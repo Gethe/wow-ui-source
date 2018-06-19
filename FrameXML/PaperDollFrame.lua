@@ -754,10 +754,16 @@ function PaperDollFrame_SetBlock(statFrame, unit)
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_BLOCK, chance, true, chance);
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, BLOCK_CHANCE).." "..string.format("%.2F", chance).."%"..FONT_COLOR_CODE_CLOSE;
 
-	local baselineArmor, effectiveArmor, armor, bonusArmor = UnitArmor(unit);
 	local shieldBlockArmor = GetShieldBlock();
-	local armorAndBlockArmorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor + shieldBlockArmor, UnitEffectiveLevel(unit));
-	statFrame.tooltip2 = CR_BLOCK_TOOLTIP:format(BreakUpLargeNumbers(shieldBlockArmor), armorAndBlockArmorReduction);
+	local blockArmorReduction = PaperDollFrame_GetArmorReduction(shieldBlockArmor, UnitEffectiveLevel(unit));
+	local blockArmorReductionAgainstTarget = PaperDollFrame_GetArmorReductionAgainstTarget(shieldBlockArmor);
+
+	statFrame.tooltip2 = CR_BLOCK_TOOLTIP:format(blockArmorReduction);
+	if (blockArmorReductionAgainstTarget) then
+		statFrame.tooltip3 = format(STAT_BLOCK_TARGET_TOOLTIP, blockArmorReductionAgainstTarget);
+	else
+		statFrame.tooltip3 = nil;
+	end
 	statFrame:Show();
 end
 

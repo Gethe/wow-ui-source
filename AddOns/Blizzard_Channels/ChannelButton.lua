@@ -222,43 +222,53 @@ function ChannelButtonMixin:OnClick(button)
 	end
 end
 
-function ChannelButtonMixin:Update()
-	ChannelButtonBaseMixin.Update(self);
-
-	local selectedChannelID, selectedChannelSupportsText = self:GetChannelList():GetSelectedChannelIDAndSupportsText();
-	self:SetIsSelectedChannel(self:GetChannelID() == selectedChannelID and self:ChannelSupportsText() == selectedChannelSupportsText);
-
-	self.NormalTexture:SetAlpha(1);
-
-	local hasVoice = self:ChannelSupportsVoice();
-	local hasText = self:ChannelSupportsText();
-
-	-- setup name label anchoring
-	self.Text:ClearAllPoints();
-	self.Text:SetPoint("LEFT", self, "LEFT", 6, 0);
-
-	if hasVoice then
-		self.Text:SetPoint("RIGHT", self.Speaker, "LEFT", -2, 0);
-	else
-		self.Text:SetPoint("RIGHT", self, "RIGHT", -6, 0);
+do
+	local function OnClickSpeaker(headsetButton)
+		-- If the user clicks this before seeing the tutorial, assume they know how to activate voice channels.
+		-- This only applies to headset buttons in the channels frame.
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CHAT_CHANNELS, true);
 	end
 
-	-- Some text channels have voice, not all voice channels have text...channels with text have setup priority for appearance (also, they're backed by the chat system,
-	-- not the voice chat system)
-	if hasText then
-		local color = self:IsActive() and HIGHLIGHT_FONT_COLOR or DISABLED_FONT_COLOR;
-		local text = ("%s %s %s"):format(self:GetChannelNumberText(), self:GetChannelName(), self:GetMemberCountText());
-		self.Text:SetText(color:WrapTextInColorCode(text));
-		self:SetEnabled(self:IsActive() or hasVoice);
-	elseif hasVoice then
-		local isAvailable = not self:IsRemoved();
-		local color = isAvailable and HIGHLIGHT_FONT_COLOR or DISABLED_FONT_COLOR;
-		self.Text:SetText(color:WrapTextInColorCode(self:GetChannelName()));
-		self:SetEnabled(isAvailable);
-	else
-		local color = DISABLED_FONT_COLOR;
-		self.Text:SetText(color:WrapTextInColorCode(self:GetChannelName()));
-		self:SetEnabled(false);
+	function ChannelButtonMixin:Update()
+		ChannelButtonBaseMixin.Update(self);
+
+		local selectedChannelID, selectedChannelSupportsText = self:GetChannelList():GetSelectedChannelIDAndSupportsText();
+		self:SetIsSelectedChannel(self:GetChannelID() == selectedChannelID and self:ChannelSupportsText() == selectedChannelSupportsText);
+
+		self.NormalTexture:SetAlpha(1);
+
+		local hasVoice = self:ChannelSupportsVoice();
+		local hasText = self:ChannelSupportsText();
+
+		-- setup name label anchoring
+		self.Text:ClearAllPoints();
+		self.Text:SetPoint("LEFT", self, "LEFT", 6, 0);
+
+		if hasVoice then
+			self.Text:SetPoint("RIGHT", self.Speaker, "LEFT", -2, 0);
+		else
+			self.Text:SetPoint("RIGHT", self, "RIGHT", -6, 0);
+		end
+
+		-- Some text channels have voice, not all voice channels have text...channels with text have setup priority for appearance (also, they're backed by the chat system,
+		-- not the voice chat system)
+		if hasText then
+			local color = self:IsActive() and HIGHLIGHT_FONT_COLOR or DISABLED_FONT_COLOR;
+			local text = ("%s %s %s"):format(self:GetChannelNumberText(), self:GetChannelName(), self:GetMemberCountText());
+			self.Text:SetText(color:WrapTextInColorCode(text));
+			self:SetEnabled(self:IsActive() or hasVoice);
+		elseif hasVoice then
+			local isAvailable = not self:IsRemoved();
+			local color = isAvailable and HIGHLIGHT_FONT_COLOR or DISABLED_FONT_COLOR;
+			self.Text:SetText(color:WrapTextInColorCode(self:GetChannelName()));
+			self:SetEnabled(isAvailable);
+		else
+			local color = DISABLED_FONT_COLOR;
+			self.Text:SetText(color:WrapTextInColorCode(self:GetChannelName()));
+			self:SetEnabled(false);
+		end
+
+		self.Speaker:SetOnClickCallback(OnClickSpeaker);
 	end
 end
 

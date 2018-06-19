@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Button name="CustomBindingButtonTemplate" inherits="UIMenuButtonStretchTemplate" mixin="CustomBindingButtonMixin" virtual="true" debugID="1">
+	<Button name="CustomBindingButtonTemplate" inherits="UIMenuButtonStretchTemplate" mixin="CustomBindingButtonMixin" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="selectedHighlight" file="Interface\Buttons\UI-Silver-Button-Select" alphaMode="ADD" hidden="true">

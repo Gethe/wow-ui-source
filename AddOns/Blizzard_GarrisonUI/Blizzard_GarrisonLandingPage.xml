@@ -272,7 +272,7 @@
 						<Anchor point="TOP" relativeKey="$parent.$parent.HeaderBar" relativePoint="BOTTOM" x="0" y="8"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="FollowerHeaderBar" atlas="GarrLanding-FollowerScrollFrame" useAtlasSize="true">
+				<Texture parentKey="FollowerScrollFrame" atlas="GarrLanding-FollowerScrollFrame" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
 					</Anchors>

@@ -89,22 +89,27 @@ local function GetErrorString(error, community)
 	return nil;
 end
 
+function GetCommunitiesErrorString(action, error, clubType)
+	local actionCodeString, errorCodeString;
+	if clubType ~= Enum.ClubType.BattleNet then
+		actionCodeString = GetActionString(action, true);
+		errorCodeString = GetErrorString(error, true);
+	end
+	if not actionCodeString then
+		actionCodeString = GetActionString(action, false);
+	end
+	if not errorCodeString then
+		errorCodeString = GetErrorString(error, false);
+	end
+	if actionCodeString then
+		return actionCodeString:format(errorCodeString or "");
+	end
+end
+
 errorFrame:SetScript("OnEvent", function(self, event, ...)
 	if event == "CLUB_ERROR" then
-		local action, error, clubType = ...;
-		local actionCodeString, errorCodeString, errorString;
-		if clubType ~= Enum.ClubType.BattleNet then
-			actionCodeString = GetActionString(action, true);
-			errorCodeString = GetErrorString(error, true);
-		end
-		if not actionCodeString then
-			actionCodeString = GetActionString(action, false);
-		end
-		if not errorCodeString then
-			errorCodeString = GetErrorString(error, false);
-		end
-		if actionCodeString then
-			errorString = actionCodeString:format(errorCodeString or "");
+		local errorString = GetCommunitiesErrorString(...);
+		if errorString then
 			UIErrorsFrame:AddMessage(errorString, RED_FONT_COLOR:GetRGB());
 		end
 	end

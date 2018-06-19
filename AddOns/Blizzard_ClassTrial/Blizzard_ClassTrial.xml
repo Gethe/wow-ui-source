@@ -90,6 +90,68 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="ExpansionTrialThanksForPlayingDialog" toplevel="true" frameStrata="DIALOG" parent="UIParent" inherits="BaseExpandableDialog" mixin="ExpansionTrialDialogMixin">
+		<Size x="521" y="250"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="UIParent"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="UIParent"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlightHugeOutline2" justifyH="CENTER" justifyV="TOP">
+					<Size x="270" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-45"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="ExpansionImage">
+					<Size x="256" y="128"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-5" />
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Description" inherits="GameFontNormalMed2" justifyH="CENTER" justifyV="TOP">
+					<Size x="360" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.ExpansionImage" relativePoint="BOTTOM" x="0" y="-20"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="EatAllInput" frameStrata="LOW" enableMouse="true" enableKeyboard="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="UIParent"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="UIParent"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="Button" inherits="UIPanelButtonTemplate" text="EXPANSION_TRIAL_THANKS_BUTTON">
+				<Size x="250" y="22"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" y="-20"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnButtonClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnKeyDown function="nop"/>
+			<OnKeyUp function="nop"/>
+		</Scripts>
+	</Frame>
+	
 	<Frame name="ClassTrialTimerDisplay" enableMouse="true" parent="UIParent" mixin="ClassTrialTimerDisplayMixin" hidden="true">
 		<Size x="304" y="81"/>
 		<Anchors>

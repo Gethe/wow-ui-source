@@ -43,7 +43,7 @@ local THREE_SPEC_LGBUTTON_HEIGHT = 95;
 local SPEC_SCROLL_HEIGHT = 282;
 local SPEC_SCROLL_PREVIEW_HEIGHT = 228;
 local TALENT_FRAME_BASE_WIDTH = 646;
-local TALENT_FRAME_EXPANSION_EXTRA_WIDTH = 131;
+local TALENT_FRAME_EXPANSION_EXTRA_WIDTH = 137;
 
 -- speed references
 local next = next;
@@ -377,8 +377,8 @@ end
 function PlayerTalentFrame_SetExpanded(expanded)
 	if (expanded) then
 		PlayerTalentFrame:SetWidth(TALENT_FRAME_BASE_WIDTH + TALENT_FRAME_EXPANSION_EXTRA_WIDTH);
-		PlayerTalentFrameTalentsTRCorner:SetPoint("TOPRIGHT", -134, -2);
-		PlayerTalentFrameTalentsBRCorner:SetPoint("BOTTOMRIGHT", -134, 2);
+		PlayerTalentFrameTalentsTRCorner:SetPoint("TOPRIGHT", -140, -2);
+		PlayerTalentFrameTalentsBRCorner:SetPoint("BOTTOMRIGHT", -140, 2);
 		PlayerTalentFrameTalents.PvpTalentFrame:Show();
 		if (PlayerTalentFrameTalents.PvpTalentFrame.TalentList:IsShown()) then
 			SetUIPanelAttribute(PlayerTalentFrame, "width", PlayerTalentFrame.superExpandedPanelWidth);
@@ -1471,7 +1471,9 @@ end
 
 function PvpTalentFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, PvpTalentFrameEvents);
-
+	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_TALENTS_FIRST_UNLOCK)) then
+		self.TrinketSlot.HelpBox:Show();
+	end
 	self:Update();
 end
 
@@ -1658,6 +1660,9 @@ PvpTalentWarmodeButtonMixin = {};
 
 function PvpTalentWarmodeButtonMixin:OnShow()
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
+	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_WARMODE_UNLOCK)) then
+		self:GetParent().WarmodeTutorialBox:Show();
+	end
 	self:Update();
 end
 
@@ -1707,9 +1712,22 @@ end
 function PvpTalentWarmodeButtonMixin:OnClick()
 	if (C_PvP.CanToggleWarMode()) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		local warmodeEnabled = self.predictedToggle:Get(); 
+		
+		if (warmodeEnabled) then 
+			PlaySound(SOUNDKIT.UI_WARMODE_DECTIVATE);
+		else 
+			PlaySound(SOUNDKIT.UI_WARMODE_ACTIVATE);
+		end
+		
 		self.predictedToggle:Toggle();
+		
 		self:Update();
 		self:GetParent():UpdateModelScenes();
+		if (self:GetParent().WarmodeTutorialBox:IsVisible()) then 
+			self:GetParent().WarmodeTutorialBox:Hide();
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_WARMODE_UNLOCK, true);
+		end
 	end
 end
 

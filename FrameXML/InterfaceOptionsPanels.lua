@@ -1128,6 +1128,7 @@ ActionBarsPanelOptions = {
 	bottomRightActionBar = { text = "SHOW_MULTIBAR2_TEXT", default = "0" },
 	rightActionBar = { text = "SHOW_MULTIBAR3_TEXT", default = "0" },
 	rightTwoActionBar = { text = "SHOW_MULTIBAR4_TEXT", default = "0" },
+	multiBarRightVerticalLayout = { text = "STACK_RIGHT_BARS", default = "0" },
 	lockActionBars = { text = "LOCK_ACTIONBAR_TEXT" },
 	alwaysShowActionBars = { text = "ALWAYS_SHOW_MULTIBARS_TEXT" },
 	countdownForCooldowns = { text = "COUNTDOWN_FOR_COOLDOWNS_TEXT" },
@@ -1834,6 +1835,7 @@ MousePanelOptions = {
 	autointeract = { text = "CLICK_TO_MOVE" },
 	mouseSpeed = { text = "MOUSE_SENSITIVITY", minValue = 0.5, maxValue = 1.5, valueStep = 0.05 },
 	cameraYawMoveSpeed = { text = "MOUSE_LOOK_SPEED", minValue = 90, maxValue = 270, valueStep = 10 },
+	ClipCursor = { text = "LOCK_CURSOR" },
 }
 
 function InterfaceOptionsMousePanelClickMoveStyleDropDown_OnEvent(self, event, ...)

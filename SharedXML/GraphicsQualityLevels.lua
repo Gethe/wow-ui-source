@@ -298,13 +298,13 @@ VideoData["Display_VerticalSyncDropDown"]={
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
 			cvars =	{
-				gxVSync = 0,
+				vsync = 0,
 			},
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_ENABLED,
 			cvars =	{
-				gxVSync = 1,
+				vsync = 1,
 			},
 		},
 	},
@@ -1267,11 +1267,6 @@ VideoData["Advanced_ShowHDModels"]={
 	tooltip = OPTION_TOOLTIP_SHOW_HD_MODELS,
 }
 
-VideoData["Advanced_LockCursorToScreen"]={
-	name = LOCK_CURSOR_TEXT;
-	tooltip = OPTION_TOOLTIP_LOCK_CURSOR,
-}
-
 VideoData["Advanced_MultisampleAlphaTest"]={
 	name = MULTISAMPLE_ALPHA_TEST,
 	description = OPTION_TOOLTIP_MULTISAMPLE_ALPHA_TEST,
@@ -1292,7 +1287,7 @@ VideoData["Advanced_MultisampleAlphaTest"]={
 	},
 }
 
-VideoData["Display_RenderScaleSlider"]={
+VideoData["Advanced_RenderScaleSlider"]={
 	name = RENDER_SCALE;
 	tooltip = OPTION_TOOLTIP_RENDER_SCALE,
 }
@@ -1325,7 +1320,8 @@ VideoData["Advanced_GraphicsAPIDropDown"]={
 			end
 		end,
 	lookup = Graphics_TableLookupSafe,
-	restart = true;
+	clientRestart = true,
+	gameRestart = true,
 }
 
 VideoData["Advanced_PhysicsInteractionDropDown"]={

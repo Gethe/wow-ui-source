@@ -100,7 +100,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="ClipFrame" clipChildren="true">
+            <Frame parentKey="ClipFrame" clipChildren="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="2" y="-22" />
 					<Anchor point="BOTTOMRIGHT" x="-4" y="0" />
@@ -236,9 +236,51 @@
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BackgroundFrame" />
 						</Anchors>
 					</Frame>
-				</Frames>
-			</Frame>
-
+                </Frames>
+            </Frame>
+            <Frame parentKey="FirstPowerLockedInHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="FULLSCREEN">
+                <Size x="260" y="100"/>
+                <Anchors>
+                    <Anchor point="LEFT" relativeKey="$parent.ClipFrame.BackgroundFrame.KeyOverlay.Rank4Slot" relativePoint="RIGHT" x="38" y="0"/>
+                </Anchors>
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="AZERITE_TUTORIAL_FIRST_POWER_LOCKED_IN">
+                            <Size x="228" y="0"/>
+                            <Anchors>
+                                <Anchor point="TOPLEFT" x="10" y="-15"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Frames>
+                    <Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+                        <Anchors>
+                            <Anchor point="TOPRIGHT" x="4" y="4"/>
+                        </Anchors>
+                    </Button>
+                    <Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
+                        <Anchors>
+                            <Anchor point="LEFT" x="-23" y="15"/>
+                        </Anchors>
+                    </Frame>
+                </Frames>
+                <Scripts>
+                    <OnLoad>
+                        self.Text:SetSpacing(4);
+                        SetClampedTextureRotation(self.Arrow.Arrow, 90);
+                        SetClampedTextureRotation(self.Arrow.Glow, 90);
+                        self.Arrow.Glow:ClearAllPoints();
+                        self.Arrow.Glow:SetPoint("CENTER", self.Arrow.Arrow, "CENTER", -3, 0);
+                    </OnLoad>
+                    <OnShow>
+                        self:SetHeight(self.Text:GetHeight() + 30);
+                    </OnShow>
+                    <OnHide>
+                        SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_FIRST_POWER_LOCKED_IN, true);
+                    </OnHide>
+                </Scripts>
+            </Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" />

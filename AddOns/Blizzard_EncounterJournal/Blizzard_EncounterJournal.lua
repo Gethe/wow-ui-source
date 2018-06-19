@@ -2892,7 +2892,7 @@ function EJSuggestFrame_RefreshDisplay()
 
 			local data = self.suggestions[i];
 			suggestion.centerDisplay.title.text:SetText(data.title);
-			suggestion.centerDisplay.description.text:SetText(data.description);
+			suggestion.centerDisplay.description.text:SetText(data.description ~= "" and data.description or " ");
 
 			-- find largest font that will not truncate the title
 			for fontIndex = minTitleIndex, #AdventureJournal_RightTitleFonts do

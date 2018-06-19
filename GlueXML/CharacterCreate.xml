@@ -1588,13 +1588,11 @@
 							<Button parentArray="typeButtons" inherits="CharacterCreateCharacterTypeButtonTemplate">
 								<KeyValues>
 									<KeyValue key="characterType" value="Enum.CharacterCreateType.Normal" type="global"/>
-									<KeyValue key="titleText" value="CHARACTER_TYPE_FRAME_NEW_CHARACTER" type="global"/>
 								</KeyValues>
 								<Anchors>
 								    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-5" y="21"/>
 								</Anchors>
 								<Scripts>
-									<OnLoad inherit="append" function="CharacterCreate_TypeButtonOnLoad"/>
 									<OnEnter inherit="append">
 										GlueTooltip:SetOwner(self, "ANCHOR_BOTTOM", 0, -10);
 										GlueTooltip:SetText(CHARACTER_TYPE_FRAME_NEW_CHARACTER);
@@ -1603,23 +1601,23 @@
 									<OnLeave inherit="append">
 										GlueTooltip:Hide();
 									</OnLeave>
+									<OnShow function="CharacterCreate_TypeButtonOnShow"/>
 								</Scripts>
 							</Button>
 
 							<Button parentArray="typeButtons" inherits="CharacterCreateCharacterTypeButtonTemplate">
 								<KeyValues>
 									<KeyValue key="characterType" value="Enum.CharacterCreateType.TrialBoost" type="global"/>
-									<KeyValue key="titleText" value="CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER" type="global"/>
 								</KeyValues>
 								<Anchors>
 								    <Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="5" y="21"/>
 								</Anchors>
 								<Scripts>
-									<OnLoad inherit="append" function="CharacterCreate_TypeButtonOnLoad"/>
 									<OnEnter inherit="append" function="CharacterCreate_TypeButtonOnEnter"/>
 									<OnLeave inherit="append">
 										GlueTooltip:Hide();
 									</OnLeave>
+									<OnShow function="CharacterCreate_TypeButtonOnShow"/>
 								</Scripts>
 							</Button>
 						</Frames>

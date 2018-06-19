@@ -37,9 +37,13 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo)
 	self.Bar:SetMinMaxValues(widgetInfo.barMin, widgetInfo.barMax);
 	self.Bar:SetValue(widgetInfo.barValue);
 
-	local barPercent = PercentageBetween(widgetInfo.barValue, widgetInfo.barMin, widgetInfo.barMax);
-	local barPercentText = FormatPercentage(barPercent, true);
-	self.Bar.Label:SetText(barPercentText);
+	if widgetInfo.barValueInSeconds > -1 then
+		self.Bar.Label:SetText(SecondsToTime(widgetInfo.barValueInSeconds, true, true, 1));
+	else
+		local barPercent = PercentageBetween(widgetInfo.barValue, widgetInfo.barMin, widgetInfo.barMax);
+		local barPercentText = FormatPercentage(barPercent, true);
+		self.Bar.Label:SetText(barPercentText);
+	end
 
 	local showSpark = widgetInfo.barValue > widgetInfo.barMin and widgetInfo.barValue < widgetInfo.barMax;
 	self.Bar.Spark:SetShown(showSpark);
@@ -50,15 +54,15 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo)
 
 	self.Label:SetText(widgetInfo.text);
 
-	local barWidth = self.Bar:GetWidth();
+	local barWidth = self.Bar:GetWidth() + 6;
 	local labelWidth = self.Label:GetWidth();
 
 	local totalWidth = barWidth > labelWidth and barWidth or labelWidth;
 	self:SetWidth(totalWidth);
 
-	local barHeight = self.Bar:GetHeight();
-	local labelHeight = self.Label:GetHeight();
+	local barHeight = self.Bar:GetHeight() + 16;
+	local labelHeight = self.Label:GetHeight() + 7;
 
-	local totalHeight = (widgetInfo.text and widgetInfo.text ~= "") and (barHeight + 5 + labelHeight + 7) or (barHeight + 5);
+	local totalHeight = (widgetInfo.text and widgetInfo.text ~= "") and (barHeight + labelHeight) or barHeight;
 	self:SetHeight(totalHeight);
 end

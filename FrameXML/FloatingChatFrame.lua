@@ -629,7 +629,7 @@ function FCF_OpenNewWindow(name)
 			ChatFrame_AddMessageGroup(chatFrame, "PARTY");
 			ChatFrame_AddMessageGroup(chatFrame, "PARTY_LEADER");
 			ChatFrame_AddMessageGroup(chatFrame, "CHANNEL");
-
+			
 			--Clear the edit box history.
 			chatFrame.editBox:ClearHistory();
 
@@ -959,8 +959,14 @@ function FCF_SetChatWindowFontSize(self, chatFrame, fontSize)
 	end
 	local fontFile, unused, fontFlags = chatFrame:GetFont();
 	chatFrame:SetFont(fontFile, fontSize, fontFlags);
-	if ( GMChatFrame and chatFrame == DEFAULT_CHAT_FRAME ) then
-		GMChatFrame:SetFont(fontFile, fontSize, fontFlags);
+	if ( chatFrame == DEFAULT_CHAT_FRAME ) then
+		if ( GMChatFrame ) then
+			GMChatFrame:SetFont(fontFile, fontSize, fontFlags);
+		end
+		
+		if ( CommunitiesFrame ) then
+			CommunitiesFrame.Chat.MessageFrame:SetFont(fontFile, fontSize, fontFlags);
+		end
 	end
 	SetChatWindowSize(chatFrame:GetID(), fontSize);
 end

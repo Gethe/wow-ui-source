@@ -19,7 +19,7 @@ local GUILD_EVENT_TEXTURES = {
 };
 
 function CommunitiesGuildNewsFrame_OnLoad(self)
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	QueryGuildNews();
 	self:RegisterEvent("GUILD_NEWS_UPDATE");
 	self:RegisterEvent("GUILD_MOTD");
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
@@ -47,9 +47,7 @@ function CommunitiesGuildNewsFrame_OnHide(self)
 end
 
 function CommunitiesGuildNewsFrame_OnEvent(self, event)
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		QueryGuildNews();
-	elseif ( self:IsShown() ) then
+	if ( self:IsShown() ) then
 		CommunitiesGuildNews_Update(self);
 	end
 end
@@ -312,6 +310,18 @@ end
 
 function CommunitiesGuildNewsButton_AnchorTooltip(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+end
+
+
+function CommunitiesGuildEventButton_OnClick(self, button)
+	if ( button == "LeftButton" ) then
+		if ( CalendarFrame ) then
+			CalendarFrame_OpenToGuildEventIndex(self.index);
+		else
+			ToggleCalendar();
+			CalendarFrame_OpenToGuildEventIndex(self.index);
+		end
+	end
 end
 
 function CommunitiesGuildNewsButton_OnClick(self, button)

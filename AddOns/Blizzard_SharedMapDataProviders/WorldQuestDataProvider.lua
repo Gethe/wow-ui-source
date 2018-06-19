@@ -104,10 +104,14 @@ function WorldQuestDataProviderMixin:OnAdded(mapCanvas)
 	if not self.setBountyQuestIDCallback then
 		self.setBountyQuestIDCallback = function(event, ...) self:SetBountyQuestID(...); end;
 	end
+	if not self.pingQuestIDCallback then
+		self.pingQuestIDCallback = function(event, ...) self:PingQuestID(...); end;
+	end
 
 	self:GetMap():RegisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
 	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
 	self:GetMap():RegisterCallback("SetBountyQuestID", self.setBountyQuestIDCallback);
+	self:GetMap():RegisterCallback("PingQuestID", self.pingQuestIDCallback);
 
 	self:EvaluateSpellEffectPin();
 	self:EvaluateCheckBounties();
@@ -143,6 +147,19 @@ end
 
 function WorldQuestDataProviderMixin:GetBountyQuestID()
 	return self.bountyQuestID;
+end
+
+function WorldQuestDataProviderMixin:PingQuestID(questID)
+	if self.pingPin then
+		self.pingPin:Stop();
+	end
+
+	if not self.pingPin then
+		self.pingPin = self:GetMap():AcquirePin("WorldQuestPingPinTemplate");
+		self.pingPin.dataProvider = self;
+	end
+
+	self.pingPin:Play(questID);
 end
 
 function WorldQuestDataProviderMixin:OnEvent(event, ...)
@@ -197,6 +214,10 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 						if pin then
 							pin:RefreshVisuals();
 							pin:SetPosition(info.x, info.y); -- Fix for WOW8-48605 - WQ starting location may move based on player location and viewed map
+
+							if self.pingPin and self.pingPin:IsAttachedToQuest(info.questId) then
+								self.pingPin:SetPosition(info.x, info.y);
+							end
 						else
 							self.activePins[info.questId] = self:AddWorldQuest(info);
 						end
@@ -207,6 +228,10 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	end
 
 	for questId in pairs(pinsToRemove) do
+		if self.pingPin and self.pingPin:IsAttachedToQuest(questId) then
+			self.pingPin:Stop();
+		end
+
 		mapCanvas:RemovePin(self.activePins[questId]);
 		self.activePins[questId] = nil;
 	end
@@ -447,4 +472,48 @@ function WorldQuestSpellEffectPinMixin:CastSpell(questID)
 			self:SetSpellVisualKit(spellVisualKitID);
 		end
 	end	
+end
+
+--[[ World Quest Ping Pin ]]--
+WorldQuestPingPinMixin = CreateFromMixins(MapCanvasPinMixin);
+
+function WorldQuestPingPinMixin:OnLoad()
+	self:UseFrameLevelType("PIN_FRAME_LEVEL_WORLD_QUEST_PING");
+end
+
+function WorldQuestPingPinMixin:Play(questID)
+	local mapID = self:GetMap():GetMapID();
+	local x, y = C_TaskQuest.GetQuestLocation(questID, mapID);
+	if x and y then
+		self:Show();
+		self:SetPosition(x, y);
+		self.DriverAnimation:Play();
+		self.ScaleAnimation:Play();
+		self.questID = questID;
+	else
+		self:Stop();
+	end	
+end
+
+function WorldQuestPingPinMixin:Stop()
+	self.DriverAnimation:Stop();
+	self.ScaleAnimation:Stop();
+	self:Clear();
+end
+
+function WorldQuestPingPinMixin:Clear()
+	self:Hide();
+	self.questID = nil;
+end
+
+function WorldQuestPingPinMixin:IsAttachedToQuest(questID)
+	return self.questID == questID;
+end
+
+WorldQuestPinPingDriverAnimationMixin = {};
+
+function WorldQuestPinPingDriverAnimationMixin:OnFinished()
+	local ping = self:GetParent();
+	ping.ScaleAnimation:Stop();
+	ping:Clear();
 end

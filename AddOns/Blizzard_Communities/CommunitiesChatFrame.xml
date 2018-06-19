@@ -90,8 +90,7 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
-
-	<EditBox name="CommunitiesChatEditBoxTemplate" autoFocus="false" virtual="true" letters="1000">
+	<EditBox name="CommunitiesChatEditBoxTemplate" autoFocus="false" virtual="true" bytes="512" visibleBytes="255" invisibleBytes="255">
 		<Size x="130" y="32"/>
 		<Layers>
 			<Layer level="BACKGROUND">

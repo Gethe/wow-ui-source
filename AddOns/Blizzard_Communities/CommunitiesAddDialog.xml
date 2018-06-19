@@ -329,13 +329,15 @@
 						<OnClick function="CommunitiesCreateDialogChangeAvatarButton_OnClick"/>
 					</Scripts>
 				</Button>
-				<Button parentKey="CreateButton" inherits="UIPanelButtonNoTooltipTemplate" text="COMMUNITIES_CREATE_COMMUNITY">
+				<Button parentKey="CreateButton" inherits="UIPanelButtonNoTooltipTemplate" motionScriptsWhileDisabled="true" text="COMMUNITIES_CREATE_COMMUNITY">
 					<Size x="165" y="24"/>
 					<Anchors>
 						<Anchor point="BOTTOM" x="-65" y="32"/>
 					</Anchors>
 					<Scripts>
 						<OnClick function="CommunitiesCreateDialogCreateButton_OnClick"/>
+						<OnEnter function="CommunitiesCreateDialogCreateButton_OnEnter"/>
+						<OnLeave function="CommunitiesCreateDialogCreateButton_OnLeave"/>
 					</Scripts>
 				</Button>
 				<Button parentKey="CancelButton" inherits="UIPanelButtonNoTooltipTemplate" text="CANCEL">

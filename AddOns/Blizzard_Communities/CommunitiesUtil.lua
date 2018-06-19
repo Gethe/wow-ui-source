@@ -50,24 +50,28 @@ function CommunitiesUtil.SortMemberInfo(memberInfoArray)
 	return memberInfoArray;
 end
 
-function CommunitiesUtil.GetMemberInfo(clubId, streamId)
+function CommunitiesUtil.GetMemberInfo(clubId, streamId, filterOffline)
 	local memberIds = clubId and C_Club.GetClubMembers(clubId, streamId) or {};
 
 	local memberInfoArray = {};
 
 	for _, memberId in ipairs(memberIds) do
-		table.insert(memberInfoArray, C_Club.GetMemberInfo(clubId, memberId));
+		local memberInfo = C_Club.GetMemberInfo(clubId, memberId);
+		local couldBeOffline = not memberInfo or (memberInfo.presence == Enum.ClubMemberPresence.Offline or memberInfo.presence == Enum.ClubMemberPresence.Unknown);
+		if memberInfo and (not filterOffline or not couldBeOffline) then
+			table.insert(memberInfoArray, memberInfo);
+		end
 	end
 
 	return memberInfoArray;
 end
 
 -- Leave streamId as nil if you want all members in the club
-function CommunitiesUtil.GetAndSortMemberInfo(clubId, streamId)
-	return CommunitiesUtil.SortMemberInfo(CommunitiesUtil.GetMemberInfo(clubId, streamId));
+function CommunitiesUtil.GetAndSortMemberInfo(clubId, streamId, filterOffline)
+	return CommunitiesUtil.SortMemberInfo(CommunitiesUtil.GetMemberInfo(clubId, streamId, filterOffline));
 end
 
-function CommunitiesUtil.SortMemberInfoWithOverride(memberInfoArray, overrideCompare)
+function CommunitiesUtil.SortMemberInfoWithOverride(memberInfoArray, overrideCompare)	
 	table.sort(memberInfoArray, function (lhsMemberInfo, rhsMemberInfo)
 		local overrideCompareResult = overrideCompare(lhsMemberInfo, rhsMemberInfo);
 		if overrideCompareResult == nil then
@@ -109,4 +113,8 @@ end
 
 function CommunitiesUtil.DoesCommunityStreamHaveUnreadMessages(clubId, streamId)
 	return C_Club.GetStreamViewMarker(clubId, streamId) ~= nil;
+end
+
+function CommunitiesUtil.CanKickClubMember(clubPrivileges, memberInfo)
+	return tContains(clubPrivileges.kickableRoleIds, memberInfo.role);
 end

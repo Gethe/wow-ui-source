@@ -11,6 +11,15 @@ local Loot =
 	Events =
 	{
 		{
+			Name = "AzeriteEmpoweredItemLooted",
+			Type = "Event",
+			LiteralName = "AZERITE_EMPOWERED_ITEM_LOOTED",
+			Payload =
+			{
+				{ Name = "itemLink", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "BonusRollActivate",
 			Type = "Event",
 			LiteralName = "BONUS_ROLL_ACTIVATE",

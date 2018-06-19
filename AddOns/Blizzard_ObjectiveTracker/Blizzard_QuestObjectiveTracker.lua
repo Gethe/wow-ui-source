@@ -345,7 +345,6 @@ function QUEST_TRACKER_MODULE:Update()
 
 	local playerMoney = GetMoney();
 	local watchMoney = false;
-	local inScenario = C_Scenario.IsInScenario();
 	local showPOIs = GetCVarBool("questPOI");
 
 	for orderingIndex = 1, #questTrackerOrderingFlags do
@@ -362,7 +361,7 @@ function QUEST_TRACKER_MODULE:Update()
 				if ( isTask or ( isBounty and not IsQuestComplete(questID) ) ) then
 					showQuest = false;
 				end
-
+				
 				if ( showQuest ) then
 					local isSequenced = IsQuestSequenced(questID);
 					local existingBlock = QUEST_TRACKER_MODULE:GetExistingBlock(questID);

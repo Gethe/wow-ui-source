@@ -201,6 +201,7 @@ local Map =
 			Returns =
 			{
 				{ Name = "fileDataID", Type = "number", Nilable = false },
+				{ Name = "atlasID", Type = "string", Nilable = false },
 				{ Name = "texturePercentageX", Type = "number", Nilable = false },
 				{ Name = "texturePercentageY", Type = "number", Nilable = false },
 				{ Name = "textureX", Type = "number", Nilable = false },

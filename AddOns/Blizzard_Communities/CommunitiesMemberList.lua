@@ -54,7 +54,7 @@ local CHARACTER_COLUMN_INFO = {
 	
 	[2] = {
 		title = COMMUNITIES_ROSTER_COLUMN_TITLE_CLASS,
-		width = 30,
+		width = 45,
 		attribute = "classID",
 	},
 	
@@ -90,14 +90,14 @@ local EXTRA_GUILD_COLUMNS = {
 		dropdownText = GUILLD_ROSTER_DROPDOWN_ACHIEVEMENT_POINTS,
 		title = COMMUNITIES_ROSTER_COLUMN_TITLE_ACHIEVEMENT,
 		attribute = "achievementPoints",
-		width = 130,
+		width = 115,
 	};
 
 	[EXTRA_GUILD_COLUMN_PROFESSION] = {
 		dropdownText = GUILLD_ROSTER_DROPDOWN_PROFESSION,
 		title = COMMUNITIES_ROSTER_COLUMN_TITLE_PROFESSION,
 		attribute = "profession", -- This is a special case since there are 2 separate sets of profession attributes.
-		width = 130,
+		width = 115,
 	};
 };
 
@@ -283,7 +283,7 @@ function CommunitiesMemberListMixin:UpdateMemberList()
 		streamId = self:GetSelectedStreamId();
 	end
 	
-	self.sortedMemberList = CommunitiesUtil.GetAndSortMemberInfo(clubId, streamId);
+	self.sortedMemberList = CommunitiesUtil.GetAndSortMemberInfo(clubId, streamId, not self:ShouldShowOfflinePlayers());
 	if self.activeColumnSortIndex then
 		self:SortByColumnIndex(self.activeColumnSortIndex);
 	end
@@ -317,6 +317,8 @@ function CommunitiesMemberListMixin:OnLoad()
 	
 	self.invitations = {};
 	self.professionDisplay = {};
+	self.showOfflinePlayers = GetCVarBool("communitiesShowOffline");
+	self.ShowOfflineButton:SetChecked(self.showOfflinePlayers);
 	
 	self.ListScrollFrame.scrollBar.doNotHide = true;
 	self.ListScrollFrame.scrollBar:SetValue(0);
@@ -370,6 +372,8 @@ end
 
 function CommunitiesMemberListMixin:SetExpandedDisplay(expandedDisplay)
 	self.expandedDisplay = expandedDisplay;
+	self:UpdateMemberList();
+	
 	if expandedDisplay then
 		if self:IsDisplayingProfessions() then
 			self:UpdateProfessionDisplay();
@@ -380,6 +384,17 @@ function CommunitiesMemberListMixin:SetExpandedDisplay(expandedDisplay)
 	
 	self:RefreshLayout();
 	self:RefreshListDisplay();
+	self.ShowOfflineButton:SetShown(expandedDisplay);
+end
+
+function CommunitiesMemberListMixin:ShouldShowOfflinePlayers()
+	return self.showOfflinePlayers or not self.expandedDisplay;
+end
+
+function CommunitiesMemberListMixin:SetShowOfflinePlayers(showOfflinePlayers)
+	self.showOfflinePlayers = showOfflinePlayers;
+	SetCVar("communitiesShowOffline", showOfflinePlayers and "1" or "0");
+	self:UpdateMemberList();
 end
 
 function CommunitiesMemberListMixin:RefreshLayout()
@@ -480,10 +495,22 @@ function CommunitiesMemberListMixin:OnClubMemberButtonClicked(entry, button)
 	if button == "RightButton" then
 		self.selectedEntry = entry;
 		ToggleDropDownMenu(1, nil, self.DropDown, entry, 0, 0);
-	elseif entry:GetProfessionId() ~= nil then
-		local memberInfo = entry:GetMemberInfo();
-		if memberInfo then
-			C_GuildInfo.QueryGuildMemberRecipes(memberInfo.guid, entry:GetProfessionId());
+		return;
+	end
+	
+	local clubId = self:GetSelectedClubId();
+	local clubInfo = C_Club.GetClubInfo(clubId);
+	if clubInfo and clubInfo.clubType == Enum.ClubType.Guild then
+		if entry:GetProfessionId() ~= nil then
+			local memberInfo = entry:GetMemberInfo();
+			if memberInfo then
+				C_GuildInfo.QueryGuildMemberRecipes(memberInfo.guid, entry:GetProfessionId());
+			end
+		else
+			local memberInfo = entry:GetMemberInfo();
+			if memberInfo then
+				CommunitiesFrame:OpenGuildMemberDetailFrame(clubId, memberInfo);
+			end
 		end
 	end
 end
@@ -1037,7 +1064,7 @@ function CommunitiesMemberListEntryMixin:UpdateNameFrame()
 
 	nameFrame:ClearAllPoints();
 	if self.Class:IsShown() then
-		nameFrame:SetPoint("LEFT", self.Class, "RIGHT", 8, 0);
+		nameFrame:SetPoint("LEFT", self.Class, "RIGHT", 18, 0);
 	else
 		nameFrame:SetPoint("LEFT", 4, 0);
 	end

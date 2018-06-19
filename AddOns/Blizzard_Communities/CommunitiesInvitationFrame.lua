@@ -102,3 +102,55 @@ function CommunitiesInvitebutton_OnHide(self)
 		StaticPopup_Hide("INVITE_COMMUNITY_MEMBER_WITH_INVITE_LINK");
 	end
 end
+
+CommunitiesTicketFrameMixin = {};
+
+-- overrides CommunitiesInvitationFrameMixin:OnShow 
+function CommunitiesTicketFrameMixin:OnShow()
+end
+
+-- overrides CommunitiesInvitationFrameMixin:OnHide 
+function CommunitiesTicketFrameMixin:OnHide()
+end
+
+function CommunitiesTicketFrameMixin:OnEvent(event, ...)
+end
+
+function CommunitiesTicketFrameMixin:DisplayTicket(ticketInfo)
+	self.ticketId = ticketInfo.ticketId;
+	
+	local clubInfo = ticketInfo.clubInfo;
+	self.clubId = clubInfo.clubId;
+
+	local isCharacterClub = clubInfo.clubType == Enum.ClubType.Character;
+	local clubTypeText = isCharacterClub and COMMUNITIES_INVITATION_FRAME_TYPE_CHARACTER or COMMUNITIES_INVITATION_FRAME_TYPE;
+	self.Type:SetText(clubTypeText);
+	C_Club.SetAvatarTexture(self.Icon, clubInfo.avatarId, clubInfo.clubType);
+	self.Name:SetText(clubInfo.name);
+	
+	if clubInfo.description ~= "" then
+		self.Description:SetText(COMMUNITIES_INVIVATION_FRAME_DESCRIPTION_FORMAT:format(clubInfo.description));
+	else
+		self.Description:SetText("");
+	end
+	
+	self.Leader:SetText(nil);
+
+	self.MemberCount:SetText(COMMUNITIES_INVITATION_FRAME_MEMBER_COUNT:format(clubInfo.memberCount or 1));
+end
+
+function CommunitiesTicketFrameMixin:AcceptTicket()
+	C_Club.RedeemTicket(self.ticketId);
+	local communitiesFrame = self:GetCommunitiesFrame();
+	communitiesFrame.CommunitiesList:RemoveTicket(self.ticketId);
+	communitiesFrame:SelectClub(nil);
+	communitiesFrame:TriggerEvent(CommunitiesFrameMixin.Event.TicketAccepted, self.ticketId, self.clubId);
+	self:Hide();
+end
+
+function CommunitiesTicketFrameMixin:DeclineTicket()
+	local communitiesFrame = self:GetCommunitiesFrame();
+	communitiesFrame.CommunitiesList:RemoveTicket(self.ticketId);
+	communitiesFrame:SelectClub(nil);
+	self:Hide();
+end

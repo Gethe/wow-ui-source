@@ -40,9 +40,13 @@ Import("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_LABEL");
 Import("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_INSTRUCTIONS");
 Import("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_INSTRUCTIONS_TOOLTIP");
 Import("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_INSTRUCTIONS_CHARACTER");
+Import("COMMUNITIES_CREATE_DIALOG_NAME_AND_SHORT_NAME_ERROR");
+Import("COMMUNITIES_CREATE_DIALOG_NAME_ERROR");
+Import("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_ERROR");
 Import("CANCEL");
 Import("FEATURE_NOT_AVAILBLE_PANDAREN");
 Import("OKAY");
+Import("RED_FONT_COLOR");
 
 Import("C_Club");
 Import("CreateFrame");
@@ -154,9 +158,14 @@ function CommunitiesCreateDialogMixin:CreateCommunity()
 end
 
 function CommunitiesCreateDialogMixin:UpdateCreateButton()
-	local validName = strlenutf8(self.NameBox:GetText()) >= 2;
-	local validShortName = strlenutf8(self.ShortNameBox:GetText()) >= 2;
-	self.CreateButton:SetEnabled(validName and validShortName);
+	local name = self.NameBox:GetText();
+	local nameIsValid = C_Club.ValidateText(self:GetClubType(), name, Enum.ClubFieldType.ClubName) == Enum.ValidateNameResult.NameSuccess;
+	local shortName = self.ShortNameBox:GetText();
+	local shortNameIsValid = C_Club.ValidateText(self:GetClubType(), shortName, Enum.ClubFieldType.ClubShortName) == Enum.ValidateNameResult.NameSuccess;
+	self.CreateButton:SetEnabled(nameIsValid and shortNameIsValid);
+	if self.CreateButton:IsMouseOver() then
+		CommunitiesCreateDialogCreateButton_OnEnter(self.CreateButton);
+	end
 end
 
 function CommunitiesAddDialogWoWButton_OnEnter(self)
@@ -212,4 +221,29 @@ function CommunitiesCreateDialogCreateButton_OnClick(self)
 	CommunitiesCreateDialog:CreateCommunity();
 	CommunitiesCreateDialog:Hide();
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
+end
+
+function CommunitiesCreateDialogCreateButton_OnEnter(self)
+	local createDialog = self:GetParent();
+	local name = createDialog.NameBox:GetText();
+	local nameErrorCode = C_Club.GetCommunityNameResultText(C_Club.ValidateText(createDialog:GetClubType(), name, Enum.ClubFieldType.ClubName));
+	local shortName = createDialog.ShortNameBox:GetText();
+	local shortNameErrorCode = C_Club.GetCommunityNameResultText(C_Club.ValidateText(createDialog:GetClubType(), shortName, Enum.ClubFieldType.ClubShortName));
+	if nameErrorCode ~= nil and shortNameErrorCode ~= nil then
+		local nameError = RED_FONT_COLOR:WrapTextInColorCode(nameErrorCode);
+		local shortNameError = RED_FONT_COLOR:WrapTextInColorCode(shortNameErrorCode);
+		Outbound.ShowGameTooltip(COMMUNITIES_CREATE_DIALOG_NAME_AND_SHORT_NAME_ERROR:format(nameError, shortNameError), self:GetRight(), self:GetTop(), true);
+	elseif nameErrorCode ~= nil then
+		local nameError = RED_FONT_COLOR:WrapTextInColorCode(nameErrorCode);
+		Outbound.ShowGameTooltip(COMMUNITIES_CREATE_DIALOG_NAME_ERROR:format(nameError), self:GetRight(), self:GetTop(), true);
+	elseif shortNameErrorCode ~= nil then
+		local shortNameError = RED_FONT_COLOR:WrapTextInColorCode(shortNameErrorCode);
+		Outbound.ShowGameTooltip(COMMUNITIES_CREATE_DIALOG_SHORT_NAME_ERROR:format(shortNameError), self:GetRight(), self:GetTop(), true);
+	else
+		Outbound.HideGameTooltip();
+	end
+end
+
+function CommunitiesCreateDialogCreateButton_OnLeave(self)
+	Outbound.HideGameTooltip();
 end

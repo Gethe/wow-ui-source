@@ -99,6 +99,10 @@ function GroupMembersPinMixin:Refresh(fromOnShow)
 	self:UpdatePlayerPins();
 
 	self:UpdateTooltips(GameTooltip);
+
+	if fromOnShow then
+		self:OnMapChanged();
+	end
 end
 
 function GroupMembersPinMixin:OnMapChanged()
@@ -128,6 +132,7 @@ function GroupMembersPinMixin:SynchronizePinSizes()
 			self:SetPinSize(unit, size / scale);
 		end
 	end
+	self:SetPlayerPingScale(.65 / scale);
 end
 
 function GroupMembersPinMixin:OnCanvasSizeChanged()

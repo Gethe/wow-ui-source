@@ -537,12 +537,14 @@ local function IsUsingValidProductForCreateNewCharacterBoost()
 	return not IsUsingValidProductForTrialBoost(CharacterUpgradeFlow.data);
 end
 
-local function IsBoostFlowValidForCharacter(flowData, class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress)
+local function IsBoostFlowValidForCharacter(flowData, class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter)
 	if (boostInProgress or vasServiceInProgress) then
 		return false;
 	end
 
-	if isTrialBoost then
+	if isExpansionTrialCharacter and CanUpgradeExpansion()  then
+		return false;
+	elseif isTrialBoost then
 		if level >= flowData.level and not IsUsingValidProductForTrialBoost(flowData) then
 			return false;
 		end
@@ -559,8 +561,8 @@ local function IsBoostFlowValidForCharacter(flowData, class, level, boostInProgr
 	return true;
 end
 
-local function CanBoostCharacter(class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress)
-	return IsBoostFlowValidForCharacter(CharacterUpgradeFlow.data, class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress);
+local function CanBoostCharacter(class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter)
+	return IsBoostFlowValidForCharacter(CharacterUpgradeFlow.data, class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter);
 end
 
 local function IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade)
@@ -588,6 +590,11 @@ local function formatDescription(description, gender)
 
 	-- This is a very simple parser that will only handle $G/$g tokens
 	return gsub(description, "$[Gg]([^:]+):([^;]+);", "%"..gender);
+end
+
+function IsExpansionTrialCharacter(characterGUID)
+	local isExpansionTrialCharacter = select(28, GetCharacterInfoByGUID(characterGUID));
+	return isExpansionTrialCharacter;
 end
 
 function GetAvailableBoostTypesForCharacterByGUID(characterGUID)
@@ -815,8 +822,8 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	for i = 1, numDisplayedCharacters do
 		local button = _G["CharSelectCharacterButton"..i];
 		_G["CharSelectPaidService"..i]:Hide();
-		local class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress = select(5, GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET)));
-		local canBoostCharacter = CanBoostCharacter(class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress);
+		local class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter = select(5, GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET)));
+		local canBoostCharacter = CanBoostCharacter(class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter);
 
 		SetCharacterButtonEnabled(button, canBoostCharacter);
 

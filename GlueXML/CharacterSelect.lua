@@ -72,6 +72,12 @@ function CharacterSelectLockedButtonMixin:OnLeave()
 end
 
 function CharacterSelectLockedButtonMixin:OnClick()
+	if IsExpansionTrialCharacter(self.guid) and CanUpgradeExpansion() then
+		ToggleStoreUI();
+		StoreFrame_SetGamesCategory();
+		return;
+	end
+
     CharacterSelectButton_OnClick(self.characterSelectButton);
 
 	if GlobalGlueContextMenu_GetOwner() == self then
@@ -670,8 +676,18 @@ function CharacterSelect_SetupPadlockForCharacterButton(button, guid)
 
     padlock.guid = guid;
 
-    local isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade = select(22, GetCharacterInfoByGUID(guid));
-    if isTrialBoost and isTrialBoostLocked then
+    local isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, _, _, _, isExpansionTrialCharacter = select(22, GetCharacterInfoByGUID(guid));
+	if isExpansionTrialCharacter then
+		if IsExpansionTrial() or CanUpgradeExpansion() then
+			-- Player has to upgrade to unlock this character
+			padlock.tooltipTitle = CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_LOCKED_TOOLTIP_TITLE;
+			padlock.tooltipText = CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_LOCKED_TOOLTIP_TEXT;
+		else
+			-- Player just needs to boost to get this character
+			padlock.tooltipTitle = CHARACTER_SELECT_INFO_TRIAL_BOOST_LOCKED_TOOLTIP_TITLE;
+			padlock.tooltipText = CHARACTER_SELECT_INFO_TRIAL_BOOST_LOCKED_TOOLTIP_TEXT;
+		end
+    elseif isTrialBoost and isTrialBoostLocked then
         padlock.tooltipTitle = CHARACTER_SELECT_INFO_TRIAL_BOOST_LOCKED_TOOLTIP_TITLE;
         padlock.tooltipText = CHARACTER_SELECT_INFO_TRIAL_BOOST_LOCKED_TOOLTIP_TEXT;
     elseif revokedCharacterUpgrade then
@@ -785,7 +801,7 @@ function UpdateCharacterList(skipSelect)
     local areCharServicesShown = CharSelectServicesFlowFrame:IsShown();
 
     for i=1, characterLimit, 1 do
-        local name, race, _, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked, isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, _, lastLoginBuild = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
+        local name, race, _, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked, isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, _, lastLoginBuild, _, isExpansionTrialCharacter = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
         local productID, vasServiceState, vasServiceErrors, productInfo;
         if (guid) then
             productID, vasServiceState, vasServiceErrors = C_StoreGlue.GetVASPurchaseStateInfo(guid);
@@ -865,7 +881,24 @@ function UpdateCharacterList(skipSelect)
 
                 locationText:SetFontObject("GlueFontDisableSmall");
 
-                if isTrialBoost then
+                if isExpansionTrialCharacter then
+					if IsExpansionTrial() or CanUpgradeExpansion() then
+						locationText:SetText(CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_BUY_EXPANSION);
+					else
+						locationText:SetText(CHARACTER_SELECT_INFO_TRIAL_BOOST_APPLY_BOOST_TOKEN);
+					end
+
+                    if isTrialBoostLocked or not IsExpansionTrial() then
+                        infoText:SetText(CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_LOCKED);
+                        CharacterSelect_SetupPadlockForCharacterButton(button, guid);
+
+                        if (not areCharServicesShown) then
+                            nameText:SetTextColor(.5, .5, .5, 1);
+                        end
+                    else
+                        infoText:SetText(CHARACTER_SELECT_INFO_EXPANSION_TRIAL_PLAYABLE);
+                    end
+                elseif isTrialBoost then
                     locationText:SetText(CHARACTER_SELECT_INFO_TRIAL_BOOST_APPLY_BOOST_TOKEN);
 
                     if isTrialBoostLocked then
@@ -1267,8 +1300,8 @@ function CharacterSelect_AllowedToEnterWorld()
 		return false;
     end
 
-    local isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, vasServiceInProgress = select(22, GetCharacterInfo(GetCharacterSelection()));
-	local trialBoostUnavailable = isTrialBoost and (isTrialBoostLocked or not C_CharacterServices.IsTrialBoostEnabled());
+    local isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter = select(22, GetCharacterInfo(GetCharacterSelection()));
+	local trialBoostUnavailable = (isExpansionTrialCharacter and (isTrialBoostLocked or not IsExpansionTrial())) or (isTrialBoost and (isTrialBoostLocked or not C_CharacterServices.IsTrialBoostEnabled()));
     if (revokedCharacterUpgrade or trialBoostUnavailable) then
         return false;
     end
@@ -1546,18 +1579,23 @@ end
 
 -- Account upgrade panel
 function AccountUpgradePanel_GetDisplayExpansionLevel()
-    if IsTrialAccount() then
+	if IsTrialAccount() then
 		return nil, LE_EXPANSION_CLASSIC;
-    end
+	end
+
+	local currentExpansionLevel = GetClampedCurrentExpansionLevel();
+	if IsExpansionTrial() then
+		currentExpansionLevel = currentExpansionLevel - 1;
+	end
+	local upgradeExpansionLevel = math.min(currentExpansionLevel + 1, GetMaximumExpansionLevel());
 	
-	local currentExpansionLevel = math.min(GetClientDisplayExpansionLevel(), math.max(GetAccountExpansionLevel(), GetExpansionLevel()));		
-	local upgradeExpansionLevel = IsExpansionTrial() and currentExpansionLevel or currentExpansionLevel + 1;
-	
-	if currentExpansionLevel <= GetMinimumExpansionLevel() then
+	local minExpansionLevel = GetMinimumExpansionLevel();
+
+	if currentExpansionLevel <= minExpansionLevel then
 		currentExpansionLevel = LE_EXPANSION_CLASSIC;
 	end
 	
-	if upgradeExpansionLevel and upgradeExpansionLevel <= GetMinimumExpansionLevel() then
+	if upgradeExpansionLevel <= minExpansionLevel then
 		upgradeExpansionLevel = LE_EXPANSION_CLASSIC;
 	end
 
@@ -2001,11 +2039,16 @@ function CharacterServicesMaster_UpdateServiceButton()
         return;
     end
 
-    local upgradeAmounts = C_SharedCharacterServices.GetUpgradeDistributions();	
+    local upgradeInfo = C_SharedCharacterServices.GetUpgradeDistributions();	
     local hasPurchasedBoost = false;
-    for id, data in pairs(upgradeAmounts) do
+    for id, data in pairs(upgradeInfo) do
 		hasPurchasedBoost = hasPurchasedBoost or data.hasPaid;
     end
+
+	local isExpansionTrial, expansionTrialRemainingSeconds = GetExpansionTrialInfo();
+	if isExpansionTrial then
+		upgradeInfo[0] = {hasPaid = false, hasFree = true, amount = 1, isExpansionTrial = true, remainingTime = expansionTrialRemainingSeconds};
+	end
 
     -- support refund notice for Korea
     if hasPurchasedBoost and C_StoreSecure.GetCurrencyID() == CURRENCY_KRW then
@@ -2014,36 +2057,54 @@ function CharacterServicesMaster_UpdateServiceButton()
 
 	local characterServiceDisplayInfo = C_CharacterServices.GetCharacterServiceDisplayOrder();
     for _, boostType in pairs(characterServiceDisplayInfo) do
-		DisplayBattlepayTokens(upgradeAmounts, boostType);
+		DisplayBattlepayTokens(upgradeInfo[boostType], boostType);
 	end
+
+	local accountExpansion = GetAccountExpansionLevel();
+	local MINIMUM_BOOST_POPUP_SHOWN = 7;
 
 	local freeFrame = nil;
 	for i = 1, CharacterSelect.numActiveCharacterBoosts do
 		local boostFrame = CharacterSelect.CharacterBoosts[i];
-		local boostFrameIsBetterCandidate = not freeFrame or boostFrame.data.expansion > freeFrame.data.expansion;
+		local boostFrameIsBetterCandidate = false;
+
+		if boostFrame.data.expansion >= MINIMUM_BOOST_POPUP_SHOWN then
+			if not freeFrame then
+				boostFrameIsBetterCandidate = true;
+			elseif boostFrame.data.isExpansionTrial then
+				boostFrameIsBetterCandidate = not freeFrame.data.isExpansionTrial or boostFrame.data.expansion > freeFrame.data.expansion;
+			else
+				boostFrameIsBetterCandidate = not freeFrame.data.isExpansionTrial and boostFrame.data.expansion > freeFrame.data.expansion;
+			end
+		end
+
 		if boostFrameIsBetterCandidate then
-			if boostFrame.data.expansion <= GetAccountExpansionLevel() then
-				freeFrame = boostFrame;
+			if boostFrame.data.isExpansionTrial then
+				if isExpansionTrial and boostFrame.data.expansion <= accountExpansion and boostFrame.data.expansion > C_SharedCharacterServices.GetLastSeenExpansionTrialPopup() then
+					freeFrame = boostFrame;
+				end
+			else
+				if boostFrame.data.expansion <= accountExpansion and boostFrame.data.expansion > C_SharedCharacterServices.GetLastSeenCharacterUpgradePopup() then
+					freeFrame = boostFrame;
+				end
 			end
 		end
 	end
 
-	local MINIMUM_BOOST_POPUP_SHOWN = 7;
-    if freeFrame and freeFrame.data.expansion >= MINIMUM_BOOST_POPUP_SHOWN and C_SharedCharacterServices.GetLastSeenUpgradePopup() < freeFrame.data.expansion then
+	if freeFrame then
 		DisplayBattlepayTokenFreeFrame(freeFrame);
 	end
 end
 
-function DisplayBattlepayTokens(upgradeAmounts, boostType)
-	local charUpgradeDisplayData = C_CharacterServices.GetCharacterServiceDisplayData(boostType);
-	local boostAmounts = upgradeAmounts[boostType];
-	if boostAmounts and boostAmounts.amount > 0 then
-		DisplayBattlepayTokenType(charUpgradeDisplayData, boostAmounts.amount, boostAmounts.hasFree);
+function DisplayBattlepayTokens(upgradeInfo, boostType)
+	if upgradeInfo and upgradeInfo.amount > 0 then
+		local charUpgradeDisplayData = C_CharacterServices.GetCharacterServiceDisplayData(boostType);
+		DisplayBattlepayTokenType(charUpgradeDisplayData, upgradeInfo);
 	end
 end
 
-function DisplayBattlepayTokenType(charUpgradeDisplayData, amount, hasFreeBoost)
-	if amount > 0 then
+function DisplayBattlepayTokenType(charUpgradeDisplayData, upgradeInfo)
+	if upgradeInfo.amount > 0 then
 		CharacterSelect.numActiveCharacterBoosts = CharacterSelect.numActiveCharacterBoosts + 1;
 		
 		local boostFrameIndex = CharacterSelect.numActiveCharacterBoosts;
@@ -2053,7 +2114,9 @@ function DisplayBattlepayTokenType(charUpgradeDisplayData, amount, hasFreeBoost)
 		end
 
 		frame.data = charUpgradeDisplayData;
-		frame.hasFreeBoost = hasFreeBoost;
+		frame.data.isExpansionTrial = upgradeInfo.isExpansionTrial;
+		frame.hasFreeBoost = upgradeInfo.hasFree;
+		frame.remainingTime = upgradeInfo.remainingTime;
 
 		SetPortraitToTexture(frame.Icon, charUpgradeDisplayData.icon);
 		SetPortraitToTexture(frame.Highlight.Icon, charUpgradeDisplayData.icon);
@@ -2065,11 +2128,17 @@ function DisplayBattlepayTokenType(charUpgradeDisplayData, amount, hasFreeBoost)
 			frame:SetPoint("TOPRIGHT", CharacterSelectCharacterFrame, "TOPLEFT", -18, -4);
 		end
 
-		if amount > 1 then
+		if upgradeInfo.remainingTime then
+			frame.Timer:StartTimer(upgradeInfo.remainingTime, 1, true);
+		else
+			frame.Timer:StopTimer();
+		end
+
+		if upgradeInfo.amount > 1 then
 			frame.Ring:Show();
 			frame.NumberBackground:Show();
 			frame.Number:Show();
-			frame.Number:SetText(amount);
+			frame.Number:SetText(upgradeInfo.amount);
 		else
 			frame.Ring:Hide();
 			frame.NumberBackground:Hide();
@@ -2079,14 +2148,23 @@ function DisplayBattlepayTokenType(charUpgradeDisplayData, amount, hasFreeBoost)
 	end
 end
 
+local textureKitRegionInfo = {
+	["Top"] = {formatString= "%s-boostpopup-top", useAtlasSize=true},
+	["Middle"] = {formatString="%s-boostpopup-middle", useAtlasSize = false},
+	["Bottom"] = {formatString="%s-boostpopup-bottom", useAtlasSize = true},
+	["CloseButtonBG"] = {formatString="%s-boostpopup-exit-frame", useAtlasSize = true}
+}
+
 function DisplayBattlepayTokenFreeFrame(freeFrame)
 	local freeFrameData = freeFrame.data;
-	freeFrame.Glow:SetPoint("CENTER", freeFrame.IconBorder, "CENTER");
-	freeFrame.Glow:Show();
-	freeFrame.GlowSpin.SpinAnim:Play();
-	freeFrame.GlowPulse.PulseAnim:Play();
-	freeFrame.GlowSpin:Show();
-	freeFrame.GlowPulse:Show();
+	if not freeFrame.data.isExpansionTrial then
+		freeFrame.Glow:SetPoint("CENTER", freeFrame.IconBorder, "CENTER");
+		freeFrame.Glow:Show();
+		freeFrame.GlowSpin.SpinAnim:Play();
+		freeFrame.GlowPulse.PulseAnim:Play();
+		freeFrame.GlowSpin:Show();
+		freeFrame.GlowPulse:Show();
+	end
 
 	local popupData = freeFrameData.popupInfo;
 	if popupData then
@@ -2094,30 +2172,61 @@ function DisplayBattlepayTokenFreeFrame(freeFrame)
 		
 		popupFrame.data = freeFrameData;
 		popupFrame.Title:SetText(popupData.title);
+
+		local timerHeight = 0;
+		if freeFrame.remainingTime then
+			popupFrame.Timer:StartTimer(freeFrame.remainingTime, 1, true, true, BOOST_POPUP_TIMER_FORMAT_STRING);
+			popupFrame.Description:SetPoint("TOP", popupFrame.Timer, "BOTTOM", 0, -20);
+			timerHeight = popupFrame.Timer:GetHeight() + 2;
+		else
+			popupFrame.Timer:StopTimer();
+			popupFrame.Description:SetPoint("TOP", popupFrame.Title, "BOTTOM", 0, -20);
+		end
+
 		popupFrame.Description:SetText(popupData.description);
-		popupFrame.Top:SetAtlas(popupData.textureKitPrefix.."-boostpopup-top", true);
-		popupFrame.Middle:SetAtlas(popupData.textureKitPrefix.."-boostpopup-middle", false);
-		popupFrame.Bottom:SetAtlas(popupData.textureKitPrefix.."-boostpopup-bottom", true);
-		popupFrame.CloseButtonBG:SetAtlas(popupData.textureKitPrefix.."-boostpopup-exit-frame", true);
+		popupFrame:SetupTextureKit(popupData.textureKitPrefix, textureKitRegionInfo);
 		
-		popupFrame:SetHeight(180 + popupFrame.Description:GetHeight() + popupFrame.Title:GetHeight());
+		local baseHeight;
+		if freeFrame.data.isExpansionTrial then
+			popupFrame.GetStartedButton:SetText(EXPANSION_TRIAL_CREATE_TRIAL_CHARACTER);
+			popupFrame.LaterButton:Hide();
+			baseHeight = 160;
+		else
+			popupFrame.GetStartedButton:SetText(CHARACTER_UPGRADE_POPUP_BOOST_EXISTING_CHARACTER);
+			popupFrame.LaterButton:Show();
+			baseHeight = 180;
+		end
+
+		popupFrame:SetHeight(baseHeight + timerHeight + popupFrame.Description:GetHeight() + popupFrame.Title:GetHeight());
 		popupFrame:Show();
 	end
 end
 
 local function CharacterUpgradePopup_CheckSetPopupSeen(data)
     if UpgradePopupFrame and UpgradePopupFrame.data and UpgradePopupFrame:IsVisible() then
-        if (data.expansion == UpgradePopupFrame.data.expansion and C_SharedCharacterServices.GetLastSeenUpgradePopup() < data.expansion) then
-            C_SharedCharacterServices.SetPopupSeen(data.expansion);
+        if data.expansion == UpgradePopupFrame.data.expansion then
+			if UpgradePopupFrame.data.isExpansionTrial and C_SharedCharacterServices.GetLastSeenExpansionTrialPopup() < data.expansion then
+				C_SharedCharacterServices.SetExpansionTrialPopupSeen(data.expansion);
+			elseif C_SharedCharacterServices.GetLastSeenCharacterUpgradePopup() < data.expansion then
+				C_SharedCharacterServices.SetCharacterUpgradePopupSeen(data.expansion);
+			end
         end
     end
 end
 
 local function HandleUpgradePopupButtonClick(self)
-    PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON); -- TODO: Is there a better sound to play in case this is a close button?
+    PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
     local data = self:GetParent().data;
     CharacterUpgradePopup_CheckSetPopupSeen(data);
     return data;
+end
+
+UpgradePopupFrameMixin = CreateFromMixins(BaseExpandableDialogMixin);
+
+function UpgradePopupFrameMixin:OnCloseClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+	CharacterUpgradePopup_CheckSetPopupSeen(self.data);
+	CharacterServicesMaster_UpdateServiceButton();
 end
 
 function CharacterUpgradePopup_OnCharacterBoostDelivered(boostType, guid, reason)
@@ -2155,7 +2264,24 @@ end
 
 function CharacterUpgradePopup_OnStartClick(self)
     local data = HandleUpgradePopupButtonClick(self);
-    CharacterUpgradePopup_BeginCharacterUpgradeFlow(data);
+	if data.isExpansionTrial then
+		CharacterSelect_CreateNewCharacter(Enum.CharacterCreateType.TrialBoost, true);
+	else
+		CharacterUpgradePopup_BeginCharacterUpgradeFlow(data);
+	end
+end
+
+function CharacterUpgradePopup_OnStartEnter(self)
+	local data = self:GetParent().data;
+	if not data.isExpansionTrial then
+		GlueTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		local tooltip = CHARACTER_UPGRADE_POPUP_BOOST_EXISTING_CHARACTER_TOOLTIP:format(data.flowTitle);
+		GlueTooltip:SetText(tooltip, nil, nil, nil, nil, true);
+	end
+end
+
+function CharacterUpgradePopup_OnStartLeave(self)
+	GlueTooltip:Hide();
 end
 
 function CharacterUpgradePopup_OnTryNewClick(self)
@@ -2166,13 +2292,14 @@ function CharacterUpgradePopup_OnTryNewClick(self)
     end
 end
 
-function CharacterUpgradePopup_OnCloseClick(self)
-    HandleUpgradePopupButtonClick(self);
-    CharacterServicesMaster_UpdateServiceButton();
-end
-
 function CharacterServicesTokenBoost_OnClick(self)
-    if IsVeteranTrialAccount() then
+	if self.data.isExpansionTrial then
+		if UpgradePopupFrame:IsShown() then
+			UpgradePopupFrame:Hide();
+		else
+			DisplayBattlepayTokenFreeFrame(self);
+		end
+    elseif IsVeteranTrialAccount() then
         GlueDialog_Show("CHARACTER_BOOST_FEATURE_RESTRICTED", CHARACTER_BOOST_YOU_MUST_REACTIVATE);
     elseif IsTrialAccount() then
         GlueDialog_Show("CHARACTER_BOOST_FEATURE_RESTRICTED", CHARACTER_BOOST_YOU_MUST_UPGRADE);
@@ -2187,13 +2314,14 @@ function CharacterServicesMaster_OnLoad(self)
     self.flows = {};
 
     self:RegisterEvent("PRODUCT_DISTRIBUTIONS_UPDATED");
+    self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
     self:RegisterEvent("PRODUCT_ASSIGN_TO_TARGET_FAILED");
 end
 
 local completedGuid;
 
 function CharacterServicesMaster_OnEvent(self, event, ...)
-    if (event == "PRODUCT_DISTRIBUTIONS_UPDATED") then
+    if (event == "PRODUCT_DISTRIBUTIONS_UPDATED" or event == "UPDATE_EXPANSION_LEVEL") then
         CharacterServicesMaster_UpdateServiceButton();
     elseif (event == "PRODUCT_ASSIGN_TO_TARGET_FAILED") then
         if (CharacterServicesMaster.pendingGuid and C_CharacterServices.DoesGUIDHavePendingFactionChange(CharacterServicesMaster.pendingGuid)) then
@@ -2456,8 +2584,13 @@ end
 function CharacterServicesTokenBoost_OnEnter(self)
     self.Highlight:Show();
     GlueTooltip:SetOwner(self, "ANCHOR_LEFT");
-    GlueTooltip:AddLine(BOOST_TOKEN_TOOLTIP_TITLE:format(self.data.level), 1.0, 1.0, 1.0);
-    GlueTooltip:AddLine(BOOST_TOKEN_TOOLTIP_DESCRIPTION:format(self.data.level), nil, nil, nil, 1, 1);
+	if self.data.isExpansionTrial then
+		GlueTooltip:AddLine(self.data.popupInfo.title, 1.0, 1.0, 1.0);
+		GlueTooltip:AddLine(self.data.popupInfo.description, nil, nil, nil, true);
+	else
+		GlueTooltip:AddLine(BOOST_TOKEN_TOOLTIP_TITLE:format(self.data.level), 1.0, 1.0, 1.0);
+		GlueTooltip:AddLine(BOOST_TOKEN_TOOLTIP_DESCRIPTION:format(self.data.level), nil, nil, nil, true);
+	end
     GlueTooltip:Show();
 end
 
@@ -2881,9 +3014,12 @@ function CharacterSelect_CheckApplyBoostToUnrevokeBoost(guid)
 end
 
 function CharacterSelect_ShowBoostUnlockDialog(guid)
-    local isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade = select(22, GetCharacterInfoByGUID(guid));
+    local isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, _, _, _, isExpansionTrialCharacter = select(22, GetCharacterInfoByGUID(guid));
 
     if isTrialBoost and isTrialBoostLocked then
+        CharacterSelect_CheckApplyBoostToUnlockTrialCharacter(guid);
+        return true;
+	elseif isExpansionTrialCharacter then
         CharacterSelect_CheckApplyBoostToUnlockTrialCharacter(guid);
         return true;
     elseif revokedCharacterUpgrade then

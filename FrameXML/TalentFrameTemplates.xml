@@ -68,11 +68,11 @@
 		</Scripts>
 	</Button>
 	<Button name="PvpTalentSlotTemplate" virtual="true" mixin="PvpTalentSlotMixin" motionScriptsWhileDisabled="true">
-		<Size x="44" y="44"/>
+		<Size x="45" y="45"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Texture" hidden="true">
-					<Size x="32" y="32"/>
+				<Texture parentKey="Texture">
+					<Size x="33" y="33"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -91,7 +91,7 @@
 				<FontString parentKey="TalentName" inherits="GameFontHighlightSmall" hidden="true">
 					<Size x="100" y="5"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Border" relativePoint="BOTTOM" x="0" y="2"/>
+						<Anchor point="TOP" relativeKey="$parent.Border" relativePoint="BOTTOM" x="1" y="1"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -104,7 +104,6 @@
 						<Color r="0.32" g="0.5" b="1.0"/>
 					</Shadow>
 				</FontString>
-
 				<Texture parentKey="NewGlow" atlas="collections-newglow" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.New" x="-20" y="10"/>

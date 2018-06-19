@@ -291,6 +291,20 @@ local Club =
 			},
 		},
 		{
+			Name = "GetCommunityNameResultText",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "result", Type = "ValidateNameResult", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "errorCode", Type = "string", Nilable = true },
+			},
+		},
+		{
 			Name = "GetInfoFromLastCommunityChatLine",
 			Type = "Function",
 
@@ -732,6 +746,16 @@ local Club =
 			},
 		},
 		{
+			Name = "SetSocialQueueingEnabled",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnfocusStream",
 			Type = "Function",
 
@@ -754,7 +778,7 @@ local Club =
 
 			Returns =
 			{
-				{ Name = "result", Type = "ClubValidateTextResult", Nilable = false },
+				{ Name = "result", Type = "ValidateNameResult", Nilable = false },
 			},
 		},
 	},
@@ -997,7 +1021,7 @@ local Club =
 			LiteralName = "CLUB_TICKET_RECEIVED",
 			Payload =
 			{
-				{ Name = "succeeded", Type = "bool", Nilable = false },
+				{ Name = "error", Type = "ClubErrorType", Nilable = false },
 				{ Name = "ticket", Type = "string", Nilable = false },
 				{ Name = "info", Type = "ClubInfo", Nilable = true },
 			},
@@ -1219,17 +1243,30 @@ local Club =
 			},
 		},
 		{
-			Name = "ClubValidateTextResult",
+			Name = "ValidateNameResult",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 17,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 16,
 			Fields =
 			{
-				{ Name = "Success", Type = "ClubValidateTextResult", EnumValue = 0 },
-				{ Name = "FailProfanity", Type = "ClubValidateTextResult", EnumValue = 1 },
-				{ Name = "FailTooShort", Type = "ClubValidateTextResult", EnumValue = 2 },
-				{ Name = "FailTooLong", Type = "ClubValidateTextResult", EnumValue = 3 },
+				{ Name = "NameSuccess", Type = "ValidateNameResult", EnumValue = 0 },
+				{ Name = "NameFailure", Type = "ValidateNameResult", EnumValue = 1 },
+				{ Name = "NameNoName", Type = "ValidateNameResult", EnumValue = 2 },
+				{ Name = "NameTooShort", Type = "ValidateNameResult", EnumValue = 3 },
+				{ Name = "NameTooLong", Type = "ValidateNameResult", EnumValue = 4 },
+				{ Name = "NameInvalidCharacter", Type = "ValidateNameResult", EnumValue = 5 },
+				{ Name = "NameMixedLanguages", Type = "ValidateNameResult", EnumValue = 6 },
+				{ Name = "NameProfane", Type = "ValidateNameResult", EnumValue = 7 },
+				{ Name = "NameReserved", Type = "ValidateNameResult", EnumValue = 8 },
+				{ Name = "NameInvalidApostrophe", Type = "ValidateNameResult", EnumValue = 9 },
+				{ Name = "NameMultipleApostrophes", Type = "ValidateNameResult", EnumValue = 10 },
+				{ Name = "NameThreeConsecutive", Type = "ValidateNameResult", EnumValue = 11 },
+				{ Name = "NameInvalidSpace", Type = "ValidateNameResult", EnumValue = 12 },
+				{ Name = "NameConsecutiveSpaces", Type = "ValidateNameResult", EnumValue = 13 },
+				{ Name = "NameRussianConsecutiveSilentCharacters", Type = "ValidateNameResult", EnumValue = 14 },
+				{ Name = "NameRussianSilentCharacterAtBeginningOrEnd", Type = "ValidateNameResult", EnumValue = 15 },
+				{ Name = "NameDeclensionDoesntMatchBaseName", Type = "ValidateNameResult", EnumValue = 16 },
 			},
 		},
 		{
@@ -1244,8 +1281,10 @@ local Club =
 				{ Name = "broadcast", Type = "string", Nilable = false },
 				{ Name = "clubType", Type = "ClubType", Nilable = false },
 				{ Name = "avatarId", Type = "number", Nilable = false },
+				{ Name = "memberCount", Type = "number", Nilable = true },
 				{ Name = "favoriteTimeStamp", Type = "number", Nilable = true },
 				{ Name = "joinTime", Type = "number", Nilable = true },
+				{ Name = "socialQueueingEnabled", Type = "bool", Nilable = true },
 			},
 		},
 		{
@@ -1279,6 +1318,8 @@ local Club =
 				{ Name = "lastOnlineDay", Type = "number", Nilable = true },
 				{ Name = "lastOnlineHour", Type = "number", Nilable = true },
 				{ Name = "guildRank", Type = "string", Nilable = true },
+				{ Name = "guildRankOrder", Type = "number", Nilable = true },
+				{ Name = "isRemoteChat", Type = "bool", Nilable = true },
 			},
 		},
 		{

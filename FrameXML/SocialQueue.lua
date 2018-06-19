@@ -82,8 +82,8 @@ function SocialQueueUtil_GetHeaderName(groupGUID)
 		
 		local clubId = members[1].clubId;
 		local playerName, color = SocialQueueUtil_GetRelationshipInfo(members[1].guid, nil, clubId);
-		if ( #members > 0 ) then
-			playerName = string.format(QUICK_JOIN_TOAST_EXTRA_PLAYERS, playerName, #members);
+		if ( #members > 1 ) then
+			playerName = string.format(QUICK_JOIN_TOAST_EXTRA_PLAYERS, playerName, #members - 1);
 		end
 		playerName = color..playerName;
 		

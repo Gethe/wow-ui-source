@@ -254,6 +254,7 @@ AzeriteIslandsToast.xml
 ..\SharedXML\ModelPreviewFrame.xml
 SplashFrame.xml
 QuestChoiceFrameMixin.lua
+AzeriteEmpoweredItemDataSource.lua
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

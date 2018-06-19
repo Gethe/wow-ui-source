@@ -1,46 +1,51 @@
-local AZERITE_GLOW_MODEL_SCENE_ID = 214; 
+local AZERITE_GLOW_MODEL_SCENE_ID = 214;
 
-local AZERITE_GLOW_MODEL_ACTORS = 
+local AZERITE_GLOW_MODEL_ACTORS =
 {
-	Precast =  { effectID = 1983524, name = "precast" }, 
+	Precast =  { effectID = 1983524, name = "precast" },
 	Absorb  =  { effectID = 2101311, name = "absorb" },
 	Breathe =  { effectID = 1983552, name = "breathe" },
 }
 
-PartyPoseRewardsMixin = { }; 
+PartyPoseRewardsMixin = { };
 
 function PartyPoseRewardsMixin:IsAzeriteCurrency()
 	return (self.objectType == "currency" and self.id == C_CurrencyInfo.GetAzeriteCurrencyID());
 end
 
-function PartyPoseRewardsMixin:SetRewardsQuality(quality) 
-	if (quality) then 
-		local atlasTexture = LOOT_BORDER_BY_QUALITY[quality]; 
-		self.IconBorder:SetAtlas(atlasTexture, true); 
+function PartyPoseRewardsMixin:SetRewardsQuality(quality)
+	if (quality) then
+		local atlasTexture = LOOT_BORDER_BY_QUALITY[quality];
+		self.IconBorder:SetAtlas(atlasTexture, true);
 		local color = ITEM_QUALITY_COLORS[quality];
 		self.Name:SetVertexColor(color.r, color.g, color.b);
-	else 
+	else
 		self.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
 		self.Name:SetVertexColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 	end
 end
 
 function PartyPoseRewardsMixin:PlayRewardAnimation()
-	self.Glow.AnimFadeOut:Play();	
+	self.Glow.AnimFadeOut:Play();
 	self.Shine.AnimFadeOut:Play();
-			
+
 	self:Show();
 	self.AnimFadeOut:Play();
-	
+
 	if (self:IsAzeriteCurrency()) then
 		self.loopingSoundEmitter:StartLoopingSound();
+		C_Timer.After(3,
+			function()
+				self.loopingSoundEmitter:FinishLoopingSound();
+			end
+		);
 		self:GetParent():PlayModelSceneAnimations();
 		self:GetParent():AnchorModelScenesToRewards(self.Icon);
 	end
 end
 
 function PartyPoseRewardsMixin:StopRewardAnimation()
-	self.Glow.AnimFadeOut:Stop();	
+	self.Glow.AnimFadeOut:Stop();
 	self.Shine.AnimFadeOut:Stop();
 	self.AnimFadeOut:Stop();
 end
@@ -53,30 +58,29 @@ function PartyPoseRewardsMixin:OnEnter()
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 		GameTooltip:SetCurrencyByID(self.id, self.quantity);
 	end
-	
-	GameTooltip:Show(); 
+
+	GameTooltip:Show();
 	CursorUpdate(self);
-	
-	self:StopRewardAnimation(); 
-	self.Glow:SetAlpha(0); 
-	self.Shine:SetAlpha(0); 
-	
-	if (self:IsAzeriteCurrency()) then 
+
+	self:StopRewardAnimation();
+	self.Glow:SetAlpha(0);
+	self.Shine:SetAlpha(0);
+
+	if (self:IsAzeriteCurrency()) then
 		self.loopingSoundEmitter:CancelLoopingSound();
 		self:GetParent():HideAzeriteGlowModelScenes();
-	end	
-	
-	self:SetAlpha(1); 
+	end
+
+	self:SetAlpha(1);
 	self:Show();
 end
 
 function PartyPoseRewardsMixin:OnAnimationFinished()
-	if (self:IsAzeriteCurrency()) then 
+	if (self:IsAzeriteCurrency()) then
 		self:GetParent():HideAzeriteGlowModelScenes();
-		self.loopingSoundEmitter:FinishLoopingSound();
-	end	
-	
-	self:Hide(); 
+	end
+
+	self:Hide();
 	self:GetParent():PlayNextRewardAnimation(self);
 end
 
@@ -88,7 +92,7 @@ function PartyPoseRewardsMixin:OnLeave()
 	GameTooltip:Hide();
 	ResetCursor();
 	self:Hide();
-	self:GetParent():PlayNextRewardAnimation(self); 
+	self:GetParent():PlayNextRewardAnimation(self);
 end
 
 function PartyPoseRewardsMixin:OnLoad()
@@ -109,7 +113,7 @@ function PartyPoseMixin:AnchorModelScenesToRewards(relativeFrame)
 	self.RewardAnimations.AzeriteGlow:SetPoint("CENTER", relativeFrame, "CENTER", -25, 45);
 end
 
-function PartyPoseMixin:UpdateAzeriteGlowModelActor(scene, fileID, name, forceUpdate)	
+function PartyPoseMixin:UpdateAzeriteGlowModelActor(scene, fileID, name)
 	local actor = scene:GetActorByTag(name);
 	if (actor) then
 		actor:SetModelByFileID(fileID);
@@ -121,102 +125,102 @@ function PartyPoseMixin:HideAzeriteGlowModelScenes()
 end
 
 function PartyPoseMixin:PlayNextRewardAnimation(rewardObj)
-	local reward = self.rewardPool:GetNextActive(rewardObj); 
-	
-	if (reward) then 
-		reward:PlayRewardAnimation(); 
+	local reward = self.rewardPool:GetNextActive(rewardObj);
+
+	if (reward) then
+		reward:PlayRewardAnimation();
 	end
 end
 
 function PartyPoseMixin:AddReward(label, texture, count, quality, id, objectType, objectLink, quantity)
 	local rewardFrame = self.rewardPool:Acquire();
-	
+
 	rewardFrame:SetPoint("BOTTOM", self, "BOTTOM", -15, 15);
 	rewardFrame.Name:SetText(label);
 	rewardFrame.Icon:SetTexture(texture);
-	
-	rewardFrame.id = id; 
+
+	rewardFrame.id = id;
 	rewardFrame.objectType = objectType;
 	rewardFrame.quantity = quantity;
-	rewardFrame.objectLink = objectLink; 
-	
+	rewardFrame.objectLink = objectLink;
+
 	if (count > 1) then
 		rewardFrame.Count:SetText(count);
 		rewardFrame.Count:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-		relativeFrame.Count:Show(); 
+		relativeFrame.Count:Show();
 	else
 		rewardFrame.Count:Hide();
 	end
 
 	rewardFrame:SetRewardsQuality(quality);
-	
+
 	return rewardFrame;
 end
 
 function PartyPoseMixin:GetFirstReward()
-	return self.rewardPool:GetNextActive(); 
+	return self.rewardPool:GetNextActive();
 end
 
-function PartyPoseMixin:SetRewards()	
+function PartyPoseMixin:SetRewards()
 	local name, typeID, subtypeID, iconTextureFile, moneyBase, moneyVar, experienceBase, experienceVar, numStrangers, numRewards = GetLFGCompletionReward();
 	if (not numRewards) then
-		return; 
+		return;
 	end
-	
+
 	for i = 1, numRewards do
 		local texture, quantity, isBonus, bonusQuantity, name, quality, id, objectType = GetLFGCompletionRewardItem(i);
 		local originalQuanity = quantity;
 		local objectLink =  GetLFGCompletionRewardItemLink(i);
-		if (objectType == "currency") then 
-			name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(id, quantity, name, texture, quality, originalQuantity); 
+		if (objectType == "currency") then
+			name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(id, quantity, name, texture, quality, originalQuantity);
 		end
-		
+
 		if (objectType == "currency" or objectType == "item") then
-			local reward = self:AddReward(name, texture, quantity, quality, id, objectType, objectLink, originalQuanity);		
-		else 
+			local reward = self:AddReward(name, texture, quantity, quality, id, objectType, objectLink, originalQuanity);
+		else
 			local money = moneyBase + moneyVar * numStrangers;
 			self:AddReward(GetMoneyString(money), "Interface\\Icons\\inv_misc_coin_01", nil, 1);
 		end
 	end
-	
+
 	local firstReward = self:GetFirstReward();
 	if (firstReward) then
 		firstReward:PlayRewardAnimation();
-	end	
+	end
 end
 
 function PartyPoseMixin:PlayModelSceneAnimations(forceUpdate)
 	local precast = AZERITE_GLOW_MODEL_ACTORS.Precast;
-	local absorb = AZERITE_GLOW_MODEL_ACTORS.Absorb; 
+	local absorb = AZERITE_GLOW_MODEL_ACTORS.Absorb;
 	local breathe = AZERITE_GLOW_MODEL_ACTORS.Breathe;
-	
+
 	self.RewardAnimations.AzeriteGlow:Show();
 	self.RewardAnimations.AzeriteGlow:SetFromModelSceneID(AZERITE_GLOW_MODEL_SCENE_ID, forceUpdate);
-	
-	self:UpdateAzeriteGlowModelActor(self.RewardAnimations.AzeriteGlow, precast.effectID, precast.name, forceUpdate); 
-	self:UpdateAzeriteGlowModelActor(self.RewardAnimations.AzeriteGlow, absorb.effectID, absorb.name, forceUpdate); 
-	self:UpdateAzeriteGlowModelActor(self.RewardAnimations.AzeriteGlow, breathe.effectID, breathe.name, forceUpdate); 
+
+	self:UpdateAzeriteGlowModelActor(self.RewardAnimations.AzeriteGlow, precast.effectID, precast.name);
+	self:UpdateAzeriteGlowModelActor(self.RewardAnimations.AzeriteGlow, absorb.effectID, absorb.name);
+	self:UpdateAzeriteGlowModelActor(self.RewardAnimations.AzeriteGlow, breathe.effectID, breathe.name);
 end
 
--- Moves the shadow to underneath the model actor in the model scene. 
+-- Moves the shadow to underneath the model actor in the model scene.
 function PartyPoseMixin:SetupShadow(actor)
-	local shadowTexture = self.ModelScene.shadowPool:Acquire(); 
+	local shadowTexture = self.ModelScene.shadowPool:Acquire();
 	local positionVector = CreateVector3D(actor:GetPosition())
 	positionVector:ScaleBy(actor:GetScale());
-	local x, y, depthScale = self.ModelScene:Transform3DPointTo2D(positionVector:GetXYZ()); 
-	
-	if (not x or not y or not depthScale) then 
+	local x, y, depthScale = self.ModelScene:Transform3DPointTo2D(positionVector:GetXYZ());
+
+	if (not x or not y or not depthScale) then
 		return;
-	end 
-	
+	end
+
 	shadowTexture:ClearAllPoints();
 	depthScale = Lerp(.05, 1, ClampedPercentageBetween(depthScale, .8, 1))
-	-- Scales down the texture depending on it's depthScale. 
-	shadowTexture:SetScale(depthScale); 
+	-- Scales down the texture depending on it's depthScale.
+	shadowTexture:SetScale(depthScale);
 
-	-- Need to apply the effective scale to account for UI Scaling. 
-	local inverseScale = self.ModelScene:GetEffectiveScale() * depthScale; 
-	-- The position of the character can be found by the offset on the screen. 
+	-- Need to apply the effective scale to account for UI Scaling.
+	local inverseScale = self.ModelScene:GetEffectiveScale() * depthScale;
+	-- The position of the character can be found by the offset on the screen.
 	shadowTexture:SetPoint("CENTER", self.ModelScene, "BOTTOMLEFT", (x / inverseScale) + 2, (y / inverseScale) - 4);
 	shadowTexture:Show();
 end
@@ -227,27 +231,94 @@ function PartyPoseMixin:ApplyVisualKitToEachActor(visKit)
 	end
 end
 
--- Creates the model scene and adds the actors from a particular ID. 
-function PartyPoseMixin:SetModelScene(sceneID, partyCategory)
-	self.ModelScene:SetFromModelSceneID(sceneID, true); 
+-- Creates the model scene and adds the actors from a particular ID.
+function PartyPoseMixin:SetModelScene(sceneID, partyCategory, forceUpdate)
+	self.ModelScene:SetFromModelSceneID(sceneID, forceUpdate);
 	self.ModelScene.shadowPool:ReleaseAll();
-	
-	local numPartyMembers = GetNumGroupMembers(partyCategory) - 1;
+	self.ModelScene.partyCategory = partyCategory;
+
 	local playerActor = self.ModelScene:GetActorByTag("player");
-	if (playerActor) then 
-		if (playerActor:SetModelByUnit("player")) then 
-			self:SetupShadow(playerActor); 
+	if (playerActor) then
+		if (playerActor:SetModelByUnit("player")) then
+			self:SetupShadow(playerActor);
 		end
 	end
-	
+
+	local numPartyMembers = GetNumGroupMembers(partyCategory) - 1;
 	for i=1, numPartyMembers do
-		local partyActor = self.ModelScene:GetActorByTag("party"..i); 
-		if (partyActor) then 
-			partyActor:SetModelByUnit("party"..i)
-			self:SetupShadow(partyActor);
+		local partyActor = self.ModelScene:GetActorByTag("party"..i);
+		if (partyActor) then
+			if (partyActor:SetModelByUnit("party"..i)) then
+				self:SetupShadow(partyActor);
+			end
 		end
 	end
-	self.ModelScene:Show(); 
+	self.ModelScene:Show();
+end
+
+function PartyPoseMixin:PlaySounds(partyPoseInfo, winnerFactionGroup) 
+	local factionGroup = UnitFactionGroup("player"); 
+	if (factionGroup == winnerFactionGroup) then
+		PlaySound(partyPoseInfo.victorySoundKitID); 
+	else 
+		PlaySound(partyPoseInfo.defeatSoundKitID); 
+	end
+end
+
+function PartyPoseMixin:SetupTheme(styleData)
+	if self.Topper then
+		self.Topper:SetPoint("BOTTOM", self.TopBorder, "TOP", 0, styleData.topperOffset);
+		self.Topper:SetAtlas(styleData.Topper, true);
+
+		if styleData.topperBehindFrame then
+			self.Topper:SetDrawLayer("BACKGROUND", -7);
+		else
+			self.Topper:SetDrawLayer("ARTWORK", 2);
+		end
+	end
+
+	self.TitleText:SetDrawLayer("OVERLAY", 7);
+	self.TitleBg:SetDrawLayer("OVERLAY", 6);
+
+	self.TitleBg:ClearAllPoints();
+	self.TitleBg:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 31);
+	self.TitleBg:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 31);
+
+	self.TitleBg:SetAtlas(styleData.TitleBG, true);
+
+	if self.ModelScene then
+		self.ModelScene.Bg:SetAtlas(styleData.ModelSceneBG);
+	end
+
+	self.TopLeftCorner:SetAtlas(styleData.TopLeft, true);
+	self.TopRightCorner:SetAtlas(styleData.TopRight, true);
+	self.BotLeftCorner:SetAtlas(styleData.BottomLeft, true);
+	self.BotRightCorner:SetAtlas(styleData.BottomRight, true);
+
+	self.TopBorder:SetAtlas(styleData.Top, true);
+	self.BottomBorder:SetAtlas(styleData.Bottom, true);
+	self.LeftBorder:SetAtlas(styleData.Left, true);
+	self.RightBorder:SetAtlas(styleData.Right, true);
+
+	self.TopLeftCorner:SetTexCoord(0, 1, 0, 1);
+	self.TopRightCorner:SetTexCoord(1, 0, 0, 1);
+	self.BotLeftCorner:SetTexCoord(0, 1, 1, 0);
+	self.BotRightCorner:SetTexCoord(1, 0, 1, 0);
+
+	self.Background:ClearAllPoints();
+	self.Background:SetPoint("TOPLEFT", self.TopLeftCorner, 4, -4);
+	self.Background:SetPoint("BOTTOMRIGHT", self.BotRightCorner, -4, 4);
+
+	local border = AnchorUtil.CreateNineSlice(self);
+	border:SetTopLeftCorner(self.TopLeftCorner, -20, 20);
+	border:SetTopRightCorner(self.TopRightCorner, 20, 20);
+	border:SetBottomLeftCorner(self.BotLeftCorner, -20, styleData.bottomCornerYOffset);
+	border:SetBottomRightCorner(self.BotRightCorner, 20, styleData.bottomCornerYOffset);
+	border:SetTopEdge(self.TopBorder);
+	border:SetLeftEdge(self.LeftBorder);
+	border:SetRightEdge(self.RightBorder);
+	border:SetBottomEdge(self.BottomBorder);
+	border:Apply();
 end
 
 function PartyPoseMixin:OnLoad()
@@ -261,9 +332,10 @@ end
 
 function PartyPoseMixin:OnEvent(event, ...)
 	if (event == "UI_MODEL_SCENE_INFO_UPDATED") then
-		self:SetModelScene(self.ModelScene:GetModelSceneID()); 
-		self:PlayModelSceneAnimations(true);
+		local forceUpdate = true;
+		self:SetModelScene(self.ModelScene:GetModelSceneID(), self.ModelScene.partyCategory, forceUpdate);
+		self:PlayModelSceneAnimations(forceUpdate);
 	elseif ( event == "LFG_COMPLETION_REWARD" ) then
-		self:SetRewards(); 
+		self:SetRewards();
 	end
 end

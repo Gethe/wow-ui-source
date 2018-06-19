@@ -112,9 +112,6 @@
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
-		<KeyValues>
-			<KeyValue key="garrisonType" value="LE_GARRISON_TYPE_7_0" type="global"/>
-		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background">
@@ -198,10 +195,6 @@
 			</Frame>
 			<Frame name="ClassHallTalentInset" inherits="InsetFrameTemplate" parentKey="LeftInset" useParentLevel="true">
 				<Size x="328" y="504"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="3" y="-58"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="TradeFrame" relativePoint="TOPLEFT" x="338" y="-352"/>
-				</Anchors>
 			</Frame>
 			<Button parentKey="BackButton" inherits="UIPanelButtonTemplate" text="BACK">
 				<Size x="86" y="22"/>

@@ -203,9 +203,7 @@ function ContainerFrame_OnHide(self)
 		PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE);
 	end
 
-	if ArtifactRelicHelpBox:IsShown() and ArtifactRelicHelpBox.owner == self then
-		ArtifactRelicHelpBox:Hide();
-	end
+	ContainerFrame_CloseSpecializedTutorialForItem(self);
 end
 
 function ContainerFrame_OnShow(self)
@@ -283,6 +281,8 @@ function ContainerFrame_OnShow(self)
 	if ( ManageBackpackTokenFrame ) then
 		ManageBackpackTokenFrame();
 	end
+
+	AzeriteInBagsHelpBox:Hide();
 end
 
 function OpenBag(id, force)
@@ -455,18 +455,55 @@ function ContainerFrame_GetOpenFrame()
 	end
 end
 
+function ContainerFrame_AnchorTutorialToItemButton(tutorialFrame, itemButton)
+	tutorialFrame.owner = itemButton:GetParent();
+	tutorialFrame:ClearAllPoints();
+	tutorialFrame:SetPoint("RIGHT", itemButton, "LEFT", -27, 0);
+	tutorialFrame:Show();
+end
+
+function ContainerFrame_IsSpecializedTutorialShown()
+	return ArtifactRelicHelpBox:IsShown() or AzeriteItemInBagHelpBox:IsShown();
+end
+
+function ContainerFrame_CloseSpecializedTutorialForItem(ownerFrame)
+	if ArtifactRelicHelpBox:IsShown() and ArtifactRelicHelpBox.owner == ownerFrame then
+		ArtifactRelicHelpBox:Hide();
+	end
+
+	if AzeriteItemInBagHelpBox:IsShown() and AzeriteItemInBagHelpBox.owner == ownerFrame then
+		AzeriteItemInBagHelpBox:Hide();
+	end
+end
+
+function ContainerFrame_ConsiderItemButtonForAzeriteTutorial(itemButton, itemID)
+	if ContainerFrame_IsSpecializedTutorialShown() then
+		return;
+	end
+
+	if itemID and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemID) then
+		if AzeriteUtil.AreAnyAzeriteEmpoweredItemsEquipped() then
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT, true);
+			return;
+		end
+
+		ContainerFrame_AnchorTutorialToItemButton(AzeriteItemInBagHelpBox, itemButton);
+	end
+end
+
 function ContainerFrame_ConsiderItemButtonForRelicTutorial(itemButton, itemID)
-	if itemID and not ArtifactRelicHelpBox:IsShown() and IsArtifactRelicItem(itemID) then
-		if C_ArtifactUI.DoesEquippedArtifactHaveAnyRelicsSlotted() then
+	if ContainerFrame_IsSpecializedTutorialShown() then
+		return;
+	end
+
+	if itemID and IsArtifactRelicItem(itemID) then
+		if C_ArtifactUI.DoesEquippedArtifactHaveAnyRelicsSlotted() and false then
 			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH, true);
 			return;
 		end
 
 		if C_ArtifactUI.CanApplyArtifactRelic(itemID, true) then
-			ArtifactRelicHelpBox.owner = itemButton:GetParent();
-			ArtifactRelicHelpBox:ClearAllPoints();
-			ArtifactRelicHelpBox:SetPoint("RIGHT", itemButton, "LEFT", -27, 0);
-			ArtifactRelicHelpBox:Show();
+			ContainerFrame_AnchorTutorialToItemButton(ArtifactRelicHelpBox, itemButton);
 		end
 	end
 end
@@ -524,11 +561,11 @@ function ContainerFrame_Update(frame)
 		BagItemAutoSortButton:Hide();
 	end
 
-	if ArtifactRelicHelpBox:IsShown() and ArtifactRelicHelpBox.owner == frame then
-		ArtifactRelicHelpBox:Hide();
-	end
+	ContainerFrame_CloseSpecializedTutorialForItem(frame);
 
-	local shouldDoRelicChecks = not BagHelpBox:IsShown() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH) and not IsKioskModeEnabled();
+	local shouldDoSpecializedTutorialChecks = not BagHelpBox:IsShown() and not IsKioskModeEnabled();
+	local shouldDoRelicChecks = shouldDoSpecializedTutorialChecks and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH);
+	local shouldDoAzeriteChecks = shouldDoSpecializedTutorialChecks and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT);
 
 	for i=1, frame.size, 1 do
 		itemButton = _G[name.."Item"..i];
@@ -613,6 +650,9 @@ function ContainerFrame_Update(frame)
 			itemButton.searchOverlay:Show();
 		else
 			itemButton.searchOverlay:Hide();
+			if shouldDoAzeriteChecks then
+				ContainerFrame_ConsiderItemButtonForAzeriteTutorial(itemButton, itemID);
+			end
 			if shouldDoRelicChecks then
 				ContainerFrame_ConsiderItemButtonForRelicTutorial(itemButton, itemID);
 			end

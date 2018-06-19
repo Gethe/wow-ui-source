@@ -6,6 +6,7 @@ local COMMUNITIES_CHAT_FRAME_EVENTS = {
 	"CLUB_MESSAGE_ADDED",
 	"CLUB_MESSAGE_UPDATED",
 	"CLUB_MESSAGE_HISTORY_RECEIVED",
+	"CLUB_UPDATED",
 };
 
 function GetCommunitiesChatPermissionOptions()
@@ -19,7 +20,9 @@ CommunitiesChatMixin = {}
 
 function CommunitiesChatMixin:OnLoad()
 	self.MessageFrame:SetMaxLines(MAX_NUM_CHAT_LINES);
+	self.MessageFrame:SetFont(DEFAULT_CHAT_FRAME:GetFont());
 	self.pendingMemberInfo = {};
+	self.broadcastSent = {};
 end
 
 function CommunitiesChatMixin:OnShow()
@@ -82,6 +85,11 @@ function CommunitiesChatMixin:OnEvent(event, ...)
 					self:UnregisterEvent("CLUB_MEMBER_UPDATED");
 				end
 			end
+		end
+	elseif event == "CLUB_UPDATED" then
+		local clubId = ...;
+		if clubId == self:GetCommunitiesFrame():GetSelectedClubId() then
+			self:AddBroadcastMessage(clubId);
 		end
 	end
 end
@@ -177,6 +185,8 @@ function CommunitiesChatMixin:DisplayChat()
 		
 		self:AddMessage(clubId, streamId, message);
 	end
+	
+	self:AddBroadcastMessage(clubId);
 	
 	C_Club.AdvanceStreamViewMarker(clubId, streamId);
 	self:UpdateScrollbar();
@@ -300,6 +310,19 @@ function CommunitiesChatMixin:AddNotification(notification, atlas, r, g, b, back
 		self.MessageFrame:AddMessage(" ");
 		self.MessageFrame:AddMessage(notification, r, g, b);
 		self.MessageFrame:AddMessage(textureMarkup, 1, 1, 1);
+	end
+end
+
+function CommunitiesChatMixin:AddBroadcastMessage(clubId)
+	local clubInfo = C_Club.GetClubInfo(clubId);
+	if clubInfo and clubInfo.broadcast ~= "" then
+		if self.broadcastSent[clubId] == clubInfo.broadcast then
+			return;
+		end
+		
+		self.MessageFrame:AddMessage(" ");
+		self.MessageFrame:AddMessage(COMMUNITIES_MESSAGE_OF_THE_DAY_FORMAT:format(clubInfo.broadcast), YELLOW_FONT_COLOR:GetRGB());
+		self.broadcastSent[clubId] = clubInfo.broadcast;
 	end
 end
 

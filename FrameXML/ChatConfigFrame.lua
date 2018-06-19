@@ -1339,14 +1339,14 @@ function IsClassColoringMessageType(messageType)
 	if ( groupInfo ) then
 		for key, value in pairs(groupInfo) do	--If any of the sub-categories color by name, we'll consider the entire thing as colored by name.
 			local info = ChatTypeInfo[strsub(value, 10)];
-			if ( info and info.colorNameByClass ) then	--strsub gets rid of CHAT_MSG_
+			if ( info and Chat_ShouldColorChatByClass(info) ) then
 				return true;
 			end
 		end
 		return false;
 	else
 		local info = ChatTypeInfo[messageType];
-		return info and info.colorNameByClass;
+		return info and Chat_ShouldColorChatByClass(info);
 	end
 end
 
@@ -1981,7 +1981,7 @@ end
 
 function ChatConfigChannelSettings_OnShow()
 	-- Have to build it here since the channel list doesn't exist on load
-	CreateChatChannelList(self, GetChannelList());
+	CreateChatChannelList(ChatConfigChannelSettings, GetChannelList());
 	ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "MovableChatConfigWideCheckBoxWithSwatchTemplate", CHAT_CONFIG_CHANNEL_SETTINGS_TITLE_WITH_DRAG_INSTRUCTIONS);
 	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
 	UpdateDefaultButtons(false);

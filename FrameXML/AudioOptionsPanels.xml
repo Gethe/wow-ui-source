@@ -85,7 +85,7 @@
 				</Scripts>
 			</CheckButton>
 			<Frame name="$parentPlayback" inherits="OptionsBoxTemplate">
-				<Size x="186" y="316"/>
+				<Size x="186" y="342"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="16" y="-116"/>
@@ -269,21 +269,6 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "Sound_EnablePositionalLowPassFilter";
-						self.restart = true;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
-			<CheckButton name="$parentEnableDSPs" inherits="AudioOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentHRTF" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="2"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "Sound_EnableDSPEffects";
 						self.restart = true;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>

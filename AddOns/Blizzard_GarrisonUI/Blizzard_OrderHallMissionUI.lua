@@ -48,13 +48,12 @@ function OrderHallMission:UpdateTextures()
 	self:GetCompleteDialog().BorderFrame.ViewButton:SetPoint("BOTTOM", 0, 88);
 
 	GarrisonFollowerMission.OnLoadMainFrame(self);
-	
+
 	self.MissionTab.MissionPage.RewardsFrame.Chest:SetAtlas("GarrMission-NeutralChest");
 	self.MissionTab.MissionPage.RewardsFrame.Chance:SetPoint("CENTER", self.MissionTab.MissionPage.RewardsFrame.Chest, -9, 6);
 
 	self.MissionTab.MissionPage.Stage.MissionEnvIcon:SetSize(48,48);
 	self.MissionTab.MissionPage.Stage.MissionEnvIcon:SetPoint("LEFT", self.MissionTab.MissionPage.Stage.MissionInfo.MissionEnv, "RIGHT", -11, 0);
-
 
 	self.Top:SetAtlas("_StoneFrameTile-Top", true);
 	self.Bottom:SetAtlas("_StoneFrameTile-Bottom", true);
@@ -65,7 +64,7 @@ function OrderHallMission:UpdateTextures()
 	self.GarrCorners.BottomLeftGarrCorner:SetAtlas("StoneFrameCorner-TopLeft", true);
 	self.GarrCorners.BottomRightGarrCorner:SetAtlas("StoneFrameCorner-TopLeft", true);
 
-	local tabs = { OrderHallMissionFrame.MissionTab.MissionList.Tab1, OrderHallMissionFrame.MissionTab.MissionList.Tab2 };
+	local tabs = { self.MissionTab.MissionList.Tab1, self.MissionTab.MissionList.Tab2 };
 	for _, tab in ipairs(tabs) do
 		tab.Left:SetAtlas("ClassHall_ParchmentHeader-End-2", true);
 		tab.Right:SetAtlas("ClassHall_ParchmentHeader-End-2", true);
@@ -81,7 +80,7 @@ function OrderHallMission:UpdateTextures()
 		tab.SelectedMid:SetHorizTile(false);
 	end
 
-	local frames = { OrderHallMissionFrame.FollowerTab, OrderHallMissionFrame.MissionTab.MissionList };
+	local frames = { self.FollowerTab, self.MissionTab.MissionList };
 	for _, frame in ipairs(frames) do
 		frame.BaseFrameBackground:SetAtlas("ClassHall_StoneFrame-BackgroundTile");
 		frame.BaseFrameLeft:SetAtlas("!ClassHall_InfoBoxMission-Left");
@@ -103,8 +102,6 @@ function OrderHallMission:UpdateTextures()
 	self.FollowerList.HeaderMid:SetPoint("RIGHT", self.FollowerList.HeaderRight, "LEFT");
 	self.FollowerList.HeaderMid:SetHorizTile(false);
 	self.FollowerList.HeaderMid:SetWidth(110);
-
-
 
 	self.BackgroundTile:SetAtlas("ClassHall_InfoBoxMission-BackgroundTile");
 
@@ -186,7 +183,7 @@ function OrderHallMission:SetupMissionList()
 	self.MissionTab.MissionList.listScroll.update = function() self.MissionTab.MissionList:Update(); end;
 	HybridScrollFrame_CreateButtons(self.MissionTab.MissionList.listScroll, "OrderHallMissionListButtonTemplate", 13, -8, nil, nil, nil, -4);
 	self.MissionTab.MissionList:Update();
-	
+
 	GarrisonMissionListTab_SetTab(self.MissionTab.MissionList.Tab1);
 end
 
@@ -315,8 +312,8 @@ function OrderHallMission:OnSetEnemy(enemyFrame, enemyInfo)
 
 	enemyFrame.MechanicEffect.Icon:SetTexture(enemyFrame.mechanicEffectIcon);
 	enemyFrame.name = enemyInfo.name;
-		
-	
+
+
 	if (mechanic and mechanic.ability) then
 		enemyFrame.mechanicEffectID = mechanic.ability.id;
 		enemyFrame.mechanicName = mechanic.name;
@@ -642,7 +639,7 @@ function OrderHallCombatAllyMixin:SetMission(missionInfo)
 	if (missionInfo) then
 		local followerIsAssigned = missionInfo.inProgress or missionInfo.completed;
 		local completed = (missionInfo.inProgress and missionInfo.timeLeftSeconds == 0) or missionInfo.completed;
-		self.Available:SetShown(not followerIsAssigned); 
+		self.Available:SetShown(not followerIsAssigned);
 		self.InProgress:SetShown(followerIsAssigned);
 		if (followerIsAssigned) then
 			local followerInfo = C_Garrison.GetFollowerInfo(missionInfo.followers[1]);
@@ -679,8 +676,8 @@ end
 -- Utility functions
 ---------------------------------------------------------------------------------
 
-function GarrisonFollowerFilter_MustHaveZoneSupport(followerInfo) 
-	return followerInfo.isCollected and followerInfo.zoneSupportSpellID ~= nil; 
+function GarrisonFollowerFilter_MustHaveZoneSupport(followerInfo)
+	return followerInfo.isCollected and followerInfo.zoneSupportSpellID ~= nil;
 end
 
 ---------------------------------------------------------------------------------
@@ -914,10 +911,10 @@ local function TextBossSpec(missionFrame, tutorial)
 		end
 	end
 
-	return string.format(ORDER_HALL_MISSION_TUTORIAL_BOSS_COUNTER, 
-		missionFrame.MissionTab.MissionPage.Enemy1.counterAbility.name, 
+	return string.format(ORDER_HALL_MISSION_TUTORIAL_BOSS_COUNTER,
+		missionFrame.MissionTab.MissionPage.Enemy1.counterAbility.name,
 		className,
-		followerName); 
+		followerName);
 end
 
 local lethalMechanicEffectID = 437;
@@ -932,23 +929,23 @@ local tutorials = {
 	-- Click to view mission details
 	[1] = {
 		id = 1,
-		text1 = ORDER_HALL_MISSION_TUTORIAL_VIEW_DETAILS, 
-		xOffset = 240, 
-		yOffset = -150, 
-		parent = "MissionList", 
-		openConditionFunc = CheckHasMissions, 
+		text1 = ORDER_HALL_MISSION_TUTORIAL_VIEW_DETAILS,
+		xOffset = 240,
+		yOffset = -150,
+		parent = "MissionList",
+		openConditionFunc = CheckHasMissions,
 		closeConditionFunc = CheckOpenMissionPage,
 		cancelConditionFunc = CheckOpenMissionCompleteOrHasNoMissions,
 		upArrow = true,
 		advanceOnClick = true,
 	},
 	-- This boss can be countered by specialization
-	[2] = { 
+	[2] = {
 		id = 2,
-		xOffset = 30, 
-		yOffset = 0, 
-		parent = "MissionPage", 
-		openConditionFunc = CheckOpenMissionPageAndHasBossMechanic, 
+		xOffset = 30,
+		yOffset = 0,
+		parent = "MissionPage",
+		openConditionFunc = CheckOpenMissionPageAndHasBossMechanic,
 		closeConditionFunc = CheckOpenMissionPageAndBossCountered,
 		cancelConditionFunc = CheckNotOpenMissionPage,
 		positionFunc = PositionAtFirstEnemy,
@@ -957,26 +954,26 @@ local tutorials = {
 		advanceOnClick = true,
 	},
 	-- Click on Combat Ally
-	[3] = { 
+	[3] = {
 		id = 3,
 		text1 = ORDER_HALL_MISSION_TUTORIAL_COMBAT_ALLY,
-		xOffset = 150, 
-		yOffset = -500, 
-		parent = "MissionList", 
-		openConditionFunc = CheckHasCombatAllyMission, 
+		xOffset = 150,
+		yOffset = -500,
+		parent = "MissionList",
+		openConditionFunc = CheckHasCombatAllyMission,
 		closeConditionFunc = CheckOpenZoneSupportMissionPage,
 		cancelConditionFunc = CheckNotHasCombatAllyMission,
 		leftArrow = true,
 		advanceOnClick = true,
 	 },
 	-- Troops have abilities that can increase your success chance
-	[4] = { 
+	[4] = {
 		id = 4,
-		text1 = ORDER_HALL_MISSION_TUTORIAL_TROOPS, 
-		xOffset = 150, 
-		yOffset = -500, 
-		parent = "MissionPage", 
-		openConditionFunc = CheckOpenMissionPageAndHasTroopInList, 
+		text1 = ORDER_HALL_MISSION_TUTORIAL_TROOPS,
+		xOffset = 150,
+		yOffset = -500,
+		parent = "MissionPage",
+		openConditionFunc = CheckOpenMissionPageAndHasTroopInList,
 		closeConditionFunc = CheckOpenMissionPageAndTroopInMission,
 		positionFunc = PositionAtFirstTroop,
 		downArrow = true,
@@ -1035,7 +1032,7 @@ local tutorials = {
 
 local function ReadTutorialCVAR()
 	local cvarVal = tonumber(GetCVar("orderHallMissionTutorial")) or 0;
-	
+
 	local lastTutorial = bit.band(cvarVal, 0xFFFF);
 	local tutorialFlags = bit.band(cvarVal, 0xFFFF0000);
 

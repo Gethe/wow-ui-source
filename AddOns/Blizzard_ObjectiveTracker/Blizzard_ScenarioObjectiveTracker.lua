@@ -878,6 +878,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 	local inChallengeMode = (scenarioType == LE_SCENARIO_TYPE_CHALLENGE_MODE);
 	local inProvingGrounds = (scenarioType == LE_SCENARIO_TYPE_PROVING_GROUNDS);
 	local dungeonDisplay = (scenarioType == LE_SCENARIO_TYPE_USE_DUNGEON_DISPLAY);
+	local inWarfront = (scenarioType == LE_SCENARIO_TYPE_WARFRONT);
 	local scenariocompleted = currentStage > numStages;
 
 	if ( scenariocompleted ) then
@@ -927,6 +928,14 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 				stageBlock.appliedAlready = true;
 			end
 			ScenarioStage_CustomizeBlock(stageBlock, scenarioType, widgetSetID, textureKitID);
+		end
+
+		local warfrontHelpBox = BlocksFrame.WarfrontHelpBox;
+		if inWarfront and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARFRONT_RESOURCES) then
+			warfrontHelpBox:SetHeight(25 + warfrontHelpBox.BigText:GetHeight());
+			warfrontHelpBox:Show();
+		else
+			warfrontHelpBox:Hide();
 		end
 	end
 	BlocksFrame.scenarioName = scenarioName;

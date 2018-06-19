@@ -56,6 +56,11 @@ local REWARDS_AT_MAX_LEVEL = {
 	},	
 }
 
+local SEASON_STATE_OFFSEASON = 1;
+local SEASON_STATE_PRESEASON = 2;
+local SEASON_STATE_ACTIVE = 3;
+local SEASON_STATE_DISABLED = 4;
+
 function GetMaxLevelReward(bracketType, hasFirstWin)
 	local factionGroup = UnitFactionGroup("player");
 	if (UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT]) then
@@ -335,13 +340,13 @@ function PVPQueueFrame_OnShow(self)
 end
 
 function PVPQueueFrame_UpdateTitle()
-	local currentSeason = GetCurrentArenaSeason();
-
-	if currentSeason == NO_ARENA_SEASON then
+	if ConquestFrame.seasonState == SEASON_STATE_PRESEASON then
 		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER);
+	elseif ConquestFrame.seasonState == SEASON_STATE_OFFSEASON then
+		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_OFF_SEASON);
 	else
-		local LEGION_START_SEASON = 19; -- if you're changing this you probably want to update the global string PLAYER_V_PLAYER_SEASON also
-		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON:format(currentSeason - LEGION_START_SEASON + 1));
+		local BFA_START_SEASON = 27; -- if you're changing this you probably want to update the global string PLAYER_V_PLAYER_SEASON also
+		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON:format(GetCurrentArenaSeason() - BFA_START_SEASON + 1));
 	end
 end
 
@@ -1011,6 +1016,8 @@ function ConquestFrame_OnLoad(self)
 	self:RegisterEvent("PVP_TYPES_ENABLED");
 	self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
+
+	ConquestFrame_EvaluateSeasonState(self);
 end
 
 function ConquestFrame_OnEvent(self, event, ...)
@@ -1021,13 +1028,44 @@ function ConquestFrame_OnEvent(self, event, ...)
 		self.bgsEnabled = ratedBgs;
 		self.arenasEnabled = ratedArenas;
 		self.disabled = not ratedBgs and not ratedArenas;
-		ConquestFrame_Update(self);
+		ConquestFrame_EvaluateSeasonState(self);
+		ConquestFrame_UpdateSeasonFrames(self);
 	elseif (self:IsVisible()) then
 		ConquestFrame_Update(self);
 		if (event == "QUEST_LOG_UPDATE" and self.activeWeeklyBonus) then
 			PVPRewardWeeklyBonus_OnEnter(self.activeWeeklyBonus);
 		end
 	end
+end
+
+function ConquestFrame_EvaluateSeasonState(self)
+	local season = GetCurrentArenaSeason();
+	if season == NO_ARENA_SEASON then
+		if self.disabled then
+			self.seasonState = SEASON_STATE_PRESEASON;
+		else
+			self.seasonState = SEASON_STATE_OFFSEASON;
+		end
+	else
+		if self.disabled then
+			self.seasonState = SEASON_STATE_DISABLED;
+		else
+			self.seasonState = SEASON_STATE_ACTIVE;
+		end
+	end
+end
+
+function ConquestFrame_UpdateSeasonFrames(self)
+	PVPQueueFrame_UpdateTitle();
+	PVPQueueFrame.HonorInset:Update();
+	HonorFrame.ConquestBar:Update();
+	ConquestFrame.ConquestBar:Update();
+	ConquestFrame_Update(self);
+	ConquestFrame_UpdateJoinButton();
+end
+
+function ConquestFrame_IsQueueingEnabled()
+	return ConquestFrame.bgsEnabled and ConquestFrame.arenasEnabled;
 end
 
 function ConquestFrame_OnShow(self)
@@ -1053,13 +1091,15 @@ function ConquestFrame_SetTierInfo(tierFrame, tierInfo, ranking)
 end
 
 function ConquestFrame_Update(self)
-	if ( GetCurrentArenaSeason() == NO_ARENA_SEASON ) then
-		ConquestFrame.Disabled:Hide();
+	local isOffseason = GetCurrentArenaSeason() == NO_ARENA_SEASON;
+	if self.seasonState == SEASON_STATE_PRESEASON then
 		ConquestFrame.NoSeason:Show();
-	elseif ( self.disabled ) then
+		ConquestFrame.Disabled:Hide();
+	elseif self.seasonState == SEASON_STATE_DISABLED then
 		ConquestFrame.NoSeason:Hide();
 		ConquestFrame.Disabled:Show();
 	else
+		local isOffseason = self.seasonState == SEASON_STATE_OFFSEASON;
 		ConquestFrame.NoSeason:Hide();
 		ConquestFrame.Disabled:Hide();
 		
@@ -1077,6 +1117,11 @@ function ConquestFrame_Update(self)
 				button.CurrentRating:Hide();
 			end
 			ConquestFrame_SetTierInfo(button.Tier, tierInfo, ranking);
+			if isOffseason then
+				button.Tier:SetAlpha(0.25);
+			else
+				button.Tier:SetAlpha(1);
+			end
 			button.bracketIndex = bracketIndex;
 
 			local honor, experience, rewards;
@@ -1119,6 +1164,9 @@ function ConquestFrame_Update(self)
 			if (not enabled) then
 				button.TeamSizeText:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 				button.CurrentRating:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+			elseif (isOffseason) then
+				button.TeamSizeText:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+				button.CurrentRating:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 			else
 				button.TeamSizeText:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 				button.CurrentRating:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
@@ -1140,6 +1188,12 @@ end
 function ConquestFrame_UpdateJoinButton()
 	local button = ConquestFrame.JoinButton;
 	local groupSize = GetNumGroupMembers();
+
+	if ConquestFrame.seasonState == SEASON_STATE_DISABLED or ConquestFrame.seasonState == SEASON_STATE_PRESEASON then
+		button:Disable();
+		button.tooltip = nil;
+		return;
+	end
 
 	--Disable the button if the person is active in LFGList
 	local lfgListDisabled;
@@ -1397,16 +1451,34 @@ function PVPUIHonorInsetMixin:DisplayRatedPanel()
 	panel:Show();
 	self.CasualPanel:Hide();
 
-	local tierID, nextTierID = C_PvP.GetSeasonBestInfo();
-	local tierInfo = C_PvP.GetPvpTierInfo(tierID);
-	ConquestFrame_SetTierInfo(panel.Tier, tierInfo);
+	local seasonState = ConquestFrame.seasonState;
 
-	local nextTierInfo = nextTierID and C_PvP.GetPvpTierInfo(nextTierID);	
-	if nextTierInfo then
-		panel.Tier.NextTier.Icon:SetTexture(nextTierInfo.tierIconID);
-		panel.Tier.NextTier:Show();
+	panel.SeasonRewardFrame:SetShown(seasonState == SEASON_STATE_ACTIVE or seasonState == SEASON_STATE_DISABLED);
+
+	if seasonState == SEASON_STATE_PRESEASON then
+		panel.Tier:Hide();
 	else
-		panel.Tier.NextTier:Hide();
+		panel.Tier:Show();
+	
+		if seasonState == SEASON_STATE_OFFSEASON then
+			panel.Tier.Title:SetText(PVP_LAST_SEASON_HIGH);
+			panel.Tier.Title:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+		else
+			panel.Tier.Title:SetText(PVP_SEASON_HIGH);
+			panel.Tier.Title:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+		end
+
+		local tierID, nextTierID = C_PvP.GetSeasonBestInfo();
+		local tierInfo = C_PvP.GetPvpTierInfo(tierID);
+		ConquestFrame_SetTierInfo(panel.Tier, tierInfo);
+
+		local nextTierInfo = nextTierID and C_PvP.GetPvpTierInfo(nextTierID);
+		if nextTierInfo and seasonState ~= SEASON_STATE_OFFSEASON then
+			panel.Tier.NextTier.Icon:SetTexture(nextTierInfo.tierIconID);
+			panel.Tier.NextTier:Show();
+		else
+			panel.Tier.NextTier:Hide();
+		end
 	end
 end
 
@@ -1608,14 +1680,16 @@ function PVPConquestBarMixin:OnEvent(event, ...)
 end
 
 function PVPConquestBarMixin:Update()
+	self:SetDisabled(ConquestFrame.seasonState == SEASON_STATE_PRESEASON or ConquestFrame.seasonState == SEASON_STATE_OFFSEASON);
+
 	local current, max, rewardItemID = self:GetConquestLevelInfo();
-	if max == 0 then
+	if max == 0 or self.disabled then
 		self:SetValue(0);
 	else
 		self:SetValue(current / max * 100);
 	end
 	self.Label:SetFormattedText(CONQUEST_BAR, current, max);
-	if rewardItemID then
+	if rewardItemID and not self.disabled then
 		self.Reward.Icon:SetTexture(GetItemIcon(rewardItemID));
 		self.Reward.itemID = rewardItemID;
 	else
@@ -1651,4 +1725,16 @@ function PVPConquestBarMixin:GetConquestLevelInfo()
 	end
 
 	return objectives[1].numFulfilled, objectives[1].numRequired, rewardItemID;
+end
+
+function PVPConquestBarMixin:SetDisabled(disabled)
+	if self.disabled ~= disabled then
+		self.Border:SetDesaturated(disabled);
+		self.Background:SetDesaturated(disabled);
+		self.Reward.Ring:SetDesaturated(disabled);
+		self.Reward.Icon:SetDesaturated(disabled);
+		self.Label:SetAlpha(disabled and 0 or 1);
+		self:SetAlpha(disabled and 0.6 or 1);
+		self.disabled = disabled;
+	end
 end

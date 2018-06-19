@@ -137,32 +137,65 @@ function MapCanvasScrollControllerMixin:OnMouseUp(button)
 	end
 end
 
+function MapCanvasScrollControllerMixin:ShouldAdjustTargetPanOnMouseWheel(delta)
+	if self.mouseWheelZoomMode == MAP_CANVAS_MOUSE_WHEEL_ZOOM_BEHAVIOR_SMOOTH then
+		return true;
+	end
+
+	if delta > 0 then
+		if self:IsAtMaxZoom() then
+			return false;
+		end
+
+		if self:ShouldZoomInstantly() then
+			return true;
+		end
+
+		if self:IsZoomingIn() then
+			return false;
+		end
+	else
+		if self:IsAtMinZoom() then
+			return false;
+		end
+
+		if self:ShouldZoomInstantly() then
+			return true;
+		end
+
+		if self:IsZoomingOut() then
+			return false;
+		end
+	end
+	return true;
+end
+
 function MapCanvasScrollControllerMixin:OnMouseWheel(delta)
 	if self.mouseWheelZoomMode == MAP_CANVAS_MOUSE_WHEEL_ZOOM_BEHAVIOR_NONE then
 		return;
 	end
 
-	if delta > 0 then
-		if (not self:IsAtMaxZoom() or self.mouseWheelZoomMode == MAP_CANVAS_MOUSE_WHEEL_ZOOM_BEHAVIOR_SMOOTH) and not self:IsZoomingIn() then
-			local cursorX, cursorY = self:GetCursorPosition();
-			local normalizedCursorX = self:NormalizeHorizontalSize(cursorX / self:GetCanvasScale() - self.Child:GetLeft());
-			local normalizedCursorY = self:NormalizeVerticalSize(self.Child:GetTop() - cursorY / self:GetCanvasScale());
+	if self:ShouldAdjustTargetPanOnMouseWheel(delta) then
+		local cursorX, cursorY = self:GetCursorPosition();
+		local normalizedCursorX = self:NormalizeHorizontalSize(cursorX / self:GetCanvasScale() - self.Child:GetLeft());
+		local normalizedCursorY = self:NormalizeVerticalSize(self.Child:GetTop() - cursorY / self:GetCanvasScale());
 
+		if not self:ShouldZoomInstantly() then
 			local nextZoomOutScale, nextZoomInScale = self:GetCurrentZoomRange();
 			local minX, maxX, minY, maxY = self:CalculateScrollExtentsAtScale(nextZoomInScale);
-			
-			self:SetPanTarget(Clamp(normalizedCursorX, minX, maxX), Clamp(normalizedCursorY, minY, maxY));
+
+			normalizedCursorX, normalizedCursorY = Clamp(normalizedCursorX, minX, maxX), Clamp(normalizedCursorY, minY, maxY);
 		end
 
-		if self.mouseWheelZoomMode == MAP_CANVAS_MOUSE_WHEEL_ZOOM_BEHAVIOR_SMOOTH then
-			self:SetZoomTarget(self:GetCanvasScale() + self.zoomAmountPerMouseWheelDelta)
-		elseif self.mouseWheelZoomMode == MAP_CANVAS_MOUSE_WHEEL_ZOOM_BEHAVIOR_FULL then
+		self:SetPanTarget(normalizedCursorX, normalizedCursorY);
+	end
+
+	if self.mouseWheelZoomMode == MAP_CANVAS_MOUSE_WHEEL_ZOOM_BEHAVIOR_SMOOTH then
+		self:SetZoomTarget(self:GetCanvasScale() + self.zoomAmountPerMouseWheelDelta * delta)
+	elseif self.mouseWheelZoomMode == MAP_CANVAS_MOUSE_WHEEL_ZOOM_BEHAVIOR_FULL then
+		if delta > 0 then
 			self:ZoomIn();
-		end
-	else
-		if self.mouseWheelZoomMode == MAP_CANVAS_MOUSE_WHEEL_ZOOM_BEHAVIOR_SMOOTH then
-			self:SetZoomTarget(self:GetCanvasScale() - self.zoomAmountPerMouseWheelDelta)
-		elseif self.mouseWheelZoomMode == MAP_CANVAS_MOUSE_WHEEL_ZOOM_BEHAVIOR_FULL then
+		else
 			self:ZoomOut();
 		end
 	end
@@ -565,9 +598,8 @@ end
 function MapCanvasScrollControllerMixin:ZoomOut()
 	local nextZoomOutScale, nextZoomInScale = self:GetCurrentZoomRange();
 	if nextZoomOutScale < self:GetCanvasScale() then
-		-- TODO: zoom out at mouse
 		if self:ShouldZoomInstantly() then
-			self:InstantPanAndZoom(nextZoomOutScale, 0.5, 0.5);
+			self:InstantPanAndZoom(nextZoomOutScale, self.targetScrollX, self.targetScrollY);
 		else
 			self:SetZoomTarget(nextZoomOutScale);
 			self:SetPanTarget(.5, .5);
@@ -580,6 +612,10 @@ function MapCanvasScrollControllerMixin:ResetZoom()
 end
 
 function MapCanvasScrollControllerMixin:InstantPanAndZoom(scale, panX, panY)
+	local scaleRatio = self:GetCanvasScale() / scale;
+	panX = Lerp(panX, self:GetCurrentScrollX() or .5, scaleRatio);
+	panY = Lerp(panY, self:GetCurrentScrollY() or .5, scaleRatio);
+
 	self.currentScale = scale;
 	self.targetScale = self.currentScale;
 	self.Child:SetScale(self.currentScale);
@@ -587,8 +623,8 @@ function MapCanvasScrollControllerMixin:InstantPanAndZoom(scale, panX, panY)
 
 	self.targetScrollX = Clamp(panX, self.scrollXExtentsMin, self.scrollXExtentsMax);
 	self.targetScrollY = Clamp(panY, self.scrollYExtentsMin, self.scrollYExtentsMax);
-	self.currentScrollX = targetScrollX;
-	self.currentScrollY = targetScrollY;
+	self.currentScrollX = self.targetScrollX;
+	self.currentScrollY = self.targetScrollY;
 	self:SetNormalizedHorizontalScroll(self.targetScrollX);
 	self:SetNormalizedVerticalScroll(self.targetScrollY);
 

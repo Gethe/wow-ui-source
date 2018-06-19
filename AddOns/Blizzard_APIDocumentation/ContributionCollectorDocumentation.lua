@@ -213,6 +213,7 @@ local ContributionCollector =
 				{ Name = "contributionState", Type = "ContributionState", Nilable = false, Default = "None" },
 				{ Name = "contributionPercentageComplete", Type = "number", Nilable = false },
 				{ Name = "timeOfNextStateChange", Type = "number", Nilable = true },
+				{ Name = "startTime", Type = "number", Nilable = false },
 			},
 		},
 		{

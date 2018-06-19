@@ -18,6 +18,39 @@
 					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 				</Anchors>
 			</Frame>
+			<Button parentKey="GuildRewardsTutorialButton" inherits="GuildRewardsTutorialButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Rewards.TitleText" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="GuildAchievementPointDisplay" inherits="GuildAchievementPointDisplayTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Rewards" relativePoint="TOPRIGHT" x="0" y="4"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="FactionFrame">
+				<Size x="1" y="20"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="0" y="-24"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="GameFontNormalSmall" text="GUILD_REPUTATION_COLON">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="0" y="4"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="Bar" inherits="CommunitiesGuildProgressBarTemplate">
+						<Size x="184" y="20"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT" x="4" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
 		</Frames>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -290,6 +323,12 @@
 					<Anchor point="BOTTOMRIGHT" x="-12" y="30"/>
 				</Anchors>
 			</Frame>
+			<Frame parentKey="TicketFrame" inherits="CommunitiesTicketFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="24" y="-40"/>
+					<Anchor point="BOTTOMRIGHT" x="-12" y="30"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="GuildFinderFrame" inherits="CommunitiesGuildFinderFrameTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="24" y="-40"/>
@@ -348,6 +387,11 @@
 					<KeyValue key="frame" value="CommunitiesGuildLogFrame" type="Global"/>
 				</KeyValues>
 			</Button>
+			<Frame parentKey="GuildMemberDetailFrame" frameLevel="100" inherits="CommunitiesGuildMemberDetailFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="-8" y="-80"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

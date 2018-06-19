@@ -57,6 +57,96 @@ function CommunitiesListMixin:GetInvitations()
 	return self.invitations;
 end
 
+function CommunitiesListMixin:GetTickets()
+	return self.tickets or {};
+end
+
+function CommunitiesListMixin:GetTicketInfoForClubId(clubId)
+	for i, ticketInfo in ipairs(self:GetTickets()) do
+		if ticketInfo.clubInfo.clubId == clubId then
+			return ticketInfo;
+		end
+	end
+
+	return nil;
+end
+
+function CommunitiesListMixin:AlreadyInClubOrHaveInvitation(clubId)
+	local communities = self:GetCommunitiesList();
+	local invitations = self:GetInvitations();
+
+	for _, community in ipairs(communities) do
+		if community.clubId == clubId then
+			return true;
+		end
+	end
+	for _, invitation in ipairs(invitations) do
+		if invitation.club.clubId == clubId then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+function CommunitiesListMixin:AlreadyHaveTicket(ticketId)
+	local tickets = self:GetTickets();
+
+	for _, ticketInfo in ipairs(tickets) do
+		if ticketInfo.ticketId == ticketId then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+function CommunitiesListMixin:ValidateTickets()
+	-- Remove any tickets for clubs that we're already in or have an invite for
+	local tickets = self:GetTickets();
+	for i = #tickets, 1, -1 do
+		local ticket = tickets[i];
+		if self:AlreadyInClubOrHaveInvitation(ticket.clubInfo.clubId) then
+			table.remove(tickets, i);
+		end
+	end
+end
+
+function CommunitiesListMixin:AddTicket(ticketId, clubInfo)
+	if self:AlreadyHaveTicket(ticketId) then
+		return;
+	end
+	if not self:AlreadyInClubOrHaveInvitation(clubInfo.clubId) then
+		local ticketInfo = {};
+		ticketInfo.ticketId = ticketId;
+		ticketInfo.clubInfo = clubInfo;
+
+		if self.tickets == nil then
+			self.tickets = {};
+		end
+		table.insert(self.tickets, ticketInfo);
+	end
+
+	local forceUpdate = true;
+	local communitiesFrame = self:GetParent();
+	communitiesFrame:Show();
+	communitiesFrame:SelectClub(clubInfo.clubId, forceUpdate)
+end
+
+function CommunitiesListMixin:RemoveTicket(ticketId)
+	for i, ticketInfo in ipairs(self.tickets) do
+		if ticketInfo.ticketId == ticketId then
+			table.remove(self.tickets, i);
+			self:Update();
+			return;
+		end
+	end
+end
+
+function CommunitiesListMixin:ClearTickets(ticketId)
+	self.ticket = nil;
+end
+
 function CommunitiesListMixin:GetFirstMatchingClubEntry(predicate)
 	local buttons = self.ListScrollFrame.buttons;
 	for i, button in ipairs(buttons) do
@@ -89,21 +179,24 @@ function CommunitiesListMixin:Update()
 	local buttons = scrollFrame.buttons;
 		
 	local clubs = self:GetCommunitiesList();
-	if not self:GetCommunitiesFrame():GetSelectedClubId() and self.mostRecentAcceptedInvite then
+	if not self:GetCommunitiesFrame():GetSelectedClubId() and self.mostRecentAcceptedInviteOrTicket then
 		for i, clubInfo in ipairs(clubs) do
-			if clubInfo.clubId == self.mostRecentAcceptedInvite then
-				self:GetCommunitiesFrame():SelectClub(self.mostRecentAcceptedInvite);
-				self.mostRecentAcceptedInvite = nil;
+			if clubInfo.clubId == self.mostRecentAcceptedInviteOrTicket then
+				self:GetCommunitiesFrame():SelectClub(self.mostRecentAcceptedInviteOrTicket);
+				self.mostRecentAcceptedInviteOrTicket = nil;
 
 				-- Selecting a club already triggered a second update.
 				return;
 			end
 		end
 	end
-		
+	
+	self:ValidateTickets();
+
 	local isInGuild = IsInGuild();
 	local invitations = self:GetInvitations();
-	local totalNumClubs = #invitations + #clubs;
+	local tickets = self:GetTickets();
+	local totalNumClubs = #invitations + #tickets + #clubs;
 	if not isInGuild then
 		totalNumClubs = totalNumClubs + 1;
 	end
@@ -133,11 +226,16 @@ function CommunitiesListMixin:Update()
 		else
 			displayIndex = displayIndex - 1;
 			local clubInfo = nil;
-			local isInvitation = displayIndex <= #invitations;
-			if isInvitation then
+			local isTicket = displayIndex <= #tickets;
+			local isInvitation = displayIndex > #tickets and displayIndex <= #tickets + #invitations;
+
+			if isTicket then
+				clubInfo = tickets[displayIndex].clubInfo;
+			elseif isInvitation then
+				displayIndex = displayIndex - #tickets;
 				clubInfo = invitations[displayIndex].club;
 			else
-				displayIndex = displayIndex - #invitations;
+				displayIndex = displayIndex - #tickets - #invitations;
 				if not isInGuild then
 					displayIndex = displayIndex - 1;
 				end
@@ -152,7 +250,7 @@ function CommunitiesListMixin:Update()
 				button:Show();
 				usedHeight = usedHeight + height;
 			elseif clubInfo then
-				button:SetClubInfo(clubInfo, isInvitation);
+				button:SetClubInfo(clubInfo, isInvitation, isTicket);
 				button:Show();
 				usedHeight = usedHeight + height;
 			elseif shouldAddJoinCommunityEntry then
@@ -179,7 +277,8 @@ function CommunitiesListMixin:UpdateClub(clubInfo)
 	for i, button in ipairs(buttons) do
 		if button:GetClubId() == clubInfo.clubId then
 			local isInvitation = false;
-			button:SetClubInfo(clubInfo, isInvitation);
+			local isTicket = false;
+			button:SetClubInfo(clubInfo, isInvitation, isTicket);
 			return;
 		end
 	end
@@ -198,7 +297,7 @@ end
 
 function CommunitiesListMixin:RegisterEventCallbacks()
 	local function CommunityInviteAcceptedCallback(event, invitationId, clubId)
-		self.mostRecentAcceptedInvite = clubId;
+		self.mostRecentAcceptedInviteOrTicket = clubId;
 	end
 
 	local function CommunityInviteDeclinedCallback(event, invitationId, clubId)
@@ -207,11 +306,18 @@ function CommunitiesListMixin:RegisterEventCallbacks()
 		self:Update();
 	end
 
+	local function CommunityTicketAcceptedCallback(event, ticketId, clubId)
+		self.mostRecentAcceptedInviteOrTicket = clubId;
+	end
+
 	self.inviteAcceptedCallback = CommunityInviteAcceptedCallback;
 	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.InviteAccepted, self.inviteAcceptedCallback);
 	
 	self.inviteDeclinedCallback = CommunityInviteDeclinedCallback;
 	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.InviteDeclined, self.inviteDeclinedCallback);
+
+	self.ticketAcceptedCallback = CommunityTicketAcceptedCallback;
+	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.TicketAccepted, self.ticketAcceptedCallback);
 end
 
 function CommunitiesListMixin:OnShow()
@@ -230,6 +336,7 @@ end
 function CommunitiesListMixin:OnHide()
 	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.InviteAccepted, self.inviteAcceptedCallback);
 	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.InviteDeclined, self.inviteDeclinedCallback);
+	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.TicketAccpted, self.ticketAcceptedCallback);
 	FrameUtil.UnregisterFrameForEvents(self, COMMUNITIES_LIST_EVENTS);
 end
 
@@ -288,7 +395,7 @@ local COMMUNITIES_LIST_ENTRY_EVENTS = {
 
 CommunitiesListEntryMixin = {};
 
-function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation)
+function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket)
 	self.overrideOnClick = nil;
 	if clubInfo then
 		local isGuild = clubInfo.clubType == Enum.ClubType.Guild;
@@ -300,23 +407,35 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation)
 			fontColor = GREEN_FONT_COLOR;
 		end
 		
+		if isGuild then
+			self.Background:SetAtlas("communities-nav-button-green-normal");
+			self.Background:SetTexCoord(0, 1, 0, 1);
+			self.Selection:SetAtlas("communities-nav-button-green-pressed");
+			self.Selection:SetTexCoord(0, 1, 0, 1);
+		else
+			self.Background:SetTexture("Interface\\Common\\bluemenu-main");
+			self.Background:SetTexCoord(0.00390625, 0.87890625, 0.75195313, 0.83007813);
+			self.Selection:SetTexture("Interface\\Common\\bluemenu-main");
+			self.Selection:SetTexCoord(0.00390625, 0.87890625, 0.59179688, 0.66992188);
+		end
+		
 		self.Name:SetTextColor(fontColor:GetRGB());
 		self.clubId = clubInfo.clubId;
 		self.isInvitation = isInvitation;
+		self.isTicket = isTicket;
 		self.Selection:SetShown(clubInfo.clubId == self:GetCommunitiesFrame():GetSelectedClubId());
 		self.FavoriteIcon:SetShown(self:GetCommunitiesFrame().CommunitiesList:IsClubFavorite(clubInfo));
-		self.InvitationIcon:SetShown(isInvitation);
+		self.InvitationIcon:SetShown(isInvitation or isTicket);
 		SetLargeGuildTabardTextures("player", self.GuildTabardEmblem, self.GuildTabardBackground, self.GuildTabardBorder);
 		self.GuildTabardEmblem:SetShown(isGuild);
 		self.GuildTabardBackground:SetShown(isGuild);
 		self.GuildTabardBorder:SetShown(isGuild);
-		self.Icon:SetShown(not isInvitation and not isGuild);
+		self.Icon:SetShown(not isInvitation and not isGuild and not isTicket);
 		self.Icon:SetSize(42, 42);
 		self.Icon:SetPoint("TOPLEFT", 8, -15);
 		self.CircleMask:SetShown(not isInvitation and not isGuild);
-		self.IconRing:SetShown(not isInvitation and not isGuild);
+		self.IconRing:SetShown(not isInvitation and not isGuild and not isTicket);
 		self.IconRing:SetAtlas(clubInfo.clubType == Enum.ClubType.BattleNet and "communities-ring-blue" or "communities-ring-gold");
-		self.GuildFinderBackground:Hide();
 		C_Club.SetAvatarTexture(self.Icon, clubInfo.avatarId, clubInfo.clubType);
 		self:UpdateUnreadNotification();
 	else
@@ -330,7 +449,7 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation)
 end
 
 function CommunitiesListEntryMixin:UpdateUnreadNotification()
-	self.UnreadNotificationIcon:SetShown(not self.isInvitation and self.clubId and CommunitiesUtil.DoesCommunityHaveUnreadMessages(self.clubId));
+	self.UnreadNotificationIcon:SetShown(not self.isInvitation and not self.isTicket and self.clubId and CommunitiesUtil.DoesCommunityHaveUnreadMessages(self.clubId));
 end
 
 function CommunitiesListEntryMixin:SetAddCommunity()
@@ -348,12 +467,15 @@ function CommunitiesListEntryMixin:SetAddCommunity()
 	self.Name:SetTextColor(GREEN_FONT_COLOR:GetRGB());
 	self.Selection:Hide();
 	
+	self.Background:SetTexture("Interface\\Common\\bluemenu-main");
+	self.Background:SetTexCoord(0.00390625, 0.87890625, 0.75195313, 0.83007813);
+	self.Selection:SetTexture("Interface\\Common\\bluemenu-main");
+	self.Selection:SetTexCoord(0.00390625, 0.87890625, 0.59179688, 0.66992188);
 	self.FavoriteIcon:Hide();
 	self.InvitationIcon:Hide();
 	self.Icon:Show();
 	self.CircleMask:Hide();
 	self.IconRing:Hide();
-	self.GuildFinderBackground:Hide();
 	self.GuildTabardEmblem:Hide();
 	self.GuildTabardBackground:Hide();
 	self.GuildTabardBorder:Hide();
@@ -373,20 +495,25 @@ function CommunitiesListEntryMixin:SetGuildFinder()
 	
 	self.clubId = nil;
 	self.Name:SetText(COMMUNITIES_GUILD_FINDER);
-	self.Name:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+	self.Name:SetTextColor(GREEN_FONT_COLOR:GetRGB());
 	self.Selection:SetShown(self:GetCommunitiesFrame():GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER);
-	
+
+	self.Background:SetAtlas("communities-nav-button-green-normal");
+	self.Background:SetTexCoord(0, 1, 0, 1);
+	self.Selection:SetAtlas("communities-nav-button-green-pressed");
+	self.Selection:SetTexCoord(0, 1, 0, 1);
 	self.FavoriteIcon:Hide();
 	self.InvitationIcon:Hide();
 	self.Icon:Show();
-	self.Icon:SetSize(42, 42);
-	self.Icon:SetPoint("TOPLEFT", 8, -15);
+	self.Icon:SetSize(35, 35);
+	self.Icon:SetPoint("TOPLEFT", 12, -15);
 	self.CircleMask:Show();
 	self.IconRing:Hide();
-	self.GuildFinderBackground:Show();
 	self.GuildTabardEmblem:Hide();
-	self.GuildTabardBackground:Hide();
-	self.GuildTabardBorder:Hide();
+	self.GuildTabardBackground:Show();
+	self.GuildTabardBackground:SetVertexColor(0.7, 0.7, 0.7);
+	self.GuildTabardBorder:Show();
+	self.GuildTabardBorder:SetVertexColor(0.7, 0.7, 0.7);
 	self.UnreadNotificationIcon:Hide();
 
 	local factionGroup = UnitFactionGroup("player");
@@ -405,12 +532,16 @@ function CommunitiesListEntryMixin:IsInvitation()
 	return self.isInvitation;
 end
 
-function CommunitiesListEntryMixin:GetCommuntiesList()
+function CommunitiesListEntryMixin:IsTicket()
+	return self.isTicket;
+end
+
+function CommunitiesListEntryMixin:GetCommunitiesList()
 	return self:GetParent():GetParent():GetParent();
 end
 
 function CommunitiesListEntryMixin:GetCommunitiesFrame()
-	return self:GetCommuntiesList():GetCommunitiesFrame();
+	return self:GetCommunitiesList():GetCommunitiesFrame();
 end
 
 function CommunitiesListEntryMixin:OnShow()

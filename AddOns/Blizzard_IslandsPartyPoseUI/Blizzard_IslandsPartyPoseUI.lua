@@ -1,32 +1,79 @@
-local AZERITE_POWER_SPELL_VISUAL_KIT_ID = 96781; -- Heart of Azeroth Channel Spell. 
+local AZERITE_POWER_SPELL_VISUAL_KIT_ID = 96781; -- Heart of Azeroth Channel Spell.
 IslandsPartyPoseMixin = CreateFromMixins(PartyPoseMixin);
 
-function IslandsPartyPoseMixin:SetLeaveButtonText() 
+function IslandsPartyPoseMixin:SetLeaveButtonText()
 	self.LeaveButton.Text:SetText(ISLAND_LEAVE);
 end
 
-function IslandsPartyPoseMixin:SetTopBannerAndBackgroundFromWinner(winner)
-	if (winner == "Horde") then
-		self.TitleText:SetText(VICTORY_TEXT0); 
-		self.TitleBg:SetAtlas("scoreboard-header-horde", true); 
-		self.ModelScene.Bg:SetAtlas("scoreboard-background-islands-horde"); 
-	elseif (winner == "Alliance") then
-		self.TitleText:SetText(VICTORY_TEXT1); 
-		self.TitleBg:SetAtlas("scoreboard-header-alliance", true); 
-		self.ModelScene.Bg:SetAtlas("scoreboard-background-islands-alliance"); 
-	end
-end
+do
+	local islandsStyleData =
+	{
+		Horde =
+		{
+			topperOffset = -37,
+			Topper = "scoreboard-horde-header",
+			topperBehindFrame = false,
 
-function IslandsPartyPoseMixin:LoadScreenData(mapID, winner) 
-	self.rewardPool:ReleaseAll(); 
-	local partyPoseInfo = C_PartyPose.GetPartyPoseInfoByMapID(mapID); 
-	UIWidgetManager:RegisterWidgetSetContainer(partyPoseInfo.widgetSetID, self.Score);
-	
-	self:PlayModelSceneAnimations(false);
-	self:SetModelScene(partyPoseInfo.modelSceneID, LE_PARTY_CATEGORY_INSTANCE);
-	self:ApplyVisualKitToEachActor(AZERITE_POWER_SPELL_VISUAL_KIT_ID); 
-	self:SetLeaveButtonText(); 
-	
-	local factionWinner = PLAYER_FACTION_GROUP[winner];
-	self:SetTopBannerAndBackgroundFromWinner(factionWinner); 
+			TitleBG = "scoreboard-header-horde",
+			ModelSceneBG = "scoreboard-background-islands-horde",
+
+			Top = "_scoreboard-horde-tiletop",
+			Bottom = "_scoreboard-horde-tilebottom",
+			Left = "!scoreboard-horde-tileleft",
+			Right = "!scoreboard-horde-tileright",
+			TopLeft = "scoreboard-horde-corner",
+			TopRight = "scoreboard-horde-corner",
+			BottomLeft = "scoreboard-horde-corner",
+			BottomRight = "scoreboard-horde-corner",
+
+			-- one-off
+			bottomCornerYOffset = -24;
+		},
+
+		Alliance =
+		{
+			topperOffset = -28,
+			Topper = "scoreboard-alliance-header",
+			topperBehindFrame = false,
+
+			TitleBG = "scoreboard-header-alliance",
+			ModelSceneBG = "scoreboard-background-islands-alliance",
+
+			Top = "_scoreboard-alliance-tiletop",
+			Bottom = "_scoreboard-alliance-tilebottom",
+			Left = "!scoreboard-alliance-tileleft",
+			Right = "!scoreboard-alliance-tileright",
+			TopLeft = "scoreboard-alliance-corner",
+			TopRight = "scoreboard-alliance-corner",
+			BottomLeft = "scoreboard-alliance-corner",
+			BottomRight = "scoreboard-alliance-corner",
+
+			-- one-off
+			bottomCornerYOffset = -20;
+		},
+	};
+
+	function IslandsPartyPoseMixin:LoadScreenData(mapID, winner)
+		self.rewardPool:ReleaseAll();
+		local partyPoseInfo = C_PartyPose.GetPartyPoseInfoByMapID(mapID);
+		UIWidgetManager:RegisterWidgetSetContainer(partyPoseInfo.widgetSetID, self.Score);
+
+		self:SetLeaveButtonText();
+
+		local winnerFactionGroup = PLAYER_FACTION_GROUP[winner];
+		local playerFactionGroup = UnitFactionGroup("player");
+		self:PlaySounds(partyPoseInfo, winnerFactionGroup);
+		if (winnerFactionGroup == playerFactionGroup) then
+			self.TitleText:SetText(PARTY_POSE_VICTORY);
+			self:SetModelScene(partyPoseInfo.victoryModelSceneID, LE_PARTY_CATEGORY_INSTANCE);
+		else
+			self.TitleText:SetText(PARTY_POSE_DEFEAT);
+			self:SetModelScene(partyPoseInfo.defeatModelSceneID, LE_PARTY_CATEGORY_INSTANCE);
+		end
+
+		self:PlayModelSceneAnimations();
+		self:ApplyVisualKitToEachActor(AZERITE_POWER_SPELL_VISUAL_KIT_ID);
+
+		self:SetupTheme(islandsStyleData[playerFactionGroup]);
+	end
 end

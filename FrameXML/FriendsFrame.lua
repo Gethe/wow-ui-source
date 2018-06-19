@@ -436,7 +436,7 @@ function FriendsList_InitializePendingInviteDropDown(self, level)
 		UIDropDownMenu_AddButton(info, level)
 	else
 		if level == 2 then
-			local bnetIDAccount, name = BNGetFriendInviteInfo(UIDROPDOWNMENU_MENU_VALUE);
+			local bnetIDAccount, name = BNGetFriendInviteInfo(self.inviteIndex);
 
 			info.text = REPORT_SPAMMING;
 			info.func = function()

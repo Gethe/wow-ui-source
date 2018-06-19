@@ -859,7 +859,7 @@ function KnowledgeBase_SendArticleRequest(categoryIndex, subcategoryIndex)
 	KnowledgeBase_Clearlist();
 	local buttonText = ALL;
 	if subcategoryIndex ~= 0 then
-		local list = KnowledgeBase_GetSubCategoryList(self, categoryIndex);
+		local list = KnowledgeBase_GetSubCategoryList(nil, categoryIndex);
 		local entry = list and list[subcategoryIndex+1];
 		buttonText = entry and entry.text;
 	end

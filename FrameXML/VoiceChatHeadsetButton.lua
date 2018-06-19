@@ -100,6 +100,14 @@ function VoiceChatHeadsetButtonMixin:ToggleActivateChannel()
 	elseif self:IsCommunityChannel() then
 		ChannelFrame:TryJoinCommunityStreamChannel(self.clubId, self.streamId);
 	end
+
+	if self.onClickFn then
+		self:onClickFn();
+	end
+end
+
+function VoiceChatHeadsetButtonMixin:SetOnClickCallback(fn)
+	self.onClickFn = fn;
 end
 
 function VoiceChatHeadsetButtonMixin:SetVoiceChannel(voiceChannel)
@@ -220,6 +228,10 @@ end
 
 function VoiceChatHeadsetMixin:SetChannelName(...)
 	self.Button:SetChannelName(...);
+end
+
+function VoiceChatHeadsetMixin:SetOnClickCallback(fn)
+	self.Button:SetOnClickCallback(fn);
 end
 
 function VoiceChatHeadsetMixin:SetPendingState(pending)

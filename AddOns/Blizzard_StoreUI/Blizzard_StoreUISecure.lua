@@ -1651,9 +1651,9 @@ end
 
 function StoreFrame_SetCategory(forceModelUpdate)
 	local productGroupInfo = C_StoreSecure.GetProductGroupInfo(selectedCategoryID);
-	if productGroupInfo.displayType == Enum.BattlepayGroupDisplayType.Splash then
+	if productGroupInfo and productGroupInfo.displayType == Enum.BattlepayGroupDisplayType.Splash then
 		StoreFrame_SetSplashCategory(forceModelUpdate);
-	elseif productGroupInfo.displayType == Enum.BattlepayGroupDisplayType.DoubleWide then
+	elseif productGroupInfo and productGroupInfo.displayType == Enum.BattlepayGroupDisplayType.DoubleWide then
 		StoreFrame_SetCardStyle(StoreFrame, "double-wide", NUM_STORE_PRODUCT_CARDS_PER_ROW / 2);
 		StoreFrame_SetNormalCategory(forceModelUpdate, NUM_STORE_PRODUCT_CARDS / 2);
 	else

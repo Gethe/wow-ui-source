@@ -5,7 +5,7 @@ function ArtifactBarMixin:GetPriority()
 end
 
 function ArtifactBarMixin:ShouldBeVisible()
-	return HasArtifactEquipped() and not C_ArtifactUI.IsEquippedArtifactMaxed();
+	return HasArtifactEquipped() and not C_ArtifactUI.IsEquippedArtifactMaxed() and not C_ArtifactUI.IsEquippedArtifactDisabled();
 end
 
 function ArtifactBarMixin:Update()

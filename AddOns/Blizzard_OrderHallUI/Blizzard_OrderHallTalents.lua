@@ -41,8 +41,11 @@ function OrderHallTalentFrameMixin:OnLoad()
 	self.choiceTexturePool = CreateTexturePool(self, "BACKGROUND", 1, "GarrisonTalentChoiceTemplate");
 	self.arrowTexturePool = CreateTexturePool(self, "BACKGROUND", 2, "GarrisonTalentArrowTemplate");
 	self.researchingTalentID = 0;
+end
 
-	local primaryCurrency, _ = C_Garrison.GetCurrencyTypes(self.garrisonType);
+function OrderHallTalentFrameMixin:SetGarrisonType(garrType)
+	self.garrisonType = garrType; 
+	local primaryCurrency, _ = C_Garrison.GetCurrencyTypes(garrType);
 	self.currency = primaryCurrency;
 end
 
@@ -100,7 +103,8 @@ function OrderHallTalentFrameMixin:RefreshCurrency()
 	local currencyName, amount, currencyTexture = GetCurrencyInfo(self.currency);
 	amount = BreakUpLargeNumbers(amount);
 	self.Currency:SetText(amount);
-	-- self.CurrencyIcon:SetTexture(currencyTexture);
+	self.CurrencyIcon:SetTexture(currencyTexture);
+	TalentUnavailableReasons[LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_NOT_ENOUGH_RESOURCES] = ORDER_HALL_TALENT_UNAVAILABLE_NOT_ENOUGH_RESOURCES_MULTI_RESOURCE:format(currencyName);
 end
 
 local MAX_TIERS = 8;
@@ -129,7 +133,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			garrTalentTreeID = treeIDs[1];
 		end
 	end
-	local uiTextureKit, classAgnostic, tree = C_Garrison.GetTalentTreeInfoForID(garrTalentTreeID);
+	local uiTextureKit, classAgnostic, tree, titleText, shouldUseNpcInfo = C_Garrison.GetTalentTreeInfoForID(garrTalentTreeID);
 	if not tree then
 		self.refreshing = false;
 		return;
@@ -137,11 +141,13 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	
 	-- Chromie is the original classAgnostic talent tree, and we added a back button to her talent frame
 	-- as a small quality of life improvement (this may or may not be relevent to classAgnostic talent trees in the future).
-	if (classAgnostic) then
+	if (shouldUseNpcInfo) then
 		self.TitleText:SetText(UnitName("npc"));
-		SetPortraitTexture(self.portrait, "npc");
 		self.BackButton:Show();
-	else
+	elseif (titleText) then
+		self.TitleText:SetText(titleText);
+		self.BackButton:Hide();
+	else 
 		self.TitleText:SetText(ORDER_HALL_TALENT_TITLE);
 		self.BackButton:Hide();
 	end
@@ -162,6 +168,13 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 
 	if (uiTextureKit) then
 		self.Background:SetAtlas(uiTextureKit.."-background");
+		self.portrait:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+		local atlas = uiTextureKit.."-logo";
+		if (GetAtlasInfo(atlas)) then 
+			self.portrait:SetAtlas(atlas);
+		else
+			SetPortraitTexture(self.portrait, "npc");
+		end 
 	else
 		local _, className, classID = UnitClass("player");
 
@@ -247,9 +260,11 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 
 	local distance = change * changecount;
 	self:SetHeight(height - distance);
-	self.LeftInset:SetHeight(insetheight - distance);
 	self.Background:SetHeight(bgheight - distance);
-
+	self.LeftInset:ClearAllPoints();
+	self.LeftInset:SetHeight(insetheight - distance);
+	self.LeftInset:SetPoint("CENTER", self.Background, 0, 0);
+	
     local completeTalent = C_Garrison.GetCompleteTalent(self.garrisonType);
 
 	-- position talent buttons

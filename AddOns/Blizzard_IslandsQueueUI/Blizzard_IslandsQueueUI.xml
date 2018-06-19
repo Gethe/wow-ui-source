@@ -149,6 +149,7 @@
 		<Scripts>
 			<OnClick>
 				self:GetParent():SetActiveDifficulty(self); 
+				PlaySound(self.soundkitID);
 			</OnClick>
 			<OnEnter>
 				if self.tooltipText then
@@ -174,6 +175,7 @@
 				<Scripts>
 					<OnClick>
 						self:GetParent():OnQueueClick(); 
+						PlaySound(SOUNDKIT.UI_80_ISLANDS_TABLE_FIND_GROUP); 
 					</OnClick>
 				</Scripts>
 			</Button>

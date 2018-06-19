@@ -18,6 +18,7 @@ EJ_ALERT_TIME_DIFF = 60*60*24*7*2; -- 2 weeks
 
 local g_microButtonAlertsEnabled = true;
 local g_visibleMicroButtonAlerts = {};
+local g_visibleExternalAlerts = {};
 local g_flashingMicroButtons = {};
 
 function LoadMicroButtonTextures(self, name)
@@ -244,7 +245,7 @@ function UpdateMicroButtons()
 end
 
 function MicroButtonPulse(self, duration)
-	if not g_microButtonAlertsEnabled then
+	if not MainMenuMicroButton_AreAlertsEffectivelyEnabled() then
 		return;
 	end
 
@@ -384,10 +385,42 @@ MAIN_MENU_MICRO_ALERT_PRIORITY = {
 	"EJMicroButtonAlert",
 };
 
+function MainMenuMicroButton_AddExternalAlert(externalAlert)
+	g_visibleExternalAlerts[externalAlert] = true;
+	MainMenuMicroButton_UpdateAlertsEnabled();
+end
+
+function MainMenuMicroButton_RemoveExternalAlert(externalAlert)
+	g_visibleExternalAlerts[externalAlert] = nil;
+	MainMenuMicroButton_UpdateAlertsEnabled();
+end
+
 function MainMenuMicroButton_SetAlertsEnabled(enabled)
 	g_microButtonAlertsEnabled = enabled;
+	MainMenuMicroButton_UpdateAlertsEnabled();
+end
 
-	if not enabled then
+function MainMenuMicroButton_UpdateAlertsEnabled(frameToSkip)
+	if MainMenuMicroButton_AreAlertsEffectivelyEnabled() then
+		-- If anything is shown, leave it in that state
+		for i, priorityFrameName in ipairs(MAIN_MENU_MICRO_ALERT_PRIORITY) do
+			local priorityFrame = _G[priorityFrameName];
+			if priorityFrame:IsShown() then
+				return;
+			end
+		end
+
+		-- Nothing shown, try evaluating its visibility
+		for i, priorityFrameName in ipairs(MAIN_MENU_MICRO_ALERT_PRIORITY) do
+			local priorityFrame = _G[priorityFrameName];
+			if frameToSkip ~= priorityFrame then
+				priorityFrame.MicroButton:EvaluateAlertVisibility();
+				if priorityFrame:IsShown() then
+					break;
+				end
+			end
+		end
+	else
 		for alert in pairs(g_visibleMicroButtonAlerts) do
 			alert:Hide();
 		end
@@ -401,8 +434,12 @@ function MainMenuMicroButton_SetAlertsEnabled(enabled)
 	end
 end
 
+function MainMenuMicroButton_AreAlertsEffectivelyEnabled()
+	return g_microButtonAlertsEnabled and not next(g_visibleExternalAlerts);
+end
+
 function MainMenuMicroButton_ShowAlert(alert, text, tutorialIndex)
-	if not g_microButtonAlertsEnabled then
+	if not MainMenuMicroButton_AreAlertsEffectivelyEnabled() then
 		return false;
 	end
 
@@ -787,29 +824,7 @@ end
 
 function MicroButtonAlert_OnHide(self)
 	g_visibleMicroButtonAlerts[self] = nil;
-
-	if not g_microButtonAlertsEnabled then
-		return;
-	end
-
-	-- If anything is shown, leave it in that state
-	for i, priorityFrameName in ipairs(MAIN_MENU_MICRO_ALERT_PRIORITY) do
-		local priorityFrame = _G[priorityFrameName];
-		if priorityFrame:IsShown() then
-			return;
-		end
-	end
-
-	-- Nothing shown, try evaluating its visibility
-	for i, priorityFrameName in ipairs(MAIN_MENU_MICRO_ALERT_PRIORITY) do
-		local priorityFrame = _G[priorityFrameName];
-		if priorityFrame ~= self then
-			priorityFrame.MicroButton:EvaluateAlertVisibility();
-			if priorityFrame:IsShown() then
-				break;
-			end
-		end
-	end
+	MainMenuMicroButton_UpdateAlertsEnabled(self);
 end
 
 function MicroButtonAlert_CreateAlert(parent, tutorialIndex, text, anchorPoint, anchorRelativeTo, anchorRelativePoint, anchorOffsetX, anchorOffsetY)

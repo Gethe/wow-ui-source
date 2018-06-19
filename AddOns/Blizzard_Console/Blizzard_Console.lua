@@ -363,6 +363,7 @@ function DeveloperConsoleMixin:OnEditBoxTabPressed()
 	if IsControlKeyDown() then
 		C_Console.PrintAllMatchingCommands((self:FindBestEditCommand()));
 	else
+		self.AutoComplete:FinishWork();
 		if IsShiftKeyDown() then
 			if self.AutoComplete:PreviousEntry() then
 				return;

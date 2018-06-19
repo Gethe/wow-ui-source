@@ -7,14 +7,14 @@
 
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture parentKey="Icon" atlas="QuestPortraitIcon-SandboxQuest" useAtlasSize="true">
+				<Texture parentKey="Icon">
 					<Anchors>
 						<Anchor point="CENTER" />
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="HIGHLIGHT">
-				<Texture parentKey="IconHighlight" atlas="QuestPortraitIcon-SandboxQuest" useAtlasSize="true" alphaMode="ADD" alpha=".25">
+				<Texture parentKey="IconHighlight" alphaMode="ADD" alpha=".25">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon" />
 					</Anchors>
@@ -23,13 +23,13 @@
 			<Layer level="ARTWORK">
 				<FontString parentKey="Text" inherits="SystemFont_Large">
 					<Anchors>
-						<Anchor point="TOP" relativePoint="BOTTOM" y="-10" />
+						<Anchor point="TOP" relativePoint="BOTTOM" />
 					</Anchors>
 					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>
 			</Layer>
 
-			<Layer level="BACKGROUND">
+			<Layer level="BACKGROUND" textureSubLevel="-2">
 				<Texture parentKey="TextBackground" atlas="AdventureMapLabel-Small" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Text" x="-30" y="-10" />

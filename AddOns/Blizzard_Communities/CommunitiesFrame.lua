@@ -5,6 +5,7 @@ CommunitiesFrameMixin:GenerateCallbackEvents(
 {
     "InviteAccepted",
     "InviteDeclined",
+	"TicketAccepted",
 	"DisplayModeChanged",
 	"ClubSelected",
 	"StreamSelected",
@@ -282,6 +283,11 @@ COMMUNITIES_FRAME_DISPLAY_MODES = {
 		"InvitationFrame",
 	},
 	
+	TICKET = {
+		"CommunitiesList",
+		"TicketFrame",
+	},
+
 	GUILD_FINDER = {
 		"CommunitiesList",
 		"GuildFinderFrame",
@@ -290,7 +296,6 @@ COMMUNITIES_FRAME_DISPLAY_MODES = {
 	GUILD_BENEFITS = {
 		"CommunitiesList",
 		"GuildBenefitsFrame",
-		"CommunitiesControlFrame",
 	},
 	
 	GUILD_INFO = {
@@ -317,17 +322,16 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 	self:CloseActiveDialogs();
 	
 	self.displayMode = displayMode;
-
+	
+	local subframesToUpdate = {};
 	for i, mode in pairs(COMMUNITIES_FRAME_DISPLAY_MODES) do
-		if mode ~= displayMode then
-			for j, subframe in ipairs(mode) do
-				self[subframe]:Hide();
-			end
+		for j, subframe in ipairs(mode) do
+			subframesToUpdate[subframe] = subframesToUpdate[subframe] or mode == displayMode;
 		end
 	end
 	
-	for i, subframe in ipairs(displayMode) do
-		self[subframe]:Show();
+	for subframe, shouldShow in pairs(subframesToUpdate) do
+		self[subframe]:SetShown(shouldShow);
 	end
 	
 	-- If we run into more cases where we need more specific controls on what
@@ -362,7 +366,7 @@ function CommunitiesFrameMixin:ValidateDisplayMode()
 		local isGuildCommunitySelected = clubInfo and clubInfo.clubType == Enum.ClubType.Guild;
 		if not isGuildCommunitySelected and guildDisplay then
 			self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.CHAT);
-		elseif displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION then
+		elseif displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.TICKET then
 			self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.CHAT);
 		elseif displayMode == nil then
 			self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.CHAT);
@@ -453,6 +457,12 @@ function CommunitiesFrameMixin:OnClubSelected(clubId)
 			if invitationInfo then
 				self.InvitationFrame:DisplayInvitation(invitationInfo);
 				self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION);
+			else
+				local ticketInfo = self.CommunitiesList:GetTicketInfoForClubId(clubId);
+				if ticketInfo then
+					self.TicketFrame:DisplayTicket(ticketInfo);
+					self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.TICKET);
+				end
 			end
 		end
 	else
@@ -601,6 +611,14 @@ function CommunitiesFrameMixin:ShowEditStreamDialog(clubId, streamId)
 	if stream then
 		self.EditStreamDialog:ShowEditDialog(clubId, stream);
 	end
+end
+
+function CommunitiesFrameMixin:OpenGuildMemberDetailFrame(clubId, memberInfo)
+	self.GuildMemberDetailFrame:DisplayMember(clubId, memberInfo);
+end
+
+function CommunitiesFrameMixin:CloseGuildMemberDetailFrame()
+	self.GuildMemberDetailFrame:Hide();
 end
 
 function CommunitiesFrameMixin:ShowNotificationSettingsDialog()

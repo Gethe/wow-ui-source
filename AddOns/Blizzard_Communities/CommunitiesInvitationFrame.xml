@@ -117,7 +117,16 @@
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
-	
+
+	<Frame name="CommunitiesTicketFrameTemplate" inherits="CommunitiesInvitationFrameTemplate" mixin="CommunitiesTicketFrameMixin" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self.AcceptButton:SetScript("OnClick", function(self) self:GetParent():AcceptTicket(); end);
+				self.DeclineButton:SetScript("OnClick", function(self) self:GetParent():DeclineTicket(); end);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
 	<Button name="CommunitiesInviteButtonTemplate" inherits="UIPanelDynamicResizeButtonTemplate" text="COMMUNITIES_INVITE_MEMBERS" virtual="true">
 		<Scripts>
 			<OnClick function="CommunitiesInviteButton_OnClick"/>

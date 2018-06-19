@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_WarboardUI.lua"/>
-	
+
 	<Button name="WarboardQuestChoiceOptionTemplate" mixin="WarboardQuestChoiceOptionFrameMixin" virtual="true">
 		<Size x="240" y="332"/>
 		<Layers>
@@ -198,55 +198,24 @@
 								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-61"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="TopRightCorner" atlas="UI-Frame-Horde-Corner" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="0" y="0"/>
-							</Anchors>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="TopLeftCorner" atlas="UI-Frame-Horde-Corner" useAtlasSize="true" textureSubLevel="1"/>
+						<Texture parentKey="TopRightCorner" atlas="UI-Frame-Horde-Corner" useAtlasSize="true" textureSubLevel="1">
 							<TexCoords left="1" right="0" top="0" bottom="1"/>
 						</Texture>
-						<Texture parentKey="TopLeftCorner" atlas="UI-Frame-Horde-Corner" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="BottomLeftCorner" atlas="UI-Frame-Horde-Corner" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="0" y="0"/>
-							</Anchors>
+						<Texture parentKey="BottomLeftCorner" atlas="UI-Frame-Horde-Corner" useAtlasSize="true" textureSubLevel="1">
 							<TexCoords left="0" right="1" top="1" bottom="0"/>
 						</Texture>
-						<Texture parentKey="BottomRightCorner" atlas="UI-Frame-Horde-Corner" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-							</Anchors>
+						<Texture parentKey="BottomRightCorner" atlas="UI-Frame-Horde-Corner" useAtlasSize="true" textureSubLevel="1">
 							<TexCoords left="1" right="0" top="1" bottom="0"/>
 						</Texture>
 					</Layer>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="TopBorder" atlas="_UI-Frame-Horde-TileTop" horizTile="true" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner" relativePoint="TOPLEFT"/>
-								<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="TOPRIGHT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="BottomBorder" atlas="_UI-Frame-Horde-TileBottom" horizTile="true" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftCorner" relativePoint="BOTTOMLEFT"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" relativePoint="BOTTOMRIGHT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="LeftBorder" atlas="!UI-Frame-Horde-TileLeft" vertTile="true" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner" relativePoint="TOPLEFT"/>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftCorner" relativePoint="BOTTOMLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="RightBorder" atlas="!UI-Frame-Horde-TileRight" vertTile="true" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="TOPRIGHT"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" relativePoint="BOTTOMRIGHT"/>
-							</Anchors>
-						</Texture>
+					<Layer level="BACKGROUND" textureSubLevel="0">
+						<Texture parentKey="TopBorder" atlas="_UI-Frame-Horde-TileTop" horizTile="true" useAtlasSize="true"/>
+						<Texture parentKey="BottomBorder" atlas="_UI-Frame-Horde-TileBottom" horizTile="true" useAtlasSize="true"/>
+						<Texture parentKey="LeftBorder" atlas="!UI-Frame-Horde-TileLeft" vertTile="true" useAtlasSize="true"/>
+						<Texture parentKey="RightBorder" atlas="!UI-Frame-Horde-TileRight" vertTile="true" useAtlasSize="true"/>
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture parentKey="CloseButtonBorder" atlas="UI-Frame-Horde-ExitButtonBorder" useAtlasSize="true">
@@ -331,6 +300,55 @@
 					<Anchor point="TOPRIGHT" x="1" y="3" />
 				</Anchors>
 			</Button>
+			<Frame parentKey="WarfrontHelpBox" inherits="GlowBoxTemplate" hidden="true" frameStrata="DIALOG">
+				<Size x="190" y="65"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.Option1.OptionButtonsContainer" x="-41" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="BigText" inherits="GameFontHighlight" justifyH="LEFT" text="WARFRONT_TUTORIAL_CONSTRUCTION">
+							<Size x="146" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" x="-1" y="-12"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="ArrowRight" inherits="HelpPlateArrowDOWN">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="-1" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="ArrowGlowRight" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="1" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="6" y="6"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:GetParent():Hide();
+								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARFRONT_CONSTRUCTION, true);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						SetClampedTextureRotation(self.ArrowRight, 270);
+						SetClampedTextureRotation(self.ArrowGlowRight, 270);
+					</OnLoad>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

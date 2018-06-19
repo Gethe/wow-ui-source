@@ -16,6 +16,15 @@ local MythicPlusInfo =
 			},
 		},
 		{
+			Name = "GetOwnedKeystoneChallengeMapID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "challengeMapID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetOwnedKeystoneLevel",
 			Type = "Function",
 

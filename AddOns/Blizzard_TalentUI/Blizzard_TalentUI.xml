@@ -1029,31 +1029,44 @@
 			<Frame name="$parentPvpTalentFrame" parentKey="PvpTalentFrame" mixin="PvpTalentFrameMixin">
 				<Size x="131" y="379"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-135" y="0"/>
+					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-135" y=".5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture atlas="pvptalents-background" setAllPoints="true"/>
+						<Texture atlas="pvptalents-background" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
 					</Layer>
-					<Layer level="BORDER">
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture file="Interface\Common\bluemenu-vert" vertTile="true">
+							<Size x="5" y="378"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-5" y="-1"/>
+							</Anchors>
+							<TexCoords left="0.00781250" right="0.04687500" top="0.00000000" bottom="1.00000000"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
 						<Texture name="$parentTLCorner" atlas="Talent-TopLeftCurlies" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="-2"/>
+								<Anchor point="TOPLEFT" x="-1" y="-1"/>
 							</Anchors>
 						</Texture>
 						<Texture name="$parentTRCorner" atlas="Talent-TopRightCurlies" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPRIGHT" x="0" y="-2"/>
+								<Anchor point="TOPRIGHT" x="1" y="-1"/>
 							</Anchors>
 						</Texture>
 						<Texture name="$parentBLCorner" atlas="Talent-BottomLeftCurlies" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="0" y="2"/>
+								<Anchor point="BOTTOMLEFT" x="-1"/>
 							</Anchors>
 						</Texture>
 						<Texture name="$parentBRCorner" atlas="Talent-BottomRightCurlies" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT" x="0" y="2"/>
+								<Anchor point="BOTTOMRIGHT" x="1"/>
 							</Anchors>
 						</Texture>
 						<Texture atlas="_Talent-Top-Tile" horizTile="true">
@@ -1071,7 +1084,7 @@
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="ARTWORK">
+					<Layer level="BORDER">
 						<Texture parentKey="Swords" atlas="pvptalents-warmode-swords" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="BOTTOM" x="0" y="30"/>
@@ -1079,22 +1092,33 @@
 						</Texture>
 						<FontString parentKey="Label" inherits="Fancy14Font" text="PVP_LABEL_WAR_MODE">
 							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="104"/>
+								<Anchor point="BOTTOM" x="0" y="103"/>
 							</Anchors>
 							<Color r="1.0" g="0.82" b="0.0"/>
+							<Shadow>
+								<Offset x="1" y="-1"/>
+								<Color r="0" g="0" b="0"/>
+							</Shadow>
 						</FontString>
 					</Layer>
-					<Layer level="ARTWORK" textureSubLevel="1">
+					<Layer level="BORDER" textureSubLevel="1">
 						<Texture parentKey="Orb" atlas="pvptalents-warmode-orb" useAtlasSize="true" alpha="0.4">
 							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="6"/>
+								<Anchor point="BOTTOM" x="-.5" y="5"/>
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="ARTWORK" textureSubLevel="2">
+					<Layer level="BORDER" textureSubLevel="2">
 						<Texture parentKey="Ring" atlas="pvptalents-warmode-ring" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="LEFT" x="25" y="-142"/>
+								<Anchor point="BOTTOM" x="-.5" y="5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture atlas="pvptalents-warmode-firecover" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOM" y="4"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -1114,14 +1138,114 @@
 							<OnClick method="OnClick"/>
 						</Scripts>
 					</Button>
+					<Frame parentKey="WarmodeTutorialBox" inherits="GlowBoxTemplate" hidden="true" frameStrata="DIALOG">
+						<Size x="220" y="100"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.InvisibleWarmodeButton" x="100" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Text" inherits="GameFontHighlight" justifyV="TOP" justifyH="LEFT" text="WAR_MODE_TUTORIAL">
+									<Size x="188" y="0"/>
+									<Anchors>
+										<Anchor point="LEFT" x="10" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="6" y="6"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										self:GetParent():Hide();
+										SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_WARMODE_UNLOCK, true);
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
+								<Anchors>
+									<Anchor point="LEFT" x="-20" y="17"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								SetClampedTextureRotation(self.Arrow.Arrow, 90);
+								SetClampedTextureRotation(self.Arrow.Glow, 90);
+								self.Arrow.Glow:ClearAllPoints();
+								self.Arrow.Glow:SetPoint("CENTER", self.Arrow.Arrow, -3, 0); 
+							</OnLoad>
+							<OnShow>
+								self:SetHeight(self.Text:GetHeight() + 20);
+								self:SetWidth(self.Text:GetWidth() + 20); 
+							</OnShow>
+						</Scripts>
+					</Frame>
 					<Button parentKey="TrinketSlot" parentArray="Slots" inherits="PvpTalentTrinketSlotTemplate">
 						<Anchors>
-							<Anchor point="TOP" x="0" y="-16"/>
+							<Anchor point="TOP" x="-.5" y="-15"/>
 						</Anchors>
+						<Frames>
+							<Frame parentKey="HelpBox" inherits="GlowBoxTemplate" hidden="true" frameStrata="DIALOG">
+								<Size x="220" y="100"/>
+								<Anchors>
+									<Anchor point="LEFT" x="80" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<FontString parentKey="Text" inherits="GameFontHighlight" justifyV="TOP" justifyH="LEFT" text="PVP_TALENT_FIRST_TALENT">
+											<Size x="188" y="0"/>
+											<Anchors>
+												<Anchor point="LEFT" x="10" y="0"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+										<Anchors>
+											<Anchor point="TOPRIGHT" x="6" y="6"/>
+										</Anchors>
+										<Scripts>
+											<OnClick>
+												self:GetParent():Hide();
+												SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_TALENTS_FIRST_UNLOCK, true);
+											</OnClick>
+										</Scripts>
+									</Button>
+									<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
+										<Anchors>
+											<Anchor point="LEFT" x="-20" y="17"/>
+										</Anchors>
+									</Frame>
+								</Frames>
+								<Scripts>
+									<OnLoad>
+										SetClampedTextureRotation(self.Arrow.Arrow, 90);
+										SetClampedTextureRotation(self.Arrow.Glow, 90);
+										self.Arrow.Glow:ClearAllPoints();
+										self.Arrow.Glow:SetPoint("CENTER", self.Arrow.Arrow, -3, 0); 
+									</OnLoad>
+									<OnShow>
+										self:SetHeight(self.Text:GetHeight() + 20);
+										self:SetWidth(self.Text:GetWidth() + 20); 
+									</OnShow>
+								</Scripts>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnClick inherit="prepend">
+								self.HelpBox:Hide();
+								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_TALENTS_FIRST_UNLOCK, true);
+							</OnClick>
+						</Scripts>
 					</Button>
 					<Button parentKey="TalentSlot1" parentArray="Slots" inherits="PvpTalentSlotTemplate">
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.TrinketSlot" relativePoint="BOTTOM" x="0" y="-16"/>
+							<Anchor point="TOP" relativeKey="$parent.TrinketSlot" relativePoint="BOTTOM" x="0" y="-9"/>
 						</Anchors>
 					</Button>
 					<Button parentKey="TalentSlot2" parentArray="Slots" inherits="PvpTalentSlotTemplate">
@@ -1135,7 +1259,7 @@
 						</Anchors>
 					</Button>
 					<Frame name="$parentTalentList" parentKey="TalentList" mixin="PvpTalentListMixin" inherits="ButtonFrameTemplate" hidden="true">
-						<Size x="182" y="404"/>
+						<Size x="186" y="404"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeTo="PlayerTalentFrame" relativePoint="BOTTOMRIGHT" x="-4" y="26"/>
 						</Anchors>
@@ -1165,8 +1289,8 @@
 							<ScrollFrame name="$parentScrollFrame" inherits="HybridScrollFrameTemplate" parentKey="ScrollFrame">
 								<Size x="120" y="278"/>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parent" x="5" y="-26"/>
-									<Anchor point="BOTTOMRIGHT" relativeTo="$parent" x="-21" y="32"/>
+									<Anchor point="TOPLEFT" relativeTo="$parent" x="9" y="-28"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="$parent" x="-21" y="28"/>
 								</Anchors>
 								<Frames>
 									<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate" parentKey="ScrollBar">
@@ -1199,7 +1323,7 @@
 							<Anchor point="CENTER" relativePoint="BOTTOM" x="0" y="23"/>
 						</Anchors>
 					</ModelScene>
-					<ModelScene parentKey="FireModelScene" inherits="NonInteractableModelSceneMixinTemplate" drawLayer="ARTWORK" enableMouse="false">
+					<ModelScene parentKey="FireModelScene" inherits="NonInteractableModelSceneMixinTemplate" useParentLevel="true" drawLayer="ARTWORK" enableMouse="false">
 						<Size x="200" y="200"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="0"/>
@@ -1215,7 +1339,7 @@
 			</Frame>
 			<Button name="$parentPvpTalentButton" mixin="PvpTalentExpandingButtonMixin" inherits="UIExpandingButtonTemplate" parentKey="PvpTalentButton">
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="PlayerTalentFrame" relativePoint="TOPRIGHT" x="-8" y="-46"/>
+					<Anchor point="RIGHT" relativeTo="PlayerTalentFrame" relativePoint="TOPRIGHT" x="-10" y="-42"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad method="OnLoad"/>

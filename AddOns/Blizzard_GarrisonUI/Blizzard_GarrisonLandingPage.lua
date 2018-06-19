@@ -74,9 +74,17 @@ function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 		self.Report.Background:ClearAllPoints();
 		self.Report.Background:SetPoint("BOTTOM", self.Report, "BOTTOMLEFT", 194, 54);
 	elseif (self.garrTypeID == LE_GARRISON_TYPE_8_0) then
-		self.Report.Background:SetAtlas("GarrLanding_Watermark-Tradeskill", true);
-		self.Report.Background:ClearAllPoints();
-		self.Report.Background:SetPoint("BOTTOMLEFT", 60, 40);
+
+		local faction = UnitFactionGroup("player");
+		if ( faction ~= "Horde" ) then
+			self.Report.Background:SetAtlas("BfAMissionsLandingPage-Background-Horde", true);
+			self.Report.Background:ClearAllPoints();
+			self.Report.Background:SetPoint("BOTTOMLEFT", 100, 127);
+		else
+			self.Report.Background:SetAtlas("BfAMissionsLandingPage-Background-Alliance", true);
+			self.Report.Background:ClearAllPoints();
+			self.Report.Background:SetPoint("BOTTOMLEFT", 100, 127);
+		end
 	end
 	self.abilityCountersForMechanicTypes = C_Garrison.GetFollowerAbilityCountersForMechanicTypes(GetPrimaryGarrisonFollowerType(self.garrTypeID));
 	GarrisonThreatCountersFrame:SetParent(self.FollowerTab);

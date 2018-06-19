@@ -1,6 +1,6 @@
 local ISLANDS_QUEUE_WIDGET_SET_ID = 127; 
-local ISLANDS_QUEUE_LEFT_CARD_ROTATION = math.rad(-4.91);
-local ISLANDS_QUEUE_RIGHT_CARD_ROTATION = math.rad(1.15); 
+local ISLANDS_QUEUE_LEFT_CARD_ROTATION = math.rad(4.91);
+local ISLANDS_QUEUE_RIGHT_CARD_ROTATION = math.rad(-1.15); 
 IslandsQueueWeeklyQuestMixin = { }; 
 
 local ButtonTooltips = 
@@ -9,6 +9,14 @@ local ButtonTooltips =
 	PLAYER_DIFFICULTY2,
 	PLAYER_DIFFICULTY6,
 	PVP_FLAG,	
+};
+
+local ButtonPressedSounds = 
+{
+	SOUNDKIT.UI_80_ISLANDS_TABLE_FIND_GROUP,
+	SOUNDKIT.UI_80_ISLANDS_TABLE_FIND_GROUP,
+	SOUNDKIT.UI_80_ISLANDS_TABLE_FIND_GROUP,
+	SOUNDKIT.UI_80_ISLANDS_TABLE_FIND_GROUP_PVP,
 };
 
 function IslandsQueueWeeklyQuestMixin:OnEvent(event, ...)
@@ -103,10 +111,12 @@ function IslandsQueueFrameMixin:OnEvent(event, ...)
 end
 
 function IslandsQueueFrameMixin:OnShow()
+	PlaySound(SOUNDKIT.UI_80_ISLANDS_TABLE_OPEN);
 	self.DifficultySelectorFrame:SetInitialDifficulty(); 
 end
 
 function IslandsQueueFrameMixin:OnHide()
+	PlaySound(SOUNDKIT.UI_80_ISLANDS_TABLE_CLOSE);
 	C_IslandsQueue.CloseIslandsQueueScreen();
 end
 
@@ -142,6 +152,7 @@ function IslandsQueueFrameDifficultyMixin:RefreshDifficultyButtons()
 		self.previousDifficulty = button; 
 		button.difficulty = islandDifficultyId;
 		button.tooltipText = ButtonTooltips[buttonIndex]; 
+		button.soundkitID = ButtonPressedSounds[buttonIndex];
 		button:Show(); 
 	end
 end

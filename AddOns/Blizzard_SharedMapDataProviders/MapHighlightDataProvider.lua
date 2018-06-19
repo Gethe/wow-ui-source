@@ -33,21 +33,30 @@ end
 function MapHighlightPinMixin:Refresh()
 	local mapID = self:GetMap():GetMapID();
 	local normalizedCursorX, normalizedCursorY = self:GetMap():GetNormalizedCursorPosition();
-	local fileDataID, texPercentageX, texPercentageY, textureX, textureY, scrollChildX, scrollChildY = C_Map.GetMapHighlightInfoAtPosition(mapID, normalizedCursorX, normalizedCursorY);
-	if fileDataID and fileDataID > 0 then
+	local fileDataID, atlasID, texPercentageX, texPercentageY, textureX, textureY, scrollChildX, scrollChildY = C_Map.GetMapHighlightInfoAtPosition(mapID, normalizedCursorX, normalizedCursorY);
+	if (fileDataID and fileDataID > 0) or (atlasID) then
 		self.HighlightTexture:SetTexCoord(0, texPercentageX, 0, texPercentageY);
-		self.HighlightTexture:SetTexture(fileDataID);
 		local width = self:GetWidth();
 		local height = self:GetHeight();
-		textureX = textureX * width;
-		textureY = textureY * height;
-		scrollChildX = scrollChildX * width;
-		scrollChildY = -scrollChildY * height;
-		if textureX > 0 and textureY > 0 then
-			self.HighlightTexture:SetWidth(textureX);
-			self.HighlightTexture:SetHeight(textureY);
-			self.HighlightTexture:SetPoint("TOPLEFT", scrollChildX, scrollChildY);
+		self.HighlightTexture:ClearAllPoints();
+		if (atlasID) then
+			self.HighlightTexture:SetAtlas(atlasID, true, "TRILINEAR");
+			scrollChildX = ((scrollChildX + 0.5*textureX) - 0.5) * width;
+			scrollChildY = -((scrollChildY + 0.5*textureY) - 0.5) * height;
+			self.HighlightTexture:SetPoint("CENTER", scrollChildX, scrollChildY);
 			self.HighlightTexture:Show();
+		else
+			self.HighlightTexture:SetTexture(fileDataID, nil, nil, "TRILINEAR");
+			textureX = textureX * width;
+			textureY = textureY * height;
+			scrollChildX = scrollChildX * width;
+			scrollChildY = -scrollChildY * height;
+			if textureX > 0 and textureY > 0 then
+				self.HighlightTexture:SetWidth(textureX);
+				self.HighlightTexture:SetHeight(textureY);
+				self.HighlightTexture:SetPoint("TOPLEFT", scrollChildX, scrollChildY);
+				self.HighlightTexture:Show();
+			end
 		end
 	else
 		self.HighlightTexture:Hide();

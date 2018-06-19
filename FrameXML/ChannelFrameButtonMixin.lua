@@ -24,4 +24,26 @@ function ChannelFrameButtonMixin:OnLoad()
 	self:RegisterStateUpdateEvent("VOICE_CHAT_CHANNEL_ACTIVATED");
 	self:RegisterStateUpdateEvent("VOICE_CHAT_CHANNEL_DEACTIVATED");
 	self:UpdateVisibleState();
+
+	self:RegisterEvent("VOICE_CHAT_CHANNEL_JOINED");
+end
+
+function ChannelFrameButtonMixin:OnEvent(event, ...)
+	PropertyBindingMixin.OnEvent(self, event, ...);
+
+	if event == "VOICE_CHAT_CHANNEL_JOINED" then
+		self:OnVoiceChannelJoined(...);
+	end
+end
+
+function ChannelFrameButtonMixin:OnVoiceChannelJoined(statusCode, voiceChannelID, channelType, clubId, streamId)
+	ChannelFrame:MarkDirty("CheckShowTutorial");
+	if ChannelFrame:ShouldShowTutorial() then
+		UIFrameFlash(self.Flash, .25, .25, -1, false, .4, .1);
+	end
+end
+
+function ChannelFrameButtonMixin:OnClick()
+	PropertyButtonMixin.OnClick(self);
+	UIFrameFlashStop(self.Flash);
 end

@@ -7,6 +7,30 @@ local GuildInfo =
 	Functions =
 	{
 		{
+			Name = "GetGuildRankOrder",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "guid", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "rankOrder", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "IsGuildRankAssignmentAllowed",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "rankOrder", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "QueryGuildMemberRecipes",
 			Type = "Function",
 
@@ -14,6 +38,36 @@ local GuildInfo =
 			{
 				{ Name = "guildMemberGUID", Type = "string", Nilable = false },
 				{ Name = "skillLineID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "RemoveFromGuild",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "guid", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "SetGuildRankOrder",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "rankOrder", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetNote",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "note", Type = "string", Nilable = false },
+				{ Name = "isPublic", Type = "bool", Nilable = false },
 			},
 		},
 	},

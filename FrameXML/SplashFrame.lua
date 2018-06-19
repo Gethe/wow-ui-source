@@ -1,51 +1,43 @@
-LEGION_POSTPATCH_QUESTS = { Alliance = { 40519, 44663 }, Horde = { 43926, 44663 }};
+BASE_SPLASH_SCREEN_VERSION = 13;
+NEWEST_SPLASH_SCREEN_VERSION = 14;
 
-BASE_SPLASH_SCREEN_VERSION = 7;
-NEWEST_SPLASH_SCREEN_VERSION = 12;
-
-local function GetLegionQuestID()
-	local faction = UnitFactionGroup("player");
-
-	local startIndex = 1;
-	if (select(2, UnitClass("player")) == "DEMONHUNTER") then
-		startIndex = 2;
-	end
-
-	local tbl = LEGION_POSTPATCH_QUESTS[faction];
-
-	local questID = nil;
-
-	if (tbl) then
-		for i = startIndex, #tbl do
-			if (not IsQuestFlaggedCompleted(tbl[i])) then
-				questID = tbl[i];
-				break;
-			end
-		end
-	end
-
-	return questID;
-end
+local FACTION_OVERRIDES = {
+	["Alliance"] = {
+		questID = 53370,
+		leftTex = "splash-801A-topleft",
+		rightTex = "splash-801A-right",
+		bottomTex = "splash-801A-botleft",
+		rightTitle = SPLASH_BATTLEFORAZEROTH_BOX_RIGHT_TITLE_ALLIANCE,
+		rightDesc = SPLASH_BATTLEFORAZEROTH_BOX_RIGHT_DESC_ALLIANCE,	
+	},
+	["Horde"] = {
+		questID = 53372,
+		leftTex = "splash-801H-topleft",
+		rightTex = "splash-801H-right",
+		bottomTex = "splash-801H-botleft",
+		rightTitle = SPLASH_BATTLEFORAZEROTH_BOX_RIGHT_TITLE_HORDE,
+		rightDesc = SPLASH_BATTLEFORAZEROTH_BOX_RIGHT_DESC_HORDE,
+	},
+}
 
 SPLASH_SCREENS = {
-	["LEGION_BASE"] = {	id = BASE_SPLASH_SCREEN_VERSION, -- Legion (7.0) Base
-						expansion = LE_EXPANSION_LEGION,
+	["BFA_PREPATCH"] = {	id = BASE_SPLASH_SCREEN_VERSION, -- Battle for Azeroth prepatch
 						questID = nil,
-						getQuestID = GetLegionQuestID,
-						leftTex = "splash-705-topleft",
-						rightTex = "splash-705-right",
-						bottomTex = "splash-705-botleft",
+						leftTex = "splash-801-topleft",
+						rightTex = "splash-801-right",
+						bottomTex = "splash-801-botleft",
 						header = SPLASH_BASE_HEADER,
-						label = SPLASH_LEGION_BOX_LABEL,
-						feature1Title = SPLASH_LEGION_BOX_FEATURE1_TITLE,
-						feature1Desc = SPLASH_LEGION_BOX_FEATURE1_DESC,
-						feature2Title = SPLASH_LEGION_BOX_FEATURE2_TITLE,
-						feature2Desc = SPLASH_LEGION_BOX_FEATURE2_DESC,
-						rightTitle = SPLASH_LEGION_BOX_RIGHT_TITLE,
-						rightDesc = SPLASH_LEGION_BOX_RIGHT_DESC,
+						label = SPLASH_BATTLEFORAZEROTH_PREPATCH_LABEL,
+						feature1Title = SPLASH_BATTLEFORAZEROTH_PREPATCH_FEATURE1_TITLE,
+						feature1Desc = SPLASH_BATTLEFORAZEROTH_PREPATCH_FEATURE1_DESC,
+						feature2Title = SPLASH_BATTLEFORAZEROTH_PREPATCH_FEATURE2_TITLE,
+						feature2Desc = SPLASH_BATTLEFORAZEROTH_PREPATCH_FEATURE2_DESC,
+						rightTitle = SPLASH_BATTLEFORAZEROTH_PREPATCH_RIGHT_TITLE,
+						rightDesc = SPLASH_BATTLEFORAZEROTH_PREPATCH_RIGHT_DESC,
 						cVar="splashScreenNormal",
 						hideStartButton = false,
-						minQuestLevel = 98,
+						minQuestLevel = 0,
+						minDisplayLevel = 20,
 						features = {
 								[1] = { EnterFunc = function() end,
 								        LeaveFunc = function() end,
@@ -55,28 +47,21 @@ SPLASH_SCREENS = {
 								        },
 						},
 	},
-	["LEGION_CURRENT"] = {	id = NEWEST_SPLASH_SCREEN_VERSION, -- 7.3.5
-					questID = nil,
-					getQuestID = function()
-						return nil;
-					end,
-					leftTex = "splash-735-topleft",
-					rightTex = "splash-735-right",
-					bottomTex = "splash-735-botleft",
+	["BFA_BOX_LEVEL"] = {	id = NEWEST_SPLASH_SCREEN_VERSION, -- Battle for Azeroth live
+					expansion = LE_EXPANSION_BATTLE_FOR_AZEROTH,
 					header = SPLASH_BASE_HEADER,
-					label = SPLASH_LEGION_NEW_7_3_5_LABEL,
-					feature1Title = SPLASH_LEGION_NEW_7_3_5_FEATURE1_TITLE,
-					feature1Desc = SPLASH_LEGION_NEW_7_3_5_FEATURE1_DESC,
-					feature2Title = SPLASH_LEGION_NEW_7_3_5_FEATURE2_TITLE,
-					feature2Desc = SPLASH_LEGION_NEW_7_3_5_FEATURE2_DESC,
-					rightTitle = SPLASH_LEGION_NEW_7_3_5_RIGHT_TITLE,
-					rightDesc = SPLASH_LEGION_NEW_7_3_5_RIGHT_DESC,
+					label = SPLASH_BATTLEFORAZEROTH_BOX_LABEL,
+					feature1Title = SPLASH_BATTLEFORAZEROTH_BOX_FEATURE1_TITLE,
+					feature1Desc = SPLASH_BATTLEFORAZEROTH_BOX_FEATURE1_DESC,
+					feature2Title = SPLASH_BATTLEFORAZEROTH_PREPATCH_FEATURE2_TITLE,
+					feature2Desc = SPLASH_BATTLEFORAZEROTH_PREPATCH_FEATURE2_DESC,
 					rightDescSubText = SPLASH_OPENS_SOON,
 					rightDescSubTextPredicate = function() return not IsSplashFramePrimaryFeatureUnlocked() end,
 					rightTitleMaxLines = 1,
 					cVar="splashScreenNormal",
-					hideStartButton = true,
-					minDisplayLevel = 101,
+					hideStartButton = false,
+					minQuestLevel = 110,
+					minDisplayLevel = 110,
 					features = {
 						[1] = { EnterFunc = function() end,
 								LeaveFunc = function() end,
@@ -88,11 +73,12 @@ SPLASH_SCREENS = {
 	},
 };
 
-BASE_SPLASH_TAG = "LEGION_BASE";
-CURRENT_SPLASH_TAG = "LEGION_CURRENT";
+BASE_SPLASH_TAG = "BFA_PREPATCH";
+CURRENT_SPLASH_TAG = "BFA_BOX_LEVEL";
 
 local function GetSplashFrameTag()
-	if (not SPLASH_SCREENS[CURRENT_SPLASH_TAG].minDisplayLevel or UnitLevel("player") >= SPLASH_SCREENS[CURRENT_SPLASH_TAG].minDisplayLevel) then
+	local passesExpansionCheck = not SPLASH_SCREENS[CURRENT_SPLASH_TAG].expansion or GetExpansionLevel() >= SPLASH_SCREENS[CURRENT_SPLASH_TAG].expansion;
+	if passesExpansionCheck and (not SPLASH_SCREENS[CURRENT_SPLASH_TAG].minDisplayLevel or UnitLevel("player") >= SPLASH_SCREENS[CURRENT_SPLASH_TAG].minDisplayLevel) then
 		return CURRENT_SPLASH_TAG;
 	else
 		return BASE_SPLASH_TAG;
@@ -151,6 +137,16 @@ local function CheckSplashScreenShow()
 	end
 end
 
+local function ApplyFactionOverrides()
+	local factionGroup = UnitFactionGroup("player");
+	local override = FACTION_OVERRIDES[factionGroup];
+	if override then
+		for k, v in pairs(override) do
+			SPLASH_SCREENS[CURRENT_SPLASH_TAG][k] = v;
+		end
+	end
+end
+
 function SplashFrame_OnEvent(self, event)
 	if ( IsKioskModeEnabled() ) then
 		return;
@@ -164,6 +160,7 @@ function SplashFrame_OnEvent(self, event)
 	elseif( event == "PLAYER_ENTERING_WORLD" ) then
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
 		self.playerEntered = true;
+		ApplyFactionOverrides();
 	elseif( event == "VARIABLES_LOADED" ) then
 		self:UnregisterEvent("VARIABLES_LOADED");
 		self.varsLoaded = true;
@@ -180,8 +177,8 @@ function SplashFrame_Display(tag, showStartButton)
 	local frame = SplashFrame;
 	frame.tag = tag;
 	local screenInfo = SPLASH_SCREENS[tag];
-	frame.LeftTexture:SetAtlas(screenInfo.leftTex);
-	frame.RightTexture:SetAtlas(screenInfo.rightTex);
+	frame.LeftTexture:SetAtlas(screenInfo.leftTex, true);
+	frame.RightTexture:SetAtlas(screenInfo.rightTex, true);
 	frame.BottomTexture:SetAtlas(screenInfo.bottomTex);
 	frame.Header:SetText(screenInfo.header);
 	frame.Label:SetText(screenInfo.label);

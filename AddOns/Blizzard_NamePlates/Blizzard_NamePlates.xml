@@ -46,14 +46,8 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-				GameTooltip:SetUnitAura(self:GetParent().unit, self:GetID(), self:GetParent().filter);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-			<OnUpdate method="OnUpdate"/>
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave" />
 		</Scripts>
 	</Frame>
 
@@ -388,7 +382,6 @@
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 					<OnEvent method="OnEvent"/>
-					<OnUpdate method="OnUpdate"/>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="ClassificationFrame" frameStrata="HIGH">
@@ -456,4 +449,20 @@
 
 	<Button name="NamePlateUnitFrameTemplate" inherits="BaseNamePlateUnitFrameTemplate" virtual="true" />
 	<Button name="ForbiddenNamePlateUnitFrameTemplate" inherits="BaseNamePlateUnitFrameTemplate" virtual="true" />
+
+	<GameTooltip name="NamePlateTooltip" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="GameTooltipTemplate">
+		<Scripts>
+			<OnUpdate>
+				self.updateTooltip = (self.updateTooltip or TOOLTIP_UPDATE_TIME) - elapsed;
+				if self.updateTooltip > 0 then
+					return;
+				end
+				self.updateTooltip = TOOLTIP_UPDATE_TIME;
+				local owner = self:GetOwner();
+				if owner and owner.UpdateTooltip then
+					owner:UpdateTooltip();
+				end
+			</OnUpdate>
+		</Scripts>
+	</GameTooltip>
 </Ui>

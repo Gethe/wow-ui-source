@@ -42,18 +42,20 @@ function CommunitiesStreamDropDownMenu_Initialize(self)
 	info.mouseOverIcon = nil;
 	
 	if self:GetCommunitiesFrame():GetPrivilegesForClub(clubId).canCreateStream then
-		info.text = COMMUNITIES_CREATE_CHANNEL;
+		info.text = GREEN_FONT_COLOR:WrapTextInColorCode(COMMUNITIES_CREATE_CHANNEL);
 		info.value = nil;
-		info.notCheckable = 1;
+		info.customCheckIconAtlas = "communities-icon-addgroupplus";
 		info.func = function(button)
 			self:GetCommunitiesFrame():ShowCreateChannelDialog();
 		end
 		UIDropDownMenu_AddButton(info);
 	end
 	
-	info.text = CreateTextureMarkup("Interface\\WorldMap\\GEAR_64GREY", 64, 64, 16, 16, 0, 1, 0, 1).." "..COMMUNITIES_NOTIFICATION_SETTINGS;
+	info.customCheckIconAtlas = nil;
+	
+	info.text = COMMUNITIES_NOTIFICATION_SETTINGS;
 	info.value = nil;
-	info.notCheckable = 1;
+	info.customCheckIconTexture = "Interface\\WorldMap\\GEAR_64GREY";
 	info.func = function(button)
 		self:GetCommunitiesFrame():ShowNotificationSettingsDialog();
 	end
@@ -189,6 +191,9 @@ function CommunitiesNotificationSettingsDialogMixin:Refresh()
 	
 	local clubId = self:GetSelectedClubId();
 	if clubId then
+		local clubInfo = C_Club.GetClubInfo(clubId);
+		self.ScrollFrame.Child.QuickJoinButton:SetChecked(clubInfo and clubInfo.socialQueueingEnabled);
+		
 		local notificationSettings = C_Club.GetClubStreamNotificationSettings(clubId);
 		local notificationSettingsLookup = {};
 		for i, setting in ipairs(notificationSettings) do
@@ -221,6 +226,8 @@ end
 function CommunitiesNotificationSettingsDialogMixin:SaveSettings()
 	local clubId = self:GetSelectedClubId();
 	if clubId then
+		C_Club.SetSocialQueueingEnabled(clubId, self.ScrollFrame.Child.QuickJoinButton:GetChecked());
+	
 		local notificationSettings = {};
 		for button in self.buttonPool:EnumerateActive() do
 			table.insert(notificationSettings, { streamId = button:GetStreamId(), filter = button:GetFilter(), });
@@ -255,6 +262,7 @@ function CommunitiesNotificationSettingsDialogMixin:GetCommunitiesFrame()
 end
 
 function CommunitiesMassNotificationsSettingsButton_OnClick(self)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	self:GetParent():GetParent():GetParent():SetAll(self.filter);
 end
 
@@ -290,6 +298,7 @@ function CommunitiesAddToChatMixin:GetStreamId()
 end
 
 function CommunitiesAddToChatMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	local clubId = self:GetParent():GetSelectedClubId();
 	local streamId = self:GetParent():GetSelectedStreamId();
 	if clubId and streamId then

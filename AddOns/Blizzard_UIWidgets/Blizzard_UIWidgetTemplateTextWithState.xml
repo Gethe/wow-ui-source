@@ -1,10 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Frame name="UIWidgetTemplateTextWithState" inherits="UIWidgetBaseTemplate" virtual="true" secureMixin="UIWidgetTemplateTextWithStateMixin">
+	<Frame name="UIWidgetTemplateTextWithState" inherits="UIWidgetBaseTemplate" virtual="true" mixin="UIWidgetTemplateTextWithStateMixin">
 		<Size x="237" y="32"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Text" secureMixin="UIWidgetBaseColoredTextMixin" inherits="GameTooltipText">
+				<FontString parentKey="Text" mixin="UIWidgetBaseColoredTextMixin" inherits="GameTooltipText">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>

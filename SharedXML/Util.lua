@@ -897,12 +897,12 @@ function SetupTextureKitOnFrameByID(textureKitID, frame, fmt, setVisibilityOfReg
 	SetupTextureKitOnFrame(textureKit, frame, fmt, setVisibilityOfRegions, useAtlasSize);
 end
 
-function SetupTextureKitOnFrame(textureKit, frame, fmt, setVisibilityOfRegions, useAtlasSize)
+function SetupTextureKitOnFrame(textureKit, frame, fmt, setVisibility, useAtlasSize)
 	if not frame then
 		return;
 	end
 
-	if setVisibilityOfRegions then
+	if setVisibility then
 		frame:SetShown(textureKit ~= nil);
 	end
 
@@ -948,6 +948,21 @@ end
 function SetupTextureKits(textureKitID, frame, regions, setVisibilityOfRegions, useAtlasSize)
 	local textureKit = GetUITextureKitInfo(textureKitID);
 	SetupTextureKitOnRegions(textureKit, frame, regions, setVisibilityOfRegions, useAtlasSize);
+end
+
+function SetupTextureKitsFromRegionInfo(textureKit, frame, regionInfoList)
+	if not frame or not regionInfoList then
+		return;
+	end
+
+	for region, regionInfo in pairs(regionInfoList) do
+		SetupTextureKitOnFrame(textureKit, frame[region], regionInfo.formatString, regionInfo.setVisibility, regionInfo.useAtlasSize);
+	end
+end
+
+function SetupTextureKitsFromRegionInfoByID(textureKitID, frame, regionInfoList)
+	local textureKit = GetUITextureKitInfo(textureKitID);
+	SetupTextureKitsFromRegionInfo(textureKit, frame, regionInfoList);
 end
 
 CallbackRegistryBaseMixin = {};
@@ -1347,4 +1362,8 @@ end
 
 function AreFullDatesEqual(firstDate, secondDate)
 	return firstDate.month == secondDate.month and firstDate.day == secondDate.day and firstDate.year == secondDate.year;
+end
+
+function GetClampedCurrentExpansionLevel()
+	return math.min(GetClientDisplayExpansionLevel(), math.max(GetAccountExpansionLevel(), GetExpansionLevel()));
 end

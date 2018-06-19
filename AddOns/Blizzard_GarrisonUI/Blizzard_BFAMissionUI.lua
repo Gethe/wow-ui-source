@@ -27,20 +27,48 @@ function BFAMission:OnLoadMainFrame()
 end
 
 do
-	local bfaGarrisonAtlas =
+	local bfaGarrisonStyleData =
 	{
 		Horde =
 		{
-			TopperOffset = -37,
+			TitleScrollOffset = -2,
+			TitleColor = CreateColor(0.192, 0.051, 0.008, 1),
+
+			titleSrollLeft = "HordeFrame_Title-End-2",
+			titleSrollRight = "HordeFrame_Title-End",
+			titleScollMiddle = "_HordeFrame_Title-Tile",
+
+			TopperOffset = -33,
 			Topper = "HordeFrame-Header",
+			topperBehindFrame = false,
+
+			closeButtonBorder = "HordeFrame_ExitBorder",
+			closeButtonBorderX = -1,
+			closeButtonBorderY = 1,
+			closeButtonX = 4,
+			closeButtonY = 4,
+
+			BackgroundTile = "ClassHall_InfoBoxMission-BackgroundTile",
+
 			Top = "_HordeFrameTile-Top",
-			Bottom = "_HordeFrameTile-Bottom",
+			Bottom = "_HordeFrameTile-Top",
 			Left = "!HordeFrameTile-Left",
 			Right = "!HordeFrameTile-Left",
 			TopLeft = "HordeFrame-Corner-TopLeft",
 			TopRight = "HordeFrame-Corner-TopLeft",
 			BottomLeft = "HordeFrame-Corner-TopLeft",
 			BottomRight = "HordeFrame-Corner-TopLeft",
+
+			TabLeft = "HordeFrame_ParchmentHeader-End-2",
+			TabRight = "HordeFrame_ParchmentHeader-End",
+			TabMiddle = "_HordeFrame_ParchmentHeader-Mid",
+			TabSelectLeft = "HordeFrame_ParchmentHeaderSelect-End-2",
+			TabSelectRight = "HordeFrame_ParchmentHeaderSelect-End",
+			TabSelectMiddle = "_HordeFrame_ParchmentHeaderSelect-Mid",
+
+			SearchLeft = "HordeFrame_ParchmentHeader-End-2",
+			SearchRight = "HordeFrame_ParchmentHeader-End",
+			SearchMiddle = "_HordeFrame_ParchmentHeader-Mid",
 
 			SetupNineSlice = function(self)
 				local border = AnchorUtil.CreateNineSlice(self.GarrCorners);
@@ -58,10 +86,27 @@ do
 
 		Alliance =
 		{
-			TopperOffset = -40,
+			TitleScrollOffset = -5,
+			TitleColor = CreateColor(0.008, 0.051, 0.192, 1),
+
+			titleSrollLeft = "AllianceFrame_Title-End-2",
+			titleSrollRight = "AllianceFrame_Title-End",
+			titleScollMiddle = "_AllianceFrame_Title-Tile",
+
+			TopperOffset = -29,
 			Topper = "AllianceFrame-Header",
+			topperBehindFrame = false,
+
+			closeButtonBorder = "AllianceFrame_ExitBorder",
+			closeButtonBorderX = 0,
+			closeButtonBorderY = 0,
+			closeButtonX = 4,
+			closeButtonY = 3,
+
+			BackgroundTile = "UI-Frame-Alliance-BackgroundTile",
+
 			Top = "_AllianceFrameTile-Top",
-			Bottom = "_AllianceFrameTile-Bottom",
+			Bottom = "_AllianceFrameTile-Top",
 			Left = "!AllianceFrameTile-Left",
 			Right = "!AllianceFrameTile-Left",
 			TopLeft = "AllianceFrameCorner-TopLeft",
@@ -69,16 +114,27 @@ do
 			BottomLeft = "AllianceFrameCorner-TopLeft",
 			BottomRight = "AllianceFrameCorner-TopLeft",
 
+			TabLeft = "AllianceFrame_ParchmentHeader-End",
+			TabRight = "AllianceFrame_ParchmentHeader-End-2",
+			TabMiddle = "_AllianceFrame_ParchmentHeader-Mid",
+			TabSelectLeft = "AllianceFrame_ParchmentHeaderSelect-End-2",
+			TabSelectRight = "AllianceFrame_ParchmentHeaderSelect-End",
+			TabSelectMiddle = "_AllianceFrame_ParchmentHeaderSelect-Mid",
+
+			SearchLeft = "AllianceFrame_ParchmentHeader-End",
+			SearchRight = "AllianceFrame_ParchmentHeader-End-2",
+			SearchMiddle = "_AllianceFrame_ParchmentHeader-Mid",
+
 			SetupNineSlice = function(self)
 				local border = AnchorUtil.CreateNineSlice(self.GarrCorners);
-				border:SetTopLeftCorner(self.GarrCorners.TopLeftGarrCorner, 0, 0);
-				border:SetTopRightCorner(self.GarrCorners.TopRightGarrCorner, 0, 0);
-				border:SetBottomLeftCorner(self.GarrCorners.BottomLeftGarrCorner, 0, 0);
-				border:SetBottomRightCorner(self.GarrCorners.BottomRightGarrCorner, 0, 0);
-				border:SetTopEdge(self.Top, -73, 0, 73, 0);
-				border:SetLeftEdge(self.Left, 0, 73, 0, -73);
-				border:SetRightEdge(self.Right, 0, 73, 0, -73);
-				border:SetBottomEdge(self.Bottom, -73, 0, 73, 0);
+				border:SetTopLeftCorner(self.GarrCorners.TopLeftGarrCorner, -6, 6);
+				border:SetTopRightCorner(self.GarrCorners.TopRightGarrCorner, 6, 6);
+				border:SetBottomLeftCorner(self.GarrCorners.BottomLeftGarrCorner, -6, -6);
+				border:SetBottomRightCorner(self.GarrCorners.BottomRightGarrCorner, 6, -6);
+				border:SetTopEdge(self.Top);
+				border:SetLeftEdge(self.Left);
+				border:SetRightEdge(self.Right);
+				border:SetBottomEdge(self.Bottom);
 				border:Apply();
 			end,
 		},
@@ -95,44 +151,109 @@ do
 		self.RightBorder:Hide();
 	end
 
-	function BFAMission:UpdateTextures()
-		OrderHallMission.UpdateTextures(self);
+	local function SetupTitleText(self, styleData)
+		self.Topper:SetPoint("BOTTOM", self.Top, "TOP", 0, styleData.TopperOffset);
+		self.Topper:SetAtlas(styleData.Topper, true);
 
-		HideBorderTrim(self);
+		if styleData.topperBehindFrame then
+			self.Topper:SetDrawLayer("BACKGROUND", -7);
+		else
+			self.Topper:SetDrawLayer("ARTWORK", 2);
+		end
 
+		self.TitleScroll.ScrollLeft:SetAtlas(styleData.titleSrollLeft);
+		self.TitleScroll.ScrollRight:SetAtlas(styleData.titleSrollRight);
+		self.TitleScroll.ScrollMiddle:SetAtlas(styleData.titleScollMiddle);
+
+		self.TitleScroll:SetPoint("BOTTOM", self.Topper, "BOTTOM", 0, styleData.TitleScrollOffset);
+		self.TitleText.layoutIndex = 1;
+		self.TitleText:SetParent(self.TitleScroll); -- Reusing existing title text label from base template
+		self.TitleText:ClearAllPoints();
+		self.TitleText:SetPoint("CENTER", self.TitleScroll, "CENTER", 0, 1);
+
+		if styleData.TitleColor then
+			self.TitleText:SetTextColor(styleData.TitleColor:GetRGBA())
+		end
+
+		self.TitleText:SetShadowOffset(0, 0);
+	end
+
+	local function SetupMissionTab(tab, styleData)
+		tab.Left:SetAtlas(styleData.TabLeft, true);
+		tab.Right:SetAtlas(styleData.TabRight, true);
+		tab.Middle:SetAtlas(styleData.TabMiddle, true);
+
+		tab.SelectedLeft:SetAtlas(styleData.TabSelectLeft, true);
+		tab.SelectedRight:SetAtlas(styleData.TabSelectRight, true);
+		tab.SelectedMid:SetAtlas(styleData.TabSelectMiddle, true);
+
+		tab.SelectedRight:SetTexCoord(0, 1, 0, 1);
+		tab.Right:SetTexCoord(0, 1, 0, 1);
+	end
+
+	local function SetupMissionList(self, styleData)
+		SetupMissionTab(self.MissionTab.MissionList.Tab1, styleData);
+		SetupMissionTab(self.MissionTab.MissionList.Tab2, styleData);
+	end
+
+	local function SetupFollowerList(self, styleData)
+		self.FollowerList.HeaderLeft:SetAtlas(styleData.SearchLeft, true);
+		self.FollowerList.HeaderRight:SetAtlas(styleData.SearchRight, true);
+		self.FollowerList.HeaderMid:SetAtlas(styleData.SearchMiddle, true);
+
+		self.FollowerList.HeaderRight:SetTexCoord(0, 1, 0, 1);
+	end
+
+	local function SetupBorder(self, styleData)
+		self.Bottom:SetTexCoord(0, 1, 1, 0);
+
+		self.Top:SetAtlas(styleData.Top, true);
+		self.Bottom:SetAtlas(styleData.Bottom, true);
+		self.Left:SetAtlas(styleData.Left, true);
+		self.Right:SetAtlas(styleData.Right, true);
+
+		self.GarrCorners.TopLeftGarrCorner:SetAtlas(styleData.TopLeft, true);
+		self.GarrCorners.TopRightGarrCorner:SetAtlas(styleData.TopRight, true);
+		self.GarrCorners.BottomLeftGarrCorner:SetAtlas(styleData.BottomLeft, true);
+		self.GarrCorners.BottomRightGarrCorner:SetAtlas(styleData.BottomRight, true);
+
+		styleData.SetupNineSlice(self);
+		self.BackgroundTile:SetAtlas(styleData.BackgroundTile);
+
+		self.CloseButton:ClearAllPoints();
+		self.CloseButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", styleData.closeButtonX, styleData.closeButtonY);
+		self.CloseButton:SetFrameLevel(self.GarrCorners:GetFrameLevel() + 2);
+
+		self.CloseButtonBorder:SetAtlas(styleData.closeButtonBorder, true);
+		self.CloseButtonBorder:SetParent(self.CloseButton);
+		self.CloseButtonBorder:SetPoint("CENTER", self.CloseButton, "CENTER", styleData.closeButtonBorderX, styleData.closeButtonBorderY);
+	end
+
+	local function SetupScoutingMap(self)
 		-- Resize scouting map scroll frame to fit with edge pieces.
 		self.MapTab.ScrollContainer:SetPoint("LEFT", self.Left, "RIGHT", -17, 0);
 		self.MapTab.ScrollContainer:SetPoint("TOP", self.Top, "BOTTOM", 0, 17);
 		self.MapTab.ScrollContainer:SetPoint("RIGHT", self.Right, "LEFT", 17, 0);
 		self.MapTab.ScrollContainer:SetPoint("BOTTOM", self.Bottom, "TOP", 0, -17);
+	end
 
-		-- Custom close button needs to sit on top of corner pieces because they're closer to the edge
-		self.CloseButton:SetFrameLevel(self.GarrCorners:GetFrameLevel() + 1);
+	local function SetupTabs(self)
+		self.Tab1:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 7, -33);
+	end
 
-		-- Tabs need adjustment because of the border adjustment...
-		BFAMissionFrameTab1:SetPoint("BOTTOMLEFT", BFAMissionFrame, "BOTTOMLEFT", 7, -33);
-
-		-- Create flavor art piece
-		if not self.Topper then
-			self.Topper = self:CreateTexture(nil, "BACKGROUND", nil, 2);
-		end
+	function BFAMission:UpdateTextures()
+		OrderHallMission.UpdateTextures(self);
 
 		local factionGroup = UnitFactionGroup("player");
-		local atlases = bfaGarrisonAtlas[factionGroup];
+		local styleData = bfaGarrisonStyleData[factionGroup];
 
-		self.Topper:SetPoint("BOTTOM", self.Top, "TOP", 0, atlases.TopperOffset);
-		self.Topper:SetAtlas(atlases.Topper, true);
-		self.Top:SetAtlas(atlases.Top, true);
-		self.Bottom:SetAtlas(atlases.Bottom, true);
-		self.Left:SetAtlas(atlases.Left, true);
-		self.Right:SetAtlas(atlases.Right, true);
-
-		self.GarrCorners.TopLeftGarrCorner:SetAtlas(atlases.TopLeft, true);
-		self.GarrCorners.TopRightGarrCorner:SetAtlas(atlases.TopRight, true);
-		self.GarrCorners.BottomLeftGarrCorner:SetAtlas(atlases.BottomLeft, true);
-		self.GarrCorners.BottomRightGarrCorner:SetAtlas(atlases.BottomRight, true);
-
-		atlases.SetupNineSlice(self);
+		HideBorderTrim(self);
+		SetupScoutingMap(self);
+		SetupTabs(self);
+		SetupTitleText(self, styleData);
+		SetupMissionList(self, styleData);
+		SetupFollowerList(self, styleData);
+		SetupBorder(self, styleData);
 	end
 end
 
@@ -190,22 +311,27 @@ function BFAMission:EscapePressed()
 	return false;
 end
 
+function BFAMission:SetTitleText(text)
+	self.TitleText:SetText(text);
+	self.TitleScroll:MarkDirty();
+end
+
 function BFAMission:SelectTab(id)
 	if (self:GetMissionPage():IsShown()) then
 		self:GetMissionPage().CloseButton:Click();
 	end
 	GarrisonFollowerMission.SelectTab(self, id);
 	if (id == 1) then
-		self.TitleText:SetText(WAR_MISSIONS);
+		self:SetTitleText(WAR_MISSIONS);
 		self.FollowerList:Hide();
 		self.BackgroundTile:Show()
 		self.MapTab:Hide();
 	elseif (id == 2) then
-		self.TitleText:SetText(WAR_FOLLOWERS);
+		self:SetTitleText(WAR_FOLLOWERS);
 		self.BackgroundTile:Show()
 		self.MapTab:Hide();
 	else
-		self.TitleText:SetText(ADVENTURE_MAP_TITLE);
+		self:SetTitleText(ADVENTURE_MAP_TITLE);
 		self.FollowerList:Hide();
 		self.MapTab:Show();
 		self.BackgroundTile:Hide()

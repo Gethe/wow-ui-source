@@ -166,13 +166,15 @@
 					<OnClick function="CommunitiesSettingsDialogDeleteButton_OnClick"/>
 				</Scripts>
 			</Button>
-			<Button parentKey="Accept" inherits="UIPanelButtonTemplate" text="ACCEPT">
+			<Button parentKey="Accept" motionScriptsWhileDisabled="true" inherits="UIPanelButtonTemplate" text="ACCEPT">
 				<Size x="100" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.Delete" relativePoint="LEFT" x="-10" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="CommunitiesSettingsDialogAcceptButton_OnClick"/>
+					<OnEnter function="CommunitiesSettingsDialogAcceptButton_OnEnter"/>
+					<OnLeave function="CommunitiesSettingsDialogAcceptButton_OnLeave"/>
 				</Scripts>
 			</Button>
 			<Button parentKey="Cancel" inherits="UIPanelButtonTemplate" text="CANCEL">

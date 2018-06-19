@@ -3002,7 +3002,7 @@ function GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, a
 		arg2 = Ambiguate(arg2, "none")
 	end
 
-	if ( info and info.colorNameByClass and arg12 ) then
+	if ( arg12 and info and Chat_ShouldColorChatByClass(info) ) then
 		local localizedClass, englishClass, localizedRace, englishRace, sex = GetPlayerInfoByGUID(arg12)
 
 		if ( englishClass ) then
@@ -5040,6 +5040,12 @@ end
 
 function ChatChannelDropDown_PopInChat(self, chatType, chatTarget)
 	--PopOutChat_PopInChat(chatType, chatTarget);
+end
+
+function Chat_ShouldColorChatByClass(chatTypeInfo)
+	local override = ChatClassColorOverrideShown();
+	local colorByClass = info and info.colorNameByClass;
+	return override or (override == nil and colorByClass);
 end
 
 function Chat_GetColoredChatName(chatType, chatTarget)

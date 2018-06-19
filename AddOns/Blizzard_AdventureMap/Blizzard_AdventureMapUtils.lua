@@ -1,6 +1,6 @@
 function AdventureMap_IsZoneIDBlockedByZoneChoice(mapID, zoneMapID)
 	for choiceIndex = 1, C_AdventureMap.GetNumZoneChoices() do
-		local questID, name, zoneDescription, normalizedX, normalizedY = C_AdventureMap.GetZoneChoiceInfo(choiceIndex);
+		local questID, textureKit, name, zoneDescription, normalizedX, normalizedY = C_AdventureMap.GetZoneChoiceInfo(choiceIndex);
 		if AdventureMap_IsQuestValid(questID, normalizedX, normalizedY) then
 			local mapInfo = C_Map.GetMapInfoAtPosition(mapID, normalizedX, normalizedY);
 			if mapInfo and mapInfo.mapID == zoneMapID then

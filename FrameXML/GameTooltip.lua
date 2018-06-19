@@ -634,7 +634,7 @@ function GameTooltip_ShowCompareSpell(self, anchorFrame)
 		return false;
 	end
 
-	local owningItemSource = AzeriteEmpowedItemDataSource:CreateFromFromItemLink(owningItemLink);
+	local owningItemSource = AzeriteEmpoweredItemDataSource:CreateFromFromItemLink(owningItemLink);
 	local sourceItem = owningItemSource:GetItem();
 	if not sourceItem:IsItemDataCached() then
 		-- We'll try again later
@@ -646,7 +646,7 @@ function GameTooltip_ShowCompareSpell(self, anchorFrame)
 		return false;
 	end
 
-	local equippedItemSource = AzeriteEmpowedItemDataSource:CreateFromFromItemLocation(equippedItemLocation);
+	local equippedItemSource = AzeriteEmpoweredItemDataSource:CreateFromItemLocation(equippedItemLocation);
 	local equippedItem = equippedItemSource:GetItem(equippedItemLocation);
 	if not equippedItem:IsItemDataCached() then
 		-- We'll try again later
@@ -764,11 +764,11 @@ local function WidgetLayout(widgetContainer, sortedWidgets)
 
 	for index, widgetFrame in ipairs(sortedWidgets) do
 		if ( index == 1 ) then
-			widgetFrame:SetPoint("TOP", widgetContainer, "TOP", 0, 0);
+			widgetFrame:SetPoint("TOPLEFT", widgetContainer, "TOPLEFT", 0, 0);
 			widgetsHeight = widgetsHeight + widgetFrame:GetHeight();
 		else
 			local relative = sortedWidgets[index - 1];
-			widgetFrame:SetPoint("TOP", relative, "BOTTOM", 0, -10);
+			widgetFrame:SetPoint("TOPLEFT", relative, "BOTTOMLEFT", 0, -10);
 			widgetsHeight = widgetsHeight + widgetFrame:GetHeight() + 10;
 		end
 

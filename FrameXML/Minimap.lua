@@ -593,11 +593,21 @@ function GarrisonLandingPageMinimapButton_UpdateIcon(self)
 	elseif (garrisonType == LE_GARRISON_TYPE_8_0) then
 		self.faction = UnitFactionGroup("player");
 		if ( self.faction == "Horde" ) then
+			local _, width, height = GetAtlasInfo("bfa-landingbutton-horde-up");
+			self:SetSize(width, height);
+
 			self:GetNormalTexture():SetAtlas("bfa-landingbutton-horde-up", true);
 			self:GetPushedTexture():SetAtlas("bfa-landingbutton-horde-down", true);
+			self:GetHighlightTexture():SetAtlas("bfa-landingbutton-horde-diamondhighlight", true);
+			self.LoopingGlow:SetAtlas("bfa-landingbutton-horde-diamondglow", true);
 		else
+			local _, width, height = GetAtlasInfo("bfa-landingbutton-alliance-up");
+			self:SetSize(width, height);
+
 			self:GetNormalTexture():SetAtlas("bfa-landingbutton-alliance-up", true);
 			self:GetPushedTexture():SetAtlas("bfa-landingbutton-alliance-down", true);
+			self:GetHighlightTexture():SetAtlas("bfa-landingbutton-alliance-shieldhighlight", true);
+			self.LoopingGlow:SetAtlas("bfa-landingbutton-alliance-shieldglow", true);
 		end
 		self.title = GARRISON_TYPE_8_0_LANDING_PAGE_TITLE;
 		self.description = GARRISON_TYPE_8_0_LANDING_PAGE_TOOLTIP;

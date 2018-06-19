@@ -190,7 +190,8 @@ function PvpTalentSlotMixin:OnLoad()
 	self:RegisterForDrag("LeftButton");
 	if (self.isTrinket) then
 		self.Arrow:SetSize(43, 44);
-		self.Arrow:SetPoint("LEFT", self.Border, "RIGHT", -16, 0);
+		self.Arrow:SetPoint("LEFT", self.Border, "RIGHT", -16, -1);
+		self.Texture:SetSize(41, 41);
 	end
 end
 
@@ -245,16 +246,16 @@ function PvpTalentSlotMixin:Update()
 	end
 
 	local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(self.slotIndex);
-
+	self.Texture:Show();
 	local selectedTalentID = self.predictedSetting:Get();
 	if (selectedTalentID) then
 		local _, name, texture = GetPvpTalentInfoByID(selectedTalentID);
 		SetPortraitToTexture(self.Texture, texture);
+
 		self.TalentName:SetText(name);
-		self.Texture:Show();
 		self.TalentName:Show();
 	else
-		self.Texture:Hide();
+		self.Texture:SetAtlas("pvptalents-talentborder-empty");
 		self.TalentName:Hide();
 	end
 
@@ -266,6 +267,7 @@ function PvpTalentSlotMixin:Update()
 	else
 		self.Border:SetAtlas("pvptalents-talentborder-locked");
 		self:Disable();
+		self.Texture:Hide();
 		self.slotWasDisabled = true;
 	end
 end

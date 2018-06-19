@@ -118,7 +118,7 @@ function SetItemRef(link, text, button, chatFrame)
 				end
 				]]
 			elseif ( button == "RightButton" ) then
-				if ( not BNIsSelf(bnetIDAccount) ) then
+				if ( isCommunityLink or not BNIsSelf(bnetIDAccount) ) then
 					FriendsFrame_ShowBNDropdown(name, 1, nil, chatType, chatFrame, nil, bnetIDAccount, communityClubID, communityStreamID, communityEpoch, communityPosition);
 				end
 			else
@@ -313,13 +313,22 @@ function SetItemRef(link, text, button, chatFrame)
 			StoreFrame_SetServicesCategory();
 			ToggleStoreUI();
 		end
-	elseif ( strsub(link, 1, 4) == "item") then
+	elseif ( strsub(link, 1, 4) == "item" ) then
 		if ( IsModifiedClick("CHATLINK") and button == "LeftButton" ) then
 			local name, link = GetItemInfo(text);
 			if ChatEdit_InsertLink(link) then
 				return;
 			end
 		end
+	elseif ( strsub(link, 1, 10) == "clubTicket" ) then
+		if ( IsModifiedClick("CHATLINK") and button == "LeftButton" ) then
+			if ChatEdit_InsertLink(text) then
+				return;
+			end
+		end
+		local _, ticketId = strsplit(":", link);
+		CommunitiesHyperlink.OnClickLink(ticketId);
+		return;
 	end
 
 	if ( IsModifiedClick() ) then
@@ -429,6 +438,15 @@ end
 function GetPlayerCommunityLink(playerName, linkDisplayText, clubId, streamId, epoch, position)
 	clubId, streamId, epoch, position = SanitizeCommunityData(clubId, streamId, epoch, position);
 	return FormatLink("playerCommunity", linkDisplayText, playerName, clubId, streamId, epoch, position);
+end
+
+function GetClubTicketLink(ticketId, clubName, clubType)
+	local link = FormatLink("clubTicket", CLUB_INVITE_HYPERLINK_TEXT:format(clubName), ticketId);
+	if clubType == Enum.ClubType.BattleNet then
+		return BATTLENET_FONT_COLOR:WrapTextInColorCode(link);
+	else 
+		return NORMAL_FONT_COLOR:WrapTextInColorCode(link);
+	end
 end
 
 function SplitLink(link)

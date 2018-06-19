@@ -467,6 +467,11 @@ retain("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_LABEL");
 retain("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_INSTRUCTIONS");
 retain("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_INSTRUCTIONS_TOOLTIP");
 retain("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_INSTRUCTIONS_CHARACTER");
+retain("COMMUNITIES_CREATE_DIALOG_NAME_AND_SHORT_NAME_ERROR");
+retain("COMMUNITIES_CREATE_DIALOG_NAME_ERROR");
+retain("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_ERROR");
+
+retain("RED_FONT_COLOR");
 
 --Lua enums
 retain("LE_TOKEN_RESULT_SUCCESS");
@@ -490,6 +495,8 @@ takeenum("BattlepayProductGroupFlag");
 takeenum("BattlepayGroupDisplayType");
 retainenum("ModelSceneSetting");
 retainenum("ClubType");
+retainenum("ClubFieldType");
+retainenum("ValidateNameResult");
 
 -- Secure Mixins
 -- where ... are the mixins to mixin

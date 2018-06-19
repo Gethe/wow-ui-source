@@ -6,7 +6,7 @@
 		<Size x="178" y="68"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\Common\bluemenu-main">
+				<Texture parentKey="Background" file="Interface\Common\bluemenu-main">
 					<Size x="0" y="80"/>
 					<TexCoords left="0.00390625" right="0.87890625" top="0.75195313" bottom="0.83007813"/>
 					<Anchors>
@@ -14,15 +14,16 @@
 						<Anchor point="RIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="GuildTabardBackground" file="Interface\GuildFrame\GuildFrame">
-					<Size x="46" y="46"/>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="GuildTabardBackground" atlas="communities-guildbanner-background">
+					<Size x="51" y="53"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="8" y="-12"/>
+						<Anchor point="TOPLEFT" x="4" y="-11"/>
 					</Anchors>
-					<TexCoords left="0.63183594" right="0.69238281" top="0.61914063" bottom="0.74023438"/>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER">
+			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture parentKey="Selection" file="Interface\Common\bluemenu-main" hidden="true">
 					<Size x="0" y="80"/>
 					<Anchors>
@@ -58,29 +59,19 @@
 				</FontString>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="1">
-				<!-- TODO:: This texture is being trimmed and stretched and should be replaced -->
-				<Texture parentKey="GuildFinderBackground" file="Interface\AchievementFrame\GuildTabard" hidden="true">
-					<Size x="50" y="60"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon" x="0" y="-8"/>
-					</Anchors>
-					<Color r="0.7" g="0.7" b="0.7"/>
-					<TexCoords left="0.00781250" right="0.57031250" top="0.78437500" bottom="0.98437500"/>
-				</Texture>
 				<Texture parentKey="GuildTabardEmblem" file="Interface\GuildFrame\GuildEmblemsLG_01">
-					<Size x="48" y="48"/>
+					<Size x="42" y="42"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="8" y="-12"/>
+						<Anchor point="TOPLEFT" x="9" y="-11"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="GuildTabardBorder" file="Interface\GuildFrame\GuildFrame">
-					<Size x="45" y="44"/>
+				<Texture parentKey="GuildTabardBorder" atlas="communities-guildbanner-border">
+					<Size x="51" y="53"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="10" y="-13"/>
+						<Anchor point="TOPLEFT" x="4" y="-11"/>
 					</Anchors>
-					<TexCoords left="0.63183594" right="0.69238281" top="0.74414063" bottom="0.86523438"/>
 				</Texture>
 				<Texture parentKey="InvitationIcon" atlas="communities-icon-invitemail">
 					<Size x="57" y="55"/>

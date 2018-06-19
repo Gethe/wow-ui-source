@@ -60,6 +60,15 @@ local CurrencyInfo =
 			},
 		},
 		{
+			Name = "GetWarResourcesCurrencyID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "warResourceCurrencyID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "IsCurrencyContainer",
 			Type = "Function",
 

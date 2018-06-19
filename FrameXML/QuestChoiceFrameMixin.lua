@@ -104,11 +104,8 @@ function QuestChoiceFrameMixin:WidgetLayout(widgetContainer, sortedWidgets)
 end
 
 function QuestChoiceFrameMixin:WidgetInit(widgetFrame)
-	if self.optionTextColor and widgetFrame.GatherColorableFontStrings then
-		local fontStrings = widgetFrame:GatherColorableFontStrings();
-		for _, fontString in ipairs(fontStrings) do
-			fontString:SetTextColor(self.optionTextColor:GetRGBA());
-		end
+	if self.optionDescriptionColor and widgetFrame.SetFontStringColor then
+		widgetFrame:SetFontStringColor(self.optionDescriptionColor);
 	end
 end
 
@@ -197,7 +194,7 @@ function QuestChoiceFrameMixin:Update()
 	self.hasPendingUpdate = false;
 
 	local choiceID, questionText, numOptions = GetQuestChoiceInfo();
-	if (not choiceID or choiceID == 0) then
+	if (not choiceID or choiceID == 0 or numOptions == 0) then
 		self:Hide();
 		return;
 	end

@@ -5,35 +5,4 @@
 	<Script file="WorldMapPOIQuantizer.lua"/>
 	<Script file="WorldMapFrame.lua"/>
 	<Include file="WorldMapFrameTemplates.xml"/>
-
-	<Frame name="WorldMapPingTemplate" mixin="WorldMapPingMixin" virtual="true">
-		<Size x="70" y="70"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Expand" file="Interface/minimap/UI-Minimap-Ping-Expand" alpha="0">
-					<Size x="32" y="32"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Animations>
-			<AnimationGroup parentKey="DriverAnimation" mixin="WorldMapPingAnimationMixin">
-				<Alpha childKey="Expand" fromAlpha="0" toAlpha="1"                      duration="0.2" order="1"/>
-				<Alpha childKey="Expand" fromAlpha="1" toAlpha="0" startDelay=".45"     duration="0.2" order="1"/>
-				<Alpha childKey="Expand" fromAlpha="0" toAlpha="1" startDelay=".575"    duration="0.2" order="1"/>
-				<Alpha childKey="Expand" fromAlpha="1" toAlpha="0" startDelay=".95"     duration="0.2" order="1"/>
-
-				<Scripts>
-					<OnPlay method="OnPlay"/>
-					<OnFinished method="OnStop"/>
-					<OnStop method="OnStop"/>
-				</Scripts>
-			</AnimationGroup>
-			<AnimationGroup parentKey="ScaleAnimation" looping="REPEAT">
-				<Scale childKey="Expand" fromScaleX=".5" fromScaleY=".5" toScaleX="1.2" toScaleY="1.2" duration=".575" order="1"/>
-			</AnimationGroup>
-		</Animations>
-	</Frame>
 </Ui>

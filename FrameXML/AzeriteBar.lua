@@ -101,7 +101,7 @@ function AzeriteBarMixin:SetupPointsTooltip()
 end
 
 function AzeriteBarMixin:UpdatePointsTooltip()
-	if ( self:IsShown() ) then
+	if ( GameTooltip:IsOwned(self) ) then
 		self:SetupPointsTooltip();
 	end
 end

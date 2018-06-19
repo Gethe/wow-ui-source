@@ -57,12 +57,18 @@ end
 UIWidgetBaseResourceTemplateMixin = {}
 
 function UIWidgetBaseResourceTemplateMixin:Setup(resourceInfo)
+	self.Text:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
 	self.Text:SetText(resourceInfo.text);
+
 	self:SetTooltip(resourceInfo.tooltip);
 	self.Icon:SetTexture(resourceInfo.iconFileID);
 
 	self:SetWidth(self.Icon:GetWidth() + self.Text:GetWidth() + 2);
 	self:SetHeight(self.Icon:GetHeight());
+end
+
+function UIWidgetBaseResourceTemplateMixin:SetFontColor(color)
+	self.Text:SetTextColor(color:GetRGB());
 end
 
 local function SetTextColorForEnabledState(fontString, enabledState)
@@ -88,9 +94,8 @@ function UIWidgetBaseCurrencyTemplateMixin:Setup(currencyInfo, enabledState)
 	SetTextColorForEnabledState(self.Text, enabledState);
 	SetTextColorForEnabledState(self.LeadingText, enabledState);
 
-	local totalWidth = self.Icon:GetWidth() + self.Text:GetWidth() + 2;
+	local totalWidth = self.Icon:GetWidth() + self.Text:GetWidth() + 5;
 
-	self.Icon:ClearAllPoints();
 	if currencyInfo.leadingText ~= "" then
 		self.LeadingText:SetText(currencyInfo.leadingText);
 		self.LeadingText:Show();
@@ -103,6 +108,11 @@ function UIWidgetBaseCurrencyTemplateMixin:Setup(currencyInfo, enabledState)
 
 	self:SetWidth(totalWidth);
 	self:SetHeight(self.Icon:GetHeight());
+end
+
+function UIWidgetBaseCurrencyTemplateMixin:SetFontColor(color)
+	self.Text:SetTextColor(color:GetRGB());
+	self.LeadingText:SetTextColor(color:GetRGB());
 end
 
 UIWidgetBaseColoredTextMixin = {}

@@ -318,7 +318,7 @@
 				</FontString>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture atlas="pvpqueue-conquestbar-background">
+				<Texture parentKey="Background" atlas="pvpqueue-conquestbar-background">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 						<Anchor point="BOTTOMRIGHT"/>
@@ -1275,38 +1275,44 @@
 								</Scripts>
 							</Button>
 							<Frame parentKey="NoSeason" inherits="GlowBoxTemplate" hidden="true" frameLevel="100" enableMouse="true">
+								<HitRectInsets>
+									<AbsInset left="-20" right="-20" top="-20" bottom="-20"/>
+								</HitRectInsets>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="3" y="-3" />
-									<Anchor point="BOTTOMRIGHT" x="-2" y="4"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="18" y="-18" />
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" x="-18" y="17" />
 								</Anchors>
 								<Layers>
 									<Layer level="OVERLAY">
 										<FontString parentKey="Title" inherits="QuestTitleFontBlackShadow" text="PVP_TAB_CONQUEST"  justifyH="CENTER">
 											<Size x="280" y="0"/>
 											<Anchors>
-												<Anchor point="TOP" x="0" y="-125"/>
+												<Anchor point="CENTER" x="0" y="20"/>
 											</Anchors>
 										</FontString>
 										<FontString parentKey="Info"  inherits="GameFontHighlight" text="ARENA_MASTER_NO_SEASON_TEXT"  justifyH="CENTER" justifyV="TOP">
-											<Size x="280" y="180"/>
+											<Size x="280" y="0"/>
 											<Anchors>
-												<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-33"/>
+												<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-2"/>
 											</Anchors>
 										</FontString>
 									</Layer>
 								</Layers>
 							</Frame>
 							<Frame parentKey="Disabled" inherits="GlowBoxTemplate" hidden="true" frameLevel="100" enableMouse="true">
+								<HitRectInsets>
+									<AbsInset left="-20" right="-20" top="-20" bottom="-20"/>
+								</HitRectInsets>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="3" y="-3" />
-									<Anchor point="BOTTOMRIGHT" x="-2" y="4"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="18" y="-18" />
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" x="-18" y="17" />
 								</Anchors>
 								<Layers>
 									<Layer level="OVERLAY">
 										<FontString parentKey="Info"  inherits="GameFontHighlight" text="ARENA_RATED_QUEUES_DISABLED"  justifyH="CENTER" justifyV="TOP">
-											<Size x="280" y="180"/>
+											<Size x="280" y="0"/>
 											<Anchors>
-												<Anchor point="TOP" x="0" y="-125"/>
+												<Anchor point="CENTER" x="0" y="0"/>
 											</Anchors>
 										</FontString>
 									</Layer>
@@ -1493,7 +1499,8 @@
 										</Anchors>
 										<Layers>
 											<Layer level="ARTWORK">
-												<FontString inherits="GameFontNormal" text="PVP_SEASON_HIGH">
+												<FontString parentKey="Title" inherits="GameFontNormal" text="PVP_SEASON_HIGH">
+													<Size x="142" y="0"/>
 													<Anchors>
 														<Anchor point="BOTTOM" relativePoint="TOP" y="8"/>
 													</Anchors>
@@ -1533,6 +1540,7 @@
 													</Anchors>
 												</Texture>
 												<FontString inherits="GameFontNormal" text="PVP_SEASON_REWARD">
+													<Size x="142" y="0"/>
 													<Anchors>
 														<Anchor point="BOTTOM" relativePoint="TOP" y="10"/>
 													</Anchors>
@@ -1556,7 +1564,7 @@
 												</MaskTexture>
 											</Layer>
 											<Layer level="OVERLAY">
-												<Texture parentKey="CheckMark" atlas="pvpqueue-conquestbar-checkmark" useAtlasSize="true">
+												<Texture parentKey="CheckMark" atlas="pvpqueue-conquestbar-checkmark" useAtlasSize="true" hidden="true">
 													<Anchors>
 														<Anchor point="BOTTOMRIGHT" x="14" y="-4"/>
 													</Anchors>

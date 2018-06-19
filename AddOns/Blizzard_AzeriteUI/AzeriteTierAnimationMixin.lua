@@ -123,7 +123,9 @@ function AzeriteTierPowerSelectedAnimationMixin:OnAnimStateChanged(animState) --
 	elseif animState == self.ROTATING then
 		return self.SUPPRESS_POWER_UPDATE;
 	elseif animState == self.START_HOLD then
-		self.loopingSoundEmitter:StartLoopingSound();
+		if self.loopingSoundEmitter then
+			self.loopingSoundEmitter:StartLoopingSound();
+		end
 	elseif animState == self.END_HOLD then
 		local now = GetTime();
 		self.animStateData[animState].startTime = now;
@@ -159,7 +161,6 @@ function AzeriteTierPowerSelectedAnimationMixin:PerformAnimation(elapsed)
 			end
 
 			if percent == 1.0 then
-				self.loopingSoundEmitter:FinishLoopingSound();
 				self:SetAnimState(self.END_HOLD);
 			end
 		else
@@ -208,9 +209,9 @@ end
 --[[ Final Power Selected Animation ]]
 AzeriteTierFinalPowerSelectedAnimationMixin = CreateFromMixins(AzeriteTierPowerSelectedAnimationMixin);
 
-function AzeriteTierFinalPowerSelectedAnimationMixin:Create(owningFrame, loopingSoundEmitter)
+function AzeriteTierFinalPowerSelectedAnimationMixin:Create(owningFrame)
 	local finalPowerSelectedAnimation = CreateFromMixins(AzeriteTierFinalPowerSelectedAnimationMixin);
-	finalPowerSelectedAnimation:OnLoad(owningFrame, nil, nil, loopingSoundEmitter);
+	finalPowerSelectedAnimation:OnLoad(owningFrame, nil, nil, nil);
 
 	return finalPowerSelectedAnimation;
 end

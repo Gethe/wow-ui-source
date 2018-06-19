@@ -1882,6 +1882,39 @@ function CalendarFrame_UpdateMonthOffsetButtons()
 	end
 end
 
+function CalendarFrame_OpenToGuildEventIndex(guildEventIndex)
+	if ( CalendarFrame and CalendarFrame:IsShown() ) then
+		-- if the calendar is already open we need to do some work that's normally happening in CalendarFrame_OnShow
+		local date = C_Calendar.GetDate();
+		C_Calendar.SetAbsMonth(date.month, date.year);
+	else
+		ToggleCalendar();
+	end
+	local info = C_Calendar.GetGuildEventSelectionInfo(guildEventIndex);
+	local monthOffset = info.offsetMonth;
+	local day = info.monthDay;
+	local eventIndex = info.eventIndex;
+	if ( monthOffset ) then
+		C_Calendar.SetMonth(monthOffset);
+	end
+	-- need to highlight the proper day/event in calendar
+	local monthInfo = C_Calendar.GetMonthInfo();
+	local firstDay = monthInfo.firstWeekday;
+	local buttonIndex = day + firstDay - CALENDAR_FIRST_WEEKDAY;
+	if ( firstDay < CALENDAR_FIRST_WEEKDAY ) then
+		buttonIndex = buttonIndex + 7;
+	end
+	local dayButton = _G["CalendarDayButton"..buttonIndex];
+	CalendarDayButton_Click(dayButton);
+	if ( eventIndex <= 4 ) then -- can only see 4 events per day
+		local eventButton = _G["CalendarDayButton"..buttonIndex.."EventButton"..eventIndex];
+		CalendarDayEventButton_Click(eventButton, true);	-- true to open the event
+	else
+		CalendarFrame_SetSelectedEvent();	-- clears any event highlights
+		C_Calendar.OpenEvent(0, day, eventIndex);
+	end
+end
+
 function CalendarPrevMonthButton_OnClick()
 	PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 	CalendarFrame_OffsetMonth(-1);

@@ -2315,7 +2315,7 @@
 			<Layer level="ARTWORK">
 				<FontString parentKey="Label" inherits="GameFontNormal">
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="-2" y="0"/>
+						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="-5" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>

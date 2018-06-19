@@ -181,7 +181,7 @@
 				<Texture parentKey="Class" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Level" relativePoint="RIGHT" x="2" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Level" relativePoint="RIGHT" x="8" y="0"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Zone" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
@@ -232,6 +232,20 @@
 
 	<Frame name="CommunitiesMemberListFrameTemplate" mixin="CommunitiesMemberListMixin" virtual="true">
 		<Frames>
+			<CheckButton parentKey="ShowOfflineButton" inherits="UICheckButtonTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="26"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.text:SetText(COMMUNITIES_MEMBER_LIST_SHOW_OFFLINE);
+					</OnLoad>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						self:GetParent():SetShowOfflinePlayers(self:GetChecked());
+					</OnClick>
+				</Scripts>
+			</CheckButton>
 			<Frame parentKey="ColumnDisplay" useParentLevel="true" inherits="ColumnDisplayTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-3" y="60"/>

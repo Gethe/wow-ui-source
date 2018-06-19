@@ -20,7 +20,7 @@ function VoiceToggleButtonOnlyVisibleWhenLoggedInMixin:OnLoad()
 	self:SetVisibilityQueryFunction(function() return C_VoiceChat.IsLoggedIn(); end);
 end
 
-VoiceToggleMuteMixin = CreateFromMixins(VoiceToggleButtonAlwaysVisibileMixin);
+VoiceToggleMuteMixin = CreateFromMixins(VoiceToggleButtonOnlyVisibleWhenLoggedInMixin);
 
 MUTE_SILENCE_STATE_NONE		= 0
 MUTE_SILENCE_STATE_MUTE		= 1
@@ -59,7 +59,7 @@ function VoiceToggleMuteMixin:SetupMuteButton()
 end
 
 function VoiceToggleMuteMixin:OnLoad()
-	VoiceToggleButtonAlwaysVisibileMixin.OnLoad(self);
+	VoiceToggleButtonOnlyVisibleWhenLoggedInMixin.OnLoad(self);
 
 	self:SetupMuteButton();
 
@@ -75,10 +75,10 @@ function VoiceToggleMuteMixin:OnLoad()
 	self:UpdateVisibleState();
 end
 
-VoiceToggleDeafenMixin = CreateFromMixins(VoiceToggleButtonAlwaysVisibileMixin);
+VoiceToggleDeafenMixin = CreateFromMixins(VoiceToggleButtonOnlyVisibleWhenLoggedInMixin);
 
 function VoiceToggleDeafenMixin:OnLoad()
-	VoiceToggleButtonAlwaysVisibileMixin.OnLoad(self);
+	VoiceToggleButtonOnlyVisibleWhenLoggedInMixin.OnLoad(self);
 	self:SetAccessorFunction(C_VoiceChat.IsDeafened);
 	self:SetMutatorFunction(C_VoiceChat.SetDeafened);
 	self:AddStateAtlas(false, "chatframe-button-icon-speaker-on");

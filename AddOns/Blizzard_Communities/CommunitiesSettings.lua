@@ -71,9 +71,14 @@ function CommunitiesSettingsDialogMixin:GetMessageOfTheDay()
 end
 
 function CommunitiesSettingsDialogMixin:UpdateCreateButton()
-	local nameValid = strlenutf8(self.NameEdit:GetText()) >= 2;
-	local shortNameValid = strlenutf8(self.ShortNameEdit:GetText()) >= 2;
-	self.Accept:SetEnabled(nameValid and shortNameValid);
+	local name = self.NameEdit:GetText();
+	local nameIsValid = C_Club.ValidateText(self:GetClubType(), name, Enum.ClubFieldType.ClubName) == Enum.ValidateNameResult.NameSuccess;
+	local shortName = self.ShortNameEdit:GetText();
+	local shortNameIsValid = C_Club.ValidateText(self:GetClubType(), shortName, Enum.ClubFieldType.ClubShortName) == Enum.ValidateNameResult.NameSuccess;
+	self.Accept:SetEnabled(nameIsValid and shortNameIsValid);
+	if self.Accept:IsMouseOver() then
+		CommunitiesSettingsDialogAcceptButton_OnEnter(self.Accept);
+	end
 end
 
 local function CommunitiesAvatarPickerDialog_OnOkay(self)
@@ -96,6 +101,31 @@ function CommunitiesSettingsDialogChangeAvatarButton_OnClick(self)
 	communitiesSettingsDialog:Hide();
 	CommunitiesAvatarPicker_OpenDialog(communitiesSettingsDialog:GetClubType(), communitiesSettingsDialog:GetAvatarId(), CommunitiesAvatarPickerDialog_OnOkay, CommunitiesAvatarPickerDialog_OnCancel);
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
+end
+		
+function CommunitiesSettingsDialogAcceptButton_OnEnter(self)
+	local communitiesSettingsDialog = self:GetParent();
+	local name = communitiesSettingsDialog.NameEdit:GetText();
+	local nameErrorCode = C_Club.GetCommunityNameResultText(C_Club.ValidateText(communitiesSettingsDialog:GetClubType(), name, Enum.ClubFieldType.ClubName));
+	local shortName = communitiesSettingsDialog.ShortNameEdit:GetText();
+	local shortNameErrorCode = C_Club.GetCommunityNameResultText(C_Club.ValidateText(communitiesSettingsDialog:GetClubType(), shortName, Enum.ClubFieldType.ClubShortName));
+	if nameErrorCode ~= nil and shortNameErrorCode ~= nil then
+		local nameError = RED_FONT_COLOR:WrapTextInColorCode(nameErrorCode);
+		local shortNameError = RED_FONT_COLOR:WrapTextInColorCode(shortNameErrorCode);
+		GameTooltip_SetBasicTooltip(GameTooltip, COMMUNITIES_CREATE_DIALOG_NAME_AND_SHORT_NAME_ERROR:format(nameError, shortNameError), self:GetRight(), self:GetTop(), true);
+	elseif nameErrorCode ~= nil then
+		local nameError = RED_FONT_COLOR:WrapTextInColorCode(nameErrorCode);
+		GameTooltip_SetBasicTooltip(GameTooltip, COMMUNITIES_CREATE_DIALOG_NAME_ERROR:format(nameError), self:GetRight(), self:GetTop(), true);
+	elseif shortNameErrorCode ~= nil then
+		local shortNameError = RED_FONT_COLOR:WrapTextInColorCode(shortNameErrorCode);
+		GameTooltip_SetBasicTooltip(GameTooltip, COMMUNITIES_CREATE_DIALOG_SHORT_NAME_ERROR:format( shortNameError), self:GetRight(), self:GetTop(), true);
+	else
+		GameTooltip:Hide();
+	end
+end
+
+function CommunitiesSettingsDialogAcceptButton_OnLeave(self)
+	GameTooltip:Hide();
 end
 
 function CommunitiesSettingsDialogAcceptButton_OnClick(self)

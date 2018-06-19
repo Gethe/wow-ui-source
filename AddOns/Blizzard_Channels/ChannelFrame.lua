@@ -13,8 +13,9 @@ do
 		self.DirtyFlags:OnLoad();
 		self.DirtyFlags:AddNamedFlagsFromTable(dirtyFlags);
 		self.DirtyFlags:AddNamedMask("UpdateAll", Flags_CreateMaskFromTable(dirtyFlags));
+		self.DirtyFlags:AddNamedMask("CheckShowTutorial", 4);
 
-		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateAll);
+		self:MarkDirty("UpdateAll");
 
 		self:RegisterEvent("MUTELIST_UPDATE");
 		self:RegisterEvent("IGNORELIST_UPDATE");
@@ -70,7 +71,7 @@ function ChannelFrameMixin:OnShow()
 	end
 
 	self:SetEventsRegistered(true);
-	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateAll);
+	self:MarkDirty("UpdateAll");
 end
 
 function ChannelFrameMixin:OnHide()
@@ -82,7 +83,7 @@ end
 
 function ChannelFrameMixin:OnEvent(event, ...)
 	if event == "CHANNEL_UI_UPDATE" then
-		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateAll);
+		self:MarkDirty("UpdateAll");
 	elseif event == "CHANNEL_LEFT" then
 		self:OnChannelLeft(...);
 	elseif event == "PARTY_LEADER_CHANGED" then
@@ -90,9 +91,9 @@ function ChannelFrameMixin:OnEvent(event, ...)
 	elseif event == "GROUP_ROSTER_UPDATE" then
 		self:UpdatePartyChannelIfSelected()
 	elseif event == "MUTELIST_UPDATE" then
-		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateRoster);
+		self:MarkDirty("UpdateRoster");
 	elseif event == "IGNORELIST_UPDATE" then
-		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateRoster);
+		self:MarkDirty("UpdateRoster");
 	elseif event == "CHANNEL_FLAGS_UPDATED" then
 		self:GetList():UpdateDropdownForChannel(self:GetDropdown(), ...);
 	elseif event == "CHAT_MSG_CHANNEL_NOTICE_USER" then
@@ -202,6 +203,22 @@ function ChannelFrameMixin:CheckActivateChannel(channelID)
 	end
 end
 
+function ChannelFrameMixin:CheckShowTutorial()
+	if self:ShouldShowTutorial() then
+		local channels = self:GetList();
+		local channelButton = channels:GetButtonForAnyVoiceChannel();
+		if channelButton then
+			self.Tutorial:ClearAllPoints();
+			self.Tutorial:SetPoint("LEFT", channelButton, "RIGHT", 20, -1);
+			self.Tutorial:Show();
+		end
+	end
+end
+
+function ChannelFrameMixin:ShouldShowTutorial()
+	return UnitLevel("player") >= 10 and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CHAT_CHANNELS);
+end
+
 function ChannelFrameMixin:TryCreateVoiceChannel(channelName)
 	self:TryExecuteCommand(function()
 		self:CreateVoiceChannel(channelName);
@@ -274,42 +291,50 @@ function ChannelFrameMixin:Update()
 			self:GetRoster():Update();
 		end
 
+		if self.DirtyFlags:IsDirty(self.DirtyFlags.CheckShowTutorial) then
+			self:CheckShowTutorial();
+		end
+
 		self.DirtyFlags:MarkClean();
 	end
+end
+
+function ChannelFrameMixin:MarkDirty(maskName)
+	self.DirtyFlags:MarkDirty(self.DirtyFlags[maskName]);
 end
 
 function ChannelFrameMixin:UpdateChannelIfSelected(channelID)
 	local channel = self:GetList():GetSelectedChannelButton();
 	if channel and channel:ChannelSupportsText() and channel:GetChannelID() == channelID then
-		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateRoster);
+		self:MarkDirty("UpdateRoster");
 	end
 end
 
 function ChannelFrameMixin:UpdateChannelByNameIfSelected(channelName)
 	local channel = self:GetList():GetSelectedChannelButton();
 	if channel and channel:ChannelSupportsText() and channel:GetChannelName() == channelName then
-		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateRoster);
+		self:MarkDirty("UpdateRoster");
 	end
 end
 
 function ChannelFrameMixin:UpdateVoiceChannelIfSelected(voiceChannelID)
 	local channel = self:GetList():GetSelectedChannelButton();
 	if channel and channel:ChannelSupportsVoice() and channel:GetVoiceChannelID() == voiceChannelID then
-		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateRoster);
+		self:MarkDirty("UpdateRoster");
 	end
 end
 
 function ChannelFrameMixin:UpdatePartyChannelIfSelected()
 	local channel = self:GetList():GetSelectedChannelButton();
 	if channel and C_ChatInfo.IsPartyChannelType(channel:GetChannelType()) then
-		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateRoster);
+		self:MarkDirty("UpdateRoster");
 	end
 end
 
 function ChannelFrameMixin:UpdateCommunityChannelIfSelected(clubId, memberId)
 	local channel = self:GetList():GetSelectedChannelButton();
 	if channel and channel:ChannelIsCommunity() and channel.clubId == clubId then
-		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateRoster);
+		self:MarkDirty("UpdateRoster");
 	end
 end
 
@@ -502,27 +527,27 @@ function ChannelFrameMixin:OnGroupLeft(partyCategory, partyGUID)
 end
 
 function ChannelFrameMixin:OnClubAdded(clubId)
-	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateChannelList);
+	self:MarkDirty("UpdateChannelList");
 end
 
 function ChannelFrameMixin:OnClubRemoved(clubId)
-	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateChannelList);
+	self:MarkDirty("UpdateChannelList");
 end
 
 function ChannelFrameMixin:OnClubStreamsLoaded(clubId)
-	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateChannelList);
+	self:MarkDirty("UpdateChannelList");
 end
 
 function ChannelFrameMixin:OnClubStreamAdded(clubId, streamId)
-	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateChannelList);
+	self:MarkDirty("UpdateChannelList");
 end
 
 function ChannelFrameMixin:OnClubStreamRemoved(clubId, streamId)
-	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateChannelList);
+	self:MarkDirty("UpdateChannelList");
 end
 
 function ChannelFrameMixin:OnCommunityFavoriteChanged(clubId)
-	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateChannelList);
+	self:MarkDirty("UpdateChannelList");
 end
 
 function ChannelFrameMixin:OnMemberActiveStateChanged(memberID, channelID, isActive)
@@ -573,7 +598,7 @@ end
 
 function ChannelFrameMixin:OnUserSelectedChannel()
 	self:GetRoster():ResetScrollPosition();
-	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateRoster);
+	self:MarkDirty("UpdateRoster");
 end
 
 function ChannelFrameMixin:IsCategoryGlobal(category)

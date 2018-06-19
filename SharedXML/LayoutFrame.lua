@@ -16,18 +16,71 @@ if tbl then
 	end
 
 	Import("GMError");
-	
+	Import("math");
+	Import("Clamp");
+
 	setfenv(1, tbl);
 end
 ----------------
 
-LayoutMixin = {};
-VerticalLayoutMixin = {};
-HorizontalLayoutMixin = {};
+--------------------------------------------------------------------------------
+-- BaseLayout Mixin
+--------------------------------------------------------------------------------
+
+BaseLayoutMixin = {};
+
+function BaseLayoutMixin:AddLayoutChildren(layoutChildren, ...)
+	for i = 1, select("#", ...) do
+		local region = select(i, ...);
+		if region.layoutIndex and region:IsShown() then
+			layoutChildren[#layoutChildren + 1] = region;
+		end
+	end
+end
+
+local function LayoutIndexComparator(left, right)
+	if (left.layoutIndex == right.layoutIndex and left ~= right) then
+		GMError("Duplicate layoutIndex found: " .. left.layoutIndex);
+	end
+	return left.layoutIndex < right.layoutIndex;
+end
+
+function BaseLayoutMixin:GetLayoutChildren()
+	local children = {};
+	self:AddLayoutChildren(children, self:GetChildren());
+	self:AddLayoutChildren(children, self:GetRegions());
+	table.sort(children, LayoutIndexComparator);
+
+	return children;
+end
+
+function BaseLayoutMixin:Layout()
+	assert(false); -- Implement in derived class
+end
+
+function BaseLayoutMixin:OnUpdate()
+	if self:IsDirty() then
+		self:Layout();
+	end
+end
+
+function BaseLayoutMixin:MarkDirty()
+	self.dirty = true;
+end
+
+function BaseLayoutMixin:MarkClean()
+	self.dirty = false;
+end
+
+function BaseLayoutMixin:IsDirty()
+	return self.dirty;
+end
 
 --------------------------------------------------------------------------------
 -- Layout Mixin
 --------------------------------------------------------------------------------
+
+LayoutMixin = CreateFromMixins(BaseLayoutMixin);
 
 function LayoutMixin:GetPadding(frame)
 	if (frame) then
@@ -38,22 +91,13 @@ function LayoutMixin:GetPadding(frame)
 	end
 end
 
-function LayoutMixin:AddLayoutChildren(layoutChildren, ...)
-	for i = 1, select("#", ...) do
-		local region = select(i, ...);
-		if region.layoutIndex and region:IsShown() then
-			layoutChildren[#layoutChildren + 1] = region;
-		end
-	end
-end
-
 function LayoutMixin:CalculateFrameSize(childrenWidth, childrenHeight)
 	local frameWidth, frameHeight;
 	local leftPadding, rightPadding, topPadding, bottomPadding = self:GetPadding(self);
-	
+
 	childrenWidth = childrenWidth + leftPadding + rightPadding;
 	childrenHeight = childrenHeight + topPadding + bottomPadding;
-	
+
 	-- Expand this frame if the "expand" keyvalue is set and children width or height is larger.
 	-- Otherwise, set this frame size to the fixed size if set, or the size of the children
 	if (self.expand and self.fixedWidth and childrenWidth > self.fixedWidth) then
@@ -69,23 +113,12 @@ function LayoutMixin:CalculateFrameSize(childrenWidth, childrenHeight)
 	return frameWidth, frameHeight;
 end
 
-local function LayoutIndexComparator(left, right)
-	if (left.layoutIndex == right.layoutIndex and left ~= right) then
-		GMError("Duplicate layoutIndex found: " .. left.layoutIndex);
-	end
-	return left.layoutIndex < right.layoutIndex;
-end
-
 function LayoutMixin:Layout()
-	self.dirty = false;
-	
-	local children = {};
-	self:AddLayoutChildren(children, self:GetChildren());
-	self:AddLayoutChildren(children, self:GetRegions());
-	table.sort(children, LayoutIndexComparator);
+	self:MarkClean();
 
+	local children = self:GetLayoutChildren();
 	local childrenWidth, childrenHeight, hasExpandableChild = self:LayoutChildren(children);
-	
+
 	local frameWidth, frameHeight = self:CalculateFrameSize(childrenWidth, childrenHeight);
 
 	-- If at least one child had "expand" set and we did not already expand them, call LayoutChildren() again to expand them
@@ -93,34 +126,22 @@ function LayoutMixin:Layout()
 		childrenWidth, childrenHeight = self:LayoutChildren(children, frameWidth, frameHeight);
 		frameWidth, frameHeight = self:CalculateFrameSize(childrenWidth, childrenHeight);
 	end
-	
+
 	self:SetSize(frameWidth, frameHeight);
-end
-
-function LayoutMixin:OnUpdate()
-	if self:IsDirty() then
-		self:Layout();
-	end
-end
-
-function LayoutMixin:MarkDirty()
-	self.dirty = true;
-end
-
-function LayoutMixin:IsDirty()
-	return self.dirty;
 end
 
 --------------------------------------------------------------------------------
 -- VerticalLayout Mixin
 --------------------------------------------------------------------------------
 
+VerticalLayoutMixin = {};
+
 function VerticalLayoutMixin:LayoutChildren(children, expandToWidth)
 	local frameLeftPadding, frameRightPadding, topOffset = self:GetPadding(self);
 	local spacing = self.spacing or 0;
 	local childrenWidth, childrenHeight = 0, 0;
 	local hasExpandableChild = false;
-	
+
 	-- Calculate width and height based on children
 	for i, child in ipairs(children) do
 		local childWidth, childHeight = child:GetSize();
@@ -140,7 +161,7 @@ function VerticalLayoutMixin:LayoutChildren(children, expandToWidth)
 		if (i > 1) then
 			childrenHeight = childrenHeight + spacing;
 		end
-		
+
 		-- Set child position
 		child:ClearAllPoints();
 		topOffset = topOffset + topPadding;
@@ -156,7 +177,7 @@ function VerticalLayoutMixin:LayoutChildren(children, expandToWidth)
 		end
 		topOffset = topOffset + childHeight + bottomPadding + spacing;
 	end
-	
+
 	return childrenWidth, childrenHeight, hasExpandableChild;
 end
 
@@ -164,12 +185,14 @@ end
 -- HorizontalLayout Mixin
 --------------------------------------------------------------------------------
 
+HorizontalLayoutMixin = {};
+
 function HorizontalLayoutMixin:LayoutChildren(children, ignored, expandToHeight)
 	local leftOffset, _, frameTopPadding, frameBottomPadding = self:GetPadding(self);
 	local spacing = self.spacing or 0;
 	local childrenWidth, childrenHeight = 0, 0;
 	local hasExpandableChild = false;
-	
+
 	-- Calculate width and height based on children
 	for i, child in ipairs(children) do
 		local childWidth, childHeight = child:GetSize();
@@ -177,7 +200,7 @@ function HorizontalLayoutMixin:LayoutChildren(children, ignored, expandToHeight)
 		if (child.expand) then
 			hasExpandableChild = true;
 		end
-		
+
 		-- Expand child height if it is set to expand and we also have an expandToHeight value.
 		if (child.expand and expandToHeight) then
 			childHeight = expandToHeight - topPadding - bottomPadding - frameTopPadding - frameBottomPadding;
@@ -189,7 +212,7 @@ function HorizontalLayoutMixin:LayoutChildren(children, ignored, expandToHeight)
 		if (i > 1) then
 			childrenWidth = childrenWidth + spacing;
 		end
-		
+
 		-- Set child position
 		child:ClearAllPoints();
 		leftOffset = leftOffset + leftPadding;
@@ -205,6 +228,42 @@ function HorizontalLayoutMixin:LayoutChildren(children, ignored, expandToHeight)
 		end
 		leftOffset = leftOffset + childWidth + rightPadding + spacing;
 	end
-	
+
 	return childrenWidth, childrenHeight, hasExpandableChild;
+end
+
+--------------------------------------------------------------------------------
+-- ResizeLayout Mixin
+--------------------------------------------------------------------------------
+
+ResizeLayoutMixin = CreateFromMixins(BaseLayoutMixin);
+
+local function GetExtents(frame, left, right, top, bottom)
+	local frameLeft, frameBottom, frameWidth, frameHeight = frame:GetRect();
+	local frameRight = frameLeft + frameWidth;
+	local frameTop = frameBottom + frameHeight;
+
+	left = left and math.min(frameLeft, left) or frameLeft;
+	right = right and math.max(frameRight, right) or frameRight;
+	top = top and math.max(frameTop, top) or frameTop;
+	bottom = bottom and math.min(frameBottom, bottom) or frameBottom;
+
+	return left, right, top, bottom;
+end
+
+local function GetSize(desired, fixed, minimum, maximum)
+	return fixed or Clamp(desired, minimum or desired, maximum or desired);
+end
+
+function ResizeLayoutMixin:Layout()
+	self:MarkClean();
+
+	local left, right, top, bottom;
+	for childIndex, child in ipairs(self:GetLayoutChildren()) do
+		left, right, top, bottom = GetExtents(child, left, right, top, bottom);
+	end
+
+	local width = GetSize((right - left) + (self.widthPadding or 0), self.fixedWidth, self.minimumWidth, self.maximumWidth);
+	local height = GetSize((top - bottom) + (self.heightPadding or 0), self.fixedHeight, self.minimumHeight, self.maximumHeight);
+	self:SetSize(width, height);
 end

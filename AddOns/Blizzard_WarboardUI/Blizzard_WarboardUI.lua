@@ -72,6 +72,32 @@ local textureKitColors = {
 	},
 };
 
+local borderOffsets = {
+	["alliance"] = { cornerX = 7, cornerY = 7, edge = 0, closeX = 1, closeY = 2, header = -56, showHeader = true, },
+	["horde"] = { cornerX = 7, cornerY = 7, edge = 0, closeX = 4, closeY = 6, header = -61, showHeader = true, },
+	["neutral"] = { cornerX = 9, cornerY = 9, edge = 0, closeX = 4, closeY = 6, header = 0, showHeader = false, },
+}
+
+local function SetupNineSlice(self, offsets)
+	local border = AnchorUtil.CreateNineSlice(self.BorderFrame);
+	border:SetTopLeftCorner(self.BorderFrame.TopLeftCorner, -offsets.cornerX, offsets.cornerY);
+	border:SetTopRightCorner(self.BorderFrame.TopRightCorner, offsets.cornerX, offsets.cornerY);
+	border:SetBottomLeftCorner(self.BorderFrame.BottomLeftCorner, -offsets.cornerX, -offsets.cornerY);
+	border:SetBottomRightCorner(self.BorderFrame.BottomRightCorner, offsets.cornerX, -offsets.cornerY);
+	border:SetTopEdge(self.BorderFrame.TopBorder, -offsets.edge, 0, offsets.edge, 0);
+	border:SetBottomEdge(self.BorderFrame.BottomBorder, -offsets.edge, 0, offsets.edge, 0);
+	border:SetLeftEdge(self.BorderFrame.LeftBorder, 0, offsets.edge, 0, -offsets.edge);
+	border:SetRightEdge(self.BorderFrame.RightBorder, 0, offsets.edge, 0, -offsets.edge);
+	border:Apply();
+end
+
+local function SetupBorder(self, offsets)
+	SetupNineSlice(self, offsets);
+	self.BorderFrame.Header:SetPoint("BOTTOM", self.BorderFrame, "TOP", 0, offsets.header);
+	self.BorderFrame.Header:SetShown(offsets.showHeader);
+	self.BorderFrame.CloseButtonBorder:SetPoint("TOPRIGHT", self.BorderFrame, "TOPRIGHT", offsets.closeX, offsets.closeY);
+end
+
 function WarboardQuestChoiceFrameMixin:OnLoad()
 	self.QuestionText = self.Title.Text;
 	self.initOptionHeight = 439;
@@ -100,17 +126,21 @@ function WarboardQuestChoiceFrameMixin:TryShow()
 	self:SetupTextureKits(self.Background, backgroundTextureKitRegions);
 
 	self.BorderFrame.Header:SetShown(not hideWarboardHeader);
-	local optionDescriptionColor = WARBOARD_OPTION_TEXT_COLOR;
-	local optionHeaderTitleColor = BLACK_FONT_COLOR;
+	self.optionDescriptionColor = WARBOARD_OPTION_TEXT_COLOR;
+	self.optionHeaderTitleColor = BLACK_FONT_COLOR;
 	local textureKit = GetUITextureKitInfo(uiTextureKitID);
 	local textureKitColor = textureKitColors[textureKit];
 	if textureKitColor then
-		optionDescriptionColor = textureKitColor.description;
-		optionHeaderTitleColor = textureKitColor.title;
+		self.optionDescriptionColor = textureKitColor.description;
+		self.optionHeaderTitleColor = textureKitColor.title;
 	end
-	for _, option in pairs(self.Options) do	
-		option.OptionText:SetTextColor(optionDescriptionColor:GetRGBA());
-		option.Header.Text:SetTextColor(optionHeaderTitleColor:GetRGBA());
+
+	local offsets = borderOffsets[textureKit] or borderOffsets["neutral"];
+	SetupBorder(self, offsets);
+
+	for _, option in pairs(self.Options) do
+		option.OptionText:SetTextColor(self.optionDescriptionColor:GetRGBA());
+		option.Header.Text:SetTextColor(self.optionHeaderTitleColor:GetRGBA());
 	end
 
 	QuestChoiceFrameMixin.TryShow(self);
@@ -153,6 +183,18 @@ function WarboardQuestChoiceFrameMixin:Update()
 	end
 
 	self:Layout();
+
+	local showWarfrontHelpbox = false;
+	if C_Scenario.IsInScenario() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARFRONT_CONSTRUCTION) then
+		local scenarioType = select(10, C_Scenario.GetInfo());
+		showWarfrontHelpbox = scenarioType == LE_SCENARIO_TYPE_WARFRONT;
+	end
+	if showWarfrontHelpbox then
+		self.WarfrontHelpBox:SetHeight(25 + self.WarfrontHelpBox.BigText:GetHeight());
+		self.WarfrontHelpBox:Show();
+	else
+		self.WarfrontHelpBox:Hide();
+	end
 end
 
 WarboardQuestChoiceOptionFrameMixin = CreateFromMixins(QuestChoiceOptionFrameMixin);
@@ -174,9 +216,13 @@ function WarboardQuestChoiceOptionFrameMixin:ConfigureButtons()
 			self:SetToStandardSize();
 		end
 	else
+		if self:GetParent():GetNumOptions() == 1 then
+			self:SetToWideSize();
+		else
+			self:SetToStandardSize();
+		end
 		secondButton:Hide();
 		self.OptionButtonsContainer:SetSize(parent.optionButtonWidth, parent.optionButtonHeight);
-		self:SetToStandardSize();
 	end
 end
 

@@ -464,6 +464,7 @@ LOOTWONALERTFRAME_VALUES={
 	Alliance = { bgOffsetX=-1, bgOffsetY=-1, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="loottoast-bg-alliance", glowAtlas="loottoast-glow"},
 	RatedHorde = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="pvprated-loottoast-bg-horde", glowAtlas="loottoast-glow"},
 	RatedAlliance = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="pvprated-loottoast-bg-alliance", glowAtlas="loottoast-glow"},
+	Azerite = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=3, labelText=AZERITE_EMPOWERED_ITEM_LOOT_LABEL, bgAtlas="LootToast-Azerite", glowAtlas="loottoast-glow"},
 }
 
 -- NOTE - This may also be called for an externally created frame. (E.g. bonus roll has its own frame)
@@ -485,6 +486,7 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 		itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
 	end
 
+	local isAzeriteEmpowered = C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemHyperLink);
 	local windowInfo = wonRoll and LOOTWONALERTFRAME_VALUES.WonRoll or LOOTWONALERTFRAME_VALUES.Default;
 	if( showFactionBG ) then
 		local factionGroup = UnitFactionGroup("player");
@@ -511,6 +513,8 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 			windowInfo = LOOTWONALERTFRAME_VALUES["LessAwesome"];
 		elseif ( isUpgraded ) then
 			windowInfo = LOOTWONALERTFRAME_VALUES["Upgraded"];
+		elseif ( isAzeriteEmpowered ) then
+			windowInfo = LOOTWONALERTFRAME_VALUES["Azerite"];
 		end
 		if ( windowInfo.bgAtlas ) then
 			self.Background:Hide();
@@ -557,7 +561,7 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 	self.IconBorder:SetAtlas(atlas);
 	self.IconBorder:SetDesaturated(desaturate);
 	if not windowInfo.noIconBorder and not isCurrency and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemHyperLink) then
-		self.IconOverlay:SetAtlas("AzeriteIconFrame");
+		self.IconOverlay:SetAtlas("LootToast-Azerite-Border");
 		self.IconOverlay:Show();
 	else
 		self.IconOverlay:Hide();
@@ -606,6 +610,8 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 		PlaySound(SOUNDKIT.UI_RAID_LOOT_TOAST_LESSER_ITEM_WON);
 	elseif ( isUpgraded ) then
 		PlaySound(SOUNDKIT.UI_WARFORGED_ITEM_LOOT_TOAST);
+	elseif ( isAzeriteEmpowered ) then
+		PlaySound(SOUNDKIT.UI_AZERITE_EMPOWERED_ITEM_LOOT_TOAST);
 	else
 		PlaySound(SOUNDKIT.UI_EPICLOOT_TOAST);
 	end

@@ -1,30 +1,38 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Frame name="WarfrontsPartyPoseFrame" topLevel="true" parent="UIParent" inherits="PartyPoseFrameTemplate" mixin="WarfrontsPartyPoseMixin">
+	<Frame name="WarfrontsPartyPoseFrame" toplevel="true" parent="UIParent" inherits="PartyPoseFrameTemplate" mixin="WarfrontsPartyPoseMixin">
 		<Anchors>
 			<Anchor point="CENTER" x="5" y="5"/>
 		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="Topper">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
 			<ModelScene parentKey="ModelScene" enableMouse="false" useParentLevel="true" inherits="PartyPoseModelFrameTemplate">
 				<Anchors>
-					<Anchor point="CENTER"/> 
+					<Anchor point="CENTER"/>
 				</Anchors>
 			</ModelScene>
 			<Button parentKey="LeaveButton" inherits="UIPanelButtonNoTooltipTemplate">
 				<Size x="164" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ModelScene" x="-20" y="-45"/> 
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ModelScene" x="-20" y="-45"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						ConfirmOrLeaveLFGParty(); 
+						ConfirmOrLeaveLFGParty();
 						HideUIPanel(self:GetParent());
 					</OnClick>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>

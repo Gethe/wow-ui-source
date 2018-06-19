@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Frame name="UIWidgetTemplateIconTextAndCurrencies" inherits="UIWidgetBaseTemplate" virtual="true" secureMixin="UIWidgetTemplateIconTextAndCurrenciesMixin">
+	<Frame name="UIWidgetTemplateIconTextAndCurrencies" inherits="UIWidgetBaseTemplate" virtual="true" mixin="UIWidgetTemplateIconTextAndCurrenciesMixin">
 		<Size x="237" y="32"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -10,13 +10,13 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Text" secureMixin="UIWidgetBaseColoredTextMixin" inherits="GameTooltipHeaderText">
+				<FontString parentKey="Text" mixin="UIWidgetBaseColoredTextMixin" inherits="GameTooltipHeaderText">
 					<Size x="178"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="10" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Description" secureMixin="UIWidgetBaseColoredTextMixin" inherits="GameTooltipText">
+				<FontString parentKey="Description" mixin="UIWidgetBaseColoredTextMixin" inherits="GameTooltipText">
 					<Size x="178"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Text" relativePoint="BOTTOMLEFT" x="0" y="-2"/>

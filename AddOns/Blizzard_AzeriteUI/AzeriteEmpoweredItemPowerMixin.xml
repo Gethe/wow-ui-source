@@ -226,7 +226,7 @@
 						<Scale childKey="RingBurst" startDelay="0.25" duration="0.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.5" toScaleY="1.5"/>
 						<Scripts>
 							<OnFinished>
-								self:GetParent():GetParent():OnAnimationFinished();
+								self:GetParent():GetParent():OnSwirlAnimationFinished();
 							</OnFinished>
 						</Scripts>
 					</AnimationGroup>
@@ -259,7 +259,7 @@
 						<Alpha childKey="Ring" startDelay="0.65" duration="0.25" order="2" fromAlpha=".5" toAlpha="0"/>
 						<Scripts>
 							<OnFinished>
-								self:GetParent():GetParent():OnAnimationFinished();
+								self:GetParent():GetParent():OnSwirlAnimationFinished();
 							</OnFinished>
 						</Scripts>
 					</AnimationGroup>
@@ -279,6 +279,11 @@
 				<Alpha parentKey="BorderSelectable" childKey="IconBorderSelectable" duration=".25" order="1" fromAlpha="0" toAlpha="1" />
 				<Alpha parentKey="IconNotSelectableOverlay" childKey="IconNotSelectableOverlay" duration=".25" order="1" fromAlpha="0" toAlpha="1" />
 				<Alpha parentKey="IconBorder" childKey="IconBorder" duration=".25" order="1" fromAlpha="0" toAlpha="1" />
+				<Scripts>
+					<OnFinished>
+						self:GetParent():OnTransitionAnimationFinished();
+					</OnFinished>
+				</Scripts>
 			</AnimationGroup>
 			<AnimationGroup parentKey="CanSelectArrowAnim" setToFinalAlpha="true" looping="REPEAT">
 				<Translation childKey="Arrow" duration=".6" order="1" smoothing="IN_OUT" offsetY="10"/>
