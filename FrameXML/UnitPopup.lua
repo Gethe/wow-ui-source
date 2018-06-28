@@ -233,6 +233,7 @@ UnitPopupMenus = {
 	["BOSS"] = { "RAID_TARGET_ICON", "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "CANCEL" },
 	["WORLD_STATE_SCORE"] = { "REPORT_PLAYER", "PVP_REPORT_AFK", "CANCEL" },
 	["COMMUNITIES_WOW_MEMBER"] = { "VOICE_CHAT_MICROPHONE_VOLUME", "VOICE_CHAT_SPEAKER_VOLUME", "VOICE_CHAT_USER_VOLUME", "SUBSECTION_SEPARATOR", "INVITE", "SUGGEST_INVITE", "REQUEST_INVITE", "WHISPER", "IGNORE", "COMMUNITIES_LEAVE", "COMMUNITIES_KICK", "COMMUNITIES_MEMBER_NOTE", "COMMUNITIES_ROLE", "OTHER_SUBSECTION_TITLE", "REPORT_PLAYER" },
+	["COMMUNITIES_GUILD_MEMBER"] = { "VOICE_CHAT_MICROPHONE_VOLUME", "VOICE_CHAT_SPEAKER_VOLUME", "VOICE_CHAT_USER_VOLUME", "SUBSECTION_SEPARATOR", "INVITE", "SUGGEST_INVITE", "REQUEST_INVITE", "WHISPER", "IGNORE", "OTHER_SUBSECTION_TITLE", "GUILD_PROMOTE", "GUILD_LEAVE", "REPORT_PLAYER" },
 	["COMMUNITIES_MEMBER"] = { "VOICE_CHAT_MICROPHONE_VOLUME", "VOICE_CHAT_SPEAKER_VOLUME", "VOICE_CHAT_USER_VOLUME", "SUBSECTION_SEPARATOR", "COMMUNITIES_LEAVE", "COMMUNITIES_KICK", "COMMUNITIES_MEMBER_NOTE", "COMMUNITIES_ROLE", "OTHER_SUBSECTION_TITLE", "REPORT_PLAYER"  },
 	["COMMUNITIES_COMMUNITY"] = { "COMMUNITIES_FAVORITE", "COMMUNITIES_LEAVE" },
 
@@ -739,7 +740,9 @@ local function UnitPopup_TryCreatePlayerLocation(menu, guid)
 	if menu.battlefieldScoreIndex then
 		return PlayerLocation:CreateFromBattlefieldScoreIndex(menu.battlefieldScoreIndex);
 	elseif menu.communityClubID and menu.communityStreamID and menu.communityEpoch and menu.communityPosition then
-		return PlayerLocation:CreateFromCommunityData(menu.communityClubID, menu.communityStreamID, menu.communityEpoch, menu.communityPosition);
+		return PlayerLocation:CreateFromCommunityChatData(menu.communityClubID, menu.communityStreamID, menu.communityEpoch, menu.communityPosition);
+	elseif menu.communityClubID and not menu.communityStreamID then
+		return PlayerLocation:CreateFromCommunityInvitation(menu.communityClubID, guid);
 	elseif menu.lineID then
 		return PlayerLocation:CreateFromChatLineID(menu.lineID);
 	elseif menu.unit then
@@ -767,6 +770,17 @@ local function UnitPopup_GetLFGCategoryForLFGSlot(lfgSlot)
 end
 
 local function UnitPopup_IsPlayerOffline(menu)
+	if menu.clubMemberInfo then
+		local presence = menu.clubMemberInfo.presence;
+		if presence == Enum.ClubMemberPresence.Offline or presence == Enum.ClubMemberPresence.Unknown then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+local function UnitPopup_IsPlayerMobile(menu)
 	if menu.clubMemberInfo then
 		local presence = menu.clubMemberInfo.presence;
 		if presence == Enum.ClubMemberPresence.Offline or presence == Enum.ClubMemberPresence.Unknown then
@@ -935,7 +949,7 @@ function UnitPopup_HideButtons ()
 				shown = false;
 			end
 		elseif ( value == "REPORT_SPAM" ) then
-			if not playerLocation:IsChatLineID() then
+			if not playerLocation:IsChatLineID() and not playerLocation:IsCommunityInvitation() then
 				shown = false;
 			end
 		elseif ( value == "REPORT_CHEATING" or value == "REPORT_BATTLE_PET" or value == "REPORT_PET" ) then
@@ -1205,23 +1219,23 @@ function UnitPopup_HideButtons ()
 				shown = false;
 			end
 		elseif ( value == "VOICE_CHAT" ) then
-			if not isLocalPlayer and not C_VoiceChat.IsPlayerUsingVoice(playerLocation) then
+			if not C_VoiceChat.CanPlayerUseVoiceChat() or not isLocalPlayer and not C_VoiceChat.IsPlayerUsingVoice(playerLocation) then
 				shown = false;
 			end
 		elseif value == "VOICE_CHAT_MICROPHONE_VOLUME" then
-			if not isLocalPlayer then
+			if not C_VoiceChat.CanPlayerUseVoiceChat() or not isLocalPlayer then
 				shown = false;
 			end
 		elseif value == "VOICE_CHAT_SPEAKER_VOLUME" then
-			if not isLocalPlayer then
+			if not C_VoiceChat.CanPlayerUseVoiceChat() or not isLocalPlayer then
 				shown = false;
 			end
 		elseif value == "VOICE_CHAT_SETTINGS" then
-			if not isLocalPlayer then
+			if not C_VoiceChat.CanPlayerUseVoiceChat() or not isLocalPlayer then
 				shown = false;
 			end
 		elseif value == "VOICE_CHAT_USER_VOLUME" then
-			if isLocalPlayer or not C_VoiceChat.IsPlayerUsingVoice(playerLocation) then
+			if not C_VoiceChat.CanPlayerUseVoiceChat() or isLocalPlayer or not C_VoiceChat.IsPlayerUsingVoice(playerLocation) then
 				shown = false;
 			end
 		elseif value == "COMMUNITIES_LEAVE" then

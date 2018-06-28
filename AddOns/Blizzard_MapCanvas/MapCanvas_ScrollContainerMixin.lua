@@ -63,23 +63,24 @@ function MapCanvasScrollControllerMixin:FindBestLocationForClick()
 		local normalizedCursorX = self:NormalizeHorizontalSize(endCursorX / self:GetCanvasScale() - self.Child:GetLeft());
 		local normalizedCursorY = self:NormalizeVerticalSize(self.Child:GetTop() - endCursorY / self:GetCanvasScale());
 
-		local x = normalizedCursorX;
-		local y = normalizedCursorY;
-		if self:GetMap():ShouldShowSubzones() then
-			local mapInfo = C_Map.GetMapInfoAtPosition(self.mapID, normalizedCursorX, normalizedCursorY);
-			if mapInfo then
-				local left, right, top, bottom = C_Map.GetMapRectOnMap(mapInfo.mapID, self.mapID);
-				local centerX = left + (right - left) * .5;
-				local centerY = top + (bottom - top) * .5;
+		local mapInfo = C_Map.GetMapInfoAtPosition(self.mapID, normalizedCursorX, normalizedCursorY);
+		if mapInfo and mapInfo.mapID ~= self.mapID then
+			local left, right, top, bottom = C_Map.GetMapRectOnMap(mapInfo.mapID, self.mapID);
+			local centerX = left + (right - left) * .5;
+			local centerY = top + (bottom - top) * .5;
 
-				x = centerX;
-				y = centerY;
-			end
+			normalizedCursorX = centerX;
+			normalizedCursorY = centerY;
 		end
 
-		local nextZoomOutScale, nextZoomInScale = self:GetCurrentZoomRange();
-		local minX, maxX, minY, maxY = self:CalculateScrollExtentsAtScale(nextZoomInScale);
-		return Clamp(x, minX, maxX), Clamp(y, minY, maxY);
+		if not self:ShouldZoomInstantly() then
+			local nextZoomOutScale, nextZoomInScale = self:GetCurrentZoomRange();
+			local minX, maxX, minY, maxY = self:CalculateScrollExtentsAtScale(nextZoomInScale);
+
+			return Clamp(normalizedCursorX, minX, maxX), Clamp(normalizedCursorY, minY, maxY);
+		end
+
+		return normalizedCursorX, normalizedCursorY;
 	end
 end
 
@@ -110,6 +111,8 @@ function MapCanvasScrollControllerMixin:OnMouseUp(button)
 			if not self:GetMap():ProcessCanvasClickHandlers(button, self:NormalizeUIPosition(cursorX, cursorY)) then
 				if self:ShouldNavigateOnClick() then
 					self:GetMap():NavigateToCursor(self:GetNormalizedCursorPosition());
+				elseif self:ShouldZoomInOnClick() then
+					self:TryPanOrZoomOnClick();
 				end
 			end
 		elseif not self:TryPanOrZoomOnClick() and self:IsPanning() then		

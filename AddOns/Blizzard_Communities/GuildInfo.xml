@@ -11,9 +11,10 @@
 		<Size x="270" y="21"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString inherits="GameFontHighlight" parentKey="label">
+				<FontString inherits="GameFontHighlight" parentKey="label" justifyH="LEFT" maxlines="2">
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parent" x="18" y="0"/>
+						<Anchor point="RIGHT" relativeTo="$parent" x="-45" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString inherits="GameFontNormal" parentKey="count">

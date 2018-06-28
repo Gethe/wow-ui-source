@@ -374,7 +374,7 @@ function TradeSkillUIMixin:OnLinkToButtonClicked()
 	if MacroFrameText and MacroFrameText:IsShown() and MacroFrameText:HasFocus() then
 		local link = C_TradeSkillUI.GetTradeSkillListLink();
 		local text = MacroFrameText:GetText() .. link;
-		if strlenutf8(text) <= MacroFrameText:GetNumLetters() then
+		if strlenutf8(text) <= MacroFrameText:GetMaxLetters() then
 			MacroFrameText:Insert(link);
 		end
 	else
@@ -426,7 +426,7 @@ function TradeSkillUIMixin:InitLinkToMenu(dropdown, level)
 	local channels = { GetChannelList() };
 	local channelCount = #channels / 2;
 	for i = 1, channelCount do
-		info.text = channels[i * 2];
+		info.text = ChatFrame_ResolveChannelName(channels[i * 2]);
 		info.arg1 = "/"..channels[(i - 1) * 2 + 1];
 		UIDropDownMenu_AddButton(info);
 	end

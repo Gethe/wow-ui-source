@@ -1,6 +1,7 @@
 local function GetStatusBarVisInfoData(widgetID)
 	local widgetInfo = C_UIWidgetManager.GetStatusBarWidgetVisualizationInfo(widgetID);
 	if widgetInfo and widgetInfo.shownState ~= Enum.WidgetShownState.Hidden then
+		widgetInfo.hasTimer = widgetInfo.barValueInSeconds > -1;
 		return widgetInfo;
 	end
 end
@@ -38,7 +39,7 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo)
 	self.Bar:SetValue(widgetInfo.barValue);
 
 	if widgetInfo.barValueInSeconds > -1 then
-		self.Bar.Label:SetText(SecondsToTime(widgetInfo.barValueInSeconds, true, true, 1));
+		self.Bar.Label:SetText(SecondsToTime(widgetInfo.barValueInSeconds, true, true, 2, true));
 	else
 		local barPercent = PercentageBetween(widgetInfo.barValue, widgetInfo.barMin, widgetInfo.barMax);
 		local barPercentText = FormatPercentage(barPercent, true);

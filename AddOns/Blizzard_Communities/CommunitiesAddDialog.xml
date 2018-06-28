@@ -6,10 +6,10 @@
 		<Frame name="CommunitiesAddDialog" parent="UIParent" enableMouse="true" frameStrata="DIALOG" mixin="CommunitiesAddDialogMixin" hidden="true">
 			<Size x="514" y="420"/>
 			<Anchors>
-				<Anchor point="CENTER" relativeTo="UIParent" y="0"/>
+				<Anchor point="TOP" relativeTo="UIParent" x="0" y="-142"/>
 			</Anchors>
-			<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-				<BackgroundInsets left="11" right="11" top="12" bottom="11"/>
+			<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+				<BackgroundInsets left="11" right="11" top="11" bottom="11"/>
 				<TileSize val="32"/>
 				<EdgeSize val="32"/>
 			</Backdrop>
@@ -174,17 +174,17 @@
 		<Frame name="CommunitiesCreateDialog" parent="UIParent" enableMouse="true" frameStrata="DIALOG" mixin="CommunitiesCreateDialogMixin" hidden="true">
 			<Size x="412" y="375"/>
 			<Anchors>
-				<Anchor point="TOP" relativeTo="UIParent" y="-200"/>
+				<Anchor point="TOP" relativeTo="UIParent" x="0" y="-142"/>
 			</Anchors>
-			<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-				<BackgroundInsets left="11" right="12" top="12" bottom="11"/>
+			<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+				<BackgroundInsets left="11" right="11" top="11" bottom="11"/>
 				<TileSize val="32"/>
 				<EdgeSize val="32"/>
 			</Backdrop>
 			<Layers>
 				<Layer level="OVERLAY">
 					<Texture parentKey="IconPreviewRing" atlas="communities-ring-gold">
-						<Size x="80" y="80"/>
+						<Size x="79" y="80"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="-48" y="65"/>
 						</Anchors>
@@ -194,7 +194,7 @@
 					<Texture parentKey="IconPreview">
 						<Size x="64" y="64"/>
 						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.IconPreviewRing" x="0" y="3"/>
+							<Anchor point="CENTER" relativeKey="$parent.IconPreviewRing" x="0" y="0"/>
 						</Anchors>
 					</Texture>
 					<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
@@ -212,7 +212,7 @@
 							<Anchor point="TOP" x="0" y="-18"/>
 						</Anchors>
 					</FontString>
-					<FontString parentKey="NameLabel" text="COMMUNITIES_CREATE_DIALOG_NAME_LABEL" justifyH="LEFT" inherits="GameFontNormal">
+					<FontString parentKey="NameLabel" text="COMMUNITIES_SETTINGS_NAME_LABEL" justifyH="LEFT" inherits="GameFontNormal">
 						<Size x="0" y="0"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="30" y="-52"/>

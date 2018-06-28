@@ -10,14 +10,14 @@
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Text" mixin="UIWidgetBaseColoredTextMixin" inherits="GameTooltipText">
-					<Size x="215"/>
+					<Size x="227"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="12"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
-	</Frame>
+		</Frame>
 
 	<Frame name="UIWidgetTemplateBulletTextList" inherits="UIWidgetBaseTemplate" virtual="true" mixin="UIWidgetTemplateBulletTextListMixin">
 		<Size x="237" y="32"/>

@@ -131,9 +131,11 @@ function TalkingHeadFrame_PlayCurrent()
 	local textFormatted = string.format(text);
 	if ( displayInfo and displayInfo ~= 0 ) then
 		if ( textureKitID ~= 0 ) then
-			SetupTextureKits(textureKitID, frame, textureKitRegionFormatStrings, false, true);
+			SetupTextureKits(textureKitID, frame.BackgroundFrame, textureKitRegionFormatStrings, false, true);
+			SetupTextureKits(textureKitID, frame.PortraitFrame, textureKitRegionFormatStrings, false, true);
 		else
-			SetupAtlasesOnRegions(frame, defaultAtlases, true);
+			SetupAtlasesOnRegions(frame.BackgroundFrame, defaultAtlases, true);
+			SetupAtlasesOnRegions(frame.PortraitFrame, defaultAtlases, true);
 		end
 		frame:Show();
 		if ( currentDisplayInfo ~= displayInfo ) then

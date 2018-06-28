@@ -1,8 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Frame name="IslandsPartyPoseFrame" topLevel="true" parent="UIParent" inherits="PartyPoseFrameTemplate" mixin="IslandsPartyPoseMixin" enableMouse="true">
+	<Frame name="IslandsPartyPoseFrame" toplevel="true" parent="UIParent" inherits="PartyPoseFrameTemplate" mixin="IslandsPartyPoseMixin">
 		<Anchors>
-			<Anchor point="CENTER" x="5" y="5"/>
+			<Anchor point="CENTER"/>
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="2">
@@ -25,8 +25,10 @@
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ModelScene" x="15" y="-55"/>
 				</Anchors>
 			</Frame>
-			<Button parentKey="LeaveButton" inherits="UIPanelButtonNoTooltipTemplate">
-				<Size x="164" y="22"/>
+			<Button parentKey="LeaveButton" inherits="UIPanelButtonNoTooltipResizeToFitTemplate">
+				<KeyValues>
+					<KeyValue key="minimumWidth" value="164" type="number"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ModelScene" x="-20" y="-45"/>
 				</Anchors>

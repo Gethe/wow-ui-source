@@ -171,7 +171,7 @@ function FriendsFrame_ClickSummonButton (self)
 	end
 end
 
-function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame, friendsList, isMobile, communityClubID, communityStreamID, communityEpoch, communityPosition)
+function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame, friendsList, isMobile, communityClubID, communityStreamID, communityEpoch, communityPosition, guid)
 	HideDropDownMenu(1);
 	if ( connected or friendsList ) then
 		if ( connected ) then
@@ -193,6 +193,7 @@ function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame,
 		FriendsDropDown.chatFrame = chatFrame;
 		FriendsDropDown.bnetIDAccount = nil;
 		FriendsDropDown.isMobile = isMobile;
+		FriendsDropDown.guid = guid;
 		ToggleDropDownMenu(1, nil, FriendsDropDown, "cursor");
 	end
 end

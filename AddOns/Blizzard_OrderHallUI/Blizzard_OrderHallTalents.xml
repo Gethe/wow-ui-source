@@ -208,7 +208,89 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-
+			<Frame parentKey="StyleFrame" hidden="true">
+				<Size x="336" y="566"/>
+				<Anchors>
+					<Anchor point="CENTER"/> 
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER" textureSubLevel="2">
+						<Texture parentKey="TopTalentLeftCorner" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-4" y="4" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="TopTalentRightCorner" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="4" y="4"/>
+							</Anchors>
+							<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+						</Texture>
+						<Texture parentKey="BotTalentLeftCorner" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="-4" y="-4"/>
+							</Anchors>
+							<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+						</Texture>
+						<Texture parentKey="BotTalentRightCorner" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="4" y="-4"/>
+							</Anchors>
+							<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="CornerLogo" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.TopTalentLeftCorner" x="-25" y="10"/> 
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CloseButtonBorder" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.CloseButton"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="Top" horizTile="true" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" y="4"/>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Bottom" horizTile="true" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" y="-4"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Left" vertTile="true" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-4"/>
+								<Anchor point="BOTTOMLEFT" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Right" vertTile="true" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="4"/>
+								<Anchor point="BOTTOMRIGHT" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CurrencyBG" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-50"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background">
+							<Anchors>
+								<Anchor point="CENTER"/> 
+							</Anchors>
+						</Texture> 
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
 	</Frame>
 </Ui>

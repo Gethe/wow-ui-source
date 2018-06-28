@@ -70,6 +70,7 @@
 				<KeyValue key="maximumHeight" value="300" type="number"/>
 				<KeyValue key="widthPadding" value="300" type="number"/>
 				<KeyValue key="heightPadding" value="300" type="number"/>
+			</KeyValues>
 			-->
 			<Scripts>
 				<OnShow method="Layout"/>

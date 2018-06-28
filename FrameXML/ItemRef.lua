@@ -124,6 +124,8 @@ function SetItemRef(link, text, button, chatFrame)
 			else
 				if ( BNIsFriend(bnetIDAccount)) then
 					ChatFrame_SendSmartTell(name, chatFrame);
+				else
+					ChatFrame_DisplaySystemMessageInCurrent(ERR_BNET_IS_NOT_YOUR_FRIEND:format(name));
 				end
 			end
 		end
@@ -327,7 +329,10 @@ function SetItemRef(link, text, button, chatFrame)
 			end
 		end
 		local _, ticketId = strsplit(":", link);
-		CommunitiesHyperlink.OnClickLink(ticketId);
+		if ( CommunitiesFrame_IsEnabled() ) then
+			Communities_LoadUI();
+			CommunitiesHyperlink.OnClickLink(ticketId);
+		end
 		return;
 	end
 

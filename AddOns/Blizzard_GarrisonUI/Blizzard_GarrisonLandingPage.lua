@@ -76,7 +76,7 @@ function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 	elseif (self.garrTypeID == LE_GARRISON_TYPE_8_0) then
 
 		local faction = UnitFactionGroup("player");
-		if ( faction ~= "Horde" ) then
+		if ( faction == "Horde" ) then
 			self.Report.Background:SetAtlas("BfAMissionsLandingPage-Background-Horde", true);
 			self.Report.Background:ClearAllPoints();
 			self.Report.Background:SetPoint("BOTTOMLEFT", 100, 127);

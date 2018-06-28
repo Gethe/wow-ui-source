@@ -274,10 +274,11 @@ function ChannelRosterButtonMixin:UpdateName()
 
 	local r, g, b;
 
-	if not self:IsConnected() then
+	-- Check for false here, because nil indicates we don't know if they are online
+	if self:IsConnected() == false then
 		r, g, b = DISABLED_FONT_COLOR:GetRGB();
 	elseif self.playerLocation then
-		local _, class= UnitClassByPlayerLocation(self.playerLocation);
+		local _, class = C_PlayerInfo.GetClass(self.playerLocation)
 		if class then
 			r, g, b = GetClassColor(class);
 		end

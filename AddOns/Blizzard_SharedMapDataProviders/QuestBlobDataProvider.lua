@@ -34,11 +34,18 @@ function QuestBlobDataProviderMixin:OnAdded(mapCanvas)
 	if not self.clearFocusedQuestIDCallback then
 		self.clearFocusedQuestIDCallback = function(event, ...) self.pin:ClearFocusedQuestID(...); end;
 	end
-	
+	if not self.setHighlightedQuestPOICallback then
+		self.setHighlightedQuestPOICallback = function(event, ...) self.pin:SetHighlightedQuestPOI(...); end;
+	end
+	if not self.clearHighlightedQuestPOICallback then
+		self.clearHighlightedQuestPOICallback = function(event, ...) self.pin:ClearHighlightedQuestPOI(...); end;
+	end
 	self:GetMap():RegisterCallback("SetHighlightedQuestID", self.setHighlightedQuestIDCallback);
 	self:GetMap():RegisterCallback("ClearHighlightedQuestID", self.clearHighlightedQuestIDCallback);
 	self:GetMap():RegisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
 	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
+	self:GetMap():RegisterCallback("SetHighlightedQuestPOI", self.setHighlightedQuestPOICallback);
+	self:GetMap():RegisterCallback("ClearHighlightedQuestPOI", self.clearHighlightedQuestPOICallback);
 end
 
 function QuestBlobDataProviderMixin:OnRemoved(mapCanvas)
@@ -48,6 +55,8 @@ function QuestBlobDataProviderMixin:OnRemoved(mapCanvas)
 	self:GetMap():UnregisterCallback("ClearHighlightedQuestID", self.clearHighlightedQuestIDCallback);
 	self:GetMap():UnregisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
 	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
+	self:GetMap():UnregisterCallback("SetHighlightedQuestPOI", self.setHighlightedQuestPOICallback);
+	self:GetMap():UnregisterCallback("ClearHighlightedQuestPOI", self.clearHighlightedQuestPOICallback);
 end
 
 function QuestBlobDataProviderMixin:OnMapChanged()
@@ -155,7 +164,21 @@ function QuestBlobPinMixin:ClearFocusedQuestID()
 	self:Refresh();
 end
 
+function QuestBlobPinMixin:SetHighlightedQuestPOI(questID)
+	self.highlightedQuestPOI = questID;
+	self:Refresh();
+end
+
+function QuestBlobPinMixin:ClearHighlightedQuestPOI()
+	self.highlightedQuestPOI = nil;
+	self:Refresh();
+end
+
 function QuestBlobPinMixin:UpdateTooltip()
+	if self.highlightedQuestPOI then
+		return;
+	end
+
 	local mouseX, mouseY = self:GetMap():GetNormalizedCursorPosition();
 	local questLogIndex, numPOITooltips = self:UpdateMouseOverTooltip(mouseX, mouseY);
 	if not questLogIndex then

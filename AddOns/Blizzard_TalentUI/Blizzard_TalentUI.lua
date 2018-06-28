@@ -1660,6 +1660,8 @@ PvpTalentWarmodeButtonMixin = {};
 
 function PvpTalentWarmodeButtonMixin:OnShow()
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
+	self:RegisterEvent("ZONE_CHANGED");
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_WARMODE_UNLOCK)) then
 		self:GetParent().WarmodeTutorialBox:Show();
 	end
@@ -1668,6 +1670,8 @@ end
 
 function PvpTalentWarmodeButtonMixin:OnHide()
 	self:UnregisterEvent("PLAYER_FLAGS_CHANGED");
+	self:UnregisterEvent("ZONE_CHANGED_NEW_AREA");
+	self:UnregisterEvent("ZONE_CHANGED");
 end
 
 function PvpTalentWarmodeButtonMixin:OnEvent(event, ...)
@@ -1678,6 +1682,8 @@ function PvpTalentWarmodeButtonMixin:OnEvent(event, ...)
 		if (C_PvP.IsWarModeDesired() ~= previousValue) then
 			self:Update();
 		end
+	elseif ((event == "ZONE_CHANGED") or (event == "ZONE_CHANGED_NEW_AREA")) then
+		self:Update();
 	end
 end
 

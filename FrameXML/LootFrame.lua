@@ -757,7 +757,15 @@ function GetBonusRollEncounterJournalLinkDifficulty()
 end
 
 function EncounterJournalLinkButton_IsLinkDataAvailable()
-	return (BonusRollFrame.instanceID or BonusRollFrame.encounterID) and GetBonusRollEncounterJournalLinkDifficulty();
+    if ( BonusRollFrame.instanceID or BonusRollFrame.encounterID ) then
+        local difficultyID = GetBonusRollEncounterJournalLinkDifficulty();
+        -- Mythic+ doesn't yet have all the itemContext info available 
+        --that we need to properly show item tooltips
+        if ( difficultyID ~= nil and difficultyID ~= DIFFICULTY_DUNGEON_CHALLENGE) then
+            return true;
+        end
+    end
+    return false;
 end
 
 function EncounterJournalLinkButton_OnShow(self)

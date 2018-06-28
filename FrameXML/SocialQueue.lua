@@ -81,13 +81,13 @@ function SocialQueueUtil_GetHeaderName(groupGUID)
 		members = SocialQueueUtil_SortGroupMembers(members);
 		
 		local clubId = members[1].clubId;
-		local playerName, color = SocialQueueUtil_GetRelationshipInfo(members[1].guid, nil, clubId);
+		local playerName, color, relationship = SocialQueueUtil_GetRelationshipInfo(members[1].guid, nil, clubId);
 		if ( #members > 1 ) then
 			playerName = string.format(QUICK_JOIN_TOAST_EXTRA_PLAYERS, playerName, #members - 1);
 		end
 		playerName = color..playerName;
 		
-		if ( clubId ) then
+		if ( relationship == "club" and clubId ) then
 			local clubInfo = C_Club.GetClubInfo(clubId);
 			if ( clubInfo ) then
 				playerName = SOCIAL_QUEUE_COMMUNITIES_HEADER_FORMAT:format(playerName, clubInfo.name);

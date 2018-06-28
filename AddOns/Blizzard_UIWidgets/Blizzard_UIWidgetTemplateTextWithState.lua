@@ -19,13 +19,15 @@ function UIWidgetTemplateTextWithStateMixin:Setup(widgetInfo)
 		self.Text:SetTextColor(self.fontColor:GetRGB());
 	end
 
+	local width;
 	if widgetInfo.widgetWidth > 0 then
-		self:SetWidth(widgetInfo.widgetWidth);
+		width = widgetInfo.widgetWidth;
 	else
-		self:SetWidth(self.Text:GetWidth());
+		width = self.Text:GetStringWidth();
 	end
 
-	self:SetHeight(self.Text:GetHeight());
+	self:SetWidth(width);
+	self:SetHeight(self.Text:GetStringHeight());
 end
 
 function UIWidgetTemplateTextWithStateMixin:SetFontStringColor(fontColor)

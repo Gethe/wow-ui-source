@@ -2,7 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="CommunitiesInvitationFrame.lua"/>
 	
-	<Frame name="CommunitiesInvitationFrameTemplate" mixin="CommunitiesInvitationFrameMixin" virtual="true">
+	<Frame name="CommunitiesInvitationFrameTemplate" mixin="CommunitiesInvitationFrameMixin" hyperlinksEnabled="true" virtual="true">
 		<Frames>
 			<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
 				<Size x="150" y="24"/>
@@ -115,6 +115,7 @@
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
+			<OnHyperlinkClick method="OnHyperlinkClick"/>
 		</Scripts>
 	</Frame>
 

@@ -33,12 +33,9 @@ function LoadMicroButtonTextures(self, name)
 end
 
 function MicroButtonTooltipText(text, action)
-	if ( GetBindingKey(action) ) then
-		return text.." "..NORMAL_FONT_COLOR_CODE.."("..GetBindingText(GetBindingKey(action))..")"..FONT_COLOR_CODE_CLOSE;
-	else
-		return text;
-	end
-
+	local keyStringFormat = NORMAL_FONT_COLOR_CODE.."(%s)"..FONT_COLOR_CODE_CLOSE;
+	local bindingAvailableFormat = "%s %s";
+	return FormatBindingKeyIntoText(text, action, bindingAvailableFormat, keyStringFormat);
 end
 
 function MicroButton_OnEnter(self)
@@ -145,15 +142,20 @@ function UpdateMicroButtons()
 	end
 
 	GuildMicroButton_UpdateTabard();
-	if ( IsTrialAccount() or (IsVeteranTrialAccount() and not IsInGuild()) or factionGroup == "Neutral" or IsKioskModeEnabled() ) then
+	if ( IsCommunitiesUIDisabledByTrialAccount() or factionGroup == "Neutral" or IsKioskModeEnabled() ) then
 		GuildMicroButton:Disable();
 		if (IsKioskModeEnabled()) then
 			SetKioskTooltip(GuildMicroButton);
+		else
+			GuildMicroButton.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
 		end
+	elseif ( C_Club.IsEnabled() and not BNConnected() ) then
+		GuildMicroButton:Disable();
+		GuildMicroButton.disabledTooltip = BLIZZARD_COMMUNITIES_SERVICES_UNAVAILABLE;
 	elseif ( GuildFrameIsOpen() ) then
 		GuildMicroButton:Enable();
 		GuildMicroButton:SetButtonState("PUSHED", true);
-		GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -1);
+		GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -2);
 		GuildMicroButtonTabard:SetAlpha(0.70);
 	else
 		GuildMicroButton:Enable();
@@ -215,13 +217,13 @@ function UpdateMicroButtons()
 	else
 		StoreMicroButton:SetButtonState("NORMAL");
 	end
-	
+
 	StoreMicroButton:Show();
 	HelpMicroButton:Hide();
 	if ( IsVeteranTrialAccount() ) then
 		StoreMicroButton.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
 		StoreMicroButton:Disable();
-	elseif ( IsTrialAccount() and not C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAMES_CATEGORY_ID) ) then
+	elseif ( IsTrialAccount() ) then
 		StoreMicroButton.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
 		StoreMicroButton:Disable();
 	elseif ( C_StorePublic.IsDisabledByParentalControls() ) then
@@ -329,9 +331,38 @@ function CharacterMicroButton_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED");
 	self:RegisterEvent("AZERITE_ITEM_POWER_LEVEL_CHANGED");
+	LoadMicroButtonTextures(self, "Character");
+end
+
+function CharacterMicroButton_OnMouseDown(self)
+	if ( self.down ) then
+		self.down = nil;
+		ToggleCharacter("PaperDollFrame");
+	else
+		CharacterMicroButton_SetPushed();
+		self.down = 1;
+	end
+end
+
+function CharacterMicroButton_OnMouseUp(self)
+	if ( self.down ) then
+		self.down = nil;
+		if ( self:IsMouseOver() ) then
+			ToggleCharacter("PaperDollFrame");
+		end
+		UpdateMicroButtons();
+	elseif ( self:GetButtonState() == "NORMAL" ) then
+		CharacterMicroButton_SetPushed();
+		self.down = 1;
+	else
+		CharacterMicroButton_SetNormal();
+		self.down = 1;
+	end
+end
+
+function CharacterMicroButton_OnEnter(self)
 	self.tooltipText = MicroButtonTooltipText(CHARACTER_BUTTON, "TOGGLECHARACTER0");
-	self.newbieText = NEWBIE_TOOLTIP_CHARACTER;
-	LoadMicroButtonTextures(self, "Character");	
+	GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHARACTER);
 end
 
 function CharacterMicroButton_OnEvent(self, event, ...)
@@ -556,7 +587,7 @@ function TalentMicroButton_OnEvent(self, event, ...)
 			self.receivedUpdate = true;
 			local shouldPulseForTalents = self:HasTalentAlertToShow() or self:HasPvpTalentAlertToShow();
 			if (UnitLevel("player") >= SHOW_SPEC_LEVEL and (not GetSpecialization() or shouldPulseForTalents)) then
-				MicroButtonPulse(self);		
+				MicroButtonPulse(self);
 			end
 		end
 	elseif ( event == "UPDATE_BINDINGS" ) then
@@ -596,6 +627,17 @@ do
 		self.lastNumPetsNeedingFanfare = numPetsNeedingFanfare;
 	end
 
+	function CollectionsMicroButton_OnLoad(self)
+		LoadMicroButtonTextures(self, "Mounts");
+		SetDesaturation(self:GetDisabledTexture(), true);
+		self:RegisterEvent("HEIRLOOMS_UPDATED");
+		self:RegisterEvent("PET_JOURNAL_NEW_BATTLE_SLOT");
+		self:RegisterEvent("TOYS_UPDATED");
+		self:RegisterEvent("COMPANION_LEARNED");
+		self:RegisterEvent("PET_JOURNAL_LIST_UPDATE");
+		self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	end
+
 	function CollectionsMicroButton_OnEvent(self, event, ...)
 		if CollectionsJournal and CollectionsJournal:IsShown() then
 			return;
@@ -625,6 +667,16 @@ do
 		elseif ( event == "COMPANION_LEARNED" or event == "PLAYER_ENTERING_WORLD" or event == "PET_JOURNAL_LIST_UPDATE" ) then
 			self:EvaluateAlertVisibility();
 		end
+	end
+
+
+	function CollectionsMicroButton_OnEnter(self)
+		self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS");
+		GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_MOUNTS_AND_PETS);
+	end
+
+	function CollectionsMicroButton_OnClick(self)
+		ToggleCollectionsJournal();
 	end
 end
 

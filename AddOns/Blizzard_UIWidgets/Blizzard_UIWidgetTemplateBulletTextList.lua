@@ -21,7 +21,7 @@ function UIWidgetTemplateBulletTextListMixin:Setup(widgetInfo)
 
 		lineFrame.Text:SetText(line);
 		lineFrame:SetEnabledState(widgetInfo.enabledState)
-		lineFrame:SetHeight(lineFrame.Text:GetHeight());
+		lineFrame:SetHeight(lineFrame.Text:GetStringHeight());
 
 		lineFrame:ClearAllPoints();
 		if previousLineFrame then
@@ -45,6 +45,16 @@ end
 function UIWidgetTemplateBulletTextListMixin:OnReset()
 	UIWidgetBaseTemplateMixin.OnReset(self);
 	self.linePool:ReleaseAll();
+end
+
+function UIWidgetTemplateBulletTextListMixin:CustomDebugSetup(color)
+	for line in self.linePool:EnumerateActive() do
+		if not line._debugBGTex then
+			line._debugBGTex = line:CreateTexture()
+			line._debugBGTex:SetColorTexture(color:GetRGBA());
+			line._debugBGTex:SetAllPoints(line);
+		end
+	end
 end
 
 UIWidgetTemplateBulletTextListLineMixin = {};

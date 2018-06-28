@@ -77,22 +77,18 @@ local EJ_DIFFICULTIES =
 
 local EJ_TIER_DATA =
 {
-	[1] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-Classic", r = 1.0, g = 0.8, b = 0.0 },
-	[2] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-BurningCrusade", r = 0.6, g = 0.8, b = 0.0 },
-	[3] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-WrathoftheLichKing", r = 0.2, g = 0.8, b = 1.0 },
-	[4] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-Cataclysm", r = 1.0, g = 0.4, b = 0.0 },
-	[5] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-MistsofPandaria", r = 0.0, g = 0.6, b = 0.2 },
-	[6] = { backgroundTexture = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-WarlordsofDraenor", r = 0.82, g = 0.55, b = 0.1 },
-	[7] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-Legion", r = 1.0, g = 0.8, b = 0.0 },
-	[8] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-BattleforAzeroth", r = 1.0, g = 0.8, b = 0.0 },
+	[1] = { backgroundAtlas = "UI-EJ-Classic", r = 1.0, g = 0.8, b = 0.0 },
+	[2] = { backgroundAtlas = "UI-EJ-BurningCrusade", r = 0.6, g = 0.8, b = 0.0 },
+	[3] = { backgroundAtlas = "UI-EJ-WrathoftheLichKing", r = 0.2, g = 0.8, b = 1.0 },
+	[4] = { backgroundAtlas = "UI-EJ-Cataclysm", r = 1.0, g = 0.4, b = 0.0 },
+	[5] = { backgroundAtlas = "UI-EJ-MistsofPandaria", r = 0.0, g = 0.6, b = 0.2 },
+	[6] = { backgroundAtlas = "UI-EJ-WarlordsofDraenor", r = 0.82, g = 0.55, b = 0.1 },
+	[7] = { backgroundAtlas = "UI-EJ-Legion", r = 0.0, g = 0.6, b = 0.2 },
+	[8] = { backgroundAtlas = "UI-EJ-BattleforAzeroth", r = 0.8, g = 0.4, b = 0.0 },
 }
 
 function GetEJTierData(tier)
-	if tier <= #EJ_TIER_DATA then
-		return EJ_TIER_DATA[tier];
-	end
-
-	return EJ_TIER_DATA[1];
+	return EJ_TIER_DATA[tier] or EJ_TIER_DATA[1];
 end
 
 ExpansionEnumToEJTierDataTableId = {
@@ -296,7 +292,7 @@ function EncounterJournal_OnShow(self)
 	if ( not instanceSelect.suggestTab:IsEnabled() or EncounterJournal.suggestFrame:IsShown() ) then
 		tierData = GetEJTierData(EJSuggestTab_GetPlayerTierIndex());
 	end
-	instanceSelect.bg:SetTexture(tierData.backgroundTexture);
+	instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
 	instanceSelect.raidsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 	instanceSelect.dungeonsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 	EncounterJournal_CheckLevelAndDisplayLootTab();
@@ -2401,7 +2397,7 @@ function EJ_ContentTab_Select(id)
 	end
 	selectedTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 	selectedTab.selectedGlow:Show();
-	instanceSelect.bg:SetTexture(tierData.backgroundTexture);
+	instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
 	EncounterJournal.encounter:Hide();
 	EncounterJournal.instanceSelect:Show();
 
@@ -2442,7 +2438,7 @@ function EJ_HideSuggestPanel()
 		EncounterJournal_EnableTierDropDown();
 
 		local tierData = GetEJTierData(EJ_GetCurrentTier());
-		instanceSelect.bg:SetTexture(tierData.backgroundTexture);
+		instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
 		instanceSelect.raidsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 		instanceSelect.dungeonsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 		instanceSelect.scroll:Show();
@@ -2487,7 +2483,7 @@ function EncounterJournal_TierDropDown_Select(_, tier)
 	instanceSelect.raidsTab.grayBox:Hide();
 
 	local tierData = GetEJTierData(tier);
-	instanceSelect.bg:SetTexture(tierData.backgroundTexture);
+	instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
 	instanceSelect.raidsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 	instanceSelect.dungeonsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 
@@ -2784,7 +2780,7 @@ function EJSuggestFrame_RefreshDisplay()
 	local tierData = GetEJTierData(EJSuggestTab_GetPlayerTierIndex());
 	tab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 	tab.selectedGlow:Show();
-	instanceSelect.bg:SetTexture(tierData.backgroundTexture);
+	instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
 
 	local self = EncounterJournal.suggestFrame;
 	C_AdventureJournal.GetSuggestions(self.suggestions);

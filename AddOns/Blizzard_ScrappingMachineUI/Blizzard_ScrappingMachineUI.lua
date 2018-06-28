@@ -40,6 +40,13 @@ function ScrappingMachineMixin:OnLoad()
 	self:SetupScrapButtonPool(); 
 	
 	UIPanelWindows[self:GetName()] = {area = "left", pushable = 3, showFailedFunc = C_ScrappingMachineUI.CloseScrappingMachine, };
+	
+	if ("Horde" == UnitFactionGroup("player")) then 
+		self.Background:SetAtlas("scrappingmachine-background-goblin", false); 
+	else
+		self.Background:SetAtlas("scrappingmachine-background-gnomish", false);
+	end
+	
 	SetPortraitToTexture(self.portrait, "Interface\\Icons\\inv_gizmo_03");
 	self.TitleText:SetText(SCRAPPING_MACHINE_TITLE);	 
 end
@@ -54,6 +61,7 @@ function ScrappingMachineMixin:OnShow()
 	self:RegisterUnitEvent("UNIT_SPELLCAST_START", "player");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "player");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player"); 
+	self.TitleText:SetText(C_ScrappingMachineUI.GetScrappingMachineName());
 end
 
 function ScrappingMachineMixin:OnEvent(event, ...)

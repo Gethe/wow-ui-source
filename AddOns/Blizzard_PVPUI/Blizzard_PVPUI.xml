@@ -158,66 +158,6 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="PVPRewardTooltip" inherits="VerticalLayoutFrame" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
-		<Size x="250" y="256"/>
-		<Anchors>
-			<Anchor point="BOTTOMRIGHT"/>
-		</Anchors>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize val="16"/>
-			<TileSize val="16"/>
-			<BackgroundInsets left="5" right="5" top="5" bottom="5"/>
-		</Backdrop>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="RewardString" inherits="GameFontNormal" text="PVP_REWARD_TOOLTIP">
-					<KeyValues>
-						<KeyValue key="layoutIndex" value="1" type="number"/>
-					</KeyValues>
-				</FontString>
-				<FontString parentKey="Honor" inherits="GameFontHighlight">
-					<KeyValues>
-						<KeyValue key="layoutIndex" value="2" type="number"/>
-					</KeyValues>
-				</FontString>
-				<FontString parentKey="XP" inherits="GameFontHighlight">
-					<KeyValues>
-						<KeyValue key="layoutIndex" value="3" type="number"/>
-					</KeyValues>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame parentKey="ItemTooltip" inherits="InternalEmbeddedItemTooltipTemplate">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="4" type="number"/>
-					<KeyValue key="topPadding" value="15" type="number"/>
-					<KeyValue key="bottomPadding" value="6" type="number"/>
-				</KeyValues>
-				<Size x="100" y="100"/>
-				<Scripts>
-					<OnSizeChanged inherit="prepend">
-						self:GetParent():Layout();
-					</OnSizeChanged>
-				</Scripts>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-			</OnLoad>
-		</Scripts>
-		<KeyValues>
-			<KeyValue key="fixedWidth" value="100" type="number"/>
-			<KeyValue key="expand" value="true" type="boolean"/>
-			<KeyValue key="topPadding" value="10" type="number"/>
-			<KeyValue key="bottomPadding" value="12" type="number"/>
-			<KeyValue key="leftPadding" value="10" type="number"/>
-			<KeyValue key="rightPadding" value="10" type="number"/>
-			<KeyValue key="spacing" value="2" type="number"/>
-		</KeyValues>
-	</Frame>
 
 	<Frame name="PVPRewardTemplate" enableMouse="true" virtual="true">
 		<Size x="48" y="48"/>
@@ -242,25 +182,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="WeeklyBonus" hidden="true">
-				<Size x="29" y="29"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="4" y="5"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture atlas="honorsystem-icon-bonus" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter function="PVPRewardWeeklyBonus_OnEnter"/>
-					<OnLeave function="PVPRewardWeeklyBonus_OnLeave"/>
-				</Scripts>
-			</Frame>
 			<Frame parentKey="EnlistmentBonus" hidden="true">
 				<Size x="29" y="29"/>
 				<Anchors>
@@ -295,7 +216,7 @@
 		<Scripts>
 			<OnEnter function="PVPRewardTemplate_OnEnter"/>
 			<OnLeave>
-				PVPRewardTooltip:Hide();
+				EmbeddedItemTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 	</Frame>
@@ -369,6 +290,28 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
+			<Frame parentKey="Lock" hidden="true">
+				<Size x="36" y="47"/>
+				<Anchors>
+					<Anchor point="CENTER" x="11" y="3"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture atlas="honorsystem-bar-lock" setAllPoints="true"/>
+					</Layer>
+					<Layer level="HIGHLIGHT">
+						<Texture atlas="honorsystem-bar-lock" alpha="0.1" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, 'ANCHOR_RIGHT');
+						GameTooltip:SetText(string.format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT]));
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			 </Frame>
 		</Frames>
 		<BarTexture atlas="_pvpqueue-conquestbar-fill-yellow"/>
 		<BarColor r="1" g="1" b="1"/>
@@ -510,9 +453,10 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Title" inherits="GameFontHighlightLarge">
+				<FontString parentKey="Title" inherits="GameFontHighlightLarge" justifyH="LEFT" maxLines="1">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Anchor" x="20" y="-1"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Anchor" x="-20" y="-1"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="LevelRequirement" inherits="GameFontNormalMed3" hidden="true">
@@ -532,6 +476,16 @@
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.Anchor" x="-16" y="-2"/>
 				</Anchors>
+				<Scripts>
+					<OnShow>
+						local parent = self:GetParent();
+						parent.Title:SetPoint("RIGHT", parent.Anchor, "RIGHT", -60, -1);
+					</OnShow>
+					<OnHide>
+						local parent = self:GetParent();
+						parent.Title:SetPoint("RIGHT", parent.Anchor, "RIGHT", -20, -1);
+					</OnHide>
+				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -1460,6 +1414,8 @@
 									<OnHide method="OnHide"/>
 									<OnEvent method="OnEvent"/>
 									<OnMouseUp method="OnMouseUp"/>
+									<OnEnter method="OnEnter"/>
+									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
 							</Cooldown>
 							<Frame parentKey="CasualPanel" hidden="true">

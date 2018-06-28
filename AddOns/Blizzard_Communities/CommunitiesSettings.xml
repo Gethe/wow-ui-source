@@ -5,10 +5,10 @@
 	<Frame name="CommunitiesSettingsDialog" frameStrata="DIALOG" parent="UIParent" mixin="CommunitiesSettingsDialogMixin" topLevel="true" hidden="true">
 		<Size x="412" y="515"/>
 		<Anchors>
-			<Anchor point="TOP" x="0" y="-200"/>
+			<Anchor point="TOP" relativeTo="UIParent" x="0" y="-142"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets left="11" right="12" top="12" bottom="11"/>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets left="11" right="11" top="11" bottom="11"/>
 			<TileSize val="32"/>
 			<EdgeSize val="32"/>
 		</Backdrop>
@@ -66,7 +66,7 @@
 				<Texture parentKey="IconPreview">
 					<Size x="64" y="64"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.IconPreviewRing" x="0" y="3"/>
+						<Anchor point="CENTER" relativeKey="$parent.IconPreviewRing" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">

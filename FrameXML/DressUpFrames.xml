@@ -159,14 +159,12 @@
 					<OnLoad>						
 						function OnMaximize(frame)
 							frame:GetParent():SetSize(450, 545);
-							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						
 						self:SetOnMaximizedCallback(OnMaximize);
 						
 						function OnMinimize(frame)
 							frame:GetParent():SetSize(334, 423);
-							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						
 						self:SetOnMinimizedCallback(OnMinimize);

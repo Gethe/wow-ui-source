@@ -13,6 +13,11 @@ function OrderHallTalentFrame_ToggleFrame()
 	end
 end
 
+local function OnTalentButtonReleased(pool, button)
+	FramePool_HideAndClearAnchors(pool, button);
+	button:OnReleased()
+end
+
 StaticPopupDialogs["ORDER_HALL_TALENT_RESEARCH"] = {
 	text = "%s";
 	button1 = ACCEPT,
@@ -31,9 +36,105 @@ StaticPopupDialogs["ORDER_HALL_TALENT_RESEARCH"] = {
 
 OrderHallTalentFrameMixin = { }
 
-local function OnTalentButtonReleased(pool, button)
-	FramePool_HideAndClearAnchors(pool, button);
-	button:OnReleased()
+do
+	local bfaTalentFrameStyleData =
+	{
+		Horde =
+		{
+			closeButtonBorder = "talenttree-horde-exit",
+
+			Top = "_talenttree-horde-tiletop",
+			Bottom = "_talenttree-horde-tilebottom",
+			Left = "!talenttree-horde-tileleft",
+			Right = "!talenttree-horde-tileright",
+			TopLeft = "talenttree-horde-corner",
+			TopRight = "talenttree-horde-corner",
+			BotLeft = "talenttree-horde-corner",
+			BotRight = "talenttree-horde-corner",
+			Background = "talenttree-horde-background",
+			Portrait = "talenttree-horde-cornerlogo",
+			CurrencyBG = "talenttree-horde-currencybg",
+		},
+
+		Alliance =
+		{
+			closeButtonBorder = "talenttree-alliance-exit",
+
+			Top = "_talenttree-alliance-tiletop",
+			Bottom = "_talenttree-alliance-tilebottom",
+			Left = "!talentree-alliance-tileleft",
+			Right = "!talentree-alliance-tileright",
+			TopLeft = "talenttree-alliance-corner",
+			TopRight = "talenttree-alliance-corner",
+			BotLeft = "talenttree-alliance-corner",
+			BotRight = "talenttree-alliance-corner",
+			Background = "talenttree-alliance-background",
+			Portrait = "talenttree-alliance-cornerlogo",
+			CurrencyBG = "talenttree-alliance-currencybg",
+		},
+	};
+
+	local function SetupBorder(self, styleData)
+		self.Top:SetAtlas(styleData.Top, true);
+		self.Bottom:SetAtlas(styleData.Bottom, true);
+		self.Left:SetAtlas(styleData.Left, true);
+		self.Right:SetAtlas(styleData.Right, true);
+
+		self.TopTalentLeftCorner:SetAtlas(styleData.TopLeft, true);
+		self.TopTalentRightCorner:SetAtlas(styleData.TopRight, true);
+		self.BotTalentLeftCorner:SetAtlas(styleData.BotLeft, true);
+		self.BotTalentRightCorner:SetAtlas(styleData.BotRight, true);
+		self.CornerLogo:SetAtlas(styleData.Portrait, true);
+		
+		self.Background:SetAtlas(styleData.Background, true);
+		self.Background:ClearAllPoints();
+		self.Background:SetPoint("CENTER", self);
+		
+		self.CurrencyBG:SetAtlas(styleData.CurrencyBG, true);
+		self:GetParent().CurrencyIcon:ClearAllPoints();
+		self:GetParent().CurrencyIcon:SetPoint("CENTER", self.CurrencyBG, "CENTER", 20, -1);
+		self:GetParent().CurrencyIcon:SetSize(17,16);
+		
+		self:GetParent().CloseButton:ClearAllPoints();
+		self:GetParent().CloseButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", 3, 3);
+		self:GetParent().CloseButton:SetFrameLevel(self:GetFrameLevel() + 5);
+		
+		self.CloseButtonBorder:SetAtlas(styleData.closeButtonBorder, true);
+		self.CloseButtonBorder:ClearAllPoints();
+		self.CloseButtonBorder:SetPoint("CENTER", self:GetParent().CloseButton);
+		
+		self:SetFrameLevel(self:GetParent():GetFrameLevel() -1);
+	end
+
+	function OrderHallTalentFrameMixin:SetUseStyleTextures(shouldUseStyleTextures)
+		if (not shouldUseStyleTextures) then 
+			self:SetPortraitFrameShown(true); 
+			return;
+		end
+		
+		local factionGroup = UnitFactionGroup("player");
+		local styleData = bfaTalentFrameStyleData[factionGroup];
+		self:SetPortraitFrameShown(false); 
+		SetupBorder(self.StyleFrame, styleData);
+		self.StyleFrame:Show();
+	end
+end
+
+function OrderHallTalentFrameMixin:SetPortraitFrameShown(shouldShow)
+	self.PortraitFrame:SetShown(shouldShow);
+	self.TopLeftCorner:SetShown(shouldShow);
+	self.TopRightCorner:SetShown(shouldShow);
+	self.BotLeftCorner:SetShown(shouldShow);
+	self.BotRightCorner:SetShown(shouldShow);
+	self.TopBorder:SetShown(shouldShow);
+	self.BottomBorder:SetShown(shouldShow);
+	self.LeftBorder:SetShown(shouldShow);
+	self.RightBorder:SetShown(shouldShow);
+	self.Background:SetShown(shouldShow);
+	self.TopTileStreaks:SetShown(shouldShow);
+	self.TitleBg:SetShown(shouldShow);
+	self.Bg:SetShown(shouldShow);
+	ClassHallTalentInset:SetShown(shouldShow);
 end
 
 function OrderHallTalentFrameMixin:OnLoad()
@@ -133,25 +234,45 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			garrTalentTreeID = treeIDs[1];
 		end
 	end
-	local uiTextureKit, classAgnostic, tree, titleText, shouldUseNpcInfo = C_Garrison.GetTalentTreeInfoForID(garrTalentTreeID);
+	local uiTextureKit, classAgnostic, tree, titleText, isThemed = C_Garrison.GetTalentTreeInfoForID(garrTalentTreeID);
 	if not tree then
 		self.refreshing = false;
 		return;
 	end
 	
-	-- Chromie is the original classAgnostic talent tree, and we added a back button to her talent frame
-	-- as a small quality of life improvement (this may or may not be relevent to classAgnostic talent trees in the future).
-	if (shouldUseNpcInfo) then
+	self.StyleFrame:Hide();
+	
+	self:SetUseStyleTextures(isThemed);
+	
+	if (isThemed) then
+		self.TitleText:Hide();
+		self.BackButton:Hide();
+	elseif (classAgnostic and not isThemed) then
 		self.TitleText:SetText(UnitName("npc"));
+		self.TitleText:Show();
 		self.BackButton:Show();
 	elseif (titleText) then
 		self.TitleText:SetText(titleText);
+		self.TitleText:Show();
 		self.BackButton:Hide();
 	else 
 		self.TitleText:SetText(ORDER_HALL_TALENT_TITLE);
+		self.TitleText:Show();
 		self.BackButton:Hide();
 	end
 
+	if (uiTextureKit) then
+		self.Background:SetAtlas(uiTextureKit.."-background");
+	else
+		local _, className, classID = UnitClass("player");
+
+		self.Background:SetAtlas("orderhalltalents-background-"..className);
+		if (not classAgnostic) then
+			self.portrait:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+			self.portrait:SetTexture("INTERFACE\\ICONS\\crest_"..className);
+		end
+	end
+	
 	local friendshipFactionID = C_Garrison.GetCurrentGarrTalentTreeFriendshipFactionID();
 	if (friendshipFactionID and friendshipFactionID > 0) then
 		NPCFriendshipStatusBar_Update(self, friendshipFactionID);
@@ -164,25 +285,6 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		self.Currency:Show();
 		self.CurrencyIcon:Show();
 		self.CurrencyHitTest:Show();
-	end
-
-	if (uiTextureKit) then
-		self.Background:SetAtlas(uiTextureKit.."-background");
-		self.portrait:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
-		local atlas = uiTextureKit.."-logo";
-		if (GetAtlasInfo(atlas)) then 
-			self.portrait:SetAtlas(atlas);
-		else
-			SetPortraitTexture(self.portrait, "npc");
-		end 
-	else
-		local _, className, classID = UnitClass("player");
-
-		self.Background:SetAtlas("orderhalltalents-background-"..className);
-		if (not classAgnostic) then
-			self.portrait:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
-			self.portrait:SetTexture("INTERFACE\\ICONS\\crest_"..className);
-		end
 	end
 
 	local borderX = 168;
@@ -243,7 +345,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			choiceBackground:SetPoint("TOP", xOffset, yOffset);
 			choiceBackground:Show();
 		end
-		self["Tick"..index]:Show();
+		self["Tick"..index]:SetShown(not classAgnostic);
 	end
 
 	local height = 566;
@@ -257,10 +359,12 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		self["Tick"..index]:Hide();
 		changecount = changecount + 1;
 	end
-
 	local distance = change * changecount;
-	self:SetHeight(height - distance);
+	local displayHeight = height - distance;
+	self:SetHeight(displayHeight);
 	self.Background:SetHeight(bgheight - distance);
+	self.StyleFrame.Background:SetHeight(displayHeight); 
+	self.StyleFrame:SetHeight(displayHeight); 
 	self.LeftInset:ClearAllPoints();
 	self.LeftInset:SetHeight(insetheight - distance);
 	self.LeftInset:SetPoint("CENTER", self.Background, 0, 0);

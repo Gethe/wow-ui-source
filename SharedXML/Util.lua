@@ -1134,6 +1134,10 @@ function FlagsMixin:IsSet(flagOrMask)
 	return bit.band(self.flags, flagOrMask) == flagOrMask;
 end
 
+function FlagsMixin:GetFlags()
+	return self.flags;
+end
+
 DirtyFlagsMixin = CreateFromMixins(FlagsMixin);
 
 function DirtyFlagsMixin:OnLoad()

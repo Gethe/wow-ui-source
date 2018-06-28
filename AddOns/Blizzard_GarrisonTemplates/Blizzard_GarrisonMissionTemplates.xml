@@ -127,7 +127,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontHighlight">
+				<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontHighlight" maxlines="3">
 					<Size x="95" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.BG" x="10"/>

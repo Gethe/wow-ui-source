@@ -161,22 +161,22 @@
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 			</Button>
-			<Button parentKey="GuildRecruitmentButton" inherits="UIPanelButtonTemplate, CommunitiesSubPanelButtonScriptTemplate" text="GUILD_RECRUITMENT">
+			<Button parentKey="GuildControlButton" inherits="UIPanelButtonTemplate, CommunitiesSubPanelButtonScriptTemplate" text="GUILD_CONTROL_BUTTON_TEXT">
 				<Size x="130" y="20"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="frame" value="CommunitiesGuildRecruitmentFrame" type="Global"/>
+					<KeyValue key="frame" value="GuildControlUI" type="Global"/>
 				</KeyValues>
 			</Button>
-			<Button parentKey="GuildControlButton" inherits="UIPanelButtonTemplate, CommunitiesSubPanelButtonScriptTemplate" text="GUILD_CONTROL_BUTTON_TEXT">
+			<Button parentKey="GuildRecruitmentButton" inherits="UIPanelButtonTemplate, CommunitiesSubPanelButtonScriptTemplate" text="GUILD_RECRUITMENT">
 				<Size x="130" y="20"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.GuildRecruitmentButton" relativePoint="LEFT" x="-2" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.GuildControlButton" relativePoint="LEFT" x="-2" y="0"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="frame" value="GuildControlUI" type="Global"/>
+					<KeyValue key="frame" value="CommunitiesGuildRecruitmentFrame" type="Global"/>
 				</KeyValues>
 			</Button>
 		</Frames>
@@ -231,6 +231,32 @@
 								<MaskedTexture childKey="Portrait"/>
 							</MaskedTextures>
 						</MaskTexture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="TabardBackground" file="Interface\GuildFrame\GuildFrame" hidden="true">
+							<Size x="62" y="62"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-7" y="8"/>
+							</Anchors>
+							<TexCoords left="0.63183594" right="0.69238281" top="0.61914063" bottom="0.74023438"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="TabardEmblem" file="Interface\GuildFrame\GuildEmblemsLG_01" hidden="true">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-8" y="9"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="TabardBorder" file="Interface\GuildFrame\GuildFrame" hidden="true">
+							<Size x="61" y="60"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-6" y="7"/>
+							</Anchors>
+							<TexCoords left="0.63183594" right="0.69238281" top="0.74414063" bottom="0.86523438"/>
+						</Texture>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -292,13 +318,13 @@
 			<Frame parentKey="CommunitiesListDropDownMenu" inherits="CommunitiesListDropDownMenuTemplate">
 				<Size x="40" y="28"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="-12" y="-28"/>
+					<Anchor point="TOPLEFT" x="-10" y="-28"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="VoiceChatHeadset" inherits="VoiceChatHeadsetTemplate">
-				<Size x="27" y="27"/>
+				<Size x="30" y="30"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-15" y="-30"/>
+					<Anchor point="TOPRIGHT" x="-15" y="-26"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="MemberList" inherits="CommunitiesMemberListFrameTemplate">
@@ -350,21 +376,21 @@
 			<Frame parentKey="EditStreamDialog" frameStrata="DIALOG" inherits="CommunitiesEditStreamDialogTemplate" hidden="true">
 				<Size x="320" y="260"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeTo="UIParent"/>
+					<Anchor point="TOP" relativeTo="UIParent" x="0" y="-142"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="NotificationSettingsDialog" frameStrata="DIALOG" inherits="CommunitiesNotificationSettingsDialogTemplate" hidden="true">
 				<Size x="638" y="508"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeTo="UIParent"/>
+					<Anchor point="TOP" relativeTo="UIParent" x="0" y="-142"/>
 				</Anchors>
 			</Frame>
 			<Button parentKey="AddToChatButton" inherits="AddToChatButtonTemplate">
-				<Size x="24" y="24"/>
+				<Size x="22" y="22"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.ChatEditBox" relativePoint="RIGHT" x="5" y="0"/>
-					<Anchor point="BOTTOM" x="0" y="3"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.ChatEditBox" relativePoint="BOTTOMRIGHT" x="8" y="5"/>
 				</Anchors>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 			<Button parentKey="InviteButton" inherits="CommunitiesInviteButtonTemplate">
 				<Size x="130" y="20"/>
@@ -389,7 +415,7 @@
 			</Button>
 			<Frame parentKey="GuildMemberDetailFrame" frameLevel="100" inherits="CommunitiesGuildMemberDetailFrameTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="-8" y="-80"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="-8" y="-76"/>
 				</Anchors>
 			</Frame>
 		</Frames>

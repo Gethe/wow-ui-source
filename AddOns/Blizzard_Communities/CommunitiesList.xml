@@ -15,15 +15,15 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="1">
+			<Layer level="BACKGROUND" textureSubLevel="2">
 				<Texture parentKey="GuildTabardBackground" atlas="communities-guildbanner-background">
-					<Size x="51" y="53"/>
+					<Size x="52" y="51"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="4" y="-11"/>
+						<Anchor point="TOPLEFT" x="6" y="-11"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="-1">
+			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Selection" file="Interface\Common\bluemenu-main" hidden="true">
 					<Size x="0" y="80"/>
 					<Anchors>
@@ -35,9 +35,9 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon">
-					<Size x="42" y="42"/>
+					<Size x="38" y="38"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="8" y="-15"/>
+						<Anchor point="TOPLEFT" x="11" y="-15"/>
 					</Anchors>
 				</Texture>
 				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
@@ -51,7 +51,7 @@
 				</MaskTexture>
 				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="11" y="0"/>
 						<Anchor point="RIGHT" x="-24" y="0"/>
 						<Anchor point="TOP" x="0" y="-6"/>
 						<Anchor point="BOTTOM" x="0" y="6"/>
@@ -62,15 +62,15 @@
 				<Texture parentKey="GuildTabardEmblem" file="Interface\GuildFrame\GuildEmblemsLG_01">
 					<Size x="42" y="42"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="9" y="-11"/>
+						<Anchor point="TOPLEFT" x="11" y="-10"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="GuildTabardBorder" atlas="communities-guildbanner-border">
-					<Size x="51" y="53"/>
+					<Size x="52" y="51"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="4" y="-11"/>
+						<Anchor point="TOPLEFT" x="6" y="-11"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="InvitationIcon" atlas="communities-icon-invitemail">
@@ -80,9 +80,9 @@
 					</Anchors>
 				</Texture>
 				<Texture parentKey="IconRing" atlas="communities-ring-gold">
-					<Size x="52" y="52"/>
+					<Size x="48" y="48"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon" x="0" y="-2"/>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="UnreadNotificationIcon" atlas="communities-icon-notification" hidden="true">

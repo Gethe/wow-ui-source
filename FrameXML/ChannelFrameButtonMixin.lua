@@ -39,11 +39,15 @@ end
 function ChannelFrameButtonMixin:OnVoiceChannelJoined(statusCode, voiceChannelID, channelType, clubId, streamId)
 	ChannelFrame:MarkDirty("CheckShowTutorial");
 	if ChannelFrame:ShouldShowTutorial() then
-		UIFrameFlash(self.Flash, .25, .25, -1, false, .4, .1);
+		UIFrameFlash(self.Flash, 1.0, 1.0, -1, false, 0, 0);
 	end
 end
 
 function ChannelFrameButtonMixin:OnClick()
 	PropertyButtonMixin.OnClick(self);
+	UIFrameFlashStop(self.Flash);
+end
+
+function ChannelFrameButtonMixin:HideTutorial()
 	UIFrameFlashStop(self.Flash);
 end

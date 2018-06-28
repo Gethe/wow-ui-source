@@ -594,7 +594,7 @@ function FCFMessageTypeDropDown_OnClick(self)
 	end
 end
 
-function FCF_OpenNewWindow(name)
+function FCF_OpenNewWindow(name, noDefaultChannels)
 	local count = 1;
 	local chatFrame, chatTab;
 
@@ -621,14 +621,16 @@ function FCF_OpenNewWindow(name)
 			ChatFrame_RemoveAllChannels(chatFrame);
 			ChatFrame_ReceiveAllPrivateMessages(chatFrame);
 
-			ChatFrame_AddMessageGroup(chatFrame, "SAY");
-			ChatFrame_AddMessageGroup(chatFrame, "YELL");
-			ChatFrame_AddMessageGroup(chatFrame, "GUILD");
-			ChatFrame_AddMessageGroup(chatFrame, "WHISPER");
-			ChatFrame_AddMessageGroup(chatFrame, "BN_WHISPER");
-			ChatFrame_AddMessageGroup(chatFrame, "PARTY");
-			ChatFrame_AddMessageGroup(chatFrame, "PARTY_LEADER");
-			ChatFrame_AddMessageGroup(chatFrame, "CHANNEL");
+			if ( not noDefaultChannels ) then
+				ChatFrame_AddMessageGroup(chatFrame, "SAY");
+				ChatFrame_AddMessageGroup(chatFrame, "YELL");
+				ChatFrame_AddMessageGroup(chatFrame, "GUILD");
+				ChatFrame_AddMessageGroup(chatFrame, "WHISPER");
+				ChatFrame_AddMessageGroup(chatFrame, "BN_WHISPER");
+				ChatFrame_AddMessageGroup(chatFrame, "PARTY");
+				ChatFrame_AddMessageGroup(chatFrame, "PARTY_LEADER");
+				ChatFrame_AddMessageGroup(chatFrame, "CHANNEL");
+			end
 			
 			--Clear the edit box history.
 			chatFrame.editBox:ClearHistory();
@@ -641,6 +643,7 @@ function FCF_OpenNewWindow(name)
 			-- Dock the frame by default
 			FCF_DockFrame(chatFrame, (#FCFDock_GetChatFrames(GENERAL_CHAT_DOCK)+1), true);
 			FCF_FadeInChatFrame(FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK));
+			ChatEdit_SetLastActiveWindow(chatFrame.editBox);
 			return chatFrame, i;
 		end
 		count = count + 1;

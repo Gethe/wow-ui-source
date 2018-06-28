@@ -38,7 +38,7 @@ do
 			titleSrollRight = "HordeFrame_Title-End",
 			titleScollMiddle = "_HordeFrame_Title-Tile",
 
-			TopperOffset = -33,
+			TopperOffset = -34,
 			Topper = "HordeFrame-Header",
 			topperBehindFrame = false,
 
@@ -99,9 +99,9 @@ do
 
 			closeButtonBorder = "AllianceFrame_ExitBorder",
 			closeButtonBorderX = 0,
-			closeButtonBorderY = 0,
+			closeButtonBorderY = -1,
 			closeButtonX = 4,
-			closeButtonY = 3,
+			closeButtonY = 4,
 
 			BackgroundTile = "UI-Frame-Alliance-BackgroundTile",
 

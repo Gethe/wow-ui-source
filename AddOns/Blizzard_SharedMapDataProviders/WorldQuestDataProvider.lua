@@ -478,6 +478,7 @@ end
 WorldQuestPingPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function WorldQuestPingPinMixin:OnLoad()
+	self:SetScalingLimits(1, 0.5, 0.5);
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_WORLD_QUEST_PING");
 end
 

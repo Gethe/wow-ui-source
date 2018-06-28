@@ -164,7 +164,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="SpellButton" useParentLevel="true" registerForClicks="LeftButtonDown" motionScriptsWhileDisabled="true" inherits="SecureFrameTemplate">
+			<Button parentKey="SpellButton" useParentLevel="true" registerForClicks="LeftButtonDown" motionScriptsWhileDisabled="true">
 				<Size x="55" y="55" />
 				<Anchors>
 					<Anchor point="CENTER" y="8" />

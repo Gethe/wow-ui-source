@@ -305,6 +305,15 @@ local Club =
 			},
 		},
 		{
+			Name = "GetGuildClubId",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "guildClubId", Type = "string", Nilable = true },
+			},
+		},
+		{
 			Name = "GetInfoFromLastCommunityChatLine",
 			Type = "Function",
 
@@ -438,9 +447,27 @@ local Club =
 			},
 		},
 		{
+			Name = "GetMessagesBefore",
+			Type = "Function",
+			Documentation = { "Get downloaded messages before (and including) the specified messageId limited by count. These are filtered by ignored players" },
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "streamId", Type = "string", Nilable = false },
+				{ Name = "newest", Type = "ClubMessageIdentifier", Nilable = false },
+				{ Name = "count", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "messages", Type = "table", InnerType = "ClubMessageInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMessagesInRange",
 			Type = "Function",
-			Documentation = { "Get all downloaded messages in the given range." },
+			Documentation = { "Get downloaded messages in the given range. These are filtered by ignored players" },
 
 			Arguments =
 			{
@@ -524,6 +551,23 @@ local Club =
 			},
 		},
 		{
+			Name = "IsBeginningOfStream",
+			Type = "Function",
+			Documentation = { "Returns whether the given message is the first message in the stream, taking into account ignored messages" },
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "streamId", Type = "string", Nilable = false },
+				{ Name = "messageId", Type = "ClubMessageIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isBeginningOfStream", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsEnabled",
 			Type = "Function",
 
@@ -587,18 +631,6 @@ local Club =
 			},
 		},
 		{
-			Name = "RequestMoreMessagesAfter",
-			Type = "Function",
-			Documentation = { "Call this when the user scrolls near the bottom of the message view, and more need to be displayed." },
-
-			Arguments =
-			{
-				{ Name = "clubId", Type = "string", Nilable = false },
-				{ Name = "streamId", Type = "string", Nilable = false },
-				{ Name = "messageId", Type = "ClubMessageIdentifier", Nilable = false },
-			},
-		},
-		{
 			Name = "RequestMoreMessagesBefore",
 			Type = "Function",
 			Documentation = { "Call this when the user scrolls near the top of the message view, and more need to be displayed. The history will be downloaded backwards (newest to oldest)." },
@@ -608,6 +640,12 @@ local Club =
 				{ Name = "clubId", Type = "string", Nilable = false },
 				{ Name = "streamId", Type = "string", Nilable = false },
 				{ Name = "messageId", Type = "ClubMessageIdentifier", Nilable = true },
+				{ Name = "count", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "alreadyHasMessages", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -937,6 +975,16 @@ local Club =
 			},
 		},
 		{
+			Name = "ClubRemovedMessage",
+			Type = "Event",
+			LiteralName = "CLUB_REMOVED_MESSAGE",
+			Payload =
+			{
+				{ Name = "clubName", Type = "string", Nilable = false },
+				{ Name = "clubRemovedReason", Type = "ClubRemovedReason", Nilable = false },
+			},
+		},
+		{
 			Name = "ClubSelfMemberRoleUpdated",
 			Type = "Event",
 			LiteralName = "CLUB_SELF_MEMBER_ROLE_UPDATED",
@@ -1076,14 +1124,15 @@ local Club =
 		{
 			Name = "ClubType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "BattleNet", Type = "ClubType", EnumValue = 0 },
 				{ Name = "Character", Type = "ClubType", EnumValue = 1 },
 				{ Name = "Guild", Type = "ClubType", EnumValue = 2 },
+				{ Name = "Other", Type = "ClubType", EnumValue = 3 },
 			},
 		},
 		{
@@ -1126,9 +1175,9 @@ local Club =
 		{
 			Name = "ClubErrorType",
 			Type = "Enumeration",
-			NumValues = 37,
+			NumValues = 39,
 			MinValue = 0,
-			MaxValue = 36,
+			MaxValue = 38,
 			Fields =
 			{
 				{ Name = "ErrorCommunitiesNone", Type = "ClubErrorType", EnumValue = 0 },
@@ -1144,30 +1193,32 @@ local Club =
 				{ Name = "ErrorCommunitiesUnknownTicket", Type = "ClubErrorType", EnumValue = 10 },
 				{ Name = "ErrorCommunitiesMissingShortName", Type = "ClubErrorType", EnumValue = 11 },
 				{ Name = "ErrorCommunitiesProfanity", Type = "ClubErrorType", EnumValue = 12 },
-				{ Name = "ErrorClubFull", Type = "ClubErrorType", EnumValue = 13 },
-				{ Name = "ErrorClubNoClub", Type = "ClubErrorType", EnumValue = 14 },
-				{ Name = "ErrorClubNotMember", Type = "ClubErrorType", EnumValue = 15 },
-				{ Name = "ErrorClubAlreadyMember", Type = "ClubErrorType", EnumValue = 16 },
-				{ Name = "ErrorClubNoSuchMember", Type = "ClubErrorType", EnumValue = 17 },
-				{ Name = "ErrorClubNoSuchInvitation", Type = "ClubErrorType", EnumValue = 18 },
-				{ Name = "ErrorClubInvitationAlreadyExists", Type = "ClubErrorType", EnumValue = 19 },
-				{ Name = "ErrorClubInvalidRoleID", Type = "ClubErrorType", EnumValue = 20 },
-				{ Name = "ErrorClubInsufficientPrivileges", Type = "ClubErrorType", EnumValue = 21 },
-				{ Name = "ErrorClubTooManyClubsJoined", Type = "ClubErrorType", EnumValue = 22 },
-				{ Name = "ErrorClubVoiceFull", Type = "ClubErrorType", EnumValue = 23 },
-				{ Name = "ErrorClubStreamNoStream", Type = "ClubErrorType", EnumValue = 24 },
-				{ Name = "ErrorClubStreamInvalidName", Type = "ClubErrorType", EnumValue = 25 },
-				{ Name = "ErrorClubStreamCountAtMin", Type = "ClubErrorType", EnumValue = 26 },
-				{ Name = "ErrorClubStreamCountAtMax", Type = "ClubErrorType", EnumValue = 27 },
-				{ Name = "ErrorClubMemberHasRequiredRole", Type = "ClubErrorType", EnumValue = 28 },
-				{ Name = "ErrorClubSentInvitationCountAtMax", Type = "ClubErrorType", EnumValue = 29 },
-				{ Name = "ErrorClubReceivedInvitationCountAtMax", Type = "ClubErrorType", EnumValue = 30 },
-				{ Name = "ErrorClubTargetIsBanned", Type = "ClubErrorType", EnumValue = 31 },
-				{ Name = "ErrorClubBanAlreadyExists", Type = "ClubErrorType", EnumValue = 32 },
-				{ Name = "ErrorClubBanCountAtMax", Type = "ClubErrorType", EnumValue = 33 },
-				{ Name = "ErrorClubTicketCountAtMax", Type = "ClubErrorType", EnumValue = 34 },
-				{ Name = "ErrorClubTicketNoSuchTicket", Type = "ClubErrorType", EnumValue = 35 },
-				{ Name = "ErrorClubTicketHasConsumedAllowedRedeemCount", Type = "ClubErrorType", EnumValue = 36 },
+				{ Name = "ErrorCommunitiesTrial", Type = "ClubErrorType", EnumValue = 13 },
+				{ Name = "ErrorCommunitiesVeteranTrial", Type = "ClubErrorType", EnumValue = 14 },
+				{ Name = "ErrorClubFull", Type = "ClubErrorType", EnumValue = 15 },
+				{ Name = "ErrorClubNoClub", Type = "ClubErrorType", EnumValue = 16 },
+				{ Name = "ErrorClubNotMember", Type = "ClubErrorType", EnumValue = 17 },
+				{ Name = "ErrorClubAlreadyMember", Type = "ClubErrorType", EnumValue = 18 },
+				{ Name = "ErrorClubNoSuchMember", Type = "ClubErrorType", EnumValue = 19 },
+				{ Name = "ErrorClubNoSuchInvitation", Type = "ClubErrorType", EnumValue = 20 },
+				{ Name = "ErrorClubInvitationAlreadyExists", Type = "ClubErrorType", EnumValue = 21 },
+				{ Name = "ErrorClubInvalidRoleID", Type = "ClubErrorType", EnumValue = 22 },
+				{ Name = "ErrorClubInsufficientPrivileges", Type = "ClubErrorType", EnumValue = 23 },
+				{ Name = "ErrorClubTooManyClubsJoined", Type = "ClubErrorType", EnumValue = 24 },
+				{ Name = "ErrorClubVoiceFull", Type = "ClubErrorType", EnumValue = 25 },
+				{ Name = "ErrorClubStreamNoStream", Type = "ClubErrorType", EnumValue = 26 },
+				{ Name = "ErrorClubStreamInvalidName", Type = "ClubErrorType", EnumValue = 27 },
+				{ Name = "ErrorClubStreamCountAtMin", Type = "ClubErrorType", EnumValue = 28 },
+				{ Name = "ErrorClubStreamCountAtMax", Type = "ClubErrorType", EnumValue = 29 },
+				{ Name = "ErrorClubMemberHasRequiredRole", Type = "ClubErrorType", EnumValue = 30 },
+				{ Name = "ErrorClubSentInvitationCountAtMax", Type = "ClubErrorType", EnumValue = 31 },
+				{ Name = "ErrorClubReceivedInvitationCountAtMax", Type = "ClubErrorType", EnumValue = 32 },
+				{ Name = "ErrorClubTargetIsBanned", Type = "ClubErrorType", EnumValue = 33 },
+				{ Name = "ErrorClubBanAlreadyExists", Type = "ClubErrorType", EnumValue = 34 },
+				{ Name = "ErrorClubBanCountAtMax", Type = "ClubErrorType", EnumValue = 35 },
+				{ Name = "ErrorClubTicketCountAtMax", Type = "ClubErrorType", EnumValue = 36 },
+				{ Name = "ErrorClubTicketNoSuchTicket", Type = "ClubErrorType", EnumValue = 37 },
+				{ Name = "ErrorClubTicketHasConsumedAllowedRedeemCount", Type = "ClubErrorType", EnumValue = 38 },
 			},
 		},
 		{
@@ -1190,16 +1241,17 @@ local Club =
 		{
 			Name = "ClubMemberPresence",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "Unknown", Type = "ClubMemberPresence", EnumValue = 0 },
 				{ Name = "Online", Type = "ClubMemberPresence", EnumValue = 1 },
-				{ Name = "Offline", Type = "ClubMemberPresence", EnumValue = 2 },
-				{ Name = "Away", Type = "ClubMemberPresence", EnumValue = 3 },
-				{ Name = "Busy", Type = "ClubMemberPresence", EnumValue = 4 },
+				{ Name = "OnlineMobile", Type = "ClubMemberPresence", EnumValue = 2 },
+				{ Name = "Offline", Type = "ClubMemberPresence", EnumValue = 3 },
+				{ Name = "Away", Type = "ClubMemberPresence", EnumValue = 4 },
+				{ Name = "Busy", Type = "ClubMemberPresence", EnumValue = 5 },
 			},
 		},
 		{
@@ -1213,6 +1265,20 @@ local Club =
 				{ Name = "Available", Type = "ClubInvitationCandidateStatus", EnumValue = 0 },
 				{ Name = "InvitePending", Type = "ClubInvitationCandidateStatus", EnumValue = 1 },
 				{ Name = "AlreadyMember", Type = "ClubInvitationCandidateStatus", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "ClubRemovedReason",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "None", Type = "ClubRemovedReason", EnumValue = 0 },
+				{ Name = "Banned", Type = "ClubRemovedReason", EnumValue = 1 },
+				{ Name = "Removed", Type = "ClubRemovedReason", EnumValue = 2 },
+				{ Name = "ClubDestroyed", Type = "ClubRemovedReason", EnumValue = 3 },
 			},
 		},
 		{

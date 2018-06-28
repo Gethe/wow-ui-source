@@ -73,7 +73,7 @@ local textureKitColors = {
 };
 
 local borderOffsets = {
-	["alliance"] = { cornerX = 7, cornerY = 7, edge = 0, closeX = 1, closeY = 2, header = -56, showHeader = true, },
+	["alliance"] = { cornerX = 7, cornerY = 7, edge = 0, closeX = 4, closeY = 6, header = -56, showHeader = true, },
 	["horde"] = { cornerX = 7, cornerY = 7, edge = 0, closeX = 4, closeY = 6, header = -61, showHeader = true, },
 	["neutral"] = { cornerX = 9, cornerY = 9, edge = 0, closeX = 4, closeY = 6, header = 0, showHeader = false, },
 }
@@ -159,9 +159,9 @@ function WarboardQuestChoiceFrameMixin:Update()
 	local numOptions = self:GetNumOptions();
 	for i = 1, numOptions do
 		local option = self.Options[i];
-		option.Artwork:SetDesaturated(not option.hasActiveButton);
-		option.ArtworkBorder:SetShown(option.hasActiveButton);
-		option.ArtworkBorderDisabled:SetShown(not option.hasActiveButton);
+		option.Artwork:SetDesaturated(option.hasDesaturatedArt);
+		option.ArtworkBorder:SetShown(not option.hasDesaturatedArt);
+		option.ArtworkBorderDisabled:SetShown(option.hasDesaturatedArt);
 		if not hasHeaders then
 			hasHeaders = option.Header:IsShown();
 		end

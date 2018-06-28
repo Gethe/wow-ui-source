@@ -426,6 +426,19 @@ function UIPanelButton_OnEnable(self)
 	self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
 end
 
+UIPanelButtonNoTooltipResizeToFitMixin = {};
+
+function UIPanelButtonNoTooltipResizeToFitMixin:OnLoad()
+	UIPanelButton_OnLoad(self);
+	self.Text.layoutIndex = 1;
+	self:MarkDirty();
+end
+
+function UIPanelButtonNoTooltipResizeToFitMixin:SetText(text)
+	self.Text:SetText(text);
+	self:MarkDirty();
+end
+
 function SelectionFrameCancelButton_OnClick(self, ...)
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 	local cancelFunction = self:GetParent().OnCancel;

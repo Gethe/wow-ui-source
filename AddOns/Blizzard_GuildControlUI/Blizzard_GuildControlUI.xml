@@ -341,24 +341,25 @@
 				<Texture name="$parentTopBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="12" y="-12"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-12" y="-55"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-12" y="-52"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" >
 				<FontString name="$parentTitle" text="GUILDCONTROL" font="GameFontNormal">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="24" y="-28"/>
+						<Anchor point="TOPLEFT" x="24" y="-27"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="$parentHbar" inherits="HorizontalBarTemplate" useParentLevel="true">
+				<Size y="3"/>
 				<Anchors>
-					<Anchor point="TOP"  relativeTo="$parentTopBg" relativePoint="BOTTOM" x="0" y="1"/>
-					<Anchor point="LEFT"  x="8" y="0"/>
-					<Anchor point="RIGHT"  x="-8" y="0"/>
+					<Anchor point="TOP" relativeTo="$parentTopBg" relativePoint="BOTTOM" x="0" y="-2"/>
+					<Anchor point="LEFT" x="9" y="0"/>
+					<Anchor point="RIGHT" x="-9" y="0"/>
 				</Anchors>
 			</Frame>
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
@@ -502,6 +503,7 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<FontString parentKey="OfficerPermissions" font="GameFontNormal" justifyH="LEFT">
+							<Size x="268"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentOfficerBg" relativePoint="TOPLEFT" x="22" y="-20"/>
 							</Anchors>
@@ -551,7 +553,7 @@
 						</Anchors>
 					</CheckButton>
 					
-					<CheckButton name="$parentCheckbox5" inherits="GuildPermissionCheckBoxTemplate" id="5">
+					<CheckButton parentKey="InviteCheckbox" name="$parentCheckbox5" inherits="GuildPermissionCheckBoxTemplate" id="5">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentRosterLabel" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 						</Anchors>

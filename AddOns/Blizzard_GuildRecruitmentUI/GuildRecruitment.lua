@@ -51,6 +51,15 @@ end
 
 function CommunitiesGuildRecruitmentFrame_OnShow(self)
 	RequestGuildApplicantsList();
+	if not IsGuildLeader() then
+		self.Tab1:Hide();
+		self.Tab2:SetPoint("LEFT", self.Tab1, "LEFT");
+		PanelTemplates_SetTab(self, 2);
+	else
+		self.Tab1:Show();
+		self.Tab2:SetPoint("LEFT", self.Tab1, "RIGHT");
+	end
+	
 	CommunitiesGuildRecruitmentFrame_Update(self);
 end
 
@@ -172,10 +181,10 @@ end
 
 function CommunitiesGuildRecruitmentFrameApplicants_OnLoad(self)
 	local applicantsContainer = self.Container;
-	applicantsContainer.update = function () GuildRecruitmentFrameApplicants_Update(self); end;
+	applicantsContainer.update = function () CommunitiesGuildRecruitmentFrameApplicants_Update(self); end;
 	HybridScrollFrame_CreateButtons(applicantsContainer, "CommunitiesGuildRecruitmentApplicantTemplate", 0, 0);
 	
-	applicantsContainer.ScrollBar.Show = 
+	applicantsContainer.scrollBar.Show = 
 		function (self)
 			applicantsContainer:SetWidth(304);
 			for _, button in next, applicantsContainer.buttons do
@@ -184,7 +193,7 @@ function CommunitiesGuildRecruitmentFrameApplicants_OnLoad(self)
 			end
 			getmetatable(self).__index.Show(self);
 		end
-	applicantsContainer.ScrollBar.Hide = 
+	applicantsContainer.scrollBar.Hide = 
 		function (self)
 			applicantsContainer:SetWidth(320);
 			for _, button in next, applicantsContainer.buttons do
@@ -299,9 +308,9 @@ function CommunitiesGuildRecruitmentApplicant_OnClick(self, button)
 		if ( commentHeight > GUILD_COMMENT_HEIGHT ) then
 			local buttonHeight = GUILD_BUTTON_HEIGHT + commentHeight - GUILD_COMMENT_HEIGHT + GUILD_COMMENT_BORDER;
 			self:SetHeight(buttonHeight);
-			HybridScrollFrame_ExpandButton(self:GetParent(), ((self.index - 1) * GUILD_BUTTON_HEIGHT), buttonHeight);
+			HybridScrollFrame_ExpandButton(self:GetParent():GetParent(), ((self.index - 1) * GUILD_BUTTON_HEIGHT), buttonHeight);
 		else
-			HybridScrollFrame_CollapseButton(self:GetParent());
+			HybridScrollFrame_CollapseButton(self:GetParent():GetParent());
 		end
 		CommunitiesGuildRecruitmentFrameApplicants_Update(self:GetParent():GetParent():GetParent());
 	elseif ( button == "RightButton" ) then

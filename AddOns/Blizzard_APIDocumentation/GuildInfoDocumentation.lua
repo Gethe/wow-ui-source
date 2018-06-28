@@ -21,6 +21,20 @@ local GuildInfo =
 			},
 		},
 		{
+			Name = "GuildControlGetRankFlags",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "rankOrder", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "permissions", Type = "table", InnerType = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsGuildRankAssignmentAllowed",
 			Type = "Function",
 

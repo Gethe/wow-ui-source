@@ -51,11 +51,12 @@ function GenerateBuildString(buildNumber)
 end
 
 function CharacterSelectLockedButtonMixin:OnEnter()
-    -- TODO: Less than ideal, but this text needs to be dynamic and shouldn't require a full character refresh.
-    -- The only reason for these padlock tooltips (at the moment) is to spend boost tokens, or setup purchase
-    -- of a boost token in the shop.
-    local tooltipFooter = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_HELP_SHOP;
-    if C_CharacterServices.HasRequiredBoostForUnrevoke() then
+	local requiresPurchase = IsExpansionTrialCharacter(self.guid) and CanUpgradeExpansion() or not C_CharacterServices.HasRequiredBoostForUnrevoke();
+
+    local tooltipFooter;
+    if requiresPurchase then
+		tooltipFooter = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_HELP_SHOP;
+	else
         tooltipFooter = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_HELP_USE_BOOST;
     end
 
@@ -113,7 +114,7 @@ function CharacterSelect_OnLoad(self)
 
     self.createIndex = 0;
     self.selectedIndex = 0;
-    self.selectLast = false;
+	self.selectLast = false;
     self.characterPadlockPool = CreateFramePool("BUTTON", self, "CharSelectLockedButtonTemplate");
     self:RegisterEvent("CHARACTER_LIST_UPDATE");
     self:RegisterEvent("UPDATE_SELECTED_CHARACTER");
@@ -510,8 +511,7 @@ function CharacterSelect_OnEvent(self, event, ...)
 
         if (self.hasPendingTrialBoost) then
             KioskMode_SetWaitingOnTrial(true);
-            local guid = select(15, GetCharacterInfo(numChars)); -- Brittle, assumes the newly created character will be last on the list.
-            C_CharacterServices.TrialBoostCharacter(guid, self.trialBoostFactionID, self.trialBoostSpecID);
+            C_CharacterServices.TrialBoostCharacter(self.trialBoostGuid, self.trialBoostFactionID, self.trialBoostSpecID);
             CharacterSelect_SetPendingTrialBoost(false);
         end
 
@@ -663,10 +663,11 @@ function CharacterSelect_OnEvent(self, event, ...)
 	end
 end
 
-function CharacterSelect_SetPendingTrialBoost(hasPendingTrialBoost, factionID, specID)
+function CharacterSelect_SetPendingTrialBoost(hasPendingTrialBoost, factionID, specID, guid)
     CharacterSelect.hasPendingTrialBoost = hasPendingTrialBoost;
     CharacterSelect.trialBoostFactionID = factionID;
     CharacterSelect.trialBoostSpecID = specID;
+    CharacterSelect.trialBoostGuid = guid;
 end
 
 function CharacterSelect_SetupPadlockForCharacterButton(button, guid)
@@ -769,32 +770,26 @@ function UpdateCharacterList(skipSelect)
         MAX_CHARACTERS_DISPLAYED = MAX_CHARACTERS_DISPLAYED_BASE;
     end
 
-    -- select the last("newest") character
-    if ( CharacterSelect.selectLast ) then
+	if CharacterSelect.selectLast then
         CHARACTER_LIST_OFFSET = max(numChars - MAX_CHARACTERS_DISPLAYED, 0);
-        CharacterSelect.selectedIndex = numChars;
-        CharacterSelect.selectLast = false;
-    end
-
-    if ( CharacterSelect.undeleteGuid ) then
-        local found = false;
-        repeat
-            for i = 1, MAX_CHARACTERS_DISPLAYED, 1 do
-                local guid, _, _, _, _, forceRename = select(15, GetCharacterInfo(GetCharIDFromIndex(i + CHARACTER_LIST_OFFSET)));
-                if ( guid == CharacterSelect.undeleteGuid ) then
-                    CharacterSelect.selectedIndex = i + CHARACTER_LIST_OFFSET;
-                    CharacterSelect.undeleteSucceeded = true;
-                    CharacterSelect.undeletePendingRename = forceRename;
-                    found = true;
-                    break;
-                end
-            end
-            if (not found) then
-                CHARACTER_LIST_OFFSET = CHARACTER_LIST_OFFSET + 1;
-            end
-        until found;
-        CharacterSelect.undeleteGuid = nil;
-    end
+		CharacterSelect.selectedIndex = numChars;
+		CharacterSelect.selectLast = false;
+	elseif CharacterSelect.selectGuid or CharacterSelect.undeleteGuid then
+		for i = 1, numChars do
+			local guid, _, _, _, _, forceRename = select(15, GetCharacterInfo(i));
+			if guid == CharacterSelect.selectGuid or guid == CharacterSelect.undeleteGuid then
+				CHARACTER_LIST_OFFSET = max(i - MAX_CHARACTERS_DISPLAYED, 0);
+				CharacterSelect.selectedIndex = i;
+				if guid == CharacterSelect.undeleteGuid then
+					CharacterSelect.undeleteSucceeded = true;
+					CharacterSelect.undeletePendingRename = forceRename;
+				end
+				break;
+			end
+		end
+		CharacterSelect.selectGuid = nil;
+		CharacterSelect.undeleteGuid = nil;
+	end
 
     local debugText = numChars..": ";
     local characterLimit = min(numChars, MAX_CHARACTERS_DISPLAYED);
@@ -882,7 +877,13 @@ function UpdateCharacterList(skipSelect)
                 locationText:SetFontObject("GlueFontDisableSmall");
 
                 if isExpansionTrialCharacter then
-					if IsExpansionTrial() or CanUpgradeExpansion() then
+					if IsExpansionTrial() then
+						if isTrialBoostLocked then
+							locationText:SetText(CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_BUY_EXPANSION);
+						else
+							locationText:SetText(nil);
+						end
+					elseif CanUpgradeExpansion() then
 						locationText:SetText(CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_BUY_EXPANSION);
 					else
 						locationText:SetText(CHARACTER_SELECT_INFO_TRIAL_BOOST_APPLY_BOOST_TOKEN);

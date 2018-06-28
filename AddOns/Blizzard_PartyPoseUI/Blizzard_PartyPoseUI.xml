@@ -3,10 +3,9 @@
 	<Button name="PartyPoseRewardsButtonTemplate" mixin="PartyPoseRewardsMixin" alpha="0" virtual="true">
 		<Size x="174" y="55"/> 
 		<Animations>
-			<AnimationGroup parentKey="AnimFadeOut">
-				<Alpha fromAlpha="0" toAlpha="1" order="1" duration=".5"/>
-				<Alpha fromAlpha="1" toAlpha="1" order="2" duration="3"/>
-				<Alpha fromAlpha="1" toAlpha="0" order="3" duration="0"/>
+			<AnimationGroup parentKey="AnimFade">
+				<Alpha parentKey="FadeIn" fromAlpha="0" toAlpha="1" order="1" duration=".5"/>
+				<Alpha parentKey="FadeOut" startDelay="1.75" fromAlpha="1" toAlpha="0" order="3" duration=".5"/>
 				<Scripts>
 					<OnFinished>
 						self:GetParent():OnAnimationFinished();
@@ -15,14 +14,14 @@
 			</AnimationGroup>
 		</Animations>
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture parentKey="NameFrame" atlas="scoreboard-footer-lootbackground" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" x="60" y="-8"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
+			<Layer level="BORDER" textureSubLevel="1">
 				<Texture parentKey="Icon">
 					<Size x="55" y="55" />
 					<Anchors>
@@ -30,7 +29,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="2">
+			<Layer level="BORDER" textureSubLevel="2">
 				<Texture parentKey="IconBorder" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
@@ -57,41 +56,6 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer level="BORDER" textureSubLevel="-3">
-				<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" alpha="0" parentKey="Glow">
-					<Size x="315" y="171"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.NameFrame" x="-32" y="5"/>
-					</Anchors>
-					<Animations>
-						<AnimationGroup parentKey="AnimFadeOut">
-							<Alpha fromAlpha="0" toAlpha="1" duration="1" order="1" parentKey="glowIn"/>
-							<Alpha fromAlpha="1" toAlpha="0" duration="1" order="2" parentKey="glowOut"/>
-
-						</AnimationGroup>
-					</Animations>
-					<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
-				</Texture>
-				<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" alpha="0" parentKey="Shine">
-					<Size x="67" y="55"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-5" y="0"/>
-					</Anchors>
-					<Animations>
-						<AnimationGroup parentKey="AnimFadeOut">
-							<Alpha fromAlpha="0" toAlpha="1" duration="0.25" order="1"/>
-							<Translation offsetX="210" offsetY="0" duration="0.8" order="2"/>
-							<Alpha startDelay=".35" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
-							<Scripts>
-								<OnFinished>
-									self:GetParent():Hide();
-								</OnFinished>
-							</Scripts>
-						</AnimationGroup>
-					</Animations>
-					<TexCoords left="0.78125" right="0.912109375" top="0" bottom="0.28125"/>
-				</Texture>
-			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -108,7 +72,7 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Frame name="PartyPoseFrameTemplate" virtual="true">
+	<Frame name="PartyPoseFrameTemplate" enableMouse="true" hidden="true" virtual="true">
 		<Size x="760" y="549"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-6">
@@ -184,13 +148,34 @@
 		</Scripts>
 		<Frames>
 			<Frame parentKey="RewardAnimations">
-				<Size x="400" y="400"/>
+				<Size x="174" y="55"/>
 				<Anchors>
-					<Anchor point="BOTTOM"/> 
+					<Anchor point="BOTTOM" x="0" y="10"/> 
 				</Anchors>
 				<Frames>
-					<ModelScene parentKey="AzeriteGlow" inherits="NonInteractableModelSceneMixinTemplate" drawLayer="OVERLAY" enableMouse="false">
+					<Button parentKey="RewardFrame" inherits="PartyPoseRewardsButtonTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER" />
+						</Anchors>
+					</Button>
+					<ModelScene parentKey="HoldModelScene" hidden="true" inherits="NonInteractableModelSceneMixinTemplate" drawLayer="BACKGROUND" useParentLevel="true">
 						<Size x="700" y="700"/>
+						<Anchors>
+							<Anchor point="CENTER" />
+						</Anchors>
+						<Animations>
+							<AnimationGroup parentKey="RewardModelAnim" setToFinalAlpha="true">
+								<Alpha childKey="HoldModelScene" startDelay=".3" fromAlpha="0" toAlpha="1" order="1" duration=".5"/>
+								<Alpha childKey="HoldModelScene" startDelay="1.25" fromAlpha="1" toAlpha="0" order="2" duration=".5"/>
+							</AnimationGroup>
+						</Animations>
+					</ModelScene>
+					
+					<ModelScene parentKey="ImpactModelScene" hidden="true" inherits="NonInteractableModelSceneMixinTemplate" drawLayer="OVERLAY" useParentLevel="true">
+						<Size x="700" y="700"/>
+						<Anchors>
+							<Anchor point="CENTER" />
+						</Anchors>
 					</ModelScene>
 				</Frames>
 			</Frame>
@@ -207,13 +192,11 @@
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-5">
 				<Texture parentKey="Bg">
-					<Size x="720" y="400"/> 
 					<Anchors>
 						<Anchor point="TOPLEFT" />
 						<Anchor point="BOTTOMRIGHT" />
 					</Anchors>
 				</Texture>
-				<TexCoords right="1" left="0.5" top="0" bottom="1"/>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="2">
 				<Texture parentKey="ShadowCornerTopLeft" atlas="collections-background-shadow-large" useAtlasSize="true">

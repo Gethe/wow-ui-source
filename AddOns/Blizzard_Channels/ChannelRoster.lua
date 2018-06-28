@@ -176,12 +176,18 @@ do
 	local function UpdateChatSystemChannelRosterEntry(channelID, rosterIndex, voiceChannelID, rosterEntry)
 		local name, owner, moderator, guid = C_ChatInfo.GetChannelRosterInfo(channelID, rosterIndex);
 
+		if not name then
+			-- we don't have the roster info yet
+			return;
+		end
+
 		rosterEntry:SetMemberID(rosterIndex);
 		rosterEntry:SetMemberPlayerLocationFromGuid(guid);
 		rosterEntry:SetMemberName(name);
 		rosterEntry:SetMemberIsOwner(owner);
 		rosterEntry:SetMemberIsModerator(moderator);
 		rosterEntry:SetVoiceEnabled(false);
+		rosterEntry:SetIsConnected(C_PlayerInfo.IsConnected(rosterEntry:GetMemberPlayerLocation()));
 
 		if voiceChannelID then
 			local voiceMemberID = C_VoiceChat.GetMemberID(voiceChannelID, guid);
@@ -193,16 +199,12 @@ do
 				rosterEntry:SetVoiceMemberID(voiceMemberID);
 				rosterEntry:SetVoiceActive(voiceMemberInfo.isActive);
 				rosterEntry:SetVoiceMuted(voiceMemberInfo.isMutedForMe);
-				rosterEntry:SetIsConnected(C_VoiceChat.IsMemberConnected(voiceMemberID, voiceChannelID));
-			else
-				rosterEntry:SetIsConnected(false);
 			end
 		else
 			rosterEntry:SetVoiceChannelID(nil);
 			rosterEntry:SetVoiceMemberID(nil);
 			rosterEntry:SetVoiceActive(nil);
 			rosterEntry:SetVoiceMuted(nil);
-			rosterEntry:SetIsConnected(true);
 		end
 
 		rosterEntry:Update();
@@ -241,7 +243,7 @@ do
 			rosterEntry:SetVoiceEnabled(true);
 			rosterEntry:SetVoiceActive(member.isActive);
 			rosterEntry:SetVoiceMuted(member.isMutedForMe);
-			rosterEntry:SetIsConnected(C_VoiceChat.IsMemberConnected(member.memberID, voiceChannelID));
+			rosterEntry:SetIsConnected(C_PlayerInfo.IsConnected(rosterEntry:GetMemberPlayerLocation()));
 
 			rosterEntry:Update();
 		end

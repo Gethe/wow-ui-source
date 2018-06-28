@@ -1,13 +1,64 @@
-local AZERITE_GLOW_MODEL_SCENE_ID = 214;
-
-local AZERITE_GLOW_MODEL_ACTORS =
-{
-	Precast =  { effectID = 1983524, name = "precast" },
-	Absorb  =  { effectID = 2101311, name = "absorb" },
-	Breathe =  { effectID = 1983552, name = "breathe" },
-}
-
 PartyPoseRewardsMixin = { };
+
+function PartyPoseRewardsMixin:OnLoad()
+	local startingSound = SOUNDKIT.UI_80_ISLANDS_AZERITECOLLECTION_START;
+	local loopingSound = SOUNDKIT.UI_80_ISLANDS_AZERITECOLLECTION_LOOP;
+	local endingSound = SOUNDKIT.UI_80_ISLANDS_AZERITECOLLECTION_STOP;
+
+	local loopStartDelay = 0;
+	local loopEndDelay = 0;
+	local loopFadeTime = 400; -- ms
+	self.loopingSoundEmitter = CreateLoopingSoundEffectEmitter(startingSound, loopingSound, endingSound, loopStartDelay, loopEndDelay, loopFadeTime);
+end
+
+function PartyPoseRewardsMixin:OnEnter()
+	if (self.objectType == "item") then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetItemByID(self.id);
+	elseif (self.objectType == "currency") then
+		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+		GameTooltip:SetCurrencyByID(self.id, self.originalQuantity);
+	end
+
+	GameTooltip:Show();
+	CursorUpdate(self);
+
+	self:PauseRewardAnimation();
+
+	self.loopingSoundEmitter:CancelLoopingSound();
+end
+
+function PartyPoseRewardsMixin:OnLeave()
+	GameTooltip:Hide();
+	ResetCursor();
+
+	self:ResumeRewardAnimation();
+end
+
+function PartyPoseRewardsMixin:OnHide()
+	self.loopingSoundEmitter:CancelLoopingSound();
+end
+
+function PartyPoseRewardsMixin:SetupReward(rewardData)
+	self.Name:SetText(rewardData.name);
+	self.Icon:SetTexture(rewardData.texture);
+
+	self.id = rewardData.id;
+	self.objectType = rewardData.objectType;
+	self.quantity = rewardData.quantity;
+	self.originalQuantity = rewardData.originalQuantity;
+	self.objectLink = rewardData.objectLink;
+
+	if (rewardData.quantity > 1) then
+		self.Count:SetText(rewardData.quantity);
+		self.Count:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		self.Count:Show();
+	else
+		self.Count:Hide();
+	end
+
+	self:SetRewardsQuality(rewardData.quality);
+end
 
 function PartyPoseRewardsMixin:IsAzeriteCurrency()
 	return (self.objectType == "currency" and self.id == C_CurrencyInfo.GetAzeriteCurrencyID());
@@ -26,135 +77,91 @@ function PartyPoseRewardsMixin:SetRewardsQuality(quality)
 end
 
 function PartyPoseRewardsMixin:PlayRewardAnimation()
-	self.Glow.AnimFadeOut:Play();
-	self.Shine.AnimFadeOut:Play();
-
-	self:Show();
-	self.AnimFadeOut:Play();
+	self.AnimFade:Play();
 
 	if (self:IsAzeriteCurrency()) then
 		self.loopingSoundEmitter:StartLoopingSound();
-		C_Timer.After(3,
+		C_Timer.After(2,
 			function()
 				self.loopingSoundEmitter:FinishLoopingSound();
 			end
 		);
-		self:GetParent():PlayModelSceneAnimations();
-		self:GetParent():AnchorModelScenesToRewards(self.Icon);
 	end
 end
 
-function PartyPoseRewardsMixin:StopRewardAnimation()
-	self.Glow.AnimFadeOut:Stop();
-	self.Shine.AnimFadeOut:Stop();
-	self.AnimFadeOut:Stop();
+function PartyPoseRewardsMixin:PauseRewardAnimation()
+	self.AnimFade.FadeIn:SetFromAlpha(1);
+	self.AnimFade.FadeOut:SetToAlpha(1);
+	self.AnimFade:Pause();
+	self:GetParent():GetParent():PauseRewardAnimation();
 end
 
-function PartyPoseRewardsMixin:OnEnter()
-	if (self.objectType == "item") then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetItemByID(self.id);
-	elseif (self.objectType == "currency") then
-		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-		GameTooltip:SetCurrencyByID(self.id, self.quantity);
-	end
-
-	GameTooltip:Show();
-	CursorUpdate(self);
-
-	self:StopRewardAnimation();
-	self.Glow:SetAlpha(0);
-	self.Shine:SetAlpha(0);
-
-	if (self:IsAzeriteCurrency()) then
-		self.loopingSoundEmitter:CancelLoopingSound();
-		self:GetParent():HideAzeriteGlowModelScenes();
-	end
-
-	self:SetAlpha(1);
-	self:Show();
+function PartyPoseRewardsMixin:ResumeRewardAnimation()
+	self.AnimFade.FadeIn:SetFromAlpha(0);
+	self.AnimFade.FadeOut:SetToAlpha(0);
+	self.AnimFade:Play();
+	self:GetParent():GetParent():ResumeRewardAnimation();
 end
 
 function PartyPoseRewardsMixin:OnAnimationFinished()
-	if (self:IsAzeriteCurrency()) then
-		self:GetParent():HideAzeriteGlowModelScenes();
-	end
-
-	self:Hide();
-	self:GetParent():PlayNextRewardAnimation(self);
+	self:PlayNextRewardAnimation();
 end
 
-function PartyPoseRewardsMixin:OnHide()
-	self.loopingSoundEmitter:CancelLoopingSound();
-end
-
-function PartyPoseRewardsMixin:OnLeave()
-	GameTooltip:Hide();
-	ResetCursor();
-	self:Hide();
-	self:GetParent():PlayNextRewardAnimation(self);
-end
-
-function PartyPoseRewardsMixin:OnLoad()
-	local startingSound = SOUNDKIT.UI_80_ISLANDS_AZERITECOLLECTION_START;
-	local loopingSound = SOUNDKIT.UI_80_ISLANDS_AZERITECOLLECTION_LOOP;
-	local endingSound = SOUNDKIT.UI_80_ISLANDS_AZERITECOLLECTION_STOP;
-
-	local loopStartDelay = 0;
-	local loopEndDelay = 0;
-	local loopFadeTime = 400; -- ms
-	self.loopingSoundEmitter = CreateLoopingSoundEffectEmitter(startingSound, loopingSound, endingSound, loopStartDelay, loopEndDelay, loopFadeTime);
+function PartyPoseRewardsMixin:PlayNextRewardAnimation()
+	self:GetParent():GetParent():PlayNextRewardAnimation();
 end
 
 PartyPoseMixin = { };
 
-function PartyPoseMixin:AnchorModelScenesToRewards(relativeFrame)
-	self.RewardAnimations.AzeriteGlow:ClearAllPoints();
-	self.RewardAnimations.AzeriteGlow:SetPoint("CENTER", relativeFrame, "CENTER", -25, 45);
-end
-
-function PartyPoseMixin:UpdateAzeriteGlowModelActor(scene, fileID, name)
-	local actor = scene:GetActorByTag(name);
-	if (actor) then
-		actor:SetModelByFileID(fileID);
-	end
-end
-
 function PartyPoseMixin:HideAzeriteGlowModelScenes()
-	self.RewardAnimations.AzeriteGlow:Hide();
+	self.RewardAnimations.ImpactModelScene:Hide();
+	self.RewardAnimations.HoldModelScene:Hide();
 end
 
-function PartyPoseMixin:PlayNextRewardAnimation(rewardObj)
-	local reward = self.rewardPool:GetNextActive(rewardObj);
+function PartyPoseMixin:PlayNextRewardAnimation()
+	local rewardData = table.remove(self.pendingRewardData, 1);
 
-	if (reward) then
-		reward:PlayRewardAnimation();
-	end
-end
-
-function PartyPoseMixin:AddReward(label, texture, count, quality, id, objectType, objectLink, quantity)
-	local rewardFrame = self.rewardPool:Acquire();
-
-	rewardFrame:SetPoint("BOTTOM", self, "BOTTOM", -15, 15);
-	rewardFrame.Name:SetText(label);
-	rewardFrame.Icon:SetTexture(texture);
-
-	rewardFrame.id = id;
-	rewardFrame.objectType = objectType;
-	rewardFrame.quantity = quantity;
-	rewardFrame.objectLink = objectLink;
-
-	if (count > 1) then
-		rewardFrame.Count:SetText(count);
-		rewardFrame.Count:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-		relativeFrame.Count:Show();
+	local rewardFrame = self.RewardAnimations.RewardFrame;
+	if rewardData then
+		rewardFrame:Show();
+		rewardFrame:SetupReward(rewardData);
+		rewardFrame:PlayRewardAnimation();
+		if rewardFrame:IsAzeriteCurrency() then
+			self:PlayModelSceneAnimations();
+		else
+			self:HideAzeriteGlowModelScenes();
+		end
 	else
-		rewardFrame.Count:Hide();
+		rewardFrame:Hide();
 	end
+end
 
-	rewardFrame:SetRewardsQuality(quality);
+function PartyPoseMixin:PauseRewardAnimation()
+	if self.RewardAnimations.RewardFrame:IsAzeriteCurrency() then
+		self.RewardAnimations.HoldModelScene.RewardModelAnim:Pause();
+	end
+end
 
-	return rewardFrame;
+function PartyPoseMixin:ResumeRewardAnimation()
+	if self.RewardAnimations.RewardFrame:IsAzeriteCurrency() then
+		self.RewardAnimations.HoldModelScene.RewardModelAnim:Play();
+	end
+end
+
+function PartyPoseMixin:AddReward(name, texture, quality, id, objectType, objectLink, quantity, originalQuantity, isCurrencyContainer)
+	local rewardData = {
+		name = name, 
+		texture = texture, 
+		quality = quality, 
+		id = id, 
+		objectType = objectType, 
+		objectLink = objectLink, 
+		quantity = quantity,
+		originalQuantity = originalQuantity,
+		isCurrencyContainer = isCurrencyContainer,
+	};
+
+	table.insert(self.pendingRewardData, rewardData);
 end
 
 function PartyPoseMixin:GetFirstReward()
@@ -162,54 +169,84 @@ function PartyPoseMixin:GetFirstReward()
 end
 
 function PartyPoseMixin:SetRewards()
+	self.pendingRewardData = {};
+
 	local name, typeID, subtypeID, iconTextureFile, moneyBase, moneyVar, experienceBase, experienceVar, numStrangers, numRewards = GetLFGCompletionReward();
-	if (not numRewards) then
+	if not numRewards or numRewards == 0 then
+		self.RewardAnimations.RewardFrame:Hide();
 		return;
 	end
 
+	local continuableContainer = ContinuableContainer:Create();
 	for i = 1, numRewards do
 		local texture, quantity, isBonus, bonusQuantity, name, quality, id, objectType = GetLFGCompletionRewardItem(i);
-		local originalQuanity = quantity;
-		local objectLink =  GetLFGCompletionRewardItemLink(i);
-		if (objectType == "currency") then
-			name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(id, quantity, name, texture, quality, originalQuantity);
-		end
-
-		if (objectType == "currency" or objectType == "item") then
-			local reward = self:AddReward(name, texture, quantity, quality, id, objectType, objectLink, originalQuanity);
-		else
-			local money = moneyBase + moneyVar * numStrangers;
-			self:AddReward(GetMoneyString(money), "Interface\\Icons\\inv_misc_coin_01", nil, 1);
+		if objectType == "item" then
+			local item = Item:CreateFromItemID(id);
+			continuableContainer:AddContinuable(item);
 		end
 	end
 
-	local firstReward = self:GetFirstReward();
-	if (firstReward) then
-		firstReward:PlayRewardAnimation();
-	end
+	continuableContainer:ContinueOnLoad(function()
+		for i = 1, numRewards do
+			local texture, quantity, isBonus, bonusQuantity, name, quality, id, objectType = GetLFGCompletionRewardItem(i);
+			local originalQuantity = quantity;
+			local isCurrencyContainer = false;
+			local objectLink = GetLFGCompletionRewardItemLink(i);
+			if (objectType == "currency") then
+				isCurrencyContainer = C_CurrencyInfo.IsCurrencyContainer(id, quantity);
+				name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(id, quantity, name, texture, quality);
+			end
+
+			self:AddReward(name, texture, quality, id, objectType, objectLink, quantity, originalQuantity, isCurrencyContainer);
+		end
+
+		table.sort(self.pendingRewardData, function(left, right)
+			if left.isCurrencyContainer ~= right.isCurrencyContainer then
+				return left.isCurrencyContainer;
+			end
+			if left.objectType ~= right.objectType then
+				return left.objectType < right.objectType; -- Not really important, just that the order is consistent
+			end
+			return left.id < right.id;
+		end);
+
+		self.RewardAnimations.RewardFrame:Show();
+		self:PlayNextRewardAnimation();
+	end);
 end
 
 function PartyPoseMixin:PlayModelSceneAnimations(forceUpdate)
-	local precast = AZERITE_GLOW_MODEL_ACTORS.Precast;
-	local absorb = AZERITE_GLOW_MODEL_ACTORS.Absorb;
-	local breathe = AZERITE_GLOW_MODEL_ACTORS.Breathe;
+	self.RewardAnimations.ImpactModelScene:Show();
+	self.RewardAnimations.HoldModelScene:Show();
 
-	self.RewardAnimations.AzeriteGlow:Show();
-	self.RewardAnimations.AzeriteGlow:SetFromModelSceneID(AZERITE_GLOW_MODEL_SCENE_ID, forceUpdate);
+	self.RewardAnimations.ImpactModelScene:SetFromModelSceneID(214, forceUpdate);
+	local impactActor = self.RewardAnimations.ImpactModelScene:GetActorByTag("effect");
+	if (impactActor) then
+		impactActor:SetModelByFileID(1983536); -- 8FX_AZERITE_GENERIC_IMPACTHIGH_CHEST
 
-	self:UpdateAzeriteGlowModelActor(self.RewardAnimations.AzeriteGlow, precast.effectID, precast.name);
-	self:UpdateAzeriteGlowModelActor(self.RewardAnimations.AzeriteGlow, absorb.effectID, absorb.name);
-	self:UpdateAzeriteGlowModelActor(self.RewardAnimations.AzeriteGlow, breathe.effectID, breathe.name);
+		impactActor:SetAnimation(0, 0, 1, 0);
+		C_Timer.After(.2, function() impactActor:SetAnimation(0, 0, 0, 0); end);
+	end
+
+	self.RewardAnimations.HoldModelScene:SetFromModelSceneID(234, forceUpdate);
+	local holdActor = self.RewardAnimations.HoldModelScene:GetActorByTag("effect");
+	if (holdActor) then
+		holdActor:SetModelByFileID(1983980); -- 8FX_AZERITE_EMPOWER_STATECHEST
+	end
+
+	self.RewardAnimations.HoldModelScene.RewardModelAnim:Play();
 end
 
--- Moves the shadow to underneath the model actor in the model scene.
-function PartyPoseMixin:SetupShadow(actor)
-	local shadowTexture = self.ModelScene.shadowPool:Acquire();
-	local positionVector = CreateVector3D(actor:GetPosition())
+function PartyPoseMixin:UpdateShadow(actor)
+	local shadowTexture = actor.shadowTexture;
+	assert(shadowTexture);
+
+	local positionVector = CreateVector3D(actor:GetPosition());
 	positionVector:ScaleBy(actor:GetScale());
 	local x, y, depthScale = self.ModelScene:Transform3DPointTo2D(positionVector:GetXYZ());
 
 	if (not x or not y or not depthScale) then
+		shadowTexture:Hide();
 		return;
 	end
 
@@ -225,10 +262,14 @@ function PartyPoseMixin:SetupShadow(actor)
 	shadowTexture:Show();
 end
 
-function PartyPoseMixin:ApplyVisualKitToEachActor(visKit)
-	for actor in self.ModelScene:EnumerateActiveActors() do
-		actor:ApplySpellVisualKit(visKit, true);
-	end
+function PartyPoseMixin:SetupShadow(actor)
+	self.onActorSizeChangedCallback = self.onActorSizeChangedCallback or function(actor)
+		self:UpdateShadow(actor);
+	end;
+
+	actor:SetOnSizeChangedCallback(self.onActorSizeChangedCallback);
+	actor.shadowTexture = self.ModelScene.shadowPool:Acquire();
+	self:UpdateShadow(actor);
 end
 
 -- Creates the model scene and adds the actors from a particular ID.
@@ -322,12 +363,11 @@ function PartyPoseMixin:SetupTheme(styleData)
 end
 
 function PartyPoseMixin:OnLoad()
-	self.ModelScene:EnableMouse(false);
-	self.ModelScene:EnableMouseWheel(false);
+	UIPanelWindows[self:GetName()] = { area = "center", pushable = 0, whileDead = 1, ignoreControlLost = true, };
 	self.ModelScene.shadowPool = CreateTexturePool(self.ModelScene, "BORDER", 1, "PartyPoseModelShadowTextureTemplate");
-	self.rewardPool = CreateFramePool("BUTTON", self, "PartyPoseRewardsButtonTemplate");
 	self:RegisterEvent("LFG_COMPLETION_REWARD");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
+	self:RegisterEvent("PLAYER_LEAVING_WORLD");
 end
 
 function PartyPoseMixin:OnEvent(event, ...)
@@ -337,5 +377,7 @@ function PartyPoseMixin:OnEvent(event, ...)
 		self:PlayModelSceneAnimations(forceUpdate);
 	elseif ( event == "LFG_COMPLETION_REWARD" ) then
 		self:SetRewards();
+	elseif ( event == "PLAYER_LEAVING_WORLD" ) then
+		HideUIPanel(self);
 	end
 end

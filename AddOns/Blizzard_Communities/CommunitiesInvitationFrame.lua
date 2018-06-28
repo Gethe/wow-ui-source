@@ -1,6 +1,7 @@
 
 local COMMUNITIES_INVITATION_FRAME_EVENTS = {
 	"CLUB_MEMBER_UPDATED",
+	"PLAYER_REPORT_SUBMITTED",
 };
 
 CommunitiesInvitationFrameMixin = {};
@@ -20,6 +21,11 @@ function CommunitiesInvitationFrameMixin:OnEvent(event, ...)
 			local invitationInfo = C_Club.GetInvitationInfo(self.clubId);
 			self:DisplayInvitation(invitationInfo);
 		end
+	elseif event == "PLAYER_REPORT_SUBMITTED" then
+		local guid = ...;
+		if self.inviterInfo and self.inviterInfo.guid == guid then
+			self:DeclineInvitation();
+		end
 	end
 end
 
@@ -32,10 +38,24 @@ function CommunitiesInvitationFrameMixin:DisplayInvitation(invitationInfo)
 	
 	local clubInfo = invitationInfo.club;
 	local inviterInfo = invitationInfo.inviter;
+	self.inviterInfo = inviterInfo;
 	self.clubId = clubInfo.clubId;
-	self.InvitationText:SetText(COMMUNITY_INVITATION_FRAME_INVITATION_TEXT:format(inviterInfo.name));
-
+	
 	local isCharacterClub = clubInfo.clubType == Enum.ClubType.Character;
+	local inviterName = inviterInfo.name or "";
+	local classInfo = inviterInfo.classID and C_CreatureInfo.GetClassInfo(inviterInfo.classID);
+	local inviterText;
+	if isCharacterClub and classInfo then
+		local classColorInfo = RAID_CLASS_COLORS[classInfo.classFile];
+		inviterText = GetPlayerLink(inviterName, ("[%s]"):format(WrapTextInColorCode(inviterName, classColorInfo.colorStr)));
+	elseif isCharacterClub then
+		inviterText = GetPlayerLink(inviterName, ("[%s]"):format(inviterName));
+	else
+		inviterText = inviterName;
+	end
+
+	self.InvitationText:SetText(COMMUNITY_INVITATION_FRAME_INVITATION_TEXT:format(inviterText));
+	
 	local clubTypeText = isCharacterClub and COMMUNITIES_INVITATION_FRAME_TYPE_CHARACTER or COMMUNITIES_INVITATION_FRAME_TYPE;
 	self.Type:SetText(clubTypeText);
 	C_Club.SetAvatarTexture(self.Icon, clubInfo.avatarId, clubInfo.clubType);
@@ -49,9 +69,11 @@ function CommunitiesInvitationFrameMixin:DisplayInvitation(invitationInfo)
 	
 	local leadersText = "";
 	for i, leader in ipairs(invitationInfo.leaders) do
-		leadersText = leadersText..leader.name;
-		if i ~= #invitationInfo.leaders then
-			leadersText = leadersText..PLAYER_LIST_DELIMITER;
+		if leader.name then
+			leadersText = leadersText..leader.name;
+			if i ~= #invitationInfo.leaders then
+				leadersText = leadersText..PLAYER_LIST_DELIMITER;
+			end
 		end
 	end
 
@@ -73,6 +95,14 @@ function CommunitiesInvitationFrameMixin:DeclineInvitation()
 	C_Club.DeclineInvitation(self.clubId);
 	self:GetCommunitiesFrame():TriggerEvent(CommunitiesFrameMixin.Event.InviteDeclined, self.invitationId, self.clubId);
 	self:Hide();
+end
+
+function CommunitiesInvitationFrameMixin:OnHyperlinkClick(link, text, button, ...)
+	if button == "RightButton" then
+		FriendsFrame_ShowDropdown(self.inviterInfo.name or "", 1, nil, nil, nil, nil, nil, self.clubId, nil, nil, nil, self.inviterInfo.guid)
+	else
+		SetItemRef(link, text, button, nil);
+	end
 end
 
 function CommunitiesInviteButton_OnClick(self)

@@ -46,7 +46,7 @@ function VignetteDataProviderMixin:RefreshAllData(fromOnShow)
 	local mapID = self:GetMap():GetMapID();
 	for i, vignetteGUID in ipairs(vignetteGUIDs) do
 		local vignetteInfo = C_VignetteInfo.GetVignetteInfo(vignetteGUID);
-		if vignetteInfo.onWorldMap then
+		if vignetteInfo and vignetteInfo.onWorldMap then
 			local existingPin = pinsToRemove[vignetteGUID];
 			if existingPin then
 				pinsToRemove[vignetteGUID] = nil;
@@ -133,6 +133,9 @@ function VignettePinMixin:OnAcquired(vignetteGUID, vignetteInfo)
 	self.hasTooltip = vignetteInfo.hasTooltip or vignetteInfo.type == Enum.VignetteType.PvpBounty;
 	self.isUnique = vignetteInfo.isUnique;
 	self.vignetteID = vignetteInfo.vignetteID;
+
+	self:EnableMouse(self.hasTooltip);
+
 	self.vignetteInfo = vignetteInfo;
 
 	self.Texture:SetAtlas(vignetteInfo.atlasName, true);

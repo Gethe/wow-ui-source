@@ -18,34 +18,26 @@ end
 function FlightMap_ZoneSummaryDataProvider:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 
-	self:GatherWorldQuests();
-
 	self:CheckMouse();
 end
 
-function FlightMap_ZoneSummaryDataProvider:GatherWorldQuests()
-	self.worldQuestsByZone = {};
+function FlightMap_ZoneSummaryDataProvider:GetNumWorldQuestsForMap(mapID)
+	local numWorldQuests = 0;
 
-	local mapID = self:GetMap():GetMapID();
 	local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapID);
 	if taskInfo then
 		for i, info in ipairs(taskInfo) do
-			if HaveQuestData(info.questId) then
-				if QuestUtils_IsQuestWorldQuest(info.questId) and WorldMap_DoesWorldQuestInfoPassFilters(info) then
-					if not self.worldQuestsByZone[info.mapID] then
-						self.worldQuestsByZone[info.mapID] = {};
-					end
-					table.insert(self.worldQuestsByZone[info.mapID], info);
-
-					C_TaskQuest.RequestPreloadRewardData(info.questId);
-				end
+			if HaveQuestData(info.questId) and QuestUtils_IsQuestWorldQuest(info.questId) and WorldMap_DoesWorldQuestInfoPassFilters(info) then
+				numWorldQuests = numWorldQuests + 1;
 			end
 		end
 	end
+
+	return numWorldQuests;
 end
 
 function FlightMap_ZoneSummaryDataProvider:CheckMouse()
-	if not self:GetMap():IsAtMaxZoom() and self:GetMap():GetMapID() and self:GetMap():IsCanvasMouseFocus() and (not GameTooltip:GetOwner() or GameTooltip:GetOwner() == self:GetMap()) then
+	if self:GetMap():IsAtMinZoom() and self:GetMap():GetMapID() and self:GetMap():IsCanvasMouseFocus() and (not GameTooltip:GetOwner() or GameTooltip:GetOwner() == self:GetMap()) then
 		local mapID = self:GetMap():GetMapID();
 		local mouseX, mouseY = self:GetMap():GetNormalizedCursorPosition();
 		local mapInfo = C_Map.GetMapInfoAtPosition(mapID, mouseX, mouseY);
@@ -54,9 +46,9 @@ function FlightMap_ZoneSummaryDataProvider:CheckMouse()
 			GameTooltip:SetOwner(self:GetMap(), "ANCHOR_CURSOR_RIGHT", 30);
 			GameTooltip:SetText(mapInfo.name);
 
-			local worldQuests = self.worldQuestsByZone[mapInfo.mapID];
-			if worldQuests then
-				GameTooltip:AddLine(FLIGHT_MAP_WORLD_QUESTS:format(#worldQuests), HIGHLIGHT_FONT_COLOR:GetRGB());
+			local numWorldQuests = self:GetNumWorldQuestsForMap(mapInfo.mapID);
+			if numWorldQuests > 0 then
+				GameTooltip:AddLine(FLIGHT_MAP_WORLD_QUESTS:format(numWorldQuests), HIGHLIGHT_FONT_COLOR:GetRGB());
 				GameTooltip:AddLine(" ");
 			end
 

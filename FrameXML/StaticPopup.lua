@@ -4687,6 +4687,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	editBox.hasAutoComplete = info.autoCompleteSource ~= nil;
 	if ( editBox.hasAutoComplete ) then
 		AutoCompleteEditBox_SetAutoCompleteSource(editBox, info.autoCompleteSource, unpack(info.autoCompleteArgs));
+	else
+		AutoCompleteEditBox_SetAutoCompleteSource(editBox, nil);
 	end
 
 	-- Finally size and show the dialog

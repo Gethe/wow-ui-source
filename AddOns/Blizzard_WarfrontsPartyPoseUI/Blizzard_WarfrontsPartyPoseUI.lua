@@ -1,29 +1,25 @@
 local WARFRONTS_GRUNT_ACTORS_HORDE =
 {
-	grunt1  = 83858,
-	grunt2  = 83860,
-	grunt3  = 83960,
-	grunt4 	= 83958,
-	grunt5 	= 84009,
-	grunt6  = 84011,
-	grunt7 	= 85991,
-	grunt8  = 87705,
-	grunt9  = 86718,
-	grunt10 = 86722,
+	grunt1 = 83860, -- ORCMALE_HD.m2 (Grunt)
+	grunt2 = 87186, -- TROLLFEMALE_HD.m2 (Witch Doctor)
+	grunt3 = 85979, -- BLOODELFFEMALE_HD.m2 (Warcaster)
+	grunt4 = 81941, -- GOBLINMALE.m2 (Wistel)
+	grunt5 = 83958, -- TROLLMALE_HD.m2 (Axe Thrower)
+	grunt6 = 84011, -- TAURENFEMALE_HD.m2 (Warrior)
+	grunt7 = 83858, -- ORCFEMALE_HD.m2 (Grunt)
+	grunt8 = 83766, -- ORCMALE_HD.m2 (Peon)
 }
 
 local WARFRONTS_GRUNT_ACTORS_ALLIANCE =
 {
-	grunt1 	= 83056,
-	grunt2  = 83057,
-	grunt3  = 86833,
-	grunt4	= 78939,
-	grunt5  = 84310,
-	grunt6 	= 87808,
-	grunt7	= 87804,
-	grunt8  = 71841,
-	grunt9 	= 60949,
-	grunt10 = 60990,
+	grunt1 = 86715, -- humanguard_m.m2 (human male footman)
+	grunt2 = 86833, -- DWARFFEMALE_HD.m2 (dwarf female rifleman)
+	grunt3 = 84310, -- GNOMEFEMALE_HD.m2 (gnome female engineer)
+	grunt4 = 86989, -- HUMANFEMALE_HD.m2 (human female priest)
+	grunt5 = 86823, -- DWARFMALE_HD.m2 (dwarf male rifleman)
+	grunt6 = 86814, -- humanknight_m.m2 (human male knight)
+	grunt7 = 87004, -- HUMANFEMALE_HD.m2 (human female sorceress)
+	grunt8 = 87528, -- draeneipeacekeeper_m.m2 (draenei male paladin)
 }
 
 WarfrontsPartyPoseMixin = CreateFromMixins(PartyPoseMixin);
@@ -45,7 +41,7 @@ function WarfrontsPartyPoseMixin:AddModelSceneActors(playerFactionGroup)
 end
 
 function WarfrontsPartyPoseMixin:SetLeaveButtonText()
-	self.LeaveButton.Text:SetText(WARFRONTS_LEAVE);
+	self.LeaveButton:SetText(WARFRONTS_LEAVE);
 end
 
 do

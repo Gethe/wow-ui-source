@@ -183,20 +183,16 @@ end
 
 function VoiceChatHeadsetButtonMixin:ShowTooltip()
 	local isActive = self:IsVoiceActive();
-	local baseMessage = isActive and VOICE_CHAT_CHANNEL_ACTIVE_TOOLTIP or VOICE_CHAT_CHANNEL_INACTIVE_TOOLTIP;
-	local formattedChannelName = Voice_FormatTextForChannel(self:GetVoiceChannel(), self:GetChannelName());
-	local message = baseMessage:format(formattedChannelName);
-	local instructions = isActive and VOICE_CHAT_CHANNEL_ACTIVE_TOOLTIP_INSTRUCTIONS or VOICE_CHAT_CHANNEL_INACTIVE_TOOLTIP_INSTRUCTIONS;
+	local message = isActive and VOICE_CHAT_LEAVE or VOICE_CHAT_JOIN;
 
 	local tooltip = GameTooltip;
 	tooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip_SetTitle(tooltip, message);
-	GameTooltip_AddInstructionLine(tooltip, instructions);
 	tooltip:Show();
 end
 
 function VoiceChatHeadsetButtonMixin:Update()
-	if self:GetVoiceChannel() or self:IsCommunityChannel() then
+	if self:GetVoiceChannel() or (self:IsCommunityChannel() and C_VoiceChat.CanPlayerUseVoiceChat()) then
 		self:SetShown(true);
 
 		local isActive = self:IsVoiceActive();

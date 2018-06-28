@@ -152,9 +152,14 @@ function ModelSceneMixin:ReleaseAllActors()
 	end
 end
 
+local function OnReleased(actorPool, actor)
+	actor:OnReleased();
+	ActorPool_HideAndClearModel(actorPool, actor);
+end
+
 function ModelSceneMixin:AcquireActor()
 	if not self.actorPool then
-		self.actorPool = CreateActorPool(self, self.actorTemplate);
+		self.actorPool = CreateActorPool(self, self.actorTemplate, OnReleased);
 	end
 	return self.actorPool:Acquire();
 end

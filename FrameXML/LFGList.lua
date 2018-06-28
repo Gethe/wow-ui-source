@@ -33,6 +33,7 @@ LFG_LIST_CATEGORY_TEXTURES = {
 	[8] = "battlegrounds",
 	[9] = "ratedbgs",
 	[10] = "ashran",
+	[111] = "islands",
 };
 
 LFG_LIST_PER_EXPANSION_TEXTURES = {

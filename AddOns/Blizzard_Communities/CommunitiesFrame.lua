@@ -15,11 +15,14 @@ local COMMUNITIES_FRAME_EVENTS = {
 	"CLUB_STREAMS_LOADED",
 	"CLUB_STREAM_ADDED",
 	"CLUB_STREAM_REMOVED",
-	"CLUB_STREAM_SUBSCRIBED",
 	"CLUB_ADDED",
 	"CLUB_REMOVED",
 	"CLUB_SELF_MEMBER_ROLE_UPDATED",
 	"STREAM_VIEW_MARKER_UPDATED",
+	"BN_DISCONNECTED",
+	"PLAYER_GUILD_UPDATE",
+	"CHANNEL_UI_UPDATE",
+	"UPDATE_CHAT_COLOR",
 };
 
 local COMMUNITIES_STATIC_POPUPS = {
@@ -32,17 +35,6 @@ local COMMUNITIES_STATIC_POPUPS = {
 	"CONFIRM_LEAVE_AND_DESTROY_COMMUNITY",
 	"CONFIRM_LEAVE_COMMUNITY",
 };
-
-local function RangeIsEmpty(range)
-	return range.newestMessageId.epoch < range.oldestMessageId.epoch or (range.newestMessageId.epoch == range.oldestMessageId.epoch and range.newestMessageId.position < range.oldestMessageId.position);
-end
-
-local function RequestInitialMessages(clubId, streamId)
-	local ranges = C_Club.GetMessageRanges(clubId, streamId);
-	if (not ranges or #ranges == 0 or RangeIsEmpty(ranges[#ranges])) then
-		C_Club.RequestMoreMessagesBefore(clubId, streamId, nil);
-	end
-end
 
 function CommunitiesFrameMixin:OnLoad()
 	CallbackRegistryBaseMixin.OnLoad(self);
@@ -67,15 +59,17 @@ function CommunitiesFrameMixin:OnShow()
 	if ChannelFrame and ChannelFrame:IsShown() then
 		HideUIPanel(ChannelFrame);
 	end
-
+	
 	local clubId = self:GetSelectedClubId();
 	if clubId  then
 		C_Club.SetClubPresenceSubscription(clubId);
 	end
 
-	SetPortraitToTexture(self.PortraitOverlay.Portrait, "Interface\\Icons\\Achievement_General_StayClassy");
+	self:UpdatePortrait();
+	
 	FrameUtil.RegisterFrameForEvents(self, COMMUNITIES_FRAME_EVENTS);
 	self:UpdateClubSelection();
+	self:UpdateStreamDropDown();
 	UpdateMicroButtons();
 end
 
@@ -115,14 +109,13 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 				self:UpdateStreamDropDown();
 			end
 		end
-	elseif event == "CLUB_STREAM_SUBSCRIBED" then
-		local clubId, streamId = ...;
-		if clubId == self:GetSelectedClubId() and streamId == self:GetSelectedStreamId() then
-			RequestInitialMessages(clubId, streamId);
-		end
 	elseif event == "CLUB_ADDED" then
 		local clubId = ...;
 		self:AddNewClubId(clubId);
+		
+		if self:GetSelectedClubId() == nil then
+			self:UpdateClubSelection();
+		end
 	elseif event == "CLUB_REMOVED" then
 		local clubId = ...;
 		if clubId == self:GetSelectedClubId() then
@@ -144,6 +137,15 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 		if self.CommunitiesListDropDownMenu:IsShown() then
 			self.CommunitiesListDropDownMenu:UpdateUnreadNotification();
 		end
+	elseif event == "BN_DISCONNECTED" then
+		HideUIPanel(self);
+	elseif event == "PLAYER_GUILD_UPDATE" then
+		local guildClubId = C_Club.GetGuildClubId();
+		if guildClubId ~= nil and guildClubId == self:GetSelectedClubId() then
+			SetLargeGuildTabardTextures("player", self.PortraitOverlay.TabardEmblem, self.PortraitOverlay.TabardBackground, self.PortraitOverlay.TabardBorder);
+		end
+	elseif event == "CHANNEL_UI_UPDATE" or event == "UPDATE_CHAT_COLOR" then
+		self:UpdateStreamDropDown();
 	end
 end
 
@@ -163,8 +165,8 @@ function CommunitiesFrameMixin:StreamsLoadedForClub(clubId)
 			if streams then
 				for i, stream in ipairs(streams) do
 					if stream.streamType == Enum.ClubStreamType.General then
-						C_Club.AddClubStreamToChatWindow(clubId, stream.streamId, 1);
-						ChatFrame_AddCommunitiesChannel(DEFAULT_CHAT_FRAME, clubId, stream.streamId);
+						local DEFAULT_CHAT_FRAME_INDEX = 1;
+						ChatFrame_AddNewCommunitiesChannel(DEFAULT_CHAT_FRAME_INDEX, clubId, stream.streamId);
 						table.remove(self.newClubIds, i);
 						break;
 					end
@@ -354,6 +356,7 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 	
 	self:TriggerEvent(CommunitiesFrameMixin.Event.DisplayModeChanged, displayMode);
 	
+	self:UpdateCommunitiesButtons();
 	self:UpdateCommunitiesTabs();
 end
 
@@ -370,6 +373,10 @@ function CommunitiesFrameMixin:ValidateDisplayMode()
 			self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.CHAT);
 		elseif displayMode == nil then
 			self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.CHAT);
+		end
+		
+		if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER then
+			self.GuildMemberListDropDownMenu:SetShown(isGuildCommunitySelected);
 		end
 	end	
 end
@@ -422,6 +429,24 @@ function CommunitiesFrameMixin:UpdateCommunitiesTabs()
 	end
 end
 
+function CommunitiesFrameMixin:UpdatePortrait()
+	local clubId = self:GetSelectedClubId();
+	local clubInfo = clubId and C_Club.GetClubInfo(clubId) or nil;
+	local isGuildCommunity = clubInfo and clubInfo.clubType == Enum.ClubType.Guild or nil;
+	self.PortraitOverlay.Portrait:SetShown(not isGuildCommunity);
+	self.PortraitOverlay.TabardEmblem:SetShown(isGuildCommunity);
+	self.PortraitOverlay.TabardBackground:SetShown(isGuildCommunity);
+	self.PortraitOverlay.TabardBorder:SetShown(isGuildCommunity);
+	
+	if clubInfo == nil then
+		SetPortraitToTexture(self.PortraitOverlay.Portrait, "Interface\\Icons\\achievement_guildperk_havegroup willtravel");
+	elseif isGuildCommunity then
+		SetLargeGuildTabardTextures("player", self.PortraitOverlay.TabardEmblem, self.PortraitOverlay.TabardBackground, self.PortraitOverlay.TabardBorder);
+	else
+		C_Club.SetAvatarTexture(self.PortraitOverlay.Portrait, clubInfo.avatarId, clubInfo.clubType);
+	end
+end
+
 function CommunitiesFrameMixin:OnClubSelected(clubId)
 	local clubSelected = clubId ~= nil;
 	self:CloseActiveDialogs();
@@ -433,12 +458,12 @@ function CommunitiesFrameMixin:OnClubSelected(clubId)
 		
 		local clubInfo = C_Club.GetClubInfo(clubId);
 		if clubInfo then
-			C_Club.SetAvatarTexture(self.PortraitOverlay.Portrait, clubInfo.avatarId, clubInfo.clubType);
 			local selectedStream = self:GetSelectedStreamForClub(clubId);
 			if selectedStream ~= nil then
 				self:SelectStream(clubId, selectedStream.streamId);
 			else
 				local streams = C_Club.GetStreams(clubId);
+				CommunitiesUtil.SortStreams(streams);
 				if #streams >= 1 then
 					self:SelectStream(clubId, streams[1].streamId);
 				else
@@ -465,10 +490,9 @@ function CommunitiesFrameMixin:OnClubSelected(clubId)
 				end
 			end
 		end
-	else
-		SetPortraitToTexture(self.PortraitOverlay.Portrait, "Interface\\Icons\\Achievement_General_StayClassy");
 	end
 	
+	self:UpdatePortrait();
 	self:UpdateCommunitiesButtons();
 	self:UpdateCommunitiesTabs();
 	self:TriggerEvent(CommunitiesFrameMixin.Event.ClubSelected, clubId);
@@ -554,7 +578,7 @@ function CommunitiesFrameMixin:SelectStream(clubId, streamId)
 					self:SetFocusedStream(clubId, streamId);
 					C_Club.SetAutoAdvanceStreamViewMarker(clubId, streamId);
 					if C_Club.IsSubscribedToStream(clubId, streamId) then
-						RequestInitialMessages(clubId, streamId);
+						self.Chat:RequestInitialMessages(clubId, streamId);
 					end
 					
 					self:TriggerEvent(CommunitiesFrameMixin.Event.StreamSelected, streamId);
@@ -589,7 +613,8 @@ function CommunitiesFrameMixin:UpdateStreamDropDown()
 	local clubId = self:GetSelectedClubId();
 	local selectedStream = self:GetSelectedStreamForClub(clubId);
 	UIDropDownMenu_SetSelectedValue(self.StreamDropDownMenu, selectedStream and selectedStream.streamId or nil, true);
-	UIDropDownMenu_SetText(self.StreamDropDownMenu, selectedStream and selectedStream.name or "");
+	local streamName = selectedStream and CommunitiesStreamDropDownMenu_GetStreamName(clubId, selectedStream) or "";
+	UIDropDownMenu_SetText(self.StreamDropDownMenu, streamName);
 	self.StreamDropDownMenu:UpdateUnreadNotification();
 end
 
@@ -711,9 +736,20 @@ function CommunitiesControlFrameMixin:Update()
 			end
 		
 			if isGuild then
-				-- TODO:: Check guild permissions
-				self.GuildRecruitmentButton:Show();
-				self.GuildControlButton:Show();
+				self.GuildControlButton:SetShown(IsGuildLeader());
+				
+				local myMemberInfo = C_Club.GetMemberInfoForSelf(clubId);
+				if communitiesFrame:GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER and myMemberInfo and myMemberInfo.guildRankOrder then
+					local permissions = C_GuildInfo.GuildControlGetRankFlags(myMemberInfo.guildRankOrder);
+					local hasInvitePermissions = permissions[GuildControlUIRankSettingsFrame.InviteCheckbox:GetID()];
+					self.GuildRecruitmentButton:SetShown(hasInvitePermissions);
+					self.GuildRecruitmentButton:ClearAllPoints();
+					if self.GuildRecruitmentButton:IsShown() and self.GuildControlButton:IsShown() then
+						self.GuildRecruitmentButton:SetPoint("RIGHT", self.GuildControlButton, "LEFT", -2, 0);
+					else
+						self.GuildRecruitmentButton:SetPoint("BOTTOMRIGHT");
+					end
+				end
 			end
 		end
 	end

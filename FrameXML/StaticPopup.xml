@@ -52,9 +52,9 @@
 		<Size>
 			<AbsDimension x="320" y="72"/>
 		</Size>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
+				<AbsInset left="11" right="11" top="11" bottom="11"/>
 			</BackgroundInsets>
 			<TileSize>
 				<AbsValue val="32"/>

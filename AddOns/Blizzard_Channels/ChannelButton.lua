@@ -227,6 +227,7 @@ do
 		-- If the user clicks this before seeing the tutorial, assume they know how to activate voice channels.
 		-- This only applies to headset buttons in the channels frame.
 		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CHAT_CHANNELS, true);
+		ChannelFrame:HideTutorial();
 	end
 
 	function ChannelButtonMixin:Update()

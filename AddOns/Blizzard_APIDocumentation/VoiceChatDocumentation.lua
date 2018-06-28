@@ -25,6 +25,15 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "CanPlayerUseVoiceChat",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUseVoiceChat", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CreateChannel",
 			Type = "Function",
 
@@ -327,21 +336,6 @@ local VoiceChat =
 			},
 		},
 		{
-			Name = "IsMemberConnected",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "isConnected", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "IsMemberLocalPlayer",
 			Type = "Function",
 
@@ -407,6 +401,24 @@ local VoiceChat =
 			Returns =
 			{
 				{ Name = "isMuted", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "IsParentalDisabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isParentalDisabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsParentalMuted",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isParentalMuted", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -964,9 +976,9 @@ local VoiceChat =
 		{
 			Name = "VoiceChatStatusCode",
 			Type = "Enumeration",
-			NumValues = 22,
+			NumValues = 23,
 			MinValue = 0,
-			MaxValue = 21,
+			MaxValue = 22,
 			Fields =
 			{
 				{ Name = "Success", Type = "VoiceChatStatusCode", EnumValue = 0 },
@@ -991,6 +1003,7 @@ local VoiceChat =
 				{ Name = "UnsupportedChatChannelType", Type = "VoiceChatStatusCode", EnumValue = 19 },
 				{ Name = "InvalidCommunityStream", Type = "VoiceChatStatusCode", EnumValue = 20 },
 				{ Name = "PlayerSilenced", Type = "VoiceChatStatusCode", EnumValue = 21 },
+				{ Name = "PlayerVoiceChatParentalDisabled", Type = "VoiceChatStatusCode", EnumValue = 22 },
 			},
 		},
 		{

@@ -587,13 +587,13 @@
 			</Frame>
             
             <ScrollFrame parentKey="WeeklyInfo" mixin="ChallengesFrameWeeklyInfoMixin">
-                <Size x="550" y="372"/>
+                <Size x="550" y="392"/>
                 <Anchors>
                     <Anchor point="TOPLEFT" x="6" y="-12"/>
                 </Anchors>
                 <ScrollChild>
                     <Frame parentKey="Child">
-                        <Size x="550" y="372"/>
+                        <Size x="550" y="392"/>
                         <Anchors>
                             <Anchor point="TOPLEFT"/>
                         </Anchors>

@@ -93,6 +93,11 @@
 						<Anchors>
 							<Anchor point="TOPRIGHT" x="6" y="6"/>
 						</Anchors>
+						<Scripts>
+							<OnClick inherit="append">
+								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CHAT_CHANNELS, true);
+							</OnClick>
+						</Scripts>
 					</Button>
 					<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
 						<Anchors>
@@ -110,7 +115,6 @@
 					</OnLoad>
 					<OnShow>
 						self:SetHeight(self.Text:GetHeight() + 32);
-						SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CHAT_CHANNELS, true);
 					</OnShow>
 				</Scripts>
 			</Frame>

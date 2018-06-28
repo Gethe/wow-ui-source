@@ -478,13 +478,16 @@ function CharacterCreate_OnEvent(self, event, ...)
 			CharacterCreateEnumerateClasses();
 		end
 	elseif ( event == "CHARACTER_CREATION_RESULT" ) then
-		local success, errorCode = ...;
-		if ( success ) then
-			if (CharacterUpgrade_IsCreatedCharacterTrialBoost() and IsConnectedToServer()) then
-				CharacterSelect_SetPendingTrialBoost(true, CharacterCreate_GetSelectedFaction(), CharCreateSelectSpecFrame.selected);
+		local success, errorCode, guid = ...;
+		if success then
+			if guid then
+				if (CharacterUpgrade_IsCreatedCharacterTrialBoost() and IsConnectedToServer()) then
+					CharacterSelect_SetPendingTrialBoost(true, CharacterCreate_GetSelectedFaction(), CharCreateSelectSpecFrame.selected, guid);
+				end
+				CharacterSelect.selectGuid = guid;
+			elseif C_CharacterCreation.IsUsingCharacterTemplate() then
+				CharacterSelect.selectLast = true;
 			end
-
-			CharacterSelect.selectLast = true;
 			GlueParent_SetScreen("charselect");
 		else
 			CharCreate_RefreshNextButton();

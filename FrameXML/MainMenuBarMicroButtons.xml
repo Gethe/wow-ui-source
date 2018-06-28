@@ -85,32 +85,9 @@
 		</Layers>
 		<Scripts>
 			<OnLoad function="CharacterMicroButton_OnLoad" />
-			<OnMouseDown>
-				if ( self.down ) then
-					self.down = nil;
-					ToggleCharacter("PaperDollFrame");
-					return;
-				end
-				CharacterMicroButton_SetPushed();
-				self.down = 1;
-			</OnMouseDown>
-			<OnMouseUp>
-				if ( self.down ) then
-					self.down = nil;
-					if ( self:IsMouseOver() ) then
-						ToggleCharacter("PaperDollFrame");
-					end
-					UpdateMicroButtons();
-					return;
-				end
-				if ( self:GetButtonState() == "NORMAL" ) then
-					CharacterMicroButton_SetPushed();
-					self.down = 1;
-				else
-					CharacterMicroButton_SetNormal();
-					self.down = 1;
-				end
-			</OnMouseUp>
+			<OnMouseDown function="CharacterMicroButton_OnMouseDown"/>
+			<OnMouseUp function ="CharacterMicroButton_OnMouseUp"/>
+			<OnEnter function="CharacterMicroButton_OnEnter"/>
 			<OnEvent function="CharacterMicroButton_OnEvent"/>
 		</Scripts>
 	</Button>
@@ -152,7 +129,7 @@
 			<OnClick function="TalentMicroButton_OnClick"/>
 			<OnEvent function="TalentMicroButton_OnEvent"/>
 		</Scripts>
-	</Button>	
+	</Button>
 	<Button name="AchievementMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="TalentMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
@@ -201,14 +178,13 @@
 		</Anchors>
 		<Frames>
 			<Frame name="$parentTabard" hidden="true">
-				<Size x="28" y="58"/>
+				<Size x="28" y="36"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture name="$parentBackground" file="Interface\Buttons\UI-MicroButton-Guild-Banner" parentKey="background">
-							<Size x="30" y="60"/>
+						<Texture name="$parentBackground" parentKey="background" atlas="hud-microbutton-Guild-Banner" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
@@ -216,9 +192,9 @@
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="1">
 						<Texture name="$parentEmblem" parentKey="emblem" file="Interface\GuildFrame\GuildEmblems_01">
-							<Size x="16" y="16"/>
+							<Size x="14" y="14"/>
 							<Anchors>
-								<Anchor point="CENTER" x="0" y="-9"/>
+								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -234,7 +210,7 @@
 				self:RegisterEvent("PLAYER_GUILD_UPDATE");
 				self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
 				GuildMicroButton_UpdateTabard(true);
-				if ( IsTrialAccount() or (IsVeteranTrialAccount() and not IsInGuild()) ) then
+				if ( IsCommunitiesUIDisabledByTrialAccount() ) then
 					self:Disable();
 					self.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
 				end
@@ -285,23 +261,10 @@
 			<Anchor point="BOTTOMLEFT" relativeTo="LFDMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad>
-				LoadMicroButtonTextures(self, "Mounts");
-				SetDesaturation(self:GetDisabledTexture(), true);
-				self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS");
-				self.newbieText = NEWBIE_TOOLTIP_MOUNTS_AND_PETS;
-
-				self:RegisterEvent("HEIRLOOMS_UPDATED");
-				self:RegisterEvent("PET_JOURNAL_NEW_BATTLE_SLOT");
-				self:RegisterEvent("TOYS_UPDATED");
-				self:RegisterEvent("COMPANION_LEARNED");
-				self:RegisterEvent("PET_JOURNAL_LIST_UPDATE");
-				self:RegisterEvent("PLAYER_ENTERING_WORLD");
-			</OnLoad>
-			<OnClick>
-				ToggleCollectionsJournal();
-			</OnClick>
-			<OnEvent function="CollectionsMicroButton_OnEvent" />
+			<OnLoad function="CollectionsMicroButton_OnLoad"/>
+			<OnEnter function="CollectionsMicroButton_OnEnter"/>
+			<OnClick function="CollectionsMicroButton_OnClick"/>
+			<OnEvent function="CollectionsMicroButton_OnEvent"/>
 		</Scripts>
 	</Button>
 	<Button name="EJMicroButton" inherits="MainMenuBarMicroButton" mixin="EJMicroButtonMixin" parent="UIParent">
@@ -342,7 +305,7 @@
 	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="StoreMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
-		</Anchors>	
+		</Anchors>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="MainMenuBarPerformanceBar" file="Interface\MainMenuBar\UI-MainMenuBar-PerformanceBar">

@@ -130,7 +130,7 @@ function PropertyBindingMixin:SetTooltip(state)
 	local tooltipFunction = self:GetTooltipFunction();
 	local tooltipText = tooltipFunction and tooltipFunction(state) or self:GetStateTooltipString(state);
 
-	self.tooltipFrame:SetText(tooltipText);
+	GameTooltip_SetTitle(self.tooltipFrame, tooltipText);
 	self.tooltipFrame:Show();
 end
 

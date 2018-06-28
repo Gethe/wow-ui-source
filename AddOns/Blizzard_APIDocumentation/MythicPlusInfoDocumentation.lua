@@ -49,6 +49,20 @@ local MythicPlusInfo =
 			},
 		},
 		{
+			Name = "GetRewardLevelFromKeystoneLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "keystoneLevel", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "rewardLevel", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetSeasonBestForMap",
 			Type = "Function",
 

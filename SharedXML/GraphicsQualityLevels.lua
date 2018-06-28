@@ -322,7 +322,6 @@ local function GenerateMSAAData(data, advanced, ...)
 				text = advanced and ADVANCED_ANTIALIASING_MSAA_FORMAT:format(sampleCount, coverageCount) or ANTIALIASING_MSAA_FORMAT:format(sampleCount),
 				cvars =	{
 					ffxAntiAliasingMode = not advanced and 0 or nil,
-					RenderScale = not advanced and tonumber(GetCVarDefault("RenderScale")) or nil,
 					MSAAQuality = msaaQuality,
 				},
 			};
@@ -340,7 +339,6 @@ local function GenerateFFXAntiAliasingData(data, advanced)
 			text = ANTIALIASING_FXAA_LOW,
 			cvars =	{
 				ffxAntiAliasingMode = 1,
-				RenderScale = not advanced and tonumber(GetCVarDefault("RenderScale")) or nil,
 				MSAAQuality = not advanced and 0 or nil,
 			},
 		};
@@ -349,7 +347,6 @@ local function GenerateFFXAntiAliasingData(data, advanced)
 			text = ANTIALIASING_FXAA_HIGH,
 			cvars =	{
 				ffxAntiAliasingMode = 2,
-				RenderScale = not advanced and tonumber(GetCVarDefault("RenderScale")) or nil,
 				MSAAQuality = not advanced and 0 or nil,
 			},
 		};
@@ -360,7 +357,6 @@ local function GenerateFFXAntiAliasingData(data, advanced)
 			text = ANTIALIASING_CMAA,
 			cvars =	{
 				ffxAntiAliasingMode = 3,
-				RenderScale = not advanced and tonumber(GetCVarDefault("RenderScale")) or nil,
 				MSAAQuality = not advanced and 0 or nil,
 			},
 		};
@@ -376,7 +372,6 @@ local function GenerateAntiAliasingDropDownData()
 		text = VIDEO_OPTIONS_NONE,
 		cvars =	{
 			ffxAntiAliasingMode = 0,
-			RenderScale = tonumber(GetCVarDefault("RenderScale")),
 			MSAAQuality = 0,
 		},
 	};
@@ -384,30 +379,6 @@ local function GenerateAntiAliasingDropDownData()
 	local fxaa, cmaa = GenerateFFXAntiAliasingData(data, false);
 
 	GenerateMSAAData(data, false, MultiSampleAntiAliasingSupported());
-
-	local ssaa2x = GetMaxRenderScale() >= 2.0;
-
-	if ssaa2x then
-		data[#data + 1] = {
-			text = ANTIALIASING_SSAA,
-			cvars =	{
-				ffxAntiAliasingMode = 0,
-				RenderScale = 2,
-				MSAAQuality = 0,
-			},
-		};
-	end
-
-	if cmaa and ssaa2x then
-		data[#data + 1] = {
-			text = ANTIALIASING_SSAA_CMAA,
-			cvars =	{
-				ffxAntiAliasingMode = 3,
-				RenderScale = 2,
-				MSAAQuality = 0,
-			},
-		};
-	end
 
 	return data;
 end
@@ -558,7 +529,6 @@ VideoData["Graphics_SSAODropDown"]={
 		},
 		{
 			text = VIDEO_OPTIONS_ULTRA,
-			tooltip = VIDEO_OPTIONS_SSAO_ULTRA,
 		},
 	},
 

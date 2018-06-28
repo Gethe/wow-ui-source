@@ -15,7 +15,7 @@ local COMMUNITIES_MEMBER_LIST_ENTRY_EVENTS = {
 	"CLUB_MEMBER_PRESENCE_UPDATED",
 	"CLUB_MEMBER_ROLE_UPDATED",
 	"VOICE_CHAT_CHANNEL_MEMBER_ACTIVE_STATE_CHANGED",
-	"PLAYER_GUILD_UPDATE",
+	"GUILD_ROSTER_UPDATE",
 };
 
 COMMUNITY_MEMBER_ROLE_NAMES = {
@@ -207,7 +207,17 @@ function CommunitiesMemberListMixin:SetProfessionCollapsed(professionId, collaps
 end
 
 function CommunitiesMemberListMixin:IsDisplayingProfessions()
-	return self.expandedDisplay and self.extraGuildColumnIndex == EXTRA_GUILD_COLUMN_PROFESSION;
+	local clubId = self:GetSelectedClubId();
+	if not clubId then
+		return false;
+	end
+	
+	local clubInfo = C_Club.GetClubInfo(clubId);
+	if not clubInfo then
+		return false;
+	end
+	
+	return clubInfo.clubType == Enum.ClubType.Guild and self.expandedDisplay and self.extraGuildColumnIndex == EXTRA_GUILD_COLUMN_PROFESSION;
 end
 
 function CommunitiesMemberListMixin:RefreshListDisplay()
@@ -677,12 +687,27 @@ function CommunitiesMemberListEntryMixin:OnEvent(event, ...)
 			self:UpdateVoiceButtons();
 			self:UpdateNameFrame();
 		end
-	elseif event == "PLAYER_GUILD_UPDATE" then
+	elseif event == "GUILD_ROSTER_UPDATE" then
 		local clubId = self:GetMemberList():GetSelectedClubId();
-		local clubInfo = C_Club.GetClubInfo(clubId);
-		if clubInfo and clubInfo.clubType == Enum.ClubType.Guild then
-			self:RefreshExpandedColumns();
+		if clubId == nil then
+			return;
 		end
+		
+		local clubInfo = C_Club.GetClubInfo(clubId);
+		if clubInfo == nil or clubInfo.clubType ~= Enum.ClubType.Guild then
+			return;
+		end
+		
+		if self.memberInfo == nil then
+			return;
+		end
+		
+		self.memberInfo = C_Club.GetMemberInfo(clubId, self.memberInfo.memberId);
+		if self.memberInfo == nil then
+			return;
+		end
+		
+		self:RefreshExpandedColumns();
 	end
 end
 
@@ -725,10 +750,14 @@ function CommunitiesMemberListEntryMixin:UpdatePresence()
 			self.NameFrame.Name:SetTextColor(BATTLENET_FONT_COLOR:GetRGB());
 		end
 
+		self.NameFrame.PresenceIcon:SetPoint("LEFT", 0, 0);
 		if memberInfo.presence == Enum.ClubMemberPresence.Away then
 			self.NameFrame.PresenceIcon:SetTexture(FRIENDS_TEXTURE_AFK);
 		elseif memberInfo.presence == Enum.ClubMemberPresence.Busy then
 			self.NameFrame.PresenceIcon:SetTexture(FRIENDS_TEXTURE_DND);
+		elseif memberInfo.presence == Enum.ClubMemberPresence.OnlineMobile then
+			self.NameFrame.PresenceIcon:SetTexture("Interface\\ChatFrame\\UI-ChatIcon-ArmoryChat");
+			self.NameFrame.PresenceIcon:SetPoint("LEFT", -2, 0);
 		else
 			self.NameFrame.PresenceIcon:Hide();
 			if memberInfo.presence == Enum.ClubMemberPresence.Offline then
@@ -868,7 +897,9 @@ function CommunitiesMemberListEntryMixin:OnEnter()
 			end
 		end
 		
-		if memberInfo.zone then
+		if memberInfo.presence == Enum.ClubMemberPresence.OnlineMobile then
+			GameTooltip:AddLine(COMMUNITIES_PRESENCE_MOBILE_CHAT, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
+		elseif memberInfo.zone then
 			GameTooltip:AddLine(memberInfo.zone, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 		end
 		
@@ -946,7 +977,9 @@ function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 			end
 		end
 	
-		if memberInfo.zone then
+		if memberInfo.presence == Enum.ClubMemberPresence.OnlineMobile then
+			self.Zone:SetText(COMMUNITIES_PRESENCE_MOBILE_CHAT);
+		elseif memberInfo.zone then
 			self.Zone:SetText(memberInfo.zone);
 		else
 			self.Zone:SetText("");
@@ -1168,7 +1201,7 @@ end
 local clubTypeToUnitPopup = {
 	[Enum.ClubType.BattleNet] = "COMMUNITIES_MEMBER",
 	[Enum.ClubType.Character] = "COMMUNITIES_WOW_MEMBER",
-	[Enum.ClubType.Guild] = "COMMUNITIES_WOW_MEMBER",
+	[Enum.ClubType.Guild] = "COMMUNITIES_GUILD_MEMBER",
 };
 
 function CommunitiesMemberListDropdown_Initialize(self, level)

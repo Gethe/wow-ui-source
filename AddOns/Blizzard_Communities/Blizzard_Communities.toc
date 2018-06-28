@@ -27,3 +27,4 @@ GuildInfo.xml
 GuildNews.xml
 GuildRoster.xml
 CommunitiesFrame.xml
+Localization.lua

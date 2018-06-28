@@ -62,7 +62,9 @@ function UnitPopupToggleMuteMixin:OnLoad()
 	self:AddStateAtlas(MUTE_SILENCE_STATE_NONE, "voicechat-icon-mic");
 	self:AddStateAtlas(MUTE_SILENCE_STATE_MUTE, "voicechat-icon-mic-mute");
 	self:AddStateAtlas(MUTE_SILENCE_STATE_SILENCE, "voicechat-icon-mic-silenced");
-	self:AddStateAtlas(MUTE_SILENCE_STATE_BOTH, "voicechat-icon-mic-mutesilenced");
+	self:AddStateAtlas(MUTE_SILENCE_STATE_MUTE_AND_SILENCE, "voicechat-icon-mic-mutesilenced");
+	self:AddStateAtlas(MUTE_SILENCE_STATE_PARENTAL_MUTE, "voicechat-icon-mic-silenced");
+	self:AddStateAtlas(MUTE_SILENCE_STATE_MUTE_AND_PARENTAL_MUTE, "voicechat-icon-mic-mutesilenced");
 
 	self:SetUseIconAsHighlight(true);
 end
@@ -147,7 +149,7 @@ function UnitPopupToggleUserMuteMixin:OnLoad()
 	self:AddStateAtlas(MUTE_SILENCE_STATE_NONE, "voicechat-icon-speaker");
 	self:AddStateAtlas(MUTE_SILENCE_STATE_MUTE, "voicechat-icon-speaker-mute");
 	self:AddStateAtlas(MUTE_SILENCE_STATE_SILENCE, "voicechat-icon-speaker-silenced");
-	self:AddStateAtlas(MUTE_SILENCE_STATE_BOTH, "voicechat-icon-speaker-mutesilenced");
+	self:AddStateAtlas(MUTE_SILENCE_STATE_MUTE_AND_SILENCE, "voicechat-icon-speaker-mutesilenced");
 	self:SetUseIconAsHighlight(true);
 end
 

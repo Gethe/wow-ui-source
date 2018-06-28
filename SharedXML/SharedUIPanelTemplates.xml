@@ -393,7 +393,7 @@
 						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentTitleBg" inherits="_UI-Frame-TitleTileBg">
+				<Texture name="$parentTitleBg" parentKey="TitleBg" inherits="_UI-Frame-TitleTileBg">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="2" y="-3"/>
 						<Anchor point="TOPRIGHT" x="-25" y="-3"/>
@@ -1819,6 +1819,7 @@
 				<Scripts>
 					<OnClick>
 						self:GetParent():Maximize();
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-Panel-BiggerButton-Up"/>
@@ -1831,6 +1832,7 @@
 				<Scripts>
 					<OnClick>
 						self:GetParent():Minimize();
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-Panel-SmallerButton-Up"/>

@@ -44,7 +44,8 @@ local PvpInfo =
 			{
 				{ Name = "honor", Type = "number", Nilable = false },
 				{ Name = "experience", Type = "number", Nilable = false },
-				{ Name = "rewards", Type = "table", InnerType = "BattlefieldReward", Nilable = true },
+				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
+				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
 			},
 		},
 		{
@@ -55,7 +56,8 @@ local PvpInfo =
 			{
 				{ Name = "honor", Type = "number", Nilable = false },
 				{ Name = "experience", Type = "number", Nilable = false },
-				{ Name = "rewards", Type = "table", InnerType = "BattlefieldReward", Nilable = true },
+				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
+				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
 			},
 		},
 		{
@@ -81,7 +83,8 @@ local PvpInfo =
 			{
 				{ Name = "honor", Type = "number", Nilable = false },
 				{ Name = "experience", Type = "number", Nilable = false },
-				{ Name = "rewards", Type = "table", InnerType = "BattlefieldReward", Nilable = true },
+				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
+				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
 				{ Name = "hasWon", Type = "bool", Nilable = false },
 			},
 		},
@@ -172,7 +175,8 @@ local PvpInfo =
 			{
 				{ Name = "honor", Type = "number", Nilable = false },
 				{ Name = "experience", Type = "number", Nilable = false },
-				{ Name = "rewards", Type = "table", InnerType = "BattlefieldReward", Nilable = true },
+				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
+				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
 			},
 		},
 		{
@@ -192,7 +196,8 @@ local PvpInfo =
 			{
 				{ Name = "honor", Type = "number", Nilable = false },
 				{ Name = "experience", Type = "number", Nilable = false },
-				{ Name = "rewards", Type = "table", InnerType = "BattlefieldReward", Nilable = true },
+				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
+				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
 			},
 		},
 		{
@@ -203,7 +208,8 @@ local PvpInfo =
 			{
 				{ Name = "honor", Type = "number", Nilable = false },
 				{ Name = "experience", Type = "number", Nilable = false },
-				{ Name = "rewards", Type = "table", InnerType = "BattlefieldReward", Nilable = true },
+				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
+				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
 			},
 		},
 		{
@@ -514,7 +520,16 @@ local PvpInfo =
 			},
 		},
 		{
-			Name = "BattlefieldReward",
+			Name = "BattlefieldCurrencyReward",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "BattlefieldItemReward",
 			Type = "Structure",
 			Fields =
 			{

@@ -597,7 +597,7 @@
 					<Anchor point="TOPLEFT" x="4" y="-4"/>
 				</Anchors>
 				<Frames>
-					<Slider parentKey="ScrollBar" inherits="HybridScrollBarTemplate">
+					<Slider parentKey="scrollBar" inherits="HybridScrollBarTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-12"/>
 							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="13"/>

@@ -24,7 +24,7 @@
 	<Frame name="CommunitiesAvatarPickerDialog" parent="UIParent" topLevel="true" inherits="SelectionFrameTemplate" enableMouse="true" mixin="CommunitiesAvatarPickerDialogMixin" hidden="true">
 		<Size x="510" y="480"/>
 		<Anchors>
-			<Anchor point="CENTER" relativeTo="UIParent" y="100"/>
+			<Anchor point="TOP" relativeTo="UIParent" x="0" y="-140"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -33,7 +33,7 @@
 						<Anchor point="TOPLEFT" x="7" y="-7"/>
 						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
 					</Anchors>
-					<Color r="0" g="0" b="0" a="0.8"/>
+					<Color r="0" g="0" b="0" a="0.9"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">

@@ -80,20 +80,19 @@ function QuestDataProviderMixin:RefreshAllData(fromOnShow)
 	local pinsToQuantize = { };
 	
 	local mapInfo = C_Map.GetMapInfo(mapID);
-	local QuestInfo = C_QuestLog.GetQuestsOnMap(mapID);
-	if QuestInfo then
-		for i, info in ipairs(QuestInfo) do
+	local questsOnMap = C_QuestLog.GetQuestsOnMap(mapID);
+	if questsOnMap then
+		for i, info in ipairs(questsOnMap) do
 			if not QuestUtils_IsQuestWorldQuest(info.questID) and self:ShouldShowQuest(info.questID, mapInfo.mapType) then
 				local pin = self:AddQuest(info.questID, info.x, info.y, i);
-				tinsert(pinsToQuantize, pin);
+				table.insert(pinsToQuantize, pin);
 			end
 		end
 	end
 
 	self:AssignMissingNumbersToPins();
 
-	self.poiQuantizer:Clear();
-	self.poiQuantizer:Quantize(pinsToQuantize);
+	self.poiQuantizer:ClearAndQuantize(pinsToQuantize);
 
 	for i, pin in pairs(pinsToQuantize) do
 		pin:SetPosition(pin.quantizedX or pin.normalizedX, pin.quantizedY or pin.normalizedY);
@@ -139,7 +138,7 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset)
 
 	pin.isSuperTracked = isSuperTracked;
 
-	if ( isSuperTracked ) then
+	if isSuperTracked then
 		pin:UseFrameLevelType("PIN_FRAME_LEVEL_SUPER_TRACKED_QUEST");
 	else
 		pin:UseFrameLevelType("PIN_FRAME_LEVEL_ACTIVE_QUEST", frameLevelOffset);
@@ -251,14 +250,22 @@ function QuestPinMixin:OnMouseEnter()
 				end
 			end
 		else
-
+			local numObjectives = GetNumQuestLeaderBoards(questLogIndex);
+			for i = 1, numObjectives do
+				local text, objectiveType, finished = GetQuestLogLeaderBoard(i, questLogIndex);
+				if ( text and not finished ) then
+					WorldMapTooltip:AddLine(QUEST_DASH..text, 1, 1, 1, true);
+				end
+			end
 		end
 	end
 	WorldMapTooltip:Show();
+	self:GetMap():TriggerEvent("SetHighlightedQuestPOI", self.questID);
 end
 
 function QuestPinMixin:OnMouseLeave()
 	WorldMapTooltip:Hide();
+	self:GetMap():TriggerEvent("ClearHighlightedQuestPOI");
 end
 
 function QuestPinMixin:OnClick(button)

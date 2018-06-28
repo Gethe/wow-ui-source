@@ -562,7 +562,7 @@ function GarrisonFollowerList:UpdateData()
 						button.Follower.ILevel:SetPoint("TOPLEFT", button.Follower.Name, "BOTTOMLEFT", 0, -4);
 						button.Follower.Status:SetPoint("TOPLEFT", button.Follower.ILevel, "BOTTOMLEFT", -1, -2);
 					end
-					button.Follower.ILevel:SetText(ITEM_LEVEL_ABBR.." "..follower.iLevel);
+					button.Follower.ILevel:SetText(POWER_LEVEL_ABBR.." "..follower.iLevel);
 					button.Follower.ILevel:Show();
 				else
 					button.Follower.ILevel:SetText(nil);
@@ -2082,7 +2082,7 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 		GarrisonFollowerPage_SetItem(self.ItemWeapon, weaponItemID, weaponItemLevel);
 		GarrisonFollowerPage_SetItem(self.ItemArmor, armorItemID, armorItemLevel);
 		if ( ShouldShowILevelInFollowerList(followerInfo) ) then
-			self.ItemAverageLevel.Level:SetText(ITEM_LEVEL_ABBR .. " " .. followerInfo.iLevel);
+			self.ItemAverageLevel.Level:SetText(POWER_LEVEL_ABBR .. " " .. followerInfo.iLevel);
 			self.ItemAverageLevel.Level:Show();
 		else
 			self.ItemWeapon:Hide();

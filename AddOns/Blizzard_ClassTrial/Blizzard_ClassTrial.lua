@@ -77,6 +77,7 @@ local classFilenameToAtlas = {
 	["WARLOCK"] = "ClassTrial-Warlock-Ring",
 	["MONK"] = "ClassTrial-Monk-Ring",
 	["DRUID"] = "ClassTrial-Druid-Ring",
+	["DEMONHUNTER"] = "ClassTrial-DemonHunter-Ring",
 };
 
 function ClassTrial_SetHasAvailableBoost(hasBoost)
@@ -223,31 +224,42 @@ end
 function ExpansionTrialDialogMixin:OnEvent(event, ...)
 	if event == "CLASS_TRIAL_TIMER_START" then
 		if CanUpgradeExpansion() then
-			self.expansionTrialUpgrade = false;
+			self:SetupDialogType(false);
 			self:Show();
 		end
 	elseif event == "UPDATE_EXPANSION_LEVEL" then
 		local upgradingFromExpansionTrial = select(5, ...);
 		if upgradingFromExpansionTrial then
-			self.expansionTrialUpgrade = true;
+			self:SetupDialogType(true);
 			self:Show();
 		end
 	end
 end
 
-function ExpansionTrialDialogMixin:OnShow()
-	SetStoreUIShown(false);
-
-	if self.expansionTrialUpgrade then
+function ExpansionTrialDialogMixin:SetupDialogType(expansionTrialUpgrade)
+	if expansionTrialUpgrade then
 		self.Title:SetText(EXPANSION_TRIAL_PURCHASE_THANKS_TITLE);
 		self.Description:SetText(EXPANSION_TRIAL_PURCHASE_THANKS_TEXT);
 		self.Button:SetText(EXPANSION_TRIAL_PURCHASE_THANKS_BUTTON);
 	else
-		self.Title:SetText(EXPANSION_TRIAL_THANKS_TEXT);
+		self.Title:SetText(EXPANSION_TRIAL_THANKS_TITLE);
 		self.Description:SetText(EXPANSION_TRIAL_THANKS_TEXT);
 		self.Button:SetText(EXPANSION_TRIAL_THANKS_BUTTON);
 	end
 
+	self.expansionTrialUpgrade = expansionTrialUpgrade;
+end
+
+function ExpansionTrialDialogMixin:IsShowingExpansionTrialUpgrade()
+	return self:IsShown() and self.expansionTrialUpgrade;
+end
+
+function ClassTrial_IsExpansionTrialUpgradeDialogShowing()
+	return ExpansionTrialThanksForPlayingDialog:IsShowingExpansionTrialUpgrade();
+end
+
+function ExpansionTrialDialogMixin:OnShow()
+	SetStoreUIShown(false);
 	self:SetHeight(300 + self.Description:GetHeight() + self.Title:GetHeight());
 end
 

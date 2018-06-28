@@ -81,8 +81,8 @@
 	
 	<Frame name="CommunitiesEditStreamDialogTemplate" frameStrata="DIALOG" mixin="CommunitiesEditStreamDialogMixin" virtual="true">
 		<Size x="350" y="320"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets left="11" right="12" top="12" bottom="11"/>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets left="11" right="11" top="11" bottom="11"/>
 			<TileSize val="32"/>
 			<EdgeSize val="32"/>
 		</Backdrop>
@@ -149,6 +149,11 @@
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.TypeLabel" relativePoint="LEFT" x="-3" y="0"/>
 				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+					</OnClick>
+				</Scripts>
 			</CheckButton>
 			<Button parentKey="Accept" inherits="UIPanelButtonTemplate" text="ACCEPT">
 				<Size x="100" y="20"/>
@@ -194,7 +199,7 @@
 						<Anchor point="TOPLEFT" x="7" y="-7"/>
 						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
 					</Anchors>
-					<Color r="0" g="0" b="0" a=".80"/>
+					<Color r="0" g="0" b="0" a=".90"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -290,12 +295,21 @@
 		</Scripts>
 	</Frame>
 	
-	<Button name="AddToChatButtonTemplate" inherits="UIPanelSquareButton" mixin="CommunitiesAddToChatMixin" virtual="true">
+	<Button name="AddToChatButtonTemplate" inherits="UIMenuButtonStretchTemplate" mixin="CommunitiesAddToChatMixin" virtual="true">
 		<Layers>
-			<Layer>
-				<FontString parentKey="Label" inherits="GameFontNormal" text="COMMUNITIES_ADD_TO_CHAT">
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture file="Interface\Buttons\SquareButtonTextures" parentKey="icon">
+					<Size x="12" y="12"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="LEFT" x="-4" y="0"/>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.45312500" right="0.64062500" top="0.20312500" bottom="0.01562500"/>
+				</Texture>
+			</Layer>
+			<Layer>
+				<FontString parentKey="Label" inherits="GameFontNormalSmall" text="COMMUNITIES_ADD_TO_CHAT">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="LEFT" x="-1" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>

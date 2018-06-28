@@ -59,11 +59,7 @@ local UIModelInfo =
 
 			Returns =
 			{
-				{ Name = "animation", Type = "number", Nilable = false },
-				{ Name = "animationVariation", Type = "number", Nilable = false },
-				{ Name = "animSpeed", Type = "number", Nilable = false },
-				{ Name = "alpha", Type = "number", Nilable = false },
-				{ Name = "scale", Type = "number", Nilable = false },
+				{ Name = "actorDisplayInfo", Type = "UIModelSceneActorDisplayInfo", Nilable = false },
 			},
 		},
 		{
@@ -158,6 +154,20 @@ local UIModelInfo =
 				{ Name = "AzeriteItemLevelUpToast", Type = "ModelSceneType", EnumValue = 13 },
 				{ Name = "AzeritePowers", Type = "ModelSceneType", EnumValue = 14 },
 				{ Name = "AzeriteRewardGlow", Type = "ModelSceneType", EnumValue = 15 },
+			},
+		},
+		{
+			Name = "UIModelSceneActorDisplayInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "animation", Type = "number", Nilable = false },
+				{ Name = "animationVariation", Type = "number", Nilable = false },
+				{ Name = "animSpeed", Type = "number", Nilable = false },
+				{ Name = "animationKitID", Type = "number", Nilable = true },
+				{ Name = "spellVisualKitID", Type = "number", Nilable = true },
+				{ Name = "alpha", Type = "number", Nilable = false },
+				{ Name = "scale", Type = "number", Nilable = false },
 			},
 		},
 		{

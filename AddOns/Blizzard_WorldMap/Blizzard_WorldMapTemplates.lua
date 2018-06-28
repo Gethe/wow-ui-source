@@ -12,7 +12,6 @@ function WorldMapFloorNavigationFrameMixin:Refresh()
 		UIDropDownMenu_SetSelectedValue(self, mapID);
 		self:Show();
 	else
-		UIDropDownMenu_ClearAll(self);
 		self:Hide();
 	end
 end

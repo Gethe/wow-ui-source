@@ -232,7 +232,7 @@ function PvpTalentSlotMixin:SetUp(slotIndex)
 			end, 
 			["getFunction"] = function()
 				local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(slotIndex);
-				return slotInfo.selectedTalentID;
+				return slotInfo and slotInfo.selectedTalentID;
 			end, 
 		}
 	);
@@ -259,7 +259,7 @@ function PvpTalentSlotMixin:Update()
 		self.TalentName:Hide();
 	end
 
-	if (slotInfo.enabled) then
+	if (slotInfo and slotInfo.enabled) then
 		self.Border:SetAtlas("pvptalents-talentborder");
 		self:Enable();
 		self.New:SetShown(self.slotWasDisabled);

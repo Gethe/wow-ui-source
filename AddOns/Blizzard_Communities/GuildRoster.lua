@@ -1,6 +1,6 @@
 
-local COMMUNITIES_GUILD_DETAIL_NORM_HEIGHT = 175;
-local COMMUNITIES_GUILD_DETAIL_OFFICER_HEIGHT = 228;
+COMMUNITIES_GUILD_DETAIL_NORM_HEIGHT = 175;
+COMMUNITIES_GUILD_DETAIL_OFFICER_HEIGHT = 228;
 
 CommunitiesGuildMemberDetailMixin = {};
 
@@ -133,7 +133,7 @@ function CommunitiesGuildMemberDetailMixin:DisplayMember(clubId, memberInfo)
 	end
 	
 	self.RemoveButton:SetEnabled(CanGuildRemove() and rankOrder > myRankOrder);
-	self.GroupInviteButton:SetEnabled(memberInfo.lastOnlineHour == nil and not memberInfo.isRemoteChat);
+	self.GroupInviteButton:SetEnabled(memberInfo.lastOnlineHour == nil and not memberInfo.isRemoteChat and memberInfo.presence ~= Enum.ClubMemberPresence.OnlineMobile);
 	
 	self:Show();
 end

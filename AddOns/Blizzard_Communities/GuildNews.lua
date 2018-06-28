@@ -59,13 +59,13 @@ function CommunitiesGuildNews_Update(self)
 		self.Container:SetPoint("TOPLEFT", self.GMImpeachButton, "BOTTOMLEFT", 0, 0);
 		self.Container:SetHeight(290);
 		self.Container.ScrollBar:SetPoint("TOPLEFT", self.Container, "TOPRIGHT", 1, 28);
-		self.Container.ScrollBar:SetPoint("BOTTOMLEFT", self.Container, "BOTTOMRIGHT", 1, 9);
+		self.Container.ScrollBar:SetPoint("BOTTOMLEFT", self.Container, "BOTTOMRIGHT", 1, 7);
 	else
 		self.GMImpeachButton:Hide();
 		self.Container:SetPoint("TOPLEFT", self.Header, "BOTTOMLEFT", 0, 0);
 		self.Container:SetHeight(306);
 		self.Container.ScrollBar:SetPoint("TOPLEFT", self.Container, "TOPRIGHT", 1, 10);
-		self.Container.ScrollBar:SetPoint("BOTTOMLEFT", self.Container, "BOTTOMRIGHT", 1, 9);
+		self.Container.ScrollBar:SetPoint("BOTTOMLEFT", self.Container, "BOTTOMRIGHT", 1, 7);
 	end
 	
 	local motd = GetGuildRosterMOTD();

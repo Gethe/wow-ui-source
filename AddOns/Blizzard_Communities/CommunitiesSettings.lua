@@ -33,6 +33,7 @@ function CommunitiesSettingsDialogMixin:SetClubId(clubId)
 		self.NameEdit:SetText(clubInfo.name);
 		self.ShortNameEdit:SetText(clubInfo.shortName or "");
 		self.Description.EditBox:SetText(clubInfo.description);
+		self.Description.EditBox.Instructions:SetText(self.clubType == Enum.ClubType.BattleNet and COMMUNITIES_CREATE_DIALOG_DESCRIPTION_INSTRUCTIONS_BATTLE_NET or COMMUNITIES_CREATE_DIALOG_DESCRIPTION_INSTRUCTIONS);
 		self.MessageOfTheDay.EditBox:SetText(clubInfo.broadcast);
 	end
 end

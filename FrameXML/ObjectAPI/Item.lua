@@ -39,6 +39,15 @@ end
 	return item;
 end
 
+--[[static]] function Item:CreateFromItemID(itemID)
+	if type(itemID) ~= "number" then
+		error("Usage: Item:CreateFromItemID(itemID)", 2);
+	end
+	local item = CreateFromMixins(ItemMixin);
+	item:SetItemID(itemID);
+	return item;
+end
+
 function ItemMixin:SetItemLocation(itemLocation)
 	self:Clear();
 	self.itemLocation = itemLocation;
@@ -47,6 +56,11 @@ end
 function ItemMixin:SetItemLink(itemLink)
 	self:Clear();
 	self.itemLink = itemLink;
+end
+
+function ItemMixin:SetItemID(itemID)
+	self:Clear();
+	self.itemID = itemID;
 end
 
 function ItemMixin:GetItemLocation()
@@ -60,14 +74,19 @@ end
 function ItemMixin:Clear()
 	self.itemLocation = nil;
 	self.itemLink = nil;
+	self.itemID = nil;
 end
 
 function ItemMixin:IsItemEmpty()
-	if self.itemLink then
-		return not C_Item.DoesItemExistByID(self.itemLink);
+	if self:GetStaticBackingItem() then
+		return not C_Item.DoesItemExistByID(self:GetStaticBackingItem());
 	end
 
 	return not self:IsItemInPlayersControl();
+end
+
+function ItemMixin:GetStaticBackingItem()
+	return self.itemLink or self.itemID;
 end
 
 function ItemMixin:IsItemInPlayersControl()
@@ -77,23 +96,12 @@ end
 
 -- Item API
 function ItemMixin:GetItemID()
-	if self.itemLink then
-		return (GetItemInfoInstant(self.itemLink));
+	if self:GetStaticBackingItem() then
+		return (GetItemInfoInstant(self:GetStaticBackingItem()));
 	end
 
 	if not self:IsItemEmpty() then
 		return C_Item.GetItemID(self:GetItemLocation());
-	end
-	return nil;
-end
-
-function ItemMixin:GetItemLink()
-	if self.itemLink then
-		return self.itemLink;
-	end
-
-	if not self:IsItemEmpty() then
-		return C_Item.GetItemLink(self:GetItemLocation());
 	end
 	return nil;
 end
@@ -115,8 +123,8 @@ function ItemMixin:UnlockItem()
 end
 
 function ItemMixin:GetItemIcon() -- requires item data to be loaded
-	if self.itemLink then
-		return C_Item.GetItemIconByID(self.itemLink);
+	if self:GetStaticBackingItem() then
+		return C_Item.GetItemIconByID(self:GetStaticBackingItem());
 	end
 
 	if not self:IsItemEmpty() then
@@ -125,8 +133,8 @@ function ItemMixin:GetItemIcon() -- requires item data to be loaded
 end
 
 function ItemMixin:GetItemName() -- requires item data to be loaded
-	if self.itemLink then
-		return C_Item.GetItemNameByID(self.itemLink);
+	if self:GetStaticBackingItem() then
+		return C_Item.GetItemNameByID(self:GetStaticBackingItem());
 	end
 
 	if not self:IsItemEmpty() then
@@ -140,6 +148,10 @@ function ItemMixin:GetItemLink() -- requires item data to be loaded
 		return self.itemLink;
 	end
 
+	if self.itemID then
+		return (select(2, GetItemInfo(self.itemID)));
+	end
+
 	if not self:IsItemEmpty() then
 		return C_Item.GetItemLink(self:GetItemLocation());
 	end
@@ -147,8 +159,8 @@ function ItemMixin:GetItemLink() -- requires item data to be loaded
 end
 
 function ItemMixin:GetItemQuality() -- requires item data to be loaded
-	if self.itemLink then
-		return C_Item.GetItemQualityByID(self.itemLink);
+	if self:GetStaticBackingItem() then
+		return C_Item.GetItemQualityByID(self:GetStaticBackingItem());
 	end
 
 	if not self:IsItemEmpty() then
@@ -158,9 +170,10 @@ function ItemMixin:GetItemQuality() -- requires item data to be loaded
 end
 
 function ItemMixin:GetCurrentItemLevel() -- requires item data to be loaded
-	if self.itemLink then
-		return (GetDetailedItemLevelInfo(self.itemLink));
+	if self:GetStaticBackingItem() then
+		return (GetDetailedItemLevelInfo(self:GetStaticBackingItem()));
 	end
+
 	if not self:IsItemEmpty() then
 		return C_Item.GetCurrentItemLevel(self:GetItemLocation());
 	end
@@ -173,9 +186,10 @@ function ItemMixin:GetItemQualityColor() -- requires item data to be loaded
 end
 
 function ItemMixin:GetInventoryType()
-	if self.itemLink then
-		return C_Item.GetItemInventoryTypeByID(self.itemLink);
+	if self:GetStaticBackingItem() then
+		return C_Item.GetItemInventoryTypeByID(self:GetStaticBackingItem());
 	end
+
 	if not self:IsItemEmpty() then
 		return C_Item.GetItemInventoryType(self:GetItemLocation());
 	end
@@ -183,9 +197,10 @@ function ItemMixin:GetInventoryType()
 end
 
 function ItemMixin:GetItemGUID()
-	if self.itemLink then
+	if self:GetStaticBackingItem() then
 		return nil;
 	end
+
 	if not self:IsItemEmpty() then
 		return C_Item.GetItemGUID(self:GetItemLocation());
 	end
@@ -199,9 +214,10 @@ function ItemMixin:GetInventoryTypeName()
 end
 
 function ItemMixin:IsItemDataCached()
-	if self.itemLink then
-		return C_Item.IsItemDataCachedByID(self.itemLink);
+	if self:GetStaticBackingItem() then
+		return C_Item.IsItemDataCachedByID(self:GetStaticBackingItem());
 	end
+
 	if not self:IsItemEmpty() then
 		return C_Item.IsItemDataCached(self:GetItemLocation());
 	end

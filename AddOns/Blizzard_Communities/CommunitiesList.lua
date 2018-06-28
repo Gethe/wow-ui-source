@@ -269,11 +269,24 @@ function CommunitiesListMixin:Update()
 	HybridScrollFrame_Update(scrollFrame, totalHeight, usedHeight);
 end
 
+function CommunitiesListMixin:UpdateClubInfo(newClubInfo)
+	local clubs = self:GetCommunitiesList();
+	if clubs then
+		for i, club in ipairs(clubs) do
+			if club.clubId == newClubInfo.clubId then
+				clubs[i] = newClubInfo;
+				break;
+			end
+		end
+	end
+end
+
 function CommunitiesListMixin:UpdateClub(clubInfo)
+	self:UpdateClubInfo(clubInfo);
+	
 	local scrollFrame = self.ListScrollFrame;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local buttons = scrollFrame.buttons;
-
 	for i, button in ipairs(buttons) do
 		if button:GetClubId() == clubInfo.clubId then
 			local isInvitation = false;
@@ -288,8 +301,8 @@ function CommunitiesListMixin:OnLoad()
 	self.ListScrollFrame.update = function() 
 		self:Update(); 
 	end;
-	self.ListScrollFrame.scrollBar.doNotHide = true;
-	self.ListScrollFrame.scrollBar:SetValue(0);
+	self.ListScrollFrame.ScrollBar.doNotHide = true;
+	self.ListScrollFrame.ScrollBar:SetValue(0);
 	
 	self.declinedInvitationIds = {};
 	self.pendingFavorites = {};
@@ -323,7 +336,6 @@ end
 function CommunitiesListMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, COMMUNITIES_LIST_EVENTS);
 	HybridScrollFrame_CreateButtons(self.ListScrollFrame, "CommunitiesListEntryTemplate", 0, -COMMUNITIES_LIST_INITLAL_TOP_BORDER_OFFSET);
-	self.ListScrollFrame.ScrollBar:SetValueStep(1);
 	self:UpdateCommunitiesList();
 	self:UpdateInvitations();
 	self:Update();
@@ -390,7 +402,8 @@ function CommunitiesListMixin:PredictFavorites(clubs)
 end
 
 local COMMUNITIES_LIST_ENTRY_EVENTS = {
-	"STREAM_VIEW_MARKER_UPDATED"
+	"STREAM_VIEW_MARKER_UPDATED",
+	"PLAYER_GUILD_UPDATE",
 }
 
 CommunitiesListEntryMixin = {};
@@ -420,6 +433,7 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket)
 		end
 		
 		self.Name:SetTextColor(fontColor:GetRGB());
+		self.Name:SetPoint("LEFT", self.Icon, "RIGHT", 11, 0);
 		self.clubId = clubInfo.clubId;
 		self.isInvitation = isInvitation;
 		self.isTicket = isTicket;
@@ -431,8 +445,8 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket)
 		self.GuildTabardBackground:SetShown(isGuild);
 		self.GuildTabardBorder:SetShown(isGuild);
 		self.Icon:SetShown(not isInvitation and not isGuild and not isTicket);
-		self.Icon:SetSize(42, 42);
-		self.Icon:SetPoint("TOPLEFT", 8, -15);
+		self.Icon:SetSize(38, 38);
+		self.Icon:SetPoint("TOPLEFT", 11, -15);
 		self.CircleMask:SetShown(not isInvitation and not isGuild);
 		self.IconRing:SetShown(not isInvitation and not isGuild and not isTicket);
 		self.IconRing:SetAtlas(clubInfo.clubType == Enum.ClubType.BattleNet and "communities-ring-blue" or "communities-ring-gold");
@@ -465,6 +479,7 @@ function CommunitiesListEntryMixin:SetAddCommunity()
 	self.clubId = nil;
 	self.Name:SetText(COMMUNITIES_JOIN_COMMUNITY);
 	self.Name:SetTextColor(GREEN_FONT_COLOR:GetRGB());
+	self.Name:SetPoint("LEFT", self.Icon, "RIGHT", 13, 0);
 	self.Selection:Hide();
 	
 	self.Background:SetTexture("Interface\\Common\\bluemenu-main");
@@ -482,8 +497,8 @@ function CommunitiesListEntryMixin:SetAddCommunity()
 	self.UnreadNotificationIcon:Hide();
 
 	self.Icon:SetAtlas("communities-icon-addgroupplus");
-	self.Icon:SetSize(32, 32);
-	self.Icon:SetPoint("TOPLEFT", 11, -18);
+	self.Icon:SetSize(30, 30);
+	self.Icon:SetPoint("TOPLEFT", 17, -18);
 end
 
 function CommunitiesListEntryMixin:SetGuildFinder()
@@ -496,6 +511,7 @@ function CommunitiesListEntryMixin:SetGuildFinder()
 	self.clubId = nil;
 	self.Name:SetText(COMMUNITIES_GUILD_FINDER);
 	self.Name:SetTextColor(GREEN_FONT_COLOR:GetRGB());
+	self.Name:SetPoint("LEFT", self.Icon, "RIGHT", 11, 0);
 	self.Selection:SetShown(self:GetCommunitiesFrame():GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER);
 
 	self.Background:SetAtlas("communities-nav-button-green-normal");
@@ -506,7 +522,7 @@ function CommunitiesListEntryMixin:SetGuildFinder()
 	self.InvitationIcon:Hide();
 	self.Icon:Show();
 	self.Icon:SetSize(35, 35);
-	self.Icon:SetPoint("TOPLEFT", 12, -15);
+	self.Icon:SetPoint("TOPLEFT", 15, -15);
 	self.CircleMask:Show();
 	self.IconRing:Hide();
 	self.GuildTabardEmblem:Hide();
@@ -558,6 +574,8 @@ function CommunitiesListEntryMixin:OnEvent(event, ...)
 		if clubId == self.clubId then
 			self:UpdateUnreadNotification();
 		end
+	elseif event == "PLAYER_GUILD_UPDATE" then
+		SetLargeGuildTabardTextures("player", self.GuildTabardEmblem, self.GuildTabardBackground, self.GuildTabardBorder);
 	end
 end
 
@@ -685,6 +703,7 @@ end
 function CommunitiesListDropDownMenu_Initialize(self)
 	local clubs = C_Club.GetSubscribedClubs();
 	if clubs ~= nil then
+		CommunitiesUtil.SortClubs(clubs);
 		local info = UIDropDownMenu_CreateInfo();
 		local parent = self:GetParent();
 		for i, clubInfo in ipairs(clubs) do

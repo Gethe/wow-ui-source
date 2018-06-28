@@ -1711,7 +1711,7 @@
 						<Anchor point="TOPLEFT"  x="10" y="-10"/>
 						<Anchor point="BOTTOMRIGHT"  x="-10" y="10"/>
 					</Anchors>
-					<Color r="0" g="0" b="0" a="0.5"/>
+					<Color r="0" g="0" b="0" a="0.9"/>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="-5">

@@ -703,14 +703,6 @@ function MapCanvasMixin:EvaluateLockReasons()
 	end
 end
 
-function MapCanvasMixin:SetShouldShowSubzones(value)
-	self.shouldShowSubzones = value;
-end
-
-function MapCanvasMixin:ShouldShowSubzones()
-	return self.shouldShowSubzones;
-end
-
 function MapCanvasMixin:GetPinFrameLevelsManager()
 	return self.pinFrameLevelsManager;
 end
