@@ -442,21 +442,21 @@ function FriendsList_InitializePendingInviteDropDown(self, level)
 			info.text = REPORT_SPAMMING;
 			info.func = function()
 							UIDROPDOWNMENU_MENU_VALUE = self.inviteIndex;
-							PlayerReportFrame:InitiateReport("SPAM", name);
+							PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_SPAM, name);
 						end
 			UIDropDownMenu_AddButton(info, level)
 
 			info.text = REPORT_ABUSE;
 			info.func = function()
 							UIDROPDOWNMENU_MENU_VALUE = self.inviteIndex;
-							PlayerReportFrame:InitiateReport("ABUSE", name);
+							PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_ABUSE, name);
 						end
 			UIDropDownMenu_AddButton(info, level)
 
 			info.text = REPORT_BAD_NAME;
 			info.func = function()
 							UIDROPDOWNMENU_MENU_VALUE = self.inviteIndex;
-							PlayerReportFrame:InitiateReport("NAME", name);
+							PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_BAD_PLAYER_NAME, name);
 						end
 			UIDropDownMenu_AddButton(info, level)
 			info.notCheckable = false;

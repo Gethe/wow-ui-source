@@ -3,6 +3,7 @@ AzeriteEmpoweredItemUIMixin = CreateFromMixins(CallbackRegistryBaseMixin);
 AzeriteEmpoweredItemUIMixin:GenerateCallbackEvents(
 {
     "OnShow",
+	"OnHide",
 });
 
 local AZERITE_EMPOWERED_FRAME_EVENTS = {
@@ -81,6 +82,8 @@ end
 function AzeriteEmpoweredItemUIMixin:OnHide()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	self:Clear();
+
+	self:TriggerEvent(AzeriteEmpoweredItemUIMixin.Event.OnHide);
 end
 
 function AzeriteEmpoweredItemUIMixin:OnEvent(event, ...)

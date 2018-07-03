@@ -30,8 +30,8 @@
 			</Button>
 			<Frame parentKey="InsetFrame" inherits="InsetFrameTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="-4" y="3"/>
-					<Anchor point="BOTTOMRIGHT" x="6" y="-3"/>
+					<Anchor point="TOPLEFT" x="-3" y="3"/>
+					<Anchor point="BOTTOMRIGHT" x="3" y="-2"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -49,7 +49,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<FontString parentKey="InvitationText" inherits="GameFontNormalLarge">
+				<FontString parentKey="InvitationText" inherits="GameFontNormalMed2">
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-20"/>
 					</Anchors>

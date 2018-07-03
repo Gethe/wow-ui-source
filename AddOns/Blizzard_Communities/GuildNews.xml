@@ -257,17 +257,17 @@
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\GuildFrame\GuildFrame">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="3" y="-3"/>
-						<Anchor point="BOTTOMRIGHT" x="-9" y="-2"/>
+						<Anchor point="TOPLEFT" x="4" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="-13" y="-1"/>
 					</Anchors>
-					<TexCoords left="0.00097656" right="0.31445313" top="0.00195313" bottom="0.59765625"/>
+					<TexCoords left="0" right="0.3154296875" top="0" bottom="0.595703125"/>
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Header" file="Interface\GuildFrame\GuildFrame">
 					<Size x="300" y="22"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="4" y="-3"/>
+						<Anchor point="TOPLEFT" x="4" y="0"/>
 					</Anchors>
 					<TexCoords left="0.00097656" right="0.31445313" top="0.93164063" bottom="0.97460938"/>
 				</Texture>
@@ -276,7 +276,7 @@
 				<FontString parentKey="TitleText" inherits="GameFontNormalMed1" justifyH="LEFT" text="GUILD_NEWS_TITLE">
 					<Size x="232" y="38"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="5" y="35"/>
+						<Anchor point="TOPLEFT" x="3" y="35"/>
 					</Anchors>
 				</FontString>
 				<FontString	inherits="GameFontNormal" text="GUILD_NEWS">

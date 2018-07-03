@@ -24,9 +24,11 @@ function MapCanvasMixin:OnUpdate()
 end
 
 function MapCanvasMixin:SetMapID(mapID)
-	if self.mapID ~= mapID then
+	local mapArtID = C_Map.GetMapArtID(mapID) -- phased map art may be different for the same mapID
+	if self.mapID ~= mapID or self.mapArtID ~= mapArtID then
 		self.areDetailLayersDirty = true;
 		self.mapID = mapID; 
+		self.mapArtID = mapArtID;
 		self.expandedMapInsetsByMapID = {};
 		self.ScrollContainer:SetMapID(mapID);
 		if self:IsShown() then

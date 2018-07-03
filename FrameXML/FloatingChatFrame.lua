@@ -631,7 +631,7 @@ function FCF_OpenNewWindow(name, noDefaultChannels)
 				ChatFrame_AddMessageGroup(chatFrame, "PARTY_LEADER");
 				ChatFrame_AddMessageGroup(chatFrame, "CHANNEL");
 			end
-			
+
 			--Clear the edit box history.
 			chatFrame.editBox:ClearHistory();
 
@@ -966,7 +966,7 @@ function FCF_SetChatWindowFontSize(self, chatFrame, fontSize)
 		if ( GMChatFrame ) then
 			GMChatFrame:SetFont(fontFile, fontSize, fontFlags);
 		end
-		
+
 		if ( CommunitiesFrame ) then
 			CommunitiesFrame.Chat.MessageFrame:SetFont(fontFile, fontSize, fontFlags);
 		end
@@ -1401,8 +1401,8 @@ function FCF_IsValidChatFrame(chatFrame)
 end
 
 function FCF_UpdateButtonSide(chatFrame)
-	local leftDist =  chatFrame:GetLeft();
-	local rightDist = GetScreenWidth() - chatFrame:GetRight();
+	local leftDist =  chatFrame:GetLeft() or 0;
+	local rightDist = GetScreenWidth() - (chatFrame:GetRight() or 0);
 	local changed = nil;
 	if (( leftDist > 0 and leftDist <= rightDist ) or rightDist < 0 ) then
 		if ( chatFrame.buttonSide ~= "left" ) then

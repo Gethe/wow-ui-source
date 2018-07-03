@@ -296,7 +296,7 @@ function PVPQueueFrame_UpdateTitle()
 	elseif ConquestFrame.seasonState == SEASON_STATE_OFFSEASON then
 		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_OFF_SEASON);
 	else
-		local BFA_START_SEASON = 27; -- if you're changing this you probably want to update the global string PLAYER_V_PLAYER_SEASON also
+		local BFA_START_SEASON = 26; -- if you're changing this you probably want to update the global string PLAYER_V_PLAYER_SEASON also
 		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON:format(GetCurrentArenaSeason() - BFA_START_SEASON + 1));
 	end
 end
@@ -952,6 +952,46 @@ function ConquestFrame_OnShow(self)
 	ConquestFrame_Update(self);
 end
 
+local tierEnumToName = 
+{
+	[0] = PVP_RANK_0_NAME,
+	[1] = PVP_RANK_1_NAME,
+	[2] = PVP_RANK_2_NAME,
+	[3] = PVP_RANK_3_NAME,
+	[4] = PVP_RANK_4_NAME,
+	[5] = PVP_RANK_5_NAME,
+};
+
+local nextTierEnumToDescription = 
+{
+	[0] = nil,
+	[1] = PVP_RANK_1_NEXT_RANK_DESC,
+	[2] = PVP_RANK_2_NEXT_RANK_DESC,
+	[3] = PVP_RANK_3_NEXT_RANK_DESC,
+	[4] = PVP_RANK_4_NEXT_RANK_DESC,
+	[5] = PVP_RANK_5_NEXT_RANK_DESC,
+};
+
+function PVPRatedTier_OnEnter(self)
+	if self.tierInfo and self.tierInfo.pvpTierEnum and tierEnumToName[self.tierInfo.pvpTierEnum] then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, tierEnumToName[self.tierInfo.pvpTierEnum]);
+		GameTooltip:Show();
+	end
+end
+
+function NextTier_OnEnter(self)
+	if self.tierInfo and self.tierInfo.pvpTierEnum and tierEnumToName[self.tierInfo.pvpTierEnum] then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, TOOLTIP_PVP_NEXT_RANK:format(tierEnumToName[self.tierInfo.pvpTierEnum]));
+		if nextTierEnumToDescription[self.tierInfo.pvpTierEnum] then
+			GameTooltip:SetMinimumWidth(260);
+			GameTooltip_AddNormalLine(GameTooltip, nextTierEnumToDescription[self.tierInfo.pvpTierEnum], true);
+		end
+		GameTooltip:Show();
+	end
+end
+
 function ConquestFrame_SetTierInfo(tierFrame, tierInfo, ranking)
 	if tierInfo then
 		tierFrame.Icon:SetTexture(tierInfo.tierIconID);
@@ -966,6 +1006,8 @@ function ConquestFrame_SetTierInfo(tierFrame, tierInfo, ranking)
 	else
 		tierFrame:Hide();
 	end
+
+	tierFrame.tierInfo = tierInfo;
 end
 
 function ConquestFrame_Update(self)
@@ -1320,9 +1362,11 @@ function PVPUIHonorInsetMixin:DisplayRatedPanel()
 
 		local nextTierInfo = nextTierID and C_PvP.GetPvpTierInfo(nextTierID);
 		if nextTierInfo and seasonState ~= SEASON_STATE_OFFSEASON then
+			panel.Tier.NextTier.tierInfo = nextTierInfo;
 			panel.Tier.NextTier.Icon:SetTexture(nextTierInfo.tierIconID);
 			panel.Tier.NextTier:Show();
 		else
+			panel.Tier.NextTier.tierInfo = nil;
 			panel.Tier.NextTier:Hide();
 		end
 	end

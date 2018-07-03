@@ -4,7 +4,13 @@
 		<Size x="174" y="55"/> 
 		<Animations>
 			<AnimationGroup parentKey="AnimFade">
-				<Alpha parentKey="FadeIn" fromAlpha="0" toAlpha="1" order="1" duration=".5"/>
+                <Alpha parentKey="FadeIn" fromAlpha="0" toAlpha="1" order="1" duration=".5">
+                    <Scripts>
+                        <OnFinished>
+                            self:GetParent():GetParent():CheckForIndefinitePause();
+                        </OnFinished>
+                    </Scripts>
+                </Alpha>
 				<Alpha parentKey="FadeOut" startDelay="1.75" fromAlpha="1" toAlpha="0" order="3" duration=".5"/>
 				<Scripts>
 					<OnFinished>
@@ -72,7 +78,7 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Frame name="PartyPoseFrameTemplate" enableMouse="true" hidden="true" virtual="true">
+	<Frame name="PartyPoseFrameTemplate" enableMouse="true" frameStrata="FULLSCREEN" hidden="true" virtual="true">
 		<Size x="760" y="549"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-6">
@@ -187,7 +193,8 @@
 			<KeyValue key="reversedLighting" value="true" type="boolean"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="CENTER"/> 
+			<Anchor point="TOPLEFT" x="5" y="-75"/>	
+			<Anchor point="BOTTOMRIGHT" x="-5" y="65"/>	
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-5">

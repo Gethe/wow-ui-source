@@ -7,8 +7,10 @@ function MapCanvasDetailLayerMixin:OnLoad()
 end
 
 function MapCanvasDetailLayerMixin:SetMapAndLayer(mapID, layerIndex)
-	if self.mapID ~= mapID or self.layerIndex ~= layerIndex then
+	local mapArtID = C_Map.GetMapArtID(mapID) -- phased map art may be different for the same mapID
+	if self.mapID ~= mapID or self.mapArtID ~= mapArtID or self.layerIndex ~= layerIndex then
 		self.mapID = mapID;
+		self.mapArtID = mapArtID;
 		self.layerIndex = layerIndex;
 
 		self:RefreshDetailTiles();

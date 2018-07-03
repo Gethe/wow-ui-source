@@ -191,6 +191,7 @@ UnitPopupButtons = {
 	["COMMUNITIES_LEAVE"] = { text = function(dropdownMenu)
 			return dropdownMenu.clubInfo.clubType == Enum.ClubType.Character and COMMUNITIES_LIST_DROP_DOWN_LEAVE_CHARACTER_COMMUNITY or COMMUNITIES_LIST_DROP_DOWN_LEAVE_COMMUNITY;
 		end },
+	["COMMUNITIES_BATTLETAG_FRIEND"] = { text = COMMUNITY_MEMBER_LIST_DROP_DOWN_BATTLETAG_FRIEND },
 	["COMMUNITIES_KICK"] = { text = COMMUNITY_MEMBER_LIST_DROP_DOWN_REMOVE },
 	["COMMUNITIES_MEMBER_NOTE"] = { text = COMMUNITY_MEMBER_LIST_DROP_DOWN_SET_NOTE },
 	["COMMUNITIES_ROLE"] = { text = COMMUNITY_MEMBER_LIST_DROP_DOWN_ROLES, nested = 1 },
@@ -201,7 +202,11 @@ UnitPopupButtons = {
 	["COMMUNITIES_FAVORITE"] = { text = function(dropdownMenu)
 			return dropdownMenu.clubInfo.favoriteTimeStamp and COMMUNITIES_LIST_DROP_DOWN_UNFAVORITE or COMMUNITIES_LIST_DROP_DOWN_FAVORITE;
 		end },
-	
+	["COMMUNITIES_SETTINGS"] = { text = COMMUNITIES_LIST_DROP_DOWN_COMMUNITIES_SETTINGS, },
+	["COMMUNITIES_NOTIFICATION_SETTINGS"] = { text = COMMUNITIES_LIST_DROP_DOWN_COMMUNITIES_NOTIFICATION_SETTINGS, },	
+	["COMMUNITIES_CLEAR_UNREAD_NOTIFICATIONS"] = { text = COMMUNITIES_LIST_DROP_DOWN_CLEAR_UNREAD_NOTIFICATIONS, },
+	["COMMUNITIES_INVITE"] = { text = COMMUNITIES_LIST_DROP_DOWN_INVITE, },
+
 	-- Community message line
 	["DELETE_COMMUNITIES_MESSAGE"] = { text = COMMUNITY_MESSAGE_DROP_DOWN_DELETE, },
 };
@@ -232,10 +237,10 @@ UnitPopupMenus = {
 	["FOCUS"] = { "RAID_TARGET_ICON", "CLEAR_FOCUS", "OTHER_SUBSECTION_TITLE", "VOICE_CHAT", "LARGE_FOCUS", "MOVE_FOCUS_FRAME", "CANCEL" },
 	["BOSS"] = { "RAID_TARGET_ICON", "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "CANCEL" },
 	["WORLD_STATE_SCORE"] = { "REPORT_PLAYER", "PVP_REPORT_AFK", "CANCEL" },
-	["COMMUNITIES_WOW_MEMBER"] = { "VOICE_CHAT_MICROPHONE_VOLUME", "VOICE_CHAT_SPEAKER_VOLUME", "VOICE_CHAT_USER_VOLUME", "SUBSECTION_SEPARATOR", "INVITE", "SUGGEST_INVITE", "REQUEST_INVITE", "WHISPER", "IGNORE", "COMMUNITIES_LEAVE", "COMMUNITIES_KICK", "COMMUNITIES_MEMBER_NOTE", "COMMUNITIES_ROLE", "OTHER_SUBSECTION_TITLE", "REPORT_PLAYER" },
+	["COMMUNITIES_WOW_MEMBER"] = { "ADD_FRIEND_MENU", "SUBSECTION_SEPARATOR", "VOICE_CHAT_MICROPHONE_VOLUME", "VOICE_CHAT_SPEAKER_VOLUME", "VOICE_CHAT_USER_VOLUME", "SUBSECTION_SEPARATOR", "INVITE", "SUGGEST_INVITE", "REQUEST_INVITE", "WHISPER", "IGNORE", "COMMUNITIES_LEAVE", "COMMUNITIES_KICK", "COMMUNITIES_MEMBER_NOTE", "COMMUNITIES_ROLE", "OTHER_SUBSECTION_TITLE", "REPORT_PLAYER" },
 	["COMMUNITIES_GUILD_MEMBER"] = { "VOICE_CHAT_MICROPHONE_VOLUME", "VOICE_CHAT_SPEAKER_VOLUME", "VOICE_CHAT_USER_VOLUME", "SUBSECTION_SEPARATOR", "INVITE", "SUGGEST_INVITE", "REQUEST_INVITE", "WHISPER", "IGNORE", "OTHER_SUBSECTION_TITLE", "GUILD_PROMOTE", "GUILD_LEAVE", "REPORT_PLAYER" },
-	["COMMUNITIES_MEMBER"] = { "VOICE_CHAT_MICROPHONE_VOLUME", "VOICE_CHAT_SPEAKER_VOLUME", "VOICE_CHAT_USER_VOLUME", "SUBSECTION_SEPARATOR", "COMMUNITIES_LEAVE", "COMMUNITIES_KICK", "COMMUNITIES_MEMBER_NOTE", "COMMUNITIES_ROLE", "OTHER_SUBSECTION_TITLE", "REPORT_PLAYER"  },
-	["COMMUNITIES_COMMUNITY"] = { "COMMUNITIES_FAVORITE", "COMMUNITIES_LEAVE" },
+	["COMMUNITIES_MEMBER"] = { "COMMUNITIES_BATTLETAG_FRIEND", "SUBSECTION_SEPARATOR", "VOICE_CHAT_MICROPHONE_VOLUME", "VOICE_CHAT_SPEAKER_VOLUME", "VOICE_CHAT_USER_VOLUME", "SUBSECTION_SEPARATOR", "COMMUNITIES_LEAVE", "COMMUNITIES_KICK", "COMMUNITIES_MEMBER_NOTE", "COMMUNITIES_ROLE", "OTHER_SUBSECTION_TITLE", "REPORT_PLAYER"  },
+	["COMMUNITIES_COMMUNITY"] = { "COMMUNITIES_CLEAR_UNREAD_NOTIFICATIONS", "COMMUNITIES_INVITE", "COMMUNITIES_SETTINGS", "COMMUNITIES_NOTIFICATION_SETTINGS", "COMMUNITIES_FAVORITE", "COMMUNITIES_LEAVE" },
 
 	-- Second level menus
 	["ADD_FRIEND_MENU"] = { "BATTLETAG_FRIEND", "CHARACTER_FRIEND" },
@@ -838,7 +843,8 @@ function UnitPopup_HideButtons ()
 				shown = false;
 			end
 		elseif ( value == "ADD_FRIEND_MENU" ) then
-			if ( not haveBattleTag or not isPlayer ) then
+			local hasClubInfo = dropdownMenu.clubInfo ~= nil and dropdownMenu.clubMemberInfo ~= nil;
+			if ( not haveBattleTag or (not isPlayer and not hasClubInfo) ) then
 				shown = false;
 			end
 		elseif ( value == "GUILD_BATTLETAG_FRIEND" ) then
@@ -1242,6 +1248,12 @@ function UnitPopup_HideButtons ()
 			if dropdownMenu.clubInfo == nil or dropdownMenu.clubMemberInfo == nil or not dropdownMenu.clubMemberInfo.isSelf then
 				shown = false;
 			end
+		elseif value == "COMMUNITIES_BATTLETAG_FRIEND" then
+			if dropdownMenu.clubInfo == nil
+				or dropdownMenu.clubMemberInfo == nil
+				or dropdownMenu.clubMemberInfo.isSelf then
+				shown = false;
+			end
 		elseif value == "COMMUNITIES_KICK" then
 			if dropdownMenu.clubInfo == nil
 				or dropdownMenu.clubMemberInfo == nil
@@ -1282,6 +1294,25 @@ function UnitPopup_HideButtons ()
 				end
 				
 				if not CanDestroyMessage(clubId, streamId, messageId) then
+					shown = false;
+				end
+			else
+				shown = false;
+			end
+		elseif value == "COMMUNITIES_INVITE" then
+			if dropdownMenu.clubInfo then
+				local privileges = C_Club.GetClubPrivileges(dropdownMenu.clubInfo.clubId);
+				if not privileges.canSendInvitation then
+					shown = false;
+				end
+			else
+				shown = false;
+			end
+		elseif value == "COMMUNITIES_SETTINGS" then
+			if dropdownMenu.clubInfo then
+				local privileges = C_Club.GetClubPrivileges(dropdownMenu.clubInfo.clubId);
+				local hasCommunitySettingsPrivilege = privileges.canSetName or privileges.canSetDescription or privileges.canSetAvatar or privileges.canSetBroadcast;
+				if not hasCommunitySettingsPrivilege then
 					shown = false;
 				end
 			else
@@ -1484,12 +1515,14 @@ function UnitPopup_OnUpdate (elapsed)
 							enable = false;
 						end
 					elseif ( value == "CHARACTER_FRIEND" ) then
-						if ( not UnitCanCooperate("player", UIDROPDOWNMENU_INIT_MENU.unit) ) then
-							enable = false;
-						else
-							-- disable if player is from another realm or already on friends list
-							if ( not UnitIsSameServer(UIDROPDOWNMENU_INIT_MENU.unit) or GetFriendInfo(UnitName(UIDROPDOWNMENU_INIT_MENU.unit)) ) then
+						if ( UIDROPDOWNMENU_INIT_MENU.unit ~= nil ) then
+							if ( not UnitCanCooperate("player", UIDROPDOWNMENU_INIT_MENU.unit) ) then
 								enable = false;
+							else
+								-- disable if player is from another realm or already on friends list
+								if ( not UnitIsSameServer(UIDROPDOWNMENU_INIT_MENU.unit) or GetFriendInfo(UnitName(UIDROPDOWNMENU_INIT_MENU.unit)) ) then
+									enable = false;
+								end
 							end
 						end
 					end
@@ -1768,6 +1801,8 @@ function UnitPopup_OnClick (self)
 		local _, battleTag = BNGetInfo();
 		if ( not battleTag ) then
 			StaticPopupSpecial_Show(CreateBattleTagFrame);
+		elseif ( clubInfo ~= nil and clubMemberInfo ~= nil ) then
+			C_Club.SendBattleTagFriendRequest(clubInfo.clubId, clubMemberInfo.memberId);
 		else
 			BNCheckBattleTagInviteToUnit(unit);
 		end
@@ -1792,12 +1827,33 @@ function UnitPopup_OnClick (self)
 		else
 			StaticPopup_Show("CONFIRM_LEAVE_COMMUNITY", nil, nil, clubInfo);
 		end
+	elseif ( button == "COMMUNITIES_BATTLETAG_FRIEND" ) then
+		C_Club.SendBattleTagFriendRequest(clubInfo.clubId, clubMemberInfo.memberId);
 	elseif ( button == "COMMUNITIES_KICK" ) then
 		StaticPopup_Show("CONFIRM_REMOVE_COMMUNITY_MEMBER", nil, nil, { clubType = clubInfo.clubType, name = clubMemberInfo.name, clubId = clubInfo.clubId, memberId = clubMemberInfo.memberId });
 	elseif ( button == "COMMUNITIES_MEMBER_NOTE" ) then
 		StaticPopup_Show("SET_COMMUNITY_MEMBER_NOTE", clubMemberInfo.name, nil, { clubId = clubInfo.clubId, memberId = clubMemberInfo.memberId });
 	elseif ( button == "COMMUNITIES_FAVORITE" ) then
 		CommunitiesFrame.CommunitiesList:SetFavorite(clubInfo.clubId, clubInfo.favoriteTimeStamp == nil);
+	elseif ( button == "COMMUNITIES_INVITE" ) then
+		local streams = C_Club.GetStreams(clubInfo.clubId);
+		local defaultStreamId = #streams > 0 and streams[1] or nil;
+		for i, stream in ipairs(streams) do
+			if stream.streamType == Enum.ClubStreamType.General or stream.streamType == Enum.ClubStreamType.Guild then
+				defaultStreamId = stream.streamId;
+				break;
+			end
+		end
+		
+		if defaultStreamId then
+			CommunitiesUtil.OpenInviteDialog(clubInfo.clubId, defaultStreamId);
+		end
+	elseif ( button == "COMMUNITIES_SETTINGS" ) then
+		OpenCommunitiesSettingsDialog(clubInfo.clubId);
+	elseif ( button == "COMMUNITIES_NOTIFICATION_SETTINGS" ) then
+		CommunitiesFrame:ShowNotificationSettingsDialog(clubInfo.clubId);
+	elseif ( button == "COMMUNITIES_CLEAR_UNREAD_NOTIFICATIONS" ) then
+		CommunitiesUtil.ClearAllUnreadNotifications(clubInfo.clubId);
 	elseif ( button == "DELETE_COMMUNITIES_MESSAGE" ) then
 		C_Club.DestroyMessage(dropdownFrame.communityClubID, dropdownFrame.communityStreamID, { epoch = dropdownFrame.communityEpoch, position = dropdownFrame.communityPosition });
 	elseif ( commandToRoleId[button] ~= nil ) then

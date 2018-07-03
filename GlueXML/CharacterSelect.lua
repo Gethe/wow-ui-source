@@ -1603,21 +1603,12 @@ function AccountUpgradePanel_GetDisplayExpansionLevel()
 	return currentExpansionLevel, upgradeExpansionLevel;
 end
 
-function AccountUpgradePanel_GetBrownBoxFeatures()
-	local brownBoxLevelCap = GetMaxLevelForExpansionLevel(GetMinimumExpansionLevel());
-	return {
-		{ icon = "Interface\\Icons\\achievement_quests_completed_06", text = TRIAL_FEATURE_1 },
-		{ icon = ("Interface\\Icons\\Achievement_Level_%s"):format(brownBoxLevelCap), text = TRIAL_FEATURE_LEVEL_CAP:format(brownBoxLevelCap) },
-		{ icon = "Interface\\Icons\\inv_misc_pocketwatch_01", text = TRIAL_FEATURE_2 },
-	};
-end
-
 function AccountUpgradePanel_GetBannerInfo()
 	if IsTrialAccount() then
 		local expansionDisplayInfo, features;
 		if DoesCurrentLocaleSellExpansionLevels() then
 			expansionDisplayInfo = GetExpansionDisplayInfo(LE_EXPANSION_CLASSIC);
-			features = AccountUpgradePanel_GetBrownBoxFeatures();
+			features = expansionDisplayInfo.features;
 		else
 			expansionDisplayInfo = GetExpansionDisplayInfo(LE_EXPANSION_LEVEL_CURRENT);
 			features = expansionDisplayInfo.features;

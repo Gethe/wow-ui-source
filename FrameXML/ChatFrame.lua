@@ -4,6 +4,7 @@ CHAT_BUTTON_FLASH_TIME = 0.5;
 CHAT_TELL_ALERT_TIME = 300;
 NUM_CHAT_WINDOWS = 10;
 DEFAULT_CHAT_FRAME = ChatFrame1;
+CHAT_FOCUS_OVERRIDE = nil;
 NUM_REMEMBERED_TELLS = 10;
 MAX_WOW_CHAT_CHANNELS = 20;
 
@@ -1524,7 +1525,7 @@ SecureCmdList["DUEL"] = function(msg)
 end
 
 SecureCmdList["DUEL_CANCEL"] = function(msg)
-	CancelDuel()
+	ForfeitDuel()
 end
 
 SecureCmdList["PET_ATTACK"] = function(msg)
@@ -3624,7 +3625,24 @@ function ChatFrame_OnMouseWheel(value)
 	end
 end
 
+function ChatFrame_SetChatFocusOverride(editBoxOverride)
+	CHAT_FOCUS_OVERRIDE = editBoxOverride;
+end
+
+function ChatFrame_GetChatFocusOverride()
+	return CHAT_FOCUS_OVERRIDE;
+end
+
+function ChatFrame_ClearChatFocusOverride()
+	CHAT_FOCUS_OVERRIDE = nil;
+end
+
 function ChatFrame_OpenChat(text, chatFrame, desiredCursorPosition)
+	if chatFrame == nil and CHAT_FOCUS_OVERRIDE ~= nil then
+		CHAT_FOCUS_OVERRIDE:SetFocus();
+		return;
+	end
+	
 	local editBox = ChatEdit_ChooseBoxForSend(chatFrame);
 
 	ChatEdit_ActivateChat(editBox);
@@ -3985,6 +4003,7 @@ function ChatEdit_OnEditFocusLost(self)
 end
 
 function ChatEdit_ActivateChat(editBox)
+	ChatFrame_ClearChatFocusOverride();
 	if ( ACTIVE_CHAT_EDIT_BOX and ACTIVE_CHAT_EDIT_BOX ~= editBox ) then
 		ChatEdit_DeactivateChat(ACTIVE_CHAT_EDIT_BOX);
 	end

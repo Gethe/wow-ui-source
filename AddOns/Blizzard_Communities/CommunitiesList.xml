@@ -86,7 +86,7 @@
 					</Anchors>
 				</Texture>
 				<Texture parentKey="UnreadNotificationIcon" atlas="communities-icon-notification" hidden="true">
-					<Size x="11" y="12"/>
+					<Size x="11" y="11"/>
 					<Anchors>
 						<Anchor point="RIGHT" x="-16" y="0"/>
 					</Anchors>
@@ -120,7 +120,7 @@
 
 	<Frame name="CommunitiesListFrameTemplate" useParentLevel="true" mixin="CommunitiesListMixin" virtual="true">
 		<Layers>
-			<Layer level="BORDER">
+			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="Bg" file="Interface\Common\bluemenu-main">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="2" y="0" />
@@ -129,7 +129,7 @@
 					<TexCoords left="0.00390625" right="0.82421875" top="0.18554688" bottom="0.58984375"/>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
+			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture parentKey="TopFiligree" file="Interface\Common\bluemenu-main">
 					<Size x="155" y="55"/>
 					<Anchors>
@@ -287,7 +287,7 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture parentKey="UnreadNotificationIcon" atlas="communities-icon-notification">
-							<Size x="11" y="12"/>
+							<Size x="11" y="11"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="-19" y="-4"/>
 							</Anchors>

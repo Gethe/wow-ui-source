@@ -432,7 +432,7 @@
 				</Texture>
 				<FontString name="$parentTitleText" inherits="GameFontNormal" text="" parentKey="TitleText" wordwrap="false">
 					<Anchors>
-						<Anchor point="TOP" x="0" y="-4"/>
+						<Anchor point="TOP" x="0" y="-5"/>
 						<Anchor point="LEFT" x="60"/>
 						<Anchor point="RIGHT" x="-60"/>
 					</Anchors>

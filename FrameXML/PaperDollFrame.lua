@@ -2905,7 +2905,7 @@ function PaperDollItemsMixin:OnEvent(event, ...)
 		self:MarkDirty();
 	elseif event == "ADDON_LOADED" then
 		local addOnName = ...;
-		if addOnName == "Blizzard_AzeriteUI" or addOnName == "Blizzard_AzeriteTempUI" then
+		if addOnName == "Blizzard_AzeriteUI" then
 			self.wasAzeriteUIShown = true;
 			self:MarkDirty();
 			AzeriteEmpoweredItemUI:RegisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnShow, self.onAzeriteUIShownCallback);

@@ -14,30 +14,30 @@
 			<Frame parentKey="Rewards" inherits="CommunitiesGuildRewardsFrameTemplate">
 				<Size x="302" y="0"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="0" y="0"/>
-					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					<Anchor point="TOPRIGHT" x="-15" y="0"/>
+					<Anchor point="BOTTOMRIGHT" x="-15" y="0"/>
 				</Anchors>
 			</Frame>
 			<Button parentKey="GuildRewardsTutorialButton" inherits="GuildRewardsTutorialButtonTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Rewards.TitleText" relativePoint="RIGHT" x="4" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.Rewards.TitleText" relativePoint="RIGHT" x="0" y="1"/>
 				</Anchors>
 			</Button>
 			<Frame parentKey="GuildAchievementPointDisplay" inherits="GuildAchievementPointDisplayTemplate">
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Rewards" relativePoint="TOPRIGHT" x="0" y="4"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Rewards" relativePoint="TOPRIGHT" x="15" y="0"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="FactionFrame">
 				<Size x="1" y="20"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="0" y="-24"/>
+					<Anchor point="BOTTOMLEFT" x="0" y="-25"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="Label" inherits="GameFontNormalSmall" text="GUILD_REPUTATION_COLON">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="0" y="4"/>
+								<Anchor point="BOTTOMLEFT" x="0" y="4.5"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -46,7 +46,7 @@
 					<Frame parentKey="Bar" inherits="CommunitiesGuildProgressBarTemplate">
 						<Size x="184" y="20"/>
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT" x="4" y="0"/>
+							<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT" x="4" y="1.5"/>
 						</Anchors>
 					</Frame>
 				</Frames>
@@ -56,7 +56,7 @@
 			<Layer level="OVERLAY">
 				<Texture parentKey="InsetBorderTopLeft" inherits="UI-Frame-InnerTopLeft">
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.Rewards" relativePoint="TOPLEFT" x="-12" y="3"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Rewards" relativePoint="TOPLEFT" x="3" y="3"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="InsetBorderTopRight" inherits="UI-Frame-InnerTopRight">
@@ -66,7 +66,7 @@
 				</Texture>
 				<Texture parentKey="InsetBorderBottomLeft" inherits="UI-Frame-InnerBotLeftCorner">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Rewards" relativePoint="BOTTOMLEFT" x="-12" y="-5"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Rewards" relativePoint="BOTTOMLEFT" x="3" y="-5"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="InsetBorderBottomRight" inherits="UI-Frame-InnerBotRight">
@@ -84,6 +84,22 @@
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="BOTTOMRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBorderBottomRight" relativePoint="TOPRIGHT" />
+					</Anchors>
+				</Texture>				
+				<Texture parentKey="InsetBorderTopLeft2" inherits="UI-Frame-InnerTopLeft">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Perks" relativePoint="TOPLEFT" x="3" y="3"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderBottomLeft2" inherits="UI-Frame-InnerBotLeftCorner">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Perks" relativePoint="BOTTOMLEFT" x="3" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderLeft2" inherits="!UI-Frame-InnerLeftTile">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft2" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft2" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -139,6 +155,22 @@
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="BOTTOMRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBorderBottomRight" relativePoint="TOPRIGHT" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderTopLeft2" inherits="UI-Frame-InnerTopLeft">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Info" relativePoint="TOPLEFT" x="3" y="3"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderBottomLeft2" inherits="UI-Frame-InnerBotLeftCorner">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Info" relativePoint="BOTTOMLEFT" x="3" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderLeft2" inherits="!UI-Frame-InnerLeftTile">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft2" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft2" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -232,7 +264,7 @@
 							</MaskedTextures>
 						</MaskTexture>
 					</Layer>
-					<Layer level="BACKGROUND">
+					<Layer level="BACKGROUND" textureSubLevel="1">
 						<Texture parentKey="TabardBackground" file="Interface\GuildFrame\GuildFrame" hidden="true">
 							<Size x="62" y="62"/>
 							<Anchors>
@@ -241,7 +273,7 @@
 							<TexCoords left="0.63183594" right="0.69238281" top="0.61914063" bottom="0.74023438"/>
 						</Texture>
 					</Layer>
-					<Layer level="ARTWORK">
+					<Layer level="BACKGROUND" textureSubLevel="2">
 						<Texture parentKey="TabardEmblem" file="Interface\GuildFrame\GuildEmblemsLG_01" hidden="true">
 							<Size x="64" y="64"/>
 							<Anchors>
@@ -249,7 +281,7 @@
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="OVERLAY">
+					<Layer level="BACKGROUND" textureSubLevel="3">
 						<Texture parentKey="TabardBorder" file="Interface\GuildFrame\GuildFrame" hidden="true">
 							<Size x="61" y="60"/>
 							<Anchors>
@@ -312,7 +344,7 @@
 			<Frame parentKey="GuildMemberListDropDownMenu" inherits="GuildMemberListDropDownMenuTemplate">
 				<Size x="40" y="28"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-10" y="-26"/>
+					<Anchor point="TOPRIGHT" x="-10" y="-27"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="CommunitiesListDropDownMenu" inherits="CommunitiesListDropDownMenuTemplate">
@@ -335,7 +367,7 @@
 			</Frame>
 			<Frame parentKey="Chat" inherits="CommunitiesChatTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="30" y="-46"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="31" y="-46"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.MemberList" relativePoint="BOTTOMLEFT" x="-22" y="28"/>
 				</Anchors>
 			</Frame>
@@ -346,7 +378,7 @@
 			<Frame parentKey="InvitationFrame" inherits="CommunitiesInvitationFrameTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="24" y="-40"/>
-					<Anchor point="BOTTOMRIGHT" x="-12" y="30"/>
+					<Anchor point="BOTTOMRIGHT" x="-9" y="29"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="TicketFrame" inherits="CommunitiesTicketFrameTemplate" hidden="true">
@@ -358,7 +390,7 @@
 			<Frame parentKey="GuildFinderFrame" inherits="CommunitiesGuildFinderFrameTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="24" y="-40"/>
-					<Anchor point="BOTTOMRIGHT" x="-12" y="30"/>
+					<Anchor point="BOTTOMRIGHT" x="-9" y="29"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="GuildBenefitsFrame" inherits="GuildBenefitsFrameTemplate">
@@ -388,7 +420,7 @@
 			<Button parentKey="AddToChatButton" inherits="AddToChatButtonTemplate">
 				<Size x="22" y="22"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.ChatEditBox" relativePoint="BOTTOMRIGHT" x="8" y="5"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.ChatEditBox" relativePoint="BOTTOMRIGHT" x="4" y="5"/>
 				</Anchors>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>

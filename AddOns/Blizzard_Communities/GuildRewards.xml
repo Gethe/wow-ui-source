@@ -7,7 +7,7 @@
 *******************************************************************************
 -->
 	<Frame name="GuildAchievementPointDisplayTemplate" mixin="GuildAchievementPointDisplayMixin" virtual="true">
-		<Size x="1" y="30"/>
+		<Size x="1" y="36"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Icon" file="Interface\AchievementFrame\UI-Achievement-Shields-NoPoints">
@@ -27,11 +27,11 @@
 				</FontString>
 			</Layer>
 			<Layer level="HIGHLIGHT">
-				<Texture parentKey="Highlight" atlas="PetJournal-PetBattleAchievementGlow">
-					<Size x="0" y="30"/>
+				<Texture parentKey="Highlight" atlas="PetJournal-PetBattleAchievementGlow" alphaMode="ADD">
+					<Size x="0" y="36"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.SumText" relativePoint="LEFT" x="-10" y="2"/>
-						<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" y="2"/>
+						<Anchor point="LEFT" relativeKey="$parent.SumText" relativePoint="LEFT" x="-14" y="2"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="14" y="2"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -45,7 +45,7 @@
 	</Frame>
 	
 	<Button name="GuildRewardsTutorialButtonTemplate" virtual="true">
-		<Size x="36" y="36"/>
+		<Size x="30" y="30"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="I" file="Interface\common\help-i" setAllPoints="true"/>
@@ -56,7 +56,7 @@
 		</HighlightTexture>
 		<Scripts>
 			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -14, -14);
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -8, -8);
 				local wrap = true;
 				GameTooltip:SetText(GUILD_REWARDS_VISIT_VENDOR, nil, nil, nil, nil, wrap);
 				GameTooltip:Show();
@@ -214,16 +214,16 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Bg" file="Interface\ClassTrainerFrame\TrainerTextures">
-					<Size x="276" y="308"/>
+					<Size x="300" y="333"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="4" y="-4"/>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
 					</Anchors>
-					<TexCoords left="0.00195313" right="0.58593750" top="0.00195313" bottom="0.65429688"/>
+					<TexCoords left="0" right="0.587890625" top="0" bottom="0.65625"/>
 				</Texture>
 				<FontString parentKey="TitleText" inherits="GameFontNormalMed1" justifyH="LEFT" text="GUILD_REWARDS_TITLE">
 					<Size x="0" y="38"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-15" y="35"/>
+						<Anchor point="TOPLEFT" x="0" y="35"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -232,14 +232,14 @@
 			<ScrollFrame name="$parentRewards" parentKey="RewardsContainer" inherits="HybridScrollFrameTemplate">
 				<Size x="292" y="306"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="-10" y="-5"/>
-					<Anchor point="BOTTOMRIGHT" x="-20" y="0"/>
+					<Anchor point="TOPLEFT" x="5" y="-6"/>
+					<Anchor point="BOTTOMRIGHT" x="-4" y="0"/>
 				</Anchors>
 				<Frames>
 					<Slider inherits="HybridScrollBarTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="6" y="-10"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="9"/>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="5" y="-9"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="5" y="10"/>
 						</Anchors>
 					</Slider>
 				</Frames>

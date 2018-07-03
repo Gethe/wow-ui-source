@@ -46,6 +46,8 @@ do
 		self:RegisterEvent("VOICE_CHAT_MUTED_CHANGED");
 		self:RegisterEvent("VOICE_CHAT_DEAFENED_CHANGED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ME_CHANGED");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ADDED");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_GUID_UPDATED");
 
 		self:AddEvents("PARTY_LEADER_CHANGED", "GROUP_ROSTER_UPDATE", "CHANNEL_UI_UPDATE", "CHANNEL_LEFT", "CHAT_MSG_CHANNEL_NOTICE_USER");
 
@@ -153,6 +155,10 @@ function ChannelFrameMixin:OnEvent(event, ...)
 		self:OnDeafenedChanged(...);
 	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ME_CHANGED" then
 		self:OnMemberMuted(...);
+	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_ADDED" then
+		self:UpdateVoiceChannelIfSelected(select(2,...));
+	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_GUID_UPDATED" then
+		self:UpdateVoiceChannelIfSelected(select(2,...));
 	end
 end
 
@@ -337,7 +343,7 @@ function ChannelFrameMixin:UpdatePartyChannelIfSelected()
 	end
 end
 
-function ChannelFrameMixin:UpdateCommunityChannelIfSelected(clubId, memberId)
+function ChannelFrameMixin:UpdateCommunityChannelIfSelected(clubId)
 	local channel = self:GetList():GetSelectedChannelButton();
 	if channel and channel:ChannelIsCommunity() and channel.clubId == clubId then
 		self:MarkDirty("UpdateRoster");

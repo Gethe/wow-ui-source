@@ -3880,6 +3880,10 @@ function CalendarCreateEventTexture_Update()
 		local name = eventTex.title;
 		CalendarCreateEventTextureName:SetText(GetDungeonNameWithDifficulty(name, difficultyInfo and difficultyInfo.difficultyName or eventTex.difficultyName));
 		CalendarCreateEventTextureName:Show();
+
+		CalendarCreateEventTextureName:SetPoint("TOPLEFT", CalendarCreateEventIcon, "TOPRIGHT", 5, 0)
+		CalendarCreateEventDateLabel:SetPoint("TOPLEFT", CalendarCreateEventTextureName, "BOTTOMLEFT")
+
 		-- set the eventTex texture
 		if ( eventTex.texture ) then
 			CalendarCreateEventIcon:SetTexture(eventTex.texture);
@@ -3888,6 +3892,9 @@ function CalendarCreateEventTexture_Update()
 		end
 	else
 		CalendarCreateEventTextureName:Hide();
+
+		CalendarCreateEventDateLabel:SetPoint("TOPLEFT", CalendarCreateEventIcon, "TOPRIGHT", 5, 0)
+
 		CalendarCreateEventIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURES[eventType]);
 	end
 	-- need to update the creator name at this point since it is affected by the texture name

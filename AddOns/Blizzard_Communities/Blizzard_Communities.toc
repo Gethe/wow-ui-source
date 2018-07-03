@@ -5,7 +5,6 @@
 ## LoadOnDemand: 1
 
 ..\..\SharedXML\SecureUIPanelTemplates.lua
-CommunitiesUtil.lua
 CommunitiesList.xml
 CommunitiesMemberList.xml
 CommunitiesChatFrame.xml

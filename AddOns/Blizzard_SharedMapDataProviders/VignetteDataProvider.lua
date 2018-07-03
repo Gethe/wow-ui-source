@@ -241,7 +241,7 @@ end
 
 function VignettePinMixin:DisplayPvpBountyTooltip()
 	local player = PlayerLocation:CreateFromGUID(self:GetObjectGUID());
-	local class = C_PlayerInfo.GetClass(player);
+	local class = select(3, C_PlayerInfo.GetClass(player));
 	local race = C_PlayerInfo.GetRace(player);
 	local name = C_PlayerInfo.GetName(player);
 

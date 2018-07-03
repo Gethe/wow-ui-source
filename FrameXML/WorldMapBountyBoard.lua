@@ -329,7 +329,7 @@ function WorldMapBountyBoardMixin:ShowBountyTooltip(bountyIndex)
 			WorldMapTooltip:AddLine(bountyData.turninRequirementText, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 		end
 
-		GameTooltip_AddQuestRewardsToTooltip(WorldMapTooltip, bountyData.questID);
+		GameTooltip_AddQuestRewardsToTooltip(WorldMapTooltip, bountyData.questID, TOOLTIP_QUEST_REWARDS_STYLE_EMISSARY_REWARD);
 		WorldMapTooltip:Show();
 	else
 		WorldMapTooltip:SetText(RETRIEVING_DATA, RED_FONT_COLOR:GetRGB());

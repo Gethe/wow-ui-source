@@ -155,6 +155,7 @@ function UIWidgetManagerMixin:CreateWidget(widgetID, widgetSetID, widgetType)
 		widgetFrame.hasTimer = false;
 		widgetFrame.orderIndex = nil;
 		widgetFrame.widgetTag = nil;
+		widgetFrame:EnableMouse(true);
 
 		self.widgetIdToFrame[widgetID] = widgetFrame;
 		self.widgetSetFrames[widgetSetID][widgetID] = widgetFrame;

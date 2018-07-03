@@ -71,6 +71,10 @@ function CommunitiesFrameMixin:OnShow()
 	self:UpdateClubSelection();
 	self:UpdateStreamDropDown();
 	UpdateMicroButtons();
+	
+	if self.CommunitiesList:IsShown() then
+		self.CommunitiesList:ScrollToClub(self:GetSelectedClubId());
+	end
 end
 
 function CommunitiesFrameMixin:OnEvent(event, ...)
@@ -250,6 +254,8 @@ function CommunitiesFrameMixin:UpdateClubSelection()
 	if not IsInGuild() then
 		self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER);
 		self:SelectClub(nil);
+	else
+		self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.CHAT);
 	end
 end
 
@@ -535,7 +541,7 @@ function CommunitiesFrameMixin:UpdateCommunitiesButtons()
 	
 	if clubId ~= nil then
 		local privileges = self:GetPrivilegesForClub(clubId);
-		if privileges.canSendInvitation or privileges.canSendGuestInvitation then
+		if privileges.canSendInvitation then
 			inviteButton:SetEnabled(true);
 		-- There are currently no plans to allow suggesting members.
 		-- elseif privileges.canSuggestMember then
@@ -646,7 +652,8 @@ function CommunitiesFrameMixin:CloseGuildMemberDetailFrame()
 	self.GuildMemberDetailFrame:Hide();
 end
 
-function CommunitiesFrameMixin:ShowNotificationSettingsDialog()
+function CommunitiesFrameMixin:ShowNotificationSettingsDialog(clubId)
+	self.NotificationSettingsDialog:SelectClub(clubId);
 	self.NotificationSettingsDialog:Show();
 end
 
@@ -658,22 +665,23 @@ function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 		end
 		
 		communitiesFrame:SetSize(814, 426);
-		communitiesFrame.Chat:SetPoint("TOPLEFT", communitiesFrame.CommunitiesList, "TOPRIGHT", 30, -46);
-		communitiesFrame.Chat:SetPoint("BOTTOMRIGHT", communitiesFrame.MemberList, "BOTTOMLEFT", -22, 28);
-		communitiesFrame.Chat.MessageFrame.ScrollBar:SetPoint("TOPLEFT", communitiesFrame.Chat.MessageFrame, "TOPRIGHT", 0, -9);
-		communitiesFrame.Chat.MessageFrame.ScrollBar:SetPoint("BOTTOMLEFT", communitiesFrame.Chat.MessageFrame, "BOTTOMRIGHT", 0, -17);
+		communitiesFrame.Chat:SetPoint("TOPLEFT", communitiesFrame.CommunitiesList, "TOPRIGHT", 31, -44);
+		communitiesFrame.Chat:SetPoint("BOTTOMRIGHT", communitiesFrame.MemberList, "BOTTOMLEFT", -32, 28);
+		communitiesFrame.Chat.MessageFrame.ScrollBar:SetPoint("TOPLEFT", communitiesFrame.Chat.MessageFrame, "TOPRIGHT", 10, -11);
+		communitiesFrame.Chat.MessageFrame.ScrollBar:SetPoint("BOTTOMLEFT", communitiesFrame.Chat.MessageFrame, "BOTTOMRIGHT", 10, -17);
 		communitiesFrame.Chat.InsetFrame:Show();
 		communitiesFrame.ChatEditBox:ClearAllPoints();
-		communitiesFrame.ChatEditBox:SetPoint("TOPLEFT", communitiesFrame.Chat, "BOTTOMLEFT", -4, -3);
-		communitiesFrame.ChatEditBox:SetPoint("TOPRIGHT", communitiesFrame.Chat, "BOTTOMRIGHT", -8, -3);
+		communitiesFrame.ChatEditBox:SetPoint("TOPLEFT", communitiesFrame.Chat, "BOTTOMLEFT", -4, -4);
+		communitiesFrame.ChatEditBox:SetPoint("TOPRIGHT", communitiesFrame.Chat, "BOTTOMRIGHT", 3, -4);
 		communitiesFrame.StreamDropDownMenu:ClearAllPoints();
-		communitiesFrame.StreamDropDownMenu:SetPoint("TOPLEFT", 188, -30);
+		communitiesFrame.StreamDropDownMenu:SetPoint("TOPLEFT", 188, -28);
 		UIDropDownMenu_SetWidth(communitiesFrame.StreamDropDownMenu, 160);
 		communitiesFrame.portrait:Show();
 		communitiesFrame.TopLeftCorner:Hide();
 		communitiesFrame.TopBorder:SetPoint("TOPLEFT", communitiesFrame.PortraitFrame, "TOPRIGHT",  0, -10);
 		communitiesFrame.LeftBorder:SetPoint("TOPLEFT", communitiesFrame.PortraitFrame, "BOTTOMLEFT",  8, 0);
 		communitiesFrame.PortraitOverlay:Show();
+		communitiesFrame.VoiceChatHeadset:SetPoint("TOPRIGHT", -15, -26);
 		UpdateUIPanelPositions();
 	end
 	
@@ -682,11 +690,11 @@ function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 	local function OnMinimize(frame)
 		local communitiesFrame = frame:GetParent();
 		communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.MINIMIZED);
-		communitiesFrame:SetSize(322, 404);
-		communitiesFrame.Chat:SetPoint("TOPLEFT", communitiesFrame, "TOPLEFT", 13, -64);
-		communitiesFrame.Chat:SetPoint("BOTTOMRIGHT", communitiesFrame, "BOTTOMRIGHT", -32, 32);
-		communitiesFrame.Chat.MessageFrame.ScrollBar:SetPoint("TOPLEFT", communitiesFrame.Chat.MessageFrame, "TOPRIGHT", 5, -13);
-		communitiesFrame.Chat.MessageFrame.ScrollBar:SetPoint("BOTTOMLEFT", communitiesFrame.Chat.MessageFrame, "BOTTOMRIGHT", 5, 11);
+		communitiesFrame:SetSize(322, 406);
+		communitiesFrame.Chat:SetPoint("TOPLEFT", communitiesFrame, "TOPLEFT", 13, -67);
+		communitiesFrame.Chat:SetPoint("BOTTOMRIGHT", communitiesFrame, "BOTTOMRIGHT", -35, 36);
+		communitiesFrame.Chat.MessageFrame.ScrollBar:SetPoint("TOPLEFT", communitiesFrame.Chat.MessageFrame, "TOPRIGHT", 8, -10);
+		communitiesFrame.Chat.MessageFrame.ScrollBar:SetPoint("BOTTOMLEFT", communitiesFrame.Chat.MessageFrame, "BOTTOMRIGHT", 8, 7);
 		communitiesFrame.Chat.InsetFrame:Hide();
 		communitiesFrame.ChatEditBox:ClearAllPoints();
 		communitiesFrame.ChatEditBox:SetPoint("BOTTOMLEFT", communitiesFrame, "BOTTOMLEFT", 10, 0);
@@ -699,6 +707,7 @@ function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 		communitiesFrame.TopBorder:SetPoint("TOPLEFT", communitiesFrame.TopLeftCorner, "TOPRIGHT",  0, 0);
 		communitiesFrame.LeftBorder:SetPoint("TOPLEFT", communitiesFrame.TopLeftCorner, "BOTTOMLEFT",  0, 0);
 		communitiesFrame.PortraitOverlay:Hide();
+		communitiesFrame.VoiceChatHeadset:SetPoint("TOPRIGHT", -10, -26);
 		UpdateUIPanelPositions();
 	end
 	

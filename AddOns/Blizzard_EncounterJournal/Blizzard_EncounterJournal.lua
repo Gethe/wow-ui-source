@@ -379,14 +379,19 @@ local function EncounterJournal_UpdateSpellText(self, spellID)
 	end
 
 	-- Section info
+	EncounterJournal.encounter.infoFrame.updatingSpells = true;
 	for headerIndex, header in ipairs(self.encounter.usedHeaders) do
 		if header.spellID == spellID then
 			local sectionInfo = C_EncounterJournal.GetSectionInfo(header.myID);
 			local description = sectionInfo.description:gsub("\|cffffffff(.-)\|r", "%1");
 			header.description:SetText(description);
-			EncounterJournal_OnClick(header.button);
+			if EJ_section_openTable[header.myID] then
+				EncounterJournal_ToggleHeaders(header);
+				EncounterJournal_ToggleHeaders(header);
+			end
 		end
 	end
+	EncounterJournal.encounter.infoFrame.updatingSpells = nil;
 end
 
 function EncounterJournal_OnEvent(self, event, ...)
@@ -1485,7 +1490,7 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 			EncounterJournal_ShiftHeaders(self.index or 1);
 
 			--check to see if it is offscreen
-			if self.index then
+			if self.index and not EncounterJournal.encounter.infoFrame.updatingSpells then
 				local scrollValue = EncounterJournal.encounter.info.detailsScroll.ScrollBar:GetValue();
 				local cutoff = EncounterJournal.encounter.info.detailsScroll:GetHeight() + scrollValue;
 

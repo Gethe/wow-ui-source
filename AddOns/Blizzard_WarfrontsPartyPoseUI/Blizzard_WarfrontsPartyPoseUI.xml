@@ -24,7 +24,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						ConfirmOrLeaveLFGParty();
+						LeaveInstanceParty();
 						HideUIPanel(self:GetParent());
 					</OnClick>
 				</Scripts>
@@ -32,6 +32,8 @@
 		</Frames>
 		<Scripts>
 			<OnEvent method="OnEvent"/>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

@@ -282,7 +282,7 @@ function CommunitiesChatMixin:GetChatColor()
 end
 
 function CommunitiesChatMixin:FormatMessage(clubId, streamId, message)
-	local name = message.author.name or "";
+	local name = message.author.name or " ";
 	local link;
 	if message.author.clubType == Enum.ClubType.BattleNet then
 		link = GetBNPlayerCommunityLink(name, name, message.author.bnetAccountId, clubId, streamId, message.messageId.epoch, message.messageId.position);
@@ -308,6 +308,10 @@ function CommunitiesChatMixin:FormatMessage(clubId, streamId, message)
 	else
 		content = message.content;
 	end
+	
+	local noIconReplacement = false; -- We are replacing icon tags. For example: {skull}
+	local noGroupReplacement = true; -- We don't want to replace group tags. For example: {g1}
+	content = ChatFrame_ReplaceIconAndGroupExpressions(content, noIconReplacement, noGroupReplacement);
 
 	if CHAT_TIMESTAMP_FORMAT then
 		return BetterDate(CHAT_TIMESTAMP_FORMAT, message.messageId.epoch / 1000000)..COMMUNITIES_CHAT_MESSAGE_FORMAT:format(link or name, content);
@@ -413,14 +417,24 @@ function CommunitiesChatMixin:RefreshMessages(predicate)
 	self.MessageFrame:TransformMessages(predicate, RefreshMessage);
 end
 
+function CommunitiesChatEditBox_OnFocusGained(self)
+	EditBox_HighlightText(self);
+	ChatFrame_SetChatFocusOverride(self);
+end
+
 function CommunitiesChatEditBox_OnEnterPressed(self)
 	local message = self:GetText();
 	if message ~= "" then
 		self:GetParent().Chat:SendMessage(message);
 		self:SetText("");
-	else
-		-- If you hit enter on a blank line, deselect this edit box.
-		self:ClearFocus();
+	end
+	
+	self:ClearFocus();
+end
+
+function CommunitiesChatEditBox_OnHide(self)
+	if ChatFrame_GetChatFocusOverride() == self then
+		ChatFrame_ClearChatFocusOverride();
 	end
 end
 

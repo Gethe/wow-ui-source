@@ -4,7 +4,7 @@
 	
 	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
 		<Frame name="CommunitiesAddDialog" parent="UIParent" enableMouse="true" frameStrata="DIALOG" mixin="CommunitiesAddDialogMixin" hidden="true">
-			<Size x="514" y="420"/>
+			<Size x="514" y="426"/>
 			<Anchors>
 				<Anchor point="TOP" relativeTo="UIParent" x="0" y="-142"/>
 			</Anchors>
@@ -69,12 +69,12 @@
 			</Layers>
 			<Frames>
 				<EditBox parentKey="InviteLinkBox" autoFocus="false" inherits="InputBoxTemplate">
-					<Size x="300" y="22"/>
+					<Size x="288" y="22"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.InviteLinkDescription" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.InviteLinkDescription" relativePoint="BOTTOMLEFT" x="6" y="-13"/>
 					</Anchors>
 					<Layers>
-						<Layer level="BACKGROUND">
+						<Layer level="BORDER">
 							<Texture parentKey="Left" file="Interface\ChatFrame\UI-ChatInputBorder-Left2">
 								<Size x="32" y="32"/>
 								<Anchors>
@@ -87,6 +87,8 @@
 									<Anchor point="RIGHT" x="10"/>
 								</Anchors>
 							</Texture>
+						</Layer>
+						<Layer level="BACKGROUND">
 							<Texture parentKey="Mid" file="Interface\ChatFrame\UI-ChatInputBorder-Mid2" horizTile="true">
 								<Size x="0" y="32"/>
 								<Anchors>
@@ -106,7 +108,7 @@
 				<Button parentKey="JoinButton" inherits="UIPanelButtonNoTooltipTemplate" text="COMMUNITIES_ADD_DIALOG_INVITE_LINK_JOIN">
 					<Size x="104" y="22"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.InviteLinkBox" relativePoint="RIGHT" x="14" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.InviteLinkBox" relativePoint="RIGHT" x="20" y="0"/>
 					</Anchors>
 					<Scripts>
 						<OnClick function="CommunitiesAddDialogJoinButton_OnClick"/>
@@ -136,17 +138,19 @@
 					<HighlightTexture atlas="communities-create-button-highlight"/>
 					<DisabledTexture atlas="communities-create-button-wow-up" desaturated="true"/>
 				</Button>
-				<Button parentKey="CreateBattleNetGroupButton">
-					<Size x="132" y="70"/>
+				<Button parentKey="CreateBattleNetGroupButton" motionScriptsWhileDisabled="true">
+					<Size x="116" y="67"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.CreateBattleNetGroupLabel" relativePoint="TOPRIGHT" x="20" y="0"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CreateBattleNetGroupLabel" relativePoint="TOPRIGHT" x="28" y="0"/>
 					</Anchors>
 					<Scripts>
+						<OnEnter function="CommunitiesAddDialogBattleNetButton_OnEnter"/>
 						<OnClick function="CommunitiesAddDialogBattleNetButton_OnClick"/>
 					</Scripts>
 					<NormalTexture atlas="communities-create-button-bnet-up"/>
 					<PushedTexture atlas="communities-create-button-bnet-down"/>
-					<HighlightTexture atlas="communities-create-button-highlight"/>
+					<HighlightTexture atlas="communities-create-button-bnet-highlight"/>
+					<DisabledTexture atlas="communities-create-button-bnet-up" desaturated="true"/>
 				</Button>
 				<Button parentKey="CloseButton">
 					<Size x="32" y="32"/>

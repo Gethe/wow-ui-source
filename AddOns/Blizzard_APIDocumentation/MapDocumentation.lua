@@ -87,6 +87,20 @@ local Map =
 			},
 		},
 		{
+			Name = "GetMapArtID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "uiMapArtID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMapArtLayerTextures",
 			Type = "Function",
 

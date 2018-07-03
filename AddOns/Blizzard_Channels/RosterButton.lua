@@ -124,10 +124,6 @@ function ChannelRosterButtonMixin:IsVoiceActive()
 	return self.voiceActive;
 end
 
-function ChannelRosterButtonMixin:ShouldShowTalkingIndicator()
-	return self:IsVoiceTalking(); -- TODO: Use energy as well?
-end
-
 function ChannelRosterButtonMixin:SetVoiceMuted(muted)
 	self.voiceMuted = muted;
 end
@@ -142,6 +138,14 @@ end
 
 function ChannelRosterButtonMixin:IsConnected()
 	return self.isConnected;
+end
+
+function ChannelRosterButtonMixin:ClearVoiceInfo()
+	self:SetVoiceEnabled(false);
+	self:SetVoiceChannelID(nil);
+	self:SetVoiceMemberID(nil);
+	self:SetVoiceActive(nil);
+	self:SetVoiceMuted(nil);
 end
 
 local function ChannelRosterDropdown_Initialize(dropdown, level, menuList)

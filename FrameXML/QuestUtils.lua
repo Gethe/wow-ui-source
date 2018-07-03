@@ -125,18 +125,20 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 			return currency1.currencyID > currency2.currencyID;
 		end
 	);
+	local addedQuestCurrencies = 0;
 	local alreadyUsedCurrencyContainerId = 0; --In the case of multiple currency containers needing to displayed, we only display the first. 
 	for i, currencyInfo in ipairs(currencies) do
 		local isCurrencyContainer = C_CurrencyInfo.IsCurrencyContainer(currencyInfo.currencyID, currencyInfo.numItems);
 		if ( currencyContainerTooltip and isCurrencyContainer and (alreadyUsedCurrencyContainerId == 0) ) then 
 			if ( EmbeddedItemTooltip_SetCurrencyByID(currencyContainerTooltip, currencyInfo.currencyID, currencyInfo.numItems) ) then
-				if (C_PvP.IsWarModeDesired() and QuestUtils_IsQuestWorldQuest(questID)) then 
+				if (C_PvP.IsWarModeDesired() and QuestUtils_IsQuestWorldQuest(questID) and C_QuestLog.QuestHasWarModeBonus(questID) and not C_CurrencyInfo.GetFactionGrantedByCurrency(currencyInfo.currencyID)) then 
 					currencyContainerTooltip.Tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE);
 					currencyContainerTooltip.Tooltip:Show();
 				end
 				if ( not tooltip ) then
 					break;
 				end
+				addedQuestCurrencies = addedQuestCurrencies + 1;
 				alreadyUsedCurrencyContainerId = currencyInfo.currencyID;
 			end
 		elseif ( tooltip ) then
@@ -151,11 +153,12 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 					local currencyColor = GetColorForCurrencyReward(currencyInfo.currencyID, currencyInfo.numItems);
 					tooltip:AddLine(text, currencyColor:GetRGB());
 				end
-				if (C_PvP.IsWarModeDesired() and QuestUtils_IsQuestWorldQuest(questID)) then 
+				if (C_PvP.IsWarModeDesired() and QuestUtils_IsQuestWorldQuest(questID) and C_QuestLog.QuestHasWarModeBonus(questID) and not C_CurrencyInfo.GetFactionGrantedByCurrency(currencyInfo.currencyID)) then 
 					tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE);
 				end
+				addedQuestCurrencies = addedQuestCurrencies + 1;
 			end
 		end
 	end
-	return numQuestCurrencies;
+	return addedQuestCurrencies, alreadyUsedCurrencyContainerId > 0;
 end

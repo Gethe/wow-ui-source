@@ -743,6 +743,16 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "VoiceChatChannelMemberGuidUpdated",
+			Type = "Event",
+			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_GUID_UPDATED",
+			Payload =
+			{
+				{ Name = "memberID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "VoiceChatChannelMemberMuteForAllChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ALL_CHANGED",

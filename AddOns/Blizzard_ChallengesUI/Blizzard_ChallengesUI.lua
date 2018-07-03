@@ -96,7 +96,7 @@ function ChallengesFrame_OnLoad(self)
 end
 
 function ChallengesFrame_OnEvent(self, event)
-	if ( event == "CHALLENGE_MODE_MAPS_UPDATE" or event == "CHALLENGE_MODE_LEADERS_UPDATE" or event =="CHALLENGE_MODE_MEMBER_INFO_UPDATED" or event =="CHALLENGE_MODE_COMPLETED") then
+	if (event == "CHALLENGE_MODE_MAPS_UPDATE" or event == "CHALLENGE_MODE_LEADERS_UPDATE" or event == "CHALLENGE_MODE_MEMBER_INFO_UPDATED" or event == "CHALLENGE_MODE_COMPLETED" or event == "BAG_UPDATE") then
         if (event == "CHALLENGE_MODE_LEADERS_UPDATE") then
             self.leadersAvailable = true;
         end
@@ -109,7 +109,9 @@ function ChallengesFrame_OnEvent(self, event)
 end
 
 function ChallengesFrame_OnShow(self)
-    SetPortraitToTexture(PVEFrame.portrait, "Interface\\Icons\\achievement_bg_wineos_underxminutes");
+	self:RegisterEvent("BAG_UPDATE");
+	
+    SetPortraitToTexture(PVEFrame.portrait, "Interface\\Icons\\achievement_bg_wineos_underxminutes"); 
 	PVEFrame.TitleText:SetText(CHALLENGES);
 	PVEFrame_HideLeftInset();
     
@@ -124,6 +126,7 @@ end
 
 function ChallengesFrame_OnHide(self)
     PVEFrame_ShowLeftInset();
+	self:UnregisterEvent("BAG_UPDATE");
 end
 
 function ChallengesFrame_Update(self)
@@ -140,6 +143,19 @@ function ChallengesFrame_Update(self)
     end
     
     table.sort(sortedMaps, function(a, b) return a.level > b.level end);
+	
+	local weeklySortedMaps = {};
+	 for i = 1, #self.maps do
+		local _, weeklyLevel = C_MythicPlus.GetWeeklyBestForMap(self.maps[i])
+        if (not weeklyLevel) then
+            weeklyLevel = 0;
+        else
+            hasWeeklyRun = true;
+        end
+        tinsert(weeklySortedMaps, { id = self.maps[i], weeklyLevel = weeklyLevel});
+     end
+    
+    table.sort(weeklySortedMaps, function(a, b) return a.weeklyLevel > b.weeklyLevel end);
     
     local frameWidth = self.WeeklyInfo:GetWidth()
     
@@ -159,33 +175,43 @@ function ChallengesFrame_Update(self)
 		end
     end
     
-    local name, _, _, _, backgroundTexture = C_ChallengeMode.GetMapUIInfo(sortedMaps[1].id);
+    local _, _, _, _, backgroundTexture = C_ChallengeMode.GetMapUIInfo(sortedMaps[1].id);
     if (backgroundTexture ~= 0) then
         self.Background:SetTexture(backgroundTexture);
     end
-	
+		
     self.WeeklyInfo:SetUp(hasWeeklyRun, sortedMaps[1]);
+	
 	local weeklyChest = self.WeeklyInfo.Child.WeeklyChest;
+	
+	weeklyChest.name = nil;
+	weeklyChest.ownedKeystoneLevel, weeklyChest.level, weeklyChest.rewardLevel, weeklyChest.nextRewardLevel = 0;
+	weeklyChest.name = C_ChallengeMode.GetMapUIInfo(weeklySortedMaps[1].id);
 	weeklyChest.ownedKeystoneLevel = C_MythicPlus.GetOwnedKeystoneLevel();
-	if (weeklyChest.ownedKeystoneLevel and name ~= nil) then
-		weeklyChest.difficulty, weeklyChest.rewardLevel, weeklyChest.nextRewardLevel = C_MythicPlus.GetWeeklyChestRewardLevel();
-		weeklyChest.level = sortedMaps[1].level;
+	
+		weeklyChest.level, weeklyChest.rewardLevel, weeklyChest.nextRewardLevel = C_MythicPlus.GetWeeklyChestRewardLevel();
+	if (weeklyChest.ownedKeystoneLevel and weeklyChest.name ~= nil) then
 		if (C_MythicPlus.IsWeeklyRewardAvailable()) then 
 			self.WeeklyInfo:HideAffixes();
 			self.WeeklyInfo.Child.Label:Hide(); 
 			
+			weeklyChest.challengeMapId, weeklyChest.level = C_MythicPlus.GetLastWeeklyBestInformation(); 
+			weeklyChest.name = C_ChallengeMode.GetMapUIInfo(weeklyChest.challengeMapId);
+			weeklyChest.rewardLevel = C_MythicPlus.GetRewardLevelFromKeystoneLevel(weeklyChest.level);
+			
 			self.WeeklyInfo.Child.RunStatus:ClearAllPoints();
-			self.WeeklyInfo.Child.RunStatus:SetPoint("TOP", self, "TOP", 0, -25);
+			self.WeeklyInfo.Child.RunStatus:SetPoint("TOP", weeklyChest.CollectChest.FinalKeyLevel, "TOP", 0, 50);
 			self.WeeklyInfo.Child.RunStatus:SetText(MYTHIC_PLUS_CLAIM_REWARD_MESSAGE); 
 			
-			weeklyChest.CollectChest.FinalKeyLevel:SetText(MYTHIC_PLUS_WEEKLY_CHEST_LEVEL:format(name, weeklyChest.level));  
+			weeklyChest.CollectChest.FinalKeyLevel:SetText(MYTHIC_PLUS_WEEKLY_CHEST_LEVEL:format(weeklyChest.name, weeklyChest.level));  
 			weeklyChest:SetupChest(weeklyChest.CollectChest); 		
 		elseif (weeklyChest.level > 0) then 
 			self.WeeklyInfo.Child.Label:Show(); 
 			
 			self.WeeklyInfo.Child.RunStatus:ClearAllPoints();
 			self.WeeklyInfo.Child.RunStatus:SetPoint("TOP", weeklyChest, "TOP", 0, 25);
-			self.WeeklyInfo.Child.RunStatus:SetText(MYTHIC_PLUS_BEST_WEEKLY:format(name, weeklyChest.level)); 
+			
+			self.WeeklyInfo.Child.RunStatus:SetText(MYTHIC_PLUS_BEST_WEEKLY:format(weeklyChest.name, weeklyChest.level)); 
 			
 			weeklyChest:SetupChest(weeklyChest.CompletedKeystoneChest); 
 		elseif (weeklyChest.ownedKeystoneLevel) then

@@ -71,7 +71,7 @@
 			<OnHide function="MicroButtonAlert_OnHide"/>
 		</Scripts>
 	</Frame>
-	<Button name="CharacterMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+	<Button name="CharacterMicroButton" inherits="MainMenuBarMicroButton" mixin="CharacterMicroButtonMixin" parent="UIParent">
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="MicroButtonPortrait">
@@ -200,6 +200,18 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="UnreadNotificationIcon" atlas="hud-microbutton-communities-icon-notification">
+							<Size x="18" y="18"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOP" x="0" y="-5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -209,6 +221,12 @@
 				self:RegisterEvent("UPDATE_BINDINGS");
 				self:RegisterEvent("PLAYER_GUILD_UPDATE");
 				self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
+				self:RegisterEvent("STREAM_VIEW_MARKER_UPDATED");
+				self:RegisterEvent("INITIAL_CLUBS_LOADED");
+				self:RegisterEvent("CLUB_INVITATION_ADDED_FOR_SELF");
+				self:RegisterEvent("CLUB_INVITATION_REMOVED_FOR_SELF");
+				self:RegisterEvent("BN_DISCONNECTED");
+				self:RegisterEvent("BN_CONNECTED");
 				GuildMicroButton_UpdateTabard(true);
 				if ( IsCommunitiesUIDisabledByTrialAccount() ) then
 					self:Disable();
@@ -462,6 +480,16 @@
 			<OnClick function="ToggleHelpFrame"/>
 		</Scripts>
 	</Button>
+    <Frame name="CharacterMicroButtonAlert" inherits="MicroButtonAlertTemplate">
+        <KeyValues>
+            <KeyValue key="MicroButton" value="CharacterMicroButton" type="global"/>
+        </KeyValues>
+        <Scripts>
+            <OnLoad>
+                MicroButtonAlert_OnLoad(self);
+            </OnLoad>
+        </Scripts>
+    </Frame>
 	<Frame name="TalentMicroButtonAlert" inherits="MicroButtonAlertTemplate">
 		<KeyValues>
 			<KeyValue key="MicroButton" value="TalentMicroButton" type="global"/>

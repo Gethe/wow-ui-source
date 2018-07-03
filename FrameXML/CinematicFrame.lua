@@ -54,6 +54,8 @@ function CinematicFrame_OnEvent(self, event, ...)
 		RaidNotice_Clear(RaidBossEmoteFrame);	--Clear the normal boss emote frame. If there are any messages left over from the cinematic, we don't want to show them.
 		
 		LowHealthFrame:EvaluateVisibleState();
+
+		MovieFrame_OnCinematicStopped();
 	elseif ( event == "CHAT_MSG_SAY" or event == "CHAT_MSG_MONSTER_SAY" or
 		event == "CHAT_MSG_YELL" or event == "CHAT_MSG_MONSTER_YELL" ) then
 		local message, sender, lang, channel, target, flag, zone, localid, name, instanceId, lineId, guidString, bnId, isMobile, isSubtitle, hideSenderInLetterbox = ...;

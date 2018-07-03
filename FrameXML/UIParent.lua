@@ -797,11 +797,11 @@ function ToggleGuildFrame()
 	if ( IsCommunitiesUIDisabledByTrialAccount() ) then
 		UIErrorsFrame:AddMessage(ERR_RESTRICTED_ACCOUNT_TRIAL, 1.0, 0.1, 0.1, 1.0);
 		return;
-	end
-
-	if ( CommunitiesFrame_IsEnabled() ) then
+	elseif ( CommunitiesFrame_IsEnabled() ) then
 		if ( not BNConnected() ) then
 			UIErrorsFrame:AddMessage(ERR_GUILD_AND_COMMUNITIES_UNAVAILABLE, 1.0, 0.1, 0.1, 1.0);
+			return;
+		elseif ( C_Club.IsRestricted() ~= Enum.ClubRestrictionReason.None ) then
 			return;
 		end
 		

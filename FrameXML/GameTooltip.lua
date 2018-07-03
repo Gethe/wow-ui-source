@@ -31,6 +31,15 @@ TOOLTIP_QUEST_REWARDS_STYLE_ISLANDS_QUEUE = {
 	wrapHeaderText = false,
 }
 
+TOOLTIP_QUEST_REWARDS_STYLE_EMISSARY_REWARD = {
+	headerText = QUEST_REWARDS,
+	headerColor = NORMAL_FONT_COLOR,
+	prefixBlankLineCount = 1,
+	postHeaderBlankLineCount = 0,
+	wrapHeaderText = true,
+	emissaryHack = true,
+}
+
 function GameTooltip_UnitColor(unit)
 	local r, g, b;
 	if ( UnitPlayerControlled(unit) ) then
@@ -142,6 +151,9 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 	style = style or TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT;
 
 	if ( GetQuestLogRewardXP(questID) > 0 or GetNumQuestLogRewardCurrencies(questID) > 0 or GetNumQuestLogRewards(questID) > 0 or GetQuestLogRewardMoney(questID) > 0 or GetQuestLogRewardArtifactXP(questID) > 0 or GetQuestLogRewardHonor(questID) ) then
+		tooltip.ItemTooltip:Hide();
+		local showRetrievingData = false;
+
 		GameTooltip_AddBlankLinesToTooltip(tooltip, style.prefixBlankLineCount);
 		GameTooltip_AddColoredLine(tooltip, style.headerText, style.headerColor, style.wrapHeaderText);
 		GameTooltip_AddBlankLinesToTooltip(tooltip, style.postHeaderBlankLineCount);
@@ -151,7 +163,7 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 		local xp = GetQuestLogRewardXP(questID);
 		if ( xp > 0 ) then
 			GameTooltip_AddColoredLine(tooltip, BONUS_OBJECTIVE_EXPERIENCE_FORMAT:format(xp), HIGHLIGHT_FONT_COLOR);
-			if (C_PvP.IsWarModeDesired()) then
+			if (C_PvP.IsWarModeDesired() and C_QuestLog.QuestHasWarModeBonus(questID)) then
 				tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE_XP);
 			end
 			hasAnySingleLineRewards = true;
@@ -162,9 +174,11 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 			hasAnySingleLineRewards = true;
 		end
 		-- currency
-		local numAddedQuestCurrencies = QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, tooltip.ItemTooltip);
-		if ( numAddedQuestCurrencies > 0 ) then
-			hasAnySingleLineRewards = true;
+		if not style.emissaryHack then
+			local numAddedQuestCurrencies, usingCurrencyContainer = QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, tooltip.ItemTooltip);
+			if ( numAddedQuestCurrencies > 0 ) then
+				hasAnySingleLineRewards = not usingCurrencyContainer or numAddedQuestCurrencies > 1;
+			end
 		end
 		-- honor
 		local honorAmount = GetQuestLogRewardHonor(questID);
@@ -176,7 +190,7 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 		local money = GetQuestLogRewardMoney(questID);
 		if ( money > 0 ) then
 			SetTooltipMoney(tooltip, money, nil);
-			if (C_PvP.IsWarModeDesired() and QuestUtils_IsQuestWorldQuest(questID)) then
+			if (C_PvP.IsWarModeDesired() and QuestUtils_IsQuestWorldQuest(questID) and C_QuestLog.QuestHasWarModeBonus(questID)) then
 				tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE);
 			end
 			hasAnySingleLineRewards = true;
@@ -185,12 +199,8 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 		-- items
 		local numQuestRewards = GetNumQuestLogRewards(questID);
 		if numQuestRewards > 0 then
-			if ( hasAnySingleLineRewards ) then
-				GameTooltip_AddBlankLinesToTooltip(tooltip, 1);
-			end
-
-			if not EmbeddedItemTooltip_SetItemByQuestReward(tooltip.ItemTooltip, 1, questID) then  -- Only support one currently
-				GameTooltip_AddColoredLine(tooltip, RETRIEVING_DATA, RED_FONT_COLOR);
+			if not EmbeddedItemTooltip_SetItemByQuestReward(tooltip.ItemTooltip , 1, questID) then  -- Only support one currently
+				showRetrievingData = true;
 			end
 
 			if IsModifiedClick("COMPAREITEMS") or GetCVarBool("alwaysCompareItems") then
@@ -199,6 +209,27 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 				for i, tooltip in ipairs(tooltip.ItemTooltip.Tooltip.shoppingTooltips) do
 					tooltip:Hide();
 				end
+			end
+		end
+
+		-- emissary hack: Only show azerite if nothing else
+		-- in the case of double azerite, only show the currency container one
+		if style.emissaryHack and not hasAnySingleLineRewards and not tooltip.ItemTooltip:IsShown() then
+			local numAddedQuestCurrencies, usingCurrencyContainer = QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, tooltip.ItemTooltip);
+			if ( numAddedQuestCurrencies > 0 ) then
+				hasAnySingleLineRewards = not usingCurrencyContainer or numAddedQuestCurrencies > 1;
+				if usingCurrencyContainer and numAddedQuestCurrencies > 1 then
+					EmbeddedItemTooltip_Clear(tooltip.ItemTooltip);
+					tooltip.ItemTooltip:Hide();
+					tooltip:Show();
+				end
+			end
+		end
+
+		if hasAnySingleLineRewards and tooltip.ItemTooltip:IsShown() then
+			GameTooltip_AddBlankLinesToTooltip(tooltip, 1);
+			if showRetrievingData then
+				GameTooltip_AddColoredLine(tooltip, RETRIEVING_DATA, RED_FONT_COLOR);
 			end
 		end
 	end
@@ -784,6 +815,8 @@ local function WidgetLayout(widgetContainer, sortedWidgets)
 		if widgetWidth > maxWidgetWidth then
 			maxWidgetWidth = widgetWidth;
 		end
+
+		widgetFrame:EnableMouse(false);
 	end
 
 	widgetContainer:SetHeight(widgetsHeight);

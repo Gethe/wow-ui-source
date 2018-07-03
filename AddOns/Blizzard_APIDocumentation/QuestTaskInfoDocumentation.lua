@@ -7,6 +7,20 @@ local QuestTaskInfo =
 	Functions =
 	{
 		{
+			Name = "DoesMapShowTaskQuestObjectives",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "showsTaskQuestObjectives", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDistanceSqToQuest",
 			Type = "Function",
 

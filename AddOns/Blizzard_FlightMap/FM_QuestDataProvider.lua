@@ -4,8 +4,8 @@ function FlightMap_QuestDataProviderMixin:GetPinTemplate() -- override
 	return "FlightMap_QuestPinTemplate";
 end
 
-function FlightMap_QuestDataProviderMixin:ShouldShowQuest(questID, mapType) -- override
-	return true;
+function FlightMap_QuestDataProviderMixin:ShouldShowQuest(questID, mapType, doesMapShowTaskObjectives) -- override
+	return not QuestUtils_IsQuestWorldQuest(questID);
 end
 
 function FlightMap_QuestDataProviderMixin:AddQuest(...) -- override

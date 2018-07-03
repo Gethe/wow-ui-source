@@ -25,6 +25,8 @@ function PlayerReportFrameMixin:InitiateReport(reportType, playerName, playerLoc
 		reportReason = REPORT_SPAMMING;
 	elseif reportType == PLAYER_REPORT_TYPE_LANGUAGE then
 		reportReason = REPORT_BAD_LANGUAGE;
+	elseif reportType == PLAYER_REPORT_TYPE_ABUSE then
+		reportReason = REPORT_ABUSE;
 	elseif reportType == PLAYER_REPORT_TYPE_BAD_PLAYER_NAME then
 		reportReason = REPORT_BAD_NAME;
 	elseif reportType == PLAYER_REPORT_TYPE_BAD_GUILD_NAME then

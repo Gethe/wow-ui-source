@@ -6,20 +6,16 @@ end
 
 function ChannelRosterMixin:OnShow()
 	self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ACTIVE_STATE_CHANGED");
-	self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ADDED");
 	self:RegisterEvent("UNIT_CONNECTION");
 end
 
 function ChannelRosterMixin:OnHide()
 	self:UnregisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ACTIVE_STATE_CHANGED");
-	self:UnregisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ADDED");
 	self:UnregisterEvent("UNIT_CONNECTION");
 end
 
 function ChannelRosterMixin:OnEvent(event, ...)
-	if event == "VOICE_CHAT_CHANNEL_MEMBER_ADDED" then
-		self:OnVoiceChannelMemberAdded(...);
-	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_ACTIVE_STATE_CHANGED" then
+	if event == "VOICE_CHAT_CHANNEL_MEMBER_ACTIVE_STATE_CHANGED" then
 		self:OnVoiceChannelMemberActiveStateChanged(...);
 	elseif event == "UNIT_CONNECTION" then
 		self:OnUnitConnection(...);
@@ -28,13 +24,6 @@ end
 
 function ChannelRosterMixin:GetChannelFrame()
 	return self:GetParent();
-end
-
-function ChannelRosterMixin:OnVoiceChannelMemberAdded(voiceMemberID, channelID)
-	local channel = self:GetChannelFrame():GetList():GetSelectedChannelButton();
-	if channel and channel:ChannelSupportsVoice() then
-		self:Update();
-	end
 end
 
 function ChannelRosterMixin:OnVoiceChannelMemberStateUpdate(methodName, voiceMemberID, voiceChannelID, newStateValue)
@@ -186,13 +175,13 @@ do
 		rosterEntry:SetMemberName(name);
 		rosterEntry:SetMemberIsOwner(owner);
 		rosterEntry:SetMemberIsModerator(moderator);
-		rosterEntry:SetVoiceEnabled(false);
+		rosterEntry:ClearVoiceInfo();
 		rosterEntry:SetIsConnected(C_PlayerInfo.IsConnected(rosterEntry:GetMemberPlayerLocation()));
 
 		if voiceChannelID then
 			local voiceMemberID = C_VoiceChat.GetMemberID(voiceChannelID, guid);
 			local voiceMemberInfo = voiceMemberID and C_VoiceChat.GetMemberInfo(voiceMemberID, voiceChannelID);
-			
+
 			if voiceMemberInfo then
 				rosterEntry:SetVoiceEnabled(true);
 				rosterEntry:SetVoiceChannelID(voiceChannelID);
@@ -200,11 +189,6 @@ do
 				rosterEntry:SetVoiceActive(voiceMemberInfo.isActive);
 				rosterEntry:SetVoiceMuted(voiceMemberInfo.isMutedForMe);
 			end
-		else
-			rosterEntry:SetVoiceChannelID(nil);
-			rosterEntry:SetVoiceMemberID(nil);
-			rosterEntry:SetVoiceActive(nil);
-			rosterEntry:SetVoiceMuted(nil);
 		end
 
 		rosterEntry:Update();
@@ -266,13 +250,13 @@ do
 		rosterEntry:SetMemberName(memberInfo.name);
 		rosterEntry:SetMemberIsOwner(memberInfo.role == Enum.ClubRoleIdentifier.Owner or memberInfo.role == Enum.ClubRoleIdentifier.Leader);
 		rosterEntry:SetMemberIsModerator(memberInfo.role == Enum.ClubRoleIdentifier.Moderator);
-		rosterEntry:SetVoiceEnabled(false);
+		rosterEntry:ClearVoiceInfo();
 		rosterEntry:SetIsConnected(memberInfo.presence ~= Enum.ClubMemberPresence.Offline);
 
 		if voiceChannelID and memberInfo.guid then
 			local voiceMemberID = C_VoiceChat.GetMemberID(voiceChannelID, memberInfo.guid);
 			local voiceMemberInfo = voiceMemberID and C_VoiceChat.GetMemberInfo(voiceMemberID, voiceChannelID);
-			
+
 			if voiceMemberInfo then
 				rosterEntry:SetVoiceEnabled(true);
 				rosterEntry:SetVoiceChannelID(voiceChannelID);
@@ -280,11 +264,6 @@ do
 				rosterEntry:SetVoiceActive(voiceMemberInfo.isActive);
 				rosterEntry:SetVoiceMuted(voiceMemberInfo.isMutedForMe);
 			end
-		else
-			rosterEntry:SetVoiceChannelID(nil);
-			rosterEntry:SetVoiceMemberID(nil);
-			rosterEntry:SetVoiceActive(nil);
-			rosterEntry:SetVoiceMuted(nil);
 		end
 
 		rosterEntry:Update();

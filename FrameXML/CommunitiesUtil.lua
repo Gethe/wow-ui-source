@@ -71,15 +71,51 @@ function CommunitiesUtil.SortMemberInfo(memberInfoArray)
 	return memberInfoArray;
 end
 
-function CommunitiesUtil.GetMemberInfo(clubId, streamId, filterOffline)
-	local memberIds = clubId and C_Club.GetClubMembers(clubId, streamId) or {};
+function CommunitiesUtil.GetMemberIdsSortedByName(clubId, streamId)
+	return clubId and C_Club.GetClubMembers(clubId, streamId) or {};
+end
 
+function CommunitiesUtil.GetMemberInfo(clubId, memberIds)
 	local memberInfoArray = {};
 
 	for _, memberId in ipairs(memberIds) do
 		local memberInfo = C_Club.GetMemberInfo(clubId, memberId);
-		local couldBeOffline = not memberInfo or (memberInfo.presence == Enum.ClubMemberPresence.Offline or memberInfo.presence == Enum.ClubMemberPresence.Unknown);
-		if memberInfo and (not filterOffline or not couldBeOffline) then
+		if memberInfo then
+			table.insert(memberInfoArray, memberInfo);
+		end
+	end
+
+	return memberInfoArray;
+end
+
+function CommunitiesUtil.GetMemberInfoLookup(memberInfoArray)
+	local memberInfoLookup = {};
+	
+	for _, memberInfo in ipairs(memberInfoArray) do
+		memberInfoLookup[memberInfo.memberId] = memberInfo;
+	end
+
+	return memberInfoLookup;
+end
+
+function CommunitiesUtil.GetOnlineMembers(memberInfoArray)
+	local onlineMemberInfoArray = {};
+	for _, memberInfo in ipairs(memberInfoArray) do
+		local couldBeOffline = memberInfo.presence == Enum.ClubMemberPresence.Offline or memberInfo.presence == Enum.ClubMemberPresence.Unknown;
+		if not couldBeOffline then
+			table.insert(onlineMemberInfoArray, memberInfo);
+		end
+	end
+
+	return onlineMemberInfoArray;
+end
+
+function CommunitiesUtil.SortMembersByList(memberInfoLookup, memberIds)
+	local memberInfoArray = {};
+
+	for _, memberId in ipairs(memberIds) do
+		local memberInfo = memberInfoLookup[memberId];
+		if memberInfo then
 			table.insert(memberInfoArray, memberInfo);
 		end
 	end
@@ -89,7 +125,13 @@ end
 
 -- Leave streamId as nil if you want all members in the club
 function CommunitiesUtil.GetAndSortMemberInfo(clubId, streamId, filterOffline)
-	return CommunitiesUtil.SortMemberInfo(CommunitiesUtil.GetMemberInfo(clubId, streamId, filterOffline));
+	local memberIdArray = CommunitiesUtil.GetMemberIdsSortedByName(clubId, streamId);
+	local memberInfoArray = CommunitiesUtil.GetMemberInfo(clubId, memberIdArray);
+	if filterOffline then
+		memberInfoArray = CommunitiesUtil.GetOnlineMembers(memberInfoArray);
+	end
+	memberInfoArray = CommunitiesUtil.SortMemberInfo(memberInfoArray);
+	return memberInfoArray;
 end
 
 function CommunitiesUtil.SortMemberInfoWithOverride(memberInfoArray, overrideCompare)	
@@ -150,4 +192,27 @@ end
 
 function CommunitiesUtil.CanKickClubMember(clubPrivileges, memberInfo)
 	return tContains(clubPrivileges.kickableRoleIds, memberInfo.role);
+end
+
+function CommunitiesUtil.ClearAllUnreadNotifications(clubId)
+	local streams = C_Club.GetStreams(clubId);
+	for i, stream in ipairs(streams) do
+		C_Club.AdvanceStreamViewMarker(clubId, stream.streamId);
+	end
+end
+
+function CommunitiesUtil.OpenInviteDialog(clubId, streamId)
+	local clubInfo = C_Club.GetClubInfo(clubId);
+	if not clubInfo then
+		return;
+	end
+	
+	local privileges = C_Club.GetClubPrivileges(clubId);
+	if clubInfo.clubType == Enum.ClubType.Guild then
+		StaticPopup_Show("ADD_GUILDMEMBER");
+	elseif privileges.canCreateTicket then
+		StaticPopup_Show("INVITE_COMMUNITY_MEMBER_WITH_INVITE_LINK", nil, nil, { clubId = clubId, streamId = streamId, });
+	else
+		StaticPopup_Show("INVITE_COMMUNITY_MEMBER", nil, nil, { clubId = clubId, streamId = streamId, });
+	end
 end

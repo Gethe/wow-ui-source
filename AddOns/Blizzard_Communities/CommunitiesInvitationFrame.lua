@@ -78,9 +78,9 @@ function CommunitiesInvitationFrameMixin:DisplayInvitation(invitationInfo)
 	end
 
 	self.Leader:SetText(COMMUNITIES_INVIVATION_FRAME_LEADER_FORMAT:format(leadersText));
-	
-	-- TODO:: Discuss if we want this and add proper accessors if we do.
 	self.MemberCount:SetText(COMMUNITIES_INVITATION_FRAME_MEMBER_COUNT:format(clubInfo.memberCount or 1));
+	
+	MarkCommunitiesInvitiationDisplayed(self.clubId);
 end
 
 function CommunitiesInvitationFrameMixin:AcceptInvitation()
@@ -108,19 +108,8 @@ end
 function CommunitiesInviteButton_OnClick(self)
 	local communitiesFrame = self:GetParent();
 	local clubId = communitiesFrame:GetSelectedClubId();
-	local privileges = communitiesFrame:GetPrivilegesForClub(clubId);
-	local clubInfo = C_Club.GetClubInfo(clubId);
-	if not clubInfo then
-		return;
-	end
-	
-	if clubInfo.clubType == Enum.ClubType.Guild then
-		StaticPopup_Show("ADD_GUILDMEMBER");
-	elseif privileges.canCreateTicket then
-		StaticPopup_Show("INVITE_COMMUNITY_MEMBER_WITH_INVITE_LINK", nil, nil, { clubId = clubId, streamId = communitiesFrame:GetSelectedStreamId(), });
-	else
-		StaticPopup_Show("INVITE_COMMUNITY_MEMBER", nil, nil, { clubId = clubId, streamId = communitiesFrame:GetSelectedStreamId(), });
-	end
+	local streamId = communitiesFrame:GetSelectedStreamId();
+	CommunitiesUtil.OpenInviteDialog(clubId, streamId);
 end
 
 function CommunitiesInvitebutton_OnHide(self)

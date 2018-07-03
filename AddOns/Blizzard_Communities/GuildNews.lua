@@ -18,6 +18,10 @@ local GUILD_EVENT_TEXTURES = {
 	[CALENDAR_EVENTTYPE_OTHER]		= "Interface\\Calendar\\UI-Calendar-Event-Other",
 };
 
+local function IsLootNews(newsType)
+	return newsType == NEWS_ITEM_LOOTED or newsType == NEWS_ITEM_CRAFTED or newsType == NEWS_ITEM_PURCHASED or newsType == NEWS_LEGENDARY_LOOTED;
+end
+
 function CommunitiesGuildNewsFrame_OnLoad(self)
 	QueryGuildNews();
 	self:RegisterEvent("GUILD_NEWS_UPDATE");
@@ -58,14 +62,14 @@ function CommunitiesGuildNews_Update(self)
 		self.GMImpeachButton:Show();
 		self.Container:SetPoint("TOPLEFT", self.GMImpeachButton, "BOTTOMLEFT", 0, 0);
 		self.Container:SetHeight(290);
-		self.Container.ScrollBar:SetPoint("TOPLEFT", self.Container, "TOPRIGHT", 1, 28);
+		self.Container.ScrollBar:SetPoint("TOPLEFT", self.Container, "TOPRIGHT", 1, 25);
 		self.Container.ScrollBar:SetPoint("BOTTOMLEFT", self.Container, "BOTTOMRIGHT", 1, 7);
 	else
 		self.GMImpeachButton:Hide();
 		self.Container:SetPoint("TOPLEFT", self.Header, "BOTTOMLEFT", 0, 0);
 		self.Container:SetHeight(306);
-		self.Container.ScrollBar:SetPoint("TOPLEFT", self.Container, "TOPRIGHT", 1, 10);
-		self.Container.ScrollBar:SetPoint("BOTTOMLEFT", self.Container, "BOTTOMRIGHT", 1, 7);
+		self.Container.ScrollBar:SetPoint("TOPLEFT", self.Container, "TOPRIGHT", 1, 7);
+		self.Container.ScrollBar:SetPoint("BOTTOMLEFT", self.Container, "BOTTOMRIGHT", 1, 5);
 	end
 	
 	local motd = GetGuildRosterMOTD();
@@ -213,7 +217,7 @@ function CommunitiesGuildNewsButton_SetNews( button, news_id )
 		-- Bug 356148: For NEWS_ITEM types, data2 has the item upgrade ID
 		button.data2 = data2;
 		if ( text2 and text2 ~= UNKNOWN ) then
-			if ( newsType == NEWS_ITEM_LOOTED or newsType == NEWS_ITEM_CRAFTED or newsType == NEWS_ITEM_PURCHASED ) then
+			if ( IsLootNews(newsType) ) then
 				-- item link is already filled out from GetGuildNewsInfo
 			elseif ( newsType == NEWS_PLAYER_ACHIEVEMENT ) then
 				text2 = ACHIEVEMENT_COLOR_CODE.."["..text2.."]|r";
@@ -247,7 +251,7 @@ function CommunitiesGuildNewsButton_OnEnter(self)
 	GameTooltip:Hide();
 	local newsType = self.newsType;
 	self.UpdateTooltip = nil;
-	if ( newsType == NEWS_ITEM_LOOTED or newsType == NEWS_ITEM_CRAFTED or newsType == NEWS_ITEM_PURCHASED or newsType == NEWS_LEGENDARY_LOOTED ) then
+	if ( IsLootNews(newsType) ) then
 		CommunitiesGuildNewsButton_AnchorTooltip(self);
 		local _, _, _, _, text2, _, _, _ = GetGuildNewsInfo(self.index);
 		GameTooltip:SetHyperlink(text2);
@@ -372,13 +376,13 @@ function CommunitiesGuildNewsDropDown_Initialize(self)
 	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);	
 	info = UIDropDownMenu_CreateInfo();
 	info.notCheckable = 1;
-
+	
 	if ( newsType == NEWS_PLAYER_ACHIEVEMENT or newsType == NEWS_GUILD_ACHIEVEMENT ) then
 		info.func = function (button, ...) OpenAchievementFrameToAchievement(...); end;
 		info.text = GUILD_NEWS_VIEW_ACHIEVEMENT;
 		info.arg1 = id;	
 		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	elseif ( newsType == NEWS_ITEM_LOOTED or newsType == NEWS_ITEM_CRAFTED or newsType == NEWS_ITEM_PURCHASED ) then
+	elseif ( IsLootNews(newsType) ) then
 		info.func = function (button, ...) ChatEdit_LinkItem(...) end;
 		info.text = GUILD_NEWS_LINK_ITEM;
 		info.arg1 = id;

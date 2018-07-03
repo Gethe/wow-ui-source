@@ -577,6 +577,15 @@ local Club =
 			},
 		},
 		{
+			Name = "IsRestricted",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "restrictionReason", Type = "ClubRestrictionReason", Nilable = false },
+			},
+		},
+		{
 			Name = "IsSubscribedToStream",
 			Type = "Function",
 
@@ -675,6 +684,16 @@ local Club =
 			Arguments =
 			{
 				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "memberId", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SendBattleTagFriendRequest",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "guildClubId", Type = "string", Nilable = false },
 				{ Name = "memberId", Type = "number", Nilable = false },
 			},
 		},
@@ -791,6 +810,20 @@ local Club =
 			{
 				{ Name = "clubId", Type = "string", Nilable = false },
 				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldAllowClubType",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubType", Type = "ClubType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "clubTypeIsAllowed", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1093,6 +1126,11 @@ local Club =
 			},
 		},
 		{
+			Name = "InitialClubsLoaded",
+			Type = "Event",
+			LiteralName = "INITIAL_CLUBS_LOADED",
+		},
+		{
 			Name = "StreamViewMarkerUpdated",
 			Type = "Event",
 			LiteralName = "STREAM_VIEW_MARKER_UPDATED",
@@ -1279,6 +1317,18 @@ local Club =
 				{ Name = "Banned", Type = "ClubRemovedReason", EnumValue = 1 },
 				{ Name = "Removed", Type = "ClubRemovedReason", EnumValue = 2 },
 				{ Name = "ClubDestroyed", Type = "ClubRemovedReason", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "ClubRestrictionReason",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "None", Type = "ClubRestrictionReason", EnumValue = 0 },
+				{ Name = "Unavailable", Type = "ClubRestrictionReason", EnumValue = 1 },
 			},
 		},
 		{

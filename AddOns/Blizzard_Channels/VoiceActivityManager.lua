@@ -7,6 +7,7 @@ function VoiceActivityManagerMixin:OnLoad()
 	self:RegisterEvent("VOICE_CHAT_COMMUNICATION_MODE_CHANGED");
 	self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_REMOVED");
 	self:RegisterEvent("VOICE_CHAT_CHANNEL_REMOVED");
+	self:RegisterEvent("VOICE_CHAT_CHANNEL_DEACTIVATED");
 
 	self.releaseTimers = {};
 	self.notificationMembers = {};
@@ -39,6 +40,8 @@ function VoiceActivityManagerMixin:OnEvent(event, ...)
 		self:OnMemberRemoved(...);
 	elseif event == "VOICE_CHAT_CHANNEL_REMOVED" then
 		self:OnChannelRemoved(...);
+	elseif event == "VOICE_CHAT_CHANNEL_DEACTIVATED" then
+		self:OnChannelDeactivated(...);
 	end
 end
 
@@ -106,6 +109,10 @@ function VoiceActivityManagerMixin:OnMemberRemoved(memberID, channelID)
 end
 
 function VoiceActivityManagerMixin:OnChannelRemoved(statusCode, channelID)
+	self:ReleaseNotifications("*", channelID);
+end
+
+function VoiceActivityManagerMixin:OnChannelDeactivated(channelID)
 	self:ReleaseNotifications("*", channelID);
 end
 
@@ -255,7 +262,7 @@ function VoiceActivityManagerMixin:ReleaseNotifications(memberID, channelID)
 		self:UpdateAlertNotificationVisibility();
 	end
 
-	if memberID == "*" then 
+	if memberID == "*" then
 		self:ClearChannelExistingNotifications(channelID);
 	else
 		self:ClearMemberHasExistingNotification(memberID, channelID);
@@ -263,7 +270,7 @@ function VoiceActivityManagerMixin:ReleaseNotifications(memberID, channelID)
 end
 
 function VoiceActivityManagerMixin:MemberHasExistingNotification(memberID, channelID)
-	return self.notificationMembers[channelID] and self.notificationMembers[channelID][memberID];
+	return self.notificationMembers[channelID] and (self.notificationMembers[channelID][memberID] or memberID == "*");
 end
 
 function VoiceActivityManagerMixin:SetMemberHasExistingNotification(memberID, channelID)

@@ -374,7 +374,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	<Frame name="IslandsQueueFrame" parent="UIParent" hidden="true" enableMouse="true" inherits="PortraitFrameTemplate" mixin="IslandsQueueFrameMixin">
+	<Frame name="IslandsQueueFrame" parent="UIParent" hidden="true" frameStrata="HIGH" enableMouse="true" inherits="PortraitFrameTemplate" mixin="IslandsQueueFrameMixin">
 		<Size x="962" y="662"/> 
 		<Anchors>
 			<Anchor point="CENTER"/> 

@@ -165,7 +165,7 @@ VideoData["Display_DisplayModeDropDown"]={
 			fullscreen = false;
 		},
 		[2] = {
-			text = VIDEO_OPTIONS_FULLSCREEN,
+			text = VIDEO_OPTIONS_WINDOWED_FULLSCREEN,
 			cvars =	{
 				gxMaximize = 1,
 			},
@@ -1257,7 +1257,7 @@ VideoData["Advanced_MultisampleAlphaTest"]={
 	},
 }
 
-VideoData["Advanced_RenderScaleSlider"]={
+VideoData["Display_RenderScaleSlider"]={
 	name = RENDER_SCALE;
 	tooltip = OPTION_TOOLTIP_RENDER_SCALE,
 }

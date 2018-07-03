@@ -49,6 +49,7 @@ Import("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_INSTRUCTIONS_CHARACTER");
 Import("COMMUNITIES_CREATE_DIALOG_NAME_AND_SHORT_NAME_ERROR");
 Import("COMMUNITIES_CREATE_DIALOG_NAME_ERROR");
 Import("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_ERROR");
+Import("COMMUNITY_TYPE_UNAVAILABLE");
 Import("CANCEL");
 Import("FEATURE_NOT_AVAILBLE_PANDAREN");
 Import("OKAY");
@@ -73,7 +74,7 @@ function CommunitiesAddDialogMixin:OnShow()
 	self.CreateWoWCommunityLabel:SetText(COMMUNITIES_ADD_DIALOG_CREATE_WOW_LABEL:format(localizedFactionName));
 	self.CreateWoWCommunityDescription:SetText(COMMUNITIES_ADD_DIALOG_CREATE_WOW_DESCRIPTION:format(localizedFactionName));
 	
-	self.CreateWoWCommunityButton:Enable();
+	self.CreateWoWCommunityButton:SetEnabled(C_Club.ShouldAllowClubType(Enum.ClubType.Character));
 	self.CreateWoWCommunityButton.FactionIcon:Show();
 	if factionTag == "Horde" then
 		self.CreateWoWCommunityButton.FactionIcon:SetAtlas("communities-create-button-wow-horde", true);
@@ -85,6 +86,8 @@ function CommunitiesAddDialogMixin:OnShow()
 		self.CreateWoWCommunityLabel:SetText(COMMUNITIES_ADD_DIALOG_CREATE_WOW_LABEL_NO_FACTION);
 		self.CreateWoWCommunityDescription:SetText(COMMUNITIES_ADD_DIALOG_CREATE_WOW_DESCRIPTION_NO_FACTION);
 	end
+	
+	self.CreateBattleNetGroupButton:SetEnabled(C_Club.ShouldAllowClubType(Enum.ClubType.BattleNet));
 end
 
 function CommunitiesAddDialogMixin:OnAttributeChanged(name, value)
@@ -180,7 +183,11 @@ end
 
 function CommunitiesAddDialogWoWButton_OnEnter(self)
 	if not self:IsEnabled() then
-		Outbound.ShowGameTooltip(FEATURE_NOT_AVAILBLE_PANDAREN, self:GetRight(), self:GetTop());
+		if not C_Club.ShouldAllowClubType(Enum.ClubType.Character) then
+			Outbound.ShowGameTooltip(COMMUNITY_TYPE_UNAVAILABLE, self:GetRight(), self:GetTop());
+		else
+			Outbound.ShowGameTooltip(FEATURE_NOT_AVAILBLE_PANDAREN, self:GetRight(), self:GetTop());
+		end
 	end
 end
 
@@ -194,6 +201,12 @@ function CommunitiesAddDialogWoWButton_OnClick(self)
 	CommunitiesCreateDialog:ClearText();
 	CommunitiesCreateDialog:Show();
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
+end
+
+function CommunitiesAddDialogBattleNetButton_OnEnter(self)
+	if not self:IsEnabled() then
+		Outbound.ShowGameTooltip(COMMUNITY_TYPE_UNAVAILABLE, self:GetRight(), self:GetTop());
+	end
 end
 
 function CommunitiesAddDialogBattleNetButton_OnClick(self)

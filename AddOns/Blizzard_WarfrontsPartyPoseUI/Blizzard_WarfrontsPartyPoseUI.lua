@@ -24,6 +24,14 @@ local WARFRONTS_GRUNT_ACTORS_ALLIANCE =
 
 WarfrontsPartyPoseMixin = CreateFromMixins(PartyPoseMixin);
 
+function WarfrontsPartyPoseMixin:PlayRewardsAnimations()
+	self.RewardAnimations.RewardFrame:Show();
+	if (self:CanResumeAnimation()) then 
+		self:PlayNextRewardAnimation();
+	end
+	self.isPlayingRewards = true; 
+end
+
 function WarfrontsPartyPoseMixin:AddActor(scene, displayID, name)
 	local actor = scene:GetActorByTag(name);
 	if (actor) then
@@ -116,9 +124,52 @@ do
 	end
 end
 
+function WarfrontsPartyPoseMixin:OnLoad()
+	self:RegisterEvent("SCENARIO_COMPLETED"); 
+	self:RegisterEvent("QUEST_LOOT_RECEIVED"); 
+	self:RegisterEvent("QUEST_CURRENCY_LOOT_RECEIVED"); 
+	PartyPoseMixin.OnLoad(self); 
+	self.isPlayingRewards = false;
+end
+
+function WarfrontsPartyPoseMixin:OnHide()
+	self.questID = nil;
+	self.isPlayingRewards = false;
+end
+
 function WarfrontsPartyPoseMixin:OnEvent(event, ...)
 	PartyPoseMixin.OnEvent(self, event, ...);
 	if (event == "UI_MODEL_SCENE_INFO_UPDATED") then
 		self:AddModelSceneActors(UnitFactionGroup("player"));
+	elseif (event == "SCENARIO_COMPLETED") then
+		self.pendingRewardData = {};
+		self.questID = ...; 
+	elseif (event == "QUEST_LOOT_RECEIVED") then
+		local questID, rewardItemLink, quantity = ...;
+		if (questID == self.questID) then 
+			local item = Item:CreateFromItemLink(rewardItemLink);
+			item:ContinueOnItemLoad(function()
+				local id = item:GetItemID(); 
+				local quality = item:GetItemQuality(); 
+				local texture = item:GetItemIcon();
+				local name = item:GetItemName();
+				self:AddReward(name, texture, quality, id, "item", rewardItemLink, quantity, quantity, false);
+				if (not self.isPlayingRewards) then 
+					self:PlayRewardsAnimations(); 
+				end
+			end);
+		end
+	elseif (event == "QUEST_CURRENCY_LOOT_RECEIVED") then
+		local questID, currencyId, quantity = ...; 
+		if (questID == self.questID) then 
+			local name, _, texture, _, _, _, _, quality = GetCurrencyInfo(currencyId);
+			local originalQuantity = quantity;
+			local isCurrencyContainer = C_CurrencyInfo.IsCurrencyContainer(currencyId, quantity);
+			name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyId, quantity, name, texture, quality);
+			self:AddReward(name, texture, quality, currencyId, "currency", currencyLink, quantity, originalQuantity, isCurrencyContainer);
+			if (not self.isPlayingRewards) then 
+				self:PlayRewardsAnimations(); 
+			end
+		end
 	end
 end

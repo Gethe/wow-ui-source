@@ -532,6 +532,10 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnEnter function="PVPRatedTier_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
 	</Frame>
 
 	<Button name="PVPRatedActivityButtonTemplate" virtual="true">
@@ -1471,7 +1475,7 @@
 												</Anchors>
 												<Layers>
 													<Layer level="ARTWORK">
-														<Texture parentKey="Icon" setAllPoints="true"/>
+														<Texture parentKey="Icon" setAllPoints="true" alpha="0.6"/>
 														<Texture atlas="pvpqueue-sidebar-nextarrow">
 															<Size x="16" y="25"/>
 															<Anchors>
@@ -1480,6 +1484,10 @@
 														</Texture>
 													</Layer>
 												</Layers>
+												<Scripts>
+													<OnEnter function="NextTier_OnEnter"/>
+													<OnLeave function="GameTooltip_Hide"/>
+												</Scripts>
 											</Frame>
 										</Frames>
 									</Frame>

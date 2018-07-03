@@ -8,3 +8,12 @@ function CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, numItems, na
 	end
 	return name, texture, numItems, quality;
 end
+
+function CurrencyContainerUtil.GetCurrencyContainerInfoForAlert(currencyID, quantity, name, texture, quality)
+
+	if (C_CurrencyInfo.IsCurrencyContainer(currencyID, quantity)) then
+		return CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, quantity, name, texture, quality);
+	end
+
+	return name, texture, quantity, quality;
+end

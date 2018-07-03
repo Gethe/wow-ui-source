@@ -103,15 +103,20 @@ function TalkingHeadFrame_Reset(frame, text, name)
 	frame.TextFrame.Text:SetText(text);
 end
 
-local textureKitRegionFormatStrings = {
+local talkingHeadTextureKitRegionFormatStrings = {
 	["TextBackground"] = "%s-TextBackground",
 	["Portrait"] = "%s-PortraitFrame",
 }
-local defaultAtlases = {
+local talkingHeadDefaultAtlases = {
 	["TextBackground"] = "TalkingHeads-TextBackground",
 	["Portrait"] = "TalkingHeads-Alliance-PortraitFrame",
 }
-
+local talkingHeadFontColor = {
+	["TalkingHeads-Horde"] = {Name = CreateColor(0.28, 0.02, 0.02), Text = CreateColor(0.0, 0.0, 0.0), Shadow = CreateColor(0.0, 0.0, 0.0, 0.0)},
+	["TalkingHeads-Alliance"] = {Name = CreateColor(0.02, 0.17, 0.33), Text = CreateColor(0.0, 0.0, 0.0), Shadow = CreateColor(0.0, 0.0, 0.0, 0.0)},
+	["TalkingHeads-Neutral"] = {Name = CreateColor(0.33, 0.16, 0.02), Text = CreateColor(0.0, 0.0, 0.0), Shadow = CreateColor(0.0, 0.0, 0.0, 0.0)},
+	["Normal"] = {Name = CreateColor(1, 0.82, 0.02), Text = CreateColor(1, 1, 1), Shadow = CreateColor(0.0, 0.0, 0.0, 1.0)},
+}
 
 function TalkingHeadFrame_PlayCurrent()
 	local frame = TalkingHeadFrame;
@@ -130,13 +135,23 @@ function TalkingHeadFrame_PlayCurrent()
 	local displayInfo, cameraID, vo, duration, lineNumber, numLines, name, text, isNewTalkingHead, textureKitID = C_TalkingHead.GetCurrentLineInfo();
 	local textFormatted = string.format(text);
 	if ( displayInfo and displayInfo ~= 0 ) then
+		local textureKit;
 		if ( textureKitID ~= 0 ) then
-			SetupTextureKits(textureKitID, frame.BackgroundFrame, textureKitRegionFormatStrings, false, true);
-			SetupTextureKits(textureKitID, frame.PortraitFrame, textureKitRegionFormatStrings, false, true);
+			SetupTextureKits(textureKitID, frame.BackgroundFrame, talkingHeadTextureKitRegionFormatStrings, false, true);
+			SetupTextureKits(textureKitID, frame.PortraitFrame, talkingHeadTextureKitRegionFormatStrings, false, true);
+			textureKit = GetUITextureKitInfo(textureKitID);
 		else
-			SetupAtlasesOnRegions(frame.BackgroundFrame, defaultAtlases, true);
-			SetupAtlasesOnRegions(frame.PortraitFrame, defaultAtlases, true);
+			SetupAtlasesOnRegions(frame.BackgroundFrame, talkingHeadDefaultAtlases, true);
+			SetupAtlasesOnRegions(frame.PortraitFrame, talkingHeadDefaultAtlases, true);
+			textureKit = "Normal";
 		end
+		local nameColor = talkingHeadFontColor[textureKit].Name;
+		local textColor = talkingHeadFontColor[textureKit].Text;
+		local shadowColor = talkingHeadFontColor[textureKit].Shadow;
+		frame.NameFrame.Name:SetTextColor(nameColor:GetRGB());
+		frame.NameFrame.Name:SetShadowColor(shadowColor:GetRGBA());
+		frame.TextFrame.Text:SetTextColor(textColor:GetRGB());
+		frame.TextFrame.Text:SetShadowColor(shadowColor:GetRGBA());
 		frame:Show();
 		if ( currentDisplayInfo ~= displayInfo ) then
 			model.uiCameraID = cameraID;

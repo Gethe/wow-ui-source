@@ -309,7 +309,7 @@
 			<Layer>
 				<FontString parentKey="Label" inherits="GameFontNormalSmall" text="COMMUNITIES_ADD_TO_CHAT">
 					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="LEFT" x="-1" y="0"/>
+						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="LEFT" x="-1" y="0.5"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -335,7 +335,7 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture parentKey="UnreadNotificationIcon" atlas="communities-icon-notification">
-							<Size x="11" y="12"/>
+							<Size x="11" y="11"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="-19" y="-4"/>
 							</Anchors>

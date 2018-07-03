@@ -22,7 +22,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										self:GetParent():GetParent():ScrollUp();
+										self:GetParent():GetParent():ScrollByAmount(3);
 									</OnClick>
 								</Scripts>
 							</Button>
@@ -32,7 +32,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										self:GetParent():GetParent():ScrollDown();
+										self:GetParent():GetParent():ScrollByAmount(-3);
 									</OnClick>
 								</Scripts>
 							</Button>
@@ -58,7 +58,7 @@
 						SetItemRef(link, text, button, nil);
 					</OnHyperlinkClick>
 					<OnMouseWheel>
-						self:ScrollByAmount(delta);
+						self:ScrollByAmount(delta * 3);
 					</OnMouseWheel>
 				</Scripts>
 			</ScrollingMessageFrame>
@@ -73,8 +73,8 @@
 			</Button>
 			<Frame parentKey="InsetFrame" inherits="InsetFrameTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="-10" y="9"/>
-					<Anchor point="BOTTOMRIGHT" x="0" y="-28"/>
+					<Anchor point="TOPLEFT" x="-10" y="7"/>
+					<Anchor point="BOTTOMRIGHT" x="10" y="-28"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -118,8 +118,9 @@
 		<Scripts>
 			<OnEscapePressed function="EditBox_ClearFocus"/>
 			<OnEditFocusLost function="EditBox_ClearHighlight"/>
-			<OnEditFocusGained function="EditBox_HighlightText"/>
+			<OnEditFocusGained function="CommunitiesChatEditBox_OnFocusGained"/>
 			<OnEnterPressed function="CommunitiesChatEditBox_OnEnterPressed"/>
+			<OnHide function="CommunitiesChatEditBox_OnHide"/>
 		</Scripts>
 		<FontString inherits="ChatFontNormal"/>
 	</EditBox>

@@ -63,6 +63,8 @@ QuestUtils.lua
 MapUtil.lua
 AzeriteUtil.lua
 VehicleUtil.lua
+AuraUtil.lua
+CommunitiesUtil.lua
 CurrencyContainer.lua
 ## IME.xml needs to be loaded after UIParent.xml
 ..\SharedXML\IME.xml

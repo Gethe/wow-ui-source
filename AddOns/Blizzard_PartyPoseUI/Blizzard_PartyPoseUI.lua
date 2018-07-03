@@ -37,6 +37,10 @@ end
 
 function PartyPoseRewardsMixin:OnHide()
 	self.loopingSoundEmitter:CancelLoopingSound();
+
+	self.AnimFade:Stop();
+	self.AnimFade.FadeIn:SetFromAlpha(0);
+	self.AnimFade.FadeOut:SetToAlpha(0);
 end
 
 function PartyPoseRewardsMixin:SetupReward(rewardData)
@@ -97,10 +101,12 @@ function PartyPoseRewardsMixin:PauseRewardAnimation()
 end
 
 function PartyPoseRewardsMixin:ResumeRewardAnimation()
-	self.AnimFade.FadeIn:SetFromAlpha(0);
-	self.AnimFade.FadeOut:SetToAlpha(0);
-	self.AnimFade:Play();
-	self:GetParent():GetParent():ResumeRewardAnimation();
+	if self:GetParent():GetParent():CanResumeAnimation() then
+		self.AnimFade.FadeIn:SetFromAlpha(0);
+		self.AnimFade.FadeOut:SetToAlpha(0);
+		self.AnimFade:Play();
+		self:GetParent():GetParent():ResumeRewardAnimation();
+	end
 end
 
 function PartyPoseRewardsMixin:OnAnimationFinished()
@@ -109,6 +115,13 @@ end
 
 function PartyPoseRewardsMixin:PlayNextRewardAnimation()
 	self:GetParent():GetParent():PlayNextRewardAnimation();
+end
+
+function PartyPoseRewardsMixin:CheckForIndefinitePause()
+	if not self:GetParent():GetParent():CanResumeAnimation() then
+		self:PauseRewardAnimation();
+		self.isPlayingRewards = false; 
+	end
 end
 
 PartyPoseMixin = { };
@@ -122,6 +135,7 @@ function PartyPoseMixin:PlayNextRewardAnimation()
 	local rewardData = table.remove(self.pendingRewardData, 1);
 
 	local rewardFrame = self.RewardAnimations.RewardFrame;
+	rewardFrame:Hide();
 	if rewardData then
 		rewardFrame:Show();
 		rewardFrame:SetupReward(rewardData);
@@ -131,8 +145,6 @@ function PartyPoseMixin:PlayNextRewardAnimation()
 		else
 			self:HideAzeriteGlowModelScenes();
 		end
-	else
-		rewardFrame:Hide();
 	end
 end
 
@@ -146,6 +158,10 @@ function PartyPoseMixin:ResumeRewardAnimation()
 	if self.RewardAnimations.RewardFrame:IsAzeriteCurrency() then
 		self.RewardAnimations.HoldModelScene.RewardModelAnim:Play();
 	end
+end
+
+function PartyPoseMixin:CanResumeAnimation()
+	return self.pendingRewardData and #self.pendingRewardData > 0;
 end
 
 function PartyPoseMixin:AddReward(name, texture, quality, id, objectType, objectLink, quantity, originalQuantity, isCurrencyContainer)
@@ -166,53 +182,6 @@ end
 
 function PartyPoseMixin:GetFirstReward()
 	return self.rewardPool:GetNextActive();
-end
-
-function PartyPoseMixin:SetRewards()
-	self.pendingRewardData = {};
-
-	local name, typeID, subtypeID, iconTextureFile, moneyBase, moneyVar, experienceBase, experienceVar, numStrangers, numRewards = GetLFGCompletionReward();
-	if not numRewards or numRewards == 0 then
-		self.RewardAnimations.RewardFrame:Hide();
-		return;
-	end
-
-	local continuableContainer = ContinuableContainer:Create();
-	for i = 1, numRewards do
-		local texture, quantity, isBonus, bonusQuantity, name, quality, id, objectType = GetLFGCompletionRewardItem(i);
-		if objectType == "item" then
-			local item = Item:CreateFromItemID(id);
-			continuableContainer:AddContinuable(item);
-		end
-	end
-
-	continuableContainer:ContinueOnLoad(function()
-		for i = 1, numRewards do
-			local texture, quantity, isBonus, bonusQuantity, name, quality, id, objectType = GetLFGCompletionRewardItem(i);
-			local originalQuantity = quantity;
-			local isCurrencyContainer = false;
-			local objectLink = GetLFGCompletionRewardItemLink(i);
-			if (objectType == "currency") then
-				isCurrencyContainer = C_CurrencyInfo.IsCurrencyContainer(id, quantity);
-				name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(id, quantity, name, texture, quality);
-			end
-
-			self:AddReward(name, texture, quality, id, objectType, objectLink, quantity, originalQuantity, isCurrencyContainer);
-		end
-
-		table.sort(self.pendingRewardData, function(left, right)
-			if left.isCurrencyContainer ~= right.isCurrencyContainer then
-				return left.isCurrencyContainer;
-			end
-			if left.objectType ~= right.objectType then
-				return left.objectType < right.objectType; -- Not really important, just that the order is consistent
-			end
-			return left.id < right.id;
-		end);
-
-		self.RewardAnimations.RewardFrame:Show();
-		self:PlayNextRewardAnimation();
-	end);
 end
 
 function PartyPoseMixin:PlayModelSceneAnimations(forceUpdate)
@@ -318,14 +287,13 @@ function PartyPoseMixin:SetupTheme(styleData)
 		end
 	end
 
+	self.TitleBg:SetAtlas(styleData.TitleBG, true);
+	
 	self.TitleText:SetDrawLayer("OVERLAY", 7);
 	self.TitleBg:SetDrawLayer("OVERLAY", 6);
-
+	
 	self.TitleBg:ClearAllPoints();
-	self.TitleBg:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 31);
-	self.TitleBg:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 31);
-
-	self.TitleBg:SetAtlas(styleData.TitleBG, true);
+	self.TitleBg:SetPoint("CENTER", self.ModelScene, "TOP", 0, 25);
 
 	if self.ModelScene then
 		self.ModelScene.Bg:SetAtlas(styleData.ModelSceneBG);
@@ -363,9 +331,8 @@ function PartyPoseMixin:SetupTheme(styleData)
 end
 
 function PartyPoseMixin:OnLoad()
-	UIPanelWindows[self:GetName()] = { area = "center", pushable = 0, whileDead = 1, ignoreControlLost = true, };
+	UIPanelWindows[self:GetName()] = { area = "center", pushable = 0, whileDead = 1, ignoreControlLost = true, checkFit = 1 };
 	self.ModelScene.shadowPool = CreateTexturePool(self.ModelScene, "BORDER", 1, "PartyPoseModelShadowTextureTemplate");
-	self:RegisterEvent("LFG_COMPLETION_REWARD");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 	self:RegisterEvent("PLAYER_LEAVING_WORLD");
 end
@@ -375,8 +342,6 @@ function PartyPoseMixin:OnEvent(event, ...)
 		local forceUpdate = true;
 		self:SetModelScene(self.ModelScene:GetModelSceneID(), self.ModelScene.partyCategory, forceUpdate);
 		self:PlayModelSceneAnimations(forceUpdate);
-	elseif ( event == "LFG_COMPLETION_REWARD" ) then
-		self:SetRewards();
 	elseif ( event == "PLAYER_LEAVING_WORLD" ) then
 		HideUIPanel(self);
 	end

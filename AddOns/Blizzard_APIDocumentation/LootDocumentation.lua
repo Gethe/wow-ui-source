@@ -256,6 +256,17 @@ local Loot =
 			LiteralName = "PLAYER_LOOT_SPEC_UPDATED",
 		},
 		{
+			Name = "QuestCurrencyLootReceived",
+			Type = "Event",
+			LiteralName = "QUEST_CURRENCY_LOOT_RECEIVED",
+			Payload =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "currencyId", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "QuestLootReceived",
 			Type = "Event",
 			LiteralName = "QUEST_LOOT_RECEIVED",

@@ -40,7 +40,7 @@ function CommunitiesStreamDropDownMenu_Initialize(self)
 		-- TODO:: Support mention-based notifications once we have support for mentions.
 		if streamToNotificationSetting[streamId] == Enum.ClubStreamNotificationFilter.All and
 			CommunitiesUtil.DoesCommunityStreamHaveUnreadMessages(clubId, streamId) then
-			info.text = info.text.." "..CreateAtlasMarkup("communities-icon-notification", 11, 12);
+			info.text = info.text.." "..CreateAtlasMarkup("communities-icon-notification", 10, 10);
 		end
 				
 		info.mouseOverIcon = canEditStream and stream.streamType == Enum.ClubStreamType.Other and "Interface\\WorldMap\\GEAR_64GREY" or nil;
@@ -76,7 +76,7 @@ function CommunitiesStreamDropDownMenu_Initialize(self)
 	info.value = nil;
 	info.customCheckIconTexture = "Interface\\WorldMap\\GEAR_64GREY";
 	info.func = function(button)
-		self:GetCommunitiesFrame():ShowNotificationSettingsDialog();
+		self:GetCommunitiesFrame():ShowNotificationSettingsDialog(clubId);
 	end
 	UIDropDownMenu_AddButton(info);
 end
@@ -202,9 +202,7 @@ function CommunitiesNotificationSettingsDialogMixin:OnLoad()
 end
 
 function CommunitiesNotificationSettingsDialogMixin:OnShow()
-	local communitiesFrame = self:GetCommunitiesFrame();
-	self:SelectClub(communitiesFrame:GetSelectedClubId());
-	communitiesFrame:RegisterDialogShown(self);
+	self:GetCommunitiesFrame():RegisterDialogShown(self);
 end
 
 function CommunitiesNotificationSettingsDialogMixin:Refresh()
