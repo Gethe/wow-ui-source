@@ -166,6 +166,80 @@ function UIDropDownMenu_StopCounting(frame)
 	end
 end
 
+function UIDropDownMenuButtonInvisibleButton_OnEnter(self)
+	UIDropDownMenu_StopCounting(self:GetParent():GetParent());
+	CloseDropDownMenus(self:GetParent():GetParent():GetID() + 1);
+	local parent = self:GetParent();
+	if ( parent.tooltipTitle and parent.tooltipWhileDisabled) then
+		if ( parent.tooltipOnButton ) then
+			GameTooltip:SetOwner(parent, "ANCHOR_RIGHT");
+			GameTooltip_SetTitle(GameTooltip, parent.tooltipTitle);
+			if parent.tooltipInstruction then
+				GameTooltip_AddInstructionLine(GameTooltip, parent.tooltipInstruction);
+			end
+			if parent.tooltipText then
+				GameTooltip_AddNormalLine(GameTooltip, parent.tooltipText, true);
+			end
+			if parent.tooltipWarning then
+				GameTooltip_AddColoredLine(GameTooltip, parent.tooltipWarning, RED_FONT_COLOR, true);
+			end
+			GameTooltip:Show();
+		else
+			GameTooltip_AddNewbieTip(parent, parent.tooltipTitle, 1.0, 1.0, 1.0, parent.tooltipText, 1);
+		end
+	end
+end
+
+function UIDropDownMenuButtonInvisibleButton_OnLeave(self)
+	UIDropDownMenu_StartCounting(self:GetParent():GetParent());
+	GameTooltip:Hide();
+end
+
+function UIDropDownMenuButton_OnEnter(self)
+	if ( self.hasArrow ) then
+		local level =  self:GetParent():GetID() + 1;
+		local listFrame = _G["DropDownList"..level];
+		if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint()) ~= self ) then
+			ToggleDropDownMenu(self:GetParent():GetID() + 1, self.value, nil, nil, nil, nil, self.menuList, self);
+		end
+	else
+		CloseDropDownMenus(self:GetParent():GetID() + 1);
+	end
+	self.Highlight:Show();
+	UIDropDownMenu_StopCounting(self:GetParent());
+	if ( self.tooltipTitle and not self.noTooltipWhileEnabled ) then
+		if ( self.tooltipOnButton ) then
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			GameTooltip_SetTitle(GameTooltip, self.tooltipTitle);
+			if self.tooltipText then
+				GameTooltip_AddNormalLine(GameTooltip, self.tooltipText, true);
+			end
+			GameTooltip:Show();
+		else
+			GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
+		end
+	end
+				
+	if ( self.mouseOverIcon ~= nil ) then
+		self.Icon:SetTexture(self.mouseOverIcon);
+		self.Icon:Show();
+	end
+end
+
+function UIDropDownMenuButton_OnLeave(self)
+	self.Highlight:Hide();
+	UIDropDownMenu_StartCounting(self:GetParent());
+	GameTooltip:Hide();
+				
+	if ( self.mouseOverIcon ~= nil ) then
+		if ( self.icon ~= nil ) then
+			self.Icon:SetTexture(self.icon);
+		else
+			self.Icon:Hide();
+		end
+	end
+end
+
 --[[
 List of button attributes
 ======================================================
@@ -417,6 +491,8 @@ function UIDropDownMenu_AddButton(info, level)
 	button.keepShownOnClick = info.keepShownOnClick;
 	button.tooltipTitle = info.tooltipTitle;
 	button.tooltipText = info.tooltipText;
+	button.tooltipInstruction = info.tooltipInstruction;
+	button.tooltipWarning = info.tooltipWarning;
 	button.arg1 = info.arg1;
 	button.arg2 = info.arg2;
 	button.hasArrow = info.hasArrow;
@@ -424,6 +500,7 @@ function UIDropDownMenu_AddButton(info, level)
 	button.notCheckable = info.notCheckable;
 	button.menuList = info.menuList;
 	button.tooltipWhileDisabled = info.tooltipWhileDisabled;
+	button.noTooltipWhileEnabled = info.noTooltipWhileEnabled;
 	button.tooltipOnButton = info.tooltipOnButton;
 	button.noClickSound = info.noClickSound;
 	button.padding = info.padding;

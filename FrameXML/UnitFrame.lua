@@ -382,7 +382,12 @@ function UnitFrameManaCostPredictionBars_Update(frame, isStarting, startTime, en
 
 	local cost = 0;
 	if (not isStarting or startTime == endTime) then
-		frame.predictedPowerCost = nil;
+        local currentSpellID = select(9, UnitCastingInfo(frame.unit));
+        if(currentSpellID and frame.predictedPowerCost) then --if we're currently casting something with a power cost, then whatever cast
+		    cost = frame.predictedPowerCost;                 --just finished was allowed while casting, don't reset the original cast
+        else
+            frame.predictedPowerCost = nil;
+        end
 	else
 		local costTable = GetSpellPowerCost(spellID);
 		for _, costInfo in pairs(costTable) do

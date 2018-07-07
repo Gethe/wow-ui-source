@@ -48,7 +48,8 @@
 			<Layer level="OVERLAY">
 				<FontString parentKey="Subtitle1" parentArray="Subtitles" inherits="GameFontHighlightLarge" justifyH="CENTER" justifyV="MIDDLE" hidden="true" mixin="ShrinkUntilTruncateFontStringMixin">
 					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="20"/>
+						<Anchor point="BOTTOMLEFT" x="100" y="20"/>
+						<Anchor point="BOTTOMRIGHT" x="-100" y="20"/>
 					</Anchors>
 				</FontString>
 			</Layer>

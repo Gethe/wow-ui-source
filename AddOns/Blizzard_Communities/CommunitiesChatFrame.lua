@@ -47,6 +47,7 @@ function CommunitiesChatMixin:OnEvent(event, ...)
 		if clubId == self:GetCommunitiesFrame():GetSelectedClubId() and streamId == self:GetCommunitiesFrame():GetSelectedStreamId() then
 			local message = C_Club.GetMessageInfo(clubId, streamId, messageId);
 			self:AddMessage(clubId, streamId, message);
+			self:UpdateScrollbar();
 		end
 	elseif event == "CLUB_MESSAGE_HISTORY_RECEIVED" then
 		local clubId, streamId, downloadedRange, contiguousRange = ...;

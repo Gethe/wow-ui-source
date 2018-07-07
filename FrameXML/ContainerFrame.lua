@@ -1386,7 +1386,7 @@ function ContainerFrameItemButton_OnEnter(self)
 
 	local requiresCompareTooltipReanchor = ContainerFrameItemButton_CalculateItemTooltipAnchors(self, GameTooltip);
 
-	if ( requiresCompareTooltipReanchor and (IsModifiedClick("COMPAREITEMS") or GetCVarBool("alwaysCompareItems")) ) then
+	if ( (IsModifiedClick("COMPAREITEMS") or GetCVarBool("alwaysCompareItems")) ) then
 		GameTooltip_ShowCompareItem(GameTooltip);
 	end
 

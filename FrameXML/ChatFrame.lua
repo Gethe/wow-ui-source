@@ -5156,7 +5156,7 @@ end
 
 function Chat_ShouldColorChatByClass(chatTypeInfo)
 	local override = ChatClassColorOverrideShown();
-	local colorByClass = info and info.colorNameByClass;
+	local colorByClass = chatTypeInfo and chatTypeInfo.colorNameByClass;
 	return override or (override == nil and colorByClass);
 end
 

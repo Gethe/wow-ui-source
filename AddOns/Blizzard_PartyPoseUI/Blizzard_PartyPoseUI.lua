@@ -14,7 +14,7 @@ end
 function PartyPoseRewardsMixin:OnEnter()
 	if (self.objectType == "item") then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetItemByID(self.id);
+		GameTooltip:SetHyperlink(self.objectLink);
 	elseif (self.objectType == "currency") then
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 		GameTooltip:SetCurrencyByID(self.id, self.originalQuantity);

@@ -159,10 +159,8 @@ function ScrappingMachineItemSlotMixin:Clear()
 end
 
 function ScrappingMachineItemSlotMixin:OnLoad()
-	self:RegisterForClicks("LeftButtonDown");
-	self:RegisterForClicks("RightButtonDown");
+	self:RegisterForClicks("LeftButtonDown", "RightButtonDown");
 	self:RegisterForDrag("LeftButton");
-	self:RegisterForDrag("RightButton");
 	self:RegisterEvent("SCRAPPING_MACHINE_PENDING_ITEM_CHANGED");
 end
 

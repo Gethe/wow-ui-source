@@ -619,7 +619,9 @@
 						else
 							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 							self:GetParent().EditBox:ClearFocus();
-							self:GetParent().EditBox:SetText("");
+							if not self:GetParent().secureReferenceStr then
+								self:GetParent().EditBox:SetText("");
+							end
 						end
 					</OnClick>
 				</Scripts>

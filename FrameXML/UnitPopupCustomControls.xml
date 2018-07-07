@@ -77,7 +77,7 @@
 		<Size x="200" y="16"/>
 		<Frames>
 			<Frame parentKey="Text" inherits="UnitPopupVoiceTextTemplate"/>
-			<Button parentKey="Toggle" inherits="UnitPopupVoiceToggleButtonTemplate" mixin="UnitPopupToggleUserMuteMixin, UnitPopupVoiceMemberInfoMixin"/>
+			<Button parentKey="Toggle" inherits="UnitPopupVoiceToggleButtonTemplate" mixin="UnitPopupToggleUserMuteMixin"/>
 			<Slider parentKey="Slider" inherits="UnitPopupVoiceSliderTemplate" mixin="UnitPopupVoiceUserVolumeSliderMixin, UnitPopupVoiceMemberInfoMixin"/>
 		</Frames>
 	</Frame>

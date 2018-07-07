@@ -274,6 +274,10 @@ end
 
 function PvpTalentSlotMixin:OnEnter()
 	local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(self.slotIndex);
+	if not slotInfo then
+		return;
+	end
+
 	if (self.slotWasDisabled and slotInfo.enabled) then
 		self.slotWasDisabled = nil;
 		self.New:Hide();
@@ -297,8 +301,6 @@ function PvpTalentSlotMixin:OnEnter()
 end
 
 function PvpTalentSlotMixin:OnClick()
-	local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(self.slotIndex);
-
 	local selectedTalentID = self.predictedSetting:Get();
 	if (IsModifiedClick("CHATLINK") and selectedTalentID) then
 		local _, name = GetPvpTalentInfoByID(selectedTalentID);
@@ -312,10 +314,11 @@ end
 function PvpTalentSlotMixin:OnDragStart()
 	if (not self.isInspect) then
 		local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(self.slotIndex);
-
-		local predictedTalentID = self.predictedSetting:Get();
-		if (not predictedTalentID or predictedTalentID == slotInfo.selectedTalentID) then
-			PickupPvpTalent(slotInfo.selectedTalentID);
+		if slotInfo and slotInfo.selectedTalentID then
+			local predictedTalentID = self.predictedSetting:Get();
+			if (not predictedTalentID or predictedTalentID == slotInfo.selectedTalentID) then
+				PickupPvpTalent(slotInfo.selectedTalentID);
+			end
 		end
 	end
 end

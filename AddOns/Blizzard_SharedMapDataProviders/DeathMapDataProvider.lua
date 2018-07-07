@@ -15,12 +15,15 @@ function DeathMapDataProviderMixin:RefreshAllData(fromOnShow)
 		corpsePin:SetPosition(corpsePosition:GetXY());
 		corpsePin:Show();
 	end
+
+	--[[ Disabled for now, need a different icon to reduce confusion
 	local deathReleasePosition = C_DeathInfo.GetDeathReleasePosition(mapID);
 	if deathReleasePosition then
 		local deathReleasePin = self:GetMap():AcquirePin("DeathReleasePinTemplate");
 		deathReleasePin:SetPosition(deathReleasePosition:GetXY());
 		deathReleasePin:Show();
 	end	
+	]]
 end
 
 CorpsePinMixin = CreateFromMixins(MapCanvasPinMixin);

@@ -211,7 +211,7 @@ end
 
 function VignettePinMixin:OnMouseEnter()
 	if self.hasTooltip then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		self.UpdateTooltip = self.OnMouseEnter;
 
 		local hasValidTooltip = false;
@@ -223,19 +223,19 @@ function VignettePinMixin:OnMouseEnter()
 		end
 
 		if not hasValidTooltip then
-			GameTooltip_SetTitle(GameTooltip, RETRIEVING_DATA);
+			GameTooltip_SetTitle(WorldMapTooltip, RETRIEVING_DATA);
 		end
 
-		GameTooltip:Show();
+		WorldMapTooltip:Show();
 	end
 end
 
 function VignettePinMixin:OnMouseLeave()
-	GameTooltip:Hide();
+	WorldMapTooltip:Hide();
 end
 
 function VignettePinMixin:DisplayNormalTooltip()
-	GameTooltip_SetTitle(GameTooltip, self:GetVignetteName());
+	GameTooltip_SetTitle(WorldMapTooltip, self:GetVignetteName());
 	return true;
 end
 
@@ -249,9 +249,9 @@ function VignettePinMixin:DisplayPvpBountyTooltip()
 		local classInfo = C_CreatureInfo.GetClassInfo(class);
 		local factionInfo = C_CreatureInfo.GetFactionInfo(race);
 
-		GameTooltip_SetTitle(GameTooltip, name, GetClassColorObj(classInfo.classFile));
-		GameTooltip_AddColoredLine(GameTooltip, factionInfo.name, GetFactionColor(factionInfo.groupTag));
-		GameTooltip_AddQuestRewardsToTooltip(GameTooltip, self:GetRewardQuestID(), TOOLTIP_QUEST_REWARDS_STYLE_PVP_BOUNTY);
+		GameTooltip_SetTitle(WorldMapTooltip, name, GetClassColorObj(classInfo.classFile));
+		GameTooltip_AddColoredLine(WorldMapTooltip, factionInfo.name, GetFactionColor(factionInfo.groupTag));
+		GameTooltip_AddQuestRewardsToTooltip(WorldMapTooltip, self:GetRewardQuestID(), TOOLTIP_QUEST_REWARDS_STYLE_PVP_BOUNTY);
 
 		return true;
 	end

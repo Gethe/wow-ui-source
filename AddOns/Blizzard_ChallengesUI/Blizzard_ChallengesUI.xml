@@ -612,6 +612,7 @@
                                     </Shadow>
                                 </FontString>
                                 <FontString parentKey="RunStatus" inherits="GameFontNormalMed2" justifyH="CENTER" hidden="false">
+                                    <Size x="500" />
                                     <Anchors>
                                         <Anchor point="BOTTOM" relativeKey="$parent.Label" x="0" y="-90"/>
                                     </Anchors>

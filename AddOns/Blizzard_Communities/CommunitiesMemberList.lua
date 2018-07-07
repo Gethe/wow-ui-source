@@ -11,6 +11,8 @@ local COMMUNITIES_MEMBER_LIST_EVENTS = {
 	"VOICE_CHAT_CHANNEL_MEMBER_ADDED",
 	"VOICE_CHAT_CHANNEL_MEMBER_GUID_UPDATED",
 	"CLUB_INVITATIONS_RECEIVED_FOR_CLUB",
+	"CLUB_MEMBER_ROLE_UPDATED",
+	"GUILD_ROSTER_UPDATE",
 };
 
 local COMMUNITIES_MEMBER_LIST_ENTRY_EVENTS = {
@@ -532,6 +534,19 @@ function CommunitiesMemberListMixin:OnEvent(event, ...)
 		local clubId, memberId, presence = ...;
 		if clubId == self:GetSelectedClubId() and self.allMemberInfoLookup[memberId] ~= nil then
 			self.allMemberInfoLookup[memberId].presence = presence;
+			self:MarkSortDirty();
+		end
+	elseif event == "CLUB_MEMBER_ROLE_UPDATED" then
+		local clubId, memberId, roleId = ...;
+		if clubId == self:GetSelectedClubId() and self.allMemberInfoLookup[memberId] ~= nil then
+			self.allMemberInfoLookup[memberId].role = roleId;
+			self:MarkSortDirty();
+		end
+	elseif event == "GUILD_ROSTER_UPDATE" then
+		local clubId = self:GetSelectedClubId();
+		local clubInfo = clubId and C_Club.GetClubInfo(clubId);
+		if clubInfo and clubInfo.clubType == Enum.ClubType.Guild then
+			self:MarkMemberListDirty();
 			self:MarkSortDirty();
 		end
 	end

@@ -313,15 +313,21 @@ function WardrobeTransmogFrame_UpdateWeaponModel(slot)
 			local existingCategoryID = C_TransmogCollection.GetAppearanceSourceInfo(existingAppearanceSourceID);
 			if ( WardrobeUtils_IsCategoryRanged(categoryID) or WardrobeUtils_IsCategoryRanged(existingCategoryID) ) then
 				slot = nil;
+			elseif ( WardrobeUtils_IsCategoryLegionArtifact(categoryID) or WardrobeUtils_IsCategoryLegionArtifact(existingCategoryID) ) then
+				slot = nil;
 			end
 			WardrobeTransmogFrame.Model:TryOn(appearanceSourceID, slot, illusionSourceID);
 		end
-	end	
+	else
+		WardrobeTransmogFrame.Model:UndressSlot(slotID);
+	end
 end
 
 function WardrobeTransmogFrame_GetDisplayedSource(slotButton)
-	local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, pendingSourceID, pendingVisualID, hasPendingUndo = C_Transmog.GetSlotVisualInfo(GetInventorySlotInfo(slotButton.slot), slotButton.transmogType);
-	if ( pendingSourceID ~= REMOVE_TRANSMOG_ID ) then
+	local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, pendingSourceID, pendingVisualID, hasPendingUndo, hideVisual = C_Transmog.GetSlotVisualInfo(GetInventorySlotInfo(slotButton.slot), slotButton.transmogType);
+	if ( hideVisual ) then
+		return 0;
+	elseif ( pendingSourceID ~= REMOVE_TRANSMOG_ID ) then
 		return pendingSourceID;
 	elseif ( hasPendingUndo or appliedSourceID == NO_TRANSMOG_SOURCE_ID ) then
 		return baseSourceID;
@@ -1204,6 +1210,10 @@ end
 
 function WardrobeUtils_IsCategoryRanged(category)
 	return (category == LE_TRANSMOG_COLLECTION_TYPE_BOW) or (category == LE_TRANSMOG_COLLECTION_TYPE_GUN) or (category == LE_TRANSMOG_COLLECTION_TYPE_CROSSBOW);
+end
+
+function WardrobeUtils_IsCategoryLegionArtifact(category)
+	return (category == LE_TRANSMOG_COLLECTION_TYPE_PAIRED);
 end
 
 function WardrobeUtils_GetArmorCategoryIDFromSlot(slot)

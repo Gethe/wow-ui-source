@@ -41,6 +41,9 @@ do
 	{
 		Horde =
 		{
+			portraitOffsetX = -27,
+			portraitOffsetY = 31,
+
 			closeButtonBorder = "talenttree-horde-exit",
 
 			Top = "_talenttree-horde-tiletop",
@@ -58,6 +61,9 @@ do
 
 		Alliance =
 		{
+			portraitOffsetX = -22,
+			portraitOffsetY = 11,
+
 			closeButtonBorder = "talenttree-alliance-exit",
 
 			Top = "_talenttree-alliance-tiletop",
@@ -85,36 +91,37 @@ do
 		self.BotTalentLeftCorner:SetAtlas(styleData.BotLeft, true);
 		self.BotTalentRightCorner:SetAtlas(styleData.BotRight, true);
 		self.CornerLogo:SetAtlas(styleData.Portrait, true);
-		
+		self.CornerLogo:SetPoint("TOPLEFT", self.TopTalentLeftCorner, "TOPLEFT", styleData.portraitOffsetX, styleData.portraitOffsetY);
+
 		self.Background:SetAtlas(styleData.Background, true);
 		self.Background:ClearAllPoints();
 		self.Background:SetPoint("CENTER", self);
-		
+
 		self.CurrencyBG:SetAtlas(styleData.CurrencyBG, true);
 		self:GetParent().CurrencyIcon:ClearAllPoints();
 		self:GetParent().CurrencyIcon:SetPoint("CENTER", self.CurrencyBG, "CENTER", 20, -1);
 		self:GetParent().CurrencyIcon:SetSize(17,16);
-		
+
 		self:GetParent().CloseButton:ClearAllPoints();
-		self:GetParent().CloseButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", 3, 3);
+		self:GetParent().CloseButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", 4, 4);
 		self:GetParent().CloseButton:SetFrameLevel(self:GetFrameLevel() + 5);
-		
+
 		self.CloseButtonBorder:SetAtlas(styleData.closeButtonBorder, true);
 		self.CloseButtonBorder:ClearAllPoints();
 		self.CloseButtonBorder:SetPoint("CENTER", self:GetParent().CloseButton);
-		
+
 		self:SetFrameLevel(self:GetParent():GetFrameLevel() -1);
 	end
 
 	function OrderHallTalentFrameMixin:SetUseStyleTextures(shouldUseStyleTextures)
-		if (not shouldUseStyleTextures) then 
-			self:SetPortraitFrameShown(true); 
+		if (not shouldUseStyleTextures) then
+			self:SetPortraitFrameShown(true);
 			return;
 		end
-		
+
 		local factionGroup = UnitFactionGroup("player");
 		local styleData = bfaTalentFrameStyleData[factionGroup];
-		self:SetPortraitFrameShown(false); 
+		self:SetPortraitFrameShown(false);
 		SetupBorder(self.StyleFrame, styleData);
 		self.StyleFrame:Show();
 	end
@@ -145,7 +152,7 @@ function OrderHallTalentFrameMixin:OnLoad()
 end
 
 function OrderHallTalentFrameMixin:SetGarrisonType(garrType)
-	self.garrisonType = garrType; 
+	self.garrisonType = garrType;
 	local primaryCurrency, _ = C_Garrison.GetCurrencyTypes(garrType);
 	self.currency = primaryCurrency;
 end
@@ -239,11 +246,11 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		self.refreshing = false;
 		return;
 	end
-	
+
 	self.StyleFrame:Hide();
-	
+
 	self:SetUseStyleTextures(isThemed);
-	
+
 	if (isThemed) then
 		self.TitleText:Hide();
 		self.BackButton:Hide();
@@ -255,7 +262,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		self.TitleText:SetText(titleText);
 		self.TitleText:Show();
 		self.BackButton:Hide();
-	else 
+	else
 		self.TitleText:SetText(ORDER_HALL_TALENT_TITLE);
 		self.TitleText:Show();
 		self.BackButton:Hide();
@@ -272,7 +279,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			self.portrait:SetTexture("INTERFACE\\ICONS\\crest_"..className);
 		end
 	end
-	
+
 	local friendshipFactionID = C_Garrison.GetCurrentGarrTalentTreeFriendshipFactionID();
 	if (friendshipFactionID and friendshipFactionID > 0) then
 		NPCFriendshipStatusBar_Update(self, friendshipFactionID);
@@ -363,12 +370,12 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	local displayHeight = height - distance;
 	self:SetHeight(displayHeight);
 	self.Background:SetHeight(bgheight - distance);
-	self.StyleFrame.Background:SetHeight(displayHeight); 
-	self.StyleFrame:SetHeight(displayHeight); 
+	self.StyleFrame.Background:SetHeight(displayHeight);
+	self.StyleFrame:SetHeight(displayHeight);
 	self.LeftInset:ClearAllPoints();
 	self.LeftInset:SetHeight(insetheight - distance);
 	self.LeftInset:SetPoint("CENTER", self.Background, 0, 0);
-	
+
     local completeTalent = C_Garrison.GetCompleteTalent(self.garrisonType);
 
 	-- position talent buttons
@@ -382,7 +389,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		local yOffset = borderY - (buttonSpacingY + buttonSizeY) * (talent.tier);
 
 		talentFrame.talent = talent;
-			
+
 		if (talent.isBeingResearched and not talent.hasInstantResearch) then
 			talentFrame.Cooldown:SetCooldownUNIX(talent.researchStartTime, talent.researchDuration);
 			talentFrame.Cooldown:Show();
@@ -407,12 +414,12 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			talentFrame.Border:SetAtlas("orderhalltalents-spellborder-yellow");
 		else
 			local isAvailable = talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE;
-				
+
 			-- We check for LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ALREADY_HAVE to avoid a bug with
 			-- the Chromie UI (talents would flash grey when you switched to another talent in the same row).
 			local canDisplayAsAvailable = talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ANOTHER_IS_RESEARCHING or talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ALREADY_HAVE;
 			local shouldDisplayAsAvailable = canDisplayAsAvailable and talent.hasInstantResearch;
-				
+
 			-- Show as available: this is a new tier which you don't have any talents from or and old tier that you could change.
 			-- Note: For instant talents, to support the Chromie UI, we display as available even when another talent is researching (Jeff wants it this way).
 			if (isAvailable or shouldDisplayAsAvailable) then
@@ -423,7 +430,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 				else
 					talentFrame.Border:SetAtlas("orderhalltalents-spellborder-green");
 				end
-					
+
 			-- Show as unavailable: You have not unlocked this tier yet or you have unlocked it but another research is already in progress.
 			else
 				talentFrame.Border:SetAtlas("orderhalltalents-spellborder");
@@ -432,7 +439,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		end
 		talentFrame:SetPoint("TOPLEFT", xOffset, yOffset);
 		talentFrame:Show();
-			
+
         if (talent.id == completeTalent) then
             if (talent.selected and not talent.hasInstantResearch) then
 				PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_READY_CHECK);
@@ -476,14 +483,14 @@ function GarrisonTalentButtonMixin:OnEnter()
 		GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..TIME_REMAINING..FONT_COLOR_CODE_CLOSE.." "..SecondsToTime(talent.researchTimeRemaining), 1, 1, 1);
 	elseif not talent.selected then
 		GameTooltip:AddLine(" ");
-		
+
 		if (talent.researchDuration and talent.researchDuration > 0) then
 			GameTooltip:AddLine(RESEARCH_TIME_LABEL.." "..HIGHLIGHT_FONT_COLOR_CODE..SecondsToTime(talent.researchDuration)..FONT_COLOR_CODE_CLOSE);
 		end
 
 		if ((talent.researchCost and talent.researchCost > 0 and talent.researchCurrency) or (talent.researchGoldCost and talent.researchGoldCost > 0)) then
 			local str = NORMAL_FONT_COLOR_CODE..COSTS_LABEL..FONT_COLOR_CODE_CLOSE;
-			
+
 			if (talent.researchCost and talent.researchCurrency) then
 				local _, _, currencyTexture = GetCurrencyInfo(talent.researchCurrency);
 				str = str.." "..BreakUpLargeNumbers(talent.researchCost).."|T"..currencyTexture..":0:0:2:0|t";

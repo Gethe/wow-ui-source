@@ -506,6 +506,7 @@ function ChannelFrameMixin:OnVoiceChannelActivated(voiceChannelID)
 end
 
 function ChannelFrameMixin:OnVoiceChannelDeactivated(voiceChannelID)
+	ChatFrame_DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE_PLAYER_LEFT);
 	self:SetVoiceChannelActiveState(voiceChannelID, false);
 	self:CheckChannelAnnounceState(voiceChannelID, "inactive");
 	PlaySound(SOUNDKIT.UI_VOICECHAT_LEAVECHANNEL);
@@ -574,11 +575,7 @@ function ChannelFrameMixin:OnCommunityFavoriteChanged(clubId)
 end
 
 function ChannelFrameMixin:OnMemberActiveStateChanged(memberID, channelID, isActive)
-	if C_VoiceChat.IsMemberLocalPlayer(memberID, channelID) then
-		if not isActive then
-			ChatFrame_DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE_PLAYER_LEFT);
-		end
-	else
+	if not C_VoiceChat.IsMemberLocalPlayer(memberID, channelID) then
 		local channel = C_VoiceChat.GetChannel(channelID);
 		if channel and channel.isActive then
 			local memberName = C_VoiceChat.GetMemberName(memberID, channelID) or "";

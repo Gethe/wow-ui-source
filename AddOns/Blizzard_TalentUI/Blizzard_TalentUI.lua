@@ -1439,7 +1439,11 @@ local PvpTalentFrameEvents = {
 	"UI_MODEL_SCENE_INFO_UPDATED",
 };
 
+TALENT_WAR_MODE_BUTTON = nil;
+
 function PvpTalentFrameMixin:OnLoad()
+	TALENT_WAR_MODE_BUTTON = self.InvisibleWarmodeButton;
+
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
 	for i, slot in ipairs(self.Slots) do
 		slot:SetUp(i);
@@ -1713,6 +1717,10 @@ function PvpTalentWarmodeButtonMixin:Update()
 	local ringAtlas = "pvptalents-warmode-ring"..disabledAdd;
 	frame.Swords:SetAtlas(swordsAtlas);
 	frame.Ring:SetAtlas(ringAtlas);
+
+	if GameTooltip:GetOwner() == self then
+		self:OnEnter();
+	end
 end
 
 function PvpTalentWarmodeButtonMixin:OnClick()
@@ -1739,13 +1747,15 @@ end
 
 function PvpTalentWarmodeButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(PVP_LABEL_WAR_MODE, 1, 1, 1);
+	GameTooltip_SetTitle(GameTooltip, PVP_LABEL_WAR_MODE);
+	if C_PvP.IsWarModeActive() or self:GetWarModeDesired() then
+		GameTooltip_AddInstructionLine(GameTooltip, PVP_WAR_MODE_ENABLED);
+	end
 	local wrap = true;
-	GameTooltip:AddLine(PVP_WAR_MODE_DESCRIPTION, nil, nil, nil, wrap);
+	GameTooltip_AddNormalLine(GameTooltip, PVP_WAR_MODE_DESCRIPTION, wrap);
 	if (not C_PvP.CanToggleWarMode()) then
 		local text = UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0] and PVP_WAR_MODE_NOT_NOW_HORDE or PVP_WAR_MODE_NOT_NOW_ALLIANCE;
-		local r, g, b = RED_FONT_COLOR:GetRGB();
-		GameTooltip:AddLine(text, r, g, b, wrap);
+		GameTooltip_AddColoredLine(GameTooltip, text, RED_FONT_COLOR, wrap);
 	end
 	GameTooltip:Show();
 end

@@ -92,9 +92,9 @@ UnitPopupButtons = {
 	["LEGACY_RAID_DIFFICULTY1"] = { text = RAID_DIFFICULTY1, checkable = 1, difficultyID = 3 },
 	["LEGACY_RAID_DIFFICULTY2"] = { text = RAID_DIFFICULTY2, checkable = 1, difficultyID = 4 },
 
-	["PVP_FLAG"] = { text = PVP_FLAG, nested = 1 },
-	["PVP_ENABLE"] = { text = ENABLE, checkable = 1, checkable = 1 },
-	["PVP_DISABLE"] = { text = DISABLE, checkable = 1, checkable = 1 },
+	["PVP_FLAG"] = { text = PVP_FLAG, nested = 1, tooltipWhileDisabled = true, noTooltipWhileEnabled = true, tooltipOnButton = true },
+	["PVP_ENABLE"] = { text = ENABLE, checkable = 1 },
+	["PVP_DISABLE"] = { text = DISABLE, checkable = 1 },
 
 	["ITEM_QUALITY2_DESC"] = { text = ITEM_QUALITY2_DESC, color = ITEM_QUALITY_COLORS[2], checkable = 1 },
 	["ITEM_QUALITY3_DESC"] = { text = ITEM_QUALITY3_DESC, color = ITEM_QUALITY_COLORS[3], checkable = 1 },
@@ -579,7 +579,7 @@ end
 
 function UnitPopup_AddDropDownTitle(unit, name, userData)
 	if ( unit or name ) then
-		info = UIDropDownMenu_CreateInfo();
+		local info = UIDropDownMenu_CreateInfo();
 
 		local titleText = name;
 		if not titleText and unit then
@@ -634,6 +634,21 @@ function UnitPopup_GetOverrideIsChecked(command, currentIsChecked, dropdownMenu)
 
 	-- If there was no override, use the current value
 	return currentIsChecked;
+end
+
+function UnitPopup_UpdateButtonInfo(info)
+	if info.value == "PVP_FLAG" then
+		if C_PvP.IsWarModeActive() or (TALENT_WAR_MODE_BUTTON and TALENT_WAR_MODE_BUTTON:GetWarModeDesired()) then
+			info.hasArrow = nil;
+			info.tooltipTitle = PVP_LABEL_WAR_MODE;
+			info.tooltipInstruction = PVP_WAR_MODE_ENABLED;
+			if (not C_PvP.CanToggleWarMode()) then
+				info.tooltipWarning = UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0] and PVP_WAR_MODE_NOT_NOW_HORDE or PVP_WAR_MODE_NOT_NOW_ALLIANCE;
+			end
+		else
+			info.hasArrow = true;
+		end
+	end
 end
 
 function UnitPopup_AddDropDownButton(info, dropdownMenu, cntButton, buttonIndex, level)
@@ -727,6 +742,14 @@ function UnitPopup_AddDropDownButton(info, dropdownMenu, cntButton, buttonIndex,
 	if info.customFrame then
 		info.customFrame:SetContextData(dropdownMenu);
 	end
+
+	info.tooltipWhileDisabled = cntButton.tooltipWhileDisabled;
+	info.noTooltipWhileEnabled = cntButton.noTooltipWhileEnabled;
+	info.tooltipOnButton = cntButton.tooltipOnButton;
+	info.tooltipInstruction = cntButton.tooltipInstruction;
+	info.tooltipWarning = cntButton.tooltipWarning;
+
+	UnitPopup_UpdateButtonInfo(info);
 
 	UIDropDownMenu_AddButton(info, level);
 end
@@ -1390,8 +1413,8 @@ function UnitPopup_OnUpdate (elapsed)
 						if ( not inParty ) then
 							enable = false;
 						end
-					elseif ( value == "PVP_ENABLE" or value == "PVP_DISABLE") then
-						if ( C_PvP.IsWarModeActive() ) then
+					elseif (value == "PVP_FLAG" or value == "PVP_ENABLE" or value == "PVP_DISABLE") then
+						if ( C_PvP.IsWarModeActive() or (TALENT_WAR_MODE_BUTTON and TALENT_WAR_MODE_BUTTON:GetWarModeDesired()) ) then
 							enable = false;
 						end
 					elseif ( value == "UNINVITE" ) then
