@@ -105,11 +105,10 @@ function GameTooltip_UnitColor(unit)
 	return r, g, b;
 end
 
-function GameTooltip_SetDefaultAnchor(tooltip, parent, updateTooltipFunc)
+function GameTooltip_SetDefaultAnchor(tooltip, parent)
 	tooltip:SetOwner(parent, "ANCHOR_NONE");
 	tooltip:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X - 13, CONTAINER_OFFSET_Y);
 	tooltip.default = 1;
-	tooltip.UpdateTooltip = updateTooltipFunc;
 end
 
 function GameTooltip_SetBasicTooltip(tooltip, text, x, y, wrap)
@@ -452,7 +451,6 @@ function GameTooltip_OnHide(self)
 	self.needsReset = true;
 	GameTooltip_SetBackdropStyle(self, self.IsEmbedded and GAME_TOOLTIP_BACKDROP_STYLE_EMBEDDED or GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT);
 	self.default = nil;
-	self.UpdateTooltip = nil;
 	self.overrideComparisonAnchorFrame = nil;
 	self.overrideComparisonAnchorSide = nil;
 	GameTooltip_ClearMoney(self);

@@ -277,8 +277,10 @@ function ChannelFrameMixin:QueueVoiceChannelCommand(cmd)
 		self.queuedVoiceChannelCommands = {};
 	end
 
-	table.insert(self.queuedVoiceChannelCommands, cmd);
-	C_VoiceChat.Login(); -- May already be in-flight, doesn't matter.
+	local statusCode = C_VoiceChat.Login();
+	if statusCode == Enum.VoiceChatStatusCode.OperationPending then
+		table.insert(self.queuedVoiceChannelCommands, cmd);
+	end
 end
 
 function ChannelFrameMixin:TryExecuteCommand(cmd)

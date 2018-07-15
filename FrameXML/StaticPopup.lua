@@ -1490,12 +1490,6 @@ StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
 		end
 		SetupLockOnDeclineButtonAndEscape(self, declineTimeLeft);
 	end,
-	OnHide = function(self)
-		if (self.ticker) then
-			self.ticker:Cancel();
-		end
-		self.ticker = nil;
-	end,
 	OnAccept = function(self)
 		AcceptResurrect();
 	end,

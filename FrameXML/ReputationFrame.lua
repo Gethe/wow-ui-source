@@ -384,13 +384,15 @@ end
 
 function ReputationParagonWatchBar_OnEnter(self)
 	if C_Reputation.IsFactionParagon(self.factionID) then
-		GameTooltip_SetDefaultAnchor(EmbeddedItemTooltip, UIParent, ReputationParagonFrame_SetupParagonTooltip);
+		self.UpdateTooltip = ReputationParagonFrame_SetupParagonTooltip;
+		GameTooltip_SetDefaultAnchor(EmbeddedItemTooltip, self);
 		ReputationParagonFrame_SetupParagonTooltip(self);
 	end
 end
 
 function ReputationParagonWatchBar_OnLeave(self)
 	EmbeddedItemTooltip:Hide();
+	self.UpdateTooltip = nil;
 end
 
 function ReputationParagonFrame_OnEnter(self)

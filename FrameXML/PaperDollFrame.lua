@@ -1292,14 +1292,14 @@ function PaperDollFrame_SetItemLevel(statFrame, unit)
 	local avgItemLevel, avgItemLevelEquipped = GetAverageItemLevel();
 	local minItemLevel = C_PaperDollInfo.GetMinItemLevel();
 
-	local displayItemLevel = math.max(minItemLevel or 0, avgItemLevel);
+	local displayItemLevel = math.max(minItemLevel or 0, avgItemLevelEquipped);
 	
 	displayItemLevel = floor(displayItemLevel);
-	avgItemLevelEquipped = floor(avgItemLevelEquipped);
+	avgItemLevel = floor(avgItemLevel);
 
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_AVERAGE_ITEM_LEVEL, displayItemLevel, false, displayItemLevel);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_AVERAGE_ITEM_LEVEL).." "..displayItemLevel;
-	if ( displayItemLevel ~= avgItemLevelEquipped ) then
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_AVERAGE_ITEM_LEVEL).." "..avgItemLevel;
+	if ( displayItemLevel ~= avgItemLevel ) then
 		statFrame.tooltip = statFrame.tooltip .. "  " .. format(STAT_AVERAGE_ITEM_LEVEL_EQUIPPED, avgItemLevelEquipped);
 	end
 	statFrame.tooltip = statFrame.tooltip .. FONT_COLOR_CODE_CLOSE;

@@ -1232,11 +1232,6 @@ VideoData["Advanced_StereoEnabled"]={
 	tooltip = OPTION_TOOLTIP_ENABLE_STEREO_VIDEO,
 }
 
-VideoData["Advanced_ShowHDModels"]={
-	name = SHOW_HD_MODELS_TEXT;
-	tooltip = OPTION_TOOLTIP_SHOW_HD_MODELS,
-}
-
 VideoData["Advanced_MultisampleAlphaTest"]={
 	name = MULTISAMPLE_ALPHA_TEST,
 	description = OPTION_TOOLTIP_MULTISAMPLE_ALPHA_TEST,

@@ -506,7 +506,7 @@ function CommunitiesMemberListMixin:RefreshLayout()
 end
 
 function CommunitiesMemberListMixin:OnEvent(event, ...)
-	if event == "CLUB_MEMBER_ADDED" or event == "CLUB_MEMBER_REMOVED" or event == "CLUB_MEMBER_UPDATED" or event == "VOICE_CHAT_CHANNEL_JOINED" or event == "VOICE_CHAT_CHANNEL_REMOVED" then
+	if event == "CLUB_MEMBER_ADDED" or event == "CLUB_MEMBER_REMOVED" or event == "CLUB_MEMBER_UPDATED" then
 		local clubId, memberId = ...;
 		if clubId == self:GetSelectedClubId() then
 			self:MarkMemberListDirty();
@@ -514,6 +514,16 @@ function CommunitiesMemberListMixin:OnEvent(event, ...)
 			if event == "CLUB_MEMBER_ADDED" then
 				self:RemoveInvitation(memberId);
 			end
+		end
+	elseif event == "VOICE_CHAT_CHANNEL_JOINED" then
+		local _, _, channelType, clubId, streamId = ...;
+		if channelType == Enum.ChatChannelType.Communities and clubId == self:GetSelectedClubId() and streamId == self:GetSelectedStreamId() then
+			self:MarkMemberListDirty();
+		end
+	elseif event == "VOICE_CHAT_CHANNEL_REMOVED" then
+		local _, voiceChannelID = ...;
+		if voiceChannelID == self:GetVoiceChannelID() then
+			self:MarkMemberListDirty();
 		end
 	elseif event == "VOICE_CHAT_CHANNEL_ACTIVATED" or event == "VOICE_CHAT_CHANNEL_DEACTIVATED" then
 		local voiceChannelID = ...;

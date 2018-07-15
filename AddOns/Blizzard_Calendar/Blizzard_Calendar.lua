@@ -3680,6 +3680,7 @@ function CalendarCreateEventFrame_Update()
 		C_Calendar.EventSetType(CalendarCreateEventFrame.selectedEventType);
 		-- reset event texture (must come after event type)
 		CalendarCreateEventFrame.selectedTextureIndex = nil;
+		CalendarCreateEventFrame.calendarType = nil;
 		CalendarCreateEventTexture_Update();
 		-- reset the community selected
 		UIDropDownMenu_SetSelectedValue(CalendarCreateEventCommunityDropDown, nil);
@@ -3687,13 +3688,6 @@ function CalendarCreateEventFrame_Update()
 		-- hide the creator and the community name
 		CalendarCreateEventCreatorName:Hide();
 		CalendarCreateEventCommunityName:Hide();
-
-		if(CalendarCreateEventTextureName:IsShown()) then
-			CalendarCreateEventTextureName:SetPoint("TOPLEFT", CalendarCreateEventIcon, "TOPRIGHT", 5, 0)
-			CalendarCreateEventDateLabel:SetPoint("TOPLEFT", CalendarCreateEventTextureName, "BOTTOMLEFT")
-		else
-			CalendarCreateEventDateLabel:SetPoint("TOPLEFT", CalendarCreateEventIcon, "TOPRIGHT", 5, 0)
-		end
 
 		local calendarType = C_Calendar.EventGetCalendarType();
 
@@ -3774,6 +3768,7 @@ function CalendarCreateEventFrame_Update()
 		CalendarCreateEvent_UpdateEventType();
 		-- reset event texture (must come after event type)
 		CalendarCreateEventFrame.selectedTextureIndex = eventInfo.textureIndex;
+		CalendarCreateEventFrame.calendarType = eventInfo.calendarType;
 		CalendarCreateEventTexture_Update();
 		-- update the creator (must come after event texture)
 		CalendarCreateEventCreatorName:SetFormattedText(CALENDAR_EVENT_CREATORNAME, _CalendarFrame_SafeGetName(eventInfo.creator));
@@ -3782,24 +3777,15 @@ function CalendarCreateEventFrame_Update()
 		--Hide the communitySelector
 		CalendarCreateEventCommunityDropDown:SetShown(false);
 
-		if(CalendarCreateEventTextureName:IsShown()) then
-			CalendarCreateEventCreatorName:SetPoint("TOPLEFT", CalendarCreateEventTextureName, "BOTTOMLEFT")
-		else
-			CalendarCreateEventCreatorName:SetPoint("TOPLEFT", CalendarCreateEventCommunityName, "BOTTOMLEFT")
-		end
-		CalendarCreateEventDateLabel:SetPoint("TOPLEFT", CalendarCreateEventCreatorName, "BOTTOMLEFT")
-
-		if(eventInfo.calendarType == "COMMUNITY_EVENT" or eventInfo.calendarType == "GUILD_EVENT") then
+		if eventInfo.calendarType == "COMMUNITY_EVENT" or eventInfo.calendarType == "GUILD_EVENT" then
 			CalendarCreateEventCommunityName:Show();
 			CalendarCreateEventCommunityName:SetText(eventInfo.communityName)
-			CalendarCreateEventTextureName:SetPoint("TOPLEFT", CalendarCreateEventCommunityName, "BOTTOMLEFT")
 			if(eventInfo.calendarType == "GUILD_EVENT") then
 				CalendarCreateEventCommunityName:SetTextColor(GREEN_FONT_COLOR:GetRGB())
 			else
 				CalendarCreateEventCommunityName:SetTextColor(NORMAL_FONT_COLOR:GetRGB())
 			end
 		else
-			CalendarCreateEventTextureName:SetPoint("TOPLEFT", CalendarCreateEventIcon, "TOPRIGHT", 5, 0)
 			CalendarCreateEventCommunityName:Hide();
 		end
 
@@ -3871,6 +3857,8 @@ function CalendarCreateEventTexture_Update()
 	local eventType = CalendarCreateEventFrame.selectedEventType;
 	local textureIndex = CalendarCreateEventFrame.selectedTextureIndex;
 
+	local isGuildOrCommunityEvent = CalendarCreateEventFrame.calendarType == "COMMUNITY_EVENT" or CalendarCreateEventFrame.calendarType == "GUILD_EVENT";
+
 	CalendarCreateEventIcon:SetTexture();
 	local tcoords = CALENDAR_EVENTTYPE_TCOORDS[eventType];
 	CalendarCreateEventIcon:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
@@ -3881,8 +3869,19 @@ function CalendarCreateEventTexture_Update()
 		CalendarCreateEventTextureName:SetText(GetDungeonNameWithDifficulty(name, difficultyInfo and difficultyInfo.difficultyName or eventTex.difficultyName));
 		CalendarCreateEventTextureName:Show();
 
-		CalendarCreateEventTextureName:SetPoint("TOPLEFT", CalendarCreateEventIcon, "TOPRIGHT", 5, 0)
-		CalendarCreateEventDateLabel:SetPoint("TOPLEFT", CalendarCreateEventTextureName, "BOTTOMLEFT")
+		if isGuildOrCommunityEvent then
+			CalendarCreateEventTextureName:SetPoint("TOPLEFT", CalendarCreateEventCommunityName, "BOTTOMLEFT");
+		else
+			CalendarCreateEventTextureName:SetPoint("TOPLEFT", CalendarCreateEventIcon, "TOPRIGHT", 5, 0);
+		end
+
+
+		if CalendarCreateEventFrame.mode == "edit" then
+			CalendarCreateEventCreatorName:SetPoint("TOPLEFT", CalendarCreateEventTextureName, "BOTTOMLEFT");
+			CalendarCreateEventDateLabel:SetPoint("TOPLEFT", CalendarCreateEventCreatorName, "BOTTOMLEFT");
+		else
+			CalendarCreateEventDateLabel:SetPoint("TOPLEFT", CalendarCreateEventTextureName, "BOTTOMLEFT");
+		end
 
 		-- set the eventTex texture
 		if ( eventTex.texture ) then
@@ -3893,7 +3892,12 @@ function CalendarCreateEventTexture_Update()
 	else
 		CalendarCreateEventTextureName:Hide();
 
-		CalendarCreateEventDateLabel:SetPoint("TOPLEFT", CalendarCreateEventIcon, "TOPRIGHT", 5, 0)
+		if CalendarCreateEventFrame.mode == "edit" then
+			CalendarCreateEventCreatorName:SetPoint("TOPLEFT", CalendarCreateEventIcon, "TOPRIGHT", 5, 0);
+			CalendarCreateEventDateLabel:SetPoint("TOPLEFT", CalendarCreateEventCreatorName, "BOTTOMLEFT");
+		else
+			CalendarCreateEventDateLabel:SetPoint("TOPLEFT", CalendarCreateEventIcon, "TOPRIGHT", 5, 0);
+		end
 
 		CalendarCreateEventIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURES[eventType]);
 	end

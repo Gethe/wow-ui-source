@@ -3472,11 +3472,14 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			if ( isCommunityType ) then
 				local isBattleNetCommunity = bnetIDAccount ~= nil and bnetIDAccount ~= 0;
 				local messageInfo, clubId, streamId, clubType = C_Club.GetInfoFromLastCommunityChatLine();
-
-				if ( isBattleNetCommunity ) then
-					playerLink = GetBNPlayerCommunityLink(playerName, playerLinkDisplayText, bnetIDAccount, clubId, streamId, messageInfo.messageId.epoch, messageInfo.messageId.position);
+				if (messageInfo ~= nil) then
+					if ( isBattleNetCommunity ) then
+						playerLink = GetBNPlayerCommunityLink(playerName, playerLinkDisplayText, bnetIDAccount, clubId, streamId, messageInfo.messageId.epoch, messageInfo.messageId.position);
+					else
+						playerLink = GetPlayerCommunityLink(playerName, playerLinkDisplayText, clubId, streamId, messageInfo.messageId.epoch, messageInfo.messageId.position);
+					end
 				else
-					playerLink = GetPlayerCommunityLink(playerName, playerLinkDisplayText, clubId, streamId, messageInfo.messageId.epoch, messageInfo.messageId.position);
+					playerLink = playerLinkDisplayText;
 				end
 			else
 				if ( type == "BN_WHISPER" or type == "BN_WHISPER_INFORM" ) then
