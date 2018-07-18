@@ -127,7 +127,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontHighlight">
+				<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontHighlight" maxlines="3">
 					<Size x="95" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.BG" x="10"/>
@@ -157,11 +157,20 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconOverlay" hidden="true">
+					<Size x="42" y="42"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
 				<Alpha childKey="Icon" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="IconBorder" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="IconOverlay" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="ItemBurst" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="ItemBurst" duration="0.2" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="0.9" toScaleY="0.9"/>
 				<Alpha childKey="ItemBurst" startDelay="0.2" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
@@ -192,6 +201,9 @@
 			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconOverlay" hidden="true" setAllPoints="true"/>
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontHighlight" hidden="true">
@@ -943,11 +955,6 @@
 				</Frames>
 			</Frame>
 		</ScrollChild>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseUp method="OnMouseUp"/>
-		</Scripts>
 		<Frames>
 			<Frame parentKey="UpgradeFrame" inherits="GarrisonFollowerModelUpgradeTemplate">
 				<Anchors>
@@ -1511,7 +1518,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="GarrisonMissionMechanicTooltip" inherits="GameTooltipTemplate" frameStrata="TOOLTIP">
+	<GameTooltip name="GarrisonMissionMechanicTooltip" inherits="GameTooltipTemplate" frameStrata="TOOLTIP">
 		<Size x="280" y="200"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -1544,9 +1551,9 @@
 				</FontString>
 			</Layer>
 		</Layers>
-	</Frame>
+	</GameTooltip>
 
-	<Frame name="GarrisonMissionMechanicFollowerCounterTooltip" inherits="GameTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP">
+	<GameTooltip name="GarrisonMissionMechanicFollowerCounterTooltip" inherits="GameTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP">
 		<Size x="280" y="250"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -1601,6 +1608,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-	</Frame>
+	</GameTooltip>
 
 </Ui>

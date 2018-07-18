@@ -1,0 +1,39 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="WarfrontsPartyPoseFrame" toplevel="true" parent="UIParent" inherits="PartyPoseFrameTemplate" mixin="WarfrontsPartyPoseMixin">
+		<Anchors>
+			<Anchor point="CENTER" x="5" y="5"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="Topper">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ModelScene parentKey="ModelScene" useParentLevel="true" inherits="PartyPoseModelFrameTemplate" />
+			<Button parentKey="LeaveButton" inherits="UIPanelButtonNoTooltipResizeToFitTemplate">
+				<KeyValues>
+					<KeyValue key="minimumWidth" value="164" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ModelScene" x="-20" y="-45"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						LeaveInstanceParty();
+						HideUIPanel(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

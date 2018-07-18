@@ -1,0 +1,261 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="GuildRewards.lua"/>
+<!--
+*******************************************************************************
+	Templates
+*******************************************************************************
+-->
+	<Frame name="GuildAchievementPointDisplayTemplate" mixin="GuildAchievementPointDisplayMixin" virtual="true">
+		<Size x="1" y="36"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon" file="Interface\AchievementFrame\UI-Achievement-Shields-NoPoints">
+					<Size x="28" y="28"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right=".5" top="0.5" bottom="1.0"/>
+				</Texture>
+				<FontString parentKey="SumText" inherits="GameFontNormalLarge">
+					<Size x="0" y="28"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="LEFT" x="-4" y="0"/>
+					</Anchors>
+					<Size x="0" y="0"/>
+					<Color r="0" g="1" b="0"/>
+				</FontString>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="Highlight" atlas="PetJournal-PetBattleAchievementGlow" alphaMode="ADD">
+					<Size x="0" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.SumText" relativePoint="LEFT" x="-14" y="2"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="14" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Frame>
+	
+	<Button name="GuildRewardsTutorialButtonTemplate" virtual="true">
+		<Size x="30" y="30"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="I" file="Interface\common\help-i" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\common\help-i" alphaMode="ADD" setAllPoints="true" hidden="true">
+			<Color r="1" g="1" b="1" a=".2"/>
+		</HighlightTexture>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -8, -8);
+				local wrap = true;
+				GameTooltip:SetText(GUILD_REWARDS_VISIT_VENDOR, nil, nil, nil, nil, wrap);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Button>
+	
+	<Frame name="CommunitiesGuildProgressBarTemplate" mixin="CommunitiesGuildFactionBarMixin" virtual="true">
+		<Size x="264" y="20"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Left" file="Interface\GuildFrame\GuildFrame">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.60742188" right="0.62500000" top="0.78710938" bottom="0.82226563"/>
+				</Texture>
+				<Texture parentKey="Right" file="Interface\GuildFrame\GuildFrame">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.60742188" right="0.62500000" top="0.82617188" bottom="0.86132813"/>
+				</Texture>
+				<Texture parentKey="Middle" file="Interface\GuildFrame\GuildFrame">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.60742188" right="0.62500000" top="0.74804688" bottom="0.78320313"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" file="Interface\GuildFrame\GuildFrame">
+					<Size x="0" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="LEFT" x="0" y="0"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.39843750" right="0.41210938" top="0.96875000" bottom="0.99609375"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Progress" file="Interface\TargetingFrame\UI-StatusBar">
+					<Size x="1" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="LEFT" x="1" y="0"/>
+					</Anchors>
+					<Color r="0.224" g="0.396" b="0.839"/>
+				</Texture>
+				<Texture parentKey="Shadow" file="Interface\GuildFrame\GuildFrame">
+					<Size x="9" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Progress" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.41601563" right="0.42480469" top="0.88671875" bottom="0.91406250"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<FontString parentKey="Label" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="4"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEnter method="OnEnter"/>
+			<OnEvent method="OnEvent"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="CommunitiesGuildRewardsButtonTemplate" virtual="true">
+		<Size x="289" y="47"/>
+		<Frames>
+			<Frame name="$parentMoneyFrame" parentKey="Money" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="5" y="-7"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "STATIC");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-6"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" >
+					<Size x="0" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="48" y="-7"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Money" relativePoint="LEFT" x="-2" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SubText" inherits="SystemFont_Shadow_Small" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="240" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" x="48" y="-8"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Lock" file="Interface\GuildFrame\GuildFrame" hidden="true">
+					<Size x="17" y="21"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.51660156" right="0.53320313" top="0.92578125" bottom="0.96679688"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="DisabledBG" hidden="true" alphaMode="MOD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+					<Color r="0.55" g="0.55" b="0.55" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalTexture file="Interface\ClassTrainerFrame\TrainerTextures">
+			<TexCoords left="0.00195313" right="0.57421875" top="0.65820313" bottom="0.75000000"/>
+		</NormalTexture>
+		<HighlightTexture name="$parentHighlight" file="Interface\ClassTrainerFrame\TrainerTextures" alphaMode="ADD">
+			<TexCoords left="0.00195313" right="0.57421875" top="0.75390625" bottom="0.84570313"/>
+		</HighlightTexture>	
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnEnter function="CommunitiesGuildRewardsButton_OnEnter"/>
+			<OnLeave function="CommunitiesGuildRewardsButton_OnLeave"/>
+			<OnClick function="CommunitiesGuildRewardsButton_OnClick"/> 
+		</Scripts>
+	</Button>
+<!--
+*******************************************************************************
+	Rewards panel
+*******************************************************************************
+-->
+	<Frame name="CommunitiesGuildRewardsFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Bg" file="Interface\ClassTrainerFrame\TrainerTextures">
+					<Size x="300" y="333"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
+					</Anchors>
+					<TexCoords left="0" right="0.587890625" top="0" bottom="0.65625"/>
+				</Texture>
+				<FontString parentKey="TitleText" inherits="GameFontNormalMed1" justifyH="LEFT" text="GUILD_REWARDS_TITLE">
+					<Size x="0" y="38"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="35"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame name="$parentRewards" parentKey="RewardsContainer" inherits="HybridScrollFrameTemplate">
+				<Size x="292" y="306"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-6"/>
+					<Anchor point="BOTTOMRIGHT" x="-4" y="0"/>
+				</Anchors>
+				<Frames>
+					<Slider inherits="HybridScrollBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="5" y="-9"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="5" y="10"/>
+						</Anchors>
+					</Slider>
+				</Frames>
+			</ScrollFrame>
+			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+				<Size x="10" y="10"/>
+				<Scripts>
+					<OnLoad function="CommunitiesGuildRewardsDropDown_OnLoad"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="CommunitiesGuildRewardsFrame_OnLoad"/>
+			<OnShow function="CommunitiesGuildRewardsFrame_OnShow"/>
+			<OnEvent function="CommunitiesGuildRewardsFrame_OnEvent"/>
+			<OnHide function="CommunitiesGuildRewardsFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

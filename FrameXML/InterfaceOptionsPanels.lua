@@ -76,10 +76,8 @@ local function InterfaceOptionsPanel_DefaultControl (control)
 	end
 end
 
-local function InterfaceOptionsPanel_Okay (self)
-	for _, control in SecureNext, self.controls do
-		securecall(BlizzardOptionsPanel_OkayControl, control);
-	end
+local function InterfaceOptionsPanel_Okay (self, perControlCallback)
+	BlizzardOptionsPanel_Okay(self, perControlCallback);
 end
 
 function InterfaceOptionsPanel_Cancel (self)
@@ -105,14 +103,14 @@ function InterfaceOptionsPanel_Default (self)
 	end
 end
 
-function InterfaceOptionsPanel_Refresh (self)
-	for _, control in SecureNext, self.controls do
-		securecall(BlizzardOptionsPanel_RefreshControl, control);
-		-- record values so we can cancel back to this state
-		control.oldValue = control.value;
-	end
+local function RefreshCallback(panel, control)
+	-- record values so we can cancel back to this state
+	control.oldValue = control.value;
 end
 
+function InterfaceOptionsPanel_Refresh (self)
+	BlizzardOptionsPanel_Refresh(self, RefreshCallback);
+end
 
 function InterfaceOptionsPanel_OnLoad (self)
 	BlizzardOptionsPanel_OnLoad(self, nil, InterfaceOptionsPanel_Cancel, InterfaceOptionsPanel_Default, InterfaceOptionsPanel_Refresh);
@@ -1130,6 +1128,7 @@ ActionBarsPanelOptions = {
 	bottomRightActionBar = { text = "SHOW_MULTIBAR2_TEXT", default = "0" },
 	rightActionBar = { text = "SHOW_MULTIBAR3_TEXT", default = "0" },
 	rightTwoActionBar = { text = "SHOW_MULTIBAR4_TEXT", default = "0" },
+	multiBarRightVerticalLayout = { text = "STACK_RIGHT_BARS", default = "0" },
 	lockActionBars = { text = "LOCK_ACTIONBAR_TEXT" },
 	alwaysShowActionBars = { text = "ALWAYS_SHOW_MULTIBARS_TEXT" },
 	countdownForCooldowns = { text = "COUNTDOWN_FOR_COOLDOWNS_TEXT" },
@@ -1184,6 +1183,7 @@ function InterfaceOptions_UpdateMultiActionBars ()
 	SetActionBarToggles(not not SHOW_MULTI_ACTIONBAR_1, not not SHOW_MULTI_ACTIONBAR_2, not not SHOW_MULTI_ACTIONBAR_3, not not SHOW_MULTI_ACTIONBAR_4, not not ALWAYS_SHOW_MULTIBARS);
 	MultiActionBar_Update();
 	UIParent_ManageFramePositions();
+	StatusTrackingBarManager:UpdateBarTicks(); 
 end
 
 function InterfaceOptionsActionBarsPanelPickupActionKeyDropDown_OnEvent (self, event, ...)
@@ -1835,6 +1835,7 @@ MousePanelOptions = {
 	autointeract = { text = "CLICK_TO_MOVE" },
 	mouseSpeed = { text = "MOUSE_SENSITIVITY", minValue = 0.5, maxValue = 1.5, valueStep = 0.05 },
 	cameraYawMoveSpeed = { text = "MOUSE_LOOK_SPEED", minValue = 90, maxValue = 270, valueStep = 10 },
+	ClipCursor = { text = "LOCK_CURSOR" },
 }
 
 function InterfaceOptionsMousePanelClickMoveStyleDropDown_OnEvent(self, event, ...)

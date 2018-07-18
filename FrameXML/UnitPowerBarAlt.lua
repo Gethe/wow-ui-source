@@ -76,7 +76,7 @@ function UnitPowerBarAlt_OnEvent(self, event, ...)
 		if ( arg1 == self.unit ) then
 			UnitPowerBarAlt_UpdateAll(self);
 		end
-	elseif ( event == "UNIT_POWER" ) then
+	elseif ( event == "UNIT_POWER_UPDATE" ) then
 		if ( arg1 == self.unit and arg2 == "ALTERNATE" ) then
 			local barType, minPower = UnitAlternatePowerInfo(self.unit);
 			local currentPower = UnitPower(self.unit, ALTERNATE_POWER_INDEX);
@@ -203,7 +203,7 @@ function UnitPowerBarAlt_SetUp(self, barID)
 		self.flash:SetBlendMode("ADD");
 	end
 	
-	self:RegisterUnitEvent("UNIT_POWER", self.unit);
+	self:RegisterUnitEvent("UNIT_POWER_UPDATE", self.unit);
 	self:RegisterUnitEvent("UNIT_MAXPOWER", self.unit);
 end
 
@@ -213,7 +213,7 @@ function UnitPowerBarAlt_TearDown(self)
 	
 	self.displayedValue = nil;
 	
-	self:UnregisterEvent("UNIT_POWER");
+	self:UnregisterEvent("UNIT_POWER_UPDATE");
 	self:UnregisterEvent("UNIT_MAXPOWER");
 end
 
@@ -520,7 +520,7 @@ function CounterBar_SetUp(self)
 
 	local maxValue = UnitPowerMax(self.unit, ALTERNATE_POWER_INDEX);
 	CounterBar_SetStyle(self, useFactional, animNumbers, maxValue);
-	self:RegisterEvent("UNIT_POWER");
+	self:RegisterEvent("UNIT_POWER_UPDATE");
 	self:RegisterEvent("UNIT_MAXPOWER");
 	self:Show();
 end

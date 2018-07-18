@@ -1,0 +1,13 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Button name="VoiceActivityNotificationRosterTemplate" inherits="VoiceActivityNotificationBaseTemplate" virtual="true">
+		<Size x="16" y="16"/>
+		<Frames>
+			<Frame parentKey="Volume" inherits="VoiceActivityVolumeTemplate">
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Button>
+</Ui>

@@ -159,7 +159,6 @@ VideoData["Display_DisplayModeDropDown"]={
 		[1] = {
 			text = VIDEO_OPTIONS_WINDOWED,
 			cvars =	{
-				gxWindow = 1,
 				gxMaximize = 0,
 			},
 			windowed = true;
@@ -168,27 +167,14 @@ VideoData["Display_DisplayModeDropDown"]={
 		[2] = {
 			text = VIDEO_OPTIONS_WINDOWED_FULLSCREEN,
 			cvars =	{
-				gxWindow = 1,
 				gxMaximize = 1,
-			},
-			windowed = true;
-			fullscreen = true;
-		},
-		[3] = {
-			text = VIDEO_OPTIONS_FULLSCREEN,
-			cvars =	{
-				gxWindow = 0,
-				gxMaximize = 0,
 			},
 			windowed = false;
 			fullscreen = true;
 		},
 	},
-	dependtarget = VideoOptionsDropDownMenu_dependtarget_refreshtable;
 	dependent = {
 		"Display_ResolutionDropDown",
-		"Display_RefreshDropDown",
-		"Advanced_GammaSlider",
 	},
 	GetSafeValue =
 		function(self)
@@ -239,15 +225,13 @@ VideoData["Display_PrimaryMonitorDropDown"]={
 	dependent = {
 		"Display_DisplayModeDropDown",
 		"Display_ResolutionDropDown",	--resolutions may disappear when we change the monitor
-		"Display_RefreshDropDown",
-		"Advanced_GammaSlider",
 	},
 	landscape =
 		function(self)
 			local ratio = GetMonitorAspectRatio(self:GetValue());
 			return (ratio>=1.0);
 		end,
-	clientRestart = true,
+	restart = true,
 }
 
 -------------------------------------------------------------------------------------------------------
@@ -268,7 +252,7 @@ function DecodeResolution(valueString)
 end
 
 VideoData["Display_ResolutionDropDown"]={
-	name = RESOLUTION;
+	name = WINDOW_SIZE;
 	description = OPTION_TOOLTIP_RESOLUTION,	
 	
 	tablefunction = 
@@ -282,74 +266,25 @@ VideoData["Display_ResolutionDropDown"]={
 	readfilter =
 		function(self, value)
 			local width, height = DecodeResolution(value);
-			if ( width/height > 4/3 ) then
-				value = value.." ".. WIDESCREEN_TAG;
-			end
 			return value;
 		end,
 	SetValue =
 		function (self, value)
 			local width, height = DecodeResolution(self.table[value]);
-			SetScreenResolution(width, height);
+			SetScreenResolution(width, height, Display_DisplayModeDropDown:fullscreenmode());
 		end,
 	doGetValue = 
 		function(self)
-			return GetCurrentResolution(Display_PrimaryMonitorDropDown:GetValue());
+			return GetCurrentResolution(Display_PrimaryMonitorDropDown:GetValue(), Display_DisplayModeDropDown:fullscreenmode());
 		end,
-	dependtarget = VideoOptionsDropDownMenu_dependtarget_refreshtable,
-	dependent = {
-		"Display_RefreshDropDown"
-	},
 	onrefresh =
 	function(self)
-		if(Display_DisplayModeDropDown:windowedmode() and Display_DisplayModeDropDown:fullscreenmode()) then
+		if(Display_DisplayModeDropDown:fullscreenmode()) then
 			VideoOptions_Disable(self);
 		else
 			VideoOptions_Enable(self);
 		end
 	end,
-	lookup = Graphics_TableLookupSafe,
-	restart = true,
-}
-
--------------------------------------------------------------------------------------------------------
-VideoData["Display_RefreshDropDown"]={
-	name = REFRESH_RATE;
-	description = OPTION_TOOLTIP_REFRESH_RATE,
-	
-	TABLENEXT = 2;
-	tablefunction = 
-		function()
-			-- get refresh rates for the currently selected resolution
-			local x, y = Display_ResolutionDropDown:getValues();
-			local monitor = Display_PrimaryMonitorDropDown:GetValue();
-			return GetRefreshRates(x, y, monitor);
-		end,
-	readfilter =
-		function(self, numer, denom)
-			return string.format("%.1f", numer / denom) .. HERTZ;
-		end,
-	SetValue = 
-		function (self, value)
-			local x, y = Display_ResolutionDropDown:getValues();
-			local monitor = Display_PrimaryMonitorDropDown:GetValue();
-			SetRefresh(value, x, y, monitor);
-		end,
-	doGetValue = 
-		function ()
-			local x, y = Display_ResolutionDropDown:getValues();
-			local monitor = Display_PrimaryMonitorDropDown:GetValue();
-			return GetCurrentRefresh(x, y, monitor);
-		end,
-	dependtarget = VideoOptionsDropDownMenu_dependtarget_refreshtable,
-	onrefresh =
-		function(self)
-			if(Display_DisplayModeDropDown:windowedmode()) then
-				VideoOptions_Disable(self);
-			else
-				VideoOptions_Enable(self);
-			end
-		end,
 	lookup = Graphics_TableLookupSafe,
 	restart = true,
 }
@@ -363,13 +298,13 @@ VideoData["Display_VerticalSyncDropDown"]={
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
 			cvars =	{
-				gxVSync = 0,
+				vsync = 0,
 			},
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_ENABLED,
 			cvars =	{
-				gxVSync = 1,
+				vsync = 1,
 			},
 		},
 	},
@@ -387,7 +322,6 @@ local function GenerateMSAAData(data, advanced, ...)
 				text = advanced and ADVANCED_ANTIALIASING_MSAA_FORMAT:format(sampleCount, coverageCount) or ANTIALIASING_MSAA_FORMAT:format(sampleCount),
 				cvars =	{
 					ffxAntiAliasingMode = not advanced and 0 or nil,
-					RenderScale = not advanced and tonumber(GetCVarDefault("RenderScale")) or nil,
 					MSAAQuality = msaaQuality,
 				},
 			};
@@ -405,7 +339,6 @@ local function GenerateFFXAntiAliasingData(data, advanced)
 			text = ANTIALIASING_FXAA_LOW,
 			cvars =	{
 				ffxAntiAliasingMode = 1,
-				RenderScale = not advanced and tonumber(GetCVarDefault("RenderScale")) or nil,
 				MSAAQuality = not advanced and 0 or nil,
 			},
 		};
@@ -414,7 +347,6 @@ local function GenerateFFXAntiAliasingData(data, advanced)
 			text = ANTIALIASING_FXAA_HIGH,
 			cvars =	{
 				ffxAntiAliasingMode = 2,
-				RenderScale = not advanced and tonumber(GetCVarDefault("RenderScale")) or nil,
 				MSAAQuality = not advanced and 0 or nil,
 			},
 		};
@@ -425,7 +357,6 @@ local function GenerateFFXAntiAliasingData(data, advanced)
 			text = ANTIALIASING_CMAA,
 			cvars =	{
 				ffxAntiAliasingMode = 3,
-				RenderScale = not advanced and tonumber(GetCVarDefault("RenderScale")) or nil,
 				MSAAQuality = not advanced and 0 or nil,
 			},
 		};
@@ -441,7 +372,6 @@ local function GenerateAntiAliasingDropDownData()
 		text = VIDEO_OPTIONS_NONE,
 		cvars =	{
 			ffxAntiAliasingMode = 0,
-			RenderScale = tonumber(GetCVarDefault("RenderScale")),
 			MSAAQuality = 0,
 		},
 	};
@@ -449,30 +379,6 @@ local function GenerateAntiAliasingDropDownData()
 	local fxaa, cmaa = GenerateFFXAntiAliasingData(data, false);
 
 	GenerateMSAAData(data, false, MultiSampleAntiAliasingSupported());
-
-	local ssaa2x = GetMaxRenderScale() >= 2.0;
-
-	if ssaa2x then
-		data[#data + 1] = {
-			text = ANTIALIASING_SSAA,
-			cvars =	{
-				ffxAntiAliasingMode = 0,
-				RenderScale = 2,
-				MSAAQuality = 0,
-			},
-		};
-	end
-
-	if cmaa and ssaa2x then
-		data[#data + 1] = {
-			text = ANTIALIASING_SSAA_CMAA,
-			cvars =	{
-				ffxAntiAliasingMode = 3,
-				RenderScale = 2,
-				MSAAQuality = 0,
-			},
-		};
-	end
 
 	return data;
 end
@@ -568,6 +474,9 @@ VideoData["Graphics_ParticleDensityDropDown"]={
 		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
 		},
+		[5] = {
+			text = VIDEO_OPTIONS_ULTRA,
+		},
 	},
 	dependent = {
 		"Graphics_Quality",
@@ -591,6 +500,9 @@ VideoData["RaidGraphics_ParticleDensityDropDown"]={
 		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
 		},
+		[5] = {
+			text = VIDEO_OPTIONS_ULTRA,
+		},
 	},
 	dependent = {
 		"RaidGraphics_Quality",
@@ -610,11 +522,13 @@ VideoData["Graphics_SSAODropDown"]={
 			text = VIDEO_OPTIONS_LOW,
 		},
 		{
+			text = VIDEO_OPTIONS_MEDIUM,
+		},
+		{
 			text = VIDEO_OPTIONS_HIGH,
 		},
 		{
 			text = VIDEO_OPTIONS_ULTRA,
-			tooltip = VIDEO_OPTIONS_SSAO_ULTRA,
 		},
 	},
 
@@ -634,6 +548,9 @@ VideoData["RaidGraphics_SSAODropDown"]={
 		},
 		{
 			text = VIDEO_OPTIONS_LOW,
+		},
+		{
+			text = VIDEO_OPTIONS_MEDIUM,
 		},
 		{
 			text = VIDEO_OPTIONS_HIGH,
@@ -1155,35 +1072,6 @@ VideoData["Advanced_LagDropDown"]={
 	restart = true,
 }
 
--------------------------------------------------------------------------------------------------------
-VideoData["Advanced_HardwareCursorDropDown"]={
-	name = HARDWARE_CURSOR;
-	description = OPTION_TOOLTIP_HARDWARE_CURSOR,
-	
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_DISABLED,
-			cvars =	{
-				gxCursor = 0,
-			},
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_ENABLED,
-			cvars =	{
-				gxCursor = 1,
-			},
-		},
-	},
-	onload =
-		function(self)
-			local anisotropic, pixelShaders, vertexShaders, trilinear, buffering, maxAnisotropy, hardwareCursor = GetVideoCaps();
-			if ( not hardwareCursor ) then
-				VideoOptionsDropDownMenu_DisableDropDown(self);
-			end
-		end,
-	restart = true,
-}
-
 VideoData["Advanced_MultisampleAntiAliasingDropDown"]={
 	name = MULTISAMPLE_ANTIALIASING;
 	description = OPTION_TOOLTIP_ADVANCED_MSAA,
@@ -1271,6 +1159,21 @@ VideoData["Advanced_MaxFPSBKSlider"]={
 		end,
 }
 
+VideoData["Advanced_ContrastSlider"]={
+	name = OPTION_CONTRAST;
+	tooltip = OPTION_TOOLTIP_CONTRAST,
+}
+
+VideoData["Advanced_BrightnessSlider"]={
+	name = OPTIONS_BRIGHTNESS;
+	tooltip = OPTION_TOOLTIP_BRIGHTNESS,
+}
+
+VideoData["Advanced_GammaSlider"]={
+	name = GAMMA;
+	tooltip = OPTION_TOOLTIP_GAMMA,
+}
+
 VideoData["Advanced_MaxFPSCheckBox"]={
 	name = MAXFPS_CHECK;
 	tooltip = OPTION_MAXFPS_CHECK,
@@ -1279,79 +1182,54 @@ VideoData["Advanced_MaxFPSBKCheckBox"]={
 	name = MAXFPSBK_CHECK;
 	tooltip = OPTION_MAXFPSBK_CHECK,
 }
--------------------------------------------------------------------------------------------------------
-VideoData["Advanced_GammaSlider"]={
-	name = GAMMA;
-	tooltip = OPTION_TOOLTIP_GAMMA,
-	type = CONTROLTYPE_SLIDER,
-	onrefresh =
-		function(self)
-			local parent = (self:GetParent()):GetName();
-			local checkbox = _G[parent .. "DesktopGamma"];
-			if((IsMacClient() and not Display_DisplayModeDropDown:fullscreenmode()) or (not IsMacClient() and Display_DisplayModeDropDown:windowedmode())) then
-				self:Hide();
-				checkbox:Hide();
-			else
-				self:Show();
-				checkbox:Show();
-				local value = Advanced_DesktopGamma:GetChecked();
-				if(Advanced_DesktopGamma:GetChecked()) then
-					VideoOptions_Disable(self);
-				else
-					VideoOptions_Enable(self);
-				end
-			end
-		end,
-	initialize = function(self)
-	end,
-}
--------------------------------------------------------------------------------------------------------
-VideoData["Advanced_DesktopGamma"]={
-	name = DESKTOP_GAMMA;
-	tooltip = OPTION_TOOLTIP_DESKTOP_GAMMA,
-	cvar = "desktopGamma",
-	GetValue =
-		function(self)
-			return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-		end,
-	SetValue = 
-		function (self, value)
-			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-			self:SetChecked(value and value ~= 0);
-			Advanced_GammaSlider:onrefresh();
-		end,
-	SetDisplayValue =
-		function (self, value)
-			self:SetValue(value);	-- live updating
-		end,
-	onload =
-		function(self)
-			self:SetChecked(self:GetValue() and self:GetValue() ~= 0);
-		end,
-	onclick = 
-		function(self)
-			if ( self:GetChecked() ) then
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-			else
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-			end
-			BlizzardOptionsPanel_CheckButton_OnClick(self);
-			VideoOptionsValueChanged(self, (self:GetChecked() and 1 or 0));
-			Graphics_EnableApply(self);
-		end,
-}
 VideoData["Advanced_UseUIScale"]={
 	name = USE_UISCALE;
 	tooltip = OPTION_TOOLTIP_USE_UISCALE,
 }
+VideoData["Advanced_AdapterDropDown"]={
+	name = GRAPHICS_CARD,
+	description = OPTION_TOOLTIP_GRAPHICS_CARD,
+	tablefunction = 
+		function(self)
+			self.adapters = C_VideoOptions.GetGxAdapterInfo();
+			local adapterNames = {};
+			for idx, val in ipairs(self.adapters) do
+				if ( val.isExternal ) then
+					adapterNames[idx] = string.format(GX_ADAPTER_EXTERNAL, val.name);
+				elseif ( val.isLowPower ) then
+					adapterNames[idx] = string.format(GX_ADAPTER_LOW_POWER, val.name);
+				else
+					adapterNames[idx] = val.name;
+				end
+			end
+			return GX_ADAPTER_AUTO_DETECT, unpack(adapterNames);
+		end,
+	SetValue =
+		function (self, value)
+			if ( value == 1 ) then
+				SetCVar("gxAdapter", "");
+			else
+				SetCVar("gxAdapter", self.adapters[value - 1].name);
+			end
+		end,
+	doGetValue = 
+		function(self)
+			local adapter = GetCVar("gxAdapter");
+			if ( adapter == "" ) then
+				return 1;
+			end
+			for i = 1, #self.adapters do
+				if (string.lower(self.adapters[i].name) == string.lower(adapter)) then
+					return i + 1;
+				end
+			end
+		end,
+	restart = true,
+}
+
 VideoData["Advanced_StereoEnabled"]={
 	name = ENABLE_STEREO_VIDEO;
 	tooltip = OPTION_TOOLTIP_ENABLE_STEREO_VIDEO,
-}
-
-VideoData["Advanced_ShowHDModels"]={
-	name = SHOW_HD_MODELS_TEXT;
-	tooltip = OPTION_TOOLTIP_SHOW_HD_MODELS,
 }
 
 VideoData["Advanced_MultisampleAlphaTest"]={
@@ -1374,7 +1252,7 @@ VideoData["Advanced_MultisampleAlphaTest"]={
 	},
 }
 
-VideoData["Advanced_RenderScaleSlider"]={
+VideoData["Display_RenderScaleSlider"]={
 	name = RENDER_SCALE;
 	tooltip = OPTION_TOOLTIP_RENDER_SCALE,
 }
@@ -1435,4 +1313,6 @@ VideoData["Advanced_PhysicsInteractionDropDown"]={
 			},
 		},
 	},
+	clientRestart = true,
+	gameRestart = true,
 }

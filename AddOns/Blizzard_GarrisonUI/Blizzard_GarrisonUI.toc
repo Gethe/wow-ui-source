@@ -1,9 +1,9 @@
-## Interface: 70300
+## Interface: 80000
 ## Title: Blizzard Garrison UI
 ## Secure: 1
 ## Author: Blizzard Entertainment
 ## Version: 1.0
-## RequiredDep: Blizzard_GarrisonTemplates
+## RequiredDep: Blizzard_GarrisonTemplates, Blizzard_AdventureMap
 ## LoadOnDemand: 1
 
 Blizzard_GarrisonBuildingUI.xml
@@ -13,4 +13,6 @@ Blizzard_GarrisonLandingPage.xml
 Blizzard_GarrisonCapacitiveDisplay.xml
 Blizzard_GarrisonMonumentUI.xml
 Blizzard_GarrisonRecruiterUI.xml
+Blizzard_OrderHallMissionUI.xml
+Blizzard_BFAMissionUI.xml
 Localization.lua

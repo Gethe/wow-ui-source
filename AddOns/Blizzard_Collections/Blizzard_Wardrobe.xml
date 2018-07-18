@@ -418,7 +418,7 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<EditBox name="$parentSearchBox" parentKey="searchBox" inherits="SearchBoxTemplate" letters="40" motionScriptsWhileDisabled="true">
+			<EditBox name="$parentSearchBox" parentKey="searchBox" inherits="SearchBoxTemplate" letters="40">
 				<Size x="115" y="20"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-107" y="-35"/>
@@ -1132,7 +1132,6 @@
 					<OnShow method="OnShow"/>
 					<OnHide method="OnHide"/>
 					<OnEvent method="OnEvent"/>
-					<OnMouseWheel method="OnMouseWheel"/>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="SetsTransmogFrame" parentArray="ContentFrames" inherits="CollectionsBackgroundTemplate" mixin="WardrobeSetsTransmogMixin" hidden="true">
@@ -1814,7 +1813,7 @@
 							</OnShow>
 						</Scripts>
 					</Frame>
-					<DressUpModel parentKey="Model" enableMouse="true" scale="2.0" inherits="ModelWithControlsTemplate">
+					<DressUpModel parentKey="Model" enableMouse="true" modelScale="2.0" inherits="ModelWithControlsTemplate">
 						<Size x="294" y="488"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="2" y="-4"/>

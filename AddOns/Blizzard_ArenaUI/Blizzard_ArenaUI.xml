@@ -416,14 +416,14 @@
 				</Backdrop> 
 				<Scripts>
 					<OnLoad>
-						self:RegisterEvent("SCRIPT_ARENA_PREP_OPPONENT_SPECIALIZATIONS");
+						self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS");
 						ArenaPrepFrames_UpdateBackground();
 					</OnLoad>
 					<OnShow>
 						self:SetFrameLevel(1);
 					</OnShow>
 					<OnEvent>
-						if ( event == "SCRIPT_ARENA_PREP_OPPONENT_SPECIALIZATIONS" ) then
+						if ( event == "ARENA_PREP_OPPONENT_SPECIALIZATIONS" ) then
 							ArenaPrepFrames_UpdateBackground();
 							OpacityFrameSlider:SetValue(tonumber(GetCVar("partyBackgroundOpacity")));
 							ArenaPrepBackground_SetOpacity();

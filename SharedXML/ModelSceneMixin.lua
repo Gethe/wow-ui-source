@@ -50,6 +50,10 @@ function ModelSceneMixin:ClearScene()
 	C_ModelInfo.ClearActiveModelScene(self);
 end
 
+function ModelSceneMixin:GetModelSceneID()
+	return self.modelSceneID; 
+end
+
 -- Adjusts this scene to mirror a model scene from static data without transition
 function ModelSceneMixin:SetFromModelSceneID(modelSceneID, forceEvenIfSame)
 	local modelSceneType, cameraIDs, actorIDs = C_ModelInfo.GetModelSceneInfoByID(modelSceneID);
@@ -148,9 +152,14 @@ function ModelSceneMixin:ReleaseAllActors()
 	end
 end
 
+local function OnReleased(actorPool, actor)
+	actor:OnReleased();
+	ActorPool_HideAndClearModel(actorPool, actor);
+end
+
 function ModelSceneMixin:AcquireActor()
 	if not self.actorPool then
-		self.actorPool = CreateActorPool(self, self.actorTemplate);
+		self.actorPool = CreateActorPool(self, self.actorTemplate, OnReleased);
 	end
 	return self.actorPool:Acquire();
 end
@@ -220,10 +229,21 @@ function ModelSceneMixin:IsRightMouseButtonDown()
 	return self.isRightButtonDown;
 end
 
+function ModelSceneMixin:Transform3DPointTo2D(x, y, z)
+	self:SynchronizeActiveCamera();
+	return self:Project3DPointTo2D(x, y, z);
+end
+
 -- "private" functions
 function ModelSceneMixin:OnUpdate(elapsed)
 	if self.activeCamera then
 		self.activeCamera:OnUpdate(elapsed);
+	end
+end
+
+function ModelSceneMixin:SynchronizeActiveCamera()
+	if self.activeCamera then
+		self.activeCamera:SynchronizeCamera();
 	end
 end
 

@@ -120,11 +120,12 @@ function Dispatcher:RegisterEvent(event, callback, oneTime)
 	-- Create an empty table if this is the first handler for this event
 	if (self.Events[event] == nil) then
 		self.Events[event] = {};
-		self.EventFrame:RegisterEvent(event);
 
 		-- handle OnUpdate
 		if (event == "OnUpdate") then
 			self.EventFrame:SetScript("OnUpdate", function(frame, elapsed) self:OnEvent("OnUpdate", elapsed) end);
+		else
+			self.EventFrame:RegisterEvent(event);
 		end
 	end
 

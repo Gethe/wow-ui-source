@@ -1,0 +1,191 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_WorldMapTemplates.lua"/>
+
+	<Frame name="WorldMapFloorNavigationFrameTemplate" frameStrata="HIGH" inherits="UIDropDownMenuTemplate" mixin="WorldMapFloorNavigationFrameMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="WorldMapTrackingOptionsButtonTemplate" frameStrata="HIGH" mixin="WorldMapTrackingOptionsButtonMixin" virtual="true">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture atlas="MapCornerShadow-Right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="4" y="4"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="1" bottom="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" file="Interface\Minimap\UI-Minimap-Background">
+					<Size x="25" y="25"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-4"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" file="Interface\Minimap\Tracking\None">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconOverlay" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Border" file="Interface\Minimap\MiniMap-TrackingBorder">
+					<Size x="54" y="54"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" hidden="true"/>
+		</Frames>
+		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="WorldMapNavBarButtonTemplate" inherits="NavButtonTemplate" mixin="WorldMapNavBarButtonMixin" virtual="true"/>
+
+	<Frame name="WorldMapNavBarTemplate" inherits="NavBarTemplate" mixin="WorldMapNavBarMixin" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeKey="$parent.BorderFrame" x="10" y="-23"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER" textureSubLevel="-5">
+				<Texture inherits="UI-Frame-InnerBotLeftCorner" parentKey="InsetBorderBottomLeft">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"  x="-3" y="-3"/>
+					</Anchors>
+				</Texture>
+				<Texture inherits="UI-Frame-InnerBotRight" parentKey="InsetBorderBottomRight">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"  x="3" y="-3"/>
+					</Anchors>
+				</Texture>
+				<Texture inherits="_UI-Frame-InnerBotTile" parentKey="InsetBorderBottom">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBorderBottomRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture inherits="!UI-Frame-InnerLeftTile" parentKey="InsetBorderLeft">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-3" y="0"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture inherits="!UI-Frame-InnerRightTile" parentKey="InsetBorderRight">
+					<Anchors>
+						<Anchor point="TOPRIGHT"  x="3" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBorderBottomRight" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="WorldMapSidePanelToggleTemplate" mixin="WorldMapSidePanelToggleMixin" virtual="true">
+		<Size x="32" y="32"/>
+		<Frames>
+			<Button parentKey="OpenButton" hidden="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="MapCornerShadow-Right" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="2" y="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<NormalTexture atlas="QuestCollapse-Show-Up"/>
+				<PushedTexture atlas="QuestCollapse-Show-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" setAllPoints="true">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</HighlightTexture>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						self:GetParent():OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="CloseButton" hidden="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="MapCornerShadow-Right" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="2" y="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<NormalTexture atlas="QuestCollapse-Hide-Up"/>
+				<PushedTexture atlas="QuestCollapse-Hide-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" setAllPoints="true">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</HighlightTexture>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						self:GetParent():OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="WorldMapZoneTimerTemplate" frameStrata="HIGH" mixin="WorldMapZoneTimerMixin" virtual="true">
+		<Size x="101" y="86" />
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="TimeLabel" inherits="SystemFont_OutlineThick_Huge2" justifyH="CENTER" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="20"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnUpdate method="OnUpdate" />
+		</Scripts>
+	</Frame>
+</Ui>

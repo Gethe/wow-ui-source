@@ -1,16 +1,6 @@
 
 NUM_FACTIONS_DISPLAYED = 15;
 REPUTATIONFRAME_FACTIONHEIGHT = 26;
-FACTION_BAR_COLORS = {
-	[1] = {r = 0.8, g = 0.3, b = 0.22},
-	[2] = {r = 0.8, g = 0.3, b = 0.22},
-	[3] = {r = 0.75, g = 0.27, b = 0},
-	[4] = {r = 0.9, g = 0.7, b = 0},
-	[5] = {r = 0, g = 0.6, b = 0.1},
-	[6] = {r = 0, g = 0.6, b = 0.1},
-	[7] = {r = 0, g = 0.6, b = 0.1},
-	[8] = {r = 0, g = 0.6, b = 0.1},
-};
 MAX_PLAYER_LEVEL = 0;
 REPUTATIONFRAME_ROWSPACING = 23;
 MAX_REPUTATION_REACTION = 8;
@@ -357,19 +347,19 @@ function ShowFriendshipReputationTooltip(friendshipID, parent, anchor)
 	end
 end
 
-function ReputationParagonFrame_SetupParagonTooltip(frame, factionID)
-	ReputationParagonTooltip.owner = frame;
-	ReputationParagonTooltip.factionID = factionID;
+function ReputationParagonFrame_SetupParagonTooltip(frame)
+	EmbeddedItemTooltip.owner = frame;
+	EmbeddedItemTooltip.factionID = frame.factionID;
 
-	local factionName, _, standingID = GetFactionInfoByID(factionID);
+	local factionName, _, standingID = GetFactionInfoByID(frame.factionID);
 	local gender = UnitSex("player");
 	local factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
-	local currentValue, threshold, rewardQuestID, hasRewardPending, tooLowLevelForParagon = C_Reputation.GetFactionParagonInfo(factionID);
+	local currentValue, threshold, rewardQuestID, hasRewardPending, tooLowLevelForParagon = C_Reputation.GetFactionParagonInfo(frame.factionID);
 
 	if ( tooLowLevelForParagon ) then
-		ReputationParagonTooltip:SetText(PARAGON_REPUTATION_TOOLTIP_TEXT_LOW_LEVEL);
+		EmbeddedItemTooltip:SetText(PARAGON_REPUTATION_TOOLTIP_TEXT_LOW_LEVEL);
 	else
-		ReputationParagonTooltip:SetText(factionStandingtext);
+		EmbeddedItemTooltip:SetText(factionStandingtext);
 		local description = PARAGON_REPUTATION_TOOLTIP_TEXT:format(factionName);
 		if ( hasRewardPending ) then
 			local questIndex = GetQuestLogIndexByID(rewardQuestID);
@@ -378,45 +368,42 @@ function ReputationParagonFrame_SetupParagonTooltip(frame, factionID)
 				description = text;
 			end
 		end
-		ReputationParagonTooltip:AddLine(description, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+		EmbeddedItemTooltip:AddLine(description, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
 		if ( not hasRewardPending ) then
-			GameTooltip_InsertFrame(ReputationParagonTooltip, ReputationParagonTooltipStatusBar);
-			ReputationParagonTooltipStatusBar.Bar:SetMinMaxValues(0, threshold);
 			local value = mod(currentValue, threshold);
 			-- show overflow if reward is pending
 			if ( hasRewardPending ) then
 				value = value + threshold;
 			end
-			ReputationParagonTooltipStatusBar.Bar:SetValue(value);
-			ReputationParagonTooltipStatusBar.Bar.Label:SetFormattedText(REPUTATION_PROGRESS_FORMAT, value, threshold);
+			GameTooltip_ShowProgressBar(EmbeddedItemTooltip, 0, threshold, value, REPUTATION_PROGRESS_FORMAT:format(value, threshold));
 		end
-		GameTooltip_AddQuestRewardsToTooltip(ReputationParagonTooltip, rewardQuestID);
+		GameTooltip_AddQuestRewardsToTooltip(EmbeddedItemTooltip, rewardQuestID);
 	end
-	ReputationParagonTooltip:Show();
+	EmbeddedItemTooltip:Show();
 end
 
 function ReputationParagonWatchBar_OnEnter(self)
 	if C_Reputation.IsFactionParagon(self.factionID) then
-		ReputationParagonTooltip:SetParent(self);
-		ReputationParagonTooltip:SetFrameStrata("TOOLTIP");
-		GameTooltip_SetDefaultAnchor(ReputationParagonTooltip, UIParent);
-		ReputationParagonFrame_SetupParagonTooltip(self, self.factionID);
+		self.UpdateTooltip = ReputationParagonFrame_SetupParagonTooltip;
+		GameTooltip_SetDefaultAnchor(EmbeddedItemTooltip, self);
+		ReputationParagonFrame_SetupParagonTooltip(self);
 	end
 end
 
 function ReputationParagonWatchBar_OnLeave(self)
-	ReputationParagonTooltip:Hide();
+	EmbeddedItemTooltip:Hide();
+	self.UpdateTooltip = nil;
 end
 
 function ReputationParagonFrame_OnEnter(self)
-	ReputationParagonTooltip:SetParent(self);
-	ReputationParagonTooltip:SetFrameStrata("TOOLTIP");
-	ReputationParagonTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	ReputationParagonFrame_SetupParagonTooltip(self, self.factionID);
+	EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	self.UpdateTooltip = ReputationParagonFrame_SetupParagonTooltip;
+	ReputationParagonFrame_SetupParagonTooltip(self);
 end
 
 function ReputationParagonFrame_OnLeave(self)
-	ReputationParagonTooltip:Hide();
+	self.UpdateTooltip = nil;
+	EmbeddedItemTooltip:Hide();
 end
 
 function ReputationParagonFrame_OnUpdate(self)
@@ -432,4 +419,15 @@ function ReputationParagonFrame_OnUpdate(self)
 		end
 		self.Glow:SetAlpha(alpha);
 	end
+end
+
+function ReputationDetailMainScreenCheckBox_OnClick(self)
+	if ( self:GetChecked() ) then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		SetWatchedFactionIndex(GetSelectedFaction());
+	else
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		SetWatchedFactionIndex(0);
+	end
+	StatusTrackingBarManager:UpdateBarsShown();
 end

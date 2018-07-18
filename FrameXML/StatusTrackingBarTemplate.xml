@@ -1,0 +1,44 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Frame name="StatusTrackingBarTemplate" frameStrata="MEDIUM" enableMouse="true" hidden="true" virtual="true">
+		<Size x="804" y="11"/>
+		<Frames>
+			<StatusBar parentKey="StatusBar" frameStrata="LOW" drawLayer="BORDER" inherits="AnimatedStatusBarTemplate">
+				<Size x="804" y="8"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="0" y="3"/>
+				</Anchors>
+				<BarTexture parentKey="BarTexture" file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0.58" g="0.0" b="0.55"/>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background">
+							<Color r="0.0" g="0.0" b="0.0" a="0.9"/>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="Underlay" hidden="true" file="Interface\TargetingFrame\UI-StatusBar">
+							<Color r=".502" g=".443" b=".278" />
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="-1">
+						<Texture parentKey="Overlay" hidden="true" atlas="XPBarAnim-OrangeGain" alphaMode="ADD">
+							<Color r=".901" g=".8" b=".601" />
+						</Texture>
+					</Layer>
+				</Layers>
+			</StatusBar>
+			<Frame parentKey="OverlayFrame" frameStrata="HIGH" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="5">
+						<FontString parentKey="Text" inherits="TextStatusBarText" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.StatusBar" relativePoint="CENTER" x="0" y="3"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

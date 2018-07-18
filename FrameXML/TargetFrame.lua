@@ -28,10 +28,10 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	self.statusCounter = 0;
 	self.statusSign = -1;
 	self.unitHPPercent = 1;
-	
+
 	local thisName = self:GetName();
 	self.borderTexture = _G[thisName.."TextureFrameTexture"];
-	self.highLevelTexture = _G[thisName.."TextureFrameHighLevelTexture"];	
+	self.highLevelTexture = _G[thisName.."TextureFrameHighLevelTexture"];
 	self.pvpIcon = _G[thisName.."TextureFramePVPIcon"];
 	self.prestigePortrait = _G[thisName.."TextureFramePrestigePortrait"];
 	self.prestigeBadge = _G[thisName.."TextureFramePrestigeBadge"];
@@ -58,7 +58,7 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	if ( self.showPortrait ) then
 		portraitFrame = _G[thisName.."Portrait"];
 	end
-	
+
 	_G[thisName.."HealthBar"].LeftText = _G[thisName.."TextureFrameHealthBarTextLeft"];
 	_G[thisName.."HealthBar"].RightText = _G[thisName.."TextureFrameHealthBarTextRight"];
 	_G[thisName.."ManaBar"].LeftText = _G[thisName.."TextureFrameManaBarTextLeft"];
@@ -70,9 +70,9 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	                     threatFrame, "player", _G[thisName.."NumericalThreat"],
 						 _G[thisName.."MyHealPredictionBar"], _G[thisName.."OtherHealPredictionBar"],
 						 _G[thisName.."TotalAbsorbBar"], _G[thisName.."TotalAbsorbBarOverlay"], _G[thisName.."TextureFrameOverAbsorbGlow"],
-						 _G[thisName.."TextureFrameOverHealAbsorbGlow"], _G[thisName.."HealAbsorbBar"], 
+						 _G[thisName.."TextureFrameOverHealAbsorbGlow"], _G[thisName.."HealAbsorbBar"],
 						 _G[thisName.."HealAbsorbBarLeftShadow"], _G[thisName.."HealAbsorbBarRightShadow"]);
-						
+
 	TargetFrame_Update(self);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_HEALTH");
@@ -94,10 +94,13 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 
 	local showmenu;
 	if ( menuFunc ) then
-		UIDropDownMenu_Initialize(_G[thisName.."DropDown"], menuFunc, "MENU");
+		local dropdown = _G[thisName.."DropDown"];
+		UIDropDownMenu_SetInitializeFunction(dropdown, menuFunc);
+		UIDropDownMenu_SetDisplayMode(dropdown, "MENU");
+
 		showmenu = function()
-			ToggleDropDownMenu(1, nil, _G[thisName.."DropDown"], thisName, 120, 10);
-		end		
+			ToggleDropDownMenu(1, nil, dropdown, thisName, 120, 10);
+		end
 	end
 	SecureUnitButton_OnLoad(self, self.unit, showmenu);
 end
@@ -109,12 +112,12 @@ function TargetFrame_Update (self)
 		self:Hide();
 	else
 		self:Show();
-		
+
 		-- Moved here to avoid taint from functions below
 		if ( self.totFrame ) then
 			TargetofTarget_Update(self.totFrame);
 		end
-		
+
 		UnitFrame_Update(self);
 		if ( self.showLevel ) then
 			TargetFrame_CheckLevel(self);
@@ -181,7 +184,7 @@ function TargetFrame_OnEvent (self, event, ...)
 		TargetFrame_Update(self);
 		TargetFrame_UpdateRaidTargetIcon(self);
 		CloseDropDownMenus();
-		UIParent_ManageFramePositions();	
+		UIParent_ManageFramePositions();
 	elseif ( event == "UNIT_HEALTH" ) then
 		if ( arg1 == self.unit ) then
 			TargetFrame_CheckDead(self);
@@ -255,7 +258,7 @@ end
 
 function TargetFrame_CheckLevel (self)
 	local targetEffectiveLevel = UnitEffectiveLevel(self.unit);
-	
+
 	if ( UnitIsCorpse(self.unit) ) then
 		self.levelText:Hide();
 		self.highLevelTexture:Show();
@@ -275,13 +278,13 @@ function TargetFrame_CheckLevel (self)
 		else
 			self.levelText:SetVertexColor(1.0, 0.82, 0.0);
 		end
-		
+
 		if ( self.isBossFrame ) then
 			BossTargetFrame_UpdateLevelTextAnchor(self, targetEffectiveLevel);
 		else
 			TargetFrame_UpdateLevelTextAnchor(self, targetEffectiveLevel);
 		end
-		
+
 		self.levelText:Show();
 		self.highLevelTexture:Hide();
 	else
@@ -325,33 +328,15 @@ function TargetFrame_CheckFaction (self)
 	if ( self.showPVP ) then
 		local factionGroup = UnitFactionGroup(self.unit);
 		if ( UnitIsPVPFreeForAll(self.unit) ) then
-			local prestige = UnitPrestige(self.unit);
-			if (prestige > 0) then
-				self.prestigePortrait:SetAtlas("honorsystem-portrait-neutral", false);
-				self.prestigeBadge:SetTexture(GetPrestigeInfo(prestige));
-				self.prestigePortrait:Show();
-				self.prestigeBadge:Show();
-				self.pvpIcon:Hide();
-			else
-				self.prestigePortrait:Hide();
-				self.prestigeBadge:Hide();
-				self.pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA");
-				self.pvpIcon:Show();
-			end
+			self.prestigePortrait:Hide();
+			self.prestigeBadge:Hide();
+			self.pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA");
+			self.pvpIcon:Show();
 		elseif ( factionGroup and factionGroup ~= "Neutral" and UnitIsPVP(self.unit) ) then
-			local prestige = UnitPrestige(self.unit);
-			if (prestige > 0) then
-				self.prestigePortrait:SetAtlas("honorsystem-portrait-"..factionGroup, false);
-				self.prestigeBadge:SetTexture(GetPrestigeInfo(prestige));
-				self.prestigePortrait:Show();
-				self.prestigeBadge:Show();
-				self.pvpIcon:Hide();
-			else
-				self.prestigePortrait:Hide();
-				self.prestigeBadge:Hide();
-				self.pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
-				self.pvpIcon:Show();
-			end
+			self.prestigePortrait:Hide();
+			self.prestigeBadge:Hide();
+			self.pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
+			self.pvpIcon:Show();
 		else
 			self.prestigePortrait:Hide();
 			self.prestigeBadge:Hide();
@@ -369,7 +354,7 @@ function TargetFrame_CheckBattlePet(self)
 		self.petBattleIcon:Hide();
 	end
 end
-	
+
 
 function TargetFrame_CheckClassification (self, forceNormalTexture)
 	local classification = UnitClassification(self.unit);
@@ -400,7 +385,7 @@ function TargetFrame_CheckClassification (self, forceNormalTexture)
 		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame");
 		forceNormalTexture = true;
 	end
-		
+
 	if ( forceNormalTexture ) then
 		self.haveElite = nil;
 		if ( classification == "minus" ) then
@@ -423,7 +408,7 @@ function TargetFrame_CheckClassification (self, forceNormalTexture)
 				self.threatIndicator:SetHeight(93);
 				self.threatIndicator:SetPoint("TOPLEFT", self, "TOPLEFT", -24, 0);
 			end
-		end	
+		end
 	else
 		self.haveElite = true;
 		TargetFrameBackground:SetSize(119,41);
@@ -434,9 +419,9 @@ function TargetFrame_CheckClassification (self, forceNormalTexture)
 			self.threatIndicator:SetWidth(242);
 			self.threatIndicator:SetHeight(112);
 			self.threatIndicator:SetPoint("TOPLEFT", self, "TOPLEFT", -22, 9);
-		end		
+		end
 	end
-	
+
 	if (self.questIcon) then
 		if (UnitIsQuestBoss(self.unit)) then
 			self.questIcon:Show();
@@ -465,7 +450,7 @@ function TargetFrame_OnUpdate (self, elapsed)
 	if ( self.totFrame and self.totFrame:IsShown() ~= UnitExists(self.totFrame.unit) ) then
 		TargetofTarget_Update(self.totFrame);
 	end
-	
+
 	self.elapsed = (self.elapsed or 0) + elapsed;
 	if ( self.elapsed > 0.5 ) then
 		self.elapsed = 0;
@@ -479,7 +464,7 @@ local function ShouldAuraBeLarge(caster)
 	if not caster then
 		return false;
 	end
-	
+
 	for token, value in pairs(PLAYER_UNITS) do
 		if UnitIsUnit(caster, token) or UnitIsOwnerOrControllerOfUnit(token, caster) then
 			return value;
@@ -494,10 +479,10 @@ function TargetFrame_UpdateAuras (self)
 	local playerIsTarget = UnitIsUnit(PlayerFrame.unit, self.unit);
 	local selfName = self:GetName();
 	local canAssist = UnitCanAssist("player", self.unit);
-	
+
 	for i = 1, MAX_TARGET_BUFFS do
-        local buffName, rank, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, _ , spellId, _, _, casterIsPlayer, nameplateShowAll = UnitBuff(self.unit, i, nil);
-        if (buffName) then 
+        local buffName, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, _ , spellId, _, _, casterIsPlayer, nameplateShowAll = UnitBuff(self.unit, i, nil);
+        if (buffName) then
             frameName = selfName.."Buff"..(i);
             frame = _G[frameName];
             if ( not frame ) then
@@ -523,7 +508,7 @@ function TargetFrame_UpdateAuras (self)
                 else
                     frameCount:Hide();
                 end
-                    
+
                 -- Handle cooldowns
                 frameCooldown = _G[frameName.."Cooldown"];
                 CooldownFrame_Set(frameCooldown, expirationTime - duration, duration, duration > 0, true);
@@ -562,13 +547,13 @@ function TargetFrame_UpdateAuras (self)
 	local color;
 	local frameBorder;
 	local numDebuffs = 0;
-	
+
 	local frameNum = 1;
 	local index = 1;
-	
+
 	local maxDebuffs = self.maxDebuffs or MAX_TARGET_DEBUFFS;
 	while ( frameNum <= maxDebuffs and index <= maxDebuffs ) do
-	    local debuffName, rank, icon, count, debuffType, duration, expirationTime, caster, _, _, _, _, _, casterIsPlayer, nameplateShowAll = UnitDebuff(self.unit, index, "INCLUDE_NAME_PLATE_ONLY");
+	    local debuffName, icon, count, debuffType, duration, expirationTime, caster, _, _, _, _, _, casterIsPlayer, nameplateShowAll = UnitDebuff(self.unit, index, "INCLUDE_NAME_PLATE_ONLY");
 		if ( debuffName ) then
 			if ( TargetFrame_ShouldShowDebuffs(self.unit, caster, nameplateShowAll, casterIsPlayer) ) then
 				frameName = selfName.."Debuff"..frameNum;
@@ -612,7 +597,7 @@ function TargetFrame_UpdateAuras (self)
 
 					frame:ClearAllPoints();
 					frame:Show();
-					
+
 					frameNum = frameNum + 1;
 				end
 			end
@@ -621,7 +606,7 @@ function TargetFrame_UpdateAuras (self)
 		end
 		index = index + 1;
 	end
-	
+
 	for i = frameNum, MAX_TARGET_DEBUFFS do
 		local frame = _G[selfName.."Debuff"..i];
 		if ( frame ) then
@@ -630,9 +615,9 @@ function TargetFrame_UpdateAuras (self)
 			break;
 		end
 	end
-	
+
 	self.auraRows = 0;
-	
+
 	local mirrorAurasVertically = false;
 	if ( self.buffsOnTop ) then
 		mirrorAurasVertically = true;
@@ -751,12 +736,12 @@ function TargetFrame_UpdateBuffAnchor(self, buffName, index, numDebuffs, anchorI
 		startY = AURA_START_Y;
 		auraOffsetY = AURA_OFFSET_Y;
 	end
-	
+
 	local buff = _G[buffName..index];
 	if ( index == 1 ) then
 		if ( UnitIsFriend("player", self.unit) or numDebuffs == 0 ) then
 			-- unit is friendly or there are no debuffs...buffs start on top
-			buff:SetPoint(point.."LEFT", self, relativePoint.."LEFT", AURA_START_X, startY);			
+			buff:SetPoint(point.."LEFT", self, relativePoint.."LEFT", AURA_START_X, startY);
 		else
 			-- unit is not friendly and we have debuffs...buffs start on bottom
 			buff:SetPoint(point.."LEFT", self.debuffs, relativePoint.."LEFT", 0, -offsetY);
@@ -782,7 +767,7 @@ end
 function TargetFrame_UpdateDebuffAnchor(self, debuffName, index, numBuffs, anchorIndex, size, offsetX, offsetY, mirrorVertically)
 	local buff = _G[debuffName..index];
 	local isFriend = UnitIsFriend("player", self.unit);
-	
+
 	--For mirroring vertically
 	local point, relativePoint;
 	local startY, auraOffsetY;
@@ -801,7 +786,7 @@ function TargetFrame_UpdateDebuffAnchor(self, debuffName, index, numBuffs, ancho
 		startY = AURA_START_Y;
 		auraOffsetY = AURA_OFFSET_Y;
 	end
-	
+
 	if ( index == 1 ) then
 		if ( isFriend and numBuffs > 0 ) then
 			-- unit is friendly and there are buffs...debuffs start on bottom
@@ -841,14 +826,14 @@ function TargetFrame_HealthUpdate (self, elapsed, unit)
 			local alpha = 255;
 			local counter = self.statusCounter + elapsed;
 			local sign    = self.statusSign;
-	
+
 			if ( counter > 0.5 ) then
 				sign = -sign;
 				self.statusSign = sign;
 			end
 			counter = mod(counter, 0.5);
 			self.statusCounter = counter;
-	
+
 			if ( sign == 1 ) then
 				alpha = (127  + (counter * 256)) / 255;
 			else
@@ -899,7 +884,7 @@ function TargetFrameDropDown_Initialize (self)
 	elseif ( UnitIsBattlePet("target") ) then
 		menu = "BATTLEPET";
 	elseif ( UnitIsOtherPlayersPet("target") ) then
-		menu = "OTHERPET";	
+		menu = "OTHERPET";
 	elseif ( UnitIsPlayer("target") ) then
 		id = UnitInRaid("target");
 		if ( id ) then
@@ -1044,22 +1029,22 @@ function TargetFrame_CreateSpellbar(self, event, boss)
 	self.auraRows = 0;
 	spellbar:RegisterEvent("CVAR_UPDATE");
 	spellbar:RegisterEvent("VARIABLES_LOADED");
-		
+
 	CastingBarFrame_SetUnit(spellbar, self.unit, false, true);
 	if ( event ) then
 		spellbar.updateEvent = event;
 		spellbar:RegisterEvent(event);
 	end
-	
+
 	-- check to see if the castbar should be shown
 	if ( GetCVar("showTargetCastbar") == "0") then
-		spellbar.showCastbar = false;	
-	end	
+		spellbar.showCastbar = false;
+	end
 end
 
 function Target_Spellbar_OnEvent(self, event, ...)
 	local arg1 = ...
-	
+
 	--	Check for target specific events
 	if ( (event == "VARIABLES_LOADED") or ((event == "CVAR_UPDATE") and (arg1 == "SHOW_TARGET_CASTBAR")) ) then
 		if ( GetCVar("showTargetCastbar") == "0") then
@@ -1067,14 +1052,14 @@ function Target_Spellbar_OnEvent(self, event, ...)
 		else
 			self.showCastbar = true;
 		end
-		
+
 		if ( not self.showCastbar ) then
 			self:Hide();
 		elseif ( self.casting or self.channeling ) then
 			self:Show();
 		end
 		return;
-	elseif ( event == self.updateEvent ) then	
+	elseif ( event == self.updateEvent ) then
 		-- check if the new target is casting a spell
 		local nameChannel  = UnitChannelInfo(self.unit);
 		local nameSpell  = UnitCastingInfo(self.unit);
@@ -1236,26 +1221,26 @@ function FocusFrame_SetSmallSize(smallSize, onChange)
 	if ( smallSize and not FocusFrame.smallSize ) then
 		local x = FocusFrame:GetLeft();
 		local y = FocusFrame:GetTop();
-		FocusFrame.smallSize = true;	
+		FocusFrame.smallSize = true;
 		FocusFrame.maxBuffs = 0;
-		FocusFrame.maxDebuffs = 8;		
+		FocusFrame.maxDebuffs = 8;
 		FocusFrame:SetScale(SMALL_FOCUS_SCALE);
 		FocusFrameToT:SetScale(SMALL_FOCUS_UPSCALE);
 		FocusFrameToT:SetPoint("BOTTOMRIGHT", -13, -17);
 		FocusFrame.TOT_AURA_ROW_WIDTH = 80;	-- not as much room for auras with scaled-up ToT frame
-		FocusFrame.spellbar:SetScale(SMALL_FOCUS_UPSCALE);		
+		FocusFrame.spellbar:SetScale(SMALL_FOCUS_UPSCALE);
 		FocusFrameTextureFrameName:SetFontObject(FocusFontSmall);
 		FocusFrameHealthBar.TextString:SetFontObject(TextStatusBarTextLarge);
 		FocusFrameHealthBar.TextString:SetPoint("CENTER", -50, 4)
 		FocusFrameTextureFrameName:SetWidth(120);
 		if ( onChange ) then
-			-- the frame needs to be repositioned because anchor offsets get adjusted with scale			
+			-- the frame needs to be repositioned because anchor offsets get adjusted with scale
 			FocusFrame:ClearAllPoints();
 			FocusFrame:SetPoint("TOPLEFT", x * SMALL_FOCUS_UPSCALE + 29, (y - GetScreenHeight()) * SMALL_FOCUS_UPSCALE - 13);
 		end
 		FocusFrame:UnregisterEvent("UNIT_CLASSIFICATION_CHANGED");
 		FocusFrame.showClassification = true;
-		FocusFrame:UnregisterEvent("PLAYER_FLAGS_CHANGED");	
+		FocusFrame:UnregisterEvent("PLAYER_FLAGS_CHANGED");
 		FocusFrame.showLeader = nil;
 		FocusFrame.showPVP = nil;
 		FocusFrame.pvpIcon:Hide();
@@ -1267,8 +1252,8 @@ function FocusFrame_SetSmallSize(smallSize, onChange)
 		TargetFrame_Update(FocusFrame);
 	elseif ( not smallSize and FocusFrame.smallSize ) then
 		local x = FocusFrame:GetLeft();
-		local y = FocusFrame:GetTop();		
-		FocusFrame.smallSize = false;	
+		local y = FocusFrame:GetTop();
+		FocusFrame.smallSize = false;
 		FocusFrame.maxBuffs = nil;
 		FocusFrame.maxDebuffs = nil;
 		FocusFrame:SetScale(LARGE_FOCUS_SCALE);
@@ -1281,8 +1266,8 @@ function FocusFrame_SetSmallSize(smallSize, onChange)
 		FocusFrameHealthBar.TextString:SetPoint("CENTER", -50, 3)
 		FocusFrameTextureFrameName:SetWidth(100);
 		if ( onChange ) then
-			-- the frame needs to be repositioned because anchor offsets get adjusted with scale		
-			FocusFrame:ClearAllPoints();		
+			-- the frame needs to be repositioned because anchor offsets get adjusted with scale
+			FocusFrame:ClearAllPoints();
 			FocusFrame:SetPoint("TOPLEFT", (x - 29) / SMALL_FOCUS_UPSCALE, (y + 13) / SMALL_FOCUS_UPSCALE - GetScreenHeight());
 		end
 		FocusFrame:RegisterEvent("UNIT_CLASSIFICATION_CHANGED");

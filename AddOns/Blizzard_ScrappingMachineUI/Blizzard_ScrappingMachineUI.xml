@@ -1,0 +1,91 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ScrappingMachineUI.lua"/>
+	
+	<Button name="ScrappingMachineItemSlot" mixin="ScrappingMachineItemSlotMixin" virtual="true">
+		<Size x="44" y="44" />
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" hidden="true">
+					<Size x="42" y="42" />
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Size x="42" y="42"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconOverlay" hidden="true">
+					<Size x="42" y="42"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent" />
+			<OnClick method="OnClick" />
+			<OnDragStart method="OnDragStart" />
+			<OnReceiveDrag method="OnReceiveDrag" />
+			<OnEnter method="OnMouseEnter" />
+			<OnLeave method="OnMouseLeave" />
+		</Scripts>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+	</Button>
+	
+	<Frame name="ScrappingMachineFrame" inherits="ButtonFrameTemplate" toplevel="true" hidden="true" parent="UIParent" enableMouse="true" mixin="ScrappingMachineMixin">
+		<Size x="333" y="278"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Background">
+					<Size x="323" y="227" />
+					<Anchors>
+						<Anchor point="BOTTOM" y="30" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ItemSlots"> 
+				<Size x="150" y="150"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Background" x="1" y="-12"/> 
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture atlas="scrappingmachine-background-slots" useAtlasSize="true"/> 
+					</Layer>
+				</Layers>
+			</Frame> 
+			<Button parentKey="ScrapButton" inherits="MagicButtonTemplate" text="SCRAP_BUTTON">
+				<Size x="150" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():ScrapItems();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+		</Scripts>
+	</Frame>
+</Ui>

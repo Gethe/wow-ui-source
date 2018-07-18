@@ -75,7 +75,7 @@ function UnitPositionFrameMixin:UpdateAppearanceData()
 end
 
 function UnitPositionFrameMixin:ResetCurrentMouseOverUnits()
-	self.currentMouseOverUnits = {}
+	self.currentMouseOverUnits = {};
 	self.currentMouseOverUnitCount = 0;
 end
 
@@ -162,7 +162,7 @@ function UnitPositionFrameMixin:UpdateUnitTooltips(tooltipFrame)
 	end
 
 	if tooltipText ~= "" then
-		SetMapTooltipPosition(tooltipFrame, self, true);
+		tooltipFrame:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
 		tooltipFrame:SetText(tooltipText);
 	elseif tooltipFrame:GetOwner() == self then
 		tooltipFrame:ClearLines();

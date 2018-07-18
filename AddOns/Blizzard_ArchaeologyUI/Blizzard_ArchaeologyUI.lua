@@ -1,8 +1,3 @@
-
-
-
-UIPanelWindows["ArchaeologyFrame"] = {area = "left", pushable = 3, showFailedFunc = "ArchaeologyFrame_ShowFailed" };
-
 ARCHAEOLOGY_BUTTON_HEIGHT = 59;
 ARCHAEOLOGY_MID_TITLE_YOFFSET = -110;
 
@@ -59,6 +54,7 @@ end
 
 
 function ArchaeologyFrame_OnLoad(self)
+	UIPanelWindows["ArchaeologyFrame"] = {area = "left", pushable = 3, showFailedFunc = ArchaeologyFrame_ShowFailed };
 	ButtonFrameTemplate_HideButtonBar(ArchaeologyFrame);
 	ButtonFrameTemplate_HideAttic(ArchaeologyFrame);
 	
@@ -139,8 +135,19 @@ function ArchaeologyFrame_OnShow(self)
 	end
 end
 
+local function ArchaeologyFrame_CancelSpellLoadCallback(control)
+	if control.spellDataLoadedCancelFunc then
+		control.spellDataLoadedCancelFunc();
+		control.spellDataLoadedCancelFunc = nil;
+	end
+end
 
 function ArchaeologyFrame_OnHide(self)
+	ArchaeologyFrame_CancelSpellLoadCallback(self.artifactPage.historyScroll);
+	for i=1,ARCHAEOLOGY_MAX_COMPLETED_SHOWN do
+		local projectButton = self.completedPage["artifact"..i];
+		ArchaeologyFrame_CancelSpellLoadCallback(projectButton);
+	end
 	CloseResearch();
 	CloseDropDownMenus();
 	PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
@@ -266,7 +273,7 @@ end
 
 function ArchaeologyFrame_CurrentArtifactUpdate(self)
 	local RaceName, RaceTexture, RaceitemID	= GetArchaeologyRaceInfo(self.raceID, true);
-	local name, description, rarity, icon, spellDescription, numSockets, bgTexture =  GetSelectedArtifactInfo();
+	local name, description, rarity, icon, spellDescription, numSockets, bgTexture, spellID =  GetSelectedArtifactInfo();
 	self.currentName = name;
 	if 	self.solveFrame:IsShown() then
 		local base, adjust, totalCost = GetArtifactProgress();
@@ -314,6 +321,7 @@ function ArchaeologyFrame_CurrentArtifactUpdate(self)
 		end
 	end
 	
+	ArchaeologyFrame_CancelSpellLoadCallback(self.historyScroll);
 	if rarity == 0 then --Common Item
 		self.historyTitle:SetPoint("RIGHT", -110, 126);
 		self.historyScroll:SetSize(190, 200);
@@ -339,6 +347,10 @@ function ArchaeologyFrame_CurrentArtifactUpdate(self)
 			self.historyScroll.child.text:SetWidth(400);
 			
 			self.historyScroll.child.text:SetText(spellDescription);
+			local spell = Spell:CreateFromSpellID(spellID);
+			self.historyScroll.spellDataLoadedCancelFunc = spell:ContinueWithCancelOnSpellLoad(function()
+				self.historyScroll.child.text:SetText(spell:GetSpellDescription());
+			end);
 		end
 		self.raceBG:SetTexture("");
 		self.raceRarity:SetText(RaceName.." - "..ITEM_QUALITY3_DESC);
@@ -354,7 +366,7 @@ end
 
 
 function ArchaeologyFrame_UpdateComplete(self)
-	local name, description, rarity, icon, spellDescription, completionCount, firstComletionTime, completionCount;
+	local name, description, rarity, icon, spellDescription, spellID, firstCompletionTime, completionCount;
 	local raceName, _;
 	local numRaces = GetNumArchaeologyRaces();
 	local outOfArtifacts = false;
@@ -382,7 +394,7 @@ function ArchaeologyFrame_UpdateComplete(self)
 			else
 				local failed = false;
 				local rareStatus = self.currData.onRare;
-				name, description, rarity, icon, spellDescription,  _, _, firstComletionTime, completionCount = GetArtifactInfoByRace(self.currData.raceIndex, self.currData.projectIndex);
+				name, description, rarity, icon, spellDescription,  _, _, spellID, firstCompletionTime, completionCount = GetArtifactInfoByRace(self.currData.raceIndex, self.currData.projectIndex);
 				if not name then
 					if self.raceFilter ~= 0 then
 						outOfArtifacts = true;
@@ -433,12 +445,17 @@ function ArchaeologyFrame_UpdateComplete(self)
 					projectButton.artifactName:SetText(name);
 					projectButton.raceIndex =  self.currData.raceIndex;
 					projectButton.projectIndex =  self.currData.projectIndex;
+					ArchaeologyFrame_CancelSpellLoadCallback(projectButton);
 					if rarity == 0 then
 						projectButton.spellDescription = spellDescription;
+						local spell = Spell:CreateFromSpellID(spellID);
+						projectButton.spellDataLoadedCancelFunc = spell:ContinueWithCancelOnSpellLoad(function()
+							projectButton.spellDescription = spell:GetSpellDescription();
+						end);
 					else
 						projectButton.spellDescription = description;
 					end
-					projectButton.firstComletionTime = firstComletionTime;
+					projectButton.firstCompletionTime = firstCompletionTime;
 					projectButton.completionCount = completionCount;
 					
 					if rarity == 0 then

@@ -1,0 +1,45 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="UIWidgetTemplateDoubleIconAndText_IconAndTextFrame" inherits="UIWidgetTemplateTooltipFrame" virtual="true">
+		<Size y="26"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon">
+					<Size x="26" y="26"/>
+					<Anchors>
+						<Anchor point="LEFT" />
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="Game12Font" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="UIWidgetTemplateDoubleIconAndText" inherits="UIWidgetBaseTemplate" virtual="true" mixin="UIWidgetTemplateDoubleIconAndTextMixin">
+		<Size y="26"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Label" inherits="Game12Font" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Left" inherits="UIWidgetTemplateDoubleIconAndText_IconAndTextFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT" x="15" />
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Right" inherits="UIWidgetTemplateDoubleIconAndText_IconAndTextFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT" x="25" />
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

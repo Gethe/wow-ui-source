@@ -1,0 +1,13 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="AzeriteEmpoweredItemTierTemplate" useParentLevel="true" mixin="AzeriteEmpoweredItemTierMixin" virtual="true">
+		<Size x="312" y="74"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-4">
+				<Texture parentKey="Bg" setAllPoints="true">
+					<Color r="0.95" g="0.95" b="1" />
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

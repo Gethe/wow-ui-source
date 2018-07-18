@@ -23,11 +23,11 @@ local HIDE_MOST = {
 	MultiBarRight		= "hidden",
 	FocusFrame			= "hidden",
 	TemporaryEnchantFrame = "hidden",
-	WorldStateAlwaysUpFrame = "hidden",
 	ZoneAbilityFrame	= "hidden",
 	OrderHallCommandBar	= "hidden",
 	TalentMicroButtonAlert	="hidden";
 	WorldStateScoreFrame = "hidden";
+	UIWidgetTopCenterContainerFrame = "hidden",
 }
 
 --------Data on what locks exist and what frames are ruled by them--------

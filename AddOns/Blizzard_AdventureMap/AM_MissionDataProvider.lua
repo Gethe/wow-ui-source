@@ -143,7 +143,7 @@ function AdventureMap_MissionDataProviderMixin:CompleteMission(missionInfo)
 	end
 end
 
-function AdventureMap_MissionDataProviderMixin:OnMissionCompleteResponse(missionID, canComplete, succeeded, followerDeaths)
+function AdventureMap_MissionDataProviderMixin:OnMissionCompleteResponse(missionID, canComplete, succeeded, overmaxSucceeded, followerDeaths)
 	if self.completingMissionInfo and self.completingMissionInfo.missionID == missionID then
 		local missionInfo = self.completingMissionInfo;
 		self.completingMissionInfo = nil;
@@ -240,7 +240,7 @@ function AdventureMap_MissionPinMixin:SetupMission(missionInfo)
 		self.StatusBackground:Hide();
 	end
 
-	if self:GetMap():IsZoomedIn() then
+	if not self:GetMap():IsAtMinZoom() then
 		if self.missionInfo.newMission then
 			self.OnNewAnim:Play();
 		elseif self.missionInfo.justCompleted then

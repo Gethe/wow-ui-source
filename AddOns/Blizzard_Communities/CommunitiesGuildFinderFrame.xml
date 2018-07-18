@@ -1,0 +1,52 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="CommunitiesGuildFinderFrame.lua"/>
+	
+	<Frame name="CommunitiesGuildFinderFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="communities-widebackground" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<FontString parentKey="Name" inherits="Game24Font" text="GUILD">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-52"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" justifyV="TOP" inherits="GameFontNormalMed3" text="COMMUNITIES_GUILD_FINDER_DESCRIPTION">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM" x="0" y="-14"/>
+						<Anchor point="LEFT" x="60"/>
+						<Anchor point="RIGHT" x="-60"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="FindAGuildButton" inherits="UIPanelButtonTemplate" text="COMMUNITIES_GUILD_FINDER_FRAME_FIND_A_GUILD">
+				<Size x="180" y="24"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="0" y="-24"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="CommunitiesGuildFinderFrameFindAGuildButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="InsetFrame" inherits="InsetFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-3" y="3"/>
+					<Anchor point="BOTTOMRIGHT" x="3" y="-2"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.Bg:Hide();
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

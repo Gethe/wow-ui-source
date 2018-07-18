@@ -909,7 +909,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showToastOnline";
-						self.setFunc = function (value) BNet_UpdateToastEvent(self.cvar, value); end;
+						self.setFunc = function (value) BNToastFrame:UpdateToastEvent(self.cvar, value); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -926,7 +926,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showToastOffline";
-						self.setFunc = function (value) BNet_UpdateToastEvent(self.cvar, value); end;
+						self.setFunc = function (value) BNToastFrame:UpdateToastEvent(self.cvar, value); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -943,7 +943,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showToastBroadcast";
-						self.setFunc = function (value) BNet_UpdateToastEvent(self.cvar, value); end;
+						self.setFunc = function (value) BNToastFrame:UpdateToastEvent(self.cvar, value); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -976,7 +976,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showToastFriendRequest";
-						self.setFunc = function (value) BNet_UpdateToastEvent(self.cvar, value); end;
+						self.setFunc = function (value) BNToastFrame:UpdateToastEvent(self.cvar, value); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -993,7 +993,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showToastWindow";
-						self.setFunc = function(value) if ( value == "1" ) then BNet_EnableToasts(); else BNet_DisableToasts(); end; end
+						self.setFunc = function(value) BNToastFrame:SetToastsEnabled(value == "1"); end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -1284,11 +1284,29 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentLockActionBars" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentStackRightBars" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-42"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "multiBarRightVerticalLayout";
+						self.uvar = "STACK_RIGHT_BARS";
+						self.setFunc = function (value) InterfaceOptions_UpdateMultiActionBars(); end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentLockActionBars" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentStackRightBars" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -2035,6 +2053,26 @@
 					</OnValueChanged>
 				</Scripts>
 			</Slider>
+			<CheckButton name="$parentLockCursorToScreen" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMouseSensitivitySlider" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-6" y="-60"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						if ( not IsWindowsClient() ) then
+							self:Hide();
+						else
+							self.type = CONTROLTYPE_CHECKBOX;
+							self.cvar = "ClipCursor";
+							BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						end
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
 			<CheckButton name="$parentClickToMove" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMouseLookSpeedSlider" relativePoint="BOTTOMLEFT">
@@ -2166,6 +2204,9 @@
 						end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						self:RegisterEvent("VARIABLES_LOADED");
+						if (IsKioskModeEnabled()) then
+							self:RegisterEvent("PLAYER_ENTERING_WORLD");
+						end
 					</OnLoad>
 					<OnEvent>
 						self.setFunc(GetCVar(self.cvar));

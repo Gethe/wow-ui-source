@@ -1,104 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="WorldStateFrame.lua"/>
-	<Frame name="WorldStateAlwaysUpTemplate" virtual="true" hidden="true" enableMouse="true">
-		<Size>
-			<AbsDimension x="45" y="24"/>
-		</Size>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentIcon">
-					<Size>
-						<AbsDimension x="42" y="42"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="-6" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentText" inherits="GameFontNormalSmall">
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="-12" y="10"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame name="$parentDynamicIconButton" enableMouse="true">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentText" relativePoint="RIGHT" x="0" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentIcon">
-							<Size>
-								<AbsDimension x="32" y="32"/>
-							</Size>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter>
-						if ( self.tooltip ) then
-							GameTooltip:SetOwner(self, ANCHOR_BOTTOMLEFT);
-							GameTooltip:SetText(self.tooltip);
-						end
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-			</Frame>
-			<Frame name="$parentFlash">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
-				<Anchors>
-					<Anchor point="CENTER" relativeTo="$parentDynamicIconButton">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentTexture" alphaMode="ADD">
-							<Size>
-								<AbsDimension x="32" y="32"/>
-							</Size>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnEnter>
-				if ( self.tooltip ) then
-					GameTooltip:SetOwner(self, ANCHOR_BOTTOMLEFT);
-					GameTooltip:SetText(self.tooltip);
-				end
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-		</Scripts>
-	</Frame>
 	<Button name="WorldStateScoreColumnTemplate" enableMouse="true" virtual="true">
 		<Size>
 			<AbsDimension x="75" y="30"/>
@@ -447,131 +349,6 @@
 			</Button>
 		</Frames>
 	</Frame>
-	<Frame name="WorldStateCaptureBarTemplate" virtual="true" toplevel="true" parent="UIParent" hidden="true">
-		<Size>
-			<AbsDimension x="173" y="26"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="0" y="15"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="LeftBar" name="$parentLeftBar" atlas="worldstate-capturebar-blue">
-					<Size x="61" y="9"/>
-					<Anchors>
-						<Anchor point="LEFT" x="26" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="RightBar" name="$parentRightBar" atlas="worldstate-capturebar-red">
-					<Size x="60" y="9"/>
-					<Anchors>
-						<Anchor point="RIGHT" x="-26" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="MiddleBar" atlas="worldstate-capturebar-gray">
-					<Size x="25" y="9"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>				
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture parentKey="BarBackground" atlas="worldstate-capturebar-frame-factions">
-					<Size x="173" y="26"/>
-					<Anchors>
-						<Anchor point="TOP"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="RightLine" atlas="worldstate-capturebar-frame-separater">
-					<Size x="3" y="8"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.MiddleBar" relativePoint="RIGHT" x="-1" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="LeftLine" atlas="worldstate-capturebar-frame-separater">
-					<Size x="3" y="8"/>
-					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.MiddleBar" relativePoint="LEFT" x="1" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="LeftIconHighlight" atlas="worldstate-capturebar-glow" hidden="true" alphaMode="ADD">
-					<Size x="27" y="28"/>
-					<Anchors>
-						<Anchor point="LEFT" x="-1" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="RightIconHighlight" atlas="worldstate-capturebar-glow" hidden="true" alphaMode="ADD">
-					<Size x="27" y="28"/>
-					<Anchors>
-						<Anchor point="RIGHT" x="1" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame parentKey="Indicator">
-				<Size x="5" y="18"/>
-				<Anchors>
-					<Anchor point="CENTER"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="Middle" atlas="worldstate-capturebar-spark-green" setAllPoints="true"/>
-					</Layer>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Left" atlas="worldstate-capturebar-arrow" useAtlasSize="true" hidden="false">
-							<Anchors>
-								<Anchor point="RIGHT" relativePoint="LEFT" x="1" y="0"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Right" atlas="worldstate-capturebar-arrow" useAtlasSize="true" hidden="false">
-							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT" x="-1" y="0"/>
-							</Anchors>
-							<TexCoords left="1" right="0" top="0" bottom="1"/>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnShow>
-				UIParent_ManageFramePositions();
-			</OnShow>
-			<OnHide>
-				UIParent_ManageFramePositions();
-			</OnHide>
-		</Scripts>
-	</Frame>
-	<Frame name="WorldStateAlwaysUpFrame" toplevel="true" parent="UIParent">
-		<Size>
-			<AbsDimension x="10" y="10"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOP">
-				<Offset>
-					<AbsDimension x="-5" y="-15"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Scripts>
-			<OnLoad function="WorldStateAlwaysUpFrame_OnLoad"/>
-			<OnEvent function="WorldStateAlwaysUpFrame_OnEvent"/>
-			<OnEnter>
-				if ( self.tooltip ) then
-					GameTooltip:SetOwner(self);
-					GameTooltip:SetText(self.tooltip);
-				end
-			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
-		</Scripts>
-	</Frame>
 	<!-- Score Frame -->
 	<Frame name="WorldStateScoreFrame" inherits="ButtonFrameTemplate" toplevel="true" parent="UIParent" movable="true" hidden="true">
 		<Size>
@@ -655,7 +432,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						self.sortType = "prestige";
+						self.sortType = "honorLevel";
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -1128,25 +905,8 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="WorldStateScoreFrame_OnLoad"/>
-			<OnEvent>
-				if	( event == "UPDATE_BATTLEFIELD_SCORE" or event == "UPDATE_WORLD_STATES") then
-					if ( InActiveBattlefield() and (WorldStateScoreFrame:IsVisible() or GetBattlefieldWinner() ) ) then
-						WorldStateScoreFrame_Resize();
-						WorldStateScoreFrame_Update();
-					end
-				end
-				if ( event == "PLAYER_ENTERING_WORLD" ) then
-					HideUIPanel(WorldStateScoreFrame);
-					WorldStateScoreFrame.firstOpen = false;
-					WorldStateScoreFrame.leaving = nil;
-					BATTLEFIELD_SHUTDOWN_TIMER = 0;
-				end
-			</OnEvent>
-			<OnShow>
-				WorldStateScoreFrame_Resize();
-				WorldStateScoreFrame_Update();
-				WorldStateScoreFrameTab_OnClick(WorldStateScoreFrameTab1);
-			</OnShow>
+			<OnEvent function="WorldStateScoreFrame_OnEvent"/>
+			<OnShow function="WorldStateScoreFrame_OnShow"/>
 			<OnUpdate function="RequestBattlefieldScoreData"/>
 			<OnHide function="WorldStateScoreFrame_OnHide"/>
 		</Scripts>

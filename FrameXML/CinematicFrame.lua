@@ -13,21 +13,13 @@ function CinematicFrame_OnDisplaySizeChanged(self)
   
 	  UpperBlackBar:SetHeight( blackBarHeight );
 	  LowerBlackBar:SetHeight( blackBarHeight );
-  
-	  CinematicFrame.Subtitle1:ClearAllPoints();
-	  CinematicFrame.Subtitle1:SetPoint("LEFT", CinematicFrame.LowerBlackBar, "LEFT", 5, 0);
-	  CinematicFrame.Subtitle1:SetPoint("RIGHT", CinematicFrame.LowerBlackBar, "RIGHT", -5, 0);
-	  if (CinematicFrame.Subtitle1:GetBottom() < 0) then
-		  CinematicFrame.Subtitle1:ClearAllPoints();
-		  CinematicFrame.Subtitle1:SetPoint("BOTTOMLEFT", CinematicFrame.LowerBlackBar, "TOPLEFT", 5, 5);
-		  CinematicFrame.Subtitle1:SetPoint("BOTTOMRIGHT", CinematicFrame.LowerBlackBar, "TOPRIGHT", -5, 5);
-	  end
 	end
 end
 
 function CinematicFrame_OnLoad(self)
 	self:RegisterEvent("CINEMATIC_START");
 	self:RegisterEvent("CINEMATIC_STOP");
+	self:RegisterEvent("HIDE_SUBTITLE");
 
 	--For subtitles. We only support say/yell right now.
 	self:RegisterEvent("CHAT_MSG_SAY");
@@ -35,6 +27,9 @@ function CinematicFrame_OnLoad(self)
 	self:RegisterEvent("CHAT_MSG_YELL");
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	
+	CinematicFrame.Subtitle1:SetFontObjectsToTry("GameFontHighlightLarge", "GameFontHighlightMedium", "GameFontHighlight", "GameFontHighlightSmall"); 
+	
 end
 
 function CinematicFrame_OnShow(self)
@@ -59,6 +54,8 @@ function CinematicFrame_OnEvent(self, event, ...)
 		RaidNotice_Clear(RaidBossEmoteFrame);	--Clear the normal boss emote frame. If there are any messages left over from the cinematic, we don't want to show them.
 		
 		LowHealthFrame:EvaluateVisibleState();
+
+		MovieFrame_OnCinematicStopped();
 	elseif ( event == "CHAT_MSG_SAY" or event == "CHAT_MSG_MONSTER_SAY" or
 		event == "CHAT_MSG_YELL" or event == "CHAT_MSG_MONSTER_YELL" ) then
 		local message, sender, lang, channel, target, flag, zone, localid, name, instanceId, lineId, guidString, bnId, isMobile, isSubtitle, hideSenderInLetterbox = ...;
@@ -78,6 +75,8 @@ function CinematicFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "DISPLAY_SIZE_CHANGED") then
 		CinematicFrame_OnDisplaySizeChanged(self);
+	elseif ( event == "HIDE_SUBTITLE") then
+		CinematicFrame_HideSubtitle(self)
 	end
 end
 
@@ -97,14 +96,16 @@ function CinematicFrame_AddSubtitle(chatType, body)
 		end
 		fontString = CinematicFrame.Subtitles[#CinematicFrame.Subtitles];
 	end
-
+	
 	fontString:SetText(body);
-	if (CinematicFrame.Subtitle1:GetBottom() < 0) then
-		CinematicFrame.Subtitle1:ClearAllPoints();
-		CinematicFrame.Subtitle1:SetPoint("BOTTOMLEFT", CinematicFrame.LowerBlackBar, "TOPLEFT", 5, 5);
-		CinematicFrame.Subtitle1:SetPoint("BOTTOMRIGHT", CinematicFrame.LowerBlackBar, "TOPRIGHT", -5, 5);
-	end
 	fontString:Show();
+end
+
+function CinematicFrame_HideSubtitle(self)
+	for i=1, #self.Subtitles do
+		self.Subtitles[i]:SetText("");
+		self.Subtitles[i]:Hide();
+	end
 end
 
 function CinematicFrame_OnKeyDown(self, key)

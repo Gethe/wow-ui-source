@@ -130,6 +130,7 @@
 	</Button>
 
 	<Button name="PVPSpecificBattlegroundButtonTemplate" virtual="true" inherits="PVPInstanceListEntryButtonTemplate">
+		<Size x="373" y="40"/>
 		<Scripts>
 			<OnClick function="HonorFrameSpecificBattlegroundButton_OnClick"/>
 		</Scripts>
@@ -157,66 +158,6 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="PVPRewardTooltip" inherits="VerticalLayoutFrame" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
-		<Size x="250" y="256"/>
-		<Anchors>
-			<Anchor point="BOTTOMRIGHT"/>
-		</Anchors>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize val="16"/>
-			<TileSize val="16"/>
-			<BackgroundInsets left="5" right="5" top="5" bottom="5"/>
-		</Backdrop>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="RewardString" inherits="GameFontNormal" text="PVP_REWARD_TOOLTIP">
-					<KeyValues>
-						<KeyValue key="layoutIndex" value="1" type="number"/>
-					</KeyValues>
-				</FontString>
-				<FontString parentKey="Honor" inherits="GameFontHighlight">
-					<KeyValues>
-						<KeyValue key="layoutIndex" value="2" type="number"/>
-					</KeyValues>
-				</FontString>
-				<FontString parentKey="XP" inherits="GameFontHighlight">
-					<KeyValues>
-						<KeyValue key="layoutIndex" value="3" type="number"/>
-					</KeyValues>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame parentKey="ItemTooltip" inherits="EmbeddedItemTooltip">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="4" type="number"/>
-					<KeyValue key="topPadding" value="15" type="number"/>
-					<KeyValue key="bottomPadding" value="6" type="number"/>
-				</KeyValues>
-				<Size x="100" y="100"/>
-				<Scripts>
-					<OnSizeChanged inherit="prepend">
-						self:GetParent():Layout();
-					</OnSizeChanged>
-				</Scripts>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-			</OnLoad>
-		</Scripts>
-		<KeyValues>
-			<KeyValue key="fixedWidth" value="100" type="number"/>
-			<KeyValue key="expand" value="true" type="boolean"/>
-			<KeyValue key="topPadding" value="10" type="number"/>
-			<KeyValue key="bottomPadding" value="12" type="number"/>
-			<KeyValue key="leftPadding" value="10" type="number"/>
-			<KeyValue key="rightPadding" value="10" type="number"/>
-			<KeyValue key="spacing" value="2" type="number"/>
-		</KeyValues>
-	</Frame>
 
 	<Frame name="PVPRewardTemplate" enableMouse="true" virtual="true">
 		<Size x="48" y="48"/>
@@ -241,25 +182,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="WeeklyBonus" hidden="true">
-				<Size x="29" y="29"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="4" y="5"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture atlas="honorsystem-icon-bonus" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter function="PVPRewardWeeklyBonus_OnEnter"/>
-					<OnLeave function="PVPRewardWeeklyBonus_OnLeave"/>
-				</Scripts>
-			</Frame>
 			<Frame parentKey="EnlistmentBonus" hidden="true">
 				<Size x="29" y="29"/>
 				<Anchors>
@@ -294,104 +216,111 @@
 		<Scripts>
 			<OnEnter function="PVPRewardTemplate_OnEnter"/>
 			<OnLeave>
-				PVPRewardTooltip:Hide();
+				EmbeddedItemTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<Button name="PVPBonusButtonTemplate" virtual="true">
-		<NormalTexture parentKey="NormalTexture" file="Interface\PVPFrame\PvPMegaQueue">
-			<TexCoords left="0.00195313" right="0.58789063" top="0.87304688" bottom="0.92773438"/>
-		</NormalTexture>
-		<PushedTexture file="Interface\PVPFrame\PvPMegaQueue">
-			<TexCoords left="0.00195313" right="0.58789063" top="0.92968750" bottom="0.98437500"/>
-		</PushedTexture>
+
+	<StatusBar name="PVPConquestBarTemplate" drawLayer="BACKGROUND" minValue="0" maxValue="100" defaultValue="0" enableMouse="true" mixin="PVPConquestBarMixin" virtual="true">
+		<Size x="340" y="20"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Border" atlas="pvpqueue-conquestbar-frame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" x="-9" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<FontString parentKey="Label" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Background" atlas="pvpqueue-conquestbar-background">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
-			<Frame parentKey="Reward" inherits="PVPRewardTemplate" hidden="true">
+			<Frame parentKey="Reward">
+				<Size x="36" y="36"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativePoint="RIGHT" x="-4" y="-1"/>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="-8" y="-2"/>
 				</Anchors>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnClick>
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-				HonorFrameBonusFrame_SelectButton(self)
-			</OnClick>
-			<OnMouseDown>
-				if ( self:IsEnabled() ) then
-					self.Contents:SetPoint("TOPLEFT", -1, -1);
-				end
-			</OnMouseDown>
-			<OnMouseUp>
-				self.Contents:SetPoint("TOPLEFT", 0, 0);
-			</OnMouseUp>
-			<OnEnter function="PVPBonusButtonTemplate_OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
-		</Scripts>
-	</Button>
-	<Button name="PVPBonusBattlegroundButtonTemplate" virtual="true" inherits="PVPBonusButtonTemplate">
-		<Size x="300" y="56"/>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="SelectedTexture" file="Interface\PVPFrame\PvPMegaQueue" alphaMode="ADD" hidden="true">
-					<Size x="306" y="46"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-					<TexCoords left="0.00195313" right="0.63867188" top="0.76953125" bottom="0.83007813"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<HighlightTexture parentKey="HighlightTexture" file="Interface\PVPFrame\PvPMegaQueue" alphaMode="ADD">
-			<Size x="306" y="46"/>
-			<Anchors>
-				<Anchor point="CENTER"/>
-			</Anchors>
-			<TexCoords left="0.00195313" right="0.63867188" top="0.70703125" bottom="0.76757813"/>
-		</HighlightTexture>
-	</Button>
-	<Button name="PVPBonusWorldPVPButtonTemplate" virtual="true" inherits="PVPBonusButtonTemplate">
-		<Size x="300" y="56"/>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="SelectedTexture" file="Interface\PVPFrame\PvPMegaQueue" alphaMode="ADD" hidden="true">
-					<Size x="306" y="46"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-					<TexCoords left="0.00195313" right="0.63867188" top="0.76953125" bottom="0.83007813"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<HighlightTexture parentKey="HighlightTexture" file="Interface\PVPFrame\PvPMegaQueue" alphaMode="ADD">
-			<Size x="306" y="46"/>
-			<Anchors>
-				<Anchor point="CENTER"/>
-			</Anchors>
-			<TexCoords left="0.00195313" right="0.63867188" top="0.70703125" bottom="0.76757813"/>
-		</HighlightTexture>
-		<Frames>
-			<Frame parentKey="Contents" inherits="PVPBonusBattlegroundContentsTemplate">
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Title" inherits="GameFontHighlightMedium" justifyH="left" wordwrap="false">
-							<Size x="230" y="0"/>
+						<Texture parentKey="Ring" atlas="honorsystem-bar-rewardborder-circle" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="LEFT" x="14" y="0"/>
+								<Anchor point="CENTER"/>
 							</Anchors>
-						</FontString>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Icon">
+							<Size x="30" y="30"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="30" y="30"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Icon"/>
+							</MaskedTextures>
+						</MaskTexture>
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						self.MinLevelText:SetFontObject("GameFontNormal");
-						self.MinLevelText:SetPoint("TOP", 90, -18);
-						self.UnlockText:SetPoint("BOTTOM", self.MinLevelText, "TOP", 0, 1);
-					</OnLoad>
+					<OnEnter>
+						if self.itemID then
+							GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+							GameTooltip:SetItemByID(self.itemID);
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
+			<Frame parentKey="Lock" hidden="true">
+				<Size x="36" y="47"/>
+				<Anchors>
+					<Anchor point="CENTER" x="11" y="3"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture atlas="honorsystem-bar-lock" setAllPoints="true"/>
+					</Layer>
+					<Layer level="HIGHLIGHT">
+						<Texture atlas="honorsystem-bar-lock" alpha="0.1" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, 'ANCHOR_RIGHT');
+						GameTooltip:SetText(string.format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT]));
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			 </Frame>
 		</Frames>
-	</Button>
+		<BarTexture atlas="_pvpqueue-conquestbar-fill-yellow"/>
+		<BarColor r="1" g="1" b="1"/>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</StatusBar>
 
 	<Button name="PVPCurrencyDisplayTemplate" virtual="true">
 		<Size x="36" y="36"/>
@@ -511,63 +440,153 @@
 		</Scripts>
 	</Button>
 
-	<Button name="PVPConquestButtonTemplate" virtual="true">
-		<Size x="300" y="48"/>
+	<Button name="PVPCasualActivityButtonTemplate" virtual="true">
+		<Size x="365" y="68"/>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture parentKey="SelectedTexture" file="Interface\PVPFrame\PvPMegaQueue" alphaMode="ADD" hidden="true">
-					<Size x="306" y="41"/>
+				<Texture parentKey="SelectedTexture" atlas="pvpqueue-button-casual-selected" setAllPoints="true" alphaMode="ADD" hidden="true"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="Anchor">
+					<Size x="365" y="68"/>
 					<Anchors>
-						<Anchor point="CENTER" y="-1"/>
+						<Anchor point="TOPLEFT"/>
 					</Anchors>
-					<TexCoords left="0.00195313" right="0.63867188" top="0.76953125" bottom="0.83007813"/>
+				</Texture>
+				<FontString parentKey="Title" inherits="GameFontHighlightLarge" justifyH="LEFT" maxLines="1">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Anchor" x="20" y="-1"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Anchor" x="-20" y="-1"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="LevelRequirement" inherits="GameFontNormalMed3" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Anchor" x="19" y="0"/>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-4"/>
+					</Anchors>
+					<Color r="0.4" g="0.4" b="0.4"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture parentKey="NormalTexture" atlas="pvpqueue-button-casual-up"/>
+		<PushedTexture atlas="pvpqueue-button-casual-down"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="pvpqueue-button-casual-highlight" alphaMode="ADD"/>
+		<Frames>
+			<Frame parentKey="Reward" inherits="PVPRewardTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Anchor" x="-16" y="-2"/>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						local parent = self:GetParent();
+						parent.Title:SetPoint("RIGHT", parent.Anchor, "RIGHT", -60, -1);
+					</OnShow>
+					<OnHide>
+						local parent = self:GetParent();
+						parent.Title:SetPoint("RIGHT", parent.Anchor, "RIGHT", -20, -1);
+					</OnHide>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnClick>
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+				HonorFrameBonusFrame_SelectButton(self);
+			</OnClick>
+			<OnEnter function="PVPCasualActivityButton_OnEnter"/>
+			<OnMouseDown>
+				if ( self:IsEnabled() ) then
+					self.Anchor:SetPoint("TOPLEFT", -1, -1);
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				self.Anchor:SetPoint("TOPLEFT", 0, 0);
+			</OnMouseUp>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Button>
+	
+	<Frame name="PVPRatedTierTemplate" virtual="true">
+		<Size x="50" y="50"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon">
+					<Size x="50" y="50"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="RankingShadow" atlas="pvpqueue-rankglow" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" x="1" y="-3"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="TeamSizeText" inherits="GameFontHighlightLarge">
+				<FontString parentKey="Ranking" inherits="Number12Font_o1">
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="LEFT" x="13" y="-1"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="WinsLabel" inherits="GameFontDisable" text="WINS">
-					<Anchors>
-						<Anchor point="TOP" x="-10" y="-11"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="Wins" inherits="GameFontNormal" text="0">
-					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.WinsLabel" relativePoint="BOTTOM" x="0" y="-3"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="CurrentLabel" inherits="GameFontDisable" text="RATING">
-					<Anchors>
-						<Anchor point="TOP" x="58" y="-11"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="CurrentRating" inherits="GameFontNormal" text="0">
-					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.CurrentLabel" relativePoint="BOTTOM" x="0" y="-3"/>
+						<Anchor point="CENTER" relativeKey="$parent.Shadow"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
-		<NormalTexture parentKey="NormalTexture" file="Interface\PVPFrame\PvPMegaQueue">
-			<TexCoords left="0.00195313" right="0.58789063" top="0.87304688" bottom="0.92773438"/>
-		</NormalTexture>
-		<PushedTexture file="Interface\PVPFrame\PvPMegaQueue">
-			<TexCoords left="0.00195313" right="0.58789063" top="0.92968750" bottom="0.98437500"/>
-		</PushedTexture>
-		<HighlightTexture parentKey="HighlightTexture" file="Interface\PVPFrame\PvPMegaQueue" alphaMode="ADD">
-			<Size x="306" y="41"/>
-			<Anchors>
-				<Anchor point="CENTER" y="-1"/>
-			</Anchors>
-			<TexCoords left="0.00195313" right="0.63867188" top="0.70703125" bottom="0.76757813"/>
-		</HighlightTexture>
+		<Scripts>
+			<OnEnter function="PVPRatedTier_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="PVPRatedActivityButtonTemplate" virtual="true">
+		<Size x="365" y="91"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedTexture" atlas="pvpqueue-button-selected" setAllPoints="true" alphaMode="ADD" hidden="true"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="Anchor">
+					<Size x="365" y="91"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="TeamSizeText" inherits="GameFontNormalHuge2">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Anchor" x="20" y="9"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="TeamTypeText" inherits="GameFontDisable">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Anchor" x="19" y="0"/>
+						<Anchor point="TOP" relativeKey="$parent.TeamSizeText" relativePoint="BOTTOM" x="0" y="-4"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="TierIcon">
+					<Size x="50" y="50"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Anchor" x="-4" y="-1"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="CurrentRating" inherits="GameFontNormalMed3" text="0">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.TierIcon" relativePoint="RIGHT" x="4" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture parentKey="NormalTexture" atlas="pvpqueue-button-up"/>
+		<PushedTexture atlas="pvpqueue-button-down"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="pvpqueue-button-highlight" alphaMode="ADD"/>
 		<Frames>
 			<Frame parentKey="Reward" inherits="PVPRewardTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="RIGHT" relativePoint="RIGHT" x="-3" y="-2"/>
+					<Anchor point="RIGHT" relativeKey="$parent.Anchor" x="-16" y="-2"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Tier" inherits="PVPRatedTierTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Anchor" x="-4" y="-1"/>
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -575,38 +594,234 @@
 			<OnLoad>
 				self.id = self:GetID();
 				self.TeamSizeText:SetText(CONQUEST_SIZE_STRINGS[self.id]);
+				self.TeamTypeText:SetText(CONQUEST_TYPE_STRINGS[self.id]);
 			</OnLoad>
 			<OnClick function="ConquestFrameButton_OnClick"/>
 			<OnEnter function="ConquestFrameButton_OnEnter"/>
 			<OnMouseDown>
 				if ( self:IsEnabled() ) then
-					self.TeamSizeText:SetPoint("LEFT", self, "LEFT", 12, -2);
-					self.WinsLabel:SetPoint("TOP", self, "TOP", -11, -12);
-					self.CurrentLabel:SetPoint("TOP", self, "TOP", 57, -12);
+					self.Anchor:SetPoint("TOPLEFT", -1, -1);
 				end
 			</OnMouseDown>
 			<OnMouseUp>
-				self.TeamSizeText:SetPoint("LEFT", self, "LEFT", 13, -1);
-				self.WinsLabel:SetPoint("TOP", self, "TOP", -10, -11);
-				self.CurrentLabel:SetPoint("TOP", self, "TOP", 58, -11);
+				self.Anchor:SetPoint("TOPLEFT", 0, 0);
 			</OnMouseUp>
 			<OnLeave>
 				ConquestTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 	</Button>
+
 	<Frame name="PVPUIFrame" setAllPoints="true" parent="PVEFrame" hidden="true">
 		<Size x="563" y="428"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="0" y="0"/>
 		</Anchors>
-
 		<Frames>
 			<Frame name="PVPQueueFrame" useParentLevel="true" setAllPoints="true">
 				<Frames>
+					<Frame parentKey="PrestigePortrait">
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="PortraitBackground">
+									<Size x="60" y="60"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="PVEFrame" relativePoint="TOPLEFT" x="-6" y="7" />
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<Texture parentKey="SmallWreath" atlas="honorsystem-prestige-smallwreath" useAtlasSize="false" hidden="true">
+									<Size x="73" y="43"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="PVEFrame" relativePoint="TOPLEFT" x="-12" y="-19" />
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self:SetFrameLevel(self:GetParent():GetFrameLevel()-1);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="PVPTalentPrestigeLevelDialog" parentKey="PrestigeLevelDialog" inherits="PortraitFrameTemplateNoCloseButton" enableMouse="true" frameStrata="DIALOG" hidden="true">
+						<Size x="325" y="500"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER" x="0" y="100"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" inherits="GameFontNormal" text="PVP_PRESTIGE_RANK_UP_HONOR_TRADE">
+									<Size x="300" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-40"/>
+									</Anchors>
+								</FontString>
+								<Texture parentKey="Laurel" atlas="honorsystem-prestige-laurel" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="10"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="NextRank" inherits="GameFontNormalLarge" text="5">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.Laurel" relativePoint="BOTTOM" x="0" y="46"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="NextRankLabel" inherits="QuestFont_Super_Huge" text="Legionnaire">
+									<Size x="300" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.Laurel" relativePoint="BOTTOM" x="0" y="20"/>
+									</Anchors>
+									<Color r="1" g="1" b="1"/>
+								</FontString>
+								<Texture parentKey="TopDivider" atlas="honorsystem-prestige-rewardline" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.NextRankLabel" x="0" y="-50"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="NextMaxLevelReward" inherits="GameFontNormal">
+									<Size x="240" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.TopDivider" relativePoint="BOTTOM" x="0" y="-6"/>
+									</Anchors>
+								</FontString>
+								<Texture parentKey="BottomDivider" atlas="honorsystem-prestige-rewardline" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.TopDivider" relativePoint="BOTTOM" x="0" y="-78"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="Warning" inherits="GameFontNormal" text="PVP_PRESTIGE_RANK_UP_WARNING">
+									<Size x="300" y="0"/>
+									<Anchors>
+										<Anchor point="BOTTOM" x="0" y="60"/>
+									</Anchors>
+									<Color r="1.0" g="1.0" b="0.0"/>
+								</FontString>
+							</Layer>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="LaurelBackground" atlas="honorsystem-prestige-laurel-bg-horde" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.Laurel"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="PrestigeIcon" atlas="honorsystem-icon-prestige-5">
+									<Size x="105" y="105"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.Laurel" y="3"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="MaxLevelReward" inherits="PVPHonorRewardCodeTemplate">
+								<Size x="48" y="48"/>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.NextMaxLevelReward" relativePoint="BOTTOM" x="0" y="-8"/>
+								</Anchors>
+								<KeyValues>
+									<KeyValue key="formatString" value="HONOR_REWARD_TITLE" type="global"/>
+								</KeyValues>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture parentKey="Icon">
+											<Size x="47" y="47"/>
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="ARTWORK" textureSubLevel="1">
+										<FontString parentKey="Quantity" inherits="NumberFontNormal">
+											<Anchors>
+												<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="Text" inherits="GameFontHighlight" hidden="true">
+											<Anchors>
+												<Anchor point="CENTER" x="0" y="4"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+									<Layer level="OVERLAY">
+										<Texture parentKey="Frame" file="Interface\Buttons\UI-Quickslot2">
+											<Anchors>
+												<Anchor point="TOPLEFT" x="-15" y="15"/>
+												<Anchor point="BOTTOMRIGHT" x="15" y="-15"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnEnter>
+										if (self.rewardInfo) then
+											GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+											if (self.rewardInfo:SetTooltip()) then
+												GameTooltip:Show();
+											end
+										end
+									</OnEnter>
+									<OnLeave function="GameTooltip_Hide"/>
+								</Scripts>
+							</Frame>
+							<Button name="$parentCloseButton" inherits="UIPanelCloseButton" parentKey="CloseButton">
+								<Anchors>
+									<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+										<Offset x="4" y="5"/>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										PlaySound(SOUNDKIT.UI_PVP_HONOR_PRESTIGE_WINDOW_CLOSE);
+										self:GetParent():Hide();
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Button parentKey="Accept" inherits="UIPanelButtonTemplate" text="PVP_PRESTIGE_RANK_UP_ACCEPT">
+								<Size x="126" y="22"/>
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-4" y="20"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										PlaySound(SOUNDKIT.UI_PVP_HONOR_PRESTIGE_RANK_UP);
+										HideUIPanel(PlayerTalentFrame);
+										self:GetParent():Hide();
+										Prestige();
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Button parentKey="Cancel" inherits="UIPanelButtonTemplate" text="CANCEL">
+								<Size x="126" y="22"/>
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="4" y="20"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										PlaySound(SOUNDKIT.UI_PVP_HONOR_PRESTIGE_WINDOW_CLOSE);
+										self:GetParent():Hide();
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								self.Bg:SetTexture("Interface\\FrameGeneral\\UI-Background-Marble", true, true);
+								ButtonFrameTemplate_HidePortrait(self);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="PortraitMouseOverFrame">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PVEFramePortraitFrame" relativePoint="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="PVEFramePortraitFrame" relativePoint="BOTTOMRIGHT"/>
+						</Anchors>
+					</Frame>
 					<Button name="$parentCategoryButton1" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton1" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="10" y="-70" />
+							<Anchor point="TOPLEFT" x="10" y="-101" />
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -621,7 +836,7 @@
 					</Button>
 					<Button name="$parentCategoryButton2" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton2" id="2">
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentCategoryButton1" relativePoint="BOTTOM" x="0" y="-23" />
+							<Anchor point="TOP" relativeTo="$parentCategoryButton1" relativePoint="BOTTOM" x="0" y="-30" />
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -636,22 +851,7 @@
 					</Button>
 					<Button name="$parentCategoryButton3" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton3" id="3">
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentCategoryButton2" relativePoint="BOTTOM" x="0" y="-23" />
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString parentKey="Name" inherits="GameFontNormalLarge" spacing="2" justifyH="LEFT">
-									<Size x="106" y="0"/>
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.Ring" relativePoint="RIGHT" x="0" y="0" />
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Button>
-					<Button name="$parentCategoryButton4" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton4" id="4">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentCategoryButton3" relativePoint="BOTTOM" x="0" y="-23" />
+							<Anchor point="TOP" relativeTo="$parentCategoryButton2" relativePoint="BOTTOM" x="0" y="-30" />
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -664,7 +864,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame name="PremadeGroupsPvPTutorialAlert" inherits="MicroButtonAlertTemplate" parent="PVPQueueFrameCategoryButton4">
+							<Frame name="PremadeGroupsPvPTutorialAlert" inherits="MicroButtonAlertTemplate" parent="PVPQueueFrameCategoryButton3">
 								<KeyValues>
 									<KeyValue key="label" value="LFG_LIST_TUTORIAL_ALERT" type="global"/>
 									<KeyValue key="tutorialIndex" value="LE_FRAME_TUTORIAL_LFG_LIST" type="global"/>
@@ -676,108 +876,71 @@
 						</Frames>
 					</Button>
 					<!-- Casual  -->
-					<Frame name="HonorFrame" toplevel="true" useParentLevel="true" >
-						<Size x="339" y="403"/>
+					<Frame name="HonorFrame" toplevel="true">
+						<Size x="402" y="403"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="220" y="-22"/>
 						</Anchors>
 						<Frames>
-							<Frame parentKey="XPBar" useParentLevel="true" inherits="PVPHonorSystemSmallXPBar">
+							<StatusBar parentKey="ConquestBar" inherits="PVPConquestBarTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="1" y="-7"/>
+									<Anchor point="TOPLEFT" x="16" y="-19"/>
 								</Anchors>
-							</Frame>
-							<Frame parentKey="RoleInset" useParentLevel="true" inherits="InsetFrameTemplate">
-								<Anchors>
-									<Anchor point="TOPLEFT" x="4" y="-52" />
-									<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-5" y="-114" />
-								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND" textureSubLevel="0">
-										<Texture parentKey="Background" setAllPoints="true">
-											<Color r="1" g="1" b="1"/>
-											<Gradient orientation="VERTICAL">
-												<MinColor r="1" g="0" b="0" a="0.0"/>
-												<MaxColor r="0.38" g="0" b="0.79" a="0.2"/>
-											</Gradient>
-										</Texture>
-									</Layer>
-									<Layer level="BACKGROUND" textureSubLevel="1">
-										<Texture parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
-											<Anchors>
-												<Anchor point="TOPLEFT" x="0" y="0"/>
-												<Anchor point="TOPRIGHT" x="0" y="0"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Frames>
-									<Button parentKey="HealerIcon" inherits="LFGRoleButtonTemplate" id="2">
-										<Size x="45" y="45"/>
-										<KeyValues>
-											<KeyValue key="role" value="HEALER" type="string"/>
-										</KeyValues>
-										<Anchors>
-											<Anchor point="TOP" x="0" y="-8"/>
-										</Anchors>
-										<Scripts>
-											<OnLoad>
-												self.checkButton.onClick = PVPUIFrame_RoleButtonClicked;
-												LFGRoleButtonTemplate_OnLoad(self);
-											</OnLoad>
-										</Scripts>
-									</Button>
-									<Button parentKey="TankIcon" inherits="LFGRoleButtonTemplate" id="1">
-										<Size x="45" y="45"/>
-										<KeyValues>
-											<KeyValue key="role" value="TANK" type="string"/>
-										</KeyValues>
-										<Anchors>
-											<Anchor point="RIGHT" relativeKey="$parent.HealerIcon" relativePoint="LEFT" x="-40" y="0"/>
-										</Anchors>
-										<Scripts>
-											<OnLoad>
-												self.checkButton.onClick = PVPUIFrame_RoleButtonClicked;
-												LFGRoleButtonTemplate_OnLoad(self);
-											</OnLoad>
-										</Scripts>
-									</Button>
-									<Button parentKey="DPSIcon" inherits="LFGRoleButtonTemplate" id="3">
-										<Size x="45" y="45"/>
-										<KeyValues>
-											<KeyValue key="role" value="DAMAGER" type="string"/>
-										</KeyValues>
-										<Anchors>
-											<Anchor point="LEFT" relativeKey="$parent.HealerIcon" relativePoint="RIGHT" x="40" y="0"/>
-										</Anchors>
-										<Scripts>
-											<OnLoad>
-												self.checkButton.onClick = PVPUIFrame_RoleButtonClicked;
-												LFGRoleButtonTemplate_OnLoad(self);
-											</OnLoad>
-										</Scripts>
-									</Button>
-								</Frames>
-							</Frame>
-							<Frame name="$parentTypeDropDown" inherits="UIDropDownMenuTemplate" id="1">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeKey="$parent.RoleInset" relativePoint="BOTTOMRIGHT" x="14" y="-2"/>
-								</Anchors>
-								<Layers>
-									<Layer level="OVERLAY">
-										<FontString inherits="GameFontNormal" justifyH="RIGHT" text="TYPE">
-											<Size x="115" y="24"/>
-											<Anchors>
-												<Anchor point="RIGHT" relativePoint="LEFT" x="8" y="3"/>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-							</Frame>
+							</StatusBar>
 							<Frame parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate">
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" x="-5" y="22"/>
-									<Anchor point="TOPLEFT" x="4" y="-145"/>
+									<Anchor point="TOPLEFT" x="4" y="-85"/>
+								</Anchors>
+							</Frame>
+							<Button parentKey="TankIcon" inherits="LFGRoleButtonTemplate" id="1">
+								<Size x="32" y="32"/>
+								<KeyValues>
+									<KeyValue key="role" value="TANK" type="string"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="9" y="2"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self.checkButton.onClick = PVPUIFrame_RoleButtonClicked;
+										LFGRoleButtonTemplate_OnLoad(self);
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button parentKey="HealerIcon" inherits="LFGRoleButtonTemplate" id="2">
+								<Size x="32" y="32"/>
+								<KeyValues>
+									<KeyValue key="role" value="HEALER" type="string"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.TankIcon" relativePoint="RIGHT" x="8" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self.checkButton.onClick = PVPUIFrame_RoleButtonClicked;
+										LFGRoleButtonTemplate_OnLoad(self);
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button parentKey="DPSIcon" inherits="LFGRoleButtonTemplate" id="3">
+								<Size x="32" y="32"/>
+								<KeyValues>
+									<KeyValue key="role" value="DAMAGER" type="string"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.HealerIcon" relativePoint="RIGHT" x="8" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self.checkButton.onClick = PVPUIFrame_RoleButtonClicked;
+										LFGRoleButtonTemplate_OnLoad(self);
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Frame name="$parentTypeDropDown" inherits="UIDropDownMenuTemplate" id="1">
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="TOPRIGHT" x="6" y="-1"/>
 								</Anchors>
 							</Frame>
 							<ScrollFrame name="$parentSpecificFrame" inherits="HybridScrollFrameTemplate" parentKey="SpecificFrame" hidden="true">
@@ -801,118 +964,38 @@
 							</ScrollFrame>
 							<Frame parentKey="BonusFrame" hidden="true">
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT" x="-8" y="25"/>
-									<Anchor point="TOPLEFT" x="8" y="-42"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.Inset"/>
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset"/>
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<Texture parentKey="WorldBattlesTexture" atlas="pvpqueue-bg-alliance" useAtlasSize="true" alpha="0.62">
-											<Size x="322" y="229"/>
+										<Texture parentKey="WorldBattlesTexture" atlas="pvpqueue-background-casual-alliance" useAtlasSize="true">
 											<Anchors>
-												<Anchor point="BOTTOM" x="0" y="0"/>
+												<Anchor point="TOP" x="0" y="-3"/>
 											</Anchors>
 										</Texture>
 									</Layer>
 								</Layers>
 								<Frames>
-									<Button parentKey="DiceButton">
-										<Size x="23" y="23"/>
+									<Button parentKey="RandomBGButton" inherits="PVPCasualActivityButtonTemplate">
 										<Anchors>
-											<Anchor point="RIGHT" relativePoint="CENTER" x="-130" y="80"/>
+											<Anchor point="TOP" relativeKey="$parent.Inset" y="-9"/>
 										</Anchors>
-										<Layers>
-											<Layer level="OVERLAY">
-												<Texture parentKey="DiceTexture" file="Interface\Buttons\UI-GroupLoot-Dice-Up">
-													<Size x="18" y="18"/>
-													<Anchors>
-														<Anchor point="CENTER" x="0" y="-2"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-										</Layers>
-										<NormalTexture file="Interface\Buttons\UI-SquareButton-Up">
-											<Size x="32" y="32"/>
-											<Anchors>
-												<Anchor point="CENTER"/>
-											</Anchors>
-										</NormalTexture>
-										<PushedTexture file="Interface\Buttons\UI-SquareButton-Down">
-											<Size x="32" y="32"/>
-											<Anchors>
-												<Anchor point="CENTER"/>
-											</Anchors>
-										</PushedTexture>
-										<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
-											<Size x="32" y="32"/>
-											<Anchors>
-												<Anchor point="CENTER"/>
-											</Anchors>
-										</HighlightTexture>
-										<Scripts>
-											<OnEnter>
-												GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-												GameTooltip:SetText(BATTLEGROUND_DICE_BUTTON_TOOLTIP);
-											</OnEnter>
-											<OnLeave>
-												GameTooltip:Hide();
-											</OnLeave>
-											<OnMouseDown>
-												self.DiceTexture:SetPoint("CENTER", -1, -3);
-											</OnMouseDown>
-											<OnMouseUp>
-												self.DiceTexture:SetPoint("CENTER", 0, -2);
-											</OnMouseUp>
-											<OnClick>
-												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-												IncludedBattlegroundsDropDown_Toggle();
-											</OnClick>
-										</Scripts>
-									</Button>
-									<Frame name="IncludedBattlegroundsDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
-										<Anchors>
-											<Anchor point="TOPRIGHT" relativeKey="$parent.DiceButton" x="35" y="26"/>
-										</Anchors>
-										<Scripts>
-											<OnLoad function="IncludedBattlegroundsDropDown_OnLoad"/>
-										</Scripts>
-									</Frame>
-									<Button parentKey="RandomBGButton" inherits="PVPBonusBattlegroundButtonTemplate">
-										<Anchors>
-											<Anchor point="TOP" x="0" y="-107"/>
-										</Anchors>
-										<Frames>
-											<Frame parentKey="Contents" inherits="PVPBonusBattlegroundContentsTemplate">
-												<Layers>
-													<Layer level="ARTWORK">
-														<FontString parentKey="Title" inherits="GameFontHighlightMedium" text="RANDOM_BATTLEGROUNDS">
-															<Anchors>
-																<Anchor point="LEFT" x="14" y="0"/>
-															</Anchors>
-														</FontString>
-														<FontString parentKey="ExcludedBattlegrounds" inherits="GameFontNormalSmall" justifyH="LEFT">
-															<Size x="220" y="10"/>
-															<Anchors>
-																<Anchor point="LEFT" x="30" y="0"/>
-																<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-2"/>
-															</Anchors>
-															<Color r="0.75" g="0.15" b="0.15"/>
-														</FontString>
-														<Texture parentKey="ThumbTexture" file="Interface\PVPFrame\bg-down-on">
-															<Anchors>
-																<Anchor point="RIGHT" relativeKey="$parent.ExcludedBattlegrounds" relativePoint="LEFT" x="-2" y="-2"/>
-															</Anchors>
-														</Texture>
-													</Layer>
-												</Layers>
-											</Frame>
-										</Frames>
 										<KeyValues>
 											<KeyValue key="tooltipTableKey" value="RandomBG" type="string"/>
 										</KeyValues>
 									</Button>
-									<Button parentKey="Arena1Button" inherits="PVPBonusWorldPVPButtonTemplate">
+									<Button parentKey="RandomEpicBGButton" inherits="PVPCasualActivityButtonTemplate">
 										<Anchors>
 											<Anchor point="TOP" relativeKey="$parent.RandomBGButton" relativePoint="BOTTOM" x="0" y="-1"/>
+										</Anchors>
+										<KeyValues>
+											<KeyValue key="tooltipTableKey" value="LargeBattleground" type="string"/>
+										</KeyValues>
+									</Button>
+									<Button parentKey="Arena1Button" inherits="PVPCasualActivityButtonTemplate">
+										<Anchors>
+											<Anchor point="TOP" relativeKey="$parent.RandomEpicBGButton" relativePoint="BOTTOM" x="0" y="-1"/>
 										</Anchors>
 										<KeyValues>
 											<KeyValue key="canQueue" value="true" type="boolean"/>
@@ -920,18 +1003,9 @@
 											<KeyValue key="tooltipTableKey" value="Skirmish" type="string"/>
 										</KeyValues>
 									</Button>
-									<Button parentKey="AshranButton" inherits="PVPBonusWorldPVPButtonTemplate">
+									<Button parentKey="BrawlButton" inherits="PVPCasualActivityButtonTemplate">
 										<Anchors>
 											<Anchor point="TOP" relativeKey="$parent.Arena1Button" relativePoint="BOTTOM" x="0" y="-1"/>
-										</Anchors>
-										<KeyValues>
-											<KeyValue key="queueID" value="ASHRAN_QUEUE_ID" type="global"/>
-											<KeyValue key="tooltipTableKey" value="Ashran" type="string"/>
-										</KeyValues>
-									</Button>
-									<Button parentKey="BrawlButton" inherits="PVPBonusWorldPVPButtonTemplate">
-										<Anchors>
-											<Anchor point="TOP" relativeKey="$parent.AshranButton" relativePoint="BOTTOM" x="0" y="-1"/>
 										</Anchors>
 										<KeyValues>
 											<KeyValue key="isBrawl" value="true" type="boolean"/>
@@ -1032,155 +1106,90 @@
 						</Frames>
 						<Scripts>
 							<OnLoad function="HonorFrame_OnLoad"/>
-                            <OnShow function="HonorFrame_OnShow"/>
 							<OnEvent function="HonorFrame_OnEvent"/>
 						</Scripts>
 					</Frame>
 					<!-- Rated -->
 					<Frame name="ConquestFrame" toplevel="true" hidden="true" useParentLevel="true" >
-						<Size x="339" y="407"/>
+						<Size x="402" y="407"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="220" y="-22"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BORDER" textureSubLevel="-1">
-								<Texture parentKey="RatedBGTexture" file="Interface\PVPFrame\PvPMegaQueue">
-									<Size x="324" y="121"/>								
+								<Texture parentKey="RatedBGTexture" atlas="pvpqueue-background-rated" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="TOP" x="0" y="-154"/>
+										<Anchor point="TOP" x="0" y="-88"/>
 									</Anchors>
-									<TexCoords left="0.00390625" right="0.63671875" top="0.0361328125" bottom="0.154296875"/>	
 								</Texture>
-								<Texture parentKey="ArenaTexture" file="Interface\PVPFrame\PvPMegaQueue">
-									<Size x="324" y="72"/>								
-									<Anchors>
-										<Anchor point="BOTTOM" x="0" y="28"/>
-									</Anchors>
-									<TexCoords left="0" right="0.640625" top="0.6416015625" bottom="0.7060546875"/>	
-								</Texture>	
-							</Layer>
-							<Layer level="BORDER">
-								<Texture parentKey="ArenaHeader" file="Interface\PVPFrame\PvPMegaQueue">
-									<Size x="324" y="57"/>
-									<Anchors>
-										<Anchor point="TOP" x="0" y="-119"/>
-									</Anchors>
-									<TexCoords left="0.00195313" right="0.63867188" top="0.57714844" bottom="0.64062500"/>
-								</Texture>
-								<Texture parentKey="RatedBGHeader" file="Interface\PVPFrame\PvPMegaQueue">
-									<Size x="324" y="57"/>
-									<Anchors>
-										<Anchor point="TOP" x="0" y="-270"/>
-									</Anchors>
-									<TexCoords left="0.00195313" right="0.63867188" top="0.57128906" bottom="0.64062500"/>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
-								<FontString inherits="QuestTitleFontBlackShadow" text="ARENA_BATTLES">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.ArenaHeader" x="7" y="-10"/>
-									</Anchors>
-								</FontString>
-								<FontString inherits="QuestTitleFontBlackShadow" text="PVP_RATED_BATTLEGROUNDS">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.RatedBGHeader" x="7" y="-12"/>
-									</Anchors>
-								</FontString>
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentKey="XPBar" useParentLevel="true" inherits="PVPHonorSystemSmallXPBar">
+							<StatusBar parentKey="ConquestBar" inherits="PVPConquestBarTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="1" y="-7"/>
+									<Anchor point="TOPLEFT" x="16" y="-19"/>
 								</Anchors>
-							</Frame>
-							<Frame parentKey="RoleInset" useParentLevel="true" inherits="InsetFrameTemplate">
-								<Anchors>
-									<Anchor point="TOPLEFT" x="4" y="-52" />
-									<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-5" y="-114" />
-								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND" textureSubLevel="0">
-										<Texture parentKey="Background" setAllPoints="true">
-											<Color r="1" g="1" b="1"/>
-											<Gradient orientation="VERTICAL">
-												<MinColor r="1" g="0" b="0" a="0.0"/>
-												<MaxColor r="0.38" g="0" b="0.79" a="0.2"/>
-											</Gradient>
-										</Texture>
-									</Layer>
-									<Layer level="BACKGROUND" textureSubLevel="1">
-										<Texture parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
-											<Anchors>
-												<Anchor point="TOPLEFT" x="0" y="0"/>
-												<Anchor point="TOPRIGHT" x="0" y="0"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Frames>
-									<Button parentKey="HealerIcon" inherits="LFGRoleButtonTemplate" id="2">
-										<Size x="45" y="45"/>
-										<KeyValues>
-											<KeyValue key="role" value="HEALER" type="string"/>
-										</KeyValues>
-										<Anchors>
-											<Anchor point="TOP" x="0" y="-8"/>
-										</Anchors>
-										<Scripts>
-											<OnLoad>
-												self.checkButton.onClick = PVPUIFrame_RoleButtonClicked;
-												LFGRoleButtonTemplate_OnLoad(self);
-											</OnLoad>
-										</Scripts>
-									</Button>
-									<Button parentKey="TankIcon" inherits="LFGRoleButtonTemplate" id="1">
-										<Size x="45" y="45"/>
-										<KeyValues>
-											<KeyValue key="role" value="TANK" type="string"/>
-										</KeyValues>
-										<Anchors>
-											<Anchor point="RIGHT" relativeKey="$parent.HealerIcon" relativePoint="LEFT" x="-40" y="0"/>
-										</Anchors>
-										<Scripts>
-											<OnLoad>
-												self.checkButton.onClick = PVPUIFrame_RoleButtonClicked;
-												LFGRoleButtonTemplate_OnLoad(self);
-											</OnLoad>
-										</Scripts>
-									</Button>
-									<Button parentKey="DPSIcon" inherits="LFGRoleButtonTemplate" id="3">
-										<Size x="45" y="45"/>
-										<KeyValues>
-											<KeyValue key="role" value="DAMAGER" type="string"/>
-										</KeyValues>
-										<Anchors>
-											<Anchor point="LEFT" relativeKey="$parent.HealerIcon" relativePoint="RIGHT" x="40" y="0"/>
-										</Anchors>
-										<Scripts>
-											<OnLoad>
-												self.checkButton.onClick = PVPUIFrame_RoleButtonClicked;
-												LFGRoleButtonTemplate_OnLoad(self);
-											</OnLoad>
-										</Scripts>
-									</Button>
-								</Frames>
-							</Frame>
+							</StatusBar>
 							<Frame parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate">
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" x="-5" y="26"/>
-									<Anchor point="TOPLEFT" x="4" y="-116"/>
+									<Anchor point="TOPLEFT" x="4" y="-85"/>
 								</Anchors>
 							</Frame>
-							<Button parentKey="Arena2v2" inherits="PVPConquestButtonTemplate" id="1">
+							<Button parentKey="TankIcon" inherits="LFGRoleButtonTemplate" id="1">
+								<Size x="32" y="32"/>
+								<KeyValues>
+									<KeyValue key="role" value="TANK" type="string"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="9" y="2"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self.checkButton.onClick = PVPUIFrame_RoleButtonClicked;
+										LFGRoleButtonTemplate_OnLoad(self);
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button parentKey="HealerIcon" inherits="LFGRoleButtonTemplate" id="2">
+								<Size x="32" y="32"/>
+								<KeyValues>
+									<KeyValue key="role" value="HEALER" type="string"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.TankIcon" relativePoint="RIGHT" x="8" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self.checkButton.onClick = PVPUIFrame_RoleButtonClicked;
+										LFGRoleButtonTemplate_OnLoad(self);
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button parentKey="DPSIcon" inherits="LFGRoleButtonTemplate" id="3">
+								<Size x="32" y="32"/>
+								<KeyValues>
+									<KeyValue key="role" value="DAMAGER" type="string"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.HealerIcon" relativePoint="RIGHT" x="8" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self.checkButton.onClick = PVPUIFrame_RoleButtonClicked;
+										LFGRoleButtonTemplate_OnLoad(self);
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button parentKey="Arena2v2" inherits="PVPRatedActivityButtonTemplate" id="1">
 								<KeyValues>
 									 <KeyValue key="toolTipTitle" value="ARENA_BATTLES_2V2" type="global"/>
 								</KeyValues>
 								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.ArenaHeader" relativePoint="BOTTOM" y="12"/>
+									<Anchor point="TOP" relativeKey="$parent.Inset" y="-9"/>
 								</Anchors>
 							</Button>
-							<Button parentKey="Arena3v3" inherits="PVPConquestButtonTemplate" id="2">
+							<Button parentKey="Arena3v3" inherits="PVPRatedActivityButtonTemplate" id="2">
 								<KeyValues>
 									 <KeyValue key="toolTipTitle" value="ARENA_BATTLES_3V3" type="global"/>
 								</KeyValues>
@@ -1188,12 +1197,12 @@
 									<Anchor point="TOP" relativeKey="$parent.Arena2v2" relativePoint="BOTTOM" y="-1"/>
 								</Anchors>
 							</Button>
-							<Button parentKey="RatedBG" inherits="PVPConquestButtonTemplate" id="3">
+							<Button parentKey="RatedBG" inherits="PVPRatedActivityButtonTemplate" id="3">
 								<KeyValues>
 									 <KeyValue key="toolTipTitle" value="PVP_RATED_BATTLEGROUNDS" type="global"/>
 								</KeyValues>
 								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.RatedBGHeader" relativePoint="BOTTOM" y="9"/>
+									<Anchor point="TOP" relativeKey="$parent.Arena3v3" relativePoint="BOTTOM" y="-1"/>
 								</Anchors>
 							</Button>
 							<Frame parentKey="ShadowOverlay" inherits="ShadowOverlaySmallTemplate" useParentLevel="true">
@@ -1224,38 +1233,44 @@
 								</Scripts>
 							</Button>
 							<Frame parentKey="NoSeason" inherits="GlowBoxTemplate" hidden="true" frameLevel="100" enableMouse="true">
+								<HitRectInsets>
+									<AbsInset left="-20" right="-20" top="-20" bottom="-20"/>
+								</HitRectInsets>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="3" y="-3" />
-									<Anchor point="BOTTOMRIGHT" x="-2" y="4"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="18" y="-18" />
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" x="-18" y="17" />
 								</Anchors>
 								<Layers>
 									<Layer level="OVERLAY">
 										<FontString parentKey="Title" inherits="QuestTitleFontBlackShadow" text="PVP_TAB_CONQUEST"  justifyH="CENTER">
 											<Size x="280" y="0"/>
 											<Anchors>
-												<Anchor point="TOP" x="0" y="-125"/>
+												<Anchor point="CENTER" x="0" y="20"/>
 											</Anchors>
 										</FontString>
 										<FontString parentKey="Info"  inherits="GameFontHighlight" text="ARENA_MASTER_NO_SEASON_TEXT"  justifyH="CENTER" justifyV="TOP">
-											<Size x="280" y="180"/>
+											<Size x="280" y="0"/>
 											<Anchors>
-												<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-33"/>
+												<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-2"/>
 											</Anchors>
 										</FontString>
 									</Layer>
 								</Layers>
 							</Frame>
 							<Frame parentKey="Disabled" inherits="GlowBoxTemplate" hidden="true" frameLevel="100" enableMouse="true">
+								<HitRectInsets>
+									<AbsInset left="-20" right="-20" top="-20" bottom="-20"/>
+								</HitRectInsets>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="3" y="-3" />
-									<Anchor point="BOTTOMRIGHT" x="-2" y="4"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="18" y="-18" />
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" x="-18" y="17" />
 								</Anchors>
 								<Layers>
 									<Layer level="OVERLAY">
 										<FontString parentKey="Info"  inherits="GameFontHighlight" text="ARENA_RATED_QUEUES_DISABLED"  justifyH="CENTER" justifyV="TOP">
-											<Size x="280" y="180"/>
+											<Size x="280" y="0"/>
 											<Anchors>
-												<Anchor point="TOP" x="0" y="-125"/>
+												<Anchor point="CENTER" x="0" y="0"/>
 											</Anchors>
 										</FontString>
 									</Layer>
@@ -1269,193 +1284,8 @@
 							<OnShow function="ConquestFrame_OnShow" />
 						</Scripts>
 					</Frame>
-					<!-- War Games-->
-					<Frame name="WarGamesFrame" enableMouse="true" hidden="true" >
-						<Size x="339" y="402"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="220" y="-22"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="InfoBG">
-									<Size x="304" y="121"/>
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" x="8" y="19"/>
-									</Anchors>
-									<Color r="0.078125" g="0.12109375" b="0.21484375" a="0.4"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Frame parentKey="RightInset" useParentLevel="true" inherits="InsetFrameTemplate">
-								<Size x="332" y="379"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" x="5" y="-2"/>
-								</Anchors>
-							</Frame>
-							<ScrollFrame name="$parentScrollFrame" inherits="HybridScrollFrameTemplate" parentKey="scrollFrame">
-								<Size x="308" y="248"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" x="7" y="-6"/>
-								</Anchors>
-								<Frames>
-									<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-12"/>
-											<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="11"/>
-										</Anchors>
-									</Slider>
-								</Frames>
-							</ScrollFrame>
-							<ScrollFrame name="$parentInfoScrollFrame" inherits="UIPanelScrollFrameTemplate">
-								<Size x="303" y="114"/>
-								<Anchors>
-									<Anchor point="BOTTOMLEFT" x="9" y="25"/>
-								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture parentKey="scrollBarBackground">
-											<Size x="25" y="84"/>
-											<Anchors>
-												<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="5"/>
-												<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
-											</Anchors>
-											<Color r="0" g="0" b="0" a="0.7"/>
-										</Texture>
-									</Layer>
-									<Layer level="ARTWORK">
-										<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" parentKey="scrollBarArtTop">
-											<Size x="30" y="120"/>
-											<Anchors>
-												<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-3" y="3"/>
-											</Anchors>
-											<TexCoords left="0" right="0.46875" top="0.0" bottom="0.9375"/>
-										</Texture>
-										<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" parentKey="scrollBarArtBottom">
-											<Size x="30" y="128"/>
-											<Anchors>
-												<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-3" y="-3"/>
-											</Anchors>
-											<TexCoords left="0.53125" right="1.0" top="0.0" bottom="1.0"/>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnLoad>
-										self.scrollBarHideable = true;
-										ScrollFrame_OnLoad(self);
-										ScrollFrame_OnScrollRangeChanged(self);
-										local scrollBar = _G[self:GetName().."ScrollBar"];
-										self.scrollBarBackground:SetParent(scrollBar);
-										self.scrollBarArtTop:SetParent(scrollBar);
-										self.scrollBarArtBottom:SetParent(scrollBar);
-										scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, -18);
-										scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 6, 15);
-										self.defaultWidth = self:GetWidth();
-										local resizeFunc = function(scrollBar)
-											if ( scrollBar:IsShown() ) then
-												self:SetWidth(self.defaultWidth);
-											else
-												self:SetWidth(self.defaultWidth + scrollBar:GetWidth() + 7);
-											end
-										end
-
-										scrollBar:SetScript("OnHide", resizeFunc);
-										scrollBar:SetScript("OnShow", resizeFunc);
-
-										resizeFunc(scrollBar);
-									</OnLoad>
-								</Scripts>
-								<ScrollChild>
-									<Frame name="$parentChildFrame">
-										<Size x="1" y="1"/>
-										<Anchors>
-											<Anchor point="TOPLEFT"/>
-										</Anchors>
-										<Layers>
-											<Layer level="ARTWORK">
-												<FontString name="WarGamesFrameDescription" inherits="GameFontBlackMedium" justifyH="LEFT" justifyV="TOP" text="WARGAME_TOOLTIP">
-													<Size x="275" y="0"/>
-													<Anchors>
-														<Anchor point="TOPLEFT" x="15" y="-15"/>
-													</Anchors>
-													<Color r="0.6" g="0.6" b="0.6"/>
-												</FontString>
-												<Texture name="$parentSpacer">
-													<Size x="15" y="15"/>
-													<Anchors>
-														<Anchor point="TOP" relativeTo="WarGamesFrameDescription" relativePoint="BOTTOM" x="0" y="0"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-										</Layers>
-									</Frame>
-								</ScrollChild>
-							</ScrollFrame>
-							<Frame parentKey="HorizontalBar">
-								<Size x="331" y="16"/>
-								<Anchors>
-									<Anchor point="BOTTOMLEFT" x="3" y="135"/>
-								</Anchors>
-								<Layers>
-									<Layer level="ARTWORK">
-										<Texture parentKey="LeftBar" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
-											<Size x="256" y="16"/>
-											<Anchors>
-												<Anchor point="LEFT"/>
-											</Anchors>
-											<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
-										</Texture>
-										<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
-											<Size x="75" y="16"/>
-											<Anchors>
-												<Anchor point="LEFT" relativeKey="$parent.LeftBar" relativePoint="RIGHT"/>
-											</Anchors>
-											<TexCoords left="0" right="0.29296875" top="0.25" bottom="0.5"/>
-										</Texture>
-									</Layer>
-								</Layers>
-							</Frame>
-							<Button name="WarGameStartButton" inherits="MagicButtonTemplate" text="START_WARGAME" motionScriptsWhileDisabled="true">
-								<Size x="130" y="22"/>
-								<Anchors>
-									<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
-								</Anchors>
-								<Scripts>
-									<OnClick function="WarGameStartButton_OnClick"/>
-									<OnEnter function="WarGameStartButton_OnEnter"/>
-									<OnLeave function="GameTooltip_Hide"/>
-								</Scripts>
-							</Button>
-							<CheckButton name="WarGameTournamentModeCheckButton" inherits="UICheckButtonTemplate">
-								<Size x="24" y="24"/>
-								<Anchors>
-									<Anchor point="BOTTOMLEFT" x="6" y="-3"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self.text:SetText(TOURNAMENT_RULES);
-										self.text:SetFontObject(GameFontHighlightSmall);
-									</OnLoad>
-									<OnClick>
-										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-									</OnClick>
-									<OnEnter>
-										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GameTooltip:SetText(TOURNAMENT_RULES_TOOLTIP, nil, nil, nil, nil, true);
-									</OnEnter>
-									<OnLeave function="GameTooltip_Hide"/>
-								</Scripts>
-							</CheckButton>
-						</Frames>
-						<Scripts>
-							<OnLoad  function="WarGamesFrame_OnLoad"/>
-							<OnEvent function="WarGamesFrame_OnEvent"/>
-							<OnShow  function="WarGamesFrame_OnShow"/>
-						</Scripts>
-					</Frame>
 					<Frame name="LFGListPVPStub" hidden="true">
-						<Size x="338" y="428"/>
+						<Size x="339" y="428"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="224" y="0"/>
 						</Anchors>
@@ -1468,6 +1298,254 @@
 								LFGListFrame_SetBaseFilters(LFGListFrame, LE_LFG_LIST_FILTER_PVP);
 							</OnShow>
 						</Scripts>
+					</Frame>
+					<Frame parentKey="HonorInset" inherits="InsetFrameTemplate" useParentLevel="true" mixin="PVPUIHonorInsetMixin">
+						<Size x="166" y="0"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-6" y="-22"/>
+							<Anchor point="BOTTOMRIGHT" x="-6" y="25"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture atlas="pvpqueue-sidebar-background" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-3"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Cooldown parentKey="HonorLevelDisplay" reverse="true" hideCountdownNumbers="true" rotation="180" mixin="PVPUIHonorLevelDisplayMixin">
+								<Size x="128" y="128"/>
+								<Anchors>
+									<Anchor point="TOP" x="0" y="-25"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture parentKey="Background">
+											<Size x="95" y="95"/>
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="BORDER">
+										<Texture atlas="pvpqueue-sidebar-honorbar-background" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER" x="0" y="-1"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="ARTWORK">
+										<FontString parentKey="LevelLabel" inherits="GameFontNormal">
+											<Anchors>
+												<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="1"/>
+											</Anchors>
+										</FontString>
+										<Texture parentKey="LevelBadge">
+											<Size x="69" y="69"/>
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
+									<Frame parentKey="NextRewardLevel">
+										<Size x="36" y="36"/>
+										<Anchors>
+											<Anchor point="BOTTOM" x="0" y="-1"/>
+										</Anchors>
+										<Layers>
+											<Layer level="BACKGROUND">
+												<Texture parentKey="RewardIcon">
+													<Size x="28" y="28"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+													<Color r="0" g="0" b="0"/>
+												</Texture>
+											</Layer>
+											<Layer level="BACKGROUND" textureSubLevel="1">
+												<Texture parentKey="IconCover">
+													<Size x="36" y="36"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+													<Color r="0" g="0" b="0" a="0.5"/>
+												</Texture>
+												<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+													<Size x="36" y="36"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+													<MaskedTextures>
+														<MaskedTexture childKey="RewardIcon"/>
+														<MaskedTexture childKey="IconCover"/>
+													</MaskedTextures>
+												</MaskTexture>
+											</Layer>
+											<Layer level="BORDER">
+												<Texture parentKey="RingBorder" atlas="pvpqueue-rewardring-black">
+													<Size x="48" y="48"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="ARTWORK">
+												<FontString parentKey="LevelLabel" inherits="Game10Font_o1">
+													<Anchors>
+														<Anchor point="CENTER" x="1"/>
+													</Anchors>
+													<Color r="0.498" g="0.498" b="0.498"/>
+												</FontString>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnEnter>
+												self:GetParent():ShowNextRewardTooltip();
+											</OnEnter>
+											<OnLeave function="GameTooltip_Hide"/>
+										</Scripts>
+									</Frame>
+								</Frames>
+								<SwipeTexture file="Interface\PVPFrame\pvpqueue-sidebar-honorbar-fill"/>
+								<Scripts>
+									<OnLoad method="OnLoad"/>
+									<OnShow method="OnShow"/>
+									<OnHide method="OnHide"/>
+									<OnEvent method="OnEvent"/>
+									<OnMouseUp method="OnMouseUp"/>
+									<OnEnter method="OnEnter"/>
+									<OnLeave function="GameTooltip_Hide"/>
+								</Scripts>
+							</Cooldown>
+							<Frame parentKey="CasualPanel" hidden="true">
+								<Anchors>
+									<Anchor point="LEFT"/>
+									<Anchor point="RIGHT"/>
+									<Anchor point="TOP" relativeKey="$parent.HonorLevelDisplay" relativePoint="BOTTOM"/>
+									<Anchor point="BOTTOM"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="HKLabel" inherits="GameFontNormal" text="HONORABLE_KILLS">
+											<Anchors>
+												<Anchor point="TOP" x="0" y="-31"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="HKValue" inherits="GameFontNormalHuge2">
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.HKLabel" relativePoint="BOTTOM" x="0" y="-8"/>
+											</Anchors>
+											<Color r="1" g="1" b="1"/>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+							<Frame parentKey="RatedPanel" hidden="true">
+								<Anchors>
+									<Anchor point="LEFT"/>
+									<Anchor point="RIGHT"/>
+									<Anchor point="TOP" relativeKey="$parent.HonorLevelDisplay" relativePoint="BOTTOM"/>
+									<Anchor point="BOTTOM"/>
+								</Anchors>
+								<Frames>
+									<Frame parentKey="Tier" inherits="PVPRatedTierTemplate">
+										<Anchors>
+											<Anchor point="TOP" x="0" y="-50"/>
+										</Anchors>
+										<Layers>
+											<Layer level="ARTWORK">
+												<FontString parentKey="Title" inherits="GameFontNormal" text="PVP_SEASON_HIGH">
+													<Size x="142" y="0"/>
+													<Anchors>
+														<Anchor point="BOTTOM" relativePoint="TOP" y="8"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+										<Frames>
+											<Frame parentKey="NextTier">
+												<Size x="26" y="26"/>
+												<Anchors>
+													<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="16" y="-17"/>
+												</Anchors>
+												<Layers>
+													<Layer level="ARTWORK">
+														<Texture parentKey="Icon" setAllPoints="true" alpha="0.6"/>
+														<Texture atlas="pvpqueue-sidebar-nextarrow">
+															<Size x="16" y="25"/>
+															<Anchors>
+																<Anchor point="TOPLEFT" x="-13" y="-1"/>
+															</Anchors>
+														</Texture>
+													</Layer>
+												</Layers>
+												<Scripts>
+													<OnEnter function="NextTier_OnEnter"/>
+													<OnLeave function="GameTooltip_Hide"/>
+												</Scripts>
+											</Frame>
+										</Frames>
+									</Frame>
+									<Frame parentKey="SeasonRewardFrame" mixin="PVPUISeasonRewardFrameMixin">
+										<Size x="44" y="44"/>
+										<Anchors>
+											<Anchor point="BOTTOM" y="31"/>
+										</Anchors>
+										<Layers>
+											<Layer level="ARTWORK">
+												<Texture parentKey="Ring" atlas="pvpqueue-rewardring-large" useAtlasSize="true">
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+												<FontString inherits="GameFontNormal" text="PVP_SEASON_REWARD">
+													<Size x="142" y="0"/>
+													<Anchors>
+														<Anchor point="BOTTOM" relativePoint="TOP" y="10"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+											<Layer level="BACKGROUND">
+												<Texture parentKey="Icon">
+													<Size x="40" y="40"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+												<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+													<Size x="40" y="40"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+													<MaskedTextures>
+														<MaskedTexture childKey="Icon"/>
+													</MaskedTextures>
+												</MaskTexture>
+											</Layer>
+											<Layer level="OVERLAY">
+												<Texture parentKey="CheckMark" atlas="pvpqueue-conquestbar-checkmark" useAtlasSize="true" hidden="true">
+													<Anchors>
+														<Anchor point="BOTTOMRIGHT" x="14" y="-4"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnShow method="OnShow"/>
+											<OnHide method="OnHide"/>
+											<OnEvent method="OnEvent"/>
+											<OnEnter method="UpdateTooltip"/>
+											<OnLeave method="OnLeave"/>
+										</Scripts>
+									</Frame>
+								</Frames>
+							</Frame>
+						</Frames>
 					</Frame>
 				</Frames>
 				<Scripts>

@@ -93,7 +93,6 @@
 							self:OnAnimFinished(...);
 							self:GetParent().Level:SetText(UnitHonorLevel("player"));
 							PVPHonorXPBar_SetNextAvailable(self:GetParent());
-							HonorExhaustionTick_Update(self.ExhaustionTick);
 						end
 					</OnLoad>
 					<OnEnter function="PVPHonorXPBar_OnEnter"/>
@@ -197,12 +196,6 @@
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.Border" relativePoint="BOTTOM" x="0" y="16"/>
 						</Anchors>
-						<Scripts>
-							<OnClick function="PVPHonorXPBarPrestige_OnClick"/>
-							<OnShow>
-								self:SetWidth(self:GetTextWidth()+40);
-							</OnShow>
-						</Scripts>
 					</Button>
 				</Frames>
 				<Scripts>
@@ -330,7 +323,6 @@
 							self:OnAnimFinished(...);
 							self:GetParent().Level:SetText(UnitHonorLevel("player"));
 							PVPHonorXPBar_SetNextAvailable(self:GetParent());
-							HonorExhaustionTick_Update(self.ExhaustionTick);
 						end
 					</OnLoad>
 					<OnEnter function="PVPHonorXPBar_OnEnter"/>
@@ -434,7 +426,6 @@
 							<Anchor point="TOP" relativeKey="$parent.Border" relativePoint="BOTTOM" x="0" y="16"/>
 						</Anchors>
 						<Scripts>
-							<OnClick function="PVPHonorXPBarPrestige_OnClick"/>
 							<OnShow>
 								self:SetWidth(self:GetTextWidth()+40);
 							</OnShow>
@@ -455,6 +446,7 @@
 		</Frames>
 		<KeyValues>
 			<KeyValue type="boolean" key="isSmall" value="true"/>
+			<KeyValue type="boolean" key="canPrestigeHere" value="true"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad function="PVPHonorXPBar_OnLoad"/>
@@ -997,9 +989,5 @@
 				</Scripts>
 			</AnimationGroup>
 		</Animations>
-		<Scripts>
-			<OnLoad function="PrestigeLevelUpBanner_OnLoad"/>
-			<OnEvent function="PrestigeLevelUpBanner_OnEvent"/>
-		</Scripts>
 	</Frame>
 </Ui>

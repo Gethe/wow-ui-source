@@ -88,6 +88,10 @@ end
 function CameraBaseMixin:OnUpdate(elapsed)
 end
 
+-- Override this with code to synchronize the camera state with the model scene API, may be called by the ModelScene to synchronize deferred camera state in case it needs to be queried
+function CameraBaseMixin:SynchronizeCamera()
+end
+
 -- Override this to be notified when the mouse is down on the model scene
 function CameraBaseMixin:OnMouseDown(button)
 end

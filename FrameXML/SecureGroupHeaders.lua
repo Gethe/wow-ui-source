@@ -1018,7 +1018,7 @@ function SecureAuraHeader_Update(self)
 		local i = 1;
 		repeat
 			local aura, _, duration = freshTable();
-			aura.name, _, _, _, _, duration, aura.expires, aura.caster, _, aura.shouldConsolidate, _ = UnitAura(unit, i, fullFilter);
+			aura.name, _, _, _, duration, aura.expires, aura.caster, _, aura.shouldConsolidate, _ = UnitAura(unit, i, fullFilter);
 			if ( aura.name ) then
 				aura.filter = fullFilter;
 				aura.index = i;

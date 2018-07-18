@@ -79,24 +79,8 @@
 		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
-	<Slider name="CompactUnitFrameProfilesSliderTemplate" orientation="HORIZONTAL" virtual="true" enableMouse="true">
-		<Size>
-			<AbsDimension x="144" y="17"/>
-		</Size>
-		<HitRectInsets>
-			<AbsInset left="0" right="0" top="-10" bottom="-10"/>
-		</HitRectInsets>
-		<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="8"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="8"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="3" right="3" top="6" bottom="6"/>
-			</BackgroundInsets>
-		</Backdrop>
+	<Slider name="CompactUnitFrameProfilesSliderTemplate" inherits="HorizontalSliderTemplate" virtual="true">
+		<Size x="144" y="17"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentLabel" inherits="GameFontHighlight" parentKey="label">
@@ -132,11 +116,6 @@
 				CompactUnitFrameProfilesSlider_OnValueChanged(self, value, userInput);
 			</OnValueChanged>
 		</Scripts>
-		<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
-			<Size>
-				<AbsDimension x="32" y="32"/>
-			</Size>
-		</ThumbTexture>
 	</Slider>
 
 	<Frame name="CompactUnitFrameProfileDialogWithCoverTemplate" frameStrata="DIALOG" hidden="true" virtual="true">

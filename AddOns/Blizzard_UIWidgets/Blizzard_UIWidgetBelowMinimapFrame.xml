@@ -1,0 +1,12 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Frame name="UIWidgetBelowMinimapContainerFrame" toplevel="true" parent="UIParent" mixin="UIWidgetBelowMinimapContainerMixin">
+		<Size x="10" y="0"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT" x="-400" y="0"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

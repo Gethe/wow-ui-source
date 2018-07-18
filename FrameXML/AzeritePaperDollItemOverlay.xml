@@ -1,0 +1,188 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="AzeritePaperDollItemOverlay.lua"/>
+	
+	<Frame name="PaperDollAzeriteItemOverlayTemplate" mixin="AzeritePaperDollItemOverlayMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="HasPaperDollAzeriteItemOverlay" value="true"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BORDER" textureSubLevel="-1">
+				<Texture parentKey="AzeriteTexture">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="RankFrame">
+				<Size x="31" y="21" />
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="BOTTOM" y="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="4">
+						<Texture parentKey="Texture" atlas="AzeriteArmor-CharacterInfo-NeckLevelBorder">
+							<Size x="31" y="21" />
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Label" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.RankTexture" y="1"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="AvailableTraitFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="BORDER" textureSubLevel="-1">
+						<Texture parentKey="SmokeRightUnderlay" atlas="AzeriteArmor-CharacterInfo-Border-Smoke" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="RIGHT" x="0" y="4"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="SmokeLeftUnderlay" atlas="AzeriteArmor-CharacterInfo-Border-Smoke" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="LEFT" x="0" y="-4" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="SmokeTopUnderlay" atlas="AzeriteArmor-CharacterInfo-Border-Smoke" rotation="90" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="TOP" x="4" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="SmokeBottomUnderlay" atlas="AzeriteArmor-CharacterInfo-Border-Smoke" rotation="90" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="BOTTOM" x="-4" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="0">
+						<Texture parentKey="SmokeRight" atlas="AzeriteArmor-CharacterInfo-Border-Smoke" useAtlasSize="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="RIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="SmokeLeft" atlas="AzeriteArmor-CharacterInfo-Border-Smoke" useAtlasSize="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="LEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="SmokeTop" atlas="AzeriteArmor-CharacterInfo-Border-Smoke" rotation="90" useAtlasSize="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="TOP"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="SmokeBottom" atlas="AzeriteArmor-CharacterInfo-Border-Smoke" rotation="90" useAtlasSize="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="BOTTOM"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="3">
+						<Texture parentKey="StarTopLeft" atlas="AzeriteArmor-CharacterInfo-Border-TitanStar" alphaMode="ADD">
+							<Size x="10" y="10" />
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="TOPLEFT" x="2" y="-2"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="StarTopRight" atlas="AzeriteArmor-CharacterInfo-Border-TitanStar" alphaMode="ADD">
+							<Size x="10" y="10" />
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-2" y="-2"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="StarBottomLeft" atlas="AzeriteArmor-CharacterInfo-Border-TitanStar" alphaMode="ADD">
+							<Size x="10" y="10" />
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="BOTTOMLEFT" x="2" y="2"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="StarBottomRight" atlas="AzeriteArmor-CharacterInfo-Border-TitanStar" alphaMode="ADD">
+							<Size x="10" y="10" />
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" x="-2" y="2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="1">
+						<Texture parentKey="StarTopLeftUnderlay" atlas="AzeriteArmor-CharacterInfo-Border-TitanStar" alpha=".5">
+							<Size x="10" y="10" />
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="TOPLEFT" x="2" y="-2"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="StarTopRightUnderlay" atlas="AzeriteArmor-CharacterInfo-Border-TitanStar" alpha=".5">
+							<Size x="10" y="10" />
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-2" y="-2"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="StarBottomLeftUnderlay" atlas="AzeriteArmor-CharacterInfo-Border-TitanStar" alpha=".5">
+							<Size x="10" y="10" />
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="BOTTOMLEFT" x="2" y="2"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="StarBottomRightUnderlay" atlas="AzeriteArmor-CharacterInfo-Border-TitanStar" alpha=".5">
+							<Size x="10" y="10" />
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" x="-2" y="2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="2">
+						<Texture parentKey="ItemGlow" atlas="AzeriteArmor-CharacterInfo-Border-ItemGlow" useAtlasSize="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="-2">
+						<Texture parentKey="BorderGlow" atlas="AzeriteArmor-CharacterInfo-Border-Glow" useAtlasSize="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="AvailableAnim" looping="REPEAT">
+						<Alpha childKey="SmokeRight"	startDelay="0.00" duration="1.5" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="SmokeLeft"		startDelay="0.75" duration="1.5" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="SmokeTop"		startDelay="1.50" duration="1.5" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="SmokeBottom"	startDelay="2.25" duration="1.5" order="1" fromAlpha="1" toAlpha="0"/>
+
+						<Alpha childKey="SmokeRight"	startDelay="1.50" duration="1.5" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="SmokeLeft"		startDelay="2.25" duration="1.5" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="SmokeTop"		startDelay="3.00" duration="1.5" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="SmokeBottom"	startDelay="4.50" duration="1.5" order="1" fromAlpha="0" toAlpha="1"/>
+
+						<Alpha childKey="StarTopLeft"		startDelay="0.00" duration="1.5" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="StarTopRight"		startDelay="0.75" duration="1.5" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="StarBottomLeft"	startDelay="1.50" duration="1.5" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="StarBottomRight"	startDelay="2.25" duration="1.5" order="1" fromAlpha="1" toAlpha="0"/>
+
+						<Alpha childKey="StarTopLeft"		startDelay="1.50" duration="1.5" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="StarTopRight"		startDelay="2.25" duration="1.5" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="StarBottomLeft"	startDelay="3.00" duration="1.5" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="StarBottomRight"	startDelay="4.50" duration="1.5" order="1" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="AvailableAnimGlow" looping="REPEAT">
+						<Alpha childKey="BorderGlow" smoothing="IN_OUT" startDelay="0.00" duration=".75" order="1" fromAlpha=".0" toAlpha="1"/>
+						<Alpha childKey="BorderGlow" smoothing="IN_OUT" startDelay="1.25" duration=".5" order="1" fromAlpha="1" toAlpha=".0"/>
+						<Alpha childKey="BorderGlow" smoothing="IN_OUT" startDelay="1.75" duration=".25" order="1" fromAlpha="0" toAlpha="0"/>
+
+						<Alpha childKey="ItemGlow" smoothing="IN_OUT" startDelay="0.00" duration=".75" order="1" fromAlpha=".5" toAlpha="1"/>
+						<Alpha childKey="ItemGlow" smoothing="IN_OUT" startDelay="1.25" duration=".5" order="1" fromAlpha="1" toAlpha=".5"/>
+						<Alpha childKey="ItemGlow" smoothing="IN_OUT" startDelay="1.75" duration=".25" order="1" fromAlpha=".5" toAlpha=".5"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

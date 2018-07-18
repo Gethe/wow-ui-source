@@ -55,8 +55,10 @@ end
 
 function PaladinPowerBar:ToggleHolyRune(self, visible)
 	if visible then
+		self.activate:Stop();
 		self.deactivate:Play();
 	else
+		self.deactivate:Stop();
 		self.activate:Play();
 	end
 end
@@ -91,7 +93,7 @@ function PaladinPowerBar:UpdatePower()
 
 	for i=1,maxHolyPower do
 		local holyRune = self["rune"..i];
-		local isShown = holyRune:GetAlpha()> 0 or holyRune.activate:IsPlaying();
+		local isShown = not holyRune.deactivate:IsPlaying() and (holyRune:GetAlpha()> 0 or holyRune.activate:IsPlaying());
 		local shouldShow = i <= numHolyPower;
 		if isShown ~= shouldShow then
 			self:ToggleHolyRune(holyRune, isShown);

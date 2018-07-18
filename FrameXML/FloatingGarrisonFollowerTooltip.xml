@@ -56,7 +56,7 @@ UI.xsd">
 		</Layers>
 	</Frame>
 	
-	<Frame name="GarrisonFollowerTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="TooltipBorderedFrameTemplate">
+	<Frame name="GarrisonFollowerTooltipContentsTemplate" virtual="true">
 		<Size x="260" y="80"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="2">
@@ -164,6 +164,8 @@ UI.xsd">
 		<Scripts>
 			<OnLoad function="GarrisonFollowerTooltip_OnLoad"/>
 		</Scripts>
+	</Frame>
+	<Frame name="GarrisonFollowerTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="GarrisonFollowerTooltipContentsTemplate,TooltipBorderedFrameTemplate">
 	</Frame>
 
 	<Frame name="GarrisonShipyardFollowerTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="TooltipBorderedFrameTemplate">

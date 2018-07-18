@@ -4,9 +4,6 @@ MAX_TALENT_TABS = 4;
 MAX_TALENT_TIERS = 7;
 NUM_TALENT_COLUMNS = 3;
 
-MAX_PVP_TALENT_TIERS = 6;
-MAX_PVP_TALENT_COLUMNS = 3;
-
 DEFAULT_TALENT_SPEC = "spec1";
 DEFAULT_TALENT_TAB = 1;
 
@@ -187,79 +184,140 @@ function TalentFrame_UpdateSpecInfoCache(cache, inspect, pet, talentGroup)
 	end
 end
 
-function PVPTalentFrame_Update(self, talentUnit)
-	local parent = self:GetParent();
-	local activeTalentGroup = GetActiveSpecGroup(false);
-	local factionGroup = UnitFactionGroup("player");
-	local prestigeLevel = UnitPrestige("player");
+PvpTalentSlotMixin = {};
 
-	if ( not self.inspect ) then
-		if ( UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT] ) then
-			self.XPBar:Hide();
-			self.NotAvailableYet:SetFormattedText(PVP_TALENTS_BECOME_AVAILABLE_AT_LEVEL, 110);
-			self.NotAvailableYet:Show();
+function PvpTalentSlotMixin:OnLoad()
+	self:RegisterForDrag("LeftButton");
+	if (self.isTrinket) then
+		self.Arrow:SetSize(43, 44);
+		self.Arrow:SetPoint("LEFT", self.Border, "RIGHT", -16, -1);
+		self.Texture:SetSize(41, 41);
+	end
+end
+
+function PvpTalentSlotMixin:OnShow()
+	self:RegisterEvent("PLAYER_PVP_TALENT_UPDATE");
+end
+
+function PvpTalentSlotMixin:OnHide()
+	self:UnregisterEvent("PLAYER_PVP_TALENT_UPDATE");
+end
+
+function PvpTalentSlotMixin:OnEvent(event)
+	if (event == "PLAYER_PVP_TALENT_UPDATE") then
+		self.predictedSetting:Clear();
+		self:Update();
+	end
+end
+
+function PvpTalentSlotMixin:GetSelectedTalent()
+	return self.predictedSetting:Get();
+end
+
+function PvpTalentSlotMixin:SetSelectedTalent(talentID)
+	local selectedTalentID = self.predictedSetting:Get();
+	if (selectedTalentID and selectedTalentID == talentID) then
+		return;
+	end
+	self.predictedSetting:Set(talentID);
+	self:Update();
+end
+
+function PvpTalentSlotMixin:SetUp(slotIndex)
+	self.slotIndex = slotIndex;
+	self.predictedSetting = CreatePredictedSetting(
+		{
+			["setFunction"] = function(value)
+				return LearnPvpTalent(value, slotIndex);
+			end, 
+			["getFunction"] = function()
+				local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(slotIndex);
+				return slotInfo and slotInfo.selectedTalentID;
+			end, 
+		}
+	);
+	
+	self:Update();
+end
+
+function PvpTalentSlotMixin:Update()
+	if (not self.slotIndex) then
+		error("Slot must be setup with a slot index first.");
+	end
+
+	local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(self.slotIndex);
+	self.Texture:Show();
+	local selectedTalentID = self.predictedSetting:Get();
+	if (selectedTalentID) then
+		local _, name, texture = GetPvpTalentInfoByID(selectedTalentID);
+		SetPortraitToTexture(self.Texture, texture);
+
+		self.TalentName:SetText(name);
+		self.TalentName:Show();
+	else
+		self.Texture:SetAtlas("pvptalents-talentborder-empty");
+		self.TalentName:Hide();
+	end
+
+	if (slotInfo and slotInfo.enabled) then
+		self.Border:SetAtlas("pvptalents-talentborder");
+		self:Enable();
+		self.New:SetShown(self.slotWasDisabled);
+		self.NewGlow:SetShown(self.slotWasDisabled);
+	else
+		self.Border:SetAtlas("pvptalents-talentborder-locked");
+		self:Disable();
+		self.Texture:Hide();
+		self.slotWasDisabled = true;
+	end
+end
+
+function PvpTalentSlotMixin:OnEnter()
+	local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(self.slotIndex);
+	if not slotInfo then
+		return;
+	end
+
+	if (self.slotWasDisabled and slotInfo.enabled) then
+		self.slotWasDisabled = nil;
+		self.New:Hide();
+		self.NewGlow:Hide();
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	local selectedTalentID = self.predictedSetting:Get();
+	if (selectedTalentID) then
+		GameTooltip:SetPvpTalent(selectedTalentID, false, GetActiveSpecGroup(true), self.slotIndex);
+	else
+		GameTooltip:SetText(PVP_TALENT_SLOT);
+		if (not slotInfo.enabled) then
+			GameTooltip:AddLine(PVP_TALENT_SLOT_LOCKED:format(C_SpecializationInfo.GetPvpTalentSlotUnlockLevel(self.slotIndex)), RED_FONT_COLOR:GetRGB());
 		else
-			self.NotAvailableYet:Hide();
-			self.XPBar:Show();
+			GameTooltip:AddLine(PVP_TALENT_SLOT_EMPTY, GREEN_FONT_COLOR:GetRGB());
 		end
 	end
 
-	local numTalentSelections = 0;
-	for tier = 1, MAX_PVP_TALENT_TIERS do
-		local talentRow = self.Talents["Tier"..tier];
-		local isRowFree, prevSelected = GetPvpTalentRowSelectionInfo(tier);
+	GameTooltip:Show();
+end
 
-		if ( not self.inspect and prevSelected == self.talentInfo[tier] ) then
-			self.talentInfo[tier] = nil;
-		end
-
-		local rowShouldGlow = false;
-		for column = 1, MAX_PVP_TALENT_COLUMNS do
-			local button = talentRow["Talent"..column];
-			local id, name, icon, selected, available, _, unlocked = GetPvpTalentInfo(tier, column, self.talentGroup, self.inspect, talentUnit);
-			-- if any buttons glow, the whole row should glow
-			button.shouldGlow = (available and not selected) or rowShouldGlow;
-			if ( column == 1 and button.shouldGlow ) then
-				-- since buttons on a row are unlocked from left to right, if the first
-				-- choice should glow, all of them should glow
-				rowShouldGlow = true;
-			end
-			if ( button.Name ) then
-				button.Name:SetText(name);
-			end
-			button.Icon:SetTexture(icon);
-			button.pvpTalentID = id;
-			if ( self.inspect ) then
-				SetDesaturation(button.Icon, not selected);
-				button.border:SetShown(selected);
-			else
-				if ( not unlocked ) then
-					PlayerTalentFramePVPTalents_LockButton(button);
-				else
-					PlayerTalentFramePVPTalents_UnlockButton(button, activeTalentGroup == self.talentGroup);
-					if (talentRow.selectionId == id) then
-						numTalentSelections = numTalentSelections + 1;
-					end
-
-					button.knownSelection:SetShown(self.talentInfo[tier] == id or (selected and not self.talentInfo[tier]));
-					if ( selected or self.talentInfo[tier] ) then
-						SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_FIRST_TALENT, true);
-						PlayerTalentFramePVPTalents.TutorialBox:Hide();
-					end
-				end
-			end
-		end
-		TalentFrame_UpdateRowGlow(talentRow);
+function PvpTalentSlotMixin:OnClick()
+	local selectedTalentID = self.predictedSetting:Get();
+	if (IsModifiedClick("CHATLINK") and selectedTalentID) then
+		local _, name = GetPvpTalentInfoByID(selectedTalentID);
+		local link = GetPvpTalentLink(selectedTalentID);
+		HandleGeneralTalentFrameChatLink(self, name, link);
+		return;
 	end
+	self:GetParent():SelectSlot(self);
+end
 
-	if ( not self.inspect ) then
-		if ( UnitLevel("player") >= MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT] ) then
-			if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_FIRST_TALENT) ) then
-				PlayerTalentFramePVPTalents_ShowTutorial(LE_FRAME_TUTORIAL_HONOR_TALENT_FIRST_TALENT);
-			elseif ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_HONOR_LEVELS) ) then
-				PlayerTalentFramePVPTalents_ShowTutorial(LE_FRAME_TUTORIAL_HONOR_TALENT_HONOR_LEVELS);
-			elseif ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_PRESTIGE) and CanPrestige() ) then
-				PlayerTalentFramePVPTalents_ShowTutorial(LE_FRAME_TUTORIAL_HONOR_TALENT_PRESTIGE);
+function PvpTalentSlotMixin:OnDragStart()
+	if (not self.isInspect) then
+		local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(self.slotIndex);
+		if slotInfo and slotInfo.selectedTalentID then
+			local predictedTalentID = self.predictedSetting:Get();
+			if (not predictedTalentID or predictedTalentID == slotInfo.selectedTalentID) then
+				PickupPvpTalent(slotInfo.selectedTalentID);
 			end
 		end
 	end

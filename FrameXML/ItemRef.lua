@@ -1,24 +1,27 @@
 function SetItemRef(link, text, button, chatFrame)
 	if ( strsub(link, 1, 6) == "player" ) then
-		local namelink, isGMLink;
+		local namelink, isGMLink, isCommunityLink;
 		if ( strsub(link, 7, 8) == "GM" ) then
 			namelink = strsub(link, 10);
 			isGMLink = true;
+		elseif ( strsub(link, 7, 15) == "Community") then
+			namelink = strsub(link, 17);
+			isCommunityLink = true;
 		else
 			namelink = strsub(link, 8);
 		end
 
-		local name, lineID, chatType, chatTarget = strsplit(":", namelink);
+		local name, lineID, chatType, chatTarget, communityClubID, communityStreamID, communityEpoch, communityPosition;
+		
+		if ( isCommunityLink ) then 
+			name, communityClubID, communityStreamID, communityEpoch, communityPosition = strsplit(":", namelink);
+		else
+			name, lineID, chatType, chatTarget = strsplit(":", namelink);
+		end
 		if ( name and (strlen(name) > 0) ) then
 			if ( IsModifiedClick("CHATLINK") ) then
 				local staticPopup;
 				staticPopup = StaticPopup_Visible("ADD_IGNORE");
-				if ( staticPopup ) then
-					-- If add ignore dialog is up then enter the name into the editbox
-					_G[staticPopup.."EditBox"]:SetText(name);
-					return;
-				end
-				staticPopup = StaticPopup_Visible("ADD_MUTE");
 				if ( staticPopup ) then
 					-- If add ignore dialog is up then enter the name into the editbox
 					_G[staticPopup.."EditBox"]:SetText(name);
@@ -54,16 +57,27 @@ function SetItemRef(link, text, button, chatFrame)
 				end
 
 			elseif ( button == "RightButton" and (not isGMLink) ) then
-				FriendsFrame_ShowDropdown(name, 1, lineID, chatType, chatFrame);
+				FriendsFrame_ShowDropdown(name, 1, lineID, chatType, chatFrame, nil, nil, communityClubID, communityStreamID, communityEpoch, communityPosition);
 			else
 				ChatFrame_SendTell(name, chatFrame);
 			end
 		end
 		return;
 	elseif ( strsub(link, 1, 8) == "BNplayer" ) then
-		local namelink = strsub(link, 10);
+		local namelink, isCommunityLink;
+		if ( strsub(link, 9, 17) == "Community" ) then
+			namelink = strsub(link, 19);
+			isCommunityLink = true;
+		else
+			namelink = strsub(link, 10);
+		end
 
-		local name, bnetIDAccount, lineID, chatType, chatTarget = strsplit(":", namelink);
+		local name, bnetIDAccount, lineID, chatType, chatTarget, communityClubID, communityStreamID, communityEpoch, communityPosition;
+		if ( isCommunityLink ) then
+			name, bnetIDAccount, communityClubID, communityStreamID, communityEpoch, communityPosition = strsplit(":", namelink);
+		else
+			name, bnetIDAccount, lineID, chatType, chatTarget = strsplit(":", namelink);
+		end
 		if ( name and (strlen(name) > 0) ) then
 			if ( IsModifiedClick("CHATLINK") ) then
 				--[[
@@ -71,12 +85,6 @@ function SetItemRef(link, text, button, chatFrame)
 
 				local staticPopup;
 				staticPopup = StaticPopup_Visible("ADD_IGNORE");
-				if ( staticPopup ) then
-					-- If add ignore dialog is up then enter the name into the editbox
-					_G[staticPopup.."EditBox"]:SetText(name);
-					return;
-				end
-				staticPopup = StaticPopup_Visible("ADD_MUTE");
 				if ( staticPopup ) then
 					-- If add ignore dialog is up then enter the name into the editbox
 					_G[staticPopup.."EditBox"]:SetText(name);
@@ -110,12 +118,14 @@ function SetItemRef(link, text, button, chatFrame)
 				end
 				]]
 			elseif ( button == "RightButton" ) then
-				if ( not BNIsSelf(bnetIDAccount) ) then
-					FriendsFrame_ShowBNDropdown(name, 1, nil, chatType, chatFrame, nil, BNet_GetBNetIDAccount(name));
+				if ( isCommunityLink or not BNIsSelf(bnetIDAccount) ) then
+					FriendsFrame_ShowBNDropdown(name, 1, nil, chatType, chatFrame, nil, bnetIDAccount, communityClubID, communityStreamID, communityEpoch, communityPosition);
 				end
 			else
-				if ( not BNIsSelf(bnetIDAccount) ) then
+				if ( BNIsFriend(bnetIDAccount)) then
 					ChatFrame_SendSmartTell(name, chatFrame);
+				else
+					ChatFrame_DisplaySystemMessageInCurrent(ERR_BNET_IS_NOT_YOUR_FRIEND:format(name));
 				end
 			end
 		end
@@ -124,7 +134,7 @@ function SetItemRef(link, text, button, chatFrame)
 		if ( IsModifiedClick("CHATLINK") ) then
 			local chanLink = strsub(link, 9);
 			local chatType, chatTarget = strsplit(":", chanLink);
-			ToggleFriendsFrame(3);
+			ChannelFrame:Toggle();
 		elseif ( button == "LeftButton" ) then
 			local chanLink = strsub(link, 9);
 			local chatType, chatTarget = strsplit(":", chanLink);
@@ -169,7 +179,7 @@ function SetItemRef(link, text, button, chatFrame)
 		ToggleTalentFrame(PVP_TALENTS_TAB);
 		return;
 	elseif ( strsub(link, 1, 10) == "worldquest" ) then
-		ShowUIPanel(WorldMapFrame);
+		OpenWorldMap();
 		return;
 	elseif ( strsub(link, 1, 7) == "journal" ) then
 		if ( not HandleModifiedItemClick(GetFixedLink(text)) ) then
@@ -305,6 +315,25 @@ function SetItemRef(link, text, button, chatFrame)
 			StoreFrame_SetServicesCategory();
 			ToggleStoreUI();
 		end
+	elseif ( strsub(link, 1, 4) == "item" ) then
+		if ( IsModifiedClick("CHATLINK") and button == "LeftButton" ) then
+			local name, link = GetItemInfo(text);
+			if ChatEdit_InsertLink(link) then
+				return;
+			end
+		end
+	elseif ( strsub(link, 1, 10) == "clubTicket" ) then
+		if ( IsModifiedClick("CHATLINK") and button == "LeftButton" ) then
+			if ChatEdit_InsertLink(text) then
+				return;
+			end
+		end
+		local _, ticketId = strsplit(":", link);
+		if ( CommunitiesFrame_IsEnabled() ) then
+			Communities_LoadUI();
+			CommunitiesHyperlink.OnClickLink(ticketId);
+		end
+		return;
 	end
 
 	if ( IsModifiedClick() ) then
@@ -381,6 +410,10 @@ function GetPlayerLink(characterName, linkDisplayText, lineID, chatType, chatTar
 	end
 end
 
+function GetBNPlayerLink(name, linkDisplayText, bnetIDAccount, lineID, chatType, chatTarget)
+	return FormatLink("BNplayer", linkDisplayText, name, bnetIDAccount, lineID or 0, chatType, chatTarget);
+end
+
 function GetGMLink(gmName, linkDisplayText, lineID)
 	if lineID then
 		return FormatLink("playerGM", linkDisplayText, gmName, lineID or 0);
@@ -389,8 +422,36 @@ function GetGMLink(gmName, linkDisplayText, lineID)
 	end
 end
 
-function GetBNPlayerLink(name, linkDisplayText, bnetIDAccount, lineID, chatType, chatTarget)
-	return FormatLink("BNplayer", linkDisplayText, name, bnetIDAccount, lineID or 0, chatType, chatTarget);
+local function SanitizeCommunityData(clubId, streamId, epoch, position)
+	if type(clubId) == "number" then
+		clubId = ("%.f"):format(clubId);
+	end
+	if type(streamId) == "number" then
+		streamId = ("%.f"):format(streamId);
+	end
+	epoch = ("%.f"):format(epoch);
+	position = ("%.f"):format(position);
+
+	return clubId, streamId, epoch, position;
+end
+
+function GetBNPlayerCommunityLink(playerName, linkDisplayText, bnetIDAccount, clubId, streamId, epoch, position)
+	clubId, streamId, epoch, position = SanitizeCommunityData(clubId, streamId, epoch, position);
+	return FormatLink("BNplayerCommunity", linkDisplayText, playerName, bnetIDAccount, clubId, streamId, epoch, position);
+end
+
+function GetPlayerCommunityLink(playerName, linkDisplayText, clubId, streamId, epoch, position)
+	clubId, streamId, epoch, position = SanitizeCommunityData(clubId, streamId, epoch, position);
+	return FormatLink("playerCommunity", linkDisplayText, playerName, clubId, streamId, epoch, position);
+end
+
+function GetClubTicketLink(ticketId, clubName, clubType)
+	local link = FormatLink("clubTicket", CLUB_INVITE_HYPERLINK_TEXT:format(clubName), ticketId);
+	if clubType == Enum.ClubType.BattleNet then
+		return BATTLENET_FONT_COLOR:WrapTextInColorCode(link);
+	else 
+		return NORMAL_FONT_COLOR:WrapTextInColorCode(link);
+	end
 end
 
 function SplitLink(link)

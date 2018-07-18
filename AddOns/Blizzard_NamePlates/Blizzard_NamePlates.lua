@@ -431,21 +431,12 @@ function NameplateBuffContainerMixin:OnLoad()
 	self.buffList = {};
 	self.targetYOffset = 0;
 	self.baseYOffset = 0;
-	self.BuffFrameUpdateTime = 0;
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 end
 
 function NameplateBuffContainerMixin:OnEvent(event, ...)
 	if (event == "PLAYER_TARGET_CHANGED") then
 		self:UpdateAnchor();
-	end
-end
-
-function NameplateBuffContainerMixin:OnUpdate(elapsed)
-	if ( self.BuffFrameUpdateTime > 0 ) then
-		self.BuffFrameUpdateTime = self.BuffFrameUpdateTime - elapsed;
-	else
-		self.BuffFrameUpdateTime = self.BuffFrameUpdateTime + TOOLTIP_UPDATE_TIME;
 	end
 end
 
@@ -511,7 +502,7 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter, showAll)
 		local buffIndex = 1;
 
 		for i = 1, BUFF_MAX_DISPLAY do
-			local name, rank, texture, count, debuffType, duration, expirationTime, caster, _, nameplateShowPersonal, spellId, _, _, _, nameplateShowAll = UnitAura(unit, i, filter);
+			local name, texture, count, debuffType, duration, expirationTime, caster, _, nameplateShowPersonal, spellId, _, _, _, nameplateShowAll = UnitAura(unit, i, filter);
 
 			if (self:ShouldShowBuff(name, caster, nameplateShowPersonal, nameplateShowAll or showAll, duration)) then
 				if (not self.buffList[buffIndex]) then
@@ -521,7 +512,6 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter, showAll)
 				end
 				local buff = self.buffList[buffIndex];
 				buff:SetID(i);
-				buff.name = name;
 				buff.Icon:SetTexture(texture);
 				if (count > 1) then
 					buff.CountFrame.Count:SetText(count);
@@ -548,14 +538,15 @@ end
 
 NameplateBuffButtonTemplateMixin = {};
 
-function NameplateBuffButtonTemplateMixin:OnUpdate(elapsed)
-	if (self:GetParent().BuffFrameUpdateTime > 0) then
-		return;
-	end
+function NameplateBuffButtonTemplateMixin:OnEnter()
+	NamePlateTooltip:SetOwner(self, "ANCHOR_LEFT");
+	NamePlateTooltip:SetUnitAura(self:GetParent().unit, self:GetID(), self:GetParent().filter);
 
-	if (GameTooltip:IsOwned(self)) then
-		GameTooltip:SetUnitAura(self:GetParent().unit, self:GetID(), self:GetParent().filter);
-	end
+	self.UpdateTooltip = self.OnEnter;
+end
+
+function NameplateBuffButtonTemplateMixin:OnLeave()
+	NamePlateTooltip:Hide();
 end
 
 NamePlateBorderTemplateMixin = {};

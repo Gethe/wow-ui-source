@@ -1,4 +1,4 @@
-## Interface: 70300
+## Interface: 80000
 ## Title: Blizzard_AlliedRacesIO
 ## Notes: Hooray for new races! So neat! :3
 ## Author: Blizzard Entertainment

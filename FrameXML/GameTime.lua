@@ -9,7 +9,6 @@ local GAMETIME_DUSK = (21 * 60) +  0;		-- 9:00 PM
 local date = date;
 local format = format;
 local GetCVarBool = GetCVarBool;
-local CalendarGetDate = CalendarGetDate;
 local max = max;
 local tonumber = tonumber;
 
@@ -154,7 +153,7 @@ end
 
 function GameTimeFrame_OnEvent(self, event, ...)
 	if ( event == "CALENDAR_UPDATE_PENDING_INVITES" or event == "PLAYER_ENTERING_WORLD" ) then
-		local pendingCalendarInvites = CalendarGetNumPendingInvites();
+		local pendingCalendarInvites = C_Calendar.GetNumPendingInvites();
 		if ( pendingCalendarInvites > self.pendingCalendarInvites ) then
 			if ( not CalendarFrame or (CalendarFrame and not CalendarFrame:IsShown()) ) then
 				GameTimeCalendarInvitesTexture:Show();
@@ -244,7 +243,7 @@ function GameTimeFrame_OnClick(self)
 end
 
 function GameTimeFrame_SetDate()
-	local _, _, day = CalendarGetDate();
-	GameTimeFrame:SetText(day);
+	local date = C_Calendar.GetDate();
+	GameTimeFrame:SetText(date.monthDay);
 end
 

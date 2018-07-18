@@ -32,7 +32,7 @@ end
 
 function CommentatorUnitFrameMixin:OnEvent(event, ...)	
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-		self:OnCombatEvent(...);
+		self:OnCombatEvent(CombatLogGetCurrentEventInfo());
 	elseif event == "COMMENTATOR_PLAYER_UPDATE" then
 		self:FullCooldownRefresh();
 	elseif ( event == "ARENA_COOLDOWNS_UPDATE" ) then

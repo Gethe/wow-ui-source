@@ -638,38 +638,34 @@
 			<OnEvent function="GroupLootFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
-	<Frame name="GroupLootContainer" parent="UIParent" hidden="true">
+	<ContainedAlertFrame name="GroupLootContainer" parent="UIParent" hidden="true">
 		<Size x="256" y="1"/>
 		<Scripts>
-			<OnShow>
-				AlertFrame:UpdateAnchors();
-			</OnShow>
-			<OnHide>
-				AlertFrame:UpdateAnchors();
-			</OnHide>
 			<OnLoad function="GroupLootContainer_OnLoad"/>
 		</Scripts>
-	</Frame>
+	</ContainedAlertFrame>
 	<Frame name="GroupLootFrame1" inherits="GroupLootFrameTemplate" id="1"/>
 	<Frame name="GroupLootFrame2" inherits="GroupLootFrameTemplate" id="2"/>
 	<Frame name="GroupLootFrame3" inherits="GroupLootFrameTemplate" id="3"/>
 	<Frame name="GroupLootFrame4" inherits="GroupLootFrameTemplate" id="4"/>
 	<Frame name="BonusRollFrame" inherits="BonusRollFrameTemplate"/>
-	<Button name="BonusRollLootWonFrame" inherits="LootWonAlertFrameTemplate">
+	<ContainedAlertFrame name="BonusRollLootWonFrame" inherits="LootWonAlertFrameTemplate">
 		<Scripts>
+			<OnLoad inherit="append" function="BonusRollLootWonFrame_OnLoad"/>
 			<OnHide>
 				GroupLootContainer_RemoveFrame(GroupLootContainer, self);
 			</OnHide>
 			<OnClick function="LootWonAlertFrame_OnClick"/>
 		</Scripts>
-	</Button>
-	<Button name="BonusRollMoneyWonFrame" inherits="MoneyWonAlertFrameTemplate">
+	</ContainedAlertFrame>
+	<ContainedAlertFrame name="BonusRollMoneyWonFrame" inherits="MoneyWonAlertFrameTemplate">
 		<Scripts>
+			<OnLoad inherit="append" function="BonusRollMoneyWonFrame_OnLoad"/>
 			<OnHide>
 				GroupLootContainer_RemoveFrame(GroupLootContainer, self);
 			</OnHide>
 		</Scripts>
-	</Button>
+	</ContainedAlertFrame>
 
 	<Button name="MasterLooterPlayerTemplate" virtual="true">
 		<Size x="98" y="23"/>

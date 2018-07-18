@@ -1,8 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
+	<Include file="AzeritePaperDollItemOverlay.xml"/>
     <Script file="PaperDollFrame.lua"/>
 
-    <Button name="PaperDollItemSlotButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+    <Button name="PaperDollItemSlotButtonTemplate" inherits="ItemButtonTemplate, PaperDollAzeriteItemOverlayTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="ignoreTexture" file="Interface\PaperDollInfoFrame\UI-GearManager-LeaveItem-Transparent">
@@ -51,7 +52,10 @@
 			</OnLeave>
         </Scripts>
     </Button>
-	<Button name="PaperDollItemSlotButtonLeftTemplate" inherits="PaperDollItemSlotButtonTemplate" virtual="true">
+	<Button name="PaperDollItemSlotButtonLeftTemplate" parentArray="EquipmentSlots" inherits="PaperDollItemSlotButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue type="boolean" key="IsLeftSide" value="true"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture name="$parentFrame" inherits="Char-LeftSlot">	
@@ -62,7 +66,10 @@
 			</Layer>
 		</Layers>
 	</Button>
-	<Button name="PaperDollItemSlotButtonRightTemplate" inherits="PaperDollItemSlotButtonTemplate" virtual="true">
+	<Button name="PaperDollItemSlotButtonRightTemplate" parentArray="EquipmentSlots" inherits="PaperDollItemSlotButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue type="boolean" key="IsLeftSide" value="false"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture name="$parentFrame" inherits="Char-RightSlot">	
@@ -73,7 +80,7 @@
 			</Layer>
 		</Layers>
 	</Button>
-	<Button name="PaperDollItemSlotButtonBottomTemplate" inherits="PaperDollItemSlotButtonTemplate" virtual="true">
+	<Button name="PaperDollItemSlotButtonBottomTemplate" parentArray="WeaponSlots" inherits="PaperDollItemSlotButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture name="$parentFrame" inherits="Char-BottomSlot">	
@@ -495,6 +502,7 @@
 						<Scripts>
 							<OnLoad>
 								self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+								self:RegisterEvent("PORTRAITS_UPDATED");
 								self:RegisterEvent("PLAYER_ENTERING_WORLD");
 								
 								local tcoords = PAPERDOLL_SIDEBARS[self:GetID()].texCoords;
@@ -505,9 +513,11 @@
 							<OnEvent>
 								if ( event == "UNIT_PORTRAIT_UPDATE" ) then
 									local unit = ...;
-									if ( not unit or unit == "player" ) then
+									if ( unit == "player" ) then
 										SetPortraitTexture(self.Icon, "player");
 									end
+								elseif ( event == "PORTRAITS_UPDATED" ) then
+									SetPortraitTexture(self.Icon, "player");
 								elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 									SetPortraitTexture(self.Icon, "player");
 								end
@@ -714,7 +724,7 @@
 					</OnReceiveDrag>
                 </Scripts>
             </PlayerModel>
-			<Frame name="PaperDollItemsFrame" setAllPoints="true">
+			<Frame name="PaperDollItemsFrame" mixin="PaperDollItemsMixin" setAllPoints="true">
 				<Frames>
 					<Button name="CharacterHeadSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
 						<Anchors>
@@ -824,7 +834,43 @@
 							</Layer>
 						</Layers>
 					</Button>
+					<Frame parentKey="UnspentAzeriteHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
+						<Size x="200" y="100"/>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="AZERITE_EMPOWERED_UNSELECTED_TRAITS_HELPTIP">
+									<Size x="190" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="10" y="-18"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+								<Scripts>
+									<OnClick>
+										self:GetParent():GetParent():OnHelpTipManuallyClosed();
+										HideParentPanel(self);
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate" />
+						</Frames>
+						<Scripts>
+							<OnShow>
+								self:SetHeight(self.Text:GetHeight() + 34);
+							</OnShow>
+						</Scripts>
+					</Frame>
 				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnUpdate method="OnUpdate"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
 			</Frame>
 		</Frames>
         <Scripts>

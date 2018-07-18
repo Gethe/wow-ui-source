@@ -74,71 +74,24 @@
 			<Layer level="BACKGROUND">
 				<FontString name="$parentColorHeader" inherits="GameFontNormalSmall" text="COLOR">
 					<Anchors>
-						<Anchor point="BOTTOM" relativePoint="TOPLEFT">
-							<Offset x="191" y="2"/>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentClassColorHeader" inherits="GameFontNormalSmall" text="SHOW_CLASS_COLOR">
-					<Anchors>
-						<Anchor point="BOTTOM" relativePoint="TOPLEFT">
-							<Offset x="275" y="2"/>
-						</Anchor>
+						<Anchor point="BOTTOM" relativePoint="TOPLEFT" x="191" y="2"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 	</Frame>
-	<FontString name="ClassColorLegendFontStringTemplate" inherits="GameFontNormal" justifyH="LEFT" virtual="true">
-		<Size>
-			<AbsDimension x="100" y="11"/>
-		</Size>
-	</FontString>
-	<Frame name="ClassColorLegendTemplate" inherits="ChatConfigBoxTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="130" y="1"/>
-		</Size>
+	<Frame name="WideChatConfigBoxWithHeaderAndClassColorsTemplate" inherits="ChatConfigBoxWithHeaderTemplate" virtual="true">
 		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" inherits="GameFontNormal" text="CLASS_COLORS" parentKey="header">
+			<Layer level="BACKGROUND">
+				<FontString name="$parentColorHeader" inherits="GameFontNormalSmall" text="COLOR">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="10" y="-11"/>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString inherits="ClassColorLegendFontStringTemplate" parentKey="firstClass">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
-							<Offset x="10" y="-5"/>
-						</Anchor>
+						<Anchor point="BOTTOM" relativePoint="TOPLEFT" x="361" y="2"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad>
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-				self:SetBackdropColor(0.27, 0.27, 0.27);
-				
-				local fontStringOffset = 2;
-				self.classStrings = {};
-				tinsert(self.classStrings, self.firstClass);
-				for key, value in ipairs(CLASS_SORT_ORDER) do
-					local fontString = self.classStrings[key];
-					if ( not fontString ) then
-						fontString = self:CreateFontString(nil, "ARTWORK", "ClassColorLegendFontStringTemplate");
-						tinsert(self.classStrings, fontString);
-						fontString:SetPoint("TOPLEFT", self.classStrings[key - 1], "BOTTOMLEFT", 0, -fontStringOffset);
-					end
-					local classColor = RAID_CLASS_COLORS[value];
-					fontString:SetFormattedText("|cff%.2x%.2x%.2x%s|r\n", classColor.r*255, classColor.g*255, classColor.b*255, LOCALIZED_CLASS_NAMES_MALE[value]);
-				end
-				
-				self:SetHeight((self.firstClass:GetHeight() + fontStringOffset) * #self.classStrings + self.header:GetHeight() + 31);
-			</OnLoad>
-		</Scripts>
 	</Frame>
+
 	<CheckButton name="ChatConfigBaseCheckButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="32" y="32"/>
@@ -168,13 +121,13 @@
 		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
-	<CheckButton name="ChatConfigCheckButtonTemplate" inherits="ChatConfigBaseCheckButtonTemplate" virtual="true">
+	<CheckButton name="ChatConfigCheckButtonTemplate" parentKey="CheckButton" inherits="ChatConfigBaseCheckButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="24" y="24"/>
 		</Size>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontHighlight" justifyH="LEFT">
+				<FontString name="$parentText" parentKey="Text" inherits="GameFontHighlight" justifyH="LEFT">
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT">
 							<Offset>
@@ -211,9 +164,7 @@
 		</HitRectInsets>
 	</CheckButton>
 	<Frame name="ChatConfigCheckBoxTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="200" y="26"/>
-		</Size>
+		<Size x="200" y="26"/>
 		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<EdgeSize>
 				<AbsValue val="16"/>
@@ -223,7 +174,7 @@
 			</TileSize>
 		</Backdrop>
 		<Frames>
-			<CheckButton name="$parentCheck" inherits="ChatConfigCheckButtonTemplate">
+			<CheckButton name="$parentCheck" parentKey="CheckButton" inherits="ChatConfigCheckButtonTemplate">
 				<Size>
 					<AbsDimension x="24" y="24"/>
 				</Size>
@@ -242,16 +193,10 @@
 	</Frame>
 	<Frame name="ChatConfigCheckBoxWithSwatchTemplate" inherits="ChatConfigCheckBoxTemplate" virtual="true">
 		<Frames>
-			<Button name="$parentColorSwatch" hidden="false">
-				<Size>
-					<AbsDimension x="16" y="16"/>
-				</Size>
+			<Button name="$parentColorSwatch" parentKey="ColorSwatch">
+				<Size x="16" y="16"/>
 				<Anchors>
-					<Anchor point="LEFT">
-						<Offset>
-							<AbsDimension x="178" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" x="178" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -279,27 +224,49 @@
 			</Button>
 		</Frames>
 	</Frame>
-	<Frame name="ChatConfigCheckBoxWithSwatchAndClassColorTemplate" inherits="ChatConfigCheckBoxWithSwatchTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="328" y="25"/>
-		</Size>
+	<Frame name="ChatConfigWideCheckBoxWithSwatchTemplate" inherits="ChatConfigCheckBoxWithSwatchTemplate" virtual="true">
+		<Size x="550" y="26"/>
+		<Scripts>
+			<OnLoad inherit="prepend">
+				self.CheckButton:SetHitRectInsets(0, -300, 0, 0);
+				self.ColorSwatch:SetPoint("LEFT", self, "LEFT", 350, 0);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="MovableChatConfigWideCheckBoxWithSwatchTemplate" parentArray="WideCheckBoxes" mixin="ChatConfigWideCheckBoxMixin" inherits="ChatConfigWideCheckBoxWithSwatchTemplate" virtual="true">
+		<Size x="550" y="23"/>
 		<Frames>
-			<CheckButton name="$parentColorClasses" inherits="ChatConfigBaseCheckButtonTemplate">
-				<Size>
-					<AbsDimension x="24" y="23"/>
-				</Size>
+			<Button parentKey="CloseChannel">
+				<Size x="14" y="14"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentColorSwatch" relativePoint="RIGHT">
-						<Offset x="65" y="0"/>
-					</Anchor>
+					<Anchor point="RIGHT" x="-8" y="0"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self.func = ColorClassesCheckBox_OnClick;
-					</OnLoad>
+					<OnClick>
+						self:GetParent():LeaveChannel();
+					</OnClick>
 				</Scripts>
-			</CheckButton>
+				<NormalTexture file="Interface\Buttons\UI-GroupLoot-Pass-Up" alpha="0.5"/>
+				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Pass-Up" alpha="0.5" alphaMode="ADD"/>
+			</Button>
+			<Frame parentKey="ArtOverlay" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="100">
+						<Texture parentKey="GrayedOut" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="6"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="0.5"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
+		<Scripts>
+			<OnLoad inherit="prepend" method="OnLoad"/>
+			<OnDragStart method="OnDragStart"/>
+		</Scripts>
 	</Frame>
 	<Frame name="ChatConfigSwatchTemplate" virtual="true">
 		<Size>
@@ -446,11 +413,30 @@
 			</Anchors>
 		</HighlightTexture>
 	</Button>
+	<Button name="ChatWindowTab" mixin="ChatWindowTabMixin" inherits="ChatTabArtTemplate" virtual="true">
+		<Size x="64" y="32"/>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="10" y="-1"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				FCFTab_UpdateColors(self, false);
+				self:SetAlpha(CHAT_FRAME_TAB_NORMAL_MOUSEOVER_ALPHA);
+			</OnLoad>
+			<OnClick method="OnClick"/>
+		</Scripts>
+		<ButtonText parentKey="Text">
+			<Size x="50" y="8"/>
+			<Anchors>
+				<Anchor point="LEFT" relativeKey="$parent.leftTexture" relativePoint="RIGHT" x="0" y="-5"/>
+				<Anchor point="RIGHT" relativeKey="$parent.rightTexture" relativePoint="LEFT" x="0" y="-5"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontNormalSmall"/>
+	</Button>
 
 	<Frame name="ChatConfigFrame" toplevel="true" parent="UIParent" hidden="true" enableMouse="true">
-		<Size>
-			<AbsDimension x="645" y="595"/>
-		</Size>
+		<Size x="745" y="605"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
@@ -491,23 +477,12 @@
 			<Frame name="ChatConfigCategoryFrame" inherits="ChatConfigBoxTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="12" y="-47"/>
+						<Offset x="12" y="-57"/>
 					</Anchor>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT">
 						<Offset x="137" y="35"/>
 					</Anchor>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentTitle" inherits="GameFontHighlight" text="CATEGORIES">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-									<Offset x="7" y="0"/>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 				<Frames>
 					<Button name="$parentButton1" inherits="ConfigCategoryButtonTemplate" text="CHAT" id="1">
 						<Anchors>
@@ -552,21 +527,18 @@
 				</Frames>
 				<Scripts>
 					<OnShow>
-						if ( IsCombatLog(FCF_GetCurrentChatFrame()) ) then
-							ChatConfigCategoryFrameButton2:Show();
-							ChatConfigCategoryFrameButton3:SetPoint("TOPLEFT", ChatConfigCategoryFrameButton2, "BOTTOMLEFT", 0, -1);
-							ChatConfigCategoryFrameButton3:SetPoint("TOPRIGHT", ChatConfigCategoryFrameButton2, "BOTTOMRIGHT", 0, -1);
-							ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton2);
-						else
-							ChatConfigCategoryFrameButton2:Hide();
-							ChatConfigCategoryFrameButton3:SetPoint("TOPLEFT", ChatConfigCategoryFrameButton1, "BOTTOMLEFT", 0, -1);
-							ChatConfigCategoryFrameButton3:SetPoint("TOPRIGHT", ChatConfigCategoryFrameButton1, "BOTTOMRIGHT", 0, -1);
-							ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton1);
-						end
-						ChatConfigFrameHeaderText:SetText(format(CHATCONFIG_HEADER, FCF_GetCurrentChatFrame().name));
-						ChatConfigFrameHeader:SetWidth(ChatConfigFrameHeaderText:GetWidth()+200);
-						ChatConfigCategory_UpdateEnabled();
+						ChatConfigCategoryFrame_Refresh();
 					</OnShow>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="ChatTabManager" name="$parentChatTabManager" mixin="ChatConfigFrameTabManagerMixin">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="ChatConfigCategoryFrame" relativePoint="TOPLEFT" x="0" y="-2"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
 				</Scripts>
 			</Frame>
 			<Frame name="ChatConfigBackgroundFrame" inherits="ChatConfigBoxTemplate">
@@ -585,18 +557,11 @@
 					<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame"/>
 				</Anchors>
 				<Frames>
-					<Frame name="$parentLeft" inherits="ChatConfigBoxWithHeaderAndClassColorsTemplate">
+					<Frame name="$parentLeft" inherits="WideChatConfigBoxWithHeaderAndClassColorsTemplate">
 						<Size x="10" y="10"/>
 						<Anchors>
 							<Anchor point="TOPLEFT">
-								<Offset x="13" y="-25"/>
-							</Anchor>
-						</Anchors>
-					</Frame>
-					<Frame name="$parentClassColorLegend" inherits="ClassColorLegendTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT">
-								<Offset x="5" y="0"/>
+								<Offset x="13" y="-30"/>
 							</Anchor>
 						</Anchors>
 					</Frame>
@@ -611,19 +576,10 @@
 					<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame"/>
 				</Anchors>
 				<Frames>
-					<Frame name="$parentLeft" inherits="ChatConfigBoxWithHeaderAndClassColorsTemplate">
+					<Frame name="$parentLeft" mixin="ChatConfigWideCheckBoxManagerMixin" inherits="WideChatConfigBoxWithHeaderAndClassColorsTemplate">
 						<Size x="10" y="10"/>
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset x="13" y="-25"/>
-							</Anchor>
-						</Anchors>
-					</Frame>
-					<Frame name="$parentClassColorLegend" inherits="ClassColorLegendTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT">
-								<Offset x="5" y="0"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="13" y="-30"/>
 						</Anchors>
 					</Frame>
 				</Frames>
@@ -641,7 +597,7 @@
 						<Size x="10" y="10"/>
 						<Anchors>
 							<Anchor point="TOPLEFT">
-								<Offset x="13" y="-25"/>
+								<Offset x="13" y="-30"/>
 							</Anchor>
 						</Anchors>
 					</Frame>
@@ -686,17 +642,6 @@
 						<Offset x="-12" y="35"/>
 					</Anchor>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString inherits="GameFontHighlight" text="FILTERS">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-									<Offset x="0" y="2"/>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 				<Frames>
 					<Frame name="$parentFilters" inherits="ChatConfigBoxTemplate">
 						<Size>

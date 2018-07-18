@@ -121,9 +121,6 @@ function QueueStatusFrame_OnLoad(self)
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
 	self:RegisterEvent("LFG_LIST_APPLICANT_UPDATED");
 
-	--For PvP Role Checks
-	self:RegisterEvent("PVP_ROLE_CHECK_UPDATED");
-
 	--For PvP
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
 	self:RegisterEvent("PVP_BRAWL_INFO_UPDATED");
@@ -131,13 +128,6 @@ function QueueStatusFrame_OnLoad(self)
 	--For World PvP stuff
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("ZONE_CHANGED");
-	self:RegisterEvent("BATTLEFIELD_MGR_QUEUE_REQUEST_RESPONSE");
-	self:RegisterEvent("BATTLEFIELD_MGR_QUEUE_STATUS_UPDATE");
-	self:RegisterEvent("BATTLEFIELD_MGR_EJECT_PENDING");
-	self:RegisterEvent("BATTLEFIELD_MGR_EJECTED");
-	self:RegisterEvent("BATTLEFIELD_MGR_QUEUE_INVITE");
-	self:RegisterEvent("BATTLEFIELD_MGR_ENTRY_INVITE");
-	self:RegisterEvent("BATTLEFIELD_MGR_ENTERED");
 
 	--For Pet Battles
 	self:RegisterEvent("PET_BATTLE_QUEUE_STATUS");
@@ -381,6 +371,18 @@ local function GetDisplayNameFromCategory(category)
 		local brawlInfo = C_PvP.GetBrawlInfo();
 		if (brawlInfo and brawlInfo.active and brawlInfo.name) then
 			return brawlInfo.name;
+		end
+	end
+
+	if (category == LE_LFG_CATEGORY_SCENARIO) then
+		local scenarioIDs = C_LFGInfo.GetAllEntriesForCategory(category)
+		for i, scenID in ipairs(scenarioIDs) do
+			if (not C_LFGInfo.HideNameFromUI(scenID)) then
+				local instanceName = GetLFGDungeonInfo(scenID);
+				if(instanceName) then
+					return instanceName;
+				end
+			end
 		end
 	end
 
@@ -917,7 +919,7 @@ function QueueStatusDropDown_AddBattlefieldButtons(info, idx)
 		
 		if ( not inArena ) then
 			info.text = TOGGLE_BATTLEFIELD_MAP;
-			info.func = wrapFunc(ToggleBattlefieldMinimap);
+			info.func = wrapFunc(ToggleBattlefieldMap);
 			info.arg1 = nil;
 			info.arg2 = nil;
 			UIDropDownMenu_AddButton(info);

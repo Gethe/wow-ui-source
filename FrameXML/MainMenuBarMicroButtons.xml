@@ -2,18 +2,12 @@
 ..\FrameXML\UI.xsd">
 	<Script file="MainMenuBarMicroButtons.lua"/>
 	<Button name="MainMenuBarMicroButton" motionScriptsWhileDisabled="true" virtual="true">
-		<Size>
-			<AbsDimension x="28" y="58"/>
-		</Size>
-		<HitRectInsets>
-			<AbsInset left="0" right="0" top="18" bottom="0"/>
-		</HitRectInsets>
+		<Size x="28" y="36"/>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="$parentFlash" file="Interface\Buttons\Micro-Highlight" alphaMode="ADD" parentKey="Flash" hidden="true">
-					<Size x="64" y="64"/>
+				<Texture name="$parentFlash" atlas="hud-microbutton-highlightalert" useAtlasSize="true" alphaMode="ADD" parentKey="Flash" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-2" y="-18"/>
+						<Anchor point="TOPLEFT" x="-2" y="2"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -77,69 +71,29 @@
 			<OnHide function="MicroButtonAlert_OnHide"/>
 		</Scripts>
 	</Frame>
-	<Button name="CharacterMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
-		<Anchors>
-			<Anchor point="BOTTOMLEFT">
-				<Offset>
-					<AbsDimension x="548" y="2"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
+	<Button name="CharacterMicroButton" inherits="MainMenuBarMicroButton" mixin="CharacterMicroButtonMixin" parent="UIParent">
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="MicroButtonPortrait">
-					<Size>
-						<AbsDimension x="18" y="25"/>
-					</Size>
+					<Size x="16" y="22"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-28"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="-8"/>
 					</Anchors>
 					<TexCoords left="0.2" right="0.8" top="0.0666" bottom="0.9"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad function="CharacterMicroButton_OnLoad"/>
-			<OnMouseDown>
-				if ( self.down ) then
-					self.down = nil;
-					ToggleCharacter("PaperDollFrame");
-					return;
-				end
-				CharacterMicroButton_SetPushed();
-				self.down = 1;
-			</OnMouseDown>
-			<OnMouseUp>
-				if ( self.down ) then
-					self.down = nil;
-					if ( self:IsMouseOver() ) then
-						ToggleCharacter("PaperDollFrame");
-					end
-					UpdateMicroButtons();
-					return;
-				end
-				if ( self:GetButtonState() == "NORMAL" ) then
-					CharacterMicroButton_SetPushed();
-					self.down = 1;
-				else
-					CharacterMicroButton_SetNormal();
-					self.down = 1;
-				end
-			</OnMouseUp>
+			<OnLoad function="CharacterMicroButton_OnLoad" />
+			<OnMouseDown function="CharacterMicroButton_OnMouseDown"/>
+			<OnMouseUp function ="CharacterMicroButton_OnMouseUp"/>
+			<OnEnter function="CharacterMicroButton_OnEnter"/>
 			<OnEvent function="CharacterMicroButton_OnEvent"/>
 		</Scripts>
 	</Button>
 	<Button name="SpellbookMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="CharacterMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-2" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOMLEFT" relativeTo="CharacterMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad>
@@ -156,11 +110,7 @@
 	</Button>
 	<Button name="TalentMicroButton" inherits="MainMenuBarMicroButton" mixin="TalentMicroButtonMixin" parent="UIParent">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="SpellbookMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-2" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOMLEFT" relativeTo="SpellbookMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad>
@@ -173,10 +123,8 @@
 				self:RegisterEvent("UPDATE_BINDINGS");
 				self:RegisterEvent("PLAYER_TALENT_UPDATE");
 				self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
-                self:RegisterEvent("HONOR_LEVEL_UPDATE");
-	            self:RegisterEvent("HONOR_PRESTIGE_UPDATE");
-	            self:RegisterEvent("PLAYER_PVP_TALENT_UPDATE");
-				self:RegisterEvent("PLAYER_CHARACTER_UPGRADE_TALENT_COUNT_CHANGED");
+        		self:RegisterEvent("HONOR_LEVEL_UPDATE");
+	      		self:RegisterEvent("PLAYER_PVP_TALENT_UPDATE");
 			</OnLoad>
 			<OnClick function="TalentMicroButton_OnClick"/>
 			<OnEvent function="TalentMicroButton_OnEvent"/>
@@ -184,11 +132,7 @@
 	</Button>
 	<Button name="AchievementMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="TalentMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-2" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOMLEFT" relativeTo="TalentMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad>
@@ -212,11 +156,7 @@
 	</Button>
 	<Button name="QuestLogMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="AchievementMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-2" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOMLEFT" relativeTo="AchievementMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad>
@@ -234,26 +174,17 @@
 	</Button>
 	<Button name="GuildMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="QuestLogMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-2" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOMLEFT" relativeTo="QuestLogMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
 		<Frames>
 			<Frame name="$parentTabard" hidden="true">
-				<Size>
-					<AbsDimension x="28" y="58"/>
-				</Size>
+				<Size x="28" y="36"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture name="$parentBackground" file="Interface\Buttons\UI-MicroButton-Guild-Banner" parentKey="background">
-							<Size>
-								<AbsDimension x="30" y="60"/>
-							</Size>
+						<Texture name="$parentBackground" parentKey="background" atlas="hud-microbutton-Guild-Banner" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
@@ -261,9 +192,21 @@
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="1">
 						<Texture name="$parentEmblem" parentKey="emblem" file="Interface\GuildFrame\GuildEmblems_01">
-							<Size x="16" y="16"/>
+							<Size x="14" y="14"/>
 							<Anchors>
-								<Anchor point="CENTER" x="0" y="-9"/>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="UnreadNotificationIcon" atlas="hud-microbutton-communities-icon-notification">
+							<Size x="18" y="18"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOP" x="0" y="-5"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -278,8 +221,14 @@
 				self:RegisterEvent("UPDATE_BINDINGS");
 				self:RegisterEvent("PLAYER_GUILD_UPDATE");
 				self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
+				self:RegisterEvent("STREAM_VIEW_MARKER_UPDATED");
+				self:RegisterEvent("INITIAL_CLUBS_LOADED");
+				self:RegisterEvent("CLUB_INVITATION_ADDED_FOR_SELF");
+				self:RegisterEvent("CLUB_INVITATION_REMOVED_FOR_SELF");
+				self:RegisterEvent("BN_DISCONNECTED");
+				self:RegisterEvent("BN_CONNECTED");
 				GuildMicroButton_UpdateTabard(true);
-				if ( IsTrialAccount() or (IsVeteranTrialAccount() and not IsInGuild()) ) then
+				if ( IsCommunitiesUIDisabledByTrialAccount() ) then
 					self:Disable();
 					self.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
 				end
@@ -289,18 +238,12 @@
 			</OnLoad>
 			<OnShow function="MicroButton_KioskModeDisable"/>
 			<OnEvent function="GuildMicroButton_OnEvent"/>
-			<OnClick>
-				ToggleGuildFrame();
-			</OnClick>
+			<OnClick function="ToggleGuildFrame"/>
 		</Scripts>
 	</Button>
 	<Button name="LFDMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="GuildMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-2" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOMLEFT" relativeTo="GuildMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad>
@@ -333,39 +276,18 @@
 			<KeyValue key="lastNumPetsNeedingFanfare" value="0" type="number"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="LFDMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-2" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOMLEFT" relativeTo="LFDMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad>
-				LoadMicroButtonTextures(self, "Mounts");
-				SetDesaturation(self:GetDisabledTexture(), true);
-				self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS");
-				self.newbieText = NEWBIE_TOOLTIP_MOUNTS_AND_PETS;
-
-				self:RegisterEvent("HEIRLOOMS_UPDATED");
-				self:RegisterEvent("PET_JOURNAL_NEW_BATTLE_SLOT");
-				self:RegisterEvent("TOYS_UPDATED");
-				self:RegisterEvent("COMPANION_LEARNED");
-				self:RegisterEvent("PET_JOURNAL_LIST_UPDATE");
-				self:RegisterEvent("PLAYER_ENTERING_WORLD");
-			</OnLoad>
-			<OnClick>
-				ToggleCollectionsJournal();
-			</OnClick>
-			<OnEvent function="CollectionsMicroButton_OnEvent" />
+			<OnLoad function="CollectionsMicroButton_OnLoad"/>
+			<OnEnter function="CollectionsMicroButton_OnEnter"/>
+			<OnClick function="CollectionsMicroButton_OnClick"/>
+			<OnEvent function="CollectionsMicroButton_OnEvent"/>
 		</Scripts>
 	</Button>
 	<Button name="EJMicroButton" inherits="MainMenuBarMicroButton" mixin="EJMicroButtonMixin" parent="UIParent">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="CollectionsMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-2" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOMLEFT" relativeTo="CollectionsMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
 		<Frames>
 			<Frame parentKey="NewAdventureNotice" hidden="true">
@@ -389,11 +311,7 @@
 	</Button>
 	<Button name="StoreMicroButton" inherits="MainMenuBarMicroButton" mixin="StoreMicroButtonMixin" parent="UIParent">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="EJMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-2" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOMLEFT" relativeTo="EJMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad function="StoreMicroButton_OnLoad"/>
@@ -404,7 +322,7 @@
 	</Button>
 	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="StoreMicroButton" relativePoint="BOTTOMRIGHT" x="-3"/>
+			<Anchor point="BOTTOMLEFT" relativeTo="StoreMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -415,13 +333,9 @@
 					</Anchors>
 				</Texture>
 				<Texture name="MainMenuBarDownload" file="Interface\BUTTONS\UI-MicroStream-Yellow" hidden="true">
-					<Size>
-						<AbsDimension x="28" y="28"/>
-					</Size>
+					<Size x="28" y="28"/>
 					<Anchors>
-						<Anchor point="BOTTOM" relativeTo="MainMenuMicroButton" relativePoint="BOTTOM">
-							<Offset x="0" y="7"/>
-						</Anchor>
+						<Anchor point="BOTTOM" relativeTo="MainMenuMicroButton" relativePoint="BOTTOM" x="0" y="7"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -449,9 +363,9 @@
 					end
 					if(status == 0) then
 						MainMenuBarDownload:Hide();
-						self:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Up");
-						self:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Down");
-						self:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Disabled");
+						self:SetNormalAtlas("hud-microbutton-MainMenu-Up", true);
+						self:SetPushedAtlas("hud-microbutton-MainMenu-Down", true);
+						self:SetDisabledAtlas("hud-microbutton-MainMenu-Disabled", true);
 					else
 						self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Up");
 						self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Down");
@@ -550,14 +464,36 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-
+	<Button name="HelpMicroButton" inherits="MainMenuBarMicroButton" hidden="true">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="EJMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="MicroButton" value="HelpMicroButton" type="global"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad>
+				LoadMicroButtonTextures(self, "MainMenu");
+				self.tooltipText = HELP_BUTTON;
+				self.newbieText = NEWBIE_TOOLTIP_HELP;
+			</OnLoad>
+			<OnClick function="ToggleHelpFrame"/>
+		</Scripts>
+	</Button>
+    <Frame name="CharacterMicroButtonAlert" inherits="MicroButtonAlertTemplate">
+        <KeyValues>
+            <KeyValue key="MicroButton" value="CharacterMicroButton" type="global"/>
+        </KeyValues>
+        <Scripts>
+            <OnLoad>
+                MicroButtonAlert_OnLoad(self);
+            </OnLoad>
+        </Scripts>
+    </Frame>
 	<Frame name="TalentMicroButtonAlert" inherits="MicroButtonAlertTemplate">
 		<KeyValues>
 			<KeyValue key="MicroButton" value="TalentMicroButton" type="global"/>
 		</KeyValues>
-		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="TalentMicroButton" relativePoint="TOP" x="0" y="-8"/>
-		</Anchors>
 		<Scripts>
 			<OnLoad>
 				MicroButtonAlert_OnLoad(self);
@@ -568,9 +504,6 @@
 		<KeyValues>
 			<KeyValue key="MicroButton" value="CollectionsMicroButton" type="global"/>
 		</KeyValues>
-		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="CollectionsMicroButton" relativePoint="TOP" x="0" y="-8"/>
-		</Anchors>
 		<Scripts>
 			<OnLoad>
 				MicroButtonAlert_OnLoad(self);
@@ -578,9 +511,9 @@
 		</Scripts>
 	</Frame>
 	<Frame name="LFDMicroButtonAlert" inherits="MicroButtonAlertTemplate">
-		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="LFDMicroButton" relativePoint="TOP" x="0" y="-8"/>
-		</Anchors>
+		<KeyValues>
+			<KeyValue key="MicroButton" value="LFDMicroButton" type="global"/>
+		</KeyValues>
 		<Scripts>
 			<OnLoad>
 				MicroButtonAlert_OnLoad(self);
@@ -592,9 +525,6 @@
 		<KeyValues>
 			<KeyValue key="MicroButton" value="EJMicroButton" type="global"/>
 		</KeyValues>
-		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="EJMicroButton" relativePoint="TOP" x="0" y="-8"/>
-		</Anchors>
 		<Scripts>
 			<OnLoad>
 				MicroButtonAlert_OnLoad(self);

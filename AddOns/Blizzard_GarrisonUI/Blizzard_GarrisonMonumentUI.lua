@@ -94,6 +94,7 @@ end
 function GarrisonMonuntmentFrame_UpdateDisplay(trophy_id, trophy_name, lock_code)
 	local frame = GarrisonMonumentFrame;
 	if( not trophy_id ) then
+		local _;
 		trophy_id, lock_code,_, trophy_name = C_Trophy.MonumentGetTrophyInfoByIndex(frame.monumentID);
 	end
 	frame.Text:SetText( trophy_name or EMPTY ) -- set trophy name;

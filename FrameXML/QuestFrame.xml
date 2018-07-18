@@ -446,41 +446,6 @@
 											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton24"/>
 										</Anchors>
 									</Button>
-									<Button name="QuestTitleButton26" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton25"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton27" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton26"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton28" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton27"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton29" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton28"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton30" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton29"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton31" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton30"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton32" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton31"/>
-										</Anchors>
-									</Button>
 								</Frames>
 							</Frame>
 						</ScrollChild>

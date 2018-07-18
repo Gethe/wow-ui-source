@@ -53,11 +53,6 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="BgBurst" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-ARTWORKBurst" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.RuneBG"/>
-					</Anchors>
-				</Texture>
 				<Texture parentKey="BgBurst2" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-BackgroundBurst" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="61"/>
@@ -66,13 +61,6 @@
 				<Texture parentKey="Divider" atlas="ChallengeMode-ThinDivider" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.InstructionBackground" relativePoint="TOP"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture parentKey="RuneCoverGlow" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-ARTWORKCoverGlow" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.RuneBG"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -290,12 +278,6 @@
 		</Frames>
 		<Animations>
 			<AnimationGroup parentKey="InsertedAnim" setToFinalAlpha="true">
-				<Alpha childKey="RuneCoverGlow" startDelay="0.2" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="RuneCoverGlow" startDelay="1.5" duration="1" order="1" fromAlpha="1" toAlpha="0.55"/>
-				<Alpha childKey="BgBurst" startDelay="0.3" smoothing="OUT" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="BgBurst" startDelay="0.3" smoothing="OUT" duration="0.2" order="1" fromScaleX="0.8" fromScaleY="0.8" toScaleX="1.1" toScaleY="1.1"/>
-				<Alpha childKey="BgBurst" startDelay="1.25" smoothing="IN" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
-				<Scale childKey="BgBurst" startDelay="0.7" smoothing="OUT" duration="1.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.8" toScaleY="0.8"/>
 				<Alpha childKey="KeystoneSlotGlow" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="PentagonLines" startDelay="0.15" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="PentagonLines" startDelay="0.55" smoothing="IN_OUT" duration="1" order="1" fromAlpha="1" toAlpha="0.55"/>
@@ -557,7 +539,6 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
-			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
     
@@ -596,30 +577,6 @@
         </Scripts>
     </Frame>
     
-    <Frame name="ChallengesGuildBestTemplate" parentArray="GuildBests" virtual="true" mixin="ChallengesGuildBestMixin">
-        <Size x="230" y="18"/>
-        <Layers>
-            <Layer level="ARTWORK">
-                <FontString parentKey="CharacterName" inherits="GameFontNormal" justifyH="LEFT">
-                    <Size x="150" y="0"/>
-                    <Anchors>
-                        <Anchor point="LEFT"/>
-                    </Anchors>
-                </FontString>
-                <FontString parentKey="Level" inherits="GameFontNormal" justifyH="RIGHT">
-                    <Size x="26" y="0"/>
-                    <Anchors>
-                        <Anchor point="RIGHT"/>
-                    </Anchors>
-                </FontString>
-            </Layer>
-        </Layers>
-        <Scripts>
-            <OnEnter method="OnEnter"/>
-            <OnLeave function="GameTooltip_Hide"/>
-        </Scripts>
-    </Frame>
-    
 	<Frame name="ChallengesFrame" useParentLevel="true" setAllPoints="true" parent="PVEFrame" hidden="true">
 		<Frames>
 			<Frame name="$parentInset" useParentLevel="true" inherits="InsetFrameTemplate">
@@ -629,71 +586,22 @@
 				</Anchors>
 			</Frame>
             
-            <Frame parentKey="WeeklyChest" hidden="true">
-                <Size x="98" y="73"/>
-                <Anchors>
-                    <Anchor point="TOPRIGHT" x="-10" y="-27"/>
-                </Anchors>
-                <Layers>
-                    <Layer level="ARTWORK">
-                        <Texture atlas="ChallengeMode-Chest">
-                            <Size x="98" y="73"/>
-                            <Anchors>
-                                <Anchor point="TOPRIGHT"/>
-                            </Anchors>
-                        </Texture>
-                    </Layer>
-                    <Layer level="HIGHLIGHT">
-                        <Texture atlas="ChallengeMode-Chest" alphaMode="ADD" alpha="0.25">
-                            <Size x="98" y="73"/>
-                            <Anchors>
-                                <Anchor point="TOPRIGHT"/>
-                            </Anchors>
-                        </Texture>
-                    </Layer>
-                </Layers>
-                <Scripts>
-                    <OnEnter>
-                        GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -20, -15);
-                        GameTooltip:SetText(CHALLENGE_MODE_WEEKLY_REWARD_AVAILABLE, nil, nil, nil, nil, true);
-                        GameTooltip:Show();
-                    </OnEnter>
-                    <OnLeave function="GameTooltip_Hide"/>
-                </Scripts>
-            </Frame>
-            
-            <ScrollFrame name="ChallengesModeWeeklyBest" parentKey="WeeklyBest" mixin="ChallengesFrameWeeklyBestMixin">
-                <Size x="550" y="372"/>
+            <ScrollFrame parentKey="WeeklyInfo" mixin="ChallengesFrameWeeklyInfoMixin">
+                <Size x="550" y="392"/>
                 <Anchors>
                     <Anchor point="TOPLEFT" x="6" y="-12"/>
                 </Anchors>
                 <ScrollChild>
                     <Frame parentKey="Child">
-                        <Size x="550" y="372"/>
+                        <Size x="550" y="392"/>
                         <Anchors>
                             <Anchor point="TOPLEFT"/>
                         </Anchors>
                         <Layers>
                             <Layer level="ARTWORK">
-                                <Texture parentKey="Star" atlas="ChallengeMode-SpikeyStar" useAtlasSize="true" alpha="0.51">
-                                    <Size x="90" y="90"/>
+                                <FontString parentKey="Label" inherits="GameFontNormalHuge" text="CHALLENGE_MODE_THIS_WEEK">
                                     <Anchors>
-                                        <Anchor point="TOPLEFT" x="48" y="-15"/>
-                                    </Anchors>
-                                </Texture>
-                                <Texture parentKey="Glow" atlas="ChallengeMode-SoftYellowGlow" useAtlasSize="true" alphaMode="ADD">
-                                    <Anchors>
-                                        <Anchor point="CENTER" relativeKey="$parent.Star" y="-8"/>
-                                    </Anchors>
-                                </Texture>
-                                <FontString parentKey="Level" inherits="CombatTextFontOutline" justifyH="CENTER">
-                                    <Anchors>
-                                        <Anchor point="CENTER" relativeKey="$parent.Star" y="-5"/>
-                                    </Anchors>
-                                </FontString>
-                                <FontString parentKey="Label" inherits="Fancy24Font" text="CHALLENGE_MODE_WEEKLY_BEST">
-                                    <Anchors>
-                                        <Anchor point="TOPLEFT" relativeKey="$parent.Star" relativePoint="TOPRIGHT" x="-16" y="-39"/>
+                                        <Anchor point="TOP" y="-25"/>
                                     </Anchors>
                                     <Color r="1.0" g="1.0" b="1.0"/>
                                     <Shadow>
@@ -703,16 +611,17 @@
                                         <Color r="0" g="0" b="0"/>
                                     </Shadow>
                                 </FontString>
-                                <FontString parentKey="NoRunsThisWeek" inherits="GameFontNormalMed2" justifyH="LEFT" text="CHALLENGE_MODE_NO_RUNS_THIS_WEEK" hidden="true">
-                                    <Size x="300" y="0"/>
+                                <FontString parentKey="RunStatus" inherits="GameFontNormalMed2" justifyH="CENTER" hidden="false">
+                                    <Size x="500" />
                                     <Anchors>
-                                        <Anchor point="TOPLEFT" relativeKey="$parent.Label" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+                                        <Anchor point="BOTTOM" relativeKey="$parent.Label" x="0" y="-90"/>
                                     </Anchors>
                                 </FontString>
-                                <FontString parentKey="DungeonName" inherits="GameFontNormalHuge2">
+                                <FontString parentKey="SeasonBest" inherits="GameFontNormalMed2" text="MYTHIC_PLUS_SEASON_BEST">
                                     <Anchors>
-                                        <Anchor point="TOPLEFT" relativeKey="$parent.Label" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+                                        <Anchor point="BOTTOMLEFT" x="10" y="15"/>
                                     </Anchors>
+									<Color r="1.0" g="1.0" b="1.0"/>
                                     <Shadow>
                                         <Offset>
                                             <AbsDimension x="1" y="-1"/>
@@ -724,36 +633,29 @@
 							<Layer level="BACKGROUND">
 								<Texture parentKey="RuneBG" hidden="false" alpha="0.6" alphaMode="BLEND" atlas="ChallengeMode-RuneBG" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent.Star" y="-3"/>
+										<Anchor point="CENTER" x="-100" y="50"/>
 									</Anchors>
 								</Texture>
                                 <Texture parentKey="RunesLarge" hidden="false" alpha="0.08" alphaMode="BLEND" atlas="ChallengeMode-Runes-Large" useAtlasSize="true">
                                     <Anchors>
-                                        <Anchor point="CENTER" relativeKey="$parent.Star" y="-2"/>
+                                        <Anchor point="CENTER" relativeKey="$parent.RuneBG" y="0"/>
                                     </Anchors>
                                 </Texture>
                                 <Texture parentKey="RunesSmall" hidden="false" alpha="0.08" alphaMode="BLEND" atlas="ChallengeMode-Runes-Small" useAtlasSize="true">
                                     <Anchors>
-                                        <Anchor point="CENTER" relativeKey="$parent.Star" x="-1" y="0"/>
+                                        <Anchor point="CENTER" relativeKey="$parent.RuneBG" x="-1" y="0"/>
                                     </Anchors>
                                 </Texture>
                             </Layer>
                             <Layer level="BACKGROUND" textureSubLevel="1">
                                 <Texture parentKey="LargeRuneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-GlowLarge" useAtlasSize="true">
                                     <Anchors>
-                                        <Anchor point="CENTER" relativeKey="$parent.Star" y="-2"/>
+                                        <Anchor point="TOPLEFT" y="-2"/>
                                     </Anchors>
                                 </Texture>
                                 <Texture parentKey="SmallRuneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-GlowSmall" useAtlasSize="true">
                                     <Anchors>
-                                        <Anchor point="CENTER" relativeKey="$parent.Star" x="-1" y="0"/>
-                                    </Anchors>
-                                </Texture>
-                            </Layer>
-                            <Layer level="OVERLAY">
-                                <Texture parentKey="Glow2" atlas="ChallengeMode-SoftYellowGlow" useAtlasSize="true" alphaMode="ADD" alpha="0.3">
-                                    <Anchors>
-                                        <Anchor point="CENTER" relativeKey="$parent.Star" y="-8"/>
+                                        <Anchor point="TOPLEFT" x="-1" y="0"/>
                                     </Anchors>
                                 </Texture>
                             </Layer>
@@ -761,78 +663,184 @@
                         <Frames>
                             <Frame hidden="true" inherits="ChallengesKeystoneFrameAffixTemplate">
                                 <Anchors>
-                                    <Anchor point="TOPLEFT" relativeKey="$parent.DungeonName" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
+                                    <Anchor point="CENTER" relativeKey="$parent.Label" x="-95" y="-45"/>
                                 </Anchors>
                             </Frame>
-                        </Frames>
-                        <Animations>
-                            <AnimationGroup parentKey="RunesSmallRotateAnim" looping="REPEAT">
-                                <Rotation childKey="RunesSmall" duration="160" order="1" degrees="360"/>
-                                <Rotation childKey="SmallRuneGlow" duration="160" order="1" degrees="360"/>
-                            </AnimationGroup>
-                            <AnimationGroup parentKey="RunesLargeRotateAnim" looping="REPEAT">
-                                <Rotation childKey="RunesLarge" duration="160" order="1" degrees="-360"/>
-                                <Rotation childKey="LargeRuneGlow" duration="160" order="1" degrees="-360"/>
-                            </AnimationGroup>
-							<AnimationGroup parentKey="RunesLargeAnim" looping="REPEAT">
-								<Alpha childKey="LargeRuneGlow" startDelay="0" duration="3" order="1" fromAlpha="0" toAlpha="0.05"/>
-								<Alpha childKey="LargeRuneGlow" startDelay="3" duration="3" order="1" fromAlpha="0.05" toAlpha="0"/>
-							</AnimationGroup>
-							<AnimationGroup parentKey="RunesSmallAnim" looping="REPEAT">
-								<Alpha childKey="SmallRuneGlow" startDelay="0" duration="2" order="1" fromAlpha="0" toAlpha="0.05"/>
-								<Alpha childKey="SmallRuneGlow" startDelay="2" duration="2" order="1" fromAlpha="0.05" toAlpha="0"/>
-							</AnimationGroup>
-                        </Animations>
-                        <Scripts>
-                            <OnShow>
-                                self.RunesSmallRotateAnim:Play();
-                                self.RunesLargeRotateAnim:Play();
-								self.RunesLargeAnim:Play();
-								self.RunesSmallAnim:Play();
-                            </OnShow>
-                            <OnHide>
-                                self.RunesSmallRotateAnim:Stop();
-                                self.RunesLargeRotateAnim:Stop();
-								self.RunesLargeAnim:Stop();
-								self.RunesSmallAnim:Stop();
-                            </OnHide>
-                        </Scripts>
-                    </Frame>
-                </ScrollChild>
+							<Frame parentKey="WeeklyChest" hidden="true" mixin="ChallengeModeWeeklyChestMixin">
+								<Size x="200" y="145"/>
+								<Anchors>
+									<Anchor point="CENTER" x="0" y="-45"/>
+								</Anchors>
+								<Frames>
+									<Frame parentKey="CollectChest" hidden="true"> 
+										<Size x="269" y="188"/>
+										<Anchors>
+											<Anchor point="CENTER"/>
+										</Anchors>
+										<Layers>
+											<Layer level="ARTWORK" textureSubLevel="-1">
+												<Texture parentKey="CollectGlow" atlas="mythicplus-chest-collect" alphaMode="ADD">
+													<Size x="269" y="188"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="ARTWORK">
+												<Texture parentKey="CollectRewardsChest" atlas="mythicplus-chest-collect">
+													<Size x="269" y="188"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="OVERLAY">
+												<Texture parentKey="CollectSparkle" atlas="mythicplus-chest-collect-sparkles" alpha=".5" alphaMode="ADD">
+													<Size x="269" y="188"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="OVERLAY" textureSubLevel="1">
+												<Texture parentKey="CollectSparkle2" atlas="mythicplus-chest-collect-sparkles" alphaMode="ADD">
+													<Size x="269" y="188"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="OVERLAY" textureSubLevel="3">
+												<FontString parentKey="Level" inherits="GameFontNormalHuge2">
+													<Anchors>
+														<Anchor point="CENTER" x="-1"/>
+													</Anchors>
+													<Color r="1" g="1" b="1"/>
+												</FontString>
+											</Layer>
+											<Layer level="OVERLAY" textureSubLevel="3">
+												<FontString parentKey="FinalKeyLevel" inherits="Fancy20Font">
+													<Anchors>
+														<Anchor point="TOP" x="0" y="15"/>
+													</Anchors>
+													<Color r="1" g="1" b="1"/>
+												</FontString>
+											</Layer>
+										</Layers>
+										<Animations>
+											<AnimationGroup parentKey="Anim" looping="REPEAT">
+												<Alpha childKey="CollectGlow" startDelay="0" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+												<Alpha childKey="CollectGlow" startDelay="1" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha childKey="CollectSparkle2" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+												<Alpha childKey="CollectSparkle2" startDelay="1" smoothing="OUT" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+											</AnimationGroup>
+											<AnimationGroup parentKey="SparkleRotation" looping="REPEAT">
+												<Rotation childKey="CollectSparkle" smoothing="OUT" duration="2" order="1" degrees="1"/>
+												<Rotation childKey="CollectSparkle" smoothing="OUT" duration="2" order="2" degrees="0"/>
+												<Rotation childKey="CollectSparkle" smoothing="OUT" duration="2" order="3" degrees="-1"/>
+												<Rotation childKey="CollectSparkle" smoothing="OUT" duration="2" order="4" degrees="0"/>
+												<Rotation childKey="CollectSparkle2" smoothing="OUT" duration="2" order="1" degrees="1"/>
+												<Rotation childKey="CollectSparkle2" smoothing="OUT" duration="2" order="2" degrees="0"/>
+												<Rotation childKey="CollectSparkle2" smoothing="OUT" duration="2" order="3" degrees="-1"/>
+												<Rotation childKey="CollectSparkle2" smoothing="OUT" duration="2" order="4" degrees="0"/>
+											</AnimationGroup>
+									</Animations>
+									</Frame>
+									<Frame parentKey="MissingKeystoneChest" hidden="true">
+										<Size x="219" y="134"/>
+										<Anchors>
+											<Anchor point="CENTER"/>
+										</Anchors>
+										<Layers>
+											<Layer level="ARTWORK">
+												<Texture atlas="mythicplus-chest-silver" alpha="0.45">
+													<Size x="219" y="134"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+										</Layers>
+									</Frame>
+									<Frame parentKey="CompletedKeystoneChest" hidden="true">
+										<Size x="219" y="134"/>
+										<Anchors>
+											<Anchor point="CENTER"/>
+										</Anchors>
+										<Layers>
+											<Layer level="ARTWORK">
+												<Texture atlas="mythicplus-chest-gold">
+													<Size x="219" y="134"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="OVERLAY" textureSubLevel="3">
+												<FontString parentKey="Level" inherits="GameFontNormalHuge2">
+													<Anchors>
+														<Anchor point="CENTER" x="-2"/>
+													</Anchors>
+													<Color r="1" g="1" b="1"/>
+												</FontString>
+											</Layer>
+										</Layers>
+									</Frame>
+								</Frames>
+								<Scripts>
+									<OnEnter method="OnEnter"/>
+									<OnLeave function="GameTooltip_Hide"/>
+									<OnShow>
+										if (self.CollectChest:IsShown()) then
+											self.CollectChest.Anim:Play();
+											self.CollectChest.SparkleRotation:Play();
+										end
+									</OnShow>
+									<OnHide>
+										if (self.CollectChest:IsShown()) then
+											self.CollectChest.Anim:Stop();
+											self.CollectChest.SparkleRotation:Stop();
+										end
+									</OnHide>
+								</Scripts>
+							</Frame>
+					</Frames>
+					<Animations>
+					  <AnimationGroup parentKey="RunesSmallRotateAnim" looping="REPEAT">
+						  <Rotation childKey="RunesSmall" duration="160" order="1" degrees="360"/>
+						  <Rotation childKey="SmallRuneGlow" duration="160" order="1" degrees="360"/>
+					  </AnimationGroup>
+					  <AnimationGroup parentKey="RunesLargeRotateAnim" looping="REPEAT">
+						  <Rotation childKey="RunesLarge" duration="160" order="1" degrees="-360"/>
+						  <Rotation childKey="LargeRuneGlow" duration="160" order="1" degrees="-360"/>
+					  </AnimationGroup>
+						<AnimationGroup parentKey="RunesLargeAnim" looping="REPEAT">
+							<Alpha childKey="LargeRuneGlow" startDelay="0" duration="3" order="1" fromAlpha="0" toAlpha="0.05"/>
+							<Alpha childKey="LargeRuneGlow" startDelay="3" duration="3" order="1" fromAlpha="0.05" toAlpha="0"/>
+						</AnimationGroup>
+						<AnimationGroup parentKey="RunesSmallAnim" looping="REPEAT">
+							<Alpha childKey="SmallRuneGlow" startDelay="0" duration="2" order="1" fromAlpha="0" toAlpha="0.05"/>
+							<Alpha childKey="SmallRuneGlow" startDelay="2" duration="2" order="1" fromAlpha="0.05" toAlpha="0"/>
+						</AnimationGroup>
+					</Animations>
+					<Scripts>
+						<OnShow>
+							self.RunesSmallRotateAnim:Play();
+							self.RunesLargeRotateAnim:Play();
+							self.RunesLargeAnim:Play();
+							self.RunesSmallAnim:Play();
+						</OnShow>
+						<OnHide>
+							self.RunesSmallRotateAnim:Stop();
+							self.RunesLargeRotateAnim:Stop();
+							self.RunesLargeAnim:Stop();
+							self.RunesSmallAnim:Stop();
+						</OnHide>
+					</Scripts>
+				</Frame>
+				</ScrollChild>
             </ScrollFrame>
             <Frame inherits="ChallengesDungeonIconFrameTemplate" hidden="true"/>
-			
-			<Frame parentKey="GuildBest" mixin="ChallengesFrameGuildBestMixin" hidden="true">
-                <Size x="260" y="110"/>
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeKey="$parent.WeeklyBest.Child.Star" relativePoint="BOTTOMRIGHT" x="-16" y="30"/>
-                </Anchors>
-                <Layers>
-                    <Layer level="BACKGROUND">
-                        <Texture atlas="ChallengeMode-guild-background" setAllPoints="true" alpha="0.4"/>
-                    </Layer>
-                    <Layer level="ARTWORK">
-                        <FontString parentKey="Title" inherits="GameFontNormalMed2" text="CHALLENGE_MODE_GUILD_BEST">
-                            <Anchors>
-                                <Anchor point="TOPLEFT" x="15" y="-7"/>
-                            </Anchors>
-                        </FontString>
-                        <Texture parentKey="Line" atlas="ChallengeMode-RankLineDivider" useAtlasSize="false">
-							<Size x="246" y="9"/>
-                            <Anchors>
-                                <Anchor point="TOP" x="0" y="-20"/>
-                            </Anchors>
-                        </Texture>
-                    </Layer>
-                </Layers>
-                <Frames>
-                    <Frame inherits="ChallengesGuildBestTemplate" hidden="true">
-                        <Anchors>
-                            <Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-7"/>
-                        </Anchors>
-                    </Frame>
-                </Frames>
-            </Frame>
 		</Frames>
         <Layers>
             <Layer level="BACKGROUND" textureSubLevel="1">

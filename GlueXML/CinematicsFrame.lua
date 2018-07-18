@@ -1,7 +1,7 @@
 function CinematicsFrame_OnLoad(self)
 	local button;
 	local height = 80;
-	local numMovies = GetClientDisplayExpansionLevel() + 1;	
+	local numMovies = math.ceil((GetClientDisplayExpansionLevel() + 1) / 2);
 	for i = 1, numMovies do
 		button = _G["CinematicsButton"..i];
 		if ( not button ) then

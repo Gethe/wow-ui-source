@@ -1509,34 +1509,6 @@ TRAVEL PASS
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Button>
-					<Button name="FriendsFrameMutePlayerButton" inherits="UIPanelButtonTemplate" text="MUTE_PLAYER">
-						<Size x="110" y="21"/>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="FriendsFrameIgnorePlayerButton" relativePoint="RIGHT"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:SetFrameLevel( self:GetFrameLevel() + 3 );
-							</OnLoad>
-							<OnClick>
-								if ( UnitCanCooperate("player", "target") and UnitIsPlayer("target") ) then
-									local name, server = UnitName("target");
-									local fullname = name;
-									if ( server and not UnitIsSameServer("target") ) then
-										fullname = name.."-"..server;
-									end
-									AddMute(fullname);
-									PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-								else
-									StaticPopup_Show("ADD_MUTE");
-								end
-							</OnClick>
-							<OnEnter>
-								GameTooltip_AddNewbieTip(self, MUTE_PLAYER, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_MUTEPLAYER, 1);
-							</OnEnter>
-							<OnLeave function="GameTooltip_Hide"/>
-						</Scripts>
-					</Button>
 					<Frame name="FriendsFrameIgnoredHeader" inherits="FriendsFrameHeaderTemplate" hidden="true"/>
 					<Frame name="FriendsFrameBlockedInviteHeader" inherits="FriendsFrameHeaderTemplate" hidden="true"/>
 					<Frame name="FriendsFrameMutedHeader" inherits="FriendsFrameHeaderTemplate" hidden="true"/>
@@ -1727,7 +1699,7 @@ TRAVEL PASS
 							<Anchor point="BOTTOMRIGHT" x="-5" y="26"/>
 						</Anchors>
 					</Frame>
-					<EditBox name="WhoFrameEditBox" autoFocus="false" frameStrata="HIGH" historyLines="32">
+					<EditBox name="WhoFrameEditBox" autoFocus="false" frameStrata="HIGH" historyLines="32" bytes="256">
 						<Size x="296" y="32"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="-10" y="20"/>
@@ -1737,7 +1709,7 @@ TRAVEL PASS
 							<OnEnterPressed function="WhoFrameEditBox_OnEnterPressed"/>
 							<OnEscapePressed function="EditBox_ClearFocus"/>
 						</Scripts>
-						<FontString inherits="ChatFontNormal" bytes="256"/>
+						<FontString inherits="ChatFontNormal"/>
 					</EditBox>
 					<ScrollFrame name="WhoListScrollFrame" inherits="FauxScrollFrameTemplate">
 						<Size x="296" y="287"/>
@@ -1818,30 +1790,15 @@ TRAVEL PASS
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			<Button name="FriendsFrameTab3" inherits="FriendsFrameTabTemplate" id="3" text="CHAT">
+			<Button name="FriendsFrameTab3" inherits="FriendsFrameTabTemplate" id="3" text="RAID">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="FriendsFrameTab2" relativePoint="RIGHT" x="-15" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad function="FriendsFrame_Update"/>
-					<OnEvent function="FriendsFrame_Update"/>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(CHAT_CHANNELS, "TOGGLECHANNELTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHANNELTAB, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Button>
-			<Button name="FriendsFrameTab4" inherits="FriendsFrameTabTemplate" id="4" text="RAID">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="FriendsFrameTab3" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="FriendsFrameTab2" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="-15" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad function="FriendsFrame_Update"/>
-					<OnEvent function="FriendsFrame_Update"/>
 					<OnEnter>
 						GameTooltip_AddNewbieTip(self, RAID, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_RAID, 1);
 					</OnEnter>
@@ -2226,7 +2183,7 @@ TRAVEL PASS
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								self.autoCompleteParams = AUTOCOMPLETE_LIST.ADDFRIEND;
+								AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, AUTOCOMPLETE_LIST.ADDFRIEND.include, AUTOCOMPLETE_LIST.ADDFRIEND.exclude);
 							</OnLoad>
 							<OnEnterPressed>
 								if ( not AutoCompleteEditBox_OnEnterPressed(self) and AddFriendEntryFrameAcceptButton:IsEnabled() ) then
@@ -2576,7 +2533,6 @@ TRAVEL PASS
 			<OnLoad>
 				self:RegisterEvent("BN_REQUEST_FOF_SUCCEEDED");
 				self:RegisterEvent("BN_DISCONNECTED");
-				self:RegisterEvent("BN_REQUEST_FOF_FAILED");
 				self.requested = { };
 				self.hideOnEscape = true;
 				self.exclusive = true;

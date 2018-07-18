@@ -1,6 +1,13 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Include file="MainMenuBarMicroButtons.xml"/>
+	<Include file="StatusTrackingBarTemplate.xml"/>
+	<Include file="ExpBar.xml"/>
+	<Include file="ReputationBar.xml"/> 
+	<Include file="AzeriteBar.xml"/>
+	<Include file="ArtifactBar.xml"/>
+	<Include file="HonorBar.xml"/>
+	<Include file="StatusTrackingBar.xml"/>
 	<Include file="MainMenuBar.xml"/>
 	<Include file="ActionButtonTemplate.xml"/>
 	<Include file="ActionBarFrame.xml"/>

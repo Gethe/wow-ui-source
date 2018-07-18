@@ -1,0 +1,59 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="VoiceChatPrompt.lua"/>
+
+	<ContainedAlertFrame name="VoiceChatPromptTemplate" inherits="SocialToastTemplate" virtual="true">
+		<Size x="250" y="70"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon">
+					<Size x="29" y="29"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-7"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="180"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="6" y="5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</ContainedAlertFrame>
+
+	<ContainedAlertFrame name="VoiceChatPromptActivateChannel" mixin="VoiceChatActivateChannelPromptMixin" inherits="VoiceChatPromptTemplate">
+		<Size x="250" y="70"/>
+		<KeyValues>
+ 			<KeyValue key="externallyManagedOutroAnimation" value="true" type="boolean"/>
+ 		</KeyValues>
+		<Frames>
+			<Button parentKey="AcceptButton" mixin="VoiceChatActivateChannelPromptButtonMixin" text="VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_ACCEPT" inherits="UIPanelButtonTemplate">
+				<Size x="126" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="13"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+	</ContainedAlertFrame>
+
+	<ContainedAlertFrame name="VoiceChatChannelActivatedNotification" mixin="VoiceChatChannelActivatedNotificationMixin" inherits="VoiceChatPromptTemplate">
+		<Size x="250" y="52"/>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="Text2" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="180"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Text" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</ContainedAlertFrame>
+</Ui>

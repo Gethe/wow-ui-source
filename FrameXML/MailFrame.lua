@@ -193,6 +193,7 @@ function InboxFrame_Update()
 				SetItemButtonQuality(button, select(3, GetItemInfo(firstItemID)), firstItemID);
 			else
 				button.IconBorder:Hide();
+				button.IconOverlay:Hide();
 			end
 			
 			buttonIcon = _G["MailItem"..i.."ButtonIcon"];

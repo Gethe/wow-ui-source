@@ -1,0 +1,22 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="UIWidgetTemplateScenarioHeaderCurrenciesAndBackground" inherits="UIWidgetBaseTemplate" virtual="true" mixin="UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin" frameStrata="BACKGROUND">
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Frame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="CurrencyContainer" frameStrata="HIGH">
+				<Size x="16" y="200"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="19" y="-46" />
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

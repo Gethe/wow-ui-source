@@ -1,20 +1,9 @@
-local BNToasts = { };
-local BNToastEvents = {
-	showToastOnline = { "BN_FRIEND_ACCOUNT_ONLINE" },
-	showToastOffline = { "BN_FRIEND_ACCOUNT_OFFLINE" },
-	showToastBroadcast = { "BN_CUSTOM_MESSAGE_CHANGED" },
-	showToastFriendRequest = { "BN_FRIEND_INVITE_ADDED", "BN_FRIEND_INVITE_LIST_INITIALIZED" },
-};
 local BN_TOAST_TYPE_ONLINE = 1;
 local BN_TOAST_TYPE_OFFLINE = 2;
 local BN_TOAST_TYPE_BROADCAST = 3;
 local BN_TOAST_TYPE_PENDING_INVITES = 4;
 local BN_TOAST_TYPE_NEW_INVITE = 5;
-BN_TOAST_TOP_OFFSET = 70;
-BN_TOAST_BOTTOM_OFFSET = -12;
-BN_TOAST_RIGHT_OFFSET = -1;
-BN_TOAST_LEFT_OFFSET = 1;
-BN_TOAST_TOP_BUFFER = 20;	-- the minimum distance in pixels from the toast to the top edge of the screen
+local BN_TOAST_TYPE_CLUB_INVITATION = 6;
 
 BNET_CLIENT_WOW = "WoW";
 BNET_CLIENT_SC2 = "S2";
@@ -26,24 +15,7 @@ BNET_CLIENT_OVERWATCH = "Pro";
 BNET_CLIENT_CLNT = "CLNT";
 BNET_CLIENT_SC = "S1";
 BNET_CLIENT_DESTINY2 = "DST2";
-
-function BNet_OnLoad(self)
-	self:RegisterEvent("BN_DISCONNECTED");
-	self:RegisterEvent("BN_BLOCK_FAILED_TOO_MANY");
-end
-
-function BNet_OnEvent(self, event, ...)
-	if ( event == "BN_DISCONNECTED" ) then
-		table.wipe(BNToasts);
-	elseif ( event == "BN_BLOCK_FAILED_TOO_MANY" ) then
-		local blockType = ...;
-		if ( blockType == "RID" ) then
-			StaticPopup_Show("BN_BLOCK_FAILED_TOO_MANY_RID");
-		elseif ( blockType == "CID" ) then
-			StaticPopup_Show("BN_BLOCK_FAILED_TOO_MANY_CID");
-		end
-	end
-end
+BNET_CLIENT_COD = "VIPR";
 
 --Name can be a realID or plain battletag with no 4 digit number (e.g. Murky McGrill or LichKing).
 function BNet_GetBNetIDAccount(name)
@@ -58,150 +30,234 @@ function BNet_GetBNetIDAccountFromCharacterName(name)
 		if ( (characterName and strcmputf8i(name, characterName) == 0) ) then
 			return opaqueID;
 		end
-	end	
+	end
 end
 
 -- BNET toast
-function BNToastFrame_OnEvent(self, event, arg1)
-	if ( event == "BN_FRIEND_ACCOUNT_ONLINE" ) then	
-		BNToastFrame_AddToast(BN_TOAST_TYPE_ONLINE, arg1);
+
+BNToastMixin = {}
+
+function BNToastMixin:OnLoad()
+	self.BNToastEvents = {
+		showToastOnline = { "BN_FRIEND_ACCOUNT_ONLINE" },
+		showToastOffline = { "BN_FRIEND_ACCOUNT_OFFLINE" },
+		showToastClubInvitation = { "CLUB_INVITATION_ADDED_FOR_SELF" },
+		showToastBroadcast = { "BN_CUSTOM_MESSAGE_CHANGED" },
+		showToastFriendRequest = { "BN_FRIEND_INVITE_ADDED", "BN_FRIEND_INVITE_LIST_INITIALIZED" },
+	};
+
+	self.BNToasts = {};
+	self.DoubleLine:SetSpacing(3);
+	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("BN_DISCONNECTED");
+	self:RegisterEvent("BN_BLOCK_FAILED_TOO_MANY");
+
+	local alertSystem = ChatAlertFrame:AddAutoAnchoredSubSystem(self);
+	ChatAlertFrame:SetSubSystemAnchorPriority(alertSystem, 1);
+end
+
+function BNToastMixin:OnEvent(event, ...)
+	if ( event == "BN_DISCONNECTED" ) then
+		self:ClearToasts();
+	elseif ( event == "BN_BLOCK_FAILED_TOO_MANY" ) then
+		self:BlockFailed(...);
+	elseif ( event == "BN_FRIEND_ACCOUNT_ONLINE" ) then
+		self:AddToast(BN_TOAST_TYPE_ONLINE, ...);
 	elseif ( event == "BN_FRIEND_ACCOUNT_OFFLINE" ) then
-		BNToastFrame_AddToast(BN_TOAST_TYPE_OFFLINE, arg1);
+		self:AddToast(BN_TOAST_TYPE_OFFLINE, ...);
 	elseif ( event == "BN_CUSTOM_MESSAGE_CHANGED" ) then
-		if ( arg1 ) then
-			BNToastFrame_AddToast(BN_TOAST_TYPE_BROADCAST, arg1);
-		end
+		self:OnCustomMessageChanged(...);
 	elseif ( event == "BN_FRIEND_INVITE_ADDED" ) then
-		BNToastFrame_AddToast(BN_TOAST_TYPE_NEW_INVITE);
+		self:AddToast(BN_TOAST_TYPE_NEW_INVITE);
+	elseif ( event == "CLUB_INVITATION_ADDED_FOR_SELF" ) then
+		self:AddToast(BN_TOAST_TYPE_CLUB_INVITATION, ...);
 	elseif ( event == "BN_FRIEND_INVITE_LIST_INITIALIZED" ) then
-		BNToastFrame_AddToast(BN_TOAST_TYPE_PENDING_INVITES, arg1);
+		self:AddToast(BN_TOAST_TYPE_PENDING_INVITES, ...);
 	elseif( event == "VARIABLES_LOADED" ) then
-		BNet_SetToastDuration(GetCVar("toastDuration"));
-		if ( GetCVarBool("showToastWindow") ) then
-			BNet_EnableToasts();
+		self:OnVariablesLoaded();
+	end
+end
+
+function BNToastMixin:OnHide()
+	self:CheckShowToast();
+end
+
+function BNToastMixin:OnEnter()
+	AlertFrame_PauseOutAnimation(self);
+
+	if self.toastType == BN_TOAST_TYPE_BROADCAST and self.BottomLine:IsTruncated() then
+		self.TooltipFrame.Text:SetText(self.BottomLine:GetText());
+		self.TooltipFrame:Show();
+	end
+end
+
+function BNToastMixin:OnLeave()
+	AlertFrame_ResumeOutAnimation(self);
+	self.TooltipFrame:Hide();
+end
+
+function BNToastMixin:OnClick()
+	local toastType = self.toastType;
+	local toastData = self.toastData;
+
+	self:Hide(); -- will trigger next toast
+
+	if toastType == BN_TOAST_TYPE_NEW_INVITE or toastType == BN_TOAST_TYPE_PENDING_INVITES then
+		if not FriendsFrame:IsShown() then
+			ToggleFriendsFrame(FRIEND_TAB_FRIENDS);
 		end
+
+		if GetCVarBool("friendInvitesCollapsed") then
+			FriendsListFrame_ToggleInvites();
+		end
+
+		FriendsTabHeaderTab1:Click();
+	elseif toastType == BN_TOAST_TYPE_ONLINE or toastType == BN_TOAST_TYPE_BROADCAST then
+		local bnetIDAccount, accountName = BNGetFriendInfoByID(toastData);
+		if accountName then --This player may have been removed from our friends list, so we may not have a name.
+			ChatFrame_SendSmartTell(accountName);
+		end
+	elseif toastType == BN_TOAST_TYPE_CLUB_INVITATION then
+		Communities_LoadUI();
+		ShowUIPanel(CommunitiesFrame);
+		CommunitiesFrame:SelectClub(toastData.club.clubId);
 	end
 end
 
-function BNToastFrame_OnEnter()
-	AlertFrame_StopOutAnimation(BNToastFrame);
-	if ( BNToastFrame.toastType == BN_TOAST_TYPE_BROADCAST and BNToastFrameBottomLine:IsTruncated() ) then
-		BNToastFrame.TooltipFrame.Text:SetText(BNToastFrameBottomLine:GetText());
-		BNToastFrame.TooltipFrame:Show();
+function BNToastMixin:ClearToasts()
+	table.wipe(self.BNToasts);
+end
+
+function BNToastMixin:BlockFailed(blockType)
+	if ( blockType == "RID" ) then
+		StaticPopup_Show("BN_BLOCK_FAILED_TOO_MANY_RID");
+	elseif ( blockType == "CID" ) then
+		StaticPopup_Show("BN_BLOCK_FAILED_TOO_MANY_CID");
 	end
 end
 
-function BNToastFrame_OnLeave()
-	AlertFrame_ResumeOutAnimation(BNToastFrame);
-	if ( BNToastFrame.toastType == BN_TOAST_TYPE_BROADCAST ) then
-		BNToastFrame.TooltipFrame:Hide();
+function BNToastMixin:OnCustomMessageChanged(toastData)
+	if toastData then
+		self:AddToast(BN_TOAST_TYPE_BROADCAST, toastData);
 	end
 end
 
-function BNet_EnableToasts()
-	local frame = BNToastFrame;
-	for cvar, events in pairs(BNToastEvents) do
-		if ( GetCVarBool(cvar) ) then
-			for _, event in pairs(events) do
-				frame:RegisterEvent(event);
+function BNToastMixin:OnVariablesLoaded()
+	self:SetToastDuration(GetCVar("toastDuration"));
+	self:SetToastsEnabled(GetCVarBool("showToastWindow"));
+end
+
+function BNToastMixin:EnableToasts()
+	for cvar, events in pairs(self.BNToastEvents) do
+		if GetCVarBool(cvar) then
+			for eventIndex, event in ipairs(events) do
+				self:RegisterEvent(event);
 			end
 		end
 	end
 end
 
-function BNet_DisableToasts()
-	local frame = BNToastFrame;
-	frame:UnregisterAllEvents();
-	table.wipe(BNToasts);
-	frame:Hide();
+function BNToastMixin:DisableToasts()
+	self:ClearToasts();
+	self:Hide();
+
+	for cvar, events in pairs(self.BNToastEvents) do
+		for eventIndex, event in ipairs(events) do
+			self:UnregisterEvent(event);
+		end
+	end
 end
 
-function BNet_UpdateToastEvent(cvar, value)
-	if ( GetCVarBool("showToastWindow") ) then
-		local frame = BNToastFrame;
-		local events = BNToastEvents[cvar];
-		if ( value == "1" ) then
-			for _, event in pairs(events) do
-				frame:RegisterEvent(event);
+function BNToastMixin:UpdateToastEvent(cvar, value)
+	if GetCVarBool("showToastWindow") then
+		local events = self.BNToastEvents[cvar];
+		if events and value == "1" then
+			for eventIndex, event in pairs(events) do
+				self:RegisterEvent(event);
 			end
 		else
-			for _, event in pairs(events) do
-				frame:UnregisterEvent(event);
+			for eventIndex, event in pairs(events) do
+				self:UnregisterEvent(event);
 			end
 		end
 	end
 end
 
-function BNet_SetToastDuration(duration)
-	BNToastFrame.duration = duration;
+function BNToastMixin:SetToastsEnabled(enabled)
+	if enabled then
+		self:EnableToasts();
+	else
+		self:DisableToasts();
+	end
 end
 
-function BNToastFrame_Show()
-	local toastType = BNToasts[1].toastType;
-	local toastData = BNToasts[1].toastData;
-	tremove(BNToasts, 1);
-	local topLine = BNToastFrameTopLine;
-	local middleLine = BNToastFrameMiddleLine;
-	local bottomLine = BNToastFrameBottomLine;
+function BNToastMixin:SetToastDuration(duration)
+	self.duration = duration;
+end
+
+function BNToastMixin:ShowToast()
+	local toast = tremove(self.BNToasts, 1);
+	local toastType, toastData = toast.toastType, toast.toastData;
+
+	local self = BNToastFrame;
+	local topLine = self.TopLine;
+	local middleLine = self.MiddleLine;
+	local bottomLine = self.BottomLine;
+	local doubleLine = self.DoubleLine;
+
+	topLine:Hide();
+	middleLine:Hide();
+	bottomLine:Hide();
+	doubleLine:Hide();
+
 	if ( toastType == BN_TOAST_TYPE_NEW_INVITE ) then
-		BNToastFrameIconTexture:SetTexCoord(0.75, 1, 0, 0.5);
-		topLine:Hide();
-		middleLine:Hide();
-		bottomLine:Hide();
-		BNToastFrameDoubleLine:Show();
-		BNToastFrameDoubleLine:SetText(BN_TOAST_NEW_INVITE);
+		self.IconTexture:SetTexCoord(0.75, 1, 0, 0.5);
+		doubleLine:Show();
+		doubleLine:SetText(BN_TOAST_NEW_INVITE);
+		doubleLine:SetMaxLines(0);
 	elseif ( toastType == BN_TOAST_TYPE_PENDING_INVITES ) then
-		BNToastFrameIconTexture:SetTexCoord(0.75, 1, 0, 0.5);
-		topLine:Hide();
-		middleLine:Hide();
-		bottomLine:Hide();
-		BNToastFrameDoubleLine:Show();
-		BNToastFrameDoubleLine:SetFormattedText(BN_TOAST_PENDING_INVITES, toastData);
+		self.IconTexture:SetTexCoord(0.75, 1, 0, 0.5);
+		doubleLine:Show();
+		doubleLine:SetFormattedText(BN_TOAST_PENDING_INVITES, toastData);
 	elseif ( toastType == BN_TOAST_TYPE_ONLINE ) then
 		local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client = BNGetFriendInfoByID(toastData);
 		-- don't display a toast if we didn't get the data in time
 		if ( not accountName ) then
 			return;
 		end
-		
+
 		if (battleTag) then
 			characterName = BNet_GetValidatedCharacterName(characterName, battleTag, client) or "";
 			characterName = BNet_GetClientEmbeddedTexture(client, 14, 14, 0, -1)..characterName;
 			middleLine:SetFormattedText(characterName);
 			middleLine:SetTextColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);
 			middleLine:Show();
-		else
-			middleLine:Hide();
 		end
-		
-		BNToastFrameIconTexture:SetTexCoord(0, 0.25, 0.5, 1);
+
+		self.IconTexture:SetTexCoord(0, 0.25, 0.5, 1);
 		topLine:Show();
-		topLine:SetText(accountName);
-		topLine:SetTextColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);
+		topLine:SetText(FRIENDS_BNET_NAME_COLOR:WrapTextInColorCode(accountName));
 		bottomLine:Show();
-		bottomLine:SetText(BN_TOAST_ONLINE);
-		bottomLine:SetTextColor(FRIENDS_GRAY_COLOR.r, FRIENDS_GRAY_COLOR.g, FRIENDS_GRAY_COLOR.b);
-		BNToastFrameDoubleLine:Hide();
+		bottomLine:SetText(FRIENDS_GRAY_COLOR:WrapTextInColorCode(BN_TOAST_ONLINE));
 	elseif ( toastType == BN_TOAST_TYPE_OFFLINE ) then
 		local bnetIDAccount, accountName = BNGetFriendInfoByID(toastData);
 		-- don't display a toast if we didn't get the data in time
 		if ( not accountName ) then
 			return;
 		end
-		BNToastFrameIconTexture:SetTexCoord(0, 0.25, 0.5, 1);
+		self.IconTexture:SetTexCoord(0, 0.25, 0.5, 1);
 		topLine:Show();
-		topLine:SetFormattedText(accountName);
-		topLine:SetTextColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);
+		topLine:SetFormattedText(FRIENDS_BNET_NAME_COLOR:WrapTextInColorCode(accountName));
 		bottomLine:Show();
 		bottomLine:SetText(BN_TOAST_OFFLINE);
 		bottomLine:SetTextColor(FRIENDS_GRAY_COLOR.r, FRIENDS_GRAY_COLOR.g, FRIENDS_GRAY_COLOR.b);
-		BNToastFrameDoubleLine:Hide();
+		doubleLine:Hide();
 		middleLine:Hide();
 	elseif ( toastType == BN_TOAST_TYPE_BROADCAST ) then
 		local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isAFK, isDND, messageText = BNGetFriendInfoByID(toastData);
 		if ( not messageText or messageText == "" ) then
 			return;
-		end	
+		end
 		BNToastFrameIconTexture:SetTexCoord(0, 0.25, 0, 0.5);
 		topLine:Show();
 		topLine:SetText(accountName);
@@ -209,247 +265,123 @@ function BNToastFrame_Show()
 		bottomLine:Show();
 		bottomLine:SetText(messageText);
 		bottomLine:SetTextColor(FRIENDS_GRAY_COLOR.r, FRIENDS_GRAY_COLOR.g, FRIENDS_GRAY_COLOR.b);
-		BNToastFrameDoubleLine:Hide();
+		doubleLine:Hide();
 		middleLine:Hide();
+	elseif ( toastType == BN_TOAST_TYPE_CLUB_INVITATION ) then
+		self.IconTexture:SetTexCoord(0.5, 0.75, 0, 0.5);
+		doubleLine:Show();
+		local clubName = "";
+		if toastData.club.clubType == Enum.ClubType.BattleNet then
+			clubName = BATTLENET_FONT_COLOR:WrapTextInColorCode(toastData.club.name);
+		else
+			clubName = NORMAL_FONT_COLOR:WrapTextInColorCode(toastData.club.name);
+		end
+		doubleLine:SetText(BN_TOAST_NEW_CLUB_INVITATION:format(clubName));
+		doubleLine:SetMaxLines(2);
 	end
-	
+
 	if (middleLine:IsShown() and bottomLine:IsShown()) then
 		bottomLine:SetPoint("TOPLEFT", middleLine, "BOTTOMLEFT", 0, -4);
-		BNToastFrame:SetHeight(63);
+		self:SetHeight(63);
 	else
 		bottomLine:SetPoint("TOPLEFT", topLine, "BOTTOMLEFT", 0, -4);
-		BNToastFrame:SetHeight(50);
+		self:SetHeight(50);
 	end
 
-	local frame = BNToastFrame;
-	BNToastFrame_UpdateAnchor(true);
-	frame:Show();
 	PlaySound(SOUNDKIT.UI_BNET_TOAST);
-	frame.toastType = toastType;
-	frame.toastData = toastData;
-	frame.animIn:Play();
-	BNToastFrameGlowFrame.glow:Show();
-	BNToastFrameGlowFrame.glow.animIn:Play();
-	frame.waitAndAnimOut:Stop();	--Just in case it's already animating out, but we want to reinstate it.
-	if ( frame:IsMouseOver() ) then
-		frame.waitAndAnimOut.animOut:SetStartDelay(1);
-	else
-		frame.waitAndAnimOut.animOut:SetStartDelay(frame.duration);
-		frame.waitAndAnimOut:Play();
+	self.toastType = toastType;
+	self.toastData = toastData;
+	AlertFrame_ShowNewAlert(self);
+end
+
+function BNToastMixin:CheckShowToast()
+	if #self.BNToasts > 0 then
+		self:ShowToast();
 	end
 end
 
-function BNToastFrame_Close()
-	BNToastFrame:Hide();
-	BNToastFrame.TooltipFrame:Hide();
+function BNToastMixin:AddToast(toastType, toastData)
+	self:RemoveToast(toastType, toastData);
+	tinsert(self.BNToasts, { toastType = toastType, toastData = toastData });
+	self:ShowToast();
 end
 
-function BNToastFrame_OnUpdate()
-	if ( next(BNToasts) and not BNToastFrame:IsShown() ) then
-		BNToastFrame_Show();
-	end
-end
-
-function BNToastFrame_AddToast(toastType, toastData)
-	local toast = { };
-	toast.toastType = toastType;
-	toast.toastData = toastData;
-	BNToastFrame_RemoveToast(toastType, toastData);
-	tinsert(BNToasts, toast);
-end
-
-function BNToastFrame_RemoveToast(toastType, toastData)
-	for i = 1, #BNToasts do
-		if ( BNToasts[i].toastType == toastType and BNToasts[i].toastData == toastData ) then
-			tremove(BNToasts, i);
+function BNToastMixin:RemoveToast(toastType, toastData)
+	for toastIndex, toast in ipairs(self.BNToasts) do
+		if toast.toastType == toastType and toast.toastData == toastData then
+			tremove(self.BNToasts, toastIndex);
 			break;
 		end
 	end
 end
 
-function BNToastFrame_UpdateAnchor(forceAnchor)
-	local chatFrame = DEFAULT_CHAT_FRAME;
-	local toastFrame = BNToastFrame;
-	local offscreen = chatFrame.buttonFrame:GetTop() + BNToastFrame:GetHeight() + BN_TOAST_TOP_OFFSET + BN_TOAST_TOP_BUFFER > GetScreenHeight();
-
-	if ( chatFrame.buttonSide ~= toastFrame.buttonSide ) then
-		forceAnchor = true;
-	end
-	if ( offscreen and toastFrame.topSide ) then
-		forceAnchor = true;
-		toastFrame.topSide = false;
-	elseif ( not offscreen and not toastFrame.topSide ) then
-		forceAnchor = true;
-		toastFrame.topSide = true;
-	end
-	if ( forceAnchor ) then
-		toastFrame:ClearAllPoints();
-		toastFrame.buttonSide = chatFrame.buttonSide;
-		local xOffset = BN_TOAST_LEFT_OFFSET;
-		if ( toastFrame.buttonSide == "right" ) then
-			xOffset = BN_TOAST_RIGHT_OFFSET;
-		end
-		if ( toastFrame.topSide ) then
-			toastFrame:SetPoint("BOTTOM"..toastFrame.buttonSide, chatFrame.buttonFrame, "TOP"..toastFrame.buttonSide, xOffset, BN_TOAST_TOP_OFFSET);
-		else
-			local yOffset = BN_TOAST_BOTTOM_OFFSET;
-			if ( GetCVar("chatStyle") == "im" ) then
-				yOffset = yOffset - 20;
-			end
-			toastFrame:SetPoint("TOP"..toastFrame.buttonSide, chatFrame.buttonFrame, "BOTTOM"..toastFrame.buttonSide, xOffset, yOffset);
-		end
-	end
-end
-
-function BNToastFrame_OnClick(self)	
-	BNToastFrame_Close();
-	local toastType = BNToastFrame.toastType;
-	local toastData = BNToastFrame.toastData;
-	if ( toastType == BN_TOAST_TYPE_NEW_INVITE or toastType == BN_TOAST_TYPE_PENDING_INVITES ) then
-		if ( not FriendsFrame:IsShown() ) then
-			ToggleFriendsFrame(1);
-		end
-		local collapsed = GetCVarBool("friendInvitesCollapsed");
-		if ( collapsed ) then
-			FriendsListFrame_ToggleInvites();
-		end
-		FriendsTabHeaderTab1:Click();
-	elseif ( toastType == BN_TOAST_TYPE_ONLINE or toastType == BN_TOAST_TYPE_BROADCAST ) then
-		local bnetIDAccount, accountName = BNGetFriendInfoByID(toastData);
-		if ( accountName ) then	--This player may have been removed from our friends list, so we may not have a name.
-			ChatFrame_SendSmartTell(accountName);
-		end
-	end
-end
-
-function BNet_InitiateReport(bnetIDAccount, reportType)
-	local reportFrame = BNetReportFrame;
-	if ( reportFrame:IsShown() ) then
-		StaticPopupSpecial_Hide(reportFrame);
-	end
-	CloseDropDownMenus();
-	-- set up
-	local fullName;
-	if ( not bnetIDAccount ) then
-		-- invite
-		bnetIDAccount, fullName = BNGetFriendInviteInfo(UIDROPDOWNMENU_MENU_VALUE);
-	else
-		local _, accountName, battleTag, isBattleTag, characterName = BNGetFriendInfoByID(bnetIDAccount);
-		if ( accountName ) then
-			if ( characterName ) then
-				fullName = accountName.." ("..characterName..")";
-			else
-				fullName = accountName;
-			end
-		else
-			local _, characterName = BNGetGameAccountInfo(bnetIDAccount);
-			fullName = characterName;
-		end
-	end
-	reportFrame.bnetIDAccount = bnetIDAccount;
-	reportFrame.type = reportType;
-	reportFrame.name = fullName;
-	BNetReportFrameCommentBox:SetText("");
-	
-	if ( reportType == "SPAM" or reportType == "NAME" ) then
-		StaticPopup_Show("CONFIRM_BNET_REPORT", format(_G["BNET_REPORT_CONFIRM_"..reportType], fullName));
-	elseif ( reportType == "ABUSE" ) then
-		BNetReportFrameName:SetText(fullName);
-		StaticPopupSpecial_Show(reportFrame);
-	end
-end
-
-function BNet_ConfirmReport()
-	StaticPopup_Show("CONFIRM_BNET_REPORT", format(_G["BNET_REPORT_CONFIRM_"..BNetReportFrame.type], BNetReportFrame.name));
-end
-
-function BNet_SendReport()
-	local reportFrame = BNetReportFrame;
-	local comments = BNetReportFrameCommentBox:GetText();
-	BNReportPlayer(reportFrame.bnetIDAccount, reportFrame.type, comments);
-end
-
-
-
---This is used to track time played for an alert in Korea
---This is used to track time played for an alert in Korea
 --This is used to track time played for an alert in Korea
 
+BNetTimeAlertMixin = {};
 
-function TimeAlert_OnEvent(self, event, arg1)
-	if( not TimeAlertFrame:IsShown() ) then
-		TimeAlert_Start(arg1);
+function BNetTimeAlertMixin:OnLoad()
+	self:RegisterEvent("SESSION_TIME_ALERT");
+
+	local alertSystem = ChatAlertFrame:AddAutoAnchoredSubSystem(self);
+	ChatAlertFrame:SetSubSystemAnchorPriority(alertSystem, 2);
+end
+
+function BNetTimeAlertMixin:OnEvent(event, ...)
+	if not self:IsShown() then
+		self:Start(...);
 	end
 end
 
-function TimeAlert_Start(time)
-	TimeAlertFrame:Show();
-	TimeAlertFrame.animIn:Play();
-	TimeAlertFrame:SetScript("OnUpdate", TimeAlert_OnUpdate);
-	TimeAlertFrame.timer = time / 1000;
-
-	BNToastFrame_UpdateAnchor(true);
+function BNetTimeAlertMixin:Start(time)
+	self:SetExternallyManagedOutroAnimation(true); -- Initially this needs to display for a set amount of time, after which the alert system takes over and fades it out.
+	AlertFrame_ShowNewAlert(self);
+	self.timer = time / 1000;
 end
 
-
-function TimeAlert_Close()
-	TimeAlertFrame:SetScript("OnUpdate", nil);
-	TimeAlertFrame:Hide();
-end
-
-function TimeAlert_OnUpdate(self, elapsed)
-	TimeAlertFrame.timer = TimeAlertFrame.timer - elapsed;
-	if ( TimeAlertFrame.timer < 0 ) then
-		TimeAlertFrame.animOut:Play();
-		TimeAlertFrame.timer = 1000000;
-	end
-	
-	TimeAlertFrameText:SetFormattedText(TIME_PLAYED_ALERT, SecondsToTime(GetSessionTime(), true, true));
-	TimeAlertFrame:SetHeight(TimeAlertFrameBG:GetHeight());
-	
-	BNToastFrame_UpdateAnchor();
-	if ( BNToastFrame.topSide ) then
-		if ( BNToastFrame:IsShown() ) then
-			TimeAlertFrame:SetPoint("BOTTOM", BNToastFrame, "TOP", 0, 10);
-		else
-			TimeAlertFrame:SetPoint("BOTTOM", BNToastFrame, "BOTTOM", 0, 0);
-		end
-	else
-		if ( BNToastFrame:IsShown() ) then
-			TimeAlertFrame:SetPoint("TOP", BNToastFrame, "BOTTOM", 0, -10);
-		else
-			TimeAlertFrame:SetPoint("TOP", BNToastFrame, "TOP", 0, 0);
+function BNetTimeAlertMixin:OnUpdate(elapsed)
+	if self.timer then
+		self.timer = self.timer - elapsed;
+		if self.timer < 0 then
+			self:SetExternallyManagedOutroAnimation(false);
+			AlertFrame_PlayOutroAnimation(self);
+			self.timer = nil;
 		end
 	end
+
+	-- As long as this frame is shown, continue to update
+	self.Text:SetFormattedText(TIME_PLAYED_ALERT, SecondsToTime(GetSessionTime(), true, true));
+	self:SetHeight(self.Text:GetStringHeight() + 20);
 end
 
 function BNet_GetClientEmbeddedTexture(client, width, height, xOffset, yOffset)
-	if ( not height ) then
-		height = width;
-		xOffset = 0;
-		yOffset = 0;
-	end
+	width = width or 0;
+	height = height or width;
+	xOffset = xOffset or 0;
+	yOffset = yOffset or 0;
+
 	local textureString;
 	if ( client == BNET_CLIENT_WOW ) then
-		textureString = "WOW";
+		textureString = "Interface\\ChatFrame\\UI-ChatIcon-WOW";
 	elseif ( client == BNET_CLIENT_SC2 ) then
-		textureString = "SC2";
+		textureString = "Interface\\ChatFrame\\UI-ChatIcon-SC2";
 	elseif ( client == BNET_CLIENT_D3 ) then
-		textureString = "D3";
+		textureString = "Interface\\ChatFrame\\UI-ChatIcon-D3";
 	elseif ( client == BNET_CLIENT_WTCG ) then
-		textureString = "WTCG";
+		textureString = "Interface\\ChatFrame\\UI-ChatIcon-WTCG";
 	elseif ( client == BNET_CLIENT_HEROES ) then
-		textureString = "HotS";
+		textureString = "Interface\\ChatFrame\\UI-ChatIcon-HotS";
 	elseif ( client == BNET_CLIENT_OVERWATCH ) then
-		textureString = "Overwatch";
+		textureString = "Interface\\ChatFrame\\UI-ChatIcon-Overwatch";
 	elseif ( client == BNET_CLIENT_SC ) then
-		textureString = "SC";
+		textureString = "Interface\\ChatFrame\\UI-ChatIcon-SC";
 	elseif ( client == BNET_CLIENT_DESTINY2 ) then
-		textureString = "Destiny2";
+		textureString = "Interface\\ChatFrame\\UI-ChatIcon-Destiny2";
+	elseif ( client == BNET_CLIENT_COD ) then
+		textureString = "Interface\\ChatFrame\\UI-ChatIcon-CallOfDutyBlackOps4";
 	else
-		textureString = "Battlenet";
+		textureString = "Interface\\ChatFrame\\UI-ChatIcon-Battlenet";
 	end
-	return string.format("|TInterface\\ChatFrame\\UI-ChatIcon-%s:%d:%d:%d:%d|t", textureString, width, height, xOffset, yOffset);
+	return string.format("|T%s:%d:%d:%d:%d|t", textureString, width, height, xOffset, yOffset);
 end
 
 function BNet_GetClientTexture(client)
@@ -468,13 +400,15 @@ function BNet_GetClientTexture(client)
 	elseif ( client == BNET_CLIENT_SC ) then
 		return "Interface\\FriendsFrame\\Battlenet-SCicon";
 	elseif ( client == BNET_CLIENT_DESTINY2 ) then
-		return "Interface\\FriendsFrame\\Battlenet-Destiny2icon"; 
+		return "Interface\\FriendsFrame\\Battlenet-Destiny2icon";
+	elseif ( client == BNET_CLIENT_COD ) then
+		return "Interface\\FriendsFrame\\Battlenet-CallOfDutyBlackOps4icon";
 	else
 		return "Interface\\FriendsFrame\\Battlenet-Battleneticon";
 	end
 end
 
--- if we don't have a character name or it's for HotS, use the battletag
+-- if we don't have a character name or it's for a game that doesn't have toons like Heroes, use the battletag
 function BNet_GetValidatedCharacterName(characterName, battleTag, client)
 	if ( not characterName or characterName == "" or client == BNET_CLIENT_HEROES ) then
 		if ( battleTag and battleTag ~= "" ) then

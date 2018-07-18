@@ -337,62 +337,17 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="BorderBox" frameLevel="50" hidden="false">
+			<Frame parentKey="BorderBox" inherits="SelectionFrameTemplate" frameLevel="50" hidden="false">
+				<KeyValues>
+					<KeyValue key="OnOkay" value="MacroPopupOkayButton_OnClick" type="global"/>
+					<KeyValue key="OnCancel" value="MacroPopupFrame_CancelEdit" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
-						<Texture parentKey="topLeft" atlas="macropopup-topleft" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="topRight" atlas="macropopup-topright" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="0" y="0"/>
-							</Anchors>
-						</Texture>
-						<Texture atlas="_macropopup-top" horizTile="true" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.topLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
-								<Anchor point="TOPRIGHT" relativeKey="$parent.topRight" relativePoint="TOPLEFT" x="0" y="0"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="bottomLeft" atlas="macropopup-bottomleft" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="0" y="0"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="bottomRight" atlas="macropopup-bottomright" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-							</Anchors>
-						</Texture>
-						<Texture atlas="_macropopup-bottom" horizTile="true" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent.bottomLeft" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.bottomRight" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-							</Anchors>
-						</Texture>
-						<Texture atlas="!macropopup-left" vertTile="true" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.topLeft" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent.bottomLeft" relativePoint="TOPLEFT" x="0" y="0"/>
-							</Anchors>
-						</Texture>
-						<Texture atlas="!macropopup-right" vertTile="true" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPRIGHT" relativeKey="$parent.topRight" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.bottomRight" relativePoint="TOPRIGHT" x="0" y="0"/>
-							</Anchors>
-						</Texture>
-						<FontString inherits="GameFontHighlightSmall" text="MACRO_POPUP_TEXT">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="24" y="-21"/>
-							</Anchors>
-						</FontString>
 						<FontString inherits="GameFontHighlightSmall" text="MACRO_POPUP_CHOOSE_ICON">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="24" y="-69"/>
@@ -440,37 +395,13 @@
 							</OnTextChanged>
 							<OnEscapePressed function="MacroPopupFrame_CancelEdit"/>
 							<OnEnterPressed>
-								if ( MacroPopupOkayButton:IsEnabled() ) then
-									MacroPopupOkayButton_OnClick(MacroPopupOkayButton);
+								if ( MacroPopupFrame.BorderBox.OkayButton:IsEnabled() ) then
+									MacroPopupOkayButton_OnClick(MacroPopupFrame.BorderBox.OkayButton);
 								end
 							</OnEnterPressed>
 						</Scripts>
 						<FontString inherits="ChatFontNormal"/>
 					</EditBox>
-					<Button name="MacroPopupCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
-						<Size x="78" y="22"/>
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="MacroPopupFrame" x="-11" y="13"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								MacroPopupFrame_CancelEdit();
-								PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="MacroPopupOkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
-						<Size x="78" y="22"/>
-						<Anchors>
-							<Anchor point="RIGHT" relativeTo="MacroPopupCancelButton" relativePoint="LEFT" x="-2" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								MacroPopupOkayButton_OnClick();
-								PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
-							</OnClick>
-						</Scripts>
-					</Button>
 				</Frames>
 			</Frame>
 			<ScrollFrame name="MacroPopupScrollFrame" inherits="ListScrollFrameTemplate">

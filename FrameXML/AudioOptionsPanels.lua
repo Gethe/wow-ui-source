@@ -7,92 +7,37 @@ local VOICE_OPTIONS_BINDING_FAIL_FADE = 6;
 -- [[ Generic Audio Options Panel ]] --
 
 function AudioOptionsPanel_CheckButton_OnClick (checkButton)
-	local setting = "0";
-	if ( checkButton:GetChecked() ) then
-		if ( not checkButton.invert ) then
-			setting = "1"
-		end
-	elseif ( checkButton.invert ) then
-		setting = "1"
-	end
+	BlizzardOptionsPanel_CheckButton_OnClick(checkButton);
 
-	local prevValue = checkButton:GetValue();
-
-	checkButton:SetValue(setting);
-
-	if ( checkButton.restart and prevValue ~= setting ) then
+	if checkButton.restart then
 		AudioOptionsFrame_AudioRestart();
-	end
-
-	if ( checkButton.dependentControls ) then
-		if ( checkButton:GetChecked() ) then
-			for _, control in next, checkButton.dependentControls do
-				control:Enable();
-			end
-		else
-			for _, control in next, checkButton.dependentControls do
-				control:Disable();
-			end
-		end
-	end
-
-	if ( checkButton.setFunc ) then
-		checkButton.setFunc(setting);
 	end
 end
 
+local function AudioOptionsPanel_RequiresRestartCallback(self, control)
+	if control.restart then
+		AudioOptionsFrame.audioRestart = true;
+	end
+end
+
+local function AudioOptionsPanel_RefreshControlCallback(self, control)
+	control.oldValue = control.value;
+end
 
 local function AudioOptionsPanel_Okay (self)
-	for _, control in next, self.controls do
-		if ( control.value and control:GetValue() ~= control.value ) then
-			if ( control.restart ) then
-				AudioOptionsFrame.audioRestart = true;
-			end
-			control:SetValue(control.value);
-		end
-	end
-	MiniMapVoiceChat_Update();
+	BlizzardOptionsPanel_Okay(self, AudioOptionsPanel_RequiresRestartCallback);
 end
 
 local function AudioOptionsPanel_Cancel (self)
-	for _, control in next, self.controls do
-		if ( control.oldValue ) then
-			if ( control.value and control.value ~= control.oldValue ) then
-				if ( control.restart ) then
-					AudioOptionsFrame.audioRestart = true;
-				end
-				control:SetValue(control.oldValue);
-			end
-		elseif ( control.value ) then
-			if ( control:GetValue() ~= control.value ) then
-				if ( control.restart ) then
-					AudioOptionsFrame.audioRestart = true;
-				end
-				control:SetValue(control.value);
-			end
-		end
-	end
+	BlizzardOptionsPanel_Cancel(self, AudioOptionsPanel_RequiresRestartCallback);
 end
 
 local function AudioOptionsPanel_Default (self)
-	for _, control in next, self.controls do
-		if ( control.defaultValue and control.value ~= control.defaultValue ) then
-			if ( control.restart ) then
-				AudioOptionsFrame.audioRestart = true;
-			end
-			control:SetValue(control.defaultValue);
-			control.value = control.defaultValue;
-		end
-	end
-	MiniMapVoiceChat_Update();
+	BlizzardOptionsPanel_Default(self, AudioOptionsPanel_RequiresRestartCallback);
 end
 
 local function AudioOptionsPanel_Refresh (self)
-	for _, control in next, self.controls do
-		BlizzardOptionsPanel_RefreshControl(control);
-		-- record values so we can cancel back to this state
-		control.oldValue = control.value;
-	end
+	BlizzardOptionsPanel_Refresh(self, AudioOptionsPanel_RefreshControlCallback);
 end
 
 
@@ -114,7 +59,6 @@ SoundPanelOptions = {
 	Sound_EnableReverb = { text = "ENABLE_REVERB" },
 	--Sound_EnableHardware = { text = "ENABLE_HARDWARE" },
 	Sound_EnablePositionalLowPassFilter = { text = "ENABLE_SOFTWARE_HRTF" },
-	Sound_EnableDSPEffects = { text = "ENABLE_DSP_EFFECTS" },
 	Sound_SFXVolume = { text = "SOUND_VOLUME", minValue = 0, maxValue = 1, valueStep = 0.1, },
 	Sound_MusicVolume = { text = "MUSIC_VOLUME", minValue = 0, maxValue = 1, valueStep = 0.1, },
 	Sound_AmbienceVolume = { text = "AMBIENCE_VOLUME", minValue = 0, maxValue = 1, valueStep = 0.1, },
@@ -137,32 +81,29 @@ function AudioOptionsSoundPanelHardwareDropDown_OnLoad (self)
 	local deviceName = Sound_GameSystem_GetOutputDriverNameByIndex(selectedDriverIndex);
 	self.defaultValue = BlizzardOptionsPanel_GetCVarDefaultSafe(self.cvar);
 	self.value = selectedDriverIndex;
-	self.newValue = selectedDriverIndex;
 	self.restart = true;
 
 	UIDropDownMenu_SetWidth(self, 136);
 	UIDropDownMenu_SetSelectedValue(self, selectedDriverIndex);
 	UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelHardwareDropDown_Initialize);
 
-	self.SetValue = 
-		function (self, value)
-			self.value = value;
-			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-		end
-	self.GetValue =
-		function (self)
-			return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-		end
-	self.RefreshValue =
-		function (self)
-			local selectedDriverIndex = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-			local deviceName = Sound_GameSystem_GetOutputDriverNameByIndex(selectedDriverIndex);
-			self.value = selectedDriverIndex;
-			self.newValue = selectedDriverIndex;
+	self.SetValue = function (self, value)
+		self.newValue = value;
+		BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+	end
 
-			UIDropDownMenu_SetSelectedValue(self, selectedDriverIndex);
-			UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelHardwareDropDown_Initialize);
-		end
+	self.GetValue = function (self)
+		return self.newValue or self.value;
+	end
+
+	self.RefreshValue =	function (self)
+		local selectedDriverIndex = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+		local deviceName = Sound_GameSystem_GetOutputDriverNameByIndex(selectedDriverIndex);
+		self.newValue = selectedDriverIndex;
+
+		UIDropDownMenu_SetSelectedValue(self, selectedDriverIndex);
+		UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelHardwareDropDown_Initialize);
+	end
 end
 
 function AudioOptionsSoundPanelHardwareDropDown_Initialize(self)
@@ -203,32 +144,28 @@ function AudioOptionsSoundPanelSoundChannelsDropDown_OnLoad (self)
 	local selected = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
 	self.defaultValue = BlizzardOptionsPanel_GetCVarDefaultSafe(self.cvar);
 	self.value = selected;
-	self.newValue = selected;
 	self.restart = true;
 
 	UIDropDownMenu_SetWidth(self, 136);
 	UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundChannelsDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(self, selected);
 
-	self.SetValue = 
-		function (self, value)
-			self.value = value;
-			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-			UIDropDownMenu_SetSelectedValue(self, value);
-		end
-	self.GetValue =
-		function (self)
-			return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-		end
-	self.RefreshValue =
-		function (self)
-			local selected = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-			self.value = selected;
-			self.newValue = selected;
+	self.SetValue = function (self, value)
+		self.newValue = value;
+		BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+	end
 
-			UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundChannelsDropDown_Initialize);
-			UIDropDownMenu_SetSelectedValue(self, selected);
-		end
+	self.GetValue = function (self)
+		return self.newValue or self.value;
+	end
+
+	self.RefreshValue =	function (self)
+		local selected = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+		self.newValue = selected;
+
+		UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundChannelsDropDown_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, selected);
+	end
 end
 
 local soundChannelValues = { 24, 48, 64 };
@@ -236,7 +173,7 @@ local soundChannelText = { "SOUND_CHANNELS_LOW", "SOUND_CHANNELS_MEDIUM", "SOUND
 function AudioOptionsSoundPanelSoundChannelsDropDown_Initialize(self)
 	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
 	local info = UIDropDownMenu_CreateInfo();
-	
+
 	for i=1, #soundChannelValues do
 		info.text = format(_G[soundChannelText[i]], soundChannelValues[i]);
 		info.value = soundChannelValues[i];
@@ -246,7 +183,7 @@ function AudioOptionsSoundPanelSoundChannelsDropDown_Initialize(self)
 			info.checked = nil;
 		end
 		info.func = AudioOptionsSoundPanelSoundChannelsDropDown_OnClick;
-		
+
 		UIDropDownMenu_AddButton(info);
 	end
 end
@@ -269,32 +206,28 @@ function AudioOptionsSoundPanelSoundCacheSizeDropDown_OnLoad (self)
 	local selected = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
 	self.defaultValue = BlizzardOptionsPanel_GetCVarDefaultSafe(self.cvar);
 	self.value = selected;
-	self.newValue = selected;
 	self.restart = true;
 
 	UIDropDownMenu_SetWidth(self, 136);
 	UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundCacheSizeDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(self, selected);
 
-	self.SetValue = 
-		function (self, value)
-			self.value = value;
-			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-			UIDropDownMenu_SetSelectedValue(self, value);
-		end
-	self.GetValue =
-		function (self)
-			return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-		end
-	self.RefreshValue =
-		function (self)
-			local selected = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-			self.value = selected;
-			self.newValue = selected;
+	self.SetValue = function (self, value)
+		self.newValue = value;
+		BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+	end
 
-			UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundCacheSizeDropDown_Initialize);
-			UIDropDownMenu_SetSelectedValue(self, selected);
-		end
+	self.GetValue = function (self)
+		return self.newValue or self.value;
+	end
+
+	self.RefreshValue =	function (self)
+		local selected = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+		self.newValue = selected;
+
+		UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundCacheSizeDropDown_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, selected);
+	end
 end
 
 local soundCacheSizeValues = { 16777216, 67108864 }; --value in bytes, displayed in MB
@@ -302,7 +235,7 @@ local soundCacheSizeText = { "SOUND_CACHE_SIZE_SMALL", "SOUND_CACHE_SIZE_LARGE" 
 function AudioOptionsSoundPanelSoundCacheSizeDropDown_Initialize(self)
 	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
 	local info = UIDropDownMenu_CreateInfo();
-	
+
 	for i=1, #soundCacheSizeValues do
 		info.text = format(_G[soundCacheSizeText[i]], soundCacheSizeValues[i]/1024/1024); --convert to MB
 		info.value = soundCacheSizeValues[i];
@@ -312,7 +245,7 @@ function AudioOptionsSoundPanelSoundCacheSizeDropDown_Initialize(self)
 			info.checked = nil;
 		end
 		info.func = AudioOptionsSoundPanelSoundCacheSizeDropDown_OnClick;
-		
+
 		UIDropDownMenu_AddButton(info);
 	end
 end
@@ -341,516 +274,392 @@ VoicePanelOptions = {
 	VoiceActivationSensitivity = { text = "VOICE_ACTIVATION_SENSITIVITY", minValue = 0, maxValue = 1, valueStep = 0.02 },
 }
 
-local AudioOptionsVoicePanelDisableList = 
-{	
-	AudioOptionsVoicePanelChatMode1Label = NORMAL_FONT_COLOR,
-	AudioOptionsVoicePanelAudioLabel = NORMAL_FONT_COLOR,
-	AudioOptionsVoicePanelAudioDescription = HIGHLIGHT_FONT_COLOR,
-	AudioOptionsVoicePanelAudioOff = HIGHLIGHT_FONT_COLOR,
-	AudioOptionsVoicePanelAudioNormal = HIGHLIGHT_FONT_COLOR,
-	AudioOptionsVoicePanelSpeakerVolumeLabel = NORMAL_FONT_COLOR,
-	AudioOptionsVoicePanelSoundFadeLabel = NORMAL_FONT_COLOR,
-	AudioOptionsVoicePanelMusicFadeLabel = NORMAL_FONT_COLOR,
-	AudioOptionsVoicePanelAmbienceFadeLabel = NORMAL_FONT_COLOR,
-};
-
-local AudioOptionsVoicePanelFrameMicrophoneList = 
+local AudioOptionsVoicePanelFrameMicrophoneList =
 {
 	AudioOptionsVoicePanelMicrophoneVolumeLabel = NORMAL_FONT_COLOR,
 	AudioOptionsVoicePanelMicTestText = NORMAL_FONT_COLOR,
-	PlayLoopbackSoundButtonTexture = NORMAL_FONT_COLOR,
-	RecordLoopbackSoundButtonTexture = RED_FONT_COLOR,
 };
 
-function AudioOptionsVoicePanel_Refresh (self)
-	AudioOptionsPanel_Refresh(self);
-	AudioOptionsVoicePanelEnableVoice_UpdateControls(GetCVar(AudioOptionsVoicePanelEnableVoice.cvar));
-	AudioOptionsVoicePanelBindingType_Update(GetCVar(AudioOptionsVoicePanelChatModeDropDown.cvar));
-	AudioOptionsVoicePanelKeyBindingButton_Refresh();
-	AudioOptionsVoicePanelKeyBindingButton_SetTooltip();
+function AudioOptionsVoicePanel_OnDismiss(self, shouldApply)
+	if self.PushToTalkKeybindButton then
+		CustomBindingManager:OnDismissed(self.PushToTalkKeybindButton:GetCustomBindingType(), shouldApply);
+	end
 end
 
-function AudioOptionsVoicePanel_OnLoad (self)
-	self.name = VOICE_LABEL;
+function AudioOptionsVoicePanel_Okay(self)
+	BlizzardOptionsPanel_Okay(self);
+	AudioOptionsVoicePanel_OnDismiss(self, true);
+end
+
+function AudioOptionsVoicePanel_Cancel(self)
+	BlizzardOptionsPanel_Cancel(self);
+	AudioOptionsVoicePanel_OnDismiss(self, false);
+end
+
+function AudioOptionsVoicePanel_Refresh(self)
+	BlizzardOptionsPanel_Refresh(self);
+	AudioOptionsVoicePanelEnableVoice_UpdateControls(self);
+end
+
+function AudioOptionsVoicePanel_OnLoad(self)
+	self.name = VOICE_CHAT;
 	self.options = VoicePanelOptions;
-	BlizzardOptionsPanel_OnLoad(self, AudioOptionsPanel_Okay, AudioOptionsPanel_Cancel, AudioOptionsPanel_Default, AudioOptionsVoicePanel_Refresh);
 	self:SetScript("OnEvent", AudioOptionsVoicePanel_OnEvent);
+	BlizzardOptionsPanel_OnLoad(self, AudioOptionsVoicePanel_Okay, AudioOptionsVoicePanel_Cancel, nil, AudioOptionsVoicePanel_Refresh);
 end
 
-function AudioOptionsVoicePanel_OnEvent (self, event, ...)
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		self:UnregisterEvent(event);
-	end
-end
-
-function AudioOptionsVoicePanel_OnShow (self)
-	VoiceChatTalkers:SetAlpha(1);
-	VoiceChatTalkers.optionsLock = true;
+function AudioOptionsVoicePanel_OnShow(self)
 	VideoOptionsPanel_OnShow(self);
+	AudioOptionsVoicePanel_InitializeCommunicationModeUI(self);
+	self:RegisterEvent("UPDATE_BINDINGS");
+	self:RegisterEvent("VOICE_CHAT_ERROR");
+	self:RegisterEvent("VOICE_CHAT_CONNECTION_SUCCESS");
 end
 
-function AudioOptionsVoicePanel_OnHide (self)
-	AudioOptionsVoicePanelKeyBindingButton_CancelBinding();
-	VoiceChatTalkers.optionsLock = nil;
-	if ( VoiceChatTalkers_CanHide() ) then
-		VoiceChatTalkers_FadeOut();
+function AudioOptionsVoicePanel_OnHide(self)
+	if self.PushToTalkKeybindButton then
+		self.ChatModeDropdown.PushToTalkNotification:SetText("");
+		CustomBindingManager:OnDismissed(self.PushToTalkKeybindButton:GetCustomBindingType(), false);
+		BindingButtonTemplate_SetSelected(self.PushToTalkKeybindButton, false);
+	end
+
+	self:UnregisterEvent("VOICE_CHAT_CONNECTION_SUCCESS");
+	self:UnregisterEvent("VOICE_CHAT_ERROR");
+	self:UnregisterEvent("UPDATE_BINDINGS");
+end
+
+function AudioOptionsVoicePanel_OnEvent(self, event, ...)
+	if event == "PLAYER_ENTERING_WORLD" then
+		OptionsFrame_AddCategory(VideoOptionsFrame, self);
+		self:UnregisterEvent(event);
+	elseif event == "UPDATE_BINDINGS" then
+		AudioOptionsVoicePanel_UpdateCommunicationModeUI(self);
+	elseif event == "VOICE_CHAT_ERROR" or event == "VOICE_CHAT_CONNECTION_SUCCESS" then
+		AudioOptionsVoicePanelEnableVoice_UpdateControls(self);
 	end
 end
 
-function AudioOptionsVoicePanelEnableVoice_UpdateControls (value)
-	local voiceChatEnabled = value == "1";
-	if ( VoiceIsDisabledByClient() ) then
-		--Comsat is disabled either because the computer is way old (No SSE) or another copy of WoW is running.
-		BlizzardOptionsPanel_SetCVarSafe("EnableVoiceChat", 0);
-		voiceChatEnabled = false;
-		AudioOptionsVoicePanelEnableVoice:Hide();
-		AudioOptionsVoicePanelDisabledMessage:Show();
-	elseif ( not AudioOptionsVoicePanelEnableVoice:IsShown() ) then
-		--Pretty certain this won't be changing dynamically, but better safe than sorry.
-		AudioOptionsVoicePanelEnableVoice:Show();
-		AudioOptionsVoicePanelDisabledMessage:Hide();
+function AudioOptionsVoicePanel_InitializeCommunicationModeUI(self)
+	if not self.PushToTalkKeybindButton then
+		local handler = CustomBindingHandler:CreateHandler(Enum.CustomBindingType.VoicePushToTalk);
+
+		handler:SetOnBindingModeActivatedCallback(function(isActive)
+			if isActive then
+				self.ChatModeDropdown.PushToTalkNotification:SetFormattedText(BIND_KEY_TO_COMMAND, GetBindingName("TOGGLE_VOICE_PUSH_TO_TALK"));
+			end
+		end);
+
+		handler:SetOnBindingCompletedCallback(function(completedSuccessfully)
+			self.ChatModeDropdown.PushToTalkNotification:SetText("");
+			BindingButtonTemplate_SetSelected(self.PushToTalkKeybindButton, false);
+			AudioOptionsVoicePanel_UpdateCommunicationModeUI(self);
+		end);
+
+		self.PushToTalkKeybindButton = CustomBindingManager:RegisterHandlerAndCreateButton(handler, "CustomBindingButtonTemplateWithLabel", self);
+		self.PushToTalkKeybindButton.KeyLabel:SetText(VOICE_CHAT_MODE_KEY);
+		self.PushToTalkKeybindButton:SetPoint("BOTTOMLEFT", self.ChatModeDropdown, "BOTTOMRIGHT", 0, 5);
+		self.PushToTalkKeybindButton:SetWidth(140); -- TODO: Needs to dynamically size
+		self.PushToTalkKeybindButton.selectedHighlight:SetWidth(140);
+
+		AudioOptionsVoicePanel_KeyBindButton_SetEnabled(self.PushToTalkKeybindButton, not self.ChatModeDropdown.isDisabled); -- TODO: Hide binding ui if openMic is selected?
+		BlizzardOptionsPanel_RegisterControl(self.PushToTalkKeybindButton, self);
 	end
-	if ( voiceChatEnabled ) then
-		UIDropDownMenu_EnableDropDown(AudioOptionsVoicePanelOutputDeviceDropDown);
-		UIDropDownMenu_EnableDropDown(AudioOptionsVoicePanelChatModeDropDown);
 
-		AudioOptionsVoicePanelChatMode1KeyBindingButton:Enable();
+	AudioOptionsVoicePanel_UpdateCommunicationModeUI(self);
+end
 
-		for index, value in pairs(AudioOptionsVoicePanelDisableList) do
-			_G[index]:SetVertexColor(value.r, value.g, value.b);
+local function GetFirstValidBindingKey(...)
+	for i = 1, select("#", ...) do
+		local key = select(i, ...);
+		if key and #key > 0 then
+			return key;
 		end
+	end
+end
 
-		BlizzardOptionsPanel_Slider_Enable(AudioOptionsVoicePanelVoiceActivateSlider);
-		BlizzardOptionsPanel_Slider_Enable(AudioOptionsVoicePanelSpeakerVolume);
-		BlizzardOptionsPanel_Slider_Enable(AudioOptionsVoicePanelSoundFade);
-		BlizzardOptionsPanel_Slider_Enable(AudioOptionsVoicePanelMusicFade);
-		BlizzardOptionsPanel_Slider_Enable(AudioOptionsVoicePanelAmbienceFade);
+local function GetPreferredBindingKey(action, mode)
+	return GetFirstValidBindingKey(GetBindingKey(action, mode));
+end
 
-		AudioOptionsVoicePanelEnableMicrophone:Enable();
-		AudioOptionsVoicePanelPushToTalkSound:Enable();
-		AudioOptionsVoicePanelEnableMicrophone_UpdateControls(AudioOptionsVoicePanelEnableMicrophone:GetChecked());
+function AudioOptionsVoicePanel_UpdateCommunicationModeUI(self)
+	if self.PushToTalkKeybindButton then
+		BindingButtonTemplate_SetupBindingButton(nil, self.PushToTalkKeybindButton);
+	end
+end
 
-		if ( ChannelPullout:IsShown() ) then
-			ChannelPullout_ToggleDisplay();
-		end
+function AudioOptionsVoicePanel_KeyBindButton_SetEnabled(self, enabled)
+	local color = enabled and NORMAL_FONT_COLOR or GRAY_FONT_COLOR;
+	self:SetEnabled(enabled);
+	self.KeyLabel:SetTextColor(color:GetRGB());
+end
+
+function AudioOptionsVoicePanel_TestInputDevice_SetEnabled(self, enabled)
+	local color = enabled and NORMAL_FONT_COLOR or GRAY_FONT_COLOR;
+	self.ToggleTest:SetEnabled(enabled);
+	self.Label:SetTextColor(color:GetRGB());
+end
+
+function AudioOptionsVoicePanel_SetCustomControlsEnabled(self, enabled)
+	if(self.PushToTalkKeybindButton) then
+		AudioOptionsVoicePanel_KeyBindButton_SetEnabled(self.PushToTalkKeybindButton, enabled);
+	end
+	AudioOptionsVoicePanel_TestInputDevice_SetEnabled(self.TestInputDevice, enabled);
+end
+
+function AudioOptionsVoicePanelEnableVoice_UpdateControls(self)
+	local statusCode = C_VoiceChat.GetCurrentVoiceChatConnectionStatusCode();
+	local errorString = Voice_GetGameErrorStringFromStatusCode(statusCode);
+
+	local enabled = (not errorString);
+	BlizzardOptionsPanel_SetControlsEnabled(self, enabled);
+	AudioOptionsVoicePanel_SetCustomControlsEnabled(self, enabled);
+
+	if(enabled) then
+		self.ErrorStateMessage:Hide();
 	else
-		UIDropDownMenu_DisableDropDown(AudioOptionsVoicePanelOutputDeviceDropDown);
-		UIDropDownMenu_DisableDropDown(AudioOptionsVoicePanelChatModeDropDown);
+		self.ErrorStateMessage:SetText(errorString)
+		self.ErrorStateMessage:Show();
+	end
+end
 
-		AudioOptionsVoicePanelChatMode1KeyBindingButton:Disable();
+local function AudioOptionsPanelVoiceChatSlider_BaseOnLoad(self, cvar, getCurrentFn)
+	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+	self:SetMinMaxValues(0, 100);
+	self.Low:Hide();
+	self.High:Hide();
+	self.Text:ClearAllPoints();
+	self.Text:SetPoint("LEFT", self, "RIGHT", 6, 1);
 
-		for index, value in pairs(AudioOptionsVoicePanelDisableList) do
-			_G[index]:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+	local current, defaultValue = GetCVarInfo(cvar);
+	self.defaultValue = defaultValue;
+
+	self.GetCurrentValue = function(self)
+		return getCurrentFn();
+	end
+
+	self.RefreshValue = function(self)
+		local current = getCurrentFn();
+		if current ~= nil then
+			self:SetValue(current);
+		end
+	end
+
+	self:RefreshValue();
+end
+
+local function AudioOptionsPanelVoiceChatSlider_BaseOnValueChanged(self, value, setValueFn)
+	self.newValue = floor(value);
+	self.Text:SetText(FormatPercentage(self.newValue / 100, true));
+	setValueFn(self.newValue);
+end
+
+function AudioOptionsPanelVoiceChatVolumeSlider_OnLoad(self)
+	AudioOptionsPanelVoiceChatSlider_BaseOnLoad(self, "VoiceOutputVolume", C_VoiceChat.GetOutputVolume);
+end
+
+function AudioOptionsPanelVoiceChatVolumeSlider_OnValueChanged(self, value)
+	AudioOptionsPanelVoiceChatSlider_BaseOnValueChanged(self, value, C_VoiceChat.SetOutputVolume);
+end
+
+function AudioOptionsPanelVoiceChatMicVolumeSlider_OnLoad(self)
+	AudioOptionsPanelVoiceChatSlider_BaseOnLoad(self, "VoiceInputVolume", C_VoiceChat.GetInputVolume);
+end
+
+function AudioOptionsPanelVoiceChatMicVolumeSlider_OnValueChanged(self, value)
+	AudioOptionsPanelVoiceChatSlider_BaseOnValueChanged(self, value, C_VoiceChat.SetInputVolume);
+end
+
+function AudioOptionsPanelVoiceChatMicSensitivitySlider_OnLoad(self)
+	AudioOptionsPanelVoiceChatSlider_BaseOnLoad(self, "VoiceVADSensitivity", C_VoiceChat.GetVADSensitivity);
+end
+
+function AudioOptionsPanelVoiceChatMicSensitivitySlider_OnValueChanged(self, value)
+	AudioOptionsPanelVoiceChatSlider_BaseOnValueChanged(self, value, C_VoiceChat.SetVADSensitivity);
+end
+
+-- Voice Chat Input/Output devices
+AudioOptionsVoicePanelMicDeviceDropDown_OnLoad = nop;
+AudioOptionsVoicePanelOutputDeviceDropDown_OnLoad = nop;
+AudioOptionsVoicePanelChatModeDropdown_OnLoad = nop;
+AudioOptionsVoicePanelChatModeDropdown_Initialize = nop;
+
+do
+	local function FindActiveDevice(devices)
+		if devices then
+			for index, device in ipairs(devices) do
+				if device.isActive then
+					return device;
+				end
+			end
+		end
+	end
+
+	local function GetDeviceID(device)
+		return device and device.deviceID or "";
+	end
+
+	local function GetDeviceDisplayName(device)
+		return device and device.displayName or VOICE_CHAT_INVALID_DEVICE;
+	end
+
+	local function GetActiveInputDevice()
+		return FindActiveDevice(C_VoiceChat.GetAvailableInputDevices());
+	end
+
+	local function GetActiveInputDeviceID()
+		return GetDeviceID(GetActiveInputDevice());
+	end
+
+	local function GetActiveInputDeviceDisplayName()
+		return GetDeviceDisplayName(GetActiveInputDevice());
+	end
+
+	local function GetActiveOutputDevice()
+		return FindActiveDevice(C_VoiceChat.GetAvailableOutputDevices());
+	end
+
+	local function GetActiveOutputDeviceID()
+		return GetDeviceID(GetActiveOutputDevice());
+	end
+
+	local function GetActiveOutputDeviceDisplayName()
+		return GetDeviceDisplayName(GetActiveOutputDevice());
+	end
+
+	local function SortVoiceChatDevices(deviceA, deviceB)
+		if deviceA.isSystemDefault ~= deviceB.isSystemDefault then
+			return deviceA.isSystemDefault;
 		end
 
-		BlizzardOptionsPanel_Slider_Disable(AudioOptionsVoicePanelVoiceActivateSlider);
-		BlizzardOptionsPanel_Slider_Disable(AudioOptionsVoicePanelSpeakerVolume);
-		BlizzardOptionsPanel_Slider_Disable(AudioOptionsVoicePanelSoundFade);
-		BlizzardOptionsPanel_Slider_Disable(AudioOptionsVoicePanelMusicFade);
-		BlizzardOptionsPanel_Slider_Disable(AudioOptionsVoicePanelAmbienceFade);
-
-		AudioOptionsVoicePanelEnableMicrophone:Disable();
-		AudioOptionsVoicePanelPushToTalkSound:Disable();
-		AudioOptionsVoicePanelEnableMicrophone_UpdateControls(AudioOptionsVoicePanelEnableMicrophone:GetChecked());
-
-		if ( ChannelPullout:IsShown() ) then
-			ChannelPullout_ToggleDisplay();
-		end
-	end
-end
-
-function AudioOptionsVoicePanel_DisableMicrophoneControls ()
-	UIDropDownMenu_DisableDropDown(AudioOptionsVoicePanelInputDeviceDropDown);
-	RecordLoopbackSoundButton:Disable();
-	PlayLoopbackSoundButton:Disable();
-
-	for index in pairs(AudioOptionsVoicePanelFrameMicrophoneList) do
-		_G[index]:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		return strcmputf8i(deviceA.displayName, deviceB.displayName) < 0;
 	end
 
-	BlizzardOptionsPanel_Slider_Disable(AudioOptionsVoicePanelMicrophoneVolume);
-end
-
-function AudioOptionsVoicePanel_EnableMicrophoneControls ()
-	UIDropDownMenu_EnableDropDown(AudioOptionsVoicePanelInputDeviceDropDown);
-	RecordLoopbackSoundButton:Enable();
-	PlayLoopbackSoundButton:Enable();
-
-	for index, value in pairs(AudioOptionsVoicePanelFrameMicrophoneList) do
-		_G[index]:SetVertexColor(value.r, value.g, value.b);
+	local function VoiceBaseDeviceDropdown_OnClick(self)
+		local value = self.value;
+		UIDropDownMenu_SetSelectedValue(self.owner, value);
+		self.owner:SetValue(value);
 	end
 
-	BlizzardOptionsPanel_Slider_Enable(AudioOptionsVoicePanelMicrophoneVolume);
-end
-
-function AudioOptionsVoicePanelEnableMicrophone_UpdateControls (value)
-	if ( not AudioOptionsVoicePanelEnableVoice:GetChecked() or
-		 not value or value == "0" or
-		 VoiceIsDisabledByClient() ) then
-		--If VoiceChat is disabled, the microphone controls should be too.
-		AudioOptionsVoicePanel_DisableMicrophoneControls();
-	else
-		AudioOptionsVoicePanel_EnableMicrophoneControls();
-	end
-end
-
-function AudioOptionsVoicePanelBindingType_Update (value)
-	local mode = tonumber(value) + 1;
-	if ( mode == 1 ) then
-		AudioOptionsVoicePanelChatMode1:Show();
-		AudioOptionsVoicePanelChatMode2:Hide();
-	else
-		AudioOptionsVoicePanelChatMode1:Hide();
-		AudioOptionsVoicePanelChatMode2:Show();
-	end
-end
-
-function AudioOptionsVoicePanelKeyBindingButton_Refresh ()
-	PUSH_TO_TALK_BUTTON = BlizzardOptionsPanel_GetCVarSafe("PushToTalkButton");
-	local bindingText = GetBindingText(PUSH_TO_TALK_BUTTON);
-	AudioOptionsVoicePanelChatMode1KeyBindingButtonHiddenText:SetText(bindingText);
-	AudioOptionsVoicePanelChatMode1KeyBindingButton:SetText(bindingText);
-end
-
-function AudioOptionsVoicePanelKeyBindingButton_SetTooltip ()
-	local textWidth = AudioOptionsVoicePanelChatMode1KeyBindingButtonHiddenText:GetWidth();	
-	if ( textWidth > 135 ) then
-		AudioOptionsVoicePanelChatMode1KeyBindingButton.tooltip = AudioOptionsVoicePanelChatMode1KeyBindingButtonHiddenText:GetText();
-	else
-		AudioOptionsVoicePanelChatMode1KeyBindingButton.tooltip = nil;
-	end
-end
-
-function AudioOptionsVoicePanelKeyBindingButton_OnEnter (self)
-	if ( self.tooltip ) then
-		GameTooltip:SetOwner(self);
-		GameTooltip:SetText(self.tooltip);
-		GameTooltip:Show();
-	end
-end
-
-function AudioOptionsVoicePanelKeyBindingButton_OnKeyUp (self, key)
-	if ( self.buttonPressed ) then
-		AudioOptionsVoicePanelKeyBindingButton_BindButton(self);
-	end
-end
-
-function AudioOptionsVoicePanelKeyBindingButton_OnKeyDown (self, key)
-	if ( GetBindingFromClick(key) == "SCREENSHOT" ) then
-		RunBinding("SCREENSHOT");
-		return;
-	end
-	if ( self.buttonPressed ) then
-		if ( key == "UNKNOWN" ) then
-			return;
+	local function BuildVoiceChatDeviceEntries(self)
+		local devices = self.getAvailableEntries();
+		if not devices then
+			return 0;
 		end
 
-		if ( key == "LSHIFT" or key == "RSHIFT" or key == "LCTRL" or key == "RCTRL" or key == "LALT" or key == "RALT" ) then
-			if ( PUSH_TO_TALK_MODIFIER == "" ) then
-				PUSH_TO_TALK_MODIFIER = key;
+		table.sort(devices, SortVoiceChatDevices);
+
+		local selectedValue = UIDropDownMenu_GetSelectedValue(self);
+		local info = UIDropDownMenu_CreateInfo();
+
+		info.func = self.dropdownOnClickFn;
+		info.owner = self;
+
+		for index, device in ipairs(devices) do
+			if device.isSystemDefault then
+				info.text = self.defaultDeviceDisplayName;
 			else
-				PUSH_TO_TALK_MODIFIER = PUSH_TO_TALK_MODIFIER.."-"..key;
+				info.text = device.displayName;
 			end
-			return;
-		elseif ( PUSH_TO_TALK_BUTTON ~= "" ) then
-			AudioOptionsVoicePanelBindingOutputText:SetText(ERROR_CANNOT_BIND);
-			AudioOptionsVoicePanelBindingOutputTextConflict:SetText("");
-			AudioOptionsVoicePanelBindingOutput:SetAlpha(1.0);
-			AudioOptionsVoicePanelBindingOutput.fade = VOICE_OPTIONS_BINDING_FAIL_FADE;
-			self:UnlockHighlight();
-			self.buttonPressed = nil;
-			return;
-		end
 
-		if ( PUSH_TO_TALK_MODIFIER == "" ) then
-			PUSH_TO_TALK_BUTTON = key;
-		else
-			PUSH_TO_TALK_BUTTON = PUSH_TO_TALK_MODIFIER.."-"..key;
-		end
-	end
-
-end
-
-function AudioOptionsVoicePanelKeyBindingButton_CancelBinding ()
-	local self = AudioOptionsVoicePanelChatMode1KeyBindingButton;
-	self:UnlockHighlight();
-	self.buttonPressed = nil;
-	AudioOptionsVoicePanelBindingOutputText:SetText("");
-	AudioOptionsVoicePanelBindingOutputTextConflict:SetText("");
-	self:SetScript("OnKeyDown", nil);
-	self:SetScript("OnKeyUp", nil);
-	AudioOptionsVoicePanelBindingOutput:SetAlpha(1.0)
-	AudioOptionsVoicePanelBindingOutput.fade = 0;
-	UIFrameFadeIn(AudioOptionsVoicePanelBindingOutput, 0); 
-	PUSH_TO_TALK_BUTTON = "";
-	PUSH_TO_TALK_MODIFIER = "";
-end
-
-function AudioOptionsVoicePanelKeyBindingButton_OnClick (self, button)
-	if ( button == "UNKNOWN" ) then
-		return;
-	end
-	if ( not IsShiftKeyDown() and not IsControlKeyDown() and not IsAltKeyDown() ) then
-		if ( button == "LeftButton" or button == "RightButton" ) then
-			if ( self.buttonPressed ) then
-				AudioOptionsVoicePanelKeyBindingButton_CancelBinding(self);
+			info.value = device.deviceID;
+			if info.value == selectedValue then
+				info.checked = 1;
+				UIDropDownMenu_SetText(self, info.text);
 			else
-				self:LockHighlight();
-				self.buttonPressed = 1;
-				AudioOptionsVoicePanelBindingOutputText:SetText(CAN_BIND_PTT);
-				self:SetScript("OnKeyDown", AudioOptionsVoicePanelKeyBindingButton_OnKeyDown);
-				self:SetScript("OnKeyUp", AudioOptionsVoicePanelKeyBindingButton_OnKeyUp);
-				AudioOptionsVoicePanelBindingOutput:SetAlpha(1.0)
-				AudioOptionsVoicePanelBindingOutput.fade = 0;
-				UIFrameFadeIn(AudioOptionsVoicePanelBindingOutput, 0); 
-				AudioOptionsVoicePanelBindingOutputTextConflict:SetText("");
-				PUSH_TO_TALK_BUTTON = "";
-				PUSH_TO_TALK_MODIFIER = "";
+				info.checked = nil;
 			end
-			return;
+			UIDropDownMenu_AddButton(info);
 		end
+
+		return #devices;
 	end
 
-	if ( self.buttonPressed ) then
-		if ( PUSH_TO_TALK_BUTTON ~= "" ) then
-			AudioOptionsVoicePanelBindingOutputText:SetText(ERROR_CANNOT_BIND);
-			AudioOptionsVoicePanelBindingOutput:SetAlpha(1.0);
-			AudioOptionsVoicePanelBindingOutput.fade = VOICE_OPTIONS_BINDING_FAIL_FADE;
-			AudioOptionsVoicePanelBindingOutputText:SetVertexColor(1, 1, 1);
-			AudioOptionsVoicePanelBindingOutputTextConflict:SetText("");
-			self:UnlockHighlight();
-			self.buttonPressed = nil;
-			return;
-		end
-
-		if ( PUSH_TO_TALK_MODIFIER == "" ) then
-			PUSH_TO_TALK_BUTTON = button;
-		else
-			PUSH_TO_TALK_BUTTON = PUSH_TO_TALK_MODIFIER.."-"..button;
-		end
-		AudioOptionsVoicePanelKeyBindingButton_BindButton(self);
-	end
-end
-
-function AudioOptionsVoicePanelKeyBindingButton_BindButton (self)
-	if ( PUSH_TO_TALK_BUTTON == "" and PUSH_TO_TALK_MODIFIER ~= "" ) then
-		PUSH_TO_TALK_BUTTON = PUSH_TO_TALK_MODIFIER;
-	end
-	if ( PUSH_TO_TALK_BUTTON ~= "" ) then
-		BlizzardOptionsPanel_SetCVarSafe("PushToTalkButton", PUSH_TO_TALK_BUTTON);
-		local bindingText = GetBindingText(PUSH_TO_TALK_BUTTON);
-		self:SetText(bindingText);
-		AudioOptionsVoicePanelChatMode1KeyBindingButtonHiddenText:SetText(bindingText);
-
-		self:UnlockHighlight();
-		self.buttonPressed = nil;
-
-		local currentbinding = GetBindingByKey(PUSH_TO_TALK_BUTTON);
-		if ( currentbinding ) then
-			local currentBindingString = _G["BINDING_NAME_"..currentbinding];
-			if ( not currentBindingString ) then
-				currentBindingString = currentbinding;
-			end
-			
-			UIErrorsFrame:AddMessage(format(ALREADY_BOUND, currentBindingString), 1.0, 1.0, 0.0, 1.0);
-			AudioOptionsVoicePanelBindingOutputTextConflict:SetText(format(ALREADY_BOUND, currentBindingString));
-		else
-			AudioOptionsVoicePanelBindingOutputTextConflict:SetText("");
-		end
-
-		AudioOptionsVoicePanelBindingOutputText:SetText(PTT_BOUND);
-		AudioOptionsVoicePanelBindingOutput:SetAlpha(1.0);
-		AudioOptionsVoicePanelBindingOutput.fade = VOICE_OPTIONS_BINDING_SUCCESS_FADE;
-		self:SetScript("OnKeyDown", nil);
-		self:SetScript("OnKeyUp", nil);
-	end
-	AudioOptionsVoicePanelKeyBindingButton_SetTooltip();
-	if ( GameTooltip:GetOwner() == self ) then
-		AudioOptionsVoicePanelKeyBindingButton_OnEnter(self);
-	end
-end
-
-function AudioOptionsVoicePanelBindingOutput_OnUpdate(self, elapsed)
-	if ( self.fade and self.fade > 0 ) then
-		self:SetAlpha(self.fade);
-		self.fade = self.fade - elapsed;
-		if ( self.fade < 0 ) then
-			self.fade = 0;
-			self:SetAlpha(0);
-		end
-	end
-end
-
-function AudioOptionsVoicePanel_SetOutputDevice(deviceIndex)
-	VoiceSelectOutputDevice(VoiceEnumerateOutputDevices(deviceIndex));
-end
-
-function AudioOptionsVoicePanel_SetInputDevice(deviceIndex)
-	VoiceSelectCaptureDevice(VoiceEnumerateCaptureDevices(deviceIndex));
-end
-
-function AudioOptionsVoicePanelInputDeviceDropDown_OnLoad (self)
-	UIDropDownMenu_SetWidth(self, 140);
-
-	self.cvar = "Sound_VoiceChatInputDriverIndex";
-
-	local selectedDriverIndex = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-
-	self.defaultValue = BlizzardOptionsPanel_GetCVarDefaultSafe(self.cvar);
-	self.value = selectedDriverIndex;
-	self.nextValue = selectedDriverIndex;
-	self.restart = true;
-
-	UIDropDownMenu_SetSelectedValue(self, selectedDriverIndex);
-	UIDropDownMenu_Initialize(self, AudioOptionsVoicePanelInputDeviceDropDown_Initialize);
-
-	self.SetValue = 
-		function (self, value)
-			self.value = value;
-			AudioOptionsVoicePanel_SetInputDevice(value);
-			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-		end
-	self.GetValue =
-		function (self)
-			return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-		end
-	self.RefreshValue =
-		function (self)
-			local selectedDriverIndex = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-
-			self.value = selectedDriverIndex;
-			self.newValue = selectedDriverIndex;
-
-			UIDropDownMenu_SetSelectedValue(self, selectedDriverIndex);
-			UIDropDownMenu_Initialize(self, AudioOptionsVoicePanelInputDeviceDropDown_Initialize);
-		end
-end
-
-function AudioOptionsVoicePanelInputDeviceDropDown_Initialize(self)
-	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
-	local num = Sound_ChatSystem_GetNumInputDrivers();
-	local info = UIDropDownMenu_CreateInfo();
-	for index=0,num-1,1 do
-		info.text = Sound_ChatSystem_GetInputDriverNameByIndex(index);
-		info.value = index;
-		if (selectedValue and index == selectedValue) then
+	local function VoiceBaseDeviceDropdown_DropdownInitialize(self)
+		local numDevices = BuildVoiceChatDeviceEntries(self);
+		if numDevices == 0 then
+			local info = UIDropDownMenu_CreateInfo();
+			info.text = VOICE_CHAT_INVALID_DEVICE;
+			info.value = VOICE_CHAT_INVALID_DEVICE;
 			info.checked = 1;
-			UIDropDownMenu_SetText(self, info.text);
-		else
-			info.checked = nil;
+			UIDropDownMenu_AddButton(info);
 		end
-		info.func = AudioOptionsVoicePanelInputDeviceDropDown_OnClick;
+	end
 
-		UIDropDownMenu_AddButton(info);
+	local function VoiceBaseDeviceDropdown_OnLoad(self)
+		BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+		UIDropDownMenu_SetWidth(self, 140);
+
+		self.SetValue = function(self, value)
+			self.newValue = value;
+			self.setValueFn(value);
+		end
+
+		self.GetValue = function(self)
+			return self.newValue or self.value;
+		end
+
+		self.RefreshValue = function(self)
+			self.newValue = self.getCurrentValueFn();
+			UIDropDownMenu_Initialize(self, self.dropdownInitFn);
+			UIDropDownMenu_SetSelectedValue(self, self.newValue);
+		end
+
+		self:RefreshValue();
+	end
+
+	AudioOptionsVoicePanelMicDeviceDropDown_OnLoad = function(self)
+		self.setValueFn = C_VoiceChat.SetInputDevice;
+		self.getCurrentValueFn = GetActiveInputDeviceID;
+		self.getCurrentTextFn = GetActiveInputDeviceDisplayName;
+		self.getAvailableEntries = C_VoiceChat.GetAvailableInputDevices;
+		self.defaultDeviceDisplayName = VOICE_CHAT_INPUT_DEVICE_DEFAULT;
+		self.dropdownOnClickFn = VoiceBaseDeviceDropdown_OnClick;
+		self.dropdownInitFn = VoiceBaseDeviceDropdown_DropdownInitialize;
+
+		VoiceBaseDeviceDropdown_OnLoad(self);
+	end
+
+	AudioOptionsVoicePanelOutputDeviceDropDown_OnLoad = function(self)
+		self.setValueFn = C_VoiceChat.SetOutputDevice;
+		self.getCurrentValueFn = GetActiveOutputDeviceID;
+		self.getCurrentTextFn = GetActiveOutputDeviceDisplayName;
+		self.getAvailableEntries = C_VoiceChat.GetAvailableOutputDevices;
+		self.defaultDeviceDisplayName = VOICE_CHAT_OUTPUT_DEVICE_DEFAULT;
+		self.dropdownOnClickFn = VoiceBaseDeviceDropdown_OnClick;
+		self.dropdownInitFn = VoiceBaseDeviceDropdown_DropdownInitialize;
+
+		VoiceBaseDeviceDropdown_OnLoad(self);
+	end
+
+	AudioOptionsVoicePanelChatModeDropdown_OnLoad = function(self)
+		local chatModeToText =
+		{
+			[Enum.CommunicationMode.PushToTalk] = PUSH_TO_TALK,
+			[Enum.CommunicationMode.OpenMic] = OPEN_MIC,
+		};
+
+		self.setValueFn = C_VoiceChat.SetCommunicationMode;
+		self.getCurrentValueFn = C_VoiceChat.GetCommunicationMode;
+		self.getCurrentTextFn = function() return chatModeToText[C_VoiceChat.GetCommunicationMode()] or PUSH_TO_TALK; end
+		self.defaultValue = Enum.CommunicationMode.PushToTalk;
+		self.dropdownInitFn = AudioOptionsVoicePanelChatModeDropdown_Initialize;
+		self.dropdownOnClickFn = AudioOptionsVoicePanelChatModeDropdown_OnClick;
+
+		VoiceBaseDeviceDropdown_OnLoad(self);
 	end
 end
 
-function AudioOptionsVoicePanelInputDeviceDropDown_OnClick(self)
-	local value = self.value;
-	local dropdown = AudioOptionsVoicePanelInputDeviceDropDown;
-	UIDropDownMenu_SetSelectedValue(dropdown, value);
-	dropdown:SetValue(value);
-end
-
---==============================
---
--- Record Loopback functions
---
---==============================
-
-function RecordLoopbackSoundButton_OnUpdate (self)
-	if ( self.clicked ) then
-		if ( not AudioOptionsVoicePanelEnableVoice:GetChecked() or
-			 not AudioOptionsVoicePanelEnableMicrophone:GetChecked() ) then
-			-- NOTE: add VoiceIsDisabledByClient() if turning voice on and off ever happens dynamically
-			RecordLoopbackSoundButton:Disable();
-			RecordLoopbackSoundButtonTexture:SetVertexColor(0.5, 0.5, 0.5);
-		else
-			local isRecording = VoiceChat_IsRecordingLoopbackSound();
-			if ( isRecording == 0 ) then
-				RecordLoopbackSoundButton:Enable();
-				RecordLoopbackSoundButtonTexture:SetVertexColor(1, 0, 0);	
-				self.clicked = nil;
-			else
-				RecordLoopbackSoundButton:Disable();
-				RecordLoopbackSoundButtonTexture:SetVertexColor(0.5, 0.5, 0.5);								
-			end
-		end
-	end
-end
-
---==============================
---
--- VU Meter functions
---
---==============================
-
-function LoopbackVUMeter_OnLoad (self)
-    self:SetMinMaxValues(0, 100);
-	self:SetValue(0);
-end
-
-function LoopbackVUMeter_OnUpdate (self, elapsed)
-    local isRecording = VoiceChat_IsRecordingLoopbackSound();
-    local isPlaying = VoiceChat_IsPlayingLoopbackSound();
-    if ( isRecording == 0 and isPlaying == 0 ) then
-        self:SetValue(0);
-    else
-        local volume = VoiceChat_GetCurrentMicrophoneSignalLevel();
-        self:SetValue(volume);
-    end
-end
-
-function AudioOptionsVoicePanelChatModeDropDown_OnLoad (self)
-	UIDropDownMenu_SetWidth(self, 140);
-
-	self.cvar = "VoiceChatMode";
-
-	local voiceChatMode = 0;
-
-	self.tooltip = _G["OPTION_TOOLTIP_VOICE_TYPE"..(voiceChatMode+1)];
-	self.defaultValue = 0;
-	self.value = voiceChatMode;
-	self.newValue = voiceChatMode;
-	self.restart = true;
-
-	UIDropDownMenu_SetSelectedValue(self, voiceChatMode);
-	UIDropDownMenu_Initialize(self, AudioOptionsVoicePanelChatModeDropDown_Initialize);
-
-	self.SetValue = 
-		function (self, value)
-			self.value = value;
-			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-			AudioOptionsVoicePanelBindingType_Update(value);
-			SetSelfMuteState();
-		end
-	self.GetValue =
-		function (self)
-			return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-		end
-	self.RefreshValue =
-		function (self)
-			local voiceChatMode = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-
-			self.tooltip = _G["OPTION_TOOLTIP_VOICE_TYPE"..(voiceChatMode+1)];
-			self.value = voiceChatMode;
-			self.newValue = voiceChatMode;
-
-			UIDropDownMenu_SetSelectedValue(self, voiceChatMode);
-			UIDropDownMenu_Initialize(self, AudioOptionsVoicePanelChatModeDropDown_Initialize);
-		end
-end
-
-function AudioOptionsVoicePanelChatModeDropDown_Initialize(self)
-	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
+function AudioOptionsVoicePanelChatModeDropdown_Initialize(self)
+	local selectedValue = self.getCurrentValueFn() or self.defaultValue;
 	local info = UIDropDownMenu_CreateInfo();
+
+	info.func = self.dropdownOnClickFn;
+	info.owner = self;
 
 	info.text = PUSH_TO_TALK;
-	info.func = AudioOptionsVoicePanelChatModeDropDown_OnClick;
-	info.value = 0;
-	if ( info.value == selectedValue ) then
+	info.value = Enum.CommunicationMode.PushToTalk;
+	if info.value == selectedValue then
 		info.checked = 1;
-		UIDropDownMenu_SetText(self, info.text);
 	else
 		info.checked = nil;
 	end
@@ -858,97 +667,109 @@ function AudioOptionsVoicePanelChatModeDropDown_Initialize(self)
 	info.tooltipText = OPTION_TOOLTIP_VOICE_TYPE1;
 	UIDropDownMenu_AddButton(info);
 
-	info.text = VOICE_ACTIVATED;
-	info.func = AudioOptionsVoicePanelChatModeDropDown_OnClick;
-	info.value = 1;
-	if ( info.value == selectedValue ) then
+	info.text = OPEN_MIC;
+	info.value = Enum.CommunicationMode.OpenMic;
+	if info.value == selectedValue then
 		info.checked = 1;
-		UIDropDownMenu_SetText(self, info.text);
 	else
 		info.checked = nil;
 	end
-	info.tooltipTitle = VOICE_ACTIVATED;
+	info.tooltipTitle = OPEN_MIC
 	info.tooltipText  = OPTION_TOOLTIP_VOICE_TYPE2;
 	UIDropDownMenu_AddButton(info);
 end
 
-function AudioOptionsVoicePanelChatModeDropDown_OnClick(self)
-	local value = self.value;
-	local dropdown = AudioOptionsVoicePanelChatModeDropDown;
-	UIDropDownMenu_SetSelectedValue(dropdown, value);
-	dropdown.tooltip = _G["OPTION_TOOLTIP_VOICE_TYPE"..(value+1)];
-	dropdown:SetValue(value);
+function AudioOptionsVoicePanelChatModeDropdown_OnClick(self)
+	local chatMode = self.value;
+	UIDropDownMenu_SetSelectedValue(self.owner, chatMode);
+	self.owner.tooltip = _G["OPTION_TOOLTIP_VOICE_TYPE"..(chatMode + 1)];
+	self.owner:SetValue(chatMode);
 end
 
-function AudioOptionsVoicePanelOutputDeviceDropDown_OnLoad (self)
-	UIDropDownMenu_SetWidth(self, 140);
-
-	self.cvar = "Sound_VoiceChatOutputDriverIndex";
-
-	local selectedDriverIndex = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-
-	self.defaultValue = BlizzardOptionsPanel_GetCVarDefaultSafe(self.cvar);
-	self.value = selectedDriverIndex;
-	self.nextValue = selectedDriverIndex;
-	self.restart = true;
-
-	UIDropDownMenu_SetSelectedValue(self, selectedDriverIndex);
-	UIDropDownMenu_Initialize(self, AudioOptionsVoicePanelOutputDeviceDropDown_Initialize);
-
-	self.SetValue = 
-		function (self, value)
-			self.value = value;
-			AudioOptionsVoicePanel_SetOutputDevice(value);
-			BlizzardOptionsPanel_SetCVarSafe("Sound_VoiceChatOutputDriverIndex", value);
-		end
-	self.GetValue =
-		function (self)
-			return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-		end
-	self.RefreshValue =
-		function (self)
-			local selectedDriverIndex = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-
-			self.value = selectedDriverIndex;
-			self.nextValue = selectedDriverIndex;
-
-			UIDropDownMenu_SetSelectedValue(self, selectedDriverIndex);
-			UIDropDownMenu_Initialize(self, AudioOptionsVoicePanelOutputDeviceDropDown_Initialize);
-		end
+local function ReactivateChannel(self)
+	-- Intentionally leaving this set after reactivation, potentially need to handle async case using events.
+	if self.currentActiveChannel then
+		C_VoiceChat.ActivateChannel(self.currentActiveChannel);
+	end
 end
 
-function AudioOptionsVoicePanelOutputDeviceDropDown_Initialize(self)
-	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
-	local num = Sound_ChatSystem_GetNumOutputDrivers();	
-	local info = UIDropDownMenu_CreateInfo();
-	if ( num == 0 ) then
-		UIDropDownMenu_SetText(self, "");
-	else
-		for index=0,num-1,1 do
-			info.text = Sound_ChatSystem_GetOutputDriverNameByIndex(index);
-			info.value = index;
-	        if (selectedValue and index == selectedValue) then
-				info.checked = 1;
-				UIDropDownMenu_SetText(self, info.text);
-			else
-				info.checked = nil;
-			end
-			info.func = AudioOptionsVoicePanelOutputDeviceDropDown_OnClick;
+local function UpdateTestButton(self)
+	local texture = "Interface\\OptionsFrame\\VoiceChat-Play";
+	if self.isTesting then
+		texture = "Interface\\OptionsFrame\\VoiceChat-Record";
+	end
 
-			UIDropDownMenu_AddButton(info);
+	self.ToggleTest.Texture:SetTexture(texture);
+end
+
+local function BeginInputDeviceTest(self)
+	if not self.isTesting then
+		self.isTesting = true;
+		self.currentActiveChannel = C_VoiceChat.GetActiveChannelID();
+
+		local listenToLocalUser = true;
+		C_VoiceChat.BeginLocalCapture(listenToLocalUser);
+		UpdateTestButton(self);
+	end
+end
+
+local function EndInputDeviceTest(self)
+	if self.isTesting then
+		self.isTesting = false;
+		C_VoiceChat.EndLocalCapture();
+		ReactivateChannel(self);
+		self.VUMeter.Status:SetValue(0);
+		UpdateTestButton(self);
+	end
+end
+
+local function UpdateVUMeter(self, isSpeaking, energy)
+	energy = self.isTesting and energy or 0;
+	self.VUMeter.Status:SetValue(energy);
+
+	if self.VUMeter.isSpeaking ~= isSpeaking then
+		self.VUMeter.isSpeaking = isSpeaking;
+		if isSpeaking then
+			self.VUMeter.Status:SetStatusBarColor(0, 1, 0, 1);
+		else
+			self.VUMeter.Status:SetStatusBarColor(1, 1, 1, 1);
 		end
 	end
 end
 
-function AudioOptionsVoicePanelOutputDeviceDropDown_OnClick(self)
-	local value = self.value;
-	local dropdown = AudioOptionsVoicePanelOutputDeviceDropDown;
-	UIDropDownMenu_SetSelectedValue(dropdown, value);
-	dropdown:SetValue(value);
+local function ToggleTesting(self)
+	if self.isTesting then
+		EndInputDeviceTest(self);
+	else
+		BeginInputDeviceTest(self);
+	end
 end
 
-function AudioOptionsVoicePanelOutputDeviceDropDown_OnEvent(self, event, ...)
-	if ( event == "VOICE_CHAT_ENABLED_UPDATE" ) then
-		UIDropDownMenu_Initialize(self, AudioOptionsVoicePanelOutputDeviceDropDown_Initialize);
+function AudioOptionsVoicePanelTestInputDevice_OnClick(self, button)
+	ToggleTesting(self:GetParent());
+end
+
+function AudioOptionsVoicePanelTestInputDevice_OnLoad(self)
+	self:RegisterEvent("ADDONS_UNLOADING");
+
+	self.VUMeter.Status:SetMinMaxValues(0, 1);
+	self.VUMeter.Status:SetValue(0);
+	UpdateTestButton(self);
+end
+
+function AudioOptionsVoicePanelTestInputDevice_OnShow(self)
+	self:RegisterEvent("VOICE_CHAT_AUDIO_CAPTURE_ENERGY");
+end
+
+function AudioOptionsVoicePanelTestInputDevice_OnHide(self)
+	self:UnregisterEvent("VOICE_CHAT_AUDIO_CAPTURE_ENERGY");
+	EndInputDeviceTest(self);
+end
+
+function AudioOptionsVoicePanelTestInputDevice_OnEvent(self, event, ...)
+	if event == "ADDONS_UNLOADING" then
+		EndInputDeviceTest(self);
+	elseif event == "VOICE_CHAT_AUDIO_CAPTURE_ENERGY" then
+		UpdateVUMeter(self, ...);
 	end
 end

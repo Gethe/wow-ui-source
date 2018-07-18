@@ -22,7 +22,7 @@ function PossessBar_Update ()
 end
 
 function PossessBar_UpdateState ()
-	local texture, name, enabled;
+	local texture, spellID, enabled;
 	local button, background, icon, cooldown;
 
 	for i=1, NUM_POSSESS_SLOTS do
@@ -30,7 +30,7 @@ function PossessBar_UpdateState ()
 		button = _G["PossessButton"..i];
 		background = _G["PossessBackground"..i];
 		icon = _G["PossessButton"..i.."Icon"];
-		texture, name, enabled = GetPossessInfo(i);
+		texture, spellID, enabled = GetPossessInfo(i);
 		icon:SetTexture(texture);
 
 		--Cooldown stuffs
@@ -69,8 +69,7 @@ function PossessButton_OnClick (self)
 		elseif ( UnitControllingVehicle("player") and CanExitVehicle() ) then
 			VehicleExit();
 		else
-			local texture, name = GetPossessInfo(id);
-			CancelUnitBuff("player", name);
+			CancelPetPossess();
 		end
 	end
 end

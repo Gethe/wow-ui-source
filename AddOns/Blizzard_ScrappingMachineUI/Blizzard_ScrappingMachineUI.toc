@@ -1,0 +1,6 @@
+## Interface: 80000
+## Title: Blizzard Scraping Machine UI
+## Secure: 1
+## LoadOnDemand: 1
+
+Blizzard_ScrappingMachineUI.xml

@@ -645,7 +645,7 @@ function ActionButton_UpdateOverlayGlow(self)
 	if ( spellType == "spell" and IsSpellOverlayed(id) ) then
 		ActionButton_ShowOverlayGlow(self);
 	elseif ( spellType == "macro" ) then
-		local _, _, spellId = GetMacroSpell(id);
+		local spellId = GetMacroSpell(id);
 		if ( spellId and IsSpellOverlayed(spellId) ) then
 			ActionButton_ShowOverlayGlow(self);
 		else
@@ -780,7 +780,7 @@ function ActionButton_OnEvent(self, event, ...)
 		if ( actionType == "spell" and id == arg1 ) then
 			ActionButton_ShowOverlayGlow(self);
 		elseif ( actionType == "macro" ) then
-			local _, _, spellId = GetMacroSpell(id);
+			local spellId = GetMacroSpell(id);
 			if ( spellId and spellId == arg1 ) then
 				ActionButton_ShowOverlayGlow(self);
 			end
@@ -792,7 +792,7 @@ function ActionButton_OnEvent(self, event, ...)
 		if ( actionType == "spell" and id == arg1 ) then
 			ActionButton_HideOverlayGlow(self);
 		elseif ( actionType == "macro" ) then
-			local _, _, spellId = GetMacroSpell(id);
+			local spellId = GetMacroSpell(id);
 			if (spellId and spellId == arg1 ) then
 				ActionButton_HideOverlayGlow(self);
 			end

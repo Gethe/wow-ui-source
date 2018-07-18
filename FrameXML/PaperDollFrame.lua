@@ -87,7 +87,7 @@ PAPERDOLL_SIDEBARS = {
 		icon = nil;  -- Uses the character portrait
 		texCoords = {0.109375, 0.890625, 0.09375, 0.90625};
 		disabledTooltip = nil;
-		IsActive = function () return true; end
+		IsActive = function() return true; end
 	},
 	{
 		name=PAPERDOLL_SIDEBAR_TITLES;
@@ -95,7 +95,7 @@ PAPERDOLL_SIDEBARS = {
 		icon = "Interface\\PaperDollInfoFrame\\PaperDollSidebarTabs";
 		texCoords = {0.01562500, 0.53125000, 0.32421875, 0.46093750};
 		disabledTooltip = NO_TITLES_TOOLTIP;
-		IsActive = function ()
+		IsActive = function()
 			-- You always have the "No Title" title so you need to have more than one to have an option.
 			return #GetKnownTitles() > 1;
 		end
@@ -106,7 +106,7 @@ PAPERDOLL_SIDEBARS = {
 		icon = "Interface\\PaperDollInfoFrame\\PaperDollSidebarTabs";
 		texCoords = {0.01562500, 0.53125000, 0.46875000, 0.60546875};
 		disabledTooltip = format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL);
-		IsActive = function ()
+		IsActive = function()
 			return C_EquipmentSet.GetNumEquipmentSets() > 0 or UnitLevel("player") >= SHOW_LFD_LEVEL;
 		end
 	},
@@ -210,11 +210,15 @@ PAPERDOLL_STATINFO = {
 	["BLOCK"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetBlock(statFrame, unit); end
 	},
+	["STAGGER"] = {
+		updateFunc = function(statFrame, unit) PaperDollFrame_SetStagger(statFrame, unit); end
+	},
 };
 
 -- primary: only show the 1 for the player's current spec
 -- roles: only show if the player's current spec is one of the roles
 -- hideAt: only show if it's not this value
+-- showFunc: only show if this function returns true (Note: make sure whatever your function is dependent on also triggers an update when it changes)
 
 PAPERDOLL_STATCATEGORIES= {
 	[1] = {
@@ -225,7 +229,8 @@ PAPERDOLL_STATCATEGORIES= {
 			[3] = { stat = "INTELLECT", primary = LE_UNIT_STAT_INTELLECT },
 			[4] = { stat = "STAMINA" },
 			[5] = { stat = "ARMOR" },
-			[6] = { stat = "MANAREGEN", roles =  { "HEALER" } },
+			[6] = { stat = "STAGGER", hideAt = 0, roles = { "TANK" }},
+			[7] = { stat = "MANAREGEN", roles =  { "HEALER" } },
 		},
 	},
 	[2] = {
@@ -240,7 +245,7 @@ PAPERDOLL_STATCATEGORIES= {
 			{ stat = "SPEED", hideAt = 0 },
 			{ stat = "DODGE", roles =  { "TANK" } },
 			{ stat = "PARRY", hideAt = 0, roles =  { "TANK" } },
-			{ stat = "BLOCK" , hideAt = 0, roles =  { "TANK" } },
+			{ stat = "BLOCK", hideAt = 0, showFunc = C_PaperDollInfo.OffhandHasShield },
 		},
 	},
 };
@@ -277,7 +282,7 @@ BASE_ENEMY_PARRY_CHANCE = {
 
 DUAL_WIELD_HIT_PENALTY = 19.0;
 
-function PaperDollFrame_OnLoad (self)
+function PaperDollFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("CHARACTER_POINTS_CHANGED");
 	self:RegisterEvent("UNIT_MODEL_CHANGED");
@@ -301,7 +306,6 @@ function PaperDollFrame_OnLoad (self)
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	self:RegisterEvent("BAG_UPDATE");
 	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
-	self:RegisterEvent("PLAYER_BANKSLOTS_CHANGED");
 	self:RegisterEvent("PLAYER_AVG_ITEM_LEVEL_UPDATE");
 	self:RegisterEvent("PLAYER_DAMAGE_DONE_MODS");
 	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
@@ -312,6 +316,7 @@ function PaperDollFrame_OnLoad (self)
 	self:RegisterEvent("SPELL_POWER_CHANGED");
 	self:RegisterEvent("CHARACTER_ITEM_FIXUP_NOTIFICATION");
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
+	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	-- flyout settings
 	PaperDollItemsFrame.flyoutSettings = {
 		onClickFunc = PaperDollFrameItemFlyoutButton_OnClick,
@@ -336,7 +341,7 @@ function PaperDollFrame_OnLoad (self)
 	end
 end
 
-function PaperDoll_IsEquippedSlot (slot)
+function PaperDoll_IsEquippedSlot(slot)
 	if ( slot ) then
 		slot = tonumber(slot);
 		if ( slot ) then
@@ -346,7 +351,7 @@ function PaperDoll_IsEquippedSlot (slot)
 	return false;
 end
 
-function CharacterModelFrame_OnMouseUp (self, button)
+function CharacterModelFrame_OnMouseUp(self, button)
 	if ( button == "LeftButton" ) then
 		AutoEquipCursorItem();
 	end
@@ -359,7 +364,7 @@ function PaperDollFrame_QueuedUpdate(self)
 	PaperDollFrame_UpdateStats();
 end
 
-function PaperDollFrame_OnEvent (self, event, ...)
+function PaperDollFrame_OnEvent(self, event, ...)
 	local unit = ...;
 	if ( event == "PLAYER_ENTERING_WORLD" or
 		event == "UNIT_MODEL_CHANGED" and unit == "player" ) then
@@ -403,9 +408,9 @@ function PaperDollFrame_OnEvent (self, event, ...)
 			event == "AVOIDANCE_UPDATE" or
 			event == "BAG_UPDATE" or
 			event == "PLAYER_EQUIPMENT_CHANGED" or
-			event == "PLAYER_BANKSLOTS_CHANGED" or
 			event == "PLAYER_AVG_ITEM_LEVEL_UPDATE" or
-			event == "PLAYER_DAMAGE_DONE_MODS") then
+			event == "PLAYER_DAMAGE_DONE_MODS" or
+			event == "PLAYER_TARGET_CHANGED") then
 		self:SetScript("OnUpdate", PaperDollFrame_QueuedUpdate);
 	elseif (event == "PLAYER_TALENT_UPDATE") then
 		PaperDollFrame_SetLevel();
@@ -696,12 +701,33 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 end
 
 function PaperDollFrame_SetArmor(statFrame, unit)
-	local baselineArmor, effectiveArmor, armor, posBuff, negBuff = UnitArmor(unit);
+	local baselineArmor, effectiveArmor, armor, bonusArmor = UnitArmor(unit);
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_ARMOR, BreakUpLargeNumbers(effectiveArmor), false, effectiveArmor);
     local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitEffectiveLevel(unit));
+	local armorReductionAgainstTarget = PaperDollFrame_GetArmorReductionAgainstTarget(effectiveArmor);
 
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, ARMOR).." "..BreakUpLargeNumbers(effectiveArmor)..FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = format(STAT_ARMOR_TOOLTIP, armorReduction);
+	if (armorReductionAgainstTarget) then
+		statFrame.tooltip3 = format(STAT_ARMOR_TARGET_TOOLTIP, armorReductionAgainstTarget);
+	else
+		statFrame.tooltip3 = nil;
+	end
+	statFrame:Show();
+end
+
+function PaperDollFrame_SetStagger(statFrame, unit)
+	local stagger, staggerAgainstTarget = C_PaperDollInfo.GetStaggerPercentage(unit);
+	PaperDollFrame_SetLabelAndText(statFrame, STAT_STAGGER, BreakUpLargeNumbers(stagger), true, stagger);
+
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAGGER).." "..string.format("%.2F%%",stagger)..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip2 = format(STAT_STAGGER_TOOLTIP, stagger);
+	if (staggerAgainstTarget) then
+		statFrame.tooltip3 = format(STAT_STAGGER_TARGET_TOOLTIP, staggerAgainstTarget);
+	else
+		statFrame.tooltip3 = nil;
+	end
+
 	statFrame:Show();
 end
 
@@ -727,7 +753,17 @@ function PaperDollFrame_SetBlock(statFrame, unit)
 	local chance = GetBlockChance();
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_BLOCK, chance, true, chance);
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, BLOCK_CHANCE).." "..string.format("%.2F", chance).."%"..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(CR_BLOCK_TOOLTIP, GetShieldBlock());
+
+	local shieldBlockArmor = GetShieldBlock();
+	local blockArmorReduction = PaperDollFrame_GetArmorReduction(shieldBlockArmor, UnitEffectiveLevel(unit));
+	local blockArmorReductionAgainstTarget = PaperDollFrame_GetArmorReductionAgainstTarget(shieldBlockArmor);
+
+	statFrame.tooltip2 = CR_BLOCK_TOOLTIP:format(blockArmorReduction);
+	if (blockArmorReductionAgainstTarget) then
+		statFrame.tooltip3 = format(STAT_BLOCK_TARGET_TOOLTIP, blockArmorReductionAgainstTarget);
+	else
+		statFrame.tooltip3 = nil;
+	end
 	statFrame:Show();
 end
 
@@ -1161,6 +1197,7 @@ function Mastery_OnEnter(statFrame)
 		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(STAT_MASTERY_TOOLTIP_NO_TALENT_SPEC, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, true);
 	end
+	statFrame.UpdateTooltip = statFrame.onEnterFunc;
 	GameTooltip:Show();
 end
 
@@ -1253,11 +1290,16 @@ function PaperDollFrame_SetItemLevel(statFrame, unit)
 	end
 
 	local avgItemLevel, avgItemLevelEquipped = GetAverageItemLevel();
+	local minItemLevel = C_PaperDollInfo.GetMinItemLevel();
+
+	local displayItemLevel = math.max(minItemLevel or 0, avgItemLevelEquipped);
+	
+	displayItemLevel = floor(displayItemLevel);
 	avgItemLevel = floor(avgItemLevel);
-	avgItemLevelEquipped = floor(avgItemLevelEquipped);
-	PaperDollFrame_SetLabelAndText(statFrame, STAT_AVERAGE_ITEM_LEVEL, avgItemLevelEquipped, false, avgItemLevelEquipped);
+
+	PaperDollFrame_SetLabelAndText(statFrame, STAT_AVERAGE_ITEM_LEVEL, displayItemLevel, false, displayItemLevel);
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_AVERAGE_ITEM_LEVEL).." "..avgItemLevel;
-	if ( avgItemLevelEquipped ~= avgItemLevel ) then
+	if ( displayItemLevel ~= avgItemLevel ) then
 		statFrame.tooltip = statFrame.tooltip .. "  " .. format(STAT_AVERAGE_ITEM_LEVEL_EQUIPPED, avgItemLevelEquipped);
 	end
 	statFrame.tooltip = statFrame.tooltip .. FONT_COLOR_CODE_CLOSE;
@@ -1332,7 +1374,7 @@ function PaperDollFrame_SetMovementSpeed(statFrame, unit)
 	statFrame.onEnterFunc = MovementSpeed_OnEnter;
 end
 
-function CharacterSpellBonusDamage_OnEnter (self)
+function CharacterSpellBonusDamage_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, self.tooltip).." "..BreakUpLargeNumbers(self.minModifier)..FONT_COLOR_CODE_CLOSE);
 
@@ -1383,7 +1425,7 @@ local function ShouldShowExaltedPlusHelpTip()
 end
 
 
-function PaperDollFrame_OnShow (self)
+function PaperDollFrame_OnShow(self)
 	CharacterStatsPane.initialOffsetY = 0;
 	CharacterFrameTitleText:SetText(UnitPVPName("player"));
 	PaperDollFrame_SetLevel();
@@ -1398,14 +1440,14 @@ function PaperDollFrame_OnShow (self)
 	self:GetParent().ReputationTabHelpBox:SetShown(ShouldShowExaltedPlusHelpTip());
 end
 
-function PaperDollFrame_OnHide (self)
+function PaperDollFrame_OnHide(self)
 	CharacterStatsPane.initialOffsetY = 0;
 	CharacterFrame_Collapse();
 	PaperDollSidebarTabs:Hide();
 	PaperDollFrame_HideInventoryFixupComplete(self);
 end
 
-function PaperDollFrame_ClearIgnoredSlots ()
+function PaperDollFrame_ClearIgnoredSlots()
 	C_EquipmentSet.ClearIgnoredSlotsForSave();
 	for k, button in next, itemSlotButtons do
 		if ( button.ignored ) then
@@ -1415,7 +1457,7 @@ function PaperDollFrame_ClearIgnoredSlots ()
 	end
 end
 
-function PaperDollFrame_IgnoreSlotsForSet (setID)
+function PaperDollFrame_IgnoreSlotsForSet(setID)
 	local set = C_EquipmentSet.GetIgnoredSlots(setID);
 	for slot, ignored in pairs(set) do
 		if ( ignored ) then
@@ -1435,7 +1477,7 @@ function PaperDollFrame_IgnoreSlot(slot)
 	PaperDollItemSlotButton_Update(itemSlotButtons[slot]);
 end
 
-function PaperDollItemSlotButton_OnLoad (self)
+function PaperDollItemSlotButton_OnLoad(self)
 	self:RegisterForDrag("LeftButton");
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	local slotName = self:GetName();
@@ -1471,39 +1513,41 @@ function PaperDollItemSlotButton_OnLoad (self)
 	end
 end
 
-function PaperDollItemSlotButton_OnShow (self, isBag)
-	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
-	self:RegisterEvent("MERCHANT_UPDATE");
-	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED");
-	self:RegisterEvent("ITEM_LOCK_CHANGED");
-	self:RegisterEvent("CURSOR_UPDATE");
-	self:RegisterEvent("SHOW_COMPARE_TOOLTIP");
-	self:RegisterEvent("UPDATE_INVENTORY_ALERTS");
+local PAPERDOLL_FRAME_EVENTS = {
+	"PLAYER_EQUIPMENT_CHANGED",
+	"MERCHANT_UPDATE",
+	"PLAYERBANKSLOTS_CHANGED",
+	"ITEM_LOCK_CHANGED",
+	"CURSOR_UPDATE",
+	"UPDATE_INVENTORY_ALERTS",
+	"AZERITE_ITEM_POWER_LEVEL_CHANGED",
+	"AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED",
+};
+
+function PaperDollItemSlotButton_OnShow(self, isBag)
+	FrameUtil.RegisterFrameForEvents(self, PAPERDOLL_FRAME_EVENTS);
+
 	if ( not isBag ) then
 		self:RegisterEvent("BAG_UPDATE_COOLDOWN");
 	end
 	PaperDollItemSlotButton_Update(self);
 end
 
-function PaperDollItemSlotButton_OnHide (self)
-	self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED");
-	self:UnregisterEvent("MERCHANT_UPDATE");
-	self:UnregisterEvent("PLAYERBANKSLOTS_CHANGED");
-	self:UnregisterEvent("ITEM_LOCK_CHANGED");
-	self:UnregisterEvent("CURSOR_UPDATE");
+function PaperDollItemSlotButton_OnHide(self)
+	FrameUtil.UnregisterFrameForEvents(self, PAPERDOLL_FRAME_EVENTS);
+
 	self:UnregisterEvent("BAG_UPDATE_COOLDOWN");
-	self:UnregisterEvent("SHOW_COMPARE_TOOLTIP");
-	self:UnregisterEvent("UPDATE_INVENTORY_ALERTS");
 end
 
-function PaperDollItemSlotButton_OnEvent (self, event, ...)
-	local arg1, arg2 = ...;
+function PaperDollItemSlotButton_OnEvent(self, event, ...)
 	if ( event == "PLAYER_EQUIPMENT_CHANGED" ) then
-		if ( self:GetID() == arg1 ) then
+		local equipmentSlot, hasCurrent = ...;
+		if ( self:GetID() == equipmentSlot ) then
 			PaperDollItemSlotButton_Update(self);
 		end
 	elseif ( event == "ITEM_LOCK_CHANGED" ) then
-		if ( not arg2 and arg1 == self:GetID() ) then
+		local bagOrSlotIndex, slotIndex = ...;
+		if ( not slotIndex and bagOrSlotIndex == self:GetID() ) then
 			PaperDollItemSlotButton_UpdateLock(self);
 		end
 	elseif ( event == "BAG_UPDATE_COOLDOWN" ) then
@@ -1514,31 +1558,24 @@ function PaperDollItemSlotButton_OnEvent (self, event, ...)
 		else
 			self:UnlockHighlight();
 		end
-	elseif ( event == "SHOW_COMPARE_TOOLTIP" ) then
-		if ( (arg1 ~= self:GetID()) or (arg2 > NUM_SHOPPING_TOOLTIPS) ) then
-			return;
-		end
-
-		local tooltip = _G["ShoppingTooltip"..arg2];
-		local anchor = "ANCHOR_RIGHT";
-		if ( arg2 > 1 ) then
-			anchor = "ANCHOR_BOTTOMRIGHT";
-		end
-		tooltip:SetOwner(self, anchor);
-		local hasItem, hasCooldown = tooltip:SetInventoryItem("player", self:GetID());
-		if ( not hasItem ) then
-			tooltip:Hide();
-		end
 	elseif ( event == "UPDATE_INVENTORY_ALERTS" ) then
 		PaperDollItemSlotButton_Update(self);
 	elseif ( event == "MODIFIER_STATE_CHANGED" ) then
 		if ( IsModifiedClick("SHOWITEMFLYOUT") and self:IsMouseOver() ) then
 			PaperDollItemSlotButton_OnEnter(self);
 		end
+	elseif event == "AZERITE_ITEM_POWER_LEVEL_CHANGED" then
+		local azeriteItemLocation, oldPowerLevel, newPowerLevel = ...;
+		if azeriteItemLocation:IsEqualToEquipmentSlot(self:GetID()) then
+			PaperDollItemSlotButton_Update(self);
+		end
+	elseif event == "AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED" then
+		local item = ...;
+		PaperDollItemSlotButton_Update(self);
 	end
 end
 
-function PaperDollItemSlotButton_OnClick (self, button)
+function PaperDollItemSlotButton_OnClick(self, button)
 	MerchantFrame_ResetRefundItem();
 	if ( button == "LeftButton" ) then
 		local type = GetCursorInfo();
@@ -1555,16 +1592,22 @@ function PaperDollItemSlotButton_OnClick (self, button)
 	end
 end
 
-function PaperDollItemSlotButton_OnModifiedClick (self, button)
+function PaperDollItemSlotButton_OnModifiedClick(self, button)
+	if ( IsModifiedClick("EXPANDITEM") ) then
+		local itemLocation = ItemLocation:CreateFromEquipmentSlot(self:GetID());
+		if C_Item.DoesItemExist(itemLocation) and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) then
+			OpenAzeriteEmpoweredItemUIFromItemLocation(itemLocation);
+		else
+			SocketInventoryItem(self:GetID());
+		end
+		return;
+	end
 	if ( HandleModifiedItemClick(GetInventoryItemLink("player", self:GetID())) ) then
 		return;
 	end
-	if ( IsModifiedClick("SOCKETITEM") ) then
-		SocketInventoryItem(self:GetID());
-	end
 end
 
-function PaperDollItemSlotButton_Update (self)
+function PaperDollItemSlotButton_Update(self)
 	local textureName = GetInventoryItemTexture("player", self:GetID());
 	local cooldown = _G[self:GetName().."Cooldown"];
 	if ( textureName ) then
@@ -1599,16 +1642,19 @@ function PaperDollItemSlotButton_Update (self)
 	end
 
 	local quality = GetInventoryItemQuality("player", self:GetID());
-	SetItemButtonQuality(self, quality, GetInventoryItemID("player", self:GetID()));
+	local suppressOverlays = self.HasPaperDollAzeriteItemOverlay;
+	SetItemButtonQuality(self, quality, GetInventoryItemID("player", self:GetID()), suppressOverlays);
 
 	if (not PaperDollEquipmentManagerPane:IsShown()) then
 		self.ignored = nil;
 	end
 
-	if ( self.ignored and self.ignoreTexture ) then
-		self.ignoreTexture:Show();
-	elseif ( self.ignoreTexture ) then
-		self.ignoreTexture:Hide();
+	if self.ignoreTexture then
+		self.ignoreTexture:SetShown(self.ignored);
+	end
+
+	if self.HasPaperDollAzeriteItemOverlay then
+		self:SetAzeriteItem(self.hasItem and ItemLocation:CreateFromEquipmentSlot(self:GetID()) or nil);
 	end
 
 	PaperDollItemSlotButton_UpdateLock(self);
@@ -1618,17 +1664,11 @@ function PaperDollItemSlotButton_Update (self)
 	MerchantFrame_UpdateCanRepairAll();
 end
 
-function PaperDollItemSlotButton_UpdateLock (self)
-	if ( IsInventoryItemLocked(self:GetID()) ) then
-		--this:SetNormalTexture("Interface\\Buttons\\UI-Quickslot");
-		SetItemButtonDesaturated(self, true);
-	else
-		--this:SetNormalTexture("Interface\\Buttons\\UI-Quickslot2");
-		SetItemButtonDesaturated(self, false);
-	end
+function PaperDollItemSlotButton_UpdateLock(self)
+	SetItemButtonDesaturated(self, IsInventoryItemLocked(self:GetID()));
 end
 
-function PaperDollItemSlotButton_OnEnter (self)
+function PaperDollItemSlotButton_OnEnter(self)
 	self:RegisterEvent("MODIFIER_STATE_CHANGED");
 	EquipmentFlyout_UpdateFlyout(self);
 	if ( not EquipmentFlyout_SetTooltipAnchor(self) ) then
@@ -1651,13 +1691,13 @@ function PaperDollItemSlotButton_OnEnter (self)
 	end
 end
 
-function PaperDollItemSlotButton_OnLeave (self)
+function PaperDollItemSlotButton_OnLeave(self)
 	self:UnregisterEvent("MODIFIER_STATE_CHANGED");
 	GameTooltip:Hide();
 	ResetCursor();
 end
 
-function PaperDollStatTooltip (self)
+function PaperDollStatTooltip(self)
 	if ( not self.tooltip ) then
 		return;
 	end
@@ -1665,6 +1705,9 @@ function PaperDollStatTooltip (self)
 	GameTooltip:SetText(self.tooltip);
 	if ( self.tooltip2 ) then
 		GameTooltip:AddLine(self.tooltip2, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+	end
+	if ( self.tooltip3 ) then
+		GameTooltip:AddLine(self.tooltip3, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 	end
 	GameTooltip:Show();
 end
@@ -1719,7 +1762,7 @@ function PaperDollFormatStat(name, base, posBuff, negBuff)
 	return effectiveText, text;
 end
 
-function CharacterAttackFrame_OnEnter (self)
+function CharacterAttackFrame_OnEnter(self)
 	-- Main hand weapon
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(INVTYPE_WEAPONMAINHAND, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
@@ -1735,7 +1778,7 @@ function CharacterAttackFrame_OnEnter (self)
 	GameTooltip:Show();
 end
 
-function CharacterDamageFrame_OnEnter (self)
+function CharacterDamageFrame_OnEnter(self)
 	-- Main hand weapon
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if ( self.unit == "pet" ) then
@@ -1756,7 +1799,14 @@ function CharacterDamageFrame_OnEnter (self)
 end
 
 function PaperDollFrame_GetArmorReduction(armor, attackerLevel)
-	return GetArmorEffectiveness(armor, attackerLevel) * 100;
+	return C_PaperDollInfo.GetArmorEffectiveness(armor, attackerLevel) * 100;
+end
+
+function PaperDollFrame_GetArmorReductionAgainstTarget(armor)
+	local armorEffectiveness = C_PaperDollInfo.GetArmorEffectivenessAgainstTarget(armor);
+	if ( armorEffectiveness ) then
+		return armorEffectiveness * 100;
+	end
 end
 
 function PaperDollFrame_UpdateStats()
@@ -1812,8 +1862,12 @@ function PaperDollFrame_UpdateStats()
 				end
 				showStat = foundRole;
 			end
+			if ( showStat and stat.showFunc ) then
+				showStat = stat.showFunc();
+			end
 			if ( showStat ) then
 				statFrame.onEnterFunc = nil;
+				statFrame.UpdateTooltip = nil;
 				PAPERDOLL_STATINFO[stat.stat].updateFunc(statFrame, "player");
 				if ( not stat.hideAt or stat.hideAt ~= statFrame.numericValue ) then
 					if ( numStatInCat == 0 ) then
@@ -1870,7 +1924,7 @@ function ComputePetBonus(stat, value)
 	return 0;
 end
 
-function PaperDollFrameItemFlyoutButton_OnClick (self)
+function PaperDollFrameItemFlyoutButton_OnClick(self)
 	if ( self.location == EQUIPMENTFLYOUT_IGNORESLOT_LOCATION ) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		local slot = EquipmentFlyoutFrame.button;
@@ -2019,7 +2073,7 @@ function GearSetButton_UpdateSpecInfo(self)
 	GearSetButton_SetSpecInfo(self, specID);
 end
 
-function GearSetButton_OnClick (self, button, down)
+function GearSetButton_OnClick(self, button, down)
 	if ( self.setID ) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);		-- inappropriately named, but a good sound.
 		PaperDollEquipmentManagerPane.selectedSetID = self.setID;
@@ -2042,7 +2096,7 @@ function GearSetButton_OnClick (self, button, down)
 	StaticPopup_Hide("CONFIRM_OVERWRITE_EQUIPMENT_SET");
 end
 
-function GearSetButton_OnEnter (self)
+function GearSetButton_OnEnter(self)
 	if ( self.setID ) then
 		GameTooltip_SetDefaultAnchor(GameTooltip, self);
 		GameTooltip:SetEquipmentSet(self.setID);
@@ -2059,7 +2113,7 @@ function OnGearManagerDialogPopupButtonCreated(self, newButton)
 	tinsert(self.buttons, newButton);
 end
 
-function GearManagerDialogPopup_OnLoad (self)
+function GearManagerDialogPopup_OnLoad(self)
 	self.buttons = {};
 
 	BuildIconArray(GearManagerDialogPopup, "GearManagerDialogPopupButton", "GearSetPopupButtonTemplate", NUM_GEARSET_ICONS_PER_ROW, NUM_GEARSET_ICON_ROWS, OnGearManagerDialogPopupButtonCreated);
@@ -2078,7 +2132,7 @@ function GearManagerDialogPopup_OnLoad (self)
 end
 
 local GEAR_MANAGER_POPUP_FRAME_MINIMUM_PADDING = 40;
-function GearManagerDialogPopup_AdjustAnchors (self)
+function GearManagerDialogPopup_AdjustAnchors(self)
 	local rightSpace = GetScreenWidth() - PaperDollFrame:GetRight();
 	self.parentLeft = PaperDollFrame:GetLeft();
 	local leftSpace = self.parentLeft;
@@ -2099,7 +2153,7 @@ function GearManagerDialogPopup_AdjustAnchors (self)
 	end
 end
 
-function GearManagerDialogPopup_OnShow (self)
+function GearManagerDialogPopup_OnShow(self)
 	GearManagerDialogPopup_AdjustAnchors(self);
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	self.setID = nil;
@@ -2108,13 +2162,13 @@ function GearManagerDialogPopup_OnShow (self)
 	RefreshEquipmentSetIconInfo();
 end
 
-function GearManagerDialogPopup_OnUpdate (self)
+function GearManagerDialogPopup_OnUpdate(self)
 	if ( PaperDollFrame:GetLeft() ~= self.parentLeft ) then
 		GearManagerDialogPopup_AdjustAnchors(self);
 	end
 end
 
-function GearManagerDialogPopup_OnHide (self)
+function GearManagerDialogPopup_OnHide(self)
 	GearManagerDialogPopup.setID = nil;
 	GearManagerDialogPopup:SetSelection(true, nil);
 	GearManagerDialogPopupEditBox:SetText("");
@@ -2181,7 +2235,7 @@ end
 --[[
 RefreshEquipmentSetIconInfo() counts how many uniquely textured inventory items the player has equipped.
 ]]
-function RefreshEquipmentSetIconInfo ()
+function RefreshEquipmentSetIconInfo()
 	EM_ICON_FILENAMES = {};
 	EM_ICON_FILENAMES[1] = "INV_MISC_QUESTIONMARK";
 	local index = 2;
@@ -2224,7 +2278,7 @@ function GetEquipmentSetIconInfo(index)
 
 end
 
-function GearManagerDialogPopup_Update ()
+function GearManagerDialogPopup_Update()
 	local popup = GearManagerDialogPopup;
 	local buttons = popup.buttons;
 	local offset = FauxScrollFrame_GetOffset(GearManagerDialogPopupScrollFrame) or 0;
@@ -2262,7 +2316,7 @@ function GearManagerDialogPopup_Update ()
 	FauxScrollFrame_Update(GearManagerDialogPopupScrollFrame, ceil(#EM_ICON_FILENAMES / NUM_GEARSET_ICONS_PER_ROW) + 1, NUM_GEARSET_ICON_ROWS, GEARSET_ICON_ROW_HEIGHT );
 end
 
-function GearManagerDialogPopupOkay_Update ()
+function GearManagerDialogPopupOkay_Update()
 	local popup = GearManagerDialogPopup;
 	local button = GearManagerDialogPopupOkay;
 
@@ -2273,7 +2327,7 @@ function GearManagerDialogPopupOkay_Update ()
 	end
 end
 
-function GearManagerDialogPopupOkay_OnClick (self, button, pushed)
+function GearManagerDialogPopupOkay_OnClick(self, button, pushed)
 	local popup = GearManagerDialogPopup;
 	local iconTexture = GetEquipmentSetIconInfo(popup.selectedIcon);
 
@@ -2306,11 +2360,11 @@ function GearManagerDialogPopupOkay_OnClick (self, button, pushed)
 	popup:Hide();
 end
 
-function GearManagerDialogPopupCancel_OnClick ()
+function GearManagerDialogPopupCancel_OnClick()
 	GearManagerDialogPopup:Hide();
 end
 
-function GearSetPopupButton_OnClick (self, button)
+function GearSetPopupButton_OnClick(self, button)
 	local popup = GearManagerDialogPopup;
 	local offset = FauxScrollFrame_GetOffset(GearManagerDialogPopupScrollFrame) or 0;
 	popup.selectedIcon = (offset * NUM_GEARSET_ICONS_PER_ROW) + self:GetID();
@@ -2531,7 +2585,7 @@ function PaperDollEquipmentManagerPane_Update(equipmentSetsDirty)
 	end
 end
 
-function PaperDollEquipmentManagerPaneSaveSet_OnClick (self)
+function PaperDollEquipmentManagerPaneSaveSet_OnClick(self)
 	local selectedSetID = PaperDollEquipmentManagerPane.selectedSetID
 	if (selectedSetID) then
 		local selectedSetName = C_EquipmentSet.GetEquipmentSetInfo(selectedSetID);
@@ -2544,7 +2598,7 @@ function PaperDollEquipmentManagerPaneSaveSet_OnClick (self)
 	end
 end
 
-function PaperDollEquipmentManagerPaneEquipSet_OnClick (self)
+function PaperDollEquipmentManagerPaneEquipSet_OnClick(self)
 	local selectedSetID = PaperDollEquipmentManagerPane.selectedSetID;
 	if ( selectedSetID) then
 		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);			-- inappropriately named, but a good sound.
@@ -2789,4 +2843,150 @@ function PaperDollFrame_HideInventoryFixupComplete(self)
 	end
 
 	MicroButtonPulseStop(CharacterMicroButton);
+end
+
+PaperDollItemsMixin = {};
+
+function PaperDollItemsMixin:OnLoad()
+	self.isDirty = false;
+	self.onAzeriteUIShownCallback = function() self:OnAzeriteUIShown() end;
+end
+
+function PaperDollItemsMixin:MarkDirty()
+	self.isDirty = true;
+end
+
+function PaperDollItemsMixin:OnUpdate()
+	if self.isDirty then
+		self.isDirty = false;
+		self:EvaluateHelpTip();
+	end
+end
+
+local PAPERDOLL_ITEMS_FRAME_EVENTS = {
+	"PLAYER_EQUIPMENT_CHANGED",
+	"AZERITE_ITEM_POWER_LEVEL_CHANGED",
+	"AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED",
+};
+
+function PaperDollItemsMixin:OnShow()
+	self:MarkDirty();
+
+	FrameUtil.RegisterFrameForEvents(self, PAPERDOLL_ITEMS_FRAME_EVENTS);
+
+	if AzeriteEmpoweredItemUI then
+		AzeriteEmpoweredItemUI:RegisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnShow, self.onAzeriteUIShownCallback);
+	else
+		self:RegisterEvent("ADDON_LOADED");
+	end
+end
+
+function PaperDollItemsMixin:OnHide()
+	self:ResetHelpTipFlags();
+
+	FrameUtil.UnregisterFrameForEvents(self, PAPERDOLL_ITEMS_FRAME_EVENTS);
+
+	if AzeriteEmpoweredItemUI then
+		AzeriteEmpoweredItemUI:UnregisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnShow, self.onAzeriteUIShownCallback);
+	end
+	self:UnregisterEvent("ADDON_LOADED");
+end
+
+function PaperDollItemsMixin:OnEvent(event, ...)
+	if event == "AZERITE_ITEM_POWER_LEVEL_CHANGED" then
+		local azeriteItemLocation, oldPowerLevel, newPowerLevel = ...;
+		self:MarkDirty();
+	elseif event == "AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED" then
+		local item = ...;
+		self:MarkDirty();
+	elseif event == "PLAYER_EQUIPMENT_CHANGED" then
+		local equipmentSlot, hasCurrent = ...;
+		self:ResetHelpTipFlags();
+		self:MarkDirty();
+	elseif event == "ADDON_LOADED" then
+		local addOnName = ...;
+		if addOnName == "Blizzard_AzeriteUI" then
+			self.wasAzeriteUIShown = true;
+			self:MarkDirty();
+			AzeriteEmpoweredItemUI:RegisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnShow, self.onAzeriteUIShownCallback);
+		end
+	end
+end
+
+function PaperDollItemsMixin:OnAzeriteUIShown()
+	self.wasAzeriteUIShown = true;
+	self:MarkDirty();
+end
+
+function PaperDollItemsMixin:ResetHelpTipFlags()
+	self.wasHelpTipManuallyClosed = nil;
+	self.wasAzeriteUIShown = nil;
+end
+
+function PaperDollItemsMixin:ShouldShowHelpTip()
+	if self.wasHelpTipManuallyClosed then
+		return false;
+	end
+
+	if self.wasAzeriteUIShown then
+		return false;
+	end
+
+	if AzeriteEmpoweredItemUI and AzeriteEmpoweredItemUI:IsShown() then
+		return false;
+	end
+
+	return true;
+end
+
+function PaperDollItemsMixin:OnHelpTipManuallyClosed()
+	self.wasHelpTipManuallyClosed = true;
+end
+
+function PaperDollItemsMixin:EvaluateHelpTip()
+	if not self:ShouldShowHelpTip() then
+		self.UnspentAzeriteHelpBox:Hide();
+		return;
+	end
+
+	local bestHelpTipButton = self:FindBestHelpTipButton();
+	if bestHelpTipButton then
+		self.UnspentAzeriteHelpBox.Arrow:ClearAllPoints();
+		self.UnspentAzeriteHelpBox:ClearAllPoints();
+		self.UnspentAzeriteHelpBox.Arrow.Glow:ClearAllPoints();
+		self.UnspentAzeriteHelpBox:ClearAllPoints();
+
+		if bestHelpTipButton.IsLeftSide then
+			self.UnspentAzeriteHelpBox.Arrow.Arrow:SetRotation(-math.pi / 2);
+			self.UnspentAzeriteHelpBox.Arrow.Glow:SetRotation(-math.pi / 2);
+
+			self.UnspentAzeriteHelpBox.Arrow:SetPoint("RIGHT", self.UnspentAzeriteHelpBox, "LEFT", 17, 0);
+			self.UnspentAzeriteHelpBox.Arrow.Glow:SetPoint("CENTER", self.UnspentAzeriteHelpBox.Arrow.Arrow, "CENTER", -3, 0);
+			self.UnspentAzeriteHelpBox.CloseButton:SetPoint("TOPRIGHT", self.UnspentAzeriteHelpBox, "TOPRIGHT", 6, 6);
+			self.UnspentAzeriteHelpBox:SetPoint("LEFT", bestHelpTipButton, "RIGHT", 30, 0);
+		else
+			self.UnspentAzeriteHelpBox.Arrow.Arrow:SetRotation(math.pi / 2);
+			self.UnspentAzeriteHelpBox.Arrow.Glow:SetRotation(math.pi / 2);
+
+			self.UnspentAzeriteHelpBox.Arrow:SetPoint("LEFT", self.UnspentAzeriteHelpBox, "RIGHT", -17, 0);
+			self.UnspentAzeriteHelpBox.Arrow.Glow:SetPoint("CENTER", self.UnspentAzeriteHelpBox.Arrow.Arrow, "CENTER", 4, 0);
+			self.UnspentAzeriteHelpBox.CloseButton:SetPoint("TOPRIGHT", self.UnspentAzeriteHelpBox, "TOPRIGHT", 4, 6);
+			self.UnspentAzeriteHelpBox:SetPoint("RIGHT", bestHelpTipButton, "LEFT", -30, 0);
+		end
+
+		self.UnspentAzeriteHelpBox:Show();
+	else
+		self.UnspentAzeriteHelpBox:Hide();
+	end
+end
+
+function PaperDollItemsMixin:FindBestHelpTipButton()
+	for equipSlotIndex, itemLocation in AzeriteUtil.EnumerateEquipedAzeriteEmpoweredItems() do
+		if C_AzeriteEmpoweredItem.HasAnyUnselectedPowers(itemLocation) then
+			-- Right now we're just going to try pointing at the lowest slot index
+			return self.EquipmentSlots[equipSlotIndex];
+		end
+	end
+
+	return nil;
 end

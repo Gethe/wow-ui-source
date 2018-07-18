@@ -14,7 +14,10 @@ MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_CATACLYSM] = 85;
 MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_MISTS_OF_PANDARIA] = 90;
 MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_WARLORDS_OF_DRAENOR] = 100;
 MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEGION] = 110;
-MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_8_0] = 110;
+MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_BATTLE_FOR_AZEROTH] = 120;
+MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_9_0] = 120;
+MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_10_0] = 120;
+MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_11_0] = 120;
 
 NPE_TUTORIAL_COMPLETE_LEVEL = 10;
 
@@ -52,6 +55,45 @@ LIGHTBLUE_FONT_COLOR		= CreateColor(0.53, 0.67, 1.0);
 LIGHTGRAY_FONT_COLOR		= CreateColor(0.6, 0.6, 0.6);
 PAPER_FRAME_EXPANDED_COLOR	= CreateColor(0.929, 0.788, 0.620);
 PAPER_FRAME_COLLAPSED_COLOR = CreateColor(0.827, 0.659, 0.463);
+ARTIFACT_BAR_COLOR 			= CreateColor(0.901, 0.8, 0.601);
+WARBOARD_OPTION_TEXT_COLOR	= CreateColor(0.28, 0.02, 0.02);
+DEFAULT_CHAT_CHANNEL_COLOR	= CreateColor(1.0, 0.753, 0.753);
+DIM_GREEN_FONT_COLOR		= CreateColor(0.251, 0.753, 0.251); -- Used for officer chat in guilds.
+BLACK_FONT_COLOR			= CreateColor(0.0, 0.0, 0.0);
+
+AREA_NAME_FONT_COLOR = CreateColor(1.0, 0.9294, 0.7607);
+AREA_DESCRIPTION_FONT_COLOR = HIGHLIGHT_FONT_COLOR;
+INVASION_FONT_COLOR = CreateColor(0.78, 1, 0);
+INVASION_DESCRIPTION_FONT_COLOR = CreateColor(1, 0.973, 0.035);
+
+FACTION_BAR_COLORS = {
+	[1] = {r = 0.8, g = 0.3, b = 0.22},
+	[2] = {r = 0.8, g = 0.3, b = 0.22},
+	[3] = {r = 0.75, g = 0.27, b = 0},
+	[4] = {r = 0.9, g = 0.7, b = 0},
+	[5] = {r = 0, g = 0.6, b = 0.1},
+	[6] = {r = 0, g = 0.6, b = 0.1},
+	[7] = {r = 0, g = 0.6, b = 0.1},
+	[8] = {r = 0, g = 0.6, b = 0.1},
+};
+
+WORLD_QUEST_ICONS_BY_PROFESSION = {
+	[129] = "worldquest-icon-firstaid",
+	[164] = "worldquest-icon-blacksmithing",
+	[165] = "worldquest-icon-leatherworking",
+	[171] = "worldquest-icon-alchemy",
+	[182] = "worldquest-icon-herbalism",
+	[186] = "worldquest-icon-mining",
+	[202] = "worldquest-icon-engineering",
+	[333] = "worldquest-icon-enchanting",
+	[755] = "worldquest-icon-jewelcrafting",
+	[773] = "worldquest-icon-inscription",
+	[794] = "worldquest-icon-archaeology",
+	[356] = "worldquest-icon-fishing",
+	[185] = "worldquest-icon-cooking",
+	[197] = "worldquest-icon-tailoring",
+	[393] = "worldquest-icon-skinning",
+};
 
 CHAT_FONT_HEIGHTS = {
 	[1] = 12,
@@ -79,12 +121,12 @@ MATERIAL_TITLETEXT_COLOR_TABLE = {
 	["ParchmentLarge"] = {.208, 0, 0}
 };
 
-FRIENDS_BNET_NAME_COLOR = {r=0.510, g=0.773, b=1.0};
-FRIENDS_BNET_BACKGROUND_COLOR = {r=0, g=0.694, b=0.941, a=0.05};
-FRIENDS_WOW_NAME_COLOR = {r=0.996, g=0.882, b=0.361};
-FRIENDS_WOW_BACKGROUND_COLOR = {r=1.0, g=0.824, b=0.0, a=0.05};
-FRIENDS_GRAY_COLOR = {r=0.486, g=0.518, b=0.541};
-FRIENDS_OFFLINE_BACKGROUND_COLOR = {r=0.588, g=0.588, b=0.588, a=0.05};
+FRIENDS_BNET_NAME_COLOR = CreateColor(0.510, 0.773, 1.0);
+FRIENDS_BNET_BACKGROUND_COLOR = CreateColor(0, 0.694, 0.941, 0.05);
+FRIENDS_WOW_NAME_COLOR = CreateColor(0.996, 0.882, 0.361);
+FRIENDS_WOW_BACKGROUND_COLOR = CreateColor(1.0, 0.824, 0.0, 0.05);
+FRIENDS_GRAY_COLOR = CreateColor(0.486, 0.518, 0.541);
+FRIENDS_OFFLINE_BACKGROUND_COLOR = CreateColor(0.588, 0.588, 0.588, 0.05);
 FRIENDS_BNET_NAME_COLOR_CODE = "|cff82c5ff";
 FRIENDS_BROADCAST_TIME_COLOR_CODE = "|cff4381a8"
 FRIENDS_WOW_NAME_COLOR_CODE = "|cfffde05c";
@@ -153,7 +195,7 @@ MAX_POWER_PER_EMBER = 10;
 -- Talent
 --
 SHOW_TALENT_LEVEL = 15;
-SHOW_PVP_TALENT_LEVEL = 100;
+SHOW_PVP_TALENT_LEVEL = 20;
 SHOW_PVP_LEVEL = 10;
 SHOW_LFD_LEVEL = 15;
 SHOW_MASTERY_LEVEL = 78;
@@ -165,8 +207,7 @@ CLASS_TALENT_LEVELS = {
 
 SPECIALIZATION_TAB = 1;
 TALENTS_TAB = 2;
-PVP_TALENTS_TAB = 3;
-NUM_TALENT_FRAME_TABS = 3;
+NUM_TALENT_FRAME_TABS = 2;
 
 --
 -- Specs
@@ -460,12 +501,12 @@ COMBATLOG_FILTER_EVERYTHING =	0xFFFFFFFF;
 CALENDAR_FIRST_WEEKDAY			= 1;		-- 1=SUN 2=MON 3=TUE 4=WED 5=THU 6=FRI 7=SAT
 
 -- Event Types
-CALENDAR_EVENTTYPE_RAID			= 1;
-CALENDAR_EVENTTYPE_DUNGEON		= 2;
-CALENDAR_EVENTTYPE_PVP			= 3;
-CALENDAR_EVENTTYPE_MEETING		= 4;
-CALENDAR_EVENTTYPE_OTHER		= 5;
-CALENDAR_MAX_EVENTTYPE			= CALENDAR_EVENTTYPE_OTHER;
+CALENDAR_EVENTTYPE_RAID			= Enum.CalendarEventType.Raid;
+CALENDAR_EVENTTYPE_DUNGEON		= Enum.CalendarEventType.Dungeon;
+CALENDAR_EVENTTYPE_PVP			= Enum.CalendarEventType.Pvp;
+CALENDAR_EVENTTYPE_MEETING		= Enum.CalendarEventType.Meeting;
+CALENDAR_EVENTTYPE_OTHER		= Enum.CalendarEventType.Other;
+CALENDAR_MAX_EVENTTYPE			= Enum.CalendarEventType.Other;
 
 -- Invite Statuses
 CALENDAR_INVITESTATUS_INVITED		= 1;
@@ -574,8 +615,8 @@ SHOW_SEARCH_BAR_NUM_FRIENDS = 12;
 MIN_CHARACTER_SEARCH = 3;
 
 -- faction
-PLAYER_FACTION_GROUP = { [0] = "Horde", [1] = "Alliance" };
-PLAYER_FACTION_COLORS = { [0] = {r=0.90, g=0.05, b=0.07}, [1]={r=0.29, g=0.33, b=0.91}}
+PLAYER_FACTION_GROUP = { [0] = "Horde", [1] = "Alliance", Horde = 0, Alliance = 1 };
+PLAYER_FACTION_COLORS = { [0] = CreateColor(0.90, 0.05, 0.07), [1] = CreateColor(0.29, 0.33, 0.91) }
 
 -- Panel default size
 PANEL_DEFAULT_WIDTH = 338;
@@ -601,6 +642,22 @@ CALENDAR_WEEKDAY_NAMES = {
 	WEEKDAY_THURSDAY,
 	WEEKDAY_FRIDAY,
 	WEEKDAY_SATURDAY,
+};
+
+-- month names show up differently for full date displays in some languages
+CALENDAR_FULLDATE_MONTH_NAMES = {
+	FULLDATE_MONTH_JANUARY,
+	FULLDATE_MONTH_FEBRUARY,
+	FULLDATE_MONTH_MARCH,
+	FULLDATE_MONTH_APRIL,
+	FULLDATE_MONTH_MAY,
+	FULLDATE_MONTH_JUNE,
+	FULLDATE_MONTH_JULY,
+	FULLDATE_MONTH_AUGUST,
+	FULLDATE_MONTH_SEPTEMBER,
+	FULLDATE_MONTH_OCTOBER,
+	FULLDATE_MONTH_NOVEMBER,
+	FULLDATE_MONTH_DECEMBER,
 };
 
 
@@ -709,6 +766,7 @@ CHALLENGE_MEDAL_TEXTURES_SMALL = {
 -- Player Reporting
 PLAYER_REPORT_TYPE_SPAM = "spam";
 PLAYER_REPORT_TYPE_LANGUAGE = "language";
+PLAYER_REPORT_TYPE_ABUSE = "abuse";
 PLAYER_REPORT_TYPE_BAD_PLAYER_NAME = "badplayername";
 PLAYER_REPORT_TYPE_BAD_GUILD_NAME = "badguildname";
 PLAYER_REPORT_TYPE_CHEATING = "cheater";
@@ -775,16 +833,9 @@ SCENARIO_FLAG_DEPRECATED3			= 0x00000008;
 LUA_WARNING_TREAT_AS_ERROR = 0;
 
 -- Quest Tags
-QUEST_TAG_GROUP = 1;
-QUEST_TAG_PVP = 41;
-QUEST_TAG_RAID = 62;
-QUEST_TAG_DUNGEON = 81;
-QUEST_TAG_LEGENDARY = 83;
-QUEST_TAG_HEROIC = 85;
-QUEST_TAG_RAID10 = 88;
-QUEST_TAG_RAID25 = 89;
-QUEST_TAG_SCENARIO = 98;
-QUEST_TAG_ACCOUNT = 102;
+QUEST_ICONS_FILE = "Interface\\QuestFrame\\QuestTypeIcons";
+QUEST_ICONS_FILE_WIDTH = 128;
+QUEST_ICONS_FILE_HEIGHT = 64;
 
 QUEST_TAG_TCOORDS = {
 	["COMPLETED"] = { 0.140625, 0.28125, 0, 0.28125 },
@@ -794,17 +845,17 @@ QUEST_TAG_TCOORDS = {
 	["STORY"] = { 0.703125, 0.84375, 0.28125, 0.5625 },
 	["ALLIANCE"] = { 0.421875, 0.5625, 0.28125, 0.5625 },
 	["HORDE"] = { 0.5625, 0.703125, 0.28125, 0.5625 },
-	[QUEST_TAG_DUNGEON] = { 0.421875, 0.5625, 0, 0.28125 },
-	[QUEST_TAG_SCENARIO] = { 0.5625, 0.703125, 0, 0.28125 },
-	[QUEST_TAG_ACCOUNT] = { 0.84375, 0.984375, 0, 0.28125 },
-	[QUEST_TAG_LEGENDARY] = { 0, 0.140625, 0.28125, 0.5625 },
-	[QUEST_TAG_GROUP] = { 0.140625, 0.28125, 0.28125, 0.5625 },
-	[QUEST_TAG_PVP] = { 0.28125, 0.421875, 0.28125, 0.5625 },
-	[QUEST_TAG_HEROIC] = { 0, 0.140625, 0.5625, 0.84375 },
+	[Enum.QuestTag.Dungeon] = { 0.421875, 0.5625, 0, 0.28125 },
+	[Enum.QuestTag.Scenario] = { 0.5625, 0.703125, 0, 0.28125 },
+	[Enum.QuestTag.Account] = { 0.84375, 0.984375, 0, 0.28125 },
+	[Enum.QuestTag.Legendary] = { 0, 0.140625, 0.28125, 0.5625 },
+	[Enum.QuestTag.Group] = { 0.140625, 0.28125, 0.28125, 0.5625 },
+	[Enum.QuestTag.Pvp] = { 0.28125, 0.421875, 0.28125, 0.5625 },
+	[Enum.QuestTag.Heroic] = { 0, 0.140625, 0.5625, 0.84375 },
 	-- same texture for all raids
-	[QUEST_TAG_RAID] = { 0.703125, 0.84375, 0, 0.28125 },
-	[QUEST_TAG_RAID10] = { 0.703125, 0.84375, 0, 0.28125 },
-	[QUEST_TAG_RAID25] = { 0.703125, 0.84375, 0, 0.28125 },
+	[Enum.QuestTag.Raid] = { 0.703125, 0.84375, 0, 0.28125 },
+	[Enum.QuestTag.Raid10] = { 0.703125, 0.84375, 0, 0.28125 },
+	[Enum.QuestTag.Raid25] = { 0.703125, 0.84375, 0, 0.28125 },
 };
 
 WORLD_QUEST_TYPE_TCOORDS = {
@@ -888,48 +939,6 @@ LFG_SUBTYPEID_SCENARIO = 4;
 LFG_SUBTYPEID_FLEXRAID = 5;
 LFG_SUBTYPEID_WORLDPVP = 6;
 
--- CONTRIBUTIONS
-CONTRIBUTION_APPEARANCE_DATA = {
-	[Enum.ContributionState.Building] = {
-		stateName = CONTRIBUTION_UNDER_CONSTRUCTION,
-		stateColor = NORMAL_FONT_COLOR,
-		tooltipLine = CONTRIBUTION_POI_TOOLTIP_PERCENTAGE_BUILT,
-		tooltipUseTimeRemaining = false,
-		statusBarAtlas = "_Legionfall_BarFill_UnderConstruction",
-		borderAtlas = "Legionfall_YellowFrame",
-		bannerAtlas = "Legionfall_Banner",
-	},
-
-	[Enum.ContributionState.Active] = {
-		stateName = CONTRIBUTION_ACTIVE,
-		stateColor = GREEN_FONT_COLOR,
-		tooltipLine = CONTRIBUTION_ACTIVE,
-		tooltipUseTimeRemaining = false,
-		statusBarAtlas = "_Legionfall_BarFill_Active",
-		borderAtlas = "Legionfall_GreenFrame",
-		bannerAtlas = "Legionfall_Banner",
-	},
-
-	[Enum.ContributionState.UnderAttack] = {
-		stateName = CONTRIBUTION_UNDER_ATTACK,
-		stateColor = RED_FONT_COLOR,
-		tooltipLine = CONTRIBUTION_POI_TOOLTIP_REMAINING_TIME,
-		tooltipUseTimeRemaining = true,
-		statusBarAtlas = "_Legionfall_BarFill_UnderAttack",
-		borderAtlas = "Legionfall_RedFrame",
-		bannerAtlas = "Legionfall_Banner",
-	},
-
-	[Enum.ContributionState.Destroyed] = {
-		stateName = CONTRIBUTION_DESTROYED,
-		stateColor = DISABLED_FONT_COLOR,
-		tooltipLine = CONTRIBUTION_DESTROYED,
-		statusBarAtlas = "_Legionfall_BarFill_Active",
-		borderAtlas = "Legionfall_GrayFrame",
-		bannerAtlas = "Legionfall_GrayBanner",
-	},
-}
-
 -- TEXTURES
 QUESTION_MARK_ICON = "INTERFACE\\ICONS\\INV_MISC_QUESTIONMARK.BLP";
 
@@ -960,3 +969,12 @@ RELIC_TALENT_LINK_STYLE_POTENTIAL = 2;
 RELIC_TALENT_LINK_STYLE_ACTIVE = 3;
 RELIC_TALENT_LINK_STYLE_UPCOMING = 4;
 RELIC_TALENT_LINK_STYLE_AVAILABLE = 5;
+
+-- TODO: Need to be able to expose this from client...
+Enum.ChatChannelType = {
+	None = 0,
+	Custom = 1,
+	Private_Party = 2,
+	Public_Party = 3,
+	Communities = 4,
+};

@@ -1,63 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 
-	<EditBox name="SearchBoxTemplate" inherits="InputBoxInstructionsTemplate" autoFocus="false" virtual="true">
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture name="$parentSearchIcon" file="Interface\Common\UI-Searchbox-Icon" parentKey="searchIcon">
-					<Size x="14" y="14"/>
-					<Anchors>
-						<Anchor point="LEFT" x="0" y="-2"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button name="$parentClearButton" parentKey="clearButton" hidden="true">
-				<Size x="17" y="17"/>
-				<Anchors>
-					<Anchor point="RIGHT" x="-3" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\FriendsFrame\ClearBroadcastIcon" alpha="0.5" parentKey="texture">
-							<Size>
-								<AbsDimension x="17" y="17"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter>
-						self.texture:SetAlpha(1.0);
-					</OnEnter>
-					<OnLeave>
-						self.texture:SetAlpha(0.5);
-					</OnLeave>
-					<OnMouseDown>
-						if self:IsEnabled() then
-							self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 1, -1);
-						end
-					</OnMouseDown>
-					<OnMouseUp>
-						self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
-					</OnMouseUp>
-					<OnClick function="SearchBoxTemplateClearButton_OnClick"/>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnLoad function="SearchBoxTemplate_OnLoad"/>
-			<OnEscapePressed function="EditBox_ClearFocus"/>
-			<OnEnterPressed function="EditBox_ClearFocus"/>
-			<OnEditFocusLost function="SearchBoxTemplate_OnEditFocusLost"/>
-			<OnEditFocusGained function="SearchBoxTemplate_OnEditFocusGained"/>
-			<OnTextChanged function="SearchBoxTemplate_OnTextChanged"/>
-		</Scripts>
-	</EditBox>
 	<EditBox name="BagSearchBoxTemplate" inherits="SearchBoxTemplate" autoFocus="false" virtual="true">
 		<Scripts>
 			<OnHide function="BagSearch_OnHide"/>
@@ -65,29 +8,6 @@
 			<OnChar function="BagSearch_OnChar"/>
 		</Scripts>
 	</EditBox>
-	<CheckButton name="UICheckButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="32" y="32"/>
-		</Size>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontNormalSmall" parentKey="text">
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="-2" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
-	</CheckButton>
 	<Button name="GameMenuButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="144" y="21"/>
@@ -1661,28 +1581,28 @@
 	<Frame name="EtherealFrameTemplate" inherits="PortraitFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-2">
-				<Texture name="$parentCornerTL" file="Interface\Transmogrify\Textures.png">
+				<Texture name="$parentCornerTL" parentKey="CornerTL" file="Interface\Transmogrify\Textures.png">
 					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-2" y="-8"/>
 					</Anchors>
 					<TexCoords left="0.00781250" right="0.50781250" top="0.00195313" bottom="0.12695313"/>
 				</Texture>
-				<Texture name="$parentCornerTR" file="Interface\Transmogrify\Textures.png">
+				<Texture name="$parentCornerTR" parentKey="CornerTR" file="Interface\Transmogrify\Textures.png">
 					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="0" y="-8"/>
 					</Anchors>
 					<TexCoords left="0.00781250" right="0.50781250" top="0.38476563" bottom="0.50781250"/>
 				</Texture>
-				<Texture name="$parentCornerBL" file="Interface\Transmogrify\Textures.png">
+				<Texture name="$parentCornerBL" parentKey="CornerBL" file="Interface\Transmogrify\Textures.png">
 					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="-2" y="16"/>
 					</Anchors>
 					<TexCoords left="0.00781250" right="0.50781250" top="0.25781250" bottom="0.38085938"/>
 				</Texture>
-				<Texture name="$parentCornerBR" file="Interface\Transmogrify\Textures.png">
+				<Texture name="$parentCornerBR" parentKey="CornerBR" file="Interface\Transmogrify\Textures.png">
 					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="0" y="16"/>
@@ -1734,37 +1654,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-	</Frame>
-
-
-<!--
-*******************************************************************************
-	TruncatedButtonTemplate
-	This button template will truncate any text that goes out of the button. If text is truncated,
-	the button will have a tooltip with the full text.
-*******************************************************************************
--->
-	<Button name="TruncatedButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
-		<Scripts>
-			<OnSizeChanged>
-				local text = _G[self:GetName().."Text"];
-				text:SetWidth(self:GetWidth() - 5);
-				text:SetHeight(self:GetHeight());
-			</OnSizeChanged>
-			<OnEnter>
-				TruncatedButton_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				TruncatedButton_OnLeave(self);
-			</OnLeave>
-		</Scripts>
-	</Button>
-	
-	<Frame name="TruncatedTooltipScriptTemplate" virtual="true">
-		<Scripts>
-			<OnEnter function="TruncatedTooltipScript_OnEnter"/>
-			<OnLeave function="TruncatedTooltipScript_OnLeave"/>
-		</Scripts>
 	</Frame>
 
 	<Frame name="HorizontalBarTemplate" virtual="true">
@@ -1822,7 +1711,7 @@
 						<Anchor point="TOPLEFT"  x="10" y="-10"/>
 						<Anchor point="BOTTOMRIGHT"  x="-10" y="10"/>
 					</Anchors>
-					<Color r="0" g="0" b="0" a="0.5"/>
+					<Color r="0" g="0" b="0" a="0.9"/>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="-5">
@@ -2207,13 +2096,13 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentBigIPulse" file="Interface\common\help-i" alphaMode="ADD" hidden="true">
+				<Texture parentKey="BigIPulse" file="Interface\common\help-i" alphaMode="ADD" hidden="true">
 					<Size x="46" y="46"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentRingPulse" file="Interface\TutorialFrame\minimap-glow" alphaMode="ADD" hidden="true">
+				<Texture parentKey="RingPulse" file="Interface\TutorialFrame\minimap-glow" alphaMode="ADD" hidden="true">
 					<Size x="52" y="52"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
@@ -2241,8 +2130,8 @@
 		</HighlightTexture>
 		<Animations>
 			<AnimationGroup parentKey="Pulse" looping="BOUNCE">
-				<Alpha target="$parentBigIPulse" fromAlpha="0.75" toAlpha="0" duration="1.0" smoothing="IN_OUT" order="1"/>
-				<Alpha target="$parentRingPulse" fromAlpha="0.5" toAlpha="0" duration="1.0" smoothing="IN_OUT" order="1"/>
+				<Alpha childKey="BigIPulse" fromAlpha="0.75" toAlpha="0" duration="1.0" smoothing="IN_OUT" order="1"/>
+				<Alpha childKey="RingPulse" fromAlpha="0.5" toAlpha="0" duration="1.0" smoothing="IN_OUT" order="1"/>
 			</AnimationGroup>
 		</Animations>
 	</Button>
@@ -2410,122 +2299,6 @@
     Utility Frames
 *******************************************************************************
 -->
-
-	<ScrollFrame name="InputScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
-		<KeyValues>
-			<!--
-			<KeyValue key="maxLetters" value="127" type="number"/>
-			<KeyValue key="instructions" value="INSTRUCTION_TEXT" type="global"/>
-			<KeyValue key="hideCharCount" value="false" type="boolean"/>
-			-->
-		</KeyValues>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="TopLeftTex" file="Interface\Common\Common-Input-Border-TL">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-5" y="5"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="TopRightTex" file="Interface\Common\Common-Input-Border-TR">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="5" y="5"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="TopTex" file="Interface\Common\Common-Input-Border-T">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftTex" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TopRightTex" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BottomLeftTex" file="Interface\Common\Common-Input-Border-BL">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-5" y="-5"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BottomRightTex" file="Interface\Common\Common-Input-Border-BR">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="5" y="-5"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BottomTex" file="Interface\Common\Common-Input-Border-B">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.BottomLeftTex" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightTex" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="LeftTex" file="Interface\Common\Common-Input-Border-L">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftTex" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomLeftTex" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="RightTex" file="Interface\Common\Common-Input-Border-R">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.TopRightTex" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightTex" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="MiddleTex" file="Interface\Common\Common-Input-Border-M">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.LeftTex" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightTex" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString inherits="GameFontDisableLarge" parentKey="CharCount">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-6" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad function="InputScrollFrame_OnLoad"/>
-			<OnMouseDown>
-				self.EditBox:SetFocus();
-			</OnMouseDown>
-		</Scripts>
-		<ScrollChild>
-			<EditBox parentKey="EditBox" multiLine="true" countInvisibleLetters="true" autoFocus="false">
-				<Size x="1" y="1"/>
-				<Anchors>
-					<Anchor point="TOPLEFT"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BORDER">
-						<FontString parentKey="Instructions" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="TOP">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
-							</Anchors>
-							<Color r="0.35" g="0.35" b="0.35"/>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnTabPressed>
-						if ( self.nextEditBox ) then
-							self.nextEditBox:SetFocus();
-						end
-					</OnTabPressed>
-					<OnTextChanged function="InputScrollFrame_OnTextChanged"/>
-					<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
-					<OnUpdate>
-						ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
-					</OnUpdate>
-					<OnEscapePressed>
-						self:ClearFocus();
-					</OnEscapePressed>
-				</Scripts>
-				<FontString inherits="GameFontHighlightSmall"/>
-			</EditBox>
-		</ScrollChild>
-	</ScrollFrame>
-
 	<Frame name="InlineHyperlinkFrameTemplate" hyperlinksEnabled="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="tooltipFrame" value="GameTooltip" type="global"/>
@@ -2536,4 +2309,19 @@
 			<OnHyperlinkClick function="InlineHyperlinkFrame_OnClick"/>
 		</Scripts>
 	</Frame>
+
+	<Button name="UIExpandingButtonTemplate" mixin="UIExpandingButtonMixin" inherits="UIPanelSquareButton" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="-5" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
 </Ui>

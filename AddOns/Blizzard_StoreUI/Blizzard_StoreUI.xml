@@ -335,9 +335,6 @@
 		</EditBox>
 		<Button name="StoreDropDownMenuButtonTemplate" virtual="true" parentArray="Buttons">
 			<Size x="100" y="16"/>
-			<Scripts>
-				<OnLoad function="StoreDropDownMenuMenuButton_OnLoad"/>
-			</Scripts>
 			<Layers>
 				<Layer level="ARTWORK">
 					<Texture parentKey="Check" file="Interface\Common\UI-DropDownRadioChecks" hidden="true">
@@ -386,6 +383,9 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" x="16" y="-16"/>
 					</Anchors>
+					<Scripts>
+						<OnLoad function="StoreDropDownMenuMenuButton_OnLoad"/>
+					</Scripts>
 				</Button>
 			</Frames>
 			<Scripts>
@@ -1535,22 +1535,6 @@
 					</Texture>
 				</Layer>
 			</Layers>
-			<Scripts>
-				<!--
-							WARNING: ScopeModifiers don't work for templates!
-				These functions will fail to load properly if this template is instantiated outside
-				of the initial LoadAddon call becuase we'll have lost the scoped modifiers and the
-				reference to the addon environment if we instantiate them later.
-				
-				Except for the first category, which is declared in .xml, we have to manually set these
-				scripts after the frame has been instantiated in Lua for them to work properly.
-
-				-->
-				
-				<OnEnter function="StoreCategory_OnEnter" />
-				<OnLeave function="StoreCategory_OnLeave" />
-				<OnClick function="StoreCategory_OnClick" />
-			</Scripts>
 		</Button>
 		<Frame name="GoldBorderFrameTemplate" virtual="true">
 			<Size x="398" y="556" />
@@ -2141,6 +2125,22 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" relativePoint="TOPLEFT" x="9" y="-20" />
 					</Anchors>
+					<Scripts>
+						<!--
+									WARNING: ScopeModifiers don't work for templates!
+						These functions will fail to load properly if this template is instantiated outside
+						of the initial LoadAddon call becuase we'll have lost the scoped modifiers and the
+						reference to the addon environment if we instantiate them later.
+				
+						Except for the first category, which is declared in .xml, we have to manually set these
+						scripts after the frame has been instantiated in Lua for them to work properly.
+
+						-->
+				
+						<OnEnter function="StoreCategory_OnEnter" />
+						<OnLeave function="StoreCategory_OnLeave" />
+						<OnClick function="StoreCategory_OnClick" />
+					</Scripts>
 				</Button>
 				<Button parentArray="ProductCards" inherits="StoreProductCardTemplate">
 					<Anchors>

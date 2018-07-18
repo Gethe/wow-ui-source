@@ -1,0 +1,122 @@
+local AchievementInfo =
+{
+	Name = "AchievementInfo",
+	Type = "System",
+	Namespace = "C_AchievementInfo",
+
+	Functions =
+	{
+		{
+			Name = "SetPortraitTexture",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "textureObject", Type = "table", Nilable = false },
+			},
+		},
+	},
+
+	Events =
+	{
+		{
+			Name = "AchievementEarned",
+			Type = "Event",
+			LiteralName = "ACHIEVEMENT_EARNED",
+			Payload =
+			{
+				{ Name = "achievementID", Type = "number", Nilable = false },
+				{ Name = "alreadyEarned", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "AchievementPlayerName",
+			Type = "Event",
+			LiteralName = "ACHIEVEMENT_PLAYER_NAME",
+			Payload =
+			{
+				{ Name = "achievementID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "AchievementSearchUpdated",
+			Type = "Event",
+			LiteralName = "ACHIEVEMENT_SEARCH_UPDATED",
+		},
+		{
+			Name = "CriteriaComplete",
+			Type = "Event",
+			LiteralName = "CRITERIA_COMPLETE",
+			Payload =
+			{
+				{ Name = "criteriaID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "CriteriaEarned",
+			Type = "Event",
+			LiteralName = "CRITERIA_EARNED",
+			Payload =
+			{
+				{ Name = "achievementID", Type = "number", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CriteriaUpdate",
+			Type = "Event",
+			LiteralName = "CRITERIA_UPDATE",
+		},
+		{
+			Name = "InspectAchievementReady",
+			Type = "Event",
+			LiteralName = "INSPECT_ACHIEVEMENT_READY",
+			Payload =
+			{
+				{ Name = "guid", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ReceivedAchievementList",
+			Type = "Event",
+			LiteralName = "RECEIVED_ACHIEVEMENT_LIST",
+		},
+		{
+			Name = "ReceivedAchievementMemberList",
+			Type = "Event",
+			LiteralName = "RECEIVED_ACHIEVEMENT_MEMBER_LIST",
+			Payload =
+			{
+				{ Name = "achievementID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "TrackedAchievementListChanged",
+			Type = "Event",
+			LiteralName = "TRACKED_ACHIEVEMENT_LIST_CHANGED",
+			Payload =
+			{
+				{ Name = "achievementID", Type = "number", Nilable = true },
+				{ Name = "added", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "TrackedAchievementUpdate",
+			Type = "Event",
+			LiteralName = "TRACKED_ACHIEVEMENT_UPDATE",
+			Payload =
+			{
+				{ Name = "achievementID", Type = "number", Nilable = false },
+				{ Name = "criteriaID", Type = "number", Nilable = true },
+				{ Name = "elapsed", Type = "number", Nilable = true },
+				{ Name = "duration", Type = "number", Nilable = true },
+			},
+		},
+	},
+
+	Tables =
+	{
+	},
+};
+
+APIDocumentation:AddDocumentationTable(AchievementInfo);

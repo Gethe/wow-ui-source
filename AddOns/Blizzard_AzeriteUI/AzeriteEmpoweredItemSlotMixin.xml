@@ -1,0 +1,21 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="AzeriteEmpoweredItemSlotTemplate" parentArray="Slots" mixin="AzeriteEmpoweredItemSlotMixin" virtual="true">
+		<Size x="50" y="50" />
+		<Frames>
+			<ModelScene parentKey="LockedInEffect" drawLayer="OVERLAY" inherits="NonInteractableModelSceneMixinTemplate">
+				<Size x="500" y="500" />
+				<Anchors>
+					<Anchor point="CENTER" />
+				</Anchors>
+			</ModelScene>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+			<OnEvent method="OnEvent" />
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave" />
+		</Scripts>
+	</Frame>
+</Ui>

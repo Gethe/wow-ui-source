@@ -742,13 +742,17 @@ function HeirloomsMixin:UpdateClassFilterDropDownText()
 	if classFilter == NO_CLASS_FILTER then
 		text = ALL_CLASSES;
 	else
-		local className, classTag = GetClassInfoByID(classFilter);
-		local classColorStr = RAID_CLASS_COLORS[classTag].colorStr;
+		local classInfo = C_CreatureInfo.GetClassInfo(classFilter);
+		if not classInfo then
+			return;
+		end
+		
+		local classColorStr = RAID_CLASS_COLORS[classInfo.classFile].colorStr;
 		if specFilter == NO_SPEC_FILTER then
-			text = HEIRLOOMS_CLASS_FILTER_FORMAT:format(classColorStr, className);
+			text = HEIRLOOMS_CLASS_FILTER_FORMAT:format(classColorStr, classInfo.className);
 		else
 			local specName = GetSpecializationNameForSpecID(specFilter);
-			text = HEIRLOOMS_CLASS_SPEC_FILTER_FORMAT:format(classColorStr, className, specName);
+			text = HEIRLOOMS_CLASS_SPEC_FILTER_FORMAT:format(classColorStr, classInfo.className, specName);
 		end
 	end
 	UIDropDownMenu_SetText(self.classDropDown, text);
@@ -797,7 +801,13 @@ do
 		
 			local classDisplayName, classTag, classID;
 			if filterClassID ~= NO_CLASS_FILTER then
-				classDisplayName, classTag, classID = GetClassInfoByID(filterClassID);
+				classID = filterClassID;
+			
+				local classInfo = C_CreatureInfo.GetClassInfo(filterClassID);
+				if classInfo then
+					classDisplayName = classInfo.className;
+					classTag = classInfo.classFile;
+				end
 			else
 				classDisplayName, classTag, classID = UnitClass("player");
 			end

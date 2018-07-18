@@ -9,7 +9,12 @@ HUNTER_TRACKING = 1;
 TOWNSFOLK = 2;
 
 GARRISON_ALERT_CONTEXT_BUILDING = 1;
-GARRISON_ALERT_CONTEXT_MISSION = { [LE_FOLLOWER_TYPE_GARRISON_6_0] = 2, [LE_FOLLOWER_TYPE_SHIPYARD_6_2] = 4, [LE_FOLLOWER_TYPE_GARRISON_7_0] = 5 };
+GARRISON_ALERT_CONTEXT_MISSION = {
+	[LE_FOLLOWER_TYPE_GARRISON_6_0] = 2,
+	[LE_FOLLOWER_TYPE_SHIPYARD_6_2] = 4,
+	[LE_FOLLOWER_TYPE_GARRISON_7_0] = 5,
+	[LE_FOLLOWER_TYPE_GARRISON_8_0] = 6,
+};
 GARRISON_ALERT_CONTEXT_INVASION = 3;
 
 LFG_EYE_TEXTURES = { };
@@ -22,7 +27,6 @@ function Minimap_OnLoad(self)
 	self:RegisterEvent("MINIMAP_PING");
 	self:RegisterEvent("MINIMAP_UPDATE_ZOOM");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
-	self:RegisterEvent("FOCUS_TARGET_CHANGED");
 end
 
 function ToggleMinimap()
@@ -63,40 +67,40 @@ function Minimap_SetTooltip( pvpType, factionName )
 		local zoneName = GetZoneText();
 		local subzoneName = GetSubZoneText();
 		if ( subzoneName == zoneName ) then
-			subzoneName = "";	
+			subzoneName = "";
 		end
 		GameTooltip:AddLine( zoneName, 1.0, 1.0, 1.0 );
 		if ( pvpType == "sanctuary" ) then
-			GameTooltip:AddLine( subzoneName, 0.41, 0.8, 0.94 );	
+			GameTooltip:AddLine( subzoneName, 0.41, 0.8, 0.94 );
 			GameTooltip:AddLine(SANCTUARY_TERRITORY, 0.41, 0.8, 0.94);
 		elseif ( pvpType == "arena" ) then
-			GameTooltip:AddLine( subzoneName, 1.0, 0.1, 0.1 );	
+			GameTooltip:AddLine( subzoneName, 1.0, 0.1, 0.1 );
 			GameTooltip:AddLine(FREE_FOR_ALL_TERRITORY, 1.0, 0.1, 0.1);
 		elseif ( pvpType == "friendly" ) then
 			if (factionName and factionName ~= "") then
-				GameTooltip:AddLine( subzoneName, 0.1, 1.0, 0.1 );	
+				GameTooltip:AddLine( subzoneName, 0.1, 1.0, 0.1 );
 				GameTooltip:AddLine(format(FACTION_CONTROLLED_TERRITORY, factionName), 0.1, 1.0, 0.1);
 			end
 		elseif ( pvpType == "hostile" ) then
 			if (factionName and factionName ~= "") then
-				GameTooltip:AddLine( subzoneName, 1.0, 0.1, 0.1 );	
+				GameTooltip:AddLine( subzoneName, 1.0, 0.1, 0.1 );
 				GameTooltip:AddLine(format(FACTION_CONTROLLED_TERRITORY, factionName), 1.0, 0.1, 0.1);
 			end
 		elseif ( pvpType == "contested" ) then
-			GameTooltip:AddLine( subzoneName, 1.0, 0.7, 0.0 );	
+			GameTooltip:AddLine( subzoneName, 1.0, 0.7, 0.0 );
 			GameTooltip:AddLine(CONTESTED_TERRITORY, 1.0, 0.7, 0.0);
 		elseif ( pvpType == "combat" ) then
-			GameTooltip:AddLine( subzoneName, 1.0, 0.1, 0.1 );	
+			GameTooltip:AddLine( subzoneName, 1.0, 0.1, 0.1 );
 			GameTooltip:AddLine(COMBAT_ZONE, 1.0, 0.1, 0.1);
 		else
-			GameTooltip:AddLine( subzoneName, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b );	
+			GameTooltip:AddLine( subzoneName, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b );
 		end
 		GameTooltip:Show();
 	end
 end
 
 function Minimap_OnEvent(self, event, ...)
-	if ( event == "PLAYER_TARGET_CHANGED" or event == "FOCUS_TARGET_CHANGED" ) then
+	if ( event == "PLAYER_TARGET_CHANGED" ) then
 		self:UpdateBlips();
 	elseif ( event == "MINIMAP_PING" ) then
 		local arg1, arg2, arg3 = ...;
@@ -219,13 +223,13 @@ end
 function MinimapMailFrameUpdate()
 	local sender1,sender2,sender3 = GetLatestThreeSenders();
 	local toolText;
-	
+
 	if( sender1 or sender2 or sender3 ) then
 		toolText = HAVE_MAIL_FROM;
 	else
 		toolText = HAVE_MAIL;
 	end
-	
+
 	if( sender1 ) then
 		toolText = toolText.."\n"..sender1;
 	end
@@ -274,8 +278,8 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 	local count = GetNumTrackingTypes();
 	local info;
 	local _, class = UnitClass("player");
-	
-	if (level == 1) then 
+
+	if (level == 1) then
 		info = UIDropDownMenu_CreateInfo();
 		info.text=MINIMAP_TRACKING_NONE;
 		info.checked = MiniMapTrackingDropDown_IsNoTrackingActive;
@@ -285,7 +289,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 		info.isNotRadio = true;
 		info.keepShownOnClick = true;
 		UIDropDownMenu_AddButton(info, level);
-		
+
 		if (class == "HUNTER") then --only show hunter dropdown for hunters
 			numTracking = 0;
 			-- make sure there are at least two options in dropdown
@@ -295,7 +299,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 					numTracking = numTracking + 1;
 				end
 			end
-			if (numTracking > 1) then 
+			if (numTracking > 1) then
 				info.text = HUNTER_TRACKING_TEXT;
 				info.func =  nil;
 				info.notCheckable = true;
@@ -305,7 +309,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 				UIDropDownMenu_AddButton(info, level)
 			end
 		end
-		
+
 		info.text = TOWNSFOLK_TRACKING_TEXT;
 		info.func =  nil;
 		info.notCheckable = true;
@@ -316,7 +320,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 	end
 
 	for id=1, count do
-		name, texture, active, category, nested  = GetTrackingInfo(id);
+		name, texture, active, category, nested = GetTrackingInfo(id);
 		info = UIDropDownMenu_CreateInfo();
 		info.text = name;
 		info.checked = MiniMapTrackingDropDownButton_IsActive;
@@ -336,16 +340,16 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 			info.tCoordTop = 0;
 			info.tCoordBottom = 1;
 		end
-		if (level == 1 and 
+		if (level == 1 and
 			(nested < 0 or -- this tracking shouldn't be nested
-			(nested == HUNTER_TRACKING and class ~= "HUNTER") or 
+			(nested == HUNTER_TRACKING and class ~= "HUNTER") or
 			(numTracking == 1 and category == "spell"))) then -- this is a hunter tracking ability, but you only have one
 			UIDropDownMenu_AddButton(info, level);
 		elseif (level == 2 and (nested == TOWNSFOLK or (nested == HUNTER_TRACKING and class == "HUNTER")) and nested == UIDROPDOWNMENU_MENU_VALUE) then
 			UIDropDownMenu_AddButton(info, level);
 		end
 	end
-	
+
 end
 
 function MiniMapTrackingShineFadeIn()
@@ -364,7 +368,7 @@ end
 --
 -- Dungeon Difficulty
 --
-						
+
 local IS_GUILD_GROUP;
 
 function MiniMapInstanceDifficulty_OnEvent(self, event, ...)
@@ -572,11 +576,11 @@ function GarrisonLandingPageMinimapButton_UpdateIcon(self)
 	if (garrisonType == LE_GARRISON_TYPE_6_0) then
 		self.faction = UnitFactionGroup("player");
 		if ( self.faction == "Horde" ) then
-			self:GetNormalTexture():SetAtlas("GarrLanding-MinimapIcon-Horde-Up", true)
-			self:GetPushedTexture():SetAtlas("GarrLanding-MinimapIcon-Horde-Down", true)
+			self:GetNormalTexture():SetAtlas("GarrLanding-MinimapIcon-Horde-Up", true);
+			self:GetPushedTexture():SetAtlas("GarrLanding-MinimapIcon-Horde-Down", true);
 		else
-			self:GetNormalTexture():SetAtlas("GarrLanding-MinimapIcon-Alliance-Up", true)
-			self:GetPushedTexture():SetAtlas("GarrLanding-MinimapIcon-Alliance-Down", true)
+			self:GetNormalTexture():SetAtlas("GarrLanding-MinimapIcon-Alliance-Up", true);
+			self:GetPushedTexture():SetAtlas("GarrLanding-MinimapIcon-Alliance-Down", true);
 		end
 		self.title = GARRISON_LANDING_PAGE_TITLE;
 		self.description = MINIMAP_GARRISON_LANDING_PAGE_TOOLTIP;
@@ -586,6 +590,27 @@ function GarrisonLandingPageMinimapButton_UpdateIcon(self)
 		self:GetPushedTexture():SetAtlas("legionmission-landingbutton-"..className.."-down", true);
 		self.title = ORDER_HALL_LANDING_PAGE_TITLE;
 		self.description = MINIMAP_ORDER_HALL_LANDING_PAGE_TOOLTIP;
+	elseif (garrisonType == LE_GARRISON_TYPE_8_0) then
+		self.faction = UnitFactionGroup("player");
+		if ( self.faction == "Horde" ) then
+			local _, width, height = GetAtlasInfo("bfa-landingbutton-horde-up");
+			self:SetSize(width, height);
+
+			self:GetNormalTexture():SetAtlas("bfa-landingbutton-horde-up", true);
+			self:GetPushedTexture():SetAtlas("bfa-landingbutton-horde-down", true);
+			self:GetHighlightTexture():SetAtlas("bfa-landingbutton-horde-diamondhighlight", true);
+			self.LoopingGlow:SetAtlas("bfa-landingbutton-horde-diamondglow", true);
+		else
+			local _, width, height = GetAtlasInfo("bfa-landingbutton-alliance-up");
+			self:SetSize(width, height);
+
+			self:GetNormalTexture():SetAtlas("bfa-landingbutton-alliance-up", true);
+			self:GetPushedTexture():SetAtlas("bfa-landingbutton-alliance-down", true);
+			self:GetHighlightTexture():SetAtlas("bfa-landingbutton-alliance-shieldhighlight", true);
+			self.LoopingGlow:SetAtlas("bfa-landingbutton-alliance-shieldglow", true);
+		end
+		self.title = GARRISON_TYPE_8_0_LANDING_PAGE_TITLE;
+		self.description = GARRISON_TYPE_8_0_LANDING_PAGE_TOOLTIP;
 	end
 end
 
@@ -670,7 +695,7 @@ function GarrisonMinimapShipmentCreated_ShowPulse(self, isTroop)
     else
         text = GARRISON_LANDING_SHIPMENT_STARTED_ALERT;
     end
-    
+
 	self.AlertText:SetText(text);
 	GarrisonMinimap_Justify(self.AlertText);
 	self.MinimapAlertAnim:Play();

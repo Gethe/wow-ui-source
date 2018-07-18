@@ -33,7 +33,15 @@
 			<Layer level="OVERLAY">
 				<Texture parentKey="EarnedStar" atlas="tradeskills-star"/>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="FlashStar" atlas="tradeskills-star-off" alpha=".7" alphaMode="ADD" hidden="true"/>
+			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Pulse" looping="BOUNCE">
+				<Alpha childKey="FlashStar" fromAlpha="0" toAlpha="1" duration="0.4"/>
+			</AnimationGroup>
+		</Animations>
 	</Frame>
 
 	<Button name="TradeSkillGuildCrafterButtonTemplate" virtual="true">
@@ -301,13 +309,21 @@
 								<Texture parentKey="IconBorder">
 									<Size x="47" y="47"/>
 									<Anchors>
-										<Anchor point="CENTER" x="0"/>
+										<Anchor point="CENTER"/>
 									</Anchors>
 								</Texture>
 								<Texture parentKey="ResultBorder" atlas="tradeskills-iconborder">
 									<Size x="51" y="51"/>
 									<Anchors>
-										<Anchor point="CENTER" x="0"/>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<Texture parentKey="IconOverlay" hidden="true">
+									<Size x="47" y="47"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -413,7 +429,7 @@
 							<KeyValue key="reagentIndex" type="number" value="7"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Reagent6" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Reagent5" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 						</Anchors>
 					</Button>
 					<Button parentKey="Reagent8" inherits="TradeSkillReagentTemplate">
@@ -431,6 +447,7 @@
 			<OnLoad method="OnLoad" />
 			<OnUpdate method="OnUpdate" />
 			<OnEvent method="OnEvent" />
+			<OnHide method="OnHide" />
 		</Scripts>
 	</ScrollFrame>
 </Ui>

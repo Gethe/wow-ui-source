@@ -11,7 +11,7 @@
 			
 			<Layer level="ARTWORK">
 				<FontString parentKey="Text" inherits="NumberFont_Shadow_Small" justifyH="LEFT" justifyV="MIDDLE" wordwrap="false">
-					<Size x="120" />
+					<Size x="240" />
 					<Anchors>
 						<Anchor point="TOPLEFT" x="5" />
 						<Anchor point="BOTTOMLEFT" x="5" />

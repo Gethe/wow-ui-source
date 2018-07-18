@@ -276,6 +276,11 @@
 							</Layer>
 						</Layers>
 						<Frames>
+							<Frame parentKey="WidgetContainer" hidden="true">
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+							</Frame>
 							<Button parentKey="RewardButton" hidden="true">
 								<Size x="48" y="48"/>
 								<Anchors>
@@ -517,6 +522,57 @@
 				</Frames>
 			</Frame>
 		</ScrollChild>
+		<Frames>
+			<Frame parentKey="WarfrontHelpBox" inherits="GlowBoxTemplate" hidden="true">
+				<Size x="220" y="65"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeKey="$parent.ScrollContents.ScenarioStageBlock" x="-29" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="BigText" inherits="GameFontHighlight" justifyH="LEFT" text="WARFRONT_TUTORIAL_RESOURCES">
+							<Size x="176" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" x="-1" y="-12"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="ArrowRight" inherits="HelpPlateArrowDOWN">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="-1" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="ArrowGlowRight" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="1" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="6" y="6"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:GetParent():Hide();
+								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARFRONT_RESOURCES, true);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						SetClampedTextureRotation(self.ArrowRight, 270);
+						SetClampedTextureRotation(self.ArrowGlowRight, 270);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad function="ScenarioBlocksFrame_OnLoad"/>
 			<OnEvent function="ScenarioBlocksFrame_OnEvent"/>
@@ -682,7 +738,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="ItemTooltip" inherits="EmbeddedItemTooltip">
+			<Frame parentKey="ItemTooltip" inherits="InternalEmbeddedItemTooltipTemplate">
 				<KeyValues>
 					<KeyValue key="leftPadding" value="8" type="number"/>
 					<KeyValue key="layoutIndex" value="2" type="number"/>

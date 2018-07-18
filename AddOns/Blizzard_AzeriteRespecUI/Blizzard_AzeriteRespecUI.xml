@@ -1,0 +1,176 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_AzeriteRespecUI.lua"/>
+
+	<Frame name="AzeriteRespecFrame" inherits="EtherealFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true" mixin="AzeriteRespecMixin" hidden="true">
+		<Size x="343" y="261"/>
+
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-4">
+				<Texture parentKey="Background" atlas="azeritereforger-background" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" y="35" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<Button parentKey="ItemSlot" mixin="AzeriteRespecItemSlotMixin">
+				<Size x="44" y="44" />
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Background" />
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Icon" hidden="true">
+							<Size x="42" y="42" />
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="GlowOverlay" atlas="azeritereforger-glow" useAtlasSize="true" alphaMode="ADD" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad" />
+					<OnClick method="OnClick" />
+					<OnDragStart method="OnDragStart" />
+					<OnReceiveDrag method="OnReceiveDrag" />
+					<OnEnter method="OnMouseEnter" />
+					<OnLeave method="OnMouseLeave" /> 
+				</Scripts>
+			</Button>
+
+
+
+			<Frame parentKey="ButtonFrame">
+				<Size x="0" y="35"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="AzeriteRespecButton" mixin="AzeriteRespecButtonMixin" inherits="MagicButtonTemplate" text="AZERITE_RESPEC_BUTTON" motionScriptsWhileDisabled="true">
+						<Size x="154" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-2" y="5"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:GetParent():GetParent():AzeriteRespecItem();
+							</OnClick>
+							<OnEnter method="OnMouseEnter" />
+							<OnLeave method="OnMouseLeave" />
+						</Scripts>
+					</Button>
+					<Frame parentKey="MoneyFrameEdge" inherits="ThinGoldEdgeTemplate" >
+						<Size x="182" y="24"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-160" y="3"/>
+						</Anchors>
+					</Frame>
+	
+					<Frame parentKey="MoneyFrame" name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-150" y="6"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								SmallMoneyFrame_OnLoad(self);
+								MoneyFrame_SetType(self, "STATIC");
+								MoneyFrame_SetMaxDisplayWidth(self, 183);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Layers>
+					<Layer level="BORDER" textureSubLevel="1">
+						<Texture>
+							<Size x="334" y="21"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="1" y="5"/>
+							</Anchors>
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="2">
+						<Texture parentKey="ButtonBorder" inherits="_UI-Frame-InnerBotTile">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="1" y="26"/>
+								<Anchor point="BOTTOMRIGHT" x="-3" y="26"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ButtonBottomBorder" inherits="_UI-Frame-BtnBotTile">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="6" y="2"/>
+								<Anchor point="BOTTOMRIGHT" x="-8" y="2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="HelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
+				<Size x="220" y="100"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ItemSlot" relativePoint="RIGHT" x="15" y="0" />
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="AZERITE_RESPEC_TUTORIAL_TEXT">
+							<Size x="188" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="16" y="-24"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="6" y="6"/>
+						</Anchors>
+						<Scripts>
+							<OnClick inherit="append">
+								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_RESPEC, true);
+								self:GetParent():Hide();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="LEFT" x="-20" y="15"/>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								SetClampedTextureRotation(self.Arrow, 90);
+								SetClampedTextureRotation(self.Glow, 90);
+								self.Glow:ClearAllPoints();
+								self.Glow:SetPoint("LEFT", self, "LEFT", -10, -15);
+							</OnShow>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						self:SetHeight(self.Text:GetHeight()+42);
+					</OnShow>
+				</Scripts>
+			</Frame>
+		</Frames>
+
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+		</Scripts>
+	</Frame>
+</Ui>

@@ -15,7 +15,6 @@ function AccountLogin_OnLoad(self)
 	self:RegisterEvent("SCREEN_FIRST_DISPLAYED");
 	self:RegisterEvent("LOGIN_STATE_CHANGED");
 	self:RegisterEvent("LAUNCHER_LOGIN_STATUS_CHANGED");
-	self:RegisterEvent("FATAL_AUTHENTICATION_FAILURE");
 
 	AccountLogin_CheckLoginState(self);
 end
@@ -28,13 +27,6 @@ function AccountLogin_OnEvent(self, event, ...)
 		AccountLogin_CheckLoginState(self);
 	elseif ( event == "LAUNCHER_LOGIN_STATUS_CHANGED" ) then
 		AccountLogin_Update();
-	elseif ( event == "FATAL_AUTHENTICATION_FAILURE" ) then
-		local errorCode, isHtml = ...;
-		if ( isHtml ) then
-			GlueDialog_Show("OKAY_HTML_MUST_ACCEPT", _G[errorCode]);
-		else
-			GlueDialog_Show("OKAY_MUST_ACCEPT", _G[errorCode]);
-		end
 	end
 end
 

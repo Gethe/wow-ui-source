@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="LayoutFrame.lua"/>
-	
+
 	<ScopedModifier scriptsUseGivenEnv="true">
 		<Frame name="VerticalLayoutFrame" virtual="true" mixin="LayoutMixin, VerticalLayoutMixin">
 			<!--
@@ -10,18 +10,18 @@
 				calculated based on the sizes of child frames
 				<KeyValue key="fixedWidth" value="300" type="number"/>
 				<KeyValue key="fixedHeight" value="300" type="number"/>
-				
+
 				If expand is set to true, the frame will expand to the width of the widest child.
 				If you have fixedWidth set, the frame width will be the the maximum of fixedWidth
 				and the width of the widest child.
 				<KeyValue key="expand" value="true" type="boolean"/>
-				
+
 				Padding values for the 4 sides of the frame
 				<KeyValue key="topPadding" value="35" type="number"/>
 				<KeyValue key="bottomPadding" value="10" type="number"/>
 				<KeyValue key="leftPadding" value="10" type="number"/>
 				<KeyValue key="rightPadding" value="10" type="number"/>
-				
+
 				Spacing is the number of pixels between child elements
 				<KeyValue key="spacing" value="10" type="number"/>
 			</KeyValues>
@@ -30,27 +30,48 @@
 				<OnShow method="Layout"/>
 				<OnUpdate method="OnUpdate"/>
 			</Scripts>
-			
+
 			<!--
 				FontStrings, Textures and Frames can have the following key/value pairs
-				
+
 				layoutIndex is required to be included in the layout system. You can choose not to have
 				a layoutIndex, in which case this region/frame should be anchored separately
 				<KeyValue key="layoutIndex" value="3" type="number"/>
-				
+
 				Padding values for the 4 sides of the region/frame
 				<KeyValue key="topPadding" value="20" type="number"/>
 				<KeyValue key="bottomPadding" value="10" type="number"/>
 				<KeyValue key="leftPadding" value="10" type="number"/>
 				<KeyValue key="rightPadding" value="10" type="number"/>
-				
+
 				If expand is set to true, the region/frame will expand to fit the parent layout frame
 				<KeyValue key="expand" value="true" type="boolean"/>
 			-->
 		</Frame>
-		
+
 		<Frame name="HorizontalLayoutFrame" virtual="true" mixin="LayoutMixin, HorizontalLayoutMixin">
 			<!-- Uses the same key/value pairs as VerticalLayoutFrame -->
+			<Scripts>
+				<OnShow method="Layout"/>
+				<OnUpdate method="OnUpdate"/>
+			</Scripts>
+		</Frame>
+
+		<Frame name="ResizeLayoutFrame" mixin="ResizeLayoutMixin" virtual="true">
+			<!--
+			<KeyValues>
+				Use fixedWidth/fixedHeight if you want a fixed size; otherwise size will be dynamically
+				calculated based on the sizes of child frames
+				<KeyValue key="fixedWidth" value="300" type="number"/>
+				<KeyValue key="fixedHeight" value="300" type="number"/>
+				<KeyValue key="minimumWidth" value="300" type="number"/>
+				<KeyValue key="minimumHeight" value="300" type="number"/>
+				<KeyValue key="maximumWidth" value="300" type="number"/>
+				<KeyValue key="maximumHeight" value="300" type="number"/>
+				<KeyValue key="widthPadding" value="300" type="number"/>
+				<KeyValue key="heightPadding" value="300" type="number"/>
+			</KeyValues>
+			-->
 			<Scripts>
 				<OnShow method="Layout"/>
 				<OnUpdate method="OnUpdate"/>

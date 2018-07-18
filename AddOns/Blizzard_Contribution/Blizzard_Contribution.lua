@@ -88,7 +88,7 @@ end
 
 function ContributionStatusMixin:Update()
 	local state, stateAmount, timeOfNextStateChange = C_ContributionCollector.GetState(self.contributionID);
-	local appearance = CONTRIBUTION_APPEARANCE_DATA[state];
+	local appearance = C_ContributionCollector.GetContributionAppearance(self.contributionID, state);
 
 	self:SetValue(stateAmount);
 
@@ -161,6 +161,8 @@ function ContributeButtonMixin:OnEvent(event, ...)
 		if currencyID == self.requiredCurrencyID then
 			self:Update();
 		end
+	elseif event == "BAG_UPDATE_DELAYED" then
+		self:Update();
 	end
 end
 
@@ -170,67 +172,72 @@ function ContributeButtonMixin:OnClick(button)
 	self:GetParent():Contribute();
 end
 
-function ContributeButtonMixin:OnEnter()
+function ContributeButtonMixin:UpdateTooltip()
 	local isEnabled = self:IsEnabled();
 	local shouldShowTooltip = isEnabled or (self.contributionResult == Enum.ContributionResult.IncorrectState) or (self.contributionResult == Enum.ContributionResult.FailedConditionCheck);
 
 	if shouldShowTooltip then
-		ContributionTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
 		if isEnabled or (self.contributionResult == Enum.ContributionResult.FailedConditionCheck) then
-			ContributionTooltip:SetText(CONTRIBUTION_REWARD_TOOLTIP_TITLE, HIGHLIGHT_FONT_COLOR:GetRGBA());
-			GameTooltip_AddQuestRewardsToTooltip(ContributionTooltip, self.questID, TOOLTIP_QUEST_REWARDS_STYLE_CONTRIBUTION);
+			EmbeddedItemTooltip:SetText(CONTRIBUTION_REWARD_TOOLTIP_TITLE, HIGHLIGHT_FONT_COLOR:GetRGBA());
+			GameTooltip_AddQuestRewardsToTooltip(EmbeddedItemTooltip, self.questID, TOOLTIP_QUEST_REWARDS_STYLE_CONTRIBUTION);
 
-			local currencyID, requiredCurrency = C_ContributionCollector.GetRequiredContributionAmount(self.contributionID);
-			local currencyName, ownedCurrency = GetCurrencyInfo(currencyID);
-			local currencyLineColor = (ownedCurrency >= requiredCurrency) and NORMAL_FONT_COLOR or DISABLED_FONT_COLOR;
-			local currencyLine = CONTRIBUTION_TOOLTIP_PLAYER_CURRENCY_AMOUNT:format(BreakUpLargeNumbers(ownedCurrency), BreakUpLargeNumbers(requiredCurrency), currencyName);
-
-			ContributionTooltip.Currency:Show();
-			ContributionTooltip.Currency:SetVertexColor(currencyLineColor:GetRGBA());
-			ContributionTooltip.Currency:SetText(currencyLine);
+			local rcName, rcAvailable, rcFormatString;
+			local currencyID, currencyAmount = C_ContributionCollector.GetRequiredContributionCurrency(self.contributionID);
+			local itemID, itemCount = C_ContributionCollector.GetRequiredContributionItem(self.contributionID);
+			if currencyID then
+				rcName, rcAvailable = GetCurrencyInfo(currencyID);
+				rcAmount = currencyAmount;
+				rcFormatString = CONTRIBUTION_TOOLTIP_PLAYER_CURRENCY_AMOUNT;
+			elseif itemID then
+				rcName = GetItemInfo(itemID);
+				rcAmount = itemCount;
+				local INCLUDE_BANK = true;
+				local IGNORE_USABLE = true;
+				local INCLUDE_REAGENT_BANK = true;
+				rcAvailable = GetItemCount(itemID, INCLUDE_BANK, IGNORE_USABLE, INCLUDE_REAGENT_BANK);
+				rcFormatString = CONTRIBUTION_TOOLTIP_PLAYER_ITEM_AMOUNT;
+			end
+			if rcName then
+				local lineColor = (rcAvailable >= rcAmount) and NORMAL_FONT_COLOR or DISABLED_FONT_COLOR;
+				local text = rcFormatString:format(BreakUpLargeNumbers(rcAvailable), BreakUpLargeNumbers(rcAmount), rcName);
+				GameTooltip_SetBottomText(EmbeddedItemTooltip, text, lineColor);
+			end
 		elseif self.contributionResult == Enum.ContributionResult.IncorrectState then
-			ContributionTooltip:SetText(CONTRIBUTION_BUTTON_ONLY_WHEN_UNDER_CONSTRUCTION_TOOLTIP, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true);
-			ContributionTooltip.Currency:Hide();
+			EmbeddedItemTooltip:SetText(CONTRIBUTION_BUTTON_ONLY_WHEN_UNDER_CONSTRUCTION_TOOLTIP, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true);
 		end
-
-		ContributionTooltip:Show();
-	end
-end
-
-function ContributionTooltip_CalculatePadding(tooltip)
-	local itemWidth, itemHeight, currencyWidth, currencyHeight = 0, 0, 0, 0;
-
-	if tooltip.ItemTooltip:IsShown() then
-		itemWidth, itemHeight = tooltip.ItemTooltip:GetSize();
-		itemWidth = itemWidth + 9; -- extra padding for this line
-	end
-
-	if tooltip.Currency:IsShown() then
-		currencyWidth, currencyHeight = tooltip.Currency:GetSize();
-		currencyWidth = currencyWidth + 20; -- extra width padding for this line
-	end
-
-	local extraWidth = math.max(itemWidth, currencyWidth);
-	local extraHeight = itemHeight + currencyHeight;
-
-	local oldPaddingWidth, oldPaddingHeight = tooltip:GetPadding();
-	local actualTooltipWidth = tooltip:GetWidth() - oldPaddingWidth;
-	local paddingWidth = (actualTooltipWidth <= extraWidth) and extraWidth - actualTooltipWidth or 0;
-	local paddingHeight = (extraHeight > 0) and extraHeight + 12 or 0;
-
-	if(math.abs(paddingWidth - oldPaddingWidth) > 0.5 or math.abs(paddingHeight - oldPaddingHeight) > 0.5) then
-		tooltip:SetPadding(paddingWidth, paddingHeight);
+		EmbeddedItemTooltip:Show();
 	end
 end
 
 function ContributeButtonMixin:OnLeave()
-	ContributionTooltip:Hide();
+	EmbeddedItemTooltip:Hide();
 end
 
 function ContributeButtonMixin:SetContributionID(contributionID)
 	self.contributionID = contributionID;
-	self.requiredCurrencyID = C_ContributionCollector.GetRequiredContributionAmount(contributionID);
+	-- try currency first
+	local currencyID, currencyAmount = C_ContributionCollector.GetRequiredContributionCurrency(contributionID);
+	if currencyID then
+		self.requiredCurrencyID = currencyID;
+		self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
+		self:UnregisterEvent("BAG_UPDATE_DELAYED");
+		return;
+	end
+	-- then item
+	local itemID, itemCount = C_ContributionCollector.GetRequiredContributionItem(contributionID);
+	if itemID then
+		self:RegisterEvent("BAG_UPDATE_DELAYED");
+		self.requiredCurrencyID = nil;
+		self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
+		return;
+	end
+	
+	-- failed to find anything
+	self.requiredCurrencyID = nil;
+	self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
+	self:UnregisterEvent("BAG_UPDATE_DELAYED");
 end
 
 function ContributeButtonMixin:Update()
@@ -243,9 +250,16 @@ function ContributeButtonMixin:Update()
 	self.questID = C_ContributionCollector.GetRewardQuestID(self.contributionID);
 
 	if canContribute or (result == Enum.ContributionResult.FailedConditionCheck) then
-		local currencyID, currencyAmount = C_ContributionCollector.GetRequiredContributionAmount(self.contributionID);
-		local currencyColorCode = canContribute and HIGHLIGHT_FONT_COLOR_CODE or DISABLED_FONT_COLOR_CODE;
-		self:SetCurrencyFromID(currencyID, currencyAmount, CONTIBUTION_REQUIRED_CURRENCY, currencyColorCode);
+		local colorCode = canContribute and HIGHLIGHT_FONT_COLOR_CODE or DISABLED_FONT_COLOR_CODE;	
+		local currencyID, currencyAmount = C_ContributionCollector.GetRequiredContributionCurrency(self.contributionID);
+		local itemID, itemCount = C_ContributionCollector.GetRequiredContributionItem(self.contributionID);
+		if currencyID then
+			self:SetCurrencyFromID(currencyID, currencyAmount, CONTIBUTION_REQUIRED_CURRENCY, colorCode);
+		elseif itemID then
+			local markup = CreateTextureMarkup(GetItemIcon(itemID), 64, 64, 16, 16, 0, 1, 0, 1);
+			local itemString = ("%s%s %s|r"):format(colorCode, BreakUpLargeNumbers(itemCount), markup);
+			self:SetText(CONTIBUTION_REQUIRED_ITEM:format(itemString));
+		end
 	else
 		self:SetText(CONTRIBUTION_DISABLED);
 	end
@@ -285,7 +299,7 @@ function ContributionMixin:Update()
 	local contributionName = C_ContributionCollector.GetName(self.contributionID);
 	local contributionDescription = C_ContributionCollector.GetDescription(self.contributionID);
 	local state, stateAmount = C_ContributionCollector.GetState(self.contributionID);
-	local appearance = CONTRIBUTION_APPEARANCE_DATA[state];
+	local appearance = C_ContributionCollector.GetContributionAppearance(self.contributionID, state);
 
 	self.Header.Text:SetText(contributionName);
 	self.Description:SetText(contributionDescription);

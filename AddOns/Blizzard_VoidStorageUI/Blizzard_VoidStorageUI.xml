@@ -123,6 +123,14 @@
 					<Color r="0" g="0" b="0" a="0.8"/>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconOverlay" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>

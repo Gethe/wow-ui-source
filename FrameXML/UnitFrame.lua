@@ -119,7 +119,8 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
-	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+	self:RegisterEvent("UNIT_PORTRAIT_UPDATE")
+	self:RegisterEvent("PORTRAITS_UPDATED");
 	if ( self.healAbsorbBar ) then
 		self:RegisterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED");
 	end
@@ -201,10 +202,10 @@ function UnitFramePortrait_Update (self)
 end
 
 function UnitFrame_OnEvent(self, event, ...)
-	local arg1 = ...
+	local eventUnit = ...
 
 	local unit = self.unit;
-	if ( arg1 == unit ) then
+	if ( eventUnit == unit ) then
 		if ( event == "UNIT_NAME_UPDATE" ) then
 			self.name:SetText(GetUnitName(unit));
 		elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
@@ -223,11 +224,10 @@ function UnitFrame_OnEvent(self, event, ...)
 		elseif ( event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" ) then
 			UnitFrameHealPredictionBars_Update(self);
 		elseif ( event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_SUCCEEDED" ) then
-			local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible, spellID = UnitCastingInfo(unit);
+			local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible, spellID = UnitCastingInfo(unit);
 			UnitFrameManaCostPredictionBars_Update(self, event == "UNIT_SPELLCAST_START", startTime, endTime, spellID);
 		end
-	elseif ( not arg1 and event == "UNIT_PORTRAIT_UPDATE" ) then
-		-- this is an update all portraits signal
+	elseif ( event == "PORTRAITS_UPDATED" ) then
 		UnitFramePortrait_Update(self);
 	end
 end
@@ -382,7 +382,12 @@ function UnitFrameManaCostPredictionBars_Update(frame, isStarting, startTime, en
 
 	local cost = 0;
 	if (not isStarting or startTime == endTime) then
-		frame.predictedPowerCost = nil;
+        local currentSpellID = select(9, UnitCastingInfo(frame.unit));
+        if(currentSpellID and frame.predictedPowerCost) then --if we're currently casting something with a power cost, then whatever cast
+		    cost = frame.predictedPowerCost;                 --just finished was allowed while casting, don't reset the original cast
+        else
+            frame.predictedPowerCost = nil;
+        end
 	else
 		local costTable = GetSpellPowerCost(spellID);
 		for _, costInfo in pairs(costTable) do
@@ -780,11 +785,11 @@ function UnitFrameHealthBar_OnValueChanged(self, value)
 end
 
 function UnitFrameManaBar_UnregisterDefaultEvents(self)
-	self:UnregisterEvent("UNIT_POWER");
+	self:UnregisterEvent("UNIT_POWER_UPDATE");
 end
 
 function UnitFrameManaBar_RegisterDefaultEvents(self)
-	self:RegisterUnitEvent("UNIT_POWER", self.unit);
+	self:RegisterUnitEvent("UNIT_POWER_UPDATE", self.unit);
 end
 
 function UnitFrameManaBar_Initialize (unit, statusbar, statustext, frequentUpdates)

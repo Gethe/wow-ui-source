@@ -1,0 +1,26 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="StatusTrackingBar.lua"/>
+	<Script file="ArtifactBar.lua"/>
+	<Frame name="ArtifactStatusBarTemplate" inherits="StatusTrackingBarTemplate" mixin="ArtifactBarMixin" virtual="true">
+		<Size x="804" y="11"/>
+		<Frames>
+			<Button parentKey="Tick" hidden="true" frameStrata="HIGH" mixin="ArtifactTickMixin">
+				<Size x="32" y="32"/>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+				<NormalTexture parentKey="Normal" file="Interface\MainMenuBar\UI-ExhaustionTickNormal"/>
+				<HighlightTexture parentKey="Highlight" file="Interface\MainMenuBar\UI-ExhaustionTickHighlight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+</Ui>

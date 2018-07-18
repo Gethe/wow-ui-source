@@ -1,0 +1,26 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ChannelList.lua"/>
+
+	<ScrollFrame name="ChannelListTemplate" mixin="ChannelListMixin" inherits="UIPanelScrollFrameCodeTemplate" virtual="true">
+		<Frames>
+			<Slider parentKey="ScrollBar" inherits="UIPanelStretchableArtScrollBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-12"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="16"/>
+				</Anchors>
+			</Slider>
+		</Frames>
+		<ScrollChild>
+			<Frame parentKey="Child">
+				<Size x="175" y="0"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+		</ScrollChild>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</ScrollFrame>
+</Ui>

@@ -5,161 +5,141 @@
 	<Texture name="UIPanelButtonHighlightTexture" file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD" virtual="true">
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 	</Texture>
-	
-<!-- Paper overlay texture pieces -->
-<Texture name="UI-PaperOverlay-AbilityTextBG" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-	<Size x="256" y="80"/>
-	<TexCoords left="0.00195313" right="0.50195313" top="0.02246094" bottom="0.10058594"/>
-</Texture>
-<Texture name="UI-PaperOverlay-Bullet" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true">
-	<Size x="13" y="13"/>
-	<TexCoords left="0.974609375" right="1.0" top="0.7509765625" bottom="0.763671875"/>
-</Texture>
-<Texture name="UI-PaperOverlay-Check" file="Interface\AchievementFrame\UI-Achievement-Criteria-Check" virtual="true">
-	<Size x="13" y="13"/>
-	<TexCoords left="0" right="0.65625" top="0" bottom="1"/>
-</Texture>
-<Texture name="UI-PaperOverlay-PaperHeader-SelectUp-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
-	<Size x="64" y="29"/>
-	<TexCoords left="0.00000000" right="1.00000000" top="0.22265625" bottom="0.27929688"/>
-</Texture>
-<Texture name="UI-PaperOverlay-AbilityTextBottomBorder" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-	<Size x="243" y="9"/>
-	<TexCoords left="0.04492188" right="0.51953125" top="0.00097656" bottom="0.00976563"/>
-</Texture>
-<Texture name="UI-PaperOverlay-PaperHeader-SelectUp-Left" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-	<Size x="64" y="29"/>
-	<TexCoords left="0.81445313" right="0.93945313" top="0.39453125" bottom="0.42285156"/>
-</Texture>
-<Texture name="UI-PaperOverlay-PaperHeader-SelectUp-Right" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-	<Size x="64" y="29"/>
-	<TexCoords left="0.34570313" right="0.47070313" top="0.49316406" bottom="0.52148438"/>
-</Texture>
 
-<!-- Vertically tiling pieces -->
-	<Texture name="!UI-Frame-RightTile" file="Interface\FrameGeneral\!UI-Frame" virtual="true" vertTile="true" >
+	<!-- Paper overlay texture pieces -->
+	<Texture name="UI-PaperOverlay-AbilityTextBG" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="256" y="80"/>
+		<TexCoords left="0.00195313" right="0.50195313" top="0.02246094" bottom="0.10058594"/>
+	</Texture>
+	<Texture name="UI-PaperOverlay-Bullet" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true">
+		<Size x="13" y="13"/>
+		<TexCoords left="0.974609375" right="1.0" top="0.7509765625" bottom="0.763671875"/>
+	</Texture>
+	<Texture name="UI-PaperOverlay-Check" file="Interface\AchievementFrame\UI-Achievement-Criteria-Check" virtual="true">
+		<Size x="13" y="13"/>
+		<TexCoords left="0" right="0.65625" top="0" bottom="1"/>
+	</Texture>
+	<Texture name="UI-PaperOverlay-PaperHeader-SelectUp-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
+		<Size x="64" y="29"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.22265625" bottom="0.27929688"/>
+	</Texture>
+	<Texture name="UI-PaperOverlay-AbilityTextBottomBorder" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="243" y="9"/>
+		<TexCoords left="0.04492188" right="0.51953125" top="0.00097656" bottom="0.00976563"/>
+	</Texture>
+	<Texture name="UI-PaperOverlay-PaperHeader-SelectUp-Left" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="64" y="29"/>
+		<TexCoords left="0.81445313" right="0.93945313" top="0.39453125" bottom="0.42285156"/>
+	</Texture>
+	<Texture name="UI-PaperOverlay-PaperHeader-SelectUp-Right" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="64" y="29"/>
+		<TexCoords left="0.34570313" right="0.47070313" top="0.49316406" bottom="0.52148438"/>
+	</Texture>
+
+	<!-- Tiled textures size=64,512-->
+	<Texture name="_SearchBarLg" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
+		<Size x="64" y="49"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.74804688" bottom="0.84375000"/>
+	</Texture>
+
+	<!-- Vertically tiling pieces -->
+	<Texture name="!UI-Frame-RightTile" atlas="!UI-Frame-RightTile" virtual="true" vertTile="true" >
 		<Size x="10" y="256"/>
-		<TexCoords left="0.17187500" right="0.32812500" top="0.00000000" bottom="1.00000000"/>
 	</Texture>
-	<Texture name="!UI-Frame-LeftTile" file="Interface\FrameGeneral\!UI-Frame" virtual="true" vertTile="true" >
+	<Texture name="!UI-Frame-LeftTile" atlas="!UI-Frame-LeftTile" virtual="true" vertTile="true" >
 		<Size x="16" y="256"/>
-		<TexCoords left="0.35937500" right="0.60937500" top="0.00000000" bottom="1.00000000"/>
 	</Texture>
-	<Texture name="!UI-Frame-InnerRightTile" file="Interface\FrameGeneral\!UI-Frame" virtual="true" vertTile="true" >
+	<Texture name="!UI-Frame-InnerRightTile" atlas="!UI-Frame-InnerRightTile" virtual="true" vertTile="true" >
 		<Size x="3" y="256"/>
-		<TexCoords left="0.01562500" right="0.06250000" top="0.00000000" bottom="1.00000000"/>
 	</Texture>
-	<Texture name="!UI-Frame-InnerLeftTile" file="Interface\FrameGeneral\!UI-Frame" virtual="true" vertTile="true" >
+	<Texture name="!UI-Frame-InnerLeftTile" atlas="!UI-Frame-InnerLeftTile" virtual="true" vertTile="true" >
 		<Size x="3" y="256"/>
-		<TexCoords left="0.09375000" right="0.14062500" top="0.00000000" bottom="1.00000000"/>
 	</Texture>
 
-<!-- Horizontally tiling pieces -->
-	<Texture name="_UI-Frame-BtnBotTile" file="Interface\FrameGeneral\_UI-Frame" virtual="true" horizTile="true" >
+	<!-- Horizontally tiling pieces -->
+	<Texture name="_UI-Frame-BtnBotTile" atlas="_UI-Frame-BtnBotTile" virtual="true" horizTile="true" >
 		<Size x="256" y="3"/>
-		<TexCoords left="0.00000000" right="1.00000000" top="0.04687500" bottom="0.07031250"/>
 	</Texture>
-	<Texture name="_UI-Frame-Bot" file="Interface\FrameGeneral\_UI-Frame" virtual="true" horizTile="true" >
+	<Texture name="_UI-Frame-Bot" atlas="_UI-Frame-Bot" virtual="true" horizTile="true" >
 		<Size x="256" y="9"/>
-		<TexCoords left="0.00000000" right="1.00000000" top="0.20312500" bottom="0.27343750"/>
 	</Texture>
-	<Texture name="_UI-Frame-InnerTopTile" file="Interface\FrameGeneral\_UI-Frame" virtual="true" horizTile="true" >
+	<Texture name="_UI-Frame-InnerTopTile" atlas="_UI-Frame-InnerTopTile" virtual="true" horizTile="true" >
 		<Size x="256" y="3"/>
-		<TexCoords left="0.00000000" right="1.00000000" top="0.08593750" bottom="0.10937500"/>
 	</Texture>
-	<Texture name="_UI-Frame-InnerBotTile" file="Interface\FrameGeneral\_UI-Frame" virtual="true" horizTile="true" >
+	<Texture name="_UI-Frame-InnerBotTile" atlas="_UI-Frame-InnerBotTile" virtual="true" horizTile="true" >
 		<Size x="256" y="3"/>
-		<TexCoords left="0.00000000" right="1.00000000" top="0.00781250" bottom="0.03125000"/>
 	</Texture>
-	<Texture name="_UI-Frame-TitleTileBg" file="Interface\FrameGeneral\_UI-Frame" virtual="true" horizTile="true" >
+	<Texture name="_UI-Frame-TitleTileBg" atlas="_UI-Frame-TitleTileBg" virtual="true" horizTile="true" >
 		<Size x="256" y="17"/>
-		<TexCoords left="0.00000000" right="1.00000000" top="0.28906250" bottom="0.42187500"/>
-	</Texture>
-	<Texture name="_UI-Frame-TitleTile" file="Interface\FrameGeneral\_UI-Frame" virtual="true" horizTile="true" >
-		<Size x="256" y="28"/>
-		<TexCoords left="0.00000000" right="1.00000000" top="0.43750000" bottom="0.65625000"/>
-	</Texture>
-	<Texture name="_UI-Frame-TopTileStreaks" file="Interface\FrameGeneral\_UI-Frame" virtual="true" horizTile="true" >
-		<Size x="256" y="37"/>
-		<TexCoords left="0.00000000" right="1.00000000" top="0.67187500" bottom="0.96093750"/>
 	</Texture>
 
-<!--
-*******************************************************************************
-    Texture templates for frame border pieces
-*******************************************************************************
--->
-	<Texture name="UI-Frame-Portrait" file="Interface\FrameGeneral\UI-Frame" virtual="true">
+	<Texture name="_UI-Frame-TittleTile-HiRes" atlas="_UI-Frame-TittleTile-HiRes" virtual="true" horizTile="true" useAtlasSize="true"/>
+
+	<Texture name="_UI-Frame-TitleTile" atlas="_UI-Frame-TitleTile" virtual="true" horizTile="true" >
+		<Size x="256" y="28"/>
+	</Texture>
+	<Texture name="_UI-Frame-TopTileStreaks" atlas="_UI-Frame-TopTileStreaks" virtual="true" horizTile="true" >
+		<Size x="256" y="37"/>
+	</Texture>
+
+	<!--
+	*******************************************************************************
+		Texture templates for frame border pieces
+	*******************************************************************************
+	-->
+	<Texture name="UI-Frame-Portrait" atlas="UI-Frame-Portrait" virtual="true">
 		<Size x="78" y="78"/>
-		<TexCoords left="0.00781250" right="0.61718750" top="0.00781250" bottom="0.61718750"/>
 	</Texture>
-	<Texture name="UI-Frame-TopCornerRight" file="Interface\FrameGeneral\UI-Frame" virtual="true">
+	<Texture name="UI-Frame-TopCornerRight" atlas="UI-Frame-TopCornerRight" virtual="true">
 		<Size x="33" y="33"/>
-		<TexCoords left="0.63281250" right="0.89062500" top="0.00781250" bottom="0.26562500"/>
 	</Texture>
-	<Texture name="UI-Frame-BtnDivRight" file="Interface\FrameGeneral\UI-Frame" virtual="true">
+	<Texture name="UI-Frame-BtnDivRight" atlas="UI-Frame-BtnDivRight" virtual="true">
 		<Size x="11" y="25"/>
-		<TexCoords left="0.90625000" right="0.99218750" top="0.00781250" bottom="0.20312500"/>
 	</Texture>
-	<Texture name="UI-Frame-InnerTopRight" file="Interface\FrameGeneral\UI-Frame" virtual="true">
+	<Texture name="UI-Frame-InnerTopRight" atlas="UI-Frame-InnerTopRight" virtual="true">
 		<Size x="6" y="6"/>
-		<TexCoords left="0.90625000" right="0.95312500" top="0.21875000" bottom="0.26562500"/>
 	</Texture>
-	<Texture name="UI-Frame-TopLeftCorner" file="Interface\FrameGeneral\UI-Frame" virtual="true">
-		<Size x="32" y="32"/>
-		<TexCoords left="0.63281250" right="0.88281250" top="0.28125000" bottom="0.53125000"/>
+	<Texture name="UI-Frame-TopLeftCorner" atlas="UI-Frame-TopLeftCornerNoPortrait" virtual="true">
+		<Size x="33" y="33"/>
 	</Texture>
-	<Texture name="UI-Frame-InnerTopLeft" file="Interface\FrameGeneral\UI-Frame" virtual="true">
+	<Texture name="UI-Frame-InnerTopLeft" atlas="UI-Frame-InnerTopLeft" virtual="true">
 		<Size x="6" y="6"/>
-		<TexCoords left="0.63281250" right="0.67968750" top="0.54687500" bottom="0.59375000"/>
 	</Texture>
-	<Texture name="UI-Frame-InnerBotLeftCorner" file="Interface\FrameGeneral\UI-Frame" virtual="true">
+	<Texture name="UI-Frame-InnerBotLeftCorner" atlas="UI-Frame-InnerBotLeftCorner" virtual="true">
 		<Size x="6" y="6"/>
-		<TexCoords left="0.69531250" right="0.74218750" top="0.54687500" bottom="0.59375000"/>
 	</Texture>
-	<Texture name="UI-Frame-InnerBotRight" file="Interface\FrameGeneral\UI-Frame" virtual="true">
+	<Texture name="UI-Frame-InnerBotRight" atlas="UI-Frame-InnerBotRight" virtual="true">
 		<Size x="6" y="6"/>
-		<TexCoords left="0.75781250" right="0.80468750" top="0.54687500" bottom="0.59375000"/>
 	</Texture>
-	<Texture name="UI-Frame-BtnCornerLeft" file="Interface\FrameGeneral\UI-Frame" virtual="true">
+	<Texture name="UI-Frame-BtnCornerLeft" atlas="UI-Frame-BtnCornerLeft" virtual="true">
 		<Size x="12" y="32"/>
-		<TexCoords left="0.89843750" right="0.99218750" top="0.28125000" bottom="0.53125000"/>
 	</Texture>
-	<Texture name="UI-Frame-BotCornerLeft" file="Interface\FrameGeneral\UI-Frame" virtual="true">
+	<Texture name="UI-Frame-BotCornerLeft" atlas="UI-Frame-BotCornerLeft" virtual="true">
 		<Size x="14" y="14"/>
-		<TexCoords left="0.00781250" right="0.11718750" top="0.63281250" bottom="0.74218750"/>
 	</Texture>
-	<Texture name="UI-Frame-TopCornerLeft" file="Interface\FrameGeneral\UI-Frame" virtual="true">
+	<Texture name="UI-Frame-TopCornerLeft" atlas="UI-Frame-TopLeftCorner" virtual="true">
 		<Size x="14" y="14"/>
-		<TexCoords left="0.00781250" right="0.11718750" top="0.74218750" bottom="0.63281250"/>
 	</Texture>
-	<Texture name="UI-Frame-BtnDivMiddle" file="Interface\FrameGeneral\UI-Frame" virtual="true">
+	<Texture name="UI-Frame-BtnDivMiddle" atlas="UI-Frame-BtnDivMiddle" virtual="true">
 		<Size x="13" y="25"/>
-		<TexCoords left="0.00781250" right="0.10937500" top="0.75781250" bottom="0.95312500"/>
 	</Texture>
-	<Texture name="UI-Frame-BtnCornerRight" file="Interface\FrameGeneral\UI-Frame" virtual="true">
+	<Texture name="UI-Frame-BtnCornerRight" atlas="UI-Frame-BtnCornerRight" virtual="true">
 		<Size x="12" y="32"/>
-		<TexCoords left="0.13281250" right="0.22656250" top="0.63281250" bottom="0.88281250"/>
 	</Texture>
-	<Texture name="UI-Frame-BotCornerRight" file="Interface\FrameGeneral\UI-Frame" virtual="true">
+	<Texture name="UI-Frame-BotCornerRight" atlas="UI-Frame-BotCornerRight" virtual="true">
 		<Size x="11" y="11"/>
-		<TexCoords left="0.13281250" right="0.21875000" top="0.89843750" bottom="0.98437500"/>
 	</Texture>
-	<Texture name="UI-Frame-TopCornerRightSimple" file="Interface\FrameGeneral\UI-Frame" virtual="true">
+	<Texture name="UI-Frame-TopCornerRightSimple" atlas="UI-Frame-TopCornerRightSimple" virtual="true">
 		<Size x="11" y="11"/>
-		<TexCoords left="0.13281250" right="0.21875000" top="0.98437500" bottom="0.89843750"/>
 	</Texture>
-	<Texture name="UI-Frame-BtnDivLeft" file="Interface\FrameGeneral\UI-Frame" virtual="true">
+	<Texture name="UI-Frame-BtnDivLeft" atlas="UI-Frame-BtnDivLeft" virtual="true">
 		<Size x="11" y="25"/>
-		<TexCoords left="0.24218750" right="0.32812500" top="0.63281250" bottom="0.82812500"/>
 	</Texture>
-	<Texture name="UI-Frame-InnerSplitLeft" file="Interface\FrameGeneral\UI-Frame" virtual="true">
+	<Texture name="UI-Frame-InnerSplitLeft" atlas="UI-Frame-InnerSplitLeft" virtual="true">
 		<Size x="9" y="14"/>
-		<TexCoords left="0.24218750" right="0.31250000" top="0.84375000" bottom="0.95312500"/>
 	</Texture>
-	<Texture name="UI-Frame-InnerSplitRight" file="Interface\FrameGeneral\UI-Frame" virtual="true">
+	<Texture name="UI-Frame-InnerSplitRight" atlas="UI-Frame-InnerSplitLeft" virtual="true">
 		<Size x="9" y="14"/>
-		<TexCoords left="0.34375000" right="0.41406250" top="0.63281250" bottom="0.74218750"/>
 	</Texture>
 
 	<Button name="UIPanelCloseButtonNoScripts" virtual="true">
@@ -328,76 +308,8 @@
 		</HighlightTexture>
 	</Button>
 
-	<Button name="UIPanelButtonTemplate" virtual="true">
-		<Size x="40" y="22"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Left" file="Interface\Buttons\UI-Panel-Button-Up">
-					<Size x="12" y="22"/>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-					<TexCoords left="0" right="0.09375" top="0" bottom="0.6875"/>
-				</Texture>
-				<Texture parentKey="Right" file="Interface\Buttons\UI-Panel-Button-Up">
-					<Size x="12" y="22"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-					<TexCoords left="0.53125" right="0.625" top="0" bottom="0.6875"/>
-				</Texture>
-				<Texture parentKey="Middle" file="Interface\Buttons\UI-Panel-Button-Up">
-					<Size x="12" y="22"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-					<TexCoords left="0.09375" right="0.53125" top="0" bottom="0.6875"/>
-				</Texture>
-			</Layer>
-		</Layers>
+	<Button name="UIPanelButtonTemplate" inherits="UIPanelButtonNoTooltipTemplate" virtual="true">
 		<Scripts>
-			<OnLoad>
-				if ( not self:IsEnabled() ) then
-					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-				end
-			</OnLoad>
-			<OnMouseDown>
-				if ( self:IsEnabled() ) then
-					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-				end
-			</OnMouseDown>
-			<OnMouseUp>
-				if ( self:IsEnabled() ) then
-					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-				end
-			</OnMouseUp>
-			<OnShow>
-				if ( self:IsEnabled() ) then
-					-- we need to reset our textures just in case we were hidden before a mouse up fired
-					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-				end
-			</OnShow>
-			<OnDisable>
-				self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-				self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-				self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-			</OnDisable>
-			<OnEnable>
-				self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-				self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-				self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-			</OnEnable>
 			<OnEnter>
 				if(self.tooltipText ~= nil) then
 					GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
@@ -409,12 +321,16 @@
 				end
 			</OnLeave>
 		</Scripts>
-		<ButtonText name="$parentText" parentKey="Text"/>
-		<NormalFont style="GameFontNormal"/>
-		<HighlightFont style="GameFontHighlight"/>
-		<DisabledFont style="GameFontDisable"/>
-		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 	</Button>
+
+	<!--A super simple standard button that will widen on load to fit its text if its 
+	localized version is bigger than its current size + 40 padding.  It will never reshrink.-->
+	<Button name="UIPanelDynamicResizeButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad function="DynamicResizeButton_Resize" inherit="append"/>
+		</Scripts>
+	</Button>
+	
 	<CheckButton name="UIRadioButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="16" y="16"/>
@@ -442,13 +358,32 @@
 			<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
 		</CheckedTexture>
 	</CheckButton>
+
+	<CheckButton name="UICheckButtonTemplate" virtual="true">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormalSmall" parentKey="text">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+	</CheckButton>
+
 <!--
 *******************************************************************************
     PortraitFrameTemplate
 	This is an empty frame with space for a portrait/icon in the top left corner.
 *******************************************************************************
 -->
-	<Frame name="PortraitFrameTemplateNoCloseButton" virtual="true">
+	<Frame name="PortraitFrameTemplateNoCloseButton" virtual="true" mixin="PortraitFrameTemplateMixin">
 		<Size x="338" y="424"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-6">
@@ -458,7 +393,7 @@
 						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentTitleBg" inherits="_UI-Frame-TitleTileBg">
+				<Texture name="$parentTitleBg" parentKey="TitleBg" inherits="_UI-Frame-TitleTileBg">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="2" y="-3"/>
 						<Anchor point="TOPRIGHT" x="-25" y="-3"/>
@@ -474,72 +409,75 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentPortraitFrame" inherits="UI-Frame-Portrait" parentKey="portraitFrame">
+				<Texture name="$parentPortraitFrame" parentKey="PortraitFrame" inherits="UI-Frame-Portrait">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-14" y="11"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentTopRightCorner" inherits="UI-Frame-TopCornerRight">
+				<Texture name="$parentTopRightCorner" parentKey="TopRightCorner" inherits="UI-Frame-TopCornerRight">
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="0" y="1"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentTopLeftCorner" inherits="UI-Frame-TopLeftCorner" hidden="true" parentKey="topLeftCorner">
+				<Texture name="$parentTopLeftCorner" parentKey="TopLeftCorner" inherits="UI-Frame-TopLeftCorner" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-6" y="1"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentTopBorder" inherits="_UI-Frame-TitleTile" parentKey="topBorderBar">
+				<Texture name="$parentTopBorder" parentKey="TopBorder" inherits="_UI-Frame-TitleTile">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentPortraitFrame" relativePoint="TOPRIGHT" x="0" y="-10" />
-						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.PortraitFrame" relativePoint="TOPRIGHT" x="0" y="-10" />
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 				<FontString name="$parentTitleText" inherits="GameFontNormal" text="" parentKey="TitleText" wordwrap="false">
 					<Anchors>
-						<Anchor point="TOP" x="0" y="-4"/>
+						<Anchor point="TOP" x="0" y="-5"/>
 						<Anchor point="LEFT" x="60"/>
 						<Anchor point="RIGHT" x="-60"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="$parentTopTileStreaks" inherits="_UI-Frame-TopTileStreaks" parentKey="TopTileStreaks">
+				<Texture name="$parentTopTileStreaks" parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="-21"/>
 						<Anchor point="TOPRIGHT" x="-2" y="-21"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBotLeftCorner" inherits="UI-Frame-BotCornerLeft">
+				<Texture name="$parentBotLeftCorner" parentKey="BotLeftCorner" inherits="UI-Frame-BotCornerLeft">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="-6" y="-5"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBotRightCorner" inherits="UI-Frame-BotCornerRight">
+				<Texture name="$parentBotRightCorner" parentKey="BotRightCorner" inherits="UI-Frame-BotCornerRight">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="0" y="-5"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBottomBorder" inherits="_UI-Frame-Bot">
+				<Texture name="$parentBottomBorder" parentKey="BottomBorder" inherits="_UI-Frame-Bot">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentLeftBorder" inherits="!UI-Frame-LeftTile" parentKey="leftBorderBar">
+				<Texture name="$parentLeftBorder" parentKey="LeftBorder" inherits="!UI-Frame-LeftTile">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentPortraitFrame" relativePoint="BOTTOMLEFT" x="8" y="0" />
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.PortraitFrame" relativePoint="BOTTOMLEFT" x="8" y="0" />
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BotLeftCorner" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentRightBorder" inherits="!UI-Frame-RightTile">
+				<Texture name="$parentRightBorder" parentKey="RightBorder" inherits="!UI-Frame-RightTile">
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="BOTTOMRIGHT" x="1"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="BOTTOMRIGHT" x="1"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BotRightCorner" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 	<Frame name="PortraitFrameTemplate" inherits="PortraitFrameTemplateNoCloseButton" virtual="true">
 		<Frames>
@@ -555,6 +493,122 @@
 			</Button>
 		</Frames>
 	</Frame>
+
+	<Frame name="PortraitFrameTemplateNoCloseButton-HiRes" virtual="true">
+		<Size x="338" y="424"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true" parentKey="Bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-18"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="2"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTitleBg" inherits="_UI-Frame-TitleTileBG">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="53" y="-2"/>
+						<Anchor point="TOPRIGHT" x="-22" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture name="$parentPortrait" parentKey="portrait">
+					<Size x="61" y="61"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="8" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentPortraitFrame" parentKey="PortraitFrame" atlas="UI-Frame-Portrait-HiRes">
+					<Size x="78" y="80"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-9" y="13"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTopRightCorner" parentKey="TopRightCorner" atlas="UI-Frame-TopCornerRight-HiRes">
+					<Size x="52.666667" y="46"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="2" y="1.6666667"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTopLeftCorner" parentKey="TopLeftCorner" inherits="UI-Frame-TopLeftCorner" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="1"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTopBorder" parentKey="TopBorder" inherits="_UI-Frame-TittleTile-HiRes">
+					<Size x="0" y="23.333333"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentPortraitFrame" relativePoint="TOPRIGHT" x="0" y="-11.333333"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentTitleText" inherits="GameFontNormal" parentKey="TitleText">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentTitleBg" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentTopTileStreaks" parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Bg"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Bg"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBotLeftCorner" parentKey="BotLeftCorner" atlas="UI-Frame-BotCornerLeft-HiRes">
+					<Size x="15" y="16.333333"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-1.666667" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBotRightCorner" parentKey="BotRightCorner" atlas="UI-Frame-BotCornerRight-HiRes">
+					<Size x="15.666667" y="16.333333"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBottomBorder" parentKey="BottomBorder" atlas="_UI-Frame-Bot-HiRes">
+					<Size x="0" y="5.333333"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentLeftBorder" parentKey="LeftBorder" atlas="!UI-Frame-LeftTile-HiRes" vertTile="true">
+					<Size x="5.333333" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentPortraitFrame" relativePoint="BOTTOMLEFT" x="7.333333" y="0" />
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentRightBorder" parentKey="RightBorder" atlas="!UI-Frame-RightTile-HiRes">
+					<Size x="5.666667" y="0"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="PortraitFrameTemplate-HiRes" inherits="PortraitFrameTemplateNoCloseButton-HiRes" virtual="true">
+		<Frames>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton" parentKey="CloseButton">
+				<Size x="31" y="31"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset x="5.2" y="5.8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="PortraitFrameCloseButton_OnClick" />
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
 <!--
 *******************************************************************************
     InsetFrameTemplate
@@ -667,6 +721,38 @@
 		</Frames>
 	</Frame>
 
+
+	<Frame name="ButtonFrameTemplate-HighRes" inherits="PortraitFrameTemplate-HiRes" virtual="true">
+		<Layers>
+			<!-- HiRes versions of these (bottom corners and border) don't exist yet, leaving these hidden for now -->
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture name="$parentBtnCornerLeft" inherits="UI-Frame-BtnCornerLeft" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-2" y="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBtnCornerRight" inherits="UI-Frame-BtnCornerRight" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentButtonBottomBorder" inherits="_UI-Frame-BtnBotTile" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentBtnCornerLeft" relativePoint="BOTTOMRIGHT" y="3"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBtnCornerRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="Inset">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-60" />
+					<Anchor point="BOTTOMRIGHT" x="-6" y="26" />
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
 <!--
 *******************************************************************************
     MagicButtonTemplate
@@ -968,63 +1054,27 @@
 		<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
 		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 	</Button>
-	<Texture name="UIPanelScrollBarButton" virtual="true">
-		<TexCoords left="0.20" right="0.80" top="0.25" bottom="0.75"/>
-	</Texture>
-	<Button name="UIPanelScrollUpButtonTemplate" virtual="true">
-		<Size x="18" y="16"/>
-		<NormalTexture parentKey="Normal" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Up"/>
-		<PushedTexture parentKey="Pushed" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Down"/>
-		<DisabledTexture parentKey="Disabled" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Disabled"/>
-		<HighlightTexture parentKey="Highlight" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Highlight" alphaMode="ADD"/>
-	</Button>
-	<Button name="UIPanelScrollDownButtonTemplate" virtual="true">
-		<Size x="18" y="16"/>
-		<NormalTexture parentKey="Normal" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Up"/>
-		<PushedTexture parentKey="Pushed" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Down"/>
-		<DisabledTexture parentKey="Disabled" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled"/>
-		<HighlightTexture parentKey="Highlight" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Highlight" alphaMode="ADD"/>
-	</Button>
-	<Slider name="UIPanelScrollBarTemplate" virtual="true">
-		<Size x="16" y="0"/>
-		<Frames>
-			<Button name="$parentScrollUpButton" parentKey="ScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
-				<Anchors>
-					<Anchor point="BOTTOM" relativePoint="TOP"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						local parent = self:GetParent();
-						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
-						parent:SetValue(parent:GetValue() - scrollStep);
-						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentScrollDownButton" parentKey="ScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						local parent = self:GetParent();
-						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
-						parent:SetValue(parent:GetValue() + scrollStep);
-						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnValueChanged>
-				self:GetParent():SetVerticalScroll(value);
-			</OnValueChanged>
-		</Scripts>
-		<ThumbTexture name="$parentThumbTexture" parentKey="ThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
-			<Size x="18" y="24"/>
-			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
+
+	<Slider name="HorizontalSliderTemplate" orientation="HORIZONTAL" enableMouse="true" virtual="true">
+		<HitRectInsets>
+			<AbsInset left="0" right="0" top="-10" bottom="-10"/>
+		</HitRectInsets>
+		<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="8"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="8"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="3" right="3" top="6" bottom="6"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<ThumbTexture parentKey="Thumb" name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
+			<Size x="32" y="32"/>
 		</ThumbTexture>
 	</Slider>
+
 	<Slider name="UIPanelStretchableArtScrollBarTemplate" inherits="UIPanelScrollBarTemplate" virtual="true">
 		<Size x="20" y="0" />
 		<Anchors>
@@ -1213,7 +1263,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
+			<Button name="$parentScrollUpButton" parentKey="ScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
 				<Anchors>
 					<Anchor point="TOP" x="0" y="15"/>
 				</Anchors>
@@ -1226,7 +1276,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
+			<Button name="$parentScrollDownButton" parentKey="ScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="-15"/>
 				</Anchors>
@@ -1370,46 +1420,6 @@
 			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
 		</ThumbTexture>
 	</Slider>
-	<ScrollFrame name="UIPanelScrollFrameCodeTemplate" virtual="true">
-		<Scripts>
-			<OnLoad>
-				ScrollFrame_OnLoad(self);
-			</OnLoad>
-			<OnScrollRangeChanged>
-				ScrollFrame_OnScrollRangeChanged(self, xrange, yrange);
-			</OnScrollRangeChanged>
-			<!--  The code to disable the ScrollDownButton is pretty hacked, but it works -->
-			<OnVerticalScroll>
-				local scrollbar = self.ScrollBar or _G[self:GetName().."ScrollBar"];
-				scrollbar:SetValue(offset);
-
-				local min, max = scrollbar:GetMinMaxValues();
-				if ( offset == 0 ) then
-					(scrollbar.ScrollUpButton or _G[scrollbar:GetName().."ScrollUpButton"]):Disable();
-				else
-					(scrollbar.ScrollUpButton or _G[scrollbar:GetName().."ScrollUpButton"]):Enable();
-				end
-				if ((scrollbar:GetValue() - max) == 0) then
-					(scrollbar.ScrollDownButton or _G[scrollbar:GetName().."ScrollDownButton"]):Disable();
-				else
-					(scrollbar.ScrollDownButton or _G[scrollbar:GetName().."ScrollDownButton"]):Enable();
-				end
-			</OnVerticalScroll>
-			<OnMouseWheel>
-				ScrollFrameTemplate_OnMouseWheel(self, delta);
-			</OnMouseWheel>
-		</Scripts>
-	</ScrollFrame>
-	<ScrollFrame name="UIPanelScrollFrameTemplate" virtual="true" inherits="UIPanelScrollFrameCodeTemplate">
-		<Frames>
-			<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="ScrollBar">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="6" y="-16"/>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="16"/>
-				</Anchors>
-			</Slider>
-		</Frames>
-	</ScrollFrame>
 	<ScrollFrame name="UIPanelScrollFrameTemplate2" inherits="UIPanelScrollFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -1446,16 +1456,7 @@
 			</Slider>
 		</Frames>
 	</ScrollFrame>
-	<ScrollFrame name="FauxScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
-		<Scripts>
-			<OnScrollRangeChanged function=""/>
-		</Scripts>
-		<ScrollChild>
-			<Frame name="$parentScrollChildFrame">
-				<Size x="300" y="334"/>
-			</Frame>
-		</ScrollChild>
-	</ScrollFrame>
+
 	<ScrollFrame name="FauxScrollFrameTemplateLight" virtual="true">
 		<Frames>
 			<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplateLightBorder">
@@ -1496,63 +1497,7 @@
 			</Frame>
 		</ScrollChild>
 	</ScrollFrame>
-	<ScrollFrame name="ListScrollFrameTemplate" inherits="FauxScrollFrameTemplate" virtual="true">
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentTop" atlas="macropopup-scrollbar-top" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBottom" atlas="macropopup-scrollbar-bottom" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentMiddle" atlas="!macropopup-scrollbar-middle" vertTile="true" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
-						<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</ScrollFrame>
 
-	<EditBox name="InputBoxTemplate" enableMouse="true" virtual="true">
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Left" file="Interface\Common\Common-Input-Border">
-					<Size x="8" y="20"/>
-					<Anchors>
-						<Anchor point="LEFT" x="-5" y="0"/>
-					</Anchors>
-					<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
-				</Texture>
-				<Texture parentKey="Right" file="Interface\Common\Common-Input-Border">
-					<Size x="8" y="20"/>
-					<Anchors>
-						<Anchor point="RIGHT" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
-				</Texture>
-				<Texture parentKey="Middle" file="Interface\Common\Common-Input-Border">
-					<Size x="10" y="20"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
-						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
-					</Anchors>
-					<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEscapePressed function="EditBox_ClearFocus"/>
-			<OnEditFocusLost function="EditBox_ClearHighlight"/>
-			<OnEditFocusGained function="EditBox_HighlightText"/>
-		</Scripts>
-		<FontString inherits="ChatFontNormal"/>
-	</EditBox>
 	<EditBox name="NumericInputSpinnerTemplate" letters="3" numeric="true" autoFocus="false" inherits="InputBoxTemplate" mixin="NumericInputSpinnerMixin" virtual="true">
 		<Size x="31" y="20"/>
 		<Layers>
@@ -1671,6 +1616,64 @@
 			<OnEnable function="InputBoxInstructions_OnEnable"/>
 		</Scripts>
 		<FontString inherits="GameFontHighlightSmall"/>
+	</EditBox>
+
+	<EditBox name="SearchBoxTemplate" inherits="InputBoxInstructionsTemplate" autoFocus="false" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentSearchIcon" file="Interface\Common\UI-Searchbox-Icon" parentKey="searchIcon">
+					<Size x="14" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentClearButton" parentKey="clearButton" hidden="true">
+				<Size x="17" y="17"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-3" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\FriendsFrame\ClearBroadcastIcon" alpha="0.5" parentKey="texture">
+							<Size>
+								<AbsDimension x="17" y="17"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						self.texture:SetAlpha(1.0);
+					</OnEnter>
+					<OnLeave>
+						self.texture:SetAlpha(0.5);
+					</OnLeave>
+					<OnMouseDown>
+						if self:IsEnabled() then
+							self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 1, -1);
+						end
+					</OnMouseDown>
+					<OnMouseUp>
+						self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+					</OnMouseUp>
+					<OnClick function="SearchBoxTemplateClearButton_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="SearchBoxTemplate_OnLoad"/>
+			<OnEscapePressed function="EditBox_ClearFocus"/>
+			<OnEnterPressed function="EditBox_ClearFocus"/>
+			<OnEditFocusLost function="SearchBoxTemplate_OnEditFocusLost"/>
+			<OnEditFocusGained function="SearchBoxTemplate_OnEditFocusGained"/>
+			<OnTextChanged function="SearchBoxTemplate_OnTextChanged"/>
+		</Scripts>
 	</EditBox>
 
 	<Button name="TabButtonTemplate" virtual="true">
@@ -1807,7 +1810,7 @@
 			</AnimationGroup>
 		</Animations>
 	</Frame>
-	
+
 	<Frame name="MaximizeMinimizeButtonFrameTemplate" parentKey="MaxMinButtonFrame" mixin="MaximizeMinimizeButtonFrameMixin" virtual="true">
 		<Size x="32" y="32"/>
 		<Frames>
@@ -1816,10 +1819,12 @@
 				<Scripts>
 					<OnClick>
 						self:GetParent():Maximize();
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-Panel-BiggerButton-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-Panel-BiggerButton-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-Panel-BiggerButton-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 			<Button parentKey="MinimizeButton" setAllPoints="true">
@@ -1827,10 +1832,12 @@
 				<Scripts>
 					<OnClick>
 						self:GetParent():Minimize();
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-Panel-SmallerButton-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-Panel-SmallerButton-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-Panel-SmallerButton-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 		</Frames>
@@ -1838,4 +1845,103 @@
 			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>
+
+<!--
+*******************************************************************************
+	TruncatedButtonTemplate
+	This button template will truncate any text that goes out of the button. If text is truncated,
+	the button will have a tooltip with the full text.
+*******************************************************************************
+-->
+	<Button name="TruncatedButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+		<ButtonText name="$parentText" parentKey="Text"/>
+		<Scripts>
+			<OnSizeChanged function="TruncatedButton_OnSizeChanged"/>
+			<OnEnter function="TruncatedButton_OnEnter"/>
+			<OnLeave function="TruncatedButton_OnLeave"/>
+		</Scripts>
+	</Button>
+	
+	<Frame name="TruncatedTooltipScriptTemplate" virtual="true">
+		<Scripts>
+			<OnEnter function="TruncatedTooltipScript_OnEnter"/>
+			<OnLeave function="TruncatedTooltipScript_OnLeave"/>
+		</Scripts>
+	</Frame>
+	
+	<!--
+*******************************************************************************
+	ColumnDisplayTemplate
+	This template will handle the column headers for a list. Currently, any 
+	adjoining scroll frame or list needs to be spaced manually to line up with
+	the columns. It might be cool to support an API for displaying data with
+	default behavior. That would lose us some flexibility though, and is
+	outside the current scope (when this comment was written).
+*******************************************************************************
+-->
+
+	<Frame name="ColumnDisplayTemplate" mixin="ColumnDisplayMixin" virtual="true">
+		<Size x="0" y="60"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+	<Button name="ColumnDisplayButtonTemplate" virtual="true">
+		<Size x="10" y="24"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Left" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="5" y="24"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture parentKey="Right" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="4" y="24"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture parentKey="Middle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="0" y="24"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick function="ColumnDisplayButton_OnClick"/>
+		</Scripts>
+		<ButtonText>
+			<Anchors>
+				<Anchor point="LEFT" x="8" y="0"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontHighlightSmall"/>
+		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeKey="$parent.Left" x="0" y="5"/>
+				<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" x="0" y="-7"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
 </Ui>

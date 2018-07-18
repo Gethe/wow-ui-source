@@ -26,19 +26,27 @@ function WorldMapBountyBoardMixin:OnShow()
 	end
 end
 
-function WorldMapBountyBoardMixin:SetMapAreaID(mapAreaID)
-	if self.mapAreaID ~= mapAreaID then
-		self.mapAreaID = mapAreaID;
+function WorldMapBountyBoardMixin:SetMapAreaID(mapID)
+	if self.mapID ~= mapID then
+		self.mapID = mapID;
 		self:Refresh();
 	end
 end
 
-function WorldMapBountyBoardMixin:GetDisplayLocation()
-	return self.displayLocation;
+function WorldMapBountyBoardMixin:GetMapID()
+	if self:GetParent().GetMapID then
+		return self:GetParent():GetMapID();
+	else
+		return self.mapID;
+	end
 end
 
-function WorldMapBountyBoardMixin:SetSelectedBountyChangedCallback(selectedBountyChangedCallback)
-	self.selectedBountyChangedCallback = selectedBountyChangedCallback;
+function WorldMapBountyBoardMixin:GoToMap(mapID)
+	self:GetParent():SetMapID(mapID);
+end
+
+function WorldMapBountyBoardMixin:GetDisplayLocation()
+	return self.displayLocation;
 end
 
 function WorldMapBountyBoardMixin:IsWorldQuestCriteriaForSelectedBounty(questID)
@@ -52,7 +60,8 @@ function WorldMapBountyBoardMixin:IsWorldQuestCriteriaForSelectedBounty(questID)
 end
 
 function WorldMapBountyBoardMixin:Clear()
-	self.selectedBountyIndex = nil;
+	local skipRefresh = true;
+	self:SetSelectedBountyIndex(nil, skipRefresh);
 	self:Hide();
 end
 
@@ -70,13 +79,14 @@ function WorldMapBountyBoardMixin:Refresh()
 	self.bountyTabPool:ReleaseAll();
 	self.bountyObjectivePool:ReleaseAll();
 
-	if not self.mapAreaID then
+	local mapID = self:GetMapID();
+	if not mapID then
 		self:Clear();
 		self.isRefreshing = false;
 		return;
 	end
 
-	self.bounties, self.displayLocation, self.lockedQuestID = GetQuestBountyInfoForMapID(self.mapAreaID, self.bounties);
+	self.bounties, self.displayLocation, self.lockedQuestID = GetQuestBountyInfoForMapID(mapID, self.bounties);
 
 	if not self.displayLocation then
 		self:Clear();
@@ -88,16 +98,18 @@ function WorldMapBountyBoardMixin:Refresh()
 		self:SetLockedType(WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_BY_QUEST);
 	elseif #self.bounties == 0 then
 		self:SetLockedType(WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NO_BOUNTIES);
-
-		self.selectedBountyIndex = nil;
-
-		self:RefreshBountyTabs();
+		self:SetSelectedBountyIndex(nil);
 	else
 		self:SetLockedType(WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NONE);
-		self.selectedBountyIndex = self.bounties[self.selectedBountyIndex] and self.selectedBountyIndex or 1;
+		self:SetSelectedBountyIndex(self.bounties[self.selectedBountyIndex] and self.selectedBountyIndex or 1);
+	end
 
-		self:RefreshBountyTabs();
-		self:RefreshSelectedBounty();
+	-- TEMP
+	if self:GetParent().SetOverlayFrameLocation then
+		local bountyBoardLocation = self:GetDisplayLocation();
+		if bountyBoardLocation then
+			self:GetParent():SetOverlayFrameLocation(self, bountyBoardLocation);
+		end
 	end
 
 	self:Show();
@@ -267,14 +279,21 @@ function WorldMapBountyBoardMixin:CalculateBountySubObjectives(bountyData)
 	return numCompleted, numTotal;
 end
 
-function WorldMapBountyBoardMixin:SetSelectedBountyIndex(selectedBountyIndex)
+function WorldMapBountyBoardMixin:SetSelectedBountyIndex(selectedBountyIndex, skipRefresh)
 	self.selectedBountyIndex = selectedBountyIndex;
-	PlaySound(SOUNDKIT.UI_WORLDQUEST_MAP_SELECT);
-	self:RefreshBountyTabs();
-	self:RefreshSelectedBounty();
-	if self.selectedBountyChangedCallback then
-		self.selectedBountyChangedCallback(self);
+	if not skipRefresh then
+		self:RefreshBountyTabs();
+		self:RefreshSelectedBounty();
 	end
+
+	local bountyQuestID;
+	if self.selectedBountyIndex then
+		local bounty = self.bounties[self.selectedBountyIndex];
+		if bounty then
+			bountyQuestID = bounty.questID;
+		end
+	end
+	self:GetParent():TriggerEvent("SetBountyQuestID", bountyQuestID);
 end
 
 function WorldMapBountyBoardMixin:GetSelectedBountyIndex()
@@ -310,7 +329,7 @@ function WorldMapBountyBoardMixin:ShowBountyTooltip(bountyIndex)
 			WorldMapTooltip:AddLine(bountyData.turninRequirementText, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 		end
 
-		GameTooltip_AddQuestRewardsToTooltip(WorldMapTooltip, bountyData.questID);
+		GameTooltip_AddQuestRewardsToTooltip(WorldMapTooltip, bountyData.questID, TOOLTIP_QUEST_REWARDS_STYLE_EMISSARY_REWARD);
 		WorldMapTooltip:Show();
 	else
 		WorldMapTooltip:SetText(RETRIEVING_DATA, RED_FONT_COLOR:GetRGB());
@@ -369,6 +388,7 @@ function WorldMapBountyBoardMixin:OnEnter()
 	elseif self.lockedType == WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NO_BOUNTIES then
 		self:ShowLockedByNoBountiesTooltip(nil);
 	end
+	self.UpdateTooltip = self.OnEnter;
 end
 
 function WorldMapBountyBoardMixin:OnLeave()
@@ -381,6 +401,7 @@ function WorldMapBountyBoardMixin:OnTabEnter(tab)
 	else
 		self:ShowBountyTooltip(tab.bountyIndex);
 	end
+	self.UpdateTooltip = function() self:OnTabEnter(tab) end;
 end
 
 function WorldMapBountyBoardMixin:OnTabLeave(tab)
@@ -389,12 +410,13 @@ end
 
 function WorldMapBountyBoardMixin:OnTabClick(tab)
 	if not tab.isEmpty then
-		if self:GetSelectedBountyIndex() ~= tab.bountyIndex then
-			self.bestMapIndex = nil;
+		local isNewTab = self:GetSelectedBountyIndex() ~= tab.bountyIndex;
+		if isNewTab then
 			self:InvalidateMapCache();
 		end
+		PlaySound(SOUNDKIT.UI_WORLDQUEST_MAP_SELECT);
 		self:SetSelectedBountyIndex(tab.bountyIndex);
-		self:FindBestMapForSelectedBounty();
+		self:SetNextMapForSelectedBounty(isNewTab);
 	end
 end
 
@@ -402,11 +424,11 @@ function WorldMapBountyBoardMixin:InvalidateMapCache()
 	self.cachedMapInfo = nil;
 end
 
-function WorldMapBountyBoardMixin:CalculateNumActiveWorldQuestsForSelectedBountyByMap(areaMapID, parentAreaMapID)
+function WorldMapBountyBoardMixin:CalculateNumActiveWorldQuestsForSelectedBountyByMap(mapID)
 	local numQuests = 0;
-	local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(areaMapID, parentAreaMapID);
-	for i, info  in ipairs(taskInfo) do
-		if QuestUtils_IsQuestWorldQuest(info.questId) then
+	local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapID);
+	for i, info in ipairs(taskInfo) do
+		if QuestUtils_IsQuestWorldQuest(info.questId) and info.mapID == mapID then -- ignore worlds quests that are on surrounding maps but viewable from this map
 			if self:IsWorldQuestCriteriaForSelectedBounty(info.questId) then
 				numQuests = numQuests + 1;
 			end
@@ -421,86 +443,42 @@ function WorldMapBountyBoardMixin:CacheMapsForSelectionBounty()
 	end
 
 	self.cachedMapInfo = {};
-
-	local continents = { GetMapContinents() };
-	for continentElementIndex = 1, #continents, 2 do
-		local continentIndex = (continentElementIndex + 1) / 2;
-
-		local zones = { GetMapZones(continentIndex) };
-		for zoneElementIndex = 1, #zones, 2 do
-			local zoneAreaMapID = zones[zoneElementIndex];
-			local numQuests = self:CalculateNumActiveWorldQuestsForSelectedBountyByMap(zoneAreaMapID, zoneAreaMapID);
-			if numQuests > 0 then
-				table.insert(self.cachedMapInfo, { zoneAreaMapID = zoneAreaMapID, count = numQuests });
-			end
+	local mapID = self:GetMapID();
+	local zones = MapUtil.GetRelatedBountyZoneMaps(mapID);
+	for i, zoneMapID in ipairs(zones) do
+		local numQuests = self:CalculateNumActiveWorldQuestsForSelectedBountyByMap(zoneMapID);
+		if numQuests > 0 then
+			table.insert(self.cachedMapInfo, { mapID = zoneMapID, count = numQuests });
 		end
 	end
-
 	table.sort(self.cachedMapInfo, function(left, right) return right.count < left.count end);
 end
 
-function WorldMapBountyBoardMixin:FindCachedZoneMapIndexFromZoneAreaID(zoneMapAreaID)
-	assert(self.cachedMapInfo);
-
-	for i, mapInfo in ipairs(self.cachedMapInfo) do
-		if mapInfo.zoneAreaMapID == zoneMapAreaID then
-			return i;
-		end
-	end
-	return nil;
-end
-
-function WorldMapBountyBoardMixin:FindCachedZoneIndexFromContinentAreaID(continentMapAreaID)
-	local continents = { GetMapContinents() };
-	for continentElementIndex = 1, #continents, 2 do
-		local continentIndex = (continentElementIndex + 1) / 2;
-		local currentContinentAreaMapID = continents[continentElementIndex];
-
-		if currentContinentAreaMapID == continentAreaMapID then
-			local bestMapIndex = nil;
-			local zones = { GetMapZones(continentIndex) };
-			for zoneElementIndex = 1, #zones, 2 do
-				local zoneAreaMapID = zones[zoneElementIndex];
-				local mapIndex = self:FindCachedZoneMapIndexFromZoneAreaID(zoneAreaMapID);
-				if mapIndex and (not bestMapIndex or mapIndex < bestMapIndex) then
-					bestMapIndex = mapIndex;
-				end
-			end
-
-			return bestMapIndex;
-		end
-	end
-
-	return nil;
-end
-
-function WorldMapBountyBoardMixin:FindCachedZoneIndexFromCurrentMapAreaID()
-	local areaMapID, isContinent = GetCurrentMapAreaID();
-	if isContinent then
-		return self:FindCachedZoneIndexFromContinentAreaID(areaMapID);
-	end
-	return self:FindCachedZoneMapIndexFromZoneAreaID(areaMapID);
-end
-
-function WorldMapBountyBoardMixin:FindNextBestMapIndex(currentIndex)
-	assert(self.cachedMapInfo);
-
-	if currentIndex then
-		return currentIndex % #self.cachedMapInfo + 1;
-	end
-
-	return self:FindCachedZoneIndexFromCurrentMapAreaID() or 1;
-end
-
-function WorldMapBountyBoardMixin:FindBestMapForSelectedBounty()
+function WorldMapBountyBoardMixin:SetNextMapForSelectedBounty(isNewTab)
 	self:CacheMapsForSelectionBounty();
 
 	if #self.cachedMapInfo == 0 then
 		return;
 	end
 
-	self.bestMapIndex = self:FindNextBestMapIndex(self.bestMapIndex);
-	SetMapByID(self.cachedMapInfo[self.bestMapIndex].zoneAreaMapID);
+	local mapIndex = 1;
+	local mapID = self:GetMapID();
+	for i, cachedMapInfo in ipairs(self.cachedMapInfo) do
+		if mapID == cachedMapInfo.mapID then
+			if isNewTab then
+				-- if we just selected this tab and the map matches a quest then stay here until the next click
+				mapIndex = i;
+				break;
+			end
+			-- we want the next map after the current one
+			mapIndex = i + 1;
+			break;
+		end
+	end
+	if mapIndex > #self.cachedMapInfo then
+		mapIndex = 1;
+	end
+	self:GoToMap(self.cachedMapInfo[mapIndex].mapID);
 end
 
 function WorldMapBountyBoardMixin:TryShowingIntroTutorial()

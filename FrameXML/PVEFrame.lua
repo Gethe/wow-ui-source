@@ -1,10 +1,13 @@
 ---------------------------------------------------------------
 -- PVE FRAME
 ---------------------------------------------------------------
+
+PVE_FRAME_BASE_WIDTH = 563;
+
 local panels = {
 	{ name = "GroupFinderFrame", addon = nil },
 	{ name = "PVPUIFrame", addon = "Blizzard_PVPUI" },
-	{ name = "ChallengesFrame", addon = "Blizzard_ChallengesUI", check = function() return UnitLevel("player") >= 110 end, },
+	{ name = "ChallengesFrame", addon = "Blizzard_ChallengesUI", check = function() return UnitLevel("player") >= GetMaxLevelForExpansionLevel(GetExpansionLevel()); end, },
 }
 
 function PVEFrame_OnLoad(self)
@@ -26,6 +29,11 @@ function PVEFrame_OnShow(self)
 			PanelTemplates_HideTab(self, index);
 		else
 			PanelTemplates_ShowTab(self, index);
+			if (panel.name == "ChallengesFrame" and not C_MythicPlus.IsMythicPlusActive()) then 
+				PanelTemplates_DisableTab(self, index);
+			else 
+				PanelTemplates_EnableTab(self, index);
+			end
 		end
 	end
 end
@@ -121,6 +129,8 @@ function PVEFrame_ShowFrame(sidePanelName, selection)
 	ShowUIPanel(self);
 	self.activeTabIndex = tabIndex;	
 	PanelTemplates_SetTab(self, tabIndex);
+	self:SetWidth(PVE_FRAME_BASE_WIDTH);
+	UpdateUIPanelPositions(PVEFrame);
 	for index, data in pairs(panels) do
 		local panel = _G[data.name];
 		if ( index == tabIndex ) then

@@ -434,6 +434,9 @@ function TutorialFrame_CheckNextPrevButtons()
 end
 
 function TutorialFrame_Update(currentTutorial)
+	if (IsKioskModeEnabled() and UnitLevel("player") >= MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT - 1]) then
+		return;
+	end
 
 	local displayData = DISPLAY_DATA[ currentTutorial ];
 	if ( not displayData or displayData.unused ) then

@@ -1,0 +1,48 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="IslandsPartyPoseFrame" toplevel="true" parent="UIParent" inherits="PartyPoseFrameTemplate" mixin="IslandsPartyPoseMixin">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="Topper">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ModelScene parentKey="ModelScene" enableMouse="false" useParentLevel="true" inherits="PartyPoseModelFrameTemplate">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</ModelScene>
+			<Frame parentKey="Score">
+				<Size x="100" y="40"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ModelScene" x="15" y="-55"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="LeaveButton" inherits="UIPanelButtonNoTooltipResizeToFitTemplate">
+				<KeyValues>
+					<KeyValue key="minimumWidth" value="164" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ModelScene" x="-20" y="-45"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ConfirmOrLeaveLFGParty();
+						HideUIPanel(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

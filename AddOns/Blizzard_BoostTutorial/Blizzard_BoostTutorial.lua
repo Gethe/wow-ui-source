@@ -128,7 +128,7 @@ function BoostTutorial:HighlightSpell(spellID, textID)
 	-- Check stance bar, this can set the frame, since this bar doesn't change
 	if (not exists) then
 		for i = 1, GetNumShapeshiftForms() do
-			local id = select(5, GetShapeshiftFormInfo(i));
+			local id = select(4, GetShapeshiftFormInfo(i));
 			if (id == spellID) then
 				frame = _G["StanceButton" .. i];
 				exists = true;
@@ -213,8 +213,8 @@ function BoostTutorial:Init()
 
 	MainMenuMicroButton_SetAlertsEnabled(false);
 
-	eventFrame:RegisterEvent("EVENT_TUTORIAL_UNHIGHLIGHT_SPELL");
-	eventFrame:RegisterEvent("EVENT_TUTORIAL_HIGHLIGHT_SPELL");
+	eventFrame:RegisterEvent("TUTORIAL_UNHIGHLIGHT_SPELL");
+	eventFrame:RegisterEvent("TUTORIAL_HIGHLIGHT_SPELL");
 	eventFrame:RegisterEvent("SPELL_PUSHED_TO_ACTIONBAR");
 	eventFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
 	eventFrame:RegisterEvent("ACTIONBAR_SLOT_CHANGED");

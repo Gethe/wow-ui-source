@@ -372,7 +372,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="ItemTooltip" inherits="EmbeddedItemTooltip">
+			<Frame parentKey="ItemTooltip" inherits="InternalEmbeddedItemTooltipTemplate">
 				<Size x="100" y="100"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.RewardHeader" relativePoint="BOTTOMLEFT" x="6" y="-8"/>

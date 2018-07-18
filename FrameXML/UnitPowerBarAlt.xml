@@ -197,6 +197,7 @@
 		</Scripts>
 	</Frame>
 	<Frame name="PlayerPowerBarAlt" parent="UIParent" inherits="UnitPowerBarAltTemplate">
+		<Size x="10" y="10"/>
 		<Scripts>
 			<OnLoad>
 				self.isPlayerBar = true;

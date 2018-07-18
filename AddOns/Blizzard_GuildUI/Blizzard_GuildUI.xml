@@ -85,7 +85,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Button name="GuildPerksButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="314" y="44"/>
@@ -115,11 +115,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture file="Interface\GuildFrame\GuildFrame">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentDisabledLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentDisabledRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
+				<Texture file="Interface\GuildFrame\GuildFrame" setAllPoints="true">
 					<TexCoords left="0.49902344" right="0.51464844" top="0.88281250" bottom="0.96093750"/>
 				</Texture>
 			</Layer>
@@ -184,14 +180,14 @@
 								<Anchor point="LEFT" x="44" y="0"/>
 							</Anchors>
 							<TexCoords left="0.42871094" right="0.44433594" top="0.88281250" bottom="0.96093750"/>
-						</Texture>		
+						</Texture>
 						<Texture name="$parentRight" file="Interface\GuildFrame\GuildFrame">
 							<Size x="16" y="40"/>
 							<Anchors>
 								<Anchor point="RIGHT" x="-20" y="0"/>
 							</Anchors>
 							<TexCoords left="0.39843750" right="0.41406250" top="0.88671875" bottom="0.96484375"/>
-						</Texture>		
+						</Texture>
 						<Texture file="Interface\GuildFrame\GuildFrame">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
@@ -256,7 +252,7 @@
 				if ( self.sortType ) then
 					SortGuildRoster(self.sortType);
 					GuildRoster_Update();
-				end				
+				end
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			</OnClick>
 		</Scripts>
@@ -358,7 +354,7 @@
 	Guild Frame
 *******************************************************************************
 -->
-	<Frame name="GuildFrame" inherits="ButtonFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">	
+	<Frame name="GuildFrame" inherits="ButtonFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentTabardBackground" file="Interface\GuildFrame\GuildFrame">
@@ -498,7 +494,7 @@
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.LeftCap" relativePoint="RIGHT" x="4" y="0"/>
 							</Anchors>
-							<Size x="0" y="0"/>	
+							<Size x="0" y="0"/>
 							<Color r="0" g="1" b="0"/>
 						</FontString>
 						<Texture parentKey="Icon" file="Interface\AchievementFrame\UI-Achievement-Shields-NoPoints">
@@ -514,7 +510,7 @@
 							<Size x="46" y="18"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="4" y="2"/>
-							</Anchors>	
+							</Anchors>
 							<Color r="1" g="1" b="1" a="1"/>
 							<TexCoords left="1.0" right="0" top="0" bottom="1.0"/>
 						</Texture>
@@ -522,7 +518,7 @@
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
-							<Size x="210" y="40"/>		
+							<Size x="210" y="40"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -587,7 +583,7 @@
 						GameTooltip:Hide();
 					</OnLeave>
 				</Scripts>
-			</Frame>		
+			</Frame>
 			<Button name="GuildNameChangeAlertFrame" inherits="GlowBoxTemplate" parentKey="nameAlert" enableMouse="true" frameStrata="DIALOG" hidden="true">
 				<Size x="256" y="36"/>
 				<Anchors>

@@ -83,7 +83,7 @@ end
 
 local function AudioOptionsPanel_Refresh (self)
 	for _, control in next, self.controls do
-		BlizzardOptionsPanel_RefreshControl(control);
+		BlizzardOptionsPanel_RefreshControlSingle(control);
 		-- record values so we can cancel back to this state
 		control.oldValue = control.value;
 	end
@@ -108,7 +108,6 @@ SoundPanelOptions = {
 	Sound_EnableReverb = { text = "ENABLE_REVERB" },
 	--Sound_EnableHardware = { text = "ENABLE_HARDWARE" },
 	Sound_EnablePositionalLowPassFilter = { text = "ENABLE_SOFTWARE_HRTF" },
-	Sound_EnableDSPEffects = { text = "ENABLE_DSP_EFFECTS" },
 	Sound_SFXVolume = { text = "SOUND_VOLUME", minValue = 0, maxValue = 1, valueStep = 0.1, },
 	Sound_MusicVolume = { text = "MUSIC_VOLUME", minValue = 0, maxValue = 1, valueStep = 0.1, },
 	Sound_AmbienceVolume = { text = "AMBIENCE_VOLUME", minValue = 0, maxValue = 1, valueStep = 0.1, },
@@ -139,7 +138,7 @@ function AudioOptionsSoundPanelHardwareDropDown_OnLoad (self)
 	GlueDropDownMenu_SetSelectedValue(self, selectedDriverIndex);
 	GlueDropDownMenu_Initialize(self, AudioOptionsSoundPanelHardwareDropDown_Initialize);
 
-	self.SetValue = 
+	self.SetValue =
 		function (self, value)
 			self.value = value;
 			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
@@ -208,7 +207,7 @@ function AudioOptionsSoundPanelSoundChannelsDropDown_OnLoad (self)
 	GlueDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundChannelsDropDown_Initialize);
 	GlueDropDownMenu_SetSelectedValue(self, selected);
 
-	self.SetValue = 
+	self.SetValue =
 		function (self, value)
 			self.value = value;
 			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
@@ -234,7 +233,7 @@ local soundChannelText = { "SOUND_CHANNELS_LOW", "SOUND_CHANNELS_MEDIUM", "SOUND
 function AudioOptionsSoundPanelSoundChannelsDropDown_Initialize(self)
 	local selectedValue = GlueDropDownMenu_GetSelectedValue(self);
 	local info = GlueDropDownMenu_CreateInfo();
-	
+
 	for i=1, #soundChannelValues do
 		info.text = format(_G[soundChannelText[i]], soundChannelValues[i]);
 		info.value = soundChannelValues[i];
@@ -244,7 +243,7 @@ function AudioOptionsSoundPanelSoundChannelsDropDown_Initialize(self)
 			info.checked = nil;
 		end
 		info.func = AudioOptionsSoundPanelSoundChannelsDropDown_OnClick;
-		
+
 		GlueDropDownMenu_AddButton(info);
 	end
 end
@@ -274,7 +273,7 @@ function AudioOptionsSoundPanelSoundCacheSizeDropDown_OnLoad (self)
 	GlueDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundCacheSizeDropDown_Initialize);
 	GlueDropDownMenu_SetSelectedValue(self, selected);
 
-	self.SetValue = 
+	self.SetValue =
 		function (self, value)
 			self.value = value;
 			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
@@ -300,7 +299,7 @@ local soundCacheSizeText = { "SOUND_CACHE_SIZE_SMALL", "SOUND_CACHE_SIZE_LARGE" 
 function AudioOptionsSoundPanelSoundCacheSizeDropDown_Initialize(self)
 	local selectedValue = GlueDropDownMenu_GetSelectedValue(self);
 	local info = GlueDropDownMenu_CreateInfo();
-	
+
 	for i=1, #soundCacheSizeValues do
 		info.text = format(_G[soundCacheSizeText[i]], soundCacheSizeValues[i]/1024/1024); --convert to MB
 		info.value = soundCacheSizeValues[i];
@@ -310,7 +309,7 @@ function AudioOptionsSoundPanelSoundCacheSizeDropDown_Initialize(self)
 			info.checked = nil;
 		end
 		info.func = AudioOptionsSoundPanelSoundCacheSizeDropDown_OnClick;
-		
+
 		GlueDropDownMenu_AddButton(info);
 	end
 end

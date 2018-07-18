@@ -231,5 +231,4 @@ function QuestPOIButton_OnClick(self)
 	end
 
 	SetSuperTrackedQuestID(questID);
-	WorldMapFrame_OnUserChangedSuperTrackedQuest(questID);
 end

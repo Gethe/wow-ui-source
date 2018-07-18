@@ -1,0 +1,20 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="BattlefieldFlagDataProvider.lua"/>
+
+	<Frame name="BattlefieldFlagPinTemplate" hidden="true" flattenRenderLayers="true" enableMouse="true" mixin="BattlefieldFlagMixin" virtual="true">
+		<Size x="36" y="36"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Texture">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

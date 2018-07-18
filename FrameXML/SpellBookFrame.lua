@@ -39,6 +39,7 @@ PROFESSION_RANKS[7] = {525, ILLUSTRIOUS};
 PROFESSION_RANKS[8] = {600, ZEN_MASTER};
 PROFESSION_RANKS[9] = {700, DRAENOR_MASTER};
 PROFESSION_RANKS[10] = {800, LEGION_MASTER};
+PROFESSION_RANKS[11] = {950, BATTLE_FOR_AZEROTH_MASTER};
 
 
 OPEN_REASON_PENDING_GLYPH = "pendingglyph";
@@ -582,11 +583,11 @@ function SpellButton_OnModifiedClick(self, button)
 			end
 			return;
 		else
-			local spellLink, tradeSkillLink = GetSpellLink(slot, SpellBookFrame.bookType);
-			if ( tradeSkillLink ) then
+			local tradeSkillLink, tradeSkillSpellID = GetSpellTradeSkillLink(slot, SpellBookFrame.bookType);
+			if ( tradeSkillSpellID ) then
 				ChatEdit_InsertLink(tradeSkillLink);
-			elseif ( spellLink ) then
-				ChatEdit_InsertLink(spellLink);
+			else
+				ChatEdit_InsertLink(GetSpellLink(slot, SpellBookFrame.bookType));
 			end
 			return;
 		end
@@ -752,7 +753,7 @@ function SpellButton_UpdateButton(self)
 		self.shine = nil;
 	end
 
-	local spellName, subSpellName = GetSpellBookItemName(slot, SpellBookFrame.bookType);
+	local spellName, _, spellID = GetSpellBookItemName(slot, SpellBookFrame.bookType);
 	local isPassive = IsPassiveSpell(slot, SpellBookFrame.bookType);
 	self.isPassive = isPassive;
 
@@ -763,28 +764,35 @@ function SpellButton_UpdateButton(self)
 		self.FlyoutArrow:Hide();
 	end
 	
-	if ( subSpellName == "" ) then
-		if ( IsTalentSpell(slot, SpellBookFrame.bookType, specID) ) then
-			if ( isPassive ) then
-				subSpellName = TALENT_PASSIVE;
-			else
-				subSpellName = TALENT;
-			end
-		elseif ( isPassive ) then
-			subSpellName = SPELL_PASSIVE;
-		end
-	end			
-
-	-- If there is no spell sub-name, move the bottom row of text up
-	if ( subSpellName == "" ) then
-		self.SpellSubName:SetHeight(6);
-	else
-		self.SpellSubName:SetHeight(0);
-	end
-
 	iconTexture:SetTexture(texture);
 	spellString:SetText(spellName);
-	subSpellString:SetText(subSpellName);
+
+	self.SpellSubName:SetHeight(6);
+	subSpellString:SetText("");
+	if spellID then
+		local spell = Spell:CreateFromSpellID(spellID);
+		spell:ContinueOnSpellLoad(function()
+			local subSpellName = spell:GetSpellSubtext();
+			if ( subSpellName == "" ) then
+				if ( IsTalentSpell(slot, SpellBookFrame.bookType, specID) ) then
+					if ( isPassive ) then
+						subSpellName = TALENT_PASSIVE;
+					else
+						subSpellName = TALENT;
+					end
+				elseif ( isPassive ) then
+					subSpellName = SPELL_PASSIVE;
+				end
+			end			
+
+			-- If there is no spell sub-name, move the bottom row of text up
+			if ( subSpellName ~= "" ) then
+				self.SpellSubName:SetHeight(0);
+				subSpellString:SetText(subSpellName);
+			end
+		end);
+	end
+
 	iconTexture:Show();
 	spellString:Show();
 	subSpellString:Show();
@@ -1218,7 +1226,7 @@ end
 function UpdateProfessionButton(self)
 	local spellIndex = self:GetID() + self:GetParent().spellOffset;
 	local texture = GetSpellBookItemTexture(spellIndex, SpellBookFrame.bookType);
-	local spellName, subSpellName = GetSpellBookItemName(spellIndex, SpellBookFrame.bookType);
+	local spellName, _, spellID = GetSpellBookItemName(spellIndex, SpellBookFrame.bookType);
 	local isPassive = IsPassiveSpell(spellIndex, SpellBookFrame.bookType);
 	if ( isPassive ) then
 		self.highlightTexture:SetTexture("Interface\\Buttons\\UI-PassiveHighlight");
@@ -1244,7 +1252,13 @@ function UpdateProfessionButton(self)
 	end
 	
 	self.spellString:SetText(spellName);
-	self.subSpellString:SetText(subSpellName);	
+	self.subSpellString:SetText("");	
+	if spellID then
+		local spell = Spell:CreateFromSpellID(spellID);
+		spell:ContinueOnSpellLoad(function()
+			self.subSpellString:SetText(spell:GetSpellSubtext());
+		end);
+	end
 	self.iconTexture:SetTexture(texture);
 	
 	SpellButton_UpdateSelection(self);
@@ -1255,7 +1269,7 @@ function FormatProfession(frame, index)
 		frame.missingHeader:Hide();
 		frame.missingText:Hide();
 		
-		local name, texture, rank, maxRank, numSpells, spelloffset, skillLine, rankModifier, specializationIndex, specializationOffset = GetProfessionInfo(index);
+		local name, texture, rank, maxRank, numSpells, spelloffset, skillLine, rankModifier, specializationIndex, specializationOffset, skillLineName = GetProfessionInfo(index);
 		frame.skillName = name;
 		frame.spellOffset = spelloffset;
 		frame.skillLine = skillLine;
@@ -1266,10 +1280,14 @@ function FormatProfession(frame, index)
 		frame.statusBar:SetValue(rank);
 		
 		local prof_title = "";
-		for i=1,#PROFESSION_RANKS do
-		    local value,title = PROFESSION_RANKS[i][1], PROFESSION_RANKS[i][2]; 
-			if maxRank < value then break end
-			prof_title = title;
+		if (skillLineName) then
+			prof_title = skillLineName;
+		else
+			for i=1,#PROFESSION_RANKS do
+				local value,title = PROFESSION_RANKS[i][1], PROFESSION_RANKS[i][2]; 
+				if maxRank < value then break end
+				prof_title = title;
+			end
 		end
 		frame.rank:SetText(prof_title);
 		
@@ -1348,13 +1366,12 @@ end
 
 
 function SpellBook_UpdateProfTab()
-	local prof1, prof2, arch, fish, cook, firstAid = GetProfessions();
+	local prof1, prof2, arch, fish, cook = GetProfessions();
 	FormatProfession(PrimaryProfession1, prof1);
 	FormatProfession(PrimaryProfession2, prof2);
-	FormatProfession(SecondaryProfession1, arch);
+	FormatProfession(SecondaryProfession1, cook);
 	FormatProfession(SecondaryProfession2, fish);
-	FormatProfession(SecondaryProfession3, cook);
-	FormatProfession(SecondaryProfession4, firstAid);
+	FormatProfession(SecondaryProfession3, arch);
 	SpellBookPage1:SetDesaturated(false);
 	SpellBookPage2:SetDesaturated(false);	
 end

@@ -142,7 +142,7 @@ function ClassNameplateBar:UpdatePredictedPowerCost(queryCurrentCastingInfo)
 	local cost = 0;
 
 	if queryCurrentCastingInfo then
-		local spellID = select(10, UnitCastingInfo("player"));
+		local spellID = select(9, UnitCastingInfo("player"));
 
 		if spellID then
 			local costTable = GetSpellPowerCost(spellID);

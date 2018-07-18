@@ -326,6 +326,14 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="IconOverlay" hidden="true">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 				</Layers>
 				<Scripts>
 					<OnEnter>
@@ -670,6 +678,14 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="IconOverlay" hidden="true">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 				</Layers>
 				<Scripts>
 					<OnEnter>
@@ -906,6 +922,14 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="IconOverlay" hidden="true">
 							<Size x="32" y="32"/>
 							<Anchors>
 								<Anchor point="CENTER"/>

@@ -1775,7 +1775,6 @@
 								<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentIcon" x="-4" y="4"/>
 							</Anchors>
 							<Size x="0" y="0"/>
-							<TexCoords left="0.75683594" right="0.98632813" top="0.00097656" bottom="0.04882813"/>
 						</FontString>
 					</Layer>
 				</Layers>

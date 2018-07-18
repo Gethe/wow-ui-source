@@ -33,6 +33,7 @@ LFG_LIST_CATEGORY_TEXTURES = {
 	[8] = "battlegrounds",
 	[9] = "ratedbgs",
 	[10] = "ashran",
+	[111] = "islands",
 };
 
 LFG_LIST_PER_EXPANSION_TEXTURES = {
@@ -43,6 +44,7 @@ LFG_LIST_PER_EXPANSION_TEXTURES = {
 	[4] = "mists",
 	[5] = "warlords",
 	[6] = "legion",
+	[7] = "battleforazeroth",
 }
 
 LFG_LIST_GROUP_DATA_ATLASES = {
@@ -622,14 +624,13 @@ function LFGListEntryCreation_Clear(self)
 	self.selectedFilters = nil;
 
 	--Reset widgets
-	self.Name:SetText("");
+	C_LFGList.ClearCreationTextFields();
 	self.ItemLevel.CheckButton:SetChecked(false);
 	self.ItemLevel.EditBox:SetText("");
 	self.HonorLevel.CheckButton:SetChecked(false);
 	self.HonorLevel.EditBox:SetText("");
 	self.VoiceChat.CheckButton:SetChecked(false);
-	self.VoiceChat.EditBox:SetText("");
-	self.Description.EditBox:SetText("");
+	--self.VoiceChat.EditBox:SetText(""); --Cleared in ClearCreationTextFields
 	self.PrivateGroup.CheckButton:SetChecked(false);
 
 	self.ActivityFinder:Hide();
@@ -876,13 +877,14 @@ function LFGListEntryCreation_GetSanitizedName(self)
 	return string.match(self.Name:GetText(), "^%s*(.-)%s*$");
 end
 
-function LFGListEntryCreation_ListGroupInternal(self, activityID, name, itemLevel, honorLevel, voiceChatInfo, description, autoAccept, privateGroup, questID)
+function LFGListEntryCreation_ListGroupInternal(self, activityID, itemLevel, honorLevel, autoAccept, privateGroup, questID)
 	if ( LFGListEntryCreation_IsEditMode(self) ) then
+		local _;
 		autoAccept, _, questID = select(9, C_LFGList.GetActiveEntryInfo());
-		C_LFGList.UpdateListing(activityID, name, itemLevel, honorLevel, voiceChatInfo, description, autoAccept, privateGroup, questID);
+		C_LFGList.UpdateListing(activityID, itemLevel, honorLevel, autoAccept, privateGroup, questID);
 		LFGListFrame_SetActivePanel(self:GetParent(), self:GetParent().ApplicationViewer);
 	else
-		if(C_LFGList.CreateListing(activityID, name, itemLevel, honorLevel, voiceChatInfo, description, autoAccept, privateGroup, questID)) then
+		if(C_LFGList.CreateListing(activityID, itemLevel, honorLevel, autoAccept, privateGroup, questID)) then
 			self.WorkingCover:Show();
 			LFGListEntryCreation_ClearFocus(self);
 		end
@@ -890,15 +892,12 @@ function LFGListEntryCreation_ListGroupInternal(self, activityID, name, itemLeve
 end
 
 function LFGListEntryCreation_ListGroup(self)
-	local name = LFGListEntryCreation_GetSanitizedName(self);
-	local description = self.Description.EditBox:GetText();
 	local itemLevel = tonumber(self.ItemLevel.EditBox:GetText()) or 0;
 	local honorLevel = tonumber(self.HonorLevel.EditBox:GetText()) or 0;
-	local voiceChatInfo = self.VoiceChat.EditBox:GetText();
 	local autoAccept = false;
 	local privateGroup = self.PrivateGroup.CheckButton:GetChecked();
 
-	LFGListEntryCreation_ListGroupInternal(self, self.selectedActivity, name, itemLevel, honorLevel, voiceChatInfo, description, autoAccept, privateGroup);
+	LFGListEntryCreation_ListGroupInternal(self, self.selectedActivity, itemLevel, honorLevel, autoAccept, privateGroup);
 end
 
 function LFGListEntryCreation_SetAutoCreateDataInternal(self, activityType, activityID, contextID)
@@ -922,20 +921,12 @@ end
 function LFGListEntryCreation_GetAutoCreateDataQuest(self)
 	local questID, activityID = self.autoCreateContextID, self.autoCreateActivityID;
 
-	local descriptionFormat = AUTO_GROUP_CREATION_NORMAL_QUEST;
-	if QuestUtils_IsQuestWorldQuest(questID) then
-		descriptionFormat = AUTO_GROUP_CREATION_WORLD_QUEST;
-	end
-
-	local description = descriptionFormat:format(QuestUtils_GetQuestName(questID));
-	local name = "";
 	local itemLevel = 0;
 	local honorLevel = 0;
-	local voiceChatInfo = "";
 	local autoAccept = true;
 	local privateGroup = false;
 
-	return activityID, name, itemLevel, honorLevel, voiceChatInfo, description, autoAccept, privateGroup, questID;
+	return activityID, itemLevel, honorLevel, autoAccept, privateGroup, questID;
 end
 
 function LFGListEntryCreation_GetAutoCreateData(self)
@@ -946,6 +937,7 @@ end
 
 function LFGListEntryCreation_CheckAutoCreate(self)
 	if LFGListEntryCreation_IsAutoCreateMode(self) then
+		C_LFGList.ClearCreationTextFields();
 		LFGListEntryCreation_ListGroupInternal(self, LFGListEntryCreation_GetAutoCreateData(self));
 		LFGListEntryCreation_ClearAutoCreateMode(self);
 	end
@@ -988,12 +980,15 @@ function LFGListEntryCreation_SetEditMode(self, editMode)
 		UIDropDownMenu_DisableDropDown(self.ActivityDropDown);
 
 		--Update edit boxes
+		C_LFGList.CopyActiveEntryInfoToCreationFields();
 		self.Name:SetEnabled(questID == nil);
-		self.Name:SetText(name);
+		if ( questID ) then
+			self.Description.EditBox.Instructions:SetText(LFGListUtil_GetQuestDescription(questID));
+		else
+			self.Description.EditBox.Instructions:SetText(DESCRIPTION_OF_YOUR_GROUP);
+		end
 		self.ItemLevel.EditBox:SetText(ilvl ~= 0 and ilvl or "");
 		self.HonorLevel.EditBox:SetText(honorLevel ~= 0 and honorLevel or "")
-		self.VoiceChat.EditBox:SetText(voiceChat);
-		self.Description.EditBox:SetText(comment);
 		self.PrivateGroup.CheckButton:SetChecked(privateGroup);
 
 		self.ListGroupButton:SetText(DONE_EDITING);
@@ -1003,6 +998,7 @@ function LFGListEntryCreation_SetEditMode(self, editMode)
 		UIDropDownMenu_EnableDropDown(self.ActivityDropDown);
 		self.ListGroupButton:SetText(LIST_GROUP);
 		self.Name:Enable();
+		self.Description.EditBox.Instructions:SetText(DESCRIPTION_OF_YOUR_GROUP);
 	end
 end
 
@@ -1158,13 +1154,16 @@ function LFGListApplicationViewer_UpdateGroupData(self)
 end
 
 function LFGListApplicationViewer_UpdateInfo(self)
-	local active, activityID, ilvl, honorLevel, name, comment, voiceChat, duration, autoAccept, privateGroup = C_LFGList.GetActiveEntryInfo();
+	local active, activityID, ilvl, honorLevel, name, comment, voiceChat, duration, autoAccept, privateGroup, questID = C_LFGList.GetActiveEntryInfo();
 	local fullName, shortName, categoryID, groupID, iLevel, filters, minLevel, maxPlayers, displayType = C_LFGList.GetActivityInfo(activityID);
 	local _, separateRecommended = C_LFGList.GetCategoryInfo(categoryID);
 	assert(active);
 	self.EntryName:SetWidth(0);
 	self.EntryName:SetText(name);
 	self.DescriptionFrame.activityName = C_LFGList.GetActivityInfo(activityID);
+	if ( comment == "" and questID ) then
+		comment = LFGListUtil_GetQuestDescription(questID);
+	end
 	self.DescriptionFrame.comment = comment;
 	if ( comment == "" ) then
 		self.DescriptionFrame.Text:SetText(self.DescriptionFrame.activityName);
@@ -2295,8 +2294,13 @@ function LFGListApplicationDialog_OnEvent(self, event)
 end
 
 function LFGListApplicationDialog_Show(self, resultID)
+	local _, activityID = C_LFGList.GetSearchResultInfo(resultID);
+	if ( activityID ~= self.activityID ) then
+		C_LFGList.ClearApplicationTextFields();
+	end
+
 	self.resultID = resultID;
-	self.Description.EditBox:SetText("");
+	self.activityID = activityID;
 	LFGListApplicationDialog_UpdateRoles(self);
 	StaticPopupSpecial_Show(self);
 end
@@ -2364,6 +2368,13 @@ function LFGListApplicationDialog_UpdateValidState(self)
 		self.SignUpButton:Disable();
 		self.SignUpButton.errorText = LFG_LIST_MUST_SELECT_ROLE;
 	end
+end
+
+function LFGListApplicationDialogSignUpButton_OnClick(button)
+	local dialog = button:GetParent();
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	C_LFGList.ApplyToGroup(dialog.resultID, dialog.TankButton:IsShown() and dialog.TankButton.CheckButton:GetChecked(), dialog.HealerButton:IsShown() and dialog.HealerButton.CheckButton:GetChecked(), dialog.DamagerButton:IsShown() and dialog.DamagerButton.CheckButton:GetChecked());
+	StaticPopupSpecial_Hide(dialog);
 end
 
 function LFGListRoleButtonCheckButton_OnClick(self)
@@ -2688,6 +2699,7 @@ function LFGListUtil_AugmentWithBest(filters, categoryID, groupID, activityID)
 	assert(activityID);
 
 	--Update the categoryID and groupID with what we get from the activity
+	local _;
 	categoryID, groupID, _, filters = select(ACTIVITY_RETURN_VALUES.categoryID, C_LFGList.GetActivityInfo(activityID));
 
 	--Update the filters if needed
@@ -2758,7 +2770,7 @@ function LFGListUtil_GetDecoratedCategoryName(categoryName, filter, useColors)
 		colorStart = "|cffffffff";
 		colorEnd = "|r";
 	end
-
+	
 	local extraName = "";
 	if ( filter == LE_LFG_LIST_FILTER_NOT_RECOMMENDED ) then
 		extraName = LFG_LIST_LEGACY;
@@ -3092,7 +3104,6 @@ end
 LFG_LIST_ACTIVE_QUEUE_MESSAGE_EVENTS = {
 	"LFG_LIST_ACTIVE_ENTRY_UPDATE",
 	"LFG_LIST_SEARCH_RESULT_UPDATED",
-	"PVP_ROLE_CHECK_UPDATED",
 	"UPDATE_BATTLEFIELD_STATUS",
 	"LFG_UPDATE",
 	"LFG_ROLE_CHECK_UPDATE",
@@ -3155,7 +3166,8 @@ end
 function LFGListUtil_SetAutoAccept(autoAccept)
 	local active, activityID, iLevel, honorLevel, name, comment, voiceChat, expiration, oldAutoAccept, privateGroup, questID = C_LFGList.GetActiveEntryInfo();
 	if active then
-		C_LFGList.UpdateListing(activityID, name, iLevel, honorLevel, voiceChat, comment, autoAccept, privateGroup, questID);
+		C_LFGList.CopyActiveEntryInfoToCreationFields();
+		C_LFGList.UpdateListing(activityID, iLevel, honorLevel, autoAccept, privateGroup, questID);
 	end
 end
 
@@ -3163,11 +3175,14 @@ LFG_LIST_UTIL_SUPPRESS_AUTO_ACCEPT_LINE = 1;
 LFG_LIST_UTIL_ALLOW_AUTO_ACCEPT_LINE = 2;
 
 function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
-	local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers, isAutoAccept = C_LFGList.GetSearchResultInfo(resultID);
+	local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers, isAutoAccept, questID = C_LFGList.GetSearchResultInfo(resultID);
 	local activityName, shortName, categoryID, groupID, minItemLevel, filters, minLevel, maxPlayers, displayType, _, useHonorLevel = C_LFGList.GetActivityInfo(activityID);
 	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
 	tooltip:SetText(name, 1, 1, 1, true);
 	tooltip:AddLine(activityName);
+	if ( comment and comment == "" and questID ) then
+		comment = LFGListUtil_GetQuestDescription(questID);
+	end
 	if ( comment ~= "" ) then
 		tooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, comment), LFG_LIST_COMMENT_FONT_COLOR.r, LFG_LIST_COMMENT_FONT_COLOR.g, LFG_LIST_COMMENT_FONT_COLOR.b, true);
 	end
@@ -3282,4 +3297,13 @@ function LFGListUtil_FindQuestGroup(questID)
 	else
 		LFGListFrame_BeginFindQuestGroup(LFGListFrame, questID);
 	end
+end
+
+function LFGListUtil_GetQuestDescription(questID)
+	local descriptionFormat = AUTO_GROUP_CREATION_NORMAL_QUEST;
+	if ( QuestUtils_IsQuestWorldQuest(questID) ) then
+		descriptionFormat = AUTO_GROUP_CREATION_WORLD_QUEST;
+	end
+
+	return descriptionFormat:format(QuestUtils_GetQuestName(questID));
 end

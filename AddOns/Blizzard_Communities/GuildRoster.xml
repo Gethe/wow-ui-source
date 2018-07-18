@@ -1,0 +1,244 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="GuildRoster.lua"/>
+
+	<Frame name="CommunitiesGuildMemberDetailFrameTemplate" mixin="CommunitiesGuildMemberDetailMixin" toplevel="true" enableMouse="true" virtual="true">
+		<Size x="212" y="270"/>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="11" top="11" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BackBackground" blendMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-5"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="5"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.6"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontNormal">
+					<Size x="165" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="17" y="-18"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Level" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ZoneLabel" inherits="GameFontNormalSmall" text="ZONE_COLON">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Level" relativePoint="BOTTOMLEFT" x="0" y="-11"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ZoneText" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size x="147" y="12"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ZoneLabel" relativePoint="RIGHT" x="2" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RankLabel" inherits="GameFontNormalSmall" text="RANK_COLON">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ZoneLabel" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RankText" inherits="GameFontHighlight" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.RankLabel" relativePoint="RIGHT" x="2" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="OnlineLabel" inherits="GameFontNormalSmall" text="LAST_ONLINE_COLON">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RankLabel" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="OnlineText" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.OnlineLabel" relativePoint="RIGHT" x="2" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NoteLabel" inherits="GameFontNormalSmall" text="NOTE_COLON">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.OnlineLabel" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="OfficerNoteLabel" inherits="GameFontNormalSmall" text="OFFICER_NOTE_COLON">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NoteLabel" relativePoint="BOTTOMLEFT" x="0" y="-43"/>
+					</Anchors>
+				</FontString>
+				<Texture file="Interface\FriendsFrame\UI-GuildMember-Patch">
+					<Size x="256" y="32"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="12" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Corner" file="Interface\DialogFrame\UI-DialogBox-Corner">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-6" y="-7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-3" y="-3"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						HideParentPanel(self);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="RemoveButton" inherits="UIPanelButtonTemplate" text="REMOVE">
+				<Size x="96" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="10" y="12"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local memberInfo = self:GetParent():GetMemberInfo();
+						if memberInfo ~= nil and memberInfo.guid ~= nil and memberInfo.name ~= nil then
+							local data = { name = memberInfo.name, guid = memberInfo.guid, };
+							StaticPopup_Show("REMOVE_GUILDMEMBER", nil, nil, data);
+						end
+					</OnClick>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, REMOVE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDREMOVE, 1);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontHighlightSmall"/>
+				<DisabledFont style="GameFontDisableSmall"/>
+			</Button>
+			<Button parentKey="GroupInviteButton" inherits="UIPanelButtonTemplate" text="GROUP_INVITE">
+				<Size x="96" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.RemoveButton" relativePoint="RIGHT" x="1" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						InviteToGroup(self:GetParent().Name:GetText());
+					</OnClick>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, GROUP_INVITE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GROUPINVITE, 1);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontHighlightSmall"/>
+				<DisabledFont style="GameFontDisableSmall"/>
+			</Button>
+			<Frame parentKey="RankDropdown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.RankLabel" relativePoint="RIGHT" x="-16" y="-3"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="NoteBackground" enableMouse="true">
+				<Size x="181" y="40"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.NoteLabel" relativePoint="BOTTOMLEFT" x="-2" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="PersonalNoteText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
+							<Size x="165" y="32"/>
+							<Anchors>
+								<Anchor point="TOP" x="1" y="-6"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
+						self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.25);
+					</OnLoad>
+					<OnMouseUp>
+						local memberInfo = self:GetParent():GetMemberInfo();
+						if memberInfo ~= nil and memberInfo.guid ~= nil then
+							local currentNote = memberInfo.memberNote or "";
+							local data = { guid = memberInfo.guid, currentNote = currentNote, isPublic = true, };
+							StaticPopup_Show("SET_GUILD_COMMUNITIY_NOTE", nil, nil, data);
+						end
+					</OnMouseUp> 
+				</Scripts>
+			</Frame>
+			<Frame parentKey="OfficerNoteBackground">
+				<Size x="181" y="40"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.OfficerNoteLabel" relativePoint="BOTTOMLEFT" x="-2" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="OfficerNoteText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
+							<Size x="165" y="32"/>
+							<Anchors>
+								<Anchor point="TOP" x="1" y="-6"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
+						self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.25);
+					</OnLoad>
+					<OnMouseUp>
+						local memberInfo = self:GetParent():GetMemberInfo();
+						if memberInfo ~= nil and memberInfo.guid ~= nil then
+							local currentNote = memberInfo.officerNote or "";
+							local data = { guid = memberInfo.guid, currentNote = currentNote, isPublic = false, };
+							StaticPopup_Show("SET_GUILD_COMMUNITIY_NOTE", nil, nil, data);
+						end
+					</OnMouseUp>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

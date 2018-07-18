@@ -33,14 +33,11 @@ function ZoneLabelDataProviderMixin:RefreshAllData(fromOnShow)
 	self.numActiveAreas = 0;
 	self.activeAreas = {};
 
-	if self:GetMap():ShouldShowSubzones() then
-		local mapAreaID = self:GetMap():GetMapID();
-		for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
-			local zoneMapID, zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
-			if zoneDepth <= 1 then -- Exclude subzones
-				self:AddZone(zoneMapID, zoneName, left, right, top, bottom);
-			end
-		end
+	local mapID = self:GetMap():GetMapID();
+	local mapChildren = C_Map.GetMapChildrenInfo(mapID, Enum.UIMapType.Zone);
+	for i, childMapInfo in ipairs(mapChildren) do
+		local left, right, top, bottom = C_Map.GetMapRectOnMap(childMapInfo.mapID, mapID);
+		self:AddZone(childMapInfo.mapID, childMapInfo.name, left, right, top, bottom);
 	end
 
 	self:AddContinent();
@@ -201,9 +198,14 @@ function ZoneLabelDataProviderMixin:AddZone(zoneMapID, zoneName, left, right, to
 end
 
 function ZoneLabelDataProviderMixin:AddContinent()
+	local mapInfo = MapUtil.GetMapParentInfo(self:GetMap():GetMapID(), Enum.UIMapType.Continent);
+	if not mapInfo then
+		return;
+	end
+
 	local areaTrigger = self:GetMap():AcquireAreaTrigger("ZoneLabelDataProvider_ZoneLabel");
 	areaTrigger.owner = self;
-	areaTrigger.name = select(2, C_MapCanvas.GetContinentInfo(self:GetMap():GetMapID()));
+	areaTrigger.name = mapInfo.name;
 	areaTrigger.isContinent = true;
 
 	self:GetMap():SetAreaTriggerEnclosedCallback(areaTrigger, OnAreaEnclosedChanged);

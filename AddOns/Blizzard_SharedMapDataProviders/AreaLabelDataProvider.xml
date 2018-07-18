@@ -1,0 +1,31 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="AreaLabelDataProvider.lua"/>
+
+	<Frame name="AreaLabelFrameTemplate" mixin="AreaLabelFrameMixin" scale="0.695" virtual="true">
+		<Size x="400" y="128"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Name" inherits="WorldMapTextFont">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-20"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Texture" hidden="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Name" relativePoint="LEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Description" inherits="SubZoneTextFont">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -50,7 +50,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<DressUpModel name="SideDressUpModel" scale="1.0" inherits="ModelWithControlsTemplate">
+			<DressUpModel name="SideDressUpModel" modelScale="1.0" inherits="ModelWithControlsTemplate">
 				<Size>
 					<AbsDimension x="172" y="400"/>
 				</Size>
@@ -159,14 +159,12 @@
 					<OnLoad>						
 						function OnMaximize(frame)
 							frame:GetParent():SetSize(450, 545);
-							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						
 						self:SetOnMaximizedCallback(OnMaximize);
 						
 						function OnMinimize(frame)
 							frame:GetParent():SetSize(334, 423);
-							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						
 						self:SetOnMinimizedCallback(OnMinimize);

@@ -28,16 +28,11 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Button name="QuickJoinToastButton" frameStrata="LOW" frameLevel="4" parent="UIParent" mixin="QuickJoinToastMixin">
+	<ContainedAlertFrame  name="QuickJoinToastButton" frameStrata="LOW" frameLevel="4" parent="UIParent" mixin="QuickJoinToastMixin">
 		<Size x="32" y="32"/>
-		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="ChatFrameMenuButton" relativePoint="TOP"/>
-		</Anchors>
 		<Frames>
-			<Frame parentKey="Toast" inherits="QuickJoinToastTemplate" frameLevel="3">
-			</Frame>
-			<Frame parentKey="Toast2" inherits="QuickJoinToastTemplate" frameLevel="3">
-			</Frame>
+			<Frame parentKey="Toast" inherits="QuickJoinToastTemplate" frameLevel="3"/>
+			<Frame parentKey="Toast2" inherits="QuickJoinToastTemplate" frameLevel="3"/>
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -137,5 +132,5 @@
 				</Scripts>
 			</AnimationGroup>
 		</Animations>
-	</Button>
+	</ContainedAlertFrame>
 </Ui>

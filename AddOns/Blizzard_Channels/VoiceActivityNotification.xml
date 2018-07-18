@@ -1,0 +1,89 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="VoiceActivityNotification.lua"/>
+
+	<Frame name="VoiceActivityVolumeTemplate" mixin="VoiceActivityVolumeMixin" virtual="true">
+		<Size x="16" y="16"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Level1" atlas="voicechat-icon-loudnessbar-1">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Level2" atlas="voicechat-icon-loudnessbar-2">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Level3" atlas="voicechat-icon-loudnessbar-3">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Button name="VoiceActivityNotificationBaseTemplate" mixin="VoiceActivityNotificationBaseMixin" hidden="true" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<ContainedAlertFrame name="VoiceActivityNotificationTemplate" inherits="VoiceActivityNotificationBaseTemplate" mixin="VoiceActivityNotificationMixin" virtual="true">
+		<Size x="120" y="29"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Portrait">
+					<Size x="22" y="22"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="11" y="-3"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="24" y="24"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Portrait"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Portrait"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="PortraitFrame" atlas="voicechat-portrait-ring">
+					<Size x="31" y="31"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Portrait"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Portrait" relativePoint="RIGHT" x="24"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Speaker" atlas="voicechat-icon-speaker">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Portrait" relativePoint="RIGHT" x="-4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Volume" inherits="VoiceActivityVolumeTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Speaker" relativePoint="RIGHT" x="-5"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</ContainedAlertFrame>
+</Ui>

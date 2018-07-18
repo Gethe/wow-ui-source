@@ -38,11 +38,11 @@ function BarberShop_OnLoad(self)
 			self.SkinColorSelector:Show();
 		end
 	end
-
-	BarberShop_UpdateCustomizationOptions(self);
 end
 
 function BarberShop_OnShow(self)
+	BarberShop_UpdateCustomizationOptions(self);
+
 	CloseAllBags();
 	BarberShop_ResetLabelColors();
 	BarberShop_UpdateCost(self);
@@ -87,7 +87,9 @@ function BarberShop_OnEvent(self, event, ...)
 	if(event == "BARBER_SHOP_SUCCESS") then
 		PlaySound(SOUNDKIT.BARBERSHOP_HAIRCUT);
 	end
-	BarberShop_Update(self);
+	if (self:IsShown()) then
+		BarberShop_Update(self);
+	end
 end
 
 function BarberShop_UpdateCost(self)
@@ -118,13 +120,13 @@ function BarberShop_Update(self)
 	for i=1, #self.Selector do
 		BarberShop_UpdateSelector(self.Selector[i]);
 	end
+	BarberShop_UpdateCustomizationOptions(self);
 end
 
 function BarberShop_UpdateSelector(self)
 	local name, _, _, isCurrent = GetBarberShopStyleInfo(self:GetID());
 	BarberShop_UpdateBanner(name);
 	BarberShop_SetLabelColor(self.Category, isCurrent);
-	BarberShop_UpdateCustomizationOptions(self:GetParent());
 end
 
 function BarberShop_UpdateCustomizationOptions(self)

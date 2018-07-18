@@ -288,4 +288,49 @@
 			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>
+
+	<!--When you inherit from this, add a child fontstring with parentKey=TimerText-->
+	<Frame name="BaseTextTimer" virtual="true" mixin="BaseTextTimerMixin" />
+
+	<Frame name="BaseExpandableDialog" virtual="true" frameStrata="HIGH" hidden="true" mixin="BaseExpandableDialogMixin">
+		<Size x="430" y="250"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Top">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Bottom">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Middle">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Top" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bottom" relativePoint="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CloseButtonBG">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-12" y="-12"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.CloseButtonBG" x="1"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="BaseExpandableDialogMixin_OnCloseClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
 </Ui>

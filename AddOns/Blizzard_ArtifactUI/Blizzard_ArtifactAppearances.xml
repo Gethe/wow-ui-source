@@ -79,6 +79,12 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="UnobtainableCover" atlas="Forge-UnobtainableCover" hidden="true">
+					<Size x="55" y="55"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<HighlightTexture parentKey="HighlightTexture" atlas="Forge-ColorSwatchHighlight" useAtlasSize="true" alphaMode="ADD">

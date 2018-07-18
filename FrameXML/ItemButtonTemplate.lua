@@ -46,7 +46,7 @@ function SetItemButtonTexture(button, texture)
 	if ( not button ) then
 		return;
 	end
-	local icon = button.icon or _G[button:GetName().."IconTexture"];
+	local icon = button.Icon or button.icon or _G[button:GetName().."IconTexture"];
 	if ( texture ) then
 		icon:Show();
 	else
@@ -60,7 +60,7 @@ function SetItemButtonTextureVertexColor(button, r, g, b)
 		return;
 	end
 	
-	local icon = button.icon or _G[button:GetName().."IconTexture"];
+	local icon = button.Icon or button.icon or _G[button:GetName().."IconTexture"];
 	icon:SetVertexColor(r, g, b);
 end
 
@@ -68,7 +68,7 @@ function SetItemButtonDesaturated(button, desaturated)
 	if ( not button ) then
 		return;
 	end
-	local icon = button.icon or _G[button:GetName().."IconTexture"];
+	local icon = button.Icon or button.icon or _G[button:GetName().."IconTexture"];
 	if ( not icon ) then
 		return;
 	end
@@ -101,11 +101,23 @@ function SetItemButtonSlotVertexColor(button, r, g, b)
 	_G[button:GetName().."SlotTexture"]:SetVertexColor(r, g, b);
 end
 
-function SetItemButtonQuality(button, quality, itemIDOrLink)
-	if itemIDOrLink and IsArtifactRelicItem(itemIDOrLink) then
-		button.IconBorder:SetTexture([[Interface\Artifacts\RelicIconFrame]]);
+function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
+	if itemIDOrLink then
+		if IsArtifactRelicItem(itemIDOrLink) then
+			button.IconBorder:SetTexture([[Interface\Artifacts\RelicIconFrame]]);
+		else
+			button.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
+		end
+		
+		if not suppressOverlays and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemIDOrLink) then
+			button.IconOverlay:SetAtlas([[AzeriteIconFrame]]);
+			button.IconOverlay:Show();
+		else
+			button.IconOverlay:Hide();
+		end
 	else
 		button.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
+		button.IconOverlay:Hide();
 	end
 
 	if quality then
@@ -139,7 +151,13 @@ function HandleModifiedItemClick(link)
 		end
 	end
 	if ( IsModifiedClick("DRESSUP") ) then
-		return DressUpItemLink(link);
+		return DressUpItemLink(link) or DressUpBattlePetLink(link) or DressUpMountLink(link)
+	end
+	if ( IsModifiedClick("EXPANDITEM") ) then
+		if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(link) then
+			OpenAzeriteEmpoweredItemUIFromLink(link);
+			return true;
+		end
 	end
 	return false;
 end

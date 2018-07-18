@@ -1,4 +1,4 @@
-## Interface: 70300
+## Interface: 80000
 ## Title: Blizzard Store UI
 ## Secure: 1
 ..\..\SharedXML\Spline.lua

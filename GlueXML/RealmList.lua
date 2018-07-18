@@ -17,6 +17,11 @@ function RealmList_Update()
 		RealmList.selectedCategory = C_RealmList.GetAvailableCategories()[1];
 	end
 
+	local kioskRealmAddr = GetKioskAutoRealmAddress();
+	if (kioskRealmAddr) then
+		RealmList.selectedRealm = kioskRealmAddr;
+	end
+
 	-- Update category tabs
 	RealmList_UpdateTabs();
 
@@ -152,6 +157,11 @@ function RealmList_Update()
 
 	if ( not foundSelectedRealm ) then
 		RealmListHighlight:Hide();
+	end
+
+	if (kioskRealmAddr and foundSelectedRealm) then
+		C_RealmList.ConnectToRealm(kioskRealmAddr);
+		SetKioskAutoRealmAddress(nil);
 	end
 
 	RealmList_UpdateOKButton();

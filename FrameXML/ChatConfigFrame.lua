@@ -695,7 +695,7 @@ end
 function ChatConfigFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		-- Chat Settings
-		ChatConfig_CreateCheckboxes(ChatConfigChatSettingsLeft, CHAT_CONFIG_CHAT_LEFT, "ChatConfigCheckBoxWithSwatchAndClassColorTemplate", PLAYER_MESSAGES);
+		ChatConfig_CreateCheckboxes(ChatConfigChatSettingsLeft, CHAT_CONFIG_CHAT_LEFT, "ChatConfigWideCheckBoxWithSwatchTemplate", PLAYER_MESSAGES);
 		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsCombat, CHAT_CONFIG_OTHER_COMBAT, "ChatConfigCheckBoxWithSwatchTemplate", COMBAT);
 		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsPVP, CHAT_CONFIG_OTHER_PVP, "ChatConfigCheckBoxWithSwatchTemplate", PVP);
 		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsSystem, CHAT_CONFIG_OTHER_SYSTEM, "ChatConfigCheckBoxWithSwatchTemplate", OTHER);
@@ -740,6 +740,7 @@ function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, tit
 		checkBox = _G[checkBoxName];
 		if ( not checkBox ) then
 			checkBox = CreateFrame("Frame", checkBoxName, frame, checkBoxTemplate);
+			checkBox:SetID(index);
 		end
 		if ( not width ) then
 			width = checkBox:GetWidth();
@@ -755,12 +756,10 @@ function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, tit
 		else
 			text = _G[value.type];
 		end
-		if ( value.noClassColor ) then
-			_G[checkBoxName.."ColorClasses"]:Hide();
-		end
 		checkBox.type = value.type;
 		checkBoxFontString = _G[checkBoxName.."CheckText"];
 		checkBoxFontString:SetText(text);
+		checkBoxFontString:SetMaxLines(1);
 		check = _G[checkBoxName.."Check"];
 		check.func = value.func;
 		check:SetID(index);
@@ -774,6 +773,15 @@ function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, tit
 			end
 		end
 	end
+	
+	for index = #checkBoxTable + 1, MAX_WOW_CHAT_CHANNELS do
+		checkBoxName = checkBoxNameString..index;
+		checkBox = _G[checkBoxName];
+		if checkBox then
+			checkBox:Hide();
+		end
+	end
+	
 	--Set Parent frame dimensions
 	if ( #checkBoxTable > 0 ) then
 		frame:SetWidth(width+padding);
@@ -926,10 +934,15 @@ function ChatConfig_UpdateCheckboxes(frame)
 			if ( not height ) then
 				height = checkBox:GetParent():GetHeight();
 			end
-			if ( type(value.checked) == "function" ) then
-				checkBox:SetChecked(value.checked());
+			if ( value.isBlank ) then
+				checkBox:Hide();
 			else
-				checkBox:SetChecked(value.checked);	
+				checkBox:Show();
+				if ( type(value.checked) == "function" ) then
+					checkBox:SetChecked(value.checked());
+				else
+					checkBox:SetChecked(value.checked);
+				end
 			end
 			if ( type(value.disabled) == "function" ) then
 				if( value.disabled() ) then
@@ -965,14 +978,13 @@ function ChatConfig_UpdateCheckboxes(frame)
 			
 			colorSwatch = _G[baseName.."ColorSwatch"];
 			if ( colorSwatch ) then
-				_G[baseName.."ColorSwatchNormalTexture"]:SetVertexColor(GetMessageTypeColor(value.type));
-				colorSwatch.type = value.type;
-			end
-			
-			--Color class names
-			local colorClasses = _G[baseName.."ColorClasses"];
-			if ( colorClasses ) then
-				colorClasses:SetChecked(IsClassColoringMessageType(value.type));
+				if ( value.isBlank ) then
+					colorSwatch:Hide();
+				else
+					_G[baseName.."ColorSwatchNormalTexture"]:SetVertexColor(GetMessageTypeColor(value.type));
+					colorSwatch.type = value.type;
+					colorSwatch:Show();
+				end
 			end
 		end
 		frame:SetHeight( topnum * height + padding );
@@ -1195,10 +1207,6 @@ function ToggleChatMessageGroup(checked, group)
 	end
 end
 
-function ColorClassesCheckBox_OnClick(self, checked)
-	ToggleChatColorNamesByClassGroup(checked, self:GetParent().type);
-end
-
 function ToggleChatColorNamesByClassGroup(checked, group)
 	local info = ChatTypeGroup[group];
 	if ( info ) then
@@ -1331,14 +1339,14 @@ function IsClassColoringMessageType(messageType)
 	if ( groupInfo ) then
 		for key, value in pairs(groupInfo) do	--If any of the sub-categories color by name, we'll consider the entire thing as colored by name.
 			local info = ChatTypeInfo[strsub(value, 10)];
-			if ( info and info.colorNameByClass ) then	--strsub gets rid of CHAT_MSG_
+			if ( info and Chat_ShouldColorChatByClass(info) ) then
 				return true;
 			end
 		end
 		return false;
 	else
 		local info = ChatTypeInfo[messageType];
-		return info and info.colorNameByClass;
+		return info and Chat_ShouldColorChatByClass(info);
 	end
 end
 
@@ -1552,8 +1560,19 @@ function CreateChatChannelList(self, ...)
 				end
 			end
 		end
+		
+		while count < channelID do
+			-- Leave empty entries for missing channels to allow for re-ordering.
+			CHAT_CONFIG_CHANNEL_LIST[count] = {};
+			CHAT_CONFIG_CHANNEL_LIST[count].channelID = count;
+			CHAT_CONFIG_CHANNEL_LIST[count].text = count..".";
+			CHAT_CONFIG_CHANNEL_LIST[count].isBlank = true;
+			count = count + 1;
+		end
+		
 		CHAT_CONFIG_CHANNEL_LIST[count] = {};
-		CHAT_CONFIG_CHANNEL_LIST[count].text = channelID.."."..channel;
+		CHAT_CONFIG_CHANNEL_LIST[count].channelID = channelID;
+		CHAT_CONFIG_CHANNEL_LIST[count].text = channelID.."."..ChatFrame_ResolveChannelName(channel);
 		CHAT_CONFIG_CHANNEL_LIST[count].channelName = channel;
 		CHAT_CONFIG_CHANNEL_LIST[count].type = tag;
 		CHAT_CONFIG_CHANNEL_LIST[count].maxWidth = CHATCONFIG_CHANNELS_MAXWIDTH;
@@ -1922,6 +1941,39 @@ function ChatConfigFrame_PlayCheckboxSound (checked)
 	end
 end
 
+function ChatConfigCategoryFrame_Refresh(preserveCategorySelection)
+	if ( IsCombatLog(FCF_GetCurrentChatFrame()) ) then
+		ChatConfigCategoryFrameButton2:Show();
+		ChatConfigCategoryFrameButton3:SetPoint("TOPLEFT", ChatConfigCategoryFrameButton2, "BOTTOMLEFT", 0, -1);
+		ChatConfigCategoryFrameButton3:SetPoint("TOPRIGHT", ChatConfigCategoryFrameButton2, "BOTTOMRIGHT", 0, -1);
+		ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton2);
+	else
+		ChatConfigCategoryFrameButton2:Hide();
+		ChatConfigCategoryFrameButton3:SetPoint("TOPLEFT", ChatConfigCategoryFrameButton1, "BOTTOMLEFT", 0, -1);
+		ChatConfigCategoryFrameButton3:SetPoint("TOPRIGHT", ChatConfigCategoryFrameButton1, "BOTTOMRIGHT", 0, -1);
+		if ( not preserveCategorySelection or _G[CHAT_CONFIG_CATEGORIES[2]]:IsShown() ) then
+			ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton1);
+		end
+	end
+	ChatConfigFrameHeaderText:SetText(format(CHATCONFIG_HEADER, FCF_GetCurrentChatFrame().name));
+	ChatConfigFrameHeader:SetWidth(ChatConfigFrameHeaderText:GetWidth()+200);
+	ChatConfigCategory_UpdateEnabled();
+end
+
+function ChatConfig_RefreshCurrentChatCategory(preserveCategorySelection)
+	if _G[CHAT_CONFIG_CATEGORIES[1]]:IsShown() then
+		ChatConfigChatSettings_OnShow();
+	elseif _G[CHAT_CONFIG_CATEGORIES[2]]:IsShown() then
+		ChatConfigCombat_OnShow();
+	elseif _G[CHAT_CONFIG_CATEGORIES[3]]:IsShown() then
+		ChatConfigChannelSettings_OnShow();
+	elseif _G[CHAT_CONFIG_CATEGORIES[4]]:IsShown() then
+		ChatConfigOtherSettings_OnShow();
+	end
+	
+	ChatConfigCategoryFrame_Refresh(preserveCategorySelection);
+end
+
 function ChatConfigChatSettings_OnShow()
 	ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsLeft);
 	UpdateDefaultButtons(false);
@@ -1929,10 +1981,32 @@ end
 
 function ChatConfigChannelSettings_OnShow()
 	-- Have to build it here since the channel list doesn't exist on load
-	CreateChatChannelList(self, GetChannelList());
-	ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "ChatConfigCheckBoxWithSwatchAndClassColorTemplate", CHANNELS);
+	CreateChatChannelList(ChatConfigChannelSettings, GetChannelList());
+	ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "MovableChatConfigWideCheckBoxWithSwatchTemplate", CHAT_CONFIG_CHANNEL_SETTINGS_TITLE_WITH_DRAG_INSTRUCTIONS);
 	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
 	UpdateDefaultButtons(false);
+end
+
+function ChatConfigChannelSettings_MoveChannelDown(channelIndex)
+	if channelIndex == #CHAT_CONFIG_CHANNEL_LIST then
+		return;
+	end
+	
+	SwapChatChannelByLocalID(CHAT_CONFIG_CHANNEL_LIST[channelIndex].channelID, CHAT_CONFIG_CHANNEL_LIST[channelIndex + 1].channelID);
+	CreateChatChannelList(ChatConfigChannelSettings, GetChannelList());
+	ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "ChatConfigWideCheckBoxWithSwatchTemplate", CHAT_CONFIG_CHANNEL_SETTINGS_TITLE_WITH_DRAG_INSTRUCTIONS);
+	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
+end
+
+function ChatConfigChannelSettings_MoveChannelUp(channelIndex)
+	if channelIndex == 1 then
+		return;
+	end
+	
+	SwapChatChannelByLocalID(CHAT_CONFIG_CHANNEL_LIST[channelIndex].channelID, CHAT_CONFIG_CHANNEL_LIST[channelIndex - 1].channelID);
+	CreateChatChannelList(ChatConfigChannelSettings, GetChannelList());
+	ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "ChatConfigWideCheckBoxWithSwatchTemplate", CHAT_CONFIG_CHANNEL_SETTINGS_TITLE_WITH_DRAG_INSTRUCTIONS);
+	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
 end
 
 function ChatConfigOtherSettings_OnShow()
@@ -1953,4 +2027,228 @@ end
 
 function ChatConfigFrameRedockButton_OnLoad(self)
 	self:SetWidth(self:GetTextWidth() + 31);
+end
+
+ChatWindowTabMixin = {};
+
+function ChatWindowTabMixin:OnClick()
+	self:GetParent():UpdateSelection(self:GetID());
+end
+
+function ChatWindowTabMixin:SetChatWindowIndex(chatWindowIndex)
+	self:SetID(chatWindowIndex);
+	local chatTab = _G["ChatFrame"..chatWindowIndex.."Tab"];
+	self.Text:SetText(chatTab.Text:GetText());
+end
+
+function ChatWindowTabMixin:UpdateWidth()
+	local maxTabWidth = self:GetParent():GetMaxTabWidth();
+	local maxWidth = (maxTabWidth ~= nil) and (maxTabWidth - 32) or nil;
+	PanelTemplates_TabResize(self, 0, nil, maxWidth, maxWidth, self.Text:GetUnboundedStringWidth());
+end
+
+ChatConfigFrameTabManagerMixin = {};
+
+local CHAT_TAB_MANAGER_SPACE = 24;
+
+function ChatConfigFrameTabManagerMixin:OnLoad()
+	self.tabPool = CreateFramePool("BUTTON", self, "ChatWindowTab");
+end
+
+function ChatConfigFrameTabManagerMixin:OnShow()
+	self.tabPool:ReleaseAll();
+	
+	local lastTab = nil;
+	for i = 1, FCF_GetNumActiveChatFrames() do
+		local tab = self.tabPool:Acquire();
+		tab:SetChatWindowIndex(i);
+		if lastTab then
+			tab:SetPoint("LEFT", lastTab, "RIGHT");
+		else
+			tab:SetPoint("BOTTOMLEFT", self, "TOPLEFT");
+		end
+		
+		tab:Show();
+		lastTab = tab;
+	end
+	
+	self:UpdateSelection(CURRENT_CHAT_FRAME_ID);
+	self:UpdateWidth();
+end
+
+function ChatConfigFrameTabManagerMixin:UpdateSelection(selectedChatWindowIndex)
+	CURRENT_CHAT_FRAME_ID = selectedChatWindowIndex;
+	
+	local preserveCategorySelection = true;
+	ChatConfig_RefreshCurrentChatCategory(preserveCategorySelection);
+	
+	for tab in self.tabPool:EnumerateActive() do
+		FCFTab_UpdateColors(tab, tab:GetID() == selectedChatWindowIndex);
+	end
+end
+
+function ChatConfigFrameTabManagerMixin:UpdateWidth(selectedChatWindowIndex)
+	self.currentWidth = 0;
+	for tab in self.tabPool:EnumerateActive() do
+		tab:UpdateWidth();
+	end
+	
+	self:CalculateCurrentWidth();
+	
+	for tab in self.tabPool:EnumerateActive() do
+		tab:UpdateWidth();
+	end
+end
+
+function ChatConfigFrameTabManagerMixin:GetMaxTabWidth()
+	local maxWidth = self:GetParent():GetWidth() - CHAT_TAB_MANAGER_SPACE;
+	if self:GetCurrentWidth() <= maxWidth then
+		return nil;
+	end
+	
+	return maxWidth / self.tabPool:GetNumActive();
+end
+
+function ChatConfigFrameTabManagerMixin:GetCurrentWidth()
+	return self.currentWidth;
+end
+
+function ChatConfigFrameTabManagerMixin:CalculateCurrentWidth()
+	local currentWidth = CHAT_TAB_MANAGER_SPACE;
+	for tab in self.tabPool:EnumerateActive() do
+		currentWidth = currentWidth + tab:GetWidth();
+	end
+	
+	self.currentWidth = currentWidth;
+end
+
+ChatConfigWideCheckBoxManagerMixin = {};
+
+function ChatConfigWideCheckBoxManagerMixin:OnUpdate(dt)
+	if self.movingIndex > #CHAT_CONFIG_CHANNEL_LIST then
+		self:StopMovingEntry();
+	end
+	
+	if not IsMouseButtonDown() or self.movingIndex == nil then
+		self:StopMovingEntry();
+		return;
+	end
+	
+	local movingEntry = self:GetMovingEntry();
+	if self.movingIndex ~= nil and movingEntry == nil then
+		return;
+	end
+	
+	local cursorY = select(2, GetScaledCursorPosition());
+	local top = self:GetTop();
+	local bottom = self:GetBottom();
+	local centerY = select(2, movingEntry:GetCenter()) * movingEntry:GetScale();
+	local height = movingEntry:GetHeight() * movingEntry:GetScale();
+	local tooFarUp = top - movingEntry:GetTop() < height / 4;
+	local tooFarDown = movingEntry:GetBottom() - bottom < height;
+
+	local distanceToMove = height / 1.7;
+	if cursorY - centerY > distanceToMove and not tooFarUp then
+		if self.movingIndex > 1 then
+			ChatConfigChannelSettings_MoveChannelUp(self.movingIndex);
+			self.movingIndex = self.movingIndex - 1;
+			self:UpdateStates();
+		end
+	elseif centerY - cursorY > distanceToMove and not tooFarDown then
+		if self.movingIndex < #CHAT_CONFIG_CHANNEL_LIST then
+			ChatConfigChannelSettings_MoveChannelDown(self.movingIndex);
+			self.movingIndex = self.movingIndex + 1;
+			self:UpdateStates();
+			self:UpdateStates();
+		end
+	end
+end
+
+function ChatConfigWideCheckBoxManagerMixin:UpdateStates()
+	if not self.movingIndex then
+		for i, button in ipairs(self.WideCheckBoxes) do
+			button:SetState(ChatConfigWideCheckBoxState.Normal);
+		end
+		
+		return;
+	end
+	
+	for i, button in ipairs(self.WideCheckBoxes) do
+		if button:GetID() == self.movingIndex then
+			button:SetState(ChatConfigWideCheckBoxState.Normal);
+		else
+			button:SetState(ChatConfigWideCheckBoxState.GrayedOut);
+		end
+	end
+end
+
+function ChatConfigWideCheckBoxManagerMixin:StartMovingEntry(index)
+	self.movingIndex = index;
+	self:SetScript("OnUpdate", ChatConfigWideCheckBoxManagerMixin.OnUpdate);
+	self:UpdateStates();
+end
+
+function ChatConfigWideCheckBoxManagerMixin:StopMovingEntry()
+	self.movingIndex = nil;
+	self:SetScript("OnUpdate", nil);
+	self:UpdateStates();
+end
+
+function ChatConfigWideCheckBoxManagerMixin:GetMovingEntry()
+	if self.movingIndex == nil then
+		return nil;
+	end
+	
+	for i, button in ipairs(self.WideCheckBoxes) do
+		if button:GetID() == self.movingIndex then
+			return button;
+		end
+	end
+	
+	return nil;
+end
+
+ChatConfigWideCheckBoxMixin = {};
+
+ChatConfigWideCheckBoxState = {
+	Normal = 1,
+	GrayedOut = 2,
+};
+
+function ChatConfigWideCheckBoxMixin:OnLoad()
+	self.CheckButton:SetHitRectInsets(0, 0, 0, 0);
+	self:RegisterForDrag("LeftButton");
+	self.CheckButton.Text:SetPoint("LEFT", self.CheckButton, "RIGHT", 1, 1);
+end
+
+function ChatConfigWideCheckBoxMixin:SetState(state)
+	self.ArtOverlay.GrayedOut:SetShown(state == ChatConfigWideCheckBoxState.GrayedOut);
+end
+
+function ChatConfigWideCheckBoxMixin:OnDragStart()
+	self:GetParent():StartMovingEntry(self:GetID());
+end
+
+function ChatConfigWideCheckBoxMixin:LeaveChannel()
+	local channelIndex = self:GetID();
+	if CHAT_CONFIG_CHANNEL_LIST[channelIndex].isBlank then
+		for i = channelIndex, #CHAT_CONFIG_CHANNEL_LIST - 1 do
+			SwapChatChannelByLocalID(CHAT_CONFIG_CHANNEL_LIST[i].channelID, CHAT_CONFIG_CHANNEL_LIST[i + 1].channelID);
+		end
+		
+		CreateChatChannelList(ChatConfigChannelSettings, GetChannelList());
+		ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "ChatConfigWideCheckBoxWithSwatchTemplate", CHAT_CONFIG_CHANNEL_SETTINGS_TITLE_WITH_DRAG_INSTRUCTIONS);
+	else
+		LeaveChannelByLocalID(CHAT_CONFIG_CHANNEL_LIST[channelIndex].channelID);
+		if channelIndex == #CHAT_CONFIG_CHANNEL_LIST then
+			CHAT_CONFIG_CHANNEL_LIST[channelIndex] = nil;
+		else
+			CHAT_CONFIG_CHANNEL_LIST[channelIndex] = {};
+			CHAT_CONFIG_CHANNEL_LIST[channelIndex].channelID = channelIndex;
+			CHAT_CONFIG_CHANNEL_LIST[channelIndex].text = channelIndex..".";
+			CHAT_CONFIG_CHANNEL_LIST[channelIndex].isBlank = true;
+		end
+	end
+	
+	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
 end

@@ -1,4 +1,3 @@
-
 BATTLEFIELD_TIMER_DELAY = 3;
 BATTLEFIELD_TIMER_THRESHOLDS = {600, 300, 60, 15};
 BATTLEFIELD_TIMER_THRESHOLD_INDEX = 1;
@@ -7,14 +6,6 @@ function PVPHelperFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
 	self:RegisterEvent("ZONE_CHANGED");
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
-	self:RegisterEvent("BATTLEFIELD_MGR_QUEUE_REQUEST_RESPONSE");
-	self:RegisterEvent("BATTLEFIELD_MGR_QUEUE_INVITE");
-	self:RegisterEvent("BATTLEFIELD_MGR_ENTRY_INVITE");
-	self:RegisterEvent("BATTLEFIELD_MGR_EJECT_PENDING");
-	self:RegisterEvent("BATTLEFIELD_MGR_EJECTED");
-	self:RegisterEvent("BATTLEFIELD_MGR_ENTERED");
-	self:RegisterEvent("BATTLEFIELD_MGR_DROP_TIMER_STARTED");
-	self:RegisterEvent("BATTLEFIELD_MGR_DROP_TIMER_CANCELED");
 	self:RegisterEvent("WARGAME_REQUESTED");
 	self:RegisterEvent("BATTLEFIELDS_SHOW");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -25,72 +16,6 @@ end
 function PVPHelperFrame_OnEvent(self, event, ...)
 	if ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "ZONE_CHANGED_NEW_AREA" or event == "ZONE_CHANGED" or event == "PLAYER_ENTERING_WORLD") then
 		PVP_UpdateStatus();
-	elseif ( event == "BATTLEFIELD_MGR_QUEUE_REQUEST_RESPONSE" ) then
-		local battleID, accepted, warmup, inArea, loggingIn, areaName = ...;
-		if(not loggingIn) then
-			if(accepted) then
-				if(warmup) then
-					StaticPopup_Show("BFMGR_CONFIRM_WORLD_PVP_QUEUED_WARMUP", areaName);
-				elseif (inArea) then
-					StaticPopup_Show("BFMGR_EJECT_PENDING", areaName);
-				else
-					StaticPopup_Show("BFMGR_CONFIRM_WORLD_PVP_QUEUED", areaName);
-				end
-			else
-				StaticPopup_Show("BFMGR_DENY_WORLD_PVP_QUEUED", areaName);
-			end
-		end
-		PVP_UpdateStatus();
-	elseif ( event == "BATTLEFIELD_MGR_QUEUE_INVITE" ) then
-		local battleID, warmup, areaName = ...;
-		if(warmup) then
-			StaticPopup_Show("BFMGR_INVITED_TO_QUEUE_WARMUP", areaName, nil, battleID);
-		else
-			StaticPopup_Show("BFMGR_INVITED_TO_QUEUE", areaName, nil, battleID);
-		end
-		StaticPopup_Hide("BFMGR_EJECT_PENDING");
-		PVP_UpdateStatus();
-	elseif ( event == "BATTLEFIELD_MGR_ENTRY_INVITE" ) then
-		local battleID, areaName = ...;
-		StaticPopup_Show("BFMGR_INVITED_TO_ENTER", areaName, nil, battleID);
-		StaticPopup_Hide("BFMGR_EJECT_PENDING");
-		PVP_UpdateStatus();
-	elseif ( event == "BATTLEFIELD_MGR_EJECT_PENDING" ) then
-		local battleID, remote, areaName = ...;
-		if(remote) then
-			StaticPopup_Show("BFMGR_EJECT_PENDING_REMOTE", areaName);
-		else
-		StaticPopup_Show("BFMGR_EJECT_PENDING", areaName);
-		end
-		PVP_UpdateStatus();
-	elseif ( event == "BATTLEFIELD_MGR_EJECTED" ) then
-		local battleID, playerExited, relocated, battleActive, lowLevel, notWhileInRaid, deserter, areaName = ...;
-		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE");
-		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE_WARMUP");
-		StaticPopup_Hide("BFMGR_INVITED_TO_ENTER");
-		StaticPopup_Hide("BFMGR_EJECT_PENDING");
-		StaticPopup_Hide("BATTLEFIELD_BORDER_WARNING");
-		if(lowLevel) then
-			StaticPopup_Show("BFMGR_PLAYER_LOW_LEVEL", areaName);
-		elseif (playerExited and battleActive and not relocated) then
-			StaticPopup_Show("BFMGR_PLAYER_EXITED_BATTLE", areaName);
-		elseif(notWhileInRaid) then
-			StaticPopup_Show("BFMGR_PLAYER_NOT_WHILE_IN_RAID", areaName);
-		elseif(deserter) then
-			StaticPopup_Show("BFMGR_PLAYER_DESERTER", areaName);
-		end
-		PVP_UpdateStatus();
-	elseif ( event == "BATTLEFIELD_MGR_ENTERED" ) then
-		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE");
-		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE_WARMUP");
-		StaticPopup_Hide("BFMGR_INVITED_TO_ENTER");
-		StaticPopup_Hide("BFMGR_EJECT_PENDING");
-		PVP_UpdateStatus();
-	elseif ( event == "BATTLEFIELD_MGR_DROP_TIMER_STARTED" ) then
-		local areaName, seconds = ...;
-		StaticPopup_Show("BATTLEFIELD_BORDER_WARNING", nil, nil, {name = areaName, timer = seconds});
-	elseif ( event == "BATTLEFIELD_MGR_DROP_TIMER_CANCELED" ) then
-		StaticPopup_Hide("BATTLEFIELD_BORDER_WARNING");
 	elseif ( event == "WARGAME_REQUESTED" ) then
 		local challengerName, bgName, timeout, tournamentRules = ...;
 		PVPFramePopup_SetupPopUp(event, challengerName, bgName, timeout, tournamentRules);
@@ -121,7 +46,7 @@ function PVP_UpdateStatus()
 				BATTLEFIELD_TIMER_THRESHOLD_INDEX = 1;
 				PREVIOUS_BATTLEFIELD_MOD = 0;
 			end
-			MainMenuBar_UpdateExperienceBars();
+			StatusTrackingBarManager:UpdateBarsShown();	
 		end
 	end
 end
@@ -240,48 +165,15 @@ end
 ---- PVP Role Check Functions
 ---------------------------------------------------------------------------
 function PVPRoleCheckPopup_OnLoad(self)
---	self:RegisterEvent("PVP_ROLE_CHECK_INITIATED");
 	self:RegisterEvent("PVP_ROLE_UPDATE");
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
-	self:RegisterEvent("PVP_ROLE_CHECK_ROLE_CHOSEN");
 end
 
 function PVPRoleCheckPopup_OnEvent(self, event, ...)
---[[	if ( event == "PVP_ROLE_CHECK_INITIATED" ) then
-		local active, queueName = GetPVPRoleCheckInfo();
-		if ( active ) then
-			PVPRoleCheckPopup_Display(self, queueName);
-		end
-	else]]
 	if ( event == "PVP_ROLE_UPDATE" ) then
 		PVPRoleCheckPopup_UpdateSelectedRoles(self);
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
 		PVPRoleCheckPopup_UpdateRolesChangeable(self);
-	elseif ( event == "PVP_ROLE_CHECK_ROLE_CHOSEN" ) then
-		local player, isTank, isHealer, isDamage = ...;
-
-		--Yes, consecutive string concatenation == bad for garbage collection. But the alternative is either extremely unslightly or localization unfriendly. (Also, this happens fairly rarely)
-		local roleList;
-		
-		if ( isTank ) then
-			roleList = INLINE_TANK_ICON.." "..TANK;
-		end
-		if ( isHealer ) then
-			if ( roleList ) then
-				roleList = roleList..PLAYER_LIST_DELIMITER.." "..INLINE_HEALER_ICON.." "..HEALER;
-			else
-				roleList = INLINE_HEALER_ICON.." "..HEALER;
-			end
-		end
-		if ( isDamage ) then
-			if ( roleList ) then
-				roleList = roleList..PLAYER_LIST_DELIMITER.." "..INLINE_DAMAGER_ICON.." "..DAMAGER;
-			else
-				roleList = INLINE_DAMAGER_ICON.." "..DAMAGER;
-			end
-		end
-		assert(roleList);
-		ChatFrame_DisplaySystemMessageInPrimary(string.format(LFG_ROLE_CHECK_ROLE_CHOSEN, player, roleList));
 	end
 end
 
