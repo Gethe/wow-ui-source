@@ -360,7 +360,22 @@ function CommunitiesMemberListMixin:UpdateMemberList()
 		self:UpdateProfessionDisplay();
 	end
 	
+	self:UpdateMemberCount();
 	self:Update();
+end
+
+COMMUNITIES_MEMBER_LIST_MEMBER_COUNT_FORMAT = "%s/%s "..GUILD_ONLINE_LABEL;
+function CommunitiesMemberListMixin:UpdateMemberCount()
+	local numOnlineMembers = 0;
+	for i, memberInfo in ipairs(self.allMemberList) do
+		if memberInfo.presence == Enum.ClubMemberPresence.Online or
+			memberInfo.presence == Enum.ClubMemberPresence.Away or
+			memberInfo.presence == Enum.ClubMemberPresence.Busy then
+			numOnlineMembers = numOnlineMembers + 1;
+		end
+	end
+	
+	self.MemberCount:SetText(COMMUNITIES_MEMBER_LIST_MEMBER_COUNT_FORMAT:format(numOnlineMembers, #self.allMemberList));
 end
 
 function CommunitiesMemberListMixin:Update()
@@ -469,6 +484,7 @@ function CommunitiesMemberListMixin:OnUpdate()
 		end
 		self:SortList();
 		self:ClearSortDirty();
+		self:UpdateMemberCount();
 	end
 end
 
@@ -488,6 +504,7 @@ end
 
 function CommunitiesMemberListMixin:SetExpandedDisplay(expandedDisplay)
 	self.expandedDisplay = expandedDisplay;
+	self.MemberCount:SetShown(not expandedDisplay);
 	self:ResetColumnSort();
 	self:UpdateMemberList();
 	
@@ -511,7 +528,7 @@ end
 function CommunitiesMemberListMixin:SetShowOfflinePlayers(showOfflinePlayers)
 	self.showOfflinePlayers = showOfflinePlayers;
 	SetCVar("communitiesShowOffline", showOfflinePlayers and "1" or "0");
-	HybridScrollFrame_SetOffset(self.ListScrollFrame, 0);
+	self.ListScrollFrame.scrollBar:SetValue(0);
 	self:UpdateMemberList();
 end
 
@@ -776,8 +793,32 @@ function CommunitiesMemberListMixin:SortByColumnIndex(columnIndex, keepSortDirec
 		self:UpdateSortedProfessionList();
 		
 		return;
+	elseif sortAttribute == "zone" then
+		table.sort(self.sortedMemberList, function(lhsMemberInfo, rhsMemberInfo)
+			if self.reverseActiveColumnSort then
+				lhsMemberInfo, rhsMemberInfo = rhsMemberInfo, lhsMemberInfo;
+			end
+			if lhsMemberInfo.lastOnlineYear and rhsMemberInfo.lastOnlineYear then
+				if lhsMemberInfo.lastOnlineYear ~= rhsMemberInfo.lastOnlineYear then
+					return lhsMemberInfo.lastOnlineYear > rhsMemberInfo.lastOnlineYear;
+				elseif lhsMemberInfo.lastOnlineMonth ~= rhsMemberInfo.lastOnlineMonth then
+					return lhsMemberInfo.lastOnlineMonth > rhsMemberInfo.lastOnlineMonth;
+				elseif lhsMemberInfo.lastOnlineDay ~= rhsMemberInfo.lastOnlineDay then
+					return lhsMemberInfo.lastOnlineDay > rhsMemberInfo.lastOnlineDay;
+				else
+					return lhsMemberInfo.lastOnlineHour > rhsMemberInfo.lastOnlineHour;
+				end
+			elseif lhsMemberInfo.lastOnlineYear then
+				return false;
+			elseif rhsMemberInfo.lastOnlineYear then
+				return true;
+			else
+				return CompareMembersByAttribute(lhsMemberInfo, rhsMemberInfo, sortAttribute);
+			end
+		end);
+		return;
 	end
-		
+	
 	CommunitiesUtil.SortMemberInfoWithOverride(self.sortedMemberList, function(lhsMemberInfo, rhsMemberInfo)
 		if self.reverseActiveColumnSort then
 			return CompareMembersByAttribute(lhsMemberInfo, rhsMemberInfo, sortAttribute);
@@ -1115,6 +1156,8 @@ function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 	
 		if memberInfo.presence == Enum.ClubMemberPresence.OnlineMobile then
 			self.Zone:SetText(COMMUNITIES_PRESENCE_MOBILE_CHAT);
+		elseif memberInfo.lastOnlineYear then
+			self.Zone:SetText(RecentTimeDate(memberInfo.lastOnlineYear, memberInfo.lastOnlineMonth, memberInfo.lastOnlineDay, memberInfo.lastOnlineHour));
 		elseif memberInfo.zone then
 			self.Zone:SetText(memberInfo.zone);
 		else

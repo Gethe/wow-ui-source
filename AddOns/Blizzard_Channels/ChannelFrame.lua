@@ -494,10 +494,13 @@ function ChannelFrameMixin:ShowChannelManagementTip(channelID)
 	local channel = C_VoiceChat.GetChannel(channelID);
 	if channel and GetPartyCategoryFromChannelType(channel.channelType) ~= nil then
 		local atlas = CreateAtlasMarkup("voicechat-channellist-icon-headphone-off");
-		local useNotBound = true;
+		local useNotBound = false;
 		local useParentheses = true;
-		local announceText = VOICE_CHAT_CHANNEL_MANAGEMENT_TIP:format(atlas, GetBindingKeyForAction("TOGGLECHATTAB", useNotBound, useParentheses));
-		ChatFrame_DisplaySystemMessageInPrimary(announceText);
+		local bindingText = GetBindingKeyForAction("TOGGLECHATTAB", useNotBound, useParentheses);
+		if bindingText and bindingText ~= "" then
+			local announceText = VOICE_CHAT_CHANNEL_MANAGEMENT_TIP:format(atlas, bindingText);
+			ChatFrame_DisplaySystemMessageInPrimary(announceText);
+		end
 	end
 end
 

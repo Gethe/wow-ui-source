@@ -98,9 +98,6 @@ do
 		self.Background:SetPoint("CENTER", self);
 
 		self.CurrencyBG:SetAtlas(styleData.CurrencyBG, true);
-		self:GetParent().CurrencyIcon:ClearAllPoints();
-		self:GetParent().CurrencyIcon:SetPoint("CENTER", self.CurrencyBG, "CENTER", 20, -1);
-		self:GetParent().CurrencyIcon:SetSize(17,16);
 
 		self:GetParent().CloseButton:ClearAllPoints();
 		self:GetParent().CloseButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", 4, 4);
@@ -114,22 +111,26 @@ do
 	end
 
 	function OrderHallTalentFrameMixin:SetUseStyleTextures(shouldUseStyleTextures)
-		if (not shouldUseStyleTextures) then
-			self:SetPortraitFrameShown(true);
-			return;
-		end
+		self.StyleFrame:SetShown(shouldUseStyleTextures);
+		self:SetPortraitFrameShown(not shouldUseStyleTextures);
+		self.Currency:ClearAllPoints();
 
-		local factionGroup = UnitFactionGroup("player");
-		local styleData = bfaTalentFrameStyleData[factionGroup];
-		self:SetPortraitFrameShown(false);
-		SetupBorder(self.StyleFrame, styleData);
-		self.StyleFrame:Show();
+		if shouldUseStyleTextures then
+			self.Currency:SetPoint("CENTER", self.StyleFrame.CurrencyBG, "CENTER", 0, -1);
+			self.Currency.Icon:SetSize(17, 16);
+
+			local factionGroup = UnitFactionGroup("player");
+			SetupBorder(self.StyleFrame, bfaTalentFrameStyleData[factionGroup]);
+		else
+			self.Currency:SetPoint("TOPRIGHT", self, "TOPRIGHT", -12, -29);
+			self.Currency.Icon:SetSize(27, 26);
+		end
 	end
 end
 
 function OrderHallTalentFrameMixin:SetPortraitFrameShown(shouldShow)
 	self.PortraitFrame:SetShown(shouldShow);
-	self.TopLeftCorner:SetShown(shouldShow);
+	self.TopLeftCorner:SetShown(false); -- Never show this, there are layering issues
 	self.TopRightCorner:SetShown(shouldShow);
 	self.BotLeftCorner:SetShown(shouldShow);
 	self.BotRightCorner:SetShown(shouldShow);
@@ -141,6 +142,7 @@ function OrderHallTalentFrameMixin:SetPortraitFrameShown(shouldShow)
 	self.TopTileStreaks:SetShown(shouldShow);
 	self.TitleBg:SetShown(shouldShow);
 	self.Bg:SetShown(shouldShow);
+	self.portrait:SetShown(shouldShow);
 	ClassHallTalentInset:SetShown(shouldShow);
 end
 
@@ -163,6 +165,7 @@ function OrderHallTalentFrameMixin:OnShow()
 	self:RegisterEvent("GARRISON_TALENT_UPDATE");
     self:RegisterEvent("GARRISON_TALENT_COMPLETE");
 	self:RegisterEvent("GARRISON_TALENT_NPC_CLOSED");
+	self:RegisterEvent("SPELL_TEXT_UPDATE");
 	PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_WINDOW_OPEN);
 end
 
@@ -171,6 +174,7 @@ function OrderHallTalentFrameMixin:OnHide()
 	self:UnregisterEvent("GARRISON_TALENT_UPDATE");
     self:UnregisterEvent("GARRISON_TALENT_COMPLETE");
 	self:UnregisterEvent("GARRISON_TALENT_NPC_CLOSED");
+	self:UnregisterEvent("SPELL_TEXT_UPDATE");
 
 	self:ReleaseAllPools();
 	StaticPopup_Hide("ORDER_HALL_TALENT_RESEARCH");
@@ -183,6 +187,8 @@ function OrderHallTalentFrameMixin:OnEvent(event, ...)
 		self:RefreshAllData();
 	elseif (event == "GARRISON_TALENT_NPC_CLOSED") then
 		self.CloseButton:Click();
+	elseif event == "SPELL_TEXT_UPDATE" then
+		self:RefreshAllData();
 	end
 end
 
@@ -210,8 +216,9 @@ end
 function OrderHallTalentFrameMixin:RefreshCurrency()
 	local currencyName, amount, currencyTexture = GetCurrencyInfo(self.currency);
 	amount = BreakUpLargeNumbers(amount);
-	self.Currency:SetText(amount);
-	self.CurrencyIcon:SetTexture(currencyTexture);
+	self.Currency.Text:SetText(amount);
+	self.Currency.Icon:SetTexture(currencyTexture);
+	self.Currency:MarkDirty();
 	TalentUnavailableReasons[LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_NOT_ENOUGH_RESOURCES] = ORDER_HALL_TALENT_UNAVAILABLE_NOT_ENOUGH_RESOURCES_MULTI_RESOURCE:format(currencyName);
 end
 
@@ -247,8 +254,6 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		return;
 	end
 
-	self.StyleFrame:Hide();
-
 	self:SetUseStyleTextures(isThemed);
 
 	if (isThemed) then
@@ -258,7 +263,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		self.TitleText:SetText(UnitName("npc"));
 		self.TitleText:Show();
 		self.BackButton:Show();
-	elseif (titleText) then
+	elseif (titleText and titleText ~= "") then
 		self.TitleText:SetText(titleText);
 		self.TitleText:Show();
 		self.BackButton:Hide();
@@ -270,6 +275,12 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 
 	if (uiTextureKit) then
 		self.Background:SetAtlas(uiTextureKit.."-background");
+		local atlas = uiTextureKit.."-logo";
+		if (GetAtlasInfo(atlas)) then 
+			self.portrait:SetAtlas(atlas);
+		else
+			SetPortraitTexture(self.portrait, "npc");
+		end 
 	else
 		local _, className, classID = UnitClass("player");
 
@@ -277,20 +288,20 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		if (not classAgnostic) then
 			self.portrait:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 			self.portrait:SetTexture("INTERFACE\\ICONS\\crest_"..className);
-		end
+		else
+			SetPortraitTexture(self.portrait, "npc");
+		end 
 	end
 
 	local friendshipFactionID = C_Garrison.GetCurrentGarrTalentTreeFriendshipFactionID();
 	if (friendshipFactionID and friendshipFactionID > 0) then
 		NPCFriendshipStatusBar_Update(self, friendshipFactionID);
 		self.Currency:Hide();
-		self.CurrencyIcon:Hide();
 		self.CurrencyHitTest:Hide();
 		NPCFriendshipStatusBar:ClearAllPoints();
 		NPCFriendshipStatusBar:SetPoint("TOPLEFT", 76, -39);
 	else
 		self.Currency:Show();
-		self.CurrencyIcon:Show();
 		self.CurrencyHitTest:Show();
 	end
 

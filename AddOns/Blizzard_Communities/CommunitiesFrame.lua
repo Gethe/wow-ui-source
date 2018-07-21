@@ -354,7 +354,9 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 				isGuildCommunitySelected = clubInfo.clubType == Enum.ClubType.Guild;
 			end
 		end
-		
+		if isGuildCommunitySelected then
+			GuildRoster();
+		end
 		self.GuildMemberListDropDownMenu:SetShown(isGuildCommunitySelected);
 	end
 	
@@ -482,6 +484,10 @@ function CommunitiesFrameMixin:OnClubSelected(clubId)
 			end
 			
 			self:ValidateDisplayMode();
+
+			if clubInfo.clubType == Enum.ClubType.Guild then
+				GuildRoster();
+			end
 		else
 			SetPortraitToTexture(self.PortraitOverlay.Portrait, "Interface\\Icons\\Achievement_General_StayClassy");
 			local invitationInfo = C_Club.GetInvitationInfo(clubId);

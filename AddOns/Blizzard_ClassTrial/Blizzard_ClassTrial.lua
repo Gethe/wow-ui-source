@@ -254,10 +254,6 @@ function ExpansionTrialDialogMixin:IsShowingExpansionTrialUpgrade()
 	return self:IsShown() and self.expansionTrialUpgrade;
 end
 
-function ClassTrial_IsExpansionTrialUpgradeDialogShowing()
-	return ExpansionTrialThanksForPlayingDialog:IsShowingExpansionTrialUpgrade();
-end
-
 function ExpansionTrialDialogMixin:OnShow()
 	SetStoreUIShown(false);
 	self:SetHeight(300 + self.Description:GetHeight() + self.Title:GetHeight());

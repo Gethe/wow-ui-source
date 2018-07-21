@@ -122,18 +122,6 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="CurrencyIcon" atlas="legionmission-icon-currency" useAtlasSize="false">
-					<Size x="27" y="26"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="-12" y="-29"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="Currency" inherits="SystemFont_Shadow_Med2" justifyH="RIGHT">
-					<Size x="100" y="20"/>
-					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.CurrencyIcon" relativePoint="LEFT" x="-4" y="0"/>
-					</Anchors>
-				</FontString>
 				<FontString parentKey="Tick1" inherits="OrderHallTalentFrameTick" text="I">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="24" y="-99"/>
@@ -177,12 +165,39 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Currency" inherits="ResizeLayoutFrame">
+				<!-- Size/Anchor updated in talent frame OnLoad -->
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="SystemFont_Shadow_Med2" justifyH="LEFT">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="1" type="number"/>
+							</KeyValues>
+							<Size x="0" y="20"/>
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="Icon" atlas="legionmission-icon-currency" useAtlasSize="false">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
+							</KeyValues>
+							<Size x="27" y="26"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Text" relativePoint="RIGHT" x="4" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame parentKey="CurrencyHitTest">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Currency"/>
-					<Anchor point="RIGHT" relativeKey="$parent.CurrencyIcon"/>
-					<Anchor point="TOP" relativeKey="$parent.CurrencyIcon"/>
-					<Anchor point="BOTTOM" relativeKey="$parent.CurrencyIcon"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Currency"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Currency"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>

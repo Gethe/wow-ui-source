@@ -1235,7 +1235,7 @@ end
 
 function UIDropDownMenu_GetText(frame)
 	local frameName = frame:GetName();
-	GetChild(frame, frameName, "Text"):GetText();
+	return GetChild(frame, frameName, "Text"):GetText();
 end
 
 function UIDropDownMenu_ClearAll(frame)

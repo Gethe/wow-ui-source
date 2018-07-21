@@ -153,7 +153,7 @@ function UpdateMicroButtons()
 	elseif ( C_Club.IsEnabled() and not BNConnected() ) then
 		GuildMicroButton:Disable();
 		GuildMicroButton.disabledTooltip = BLIZZARD_COMMUNITIES_SERVICES_UNAVAILABLE;
-	elseif ( C_Club.IsRestricted() ~= Enum.ClubRestrictionReason.None ) then
+	elseif ( C_Club.IsEnabled() and C_Club.IsRestricted() ~= Enum.ClubRestrictionReason.None ) then
 		GuildMicroButton:Disable();
 		GuildMicroButton.disabledTooltip = UNAVAILABLE;
 	elseif ( GuildFrameIsOpen() ) then
@@ -956,6 +956,9 @@ function MicroButtonAlert_SetText(self, text)
 end
 
 function MicroButtonAlert_OnLoad(self)
+	if self.MicroButton then
+		self:SetParent(self.MicroButton);
+	end
 	self.Text:SetSpacing(4);
 	MicroButtonAlert_SetText(self, self.label);
 end

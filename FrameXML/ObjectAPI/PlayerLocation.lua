@@ -48,6 +48,14 @@ function PlayerLocationMixin:SetGUID(guid)
 	self:ClearAndSetField("guid", guid);
 end
 
+function PlayerLocationMixin:IsValid()
+	if (self:IsCommunityData()) then
+		return C_Club.CanResolvePlayerLocationFromClubMessageData(self.communityClubID, self.communityStreamID, self.communityEpoch, self.communityPosition);
+	end
+
+	return true;
+end
+
 function PlayerLocationMixin:IsGUID()
 	return self.guid ~= nil;
 end

@@ -246,9 +246,6 @@
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="ActionButton12" x="25" y="9"/>
 		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="6" right="6" top="7" bottom="7"/>
-		</HitRectInsets>
 		<Scripts>
 			<OnClick>
 				ActionBar_PageUp(self);
@@ -265,9 +262,6 @@
 		<Anchors>
 			<Anchor point="CENTER" relativeTo="ActionBarUpButton" relativePoint="BOTTOMLEFT" x="10" y="-10"/>
 		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="6" right="6" top="7" bottom="7"/>
-		</HitRectInsets>
 		<Scripts>
 			<OnClick>
 				ActionBar_PageDown(self);

@@ -34,11 +34,13 @@ local UnrevokeWaitingForProducts = false;
 local WaitingOnVASToComplete = 0;
 local WaitingOnVASToCompleteToken = nil;
 local WasVeteran = false;
+local StoreFrameHasBeenShown = false;
 
 --Imports
 Import("bit");
 Import("C_StoreSecure");
 Import("C_PetJournal");
+Import("C_CharacterServices");
 Import("C_SharedCharacterServices");
 Import("C_ClassTrial");
 Import("C_AuthChallenge");
@@ -1143,7 +1145,9 @@ local vasErrorData = {
 	[Enum.VasError.TooMuchMoneyForLevel] = {
 		msg = function(character)
 			local str = "";
-			if (character.level >= 100) then
+			if (character.level >= 110) then
+				str = GetSecureMoneyString(1000000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
+			elseif (character.level >= 100) then
 				str = GetSecureMoneyString(250000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
 			elseif (character.level > 80) then
 				str = GetSecureMoneyString(50000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
@@ -2119,6 +2123,7 @@ function StoreFrame_OnShow(self)
 	BoostDeliveredUsageGUID = nil;
 	WaitingOnVASToComplete = 0;
 	WaitingOnVASToCompleteToken = nil;
+	StoreFrameHasBeenShown = true;
 
 	StoreFrame_UpdateCoverState();
 	PlaySound(SOUNDKIT.UI_IG_STORE_WINDOW_OPEN_BUTTON);
@@ -2157,7 +2162,7 @@ function StoreFrame_OnCharacterBoostDelivered(self)
 		self:Hide();
 
 		_G.CharacterUpgradePopup_OnCharacterBoostDelivered(BoostType, BoostDeliveredUsageGUID, BoostDeliveredUsageReason);
-	elseif (not IsOnGlueScreen() and not Outbound.IsExpansionTrialUpgradeDialogShowing()) then
+	elseif (not IsOnGlueScreen() and StoreFrameHasBeenShown and not Outbound.IsExpansionTrialUpgradeDialogShowing()) then
 		self:Hide();
 
 		local showReason = "forBoost";
