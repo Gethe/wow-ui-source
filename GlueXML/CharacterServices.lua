@@ -542,6 +542,10 @@ local function IsBoostFlowValidForCharacter(flowData, class, level, boostInProgr
 		return false;
 	end
 
+	if class == "DEMONHUNTER" and flowData.level <= 100 then
+		return false;
+	end
+
 	if isExpansionTrialCharacter and CanUpgradeExpansion()  then
 		return false;
 	elseif isTrialBoost then

@@ -990,7 +990,7 @@
 											<Anchor point="TOP" relativeKey="$parent.RandomBGButton" relativePoint="BOTTOM" x="0" y="-1"/>
 										</Anchors>
 										<KeyValues>
-											<KeyValue key="tooltipTableKey" value="LargeBattleground" type="string"/>
+											<KeyValue key="tooltipTableKey" value="EpicBattleground" type="string"/>
 										</KeyValues>
 									</Button>
 									<Button parentKey="Arena1Button" inherits="PVPCasualActivityButtonTemplate">

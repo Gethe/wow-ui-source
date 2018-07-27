@@ -180,7 +180,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Frame name="CommunitiesNotificationSettingsDialogTemplate" frameStrata="DIALOG" mixin="CommunitiesNotificationSettingsDialogMixin" inherits="SelectionFrameTemplate" virtual="true">
+	<Frame name="CommunitiesNotificationSettingsDialogTemplate" frameStrata="DIALOG" enableMouse="true" mixin="CommunitiesNotificationSettingsDialogMixin" inherits="SelectionFrameTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="OnOkay" value="CommunitiesNotificationSettingsDialogOkayButton_OnClick" type="global"/>
 			<KeyValue key="OnCancel" value="CommunitiesNotificationSettingsDialogCancelButton_OnClick" type="global"/>

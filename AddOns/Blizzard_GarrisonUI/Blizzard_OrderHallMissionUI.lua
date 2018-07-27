@@ -123,6 +123,11 @@ function OrderHallMission:DefaultTab()
 	return 1;	-- Missions
 end
 
+function OrderHallMission:ShouldShowMissionsAndFollowersTabs()
+	-- If we don't have any followers, hide followers and missions tabs
+	return C_Garrison.GetNumFollowers(self.followerTypeID) > 0;
+end
+
 function OrderHallMission:SetupTabs()
 	local tabList = { };
 	local validTabs = { };
@@ -130,8 +135,7 @@ function OrderHallMission:SetupTabs()
 
 	local lastShowMissionsAndFollowersTabs = self.lastShowMissionsAndFollowersTabs;
 
-	-- If we don't have any followers, hide followers and missions tabs
-	if (C_Garrison.GetNumFollowers(self.followerTypeID) > 0) then
+	if self:ShouldShowMissionsAndFollowersTabs() then
 		table.insert(tabList, 1);
 		table.insert(tabList, 2);
 		validTabs[1] = true;

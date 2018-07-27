@@ -270,10 +270,9 @@ function BFAMission:DefaultTab()
 	return 1;	-- Missions
 end
 
-function BFAMission:SetupTabs()
-	self.Tab1:Show();
-	self.Tab2:Show();
-	self.Tab3:Show();
+function BFAMission:ShouldShowMissionsAndFollowersTabs()
+	-- If we don't have any followers or we are not at a mission npc, hide followers and missions tabs
+	return C_Garrison.GetNumFollowers(self.followerTypeID) > 0 and C_Garrison.IsAtGarrisonMissionNPC();
 end
 
 function BFAMission:SetupMissionList()

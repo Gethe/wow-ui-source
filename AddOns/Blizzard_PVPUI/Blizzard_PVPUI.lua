@@ -690,7 +690,12 @@ BONUS_BUTTON_TOOLTIPS = {
 		tooltipKey = "SKIRMISH",
 	},
 	EpicBattleground = {
-		tooltipKey = "RANDOM_EPIC_BG",
+		func = function(self)
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			GameTooltip:SetText(BONUS_BUTTON_RANDOM_LARGE_BG_TITLE, 1, 1, 1);
+			GameTooltip:AddLine(BONUS_BUTTON_RANDOM_LARGE_BG_DESC, nil, nil, nil, true);
+			GameTooltip:Show();
+		end,
 	},
 	Brawl = {
 		func = function(self)

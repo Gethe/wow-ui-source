@@ -268,7 +268,7 @@ function PvpTalentSlotMixin:Update()
 		self.Border:SetAtlas("pvptalents-talentborder-locked");
 		self:Disable();
 		self.Texture:Hide();
-		self.slotWasDisabled = true;
+		self.slotWasDisabled = (slotInfo and not slotInfo.enabled);
 	end
 end
 

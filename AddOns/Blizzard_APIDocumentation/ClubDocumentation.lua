@@ -73,6 +73,22 @@ local Club =
 			Type = "Function",
 		},
 		{
+			Name = "CompareBattleNetDisplayName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "lhsMemberId", Type = "number", Nilable = false },
+				{ Name = "rhsMemberId", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "comparison", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "CreateClub",
 			Type = "Function",
 

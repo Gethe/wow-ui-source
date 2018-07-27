@@ -122,6 +122,7 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 		end
 	elseif event == "CLUB_REMOVED" then
 		local clubId = ...;
+		self:SetPrivilegesForClub(clubId, nil);
 		if clubId == self:GetSelectedClubId() then
 			self:UpdateClubSelection();
 		end

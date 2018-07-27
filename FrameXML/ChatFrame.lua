@@ -3642,8 +3642,11 @@ end
 
 function ChatFrame_OpenChat(text, chatFrame, desiredCursorPosition)
 	if chatFrame == nil and CHAT_FOCUS_OVERRIDE ~= nil then
-		CHAT_FOCUS_OVERRIDE:SetFocus();
-		return;
+		if CHAT_FOCUS_OVERRIDE.supportsSlashCommands or not text or strsub(text, 0, 1) ~= "/" then
+		    CHAT_FOCUS_OVERRIDE:SetFocus();
+			CHAT_FOCUS_OVERRIDE:SetText(text);
+		    return;
+		end
 	end
 	
 	local editBox = ChatEdit_ChooseBoxForSend(chatFrame);
@@ -4557,9 +4560,9 @@ function ChatEdit_OnChar(self)
 	else
 		self.command = nil;
 	end
-	if (command and target and self.autoCompleteParams) then --if they typed a command with a autocompletable target
+	if (command and target and self.autoCompleteSource and self.autoCompleteParams) then --if they typed a command with a autocompletable target
 		local utf8Position = self:GetUTF8CursorPosition();
-		local nameToShow = GetAutoCompleteResults(target, 1, utf8Position, self.autoCompleteParams.include, self.autoCompleteParams.exclude)[1];
+		local nameToShow = self.autoCompleteSource(target, 1, utf8Position, unpack(self.autoCompleteParams))[1];
 		if (nameToShow and nameToShow.name) then
 			local name = Ambiguate(nameToShow.name, "all");
 			--We're going to be setting the text programatically which will clear the userInput flag on the editBox.
@@ -4594,7 +4597,13 @@ function ChatEdit_OnInputLanguageChanged(self)
 end
 
 local function processChatType(editBox, msg, index, send)
-	editBox.autoCompleteParams = AUTOCOMPLETE_LIST[index];
+	local autoCompleteInfo = AUTOCOMPLETE_LIST[index];
+	if ( autoCompleteInfo ) then
+		AutoCompleteEditBox_SetAutoCompleteSource(editBox, GetAutoCompleteResults, autoCompleteInfo.include, autoCompleteInfo.exclude);
+	else
+		AutoCompleteEditBox_SetAutoCompleteSource(editBox, nil);
+	end
+	
 -- this is a special function for "ChatEdit_HandleChatType"
 	if ( ChatTypeInfo[index] ) then
 		if ( index == "WHISPER" or index == "SMART_WHISPER" ) then
@@ -4655,7 +4664,7 @@ function ChatEdit_HandleChatType(editBox, msg, command, send)
 		end
 	end
 	--This isn't one we found in our list, so we're not going to autocomplete.
-	editBox.autoCompleteParams = nil;
+	AutoCompleteEditBox_SetAutoCompleteSource(editBox, nil);
 	return false;
 end
 

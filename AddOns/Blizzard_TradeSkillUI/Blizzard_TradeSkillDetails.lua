@@ -376,9 +376,10 @@ function TradeSkillDetailsMixin:RefreshButtons()
 end
 
 function TradeSkillDetailsMixin:ViewGuildCrafters()
-	local tradeSkillID, skillLineName, skillLineRank, skillLineMaxRank, skillLineModifier = C_TradeSkillUI.GetTradeSkillLine();
-	if tradeSkillID and self.selectedRecipeID then
-		self.GuildFrame:ShowGuildRecipe(tradeSkillID, self.selectedRecipeID);
+	local tradeSkillID, skillLineName, skillLineRank, skillLineMaxRank, skillLineModifier, parentSkillLineID = C_TradeSkillUI.GetTradeSkillLine();
+	local effectiveSkillLineID = parentSkillLineID or tradeSkillID;
+	if effectiveSkillLineID and self.selectedRecipeID then
+		self.GuildFrame:ShowGuildRecipe(effectiveSkillLineID, self.selectedRecipeID);
 	end
 end
 

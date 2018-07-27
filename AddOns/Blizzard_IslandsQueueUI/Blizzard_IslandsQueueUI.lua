@@ -55,14 +55,47 @@ function IslandsQueueWeeklyQuestMixin:UpdateRewardInformation()
 	end
 end
 
+function IslandsQueueWeeklyQuestMixin:SetElementsEnabled(enabled)
+	local r, g, b;
+	if enabled then
+		r, g, b = 1, 1, 1;
+	else
+		r, g, b = .4, .4, .4;
+	end
+
+	local desaturated = not enabled;
+
+	self.QuestReward.Icon:SetDesaturated(desaturated);
+	self.QuestReward.Icon:SetVertexColor(r, g, b);
+	self.StatusBar.BarTexture:SetDesaturated(desaturated);
+	self.StatusBar.BarTexture:SetVertexColor(r, g, b);
+	self.OverlayFrame.Bar:SetDesaturated(desaturated);
+	self.OverlayFrame.Bar:SetVertexColor(r, g, b);
+	self.QuestReward.CompletedCheck:SetDesaturated(desaturated);
+	self.QuestReward.CompletedCheck:SetVertexColor(r, g, b);
+end
+
 function IslandsQueueWeeklyQuestMixin:UpdateQuestProgressBar()
+	if IsQuestFlaggedCompleted(self.questID) then
+		self.OverlayFrame.Text:SetText(GOAL_COMPLETED);
+		self.QuestReward.CompletedCheck:Show();
+		self.QuestReward.Completed = true;
+
+		self.StatusBar:SetMinMaxValues(0, 1);
+		self.StatusBar:SetValue(1);
+
+		self.OverlayFrame.Spark:Hide();
+		self:SetElementsEnabled(false);
+		return;
+	end
+
+	self:SetElementsEnabled(true);
 	local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(self.questID, 1, false);
 
 	self.StatusBar:SetMinMaxValues(0, numRequired);
 	self.StatusBar:SetValue(numFulfilled);
 	self.OverlayFrame.Text:SetText(ISLANDS_QUEUE_WEEKLY_QUEST_PROGRESS:format(numFulfilled, numRequired));
 
-	self.objectiveText = objectiveText;
 	if (numFulfilled > 0) then
 		local sparkSet = math.max((numFulfilled  / numRequired) * (self.StatusBar:GetWidth()), 0);
 		self.OverlayFrame.Spark:ClearAllPoints();

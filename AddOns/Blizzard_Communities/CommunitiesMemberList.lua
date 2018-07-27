@@ -342,7 +342,7 @@ function CommunitiesMemberListMixin:UpdateMemberList()
 	self.memberIds = CommunitiesUtil.GetMemberIdsSortedByName(clubId, streamId);
 	self.allMemberList = CommunitiesUtil.GetMemberInfo(clubId, self.memberIds);
 	self.allMemberInfoLookup = CommunitiesUtil.GetMemberInfoLookup(self.allMemberList);
-	self.allMemberList = CommunitiesUtil.SortMemberInfo(self.allMemberList);
+	self.allMemberList = CommunitiesUtil.SortMemberInfo(clubId, self.allMemberList);
 	if not self:ShouldShowOfflinePlayers() then 
 		self.sortedMemberList = CommunitiesUtil.GetOnlineMembers(self.allMemberList);
 		self.sortedMemberLookup = CommunitiesUtil.GetMemberInfoLookup(self.sortedMemberList);
@@ -413,7 +413,7 @@ function CommunitiesMemberListMixin:SortList()
 		local keepSortDirection = true;
 		self:SortByColumnIndex(self.activeColumnSortIndex, keepSortDirection);
 	else
-		CommunitiesUtil.SortMemberInfo(self.sortedMemberList);
+		CommunitiesUtil.SortMemberInfo(self:GetSelectedClubId(), self.sortedMemberList);
 	end
 	
 	if self:IsDisplayingProfessions() then
@@ -819,7 +819,7 @@ function CommunitiesMemberListMixin:SortByColumnIndex(columnIndex, keepSortDirec
 		return;
 	end
 	
-	CommunitiesUtil.SortMemberInfoWithOverride(self.sortedMemberList, function(lhsMemberInfo, rhsMemberInfo)
+	CommunitiesUtil.SortMemberInfoWithOverride(self:GetSelectedClubId(), self.sortedMemberList, function(lhsMemberInfo, rhsMemberInfo)
 		if self.reverseActiveColumnSort then
 			return CompareMembersByAttribute(lhsMemberInfo, rhsMemberInfo, sortAttribute);
 		else
