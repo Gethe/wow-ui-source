@@ -534,7 +534,7 @@ local function IsUsingValidProductForCreateNewCharacterBoost()
 	-- To prevent player confusion, when trial boost create is shown, do not show the normal boost create character button
 	-- As different products are added this may need to be updated to reflect specific cases, but for now it's
 	-- sufficient to make trial/normal create mutually exclusive.
-	return not IsUsingValidProductForTrialBoost(CharacterUpgradeFlow.data);
+	return not C_CharacterServices.IsTrialBoostEnabled() or not IsUsingValidProductForTrialBoost(CharacterUpgradeFlow.data);
 end
 
 local function IsBoostFlowValidForCharacter(flowData, class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter)

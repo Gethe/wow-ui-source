@@ -25,5 +25,6 @@ GuildPerks.xml
 GuildInfo.xml
 GuildNews.xml
 GuildRoster.xml
+GuildNameChange.xml
 CommunitiesFrame.xml
 Localization.lua

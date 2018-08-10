@@ -869,10 +869,15 @@ function CharacterCreateEnumerateClasses()
 		SetupClassButton(button, classID, classData);
 	end
 
-	local isCreatingBoostCharacter = CharacterUpgrade_IsCreatedCharacterUpgrade() or CharacterUpgrade_IsCreatedCharacterTrialBoost();
-	local isBoostValidForDemonHunter = CharacterUpgradeFlow.data and CharacterUpgradeFlow.data.level > 100;
-	local demonHunterBoostIsInvalid = isCreatingBoostCharacter and not isBoostValidForDemonHunter;
-	if (demonHunterBoostIsInvalid or not C_CharacterCreation.CanCreateDemonHunter()) then
+	local boostLevel;
+	if CharacterUpgrade_IsCreatedCharacterTrialBoost() then
+		boostLevel = C_CharacterCreation.GetTrialBoostStartingLevel();
+	elseif CharacterUpgrade_IsCreatedCharacterUpgrade() and CharacterUpgradeFlow.data then
+		boostLevel = CharacterUpgradeFlow.data.level;
+	end
+	
+	local demonHunterIsValid = not boostLevel or boostLevel > 100;
+	if (not demonHunterIsValid or not C_CharacterCreation.CanCreateDemonHunter()) then
         MAX_DISPLAYED_CLASSES_PER_RACE = 11;
         for button in CharacterCreate.classFramePool:EnumerateActive() do
             button:SetSize(44, 44);
@@ -884,12 +889,14 @@ function CharacterCreateEnumerateClasses()
 		end
 		CharCreateClassFrame.ClassIcons:Layout();
 		
-		local selectedClassData = C_CharacterCreation.GetSelectedClass();
-		if selectedClassData and selectedClassData.classID == demonHunterClassID then
-			local warriorClassID = C_CharacterCreation.GetClassIDFromName("WARRIOR");
-			local warriorButton = FindButtonForClassID(warriorClassID);
-			if warriorButton then
-				warriorButton:Click();
+		if ( not demonHunterIsValid ) then
+			local selectedClassData = C_CharacterCreation.GetSelectedClass();
+			if selectedClassData and selectedClassData.classID == demonHunterClassID then
+				local warriorClassID = C_CharacterCreation.GetClassIDFromName("WARRIOR");
+				local warriorButton = FindButtonForClassID(warriorClassID);
+				if warriorButton then
+					warriorButton:Click();
+				end
 			end
 		end
     end

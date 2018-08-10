@@ -405,6 +405,8 @@
 					<Anchor point="BOTTOMRIGHT" x="-12" y="30"/>
 				</Anchors>
 			</Frame>
+			<Button parentKey="GuildNameAlertFrame" inherits="CommunitiesGuildNameChangeAlertFrameTemplate" frameLevel="2"/>
+			<Frame parentKey="GuildNameChangeFrame" inherits="CommunitiesGuildNameChangeFrameTemplate" frameLevel="1"/>
 			<Frame parentKey="EditStreamDialog" frameStrata="DIALOG" inherits="CommunitiesEditStreamDialogTemplate" hidden="true">
 				<Size x="320" y="260"/>
 				<Anchors>

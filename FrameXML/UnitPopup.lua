@@ -820,7 +820,12 @@ local function UnitPopup_IsPlayerMobile(menu)
 end
 
 local function UnitPopup_GetIsLocalPlayer(menu)
-	if menu.isSelf or menu.guid and C_AccountInfo.IsGUIDRelatedToLocalAccount(menu.guid) then
+	if menu.isSelf then
+		return true;
+	end
+
+	local guid = UnitPopup_GetGUID(menu);
+	if guid and C_AccountInfo.IsGUIDRelatedToLocalAccount(guid) then
 		return true;
 	end
 
@@ -849,11 +854,7 @@ function UnitPopup_HideButtons ()
 	local haveBattleTag = UnitPopup_HasBattleTag();
 	local isOffline = UnitPopup_IsPlayerOffline(dropdownMenu);
 
-	dropdownMenu.guid = guid;
-	dropdownMenu.playerLocation = playerLocation;
-
 	local isLocalPlayer = UnitPopup_GetIsLocalPlayer(dropdownMenu);
-	dropdownMenu.isLocalPlayer = isLocalPlayer;
 
 	for index, value in ipairs(UnitPopupMenus[UIDROPDOWNMENU_MENU_VALUE] or UnitPopupMenus[dropdownMenu.which]) do
 		local shown = true;
@@ -1592,6 +1593,9 @@ function UnitPopup_OnClick (self)
 		fullname = name.."-"..server;
 	end
 
+	local guid = UnitPopup_GetGUID(dropdownFrame);
+	local playerLocation = UnitPopup_TryCreatePlayerLocation(dropdownFrame, guid);
+
 	local inParty = IsInGroup();
 	local isLeader = UnitIsGroupLeader("player");
 	local isAssistant = UnitIsGroupAssistant("player");
@@ -1613,13 +1617,13 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "IGNORE" ) then
 		AddOrDelIgnore(fullname);
 	elseif ( button == "REPORT_SPAM" ) then
-		PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_SPAM, fullname, dropdownFrame.playerLocation)
+		PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_SPAM, fullname, playerLocation)
 	elseif ( button == "REPORT_BAD_LANGUAGE" ) then
-		PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_LANGUAGE, fullname, dropdownFrame.playerLocation)
+		PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_LANGUAGE, fullname, playerLocation)
 	elseif ( button == "REPORT_BAD_NAME" ) then
-		PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_BAD_PLAYER_NAME, fullname, dropdownFrame.playerLocation)
+		PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_BAD_PLAYER_NAME, fullname, playerLocation)
 	elseif ( button == "REPORT_BAD_GUILD_NAME" ) then
-		PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_BAD_GUILD_NAME, fullname, dropdownFrame.playerLocation)
+		PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_BAD_GUILD_NAME, fullname, playerLocation)
 	elseif ( button == "REPORT_PET" ) then
 		SetPendingReportPetTarget(unit);
 		StaticPopup_Show("CONFIRM_REPORT_PET_NAME", fullname);
@@ -1627,7 +1631,7 @@ function UnitPopup_OnClick (self)
 		C_PetBattles.SetPendingReportTargetFromUnit(unit);
 		StaticPopup_Show("CONFIRM_REPORT_BATTLEPET_NAME", fullname);
 	elseif ( button == "REPORT_CHEATING" ) then
-		HelpFrame_ShowReportCheatingDialog(dropdownFrame.playerLocation);
+		HelpFrame_ShowReportCheatingDialog(playerLocation);
 	elseif ( button == "POP_OUT_CHAT" ) then
 		FCF_OpenTemporaryWindow(dropdownFrame.chatType, dropdownFrame.chatTarget, dropdownFrame.chatFrame, true);
 	elseif ( button == "DUEL" ) then

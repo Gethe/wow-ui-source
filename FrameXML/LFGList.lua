@@ -359,7 +359,7 @@ function LFGListFrame_BeginFindQuestGroup(self, questID)
 
 	local panel = self.CategorySelection;
 	LFGListCategorySelection_SelectCategory(panel, categoryID, filters);
-	LFGListCategorySelection_StartFindGroup(panel, questName);
+	LFGListCategorySelection_StartFindGroup(panel, questID);
 	LFGListEntryCreation_SetAutoCreateMode(panel:GetParent().EntryCreation, "quest", activityID, questID);
 end
 
@@ -553,12 +553,14 @@ function LFGListCategorySelectionFindGroupButton_OnClick(self)
 	LFGListCategorySelection_StartFindGroup(panel);
 end
 
-function LFGListCategorySelection_StartFindGroup(self, searchText)
+function LFGListCategorySelection_StartFindGroup(self, questID)
 	local baseFilters = self:GetParent().baseFilters;
 
 	local searchPanel = self:GetParent().SearchPanel;
 	LFGListSearchPanel_Clear(searchPanel);
-	searchPanel.SearchBox:SetText(searchText or "");
+	if questID then
+		C_LFGList.SetSearchToQuestID(questID);
+	end
 	LFGListSearchPanel_SetCategory(searchPanel, self.selectedCategory, self.selectedFilters, baseFilters);
 	LFGListSearchPanel_DoSearch(searchPanel);
 	LFGListFrame_SetActivePanel(self:GetParent(), searchPanel);
@@ -1224,7 +1226,9 @@ function LFGListApplicationViewer_UpdateInfo(self)
 
 	--Update the AutoAccept button
 	self.AutoAcceptButton:SetChecked(autoAccept);
-	if ( UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) ) then
+	if ( not C_LFGList.CanActiveEntryUseAutoAccept() ) then
+		self.AutoAcceptButton:Hide();
+	elseif ( UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) ) then
 		self.AutoAcceptButton:Show();
 		self.AutoAcceptButton:Enable();
 		self.AutoAcceptButton.Label:SetFontObject(GameFontHighlightSmall);
@@ -1622,7 +1626,11 @@ function LFGListSearchPanel_OnLoad(self)
 	self.ScrollFrame.scrollBar.doNotHide = true;
 	HybridScrollFrame_CreateButtons(self.ScrollFrame, "LFGListSearchEntryTemplate");
 	self.SearchBox.clearButton:SetScript("OnClick", function(btn)
-		SearchBoxTemplateClearButton_OnClick(btn);
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		local editBox = btn:GetParent();
+		C_LFGList.ClearSearchTextFields();
+		editBox:ClearFocus();
+
 		LFGListSearchPanel_DoSearch(self);
 	end);
 end
@@ -1705,7 +1713,7 @@ end
 
 function LFGListSearchPanel_Clear(self)
 	C_LFGList.ClearSearchResults();
-	self.SearchBox:SetText("");
+	C_LFGList.ClearSearchTextFields();
 	self.selectedResult = nil;
 	LFGListSearchPanel_UpdateResultList(self);
 	LFGListSearchPanel_UpdateResults(self);
@@ -1720,43 +1728,10 @@ function LFGListSearchPanel_SetCategory(self, categoryID, filters, preferredFilt
 	self.CategoryName:SetText(name);
 end
 
-local function Higher(value)
-	return value + 1;
-end
-
-local function Lower(value)
-	return value - 1;
-end
-
-local function GetTermsTable(term)
-	local termsTable = { term };
-	local higherTerm = term:gsub("(%d+)", Higher);
-	if higherTerm ~= term then
-		table.insert(termsTable, higherTerm);
-		table.insert(termsTable, (term:gsub("(%d+)", Lower)));
-	end
-	return { matches = termsTable };
-end
-
-function LFGListSearchPanel_ParseSearchTerms(searchText)
-	local termSet = {};
-	
-	for term in searchText:gmatch("%S+") do
-		termSet[term] = true;
-	end
-	
-	local separatedTerms = {};
-	for term in pairs(termSet) do
-		table.insert(separatedTerms, GetTermsTable(term));
-	end
-	
-	return separatedTerms;
-end
-
 function LFGListSearchPanel_DoSearch(self)
 	local searchText = self.SearchBox:GetText();
 	local languages = C_LFGList.GetLanguageSearchFilter();
-	C_LFGList.Search(self.categoryID, LFGListSearchPanel_ParseSearchTerms(searchText), self.filters, self.preferredFilters, languages);
+	C_LFGList.Search(self.categoryID, self.filters, self.preferredFilters, languages);
 	self.searching = true;
 	self.searchFailed = false;
 	self.selectedResult = nil;
@@ -1914,7 +1889,7 @@ end
 function LFGListSearchPanelSearchBox_OnEnterPressed(self)
 	local parent = self:GetParent();
 	if ( parent.AutoCompleteFrame:IsShown() and parent.AutoCompleteFrame.selected ) then
-		self:SetText( (C_LFGList.GetActivityInfo(parent.AutoCompleteFrame.selected)) );
+		C_LFGList.SetSearchToActivity(parent.AutoCompleteFrame.selected);
 	end
 
 	LFGListSearchPanel_DoSearch(self:GetParent());
@@ -1945,7 +1920,7 @@ end
 function LFGListSearchAutoCompleteButton_OnClick(self)
 	local panel = self:GetParent():GetParent();
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	panel.SearchBox:SetText( (C_LFGList.GetActivityInfo(self.activityID)) );
+	C_LFGList.SetSearchToActivity(self.activityID);
 	LFGListSearchPanel_DoSearch(panel);
 	panel.SearchBox:ClearFocus();
 end

@@ -3772,13 +3772,6 @@ function CalendarCreateEventFrame_Update()
 		-- reset event texture (must come after event type)
 		CalendarCreateEventFrame.selectedTextureIndex = eventInfo.textureIndex;
 		CalendarCreateEventFrame.calendarType = eventInfo.calendarType;
-		CalendarCreateEventTexture_Update();
-		-- update the creator (must come after event texture)
-		CalendarCreateEventCreatorName:SetFormattedText(CALENDAR_EVENT_CREATORNAME, _CalendarFrame_SafeGetName(eventInfo.creator));
-		CalendarCreateEventCreatorName:Show();
-
-		--Hide the communitySelector
-		CalendarCreateEventCommunityDropDown:SetShown(false);
 
 		if eventInfo.calendarType == "COMMUNITY_EVENT" or eventInfo.calendarType == "GUILD_EVENT" then
 			CalendarCreateEventCommunityName:Show();
@@ -3791,6 +3784,14 @@ function CalendarCreateEventFrame_Update()
 		else
 			CalendarCreateEventCommunityName:Hide();
 		end
+
+		CalendarCreateEventTexture_Update();
+		-- update the creator (must come after event texture)
+		CalendarCreateEventCreatorName:SetFormattedText(CALENDAR_EVENT_CREATORNAME, _CalendarFrame_SafeGetName(eventInfo.creator));
+		CalendarCreateEventCreatorName:Show();
+
+		--Hide the communitySelector
+		CalendarCreateEventCommunityDropDown:SetShown(false);
 
 		if ( eventInfo.calendarType == "GUILD_ANNOUNCEMENT" ) then
 			CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_EDIT_ANNOUNCEMENT);

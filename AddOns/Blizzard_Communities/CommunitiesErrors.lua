@@ -57,6 +57,7 @@ local errorStrings =
 	[Enum.ClubErrorType.ErrorCommunitiesProfanity] = "ERROR_COMMUNITIES_PROFANITY",
 	[Enum.ClubErrorType.ErrorCommunitiesTrial] = "ERROR_COMMUNITIES_TRIAL",
 	[Enum.ClubErrorType.ErrorCommunitiesVeteranTrial] = "ERROR_COMMUNITIES_VETERAN_TRIAL",
+	[Enum.ClubErrorType.ErrorCommunitiesChatMute] = "ERR_PARENTAL_CONTROLS_CHAT_MUTED",
 	[Enum.ClubErrorType.ErrorClubFull] = "ERROR_CLUB_FULL",
 	[Enum.ClubErrorType.ErrorClubNoClub] = "ERROR_CLUB_NO_CLUB",
 	[Enum.ClubErrorType.ErrorClubNotMember] = "ERROR_CLUB_NOT_MEMBER",

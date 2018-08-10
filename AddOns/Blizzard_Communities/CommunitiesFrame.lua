@@ -23,6 +23,8 @@ local COMMUNITIES_FRAME_EVENTS = {
 	"PLAYER_GUILD_UPDATE",
 	"CHANNEL_UI_UPDATE",
 	"UPDATE_CHAT_COLOR",
+	"GUILD_RENAME_REQUIRED",
+	"REQUIRED_GUILD_RENAME_RESULT",
 };
 
 local COMMUNITIES_STATIC_POPUPS = {
@@ -55,6 +57,8 @@ end
 function CommunitiesFrameMixin:OnShow()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	
+	self:SetNeedsGuildNameChange(GetGuildRenameRequired());
+
 	-- Don't allow ChannelFrame and CommunitiesFrame to show at the same time, because they share one presence subscription
 	if ChannelFrame and ChannelFrame:IsShown() then
 		HideUIPanel(ChannelFrame);
@@ -151,6 +155,17 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 		end
 	elseif event == "CHANNEL_UI_UPDATE" or event == "UPDATE_CHAT_COLOR" then
 		self:UpdateStreamDropDown();
+	elseif event == "GUILD_RENAME_REQUIRED" then
+		self:SetNeedsGuildNameChange(...);
+		self:ValidateDisplayMode();
+	elseif event == "REQUIRED_GUILD_RENAME_RESULT" then
+		local success = ...
+		if success then
+			self:SetNeedsGuildNameChange(GetGuildRenameRequired());
+			self:ValidateDisplayMode();
+		else
+			UIErrorsFrame:AddExternalErrorMessage(ERR_GUILD_NAME_INVALID);
+		end
 	end
 end
 
@@ -369,6 +384,19 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 	self:UpdateCommunitiesTabs();
 end
 
+function CommunitiesFrameMixin:GetNeedsGuildNameChange()
+	return self.hasForcedNameChange;
+end
+
+function CommunitiesFrameMixin:SetNeedsGuildNameChange(needsNameChange)
+	self.hasForcedNameChange = needsNameChange;
+end
+
+function CommunitiesFrameMixin:SetGuildNameAlertBannerMode(bannerMode)
+	self.GuildNameAlertFrame.topAnchored = bannerMode;
+	self:ValidateDisplayMode();
+end
+
 function CommunitiesFrameMixin:ValidateDisplayMode()
 	local clubId = self:GetSelectedClubId();
 	if clubId then
@@ -387,6 +415,65 @@ function CommunitiesFrameMixin:ValidateDisplayMode()
 		if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER then
 			self.GuildMemberListDropDownMenu:SetShown(isGuildCommunitySelected);
 		end
+
+		local needsGuildNameChange = isGuildCommunitySelected and self:GetNeedsGuildNameChange();
+		if needsGuildNameChange then
+			if self.GuildNameAlertFrame.topAnchored == nil then
+				self.GuildNameAlertFrame.topAnchored = not IsGuildLeader();
+			end
+
+			if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.MINIMIZED then
+				self.GuildNameChangeFrame:SetPoint("TOPLEFT", self, "TOPLEFT", 0, -56);
+				self.GuildNameChangeFrame:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -9, 29);
+			else
+				self.GuildNameChangeFrame:SetPoint("TOPLEFT", self.CommunitiesList, "TOPRIGHT", 24, -40);
+				self.GuildNameChangeFrame:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -9, 29);
+			end
+
+			self.GuildNameAlertFrame:ClearAllPoints();
+			if self.GuildNameAlertFrame.topAnchored then 
+				self.GuildNameAlertFrame:SetPoint("BOTTOM", self, "TOP");
+			else
+				self.GuildNameAlertFrame:SetPoint("TOP", self.GuildNameChangeFrame, "TOP", 0, -24)
+			end
+
+			if IsGuildLeader() then
+				self.GuildNameChangeFrame.GMText:Show();
+				self.GuildNameChangeFrame.MemberText:Hide();
+				self.GuildNameChangeFrame.Button:SetText(ACCEPT);
+				self.GuildNameChangeFrame.Button:SetPoint("TOP", self.GuildNameChangeFrame.EditBox, "BOTTOM", 0, -10);
+				self.GuildNameChangeFrame.RenameText:Show();
+				self.GuildNameChangeFrame.EditBox:Show();
+			else
+				self.GuildNameChangeFrame.GMText:Hide();
+				self.GuildNameChangeFrame.MemberText:Show();
+				self.GuildNameChangeFrame.Button:SetText(OKAY);
+				self.GuildNameChangeFrame.Button:SetPoint("TOP", self.GuildNameChangeFrame.MemberText, "BOTTOM", 0, -30);
+				self.GuildNameChangeFrame.RenameText:Hide();
+				self.GuildNameChangeFrame.EditBox:Hide();
+			end
+
+			if self.GuildNameAlertFrame.topAnchored then
+				self.GuildNameAlertFrame.Alert:SetFontObject(GameFontHighlight);
+				self.GuildNameAlertFrame.Alert:ClearAllPoints();
+				self.GuildNameAlertFrame.Alert:SetPoint("BOTTOM", self.GuildNameAlertFrame, "CENTER", 0, 0);
+				self.GuildNameAlertFrame.Alert:SetWidth(190);
+				self.GuildNameAlertFrame:SetSize(256, 60);
+				self.GuildNameAlertFrame:Enable();
+				self.GuildNameAlertFrame.ClickText:Show();
+			else
+				self.GuildNameAlertFrame.Alert:SetFontObject(GameFontHighlightMedium);
+				self.GuildNameAlertFrame.Alert:ClearAllPoints();
+				self.GuildNameAlertFrame.Alert:SetPoint("CENTER", self.GuildNameAlertFrame, "CENTER", 0, 0);
+				self.GuildNameAlertFrame.Alert:SetWidth(220);
+				self.GuildNameAlertFrame:SetSize(300, 40);
+				self.GuildNameAlertFrame:Disable();
+				self.GuildNameAlertFrame.ClickText:Hide();
+			end
+		end
+
+		self.GuildNameAlertFrame:SetShown(needsGuildNameChange);
+		self.GuildNameChangeFrame:SetShown(needsGuildNameChange and not self.GuildNameAlertFrame.topAnchored);
 	end	
 end
 
@@ -547,11 +634,16 @@ function CommunitiesFrameMixin:UpdateCommunitiesButtons()
 	addToChatButton:SetEnabled(false);
 	
 	if clubId ~= nil then
-		local privileges = self:GetPrivilegesForClub(clubId);
-		if privileges.canSendInvitation then
-			inviteButton:SetEnabled(true);
-		-- There are currently no plans to allow suggesting members.
-		-- elseif privileges.canSuggestMember then
+		local clubInfo = C_Club.GetClubInfo(clubId);
+		if clubInfo and clubInfo.clubType == Enum.ClubType.Guild then
+			inviteButton:SetEnabled(CanGuildInvite());
+		else
+			local privileges = self:GetPrivilegesForClub(clubId);
+			if privileges.canSendInvitation then
+				inviteButton:SetEnabled(true);
+			-- There are currently no plans to allow suggesting members.
+			-- elseif privileges.canSuggestMember then
+			end
 		end
 		
 		if self:GetSelectedStreamId() ~= nil then
@@ -670,7 +762,7 @@ function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 		if communitiesFrame:GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.MINIMIZED then
 			communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.CHAT);
 		end
-		
+		communitiesFrame:ValidateDisplayMode();
 		communitiesFrame:SetSize(814, 426);
 		communitiesFrame.Chat:SetPoint("TOPLEFT", communitiesFrame.CommunitiesList, "TOPRIGHT", 31, -44);
 		communitiesFrame.Chat:SetPoint("BOTTOMRIGHT", communitiesFrame.MemberList, "BOTTOMLEFT", -32, 28);
@@ -697,6 +789,7 @@ function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 	local function OnMinimize(frame)
 		local communitiesFrame = frame:GetParent();
 		communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.MINIMIZED);
+		communitiesFrame:ValidateDisplayMode();
 		communitiesFrame:SetSize(322, 406);
 		communitiesFrame.Chat:SetPoint("TOPLEFT", communitiesFrame, "TOPLEFT", 13, -67);
 		communitiesFrame.Chat:SetPoint("BOTTOMRIGHT", communitiesFrame, "BOTTOMRIGHT", -35, 36);

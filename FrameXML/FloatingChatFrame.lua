@@ -275,7 +275,7 @@ function FCFOptionsDropDown_Initialize(dropDown)
 				info.func = FCF_ToggleLock;
 			elseif ( dropDownChatFrame.isLocked ) then
 				info.text = UNLOCK_WINDOW;
-				info.func = FCF_ToggleLockOnDockedFrame;
+				info.func = FCF_ToggleLock;
 			else
 				info.text = LOCK_WINDOW;
 				info.func = FCF_ToggleLock;

@@ -1539,12 +1539,14 @@ function CreateChatChannelList(self, ...)
 	local zoneChannelList = FCF_GetCurrentChatFrame().zoneChannelList;
 	local channel, channelID, tag;
 	local checked;
+	local disabled;
 	local count = 1;
 	CHAT_CONFIG_CHANNEL_LIST = {};
-	for i=1, select("#", ...), 2 do
+	for i=1, select("#", ...), 3 do
 		channelID = select(i, ...);
 		tag = "CHANNEL"..channelID;
 		channel = select(i+1, ...);
+		disabled = select(i+2, ...);
 		checked = nil;
 		if ( channelList ) then
 			for index, value in pairs(channelList) do
@@ -1577,6 +1579,7 @@ function CreateChatChannelList(self, ...)
 		CHAT_CONFIG_CHANNEL_LIST[count].type = tag;
 		CHAT_CONFIG_CHANNEL_LIST[count].maxWidth = CHATCONFIG_CHANNELS_MAXWIDTH;
 		CHAT_CONFIG_CHANNEL_LIST[count].checked = checked;
+		CHAT_CONFIG_CHANNEL_LIST[count].disabled = disabled;
 		CHAT_CONFIG_CHANNEL_LIST[count].func = function (self, checked) 
 							ToggleChatChannel(checked, CHAT_CONFIG_CHANNEL_LIST[self:GetID()].channelName); 
 							end;

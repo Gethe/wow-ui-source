@@ -118,6 +118,8 @@ function CommunitiesChatMixin:SendMessage(text)
 	local streamId = self:GetCommunitiesFrame():GetSelectedStreamId();
 	if (clubId ~= nil and streamId ~= nil and C_Club.IsSubscribedToStream(clubId, streamId)) then
 		C_Club.SendMessage(clubId, streamId, text);
+	elseif clubId ~= nil and C_Club.IsAccountMuted(clubId) then
+		UIErrorsFrame:AddExternalErrorMessage(ERR_PARENTAL_CONTROLS_CHAT_MUTED);
 	end
 end
 

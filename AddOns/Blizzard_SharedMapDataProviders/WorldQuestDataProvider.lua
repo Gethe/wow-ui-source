@@ -202,6 +202,7 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	local mapID = mapCanvas:GetMapID();
 	if (mapID) then
 		taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapID);
+		self.matchWorldMapFilters = MapUtil.MapHasUnlockedBounties(mapID);
 	end
 
 	if taskInfo then

@@ -2682,6 +2682,16 @@ function ChatFrame_AddMessageGroup(chatFrame, group)
 	end
 end
 
+function ChatFrame_ContainsMessageGroup(chatFrame, group)
+	for i, messageType in pairs(chatFrame.messageTypeList) do
+		if group == messageType then
+			return true;
+		end
+	end
+	
+	return false;
+end
+
 function ChatFrame_AddSingleMessageType(chatFrame, messageType)
 	local group = ChatTypeGroupInverted[messageType];
 	local info = ChatTypeGroup[group];
@@ -2724,7 +2734,7 @@ function ChatFrame_RemoveAllMessageGroups(chatFrame)
 end
 
 function ChatFrame_ContainsChannel(chatFrame, channel)
-	for i, channelName in ipairs(chatFrame.channelList) do
+	for i, channelName in pairs(chatFrame.channelList) do
 		if channel == channelName then
 			return true;
 		end

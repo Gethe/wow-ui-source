@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<GameTooltip name="WorldMapCompareTooltip1" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="WorldMapFrame" inherits="ShoppingTooltipTemplate"/>
-	<GameTooltip name="WorldMapCompareTooltip2" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="WorldMapFrame" inherits="ShoppingTooltipTemplate"/>
+	<GameTooltip name="WorldMapCompareTooltip1" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
+	<GameTooltip name="WorldMapCompareTooltip2" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
 	<GameTooltip name="WorldMapTooltip" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="GameTooltipTemplate">
 		<Frames>
 			<Frame parentKey="ItemTooltip" inherits="InternalEmbeddedItemTooltipTemplate" hidden="true">

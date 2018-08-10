@@ -97,6 +97,7 @@ function WorldMapMixin:OnLoad()
 
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:RegisterEvent("UI_SCALE_CHANGED");
 
 	self:AttachQuestLog();
 end
@@ -110,7 +111,7 @@ function WorldMapMixin:OnEvent(event, ...)
 		else
 			self:Maximize();
 		end
-	elseif event == "DISPLAY_SIZE_CHANGED" then
+	elseif event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" then
 		if self:IsMaximized() then
 			self:UpdateMaximizedSize();
 		end
@@ -216,6 +217,7 @@ end
 function WorldMapMixin:OnMapChanged()
 	MapCanvasMixin.OnMapChanged(self);
 	self:RefreshOverlayFrames();
+	QuestMapFrame_CloseQuestDetails();
 	self:RefreshQuestLog();
 
 	if C_MapInternal then

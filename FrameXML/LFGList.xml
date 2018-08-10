@@ -1006,7 +1006,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox parentKey="SearchBox" inherits="SearchBoxTemplate" letters="64">
+					<EditBox parentKey="SearchBox" secureReferenceKey="LFGListSearchBox" securityDisableSetText="true" securityDisablePaste="true" inherits="SearchBoxTemplate" letters="64">
 						<Size x="319" y="18"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.CategoryName" relativePoint="BOTTOMLEFT" x="4" y="-7"/>

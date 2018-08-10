@@ -44,6 +44,7 @@ local function PetActionBar_CancelSpellLoadCallback(button)
 end
 
 function PetActionBar_OnHide(self)
+	self.mode = "none";
 	for i=1, NUM_PET_ACTION_SLOTS, 1 do
 		PetActionBar_CancelSpellLoadCallback(_G["PetActionButton" .. i]);
 	end
