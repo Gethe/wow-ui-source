@@ -286,7 +286,7 @@ function BonusObjectiveTracker_AddReward(questID, block, xp, money)
 	if ( not xp ) then
 		xp = GetQuestLogRewardXP(questID);
 	end
-	if ( xp > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL ) then
+	if ( xp > 0 and not IsPlayerAtEffectiveMaxLevel() ) then
 		local t = { };
 		t.label = xp;
 		t.texture = "Interface\\Icons\\XP_Icon";
@@ -1165,7 +1165,7 @@ function BonusObjectiveTrackerProgressBar_UpdateReward(progressBar)
 			texture = "Interface\\Icons\\inv_misc_coin_02";
 		end
 		-- xp
-		if ( not texture and GetQuestLogRewardXP(progressBar.questID) > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL ) then
+		if ( not texture and GetQuestLogRewardXP(progressBar.questID) > 0 and not IsPlayerAtEffectiveMaxLevel() ) then
 			texture = "Interface\\Icons\\xp_icon";
 		end
 		progressBar.needsReward = nil;

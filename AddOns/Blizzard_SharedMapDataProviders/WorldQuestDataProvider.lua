@@ -347,6 +347,7 @@ end
 
 function WorldQuestPinMixin:RefreshVisuals()
 	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, displayTimeLeft = GetQuestTagInfo(self.questID);
+	local tradeskillLineID = tradeskillLineIndex and select(7, GetProfessionInfo(tradeskillLineIndex));
 	local selected = self.questID == GetSuperTrackedQuestID();
 	self.Glow:SetShown(selected);
 	self.SelectedGlow:SetShown(rarity ~= LE_WORLD_QUEST_QUALITY_COMMON and selected);

@@ -179,7 +179,7 @@ function ScenarioBlocksFrame_OnEvent(self, event, ...)
 		ScenarioProvingGroundsBlock.Score:SetText(score);
 	elseif (event == "SCENARIO_COMPLETED") then
 		local rewardQuestID, xp, money = ...;
-		if( ( xp and xp > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL ) or ( money and money > 0 ) ) then
+		if( ( xp and xp > 0 and not IsPlayerAtEffectiveMaxLevel() ) or ( money and money > 0 ) ) then
 			ScenarioObjectiveTracker_AnimateReward( xp, money );
 		end
 	elseif (event == "SPELL_UPDATE_COOLDOWN") then
@@ -202,7 +202,7 @@ function ScenarioObjectiveStageBlock_OnEnter(self)
 	  GameTooltip:SetText(name, 1, 0.914, 0.682, 1);
 	  GameTooltip:AddLine(description, 1, 1, 1, true);
 	  GameTooltip:AddLine(" ");
-	  if ( xp > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL ) then
+	  if ( xp > 0 and not IsPlayerAtEffectiveMaxLevel() ) then
 		GameTooltip:AddLine(string.format(BONUS_OBJECTIVE_EXPERIENCE_FORMAT, xp), 1, 1, 1);
 	  end
 	  if ( money > 0 ) then
@@ -287,7 +287,7 @@ function ScenarioObjectiveTracker_AnimateReward(xp, money)
 	rewardsFrame:Show();
 	rewardsFrame:SetScale(0.9);
 	local rewards = {};
-	if( xp > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL ) then
+	if( xp > 0 and not IsPlayerAtEffectiveMaxLevel() ) then
 		local t = {};
 		t.label = xp;
 		t.texture = "Interface\\Icons\\XP_Icon";
@@ -752,7 +752,7 @@ function SCENARIO_TRACKER_MODULE:AddProgressBar(block, line, criteriaIndex)
 				texture = "Interface\\Icons\\inv_misc_coin_02";
 			end
 			-- xp
-			if ( not texture and GetQuestLogRewardXP(rewardQuestID) > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL ) then
+			if ( not texture and GetQuestLogRewardXP(rewardQuestID) > 0 and not IsPlayerAtEffectiveMaxLevel() ) then
 				texture = "Interface\\Icons\\xp_icon";
 			end
 			if ( texture ) then

@@ -80,7 +80,8 @@ function CommunitiesGuildMemberDetailMixin:DisplayMember(clubId, memberInfo)
 
 	local personalNoteText = self.NoteBackground.PersonalNoteText;
 	local note = memberInfo.memberNote;
-	if CanEditPublicNote() then
+	local canEditNote = memberInfo.isSelf or CanEditPublicNote();
+	if canEditNote then
 		personalNoteText:SetTextColor(1.0, 1.0, 1.0);
 		if not note or note == "" then
 			note = GUILD_NOTE_EDITLABEL;
@@ -88,7 +89,7 @@ function CommunitiesGuildMemberDetailMixin:DisplayMember(clubId, memberInfo)
 	else
 		personalNoteText:SetTextColor(0.65, 0.65, 0.65);
 	end
-	self.NoteBackground:EnableMouse(CanEditPublicNote());
+	self.NoteBackground:EnableMouse(canEditNote);
 	personalNoteText:SetText(note);
 
 	local maxRankOrder = GuildControlGetNumRanks();	

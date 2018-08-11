@@ -253,7 +253,7 @@
 						</Layers>
 					</Frame>
 
-					<Slider name="$parentRenderScaleSlider" inherits="VideoOptionsSliderTemplate" valueStep=".05" obeyStepOnDrag="true">
+					<Slider name="$parentRenderScaleSlider" inherits="VideoOptionsSliderTemplate" valueStep=".0555555555555" obeyStepOnDrag="true">
 						<Size x="126" y="17"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentResolutionDropDown" relativePoint="BOTTOMLEFT">
@@ -262,44 +262,44 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								self:SetMinMaxValues(.5, GetMaxRenderScale());
-								self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+                self:SetMinMaxValues(GetMinRenderScale(), GetMaxRenderScale());
+                self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 
-								local name = self:GetName();
-								self.type = CONTROLTYPE_SLIDER;
-								self.cvar = "RenderScale";
-								self.tooltip = OPTION_TOOLTIP_RENDER_SCALE;
-								self.name = RENDER_SCALE;
-								
-								self.SetDisplayValue = self.SetValue;
-								self.SetValue = function(self, value)
-									self:SetDisplayValue(value);
-								
-									if self:IsVisible() then
-										BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-									end
-								end
-								
-								self.GetCurrentValue = function(self)
-									return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-								end;
-								
-								self.Text = _G[name.."Text"];
-								self.Text:SetFontObject("OptionsFontSmall");
-								self.Text:ClearAllPoints();
-								self.Text:SetPoint("RIGHT", self, "LEFT", -20, 0);
-								self.Text:SetText(RENDER_SCALE);
-								
-								self.Value = _G[name.."Low"];
-								self.Value:ClearAllPoints();
-								self.Value:SetPoint("LEFT", self, "RIGHT", 3, 2);
-								
-								self.Resolution = _G[name.."High"];
-								self.Resolution:ClearAllPoints();
-								self.Resolution:SetPoint("TOP", self, "BOTTOM", 0, 0);
-								
-								VideoOptionsSlider_OnLoad(self);
-							</OnLoad>
+                local name = self:GetName();
+                self.type = CONTROLTYPE_SLIDER;
+                self.cvar = "RenderScale";
+                self.tooltip = OPTION_TOOLTIP_RENDER_SCALE;
+                self.name = RENDER_SCALE;
+
+                self.SetDisplayValue = self.SetValue;
+                self.SetValue = function(self, value)
+                self:SetDisplayValue(value);
+
+                if self:IsVisible() then
+                BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+                end
+                end
+
+                self.GetCurrentValue = function(self)
+                return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+                end;
+
+                self.Text = _G[name.."Text"];
+                self.Text:SetFontObject("OptionsFontSmall");
+                self.Text:ClearAllPoints();
+                self.Text:SetPoint("RIGHT", self, "LEFT", -20, 0);
+                self.Text:SetText(RENDER_SCALE);
+
+                self.Value = _G[name.."Low"];
+                self.Value:ClearAllPoints();
+                self.Value:SetPoint("LEFT", self, "RIGHT", 3, 2);
+
+                self.Resolution = _G[name.."High"];
+                self.Resolution:ClearAllPoints();
+                self.Resolution:SetPoint("TOP", self, "BOTTOM", 0, 0);
+
+                VideoOptionsSlider_OnLoad(self);
+              </OnLoad>
 							<OnEvent>
 								local x, y = GetCurrentScaledResolution();
 								self.Resolution:SetText(x .."x".. y);

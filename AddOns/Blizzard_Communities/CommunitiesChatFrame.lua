@@ -117,6 +117,17 @@ function CommunitiesChatMixin:SendMessage(text)
 	local clubId = self:GetCommunitiesFrame():GetSelectedClubId();
 	local streamId = self:GetCommunitiesFrame():GetSelectedStreamId();
 	if (clubId ~= nil and streamId ~= nil and C_Club.IsSubscribedToStream(clubId, streamId)) then
+		local streamInfo = C_Club.GetStreamInfo(clubId, streamId);
+		if not streamInfo then
+			return;
+		end
+		
+		if streamInfo.streamType == Enum.ClubStreamType.Guild and not C_GuildInfo.CanSpeakInGuildChat() then
+			self.MessageFrame:AddMessage(ERR_GUILD_PERMISSIONS, YELLOW_FONT_COLOR:GetRGB());
+			ChatFrame_DisplaySystemMessageInPrimary(ERR_GUILD_PERMISSIONS);
+			return;
+		end
+		
 		C_Club.SendMessage(clubId, streamId, text);
 	elseif clubId ~= nil and C_Club.IsAccountMuted(clubId) then
 		UIErrorsFrame:AddExternalErrorMessage(ERR_PARENTAL_CONTROLS_CHAT_MUTED);

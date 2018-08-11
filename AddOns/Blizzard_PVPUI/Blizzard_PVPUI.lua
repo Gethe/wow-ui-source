@@ -809,7 +809,7 @@ function HonorFrameBonusFrame_Update()
 		-- brawls
 		local button = HonorFrame.BonusFrame.BrawlButton;
 		local brawlInfo = C_PvP.GetBrawlInfo();
-		local isMaxLevel = UnitLevel("player") >= MAX_PLAYER_LEVEL;
+		local isMaxLevel = IsPlayerAtEffectiveMaxLevel();
 		button.canQueue = brawlInfo and brawlInfo.active and isMaxLevel;
 		button.isBrawl = true;
 
@@ -831,7 +831,7 @@ function HonorFrameBonusFrame_Update()
 			button.Reward:Hide();
 			button:Disable();
 		end
-		HonorFrame.BonusFrame.BrawlHelpBox:SetShown(ShouldShowBrawlHelpBox(brawlInfo and brawlInfo.active, (UnitLevel("player") >= MAX_PLAYER_LEVEL)));
+		HonorFrame.BonusFrame.BrawlHelpBox:SetShown(ShouldShowBrawlHelpBox(brawlInfo and brawlInfo.active, (IsPlayerAtEffectiveMaxLevel())));
 	end
 
 	-- select a button if one isn't selected
@@ -1584,7 +1584,7 @@ function PVPConquestBarMixin:OnEvent(event, ...)
 end
 
 function PVPConquestBarMixin:Update()
-	local locked = UnitLevel("player") < MAX_PLAYER_LEVEL;
+	local locked = not IsPlayerAtEffectiveMaxLevel();
 	self:SetDisabled(ConquestFrame.seasonState == SEASON_STATE_PRESEASON or ConquestFrame.seasonState == SEASON_STATE_OFFSEASON or locked);
 	self.Lock:SetShown(locked);
 

@@ -14,6 +14,7 @@ function ReputationFrame_OnLoad(self)
 	end
 	--]]
 	self.paragonFramesPool = CreateFramePool("FRAME", self, "ReputationParagonFrameTemplate");
+	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
 end
 
 function ReputationFrame_OnShow(self)
@@ -39,6 +40,8 @@ end
 function ReputationFrame_OnEvent(self, event, ...)
 	if ( event == "UPDATE_FACTION" or event == "LFG_BONUS_FACTION_ID_UPDATED" or event == "QUEST_LOG_UPDATE" ) then
 		ReputationFrame_Update();
+	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
+		ReputationWatchBar_UpdateMaxLevel();
 	end
 end
 

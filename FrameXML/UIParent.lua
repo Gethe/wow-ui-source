@@ -5206,3 +5206,16 @@ function ChatClassColorOverrideShown()
 	end
 end
 
+ -- takes into account the current expansion
+ -- NOTE: it's not safe to cache this value as it could change in the middle of the session
+function GetEffectivePlayerMaxLevel()
+	return MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()];
+end
+
+function IsLevelAtEffectiveMaxLevel(level)
+	return level >= GetEffectivePlayerMaxLevel();
+end
+
+function IsPlayerAtEffectiveMaxLevel()
+	return IsLevelAtEffectiveMaxLevel(UnitLevel("player"));
+end

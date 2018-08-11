@@ -7,6 +7,15 @@ local GuildInfo =
 	Functions =
 	{
 		{
+			Name = "CanSpeakInGuildChat",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canSpeakInGuildChat", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetGuildRankOrder",
 			Type = "Function",
 

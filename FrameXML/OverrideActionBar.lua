@@ -238,7 +238,7 @@ end
 
 function OverrideActionBar_UpdateXpBar(newLevel)
 	local level = newLevel or UnitLevel("player");
-	if ( level == MAX_PLAYER_LEVEL or IsXPUserDisabled() ) then
+	if ( IsLevelAtEffectiveMaxLevel(level) or IsXPUserDisabled() ) then
 		OverrideActionBar.xpBar:Hide();
 	else
 		local currXP = UnitXP("player");

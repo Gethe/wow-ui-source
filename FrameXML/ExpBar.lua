@@ -5,7 +5,7 @@ function ExpBarMixin:GetPriority()
 end
 
 function ExpBarMixin:ShouldBeVisible()
-	return UnitLevel("player") < MAX_PLAYER_LEVEL and not IsXPUserDisabled();
+	return not IsPlayerAtEffectiveMaxLevel() and not IsXPUserDisabled();
 end
 
 function ExpBarMixin:Update() 
@@ -210,7 +210,7 @@ function ExhaustionTickMixin:UpdateTickPosition()
 	end
 
 	-- Hide exhaustion tick if player is max level or XP is turned off
-	if ( UnitLevel("player") == MAX_PLAYER_LEVEL or IsXPUserDisabled() ) then
+	if ( IsPlayerAtEffectiveMaxLevel() or IsXPUserDisabled() ) then
 		self:Hide();
 	end			
 end

@@ -265,7 +265,7 @@ function ScenarioLegionInvasionAlertFrame_SetUp(frame, rewardQuestID, name, show
 		DungeonCompletionAlertFrameReward_SetRewardMoney(rewardFrame, money);
 	end
 
-	if xp > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL then
+	if xp > 0 and not IsPlayerAtEffectiveMaxLevel() then
 		local rewardFrame = GetRewardFrame(frame, "InvasionAlertFrameRewardTemplate");
 		DungeonCompletionAlertFrameReward_SetRewardXP(rewardFrame, xp);
 	end
@@ -990,7 +990,7 @@ function WorldQuestCompleteAlertFrame_SetUp(frame, questData)
 		DungeonCompletionAlertFrameReward_SetRewardMoney(rewardFrame, questData.money);
 	end
 
-	if questData.xp > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL then
+	if questData.xp > 0 and not IsPlayerAtEffectiveMaxLevel() then
 		local rewardFrame = GetRewardFrame(frame, "WorldQuestFrameRewardTemplate");
 		DungeonCompletionAlertFrameReward_SetRewardXP(rewardFrame, questData.xp);
 	end
