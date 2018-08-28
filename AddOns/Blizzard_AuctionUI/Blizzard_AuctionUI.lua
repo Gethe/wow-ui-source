@@ -10,12 +10,23 @@ local PRICE_TYPE_STACK = 2;
 
 UIPanelWindows["AuctionFrame"] = { area = "doublewide", pushable = 0, width = 840 };
 
+local function GetPrices()
+	local startPrice = MoneyInputFrame_GetCopper(StartPrice);
+	local buyoutPrice = MoneyInputFrame_GetCopper(BuyoutPrice);
+	if ( AuctionFrameAuctions.priceType == PRICE_TYPE_UNIT) then
+		startPrice =  startPrice * AuctionsStackSizeEntry:GetNumber();
+		buyoutPrice = buyoutPrice * AuctionsStackSizeEntry:GetNumber();
+	end
+	return startPrice,buyoutPrice;
+end
+
 MoneyTypeInfo["AUCTION_DEPOSIT"] = {
 	UpdateFunc = function()
 		if ( not AuctionFrameAuctions.duration ) then
 			AuctionFrameAuctions.duration = 0
 		end
-		return CalculateAuctionDeposit(AuctionFrameAuctions.duration);
+		local startPrice, buyoutPrice = GetPrices();
+		return GetAuctionDeposit(AuctionFrameAuctions.duration, startPrice, buyoutPrice);
 	end,
 	collapse = 1,
 };
@@ -1177,7 +1188,7 @@ function AuctionFrameBid_Update()
 				end
 				-- Set bid
 				MoneyInputFrame_SetCopper(BidBidPrice, bidAmount + minIncrement);
-				
+				UpdateDeposit();
 				if ( not highBidder and GetMoney() >= MoneyInputFrame_GetCopper(BidBidPrice) ) then
 					BidBidButton:Enable();
 				end
@@ -1584,6 +1595,7 @@ function PriceDropDown_OnClick(self)
 				MoneyInputFrame_SetCopper(StartPrice, startPrice * stackSize);
 				MoneyInputFrame_SetCopper(BuyoutPrice, buyoutPrice * stackSize);
 			end
+			UpdateDeposit();
 		end
 	end
 end
@@ -1625,7 +1637,8 @@ function DurationDropDown_OnClick(self)
 end
 
 function UpdateDeposit()
-	MoneyFrame_Update("AuctionsDepositMoneyFrame", CalculateAuctionDeposit(AuctionFrameAuctions.duration, AuctionsStackSizeEntry:GetNumber(), AuctionsNumStacksEntry:GetNumber()));
+	local startPrice, buyoutPrice = GetPrices();
+	MoneyFrame_Update("AuctionsDepositMoneyFrame", GetAuctionDeposit(AuctionFrameAuctions.duration or 0, startPrice, buyoutPrice, AuctionsStackSizeEntry:GetNumber(), AuctionsNumStacksEntry:GetNumber()));
 end
 
 function AuctionSellItemButton_OnEvent(self, event, ...)
@@ -1752,6 +1765,7 @@ function AuctionsFrameAuctions_ValidateAuction()
 		return;
 	end
 	AuctionsCreateAuctionButton:Enable();
+	UpdateDeposit();
 end
 
 --[[
@@ -2010,7 +2024,8 @@ function AuctionsCreateAuctionButton_OnClick()
 			startPrice = startPrice * AuctionsStackSizeEntry:GetNumber();
 			buyoutPrice = buyoutPrice * AuctionsStackSizeEntry:GetNumber();
 		end
-		StartAuction(startPrice, buyoutPrice, AuctionFrameAuctions.duration, AuctionsStackSizeEntry:GetNumber(), AuctionsNumStacksEntry:GetNumber());
+		local startPrice, buyoutPrice = GetPrices();
+		PostAuction(startPrice, buyoutPrice, AuctionFrameAuctions.duration, AuctionsStackSizeEntry:GetNumber(), AuctionsNumStacksEntry:GetNumber());
 	end
 end
 

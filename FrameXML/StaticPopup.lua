@@ -4091,6 +4091,15 @@ StaticPopupDialogs["CLIENT_INVENTORY_FULL_OVERFLOW"] = {
 	showAlert = 1,
 }
 
+StaticPopupDialogs["AUCTION_HOUSE_DEPRECATED"] = {
+	text = AUCTION_HOUSE_DEPRECATED,
+	button1 = OKAY,
+	hideOnEscape = 1,
+	timeout = 0,
+	whileDead = 1,
+	showAlert = 1,
+}
+
 local function InviteToClub(clubId, text)
 	local clubInfo = C_Club.GetClubInfo(clubId);
 	local isBattleNetClub = clubInfo.clubType == Enum.ClubType.BattleNet;

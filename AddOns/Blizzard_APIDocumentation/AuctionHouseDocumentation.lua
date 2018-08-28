@@ -26,6 +26,11 @@ local AuctionHouse =
 			LiteralName = "AUCTION_HOUSE_DISABLED",
 		},
 		{
+			Name = "AuctionHouseScriptDeprecated",
+			Type = "Event",
+			LiteralName = "AUCTION_HOUSE_SCRIPT_DEPRECATED",
+		},
+		{
 			Name = "AuctionHouseShow",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_SHOW",
