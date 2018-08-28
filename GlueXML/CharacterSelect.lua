@@ -2055,36 +2055,39 @@ function CharacterServicesMaster_UpdateServiceButton()
 	local accountExpansion = GetAccountExpansionLevel();
 	local MINIMUM_BOOST_POPUP_SHOWN = 7;
 
-	local freeFrame = nil;
-	for i = 1, CharacterSelect.numActiveCharacterBoosts do
-		local boostFrame = CharacterSelect.CharacterBoosts[i];
-		local boostFrameIsBetterCandidate = false;
+	-- We don't show the free boost popup if your region doesn't sell boxes.
+	if DoesCurrentLocaleSellExpansionLevels() then
+		local freeFrame = nil;
+		for i = 1, CharacterSelect.numActiveCharacterBoosts do
+			local boostFrame = CharacterSelect.CharacterBoosts[i];
+			local boostFrameIsBetterCandidate = false;
 
-		if boostFrame.data.expansion >= MINIMUM_BOOST_POPUP_SHOWN then
-			if not freeFrame then
-				boostFrameIsBetterCandidate = true;
-			elseif boostFrame.data.isExpansionTrial then
-				boostFrameIsBetterCandidate = not freeFrame.data.isExpansionTrial or boostFrame.data.expansion > freeFrame.data.expansion;
-			else
-				boostFrameIsBetterCandidate = not freeFrame.data.isExpansionTrial and boostFrame.data.expansion > freeFrame.data.expansion;
-			end
-		end
-
-		if boostFrameIsBetterCandidate then
-			if boostFrame.data.isExpansionTrial then
-				if isExpansionTrial and boostFrame.data.expansion <= accountExpansion and boostFrame.data.expansion > C_SharedCharacterServices.GetLastSeenExpansionTrialPopup() then
-					freeFrame = boostFrame;
-				end
-			else
-				if boostFrame.data.expansion <= accountExpansion and boostFrame.data.expansion > C_SharedCharacterServices.GetLastSeenCharacterUpgradePopup() then
-					freeFrame = boostFrame;
+			if boostFrame.data.expansion >= MINIMUM_BOOST_POPUP_SHOWN then
+				if not freeFrame then
+					boostFrameIsBetterCandidate = true;
+				elseif boostFrame.data.isExpansionTrial then
+					boostFrameIsBetterCandidate = not freeFrame.data.isExpansionTrial or boostFrame.data.expansion > freeFrame.data.expansion;
+				else
+					boostFrameIsBetterCandidate = not freeFrame.data.isExpansionTrial and boostFrame.data.expansion > freeFrame.data.expansion;
 				end
 			end
-		end
-	end
 
-	if freeFrame then
-		DisplayBattlepayTokenFreeFrame(freeFrame);
+			if boostFrameIsBetterCandidate then
+				if boostFrame.data.isExpansionTrial then
+					if isExpansionTrial and boostFrame.data.expansion <= accountExpansion and boostFrame.data.expansion > C_SharedCharacterServices.GetLastSeenExpansionTrialPopup() then
+						freeFrame = boostFrame;
+					end
+				else
+					if boostFrame.data.expansion <= accountExpansion and boostFrame.data.expansion > C_SharedCharacterServices.GetLastSeenCharacterUpgradePopup() then
+						freeFrame = boostFrame;
+					end
+				end
+			end
+		end
+		
+		if freeFrame then
+			DisplayBattlepayTokenFreeFrame(freeFrame);
+		end
 	end
 end
 

@@ -53,7 +53,7 @@ function ExpBarMixin:OnLoad()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_XP_UPDATE");
 	self:RegisterEvent("CVAR_UPDATE");
-	self.priority = 0; 
+	self.priority = 3; 
 end
 
 function ExpBarMixin:OnEvent(event, ...) 

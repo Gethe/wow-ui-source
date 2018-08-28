@@ -127,10 +127,21 @@ function PartyMemberFrame_OnLoad (self)
 	PartyMemberFrame_UpdateArt(self);
 end
 
+function PartyMemberFrame_UpdateVoiceActivityNotification(self)
+	if self.voiceNotification then
+		self.voiceNotification:ClearAllPoints();
+		if self.notPresentIcon:IsShown() then
+			self.voiceNotification:SetPoint("LEFT", self.notPresentIcon, "RIGHT", 0, 0);
+		else
+			self.voiceNotification:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, -12);
+		end
+	end
+end
+
 function PartyMemberFrame_VoiceActivityNotificationCreatedCallback(self, notification)
-	notification:SetParent(self);
-	notification:ClearAllPoints();
-	notification:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, -12);
+	self.voiceNotification = notification;
+	self.voiceNotification:SetParent(self);
+	PartyMemberFrame_UpdateVoiceActivityNotification(self);
 	notification:Show();
 end
 
@@ -154,6 +165,7 @@ function PartyMemberFrame_UpdateMember (self)
 	else
 		if VoiceActivityManager then
 			VoiceActivityManager:UnregisterFrameForVoiceActivityNotifications(self);
+			self.voiceNotification = nil;
 		end
 		self:Hide();
 	end
@@ -324,6 +336,8 @@ function PartyMemberFrame_UpdateNotPresentIcon(self)
 		self:SetAlpha(1);
 		self.notPresentIcon:Hide();
 	end
+
+	PartyMemberFrame_UpdateVoiceActivityNotification(self);
 end
 
 function PartyMemberFrame_OnEvent(self, event, ...)

@@ -328,11 +328,15 @@ function VoiceActivityManagerMixin:UpdateAlertNotificationVisibility()
 	for index, notification in self.alertNotificationList:EnumerateNodes() do
 		if index == 1 then
 			notification:SetCushions(0, 14);
+		else
+			notification:ClearCushions();
 		end
 
 		ChatAlertFrame:SetSubSystemAnchorPriority(notification:GetAlertSystem(), STARTING_PRIORITY + index);
 		notification:SetShown(index <= MAX_VISIBLE_NOTIFICATIONS);
 	end
+
+	ChatAlertFrame:UpdateAnchors();
 end
 
 function VoiceActivityManagerMixin:RegisterExternalNotificationTemplate(notificationTemplate, frameType)
@@ -351,6 +355,8 @@ end
 function VoiceActivityManagerMixin:RegisterFrameForVoiceActivityNotifications(frame, guid, voiceChannelID, notificationTemplate, frameType, notificationCreatedCallback)
 	if frame and guid and notificationTemplate and notificationCreatedCallback then
 		if self:RegisterExternalNotificationTemplate(notificationTemplate, frameType) then
+			self:UnregisterFrameForVoiceActivityNotifications(frame);
+
 			if not self.guidToExternalNotificationInfo[guid] then
 				self.guidToExternalNotificationInfo[guid] = {};
 			end

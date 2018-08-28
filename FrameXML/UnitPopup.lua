@@ -203,7 +203,7 @@ UnitPopupButtons = {
 			return dropdownMenu.clubInfo.favoriteTimeStamp and COMMUNITIES_LIST_DROP_DOWN_UNFAVORITE or COMMUNITIES_LIST_DROP_DOWN_FAVORITE;
 		end },
 	["COMMUNITIES_SETTINGS"] = { text = COMMUNITIES_LIST_DROP_DOWN_COMMUNITIES_SETTINGS, },
-	["COMMUNITIES_NOTIFICATION_SETTINGS"] = { text = COMMUNITIES_LIST_DROP_DOWN_COMMUNITIES_NOTIFICATION_SETTINGS, },	
+	["COMMUNITIES_NOTIFICATION_SETTINGS"] = { text = COMMUNITIES_LIST_DROP_DOWN_COMMUNITIES_NOTIFICATION_SETTINGS, },
 	["COMMUNITIES_CLEAR_UNREAD_NOTIFICATIONS"] = { text = COMMUNITIES_LIST_DROP_DOWN_CLEAR_UNREAD_NOTIFICATIONS, },
 	["COMMUNITIES_INVITE"] = { text = COMMUNITIES_LIST_DROP_DOWN_INVITE, },
 
@@ -651,6 +651,34 @@ function UnitPopup_UpdateButtonInfo(info)
 	end
 end
 
+local function UnitPopup_GetGUID(menu)
+	if menu.guid then
+		return menu.guid;
+	elseif menu.unit then
+		return UnitGUID(menu.unit);
+	elseif type(menu.userData) == "table" and menu.userData.guid then
+		return menu.userData.guid;
+	end
+end
+
+local function UnitPopup_TryCreatePlayerLocation(menu, guid)
+	if menu.battlefieldScoreIndex then
+		return PlayerLocation:CreateFromBattlefieldScoreIndex(menu.battlefieldScoreIndex);
+	elseif menu.communityClubID and menu.communityStreamID and menu.communityEpoch and menu.communityPosition then
+		return PlayerLocation:CreateFromCommunityChatData(menu.communityClubID, menu.communityStreamID, menu.communityEpoch, menu.communityPosition);
+	elseif menu.communityClubID and not menu.communityStreamID then
+		return PlayerLocation:CreateFromCommunityInvitation(menu.communityClubID, guid);
+	elseif menu.lineID then
+		return PlayerLocation:CreateFromChatLineID(menu.lineID);
+	elseif menu.unit then
+		return PlayerLocation:CreateFromUnit(menu.unit);
+	elseif guid then
+		return PlayerLocation:CreateFromGUID(guid);
+	end
+
+	return nil;
+end
+
 function UnitPopup_AddDropDownButton(info, dropdownMenu, cntButton, buttonIndex, level)
 	if (not level) then
 		level = 1;
@@ -740,7 +768,17 @@ function UnitPopup_AddDropDownButton(info, dropdownMenu, cntButton, buttonIndex,
 	info.tooltipText = tooltipText;
 	info.customFrame = cntButton.customFrame;
 	if info.customFrame then
-		info.customFrame:SetContextData(dropdownMenu);
+		local guid = UnitPopup_GetGUID(dropdownMenu);
+		local playerLocation = UnitPopup_TryCreatePlayerLocation(dropdownMenu, guid);
+		local contextData = {
+			guid = guid,
+			playerLocation = playerLocation,
+			voiceChannelID = dropdownMenu.voiceChannelID,
+			voiceMemberID = dropdownMenu.voiceMemberID,
+			voiceChannel = dropdownMenu.voiceChannel,
+		};
+
+		info.customFrame:SetContextData(contextData);
 	end
 
 	info.tooltipWhileDisabled = cntButton.tooltipWhileDisabled;
@@ -752,34 +790,6 @@ function UnitPopup_AddDropDownButton(info, dropdownMenu, cntButton, buttonIndex,
 	UnitPopup_UpdateButtonInfo(info);
 
 	UIDropDownMenu_AddButton(info, level);
-end
-
-local function UnitPopup_GetGUID(menu)
-	if menu.guid then
-		return menu.guid;
-	elseif menu.unit then
-		return UnitGUID(menu.unit);
-	elseif type(menu.userData) == "table" and menu.userData.guid then
-		return menu.userData.guid;
-	end
-end
-
-local function UnitPopup_TryCreatePlayerLocation(menu, guid)
-	if menu.battlefieldScoreIndex then
-		return PlayerLocation:CreateFromBattlefieldScoreIndex(menu.battlefieldScoreIndex);
-	elseif menu.communityClubID and menu.communityStreamID and menu.communityEpoch and menu.communityPosition then
-		return PlayerLocation:CreateFromCommunityChatData(menu.communityClubID, menu.communityStreamID, menu.communityEpoch, menu.communityPosition);
-	elseif menu.communityClubID and not menu.communityStreamID then
-		return PlayerLocation:CreateFromCommunityInvitation(menu.communityClubID, guid);
-	elseif menu.lineID then
-		return PlayerLocation:CreateFromChatLineID(menu.lineID);
-	elseif menu.unit then
-		return PlayerLocation:CreateFromUnit(menu.unit);
-	elseif guid then
-		return PlayerLocation:CreateFromGUID(guid);
-	end
-
-	return nil;
 end
 
 local function UnitPopup_HasBattleTag()
@@ -1306,17 +1316,17 @@ function UnitPopup_HideButtons ()
 					if not messageInfo or messageInfo.destroyed then
 						return false;
 					end
-					
+
 					local privileges = C_Club.GetClubPrivileges(clubId);
 					if not messageInfo.author.isSelf and not privileges.canDestroyOtherMessage then
 						return false;
 					elseif messageInfo.author.isSelf and not privileges.canDestroyOwnMessage then
 						return false;
 					end
-					
+
 					return true;
 				end
-				
+
 				if not CanDestroyMessage(clubId, streamId, messageId) then
 					shown = false;
 				end
@@ -1871,7 +1881,7 @@ function UnitPopup_OnClick (self)
 				break;
 			end
 		end
-		
+
 		if defaultStreamId then
 			CommunitiesUtil.OpenInviteDialog(clubInfo.clubId, defaultStreamId);
 		end

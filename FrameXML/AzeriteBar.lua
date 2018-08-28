@@ -43,7 +43,7 @@ end
 function AzeriteBarMixin:OnLoad() 
 	self:SetBarColor(ARTIFACT_BAR_COLOR:GetRGB());
 	self.StatusBar:SetOnAnimatedValueChangedCallback(function() self:AnimatedValueChangedCallback(); end)
-	self.priority = 3; 
+	self.priority = 0; 
 end
 
 function AzeriteBarMixin:OnEvent(event, ...)
