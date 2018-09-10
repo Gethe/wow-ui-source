@@ -1588,19 +1588,19 @@ function PVPConquestBarMixin:Update()
 	self:SetDisabled(ConquestFrame.seasonState == SEASON_STATE_PRESEASON or ConquestFrame.seasonState == SEASON_STATE_OFFSEASON or locked);
 	self.Lock:SetShown(locked);
 
-	local current, max, rewardItemID = self:GetConquestLevelInfo();
+	local current, max, rewardItemTexture, questID = self:GetConquestLevelInfo();
 	if max == 0 or self.disabled then
 		self:SetValue(0);
 	else
 		self:SetValue(current / max * 100);
 	end
 	self.Label:SetFormattedText(CONQUEST_BAR, current, max);
-	if rewardItemID and not self.disabled then
-		self.Reward.Icon:SetTexture(GetItemIcon(rewardItemID));
-		self.Reward.itemID = rewardItemID;
+	if rewardItemTexture and questID and not self.disabled then
+		self.Reward.Icon:SetTexture(rewardItemTexture);
+		self.Reward.questID = questID;
 	else
 		self.Reward.Icon:SetColorTexture(0, 0, 0);
-		self.Reward.itemID = nil;
+		self.Reward.questID = nil;
 	end
 end
 
@@ -1616,21 +1616,21 @@ function PVPConquestBarMixin:GetConquestLevelInfo()
 	end
 
 	if not HaveQuestData(currentQuestID) then
-		return 0, 0, nil;
+		return 0, 0, nil, nil;
 	end
 
 	local objectives = C_QuestLog.GetQuestObjectives(currentQuestID);
 	if not objectives or not objectives[1] then
-		return 0, 0, nil;
+		return 0, 0, nil, nil;
 	end
 
-	local rewardItemID;
+	local rewardItemTexture;
 	if HaveQuestRewardData(currentQuestID) then
 		local itemIndex = 1;
-		rewardItemID = select(6, GetQuestLogRewardInfo(itemIndex, currentQuestID));
+		rewardItemTexture = select(2, GetQuestLogRewardInfo(itemIndex, currentQuestID));
 	end
 
-	return objectives[1].numFulfilled, objectives[1].numRequired, rewardItemID;
+	return objectives[1].numFulfilled, objectives[1].numRequired, rewardItemTexture, currentQuestID;
 end
 
 function PVPConquestBarMixin:SetDisabled(disabled)
@@ -1646,4 +1646,19 @@ function PVPConquestBarMixin:SetDisabled(disabled)
 		self.Reward:SetAlpha(alpha);
 		self.disabled = disabled;
 	end
+end
+
+PVPConquestBarRewardMixin = { };
+
+function PVPConquestBarRewardMixin:OnEnter()
+	if self.questID then
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+		GameTooltip:SetQuestLogItem("reward", 1, self.questID);
+		self.UpdateTooltip = self.OnEnter;
+	end
+end
+
+function PVPConquestBarRewardMixin:OnLeave()
+	GameTooltip_Hide();
+	self.UpdateTooltip = nil;
 end

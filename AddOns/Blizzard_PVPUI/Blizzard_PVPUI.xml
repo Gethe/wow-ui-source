@@ -248,7 +248,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="Reward">
+			<Frame parentKey="Reward" mixin="PVPConquestBarRewardMixin">
 				<Size x="36" y="36"/>
 				<Anchors>
 					<Anchor point="LEFT" relativePoint="RIGHT" x="-8" y="-2"/>
@@ -281,13 +281,8 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnter>
-						if self.itemID then
-							GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-							GameTooltip:SetItemByID(self.itemID);
-						end
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="Lock" hidden="true">
