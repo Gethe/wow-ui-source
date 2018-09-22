@@ -97,6 +97,7 @@ function WorldMapMixin:OnLoad()
 
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:RegisterEvent("UI_SCALE_CHANGED");
 
 	self:AttachQuestLog();
 end
@@ -110,7 +111,7 @@ function WorldMapMixin:OnEvent(event, ...)
 		else
 			self:Maximize();
 		end
-	elseif event == "DISPLAY_SIZE_CHANGED" then
+	elseif event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" then
 		if self:IsMaximized() then
 			self:UpdateMaximizedSize();
 		end
@@ -178,14 +179,15 @@ function WorldMapMixin:AddStandardDataProviders()
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_PET_TAMER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SELECTABLE_GRAVEYARD");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_GOSSIP");
-	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VIGNETTE", 100);
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_AREA_POI");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DEBUG");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_MAP_LINK");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ENCOUNTER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_CONTRIBUTION_COLLECTOR");
-	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_AREA_POI");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VIGNETTE", 200);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_STORY_LINE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SCENARIO");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WORLD_QUEST_PING");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WORLD_QUEST", 500);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ACTIVE_QUEST", C_QuestLog.GetMaxNumQuests());
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SUPER_TRACKED_QUEST");
@@ -215,6 +217,7 @@ end
 function WorldMapMixin:OnMapChanged()
 	MapCanvasMixin.OnMapChanged(self);
 	self:RefreshOverlayFrames();
+	QuestMapFrame_CloseQuestDetails();
 	self:RefreshQuestLog();
 
 	if C_MapInternal then
@@ -385,6 +388,12 @@ end
 
 function WorldMapMixin:ClearFocusedQuestID()
 	self:TriggerEvent("ClearFocusedQuestID");
+end
+
+function WorldMapMixin:PingQuestID(questID)
+	if self:IsVisible() then
+		self:TriggerEvent("PingQuestID", questID);
+	end
 end
 
 -- ============================================ GLOBAL API ===============================================================================

@@ -34,6 +34,7 @@ function AzeriteEmpoweredItemPowerMixin:Reset()
 	self.SwirlContainer.SelectedAnim:Stop();
 	self.SwirlContainer.RevealAnim:Stop();
 	self.SwirlContainer:Hide();
+	self.needsBuffAvailableSoundPlayed = nil;
 end
 
 function AzeriteEmpoweredItemPowerMixin:OnShow()
@@ -266,6 +267,10 @@ function AzeriteEmpoweredItemPowerMixin:GetCanSelectEffectAlphaValue()
 end
 
 function AzeriteEmpoweredItemPowerMixin:GetBorderSelectableAlphaValue()
+	if self.azeriteItemDataSource:IsPreviewSource() then
+		return 0;
+	end
+
 	if self:IsAnyTierRevealing() then
 		if self:IsFinalPower() then
 			return 0;
@@ -288,10 +293,6 @@ function AzeriteEmpoweredItemPowerMixin:GetBorderSelectableAlphaValue()
 		return 1;
 	end
 
-	if self.azeriteItemDataSource:IsPreviewSource() then
-		return 0;
-	end
-
 	if self:IsTierSelectionActive() and self:MeetsPowerLevelRequirement() and not self:IsSpecAllowed() then
 		return .75;
 	end
@@ -309,6 +310,10 @@ function AzeriteEmpoweredItemPowerMixin:GetBorderAlphaValue()
 end
 
 function AzeriteEmpoweredItemPowerMixin:GetIconNotSelectableOverlayAlphaValue()
+	if self.azeriteItemDataSource:IsPreviewSource() then
+		return 0;
+	end
+
 	if self:IsAnyTierRevealing() then
 		return 0;
 	end
@@ -330,7 +335,7 @@ function AzeriteEmpoweredItemPowerMixin:GetDesaturationValue()
 	end
 
 	if self.azeriteItemDataSource:IsPreviewSource() then
-		return .5;
+		return .25;
 	end
 
 	if not self:MeetsPowerLevelRequirement() then
@@ -401,8 +406,21 @@ function AzeriteEmpoweredItemPowerMixin:SetCanBeSelectedDetails(isTierSelectionA
 	self.isSpecAllowed = isSpecAllowed;
 	self.tierHasAnyPowersSelected = tierHasAnyPowersSelected;
 
-	self:UpdateStyle();
 	if not wasSelectable and wasSelectable ~= self:CanBeSelected() and not self:IsAnyTierRevealing() and not self.azeriteItemDataSource:IsPreviewSource() then
+		if self.SwirlContainer:IsShown() then
+			self.needsBuffAvailableSoundPlayed = true;
+		else
+			self.needsBuffAvailableSoundPlayed = nil;
+			PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_BUFFAVAILABLE);
+		end
+	end
+
+	self:UpdateStyle();
+end
+
+function AzeriteEmpoweredItemPowerMixin:OnTransitionAnimationFinished()
+	if self.needsBuffAvailableSoundPlayed then
+		self.needsBuffAvailableSoundPlayed = nil;
 		PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_BUFFAVAILABLE);
 	end
 end
@@ -466,14 +484,36 @@ function AzeriteEmpoweredItemPowerMixin:OnClick()
 		ChatEdit_InsertLink(GetSpellLink(self:GetSpellID()));
 		return;
 	end
-
-	if self.azeriteItemDataSource:IsPreviewSource() or not self.owningTierFrame:CanSelectPowers() then
+	
+	if self.azeriteItemDataSource:IsPreviewSource() then
+		UIErrorsFrame:AddExternalErrorMessage(AZERITE_POWER_UNSELECTABLE_IN_PREVIEW);
 		return;
 	end
 
-	if not self:CanBeSelected() then
+	if not self.owningTierFrame:CanSelectPowers() then
 		return;
 	end
+
+	if not self:IsTierSelectionActive() then
+		return;
+	end
+
+	if not self:IsSpecAllowed() then
+		UIErrorsFrame:AddExternalErrorMessage(AZERITE_POWER_NOT_FOR_YOUR_SPEC);
+		return;
+	end
+
+	if UnitIsDeadOrGhost("player") then
+		UIErrorsFrame:AddExternalErrorMessage(ERR_PLAYER_DEAD);
+		return;
+	end
+
+	if UnitAffectingCombat("player") then
+		UIErrorsFrame:AddExternalErrorMessage(ERR_NOT_IN_COMBAT);
+		return;
+	end
+
+	assert(self:CanBeSelected());
 
 	local empoweredItemLocation = self.azeriteItemDataSource:GetItemLocation();
 	local function SelectPower()
@@ -481,7 +521,9 @@ function AzeriteEmpoweredItemPowerMixin:OnClick()
 			self.owningTierFrame:OnPowerSelected(self);
 
 			PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_SELECTBUFF);
-			PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_ROTATIONSTARTCLICKS);
+			if not self:IsFinalPower() then
+				PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_ROTATIONSTARTCLICKS);
+			end
 			self:PlaySelectedAnimation();
 			self:PlayClickedAnimation();
 		end
@@ -492,7 +534,11 @@ function AzeriteEmpoweredItemPowerMixin:OnClick()
 		return;
 	end
 
-	StaticPopup_Show("CONFIRM_AZERITE_EMPOWERED_SELECT_POWER", nil, nil, {SelectPower = SelectPower});
+	if self:IsFinalPower() then
+		SelectPower();
+	else
+		StaticPopup_Show("CONFIRM_AZERITE_EMPOWERED_SELECT_POWER", nil, nil, {SelectPower = SelectPower});
+	end
 end
 
 function AzeriteEmpoweredItemPowerMixin:PlaySelectedAnimation()
@@ -512,7 +558,7 @@ function AzeriteEmpoweredItemPowerMixin:PlayClickedAnimation()
 	end
 end
 
-function AzeriteEmpoweredItemPowerMixin:OnAnimationFinished()
+function AzeriteEmpoweredItemPowerMixin:OnSwirlAnimationFinished()
 	self.SwirlContainer:Hide();
 	self:PlayTransitionAnimation();
 

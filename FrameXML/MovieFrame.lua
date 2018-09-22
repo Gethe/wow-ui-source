@@ -42,6 +42,15 @@ function MovieFrame_OnHide(self)
 	end
 end
 
+function MovieFrame_OnCinematicStopped()
+	-- It's possible that both frames are trying to play around the same time, but the cinematic stop comes after we've already started a movie
+	-- In that case just make sure the UI stays hidden
+	if MovieFrame:IsShown() and UIParent:IsShown() then
+		MovieFrame.uiParentShown = true;
+		UIParent:Hide();
+	end
+end
+
 function MovieFrame_OnUpdate(self, elapsed)
 	if ( MovieFrameSubtitleString:IsShown() and self.fadingAlpha ) then
 		self.fadingAlpha = self.fadingAlpha + ((elapsed / self.fadeSpeed) * self.fadeDirection);

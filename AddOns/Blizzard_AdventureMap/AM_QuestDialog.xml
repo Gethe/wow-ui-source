@@ -60,14 +60,6 @@
 		</Anchors>
 		
 		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture parentKey="PortraitBg" atlas="AdventureMapQuest-PortraitBG" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" relativePoint="TOP" y="-17" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Portrait" />
 

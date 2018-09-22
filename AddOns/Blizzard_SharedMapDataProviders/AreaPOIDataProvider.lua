@@ -81,7 +81,6 @@ function AreaPOIPinMixin:TryShowTooltip()
 		end
 
 		if hasWidgetSet then
-			GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1);
 			GameTooltip_AddWidgetSet(GameTooltip, self.widgetSetID);
 		end
 

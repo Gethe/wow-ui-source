@@ -71,7 +71,13 @@ end
 function AzeriteRespecMixin:SetRespecItem(itemLocation)
 
 	if itemLocation and not C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) then
-		UIErrorsFrame:AddMessage(ITEM_IS_NOT_AZERITE_EMPOWERED, RED_FONT_COLOR:GetRGBA());
+		UIErrorsFrame:AddExternalErrorMessage(ITEM_IS_NOT_AZERITE_EMPOWERED);
+		return;
+	end
+
+	local azeriteitem = itemLocation and AzeriteEmpoweredItemDataSource:CreateFromItemLocation(itemLocation);
+	if azeriteitem and not AzeriteUtil.HasSelectedAnyAzeritePower(azeriteitem) then
+		UIErrorsFrame:AddExternalErrorMessage(AZERITE_EMPOWERED_REFORGE_NO_CHOICES_TO_UNDO);
 		return;
 	end
 
@@ -81,8 +87,8 @@ function AzeriteRespecMixin:SetRespecItem(itemLocation)
 	end
 	
 	if self.respecItemLocation then
-		local item = Item:CreateFromItemLocation(self.respecItemLocation);
-		item:UnlockItem();
+		local oldItem = Item:CreateFromItemLocation(self.respecItemLocation);
+		oldItem:UnlockItem();
 	end
 
 	self.respecItemLocation = itemLocation;
@@ -91,7 +97,7 @@ function AzeriteRespecMixin:SetRespecItem(itemLocation)
 			self.HelpBox:Hide();
 			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_RESPEC, true);
 		end
-
+		
 		local item = Item:CreateFromItemLocation(self.respecItemLocation);
 		item:LockItem();
 	end

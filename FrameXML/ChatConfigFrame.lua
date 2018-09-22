@@ -1339,14 +1339,14 @@ function IsClassColoringMessageType(messageType)
 	if ( groupInfo ) then
 		for key, value in pairs(groupInfo) do	--If any of the sub-categories color by name, we'll consider the entire thing as colored by name.
 			local info = ChatTypeInfo[strsub(value, 10)];
-			if ( info and info.colorNameByClass ) then	--strsub gets rid of CHAT_MSG_
+			if ( info and Chat_ShouldColorChatByClass(info) ) then
 				return true;
 			end
 		end
 		return false;
 	else
 		local info = ChatTypeInfo[messageType];
-		return info and info.colorNameByClass;
+		return info and Chat_ShouldColorChatByClass(info);
 	end
 end
 
@@ -1539,12 +1539,14 @@ function CreateChatChannelList(self, ...)
 	local zoneChannelList = FCF_GetCurrentChatFrame().zoneChannelList;
 	local channel, channelID, tag;
 	local checked;
+	local disabled;
 	local count = 1;
 	CHAT_CONFIG_CHANNEL_LIST = {};
-	for i=1, select("#", ...), 2 do
+	for i=1, select("#", ...), 3 do
 		channelID = select(i, ...);
 		tag = "CHANNEL"..channelID;
 		channel = select(i+1, ...);
+		disabled = select(i+2, ...);
 		checked = nil;
 		if ( channelList ) then
 			for index, value in pairs(channelList) do
@@ -1577,6 +1579,7 @@ function CreateChatChannelList(self, ...)
 		CHAT_CONFIG_CHANNEL_LIST[count].type = tag;
 		CHAT_CONFIG_CHANNEL_LIST[count].maxWidth = CHATCONFIG_CHANNELS_MAXWIDTH;
 		CHAT_CONFIG_CHANNEL_LIST[count].checked = checked;
+		CHAT_CONFIG_CHANNEL_LIST[count].disabled = disabled;
 		CHAT_CONFIG_CHANNEL_LIST[count].func = function (self, checked) 
 							ToggleChatChannel(checked, CHAT_CONFIG_CHANNEL_LIST[self:GetID()].channelName); 
 							end;
@@ -1981,7 +1984,7 @@ end
 
 function ChatConfigChannelSettings_OnShow()
 	-- Have to build it here since the channel list doesn't exist on load
-	CreateChatChannelList(self, GetChannelList());
+	CreateChatChannelList(ChatConfigChannelSettings, GetChannelList());
 	ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "MovableChatConfigWideCheckBoxWithSwatchTemplate", CHAT_CONFIG_CHANNEL_SETTINGS_TITLE_WITH_DRAG_INSTRUCTIONS);
 	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
 	UpdateDefaultButtons(false);

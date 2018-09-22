@@ -285,13 +285,13 @@ function ShowGarrisonLandingPage(garrTypeID)
 end
 
 function DoesFollowerMatchCurrentGarrisonType(followerType)
-	if followerType == LE_FOLLOWER_TYPE_GARRISON_7_0 then
-		return C_Garrison.GetLandingPageGarrisonType() == LE_GARRISON_TYPE_7_0;
-	elseif followerType == LE_FOLLOWER_TYPE_GARRISON_6_0 or followerType == LE_FOLLOWER_TYPE_SHIPYARD_6_2 then
-		return C_Garrison.GetLandingPageGarrisonType() == LE_GARRISON_TYPE_6_0;
+	local followerOptions = GarrisonFollowerOptions[followerType];
+	if not followerOptions then
+		GMError("Unknown follower type");
+		return false;
 	end
 
-	return false;
+	return followerOptions.garrisonType == C_Garrison.GetLandingPageGarrisonType();
 end
 
 ---------------------------------------------------------------------------------

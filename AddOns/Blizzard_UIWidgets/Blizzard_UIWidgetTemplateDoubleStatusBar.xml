@@ -78,7 +78,7 @@
 		</Animations>
 	</StatusBar>
 	
-	<Frame name="UIWidgetTemplateDoubleStatusBar" inherits="UIWidgetBaseTemplate" virtual="true" secureMixin="UIWidgetTemplateDoubleStatusBarMixin">
+	<Frame name="UIWidgetTemplateDoubleStatusBar" inherits="UIWidgetBaseTemplate" virtual="true" mixin="UIWidgetTemplateDoubleStatusBarMixin">
 		<Size x="232" y="55"/>
 		<Frames>
 			<StatusBar parentKey="LeftBar" inherits="UIWidgetTemplateDoubleStatusBar_StatusBarTemplate">

@@ -59,7 +59,6 @@ SoundPanelOptions = {
 	Sound_EnableReverb = { text = "ENABLE_REVERB" },
 	--Sound_EnableHardware = { text = "ENABLE_HARDWARE" },
 	Sound_EnablePositionalLowPassFilter = { text = "ENABLE_SOFTWARE_HRTF" },
-	Sound_EnableDSPEffects = { text = "ENABLE_DSP_EFFECTS" },
 	Sound_SFXVolume = { text = "SOUND_VOLUME", minValue = 0, maxValue = 1, valueStep = 0.1, },
 	Sound_MusicVolume = { text = "MUSIC_VOLUME", minValue = 0, maxValue = 1, valueStep = 0.1, },
 	Sound_AmbienceVolume = { text = "AMBIENCE_VOLUME", minValue = 0, maxValue = 1, valueStep = 0.1, },

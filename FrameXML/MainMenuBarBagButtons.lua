@@ -1,10 +1,10 @@
+local allBagButtons = {};
 
 function BagSlotButton_UpdateChecked(self)
 	local translatedID = self:GetID() - CharacterBag0Slot:GetID() + 1;
 	local isVisible = false;
-	local frame;
 	for i=1, NUM_CONTAINER_FRAMES, 1 do
-		frame = _G["ContainerFrame"..i];
+		local frame = _G["ContainerFrame"..i];
 		if ( (frame:GetID() == translatedID) and frame:IsShown() ) then
 			isVisible = true;
 			break;
@@ -39,7 +39,7 @@ end
 
 function BackpackButton_UpdateChecked(self)
 	local isVisible = false;
-	for i=1, NUM_CONTAINER_FRAMES, 1 do
+	for i=1, NUM_CONTAINER_FRAMES do
 		local frame = _G["ContainerFrame"..i];
 		if ( (frame:GetID() == 0) and frame:IsShown() ) then
 			isVisible = true;
@@ -63,18 +63,34 @@ function BackpackButton_OnModifiedClick(self)
 	BackpackButton_UpdateChecked(self);
 end
 
-function ItemAnim_OnLoad(self)
-	self:RegisterEvent("ITEM_PUSH");
+function BagSlotButton_OnLoad(self)
+	table.insert(allBagButtons, self);
+
+	ItemAnim_OnLoad(self)
+	PaperDollItemSlotButton_OnLoad(self);
+	self:RegisterEvent("BAG_UPDATE_DELAYED");
+	self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
+	self.isBag = 1;
+	self.UpdateTooltip = BagSlotButton_OnEnter;
+	_G[self:GetName().."NormalTexture"]:SetWidth(50);
+	_G[self:GetName().."NormalTexture"]:SetHeight(50);
+	self.IconBorder:SetSize(30, 30);
+	_G[self:GetName().."Count"]:SetPoint("BOTTOMRIGHT", -2, 2);
+	self.maxDisplayCount = 999;
 end
 
-function ItemAnim_OnEvent(self, event, ...)
-	if ( event == "ITEM_PUSH" ) then
-		local arg1, arg2 = ...;
-		local id = self:GetID();
-		if ( id == arg1 ) then
-			self.animIcon:SetTexture(arg2);
-			self.flyin:Play(true);
+function BagSlotButton_OnEvent(self, event, ...)
+	ItemAnim_OnEvent(self, event, ...);
+	if ( event == "BAG_UPDATE_DELAYED" ) then
+		PaperDollItemSlotButton_Update(self);
+	elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
+		if ( IsContainerFiltered(self:GetID() - CharacterBag0Slot:GetID() + 1) ) then
+			self.searchOverlay:Show();
+		else
+			self.searchOverlay:Hide();
 		end
+	else
+		PaperDollItemSlotButton_OnEvent(self, event, ...);
 	end
 end
 
@@ -100,34 +116,62 @@ function BagSlotButton_OnEnter(self)
 	end
 end
 
+function ItemAnim_OnLoad(self)
+	self:RegisterEvent("ITEM_PUSH");
+end
+
+function ItemAnim_OnEvent(self, event, ...)
+	if ( event == "ITEM_PUSH" ) then
+		local bagSlot, iconFileID = ...;
+		local id = self:GetID();
+		if ( id == bagSlot ) then
+			self.animIcon:SetTexture(iconFileID);
+			self.flyin:Play(true);
+		end
+	end
+end
+
 function ItemAnim_OnAnimFinished(self)
 	self:Hide();
 end
 
 function Disable_BagButtons()
-	MainMenuBarBackpackButton:Disable();
-	SetDesaturation(MainMenuBarBackpackButtonIconTexture, true);
-	CharacterBag0Slot:Disable();
-	SetDesaturation(CharacterBag0SlotIconTexture, true);
-	CharacterBag1Slot:Disable();
-	SetDesaturation(CharacterBag1SlotIconTexture, true);
-	CharacterBag2Slot:Disable();
-	SetDesaturation(CharacterBag2SlotIconTexture, true);
-	CharacterBag3Slot:Disable();
-	SetDesaturation(CharacterBag3SlotIconTexture, true);
+	for i, bagButton in ipairs(allBagButtons) do
+		bagButton:Disable();
+		SetDesaturation(bagButton.icon, true);
+	end
 end
 
 function Enable_BagButtons()
-	MainMenuBarBackpackButton:Enable();
-	SetDesaturation(MainMenuBarBackpackButtonIconTexture, false);
-	CharacterBag0Slot:Enable();
-	SetDesaturation(CharacterBag0SlotIconTexture, false);
-	CharacterBag1Slot:Enable();
-	SetDesaturation(CharacterBag1SlotIconTexture, false);
-	CharacterBag2Slot:Enable();
-	SetDesaturation(CharacterBag2SlotIconTexture, false);
-	CharacterBag3Slot:Enable();
-	SetDesaturation(CharacterBag3SlotIconTexture, false);
+	for i, bagButton in ipairs(allBagButtons) do
+		bagButton:Enable();
+		SetDesaturation(bagButton.icon, false);
+	end
+end
+
+function MainMenuBarBackpackButton_OnLoad(self)
+	table.insert(allBagButtons, self);
+
+	ItemAnim_OnLoad(self)
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	MainMenuBarBackpackButtonIconTexture:SetTexture("Interface\\Buttons\\Button-Backpack-Up");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("CVAR_UPDATE");
+	self:RegisterEvent("BAG_UPDATE");
+	self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
+	self:RegisterEvent("AZERITE_EMPOWERED_ITEM_LOOTED");
+	_G[self:GetName().."NormalTexture"]:SetWidth(64);
+	_G[self:GetName().."NormalTexture"]:SetHeight(64);
+	_G[self:GetName().."Count"]:ClearAllPoints();
+	_G[self:GetName().."Count"]:SetPoint("CENTER", 0, -10);
+end
+
+function MainMenuBarBackpackButton_OnClick(self, button)
+	if ( IsModifiedClick() ) then
+		BackpackButton_OnModifiedClick(self, button);
+	else
+		BackpackButton_OnClick(self, button);
+	end
 end
 
 function MainMenuBarBackpackButton_OnEvent(self, event, ...)
@@ -158,7 +202,45 @@ function MainMenuBarBackpackButton_OnEvent(self, event, ...)
 		else
 			self.searchOverlay:Hide();
 		end
+	elseif ( event == "AZERITE_EMPOWERED_ITEM_LOOTED" ) then
+		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_BAG) then
+			if AzeriteUtil.AreAnyAzeriteEmpoweredItemsEquipped() then
+				SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_BAG, true);
+				return;
+			end
+
+			if AzeriteItemInBagHelpBox:IsShown() then
+				return;
+			end
+
+			C_Timer.After(.5, function()
+				if AzeriteInBagsHelpBox:IsShown() then
+					return;
+				end
+
+				for i, bagButton in ipairs(allBagButtons) do
+					local bagID = i - 1;
+					if AzeriteUtil.DoesBagContainAnyAzeriteEmpoweredItems(bagID) then
+						AzeriteInBagsHelpBox:SetPoint("BOTTOM", bagButton, "TOP", 0, 40);
+						AzeriteInBagsHelpBox.Arrow:SetPoint("BOTTOM", bagButton, "TOP", 0, 20);
+						AzeriteInBagsHelpBox:Show();
+						break;
+					end
+				end
+			end);
+		end
 	end
+end
+
+function MainMenuBarBackpackButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+	GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0);
+	local keyBinding = GetBindingKey("TOGGLEBACKPACK");
+	if ( keyBinding ) then
+		GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..keyBinding..")"..FONT_COLOR_CODE_CLOSE);
+	end
+	GameTooltip:AddLine(string.format(NUM_FREE_SLOTS, (self.freeSlots or 0)));
+	GameTooltip:Show();
 end
 
 local BACKPACK_FREESLOTS_FORMAT = "(%s)";
@@ -187,4 +269,20 @@ function MainMenuBarBackpackButton_UpdateFreeSlots()
 	MainMenuBarBackpackButton.freeSlots = totalFree;
 	
 	MainMenuBarBackpackButtonCount:SetText(string.format(BACKPACK_FREESLOTS_FORMAT, totalFree));
+end
+
+function AzeriteInBagsHelpBox_OnLoad(self)
+	self.Text:SetSpacing(4);
+	self:SetClampRectInsets(-8, 8, 8, -8);
+	self.Arrow:SetClampRectInsets(-8, 8, 8, -8);
+end
+
+function AzeriteInBagsHelpBox_OnShow(self)
+	MainMenuMicroButton_AddExternalAlert(self);
+	self:SetHeight(self.Text:GetHeight() + 42);
+end
+
+function AzeriteInBagsHelpBox_OnHide(self)
+	MainMenuMicroButton_RemoveExternalAlert(self);
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_BAG, true);
 end

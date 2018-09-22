@@ -65,6 +65,16 @@ local Expansion =
 			},
 		},
 		{
+			Name = "GetExpansionTrialInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isExpansionTrialAccount", Type = "bool", Nilable = false },
+				{ Name = "expansionTrialRemainingSeconds", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetMaxLevelForExpansionLevel",
 			Type = "Function",
 
@@ -76,6 +86,15 @@ local Expansion =
 			Returns =
 			{
 				{ Name = "maxLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMaximumExpansionLevel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "expansionLevel", Type = "number", Nilable = false },
 			},
 		},
 		{

@@ -16,7 +16,6 @@ local frameTextureKitRegions = {
 function UIWidgetTemplateStackedResourceTrackerMixin:Setup(widgetInfo)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
 	self.resourcePool:ReleaseAll();
-	self.FontStrings = {};
 
 	local previousResourceFrame;
 
@@ -32,7 +31,9 @@ function UIWidgetTemplateStackedResourceTrackerMixin:Setup(widgetInfo)
 			resourceFrame:SetPoint("TOPLEFT", self.Frame, "TOPLEFT", 49, -38);
 		end
 
-		table.insert(self.FontStrings, resourceFrame.Text);
+		if self.fontColor then
+			resourceFrame:SetFontColor(self.fontColor);
+		end
 
 		previousResourceFrame = resourceFrame;
 	end
@@ -50,9 +51,9 @@ end
 function UIWidgetTemplateStackedResourceTrackerMixin:OnReset()
 	UIWidgetBaseTemplateMixin.OnReset(self);
 	self.resourcePool:ReleaseAll();
-	self.FontStrings = {};
+	self.fontColor = nil;
 end
 
-function UIWidgetTemplateStackedResourceTrackerMixin:GatherColorableFontStrings()
-	return self.FontStrings;
+function UIWidgetTemplateStackedResourceTrackerMixin:SetFontStringColor(fontColor)
+	self.fontColor = fontColor;
 end

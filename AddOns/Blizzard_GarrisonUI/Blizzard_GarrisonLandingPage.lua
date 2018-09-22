@@ -74,9 +74,17 @@ function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 		self.Report.Background:ClearAllPoints();
 		self.Report.Background:SetPoint("BOTTOM", self.Report, "BOTTOMLEFT", 194, 54);
 	elseif (self.garrTypeID == LE_GARRISON_TYPE_8_0) then
-		self.Report.Background:SetAtlas("GarrLanding_Watermark-Tradeskill", true);
-		self.Report.Background:ClearAllPoints();
-		self.Report.Background:SetPoint("BOTTOMLEFT", 60, 40);
+
+		local faction = UnitFactionGroup("player");
+		if ( faction == "Horde" ) then
+			self.Report.Background:SetAtlas("BfAMissionsLandingPage-Background-Horde", true);
+			self.Report.Background:ClearAllPoints();
+			self.Report.Background:SetPoint("BOTTOMLEFT", 100, 127);
+		else
+			self.Report.Background:SetAtlas("BfAMissionsLandingPage-Background-Alliance", true);
+			self.Report.Background:ClearAllPoints();
+			self.Report.Background:SetPoint("BOTTOMLEFT", 100, 127);
+		end
 	end
 	self.abilityCountersForMechanicTypes = C_Garrison.GetFollowerAbilityCountersForMechanicTypes(GetPrimaryGarrisonFollowerType(self.garrTypeID));
 	GarrisonThreatCountersFrame:SetParent(self.FollowerTab);
@@ -565,10 +573,19 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 							Reward.tooltip = BreakUpLargeNumbers(reward.quantity).." |T"..currencyTexture..":0:0:0:-1|t ";
 							Reward.currencyID = reward.currencyID;
 							Reward.currencyQuantity = reward.quantity;
-							Reward.Quantity:SetText(reward.quantity);
+							if C_CurrencyInfo.IsCurrencyContainer(reward.currencyID, reward.quantity) then
+								local name, texture, quantity = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.currencyID, reward.quantity);
+								Reward.Icon:SetTexture(texture);
+								if quantity > 1 then
+									Reward.Quantity:SetText(quantity);
+									Reward.Quantity:Show();
+								end
+							else
+								Reward.Quantity:SetText(reward.quantity);
+								Reward.Quantity:Show();
+							end
 							local currencyColor = GetColorForCurrencyReward(reward.currencyID, reward.quantity);
 							Reward.Quantity:SetTextColor(currencyColor:GetRGB());
-							Reward.Quantity:Show();
 						end
 					elseif (reward.bonusAbilityID) then
 						Reward.bonusAbilityID = reward.bonusAbilityID;
@@ -842,6 +859,10 @@ function GarrisonLandingPageReportMissionReward_OnEnter(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		if (self.itemID) then
 			GameTooltip:SetItemByID(self.itemID);
+			return;
+		end
+		if (self.currencyID and C_CurrencyInfo.IsCurrencyContainer(self.currencyID, self.currencyQuantity)) then			
+			GameTooltip:SetCurrencyByID(self.currencyID, self.currencyQuantity);
 			return;
 		end
 		if (self.title) then

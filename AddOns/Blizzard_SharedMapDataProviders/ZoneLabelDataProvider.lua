@@ -33,13 +33,11 @@ function ZoneLabelDataProviderMixin:RefreshAllData(fromOnShow)
 	self.numActiveAreas = 0;
 	self.activeAreas = {};
 
-	if self:GetMap():ShouldShowSubzones() then
-		local mapID = self:GetMap():GetMapID();
-		local mapChildren = C_Map.GetMapChildrenInfo(mapID, Enum.UIMapType.Zone);
-		for i, childMapInfo in ipairs(mapChildren) do
-			local left, right, top, bottom = C_Map.GetMapRectOnMap(childMapInfo.mapID, mapID);
-			self:AddZone(childMapInfo.mapID, childMapInfo.name, left, right, top, bottom);
-		end
+	local mapID = self:GetMap():GetMapID();
+	local mapChildren = C_Map.GetMapChildrenInfo(mapID, Enum.UIMapType.Zone);
+	for i, childMapInfo in ipairs(mapChildren) do
+		local left, right, top, bottom = C_Map.GetMapRectOnMap(childMapInfo.mapID, mapID);
+		self:AddZone(childMapInfo.mapID, childMapInfo.name, left, right, top, bottom);
 	end
 
 	self:AddContinent();

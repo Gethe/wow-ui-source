@@ -69,7 +69,7 @@ function MultiActionBar_Update ()
 		if ( showLeft ) then
 			contentHeight = contentHeight + VERTICAL_MULTI_BAR_HEIGHT + VERTICAL_MULTI_BAR_VERTICAL_SPACING;
 			MultiBarLeft:ClearAllPoints();
-			if ( contentHeight * VERTICAL_MULTI_BAR_MIN_SCALE > availableSpace or GetCVarBool("multiBarRightHorizontalLayout")) then
+			if ( contentHeight * VERTICAL_MULTI_BAR_MIN_SCALE > availableSpace or not GetCVarBool("multiBarRightVerticalLayout")) then
 				MultiBarLeft:SetPoint("TOPRIGHT", MultiBarRight, "TOPLEFT", -VERTICAL_MULTI_BAR_HORIZONTAL_SPACING, 0);
 				contentHeight = VERTICAL_MULTI_BAR_HEIGHT;
 				contentWidth = VERTICAL_MULTI_BAR_WIDTH * 2 + VERTICAL_MULTI_BAR_HORIZONTAL_SPACING;

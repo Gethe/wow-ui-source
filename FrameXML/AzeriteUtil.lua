@@ -23,6 +23,13 @@ do
 	end
 end
 
+function AzeriteUtil.AreAnyAzeriteEmpoweredItemsEquipped()
+	for equipSlotIndex, itemLocation in AzeriteUtil.EnumerateEquipedAzeriteEmpoweredItems() do
+		return true;
+	end
+	return false;
+end
+
 function AzeriteUtil.DoEquippedItemsHaveUnselectedPowers()
 	for equipSlotIndex, itemLocation in AzeriteUtil.EnumerateEquipedAzeriteEmpoweredItems() do
 		if C_AzeriteEmpoweredItem.HasAnyUnselectedPowers(itemLocation) then
@@ -98,4 +105,29 @@ function AzeriteUtil.GetSelectedAzeritePowerInTier(azeriteEmpoweredItemSource, t
 	end
 
 	return nil;
+end
+
+function AzeriteUtil.HasSelectedAnyAzeritePower(azeriteEmpoweredItemSource)
+	local allTierInfo = azeriteEmpoweredItemSource:GetAllTierInfo();
+	for tierIndex, tierInfo in ipairs(allTierInfo) do
+		for powerIndex, azeritePowerID in ipairs(tierInfo.azeritePowerIDs) do
+			if azeriteEmpoweredItemSource:IsPowerSelected(azeritePowerID) then
+				return true;
+			end
+		end
+	end
+
+	return nil;
+end
+
+function AzeriteUtil.DoesBagContainAnyAzeriteEmpoweredItems(bagID)
+	local itemLocation = ItemLocation:CreateEmpty();
+	for slotIndex = 1, ContainerFrame_GetContainerNumSlots(bagID) do
+		itemLocation:SetBagAndSlot(bagID, slotIndex);
+		if C_Item.DoesItemExist(itemLocation) and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) then
+			return true;
+		end
+	end
+
+	return false;
 end

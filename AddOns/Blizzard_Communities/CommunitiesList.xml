@@ -6,7 +6,7 @@
 		<Size x="178" y="68"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\Common\bluemenu-main">
+				<Texture parentKey="Background" file="Interface\Common\bluemenu-main">
 					<Size x="0" y="80"/>
 					<TexCoords left="0.00390625" right="0.87890625" top="0.75195313" bottom="0.83007813"/>
 					<Anchors>
@@ -14,15 +14,16 @@
 						<Anchor point="RIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="GuildTabardBackground" file="Interface\GuildFrame\GuildFrame">
-					<Size x="46" y="46"/>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="GuildTabardBackground" atlas="communities-guildbanner-background">
+					<Size x="52" y="51"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="8" y="-12"/>
+						<Anchor point="TOPLEFT" x="6" y="-11"/>
 					</Anchors>
-					<TexCoords left="0.63183594" right="0.69238281" top="0.61914063" bottom="0.74023438"/>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER">
+			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Selection" file="Interface\Common\bluemenu-main" hidden="true">
 					<Size x="0" y="80"/>
 					<Anchors>
@@ -34,9 +35,9 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon">
-					<Size x="42" y="42"/>
+					<Size x="38" y="38"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="8" y="-15"/>
+						<Anchor point="TOPLEFT" x="11" y="-15"/>
 					</Anchors>
 				</Texture>
 				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
@@ -50,7 +51,7 @@
 				</MaskTexture>
 				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="11" y="0"/>
 						<Anchor point="RIGHT" x="-24" y="0"/>
 						<Anchor point="TOP" x="0" y="-6"/>
 						<Anchor point="BOTTOM" x="0" y="6"/>
@@ -58,29 +59,19 @@
 				</FontString>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="1">
-				<!-- TODO:: This texture is being trimmed and stretched and should be replaced -->
-				<Texture parentKey="GuildFinderBackground" file="Interface\AchievementFrame\GuildTabard" hidden="true">
-					<Size x="50" y="60"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon" x="0" y="-8"/>
-					</Anchors>
-					<Color r="0.7" g="0.7" b="0.7"/>
-					<TexCoords left="0.00781250" right="0.57031250" top="0.78437500" bottom="0.98437500"/>
-				</Texture>
 				<Texture parentKey="GuildTabardEmblem" file="Interface\GuildFrame\GuildEmblemsLG_01">
-					<Size x="48" y="48"/>
+					<Size x="42" y="42"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="8" y="-12"/>
+						<Anchor point="TOPLEFT" x="11" y="-10"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="GuildTabardBorder" file="Interface\GuildFrame\GuildFrame">
-					<Size x="45" y="44"/>
+				<Texture parentKey="GuildTabardBorder" atlas="communities-guildbanner-border">
+					<Size x="52" y="51"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="10" y="-13"/>
+						<Anchor point="TOPLEFT" x="6" y="-11"/>
 					</Anchors>
-					<TexCoords left="0.63183594" right="0.69238281" top="0.74414063" bottom="0.86523438"/>
 				</Texture>
 				<Texture parentKey="InvitationIcon" atlas="communities-icon-invitemail">
 					<Size x="57" y="55"/>
@@ -89,13 +80,13 @@
 					</Anchors>
 				</Texture>
 				<Texture parentKey="IconRing" atlas="communities-ring-gold">
-					<Size x="52" y="52"/>
+					<Size x="48" y="48"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon" x="0" y="-2"/>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="UnreadNotificationIcon" atlas="communities-icon-notification" hidden="true">
-					<Size x="11" y="12"/>
+					<Size x="11" y="11"/>
 					<Anchors>
 						<Anchor point="RIGHT" x="-16" y="0"/>
 					</Anchors>
@@ -129,7 +120,7 @@
 
 	<Frame name="CommunitiesListFrameTemplate" useParentLevel="true" mixin="CommunitiesListMixin" virtual="true">
 		<Layers>
-			<Layer level="BORDER">
+			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="Bg" file="Interface\Common\bluemenu-main">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="2" y="0" />
@@ -138,7 +129,7 @@
 					<TexCoords left="0.00390625" right="0.82421875" top="0.18554688" bottom="0.58984375"/>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
+			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture parentKey="TopFiligree" file="Interface\Common\bluemenu-main">
 					<Size x="155" y="55"/>
 					<Anchors>
@@ -296,7 +287,7 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture parentKey="UnreadNotificationIcon" atlas="communities-icon-notification">
-							<Size x="11" y="12"/>
+							<Size x="11" y="11"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="-19" y="-4"/>
 							</Anchors>

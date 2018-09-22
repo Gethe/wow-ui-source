@@ -124,10 +124,6 @@ function ChannelRosterButtonMixin:IsVoiceActive()
 	return self.voiceActive;
 end
 
-function ChannelRosterButtonMixin:ShouldShowTalkingIndicator()
-	return self:IsVoiceTalking(); -- TODO: Use energy as well?
-end
-
 function ChannelRosterButtonMixin:SetVoiceMuted(muted)
 	self.voiceMuted = muted;
 end
@@ -142,6 +138,14 @@ end
 
 function ChannelRosterButtonMixin:IsConnected()
 	return self.isConnected;
+end
+
+function ChannelRosterButtonMixin:ClearVoiceInfo()
+	self:SetVoiceEnabled(false);
+	self:SetVoiceChannelID(nil);
+	self:SetVoiceMemberID(nil);
+	self:SetVoiceActive(nil);
+	self:SetVoiceMuted(nil);
 end
 
 local function ChannelRosterDropdown_Initialize(dropdown, level, menuList)
@@ -274,10 +278,11 @@ function ChannelRosterButtonMixin:UpdateName()
 
 	local r, g, b;
 
-	if not self:IsConnected() then
+	-- Check for false here, because nil indicates we don't know if they are online
+	if self:IsConnected() == false then
 		r, g, b = DISABLED_FONT_COLOR:GetRGB();
 	elseif self.playerLocation then
-		local _, class= UnitClassByPlayerLocation(self.playerLocation);
+		local _, class = C_PlayerInfo.GetClass(self.playerLocation)
 		if class then
 			r, g, b = GetClassColor(class);
 		end

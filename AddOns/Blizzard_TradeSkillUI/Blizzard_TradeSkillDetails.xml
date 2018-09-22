@@ -429,7 +429,7 @@
 							<KeyValue key="reagentIndex" type="number" value="7"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Reagent6" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Reagent5" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 						</Anchors>
 					</Button>
 					<Button parentKey="Reagent8" inherits="TradeSkillReagentTemplate">

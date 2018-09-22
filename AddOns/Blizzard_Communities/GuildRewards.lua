@@ -184,3 +184,104 @@ end
 function CommunitiesGuildRewardsDropDown_OnHide(self)
 	self.rewardIndex = nil;
 end
+
+CommunitiesGuildFactionBarMixin = {};
+
+function CommunitiesGuildFactionBarMixin:OnShow()
+	self:UpdateFaction();
+	self:RegisterEvent("UPDATE_FACTION");
+end
+
+function CommunitiesGuildFactionBarMixin:OnHide()
+	self:UnregisterEvent("UPDATE_FACTION");
+end
+
+function CommunitiesGuildFactionBarMixin:OnEnter()
+	local name, description, standingID, barMin, barMax, barValue = GetGuildFactionInfo();
+	
+	--Normalize Values
+	barMax = barMax - barMin;
+	barValue = barValue - barMin;
+
+	if barMax == 0 then
+		barValue = 1;
+		barMax = 1;
+	end
+	
+	self.Label:SetText(GUILD_EXPERIENCE_LABEL:format(BreakUpLargeNumbers(barValue), BreakUpLargeNumbers(barMax)));
+	
+	local name, description = GetGuildFactionInfo();
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(GUILD_REPUTATION);
+	GameTooltip:AddLine(description, 1, 1, 1, true);
+	local percentTotal = math.ceil((barValue / barMax) * 100);
+	GameTooltip:AddLine(GUILD_EXPERIENCE_CURRENT:format(BreakUpLargeNumbers(barValue), BreakUpLargeNumbers(barMax), percentTotal));
+	GameTooltip:Show();
+end
+
+function CommunitiesGuildFactionBarMixin:OnLeave()
+	local gender = UnitSex("player");
+	local name, description, standingID, barMin, barMax, barValue = GetGuildFactionInfo();
+	local factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
+	self.Label:SetText(factionStandingtext);
+	GameTooltip:Hide();
+end
+
+function CommunitiesGuildFactionBarMixin:OnEvent(event)
+	if event == "UPDATE_FACTION" then
+		self:UpdateFaction();
+	end
+end
+
+function CommunitiesGuildFactionBarMixin:UpdateFaction()
+	local name, description, standingID, barMin, barMax, barValue = GetGuildFactionInfo();
+	
+	if not self:IsMouseOver() then
+		local gender = UnitSex("player");
+		local factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
+		self.Label:SetText(factionStandingtext);
+	end
+	
+	--Normalize Values
+	barMax = barMax - barMin;
+	barValue = barValue - barMin;
+	self:SetProgress(barValue, barMax);
+end
+
+function CommunitiesGuildFactionBarMixin:SetProgress(currentValue, maxValue)
+	if maxValue == 0 then
+		currentValue = 1;
+		maxValue = 1;
+	end
+
+	local maxBarWidth = self:GetWidth() - 4;
+	local progress = min(maxBarWidth * currentValue / maxValue, maxBarWidth);
+	self.Progress:SetWidth(progress + 1);
+	
+	-- hide shadow on progress self near the right edge
+	if progress > maxBarWidth - 4 then
+		self.Shadow:Hide();
+	else
+		self.Shadow:Show();
+	end
+end
+
+GuildAchievementPointDisplayMixin = {};
+
+function GuildAchievementPointDisplayMixin:OnShow()
+	self.SumText:SetText(BreakUpLargeNumbers(GetTotalAchievementPoints(true)));
+	self:SetWidth(self.SumText:GetWidth() + self.Icon:GetWidth() + 20);
+end
+
+function GuildAchievementPointDisplayMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, GUILD_POINTS_TT);
+	GameTooltip:Show();
+end
+
+function GuildAchievementPointDisplayMixin:OnMouseUp()
+	if IsInGuild() and CanShowAchievementUI() then
+		AchievementFrame_LoadUI();
+		AchievementFrame_ToggleAchievementFrame(false, true);
+	end
+end

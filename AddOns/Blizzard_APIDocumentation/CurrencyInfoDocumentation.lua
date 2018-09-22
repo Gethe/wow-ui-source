@@ -60,6 +60,30 @@ local CurrencyInfo =
 			},
 		},
 		{
+			Name = "GetFactionGrantedByCurrency",
+			Type = "Function",
+			Documentation = { "Gets the faction ID for currency that is immediately converted into reputation with that faction instead." },
+
+			Arguments =
+			{
+				{ Name = "currencyID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "factionID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetWarResourcesCurrencyID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "warResourceCurrencyID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "IsCurrencyContainer",
 			Type = "Function",
 

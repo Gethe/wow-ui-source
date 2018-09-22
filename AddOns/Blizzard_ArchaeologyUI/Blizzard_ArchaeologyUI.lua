@@ -1,8 +1,3 @@
-
-
-
-UIPanelWindows["ArchaeologyFrame"] = {area = "left", pushable = 3, showFailedFunc = "ArchaeologyFrame_ShowFailed" };
-
 ARCHAEOLOGY_BUTTON_HEIGHT = 59;
 ARCHAEOLOGY_MID_TITLE_YOFFSET = -110;
 
@@ -59,6 +54,7 @@ end
 
 
 function ArchaeologyFrame_OnLoad(self)
+	UIPanelWindows["ArchaeologyFrame"] = {area = "left", pushable = 3, showFailedFunc = ArchaeologyFrame_ShowFailed };
 	ButtonFrameTemplate_HideButtonBar(ArchaeologyFrame);
 	ButtonFrameTemplate_HideAttic(ArchaeologyFrame);
 	

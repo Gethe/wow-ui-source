@@ -431,21 +431,12 @@ function NameplateBuffContainerMixin:OnLoad()
 	self.buffList = {};
 	self.targetYOffset = 0;
 	self.baseYOffset = 0;
-	self.BuffFrameUpdateTime = 0;
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 end
 
 function NameplateBuffContainerMixin:OnEvent(event, ...)
 	if (event == "PLAYER_TARGET_CHANGED") then
 		self:UpdateAnchor();
-	end
-end
-
-function NameplateBuffContainerMixin:OnUpdate(elapsed)
-	if ( self.BuffFrameUpdateTime > 0 ) then
-		self.BuffFrameUpdateTime = self.BuffFrameUpdateTime - elapsed;
-	else
-		self.BuffFrameUpdateTime = self.BuffFrameUpdateTime + TOOLTIP_UPDATE_TIME;
 	end
 end
 
@@ -547,14 +538,15 @@ end
 
 NameplateBuffButtonTemplateMixin = {};
 
-function NameplateBuffButtonTemplateMixin:OnUpdate(elapsed)
-	if (self:GetParent().BuffFrameUpdateTime > 0) then
-		return;
-	end
+function NameplateBuffButtonTemplateMixin:OnEnter()
+	NamePlateTooltip:SetOwner(self, "ANCHOR_LEFT");
+	NamePlateTooltip:SetUnitAura(self:GetParent().unit, self:GetID(), self:GetParent().filter);
 
-	if (GameTooltip:IsOwned(self)) then
-		GameTooltip:SetUnitAura(self:GetParent().unit, self:GetID(), self:GetParent().filter);
-	end
+	self.UpdateTooltip = self.OnEnter;
+end
+
+function NameplateBuffButtonTemplateMixin:OnLeave()
+	NamePlateTooltip:Hide();
 end
 
 NamePlateBorderTemplateMixin = {};

@@ -12,7 +12,6 @@ function WorldMapFloorNavigationFrameMixin:Refresh()
 		UIDropDownMenu_SetSelectedValue(self, mapID);
 		self:Show();
 	else
-		UIDropDownMenu_ClearAll(self);
 		self:Hide();
 	end
 end
@@ -91,7 +90,7 @@ function WorldMapTrackingOptionsButtonMixin:OnSelection(value, checked)
 		SetCVar("showTamers", checked and "1" or "0", "SHOW_TAMERS");
 	elseif (value == "primaryProfessionsFilter" or value == "secondaryProfessionsFilter") then
 		SetCVar(value, checked and "1" or "0");
-	elseif (value == "worldQuestFilterOrderResources" or value == "worldQuestFilterArtifactPower" or
+	elseif (value == "worldQuestFilterResources" or value == "worldQuestFilterArtifactPower" or
 			value == "worldQuestFilterProfessionMaterials" or value == "worldQuestFilterGold" or
 			value == "worldQuestFilterEquipment") then
 		-- World quest reward filter cvars
@@ -139,9 +138,9 @@ function WorldMapTrackingOptionsButtonMixin:InitializeDropDown()
 		UIDropDownMenu_AddButton(info);
 	end
 
-	-- If we aren't on a map with world quests don't show the world quest reward filter options.
+	-- If we aren't on a map which has emissaries don't show the world quest reward filter options.
 	local mapID = self:GetParent():GetMapID();
-	if not mapID or not MapUtil.MapHasUnlockedBounties(mapID) then
+	if not mapID or not MapUtil.MapHasEmissaries(mapID) then
 		return;
 	end
 
@@ -175,9 +174,9 @@ function WorldMapTrackingOptionsButtonMixin:InitializeDropDown()
 	info.keepShownOnClick = true;
 	info.func = OnSelection;
 
-	info.text = WORLD_QUEST_REWARD_FILTERS_ORDER_RESOURCES;
-	info.value = "worldQuestFilterOrderResources";
-	info.checked = GetCVarBool("worldQuestFilterOrderResources");
+	info.text = WORLD_QUEST_REWARD_FILTERS_RESOURCES;
+	info.value = "worldQuestFilterResources";
+	info.checked = GetCVarBool("worldQuestFilterResources");
 	UIDropDownMenu_AddButton(info);
 
 	info.text = WORLD_QUEST_REWARD_FILTERS_ARTIFACT_POWER;

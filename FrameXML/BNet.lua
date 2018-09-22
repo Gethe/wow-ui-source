@@ -15,6 +15,7 @@ BNET_CLIENT_OVERWATCH = "Pro";
 BNET_CLIENT_CLNT = "CLNT";
 BNET_CLIENT_SC = "S1";
 BNET_CLIENT_DESTINY2 = "DST2";
+BNET_CLIENT_COD = "VIPR";
 
 --Name can be a realID or plain battletag with no 4 digit number (e.g. Murky McGrill or LichKing).
 function BNet_GetBNetIDAccount(name)
@@ -375,6 +376,8 @@ function BNet_GetClientEmbeddedTexture(client, width, height, xOffset, yOffset)
 		textureString = "Interface\\ChatFrame\\UI-ChatIcon-SC";
 	elseif ( client == BNET_CLIENT_DESTINY2 ) then
 		textureString = "Interface\\ChatFrame\\UI-ChatIcon-Destiny2";
+	elseif ( client == BNET_CLIENT_COD ) then
+		textureString = "Interface\\ChatFrame\\UI-ChatIcon-CallOfDutyBlackOps4";
 	else
 		textureString = "Interface\\ChatFrame\\UI-ChatIcon-Battlenet";
 	end
@@ -398,6 +401,8 @@ function BNet_GetClientTexture(client)
 		return "Interface\\FriendsFrame\\Battlenet-SCicon";
 	elseif ( client == BNET_CLIENT_DESTINY2 ) then
 		return "Interface\\FriendsFrame\\Battlenet-Destiny2icon";
+	elseif ( client == BNET_CLIENT_COD ) then
+		return "Interface\\FriendsFrame\\Battlenet-CallOfDutyBlackOps4icon";
 	else
 		return "Interface\\FriendsFrame\\Battlenet-Battleneticon";
 	end

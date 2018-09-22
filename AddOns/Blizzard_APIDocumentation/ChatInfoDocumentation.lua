@@ -298,6 +298,23 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "ChatMsgAddonLogged",
+			Type = "Event",
+			LiteralName = "CHAT_MSG_ADDON_LOGGED",
+			Payload =
+			{
+				{ Name = "prefix", Type = "string", Nilable = false },
+				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "channel", Type = "string", Nilable = false },
+				{ Name = "sender", Type = "string", Nilable = false },
+				{ Name = "target", Type = "string", Nilable = false },
+				{ Name = "zoneChannelID", Type = "number", Nilable = false },
+				{ Name = "localID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "instanceID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "ChatMsgAfk",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_AFK",

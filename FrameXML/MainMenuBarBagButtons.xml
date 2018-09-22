@@ -41,32 +41,9 @@
 		<Size x="30" y="30"/>
 		<Scripts>
 			<OnLoad>
-				ItemAnim_OnLoad(self)
-				PaperDollItemSlotButton_OnLoad(self);
-				self:RegisterEvent("BAG_UPDATE_DELAYED");
-				self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
-				self.isBag = 1;
-				self.UpdateTooltip = BagSlotButton_OnEnter;
-				_G[self:GetName().."NormalTexture"]:SetWidth(50);
-				_G[self:GetName().."NormalTexture"]:SetHeight(50);
-				self.IconBorder:SetSize(30, 30);
-				_G[self:GetName().."Count"]:SetPoint("BOTTOMRIGHT", -2, 2);
-				self.maxDisplayCount = 999;
-			</OnLoad>
-			<OnEvent>
-				ItemAnim_OnEvent(self, event, ...);
-				if ( event == "BAG_UPDATE_DELAYED" ) then
-					PaperDollItemSlotButton_Update(self);
-				elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
-					if ( IsContainerFiltered(self:GetID() - CharacterBag0Slot:GetID() + 1) ) then
-						self.searchOverlay:Show();
-					else
-						self.searchOverlay:Hide();
-					end
-				else
-					PaperDollItemSlotButton_OnEvent(self, event, ...);
-				end
-			</OnEvent>
+                BagSlotButton_OnLoad(self);
+            </OnLoad>
+			<OnEvent function="BagSlotButton_OnEvent" />
 			<OnShow>
 				PaperDollItemSlotButton_OnShow(self, true);
 			</OnShow>
@@ -102,37 +79,10 @@
 			<Anchor point="TOPRIGHT" x="-4" y="-4"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad>
-				ItemAnim_OnLoad(self)
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-				MainMenuBarBackpackButtonIconTexture:SetTexture("Interface\\Buttons\\Button-Backpack-Up");
-				self:RegisterEvent("PLAYER_ENTERING_WORLD");
-				self:RegisterEvent("CVAR_UPDATE");
-				self:RegisterEvent("BAG_UPDATE");
-				self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
-				_G[self:GetName().."NormalTexture"]:SetWidth(64);
-				_G[self:GetName().."NormalTexture"]:SetHeight(64);
-				_G[self:GetName().."Count"]:ClearAllPoints();
-				_G[self:GetName().."Count"]:SetPoint("CENTER", 0, -10);
-			</OnLoad>
-			<OnClick>
-				if ( IsModifiedClick() ) then
-					BackpackButton_OnModifiedClick(self, button);
-				else
-					BackpackButton_OnClick(self, button);
-				end
-			</OnClick>
-			<OnReceiveDrag function="BackpackButton_OnClick"/>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-				GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0);
-				local keyBinding = GetBindingKey("TOGGLEBACKPACK");
-				if ( keyBinding ) then
-					GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..keyBinding..")"..FONT_COLOR_CODE_CLOSE);
-				end
-				GameTooltip:AddLine(string.format(NUM_FREE_SLOTS, (self.freeSlots or 0)));
-				GameTooltip:Show();
-			</OnEnter>
+			<OnLoad function="MainMenuBarBackpackButton_OnLoad" />
+			<OnClick function="MainMenuBarBackpackButton_OnClick" />
+			<OnReceiveDrag function="BackpackButton_OnClick" />
+			<OnEnter function="MainMenuBarBackpackButton_OnEnter" />
 			<OnLeave function="GameTooltip_Hide"/>
 			<OnEvent>
 				ItemAnim_OnEvent(self, event, ...);
@@ -177,4 +127,31 @@
 			</Anchor>
 		</Anchors>
 	</CheckButton>
+
+    <Frame name="AzeriteInBagsHelpBox" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG" toplevel="true" clampedToScreen="true">
+        <Size x="220" y="100"/>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="AZERITE_TUTORIAL_ITEM_IN_BAG">
+                    <Size x="188" y="0"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="16" y="-24"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" x="6" y="6"/>
+                </Anchors>
+            </Button>
+            <Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate" clampedToScreen="true" />
+        </Frames>
+        <Scripts>
+            <OnLoad function="AzeriteInBagsHelpBox_OnLoad"/>
+            <OnShow function="AzeriteInBagsHelpBox_OnShow"/>
+            <OnHide function="AzeriteInBagsHelpBox_OnHide"/>
+        </Scripts>
+    </Frame>
 </Ui>

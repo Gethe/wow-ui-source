@@ -84,9 +84,6 @@ function ArtifactPowerButtonMixin:OnClick(button)
 end
 
 function ArtifactPowerButtonMixin:OnDragStart()
-	if not self.locked and self.spellID and self.hasSpentAny and not IsPassiveSpell(self.spellID) then
-		PickupSpell(self.spellID);
-	end
 end
 
 function ArtifactPowerButtonMixin:PlayPurchaseAnimation()
@@ -254,6 +251,7 @@ function ArtifactPowerButtonMixin:SetStyle(style)
 		iconAlpha = 0;
 		iconBorderAlpha = 0;
 
+		self.Rank:SetText(nil);
 		self.Rank:SetAlpha(0);
 		self.RankBorder:SetAlpha(0);
 

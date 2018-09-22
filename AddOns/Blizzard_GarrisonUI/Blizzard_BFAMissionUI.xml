@@ -1,8 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	
+
 	<Script file="Blizzard_BFAMissionUI.lua"/>
-	
+
 	<Frame name="BFAMissionFrame" inherits="GarrisonMissionFrameTemplate, GarrisonUITemplate" mixin="GarrisonMission, GarrisonFollowerMission, OrderHallMission, BFAMission" frameLevel="1">
 		<Size x="962" y="662"/>
 		<Anchors>
@@ -17,7 +17,59 @@
 			<OnHide method="OnHideMainFrame"/>
 			<OnEvent method="OnEventMainFrame"/>
 		</Scripts>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="Topper">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="CloseButtonBorder">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.CloseButton" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
+			<Frame parentKey="TitleScroll" inherits="ResizeLayoutFrame">
+				<Size x="1" y="30"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.Topper" relativePoint="BOTTOM" x="0" y="0"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="fixedHeight" value="35" type="number"/>
+					<KeyValue key="minimumWidth" value="90" type="number"/>
+					<KeyValue key="widthPadding" value="100" type="number"/>
+				</KeyValues>
+
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="ScrollLeft">
+							<Size x="39" y="30.5"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ScrollRight">
+							<Size x="39" y="30.5"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ScrollMiddle" hWrapMode="REPEAT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ScrollLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollRight" relativePoint="BOTTOMLEFT" x="0" y="2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Button parentKey="Tab1" name="$parentTab1" inherits="OrderHallFrameTabButtonTemplate" id="1" text="GARRISON_MISSIONS">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="7" y="-31"/>
@@ -144,9 +196,9 @@
 
 					<Button parentKey="MissionPage" inherits="OrderHallMissionPageTemplate" hidden="true" mixin="GarrisonMissionPageMixin,GarrisonFollowerMissionPageMixin,OrderHallFollowerMissionPageMixin"/>
 
-					<!-- We need 13 preload models; 
+					<!-- We need 13 preload models;
 						potentially (2 troops with 5 displayIDs each) + (1 follower with 2 displayIDs) + (1 enemy model)
-						= 10 + 2 + 1 = 13 
+						= 10 + 2 + 1 = 13
 						TODO: Convert these to use a frame pool			-->
 					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
 					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
@@ -189,9 +241,9 @@
 							<Layer level="ARTWORK">
 								<FontString parentKey="BonusChanceLabel" inherits="Game18Font" justifyH="CENTER">
 									<Color r="1.0" g="0.82" b="0"/>
-									<Size x="200" y="0"/>
+									<Size x="160" y="0"/>
 									<Anchors>
-										<Anchor point="RIGHT"/>
+										<Anchor point="RIGHT" x="-10"/>
 									</Anchors>
 								</FontString>
 							</Layer>

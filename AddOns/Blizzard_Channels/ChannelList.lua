@@ -105,7 +105,7 @@ function ChannelListMixin:Update()
 	local currentStreamChannelID = numTotalChatChannels + 1;
 	for _, clubInfo in ipairs(clubs) do
 		local streams = C_Club.GetStreams(clubInfo.clubId);
-		
+
 		if #streams > 0 then
 			local isHeader = true;
 			local channelNumber = nil;
@@ -165,6 +165,10 @@ local function matchingChannelTypePredicate(button, channelType)
 	return button:GetChannelType() == channelType;
 end
 
+local function matchingAnyVoiceChannelPredicate(button)
+	return button:ChannelSupportsVoice();
+end
+
 local function matchingCommunityStreamPredicate(button, clubId, streamId)
 	return button:ChannelIsCommunity() and (button.clubId == clubId) and (button.streamId == streamId);
 end
@@ -215,6 +219,10 @@ end
 
 function ChannelListMixin:GetButtonForCommunityStream(clubId, streamId)
 	return self:GetButtonForPredicate(matchingCommunityStreamPredicate, clubId, streamId);
+end
+
+function ChannelListMixin:GetButtonForAnyVoiceChannel()
+	return self:GetButtonForPredicate(matchingAnyVoiceChannelPredicate);
 end
 
 function ChannelListMixin:HasChannel(name)

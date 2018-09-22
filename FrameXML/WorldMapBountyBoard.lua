@@ -329,7 +329,7 @@ function WorldMapBountyBoardMixin:ShowBountyTooltip(bountyIndex)
 			WorldMapTooltip:AddLine(bountyData.turninRequirementText, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 		end
 
-		GameTooltip_AddQuestRewardsToTooltip(WorldMapTooltip, bountyData.questID);
+		GameTooltip_AddQuestRewardsToTooltip(WorldMapTooltip, bountyData.questID, TOOLTIP_QUEST_REWARDS_STYLE_EMISSARY_REWARD);
 		WorldMapTooltip:Show();
 	else
 		WorldMapTooltip:SetText(RETRIEVING_DATA, RED_FONT_COLOR:GetRGB());
@@ -388,6 +388,7 @@ function WorldMapBountyBoardMixin:OnEnter()
 	elseif self.lockedType == WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NO_BOUNTIES then
 		self:ShowLockedByNoBountiesTooltip(nil);
 	end
+	self.UpdateTooltip = self.OnEnter;
 end
 
 function WorldMapBountyBoardMixin:OnLeave()
@@ -400,6 +401,7 @@ function WorldMapBountyBoardMixin:OnTabEnter(tab)
 	else
 		self:ShowBountyTooltip(tab.bountyIndex);
 	end
+	self.UpdateTooltip = function() self:OnTabEnter(tab) end;
 end
 
 function WorldMapBountyBoardMixin:OnTabLeave(tab)
@@ -408,12 +410,13 @@ end
 
 function WorldMapBountyBoardMixin:OnTabClick(tab)
 	if not tab.isEmpty then
-		if self:GetSelectedBountyIndex() ~= tab.bountyIndex then
+		local isNewTab = self:GetSelectedBountyIndex() ~= tab.bountyIndex;
+		if isNewTab then
 			self:InvalidateMapCache();
 		end
 		PlaySound(SOUNDKIT.UI_WORLDQUEST_MAP_SELECT);
 		self:SetSelectedBountyIndex(tab.bountyIndex);
-		self:SetNextMapForSelectedBounty();
+		self:SetNextMapForSelectedBounty(isNewTab);
 	end
 end
 
@@ -424,8 +427,8 @@ end
 function WorldMapBountyBoardMixin:CalculateNumActiveWorldQuestsForSelectedBountyByMap(mapID)
 	local numQuests = 0;
 	local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapID);
-	for i, info  in ipairs(taskInfo) do
-		if QuestUtils_IsQuestWorldQuest(info.questId) then
+	for i, info in ipairs(taskInfo) do
+		if QuestUtils_IsQuestWorldQuest(info.questId) and info.mapID == mapID then -- ignore worlds quests that are on surrounding maps but viewable from this map
 			if self:IsWorldQuestCriteriaForSelectedBounty(info.questId) then
 				numQuests = numQuests + 1;
 			end
@@ -451,7 +454,7 @@ function WorldMapBountyBoardMixin:CacheMapsForSelectionBounty()
 	table.sort(self.cachedMapInfo, function(left, right) return right.count < left.count end);
 end
 
-function WorldMapBountyBoardMixin:SetNextMapForSelectedBounty()
+function WorldMapBountyBoardMixin:SetNextMapForSelectedBounty(isNewTab)
 	self:CacheMapsForSelectionBounty();
 
 	if #self.cachedMapInfo == 0 then
@@ -462,6 +465,11 @@ function WorldMapBountyBoardMixin:SetNextMapForSelectedBounty()
 	local mapID = self:GetMapID();
 	for i, cachedMapInfo in ipairs(self.cachedMapInfo) do
 		if mapID == cachedMapInfo.mapID then
+			if isNewTab then
+				-- if we just selected this tab and the map matches a quest then stay here until the next click
+				mapIndex = i;
+				break;
+			end
 			-- we want the next map after the current one
 			mapIndex = i + 1;
 			break;

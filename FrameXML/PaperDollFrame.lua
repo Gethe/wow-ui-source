@@ -754,10 +754,16 @@ function PaperDollFrame_SetBlock(statFrame, unit)
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_BLOCK, chance, true, chance);
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, BLOCK_CHANCE).." "..string.format("%.2F", chance).."%"..FONT_COLOR_CODE_CLOSE;
 
-	local baselineArmor, effectiveArmor, armor, bonusArmor = UnitArmor(unit);
 	local shieldBlockArmor = GetShieldBlock();
-	local armorAndBlockArmorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor + shieldBlockArmor, UnitEffectiveLevel(unit));
-	statFrame.tooltip2 = CR_BLOCK_TOOLTIP:format(BreakUpLargeNumbers(shieldBlockArmor), armorAndBlockArmorReduction);
+	local blockArmorReduction = PaperDollFrame_GetArmorReduction(shieldBlockArmor, UnitEffectiveLevel(unit));
+	local blockArmorReductionAgainstTarget = PaperDollFrame_GetArmorReductionAgainstTarget(shieldBlockArmor);
+
+	statFrame.tooltip2 = CR_BLOCK_TOOLTIP:format(blockArmorReduction);
+	if (blockArmorReductionAgainstTarget) then
+		statFrame.tooltip3 = format(STAT_BLOCK_TARGET_TOOLTIP, blockArmorReductionAgainstTarget);
+	else
+		statFrame.tooltip3 = nil;
+	end
 	statFrame:Show();
 end
 
@@ -1286,14 +1292,14 @@ function PaperDollFrame_SetItemLevel(statFrame, unit)
 	local avgItemLevel, avgItemLevelEquipped = GetAverageItemLevel();
 	local minItemLevel = C_PaperDollInfo.GetMinItemLevel();
 
-	local displayItemLevel = math.max(minItemLevel or 0, avgItemLevel);
+	local displayItemLevel = math.max(minItemLevel or 0, avgItemLevelEquipped);
 	
 	displayItemLevel = floor(displayItemLevel);
-	avgItemLevelEquipped = floor(avgItemLevelEquipped);
+	avgItemLevel = floor(avgItemLevel);
 
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_AVERAGE_ITEM_LEVEL, displayItemLevel, false, displayItemLevel);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_AVERAGE_ITEM_LEVEL).." "..displayItemLevel;
-	if ( displayItemLevel ~= avgItemLevelEquipped ) then
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_AVERAGE_ITEM_LEVEL).." "..avgItemLevel;
+	if ( displayItemLevel ~= avgItemLevel ) then
 		statFrame.tooltip = statFrame.tooltip .. "  " .. format(STAT_AVERAGE_ITEM_LEVEL_EQUIPPED, avgItemLevelEquipped);
 	end
 	statFrame.tooltip = statFrame.tooltip .. FONT_COLOR_CODE_CLOSE;
@@ -2899,7 +2905,7 @@ function PaperDollItemsMixin:OnEvent(event, ...)
 		self:MarkDirty();
 	elseif event == "ADDON_LOADED" then
 		local addOnName = ...;
-		if addOnName == "Blizzard_AzeriteUI" or addOnName == "Blizzard_AzeriteTempUI" then
+		if addOnName == "Blizzard_AzeriteUI" then
 			self.wasAzeriteUIShown = true;
 			self:MarkDirty();
 			AzeriteEmpoweredItemUI:RegisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnShow, self.onAzeriteUIShownCallback);

@@ -435,6 +435,7 @@ function AlertFrameMixin:OnLoad()
 	self:RegisterEvent("GARRISON_RANDOM_MISSION_ADDED");
 	self:RegisterEvent("NEW_RECIPE_LEARNED");
 	self:RegisterEvent("SHOW_LOOT_TOAST_LEGENDARY_LOOTED");
+	self:RegisterEvent("AZERITE_EMPOWERED_ITEM_LOOTED");
 	self:RegisterEvent("QUEST_TURNED_IN");
 	self:RegisterEvent("QUEST_LOOT_RECEIVED");
 	self:RegisterEvent("NEW_PET_ADDED");
@@ -581,6 +582,9 @@ function AlertFrameMixin:OnEvent(event, ...)
 	elseif ( event == "SHOW_LOOT_TOAST_LEGENDARY_LOOTED") then
 		local itemLink = ...;
 		LegendaryItemAlertSystem:AddAlert(itemLink);
+	elseif ( event == "AZERITE_EMPOWERED_ITEM_LOOTED" ) then
+		local itemLink = ...;
+		LootAlertSystem:AddAlert(itemLink, quantity, nil, nil, specID, false);
 	elseif ( event == "NEW_PET_ADDED") then
 		local petID = ...;
 		NewPetAlertSystem:AddAlert(petID);

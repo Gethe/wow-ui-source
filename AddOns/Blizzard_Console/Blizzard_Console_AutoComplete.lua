@@ -350,8 +350,19 @@ function DeveloperConsoleAutoCompleteMixin:ResumeWork()
 	coroutine.resume(self.workingCoroutine);
 end
 
+function DeveloperConsoleAutoCompleteMixin:FinishWork()
+	self.workEndTime = nil;
+	if self.workingCoroutine then
+		coroutine.resume(self.workingCoroutine);
+		self.workingCoroutine = nil;
+
+		self:DisplayResults();
+		self.heightDirty = false;
+	end
+end
+
 function DeveloperConsoleAutoCompleteMixin:CheckYield()
-	if GetTimePreciseSec() > self.workEndTime then
+	if self.workEndTime and GetTimePreciseSec() > self.workEndTime then
 		return coroutine.yield();
 	end
 end

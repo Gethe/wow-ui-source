@@ -16,6 +16,8 @@ function UIWidgetTemplateHorizontalCurrenciesMixin:Setup(widgetInfo)
 	local previousCurrencyFrame;
 	local biggestHeight = 0;
 
+	local totalWidth = 0;
+
 	for index, currencyInfo in ipairs(widgetInfo.currencies) do
 		local currencyFrame = self.currencyPool:Acquire();
 		currencyFrame:Show();
@@ -24,8 +26,14 @@ function UIWidgetTemplateHorizontalCurrenciesMixin:Setup(widgetInfo)
 
 		if previousCurrencyFrame then
 			currencyFrame:SetPoint("TOPLEFT", previousCurrencyFrame, "TOPRIGHT", 10, 0);
+			totalWidth = totalWidth + currencyFrame:GetWidth() + 10;
 		else
 			currencyFrame:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+			totalWidth = currencyFrame:GetWidth();
+		end
+
+		if self.fontColor then
+			currencyFrame:SetFontColor(self.fontColor);
 		end
 
 		previousCurrencyFrame = currencyFrame;
@@ -36,6 +44,7 @@ function UIWidgetTemplateHorizontalCurrenciesMixin:Setup(widgetInfo)
 		end
 	end
 
+	self:SetWidth(totalWidth);
 	self:SetHeight(biggestHeight);
 end
 
@@ -46,4 +55,9 @@ end
 function UIWidgetTemplateHorizontalCurrenciesMixin:OnReset()
 	UIWidgetBaseTemplateMixin.OnReset(self);
 	self.currencyPool:ReleaseAll();
+	self.fontColor = nil;
+end
+
+function UIWidgetTemplateHorizontalCurrenciesMixin:SetFontStringColor(fontColor)
+	self.fontColor = fontColor;
 end

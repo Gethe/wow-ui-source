@@ -244,7 +244,7 @@ function QuestMapFrame_UpdateAll()
 		if ( questDetailID ) then
 			-- update rewards
 			SelectQuestLogEntry(GetQuestLogIndexByID(questDetailID));
-			QuestInfo_Display(QUEST_TEMPLATE_MAP_REWARDS, QuestMapFrame.DetailsFrame.RewardsFrame, nil, nil, true);
+			QuestMapFrame_ShowQuestDetails(questDetailID);
 		else
 			QuestLogQuests_Update(poiTable);
 		end
@@ -333,6 +333,10 @@ function QuestMapFrame_CloseQuestDetails(optPortraitOwnerCheckFrame)
 
 	StaticPopup_Hide("ABANDON_QUEST");
 	StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");
+end
+
+function QuestMapFrame_PingQuestID(questId)
+	QuestMapFrame:GetParent():PingQuestID(questId);
 end
 
 function QuestMapFrame_UpdateQuestDetailsButtons()

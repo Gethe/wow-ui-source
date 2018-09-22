@@ -643,6 +643,15 @@ local ArtifactUI =
 			},
 		},
 		{
+			Name = "IsEquippedArtifactDisabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "artifactDisabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsEquippedArtifactMaxed",
 			Type = "Function",
 

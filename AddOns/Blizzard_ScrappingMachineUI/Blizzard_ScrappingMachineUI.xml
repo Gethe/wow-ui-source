@@ -49,7 +49,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BORDER">
-				<Texture parentKey="Background" atlas="scrappingmachine-background-goblin">
+				<Texture parentKey="Background">
 					<Size x="323" y="227" />
 					<Anchors>
 						<Anchor point="BOTTOM" y="30" />

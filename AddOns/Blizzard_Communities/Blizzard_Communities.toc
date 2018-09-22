@@ -5,7 +5,6 @@
 ## LoadOnDemand: 1
 
 ..\..\SharedXML\SecureUIPanelTemplates.lua
-CommunitiesUtil.lua
 CommunitiesList.xml
 CommunitiesMemberList.xml
 CommunitiesChatFrame.xml
@@ -20,8 +19,12 @@ CommunitiesTabs.xml
 CommunitiesSettings.xml
 CommunitiesTicketManagerDialog.xml
 CommunitiesErrors.lua
+CommunitiesHyperlink.lua
 GuildRewards.xml
 GuildPerks.xml
 GuildInfo.xml
 GuildNews.xml
+GuildRoster.xml
+GuildNameChange.xml
 CommunitiesFrame.xml
+Localization.lua

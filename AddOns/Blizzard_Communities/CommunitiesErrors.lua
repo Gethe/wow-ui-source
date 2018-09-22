@@ -1,5 +1,6 @@
 local errorFrame = CreateFrame("FRAME");
 errorFrame:RegisterEvent("CLUB_ERROR");
+errorFrame:RegisterEvent("CLUB_REMOVED_MESSAGE");
 
 local actionStrings = 
 {
@@ -54,6 +55,9 @@ local errorStrings =
 	[Enum.ClubErrorType.ErrorCommunitiesUnknownTicket] = "ERROR_COMMUNITIES_UNKNOWN_TICKET",
 	[Enum.ClubErrorType.ErrorCommunitiesMissingShortName] = "ERROR_COMMUNITIES_MISSING_SHORT_NAME",
 	[Enum.ClubErrorType.ErrorCommunitiesProfanity] = "ERROR_COMMUNITIES_PROFANITY",
+	[Enum.ClubErrorType.ErrorCommunitiesTrial] = "ERROR_COMMUNITIES_TRIAL",
+	[Enum.ClubErrorType.ErrorCommunitiesVeteranTrial] = "ERROR_COMMUNITIES_VETERAN_TRIAL",
+	[Enum.ClubErrorType.ErrorCommunitiesChatMute] = "ERR_PARENTAL_CONTROLS_CHAT_MUTED",
 	[Enum.ClubErrorType.ErrorClubFull] = "ERROR_CLUB_FULL",
 	[Enum.ClubErrorType.ErrorClubNoClub] = "ERROR_CLUB_NO_CLUB",
 	[Enum.ClubErrorType.ErrorClubNotMember] = "ERROR_CLUB_NOT_MEMBER",
@@ -80,6 +84,13 @@ local errorStrings =
 	[Enum.ClubErrorType.ErrorClubTicketHasConsumedAllowedRedeemCount] = "ERROR_CLUB_TICKET_HAS_CONSUMED_ALLOWED_REDEEM_COUNT",
 };
 
+local clubRemovedStrings = 
+{
+	[Enum.ClubRemovedReason.Removed] = CLUB_REMOVED_REASON_REMOVED,
+	[Enum.ClubRemovedReason.Banned] = CLUB_REMOVED_REASON_BANNED,
+	[Enum.ClubRemovedReason.ClubDestroyed] = CLUB_REMOVED_REASON_CLUB_DESTROYED,
+};
+
 local function GetErrorString(error, community)
 	local key = errorStrings[error];
 	if key then
@@ -89,23 +100,34 @@ local function GetErrorString(error, community)
 	return nil;
 end
 
+function GetCommunitiesErrorString(action, error, clubType)
+	local actionCodeString, errorCodeString;
+	if clubType ~= Enum.ClubType.BattleNet then
+		actionCodeString = GetActionString(action, true);
+		errorCodeString = GetErrorString(error, true);
+	end
+	if not actionCodeString then
+		actionCodeString = GetActionString(action, false);
+	end
+	if not errorCodeString then
+		errorCodeString = GetErrorString(error, false);
+	end
+	if actionCodeString then
+		return actionCodeString:format(errorCodeString or "");
+	end
+end
+
 errorFrame:SetScript("OnEvent", function(self, event, ...)
 	if event == "CLUB_ERROR" then
-		local action, error, clubType = ...;
-		local actionCodeString, errorCodeString, errorString;
-		if clubType ~= Enum.ClubType.BattleNet then
-			actionCodeString = GetActionString(action, true);
-			errorCodeString = GetErrorString(error, true);
+		local errorString = GetCommunitiesErrorString(...);
+		if errorString then
+			UIErrorsFrame:AddExternalErrorMessage(errorString);
 		end
-		if not actionCodeString then
-			actionCodeString = GetActionString(action, false);
-		end
-		if not errorCodeString then
-			errorCodeString = GetErrorString(error, false);
-		end
-		if actionCodeString then
-			errorString = actionCodeString:format(errorCodeString or "");
-			UIErrorsFrame:AddMessage(errorString, RED_FONT_COLOR:GetRGB());
+	elseif event == "CLUB_REMOVED_MESSAGE" then
+		local clubName, clubRemovedReason = ...;
+		if (clubName ~= nil and clubRemovedStrings[clubRemovedReason] ~= nil) then
+			local errorString = clubRemovedStrings[clubRemovedReason]:format(clubName);
+			UIErrorsFrame:AddExternalErrorMessage(errorString);
 		end
 	end
 end);

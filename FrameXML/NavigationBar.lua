@@ -278,13 +278,18 @@ end
 
 
 
-function NavBar_ListOverFlowButtons(self, index)
+function NavBar_ListOverFlowButtons(self)
 	local navBar = self:GetParent();
-	
-	local button = navBar.navList[index];
-	if not button:IsShown() then
-		return button:GetText(), NavBar_OverflowItemOnClick;
+	local list = { };
+	for i, button in ipairs(navBar.navList) do
+		if not button:IsShown() then
+			local entry = { text = button:GetText(), id = i, func = NavBar_OverflowItemOnClick };
+			tinsert(list, entry);
+		else
+			break;
+		end
 	end
+	return list;
 end
 
 

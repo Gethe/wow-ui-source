@@ -28,8 +28,12 @@ function Voice_GetChannelActivatePrompt(channel)
 end
 
 function Voice_GetChannelActivatedNotification(channel)
-	local isRaid = IsChatChannelRaid(channel.channelType);
-	return isRaid and raidChannelTypeToActivatedNotification[channel.channelType] or partyChannelTypeToActivatedNotification[channel.channelType];
+	if channel.channelType == Enum.ChatChannelType.Communities then
+		return VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_CUSTOM_NAME:format(ChatFrame_GetCommunityAndStreamName(channel.clubId, channel.streamId));
+	else
+		local isRaid = IsChatChannelRaid(channel.channelType);
+		return isRaid and raidChannelTypeToActivatedNotification[channel.channelType] or partyChannelTypeToActivatedNotification[channel.channelType];
+	end
 end
 
 function Voice_FormatChannelNotification(channel, notification)
@@ -70,7 +74,14 @@ end
 
 function VoiceChatActivateChannelPromptMixin:ShowPrompt(channel)
 	self:Setup(channel);
+
+	self:SetExternallyManagedOutroAnimation(true);
 	AlertFrame_ShowNewAlert(self);
+
+    C_Timer.After(10, function()
+    	self:SetExternallyManagedOutroAnimation(false);
+    	AlertFrame_PlayOutroAnimation(self);
+    end);
 end
 
 function VoiceChatActivateChannelPromptMixin:CheckActivateChannel(channel)
@@ -79,10 +90,19 @@ function VoiceChatActivateChannelPromptMixin:CheckActivateChannel(channel)
 	end
 end
 
+local function CountActiveChannelMembers(channel)
+	local count = 0;
+	for index, member in ipairs(channel.members) do
+		if member.isActive then
+			count = count + 1;
+		end
+	end
+
+	return count;
+end
+
 function VoiceChatActivateChannelPromptMixin:ShouldPromptForChannelActivate(channel)
-	-- Previous logic:
-	-- return C_ChatInfo.IsPartyChannelType(channel.channelType);
-	return false;
+	return C_ChatInfo.IsPartyChannelType(channel.channelType) and CountActiveChannelMembers(channel) > 0;
 end
 
 function VoiceChatActivateChannelPromptMixin:ActivateChannel()

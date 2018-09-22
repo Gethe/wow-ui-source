@@ -1,25 +1,25 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Frame name="UIWidgetTemplateBulletTextListLine" virtual="true" secureMixin="UIWidgetTemplateBulletTextListLineMixin">
+	<Frame name="UIWidgetTemplateBulletTextListLine" virtual="true" mixin="UIWidgetTemplateBulletTextListLineMixin">
 		<Size x="237" y="32"/>
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Bullet" secureMixin="UIWidgetBaseColoredTextMixin" inherits="NumberFont_Small" text="RANGE_INDICATOR">
+				<FontString parentKey="Bullet" mixin="UIWidgetBaseColoredTextMixin" inherits="NumberFont_Small" text="RANGE_INDICATOR">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Text" secureMixin="UIWidgetBaseColoredTextMixin" inherits="GameTooltipText">
-					<Size x="215"/>
+				<FontString parentKey="Text" mixin="UIWidgetBaseColoredTextMixin" inherits="GameTooltipText">
+					<Size x="227"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="12"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
-	</Frame>
+		</Frame>
 
-	<Frame name="UIWidgetTemplateBulletTextList" inherits="UIWidgetBaseTemplate" virtual="true" secureMixin="UIWidgetTemplateBulletTextListMixin">
+	<Frame name="UIWidgetTemplateBulletTextList" inherits="UIWidgetBaseTemplate" virtual="true" mixin="UIWidgetTemplateBulletTextListMixin">
 		<Size x="237" y="32"/>
 	</Frame>
 </Ui>

@@ -450,33 +450,11 @@ end
 --****** News/Events ************************************************************
 function GuildEventButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then
-		if ( CalendarFrame and CalendarFrame:IsShown() ) then
-			-- if the calendar is already open we need to do some work that's normally happening in CalendarFrame_OnShow
-			local date = C_Calendar.GetDate();
-			C_Calendar.SetAbsMonth(date.month, date.year);
+		if ( CalendarFrame ) then
+			CalendarFrame_OpenToGuildEventIndex(self.index);
 		else
 			ToggleCalendar();
-		end
-		local info = C_Calendar.GetGuildEventSelectionInfo(self.index);
-		local monthOffset = info.offsetMonth;
-		local day = info.monthDay;
-		local eventIndex = info.eventIndex;
-		C_Calendar.SetMonth(monthOffset);
-		-- need to highlight the proper day/event in calendar
-		local monthInfo = C_Calendar.GetMonthInfo();
-		local firstDay = monthInfo.firstWeekday;
-		local buttonIndex = day + firstDay - CALENDAR_FIRST_WEEKDAY;
-		if ( firstDay < CALENDAR_FIRST_WEEKDAY ) then
-			buttonIndex = buttonIndex + 7;
-		end
-		local dayButton = _G["CalendarDayButton"..buttonIndex];
-		CalendarDayButton_Click(dayButton);
-		if ( eventIndex <= 4 ) then -- can only see 4 events per day
-			local eventButton = _G["CalendarDayButton"..buttonIndex.."EventButton"..eventIndex];
-			CalendarDayEventButton_Click(eventButton, true);	-- true to open the event
-		else
-			CalendarFrame_SetSelectedEvent();	-- clears any event highlights
-			C_Calendar.OpenEvent(0, day, eventIndex);
+			CalendarFrame_OpenToGuildEventIndex(self.index);
 		end
 	end
 end

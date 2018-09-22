@@ -4,7 +4,7 @@ local SCOREFRAME_BASE_COLUMNS = 6;
 local SCOREFRAME_COLUMN_SPACING = 76;
 local SCOREFRAME_BUTTON_TEXT_OFFSET = -28;
 
-local SCORE_BUTTON_HEIGHT = 16;
+SCORE_BUTTON_HEIGHT = 16;
 
 function WorldStateScoreFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");

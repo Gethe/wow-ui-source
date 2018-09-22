@@ -119,11 +119,11 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\GuildFrame\GuildFrame">
-					<Size x="285" y="335"/>
+					<Size x="283" y="333"/>
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
 					</Anchors>
-					<TexCoords left="0.63183594" right="0.94531250" top="0.00195313" bottom="0.57226563"/>
+					<TexCoords left="0.630859375" right="0.9462890625" top="0" bottom="0.5703125"/>
 				</Texture>
 				<FontString parentKey="TitleText" inherits="GameFontNormalMed1" justifyH="LEFT" text="GUILD_PERKS_TITLE">
 					<Size x="232" y="38"/>

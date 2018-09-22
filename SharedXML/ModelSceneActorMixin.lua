@@ -36,14 +36,25 @@ function ModelSceneActorMixin:ApplyFromModelSceneActorInfo(actorInfo)
 
 	self.requestedScale = nil;
 
-	local animation, animationVariation, animSpeed, alpha, scale;
-	if actorInfo.modelActorDisplayID then
-		animation, animationVariation, animSpeed, alpha, scale = C_ModelInfo.GetModelSceneActorDisplayInfoByID(actorInfo.modelActorDisplayID);
-	end
+	local actorDisplayInfo = actorInfo.modelActorDisplayID and C_ModelInfo.GetModelSceneActorDisplayInfoByID(actorInfo.modelActorDisplayID);
+	if actorDisplayInfo then
+		if actorDisplayInfo.animationKitID then
+			self:PlayAnimationKit(actorDisplayInfo.animationKitID);
+		else
+			self:SetAnimation(actorDisplayInfo.animation, actorDisplayInfo.animationVariation, actorDisplayInfo.animSpeed);
+		end
 
-	self:SetAnimation(animation or 0, animationVariation, animSpeed);
-	self:SetAlpha(alpha or 1.0);
-	self:SetRequestedScale(scale or 1.0);
+		self:SetSpellVisualKit(actorDisplayInfo.spellVisualKitID);
+		
+		self:SetAlpha(actorDisplayInfo.alpha);
+		self:SetRequestedScale(actorDisplayInfo.scale);
+	else
+		self:StopAnimationKit();
+		self:SetSpellVisualKit(nil);
+		self:SetAnimation(0, 0, 1.0);
+		self:SetAlpha(1.0);
+		self:SetRequestedScale(1.0);
+	end
 
 	self:SetNormalizedScaleAggressiveness(actorInfo.normalizeScaleAggressiveness or 0.0);
 
@@ -55,6 +66,14 @@ end
 
 function ModelSceneActorMixin:OnModelCleared()
 	C_ModelInfo.ClearActiveModelSceneActor(self);
+end
+
+function ModelSceneActorMixin:SetOnSizeChangedCallback(onSizeChangedCallback)
+	self.onSizeChangedCallback = onSizeChangedCallback;
+end
+
+function ModelSceneActorMixin:GetOnSizeChangedCallback()
+	return self.onSizeChangedCallback;
 end
 
 function ModelSceneActorMixin:SetNormalizedScaleAggressiveness(normalizedScaleAggressiveness)
@@ -105,6 +124,10 @@ function ModelSceneActorMixin:CalculateNormalizedScale(normalizedScaleAggressive
 end
 
 -- "private" methods
+function ModelSceneActorMixin:OnReleased()
+	self:SetOnSizeChangedCallback(nil);
+end
+
 function ModelSceneActorMixin:OnUpdate()
 	self:UpdateScale();
 end
@@ -118,6 +141,10 @@ function ModelSceneActorMixin:UpdateScale()
 		self.scaleDirty = nil;
 		local effectiveScale = self:GetRequestedScale() * self:CalculateNormalizedScale(self:GetNormalizedScaleAggressiveness());
 		self:SetScale(effectiveScale);
+
+		if self.onSizeChangedCallback then
+			self.onSizeChangedCallback(self);
+		end
 	end
 end
 

@@ -1,16 +1,6 @@
 
 NUM_FACTIONS_DISPLAYED = 15;
 REPUTATIONFRAME_FACTIONHEIGHT = 26;
-FACTION_BAR_COLORS = {
-	[1] = {r = 0.8, g = 0.3, b = 0.22},
-	[2] = {r = 0.8, g = 0.3, b = 0.22},
-	[3] = {r = 0.75, g = 0.27, b = 0},
-	[4] = {r = 0.9, g = 0.7, b = 0},
-	[5] = {r = 0, g = 0.6, b = 0.1},
-	[6] = {r = 0, g = 0.6, b = 0.1},
-	[7] = {r = 0, g = 0.6, b = 0.1},
-	[8] = {r = 0, g = 0.6, b = 0.1},
-};
 MAX_PLAYER_LEVEL = 0;
 REPUTATIONFRAME_ROWSPACING = 23;
 MAX_REPUTATION_REACTION = 8;
@@ -24,6 +14,7 @@ function ReputationFrame_OnLoad(self)
 	end
 	--]]
 	self.paragonFramesPool = CreateFramePool("FRAME", self, "ReputationParagonFrameTemplate");
+	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
 end
 
 function ReputationFrame_OnShow(self)
@@ -49,6 +40,8 @@ end
 function ReputationFrame_OnEvent(self, event, ...)
 	if ( event == "UPDATE_FACTION" or event == "LFG_BONUS_FACTION_ID_UPDATED" or event == "QUEST_LOG_UPDATE" ) then
 		ReputationFrame_Update();
+	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
+		ReputationWatchBar_UpdateMaxLevel();
 	end
 end
 
@@ -394,13 +387,15 @@ end
 
 function ReputationParagonWatchBar_OnEnter(self)
 	if C_Reputation.IsFactionParagon(self.factionID) then
-		GameTooltip_SetDefaultAnchor(EmbeddedItemTooltip, UIParent, ReputationParagonFrame_SetupParagonTooltip);
+		self.UpdateTooltip = ReputationParagonFrame_SetupParagonTooltip;
+		GameTooltip_SetDefaultAnchor(EmbeddedItemTooltip, self);
 		ReputationParagonFrame_SetupParagonTooltip(self);
 	end
 end
 
 function ReputationParagonWatchBar_OnLeave(self)
 	EmbeddedItemTooltip:Hide();
+	self.UpdateTooltip = nil;
 end
 
 function ReputationParagonFrame_OnEnter(self)

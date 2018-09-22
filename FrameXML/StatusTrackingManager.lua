@@ -171,8 +171,8 @@ function StatusTrackingManagerMixin:LayoutBars(visBars)
 	local TOP_BAR = true;
 	local IS_DOUBLE = true;
 	if ( #visBars > 1 ) then
-		self:LayoutBar(visBars[1], width, not TOP_BAR, IS_DOUBLE);
-		self:LayoutBar(visBars[2], width, TOP_BAR, IS_DOUBLE);
+		self:LayoutBar(visBars[2], width, not TOP_BAR, IS_DOUBLE);
+		self:LayoutBar(visBars[1], width, TOP_BAR, IS_DOUBLE);
 	elseif( #visBars == 1 ) then 
 		self:LayoutBar(visBars[1], width, TOP_BAR, not IS_DOUBLE);
 	end 

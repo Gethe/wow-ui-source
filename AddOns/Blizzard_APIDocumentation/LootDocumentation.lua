@@ -11,6 +11,15 @@ local Loot =
 	Events =
 	{
 		{
+			Name = "AzeriteEmpoweredItemLooted",
+			Type = "Event",
+			LiteralName = "AZERITE_EMPOWERED_ITEM_LOOTED",
+			Payload =
+			{
+				{ Name = "itemLink", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "BonusRollActivate",
 			Type = "Event",
 			LiteralName = "BONUS_ROLL_ACTIVATE",
@@ -245,6 +254,17 @@ local Loot =
 			Name = "PlayerLootSpecUpdated",
 			Type = "Event",
 			LiteralName = "PLAYER_LOOT_SPEC_UPDATED",
+		},
+		{
+			Name = "QuestCurrencyLootReceived",
+			Type = "Event",
+			LiteralName = "QUEST_CURRENCY_LOOT_RECEIVED",
+			Payload =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "currencyId", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+			},
 		},
 		{
 			Name = "QuestLootReceived",

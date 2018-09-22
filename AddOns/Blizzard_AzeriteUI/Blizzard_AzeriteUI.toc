@@ -3,8 +3,6 @@
 ## Secure: 1
 ## LoadOnDemand: 1
 
-AzeriteEmpowedItemDataSource.lua
-
 Blizzard_AzeriteEmpoweredItemUITemplates.xml
 
 AzeritePowerLayoutInfo.lua

@@ -3,6 +3,7 @@ AzeriteEmpoweredItemUIMixin = CreateFromMixins(CallbackRegistryBaseMixin);
 AzeriteEmpoweredItemUIMixin:GenerateCallbackEvents(
 {
     "OnShow",
+	"OnHide",
 });
 
 local AZERITE_EMPOWERED_FRAME_EVENTS = {
@@ -47,7 +48,7 @@ function AzeriteEmpoweredItemUIMixin:OnLoad()
 		frame:Reset();
 	end
 	self.powerPool = CreateTransformFrameNodePool("BUTTON", self.ClipFrame.PowerContainerFrame, "AzeriteEmpoweredItemPowerTemplate", PowerReset);
-	self.azeriteItemDataSource = AzeriteEmpowedItemDataSource:CreateEmpty();
+	self.azeriteItemDataSource = AzeriteEmpoweredItemDataSource:CreateEmpty();
 
 	local startingSound = nil;
 	local loopingSound = SOUNDKIT.UI_80_AZERITEARMOR_ROTATION_LOOP;
@@ -81,6 +82,8 @@ end
 function AzeriteEmpoweredItemUIMixin:OnHide()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	self:Clear();
+
+	self:TriggerEvent(AzeriteEmpoweredItemUIMixin.Event.OnHide);
 end
 
 function AzeriteEmpoweredItemUIMixin:OnEvent(event, ...)
@@ -109,6 +112,12 @@ function AzeriteEmpoweredItemUIMixin:OnTierAnimationStateChanged(tierFrame, anim
 		ShakeFrameRandom(self.ClipFrame.BackgroundFrame, 1, .7, .05);
 	else
 		self:OnTierAnimationProgress(tierFrame, nil);
+
+		if tierFrame:IsFirstTier() and tierFrame:HasAnySelected() then
+			if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_FIRST_POWER_LOCKED_IN) then
+				self.FirstPowerLockedInHelpBox:Show();
+			end
+		end
 	end
 
 	self:MarkDirty();
@@ -188,6 +197,8 @@ function AzeriteEmpoweredItemUIMixin:Clear()
 	HideAll(self.ClipFrame.BackgroundFrame.KeyOverlay.Slots);
 	HideAll(self.ClipFrame.BackgroundFrame.KeyOverlay.Plugs);
 
+	self.FirstPowerLockedInHelpBox:Hide();
+
 	self:MarkDirty();
 
 	FrameUtil.UnregisterFrameForEvents(self, AZERITE_EMPOWERED_FRAME_EVENTS);
@@ -207,7 +218,11 @@ function AzeriteEmpoweredItemUIMixin:SetToItemLink(itemLink, overrideClassID, ov
 end
 
 function AzeriteEmpoweredItemUIMixin:OnItemSet()
-	if not self:IsItemValid() then
+	local itemValidationReason = self.azeriteItemDataSource:GetValidationInfo();
+	if itemValidationReason ~= AzeriteEmpoweredItemDataSourceMixin.VALIDATION_SUCCESS then
+		if itemValidationReason == AzeriteEmpoweredItemDataSourceMixin.VALIDATION_NO_PREVIEW_FOR_CLASS or AzeriteEmpoweredItemDataSourceMixin.VALIDATION_MISSING_DATA then
+			UIErrorsFrame:AddExternalErrorMessage(AZERITE_PREVIEW_UNAVAILABLE_FOR_CLASS);
+		end
 		HideUIPanel(self);
 		return;
 	end
@@ -229,6 +244,9 @@ function AzeriteEmpoweredItemUIMixin:OnItemSet()
 	local needsReveal = not self.azeriteItemDataSource:HasBeenViewed();
 	self:RebuildTiers(needsReveal);
 	self.azeriteItemDataSource:SetHasBeenViewed();
+	if needsReveal then
+		PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_FIRSTTIMEFLOURISH);
+	end
 
 	self:MarkDirty();
 end

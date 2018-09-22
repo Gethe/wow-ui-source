@@ -2,26 +2,33 @@
 ..\FrameXML\UI.xsd">
 	<Script file="AzeriteIslandsToast.lua"/> 
 	<Frame name="AzeriteIslandsPlayerToastTextTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="IsPlayer" value="true" type="boolean" />
+		</KeyValues>
 		<Size x="200" y="100"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="30"/> 
 		</Anchors>
 		<Layers> 
 			<Layer level="ARTWORK">
-				<Fontstring parentKey="Text" inherits="Game27Font" justifyH="CENTER" justifyV="MIDDLE"> 
-					<Size x="0" y="0"/> 
+				<FontString parentKey="Text" inherits="Game27Font" justifyH="CENTER" justifyV="MIDDLE"> 
 					<Color r=".901" g=".8" b=".501"/>
 					<Shadow>
 						<Offset x="1" y="-1"/>
 						<Color r="0.0" g="0.0" b="0.0"/>
 					</Shadow>
-				</Fontstring>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="ShowAnim" setToFinalAlpha="true">
 				<Alpha childKey="Text" startDelay="0" duration="2" order="1" fromAlpha="1" toAlpha="0"/>
 				<Translation childKey="Text" startDelay=".15" smoothing="OUT" duration="2" order="1" offsetX="0" offsetY="250"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():GetParent():OnAnimationFinished(self:GetParent());
+					</OnFinished>
+				</Scripts>
 			</AnimationGroup>
 		</Animations>
 	</Frame>
@@ -33,32 +40,37 @@
 		</Anchors>
 		<Layers> 
 			<Layer level="ARTWORK">
-				<Fontstring parentKey="Text" inherits="Game18Font" justifyH="CENTER" justifyV="MIDDLE"> 
-					<Size x="0" y="0"/> 
+				<FontString parentKey="Text" inherits="Game18Font" justifyH="CENTER" justifyV="MIDDLE"> 
 					<Color r=".901" g=".8" b=".501"/>
 					<Shadow>
 						<Offset x="1" y="-1"/>
 						<Color r="0.0" g="0.0" b="0.0"/>
 					</Shadow>
-				</Fontstring>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="ShowAnim" setToFinalAlpha="true">
 				<Alpha childKey="Text" startDelay="0" duration="2" order="1" fromAlpha="1" toAlpha="0"/>
 				<Translation childKey="Text" startDelay=".15" smoothing="OUT" duration="2" order="1" offsetX="0" offsetY="250"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():GetParent():OnAnimationFinished(self:GetParent());
+					</OnFinished>
+				</Scripts>
 			</AnimationGroup>
 		</Animations>
 	</Frame>
 	
-	<Frame name="AzeriteIslandsToast" parent="UIParent" mixin="AzeriteIslandsToastMixin">
-		<Size x="200" y="400"/>
-		<Anchors>
-			<Anchor point="CENTER"/> 
-		</Anchors>
+	<Frame name="AzeriteIslandsToast" parent="UIParent" mixin="AzeriteIslandsToastMixin" hidden="true" setAllPoints="true">
+		<Frames>
+			<Frame parentKey="PlayerToast" inherits="AzeriteIslandsPlayerToastTextTemplate" />
+			<Frame parentKey="PartyToast" inherits="AzeriteIslandsPartyToastTextTemplate" />
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
+            <OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

@@ -465,9 +465,6 @@ local CALENDAR_CALENDARTYPE_TOOLTIP_NAMEFORMAT = {
 	["RAID_LOCKOUT"] = {
 		[""]				= CALENDAR_EVENTNAME_FORMAT_RAID_LOCKOUT,
 	},
-	["RAID_RESET"] = {
-		[""]				= CALENDAR_EVENTNAME_FORMAT_RAID_RESET,
-	},
 };
 local CALENDAR_CALENDARTYPE_NAMEFORMAT = {
 	["PLAYER"] = {
@@ -494,9 +491,6 @@ local CALENDAR_CALENDARTYPE_NAMEFORMAT = {
 	["RAID_LOCKOUT"] = {
 		[""]				= CALENDAR_EVENTNAME_FORMAT_RAID_LOCKOUT,
 	},
-	["RAID_RESET"] = {
-		[""]				= CALENDAR_EVENTNAME_FORMAT_RAID_RESET,
-	},
 };
 local CALENDAR_CALENDARTYPE_TEXTURES = {
 	["PLAYER"] = {
@@ -522,9 +516,6 @@ local CALENDAR_CALENDARTYPE_TEXTURES = {
 --		[""]				= "",
 	},
 	["RAID_LOCKOUT"] = {
---		[""]				= "",
-	},
-	["RAID_RESET"] = {
 --		[""]				= "",
 	},
 };
@@ -571,12 +562,6 @@ local CALENDAR_CALENDARTYPE_TCOORDS = {
 		top		= 0.0,
 		bottom	= 1.0,
 	},
-	["RAID_RESET"] = {
-		left	= 0.0,
-		right	= 1.0,
-		top		= 0.0,
-		bottom	= 1.0,
-	},
 };
 local CALENDAR_CALENDARTYPE_COLORS = {
 --	["PLAYER"]				= ,
@@ -585,7 +570,6 @@ local CALENDAR_CALENDARTYPE_COLORS = {
 	["SYSTEM"]				= YELLOW_FONT_COLOR,
 	["HOLIDAY"]				= HIGHLIGHT_FONT_COLOR,
 	["RAID_LOCKOUT"]		= HIGHLIGHT_FONT_COLOR,
-	["RAID_RESET"]			= HIGHLIGHT_FONT_COLOR,
 };
 
 local CALENDAR_CALENDARTYPE_COLORS_TOOLTIP = {
@@ -647,7 +631,6 @@ end
 local CALENDAR_FILTER_CVARS = {
 	{text = CALENDAR_FILTER_DARKMOON,			cvar = "calendarShowDarkmoon"		},
 	{text = CALENDAR_FILTER_RAID_LOCKOUTS,		cvar = "calendarShowLockouts"		},
-	{text = CALENDAR_FILTER_RAID_RESETS,		cvar = "calendarShowResets"			},
 	{text = CALENDAR_FILTER_WEEKLY_HOLIDAYS,	cvar = "calendarShowWeeklyHolidays"	},
 	{text = CALENDAR_FILTER_BATTLEGROUND,		cvar = "calendarShowBattlegrounds"	},
 };
@@ -1142,7 +1125,7 @@ function CalendarFrame_OnEvent(self, event, ...)
 		local calendarType = ...;
 		if ( calendarType == "HOLIDAY" ) then
 			CalendarFrame_ShowEventFrame(CalendarViewHolidayFrame);
-		elseif ( calendarType == "RAID_RESET" or calendarType == "RAID_LOCKOUT" ) then
+		elseif ( calendarType == "RAID_LOCKOUT" ) then
 			CalendarFrame_ShowEventFrame(CalendarViewRaidFrame);
 		else
 			-- for now, it could only be a player-created type
@@ -1633,7 +1616,7 @@ function CalendarFrame_UpdateDayEvents(index, day, monthOffset, selectedEventInd
 				eventButtonText1:ClearAllPoints();
 				eventButtonText1:SetAllPoints(eventButton);
 				eventButtonText1:Show();
-			elseif ( event.calendarType == "RAID_LOCKOUT" or event.calendarType == "RAID_RESET" ) then
+			elseif ( event.calendarType == "RAID_LOCKOUT" ) then
 				eventButtonText2:Hide();
 				-- Lockouts pass in a title string; resets pass in a string key
 				local title = GetDungeonNameWithDifficulty(eventTitle, event.difficultyName);
@@ -1879,6 +1862,39 @@ function CalendarFrame_UpdateMonthOffsetButtons()
 		if ( CalendarFrame.viewedMonth >= testMonth ) then
 			CalendarNextMonthButton:Disable();
 		end
+	end
+end
+
+function CalendarFrame_OpenToGuildEventIndex(guildEventIndex)
+	if ( CalendarFrame and CalendarFrame:IsShown() ) then
+		-- if the calendar is already open we need to do some work that's normally happening in CalendarFrame_OnShow
+		local date = C_Calendar.GetDate();
+		C_Calendar.SetAbsMonth(date.month, date.year);
+	else
+		ToggleCalendar();
+	end
+	local info = C_Calendar.GetGuildEventSelectionInfo(guildEventIndex);
+	local monthOffset = info.offsetMonth;
+	local day = info.monthDay;
+	local eventIndex = info.eventIndex;
+	if ( monthOffset ) then
+		C_Calendar.SetMonth(monthOffset);
+	end
+	-- need to highlight the proper day/event in calendar
+	local monthInfo = C_Calendar.GetMonthInfo();
+	local firstDay = monthInfo.firstWeekday;
+	local buttonIndex = day + firstDay - CALENDAR_FIRST_WEEKDAY;
+	if ( firstDay < CALENDAR_FIRST_WEEKDAY ) then
+		buttonIndex = buttonIndex + 7;
+	end
+	local dayButton = _G["CalendarDayButton"..buttonIndex];
+	CalendarDayButton_Click(dayButton);
+	if ( eventIndex <= 4 ) then -- can only see 4 events per day
+		local eventButton = _G["CalendarDayButton"..buttonIndex.."EventButton"..eventIndex];
+		CalendarDayEventButton_Click(eventButton, true);	-- true to open the event
+	else
+		CalendarFrame_SetSelectedEvent();	-- clears any event highlights
+		C_Calendar.OpenEvent(0, day, eventIndex);
 	end
 end
 
@@ -2179,11 +2195,14 @@ function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
 	local needSpacer = false;
 	if ( showDay ) then
 		UIMenu_AddButton(self, CALENDAR_CREATE_EVENT, nil, CalendarDayContextMenu_CreateEvent);
-		
+
 		-- add guild selections if the player has a guild
-		if ( CanEditGuildEvent() ) then
+		if ( IsInGuild() ) then
 			UIMenu_AddButton(self, CALENDAR_CREATE_GUILD_EVENT, nil, CalendarDayContextMenu_CreateGuildEvent);
-			UIMenu_AddButton(self, CALENDAR_CREATE_GUILD_ANNOUNCEMENT, nil, CalendarDayContextMenu_CreateGuildAnnouncement);
+			
+			if ( CanEditGuildEvent() ) then
+				UIMenu_AddButton(self, CALENDAR_CREATE_GUILD_ANNOUNCEMENT, nil, CalendarDayContextMenu_CreateGuildAnnouncement);
+			end
 		end
 
 		-- add community selections if the player is in a character community
@@ -2507,7 +2526,7 @@ function CalendarDayButton_OnEnter(self)
 			eventTime = GameTime_GetFormattedTime(event.startTime.hour, event.startTime.minute, true);
 		end
 		eventColor = _CalendarFrame_GetEventColor(event.calendarType, event.modStatus, event.inviteStatus, true);
-		if ( event.calendarType == "RAID_RESET" or event.calendarType == "RAID_LOCKOUT" ) then
+		if ( event.calendarType == "RAID_LOCKOUT" ) then
 			title = GetDungeonNameWithDifficulty(title, event.difficultyName);
 		end
 		GameTooltip:AddDoubleLine(
@@ -2794,23 +2813,15 @@ function CalendarViewRaidFrame_OnShow(self)
 	CalendarViewRaidFrame_Update();
 end
 
-function CalendarViewRaidFrame_OnHide(self)
-end
-
 function CalendarViewRaidFrame_Update()
 	local indexInfo = C_Calendar.GetEventIndex();
-	local raidInfo = C_Calendar.GetRaidInfo(indexInfo.offsetMonths, indexInfo.monthDay, indexInfo.eventIndex);
-	if ( raidInfo.calendarType == "RAID_LOCKOUT" ) then
+	local raidInfo = indexInfo and C_Calendar.GetRaidInfo(indexInfo.offsetMonths, indexInfo.monthDay, indexInfo.eventIndex);
+	if raidInfo and raidInfo.calendarType == "RAID_LOCKOUT" then
 		local name = GetDungeonNameWithDifficulty(raidInfo.name, raidInfo.difficultyName);
 		CalendarTitleFrame_SetText(CalendarViewRaidTitleFrame, name);
 		CalendarViewRaidDescription:SetFormattedText(CALENDAR_RAID_LOCKOUT_DESCRIPTION, name, GameTime_GetFormattedTime(raidInfo.time.hour, raidInfo.time.minute, true));
-	else
-		-- calendarType should be "RAID_RESET"
-		CalendarTitleFrame_SetText(CalendarViewRaidTitleFrame, RAID);
-		CalendarViewRaidDescription:SetFormattedText(CALENDAR_RAID_RESET_DESCRIPTION, RAID, GameTime_GetFormattedTime(raidInfo.time.hour, raidInfo.time.minute, true));
 	end
 end
-
 
 -- Calendar Event Templates
 
@@ -3143,7 +3154,7 @@ function CalendarViewEventFrame_Update()
 		CalendarViewEventTypeName:SetPoint("TOPLEFT", CalendarViewEventCommunityName, "BOTTOMLEFT")
 		if ( eventInfo.calendarType == "GUILD_EVENT" ) then
 			CalendarViewEventCommunityName:SetTextColor(GREEN_FONT_COLOR:GetRGB())
-		else 
+		else
 			CalendarViewEventCommunityName:SetTextColor(NORMAL_FONT_COLOR:GetRGB())
 		end
 	else
@@ -3672,6 +3683,7 @@ function CalendarCreateEventFrame_Update()
 		C_Calendar.EventSetType(CalendarCreateEventFrame.selectedEventType);
 		-- reset event texture (must come after event type)
 		CalendarCreateEventFrame.selectedTextureIndex = nil;
+		CalendarCreateEventFrame.calendarType = nil;
 		CalendarCreateEventTexture_Update();
 		-- reset the community selected
 		UIDropDownMenu_SetSelectedValue(CalendarCreateEventCommunityDropDown, nil);
@@ -3680,13 +3692,6 @@ function CalendarCreateEventFrame_Update()
 		CalendarCreateEventCreatorName:Hide();
 		CalendarCreateEventCommunityName:Hide();
 
-		if(CalendarCreateEventTextureName:IsShown()) then
-			CalendarCreateEventTextureName:SetPoint("TOPLEFT", CalendarCreateEventIcon, "TOPRIGHT", 5, 0)
-			CalendarCreateEventDateLabel:SetPoint("TOPLEFT", CalendarCreateEventTextureName, "BOTTOMLEFT")
-		else
-			CalendarCreateEventDateLabel:SetPoint("TOPLEFT", CalendarCreateEventIcon, "TOPRIGHT", 5, 0)
-		end
-		
 		local calendarType = C_Calendar.EventGetCalendarType();
 
 		CalendarCreateEventCommunityDropDown:SetShown(calendarType == "COMMUNITY_EVENT");
@@ -3766,6 +3771,20 @@ function CalendarCreateEventFrame_Update()
 		CalendarCreateEvent_UpdateEventType();
 		-- reset event texture (must come after event type)
 		CalendarCreateEventFrame.selectedTextureIndex = eventInfo.textureIndex;
+		CalendarCreateEventFrame.calendarType = eventInfo.calendarType;
+
+		if eventInfo.calendarType == "COMMUNITY_EVENT" or eventInfo.calendarType == "GUILD_EVENT" then
+			CalendarCreateEventCommunityName:Show();
+			CalendarCreateEventCommunityName:SetText(eventInfo.communityName)
+			if(eventInfo.calendarType == "GUILD_EVENT") then
+				CalendarCreateEventCommunityName:SetTextColor(GREEN_FONT_COLOR:GetRGB())
+			else
+				CalendarCreateEventCommunityName:SetTextColor(NORMAL_FONT_COLOR:GetRGB())
+			end
+		else
+			CalendarCreateEventCommunityName:Hide();
+		end
+
 		CalendarCreateEventTexture_Update();
 		-- update the creator (must come after event texture)
 		CalendarCreateEventCreatorName:SetFormattedText(CALENDAR_EVENT_CREATORNAME, _CalendarFrame_SafeGetName(eventInfo.creator));
@@ -3774,27 +3793,6 @@ function CalendarCreateEventFrame_Update()
 		--Hide the communitySelector
 		CalendarCreateEventCommunityDropDown:SetShown(false);
 
-		if(CalendarCreateEventTextureName:IsShown()) then
-			CalendarCreateEventCreatorName:SetPoint("TOPLEFT", CalendarCreateEventTextureName, "BOTTOMLEFT")
-		else
-			CalendarCreateEventCreatorName:SetPoint("TOPLEFT", CalendarCreateEventCommunityName, "BOTTOMLEFT")
-		end
-		CalendarCreateEventDateLabel:SetPoint("TOPLEFT", CalendarCreateEventCreatorName, "BOTTOMLEFT")
-
-		if(eventInfo.calendarType == "COMMUNITY_EVENT" or eventInfo.calendarType == "GUILD_EVENT") then
-			CalendarCreateEventCommunityName:Show();
-			CalendarCreateEventCommunityName:SetText(eventInfo.communityName)
-			CalendarCreateEventTextureName:SetPoint("TOPLEFT", CalendarCreateEventCommunityName, "BOTTOMLEFT")
-			if(eventInfo.calendarType == "GUILD_EVENT") then
-				CalendarCreateEventCommunityName:SetTextColor(GREEN_FONT_COLOR:GetRGB())
-			else
-				CalendarCreateEventCommunityName:SetTextColor(NORMAL_FONT_COLOR:GetRGB())
-			end
-		else
-			CalendarCreateEventTextureName:SetPoint("TOPLEFT", CalendarCreateEventIcon, "TOPRIGHT", 5, 0)
-			CalendarCreateEventCommunityName:Hide();
-		end
-		
 		if ( eventInfo.calendarType == "GUILD_ANNOUNCEMENT" ) then
 			CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_EDIT_ANNOUNCEMENT);
 			-- guild wide events don't have invites
@@ -3805,7 +3803,7 @@ function CalendarCreateEventFrame_Update()
 		else
 			if ( eventInfo.calendarType == "GUILD_EVENT" ) then
 				CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_EDIT_GUILD_EVENT);
-			elseif ( eventInfo.calendarType == "COMMUNITY_EVENT" ) then 
+			elseif ( eventInfo.calendarType == "COMMUNITY_EVENT" ) then
 				CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_EDIT_COMMUNITY_EVENT);
 			else
 				CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_EDIT_EVENT);
@@ -3863,6 +3861,8 @@ function CalendarCreateEventTexture_Update()
 	local eventType = CalendarCreateEventFrame.selectedEventType;
 	local textureIndex = CalendarCreateEventFrame.selectedTextureIndex;
 
+	local isGuildOrCommunityEvent = CalendarCreateEventFrame.calendarType == "COMMUNITY_EVENT" or CalendarCreateEventFrame.calendarType == "GUILD_EVENT";
+
 	CalendarCreateEventIcon:SetTexture();
 	local tcoords = CALENDAR_EVENTTYPE_TCOORDS[eventType];
 	CalendarCreateEventIcon:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
@@ -3872,6 +3872,21 @@ function CalendarCreateEventTexture_Update()
 		local name = eventTex.title;
 		CalendarCreateEventTextureName:SetText(GetDungeonNameWithDifficulty(name, difficultyInfo and difficultyInfo.difficultyName or eventTex.difficultyName));
 		CalendarCreateEventTextureName:Show();
+
+		if isGuildOrCommunityEvent then
+			CalendarCreateEventTextureName:SetPoint("TOPLEFT", CalendarCreateEventCommunityName, "BOTTOMLEFT");
+		else
+			CalendarCreateEventTextureName:SetPoint("TOPLEFT", CalendarCreateEventIcon, "TOPRIGHT", 5, 0);
+		end
+
+
+		if CalendarCreateEventFrame.mode == "edit" then
+			CalendarCreateEventCreatorName:SetPoint("TOPLEFT", CalendarCreateEventTextureName, "BOTTOMLEFT");
+			CalendarCreateEventDateLabel:SetPoint("TOPLEFT", CalendarCreateEventCreatorName, "BOTTOMLEFT");
+		else
+			CalendarCreateEventDateLabel:SetPoint("TOPLEFT", CalendarCreateEventTextureName, "BOTTOMLEFT");
+		end
+
 		-- set the eventTex texture
 		if ( eventTex.texture ) then
 			CalendarCreateEventIcon:SetTexture(eventTex.texture);
@@ -3880,6 +3895,14 @@ function CalendarCreateEventTexture_Update()
 		end
 	else
 		CalendarCreateEventTextureName:Hide();
+
+		if CalendarCreateEventFrame.mode == "edit" then
+			CalendarCreateEventCreatorName:SetPoint("TOPLEFT", CalendarCreateEventIcon, "TOPRIGHT", 5, 0);
+			CalendarCreateEventDateLabel:SetPoint("TOPLEFT", CalendarCreateEventCreatorName, "BOTTOMLEFT");
+		else
+			CalendarCreateEventDateLabel:SetPoint("TOPLEFT", CalendarCreateEventIcon, "TOPRIGHT", 5, 0);
+		end
+
 		CalendarCreateEventIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURES[eventType]);
 	end
 	-- need to update the creator name at this point since it is affected by the texture name
@@ -4545,9 +4568,9 @@ function CalendarCreateEventMassInviteButton_OnUpdate(self)
 end
 
 function CalendarCreateEventMassInviteButton_Update()
-	
+
 	local clubs = C_Club.GetSubscribedClubs()
-		
+
 	if (#clubs > 0) then
 		CalendarCreateEventMassInviteButton:Enable();
 	else
@@ -4797,7 +4820,7 @@ function CalendarMassInviteCommunityDropDown_OnClick(self, clubId)
 	if(clubInfo == nil) then
 		return;
 	end
-	
+
 	UIDropDownMenu_SetSelectedValue(CalendarMassInviteCommunityDropDown, self:GetText());
 	CalendarMassInviteFrame.selectedClubId = clubId;
 	CalendarMassInvite_Update();
@@ -5008,7 +5031,7 @@ function CalendarEventPickerScrollFrame_Update()
 					buttonTime:Hide();
 					buttonTitle:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT");
 				else
-					if ( event.calendarType == "RAID_RESET" or event.calendarType == "RAID_LOCKOUT" ) then
+					if ( event.calendarType == "RAID_LOCKOUT" ) then
 						title = GetDungeonNameWithDifficulty(title, event.difficultyName);
 					end
 					buttonTime:SetText(GameTime_GetFormattedTime(date.hour, date.minute, true));

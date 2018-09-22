@@ -2133,62 +2133,62 @@
 								<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
 								<BarColor r="0" g="1" b="0"/>
 							</StatusBar>							
-							<StatusBar name="$parentCategory1" inherits="AchievementFrameSummaryCategoryTemplate" id="92">	
+							<StatusBar name="$parentCategory1" inherits="AchievementFrameSummaryCategoryTemplate">	
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentStatusBar" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
 								</Anchors>
 							</StatusBar>
-							<StatusBar name="$parentCategory2" inherits="AchievementFrameSummaryCategoryTemplate" id="96">	
+							<StatusBar name="$parentCategory2" inherits="AchievementFrameSummaryCategoryTemplate">	
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory1" relativePoint="TOPRIGHT" x="20" y="0"/>
 								</Anchors>
 							</StatusBar>
-							<StatusBar name="$parentCategory3" inherits="AchievementFrameSummaryCategoryTemplate" id="97">	
+							<StatusBar name="$parentCategory3" inherits="AchievementFrameSummaryCategoryTemplate">	
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory1" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 								</Anchors>							
 							</StatusBar>
-							<StatusBar name="$parentCategory4" inherits="AchievementFrameSummaryCategoryTemplate" id="95">	
+							<StatusBar name="$parentCategory4" inherits="AchievementFrameSummaryCategoryTemplate">	
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory3" relativePoint="TOPRIGHT" x="20" y="0"/>
 								</Anchors>						
 							</StatusBar>
-							<StatusBar name="$parentCategory5" inherits="AchievementFrameSummaryCategoryTemplate" id="168">	
+							<StatusBar name="$parentCategory5" inherits="AchievementFrameSummaryCategoryTemplate">	
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory3" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 								</Anchors>						
 							</StatusBar>
-							<StatusBar name="$parentCategory6" inherits="AchievementFrameSummaryCategoryTemplate" id="169">	
+							<StatusBar name="$parentCategory6" inherits="AchievementFrameSummaryCategoryTemplate">	
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory5" relativePoint="TOPRIGHT" x="20" y="0"/>
 								</Anchors>
 							</StatusBar>
-							<StatusBar name="$parentCategory7" inherits="AchievementFrameSummaryCategoryTemplate" id="201">	
+							<StatusBar name="$parentCategory7" inherits="AchievementFrameSummaryCategoryTemplate">	
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory5" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 								</Anchors>							
 							</StatusBar>
-							<StatusBar name="$parentCategory8" inherits="AchievementFrameSummaryCategoryTemplate" id="15165">	
+							<StatusBar name="$parentCategory8" inherits="AchievementFrameSummaryCategoryTemplate">	
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory7" relativePoint="TOPRIGHT" x="20" y="0"/>
 								</Anchors>							
 							</StatusBar>
-							<StatusBar name="$parentCategory9" inherits="AchievementFrameSummaryCategoryTemplate" id="155">	
+							<StatusBar name="$parentCategory9" inherits="AchievementFrameSummaryCategoryTemplate">	
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory7" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 								</Anchors>							
 							</StatusBar>
-							<StatusBar name="$parentCategory10" inherits="AchievementFrameSummaryCategoryTemplate" id="15117">	
+							<StatusBar name="$parentCategory10" inherits="AchievementFrameSummaryCategoryTemplate">	
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory9" relativePoint="TOPRIGHT" x="20" y="0"/>
 								</Anchors>							
 							</StatusBar>
-							<StatusBar name="$parentCategory11" inherits="AchievementFrameSummaryCategoryTemplate" id="15246">	
+							<StatusBar name="$parentCategory11" inherits="AchievementFrameSummaryCategoryTemplate">	
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory9" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 								</Anchors>							
 							</StatusBar>
-							<StatusBar name="$parentCategory12" inherits="AchievementFrameSummaryCategoryTemplate" id="15237">	
+							<StatusBar name="$parentCategory12" inherits="AchievementFrameSummaryCategoryTemplate">	
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory11" relativePoint="TOPRIGHT" x="20" y="0"/>
 								</Anchors>							

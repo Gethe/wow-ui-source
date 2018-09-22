@@ -11,9 +11,10 @@
 		<Size x="270" y="21"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString inherits="GameFontHighlight" parentKey="label">
+				<FontString inherits="GameFontHighlight" parentKey="label" justifyH="LEFT" maxlines="2">
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parent" x="18" y="0"/>
+						<Anchor point="RIGHT" relativeTo="$parent" x="-45" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString inherits="GameFontNormal" parentKey="count">
@@ -63,15 +64,15 @@
 				<FontString parentKey="TitleText" inherits="GameFontNormalMed1" justifyH="LEFT" text="GUILD_INFO_TITLE">
 					<Size x="232" y="38"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="5" y="35"/>
+						<Anchor point="TOPLEFT" x="10" y="35"/>
 					</Anchors>
 				</FontString>
 				<Texture name="$parentBar1Left" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 					<Size x="256" y="16"/>
 					<Anchors>
-						<Anchor point="LEFT" x="-6" y="0"/>
+						<Anchor point="LEFT" x="-4" y="0"/>
 						<Anchor point="RIGHT" x="-51" y="0"/>
-						<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="TOP" x="0" y="-146"/>
+						<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="TOP" x="0" y="-143"/>
 					</Anchors>
 					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
 				</Texture>
@@ -85,7 +86,7 @@
 				<Texture name="$parentBar2Left" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 					<Size x="256" y="16"/>
 					<Anchors>
-						<Anchor point="LEFT" x="-6" y="0"/>
+						<Anchor point="LEFT" x="-4" y="0"/>
 						<Anchor point="RIGHT" x="-51" y="0"/>
 						<Anchor point="TOP" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="128"/>
 					</Anchors>
@@ -102,17 +103,17 @@
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\GuildFrame\GuildFrame">
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="15" y="-4"/>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="0" y="3"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="14" y="-1"/>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="1" y="-1"/>
 					</Anchors>
-					<TexCoords left="0.00097656" right="0.31445313" top="0.00195313" bottom="0.59765625"/>
+					<TexCoords left="0" right="0.3154296875" top="0" bottom="0.595703125"/>
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Header1" file="Interface\GuildFrame\GuildFrame">
 					<Size x="280" y="22"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="4" y="-3"/>
+						<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="4" y="0"/>
 					</Anchors>
 					<TexCoords left="0.00097656" right="0.31445313" top="0.93164063" bottom="0.97460938"/>
 				</Texture>

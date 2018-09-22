@@ -31,7 +31,7 @@ local ACHIEVEMENTUI_FONTHEIGHT;						-- set in AchievementButton_OnLoad
 local ACHIEVEMENTUI_MAX_LINES_COLLAPSED = 3;		-- can show 3 lines of text when achievement is collapsed
 
 ACHIEVEMENTUI_DEFAULTSUMMARYACHIEVEMENTS = {6, 503, 116, 545, 1017};
-ACHIEVEMENTUI_SUMMARYCATEGORIES = {92, 96, 97, 95, 168, 169, 201, 155, 15117, 15165, 15246, 15237};
+ACHIEVEMENTUI_SUMMARYCATEGORIES = {92, 96, 97, 95, 168, 169, 201, 155, 15117, 15246};
 ACHIEVEMENTUI_DEFAULTGUILDSUMMARYACHIEVEMENTS = {5362, 4860, 4989, 4947};
 ACHIEVEMENTUI_GUILDSUMMARYCATEGORIES = {15088, 15077, 15078, 15079, 15080, 15089};
 
@@ -1657,8 +1657,8 @@ function AchievementObjectives_DisplayProgressiveAchievement (objectivesFrame, i
 		miniAchievement.icon:SetTexture(iconpath);
 		if ( index == 1 ) then
 			miniAchievement:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", -4, -4);
-		elseif ( index == 7 ) then
-			miniAchievement:SetPoint("TOPLEFT", miniTable[1], "BOTTOMLEFT", 0, -8);
+		elseif ( mod(index, 6) == 1 ) then
+			miniAchievement:SetPoint("TOPLEFT", miniTable[index - 6], "BOTTOMLEFT", 0, -8);
 		else
 			miniAchievement:SetPoint("TOPLEFT", miniTable[index-1], "TOPRIGHT", 4, 0);
 		end
@@ -2229,6 +2229,10 @@ function AchievementFrameSummary_OnShow()
 	if ( achievementFunctions ~= COMPARISON_ACHIEVEMENT_FUNCTIONS and achievementFunctions ~= COMPARISON_STAT_FUNCTIONS ) then
 		if ( AchievementFrameSummary.guildView ~= IN_GUILD_VIEW ) then
 			AchievementFrameSummary_ToggleView();
+		elseif ( AchievementFrameSummary.guildView ) then
+			AchievementFrameSummary_UpdateSummaryCategories(ACHIEVEMENTUI_GUILDSUMMARYCATEGORIES);
+		else
+			AchievementFrameSummary_UpdateSummaryCategories(ACHIEVEMENTUI_SUMMARYCATEGORIES);
 		end
 		AchievementFrameSummary:SetWidth(530);
 		AchievementFrameSummary_Update();
@@ -2244,6 +2248,21 @@ end
 function AchievementFrameSummary_Update(isCompare)
 	AchievementFrameSummaryCategoriesStatusBar_Update();
 	AchievementFrameSummary_UpdateAchievements(GetLatestCompletedAchievements(IN_GUILD_VIEW));
+end
+
+function AchievementFrameSummary_UpdateSummaryCategories(categories)
+	for i = 1, 12 do
+		local statusBar = _G["AchievementFrameSummaryCategoriesCategory"..i];
+		if ( i <= #categories ) then
+			local categoryName = GetCategoryInfo(categories[i]);
+			statusBar.label:SetText(categoryName);
+			statusBar:Show();
+			statusBar:SetID(categories[i]);
+			AchievementFrameSummaryCategory_OnShow(statusBar);	-- to calculate progress
+		else
+			statusBar:Hide();
+		end
+	end
 end
 
 function AchievementFrameSummary_ToggleView()
@@ -2271,19 +2290,7 @@ function AchievementFrameSummary_ToggleView()
 			end
 		end
 	end
-	-- categories
-	for i = 1, 12 do
-		local statusBar = _G["AchievementFrameSummaryCategoriesCategory"..i];
-		if ( tCategories[i] ) then
-			local categoryName = GetCategoryInfo(tCategories[i]);
-			statusBar.label:SetText(categoryName);
-			statusBar:Show();
-			statusBar:SetID(tCategories[i]);
-			AchievementFrameSummaryCategory_OnShow(statusBar);	-- to calculate progress
-		else
-			statusBar:Hide();
-		end
-	end
+	AchievementFrameSummary_UpdateSummaryCategories(tCategories);
 end
 
 function AchievementFrameSummary_UpdateAchievements(...)
@@ -2491,8 +2498,6 @@ end
 function AchievementFrameSummaryCategory_OnLoad (self)
 	self:SetMinMaxValues(0, 100);
 	self:SetValue(0);
-	local categoryName = GetCategoryInfo(self:GetID());
-	self.label:SetText(categoryName);
 end
 
 function AchievementFrame_GetCategoryTotalNumAchievements (id, showAll)

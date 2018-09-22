@@ -7,6 +7,15 @@ local LFGListInfo =
 	Functions =
 	{
 		{
+			Name = "CanActiveEntryUseAutoAccept",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUseAutoAccept", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanCreateQuestGroup",
 			Type = "Function",
 
@@ -29,6 +38,10 @@ local LFGListInfo =
 			Type = "Function",
 		},
 		{
+			Name = "ClearSearchTextFields",
+			Type = "Function",
+		},
+		{
 			Name = "CopyActiveEntryInfoToCreationFields",
 			Type = "Function",
 		},
@@ -39,10 +52,27 @@ local LFGListInfo =
 			Arguments =
 			{
 				{ Name = "categoryID", Type = "number", Nilable = false },
-				{ Name = "searchTerms", Type = "table", InnerType = "LFGSearchTerms", Nilable = false, Documentation = { "The outer table represents AND terms and the inner tables represent OR terms." } },
 				{ Name = "filter", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "preferredFilters", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "languageFilter", Type = "WowLocale", Nilable = true },
+			},
+		},
+		{
+			Name = "SetSearchToActivity",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "activityID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSearchToQuestID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
 			},
 		},
 	},
@@ -144,14 +174,6 @@ local LFGListInfo =
 
 	Tables =
 	{
-		{
-			Name = "LFGSearchTerms",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "matches", Type = "table", InnerType = "string", Nilable = false, Documentation = { "Represent OR terms, 3 is the max terms considered. Terms beyond the primary are only considered on fuzzy match enabled activities, like Mythic+." } },
-			},
-		},
 		{
 			Name = "WowLocale",
 			Type = "Structure",

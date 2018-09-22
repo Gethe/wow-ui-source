@@ -131,6 +131,39 @@ function GetBindingName(binding)
 	return binding;
 end
 
+function GetBindingKeyForAction(action, useNotBound, useParentheses)
+	local key = GetBindingKey(action);
+	if key then
+		key = GetBindingText(key);
+	elseif useNotBound then
+		key = NOT_BOUND;
+	end
+
+	if key and useParentheses then
+		return ("(%s)"):format(key);
+	end
+
+	return key;
+end
+
+-- Gets the key string for the action and formats it into keyStringFormat, then formats
+-- that and the original text into bindingAvailableFormat and returns the resulting string.
+-- NOTE: The argument ordering for bindingAvailableFormat should be original text and then binding string text.
+-- NOTE: If there is no binding and useNotBound is set, then the NOT_BOUND string is formatted into the location
+-- where the key string would normally appear, otherwise only the original text is returned.
+function FormatBindingKeyIntoText(text, action, bindingAvailableFormat, keyStringFormat, useNotBound, useParentheses)
+	local bindingKey = GetBindingKeyForAction(action, useNotBound, useParentheses);
+
+	if bindingKey then
+		bindingAvailableFormat = bindingAvailableFormat or "%s %s";
+		keyStringFormat = keyStringFormat or "%s";
+		local keyString = keyStringFormat:format(bindingKey);
+		return bindingAvailableFormat:format(text, keyString);
+	end
+
+	return text;
+end
+
 function BindingButtonTemplate_SetSelected(keyBindingButton, isSelected)
 	keyBindingButton.selectedHighlight:SetShown(isSelected);
 	keyBindingButton.isSelected = isSelected;

@@ -1,17 +1,17 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Frame name="UIWidgetTemplateTooltipFrame" enableMouse="true" virtual="true" secureMixin="UIWidgetTemplateTooltipFrameMixin">
+	<Frame name="UIWidgetTemplateTooltipFrame" enableMouse="true" virtual="true" mixin="UIWidgetTemplateTooltipFrameMixin">
 		<Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
-	<Frame name="UIWidgetBaseTemplate" inherits="UIWidgetTemplateTooltipFrame" virtual="true" hidden="true" secureMixin="UIWidgetBaseTemplateMixin">
+	<Frame name="UIWidgetBaseTemplate" inherits="UIWidgetTemplateTooltipFrame" virtual="true" hidden="true" mixin="UIWidgetBaseTemplateMixin">
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
-	<Frame name="UIWidgetBaseResourceTemplate" inherits="UIWidgetTemplateTooltipFrame" secureMixin="UIWidgetBaseResourceTemplateMixin" virtual="true">
+	<Frame name="UIWidgetBaseResourceTemplate" inherits="UIWidgetTemplateTooltipFrame" mixin="UIWidgetBaseResourceTemplateMixin" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Icon">
@@ -20,7 +20,7 @@
 						<Anchor point="LEFT" />
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Text" inherits="GameFontNormal" justifyH="CENTER">
+				<FontString parentKey="Text" inherits="GameFontNormal_NoShadow" justifyH="CENTER">
 					<Size x="67"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="-2" />
@@ -30,12 +30,12 @@
 		</Layers>
 	</Frame>
 	
-	<Frame name="UIWidgetBaseCurrencyTemplate" inherits="UIWidgetTemplateTooltipFrame" secureMixin="UIWidgetBaseCurrencyTemplateMixin" virtual="true">
+	<Frame name="UIWidgetBaseCurrencyTemplate" inherits="UIWidgetTemplateTooltipFrame" mixin="UIWidgetBaseCurrencyTemplateMixin" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="LeadingText" inherits="GameFontNormal" text="">
+				<FontString parentKey="LeadingText" inherits="GameFontNormal_NoShadow" text="">
 					<Anchors>
-						<Anchor point="TOPLEFT" />
+						<Anchor point="LEFT" />
 					</Anchors>
 				</FontString>
 				<Texture parentKey="Icon">
@@ -44,7 +44,7 @@
 						<Anchor point="TOPLEFT" />
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Text" inherits="GameFontNormal">
+				<FontString parentKey="Text" inherits="GameFontNormal_NoShadow">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5" />
 					</Anchors>

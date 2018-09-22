@@ -204,7 +204,7 @@ function MerchantFrame_UpdateMerchantInfo()
 			name, texture, price, stackCount, numAvailable, isPurchasable, isUsable, extendedCost, currencyID = GetMerchantItemInfo(index);
 
 			if(currencyID) then
-				name, texture, price = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, numAvailable, name, texture, nil); 
+				name, texture, numAvailable = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, numAvailable, name, texture, nil); 
 			end
 	
 			local canAfford = CanAffordMerchantItem(index);

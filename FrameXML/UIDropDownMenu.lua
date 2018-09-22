@@ -166,6 +166,80 @@ function UIDropDownMenu_StopCounting(frame)
 	end
 end
 
+function UIDropDownMenuButtonInvisibleButton_OnEnter(self)
+	UIDropDownMenu_StopCounting(self:GetParent():GetParent());
+	CloseDropDownMenus(self:GetParent():GetParent():GetID() + 1);
+	local parent = self:GetParent();
+	if ( parent.tooltipTitle and parent.tooltipWhileDisabled) then
+		if ( parent.tooltipOnButton ) then
+			GameTooltip:SetOwner(parent, "ANCHOR_RIGHT");
+			GameTooltip_SetTitle(GameTooltip, parent.tooltipTitle);
+			if parent.tooltipInstruction then
+				GameTooltip_AddInstructionLine(GameTooltip, parent.tooltipInstruction);
+			end
+			if parent.tooltipText then
+				GameTooltip_AddNormalLine(GameTooltip, parent.tooltipText, true);
+			end
+			if parent.tooltipWarning then
+				GameTooltip_AddColoredLine(GameTooltip, parent.tooltipWarning, RED_FONT_COLOR, true);
+			end
+			GameTooltip:Show();
+		else
+			GameTooltip_AddNewbieTip(parent, parent.tooltipTitle, 1.0, 1.0, 1.0, parent.tooltipText, 1);
+		end
+	end
+end
+
+function UIDropDownMenuButtonInvisibleButton_OnLeave(self)
+	UIDropDownMenu_StartCounting(self:GetParent():GetParent());
+	GameTooltip:Hide();
+end
+
+function UIDropDownMenuButton_OnEnter(self)
+	if ( self.hasArrow ) then
+		local level =  self:GetParent():GetID() + 1;
+		local listFrame = _G["DropDownList"..level];
+		if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint()) ~= self ) then
+			ToggleDropDownMenu(self:GetParent():GetID() + 1, self.value, nil, nil, nil, nil, self.menuList, self);
+		end
+	else
+		CloseDropDownMenus(self:GetParent():GetID() + 1);
+	end
+	self.Highlight:Show();
+	UIDropDownMenu_StopCounting(self:GetParent());
+	if ( self.tooltipTitle and not self.noTooltipWhileEnabled ) then
+		if ( self.tooltipOnButton ) then
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			GameTooltip_SetTitle(GameTooltip, self.tooltipTitle);
+			if self.tooltipText then
+				GameTooltip_AddNormalLine(GameTooltip, self.tooltipText, true);
+			end
+			GameTooltip:Show();
+		else
+			GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
+		end
+	end
+				
+	if ( self.mouseOverIcon ~= nil ) then
+		self.Icon:SetTexture(self.mouseOverIcon);
+		self.Icon:Show();
+	end
+end
+
+function UIDropDownMenuButton_OnLeave(self)
+	self.Highlight:Hide();
+	UIDropDownMenu_StartCounting(self:GetParent());
+	GameTooltip:Hide();
+				
+	if ( self.mouseOverIcon ~= nil ) then
+		if ( self.icon ~= nil ) then
+			self.Icon:SetTexture(self.icon);
+		else
+			self.Icon:Hide();
+		end
+	end
+end
+
 --[[
 List of button attributes
 ======================================================
@@ -417,6 +491,8 @@ function UIDropDownMenu_AddButton(info, level)
 	button.keepShownOnClick = info.keepShownOnClick;
 	button.tooltipTitle = info.tooltipTitle;
 	button.tooltipText = info.tooltipText;
+	button.tooltipInstruction = info.tooltipInstruction;
+	button.tooltipWarning = info.tooltipWarning;
 	button.arg1 = info.arg1;
 	button.arg2 = info.arg2;
 	button.hasArrow = info.hasArrow;
@@ -424,6 +500,7 @@ function UIDropDownMenu_AddButton(info, level)
 	button.notCheckable = info.notCheckable;
 	button.menuList = info.menuList;
 	button.tooltipWhileDisabled = info.tooltipWhileDisabled;
+	button.noTooltipWhileEnabled = info.noTooltipWhileEnabled;
 	button.tooltipOnButton = info.tooltipOnButton;
 	button.noClickSound = info.noClickSound;
 	button.padding = info.padding;
@@ -441,8 +518,6 @@ function UIDropDownMenu_AddButton(info, level)
 	local expandArrow = _G[listFrameName.."Button"..index.."ExpandArrow"];
 	expandArrow:SetShown(info.hasArrow);
 	expandArrow:SetEnabled(not info.disabled);
-
-	button.hasArrow = info.hasArrow;
 
 	-- If not checkable move everything over to the left to fill in the gap where the check would be
 	local xPos = 5;
@@ -500,24 +575,41 @@ function UIDropDownMenu_AddButton(info, level)
 	end
 
 	if not info.notCheckable then
+		local check = _G[listFrameName.."Button"..index.."Check"];
+		local uncheck = _G[listFrameName.."Button"..index.."UnCheck"];
 		if ( info.disabled ) then
-			_G[listFrameName.."Button"..index.."Check"]:SetDesaturated(true);
-			_G[listFrameName.."Button"..index.."Check"]:SetAlpha(0.5);
-			_G[listFrameName.."Button"..index.."UnCheck"]:SetDesaturated(true);
-			_G[listFrameName.."Button"..index.."UnCheck"]:SetAlpha(0.5);
+			check:SetDesaturated(true);
+			check:SetAlpha(0.5);
+			uncheck:SetDesaturated(true);
+			uncheck:SetAlpha(0.5);
 		else
-			_G[listFrameName.."Button"..index.."Check"]:SetDesaturated(false);
-			_G[listFrameName.."Button"..index.."Check"]:SetAlpha(1);
-			_G[listFrameName.."Button"..index.."UnCheck"]:SetDesaturated(false);
-			_G[listFrameName.."Button"..index.."UnCheck"]:SetAlpha(1);
+			check:SetDesaturated(false);
+			check:SetAlpha(1);
+			uncheck:SetDesaturated(false);
+			uncheck:SetAlpha(1);
 		end
-
-		if info.isNotRadio then
-			_G[listFrameName.."Button"..index.."Check"]:SetTexCoord(0.0, 0.5, 0.0, 0.5);
-			_G[listFrameName.."Button"..index.."UnCheck"]:SetTexCoord(0.5, 1.0, 0.0, 0.5);
+		
+		if info.customCheckIconAtlas or info.customCheckIconTexture then
+			check:SetTexCoord(0, 1, 0, 1);
+			uncheck:SetTexCoord(0, 1, 0, 1);
+			
+			if info.customCheckIconAtlas then
+				check:SetAtlas(info.customCheckIconAtlas);
+				uncheck:SetAtlas(info.customUncheckIconAtlas or info.customCheckIconAtlas);
+			else
+				check:SetTexture(info.customCheckIconTexture);
+				uncheck:SetTexture(info.customUncheckIconTexture or info.customCheckIconTexture);
+			end
+		elseif info.isNotRadio then
+			check:SetTexCoord(0.0, 0.5, 0.0, 0.5);
+			check:SetTexture("Interface\\Common\\UI-DropDownRadioChecks");
+			uncheck:SetTexCoord(0.5, 1.0, 0.0, 0.5);
+			uncheck:SetTexture("Interface\\Common\\UI-DropDownRadioChecks");
 		else
-			_G[listFrameName.."Button"..index.."Check"]:SetTexCoord(0.0, 0.5, 0.5, 1.0);
-			_G[listFrameName.."Button"..index.."UnCheck"]:SetTexCoord(0.5, 1.0, 0.5, 1.0);
+			check:SetTexCoord(0.0, 0.5, 0.5, 1.0);
+			check:SetTexture("Interface\\Common\\UI-DropDownRadioChecks");
+			uncheck:SetTexCoord(0.5, 1.0, 0.5, 1.0);
+			uncheck:SetTexture("Interface\\Common\\UI-DropDownRadioChecks");
 		end
 
 		-- Checked can be a function now
@@ -529,12 +621,12 @@ function UIDropDownMenu_AddButton(info, level)
 		-- Show the check if checked
 		if ( checked ) then
 			button:LockHighlight();
-			_G[listFrameName.."Button"..index.."Check"]:Show();
-			_G[listFrameName.."Button"..index.."UnCheck"]:Hide();
+			check:Show();
+			uncheck:Hide();
 		else
 			button:UnlockHighlight();
-			_G[listFrameName.."Button"..index.."Check"]:Hide();
-			_G[listFrameName.."Button"..index.."UnCheck"]:Show();
+			check:Hide();
+			uncheck:Show();
 		end
 	else
 		_G[listFrameName.."Button"..index.."Check"]:Hide();
@@ -1143,7 +1235,7 @@ end
 
 function UIDropDownMenu_GetText(frame)
 	local frameName = frame:GetName();
-	GetChild(frame, frameName, "Text"):GetText();
+	return GetChild(frame, frameName, "Text"):GetText();
 end
 
 function UIDropDownMenu_ClearAll(frame)

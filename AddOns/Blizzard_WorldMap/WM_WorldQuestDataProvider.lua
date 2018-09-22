@@ -25,8 +25,7 @@ end
 function WorldMap_WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	WorldQuestDataProviderMixin.RefreshAllData(self, fromOnShow);
 
-	self.poiQuantizer:Clear();
-	self.poiQuantizer:Quantize(self.activePins);
+	self.poiQuantizer:ClearAndQuantize(self.activePins);
 
 	for i, pin in pairs(self.activePins) do
 		pin:SetPosition(pin.quantizedX or pin.normalizedX, pin.quantizedY or pin.normalizedY);

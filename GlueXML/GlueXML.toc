@@ -14,6 +14,7 @@ Constants.lua
 GlueFonts.xml
 GlueFontStyles.xml
 GlueLocalization.xml
+..\SharedXML\LayoutFrame.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\SharedBasicControls.xml
@@ -24,7 +25,6 @@ GlueButtons.xml
 GlueDropDownMenu.xml
 GlueContextMenu.xml
 
-..\SharedXML\LayoutFrame.xml
 ..\SharedXML\HybridScrollFrame.lua
 ..\SharedXML\HybridScrollFrame.xml
 ..\SharedXML\Vector2D.lua

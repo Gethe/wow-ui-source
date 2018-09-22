@@ -5,8 +5,7 @@ function HonorBarMixin:GetPriority()
 end
 
 function HonorBarMixin:ShouldBeVisible()
-	local level = UnitLevel("player");
-	return level >= MAX_PLAYER_LEVEL and (IsWatchingHonorAsXP() or InActiveBattlefield() or IsInActiveWorldPVP());
+	return IsWatchingHonorAsXP() or InActiveBattlefield() or IsInActiveWorldPVP();
 end
 
 function HonorBarMixin:Update()

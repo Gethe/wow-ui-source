@@ -727,6 +727,15 @@
 		<Anchors>
 			<Anchor point="TOP" relativeTo="ChatFrame1ButtonFrame" relativePoint="TOP" x="0" y="0"/>
 		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Flash" atlas="chatframe-button-highlightalert" useAtlasSize="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 	</Button>
 	<Button name="ChatFrameToggleVoiceDeafenButton" frameStrata="LOW" parent="UIParent" inherits="ToggleVoiceDeafenButtonTemplate">
 		<Anchors>

@@ -447,7 +447,8 @@
 				</Texture>
 				<FontString parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="2"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="2"/>
+						<Anchor point="BOTTOMRIGHT" x="-10"/>
 					</Anchors>
 				</FontString>
 			</Layer>

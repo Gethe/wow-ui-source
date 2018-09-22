@@ -7,6 +7,7 @@ function VoiceActivityManagerMixin:OnLoad()
 	self:RegisterEvent("VOICE_CHAT_COMMUNICATION_MODE_CHANGED");
 	self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_REMOVED");
 	self:RegisterEvent("VOICE_CHAT_CHANNEL_REMOVED");
+	self:RegisterEvent("VOICE_CHAT_CHANNEL_DEACTIVATED");
 
 	self.releaseTimers = {};
 	self.notificationMembers = {};
@@ -39,6 +40,8 @@ function VoiceActivityManagerMixin:OnEvent(event, ...)
 		self:OnMemberRemoved(...);
 	elseif event == "VOICE_CHAT_CHANNEL_REMOVED" then
 		self:OnChannelRemoved(...);
+	elseif event == "VOICE_CHAT_CHANNEL_DEACTIVATED" then
+		self:OnChannelDeactivated(...);
 	end
 end
 
@@ -106,6 +109,10 @@ function VoiceActivityManagerMixin:OnMemberRemoved(memberID, channelID)
 end
 
 function VoiceActivityManagerMixin:OnChannelRemoved(statusCode, channelID)
+	self:ReleaseNotifications("*", channelID);
+end
+
+function VoiceActivityManagerMixin:OnChannelDeactivated(channelID)
 	self:ReleaseNotifications("*", channelID);
 end
 
@@ -255,7 +262,7 @@ function VoiceActivityManagerMixin:ReleaseNotifications(memberID, channelID)
 		self:UpdateAlertNotificationVisibility();
 	end
 
-	if memberID == "*" then 
+	if memberID == "*" then
 		self:ClearChannelExistingNotifications(channelID);
 	else
 		self:ClearMemberHasExistingNotification(memberID, channelID);
@@ -263,7 +270,7 @@ function VoiceActivityManagerMixin:ReleaseNotifications(memberID, channelID)
 end
 
 function VoiceActivityManagerMixin:MemberHasExistingNotification(memberID, channelID)
-	return self.notificationMembers[channelID] and self.notificationMembers[channelID][memberID];
+	return self.notificationMembers[channelID] and (self.notificationMembers[channelID][memberID] or memberID == "*");
 end
 
 function VoiceActivityManagerMixin:SetMemberHasExistingNotification(memberID, channelID)
@@ -321,11 +328,15 @@ function VoiceActivityManagerMixin:UpdateAlertNotificationVisibility()
 	for index, notification in self.alertNotificationList:EnumerateNodes() do
 		if index == 1 then
 			notification:SetCushions(0, 14);
+		else
+			notification:ClearCushions();
 		end
 
 		ChatAlertFrame:SetSubSystemAnchorPriority(notification:GetAlertSystem(), STARTING_PRIORITY + index);
 		notification:SetShown(index <= MAX_VISIBLE_NOTIFICATIONS);
 	end
+
+	ChatAlertFrame:UpdateAnchors();
 end
 
 function VoiceActivityManagerMixin:RegisterExternalNotificationTemplate(notificationTemplate, frameType)
@@ -344,6 +355,8 @@ end
 function VoiceActivityManagerMixin:RegisterFrameForVoiceActivityNotifications(frame, guid, voiceChannelID, notificationTemplate, frameType, notificationCreatedCallback)
 	if frame and guid and notificationTemplate and notificationCreatedCallback then
 		if self:RegisterExternalNotificationTemplate(notificationTemplate, frameType) then
+			self:UnregisterFrameForVoiceActivityNotifications(frame);
+
 			if not self.guidToExternalNotificationInfo[guid] then
 				self.guidToExternalNotificationInfo[guid] = {};
 			end

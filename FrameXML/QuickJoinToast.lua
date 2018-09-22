@@ -112,7 +112,7 @@ function QuickJoinToastMixin:ProcessUpdate(guid)
 		self.groups[guid] = group;
 	end
 
-	if ( group:GetPriority() > 0 ) then
+	if ( group:GetPriority() > 0 and not group:ShouldSuppressToast() ) then
 		if ( not self.groupsAwaitingDisplay[guid] ) then
 			self.groupsAwaitingDisplay[guid] = true;
 			GuildRoster();
@@ -617,6 +617,22 @@ function QuickJoinToastGroupMixin:Update()
 	local canJoin = C_SocialQueue.GetGroupInfo(self.guid);
 	local queues = C_SocialQueue.GetGroupQueues(self.guid);
 	local players = C_SocialQueue.GetGroupMembers(self.guid);
+	
+	self.suppressToast = true;
+	if players then
+		for i, player in ipairs(players) do
+			if not player.clubId then
+				self.suppressToast = false;
+				break;
+			else
+				local clubInfo = C_Club.GetClubInfo(player.clubId);
+				if clubInfo and clubInfo.socialQueueingEnabled then
+					self.suppressToast = false;
+					break;
+				end
+			end
+		end
+	end
 
 	if ( queues and players and canJoin ) then
 		self.priority = QuickJoinToast_GetPriority(self, queues, players);
@@ -635,6 +651,10 @@ function QuickJoinToastGroupMixin:Update()
 	end
 
 	self.displayedQueues = newDisplayedQueues;
+end
+
+function QuickJoinToastGroupMixin:ShouldSuppressToast()
+	return self.suppressToast;
 end
 
 function QuickJoinToastGroupMixin:GetPriority()

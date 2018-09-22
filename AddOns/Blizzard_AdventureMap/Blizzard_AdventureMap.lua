@@ -50,6 +50,7 @@ end
 function AdventureMapMixin:OnHide()
 	MapCanvasMixin.OnHide(self);
 
+	AdventureMapQuestChoiceDialog:OnParentHide(self);
 	C_AdventureMap.Close();
 end
 

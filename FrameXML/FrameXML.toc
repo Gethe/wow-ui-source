@@ -63,6 +63,8 @@ QuestUtils.lua
 MapUtil.lua
 AzeriteUtil.lua
 VehicleUtil.lua
+AuraUtil.lua
+CommunitiesUtil.lua
 CurrencyContainer.lua
 ## IME.xml needs to be loaded after UIParent.xml
 ..\SharedXML\IME.xml
@@ -254,6 +256,7 @@ AzeriteIslandsToast.xml
 ..\SharedXML\ModelPreviewFrame.xml
 SplashFrame.xml
 QuestChoiceFrameMixin.lua
+AzeriteEmpoweredItemDataSource.lua
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

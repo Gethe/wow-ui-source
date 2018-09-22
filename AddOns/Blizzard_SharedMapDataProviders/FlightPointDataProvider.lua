@@ -32,3 +32,11 @@ end
 
 --[[ Pin ]]--
 FlightPointPinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_FLIGHT_POINT");
+
+function FlightPointPinMixin:SetTexture(poiInfo)
+	BaseMapPoiPinMixin.SetTexture(self, poiInfo);
+	if poiInfo.textureKitPrefix == "FlightMaster_Argus" then
+		self:SetSize(21, 18);
+		self.Texture:SetSize(21, 18);
+	end
+end

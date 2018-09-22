@@ -36,7 +36,6 @@ function UIWidgetTemplateIconAndTextMixin:Setup(widgetInfo)
 	self.Text:SetText(widgetInfo.text);
 	self:SetTooltip(widgetInfo.tooltip);
 	self.DynamicIconButton:SetTooltip(widgetInfo.dynamicTooltip);
-	self.hasTimer = widgetInfo.hasTimer;
 
 	if ( widgetInfo.state == Enum.IconAndTextWidgetState.ShownWithDynamicIconFlashing ) then
 		UIFrameFlash(self.Flash, 0.5, 0.5, -1);

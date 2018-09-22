@@ -304,7 +304,7 @@ function AzeriteEmpoweredItemTierMixin:OnPowerSelected(azeritePowerButton)
 	end
 
 	if self:IsFinalTier() then
-		self.tierAnimation = AzeriteTierFinalPowerSelectedAnimationMixin:Create(self, self.owningFrame:GetLoopingSoundEmitter());
+		self.tierAnimation = AzeriteTierFinalPowerSelectedAnimationMixin:Create(self);
 	else
 		self.tierAnimation = AzeriteTierPowerSelectedAnimationMixin:Create(self, azeritePowerButton, self.transformNode:GetLocalRotation(), self.owningFrame:GetLoopingSoundEmitter());
 	end
@@ -349,6 +349,10 @@ end
 
 function AzeriteEmpoweredItemTierMixin:IsFinalTier()
 	return self.isFinalTier;
+end
+
+function AzeriteEmpoweredItemTierMixin:IsFirstTier()
+	return self:GetTierIndex() == 1;
 end
 
 function AzeriteEmpoweredItemTierMixin:GetSelectedPowerID()

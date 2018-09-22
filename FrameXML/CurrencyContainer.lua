@@ -1,4 +1,4 @@
-CurrencyContainerUtil = {} 
+CurrencyContainerUtil = {};
 
 function CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, numItems, name, texture, quality)
 	local entry = C_CurrencyInfo.GetCurrencyContainerInfo(currencyID, numItems); 
@@ -8,4 +8,12 @@ function CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, numItems, na
 	end
 	return name, texture, numItems, quality;
 end
-			
+
+function CurrencyContainerUtil.GetCurrencyContainerInfoForAlert(currencyID, quantity, name, texture, quality)
+
+	if (C_CurrencyInfo.IsCurrencyContainer(currencyID, quantity)) then
+		return CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, quantity, name, texture, quality);
+	end
+
+	return name, texture, quantity, quality;
+end

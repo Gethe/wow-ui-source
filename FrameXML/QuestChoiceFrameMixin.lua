@@ -104,11 +104,8 @@ function QuestChoiceFrameMixin:WidgetLayout(widgetContainer, sortedWidgets)
 end
 
 function QuestChoiceFrameMixin:WidgetInit(widgetFrame)
-	if self.optionTextColor and widgetFrame.GatherColorableFontStrings then
-		local fontStrings = widgetFrame:GatherColorableFontStrings();
-		for _, fontString in ipairs(fontStrings) do
-			fontString:SetTextColor(self.optionTextColor:GetRGBA());
-		end
+	if self.optionDescriptionColor and widgetFrame.SetFontStringColor then
+		widgetFrame:SetFontStringColor(self.optionDescriptionColor);
 	end
 end
 
@@ -197,7 +194,7 @@ function QuestChoiceFrameMixin:Update()
 	self.hasPendingUpdate = false;
 
 	local choiceID, questionText, numOptions = GetQuestChoiceInfo();
-	if (not choiceID or choiceID == 0) then
+	if (not choiceID or choiceID == 0 or numOptions == 0) then
 		self:Hide();
 		return;
 	end
@@ -209,7 +206,7 @@ function QuestChoiceFrameMixin:Update()
 
 	self.numActiveOptionFrames = 0;
 	for i=1, numOptions do
-		local optID, buttonText, description, header, artFile, confirmationText, widgetSetID, disabled, groupID = GetQuestChoiceOptionInfo(i);
+		local optID, buttonText, description, header, artFile, confirmationText, widgetSetID, disabledButton, desaturatedArt, groupID = GetQuestChoiceOptionInfo(i);
 
 		local existingOption = self:GetExistingOptionForGroup(groupID);
 		local button;
@@ -217,14 +214,19 @@ function QuestChoiceFrameMixin:Update()
 			-- only supporting two grouped options
 			existingOption.hasMultipleButtons = true;
 			button = existingOption.OptionButtonsContainer.OptionButton2;
-			if not disabled then
+			if not disabledButton then
 				existingOption.hasActiveButton = true;
+			end
+			-- for grouped options the art is only desaturated if all of them are
+			if not desaturatedArt then
+				existingOption.hasDesaturatedArt = false;
 			end
 		else
 			self.numActiveOptionFrames = self.numActiveOptionFrames + 1;
 			local option = self.Options[self.numActiveOptionFrames];
 			option.hasMultipleButtons = false;
-			option.hasActiveButton = not disabled;
+			option.hasActiveButton = not disabledButton;
+			option.hasDesaturatedArt = desaturatedArt;
 			option.groupID = groupID;
 			option.optID = optID;
 			button = option.OptionButtonsContainer.OptionButton1;
@@ -237,7 +239,7 @@ function QuestChoiceFrameMixin:Update()
 		button.confirmationText = confirmationText;
 		button:SetText(buttonText);
 		button.optID = optID;
-		button:SetEnabled(not disabled);
+		button:SetEnabled(not disabledButton);
 	end
 
 	-- buttons

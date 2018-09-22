@@ -17,6 +17,8 @@ local PlayerLocation =
 
 			Returns =
 			{
+				{ Name = "className", Type = "string", Nilable = true },
+				{ Name = "classFilename", Type = "string", Nilable = true },
 				{ Name = "classID", Type = "number", Nilable = true },
 			},
 		},
@@ -60,6 +62,20 @@ local PlayerLocation =
 			Returns =
 			{
 				{ Name = "sex", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "IsConnected",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "isConnected", Type = "bool", Nilable = true },
 			},
 		},
 	},

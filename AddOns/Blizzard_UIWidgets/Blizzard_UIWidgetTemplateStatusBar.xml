@@ -5,7 +5,7 @@
 			<StatusBar parentKey="Bar" drawLayer="BACKGROUND" minValue="0" maxValue="100" defaultValue="0">
 				<Size x="215" y="15"/>
 				<Anchors>
-					<Anchor point="BOTTOM" y="5"/>
+					<Anchor point="TOP" y="-8"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">

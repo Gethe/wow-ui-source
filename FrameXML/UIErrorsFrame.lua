@@ -109,16 +109,23 @@ function UIErrorsMixin:FlashFontString(fontString)
 	end
 end
 
+function UIErrorsMixin:TryFlashingExistingMessage(messageType, message)
+	local existingFontString = self:GetFontStringByID(messageType);
+	if existingFontString and existingFontString:GetText() == message then
+		self:FlashFontString(existingFontString);
+
+		self:ResetMessageFadeByID(messageType);
+		return true;
+	end
+	return false;
+end
+
 function UIErrorsMixin:ShouldDisplayMessageType(messageType, message)
 	if BLACK_LISTED_MESSAGE_TYPES[messageType] then
 		return false;
 	end
 	if THROTTLED_MESSAGE_TYPES[messageType] then
-		local existingFontString = self:GetFontStringByID(messageType);
-		if existingFontString and existingFontString:GetText() == message then
-			self:FlashFontString(existingFontString);
-
-			self:ResetMessageFadeByID(messageType);
+		if self:TryFlashingExistingMessage(messageType, message) then
 			return false;
 		end
 	end
@@ -136,5 +143,12 @@ function UIErrorsMixin:TryDisplayMessage(messageType, message, r, g, b)
 		elseif soundKitID then
 			PlaySound(soundKitID);
 		end
+	end
+end
+
+function UIErrorsMixin:AddExternalErrorMessage(message)
+	if not self:TryFlashingExistingMessage(LE_GAME_ERR_SYSTEM, message) then
+		local r, g, b = RED_FONT_COLOR:GetRGB();
+		self:AddMessage(message, r, g, b, 1.0, LE_GAME_ERR_SYSTEM);
 	end
 end

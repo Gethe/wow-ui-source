@@ -2,6 +2,7 @@ local IslandsInfo =
 {
 	Name = "IslandsInfo",
 	Type = "System",
+	Namespace = "C_IslandsInfo",
 
 	Functions =
 	{

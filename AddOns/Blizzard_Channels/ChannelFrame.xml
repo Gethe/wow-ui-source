@@ -76,6 +76,49 @@
 				</Anchors>
 			</Frame>
 
+			<Frame parentKey="Tutorial" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
+				<Size x="220" y="100"/>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="TUTORIAL_VOICE">
+							<Size x="188" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="16" y="-14"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="6" y="6"/>
+						</Anchors>
+						<Scripts>
+							<OnClick inherit="append">
+								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CHAT_CHANNELS, true);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="LEFT" x="34" y="16"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self.Text:SetSpacing(4);
+						SetClampedTextureRotation(self.Arrow.Arrow, 90);
+						SetClampedTextureRotation(self.Arrow.Glow, 90);
+						self.Arrow.Glow:ClearAllPoints();
+						self.Arrow.Glow:SetPoint("CENTER", self.Arrow.Arrow, "CENTER", -5, 0);
+					</OnLoad>
+					<OnShow>
+						self:SetHeight(self.Text:GetHeight() + 32);
+					</OnShow>
+				</Scripts>
+			</Frame>
+
 			<Frame parentKey="Dropdown" hidden="true"/>
 		</Frames>
 		<Scripts>

@@ -1,6 +1,7 @@
 local MAINMENU_SLIDETIME = 0.30;
 local MAINMENU_GONEYPOS = 130;	--Distance off screen for MainMenuBar to be completely hidden
 local MAINMENU_XPOS = 0;
+MAIN_MENU_BAR_MARGIN = 75;		-- number of art pixels on one side, used by UIParent_ManageFramePositions. It's not the art's full size, don't care about the gryphon's tail.
 
 MainMenuBarMixin = { };
 function MainMenuBarMixin:OnStatusBarsUpdated()
@@ -30,20 +31,28 @@ function MainMenuBarMixin:OnShow()
 	MoveMicroButtons("BOTTOMLEFT", MicroButtonAndBagsBar, "BOTTOMLEFT", 6, 3, false);
 end
 
+function MainMenuBarMixin:SetYOffset(yOffset)
+	self.yOffset = yOffset;
+end
+
+function MainMenuBarMixin:GetYOffset()
+	return self.yOffset;
+end
+
 function MainMenuBarMixin:SetPositionForStatusBars()
 	MainMenuBar:ClearAllPoints(); 
 	MainMenuBarArtFrame.LeftEndCap:ClearAllPoints(); 
 	MainMenuBarArtFrame.RightEndCap:ClearAllPoints(); 
 	if ( StatusTrackingBarManager:GetNumberVisibleBars() == 2 ) then 
-		MainMenuBar:SetPoint("BOTTOM", MainMenuBar:GetParent(), 0, 17);
+		self:SetYOffset(17);
 		MainMenuBarArtFrame.LeftEndCap:SetPoint("BOTTOMLEFT", MainMenuBar, -98, -17); 
 		MainMenuBarArtFrame.RightEndCap:SetPoint("BOTTOMRIGHT", MainMenuBar, 98, -17); 
 	elseif ( StatusTrackingBarManager:GetNumberVisibleBars() == 1 ) then
-		MainMenuBar:SetPoint("BOTTOM", MainMenuBar:GetParent(), 0, 14);
+		self:SetYOffset(14);
 		MainMenuBarArtFrame.LeftEndCap:SetPoint("BOTTOMLEFT", MainMenuBar, -98, -14); 
 		MainMenuBarArtFrame.RightEndCap:SetPoint("BOTTOMRIGHT", MainMenuBar, 98, -14); 
 	else 
-		MainMenuBar:SetPoint("BOTTOM", MainMenuBar:GetParent(), 0, 0);
+		self:SetYOffset(0);
 		MainMenuBarArtFrame.LeftEndCap:SetPoint("BOTTOMLEFT", MainMenuBar, -98, 0); 
 		MainMenuBarArtFrame.RightEndCap:SetPoint("BOTTOMRIGHT", MainMenuBar, 98, 0); 
 	end
@@ -369,34 +378,6 @@ function MainMenuBarMixin:ChangeMenuBarSizeAndPosition(rightMultiBarShowing)
 		MainMenuBarArtFrameBackground.BackgroundSmall:Show(); 
 		MainMenuBarArtFrame.PageNumber:ClearAllPoints();
 		MainMenuBarArtFrame.PageNumber:SetPoint("RIGHT", MainMenuBarArtFrameBackground, "RIGHT", -6, -3);
-	end
-	local scale = 1;
-	self:SetScale(scale);
-	self:SetPoint("BOTTOM");
-	local rightGryphon = MainMenuBarArtFrame.RightEndCap:GetRight();
-	local xOffset = 0;
-	if (rightGryphon > MicroButtonAndBagsBar:GetLeft()) then
-		xOffset = rightGryphon - MicroButtonAndBagsBar:GetLeft();
-		local newLeft = MainMenuBarArtFrame:GetLeft() - xOffset;
-		if (newLeft < 0) then
-			local barRight = MainMenuBarArtFrame:GetRight();
-			if (barRight > MicroButtonAndBagsBar:GetLeft()) then
-				xOffset = barRight - MicroButtonAndBagsBar:GetLeft();
-				newLeft = MainMenuBarArtFrame:GetLeft() - xOffset;
-			end
-		end
-		if (newLeft < 0) then
-			local xOffsetAdjustment = 8;
-			if (UIParent:GetScale() > 1) then
-				xOffsetAdjustment = xOffsetAdjustment + (20*UIParent:GetScale());
-			end				
-			xOffset = xOffset + newLeft + xOffsetAdjustment;
-			local availableSpace = MicroButtonAndBagsBar:GetLeft() - 16;
-			scale = availableSpace / width;
-		end
-		self:SetScale(scale);
-		self:SetPoint("BOTTOM", UIParent, "BOTTOM", -xOffset, 0);
-		barRight = self:GetRight();
 	end
 	StatusTrackingBarManager:SetBarSize(rightMultiBarShowing);
 end

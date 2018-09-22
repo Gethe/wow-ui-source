@@ -380,6 +380,11 @@
 			<OnLoad>
 				GameTooltip_OnLoad(self);
 			</OnLoad>
+			<OnTooltipCleared>
+				GameTooltip_ClearMoney(self);
+				GameTooltip_ClearInsertedFrames(self);
+				GameTooltip_UpdateStyle(self);
+			</OnTooltipCleared>
 		</Scripts>
 	</GameTooltip>
 	<Frame name="TooltipMoneyFrameTemplate" inherits="SmallMoneyFrameTemplate" virtual="true">

@@ -398,6 +398,22 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Timer" inherits="BaseTextTimer">
+				<Size x="100" y="12"/>
+				<Anchors>
+					<Anchor point="TOP"  relativePoint="BOTTOM"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="TimerText" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="0.1" g="1.0" b="0.1"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame parentKey="GlowSpin" hidden="true">
 				<Size x="253" y="256"/>
 				<Anchors>
@@ -1369,37 +1385,8 @@
 						</Scripts>
 					</Frame>
 
-					<Frame name="UpgradePopupFrame" frameStrata="HIGH" hidden="true">
-						<Size x="430" y="250"/>
-						<Anchors>
-							<Anchor point="CENTER"/>
-						</Anchors>
+					<Frame name="UpgradePopupFrame" frameStrata="HIGH" hidden="true" inherits="BaseExpandableDialog" mixin="UpgradePopupFrameMixin">
 						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="Top">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="0" y="0"/>
-									</Anchors>
-								</Texture>
-								<Texture parentKey="Bottom">
-									<Size x="430" y="0"/>
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" x="0" y="0"/>
-									</Anchors>
-								</Texture>
-								<Texture parentKey="Middle">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.Top" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bottom" relativePoint="TOPRIGHT" x="0" y="0"/>
-									</Anchors>
-								</Texture>
-								<Texture parentKey="CloseButtonBG">
-									<Size x="24" y="24"/>
-									<Anchors>
-										<Anchor point="TOPRIGHT" x="-12" y="-12"/>
-									</Anchors>
-								</Texture>
-							</Layer>
 							<Layer level="ARTWORK">
 								<FontString parentKey="Title" inherits="GameFontNormalHugeOutline" justifyH="CENTER" justifyV="TOP">
 									<Size x="270" y="0"/>
@@ -1417,30 +1404,31 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
+							<Frame parentKey="Timer" inherits="BaseTextTimer">
+								<Size x="300" y="12"/>
 								<Anchors>
-									<Anchor point="CENTER" relativeKey="$parent.CloseButtonBG" x="1"/>
+									<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-2"/>
 								</Anchors>
-								<Scripts>
-									<OnClick function="CharacterUpgradePopup_OnCloseClick"/>
-								</Scripts>
-							</Button>
-							<Button parentKey="GetStartedButton" inherits="UIPanelButtonTemplate" text="CHARACTER_UPGRADE_POPUP_BOOST_EXISTING_CHARACTER">
+								<Layers>
+									<Layer level="OVERLAY">
+										<FontString parentKey="TimerText" inherits="GameFontNormalSmall">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+											<Color r="0.1" g="1.0" b="0.1"/>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+							<Button parentKey="GetStartedButton" inherits="UIPanelButtonTemplate">
 								<Size x="250" y="22"/>
 								<Anchors>
 									<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="0" y="-20"/>
 								</Anchors>
 								<Scripts>
-									<OnEnter>
-										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										local boostTitle = self:GetParent().data.flowTitle;
-										local tooltip = CHARACTER_UPGRADE_POPUP_BOOST_EXISTING_CHARACTER_TOOLTIP:format(boostTitle);
-										GlueTooltip:SetText(tooltip, nil, nil, nil, nil, true);
-									</OnEnter>
-									<OnLeave>
-										GlueTooltip:Hide();
-									</OnLeave>
 									<OnClick function="CharacterUpgradePopup_OnStartClick"/>
+									<OnEnter function="CharacterUpgradePopup_OnStartEnter"/>
+									<OnLeave function="CharacterUpgradePopup_OnStartLeave"/>
 								</Scripts>
 							</Button>
 							<Button parentKey="LaterButton" inherits="UIPanelButtonTemplate" text="CHARACTER_UPGRADE_POPUP_TRY_NEW_CLASS" motionScriptsWhileDisabled="true">

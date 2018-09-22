@@ -77,6 +77,7 @@ local classFilenameToAtlas = {
 	["WARLOCK"] = "ClassTrial-Warlock-Ring",
 	["MONK"] = "ClassTrial-Monk-Ring",
 	["DRUID"] = "ClassTrial-Druid-Ring",
+	["DEMONHUNTER"] = "ClassTrial-DemonHunter-Ring",
 };
 
 function ClassTrial_SetHasAvailableBoost(hasBoost)
@@ -170,8 +171,15 @@ function ClassTrialDialogMixin:UpdateDialogButtons(hasBoost)
 end
 
 function ClassTrialDialogMixin:OnEvent(event, ...)
+	if ExpansionTrialThanksForPlayingDialog:IsShown() then
+		-- This means that the player has just purchased the expansion but is sitting on their logout dialog...so do nothing
+		return;
+	end
+
 	if event == "CLASS_TRIAL_TIMER_START" then
-		self:ShowThanks(SOUNDKIT.UI_70_BOOST_THANKSFORPLAYING);
+		if not CanUpgradeExpansion() then
+			self:ShowThanks(SOUNDKIT.UI_70_BOOST_THANKSFORPLAYING);
+		end
 	elseif event == "CLASS_TRIAL_UPGRADE_COMPLETE" then
 		self:OnUpgradeComplete();
 	end
@@ -187,6 +195,90 @@ function ClassTrialDialogMixin:OnLoad()
 
 	self:RegisterEvent("CLASS_TRIAL_TIMER_START");
 	self:RegisterEvent("CLASS_TRIAL_UPGRADE_COMPLETE");
+end
+
+ExpansionTrialDialogMixin = CreateFromMixins(BaseExpandableDialogMixin);
+
+local textureKitRegionInfo = {
+	["Top"] = {formatString= "%s-expansionTrialPopup-top", useAtlasSize=true},
+	["Middle"] = {formatString="%s-expansionTrialPopup-middle", useAtlasSize = false},
+	["Bottom"] = {formatString="%s-expansionTrialPopup-bottom", useAtlasSize = true},
+	["CloseButtonBG"] = {formatString="%s-expansionTrialPopup-exit-frame", useAtlasSize = true}
+}
+
+function ExpansionTrialDialogMixin:OnLoad()
+	local expansionTrialBoostType = 0;
+	local upgradeDisplayData = C_CharacterServices.GetCharacterServiceDisplayData(expansionTrialBoostType);
+	self:SetupTextureKit(upgradeDisplayData.popupInfo.textureKitPrefix, textureKitRegionInfo);
+
+	local currentExpansionLevel = GetClampedCurrentExpansionLevel();
+	local expansionDisplayInfo = GetExpansionDisplayInfo(currentExpansionLevel);
+	if expansionDisplayInfo then
+		self.ExpansionImage:SetTexture(expansionDisplayInfo.logo);
+	end
+
+	self:RegisterEvent("CLASS_TRIAL_TIMER_START");
+	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
+end
+
+function ExpansionTrialDialogMixin:OnEvent(event, ...)
+	if event == "CLASS_TRIAL_TIMER_START" then
+		if CanUpgradeExpansion() then
+			self:SetupDialogType(false);
+			self:Show();
+		end
+	elseif event == "UPDATE_EXPANSION_LEVEL" then
+		local upgradingFromExpansionTrial = select(5, ...);
+		if upgradingFromExpansionTrial then
+			self:SetupDialogType(true);
+			self:Show();
+		end
+	end
+end
+
+function ExpansionTrialDialogMixin:SetupDialogType(expansionTrialUpgrade)
+	if expansionTrialUpgrade then
+		self.Title:SetText(EXPANSION_TRIAL_PURCHASE_THANKS_TITLE);
+		self.Description:SetText(EXPANSION_TRIAL_PURCHASE_THANKS_TEXT);
+		self.Button:SetText(EXPANSION_TRIAL_PURCHASE_THANKS_BUTTON);
+	else
+		self.Title:SetText(EXPANSION_TRIAL_THANKS_TITLE);
+		self.Description:SetText(EXPANSION_TRIAL_THANKS_TEXT);
+		self.Button:SetText(EXPANSION_TRIAL_THANKS_BUTTON);
+	end
+
+	self.expansionTrialUpgrade = expansionTrialUpgrade;
+end
+
+function ExpansionTrialDialogMixin:IsShowingExpansionTrialUpgrade()
+	return self:IsShown() and self.expansionTrialUpgrade;
+end
+
+function ExpansionTrialDialogMixin:OnShow()
+	SetStoreUIShown(false);
+	self:SetHeight(300 + self.Description:GetHeight() + self.Title:GetHeight());
+end
+
+function ExpansionTrialDialogMixin:OnHide()
+	ClassTrialTimerDisplay:ShowTimer();
+end
+
+function ExpansionTrialDialogMixin:OnButtonClick()
+	BaseExpandableDialogMixin.OnCloseClick(self);
+
+	if self.expansionTrialUpgrade then
+		ForceLogout();
+	else
+		SetStoreUIShown(true);
+		StoreFrame_SetGamesCategory();
+	end
+end
+
+function ExpansionTrialDialogMixin:OnCloseClick()
+	BaseExpandableDialogMixin.OnCloseClick(self);
+	if self.expansionTrialUpgrade then
+		ForceLogout();
+	end
 end
 
 ClassTrialTimerDisplayMixin = {}
@@ -233,16 +325,18 @@ function ClassTrialTimerDisplayMixin:OnUpgradeComplete()
 end
 
 function ClassTrialTimerDisplayMixin:OnEvent(event, ...)
-	if event == "CLASS_TRIAL_TIMER_START" then
-		self:Hide();
-	elseif event == "CLASS_TRIAL_UPGRADE_COMPLETE" then
+	if event == "CLASS_TRIAL_UPGRADE_COMPLETE" then
 		self:OnUpgradeComplete();
 	end
 end
 
 function ClassTrialTimerDisplayMixin:OnMouseUp()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	ClassTrialThanksForPlayingDialog:ShowThanks();
+	if CanUpgradeExpansion() then
+		ExpansionTrialThanksForPlayingDialog:Show();
+	else
+		ClassTrialThanksForPlayingDialog:ShowThanks();
+	end
 end
 
 function ClassTrialTimerDisplayMixin:OnShow()

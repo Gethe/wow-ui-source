@@ -73,7 +73,7 @@ UIPanelWindows["CommunitiesGuildNewsFiltersFrame"] =		{ area = "left",			pushabl
 -- Frames NOT using the new Templates
 UIPanelWindows["CinematicFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["ChatConfigFrame"] =				{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
-UIPanelWindows["WorldStateScoreFrame"] =		{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
+UIPanelWindows["WorldStateScoreFrame"] =		{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1,	ignoreControlLost = true, };
 UIPanelWindows["QuestChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 UIPanelWindows["WarboardQuestChoiceFrame"] =	{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 UIPanelWindows["GarrisonBuildingFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002, 	allowOtherPanels = 1};
@@ -84,7 +84,7 @@ UIPanelWindows["GarrisonMonumentFrame"] =		{ area = "center",			pushable = 0,		w
 UIPanelWindows["GarrisonRecruiterFrame"] =		{ area = "left",			pushable = 0};
 UIPanelWindows["GarrisonRecruitSelectFrame"] =	{ area = "center",			pushable = 0};
 UIPanelWindows["OrderHallMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
-UIPanelWindows["OrderHallTalentFrame"] =		{ area = "left",			pushable = 0};
+UIPanelWindows["OrderHallTalentFrame"] =		{ area = "left",			pushable = 0,		xoffset = 16};
 UIPanelWindows["ChallengesKeystoneFrame"] =		{ area = "center",			pushable = 0};
 UIPanelWindows["BFAMissionFrame"] =				{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 
@@ -261,6 +261,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("SAVED_VARIABLES_TOO_LARGE");
 	self:RegisterEvent("EXPERIMENTAL_CVAR_CONFIRMATION_NEEDED");
 	self:RegisterEvent("BAG_OVERFLOW_WITH_FULL_INVENTORY");
+	self:RegisterEvent("AUCTION_HOUSE_SCRIPT_DEPRECATED");
 	self:RegisterEvent("LOADING_SCREEN_ENABLED");
 	self:RegisterEvent("LOADING_SCREEN_DISABLED");
 
@@ -679,6 +680,10 @@ function ClassTrial_AttemptLoad()
 	end
 end
 
+function ClassTrial_IsExpansionTrialUpgradeDialogShowing()
+	return ExpansionTrialThanksForPlayingDialog and ExpansionTrialThanksForPlayingDialog:IsShowingExpansionTrialUpgrade();
+end
+
 function DeathRecap_LoadUI()
 	UIParentLoadAddOn("Blizzard_DeathRecap");
 end
@@ -780,6 +785,10 @@ function ToggleCalendar()
 	end
 end
 
+function IsCommunitiesUIDisabledByTrialAccount()
+	return IsTrialAccount() or (not C_Club.IsEnabled() and IsVeteranTrialAccount() and not IsInGuild());
+end
+
 function ToggleGuildFrame()
 	if (IsKioskModeEnabled()) then
 		return;
@@ -790,12 +799,17 @@ function ToggleGuildFrame()
 		return;
 	end
 
-	if ( IsTrialAccount() or (IsVeteranTrialAccount() and not IsInGuild()) ) then
+	if ( IsCommunitiesUIDisabledByTrialAccount() ) then
 		UIErrorsFrame:AddMessage(ERR_RESTRICTED_ACCOUNT_TRIAL, 1.0, 0.1, 0.1, 1.0);
 		return;
-	end
-
-	if ( CommunitiesFrame_IsEnabled() ) then
+	elseif ( CommunitiesFrame_IsEnabled() ) then
+		if ( not BNConnected() ) then
+			UIErrorsFrame:AddMessage(ERR_GUILD_AND_COMMUNITIES_UNAVAILABLE, 1.0, 0.1, 0.1, 1.0);
+			return;
+		elseif ( C_Club.IsRestricted() ~= Enum.ClubRestrictionReason.None ) then
+			return;
+		end
+		
 		ToggleCommunitiesFrame();
 	elseif ( IsInGuild() ) then
 		GuildFrame_LoadUI();
@@ -906,11 +920,6 @@ function ToggleEncounterJournal()
 		return true;
 	end
 	return false;
-end
-
-function ToggleCommunitiesFrame()
-	Communities_LoadUI();
-	ToggleFrame(CommunitiesFrame);
 end
 
 function ToggleCommunitiesFrame()
@@ -1033,14 +1042,18 @@ function OpenAzeriteEmpoweredItemUIFromItemLocation(itemLocation)
 	UIParentLoadAddOn("Blizzard_AzeriteUI");
 
 	ShowUIPanel(AzeriteEmpoweredItemUI);
-	AzeriteEmpoweredItemUI:SetToItemAtLocation(itemLocation);
+	if AzeriteEmpoweredItemUI:IsShown() then -- may fail to display
+		AzeriteEmpoweredItemUI:SetToItemAtLocation(itemLocation);
+	end
 end
 
 function OpenAzeriteEmpoweredItemUIFromLink(itemLink, overrideClassID, overrideSelectedPowersList)
 	UIParentLoadAddOn("Blizzard_AzeriteUI");
 
 	ShowUIPanel(AzeriteEmpoweredItemUI);
-	AzeriteEmpoweredItemUI:SetToItemLink(itemLink, overrideClassID, overrideSelectedPowersList);
+	if AzeriteEmpoweredItemUI:IsShown() then -- may fail to display
+		AzeriteEmpoweredItemUI:SetToItemLink(itemLink, overrideClassID, overrideSelectedPowersList);
+	end
 end
 
 local function PlayBattlefieldBanner(self)
@@ -1183,7 +1196,7 @@ function UIParent_OnEvent(self, event, ...)
 		if ( not StaticPopup_Visible("DEATH") ) then
 			CloseAllWindows(1);
 		end
-		if ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
+		if ( (GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1) and (not ResurrectGetOfferer()) ) then
 			StaticPopup_Show("DEATH");
 		end
 	elseif ( event == "SELF_RES_SPELL_CHANGED" ) then
@@ -1237,6 +1250,8 @@ function UIParent_OnEvent(self, event, ...)
 			dialog.data = arg1;
 		end
 	elseif ( event == "PARTY_INVITE_REQUEST" ) then
+		FlashClientIcon();
+		
 		local name, tank, healer, damage, isXRealm, allowMultipleRoles, inviterGuid = ...;
 
 		-- Color the name by our relationship
@@ -1795,6 +1810,8 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("EXPERIMENTAL_CVAR_WARNING");
 	elseif ( event == "BAG_OVERFLOW_WITH_FULL_INVENTORY") then
 		StaticPopup_Show("CLIENT_INVENTORY_FULL_OVERFLOW");
+	elseif ( event == "AUCTION_HOUSE_SCRIPT_DEPRECATED") then
+		StaticPopup_Show("AUCTION_HOUSE_DEPRECATED");
 
 	-- Events for Archaeology
 	elseif ( event == "ARCHAEOLOGY_TOGGLE" ) then
@@ -1985,6 +2002,8 @@ function UIParent_OnEvent(self, event, ...)
 		end
 		ShowUIPanel(GarrisonRecruiterFrame);
 	elseif ( event == "GARRISON_TALENT_NPC_OPENED") then
+		OrderHall_LoadUI();
+		OrderHallTalentFrame:SetGarrisonType(...); 
 		ToggleOrderHallTalentUI();
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
 		StoreFrame_CheckForFree(event);
@@ -2015,9 +2034,7 @@ function UIParent_OnEvent(self, event, ...)
 		end
 		self:UnregisterEvent("TALKINGHEAD_REQUESTED");
 	elseif (event == "CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN") then
-		if (not ChallengesKeystoneFrame) then
-			ChallengeMode_LoadUI();
-		end
+		ChallengeMode_LoadUI();
 		ChallengesKeystoneFrame:ShowKeystoneFrame();
 	elseif (event == "CHALLENGE_MODE_COMPLETED") then
 		if (not ChallengeModeCompleteBanner) then
@@ -2032,9 +2049,7 @@ function UIParent_OnEvent(self, event, ...)
 		if (uiMapSystem == Enum.UIMapSystem.Taxi) then
 			ShowUIPanel(TaxiFrame);
 		else
-			if (not FlightMapFrame) then
-				FlightMap_LoadUI();
-			end
+			FlightMap_LoadUI();
 			ShowUIPanel(FlightMapFrame);
 		end
 	elseif (event == "SCENARIO_UPDATE") then
@@ -2070,9 +2085,7 @@ function UIParent_OnEvent(self, event, ...)
 		AzeriteRespecFrame_LoadUI();
 		ShowUIPanel(AzeriteRespecFrame);
 	elseif (event == "ISLANDS_QUEUE_OPEN") then
-		if (not IslandsQueueFrame) then 
-			IslandsQueue_LoadUI(); 
-		end
+		IslandsQueue_LoadUI(); 
 		ShowUIPanel(IslandsQueueFrame); 
 	end
 end
@@ -2166,8 +2179,8 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["ZoneAbilityFrame"] = {baseY = true, yOffset = 100, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, extraActionBarFrame = 1};
 	["ChatFrame1"] = {baseY = true, yOffset = 40, bottomLeft = actionBarOffset-8, justBottomRightAndStance = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
 	["ChatFrame2"] = {baseY = true, yOffset = 40, bottomRight = actionBarOffset-8, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, rightLeft = -2*actionBarOffset, rightRight = -actionBarOffset, watchBar = 1, maxLevel = 1, point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT", xOffset = -32};
-	["StanceBarFrame"] = {baseY = 2, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
-	["PossessBarFrame"] = {baseY = 2, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
+	["StanceBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
+	["PossessBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["MultiCastActionBarFrame"] = {baseY = 8, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["AuctionProgressFrame"] = {baseY = true, yOffset = 18, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1};
 	["TalkingHeadFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, classResourceOverlayFrame = 1};
@@ -2535,12 +2548,8 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 end
 
 function FramePositionDelegate:ShowUIPanelFailed(frame)
-	local showFailedFunc = GetUIPanelWindowInfo(frame, "showFailedFunc");
-	if ( type(showFailedFunc) ~= "function" ) then
-		showFailedFunc = _G[showFailedFunc];
-	end
-	if ( showFailedFunc ) then
-		showFailedFunc(frame);
+	if GetUIPanelWindowInfo(frame, "showFailedFunc") then
+		frame:ExecuteAttribute("UIPanelLayout-showFailedFunc");
 	end
 end
 
@@ -2706,6 +2715,9 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 		UIParent:SetAttribute("CENTER_OFFSET", centerOffset);
 		frame:Raise();
 	else
+		centerOffset = leftOffset;
+		UIParent:SetAttribute("CENTER_OFFSET", centerOffset);
+		
 		frame = self:GetUIPanel("doublewide");
 		if ( frame ) then
 			local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
@@ -2911,6 +2923,39 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	end
 
 	-- Custom positioning not handled by the loop
+
+	-- MainMenuBar
+	if not MainMenuBar:IsUserPlaced() and not MicroButtonAndBagsBar:IsUserPlaced() then
+		local screenWidth = UIParent:GetWidth();
+		local barScale = 1;
+		local barWidth = MainMenuBar:GetWidth();
+		local barMargin = MAIN_MENU_BAR_MARGIN;
+		local bagsWidth = MicroButtonAndBagsBar:GetWidth();
+		local contentsWidth = barWidth + bagsWidth;
+		if contentsWidth > screenWidth then
+			barScale = screenWidth / contentsWidth;
+			barWidth = barWidth * barScale;
+			bagsWidth = bagsWidth * barScale;
+			barMargin = barMargin * barScale;
+		end
+		MainMenuBar:SetScale(barScale);
+		MainMenuBar:ClearAllPoints();
+		-- if there's no overlap with between action bar and bag bar while it's in the center, use center anchor
+		local roomLeft = screenWidth - barWidth - barMargin * 2;
+		if roomLeft >= bagsWidth * 2 then
+			MainMenuBar:SetPoint("BOTTOM", UIParent, 0, MainMenuBar:GetYOffset());
+		else
+			local xOffset = 0;
+			-- if both bars can fit without overlap, move the action bar to the left
+			-- otherwise sacrifice the art for more room
+			if roomLeft >= bagsWidth then
+				xOffset = roomLeft - bagsWidth + barMargin;
+			else
+				xOffset = math.max((roomLeft - bagsWidth) / 2 + barMargin, 0);
+			end
+			MainMenuBar:SetPoint("BOTTOMLEFT", UIParent, xOffset / barScale, MainMenuBar:GetYOffset());
+		end
+	end
 
 	-- Update Stance bar appearance
 	if ( MultiBarBottomLeft:IsShown() ) then
@@ -3283,21 +3328,18 @@ function CloseWindows(ignoreCenter, frameToIgnore)
 	end
 
 	found = securecall("CloseSpecialWindows") or found;
-
+	
 	UpdateUIPanelPositions();
 
 	return found;
 end
 
 function CloseAllWindows_WithExceptions()
-	-- Insert exceptions here, right now we just don't close the scoreFrame when the player loses control i.e. the game over spell effect
-	if ( GetUIPanel("center") == WorldStateScoreFrame ) then
-		CloseAllWindows(1);
-	elseif ( IsOptionFrameOpen() ) then
-		CloseAllWindows(1);
-	else
-		CloseAllWindows();
-	end
+	-- When the player loses control we close all UIs, unless they're handled below
+	local centerFrame = GetUIPanel("center");
+	local ignoreCenter = (centerFrame and GetUIPanelWindowInfo(centerFrame, "ignoreControlLost")) or IsOptionFrameOpen();
+	
+	CloseAllWindows(ignoreCenter);
 end
 
 function CloseAllWindows(ignoreCenter)
@@ -4668,7 +4710,13 @@ function GetLFGMode(category, lfgID)
 	elseif ( joined ) then
 		return "suspended", (empoweredFunc() and "empowered" or "unempowered");	--We are "joined" to LFG, but not actually queued right now.
 	elseif ( IsInGroup() and IsPartyLFG() and partyCategory == category and (not lfgID or lfgID == partySlot) ) then
-		return "lfgparty", (IsAllowedToUserTeleport() and "teleport" or "noteleport");
+		if IsAllowedToUserTeleport() then
+			return "lfgparty", "teleport";
+		end
+		if IsLFGComplete() then
+			return "lfgparty", "complete";
+		end
+		return "lfgparty", "noteleport";
 	elseif ( IsPartyLFG() and IsInLFGDungeon() and partyCategory == category and (not lfgID or lfgID == partySlot) ) then
 		return "abandonedInDungeon";
 	end
@@ -5148,4 +5196,29 @@ function OpenAchievementFrameToAchievement(achievementID)
 		AchievementFrame_ToggleAchievementFrame();
 	end
 	AchievementFrame_SelectAchievement(achievementID);
+end
+
+function ChatClassColorOverrideShown()
+	local value = GetCVar("chatClassColorOverride");
+	if value == "0" then
+		return true;
+	elseif value == "1" then
+		return false;
+	else
+		return nil;
+	end
+end
+
+ -- takes into account the current expansion
+ -- NOTE: it's not safe to cache this value as it could change in the middle of the session
+function GetEffectivePlayerMaxLevel()
+	return MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()];
+end
+
+function IsLevelAtEffectiveMaxLevel(level)
+	return level >= GetEffectivePlayerMaxLevel();
+end
+
+function IsPlayerAtEffectiveMaxLevel()
+	return IsLevelAtEffectiveMaxLevel(UnitLevel("player"));
 end

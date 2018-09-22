@@ -272,7 +272,7 @@
 						<Anchor point="TOP" relativeKey="$parent.$parent.HeaderBar" relativePoint="BOTTOM" x="0" y="8"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="FollowerHeaderBar" atlas="GarrLanding-FollowerScrollFrame" useAtlasSize="true">
+				<Texture parentKey="FollowerScrollFrame" atlas="GarrLanding-FollowerScrollFrame" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
 					</Anchors>
@@ -671,9 +671,10 @@
 								<Anchor point="RIGHT" relativeKey="$parent.XPText" relativePoint="LEFT" x="-8" y="0"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="ClassSpec" inherits="GameFontHighlight" justifyH="LEFT">
+						<FontString parentKey="ClassSpec" inherits="GameFontHighlight" justifyH="LEFT" maxLines="2">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-4"/>
+								<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-10"/>
+								<Anchor point="RIGHT" relativeKey="$parent.XPLabel" relativePoint="LEFT" x="-8" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>

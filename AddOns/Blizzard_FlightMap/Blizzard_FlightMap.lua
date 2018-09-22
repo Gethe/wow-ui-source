@@ -23,15 +23,6 @@ function FlightMapMixin:OnLoad()
 
 	self:AddStandardDataProviders();
 end
-	
-function FlightMapMixin:SetMapID(mapID)
-	MapCanvasMixin.SetMapID(self, mapID);
-	if self:ShouldShowSubzones() then
-		self:AddSubZoneDataProviders();
-	else
-		self:RemoveSubZoneDataProviders();
-	end
-end
 
 function FlightMapMixin:OnCanvasScaleChanged()
 	MapCanvasMixin.OnCanvasScaleChanged(self);
@@ -47,21 +38,8 @@ function FlightMapMixin:OnCanvasScaleChanged()
 	end
 end
 
-function FlightMapMixin:AddSubZoneDataProviders()
-	if not self.zoneSummaryDataProvider then
-		self.zoneSummaryDataProvider = CreateFromMixins(FlightMap_ZoneSummaryDataProvider);
-		self:AddDataProvider(self.zoneSummaryDataProvider);
-	end
-end
-
-function FlightMapMixin:RemoveSubZoneDataProviders()
-	if self.zoneSummaryDataProvider then
-		self:RemoveDataProvider(self.zoneSummaryDataProvider);
-		self.zoneSummaryDataProvider = nil;
-	end
-end
-
 function FlightMapMixin:AddStandardDataProviders()
+	self:AddDataProvider(CreateFromMixins(FlightMap_ZoneSummaryDataProvider));
 	self:AddDataProvider(CreateFromMixins(FlightMap_FlightPathDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(FlightMap_QuestDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(ClickToZoomDataProviderMixin));	-- no pins
@@ -91,8 +69,6 @@ end
 function FlightMapMixin:OnShow()
 	local mapID = GetTaxiMapID();
 
-	-- This is 'temporarily' hardcoded for Argus. There's a maintenance task in that should include fixing this.
-	self:SetShouldShowSubzones(mapID ~= 1184);
 	self:SetMapID(mapID);
 
 	MapCanvasMixin.OnShow(self);

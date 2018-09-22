@@ -36,7 +36,3 @@ function UIWidgetTemplateDoubleIconAndTextMixin:OnLoad()
 	self.LeftIcon = self.Left.Icon;
 	self.RightIcon = self.Right.Icon;
 end
-
-function UIWidgetTemplateDoubleIconAndTextMixin:GatherColorableFontStrings()
-	return {self.Label, self.Left.Text, self.Right.Text};
-end

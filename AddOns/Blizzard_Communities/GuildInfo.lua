@@ -87,7 +87,7 @@ function CommunitiesGuildInfoFrame_UpdateChallenges(self)
 end
 
 function TextEditButton_OnClick(self)
-	CommunitiesGuildTextEditFrame_SetType(CommunitiesGuildTextEditFrame, self.editType);
+	CommunitiesGuildTextEditFrame_SetType(CommunitiesGuildTextEditFrame, self.editType, self:GetParent());
 	if not CommunitiesGuildTextEditFrame:IsShown() then
 		local toggled = CallMethodOnNearestAncestor(self, "ToggleSubPanel", CommunitiesGuildTextEditFrame);
 		if not toggled then
@@ -105,7 +105,7 @@ function CommunitiesGuildTextEditFrame_OnLoad(self)
 	self.Container.ScrollFrame.EditBox:SetSpacing(2);
 end
 
-function CommunitiesGuildTextEditFrame_SetType(self, editType)
+function CommunitiesGuildTextEditFrame_SetType(self, editType, guildInfoFrame)
 	if ( editType == "motd" ) then
 		self:SetHeight(162);
 		self.Container.ScrollFrame.EditBox:SetMaxLetters(128);
@@ -120,17 +120,19 @@ function CommunitiesGuildTextEditFrame_SetType(self, editType)
 		self.Container.ScrollFrame.EditBox:SetScript("OnEnterPressed", nil);
 	end
 	self.type = editType;
+	self.guildInfoFrame = guildInfoFrame;
 	self.Container.ScrollFrame.EditBox:SetCursorPosition(0);
 	self.Container.ScrollFrame.EditBox:SetFocus();
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
-function CommunitiesGuildTextEditFrame_OnAccept(self)
+function CommunitiesGuildTextEditFrame_OnAccept()
 	if ( CommunitiesGuildTextEditFrame.type == "motd" ) then
 		GuildSetMOTD(CommunitiesGuildTextEditFrame.Container.ScrollFrame.EditBox:GetText());
 	elseif ( CommunitiesGuildTextEditFrame.type == "info" ) then
 		local infoText = CommunitiesGuildTextEditFrame.Container.ScrollFrame.EditBox:GetText();
 		SetGuildInfoText(infoText);
+		CommunitiesGuildInfoFrame_UpdateText(CommunitiesGuildTextEditFrame.guildInfoFrame, infoText);
 	end
 	HideUIPanel(CommunitiesGuildTextEditFrame);
 end

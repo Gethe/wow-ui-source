@@ -53,6 +53,15 @@ local GarrisonInfo =
 				{ Name = "treeIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "IsAtGarrisonMissionNPC",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "atGarrisonMissionNPC", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

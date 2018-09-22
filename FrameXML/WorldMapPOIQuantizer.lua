@@ -70,6 +70,19 @@ local function FindBestEnumerator(normalizedX, normalizedY)
 	end
 end
 
+function WorldMapPOIQuantizerMixin:ClearAndQuantize(poiList)
+	self:Clear();
+	self:RemoveQuantization(poiList);
+	self:Quantize(poiList);
+end
+
+function WorldMapPOIQuantizerMixin:RemoveQuantization(poiList)
+	for i, poiData in pairs(poiList) do
+		poiData.quantizedX = nil;
+		poiData.quantizedY = nil;
+	end
+end
+
 function WorldMapPOIQuantizerMixin:Quantize(poiList)
 	for i, poiData in pairs(poiList) do
 		local normalizedX, normalizedY = poiData.normalizedX or poiData.x, poiData.normalizedY or poiData.y;
@@ -80,7 +93,7 @@ function WorldMapPOIQuantizerMixin:Quantize(poiList)
 
 		local foundCell = false; 
 		local hasNeighbor = false;
-		for i, offsetData in FindBestEnumerator(cellX % 1, cellY % 1) do
+		for j, offsetData in FindBestEnumerator(cellX % 1, cellY % 1) do
 			local xOffset, yOffset = unpack(offsetData);
 			if self.grid:IsInRange(cellIndexX + xOffset, cellIndexY + yOffset) then
 				local existingPOIData = self.grid:GetCell(cellIndexX + xOffset, cellIndexY + yOffset);

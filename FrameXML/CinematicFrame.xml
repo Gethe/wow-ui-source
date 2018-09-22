@@ -21,7 +21,7 @@
 		<DisabledFont style="GameFontDisable"/>
 		<HighlightFont style="GameFontHighlight"/>
 	</Button>
-	<Frame name="CinematicFrame" setAllPoints="true" hidden="true" enableKeyboard="true" enableMouse="true">
+	<Frame name="CinematicFrame" setAllPoints="true" clampedtoscreen="true"  hidden="true" enableKeyboard="true" enableMouse="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="UpperBlackBar" name="UpperBlackBar">
@@ -48,8 +48,8 @@
 			<Layer level="OVERLAY">
 				<FontString parentKey="Subtitle1" parentArray="Subtitles" inherits="GameFontHighlightLarge" justifyH="CENTER" justifyV="MIDDLE" hidden="true" mixin="ShrinkUntilTruncateFontStringMixin">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.LowerBlackBar" relativePoint="TOPLEFT" x="120" y="-5"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.LowerBlackBar" relativePoint="BOTTOMRIGHT" x="-120" y="5"/>
+						<Anchor point="BOTTOMLEFT" x="100" y="20"/>
+						<Anchor point="BOTTOMRIGHT" x="-100" y="20"/>
 					</Anchors>
 				</FontString>
 			</Layer>

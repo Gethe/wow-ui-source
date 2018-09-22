@@ -420,10 +420,8 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				--self.sizePadding = 4;
-				--self.Text:SetPoint("LEFT", self.leftTexture, "RIGHT", 4, -6);
-				--self.Text:SetJustifyH("LEFT");
 				FCFTab_UpdateColors(self, false);
+				self:SetAlpha(CHAT_FRAME_TAB_NORMAL_MOUSEOVER_ALPHA);
 			</OnLoad>
 			<OnClick method="OnClick"/>
 		</Scripts>

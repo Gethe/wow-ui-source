@@ -88,4 +88,33 @@
 	<CinematicModel name="WorldQuestSpellEffectPinTemplate" hidden="true" mixin="WorldQuestSpellEffectPinMixin" virtual="true">
 		<Size x="400" y="400"/>
 	</CinematicModel>
+
+	<Frame name="WorldQuestPingPinTemplate" mixin="WorldQuestPingPinMixin" virtual="true">
+		<Size x="70" y="70"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Expand" file="Interface/minimap/UI-Minimap-Ping-Expand" alpha="0">
+					<Size x="50" y="50"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="DriverAnimation" mixin="WorldQuestPinPingDriverAnimationMixin">
+				<Alpha childKey="Expand" fromAlpha="0" toAlpha="1"                      duration="0.2" order="1"/>
+				<Alpha childKey="Expand" fromAlpha="1" toAlpha="0" startDelay=".45"     duration="0.2" order="1"/>
+				<Alpha childKey="Expand" fromAlpha="0" toAlpha="1" startDelay=".575"    duration="0.2" order="1"/>
+				<Alpha childKey="Expand" fromAlpha="1" toAlpha="0" startDelay=".95"     duration="0.2" order="1"/>
+
+				<Scripts>
+					<OnFinished method="OnFinished"/>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="ScaleAnimation" looping="REPEAT">
+				<Scale childKey="Expand" fromScaleX=".5" fromScaleY=".5" toScaleX="1.2" toScaleY="1.2" duration=".575" order="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
 </Ui>

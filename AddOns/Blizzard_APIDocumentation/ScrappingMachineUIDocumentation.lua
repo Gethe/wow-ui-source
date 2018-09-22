@@ -43,6 +43,15 @@ local ScrappingMachineUI =
 			},
 		},
 		{
+			Name = "GetScrappingMachineName",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "HasScrappableItems",
 			Type = "Function",
 

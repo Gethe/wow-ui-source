@@ -43,7 +43,7 @@ end
 function AzeriteBarMixin:OnLoad() 
 	self:SetBarColor(ARTIFACT_BAR_COLOR:GetRGB());
 	self.StatusBar:SetOnAnimatedValueChangedCallback(function() self:AnimatedValueChangedCallback(); end)
-	self.priority = 3; 
+	self.priority = 0; 
 end
 
 function AzeriteBarMixin:OnEvent(event, ...)
@@ -101,7 +101,7 @@ function AzeriteBarMixin:SetupPointsTooltip()
 end
 
 function AzeriteBarMixin:UpdatePointsTooltip()
-	if ( self:IsShown() ) then
+	if ( GameTooltip:IsOwned(self) ) then
 		self:SetupPointsTooltip();
 	end
 end

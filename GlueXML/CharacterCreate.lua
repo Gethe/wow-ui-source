@@ -215,7 +215,7 @@ MODEL_CAMERA_CONFIG = {
 		["HighmountainTauren6"] = { tx = -0.216, ty = -0.203, tz = 1.654, cz = 1.647, distance = 3.566, light =  0.80 },
 		["ZandalariTroll"] = { tx = 0.402, ty = 0.016, tz = 2.076, cz = 1.980, distance = 0.943, light =  0.75 },
 		["DarkIronDwarf"] = { tx = 0.037, ty = 0.009, tz = 1.298, cz = 1.265, distance = 0.839, light =  0.85 },
-		["MagharOrc"] = { tx = 0.346, ty = -0.001, tz = 1.878, cz = 1.793, distance = 1.074, light =  0.80 },
+		["MagharOrc"] = { tx = -0.0322, ty = -0.0771, tz = 2.114, cz = 2.030, distance = 1.200, light =  0.75 },
 	},
 	[1] = {
 		["Draenei"] = { tx = 0.155, ty = 0.009, tz = 2.177, cz = 1.971, distance = 0.734, light =  0.75 },
@@ -473,18 +473,21 @@ function CharacterCreate_OnEvent(self, event, ...)
 		PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_LOOK);
 	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
 		-- Expansion level changed while online, so enable buttons as needed
-		if ( CharacterCreateFrame:IsShown() ) then
+		if ( CharacterCreateFrame:IsShown() and C_CharacterCreation.GetSelectedRace() > 0) then
 			CharacterCreateEnumerateRaces(true);
 			CharacterCreateEnumerateClasses();
 		end
 	elseif ( event == "CHARACTER_CREATION_RESULT" ) then
-		local success, errorCode = ...;
-		if ( success ) then
-			if (CharacterUpgrade_IsCreatedCharacterTrialBoost() and IsConnectedToServer()) then
-				CharacterSelect_SetPendingTrialBoost(true, CharacterCreate_GetSelectedFaction(), CharCreateSelectSpecFrame.selected);
+		local success, errorCode, guid = ...;
+		if success then
+			if guid then
+				if (CharacterUpgrade_IsCreatedCharacterTrialBoost() and IsConnectedToServer()) then
+					CharacterSelect_SetPendingTrialBoost(true, CharacterCreate_GetSelectedFaction(), CharCreateSelectSpecFrame.selected, guid);
+				end
+				CharacterSelect.selectGuid = guid;
+			elseif C_CharacterCreation.IsUsingCharacterTemplate() then
+				CharacterSelect.selectLast = true;
 			end
-
-			CharacterSelect.selectLast = true;
 			GlueParent_SetScreen("charselect");
 		else
 			CharCreate_RefreshNextButton();
@@ -866,16 +869,36 @@ function CharacterCreateEnumerateClasses()
 		SetupClassButton(button, classID, classData);
 	end
 
-	if (not C_CharacterCreation.CanCreateDemonHunter()) then
+	local boostLevel;
+	if CharacterUpgrade_IsCreatedCharacterTrialBoost() then
+		boostLevel = C_CharacterCreation.GetTrialBoostStartingLevel();
+	elseif CharacterUpgrade_IsCreatedCharacterUpgrade() and CharacterUpgradeFlow.data then
+		boostLevel = CharacterUpgradeFlow.data.level;
+	end
+	
+	local demonHunterIsValid = not boostLevel or boostLevel > 100;
+	if (not demonHunterIsValid or not C_CharacterCreation.CanCreateDemonHunter()) then
         MAX_DISPLAYED_CLASSES_PER_RACE = 11;
         for button in CharacterCreate.classFramePool:EnumerateActive() do
             button:SetSize(44, 44);
         end
-		local button = FindButtonForClassID(C_CharacterCreation.GetClassIDFromName("DEMONHUNTER"));
+		local demonHunterClassID = C_CharacterCreation.GetClassIDFromName("DEMONHUNTER");
+		local button = FindButtonForClassID(demonHunterClassID);
 		if ( button ) then
 			button:Hide();
 		end
 		CharCreateClassFrame.ClassIcons:Layout();
+		
+		if ( not demonHunterIsValid ) then
+			local selectedClassData = C_CharacterCreation.GetSelectedClass();
+			if selectedClassData and selectedClassData.classID == demonHunterClassID then
+				local warriorClassID = C_CharacterCreation.GetClassIDFromName("WARRIOR");
+				local warriorButton = FindButtonForClassID(warriorClassID);
+				if warriorButton then
+					warriorButton:Click();
+				end
+			end
+		end
     end
 
 	CharCreateClassFrame.ClassIcons:Layout();
@@ -1693,6 +1716,27 @@ function CharCreate_PrepPreviewModels(reloadModels)
 	end
 end
 
+-- posture hack
+local ORC_RACE_ID = 2;
+local MAGHAR_ORC_RACE_ID = 36;
+local POSTURE_OVERRIDES = {
+	[1] = ORC_RACE_ID,
+	[2] = MAGHAR_ORC_RACE_ID,
+}
+
+function GetCameraConfigForRaceGenderFeature(race, gender, featureType)
+	local _, raceFileName = C_CharacterCreation.GetNameForRace(race);
+	if ( C_CharacterCreation.IsViewingAlteredForm() ) then
+		raceFileName = raceFileName.."Alt";
+	end
+
+	local config = MODEL_CAMERA_CONFIG[gender][raceFileName..featureType];
+	if (not config) then
+		config = MODEL_CAMERA_CONFIG[gender][raceFileName];
+	end
+	return config;
+end
+
 function CharCreate_DisplayPreviewModels(selectionIndex)
 	if ( not selectionIndex ) then
 		selectionIndex = C_CharacterCreation.GetSelectedFeatureVariation();
@@ -1712,16 +1756,7 @@ function CharCreate_DisplayPreviewModels(selectionIndex)
 		cameraID = 1;
 	end
 
-	-- get data for target/camera/light
-	local _, raceFileName = C_CharacterCreation.GetNameForRace(C_CharacterCreation.GetSelectedRace());
-	if ( C_CharacterCreation.IsViewingAlteredForm() ) then
-		raceFileName = raceFileName.."Alt";
-	end
-
-	local config = MODEL_CAMERA_CONFIG[gender][raceFileName..currentFeatureType];
-	if (not config) then
-		config = MODEL_CAMERA_CONFIG[gender][raceFileName];
-	end
+	local config = GetCameraConfigForRaceGenderFeature(race, gender, currentFeatureType);
 
 	-- selection index is the center preview
 	-- there are 2 previews above and 2 below, and will pad it out to 1 more on each side, for a total of 7 previews to set up
@@ -1742,6 +1777,17 @@ function CharCreate_DisplayPreviewModels(selectionIndex)
 			if ( previewFrame.race ~= race or previewFrame.gender ~= gender or previewFrame.currentCamera ~= config) then
 				C_CharacterCreation.UpdatePreviewFrameModel(index);
 				previewFrame.race = race;
+
+				local posture = C_CharacterCreation.GetPreviewFrameModelPostureSetting(index);
+				if posture then
+					local overrideRaceID = POSTURE_OVERRIDES[posture];
+					if overrideRaceID then
+						config = GetCameraConfigForRaceGenderFeature(overrideRaceID, gender, currentFeatureType);
+						-- clear out the race, we always need to reload model on this race to check posture
+						previewFrame.race = nil;
+					end
+				end
+
 				previewFrame.gender = gender;
 				previewFrame.currentCamera = config;
 				-- apply settings
@@ -2141,14 +2187,36 @@ local function UpdateLevelText(button, classInfo, raceData)
 	button.levelText:SetText(CHARACTER_TYPE_FRAME_STARTING_LEVEL:format(CharacterCreate_GetStartingLevel(button.characterType == Enum.CharacterCreateType.TrialBoost)));
 end
 
-function CharacterCreate_TypeButtonOnLoad(self)
-	self.typeText:SetText(self.titleText);
+function CharacterCreate_TypeButtonOnShow(self)
+	if self.characterType == Enum.CharacterCreateType.TrialBoost then
+		if IsExpansionTrial() then
+			self.typeText:SetText(CHARACTER_TYPE_FRAME_EXPANSION_TRIAL_CHARACTER);
+			self:SetWidth(148);
+			self:SetPoint("BOTTOMLEFT", CharCreateCharacterTypeFrame, "BOTTOM", -10, 21);
+		else
+			self.typeText:SetText(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER);
+			self:SetWidth(118);
+			self:SetPoint("BOTTOMLEFT", CharCreateCharacterTypeFrame, "BOTTOM", 5, 21);
+		end
+	else
+		self.typeText:SetText(CHARACTER_TYPE_FRAME_NEW_CHARACTER);
+		if IsExpansionTrial() then
+			self:SetPoint("BOTTOMRIGHT", CharCreateCharacterTypeFrame, "BOTTOM", -20, 21);
+		else
+			self:SetPoint("BOTTOMRIGHT", CharCreateCharacterTypeFrame, "BOTTOM", -5, 21);
+		end
+	end
 end
 
 function CharacterCreate_TypeButtonOnEnter(self)
 	GlueTooltip:SetOwner(self, "ANCHOR_BOTTOM", 0, -10);
-	GlueTooltip:SetText(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER);
-	GlueTooltip:AddLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP:format(C_CharacterCreation.GetTrialBoostStartingLevel()), 1, 1, 1, 1, true);
+	if IsExpansionTrial() then
+		GlueTooltip:SetText(CHARACTER_TYPE_FRAME_EXPANSION_TRIAL_CHARACTER);
+		GlueTooltip:AddLine(CHARACTER_TYPE_FRAME_EXPANSION_TRIAL_CHARACTER_TOOLTIP, 1, 1, 1, 1, true);
+	else
+		GlueTooltip:SetText(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER);
+		GlueTooltip:AddLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP:format(C_CharacterCreation.GetTrialBoostStartingLevel()), 1, 1, 1, 1, true);
+	end
 
 	if not self:IsEnabled() then
 		local classData = C_CharacterCreation.GetSelectedClass();

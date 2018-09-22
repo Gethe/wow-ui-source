@@ -43,7 +43,7 @@ local THREE_SPEC_LGBUTTON_HEIGHT = 95;
 local SPEC_SCROLL_HEIGHT = 282;
 local SPEC_SCROLL_PREVIEW_HEIGHT = 228;
 local TALENT_FRAME_BASE_WIDTH = 646;
-local TALENT_FRAME_EXPANSION_EXTRA_WIDTH = 131;
+local TALENT_FRAME_EXPANSION_EXTRA_WIDTH = 137;
 
 -- speed references
 local next = next;
@@ -377,8 +377,8 @@ end
 function PlayerTalentFrame_SetExpanded(expanded)
 	if (expanded) then
 		PlayerTalentFrame:SetWidth(TALENT_FRAME_BASE_WIDTH + TALENT_FRAME_EXPANSION_EXTRA_WIDTH);
-		PlayerTalentFrameTalentsTRCorner:SetPoint("TOPRIGHT", -134, -2);
-		PlayerTalentFrameTalentsBRCorner:SetPoint("BOTTOMRIGHT", -134, 2);
+		PlayerTalentFrameTalentsTRCorner:SetPoint("TOPRIGHT", -140, -2);
+		PlayerTalentFrameTalentsBRCorner:SetPoint("BOTTOMRIGHT", -140, 2);
 		PlayerTalentFrameTalents.PvpTalentFrame:Show();
 		if (PlayerTalentFrameTalents.PvpTalentFrame.TalentList:IsShown()) then
 			SetUIPanelAttribute(PlayerTalentFrame, "width", PlayerTalentFrame.superExpandedPanelWidth);
@@ -1439,7 +1439,11 @@ local PvpTalentFrameEvents = {
 	"UI_MODEL_SCENE_INFO_UPDATED",
 };
 
+TALENT_WAR_MODE_BUTTON = nil;
+
 function PvpTalentFrameMixin:OnLoad()
+	TALENT_WAR_MODE_BUTTON = self.InvisibleWarmodeButton;
+
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
 	for i, slot in ipairs(self.Slots) do
 		slot:SetUp(i);
@@ -1471,7 +1475,9 @@ end
 
 function PvpTalentFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, PvpTalentFrameEvents);
-
+	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_TALENTS_FIRST_UNLOCK)) then
+		self.TrinketSlot.HelpBox:Show();
+	end
 	self:Update();
 end
 
@@ -1658,11 +1664,18 @@ PvpTalentWarmodeButtonMixin = {};
 
 function PvpTalentWarmodeButtonMixin:OnShow()
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
+	self:RegisterEvent("ZONE_CHANGED");
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_WARMODE_UNLOCK)) then
+		self:GetParent().WarmodeTutorialBox:Show();
+	end
 	self:Update();
 end
 
 function PvpTalentWarmodeButtonMixin:OnHide()
 	self:UnregisterEvent("PLAYER_FLAGS_CHANGED");
+	self:UnregisterEvent("ZONE_CHANGED_NEW_AREA");
+	self:UnregisterEvent("ZONE_CHANGED");
 end
 
 function PvpTalentWarmodeButtonMixin:OnEvent(event, ...)
@@ -1673,6 +1686,8 @@ function PvpTalentWarmodeButtonMixin:OnEvent(event, ...)
 		if (C_PvP.IsWarModeDesired() ~= previousValue) then
 			self:Update();
 		end
+	elseif ((event == "ZONE_CHANGED") or (event == "ZONE_CHANGED_NEW_AREA")) then
+		self:Update();
 	end
 end
 
@@ -1702,26 +1717,45 @@ function PvpTalentWarmodeButtonMixin:Update()
 	local ringAtlas = "pvptalents-warmode-ring"..disabledAdd;
 	frame.Swords:SetAtlas(swordsAtlas);
 	frame.Ring:SetAtlas(ringAtlas);
+
+	if GameTooltip:GetOwner() == self then
+		self:OnEnter();
+	end
 end
 
 function PvpTalentWarmodeButtonMixin:OnClick()
 	if (C_PvP.CanToggleWarMode()) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		local warmodeEnabled = self.predictedToggle:Get(); 
+		
+		if (warmodeEnabled) then 
+			PlaySound(SOUNDKIT.UI_WARMODE_DECTIVATE);
+		else 
+			PlaySound(SOUNDKIT.UI_WARMODE_ACTIVATE);
+		end
+		
 		self.predictedToggle:Toggle();
+		
 		self:Update();
 		self:GetParent():UpdateModelScenes();
+		if (self:GetParent().WarmodeTutorialBox:IsVisible()) then 
+			self:GetParent().WarmodeTutorialBox:Hide();
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_WARMODE_UNLOCK, true);
+		end
 	end
 end
 
 function PvpTalentWarmodeButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(PVP_LABEL_WAR_MODE, 1, 1, 1);
+	GameTooltip_SetTitle(GameTooltip, PVP_LABEL_WAR_MODE);
+	if C_PvP.IsWarModeActive() or self:GetWarModeDesired() then
+		GameTooltip_AddInstructionLine(GameTooltip, PVP_WAR_MODE_ENABLED);
+	end
 	local wrap = true;
-	GameTooltip:AddLine(PVP_WAR_MODE_DESCRIPTION, nil, nil, nil, wrap);
+	GameTooltip_AddNormalLine(GameTooltip, PVP_WAR_MODE_DESCRIPTION, wrap);
 	if (not C_PvP.CanToggleWarMode()) then
 		local text = UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0] and PVP_WAR_MODE_NOT_NOW_HORDE or PVP_WAR_MODE_NOT_NOW_ALLIANCE;
-		local r, g, b = RED_FONT_COLOR:GetRGB();
-		GameTooltip:AddLine(text, r, g, b, wrap);
+		GameTooltip_AddColoredLine(GameTooltip, text, RED_FONT_COLOR, wrap);
 	end
 	GameTooltip:Show();
 end

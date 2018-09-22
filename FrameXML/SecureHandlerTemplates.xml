@@ -97,7 +97,7 @@
     <Scripts>
       <OnLoad>
 	SecureHandler_OnLoad(self);
-	self:EnableMouseWheel();
+	self:EnableMouseWheel(true);
       </OnLoad>
       <OnMouseWheel>
 	SecureHandler_OnMouseWheel(self, "_onmousewheel", delta);

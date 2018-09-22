@@ -680,9 +680,9 @@
 							<Layer level="ARTWORK">
 								<FontString parentKey="BonusChanceLabel" inherits="Game18Font" justifyH="CENTER">
 									<Color r="1.0" g="0.82" b="0"/>
-									<Size x="200" y="0"/>
+									<Size x="160" y="0"/>
 									<Anchors>
-										<Anchor point="RIGHT"/>
+										<Anchor point="RIGHT" x="-10"/>
 									</Anchors>
 								</FontString>
 							</Layer>

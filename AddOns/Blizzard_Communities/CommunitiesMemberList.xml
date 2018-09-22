@@ -181,7 +181,7 @@
 				<Texture parentKey="Class" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Level" relativePoint="RIGHT" x="2" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Level" relativePoint="RIGHT" x="8" y="0"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Zone" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
@@ -231,7 +231,30 @@
 	</Button>
 
 	<Frame name="CommunitiesMemberListFrameTemplate" mixin="CommunitiesMemberListMixin" virtual="true">
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="MemberCount" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="4" y="12"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 		<Frames>
+			<CheckButton parentKey="ShowOfflineButton" inherits="UICheckButtonTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="26"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.text:SetText(COMMUNITIES_MEMBER_LIST_SHOW_OFFLINE);
+					</OnLoad>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						self:GetParent():SetShowOfflinePlayers(self:GetChecked());
+					</OnClick>
+				</Scripts>
+			</CheckButton>
 			<Frame parentKey="ColumnDisplay" useParentLevel="true" inherits="ColumnDisplayTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-3" y="60"/>
@@ -299,8 +322,8 @@
 			</Frame>
 			<Frame parentKey="InsetFrame" frameLevel="100" inherits="InsetFrameTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="-2" y="3"/>
-					<Anchor point="BOTTOMRIGHT" x="-2" y="-3"/>
+					<Anchor point="TOPLEFT" x="-3" y="3"/>
+					<Anchor point="BOTTOMRIGHT" x="-2" y="-2"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -314,6 +337,7 @@
 			<OnShow method="OnShow"/>
 			<OnEvent method="OnEvent"/>
 			<OnHide method="OnHide"/>
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
 

@@ -145,7 +145,7 @@ function WorldMap_SetupWorldQuestButton(button, worldQuestType, rarity, isElite,
 end
 
 WORLD_QUEST_REWARD_TYPE_FLAG_GOLD = 0x0001;
-WORLD_QUEST_REWARD_TYPE_FLAG_ORDER_RESOURCES = 0x0002;
+WORLD_QUEST_REWARD_TYPE_FLAG_RESOURCES = 0x0002;
 WORLD_QUEST_REWARD_TYPE_FLAG_ARTIFACT_POWER = 0x0004;
 WORLD_QUEST_REWARD_TYPE_FLAG_MATERIALS = 0x0008;
 WORLD_QUEST_REWARD_TYPE_FLAG_EQUIPMENT = 0x0010;
@@ -160,16 +160,16 @@ function WorldMap_GetWorldQuestRewardType(questID)
 		worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_GOLD);
 	end
 
-	if ( GetQuestLogRewardArtifactXP(questID) > 0 ) then
-		worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_ARTIFACT_POWER);
-	end
-
 	local ORDER_RESOURCES_CURRENCY_ID = 1220;
+	local azeriteCurrencyID = C_CurrencyInfo.GetAzeriteCurrencyID(); 
+	local warResourcesCurrencyID = C_CurrencyInfo.GetWarResourcesCurrencyID();
 	local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
 	for i = 1, numQuestCurrencies do
-		if ( select(4, GetQuestLogRewardCurrencyInfo(i, questID)) == ORDER_RESOURCES_CURRENCY_ID ) then
-			worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_ORDER_RESOURCES);
-			break;
+		local currencyID = select(4, GetQuestLogRewardCurrencyInfo(i, questID));
+		if ( currencyID == ORDER_RESOURCES_CURRENCY_ID or currencyID == warResourcesCurrencyID) then
+			worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_RESOURCES);
+		elseif ( currencyID == azeriteCurrencyID ) then
+			worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_ARTIFACT_POWER);
 		end
 	end
 
@@ -227,7 +227,7 @@ function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters)
 			local typeMatchesFilters = false;
 			if ( GetCVarBool("worldQuestFilterGold") and bit.band(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_GOLD) ~= 0 ) then
 				typeMatchesFilters = true;
-			elseif ( GetCVarBool("worldQuestFilterOrderResources") and bit.band(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_ORDER_RESOURCES) ~= 0 ) then
+			elseif ( GetCVarBool("worldQuestFilterResources") and bit.band(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_RESOURCES) ~= 0 ) then
 				typeMatchesFilters = true;
 			elseif ( GetCVarBool("worldQuestFilterArtifactPower") and bit.band(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_ARTIFACT_POWER) ~= 0 ) then
 				typeMatchesFilters = true;
@@ -329,78 +329,8 @@ function TaskPOI_OnLeave(self)
 	WorldMapTooltip:Hide();
 end
 
-WorldMapPingMixin = {};
-
-function WorldMapPingMixin:PlayOnFrame(frame, contextData)
-	if self.targetFrame ~= frame then
-		if frame and frame:IsVisible() then
-			self:ClearAllPoints();
-			self:SetPoint("CENTER", frame);
-
-			self:Stop();
-			self:SetTargetFrame(frame);
-			self:SetContextData(contextData);
-			self:Play();
-		else
-			self:Stop();
-		end
-	end
-end
-
-function WorldMapPingMixin:SetTargetFrame(frame)
-	-- Stop this ping from playing on any previous target
-	if self.targetFrame then
-		self.targetFrame.worldMapPing = nil;
-	end
-
-	-- This ping is now targeting a new frame (or nothing)
-	self.targetFrame = frame;
-
-	-- Clear out context data, it's meaningless with a new frame
-	self:SetContextData(nil);
-
-	-- If that frame is a valid target, then let it know that a ping is attached
-	if frame then
-		frame.worldMapPing = self;
-
-		-- Layer this behind the frame that's targeted (could make this dynamic)
-		-- Might need to reparent, this currently works because it's only operating
-		-- on TaskPOI pins.
-		self:SetFrameLevel(frame:GetFrameLevel() + 1);
-	end
-end
-
-function WorldMapPingMixin:SetContextData(contextData)
-	self.contextData = contextData;
-end
-
-function WorldMapPingMixin:GetContextData()
-	return self.contextData;
-end
-
-function WorldMapPingMixin:Play()
-	self.DriverAnimation:Play();
-end
-
-function WorldMapPingMixin:Stop()
-	self.DriverAnimation:Stop();
-end
-
-WorldMapPingAnimationMixin = {};
-
-function WorldMapPingAnimationMixin:OnPlay()
-	local ping = self:GetParent();
-	ping.ScaleAnimation:Play();
-end
-
-function WorldMapPingAnimationMixin:OnStop()
-	local ping = self:GetParent();
-	ping:SetTargetFrame(nil);
-	ping.ScaleAnimation:Stop();
-end
-
 function WorldMapPing_StartPingQuest(questID)
-	-- MAPREFACTORTODO: Reimplement
+	QuestMapFrame_PingQuestID(questID);
 end
 
 function WorldMapPing_StartPingPOI(poiFrame)

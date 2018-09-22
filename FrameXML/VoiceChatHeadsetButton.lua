@@ -82,8 +82,9 @@ function VoiceChatHeadsetButtonMixin:ClearPendingState()
 end
 
 function VoiceChatHeadsetButtonMixin:OnVoiceChatPendingChannelJoinState(channelType, clubId, streamId, pendingState)
-	-- pass in false for the voiceChannelID so it never matches with voice chat channels that are not created yet
-	if self:VoiceChannelMatches(false, channelType, clubId, streamId) then
+	-- pass in false for the voiceChannelID so it never matches with voice chat channels that are not created yet. 
+	-- A channelType of None indicates login failed, so clear all pending states in that case
+	if self:VoiceChannelMatches(false, channelType, clubId, streamId) or (channelType == Enum.ChatChannelType.None)  then
 		self:GetParent():SetPendingState(pendingState);
 	end
 end
@@ -98,8 +99,17 @@ function VoiceChatHeadsetButtonMixin:ToggleActivateChannel()
 			C_VoiceChat.ActivateChannel(voiceChannel.channelID);
 		end
 	elseif self:IsCommunityChannel() then
+		self:GetParent():SetPendingState(true);
 		ChannelFrame:TryJoinCommunityStreamChannel(self.clubId, self.streamId);
 	end
+
+	if self.onClickFn then
+		self:onClickFn();
+	end
+end
+
+function VoiceChatHeadsetButtonMixin:SetOnClickCallback(fn)
+	self.onClickFn = fn;
 end
 
 function VoiceChatHeadsetButtonMixin:SetVoiceChannel(voiceChannel)
@@ -175,20 +185,16 @@ end
 
 function VoiceChatHeadsetButtonMixin:ShowTooltip()
 	local isActive = self:IsVoiceActive();
-	local baseMessage = isActive and VOICE_CHAT_CHANNEL_ACTIVE_TOOLTIP or VOICE_CHAT_CHANNEL_INACTIVE_TOOLTIP;
-	local formattedChannelName = Voice_FormatTextForChannel(self:GetVoiceChannel(), self:GetChannelName());
-	local message = baseMessage:format(formattedChannelName);
-	local instructions = isActive and VOICE_CHAT_CHANNEL_ACTIVE_TOOLTIP_INSTRUCTIONS or VOICE_CHAT_CHANNEL_INACTIVE_TOOLTIP_INSTRUCTIONS;
+	local message = isActive and VOICE_CHAT_LEAVE or VOICE_CHAT_JOIN;
 
 	local tooltip = GameTooltip;
 	tooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip_SetTitle(tooltip, message);
-	GameTooltip_AddInstructionLine(tooltip, instructions);
 	tooltip:Show();
 end
 
 function VoiceChatHeadsetButtonMixin:Update()
-	if self:GetVoiceChannel() or self:IsCommunityChannel() then
+	if self:GetVoiceChannel() or (self:IsCommunityChannel() and C_VoiceChat.CanPlayerUseVoiceChat()) then
 		self:SetShown(true);
 
 		local isActive = self:IsVoiceActive();
@@ -220,6 +226,10 @@ end
 
 function VoiceChatHeadsetMixin:SetChannelName(...)
 	self.Button:SetChannelName(...);
+end
+
+function VoiceChatHeadsetMixin:SetOnClickCallback(fn)
+	self.Button:SetOnClickCallback(fn);
 end
 
 function VoiceChatHeadsetMixin:SetPendingState(pending)

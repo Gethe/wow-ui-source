@@ -1490,12 +1490,6 @@ StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
 		end
 		SetupLockOnDeclineButtonAndEscape(self, declineTimeLeft);
 	end,
-	OnHide = function(self)
-		if (self.ticker) then
-			self.ticker:Cancel();
-		end
-		self.ticker = nil;
-	end,
 	OnAccept = function(self)
 		AcceptResurrect();
 	end,
@@ -2610,12 +2604,25 @@ StaticPopupDialogs["REMOVE_GUILDMEMBER"] = {
 	text = format(REMOVE_GUILDMEMBER_LABEL, "XXX"),
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(self)
-		GuildUninvite(GuildFrame.selectedName);
-		GuildMemberDetailFrame:Hide();
+	OnAccept = function(self, data)
+		if data then
+			C_GuildInfo.RemoveFromGuild(data.guid);
+			if CommunitiesFrame then
+				CommunitiesFrame:CloseGuildMemberDetailFrame();
+			end
+		else
+			GuildUninvite(GuildFrame.selectedName);
+			if GuildMemberDetailFrame then
+				GuildMemberDetailFrame:Hide();
+			end
+		end
 	end,
-	OnShow = function(self)
-		self.text:SetFormattedText(REMOVE_GUILDMEMBER_LABEL, GuildFrame.selectedName);
+	OnShow = function(self, data)
+		if data then
+			self.text:SetFormattedText(REMOVE_GUILDMEMBER_LABEL, data.name);
+		else
+			self.text:SetText(GuildFrame.selectedName);
+		end
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -2687,6 +2694,40 @@ StaticPopupDialogs["SET_GUILDOFFICERNOTE"] = {
 	whileDead = 1,
 	hideOnEscape = 1
 };
+
+StaticPopupDialogs["SET_GUILD_COMMUNITIY_NOTE"] = {
+	text = SET_GUILDPLAYERNOTE_LABEL,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	hasEditBox = 1,
+	maxLetters = 31,
+	editBoxWidth = 260,
+	OnAccept = function(self, data)
+		C_GuildInfo.SetNote(data.guid, self.editBox:GetText(), data.isPublic);
+	end,
+	OnShow = function(self, data)
+		self.text:SetText(data.isPublic and SET_GUILDPLAYERNOTE_LABEL or SET_GUILDOFFICERNOTE_LABEL);
+		self.editBox:SetText(data.currentNote);
+		self.editBox:SetFocus();
+	end,
+	OnHide = function(self)
+		ChatEdit_FocusActiveWindow();
+		self.editBox:SetText("");
+	end,
+	EditBoxOnEnterPressed = function(self, data)
+		local parent = self:GetParent();
+		C_GuildInfo.SetNote(data.guid, self:GetText(), data.isPublic);
+		parent:Hide();
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
 StaticPopupDialogs["RENAME_PET"] = {
 	text = PET_RENAME_LABEL,
 	button1 = ACCEPT,
@@ -4050,6 +4091,15 @@ StaticPopupDialogs["CLIENT_INVENTORY_FULL_OVERFLOW"] = {
 	showAlert = 1,
 }
 
+StaticPopupDialogs["AUCTION_HOUSE_DEPRECATED"] = {
+	text = AUCTION_HOUSE_DEPRECATED,
+	button1 = OKAY,
+	hideOnEscape = 1,
+	timeout = 0,
+	whileDead = 1,
+	showAlert = 1,
+}
+
 local function InviteToClub(clubId, text)
 	local clubInfo = C_Club.GetClubInfo(clubId);
 	local isBattleNetClub = clubInfo.clubType == Enum.ClubType.BattleNet;
@@ -4640,6 +4690,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	editBox.hasAutoComplete = info.autoCompleteSource ~= nil;
 	if ( editBox.hasAutoComplete ) then
 		AutoCompleteEditBox_SetAutoCompleteSource(editBox, info.autoCompleteSource, unpack(info.autoCompleteArgs));
+	else
+		AutoCompleteEditBox_SetAutoCompleteSource(editBox, nil);
 	end
 
 	-- Finally size and show the dialog

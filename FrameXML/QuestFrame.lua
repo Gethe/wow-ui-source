@@ -301,7 +301,7 @@ function QuestFrameGreetingPanel_OnShow()
 		CurrentQuestsText:SetPoint("TOPLEFT", "GreetingText", "BOTTOMLEFT", 0, -10);
 		CurrentQuestsText:Show();
 		QuestTitleButton1:SetPoint("TOPLEFT", "CurrentQuestsText", "BOTTOMLEFT", -10, -5);
-		for i=1, numActiveQuests, 1 do
+		for i=1, numActiveQuests do
 			local questTitleButton = _G["QuestTitleButton"..i];
 			local questTitleButtonIcon = _G[questTitleButton:GetName() .. "QuestIcon"];
 			local title, isComplete = GetActiveTitle(i);
@@ -343,7 +343,7 @@ function QuestFrameGreetingPanel_OnShow()
 		end
 		AvailableQuestsText:Show();
 		_G["QuestTitleButton"..(numActiveQuests + 1)]:SetPoint("TOPLEFT", "AvailableQuestsText", "BOTTOMLEFT", -10, -5);
-		for i=(numActiveQuests + 1), (numActiveQuests + numAvailableQuests), 1 do
+		for i=(numActiveQuests + 1), (numActiveQuests + numAvailableQuests) do
 			local questTitleButton = _G["QuestTitleButton"..i];
 			local questTitleButtonIcon = _G[questTitleButton:GetName() .. "QuestIcon"];
 			local isTrivial, frequency, isRepeatable, isLegendary = GetAvailableQuestInfo(i - numActiveQuests);
@@ -372,7 +372,7 @@ function QuestFrameGreetingPanel_OnShow()
 			end
 		end
 	end
-	for i=(numActiveQuests + numAvailableQuests + 1), C_QuestLog.GetMaxNumQuests(), 1 do
+	for i=(numActiveQuests + numAvailableQuests + 1), C_QuestLog.GetMaxNumQuestsCanAccept() do
 		_G["QuestTitleButton"..i]:Hide();
 	end
 end

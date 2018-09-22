@@ -51,10 +51,8 @@ end
 
 function ClubTicketUtil.FormatTimeRemaining(expirationTime)
 	local seconds = ClubTicketUtil.GetSecondsRemaining(expirationTime);
-	local hours = floor(seconds / 3600);
-	local minutes = floor(seconds / 60) % 60;
-	local seconds = seconds % 60;
-	return COMMUNITIES_INVITE_MANAGER_SHORT_TIME_FORMAT:format(hours, minutes, seconds);
+	local hideSeconds = seconds >= 60;
+	return SecondsToTime(seconds, hideSeconds);
 end
 
 function ClubTicketUtil.FormatTicket(clubInfo, ticketId)
@@ -292,6 +290,8 @@ function CommunitiesTicketManagerDialogMixin:OnShow()
 	local clubInfo = C_Club.GetClubInfo(clubId);
 	if clubInfo then
 		self.DialogLabel:SetFormattedText(COMMUNITIES_INVITE_MANAGER_LABEL, clubInfo.name);
+		self.IconRing:SetAtlas(self.clubType == Enum.ClubType.BattleNet and "communities-ring-blue" or "communities-ring-gold");
+		C_Club.SetAvatarTexture(self.Icon, clubInfo.avatarId, clubInfo.clubType);
 	end
 	
 	self:Update();
@@ -367,9 +367,13 @@ end
 function CommunitiesTicketManagerDialogMixin:Update()
 	self:RefreshLink();
 	
+	local tickets = self:GetTickets();
+	local hasTickets = #tickets >= 1;
+	self.LinkToChat:SetEnabled(hasTickets);
+	self.Copy:SetEnabled(hasTickets);
+	
 	local scrollFrame = self.InviteManager.ListScrollFrame;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
-	local tickets = self:GetTickets();
 	local buttons = scrollFrame.buttons;
 	local displayedHeight = 0;
 	local buttonHeight = buttons[1]:GetHeight();
@@ -451,7 +455,7 @@ local PIECES_SHOWN_IN_EXPANDED_VIEW = {
 };
 
 function CommunitiesTicketManagerDialogMixin:SetExpanded(expanded)
-	self:SetHeight(expanded and 484 or 232);	
+	self:SetHeight(expanded and 584 or 282);
 	for piece, shownInExpandedView in pairs(PIECES_SHOWN_IN_EXPANDED_VIEW) do
 		self[piece]:SetShown(expanded == shownInExpandedView);
 	end
@@ -493,6 +497,27 @@ function CommunitiesTicketManagerDialogMixin:GenerateLink(overrideUses, override
 	C_Club.CreateTicket(clubId, uses, expirationTime, streamId);
 end
 
+function CommunitiesTicketManagerDialogMixin:GetFirstTicketInfo()
+	local tickets = self:GetTickets();
+	if #tickets >= 1 then
+		return tickets[1];
+	end
+	
+	return nil;
+end
+
+function CommunitiesTicketManagerDialogMixin:SendLinkToChat()
+	local ticketInfo = self:GetFirstTicketInfo();
+	local clubInfo = C_Club.GetClubInfo(self:GetClubId());
+
+	if ticketInfo and clubInfo then
+		local link = GetClubTicketLink(ticketInfo.ticketId, clubInfo.name, clubInfo.clubType);
+		if not ChatEdit_InsertLink(link) then
+			ChatFrame_OpenChat(link);
+		end
+	end
+end
+
 function CommunitiesTicketManagerDialogMixin:RefreshLink()
 	local tickets = self:GetTickets();
 	if #tickets >= 1 then
@@ -502,10 +527,7 @@ function CommunitiesTicketManagerDialogMixin:RefreshLink()
 			return;
 		end
 		
-		self.LinkBox:SetText(ClubTicketUtil.FormatTicket(clubInfo, ticketInfo.ticketId));
-		if self.LinkBox:HasFocus() then
-			EditBox_HighlightText(self.LinkBox);
-		end
+		self.LinkIDText:SetText(ticketInfo.ticketId);
 		
 		if ticketInfo.allowedRedeemCount == 0 then
 			self.UsesText:SetText(COMMUNITIES_INVITE_MANAGER_USES_UNLIMITED); 
@@ -519,7 +541,7 @@ function CommunitiesTicketManagerDialogMixin:RefreshLink()
 			self.ExpiresText:SetText(ClubTicketUtil.FormatTimeRemaining(ticketInfo.expirationTime));
 		end
 	else
-		self.LinkBox:SetText("");
+		self.LinkIDText:SetText("");
 		self.UsesText:SetText("");
 		self.ExpiresText:SetText("");
 	end

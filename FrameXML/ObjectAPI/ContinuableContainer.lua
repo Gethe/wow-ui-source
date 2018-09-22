@@ -79,12 +79,14 @@ end
 
 function ContinuableContainer:RecheckEvictableContinuables()
 	local areAllLoaded = true;
-	for i, evictableObject in ipairs(self.evictableObjects) do
-		if not evictableObject:IsItemDataCached() then
-			areAllLoaded = false;
+	if self.evictableObjects then
+		for i, evictableObject in ipairs(self.evictableObjects) do
+			if not evictableObject:IsItemDataCached() then
+				areAllLoaded = false;
 
-			self.numOutstanding = self.numOutstanding + 1;
-			table.insert(self.continuables, continuable:ContinueWithCancelOnItemLoad(self.onContinuableLoadedCallback));
+				self.numOutstanding = self.numOutstanding + 1;
+				table.insert(self.continuables, continuable:ContinueWithCancelOnItemLoad(self.onContinuableLoadedCallback));
+			end
 		end
 	end
 	return areAllLoaded;

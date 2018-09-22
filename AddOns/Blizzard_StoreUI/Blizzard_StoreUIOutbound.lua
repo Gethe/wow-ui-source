@@ -32,8 +32,12 @@ function Outbound.ClearItemTooltip()
 	securecall("GameTooltip_Hide");
 end
 
-function Outbound.ConfirmClassTrialApplyToken()
-	securecall("ClassTrial_ConfirmApplyToken")
+function Outbound.ConfirmClassTrialApplyToken(guid, boostType)
+	securecall("ClassTrial_ConfirmApplyToken", guid, boostType)
+end
+
+function Outbound.IsExpansionTrialUpgradeDialogShowing()
+	return securecall("ClassTrial_IsExpansionTrialUpgradeDialogShowing");
 end
 
 function Outbound.CloseAllWindows()

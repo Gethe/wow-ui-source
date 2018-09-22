@@ -171,7 +171,7 @@ function FriendsFrame_ClickSummonButton (self)
 	end
 end
 
-function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame, friendsList, isMobile, communityClubID, communityStreamID, communityEpoch, communityPosition)
+function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame, friendsList, isMobile, communityClubID, communityStreamID, communityEpoch, communityPosition, guid)
 	HideDropDownMenu(1);
 	if ( connected or friendsList ) then
 		if ( connected ) then
@@ -193,6 +193,7 @@ function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame,
 		FriendsDropDown.chatFrame = chatFrame;
 		FriendsDropDown.bnetIDAccount = nil;
 		FriendsDropDown.isMobile = isMobile;
+		FriendsDropDown.guid = guid;
 		ToggleDropDownMenu(1, nil, FriendsDropDown, "cursor");
 	end
 end
@@ -436,26 +437,26 @@ function FriendsList_InitializePendingInviteDropDown(self, level)
 		UIDropDownMenu_AddButton(info, level)
 	else
 		if level == 2 then
-			local bnetIDAccount, name = BNGetFriendInviteInfo(UIDROPDOWNMENU_MENU_VALUE);
+			local bnetIDAccount, name = BNGetFriendInviteInfo(self.inviteIndex);
 
 			info.text = REPORT_SPAMMING;
 			info.func = function()
 							UIDROPDOWNMENU_MENU_VALUE = self.inviteIndex;
-							PlayerReportFrame:InitiateReport("SPAM", name);
+							PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_SPAM, name);
 						end
 			UIDropDownMenu_AddButton(info, level)
 
 			info.text = REPORT_ABUSE;
 			info.func = function()
 							UIDROPDOWNMENU_MENU_VALUE = self.inviteIndex;
-							PlayerReportFrame:InitiateReport("ABUSE", name);
+							PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_ABUSE, name);
 						end
 			UIDropDownMenu_AddButton(info, level)
 
 			info.text = REPORT_BAD_NAME;
 			info.func = function()
 							UIDROPDOWNMENU_MENU_VALUE = self.inviteIndex;
-							PlayerReportFrame:InitiateReport("NAME", name);
+							PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_BAD_PLAYER_NAME, name);
 						end
 			UIDropDownMenu_AddButton(info, level)
 			info.notCheckable = false;

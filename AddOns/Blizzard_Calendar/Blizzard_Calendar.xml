@@ -686,7 +686,6 @@
 		<Scripts>
 			<OnLoad function="CalendarViewRaidFrame_OnLoad"/>
 			<OnShow function="CalendarViewRaidFrame_OnShow"/>
-			<OnHide function="CalendarViewRaidFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 
@@ -1148,7 +1147,7 @@
 										ScrollingEdit_OnTextChanged(self, self:GetParent());
 										C_Calendar.EventSetDescription(self:GetText());
 										CalendarCreateEventCreateButton_Update();
-									</OnTextChanged> 
+									</OnTextChanged>
 									<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
 									<OnUpdate>
 										ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());

@@ -335,9 +335,6 @@
 		</EditBox>
 		<Button name="StoreDropDownMenuButtonTemplate" virtual="true" parentArray="Buttons">
 			<Size x="100" y="16"/>
-			<Scripts>
-				<OnLoad function="StoreDropDownMenuMenuButton_OnLoad"/>
-			</Scripts>
 			<Layers>
 				<Layer level="ARTWORK">
 					<Texture parentKey="Check" file="Interface\Common\UI-DropDownRadioChecks" hidden="true">
@@ -386,6 +383,9 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" x="16" y="-16"/>
 					</Anchors>
+					<Scripts>
+						<OnLoad function="StoreDropDownMenuMenuButton_OnLoad"/>
+					</Scripts>
 				</Button>
 			</Frames>
 			<Scripts>

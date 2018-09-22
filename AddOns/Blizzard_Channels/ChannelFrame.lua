@@ -13,8 +13,9 @@ do
 		self.DirtyFlags:OnLoad();
 		self.DirtyFlags:AddNamedFlagsFromTable(dirtyFlags);
 		self.DirtyFlags:AddNamedMask("UpdateAll", Flags_CreateMaskFromTable(dirtyFlags));
+		self.DirtyFlags:AddNamedMask("CheckShowTutorial", 4);
 
-		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateAll);
+		self:MarkDirty("UpdateAll");
 
 		self:RegisterEvent("MUTELIST_UPDATE");
 		self:RegisterEvent("IGNORELIST_UPDATE");
@@ -45,6 +46,8 @@ do
 		self:RegisterEvent("VOICE_CHAT_MUTED_CHANGED");
 		self:RegisterEvent("VOICE_CHAT_DEAFENED_CHANGED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ME_CHANGED");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ADDED");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_GUID_UPDATED");
 
 		self:AddEvents("PARTY_LEADER_CHANGED", "GROUP_ROSTER_UPDATE", "CHANNEL_UI_UPDATE", "CHANNEL_LEFT", "CHAT_MSG_CHANNEL_NOTICE_USER");
 
@@ -64,13 +67,15 @@ function ChannelFrameMixin:OnShow()
 		HideUIPanel(CommunitiesFrame);
 	end
 
+	ChatFrameChannelButton:HideTutorial();
+
 	local channel = self:GetList():GetSelectedChannelButton();
 	if channel and channel:ChannelIsCommunity() then
 		C_Club.SetClubPresenceSubscription(channel.clubId);
 	end
 
 	self:SetEventsRegistered(true);
-	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateAll);
+	self:MarkDirty("UpdateAll");
 end
 
 function ChannelFrameMixin:OnHide()
@@ -82,7 +87,7 @@ end
 
 function ChannelFrameMixin:OnEvent(event, ...)
 	if event == "CHANNEL_UI_UPDATE" then
-		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateAll);
+		self:MarkDirty("UpdateAll");
 	elseif event == "CHANNEL_LEFT" then
 		self:OnChannelLeft(...);
 	elseif event == "PARTY_LEADER_CHANGED" then
@@ -90,9 +95,9 @@ function ChannelFrameMixin:OnEvent(event, ...)
 	elseif event == "GROUP_ROSTER_UPDATE" then
 		self:UpdatePartyChannelIfSelected()
 	elseif event == "MUTELIST_UPDATE" then
-		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateRoster);
+		self:MarkDirty("UpdateRoster");
 	elseif event == "IGNORELIST_UPDATE" then
-		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateRoster);
+		self:MarkDirty("UpdateRoster");
 	elseif event == "CHANNEL_FLAGS_UPDATED" then
 		self:GetList():UpdateDropdownForChannel(self:GetDropdown(), ...);
 	elseif event == "CHAT_MSG_CHANNEL_NOTICE_USER" then
@@ -150,6 +155,10 @@ function ChannelFrameMixin:OnEvent(event, ...)
 		self:OnDeafenedChanged(...);
 	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ME_CHANGED" then
 		self:OnMemberMuted(...);
+	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_ADDED" then
+		self:UpdateVoiceChannelIfSelected(select(2,...));
+	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_GUID_UPDATED" then
+		self:UpdateVoiceChannelIfSelected(select(2,...));
 	end
 end
 
@@ -202,6 +211,26 @@ function ChannelFrameMixin:CheckActivateChannel(channelID)
 	end
 end
 
+function ChannelFrameMixin:CheckShowTutorial()
+	if self:ShouldShowTutorial() then
+		local channels = self:GetList();
+		local channelButton = channels:GetButtonForAnyVoiceChannel();
+		if channelButton then
+			self.Tutorial:ClearAllPoints();
+			self.Tutorial:SetPoint("LEFT", channelButton, "RIGHT", 20, -1);
+			self.Tutorial:Show();
+		end
+	end
+end
+
+function ChannelFrameMixin:HideTutorial()
+	self.Tutorial:Hide();
+end
+
+function ChannelFrameMixin:ShouldShowTutorial()
+	return UnitLevel("player") >= 10 and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CHAT_CHANNELS);
+end
+
 function ChannelFrameMixin:TryCreateVoiceChannel(channelName)
 	self:TryExecuteCommand(function()
 		self:CreateVoiceChannel(channelName);
@@ -248,8 +277,10 @@ function ChannelFrameMixin:QueueVoiceChannelCommand(cmd)
 		self.queuedVoiceChannelCommands = {};
 	end
 
-	table.insert(self.queuedVoiceChannelCommands, cmd);
-	C_VoiceChat.Login(); -- May already be in-flight, doesn't matter.
+	local statusCode = C_VoiceChat.Login();
+	if statusCode == Enum.VoiceChatStatusCode.OperationPending then
+		table.insert(self.queuedVoiceChannelCommands, cmd);
+	end
 end
 
 function ChannelFrameMixin:TryExecuteCommand(cmd)
@@ -274,42 +305,50 @@ function ChannelFrameMixin:Update()
 			self:GetRoster():Update();
 		end
 
+		if self.DirtyFlags:IsDirty(self.DirtyFlags.CheckShowTutorial) then
+			self:CheckShowTutorial();
+		end
+
 		self.DirtyFlags:MarkClean();
 	end
+end
+
+function ChannelFrameMixin:MarkDirty(maskName)
+	self.DirtyFlags:MarkDirty(self.DirtyFlags[maskName]);
 end
 
 function ChannelFrameMixin:UpdateChannelIfSelected(channelID)
 	local channel = self:GetList():GetSelectedChannelButton();
 	if channel and channel:ChannelSupportsText() and channel:GetChannelID() == channelID then
-		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateRoster);
+		self:MarkDirty("UpdateRoster");
 	end
 end
 
 function ChannelFrameMixin:UpdateChannelByNameIfSelected(channelName)
 	local channel = self:GetList():GetSelectedChannelButton();
 	if channel and channel:ChannelSupportsText() and channel:GetChannelName() == channelName then
-		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateRoster);
+		self:MarkDirty("UpdateRoster");
 	end
 end
 
 function ChannelFrameMixin:UpdateVoiceChannelIfSelected(voiceChannelID)
 	local channel = self:GetList():GetSelectedChannelButton();
 	if channel and channel:ChannelSupportsVoice() and channel:GetVoiceChannelID() == voiceChannelID then
-		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateRoster);
+		self:MarkDirty("UpdateRoster");
 	end
 end
 
 function ChannelFrameMixin:UpdatePartyChannelIfSelected()
 	local channel = self:GetList():GetSelectedChannelButton();
 	if channel and C_ChatInfo.IsPartyChannelType(channel:GetChannelType()) then
-		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateRoster);
+		self:MarkDirty("UpdateRoster");
 	end
 end
 
-function ChannelFrameMixin:UpdateCommunityChannelIfSelected(clubId, memberId)
+function ChannelFrameMixin:UpdateCommunityChannelIfSelected(clubId)
 	local channel = self:GetList():GetSelectedChannelButton();
 	if channel and channel:ChannelIsCommunity() and channel.clubId == clubId then
-		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateRoster);
+		self:MarkDirty("UpdateRoster");
 	end
 end
 
@@ -375,13 +414,11 @@ end
 
 function ChannelFrameMixin:OnVoiceChatError(platformCode, statusCode)
 	local errorCode = Voice_GetGameErrorFromStatusCode(statusCode);
-	if errorCode then
-		local errorString = Voice_GetGameErrorStringFromStatusCode(statusCode);
-		if errorString then
-			UIErrorsFrame:TryDisplayMessage(errorCode, errorString, RED_FONT_COLOR:GetRGB());
-			ChatFrame_DisplayUsageError(errorString);
-			self.lastError = statusCode;
-		end
+	local errorString = Voice_GetGameAlertStringFromStatusCode(statusCode);
+	if errorString then
+		UIErrorsFrame:TryDisplayMessage(errorCode, errorString, RED_FONT_COLOR:GetRGB());
+		ChatFrame_DisplayUsageError(errorString);
+		self.lastError = statusCode;
 	end
 end
 
@@ -413,7 +450,9 @@ function ChannelFrameMixin:CheckChannelAnnounceState(channelID, state)
 	end
 
 	local previousState = self.channelStates[channelID];
-	if (previousState and previousState == "joined") and state == "active" then
+	if state == "joined" then
+		self:ShowChannelManagementTip(channelID);
+	elseif state == "active" then
 		self:ShowChannelAnnounce(channelID);
 	end
 
@@ -451,6 +490,20 @@ function ChannelFrameMixin:ShowChannelAnnounce(channelID)
 	end
 end
 
+function ChannelFrameMixin:ShowChannelManagementTip(channelID)
+	local channel = C_VoiceChat.GetChannel(channelID);
+	if channel and GetPartyCategoryFromChannelType(channel.channelType) ~= nil then
+		local atlas = CreateAtlasMarkup("voicechat-channellist-icon-headphone-off");
+		local useNotBound = false;
+		local useParentheses = true;
+		local bindingText = GetBindingKeyForAction("TOGGLECHATTAB", useNotBound, useParentheses);
+		if bindingText and bindingText ~= "" then
+			local announceText = VOICE_CHAT_CHANNEL_MANAGEMENT_TIP:format(atlas, bindingText);
+			ChatFrame_DisplaySystemMessageInPrimary(announceText);
+		end
+	end
+end
+
 function ChannelFrameMixin:OnVoiceChannelActivated(voiceChannelID)
 	self:SetVoiceChannelActiveState(voiceChannelID, true);
 	self:CheckChannelAnnounceState(voiceChannelID, "active");
@@ -458,6 +511,7 @@ function ChannelFrameMixin:OnVoiceChannelActivated(voiceChannelID)
 end
 
 function ChannelFrameMixin:OnVoiceChannelDeactivated(voiceChannelID)
+	ChatFrame_DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE_PLAYER_LEFT);
 	self:SetVoiceChannelActiveState(voiceChannelID, false);
 	self:CheckChannelAnnounceState(voiceChannelID, "inactive");
 	PlaySound(SOUNDKIT.UI_VOICECHAT_LEAVECHANNEL);
@@ -502,35 +556,41 @@ function ChannelFrameMixin:OnGroupLeft(partyCategory, partyGUID)
 end
 
 function ChannelFrameMixin:OnClubAdded(clubId)
-	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateChannelList);
+	self:MarkDirty("UpdateChannelList");
 end
 
 function ChannelFrameMixin:OnClubRemoved(clubId)
-	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateChannelList);
+	self:MarkDirty("UpdateChannelList");
 end
 
 function ChannelFrameMixin:OnClubStreamsLoaded(clubId)
-	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateChannelList);
+	self:MarkDirty("UpdateChannelList");
 end
 
 function ChannelFrameMixin:OnClubStreamAdded(clubId, streamId)
-	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateChannelList);
+	self:MarkDirty("UpdateChannelList");
 end
 
 function ChannelFrameMixin:OnClubStreamRemoved(clubId, streamId)
-	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateChannelList);
+	self:MarkDirty("UpdateChannelList");
 end
 
 function ChannelFrameMixin:OnCommunityFavoriteChanged(clubId)
-	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateChannelList);
+	self:MarkDirty("UpdateChannelList");
 end
 
 function ChannelFrameMixin:OnMemberActiveStateChanged(memberID, channelID, isActive)
 	if not C_VoiceChat.IsMemberLocalPlayer(memberID, channelID) then
-		if isActive then
-			PlaySound(SOUNDKIT.UI_VOICECHAT_MEMBERJOINCHANNEL);
-		else
-			PlaySound(SOUNDKIT.UI_VOICECHAT_MEMBERLEAVECHANNEL);
+		local channel = C_VoiceChat.GetChannel(channelID);
+		if channel and channel.isActive then
+			local memberName = C_VoiceChat.GetMemberName(memberID, channelID) or "";
+			if isActive then
+				ChatFrame_DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE_MEMBER_ACTIVE:format(memberName));
+				PlaySound(SOUNDKIT.UI_VOICECHAT_MEMBERJOINCHANNEL);
+			else
+				ChatFrame_DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE_MEMBER_LEFT:format(memberName));
+				PlaySound(SOUNDKIT.UI_VOICECHAT_MEMBERLEAVECHANNEL);
+			end
 		end
 	end
 end
@@ -573,7 +633,7 @@ end
 
 function ChannelFrameMixin:OnUserSelectedChannel()
 	self:GetRoster():ResetScrollPosition();
-	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateRoster);
+	self:MarkDirty("UpdateRoster");
 end
 
 function ChannelFrameMixin:IsCategoryGlobal(category)
