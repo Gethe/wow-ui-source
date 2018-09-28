@@ -992,6 +992,14 @@
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="IconOverlay" hidden="true">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture parentKey="SpecIcon">
 					<Size x="24" y="24"/>
 					<Anchors>
@@ -999,7 +1007,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="2">
+			<Layer level="ARTWORK" textureSubLevel="3">
 				<Texture parentKey="SpecRing" file="Interface/Minimap/MiniMap-TrackingBorder">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -1071,14 +1079,6 @@
 						</AnimationGroup>
 					</Animations>
 					<TexCoords left="0.56347656" right="0.73046875" top="0.57421875" bottom="0.86718750"/>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="IconOverlay" hidden="true">
-					<Size x="60" y="60"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
-					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>

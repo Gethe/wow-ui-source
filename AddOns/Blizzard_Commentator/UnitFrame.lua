@@ -526,6 +526,8 @@ function CommentatorUnitFrameMixin:UpdateCrowdControlAurasText()
 	end
 end
 
+BLIZZARD_COMMENTATOR_MAX_NUM_OFFENSIVE_COOLDOWNS = BLIZZARD_COMMENTATOR_MAX_NUM_OFFENSIVE_COOLDOWNS or 5;
+BLIZZARD_COMMENTATOR_MAX_NUM_DEFENSIVE_COOLDOWNS = BLIZZARD_COMMENTATOR_MAX_NUM_DEFENSIVE_COOLDOWNS or 5;	
 function CommentatorUnitFrameMixin:FullCooldownRefresh()
 	local PADDING = 11;
 	self.needsCooldownData = false;
@@ -533,6 +535,10 @@ function CommentatorUnitFrameMixin:FullCooldownRefresh()
 	
 	local offensiveCooldowns = C_Commentator.GetTrackedOffensiveCooldowns(self.teamIndex, self.playerIndex);
 	if offensiveCooldowns then
+		while #offensiveCooldowns > BLIZZARD_COMMENTATOR_MAX_NUM_OFFENSIVE_COOLDOWNS do
+			offensiveCooldowns[#offensiveCooldowns] = nil;
+		end
+		
 		self.offensiveCooldownPool:SetCooldowns(offensiveCooldowns, self.OffensiveCooldownContainer, "LEFT", PADDING);	
 	else
 		self.needsCooldownData = true;
@@ -540,6 +546,10 @@ function CommentatorUnitFrameMixin:FullCooldownRefresh()
 	
 	local defensiveCooldowns = C_Commentator.GetTrackedDefensiveCooldowns(self.teamIndex, self.playerIndex);
 	if defensiveCooldowns then
+		while #defensiveCooldowns > BLIZZARD_COMMENTATOR_MAX_NUM_DEFENSIVE_COOLDOWNS do
+			defensiveCooldowns[#defensiveCooldowns] = nil;
+		end
+		
 		self.defensiveCooldownPool:SetCooldowns(defensiveCooldowns, self.DefensiveCooldownContainer, "LEFT", PADDING);
 	else
 		self.needsCooldownData = true;

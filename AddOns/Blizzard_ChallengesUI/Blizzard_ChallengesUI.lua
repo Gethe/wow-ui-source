@@ -1,5 +1,5 @@
 local NUM_REWARDS_PER_MEDAL = 2;
-local MAXIMUM_REWARDS_LEVEL = 15;
+local MAXIMUM_REWARDS_LEVEL = 10;
 local MAX_PER_ROW = 9; 
 
 local function CreateFrames(self, array, num, template)
@@ -188,9 +188,10 @@ function ChallengesFrame_Update(self)
 	weeklyChest.ownedKeystoneLevel, weeklyChest.level, weeklyChest.rewardLevel, weeklyChest.nextRewardLevel = 0;
 	weeklyChest.name = C_ChallengeMode.GetMapUIInfo(weeklySortedMaps[1].id);
 	weeklyChest.ownedKeystoneLevel = C_MythicPlus.GetOwnedKeystoneLevel();
-	
-		weeklyChest.level, weeklyChest.rewardLevel, weeklyChest.nextRewardLevel = C_MythicPlus.GetWeeklyChestRewardLevel();
-	if (weeklyChest.ownedKeystoneLevel and weeklyChest.name ~= nil) then
+	weeklyChest.level, weeklyChest.rewardLevel, weeklyChest.nextRewardLevel = C_MythicPlus.GetWeeklyChestRewardLevel();
+
+	--Need to check if a player has any season best data, if not then we want to show them keystone intro screen.
+	if (sortedMaps[1].level > 0 or weeklyChest.ownedKeystoneLevel and weeklyChest.name ~= nil) then
 		if (C_MythicPlus.IsWeeklyRewardAvailable()) then 
 			self.WeeklyInfo:HideAffixes();
 			self.WeeklyInfo.Child.Label:Hide(); 
