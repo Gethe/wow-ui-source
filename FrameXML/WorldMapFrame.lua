@@ -149,6 +149,7 @@ WORLD_QUEST_REWARD_TYPE_FLAG_RESOURCES = 0x0002;
 WORLD_QUEST_REWARD_TYPE_FLAG_ARTIFACT_POWER = 0x0004;
 WORLD_QUEST_REWARD_TYPE_FLAG_MATERIALS = 0x0008;
 WORLD_QUEST_REWARD_TYPE_FLAG_EQUIPMENT = 0x0010;
+WORLD_QUEST_REWARD_TYPE_FLAG_REPUTATION = 0x0020;
 function WorldMap_GetWorldQuestRewardType(questID)
 	if ( not HaveQuestRewardData(questID) ) then
 		C_TaskQuest.RequestPreloadRewardData(questID);
@@ -170,6 +171,8 @@ function WorldMap_GetWorldQuestRewardType(questID)
 			worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_RESOURCES);
 		elseif ( currencyID == azeriteCurrencyID ) then
 			worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_ARTIFACT_POWER);
+		elseif ( C_CurrencyInfo.GetFactionGrantedByCurrency(currencyID) ~= nil ) then
+			worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_REPUTATION);
 		end
 	end
 
@@ -234,6 +237,8 @@ function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters)
 			elseif ( GetCVarBool("worldQuestFilterProfessionMaterials") and bit.band(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_MATERIALS) ~= 0 ) then
 				typeMatchesFilters = true;
 			elseif ( GetCVarBool("worldQuestFilterEquipment") and bit.band(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_EQUIPMENT) ~= 0 ) then
+				typeMatchesFilters = true;
+			elseif ( GetCVarBool("worldQuestFilterReputation") and bit.band(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_REPUTATION) ~= 0 ) then
 				typeMatchesFilters = true;
 			end
 

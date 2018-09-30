@@ -248,7 +248,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="Reward" mixin="PVPConquestBarRewardMixin">
+			<Button parentKey="Reward" mixin="PVPConquestBarRewardMixin">
 				<Size x="36" y="36"/>
 				<Anchors>
 					<Anchor point="LEFT" relativePoint="RIGHT" x="-8" y="-2"/>
@@ -283,8 +283,9 @@
 				<Scripts>
 					<OnEnter method="OnEnter"/>
 					<OnLeave method="OnLeave"/>
+					<OnClick method="OnClick"/>
 				</Scripts>
-			</Frame>
+			</Button>
 			<Frame parentKey="Lock" hidden="true">
 				<Size x="36" y="47"/>
 				<Anchors>
@@ -314,6 +315,8 @@
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</StatusBar>
 
@@ -500,7 +503,7 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="PVPRatedTierTemplate" virtual="true">
 		<Size x="50" y="50"/>
 		<Layers>
@@ -527,10 +530,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnEnter function="PVPRatedTier_OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
-		</Scripts>
 	</Frame>
 
 	<Button name="PVPRatedActivityButtonTemplate" virtual="true">
@@ -808,12 +807,6 @@
 							</OnLoad>
 						</Scripts>
 					</Frame>
-					<Frame parentKey="PortraitMouseOverFrame">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="PVEFramePortraitFrame" relativePoint="TOPLEFT"/>
-							<Anchor point="BOTTOMRIGHT" relativeTo="PVEFramePortraitFrame" relativePoint="BOTTOMRIGHT"/>
-						</Anchors>
-					</Frame>
 					<Button name="$parentCategoryButton1" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton1" id="1">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="10" y="-101" />
@@ -871,7 +864,7 @@
 						</Frames>
 					</Button>
 					<!-- Casual  -->
-					<Frame name="HonorFrame" toplevel="true">
+					<Frame name="HonorFrame">
 						<Size x="402" y="403"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="220" y="-22"/>
@@ -1015,7 +1008,7 @@
 											</OnClick>
 										</Scripts>
 									</Button>
-									<Frame parentKey="BrawlHelpBox" inherits="GlowBoxTemplate" hidden="false" frameStrata="DIALOG" >
+									<Frame parentKey="BrawlHelpBox" inherits="GlowBoxTemplate" hidden="false" frameStrata="DIALOG">
 										<Size x="230" y="65"/>
 										<Anchors>
 											<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.BrawlButton" x="15" y="0"/>
@@ -1343,6 +1336,12 @@
 												<Anchor point="CENTER"/>
 											</Anchors>
 										</Texture>
+										<Texture parentKey="FactionBadge">
+											<Size x="59" y="69"/>
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
 									</Layer>
 								</Layers>
 								<Frames>
@@ -1485,6 +1484,10 @@
 												</Scripts>
 											</Frame>
 										</Frames>
+										<Scripts>
+											<OnEnter function="PVPRatedTier_OnEnter"/>
+											<OnLeave function="GameTooltip_Hide"/>
+										</Scripts>
 									</Frame>
 									<Frame parentKey="SeasonRewardFrame" mixin="PVPUISeasonRewardFrameMixin">
 										<Size x="44" y="44"/>
@@ -1560,7 +1563,7 @@
 	</Frame>
 
 	<Frame name="ConquestTooltip" parent="UIParent" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true">
-		<Size x="200" y="185"/>
+		<Size x="200" y="199"/>
 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<Color r="0" b="0" g="0"/>
 			<EdgeSize>
@@ -1580,9 +1583,14 @@
 						<Anchor point="TOPLEFT" x="15" y="-15"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="Tier" parentArray="Content" inherits="GameFontHighlight" text="Gladiator">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
 				<FontString parentKey="WeeklyLabel" parentArray="Content" inherits="GameFontNormalMed3" text="ARENA_WEEKLY_STATS">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Tier" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="WeeklyBest" parentArray="Content" inherits="GameFontHighlight" text="">

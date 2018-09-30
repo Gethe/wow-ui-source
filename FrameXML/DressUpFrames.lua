@@ -28,8 +28,12 @@ function DressUpVisual(...)
 		end
 		SideDressUpModel:TryOn(...);
 	else
-		DressUpFrame_Show();
-		DressUpModel:TryOn(...);
+		local result = DressUpModel:TryOn(...);
+		if ( result == Enum.ItemTryOnReason.Success ) then
+			DressUpFrame_Show();
+		else
+			UIErrorsFrame:AddExternalErrorMessage(ERR_NOT_EQUIPPABLE);
+		end
 	end
 	return true;
 end

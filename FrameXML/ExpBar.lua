@@ -31,6 +31,8 @@ function ExpBarMixin:Update()
 
 	self.currXP = currXP; 
 	self.maxBar = maxBar;
+
+	self:UpdateCurrentText();
 end
 
 function ExpBarMixin:UpdateCurrentText()

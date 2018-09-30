@@ -1,8 +1,11 @@
 ChannelFrameButtonMixin = {};
 
 function ToggleChannelFrame()
-	PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
+	local wasShown = ChannelFrame:IsShown();
 	ChannelFrame:Toggle();
+	if ChannelFrame:IsShown() ~= wasShown then
+		PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
+	end
 end
 
 function ChannelFrameButtonMixin:OnLoad()

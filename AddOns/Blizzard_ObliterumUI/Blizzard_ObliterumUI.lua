@@ -3,9 +3,9 @@ UIPanelWindows["ObliterumForgeFrame"] = {area = "left", pushable = 3, showFailed
 ObliterumForgeMixin = {};
 
 function ObliterumForgeMixin:OnLoad()
-	SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_Obliterum_Ash");
-	self.TitleText:SetText(OBLITERUM_FORGE_TITLE);
-	
+	PortraitFrameTemplate_SetPortraitToAsset(self, "Interface\\Icons\\INV_Obliterum_Ash");
+	PortraitFrameTemplate_SetTitle(self, OBLITERUM_FORGE_TITLE);
+
 	self:RegisterEvent("OBLITERUM_FORGE_CLOSE");
 	self:RegisterEvent("OBLITERUM_FORGE_PENDING_ITEM_CHANGED");
 end
@@ -56,7 +56,7 @@ function ObliterumForgeMixin:ObliterateItem()
 end
 
 function ObliterumForgeMixin:UpdateObliterateButtonState()
-	self.ObliterateButton:SetEnabled(C_TradeSkillUI.GetPendingObliterateItemID() ~= nil); 
+	self.ObliterateButton:SetEnabled(C_TradeSkillUI.GetPendingObliterateItemID() ~= nil);
 end
 
 ObliterumForgeItemSlotMixin = {};

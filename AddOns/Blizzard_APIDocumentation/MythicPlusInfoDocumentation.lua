@@ -117,6 +117,7 @@ local MythicPlusInfo =
 				{ Name = "currentWeekBestLevel", Type = "number", Nilable = false },
 				{ Name = "weeklyRewardLevel", Type = "number", Nilable = false },
 				{ Name = "nextDifficultyWeeklyRewardLevel", Type = "number", Nilable = false },
+				{ Name = "nextBestLevel", Type = "number", Nilable = false },
 			},
 		},
 		{

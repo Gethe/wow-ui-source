@@ -127,23 +127,27 @@ function GameTooltip_AddBlankLinesToTooltip(tooltip, numLines)
 	end
 end
 
+function GameTooltip_AddBlankLineToTooltip(tooltip)
+	GameTooltip_AddBlankLinesToTooltip(tooltip, 1);
+end
+
 function GameTooltip_SetTitle(tooltip, text, overrideColor, wrap)
 	local titleColor = overrideColor or HIGHLIGHT_FONT_COLOR;
 	local r, g, b, a = titleColor:GetRGBA();
 	tooltip:SetText(text, r, g, b, a, wrap);
 end
 
-function GameTooltip_AddNormalLine(tooltip, text, wrap)
-	GameTooltip_AddColoredLine(tooltip, text, NORMAL_FONT_COLOR, wrap);
+function GameTooltip_AddNormalLine(tooltip, text, wrap, leftOffset)
+	GameTooltip_AddColoredLine(tooltip, text, NORMAL_FONT_COLOR, wrap, leftOffset);
 end
 
 function GameTooltip_AddInstructionLine(tooltip, text, wrap)
 	GameTooltip_AddColoredLine(tooltip, text, GREEN_FONT_COLOR, wrap);
 end
 
-function GameTooltip_AddColoredLine(tooltip, text, color, wrap)
+function GameTooltip_AddColoredLine(tooltip, text, color, wrap, leftOffset)
 	local r, g, b = color:GetRGB();
-	tooltip:AddLine(text, r, g, b, wrap);
+	tooltip:AddLine(text, r, g, b, wrap, leftOffset);
 end
 
 function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
@@ -451,8 +455,6 @@ function GameTooltip_OnHide(self)
 	self.needsReset = true;
 	GameTooltip_SetBackdropStyle(self, self.IsEmbedded and GAME_TOOLTIP_BACKDROP_STYLE_EMBEDDED or GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT);
 	self.default = nil;
-	self.overrideComparisonAnchorFrame = nil;
-	self.overrideComparisonAnchorSide = nil;
 	GameTooltip_ClearMoney(self);
 	GameTooltip_ClearStatusBars(self);
 	GameTooltip_ClearProgressBars(self);
@@ -574,9 +576,7 @@ function GameTooltip_InitializeComparisonTooltips(self, anchorFrame)
 		self = GameTooltip;
 	end
 
-	if not anchorFrame then
-		anchorFrame = self.overrideComparisonAnchorFrame or self;
-	end
+	anchorFrame = anchorFrame or self;
 
 	if self.needsReset then
 		self:ResetSecondaryCompareItem();
@@ -588,9 +588,12 @@ function GameTooltip_InitializeComparisonTooltips(self, anchorFrame)
 end
 
 function GameTooltip_AnchorComparisonTooltips(self, anchorFrame, shoppingTooltip1, shoppingTooltip2, primaryItemShown, secondaryItemShown)
-	local leftPos = anchorFrame:GetLeft();
-	local rightPos = anchorFrame:GetRight();
-
+	local sideAnchorFrame = anchorFrame;
+	if anchorFrame.IsEmbedded then
+		sideAnchorFrame = anchorFrame:GetParent():GetParent();
+	end
+	local leftPos = sideAnchorFrame:GetLeft();
+	local rightPos = sideAnchorFrame:GetRight();
 	local side;
 	local anchorType = self:GetAnchorType();
 	local totalWidth = 0;
@@ -600,29 +603,25 @@ function GameTooltip_AnchorComparisonTooltips(self, anchorFrame, shoppingTooltip
 	if ( secondaryItemShown  ) then
 		totalWidth = totalWidth + shoppingTooltip2:GetWidth();
 	end
-	if ( self.overrideComparisonAnchorSide ) then
-		side = self.overrideComparisonAnchorSide;
+	-- find correct side
+	local rightDist = 0;
+	if ( not rightPos ) then
+		rightPos = 0;
+	end
+	if ( not leftPos ) then
+		leftPos = 0;
+	end
+
+	rightDist = GetScreenWidth() - rightPos;
+
+	if ( anchorType and totalWidth < leftPos and (anchorType == "ANCHOR_LEFT" or anchorType == "ANCHOR_TOPLEFT" or anchorType == "ANCHOR_BOTTOMLEFT") ) then
+		side = "left";
+	elseif ( anchorType and totalWidth < rightDist and (anchorType == "ANCHOR_RIGHT" or anchorType == "ANCHOR_TOPRIGHT" or anchorType == "ANCHOR_BOTTOMRIGHT") ) then
+		side = "right";
+	elseif ( rightDist < leftPos ) then
+		side = "left";
 	else
-		-- find correct side
-		local rightDist = 0;
-		if ( not rightPos ) then
-			rightPos = 0;
-		end
-		if ( not leftPos ) then
-			leftPos = 0;
-		end
-
-		rightDist = GetScreenWidth() - rightPos;
-
-		if ( anchorType and totalWidth < leftPos and (anchorType == "ANCHOR_LEFT" or anchorType == "ANCHOR_TOPLEFT" or anchorType == "ANCHOR_BOTTOMLEFT") ) then
-			side = "left";
-		elseif ( anchorType and totalWidth < rightDist and (anchorType == "ANCHOR_RIGHT" or anchorType == "ANCHOR_TOPRIGHT" or anchorType == "ANCHOR_BOTTOMRIGHT") ) then
-			side = "right";
-		elseif ( rightDist < leftPos ) then
-			side = "left";
-		else
-			side = "right";
-		end
+		side = "right";
 	end
 
 	-- see if we should slide the tooltip
@@ -640,10 +639,12 @@ function GameTooltip_AnchorComparisonTooltips(self, anchorFrame, shoppingTooltip
 		shoppingTooltip1:SetOwner(self, "ANCHOR_NONE");
 		shoppingTooltip1:ClearAllPoints();
 
+		shoppingTooltip1:SetPoint("TOP", anchorFrame, 0, -10);
+		shoppingTooltip2:SetPoint("TOP", anchorFrame, 0, -10);
 		if ( side and side == "left" ) then
-			shoppingTooltip1:SetPoint("TOPRIGHT", anchorFrame, "TOPLEFT", 0, -10);
+			shoppingTooltip1:SetPoint("RIGHT", sideAnchorFrame, "LEFT");
 		else
-			shoppingTooltip2:SetPoint("TOPLEFT", anchorFrame, "TOPRIGHT", 0, -10);
+			shoppingTooltip2:SetPoint("LEFT", sideAnchorFrame, "RIGHT");
 		end
 
 		if ( side and side == "left" ) then
@@ -655,10 +656,11 @@ function GameTooltip_AnchorComparisonTooltips(self, anchorFrame, shoppingTooltip
 		shoppingTooltip1:SetOwner(self, "ANCHOR_NONE");
 		shoppingTooltip1:ClearAllPoints();
 
+		shoppingTooltip1:SetPoint("TOP", anchorFrame, 0, -10);
 		if ( side and side == "left" ) then
-			shoppingTooltip1:SetPoint("TOPRIGHT", anchorFrame, "TOPLEFT", 0, -10);
+			shoppingTooltip1:SetPoint("RIGHT", sideAnchorFrame, "LEFT");
 		else
-			shoppingTooltip1:SetPoint("TOPLEFT", anchorFrame, "TOPRIGHT", 0, -10);
+			shoppingTooltip1:SetPoint("LEFT", sideAnchorFrame, "RIGHT");
 		end
 
 		shoppingTooltip2:Hide();

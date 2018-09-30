@@ -179,11 +179,12 @@ function CommunitiesGuildMemberRankDropdown_Initialize(self)
 		info.value = listRankOrder;
 		-- check
 		if not info.checked then
-			local allowed, reason = C_GuildInfo.IsGuildRankAssignmentAllowed(memberInfo.guid, listRankOrder);
-			if not allowed and reason == "authenticator" then
+			if not C_GuildInfo.IsGuildRankAssignmentAllowed(memberInfo.guid, listRankOrder) then
 				info.disabled = true;
 				info.tooltipWhileDisabled = 1;
 				info.tooltipTitle = GUILD_RANK_UNAVAILABLE;
+				
+				-- We only disallow a rank if it requires an authenticator.
 				info.tooltipText = GUILD_RANK_UNAVAILABLE_AUTHENTICATOR;
 				info.tooltipOnButton = 1;
 			end

@@ -1293,7 +1293,7 @@ function PaperDollFrame_SetItemLevel(statFrame, unit)
 	local minItemLevel = C_PaperDollInfo.GetMinItemLevel();
 
 	local displayItemLevel = math.max(minItemLevel or 0, avgItemLevelEquipped);
-	
+
 	displayItemLevel = floor(displayItemLevel);
 	avgItemLevel = floor(avgItemLevel);
 
@@ -1427,7 +1427,7 @@ end
 
 function PaperDollFrame_OnShow(self)
 	CharacterStatsPane.initialOffsetY = 0;
-	CharacterFrameTitleText:SetText(UnitPVPName("player"));
+	PortraitFrameTemplate_SetTitle(CharacterFrame, UnitPVPName("player"));
 	PaperDollFrame_SetLevel();
 	PaperDollFrame_UpdateStats();
 	CharacterFrame_Expand();

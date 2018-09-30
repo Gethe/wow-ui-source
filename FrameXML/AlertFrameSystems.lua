@@ -918,7 +918,7 @@ function NewRecipeLearnedAlertFrame_GetStarTextureFromRank(rank)
 end
 
 function NewRecipeLearnedAlertFrame_SetUp(self, recipeID)
-	local tradeSkillID, skillLineName = C_TradeSkillUI.GetTradeSkillLineForRecipe(recipeID);
+	local tradeSkillID, skillLineName, parentTradeSkillID = C_TradeSkillUI.GetTradeSkillLineForRecipe(recipeID);
 	if tradeSkillID then
 		local recipeName = GetSpellInfo(recipeID);
 		if recipeName then
@@ -936,7 +936,7 @@ function NewRecipeLearnedAlertFrame_SetUp(self, recipeID)
 			else
 				self.Name:SetText(recipeName);
 			end
-			self.tradeSkillID = tradeSkillID;
+			self.tradeSkillID = parentTradeSkillID or tradeSkillID;
 			self.recipeID = recipeID;
 			return true;
 		end

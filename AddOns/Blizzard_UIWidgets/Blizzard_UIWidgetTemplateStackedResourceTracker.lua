@@ -19,6 +19,11 @@ function UIWidgetTemplateStackedResourceTrackerMixin:Setup(widgetInfo)
 
 	local previousResourceFrame;
 
+	local hasFrame = (widgetInfo.frameTextureKitID ~= 0);
+
+	local resourceWidth = 0;
+	local resourceHeight = 0;
+
 	for index, resourceInfo in ipairs(widgetInfo.resources) do
 		local resourceFrame = self.resourcePool:Acquire();
 		resourceFrame:Show();
@@ -27,21 +32,35 @@ function UIWidgetTemplateStackedResourceTrackerMixin:Setup(widgetInfo)
 
 		if previousResourceFrame then
 			resourceFrame:SetPoint("TOPLEFT", previousResourceFrame, "BOTTOMLEFT", 0, -6);
+			resourceHeight = resourceHeight + resourceFrame:GetHeight() + 6;
 		else
-			resourceFrame:SetPoint("TOPLEFT", self.Frame, "TOPLEFT", 49, -38);
+			if hasFrame then
+				resourceFrame:SetPoint("TOPLEFT", self.Frame, "TOPLEFT", 49, -38);
+			else
+				resourceFrame:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+			end
+
+			resourceHeight = resourceFrame:GetHeight();
 		end
 
 		if self.fontColor then
 			resourceFrame:SetFontColor(self.fontColor);
 		end
 
+		resourceWidth = math.max(resourceWidth, resourceFrame:GetWidth());
+
 		previousResourceFrame = resourceFrame;
 	end
 	
 	SetupTextureKits(widgetInfo.frameTextureKitID, self, frameTextureKitRegions, false, true);
 
-	self:SetWidth(self.Frame:GetWidth() + 45);
-	self:SetHeight(self.Frame:GetHeight());
+	if hasFrame then
+		self:SetWidth(self.Frame:GetWidth() + 45);
+		self:SetHeight(self.Frame:GetHeight());
+	else
+		self:SetWidth(resourceWidth);
+		self:SetHeight(resourceHeight);
+	end
 end
 
 function UIWidgetTemplateStackedResourceTrackerMixin:OnLoad()

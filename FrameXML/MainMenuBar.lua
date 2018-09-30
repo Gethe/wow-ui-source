@@ -44,9 +44,9 @@ function MainMenuBarMixin:SetPositionForStatusBars()
 	MainMenuBarArtFrame.LeftEndCap:ClearAllPoints(); 
 	MainMenuBarArtFrame.RightEndCap:ClearAllPoints(); 
 	if ( StatusTrackingBarManager:GetNumberVisibleBars() == 2 ) then 
-		self:SetYOffset(17);
-		MainMenuBarArtFrame.LeftEndCap:SetPoint("BOTTOMLEFT", MainMenuBar, -98, -17); 
-		MainMenuBarArtFrame.RightEndCap:SetPoint("BOTTOMRIGHT", MainMenuBar, 98, -17); 
+		self:SetYOffset(19);
+		MainMenuBarArtFrame.LeftEndCap:SetPoint("BOTTOMLEFT", MainMenuBar, -98, -19); 
+		MainMenuBarArtFrame.RightEndCap:SetPoint("BOTTOMRIGHT", MainMenuBar, 98, -19); 
 	elseif ( StatusTrackingBarManager:GetNumberVisibleBars() == 1 ) then
 		self:SetYOffset(14);
 		MainMenuBarArtFrame.LeftEndCap:SetPoint("BOTTOMLEFT", MainMenuBar, -98, -14); 

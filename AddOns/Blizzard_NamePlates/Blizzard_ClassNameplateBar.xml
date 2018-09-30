@@ -1,23 +1,20 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
   <Script file="Blizzard_ClassNameplateBar.lua"/>
 
 	<Frame name="ClassNameplateBarFrame" parentKey="NameplateBar" hidden="true" virtual="true">
 		<KeyValues>
-			<KeyValue key="layoutIndex" value="2"/>
-			<KeyValue key="align" value="center"/>
 			<KeyValue key="scale" value=".75"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>
 
 	<StatusBar name="ClassNameplateManaBarFrame" mixin="ClassNameplateBar, ClassNameplateManaBar">
 		<KeyValues>
-			<KeyValue key="layoutIndex" value="1"/>
-			<KeyValue key="align" value="center"/>
 			<KeyValue key="scale" value="1"/>
 		</KeyValues>
 		<Size x="86" y="4"/>
@@ -48,19 +45,6 @@
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</StatusBar>
-
-	<Frame name="NamePlateTargetResourceFrame" inherits="VerticalLayoutFrame">
-		<KeyValues>
-			<KeyValue key="spacing" value="4" type="number"/>
-		</KeyValues>
-	</Frame>
-
-	<Frame name="NamePlatePlayerResourceFrame" inherits="VerticalLayoutFrame">
-		<KeyValues>
-			<KeyValue key="spacing" value="4" type="number"/>
-		</KeyValues>
-	</Frame>
-
 </Ui>
 
 

@@ -25,8 +25,7 @@ function BuilderSpender_OnUpdateFeedbackGain(self)
 	local timeElapsed = GetTime() - self.animGainStartTime;
 	
 	if ( timeElapsed > timeEnd ) then
-		self.GainGlowTexture:Hide();
-		self.updatingGain = false;
+		self:EndFeedbackGain();
 	else
 		local currValue = UnitPower(self.unit, self.powerType);
 		-- If we have gained more power and are in the middle of this anim, match the
@@ -70,9 +69,7 @@ function BuilderSpender_OnUpdateFeedbackLoss(self)
 	local timeElapsed = GetTime() - self.animLossStartTime;
 	
 	if ( timeElapsed > timeEnd ) then
-		self.LossGlowTexture:Hide();
-		self.BarTexture:Hide();
-		self.updatingLoss = false;
+		self:EndFeedbackLoss();
 	else
 		local timeElapsedPercent = timeElapsed / timeEnd;
 		local glowAlpha, barAlpha;
@@ -103,6 +100,17 @@ function BuilderSpender_OnUpdateFeedback(self)
 	if ( not self.updatingGain and not self.updatingLoss ) then
 		self:SetScript("OnUpdate", nil);
 	end
+end
+
+function BuilderSpender:EndFeedbackGain()
+	self.GainGlowTexture:Hide();
+	self.updatingGain = false;
+end
+
+function BuilderSpender:EndFeedbackLoss()
+	self.LossGlowTexture:Hide();
+	self.BarTexture:Hide();
+	self.updatingLoss = false;
 end
 
 function BuilderSpender:StartFeedbackAnim(oldValue, newValue)
@@ -157,6 +165,14 @@ function BuilderSpender:StartFeedbackAnim(oldValue, newValue)
 		self.updatingLoss = true;
 		self:SetScript("OnUpdate", BuilderSpender_OnUpdateFeedback);
 		self.animLossStartTime = GetTime();
+	end
+end
+
+function BuilderSpender:StopFeedbackAnim()
+	if self.updatingGain then
+		self:EndFeedbackGain();
+	elseif self.updatingLoss then
+		self:EndFeedbackLoss();
 	end
 end
 

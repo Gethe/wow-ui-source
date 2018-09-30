@@ -37,23 +37,38 @@ StaticPopupDialogs["ORDER_HALL_TALENT_RESEARCH"] = {
 OrderHallTalentFrameMixin = { }
 
 do
+	AnchorUtil.AddNineSliceLayout("BFAOrderTalentHorde", {
+		mirrorLayout = true,
+		TopLeftCorner =	{ atlas = "talenttree-horde-corner", x = -7, y = 7, },
+		TopRightCorner =	{ atlas = "talenttree-horde-corner", x = 7, y = 7, },
+		BottomLeftCorner =	{ atlas = "talenttree-horde-corner", x = -7, y = -7, },
+		BottomRightCorner =	{ atlas = "talenttree-horde-corner", x = 7, y = -7, },
+		TopEdge = { atlas = "_talenttree-horde-tiletop", },
+		BottomEdge = { atlas = "_talenttree-horde-tilebottom", mirrorLayout = false, },
+		LeftEdge = { atlas = "!talenttree-horde-tileleft", },
+		RightEdge = { atlas = "!talenttree-horde-tileright", mirrorLayout = false, },
+	});
+
+	AnchorUtil.AddNineSliceLayout("BFAOrderTalentAlliance", {
+		mirrorLayout = true,
+		TopLeftCorner =	{ atlas = "talenttree-alliance-corner", x = -7, y = 7, },
+		TopRightCorner =	{ atlas = "talenttree-alliance-corner", x = 7, y = 7, },
+		BottomLeftCorner =	{ atlas = "talenttree-alliance-corner", x = -7, y = -7, },
+		BottomRightCorner =	{ atlas = "talenttree-alliance-corner", x = 7, y = -7, },
+		TopEdge = { atlas = "_talenttree-alliance-tiletop", },
+		BottomEdge = { atlas = "_talenttree-alliance-tilebottom", mirrorLayout = false, },
+		LeftEdge = { atlas = "!talentree-alliance-tileleft", },
+		RightEdge = { atlas = "!talentree-alliance-tileright", mirrorLayout = false, },
+	});
+
 	local bfaTalentFrameStyleData =
 	{
 		Horde =
 		{
 			portraitOffsetX = -27,
 			portraitOffsetY = 31,
-
 			closeButtonBorder = "talenttree-horde-exit",
-
-			Top = "_talenttree-horde-tiletop",
-			Bottom = "_talenttree-horde-tilebottom",
-			Left = "!talenttree-horde-tileleft",
-			Right = "!talenttree-horde-tileright",
-			TopLeft = "talenttree-horde-corner",
-			TopRight = "talenttree-horde-corner",
-			BotLeft = "talenttree-horde-corner",
-			BotRight = "talenttree-horde-corner",
+			nineSliceLayout = "BFAOrderTalentHorde",
 			Background = "talenttree-horde-background",
 			Portrait = "talenttree-horde-cornerlogo",
 			CurrencyBG = "talenttree-horde-currencybg",
@@ -63,17 +78,8 @@ do
 		{
 			portraitOffsetX = -22,
 			portraitOffsetY = 11,
-
 			closeButtonBorder = "talenttree-alliance-exit",
-
-			Top = "_talenttree-alliance-tiletop",
-			Bottom = "_talenttree-alliance-tilebottom",
-			Left = "!talentree-alliance-tileleft",
-			Right = "!talentree-alliance-tileright",
-			TopLeft = "talenttree-alliance-corner",
-			TopRight = "talenttree-alliance-corner",
-			BotLeft = "talenttree-alliance-corner",
-			BotRight = "talenttree-alliance-corner",
+			nineSliceLayout = "BFAOrderTalentAlliance",
 			Background = "talenttree-alliance-background",
 			Portrait = "talenttree-alliance-cornerlogo",
 			CurrencyBG = "talenttree-alliance-currencybg",
@@ -81,69 +87,56 @@ do
 	};
 
 	local function SetupBorder(self, styleData)
-		self.Top:SetAtlas(styleData.Top, true);
-		self.Bottom:SetAtlas(styleData.Bottom, true);
-		self.Left:SetAtlas(styleData.Left, true);
-		self.Right:SetAtlas(styleData.Right, true);
+		AnchorUtil.ApplyNineSliceLayoutByName(self.NineSlice, styleData.nineSliceLayout);
 
-		self.TopTalentLeftCorner:SetAtlas(styleData.TopLeft, true);
-		self.TopTalentRightCorner:SetAtlas(styleData.TopRight, true);
-		self.BotTalentLeftCorner:SetAtlas(styleData.BotLeft, true);
-		self.BotTalentRightCorner:SetAtlas(styleData.BotRight, true);
-		self.CornerLogo:SetAtlas(styleData.Portrait, true);
-		self.CornerLogo:SetPoint("TOPLEFT", self.TopTalentLeftCorner, "TOPLEFT", styleData.portraitOffsetX, styleData.portraitOffsetY);
+		self.OverlayElements.CornerLogo:SetAtlas(styleData.Portrait, true);
+		self.OverlayElements.CornerLogo:SetPoint("TOPLEFT", self, "TOPLEFT", styleData.portraitOffsetX, styleData.portraitOffsetY);
 
 		self.Background:SetAtlas(styleData.Background, true);
-		self.Background:ClearAllPoints();
-		self.Background:SetPoint("CENTER", self);
 
 		self.CurrencyBG:SetAtlas(styleData.CurrencyBG, true);
-
-		self:GetParent().CloseButton:ClearAllPoints();
-		self:GetParent().CloseButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", 4, 4);
-		self:GetParent().CloseButton:SetFrameLevel(self:GetFrameLevel() + 5);
-
-		self.CloseButtonBorder:SetAtlas(styleData.closeButtonBorder, true);
-		self.CloseButtonBorder:ClearAllPoints();
-		self.CloseButtonBorder:SetPoint("CENTER", self:GetParent().CloseButton);
-
-		self:SetFrameLevel(self:GetParent():GetFrameLevel() -1);
+		UIPanelCloseButton_SetBorderAtlas(self.CloseButton, styleData.closeButtonBorder, -1, 1);
+		self.CloseButton:SetFrameLevel(510);
 	end
 
-	function OrderHallTalentFrameMixin:SetUseStyleTextures(shouldUseStyleTextures)
-		self.StyleFrame:SetShown(shouldUseStyleTextures);
-		self:SetPortraitFrameShown(not shouldUseStyleTextures);
+	function OrderHallTalentFrameMixin:SetUseThemedTextures(isThemed)
+		self:UpdateThemedFrameVisibility(isThemed);
 		self.Currency:ClearAllPoints();
+		self.Background:ClearAllPoints();
 
-		if shouldUseStyleTextures then
-			self.Currency:SetPoint("CENTER", self.StyleFrame.CurrencyBG, "CENTER", 0, -1);
+		local layoutName;
+
+		if isThemed then
+			self.Currency:SetPoint("CENTER", self.CurrencyBG, "CENTER", 0, -1);
 			self.Currency.Icon:SetSize(17, 16);
+			self.Background:SetPoint("TOPLEFT", self.Bg, "TOPLEFT", 0, 4);
+			self.Background:SetPoint("BOTTOMRIGHT", self.Bg, "BOTTOMRIGHT", 0, 0);
 
 			local factionGroup = UnitFactionGroup("player");
-			SetupBorder(self.StyleFrame, bfaTalentFrameStyleData[factionGroup]);
+			SetupBorder(self, bfaTalentFrameStyleData[factionGroup]);
 		else
 			self.Currency:SetPoint("TOPRIGHT", self, "TOPRIGHT", -12, -29);
 			self.Currency.Icon:SetSize(27, 26);
+			self.Background:SetPoint("TOPLEFT", self.Bg, "TOPLEFT", 4, -40);
+
+			AnchorUtil.ApplyNineSliceLayoutByName(self.NineSlice, "PortraitFrameTemplate");
 		end
 	end
 end
 
-function OrderHallTalentFrameMixin:SetPortraitFrameShown(shouldShow)
-	self.PortraitFrame:SetShown(shouldShow);
-	self.TopLeftCorner:SetShown(false); -- Never show this, there are layering issues
-	self.TopRightCorner:SetShown(shouldShow);
-	self.BotLeftCorner:SetShown(shouldShow);
-	self.BotRightCorner:SetShown(shouldShow);
-	self.TopBorder:SetShown(shouldShow);
-	self.BottomBorder:SetShown(shouldShow);
-	self.LeftBorder:SetShown(shouldShow);
-	self.RightBorder:SetShown(shouldShow);
-	self.Background:SetShown(shouldShow);
-	self.TopTileStreaks:SetShown(shouldShow);
-	self.TitleBg:SetShown(shouldShow);
-	self.Bg:SetShown(shouldShow);
-	self.portrait:SetShown(shouldShow);
-	ClassHallTalentInset:SetShown(shouldShow);
+function OrderHallTalentFrameMixin:UpdateThemedFrameVisibility(isThemed)
+	-- Default/base elements
+	local isBase = not isThemed;
+	self.TopTileStreaks:SetShown(isBase);
+	self.TitleBg:SetShown(isBase);
+	self.Bg:SetShown(isBase);
+	self.Inset:SetShown(isBase);
+	PortraitFrameTemplate_SetPortraitShown(self, isBase);
+
+	-- Custom themed elements
+	self.OverlayElements.CornerLogo:SetShown(isThemed);
+	self.CurrencyBG:SetShown(isThemed);
+	UIPanelCloseButton_SetBorderShown(self.CloseButton, isThemed);
 end
 
 function OrderHallTalentFrameMixin:OnLoad()
@@ -254,7 +247,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		return;
 	end
 
-	self:SetUseStyleTextures(isThemed);
+	self:SetUseThemedTextures(isThemed);
 
 	if (isThemed) then
 		self.TitleText:Hide();
@@ -276,21 +269,20 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	if (uiTextureKit) then
 		self.Background:SetAtlas(uiTextureKit.."-background");
 		local atlas = uiTextureKit.."-logo";
-		if (GetAtlasInfo(atlas)) then 
-			self.portrait:SetAtlas(atlas);
+		if (GetAtlasInfo(atlas)) then
+			PortraitFrameTemplate_SetPortraitAtlasRaw(self, atlas);
 		else
-			SetPortraitTexture(self.portrait, "npc");
-		end 
+			PortraitFrameTemplate_SetPortraitToUnit(self, "npc");
+		end
 	else
 		local _, className, classID = UnitClass("player");
 
 		self.Background:SetAtlas("orderhalltalents-background-"..className);
 		if (not classAgnostic) then
-			self.portrait:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
-			self.portrait:SetTexture("INTERFACE\\ICONS\\crest_"..className);
+			PortraitFrameTemplate_SetPortraitToAsset(self, "INTERFACE\\ICONS\\crest_"..className);
 		else
-			SetPortraitTexture(self.portrait, "npc");
-		end 
+			PortraitFrameTemplate_SetPortraitToUnit(self, "npc");
+		end
 	end
 
 	local friendshipFactionID = C_Garrison.GetCurrentGarrTalentTreeFriendshipFactionID();
@@ -381,11 +373,9 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	local displayHeight = height - distance;
 	self:SetHeight(displayHeight);
 	self.Background:SetHeight(bgheight - distance);
-	self.StyleFrame.Background:SetHeight(displayHeight);
-	self.StyleFrame:SetHeight(displayHeight);
-	self.LeftInset:ClearAllPoints();
-	self.LeftInset:SetHeight(insetheight - distance);
-	self.LeftInset:SetPoint("CENTER", self.Background, 0, 0);
+	self.Inset:ClearAllPoints();
+	self.Inset:SetHeight(insetheight - distance);
+	self.Inset:SetPoint("CENTER", self.Background, 0, 0);
 
     local completeTalent = C_Garrison.GetCompleteTalent(self.garrisonType);
 

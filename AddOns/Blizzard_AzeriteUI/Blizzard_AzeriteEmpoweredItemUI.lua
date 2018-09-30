@@ -36,7 +36,7 @@ function AzeriteEmpoweredItemUIMixin:OnLoad()
 		rankFrame.GearBg.transformNode = rankFrame.RingBg.transformNode:CreateNodeFromTexture(rankFrame.GearBg);
 		rankFrame.RingLights.transformNode = rankFrame.RingBg.transformNode:CreateNodeFromTexture(rankFrame.RingLights);
 	end
-	
+
 	local function TierReset(framePool, frame)
 		FramePool_HideAndClearAnchors(framePool, frame);
 		frame:Reset();
@@ -151,6 +151,16 @@ function AzeriteEmpoweredItemUIMixin:CanSelectPowers()
 	return true;
 end
 
+function AzeriteEmpoweredItemUIMixin:GetPowerIdsForFinalSelectedTier()
+	local powerIds = { }
+	for tierIndex, tierFrame in ipairs(self.tiersByIndex) do
+		if(not tierFrame:IsFinalTier()) then 
+			table.insert(powerIds, tierFrame:GetSelectedPowerID());
+		end
+	end
+	return powerIds;
+end
+
 function AzeriteEmpoweredItemUIMixin:IsAnyTierRevealing()
 	for tierIndex, tierFrame in ipairs(self.tiersByIndex) do
 		if tierFrame:IsRevealing() then
@@ -234,7 +244,7 @@ function AzeriteEmpoweredItemUIMixin:OnItemSet()
 	local azeriteEmpoweredItem = self.azeriteItemDataSource:GetItem();
 	azeriteEmpoweredItem:LockItem();
 	self.itemDataLoadedCancelFunc = azeriteEmpoweredItem:ContinueWithCancelOnItemLoad(function()
-		SetPortraitToTexture(self.BorderFrame.portrait, azeriteEmpoweredItem:GetItemIcon());
+		PortraitFrameTemplate_SetPortraitToAsset(self.BorderFrame, azeriteEmpoweredItem:GetItemIcon());
 		self.BorderFrame.TitleText:SetText(azeriteEmpoweredItem:GetItemName());
 	end);
 
@@ -305,7 +315,7 @@ function AzeriteEmpoweredItemUIMixin:AdjustSizeForTiers(numTiers)
 		self.ClipFrame.BackgroundFrame.KeyOverlay.Texture:SetAtlas("Azerite-CenterBG-3Ranks", true);
 		self.ClipFrame.BackgroundFrame.KeyOverlay.Texture:SetPoint("CENTER", 3, 125);
 		self.ClipFrame.BackgroundFrame.Bg:SetAtlas("Azerite-Background-3Ranks", true);
-		
+
 		self:SetSize(474, 484);
 	else
 		self.ClipFrame.BackgroundFrame.KeyOverlay.Texture:SetAtlas("Azerite-CenterBG-4Ranks", true);

@@ -530,7 +530,14 @@ function UnitFrameManaBar_UpdateType (manaBar)
 		if ( manaBar.FullPowerFrame ) then
 			manaBar.FullPowerFrame:RemoveAnims();
 		end
+		if manaBar.FeedbackFrame then
+			manaBar.FeedbackFrame:StopFeedbackAnim();
+		end
 		manaBar.currValue = UnitPower("player", powerType);
+		if unitFrame.myManaCostPredictionBar then
+			unitFrame.myManaCostPredictionBar:Hide();
+		end
+		unitFrame.predictedPowerCost = 0;
 	end
 
 	-- Update the manabar text

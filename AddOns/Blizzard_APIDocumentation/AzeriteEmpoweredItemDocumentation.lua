@@ -101,6 +101,21 @@ local AzeriteEmpoweredItem =
 			},
 		},
 		{
+			Name = "GetUpgradedAzeritePowerInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "azeriteEmpoweredItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "powerID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "upgradePowerInfo", Type = "UpgradedAzeritePowerInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "HasAnyUnselectedPowers",
 			Type = "Function",
 
@@ -277,6 +292,15 @@ local AzeriteEmpoweredItem =
 			{
 				{ Name = "classID", Type = "number", Nilable = false },
 				{ Name = "specID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UpgradedAzeritePowerInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
 			},
 		},
 	},

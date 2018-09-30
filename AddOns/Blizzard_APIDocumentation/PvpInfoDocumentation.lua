@@ -16,6 +16,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "CanToggleWarModeInArea",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canTogglePvPInArea", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetArenaCrowdControlInfo",
 			Type = "Function",
 

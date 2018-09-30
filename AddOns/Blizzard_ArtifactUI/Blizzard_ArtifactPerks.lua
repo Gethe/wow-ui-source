@@ -294,8 +294,6 @@ function ArtifactPerksMixin:RefreshPowerTiers()
 			self.CrestFrame:ClearAllPoints();
 			self.CrestFrame:SetPoint("CENTER", finalTier2Button, "CENTER");
 			self.CrestFrame:Show();
-
-			local artifactArtInfo = C_ArtifactUI.GetArtifactArtInfo();
 			
 			self.Tier2ForgingScene:Show();
 			self.Tier2ForgingScene:SetFromModelSceneID(TIER_2_FORGING_MODEL_SCENE_ID, true);
@@ -357,6 +355,11 @@ end
 
 function ArtifactPerksMixin:TryRefresh()
 	if self.perksDirty then
+		local artifactItemID = C_ArtifactUI.GetArtifactItemID();
+		if not artifactItemID or not C_Item.IsItemDataCachedByID(artifactItemID) then
+			return;
+		end
+
 		if self.newItem then
 			self.numRevealsPlaying = nil;
 			self:HideAllLines();

@@ -85,6 +85,20 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "IsValidChatLine",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "chatLine", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "isValid", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RegisterAddonMessagePrefix",
 			Type = "Function",
 			Documentation = { "Registers interest in addon messages with this prefix, cannot be an empty string." },
@@ -109,6 +123,10 @@ local ChatInfo =
 				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = true },
 				{ Name = "comment", Type = "string", Nilable = true },
 			},
+		},
+		{
+			Name = "ResetDefaultZoneChannels",
+			Type = "Function",
 		},
 		{
 			Name = "SendAddonMessage",
@@ -144,6 +162,16 @@ local ChatInfo =
 			Returns =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SwapChatChannelsByChannelIndex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "firstChannelIndex", Type = "number", Nilable = false },
+				{ Name = "secondChannelIndex", Type = "number", Nilable = false },
 			},
 		},
 	},

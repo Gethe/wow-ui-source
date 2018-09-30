@@ -204,13 +204,6 @@
 				</Scripts>
 			</Frame>
 			<Button name="$parentButton1" inherits="UIDropDownMenuButtonTemplate" id="1"/>
-			<Button name="$parentButton2" inherits="UIDropDownMenuButtonTemplate" id="2"/>
-			<Button name="$parentButton3" inherits="UIDropDownMenuButtonTemplate" id="3"/>
-			<Button name="$parentButton4" inherits="UIDropDownMenuButtonTemplate" id="4"/>
-			<Button name="$parentButton5" inherits="UIDropDownMenuButtonTemplate" id="5"/>
-			<Button name="$parentButton6" inherits="UIDropDownMenuButtonTemplate" id="6"/>
-			<Button name="$parentButton7" inherits="UIDropDownMenuButtonTemplate" id="7"/>
-			<Button name="$parentButton8" inherits="UIDropDownMenuButtonTemplate" id="8"/>
 		</Frames>
 		<Scripts>
 			<OnClick>

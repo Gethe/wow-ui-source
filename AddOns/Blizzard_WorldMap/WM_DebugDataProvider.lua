@@ -12,9 +12,9 @@ function WorldMap_DebugDataProviderMixin:OnAdded(mapCanvas)
 end
 
 function WorldMap_DebugDataProviderMixin:OnRemoved(mapCanvas)
-	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
-
 	mapCanvas:RemoveCanvasClickHandler(self.onClickHandler);
+
+	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 end
 
 local DEBUG_ICON_INFO = {

@@ -63,7 +63,11 @@ end
 
 function QuestUtils_IsQuestDungeonQuest(questID)
 	local tagID, _, worldQuestType = GetQuestTagInfo(questID);
-	IsQuestDungeonQuest_Internal(tagID, worldQuestType);
+	return IsQuestDungeonQuest_Internal(tagID, worldQuestType);
+end
+
+function QuestUtils_IsQuestBonusObjective(questID)
+	return IsQuestTask(questID) and not QuestUtils_IsQuestWorldQuest(questID);
 end
 
 function QuestUtils_GetQuestTypeTextureMarkupString(questID, iconWidth, iconHeight)

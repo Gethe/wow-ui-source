@@ -203,6 +203,10 @@ local Calendar =
 			Type = "Function",
 		},
 		{
+			Name = "EventClearClubId",
+			Type = "Function",
+		},
+		{
 			Name = "EventClearLocked",
 			Type = "Function",
 		},
@@ -229,7 +233,7 @@ local Calendar =
 			},
 		},
 		{
-			Name = "EventGetClubID",
+			Name = "EventGetClubId",
 			Type = "Function",
 
 			Returns =
@@ -380,12 +384,12 @@ local Calendar =
 			Type = "Function",
 		},
 		{
-			Name = "EventSetClubID",
+			Name = "EventSetClubId",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "clubID", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -630,6 +634,15 @@ local Calendar =
 			},
 		},
 		{
+			Name = "GetNextClubId",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "clubId", Type = "string", Nilable = true },
+			},
+		},
+		{
 			Name = "GetNumDayEvents",
 			Type = "Function",
 
@@ -688,6 +701,21 @@ local Calendar =
 			},
 		},
 		{
+			Name = "GetUpcomingClubEvents",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "offsetDays", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "events", Type = "table", InnerType = "CalendarDayEvent", Nilable = false },
+			},
+		},
+		{
 			Name = "IsActionPending",
 			Type = "Function",
 
@@ -702,7 +730,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "clubID", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "string", Nilable = false },
 				{ Name = "minLevel", Type = "number", Nilable = false },
 				{ Name = "maxLevel", Type = "number", Nilable = false },
 				{ Name = "maxRankOrder", Type = "number", Nilable = true },
@@ -755,6 +783,15 @@ local Calendar =
 			Arguments =
 			{
 				{ Name = "offsetMonths", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetNextClubId",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "string", Nilable = true },
 			},
 		},
 		{

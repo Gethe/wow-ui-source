@@ -235,7 +235,7 @@
 			<Layer level="BORDER">
 				<FontString parentKey="MemberCount" inherits="GameFontNormalSmall">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="4" y="12"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="17"/>
 					</Anchors>
 				</FontString>
 			</Layer>

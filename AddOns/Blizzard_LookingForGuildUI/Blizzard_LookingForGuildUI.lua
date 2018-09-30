@@ -344,7 +344,7 @@ function LookingForGuildGuild_ShowTooltip(self)
 		-- open the guild finder frame again with your mouse over where a recruitment button is.
 		return;
 	end
-	
+
 	local bQuest, bDungeon, bRaid, bPvP, bRP, bWeekdays, bWeekends, bTank, bHealer, bDamage = GetRecruitingGuildSettings(self.index);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(name);
@@ -486,13 +486,9 @@ function LookingForGuildFrame_CreateUIElements()
 		return;
 	end
 
-	if GetCVarBool("useHighResolutionUITextures") then
-		CreateFrame("Frame", "LookingForGuildFrame", UIParent, "ButtonFrameTemplate-HighRes, LookingForGuildFrameTemplate");
-	else
-		CreateFrame("Frame", "LookingForGuildFrame", UIParent, "ButtonFrameTemplate, LookingForGuildFrameTemplate");
-		LookingForGuildFrameTabardBorder:SetSize(60, 60);
-		LookingForGuildFrameTabardBorder:SetPoint("CENTER", LookingForGuildFrameTabardBackground, "CENTER", 0, -3);
-	end
+	CreateFrame("Frame", "LookingForGuildFrame", UIParent, "ButtonFrameTemplate, LookingForGuildFrameTemplate");
+	LookingForGuildFrameTabardBorder:SetSize(60, 60);
+	LookingForGuildFrameTabardBorder:SetPoint("CENTER", LookingForGuildFrameTabardBackground, "CENTER", 0, -3);
 
 	CreateFrame("Frame", "LookingForGuildStartFrame", UIParent, "LookingForGuildStartFrameTemplate");
 	CreateFrame("Frame", "LookingForGuildBrowseFrame", UIParent, "LookingForGuildBrowseFrameTemplate");

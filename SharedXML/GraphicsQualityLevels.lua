@@ -747,6 +747,7 @@ VideoData["Graphics_FilteringDropDown"]={
 	dependent = {
 		"Graphics_Quality",
 	},
+	restart = true;
 }
 
 VideoData["RaidGraphics_FilteringDropDown"]={
@@ -776,6 +777,7 @@ VideoData["RaidGraphics_FilteringDropDown"]={
 	dependent = {
 		"RaidGraphics_Quality",
 	},
+	restart = true;
 }
 
 -------------------------------------------------------------------------------------------------------

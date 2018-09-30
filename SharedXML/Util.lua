@@ -594,6 +594,23 @@ function CreateColor(r, g, b, a)
 	return color;
 end
 
+local function ExtractHexByte(str, index)
+	return tonumber(str:sub(index, index + 1), 16);
+end
+
+function CreateColorFromHexString(hexColor)
+	if #hexColor == 8 then
+		local a, r, g, b = ExtractHexByte(hexColor, 1), ExtractHexByte(hexColor, 3), ExtractHexByte(hexColor, 5), ExtractHexByte(hexColor, 7);
+		return CreateColor(r, g, b, a);
+	else
+		GMError("CreateColorFromHexString input must be hexadecimal digits in this format: AARRGGBB.");
+	end
+end
+
+function CreateColorFromBytes(r, g, b, a)
+	return CreateColor(r / 255, g / 255, b / 255, a / 255);
+end
+
 function AreColorsEqual(left, right)
 	if left and right then
 		return left:IsEqualTo(right);
@@ -854,6 +871,10 @@ function FormatPercentage(percentage, roundToNearestInteger)
 	return PERCENTAGE_STRING:format(percentage);
 end
 
+function FormatFraction(numerator, denominator)
+	return GENERIC_FRACTION_STRING:format(numerator, denominator);
+end
+
 function CreateTextureMarkup(file, fileWidth, fileHeight, width, height, left, right, top, bottom, xOffset, yOffset)
 	return ("|T%s:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d|t"):format(
 		  file
@@ -892,6 +913,10 @@ function SetupAtlasesOnRegions(frame, regionsToAtlases, useAtlasSize)
 	end
 end
 
+function GetFinalNameFromTextureKit(fmt, textureKit)
+	return fmt:format(textureKit);
+end
+
 function SetupTextureKitOnFrameByID(textureKitID, frame, fmt, setVisibilityOfRegions, useAtlasSize)
 	local textureKit = GetUITextureKitInfo(textureKitID);
 	SetupTextureKitOnFrame(textureKit, frame, fmt, setVisibilityOfRegions, useAtlasSize);
@@ -908,9 +933,9 @@ function SetupTextureKitOnFrame(textureKit, frame, fmt, setVisibility, useAtlasS
 
 	if textureKit then
 		if frame:GetObjectType() == "StatusBar" then
-			frame:SetStatusBarAtlas(fmt:format(textureKit));
+			frame:SetStatusBarAtlas(GetFinalNameFromTextureKit(fmt, textureKit));
 		elseif frame.SetAtlas then
-			frame:SetAtlas(fmt:format(textureKit), useAtlasSize);
+			frame:SetAtlas(GetFinalNameFromTextureKit(fmt, textureKit), useAtlasSize);
 		end
 	end
 end

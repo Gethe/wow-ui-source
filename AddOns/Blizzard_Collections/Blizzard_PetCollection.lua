@@ -128,7 +128,7 @@ function PetJournal_OnShow(self)
 		end
 	end
 
-	SetPortraitToTexture(CollectionsJournalPortrait, "Interface\\Icons\\PetJournalPortrait");
+	PortraitFrameTemplate_SetPortraitToAsset(CollectionsJournal, "Interface\\Icons\\PetJournalPortrait");
 end
 
 function PetJournal_OnHide(self)
@@ -379,7 +379,7 @@ function PetJournalSummonRandomFavoritePetButton_UpdateSpellUsability(self)
 			self.BlackCover:Hide();
 			self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			self:RegisterForDrag("LeftButton");
-		end																				
+		end
 	else
 		self.BlackCover:Show();
 		self.texture:SetDesaturated(true);
@@ -410,7 +410,7 @@ function PetJournalSummonRandomFavoritePetButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
 	local numPets, numOwned = C_PetJournal.GetNumPets();
-	if ( numOwned > 0 and not C_PetBattles.IsInBattle()  ) then 
+	if ( numOwned > 0 and not C_PetBattles.IsInBattle()  ) then
 		GameTooltip:SetCompanionPet(self.petID);
 	else
 		GameTooltip:SetSpellByID(self.spellID);

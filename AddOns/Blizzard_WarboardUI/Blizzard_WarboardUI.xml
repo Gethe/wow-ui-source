@@ -135,58 +135,9 @@
 			<KeyValue key="optionButtonVerticalSpacing" value="8" type="number"/>
 			<KeyValue key="optionButtonHorizontalSpacing" value="40" type="number"/>
 		</KeyValues>
-		<Layers>
-			<Layer level="BORDER">
-				<Texture name="$parentTopRightCorner" inherits="UI-Frame-TopCornerRightSimple">
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="0" y="6"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTopLeftCorner" inherits="UI-Frame-TopCornerLeft" parentKey="topLeftCorner">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-6" y="6"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTopBorder" inherits="_UI-Frame-Bot" parentKey="topBorderBar">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftCorner" relativePoint="TOPRIGHT" y="-3"/>
-						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="TOPLEFT" y="-3"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBotLeftCorner" inherits="UI-Frame-BotCornerLeft">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-6" y="-5"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBotRightCorner" inherits="UI-Frame-BotCornerRight">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="0" y="-5"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBottomBorder" inherits="_UI-Frame-Bot">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentLeftBorder" inherits="!UI-Frame-LeftTile" parentKey="leftBorderBar">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftCorner" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentRightBorder" inherits="!UI-Frame-RightTile">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="BOTTOMRIGHT" x="1"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
-			<!-- This frame is used to position the corner texutures above other frames (for example the scroll frame of the adventure map.)
-			The above textures can be put into this frame as well, but they have anchors via their parentKey, so don't want to move them here.-->
-			<Frame parentKey="BorderFrame" frameLevel="3">
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" setAllPoints="true"/>
+			<Frame parentKey="BorderFrame" frameLevel="510">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="3" y="-2"/>
 					<Anchor point="BOTTOMRIGHT" x="-4" y="3"/>
@@ -196,31 +147,6 @@
 						<Texture parentKey="Header" atlas="UI-Frame-Horde-Header" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-61"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BACKGROUND" textureSubLevel="1">
-						<Texture parentKey="TopLeftCorner" atlas="UI-Frame-Horde-Corner" useAtlasSize="true" textureSubLevel="1"/>
-						<Texture parentKey="TopRightCorner" atlas="UI-Frame-Horde-Corner" useAtlasSize="true" textureSubLevel="1">
-							<TexCoords left="1" right="0" top="0" bottom="1"/>
-						</Texture>
-						<Texture parentKey="BottomLeftCorner" atlas="UI-Frame-Horde-Corner" useAtlasSize="true" textureSubLevel="1">
-							<TexCoords left="0" right="1" top="1" bottom="0"/>
-						</Texture>
-						<Texture parentKey="BottomRightCorner" atlas="UI-Frame-Horde-Corner" useAtlasSize="true" textureSubLevel="1">
-							<TexCoords left="1" right="0" top="1" bottom="0"/>
-						</Texture>
-					</Layer>
-					<Layer level="BACKGROUND" textureSubLevel="0">
-						<Texture parentKey="TopBorder" atlas="_UI-Frame-Horde-TileTop" horizTile="true" useAtlasSize="true"/>
-						<Texture parentKey="BottomBorder" atlas="_UI-Frame-Horde-TileBottom" horizTile="true" useAtlasSize="true"/>
-						<Texture parentKey="LeftBorder" atlas="!UI-Frame-Horde-TileLeft" vertTile="true" useAtlasSize="true"/>
-						<Texture parentKey="RightBorder" atlas="!UI-Frame-Horde-TileRight" vertTile="true" useAtlasSize="true"/>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture parentKey="CloseButtonBorder" atlas="UI-Frame-Horde-ExitButtonBorder" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="4" y="6"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -297,7 +223,7 @@
 			</Frame>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="4">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="1" y="3" />
+					<Anchor point="TOPRIGHT" x="1" y="2" />
 				</Anchors>
 			</Button>
 			<Frame parentKey="WarfrontHelpBox" inherits="GlowBoxTemplate" hidden="true" frameStrata="DIALOG">

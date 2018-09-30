@@ -9,7 +9,12 @@ local TaxiMap =
 		{
 			Name = "GetAllTaxiNodes",
 			Type = "Function",
-			Documentation = { "Returns information on taxi nodes at the given flight master." },
+			Documentation = { "Returns information on taxi nodes at the current flight master." },
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
 
 			Returns =
 			{
@@ -29,6 +34,20 @@ local TaxiMap =
 			Returns =
 			{
 				{ Name = "mapTaxiNodes", Type = "table", InnerType = "MapTaxiNodeInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldMapShowTaxiNodes",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "shouldShowNodes", Type = "bool", Nilable = false },
 			},
 		},
 	},

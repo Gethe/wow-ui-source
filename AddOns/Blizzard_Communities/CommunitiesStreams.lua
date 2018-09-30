@@ -60,7 +60,9 @@ function CommunitiesStreamDropDownMenu_Initialize(self)
 	
 	info.mouseOverIcon = nil;
 	
-	if self:GetCommunitiesFrame():GetPrivilegesForClub(clubId).canCreateStream and #streams < 50 then
+	local clubInfo = C_Club.GetClubInfo(clubId);
+	local maximumNumberOfStreams = C_Club.GetClubLimits(clubInfo and clubInfo.clubType or Enum.ClubType.Character).maximumNumberOfStreams;
+	if self:GetCommunitiesFrame():GetPrivilegesForClub(clubId).canCreateStream and #streams < maximumNumberOfStreams then
 		info.text = GREEN_FONT_COLOR:WrapTextInColorCode(COMMUNITIES_CREATE_CHANNEL);
 		info.value = nil;
 		info.customCheckIconAtlas = "communities-icon-addchannelplus";

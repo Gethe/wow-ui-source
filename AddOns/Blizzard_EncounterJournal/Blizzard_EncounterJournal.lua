@@ -135,7 +135,7 @@ local INSTANCE_LOOT_BUTTON_HEIGHT = 64;
 
 function EncounterJournal_OnLoad(self)
 	EncounterJournalTitleText:SetText(ADVENTURE_JOURNAL);
-	SetPortraitToTexture(EncounterJournalPortrait,"Interface\\EncounterJournal\\UI-EJ-PortraitIcon");
+	PortraitFrameTemplate_SetPortraitToAsset(EncounterJournal, "Interface\\EncounterJournal\\UI-EJ-PortraitIcon");
 	self:RegisterEvent("EJ_LOOT_DATA_RECIEVED");
 	self:RegisterEvent("EJ_DIFFICULTY_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
@@ -464,8 +464,8 @@ function EncounterJournal_FindCreatureButtonForDisplayInfo(displayInfo)
 			return button;
 		end
 	end
-	
-	return nil;	
+
+	return nil;
 end
 
 function EncounterJournal_UpdatePortraits()
@@ -1863,7 +1863,7 @@ function EncounterJournal_GetSearchDisplay(index)
 			icon = "Interface\\EncounterJournal\\UI-EJ-GenericSearchCreature";
 		else
 			typeText = ENCOUNTER_JOURNAL_ABILITY;
-			if (sectionInfo) then 
+			if (sectionInfo) then
 				icon = sectionInfo.abilityIcon;
 			end
 		end
@@ -2285,11 +2285,11 @@ function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sec
 	if instanceID then
 		NavBar_Reset(EncounterJournal.navBar);
 		EncounterJournal_DisplayInstance(instanceID);
-		
+
 		if difficultyID then
 			EJ_SetDifficulty(difficultyID);
 		end
-		
+
 		if encounterID then
 			if sectionID then
 				if (EncounterJournal_CheckForOverview(sectionID)) then
@@ -2589,7 +2589,7 @@ function EncounterJournal_InitLootFilter(self, level)
 
 		if ( filterClassID > 0 ) then
 			classID = filterClassID;
-			
+
 			local classInfo = C_CreatureInfo.GetClassInfo(filterClassID);
 			if classInfo then
 				classDisplayName = classInfo.className;

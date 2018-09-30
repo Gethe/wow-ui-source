@@ -58,7 +58,7 @@
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture name="$parentFrame" inherits="Char-LeftSlot">	
+				<Texture name="$parentFrame" inherits="Char-LeftSlot">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-4"/>
 					</Anchors>
@@ -72,7 +72,7 @@
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture name="$parentFrame" inherits="Char-RightSlot">	
+				<Texture name="$parentFrame" inherits="Char-RightSlot">
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="4"/>
 					</Anchors>
@@ -83,7 +83,7 @@
 	<Button name="PaperDollItemSlotButtonBottomTemplate" parentArray="WeaponSlots" inherits="PaperDollItemSlotButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture name="$parentFrame" inherits="Char-BottomSlot">	
+				<Texture name="$parentFrame" inherits="Char-BottomSlot">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-4" y="8"/>
 					</Anchors>
@@ -154,9 +154,9 @@
 				<Anchor point="RIGHT" x="-3" y="0"/>
 			</Anchors>
 		</ButtonText>
-		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" alphaMode="ADD"/>	
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" alphaMode="ADD"/>
 	</Button>
-	
+
 	<Button name="GearSetButtonTemplate" virtual="true">
 		<Size x="169" y="44"/>
 		<Anchors>
@@ -234,7 +234,7 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		
+
 		<Frames>
 			<Button name="$parentDeleteButton" parentKey="DeleteButton" hidden="true">
 				<Size>
@@ -338,7 +338,7 @@
 			</Anchors>
 		</NormalTexture>
 	</Button>
-	
+
 	<CheckButton name="GearSetPopupButtonTemplate" inherits="SimplePopupButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
@@ -364,8 +364,8 @@
 		</NormalTexture>
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
-	</CheckButton>	
-		
+	</CheckButton>
+
 	<Button name="PaperDollSidebarTabTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="33" y="35"/>
 		<Layers>
@@ -397,7 +397,7 @@
 			</Layer>
 			<Layer level="HIGHLIGHT">
 				<Texture parentKey="Highlight" file="Interface\PaperDollInfoFrame\PaperDollSidebarTabs">
-					<Size x="31" y="31"/>	
+					<Size x="31" y="31"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="2" y="-3"/>
 					</Anchors>
@@ -429,7 +429,7 @@
 				if ( not self:IsEnabled() and self.disabledTooltip ) then
 					GameTooltip:AddLine(self.disabledTooltip, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 				end
-				
+
 				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave>
@@ -437,7 +437,7 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	
+
     <Frame name="PaperDollFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" id="1">
 		<Layers>
             <Layer level="ARTWORK">
@@ -504,7 +504,7 @@
 								self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 								self:RegisterEvent("PORTRAITS_UPDATED");
 								self:RegisterEvent("PLAYER_ENTERING_WORLD");
-								
+
 								local tcoords = PAPERDOLL_SIDEBARS[self:GetID()].texCoords;
 								self.Icon:SetTexCoord(tcoords[1], tcoords[2], tcoords[3], tcoords[4]);
 								self.Icon:SetSize(29, 31);
@@ -526,7 +526,7 @@
 					</Button>
 				</Frames>
 			</Frame>
-		
+
 			<ScrollFrame name="PaperDollTitlesPane" inherits="HybridScrollFrameTemplate" hidden="true">
 				<Size x="172" y="354"/>
 				<Anchors>
@@ -555,7 +555,7 @@
 					</OnShow>
 				</Scripts>
 			</ScrollFrame>
-			
+
 			<ScrollFrame name="PaperDollEquipmentManagerPane" inherits="HybridScrollFrameTemplate" hidden="true">
 				<Size x="172" y="354"/>
 				<Anchors>
@@ -665,22 +665,22 @@
 					<Layer level="OVERLAY">
 						<Texture name="PaperDollInnerBorderTopLeft" inherits="Char-Corner-UpperLeft">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="CharacterFrameInset" x="46" y="-4"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.$parent.Inset" x="46" y="-4"/>
 							</Anchors>
 						</Texture>
 						<Texture name="PaperDollInnerBorderTopRight" inherits="Char-Corner-UpperRight">
 							<Anchors>
-								<Anchor point="TOPRIGHT" relativeTo="CharacterFrameInset" x="-47" y="-4"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.$parent.$parent.Inset" x="-47" y="-4"/>
 							</Anchors>
 						</Texture>
 						<Texture name="PaperDollInnerBorderBottomLeft" inherits="Char-Corner-LowerLeft">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeTo="CharacterFrameInset" x="46" y="31"/>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.$parent.$parent.Inset" x="46" y="31"/>
 							</Anchors>
 						</Texture>
 						<Texture name="PaperDollInnerBorderBottomRight" inherits="Char-Corner-LowerRight">
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInset" x="-47" y="31"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.$parent.Inset" x="-47" y="31"/>
 							</Anchors>
 						</Texture>
 						<Texture name="PaperDollInnerBorderLeft" inherits="Char-Inner-Left">
@@ -709,8 +709,8 @@
 						</Texture>
 						<Texture name="PaperDollInnerBorderBottom2" inherits="Char-Inner-Bottom">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeTo="CharacterFrameInset" y="27"/>
-								<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInset" y="27"/>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.$parent.$parent.Inset" y="27"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.$parent.Inset" y="27"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -728,7 +728,7 @@
 				<Frames>
 					<Button name="CharacterHeadSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CharacterFrameInset" x="4" y="-2"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.$parent.$parent.Inset" x="4" y="-2"/>
 						</Anchors>
 					</Button>
 					<Button name="CharacterNeckSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
@@ -768,7 +768,7 @@
 					</Button>
 					<Button name="CharacterHandsSlot" inherits="PaperDollItemSlotButtonRightTemplate">
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="CharacterFrameInset" x="-4" y="-2"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.$parent.$parent.Inset" x="-4" y="-2"/>
 						</Anchors>
 					</Button>
 					<Button name="CharacterWaistSlot" inherits="PaperDollItemSlotButtonRightTemplate">
@@ -962,7 +962,7 @@
 									<Offset x="24" y="-69"/>
 								</Anchor>
 							</Anchors>
-						</FontString>					
+						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
@@ -1006,7 +1006,7 @@
 								else
 									GearManagerDialogPopup.name = nil;
 								end
-								
+
 								GearManagerDialogPopupOkay_Update();
 							</OnTextChanged>
 							<OnEscapePressed function="GearManagerDialogPopupCancel_OnClick"/>
@@ -1017,7 +1017,7 @@
 							</OnEnterPressed>
 						</Scripts>
 						<FontString inherits="ChatFontNormal"/>
-					</EditBox>	
+					</EditBox>
 					<Button name="GearManagerDialogPopupCancel" inherits="UIPanelButtonTemplate" text="CANCEL">
 						<Size x="78" y="22"/>
 						<Anchors>
@@ -1029,7 +1029,7 @@
 								PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 							</OnClick>
 						</Scripts>
-					</Button>					
+					</Button>
 					<Button name="GearManagerDialogPopupOkay" inherits="UIPanelButtonTemplate" text="OKAY">
 						<Size x="78" y="22"/>
 						<Anchors>
@@ -1061,6 +1061,6 @@
 			<OnShow function="GearManagerDialogPopup_OnShow"/>
 			<OnUpdate function="GearManagerDialogPopup_OnUpdate"/>
 			<OnHide function="GearManagerDialogPopup_OnHide"/>
-		</Scripts>				
+		</Scripts>
 	</Frame>
 </Ui>

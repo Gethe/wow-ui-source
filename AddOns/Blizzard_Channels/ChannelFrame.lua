@@ -387,18 +387,16 @@ function ChannelFrameMixin:ToggleVoiceSettings()
 end
 
 -- Channel remains, but appears disabled
-function ChannelFrameMixin:OnVoiceChannelRemoved(statusCode, channelID)
-	if statusCode == Enum.VoiceChatStatusCode.Success then
-		local button = self:GetList():GetButtonForVoiceChannelID(channelID);
-		if button then
-			if button:ChannelIsCommunity() then
-				-- This is a community stream, so just remove the attached voice channel...we will try to re-join when they activate next
-				button:ClearVoiceChannel();
-			else
-				button:SetActive(false);
-				button:SetRemoved(true);
-				button:Update();
-			end
+function ChannelFrameMixin:OnVoiceChannelRemoved(channelID)
+	local button = self:GetList():GetButtonForVoiceChannelID(channelID);
+	if button then
+		if button:ChannelIsCommunity() then
+			-- This is a community stream, so just remove the attached voice channel...we will try to re-join when they activate next
+			button:ClearVoiceChannel();
+		else
+			button:SetActive(false);
+			button:SetRemoved(true);
+			button:Update();
 		end
 	end
 end

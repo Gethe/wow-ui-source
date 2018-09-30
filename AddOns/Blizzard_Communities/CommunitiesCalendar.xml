@@ -1,0 +1,21 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="CommunitiesCalendar.lua"/>
+	
+	<Button name="CommunitiesCalendarButtonTemplate" mixin="CommunitiesCalendarButtonMixin" registerForClicks="LeftButtonUp" virtual="true">
+		<Size x="30" y="30"/>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+		<NormalTexture file="Interface\Calendar\UI-Calendar-Button">
+			<TexCoords left="0.0" right="0.390625" top="0.0" bottom="0.78125"/>
+		</NormalTexture>
+		<PushedTexture file="Interface\Calendar\UI-Calendar-Button">
+			<TexCoords left="0.5" right="0.890625" top="0.0" bottom="0.78125"/>
+		</PushedTexture>
+		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+	</Button>
+
+</Ui>

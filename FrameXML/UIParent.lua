@@ -1380,6 +1380,19 @@ function UIParent_OnEvent(self, event, ...)
 		if ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
 			StaticPopup_Show("DEATH");
 		end
+		
+		local alreadyShowingSummonPopup = StaticPopup_Visible("CONFIRM_SUMMON_STARTING_AREA") or StaticPopup_Visible("CONFIRM_SUMMON_SCENARIO") or StaticPopup_Visible("CONFIRM_SUMMON")
+		if ( not alreadyShowingSummonPopup and C_SummonInfo.GetSummonConfirmTimeLeft() > 0 ) then
+			local summonReason = C_SummonInfo.GetSummonReason();
+			local isSkippingStartingArea = C_SummonInfo.IsSummonSkippingStartExperience();
+			if ( isSkippingStartingArea ) then -- check if skiping start experience
+				StaticPopup_Show("CONFIRM_SUMMON_STARTING_AREA");
+			elseif (summonType == LE_SUMMON_REASON_SCENARIO) then
+				StaticPopup_Show("CONFIRM_SUMMON_SCENARIO");
+			else
+				StaticPopup_Show("CONFIRM_SUMMON");
+			end
+		end
 
 		-- display loot specialization setting
 		PrintLootSpecialization();

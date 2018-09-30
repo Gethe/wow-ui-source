@@ -719,6 +719,7 @@ function ChatConfigFrame_OnEvent(self, event, ...)
 		ChatConfig_UpdateCombatTabs(1);
 	elseif ( event == "CHANNEL_UI_UPDATE" ) then
 		ChatConfigCategory_UpdateEnabled();
+		ChatConfig_UpdateChatSettings();
 	end
 end
 
@@ -1711,6 +1712,13 @@ function ChatConfig_UpdateChatSettings()
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsPVP);
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsSystem);
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsCreature);
+	
+	ChatConfigFrame.ChatTabManager:UpdateTabDisplay();
+end
+
+function ChatConfig_ResetChatSettings()
+	C_ChatInfo.ResetDefaultZoneChannels();
+	ChatConfig_UpdateChatSettings();
 end
 
 function UsesGUID(direction)
@@ -1995,7 +2003,7 @@ function ChatConfigChannelSettings_MoveChannelDown(channelIndex)
 		return;
 	end
 	
-	SwapChatChannelByLocalID(CHAT_CONFIG_CHANNEL_LIST[channelIndex].channelID, CHAT_CONFIG_CHANNEL_LIST[channelIndex + 1].channelID);
+	C_ChatInfo.SwapChatChannelsByChannelIndex(channelIndex, channelIndex + 1);
 	CreateChatChannelList(ChatConfigChannelSettings, GetChannelList());
 	ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "ChatConfigWideCheckBoxWithSwatchTemplate", CHAT_CONFIG_CHANNEL_SETTINGS_TITLE_WITH_DRAG_INSTRUCTIONS);
 	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
@@ -2006,7 +2014,7 @@ function ChatConfigChannelSettings_MoveChannelUp(channelIndex)
 		return;
 	end
 	
-	SwapChatChannelByLocalID(CHAT_CONFIG_CHANNEL_LIST[channelIndex].channelID, CHAT_CONFIG_CHANNEL_LIST[channelIndex - 1].channelID);
+	C_ChatInfo.SwapChatChannelsByChannelIndex(channelIndex, channelIndex - 1);
 	CreateChatChannelList(ChatConfigChannelSettings, GetChannelList());
 	ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "ChatConfigWideCheckBoxWithSwatchTemplate", CHAT_CONFIG_CHANNEL_SETTINGS_TITLE_WITH_DRAG_INSTRUCTIONS);
 	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
@@ -2059,6 +2067,10 @@ function ChatConfigFrameTabManagerMixin:OnLoad()
 end
 
 function ChatConfigFrameTabManagerMixin:OnShow()
+	self:UpdateTabDisplay();
+end
+
+function ChatConfigFrameTabManagerMixin:UpdateTabDisplay()
 	self.tabPool:ReleaseAll();
 	
 	local lastTab = nil;
@@ -2236,7 +2248,7 @@ function ChatConfigWideCheckBoxMixin:LeaveChannel()
 	local channelIndex = self:GetID();
 	if CHAT_CONFIG_CHANNEL_LIST[channelIndex].isBlank then
 		for i = channelIndex, #CHAT_CONFIG_CHANNEL_LIST - 1 do
-			SwapChatChannelByLocalID(CHAT_CONFIG_CHANNEL_LIST[i].channelID, CHAT_CONFIG_CHANNEL_LIST[i + 1].channelID);
+			C_ChatInfo.SwapChatChannelsByChannelIndex(i, i + 1);
 		end
 		
 		CreateChatChannelList(ChatConfigChannelSettings, GetChannelList());

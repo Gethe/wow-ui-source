@@ -49,14 +49,14 @@ function QuestBlobDataProviderMixin:OnAdded(mapCanvas)
 end
 
 function QuestBlobDataProviderMixin:OnRemoved(mapCanvas)
-	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
-
 	self:GetMap():UnregisterCallback("SetHighlightedQuestID", self.setHighlightedQuestIDCallback);
 	self:GetMap():UnregisterCallback("ClearHighlightedQuestID", self.clearHighlightedQuestIDCallback);
 	self:GetMap():UnregisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
 	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
 	self:GetMap():UnregisterCallback("SetHighlightedQuestPOI", self.setHighlightedQuestPOICallback);
 	self:GetMap():UnregisterCallback("ClearHighlightedQuestPOI", self.clearHighlightedQuestPOICallback);
+
+	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 end
 
 function QuestBlobDataProviderMixin:OnMapChanged()
@@ -120,7 +120,7 @@ function QuestBlobPinMixin:OnUpdate()
 end
 
 function QuestBlobPinMixin:TryDrawQuest(questID)
-	if questID and questID > 0 and (self.dataProvider:IsShowingWorldQuests() or not QuestUtils_IsQuestWorldQuest(questID)) then
+	if questID and questID > 0 and (self.dataProvider:IsShowingWorldQuests() or not QuestUtils_IsQuestWorldQuest(questID)) and not QuestUtils_IsQuestBonusObjective(questID) then
 		self:DrawBlob(questID, true);
 	end
 end

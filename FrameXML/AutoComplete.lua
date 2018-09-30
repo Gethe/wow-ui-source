@@ -32,10 +32,6 @@ AUTOCOMPLETE_LIST_TEMPLATES = {
 		include = bit.bor(AUTOCOMPLETE_FLAG_IN_GUILD,AUTOCOMPLETE_FLAG_FRIEND,AUTO_COMPLETE_ACCOUNT_CHARACTER),
 		exclude = AUTOCOMPLETE_FLAG_NONE,
 	},
-	FRIENDLY_CHARS_NOT_BNET = {
-		include = bit.bor(AUTOCOMPLETE_FLAG_IN_GUILD,AUTOCOMPLETE_FLAG_FRIEND,AUTO_COMPLETE_ACCOUNT_CHARACTER),
-		exclude = AUTOCOMPLETE_FLAG_BNET,
-	},
 	ONLINE = {
 		include = AUTOCOMPLETE_FLAG_ONLINE,
 		exclude = AUTOCOMPLETE_FLAG_NONE,
@@ -117,7 +113,7 @@ local AUTOCOMPLETE_LIST = AUTOCOMPLETE_LIST;
 	AUTOCOMPLETE_LIST.IGNORE			= AUTOCOMPLETE_LIST_TEMPLATES.NOT_FRIEND;
 	AUTOCOMPLETE_LIST.LOOT_MASTER		= AUTOCOMPLETE_LIST_TEMPLATES.IN_GROUP;
 	AUTOCOMPLETE_LIST.WARGAME			= AUTOCOMPLETE_LIST_TEMPLATES.BNET_NOT_IN_PARTY;
-	AUTOCOMPLETE_LIST.COMMUNITY			= AUTOCOMPLETE_LIST_TEMPLATES.FRIENDLY_CHARS_NOT_BNET;
+	AUTOCOMPLETE_LIST.COMMUNITY			= AUTOCOMPLETE_LIST_TEMPLATES.ALL_OTHER_CHARS;
 
 AUTOCOMPLETE_COLOR_KEYS = 
 {
@@ -184,11 +180,18 @@ function AutoComplete_Update(parent, text, cursorPosition)
 		
 		self.parent = parent;
 		--We ask for one more result than we need so that we know whether or not results are continued
-		local possibilities = parent.autoCompleteSource(text, AUTOCOMPLETE_MAX_BUTTONS+1, cursorPosition, unpack(parent.autoCompleteParams));
+		local allowFullMatch = true;
+		local possibilities = parent.autoCompleteSource(text, AUTOCOMPLETE_MAX_BUTTONS+1, cursorPosition, allowFullMatch, unpack(parent.autoCompleteParams));
 
 		if (not possibilities) then
 			possibilities = {};
 		end
+		
+		-- We only want to show an exact match in the autocomplete dropdown if there are multiple results.
+		if (#possibilities == 1 and text == possibilities[1].name) then
+			possibilities[1] = nil;
+		end
+		
 		local realmStart = text:find("-", 1, true); 
 		if (realmStart) then
 			local realms = GetAutoCompleteRealms();
@@ -361,8 +364,8 @@ function AutoCompleteEditBox_AddHighlightedText(editBox, text)
 	end
 	local editBoxText = editBox:GetText();
 	local utf8Position = editBox:GetUTF8CursorPosition();
-	local nameInfo = editBox.autoCompleteSource(text, 1, utf8Position, unpack(editBox.autoCompleteParams))[1]; --just want first name
-	
+	local allowFullMatch = true;
+	local nameInfo = editBox.autoCompleteSource(text, 1, utf8Position, allowFullMatch, unpack(editBox.autoCompleteParams))[1]; --just want first name
 	if ( nameInfo and nameInfo.name ) then
 		--We're going to be setting the text programatically which will clear the userInput flag on the editBox. So we want to manually update the dropdown before we change the text.
 		AutoComplete_Update(editBox, editBoxText, utf8Position);

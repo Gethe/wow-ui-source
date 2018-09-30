@@ -418,7 +418,7 @@
 			<Button name="WorldStateScoreFramePrestige" inherits="WorldStateScoreColumnTemplate">
 				<Size x="16" y="16"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="$parentInset" relativePoint="TOPLEFT" x="3" y="8"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="3" y="8"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -716,12 +716,12 @@
 					</OnLoad>
 				</Scripts>
 			</Button>
-			
+
 			<Frame name="WorldStateButtonDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true" />
 			<Frame name="WorldStateScoreButton1" inherits="WorldStateScoreTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentInset" relativePoint="TOPLEFT" x="4" y="-4"/>
-					<Anchor point="TOPRIGHT" relativeTo="$parentInset" relativePoint="TOPRIGHT" x="-4" y="-4"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="4" y="-4"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Inset" relativePoint="TOPRIGHT" x="-4" y="-4"/>
 				</Anchors>
 			</Frame>
 			<ScrollFrame name="WorldStateScoreScrollFrame" inherits="FauxScrollFrameTemplate">
@@ -729,8 +729,8 @@
 					<AbsDimension x="300" y="300"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentInset" x="4" y="-4"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentInset" x="-27" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="4" y="-4"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" x="-27" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">

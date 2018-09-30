@@ -178,6 +178,7 @@ function ChannelRosterButtonMixin:OnClick(button)
 		dropdown.channelType = channel:GetChannelType();
 		dropdown.guid = guid;
 		dropdown.isSelf = self:IsLocalPlayer();
+		dropdown.isOffline = (self:IsConnected() == false);
 		dropdown.voiceChannel = channel:GetVoiceChannel();
 		dropdown.voiceChannelID = channel:GetVoiceChannelID();
 		if dropdown.voiceChannelID and guid then

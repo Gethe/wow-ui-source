@@ -205,6 +205,7 @@
 		<Scripts>
 			<OnEvent method="OnEvent"/>
 			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 			<OnEnter>
 				self.OverlayFrame.Text:Show(); 
 			</OnEnter>

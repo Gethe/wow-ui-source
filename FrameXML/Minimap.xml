@@ -202,7 +202,7 @@
 										</Anchor>
 									</Anchors>
 								</Texture>
-								<Texture name="MinimapCompassTexture" file="Interface\Minimap\CompassRing">
+								<Texture name="MinimapCompassTexture" file="Interface\Minimap\CompassRing" scale=".7">
 									<Size>
 										<AbsDimension x="365" y="365"/>
 									</Size>

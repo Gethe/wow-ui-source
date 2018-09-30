@@ -239,17 +239,6 @@
 						<Anchor point="TOPRIGHT" x="-2" y="-21"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBtnCornerRight" inherits="UI-Frame-BtnCornerRight" hidden="false">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentButtonBottomBorder" inherits="_UI-Frame-BtnBotTile">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-23" y="2"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBtnCornerRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>

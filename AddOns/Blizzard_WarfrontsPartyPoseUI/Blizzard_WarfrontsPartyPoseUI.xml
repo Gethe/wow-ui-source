@@ -4,16 +4,18 @@
 		<Anchors>
 			<Anchor point="CENTER" x="5" y="5"/>
 		</Anchors>
-		<Layers>
-			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture parentKey="Topper">
-					<Anchors>
-						<Anchor point="BOTTOM" relativePoint="TOP"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
+			<Frame parentKey="OverlayElements" frameLevel="510" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Topper">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 			<ModelScene parentKey="ModelScene" useParentLevel="true" inherits="PartyPoseModelFrameTemplate" />
 			<Button parentKey="LeaveButton" inherits="UIPanelButtonNoTooltipResizeToFitTemplate">
 				<KeyValues>

@@ -60,7 +60,7 @@
 			<Layer level="OVERLAY">
 				<FontString parentKey="Label" inherits="GameFontHighlight" >
 					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent.Bar" relativePoint="TOP" y="7"/>
+						<Anchor point="TOP" y="-3"/>
 					</Anchors>
 				</FontString>
 			</Layer>

@@ -17,6 +17,7 @@ if tbl then
 	setfenv(1, tbl);
 	
 	Import("pairs");
+	Import("select");
 	
 	function Mixin(object, ...)
 		for i = 1, select("#", ...) do

@@ -17,5 +17,5 @@ local textureKitRegions = {
 function UIWidgetTemplateIconTextAndBackgroundMixin:Setup(widgetInfo)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
 	SetupTextureKits(widgetInfo.textureKitID, self, textureKitRegions, true);
-	self.Text:SetText(widgetInfo.value);
+	self.Text:SetText(widgetInfo.text);
 end

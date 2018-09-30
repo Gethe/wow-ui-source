@@ -387,59 +387,6 @@ local CALENDAR_MONTH_NAMES = {
 
 local CALENDAR_EVENTCOLOR_MODERATOR = {r=0.54, g=0.75, b=1.0};
 
-local CALENDAR_INVITESTATUS_INFO = {
-	["UNKNOWN"] = {
-		name		= UNKNOWN,
-		color		= NORMAL_FONT_COLOR,
---		colorCode	= NORMAL_FONT_COLOR_CODE,
-	},
-	[CALENDAR_INVITESTATUS_CONFIRMED] = {
-		name		= CALENDAR_STATUS_CONFIRMED,
-		color		= GREEN_FONT_COLOR,
---		colorCode	= GREEN_FONT_COLOR_CODE,
-	},
-	[CALENDAR_INVITESTATUS_ACCEPTED] = {
-		name		= CALENDAR_STATUS_ACCEPTED,
-		color		= GREEN_FONT_COLOR,
---		colorCode	= GREEN_FONT_COLOR_CODE,
-	},
-	[CALENDAR_INVITESTATUS_DECLINED] = {
-		name		= CALENDAR_STATUS_DECLINED,
-		color		= RED_FONT_COLOR,
---		colorCode	= RED_FONT_COLOR_CODE,
-	},
-	[CALENDAR_INVITESTATUS_OUT] = {
-		name		= CALENDAR_STATUS_OUT,
-		color		= RED_FONT_COLOR,
---		colorCode	= RED_FONT_COLOR_CODE,
-	},
-	[CALENDAR_INVITESTATUS_STANDBY] = {
-		name		= CALENDAR_STATUS_STANDBY,
-		color		= ORANGE_FONT_COLOR,
---		colorCode	= ORANGE_FONT_COLOR_CODE,
-	},
-	[CALENDAR_INVITESTATUS_INVITED] = {
-		name		= CALENDAR_STATUS_INVITED,
-		color		= NORMAL_FONT_COLOR,
---		colorCode	= NORMAL_FONT_COLOR_CODE,
-	},
-	[CALENDAR_INVITESTATUS_SIGNEDUP] = {
-		name		= CALENDAR_STATUS_SIGNEDUP,
-		color		= GREEN_FONT_COLOR,
---		colorCode	= GREEN_FONT_COLOR_CODE,
-	},
-	[CALENDAR_INVITESTATUS_NOT_SIGNEDUP] = {
-		name		= CALENDAR_STATUS_NOT_SIGNEDUP,
-		color		= NORMAL_FONT_COLOR,
---		colorCode	= NORMAL_FONT_COLOR_CODE,
-	},
-	[CALENDAR_INVITESTATUS_TENTATIVE] = {
-		name		= CALENDAR_STATUS_TENTATIVE,
-		color		= ORANGE_FONT_COLOR,
---		colorCode	= ORANGE_FONT_COLOR_CODE,
-	},
-};
-
 local CALENDAR_CALENDARTYPE_TOOLTIP_NAMEFORMAT = {
 	["PLAYER"] = {
 		[""]				= "%s",
@@ -944,10 +891,6 @@ local function _CalendarFrame_GetEventColor(calendarType, modStatus, inviteStatu
 	return NORMAL_FONT_COLOR;
 end
 
-local function _CalendarFrame_SafeGetInviteStatusInfo(inviteStatus)
-	return CALENDAR_INVITESTATUS_INFO[inviteStatus] or CALENDAR_INVITESTATUS_INFO["UNKNOWN"];
-end
-
 local function _CalendarFrame_ResetClassData()
 	for _, classData in next, CalendarClassData do
 		for i in next, classData.counts do
@@ -1187,6 +1130,7 @@ function CalendarFrame_OnHide(self)
 		_G[dayButtonName.."OverlayFrameTexture"]:SetTexture();
 	end
 
+	C_Calendar.SetNextClubId(nil);
 	PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
 end
 
@@ -2550,7 +2494,7 @@ function CalendarDayButton_OnEnter(self)
 				end
 			else
 				if ( _CalendarFrame_IsSignUpEvent(event.calendarType, event.inviteType) ) then
-					local inviteStatusInfo = _CalendarFrame_SafeGetInviteStatusInfo(event.inviteStatus);
+					local inviteStatusInfo = CalendarUtil.GetCalendarInviteStatusInfo(event.inviteStatus);
 					if ( event.inviteStatus == CALENDAR_INVITESTATUS_NOT_SIGNEDUP or
 							event.inviteStatus == CALENDAR_INVITESTATUS_SIGNEDUP ) then
 						text = inviteStatusInfo.name;
@@ -3451,7 +3395,7 @@ function CalendarViewEventInviteListScrollFrame_Update()
 			buttonClass:SetTextColor(classColor.r, classColor.g, classColor.b);
 			-- setup status
 			local buttonStatus = _G[buttonName.."Status"];
-			local inviteStatusInfo = _CalendarFrame_SafeGetInviteStatusInfo(inviteInfo.inviteStatus);
+			local inviteStatusInfo = CalendarUtil.GetCalendarInviteStatusInfo(inviteInfo.inviteStatus);
 			buttonStatus:SetText(inviteStatusInfo.name);
 			buttonStatus:SetTextColor(inviteStatusInfo.color.r, inviteStatusInfo.color.g, inviteStatusInfo.color.b);
 
@@ -3686,8 +3630,17 @@ function CalendarCreateEventFrame_Update()
 		CalendarCreateEventFrame.calendarType = nil;
 		CalendarCreateEventTexture_Update();
 		-- reset the community selected
-		UIDropDownMenu_SetSelectedValue(CalendarCreateEventCommunityDropDown, nil);
-		UIDropDownMenu_SetText(CalendarCreateEventCommunityDropDown, CALENDER_INVITE_SELECT_COMMUNITY);
+		local nextClubId = C_Calendar.GetNextClubId();
+		local clubInfo = nextClubId and C_Club.GetClubInfo(nextClubId) or nil;
+		if clubInfo ~= nil then
+			C_Calendar.EventSetClubId(nextClubId);
+			UIDropDownMenu_SetSelectedValue(CalendarCreateEventCommunityDropDown, clubInfo.name);
+			UIDropDownMenu_SetText(CalendarCreateEventCommunityDropDown, clubInfo.name);
+		else
+			C_Calendar.EventClearClubId();
+			UIDropDownMenu_SetSelectedValue(CalendarCreateEventCommunityDropDown, nil);
+			UIDropDownMenu_SetText(CalendarCreateEventCommunityDropDown, CALENDER_INVITE_SELECT_COMMUNITY);
+		end
 		-- hide the creator and the community name
 		CalendarCreateEventCreatorName:Hide();
 		CalendarCreateEventCommunityName:Hide();
@@ -4108,7 +4061,7 @@ end
 function CalendarCreateEventCommunityDropDown_Initialize(self)
 	local clubs = C_Club.GetSubscribedClubs()
 	local eventType = CalendarCreateEventFrame.selectedEventType;
-	local selectedClubId = C_Calendar.EventGetClubID();
+	local selectedClubId = C_Calendar.EventGetClubId();
 	if (eventType) then
 		local info = UIDropDownMenu_CreateInfo();
 		for i, clubInfo in ipairs(clubs) do
@@ -4129,7 +4082,7 @@ function CalendarCreateEventCommunityDropDown_OnClick(self, clubId)
 		return;
 	end
 	UIDropDownMenu_SetSelectedValue(CalendarCreateEventCommunityDropDown, clubInfo.name);
-	C_Calendar.EventSetClubID(clubId);
+	C_Calendar.EventSetClubId(clubId);
 	CalendarCreateEventCreateButton_Update();
 end
 
@@ -4303,7 +4256,7 @@ function CalendarCreateEventInviteListScrollFrame_Update()
 			buttonClass:SetTextColor(classColor.r, classColor.g, classColor.b);
 			-- setup status
 			local buttonStatus = _G[buttonName.."Status"];
-			local inviteStatusInfo = _CalendarFrame_SafeGetInviteStatusInfo(inviteInfo.inviteStatus);
+			local inviteStatusInfo = CalendarUtil.GetCalendarInviteStatusInfo(inviteInfo.inviteStatus);
 			buttonStatus:SetText(inviteStatusInfo.name);
 			buttonStatus:SetTextColor(inviteStatusInfo.color.r, inviteStatusInfo.color.g, inviteStatusInfo.color.b);
 
@@ -4665,7 +4618,7 @@ end
 
 function CalendarCreateEventCreateButton_Update()
 	if ( CalendarCreateEventFrame.mode == "create" ) then
-		if ( C_Calendar.CanAddEvent() and (C_Calendar.EventGetCalendarType() ~= "COMMUNITY_EVENT" or  C_Calendar.EventGetClubID() ~= nil) ) then
+		if ( C_Calendar.CanAddEvent() and (C_Calendar.EventGetCalendarType() ~= "COMMUNITY_EVENT" or  C_Calendar.EventGetClubId() ~= nil) ) then
 			CalendarCreateEventCreateButton:Enable();
 		else
 			CalendarCreateEventCreateButton:Disable();

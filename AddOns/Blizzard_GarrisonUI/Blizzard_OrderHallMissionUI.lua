@@ -164,7 +164,8 @@ function OrderHallMission:SetupTabs()
 		local tab = self["Tab"..tabList[1]];
 		local prevTab = tab;
 		tab:ClearAllPoints();
-		tab:SetPoint("BOTTOMLEFT", self, 7, -31);
+
+		tab:SetPoint("BOTTOMLEFT", self, tab.xOffset or 7, tab.yOffset or -31);
 		tab:Show();
 
 		for i = 2, #tabList do

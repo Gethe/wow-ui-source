@@ -1304,8 +1304,8 @@
 				</Texture>
 				<Texture parentKey="TitleBg" inherits="_UI-Frame-TitleTileBg">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="2" y="-3"/>
-						<Anchor point="TOPRIGHT" x="-25" y="-3"/>
+						<Anchor point="TOPLEFT" x="2" y="-1"/>
+						<Anchor point="TOPRIGHT" x="-25" y="-1"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -2073,7 +2073,7 @@
     Help Plate System
 *******************************************************************************
 -->
-	<Button name="MainHelpPlateButton" virtual="true">
+	<Button name="MainHelpPlateButton" frameLevel="510" virtual="true">
 		<Size x="64" y="64"/>
 		<HitRectInsets>
 			<AbsInset left="20" right="20" top="20" bottom="20"/>

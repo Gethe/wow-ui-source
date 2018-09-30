@@ -20,7 +20,7 @@
 				</Texture>
 				<Texture parentKey="SingleBarLargeUpper" atlas="hud-MainMenuBar-experiencebar-large-single" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.SingleBarLarge" y="8"/>
+						<Anchor point="TOP" relativeKey="$parent.SingleBarLarge" y="9"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="SingleBarSmall" atlas="hud-MainMenuBar-experiencebar-small-single" useAtlasSize="true" hidden="true">
@@ -30,7 +30,7 @@
 				</Texture> 
 				<Texture parentKey="SingleBarSmallUpper" atlas="hud-MainMenuBar-experiencebar-small-single" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.SingleBarSmall" y="8"/>
+						<Anchor point="TOP" relativeKey="$parent.SingleBarSmall" y="9"/>
 					</Anchors>
 				</Texture> 
 			</Layer>

@@ -139,6 +139,7 @@
 								
 								local alliedRaceFrame = self:GetParent():GetParent(); 
 								alliedRaceFrame:UpdateModel(self.MaleModelID);
+								alliedRaceFrame:SetRaceNameForGender("male");
 								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER); 
 							</OnClick>
 						</Scripts>
@@ -154,6 +155,7 @@
 								alliedRaceModelFrame.AlliedRacesMaleButton:SetChecked(false);
 								local alliedRaceFrame = self:GetParent():GetParent(); 
 								alliedRaceFrame:UpdateModel(self.FemaleModelID);
+								alliedRaceFrame:SetRaceNameForGender("female");
 								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER); 
 							</OnClick>
 						</Scripts>
@@ -389,9 +391,10 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
+			<OnLoad  method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide  method="OnHide"/>
+			<OnShow  method="OnShow"/>
 		</Scripts> 
 	</Frame>
 </Ui>

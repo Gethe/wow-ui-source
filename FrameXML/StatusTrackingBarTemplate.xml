@@ -4,9 +4,9 @@
 		<Size x="804" y="11"/>
 		<Frames>
 			<StatusBar parentKey="StatusBar" frameStrata="LOW" drawLayer="BORDER" inherits="AnimatedStatusBarTemplate">
-				<Size x="804" y="8"/>
+				<Size x="804" y="10"/>
 				<Anchors>
-					<Anchor point="RIGHT" x="0" y="3"/>
+					<Anchor point="RIGHT" x="0" y="0"/>
 				</Anchors>
 				<BarTexture parentKey="BarTexture" file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0.58" g="0.0" b="0.55"/>
@@ -33,7 +33,7 @@
 					<Layer level="ARTWORK" textureSubLevel="5">
 						<FontString parentKey="Text" inherits="TextStatusBarText" hidden="true">
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.StatusBar" relativePoint="CENTER" x="0" y="3"/>
+								<Anchor point="CENTER" relativeKey="$parent.StatusBar" relativePoint="CENTER" x="0" y="1"/>
 							</Anchors>
 						</FontString>
 					</Layer>

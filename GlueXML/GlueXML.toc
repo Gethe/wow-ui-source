@@ -15,6 +15,7 @@ GlueFonts.xml
 GlueFontStyles.xml
 GlueLocalization.xml
 ..\SharedXML\LayoutFrame.xml
+..\SharedXML\PanelThemes.lua
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\SharedBasicControls.xml

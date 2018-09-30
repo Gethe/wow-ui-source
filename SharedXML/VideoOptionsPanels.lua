@@ -187,6 +187,13 @@ function Graphics_Refresh(self)
 	VideoOptionsPanel_Refresh( Advanced_);
 end
 
+function Advanced_Refresh(self)
+	for i, control in ipairs(self.controls) do
+		control.selectedID = nil;
+	end
+	VideoOptionsPanel_Refresh(self);
+end
+
 function VideoOptionsPanel_Refresh (self)
 	inrefresh = true;
 	BlizzardOptionsPanel_Refresh(self);
@@ -926,7 +933,7 @@ function Advanced_OnLoad (self)
 	self.hasApply = true;
 
 	VideoOptionsPanel_OnLoad(self);
-	BlizzardOptionsPanel_OnLoad(self, VideoOptionsPanel_Okay, VideoOptionsPanel_Cancel, Advanced_Default, VideoOptionsPanel_Refresh);
+	BlizzardOptionsPanel_OnLoad(self, VideoOptionsPanel_Okay, VideoOptionsPanel_Cancel, Advanced_Default, Advanced_Refresh);
 	OptionsFrame_AddCategory(VideoOptionsFrame, self);
 
 	if(true) then

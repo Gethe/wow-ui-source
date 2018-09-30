@@ -118,11 +118,11 @@ function WorldQuestDataProviderMixin:OnAdded(mapCanvas)
 end
 
 function WorldQuestDataProviderMixin:OnRemoved(mapCanvas)
-	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
-
 	self:GetMap():UnregisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
 	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
 	self:GetMap():UnregisterCallback("SetBountyQuestID", self.setBountyQuestIDCallback);
+
+	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 end
 
 function WorldQuestDataProviderMixin:SetFocusedQuestID(questID)
@@ -480,7 +480,7 @@ end
 WorldQuestPingPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function WorldQuestPingPinMixin:OnLoad()
-	self:SetScalingLimits(1, 0.5, 0.5);
+	self:SetScalingLimits(1, 0.65, 0.65);
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_WORLD_QUEST_PING");
 end
 

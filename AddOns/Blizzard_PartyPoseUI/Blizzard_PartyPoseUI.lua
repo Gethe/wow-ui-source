@@ -120,7 +120,7 @@ end
 function PartyPoseRewardsMixin:CheckForIndefinitePause()
 	if not self:GetParent():GetParent():CanResumeAnimation() then
 		self:PauseRewardAnimation();
-		self.isPlayingRewards = false; 
+		self.isPlayingRewards = false;
 	end
 end
 
@@ -166,12 +166,12 @@ end
 
 function PartyPoseMixin:AddReward(name, texture, quality, id, objectType, objectLink, quantity, originalQuantity, isCurrencyContainer)
 	local rewardData = {
-		name = name, 
-		texture = texture, 
-		quality = quality, 
-		id = id, 
-		objectType = objectType, 
-		objectLink = objectLink, 
+		name = name,
+		texture = texture,
+		quality = quality,
+		id = id,
+		objectType = objectType,
+		objectLink = objectLink,
 		quantity = quantity,
 		originalQuantity = originalQuantity,
 		isCurrencyContainer = isCurrencyContainer,
@@ -266,68 +266,89 @@ function PartyPoseMixin:SetModelScene(sceneID, partyCategory, forceUpdate)
 	self.ModelScene:Show();
 end
 
-function PartyPoseMixin:PlaySounds(partyPoseInfo, winnerFactionGroup) 
-	local factionGroup = UnitFactionGroup("player"); 
+function PartyPoseMixin:PlaySounds(partyPoseInfo, winnerFactionGroup)
+	local factionGroup = UnitFactionGroup("player");
 	if (factionGroup == winnerFactionGroup) then
-		PlaySound(partyPoseInfo.victorySoundKitID); 
-	else 
-		PlaySound(partyPoseInfo.defeatSoundKitID); 
+		PlaySound(partyPoseInfo.victorySoundKitID);
+	else
+		PlaySound(partyPoseInfo.defeatSoundKitID);
 	end
 end
 
-function PartyPoseMixin:SetupTheme(styleData)
-	if self.Topper then
-		self.Topper:SetPoint("BOTTOM", self.TopBorder, "TOP", 0, styleData.topperOffset);
-		self.Topper:SetAtlas(styleData.Topper, true);
+do
+	AnchorUtil.AddNineSliceLayout("PartyPoseFrameTemplate", {
+		TopLeftCorner =	{ atlas = "scoreboard-frameborder-topleft", x = 0, y = 0, },
+		TopRightCorner =	{ atlas = "scoreboard-frameborder-topright", x = 0, y = 0, },
+		BottomLeftCorner =	{ atlas = "scoreboard-frameborder-bottomleft", x = 0, y = 0, },
+		BottomRightCorner =	{ atlas = "scoreboard-frameborder-bottomright", x = 0, y = 0, },
+		TopEdge = { atlas = "scoreboard-frameborder-top", },
+		BottomEdge = { atlas = "scoreboard-frameborder-bottom",  },
+		LeftEdge = { atlas = "scoreboard-frameborder-left", },
+		RightEdge = { atlas = "scoreboard-frameborder-right",  },
+	});
 
-		if styleData.topperBehindFrame then
-			self.Topper:SetDrawLayer("BACKGROUND", -7);
-		else
-			self.Topper:SetDrawLayer("ARTWORK", 2);
+	AnchorUtil.AddNineSliceLayout("PartyPoseKit", {
+		mirrorLayout = true,
+		TopLeftCorner =	{ atlas = "scoreboard-%s-corner", x = 0, y = 0, },
+		TopRightCorner =	{ atlas = "scoreboard-%s-corner", x = 0, y = 0, },
+		BottomLeftCorner =	{ atlas = "scoreboard-%s-corner", x = 0, y = 0, },
+		BottomRightCorner =	{ atlas = "scoreboard-%s-corner", x = 0, y = 0, },
+		TopEdge = { atlas = "_scoreboard-%s-tiletop", mirrorLayout = false, },
+		BottomEdge = { atlas = "_scoreboard-%s-tilebottom", mirrorLayout = false, },
+		LeftEdge = { atlas = "!scoreboard-%s-tileleft", mirrorLayout = false, },
+		RightEdge = { atlas = "!scoreboard-%s-tileright", mirrorLayout = false, },
+	});
+
+	function PartyPoseMixin:SetupTheme(styleData)
+		if self.OverlayElements.Topper then
+			self.OverlayElements.Topper:SetPoint("BOTTOM", self.Border, "TOP", 0, styleData.topperOffset);
+			self.OverlayElements.Topper:SetAtlas(styleData.Topper, true);
 		end
+
+		self.TitleBg:ClearAllPoints();
+		self.TitleBg:SetPoint("CENTER", self.ModelScene, "TOP", 0, 25);
+		self.TitleBg:SetAtlas(styleData.TitleBG, true);
+		self.TitleBg:SetDrawLayer("OVERLAY", 6);
+		self.TitleText:SetDrawLayer("OVERLAY", 7);
+
+		if self.ModelScene then
+			self.ModelScene.Bg:SetAtlas(styleData.ModelSceneBG);
+		end
+
+		-- TODO: Potentially move this to theme data to avoid special case code like this.
+		self.Border:ClearAllPoints();
+		self.Border:SetPoint("TOPLEFT", self, "TOPLEFT", -(styleData.borderPaddingX or 0), styleData.borderPaddingY or 0);
+		self.Border:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", styleData.borderPaddingX or 0, -(styleData.borderPaddingY or 0));
+
+		AnchorUtil.ApplyNineSliceLayoutByName(self.Border, styleData.nineSliceLayout, styleData.nineSliceTextureKitName);
 	end
 
-	self.TitleBg:SetAtlas(styleData.TitleBG, true);
-	
-	self.TitleText:SetDrawLayer("OVERLAY", 7);
-	self.TitleBg:SetDrawLayer("OVERLAY", 6);
-	
-	self.TitleBg:ClearAllPoints();
-	self.TitleBg:SetPoint("CENTER", self.ModelScene, "TOP", 0, 25);
+	function PartyPoseMixin:LoadScreenData(mapID, winner, styleData)
+		local partyPoseInfo = C_PartyPose.GetPartyPoseInfoByMapID(mapID);
 
-	if self.ModelScene then
-		self.ModelScene.Bg:SetAtlas(styleData.ModelSceneBG);
+		if styleData.registerForWidgets then
+			UIWidgetManager:RegisterWidgetSetContainer(partyPoseInfo.widgetSetID, self.Score);
+		end
+
+		local winnerFactionGroup = PLAYER_FACTION_GROUP[winner];
+		local playerFactionGroup = UnitFactionGroup("player");
+
+		if (winnerFactionGroup == playerFactionGroup) then
+			self.TitleText:SetText(PARTY_POSE_VICTORY);
+			self:SetModelScene(partyPoseInfo.victoryModelSceneID, styleData.partyCategory);
+		else
+			self.TitleText:SetText(PARTY_POSE_DEFEAT);
+			self:SetModelScene(partyPoseInfo.defeatModelSceneID, styleData.partyCategory);
+		end
+
+		if styleData.addModelSceneActors then
+			self:AddModelSceneActors(playerFactionGroup);
+		end
+
+		self:SetupTheme(styleData[playerFactionGroup]);
+		self:SetLeaveButtonText();
+		self:PlaySounds(partyPoseInfo, winnerFactionGroup);
 	end
-
-	self.TopLeftCorner:SetAtlas(styleData.TopLeft, true);
-	self.TopRightCorner:SetAtlas(styleData.TopRight, true);
-	self.BotLeftCorner:SetAtlas(styleData.BottomLeft, true);
-	self.BotRightCorner:SetAtlas(styleData.BottomRight, true);
-
-	self.TopBorder:SetAtlas(styleData.Top, true);
-	self.BottomBorder:SetAtlas(styleData.Bottom, true);
-	self.LeftBorder:SetAtlas(styleData.Left, true);
-	self.RightBorder:SetAtlas(styleData.Right, true);
-
-	self.TopLeftCorner:SetTexCoord(0, 1, 0, 1);
-	self.TopRightCorner:SetTexCoord(1, 0, 0, 1);
-	self.BotLeftCorner:SetTexCoord(0, 1, 1, 0);
-	self.BotRightCorner:SetTexCoord(1, 0, 1, 0);
-
-	self.Background:ClearAllPoints();
-	self.Background:SetPoint("TOPLEFT", self.TopLeftCorner, 4, -4);
-	self.Background:SetPoint("BOTTOMRIGHT", self.BotRightCorner, -4, 4);
-
-	local border = AnchorUtil.CreateNineSlice(self);
-	border:SetTopLeftCorner(self.TopLeftCorner, -20, 20);
-	border:SetTopRightCorner(self.TopRightCorner, 20, 20);
-	border:SetBottomLeftCorner(self.BotLeftCorner, -20, styleData.bottomCornerYOffset);
-	border:SetBottomRightCorner(self.BotRightCorner, 20, styleData.bottomCornerYOffset);
-	border:SetTopEdge(self.TopBorder);
-	border:SetLeftEdge(self.LeftBorder);
-	border:SetRightEdge(self.RightBorder);
-	border:SetBottomEdge(self.BottomBorder);
-	border:Apply();
 end
 
 function PartyPoseMixin:OnLoad()

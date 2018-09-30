@@ -15,27 +15,6 @@
 		<Anchors>
 			<Anchor point="TOPLEFT" x="224" y="0"/>
 		</Anchors>
-		<Layers>
-			<Layer level="BORDER">
-				<Texture name="$parentTopTileStreaks" inherits="_UI-Frame-TopTileStreaks" parentKey="TopTileStreaks">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-5" y="-21"/>
-						<Anchor point="TOPRIGHT" x="-2" y="-21"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBtnCornerRight" inherits="UI-Frame-BtnCornerRight" hidden="false">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentButtonBottomBorder" inherits="_UI-Frame-BtnBotTile">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-23" y="2"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBtnCornerRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
 			<Frame parentKey="NoScenariosCover" enableMouse="true" hidden="true" toplevel="true">
 				<Anchors>
@@ -170,12 +149,12 @@
 										_G[myName.."ScrollBackground"]:SetParent(_G[myName.."ScrollBar"]);
 										_G[myName.."ScrollBackgroundTopLeft"]:SetParent(_G[myName.."ScrollBar"]);
 										_G[myName.."ScrollBackgroundBottomRight"]:SetParent(_G[myName.."ScrollBar"]);
-										
+
 										local scrollBar = _G[myName.."ScrollBar"];
 										scrollBar:ClearAllPoints();
 										scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 3, 7);
 										scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", 3, -8);
-										
+
 										self.scrollBarHideable = true;
 										ScrollFrame_OnLoad(self);
 									</OnLoad>

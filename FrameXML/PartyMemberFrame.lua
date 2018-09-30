@@ -329,7 +329,11 @@ function PartyMemberFrame_UpdateNotPresentIcon(self)
 		self.notPresentIcon.Border:Hide();
 		self.notPresentIcon.tooltip = PARTY_PHASED_MESSAGE;
 		if ( notInSameWarMode ) then
-			self.notPresentIcon.tooltip = PARTY_WARMODE_MESSAGE;
+			if C_PvP.IsWarModeDesired() then
+				self.notPresentIcon.tooltip = PARTY_PLAYER_WARMODE_DISABLED;
+			else
+				self.notPresentIcon.tooltip = PARTY_PLAYER_WARMODE_ENABLED;
+			end
 		end
 		self.notPresentIcon:Show();
 	else

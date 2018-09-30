@@ -114,11 +114,12 @@ Import("HTML_END");
 Import("LE_TOKEN_RESULT_SUCCESS");
 Import("LE_TOKEN_RESULT_ERROR_OTHER");
 Import("LE_TOKEN_RESULT_ERROR_DISABLED");
-Import("LE_TOKEN_RESULT_ERROR_BALANCE_NEAR_CAP")
+Import("LE_TOKEN_RESULT_ERROR_BALANCE_NEAR_CAP");
 Import("LE_TOKEN_REDEEM_TYPE_GAME_TIME");
 Import("LE_TOKEN_REDEEM_TYPE_BALANCE");
 Import("SOUNDKIT");
-Import("PortraitFrameTemplateMixin");
+Import("AnchorUtil");
+Import("AnchorMixin");
 
 BalanceEnabled = nil;
 BalanceAmount = 0;
@@ -305,12 +306,6 @@ function WowTokenRedemptionFrame_OnLoad(self)
 	WowTokenRedemptionFrame_Update(self);
 	C_WowTokenSecure.CancelRedeem();
 	self:SetPoint("CENTER", UIParent, "CENTER", 0, 60);
-
-	self.portrait:Hide();
-	self.PortraitFrame:Hide();
-	self.TopLeftCorner:Show();
-	self.TopBorder:SetPoint("TOPLEFT", self.TopLeftCorner, "TOPRIGHT",  0, 0);
-	self.LeftBorder:SetPoint("TOPLEFT", self.TopLeftCorner, "BOTTOMLEFT",  0, 0);
 
 	self:RegisterEvent("TOKEN_REDEEM_FRAME_SHOW");
 	self:RegisterEvent("TOKEN_REDEEM_GAME_TIME_UPDATED");

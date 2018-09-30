@@ -241,9 +241,10 @@
 							<TexCoords left="0.00000000" right="1.00000000" top="0.00781250" bottom="0.34375000"/>
 						</Texture>
 						<Texture parentKey="BottomBar" file="Interface\Common\bluemenu-goldborder-horiz" horizTile="true">
-							<Size x="80" y="43"/>
+							<Size x="0" y="43"/>
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" relativeKey="$parent.BLCorner" relativePoint="BOTTOMRIGHT" x="0" y="0" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BRCorner" relativePoint="BOTTOMLEFT" x="0" y="0" />
 							</Anchors>
 							<TexCoords left="0.00000000" right="1.00000000" top="0.35937500" bottom="0.69531250"/>
 						</Texture>
@@ -255,17 +256,6 @@
 					<Anchor point="TOPLEFT" x="3" y="1"/>
 					<Anchor point="BOTTOMRIGHT" x="0" y="-3"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true" hidden="true">
-							<Size x="3" y="0"/>
-							<Anchors>
-								<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderLeft" relativePoint="TOPLEFT" x="0" y="0"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBorderLeft" relativePoint="BOTTOMRIGHT" x="0" y="-4"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Scripts>
 					<OnLoad>
 						self.Bg:Hide();

@@ -152,7 +152,7 @@ end
 
 function QuickJoinToastMixin:UpdateDisplayedFriendCount()
 	local _, numBNetOnline = BNGetNumFriends();
-	local _, numWoWOnline = GetNumFriends();
+	local numWoWOnline = C_FriendList.GetNumOnlineFriends() or 0;
 	self.FriendCount:SetText(numBNetOnline + numWoWOnline);
 end
 
@@ -524,8 +524,8 @@ function QuickJoinToast_GetPriorityFromQueue(queue)
 
 	local itemLevel = GetAverageItemLevel();
 	if ( queueData.queueType == "lfglist" ) then
-		local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted = C_LFGList.GetSearchResultInfo(queueData.lfgListID);
-		local fullName, shortName, categoryID, groupID, iLevel, filters, minLevel, maxPlayers, displayType, orderIndex, useHonorLevel, showQuickJoin = C_LFGList.GetActivityInfo(activityID);
+		local searchResultInfo = C_LFGList.GetSearchResultInfo(queueData.lfgListID);
+		local fullName, shortName, categoryID, groupID, iLevel, filters, minLevel, maxPlayers, displayType, orderIndex, useHonorLevel, showQuickJoin = C_LFGList.GetActivityInfo(searchResultInfo.activityID);
 		--Filter by activity flags
 		if ( not showQuickJoin ) then
 			return 0;
@@ -603,7 +603,7 @@ function QuickJoinToast_GetPriorityFromPlayers(players)
 	local priority = 0;
 	for i=1, #players do
 		local player = players[i].guid;
-		if ( BNGetGameAccountInfoByGUID(player) or IsCharacterFriend(player) ) then
+		if ( BNGetGameAccountInfoByGUID(player) or C_FriendList.IsFriend(player) ) then
 			priority = priority + QUICK_JOIN_CONFIG.PLAYER_FRIEND_VALUE;
 		end
 		if ( IsGuildMember(player) ) then

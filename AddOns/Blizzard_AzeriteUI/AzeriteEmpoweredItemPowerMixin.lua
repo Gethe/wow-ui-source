@@ -397,6 +397,26 @@ function AzeriteEmpoweredItemPowerMixin:IsSpecAllowed()
 	return self.isSpecAllowed;
 end
 
+function AzeriteEmpoweredItemPowerMixin:SetFinalPowerTooltipDescriptions(tooltip)
+	local empoweredItemLocation = self.azeriteItemDataSource:GetItemLocation();
+	local titleOffset = 10; 
+	local descriptionOffset = 12; 
+
+	local finalPowers = nil;
+	if(self.owningTierFrame:IsFinalTier()) then
+		finalPowers = self.owningTierFrame:GetOwner():GetPowerIdsForFinalSelectedTier();
+	end
+
+	if(finalPowers) then 
+		tooltip:AddLine(" "); 
+		for powerIndex, powerID in ipairs(finalPowers) do 
+			local powerInfo = C_AzeriteEmpoweredItem.GetUpgradedAzeritePowerInfo(empoweredItemLocation, powerID);
+			GameTooltip_AddColoredLine(tooltip,DASH_WITH_TEXT:format(powerInfo.name), HIGHLIGHT_FONT_COLOR, true, titleOffset);
+			GameTooltip_AddNormalLine(tooltip, powerInfo.description, true, descriptionOffset);
+		end
+	end
+end
+
 function AzeriteEmpoweredItemPowerMixin:SetCanBeSelectedDetails(isTierSelectionActive, meetsPowerLevelRequirement, unlockLevel, isSpecAllowed, tierHasAnyPowersSelected)
 	local wasSelectable = self:CanBeSelected();
 
@@ -446,6 +466,8 @@ function AzeriteEmpoweredItemPowerMixin:OnEnter()
 		local itemLevel = item:GetCurrentItemLevel();
 		local itemLink = item:GetItemLink();
 		GameTooltip:SetAzeritePower(itemID, itemLevel, self:GetAzeritePowerID(), itemLink);
+
+		self:SetFinalPowerTooltipDescriptions(GameTooltip);
 
 		if self:CanBeSelected() then
 			GameTooltip:AddLine(" ");

@@ -12,6 +12,7 @@ end
 
 function PlayerReportFrameMixin:OnHide()
 	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+	self.CommentBox:SetText("");
 end
 
 function PlayerReportFrameMixin:InitiateReport(reportType, playerName, playerLocation)

@@ -151,6 +151,15 @@ function CachedLoginFrameContainer_Update(self)
 	end
 end
 
+function CachedLoginButton_OnLoad(self)
+	local buttonFontString = self:GetFontString();
+	if buttonFontString then
+		buttonFontString:ClearAllPoints();
+		buttonFontString:SetPoint("TOPLEFT", self, "TOPLEFT", 20, 0);
+		buttonFontString:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -20, 0);
+	end
+end
+
 function CachedLoginButton_OnClick(self)
 	PlaySound(SOUNDKIT.GS_LOGIN);
 
@@ -319,7 +328,7 @@ end
 function AccountLoginDropDown_OnLoad(self)
 	GlueDropDownMenu_SetWidth(self, 174);
 	GlueDropDownMenu_SetSelectedValue(self, 1);
-	AccountLoginDropDownText:SetJustifyH("LEFT");	
+	AccountLoginDropDownText:SetJustifyH("LEFT");
 	AccountLoginDropDown_SetupList();
 	GlueDropDownMenu_Initialize(self, AccountLoginDropDown_Initialize);
 end
@@ -530,5 +539,5 @@ function KoreanRatings_OnUpdate(self, elapsed)
 		SHOW_KOREAN_RATINGS = false;
 		AccountLogin_Update();
 		AccountLogin_CheckAutoLogin();
-	end	
+	end
 end

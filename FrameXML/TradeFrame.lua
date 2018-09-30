@@ -12,10 +12,10 @@ function TradeFrame_OnLoad(self)
 	self:RegisterEvent("TRADE_POTENTIAL_BIND_ENCHANT");
 	self:RegisterEvent("TRADE_POTENTIAL_REMOVE_TRANSMOG");
 	self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
-	TradeFrameInset:SetPoint("TOPLEFT", 4, -440);
-	TradeRecipientItemsInsetBg:SetAlpha(0.1);
-	TradeRecipientMoneyInsetBg:SetAlpha(0);
-	TradeRecipientEnchantInsetBg:SetAlpha(0.1);
+	FrameTemplate_SetAtticHeight(self, 440);
+	TradeRecipientItemsInset.Bg:SetAlpha(0.1);
+	TradeRecipientMoneyInset.Bg:SetAlpha(0);
+	TradeRecipientEnchantInset.Bg:SetAlpha(0.1);
 	TradeRecipientMoneyBg:SetAlpha(0.6);
 end
 
@@ -79,7 +79,7 @@ end
 function TradeFrame_UpdatePlayerItem(id)
 	local name, texture, numItems, quality, enchantment, canLoseTransmog = GetTradePlayerItemInfo(id);
 	local buttonText = _G["TradePlayerItem"..id.."Name"];
-	
+
 	-- See if its the enchant slot
 	if ( id == TRADE_ENCHANT_SLOT ) then
 		if ( name ) then
@@ -114,7 +114,7 @@ function TradeFrame_UpdatePlayerItem(id)
 	local _, dialog = StaticPopup_Visible("TRADE_POTENTIAL_REMOVE_TRANSMOG");
 	if ( dialog and dialog.data == id and not canLoseTransmog ) then
 		StaticPopup_Hide("TRADE_POTENTIAL_REMOVE_TRANSMOG");
-	end	
+	end
 end
 
 function TradeFrame_UpdateTargetItem(id)
@@ -131,7 +131,7 @@ function TradeFrame_UpdateTargetItem(id)
 		else
 			buttonText:SetText("");
 		end
-		
+
 	else
 		buttonText:SetText(name);
 		buttonText:SetTextColor(ITEM_QUALITY_COLORS[quality].r, ITEM_QUALITY_COLORS[quality].g, ITEM_QUALITY_COLORS[quality].b);
@@ -175,7 +175,7 @@ function TradeFrame_SetAcceptState(playerState, targetState)
 	end
 end
 
-function TradeFrameCancelButton_OnClick() 
+function TradeFrameCancelButton_OnClick()
 	if ( TradeFrame.acceptState == 1 ) then
 		CancelTradeAccept();
 	else

@@ -26,10 +26,10 @@ WarfrontsPartyPoseMixin = CreateFromMixins(PartyPoseMixin);
 
 function WarfrontsPartyPoseMixin:PlayRewardsAnimations()
 	self.RewardAnimations.RewardFrame:Show();
-	if (self:CanResumeAnimation()) then 
+	if (self:CanResumeAnimation()) then
 		self:PlayNextRewardAnimation();
 	end
-	self.isPlayingRewards = true; 
+	self.isPlayingRewards = true;
 end
 
 function WarfrontsPartyPoseMixin:AddActor(scene, displayID, name)
@@ -55,80 +55,47 @@ end
 do
 	local warfrontsStyleData =
 	{
+		-- Behavior
+		registerForWidgets = false,
+		addModelSceneActors = true,
+		partyCategory = LE_PARTY_CATEGORY_HOME,
+
+		-- Theme
 		Horde =
 		{
 			topperOffset = -37,
+			borderPaddingX = 30,
+			borderPaddingY = 20,
 			Topper = "scoreboard-horde-header",
-			topperBehindFrame = false,
-
 			TitleBG = "scoreboard-header-horde",
 			ModelSceneBG = "scoreboard-background-warfronts-horde",
-
-			Top = "_scoreboard-horde-tiletop",
-			Bottom = "_scoreboard-horde-tilebottom",
-			Left = "!scoreboard-horde-tileleft",
-			Right = "!scoreboard-horde-tileright",
-			TopLeft = "scoreboard-horde-corner",
-			TopRight = "scoreboard-horde-corner",
-			BottomLeft = "scoreboard-horde-corner",
-			BottomRight = "scoreboard-horde-corner",
-
-			-- one-off
-			bottomCornerYOffset = -24;
+			nineSliceLayout = "PartyPoseKit",
+			nineSliceTextureKitName = "horde",
 		},
 
 		Alliance =
 		{
 			topperOffset = -28,
+			borderPaddingX = 30,
+			borderPaddingY = 20,
 			Topper = "scoreboard-alliance-header",
-			topperBehindFrame = false,
-
 			TitleBG = "scoreboard-header-alliance",
 			ModelSceneBG = "scoreboard-background-warfronts-alliance",
-
-			Top = "_scoreboard-alliance-tiletop",
-			Bottom = "_scoreboard-alliance-tilebottom",
-			Left = "!scoreboard-alliance-tileleft",
-			Right = "!scoreboard-alliance-tileright",
-			TopLeft = "scoreboard-alliance-corner",
-			TopRight = "scoreboard-alliance-corner",
-			BottomLeft = "scoreboard-alliance-corner",
-			BottomRight = "scoreboard-alliance-corner",
-
-			-- one-off
-			bottomCornerYOffset = -20;
+			nineSliceLayout = "PartyPoseKit",
+			nineSliceTextureKitName = "alliance",
 		},
 	}
 
 	function WarfrontsPartyPoseMixin:LoadScreenData(mapID, winner)
-		local partyPoseInfo = C_PartyPose.GetPartyPoseInfoByMapID(mapID);
-
-		local playerFactionGroup = UnitFactionGroup("player");
-
-		self:SetLeaveButtonText();
-
-		local winnerFactionGroup = PLAYER_FACTION_GROUP[winner];
-		self:PlaySounds(partyPoseInfo, winnerFactionGroup);
-
-		if (winnerFactionGroup == playerFactionGroup) then
-			self.TitleText:SetText(PARTY_POSE_VICTORY);
-			self:SetModelScene(partyPoseInfo.victoryModelSceneID, LE_PARTY_CATEGORY_HOME);
-		else
-			self.TitleText:SetText(PARTY_POSE_DEFEAT);
-			self:SetModelScene(partyPoseInfo.defeatModelSceneID, LE_PARTY_CATEGORY_HOME);
-		end
-
-		self:AddModelSceneActors(playerFactionGroup);
-
-		self:SetupTheme(warfrontsStyleData[playerFactionGroup]);
+		PartyPoseMixin.LoadScreenData(self, mapID, winner, warfrontsStyleData);
 	end
 end
 
 function WarfrontsPartyPoseMixin:OnLoad()
-	self:RegisterEvent("SCENARIO_COMPLETED"); 
-	self:RegisterEvent("QUEST_LOOT_RECEIVED"); 
-	self:RegisterEvent("QUEST_CURRENCY_LOOT_RECEIVED"); 
-	PartyPoseMixin.OnLoad(self); 
+	self:RegisterEvent("SCENARIO_COMPLETED");
+	self:RegisterEvent("QUEST_LOOT_RECEIVED");
+	self:RegisterEvent("QUEST_CURRENCY_LOOT_RECEIVED");
+	PartyPoseMixin.OnLoad(self);
 	self.isPlayingRewards = false;
 end
 
@@ -143,32 +110,32 @@ function WarfrontsPartyPoseMixin:OnEvent(event, ...)
 		self:AddModelSceneActors(UnitFactionGroup("player"));
 	elseif (event == "SCENARIO_COMPLETED") then
 		self.pendingRewardData = {};
-		self.questID = ...; 
+		self.questID = ...;
 	elseif (event == "QUEST_LOOT_RECEIVED") then
 		local questID, rewardItemLink, quantity = ...;
-		if (questID == self.questID) then 
+		if (questID == self.questID) then
 			local item = Item:CreateFromItemLink(rewardItemLink);
 			item:ContinueOnItemLoad(function()
-				local id = item:GetItemID(); 
-				local quality = item:GetItemQuality(); 
+				local id = item:GetItemID();
+				local quality = item:GetItemQuality();
 				local texture = item:GetItemIcon();
 				local name = item:GetItemName();
 				self:AddReward(name, texture, quality, id, "item", rewardItemLink, quantity, quantity, false);
-				if (not self.isPlayingRewards) then 
-					self:PlayRewardsAnimations(); 
+				if (not self.isPlayingRewards) then
+					self:PlayRewardsAnimations();
 				end
 			end);
 		end
 	elseif (event == "QUEST_CURRENCY_LOOT_RECEIVED") then
-		local questID, currencyId, quantity = ...; 
-		if (questID == self.questID) then 
+		local questID, currencyId, quantity = ...;
+		if (questID == self.questID) then
 			local name, _, texture, _, _, _, _, quality = GetCurrencyInfo(currencyId);
 			local originalQuantity = quantity;
 			local isCurrencyContainer = C_CurrencyInfo.IsCurrencyContainer(currencyId, quantity);
 			name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyId, quantity, name, texture, quality);
 			self:AddReward(name, texture, quality, currencyId, "currency", currencyLink, quantity, originalQuantity, isCurrencyContainer);
-			if (not self.isPlayingRewards) then 
-				self:PlayRewardsAnimations(); 
+			if (not self.isPlayingRewards) then
+				self:PlayRewardsAnimations();
 			end
 		end
 	end

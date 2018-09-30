@@ -34,9 +34,7 @@ StaticPopupDialogs["CONFIRM_EXIT_WITH_UNSPENT_TALENT_POINTS"] = {
 	exclusive = 0,
 }
 
-
 UIPanelWindows["PlayerTalentFrame"] = { area = "left", pushable = 1, whileDead = 1, width = 666, height = 488 };
-
 
 -- global constants
 local THREE_SPEC_LGBUTTON_HEIGHT = 95;
@@ -117,22 +115,24 @@ function PlayerTalentFrame_Toggle(suggestedTalentTab)
 	local selectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
 	if ( not PlayerTalentFrame:IsShown() ) then
 		ShowUIPanel(PlayerTalentFrame);
-        if (suggestedTalentTab) then
-            PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..suggestedTalentTab]);
-		elseif (PlayerTalentFrame.lastSelectedTab) then
-			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..PlayerTalentFrame.lastSelectedTab]);
-		elseif ( not GetSpecialization() ) then
-			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..SPECIALIZATION_TAB]);
-		elseif ( GetNumUnspentTalents() > 0 ) then
-			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENTS_TAB]);
-		elseif ( selectedTab ) then
-			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..selectedTab]);
-		elseif ( AreTalentsLocked() ) then
-			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..SPECIALIZATION_TAB]);
-		else
-			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENTS_TAB]);
+		if PlayerTalentFrame:IsShown() then
+			if (suggestedTalentTab) then
+				PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..suggestedTalentTab]);
+			elseif (PlayerTalentFrame.lastSelectedTab) then
+				PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..PlayerTalentFrame.lastSelectedTab]);
+			elseif ( not GetSpecialization() ) then
+				PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..SPECIALIZATION_TAB]);
+			elseif ( GetNumUnspentTalents() > 0 ) then
+				PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENTS_TAB]);
+			elseif ( selectedTab ) then
+				PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..selectedTab]);
+			elseif ( AreTalentsLocked() ) then
+				PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..SPECIALIZATION_TAB]);
+			else
+				PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENTS_TAB]);
+			end
+			TalentMicroButtonAlert:Hide();
 		end
-		TalentMicroButtonAlert:Hide();
 	else
 		PlayerTalentFrame_Close();
 	end
@@ -195,8 +195,8 @@ function PlayerTalentFrame_OnLoad(self)
 
 	-- setup portrait texture
 	local _, class = UnitClass("player");
-	PlayerTalentFramePortrait:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles");
-	PlayerTalentFramePortrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[strupper(class)]));
+	PortraitFrameTemplate_SetPortraitTextureRaw(self, "Interface\\TargetingFrame\\UI-Classes-Circles");
+	PortraitFrameTemplate_SetPortraitTexCoord(self, unpack(CLASS_ICON_TCOORDS[strupper(class)]));
 
 	-- initialize active spec
 	PlayerTalentFrame_UpdateActiveSpec(GetActiveSpecGroup(false));
@@ -241,7 +241,7 @@ function PlayerTalentFrameSpec_OnLoad(self)
 	end
 
 	self.learnButton:SetShown(not self.isPet);
-	
+
 	for i = 1, numSpecs do
 		local button = self["specButton"..i];
 		local _, name, description, icon = GetSpecializationInfo(i, false, self.isPet, nil, sex);
@@ -486,22 +486,22 @@ function PlayerTalentFrame_UpdateTitleText(numTalentGroups)
 	if ( selectedTab == SPECIALIZATION_TAB or selectedTab == PET_SPECIALIZATION_TAB ) then
 		if ( spec and hasMultipleTalentGroups ) then
 			if (isActiveSpec and spec.nameActive) then
-				PlayerTalentFrameTitleText:SetText(spec.specNameActive);
+				PortraitFrameTemplate_SetTitle(PlayerTalentFrame, spec.specNameActive);
 			else
-				PlayerTalentFrameTitleText:SetText(spec.specName);
+				PortraitFrameTemplate_SetTitle(PlayerTalentFrame, spec.specName);
 			end
 		else
-			PlayerTalentFrameTitleText:SetText(SPECIALIZATION);
+			PortraitFrameTemplate_SetTitle(PlayerTalentFrame, SPECIALIZATION);
 		end
 	else
 		if ( spec and hasMultipleTalentGroups ) then
 			if (isActiveSpec and spec.nameActive) then
-				PlayerTalentFrameTitleText:SetText(spec.nameActive);
+				PortraitFrameTemplate_SetTitle(PlayerTalentFrame, spec.nameActive);
 			else
-				PlayerTalentFrameTitleText:SetText(spec.name);
+				PortraitFrameTemplate_SetTitle(PlayerTalentFrame, spec.name);
 			end
 		else
-			PlayerTalentFrameTitleText:SetText(TALENTS);
+			PortraitFrameTemplate_SetTitle(PlayerTalentFrame, TALENTS);
 		end
 	end
 
@@ -1053,7 +1053,7 @@ function PlayerSpecSpellTemplate_OnEnter(self)
     if (not id or not self.spellID or not GetSpellInfo(self.spellID)) then
 		return;
 	end
-	
+
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetSpellByID(self.spellID, isPet, false, true);
 	if ( self.extraTooltip ) then
@@ -1479,10 +1479,12 @@ function PvpTalentFrameMixin:OnShow()
 		self.TrinketSlot.HelpBox:Show();
 	end
 	self:Update();
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 end
 
 function PvpTalentFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, PvpTalentFrameEvents);
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 
 	self:UnselectSlot();
 end
@@ -1522,7 +1524,7 @@ function PvpTalentFrameMixin:Update()
 	for _, slot in pairs(self.Slots) do
 		self:UpdateSlot(slot);
 	end
-	
+
 	self.TalentList:Update();
 
 	self:UpdateModelScenes();
@@ -1585,7 +1587,7 @@ function PvpTalentFrameMixin:SelectTalentForSlot(talentID, slotIndex)
 	end
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	slot:SetSelectedTalent(talentID);	
+	slot:SetSelectedTalent(talentID);
 	self:UnselectSlot();
 end
 
@@ -1623,6 +1625,10 @@ function PvpTalentButtonMixin:Update(selectedHere, selectedOther)
 
 	self.Name:SetText(name);
 	self.Icon:SetTexture(icon);
+
+	if GameTooltip:GetOwner() == self then
+		self:OnEnter();
+	end
 end
 
 function PvpTalentButtonMixin:SetOwningFrame(frame)
@@ -1709,7 +1715,7 @@ function PvpTalentWarmodeButtonMixin:GetWarModeDesired()
 end
 
 function PvpTalentWarmodeButtonMixin:Update()
-	self:SetEnabled(C_PvP.CanToggleWarMode());
+	self:SetEnabled(C_PvP.CanToggleWarModeInArea());
 	local frame = self:GetParent();
 	local isPvp = self.predictedToggle:Get();
 	local disabledAdd = isPvp and "" or "-disabled";
@@ -1717,6 +1723,8 @@ function PvpTalentWarmodeButtonMixin:Update()
 	local ringAtlas = "pvptalents-warmode-ring"..disabledAdd;
 	frame.Swords:SetAtlas(swordsAtlas);
 	frame.Ring:SetAtlas(ringAtlas);
+
+	self:GetParent():UpdateModelScenes();
 
 	if GameTooltip:GetOwner() == self then
 		self:OnEnter();
@@ -1726,19 +1734,19 @@ end
 function PvpTalentWarmodeButtonMixin:OnClick()
 	if (C_PvP.CanToggleWarMode()) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		local warmodeEnabled = self.predictedToggle:Get(); 
-		
-		if (warmodeEnabled) then 
+		local warmodeEnabled = self.predictedToggle:Get();
+
+		if (warmodeEnabled) then
 			PlaySound(SOUNDKIT.UI_WARMODE_DECTIVATE);
-		else 
+		else
 			PlaySound(SOUNDKIT.UI_WARMODE_ACTIVATE);
 		end
-		
+
 		self.predictedToggle:Toggle();
-		
+
 		self:Update();
-		self:GetParent():UpdateModelScenes();
-		if (self:GetParent().WarmodeTutorialBox:IsVisible()) then 
+
+		if (self:GetParent().WarmodeTutorialBox:IsVisible()) then
 			self:GetParent().WarmodeTutorialBox:Hide();
 			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_WARMODE_UNLOCK, true);
 		end
@@ -1753,9 +1761,13 @@ function PvpTalentWarmodeButtonMixin:OnEnter()
 	end
 	local wrap = true;
 	GameTooltip_AddNormalLine(GameTooltip, PVP_WAR_MODE_DESCRIPTION, wrap);
-	if (not C_PvP.CanToggleWarMode()) then
-		local text = UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0] and PVP_WAR_MODE_NOT_NOW_HORDE or PVP_WAR_MODE_NOT_NOW_ALLIANCE;
-		GameTooltip_AddColoredLine(GameTooltip, text, RED_FONT_COLOR, wrap);
+	if(not C_PvP.CanToggleWarMode()) then
+		if (not C_PvP.CanToggleWarModeInArea()) then
+			local text = UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0] and PVP_WAR_MODE_NOT_NOW_HORDE or PVP_WAR_MODE_NOT_NOW_ALLIANCE;
+			GameTooltip_AddColoredLine(GameTooltip, text, RED_FONT_COLOR, wrap);
+		elseif (UnitAffectingCombat("player")) then
+			GameTooltip_AddColoredLine(GameTooltip, SPELL_FAILED_AFFECTING_COMBAT, RED_FONT_COLOR, wrap);
+		end
 	end
 	GameTooltip:Show();
 end
@@ -1763,31 +1775,26 @@ end
 PvpTalentListMixin = {};
 
 function PvpTalentListMixin:OnLoad()
-	ButtonFrameTemplate_HideAttic(self);
-	ButtonFrameTemplate_HidePortrait(self);
-	self.TopTileStreaks:Hide();
-	_G[self:GetName().."TitleBg"]:Hide();
-	_G[self:GetName().."TopBorder"]:Hide();
-	_G[self:GetName().."TopLeftCorner"]:Hide();
-	_G[self:GetName().."TopRightCorner"]:Hide();
-	self.CloseButton:Hide();
-	self.RightBorder:SetPoint("TOPRIGHT", self.MyTopRightCorner, "BOTTOMRIGHT", 0, 1);
-	self:SetFrameLevel(self:GetParent():GetFrameLevel()-2);
+	ButtonFrameTemplate_ShowButtonBar(self);
+	FrameTemplate_SetAtticHeight(self, 8);
 end
 
 function PvpTalentListMixin:Update()
 	local slotIndex = self:GetParent().selectedSlotIndex;
-	
+
 	if (slotIndex) then
 		local scrollFrame = self.ScrollFrame;
 		local offset = HybridScrollFrame_GetOffset(scrollFrame);
 		local buttons = scrollFrame.buttons;
 		local numButtons = #buttons;
 		local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(slotIndex);
+		if not slotInfo then
+			return;
+		end
 		local numTalents = #slotInfo.availableTalentIDs;
 		local selectedPvpTalents = C_SpecializationInfo.GetAllSelectedPvpTalentIDs();
 		local availableTalentIDs = slotInfo.availableTalentIDs;
-		
+
 		table.sort(availableTalentIDs, function(a, b)
 			local unlockedA = select(7,GetPvpTalentInfoByID(a));
 			local unlockedB = select(7,GetPvpTalentInfoByID(b));

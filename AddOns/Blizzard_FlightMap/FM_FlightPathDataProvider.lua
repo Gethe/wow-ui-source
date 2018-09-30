@@ -22,7 +22,8 @@ function FlightMap_FlightPathDataProviderMixin:RefreshAllData(fromOnShow)
 
 	self:CalculateLineThickness();
 
-	local taxiNodes = C_TaxiMap.GetAllTaxiNodes();
+	local mapID = self:GetMap():GetMapID();
+	local taxiNodes = C_TaxiMap.GetAllTaxiNodes(mapID);
 	for i, taxiNodeData in ipairs(taxiNodes) do
 		self:AddFlightNode(taxiNodeData);
 	end

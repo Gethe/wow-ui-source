@@ -13,4 +13,5 @@ Blizzard_TableInspectorDataProvider.lua
 Blizzard_TableInspectorAnchorDataProvider.xml
 Blizzard_TableInspectorAttributeDataProvider.xml
 Blizzard_TableInspector.xml
+Blizzard_TexelSnappingVisualizer.lua
 Localization.lua

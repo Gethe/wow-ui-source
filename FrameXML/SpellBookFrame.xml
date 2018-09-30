@@ -92,7 +92,7 @@
 			<AbsDimension x="30" y="30"/>
 		</Size>
 	</Frame>
-	<CheckButton name="SpellBookSkillLineTabTemplate" virtual="true" hidden="true">
+	<CheckButton name="SpellBookSkillLineTabTemplate" frameLevel="510" virtual="true" hidden="true">
 		<Size>
 			<AbsDimension x="32" y="32"/>
 		</Size>

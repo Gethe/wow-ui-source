@@ -30,10 +30,10 @@ function QuestDataProviderMixin:OnAdded(mapCanvas)
 end
 
 function QuestDataProviderMixin:OnRemoved(mapCanvas)
-	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
-
 	self:GetMap():UnregisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
 	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
+
+	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 end
 
 function QuestDataProviderMixin:SetFocusedQuestID(questID)
@@ -108,6 +108,9 @@ function QuestDataProviderMixin:ShouldShowQuest(questID, mapType, doesMapShowTas
 		if not doesMapShowTaskObjectives then
 			return false;
 		end
+	end
+	if QuestUtils_IsQuestBonusObjective(questID) then
+		return false;
 	end
 	return MapUtil.ShouldMapTypeShowQuests(mapType);
 end

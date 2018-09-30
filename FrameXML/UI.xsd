@@ -521,6 +521,8 @@
 				<xs:attribute name="alpha" type="xs:float" default="1.0"/>
                 <xs:attribute name="scale" type="xs:float" default="1.0"/>
                 <xs:attribute name="rotation" type="xs:float" default="0.0"/>
+                <xs:attribute name="snapToPixelGrid" type="xs:boolean" default="true"/>
+                <xs:attribute name="texelSnappingBias" type="xs:float"/>
                 <xs:attribute name="hWrapMode" type="WRAPMODE" default="CLAMP"/>
                 <xs:attribute name="vWrapMode" type="WRAPMODE" default="CLAMP"/>
                 <xs:attribute name="ignoreParentAlpha" type="xs:boolean" default="false"/>

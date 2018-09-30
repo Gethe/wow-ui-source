@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="LFRFrame.lua"/>
-	
+
 	<Button name="LFRBrowseFrameColumnHeaderTemplate" inherits="WhoFrameColumnHeaderTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
@@ -22,7 +22,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-		</Layers>					
+		</Layers>
 		<Scripts>
 			<OnMouseDown>
 				self.icon:SetPoint("CENTER", 1, -2);
@@ -106,7 +106,7 @@
 			</OnLoad>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="LFRFrameDungeonChoiceTemplate" inherits="LFGSpecificChoiceTemplate" virtual="true">
 		<Size x="340" y="16"/>
 		<Scripts>
@@ -154,12 +154,12 @@
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 	</CheckButton>
-	
+
 	<Frame name="RaidBrowserFrame" inherits="PortraitFrameTemplate" parent="UIParent" toplevel="true" hidden="true" enableMouse="true" >
 		<Size x="350" y="450"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="-0"/>
-		</Anchors>	
+		</Anchors>
 		<Frames>
 			<Frame name="LFRParentFrame" setAllPoints="true">
 				<Frames>
@@ -690,16 +690,16 @@
 				</Scripts>
 			</Frame>
 		</Frames>
-	<Scripts>
-		<OnLoad>
-			SetPortraitToTexture(self.portrait, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
-		</OnLoad>
-		<OnShow>
-			PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
-		</OnShow>
-		<OnHide>
-			PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
-		</OnHide>
-	</Scripts>
+		<Scripts>
+			<OnLoad>
+				PortraitFrameTemplate_SetPortraitToAsset(self, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
+			</OnLoad>
+			<OnShow>
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+			</OnShow>
+			<OnHide>
+				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+			</OnHide>
+		</Scripts>
 	</Frame>
 </Ui>

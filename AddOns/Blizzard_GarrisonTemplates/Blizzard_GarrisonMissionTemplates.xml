@@ -960,10 +960,6 @@
 				<Anchors>
 					<Anchor point="BOTTOM" x="164" y="-423" relativePoint="TOPLEFT"/>
 				</Anchors>
-				<Scripts>
-					<OnMouseDown function="GarrisonFollowerPageModel_SpellCast_OnMouseDown"/>
-					<OnMouseUp function="GarrisonFollowerPageModel_SpellCast_OnMouseUp"/>
-				</Scripts>
 			</Frame>
 		</Frames>
 	</ScrollFrame>

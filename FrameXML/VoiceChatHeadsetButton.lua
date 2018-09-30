@@ -57,11 +57,9 @@ function VoiceChatHeadsetButtonMixin:OnVoiceChannelJoined(statusCode, voiceChann
 	end
 end
 
-function VoiceChatHeadsetButtonMixin:OnVoiceChannelRemoved(statusCode, voiceChannelID)
-	if statusCode == Enum.VoiceChatStatusCode.Success then
-		if self:VoiceChannelMatches(voiceChannelID) then
-			self:ClearVoiceChannel();
-		end
+function VoiceChatHeadsetButtonMixin:OnVoiceChannelRemoved(voiceChannelID)
+	if self:VoiceChannelMatches(voiceChannelID) then
+		self:ClearVoiceChannel();
 	end
 end
 
@@ -82,7 +80,7 @@ function VoiceChatHeadsetButtonMixin:ClearPendingState()
 end
 
 function VoiceChatHeadsetButtonMixin:OnVoiceChatPendingChannelJoinState(channelType, clubId, streamId, pendingState)
-	-- pass in false for the voiceChannelID so it never matches with voice chat channels that are not created yet. 
+	-- pass in false for the voiceChannelID so it never matches with voice chat channels that are not created yet.
 	-- A channelType of None indicates login failed, so clear all pending states in that case
 	if self:VoiceChannelMatches(false, channelType, clubId, streamId) or (channelType == Enum.ChatChannelType.None)  then
 		self:GetParent():SetPendingState(pendingState);

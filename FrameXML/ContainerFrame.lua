@@ -1318,32 +1318,14 @@ function ContainerFrameItemButton_OnModifiedClick(self, button)
 	end
 end
 
-function ContainerFrameItemButton_CalculateItemTooltipAnchors(self, mainTooltip, secondaryTooltip)
+function ContainerFrameItemButton_CalculateItemTooltipAnchors(self, mainTooltip)
 	local x = self:GetRight();
-
 	local anchorFromLeft = x < GetScreenWidth() / 2;
-
-	if ( secondaryTooltip and secondaryTooltip:IsShown() ) then
-		-- Always put the primary tooltip on the left
-		if ( anchorFromLeft ) then
-			mainTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
-			secondaryTooltip:SetPoint("TOPLEFT", mainTooltip, "TOPRIGHT", 0, 0);
-			mainTooltip.overrideComparisonAnchorFrame = secondaryTooltip;
-			mainTooltip.overrideComparisonAnchorSide = "right";
-		else
-			secondaryTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT");
-			mainTooltip:SetPoint("TOPRIGHT", secondaryTooltip, "TOPLEFT", 0, 0);
-			mainTooltip.overrideComparisonAnchorSide = "left";
-		end
-		return true;
+	if ( anchorFromLeft ) then
+		mainTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
 	else
-		if ( anchorFromLeft ) then
-			mainTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
-		else
-			mainTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT");
-		end
+		mainTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT");
 	end
-	return false;
 end
 
 function ContainerFrameItemButton_OnEnter(self)
@@ -1384,9 +1366,9 @@ function ContainerFrameItemButton_OnEnter(self)
 		end
 	end
 
-	local requiresCompareTooltipReanchor = ContainerFrameItemButton_CalculateItemTooltipAnchors(self, GameTooltip);
+	ContainerFrameItemButton_CalculateItemTooltipAnchors(self, GameTooltip);
 
-	if ( (IsModifiedClick("COMPAREITEMS") or GetCVarBool("alwaysCompareItems")) ) then
+	if ( requiresCompareTooltipReanchor and (IsModifiedClick("COMPAREITEMS") or GetCVarBool("alwaysCompareItems")) ) then
 		GameTooltip_ShowCompareItem(GameTooltip);
 	end
 

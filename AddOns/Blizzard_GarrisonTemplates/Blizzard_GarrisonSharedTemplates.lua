@@ -1265,41 +1265,6 @@ function GarrisonFollowerPage_AnchorAbility(abilityFrame, lastAnchor, headerStri
 	return abilityFrame;
 end
 
-function GarrisonFollowerPageModel_SpellCast_OnMouseDown(self, button)
-	local followerList = self:GetParent().followerList;
-	if ( button == "LeftButton" and followerList.canCastSpellsOnFollowers and SpellCanTargetGarrisonFollower(self.followerID) ) then
-		-- no rotation if you can upgrade this follower
-		local followerInfo = self.followerID and C_Garrison.GetFollowerInfo(self.followerID);
-		if ( followerInfo and followerInfo.isCollected and followerInfo.status ~= GARRISON_FOLLOWER_ON_MISSION ) then
-			return true;
-		end
-	end
-	return false;
-end
-
-function GarrisonFollowerPageModel_OnMouseDown(self, button)
-	if (not GarrisonFollowerPageModel_SpellCast_OnMouseDown(self, button)) then
-		Model_OnMouseDown(self, button);
-	end
-end
-
-function GarrisonFollowerPageModel_SpellCast_OnMouseUp(self, button)
-	local followerList = self:GetParent().followerList;
-	if ( button == "LeftButton" and followerList.canCastSpellsOnFollowers and SpellCanTargetGarrisonFollower(self.followerID) ) then
-		-- no rotation if you can upgrade this follower, bring up confirmation dialog
-		if ( GarrisonFollower_AttemptUpgrade(self.followerID) ) then
-			return true;
-		end
-	end
-	return false;
-end
-
-function GarrisonFollowerPageModel_OnMouseUp(self, button)
-	if (not GarrisonFollowerPageModel_SpellCast_OnMouseUp(self, button)) then
-		Model_OnMouseUp(self, button);
-	end
-end
-
 function GarrisonFollowerPageModelUpgrade_OnLoad(self)
 	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
 	self:RegisterEvent("CURSOR_UPDATE");

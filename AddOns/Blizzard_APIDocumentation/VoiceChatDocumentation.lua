@@ -843,7 +843,6 @@ local VoiceChat =
 			LiteralName = "VOICE_CHAT_CHANNEL_REMOVED",
 			Payload =
 			{
-				{ Name = "status", Type = "VoiceChatStatusCode", Nilable = false },
 				{ Name = "channelID", Type = "number", Nilable = false },
 			},
 		},
