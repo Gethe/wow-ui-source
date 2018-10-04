@@ -4108,7 +4108,7 @@ local function InviteToClub(clubId, text)
 	local clubInfo = C_Club.GetClubInfo(clubId);
 	local isBattleNetClub = clubInfo.clubType == Enum.ClubType.BattleNet;
 	if isBattleNetClub then
-		local invitationCandidates = C_Club.GetInvitationCandidates(nil, nil, nil, clubId);
+		local invitationCandidates = C_Club.GetInvitationCandidates(nil, nil, nil, nil, clubId);
 		for i, candidate in ipairs(invitationCandidates) do
 			if candidate.name == text then
 				C_Club.SendInvitation(clubId, candidate.memberId);
@@ -4136,6 +4136,7 @@ StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"] = {
 	hideOnEscape = 1,
 	hasEditBox = 1,
 	maxLetters = 32,
+	editBoxSecureText = true,
 	autoCompleteSource = C_Club.GetInvitationCandidates,
 	autoCompleteArgs = {}, -- set dynamically below.
 	OnShow = function(self, data)
@@ -4691,6 +4692,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		button1:Enable();
 	end
 
+	editBox:SetSecureText(info.editBoxSecureText);
 	editBox.hasAutoComplete = info.autoCompleteSource ~= nil;
 	if ( editBox.hasAutoComplete ) then
 		AutoCompleteEditBox_SetAutoCompleteSource(editBox, info.autoCompleteSource, unpack(info.autoCompleteArgs));

@@ -395,6 +395,9 @@
 							<Anchor point="TOPRIGHT" x="-48" y="-16"/>
 						</Anchors>
 						<Scripts>
+							<OnShow>
+								self:SetEnabled(true);
+							</OnShow>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetText(ROLL);
@@ -403,6 +406,7 @@
 							<OnLeave function="GameTooltip_Hide"/>
 							<OnClick>
 								AcceptSpellConfirmationPrompt(self:GetParent():GetParent().spellID);
+								self:SetEnabled(false);
 							</OnClick>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-GroupLoot-Dice-Up"/>
@@ -457,7 +461,7 @@
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetCurrencyByID(self:GetParent().currencyID);
+						GameTooltip:SetCurrencyByID(self.currencyID);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>

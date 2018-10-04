@@ -674,11 +674,11 @@ local function _CalendarFrame_GetFullDateFromDay(dayButton)
 end
 
 local function _CalendarFrame_IsTodayOrLater(month, day, year)
-	local date = C_Calendar.GetDate();
-	local presentWeekday = date.weekday;
-	local presentMonth = date.month;
-	local presentDay = date.monthDay;
-	local presentYear = date.year;
+	local currentCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
+	local presentWeekday = currentCalendarTime.weekday;
+	local presentMonth = currentCalendarTime.month;
+	local presentDay = currentCalendarTime.monthDay;
+	local presentYear = currentCalendarTime.year;
 	local todayOrLater = false;
 	if ( year > presentYear ) then
 		todayOrLater = true;
@@ -1098,8 +1098,8 @@ function CalendarFrame_OnShow(self)
 
 	self.militaryTime = GetCVarBool("timeMgrUseMilitaryTime");
 
-	local date = C_Calendar.GetDate();
-	C_Calendar.SetAbsMonth(date.month, date.year);
+	local currentCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
+	C_Calendar.SetAbsMonth(currentCalendarTime.month, currentCalendarTime.year);
 	CalendarFrame_Update();
 
 	C_Calendar.OpenCalendar();
@@ -1199,11 +1199,11 @@ function CalendarFrame_InitDay(buttonIndex)
 end
 
 function CalendarFrame_Update()
-	local date = C_Calendar.GetDate();
-	local presentWeekday = date.weekday;
-	local presentMonth = date.month;
-	local presentDay = date.monthDay;
-	local presentYear = date.year;
+	local currentCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
+	local presentWeekday = currentCalendarTime.weekday;
+	local presentMonth = currentCalendarTime.month;
+	local presentDay = currentCalendarTime.monthDay;
+	local presentYear = currentCalendarTime.year;
 	local monthInfo = C_Calendar.GetMonthInfo(-1);
 	local prevMonth = monthInfo.month;
 	local prevYear = monthInfo.year;
@@ -1812,8 +1812,8 @@ end
 function CalendarFrame_OpenToGuildEventIndex(guildEventIndex)
 	if ( CalendarFrame and CalendarFrame:IsShown() ) then
 		-- if the calendar is already open we need to do some work that's normally happening in CalendarFrame_OnShow
-		local date = C_Calendar.GetDate();
-		C_Calendar.SetAbsMonth(date.month, date.year);
+		local currentCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
+		C_Calendar.SetAbsMonth(currentCalendarTime.month, currentCalendarTime.year);
 	else
 		ToggleCalendar();
 	end
@@ -3637,7 +3637,7 @@ function CalendarCreateEventFrame_Update()
 			UIDropDownMenu_SetSelectedValue(CalendarCreateEventCommunityDropDown, clubInfo.name);
 			UIDropDownMenu_SetText(CalendarCreateEventCommunityDropDown, clubInfo.name);
 		else
-			C_Calendar.EventClearClubId();
+			C_Calendar.EventSetClubId(nil);
 			UIDropDownMenu_SetSelectedValue(CalendarCreateEventCommunityDropDown, nil);
 			UIDropDownMenu_SetText(CalendarCreateEventCommunityDropDown, CALENDER_INVITE_SELECT_COMMUNITY);
 		end

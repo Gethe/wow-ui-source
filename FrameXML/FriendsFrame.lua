@@ -486,7 +486,7 @@ function FriendsList_CanWhisperFriend(friendType, friendIndex)
 	if friendType == FRIENDS_BUTTON_TYPE_BNET then
 		return true;
 	elseif friendType == FRIENDS_BUTTON_TYPE_WOW then
-		local info = C_FriendList.GetFriendInfo(friendIndex);
+		local info = C_FriendList.GetFriendInfoByIndex(friendIndex);
 		return info.isOnline;
 	end
 
@@ -987,8 +987,8 @@ function FriendsFrameSendMessageButton_OnClick(self)
 		ChatFrame_SendTell(name);
 	elseif ( FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_BNET ) then
 		local bnetIDAccount;
-		bnetIDAccount, name = BNGetFriendInfo(FriendsFrame.selectedFriend);
-		ChatFrame_SendSmartTell(name);
+		bnetIDAccount, tokenizedName = BNGetFriendInfo(FriendsFrame.selectedFriend);
+		ChatFrame_SendBNetTell(tokenizedName);
 	end
 	if ( name ) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);

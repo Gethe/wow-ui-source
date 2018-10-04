@@ -19,7 +19,7 @@ end
 function UIWidgetTemplateTooltipFrameMixin:OnEnter()
 	self:SetTooltipOwner();
 
-	if self.tooltip then
+	if self.tooltip and self.tooltip ~= "" then
 		if self.tooltipContainsHyperLink then
 			-- prestring is thrown out because calling SetHyperlink clears the tooltip
 			GameTooltip:SetHyperlink(self.hyperLinkString);
@@ -89,7 +89,7 @@ function UIWidgetBaseCurrencyTemplateMixin:Setup(currencyInfo, enabledState)
 	self.Text:SetText(currencyInfo.text);
 	self:SetTooltip(currencyInfo.tooltip);
 	self.Icon:SetTexture(currencyInfo.iconFileID);
-	self.Icon:SetDesaturated(disabled);
+	self.Icon:SetDesaturated(enabledState == Enum.WidgetEnabledState.Disabled);
 
 	SetTextColorForEnabledState(self.Text, enabledState);
 	SetTextColorForEnabledState(self.LeadingText, enabledState);
@@ -113,6 +113,34 @@ end
 function UIWidgetBaseCurrencyTemplateMixin:SetFontColor(color)
 	self.Text:SetTextColor(color:GetRGB());
 	self.LeadingText:SetTextColor(color:GetRGB());
+end
+
+UIWidgetBaseSpellTemplateMixin = {}
+
+function UIWidgetBaseSpellTemplateMixin:Setup(spellInfo, enabledState, width)
+	local name, _, icon = GetSpellInfo(spellInfo.spellID);
+	self.Icon:SetTexture(icon);
+	self.Icon:SetDesaturated(enabledState == Enum.WidgetEnabledState.Disabled);
+	self.Text:SetText(name);
+
+	local iconWidth = self.Icon:GetWidth() + 5;
+	local textWidth;
+	if width > 0 then
+		textWidth = width - (iconWidth);
+	else
+		textWidth = self.Text:GetStringWidth();
+	end
+
+	self.Text:SetWidth(textWidth);
+	SetTextColorForEnabledState(self.Text, enabledState);
+	self:SetTooltip(spellInfo.tooltip);
+
+	self:SetWidth(iconWidth + textWidth);
+	self:SetHeight(self.Border:GetHeight());
+end
+
+function UIWidgetBaseSpellTemplateMixin:SetFontColor(color)
+	self.Text:SetTextColor(color:GetRGB());
 end
 
 UIWidgetBaseColoredTextMixin = {}

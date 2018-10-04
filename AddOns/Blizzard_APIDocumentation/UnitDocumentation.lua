@@ -287,6 +287,15 @@ local Unit =
 			},
 		},
 		{
+			Name = "IncomingSummonChanged",
+			Type = "Event",
+			LiteralName = "INCOMING_SUMMON_CHANGED",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "KnownTitlesUpdate",
 			Type = "Event",
 			LiteralName = "KNOWN_TITLES_UPDATE",

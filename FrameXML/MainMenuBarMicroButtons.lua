@@ -973,6 +973,7 @@ end
 function MicroButtonAlert_OnLoad(self)
 	if self.MicroButton then
 		self:SetParent(self.MicroButton);
+		self:SetFrameStrata("DIALOG");
 	end
 	self.Text:SetSpacing(4);
 	MicroButtonAlert_SetText(self, self.label);

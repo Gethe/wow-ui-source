@@ -1385,14 +1385,6 @@ function CallMethodOnNearestAncestor(self, methodName, ...)
 	return false;
 end
 
-function FormateFullDateWithoutYear(messageDate)
-	return FULLDATE_NO_YEAR:format(CALENDAR_WEEKDAY_NAMES[messageDate.weekDay], CALENDAR_FULLDATE_MONTH_NAMES[messageDate.month], messageDate.day);
-end
-
-function AreFullDatesEqual(firstDate, secondDate)
-	return firstDate.month == secondDate.month and firstDate.day == secondDate.day and firstDate.year == secondDate.year;
-end
-
 function GetClampedCurrentExpansionLevel()
 	return math.min(GetClientDisplayExpansionLevel(), math.max(GetAccountExpansionLevel(), GetExpansionLevel()));
 end

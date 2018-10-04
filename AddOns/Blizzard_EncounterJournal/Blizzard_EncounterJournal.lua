@@ -1819,12 +1819,6 @@ function EncounterJournal_SetFlagIcon(texture, index)
 	local iconSize = 32;
 	local columns = 256/iconSize;
 	local rows = 64/iconSize;
-
-	-- Mythic flag should use heroic Icon
-	if (index == 12) then
-		index = 3;
-	end
-
 	local l = mod(index, columns) / columns;
 	local r = l + (1/columns);
 	local t = floor(index/columns) / rows;

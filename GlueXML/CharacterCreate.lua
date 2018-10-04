@@ -2131,12 +2131,23 @@ function CharCreateRaceButton_OnEnter(self)
 	CharacterCreateTooltip:SetOwner(self, "ANCHOR_RIGHT", 8, -5);
 	CharacterCreateTooltip:SetText(raceData.name, 1, 1, 1, 1, true);
 	if (raceData.isAlliedRace) then
+		local INDENTED_WORD_WRAP = true;
 		local hasExpansion, hasAchievement = C_CharacterCreation.GetAlliedRaceCreationRequirements(self.raceID);
 		if (not hasExpansion) then
-			CharacterCreateTooltip:AddLine(CHARACTER_CREATION_REQUIREMENTS_NEED_8_0, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true);
+			CharacterCreateTooltip:AddLine(ALLIED_RACE_UNLOCK_TEXT, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+			CharacterCreateTooltip:AddLine(string.format(DASH_WITH_TEXT, CHARACTER_CREATION_REQUIREMENTS_NEED_8_0), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true, INDENTED_WORD_WRAP);
 		end
 		if (not hasAchievement) then
-			CharacterCreateTooltip:AddLine(CHARACTER_CREATION_REQUIREMENTS_NEED_ACHIEVEMENT, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true);
+			local requirements = C_CharacterCreation.GetAlliedRaceAchievementRequirements(self.raceID);
+			if requirements then
+				-- Add unlock text if we have the expansion, otherwise it would have already been added above
+				if hasExpansion then
+					CharacterCreateTooltip:AddLine(ALLIED_RACE_UNLOCK_TEXT, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+				end
+				for i, requirement in ipairs(requirements) do
+					CharacterCreateTooltip:AddLine(string.format(DASH_WITH_TEXT, requirement), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true, INDENTED_WORD_WRAP);
+				end
+			end
 		end	
 	end
 end

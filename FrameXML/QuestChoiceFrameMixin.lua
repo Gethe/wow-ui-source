@@ -206,7 +206,7 @@ function QuestChoiceFrameMixin:Update()
 
 	self.numActiveOptionFrames = 0;
 	for i=1, numOptions do
-		local optID, buttonText, description, header, artFile, confirmationText, widgetSetID, disabledButton, desaturatedArt, groupID = GetQuestChoiceOptionInfo(i);
+		local optID, buttonText, description, header, artFile, confirmationText, widgetSetID, disabledButton, desaturatedArt, groupID, headerIconAtlasElement = GetQuestChoiceOptionInfo(i);
 
 		local existingOption = self:GetExistingOptionForGroup(groupID);
 		local button;
@@ -231,7 +231,7 @@ function QuestChoiceFrameMixin:Update()
 			option.optID = optID;
 			button = option.OptionButtonsContainer.OptionButton1;
 			option.OptionText:SetText(description);
-			option:ConfigureHeader(header);
+			option:ConfigureHeader(header, headerIconAtlasElement);
 			option.Artwork:SetTexture(artFile);
 
 			self:UpdateOptionWidgetRegistration(option, widgetSetID);
@@ -433,10 +433,29 @@ function QuestChoiceOptionFrameMixin:ConfigureButtons()
 	end
 end
 
-function QuestChoiceOptionFrameMixin:ConfigureHeader(header)
+local HEADER_TEXT_AREA_WIDTH = 195;
+
+function QuestChoiceOptionFrameMixin:ConfigureHeader(header, headerIconAtlasElement)
 	if header and #header > 0 then
-		self.Header:Show();
+		if headerIconAtlasElement then
+			self.Header.Icon:SetAtlas(headerIconAtlasElement, true);
+			self.Header.Icon:Show();
+			self.Header.Text:SetWidth(HEADER_TEXT_AREA_WIDTH - (self.Header.Icon:GetWidth() + self.Header.spacing));
+		else
+			self.Header.Icon:Hide();
+			self.Header.Text:SetWidth(HEADER_TEXT_AREA_WIDTH);
+		end
+
 		self.Header.Text:SetText(header);
+
+		if self.Header.Text:GetNumLines() > 1 then
+			self.Header.Text:SetWidth(self.Header.Text:GetWrappedWidth());
+		else
+			self.Header.Text:SetWidth(self.Header.Text:GetStringWidth());
+		end
+
+		self.Header:Show();
+		self.Header:Layout();	-- Force a layout in case it was already shown
 	else
 		self.Header:Hide();
 	end

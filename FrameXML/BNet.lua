@@ -115,7 +115,7 @@ function BNToastMixin:OnClick()
 	elseif toastType == BN_TOAST_TYPE_ONLINE or toastType == BN_TOAST_TYPE_BROADCAST then
 		local bnetIDAccount, accountName = BNGetFriendInfoByID(toastData);
 		if accountName then --This player may have been removed from our friends list, so we may not have a name.
-			ChatFrame_SendSmartTell(accountName);
+			ChatFrame_SendBNetTell(accountName);
 		end
 	elseif toastType == BN_TOAST_TYPE_CLUB_INVITATION then
 		Communities_LoadUI();

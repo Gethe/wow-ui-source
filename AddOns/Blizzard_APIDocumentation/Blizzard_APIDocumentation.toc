@@ -61,6 +61,7 @@ GossipInfoDocumentation.lua
 GuildBankDocumentation.lua
 GuildInfoDocumentation.lua
 HeirloomInfoDocumentation.lua
+IncomingSummonDocumentation.lua
 InstanceEncounterDocumentation.lua
 InvasionInfoDocumentation.lua
 IslandsInfoDocumentation.lua

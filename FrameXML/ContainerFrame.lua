@@ -625,7 +625,20 @@ function ContainerFrame_Update(frame)
 			end
 		end
 
-		itemButton.JunkIcon:SetShown(quality == LE_ITEM_QUALITY_POOR and not noValue and MerchantFrame:IsShown());
+		itemButton.JunkIcon:Hide();
+		
+		local itemLocation = ItemLocation:CreateFromBagAndSlot(frame:GetID(), itemButton:GetID());
+		if C_Item.DoesItemExist(itemLocation) then
+			if quality == LE_ITEM_QUALITY_POOR and not noValue and MerchantFrame:IsShown() then
+				itemButton.JunkIcon:SetAtlas("bags-junkcoin", true);
+				itemButton.JunkIcon:Show();
+			elseif ScrappingMachineFrame and ScrappingMachineFrame:IsShown() and C_Item.CanScrapItem(itemLocation) then
+				itemButton.JunkIcon:SetAtlas("bags-icon-scrappable");
+				itemButton.JunkIcon:SetSize(18, 16);
+				itemButton.JunkIcon:Show();
+			end
+		end
+		
 		ContainerFrameItemButton_UpdateItemUpgradeIcon(itemButton);
 
 		if ( texture ) then

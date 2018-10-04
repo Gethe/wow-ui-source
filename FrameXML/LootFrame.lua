@@ -595,7 +595,7 @@ function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, curr
 	frame.spellID = spellID;
 	frame.endTime = time() + duration;
 	frame.remaining = duration;
-	frame.currencyID = currencyID;
+	frame.CurrentCountFrame.currencyID = currencyID;
 	frame.difficultyID = difficultyID;
 
 	local instanceID, encounterID = GetJournalInfoForSpellConfirmation(spellID);

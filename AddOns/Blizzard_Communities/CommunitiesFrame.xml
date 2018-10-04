@@ -270,7 +270,7 @@
 			</Frame>
 			<Frame parentKey="MaximizeMinimizeFrame" inherits="MaximizeMinimizeButtonFrameTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="10" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="8.5" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad function="CommunitiesFrameMaximizeMinimizeButton_OnLoad" inherit="append"/>

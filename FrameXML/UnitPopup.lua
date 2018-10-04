@@ -952,7 +952,7 @@ function UnitPopup_HideButtons ()
 				whisperIsLocalPlayer = (dropdownMenu.name == playerName and dropdownMenu.server == playerServer);
 			end
 
-			if whisperIsLocalPlayer or isOffline or ( dropdownMenu.unit and (not canCoop or not isPlayer)) or (dropdownMenu.bnetIDAccount and not BNIsFriend(dropdownMenu.bnetIDAccount)) then
+			if whisperIsLocalPlayer or (isOffline and not dropdownMenu.bnetIDAccount) or ( dropdownMenu.unit and (not canCoop or not isPlayer)) or (dropdownMenu.bnetIDAccount and not BNIsFriend(dropdownMenu.bnetIDAccount)) then
 				shown = false;
 			end
 		elseif ( value == "DUEL" ) then
@@ -1626,7 +1626,7 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "WHISPER" ) then
 		local isBNetAccount = dropdownFrame.bnetIDAccount or (dropdownFrame.playerLocation and dropdownFrame.playerLocation:IsBattleNetGUID());
 		if ( isBNetAccount  ) then
-			ChatFrame_SendSmartTell(fullname, dropdownFrame.chatFrame);
+			ChatFrame_SendBNetTell(fullname, dropdownFrame.chatFrame);
 		else
 			ChatFrame_SendTell(fullname, dropdownFrame.chatFrame);
 		end

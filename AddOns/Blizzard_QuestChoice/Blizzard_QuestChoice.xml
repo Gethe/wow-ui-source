@@ -239,23 +239,35 @@
 					<Anchor point="BOTTOM" relativeKey="$parent.OptionButtonsContainer" relativePoint="TOP" y="5"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="Header">
-				<Size x="256" y="32"/>
+			<Frame parentKey="Header" inherits="HorizontalLayoutFrame" hidden="true">
+				<KeyValues>
+					<KeyValue key="fixedHeight" value="32" type="number"/>
+					<KeyValue key="spacing" value="5" type="number"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" y="10"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
 						<Texture parentKey="Background" file="Interface\QuestionFrame\TitleBanner">
+							<Size x="256" y="32"/>
 							<TexCoords top="0" left="0" bottom=".5" right="1" />
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Text" font="SystemFont_Large" justifyH="CENTER" justifyV="MIDDLE" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="28" y="2"/>
-								<Anchor point="BOTTOMRIGHT" x="-28" y="2"/>
-							</Anchors>
+						<Texture parentKey="Icon">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="1" type="number"/>
+							</KeyValues>
+						</Texture>
+						<FontString parentKey="Text" font="Game16Font" justifyV="MIDDLE" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin">
+							<Size y="30"/>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
+							</KeyValues>
 							<Color r="0" g="0" b="0"/>
 						</FontString>
 					</Layer>

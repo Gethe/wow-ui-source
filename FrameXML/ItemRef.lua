@@ -1,4 +1,31 @@
 function SetItemRef(link, text, button, chatFrame)
+	
+	-- Going forward, use linkType and linkData instead of strsub and strsplit everywhere
+	local linkType, linkData = string.match(link, '(.-):(.*)');
+
+	-- Internal only links
+	if (IsGMClient()) then
+
+		-- Allow a link to arbitrary execute a string as code when a link is clicked - Debug:<luaTextHere>
+		if (linkType == "DebugExecute") then
+			assert(loadstring(linkData))();
+			return;
+		end
+
+		-- Allow a link to launch a record in WowEdit - WowEdit:<Table>:<ID>
+		if (linkType == "WowEdit") then
+			local table, id = strsplit(":", linkData);
+			if (table and id) then
+				WowEditLaunchEditor(table, id);
+				print(("Opening |cFF00FFFF%s|r record |cFF00FFFF%s|r"):format(table, id));
+			else
+				print(("ERROR - WowEdit link invalid parameters | Table:%s ID:%s"):format(tostring(table), tostring(id)));
+			end
+			return;
+		end
+
+	end
+	
 	if ( strsub(link, 1, 6) == "player" ) then
 		local namelink, isGMLink, isCommunityLink;
 		if ( strsub(link, 7, 8) == "GM" ) then
@@ -123,7 +150,7 @@ function SetItemRef(link, text, button, chatFrame)
 				end
 			else
 				if ( BNIsFriend(bnetIDAccount)) then
-					ChatFrame_SendSmartTell(name, chatFrame);
+					ChatFrame_SendBNetTell(name, chatFrame);
 				else
 					ChatFrame_DisplaySystemMessageInCurrent(ERR_BNET_IS_NOT_YOUR_FRIEND:format(name));
 				end
@@ -334,6 +361,19 @@ function SetItemRef(link, text, button, chatFrame)
 			CommunitiesHyperlink.OnClickLink(ticketId);
 		end
 		return;
+	elseif ( strsub(link, 1, 13) == "calendarEvent" ) then
+		local _, monthOffset, monthDay, index = strsplit(":", link);
+		local dayEvent = C_Calendar.GetDayEvent(monthOffset, monthDay, index);
+		if dayEvent then
+			Calendar_LoadUI();
+			
+			if not CalendarFrame:IsShown() then
+				Calendar_Toggle();
+			end
+			
+			C_Calendar.OpenEvent(monthOffset, monthDay, index);
+		end
+		return;
 	end
 
 	if ( IsModifiedClick() ) then
@@ -457,6 +497,15 @@ function GetClubTicketLink(ticketId, clubName, clubType)
 	else 
 		return NORMAL_FONT_COLOR:WrapTextInColorCode(link);
 	end
+end
+
+function GetCalendarEventLink(monthOffset, monthDay, index)
+	local dayEvent = C_Calendar.GetDayEvent(monthOffset, monthDay, index);
+	if dayEvent then
+		return FormatLink("calendarEvent", dayEvent.title, monthOffset, monthDay, index);
+	end
+	
+	return nil;
 end
 
 function SplitLink(link)

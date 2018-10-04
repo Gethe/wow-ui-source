@@ -156,6 +156,20 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "GetSpellDisplayVisualizationInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "SpellDisplayVisualizationInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetStackedResourceTrackerWidgetVisualizationInfo",
 			Type = "Function",
 
@@ -271,9 +285,9 @@ local UIWidgetManager =
 		{
 			Name = "UIWidgetVisualizationType",
 			Type = "Enumeration",
-			NumValues = 13,
+			NumValues = 14,
 			MinValue = 0,
-			MaxValue = 12,
+			MaxValue = 13,
 			Fields =
 			{
 				{ Name = "IconAndText", Type = "UIWidgetVisualizationType", EnumValue = 0 },
@@ -289,6 +303,7 @@ local UIWidgetManager =
 				{ Name = "BulletTextList", Type = "UIWidgetVisualizationType", EnumValue = 10 },
 				{ Name = "ScenarioHeaderCurrenciesAndBackground", Type = "UIWidgetVisualizationType", EnumValue = 11 },
 				{ Name = "TextureWithState", Type = "UIWidgetVisualizationType", EnumValue = 12 },
+				{ Name = "SpellDisplay", Type = "UIWidgetVisualizationType", EnumValue = 13 },
 			},
 		},
 		{
@@ -472,6 +487,30 @@ local UIWidgetManager =
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "currencies", Type = "table", InnerType = "UIWidgetCurrencyInfo", Nilable = false },
 				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
+				{ Name = "leftCurrencyWidth", Type = "number", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "widgetTag", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "UIWidgetSpellInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "SpellDisplayVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
+				{ Name = "enabledState", Type = "WidgetEnabledState", Nilable = false },
+				{ Name = "spellInfo", Type = "UIWidgetSpellInfo", Nilable = false },
+				{ Name = "widgetWidth", Type = "number", Nilable = false },
 				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },

@@ -68,7 +68,7 @@
 				</Layer>
 			</Layers>
 			<Frames>
-				<EditBox parentKey="InviteLinkBox" autoFocus="false" inherits="InputBoxTemplate">
+				<EditBox parentKey="InviteLinkBox" autoFocus="false" inherits="InputBoxTemplate" letters="120">
 					<Size x="288" y="22"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.InviteLinkDescription" relativePoint="BOTTOMLEFT" x="6" y="-13"/>

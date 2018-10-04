@@ -248,8 +248,8 @@ function WarboardQuestChoiceOptionFrameMixin:SetToWideSize()
 	self.isWide = true;
 end
 
-function WarboardQuestChoiceOptionFrameMixin:ConfigureHeader(header)
-	QuestChoiceOptionFrameMixin.ConfigureHeader(self, header);
+function WarboardQuestChoiceOptionFrameMixin:ConfigureHeader(header, headerIconAtlasElement)
+	QuestChoiceOptionFrameMixin.ConfigureHeader(self, header, headerIconAtlasElement);
 
 	if self.Header:IsShown() then
 		self.ArtworkBorder:SetPoint("TOP", 0, HEADER_SHOWN_ARTWORK_OFFSET_Y);

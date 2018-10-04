@@ -60,6 +60,7 @@ WARBOARD_OPTION_TEXT_COLOR	= CreateColor(0.28, 0.02, 0.02);
 DEFAULT_CHAT_CHANNEL_COLOR	= CreateColor(1.0, 0.753, 0.753);
 DIM_GREEN_FONT_COLOR		= CreateColor(0.251, 0.753, 0.251); -- Used for officer chat in guilds.
 BLACK_FONT_COLOR			= CreateColor(0.0, 0.0, 0.0);
+LINK_FONT_COLOR				= CreateColor(102.0 / 255.0, 187.0 / 255.0, 255.0 / 255.0); -- Light blue that we use for system links. E.g. calendar events and nydus links in the shop.
 
 AREA_NAME_FONT_COLOR = CreateColor(1.0, 0.9294, 0.7607);
 AREA_DESCRIPTION_FONT_COLOR = HIGHLIGHT_FONT_COLOR;
@@ -1021,3 +1022,5 @@ CALENDAR_INVITESTATUS_INFO = {
 		color		= ORANGE_FONT_COLOR,
 	},
 };
+
+SUMMON_FINISHED_ICON_DISPLAY_TIME = 5;

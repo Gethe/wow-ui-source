@@ -546,7 +546,7 @@
 		<Frames>
 			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="5" y="4"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="5.6" y="5"/>
 				</Anchors>
 			</Button>
 		</Frames>
@@ -589,7 +589,7 @@
 	ButtonFrameTemplate_ShowButtonBar(self)
 *******************************************************************************
 -->
-	<Frame name="ButtonFrameTemplateMinimizable" inherits="PortraitFrameTemplate" virtual="true">
+	<Frame name="ButtonFrameTemplateMinimizable" inherits="ButtonFrameTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="layoutType" value="PortraitFrameTemplateMinimizable" type="string"/>
 		</KeyValues>

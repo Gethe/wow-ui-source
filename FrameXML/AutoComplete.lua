@@ -256,7 +256,7 @@ function AutoComplete_UpdateResults(self, results, context)
 	local maxWidth = 120;
 	for i=1, numReturns do
 		local button = _G["AutoCompleteButton"..i]
-		button.name = Ambiguate(results[i].name, "none");
+		button.nameInfo = results[i];
 		local displayName = Ambiguate(results[i].name, context or "all");
 		local displayText;
 		local displayInfo = AUTOCOMPLETE_COLOR_KEYS[results[i].priority]
@@ -326,6 +326,10 @@ end
 function AutoCompleteEditBox_SetAutoCompleteSource(self, source, ...)
 	self.autoCompleteSource = source;
 	self.autoCompleteParams = { ... };
+end
+
+function AutoCompleteEditBox_SetCustomAutoCompleteFunction(self, customAutoCompleteFunction)
+	self.customAutoCompleteFunction = customAutoCompleteFunction;
 end
 
 function AutoCompleteEditBox_OnTabPressed(editBox)
@@ -403,13 +407,14 @@ function AutoCompleteButton_OnClick(self)
 	local autoComplete = self:GetParent();
 	local editBox = autoComplete.parent;
 	local editBoxText = editBox:GetText();
+	local name = Ambiguate(self.nameInfo.name, "none");
 	local newText;
 	
 	if (editBox.command) then
-		newText = editBox.command.." "..self.name;
+		newText = editBox.command.." "..name;
 	else
 		newText = string.gsub(editBoxText, AUTOCOMPLETE_SIMPLE_REGEX,
-			string.format(AUTOCOMPLETE_SIMPLE_FORMAT_REGEX, self.name,
+			string.format(AUTOCOMPLETE_SIMPLE_FORMAT_REGEX, name,
 				string.match(editBoxText, AUTOCOMPLETE_SIMPLE_REGEX)),
 				1);
 	end
@@ -418,8 +423,13 @@ function AutoCompleteButton_OnClick(self)
 		newText = newText.." ";
 	end
 	
+	autoComplete:Hide();
+	
+	if ( editBox.customAutoCompleteFunction ~= nil and editBox.customAutoCompleteFunction(editBox, newText, self.nameInfo) ) then
+		return;
+	end
+	
 	editBox:SetText(newText);
 	--When we change the text, we move to the end, so we'll be consistent and move to the end if we don't change it as well.
 	editBox:SetCursorPosition(strlen(newText));
-	autoComplete:Hide();
 end

@@ -9,6 +9,7 @@ CommunitiesFrameMixin:GenerateCallbackEvents(
 	"DisplayModeChanged",
 	"ClubSelected",
 	"StreamSelected",
+	"SelectedClubInfoUpdated",
 });
 
 local COMMUNITIES_FRAME_EVENTS = {
@@ -134,6 +135,11 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 		end
 	elseif event == "CLUB_UPDATED" then
 		self:ValidateDisplayMode();
+		local clubId = ...;
+		if self:GetSelectedClubId() == clubId then
+			self:UpdateSelectedClubInfo(clubId);
+			self:UpdatePortrait();
+		end
 	elseif event == "CLUB_SELF_MEMBER_ROLE_UPDATED" then
 		local clubId, roleId = ...;
 		if clubId == self:GetSelectedClubId() then
@@ -283,9 +289,18 @@ end
 function CommunitiesFrameMixin:SelectClub(clubId, forceUpdate)
 	if forceUpdate or clubId ~= self.selectedClubId then
 		self.ChatEditBox:SetEnabled(clubId ~= nil);
-		self.selectedClubId = clubId;
-		self.selectedClubInfo = clubId ~= nil and C_Club.GetClubInfo(clubId) or nil;
+		self:UpdateSelectedClubInfo(clubId);
+	end
+end
+
+function CommunitiesFrameMixin:UpdateSelectedClubInfo(clubId)
+	local previousClubId = self.selectedClubId;
+	self.selectedClubId = clubId;
+	self.selectedClubInfo = clubId ~= nil and C_Club.GetClubInfo(clubId) or nil;
+	if previousClubId ~= clubId then
 		self:OnClubSelected(clubId);
+	else
+		self:TriggerEvent(CommunitiesFrameMixin.Event.SelectedClubInfoUpdated, clubId);
 	end
 end
 
@@ -583,7 +598,8 @@ function CommunitiesFrameMixin:OnClubSelected(clubId)
 		if clubInfo then
 			local selectedStream = self:GetSelectedStreamForClub(clubId);
 			if selectedStream ~= nil then
-				self:SelectStream(clubId, selectedStream.streamId);
+				local forceUpdate = true;
+				self:SelectStream(clubId, selectedStream.streamId, forceUpdate);
 			else
 				local streams = C_Club.GetStreams(clubId);
 				CommunitiesUtil.SortStreams(streams);
@@ -696,7 +712,11 @@ function CommunitiesFrameMixin:SetFocusedStream(clubId, streamId)
 	end
 end
 
-function CommunitiesFrameMixin:SelectStream(clubId, streamId)
+function CommunitiesFrameMixin:SelectStream(clubId, streamId, forceUpdate)
+	if not forceUpdate and self.selectedStreamForClub[clubId] and self.selectedStreamForClub[clubId].streamId == streamId then
+		return;
+	end
+	
 	if streamId == nil then
 		self.selectedStreamForClub[clubId] = nil;
 		self:TriggerEvent(CommunitiesFrameMixin.Event.StreamSelected, streamId);
@@ -805,7 +825,7 @@ function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 		communitiesFrame.StreamDropDownMenu:ClearAllPoints();
 		communitiesFrame.StreamDropDownMenu:SetPoint("TOPLEFT", 188, -28);
 		UIDropDownMenu_SetWidth(communitiesFrame.StreamDropDownMenu, 160);
-		PortraitFrameTemplate_SetPortraitShown(communitiesFrame, true);
+		ButtonFrameTemplateMinimizable_ShowPortrait(communitiesFrame);
 		communitiesFrame.PortraitOverlay:Show();
 		communitiesFrame.VoiceChatHeadset:SetPoint("TOPRIGHT", -8, -26);
 		UpdateUIPanelPositions();
@@ -829,7 +849,7 @@ function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 		communitiesFrame.StreamDropDownMenu:ClearAllPoints();
 		communitiesFrame.StreamDropDownMenu:SetPoint("LEFT", communitiesFrame.CommunitiesListDropDownMenu, "RIGHT", -25, 0);
 		UIDropDownMenu_SetWidth(communitiesFrame.StreamDropDownMenu, 115);
-		PortraitFrameTemplate_SetPortraitShown(communitiesFrame, false);
+		ButtonFrameTemplateMinimizable_HidePortrait(communitiesFrame);
 		communitiesFrame.PortraitOverlay:Hide();
 		communitiesFrame.VoiceChatHeadset:SetPoint("TOPRIGHT", -10, -26);
 		UpdateUIPanelPositions();

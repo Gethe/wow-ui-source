@@ -25,6 +25,7 @@ function CommunitiesChatMixin:OnLoad()
 	self.MessageFrame:SetFont(DEFAULT_CHAT_FRAME:GetFont());
 	self.pendingMemberInfo = {};
 	self.broadcastSent = {};
+	self.eventsSent = {};
 end
 
 function CommunitiesChatMixin:OnShow()
@@ -252,6 +253,8 @@ function CommunitiesChatMixin:DisplayChat()
 	self.messageRangeOldest = messages[1].messageId;
 	
 	self:AddBroadcastMessage(clubId);
+	self:AddUpcomingEventMessages(clubId);
+	self:AddOngoingEventMessages(clubId);
 	
 	C_Club.AdvanceStreamViewMarker(clubId, streamId);
 	self:UpdateScrollbar();
@@ -334,14 +337,16 @@ function CommunitiesChatMixin:FormatMessage(clubId, streamId, message)
 	end
 end
 
-function CommunitiesChatMixin:AddDateNotification(date, backfill)
+function CommunitiesChatMixin:AddDateNotification(calendarTime, backfill)
 	local notification = nil;
-	if AreFullDatesEqual(C_DateAndTime.GetTodaysDate(), date) then
+	local today = C_DateAndTime.GetCurrentCalendarTime();
+	local yesterday = C_DateAndTime.AdjustTimeByDays(today, -1);
+	if CalendarUtil.AreDatesEqual(today, calendarTime) then
 		notification = COMMUNITIES_CHAT_FRAME_TODAY_NOTIFICATION;
-	elseif AreFullDatesEqual(C_DateAndTime.GetYesterdaysDate(), date) then
+	elseif CalendarUtil.AreDatesEqual(yesterday, calendarTime) then
 		notification = COMMUNITIES_CHAT_FRAME_YESTERDAY_NOTIFICATION;
 	else
-		notification = FormateFullDateWithoutYear(date);
+		notification = CalendarUtil.FormatCalendarTimeWeekday(calendarTime);
 	end
 	
 	self:AddNotification(notification, "communities-chat-date-line", 0.4, 0.4, 0.4, backfill);
@@ -353,8 +358,9 @@ function CommunitiesChatMixin:AddUnreadNotification(backfill)
 end
 
 local NOTIFICATION_LINE_TEXTURE_SIZE_Y = 8;
+local NOTIFICATION_LINE_TEXTURE_SIZE_X = 165;
 function CommunitiesChatMixin:AddNotification(notification, atlas, r, g, b, backfill)
-	local textureMarkup = CreateAtlasMarkup(atlas, NOTIFICATION_LINE_TEXTURE_SIZE_Y, 200, 0, 3);
+	local textureMarkup = CreateAtlasMarkup(atlas, NOTIFICATION_LINE_TEXTURE_SIZE_Y, NOTIFICATION_LINE_TEXTURE_SIZE_X, 0, 3);
 	if backfill then
 		self.MessageFrame:BackFillMessage(textureMarkup, 1, 1, 1);
 		self.MessageFrame:BackFillMessage(notification, r, g, b);
@@ -381,6 +387,44 @@ function CommunitiesChatMixin:AddBroadcastMessage(clubId)
 	end
 end
 
+local DEFAULT_NUM_DAYS_TO_PREVIEW_IN_CHAT = 4;
+function CommunitiesChatMixin:AddUpcomingEventMessages(clubId)
+	if not self.eventsSent[clubId] then
+		self.eventsSent[clubId] = {};
+	end
+
+	local currentCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
+	
+	-- Only include events that are happening in the future. Ongoing events will be broadcast separately.
+	currentCalendarTime.minute = currentCalendarTime.minute + 1;
+	
+	local events = C_Calendar.GetClubCalendarEvents(clubId, currentCalendarTime, C_DateAndTime.AdjustTimeByDays(currentCalendarTime, DEFAULT_NUM_DAYS_TO_PREVIEW_IN_CHAT));
+	for i, event in ipairs(events) do
+		local eventBroadcast = CalendarUtil.GetEventBroadcastText(event);
+		if self.eventsSent[clubId][event.eventID] ~= eventBroadcast then
+			self.MessageFrame:AddMessage(eventBroadcast);
+			self.eventsSent[clubId][event.eventID] = eventBroadcast;
+		end
+	end
+end
+
+local NUM_MINUTES_TO_DISPLAY_ONGOING = 30;
+function CommunitiesChatMixin:AddOngoingEventMessages(clubId)
+	if not self.eventsSent[clubId] then
+		self.eventsSent[clubId] = {};
+	end
+
+	local currentCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
+	local events = C_Calendar.GetClubCalendarEvents(clubId, C_DateAndTime.AdjustTimeByMinutes(currentCalendarTime, -NUM_MINUTES_TO_DISPLAY_ONGOING), currentCalendarTime);
+	for i, event in ipairs(events) do
+		local eventBroadcast = CalendarUtil.GetOngoingEventBroadcastText(event);
+		if self.eventsSent[clubId][event.eventID] ~= eventBroadcast then
+			self.MessageFrame:AddMessage(eventBroadcast);
+			self.eventsSent[clubId][event.eventID] = eventBroadcast;
+		end
+	end
+end
+
 function CommunitiesChatMixin:AddMessage(clubId, streamId, message, backfill)
 	local r, g, b = self:GetChatColor();
 	if not r then
@@ -391,10 +435,10 @@ function CommunitiesChatMixin:AddMessage(clubId, streamId, message, backfill)
 		self:RegisterForMemberUpdate(clubId, message.author.memberId);
 	end
 	
-	local messageDate = C_DateAndTime.GetDateFromEpoch(message.messageId.epoch);
+	local messageDate = C_DateAndTime.GetCalendarTimeFromEpoch(message.messageId.epoch);
 	local previousMessageId = select(7, self.MessageFrame:GetMessageInfo(backfill and 1 or self.MessageFrame:GetNumMessages()));
-	local previousMessageDate = previousMessageId and C_DateAndTime.GetDateFromEpoch(previousMessageId.epoch);
-	if previousMessageDate and (messageDate.day ~= previousMessageDate.day or messageDate.month ~= previousMessageDate.month) then
+	local previousMessageDate = previousMessageId and C_DateAndTime.GetCalendarTimeFromEpoch(previousMessageId.epoch);
+	if previousMessageDate and (messageDate.monthDay ~= previousMessageDate.monthDay or messageDate.month ~= previousMessageDate.month) then
 		self:AddDateNotification(backfill and previousMessageDate or messageDate, backfill);
 	end
 	
@@ -467,8 +511,7 @@ function CommunitiesChatFrameScrollBar_OnValueChanged(self, value, userInput)
 	end
 	
 	if userInput then
-		local min, max = self:GetMinMaxValues();
-		self:GetParent():SetScrollOffset(max - value);
+		self:GetParent():SetScrollOffset(maxVal - value);
 	end
 	
 	local communitiesChatFrame = self:GetParent():GetParent();

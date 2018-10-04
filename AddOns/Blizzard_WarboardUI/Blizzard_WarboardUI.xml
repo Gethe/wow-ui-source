@@ -74,8 +74,11 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<Frame parentKey="Header" useParentLevel="true">
-				<Size x="256" y="32"/>
+			<Frame parentKey="Header" useParentLevel="true" inherits="HorizontalLayoutFrame" hidden="true">
+				<KeyValues>
+					<KeyValue key="fixedHeight" value="32" type="number"/>
+					<KeyValue key="spacing" value="5" type="number"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" y="10"/>
 				</Anchors>
@@ -83,16 +86,21 @@
 					<Layer level="BORDER">
 						<Texture parentKey="Ribbon" atlas="UI-Frame-Horde-Ribbon" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="CENTER" relativePoint="TOP" y="-16"/>
+								<Anchor point="CENTER" />
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Text" font="Game16Font" justifyH="CENTER" justifyV="MIDDLE">
-							<Size x="195"/>
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Ribbon"/>
-							</Anchors>
+						<Texture parentKey="Icon">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="1" type="number"/>
+							</KeyValues>
+						</Texture>
+						<FontString parentKey="Text" font="Game16Font" justifyV="MIDDLE" maxLines="2">
+							<Size y="30"/>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
+							</KeyValues>
 							<Color r="0" g="0" b="0"/>
 						</FontString>
 					</Layer>

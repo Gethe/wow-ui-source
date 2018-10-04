@@ -61,6 +61,7 @@ ObjectAPI\PlayerLocation.lua
 WorldFrame.xml
 UIParent.xml
 QuestUtils.lua
+AchievementUtil.lua
 MapUtil.lua
 AzeriteUtil.lua
 VehicleUtil.lua

@@ -52,4 +52,30 @@
 			</Layer>
 		</Layers>
 	</Frame>
+
+	<Frame name="UIWidgetBaseSpellTemplate" inherits="UIWidgetTemplateTooltipFrame" mixin="UIWidgetBaseSpellTemplateMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border" atlas="Legionfall_GrayFrame_Buffs">
+					<Size x="39" y="39"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Border"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="GameFontNormal_NoShadow" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
 </Ui>

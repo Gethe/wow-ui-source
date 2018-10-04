@@ -203,10 +203,6 @@ local Calendar =
 			Type = "Function",
 		},
 		{
-			Name = "EventClearClubId",
-			Type = "Function",
-		},
-		{
 			Name = "EventClearLocked",
 			Type = "Function",
 		},
@@ -389,7 +385,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -491,12 +487,19 @@ local Calendar =
 			Type = "Function",
 		},
 		{
-			Name = "GetDate",
+			Name = "GetClubCalendarEvents",
 			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "startTime", Type = "CalendarTime", Nilable = false },
+				{ Name = "endTime", Type = "CalendarTime", Nilable = false },
+			},
 
 			Returns =
 			{
-				{ Name = "date", Type = "CalendarTime", Nilable = false },
+				{ Name = "events", Type = "table", InnerType = "CalendarDayEvent", Nilable = false },
 			},
 		},
 		{
@@ -531,6 +534,22 @@ local Calendar =
 			Returns =
 			{
 				{ Name = "info", Type = "CalendarEventIndexInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetEventIndexInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "eventID", Type = "string", Nilable = false },
+				{ Name = "monthOffset", Type = "number", Nilable = true },
+				{ Name = "monthDay", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "eventIndexInfo", Type = "CalendarEventIndexInfo", Nilable = true },
 			},
 		},
 		{
@@ -698,21 +717,6 @@ local Calendar =
 			Returns =
 			{
 				{ Name = "info", Type = "CalendarRaidInfo", Nilable = false },
-			},
-		},
-		{
-			Name = "GetUpcomingClubEvents",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "clubId", Type = "string", Nilable = false },
-				{ Name = "offsetDays", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "events", Type = "table", InnerType = "CalendarDayEvent", Nilable = false },
 			},
 		},
 		{
@@ -924,23 +928,11 @@ local Calendar =
 			},
 		},
 		{
-			Name = "CalendarTime",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "monthDay", Type = "number", Nilable = false },
-				{ Name = "month", Type = "number", Nilable = false },
-				{ Name = "weekday", Type = "number", Nilable = false },
-				{ Name = "year", Type = "number", Nilable = false },
-				{ Name = "hour", Type = "number", Nilable = false },
-				{ Name = "minute", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "CalendarDayEvent",
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "eventID", Type = "string", Nilable = false },
 				{ Name = "title", Type = "string", Nilable = false },
 				{ Name = "isCustomTitle", Type = "bool", Nilable = false },
 				{ Name = "startTime", Type = "CalendarTime", Nilable = false },

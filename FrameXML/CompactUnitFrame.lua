@@ -38,6 +38,7 @@ function CompactUnitFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_FLAGS");
 	self:RegisterEvent("GROUP_JOINED");
 	self:RegisterEvent("GROUP_LEFT");
+	self:RegisterEvent("INCOMING_SUMMON_CHANGED");
 	-- also see CompactUnitFrame_UpdateUnitEvents for more events
 
 	self.maxBuffs = 0;
@@ -136,6 +137,8 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 			CompactUnitFrame_UpdateHealthBorder(self);
 		elseif ( event == "UNIT_CLASSIFICATION_CHANGED" ) then
 			CompactUnitFrame_UpdateClassificationIndicator(self);
+		elseif ( event == "INCOMING_SUMMON_CHANGED" ) then
+			CompactUnitFrame_UpdateCenterStatusIcon(self);
 		end
 	end
 end
@@ -145,6 +148,7 @@ function CompactUnitFrame_OnUpdate(self, elapsed)
 	CompactUnitFrame_UpdateInRange(self);
 	CompactUnitFrame_UpdateDistance(self);
 	CompactUnitFrame_CheckReadyCheckDecay(self, elapsed);
+	CompactUnitFrame_UpdateSummonIcon(self);
 end
 
 --Externally accessed functions
@@ -945,6 +949,20 @@ function CompactUnitFrame_CheckReadyCheckDecay(frame, elapsed)
 	end
 end
 
+function CompactUnitFrame_UpdateSummonIcon(frame)
+	if ( not frame.centerStatusIcon ) then
+		return;
+	end
+
+	local summonStatus = C_IncomingSummon.IncomingSummonStatus(frame.unit);
+
+	if ( summonStatus == Enum.SummonStatus.Accepted or summonStatus == Enum.SummonStatus.Declined) then
+		if ( C_IncomingSummon.GetSummonResponseTime(frame.unit) + SUMMON_FINISHED_ICON_DISPLAY_TIME < GetTime() ) then
+			C_IncomingSummon.ClearSummonInfo(frame.unit);
+		end
+	end
+end
+
 function CompactUnitFrame_UpdateCenterStatusIcon(frame)
 	if ( frame.centerStatusIcon ) then
 		if ( frame.optionTable.displayInOtherGroup and UnitInOtherParty(frame.unit) ) then
@@ -960,6 +978,16 @@ function CompactUnitFrame_UpdateCenterStatusIcon(frame)
 			frame.centerStatusIcon.border:Hide();
 			frame.centerStatusIcon.tooltip = nil;
 			frame.centerStatusIcon:Show();
+		elseif ( frame.optionTable.displayIncomingSummon and C_IncomingSummon.HasIncomingSummon(frame.unit) ) then
+			local status = C_IncomingSummon.IncomingSummonStatus(frame.unit);
+
+			if(status == Enum.SummonStatus.Pending) then
+				--Display pending summon icon here
+			elseif( status == Enum.SummonStatus.Accepted ) then
+				--Display check icon here
+			elseif( status == Enum.SummonStatus.Declined ) then
+				--Display X icon here
+			end
 		elseif ( frame.optionTable.displayInOtherPhase and frame.inDistance and (not UnitInPhase(frame.unit) or UnitIsWarModePhased(frame.unit)) ) then
 			frame.centerStatusIcon.texture:SetTexture("Interface\\TargetingFrame\\UI-PhasingIcon");
 			frame.centerStatusIcon.texture:SetTexCoord(0.15625, 0.84375, 0.15625, 0.84375);
@@ -1361,6 +1389,7 @@ DefaultCompactUnitFrameOptions = {
 	displayNonBossDebuffs = true,
 	healthText = "none",
 	displayIncomingResurrect = true,
+	displayIncomingSummon = true,
 	displayInOtherGroup = true,
 	displayInOtherPhase = true,
 

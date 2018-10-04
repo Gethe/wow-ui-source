@@ -3752,19 +3752,15 @@ function ChatFrame_SendTell(name, chatFrame)
 	ChatEdit_ParseText(editBox, 0);
 end
 
-function ChatFrame_SendSmartTell(name, chatFrame)
-	local editBox = ChatEdit_ChooseBoxForSend(chatFrame);
-
-	--DEBUG FIXME - for now, we're not going to remove spaces from names. We need to make sure X-server still works.
-	-- Remove spaces from the server name for slash command parsing
-	--name = gsub(name, " ", "");
-
+function ChatFrame_SendBNetTell(tokenizedName)
+	local editBox = ChatEdit_ChooseBoxForSend();
+	editBox:SetAttribute("tellTarget", tokenizedName);
+	editBox:SetAttribute("chatType", "BN_WHISPER");
 	if ( editBox ~= ChatEdit_GetActiveWindow() ) then
-		ChatFrame_OpenChat(SLASH_SMART_WHISPER1.." "..name.." ", chatFrame);
+		ChatFrame_OpenChat("");
 	else
-		editBox:SetText(SLASH_SMART_WHISPER1.." "..name.." ");
+		ChatEdit_UpdateHeader(editBox);
 	end
-	ChatEdit_ParseText(editBox, 0);
 end
 
 function ChatFrame_ReplyTell(chatFrame)
@@ -3956,6 +3952,20 @@ function ChatEdit_OnLoad(self)
 		self:Show();
 	end
 
+	local function ChatEditAutoComplete(editBox, fullText, nameInfo)
+		if nameInfo.bnetID ~= nil and nameInfo.bnetID ~= 0 then
+			editBox:SetAttribute("tellTarget", nameInfo.name);
+			editBox:SetAttribute("chatType", "BN_WHISPER");
+			editBox:SetText("");
+			ChatEdit_UpdateHeader(editBox);
+			return true;
+		end
+		
+		return false;
+	end
+	
+	AutoCompleteEditBox_SetCustomAutoCompleteFunction(self, ChatEditAutoComplete);
+	
 	self:SetParent(UIParent);
 end
 
@@ -4794,7 +4804,7 @@ function ChatEdit_ExtractTellTarget(editBox, msg, chatType)
 		return false;
 	end
 
-	if((strsub(target, 1, 1) == "|") and not(strsub(target, 1, 2) == "|K")) then
+	if ( strsub(target, 1, 1) == "|" ) then
 		return false;
 	end
 
@@ -4803,23 +4813,15 @@ function ChatEdit_ExtractTellTarget(editBox, msg, chatType)
 		return false;
 	end
 
-	if(strsub(target, 1, 2) == "|K") then
-		target, msg = BNTokenFindName(target);
-		--If there is a space just after the name (to trigger a parse), remove it.
-		if ( strsub(msg, 1, 1) == " " ) then
-			msg = strsub(msg, 2);
+	--Keep pulling off everything after the last space until we either have something on the AutoComplete list or only a single word is left.
+	while ( strfind(target, "%s") ) do
+		--Pull off everything after the last space.
+		target = strmatch(target, "(.+)%s+[^%s]*");
+		if ( #GetAutoCompleteResults(target, 1, 0, true, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude) > 0 ) then
+			break;
 		end
-	else
-		--Keep pulling off everything after the last space until we either have something on the AutoComplete list or only a single word is left.
-		while ( strfind(target, "%s") ) do
-			--Pull off everything after the last space.
-			target = strmatch(target, "(.+)%s+[^%s]*");
-			if ( #GetAutoCompleteResults(target, 1, 0, true, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude) > 0 ) then
-				break;
-			end
-		end
-		msg = strsub(msg, strlen(target) + 2);
 	end
+	msg = strsub(msg, strlen(target) + 2);
 
 	if ( chatType ~= "WHISPER" and BNet_GetBNetIDAccount(target) ) then --"WHISPER" forces character whisper
 		chatType = "BN_WHISPER";

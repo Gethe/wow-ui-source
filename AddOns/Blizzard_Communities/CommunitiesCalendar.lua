@@ -21,8 +21,8 @@ function CommunitiesCalendarButtonMixin:OnEnter()
 		GameTooltip_AddNormalLine(GameTooltip, COMMUNITIES_CALENDAR_MOTD_FORMAT:format(selectedClubInfo.broadcast), true);
 	end
 	
-	local today = C_DateAndTime.GetTodaysDate();
-	local events = C_Calendar.GetUpcomingClubEvents(selectedClubInfo.clubId, DEFAULT_NUM_DAYS_TO_PREVIEW);
+	local currentCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
+	local events = C_Calendar.GetClubCalendarEvents(selectedClubInfo.clubId, currentCalendarTime, C_DateAndTime.AdjustTimeByDays(currentCalendarTime, DEFAULT_NUM_DAYS_TO_PREVIEW));
 	for i, event in ipairs(events) do
 		if i > TOOLTIP_MAX_NUM_OF_CALENDER_EVENTS then
 			break;
@@ -30,7 +30,7 @@ function CommunitiesCalendarButtonMixin:OnEnter()
 		
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
 		
-		local weekDay = today.weekDay == event.startTime.weekday and COMMUNITIES_CALENDAR_TODAY or CALENDAR_WEEKDAY_NAMES[event.startTime.weekday];
+		local weekDay = currentCalendarTime.weekday == event.startTime.weekday and COMMUNITIES_CALENDAR_TODAY or CALENDAR_WEEKDAY_NAMES[event.startTime.weekday];
 		local startTime = GameTime_GetFormattedTime(event.startTime.hour, event.startTime.minute, true);
 		GameTooltip_AddColoredLine(GameTooltip, COMMUNITIES_CALENDAR_EVENT_FORMAT:format(weekDay, startTime), HIGHLIGHT_FONT_COLOR);
 		GameTooltip_AddNormalLine(GameTooltip, event.title);

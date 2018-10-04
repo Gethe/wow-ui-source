@@ -113,6 +113,18 @@ function ButtonFrameTemplate_ShowPortrait(self)
 	PortraitFrameTemplate_SetPortraitShown(self, true);
 end
 
+function ButtonFrameTemplateMinimizable_HidePortrait(self)
+	local layout = AnchorUtil.GetNineSliceLayout("ButtonFrameTemplateNoPortraitMinimizable");
+	AnchorUtil.ApplyNineSliceLayout(self.NineSlice, layout);
+	PortraitFrameTemplate_SetPortraitShown(self, false);
+end
+
+function ButtonFrameTemplateMinimizable_ShowPortrait(self)
+	local layout = AnchorUtil.GetNineSliceLayout("PortraitFrameTemplateMinimizable");
+	AnchorUtil.ApplyNineSliceLayout(self.NineSlice, layout);
+	PortraitFrameTemplate_SetPortraitShown(self, true);
+end
+
 function PortraitFrameTemplate_SetBorder(self, layoutName)
 	local layout = AnchorUtil.GetNineSliceLayout(layoutName);
 	AnchorUtil.ApplyNineSliceLayout(self.NineSlice, layout);
