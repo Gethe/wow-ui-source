@@ -321,6 +321,19 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "SpellDisplayIconSizeType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Small", Type = "SpellDisplayIconSizeType", EnumValue = 0 },
+				{ Name = "Medium", Type = "SpellDisplayIconSizeType", EnumValue = 1 },
+				{ Name = "Large", Type = "SpellDisplayIconSizeType", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "StatusBarValueTextType",
 			Type = "Enumeration",
 			NumValues = 6,
@@ -510,6 +523,7 @@ local UIWidgetManager =
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "enabledState", Type = "WidgetEnabledState", Nilable = false },
 				{ Name = "spellInfo", Type = "UIWidgetSpellInfo", Nilable = false },
+				{ Name = "iconSizeType", Type = "SpellDisplayIconSizeType", Nilable = false },
 				{ Name = "widgetWidth", Type = "number", Nilable = false },
 				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },

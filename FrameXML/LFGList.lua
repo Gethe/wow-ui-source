@@ -215,6 +215,7 @@ end
 function LFGListFrame_OnHide(self)
 	LFGListFrame_SetPendingQuestIDSearch(self, nil);
 	LFGListEntryCreation_ClearAutoCreateMode(self.EntryCreation);
+	self.SearchPanel.shouldAlwaysShowCreateGroupButton = nil;
 end
 
 function LFGListFrame_GetChatMessageForSearchStatusChange(newStatus)
@@ -339,7 +340,7 @@ function LFGListFrame_SetPendingQuestIDSearch(self, questID)
 	self.pendingQuestIDSearch = questID;
 end
 
-function LFGListFrame_BeginFindQuestGroup(self, questID)
+function LFGListFrame_BeginFindQuestGroup(self, questID, shouldShowCreateGroupButton)
 	local activityID, categoryID, filters, questName = LFGListUtil_GetQuestCategoryData(questID);
 
 	if not activityID then
@@ -353,6 +354,8 @@ function LFGListFrame_BeginFindQuestGroup(self, questID)
 		end
 		return;
 	end
+
+	self.SearchPanel.shouldAlwaysShowCreateGroupButton = shouldShowCreateGroupButton;
 
 	PVEFrame_ShowFrame("GroupFinderFrame", LFGListPVEStub);
 
@@ -1811,9 +1814,20 @@ function LFGListSearchPanel_UpdateResults(self)
 		if ( totalHeight < self.ScrollFrame:GetHeight() ) then
 			self.ScrollFrame.NoResultsFound:SetPoint("TOP", self.ScrollFrame, "TOP", 0, -totalHeight - 27);
 		end
-		self.ScrollFrame.NoResultsFound:SetShown(self.totalResults == 0);
-		self.ScrollFrame.StartGroupButton:SetShown(self.totalResults == 0 and not self.searchFailed);
-		self.ScrollFrame.NoResultsFound:SetText(self.searchFailed and LFG_LIST_SEARCH_FAILED or LFG_LIST_NO_RESULTS_FOUND);
+		if(self.totalResults == 0) then 
+			self.ScrollFrame.NoResultsFound:Show();
+			self.ScrollFrame.StartGroupButton:SetShown(not self.searchFailed);
+			self.ScrollFrame.StartGroupButton:ClearAllPoints();
+			self.ScrollFrame.StartGroupButton:SetPoint("BOTTOM", self.ScrollFrame.NoResultsFound, "BOTTOM", 0, - 27);
+			self.ScrollFrame.NoResultsFound:SetText(self.searchFailed and LFG_LIST_SEARCH_FAILED or LFG_LIST_NO_RESULTS_FOUND);
+		elseif(self.shouldAlwaysShowCreateGroupButton) then
+			self.ScrollFrame.NoResultsFound:Hide();
+			self.ScrollFrame.StartGroupButton:SetShown(not self.searchFailed);
+			self.ScrollFrame.StartGroupButton:ClearAllPoints();
+			self.ScrollFrame.StartGroupButton:SetPoint("TOP", self.ScrollFrame, "TOP", 0, -totalHeight - 15);
+		else 
+			self.ScrollFrame.NoResultsFound:Hide();
+		end
 
 		HybridScrollFrame_Update(self.ScrollFrame, totalHeight, self.ScrollFrame:GetHeight());
 	end
@@ -3245,7 +3259,7 @@ function LFGListUtil_GetQuestCategoryData(questID)
 	end
 end
 
-function LFGListUtil_FindQuestGroup(questID)
+function LFGListUtil_FindQuestGroup(questID, isFromGreenEyeButton)
 	if C_LFGList.HasActiveEntryInfo() then
 		if LFGListUtil_CanListGroup() then
 			StaticPopup_Show("PREMADE_GROUP_SEARCH_DELIST_WARNING", nil, nil, questID);
@@ -3253,7 +3267,7 @@ function LFGListUtil_FindQuestGroup(questID)
 			LFGListUtil_OpenBestWindow();
 		end
 	else
-		LFGListFrame_BeginFindQuestGroup(LFGListFrame, questID);
+		LFGListFrame_BeginFindQuestGroup(LFGListFrame, questID, isFromGreenEyeButton);
 	end
 end
 

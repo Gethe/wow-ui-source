@@ -1223,6 +1223,7 @@
 								local frame = self:GetParent():GetParent();
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								LFGListFrame_SetActivePanel(frame, frame.CategorySelection);
+								self:GetParent().shouldAlwaysShowCreateGroupButton = false;
 							</OnClick>
 						</Scripts>
 					</Button>

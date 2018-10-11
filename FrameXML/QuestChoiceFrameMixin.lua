@@ -98,8 +98,37 @@ function QuestChoiceFrameMixin:TryShow()
 	self:Update();
 end
 
+local function WidgetsLayout(widgetContainer, sortedWidgets)
+	local widgetsHeight = 0;
+	local maxWidgetWidth = 0;
+
+	for index, widgetFrame in ipairs(sortedWidgets) do
+		if ( index == 1 ) then
+			widgetFrame:SetPoint("TOP", widgetContainer, "TOP", 0, 0);
+		else
+			local relative = sortedWidgets[index - 1];
+			widgetFrame:SetPoint("TOP", relative, "BOTTOM", 0, 0);
+		end
+
+		widgetsHeight = widgetsHeight + widgetFrame:GetHeight();
+
+		if index == #sortedWidgets and widgetFrame.widgetType == Enum.UIWidgetVisualizationType.SpellDisplay then
+			-- Add a buffer if the last widget is a SpellDisplay
+			widgetsHeight = widgetsHeight + 35;
+		end
+
+		local widgetWidth = widgetFrame:GetWidth();
+		if widgetWidth > maxWidgetWidth then
+			maxWidgetWidth = widgetWidth;
+		end
+	end
+
+	widgetContainer:SetHeight(widgetsHeight);
+	widgetContainer:SetWidth(maxWidgetWidth);
+end
+
 function QuestChoiceFrameMixin:WidgetLayout(widgetContainer, sortedWidgets)
-	DefaultWidgetLayout(widgetContainer, sortedWidgets);
+	WidgetsLayout(widgetContainer, sortedWidgets);
 	self:UpdateHeight();
 end
 
@@ -138,6 +167,9 @@ function QuestChoiceFrameMixin:UpdateHeight()
 		end
 		if option.WidgetContainer and option.WidgetContainer:IsShown() then
 			currHeight = currHeight + option.WidgetContainer:GetHeight() + 5;
+		end
+		if option.SubHeader and option.SubHeader:IsShown() then
+			currHeight = currHeight + option.SubHeader:GetHeight() + 2;
 		end
 		maxHeight = math.max(currHeight, maxHeight);
 	end
@@ -205,14 +237,18 @@ function QuestChoiceFrameMixin:Update()
 	self.QuestionText:SetText(questionText);
 
 	self.numActiveOptionFrames = 0;
+
+	local anOptionHasMultipleButtons = false;
+
 	for i=1, numOptions do
-		local optID, buttonText, description, header, artFile, confirmationText, widgetSetID, disabledButton, desaturatedArt, groupID, headerIconAtlasElement = GetQuestChoiceOptionInfo(i);
+		local optID, buttonText, description, header, artFile, confirmationText, widgetSetID, disabledButton, desaturatedArt, groupID, headerIconAtlasElement, subHeader, buttonTooltip = GetQuestChoiceOptionInfo(i);
 
 		local existingOption = self:GetExistingOptionForGroup(groupID);
 		local button;
 		if existingOption then
 			-- only supporting two grouped options
 			existingOption.hasMultipleButtons = true;
+			anOptionHasMultipleButtons = true;
 			button = existingOption.OptionButtonsContainer.OptionButton2;
 			if not disabledButton then
 				existingOption.hasActiveButton = true;
@@ -232,11 +268,13 @@ function QuestChoiceFrameMixin:Update()
 			button = option.OptionButtonsContainer.OptionButton1;
 			option.OptionText:SetText(description);
 			option:ConfigureHeader(header, headerIconAtlasElement);
+			option:ConfigureSubHeader(subHeader);
 			option.Artwork:SetTexture(artFile);
 
 			self:UpdateOptionWidgetRegistration(option, widgetSetID);
 		end
 		button.confirmationText = confirmationText;
+		button.tooltip = buttonTooltip;
 		button:SetText(buttonText);
 		button.optID = optID;
 		button:SetEnabled(not disabledButton);
@@ -246,6 +284,7 @@ function QuestChoiceFrameMixin:Update()
 	for i = 1, self.numActiveOptionFrames do
 		local option = self.Options[i];
 		option:ConfigureButtons();
+		option:UpdateWidgetContainerAnchor(anOptionHasMultipleButtons);
 	end
 
 	if self.numActiveOptionFrames < #self.Options then
@@ -377,9 +416,16 @@ function QuestChoiceOptionButtonMixin:OnClick()
 end
 
 function QuestChoiceOptionButtonMixin:OnEnter()
-	if ( self.Text:IsTruncated() ) then
+	if self.tooltip ~= "" then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(self.Text:GetText(), 1, 1, 1, 1, true);
+		if self.Text:IsTruncated() then
+			GameTooltip_SetTitle(GameTooltip, self.Text:GetText(), nil, true);
+		end
+		GameTooltip_AddNormalLine(GameTooltip, self.tooltip, true);
+		GameTooltip:Show();
+	elseif self.Text:IsTruncated() then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, self.Text:GetText(), nil, true);
 		GameTooltip:Show();
 	end
 end
@@ -433,6 +479,16 @@ function QuestChoiceOptionFrameMixin:ConfigureButtons()
 	end
 end
 
+function QuestChoiceOptionFrameMixin:UpdateWidgetContainerAnchor(anOptionHasMultipleButtons)
+	local parent = self:GetParent();
+	self.WidgetContainer:ClearAllPoints();
+	if anOptionHasMultipleButtons and not self.hasMultipleButtons then
+		self.WidgetContainer:SetPoint("BOTTOM", self.OptionButtonsContainer, "TOP", 0, parent.optionButtonHeight + parent.optionButtonVerticalSpacing + 5);
+	else
+		self.WidgetContainer:SetPoint("BOTTOM", self.OptionButtonsContainer, "TOP", 0, 5);
+	end
+end
+
 local HEADER_TEXT_AREA_WIDTH = 195;
 
 function QuestChoiceOptionFrameMixin:ConfigureHeader(header, headerIconAtlasElement)
@@ -459,4 +515,8 @@ function QuestChoiceOptionFrameMixin:ConfigureHeader(header, headerIconAtlasElem
 	else
 		self.Header:Hide();
 	end
+end
+
+function QuestChoiceOptionFrameMixin:ConfigureSubHeader(subHeader)
+	-- Subheader is currently only supported for warboards
 end

@@ -2,17 +2,25 @@ AzeriteEmpoweredItemChannelMixin = {};
 
 local REVEAL_SIZE_BY_TIER = {
 	[3] = {
-		195,
-		288,
-		580,
+		278,
+		368,
+		591,
 	},
 
 	[4] = {
-		104,
-		193,
-		288,
-		580,
+		188,
+		278,
+		368,
+		591,
 	},
+	
+	[5] = {
+		96,
+		188,
+		278,
+		368,
+		591,
+	},	
 }
 
 function AzeriteEmpoweredItemChannelMixin:Reset()
@@ -57,6 +65,7 @@ function AzeriteEmpoweredItemChannelMixin:UpdateTierAnimationProgress(tierIndex,
 
 		self.targetHeight = Lerp(fromHeight, toHeight, EasingUtil.InCubic(progress));
 	else
+		self.targetHeight = self:GetHeightForTierIndex(self.tierIndex);
 		self.isTierAnimating = false;
 	end
 end

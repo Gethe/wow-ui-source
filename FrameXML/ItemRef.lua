@@ -374,6 +374,14 @@ function SetItemRef(link, text, button, chatFrame)
 			C_Calendar.OpenEvent(monthOffset, monthDay, index);
 		end
 		return;
+	elseif ( strsub(link, 1, 9) == "community" ) then
+		if ( CommunitiesFrame_IsEnabled() ) then
+			local _, clubId = strsplit(":", link);
+			clubId = tonumber(clubId);
+			Communities_LoadUI();
+			CommunitiesHyperlink.OnClickReference(clubId);
+		end
+		return;
 	end
 
 	if ( IsModifiedClick() ) then
@@ -503,6 +511,20 @@ function GetCalendarEventLink(monthOffset, monthDay, index)
 	local dayEvent = C_Calendar.GetDayEvent(monthOffset, monthDay, index);
 	if dayEvent then
 		return FormatLink("calendarEvent", dayEvent.title, monthOffset, monthDay, index);
+	end
+	
+	return nil;
+end
+
+function GetCommunityLink(clubId)
+	local clubInfo = C_Club.GetClubInfo(clubId);
+	if clubInfo then
+		local link = FormatLink("community", COMMUNITY_REFERENCE_FORMAT:format(clubInfo.name), clubId);
+		if clubInfo.clubType == Enum.ClubType.BattleNet then
+			return BATTLENET_FONT_COLOR:WrapTextInColorCode(link);
+		else 
+			return NORMAL_FONT_COLOR:WrapTextInColorCode(link);
+		end
 	end
 	
 	return nil;

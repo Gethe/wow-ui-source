@@ -36,7 +36,11 @@ function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:Setup(widget
 		else
 			currencyFrame:SetPoint("TOPLEFT", self.CurrencyContainer, "TOPLEFT", 0, 0);
 			totalCurrencyWidth = totalCurrencyWidth + currencyFrame:GetWidth();
-			currencyFrame:SetWidth(widgetInfo.leftCurrencyWidth);
+			if widgetInfo.leftCurrencyWidth > 0 then
+				currencyFrame:SetWidth(widgetInfo.leftCurrencyWidth);
+			else
+				currencyFrame:SetWidth(95);
+			end
 		end
 
 		totalCurrencyHeight = currencyFrame:GetHeight();

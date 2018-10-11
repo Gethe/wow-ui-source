@@ -829,6 +829,7 @@ function ScenarioStage_CustomizeBlock(stageBlock, scenarioType, widgetSetID, tex
 		stageBlock.CompleteLabel:SetPoint("LEFT", stageBlock, "LEFT", 15, 17);
 		stageBlock.Stage:SetPoint("TOPLEFT", stageBlock, "TOPLEFT", 15, -8);
 		stageBlock.Stage:SetTextColor(1, 0.914, 0.682);
+		stageBlock.Stage:SetHeight(34);
 		stageBlock.NormalBG:Hide();
 	else
 		ScenarioStageBlock.CompleteLabel:SetPoint("LEFT", stageBlock, "LEFT", 15, 3);

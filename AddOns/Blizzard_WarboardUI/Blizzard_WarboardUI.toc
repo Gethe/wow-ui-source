@@ -2,4 +2,5 @@
 ## Title: Blizzard Warboard UI
 ## Secure: 1
 ## LoadOnDemand: 1
+## RequiredDep: Blizzard_QuestChoice
 Blizzard_WarboardUI.xml

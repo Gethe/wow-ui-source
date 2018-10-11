@@ -21,6 +21,28 @@ local DEFAULT_TWO_POWERS = {
 local LAYOUT_TIER_INFO = {
 	-- Outer most to inner most ring
 	{ 
+		radius = 324,
+		startRadians = 
+		{
+			default = math.pi / 4,
+
+			[2] = DEFAULT_TWO_POWERS,
+			[3] = {
+				0.94579392,
+				-0.94579392,
+				math.pi,
+			};
+			[4] = DEFAULT_FOUR_POWERS,
+			[5] = {
+				0.94579392,
+				-0.94579392,
+				2.22843639,
+				-2.22843639,
+				math.pi,
+			},
+		},
+	},	
+	{ 
 		radius = 251,
 		startRadians = 
 		{

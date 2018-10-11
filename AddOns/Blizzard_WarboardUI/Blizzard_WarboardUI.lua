@@ -48,6 +48,14 @@ local contentHeaderTextureKitRegions = {
 	["Ribbon"] = "UI-Frame-%s-Ribbon",
 };
 
+local contentSubHeaderTextureKitRegions = {
+	["BG"] = "UI-Frame-%s-Subtitle",
+};
+
+local contentSubHeaderTextureKitRegionsDisabled = {
+	["BG"] = "UI-Frame-%s-DisableSubtitle",
+};
+
 local textureKitColors = {
 	["alliance"] = {
 		title = CreateColor(0.008, 0.051, 0.192),
@@ -170,6 +178,11 @@ function WarboardQuestChoiceFrameMixin:Update()
 			hasHeaders = option.Header:IsShown();
 		end
 		option:SetupTextureKits(option.Header, contentHeaderTextureKitRegions);
+		if option.hasDesaturatedArt then
+			option:SetupTextureKits(option.SubHeader, contentSubHeaderTextureKitRegionsDisabled);
+		else
+			option:SetupTextureKits(option.SubHeader, contentSubHeaderTextureKitRegions);
+		end
 	end
 
 	-- resize solo options of standard size
@@ -257,5 +270,19 @@ function WarboardQuestChoiceOptionFrameMixin:ConfigureHeader(header, headerIconA
 	else
 		self.ArtworkBorder:SetPoint("TOP", 0, HEADER_HIDDEN_ARTWORK_OFFSET_Y);
 		self:GetParent().optionStaticHeight = HEADER_HIDDEN_STATIC_HEIGHT;
+	end
+end
+
+function WarboardQuestChoiceOptionFrameMixin:ConfigureSubHeader(subHeader)
+	self.OptionText:ClearAllPoints();
+	if subHeader and #subHeader > 0 then
+		self.SubHeader.Text:SetText(subHeader);
+		self.SubHeader:Show();
+		self.OptionText:SetPoint("TOP", self.SubHeader, "BOTTOM", 0, -12);
+		self.OptionText:SetPoint("BOTTOM", self.OptionButtonsContainer, "TOP", 0, 39);
+	else
+		self.SubHeader:Hide();
+		self.OptionText:SetPoint("TOP", self.ArtworkBorder, "BOTTOM", 0, -12);
+		self.OptionText:SetPoint("BOTTOM", self.OptionButtonsContainer, "TOP", 0, 39);
 	end
 end

@@ -41,37 +41,12 @@
 					<Anchor point="BOTTOM" x="0" y="29"/>
 				</Anchors>
 				<Frames>
-					<Button parentKey="OptionButton1" parentArray="Buttons" mixin="QuestChoiceOptionButtonMixin" inherits="UIPanelButtonTemplate">
-						<Size x="175" y="22"/>
+					<Button parentKey="OptionButton1" inherits="QuestChoiceOptionButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
-						<ButtonText name="$parentText" parentKey="Text">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="4" y="0"/>
-								<Anchor point="BOTTOMRIGHT" x="-4" y="0"/>
-							</Anchors>
-						</ButtonText>
-						<Scripts>
-							<OnClick method="OnClick"/>
-							<OnEnter method="OnEnter"/>
-							<OnLeave method="OnLeave"/>
-						</Scripts>
 					</Button>
-					<Button parentKey="OptionButton2" parentArray="Buttons" mixin="QuestChoiceOptionButtonMixin" inherits="UIPanelButtonTemplate" hidden="true">
-						<Size x="175" y="22"/>
-						<ButtonText name="$parentText" parentKey="Text">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="4" y="0"/>
-								<Anchor point="BOTTOMRIGHT" x="-4" y="0"/>
-							</Anchors>
-						</ButtonText>
-						<Scripts>
-							<OnClick method="OnClick"/>
-							<OnEnter method="OnEnter"/>
-							<OnLeave method="OnLeave"/>
-						</Scripts>
-					</Button>
+					<Button parentKey="OptionButton2" inherits="QuestChoiceOptionButtonTemplate"/>
 				</Frames>
 			</Frame>
 			<Frame parentKey="Header" useParentLevel="true" inherits="HorizontalLayoutFrame" hidden="true">
@@ -102,6 +77,31 @@
 								<KeyValue key="layoutIndex" value="2" type="number"/>
 							</KeyValues>
 							<Color r="0" g="0" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="SubHeader" hidden="true">
+				<Size x="207" y="30"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.ArtworkBorder" relativePoint="BOTTOM" x="0" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="BG">
+							<Size x="207" y="30"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" font="Game16Font" justifyV="MIDDLE" maxLines="1">
+							<Size x="180" y="20"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.BG"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
 						</FontString>
 					</Layer>
 				</Layers>

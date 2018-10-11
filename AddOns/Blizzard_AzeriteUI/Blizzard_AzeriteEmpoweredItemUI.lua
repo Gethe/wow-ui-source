@@ -12,12 +12,12 @@ local AZERITE_EMPOWERED_FRAME_EVENTS = {
 	"PLAYER_EQUIPMENT_CHANGED",
 };
 
-AZERITE_EMPOWERED_ITEM_MAX_TIERS = 4;
+AZERITE_EMPOWERED_ITEM_MAX_TIERS = 5;
 
 function AzeriteEmpoweredItemUIMixin:OnLoad()
 	CallbackRegistryBaseMixin.OnLoad(self);
 
-	UIPanelWindows[self:GetName()] = { area = "left", pushable = 1, xoffset = 35, yoffset = -9, bottomClampOverride = 100, showFailedFunc = function() self:OnShowFailed(); end, };
+	UIPanelWindows[self:GetName()] = { area = "left", pushable = 1, xoffset = 35, yoffset = -9, bottomClampOverride = 100, checkFit = 1, showFailedFunc = function() self:OnShowFailed(); end, };
 
 	self.BorderFrame.Bg:SetParent(self);
 	self.BorderFrame.TopTileStreaks:Hide();
@@ -280,7 +280,7 @@ end
 
 function AzeriteEmpoweredItemUIMixin:UpdateTiers()
 	local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem();
-	local azeriteItemPowerLevel = azeriteItemLocation and C_AzeriteItem.GetPowerLevel(azeriteItemLocation) or 0;
+	local azeriteItemPowerLevel = azeriteItemLocation and not AzeriteUtil.IsAzeriteItemLocationBankBag(azeriteItemLocation) and C_AzeriteItem.GetPowerLevel(azeriteItemLocation) or 0;
 
 	for tierIndex, tierFrame in ipairs(self.tiersByIndex) do
 		tierFrame:Update(azeriteItemPowerLevel);
@@ -317,11 +317,18 @@ function AzeriteEmpoweredItemUIMixin:AdjustSizeForTiers(numTiers)
 		self.ClipFrame.BackgroundFrame.Bg:SetAtlas("Azerite-Background-3Ranks", true);
 
 		self:SetSize(474, 484);
-	else
+	elseif numTiers == 4 then
 		self.ClipFrame.BackgroundFrame.KeyOverlay.Texture:SetAtlas("Azerite-CenterBG-4Ranks", true);
 		self.ClipFrame.BackgroundFrame.KeyOverlay.Texture:SetPoint("CENTER", 0, 187);
 		self.ClipFrame.BackgroundFrame.Bg:SetAtlas("Azerite-Background", true);
 		self:SetSize(615, 628);
+	elseif numTiers == 5 then
+		self.ClipFrame.BackgroundFrame.KeyOverlay.Texture:SetAtlas("Azerite-CenterBG-5Ranks", true);
+		self.ClipFrame.BackgroundFrame.KeyOverlay.Texture:SetPoint("CENTER", 0, 245);
+		self.ClipFrame.BackgroundFrame.Bg:SetAtlas("Azerite-Background", false);
+		-- TODO: Get atlas changed?
+		self.ClipFrame.BackgroundFrame.Bg:SetSize(1250, 1250);
+		self:SetSize(756, 772);
 	end
 	self.ClipFrame.BackgroundFrame.KeyOverlay.Channel:AdjustSizeForTiers(numTiers);
 	UpdateUIPanelPositions(self);

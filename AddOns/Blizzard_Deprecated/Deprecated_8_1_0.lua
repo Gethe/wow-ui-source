@@ -77,12 +77,18 @@ do
 		end
 
 		if info then
+			local chatFlag = "";
+			if info.dnd then
+				chatFlag = CHAT_FLAG_DND;
+			elseif info.afk then
+				chatFlag = CHAT_FLAG_AFK;
+			end
 			return info.name,
 				info.level,
 				info.className,
 				info.area,
 				info.connected,
-				info.dnd ? CHAT_FLAG_DND : info.afk ? CHAT_FLAG_AFK : "",
+				chatFlag,
 				info.notes,
 				info.referAFriend,
 				info.guid;
@@ -179,4 +185,10 @@ do
 
 	-- Use C_FriendList.SortWho instead
 	SortWho = C_FriendList.SortWho;
+end
+
+-- Quick join / request to join update
+
+do
+	GetInviteReferralInfo = C_PartyInfo.GetInviteReferralInfo;
 end

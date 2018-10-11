@@ -224,6 +224,11 @@ function ChallengesFrame_Update(self)
 
 			weeklyChest.rewardLevel = C_MythicPlus.GetRewardLevelFromKeystoneLevel(weeklyChest.ownedKeystoneLevel);
 			weeklyChest:SetupChest(weeklyChest.MissingKeystoneChest);
+		else 
+			self.WeeklyInfo.Child.Label:Show();
+			self.WeeklyInfo.Child.RunStatus:ClearAllPoints();
+			self.WeeklyInfo.Child.RunStatus:SetPoint("CENTER", self, "CENTER", 0, 0);
+			self.WeeklyInfo.Child.RunStatus:SetText(MYTHIC_PLUS_MISSING_KEYSTONE_MESSAGE); 
 		end
 		weeklyChest:Show();
 	else

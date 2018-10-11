@@ -12,7 +12,7 @@ UIWidgetTemplateSpellDisplayMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 function UIWidgetTemplateSpellDisplayMixin:Setup(widgetInfo)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
 
-	self.Spell:Setup(widgetInfo.spellInfo, widgetInfo.enabledState, widgetInfo.widgetWidth);
+	self.Spell:Setup(widgetInfo.spellInfo, widgetInfo.enabledState, widgetInfo.widgetWidth, widgetInfo.iconSizeType);
 	if self.fontColor then
 		self.Spell:SetFontColor(self.fontColor);
 	end

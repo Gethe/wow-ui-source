@@ -191,7 +191,8 @@ function SocialQueueUtil_GetRelationshipInfo(guid, missingNameFallback, clubId)
 		return name, RGBTableToColorCode(ChatTypeInfo.GUILD), "guild", playerLink;
 	end
 	
-	if ( clubId ) then
+	local clubInfo = clubId and C_Club.GetClubInfo(clubId) or nil;
+	if ( clubInfo ) then
 		return name, FRIENDS_WOW_NAME_COLOR_CODE, "club", playerLink;
 	end
 

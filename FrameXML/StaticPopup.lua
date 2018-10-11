@@ -1630,6 +1630,11 @@ StaticPopupDialogs["GROUP_INVITE_CONFIRMATION"] = {
 		end
 	end,
 	OnHyperlinkEnter = function(self, link, text, region, boundsLeft, boundsBottom, boundsWidth, boundsHeight)
+		local linkType = string.match(link, '(.-):');
+		if ( linkType ~= "player" ) then
+			return;
+		end
+
 		self.linkRegion = region;
 		self.linkText = text;
 		self.nextUpdateTime = GetTime();

@@ -35,7 +35,12 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo)
 
 	self:SetTooltip(widgetInfo.tooltip);
 
-	self.Bar:SetWidth(widgetInfo.barWidth);
+	if widgetInfo.barWidth > 0 then
+		self.Bar:SetWidth(widgetInfo.barWidth);
+	else
+		self.Bar:SetWidth(215);
+	end
+
 	self.Bar:SetMinMaxValues(widgetInfo.barMin, widgetInfo.barMax);
 	self.Bar:SetValue(widgetInfo.barValue);
 

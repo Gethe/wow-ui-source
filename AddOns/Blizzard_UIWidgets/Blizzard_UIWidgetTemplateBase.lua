@@ -117,16 +117,31 @@ end
 
 UIWidgetBaseSpellTemplateMixin = {}
 
-function UIWidgetBaseSpellTemplateMixin:Setup(spellInfo, enabledState, width)
+local iconSizes =
+{
+	[Enum.SpellDisplayIconSizeType.Small]	= 24,
+	[Enum.SpellDisplayIconSizeType.Medium]	= 30,
+	[Enum.SpellDisplayIconSizeType.Large]	= 36,
+}
+
+local function GetIconSize(iconSizeType)
+	return iconSizes[iconSizeType] and iconSizes[iconSizeType] or iconSizes[Enum.SpellDisplayIconSizeType.Large];
+end
+
+function UIWidgetBaseSpellTemplateMixin:Setup(spellInfo, enabledState, width, iconSizeType)
 	local name, _, icon = GetSpellInfo(spellInfo.spellID);
 	self.Icon:SetTexture(icon);
 	self.Icon:SetDesaturated(enabledState == Enum.WidgetEnabledState.Disabled);
+
+	local iconSize = GetIconSize(iconSizeType);
+	self.Icon:SetSize(iconSize, iconSize);
+
 	self.Text:SetText(name);
 
 	local iconWidth = self.Icon:GetWidth() + 5;
 	local textWidth;
 	if width > 0 then
-		textWidth = width - (iconWidth);
+		textWidth = width - iconWidth;
 	else
 		textWidth = self.Text:GetStringWidth();
 	end
@@ -136,7 +151,7 @@ function UIWidgetBaseSpellTemplateMixin:Setup(spellInfo, enabledState, width)
 	self:SetTooltip(spellInfo.tooltip);
 
 	self:SetWidth(iconWidth + textWidth);
-	self:SetHeight(self.Border:GetHeight());
+	self:SetHeight(self.Icon:GetHeight());
 end
 
 function UIWidgetBaseSpellTemplateMixin:SetFontColor(color)

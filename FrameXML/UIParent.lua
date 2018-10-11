@@ -2385,15 +2385,8 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 		end
 	end
 
-	-- check if the UI fits due to scaling issues
 	if ( GetUIPanelWindowInfo(frame, "checkFit") == 1 ) then
-		local horizRatio = UIParent:GetWidth() / GetUIPanelWidth(frame);
-		local vertRatio = UIParent:GetHeight() / GetUIPanelHeight(frame);
-		if ( horizRatio < 1 or vertRatio < 1 ) then
-			frame:SetScale(min(horizRatio, vertRatio));
-		else
-			frame:SetScale(1);
-		end
+		self:UpdateScaleForFit(frame);
 	end
 
 	-- If we have a "center" frame open, only listen to other "center" open requests
@@ -2810,7 +2803,21 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 		frame:Raise();
 	end
 
+	if ( currentFrame and GetUIPanelWindowInfo(currentFrame, "checkFit") == 1 ) then
+		self:UpdateScaleForFit(currentFrame);
+	end
+
 	self.updatingPanels = nil;
+end
+
+function FramePositionDelegate:UpdateScaleForFit(frame)
+	local horizRatio = UIParent:GetWidth() / GetUIPanelWidth(frame);
+	local vertRatio = UIParent:GetHeight() / GetUIPanelHeight(frame);
+	if ( horizRatio < 1 or vertRatio < 1 ) then
+		frame:SetScale(min(horizRatio, vertRatio));
+	else
+		frame:SetScale(1);
+	end
 end
 
 function FramePositionDelegate:UIParentManageFramePositions()
@@ -4214,10 +4221,10 @@ function UpdateInviteConfirmationDialogs()
 	local confirmationType, name, guid, rolesInvalid, willConvertToRaid = GetInviteConfirmationInfo(firstInvite);
 	local text = "";
 	if ( confirmationType == LE_INVITE_CONFIRMATION_REQUEST ) then
-		local suggesterGuid, suggesterName, relationship, isQuickJoin = GetInviteReferralInfo(firstInvite);
+		local suggesterGuid, suggesterName, relationship, isQuickJoin, clubId = C_PartyInfo.GetInviteReferralInfo(firstInvite);
 
 		--If we ourselves have a relationship with this player, we'll just act as if they asked through us.
-		local _, color, selfRelationship, playerLink = SocialQueueUtil_GetRelationshipInfo(guid, name);
+		local _, color, selfRelationship, playerLink = SocialQueueUtil_GetRelationshipInfo(guid, name, clubId);
 		local safeLink = playerLink and "["..playerLink.."]" or name;
 
 		if ( isQuickJoin and selfRelationship and GetCVarBool("autoAcceptQuickJoinRequests") ) then
@@ -4226,7 +4233,14 @@ function UpdateInviteConfirmationDialogs()
 		end
 
 		if ( selfRelationship ) then
-			if ( isQuickJoin ) then
+			local clubLink = clubId and GetCommunityLink(clubId) or nil;
+			if ( clubLink and selfRelationship == "club" ) then
+				if ( isQuickJoin ) then
+					text = text..INVITE_CONFIRMATION_REQUEST_FROM_COMMUNITY_QUICKJOIN:format(color..safeLink..FONT_COLOR_CODE_CLOSE, clubLink);
+				else
+					text = text..INVITE_CONFIRMATION_REQUEST_FROM_COMMUNITY:format(color..name..FONT_COLOR_CODE_CLOSE, clubLink);
+				end
+			elseif ( isQuickJoin ) then
 				text = text..INVITE_CONFIRMATION_REQUEST_QUICKJOIN:format(color..safeLink..FONT_COLOR_CODE_CLOSE);
 			else
 				text = text..INVITE_CONFIRMATION_REQUEST:format(color..name..FONT_COLOR_CODE_CLOSE);
@@ -4234,17 +4248,23 @@ function UpdateInviteConfirmationDialogs()
 		elseif ( suggesterGuid ) then
 			suggesterName = GetSocialColoredName(suggesterName, suggesterGuid);
 
-			if ( relationship == LE_INVITE_CONFIRMATION_RELATION_FRIEND ) then
+			if ( relationship == Enum.PartyRequestJoinRelation.Friend ) then
 				if ( isQuickJoin ) then
 					text = text..INVITE_CONFIRMATION_REQUEST_FRIEND_QUICKJOIN:format(suggesterName, color..safeLink..FONT_COLOR_CODE_CLOSE);
 				else
 					text = text..INVITE_CONFIRMATION_REQUEST_FRIEND:format(suggesterName, name);
 				end
-			elseif ( relationship == LE_INVITE_CONFIRMATION_RELATION_GUILD ) then
+			elseif ( relationship == Enum.PartyRequestJoinRelation.Guild ) then
 				if ( isQuickJoin ) then
 					text = text..string.format(INVITE_CONFIRMATION_REQUEST_GUILD_QUICKJOIN, suggesterName, color..safeLink..FONT_COLOR_CODE_CLOSE);
 				else
 					text = text..string.format(INVITE_CONFIRMATION_REQUEST_GUILD, suggesterName, name);
+				end
+			elseif ( relationship == Enum.PartyRequestJoinRelation.Club ) then
+				if ( isQuickJoin ) then
+					text = text..INVITE_CONFIRMATION_REQUEST_COMMUNITY_QUICKJOIN:format(suggesterName, color..safeLink..FONT_COLOR_CODE_CLOSE);
+				else
+					text = text..INVITE_CONFIRMATION_REQUEST_COMMUNITY:format(suggesterName, name);
 				end
 			else
 				if ( isQuickJoin ) then
@@ -4261,7 +4281,7 @@ function UpdateInviteConfirmationDialogs()
 			end
 		end
 	elseif ( confirmationType == LE_INVITE_CONFIRMATION_SUGGEST ) then
-		local suggesterGuid, suggesterName, relationship, isQuickJoin = GetInviteReferralInfo(firstInvite);
+		local suggesterGuid, suggesterName, relationship, isQuickJoin = C_PartyInfo.GetInviteReferralInfo(firstInvite);
 		suggesterName = GetSocialColoredName(suggesterName, suggesterGuid);
 		name = GetSocialColoredName(name, guid);
 
