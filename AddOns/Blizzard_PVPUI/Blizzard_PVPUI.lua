@@ -454,6 +454,10 @@ function HonorFrameTypeDropDown_Initialize()
 	info.func = HonorFrameTypeDropDown_OnClick;
 	info.checked = HonorFrame.type == info.value;
 	info.disabled = nil;
+	info.tooltipWhileDisabled = nil;
+	info.tooltipTitle = nil;
+	info.tooltipText = nil;
+	info.tooltipOnButton = nil;
 	UIDropDownMenu_AddButton(info);
 end
 

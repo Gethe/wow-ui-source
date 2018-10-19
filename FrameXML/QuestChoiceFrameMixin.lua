@@ -241,7 +241,7 @@ function QuestChoiceFrameMixin:Update()
 	local anOptionHasMultipleButtons = false;
 
 	for i=1, numOptions do
-		local optID, buttonText, description, header, artFile, confirmationText, widgetSetID, disabledButton, desaturatedArt, groupID, headerIconAtlasElement, subHeader, buttonTooltip = GetQuestChoiceOptionInfo(i);
+		local optID, buttonText, description, header, artFile, confirmationText, widgetSetID, disabledButton, desaturatedArt, groupID, headerIconAtlasElement, subHeader, buttonTooltip, rewardQuestID = C_QuestChoice.GetQuestChoiceOptionInfo(i);
 
 		local existingOption = self:GetExistingOptionForGroup(groupID);
 		local button;
@@ -275,6 +275,7 @@ function QuestChoiceFrameMixin:Update()
 		end
 		button.confirmationText = confirmationText;
 		button.tooltip = buttonTooltip;
+		button.rewardQuestID = rewardQuestID;
 		button:SetText(buttonText);
 		button.optID = optID;
 		button:SetEnabled(not disabledButton);
@@ -416,22 +417,36 @@ function QuestChoiceOptionButtonMixin:OnClick()
 end
 
 function QuestChoiceOptionButtonMixin:OnEnter()
-	if self.tooltip ~= "" then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		if self.Text:IsTruncated() then
-			GameTooltip_SetTitle(GameTooltip, self.Text:GetText(), nil, true);
+	if self.tooltip or self.rewardQuestID or self.Text:IsTruncated() then
+		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+		if self.rewardQuestID and not HaveQuestRewardData(self.rewardQuestID) then
+			GameTooltip_SetTitle(EmbeddedItemTooltip, RETRIEVING_DATA, RED_FONT_COLOR);
+		else
+			if self.Text:IsTruncated() then
+				GameTooltip_SetTitle(EmbeddedItemTooltip, self.Text:GetText(), nil, true);
+			end
+
+			if self.tooltip then
+				GameTooltip_AddNormalLine(EmbeddedItemTooltip, self.tooltip, true);
+			end
+
+			if self.rewardQuestID then
+				GameTooltip_AddQuestRewardsToTooltip(EmbeddedItemTooltip, self.rewardQuestID, TOOLTIP_QUEST_REWARDS_STYLE_QUEST_CHOICE);
+			end
 		end
-		GameTooltip_AddNormalLine(GameTooltip, self.tooltip, true);
-		GameTooltip:Show();
-	elseif self.Text:IsTruncated() then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_SetTitle(GameTooltip, self.Text:GetText(), nil, true);
-		GameTooltip:Show();
+
+		EmbeddedItemTooltip:Show();
+	else
+		EmbeddedItemTooltip:Hide();
 	end
+
+	self.UpdateTooltip = self.OnEnter;
 end
 
 function QuestChoiceOptionButtonMixin:OnLeave()
-	GameTooltip:Hide();
+	EmbeddedItemTooltip:Hide();
+	self.UpdateTooltip = nil;
 end
 
 QuestChoiceItemButtonMixin = {};

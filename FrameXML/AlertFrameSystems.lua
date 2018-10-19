@@ -468,7 +468,7 @@ LOOTWONALERTFRAME_VALUES={
 }
 
 -- NOTE - This may also be called for an externally created frame. (E.g. bonus roll has its own frame)
-function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded, wonRoll, showRatedBG)
+function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded, wonRoll, showRatedBG, isSecondaryResult)
 	local itemName, itemHyperLink, itemRarity, itemTexture, _;
 	if (isCurrency) then
 		local currencyID = C_CurrencyInfo.GetCurrencyIDFromLink(itemLink); 
@@ -543,7 +543,11 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 		self.Icon:SetDrawLayer("BORDER");
 	end
 
-	self.Label:SetText(windowInfo.labelText);
+	if isSecondaryResult then
+		self.Label:SetText(YOU_RECEIVED_LABEL);
+	else
+		self.Label:SetText(windowInfo.labelText);
+	end
 	self.Label:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", windowInfo.labelOffsetX, windowInfo.labelOffsetY);
 
 	self.isCurrency = isCurrency;

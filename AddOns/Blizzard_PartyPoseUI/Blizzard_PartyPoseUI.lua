@@ -266,12 +266,26 @@ function PartyPoseMixin:SetModelScene(sceneID, partyCategory, forceUpdate)
 	self.ModelScene:Show();
 end
 
-function PartyPoseMixin:PlaySounds(partyPoseInfo, winnerFactionGroup)
-	local factionGroup = UnitFactionGroup("player");
-	if (factionGroup == winnerFactionGroup) then
-		PlaySound(partyPoseInfo.victorySoundKitID);
+function PartyPoseMixin:AddCreatureActor(displayID, name)
+	local actor = self.ModelScene:GetActorByTag(name);
+	if (actor) then
+		if (actor:SetModelByCreatureDisplayID(displayID)) then
+			self:SetupShadow(actor);
+		end
+	end
+end
+
+function PartyPoseMixin:AddModelSceneActors(actors)
+	for scriptTag, displayID in pairs(actors) do
+		self:AddCreatureActor(displayID, scriptTag);
+	end
+end
+
+function PartyPoseMixin:PlaySounds()
+	if (self.partyPoseData.playerWon) then
+		PlaySound(self.partyPoseData.partyPoseInfo.victorySoundKitID);
 	else
-		PlaySound(partyPoseInfo.defeatSoundKitID);
+		PlaySound(self.partyPoseData.partyPoseInfo.defeatSoundKitID);
 	end
 end
 
@@ -299,55 +313,79 @@ do
 		RightEdge = { atlas = "!scoreboard-%s-tileright", mirrorLayout = false, },
 	});
 
-	function PartyPoseMixin:SetupTheme(styleData)
+	function PartyPoseMixin:SetupTheme()
 		if self.OverlayElements.Topper then
-			self.OverlayElements.Topper:SetPoint("BOTTOM", self.Border, "TOP", 0, styleData.topperOffset);
-			self.OverlayElements.Topper:SetAtlas(styleData.Topper, true);
+			self.OverlayElements.Topper:SetPoint("BOTTOM", self.Border, "TOP", 0, self.partyPoseData.themeData.topperOffset);
+			self.OverlayElements.Topper:SetAtlas(self.partyPoseData.themeData.Topper, true);
 		end
 
 		self.TitleBg:ClearAllPoints();
 		self.TitleBg:SetPoint("CENTER", self.ModelScene, "TOP", 0, 25);
-		self.TitleBg:SetAtlas(styleData.TitleBG, true);
+		self.TitleBg:SetAtlas(self.partyPoseData.themeData.TitleBG, true);
 		self.TitleBg:SetDrawLayer("OVERLAY", 6);
 		self.TitleText:SetDrawLayer("OVERLAY", 7);
 
-		if self.ModelScene then
-			self.ModelScene.Bg:SetAtlas(styleData.ModelSceneBG);
-		end
-
 		-- TODO: Potentially move this to theme data to avoid special case code like this.
 		self.Border:ClearAllPoints();
-		self.Border:SetPoint("TOPLEFT", self, "TOPLEFT", -(styleData.borderPaddingX or 0), styleData.borderPaddingY or 0);
-		self.Border:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", styleData.borderPaddingX or 0, -(styleData.borderPaddingY or 0));
+		self.Border:SetPoint("TOPLEFT", self, "TOPLEFT", -(self.partyPoseData.themeData.borderPaddingX or 0), self.partyPoseData.themeData.borderPaddingY or 0);
+		self.Border:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", self.partyPoseData.themeData.borderPaddingX or 0, -(self.partyPoseData.themeData.borderPaddingY or 0));
 
-		AnchorUtil.ApplyNineSliceLayoutByName(self.Border, styleData.nineSliceLayout, styleData.nineSliceTextureKitName);
+		AnchorUtil.ApplyNineSliceLayoutByName(self.Border, self.partyPoseData.themeData.nineSliceLayout, self.partyPoseData.themeData.nineSliceTextureKitName);
 	end
 
-	function PartyPoseMixin:LoadScreenData(mapID, winner, styleData)
-		local partyPoseInfo = C_PartyPose.GetPartyPoseInfoByMapID(mapID);
+	function PartyPoseMixin:LoadPartyPose(partyPoseData, forceUpdate)
+		self.partyPoseData = partyPoseData;
 
-		if styleData.registerForWidgets then
-			UIWidgetManager:RegisterWidgetSetContainer(partyPoseInfo.widgetSetID, self.Score);
+		if partyPoseData.partyPoseInfo.widgetSetID ~= self.widgetSetID then
+			if self.widgetSetID then
+				UIWidgetManager:UnregisterWidgetSetContainer(self.widgetSetID, self.Score);
+			end
+
+			if partyPoseData.partyPoseInfo.widgetSetID then
+				UIWidgetManager:RegisterWidgetSetContainer(partyPoseData.partyPoseInfo.widgetSetID, self.Score);
+			end
+
+			self.widgetSetID = partyPoseData.partyPoseInfo.widgetSetID;
 		end
 
-		local winnerFactionGroup = PLAYER_FACTION_GROUP[winner];
-		local playerFactionGroup = UnitFactionGroup("player");
-
-		if (winnerFactionGroup == playerFactionGroup) then
+		if (partyPoseData.playerWon) then
 			self.TitleText:SetText(PARTY_POSE_VICTORY);
-			self:SetModelScene(partyPoseInfo.victoryModelSceneID, styleData.partyCategory);
+			self:SetModelScene(partyPoseData.partyPoseInfo.victoryModelSceneID, partyPoseData.themeData.partyCategory, forceUpdate);
 		else
 			self.TitleText:SetText(PARTY_POSE_DEFEAT);
-			self:SetModelScene(partyPoseInfo.defeatModelSceneID, styleData.partyCategory);
+			self:SetModelScene(partyPoseData.partyPoseInfo.defeatModelSceneID, partyPoseData.themeData.partyCategory, forceUpdate);
 		end
 
-		if styleData.addModelSceneActors then
-			self:AddModelSceneActors(playerFactionGroup);
+		self.ModelScene.Bg:SetAtlas(partyPoseData.modelSceneData.ModelSceneBG);
+
+		if partyPoseData.modelSceneData.addModelSceneActors then
+			self:AddModelSceneActors(partyPoseData.modelSceneData.addModelSceneActors);
 		end
 
-		self:SetupTheme(styleData[playerFactionGroup]);
+		self:SetupTheme();
 		self:SetLeaveButtonText();
-		self:PlaySounds(partyPoseInfo, winnerFactionGroup);
+		self:PlaySounds();
+	end
+end
+
+function PartyPoseMixin:GetPartyPoseData(mapID, winner)
+	local winnerFactionGroup = PLAYER_FACTION_GROUP[winner];
+	local playerFactionGroup = UnitFactionGroup("player");
+	local partyPoseData = {};
+	partyPoseData.partyPoseInfo = C_PartyPose.GetPartyPoseInfoByMapID(mapID);
+	partyPoseData.playerWon = (winnerFactionGroup == playerFactionGroup);
+	return partyPoseData;
+end
+
+function PartyPoseMixin:LoadScreen(mapID, winner)
+	self:LoadPartyPose(self:GetPartyPoseData(mapID, winner));
+end
+
+function PartyPoseMixin:ReloadPartyPose()
+	if self.partyPoseData then
+		local forceUpdate = true;
+		self:LoadPartyPose(self.partyPoseData, forceUpdate);
+		self:PlayModelSceneAnimations(forceUpdate);
 	end
 end
 
@@ -360,9 +398,7 @@ end
 
 function PartyPoseMixin:OnEvent(event, ...)
 	if (event == "UI_MODEL_SCENE_INFO_UPDATED") then
-		local forceUpdate = true;
-		self:SetModelScene(self.ModelScene:GetModelSceneID(), self.ModelScene.partyCategory, forceUpdate);
-		self:PlayModelSceneAnimations(forceUpdate);
+		self:ReloadPartyPose();
 	elseif ( event == "PLAYER_LEAVING_WORLD" ) then
 		HideUIPanel(self);
 	end

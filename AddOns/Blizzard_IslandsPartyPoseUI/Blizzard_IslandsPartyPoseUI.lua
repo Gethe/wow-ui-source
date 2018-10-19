@@ -52,13 +52,8 @@ function IslandsPartyPoseMixin:SetLeaveButtonText()
 end
 
 do
-	local islandsStyleData =
+	local themeData =
 	{
-		-- Behavior
-		registerForWidgets = true,
-		addModelSceneActors = false,
-		partyCategory = LE_PARTY_CATEGORY_INSTANCE,
-
 		-- Theme
 		Horde =
 		{
@@ -67,9 +62,9 @@ do
 			borderPaddingY = 20,
 			Topper = "scoreboard-horde-header",
 			TitleBG = "scoreboard-header-horde",
-			ModelSceneBG = "scoreboard-background-islands-horde",
 			nineSliceLayout = "PartyPoseKit",
 			nineSliceTextureKitName = "horde",
+			partyCategory = LE_PARTY_CATEGORY_INSTANCE,
 		},
 
 		Alliance =
@@ -79,14 +74,31 @@ do
 			borderPaddingY = 20,
 			Topper = "scoreboard-alliance-header",
 			TitleBG = "scoreboard-header-alliance",
-			ModelSceneBG = "scoreboard-background-islands-alliance",
 			nineSliceLayout = "PartyPoseKit",
 			nineSliceTextureKitName = "alliance",
+			partyCategory = LE_PARTY_CATEGORY_INSTANCE,
 		},
 	};
 
-	function IslandsPartyPoseMixin:LoadScreenData(mapID, winner)
-		PartyPoseMixin.LoadScreenData(self, mapID, winner, islandsStyleData);
+	local modelSceneData =
+	{
+		Horde =
+		{
+			ModelSceneBG = "scoreboard-background-islands-horde",
+		},
+
+		Alliance =
+		{
+			ModelSceneBG = "scoreboard-background-islands-alliance",
+		},
+	};
+
+	function IslandsPartyPoseMixin:GetPartyPoseData(mapID, winner)
+		local partyPoseData = PartyPoseMixin.GetPartyPoseData(self, mapID, winner);
+		local playerFactionGroup = UnitFactionGroup("player");
+		partyPoseData.themeData = themeData[playerFactionGroup];
+		partyPoseData.modelSceneData = modelSceneData[playerFactionGroup];
+		return partyPoseData;
 	end
 end
 

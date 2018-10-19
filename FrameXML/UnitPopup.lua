@@ -992,7 +992,7 @@ function UnitPopup_HideButtons ()
 				shown = false;
 			end
 		elseif ( value == "REPORT_PLAYER" ) then
-			if not isValidPlayerLocation or not C_ChatInfo.CanReportPlayer(playerLocation) then
+			if not isValidPlayerLocation or not C_ReportSystem.CanReportPlayer(playerLocation) then
 				shown = false;
 			end
 		elseif ( value == "REPORT_SPAM" ) then
@@ -1647,7 +1647,7 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "REPORT_BAD_GUILD_NAME" ) then
 		PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_BAD_GUILD_NAME, fullname, playerLocation)
 	elseif ( button == "REPORT_PET" ) then
-		SetPendingReportPetTarget(unit);
+		C_ReportSystem.SetPendingReportPetTarget(unit);
 		StaticPopup_Show("CONFIRM_REPORT_PET_NAME", fullname);
 	elseif ( button == "REPORT_BATTLE_PET" ) then
 		C_PetBattles.SetPendingReportTargetFromUnit(unit);

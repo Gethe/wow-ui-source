@@ -667,13 +667,14 @@ function BonusRollFrame_OnEvent(self, event, ...)
 		self.RollingFrame.LootSpinnerFinal:Hide();
 		self.StartRollAnim:Play();
 	elseif ( event == "BONUS_ROLL_RESULT" ) then
-		local rewardType, rewardLink, rewardQuantity, rewardSpecID,_,_, currencyID = ...;
+		local rewardType, rewardLink, rewardQuantity, rewardSpecID,_,_, currencyID, isSecondaryResult = ...;
 		self.state = "slowing";
 		self.rewardType = rewardType;
 		self.rewardLink = rewardLink;
 		self.rewardQuantity = rewardQuantity;
 		self.rewardSpecID = rewardSpecID;
 		self.currencyID = currencyID; 
+		self.isSecondaryResult = isSecondaryResult;
 		self.StartRollAnim:Finish();
 	elseif ( event == "PLAYER_LOOT_SPEC_UPDATED" ) then
 		local specID = GetLootSpecialization();
@@ -700,6 +701,7 @@ local finalAnimFrame = {
 	currency = 6,
 	money = 6,
 	artifact_power = 6,
+	coin = 6,
 }
 
 local finalTextureTexCoords = {
@@ -707,7 +709,10 @@ local finalTextureTexCoords = {
 	currency = {0.56347656, 0.59375, 0.875, 0.9921875},
 	money = {0.56347656, 0.59375, 0.875, 0.9921875},
 	artifact_power = {0.56347656, 0.59375, 0.875, 0.9921875},
+	coin = {0.56347656, 0.59375, 0.875, 0.9921875},
 }
+
+local QUARTERMASTER_COIN_ID = 163827;
 
 function BonusRollFrame_OnUpdate(self, elapsed)
 	if ( self.state == "prompt" ) then
@@ -728,13 +733,20 @@ function BonusRollFrame_OnUpdate(self, elapsed)
 			self.rollSound = nil;
 			PlaySound(SOUNDKIT.UI_BONUS_LOOT_ROLL_END);
 			self.RollingFrame.LootSpinner:Hide();
-			self.RollingFrame.LootSpinnerFinal:Show();
-			self.RollingFrame.LootSpinnerFinal:SetTexCoord(unpack(finalTextureTexCoords[self.rewardType]));
+			local rewardType = self.rewardType;
 			if( self.currencyID == C_CurrencyInfo.GetAzeriteCurrencyID() ) then
 				self.RollingFrame.LootSpinnerFinalText:SetText(BONUS_ROLL_REWARD_ARTIFACT_POWER);
 			else
-				self.RollingFrame.LootSpinnerFinalText:SetText(_G["BONUS_ROLL_REWARD_"..string.upper(self.rewardType)]);
+				if self.isSecondaryResult and self.rewardType == "item" then
+					local itemID = GetItemInfoInstant(self.rewardLink);
+					if itemID == QUARTERMASTER_COIN_ID then
+						rewardType = "coin";
+					end
+				end
+				self.RollingFrame.LootSpinnerFinalText:SetText(_G["BONUS_ROLL_REWARD_"..string.upper(rewardType)]);
 			end
+			self.RollingFrame.LootSpinnerFinal:Show();
+			self.RollingFrame.LootSpinnerFinal:SetTexCoord(unpack(finalTextureTexCoords[rewardType]));
 			self.FinishRollAnim:Play();
 		elseif ( self.animTime > 0.1 ) then --Slow it down
 			BonusRollFrame_AdvanceLootSpinnerAnim(self);
@@ -837,7 +849,7 @@ function BonusRollFrame_FinishedFading(self)
 	if ( self.rewardType == "item" or self.rewardType == "artifact_power" ) then
 		local wonRoll = self.rewardType == "item";
 		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollLootWonFrame);
-		LootWonAlertFrame_SetUp(BonusRollLootWonFrame, self.rewardLink, self.rewardQuantity, nil, nil, self.rewardSpecID, nil, nil, nil, nil, nil, wonRoll);
+		LootWonAlertFrame_SetUp(BonusRollLootWonFrame, self.rewardLink, self.rewardQuantity, nil, nil, self.rewardSpecID, nil, nil, nil, nil, nil, wonRoll, nil, self.isSecondaryResult);
 		AlertFrame:AddAlertFrame(BonusRollLootWonFrame);
 	elseif ( self.rewardType == "money" ) then
 		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollMoneyWonFrame);
@@ -846,7 +858,7 @@ function BonusRollFrame_FinishedFading(self)
 		AlertFrame:AddAlertFrame(BonusRollMoneyWonFrame);
 	elseif ( self.rewardType == "currency" ) then 
 		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollLootWonFrame);
-		LootWonAlertFrame_SetUp(BonusRollLootWonFrame, self.rewardLink, self.rewardQuantity, nil, nil, self.rewardSpecID, true, nil, nil, nil, nil, true);
+		LootWonAlertFrame_SetUp(BonusRollLootWonFrame, self.rewardLink, self.rewardQuantity, nil, nil, self.rewardSpecID, true, nil, nil, nil, nil, true, nil, self.isSecondaryResult);
 		AlertFrame:AddAlertFrame(BonusRollLootWonFrame);
 	else
 		GroupLootContainer_RemoveFrame(GroupLootContainer, self);

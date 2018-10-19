@@ -320,10 +320,9 @@ function BFAMission:SetupCompleteDialog()
 		completeDialog.BorderFrame.Model.Title:SetText(BFA_MISSION_REPORT);
 
 		local factionGroup = UnitFactionGroup("player");
-		completeDialog.BorderFrame.Stage.LocBack:SetAtlas("BFA-mission-complete-background-"..factionGroup);
-		completeDialog.BorderFrame.Stage.LocBack:SetTexCoord(0, 1, 0, 1);
-		completeDialog.BorderFrame.Stage.LocMid:Hide();
-		completeDialog.BorderFrame.Stage.LocFore:Hide();
+		GarrisonMissionStage_SetBack(completeDialog.BorderFrame.Stage, "BFA-mission-complete-background-"..factionGroup);
+		GarrisonMissionStage_SetMid(completeDialog.BorderFrame.Stage, nil);
+		GarrisonMissionStage_SetFore(completeDialog.BorderFrame.Stage, nil);
 
 		local neutralChestDisplayID = 71671;
 		self.MissionComplete.BonusRewards.ChestModel:SetDisplayInfo(neutralChestDisplayID);

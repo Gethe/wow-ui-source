@@ -363,10 +363,9 @@ function OrderHallMission:SetupCompleteDialog()
 
 		local _, className = UnitClass("player");
 
-		completeDialog.BorderFrame.Stage.LocBack:SetAtlas("legionmission-complete-background-"..className);
-		completeDialog.BorderFrame.Stage.LocBack:SetTexCoord(0, 1, 0, 1);
-		completeDialog.BorderFrame.Stage.LocMid:Hide();
-		completeDialog.BorderFrame.Stage.LocFore:Hide();
+		GarrisonMissionStage_SetBack(completeDialog.BorderFrame.Stage, "legionmission-complete-background-"..className);
+		GarrisonMissionStage_SetMid(completeDialog.BorderFrame.Stage, nil);
+		GarrisonMissionStage_SetFore(completeDialog.BorderFrame.Stage, nil);
 
 		local neutralChestDisplayID = 71671;
 		self.MissionComplete.BonusRewards.ChestModel:SetDisplayInfo(neutralChestDisplayID);

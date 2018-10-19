@@ -7,29 +7,6 @@ local IncomingSummon =
 	Functions =
 	{
 		{
-			Name = "ClearSummonInfo",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "unit", Type = "string", Nilable = false },
-			},
-		},
-		{
-			Name = "GetSummonResponseTime",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "unit", Type = "string", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "reponseTime", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "HasIncomingSummon",
 			Type = "Function",
 

@@ -53,7 +53,7 @@ end
 function PlayerReportFrameMixin:ConfirmReport()
 	local comments = self.CommentBox:GetText();
 	if self.playerLocation:IsValid() then 
-		C_ChatInfo.ReportPlayer(self.reportType, self.playerLocation, comments);
+		C_ReportSystem.ReportPlayer(self.reportType, self.playerLocation, comments);
 	end
 	StaticPopupSpecial_Hide(self);
 end

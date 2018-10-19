@@ -54,7 +54,6 @@ EncounterJournalDocumentation.lua
 EquipmentManagerDocumentation.lua
 ExpansionDocumentation.lua
 FogOfWarDocumentation.lua
-GMTicketInfoDocumentation.lua
 GarrisonInfoDocumentation.lua
 GlyphInfoDocumentation.lua
 GossipInfoDocumentation.lua
@@ -146,4 +145,6 @@ ZoneAbilityDocumentation.lua
 CalendarDocumentation.lua
 ClubDocumentation.lua
 FriendListDocumentation.lua
+GMTicketInfoDocumentation.lua
+ReportSystemDocumentation.lua
 # End documentation files here

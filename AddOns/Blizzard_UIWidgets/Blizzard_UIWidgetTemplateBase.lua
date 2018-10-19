@@ -1,11 +1,12 @@
 UIWidgetTemplateTooltipFrameMixin = {}
 
-function UIWidgetTemplateTooltipFrameMixin:SetTooltip(tooltip)
+function UIWidgetTemplateTooltipFrameMixin:SetTooltip(tooltip, color)
 	self.tooltip = tooltip;
 	self.tooltipContainsHyperLink = false;
 	self.preString = nil;
 	self.hyperLinkString = nil;
 	self.postString = nil;
+	self.tooltipColor = color;
 
 	if tooltip then
 		self.tooltipContainsHyperLink, self.preString, self.hyperLinkString, self.postString = ExtractHyperlinkString(tooltip);
@@ -24,11 +25,18 @@ function UIWidgetTemplateTooltipFrameMixin:OnEnter()
 			-- prestring is thrown out because calling SetHyperlink clears the tooltip
 			GameTooltip:SetHyperlink(self.hyperLinkString);
 			if self.postString and self.postString:len() > 0 then
-				GameTooltip_AddColoredLine(GameTooltip, self.postString, HIGHLIGHT_FONT_COLOR, true);
+				GameTooltip_AddColoredLine(GameTooltip, self.postString, self.tooltipColor or HIGHLIGHT_FONT_COLOR, true);
 				GameTooltip:Show();
 			end
 		else
-			GameTooltip:SetText(self.tooltip);
+			local header, nonHeader = SplitTextIntoHeaderAndNonHeader(self.tooltip);
+			if header then
+				GameTooltip_AddColoredLine(GameTooltip, header, self.tooltipColor or NORMAL_FONT_COLOR, true);
+			end
+			if nonHeader then
+				GameTooltip_AddColoredLine(GameTooltip, nonHeader, self.tooltipColor or NORMAL_FONT_COLOR, true);
+			end
+			GameTooltip:SetShown(header ~= nil);
 		end
 	end
 end
@@ -71,23 +79,27 @@ function UIWidgetBaseResourceTemplateMixin:SetFontColor(color)
 	self.Text:SetTextColor(color:GetRGB());
 end
 
-local function SetTextColorForEnabledState(fontString, enabledState)
+local function GetTextColorForEnabledState(enabledState, useHighlightForNormal)
 	if enabledState == Enum.WidgetEnabledState.Disabled then
-		fontString:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+		return DISABLED_FONT_COLOR;
 	elseif enabledState == Enum.WidgetEnabledState.Red then
-		fontString:SetTextColor(RED_FONT_COLOR:GetRGB());
+		return RED_FONT_COLOR;
 	elseif enabledState == Enum.WidgetEnabledState.Highlight then
-		fontString:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		return HIGHLIGHT_FONT_COLOR;
 	else
-		fontString:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+		return useHighlightForNormal and HIGHLIGHT_FONT_COLOR or NORMAL_FONT_COLOR;
 	end
+end
+
+local function SetTextColorForEnabledState(fontString, enabledState, useHighlightForNormal)
+	fontString:SetTextColor(GetTextColorForEnabledState(enabledState, useHighlightForNormal):GetRGB());
 end
 
 UIWidgetBaseCurrencyTemplateMixin = {}
 
 function UIWidgetBaseCurrencyTemplateMixin:Setup(currencyInfo, enabledState)
 	self.Text:SetText(currencyInfo.text);
-	self:SetTooltip(currencyInfo.tooltip);
+	self:SetTooltip(currencyInfo.tooltip, GetTextColorForEnabledState(enabledState, true));
 	self.Icon:SetTexture(currencyInfo.iconFileID);
 	self.Icon:SetDesaturated(enabledState == Enum.WidgetEnabledState.Disabled);
 

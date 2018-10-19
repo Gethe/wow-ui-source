@@ -391,6 +391,17 @@ function WorldQuestPinMixin:RefreshVisuals()
 		local _, width, height = GetAtlasInfo("worldquest-icon-burninglegion");
 		self.Texture:SetAtlas("worldquest-icon-burninglegion");
 		self.Texture:SetSize(width * 2, height * 2);
+	elseif self.worldQuestType == LE_QUEST_TAG_TYPE_FACTION_ASSAULT then
+		local factionTag = UnitFactionGroup("player");
+		if factionTag == "Alliance" then
+			local _, width, height = GetAtlasInfo("worldquest-icon-horde");
+			self.Texture:SetAtlas("worldquest-icon-horde");
+			self.Texture:SetSize(width * 2, height * 2);
+		else -- "Horde" or "Neutral"
+			local _, width, height = GetAtlasInfo("worldquest-icon-alliance");
+			self.Texture:SetAtlas("worldquest-icon-alliance");
+			self.Texture:SetSize(width * 2, height * 2);
+		end
 	else
 		self.Texture:SetAtlas("worldquest-questmarker-questbang");
 		self.Texture:SetSize(12, 30);

@@ -35,7 +35,7 @@
 						<Texture parentKey="Button" atlas="BlizzCon2017Splash-button-playexpansion" setAllPoints="true" nonBlocking="false"/>
 					</Layer>
 					<Layer level="OVERLAY">
-						<FontString parentKey="Text" text="Play the New Expansion" inherits="GameFontNormalHuge3" justifyH="CENTER" justifyV="CENTER">
+						<FontString parentKey="Text" text="Play Battle for Azeroth" inherits="GameFontNormalHuge3" justifyH="CENTER" justifyV="CENTER">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>

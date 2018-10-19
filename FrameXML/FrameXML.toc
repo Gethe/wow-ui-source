@@ -68,6 +68,7 @@ VehicleUtil.lua
 AuraUtil.lua
 CalendarUtil.lua
 CommunitiesUtil.lua
+ItemUtil.lua
 CurrencyContainer.lua
 ## IME.xml needs to be loaded after UIParent.xml
 ..\SharedXML\IME.xml

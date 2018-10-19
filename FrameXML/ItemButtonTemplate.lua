@@ -161,3 +161,48 @@ function HandleModifiedItemClick(link)
 	end
 	return false;
 end
+
+ItemButtonMixin = {};
+
+function ItemButtonMixin:GetItemLocation()
+	-- TODO: Item locations for item button mixins are currently only supported for bag items.
+	return ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
+end
+
+function ItemButtonMixin:SetMatchesSearch(matchesSearch)
+	self.matchesSearch = matchesSearch;
+	self:UpdateItemContextOverlay(self);
+end
+
+function ItemButtonMixin:GetMatchesSearch()
+	return self.matchesSearch;
+end
+
+function ItemButtonMixin:SetItemMatchesItemContext(matchesContext)
+	self.matchesItemContext = matchesContext;
+	self:UpdateItemContextOverlay(self);
+end
+
+function ItemButtonMixin:DoesItemMatchItemContext()
+	return self.matchesItemContext;
+end
+
+function ItemButtonMixin:UpdateItemContextMatching()
+	local itemLocation = self:GetItemLocation();
+	if C_Item.DoesItemExist(itemLocation) then
+		-- Ideally we'd only have 1 context active at a time, perhaps with a priority system.
+		if ItemButtonUtil.GetItemContext() == ItemButtonUtil.ItemContextEnum.Scrapping then
+			self:SetItemMatchesItemContext(C_Item.CanScrapItem(itemLocation));
+		else
+			self:SetItemMatchesItemContext(nil);
+		end
+	else
+		self:SetItemMatchesItemContext(nil);
+	end
+end
+
+function ItemButtonMixin:UpdateItemContextOverlay()
+	local matchesSearch = self.matchesSearch == nil or self.matchesSearch;
+	local matchesContext = self.matchesItemContext == nil or self.matchesItemContext;
+	self.ItemContextOverlay:SetShown(not matchesSearch or not matchesContext);
+end

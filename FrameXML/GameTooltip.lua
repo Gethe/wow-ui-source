@@ -40,6 +40,12 @@ TOOLTIP_QUEST_REWARDS_STYLE_EMISSARY_REWARD = {
 	emissaryHack = true,
 }
 
+TOOLTIP_QUEST_REWARDS_STYLE_QUEST_CHOICE = {
+	-- Doesn't include a header to allow individual player choice responses to set their own
+	prefixBlankLineCount = 1,
+	postHeaderBlankLineCount = 0,
+}
+
 function GameTooltip_UnitColor(unit)
 	local r, g, b;
 	if ( UnitPlayerControlled(unit) ) then
@@ -152,13 +158,14 @@ end
 
 function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 	style = style or TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT;
-
-	if ( GetQuestLogRewardXP(questID) > 0 or GetNumQuestLogRewardCurrencies(questID) > 0 or GetNumQuestLogRewards(questID) > 0 or GetQuestLogRewardMoney(questID) > 0 or GetQuestLogRewardArtifactXP(questID) > 0 or GetQuestLogRewardHonor(questID) ) then
+	if ( GetQuestLogRewardXP(questID) > 0 or GetNumQuestLogRewardCurrencies(questID) > 0 or GetNumQuestLogRewards(questID) > 0 or GetQuestLogRewardMoney(questID) > 0 or GetQuestLogRewardArtifactXP(questID) > 0 or GetQuestLogRewardHonor(questID) > 0 ) then
 		tooltip.ItemTooltip:Hide();
 		local showRetrievingData = false;
 
 		GameTooltip_AddBlankLinesToTooltip(tooltip, style.prefixBlankLineCount);
-		GameTooltip_AddColoredLine(tooltip, style.headerText, style.headerColor, style.wrapHeaderText);
+		if style.headerText and style.headerColor then
+			GameTooltip_AddColoredLine(tooltip, style.headerText, style.headerColor, style.wrapHeaderText);
+		end
 		GameTooltip_AddBlankLinesToTooltip(tooltip, style.postHeaderBlankLineCount);
 
 		local hasAnySingleLineRewards = false;

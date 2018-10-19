@@ -192,3 +192,16 @@ end
 do
 	GetInviteReferralInfo = C_PartyInfo.GetInviteReferralInfo;
 end
+
+-- Report system update
+do
+	-- Use C_ReportSystem.SetPendingReportPetTarget instead
+	SetPendingReportPetTarget = C_ReportSystem.SetPendingReportPetTarget;
+
+	-- Use C_ReportSystem.SetPendingReportTarget instead
+	SetPendingReportTarget = C_ReportSystem.SetPendingReportTarget;
+
+	-- Moved to C_ReportSystem
+	C_ChatInfo.ReportPlayer = C_ReportSystem.ReportPlayer;
+	C_ChatInfo.CanReportPlayer = C_ReportSystem.CanReportPlayer;
+end

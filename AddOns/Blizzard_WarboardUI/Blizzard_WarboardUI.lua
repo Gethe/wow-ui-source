@@ -275,7 +275,7 @@ end
 
 function WarboardQuestChoiceOptionFrameMixin:ConfigureSubHeader(subHeader)
 	self.OptionText:ClearAllPoints();
-	if subHeader and #subHeader > 0 then
+	if subHeader then
 		self.SubHeader.Text:SetText(subHeader);
 		self.SubHeader:Show();
 		self.OptionText:SetPoint("TOP", self.SubHeader, "BOTTOM", 0, -12);

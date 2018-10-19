@@ -10,6 +10,7 @@ local AZERITE_EMPOWERED_FRAME_EVENTS = {
 	"AZERITE_ITEM_POWER_LEVEL_CHANGED",
 	"AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED",
 	"PLAYER_EQUIPMENT_CHANGED",
+	"SCRAPPING_MACHINE_SCRAPPING_FINISHED",
 };
 
 AZERITE_EMPOWERED_ITEM_MAX_TIERS = 5;
@@ -35,6 +36,11 @@ function AzeriteEmpoweredItemUIMixin:OnLoad()
 		rankFrame.RingBg.transformNode = root:CreateNodeFromTexture(rankFrame.RingBg);
 		rankFrame.GearBg.transformNode = rankFrame.RingBg.transformNode:CreateNodeFromTexture(rankFrame.GearBg);
 		rankFrame.RingLights.transformNode = rankFrame.RingBg.transformNode:CreateNodeFromTexture(rankFrame.RingLights);
+	end
+
+	local _, classFilename = UnitClass("player");
+	if ( classFilename == "DRUID" ) then
+		self.ClipFrame.BackgroundFrame.RankFrames[1].RingBg:SetAtlas("Azerite-TitanBG-Rank5-1Gear");
 	end
 
 	local function TierReset(framePool, frame)
@@ -100,6 +106,8 @@ function AzeriteEmpoweredItemUIMixin:OnEvent(event, ...)
 		if self.azeriteItemDataSource:DidEquippedItemChange(equipmentSlot) then
 			self:Clear();
 		end
+	elseif event == "SCRAPPING_MACHINE_SCRAPPING_FINISHED" then  
+		HideUIPanel(self);
 	end
 end
 
@@ -326,9 +334,8 @@ function AzeriteEmpoweredItemUIMixin:AdjustSizeForTiers(numTiers)
 		self.ClipFrame.BackgroundFrame.KeyOverlay.Texture:SetAtlas("Azerite-CenterBG-5Ranks", true);
 		self.ClipFrame.BackgroundFrame.KeyOverlay.Texture:SetPoint("CENTER", 0, 245);
 		self.ClipFrame.BackgroundFrame.Bg:SetAtlas("Azerite-Background", false);
-		-- TODO: Get atlas changed?
-		self.ClipFrame.BackgroundFrame.Bg:SetSize(1250, 1250);
-		self:SetSize(756, 772);
+		self.ClipFrame.BackgroundFrame.Bg:SetSize(1260, 1260);
+		self:SetSize(754, 764);
 	end
 	self.ClipFrame.BackgroundFrame.KeyOverlay.Channel:AdjustSizeForTiers(numTiers);
 	UpdateUIPanelPositions(self);

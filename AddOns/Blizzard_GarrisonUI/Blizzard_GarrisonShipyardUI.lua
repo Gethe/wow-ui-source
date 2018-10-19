@@ -101,16 +101,16 @@ function GarrisonShipyardMission:OnLoadMainFrame()
 		local dialogBorderFrame = self.MissionTab.MissionList.CompleteDialog.BorderFrame;
 		dialogBorderFrame.Model:SetDisplayInfo(44158);
 		dialogBorderFrame.Model:SetPosition(0.2, 1.35, -0.5);
-		dialogBorderFrame.Stage.LocBack:SetAtlas("_GarrMissionLocation-FrostfireSea-Back", true);
-		dialogBorderFrame.Stage.LocMid:SetAtlas("_GarrMissionLocation-FrostfireSea-Mid", true);
-		dialogBorderFrame.Stage.LocFore:SetAtlas("_GarrMissionLocation-FrostfireSea-Fore", true);
+		GarrisonMissionStage_SetBack(dialogBorderFrame.Stage, "_GarrMissionLocation-FrostfireSea-Back");
+		GarrisonMissionStage_SetMid(dialogBorderFrame.Stage, "_GarrMissionLocation-FrostfireSea-Mid");
+		GarrisonMissionStage_SetFore(dialogBorderFrame.Stage, "_GarrMissionLocation-FrostfireSea-Fore");
 	else
 		local dialogBorderFrame = self.MissionTab.MissionList.CompleteDialog.BorderFrame;
 		dialogBorderFrame.Model:SetDisplayInfo(53831);
 		dialogBorderFrame.Model:SetPosition(0.2, .90, -0.7);
-		dialogBorderFrame.Stage.LocBack:SetAtlas("_GarrMissionLocation-ShadowmoonSea-Back", true);
-		dialogBorderFrame.Stage.LocMid:SetAtlas("_GarrMissionLocation-ShadowmoonSea-Mid", true);
-		dialogBorderFrame.Stage.LocFore:SetAtlas("_GarrMissionLocation-ShadowmoonSea-Fore", true);
+		GarrisonMissionStage_SetBack(dialogBorderFrame.Stage, "_GarrMissionLocation-ShadowmoonSea-Back");
+		GarrisonMissionStage_SetMid(dialogBorderFrame.Stage, "_GarrMissionLocation-ShadowmoonSea-Mid");
+		GarrisonMissionStage_SetFore(dialogBorderFrame.Stage, "_GarrMissionLocation-ShadowmoonSea-Fore");
 	end
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:RegisterEvent("GARRISON_FOLLOWER_XP_CHANGED");

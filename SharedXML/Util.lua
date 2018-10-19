@@ -17,7 +17,6 @@ function GetTextureInfo(obj)
 			assetType = "FileID";
 		end
 
-
 		if not assetName then
 			assetName = "UnknownAsset";
 			assetType = "Unknown";
@@ -212,6 +211,41 @@ end
 function ExtractHyperlinkString(linkString)
 	local preString, hyperlinkString, postString = linkString:match("^(.*)|H(.+)|h(.*)$");
 	return preString ~= nil, preString, hyperlinkString, postString;
+end
+
+function SplitTextIntoLines(text, delimiter)
+	local lines = {};
+	local startIndex = 1;
+	local foundIndex = string.find(text, delimiter);
+	while foundIndex do
+		table.insert(lines, text:sub(startIndex, foundIndex - 1));
+		startIndex = foundIndex + 2;
+		foundIndex = string.find(text, delimiter, startIndex);
+	end
+	if startIndex <= #text then
+		table.insert(lines, text:sub(startIndex));
+	end
+	return lines;
+end
+
+function SplitTextIntoHeaderAndNonHeader(text)
+	local foundIndex = string.find(text, "|n");
+	if not foundIndex then
+		-- There was no newline...the whole thing is a header
+		return text;
+	elseif #text == 2 then
+		-- There was a newline, but that was all that was in the string.
+		return nil;
+	elseif foundIndex == 1 then
+		-- There was a newline at the very beginning...the whole rest of the string is a header
+		return text:sub(3);
+	elseif foundIndex == #text - 1 then
+		-- There was a newline at the very end...the whole rest of the string is a header
+		return text:sub(1, foundIndex - 1);
+	else
+		-- There was a newline somewhere in the middle...everything before it is the header and everything after it is the non-header
+		return text:sub(1, foundIndex - 1), text:sub(foundIndex + 2);
+	end
 end
 
 function GetItemInfoFromHyperlink(link)

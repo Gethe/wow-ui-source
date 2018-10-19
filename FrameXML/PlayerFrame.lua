@@ -19,7 +19,7 @@ function PlayerFrame_OnLoad(self)
 	self.statusSign = -1;
 	CombatFeedback_Initialize(self, PlayerHitIndicator, 30);
 	PlayerFrame_Update();
-	self:RegisterEvent("UNIT_LEVEL");
+	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
 	self:RegisterEvent("UNIT_FACTION");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_ENTER_COMBAT");
@@ -186,10 +186,8 @@ function PlayerFrame_OnEvent(self, event, ...)
 	UnitFrame_OnEvent(self, event, ...);
 
 	local arg1, arg2, arg3, arg4, arg5 = ...;
-	if ( event == "UNIT_LEVEL" ) then
-		if ( arg1 == "player" ) then
-			PlayerFrame_Update();
-		end
+	if ( event == "PLAYER_LEVEL_CHANGED" ) then
+		PlayerFrame_Update();
 	elseif ( event == "UNIT_COMBAT" ) then
 		if ( arg1 == self.unit ) then
 			CombatFeedback_OnCombatEvent(self, arg2, arg3, arg4, arg5);

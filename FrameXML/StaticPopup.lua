@@ -996,7 +996,7 @@ StaticPopupDialogs["CONFIRM_REPORT_BATTLEPET_NAME"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		C_ChatInfo.ReportPlayer(PLAYER_REPORT_TYPE_BAD_BATTLEPET_NAME);
+		C_ReportSystem.ReportPlayer(PLAYER_REPORT_TYPE_BAD_BATTLEPET_NAME);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -1009,7 +1009,7 @@ StaticPopupDialogs["CONFIRM_REPORT_PET_NAME"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		C_ChatInfo.ReportPlayer(PLAYER_REPORT_TYPE_BAD_PET_NAME);
+		C_ReportSystem.ReportPlayer(PLAYER_REPORT_TYPE_BAD_PET_NAME);
 	end,
 	timeout = 0,
 	whileDead = 1,

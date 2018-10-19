@@ -419,6 +419,9 @@ function UIParent_OnLoad(self)
 
 	-- Event(s) for Azerite Empowered Items
 	self:RegisterEvent("RESPEC_AZERITE_EMPOWERED_ITEM_OPENED");
+
+	-- Events for Reporting SYSTEM
+	self:RegisterEvent("REPORT_PLAYER_RESULT");
 end
 
 function UIParent_OnShow(self)
@@ -2086,12 +2089,12 @@ function UIParent_OnEvent(self, event, ...)
 	elseif (event == "ISLAND_COMPLETED") then
 		IslandsPartyPose_LoadUI();
 		local mapID, winner = ...;
-		IslandsPartyPoseFrame:LoadScreenData(mapID, winner);
+		IslandsPartyPoseFrame:LoadScreen(mapID, winner);
 		ShowUIPanel(IslandsPartyPoseFrame);
 	elseif (event == "WARFRONT_COMPLETED") then
 		WarfrontsPartyPose_LoadUI();
 		local mapID, winner = ...;
-		WarfrontsPartyPoseFrame:LoadScreenData(mapID, winner);
+		WarfrontsPartyPoseFrame:LoadScreen(mapID, winner);
 		ShowUIPanel(WarfrontsPartyPoseFrame);
 	-- Event(s) for Azerite Respec
 	elseif (event == "RESPEC_AZERITE_EMPOWERED_ITEM_OPENED") then
@@ -2100,6 +2103,16 @@ function UIParent_OnEvent(self, event, ...)
 	elseif (event == "ISLANDS_QUEUE_OPEN") then
 		IslandsQueue_LoadUI(); 
 		ShowUIPanel(IslandsQueueFrame); 
+	-- Events for Reporting system
+	elseif (event == "REPORT_PLAYER_RESULT") then
+		local success = ...;
+		if (success) then
+			UIErrorsFrame:AddExternalErrorMessage(GERR_REPORT_SUBMITTED_SUCCESSFULLY);
+			DEFAULT_CHAT_FRAME:AddMessage(COMPLAINT_ADDED);
+		else
+			UIErrorsFrame:AddExternalErrorMessage(GERR_REPORT_SUBMISSION_FAILED);
+			DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED);
+		end
 	end
 end
 

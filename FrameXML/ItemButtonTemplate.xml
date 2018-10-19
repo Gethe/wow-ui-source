@@ -1,7 +1,7 @@
  <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="ItemButtonTemplate.lua"/>
- 	<Button name="ItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
+ 	<Button name="ItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" mixin="ItemButtonMixin" virtual="true">
 		<Size>
 			<AbsDimension x="37" y="37"/>
 		</Size>
@@ -31,6 +31,11 @@
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="4">
 				<Texture name="$parentSearchOverlay" parentKey="searchOverlay" setAllPoints="true" hidden="true">
+					<Color r="0" g="0" b="0" a="0.8"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="5">
+				<Texture parentKey="ItemContextOverlay" setAllPoints="true" hidden="true">
 					<Color r="0" g="0" b="0" a="0.8"/>
 				</Texture>
 			</Layer>

@@ -1953,7 +1953,8 @@ function ChatConfigFrame_PlayCheckboxSound (checked)
 end
 
 function ChatConfigCategoryFrame_Refresh(preserveCategorySelection)
-	if ( IsCombatLog(FCF_GetCurrentChatFrame()) ) then
+	local currentChatFrame = FCF_GetCurrentChatFrame();
+	if ( currentChatFrame ~= nil and IsCombatLog(currentChatFrame) ) then
 		ChatConfigCategoryFrameButton2:Show();
 		ChatConfigCategoryFrameButton3:SetPoint("TOPLEFT", ChatConfigCategoryFrameButton2, "BOTTOMLEFT", 0, -1);
 		ChatConfigCategoryFrameButton3:SetPoint("TOPRIGHT", ChatConfigCategoryFrameButton2, "BOTTOMRIGHT", 0, -1);
@@ -1966,7 +1967,7 @@ function ChatConfigCategoryFrame_Refresh(preserveCategorySelection)
 			ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton1);
 		end
 	end
-	ChatConfigFrameHeaderText:SetText(format(CHATCONFIG_HEADER, FCF_GetCurrentChatFrame().name));
+	ChatConfigFrameHeaderText:SetText(currentChatFrame ~= nil and CHATCONFIG_HEADER:format(currentChatFrame.name) or "");
 	ChatConfigFrameHeader:SetWidth(ChatConfigFrameHeaderText:GetWidth()+200);
 	ChatConfigCategory_UpdateEnabled();
 end

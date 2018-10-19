@@ -85,8 +85,8 @@ function MerchantFrame_OnUpdate(self, dt)
 end
 
 function MerchantFrame_OnShow(self)
-	OpenAllBags(self);
-	ContainerFrame_UpdateAll();
+	local forceUpdate = true;
+	OpenAllBags(self, forceUpdate);
 	
 	-- Update repair all button status
 	MerchantFrame_UpdateCanRepairAll();
@@ -100,7 +100,10 @@ end
 
 function MerchantFrame_OnHide(self)
 	CloseMerchant();
-	CloseAllBags(self);
+	
+	local forceUpdate = true;
+	CloseAllBags(self, forceUpdate);
+
 	ResetCursor();
 	
 	StaticPopup_Hide("CONFIRM_PURCHASE_TOKEN_ITEM");
@@ -610,7 +613,7 @@ function MerchantItemButton_OnModifiedClick(self, button)
 
 			if ( maxStack > 1 ) then
 				local maxPurchasable = min(maxStack, canAfford);
-				OpenStackSplitFrame(maxPurchasable, self, "BOTTOMLEFT", "TOPLEFT", stackCount);
+				StackSplitFrame:OpenStackSplitFrame(maxPurchasable, self, "BOTTOMLEFT", "TOPLEFT", stackCount);
 			end
 			return;
 		end

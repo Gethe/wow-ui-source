@@ -139,8 +139,8 @@
 									<Layer level="ARTWORK" textureSubLevel="6">
 										<Texture parentKey="Shadow" atlas="Azerite-TopShadow" useAtlasSize="true" inherits="AzeriteUITexture">
 											<Anchors>
-												<Anchor point="TOPLEFT" x="90" y="0" />
-												<Anchor point="TOPRIGHT" x="0" y="0" />
+												<Anchor point="TOPLEFT" x="90" y="-20" />
+												<Anchor point="TOPRIGHT" x="0" y="-20" />
 											</Anchors>
 										</Texture>
 									</Layer>
@@ -170,7 +170,7 @@
 										<Texture name="RG" parentKey="RingBgGlow" atlas="Azerite-TitanBG-Glow-Rank5" useAtlasSize="true" inherits="AzeriteRingGlowTexture" />
 									</Layer>
 									<Layer level="BORDER" textureSubLevel="2">
-										<Texture parentKey="RingLights" atlas="Azerite-TitanBG-LightsRank4" useAtlasSize="true" inherits="AzeriteRingLightsTexture" />
+										<Texture parentKey="RingLights" atlas="Azerite-TitanBG-LightsRank5" useAtlasSize="true" inherits="AzeriteRingLightsTexture" />
 									</Layer>
 									<Layer level="BORDER" textureSubLevel="3">
 										<Texture parentKey="Ring" atlas="Azerite-GoldRing-Rank5" useAtlasSize="true" inherits="AzeriteRingBorderTexture" />

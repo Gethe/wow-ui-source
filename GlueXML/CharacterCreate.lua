@@ -1121,11 +1121,6 @@ function CharacterCreate_UpdateRacesToggleButton()
 	local kioskModeHide = IsKioskGlueEnabled() and KioskModeSplash_GetMode() == "newcharacter";
 	local shouldShow = C_CharacterCreation.ShouldShowAlliedRacesButton() and CharacterCreateFrame.state == "CLASSRACE" and not kioskModeHide;
 
-	if (shouldShow and PAID_SERVICE_TYPE) then
-		local validOptions = CharacterCreate_GetValidAlliedRacePaidServiceOptions();
-		shouldShow = validOptions and #validOptions > 0;
-	end
-
 	if shouldShow then
 		local inAlliedRaceMode = C_CharacterCreation.GetCurrentRaceMode() == Enum.CharacterCreateRaceMode.AlliedRace;
 		CharCreateCoreRacesButton:SetShown(inAlliedRaceMode);

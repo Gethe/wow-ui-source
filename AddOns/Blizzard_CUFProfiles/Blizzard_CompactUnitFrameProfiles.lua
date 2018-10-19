@@ -4,6 +4,7 @@ function CompactUnitFrameProfiles_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	self:RegisterEvent("GROUP_JOINED");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	
 	--Get this working with the InterfaceOptions panel.
 	self.name = COMPACT_UNIT_FRAME_PROFILES_LABEL;
@@ -31,11 +32,8 @@ function CompactUnitFrameProfiles_OnEvent(self, event, ...)
 		CompactUnitFrameProfiles_CheckAutoActivation();
 	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED" ) then	--Check for changing specs
 		CompactUnitFrameProfiles_CheckAutoActivation();
-	elseif ( event == "GROUP_JOINED" ) then
-		local partyCategory = ...;
-		if ( partyCategory == LE_PARTY_CATEGORY_INSTANCE ) then
-			CompactUnitFrameProfiles_CheckAutoActivation();
-		end
+	elseif ( event == "GROUP_JOINED" or event == "GROUP_ROSTER_UPDATE" ) then
+		CompactUnitFrameProfiles_CheckAutoActivation();
 	end
 end
 
@@ -270,10 +268,12 @@ end
 
 local autoActivateGroupSizes = { 2, 3, 5, 10, 15, 25, 40 };
 local countMap = {};	--Maps number of players to the category. (For example, so that AQ20 counts as a 25-man.)
-for i=1, 10 do countMap[i] = 10 end;
-for i=11, 15 do countMap[i] = 15 end;
-for i=16, 25 do countMap[i] = 25 end;
-for i=26, 40 do countMap[i] = 40 end;
+for i, autoActivateGroupSize in ipairs(autoActivateGroupSizes) do
+	local groupSizeStart = i > 1 and (autoActivateGroupSizes[i - 1] + 1) or 1;
+	for groupSize = groupSizeStart, autoActivateGroupSize do
+		countMap[groupSize] = autoActivateGroupSize;
+	end
+end
 
 function CompactUnitFrameProfiles_GetAutoActivationState()
 	local name, instanceType, difficultyIndex, difficultyName, maxPlayers, dynamicDifficulty, isDynamic = GetInstanceInfo();
@@ -284,34 +284,26 @@ function CompactUnitFrameProfiles_GetAutoActivationState()
 	local numPlayers, profileType, enemyType;
 	
 	if ( instanceType == "party" or instanceType == "raid" ) then
-		if ( maxPlayers <= 5 ) then
-			numPlayers = 5;	--For 5-man dungeons.
+		numPlayers = maxPlayers > 0 and countMap[maxPlayers] or 5;
+		profileType = instanceType;
+		enemyType = "PvE";
+	elseif ( instanceType == "arena" ) then
+		numPlayers = countMap[GetNumGroupMembers()];
+		profileType = instanceType;
+		enemyType = "PvP";
+	elseif ( instanceType == "pvp" ) then
+		if ( IsRatedBattleground() ) then
+			numPlayers = 10;
 		else
 			numPlayers = countMap[maxPlayers];
 		end
-		profileType, enemyType = instanceType, "PvE";
-	elseif ( instanceType == "arena" ) then
-		local groupSize = GetNumGroupMembers(LE_PARTY_CATEGORY_HOME);
-		--TODO - Get the actual arena size, not just the # in party.
-		if ( groupSize <= 2 ) then
-			numPlayers, profileType, enemyType = 2, instanceType, "PvP";
-		elseif ( groupSize <= 3 ) then
-			numPlayers, profileType, enemyType = 3, instanceType, "PvP";
-		else
-			numPlayers, profileType, enemyType = 5, instanceType, "PvP";
-		end
-	elseif ( instanceType == "pvp" ) then
-		if ( IsRatedBattleground() ) then
-			numPlayers, profileType, enemyType = 10, instanceType, "PvP";
-		else
-			numPlayers, profileType, enemyType = countMap[maxPlayers], instanceType, "PvP";
-		end
+		
+		profileType = instanceType;
+		enemyType = "PvP";
 	else
-		if ( IsInRaid() ) then
-			numPlayers, profileType, enemyType = countMap[GetNumGroupMembers()], "world", "PvE";
-		else
-			numPlayers, profileType, enemyType = 5, "world", "PvE";
-		end
+		numPlayers = countMap[GetNumGroupMembers()];
+		profileType = "world";
+		enemyType = "PvE";
 	end
 	
 	if ( not numPlayers ) then
@@ -348,10 +340,6 @@ function CompactUnitFrameProfiles_CheckAutoActivation()
 		
 	local spec = GetSpecialization(false, false, 1);
 	local lastActivationType, lastNumPlayers, lastSpec, lastEnemyType = CompactUnitFrameProfiles_GetLastActivationType();
-	
-	if ( activationType == "world" ) then	--We don't adjust due to just the number of players in the raid.
-		return;
-	end
 	
 	if ( lastActivationType == activationType and lastNumPlayers == numPlayers and lastSpec == spec and lastEnemyType == enemyType ) then
 		--If we last auto-adjusted for this same thing, we don't change. (In case they manually changed the profile.)

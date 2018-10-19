@@ -186,7 +186,7 @@ function ClassTrainerFrame_SetServiceButton( skillButton, skillIndex, playerMone
 	
 	local requirements = "";
 	local separator = "";
-	if reqLevel > 1 then
+	if reqLevel and reqLevel > 1 then
 		if ( UnitLevel("player") >= reqLevel ) then
 			requirements = requirements..format(TRAINER_REQ_LEVEL, reqLevel);
 		else

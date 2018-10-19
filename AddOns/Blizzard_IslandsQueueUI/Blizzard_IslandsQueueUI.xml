@@ -442,7 +442,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="TitleBanner">
+			<Frame parentKey="TitleBanner" frameLevel="1150">
 				<Size x="200" y="40"/> 
 				<Anchors>
 					<Anchor point="TOP" x="0" y="20"/> 
