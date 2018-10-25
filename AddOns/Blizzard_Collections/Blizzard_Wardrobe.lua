@@ -1861,6 +1861,9 @@ function WardrobeItemsCollectionMixin:GoToSourceID(sourceID, slot, transmogType,
 		if ( self.activeCategory ~= categoryID or self.activeSlot ~= slot ) then
 			self:SetActiveSlot(slot, transmogType, categoryID);
 		else
+			if not self.filteredVisualsList then
+				self:RefreshVisualsList();
+			end
 			self:ResetPage();
 		end
 	end

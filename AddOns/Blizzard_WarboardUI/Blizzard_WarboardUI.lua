@@ -274,15 +274,12 @@ function WarboardQuestChoiceOptionFrameMixin:ConfigureHeader(header, headerIconA
 end
 
 function WarboardQuestChoiceOptionFrameMixin:ConfigureSubHeader(subHeader)
-	self.OptionText:ClearAllPoints();
 	if subHeader then
 		self.SubHeader.Text:SetText(subHeader);
 		self.SubHeader:Show();
 		self.OptionText:SetPoint("TOP", self.SubHeader, "BOTTOM", 0, -12);
-		self.OptionText:SetPoint("BOTTOM", self.OptionButtonsContainer, "TOP", 0, 39);
 	else
 		self.SubHeader:Hide();
 		self.OptionText:SetPoint("TOP", self.ArtworkBorder, "BOTTOM", 0, -12);
-		self.OptionText:SetPoint("BOTTOM", self.OptionButtonsContainer, "TOP", 0, 39);
 	end
 end

@@ -731,13 +731,16 @@ function WhoList_Update()
 		button.tooltip1 = nil;
 		button.tooltip2 = nil;
 		local info = C_FriendList.GetWhoInfo(whoIndex);
-		name = info.fullName;
-		guild = info.fullGuildName;
-		level = info.level;
-		race = info.raceStr;
-		class = info.classStr;
-		zone = info.area;
-		classFileName = info.filename;
+		if ( info ) then
+			name = info.fullName;
+			guild = info.fullGuildName;
+			level = info.level;
+			race = info.raceStr;
+			class = info.classStr;
+			zone = info.area;
+			classFileName = info.filename;
+		end
+		
 		columnTable = { zone, guild, race };
 
 		if ( classFileName ) then

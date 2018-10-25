@@ -1625,6 +1625,11 @@ function ChatConfigCombat_OnShow()
 	UpdateDefaultButtons(true);
 end
 
+function ChatConfigCombat_OnHide()
+	ChatConfigBackgroundFrame:SetPoint("TOPLEFT", ChatConfigCategoryFrame, "TOPRIGHT", 1, 0);
+	ChatConfig_HideCombatTabs();
+end
+
 function ChatConfig_UpdateFilterList()
 	local index;
 	local offset = FauxScrollFrame_GetOffset(ChatConfigCombatSettingsFiltersScrollFrame);
@@ -1974,28 +1979,36 @@ end
 
 function ChatConfig_RefreshCurrentChatCategory(preserveCategorySelection)
 	if _G[CHAT_CONFIG_CATEGORIES[1]]:IsShown() then
-		ChatConfigChatSettings_OnShow();
-	elseif _G[CHAT_CONFIG_CATEGORIES[2]]:IsShown() then
-		ChatConfigCombat_OnShow();
+		ChatConfigChatSettings_UpdateCheckboxes();
+	-- The combat category is only in 1 chat frame so we don't need to update its checkboxes on a refresh.
+	--elseif _G[CHAT_CONFIG_CATEGORIES[2]]:IsShown() then
 	elseif _G[CHAT_CONFIG_CATEGORIES[3]]:IsShown() then
-		ChatConfigChannelSettings_OnShow();
+		ChatConfigChannelSettings_UpdateCheckboxes();
 	elseif _G[CHAT_CONFIG_CATEGORIES[4]]:IsShown() then
-		ChatConfigOtherSettings_OnShow();
+		ChatConfigOtherSettings_UpdateCheckboxes();
 	end
 	
 	ChatConfigCategoryFrame_Refresh(preserveCategorySelection);
 end
 
-function ChatConfigChatSettings_OnShow()
+function ChatConfigChatSettings_UpdateCheckboxes()
 	ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsLeft);
+end
+
+function ChatConfigChatSettings_OnShow()
+	ChatConfigChatSettings_UpdateCheckboxes();
 	UpdateDefaultButtons(false);
+end
+
+function ChatConfigChannelSettings_UpdateCheckboxes()
+	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
 end
 
 function ChatConfigChannelSettings_OnShow()
 	-- Have to build it here since the channel list doesn't exist on load
 	CreateChatChannelList(ChatConfigChannelSettings, GetChannelList());
 	ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "MovableChatConfigWideCheckBoxWithSwatchTemplate", CHAT_CONFIG_CHANNEL_SETTINGS_TITLE_WITH_DRAG_INSTRUCTIONS);
-	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
+	ChatConfigChannelSettings_UpdateCheckboxes();
 	UpdateDefaultButtons(false);
 end
 
@@ -2021,11 +2034,15 @@ function ChatConfigChannelSettings_MoveChannelUp(channelIndex)
 	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
 end
 
-function ChatConfigOtherSettings_OnShow()
+function ChatConfigOtherSettings_UpdateCheckboxes()
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsCombat);
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsPVP);
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsSystem);
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsCreature);
+end
+
+function ChatConfigOtherSettings_OnShow()
+	ChatConfigOtherSettings_UpdateCheckboxes();
 	UpdateDefaultButtons(false);
 end
 

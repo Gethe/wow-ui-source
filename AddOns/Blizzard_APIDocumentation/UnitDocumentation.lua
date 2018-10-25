@@ -6,6 +6,15 @@ local Unit =
 	Functions =
 	{
 		{
+			Name = "PlayerVehicleHasComboPoints",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "vehicleHasComboPoints", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetPortraitTexture",
 			Type = "Function",
 

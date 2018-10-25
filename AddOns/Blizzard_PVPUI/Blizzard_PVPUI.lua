@@ -13,6 +13,8 @@ local SEASON_STATE_DISABLED = 4;
 
 local CONQUEST_CURRENCY_ID = 1602;
 
+local BFA_START_SEASON = 26;
+
 ---------------------------------------------------------------
 -- PVP FRAME
 ---------------------------------------------------------------
@@ -296,7 +298,6 @@ function PVPQueueFrame_UpdateTitle()
 	elseif ConquestFrame.seasonState == SEASON_STATE_OFFSEASON then
 		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_OFF_SEASON);
 	else
-		local BFA_START_SEASON = 26; -- if you're changing this you probably want to update the global string PLAYER_V_PLAYER_SEASON also
 		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON:format(GetCurrentArenaSeason() - BFA_START_SEASON + 1));
 	end
 end
@@ -382,6 +383,7 @@ end
 ---------------------------------------------------------------
 
 local MIN_BONUS_HONOR_LEVEL;
+local HONOR_REWARD_QUEST_ID = 54748;
 
 function HonorFrame_OnLoad(self)
 	self.SpecificFrame.scrollBar.doNotHide = true;
@@ -410,6 +412,11 @@ function HonorFrame_OnLoad(self)
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
     self:RegisterEvent("PLAYER_LEVEL_UP");
 	self:RegisterEvent("PVP_WORLDSTATE_UPDATE");
+end
+
+function HonorFrame_OnShow(self)
+	-- prime the data;
+	HaveQuestRewardData(HONOR_REWARD_QUEST_ID);
 end
 
 function HonorFrame_OnEvent(self, event, ...)
@@ -787,6 +794,7 @@ function HonorFrameBonusFrame_Update()
 
 		PVPUIFrame_ConfigureRewardFrame(button.Reward, C_PvP.GetRandomBGRewards());
 		button.Reward.EnlistmentBonus:SetShown(battlegroundEnlistmentActive);
+		button.rewardQuestID = HONOR_REWARD_QUEST_ID;
     end
 
 	-- arena pvp
@@ -807,6 +815,7 @@ function HonorFrameBonusFrame_Update()
 		button.Title:SetText(RANDOM_EPIC_BATTLEGROUND);
 
 		PVPUIFrame_ConfigureRewardFrame(button.Reward, C_PvP.GetRandomEpicBGRewards());
+		button.rewardQuestID = HONOR_REWARD_QUEST_ID;
 	end
 
 	do
@@ -959,6 +968,10 @@ function ConquestFrame_OnShow(self)
 	RequestRatedInfo();
 	RequestPVPOptionsEnabled();
 	ConquestFrame_Update(self);
+	local lastSeasonNumber = tonumber(GetCVar("newPvpSeason"));
+	if lastSeasonNumber < (GetCurrentArenaSeason()) then
+		PVPQueueFrame.NewSeasonPopup:Show(); 
+	end
 end
 
 local tierEnumToName =
@@ -991,11 +1004,17 @@ end
 
 function NextTier_OnEnter(self)
 	if self.tierInfo and self.tierInfo.pvpTierEnum and tierEnumToName[self.tierInfo.pvpTierEnum] then
+		local WORD_WRAP = true;
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip_SetTitle(GameTooltip, TOOLTIP_PVP_NEXT_RANK:format(tierEnumToName[self.tierInfo.pvpTierEnum]));
 		if nextTierEnumToDescription[self.tierInfo.pvpTierEnum] then
 			GameTooltip:SetMinimumWidth(260);
-			GameTooltip_AddNormalLine(GameTooltip, nextTierEnumToDescription[self.tierInfo.pvpTierEnum], true);
+			GameTooltip_AddNormalLine(GameTooltip, nextTierEnumToDescription[self.tierInfo.pvpTierEnum], WORD_WRAP);
+		end
+		local activityItemLevel, weeklyItemLevel = C_PvP.GetRewardItemLevelsByTierEnum(self.tierInfo.pvpTierEnum);
+		if activityItemLevel > 0 then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddColoredLine(GameTooltip, PVP_GEAR_REWARD_CHANCE_LONG:format(activityItemLevel), NORMAL_FONT_COLOR, WORD_WRAP);
 		end
 		GameTooltip:Show();
 	end
@@ -1042,6 +1061,7 @@ function ConquestFrame_Update(self)
 			if tierInfo then
 				button.CurrentRating:SetText(rating);
 				button.CurrentRating:Show();
+				button.pvpTierEnum = tierInfo.pvpTierEnum;
 			else
 				button.CurrentRating:Hide();
 			end
@@ -1256,9 +1276,10 @@ function PVPRewardTemplate_OnEnter(self)
 	if (not self.Icon:IsShown()) then
 		return;
 	end
-
 	EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	EmbeddedItemTooltip:SetText(PVP_REWARD_TOOLTIP);
+	self.UpdateTooltip = nil;
+
 	if (self.experience > 0) then
 		GameTooltip_AddColoredLine(EmbeddedItemTooltip, PVP_REWARD_XP_FORMAT:format(BreakUpLargeNumbers(self.experience)), HIGHLIGHT_FONT_COLOR);
 	else
@@ -1272,14 +1293,36 @@ function PVPRewardTemplate_OnEnter(self)
 			EmbeddedItemTooltip:AddLine(text, currencyColor:GetRGB());
 		end
 	end
+	local activityItemLevel;
+	local pvpTierEnum = self:GetParent().pvpTierEnum;
+	if pvpTierEnum then
+		activityItemLevel = C_PvP.GetRewardItemLevelsByTierEnum(pvpTierEnum);
+	end
+	local rewardQuestID = self:GetParent().rewardQuestID;
+	if rewardQuestID then
+		if HaveQuestRewardData(rewardQuestID) then
+			activityItemLevel = select(7, GetQuestLogRewardInfo(1, rewardQuestID));
+		else
+			self.UpdateTooltip = PVPRewardTemplate_OnEnter;
+		end
+	end
+	if activityItemLevel and activityItemLevel > 0 then
+		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
+		GameTooltip_AddColoredLine(EmbeddedItemTooltip, PVP_GEAR_REWARD_CHANCE:format(activityItemLevel), HIGHLIGHT_FONT_COLOR);
+	end
 	if self.itemID then
-		EmbeddedItemTooltip:AddLine(" ");
+		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
 		EmbeddedItemTooltip_SetItemByID(EmbeddedItemTooltip.ItemTooltip, self.itemID);
 	elseif self.currencyID then
-		EmbeddedItemTooltip:AddLine(" ");
+		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
 		EmbeddedItemTooltip_SetCurrencyByID(EmbeddedItemTooltip.ItemTooltip, self.currencyID, self.quantity);
 	end
 	EmbeddedItemTooltip:Show();
+end
+
+function PVPRewardTemplate_OnLeave(self)
+	EmbeddedItemTooltip:Hide();
+	self.UpdateTooltip = nil;
 end
 
 function PVPRewardEnlistmentBonus_OnEnter(self)
@@ -1703,4 +1746,16 @@ function PVPConquestBarRewardMixin:OnClick()
 	if self.questID and IsModifiedClick() then
 		HandleModifiedItemClick(GetQuestLogItemLink("reward", 1, self.questID));
 	end
+end
+
+NewPvpSeasonMixin = { };
+
+function NewPvpSeasonMixin:OnShow()
+	local currentSeasonNumber = GetCurrentArenaSeason() - BFA_START_SEASON + 1;
+	self.SeasonDescription:SetText(BFA_SEASON_NUMBER:format(currentSeasonNumber));
+	self.SeasonDescription2:SetText(BFA_PVP_SEASON_DESCRIPTION_TWO);
+end
+
+function NewPvpSeasonMixin:OnHide()
+	SetCVar("newPvpSeason", GetCurrentArenaSeason());
 end

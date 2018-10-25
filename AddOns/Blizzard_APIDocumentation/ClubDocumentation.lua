@@ -16,14 +16,13 @@ local Club =
 			},
 		},
 		{
-			Name = "AddClubStreamToChatWindow",
+			Name = "AddClubStreamChatChannel",
 			Type = "Function",
 
 			Arguments =
 			{
 				{ Name = "clubId", Type = "string", Nilable = false },
 				{ Name = "streamId", Type = "string", Nilable = false },
-				{ Name = "chatWindowIndex", Type = "number", Nilable = false },
 			},
 		},
 		{

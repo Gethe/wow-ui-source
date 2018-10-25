@@ -263,10 +263,9 @@
 				</Scripts>
 			</Frame>
 			<SimpleHTML parentKey="OptionText" inherits="InlineHyperlinkFrameTemplate">
-				<Size x="200"/>
+				<Size x="200" y="10"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.Artwork" relativePoint="BOTTOM" y="-8"/>
-					<Anchor point="BOTTOM" relativeKey="$parent.Rewards" relativePoint="TOP" y="35"/>
 				</Anchors>
 				<Scripts>
 					<OnSizeChanged>self:GetParent():GetParent():SetPendingUpdate();</OnSizeChanged>

@@ -39,16 +39,23 @@ end
 
 function AzeriteEmpoweredItemPowerMixin:OnShow()
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
+	self:RegisterEvent("AZERITE_EMPOWERED_ITEM_EQUIPPED_STATUS_CHANGED");
+	self.isHeartOfAzerothEquipped = C_AzeriteEmpoweredItem.IsHeartOfAzerothEquipped();
 end
 
 function AzeriteEmpoweredItemPowerMixin:OnHide()
 	self:UnregisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
+	self:UnregisterEvent("AZERITE_EMPOWERED_ITEM_EQUIPPED_STATUS_CHANGED");
 end
 
 function AzeriteEmpoweredItemPowerMixin:OnEvent(event, ...)
 	if event == "UI_MODEL_SCENE_INFO_UPDATED" then
 		local forceUpdate = true;
 		self:SetupModelScene(forceUpdate);
+	elseif event == "AZERITE_EMPOWERED_ITEM_EQUIPPED_STATUS_CHANGED" then
+		self.isHeartOfAzerothEquipped = ...; 
+		self:SetPowerButtonState();
+		self:UpdateStyle();
 	end
 end
 
@@ -310,6 +317,10 @@ function AzeriteEmpoweredItemPowerMixin:GetBorderAlphaValue()
 end
 
 function AzeriteEmpoweredItemPowerMixin:GetIconNotSelectableOverlayAlphaValue()
+	if not self.isHeartOfAzerothEquipped then 
+		return 1; 
+	end
+
 	if self.azeriteItemDataSource:IsPreviewSource() then
 		return 0;
 	end
@@ -378,7 +389,7 @@ function AzeriteEmpoweredItemPowerMixin:IsSelected()
 end
 
 function AzeriteEmpoweredItemPowerMixin:CanBeSelected()
-	return self:IsTierSelectionActive() and self:MeetsPowerLevelRequirement() and self:IsSpecAllowed() and not self.azeriteItemDataSource:IsPreviewSource();
+	return self:IsTierSelectionActive() and self:MeetsPowerLevelRequirement() and self:IsSpecAllowed() and not self.azeriteItemDataSource:IsPreviewSource() and self.isHeartOfAzerothEquipped;
 end
 
 function AzeriteEmpoweredItemPowerMixin:MeetsPowerLevelRequirement()
@@ -395,6 +406,11 @@ end
 
 function AzeriteEmpoweredItemPowerMixin:IsSpecAllowed()
 	return self.isSpecAllowed;
+end
+
+function AzeriteEmpoweredItemPowerMixin:SetPowerButtonState()
+	self.IconNotSelectableOverlay:SetShown(not self.isHeartOfAzerothEquipped);
+	self.IconNotSelectableOverlay:SetAlpha(self:GetIconNotSelectableOverlayAlphaValue());
 end
 
 function AzeriteEmpoweredItemPowerMixin:SetFinalPowerTooltipDescriptions(tooltip)
@@ -490,6 +506,11 @@ function AzeriteEmpoweredItemPowerMixin:OnEnter()
 			end
 		end
 
+		if(not self.isHeartOfAzerothEquipped) then
+			GameTooltip:AddLine(" ");
+			GameTooltip_AddColoredLine(GameTooltip, HEART_OF_AZEROTH_MISSING_ERROR, RED_FONT_COLOR);
+		end
+
 		GameTooltip:Show();
 		self.UpdateTooltip = self.OnEnter;
 	end);
@@ -533,6 +554,10 @@ function AzeriteEmpoweredItemPowerMixin:OnClick()
 	if UnitAffectingCombat("player") then
 		UIErrorsFrame:AddExternalErrorMessage(ERR_NOT_IN_COMBAT);
 		return;
+	end
+
+	if not self.isHeartOfAzerothEquipped then 
+		return; 
 	end
 
 	assert(self:CanBeSelected());

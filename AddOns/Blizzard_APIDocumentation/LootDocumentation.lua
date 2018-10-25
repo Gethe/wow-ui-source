@@ -6,6 +6,15 @@ local Loot =
 
 	Functions =
 	{
+		{
+			Name = "IsLegacyLootModeEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isLegacyLootModeEnabled", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -106,6 +115,7 @@ local Loot =
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
 			},
 		},
 		{

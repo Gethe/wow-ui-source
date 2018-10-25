@@ -32,7 +32,7 @@ function ComboPointPowerBar:Setup()
 	local frameLevel = 0;
 	local xOffset = 43;
 	if UnitInVehicle("player") then
-		showBar = UnitPowerMax("vehicle", Enum.PowerType.ComboPoints) > 0;
+		showBar = PlayerVehicleHasComboPoints();
 	else
 		showBar = ClassPowerBar.Setup(self) or self:SetupDruid();
 		if showBar then

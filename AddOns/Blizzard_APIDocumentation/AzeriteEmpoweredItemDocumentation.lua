@@ -187,6 +187,15 @@ local AzeriteEmpoweredItem =
 			},
 		},
 		{
+			Name = "IsHeartOfAzerothEquipped",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isHeartOfAzerothEquipped", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPowerAvailableForSpec",
 			Type = "Function",
 
@@ -244,6 +253,15 @@ local AzeriteEmpoweredItem =
 
 	Events =
 	{
+		{
+			Name = "AzeriteEmpoweredItemEquippedStatusChanged",
+			Type = "Event",
+			LiteralName = "AZERITE_EMPOWERED_ITEM_EQUIPPED_STATUS_CHANGED",
+			Payload =
+			{
+				{ Name = "isHeartEquipped", Type = "bool", Nilable = false },
+			},
+		},
 		{
 			Name = "AzeriteEmpoweredItemSelectionUpdated",
 			Type = "Event",

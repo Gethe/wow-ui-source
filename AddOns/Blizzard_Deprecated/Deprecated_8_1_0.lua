@@ -205,3 +205,12 @@ do
 	C_ChatInfo.ReportPlayer = C_ReportSystem.ReportPlayer;
 	C_ChatInfo.CanReportPlayer = C_ReportSystem.CanReportPlayer;
 end
+
+-- Communities
+do
+	-- Renamed to AddClubStreamChatChannel, and chatWindowIndex parameter removed
+	-- You may also need to call AddChatWindowChannel()
+	C_Club.AddClubStreamToChatWindow = function(clubId, streamId, chatWindowIndex)
+		return C_Club.AddClubStreamChatChannel(clubId, streamId);
+	end
+end

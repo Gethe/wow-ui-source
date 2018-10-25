@@ -1715,7 +1715,7 @@ function PvpTalentWarmodeButtonMixin:GetWarModeDesired()
 end
 
 function PvpTalentWarmodeButtonMixin:Update()
-	self:SetEnabled(C_PvP.CanToggleWarModeInArea());
+	self:SetEnabled(not IsInInstance());
 	local frame = self:GetParent();
 	local isPvp = self.predictedToggle:Get();
 	local disabledAdd = isPvp and "" or "-disabled";
@@ -1732,7 +1732,7 @@ function PvpTalentWarmodeButtonMixin:Update()
 end
 
 function PvpTalentWarmodeButtonMixin:OnClick()
-	if (C_PvP.CanToggleWarMode()) then
+	if (C_PvP.CanToggleWarMode(not C_PvP.IsWarModeDesired())) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		local warmodeEnabled = self.predictedToggle:Get();
 
@@ -1761,7 +1761,7 @@ function PvpTalentWarmodeButtonMixin:OnEnter()
 	end
 	local wrap = true;
 	GameTooltip_AddNormalLine(GameTooltip, PVP_WAR_MODE_DESCRIPTION, wrap);
-	if(not C_PvP.CanToggleWarMode()) then
+	if(not C_PvP.CanToggleWarMode(true)) then
 		if (not C_PvP.CanToggleWarModeInArea()) then
 			local text = UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0] and PVP_WAR_MODE_NOT_NOW_HORDE or PVP_WAR_MODE_NOT_NOW_ALLIANCE;
 			GameTooltip_AddColoredLine(GameTooltip, text, RED_FONT_COLOR, wrap);

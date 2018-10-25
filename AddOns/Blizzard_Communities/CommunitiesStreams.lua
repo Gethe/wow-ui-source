@@ -477,24 +477,3 @@ end
 function CommunitiesAddToChatMixin:GetCommunitiesFrame()
 	return self:GetParent();
 end
-
-function CommunitiesAddStreamHighlightTab_OnClick(self)
-	if FCF_GetNumActiveChatFrames() ~= NUM_CHAT_WINDOWS then
-		local clubId, streamId = C_Cursor.GetCursorCommunitiesStream();
-		if clubId and streamId then
-			local clubInfo = C_Club.GetClubInfo(clubId);
-			local streamInfo = C_Club.GetStreamInfo(clubId, streamId);
-			if clubInfo and streamInfo then
-				local MAX_COMMUNITY_NAME_LENGTH = 12;
-				local MAX_CHAT_TAB_STREAM_NAME_LENGTH = 50; -- Arbitrarily large, since for now we don't want to truncate the stream part.
-				local communityPart = ChatFrame_TruncateToMaxLength(clubInfo.name, MAX_COMMUNITY_NAME_LENGTH);
-				local streamPart = ChatFrame_TruncateToMaxLength(streamInfo.name, MAX_CHAT_TAB_STREAM_NAME_LENGTH);
-				local chatFrameName = COMMUNITIES_NAME_AND_STREAM_NAME:format(communityPart, streamPart);
-				local frame, chatFrameIndex = FCF_OpenNewWindow(chatFrameName);
-				C_Club.AddClubStreamToChatWindow(clubId, streamId, chatFrameIndex);
-				ChatFrame_AddChannel(frame, Chat_GetCommunitiesChannelName(clubId, streamId));
-				self:GetParent():Reset();
-			end
-		end
-	end
-end

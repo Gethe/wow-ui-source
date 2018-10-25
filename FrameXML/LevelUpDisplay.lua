@@ -1502,6 +1502,9 @@ function BossBanner_Play(self, data)
 			BossBanner_BeginAnims(self);
 			PlaySound(SOUNDKIT.UI_RAID_BOSS_DEFEATED);
 		elseif ( data.mode == "LOOT" ) then
+			if(C_Loot.IsLegacyLootModeEnabled()) then 
+				return 
+			end
 			self.BannerTop:SetAlpha(1);
 			self.BannerBottom:SetAlpha(1);
 			self.BannerMiddle:SetAlpha(1);

@@ -470,6 +470,7 @@ local Map =
 				{ Name = "areaPoiID", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "atlasName", Type = "string", Nilable = false },
+				{ Name = "uiTextureKit", Type = "string", Nilable = true },
 			},
 		},
 		{

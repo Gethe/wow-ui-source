@@ -10,6 +10,11 @@ local PvpInfo =
 			Name = "CanToggleWarMode",
 			Type = "Function",
 
+			Arguments =
+			{
+				{ Name = "toggle", Type = "bool", Nilable = false },
+			},
+
 			Returns =
 			{
 				{ Name = "canTogglePvP", Type = "bool", Nilable = false },
@@ -219,6 +224,21 @@ local PvpInfo =
 				{ Name = "experience", Type = "number", Nilable = false },
 				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
 				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
+			},
+		},
+		{
+			Name = "GetRewardItemLevelsByTierEnum",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "pvpTierEnum", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "activityItemLevel", Type = "number", Nilable = false },
+				{ Name = "weeklyItemLevel", Type = "number", Nilable = false },
 			},
 		},
 		{

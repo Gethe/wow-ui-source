@@ -98,24 +98,36 @@ function QuestChoiceFrameMixin:TryShow()
 	self:Update();
 end
 
+local function IsTopWidget(widgetFrame)
+	return widgetFrame.widgetType == Enum.UIWidgetVisualizationType.SpellDisplay;
+end
+
 local function WidgetsLayout(widgetContainer, sortedWidgets)
 	local widgetsHeight = 0;
 	local maxWidgetWidth = 0;
 
+	local lastTopWidget, lastBottomWidget;
+
 	for index, widgetFrame in ipairs(sortedWidgets) do
-		if ( index == 1 ) then
-			widgetFrame:SetPoint("TOP", widgetContainer, "TOP", 0, 0);
+		if IsTopWidget(widgetFrame) then
+			if lastTopWidget then
+				widgetFrame:SetPoint("TOP", lastTopWidget, "BOTTOM", 0, 0);
+			else
+				widgetFrame:SetPoint("TOP", widgetContainer, "TOP", 0, 0);
+			end
+
+			lastTopWidget = widgetFrame;
 		else
-			local relative = sortedWidgets[index - 1];
-			widgetFrame:SetPoint("TOP", relative, "BOTTOM", 0, 0);
+			if lastBottomWidget then
+				lastBottomWidget:SetPoint("BOTTOM", widgetFrame, "TOP", 0, 0);
+			end
+
+			widgetFrame:SetPoint("BOTTOM", widgetContainer, "BOTTOM", 0, 0);
+
+			lastBottomWidget = widgetFrame;
 		end
 
 		widgetsHeight = widgetsHeight + widgetFrame:GetHeight();
-
-		if index == #sortedWidgets and widgetFrame.widgetType == Enum.UIWidgetVisualizationType.SpellDisplay then
-			-- Add a buffer if the last widget is a SpellDisplay
-			widgetsHeight = widgetsHeight + 35;
-		end
 
 		local widgetWidth = widgetFrame:GetWidth();
 		if widgetWidth > maxWidgetWidth then
@@ -123,6 +135,7 @@ local function WidgetsLayout(widgetContainer, sortedWidgets)
 		end
 	end
 
+	widgetContainer.nativeHeight = widgetsHeight;
 	widgetContainer:SetHeight(widgetsHeight);
 	widgetContainer:SetWidth(maxWidgetWidth);
 end
@@ -145,8 +158,8 @@ function QuestChoiceFrameMixin:UpdateOptionWidgetRegistration(option, widgetSetI
 	end
 
 	if widgetSetID then
-		UIWidgetManager:RegisterWidgetSetContainer(widgetSetID, option.WidgetContainer, function(...) self:WidgetLayout(...) end, function(...) self:WidgetInit(...) end);
 		option.WidgetContainer:Show();
+		UIWidgetManager:RegisterWidgetSetContainer(widgetSetID, option.WidgetContainer, function(...) self:WidgetLayout(...) end, function(...) self:WidgetInit(...) end);
 	end
 
 	option.widgetSetID = widgetSetID;
@@ -157,16 +170,24 @@ function QuestChoiceFrameMixin:UpdateHeight()
 	local initOptionHeight = self.initOptionHeight or INIT_OPTION_HEIGHT;
 	local optionStaticHeight = self.optionStaticHeight or OPTION_STATIC_HEIGHT;
 	local maxHeight = initOptionHeight;
+
+	self.maxWidgetsHeight = 0;
+	self.maxDescriptionHeight = 0;
+	for i=1, self.numActiveOptionFrames do
+		local option = self.Options[i];
+		self.maxDescriptionHeight = math.max(self.maxDescriptionHeight, option.OptionText:GetContentHeight());
+		if option.WidgetContainer and option.WidgetContainer:IsShown() then
+			self.maxWidgetsHeight = math.max(self.maxWidgetsHeight, option.WidgetContainer.nativeHeight);
+		end
+	end
+
 	for i=1, self.numActiveOptionFrames do
 		local option = self.Options[i];
 		local currHeight = optionStaticHeight;
 
-		currHeight = currHeight + option.OptionText:GetContentHeight() + option.OptionButtonsContainer:GetHeight();
+		currHeight = currHeight + option.OptionText:GetContentHeight() + option.OptionButtonsContainer:GetHeight() + self.maxWidgetsHeight;
 		if (option.Rewards) then
 			currHeight = currHeight + option.Rewards:GetHeight() + 25;
-		end
-		if option.WidgetContainer and option.WidgetContainer:IsShown() then
-			currHeight = currHeight + option.WidgetContainer:GetHeight() + 5;
 		end
 		if option.SubHeader and option.SubHeader:IsShown() then
 			currHeight = currHeight + option.SubHeader:GetHeight() + 2;
@@ -285,7 +306,6 @@ function QuestChoiceFrameMixin:Update()
 	for i = 1, self.numActiveOptionFrames do
 		local option = self.Options[i];
 		option:ConfigureButtons();
-		option:UpdateWidgetContainerAnchor(anOptionHasMultipleButtons);
 	end
 
 	if self.numActiveOptionFrames < #self.Options then
@@ -298,6 +318,12 @@ function QuestChoiceFrameMixin:Update()
 	self:ShowRewards()
 
 	self:UpdateHeight();
+
+	for i = 1, self.numActiveOptionFrames do
+		local option = self.Options[i];
+		option:UpdateWidgetContainerAnchor(anOptionHasMultipleButtons);
+		option:UpdateWidgetContainerHeight();
+	end
 end
 
 function QuestChoiceFrameMixin:ShowRewards()
@@ -496,11 +522,25 @@ end
 
 function QuestChoiceOptionFrameMixin:UpdateWidgetContainerAnchor(anOptionHasMultipleButtons)
 	local parent = self:GetParent();
-	self.WidgetContainer:ClearAllPoints();
 	if anOptionHasMultipleButtons and not self.hasMultipleButtons then
-		self.WidgetContainer:SetPoint("BOTTOM", self.OptionButtonsContainer, "TOP", 0, parent.optionButtonHeight + parent.optionButtonVerticalSpacing + 5);
+		self.additionalHeight = parent.optionButtonHeight + parent.optionButtonVerticalSpacing + 5;
 	else
-		self.WidgetContainer:SetPoint("BOTTOM", self.OptionButtonsContainer, "TOP", 0, 5);
+		self.additionalHeight = 5;
+	end
+
+	self.WidgetContainer:SetPoint("BOTTOM", self.OptionButtonsContainer, "TOP", 0, self.additionalHeight);
+end
+
+function QuestChoiceOptionFrameMixin:UpdateWidgetContainerHeight()
+	local parent = self:GetParent();
+	if parent.maxDescriptionHeight and parent.maxDescriptionHeight > 0 then
+		local y1 = self.OptionText:GetTop() - parent.maxDescriptionHeight - 5;
+		local y2 = self.OptionButtonsContainer:GetTop() + self.additionalHeight;
+		if y1 and y2 then
+			local spaceToFill = y1 - y2;
+			local newHeight = math.max(spaceToFill, parent.maxWidgetsHeight);
+			self.WidgetContainer:SetHeight(newHeight);
+		end
 	end
 end
 

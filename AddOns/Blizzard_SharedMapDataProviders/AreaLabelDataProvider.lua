@@ -194,7 +194,6 @@ function AreaLabelFrameMixin:EvaluateLabels()
 		
 		if areaLabelInfo.textureInfo then
 			self.Texture:SetAtlas(areaLabelInfo.textureInfo.atlas);
-			self.Texture:SetAtlas(areaLabelInfo.textureInfo.atlas);
 			self.Texture:SetSize(areaLabelInfo.textureInfo.width, areaLabelInfo.textureInfo.height);
 			self.Texture:Show();
 		else

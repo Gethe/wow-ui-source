@@ -10,6 +10,7 @@ CONTAINER_SPACING = 0;
 VISIBLE_CONTAINER_SPACING = 3;
 CONTAINER_OFFSET_Y = 70;
 CONTAINER_OFFSET_X = -4;
+MINIMUM_CONTAINER_OFFSET_X = 10;
 CONTAINER_SCALE = 0.75;
 BACKPACK_MONEY_OFFSET_DEFAULT = -231;
 BACKPACK_MONEY_HEIGHT_OFFSET_PER_EXTRA_ROW = 41;
@@ -1039,6 +1040,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 end
 
 function UpdateContainerFrameAnchors()
+	local containerFrameOffsetX = math.max(CONTAINER_OFFSET_X, MINIMUM_CONTAINER_OFFSET_X);
 	local frame, xOffset, yOffset, screenHeight, freeScreenHeight, leftMostPoint, column;
 	local screenWidth = GetScreenWidth();
 	local containerScale = 1;
@@ -1050,7 +1052,7 @@ function UpdateContainerFrameAnchors()
 	while ( containerScale > CONTAINER_SCALE ) do
 		screenHeight = GetScreenHeight() / containerScale;
 		-- Adjust the start anchor for bags depending on the multibars
-		xOffset = CONTAINER_OFFSET_X / containerScale; 
+		xOffset = containerFrameOffsetX / containerScale; 
 		yOffset = CONTAINER_OFFSET_Y / containerScale; 
 		-- freeScreenHeight determines when to start a new column of bags
 		freeScreenHeight = screenHeight - yOffset;
@@ -1080,7 +1082,7 @@ function UpdateContainerFrameAnchors()
 	
 	screenHeight = GetScreenHeight() / containerScale;
 	-- Adjust the start anchor for bags depending on the multibars
-	xOffset = CONTAINER_OFFSET_X / containerScale;
+	xOffset = containerFrameOffsetX / containerScale;
 	yOffset = CONTAINER_OFFSET_Y / containerScale;
 	-- freeScreenHeight determines when to start a new column of bags
 	freeScreenHeight = screenHeight - yOffset;

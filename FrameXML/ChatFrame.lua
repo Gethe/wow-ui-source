@@ -2756,7 +2756,7 @@ end
 function ChatFrame_AddNewCommunitiesChannel(chatFrameIndex, clubId, streamId, setEditBoxToChannel)
 	local clubInfo = C_Club.GetClubInfo(clubId);
 	if clubInfo then
-		C_Club.AddClubStreamToChatWindow(clubId, streamId, chatFrameIndex);
+		C_Club.AddClubStreamChatChannel(clubId, streamId);
 		
 		local channelColor = DEFAULT_CHAT_CHANNEL_COLOR;
 		local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);

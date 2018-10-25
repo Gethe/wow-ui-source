@@ -93,6 +93,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "IsLegendaryQuest",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isLegendaryQuest", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsOnQuest",
 			Type = "Function",
 

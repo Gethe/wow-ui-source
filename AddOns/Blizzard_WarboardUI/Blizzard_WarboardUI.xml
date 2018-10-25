@@ -107,10 +107,9 @@
 				</Layers>
 			</Frame>
 			<SimpleHTML parentKey="OptionText" inherits="InlineHyperlinkFrameTemplate">
-				<Size x="196"/>
+				<Size x="196" y="10"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.ArtworkBorder" relativePoint="BOTTOM" x="0" y="-12"/>
-					<Anchor point="BOTTOM" relativeKey="$parent.OptionButtonsContainer" relativePoint="TOP" y="39"/>
 				</Anchors>
 				<Scripts>
 					<OnSizeChanged>self:GetParent():GetParent():SetPendingUpdate();</OnSizeChanged>

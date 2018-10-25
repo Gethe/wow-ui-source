@@ -22,7 +22,8 @@ function UIWidgetTemplateHorizontalCurrenciesMixin:Setup(widgetInfo)
 		local currencyFrame = self.currencyPool:Acquire();
 		currencyFrame:Show();
 
-		currencyFrame:Setup(currencyInfo, Enum.WidgetEnabledState.Highlight);
+		local tooltipEnabledState = currencyInfo.isCurrencyMaxed and Enum.WidgetEnabledState.Red or Enum.WidgetEnabledState.Highlight;
+		currencyFrame:Setup(currencyInfo, Enum.WidgetEnabledState.Highlight, tooltipEnabledState);
 
 		if previousCurrencyFrame then
 			currencyFrame:SetPoint("TOPLEFT", previousCurrencyFrame, "TOPRIGHT", 10, 0);

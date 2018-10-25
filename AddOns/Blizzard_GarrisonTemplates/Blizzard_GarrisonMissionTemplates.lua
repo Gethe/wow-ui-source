@@ -2130,7 +2130,7 @@ end
 function GarrisonMissionPageRewardsFrame_SetSuccessChance(self, chance, missionEffects)
 	local successChanceColor = GREEN_FONT_COLOR;
 	if (missionEffects) then
-		if ((chance < 0 and missionEffects.hasUncounterableSuccessChanceNegativeEffect) or missionEffects.hasSuccessChanceNegativeEffect) then
+		if (missionEffects.hasSuccessChanceNegativeEffect) then
 			successChanceColor = RED_FONT_COLOR;
 		end
 	end
