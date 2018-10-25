@@ -293,19 +293,6 @@ end
 
 function ArtifactPerksMixin:OnUpdate(elapsed)
 	self:TryRefresh();
-	if ( self.inInstabilityMode ) then
-		local timeNow = GetTime();
-		if ( timeNow > self.nextInstabilityTime ) then
-			self:RefreshNextInstabilityTime();
-			ShakeFrameRandom(ArtifactFrame, 1, 1.5, 0.05);
-		end
-		self.shakeCooldown = self.shakeCooldown - elapsed;
-		if ( self.shakeCooldown <= 0 ) then
-			ShakeFrameRandom(self.InstabilityShakeModel, 6, 1.5, 0.05);
-			ShakeFrameRandom(self.AltInstabilityShakeModel, 6, 1.5, 0.05);
-			self.shakeCooldown = math.random(2, 4);
-		end
-	end
 end
 
 function ArtifactPerksMixin:AreAllGoldMedalsPurchasedByTier(tier)
@@ -375,10 +362,15 @@ function ArtifactPerksMixin:RefreshPowers(newItem)
 	self:RefreshDependencies(powers);
 	self:RefreshRelics();
 
+	local artifactItemID = C_ArtifactUI.GetArtifactInfo();
+	local isFishingArtifact = artifactItemID == 133755;
+
 	-- Instability needs the buttons created first
-	if ( not self.inInstabilityMode and self.powerButtonPool:GetNumActive() > 0 and C_ArtifactUI.IsArtifactInstabilityInEffect() ) then
+	if ( not self.inInstabilityMode and not isFishingArtifact and self.powerButtonPool:GetNumActive() > 0 and C_ArtifactUI.IsArtifactInstabilityInEffect() ) then
 		self:BeginInstability();
-	end	
+	else
+		self:EndInstability();
+	end
 end
 
 function ArtifactPerksMixin:RefreshFinalPowerForTier(tier, isUnlocked)
@@ -505,6 +497,7 @@ end
 function ArtifactPerksMixin:TryRefresh()
 	if self.perksDirty then
 		if self.newItem then
+			self.inInstabilityMode = nil;
 			self.numRevealsPlaying = nil;
 			self:HideAllLines();
 			self:RefreshBackground();
@@ -1274,52 +1267,18 @@ end
 
 function ArtifactPerksMixin:BeginInstability()
 	self.inInstabilityMode = true;
-	self.CrestFrame.InstabilityRunesAnim:Play();
-	self.Model.InstabilityBackground1.Anim:Play();
-	for i, frame in pairs(self.InstabilityCrests) do
-		frame.Anim:Play();
+	if not self.TitleContainer.InstabilityPointsRemainingPool then
+		self.TitleContainer.InstabilityPointsRemainingPool = CreateFontStringPool(self, "OVERLAY", 0, "ArtifactInstabilityPointsRemainingTemplate");
 	end
-	local powerButtonFrameLevel;
-	for button in self.powerButtonPool:EnumerateActive() do
-		button:EnterInstabilityMode();
-		if ( not powerButtonFrameLevel ) then
-			powerButtonFrameLevel = button:GetFrameLevel() - 1;
-		end
-	end
-	self.Tier2ForgingScene:SetFrameLevel(powerButtonFrameLevel);
-	if (self.Tier2ForgingScene.ForgingEffect) then
-		self.Tier2ForgingScene.ForgingEffect:SetAlpha(1);
-	end
-	for i, scene in ipairs(self.InstabilityForgingScenes) do
-		scene:SetAlpha(1);
-		scene:SetFrameLevel(powerButtonFrameLevel);
-	end
-	self:RefreshNextInstabilityTime();
-
-	self.TitleContainer.InstabilityPointsRemainingPool = CreateFontStringPool(self, "OVERLAY", 0, "ArtifactInstabilityPointsRemainingTemplate");
 	self:SetupInstabilityPoints();
+end
 
-	self.shakeCooldown = math.random(2, 4);
-	self.InstabilityShakeModel:Show();	
-	self.InstabilityShakeModel:SetShadowEffect(1);
-	self.InstabilityShakeModel.AlphaAnim:Play();	
-	self.InstabilityEffectModel:Show();
-	self.InstabilityEffectModel:SetShadowEffect(1);
-	self.InstabilityEffectModel.AlphaAnim:Play();
-
-	if ( self.AltModel:IsShown() ) then
-		self.AltInstabilityShakeModel:Show();	
-		self.AltInstabilityShakeModel:SetShadowEffect(1);
-		self.AltInstabilityShakeModel.AlphaAnim:Play();
-
-		self.AltInstabilityEffectModel:Show();
-		self.AltInstabilityEffectModel:SetShadowEffect(1);
-		self.AltInstabilityEffectModel.AlphaAnim:Play();
+function ArtifactPerksMixin:EndInstability()
+	self.inInstabilityMode = false;
+	if self.TitleContainer.InstabilityPointsRemainingPool then
+		self.TitleContainer.InstabilityPointsRemainingPool:ReleaseAll();
 	end
-
-	self.playInstabilityLoopingSound = true;
-	self.instabilitySoundEmitter = CreateLoopingSoundEffectEmitter(nil, self:GetInstabilityLoopingSoundKit(), nil, 0, 0, 0);
-	self.instabilitySoundEmitter:StartLoopingSound();
+	self.TitleContainer.PointsRemainingLabel.currentAnimatedValue = C_ArtifactUI.GetPointsRemaining();
 end
 
 function ArtifactPerksMixin:AnimateTraitRefund(numTraitsRefunded)
