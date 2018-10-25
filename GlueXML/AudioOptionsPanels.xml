@@ -91,7 +91,7 @@
 				</Scripts>
 			</CheckButton>	
 			<Frame name="$parentPlayback" inherits="OptionsBoxTemplate">
-				<Size x="186" y="316"/>
+				<Size x="186" y="264"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="16" y="-116"/>
@@ -152,7 +152,7 @@
 			<CheckButton name="$parentMusic" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentEmoteSounds" relativePoint="BOTTOMLEFT">
-						<Offset x="-8" y="2"/>
+						<Offset x="-8" y="-8"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -178,25 +178,10 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentPetBattleMusic" inherits="AudioOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentLoopMusic" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="4"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "Sound_EnablePetBattleMusic";
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(AudioOptionsSoundPanelMusic, self);
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
 			<CheckButton name="$parentAmbientSounds" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentPetBattleMusic" relativePoint="BOTTOMLEFT">
-						<Offset x="-8" y="2"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentLoopMusic" relativePoint="BOTTOMLEFT">
+						<Offset x="-8" y="-8"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -210,7 +195,7 @@
 			<CheckButton name="$parentDialogSounds" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentAmbientSounds" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="2"/>
+						<Offset x="0" y="-8"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -239,7 +224,7 @@
 			<CheckButton name="$parentSoundInBG" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentErrorSpeech" relativePoint="BOTTOMLEFT">
-						<Offset x="-8" y="2"/>
+						<Offset x="-8" y="-8"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -250,7 +235,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
-			<CheckButton name="$parentReverb" inherits="AudioOptionsSmallCheckButtonTemplate">
+			<!--CheckButton name="$parentReverb" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSoundInBG" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="2"/>
@@ -279,27 +264,12 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>				
-			<CheckButton name="$parentEnableDSPs" inherits="AudioOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentHRTF" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="2"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "Sound_EnableDSPEffects";
-						self.restart = true;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>				
+			</CheckButton-->
 			<Frame name="$parentHardware" inherits="OptionsBoxTemplate">
 				<Size x="186" y="152"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentPlayback" relativePoint="TOPRIGHT">
-						<Offset x="8" y="0"/>
+						<Offset x="14" y="0"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -430,8 +400,8 @@
 			<Frame name="$parentVolume" inherits="OptionsBoxTemplate">
 				<Size x="186" y="174"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentHardware" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-16"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentHardware" relativePoint="TOPRIGHT">
+						<Offset x="14" y="0"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>

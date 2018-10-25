@@ -350,12 +350,14 @@
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
+				<!--
 				<Texture name="$parentThreatIndicator" file="Interface\RaidFrame\UI-RaidFrame-Threat" hidden="false">
 					<Size x="8" y="8"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-2" y="-5"/>
 					</Anchors>
 				</Texture>
+				-->
 				<Texture name="$parentVehicleIndicator" file="Interface\Vehicles\UI-Vehicles-Raid-Icon" hidden="true">
 					<Size x="16" y="16"/>
 					<Anchors>
@@ -618,7 +620,7 @@
 				local prefix = self:GetName();
 				self.healthbar = _G[prefix.."HealthBar"];
 				self.manabar = _G[prefix.."ManaBar"];
-				self.threatIndicator = _G[prefix.."ThreatIndicator"];
+				--self.threatIndicator = _G[prefix.."ThreatIndicator"];
 				self.nameLabel = _G[prefix.."Name"];
 				self.clearButton = _G[prefix.."ClearButton"];
 				self.speaker = _G[prefix.."Speaker"];

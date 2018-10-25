@@ -30,27 +30,14 @@ function PetFrame_OnLoad (self)
 	self:RegisterEvent("PET_ATTACK_STOP");
 	self:RegisterEvent("PET_UI_UPDATE");
 	self:RegisterEvent("PET_RENAMEABLE");
+	self:RegisterEvent("UNIT_HAPPINESS");
+	self:RegisterEvent("UNIT_MAXPOWER");
 	self:RegisterUnitEvent("UNIT_COMBAT", "pet", "player");
 	self:RegisterUnitEvent("UNIT_AURA", "pet", "player");
 	local showmenu = function()
 		ToggleDropDownMenu(1, nil, PetFrameDropDown, "PetFrame", 44, 8);
 	end
 	SecureUnitButton_OnLoad(self, "pet", showmenu);
-	
-	local _, class = UnitClass("player");
-	if ( class == "DEATHKNIGHT" or class == "ROGUE") then
-		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -75);
-	elseif ( class == "SHAMAN" or class == "DRUID" ) then
-		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -100);
-	elseif ( class == "WARLOCK" ) then
-		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -90);
-	elseif ( class == "PALADIN" ) then
-		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -90);
-	elseif ( class == "PRIEST" ) then
-		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -90);
-	elseif ( class == "MONK" ) then
-		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 90, -100);
-	end
 end
 
 function PetFrame_Update (self, override)
@@ -71,7 +58,8 @@ function PetFrame_Update (self, override)
 			end
 			PetAttackModeTexture:Hide();
 
-			RefreshDebuffs(self, self.unit, nil, nil, true);
+			PetFrame_SetHappiness();
+			RefreshBuffs(self, self.unit, nil, nil, true);
 		else
 			self:Hide();
 		end
@@ -100,7 +88,7 @@ function PetFrame_OnEvent (self, event, ...)
 		end
 	elseif ( event == "UNIT_AURA" ) then
 		if ( arg1 == self.unit ) then
-			RefreshDebuffs(self, self.unit, nil, nil, true);
+			RefreshBuffs(self, self.unit, nil, nil, true);
 		end
 	elseif ( event == "PET_ATTACK_START" ) then
 		PetAttackModeTexture:SetVertexColor(1.0, 1.0, 1.0, 1.0);
@@ -109,6 +97,10 @@ function PetFrame_OnEvent (self, event, ...)
 		PetAttackModeTexture:Hide();
 	elseif ( event == "PET_RENAMEABLE" ) then
 		StaticPopup_Show("RENAME_PET");
+	elseif (event == "UNIT_HAPPINESS" ) then
+		PetFrame_SetHappiness();
+	elseif (event == "UNIT_MAXPOWER" ) then
+		PetFrame_Update(self);
 	end
 end
 
@@ -156,6 +148,32 @@ function PetFrame_OnUpdate (self, elapsed)
 	--	end
 	--end
 	
+end
+
+function PetFrame_SetHappiness()
+	local happiness, damagePercentage, loyaltyRate = GetPetHappiness();
+	local hasPetUI, isHunterPet = HasPetUI();
+	if ( not happiness or not isHunterPet ) then
+		PetFrameHappiness:Hide();
+		return;	
+	end
+	PetFrameHappiness:Show();
+	if ( happiness == 1 ) then
+		PetFrameHappinessTexture:SetTexCoord(0.375, 0.5625, 0, 0.359375);
+	elseif ( happiness == 2 ) then
+		PetFrameHappinessTexture:SetTexCoord(0.1875, 0.375, 0, 0.359375);
+	elseif ( happiness == 3 ) then
+		PetFrameHappinessTexture:SetTexCoord(0, 0.1875, 0, 0.359375);
+	end
+	PetFrameHappiness.tooltip = _G["PET_HAPPINESS"..happiness];
+	PetFrameHappiness.tooltipDamage = format(PET_DAMAGE_PERCENTAGE, damagePercentage);
+	if ( loyaltyRate < 0 ) then
+		PetFrameHappiness.tooltipLoyalty = _G["LOSING_LOYALTY"];
+	elseif ( loyaltyRate > 0 ) then
+		PetFrameHappiness.tooltipLoyalty = _G["GAINING_LOYALTY"];
+	else
+		PetFrameHappiness.tooltipLoyalty = nil;
+	end
 end
 
 function PetFrameDropDown_OnLoad (self)

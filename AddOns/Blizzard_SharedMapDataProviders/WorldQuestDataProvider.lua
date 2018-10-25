@@ -51,6 +51,7 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 		pinsToRemove[questId] = true;
 	end
 
+	--[[
 	local mapAreaID = self:GetMap():GetMapID();
 	for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
 		local zoneMapID, zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
@@ -76,6 +77,7 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 			end
 		end
 	end
+	--]]
 
 	for questId in pairs(pinsToRemove) do
 		self:GetMap():RemovePin(self.activePins[questId]);

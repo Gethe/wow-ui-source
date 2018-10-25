@@ -654,6 +654,13 @@ COMBAT_CONFIG_MESSAGETYPES_MISC = {
 		func = function (self, checked) ToggleMessageType(checked, "UNIT_DIED", "UNIT_DESTROYED", "UNIT_DISSIPATES"); end;
 		tooltip = DEATHS_COMBATLOG_TOOLTIP,
 	},
+	[5] = {
+		text = PET_LOYALTY,
+		type = {"UNIT_LOYALTY"};
+		checked = function () return HasMessageType("UNIT_LOYALTY"); end;
+		func = function (self, checked) ToggleMessageType(checked, "UNIT_LOYALTY"); end;
+		tooltip = UNIT_LOYALTY_COMBATLOG_TOOLTIP,
+	},
 };
 COMBAT_CONFIG_UNIT_COLORS = {
 	[1] = {

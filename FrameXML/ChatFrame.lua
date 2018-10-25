@@ -116,10 +116,8 @@ ChatTypeGroup["SYSTEM"] = {
 	"CHAT_MSG_SYSTEM",
 	"TIME_PLAYED_MSG",
 	"PLAYER_LEVEL_UP",
-	"UNIT_LEVEL",
 	"CHARACTER_POINTS_CHANGED",
 	"CHAT_MSG_BN_WHISPER_PLAYER_OFFLINE",
-	"QUEST_TURNED_IN",
 };
 ChatTypeGroup["SAY"] = {
 	"CHAT_MSG_SAY",
@@ -527,7 +525,7 @@ EMOTE170_TOKEN = "GOLFCLAP";
 EMOTE171_TOKEN = "MOUNTSPECIAL";
 EMOTE304_TOKEN = "INCOMING";
 EMOTE306_TOKEN = "FLEE";
-EMOTE368_TOKEN = "BLAME"
+--[[EMOTE368_TOKEN = "BLAME"
 EMOTE369_TOKEN = "BLANK"
 EMOTE370_TOKEN = "BRANDISH"
 EMOTE371_TOKEN = "BREATH"
@@ -608,10 +606,10 @@ EMOTE453_TOKEN = "READ"
 EMOTE454_TOKEN = "FORTHEALLIANCE"
 EMOTE455_TOKEN = "FORTHEHORDE"
 EMOTE517_TOKEN = "WHOA"
-EMOTE518_TOKEN = "OOPS"
+EMOTE518_TOKEN = "OOPS"]]
 
 -- NOTE: This indices used to iterate the tokens may not be contiguous, keep that in mind when updating this value.
-local MAXEMOTEINDEX = 518;
+local MAXEMOTEINDEX = 306;--518;
 
 
 ICON_LIST = {
@@ -1338,7 +1336,7 @@ SecureCmdList["ASSIST"] = function(msg)
 	end
 end
 
-SecureCmdList["FOCUS"] = function(msg)
+--[[SecureCmdList["FOCUS"] = function(msg)
 	if ( msg == "" ) then
 		FocusUnit();
 	else
@@ -1356,7 +1354,7 @@ SecureCmdList["CLEARFOCUS"] = function(msg)
 	if ( SecureCmdOptionParse(msg) ) then
 		ClearFocus();
 	end
-end
+end]]
 
 SecureCmdList["MAINTANKON"] = function(msg)
 	local action, target = SecureCmdOptionParse(msg);
@@ -2525,14 +2523,6 @@ function ChatFrame_ImportListToHash(list, hash)
 end
 
 function ChatFrame_ImportEmoteTokensToHash()
-	-- Hook up per-faction emotes before we build the emote list hash.
-	local factionGroup = UnitFactionGroup("player");
-	if ( factionGroup == "Alliance" ) then
-		TextEmoteSpeechList[#TextEmoteSpeechList + 1] = "FORTHEALLIANCE";
-	elseif ( factionGroup == "Horde" ) then
-		TextEmoteSpeechList[#TextEmoteSpeechList + 1] = "FORTHEHORDE";
-	end
-
 	local i = 1;
 	local j = 1;
 	local cmdString = _G["EMOTE"..i.."_CMD"..j];
@@ -2597,7 +2587,6 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("BN_DISCONNECTED");
 	self:RegisterEvent("PLAYER_REPORT_SUBMITTED");
 	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
-	self:RegisterEvent("CHARACTER_UPGRADE_SPELL_TIER_SET");
 	self:RegisterEvent("ALTERNATIVE_DEFAULT_LANGUAGE_CHANGED");
 	self.tellTimer = GetTime();
 	self.channelList = {};
@@ -2873,25 +2862,7 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		ChatFrame_DisplayTimePlayed(self, arg1, arg2);
 		return true;
 	elseif ( event == "PLAYER_LEVEL_UP" ) then
-		local level, arg2, arg3, arg4, arg5, arg6, arg7, arg8 = ...;
-		LevelUpDisplay_ChatPrint(self, level, LEVEL_UP_TYPE_CHARACTER)
-		return true;
-	elseif ( event == "QUEST_TURNED_IN" ) then
-		local questID, xp, money = ...;
-		if questID == WORLD_QUESTS_AVAILABLE_QUEST_ID then
-			LevelUpDisplay_ChatPrint(self, nil, TOAST_WORLD_QUESTS_UNLOCKED)
-		end
-		return true;
-	elseif (event == "UNIT_LEVEL" ) then
-		local arg1 = ...;
-		if (arg1 == "pet" and UnitName("pet") ~= UNKNOWNOBJECT) then
-			LevelUpDisplay_ChatPrint(self, UnitLevel("pet"), LEVEL_UP_TYPE_PET);
-		end
-	elseif ( event == "CHARACTER_UPGRADE_SPELL_TIER_SET" ) then
-		local tierIndex = ...;
-		if (tierIndex > 0) then
-			LevelUpDisplay_ChatPrint(self, tierIndex, LEVEL_UP_TYPE_SPELL_BUCKET);
-		end
+		ChatFrame_DisplayLevelUp(self, ...)
 		return true;
 	elseif ( event == "CHARACTER_POINTS_CHANGED" ) then
 		local arg1 = ...;
@@ -3750,6 +3721,48 @@ function ChatFrame_DisplayTimePlayed(self, totalTime, levelTime)
 	d, h, m, s = ChatFrame_TimeBreakDown(levelTime);
 	local string = format(TIME_PLAYED_LEVEL, format(TIME_DAYHOURMINUTESECOND, d, h, m, s));
 	self:AddMessage(string, info.r, info.g, info.b, info.id);
+end
+
+function ChatFrame_DisplayLevelUp(self, level, ...)
+	-- Level up
+	local info = ChatTypeInfo["SYSTEM"];
+	local arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 = ...;
+
+	local string = LEVEL_UP:format(level);
+	self:AddMessage(string, info.r, info.g, info.b, info.id);
+
+	if ( arg3 > 0 ) then
+		string = LEVEL_UP_HEALTH_MANA:format(arg2, arg3);
+	else
+		string = LEVEL_UP_HEALTH:format(arg2);
+	end
+	self:AddMessage(string, info.r, info.g, info.b, info.id);
+
+	if ( arg4 > 0 ) then
+		string = format(GetText("LEVEL_UP_CHAR_POINTS", nil, arg4), arg4);
+		self:AddMessage(string, info.r, info.g, info.b, info.id);
+	end
+
+	if ( arg5 > 0 ) then
+		string = format(LEVEL_UP_STAT, SPELL_STAT1_NAME, arg5);
+		self:AddMessage(string, info.r, info.g, info.b, info.id);
+	end
+	if ( arg6 > 0 ) then
+		string = format(LEVEL_UP_STAT, SPELL_STAT2_NAME, arg6);
+		self:AddMessage(string, info.r, info.g, info.b, info.id);
+	end
+	if ( arg7 > 0 ) then
+		string = format(LEVEL_UP_STAT, SPELL_STAT3_NAME, arg7);
+		self:AddMessage(string, info.r, info.g, info.b, info.id);
+	end
+	if ( arg8 > 0 ) then
+		string = format(LEVEL_UP_STAT, SPELL_STAT4_NAME, arg8);
+		self:AddMessage(string, info.r, info.g, info.b, info.id);
+	end
+	if ( arg9 > 0 ) then
+		string = format(LEVEL_UP_STAT, SPELL_STAT5_NAME, arg9);
+		self:AddMessage(string, info.r, info.g, info.b, info.id);
+	end
 end
 
 function ChatFrame_ChatPageUp()
@@ -4792,14 +4805,6 @@ end
 
 function VoiceMacroMenu_Click(self)
 	local emote = TextEmoteSpeechList[self:GetID()];
-	if (emote == EMOTE454_TOKEN or emote == EMOTE455_TOKEN) then
-		local faction = UnitFactionGroup("player", true);
-		if (faction == "Alliance") then
-			emote = EMOTE454_TOKEN;
-		elseif (faction == "Horde") then
-			emote = EMOTE455_TOKEN;
-		end
-	end
 
 	DoEmote(emote);
 	ChatMenu:Hide();

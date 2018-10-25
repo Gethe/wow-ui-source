@@ -226,7 +226,7 @@ TRAVEL PASS
 						if ( self.duration ) then
 							GameTooltip:AddLine(COOLDOWN_REMAINING .. " " .. SecondsToTime(self.duration - (GetTime() - self.start)), 1, 1, 1, true);
 						end
-						if ( SHOW_NEWBIE_TIPS == "1" ) then
+						if ( GetCVar("showNewbieTips") == "1" ) then
 							GameTooltip:AddLine(NEWBIE_TOOLTIP_RAF_SUMMON_LINKED, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
 						end
 						GameTooltip:Show();
@@ -363,7 +363,7 @@ TRAVEL PASS
 								if ( self.duration ) then
 									GameTooltip:AddLine(COOLDOWN_REMAINING .. " " .. SecondsToTime(self.duration - (GetTime() - self.start)), 1, 1, 1, true);
 								end
-								if ( SHOW_NEWBIE_TIPS == "1" ) then
+								if ( GetCVar("showNewbieTips") == "1" ) then
 									GameTooltip:AddLine(NEWBIE_TOOLTIP_RAF_SUMMON_LINKED, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
 								end
 								GameTooltip:Show();
@@ -1823,7 +1823,10 @@ TRAVEL PASS
 					<Anchor point="LEFT" relativeTo="FriendsFrameTab2" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad function="FriendsFrame_Update"/>
+					<OnLoad>
+						self.selectedTextY = 4;
+						FriendsFrame_Update(self);
+					</OnLoad>
 					<OnEvent function="FriendsFrame_Update"/>
 					<OnEnter>
 						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(CHAT_CHANNELS, "TOGGLECHANNELTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHANNELTAB, 1);
@@ -1840,7 +1843,10 @@ TRAVEL PASS
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad function="FriendsFrame_Update"/>
+					<OnLoad>
+						self.selectedTextY = 4;
+						FriendsFrame_Update(self);
+					</OnLoad>
 					<OnEvent function="FriendsFrame_Update"/>
 					<OnEnter>
 						GameTooltip_AddNewbieTip(self, RAID, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_RAID, 1);

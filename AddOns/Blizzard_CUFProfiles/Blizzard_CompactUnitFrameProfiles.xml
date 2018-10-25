@@ -554,19 +554,9 @@
 							</OnLoad>
 						</Scripts>
 					</Frame>
-					<CheckButton name="$parentDisplayIncomingHeals" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentKeepGroupsTogether" relativePoint="BOTTOMLEFT" x="0" y="-50"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "displayHealPrediction");
-							</OnLoad>
-						</Scripts>
-					</CheckButton>
 					<CheckButton name="$parentDisplayPowerBar" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentDisplayIncomingHeals" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentKeepGroupsTogether" relativePoint="BOTTOMLEFT" x="0" y="-50"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -574,19 +564,9 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="$parentDisplayAggroHighlight" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentDisplayPowerBar" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "displayAggroHighlight");
-							</OnLoad>
-						</Scripts>
-					</CheckButton>
 					<CheckButton name="$parentUseClassColors" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentDisplayAggroHighlight" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentDisplayPowerBar" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -737,19 +717,19 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="$parentAutoActivate25Players" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+					<CheckButton name="$parentAutoActivate20Players" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivate15Players" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "autoActivate25Players");
+								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "autoActivate20Players");
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="$parentAutoActivate40Players" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivate25Players" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivate20Players" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -758,41 +738,9 @@
 						</Scripts>
 					</CheckButton>
 
-					<CheckButton name="$parentAutoActivateSpec1" inherits="CompactUnitFrameProfilesCheckButtonTemplate" parentArray="AutoActivateSpecs" id="1">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivate40Players" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad function="CompactUnitFrameAutoActivateSpec_OnLoad"/>
-						</Scripts>
-					</CheckButton>
-					<CheckButton name="$parentAutoActivateSpec2" inherits="CompactUnitFrameProfilesCheckButtonTemplate" parentArray="AutoActivateSpecs" id="2">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivateSpec1" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad function="CompactUnitFrameAutoActivateSpec_OnLoad"/>
-						</Scripts>
-					</CheckButton>
-					<CheckButton name="$parentAutoActivateSpec3" inherits="CompactUnitFrameProfilesCheckButtonTemplate" parentArray="AutoActivateSpecs" id="3">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivateSpec2" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad function="CompactUnitFrameAutoActivateSpec_OnLoad"/>
-						</Scripts>
-					</CheckButton>
-					<CheckButton name="$parentAutoActivateSpec4" inherits="CompactUnitFrameProfilesCheckButtonTemplate" parentArray="AutoActivateSpecs" id="4">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivateSpec3" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad function="CompactUnitFrameAutoActivateSpec_OnLoad"/>
-						</Scripts>
-					</CheckButton>
 					<CheckButton name="$parentAutoActivatePvP" inherits="CompactUnitFrameProfilesCheckButtonTemplate" parentKey="AutoActivatePvP">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivateSpec4" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivate40Players" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>

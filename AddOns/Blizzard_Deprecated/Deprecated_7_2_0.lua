@@ -49,15 +49,6 @@ do
 	end
 end
 
--- WorldMap
-
-do
-	function GetMapLandmarkInfo(index)
-		local landmarkType, name, description, textureIndex, x, y, mapLinkID, inBattleMap, graveyardID, areaID, poiID, isObjectIcon, atlasIcon, displayAsBanner = C_WorldMap.GetMapLandmarkInfo(index);
-		return landmarkType, name, description, textureIndex, x, y, mapLinkID, inBattleMap, graveyardID, areaID, poiID, isObjectIcon, atlasIcon;
-	end
-end
-
 -- EquipmentSet
 
 do

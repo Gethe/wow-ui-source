@@ -532,11 +532,7 @@
 					</OnClick>
                 </Scripts>
             </Button>
-			<Frame name="$parentLootFilter" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="lootFilter">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="0" y="-28"/>
-				</Anchors>
-			</Frame>
+
 		</Frames>
 		<Scripts>
 			<OnHide function="MerchantFrame_OnHide"/>

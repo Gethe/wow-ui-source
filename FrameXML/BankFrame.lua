@@ -86,6 +86,7 @@ function BankFrameItemButton_Update (button)
 	if( button.isBag ) then
 		id, slotTextureName = GetInventorySlotInfo("Bag"..buttonID);
 	else
+--[[
 		local isQuestItem, questId, isActive = GetContainerItemQuestInfo(container, buttonID);
 		local questTexture = button["IconQuestTexture"];
 		if ( questId and not isActive ) then
@@ -93,10 +94,13 @@ function BankFrameItemButton_Update (button)
 			questTexture:Show();
 		elseif ( questId or isQuestItem ) then
 			questTexture:SetTexture(TEXTURE_ITEM_QUEST_BORDER);
-			questTexture:Show();		
+			questTexture:Show();
 		else
 			questTexture:Hide();
 		end
+--]]
+		local questTexture = button["IconQuestTexture"];
+		questTexture:Hide();
 	end
 
 	if ( textureName ) then

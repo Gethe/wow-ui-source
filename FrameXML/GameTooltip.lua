@@ -182,12 +182,10 @@ end
 
 function GameTooltip_OnTooltipAddMoney(self, cost, maxcost)
 	if( not maxcost ) then --We just have 1 price to display
-		SetTooltipMoney(self, cost, nil, string.format("%s:", SELL_PRICE));
+		SetTooltipMoney(self, cost, nil);
 	else
-		self:AddLine(string.format("%s:", SELL_PRICE), 1.0, 1.0, 1.0);
-		local indent = string.rep(" ",4)
-		SetTooltipMoney(self, cost, nil, string.format("%s%s:", indent, MINIMUM));
-		SetTooltipMoney(self, maxcost, nil, string.format("%s%s:", indent, MAXIMUM));
+		SetTooltipMoney(self, cost, nil, string.format("%s:", MINIMUM));
+		SetTooltipMoney(self, maxcost, nil, string.format("%s:", MAXIMUM));
 	end
 end
 
@@ -346,7 +344,7 @@ function GameTooltip_OnUpdate(self, elapsed)
 end
 
 function GameTooltip_AddNewbieTip(frame, normalText, r, g, b, newbieText, noNormalText)
-	if ( SHOW_NEWBIE_TIPS == "1" ) then
+	if ( GetCVar("showNewbieTips") == "1" ) then
 		GameTooltip_SetDefaultAnchor(GameTooltip, frame);
 		if ( normalText ) then
 			GameTooltip:SetText(normalText, r, g, b);

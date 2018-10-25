@@ -30,7 +30,7 @@ function ActiveQuestDataProviderMixin:RefreshAllData(fromOnShow)
 
 	self.usedQuestNumbers = self.usedQuestNumbers or {};
 	self.pinsMissingNumbers = self.pinsMissingNumbers or {};
-
+	--[[
 	local mapAreaID = self:GetMap():GetMapID();
 	for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
 		local zoneMapID, zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
@@ -46,7 +46,7 @@ function ActiveQuestDataProviderMixin:RefreshAllData(fromOnShow)
 			end
 		end
 	end
-
+	--]]
 	self:AssignMissingNumbersToPins();
 end
 

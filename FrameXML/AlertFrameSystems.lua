@@ -901,6 +901,7 @@ function NewRecipeLearnedAlertFrame_GetStarTextureFromRank(rank)
 end
 
 function NewRecipeLearnedAlertFrame_SetUp(self, recipeID)
+--[[ Removed for classic
 	local tradeSkillID, skillLineName = C_TradeSkillUI.GetTradeSkillLineForRecipe(recipeID);
 	if tradeSkillID then
 		local recipeName = GetSpellInfo(recipeID);
@@ -924,6 +925,7 @@ function NewRecipeLearnedAlertFrame_SetUp(self, recipeID)
 			return true;
 		end
 	end
+]]
 	return false;
 end
 

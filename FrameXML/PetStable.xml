@@ -1,44 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="PetStable.lua"/>
-	<Texture name="PetStable-ActiveBG" file="Interface\PetStableFrame\PetStable-Parts" virtual="true" >
-		<Size x="81" y="373"/>	
-		<TexCoords left="0.00195313" right="0.16015625" top="0.00195313" bottom="0.73046875"/>	
-	</Texture>
-	<Texture name="PetStable-StableSlot" file="Interface\PetStableFrame\PetStable-Parts" virtual="true" >
-		<Size x="41" y="41"/>	
-		<TexCoords left="0.00195313" right="0.08203125" top="0.73437500" bottom="0.81445313"/>	
-	</Texture>
-	<Texture name="PetStable-DietIcon" file="Interface\PetStableFrame\PetStable-Parts" virtual="true" >
-		<Size x="25" y="23"/>	
-		<TexCoords left="0.08593750" right="0.13476563" top="0.73437500" bottom="0.77929688"/>	
-	</Texture>
-	<Texture name="PetStable-TabSel-Left" file="Interface\PetStableFrame\PetStable-Parts" virtual="true" >
-		<Size x="8" y="16"/>	
-		<TexCoords left="0.13867188" right="0.15429688" top="0.73437500" bottom="0.76562500"/>	
-	</Texture>
-	<Texture name="PetStable-TabSel-Right" file="Interface\PetStableFrame\PetStable-Parts" virtual="true" >
-		<Size x="8" y="16"/>	
-		<TexCoords left="0.08593750" right="0.10156250" top="0.78320313" bottom="0.81445313"/>	
-	</Texture>
-	<Texture name="PetStable-TabUnsel-Left" file="Interface\PetStableFrame\PetStable-Parts" virtual="true" >
-		<Size x="8" y="16"/>	
-		<TexCoords left="0.10546875" right="0.12109375" top="0.78320313" bottom="0.81445313"/>	
-	</Texture>
-	<Texture name="PetStable-TabUnsel-Right" file="Interface\PetStableFrame\PetStable-Parts" virtual="true" >
-		<Size x="8" y="16"/>	
-		<TexCoords left="0.12500000" right="0.14062500" top="0.78320313" bottom="0.81445313"/>	
-	</Texture>
-	<Texture name="PetStable-ModelBG" file="Interface\PetStableFrame\PetStable-Parts" virtual="true" >
-		<Size x="314" y="281"/>	
-		<TexCoords left="0.16406250" right="0.77734375" top="0.00195313" bottom="0.55078125"/>	
-	</Texture>
-	<Texture name="PetStable-StableBG" file="Interface\PetStableFrame\PetStable-Parts" virtual="true" >
-		<Size x="314" y="116"/>	
-		<TexCoords left="0.16406250" right="0.77734375" top="0.55468750" bottom="0.78125000"/>	
-	</Texture>
-
-	<Button name="PetStableSlotTemplate" virtual="true">
+	<CheckButton name="PetStableSlotTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="37" y="37"/>
 		</Size>
@@ -47,14 +10,15 @@
 				<Texture name="$parentIconTexture"/>
 			</Layer>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" inherits="PetStable-StableSlot" parentKey="Background">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-2" y="2"/>
+				<Texture name="$parentBackground" file="Interface\Buttons\UI-EmptySlot">
+					<Size>
+<AbsDimension x="64" y="64"/>
+</Size><Anchors>
+						<Anchor point="TOPLEFT">
+<Offset>
+<AbsDimension x="-13" y="13"/></Offset></Anchor>
 					</Anchors>
 				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentChecked" parentKey="Checked" file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD" hidden="true"/>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -73,151 +37,92 @@
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnClick>
-				local cursorType, petSlot = GetCursorInfo();
-				if (cursorType == "pet") then
-					SetPetSlot(petSlot, self.petSlot);
-					ClearCursor();
-				elseif (PetStableFrame.selectedPet ~= self.petSlot and GetStablePetInfo(self.petSlot)) then
-					PetStableFrame.selectedPet = self.petSlot;
-					PetStable_Update(true);
+				if ( ClickStablePet(self:GetID()) ) then
+					PetStable_Update();
 				end
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			</OnClick>
 			<OnDragStart>
-				PickupStablePet(self.petSlot);
+				PickupStablePet(self:GetID());
 			</OnDragStart>
 			<OnReceiveDrag>
-				if (self:IsEnabled()) then
-					local cursorType, petSlot = GetCursorInfo();
-					if (cursorType == "pet") then
-						SetPetSlot(petSlot, self.petSlot);
-						ClearCursor();
-					end
-					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+				if ( ClickStablePet(self:GetID()) ) then
+					PetStable_Update();
 				end
 			</OnReceiveDrag>
 		</Scripts>
-		<PushedTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-	</Button>
-	<Button name="PetStableActiveSlotTemplate" inherits="PetStableSlotTemplate" virtual="true">
-		<Layers>
-			<Layer level="OVERLAY">
-				<FontString name="$parentPetName" inherits="GameFontHighlightSmall" parentKey="PetName">
+		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2"><Size><AbsDimension x="64" y="64"/></Size><Anchors><Anchor point="CENTER"><Offset><AbsDimension x="0" y="-1"/></Offset></Anchor></Anchors></NormalTexture><PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/><CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+	</CheckButton>
+	<Frame name="PetStableFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true"><Size><AbsDimension x="384" y="512"/></Size><Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="0" y="-104"/></Offset></Anchor></Anchors><HitRectInsets><AbsInset left="0" right="34" top="0" bottom="75"/></HitRectInsets><Layers><Layer level="BACKGROUND"><Texture name="PetStableFramePortrait"><Size><AbsDimension x="60" y="60"/></Size><Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="7" y="-6"/></Offset></Anchor></Anchors></Texture></Layer><Layer level="BORDER">
+				<Texture file="Interface\PetStableFrame\UI-PetStable-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/></Size><Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>		
+				<Texture file="Interface\PetStableFrame\UI-PetStable-TopRight">
+					<Size><AbsDimension x="128" y="256"/></Size><Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="PetStableFrameBottomLeft" file="Interface\PetStableFrame\UI-PetStable-BottomLeft">
+					<Size>
+					<AbsDimension x="256" y="256"/>
+					</Size>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="-12" y="7"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="12" y="7"/>
+			<Anchor point="BOTTOMLEFT"/>
+		</Anchors>
+		</Texture>
+				<Texture name="PetStableFrameBottomRight" file="Interface\PetStableFrame\UI-PetStable-BottomRight">
+					<Size><AbsDimension x="128" y="256"/></Size><Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<FontString name="PetStableTitleLabel" inherits="GameFontHighlight" text="STABLES"><Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-18"/>
+							</Offset>
+						</Anchor></Anchors></FontString><FontString name="PetStableLevelText" inherits="GameFontNormal" text=""><Anchors><Anchor point="TOP" relativeTo="PetStableTitleLabel" relativePoint="BOTTOM"><Offset><AbsDimension x="0" y="-8"/></Offset></Anchor></Anchors></FontString><FontString name="PetStableLoyaltyText" inherits="GameFontNormalSmall" text=""><Anchors><Anchor point="TOP" relativeTo="PetStableLevelText" relativePoint="BOTTOM"><Offset><AbsDimension x="0" y="-1"/></Offset></Anchor></Anchors></FontString><FontString name="PetStableSlotText" inherits="GameFontHighlightSmall" text="STABLE_SLOT_TEXT">
+					<Anchors>
+						<Anchor point="BOTTOM"><Offset>
+								<AbsDimension x="-10" y="132"/>
+							</Offset>
+						</Anchor>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentBorder" inherits="PetTalent-PetIconBorder" parentKey="Border">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-8" y="8"/>
+				<FontString name="PetStableCostLabel" inherits="GameFontNormal" text="COSTS_LABEL"><Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="74" y="110"/>
+							</Offset>
+						</Anchor>
 					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame name="$parentLockIcon" hidden="true" parentKey="LockIcon" setAllPoints="true">
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="$parentIcon" inherits="GoldLockIcon">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" x="8" y="-8"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter>
-						PetStableSlot_Lock_OnEnter(self);
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-			</Frame>
-		</Frames>
-	</Button>
-	<Frame name="PetStableFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
-		<Size x="417" y="438"/>
-		<Anchors>
-			<Anchor point="TOPLEFT" x="0" y="-104"/>
-		</Anchors>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="PetStableFrameModelBg" inherits="PetStable-ModelBG">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="PetStableFrameInset" x="3" y="-3"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame name="PetStableLeftInset" inherits="InsetFrameTemplate" parentKey="LeftInset" useParentLevel="true">
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="PetStableActiveBg" inherits="PetStable-ActiveBG">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="3" y="-3"/>
-							</Anchors>
-						</Texture>
-						<FontString name="PetStableActivePetsLabel" inherits="GameFontNormal" parentKey="ActivePetsLabel" text="ACTIVE_PETS">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="4" y="-7"/>
-								<Anchor point="RIGHT" relativePoint="TOPRIGHT" x="-4" />
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
-			<Frame name="PetStableBottomInset" inherits="InsetFrameTemplate" parentKey="BottomInset" useParentLevel="true">
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="PetStableFrameStableBg" inherits="PetStable-StableBG">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="3" y="-3"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
-			<PlayerModel name="PetStableModel" inherits="ModelWithZoomTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="PetStableFrameModelBg" x="2" y="-48"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="PetStableFrameModelBg" x="-3" y="3"/>
+				</FontString>
+			</Layer></Layers><Frames>
+			<PlayerModel name="PetStableModel"><Size><AbsDimension x="313" y="223"/></Size><Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="23" y="-76"/></Offset></Anchor>
                 </Anchors>
                 <Scripts>
+					<OnUpdate function="Model_OnUpdate"/>
 					<OnLoad>
 						Model_OnLoad(self);
-						self:SetCamDistanceScale(1.3);
 					</OnLoad>
-                </Scripts>
+					<OnMouseUp>
+						if ( self.mouseDown ) then
+							self.onMouseUpFunc(self, button);
+						end
+					</OnMouseUp>
+					<OnMouseDown>
+						Model_OnMouseDown(self, button);
+					</OnMouseDown>
+          </Scripts>
 				<Frames>
-					<Button name="PetStableModelRotateLeftButton">
-						<Size>
-							<AbsDimension x="35" y="35"/>
-						</Size>
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
-							</OnLoad>
-							<OnClick>
-								Model_RotateLeft(PetStableModel);
-							</OnClick>
-						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
-						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
-					</Button>
 					<Button name="PetStableModelRotateRightButton">
 						<Size>
 							<AbsDimension x="35" y="35"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="PetStableModelRotateLeftButton" relativePoint="TOPRIGHT"/>
+							<Anchor point="TOPLEFT"><Offset><AbsDimension x="0" y="0"/></Offset></Anchor>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -227,66 +132,51 @@
 								Model_RotateRight(PetStableModel);
 							</OnClick>
 						</Scripts>
+						<!-- Classic named its rotation buttons from the perspective of the model (instead of the camera),
+							 so the old "RotationLeft" texture should be paired with the modern "RotateRight" function. -->
+						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
+						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
+					</Button>
+					<Button name="PetStableModelRotateLeftButton">
+						<Size>
+							<AbsDimension x="35" y="35"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PetStableModelRotateRightButton" relativePoint="TOPRIGHT"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+							</OnLoad>
+							<OnClick>
+								Model_RotateLeft(PetStableModel);
+							</OnClick>
+						</Scripts>
+						<!-- Classic named its rotation buttons from the perspective of the model (instead of the camera),
+							 so the old "RotationLeft" texture should be paired with the modern "RotateRight" function. -->
 						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
-					<Frame name="PetStableModelShadow" inherits="ShadowOverlayTemplate" useParentLevel="true">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="-1" y="1"/>
-							<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
-						</Anchors>
-					</Frame>
-				</Frames>
-			</PlayerModel>
-			<Frame name="PetStablePetInfo">
-				<Size x="310" y="40"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="PetStableFrameModelBg" x="2" y="-4"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="PetStableSelectedPetIcon">
-							<Size x="40" y="40"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="2" y="-1"/>
-							</Anchors>
-						</Texture>
-						<FontString name="PetStableNameText" inherits="GameFontNormalLeft">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="48" y="-8"/>
-							</Anchors>
-						</FontString>
-						<FontString name="PetStableLevelText" inherits="GameFontHighlightSmallLeft">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="48" y="2"/>
-							</Anchors>
-						</FontString>
-						<FontString name="PetStableTypeText" inherits="GameFontHighlightSmallRight">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture name="PetStableIconBorder" inherits="PetTalent-PetIconBorder" hidden="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="PetStableSelectedPetIcon" x="-7" y="7"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Frame name="PetStableDiet" enableMouse="true" hidden="false">
+					<Frame name="PetStablePetInfo" enableMouse="true" hidden="false">
 						<Size>
-							<AbsDimension x="25" y="23"/>
+							<AbsDimension x="24" y="23"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="-3" y="-2"/>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PetStableModelRotateRightButton">
+								<Offset><AbsDimension x="7" y="0"/>
+								</Offset>
+							</Anchor>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture name="PetStableDietTexture" inherits="PetStable-DietIcon"/>
+								<Texture file="Interface\PetPaperDollFrame\UI-PetHappiness" setAllPoints="true">
+									<Size>
+										<AbsDimension x="24" y="23"/>
+									</Size>
+									<TexCoords left="0" right="0.1875" top="0" bottom="0.359375"/>
+								</Texture>			
 							</Layer>
 						</Layers>
 						<Scripts>
@@ -294,121 +184,126 @@
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetText(self.tooltip);
 							</OnEnter>
-							<OnLeave function="GameTooltip_Hide"/>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
 						</Scripts>
 					</Frame>
 				</Frames>
-			</Frame>
-			<Button name="PetStableActivePet1" inherits="PetStableActiveSlotTemplate" id="1">
+            </PlayerModel>
+			<CheckButton name="PetStableCurrentPet" inherits="PetStableSlotTemplate" id="0">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="PetStableLeftInset" x="24" y="-50"/>
-				</Anchors>
-			</Button>
-			<Button name="PetStableActivePet2" inherits="PetStableActiveSlotTemplate" id="2">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="PetStableActivePet1" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
-				</Anchors>
-			</Button>
-			<Button name="PetStableActivePet3" inherits="PetStableActiveSlotTemplate" id="3">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="PetStableActivePet2" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
-				</Anchors>
-			</Button>
-			<Button name="PetStableActivePet4" inherits="PetStableActiveSlotTemplate" id="4">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="PetStableActivePet3" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
-				</Anchors>
-			</Button>
-			<Button name="PetStableActivePet5" inherits="PetStableActiveSlotTemplate" id="5">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="PetStableActivePet4" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
-				</Anchors>
-			</Button>
-			<Button name="PetStableStabledPet1" inherits="PetStableSlotTemplate" id="1">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="PetStableBottomInset" x="50" y="-9"/>
-				</Anchors>
-			</Button>
-			<Button name="PetStableStabledPet2" inherits="PetStableSlotTemplate" id="2">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="PetStableStabledPet1" relativePoint="RIGHT" x="7" y="0"/>
-				</Anchors>
-			</Button>
-			<Button name="PetStableStabledPet3" inherits="PetStableSlotTemplate" id="3">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="PetStableStabledPet2" relativePoint="RIGHT" x="7" y="0"/>
-				</Anchors>
-			</Button>
-			<Button name="PetStableStabledPet4" inherits="PetStableSlotTemplate" id="4">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="PetStableStabledPet3" relativePoint="RIGHT" x="7" y="0"/>
-				</Anchors>
-			</Button>
-			<Button name="PetStableStabledPet5" inherits="PetStableSlotTemplate" id="5">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="PetStableStabledPet4" relativePoint="RIGHT" x="7" y="0"/>
-				</Anchors>
-			</Button>
-			<Button name="PetStableStabledPet6" inherits="PetStableSlotTemplate" id="6">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="PetStableStabledPet1" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
-				</Anchors>
-			</Button>
-			<Button name="PetStableStabledPet7" inherits="PetStableSlotTemplate" id="7">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="PetStableStabledPet6" relativePoint="RIGHT" x="7" y="0"/>
-				</Anchors>
-			</Button>
-			<Button name="PetStableStabledPet8" inherits="PetStableSlotTemplate" id="8">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="PetStableStabledPet7" relativePoint="RIGHT" x="7" y="0"/>
-				</Anchors>
-			</Button>
-			<Button name="PetStableStabledPet9" inherits="PetStableSlotTemplate" id="9">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="PetStableStabledPet8" relativePoint="RIGHT" x="7" y="0"/>
-				</Anchors>
-			</Button>
-			<Button name="PetStableStabledPet10" inherits="PetStableSlotTemplate" id="10">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="PetStableStabledPet9" relativePoint="RIGHT" x="7" y="0"/>
-				</Anchors>
-			</Button>
-			<Button name="PetStableNextPageButton" inherits="UIPanelSquareButton">
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="PetStableBottomInset" relativePoint="BOTTOM" x="40" y="5"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						SquareButton_SetIcon(self, "RIGHT");
-					</OnLoad>
-					<OnClick function="PetStable_NextPage"/>
-				</Scripts>
-			</Button>
-			<Button name="PetStablePrevPageButton" inherits="UIPanelSquareButton">
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="PetStableBottomInset" relativePoint="BOTTOM" x="-40" y="5"/>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="95" y="150"/>
+						</Offset>
+					</Anchor>
 				</Anchors>
 				<Layers>
-					<Layer level="OVERLAY">
-						<FontString name="PetStableCurrentPage" inherits="GameFontHighlightSmallOutline">
+					<Layer level="BACKGROUND">
+						<FontString inherits="GameFontNormalSmall" text="CURRENT_PET">
 							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT"/>
-								<Anchor point="RIGHT" relativeTo="PetStableNextPageButton" relativePoint="LEFT"/>
+								<Anchor point="BOTTOM" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="0" y="6"/>
+									</Offset>
+								</Anchor>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
+			</CheckButton>
+			<CheckButton name="PetStableStabledPet1" inherits="PetStableSlotTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetStableCurrentPet" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="53" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString inherits="GameFontNormalSmall" text="STABLED_PETS">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="24" y="6"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</CheckButton>
+			<CheckButton name="PetStableStabledPet2" inherits="PetStableSlotTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetStableStabledPet1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<Button name="PetStablePurchaseButton" inherits="UIPanelButtonTemplate" text="PURCHASE">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-110" y="105"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						BuyStableSlot();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="PetStableMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-45" y="84"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
 				<Scripts>
 					<OnLoad>
-						SquareButton_SetIcon(self, "LEFT");
+						SmallMoneyFrame_OnLoad(self);
 					</OnLoad>
-					<OnClick function="PetStable_PrevPage"/>
 				</Scripts>
+			</Frame>
+			<Frame name="PetStableCostMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetStableCostLabel" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "STATIC");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="PetStableFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-29" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad function="PetStable_OnLoad"/>
+			<OnLoad>
+				PetStable_OnLoad(self);
+			</OnLoad>
 			<OnShow>
 				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 			</OnShow>
@@ -421,7 +316,6 @@
 				end
 			</OnHide>
 			<OnEvent function="PetStable_OnEvent"/>
-			<OnMouseWheel function="PetStable_OnMouseWheel"/>
 		</Scripts>
 	</Frame>
 </Ui>

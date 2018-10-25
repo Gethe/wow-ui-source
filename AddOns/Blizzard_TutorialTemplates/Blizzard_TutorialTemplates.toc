@@ -3,5 +3,3 @@
 ## Interface: 70300
 ## Secure: 1
 ## LoadOnDemand: 1
-
-Blizzard_TutorialPointerFrame.xml

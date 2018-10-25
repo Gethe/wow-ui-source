@@ -77,7 +77,7 @@ function QuestMapFrame_OnEvent(self, event, ...)
 				TriggerTutorial(11);
 			end
 		end
-		if ( AUTO_QUEST_WATCH == "1" and
+		if ( GetCVar("autoQuestWatch") == "1" and
 			GetNumQuestLeaderBoards(arg1) > 0 and
 			GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
 			AddQuestWatch(arg1);
@@ -747,13 +747,15 @@ function QuestLogQuests_Update(poiTable)
 	QuestPOI_HideUnusedButtons(QuestScrollFrame.Contents);
 end
 
-function ToggleQuestLog()
+-- Replaced by QuestLogFrame.lua.
+-- Once we do a cleanup of Classic files, this file should probably be removed entirely.
+--[[function ToggleQuestLog()
 	if ( QuestMapFrame:IsShown() and QuestMapFrame:IsVisible() ) then
 		HideUIPanel(WorldMapFrame);
 	else
 		ShowQuestLog();
 	end
-end
+end]]
 
 function ShowQuestLog()
 	WorldMapFrame.questLogMode = true;
@@ -795,9 +797,11 @@ function QuestMapLogTitleButton_OnEnter(self)
 		end
 	end
 
+	--[[
 	if ( not IsQuestComplete(self.questID) ) then
 		WorldMapBlobFrame:DrawBlob(self.questID, true);
 	end
+	--]]
 
 
 	GameTooltip:ClearAllPoints();
@@ -922,9 +926,11 @@ function QuestMapLogTitleButton_OnLeave(self)
 		end
 	end
 
+	--[[
 	if ( GetSuperTrackedQuestID() ~= self.questID and not IsQuestComplete(self.questID) ) then
 		WorldMapBlobFrame:DrawBlob(self.questID, false);
 	end
+	--]]
 	GameTooltip:Hide();
 	tooltipButton = nil;
 end

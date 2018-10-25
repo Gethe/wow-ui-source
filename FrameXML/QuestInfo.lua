@@ -421,7 +421,8 @@ function QuestInfo_ShowRewards()
 		numQuestCurrencies = GetNumQuestLogRewardCurrencies();
 		money = GetQuestLogRewardMoney();
 		skillName, skillIcon, skillPoints = GetQuestLogRewardSkillPoints();
-		xp = GetQuestLogRewardXP();
+		-- Don't show XP rewards in Classic.
+		xp = 0; -- GetQuestLogRewardXP();
 		artifactXP, artifactCategory = GetQuestLogRewardArtifactXP();
 		honor = GetQuestLogRewardHonor();
 		playerTitle = GetQuestLogRewardTitle();
@@ -434,7 +435,8 @@ function QuestInfo_ShowRewards()
 		numQuestCurrencies = GetNumRewardCurrencies();
 		money = GetRewardMoney();
 		skillName, skillIcon, skillPoints = GetRewardSkillPoints();
-		xp = GetRewardXP();
+		-- Don't show XP rewards in Classic.
+		xp = 0; --GetRewardXP();
 		artifactXP, artifactCategory = GetRewardArtifactXP();
 		honor = GetRewardHonor();
 		playerTitle = GetRewardTitle();
@@ -847,6 +849,41 @@ function QuestInfo_ToggleRewardElement(frame, value, anchor)
 		return true;
 	else
 		frame:Hide();
+	end
+end
+
+--[[
+	AlphaDependentText
+	When instant quest text is disabled, some parts of quest text don't show up until the quest text has finished scrolling.
+	These functions control those elements.
+]]
+
+function QuestInfo_ShowAlphaDependentText(parent)
+	if (not parent.alphaDependentText) then
+		return;
+	end
+	for index,frame in ipairs(parent.alphaDependentText) do
+		frame:SetAlpha(1);
+	end
+end
+
+function QuestInfo_HideAlphaDependentText(parent)
+	if (not parent.alphaDependentText) then
+		return;
+	end
+	for index,frame in ipairs(parent.alphaDependentText) do
+		frame:SetAlpha(0);
+	end
+end
+
+function QuestInfo_FadeInAlphaDependentText(parent, fadeTime)
+	if (not parent.alphaDependentText) then
+		return;
+	end
+	for index,frame in ipairs(parent.alphaDependentText) do
+		if (frame:IsShown()) then
+			UIFrameFadeIn(frame, fadeTime );
+		end
 	end
 end
 

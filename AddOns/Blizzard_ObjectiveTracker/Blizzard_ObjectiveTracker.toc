@@ -2,11 +2,3 @@
 ## Title: Blizzard Objective Tracker UI
 ## Secure: 1
 ## LoadOnDemand: 0
-Blizzard_ObjectiveTrackerShared.xml
-Blizzard_ObjectiveTracker.xml
-Blizzard_QuestSuperTracking.lua
-Blizzard_QuestObjectiveTracker.xml
-Blizzard_AchievementObjectiveTracker.lua
-Blizzard_AutoQuestPopUpTracker.xml
-Blizzard_BonusObjectiveTracker.xml
-Blizzard_ScenarioObjectiveTracker.xml

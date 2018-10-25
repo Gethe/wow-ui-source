@@ -22,11 +22,7 @@
 			</AnimationGroup>
 		</Animations>
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="GhostFrame" relativePoint="RIGHT" >
-				<Offset>
-					<AbsDimension x="0" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOP" relativeTo="WorldStateAlwaysUpFrame" relativePoint="BOTTOM" x="0" y="-4"/>
 		</Anchors>
 		<Size x="48" y="48"/>
 		<Frames>

@@ -87,10 +87,10 @@ function PartyMemberFrame_OnLoad (self)
 	UnitFrame_Initialize(self, "party"..id,  _G[prefix.."Name"], _G[prefix.."Portrait"],
 		   _G[prefix.."HealthBar"], _G[prefix.."HealthBarText"], 
 		   _G[prefix.."ManaBar"], _G[prefix.."ManaBarText"],
-		   _G[prefix.."Flash"], nil, nil, _G[prefix.."MyHealPredictionBar"], _G[prefix.."OtherHealPredictionBar"], 
-		   _G[prefix.."TotalAbsorbBar"], _G[prefix.."TotalAbsorbBarOverlay"], _G[prefix.."OverAbsorbGlow"],
-		   _G[prefix.."OverHealAbsorbGlow"], _G[prefix.."HealAbsorbBar"], _G[prefix.."HealAbsorbBarLeftShadow"],
-		   _G[prefix.."HealAbsorbBarRightShadow"]);
+		   _G[prefix.."Flash"], nil, nil, nil, nil, 
+		   nil, nil, nil,
+		   nil, nil, nil,
+		   nil);
 	SetTextStatusBarTextZeroText(_G[prefix.."HealthBar"], DEAD);
 
 	self.statusCounter = 0;
@@ -239,20 +239,6 @@ function PartyMemberFrame_UpdatePvPStatus (self)
 	end
 end
 
-function PartyMemberFrame_UpdateAssignedRoles (self)
-	local id = self:GetID();
-	local unit = "party"..id;
-	local icon = _G["PartyMemberFrame"..id.."RoleIcon"];
-	local role = UnitGroupRolesAssigned(unit);
-	
-	if ( role == "TANK" or role == "HEALER" or role == "DAMAGER") then
-		icon:SetTexCoord(GetTexCoordsForRoleSmallCircle(role));
-		icon:Show();
-	else
-		icon:Hide();
-	end
-end
-
 function PartyMemberFrame_UpdateVoiceStatus (self)
 	local id = self:GetID();
 	if ( not UnitName("party"..id) ) then
@@ -335,7 +321,6 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 	elseif ( event == "GROUP_ROSTER_UPDATE" or event == "UPDATE_ACTIVE_BATTLEFIELD" ) then
 		PartyMemberFrame_UpdateMember(self);
 		PartyMemberFrame_UpdateArt(self);
-		PartyMemberFrame_UpdateAssignedRoles(self);
 		return;
 	elseif ( event == "PARTY_LEADER_CHANGED" ) then
 		PartyMemberFrame_UpdateLeader(self);
@@ -438,15 +423,10 @@ function PartyMemberBuffTooltip_Update (self)
 	local numBuffs = 0;
 	local numDebuffs = 0;
 	local index = 1;
-	local filter;
+	local filter = nil;
 	
 	PartyMemberBuffTooltip:SetID(self:GetID());
 
-	if ( SHOW_CASTABLE_BUFFS == "1" ) then
-		filter = "RAID";
-	else
-		filter = nil;
-	end
 	for i=1, MAX_PARTY_TOOLTIP_BUFFS do
 		name, rank, icon = UnitBuff(self.unit, i, filter);
 		if ( icon ) then
@@ -471,11 +451,6 @@ function PartyMemberBuffTooltip_Update (self)
 	index = 1;
 
 	local debuffButton, debuffStack, debuffType, color, countdown;
-	if ( SHOW_DISPELLABLE_DEBUFFS == "1" ) then
-		filter = "RAID";
-	else
-		filter = nil;
-	end
 	for i=1, MAX_PARTY_TOOLTIP_DEBUFFS do
 		local debuffBorder = _G["PartyMemberBuffTooltipDebuff"..index.."Border"]
 		local partyDebuff = _G["PartyMemberBuffTooltipDebuff"..index.."Icon"];

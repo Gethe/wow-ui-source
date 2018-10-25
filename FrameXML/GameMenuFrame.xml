@@ -74,24 +74,9 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="GameMenuButtonWhatsNew" inherits="GameMenuButtonTemplate" text="GAMEMENU_NEW_BUTTON" motionScriptsWhileDisabled="true">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="GameMenuButtonStore" relativePoint="BOTTOM" x="0" y="-1"/>
-				</Anchors>
-				<Scripts>
-					<OnShow>
-						self:SetEnabled(not IsKioskModeEnabled());
-					</OnShow>
-					<OnClick>
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
-						HideUIPanel(GameMenuFrame);
-						SplashFrame_Open();
-					</OnClick>
-				</Scripts>
-			</Button>
 			<Button name="GameMenuButtonOptions" inherits="GameMenuButtonTemplate" text="SYSTEMOPTIONS_MENU">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="GameMenuButtonWhatsNew" relativePoint="BOTTOM" x="0" y="-16"/>
+					<Anchor point="TOP" relativeTo="GameMenuButtonStore" relativePoint="BOTTOM" x="0" y="-16"/>
 				</Anchors>
 				<Scripts>
 					<OnShow>

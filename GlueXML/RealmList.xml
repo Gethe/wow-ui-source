@@ -18,7 +18,7 @@
         					</Offset>
         				</Anchor>
         			</Anchors>
-					<TexCoords left="0" right="0.15625" top="0" bottom="0.546875"/>
+					<TexCoords left="0" right="0.15625" top="0" bottom="1.0"/>
         		</Texture>
 				<Texture name="$parentMiddleDisabled" file="Interface\PaperDollInfoFrame\UI-Character-ActiveTab">
         			<Size>
@@ -27,7 +27,7 @@
         			<Anchors>
         				<Anchor point="LEFT" relativeTo="$parentLeftDisabled" relativePoint="RIGHT"/>
         			</Anchors>
-					<TexCoords left="0.15625" right="0.84375" top="0" bottom="0.546875"/>
+					<TexCoords left="0.15625" right="0.84375" top="0" bottom="1.0"/>
         		</Texture>
 				<Texture name="$parentRightDisabled" file="Interface\PaperDollInfoFrame\UI-Character-ActiveTab">
         			<Size>
@@ -36,7 +36,7 @@
         			<Anchors>
         				<Anchor point="LEFT" relativeTo="$parentMiddleDisabled" relativePoint="RIGHT"/>
         			</Anchors>
-					<TexCoords left="0.84375" right="1.0" top="0" bottom="0.546875"/>
+					<TexCoords left="0.84375" right="1.0" top="0" bottom="1.0"/>
         		</Texture>
 				<Texture name="$parentLeft" file="Interface\PaperDollInfoFrame\UI-Character-InActiveTab">
         			<Size>

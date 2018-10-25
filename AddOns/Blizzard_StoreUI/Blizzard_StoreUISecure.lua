@@ -1824,6 +1824,11 @@ end
 
 function StoreFrame_IsProductGroupDisabled(groupID)
 	local productGroupInfo = C_StoreSecure.GetProductGroupInfo(groupID);
+		
+	if (not productGroupInfo) then 
+		return;
+	end
+	
 	local displayAsDisabled = productGroupInfo.disabledTooltip ~= nil and not StoreFrame_DoesProductGroupHavePurchasableItems(groupID);
 	local enabledForTrial = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlag.EnabledForTrial) == Enum.BattlepayProductGroupFlag.EnabledForTrial;
 	local trialRestricted = IsTrialAccount() and not enabledForTrial;

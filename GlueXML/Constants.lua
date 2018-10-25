@@ -1,21 +1,23 @@
 --Login Screen Ambience
 EXPANSION_GLUE_AMBIENCE = {
-	[LE_EXPANSION_BURNING_CRUSADE]			= SOUNDKIT.GLUESCREEN_INTRO,
-	[LE_EXPANSION_WRATH_OF_THE_LICH_KING]	= SOUNDKIT.GLUESCREEN_INTRO,
-	[LE_EXPANSION_CATACLYSM]				= SOUNDKIT.GLUESCREEN_INTRO,
-	[LE_EXPANSION_MISTS_OF_PANDARIA]		= SOUNDKIT.GLUESCREEN_INTRO,
-	[LE_EXPANSION_WARLORDS_OF_DRAENOR]		= SOUNDKIT.AMB_GLUESCREEN_WARLORDS_OF_DRAENOR,
-	[LE_EXPANSION_LEGION]					= SOUNDKIT.AMB_GLUESCREEN_LEGION,
+	[LE_EXPANSION_CLASSIC]					= SOUNDKIT.GLUESCREEN_INTRO,
+--	[LE_EXPANSION_BURNING_CRUSADE]			= SOUNDKIT.GLUESCREEN_INTRO,
+--	[LE_EXPANSION_WRATH_OF_THE_LICH_KING]	= SOUNDKIT.GLUESCREEN_INTRO,
+--	[LE_EXPANSION_CATACLYSM]				= SOUNDKIT.GLUESCREEN_INTRO,
+--	[LE_EXPANSION_MISTS_OF_PANDARIA]		= SOUNDKIT.GLUESCREEN_INTRO,
+--	[LE_EXPANSION_WARLORDS_OF_DRAENOR]		= SOUNDKIT.AMB_GLUESCREEN_WARLORDS_OF_DRAENOR,
+--	[LE_EXPANSION_LEGION]					= SOUNDKIT.AMB_GLUESCREEN_LEGION,
 };
 
 --Music
 EXPANSION_GLUE_MUSIC = {
-	[LE_EXPANSION_BURNING_CRUSADE]			= SOUNDKIT.MUS_1_0_MAINTITLE_ORIGINAL,
-	[LE_EXPANSION_WRATH_OF_THE_LICH_KING]	= SOUNDKIT.GS_LICH_KING,
-	[LE_EXPANSION_CATACLYSM]				= SOUNDKIT.GS_CATACLYSM,
-	[LE_EXPANSION_MISTS_OF_PANDARIA]		= SOUNDKIT.MUS_50_HEART_OF_PANDARIA_MAINTITLE,
-	[LE_EXPANSION_WARLORDS_OF_DRAENOR]		= SOUNDKIT.MUS_60_MAIN_TITLE,
-	[LE_EXPANSION_LEGION]					= SOUNDKIT.MUS_70_MAIN_TITLE,
+	[LE_EXPANSION_CLASSIC]					= SOUNDKIT.MUS_1_0_MAINTITLE_ORIGINAL,
+--	[LE_EXPANSION_BURNING_CRUSADE]			= SOUNDKIT.MUS_1_0_MAINTITLE_ORIGINAL,
+--	[LE_EXPANSION_WRATH_OF_THE_LICH_KING]	= SOUNDKIT.GS_LICH_KING,
+--	[LE_EXPANSION_CATACLYSM]				= SOUNDKIT.GS_CATACLYSM,
+--	[LE_EXPANSION_MISTS_OF_PANDARIA]		= SOUNDKIT.MUS_50_HEART_OF_PANDARIA_MAINTITLE,
+--	[LE_EXPANSION_WARLORDS_OF_DRAENOR]		= SOUNDKIT.MUS_60_MAIN_TITLE,
+--	[LE_EXPANSION_LEGION]					= SOUNDKIT.MUS_70_MAIN_TITLE,
 };
 
 GLUE_AMBIENCE_TRACKS = {
@@ -46,15 +48,15 @@ GLUE_AMBIENCE_TRACKS = {
 };
 
 CHAR_MODEL_FOG_INFO = {
-	["SCOURGE"] = { r=0, g=0.22, b=0.22, far=18 };
-	--[[
 	["HUMAN"] = { r=0.8, g=0.65, b=0.73, far=222 };
 	["ORC"] = { r=0.5, g=0.5, b=0.5, far=270 };
+	["TROLL"] = { r=0.5, g=0.5, b=0.5, far=270 };
 	["DWARF"] = { r=0.85, g=0.88, b=1.0, far=500 };
+	["GNOME"] = { r=0.85, g=0.88, b=1.0, far=500 };
 	["NIGHTELF"] = { r=0.25, g=0.22, b=0.55, far=611 };
 	["TAUREN"] = { r=1.0, g=0.61, b=0.42, far=153 };
+	["SCOURGE"] = { r=0, g=0.22, b=0.22, far=26 };
 	["CHARACTERSELECT"] = { r=0.8, g=0.65, b=0.73, far=222 };
-	]]
 };
 
 CHAR_MODEL_GLOW_INFO = {
@@ -74,31 +76,33 @@ ACCOUNTNAME_BUTTON_HEIGHT = 20;
 --Credits titles
 CREDITS_TITLES = {
 	[LE_EXPANSION_CLASSIC] = CREDITS_WOW_CLASSIC,
-	[LE_EXPANSION_BURNING_CRUSADE] = CREDITS_WOW_BC,
-	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = CREDITS_WOW_LK,
-	[LE_EXPANSION_CATACLYSM] = CREDITS_WOW_CC,
-	[LE_EXPANSION_MISTS_OF_PANDARIA] = CREDITS_WOW_MOP,
-	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = CREDITS_WOW_WOD,
-	[LE_EXPANSION_LEGION] = CREDITS_WOW_LEGION,
+--	[LE_EXPANSION_BURNING_CRUSADE] = CREDITS_WOW_BC,
+--	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = CREDITS_WOW_LK,
+--	[LE_EXPANSION_CATACLYSM] = CREDITS_WOW_CC,
+--	[LE_EXPANSION_MISTS_OF_PANDARIA] = CREDITS_WOW_MOP,
+--	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = CREDITS_WOW_WOD,
+--	[LE_EXPANSION_LEGION] = CREDITS_WOW_LEGION,
 };
 
 --Backgrounds
 EXPANSION_HIGH_RES_BG = {
-	[LE_EXPANSION_BURNING_CRUSADE] = "Interface\\Glues\\Models\\UI_MainMenu_BurningCrusade\\UI_MainMenu_BurningCrusade.m2",
-	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = "Interface\\Glues\\Models\\UI_MainMenu_Northrend\\UI_MainMenu_Northrend.m2",
-	[LE_EXPANSION_CATACLYSM] = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
-	[LE_EXPANSION_MISTS_OF_PANDARIA] = "Interface\\Glues\\Models\\UI_MainMenu_Pandaria\\UI_MainMenu_Pandaria.m2",
-	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords.m2",
-	[LE_EXPANSION_LEGION] = "Interface\\Glues\\Models\\UI_MainMenu_Legion\\UI_MainMenu_Legion.m2",	-- TODO: Fix for 7.0
+	[LE_EXPANSION_CLASSIC] =  "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
+--	[LE_EXPANSION_BURNING_CRUSADE] = "Interface\\Glues\\Models\\UI_MainMenu_BurningCrusade\\UI_MainMenu_BurningCrusade.m2",
+--	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = "Interface\\Glues\\Models\\UI_MainMenu_Northrend\\UI_MainMenu_Northrend.m2",
+--	[LE_EXPANSION_CATACLYSM] = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
+--	[LE_EXPANSION_MISTS_OF_PANDARIA] = "Interface\\Glues\\Models\\UI_MainMenu_Pandaria\\UI_MainMenu_Pandaria.m2",
+--	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords.m2",
+--	[LE_EXPANSION_LEGION] = "Interface\\Glues\\Models\\UI_MainMenu_Legion\\UI_MainMenu_Legion.m2",	-- TODO: Fix for 7.0
 };
 
 EXPANSION_LOW_RES_BG = {
-	[LE_EXPANSION_BURNING_CRUSADE] =  "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
-	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] =  "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
-	[LE_EXPANSION_CATACLYSM] =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
-	[LE_EXPANSION_MISTS_OF_PANDARIA] =  "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_LowBandwidth.m2",
-	[LE_EXPANSION_WARLORDS_OF_DRAENOR] =  "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords_LowBandwidth.m2",
-	[LE_EXPANSION_LEGION] =  "Interface\\Glues\\Models\\UI_MainMenu_Legion\\UI_MainMenu_Legion_LowBandwidth.m2",	-- TODO: Fix for 7.0
+	[LE_EXPANSION_CLASSIC] =  "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
+--	[LE_EXPANSION_BURNING_CRUSADE] =  "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
+--	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] =  "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
+--	[LE_EXPANSION_CATACLYSM] =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
+--	[LE_EXPANSION_MISTS_OF_PANDARIA] =  "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_LowBandwidth.m2",
+--	[LE_EXPANSION_WARLORDS_OF_DRAENOR] =  "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords_LowBandwidth.m2",
+--	[LE_EXPANSION_LEGION] =  "Interface\\Glues\\Models\\UI_MainMenu_Legion\\UI_MainMenu_Legion_LowBandwidth.m2",	-- TODO: Fix for 7.0
 };
 
 --Tooltip
@@ -142,89 +146,89 @@ CREDITS_ART_INFO = {
 		{ file="NightsHollow", w=512, h=512, offsetx=0, offsety=0, maxAlpha=0.7, maxTexIndex = 4 },
 	},
 
-	[LE_EXPANSION_BURNING_CRUSADE] = {
-		{ file="Illidan", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-	},
-
-	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = {
-		{ file="CinSnow01TGA", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-	},
-
-	[LE_EXPANSION_CATACLYSM] = {
-		path = "CATACLYSM",
-		{ file="Greymane City Map01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-	},
-
-	[LE_EXPANSION_MISTS_OF_PANDARIA] = {
-		path = "Pandaria",
-		{ file="Mogu_BossConcept_New", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-	},
-
-	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = {
-		path = "Warlords",
-		{ file="Arrak_Forest_Dark", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-	},
-
-	[LE_EXPANSION_LEGION] = {
-		path = "Legion",
-		{ file="Fel", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="BlackRookHold", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="TombofSargeras", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="SuramarColor", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="AegwynnsTower", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="SuramarLandscape", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="DeathPortal", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="Tauren", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="SuramarTreesRound", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="NashalStatue", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="BElfDemonHunter", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="VrykulLongHouse", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="SeaGiant", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="FelObelisk", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="DemonHunterArmor", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="Valhalla", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="SuramarCrags", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="GreatHall", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="NashalTrees", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="DeathKnightFrostWeapons", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="ItaiMysticFacade", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="NightWellFX", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="PriestArmor", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="TaurenBuildings", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="FelStructureBarrackVariants", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="SuramarCatacombs", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="LegionArmy", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="NightElfBridges", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="RogueArmor", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="AncientSuramarCity", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="NightElfPropInterior", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="AncientSuramar", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="MageArmor", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="CombatRogueWeapons", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="AzunaZone", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="DruidArmor", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="ShamanArmor", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="Owl", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="NightElfPropExterior", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="SeaGiantKing", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="Satyr", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="AncientNightElfBuilding", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="BugBear", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="SuramarAstronomyRoom", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="ThorimStormFistWeapons", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="NashalPainting", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-		{ file="ShamanMythicArmor", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
-	},
+--	[LE_EXPANSION_BURNING_CRUSADE] = {
+--		{ file="Illidan", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--	},
+--
+--	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = {
+--		{ file="CinSnow01TGA", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--	},
+--
+--	[LE_EXPANSION_CATACLYSM] = {
+--		path = "CATACLYSM",
+--		{ file="Greymane City Map01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--	},
+--
+--	[LE_EXPANSION_MISTS_OF_PANDARIA] = {
+--		path = "Pandaria",
+--		{ file="Mogu_BossConcept_New", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--	},
+--
+--	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = {
+--		path = "Warlords",
+--		{ file="Arrak_Forest_Dark", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--	},
+--
+--	[LE_EXPANSION_LEGION] = {
+--		path = "Legion",
+--		{ file="Fel", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="BlackRookHold", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="TombofSargeras", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="SuramarColor", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="AegwynnsTower", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="SuramarLandscape", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="DeathPortal", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="Tauren", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="SuramarTreesRound", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="NashalStatue", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="BElfDemonHunter", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="VrykulLongHouse", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="SeaGiant", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="FelObelisk", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="DemonHunterArmor", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="Valhalla", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="SuramarCrags", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="GreatHall", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="NashalTrees", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="DeathKnightFrostWeapons", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="ItaiMysticFacade", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="NightWellFX", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="PriestArmor", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="TaurenBuildings", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="FelStructureBarrackVariants", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="SuramarCatacombs", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="LegionArmy", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="NightElfBridges", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="RogueArmor", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="AncientSuramarCity", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="NightElfPropInterior", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="AncientSuramar", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="MageArmor", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="CombatRogueWeapons", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="AzunaZone", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="DruidArmor", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="ShamanArmor", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="Owl", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="NightElfPropExterior", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="SeaGiantKing", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="Satyr", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="AncientNightElfBuilding", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="BugBear", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="SuramarAstronomyRoom", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="ThorimStormFistWeapons", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="NashalPainting", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--		{ file="ShamanMythicArmor", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+--	},
 };
 
 GLUE_CREDITS_SOUND_KITS = {
 	[LE_EXPANSION_CLASSIC]					= SOUNDKIT.MENU_CREDITS01,
-	[LE_EXPANSION_BURNING_CRUSADE]			= SOUNDKIT.MENU_CREDITS02,
-	[LE_EXPANSION_WRATH_OF_THE_LICH_KING]	= SOUNDKIT.MENU_CREDITS03,
-	[LE_EXPANSION_CATACLYSM]				= SOUNDKIT.MENU_CREDITS04,
-	[LE_EXPANSION_MISTS_OF_PANDARIA]		= SOUNDKIT.MENU_CREDITS05,
-	[LE_EXPANSION_WARLORDS_OF_DRAENOR]		= SOUNDKIT.MENU_CREDITS06,
-	[LE_EXPANSION_LEGION]					= SOUNDKIT.MENU_CREDITS07,
+--	[LE_EXPANSION_BURNING_CRUSADE]			= SOUNDKIT.MENU_CREDITS02,
+--	[LE_EXPANSION_WRATH_OF_THE_LICH_KING]	= SOUNDKIT.MENU_CREDITS03,
+--	[LE_EXPANSION_CATACLYSM]				= SOUNDKIT.MENU_CREDITS04,
+--	[LE_EXPANSION_MISTS_OF_PANDARIA]		= SOUNDKIT.MENU_CREDITS05,
+--	[LE_EXPANSION_WARLORDS_OF_DRAENOR]		= SOUNDKIT.MENU_CREDITS06,
+--	[LE_EXPANSION_LEGION]					= SOUNDKIT.MENU_CREDITS07,
 };
 
 AUTO_LOGIN_WAIT_TIME = 1.75;

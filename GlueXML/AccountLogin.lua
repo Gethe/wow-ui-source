@@ -64,7 +64,7 @@ function AccountLogin_CheckLoginState(self)
 end
 
 function AccountLogin_OnShow(self)
-	SetExpansionLogo(self.UI.GameLogo, GetClientDisplayExpansionLevel());
+	SetClassicLogo(self.UI.GameLogo);
 	self.UI.AccountEditBox:SetText("");
 	AccountLogin_UpdateSavedData(self);
 
@@ -113,13 +113,13 @@ function AccountLogin_UpdateSavedData(self)
 		AccountLogin_FocusPassword();
 	end
 	if ( GetSavedAccountName() ~= "" and GetSavedAccountList() ~= "" ) then
-		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", 0, 255);
-		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 150);
+		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", 8, 250);
+		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 11, 183);
 		AccountLogin.UI.AccountsDropDown:Show();
 		AccountLogin.UI.AccountsDropDown.active = true;
 	else
-		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", 0, 275);
-		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 170);
+		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", 8, 270);
+		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 11, 203);
 		AccountLogin.UI.AccountsDropDown:Hide();
 		AccountLogin.UI.AccountsDropDown.active = false;
 	end
@@ -325,7 +325,7 @@ end
 -- =============================================================
 
 function AccountLoginDropDown_OnLoad(self)
-	GlueDropDownMenu_SetWidth(self, 174);
+	GlueDropDownMenu_SetWidth(self, 134);
 	GlueDropDownMenu_SetSelectedValue(self, 1);
 	AccountLoginDropDownText:SetJustifyH("LEFT");	
 	AccountLoginDropDown_SetupList();

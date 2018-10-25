@@ -146,10 +146,10 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						AlertFrame_StopOutAnimation(BNToastFrame);
+						BNToastFrame_StopOutAnimation(BNToastFrame);
 					</OnEnter>
 					<OnLeave>
-						AlertFrame_ResumeOutAnimation(BNToastFrame);
+						BNToastFrame_ResumeOutAnimation(BNToastFrame);
 					</OnLeave>
 					<OnClick function="BNToastFrame_Close"/>
 				</Scripts>

@@ -93,10 +93,27 @@ GlueDialogTypes["CONFIRM_RESET_VIDEO_SETTINGS"] = {
 	button3 = CANCEL,
 	showAlert = 1,
 	OnAccept = function ()
-		VideoOptionsFrame_SetAllToDefaults();
+		VideoOptionsFrame_SetAllToDefaults(false);
 	end,
 	OnCancel = function ()
-		VideoOptionsFrame_SetCurrentToDefaults();
+		VideoOptionsFrame_SetCurrentToDefaults(false);
+	end,
+	escapeHides = true,
+}
+
+GlueDialogTypes["CONFIRM_RESET_CLASSIC_VIDEO_SETTINGS"] = {
+	text = CONFIRM_RESET_SETTINGS,
+	button1 = ALL_SETTINGS,
+	button2 = CURRENT_SETTINGS,
+	button3 = CANCEL,
+	showAlert = 1,
+	OnAccept = function ()
+		VideoOptionsFrame_SetAllToDefaults(false); -- Set to recommnded first to lock in main slider setting
+		VideoOptionsFrame_SetAllToDefaults(true);
+	end,
+	OnCancel = function ()
+		VideoOptionsFrame_SetCurrentToDefaults(false); -- Set to recommnded first to lock in main slider setting
+		VideoOptionsFrame_SetCurrentToDefaults(true);
 	end,
 	escapeHides = true,
 }

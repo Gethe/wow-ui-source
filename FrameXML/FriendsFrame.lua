@@ -49,7 +49,8 @@ local INVITE_RESTRICTION_CLIENT = 1;
 local INVITE_RESTRICTION_LEADER = 2;
 local INVITE_RESTRICTION_FACTION = 3;
 local INVITE_RESTRICTION_INFO = 4;
-local INVITE_RESTRICTION_NONE = 5;
+local INVITE_RESTRICTION_REGION = 5;
+local INVITE_RESTRICTION_NONE = 6;
 
 local FriendListEntries = { };
 local playerRealmName;
@@ -2224,9 +2225,11 @@ function FriendsFrame_GetInviteRestriction(index)
 	local restriction = INVITE_RESTRICTION_NO_GAME_ACCOUNTS;
 	local numGameAccounts = BNGetNumFriendGameAccounts(index);
 	for i = 1, numGameAccounts do
-		local hasFocus, characterName, client, realmName, realmID, faction = BNGetFriendGameAccountInfo(index, i);
+		local hasFocus, characterName, client, realmName, realmID, faction, _, _, _, _, _, _, _, _, _, _, _, _, _, _, regionMismatch = BNGetFriendGameAccountInfo(index, i);
 		if ( client == BNET_CLIENT_WOW ) then
-			if ( faction ~= playerFactionGroup ) then
+			if ( regionMismatch ) then
+				restriction = max(INVITE_RESTRICTION_REGION, restriction);
+			elseif ( faction ~= playerFactionGroup ) then
 				restriction = max(INVITE_RESTRICTION_FACTION, restriction);
 			elseif ( realmID == 0 ) then
 				restriction = max(INVITE_RESTRICTION_INFO, restriction);

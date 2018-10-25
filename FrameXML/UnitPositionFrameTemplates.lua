@@ -233,7 +233,9 @@ function UnitPositionFrameMixin:UpdateFull(timeNow)
 		local unit = unitBase..i;
 		if UnitExists(unit) and not UnitIsUnit(unit, "player") then
 			local appearance = UnitInSubgroup(unit, overridePartyType) and partyAppearance or raidAppearance;
-			self:AddUnitInternal(timeNow, unit, appearance, true);
+--			self:AddUnitInternal(timeNow, unit, appearance, true );
+			-- 1.12 Classic change, we use texture not atlas for party/raid
+			self:AddUnitInternal(timeNow, unit, appearance, false);
 		end
 	end
 

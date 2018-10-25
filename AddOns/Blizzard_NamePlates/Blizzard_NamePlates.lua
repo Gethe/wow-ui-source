@@ -15,18 +15,16 @@ function NamePlateDriverMixin:OnLoad()
 	self:RegisterEvent("RAID_TARGET_UPDATE");
 	self:RegisterEvent("UNIT_FACTION");
 
-	self:SetBaseNamePlateSize(110, 45);
+	self:SetBaseNamePlateSize(128, 32);
 
 	self.namePlateSetupFunctions =
 	{
-		["player"] = DefaultCompactNamePlatePlayerFrameSetup,
 		["friendly"] = DefaultCompactNamePlateFriendlyFrameSetup,
 		["enemy"] = DefaultCompactNamePlateEnemyFrameSetup,
 	};
 
 	self.namePlateSetInsetFunctions =
 	{
-		["player"] = C_NamePlate.SetNamePlateSelfPreferredClickInsets,
 		["friendly"] =  C_NamePlate.SetNamePlateFriendlyPreferredClickInsets,
 		["enemy"] = C_NamePlate.SetNamePlateEnemyPreferredClickInsets,
 	};
@@ -84,16 +82,13 @@ function NamePlateDriverMixin:OnNamePlateAdded(namePlateUnitToken)
 	self:ApplyFrameOptions(namePlateFrameBase, namePlateUnitToken);
 
 	namePlateFrameBase:OnAdded(namePlateUnitToken, self);
-	self:SetupClassNameplateBars();
 
 	self:OnUnitAuraUpdate(namePlateUnitToken);
 	self:OnRaidTargetUpdate();
 end
 
 function NamePlateDriverMixin:GetNamePlateTypeFromUnit(unit)
-	if UnitIsUnit("player", unit) then
-		return "player";
-	elseif UnitIsFriend("player", unit) then
+	if UnitIsFriend("player", unit) then
 		return "friendly";
 	else
 		return "enemy";
@@ -133,7 +128,6 @@ function NamePlateDriverMixin:OnNamePlateRemoved(namePlateUnitToken)
 end
 
 function NamePlateDriverMixin:OnTargetChanged()
-	self:SetupClassNameplateBars();
 	self:OnUnitAuraUpdate("target");
 end
 
@@ -160,9 +154,6 @@ function NamePlateDriverMixin:OnUnitAuraUpdate(unit)
 	end
 
 	local nameplate = C_NamePlate.GetNamePlateForUnit(unit, issecure());
-	if (nameplate) then
-		nameplate.UnitFrame.BuffFrame:UpdateBuffs(nameplate.namePlateUnitToken, filter, showAll);
-	end
 end
 
 function NamePlateDriverMixin:OnRaidTargetUpdate()
@@ -185,76 +176,6 @@ function NamePlateDriverMixin:OnUnitFactionChanged(unit)
 		CompactUnitFrame_UpdateName(nameplate.UnitFrame);
 		CompactUnitFrame_UpdateHealthColor(nameplate.UnitFrame);
 	end
-end
-
-function NamePlateDriverMixin:SetupClassNameplateBar(onTarget, bar)
-	if (not bar) then
-		return;
-	end
-
-	bar:Hide();
-
-	local showSelf = GetCVar("nameplateShowSelf");
-	if (showSelf == "0") then
-		return;
-	end
-
-	if (onTarget and NamePlateTargetResourceFrame) then
-		local namePlateTarget = C_NamePlate.GetNamePlateForUnit("target", issecure());
-		if (namePlateTarget) then
-			bar:SetParent(NamePlateTargetResourceFrame);
-			NamePlateTargetResourceFrame:SetParent(namePlateTarget.UnitFrame);
-			NamePlateTargetResourceFrame:ClearAllPoints();
-			NamePlateTargetResourceFrame:SetPoint("BOTTOM", namePlateTarget.UnitFrame.name, "TOP", 0, 4);
-			bar:Show();
-			NamePlateTargetResourceFrame:Layout();
-		end
-		NamePlateTargetResourceFrame:SetShown(namePlateTarget ~= nil);
-	elseif (not onTarget and NamePlatePlayerResourceFrame) then
-		local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player", issecure());
-		if (namePlatePlayer) then
-			bar:SetParent(NamePlatePlayerResourceFrame);
-			NamePlatePlayerResourceFrame:SetParent(namePlatePlayer.UnitFrame);
-			NamePlatePlayerResourceFrame:ClearAllPoints();
-			NamePlatePlayerResourceFrame:SetPoint("TOP", namePlatePlayer.UnitFrame.healthBar, "BOTTOM", 0, -1);
-			bar:Show();
-			NamePlatePlayerResourceFrame:Layout();
-		end
-		NamePlatePlayerResourceFrame:SetShown(namePlatePlayer ~= nil);
-	end
-end
-
-function NamePlateDriverMixin:SetupClassNameplateBars()
-	local targetMode = GetCVarBool("nameplateResourceOnTarget");
-	if (self.nameplateBar and self.nameplateBar.overrideTargetMode ~= nil) then
-		targetMode = self.nameplateBar.overrideTargetMode;
-	end
-	self:SetupClassNameplateBar(targetMode, self.nameplateBar);
-	self:SetupClassNameplateBar(false, self.nameplateManaBar);
-
-	if targetMode and self.nameplateBar then
-		local percentOffset = tonumber(GetCVar("nameplateClassResourceTopInset"));
-		if self:IsUsingLargerNamePlateStyle() then
-			percentOffset = percentOffset + .1;
-		end
-		C_NamePlate.SetTargetClampingInsets(percentOffset * UIParent:GetHeight(), 0.0);
-	else
-		C_NamePlate.SetTargetClampingInsets(0.0, 0.0);
-	end
-end
-
-function NamePlateDriverMixin:SetClassNameplateBar(frame)
-	self.nameplateBar = frame;
-	self:SetupClassNameplateBars();
-end
-
-function NamePlateDriverMixin:GetClassNameplateBar()
-	return self.nameplateBar;
-end
-
-function NamePlateDriverMixin:SetClassNameplateManaBar(frame)
-	self.nameplateManaBar = frame;
-	self:SetupClassNameplateBars();
 end
 
 function NamePlateDriverMixin:SetBaseNamePlateSize(width, height)
@@ -281,34 +202,22 @@ end
 
 function NamePlateDriverMixin:UpdateNamePlateOptions()
 	DefaultCompactNamePlateEnemyFrameOptions.useClassColors = GetCVarBool("ShowClassColorInNameplate");
-	DefaultCompactNamePlateEnemyFrameOptions.playLoseAggroHighlight = GetCVarBool("ShowNamePlateLoseAggroFlash");
 
 	local showOnlyNames = GetCVarBool("nameplateShowOnlyNames");
 	DefaultCompactNamePlateFriendlyFrameOptions.useClassColors = GetCVarBool("ShowClassColorInFriendlyNameplate");
 	DefaultCompactNamePlateFriendlyFrameOptions.hideHealthbar = showOnlyNames;
-	DefaultCompactNamePlateFriendlyFrameOptions.hideCastbar = showOnlyNames;
 
 	local namePlateVerticalScale = tonumber(GetCVar("NamePlateVerticalScale"));
 	local zeroBasedScale = namePlateVerticalScale - 1.0;
 	local clampedZeroBasedScale = Saturate(zeroBasedScale);
-	DefaultCompactNamePlateFrameSetUpOptions.healthBarHeight = 4 * namePlateVerticalScale;
-	DefaultCompactNamePlatePlayerFrameSetUpOptions.healthBarHeight = 4 * namePlateVerticalScale * Lerp(1.2, 1.0, clampedZeroBasedScale);
+	DefaultCompactNamePlateFrameSetUpOptions.healthBarHeight = 10 * namePlateVerticalScale;
 
 	DefaultCompactNamePlateFrameSetUpOptions.useLargeNameFont = clampedZeroBasedScale > .25;
 	local screenWidth, screenHeight = GetPhysicalScreenSize();
-	DefaultCompactNamePlateFrameSetUpOptions.useFixedSizeFont = screenHeight <= 1200;
-
-	DefaultCompactNamePlateFrameSetUpOptions.castBarHeight = math.min(Lerp(12, 16, zeroBasedScale), DefaultCompactNamePlateFrameSetUpOptions.healthBarHeight * 2);
-	DefaultCompactNamePlateFrameSetUpOptions.castBarFontHeight = Lerp(8, 12, clampedZeroBasedScale);
-
-	DefaultCompactNamePlateFrameSetUpOptions.castBarShieldWidth = Lerp(10, 15, clampedZeroBasedScale);
-	DefaultCompactNamePlateFrameSetUpOptions.castBarShieldHeight = Lerp(12, 18, clampedZeroBasedScale);
-
-	DefaultCompactNamePlateFrameSetUpOptions.castIconWidth = Lerp(10, 15, clampedZeroBasedScale);
-	DefaultCompactNamePlateFrameSetUpOptions.castIconHeight = Lerp(10, 15, clampedZeroBasedScale);
+	--DefaultCompactNamePlateFrameSetUpOptions.useFixedSizeFont = screenHeight <= 1200;
+	DefaultCompactNamePlateFrameSetUpOptions.useLargeNameFont = true;
 
 	DefaultCompactNamePlateFrameSetUpOptions.hideHealthbar = showOnlyNames;
-	DefaultCompactNamePlateFrameSetUpOptions.hideCastbar = showOnlyNames;
 
 	local horizontalScale = tonumber(GetCVar("NamePlateHorizontalScale"));
 	C_NamePlate.SetNamePlateFriendlySize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight * Lerp(1.0, 1.25, zeroBasedScale));
@@ -330,7 +239,6 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	if self.nameplateManaBar then
 		self.nameplateManaBar:OnOptionsUpdated();
 	end
-	self:SetupClassNameplateBars();
 end
 
 NamePlateBaseMixin = {};
@@ -351,7 +259,6 @@ function NamePlateBaseMixin:OnAdded(namePlateUnitToken, driverFrame)
 			CreateFrame("FRAME", nil, self.UnitFrame, "NamePlateCommentatorDisplayInfoTemplate");
 		end
 	else
-		self.UnitFrame.BuffFrame:SetActive(true);
 		if self.CommentatorDisplayInfo then
 			self.CommentatorDisplayInfo:Hide();
 		end
@@ -372,18 +279,7 @@ function NamePlateBaseMixin:OnOptionsUpdated()
 end
 
 function NamePlateBaseMixin:ApplyOffsets()
-	if self.driverFrame:IsUsingLargerNamePlateStyle() then
-		self.UnitFrame.BuffFrame:SetBaseYOffset(20);
-	else
-		self.UnitFrame.BuffFrame:SetBaseYOffset(0);
-	end
-
-	local targetMode = GetCVarBool("nameplateResourceOnTarget");
-	if targetMode then
-		self.UnitFrame.BuffFrame:SetTargetYOffset(18);
-	else
-		self.UnitFrame.BuffFrame:SetTargetYOffset(0);
-	end
+	-- Nothing to do in Classic.
 end
 
 NAMEPLATE_MINIMUM_INSET_HEIGHT_THRESHOLD = 10;
@@ -403,11 +299,17 @@ end
 function NamePlateBaseMixin:GetPreferredInsets()
 	local frame = self.UnitFrame;
 	local health = frame.healthBar;
+	local border = health.border;
 
-	local left = health:GetLeft() - frame:GetLeft();
-	local right = frame:GetRight() - health:GetRight();
-	local top = frame:GetTop() - health:GetTop();
-	local bottom = health:GetBottom() - frame:GetBottom();
+	local healthLeft = min(health:GetLeft(), border:GetLeft());
+	local healthRight = max(health:GetRight(), border:GetRight());
+	local healthTop = max(health:GetTop(), border:GetTop());
+	local healthBottom = min(health:GetBottom(), border:GetBottom());
+
+	local left = healthLeft - frame:GetLeft();
+	local right = frame:GetRight() - healthRight;
+	local top = frame:GetTop() - healthTop;
+	local bottom = healthBottom - frame:GetBottom();
 
 	-- Width probably won't be an issue, but if height is under a certain threshold, give the user a little more area to click on.
 	local widthPadding, heightPadding = self:GetAdditionalInsetPadding(right - left, top - bottom);
@@ -419,150 +321,8 @@ function NamePlateBaseMixin:GetPreferredInsets()
 	return left, right, top, bottom;
 end
 
---------------------------------------------------------------------------------
---
--- Buffs
---
---------------------------------------------------------------------------------
-
-NameplateBuffContainerMixin = {};
-
-function NameplateBuffContainerMixin:OnLoad()
-	self.buffList = {};
-	self.targetYOffset = 0;
-	self.baseYOffset = 0;
-	self.BuffFrameUpdateTime = 0;
-	self:RegisterEvent("PLAYER_TARGET_CHANGED");
-end
-
-function NameplateBuffContainerMixin:OnEvent(event, ...)
-	if (event == "PLAYER_TARGET_CHANGED") then
-		self:UpdateAnchor();
-	end
-end
-
-function NameplateBuffContainerMixin:OnUpdate(elapsed)
-	if ( self.BuffFrameUpdateTime > 0 ) then
-		self.BuffFrameUpdateTime = self.BuffFrameUpdateTime - elapsed;
-	else
-		self.BuffFrameUpdateTime = self.BuffFrameUpdateTime + TOOLTIP_UPDATE_TIME;
-	end
-end
-
-function NameplateBuffContainerMixin:SetTargetYOffset(targetYOffset)
-	self.targetYOffset = targetYOffset;
-end
-
-function NameplateBuffContainerMixin:GetTargetYOffset()
-	return self.targetYOffset;
-end
-
-function NameplateBuffContainerMixin:SetBaseYOffset(baseYOffset)
-	self.baseYOffset = baseYOffset;
-end
-
-function NameplateBuffContainerMixin:GetBaseYOffset()
-	return self.baseYOffset;
-end
-
-function NameplateBuffContainerMixin:UpdateAnchor()
-	local isTarget = self:GetParent().unit and UnitIsUnit(self:GetParent().unit, "target");
-	local targetYOffset = self:GetBaseYOffset() + (isTarget and self:GetTargetYOffset() or 0.0);
-	if (self:GetParent().unit and ShouldShowName(self:GetParent())) then
-		self:SetPoint("BOTTOM", self:GetParent(), "TOP", 0, targetYOffset);
-	else
-		self:SetPoint("BOTTOM", self:GetParent().healthBar, "TOP", 0, 5 + targetYOffset);
-	end
-end
-
-function NameplateBuffContainerMixin:ShouldShowBuff(name, caster, nameplateShowPersonal, nameplateShowAll, duration)
-	if (not name) then
-		return false;
-	end
-	return nameplateShowAll or
-		   (nameplateShowPersonal and (caster == "player" or caster == "pet" or caster == "vehicle"));
-end
-
-function NameplateBuffContainerMixin:SetActive(isActive)
-	self.isActive = isActive;
-end
-
-function NameplateBuffContainerMixin:UpdateBuffs(unit, filter, showAll)
-	if not self.isActive then
-		for i = 1, BUFF_MAX_DISPLAY do
-			if (self.buffList[i]) then
-				self.buffList[i]:Hide();
-			end
-		end
-		
-		return;
-	end
-	
-	self.unit = unit;
-	self.filter = filter;
-	self:UpdateAnchor();
-
-	if filter == "NONE" then
-		for i, buff in ipairs(self.buffList) do
-			buff:Hide();
-		end
-	else
-		-- Some buffs may be filtered out, use this to create the buff frames.
-		local buffIndex = 1;
-
-		for i = 1, BUFF_MAX_DISPLAY do
-			local name, rank, texture, count, debuffType, duration, expirationTime, caster, _, nameplateShowPersonal, spellId, _, _, _, nameplateShowAll = UnitAura(unit, i, filter);
-
-			if (self:ShouldShowBuff(name, caster, nameplateShowPersonal, nameplateShowAll or showAll, duration)) then
-				if (not self.buffList[buffIndex]) then
-					self.buffList[buffIndex] = CreateFrame("Frame", self:GetParent():GetName() .. "Buff" .. buffIndex, self, "NameplateBuffButtonTemplate");
-					self.buffList[buffIndex]:SetMouseClickEnabled(false);
-					self.buffList[buffIndex].layoutIndex = buffIndex;
-				end
-				local buff = self.buffList[buffIndex];
-				buff:SetID(i);
-				buff.name = name;
-				buff.Icon:SetTexture(texture);
-				if (count > 1) then
-					buff.CountFrame.Count:SetText(count);
-					buff.CountFrame.Count:Show();
-				else
-					buff.CountFrame.Count:Hide();
-				end
-
-				CooldownFrame_Set(buff.Cooldown, expirationTime - duration, duration, duration > 0, true);
-
-				buff:Show();
-				buffIndex = buffIndex + 1;
-			end
-		end
-
-		for i = buffIndex, BUFF_MAX_DISPLAY do
-			if (self.buffList[i]) then
-				self.buffList[i]:Hide();
-			end
-		end
-	end
-	self:Layout();
-end
-
-NameplateBuffButtonTemplateMixin = {};
-
-function NameplateBuffButtonTemplateMixin:OnUpdate(elapsed)
-	if (self:GetParent().BuffFrameUpdateTime > 0) then
-		return;
-	end
-
-	if (GameTooltip:IsOwned(self)) then
-		GameTooltip:SetUnitAura(self:GetParent().unit, self:GetID(), self:GetParent().filter);
-	end
-end
-
 NamePlateBorderTemplateMixin = {};
 
 function NamePlateBorderTemplateMixin:SetVertexColor(r, g, b, a)
-	a = a / self.numLayers;
-	for i, texture in ipairs(self.Textures) do
-		texture:SetVertexColor(r, g, b, a);
-	end
+	-- Nothing to do in Classic.
 end

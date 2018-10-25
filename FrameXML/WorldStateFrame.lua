@@ -61,6 +61,8 @@ function WorldStateAlwaysUpFrame_OnLoad(self)
 	self:RegisterEvent("LFG_READY_CHECK_DECLINED");
 	self:RegisterEvent("LFG_READY_CHECK_SHOW");
 
+	self:RegisterEvent("CVAR_UPDATE");
+
 	FILTERED_BG_CHAT_ADD = {};
 	FILTERED_BG_CHAT_SUBTRACT = {};
 	FILTERED_BG_CHAT_END = {};
@@ -165,34 +167,37 @@ function WorldStateAlwaysUpFrame_Update()
 	local alwaysUpShown = 1;
 	local extendedUIShown = 1;
 	local alwaysUpHeight = 10;
-	for i=1, numUI do
-		local uiType, state, hidden, text, icon, dynamicIcon, dynamicFlashIcon, tooltip, dynamicTooltip, extendedUI, extendedUIState1, extendedUIState2, extendedUIState3 = GetWorldStateUIInfo(i);
-		if ( not hidden ) then
-			if ( state > 0 ) then
-				-- Handle always up frames and extended ui's completely differently
-				if ( extendedUI ~= "" ) then
-					-- extendedUI
-					local uiInfo = ExtendedUI[extendedUI]
-					local name = uiInfo.name..extendedUIShown;
-					if ( extendedUIShown > NUM_EXTENDED_UI_FRAMES ) then
-						frame = uiInfo.create(extendedUIShown);
-						NUM_EXTENDED_UI_FRAMES = extendedUIShown;
+
+	if ( GetCVar("hideOutdoorWorldState") == "0" or instanceType == "pvp" ) then
+		for i=1, numUI do
+			local uiType, state, hidden, text, icon, dynamicIcon, dynamicFlashIcon, tooltip, dynamicTooltip, extendedUI, extendedUIState1, extendedUIState2, extendedUIState3 = GetWorldStateUIInfo(i);
+			if ( not hidden ) then
+				if ( state > 0 ) then
+					-- Handle always up frames and extended ui's completely differently
+					if ( extendedUI ~= "" ) then
+						-- extendedUI
+						local uiInfo = ExtendedUI[extendedUI]
+						local name = uiInfo.name..extendedUIShown;
+						if ( extendedUIShown > NUM_EXTENDED_UI_FRAMES ) then
+							frame = uiInfo.create(extendedUIShown);
+							NUM_EXTENDED_UI_FRAMES = extendedUIShown;
+						else
+							frame = _G[name];
+						end
+						uiInfo.update(extendedUIShown, extendedUIState1, extendedUIState2, extendedUIState3);
+						frame:Show();
+						extendedUIShown = extendedUIShown + 1;
 					else
-						frame = _G[name];
+						-- Always Up
+						frame = WorldStateAlwaysUpFrame_AddFrame(alwaysUpShown, text, icon, dynamicIcon, dynamicFlashIcon, dynamicTooltip, state);
+						alwaysUpShown = alwaysUpShown + 1;
+						alwaysUpHeight = alwaysUpHeight + frame:GetHeight();
+					end	
+					if ( icon ~= "" ) then
+						frame.tooltip = tooltip;
+					else
+						frame.tooltip = nil;
 					end
-					uiInfo.update(extendedUIShown, extendedUIState1, extendedUIState2, extendedUIState3);
-					frame:Show();
-					extendedUIShown = extendedUIShown + 1;
-				else
-					-- Always Up
-					frame = WorldStateAlwaysUpFrame_AddFrame(alwaysUpShown, text, icon, dynamicIcon, dynamicFlashIcon, dynamicTooltip, state);
-					alwaysUpShown = alwaysUpShown + 1;
-					alwaysUpHeight = alwaysUpHeight + frame:GetHeight();
-				end	
-				if ( icon ~= "" ) then
-					frame.tooltip = tooltip;
-				else
-					frame.tooltip = nil;
 				end
 			end
 		end

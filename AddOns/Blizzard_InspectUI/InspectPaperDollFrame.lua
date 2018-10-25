@@ -28,27 +28,18 @@ function InspectPaperDollFrame_SetLevel()
 	end
 
 	local unit, level, effectiveLevel, sex = InspectFrame.unit, UnitLevel(InspectFrame.unit), UnitEffectiveLevel(InspectFrame.unit), UnitSex(InspectFrame.unit);
-	local specID = GetInspectSpecialization(InspectFrame.unit);
+	local race = UnitRace(InspectFrame.unit);
 	
 	local classDisplayName, class = UnitClass(InspectFrame.unit); 
-	local classColorString = RAID_CLASS_COLORS[class].colorStr;
 	local specName, _;
-	
-	if (specID) then
-		_, specName = GetSpecializationInfoByID(specID, sex);
-	end
 	
 	if ( level == -1 or effectiveLevel == -1 ) then
 		level = "??";
 	elseif ( effectiveLevel ~= level ) then
 		level = EFFECTIVE_LEVEL_FORMAT:format(effectiveLevel, level);
 	end
-	
-	if (specName and specName ~= "") then
-		InspectLevelText:SetFormattedText(PLAYER_LEVEL, level, classColorString, specName, classDisplayName);
-	else
-		InspectLevelText:SetFormattedText(PLAYER_LEVEL_NO_SPEC, level, classColorString, classDisplayName);
-	end
+
+	InspectLevelText:SetFormattedText(PLAYER_LEVEL, level, race, classDisplayName);
 end
 
 function InspectPaperDollFrame_UpdateButtons()
@@ -70,6 +61,7 @@ function InspectPaperDollFrame_UpdateButtons()
 	InspectPaperDollItemSlotButton_Update(InspectTrinket1Slot);
 	InspectPaperDollItemSlotButton_Update(InspectMainHandSlot);
 	InspectPaperDollItemSlotButton_Update(InspectSecondaryHandSlot);
+	InspectPaperDollItemSlotButton_Update(InspectRangedSlot);
 end
 
 local factionLogoTextures = {
@@ -80,7 +72,6 @@ local factionLogoTextures = {
 
 function InspectPaperDollFrame_OnShow()
 	InspectModelFrame:Show();
-	ButtonFrameTemplate_HideButtonBar(InspectFrame);
 	local modelCanDraw = InspectModelFrame:SetUnit(InspectFrame.unit);
 	InspectPaperDollFrame_SetLevel();
 	InspectPaperDollFrame_UpdateButtons();
@@ -98,12 +89,6 @@ function InspectPaperDollFrame_OnShow()
 	else
 		InspectFaction:Hide();
 	end
-	
-	SetPaperDollBackground(InspectModelFrame, InspectFrame.unit);
-	InspectModelFrameBackgroundTopLeft:SetDesaturated(true);
-	InspectModelFrameBackgroundTopRight:SetDesaturated(true);
-	InspectModelFrameBackgroundBotLeft:SetDesaturated(true);
-	InspectModelFrameBackgroundBotRight:SetDesaturated(true);
 end
 
 function InspectPaperDollItemSlotButton_OnLoad(self)
@@ -149,10 +134,6 @@ function InspectPaperDollItemSlotButton_Update(button)
 		SetItemButtonTexture(button, textureName);
 		SetItemButtonCount(button, GetInventoryItemCount(unit, button:GetID()));
 		button.hasItem = 1;
-
-		local quality = GetInventoryItemQuality(unit, button:GetID());
-		SetItemButtonQuality(button, quality, GetInventoryItemID(unit, button:GetID()));
-
 	else
 		local textureName = button.backgroundTextureName;
 		if ( button.checkRelic and UnitHasRelicSlot(unit) ) then
@@ -166,13 +147,4 @@ function InspectPaperDollItemSlotButton_Update(button)
 	if ( GameTooltip:IsOwned(button) ) then
 		GameTooltip:Hide();
 	end
-end
-
-function InspectPaperDollViewButton_OnLoad(self)
-	self:SetWidth(30 + self:GetFontString():GetStringWidth());
-end
-
-function InspectPaperDollViewButton_OnClick(self)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	DressUpSources(C_TransmogCollection.GetInspectSources());
 end

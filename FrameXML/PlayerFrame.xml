@@ -12,13 +12,6 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="PlayerFrameFlash" file="Interface\TargetingFrame\UI-TargetingFrame-Flash" hidden="true">
-					<Size x="242" y="93"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="13" y="0"/>
-					</Anchors>
-					<TexCoords left="0.9453125" right="0" top="0" bottom="0.181640625"/>
-				</Texture>
 				<Texture name="PlayerFrameBackground">
 					<Size x="119" y="41"/>
 					<Anchors>
@@ -34,10 +27,6 @@
 						<Anchor point="TOPLEFT" x="42" y="-12"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture name="$parentTotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -45,14 +34,6 @@
 				<Frames>
 					<Frame setAllPoints="true">
 						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="PlayerFrameMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
-								<Texture name="PlayerFrameOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
-								<Texture name="PlayerFrameManaCostPredictionBar" inherits="MyManaCostPredictionBarTemplate"/>
-								<Texture name="$parentHealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
-								<Texture name="$parentHealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
-								<Texture name="$parentHealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
-							</Layer>
 							<Layer level="BORDER">
 								<Texture name="PlayerFrameTexture" file="Interface\TargetingFrame\UI-TargetingFrame">
 									<TexCoords left="1.0" right="0.09375" top="0" bottom="0.78125"/>
@@ -72,7 +53,7 @@
 								<FontString name="PlayerLevelText" inherits="GameNormalNumberFont" justifyH="CENTER">
 									<!--WARNING:: This is re-anchored in code.-->
 									<Anchors>
-										<Anchor point="CENTER" x="-62" y="-17"/>
+										<Anchor point="CENTER" x="-63" y="-16"/>
 									</Anchors>
 								</FontString>
 								<FontString name="PlayerPVPTimerText" inherits="GameFontNormalSmall">
@@ -139,8 +120,6 @@
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK" textureSubLevel="1">
-								<Texture name="$parentOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
-								<Texture name="$parentOverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
 								<Texture name="PlayerPrestigeBadge" hidden="true">
 									<Size x="30" y="30"/>
 									<Anchors>
@@ -157,7 +136,7 @@
 								<Texture name="PlayerLeaderIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true">
 									<Size x="16" y="16"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="40" y="-12"/>
+										<Anchor point="TOPLEFT" x="44" y="-10"/>
 									</Anchors>
 								</Texture>
 								<Texture name="PlayerGuideIcon" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" hidden="true">
@@ -174,24 +153,18 @@
 									</Anchors>
 								</Texture>
 								<Texture name="PlayerRestIcon" file="Interface\CharacterFrame\UI-StateIcon" hidden="false">
-									<Size x="31" y="31"/>
+									<Size x="31" y="33"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="39" y="-50"/>
+										<Anchor point="TOPLEFT" x="37" y="-49"/>
 									</Anchors>
 									<TexCoords left="0" right="0.5" top="0" bottom="0.421875"/>
 								</Texture>
 								<Texture name="PlayerAttackIcon" file="Interface\CharacterFrame\UI-StateIcon" hidden="false">
-									<Size x="32" y="31"/>
+									<Size x="32" y="32"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="PlayerRestIcon" x="1" y="1"/>
 									</Anchors>
 									<TexCoords left="0.5" right="1.0" top="0" bottom="0.484375"/>
-								</Texture>
-								<Texture name="$parentRoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" hidden="true">
-									<Size x="19" y="19"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="95" y="-15"/>
-									</Anchors>
 								</Texture>
 							</Layer>
 						</Layers>
@@ -313,12 +286,6 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<StatusBar parentKey="PlayerFrameHealthBarAnimatedLoss" mixin="AnimatedHealthLossMixin" hidden="true">
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-				</Scripts>
-			</StatusBar>
 			<StatusBar name="PlayerFrameHealthBar" inherits="TextStatusBar" enableMouseMotion="true">
 				<Size x="119" y="12"/>
 				<Anchors>
@@ -332,13 +299,8 @@
 						self.cvarLabel = "STATUS_TEXT_PLAYER";
 
 						self:SetMouseClickEnabled(false);
-
-						self:GetParent().PlayerFrameHealthBarAnimatedLoss:SetUnitHealthBar("player", self);
 					</OnLoad>
 					<OnValueChanged function="UnitFrameHealthBar_OnValueChanged"/>
-					<OnSizeChanged>
-						UnitFrameHealPredictionBars_UpdateSize(self:GetParent());
-					</OnSizeChanged>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
@@ -359,15 +321,6 @@
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
-				<Frames>
-					<Frame parentKey="FeedbackFrame" setAllPoints="true" useParentLevel="true" inherits="BuilderSpenderFrame"/>
-					<Frame parentKey="FullPowerFrame" inherits="FullResourcePulseFrame">
-						<Size x="119" y="12"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT"/>
-						</Anchors>
-					</Frame>
-				</Frames>
 			</StatusBar>
 			<Frame name="PlayerFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
 				<Size x="10" y="10"/>

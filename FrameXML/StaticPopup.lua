@@ -162,10 +162,31 @@ StaticPopupDialogs["CONFIRM_RESET_VIDEO_SETTINGS"] = {
 	button3 = CURRENT_SETTINGS,
 	button2 = CANCEL,
 	OnAccept = function ()
-		VideoOptionsFrame_SetAllToDefaults();
+		VideoOptionsFrame_SetAllToDefaults(false);
 	end,
 	OnAlt = function ()
-		VideoOptionsFrame_SetCurrentToDefaults();
+		VideoOptionsFrame_SetCurrentToDefaults(false);
+	end,
+	OnCancel = function() end,
+	showAlert = 1,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1,
+	whileDead = 1,
+}
+
+StaticPopupDialogs["CONFIRM_RESET_CLASSIC_VIDEO_SETTINGS"] = {
+	text = CONFIRM_RESET_SETTINGS,
+	button1 = ALL_SETTINGS,
+	button3 = CURRENT_SETTINGS,
+	button2 = CANCEL,
+	OnAccept = function ()
+		VideoOptionsFrame_SetAllToDefaults(false); -- Set to recommnded first to lock in main slider setting
+		VideoOptionsFrame_SetAllToDefaults(true);
+	end,
+	OnAlt = function ()
+		VideoOptionsFrame_SetCurrentToDefaults(false); -- Set to recommnded first to lock in main slider setting
+		VideoOptionsFrame_SetCurrentToDefaults(true);
 	end,
 	OnCancel = function() end,
 	showAlert = 1,
@@ -1302,7 +1323,7 @@ StaticPopupDialogs["DEATH"] = {
 	button1 = DEATH_RELEASE,
 	button2 = USE_SOULSTONE,	-- rez option 1
 	button3 = USE_SOULSTONE,	-- rez option 2
-	button4 = DEATH_RECAP,
+	--button4 = DEATH_RECAP,
 	OnShow = function(self)
 		self.timeleft = GetReleaseTimeRemaining();
 
@@ -1311,7 +1332,7 @@ StaticPopupDialogs["DEATH"] = {
 		elseif ( self.timeleft == -1 ) then
 			self.text:SetText(DEATH_RELEASE_NOTIMER);
 		end
-		if ( not self.UpdateRecapButton ) then
+		--[[if ( not self.UpdateRecapButton ) then
 			self.UpdateRecapButton = function( self )
 				if ( DeathRecap_HasEvents() ) then
 					self.button4:Enable();
@@ -1330,14 +1351,14 @@ StaticPopupDialogs["DEATH"] = {
 			end
 		end
 
-		self:UpdateRecapButton();
+		self:UpdateRecapButton();]]
 	end,
 	OnHide = function(self)
 		self.button2.option = nil;
 		self.button3.option = nil;
-		self.button4:SetScript("OnEnter", nil );
+		--[[self.button4:SetScript("OnEnter", nil );
 		self.button4:SetScript("OnLeave", nil);
-		self.button4:SetMotionScriptsWhileDisabled(false);
+		self.button4:SetMotionScriptsWhileDisabled(false);]]
 	end,
 	OnButton1 = function(self)
 		if ( IsActiveBattlefieldArena() and not C_PvP.IsInBrawl() ) then
@@ -1355,10 +1376,10 @@ StaticPopupDialogs["DEATH"] = {
 	OnButton3 = function(self, data, reason)
 		return OnResurrectButtonClick(self.button3.option, reason);
 	end,
-	OnButton4 = function()
+	--[[OnButton4 = function()
 		OpenDeathRecapUI();
 		return true;
-	end,
+	end,]]
 	OnUpdate = function(self, elapsed)
 		if ( IsFalling() and not IsOutOfBounds()) then
 			self.button1:Disable();
@@ -1412,9 +1433,9 @@ StaticPopupDialogs["DEATH"] = {
 			self.button3:SetEnabled(option2.canUse);
 		end
 
-		if ( self.UpdateRecapButton) then
+		--[[if ( self.UpdateRecapButton) then
 			self:UpdateRecapButton();
-		end
+		end]]
 	end,
 	DisplayButton2 = function(self)
 		local option1, option2 = GetSelfResurrectDialogOptions();
@@ -2173,9 +2194,6 @@ StaticPopupDialogs["ABANDON_QUEST"] = {
 	button2 = NO,
 	OnAccept = function(self)
 		AbandonQuest();
-		if ( QuestLogPopupDetailFrame:IsShown() ) then
-			HideUIPanel(QuestLogPopupDetailFrame);
-		end
 		PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST);
 	end,
 	timeout = 0,
@@ -2189,9 +2207,6 @@ StaticPopupDialogs["ABANDON_QUEST_WITH_ITEMS"] = {
 	button2 = NO,
 	OnAccept = function(self)
 		AbandonQuest();
-		if ( QuestLogPopupDetailFrame:IsShown() ) then
-			HideUIPanel(QuestLogPopupDetailFrame);
-		end
 		PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST);
 	end,
 	timeout = 0,
@@ -3015,6 +3030,23 @@ StaticPopupDialogs["CONFIRM_TALENT_WIPE"] = {
 	OnCancel = function(self)
 		if ( PlayerTalentFrame ) then
 			HideUIPanel(PlayerTalentFrame);
+		end
+	end,
+	hasMoneyFrame = 1,
+	exclusive = 1,
+	timeout = 0,
+	hideOnEscape = 1
+};
+StaticPopupDialogs["CONFIRM_PET_UNLEARN"] = {
+	text = CONFIRM_PET_UNLEARN,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		ConfirmPetUnlearn();
+	end,
+	OnUpdate = function(self, elapsed)
+		if ( not CheckTalentMasterDist() ) then
+			self:Hide();
 		end
 	end,
 	hasMoneyFrame = 1,

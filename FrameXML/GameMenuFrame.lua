@@ -7,30 +7,16 @@ function GameMenuFrame_OnShow(self)
 end
 
 function GameMenuFrame_UpdateVisibleButtons(self)
-	local height = 292;
+	local height = 272;
 	GameMenuButtonUIOptions:SetPoint("TOP", GameMenuButtonOptions, "BOTTOM", 0, -1);
-
-	local buttonToReanchor = GameMenuButtonWhatsNew;
-	local reanchorYOffset = -1;
-
-	if (not SplashFrameCanBeShown() or IsCharacterNewlyBoosted()) then
-		GameMenuButtonWhatsNew:Hide();
-		height = height - 20;
-		buttonToReanchor = GameMenuButtonOptions;
-		reanchorYOffset = -16;
-	else
-		GameMenuButtonWhatsNew:Show();
-		GameMenuButtonOptions:SetPoint("TOP", GameMenuButtonWhatsNew, "BOTTOM", 0, -16);
-	end
 
 	local storeIsRestricted = IsTrialAccount() and not C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAMES_CATEGORY_ID);
 	if ( C_StorePublic.IsEnabled() and not storeIsRestricted ) then
 		height = height + 20;
 		GameMenuButtonStore:Show();
-		buttonToReanchor:SetPoint("TOP", GameMenuButtonStore, "BOTTOM", 0, reanchorYOffset);
 	else
 		GameMenuButtonStore:Hide();
-		buttonToReanchor:SetPoint("TOP", GameMenuButtonHelp, "BOTTOM", 0, reanchorYOffset);
+		GameMenuButtonOptions:SetPoint("TOP", GameMenuButtonHelp, "BOTTOM", 0, -16);
 	end
 
 	if ( not GameMenuButtonRatings:IsShown() and GetNumAddOns() == 0 ) then

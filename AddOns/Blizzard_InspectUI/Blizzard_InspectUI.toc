@@ -5,6 +5,4 @@
 Blizzard_InspectUI.xml
 InspectPaperDollFrame.xml
 InspectPVPFrame.xml
-InspectTalentFrame.xml
-InspectGuildFrame.xml
 Localization.lua

@@ -28,21 +28,21 @@
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.WatchBarTexture0" relativePoint="RIGHT"/>
 							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.1875" bottom="0.359375"/>
+							<TexCoords left="0" right="1.0" top="0.171875" bottom="0.34375"/>
 						</Texture>
 						<Texture parentKey="WatchBarTexture2" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
 							<Size x="256" y="11"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.WatchBarTexture1" relativePoint="RIGHT"/>
 							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.375" bottom="0.546875"/>
+							<TexCoords left="0" right="1.0" top="0.34375" bottom="0.515625"/>
 						</Texture>
 						<Texture parentKey="WatchBarTexture3" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
 							<Size x="256" y="11"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.WatchBarTexture2" relativePoint="RIGHT"/>
 							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.5625" bottom="0.734375"/>
+							<TexCoords left="0" right="1.0" top="0.515625" bottom="0.6875"/>
 						</Texture>
 						<Texture parentKey="XPBarTexture0" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
 							<Size x="256" y="10"/>
@@ -124,9 +124,9 @@
 			<Anchor point="BOTTOM"/>
 		</Anchors>
 		<Frames>
-			<StatusBar name="MainMenuExpBar" inherits="TextStatusBar, AnimatedStatusBarTemplate">
+			<StatusBar name="MainMenuExpBar" inherits="TextStatusBar">
 				<Size>
-					<AbsDimension x="1024" y="11"/>
+					<AbsDimension x="1024" y="13"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOP"/>
@@ -135,7 +135,7 @@
 					<Layer level="BORDER">
 						<Texture name="ExhaustionLevelFillBar">
 							<Size>
-								<AbsDimension x="0" y="10"/>
+								<AbsDimension x="0" y="13"/>
 							</Size>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="MainMenuExpBar">
@@ -148,35 +148,60 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="-1">
-						<Texture name="MainMenuXPBarTextureLeftCap" file="Interface\MainMenuBar\UI-XP-Bar">
+						<Texture name="MainMenuXPBarTexture0" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
 							<Size>
-								<AbsDimension x="14" y="14"/>
+								<AbsDimension x="256" y="10"/>
 							</Size>
 							<Anchors>
-								<Anchor point="LEFT"  relativePoint="LEFT" x="-3" y="0"/>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="-384" y="3"/>
+									</Offset>
+								</Anchor>
 							</Anchors>
-							<TexCoords left="0.18750000" right="0.43750000" top="0.01562500" bottom="0.26562500"/>
+							<TexCoords left="0" right="1.0" top="0.79296875" bottom="0.83203125"/>
 						</Texture>
-						<Texture name="MainMenuXPBarTextureRightCap" file="Interface\MainMenuBar\UI-XP-Bar">
+						<Texture name="MainMenuXPBarTexture1" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
 							<Size>
-								<AbsDimension x="14" y="14"/>
+								<AbsDimension x="256" y="10"/>
 							</Size>
 							<Anchors>
-								<Anchor point="RIGHT" relativePoint="RIGHT" x="3" y="0"/>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="-128" y="3"/>
+									</Offset>
+								</Anchor>
 							</Anchors>
-							<TexCoords left="0.18750000" right="0.43750000" top="0.29687500" bottom="0.54687500"/>
+							<TexCoords left="0" right="1.0" top="0.54296875" bottom="0.58203125"/>
 						</Texture>
-						<Texture name="MainMenuXPBarTextureMid" file="Interface\MainMenuBar\UI-XP-Mid" horizTile="true">
+						<Texture name="MainMenuXPBarTexture2" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
 							<Size>
-								<AbsDimension x="14" y="14"/>
+								<AbsDimension x="256" y="10"/>
 							</Size>
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="MainMenuXPBarTextureLeftCap" relativePoint="RIGHT"/>
-								<Anchor point="RIGHT" relativeTo="MainMenuXPBarTextureRightCap" relativePoint="LEFT"/>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="128" y="3"/>
+									</Offset>
+								</Anchor>
 							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.29296875" bottom="0.33203125"/>
+						</Texture>
+						<Texture name="MainMenuXPBarTexture3" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size>
+								<AbsDimension x="256" y="10"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="384" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.04296875" bottom="0.08203125"/>
 						</Texture>
 					</Layer>
-					<Layer level="BACKGROUND">
+					<Layer level="BACKGROUND" textureSubLevel="-2">
 						<Texture>
 							<Color r="0.0" g="0.0" b="0.0" a="0.5"/>
 						</Texture>
@@ -186,7 +211,7 @@
 					<Frame name="MainMenuBarOverlayFrame" frameStrata="DIALOG">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="MainMenuBar"/>
-							<Anchor point="BOTTOMRIGHT" relativeTo="MainMenuBar" y="2"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="MainMenuBar"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -211,6 +236,7 @@
 				<Scripts>
 					<OnLoad inherit="prepend">
 						TextStatusBar_Initialize(self);
+						self:GetStatusBarTexture():SetDrawLayer("BACKGROUND", -1);
 
 						SetTextStatusBarText(MainMenuExpBar, MainMenuBarExpText);
 						ExpBar_Update();
@@ -222,7 +248,6 @@
 						self.cvarLabel = "XP_BAR_TEXT";
 						self.alwaysPrefix = true;
 						self.alwaysShow = true;
-						MainMenuExpBar_SetWidth(1024);
 					</OnLoad>
 					<OnEvent>
 						if ( event == "CVAR_UPDATE" ) then
@@ -239,9 +264,6 @@
 					<OnEnter function="ExpBar_OnEnter"/>
 					<OnLeave>
 						HideTextStatusBarText(self);
-						if (GameLimitedMode_IsActive()) then
-							MicroButtonPulseStop(StoreMicroButton);
-						end
 						GameTooltip:Hide();
 						ExhaustionTick.timer = nil;
 					</OnLeave>
@@ -420,180 +442,78 @@
 					<OnEvent function="MainMenuBar_OnEvent"/>
 				</Scripts>
 			</Frame>
-			<Button name="MainMenuBarVehicleLeaveButton" hidden="true" motionScriptsWhileDisabled="true">
+			<Frame name="MainMenuBarPerformanceBarFrame" frameStrata="LOW">
 				<Size>
-					<AbsDimension x="32" y="32"/>
+					<AbsDimension x="16" y="64"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPLEFT">
+					<Anchor point="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="0" y="0"/>
+							<AbsDimension x="-227" y="-10"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="MainMenuBarPerformanceBar" file="Interface\MainMenuBar\UI-MainMenuBar-PerformanceBar">
+							<Size>
+								<AbsDimension x="20" y="66"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Scripts>
-					<OnLoad function="MainMenuBarVehicleLeaveButton_OnLoad"/>
-					<OnEvent function="MainMenuBarVehicleLeaveButton_OnEvent"/>
-					<OnClick function="MainMenuBarVehicleLeaveButton_OnClicked"/>
-					<OnEnter function="MainMenuBarVehicleLeaveButton_OnEnter"/>
-					<OnLeave function="GameTooltip_Hide"/>
+					<OnLoad>
+						PERFORMANCEBAR_LOW_LATENCY = 300;
+						PERFORMANCEBAR_MEDIUM_LATENCY = 600;
+						PERFORMANCEBAR_UPDATE_INTERVAL = 10;
+						self.hover = nil;
+						self.updateInterval = 0;
+					</OnLoad>
+					<OnUpdate>
+						if (self.updateInterval > 0) then
+							self.updateInterval = self.updateInterval - elapsed;
+						else
+							self.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL;
+
+							local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
+							local latency = latencyHome > latencyWorld and latencyHome or latencyWorld;
+							if (latency > PERFORMANCEBAR_MEDIUM_LATENCY) then
+								MainMenuBarPerformanceBar:SetVertexColor(1, 0, 0);
+							elseif (latency > PERFORMANCEBAR_LOW_LATENCY) then
+								MainMenuBarPerformanceBar:SetVertexColor(1, 1, 0);
+							else
+								MainMenuBarPerformanceBar:SetVertexColor(0, 1, 0);
+							end
+							if (self.hover) then
+								GameTooltip_AddNewbieTip(self, MAINMENUBAR_LATENCY_LABEL.." "..latency..MILLISECONDS_ABBR, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LATENCY);
+							end
+						end
+					</OnUpdate>
 				</Scripts>
-				<NormalTexture file="Interface\Vehicles\UI-Vehicles-Button-Exit-Up">
-					<TexCoords left="0.140625" right="0.859375" top="0.140625" bottom="0.859375"/>
-				</NormalTexture>
-				<PushedTexture file="Interface\Vehicles\UI-Vehicles-Button-Exit-Down">
-					<TexCoords left="0.140625" right="0.859375" top="0.140625" bottom="0.859375"/>
-				</PushedTexture>
-				<HighlightTexture parentKey="Highlight" alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+			</Frame>
+			<Button name="MainMenuBarPerformanceBarFrameButton" parent="MainMenuBarPerformanceBarFrame" setAllPoints="true" frameStrata="HIGH">
+				<Scripts>
+					<OnEnter>
+						MainMenuBarPerformanceBarFrame.hover = 1;
+						local bandwidthIn, bandwidthOut, latency = GetNetStats();
+						GameTooltip_AddNewbieTip(self, MAINMENUBAR_LATENCY_LABEL.." "..latency..MILLISECONDS_ABBR, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LATENCY);
+					</OnEnter>
+					<OnLeave>
+						MainMenuBarPerformanceBarFrame.hover = nil;
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
 			<OnShow>
 				UpdateMicroButtonsParent(MainMenuBarArtFrame);
-				MoveMicroButtons("BOTTOMLEFT", MainMenuBarArtFrame, "BOTTOMLEFT", 556, 2, false);
+				MoveMicroButtons("BOTTOMLEFT", MainMenuBarArtFrame, "BOTTOMLEFT", 552, 2, false);
 			</OnShow>
-		</Scripts>
-	</Frame>
-	<Frame name="ArtifactWatchBar" inherits="MainMenuBarWatchBarTemplate">
-		<Frames>
-			<Button parentKey="Tick" hidden="true" frameStrata="MEDIUM">
-				<Size x="32" y="32"/>
-				<Scripts>
-					<OnEnter function="MainMenuBar_ArtifactTick_OnEnter"/>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-				<NormalTexture parentKey="Normal" file="Interface\MainMenuBar\UI-ExhaustionTickNormal"/>
-				<HighlightTexture parentKey="Highlight" file="Interface\MainMenuBar\UI-ExhaustionTickHighlight" alphaMode="ADD"/>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				self:RegisterEvent("PLAYER_ENTERING_WORLD");
-				self:RegisterEvent("UNIT_INVENTORY_CHANGED");
-				self:RegisterEvent("ARTIFACT_XP_UPDATE");
-				self:RegisterEvent("CVAR_UPDATE");
-				self.StatusBar:SetStatusBarColor(.901, .8, .601);
-				self.StatusBar:SetAnimatedTextureColors(.901, .8, .601);
-
-				self.StatusBar.Overlay:SetAllPoints(self.StatusBar:GetStatusBarTexture());
-
-				self.StatusBar:SetOnAnimatedValueChangedCallback(MainMenuBar_ArtifactOnAnimatedValueChangedCallback);
-			</OnLoad>
-			<OnEvent>
-				if ( event == "UNIT_INVENTORY_CHANGED" ) then
-					local unitTag = ...;
-					if ( unitTag == "player" ) then
-						MainMenuBar_UpdateExperienceBars();
-					end
-				elseif ( event == "ARTIFACT_XP_UPDATE") then
-					MainMenuBar_UpdateExperienceBars();
-				elseif ( event == "CVAR_UPDATE" ) then
-					local name, value = ...;
-					if ( name == "XP_BAR_TEXT" ) then
-						if( value == "1" ) then
-							ShowWatchBarText(ArtifactWatchBar, "lock");
-						else
-							HideWatchBarText(ArtifactWatchBar, "unlock");
-						end
-						MainMenuBar_UpdateExperienceBars();
-					end
-				end
-			</OnEvent>
-			<OnShow>
-				if ( GetCVarBool("xpBarText") ) then
-					ShowWatchBarText(ArtifactWatchBar, "lock");
-				end
-				UIParent_ManageFramePositions();
-			</OnShow>
-			<OnHide function="UIParent_ManageFramePositions"/>
-			<OnEnter>
-				self.OverlayFrame.Text:Show();
-				MainMenuBar_ArtifactUpdateOverlayFrameText();
-				MainMenuBar_ArtifactTick_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				if (not self.textLocked) then
-					self.OverlayFrame.Text:Hide();
-				end
-				GameTooltip_Hide();
-			</OnLeave>
-		</Scripts>
-	</Frame>
-	<Frame name="HonorWatchBar" enableMouse="true" parent="MainMenuBar" inherits="MainMenuBarWatchBarTemplate" hidden="true">
-		<Size x="1024" y="11"/>
-		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="MainMenuBar" relativePoint="TOP" x="0" y="-3"/>
-		</Anchors>
-        <Layers>
-            <Layer level="BORDER">
-                <Texture parentKey="ExhaustionLevelFillBar">
-                    <Size x="0" y="10"/>
-                    <Anchors>
-                        <Anchor point="TOPLEFT" relativeTo="HonorWatchBar" x="0" y="0"/>
-                    </Anchors>
-                    <Color r="1.0" g="1.0" b="1.0" a="1.0"/>
-                </Texture>
-            </Layer>
-        </Layers>
-        <Frames>
-            <Button parentKey="ExhaustionTick" hidden="true" frameStrata="MEDIUM">
-                <Size x="32" y="32"/>
-                <Anchors>
-                    <Anchor point="CENTER" relativeKey="$parent.ExhaustionLevelFillBar" relativePoint="RIGHT" x="0" y="0"/>
-                </Anchors>
-                <Scripts>
-                    <OnLoad function="HonorExhaustionTick_OnLoad"/>
-                    <OnEvent>
-						MainMenuBar_UpdateExperienceBars();
-					</OnEvent>
-                    <OnEnter function="HonorExhaustionToolTipText"/>
-                    <OnLeave function="GameTooltip_Hide"/>
-                </Scripts>
-                <NormalTexture parentKey="Normal" file="Interface\MainMenuBar\UI-ExhaustionTickNormal"/>
-                <HighlightTexture parentKey="Highlight" file="Interface\MainMenuBar\UI-ExhaustionTickHighlight" alphaMode="ADD"/>
-            </Button>
-			<Frame parentKey="OverlayFrame" frameStrata="DIALOG" setAllPoints="true">
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Text" inherits="TextStatusBarText" hidden="true">
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="3"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad function="HonorWatchBar_OnLoad"/>
-			<OnEvent>
-				local arg1, arg2 = ...;
-				if( event == "CVAR_UPDATE" and arg1 == "XP_BAR_TEXT" ) then
-					if( arg2 == "1" ) then
-						ShowWatchBarText(HonorWatchBar, "lock");
-					else
-						HideWatchBarText(HonorWatchBar, "unlock");
-					end
-				else
-					MainMenuBar_UpdateExperienceBars();
-				end
-			</OnEvent>
-			<OnShow>
-				if ( GetCVarBool("xpBarText") ) then
-					ShowWatchBarText(HonorWatchBar, "lock");
-				end
-				UIParent_ManageFramePositions();
-			</OnShow>
-			<OnHide function="UIParent_ManageFramePositions"/>
-			<OnEnter>
-				self.OverlayFrame.Text:Show();
-				MainMenuBar_HonorUpdateOverlayFrameText();
-			</OnEnter>
-			<OnLeave>
-				if (not self.textLocked) then
-					self.OverlayFrame.Text:Hide();
-				end
-			</OnLeave>
 		</Scripts>
 	</Frame>
 	<Button name="ExhaustionTick" parent="MainMenuExpBar" hidden="false" frameStrata="MEDIUM">
@@ -610,7 +530,6 @@
 		<Scripts>
 			<OnLoad function="ExhaustionTick_OnLoad"/>
 			<OnEvent function="ExhaustionTick_OnEvent"/>
-			<OnEnter function="ExhaustionToolTipText"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<NormalTexture name="ExhaustionTickNormal" file="Interface\MainMenuBar\UI-ExhaustionTickNormal"/>

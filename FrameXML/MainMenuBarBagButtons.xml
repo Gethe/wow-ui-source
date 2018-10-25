@@ -38,7 +38,7 @@
 		</Scripts>
 	</Frame>
 	<CheckButton name="BagSlotButtonTemplate" inherits="ItemButtonTemplate, ItemAnimTemplate" virtual="true">
-		<Size x="30" y="30"/>
+		<Size x="37" y="37"/>
 		<Scripts>
 			<OnLoad>
 				ItemAnim_OnLoad(self)
@@ -47,9 +47,6 @@
 				self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
 				self.isBag = 1;
 				self.UpdateTooltip = BagSlotButton_OnEnter;
-				_G[self:GetName().."NormalTexture"]:SetWidth(50);
-				_G[self:GetName().."NormalTexture"]:SetHeight(50);
-				self.IconBorder:SetSize(30, 30);
 				_G[self:GetName().."Count"]:SetPoint("BOTTOMRIGHT", -2, 2);
 				self.maxDisplayCount = 999;
 			</OnLoad>
@@ -98,12 +95,12 @@
 	</CheckButton>
 	<CheckButton name="MainMenuBarBackpackButton" inherits="ItemButtonTemplate, ItemAnimTemplate" parent="MainMenuBarArtFrame" id="0">
 		<Size>
-			<AbsDimension x="30" y="30"/>
+			<AbsDimension x="37" y="37"/>
 		</Size>
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-4" y="6"/>
+					<AbsDimension x="-6" y="2"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -116,8 +113,6 @@
 				self:RegisterEvent("CVAR_UPDATE");
 				self:RegisterEvent("BAG_UPDATE");
 				self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
-				_G[self:GetName().."NormalTexture"]:SetWidth(50);
-				_G[self:GetName().."NormalTexture"]:SetHeight(50);
 				_G[self:GetName().."Count"]:ClearAllPoints();
 				_G[self:GetName().."Count"]:SetPoint("CENTER", 1, -7);
 			</OnLoad>
@@ -136,7 +131,6 @@
 				if ( keyBinding ) then
 					GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..keyBinding..")"..FONT_COLOR_CODE_CLOSE);
 				end
-				GameTooltip:AddLine(string.format(NUM_FREE_SLOTS, (self.freeSlots or 0)));
 				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave function="GameTooltip_Hide"/>
@@ -151,7 +145,7 @@
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="MainMenuBarBackpackButton" relativePoint="LEFT">
 				<Offset>
-					<AbsDimension x="-2" y="0"/>
+					<AbsDimension x="-5" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -160,7 +154,7 @@
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="CharacterBag0Slot" relativePoint="LEFT">
 				<Offset>
-					<AbsDimension x="-2" y="0"/>
+					<AbsDimension x="-5" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -169,7 +163,7 @@
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="CharacterBag1Slot" relativePoint="LEFT">
 				<Offset>
-					<AbsDimension x="-2" y="0"/>
+					<AbsDimension x="-5" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -178,7 +172,7 @@
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="CharacterBag2Slot" relativePoint="LEFT">
 				<Offset>
-					<AbsDimension x="-2" y="0"/>
+					<AbsDimension x="-5" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>

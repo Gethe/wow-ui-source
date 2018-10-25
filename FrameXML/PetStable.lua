@@ -1,14 +1,4 @@
-NUM_PET_STABLE_SLOTS = 10;
-NUM_PET_STABLE_PAGES = 5;
-NUM_PET_ACTIVE_SLOTS = 5;
-
-local CALL_PET_SPELL_IDS = {
-	0883,
-	83242,
-	83243,
-	83244,
-	83245,
-};
+NUM_PET_STABLE_SLOTS = 2;
 
 function PetStable_OnLoad(self)
 	self:RegisterEvent("PET_STABLE_SHOW");
@@ -18,275 +8,225 @@ function PetStable_OnLoad(self)
 	self:RegisterEvent("UNIT_PET");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("SPELLS_CHANGED");
-	
-	-- Set portrait
-	SetPortraitToTexture(PetStableFramePortrait, "Interface\\Icons\\ability_physical_taunt");
-
-	self.TitleText:SetFormattedText(PET_STABLE_TITLE, UnitName("player"));
-	ButtonFrameTemplate_HideButtonBar(self);
-	self.Inset:ClearAllPoints();
-	self.Inset:SetPoint("TOPLEFT", 91, PANEL_INSET_TOP_OFFSET-2);
-	self.Inset:SetPoint("BOTTOMRIGHT", PANEL_INSET_RIGHT_OFFSET, 126);
-	self.LeftInset:SetPoint("TOPLEFT", PANEL_INSET_LEFT_OFFSET, PANEL_INSET_ATTIC_OFFSET+4);
-	self.LeftInset:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", 91, PANEL_INSET_BOTTOM_OFFSET);
-	self.LeftInset.Bg:Hide();
-	self.BottomInset:SetPoint("TOPLEFT", self.Inset, "BOTTOMLEFT", 0, 0);
-	self.BottomInset:SetPoint("BOTTOMRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_BOTTOM_OFFSET);
-	self.BottomInset.Bg:Hide();
-	self.page = 1;
-	self.selectedPet = nil;
 end
 
 function PetStable_OnEvent(self, event, ...)
 	local arg1 = ...;
 	if ( event == "PET_STABLE_SHOW" ) then
 		ShowUIPanel(self);
-		if ( not self:IsShown() ) then
+		if ( not self:IsVisible() ) then
 			ClosePetStables();
 			return;
 		end
 
-		PetStable_Update(true);
-	elseif ( event == "PET_STABLE_UPDATE" or event == "SPELLS_CHANGED") then
-		PetStable_Update(true);
-	elseif (event == "UNIT_NAME_UPDATE" and arg1 == "pet") then
-		PetStable_Update(false);
+		PetStable_Update();
+	elseif ( event == "PET_STABLE_UPDATE" or event == "SPELLS_CHANGED" or (event == "UNIT_PET" and arg1 == "player") ) then
+		PetStable_Update();
 	elseif ( event == "PET_STABLE_UPDATE_PAPERDOLL" ) then
 		-- So warlock pets don't show
 		if ( UnitExists("pet") and not HasPetUI() ) then
 			PetStable_NoPetsAllowed();
 			return;
 		end
-		if (PetStableFrame.selectedPet) then
-			SetPetStablePaperdoll(PetStableModel, PetStableFrame.selectedPet);
-		else
-			PetStableModel:Hide();
-		end
+		SetPetStablePaperdoll(PetStableModel);
 	elseif ( event == "PET_STABLE_CLOSED" ) then
 		HideUIPanel(self);
 		StaticPopup_Hide("CONFIRM_BUY_STABLE_SLOT");
 	end
 end
 
-function PetStable_OnMouseWheel(self, value)
-	if ( value > 0 ) then
-		if ( PetStablePrevPageButton:IsEnabled() ) then
-			PetStable_PrevPage(PetStablePrevPageButton);
-		end
-	else
-		if ( PetStableNextPageButton:IsEnabled() ) then
-			PetStable_NextPage(PetStableNextPageButton);
-		end	
-	end
-end
-
-function PetStable_UpdateSlot(button, petSlot)
-
-	local icon, name, level, family, talent = GetStablePetInfo(petSlot);
+function PetStable_Update()
+	-- Set stablemaster portrait
+	SetPortraitTexture(PetStableFramePortrait, "npc");
 	
-	button.petSlot = petSlot;
-	SetItemButtonTexture(button, icon);
-
-	if ( icon and level and family and talent) then
-		button.tooltip = name;
-		button.tooltipSubtext = format(STABLE_PET_INFO_TOOLTIP_TEXT, level, family, talent);
-	else
-		button.tooltip = EMPTY_STABLE_SLOT;
-		button.tooltipSubtext = "";
-	end
-	
-	if (button.PetName) then
-		button.PetName:SetText(name);
-	end
-	
-	if ( GameTooltip:IsOwned(button) ) then
-		button:GetScript("OnEnter")(button);
-	end
-	
-	if (PetStableFrame.selectedPet and PetStableFrame.selectedPet == button.petSlot) then
-		button.Checked:Show();
-	else
-		button.Checked:Hide();
-	end
-end
-
-function PetStable_SetSelectedPetInfo(icon, name, level, family, talent)
-	if ( family and talent) then
-		PetStableTypeText:SetFormattedText(STABLE_PET_INFO_TEXT, family, talent);
-	else
-		PetStableTypeText:SetText("");
-	end
-	
-	if (level) then
-		PetStableLevelText:SetFormattedText(UNIT_LEVEL_TEMPLATE, level);
-	else
-		PetStableLevelText:SetText("");
-	end
-	
-	if ( name ) then
-		PetStableNameText:SetText(name);
-	else
-		PetStableNameText:SetText("");
-	end
-	
-	PetStableSelectedPetIcon:SetTexture(icon);
-end
-
-function PetStable_GetPetSlot(buttonID, active)
-	if (active) then
-		return buttonID;
-	else
-		return NUM_PET_ACTIVE_SLOTS + (PetStableFrame.page-1)*NUM_PET_STABLE_SLOTS + buttonID;
-	end
-end
-
-function PetStable_Update(updateModel)
 	-- So warlock pets don't show
 	local hasPetUI, isHunterPet = HasPetUI();
 	if ( UnitExists("pet") and hasPetUI and not isHunterPet ) then
 		PetStable_NoPetsAllowed();
-		for i =1, NUM_PET_ACTIVE_SLOTS do
-			_G["PetStableActivePet"..i]:Disable();
-		end
+		PetStableCurrentPet:Disable();
 		return;
 	else
-		for i =1, NUM_PET_ACTIVE_SLOTS do
-			_G["PetStableActivePet"..i]:Enable();
-		end
+		PetStableCurrentPet:Enable();
 	end
 	
-	-- If no selected pet, try to set one
-	if (PetStableFrame.selectedPet and not GetStablePetInfo(PetStableFrame.selectedPet)) then
-		PetStableFrame.selectedPet = nil;
-	end
-	
-	if ( not PetStableFrame.selectedPet ) then
-		for i=1, NUM_PET_ACTIVE_SLOTS do
-			local petSlot = PetStable_GetPetSlot(i, true);
-			if ( GetStablePetInfo(petSlot) ) then
-				PetStableFrame.selectedPet = petSlot;
-				updateModel = true;
-				break;
-			end 
-		end
-		
-		if ( not PetStableFrame.selectedPet) then
-			for i=1, NUM_PET_STABLE_SLOTS do
-				local petSlot = PetStable_GetPetSlot(i, false);
-				if ( GetStablePetInfo(petSlot) ) then
-					PetStableFrame.selectedPet = petSlot;
-					updateModel = true;
+	-- If no selected pet try to set one
+	local selectedPet = GetSelectedStablePet();
+	if ( selectedPet == -1 ) then
+		if ( GetPetIcon() ) then
+			selectedPet = 0;
+			ClickStablePet(0);
+		else
+			for i=0, NUM_PET_STABLE_SLOTS do
+				if ( GetStablePetInfo(i) ) then
+					selectedPet = i;
+					ClickStablePet(i);
 					break;
 				end 
 			end
 		end
 	end
 
+	-- Set slot cost
+	MoneyFrame_Update("PetStableCostMoneyFrame", GetNextStableSlotCost());	
+
 	-- Set slot statuseses
+	local numSlots = GetNumStableSlots();
+	local numPets = GetNumStablePets();
+	
+	local icon, name, level, family, loyalty;
 	for i=1, NUM_PET_STABLE_SLOTS do
 		local button = _G["PetStableStabledPet"..i];
-		local petSlot = PetStable_GetPetSlot(i, false);
-		PetStable_UpdateSlot(button, petSlot);
+		local background = _G["PetStableStabledPet"..i.."Background"];
+		icon, name, level, family, loyalty = GetStablePetInfo(i);
+		SetItemButtonTexture(button, icon);
+		if ( i <= GetNumStableSlots() ) then
+			background:SetVertexColor(1.0,1.0,1.0);
+			button:Enable();
+			if ( icon ) then
+				button.tooltip = name;
+				button.tooltipSubtext = format(UNIT_LEVEL_TEMPLATE,level).." "..family;
+			else
+				button.tooltip = EMPTY_STABLE_SLOT;
+				button.tooltipSubtext = "";
+			end
+			if ( i == selectedPet ) then
+				if ( icon ) then
+					button:SetChecked(1);
+					PetStableLevelText:SetText(name.." "..format(UNIT_LEVEL_TEMPLATE,level).." "..family);
+					PetStableLoyaltyText:SetText(loyalty);
+					SetPetStablePaperdoll(PetStableModel);
+					PetStablePetInfo.tooltip = format(PET_DIET_TEMPLATE, BuildListString(GetStablePetFoodTypes(i)));
+					if ( not PetStableModel:IsShown() ) then
+						PetStableModel:Show();
+					end
+				else
+					button:SetChecked(nil);
+					PetStableLevelText:SetText("");
+					PetStableLoyaltyText:SetText("");
+					PetStableModel:Hide();
+				end
+				
+			else
+				button:SetChecked(nil);
+			end
+			if ( GameTooltip:IsOwned(button) ) then
+				GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
+				GameTooltip:SetText(button.tooltip);
+				GameTooltip:AddLine(button.tooltipSubtext, 1.0, 1.0, 1.0);
+				GameTooltip:Show();
+			end
+		else
+			background:SetVertexColor(1.0,0.1,0.1);
+			button:Disable();
+		end
 	end
 
-	-- Active slots
-	for i=1, NUM_PET_ACTIVE_SLOTS do
-		local button = _G["PetStableActivePet"..i];
-		local petSlot = PetStable_GetPetSlot(i, true);
-		PetStable_UpdateSlot(button, petSlot);
-		if (IsSpellKnown(CALL_PET_SPELL_IDS[i]) or GetStablePetInfo(petSlot)) then
-			button:Enable();
-			button.Background:SetDesaturated(false);
-			button.Border:SetDesaturated(false);
-			button.LockIcon:Hide();
+	-- Current pet slot
+	if ( selectedPet == 0 ) then
+		if ( UnitExists("pet") ) then
+			PetStableCurrentPet:SetChecked(1);
+			local family = UnitCreatureFamily("pet");
+			if ( not family ) then
+				family = "";
+			end
+			PetStableLevelText:SetText(UnitName("pet").." "..format(UNIT_LEVEL_TEMPLATE,UnitLevel("pet")).." "..family);
+			PetStableLoyaltyText:SetText(GetPetLoyalty());
+			SetPetStablePaperdoll(PetStableModel);
+			if ( not PetStableModel:IsShown() ) then
+				PetStableModel:Show();
+			end
+			if ( GetPetFoodTypes() ) then
+				PetStablePetInfo.tooltip = format(PET_DIET_TEMPLATE, BuildListString(GetPetFoodTypes()));
+			end
+		elseif ( GetStablePetInfo(0) ) then
+			-- If pet doesn't exist it might be dismissed, so check stable slot 0 for current pet info
+			PetStableCurrentPet:SetChecked(1);
+			icon, name, level, family, loyalty = GetStablePetInfo(0);
+			PetStableLevelText:SetText(name.." "..format(UNIT_LEVEL_TEMPLATE,level).." "..family);
+			PetStableLoyaltyText:SetText(loyalty);
+			SetPetStablePaperdoll(PetStableModel);
+			if ( not PetStableModel:IsShown() ) then
+				PetStableModel:Show();
+			end
+			if ( GetStablePetFoodTypes(0) ) then
+				PetStablePetInfo.tooltip = format(PET_DIET_TEMPLATE, BuildListString(GetStablePetFoodTypes(0)));
+			end
 		else
-			button:Disable();
-			button.Background:SetDesaturated(true);
-			button.Border:SetDesaturated(true);
-			button.LockIcon:Show();
-		end
-	end
-	
- 	if ( PetStableFrame.selectedPet ) then
-		-- Update selected pet display
-		PetStableModel:Show();
-		if (updateModel) then
-			SetPetStablePaperdoll(PetStableModel, PetStableFrame.selectedPet);
-		end
-		local icon, name, level, family, talent = GetStablePetInfo(PetStableFrame.selectedPet);
-		PetStable_SetSelectedPetInfo(icon, name, level, family, talent);
-		
-		if ( GetStablePetFoodTypes(PetStableFrame.selectedPet) ) then
-			PetStableDiet.tooltip = format(PET_DIET_TEMPLATE, BuildListString(GetStablePetFoodTypes(PetStableFrame.selectedPet)));
-			PetStableDiet:Show();
-		else
-			PetStableDiet:Hide();
+			PetStableCurrentPet:SetChecked(nil);
+			PetStableLevelText:SetText("");
+			PetStableLoyaltyText:SetText("");
+			PetStableModel:Hide();
 		end
 	else
- 		-- If no selected pet clear everything out
+		PetStableCurrentPet:SetChecked(nil);
+	end
+	-- Set tooltip and icon info
+	if ( GetPetIcon() ) then
+		SetItemButtonTexture(PetStableCurrentPet, GetPetIcon());
+		PetStableCurrentPet.tooltip = UnitName("pet");
+		PetStableCurrentPet.tooltipSubtext = format(UNIT_LEVEL_TEMPLATE,UnitLevel("pet")).." "..UnitCreatureFamily("pet");
+	elseif ( GetStablePetInfo(0) ) then
+		icon, name, level, family, loyalty = GetStablePetInfo(0);
+		SetItemButtonTexture(PetStableCurrentPet, icon);
+		PetStableCurrentPet.tooltip = name;
+		PetStableCurrentPet.tooltipSubtext = format(UNIT_LEVEL_TEMPLATE,level).." "..family;
+	else
+		SetItemButtonTexture(PetStableCurrentPet, "");
+		PetStableCurrentPet.tooltip = EMPTY_STABLE_SLOT;
+		PetStableCurrentPet.tooltipSubtext = "";
+		PetStableCurrentPet:SetChecked(nil);
+	end
+	if ( GameTooltip:IsOwned(PetStableCurrentPet) ) then
+		GameTooltip:SetOwner(PetStableCurrentPet, "ANCHOR_RIGHT");
+		GameTooltip:SetText(PetStableCurrentPet.tooltip);
+		GameTooltip:AddLine(PetStableCurrentPet.tooltipSubtext, "", 1.0, 1.0, 1.0);
+		GameTooltip:Show();
+	end
+	
+	-- If no selected pet clear everything out
+ 	if ( selectedPet == -1 ) then
+ 		-- no pet
  		PetStableModel:Hide();
- 		PetStable_SetSelectedPetInfo();
-		PetStableDiet.tooltip = nil;
-		PetStableDiet:Hide();
+ 		PetStableLevelText:SetText("");
+ 		PetStableLoyaltyText:SetText("");
  	end
 	
-	-- Select correct page
-	if (PetStableFrame.page == 1) then
-		PetStablePrevPageButton:Disable();
+	-- Enable, disable, or hide purchase button
+	PetStablePurchaseButton:Show();
+	if ( GetNumStableSlots() == NUM_PET_STABLE_SLOTS ) then
+		PetStablePurchaseButton:Hide();
+		PetStableCostLabel:Hide();
+		PetStableCostMoneyFrame:Hide();
+		PetStableSlotText:Hide();
+	elseif ( GetMoney() >= GetNextStableSlotCost() ) then
+		PetStablePurchaseButton:Enable();
+		PetStableCostLabel:Show();
+		PetStableCostMoneyFrame:Show();
+		SetMoneyFrameColor("PetStableCostMoneyFrame", HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 	else
-		PetStablePrevPageButton:Enable();
-	end
-	if (PetStableFrame.page == NUM_PET_STABLE_PAGES) then
-		PetStableNextPageButton:Disable();
-	else
-		PetStableNextPageButton:Enable();
-	end
-	PetStableCurrentPage:SetFormattedText(MERCHANT_PAGE_NUMBER, PetStableFrame.page, NUM_PET_STABLE_PAGES);
-end
-
-function PetStable_PrevPage(self)
-	self:SetButtonState("NORMAL");
-	local page = PetStableFrame.page-1;
-	if (page ~= PetStableFrame.page and page > 0 and page <= NUM_PET_STABLE_PAGES) then
-		PetStableFrame.page = page;
-		PetStable_Update(false);
-	end
-end
-
-function PetStable_NextPage(self)
-	self:SetButtonState("NORMAL");
-	local page = PetStableFrame.page+1;
-	if (page ~= PetStableFrame.page and page > 0 and page <= NUM_PET_STABLE_PAGES) then
-		PetStableFrame.page = page;
-		PetStable_Update(false);
+		PetStablePurchaseButton:Disable();
+		PetStableCostLabel:Show();
+		PetStableCostMoneyFrame:Show();
+		SetMoneyFrameColor("PetStableCostMoneyFrame", RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 	end
 end
 
 function PetStable_NoPetsAllowed()
-	local button;
 	for i=1, NUM_PET_STABLE_SLOTS do
 		button = _G["PetStableStabledPet"..i];
 		button.tooltip = EMPTY_STABLE_SLOT;
-		button.Checked:Hide();
+		button:SetChecked(nil);
 	end
-
-	for i =1, NUM_PET_ACTIVE_SLOTS do
-		button = _G["PetStableActivePet"..i];
-		button.Checked:Hide();
-		button.tooltip = EMPTY_STABLE_SLOT;
-		SetItemButtonTexture(button, "");
-	end	
 	
-	PetStable_SetSelectedPetInfo();
+	PetStableCurrentPet:SetChecked(nil);
+	PetStableLevelText:SetText("");
+	PetStableLoyaltyText:SetText("");
 	PetStableModel:Hide();
-end
-
-function PetStableSlot_Lock_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(PET_STABLE_SLOT_LOCKED);
-	local spellName = GetSpellInfo(CALL_PET_SPELL_IDS[self:GetParent():GetID()]);
-	if (spellName and spellName ~= "") then
-		GameTooltip:AddLine(format(PET_STABLE_SLOT_LOCKED_TOOLTIP, spellName), 1.0, 1.0, 1.0);
-	end
-	GameTooltip:Show();
+	SetItemButtonTexture(PetStableCurrentPet, "");
+	PetStableCurrentPet.tooltip = EMPTY_STABLE_SLOT;
+	PetStableCurrentPet:SetChecked(nil);
+	PetStablePurchaseButton:Hide();
+	PetStableCostLabel:Hide();
+	PetStableCostMoneyFrame:Hide();
+	PetStableSlotText:Hide();
 end

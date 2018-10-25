@@ -139,13 +139,6 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentFlash" file="Interface\TargetingFrame\UI-TargetingFrame-Flash" hidden="true">
-					<Size x="242" y="93"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-24" y="0"/>
-					</Anchors>
-					<TexCoords left="0" right="0.9453125" top="0" bottom="0.181640625"/>
-				</Texture>
 				<Texture name="$parentBackground" parentKey="Background">
 					<Size x="119" y="41"/>
 					<Anchors>
@@ -168,17 +161,6 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
-				<Texture name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
-				<Texture name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
-				<Texture name="$parentHealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
-				<Texture name="$parentHealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
-				<Texture name="$parentHealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
-				<Texture name="$parentTotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
-			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="$parentTextureFrame" parentKey="textureFrame" setAllPoints="true">
@@ -196,7 +178,7 @@
 						<FontString name="$parentLevelText" inherits="GameNormalNumberFont" justifyH="CENTER">
 							<!--WARNING:: This is re-anchored in code.-->
 							<Anchors>
-								<Anchor point="CENTER" x="61" y="-17"/>
+								<Anchor point="CENTER" x="63" y="-16"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentDeadText" inherits="GameFontNormalSmall" text="DEAD">
@@ -207,36 +189,6 @@
 						<FontString name="$parentUnconsciousText" inherits="GameFontNormalSmall" text="UNCONSCIOUS">
 							<Anchors>
 								<Anchor point="CENTER" x="-50" y="3"/>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentHealthBarText" inherits="TextStatusBarText">
-							<Anchors>
-								<Anchor point="CENTER" x="-50" y="3"/>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentHealthBarTextLeft" inherits="TextStatusBarText">
-							<Anchors>
-								<Anchor point="LEFT" x="8" y="3"/>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentHealthBarTextRight" inherits="TextStatusBarText">
-							<Anchors>
-								<Anchor point="RIGHT" x="-110" y="3"/>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentManaBarText" inherits="TextStatusBarText">
-							<Anchors>
-								<Anchor point="CENTER" x="-50" y="-8"/>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentManaBarTextLeft" inherits="TextStatusBarText">
-							<Anchors>
-								<Anchor point="LEFT" x="8" y="-8"/>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentManaBarTextRight" inherits="TextStatusBarText">
-							<Anchors>
-								<Anchor point="RIGHT" x="-110" y="-8"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -285,8 +237,6 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="1">
-						<Texture name="$parentOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
-						<Texture name="$parentOverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
 						<Texture name="$parentPrestigeBadge" hidden="true">
 							<Size x="30" y="30"/>
 							<Anchors>
@@ -319,9 +269,6 @@
 						UnitFrameHealthBar_OnValueChanged(self, value);
 						TargetHealthCheck(self, value);
 					</OnValueChanged>
-					<OnSizeChanged>
-						UnitFrameHealPredictionBars_UpdateSize(self:GetParent());
-					</OnSizeChanged>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
@@ -346,32 +293,6 @@
 			</Frame>
 			<Frame name="$parentDebuffs" parentKey="debuffs" hidden="true">
 				<Size x="10" y="10"/>
-			</Frame>
-			<Frame name="$parentNumericalThreat" hidden="true">
-				<Size x="49" y="18"/>
-				<Anchors>
-					<Anchor point="BOTTOM" relativePoint="TOP" x="-50" y="-22"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentValue" inherits="GameFontHighlight" text="100%" parentKey="text">
-							<Anchors>
-								<Anchor point="TOP" x="0" y="-4"/>
-							</Anchors>
-						</FontString>
-						<Texture name="$parentBG" file="Interface\TargetingFrame\UI-StatusBar" parentKey="bg">
-							<Size x="37" y="14"/>
-							<Anchors>
-								<Anchor point="TOP" x="0" y="-3"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\TargetingFrame\NumericThreatBorder">
-							<TexCoords left="0" right="0.765625" top="0" bottom="0.5625"/>
-						</Texture>
-					</Layer>
-				</Layers>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -548,7 +469,6 @@
 				self.showLevel = true;
 				self.showPVP = true;
 				self.showLeader = true;
-				self.showThreat = true;
 				self.showPortrait = true;
 				self.showClassification = true;
 				self.showAuraCount = true;
@@ -557,15 +477,13 @@
 				TargetFrame_CreateSpellbar(self, "PLAYER_TARGET_CHANGED");
 				TargetFrame_CreateTargetofTarget(self, "targettarget");
 				self:RegisterEvent("PLAYER_TARGET_CHANGED");
-				self.threatNumericIndicator:SetScript("OnShow", function() TargetFrame_UpdateAuras(self) end);
-				self.threatNumericIndicator:SetScript("OnHide", function() TargetFrame_UpdateAuras(self) end);
 				UIParent_UpdateTopFramePositions();
 			</OnLoad>
 			<OnDragStart function="TargetFrame_OnDragStart"/>
 			<OnDragStop function="TargetFrame_OnDragStop"/>
 		</Scripts>
 	</Button>
-	<Button name="FocusFrame" movable="true" inherits="TargetFrameTemplate" clampedToScreen="true">
+	<!--<Button name="FocusFrame" movable="true" inherits="TargetFrameTemplate" clampedToScreen="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" x="250" y="-240"/>
 		</Anchors>
@@ -587,7 +505,6 @@
 				self.showLevel = true;
 				self.showPVP = true;
 				self.showLeader = true;
-				self.showThreat = true;
 				self.showPortrait = true;
 				self.showClassification = true;
 				self.showAuraCount = true;
@@ -600,7 +517,7 @@
 			<OnDragStart function="FocusFrame_OnDragStart"/>
 			<OnDragStop function="FocusFrame_OnDragStop"/>
 		</Scripts>
-	</Button>
+	</Button>-->
 	<Button name="Boss1TargetFrame" inherits="BossTargetFrameTemplate" id="1">
 		<Anchors>
 			<Anchor point="TOPRIGHT" x="55" y="-236"/>

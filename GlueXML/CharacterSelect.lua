@@ -3,7 +3,7 @@ CHARACTER_SELECT_INITIAL_FACING = nil;
 
 CHARACTER_ROTATION_CONSTANT = 0.6;
 
-MAX_CHARACTERS_DISPLAYED = 12;
+MAX_CHARACTERS_DISPLAYED = 10;
 MAX_CHARACTERS_DISPLAYED_BASE = MAX_CHARACTERS_DISPLAYED;
 
 MAX_CHARACTERS_PER_REALM = 200; -- controled by the server now, so lets set it up high
@@ -156,7 +156,7 @@ function CharacterSelect_OnLoad(self)
 
     CHARACTER_LIST_OFFSET = 0;
     if (not IsGMClient()) then
-        MAX_CHARACTERS_PER_REALM = 16;
+        MAX_CHARACTERS_PER_REALM = 10;
     end
 end
 
@@ -167,7 +167,6 @@ function CharacterSelect_OnShow(self)
     CHARACTER_LIST_OFFSET = 0;
     CHARACTER_SELECT_KICKED_FROM_CONVERT = false;
     CharacterSelect_ResetVeteranStatus();
-    CharacterTemplateConfirmDialog:Hide();
 
     if ( #translationTable == 0 ) then
         for i = 1, GetNumCharacters() do
@@ -718,7 +717,7 @@ function UpdateCharacterSelection(self)
     for i=1, MAX_CHARACTERS_DISPLAYED, 1 do
         button = _G["CharSelectCharacterButton"..i];
         paidServiceButton = _G["CharSelectPaidService"..i];
-        button.selection:Hide();
+        button:UnlockHighlight();
         button.upButton:Hide();
         button.downButton:Hide();
         if (self.undeleting or CharSelectServicesFlowFrame:IsShown()) then
@@ -739,7 +738,7 @@ function UpdateCharacterSelection(self)
         paidServiceButton = _G["CharSelectPaidService"..index];
 
         if ( button ) then
-            button.selection:Show();
+            button:LockHighlight();
             if ( button:IsMouseOver() ) then
                 CharacterSelectButton_ShowMoveButtons(button);
             end
@@ -1166,7 +1165,6 @@ end
 
 function CharacterSelect_CreateNewCharacter(characterType, allowCharacterTypeFrameToShow)
     C_CharacterCreation.SetCharacterCreateType(characterType);
-    CharacterCreate_SetAllowCharacterTypeFrame(allowCharacterTypeFrameToShow);
     CharacterSelect_SelectCharacter(CharacterSelect.createIndex);
 end
 
@@ -1210,7 +1208,7 @@ function CharacterSelect_SelectCharacterByGUID(guid)
         if (select(15, GetCharacterInfo(GetCharIDFromIndex(i + CHARACTER_LIST_OFFSET))) == guid) then
             local button = _G["CharSelectCharacterButton"..i];
             CharacterSelectButton_OnClick(button);
-            button.selection:Show();
+            button:LockHighlight();
             UpdateCharacterSelection(CharacterSelect);
             GetCharacterListUpdate();
             return true;
@@ -1502,7 +1500,8 @@ function CharacterSelectButton_OnDragStop(self)
         paidBtn.texture:SetVertexColor(1, 1, 1);
         paidBtn.GoldBorder:SetVertexColor(1, 1, 1);
         paidBtn.VASIcon:SetVertexColor(1, 1, 1);
-        if ( button.selection:IsShown() and button:IsMouseOver() ) then
+        if ( CharacterSelect.selectedIndex == index and button:IsMouseOver() ) then
+			button:LockHighlight();
             CharacterSelectButton_ShowMoveButtons(button);
         end
     end
@@ -1595,62 +1594,17 @@ function AccountUpgradePanel_GetBrownBoxFeatures()
 end
 
 function AccountUpgradePanel_GetBannerInfo()
-	if IsTrialAccount() then
-		local expansionDisplayInfo, features;
-		if DoesCurrentLocaleSellExpansionLevels() then
-			expansionDisplayInfo = GetExpansionDisplayInfo(LE_EXPANSION_CLASSIC);
-			features = AccountUpgradePanel_GetBrownBoxFeatures();
-		else
-			expansionDisplayInfo = GetExpansionDisplayInfo(LE_EXPANSION_LEVEL_CURRENT);
-			features = expansionDisplayInfo.features;
-			
-			-- Replace the boost feature.
-			features[3] = { icon = "Interface\\Icons\\Achievement_Quests_Completed_06", text = UPGRADE_FEATURE_2 }
-		end
-		
-		if not expansionDisplayInfo then
-			return nil, false;
-		end
-
-		local shouldShowBanner = true;
-		return nil, shouldShowBanner, UPGRADE_ACCOUNT_SHORT, expansionDisplayInfo.logo, expansionDisplayInfo.banner, features;
-	elseif IsVeteranTrialAccount() then
-		local features = {
-			{ icon = "Interface\\Icons\\achievement_bg_returnxflags_def_wsg", text = VETERAN_FEATURE_1 },
-			{ icon = "Interface\\Icons\\achievement_reputation_01", text = VETERAN_FEATURE_2 },
-			{ icon = "Interface\\Icons\\spell_holy_surgeoflight", text = VETERAN_FEATURE_3 },
-		};
-		
-		local currentExpansionLevel = AccountUpgradePanel_GetDisplayExpansionLevel();
-		local expansionDisplayInfo = GetExpansionDisplayInfo(currentExpansionLevel);
-		if not expansionDisplayInfo then
-			return currentExpansionLevel, false;
-		end
-		
-		local shouldShowBanner = true;
-		return currentExpansionLevel, shouldShowBanner, REACTIVATE_ACCOUNT_NOW, expansionDisplayInfo.logo, expansionDisplayInfo.banner, features;
-	else
-		local currentExpansionLevel, upgradeLevel = AccountUpgradePanel_GetDisplayExpansionLevel();
-		local shouldShowBanner = GameLimitedMode_IsActive() or CanUpgradeExpansion();
-		if shouldShowBanner then
-			local expansionDisplayInfo = GetExpansionDisplayInfo(upgradeLevel);
-			if not expansionDisplayInfo then
-				return currentExpansionLevel, false;
-			end
-		
-			return currentExpansionLevel, shouldShowBanner, UPGRADE_ACCOUNT_SHORT, expansionDisplayInfo.logo, expansionDisplayInfo.banner, expansionDisplayInfo.features;
-		else
-			return currentExpansionLevel, shouldShowBanner;
-		end
-	end
+	local currentExpansionLevel = AccountUpgradePanel_GetDisplayExpansionLevel();
+	local shouldShowBanner = false; -- We never want to show the banner for Classic.
+	return currentExpansionLevel, shouldShowBanner;
 end
 
 function AccountUpgradePanel_Update(isExpanded)
 	local currentExpansionLevel, shouldShowBanner, upgradeButtonText, upgradeLogo, upgradeBanner, features = AccountUpgradePanel_GetBannerInfo();
-	SetExpansionLogo(CharacterSelectLogo, currentExpansionLevel);
+	SetClassicLogo(CharacterSelectLogo);
     if ( shouldShowBanner ) then
 		CharSelectAccountUpgradeButton:SetText(upgradeButtonText);
-        CharacterSelectServerAlertFrame:SetPoint("TOP", CharSelectAccountUpgradeMiniPanel, "BOTTOM", 0, -25);
+        CharacterSelectServerAlertFrame:SetPoint("TOP", CharSelectAccountUpgradeMiniPanel, "BOTTOM", 0, -35);
         CharSelectAccountUpgradeButton:Show();
         if ( isExpanded ) then
             CharSelectAccountUpgradePanel:Show();

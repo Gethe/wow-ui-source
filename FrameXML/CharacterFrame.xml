@@ -140,16 +140,89 @@
 		</Scripts>
 	</Frame>
 
-    <Frame name="CharacterFrame" toplevel="true" movable="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplate">
-        <Frames>
-            <Button name="CharacterFrameTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="CHARACTER">
-                <Anchors>
-					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+    <Frame name="CharacterFrame" toplevel="true" movable="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="45"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="CharacterFramePortrait">
+					<Size>
+						<AbsDimension x="60" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="CharacterNameFrame">
+				<Size>
+					<AbsDimension x="109" y="12"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
 						<Offset>
-							<AbsDimension x="11" y="2"/>
+							<AbsDimension x="6" y="232"/>
 						</Offset>
 					</Anchor>
-                </Anchors>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<FontString name="CharacterNameText" inherits="GameFontNormal" text="NAME">
+							<Size>
+								<AbsDimension x="300" y="12"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1.0" g="1.0" b="1.0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetFrameLevel() + 1);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="CharacterFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="CharacterFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-44" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetFrameLevel() + 4);
+					</OnLoad>
+				</Scripts>
+			</Button>
+            <Button name="CharacterFrameTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="CHARACTER" motionScriptsWhileDisabled="false">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="60" y="62"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
                 <Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -158,170 +231,70 @@
 					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
             </Button>
-			<Button name="CharacterFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="REPUTATION_ABBR">
-                <Anchors>
-                   <Anchor point="LEFT" relativeTo="CharacterFrameTab1" relativePoint="RIGHT">
-                        <Offset>
-                            <AbsDimension x="-15" y="0"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-                <Scripts>
+			<Button name="CharacterFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="PET" motionScriptsWhileDisabled="false">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CharacterFrameTab1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(MicroButtonTooltipText(PET, "TOGGLECHARACTER3"), 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			<Button name="CharacterFrameTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="REPUTATION" motionScriptsWhileDisabled="false">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CharacterFrameTab2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(MicroButtonTooltipText(REPUTATION, "TOGGLECHARACTER2"), 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
-                </Scripts>
-            </Button>
-			<Frame parentKey="ReputationTabHelpBox" inherits="GlowBoxTemplate" hidden="true" frameStrata="DIALOG" >
-				<Size x="230" y="65"/>
-				<Anchors>
-					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="CharacterFrameTab2" x="0" y="-14"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="BigText" inherits="GameFontHighlight" text="REPUTATION_EXALTED_PLUS_HELP" justifyH="LEFT">
-							<Size x="186" y="0"/>
-							<Anchors>
-								<Anchor point="TOP" x="-10" y="-12"/>
-							</Anchors>
-						</FontString>
-						<Texture parentKey="ArrowUp" inherits="HelpPlateArrowUP">
-							<Size x="53" y="21"/>
-							<Anchors>
-								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-3"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER">
-						<Texture parentKey="ArrowGlowUp" inherits="HelpPlateArrow-GlowUP" alphaMode="ADD" alpha="0.5">
-							<Size x="53" y="21"/>
-							<Anchors>
-								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-3"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="6" y="6"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								self:GetParent():Hide();
-								SetCVarBitfield("closedInfoFrames",	LE_FRAME_TUTORIAL_REPUTATION_EXALTED_PLUS, true);
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:SetHeight(self.BigText:GetHeight() + HELPTIP_HEIGHT_PADDING);
-					</OnLoad>
 				</Scripts>
-			</Frame>
-			<Button name="CharacterFrameTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="CURRENCY" hidden="true">
+			</Button>
+			<Button name="CharacterFrameTab4" inherits="CharacterFrameTabButtonTemplate" id="4" text="SKILLS" motionScriptsWhileDisabled="false">
                 <Anchors>
-                   <Anchor point="LEFT" relativeTo="CharacterFrameTab2" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="CharacterFrameTab3" relativePoint="RIGHT">
                         <Offset>
-                            <AbsDimension x="-15" y="0"/>
+                            <AbsDimension x="-16" y="0"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
                 <Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(MicroButtonTooltipText(CURRENCY, "TOGGLECURRENCY"), 1.0,1.0,1.0 );
+						GameTooltip:SetText(MicroButtonTooltipText(SKILLS, "TOGGLECHARACTER1"), 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
-                </Scripts>
-            </Button>
-			<Frame name="CharacterFrameInsetRight" inherits="InsetFrameTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="CharacterFrameInset" relativePoint="TOPRIGHT" x="1" y="0"/>
-					<Anchor point="BOTTOMRIGHT"  x="-4" y="4"/>
-				</Anchors>
-			</Frame>
-
-			<Frame name="CharacterStatsPane" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="CharacterFrameInsetRight" x="3" y="-3"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInsetRight" x="-3" y="2"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="ClassBackground">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Frame parentKey="ItemLevelCategory" inherits="CharacterStatFrameCategoryTemplate">
-						<KeyValues>
-							<KeyValue key="titleText" value="STAT_AVERAGE_ITEM_LEVEL" type="global"/>
-						</KeyValues>
-						<Anchors>
-							<Anchor point="TOP" x="0" y="-2"/>
-						</Anchors>
-					</Frame>
-					<Frame parentKey="ItemLevelFrame">
-						<Size x="187" y="29"/>
-						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.ItemLevelCategory" relativePoint="BOTTOM" x="0" y="0"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BORDER">
-								<Texture parentKey="Background" atlas="UI-Character-Info-ItemLevel-Bounce" useAtlasSize="true" alpha="0.3">
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
-								<FontString parentKey="Value" inherits="Game15Font_o1">
-									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent.ItemLevelBackground" x="0" y="-1"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnEnter>
-								if ( self.onEnterFunc ) then
-									self:onEnterFunc();
-								else
-									PaperDollStatTooltip(self);
-								end
-							</OnEnter>
-							<OnLeave function="GameTooltip_Hide"/>
-						</Scripts>
-					</Frame>
-					<Frame parentKey="AttributesCategory" inherits="CharacterStatFrameCategoryTemplate">
-						<KeyValues>
-							<KeyValue key="titleText" value="STAT_CATEGORY_ATTRIBUTES" type="global"/>
-						</KeyValues>
-						<Anchors>
-							<Anchor point="TOP" x="0" y="-81"/>
-						</Anchors>
-					</Frame>
-					<Frame parentKey="EnhancementsCategory" inherits="CharacterStatFrameCategoryTemplate">
-						<KeyValues>
-							<KeyValue key="titleText" value="STAT_CATEGORY_ENHANCEMENTS" type="global"/>
-						</KeyValues>
-					</Frame>
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						self.statsFramePool = CreateFramePool("FRAME", self, "CharacterStatFrameTemplate");
-						local _, class = UnitClass("player");
-						self.ClassBackground:SetAtlas("UI-Character-Info-"..class.."-BG", true);
-					</OnLoad>
 				</Scripts>
-			</Frame>
+            </Button>
+			<Button name="CharacterFrameTab5" inherits="CharacterFrameTabButtonTemplate" id="5" text="HONOR">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CharacterFrameTab4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(MicroButtonTooltipText(HONOR, "TOGGLECHARACTER4"), 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad function="CharacterFrame_OnLoad"/>

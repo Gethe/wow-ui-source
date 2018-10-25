@@ -9,7 +9,7 @@ function PlayerFrame_OnLoad(self)
 	UnitFrame_Initialize(self, "player", PlayerName, PlayerPortrait,
 						 PlayerFrameHealthBar, PlayerFrameHealthBarText,
 						 PlayerFrameManaBar, PlayerFrameManaBarText,
-						 PlayerFrameFlash, nil, nil,
+						 nil, nil, nil,
 						 PlayerFrameMyHealPredictionBar, PlayerFrameOtherHealPredictionBar,
 						 PlayerFrameTotalAbsorbBar, PlayerFrameTotalAbsorbBarOverlay, PlayerFrameOverAbsorbGlow,
 						 PlayerFrameOverHealAbsorbGlow, PlayerFrameHealAbsorbBar, PlayerFrameHealAbsorbBarLeftShadow,
@@ -40,7 +40,6 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_EXITING_VEHICLE");
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
 	self:RegisterEvent("PVP_TIMER_UPDATE");
-	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("HONOR_PRESTIGE_UPDATE");
 	self:RegisterUnitEvent("UNIT_COMBAT", "player", "vehicle");
@@ -64,9 +63,9 @@ end
 --This is overwritten in LocalizationPost for different languages.
 function PlayerFrame_UpdateLevelTextAnchor(level)
 	if ( level >= 100 ) then
-		PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -62, -17);
+		PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -64, -16);
 	else
-		PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -61, -17);
+		PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -63, -16);
 	end
 end
 
@@ -220,7 +219,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 		self.onHateList = nil;
 		PlayerFrame_Update();
 		PlayerFrame_UpdateStatus();
-		PlayerFrame_UpdateRolesAssigned();
 
 		if ( IsPVPTimerRunning() ) then
 			PlayerPVPTimerText:Show();
@@ -310,8 +308,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 			PlayerPVPTimerText:Hide();
 			PlayerPVPTimerText.timeLeft = nil;
 		end
-	elseif ( event == "PLAYER_ROLES_ASSIGNED" ) then
-		PlayerFrame_UpdateRolesAssigned();
 	elseif ( event == "VARIABLES_LOADED" ) then
 		PlayerFrame_SetLocked(not PLAYER_FRAME_UNLOCKED);
 		if ( PLAYER_FRAME_CASTBARS_SHOWN ) then
@@ -319,19 +315,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "HONOR_PRESTIGE_UPDATE" ) then
 		PlayerFrame_UpdatePvPStatus();
-	end
-end
-
-function PlayerFrame_UpdateRolesAssigned()
-	local frame = PlayerFrame;
-	local icon = _G[frame:GetName().."RoleIcon"];
-	local role = UnitGroupRolesAssigned("player");
-
-	if ( role == "TANK" or role == "HEALER" or role == "DAMAGER") then
-		icon:SetTexCoord(GetTexCoordsForRoleSmallCircle(role));
-		icon:Show();
-	else
-		icon:Hide();
 	end
 end
 
@@ -412,16 +395,12 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	PlayerFrameTexture:Hide();
 	if ( vehicleType == "Natural" ) then
 		PlayerFrameVehicleTexture:SetTexture("Interface\\Vehicles\\UI-Vehicle-Frame-Organic");
-		PlayerFrameFlash:SetTexture("Interface\\Vehicles\\UI-Vehicle-Frame-Organic-Flash");
-		PlayerFrameFlash:SetTexCoord(-0.02, 1, 0.07, 0.86);
 		PlayerFrameHealthBar:SetWidth(103);
 		PlayerFrameHealthBar:SetPoint("TOPLEFT",116,-41);
 		PlayerFrameManaBar:SetWidth(103);
 		PlayerFrameManaBar:SetPoint("TOPLEFT",116,-52);
 	else
 		PlayerFrameVehicleTexture:SetTexture("Interface\\Vehicles\\UI-Vehicle-Frame");
-		PlayerFrameFlash:SetTexture("Interface\\Vehicles\\UI-Vehicle-Frame-Flash");
-		PlayerFrameFlash:SetTexCoord(-0.02, 1, 0.07, 0.86);
 		PlayerFrameHealthBar:SetWidth(100);
 		PlayerFrameHealthBar:SetPoint("TOPLEFT",119,-41);
 		PlayerFrameManaBar:SetWidth(100);
@@ -430,7 +409,7 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	PlayerFrame_ShowVehicleTexture();
 
 	PlayerName:SetPoint("CENTER",50,23);
-	PlayerLeaderIcon:SetPoint("TOPLEFT",40,-12);
+	PlayerLeaderIcon:SetPoint("TOPLEFT",44,-10);
 	PlayerMasterIcon:SetPoint("TOPLEFT",86,0);
 	PlayerFrameGroupIndicator:SetPoint("BOTTOMLEFT", PlayerFrame, "TOPLEFT", 97, -13);
 
@@ -453,7 +432,7 @@ function PlayerFrame_ToPlayerArt(self)
 	PlayerFrameTexture:Show();
 	PlayerFrame_HideVehicleTexture();
 	PlayerName:SetPoint("CENTER",50,19);
-	PlayerLeaderIcon:SetPoint("TOPLEFT",40,-12);
+	PlayerLeaderIcon:SetPoint("TOPLEFT",44,-10);
 	PlayerMasterIcon:SetPoint("TOPLEFT",80,-10);
 	PlayerFrameGroupIndicator:SetPoint("BOTTOMLEFT", PlayerFrame, "TOPLEFT", 97, -20);
 	PlayerFrameHealthBar:SetWidth(119);
@@ -462,8 +441,6 @@ function PlayerFrame_ToPlayerArt(self)
 	PlayerFrameManaBar:SetPoint("TOPLEFT",106,-52);
 	PlayerFrameBackground:SetWidth(119);
 	PlayerLevelText:Show();
-	PlayerFrameFlash:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Flash");
-	PlayerFrameFlash:SetTexCoord(0.9453125, 0, 0, 0.181640625);
 end
 
 function PlayerFrame_UpdateVoiceStatus (status)
@@ -762,12 +739,6 @@ function PlayerFrame_ShowVehicleTexture()
 	local _, class = UnitClass("player");
 	if ( PlayerFrame.classPowerBar ) then
 		PlayerFrame.classPowerBar:Hide();
-	elseif ( class == "SHAMAN" ) then
-		TotemFrame:Hide();
-	elseif ( class == "DEATHKNIGHT" ) then
-		RuneFrame:Hide();
-	elseif ( class == "PRIEST" ) then
-		PriestBarFrame:Hide();
 	end
 end
 
@@ -778,12 +749,6 @@ function PlayerFrame_HideVehicleTexture()
 	local _, class = UnitClass("player");
 	if ( PlayerFrame.classPowerBar ) then
 		PlayerFrame.classPowerBar:Setup();
-	elseif ( class == "SHAMAN" ) then
-		TotemFrame_Update();
-	elseif ( class == "DEATHKNIGHT" ) then
-		RuneFrame:Show();
-	elseif ( class == "PRIEST" ) then
-		PriestBarFrame_CheckAndShow();
 	end
 end
 
@@ -862,22 +827,8 @@ function PlayerFrame_AdjustAttachments()
 	end
 	if ( PetFrame and PetFrame:IsShown() ) then
 		CastingBarFrame:SetPoint("TOP", PetFrame, "BOTTOM", 0, -4);
-	elseif ( TotemFrame and TotemFrame:IsShown() ) then
-		CastingBarFrame:SetPoint("TOP", TotemFrame, "BOTTOM", 0, 2);
 	else
 		local _, class = UnitClass("player");
-		if ( class == "PALADIN" ) then
-			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, -6);
-		elseif ( class == "DRUID" ) then
-			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, 10);
-		elseif ( class == "PRIEST" and PriestBarFrame:IsShown() ) then
-			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, -2);
-		elseif ( class == "DEATHKNIGHT" or class == "WARLOCK" ) then
-			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, 4);
-		elseif ( class == "MONK" ) then
-			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, -1);
-		else
-			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, 10);
-		end
+		CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, 10);
 	end
 end

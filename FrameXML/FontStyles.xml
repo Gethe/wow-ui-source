@@ -198,9 +198,7 @@
 	<Font name="SubZoneTextFont" inherits="SystemFont_OutlineThick_Huge4" virtual="true"/>
 	<Font name="PVPInfoTextFont" inherits="SystemFont_OutlineThick_Huge2" virtual="true"/>
 	<Font name="ErrorFont" inherits="GameFontNormalLarge" virtual="true"/>
-	<Font name="TextStatusBarText" inherits="SystemFont_Outline_Small" virtual="true">
-		<Color r="1.0" g="1.0" b="1.0"/>
-	</Font>
+	<Font name="TextStatusBarText" inherits="NumberFontNormal" virtual="true"/>
 	<Font name="GameNormalNumberFont" inherits="NumberFont_GameNormal" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>

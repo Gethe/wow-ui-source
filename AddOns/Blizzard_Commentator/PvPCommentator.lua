@@ -271,9 +271,9 @@ function PvPCommentatorMixin:SetDefaultCVars()
 	SetCVar("nameplateShowAll", 1);
 
 	-- See InterfaceOptionsNPCNamesDropDown, we want these all off.
-	SetCVar("UnitNameFriendlySpecialNPCName", 0);
-	SetCVar("UnitNameHostleNPC", 0);
-	SetCVar("UnitNameInteractiveNPC", 0);
+	-- SetCVar("UnitNameFriendlySpecialNPCName", 0);	-- CVar removed in Classic 7.3.5
+	-- SetCVar("UnitNameHostleNPC", 0);					-- CVar removed in Classic 7.3.5
+	-- SetCVar("UnitNameInteractiveNPC", 0);			-- CVar removed in Classic 7.3.5
 	SetCVar("UnitNameNPC", 0);
 	SetCVar("ShowQuestUnitCircles", 0);
 	

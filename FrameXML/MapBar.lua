@@ -68,7 +68,7 @@ function MapBarFrame_Update(self)
 end
 
 function MapBarFrame_UpdateLayout(self)
-	self:SetFrameLevel(WorldMapPOIFrame:GetFrameLevel() + 1);
+	--self:SetFrameLevel(WorldMapPOIFrame:GetFrameLevel() + 1);
 end
 
 function MapBarFrame_GetString(stringType, tag, phase)

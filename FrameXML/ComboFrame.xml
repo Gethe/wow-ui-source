@@ -64,47 +64,27 @@
 		<Frames>
 			<Frame name="ComboPoint1" parentArray="ComboPoints" inherits="ComboPointTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-9" y="6"/>
+					<Anchor point="TOPRIGHT" x="0" y="0"/>
 				</Anchors>
 			</Frame>
 			<Frame name="ComboPoint2" parentArray="ComboPoints" inherits="ComboPointTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="0" y="0"/>
+					<Anchor point="TOPRIGHT" x="7" y="-8"/>
 				</Anchors>
 			</Frame>
 			<Frame name="ComboPoint3" parentArray="ComboPoints" inherits="ComboPointTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="7" y="-8"/>
+					<Anchor point="TOPRIGHT" x="12" y="-19"/>
 				</Anchors>
 			</Frame>
 			<Frame name="ComboPoint4" parentArray="ComboPoints" inherits="ComboPointTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="12" y="-19"/>
+					<Anchor point="TOPRIGHT" x="14" y="-30"/>
 				</Anchors>
 			</Frame>
 			<Frame name="ComboPoint5" parentArray="ComboPoints" inherits="ComboPointTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="14" y="-30"/>
-				</Anchors>
-			</Frame>
-			<Frame name="ComboPoint6" parentArray="ComboPoints" inherits="ComboPointTemplate">
-				<Anchors>
 					<Anchor point="TOPRIGHT" x="12" y="-41"/>
-				</Anchors>
-			</Frame>
-			<Frame name="ComboPoint7" parentArray="ComboPoints" inherits="ComboPointTemplate" alpha="0.6">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="24" y="-33"/>
-				</Anchors>
-			</Frame>
-			<Frame name="ComboPoint8" parentArray="ComboPoints" inherits="ComboPointTemplate" alpha="0.6">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="24" y="-22"/>
-				</Anchors>
-			</Frame>
-			<Frame name="ComboPoint9" parentArray="ComboPoints" inherits="ComboPointTemplate" alpha="0.6">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="20" y="-12"/>
 				</Anchors>
 			</Frame>
 		</Frames>

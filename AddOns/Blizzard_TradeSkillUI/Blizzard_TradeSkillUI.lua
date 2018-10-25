@@ -1,453 +1,432 @@
-UIPanelWindows["TradeSkillFrame"] = {area = "left", pushable = 3, showFailedFunc = C_TradeSkillUI.CloseTradeSkill, };
+TRADE_SKILLS_DISPLAYED = 8;
+MAX_TRADE_SKILL_REAGENTS = 8;
+TRADE_SKILL_HEIGHT = 16;
 
-TradeSkillTypeColor = {
-	optimal			= { r = 1.00, g = 0.50, b = 0.25,	font = GameFontNormalLeftOrange };
-	medium			= { r = 1.00, g = 1.00, b = 0.00,	font = GameFontNormalLeftYellow };
-	easy			= { r = 0.25, g = 0.75, b = 0.25,	font = GameFontNormalLeftLightGreen };
-	trivial			= { r = 0.50, g = 0.50, b = 0.50,	font = GameFontNormalLeftGrey };
-	header			= { r = 1.00, g = 0.82, b = 0,		font = GameFontNormalLeft };
-	subheader		= { r = 1.00, g = 0.82, b = 0,		font = GameFontNormalLeft };
-	nodifficulty	= { r = 0.96, g = 0.96, b = 0.96,	font = GameFontNormalLeftGrey };
-};
+TradeSkillTypeColor = { };
+TradeSkillTypeColor["optimal"]	= { r = 1.00, g = 0.50, b = 0.25, font = "GameFontNormalLeftOrange" };       
+TradeSkillTypeColor["medium"]	= { r = 1.00, g = 1.00, b = 0.00, font = "GameFontNormalLeftYellow" };       
+TradeSkillTypeColor["easy"]		= { r = 0.25, g = 0.75, b = 0.25, font = "GameFontNormalLeftLightGreen" };   
+TradeSkillTypeColor["trivial"]	= { r = 0.50, g = 0.50, b = 0.50, font = "GameFontNormalLeftGrey" };         
+TradeSkillTypeColor["header"]	= { r = 1.00, g = 0.82, b = 0,    font = "GameFontNormalLeft" };
 
-TradeSkillUIMixin = {};
+-- Current Trade Skill name. Used for detecting if the player swaps which tradeskill the window should show.
+local currentTradeSkillName = "";
 
-function TradeSkillUIMixin:OnLoad()
-	self.RecipeList:SetRecipeChangedCallback(function(...) self:OnRecipeChanged(...) end);
-
-	self:RegisterEvent("TRADE_SKILL_DATA_SOURCE_CHANGING");
-	self:RegisterEvent("TRADE_SKILL_DATA_SOURCE_CHANGED");
-	self:RegisterEvent("TRADE_SKILL_LIST_UPDATE");
-	self:RegisterEvent("TRADE_SKILL_DETAILS_UPDATE");
-	self:RegisterEvent("TRADE_SKILL_NAME_UPDATE");
-	self:RegisterEvent("TRADE_SKILL_FILTER_UPDATE");
-
-	self:RegisterEvent("SKILL_LINES_CHANGED");
-	self:RegisterEvent("TRIAL_STATUS_UPDATE");
-
-	self:RegisterEvent("TRADE_SKILL_CLOSE");
-	self:RegisterEvent("GARRISON_TRADESKILL_NPC_CLOSED");
-
-	UIDropDownMenu_Initialize(self.FilterDropDown, function(...) self:InitFilterMenu(...) end, "MENU");
-	UIDropDownMenu_Initialize(self.LinkToDropDown, function(...) self:InitLinkToMenu(...) end, "MENU");
-end
-
-function TradeSkillUIMixin:OnEvent(event, ...)
-	if event == "TRADE_SKILL_DATA_SOURCE_CHANGING" then
-		if self:IsVisible() then
-			self:RefreshRetrievingDataFrame();
-			self.RecipeList:OnDataSourceChanging();
-		end
-	elseif event == "TRADE_SKILL_DATA_SOURCE_CHANGED" then
-		if self:IsVisible() then
-			self:RefreshRetrievingDataFrame();
-			self:OnDataSourceChanged();
-			if self.pendingRecipeIDToSelect then
-				self.RecipeList:SelectedAndForceRecipeIDIntoView(self.pendingRecipeIDToSelect);
-				self.pendingRecipeIDToSelect = nil;
-			end
-		end
-	elseif event == "TRADE_SKILL_LIST_UPDATE" then
-		if self:IsVisible() then
-			self.RecipeList:Refresh();
-			self.DetailsFrame:Refresh();
-		end
-	elseif event == "TRADE_SKILL_DETAILS_UPDATE" then
-		if self:IsVisible() then
-			self.DetailsFrame:Refresh();
-		end
-	elseif event == "TRADE_SKILL_NAME_UPDATE" then
-		if self:IsVisible() then
-			self:RefreshTitle();
-		end
-	elseif event == "TRADE_SKILL_FILTER_UPDATE" then
-		if self:IsVisible() then
-			self.RecipeList:Refresh();
-		end
-	elseif event == "SKILL_LINES_CHANGED" then
-		if self:IsVisible() then
-			self:RefreshSkillRank();
-		end
-	elseif event == "TRIAL_STATUS_UPDATE" then
-		if self:IsVisible() then
-			self:RefreshSkillRank();
-		end
-	elseif event == "TRADE_SKILL_CLOSE" then
-		HideUIPanel(self);
-	elseif event == "GARRISON_TRADESKILL_NPC_CLOSED" then
-		HideUIPanel(self);
-	end
-end
-
-function TradeSkillUIMixin:OnShow()
-	self:RefreshRetrievingDataFrame();
-	PlaySound(SOUNDKIT.UI_PROFESSIONS_WINDOW_OPEN);
-end
-
-function TradeSkillUIMixin:OnHide()
-	C_TradeSkillUI.CloseTradeSkill();
-	C_Garrison.CloseGarrisonTradeskillNPC();
-	PlaySound(SOUNDKIT.UI_PROFESSIONS_WINDOW_CLOSE);
-end
-
-function TradeSkillUIMixin:OnDataSourceChanged()
-	local tradeSkillID = C_TradeSkillUI.GetTradeSkillLine();
-
-	local tradeSkillChanged = self.lastTradeSkillID ~= tradeSkillID;
-	self.lastTradeSkillID = tradeSkillChanged;
-
-	self.RecipeList:OnDataSourceChanged(tradeSkillChanged);
-	self.DetailsFrame:OnDataSourceChanged(tradeSkillChanged);
-	self:RefreshSkillRank();
-	self:RefreshTitle();
-
-	self.LinkToButton:SetShown(C_TradeSkillUI.CanTradeSkillListLink());
-	
-	self:ClearSlotFilter();	
-
+function TradeSkillFrame_OnShow(self)
 	CloseDropDownMenus();
-	self.SearchBox:SetText("");
-end
-
-function TradeSkillUIMixin:RefreshRetrievingDataFrame()
-	self.RetrievingFrame:SetShown(not C_TradeSkillUI.IsTradeSkillReady());
-end
-
-function TradeSkillUIMixin:RefreshTitle()
-	local tradeSkillID, skillLineName, skillLineRank, skillLineMaxRank, skillLineModifier =  C_TradeSkillUI.GetTradeSkillLine();
-
-	self.LinkNameButton:Hide();
-
-	if C_TradeSkillUI.IsTradeSkillGuild() then
-		self.TitleText:SetFormattedText(GUILD_TRADE_SKILL_TITLE, skillLineName);
-
-		self.portrait:Hide();
-
-		self.TabardBackground:Show();
-		self.TabardEmblem:Show();
-		self.TabardBorder:Show();
-		SetLargeGuildTabardTextures("player", self.TabardEmblem, self.TabardBackground, self.TabardBorder);
+	TradeSkillSubClassDropDown:Hide();
+	TradeSkillSubClassDropDown:Show();
+	TradeSkillInvSlotDropDown:Hide();
+	TradeSkillInvSlotDropDown:Show();
+	ShowUIPanel(TradeSkillFrame);
+	TradeSkillCreateButton:Disable();
+	TradeSkillCreateAllButton:Disable();
+	if ( GetTradeSkillSelectionIndex() == 0 ) then
+		TradeSkillFrame_SetSelection(GetFirstTradeSkill());
 	else
-		local linked, linkedName = C_TradeSkillUI.IsTradeSkillLinked();
-		if linked and linkedName then
-			self.LinkNameButton:Show();
-			self.TitleText:SetFormattedText("%s %s[%s]|r", TRADE_SKILL_TITLE:format(skillLineName), HIGHLIGHT_FONT_COLOR_CODE, linkedName);
-			self.LinkNameButton.linkedName = linkedName;
-			self.LinkNameButton:SetWidth(self.TitleText:GetStringWidth());
+		TradeSkillFrame_SetSelection(GetTradeSkillSelectionIndex());
+	end
+	FauxScrollFrame_SetOffset(TradeSkillListScrollFrame, 0);
+	TradeSkillListScrollFrameScrollBar:SetMinMaxValues(0, 0); 
+	TradeSkillListScrollFrameScrollBar:SetValue(0);
+	SetPortraitTexture(TradeSkillFramePortrait, "player");
+	TradeSkillFrame_Update();
+end
+
+function TradeSkillFrame_Hide()
+	HideUIPanel(TradeSkillFrame);
+end
+
+function TradeSkillFrame_OnLoad(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("TRADE_SKILL_UPDATE");
+	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+	self:RegisterEvent("UPDATE_TRADESKILL_RECAST");
+end
+
+function TradeSkillFrame_OnEvent(self, event, ...)
+	if ( not TradeSkillFrame:IsVisible() ) then
+		return;
+	end
+	if ( event == "TRADE_SKILL_UPDATE" ) then
+		if (currentTradeSkillName ~= GetTradeSkillLine()) then
+			TradeSkillFrame_OnShow(TradeSkillFrame);
+			currentTradeSkillName = GetTradeSkillLine();
+		end
+		TradeSkillCreateButton:Disable();
+		TradeSkillCreateAllButton:Disable();
+		if ( GetTradeSkillSelectionIndex() > 1 and GetTradeSkillSelectionIndex() <= GetNumTradeSkills() ) then
+			TradeSkillFrame_SetSelection(GetTradeSkillSelectionIndex());
 		else
-			self.TitleText:SetFormattedText(TRADE_SKILL_TITLE, skillLineName);
-			self.LinkNameButton.linkedName = nil;
-		end
-
-		self.portrait:Show();
-		self.TabardBackground:Hide();
-		self.TabardEmblem:Hide();
-		self.TabardBorder:Hide();
-		SetPortraitToTexture(self.portrait, C_TradeSkillUI.GetTradeSkillTexture(tradeSkillID));
-	end
-end
-
-function TradeSkillUIMixin:OnRecipeChanged(recipeID)
-	self.DetailsFrame:SetSelectedRecipeID(self.RecipeList:GetSelectedRecipeID());
-end
-
-function TradeSkillUIMixin:SelectRecipe(recipeID)
-	if self:IsVisible() and C_TradeSkillUI.IsTradeSkillReady() and not C_TradeSkillUI.IsDataSourceChanging() then
-		self.RecipeList:OnLearnedTabClicked();
-		self.RecipeList:SelectedAndForceRecipeIDIntoView(recipeID);
-	else
-		self.pendingRecipeIDToSelect = recipeID;
-	end
-end
-
-function TradeSkillUIMixin:OnSearchTextChanged(searchBox)
-	local text = searchBox:GetText();
-	
-	local minLevel, maxLevel;
-	local approxLevel = text:match("^~(%d+)");
-	if approxLevel then
-		minLevel = approxLevel - 2;
-		maxLevel = approxLevel + 2;
-	else
-		minLevel, maxLevel = text:match("^(%d+)%s*-*%s*(%d*)$");
-	end
-	if minLevel then
-		if not maxLevel or maxLevel == "" then
-			maxLevel = minLevel;
-		end
-		minLevel = tonumber(minLevel);
-		maxLevel = tonumber(maxLevel);
-
-		minLevel = math.max(1, math.min(10000, minLevel));
-		maxLevel = math.max(1, math.min(10000, math.max(minLevel, maxLevel)));
-
-		C_TradeSkillUI.SetRecipeItemNameFilter(nil);
-		C_TradeSkillUI.SetRecipeItemLevelFilter(minLevel, maxLevel);
-	else
-		C_TradeSkillUI.SetRecipeItemNameFilter(text);
-		C_TradeSkillUI.SetRecipeItemLevelFilter(0, 0);
-	end
-end
-
-function TradeSkillUIMixin:ClearSlotFilter()
-	C_TradeSkillUI.ClearInventorySlotFilter();
-	C_TradeSkillUI.ClearRecipeCategoryFilter();
-end
-
-function TradeSkillUIMixin:SetSlotFilter(inventorySlotIndex, categoryID, subCategoryID)
-	self:ClearSlotFilter();
-
-	if inventorySlotIndex then
-		C_TradeSkillUI.SetInventorySlotFilter(inventorySlotIndex, true, true);
-	end
-
-	if categoryID or subCategoryID then
-		C_TradeSkillUI.SetRecipeCategoryFilter(categoryID, subCategoryID);
-	end
-end
-
-local function GenerateRankText(skillLineRank, skillLineMaxRank, skillLineModifier)
-	local rankText;
-	if skillLineModifier > 0  then
-		rankText = TRADESKILL_RANK_WITH_MODIFIER:format(skillLineRank, skillLineModifier, skillLineMaxRank);
-	else
-		rankText = TRADESKILL_RANK:format(skillLineRank, skillLineMaxRank);
-	end
-		
-	if GameLimitedMode_IsActive() then
-		local _, _, profCap = GetRestrictedAccountData();
-		if skillLineRank >= profCap then
-			return ("%s %s%s|r"):format(rankText, RED_FONT_COLOR_CODE, CAP_REACHED_TRIAL);
-		end
-	end
-	return rankText;
-end
-
-function TradeSkillUIMixin:RefreshSkillRank()
-	if C_TradeSkillUI.IsTradeSkillGuild() then
-		self.RankFrame:Hide();
-	else
-		local tradeSkillID, skillLineName, skillLineRank, skillLineMaxRank, skillLineModifier = C_TradeSkillUI.GetTradeSkillLine();
-		if not C_TradeSkillUI.IsTradeSkillReady() or not tradeSkillID or (C_TradeSkillUI.IsNPCCrafting() and skillLineMaxRank == 0) then
-			self.RankFrame:Hide();
-		else
-			self.RankFrame:SetMinMaxValues(0, skillLineMaxRank);
-			self.RankFrame:SetValue(skillLineRank);
-
-			local rankText = GenerateRankText(skillLineRank, skillLineMaxRank, skillLineModifier);
-			self.RankFrame.RankText:SetText(rankText);
-
-			self.RankFrame:Show();
-		end
-	end
-end
-
-function TradeSkillUIMixin:InitFilterMenu(dropdown, level)
-	local info = UIDropDownMenu_CreateInfo();
-	if level == 1 then
-		--[[ Only show makeable recipes ]]--
-		info.text = CRAFT_IS_MAKEABLE;
-		info.func = function() 
-			C_TradeSkillUI.SetOnlyShowMakeableRecipes(not C_TradeSkillUI.GetOnlyShowMakeableRecipes());
-		end 
-
-		info.keepShownOnClick = true;
-		info.checked = C_TradeSkillUI.GetOnlyShowMakeableRecipes();
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level)
-		
-		--[[ Only show recipes that provide skill ups ]]--
-		local tradeSkillID, name, rank, skillLineMaxRank = C_TradeSkillUI.GetTradeSkillLine();
-		local isNPCCrafting = C_TradeSkillUI.IsNPCCrafting() and skillLineMaxRank == 0;
-		
-		if not C_TradeSkillUI.IsTradeSkillGuild() and not isNPCCrafting then
-			info.text = TRADESKILL_FILTER_HAS_SKILL_UP;
-			info.func = function() 
-				C_TradeSkillUI.SetOnlyShowSkillUpRecipes(not C_TradeSkillUI.GetOnlyShowSkillUpRecipes());
-			end 
-			info.keepShownOnClick = true;
-			info.checked = C_TradeSkillUI.GetOnlyShowSkillUpRecipes();
-			info.isNotRadio = true;
-			UIDropDownMenu_AddButton(info, level);
-		end
-		
-		info.checked = 	nil;
-		info.isNotRadio = nil;
-		info.func = nil;
-		info.notCheckable = true;
-		info.keepShownOnClick = true;
-		info.hasArrow = true;	
-		
-		--[[ Filter recipes by inventory slot ]]--	
-		info.text = TRADESKILL_FILTER_SLOTS;
-		info.value = 1;
-		UIDropDownMenu_AddButton(info, level);
-				
-		--[[ Filter recipes by parent category ]]--	
-		info.text = TRADESKILL_FILTER_CATEGORY;
-		info.value = 2;
-		UIDropDownMenu_AddButton(info, level);
-
-		--[[ Filter recipes by source ]]--	
-		info.text = SOURCES;
-		info.value = 3;
-		UIDropDownMenu_AddButton(info, level);
-	
-	elseif level == 2 then
-		--[[ Inventory slots ]]--	
-		if UIDROPDOWNMENU_MENU_VALUE == 1 then
-			local inventorySlots = { C_TradeSkillUI.GetAllFilterableInventorySlots() };
-			for i, inventorySlot in ipairs(inventorySlots) do
-				info.text = inventorySlot;
-				info.func = function() self:SetSlotFilter(i, nil, nil); end;
-				info.notCheckable = true;
-				info.hasArrow = false;
-				info.keepShownOnClick = true;
-				UIDropDownMenu_AddButton(info, level);
+			if ( GetNumTradeSkills() > 0 ) then
+				TradeSkillFrame_SetSelection(GetFirstTradeSkill());
+				FauxScrollFrame_SetOffset(TradeSkillListScrollFrame, 0);
 			end
-		elseif UIDROPDOWNMENU_MENU_VALUE == 2 then
-			--[[ Parent categories ]]--	
-			local categories = { C_TradeSkillUI.GetCategories() };
+			TradeSkillListScrollFrameScrollBar:SetValue(0);
+		end
+		TradeSkillFrame_Update();
+	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
+		if ( arg1 == "player" ) then
+			SetPortraitTexture(TradeSkillFramePortrait, "player");
+		end
+	elseif ( event == "UPDATE_TRADESKILL_RECAST" ) then
+		TradeSkillInputBox:SetNumber(GetTradeskillRepeatCount());
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		TradeSkillFrame_Hide();
+	end
+end
 
-			for i, categoryID in ipairs(categories) do
-				local categoryData = C_TradeSkillUI.GetCategoryInfo(categoryID);
-				info.text = categoryData.name;
-				info.func = function() self:SetSlotFilter(nil, categoryID, nil); end
-				info.notCheckable = true;
-				info.hasArrow = select("#", C_TradeSkillUI.GetSubCategories(categoryID)) > 0;
-				info.keepShownOnClick = true;
-				info.value = categoryID;
-				UIDropDownMenu_AddButton(info, level);
+function TradeSkillFrame_Update()
+	local numTradeSkills = GetNumTradeSkills();
+	local skillOffset = FauxScrollFrame_GetOffset(TradeSkillListScrollFrame);
+	-- If no tradeskills
+	if ( numTradeSkills == 0 ) then
+		TradeSkillFrameTitleText:SetText(format(TRADE_SKILL_TITLE, GetTradeSkillLine()));
+		TradeSkillSkillName:Hide();
+--		TradeSkillSkillLineName:Hide();
+		TradeSkillSkillIcon:Hide();
+		TradeSkillRequirementLabel:Hide();
+		TradeSkillRequirementText:SetText("");
+		TradeSkillCollapseAllButton:Disable();
+		for i=1, MAX_TRADE_SKILL_REAGENTS, 1 do
+			getglobal("TradeSkillReagent"..i):Hide();
+		end
+	else
+		TradeSkillSkillName:Show();
+--		TradeSkillSkillLineName:Show();
+		TradeSkillSkillIcon:Show();
+		TradeSkillCollapseAllButton:Enable();
+	end
+	-- ScrollFrame update
+	FauxScrollFrame_Update(TradeSkillListScrollFrame, numTradeSkills, TRADE_SKILLS_DISPLAYED, TRADE_SKILL_HEIGHT, nil, nil, nil, TradeSkillHighlightFrame, 293, 316 );
+	
+	TradeSkillHighlightFrame:Hide();
+	for i=1, TRADE_SKILLS_DISPLAYED, 1 do
+		local skillIndex = i + skillOffset;
+		local skillName, skillType, numAvailable, isExpanded = GetTradeSkillInfo(skillIndex);
+		local skillButton = getglobal("TradeSkillSkill"..i);
+		if ( skillIndex <= numTradeSkills ) then	
+			-- Set button widths if scrollbar is shown or hidden
+			if ( TradeSkillListScrollFrame:IsVisible() ) then
+				skillButton:SetWidth(293);
+			else
+				skillButton:SetWidth(323);
 			end
-		elseif UIDROPDOWNMENU_MENU_VALUE == 3 then
-			info.hasArrow = false;
-			info.isNotRadio = true;
-			info.notCheckable = true;
-			info.keepShownOnClick = true;
-				
-			info.text = CHECK_ALL;
-			info.func = function()
-							TradeSkillFrame_SetAllSourcesFiltered(false);
-							UIDropDownMenu_Refresh(self.FilterDropDown, 3, 2);
-						end;
-			UIDropDownMenu_AddButton(info, level);
+			local color = TradeSkillTypeColor[skillType];
+			if ( color ) then
+				skillButton:SetNormalFontObject(color.font);
+			end
 			
-			info.text = UNCHECK_ALL;
-			info.func = function()
-							TradeSkillFrame_SetAllSourcesFiltered(true);
-							UIDropDownMenu_Refresh(self.FilterDropDown, 3, 2);
-						end;
-			UIDropDownMenu_AddButton(info, level);
-		
-			info.notCheckable = false;
-
-			local numSources = C_PetJournal.GetNumPetSources();
-			for i = 1, numSources do
-				if C_TradeSkillUI.IsAnyRecipeFromSource(i) then
-					info.text = _G["BATTLE_PET_SOURCE_"..i];
-					info.func = function(_, _, _, value)
-								C_TradeSkillUI.SetRecipeSourceTypeFilter(i, not value);
-							end;
-					info.checked = function() return not C_TradeSkillUI.IsRecipeSourceTypeFiltered(i); end;
-					UIDropDownMenu_AddButton(info, level);
+			skillButton:SetID(skillIndex);
+			skillButton:Show();
+			-- Handle headers
+			if ( skillType == "header" ) then
+				skillButton:SetText(skillName);
+				if ( isExpanded ) then
+					skillButton:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up");
+				else
+					skillButton:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
+				end
+				getglobal("TradeSkillSkill"..i.."Highlight"):SetTexture("Interface\\Buttons\\UI-PlusButton-Hilight");
+				getglobal("TradeSkillSkill"..i):UnlockHighlight();
+			else
+				if ( not skillName ) then
+					return;
+				end
+				skillButton:SetNormalTexture("");
+				getglobal("TradeSkillSkill"..i.."Highlight"):SetTexture("");
+				if ( numAvailable == 0 ) then
+					skillButton:SetText(" "..skillName);
+				else
+					skillButton:SetText(" "..skillName.." ["..numAvailable.."]");
+				end
+				
+				-- Place the highlight and lock the highlight state
+				if ( GetTradeSkillSelectionIndex() == skillIndex ) then
+					TradeSkillHighlightFrame:SetPoint("TOPLEFT", "TradeSkillSkill"..i, "TOPLEFT", 0, 0);
+					TradeSkillHighlightFrame:Show();
+					getglobal("TradeSkillSkill"..i):LockHighlight();
+				else
+					getglobal("TradeSkillSkill"..i):UnlockHighlight();
 				end
 			end
-		end
-	elseif level == 3 then
-		--[[ Subcategories ]]--	
-		local categoryID = UIDROPDOWNMENU_MENU_VALUE;
-		local categoryData = C_TradeSkillUI.GetCategoryInfo(categoryID);
-		local subCategories = { C_TradeSkillUI.GetSubCategories(categoryID) };
-
-		for i, subCategoryID in ipairs(subCategories) do
-			local subCategoryData = C_TradeSkillUI.GetCategoryInfo(subCategoryID);
-			info.text = subCategoryData.name;
-			info.func = function() self:SetSlotFilter(nil, categoryID, subCategoryID); end
-			info.notCheckable = true;
-			info.keepShownOnClick = true;
-			info.value = subCategoryID;
-			UIDropDownMenu_AddButton(info, level);
-		end
-	end
-end
-
-function TradeSkillUIMixin:OnLinkToButtonClicked()
-	if MacroFrameText and MacroFrameText:IsShown() and MacroFrameText:HasFocus() then
-		local link = C_TradeSkillUI.GetTradeSkillListLink();
-		local text = MacroFrameText:GetText() .. link;
-		if strlenutf8(text) <= MacroFrameText:GetNumLetters() then
-			MacroFrameText:Insert(link);
-		end
-	else 
-		local activeEditBox = ChatEdit_GetActiveWindow();
-		if activeEditBox then
-			local link = C_TradeSkillUI.GetTradeSkillListLink();
-			ChatEdit_InsertLink(link);
+			
 		else
-			ToggleDropDownMenu(1, nil, self.LinkToDropDown, self.LinkToButton, 25, 25);
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+			skillButton:Hide();
 		end
 	end
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-end
-
-function TradeSkillUIMixin:InitLinkToMenu(dropdown, level)
-	local info = UIDropDownMenu_CreateInfo();	
-	info.notCheckable = true;	
-	info.text = TRADESKILL_POST;
-	info.isTitle = true;
-	UIDropDownMenu_AddButton(info);
-
-	info.isTitle = nil;
-	info.notCheckable = true;
-	info.func = function(_, channel)
-		local link = C_TradeSkillUI.GetTradeSkillListLink();
-		if link then 
-			ChatFrame_OpenChat(channel.." "..link, DEFAULT_CHAT_FRAME);
+	
+	-- Set the expand/collapse all button texture
+	local numHeaders = 0;
+	local notExpanded = 0;
+	for i=1, numTradeSkills, 1 do
+		local skillName, skillType, numAvailable, isExpanded = GetTradeSkillInfo(i);
+		if ( skillName and skillType == "header" ) then
+			numHeaders = numHeaders + 1;
+			if ( not isExpanded ) then
+				notExpanded = notExpanded + 1;
+			end
 		end
-	end;
-	
-	info.text = GUILD;
-	info.arg1 = SLASH_GUILD1;
-	info.disabled = not IsInGuild();
-	UIDropDownMenu_AddButton(info);
-	
-	info.text = PARTY;
-	info.arg1 = SLASH_PARTY1;
-	info.disabled = GetNumSubgroupMembers() == 0;
-	UIDropDownMenu_AddButton(info);
-	
-	info.text = RAID;
-	info.disabled = not IsInRaid();
-	info.arg1 = SLASH_RAID1;
-	UIDropDownMenu_AddButton(info);
-	
-	info.disabled = false
-
-	local channels = { GetChannelList() };
-	local channelCount = #channels / 2;
-	for i=1, MAX_CHANNEL_BUTTONS do
-		if i <= channelCount then
-			info.text = channels[i * 2];
-			info.arg1 = "/"..channels[(i - 1) * 2 + 1];
-			UIDropDownMenu_AddButton(info);
+		if ( GetTradeSkillSelectionIndex() == i ) then
+			-- Set the max makeable items for the create all button
+			TradeSkillFrame.numAvailable = numAvailable;
 		end
 	end
-end
-
-local TIME_BETWEEN_DOTS_SEC = .3;
-function TradeSkillUIMixin:OnRetrievingFrameUpdate(elapsed)
-	if self.RetrievingFrame.timeUntilNextDotSecs then
-		self.RetrievingFrame.timeUntilNextDotSecs = self.RetrievingFrame.timeUntilNextDotSecs - elapsed;
+	-- If all headers are not expanded then show collapse button, otherwise show the expand button
+	if ( notExpanded ~= numHeaders ) then
+		TradeSkillCollapseAllButton.collapsed = nil;
+		TradeSkillCollapseAllButton:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up");
 	else
-		self.RetrievingFrame.timeUntilNextDotSecs = TIME_BETWEEN_DOTS_SEC;
+		TradeSkillCollapseAllButton.collapsed = 1;
+		TradeSkillCollapseAllButton:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
+	end
+end
+
+function TradeSkillFrame_SetSelection(id)
+	local skillName, skillType, numAvailable, isExpanded = GetTradeSkillInfo(id);
+	TradeSkillHighlightFrame:Show();
+	if ( skillType == "header" ) then
+		TradeSkillHighlightFrame:Hide();
+		if ( isExpanded ) then
+			CollapseTradeSkillSubClass(id);
+		else
+			ExpandTradeSkillSubClass(id);
+		end
+		return;
+	end
+	TradeSkillFrame.selectedSkill = id;
+	SelectTradeSkill(id);
+	if ( GetTradeSkillSelectionIndex() > GetNumTradeSkills() ) then
+		return;
+	end
+	local color = TradeSkillTypeColor[skillType];
+	if ( color ) then
+		TradeSkillHighlight:SetVertexColor(color.r, color.g, color.b);
 	end
 
-	if self.RetrievingFrame.timeUntilNextDotSecs <= 0 then
-		local dotCount = ((self.RetrievingFrame.dotCount or 0) + 1) % 4;
+	-- General Info
+	local skillLineName, skillLineRank, skillLineMaxRank = GetTradeSkillLine();
+	TradeSkillFrameTitleText:SetText(format(TRADE_SKILL_TITLE, skillLineName));
+	-- Set statusbar info
+	TradeSkillRankFrameSkillName:SetText(skillLineName);
+	TradeSkillRankFrame:SetStatusBarColor(0.0, 0.0, 1.0, 0.5);
+	TradeSkillRankFrameBackground:SetVertexColor(0.0, 0.0, 0.75, 0.5);
+	TradeSkillRankFrame:SetMinMaxValues(0, skillLineMaxRank);
+	TradeSkillRankFrame:SetValue(skillLineRank);
+	TradeSkillRankFrameSkillRank:SetText(skillLineRank.."/"..skillLineMaxRank);
 
-		self.RetrievingFrame.Dots:SetText(("."):rep(dotCount));
-		self.RetrievingFrame.dotCount = dotCount;
-		self.RetrievingFrame.timeUntilNextDotSecs = self.RetrievingFrame.timeUntilNextDotSecs + TIME_BETWEEN_DOTS_SEC;
+	TradeSkillSkillName:SetText(skillName);
+	if ( GetTradeSkillCooldown(id) ) then
+		TradeSkillSkillCooldown:SetText(COOLDOWN_REMAINING.." "..SecondsToTime(GetTradeSkillCooldown(id)));
+	else
+		TradeSkillSkillCooldown:SetText("");
+	end
+	TradeSkillSkillIcon:SetNormalTexture(GetTradeSkillIcon(id));
+	local minMade,maxMade = GetTradeSkillNumMade(id);
+	if ( maxMade > 1 ) then
+		if ( minMade == maxMade ) then
+			TradeSkillSkillIconCount:SetText(minMade);
+		else
+			TradeSkillSkillIconCount:SetText(minMade.."-"..maxMade);
+		end
+		if ( TradeSkillSkillIconCount:GetWidth() > 39 ) then
+			TradeSkillSkillIconCount:SetText("~"..floor((minMade + maxMade)/2));
+		end
+	else
+		TradeSkillSkillIconCount:SetText("");
+	end
+	
+	-- Reagents
+	local creatable = 1;
+	local numReagents = GetTradeSkillNumReagents(id);
+	for i=1, numReagents, 1 do
+		local reagentName, reagentTexture, reagentCount, playerReagentCount = GetTradeSkillReagentInfo(id, i);
+		local reagent = getglobal("TradeSkillReagent"..i)
+		local name = getglobal("TradeSkillReagent"..i.."Name");
+		local count = getglobal("TradeSkillReagent"..i.."Count");
+		if ( not reagentName or not reagentTexture ) then
+			reagent:Hide();
+		else
+			reagent:Show();
+			SetItemButtonTexture(reagent, reagentTexture);
+			name:SetText(reagentName);
+			-- Grayout items
+			if ( playerReagentCount < reagentCount ) then
+				SetItemButtonTextureVertexColor(reagent, 0.5, 0.5, 0.5);
+				name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+				creatable = nil;
+			else
+				SetItemButtonTextureVertexColor(reagent, 1.0, 1.0, 1.0);
+				name:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			end
+			if ( playerReagentCount >= 100 ) then
+				playerReagentCount = "*";
+			end
+			count:SetText(playerReagentCount.." /"..reagentCount);
+		end
+	end
+	-- Place reagent label
+	local reagentToAnchorTo = numReagents;
+	if ( (numReagents > 0) and (mod(numReagents, 2) == 0) ) then
+		reagentToAnchorTo = reagentToAnchorTo - 1;
+	end
+	
+	for i=numReagents + 1, MAX_TRADE_SKILL_REAGENTS, 1 do
+		getglobal("TradeSkillReagent"..i):Hide();
+	end
+
+	local spellFocus = BuildColoredListString(GetTradeSkillTools(id));
+	if ( spellFocus ) then
+		TradeSkillRequirementLabel:Show();
+		TradeSkillRequirementText:SetText(spellFocus);
+	else
+		TradeSkillRequirementLabel:Hide();
+		TradeSkillRequirementText:SetText("");
+	end
+
+	if ( creatable ) then
+		TradeSkillCreateButton:Enable();
+		TradeSkillCreateAllButton:Enable();
+	else
+		TradeSkillCreateButton:Disable();
+		TradeSkillCreateAllButton:Disable();
+	end
+	TradeSkillDetailScrollFrame:UpdateScrollChildRect();
+
+	-- Reset the number of items to be created
+	TradeSkillInputBox:SetNumber(GetTradeskillRepeatCount());
+end
+
+function TradeSkillSkillButton_OnClick(self, button)
+	if ( button == "LeftButton" ) then
+		TradeSkillFrame_SetSelection(self:GetID());
+		TradeSkillFrame_Update();
+	end
+end
+
+function TradeSkillCollapseAllButton_OnClick(self)
+	if (self.collapsed) then
+		self.collapsed = nil;
+		ExpandTradeSkillSubClass(0);
+	else
+		self.collapsed = 1;
+		TradeSkillListScrollFrameScrollBar:SetValue(0);
+		CollapseTradeSkillSubClass(0);
+	end
+end
+
+function TradeSkillSubClassDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, TradeSkillSubClassDropDown_Initialize);
+	UIDropDownMenu_SetWidth(self, 120);
+	UIDropDownMenu_SetSelectedID(self, 1);
+end
+
+function TradeSkillSubClassDropDown_OnShow(self)
+	UIDropDownMenu_Initialize(self, TradeSkillSubClassDropDown_Initialize);
+	if ( GetTradeSkillSubClassFilter(0) ) then
+		UIDropDownMenu_SetSelectedID(TradeSkillSubClassDropDown, 1);
+	end
+end
+
+function TradeSkillSubClassDropDown_Initialize()
+	TradeSkillFilterFrame_LoadSubClasses(GetTradeSkillSubClasses());
+end
+
+function TradeSkillFilterFrame_LoadSubClasses(...)
+	local allChecked = GetTradeSkillSubClassFilter(0);
+	local info = {};
+	local argN = select("#", ...);
+	if ( argN > 1 ) then
+		info.text = ALL_SUBCLASSES;
+		info.func = TradeSkillSubClassDropDownButton_OnClick;
+		info.checked = allChecked;
+		UIDropDownMenu_AddButton(info);
+	end
+	
+	local checked;
+	for i=1, argN, 1 do
+		if ( allChecked and argN > 1 ) then
+			checked = nil;
+			UIDropDownMenu_SetText(TradeSkillSubClassDropDown, ALL_SUBCLASSES);
+		else
+			checked = GetTradeSkillSubClassFilter(i);
+			if ( checked ) then
+				UIDropDownMenu_SetText(TradeSkillSubClassDropDown, select(i, ...));
+			end
+		end
+		info = {};
+		info.text = select(i, ...);
+		info.func = TradeSkillSubClassDropDownButton_OnClick;
+		info.checked = checked;
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function TradeSkillInvSlotDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, TradeSkillInvSlotDropDown_Initialize);
+	UIDropDownMenu_SetWidth(self, 120);
+	UIDropDownMenu_SetSelectedID(self, 1);
+end
+
+function TradeSkillInvSlotDropDown_OnShow(self)
+	UIDropDownMenu_Initialize(self, TradeSkillInvSlotDropDown_Initialize);
+	if ( GetTradeSkillInvSlotFilter(0) ) then
+		UIDropDownMenu_SetSelectedID(self, 1);
+	end
+end
+
+function TradeSkillInvSlotDropDown_Initialize()
+	TradeSkillFilterFrame_LoadInvSlots(GetTradeSkillInvSlots());
+end
+
+function TradeSkillFilterFrame_LoadInvSlots(...)
+	local allChecked = GetTradeSkillInvSlotFilter(0);
+	local info = {}
+	local argN = select("#", ...);
+	if ( argN > 1 ) then
+		info.text = ALL_INVENTORY_SLOTS;
+		info.func = TradeSkillInvSlotDropDownButton_OnClick;
+		info.checked = allChecked;
+		UIDropDownMenu_AddButton(info);
+	end
+	
+	local checked;
+	for i=1, argN, 1 do
+		if ( allChecked and argN > 1 ) then
+			checked = nil;
+			UIDropDownMenu_SetText(TradeSkillInvSlotDropDown, ALL_INVENTORY_SLOTS);
+		else
+			checked = GetTradeSkillInvSlotFilter(i);
+			if ( checked ) then
+				UIDropDownMenu_SetText(TradeSkillInvSlotDropDown, select(i, ...));
+			end
+		end
+		info = {};
+		info.text = select(i, ...);
+		info.func = TradeSkillInvSlotDropDownButton_OnClick;
+		info.checked = checked;
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function TradeSkillSubClassDropDownButton_OnClick(self)
+	UIDropDownMenu_SetSelectedID(TradeSkillSubClassDropDown, self:GetID());
+	SetTradeSkillSubClassFilter(self:GetID() - 1, 1, 1);
+end
+
+function TradeSkillInvSlotDropDownButton_OnClick(self)
+	UIDropDownMenu_SetSelectedID(TradeSkillInvSlotDropDown, self:GetID())
+	SetTradeSkillInvSlotFilter(self:GetID() - 1, 1, 1);
+end
+
+function TradeSkillFrameIncrement_OnClick(self)
+	if ( TradeSkillInputBox:GetNumber() < 100 ) then
+		TradeSkillInputBox:SetNumber(TradeSkillInputBox:GetNumber() + 1);
+	end
+end
+
+function TradeSkillFrameDecrement_OnClick(self)
+	if ( TradeSkillInputBox:GetNumber() > 0 ) then
+		TradeSkillInputBox:SetNumber(TradeSkillInputBox:GetNumber() - 1);
 	end
 end

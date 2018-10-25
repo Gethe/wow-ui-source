@@ -2,8 +2,8 @@ MAX_NUM_QUESTS = 32;
 MAX_NUM_ITEMS = 10;
 MAX_REQUIRED_ITEMS = 6;
 QUEST_DESCRIPTION_GRADIENT_LENGTH = 30;
-QUEST_DESCRIPTION_GRADIENT_CPS = 70;
-QUESTINFO_FADE_IN = 0.5;
+QUEST_DESCRIPTION_GRADIENT_CPS = 40;
+QUESTINFO_FADE_IN = 1;
 
 QUEST_FRAME_AUTO_ACCEPT_QUEST_ID = 0;
 QUEST_FRAME_AUTO_ACCEPT_QUEST_START_ITEM_ID = 0;
@@ -48,17 +48,13 @@ function QuestFrame_OnEvent(self, event, ...)
         if(questStartItemID ~= nil and questStartItemID ~= 0) then
             QUEST_FRAME_AUTO_ACCEPT_QUEST_ID = GetQuestID();
             QUEST_FRAME_AUTO_ACCEPT_QUEST_START_ITEM_ID = questStartItemID;
-			if (AutoQuestPopupTracker_AddPopUp(GetQuestID(), "OFFER")) then
-                PlayAutoAcceptQuestSound();
-            end
+            PlayAutoAcceptQuestSound();
             CloseQuest();
             return;
 		end
 
 		if ( QuestGetAutoAccept() and QuestIsFromAreaTrigger()) then
-			if (AutoQuestPopupTracker_AddPopUp(GetQuestID(), "OFFER")) then
-				PlayAutoAcceptQuestSound();
-			end
+			PlayAutoAcceptQuestSound();
 			CloseQuest();
 			return;
 		else
@@ -99,18 +95,9 @@ function QuestFrame_OnEvent(self, event, ...)
 		end
 		return;
 	end
-	if( not SplashFrame:IsShown() )then
-		QuestFrame_SetPortrait();
-		ShowUIPanel(QuestFrame);
-	end
-	if ( not QuestFrame:IsShown() ) then
-		QuestFrameGreetingPanel:Hide();
-		QuestFrameDetailPanel:Hide();
-		QuestFrameProgressPanel:Hide();
-		QuestFrameRewardPanel:Hide();
-		CloseQuest();
-		return;
-	end
+
+	QuestFrame_SetPortrait();
+	ShowUIPanel(QuestFrame);
 end
 
 function QuestFrame_SetPortrait()
@@ -137,10 +124,14 @@ function QuestFrameRewardPanel_OnShow()
 	else
 		QuestFrame_HideQuestPortrait();
 	end
+	if ( GetCVar("instantQuestText") == "0" ) then
+		QuestRewardScrollChildFrame:SetAlpha(0);
+		UIFrameFadeIn(QuestRewardScrollChildFrame, QUESTINFO_FADE_IN);
+	end
 end
 
 function QuestRewardCancelButton_OnClick()
-	HideUIPanel(QuestFrame);
+	DeclineQuest();
 	PlaySound(SOUNDKIT.IG_QUEST_CANCEL);
 end
 
@@ -169,7 +160,7 @@ function QuestProgressCompleteButton_OnClick()
 end
 
 function QuestGoodbyeButton_OnClick()
-	HideUIPanel(QuestFrame);
+	DeclineQuest();
 	PlaySound(SOUNDKIT.IG_QUEST_CANCEL);
 end
 
@@ -198,6 +189,10 @@ function QuestFrameProgressPanel_OnShow()
 		QuestFrameCompleteButton:Disable();
 	end
 	QuestFrameProgressItems_Update();
+	if ( GetCVar("instantQuestText") == "0" ) then
+		QuestProgressScrollChildFrame:SetAlpha(0);
+		UIFrameFadeIn(QuestProgressScrollChildFrame, QUESTINFO_FADE_IN);
+	end
 end
 
 function QuestFrameProgressItems_Update()
@@ -286,6 +281,10 @@ function QuestFrameGreetingPanel_OnShow()
 	QuestFrameProgressPanel:Hide();
 	QuestFrameDetailPanel:Hide();
 	QuestFrame_HideQuestPortrait();
+	if ( GetCVar("instantQuestText") == "0" ) then
+		QuestGreetingScrollChildFrame:SetAlpha(0);
+		UIFrameFadeIn(QuestGreetingScrollChildFrame, QUESTINFO_FADE_IN);
+	end
 	local material = QuestFrame_GetMaterial();
 	QuestFrame_SetMaterial(QuestFrameGreetingPanel, material);
 	GreetingText:SetText(GetGreetingText());
@@ -303,24 +302,8 @@ function QuestFrameGreetingPanel_OnShow()
 		QuestTitleButton1:SetPoint("TOPLEFT", "CurrentQuestsText", "BOTTOMLEFT", -10, -5);
 		for i=1, numActiveQuests, 1 do
 			local questTitleButton = _G["QuestTitleButton"..i];
-			local questTitleButtonIcon = _G[questTitleButton:GetName() .. "QuestIcon"];
 			local title, isComplete = GetActiveTitle(i);
-			if ( IsActiveQuestTrivial(i) ) then
-				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, title);
-				questTitleButtonIcon:SetVertexColor(0.75,0.75,0.75);
-			else
-				questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, title);
-				questTitleButtonIcon:SetVertexColor(1,1,1);
-			end
-			if ( isComplete ) then
-				if ( IsActiveQuestLegendary(i) ) then
-					questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveLegendaryQuestIcon");
-				else
-					questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon");
-				end
-			else
-				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\IncompleteQuestIcon");
-			end
+			questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, title);
 			questTitleButton:SetHeight(questTitleButton:GetTextHeight() + 2);
 			questTitleButton:SetID(i);
 			questTitleButton.isActive = 1;
@@ -345,24 +328,7 @@ function QuestFrameGreetingPanel_OnShow()
 		_G["QuestTitleButton"..(numActiveQuests + 1)]:SetPoint("TOPLEFT", "AvailableQuestsText", "BOTTOMLEFT", -10, -5);
 		for i=(numActiveQuests + 1), (numActiveQuests + numAvailableQuests), 1 do
 			local questTitleButton = _G["QuestTitleButton"..i];
-			local questTitleButtonIcon = _G[questTitleButton:GetName() .. "QuestIcon"];
-			local isTrivial, frequency, isRepeatable, isLegendary = GetAvailableQuestInfo(i - numActiveQuests);
-			if ( isLegendary ) then
-				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableLegendaryQuestIcon");
-			elseif ( frequency == LE_QUEST_FREQUENCY_DAILY or frequency == LE_QUEST_FREQUENCY_WEEKLY ) then
-				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\DailyQuestIcon");
-			elseif ( isRepeatable ) then
-				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\DailyActiveQuestIcon");
-			else
-				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableQuestIcon");
-			end
-			if ( isTrivial ) then
-				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));
-				questTitleButtonIcon:SetVertexColor(0.5,0.5,0.5);
-			else
-				questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));
-				questTitleButtonIcon:SetVertexColor(1,1,1);
-			end
+			questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));
 			questTitleButton:SetHeight(questTitleButton:GetTextHeight() + 2);
 			questTitleButton:SetID(i - numActiveQuests);
 			questTitleButton.isActive = 0;
@@ -379,9 +345,6 @@ end
 
 function QuestFrame_OnShow()
 	PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
-	if (TutorialFrame.id == 1 or TutorialFrame.id == 55 or TutorialFrame.id == 57) then
-		TutorialFrame_Hide();
-	end
 	NPCFriendshipStatusBar_Update(QuestFrame);
 end
 
@@ -424,6 +387,223 @@ function QuestTitleButton_OnClick(self)
 		SelectAvailableQuest(self:GetID());
 	end
 	PlaySound(SOUNDKIT.IG_QUEST_LIST_SELECT);
+end
+
+function QuestMoneyFrame_OnLoad(self)
+	MoneyFrame_OnLoad(self);
+	MoneyFrame_SetType(self, "STATIC");
+end
+
+function QuestFrameItems_Update(questState)
+	local isQuestLog = 0;
+	if ( questState == "QuestLog" ) then
+		isQuestLog = 1;
+	end
+	local numQuestRewards;
+	local numQuestChoices;
+	local numQuestSpellRewards = 0;
+	local money;
+	local spacerFrame;
+	if ( isQuestLog == 1 ) then
+		numQuestRewards = GetNumQuestLogRewards();
+		numQuestChoices = GetNumQuestLogChoices();
+		numQuestSpellRewards = GetNumQuestLogRewardSpells();
+		money = GetQuestLogRewardMoney();
+		spacerFrame = QuestLogSpacerFrame;
+	else
+		numQuestRewards = GetNumQuestRewards();
+		numQuestChoices = GetNumQuestChoices();
+		numQuestSpellRewards = GetNumRewardSpells();
+		money = GetRewardMoney();
+		spacerFrame = QuestSpacerFrame;
+	end
+
+	local totalRewards = numQuestRewards + numQuestChoices + numQuestSpellRewards;
+	local questItemName = questState.."Item";
+	local material = QuestFrame_GetMaterial();
+	local questItemReceiveText = _G[questState.."ItemReceiveText"];
+	if ( totalRewards == 0 and money == 0 ) then
+		_G[questState.."RewardTitleText"]:Hide();
+	else
+		_G[questState.."RewardTitleText"]:Show();
+		QuestFrame_SetTitleTextColor(_G[questState.."RewardTitleText"], material);
+		QuestFrame_SetAsLastShown(_G[questState.."RewardTitleText"], spacerFrame);
+	end
+	if ( money == 0 ) then
+		_G[questState.."MoneyFrame"]:Hide();
+	else
+		_G[questState.."MoneyFrame"]:Show();
+		QuestFrame_SetAsLastShown(_G[questState.."MoneyFrame"], spacerFrame);
+		MoneyFrame_Update(questState.."MoneyFrame", money);
+	end
+	
+	-- Hide unused rewards
+	for i=totalRewards + 1, MAX_NUM_ITEMS, 1 do
+		_G[questItemName..i]:Hide();
+	end
+
+	local questItem, name, texture, isTradeskillSpell, quality, isUsable, numItems = 1;
+	local rewardsCount = 0;
+	
+	-- Setup choosable rewards
+	if ( numQuestChoices > 0 ) then
+		local itemChooseText = _G[questState.."ItemChooseText"];
+		itemChooseText:Show();
+		QuestFrame_SetTextColor(itemChooseText, material);
+		QuestFrame_SetAsLastShown(itemChooseText, spacerFrame);
+		
+		local index;
+		local baseIndex = rewardsCount;
+		for i=1, numQuestChoices, 1 do	
+			index = i + baseIndex;
+			questItem = _G[questItemName..index];
+			questItem.type = "choice";
+			numItems = 1;
+			if ( isQuestLog == 1 ) then
+				name, texture, numItems, quality, isUsable = GetQuestLogChoiceInfo(i);
+			else
+				name, texture, numItems, quality, isUsable = GetQuestItemInfo(questItem.type, i);
+			end
+			questItem:SetID(i)
+			questItem:Show();
+			-- For the tooltip
+			questItem.rewardType = "item"
+			QuestFrame_SetAsLastShown(questItem, spacerFrame);
+			_G[questItemName..index.."Name"]:SetText(name);
+			SetItemButtonCount(questItem, numItems);
+			SetItemButtonTexture(questItem, texture);
+			if ( isUsable ) then
+				SetItemButtonTextureVertexColor(questItem, 1.0, 1.0, 1.0);
+				SetItemButtonNameFrameVertexColor(questItem, 1.0, 1.0, 1.0);
+			else
+				SetItemButtonTextureVertexColor(questItem, 0.9, 0, 0);
+				SetItemButtonNameFrameVertexColor(questItem, 0.9, 0, 0);
+			end
+			if ( i > 1 ) then
+				if ( mod(i,2) == 1 ) then
+					questItem:SetPoint("TOPLEFT", questItemName..(index - 2), "BOTTOMLEFT", 0, -2);
+				else
+					questItem:SetPoint("TOPLEFT", questItemName..(index - 1), "TOPRIGHT", 1, 0);
+				end
+			else
+				questItem:SetPoint("TOPLEFT", itemChooseText, "BOTTOMLEFT", -3, -5);
+			end
+			rewardsCount = rewardsCount + 1;
+		end
+	else
+		_G[questState.."ItemChooseText"]:Hide();
+	end
+	
+	-- Setup spell rewards
+	if ( numQuestSpellRewards > 0 ) then
+		local learnSpellText = _G[questState.."SpellLearnText"];
+		learnSpellText:Show();
+		QuestFrame_SetTextColor(learnSpellText, material);
+		QuestFrame_SetAsLastShown(learnSpellText, spacerFrame);
+
+		--Anchor learnSpellText if there were choosable rewards
+		if ( rewardsCount > 0 ) then
+			learnSpellText:SetPoint("TOPLEFT", questItemName..rewardsCount, "BOTTOMLEFT", 3, -5);
+		else
+			learnSpellText:SetPoint("TOPLEFT", questState.."RewardTitleText", "BOTTOMLEFT", 0, -5);
+		end
+
+		-- In Classic, there's only ever one spell reward per quest,
+		-- so we can just hardcode index 1.
+		if ( isQuestLog == 1 ) then
+			texture, name, isTradeskillSpell = GetQuestLogRewardSpell(1);
+		else
+			texture, name, isTradeskillSpell = GetRewardSpell(1);
+		end
+		
+		if ( isTradeskillSpell ) then
+			learnSpellText:SetText(REWARD_TRADESKILL_SPELL);
+		else
+			learnSpellText:SetText(REWARD_SPELL);
+		end
+		
+		rewardsCount = rewardsCount + 1;
+		questItem = _G[questItemName..rewardsCount];
+		questItem:SetID(1);
+		questItem:Show();
+		-- For the tooltip
+		questItem.rewardType = "spell";
+		SetItemButtonCount(questItem, 0);
+		SetItemButtonTexture(questItem, texture);
+		_G[questItemName..rewardsCount.."Name"]:SetText(name);
+		questItem:SetPoint("TOPLEFT", learnSpellText, "BOTTOMLEFT", -3, -5);
+	else
+		_G[questState.."SpellLearnText"]:Hide();
+	end
+	
+	-- Setup mandatory rewards
+	if ( numQuestRewards > 0 or money > 0) then
+		QuestFrame_SetTextColor(questItemReceiveText, material);
+		-- Anchor the reward text differently if there are choosable rewards
+		if ( numQuestSpellRewards > 0  ) then
+			questItemReceiveText:SetText(REWARD_ITEMS);
+			questItemReceiveText:SetPoint("TOPLEFT", questItemName..rewardsCount, "BOTTOMLEFT", 3, -5);		
+		elseif ( numQuestChoices > 0  ) then
+			questItemReceiveText:SetText(REWARD_ITEMS);
+			local index = numQuestChoices;
+			if ( mod(index, 2) == 0 ) then
+				index = index - 1;
+			end
+			questItemReceiveText:SetPoint("TOPLEFT", questItemName..index, "BOTTOMLEFT", 3, -5);
+		else 
+			questItemReceiveText:SetText(REWARD_ITEMS_ONLY);
+			questItemReceiveText:SetPoint("TOPLEFT", questState.."RewardTitleText", "BOTTOMLEFT", 3, -5);
+		end
+		questItemReceiveText:Show();
+		QuestFrame_SetAsLastShown(questItemReceiveText, spacerFrame);
+		-- Setup mandatory rewards
+		local index;
+		local baseIndex = rewardsCount;
+		for i=1, numQuestRewards, 1 do
+			index = i + baseIndex;
+			questItem = _G[questItemName..index];
+			questItem.type = "reward";
+			numItems = 1;
+			if ( isQuestLog == 1 ) then
+				name, texture, numItems, quality, isUsable = GetQuestLogRewardInfo(i);
+			else
+				name, texture, numItems, quality, isUsable = GetQuestItemInfo(questItem.type, i);
+			end
+			questItem:SetID(i)
+			questItem:Show();
+			-- For the tooltip
+			questItem.rewardType = "item";
+			QuestFrame_SetAsLastShown(questItem, spacerFrame);
+			_G[questItemName..index.."Name"]:SetText(name);
+			SetItemButtonCount(questItem, numItems);
+			SetItemButtonTexture(questItem, texture);
+			if ( isUsable ) then
+				SetItemButtonTextureVertexColor(questItem, 1.0, 1.0, 1.0);
+				SetItemButtonNameFrameVertexColor(questItem, 1.0, 1.0, 1.0);
+			else
+				SetItemButtonTextureVertexColor(questItem, 0.5, 0, 0);
+				SetItemButtonNameFrameVertexColor(questItem, 1.0, 0, 0);
+			end
+			
+			if ( i > 1 ) then
+				if ( mod(i,2) == 1 ) then
+					questItem:SetPoint("TOPLEFT", questItemName..(index - 2), "BOTTOMLEFT", 0, -2);
+				else
+					questItem:SetPoint("TOPLEFT", questItemName..(index - 1), "TOPRIGHT", 1, 0);
+				end
+			else
+				questItem:SetPoint("TOPLEFT", questState.."ItemReceiveText", "BOTTOMLEFT", -3, -5);
+			end
+			rewardsCount = rewardsCount + 1;
+		end
+	else	
+		questItemReceiveText:Hide();
+	end
+	if ( questState == "QuestReward" ) then
+		QuestFrameCompleteQuestButton:Enable();
+		QuestFrameRewardPanel.itemChoice = 0;
+		QuestRewardItemHighlight:Hide();
+	end
 end
 
 function QuestFrame_UpdatePortraitText(text)
@@ -496,6 +676,51 @@ function QuestFrameDetailPanel_OnShow()
 	else
 		QuestFrame_HideQuestPortrait();
 	end
+
+	QuestDetailScrollChildFrame.alphaDependentText = {
+		QuestInfoQuestType,
+		QuestInfoObjectivesText,
+		QuestInfoRewardsFrame,
+		QuestInfoRewardText,
+		QuestInfoRequiredMoneyText,
+		QuestInfoGroupSize,
+		QuestInfoAnchor,
+		QuestInfoDescriptionHeader,
+		QuestInfoObjectivesHeader
+	};
+
+	-- Hide Objectives and rewards until the text is completely displayed
+	QuestInfo_HideAlphaDependentText(QuestDetailScrollChildFrame);
+	QuestFrameAcceptButton:Disable();
+
+	QuestFrameDetailPanel.fading = 1;
+	QuestFrameDetailPanel.fadingProgress = 0;
+	QuestInfoDescriptionText:SetAlphaGradient(0, QUEST_DESCRIPTION_GRADIENT_LENGTH);
+	if ( GetCVar("instantQuestText") ~= "0" ) then
+		QuestFrameDetailPanel.fadingProgress = 1024;
+	end
+end
+
+function QuestFrameDetailPanel_OnHide(self)
+	QuestInfo_ShowAlphaDependentText(QuestDetailScrollChildFrame);
+	QuestFrameDetailPanel.fading = 0;
+end
+
+function QuestFrameDetailPanel_OnUpdate(self, elapsed)
+	if ( self.fading ) then
+		self.fadingProgress = self.fadingProgress + (elapsed * QUEST_DESCRIPTION_GRADIENT_CPS);
+		PlaySound(SOUNDKIT.IG_WRITE_QUEST);
+		if ( not QuestInfoDescriptionText:SetAlphaGradient(self.fadingProgress, QUEST_DESCRIPTION_GRADIENT_LENGTH) ) then
+			self.fading = nil;
+			-- Show Quest Objectives and Rewards
+			if ( GetCVar("instantQuestText") == "0" ) then
+				QuestInfo_FadeInAlphaDependentText(QuestDetailScrollChildFrame, QUESTINFO_FADE_IN)
+			else
+				QuestInfo_ShowAlphaDependentText(QuestDetailScrollChildFrame);
+			end
+			QuestFrameAcceptButton:Enable();
+		end
+	end
 end
 
 function QuestDetailAcceptButton_OnClick()
@@ -511,7 +736,7 @@ function QuestDetailAcceptButton_OnClick()
 end
 
 function QuestDetailDeclineButton_OnClick()
-	HideUIPanel(QuestFrame);
+	DeclineQuest();
 	PlaySound(SOUNDKIT.IG_QUEST_CANCEL);
 end
 

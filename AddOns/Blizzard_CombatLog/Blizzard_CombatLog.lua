@@ -172,6 +172,7 @@ COMBATLOG_EVENT_LIST = {
 	["SPELL_BUILDING_DAMAGE"] = true,
 	["SPELL_BUILDING_HEAL"] = true,
 	["UNIT_DISSIPATES"] = true,
+	["UNIT_LOYALTY"] = true,
 };
 
 COMBATLOG_FLAG_LIST = {
@@ -433,7 +434,8 @@ Blizzard_CombatLog_Filter_Defaults = {
 					      ["PARTY_KILL"] = true,
 					      ["UNIT_DIED"] = false,
 					      ["UNIT_DESTROYED"] = true,
-					      ["UNIT_DISSIPATES"] = true
+					      ["UNIT_DISSIPATES"] = true,
+						  ["UNIT_LOYALTY"] = false
 					};
 					sourceFlags = {
 						[COMBATLOG_FILTER_MINE] = true
@@ -482,7 +484,8 @@ Blizzard_CombatLog_Filter_Defaults = {
 					      ["PARTY_KILL"] = true,
 					      ["UNIT_DIED"] = true,
 					      ["UNIT_DESTROYED"] = true,
-					      ["UNIT_DISSIPATES"] = true
+					      ["UNIT_DISSIPATES"] = true,
+						  ["UNIT_LOYALTY"] = false
 					};
 					sourceFlags = nil;
 					destFlags =  {
@@ -1110,6 +1113,14 @@ do
 						keepShownOnClick = true;
 						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "ENVIRONMENTAL_DAMAGE" );
+						end;
+					};
+					[5] = {
+						text = "Loyalty";
+						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "UNIT_LOYALTY"); end;
+						keepShownOnClick = true;
+						func = function ( self, arg1, arg2, checked )
+							Blizzard_CombatLog_MenuHelper ( checked, "UNIT_LOYALTY" );
 						end;
 					};
 				};
@@ -1798,7 +1809,7 @@ local powerTypeToStringLookup =
 	[Enum.PowerType.Rage] = RAGE,
 	[Enum.PowerType.Focus] = FOCUS,
 	[Enum.PowerType.Energy] = ENERGY,
-	[Enum.PowerType.ComboPoints] = COMBO_POINTS,
+	[Enum.PowerType.Happiness] = HAPPINESS,
 	[Enum.PowerType.Runes] = RUNES,
 	[Enum.PowerType.RunicPower] = RUNIC_POWER,
 	[Enum.PowerType.SoulShards] = SOUL_SHARDS,
@@ -1807,6 +1818,7 @@ local powerTypeToStringLookup =
 	[Enum.PowerType.Maelstrom] = MAELSTROM_POWER,
 	[Enum.PowerType.Chi] = CHI_POWER,
 	[Enum.PowerType.Insanity] = INSANITY_POWER,
+	[Enum.PowerType.ComboPoints] = COMBO_POINTS,
 	[Enum.PowerType.ArcaneCharges] = ARCANE_CHARGES_POWER,
 	[Enum.PowerType.Fury] = FURY,
 	[Enum.PowerType.Pain] = PAIN,
@@ -2735,6 +2747,14 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		if ( overkill > 0 ) then
 			amount = amount - overkill;
 		end
+	elseif ( event == "UNIT_LOYALTY" ) then
+		local gained = ...
+		if ( gained == 1 ) then
+			resultStr = _G["PET_LOYALTY_GAIN"];
+		else
+			resultStr = _G["PET_LOYALTY_LOSS"];
+		end
+		formatString = "%6$s";
 	end
 
 	-- Throw away all of the assembled strings and just grab a premade one

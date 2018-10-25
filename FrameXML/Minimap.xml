@@ -97,6 +97,32 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
+			<Button name="MinimapToggleButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-15" y="-13"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ToggleMinimap();
+					</OnClick>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, MINIMAP_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_MINIMAPTOGGLE, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight"/>
+			</Button>
 			<Minimap name="Minimap" enableMouse="true">
 				<Size>
 					<AbsDimension x="140" y="140"/>
@@ -109,6 +135,72 @@
 					</Anchor>
 				</Anchors>
 				<Frames>
+					<Frame name="MiniMapTrackingFrame" enableMouse="true" hidden="true">
+						<Size>
+							<AbsDimension x="33" y="33"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-15" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="MiniMapTrackingIcon">
+									<Size>
+										<AbsDimension x="26" y="26"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="7" y="-6"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture name="MiniMapTrackingBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
+									<Size>
+										<AbsDimension x="64" y="64"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self:RegisterEvent("UNIT_AURA");
+							</OnLoad>
+							<OnEvent>
+								if ( event == "UNIT_AURA" ) then
+									local icon = GetTrackingTexture();
+									if ( icon ) then
+										MiniMapTrackingIcon:SetTexture(icon);
+										MiniMapTrackingFrame:Show();
+									else
+										MiniMapTrackingFrame:Hide();
+									end
+								end
+							</OnEvent>
+							<OnMouseUp>
+								if ( button == "RightButton" ) then
+									CancelTrackingBuff();			
+								end
+							</OnMouseUp> 
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+								GameTooltip:SetTrackingSpell();
+							</OnEnter>							
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
 					<Frame name="MiniMapMailFrame" enableMouse="true" hidden="true">
 						<Size>
 							<AbsDimension x="33" y="33"/>
@@ -253,6 +345,7 @@
 									</Anchors>
 								</HighlightTexture>									
 							</Button>
+<!--
 							<Frame name="MiniMapTracking">
 								<Size x="32" y="32"/>
 								<Anchors>
@@ -356,6 +449,7 @@
 									</Button>
 								</Frames>
 							</Frame>
+-->
 							<Button name="MinimapZoomIn">
 								<Size>
 									<AbsDimension x="32" y="32"/>
@@ -363,7 +457,7 @@
 								<Anchors>
 									<Anchor point="CENTER">
 										<Offset>
-											<AbsDimension x="72" y="-25"/>
+											<AbsDimension x="77" y="-13"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -392,7 +486,7 @@
 								<Anchors>
 									<Anchor point="CENTER">
 										<Offset>
-											<AbsDimension x="50" y="-43"/>
+											<AbsDimension x="51" y="-41"/>
 										</Offset>
 									</Anchor>
 								</Anchors>

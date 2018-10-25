@@ -425,7 +425,7 @@ function EquipmentFlyout_DisplaySpecialButton(button, paperDollItemSlot)
 			function () 
 				GameTooltip:SetOwner(EquipmentFlyoutFrame.buttonFrame, "ANCHOR_RIGHT", 6, -EquipmentFlyoutFrame.buttonFrame:GetHeight() - 6);
 				GameTooltip:SetText(EQUIPMENT_MANAGER_IGNORE_SLOT, 1.0, 1.0, 1.0); 
-				if ( SHOW_NEWBIE_TIPS == "1" ) then
+				if ( GetCVar("showNewbieTips") == "1" ) then
 					GameTooltip:AddLine(NEWBIE_TOOLTIP_EQUIPMENT_MANAGER_IGNORE_SLOT, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 				end
 				GameTooltip:Show();
@@ -439,7 +439,7 @@ function EquipmentFlyout_DisplaySpecialButton(button, paperDollItemSlot)
 			function () 
 				GameTooltip:SetOwner(EquipmentFlyoutFrame.buttonFrame, "ANCHOR_RIGHT", 6, -EquipmentFlyoutFrame.buttonFrame:GetHeight() - 6); 
 				GameTooltip:SetText(EQUIPMENT_MANAGER_UNIGNORE_SLOT, 1.0, 1.0, 1.0); 
-				if ( SHOW_NEWBIE_TIPS == "1" ) then
+				if ( GetCVar("showNewbieTips") == "1" ) then
 					GameTooltip:AddLine(NEWBIE_TOOLTIP_EQUIPMENT_MANAGER_UNIGNORE_SLOT, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 				end
 				GameTooltip:Show();
@@ -453,7 +453,7 @@ function EquipmentFlyout_DisplaySpecialButton(button, paperDollItemSlot)
 			function () 
 				GameTooltip:SetOwner(EquipmentFlyoutFrame.buttonFrame, "ANCHOR_RIGHT", 6, -EquipmentFlyoutFrame.buttonFrame:GetHeight() - 6);
 				GameTooltip:SetText(EQUIPMENT_MANAGER_PLACE_IN_BAGS, 1.0, 1.0, 1.0); 
-				if ( SHOW_NEWBIE_TIPS == "1" ) then
+				if ( GetCVar("showNewbieTips") == "1" ) then
 					GameTooltip:AddLine(NEWBIE_TOOLTIP_EQUIPMENT_MANAGER_PLACE_IN_BAGS, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 				end
 				GameTooltip:Show();

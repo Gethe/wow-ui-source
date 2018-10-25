@@ -265,7 +265,6 @@ local function FinishChanges(self)
 
 		Display_ResolutionDropDown.tablerefresh = true;
 		Display_PrimaryMonitorDropDown.tablerefresh = true;
-		Display_RefreshDropDown.tablerefresh = true;
 		Graphics_Refresh(self)
 	end
 
@@ -333,18 +332,18 @@ function VideoOptionsPanel_Default (self)
 	end
 end
 
-function Graphics_Default (self)
-	SetDefaultVideoOptions(0);
+function Graphics_Default (self, classicDefaults)
+	SetDefaultVideoOptions(0, classicDefaults);
 	VideoOptionsPanel_Default( Display_);
 	VideoOptionsPanel_Default( Graphics_);
 	VideoOptionsPanel_Default( RaidGraphics_);
 	FinishChanges(self);
 end
 
-function Advanced_Default (self)
-	SetDefaultVideoOptions(1);
+function Advanced_Default (self, classicDefaults)
+	SetDefaultVideoOptions(1, classicDefaults);
 	if(not InGlue()) then
-		SetDefaultVideoOptions(2);
+		SetDefaultVideoOptions(2, classicDefaults);
 	end
 	for _, control in next, self.controls do
 		if(string.find(control:GetName(), "Advanced_")) then
@@ -442,14 +441,6 @@ function Graphics_NotifyTarget(self, masterIndex, isRaid)
 	return;
 end
 
--------------------------------------------------------------------------------------------------------
--- try to keep the same selection when a table has been changed
-function VideoOptionsDropDownMenu_dependtarget_refreshtable(self)
-	local saveValue = self.table[self:GetValue()];				-- get previous string correponding to current value
-	self.tablerefresh = true;									-- say our table is dirty
-	VideoOptionsDropDownMenu_Initialize(self, self.initialize);	-- regenerate our table
-	VideoOptionsValueChanged(self,self:lookup(saveValue),1);
-end
 ---------------------------------------------------
 function Graphics_TableLookup(self, val)
 	if(self.table ~= nil) then

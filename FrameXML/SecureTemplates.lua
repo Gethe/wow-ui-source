@@ -438,6 +438,7 @@ SECURE_ACTIONS.macro =
 local CANCELABLE_ITEMS = {
     [GetInventorySlotInfo("MainHandSlot")] = 1, -- main hand slot
     [GetInventorySlotInfo("SecondaryHandSlot")] = 2, -- off-hand slot
+	[GetInventorySlotInfo("RangedSlot")] = 3 -- ranged slot
 };
 
 SECURE_ACTIONS.cancelaura =
@@ -485,10 +486,10 @@ SECURE_ACTIONS.target =
         end
     end;
 
-SECURE_ACTIONS.focus =
+--[[SECURE_ACTIONS.focus =
     function (self, unit, button)
         return FocusUnit(unit);
-    end;
+    end;]]
 
 SECURE_ACTIONS.assist =
     function (self, unit, button)

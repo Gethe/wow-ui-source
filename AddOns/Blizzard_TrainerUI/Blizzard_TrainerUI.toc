@@ -2,5 +2,6 @@
 ## Title: Blizzard Trainer UI
 ## Secure: 1
 ## LoadOnDemand: 1
+## SavedVariables: TRAINER_FILTER_AVAILABLE, TRAINER_FILTER_UNAVAILABLE, TRAINER_FILTER_USED
 Blizzard_TrainerUI.xml
 Localization.lua

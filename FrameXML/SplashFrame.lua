@@ -279,7 +279,6 @@ function SplashFrame_Open( tag )
 	SplashFrame_Display( tag, ShouldShowStartButton(SPLASH_SCREENS[tag].questID, tag) );
 
 	-- hide some quest elements when splash frame is up
-	ObjectiveTracker_Update();
 	if( QuestFrame:IsShown() )then
 		HideUIPanel(QuestFrame);
 	end
@@ -349,6 +348,4 @@ function SplashFrame_OnHide(self)
 	SplashFrame.firstTimeViewed = false;
 	C_TalkingHead.SetConversationsDeferred(false);
 	AlertFrame:SetAlertsEnabled(true, "splashFrame");
-
-	ObjectiveTracker_Update();
 end

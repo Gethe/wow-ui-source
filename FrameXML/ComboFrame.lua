@@ -6,11 +6,6 @@ COMBOFRAME_SHINE_FADE_OUT = 0.4;
 COMBO_FRAME_LAST_NUM_POINTS = 0;
 
 function ComboFrame_OnLoad(self)
-	if (GetCVar("comboPointLocation") ~= "1") then
-		self:Hide();
-		return;
-	end
-
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self:RegisterEvent("UNIT_POWER_FREQUENT");
 	self:RegisterEvent("UNIT_MAXPOWER");
@@ -38,17 +33,6 @@ end
 function ComboFrame_UpdateMax(self)
 	self.maxComboPoints = UnitPowerMax(PlayerFrame.unit, Enum.PowerType.ComboPoints);
 
-	-- If we have 6 or 9 max combo points, we use the first combo point and we show 6 circles
-	-- in a row. Otherwise we skip the first combo point and show 5 circles. The last 3 combo
-	-- point circle (if you have the talent to allow this) are shown only if filled.
-	if (self.maxComboPoints == 6 or self.maxComboPoints == 9) then
-		self.startComboPointIndex = 1;
-		self.extraComboPoints = 7;
-	else
-		self.startComboPointIndex = 2;
-		self.extraComboPoints = 6;
-	end
-
 	-- First hide all combo points
 	for i = 1, #self.ComboPoints do
 		self.ComboPoints[i]:Hide();
@@ -71,7 +55,7 @@ function ComboFrame_Update(self)
 			UIFrameFadeIn(self, COMBOFRAME_FADE_IN);
 		end
 
-		local comboIndex = self.startComboPointIndex;
+		local comboIndex = 1;
 		for i=1, self.maxComboPoints do
 			local fadeInfo = {};
 			comboPoint = self.ComboPoints[comboIndex];
@@ -93,12 +77,7 @@ function ComboFrame_Update(self)
 				comboPointHighlight:SetAlpha(0);
 				comboPointShine:SetAlpha(0);
 			end
-			if ( i >= self.extraComboPoints ) then
-				-- Only show the last 3 combo points (from the talent) if you have the combo point
-				comboPoint:SetShown( comboPoints >= i );
-			else
-				comboPoint:Show();
-			end
+			comboPoint:Show();
 			comboIndex = comboIndex + 1;
 		end
 	else

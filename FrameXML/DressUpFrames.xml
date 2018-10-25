@@ -123,62 +123,32 @@
 			<OnHide function="SideDressUpFrame_OnHide"/>
 		</Scripts>
 	</Frame> 
-	<Frame name="DressUpFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplate">
-		<Size x="450" y="545"/>
+	<Frame name="DressUpFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true">
+		<Size x="384" y="512"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" x="70" y="-104"/>
+			<Anchor point="TOPLEFT" x="0" y="-104"/>
 		</Anchors>
 		<HitRectInsets>
 			<AbsInset left="0" right="30" top="0" bottom="45"/>
 		</HitRectInsets>
 		<Frames>
-			<Frame parentKey="OutfitDropDown" name="$parentOutfitDropDown" inherits="WardrobeOutfitDropDownTemplate" mixin="DressUpOutfitMixin">
-				<KeyValues>
-					<KeyValue key="width" value="163" type="number"/>
-					<KeyValue key="minMenuStringWidth" value="127" type="number"/>
-					<KeyValue key="maxMenuStringWidth" value="190" type="number"/>
-				</KeyValues>
+			<Button name="DressUpFrameCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOP" x="-23" y="-28"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-30" y="-8"/>
+						</Offset>
+					</Anchor>
 				</Anchors>
-			</Frame>
-			<Frame name="MaximizeMinimizeFrame" inherits="MaximizeMinimizeButtonFrameTemplate">
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="10" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture atlas="UI-OuterBorderButtonPatch" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER" relativePoint="LEFT" x="6" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>						
-						function OnMaximize(frame)
-							frame:GetParent():SetSize(450, 545);
-							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						end
-						
-						self:SetOnMaximizedCallback(OnMaximize);
-						
-						function OnMinimize(frame)
-							frame:GetParent():SetSize(334, 423);
-							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						end
-						
-						self:SetOnMinimizedCallback(OnMinimize);
-						
-						self:SetMinimizedCVar("miniDressUpFrame");
-					</OnLoad>
-				</Scripts>
-			</Frame>
+			</Button>
 			<Button name="DressUpFrameCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size x="80" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-7" y="4"/>
+					<Anchor point="CENTER" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-80" y="90"/>
+						</Offset>
+					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnClick function="HideParentPanel"/>
@@ -196,28 +166,205 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<DressUpModel name="DressUpModel" parentKey="DressUpModel" inherits="ModelWithControlsTemplate">
+			<DressUpModel name="DressUpModelFrame" parentKey="DressUpModel">
+				<Size>
+					<AbsDimension x="316" y="351"/>
+				</Size>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="7" y="-63"/>
-					<Anchor point="BOTTOMRIGHT" x="-9" y="28"/>
+					<Anchor point="BOTTOM">
+						<Offset>
+							<AbsDimension x="-11" y="85"/>
+						</Offset>
+					</Anchor>
 				</Anchors>
+				<Frames>
+					<Button name="DressUpModelFrameRotateRightButton">
+						<Size>
+							<AbsDimension x="35" y="35"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+							</OnLoad>
+							<OnClick>
+								Model_RotateRight(self:GetParent());
+							</OnClick>
+						</Scripts>
+						<!-- Classic named its rotation buttons from the perspective of the model (instead of the camera),
+							 so the old "RotationLeft" texture should be paired with the modern "RotateRight" function. -->
+						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
+						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
+					</Button>
+					<Button name="DressUpModelFrameRotateLeftButton">
+						<Size>
+							<AbsDimension x="35" y="35"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="DressUpModelFrameRotateRightButton" relativePoint="TOPRIGHT"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+							</OnLoad>
+							<OnClick>
+								Model_RotateLeft(self:GetParent());
+							</OnClick>
+						</Scripts>
+						<!-- Classic named its rotation buttons from the perspective of the model (instead of the camera),
+							 so the old "RotationRight" texture should be paired with the modern "RotateLeft" function. -->
+						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
+						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
+					</Button>
+				</Frames>
 				<Scripts>
+					<OnUpdate function="Model_OnUpdate"/>
 					<OnLoad>
-						Model_OnLoad(self, MODELFRAME_MAX_PLAYER_ZOOM);
+						Model_OnLoad(self, MODELFRAME_MAX_PLAYER_ZOOM, nil, nil, CharacterModelFrame_OnMouseUp);
 					</OnLoad>
 					<OnDressModel function="DressUpFrame_OnDressModel"/>
 					<OnHide>
 						self:SetSheathed(false);
 					</OnHide>
+					<OnMouseUp>
+						if ( self.mouseDown ) then
+							self.onMouseUpFunc(self, button);
+						end
+					</OnMouseUp>
+					<OnMouseDown>
+						Model_OnMouseDown(self, button);
+					</OnMouseDown>
 				</Scripts>
 			</DressUpModel>
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="ModelBackground" atlas="dressingroom-background-warrior">
+				<Texture name="DressUpFramePortrait">
+					<Size>
+						<AbsDimension x="60" y="60"/>
+					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.DressUpModel"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.DressUpModel"/>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="256" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\SkillFrame-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-256"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\SkillFrame-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="256" y="-256"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="DressUpFrameTitleText" parentKey="TitleText" inherits="GameFontHighlight" text="DRESSUP_FRAME">
+					<Size>
+						<AbsDimension x="300" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-17"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="DressUpFrameDescriptionText" inherits="GameFontNormalSmall" text="DRESSUP_FRAME_INSTRUCTIONS">
+					<Size>
+						<AbsDimension x="260" y="36"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="DressUpFrameTitleText" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="10" y="-22"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="BGTopLeft" name="$parentBackgroundTopLeft">
+					<Size>
+						<AbsDimension x="256" y="255"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="22" y="-76"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BGTopRight" name="$parentBackgroundTopRight">
+					<Size>
+						<AbsDimension x="62" y="255"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBackgroundTopLeft" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BGBottomLeft" name="$parentBackgroundBot">
+					<Size>
+						<AbsDimension x="256" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBackgroundTopLeft" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BGBottomRight" name="$parentBackgroundBot">
+					<Size>
+						<AbsDimension x="62" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBackgroundTopLeft" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
 			</Layer>

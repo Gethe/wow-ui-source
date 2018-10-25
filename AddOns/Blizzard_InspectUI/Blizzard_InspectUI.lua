@@ -1,7 +1,4 @@
-
-INSPECTFRAME_SUBFRAMES = { "InspectPaperDollFrame", "InspectPVPFrame", "InspectTalentFrame", "InspectGuildFrame" };
-
-UIPanelWindows["InspectFrame"] = { area = "left", pushable = 0, };
+INSPECTFRAME_SUBFRAMES = { "InspectPaperDollFrame", "InspectPVPFrame" };
 
 function InspectFrame_Show(unit)
 	HideUIPanel(InspectFrame);
@@ -25,9 +22,12 @@ function InspectFrame_OnLoad(self)
 	INSPECTED_UNIT = nil;
 
 	-- Tab Handling code
-	PanelTemplates_SetNumTabs(self, 4);
+	PanelTemplates_SetNumTabs(self, 2);
 	PanelTemplates_SetTab(self, 1);
-	self.TitleText:SetFontObject("GameFontHighlight");
+	InspectNameText:SetFontObject("GameFontHighlight");
+
+	-- TEMP: Disable the Honor tab until we recreate it.
+	PanelTemplates_DisableTab(InspectFrame, 2);
 end
 
 function InspectFrame_OnEvent(self, event, unit, ...)
@@ -56,7 +56,7 @@ function InspectFrame_OnEvent(self, event, unit, ...)
 	elseif ( event == "UNIT_NAME_UPDATE" ) then
 		local arg1 = ...;
 		if ( arg1 == self.unit ) then
-			InspectFrameTitleText:SetText(GetUnitName(self.unit, true));
+			InspectNameText:SetText(GetUnitName(self.unit, true));
 		end
 		return;
 	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
@@ -73,7 +73,7 @@ function InspectFrame_UnitChanged(self)
 	NotifyInspect(unit);
 	InspectPaperDollFrame_OnShow(self);
 	SetPortraitTexture(InspectFramePortrait, unit);
-	InspectFrameTitleText:SetText(GetUnitName(unit, true));
+	InspectNameText:SetText(GetUnitName(unit, true));
 	InspectFrame_UpdateTabs();
 	if ( InspectPVPFrame:IsShown() ) then
 		InspectPVPFrame_OnShow();
@@ -86,7 +86,7 @@ function InspectFrame_OnShow(self)
 	end
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);	
 	SetPortraitTexture(InspectFramePortrait, self.unit);
-	InspectFrameTitleText:SetText(GetUnitName(self.unit, true));
+	InspectNameText:SetText(GetUnitName(self.unit, true));
 end
 
 function InspectFrame_OnHide(self)
@@ -95,16 +95,14 @@ function InspectFrame_OnHide(self)
 
 	-- Clear the player being inspected
 	ClearInspectPlayer();
-
-	-- in the InspectTalentFrame_Update function, a default talent tab is selected smartly if there is no tab selected
-	-- it actually ends up feeling natural to have this behavior happen every time the frame is shown
-	PanelTemplates_SetTab(InspectTalentFrame, nil);
 end
 
-function InspectFrame_OnUpdate(self)
-end		
-
 function InspectSwitchTabs(newID)
+	-- TEMP: Disable the Honor tab until we recreate it.
+	if (newID > 1) then
+		return
+	end
+
 	local newFrame = _G[INSPECTFRAME_SUBFRAMES[newID]];
 	local oldFrame = _G[INSPECTFRAME_SUBFRAMES[PanelTemplates_GetSelectedTab(InspectFrame)]];
 	if ( newFrame ) then
@@ -124,27 +122,5 @@ end
 function InspectFrame_UpdateTabs()
 	if ( not InspectFrame.unit ) then
 		return;
-	end
-	
-	-- Talent tab
-	local level = UnitLevel(InspectFrame.unit);
-	if ( level < 10 ) then
-		PanelTemplates_DisableTab(InspectFrame, 3);
-		if ( PanelTemplates_GetSelectedTab(InspectFrame) == 3 ) then
-			InspectSwitchTabs(1);
-		end
-	else
-		PanelTemplates_EnableTab(InspectFrame, 3);
-	end
-	
-	-- Guild tab
-	local _, _, guildName = GetInspectGuildInfo(InspectFrame.unit);
-	if ( guildName and guildName ~= "" ) then
-		PanelTemplates_EnableTab(InspectFrame, 4);
-	else
-		PanelTemplates_DisableTab(InspectFrame, 4);
-		if ( PanelTemplates_GetSelectedTab(InspectFrame) == 4 ) then
-			InspectSwitchTabs(1);
-		end	
 	end
 end

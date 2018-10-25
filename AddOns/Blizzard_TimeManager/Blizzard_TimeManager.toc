@@ -3,5 +3,3 @@
 ## Secure: 1
 ## LoadOnDemand: 1
 ## SavedVariablesPerCharacter: BlizzardStopwatchOptions
-Blizzard_TimeManager.xml
-Localization.lua

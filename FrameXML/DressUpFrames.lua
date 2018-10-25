@@ -27,7 +27,7 @@ function DressUpVisual(...)
 		SideDressUpModel:TryOn(...);
 	else
 		DressUpFrame_Show();
-		DressUpModel:TryOn(...);
+		DressUpModelFrame:TryOn(...);
 	end
 	return true;
 end
@@ -64,7 +64,12 @@ end
 
 
 function DressUpTexturePath(raceFileName)
-	-- HACK
+	-- HACK!!! (from 1.12.0)
+	if ( raceFileName == "Gnome" or raceFileName == "GNOME" ) then
+		raceFileName = "Dwarf";
+	elseif ( raceFileName == "Troll" or raceFileName == "TROLL" ) then
+		raceFileName = "Orc";
+	end
 	if ( not raceFileName ) then
 		raceFileName = "Orc";
 	end
@@ -98,7 +103,7 @@ function DressUpFrame_OnDressModel(self)
 	-- only want 1 update per frame
 	if ( not self.gotDressed ) then
 		self.gotDressed = true;
-		C_Timer.After(0, function() self.gotDressed = nil; DressUpFrameOutfitDropDown:UpdateSaveButton(); end);
+		C_Timer.After(0, function() self.gotDressed = nil; end);
 	end
 end
 
@@ -107,11 +112,11 @@ function DressUpFrame_Show()
 		DressUpFrame.mode = "player";
 		DressUpFrame.ResetButton:Show();
 
-		local className, classFileName = UnitClass("player");
-		SetDressUpBackground(DressUpFrame, nil, classFileName);
+		local race, fileName = UnitRace("player");
+		SetDressUpBackground(DressUpFrame, fileName);
 
 		ShowUIPanel(DressUpFrame);
-		DressUpModel:SetUnit("player");
+		DressUpModelFrame:SetUnit("player");
 	end
 end
 
@@ -126,32 +131,13 @@ function DressUpSources(appearanceSources, mainHandEnchant, offHandEnchant)
 	for i = 1, #appearanceSources do
 		if ( i ~= mainHandSlotID and i ~= secondaryHandSlotID ) then
 			if ( appearanceSources[i] and appearanceSources[i] ~= NO_TRANSMOG_SOURCE_ID ) then
-				DressUpModel:TryOn(appearanceSources[i]);
+				DressUpModelFrame:TryOn(appearanceSources[i]);
 			end
 		end
 	end
 
-	DressUpModel:TryOn(appearanceSources[mainHandSlotID], "MAINHANDSLOT", mainHandEnchant);
-	DressUpModel:TryOn(appearanceSources[secondaryHandSlotID], "SECONDARYHANDSLOT", offHandEnchant);
-end
-
-DressUpOutfitMixin = { };
-
-function DressUpOutfitMixin:GetSlotSourceID(slot, transmogType)
-	local slotID = GetInventorySlotInfo(slot);
-	local appearanceSourceID, illusionSourceID = DressUpModel:GetSlotTransmogSources(slotID);
-	if ( transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
-		return appearanceSourceID;
-	elseif ( transmogType == LE_TRANSMOG_TYPE_ILLUSION ) then
-		return illusionSourceID;
-	end
-end
-
-function DressUpOutfitMixin:LoadOutfit(outfitID)
-	if ( not outfitID ) then
-		return;
-	end
-	DressUpSources(C_TransmogCollection.GetOutfitSources(outfitID))
+	DressUpModelFrame:TryOn(appearanceSources[mainHandSlotID], "MAINHANDSLOT", mainHandEnchant);
+	DressUpModelFrame:TryOn(appearanceSources[secondaryHandSlotID], "SECONDARYHANDSLOT", offHandEnchant);
 end
 
 function SideDressUpFrame_OnShow(self)

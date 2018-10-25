@@ -185,6 +185,4 @@ function MainMenuBarBackpackButton_UpdateFreeSlots()
 	end
 
 	MainMenuBarBackpackButton.freeSlots = totalFree;
-	
-	MainMenuBarBackpackButtonCount:SetText(string.format(BACKPACK_FREESLOTS_FORMAT, totalFree));
 end

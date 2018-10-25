@@ -42,11 +42,6 @@ function ActionBarController_OnLoad(self)
 	self:RegisterEvent("PET_BATTLE_CLOSE");
 	
 	CURRENT_ACTION_BAR_STATE = LE_ACTIONBAR_STATE_MAIN;
-	
-	-- hack to fix crasy animation on bars when action bar is also animating
-	MainMenuExpBar:SetDeferAnimationCallback(ActionBarBusy);
-	HonorWatchBar.StatusBar:SetDeferAnimationCallback(ActionBarBusy);
-	ArtifactWatchBar.StatusBar:SetDeferAnimationCallback(ActionBarBusy);
 end
 
 

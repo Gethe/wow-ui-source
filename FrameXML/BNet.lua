@@ -84,7 +84,7 @@ function BNToastFrame_OnEvent(self, event, arg1)
 end
 
 function BNToastFrame_OnEnter()
-	AlertFrame_StopOutAnimation(BNToastFrame);
+	BNToastFrame_StopOutAnimation(BNToastFrame);
 	if ( BNToastFrame.toastType == BN_TOAST_TYPE_BROADCAST and BNToastFrameBottomLine:IsTruncated() ) then
 		BNToastFrame.TooltipFrame.Text:SetText(BNToastFrameBottomLine:GetText());
 		BNToastFrame.TooltipFrame:Show();
@@ -92,10 +92,19 @@ function BNToastFrame_OnEnter()
 end
 
 function BNToastFrame_OnLeave()
-	AlertFrame_ResumeOutAnimation(BNToastFrame);
+	BNToastFrame_ResumeOutAnimation(BNToastFrame);
 	if ( BNToastFrame.toastType == BN_TOAST_TYPE_BROADCAST ) then
 		BNToastFrame.TooltipFrame:Hide();
 	end
+end
+
+function BNToastFrame_StopOutAnimation(frame)
+	frame.waitAndAnimOut:Stop();
+	frame.waitAndAnimOut.animOut:SetStartDelay(1);
+end
+
+function BNToastFrame_ResumeOutAnimation(frame)
+	frame.waitAndAnimOut:Play();
 end
 
 function BNet_EnableToasts()

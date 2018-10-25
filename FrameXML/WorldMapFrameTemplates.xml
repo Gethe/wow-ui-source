@@ -1,28 +1,46 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Frame name="WorldMapFlagTemplate" hidden="true" virtual="true">
-		<Size x="24" y="24"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Texture"/>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad>
-				RaiseFrameLevelByTwo(self);
-			</OnLoad>
-		</Scripts>
-	</Frame>
-	<Frame name="WorldMapVehicleTemplate" hidden="true" virtual="true">
+	<Frame name="WorldMapUnitTemplate" hidden="true" virtual="true">
 		<Size>
-			<AbsDimension x="45" y="45"/>
+			<AbsDimension x="16" y="16"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="10" right="10" top="10" bottom="10"/>
-		</HitRectInsets>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:SetFrameLevel(self:GetFrameLevel() + 1);
+				self.unit = "party"..self:GetID();
+				_G[self:GetName().."Icon"]:SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
+			</OnLoad>
+			<OnEnter>
+				WorldMapUnit_OnEnter(self);
+			</OnEnter>
+			<OnLeave>
+				WorldMapTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	<Frame name="WorldMapRaidUnitTemplate" inherits="WorldMapUnitTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self:SetFrameLevel(self:GetFrameLevel() + 1);
+				_G[self:GetName().."Icon"]:SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="WorldMapFlagTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="24" y="24"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentTexture" setAllPoints="true"/>
@@ -30,56 +48,8 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				RaiseFrameLevelByTwo(self);
+				self:SetFrameLevel(self:GetFrameLevel() + 2);
 			</OnLoad>
-			<OnEnter>
-				WorldMapUnit_OnEnter(self, motion);
-			</OnEnter>
-			<OnLeave>
-				WorldMapUnit_OnLeave(self, motion);
-			</OnLeave>
-		</Scripts>
-	</Frame>
-	<Frame name="WorldMapStoryLineTemplate" hidden="true" virtual="true">
-		<Size x="22" y="22" />
-		<HitRectInsets>
-			<AbsInset left="4" right="4" top="0" bottom="0"/>
-		</HitRectInsets>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Texture" atlas="QuestNormal"/>
-				<Texture parentKey="Above" atlas="MiniMap-PositionArrowUp" hidden="true">
-					<Size x="32" y="32"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="4"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Below" atlas="MiniMap-PositionArrowDown" hidden="true">
-					<Size x="32" y="32"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="-4"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter>
-				local questLineName, questName, _, _, _, floorLocation, isLegendary = C_Questline.GetQuestlineInfoByIndex(self.index);
-				if ( questName ) then
-					WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT");
-					WorldMapTooltip:SetText(questName);
-					WorldMapTooltip:AddLine(AVAILABLE_QUEST, 1, 1, 1, true);
-					if (floorLocation == LE_QUESTLINE_FLOOR_LOCATION_BELOW) then
-						WorldMapTooltip:AddLine(QUESTLINE_LOCATED_BELOW, 0.5, 0.5, 0.5, true);
-					elseif (floorLocation == LE_QUESTLINE_FLOOR_LOCATION_ABOVE) then
-						WorldMapTooltip:AddLine(QUESTLINE_LOCATED_ABOVE, 0.5, 0.5, 0.5, true);
-					end
-					WorldMapTooltip:Show();
-				end
-			</OnEnter>
-			<OnLeave>
-				WorldMapTooltip:Hide();
-			</OnLeave>
 		</Scripts>
 	</Frame>
 	<Frame name="WorldMapCorpseTemplate" hidden="true" virtual="true">
@@ -92,11 +62,14 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture file="Interface\Minimap\POIIcons" setAllPoints="true">
-					<TexCoords left="0.56640625" right="0.6328125" top="0.001953125" bottom="0.03515625"/>
+					<TexCoords left="0.875" right="1.0" top="0" bottom="0.125"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnLoad>
+				self:SetFrameLevel(self:GetFrameLevel() + 1);
+			</OnLoad>
 			<OnEnter>
 				local x, y = self:GetCenter();
 				local parentX, parentY = self:GetParent():GetCenter();
@@ -111,327 +84,6 @@
 			<OnLeave>
 				WorldMapTooltip:Hide();
 			</OnLeave>
-		</Scripts>
-	</Frame>
-	<Frame name="WorldMapDebugObjectTemplate" hidden="true" virtual="true">
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture file="Interface\RaidFrame\UI-RaidFrame-Threat" setAllPoints="true"/>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad>
-				self.texture = self:GetRegions();
-			</OnLoad>
-			<OnEnter>
-				WorldMapUnit_OnEnter(self, motion);
-			</OnEnter>
-			<OnLeave>
-				WorldMapUnit_OnLeave(self, motion);
-			</OnLeave>
-			<OnMouseUp>
-				if ( IsModifierKeyDown("CTRL") ) then
-					TeleportToDebugObject(self.index);
-				else
-					WorldMapButton_OnClick(WorldMapButton, button);
-				end
-			</OnMouseUp>
-		</Scripts>
-	</Frame>
-	<Button name="WorldMapFakeButtonTemplate" virtual="true">
-		<Scripts>
-			<OnMouseDown function="WorldMapButton_OnMouseDown"/>
-			<OnMouseUp function="WorldMapButton_OnMouseUp"/>
-			<OnClick function="WorldMapFakeButton_OnClick"/>
-		</Scripts>
-	</Button>
-	<Button name="WorldMapMaelstromButtonTemplate" inherits="WorldMapFakeButtonTemplate" hidden="true" virtual="true">
-		<Scripts>
-			<OnLoad>
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-				local zoneName = self:GetText();
-				self.zoneID = MAELSTROM_ZONES_ID[zoneName];
-				self.minLevel = MAELSTROM_ZONES_LEVELS[zoneName].minLevel;
-				self.maxLevel = MAELSTROM_ZONES_LEVELS[zoneName].maxLevel;
-				self.petMinLevel = MAELSTROM_ZONES_LEVELS[zoneName].petMinLevel;
-				self.petMaxLevel = MAELSTROM_ZONES_LEVELS[zoneName].petMaxLevel;
-			</OnLoad>
-			<OnEnter>
-				WorldMapFrame.maelstromZoneText = GetMapNameByID(self.zoneID);
-				WorldMapFrame.minLevel = self.minLevel;
-				WorldMapFrame.maxLevel = self.maxLevel;
-				WorldMapFrame.petMinLevel = self.petMinLevel;
-				WorldMapFrame.petMaxLevel = self.petMaxLevel;
-			</OnEnter>
-			<OnLeave>
-				WorldMapFrame.maelstromZoneText = nil;
-				WorldMapFrame.minLevel = nil;
-				WorldMapFrame.maxLevel = nil;
-				WorldMapFrame.petMinLevel = nil;
-				WorldMapFrame.petMaxLevel = nil;
-			</OnLeave>
-		</Scripts>
-	</Button>
-
-	<Button name="EncounterMapButtonTemplate" virtual="true">
-		<Size x="50" y="49"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentbgImage" parentKey="bgImage">
-					<Size x="36" y="36"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<NormalTexture file="Interface\EncounterJournal\UI-EncounterJournalTextures">
-			<TexCoords left="0.84960938" right="0.97070313" top="0.42871094" bottom="0.48828125"/>
-		</NormalTexture>
-		<PushedTexture file="Interface\EncounterJournal\UI-EncounterJournalTextures">
-			<TexCoords left="0.77734375" right="0.89843750" top="0.26953125" bottom="0.32910156"/>
-		</PushedTexture>
-		<HighlightTexture file="Interface\EncounterJournal\UI-EncounterJournalTextures">
-			<TexCoords left="0.68945313" right="0.81054688" top="0.33300781" bottom="0.39257813"/>
-		</HighlightTexture>
-		<Scripts>
-			<OnEnter>
-				if self.tooltipTitle then
-					WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT");
-					WorldMapTooltip:SetText(self.tooltipTitle,1,1,1);
-					WorldMapTooltip:AddLine(self.tooltipText, nil, nil, nil, true);
-					WorldMapTooltip:Show();
-				end
-			</OnEnter>
-			<OnLeave>
-				WorldMapTooltip:Hide();
-			</OnLeave>
-			<OnShow>
-				self:SetFrameLevel(self:GetParent():GetFrameLevel() + 10);
-			</OnShow>
-			<OnClick>
-				if WORLDMAP_SETTINGS.size ~= WORLDMAP_WINDOWED_SIZE then
-					ToggleWorldMap();
-				end
-
-				if not EncounterJournal or not EncounterJournal:IsShown() then
-					if not ToggleEncounterJournal() then
-						return;
-					end
-				end
-				EncounterJournal_ListInstances();
-				EncounterJournal_DisplayInstance(self.instanceID);
-				EncounterJournal_DisplayEncounter(self.encounterID);
-			</OnClick>
-		</Scripts>
-	</Button>
-
-	<Button name="WorldMapBountyBoardTabTemplate" virtual="true">
-		<Size x="44" y="44" />
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture parentKey="Icon" mask="Interface\CharacterFrame\TempPortraitAlphaMask">
-					<Size x="30" y="30" />
-					<Anchors>
-						<Anchor point="CENTER" y="1"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="EmptyIcon" atlas="worldquest-tracker-bg-noemissary" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" y="2"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame parentKey="CheckMark" setAllPoints="true">
-				<Layers>
-					<Layer level="ARTWORK" textureSubLevel="1">
-						<Texture parentKey="Texture" atlas="worldquest-tracker-checkmark" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER" />
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
-
-		<Scripts>
-			<OnLoad>
-				self:RegisterForClicks("LeftButtonDown");
-			</OnLoad>
-			<OnEnter>
-				self:GetParent():OnTabEnter(self);
-			</OnEnter>
-			<OnLeave>
-				self:GetParent():OnTabLeave(self);
-			</OnLeave>
-			<OnClick>
-				self:GetParent():OnTabClick(self);
-			</OnClick>
-		</Scripts>
-	</Button>
-
-	<Frame name="WorldMapBountyBoardObjectiveTemplate" virtual="true">
-		<Size x="35" y="35" />
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="MarkerTexture">
-					<Anchors>
-						<Anchor point="CENTER" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="CheckMarkTexture" atlas="worldquest-tracker-checkmark" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" />
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
-
-	<Frame name="WorldMapBountyBoardTemplate" mixin="WorldMapBountyBoardMixin" enableMouse="true" virtual="true">
-		<Size x="244" y="103" />
-		<HitRectInsets left="35" right="35" top="40" bottom="5" />
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="TrackerBackground" atlas="worldquest-tracker" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOM" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="1">
-				<Texture parentKey="DesaturatedTrackerBackground" atlas="worldquest-tracker" useAtlasSize="true" desaturated="true" alpha=".7">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.TrackerBackground" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString parentKey="BountyName" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1">
-					<Size x="170" />
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.TrackerBackground" y="17" />
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="Locked" atlas="worldquest-tracker-lock" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" y="-25" />
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame parentKey="TutorialBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
-				<Size x="220" y="100"/>
-				<Layers>
-					<Layer level="OVERLAY">
-						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP">
-							<Size x="188" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="16" y="-24"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="6" y="6"/>
-						</Anchors>
-						<Scripts>
-							<OnClick inherit="append">
-								if self:GetParent().activeTutorial then
-									SetCVarBitfield("closedInfoFrames", self:GetParent().activeTutorial, true);
-								end
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate" />
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						self.Text:SetSpacing(4);
-					</OnLoad>
-					<OnShow>
-						self:SetHeight(self.Text:GetHeight() + 42);
-					</OnShow>
-					<OnHide>
-						self.activeTutorial = nil;
-					</OnHide>
-				</Scripts>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad" />
-			<OnShow method="OnShow" />
-			<OnEvent method="OnEvent" />
-			<OnEnter method="OnEnter" />
-			<OnLeave method="OnLeave" />
-		</Scripts>
-	</Frame>
-
-	<Frame name="WorldMapActionButtonTemplate" mixin="WorldMapActionButtonMixin" virtual="true">
-		<Size x="101" y="86" />
-		<Layers>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="ActionFrameTexture" atlas="worldquest-followerabilityframe" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" />
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button parentKey="SpellButton" useParentLevel="true" registerForClicks="LeftButtonDown" motionScriptsWhileDisabled="true" inherits="SecureFrameTemplate">
-				<Size x="55" y="55" />
-				<Anchors>
-					<Anchor point="CENTER" y="8" />
-				</Anchors>
-				<Frames>
-					<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="5" y="-6"/>
-							<Anchor point="BOTTOMRIGHT" x="-5" y="3"/>
-						</Anchors>
-					</Cooldown>
-				</Frames>
-				<Scripts>
-					<OnClick>
-						self:GetParent():OnClick();
-					</OnClick>
-
-					<OnEnter>
-						self:GetParent():OnEnter();
-					</OnEnter>
-
-					<OnLeave>
-						self:GetParent():OnLeave();
-					</OnLeave>
-				</Scripts>
-				<NormalTexture />
-				<PushedTexture>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="1" y="-1" />
-						<Anchor point="BOTTOMRIGHT" x="1" y="-1" />
-					</Anchors>
-				</PushedTexture>
-				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="-2" />
-						<Anchor point="BOTTOMRIGHT" x="0" y="-2" />
-					</Anchors>
-				</HighlightTexture>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnEvent method="OnEvent" />
 		</Scripts>
 	</Frame>
 </Ui>

@@ -25,7 +25,7 @@ end
 
 function FlightMap_ZoneSummaryDataProvider:GatherWorldQuests()
 	self.worldQuestsByZone = {};
-
+	--[[
 	local mapAreaID = self:GetMap():GetMapID();
 	for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
 		local zoneMapID, zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
@@ -48,6 +48,7 @@ function FlightMap_ZoneSummaryDataProvider:GatherWorldQuests()
 			end
 		end
 	end
+	--]]
 end
 
 function FlightMap_ZoneSummaryDataProvider:CheckMouse()

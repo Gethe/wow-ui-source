@@ -24,9 +24,6 @@ function BattlefieldMinimap_Toggle()
 		if ( instanceType == "pvp" ) then
 			SetCVar("showBattlefieldMinimap", "1");
 			BattlefieldMinimap:Show();
-		elseif ( instanceType ~= "arena" ) then
-			SetCVar("showBattlefieldMinimap", "2");
-			BattlefieldMinimap:Show();
 		end
 	end
 end

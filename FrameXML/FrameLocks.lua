@@ -26,7 +26,6 @@ local HIDE_MOST = {
 	WorldStateAlwaysUpFrame = "hidden",
 	ZoneAbilityFrame	= "hidden",
 	OrderHallCommandBar	= "hidden",
-	TalentMicroButtonAlert	="hidden";
 	WorldStateScoreFrame = "hidden";
 }
 

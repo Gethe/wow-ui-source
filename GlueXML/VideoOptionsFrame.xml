@@ -68,7 +68,21 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
-						VideoOptionsFrameDefault_OnClick(self, button);
+						VideoOptionsFrameDefault_OnClick(self, button, false);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentClassicDefault" inherits="GlueButtonSmallTemplateBlue" text="CLASSIC_DEFAULTS">
+				<Size>
+					<AbsDimension x="140" y="38"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentDefault" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
+						VideoOptionsFrameDefault_OnClick(self, button, true);
 					</OnClick>
 				</Scripts>
 			</Button>

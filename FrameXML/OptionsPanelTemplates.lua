@@ -307,7 +307,9 @@ function BlizzardOptionsPanel_OnEvent (frame, event, ...)
 				entry = frame.options[(control.cvar or control.label)];
 				if ( entry ) then
 					if ( entry.text ) then
-						control.tooltipText = (_G["OPTION_TOOLTIP_" .. gsub(entry.text, "_TEXT$", "")] or entry.tooltip);
+						-- Ordering on this used to be reversed...which seems rather silly. We'd rather use the specified tooltip than the inferred one.
+						control.tooltipText = (entry.tooltip or _G["OPTION_TOOLTIP_" .. gsub(entry.text, "_TEXT$", "")]);
+
 						local text = _G[control:GetName() .. "Text"];
 						if ( text ) then
 							text:SetText(_G[entry.text] or entry.text);

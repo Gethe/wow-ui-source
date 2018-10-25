@@ -86,8 +86,6 @@ InterfaceOptionsFrame.xml
 InterfaceOptionsPanels.xml
 ..\SharedXML\AddonList.xml
 GarrisonBaseUtils.xml
-AlertFrames.xml
-AlertFrameSystems.xml
 MirrorTimer.xml
 CoinPickupFrame.xml
 StackSplitFrame.xml
@@ -98,7 +96,6 @@ UnitFrame.xml
 Cooldown.xml
 PVPHonorSystem.xml
 ActionBarController.xml
-TutorialFrame.xml
 Minimap.xml
 GameTime.xml
 ##ActionWindow.xml
@@ -118,15 +115,17 @@ ReadyCheck.xml
 PlayerFrame.xml
 PartyFrame.xml
 TargetFrame.xml
-TotemFrame.xml
 PetFrame.xml
 StatsFrame.xml
 SpellBookFrame.xml
 CharacterFrame.xml
 PaperDollFrame.xml
+PetPaperDollFrame.xml
+SkillFrame.xml
 ReputationFrame.xml
 QuestFrame.xml
-QuestPOI.xml
+QuestLogFrame.xml
+QuestTimerFrame.xml
 QuestInfo.xml
 MerchantFrame.xml
 TradeFrame.xml
@@ -149,7 +148,6 @@ MultiCastActionBarFrame.xml
 MainMenuBarBagButtons.xml
 UnitPositionFrameTemplates.xml
 WorldMapFrame.xml
-QuestMapFrame.xml
 RaidWarning.xml
 CinematicFrame.xml
 ComboFrame.xml
@@ -173,18 +171,12 @@ ScenarioFinder.xml
 LFGList.xml
 RatingMenuFrame.xml
 TalentFrameBase.lua
-TalentFrameTemplates.xml
 ClassPowerBar.xml
-RuneFrame.xml
-ShardBar.xml
-ComboFramePlayer.xml
-InsanityBar.xml
 EasyMenu.lua
 ChatConfigFrame.xml
 MovieFrame.xml
 AlternatePowerBar.xml
 MonkStaggerBar.xml
-LevelUpDisplay.xml
 AnimationSystem.lua
 EquipmentManager.lua
 CompactUnitFrame.xml
@@ -196,7 +188,6 @@ PaladinPowerBar.xml
 MageArcaneChargesBar.xml
 SpellActivationOverlay.xml
 GuildInviteFrame.xml
-GhostFrame.xml
 StreamingFrame.xml
 IconIntroAnimation.xml
 Timer.xml
@@ -212,15 +203,13 @@ BattlePetTooltip.xml
 FloatingGarrisonFollowerTooltip.xml
 GarrisonFollowerTooltip.xml
 StaticPopupSpecial.xml
-LossOfControlFrame.xml
 PVPHelper.xml
 MapBar.xml
 ProductChoice.xml
 ZoneAbility.xml
-ArtifactToasts.xml
 ..\SharedXML\ModelPreviewFrame.xml
-SplashFrame.xml
 QuestChoiceFrameMixin.lua
+ClassTrainerFrameTemplates.xml
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

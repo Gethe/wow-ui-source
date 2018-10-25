@@ -30,8 +30,6 @@ UIPanelWindows["InterfaceOptionsFrame"] =		{ area = "center",		pushable = 0,	whi
 UIPanelWindows["HelpFrame"] =					{ area = "center",		pushable = 0,	whileDead = 1 };
 
 -- Frames using the new Templates
-UIPanelWindows["CharacterFrame"] =				{ area = "left",			pushable = 3,	whileDead = 1};
-UIPanelWindows["SpellBookFrame"] =				{ area = "left",			pushable = 1,	whileDead = 1, width = 575, height = 545 };
 UIPanelWindows["TaxiFrame"] =					{ area = "left",			pushable = 0, 	width = 605, height = 580, showFailedFunc = CloseTaxiMap };
 UIPanelWindows["PVPUIFrame"] =					{ area = "left",			pushable = 0,	whileDead = 1, width = 563};
 UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1};
@@ -47,9 +45,7 @@ UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1};
 UIPanelWindows["MailFrame"] =					{ area = "left",			pushable = 0};
 UIPanelWindows["BankFrame"] =					{ area = "left",			pushable = 6,	width = 425 };
 UIPanelWindows["QuestLogPopupDetailFrame"] =	{ area = "left",			pushable = 0,	whileDead = 1 };
-UIPanelWindows["QuestFrame"] =					{ area = "left",			pushable = 0};
 UIPanelWindows["GuildRegistrarFrame"] =			{ area = "left",			pushable = 0};
-UIPanelWindows["GossipFrame"] =					{ area = "left",			pushable = 0};
 UIPanelWindows["DressUpFrame"] =				{ area = "left",			pushable = 2};
 UIPanelWindows["PetitionFrame"] =				{ area = "left",			pushable = 0};
 UIPanelWindows["ItemTextFrame"] =				{ area = "left",			pushable = 0};
@@ -59,6 +55,21 @@ UIPanelWindows["RaidBrowserFrame"] =			{ area = "left",			pushable = 1,	};
 UIPanelWindows["DeathRecapFrame"] =				{ area = "center",			pushable = 0,	whileDead = 1, allowOtherPanels = 1};
 UIPanelWindows["WardrobeFrame"] =				{ area = "left",			pushable = 0,	width = 965 };
 UIPanelWindows["AlliedRacesFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1};
+
+-- Resurrected Classic Frames that don't use the new Templates.
+-- The offset and width values help the Classic frames blend in with modern frames that use ButtonFrameTemplate.
+UIPanelWindows["CharacterFrame"] =				{ area = "left",			pushable = 3,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
+UIPanelWindows["SpellBookFrame"] =				{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	height = 424,	whileDead = 1 };
+UIPanelWindows["TalentFrame"] =					{ area = "left",			pushable = 6,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
+UIPanelWindows["QuestLogFrame"] =				{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
+UIPanelWindows["GossipFrame"] =					{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
+UIPanelWindows["QuestFrame"] =					{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
+UIPanelWindows["DressUpFrame"] =				{ area = "left",			pushable = 2,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
+UIPanelWindows["InspectFrame"] =				{ area = "left",			pushable = 2,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
+UIPanelWindows["ClassTrainerFrame"] =			{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
+UIPanelWindows["TradeSkillFrame"] =				{ area = "left",			pushable = 3,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
+UIPanelWindows["CraftFrame"] =					{ area = "left",			pushable = 4,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
+UIPanelWindows["PetStableFrame"] =				{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 
 -- Frames NOT using the new Templates
 UIPanelWindows["WorldMapFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
@@ -235,6 +246,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("INSTANCE_LOCK_STOP");
 	self:RegisterEvent("INSTANCE_LOCK_WARNING");
 	self:RegisterEvent("CONFIRM_TALENT_WIPE");
+	self:RegisterEvent("CONFIRM_PET_UNLEARN");
 	self:RegisterEvent("CONFIRM_BINDER");
 	self:RegisterEvent("CONFIRM_SUMMON");
 	self:RegisterEvent("CANCEL_SUMMON");
@@ -270,7 +282,12 @@ function UIParent_OnLoad(self)
 
 	-- Events for trade skill UI handling
 	self:RegisterEvent("TRADE_SKILL_SHOW");
+	self:RegisterEvent("TRADE_SKILL_CLOSE");
 	self:RegisterEvent("OBLITERUM_FORGE_SHOW");
+
+	-- Events for craft UI handling
+	self:RegisterEvent("CRAFT_SHOW");
+	self:RegisterEvent("CRAFT_CLOSE");
 
 	-- Events for Item socketing UI
 	self:RegisterEvent("SOCKET_INFO_UPDATE");
@@ -452,6 +469,10 @@ function ClassTrainerFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_TrainerUI");
 end
 
+function CraftFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_CraftUI");
+end
+
 function CombatLog_LoadUI()
 	UIParentLoadAddOn("Blizzard_CombatLog");
 end
@@ -522,10 +543,6 @@ end
 
 function AchievementFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_AchievementUI");
-end
-
-function TimeManager_LoadUI()
-	UIParentLoadAddOn("Blizzard_TimeManager");
 end
 
 function TokenFrame_LoadUI()
@@ -700,14 +717,16 @@ function ToggleAchievementFrame(stats)
 	end
 end
 
-function ToggleTalentFrame(suggestedTab)
-	if (UnitLevel("player") < SHOW_SPEC_LEVEL) then
+function ToggleTalentFrame()
+	if (UnitLevel("player") < SHOW_TALENT_LEVEL) then
 		return;
 	end
 
 	TalentFrame_LoadUI();
-	if ( PlayerTalentFrame_Toggle ) then
-		PlayerTalentFrame_Toggle(suggestedTab);
+	if ( TalentFrame:IsShown() ) then
+		HideUIPanel(TalentFrame);
+	else
+		ShowUIPanel(TalentFrame);
 	end
 end
 
@@ -715,13 +734,6 @@ function ToggleBattlefieldMinimap()
 	BattlefieldMinimap_LoadUI();
 	if ( BattlefieldMinimap_Toggle ) then
 		BattlefieldMinimap_Toggle();
-	end
-end
-
-function ToggleTimeManager()
-	TimeManager_LoadUI();
-	if ( TimeManager_Toggle ) then
-		TimeManager_Toggle();
 	end
 end
 
@@ -755,8 +767,6 @@ function ToggleGuildFrame()
 		if ( GuildFrame_Toggle ) then
 			GuildFrame_Toggle();
 		end
-	else
-		ToggleGuildFinder();
 	end
 end
 
@@ -998,12 +1008,6 @@ local function PlayBattlefieldBanner(self)
 			    end
 		    end
 		end
-
-		if ( bannerName ) then
-			UIParentLoadAddOn("Blizzard_PVPUI");
-			C_Timer.After(1, function() TopBannerManager_Show(PvPObjectiveBannerFrame, { name=bannerName, description=bannerDescription }); end);
-			self.battlefieldBannerShown = true;
-		end
 	end
 end
 
@@ -1089,12 +1093,6 @@ function UIParent_OnEvent(self, event, ...)
 			end
 			BattlefieldMinimap:Show();
 		end
-		if ( not TimeManagerFrame and GetCVar("timeMgrAlarmEnabled") == "1" ) then
-			-- We have to load the time manager here if the alarm is enabled because the alarm can go off
-			-- even if the clock is not shown. WorldFrame_OnUpdate handles alarm checking while the clock
-			-- is hidden.
-			TimeManager_LoadUI();
-		end
 		local lastTalkedToGM = GetCVar("lastTalkedToGM");
 		if ( lastTalkedToGM ~= "" ) then
 			GMChatFrame_LoadUI();
@@ -1111,7 +1109,6 @@ function UIParent_OnEvent(self, event, ...)
 
 		StoreFrame_CheckForFree(event);
 	elseif ( event == "PLAYER_LOGIN" ) then
-		TimeManager_LoadUI();
 		-- You can override this if you want a Combat Log replacement
 		CombatLog_LoadUI();
 	elseif ( event == "PLAYER_DEAD" ) then
@@ -1128,18 +1125,12 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_ALIVE" or event == "RAISED_AS_GHOUL" ) then
 		StaticPopup_Hide("DEATH");
 		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
-		if ( UnitIsGhost("player") ) then
-			GhostFrame:Show();
-		else
-			GhostFrame:Hide();
-		end
 	elseif ( event == "PLAYER_UNGHOST" ) then
 		StaticPopup_Hide("RESURRECT");
 		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
 		StaticPopup_Hide("RESURRECT_NO_TIMER");
 		StaticPopup_Hide("SKINNED");
 		StaticPopup_Hide("SKINNED_REPOP");
-		GhostFrame:Hide();
 	elseif ( event == "RESURRECT_REQUEST" ) then
 		ShowResurrectRequest(arg1);
 	elseif ( event == "PLAYER_SKINNED" ) then
@@ -1293,12 +1284,7 @@ function UIParent_OnEvent(self, event, ...)
 		if ( C_Commentator.IsSpectating() ) then
 			Commentator_LoadUI();
 		end
-		
-		if ( UnitIsGhost("player") ) then
-			GhostFrame:Show();
-		else
-			GhostFrame:Hide();
-		end
+
 		if ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
 			StaticPopup_Show("DEATH");
 		end
@@ -1375,21 +1361,13 @@ function UIParent_OnEvent(self, event, ...)
 		local resSicknessTime = GetResSicknessDuration();
 		if ( resSicknessTime ) then
 			local dialog = nil;
-			if (UnitLevel("player") <= 10) then
-				dialog = StaticPopup_Show("XP_LOSS_NO_DURABILITY", resSicknessTime);
-			else
-				dialog = StaticPopup_Show("XP_LOSS", resSicknessTime);
-			end
+			dialog = StaticPopup_Show("XP_LOSS", resSicknessTime);
 			if ( dialog ) then
 				dialog.data = resSicknessTime;
 			end
 		else
 			local dialog = nil;
-			if (UnitLevel("player") <= 10) then
-				dialog = StaticPopup_Show("XP_LOSS_NO_SICKNESS_NO_DURABILITY");
-			else
-				dialog = StaticPopup_Show("XP_LOSS_NO_SICKNESS");
-			end
+			dialog = StaticPopup_Show("XP_LOSS_NO_SICKNESS");
 			if ( dialog ) then
 				dialog.data = 1;
 			end
@@ -1534,6 +1512,12 @@ function UIParent_OnEvent(self, event, ...)
 --				PlayerTalentFrame_Open(GetActiveSpecGroup());
 --			end
 		end
+	elseif ( event == "CONFIRM_PET_UNLEARN" ) then
+		HideUIPanel(GossipFrame);
+		local dialog = StaticPopup_Show("CONFIRM_PET_UNLEARN");
+		if ( dialog ) then
+			MoneyFrame_Update(dialog:GetName().."MoneyFrame", arg1);
+		end
 	elseif ( event == "CONFIRM_BINDER" ) then
 		StaticPopup_Show("CONFIRM_BINDER", arg1);
 	elseif ( event == "CONFIRM_SUMMON" ) then
@@ -1603,6 +1587,8 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "TRADE_SKILL_SHOW" ) then
 		TradeSkillFrame_LoadUI();
 		ShowUIPanel(TradeSkillFrame);
+	elseif ( event == "TRADE_SKILL_CLOSE" ) then
+		HideUIPanel(TradeSkillFrame);
 	elseif ( event == "OBLITERUM_FORGE_SHOW" ) then
 		ObliterumForgeFrame_LoadUI();
 		ShowUIPanel(ObliterumForgeFrame);
@@ -1612,6 +1598,12 @@ function UIParent_OnEvent(self, event, ...)
 		ItemSocketingFrame_Update();
 		ShowUIPanel(ItemSocketingFrame);
 
+	-- Events for craft UI handling
+	elseif ( event == "CRAFT_SHOW" ) then
+		CraftFrame_LoadUI();
+		ShowUIPanel(CraftFrame);
+	elseif ( event == "CRAFT_CLOSE" ) then
+		HideUIPanel(CraftFrame);
 	elseif ( event == "ARTIFACT_UPDATE" ) then
 		if ( not C_ArtifactRelicForgeUI.IsAtForge() ) then
 			ArtifactFrame_LoadUI();
@@ -1916,10 +1908,6 @@ function UIParent_OnEvent(self, event, ...)
 		ToggleOrderHallTalentUI();
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
 		StoreFrame_CheckForFree(event);
-	elseif ( event == "LOADING_SCREEN_ENABLED" ) then
-		TopBannerManager_LoadingScreenEnabled();
-	elseif ( event == "LOADING_SCREEN_DISABLED" ) then
-		TopBannerManager_LoadingScreenDisabled()
 	elseif ( event == "TOKEN_AUCTION_SOLD" ) then
 		local info = ChatTypeInfo["SYSTEM"];
 		local itemName = GetItemInfo(WOW_TOKEN_ITEM_ID);
@@ -2065,7 +2053,6 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["MultiBarRight"] = {baseY = 98, watchBar = 1, anchorTo = "UIParent", point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT"};
 	["VoiceChatTalkers"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, watchBar = 1};
 	["GroupLootContainer"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1};
-	["TutorialFrameAlertButton"] = {baseY = true, yOffset = -10, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, watchBar = 1};
 	["FramerateLabel"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1};
 	["ArcheologyDigsiteProgressBar"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, castingBar = 1};
 	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, talkingHeadFrame = 1, classResourceOverlayFrame = 1, classResourceOverlayOffset = 1};
@@ -2722,17 +2709,12 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		end
 		local numWatchBars = 0;
 		numWatchBars = numWatchBars + (ReputationWatchBar:IsShown() and 1 or 0);
-		numWatchBars = numWatchBars + (HonorWatchBar:IsShown() and 1 or 0);
-		numWatchBars = numWatchBars + (ArtifactWatchBar:IsShown() and 1 or 0);
 		numWatchBars = numWatchBars + (MainMenuExpBar:IsShown() and 1 or 0);
 		if ( numWatchBars > 1 ) then
 			tinsert(yOffsetFrames, "watchBar");
 		end
 		if ( MainMenuBarMaxLevelBar:IsShown() ) then
 			tinsert(yOffsetFrames, "maxLevel");
-		end
-		if ( TutorialFrameAlertButton:IsShown() ) then
-			tinsert(yOffsetFrames, "tutorialAlert");
 		end
 		if ( PlayerPowerBarAlt:IsShown() and not PlayerPowerBarAlt:IsUserPlaced() ) then
 			local anchorTop = select(10, UnitAlternatePowerInfo(PlayerPowerBarAlt.unit));
@@ -2756,12 +2738,6 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		if ( CastingBarFrame and not CastingBarFrame:GetAttribute("ignoreFramePositionManager") ) then
 			tinsert(yOffsetFrames, "castingBar");
 		end
-	end
-
-	if ( menuBarTop == 55 ) then
-		UIPARENT_MANAGED_FRAME_POSITIONS["TutorialFrameAlertButton"].yOffset = -10;
-	else
-		UIPARENT_MANAGED_FRAME_POSITIONS["TutorialFrameAlertButton"].yOffset = -30;
 	end
 
 	-- Iterate through frames and set anchors according to the flags set
@@ -2886,17 +2862,10 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		end
 	end
 
-	--Setup Vehicle seat indicator offset - needs to move below buffs/debuffs if both right action bars are showing
-	if ( VehicleSeatIndicator and VehicleSeatIndicator:IsShown() ) then
-		if ( rightActionBars == 2 ) then
-			anchorY = min(anchorY, buffsAnchorY);
-			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -100, anchorY);
-		elseif ( rightActionBars == 1 ) then
-			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -62, anchorY);
-		else
-			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", 0, anchorY);
-		end
-		anchorY = anchorY - VehicleSeatIndicator:GetHeight() - 4;	--The -4 is there to give a small buffer for things like the QuestTimeFrame below the Seat Indicator
+	-- Quest timers
+	QuestTimerFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
+	if ( QuestTimerFrame:IsShown() ) then
+		anchorY = anchorY - QuestTimerFrame:GetHeight();
 	end
 
 	-- Boss frames - need to move below buffs/debuffs if both right action bars are showing
@@ -2932,25 +2901,12 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		ArenaPrepFrames:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 	end
 
-	-- ObjectiveTracker - needs to move below buffs/debuffs if at least 1 right action bar is showing
+	-- QuestWatchFrame
 	if ( rightActionBars > 0 ) then
 		anchorY = min(anchorY, buffsAnchorY);
 	end
-	if ( ObjectiveTrackerFrame and not ObjectiveTrackerFrame:IsUserPlaced() ) then
-		local numArenaOpponents = GetNumArenaOpponents();
-		if ( ArenaEnemyFrames and ArenaEnemyFrames:IsShown() and (numArenaOpponents > 0) ) then
-			ObjectiveTrackerFrame:ClearAllPoints();
-			ObjectiveTrackerFrame:SetPoint("TOPRIGHT", ArenaEnemyFrames_GetBestAnchorUnitFrameForOppponent(numArenaOpponents), "BOTTOMRIGHT", 2, -35);
-		elseif ( ArenaPrepFrames and ArenaPrepFrames:IsShown() and (numArenaOpponents > 0) ) then
-			ObjectiveTrackerFrame:ClearAllPoints();
-			ObjectiveTrackerFrame:SetPoint("TOPRIGHT", ArenaPrepFrames_GetBestAnchorUnitFrameForOppponent(numArenaOpponents), "BOTTOMRIGHT", 2, -35);
-		else
-			-- We're using Simple Quest Tracking, automagically size and position!
-			ObjectiveTrackerFrame:ClearAllPoints();
-			-- move up if only the minimap cluster is above, move down a little otherwise
-			ObjectiveTrackerFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -OBJTRACKER_OFFSET_X, anchorY);
-		end
-		ObjectiveTrackerFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -OBJTRACKER_OFFSET_X, CONTAINER_OFFSET_Y);
+	if ( QuestWatchFrame ) then
+		QuestWatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 	end
 
 	-- Update chat dock since the dock could have moved
@@ -3800,8 +3756,6 @@ function ToggleGameMenu()
 		InterfaceOptionsFrameCancel:Click();
 	elseif ( SocialPostFrame and Social_IsShown() ) then
 		Social_SetShown(false);
-	elseif ( TimeManagerFrame and TimeManagerFrame:IsShown() ) then
-		TimeManagerFrameCloseButton:Click();
 	elseif ( MultiCastFlyoutFrame:IsShown() ) then
 		MultiCastFlyoutFrame_Hide(MultiCastFlyoutFrame, true);
 	elseif (SpellFlyout:IsShown() ) then
@@ -3827,8 +3781,6 @@ function ToggleGameMenu()
 	elseif ( ClearTarget() and (not UnitIsCharmed("player")) ) then
 	elseif ( OpacityFrame:IsShown() ) then
 		OpacityFrame:Hide();
-	elseif ( SplashFrame:IsShown() ) then
-		SplashFrame_Close();
 	elseif ( ChallengesKeystoneFrame and ChallengesKeystoneFrame:IsShown() ) then
 		ChallengesKeystoneFrame:Hide();
 	else
@@ -4046,11 +3998,6 @@ function UpdateInviteConfirmationDialogs()
 		--If we ourselves have a relationship with this player, we'll just act as if they asked through us.
 		local _, color, selfRelationship, playerLink = SocialQueueUtil_GetNameAndColor(guid, name);
 		local safeLink = playerLink and "["..playerLink.."]" or name;
-
-		if ( isQuickJoin and selfRelationship and GetCVarBool("autoAcceptQuickJoinRequests") ) then
-			RespondToInviteConfirmation(firstInvite, true);
-			return;
-		end
 
 		if ( selfRelationship ) then
 			if ( isQuickJoin ) then
@@ -4279,7 +4226,7 @@ function GetRelativeDifficultyColor(unitLevel, challengeLevel)
 		return QuestDifficultyColors["impossible"], QuestDifficultyHighlightColors["impossible"];
 	elseif ( levelDiff >= 3 ) then
 		return QuestDifficultyColors["verydifficult"], QuestDifficultyHighlightColors["verydifficult"];
-	elseif ( levelDiff >= -4 ) then
+	elseif ( levelDiff >= -2 ) then
 		return QuestDifficultyColors["difficult"], QuestDifficultyHighlightColors["difficult"];
 	elseif ( -levelDiff <= GetQuestGreenRange() ) then
 		return QuestDifficultyColors["standard"], QuestDifficultyHighlightColors["standard"];

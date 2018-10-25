@@ -184,6 +184,7 @@ function BonusObjectiveTracker_OnBlockClick(self, button)
 					if IsWorldQuestWatched(self.TrackedQuest.questID) then
 						BonusObjectiveTracker_UntrackWorldQuest(self.TrackedQuest.questID);
 					end
+				--[[
 				else
 					local _, mapID = C_TaskQuest.GetQuestZoneID(self.TrackedQuest.questID);
 					if mapID then
@@ -191,6 +192,7 @@ function BonusObjectiveTracker_OnBlockClick(self, button)
 						SetMapByID(mapID);
 						WorldMapPing_StartPingQuest(self.TrackedQuest.questID);
 					end
+				--]]
 				end
 			end
 		elseif button == "RightButton" then
@@ -486,7 +488,7 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 		if (isWorldQuest) then
 			local headerLine = 1;
 			local needsSpacer = false;
-
+			--[[
 			local mapID, zoneMapID = C_TaskQuest.GetQuestZoneID(questID)
 			if (mapID and zoneMapID) then
 				local name = C_MapCanvas.GetZoneInfoByID(mapID, zoneMapID);
@@ -512,6 +514,7 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 					end
 				end
 			end
+			--]]
 
 			QuestUtils_AddQuestTypeToTooltip(GameTooltip, questID, NORMAL_FONT_COLOR);
 

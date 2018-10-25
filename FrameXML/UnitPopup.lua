@@ -17,7 +17,6 @@ UnitPopupButtons = {
 	["CANCEL"] = { text = CANCEL, dist = 0, space = 1 },
 	["TRADE"] = { text = TRADE, dist = 2 },
 	["INSPECT"] = { text = INSPECT, dist = 0, disabledInKioskMode = true },
-	["ACHIEVEMENTS"] = { text = COMPARE_ACHIEVEMENTS, dist = 1, disabledInKioskMode = true },
 	["TARGET"] = { text = TARGET, dist = 0 },
 	["IGNORE"]	= {
 		dist = 0,
@@ -59,7 +58,6 @@ UnitPopupButtons = {
 	["FREE_FOR_ALL"] = { text = LOOT_FREE_FOR_ALL, dist = 0 },
 	["MASTER_LOOTER"] = { text = LOOT_MASTER_LOOTER, dist = 0 },
 	["GROUP_LOOT"] = { text = LOOT_GROUP_LOOT, dist = 0 },
-	["PERSONAL_LOOT"] = { text = LOOT_PERSONAL_LOOT, dist = 0 },
 	["RESET_INSTANCES"] = { text = RESET_INSTANCES, dist = 0 },
 	["RESET_CHALLENGE_MODE"] = { text = RESET_CHALLENGE_MODE, dist = 0 },
 	["CONVERT_TO_RAID"] = { text = CONVERT_TO_RAID, dist = 0 },
@@ -170,13 +168,6 @@ UnitPopupButtons = {
 	["RAID_TARGET_8"] = { text = RAID_TARGET_8, dist = 0, checkable = 1, color = {r = 0.98, g = 0.98, b = 0.98}, icon = "Interface\\TargetingFrame\\UI-RaidTargetingIcons", tCoordLeft = 0.75, tCoordRight = 1, tCoordTop = 0.25, tCoordBottom = 0.5 },
 	["RAID_TARGET_NONE"] = { text = RAID_TARGET_NONE, dist = 0, checkable = 1 },
 
-	--Role icons
-	["SELECT_ROLE"] = { text = SET_ROLE, dist = 0, nested = 1 },
-	["SET_ROLE_NONE"] = { text = NO_ROLE, dist = 0, checkable = 1 },
-	["SET_ROLE_TANK"] = { text = INLINE_TANK_ICON.." "..TANK, dist = 0, checkable = 1 },
-	["SET_ROLE_HEALER"] = { text = INLINE_HEALER_ICON.." "..HEALER, dist = 0, checkable = 1 },
-	["SET_ROLE_DAMAGER"] = { text = INLINE_DAMAGER_ICON.." "..DAMAGER, dist = 0, checkable = 1 },
-
 	-- Chat Channel Player Commands
 	["CHAT_PROMOTE"] = { text = MAKE_MODERATOR, dist = 0 },
 	["CHAT_DEMOTE"] = { text = REMOVE_MODERATOR, dist = 0 },
@@ -190,15 +181,15 @@ UnitPopupButtons = {
 
 -- First level menus
 UnitPopupMenus = {
-	["SELF"] = { "RAID_TARGET_ICON", "SET_FOCUS", "PVP_FLAG", "LOOT_SUBSECTION_TITLE", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "SELECT_LOOT_SPECIALIZATION", "INSTANCE_SUBSECTION_TITLE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "RESET_INSTANCES", "RESET_CHALLENGE_MODE", "GARRISON_VISIT", "OTHER_SUBSECTION_TITLE", "SELECT_ROLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "INSTANCE_LEAVE", "LEAVE", "CANCEL" },
-	["PET"] = { "RAID_TARGET_ICON", "SET_FOCUS", "INTERACT_SUBSECTION_TITLE", "PET_RENAME", "PET_DISMISS", "PET_ABANDON", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" },
-	["OTHERPET"] = { "RAID_TARGET_ICON", "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME",  "REPORT_PET", "CANCEL" },
-	["BATTLEPET"] = { "PET_SHOW_IN_JOURNAL", "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" },
-	["OTHERBATTLEPET"] = { "PET_SHOW_IN_JOURNAL", "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_BATTLE_PET", "CANCEL" },
-	["PARTY"] = { "RAID_TARGET_ICON", "SET_FOCUS", "ADD_FRIEND", "ADD_FRIEND_MENU", "INTERACT_SUBSECTION_TITLE", "RAF_SUMMON", "RAF_GRANT_LEVEL", "PROMOTE", "PROMOTE_GUIDE", "LOOT_PROMOTE", "WHISPER", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "OTHER_SUBSECTION_TITLE", "SELECT_ROLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "PVP_REPORT_AFK", "VOTE_TO_KICK", "UNINVITE", "CANCEL" },
-	["PLAYER"] = { "RAID_TARGET_ICON", "SET_FOCUS", "ADD_FRIEND", "ADD_FRIEND_MENU", "INTERACT_SUBSECTION_TITLE", "RAF_SUMMON", "RAF_GRANT_LEVEL", "INVITE", "SUGGEST_INVITE", "REQUEST_INVITE", "WHISPER", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" },
-	["RAID_PLAYER"] = { "RAID_TARGET_ICON", "SET_FOCUS", "ADD_FRIEND", "ADD_FRIEND_MENU", "INTERACT_SUBSECTION_TITLE", "RAF_SUMMON", "RAF_GRANT_LEVEL", "RAID_LEADER", "RAID_PROMOTE", "RAID_DEMOTE", "LOOT_PROMOTE", "WHISPER", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "OTHER_SUBSECTION_TITLE", "SELECT_ROLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "PVP_REPORT_AFK", "VOTE_TO_KICK", "RAID_REMOVE", "CANCEL" },
-	["RAID"] = { "SET_FOCUS", "INTERACT_SUBSECTION_TITLE", "RAID_LEADER",  "RAID_PROMOTE", "RAID_DEMOTE", "RAID_MAINTANK", "RAID_MAINASSIST", "LOOT_PROMOTE", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "PVP_REPORT_AFK", "VOTE_TO_KICK", "RAID_REMOVE", "CANCEL" },
+	["SELF"] = { "RAID_TARGET_ICON", --[["SET_FOCUS",]] "PVP_FLAG", "LOOT_SUBSECTION_TITLE", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "SELECT_LOOT_SPECIALIZATION", "INSTANCE_SUBSECTION_TITLE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "RESET_INSTANCES", "RESET_CHALLENGE_MODE", "GARRISON_VISIT", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "INSTANCE_LEAVE", "LEAVE", "CANCEL" },
+	["PET"] = { "RAID_TARGET_ICON", --[["SET_FOCUS",]] "INTERACT_SUBSECTION_TITLE", "PET_RENAME", "PET_DISMISS", "PET_ABANDON", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" },
+	["OTHERPET"] = { "RAID_TARGET_ICON", --[["SET_FOCUS",]] "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME",  "REPORT_PET", "CANCEL" },
+	["BATTLEPET"] = { "PET_SHOW_IN_JOURNAL", --[["SET_FOCUS",]] "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" },
+	["OTHERBATTLEPET"] = { "PET_SHOW_IN_JOURNAL", --[["SET_FOCUS",]] "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_BATTLE_PET", "CANCEL" },
+	["PARTY"] = { "RAID_TARGET_ICON", --[["SET_FOCUS",]] "ADD_FRIEND", "ADD_FRIEND_MENU", "INTERACT_SUBSECTION_TITLE", "RAF_SUMMON", "RAF_GRANT_LEVEL", "PROMOTE", "PROMOTE_GUIDE", "LOOT_PROMOTE", "WHISPER", "INSPECT", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "PVP_REPORT_AFK", "VOTE_TO_KICK", "UNINVITE", "CANCEL" },
+	["PLAYER"] = { "RAID_TARGET_ICON", --[["SET_FOCUS",]] "ADD_FRIEND", "ADD_FRIEND_MENU", "INTERACT_SUBSECTION_TITLE", "RAF_SUMMON", "RAF_GRANT_LEVEL", "INVITE", "SUGGEST_INVITE", "REQUEST_INVITE", "WHISPER", "INSPECT", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" },
+	["RAID_PLAYER"] = { "RAID_TARGET_ICON", --[["SET_FOCUS",]] "ADD_FRIEND", "ADD_FRIEND_MENU", "INTERACT_SUBSECTION_TITLE", "RAF_SUMMON", "RAF_GRANT_LEVEL", "RAID_LEADER", "RAID_PROMOTE", "RAID_DEMOTE", "LOOT_PROMOTE", "WHISPER", "INSPECT", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "PVP_REPORT_AFK", "VOTE_TO_KICK", "RAID_REMOVE", "CANCEL" },
+	["RAID"] = { --[["SET_FOCUS",]] "INTERACT_SUBSECTION_TITLE", "RAID_LEADER",  "RAID_PROMOTE", "RAID_DEMOTE", "RAID_MAINTANK", "RAID_MAINASSIST", "LOOT_PROMOTE", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "PVP_REPORT_AFK", "VOTE_TO_KICK", "RAID_REMOVE", "CANCEL" },
 	["FRIEND"] = { "POP_OUT_CHAT", "TARGET", "SET_NOTE", "INTERACT_SUBSECTION_TITLE", "INVITE", "SUGGEST_INVITE", "REQUEST_INVITE", "WHISPER", "OTHER_SUBSECTION_TITLE", "IGNORE", "REMOVE_FRIEND", "REPORT_PLAYER", "PVP_REPORT_AFK", "CANCEL" },
 	["FRIEND_OFFLINE"] = { "SET_NOTE", "OTHER_SUBSECTION_TITLE", "IGNORE", "REMOVE_FRIEND", "CANCEL" },
 	["BN_FRIEND"] = { "POP_OUT_CHAT", "BN_TARGET", "BN_SET_NOTE", "BN_VIEW_FRIENDS", "INTERACT_SUBSECTION_TITLE", "BN_INVITE", "BN_SUGGEST_INVITE", "BN_REQUEST_INVITE", "WHISPER", "OTHER_SUBSECTION_TITLE", "BLOCK_COMMUNICATION", "BN_REMOVE_FRIEND", "BN_REPORT", "CANCEL" },
@@ -206,19 +197,18 @@ UnitPopupMenus = {
 	["GUILD"] = { "TARGET", "GUILD_BATTLETAG_FRIEND", "INTERACT_SUBSECTION_TITLE", "INVITE", "SUGGEST_INVITE", "REQUEST_INVITE", "WHISPER", "GUILD_PROMOTE", "OTHER_SUBSECTION_TITLE", "IGNORE", "GUILD_LEAVE", "CANCEL" },
 	["GUILD_OFFLINE"] = { "GUILD_BATTLETAG_FRIEND", "INTERACT_SUBSECTION_TITLE", "GUILD_PROMOTE", "OTHER_SUBSECTION_TITLE", "IGNORE", "GUILD_LEAVE", "CANCEL" },
 	["RAID_TARGET_ICON"] = { "RAID_TARGET_8", "RAID_TARGET_7", "RAID_TARGET_6", "RAID_TARGET_5", "RAID_TARGET_4", "RAID_TARGET_3", "RAID_TARGET_2", "RAID_TARGET_1", "RAID_TARGET_NONE" },
-	["SELECT_ROLE"] = { "SET_ROLE_TANK", "SET_ROLE_HEALER", "SET_ROLE_DAMAGER", "SET_ROLE_NONE" },
 	["CHAT_ROSTER"] = { "TARGET", "INTERACT_SUBSECTION_TITLE", "WHISPER", "CHAT_OWNER", "CHAT_PROMOTE", "OTHER_SUBSECTION_TITLE", "CHAT_DEMOTE", "CANCEL"  },
-	["VEHICLE"] = { "RAID_TARGET_ICON", "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "VEHICLE_LEAVE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" },
-	["TARGET"] = { "RAID_TARGET_ICON", "SET_FOCUS", "ADD_FRIEND", "ADD_FRIEND_MENU", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" },
-	["ARENAENEMY"] = { "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "CANCEL" },
+	["VEHICLE"] = { "RAID_TARGET_ICON", --[["SET_FOCUS",]] "OTHER_SUBSECTION_TITLE", "VEHICLE_LEAVE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" },
+	["TARGET"] = { "RAID_TARGET_ICON", --[["SET_FOCUS",]] "ADD_FRIEND", "ADD_FRIEND_MENU", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" },
+	["ARENAENEMY"] = { --[["SET_FOCUS",]] "OTHER_SUBSECTION_TITLE", "CANCEL" },
 	["FOCUS"] = { "RAID_TARGET_ICON", "CLEAR_FOCUS", "OTHER_SUBSECTION_TITLE", "LARGE_FOCUS", "MOVE_FOCUS_FRAME", "CANCEL" },
-	["BOSS"] = { "RAID_TARGET_ICON", "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "CANCEL" },
+	["BOSS"] = { "RAID_TARGET_ICON", --[["SET_FOCUS",]] "OTHER_SUBSECTION_TITLE", "CANCEL" },
 	["WORLD_STATE_SCORE"] = { "REPORT_PLAYER", "PVP_REPORT_AFK", "CANCEL" },
 
 	-- Second level menus
 	["ADD_FRIEND_MENU"] = { "BATTLETAG_FRIEND", "CHARACTER_FRIEND" },
 	["PVP_FLAG"] = { "PVP_ENABLE", "PVP_DISABLE"},
-	["LOOT_METHOD"] = { "PERSONAL_LOOT", "GROUP_LOOT", "FREE_FOR_ALL", "MASTER_LOOTER", "CANCEL" },
+	["LOOT_METHOD"] = { "GROUP_LOOT", "FREE_FOR_ALL", "MASTER_LOOTER", "CANCEL" },
 	["LOOT_THRESHOLD"] = { "ITEM_QUALITY2_DESC", "ITEM_QUALITY3_DESC", "ITEM_QUALITY4_DESC", "CANCEL" },
 	["SELECT_LOOT_SPECIALIZATION"] = { "LOOT_SPECIALIZATION_DEFAULT","LOOT_SPECIALIZATION_SPEC1", "LOOT_SPECIALIZATION_SPEC2", "LOOT_SPECIALIZATION_SPEC3", "LOOT_SPECIALIZATION_SPEC4"},
 	["OPT_OUT_LOOT_TITLE"] = { "OPT_OUT_LOOT_ENABLE", "OPT_OUT_LOOT_DISABLE"},
@@ -226,7 +216,8 @@ UnitPopupMenus = {
 	["DUNGEON_DIFFICULTY"] = { "DUNGEON_DIFFICULTY1", "DUNGEON_DIFFICULTY2", "DUNGEON_DIFFICULTY3" },
 	["RAID_DIFFICULTY"] = { "RAID_DIFFICULTY1", "RAID_DIFFICULTY2", "RAID_DIFFICULTY3", "LEGACY_RAID_SUBSECTION_TITLE", "LEGACY_RAID_DIFFICULTY1", "LEGACY_RAID_DIFFICULTY2" },
 	["BN_REPORT"] = { "BN_REPORT_NAME" },
-	["MOVE_PLAYER_FRAME"] = { "UNLOCK_PLAYER_FRAME", "LOCK_PLAYER_FRAME", "RESET_PLAYER_FRAME_POSITION", "PLAYER_FRAME_SHOW_CASTBARS" },
+	-- TODO: Determine if we want an option for Player Frame Cast Bars
+	["MOVE_PLAYER_FRAME"] = { "UNLOCK_PLAYER_FRAME", "LOCK_PLAYER_FRAME", "RESET_PLAYER_FRAME_POSITION", --[["PLAYER_FRAME_SHOW_CASTBARS"]] },
 	["MOVE_TARGET_FRAME"] = { "UNLOCK_TARGET_FRAME", "LOCK_TARGET_FRAME", "RESET_TARGET_FRAME_POSITION" , "TARGET_FRAME_BUFFS_ON_TOP"},
 	["MOVE_FOCUS_FRAME"] = { "UNLOCK_FOCUS_FRAME", "LOCK_FOCUS_FRAME", "FOCUS_FRAME_BUFFS_ON_TOP"},
 };
@@ -234,7 +225,6 @@ UnitPopupMenus = {
 UnitPopupShown = { {}, {}, {}, };
 
 UnitLootMethod = {
-    ["personalloot"] = { text = LOOT_PERSONAL_LOOT, tooltipText = NEWBIE_TOOLTIP_UNIT_PERSONAL },
     ["group"] = { text = LOOT_GROUP_LOOT, tooltipText = NEWBIE_TOOLTIP_UNIT_GROUP_LOOT },
 	["freeforall"] = { text = LOOT_FREE_FOR_ALL, tooltipText = NEWBIE_TOOLTIP_UNIT_FREE_FOR_ALL },
 	["master"] = { text = LOOT_MASTER_LOOTER, tooltipText = NEWBIE_TOOLTIP_UNIT_MASTER_LOOTER },
@@ -253,6 +243,14 @@ UnitPopupFrames = {
 	"GuildMemberDropDown",
 	"WorldStateButtonDropDown",
 };
+
+local function GetDropDownButtonText(button, dropdownMenu)
+	if (type(button.text) == "function") then
+		return button.text(dropdownMenu);
+	end
+
+	return button.text;
+end
 
 function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	local server = nil;
@@ -298,7 +296,7 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	local inParty = IsInGroup();
 	local inInstance, instanceType = IsInInstance();
 	local isLeader = UnitIsGroupLeader("player");
-	local showLootOptions = (IsInRaid() or (inInstance and instanceType == "raid")) and isLeader and not HasLFGRestrictions();
+	local showLootOptions = true;--(IsInRaid() or (inInstance and instanceType == "raid")) and isLeader and not HasLFGRestrictions();
 	local lootOption = showLootOptions and 1 or nil;
 
 	UnitPopupButtons["LOOT_METHOD"].nested = lootOption;
@@ -514,10 +512,6 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 					if ( PLAYER_FRAME_CASTBARS_SHOWN ) then
 						info.checked = true;
 					end
-				elseif ( strsub(value, 1, 9) == "SET_ROLE_" ) then
-					if ( UnitGroupRolesAssigned(unit) == strsub(value, 10) ) then
-						info.checked = true;
-					end
 				end
 
 				info.value = value;
@@ -533,7 +527,12 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 					info.isNotRadio = nil;
 				end
 				-- Setup newbie tooltips
-				info.tooltipTitle = UnitPopupButtons[value].text;
+				if (cntButton.isSubsectionTitle) then
+					info.tooltipTitle = UnitPopupButtons[value].text;
+				else
+					-- We need to call GetDropDownButtonText here in case the text is a function (e.g. IGNORE).
+					info.tooltipTitle = GetDropDownButtonText(cntButton, dropdownMenu);
+				end
 				info.tooltipText = _G["NEWBIE_TOOLTIP_UNIT_"..value];
 
 				previousWasSubsectionTitle = false;
@@ -598,14 +597,6 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 		end
 	end
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-end
-
-local function GetDropDownButtonText(button, dropdownMenu)
-	if (type(button.text) == "function") then
-		return button.text(dropdownMenu);
-	end
-
-	return button.text;
 end
 
 function UnitPopup_AddDropDownButton (info, dropdownMenu, cntButton, buttonIndex, level)
@@ -685,7 +676,13 @@ function UnitPopup_AddDropDownButton (info, dropdownMenu, cntButton, buttonIndex
 	end
 
 	-- Setup newbie tooltips
-	info.tooltipTitle = cntButton.text;
+	if (cntButton.isSubsectionTitle) then
+		info.tooltipTitle = cntButton.text;
+	else
+		-- We need to call GetDropDownButtonText here in case the text is a function (e.g. IGNORE).
+		info.tooltipTitle = GetDropDownButtonText(cntButton, dropdownMenu);
+	end
+
 	local tooltipText = _G["NEWBIE_TOOLTIP_UNIT_"..buttonIndex];
 	if ( not tooltipText ) then
 		tooltipText = cntButton.tooltipText;
@@ -810,7 +807,7 @@ function UnitPopup_HideButtons ()
 			if ( not UnitCanPetBattle("player", dropdownMenu.unit) or not isPlayer ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
-		elseif ( value == "INSPECT" or value == "ACHIEVEMENTS" ) then
+		elseif ( value == "INSPECT" ) then
 			if ( not dropdownMenu.unit or UnitCanAttack("player", dropdownMenu.unit) or not isPlayer ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
@@ -926,10 +923,6 @@ function UnitPopup_HideButtons ()
 			if ( not inParty or (not isLeader and (GetLootMethod() ~= "group")) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
-		elseif ( value == "PERSONAL_LOOT" ) then
-			if ( not inParty or (not isLeader and (GetLootMethod() ~= "personalloot")) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			end
 		elseif ( value == "LOOT_THRESHOLD" ) then
 			if ( not inParty or HasLFGRestrictions() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
@@ -1030,9 +1023,9 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "RAID_DIFFICULTY" ) then
-			if ( UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_WRATH_OF_THE_LICH_KING] and GetRaidDifficultyID() == UnitPopupButtons[value].defaultDifficultyID ) then
+			--if ( UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_WRATH_OF_THE_LICH_KING] and GetRaidDifficultyID() == UnitPopupButtons[value].defaultDifficultyID ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			end
+			--end
 		elseif ( value == "RAID_LEADER" ) then
 			if ( not isLeader or not isPlayer or UnitIsGroupLeader(dropdownMenu.unit)or not dropdownMenu.name ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
@@ -1041,7 +1034,7 @@ function UnitPopup_HideButtons ()
 			if ( not isLeader or not isPlayer or IsEveryoneAssistant() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			elseif ( isLeader ) then
-				if ( UnitIsGroupAssistant(dropdownMenu.unit) ) then
+				if ( UnitIsGroupLeader(dropdownMenu.unit) or UnitIsGroupAssistant(dropdownMenu.unit) ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
 			end
@@ -1161,10 +1154,6 @@ function UnitPopup_HideButtons ()
 			end
 		elseif ( value == "VEHICLE_LEAVE" ) then
 			if ( not CanExitVehicle() ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			end
-		elseif ( value == "SELECT_ROLE" ) then
-			if ( C_Scenario.IsInScenario() or not ( IsInGroup() and not HasLFGRestrictions() and (isLeader or isAssistant or UnitIsUnit(dropdownMenu.unit, "player")) ) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "GARRISON_VISIT" ) then
@@ -1352,21 +1341,6 @@ function UnitPopup_OnUpdate (elapsed)
 						if( not CanGrantLevel(dropdownFrame.unit) ) then
 							enable = false;
 						end
-					elseif ( value == "SET_ROLE_TANK" ) then
-						local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles(dropdownFrame.unit);
-						if ( not canBeTank ) then
-							enable = false;
-						end
-					elseif ( value == "SET_ROLE_HEALER" ) then
-						local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles(dropdownFrame.unit);
-						if ( not canBeHealer ) then
-							enable = false;
-						end
-					elseif ( value == "SET_ROLE_DAMAGER" ) then
-						local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles(dropdownFrame.unit);
-						if ( not canBeDamager ) then
-							enable = false;
-						end
 					elseif ( value == "BATTLETAG_FRIEND" ) then
 						if ( not BNFeaturesEnabledAndConnected() ) then
 							enable = false;
@@ -1385,10 +1359,10 @@ function UnitPopup_OnUpdate (elapsed)
 								enable = false;
 							end
 						end
-                    elseif ( value == "MASTER_LOOTER" ) then
+                    --[[elseif ( value == "MASTER_LOOTER" ) then
 						if (not IsInGuildGroup()) then
 	                        enable = false;
-						end
+						end]]
 					end
 
 					local diff = (level > 1) and 0 or 1;
@@ -1445,8 +1419,6 @@ function UnitPopup_OnClick (self)
 		end
 	elseif ( button == "INSPECT" ) then
 		InspectUnit(unit);
-	elseif ( button == "ACHIEVEMENTS" ) then
-		InspectAchievements(unit);
 	elseif ( button == "TARGET" ) then
 		TargetUnit(fullname, true);
 	elseif ( button == "IGNORE" ) then
@@ -1596,10 +1568,6 @@ function UnitPopup_OnClick (self)
 		SetLootMethod("group");
 		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
 		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
-	elseif ( button == "PERSONAL_LOOT" ) then
-		SetLootMethod("personalloot");
-		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
-		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "OPT_OUT_LOOT_ENABLE" ) then
 		SetOptOutOfLoot(1);
 		CloseDropDownMenus()
@@ -1685,14 +1653,14 @@ function UnitPopup_OnClick (self)
 		ChannelBan(dropdownFrame.channelName, fullname);
 	elseif ( button == "VEHICLE_LEAVE" ) then
 		VehicleExit();
-	elseif ( button == "SET_FOCUS" ) then
+	--[[elseif ( button == "SET_FOCUS" ) then
 		FocusUnit(unit);
 	elseif ( button == "CLEAR_FOCUS" ) then
 		ClearFocus(unit);
 	elseif ( button == "LOCK_FOCUS_FRAME" ) then
 		FocusFrame_SetLock(true);
 	elseif ( button == "UNLOCK_FOCUS_FRAME" ) then
-		FocusFrame_SetLock(false);
+		FocusFrame_SetLock(false);]]
 	elseif ( button == "LOCK_PLAYER_FRAME" ) then
 		PlayerFrame_SetLocked(true);
 	elseif ( button == "UNLOCK_PLAYER_FRAME" ) then
@@ -1725,8 +1693,6 @@ function UnitPopup_OnClick (self)
 		end
 	elseif ( strsub(button, 1, 10) == "BN_REPORT_" ) then
 		BNet_InitiateReport(dropdownFrame.bnetIDAccount, strsub(button, 11));
-	elseif ( strsub(button, 1, 9) == "SET_ROLE_" ) then
-		UnitSetRole(dropdownFrame.unit, strsub(button, 10));
 	elseif ( button == "ADD_FRIEND" or button == "CHARACTER_FRIEND" ) then
 		AddFriend(fullname);
 	elseif ( button == "BATTLETAG_FRIEND" ) then

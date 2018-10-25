@@ -61,12 +61,16 @@ function TextStatusBar_UpdateTextStringWithValues(statusFrame, textString, value
 
 		local valueDisplay = value;
 		local valueMaxDisplay = valueMax;
-		if ( statusFrame.capNumericDisplay ) then
-			valueDisplay = AbbreviateLargeNumbers(value);
-			valueMaxDisplay = AbbreviateLargeNumbers(valueMax);
-		else
-			valueDisplay = BreakUpLargeNumbers(value);
-			valueMaxDisplay = BreakUpLargeNumbers(valueMax);
+		-- Modern WoW always breaks up large numbers, whereas Classic never did.
+		-- We'll remove breaking-up by default for Classic, but add a flag to reenable it.
+		if ( statusFrame.breakUpLargeNumbers ) then
+			if ( statusFrame.capNumericDisplay ) then
+				valueDisplay = AbbreviateLargeNumbers(value);
+				valueMaxDisplay = AbbreviateLargeNumbers(valueMax);
+			else
+				valueDisplay = BreakUpLargeNumbers(value);
+				valueMaxDisplay = BreakUpLargeNumbers(valueMax);
+			end
 		end
 
 		local textDisplay = GetCVar("statusTextDisplay");

@@ -9,7 +9,8 @@ GLUE_SCREENS = {
 
 GLUE_SECONDARY_SCREENS = {
 	["cinematics"] =	{ frame = "CinematicsFrame", 	playMusic = true,	playAmbience = false,	fullScreen = false,	showSound = SOUNDKIT.GS_TITLE_OPTIONS },
-	["credits"] = 		{ frame = "CreditsFrame", 		playMusic = false,	playAmbience = false,	fullScreen = true,	showSound = SOUNDKIT.GS_TITLE_CREDITS },
+	-- CLASS-960: Disabling the credits for Blizzcon.
+	-- ["credits"] = 		{ frame = "CreditsFrame", 		playMusic = false,	playAmbience = false,	fullScreen = true,	showSound = SOUNDKIT.GS_TITLE_CREDITS },
 	-- Bug 477070 We have some rare race condition crash in the sound engine that happens when the MovieFrame's "showSound" sound plays at the same time the movie audio is starting.
 	-- Removing the showSound from the MovieFrame in attempt to avoid the crash, until we can actually find and fix the bug in the sound engine.
 	["movie"] = 		{ frame = "MovieFrame", 		playMusic = false,	playAmbience = false,	fullScreen = true },
@@ -17,6 +18,8 @@ GLUE_SECONDARY_SCREENS = {
 };
 
 ACCOUNT_SUSPENDED_ERROR_CODE = 53;
+TH_SESSION_COOLDOWN = 331;
+TH_SESSION_COOLDOWN_STARTED = 333;
 
 -- Mirror of the same variables in Blizzard_StoreUISecure.lua and UIParent.lua
 local WOW_GAMES_CATEGORY_ID = 33; 
@@ -76,7 +79,7 @@ function GlueParent_OnEvent(self, event, ...)
 		GlueParent_UpdateDialogs();
 		GlueParent_CheckCinematic();
 		if ( AccountLogin:IsVisible() ) then
-			SetExpansionLogo(AccountLogin.UI.GameLogo, GetClientDisplayExpansionLevel());
+			SetClassicLogo(AccountLogin.UI.GameLogo, GetClientDisplayExpansionLevel());
 		end
 	elseif ( event == "LOGIN_STATE_CHANGED" ) then
 		GlueParent_EnsureValidScreen();
@@ -157,7 +160,7 @@ function GlueParent_UpdateDialogs()
 		end
 	elseif ( auroraState == LE_AURORA_STATE_NONE and C_Login.GetLastError() ) then
 		if ( not CHARACTER_SELECT_KICKED_FROM_CONVERT ) then
-			local errorCategory, errorID, localizedString, debugString, errorCodeString = C_Login.GetLastError();
+			local errorCategory, errorID, localizedString, debugString, errorCodeString, errorArgument = C_Login.GetLastError();
 
 			local isHTML = false;
 			local hasURL = false;
@@ -202,6 +205,18 @@ function GlueParent_UpdateDialogs()
 					local hours = floor((remaining / 3600) - (days * 24));
 					local minutes = floor((remaining / 60) - (days * 1440) - (hours * 60));
 					localizedString = localizedString:format(" "..ACCOUNT_SUSPENSION_EXPIRATION:format(days, hours, minutes));
+				else
+					localizedString = localizedString:format("");
+				end
+			end
+
+			if ( errorID == TH_SESSION_COOLDOWN or errorID == TH_SESSION_COOLDOWN_STARTED ) then
+				local remaining = errorArgument;
+				if (remaining) then
+					remaining = remaining / 60;
+					local hours = floor(remaining / 60);
+					local minutes = floor(remaining % 60);
+					localizedString = localizedString:format(hours, minutes);
 				else
 					localizedString = localizedString:format("");
 				end
@@ -432,6 +447,7 @@ local glueScreenTags =
 		["PANDAREN"] = "PANDARENCHARACTERSELECT",
 	},
 
+--[[
 	["charcreate"] =
 	{
 		-- Classes
@@ -446,6 +462,7 @@ local glueScreenTags =
 		["ALLIANCE"] = true,
 		["NEUTRAL"] = true,
 	},
+--]]
 
 	["default"] =
 	{
@@ -512,7 +529,7 @@ local function UpdateGlueTag()
 		local classInfo = C_CharacterCreation.GetSelectedClass();
 		class = classInfo.fileName;
 		local raceID = C_CharacterCreation.GetSelectedRace();
-		race = C_CharacterCreation.GetNameForRace(raceID);
+		race = select(2, C_CharacterCreation.GetNameForRace(raceID));
 		faction = C_CharacterCreation.GetFactionForRace(raceID);
 	end
 
@@ -673,8 +690,19 @@ function GetDisplayedExpansionLogo(expansionLevel)
 	return nil;
 end
 
+-- For Classic, most places should call "SetClassicLogo" instead.
 function SetExpansionLogo(texture, expansionLevel)
 	local logo = GetDisplayedExpansionLogo(expansionLevel);
+	if logo then
+		texture:SetTexture(logo);
+		texture:Show();
+	else
+		texture:Hide();
+	end
+end
+
+function SetClassicLogo(texture)
+	local logo = 'Interface\\Glues\\Common\\WOW_Classic-LogoHR';
 	if logo then
 		texture:SetTexture(logo);
 		texture:Show();

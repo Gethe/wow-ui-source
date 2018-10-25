@@ -7,34 +7,72 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentBg" file="Interface\QuestFrame\QuestBG">
-					<Size x="510" y="620"/>
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="7" y="-62"/>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
 				<Texture name="$parentMaterialTopLeft">
-					<Size x="239" y="300"/>
+					<Size>
+						<AbsDimension x="239" y="241"/>
+					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="7" y="-62"/>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="21" y="-75"/>
+							</Offset>
+						</Anchor>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentMaterialTopRight">
-					<Size x="64" y="300"/>
+					<Size>
+						<AbsDimension x="64" y="241"/>
+					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentMaterialBotLeft">
-					<Size x="239" y="138"/>
+					<Size>
+						<AbsDimension x="239" y="128"/>
+					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentMaterialBotRight">
-					<Size x="64" y="138"/>
+					<Size>
+						<AbsDimension x="64" y="128"/>
+					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
@@ -96,7 +134,9 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentSpellBorder" inherits="Spellbook-SlotFrame">
+				<Texture name="$parentSpellBorder" file="Interface\Spellbook\Spellbook-Parts">
+					<Size x="70" y="65"/>
+					<TexCoords left="0.00390625" right="0.27734375" top="0.44140625" bottom="0.69531250"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon" x="2" y="0"/>
 					</Anchors>
@@ -130,10 +170,10 @@
 		<Size x="300" y="16"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentQuestIcon" file="Interface\GossipFrame\AvailableQuestIcon">
+				<Texture name="$parentQuestIcon" file="Interface\QuestFrame\UI-Quest-BulletPoint">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="4" y="2"/>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -153,9 +193,9 @@
 		<NormalFont style="QuestFontLeft"/>
 	</Button>
 	<ScrollFrame name="QuestScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
-		<Size x="300" y="403"/>
+		<Size x="300" y="334"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="QuestFrame" x="5" y="-65"/>
+			<Anchor point="TOPLEFT" relativeTo="QuestFrame" x="23" y="-81"/>
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">

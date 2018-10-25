@@ -131,7 +131,7 @@ function ArenaEnemyFrame_OnLoad(self)
 	UIDropDownMenu_Initialize(self.DropDown, ArenaEnemyDropDown_Initialize, "MENU");
 	
 	local setfocus = function()
-		FocusUnit("arena"..self:GetID());
+		--FocusUnit("arena"..self:GetID());
 	end
 	SecureUnitButton_OnLoad(self, "arena"..self:GetID(), setfocus);
 	
@@ -335,7 +335,7 @@ function ArenaEnemyPetFrame_OnLoad(self)
 	UIDropDownMenu_Initialize(self.DropDown, ArenaEnemyPetDropDown_Initialize, "MENU");
 	
 	local setfocus = function()
-		FocusUnit("arenapet"..self:GetID());
+		--FocusUnit("arenapet"..self:GetID());
 	end
 	SecureUnitButton_OnLoad(self, "arenapet"..self:GetID(), setfocus);
 end

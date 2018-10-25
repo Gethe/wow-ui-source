@@ -300,14 +300,9 @@
 				<Scripts>
 					<OnEnter function="ContainerFramePortraitButton_OnEnter" />
 					<OnLeave function="ContainerFramePortraitButton_OnLeave" />
-					<OnClick>
-						local parent = self:GetParent();
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						ToggleDropDownMenu(1, nil, parent.FilterDropDown, self, 0, 0);
-					</OnClick>
 				</Scripts>
 			</Button>
-			<Button parentKey="FilterIcon" hidden="true">
+			<!--<Button parentKey="FilterIcon" hidden="true">
 				<Size x="28" y="28"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.Portrait" relativePoint="BOTTOMRIGHT" x="-9" y="14"/>
@@ -338,8 +333,8 @@
 						target:GetScript("OnClick")(target);
 					</OnClick>
 				</Scripts>
-			</Button>
-			<Button name="$parentAddSlotsButton" hidden="true">
+			</Button>-->
+			<!--<Button name="$parentAddSlotsButton" hidden="true">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parent" relativePoint="TOPLEFT" x="17" y="-224"/>
@@ -384,8 +379,8 @@
 						ContainerFrame_SetBackpackForceExtended(true);
 					</OnClick>
 				</Scripts>
-			</Button>
-			<Frame name="$parentExtraBagSlotsHelpBox" parentKey="ExtraBagSlotsHelpBox" inherits="GlowBoxTemplate" enableMouse="true" frameStrata="DIALOG">
+			</Button>-->
+			<!--<Frame name="$parentExtraBagSlotsHelpBox" parentKey="ExtraBagSlotsHelpBox" inherits="GlowBoxTemplate" enableMouse="true" frameStrata="DIALOG">
 				<Size x="220" y="100"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPLEFT" x="-2" y="-206"/>
@@ -439,7 +434,7 @@
 						self:SetFrameLevel(self:GetParent():GetFrameLevel()+10);
 					</OnShow>
 				</Scripts>
-			</Frame>
+			</Frame>-->
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="0" y="-1"/>
@@ -450,17 +445,13 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame name="$parentFilterDropDown" parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate">
-				<Scripts>
-					<OnLoad function="ContainerFrameFilterDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
+			
 			<Button parentKey="ClickableTitleFrame">
 				<Size x="118" y="16"/>
 				<Anchors>
 					<Anchor point="TOP" x="8" y="-8"/>
 				</Anchors>
-				<Scripts>
+				<!--<Scripts>
 					<OnEnter>
 						local target = self:GetParent().PortraitButton;
 						target:GetScript("OnEnter")(target);
@@ -473,7 +464,7 @@
 						local target = self:GetParent().PortraitButton;
 						target:GetScript("OnClick")(target);
 					</OnClick>
-				</Scripts>
+				</Scripts>-->
 			</Button>
 		</Frames>	
 		<Scripts>
@@ -505,11 +496,11 @@
 	<Frame name="ContainerFrame12" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
 	<Frame name="ContainerFrame13" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
 
-	<EditBox name="BagItemSearchBox" inherits="BagSearchBoxTemplate" parent="ContainerFrame1" letters="15" hidden="true">
+	<!--<EditBox name="BagItemSearchBox" inherits="BagSearchBoxTemplate" parent="ContainerFrame1" letters="15" hidden="true">
 		<Size x="96" y="18"/>
-	</EditBox>
+	</EditBox>-->
 
-	<Button name="BagItemAutoSortButton" parent="ContainerFrame1" hidden="true">
+	<!--<Button name="BagItemAutoSortButton" parent="ContainerFrame1" hidden="true">
 		<Size x="28" y="26"/>
 		<NormalTexture atlas="bags-button-autosort-up"/>
 		<PushedTexture atlas="bags-button-autosort-down"/>
@@ -531,7 +522,7 @@
 			</OnEnter>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
-	</Button>
+	</Button>-->
 
 	<Frame name="BagHelpBox" parent="UIParent" inherits="GlowBoxTemplate" frameStrata="HIGH" hidden="true">
 		<Size x="220" y="200"/>

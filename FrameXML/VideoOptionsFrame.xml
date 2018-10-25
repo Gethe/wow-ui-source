@@ -68,7 +68,21 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
-						VideoOptionsFrameDefault_OnClick(self, button);
+						VideoOptionsFrameDefault_OnClick(self, button, false);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentClassicDefaults" inherits="UIPanelButtonTemplate" text="CLASSIC_DEFAULTS">
+				<Size>
+					<AbsDimension x="126" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentDefaults" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
+						VideoOptionsFrameDefault_OnClick(self, button, true);
 					</OnClick>
 				</Scripts>
 			</Button>

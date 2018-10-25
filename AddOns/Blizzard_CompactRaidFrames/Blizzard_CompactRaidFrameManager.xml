@@ -10,15 +10,6 @@
 			</Layer>
 		</Layers>
 	</Button>
-	<Button name="CRFManagerFilterRoleButtonTemplate" inherits="CRFManagerFilterButtonTemplate" virtual="true">
-		<Size x="58" y="24"/>
-		<Scripts>
-			<OnClick>
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-				CompactRaidFrameManager_ToggleRoleFilter(self.role);
-			</OnClick>
-		</Scripts>
-	</Button>
 	<Button name="CRFManagerFilterGroupButtonTemplate" inherits="CRFManagerFilterButtonTemplate" virtual="true">
 		<Size x="41" y="24"/>
 		<Scripts>
@@ -339,7 +330,7 @@
 						</Scripts>
 					</Frame>
 					<Frame name="$parentFilterOptions" parentKey="filterOptions">
-						<Size x="200" y="85"/>
+						<Size x="200" y="61"/>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture name="$parentFooterDelineator" file="Interface\RaidFrame\RaidPanel-UpperMiddle" horizTile="true">
@@ -352,42 +343,9 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button name="$parentFilterRoleTank" inherits="CRFManagerFilterRoleButtonTemplate" parentKey="filterRoleTank">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="19" y="4"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self.role = "TANK";
-										self.roleTexture = "|TInterface\\LFGFrame\\LFGRole:14:14:0:0:64:16:32:48:0:16|t";
-									</OnLoad>
-								</Scripts>
-							</Button>
-							<Button name="$parentFilterRoleHealer" inherits="CRFManagerFilterRoleButtonTemplate" parentKey="filterRoleHealer">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentFilterRoleTank" relativePoint="RIGHT"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self.role = "HEALER";
-										self.roleTexture = "|TInterface\\LFGFrame\\LFGRole:14:14:0:0:64:16:48:64:0:16|t";
-									</OnLoad>
-								</Scripts>
-							</Button>
-							<Button name="$parentFilterRoleDamager" inherits="CRFManagerFilterRoleButtonTemplate" parentKey="filterRoleDamager">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentFilterRoleHealer" relativePoint="RIGHT"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self.role = "DAMAGER";
-										self.roleTexture = "|TInterface\\LFGFrame\\LFGRole:14:14:0:0:64:16:16:32:0:16|t";
-									</OnLoad>
-								</Scripts>
-							</Button>
 							<Button name="$parentFilterGroup1" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup1" text="1" id="1">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentFilterRoleTank" relativePoint="BOTTOMLEFT"/>
+									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="19" y="4"/>
 								</Anchors>
 							</Button>
 							<Button name="$parentFilterGroup2" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup2" text="2" id="2">
@@ -516,9 +474,9 @@
 						</Frames>
 					</Frame>
 					<Frame name="$parentLeaderOptions" parentKey="leaderOptions" hidden="true">
-						<Size x="200" y="45"/>
+						<Size x="200" y="25"/>
 						<Frames>
-							<Button name="$parentInitiateRolePoll" inherits="UIMenuButtonStretchTemplate" text="ROLE_POLL" parentKey="rolePollButton">
+							<Button name="$parentInitiateReadyCheck" inherits="UIMenuButtonStretchTemplate" text="READY_CHECK" parentKey="readyCheckButton">
 								<Size x="169" y="20"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="20" y="-5"/>
@@ -526,48 +484,9 @@
 								<Scripts>
 									<OnClick>
 										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-										InitiateRolePoll();
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Button name="$parentInitiateReadyCheck" inherits="UIMenuButtonStretchTemplate" text="READY_CHECK" parentKey="readyCheckButton">
-								<Size x="129" y="20"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentInitiateRolePoll" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 										DoReadyCheck();
 									</OnClick>
 								</Scripts>
-							</Button>
-							<Button name="$parentRaidWorldMarkerButton" inherits="UIMenuButtonStretchTemplate">
-								<Size x="40" y="20"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentInitiateReadyCheck" relativePoint="TOPRIGHT" x="0" y="0"/>
-								</Anchors>
-								<Frames>
-									<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" parentKey="dropDown">
-										<Scripts>
-											<OnLoad>
-												UIDropDownMenu_Initialize(self, CRFManager_RaidWorldMarkerDropDown_Update, "MENU");
-											</OnLoad>
-										</Scripts>
-									</Frame>
-								</Frames>
-								<Scripts>
-									<OnClick>
-										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-										ToggleDropDownMenu(1, nil, self.dropDown, self:GetName(), 0, 0);
-									</OnClick>
-								</Scripts>
-								<NormalTexture parentKey="Icon" file="Interface\RaidFrame\Raid-WorldPing">
-									<Size x="14" y ="14"/>
-									<Anchors>
-										<Anchor point="CENTER" x="0" y="-1"/>
-									</Anchors>
-								</NormalTexture>
 							</Button>
 						</Frames>
 					</Frame>

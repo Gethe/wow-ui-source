@@ -118,9 +118,9 @@ function CastingBarFrame_OnShow(self)
 end
 
 function CastingBarFrame_GetEffectiveStartColor(self, isChannel, notInterruptible)
-	if self.nonInterruptibleColor and notInterruptible then
+	--[[if self.nonInterruptibleColor and notInterruptible then
 		return self.nonInterruptibleColor;
-	end	
+	end]]
 	return isChannel and self.startChannelColor or self.startCastColor;
 end
 

@@ -678,7 +678,7 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 					ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_TASK_ADDED, questID);
 				end
 			else
-				if ( AUTO_QUEST_WATCH == "1" and GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
+				if ( GetCVar("autoQuestWatch") == "1" and GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
 					AddQuestWatch(questLogIndex);
 					QuestSuperTracking_OnQuestTracked(questID);
 				end

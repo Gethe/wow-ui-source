@@ -161,8 +161,9 @@
 						<Texture parentKey="GameLogo">
 							<Size x="256" y="128"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="3" y="-7"/>
+								<Anchor point="TOPLEFT" x="8" y="-16"/>
 							</Anchors>
+							<TexCoords left="0.125" right="0.875" top="0.3125" bottom="0.6875"/>
 						</Texture>
 						<Texture name="WorldOfWarcraftRating" hidden="true">
 							<Size x="128" y="128"/>
@@ -174,9 +175,9 @@
 				</Layers>
 				<Frames>
 					<EditBox parentKey="AccountEditBox" parentArray="NormalLoginRegions" letters="320">
-						<Size x="200" y="37"/>
+						<Size x="160" y="37"/>
 						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="345"/>
+							<Anchor point="BOTTOM" x="8" y="345"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -192,7 +193,7 @@
 										</Anchor>
 									</Anchors>
 								</FontString>
-								<FontString parentKey="Fill" inherits="GlueFontDisableSmall" justifyH="LEFT" justifyV="MIDDLE" text="ENTER_YOUR_EMAIL">
+								<!--<FontString parentKey="Fill" inherits="GlueFontDisableSmall" justifyH="LEFT" justifyV="MIDDLE" text="ENTER_YOUR_EMAIL">
 									<Anchors>
 										<Anchor point="CENTER" relativePoint="CENTER">
 											<Offset>
@@ -200,7 +201,7 @@
 											</Offset>
 										</Anchor>
 									</Anchors>
-								</FontString>
+								</FontString>-->
 							</Layer>
 						</Layers>
 						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
@@ -231,11 +232,11 @@
 									ClearSavedAccountList();
 									AccountLogin_UpdateSavedData(AccountLogin);
 								end
-								if ( self:GetText() ~= "" ) then
+								--[[if ( self:GetText() ~= "" ) then
 									self.Fill:Hide();
 								else
 									self.Fill:Show();
-								end
+								end]]
 							</OnTextChanged>
 						</Scripts>
 						<FontString inherits="GlueEditBoxFont"/>
@@ -244,9 +245,9 @@
 						</TextInsets>
 					</EditBox>
 					<EditBox parentKey="PasswordEditBox" parentArray="NormalLoginRegions" letters="16" password="1">
-						<Size x="200" y="37"/>
+						<Size x="160" y="37"/>
 						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="275"/>
+							<Anchor point="BOTTOM" x="8" y="270"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -298,9 +299,9 @@
 						</Anchors>
 					</Frame>
 					<Button parentKey="LoginButton" parentArray="NormalLoginRegions" inherits="GlueButtonTemplateBlue" text="LOGIN">
-						<Size x="220" y="45"/>
+						<Size x="170" y="45"/>
 						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="170"/>
+							<Anchor point="BOTTOM" x="10" y="249"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="AccountLogin_Login"/>
@@ -313,13 +314,81 @@
 							</OnUpdate>
 						</Scripts>
 					</Button>
+					<Button parentKey="ExitButton" inherits="GlueButtonSmallTemplate" text="QUIT">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-5" y="29"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AccountLogin_Exit"/>
+						</Scripts>
+					</Button>
+					<!-- CLASS-960: Disabling the credits for Blizzcon. -->
+					<!--<Button parentKey="CreditsButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="CREDITS">-->
+					<Button parentKey="CreditsButton" hidden="true" inherits="GlueButtonSmallTemplate" text="CREDITS">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.ExitButton" relativePoint="TOP" x="0" y="80"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="GlueParent_ShowCreditsScreen"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="CinematicsButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="CINEMATICS">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.CreditsButton" relativePoint="TOP" x="0" y="-2"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="GlueParent_ShowCinematicsScreen"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="OptionsButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="SYSTEMOPTIONS_MENU">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.CinematicsButton" relativePoint="TOP" x="0" y="-2"/>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								--JS_TODO - Handle Kiosk Mode
+							</OnShow>
+							<OnClick function="GlueParent_ShowOptionsScreen"/>
+						</Scripts>
+					</Button>
+					<Button name="AccountLoginCommunityButton" parentKey="CommunityButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="COMMUNITY_SITE">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="10" y="120"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AccountLogin_LaunchCommunitySite"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="ManageAccountButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="MANAGE_ACCOUNT">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.CommunityButton" relativePoint="TOP"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AccountLogin_ManageAccount"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="CreateAccountButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="CREATE_ACCOUNT">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.ManageAccountButton" relativePoint="TOP"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AccountLogin_ManageAccount"/>
+						</Scripts>
+					</Button>
 					<CheckButton parentKey="SaveAccountNameCheckButton" parentArray="NormalLoginRegions">
 						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AccountLoginCommunityButton" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="7" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
 								<FontString parentKey="Label" inherits="GlueFontNormalSmall" text="SAVE_ACCOUNT_NAME">
 									<Anchors>
-										<Anchor point="LEFT" x="20" y="0"/>
+										<Anchor point="LEFT" x="24" y="0"/>
 									</Anchors>
 									<FontHeight>
 										<AbsValue val="10"/>
@@ -361,65 +430,6 @@
 						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 					</CheckButton>
-					<Button parentKey="ExitButton" inherits="GlueButtonSmallTemplate" text="QUIT">
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT" x="-5" y="29"/>
-						</Anchors>
-						<Scripts>
-							<OnClick function="AccountLogin_Exit"/>
-						</Scripts>
-					</Button>
-					<Button parentKey="CreditsButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="CREDITS">
-						<Anchors>
-							<Anchor point="BOTTOM" relativeKey="$parent.ExitButton" relativePoint="TOP" x="0" y="80"/>
-						</Anchors>
-						<Scripts>
-							<OnClick function="GlueParent_ShowCreditsScreen"/>
-						</Scripts>
-					</Button>
-					<Button parentKey="CinematicsButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="CINEMATICS">
-						<Anchors>
-							<Anchor point="BOTTOM" relativeKey="$parent.CreditsButton" relativePoint="TOP" x="0" y="-2"/>
-						</Anchors>
-						<Scripts>
-							<OnClick function="GlueParent_ShowCinematicsScreen"/>
-						</Scripts>
-					</Button>
-					<Button parentKey="OptionsButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="SYSTEMOPTIONS_MENU">
-						<Anchors>
-							<Anchor point="BOTTOM" relativeKey="$parent.CinematicsButton" relativePoint="TOP" x="0" y="-2"/>
-						</Anchors>
-						<Scripts>
-							<OnShow>
-								--JS_TODO - Handle Kiosk Mode
-							</OnShow>
-							<OnClick function="GlueParent_ShowOptionsScreen"/>
-						</Scripts>
-					</Button>
-					<Button parentKey="CommunityButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="COMMUNITY_SITE">
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="10" y="84"/>
-						</Anchors>
-						<Scripts>
-							<OnClick function="AccountLogin_LaunchCommunitySite"/>
-						</Scripts>
-					</Button>
-					<Button parentKey="ManageAccountButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="MANAGE_ACCOUNT">
-						<Anchors>
-							<Anchor point="BOTTOM" relativeKey="$parent.CommunityButton" relativePoint="TOP"/>
-						</Anchors>
-						<Scripts>
-							<OnClick function="AccountLogin_ManageAccount"/>
-						</Scripts>
-					</Button>
-					<Button parentKey="CreateAccountButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="CREATE_ACCOUNT">
-						<Anchors>
-							<Anchor point="BOTTOM" relativeKey="$parent.ManageAccountButton" relativePoint="TOP"/>
-						</Anchors>
-						<Scripts>
-							<OnClick function="AccountLogin_ManageAccount"/>
-						</Scripts>
-					</Button>
 					<Frame name="ServerAlertFrame" hidden="true" inherits="ServerAlertTemplate">
 						<Size>
 							<AbsDimension x="352" y="400"/>

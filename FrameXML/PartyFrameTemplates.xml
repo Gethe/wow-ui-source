@@ -199,12 +199,6 @@
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
-				<Texture name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture name="$parentTotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
-			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
@@ -232,13 +226,6 @@
 				<Frames>
 					<Frame setAllPoints="true">
 						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
-								<Texture name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
-								<Texture name="$parentHealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
-								<Texture name="$parentHealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
-								<Texture name="$parentHealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
-							</Layer>
 							<Layer level="BORDER">
 								<Texture name="$parentTexture" file="Interface\TargetingFrame\UI-PartyFrame">
 									<Size x="128" y="64"/>
@@ -257,36 +244,6 @@
 										<Anchor point="BOTTOMLEFT" x="50" y="43"/>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentHealthBarText" inherits="TextStatusBarText">
-									<Anchors>
-										<Anchor point="CENTER" x="20" y="12"/>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentHealthBarTextLeft" inherits="TextStatusBarText">
-									<Anchors>
-										<Anchor point="LEFT" x="42" y="12"/>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentHealthBarTextRight" inherits="TextStatusBarText">
-									<Anchors>
-										<Anchor point="RIGHT" x="-10" y="12"/>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentManaBarText" inherits="TextStatusBarText">
-									<Anchors>
-										<Anchor point="CENTER" x="20" y="2"/>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentManaBarTextLeft" inherits="TextStatusBarText">
-									<Anchors>
-										<Anchor point="LEFT" x="42" y="2"/>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentManaBarTextRight" inherits="TextStatusBarText">
-									<Anchors>
-										<Anchor point="RIGHT" x="-10" y="2"/>
-									</Anchors>
-								</FontString>
 							</Layer>
 							<Layer level="ARTWORK">
 								<Texture name="$parentStatus" file="Interface\Buttons\UI-Debuff-Overlays" hidden="true">
@@ -296,8 +253,6 @@
 									</Anchors>
 									<TexCoords left="0" right="0.2734375" top="0" bottom="0.5625"/>
 								</Texture>
-								<Texture name="$parentOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
-								<Texture name="$parentOverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
 							</Layer>
 							<Layer level="OVERLAY">
 								<Texture name="$parentLeaderIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true">
@@ -331,12 +286,6 @@
 										<Anchor point="LEFT" x="-7" y="-1"/>
 									</Anchors>
 								</Texture>
-								<Texture name="$parentRoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" hidden="true">
-									<Size x="19" y="19"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="7" y="-33"/>
-									</Anchors>
-								</Texture>
 							</Layer>
 						</Layers>
 					</Frame>
@@ -361,9 +310,6 @@
 						PartyMemberHealthCheck(self, value);
 						UnitFrameHealthBar_OnValueChanged(self, value);
 					</OnValueChanged>
-					<OnSizeChanged>
-						UnitFrameHealPredictionBars_UpdateSize(self:GetParent());
-					</OnSizeChanged>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>

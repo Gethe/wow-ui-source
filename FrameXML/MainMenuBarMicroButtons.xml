@@ -3,7 +3,7 @@
 	<Script file="MainMenuBarMicroButtons.lua"/>
 	<Button name="MainMenuBarMicroButton" motionScriptsWhileDisabled="true" virtual="true">
 		<Size>
-			<AbsDimension x="28" y="58"/>
+			<AbsDimension x="29" y="58"/>
 		</Size>
 		<HitRectInsets>
 			<AbsInset left="0" right="0" top="18" bottom="0"/>
@@ -81,7 +81,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT">
 				<Offset>
-					<AbsDimension x="548" y="2"/>
+					<AbsDimension x="552" y="2"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -137,38 +137,39 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="CharacterMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-2" y="0"/>
+					<AbsDimension x="-3" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
 		<Scripts>
 			<OnLoad>
 				LoadMicroButtonTextures(self, "Spellbook");
+				self.tooltipText = MicroButtonTooltipText(SPELLBOOK_ABILITIES_BUTTON, "TOGGLESPELLBOOK");
+				self.newbieText = NEWBIE_TOOLTIP_SPELLBOOK;
 			</OnLoad>
+			<OnEvent>
+				self.tooltipText = MicroButtonTooltipText(SPELLBOOK_ABILITIES_BUTTON, "TOGGLESPELLBOOK");
+			</OnEvent>
 			<OnClick>
 				ToggleSpellBook(BOOKTYPE_SPELL);
 			</OnClick>
-			<OnEnter>
-				self.tooltipText = MicroButtonTooltipText(SPELLBOOK_ABILITIES_BUTTON, "TOGGLESPELLBOOK");
-				GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_SPELLBOOK);
-			</OnEnter>
 		</Scripts>
 	</Button>
-	<Button name="TalentMicroButton" inherits="MainMenuBarMicroButton" mixin="TalentMicroButtonMixin" parent="UIParent">
+	<Button name="TalentMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="SpellbookMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-2" y="0"/>
+					<AbsDimension x="-3" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
 		<Scripts>
 			<OnLoad>
 				LoadMicroButtonTextures(self, "Talents");
-				self.tooltipText = MicroButtonTooltipText(TALENTS_BUTTON, "TOGGLETALENTS");
+				self.tooltipText = MicroButtonTooltipText(TALENTS, "TOGGLETALENTS");
 				self.newbieText = NEWBIE_TOOLTIP_TALENTS;
 
-				self.minLevel = SHOW_SPEC_LEVEL;
+				self.minLevel = SHOW_TALENT_LEVEL;
 				self:RegisterEvent("PLAYER_LEVEL_UP");
 				self:RegisterEvent("UPDATE_BINDINGS");
 				self:RegisterEvent("PLAYER_TALENT_UPDATE");
@@ -178,43 +179,17 @@
 	            self:RegisterEvent("PLAYER_PVP_TALENT_UPDATE");
 				self:RegisterEvent("PLAYER_CHARACTER_UPGRADE_TALENT_COUNT_CHANGED");
 			</OnLoad>
-			<OnClick function="TalentMicroButton_OnClick"/>
-			<OnEvent function="TalentMicroButton_OnEvent"/>
-		</Scripts>
-	</Button>
-	<Button name="AchievementMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="TalentMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-2" y="0"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Scripts>
-			<OnLoad>
-				LoadMicroButtonTextures(self, "Achievement");
-				self:RegisterEvent("RECEIVED_ACHIEVEMENT_LIST");
-				self:RegisterEvent("ACHIEVEMENT_EARNED");
-				self:RegisterEvent("UPDATE_BINDINGS");
-				self.tooltipText = MicroButtonTooltipText(ACHIEVEMENT_BUTTON, "TOGGLEACHIEVEMENT");
-				self.newbieText = NEWBIE_TOOLTIP_ACHIEVEMENT;
-				self.minLevel = 10;	--Just used for display. But we know that it will become available by level 10 due to the level 10 achievement.
-				if (IsKioskModeEnabled()) then
-					self:Disable();
-				end
-			</OnLoad>
-			<OnShow function="MicroButton_KioskModeDisable"/>
-			<OnEvent function="AchievementMicroButton_OnEvent"/>
 			<OnClick>
-				ToggleAchievementFrame();
+				ToggleTalentFrame();
 			</OnClick>
+			<OnEvent function="TalentMicroButton_OnEvent"/>
 		</Scripts>
 	</Button>
 	<Button name="QuestLogMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="AchievementMicroButton" relativePoint="BOTTOMRIGHT">
+			<Anchor point="BOTTOMLEFT" relativeTo="TalentMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-2" y="0"/>
+					<AbsDimension x="-3" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -232,188 +207,60 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="GuildMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+	<Button name="SocialsMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="QuestLogMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-2" y="0"/>
+					<AbsDimension x="-3" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<Frames>
-			<Frame name="$parentTabard" hidden="true">
-				<Size>
-					<AbsDimension x="28" y="58"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="$parentBackground" file="Interface\Buttons\UI-MicroButton-Guild-Banner" parentKey="background">
-							<Size>
-								<AbsDimension x="30" y="60"/>
-							</Size>
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY" textureSubLevel="1">
-						<Texture name="$parentEmblem" parentKey="emblem" file="Interface\GuildFrame\GuildEmblems_01">
-							<Size x="16" y="16"/>
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="-9"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
 		<Scripts>
 			<OnLoad>
 				LoadMicroButtonTextures(self, "Socials");
-				self.tooltipText = MicroButtonTooltipText(LOOKINGFORGUILD, "TOGGLEGUILDTAB");
-				self.newbieText = NEWBIE_TOOLTIP_LOOKINGFORGUILDTAB;
-				self:RegisterEvent("UPDATE_BINDINGS");
-				self:RegisterEvent("PLAYER_GUILD_UPDATE");
-				self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
-				GuildMicroButton_UpdateTabard(true);
-				if ( IsTrialAccount() or (IsVeteranTrialAccount() and not IsInGuild()) ) then
-					self:Disable();
-					self.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
-				end
-				if (IsKioskModeEnabled()) then
-					self:Disable();
-				end
+				self.tooltipText = MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL");
+				self.newbieText = NEWBIE_TOOLTIP_SOCIAL;
 			</OnLoad>
-			<OnShow function="MicroButton_KioskModeDisable"/>
-			<OnEvent function="GuildMicroButton_OnEvent"/>
-			<OnClick>
-				ToggleGuildFrame();
-			</OnClick>
-		</Scripts>
-	</Button>
-	<Button name="LFDMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="GuildMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-2" y="0"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Scripts>
-			<OnLoad>
-				LoadMicroButtonTextures(self, "LFG");
-				SetDesaturation(self:GetDisabledTexture(), true);
-				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLEGROUPFINDER");
-				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
-				self.minLevel = math.min(SHOW_LFD_LEVEL, SHOW_PVP_LEVEL);
-				if (IsKioskModeEnabled()) then
-					self:Disable();
-				end
-			</OnLoad>
-			<OnShow function="MicroButton_KioskModeDisable"/>
 			<OnEvent>
-				if (IsKioskModeEnabled()) then
-					return;
-				end
-				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLEGROUPFINDER");
-				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
-				UpdateMicroButtons();
+				self.tooltipText = MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL");
 			</OnEvent>
 			<OnClick>
-				PVEFrame_ToggleFrame();
+				ToggleFriendsFrame();
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="CollectionsMicroButton" inherits="MainMenuBarMicroButton" mixin="CollectionMicroButtonMixin" parent="UIParent">
-		<KeyValues>
-			<KeyValue key="lastNumMountsNeedingFanfare" value="0" type="number"/>
-			<KeyValue key="lastNumPetsNeedingFanfare" value="0" type="number"/>
-		</KeyValues>
+	<Button name="WorldMapMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="LFDMicroButton" relativePoint="BOTTOMRIGHT">
+			<Anchor point="BOTTOMLEFT" relativeTo="SocialsMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-2" y="0"/>
+					<AbsDimension x="-3" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				LoadMicroButtonTextures(self, "Mounts");
-				SetDesaturation(self:GetDisabledTexture(), true);
-				self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS");
-				self.newbieText = NEWBIE_TOOLTIP_MOUNTS_AND_PETS;
-
-				self:RegisterEvent("HEIRLOOMS_UPDATED");
-				self:RegisterEvent("PET_JOURNAL_NEW_BATTLE_SLOT");
-				self:RegisterEvent("TOYS_UPDATED");
-				self:RegisterEvent("COMPANION_LEARNED");
-				self:RegisterEvent("PET_JOURNAL_LIST_UPDATE");
-				self:RegisterEvent("PLAYER_ENTERING_WORLD");
+				LoadMicroButtonTextures(self, "World");
+				self.tooltipText = MicroButtonTooltipText(WORLDMAP_BUTTON, "TOGGLEWORLDMAP");
+				self.newbieText = NEWBIE_TOOLTIP_WORLDMAP;
 			</OnLoad>
+			<OnEvent>
+				self.tooltipText = MicroButtonTooltipText(WORLDMAP_BUTTON, "TOGGLEWORLDMAP");
+			</OnEvent>
 			<OnClick>
-				ToggleCollectionsJournal();
+				ToggleWorldMap();
 			</OnClick>
-			<OnEvent function="CollectionsMicroButton_OnEvent" />
-		</Scripts>
-	</Button>
-	<Button name="EJMicroButton" inherits="MainMenuBarMicroButton" mixin="EJMicroButtonMixin" parent="UIParent">
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="CollectionsMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-2" y="0"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Frames>
-			<Frame parentKey="NewAdventureNotice" hidden="true">
-				<Size x="28" y="28"/>
-				<Anchors>
-					<Anchor point="RIGHT" x="8" y="2"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture atlas="adventureguide-microbutton-alert"/>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad function="EJMicroButton_OnLoad"/>
-			<OnShow function="MicroButton_KioskModeDisable"/>
-			<OnEvent function="EJMicroButton_OnEvent"/>
-			<OnClick function="ToggleEncounterJournal"/>
-		</Scripts>
-	</Button>
-	<Button name="StoreMicroButton" inherits="MainMenuBarMicroButton" mixin="StoreMicroButtonMixin" parent="UIParent">
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="EJMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-2" y="0"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Scripts>
-			<OnLoad function="StoreMicroButton_OnLoad"/>
-			<OnShow function="MicroButton_KioskModeDisable"/>
-			<OnEvent function="StoreMicroButton_OnEvent"/>
-			<OnClick function="ToggleStoreUI"/>
 		</Scripts>
 	</Button>
 	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="StoreMicroButton" relativePoint="BOTTOMRIGHT" x="-3"/>
+			<Anchor point="BOTTOMLEFT" relativeTo="WorldMapMicroButton" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-3" y="0"/>
+				</Offset>
+			</Anchor>
 		</Anchors>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="MainMenuBarPerformanceBar" file="Interface\MainMenuBar\UI-MainMenuBar-PerformanceBar">
-					<Size x="28" y="58"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
 				<Texture name="MainMenuBarDownload" file="Interface\BUTTONS\UI-MicroStream-Yellow" hidden="true">
 					<Size>
 						<AbsDimension x="28" y="28"/>
@@ -432,11 +279,8 @@
 				self.tooltipText = MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU");
 				self.newbieText = NEWBIE_TOOLTIP_MAINMENU;
 
-				PERFORMANCEBAR_LOW_LATENCY = 300;
-				PERFORMANCEBAR_MEDIUM_LATENCY = 600;
 				self.hover = nil;
 				self.updateInterval = 0;
-				self:RegisterForClicks("LeftButtonDown", "RightButtonDown", "LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnUpdate>
 				if (self.updateInterval > 0) then
@@ -463,19 +307,11 @@
 						elseif (status == 3) then
 							MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Red");
 						end
+						
 						MainMenuBarDownload:Show();
 					end
-					local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
-					local latency = latencyHome > latencyWorld and latencyHome or latencyWorld;
-					if (latency > PERFORMANCEBAR_MEDIUM_LATENCY) then
-						MainMenuBarPerformanceBar:SetVertexColor(1, 0, 0);
-					elseif (latency > PERFORMANCEBAR_LOW_LATENCY) then
-						MainMenuBarPerformanceBar:SetVertexColor(1, 1, 0);
-					else
-						MainMenuBarPerformanceBar:SetVertexColor(0, 1, 0);
-					end
 					if (self.hover) then
-						MainMenuBarPerformanceBarFrame_OnEnter(self);
+						MicroButton_OnEnter(self);
 					end
 				end
 			</OnUpdate>
@@ -550,66 +386,23 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-
-	<Frame name="TalentMicroButtonAlert" inherits="MicroButtonAlertTemplate">
-		<KeyValues>
-			<KeyValue key="MicroButton" value="TalentMicroButton" type="global"/>
-		</KeyValues>
+	<Button name="HelpMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="TalentMicroButton" relativePoint="TOP" x="0" y="-8"/>
+			<Anchor point="BOTTOMLEFT" relativeTo="MainMenuMicroButton" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-3" y="0"/>
+				</Offset>
+			</Anchor>
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				MicroButtonAlert_OnLoad(self);
+				LoadMicroButtonTextures(self, "Help");
+				self.tooltipText = MicroButtonTooltipText(HELP_BUTTON, "TOGGLEHELP");
+				self.newbieText = NEWBIE_TOOLTIP_HELP;
 			</OnLoad>
+			<OnClick>
+				ToggleHelpFrame()
+			</OnClick>
 		</Scripts>
-	</Frame>
-	<Frame name="CollectionsMicroButtonAlert" inherits="MicroButtonAlertTemplate">
-		<KeyValues>
-			<KeyValue key="MicroButton" value="CollectionsMicroButton" type="global"/>
-		</KeyValues>
-		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="CollectionsMicroButton" relativePoint="TOP" x="0" y="-8"/>
-		</Anchors>
-		<Scripts>
-			<OnLoad>
-				MicroButtonAlert_OnLoad(self);
-			</OnLoad>
-		</Scripts>
-	</Frame>
-	<Frame name="LFDMicroButtonAlert" inherits="MicroButtonAlertTemplate">
-		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="LFDMicroButton" relativePoint="TOP" x="0" y="-8"/>
-		</Anchors>
-		<Scripts>
-			<OnLoad>
-				MicroButtonAlert_OnLoad(self);
-				self.Text:SetText(LFG_MICRO_BUTTON_SPEC_TUTORIAL);
-			</OnLoad>
-		</Scripts>
-	</Frame>
-	<Frame name="EJMicroButtonAlert" inherits="MicroButtonAlertTemplate">
-		<KeyValues>
-			<KeyValue key="MicroButton" value="EJMicroButton" type="global"/>
-		</KeyValues>
-		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="EJMicroButton" relativePoint="TOP" x="0" y="-8"/>
-		</Anchors>
-		<Scripts>
-			<OnLoad>
-				MicroButtonAlert_OnLoad(self);
-			</OnLoad>
-			<OnHide>
-				SetCVar("advJournalLastOpened", GetServerTime() );
-			</OnHide>
-		</Scripts>
-	</Frame>
-	<Frame name="StoreMicroButtonAlert" inherits="MicroButtonAlertTemplate">
-		<KeyValues>
-			<KeyValue key="MicroButton" value="StoreMicroButton" type="global"/>
-		</KeyValues>
-		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="StoreMicroButton" relativePoint="TOP" x="0" y="-8"/>
-		</Anchors>
-	</Frame>
+	</Button>
 </Ui>

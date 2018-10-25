@@ -18,8 +18,10 @@ function CompactUnitFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_POWER_BAR_HIDE");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
 	self:RegisterEvent("PLAYER_REGEN_ENABLED");
 	self:RegisterEvent("PLAYER_REGEN_DISABLED");
+	self:RegisterEvent("PLAYER_LEVEL_UP");
 	self:RegisterEvent("UNIT_CONNECTION");
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
@@ -60,10 +62,13 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 		CompactUnitFrame_UpdateSelectionHighlight(self);
 		CompactUnitFrame_UpdateName(self);
 		CompactUnitFrame_UpdateHealthBorder(self);
+	elseif ( event == "UPDATE_MOUSEOVER_UNIT" ) then
+		CompactUnitFrame_UpdateSelectionHighlight(self);
+		CompactUnitFrame_UpdateName(self);
 	elseif ( event == "PLAYER_REGEN_ENABLED" or event == "PLAYER_REGEN_DISABLED" ) then
 		CompactUnitFrame_UpdateAuras(self);	--We filter differently based on whether the player is in Combat, so we need to update when that changes.
-	elseif ( event == "PLAYER_ROLES_ASSIGNED" ) then
-		CompactUnitFrame_UpdateRoleIcon(self);
+	elseif ( event == "PLAYER_LEVEL_UP" ) then
+		CompactUnitFrame_UpdateLevel(self);
 	elseif ( event == "READY_CHECK" ) then
 		CompactUnitFrame_UpdateReadyCheck(self);
 	elseif ( event == "READY_CHECK_FINISHED" ) then
@@ -76,11 +81,9 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 		if ( event == "UNIT_MAXHEALTH" ) then
 			CompactUnitFrame_UpdateMaxHealth(self);
 			CompactUnitFrame_UpdateHealth(self);
-			CompactUnitFrame_UpdateHealPrediction(self);
 		elseif ( event == "UNIT_HEALTH" or event == "UNIT_HEALTH_FREQUENT" ) then
 			CompactUnitFrame_UpdateHealth(self);
 			CompactUnitFrame_UpdateStatusText(self);
-			CompactUnitFrame_UpdateHealPrediction(self);
 		elseif ( event == "UNIT_MAXPOWER" ) then
 			CompactUnitFrame_UpdateMaxPower(self);
 			CompactUnitFrame_UpdatePower(self);
@@ -93,8 +96,11 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 		elseif ( event == "UNIT_NAME_UPDATE" ) then
 			CompactUnitFrame_UpdateName(self);
 			CompactUnitFrame_UpdateHealthColor(self);	--This may signify that we now have the unit's class (the name cache entry has been received).
+		elseif ( event == "UNIT_LEVEL" ) then
+			CompactUnitFrame_UpdateLevel(self);
 		elseif ( event == "UNIT_AURA" ) then
 			CompactUnitFrame_UpdateAuras(self);
+		--[[
 		elseif ( event == "UNIT_THREAT_SITUATION_UPDATE" ) then
 			CompactUnitFrame_UpdateAggroHighlight(self);
 			CompactUnitFrame_UpdateAggroFlash(self);
@@ -106,13 +112,17 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 			end
 			CompactUnitFrame_UpdateAggroFlash(self);
 			CompactUnitFrame_UpdateHealthBorder(self);
+		elseif ( event == "PLAYER_TARGET_SET_ATTACKING" ) then
+			if ( self.optionTable.considerSelectionInCombatAsHostile ) then
+				CompactUnitFrame_UpdateHealthColor(self);
+				CompactUnitFrame_UpdateName(self);
+			end
+			CompactUnitFrame_UpdateHealthBorder(self);]]
 		elseif ( event == "UNIT_CONNECTION" ) then
 			--Might want to set the health/mana to max as well so it's easily visible? This happens unless the player is out of AOI.
 			CompactUnitFrame_UpdateHealthColor(self);
 			CompactUnitFrame_UpdatePowerColor(self);
 			CompactUnitFrame_UpdateStatusText(self);
-		elseif ( event == "UNIT_HEAL_PREDICTION" ) then
-			CompactUnitFrame_UpdateHealPrediction(self);
 		elseif ( event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE" or event == "UNIT_PET" ) then
 			CompactUnitFrame_UpdateAll(self);
 		elseif ( event == "READY_CHECK_CONFIRM" ) then
@@ -121,16 +131,12 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 			CompactUnitFrame_UpdateCenterStatusIcon(self);
 		elseif ( event == "UNIT_OTHER_PARTY_CHANGED" ) then
 			CompactUnitFrame_UpdateCenterStatusIcon(self);
-		elseif ( event == "UNIT_ABSORB_AMOUNT_CHANGED" ) then
-			CompactUnitFrame_UpdateHealPrediction(self);
-		elseif ( event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" ) then
-			CompactUnitFrame_UpdateHealPrediction(self);
 		elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
 			CompactUnitFrame_UpdateStatusText(self);
 		elseif ( event == "UNIT_PHASE" ) then
 			CompactUnitFrame_UpdateCenterStatusIcon(self);
 		elseif ( event == "GROUP_JOINED" ) then
-			CompactUnitFrame_UpdateAggroFlash(self);
+			--CompactUnitFrame_UpdateAggroFlash(self);
 			CompactUnitFrame_UpdateHealthBorder(self);
 		elseif ( event == "GROUP_LEFT" ) then
 			CompactUnitFrame_UpdateHealthBorder(self);
@@ -228,10 +234,11 @@ function CompactUnitFrame_UpdateUnitEvents(frame)
 	frame:RegisterUnitEvent("UNIT_MAXPOWER", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_POWER", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_AURA", unit, displayedUnit);
-	frame:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", unit, displayedUnit);
-	frame:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", unit, displayedUnit);
-	frame:RegisterUnitEvent("UNIT_HEAL_PREDICTION", unit, displayedUnit);
+	--frame:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", unit, displayedUnit);
+	--frame:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", unit, displayedUnit);
 	frame:RegisterUnitEvent("PLAYER_FLAGS_CHANGED", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_LEVEL", unit, displayedUnit);
+	--frame:RegisterUnitEvent("PLAYER_TARGET_SET_ATTACKING", unit, displayedUnit);
 end
 
 function CompactUnitFrame_UnregisterEvents(frame)
@@ -290,17 +297,17 @@ function CompactUnitFrame_UpdateAll(frame)
 		CompactUnitFrame_UpdatePowerColor(frame);
 		CompactUnitFrame_UpdateName(frame);
 		CompactUnitFrame_UpdateSelectionHighlight(frame);
-		CompactUnitFrame_UpdateAggroHighlight(frame);
-		CompactUnitFrame_UpdateAggroFlash(frame);
+		--CompactUnitFrame_UpdateAggroHighlight(frame);
+		--CompactUnitFrame_UpdateAggroFlash(frame);
 		CompactUnitFrame_UpdateHealthBorder(frame);
 		CompactUnitFrame_UpdateInRange(frame);
 		CompactUnitFrame_UpdateStatusText(frame);
-		CompactUnitFrame_UpdateHealPrediction(frame);
 		CompactUnitFrame_UpdateRoleIcon(frame);
 		CompactUnitFrame_UpdateReadyCheck(frame);
 		CompactUnitFrame_UpdateAuras(frame);
 		CompactUnitFrame_UpdateCenterStatusIcon(frame);
 		CompactUnitFrame_UpdateClassificationIndicator(frame);
+		CompactUnitFrame_UpdateLevel(frame);
 	end
 end
 
@@ -358,6 +365,7 @@ function CompactUnitFrame_IsTapDenied(frame)
 	return frame.optionTable.greyOutWhenTapDenied and not UnitPlayerControlled(frame.unit) and UnitIsTapDenied(frame.unit);
 end
 
+--[[
 local function IsOnThreatList(threatStatus)
 	return threatStatus ~= nil
 end
@@ -366,6 +374,11 @@ function CompactUnitFrame_IsOnThreatListWithPlayer(unit)
 	local _, threatStatus = UnitDetailedThreatSituation("player", unit);
 	return IsOnThreatList(threatStatus);
 end
+
+function CompactUnitFrame_IsPlayerAttacking(unit)
+	return IsPlayerAttacking(unit);
+end
+--]]
 
 function CompactUnitFrame_UpdateHealthColor(frame)
 	local r, g, b;
@@ -388,15 +401,11 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 				r, g, b = 0.9, 0.9, 0.9;
 			elseif ( frame.optionTable.colorHealthBySelection ) then
 				-- Use color based on the type of unit (neutral, etc.)
-				if ( frame.optionTable.considerSelectionInCombatAsHostile and CompactUnitFrame_IsOnThreatListWithPlayer(frame.displayedUnit) ) then
+				--[[if ( frame.optionTable.considerSelectionInCombatAsHostile and CompactUnitFrame_IsPlayerAttacking(frame.displayedUnit)) then
 					r, g, b = 1.0, 0.0, 0.0;
-				elseif ( UnitIsPlayer(frame.displayedUnit) and UnitIsFriend("player", frame.displayedUnit) ) then
-					-- We don't want to use the selection color for friendly player nameplates because
-					-- it doesn't show player health clearly enough.
-					r, g, b = 0.667, 0.667, 1.0;
-				else
+				else]]
 					r, g, b = UnitSelectionColor(frame.unit, frame.optionTable.colorHealthWithExtendedColors);
-				end
+				--end
 			elseif ( UnitIsFriend("player", frame.unit) ) then
 				r, g, b = 0.0, 1.0, 0.0;
 			else
@@ -424,8 +433,6 @@ function CompactUnitFrame_UpdateMaxHealth(frame)
 	else
 		frame.healthBar:SetMinMaxValues(0, maxHealth);
 	end
-
-	CompactUnitFrame_UpdateHealPrediction(frame);
 end
 
 function CompactUnitFrame_UpdateHealth(frame)
@@ -520,6 +527,7 @@ function ShouldShowName(frame)
 	return false;
 end
 
+local switch = false
 function CompactUnitFrame_UpdateName(frame)
 	if ( not ShouldShowName(frame) ) then
 		frame.name:Hide();
@@ -534,15 +542,21 @@ function CompactUnitFrame_UpdateName(frame)
 
 		frame.name:SetText(name);
 
-		if ( CompactUnitFrame_IsTapDenied(frame) ) then
+		if ( frame.optionTable.highlightNameOnMouseover and UnitIsUnit(frame.displayedUnit, "mouseover") ) then
+			-- Classic Nameplates had a yellow name on mouseover.
+			frame.name:SetVertexColor(1.0, 1.0, 0.0);
+		elseif ( CompactUnitFrame_IsTapDenied(frame) ) then
 			-- Use grey if not a player and can't get tap on unit
 			frame.name:SetVertexColor(0.5, 0.5, 0.5);
 		elseif ( frame.optionTable.colorNameBySelection ) then
-			if ( frame.optionTable.considerSelectionInCombatAsHostile and CompactUnitFrame_IsOnThreatListWithPlayer(frame.displayedUnit) ) then
+			--[[if ( frame.optionTable.considerSelectionInCombatAsHostile and CompactUnitFrame_IsPlayerAttacking(frame.displayedUnit)) then
 				frame.name:SetVertexColor(1.0, 0.0, 0.0);
-			else
+			else]]
 				frame.name:SetVertexColor(UnitSelectionColor(frame.unit, frame.optionTable.colorNameWithExtendedColors));
-			end
+			--end
+		else
+			-- If not coloring by selection, then default to white.
+			frame.name:SetVertexColor(1.0, 1.0, 1.0);
 		end
 
 		frame.name:Show();
@@ -561,14 +575,23 @@ function CompactUnitFrame_UpdateSelectionHighlight(frame)
 		return;
 	end
 
-	if ( UnitIsUnit(frame.displayedUnit, "target") ) then
+	local highlight = UnitIsUnit(frame.displayedUnit, "target");
+	if ( frame.optionTable.highlightOnMouseover and UnitIsUnit(frame.displayedUnit, "mouseover") ) then
+		highlight = true;
+	end
+
+	if ( highlight ) then
 		frame.selectionHighlight:Show();
 	else
 		frame.selectionHighlight:Hide();
 	end
 end
 
+--[[
 function CompactUnitFrame_UpdateAggroHighlight(frame)
+	if ( not frame.aggroHighlight ) then
+		return;
+	end
 	if ( not frame.optionTable.displayAggroHighlight ) then
 		if ( not frame.optionTable.playLoseAggroHighlight ) then
 			frame.aggroHighlight:Hide();
@@ -584,16 +607,7 @@ function CompactUnitFrame_UpdateAggroHighlight(frame)
 		frame.aggroHighlight:Hide();
 	end
 end
-
-local function IsPlayerEffectivelyTank()
-	local assignedRole = UnitGroupRolesAssigned("player");
-	if ( assignedRole == "NONE" ) then
-		local spec = GetSpecialization();
-		return spec and GetSpecializationRole(spec) == "TANK";
-	end
-
-	return assignedRole == "TANK";
-end
+--]]
 
 local function SetBorderColor(frame, r, g, b, a)
 	frame.healthBar.border:SetVertexColor(r, g, b, a);
@@ -608,27 +622,14 @@ function CompactUnitFrame_UpdateHealthBorder(frame)
 		return;
 	end
 
-	if frame.optionTable.tankBorderColor and IsInGroup() and IsPlayerEffectivelyTank() then
-		local isTanking, threatStatus = UnitDetailedThreatSituation("player", frame.displayedUnit);
-		local showTankingColor = (not isTanking) and IsOnThreatList(threatStatus) and IsInGroup();
-		if showTankingColor then
-			SetBorderColor(frame, frame.optionTable.tankBorderColor:GetRGBA());
-			return;
-		end
-	end
-
 	if frame.optionTable.defaultBorderColor then
 		SetBorderColor(frame, frame.optionTable.defaultBorderColor:GetRGBA());
 		return;
 	end
 end
-
+--[[
 function CompactUnitFrame_UpdateAggroFlash(frame)
 	if ( frame.optionTable.displayAggroHighlight or not frame.optionTable.playLoseAggroHighlight ) then
-		return;
-	end
-
-	if ( not IsPlayerEffectivelyTank() ) then
 		return;
 	end
 
@@ -644,7 +645,7 @@ function CompactUnitFrame_UpdateAggroFlash(frame)
 		frame.aggroHighlight:Hide();
 	end
 end
-
+--]]
 function CompactUnitFrame_UpdateInRange(frame)
 	if ( not frame.optionTable.fadeOutOfRange ) then
 		return;
@@ -700,130 +701,6 @@ function CompactUnitFrame_UpdateStatusText(frame)
 	else
 		frame.statusText:Hide();
 	end
-end
-
---WARNING: This function is very similar to the function UnitFrameHealPredictionBars_Update in UnitFrame.lua.
---If you are making changes here, it is possible you may want to make changes there as well.
-local MAX_INCOMING_HEAL_OVERFLOW = 1.05;
-function CompactUnitFrame_UpdateHealPrediction(frame)
-	local _, maxHealth = frame.healthBar:GetMinMaxValues();
-	local health = frame.healthBar:GetValue();
-	
-	if ( maxHealth <= 0 ) then
-		return;
-	end
-	
-	if ( not frame.optionTable.displayHealPrediction ) then
-		frame.myHealPrediction:Hide();
-		frame.otherHealPrediction:Hide();
-		frame.totalAbsorb:Hide();
-		frame.totalAbsorbOverlay:Hide();
-		frame.overAbsorbGlow:Hide();
-		frame.myHealAbsorb:Hide();
-		frame.myHealAbsorbLeftShadow:Hide();
-		frame.myHealAbsorbRightShadow:Hide();
-		frame.overHealAbsorbGlow:Hide();
-		return;
-	end
-
-	local myIncomingHeal = UnitGetIncomingHeals(frame.displayedUnit, "player") or 0;
-	local allIncomingHeal = UnitGetIncomingHeals(frame.displayedUnit) or 0;
-	local totalAbsorb = UnitGetTotalAbsorbs(frame.displayedUnit) or 0;
-	
-	--We don't fill outside the health bar with healAbsorbs.  Instead, an overHealAbsorbGlow is shown.
-	local myCurrentHealAbsorb = UnitGetTotalHealAbsorbs(frame.displayedUnit) or 0;
-	if ( health < myCurrentHealAbsorb ) then
-		frame.overHealAbsorbGlow:Show();
-		myCurrentHealAbsorb = health;
-	else
-		frame.overHealAbsorbGlow:Hide();
-	end
-	
-	--See how far we're going over the health bar and make sure we don't go too far out of the frame.
-	if ( health - myCurrentHealAbsorb + allIncomingHeal > maxHealth * MAX_INCOMING_HEAL_OVERFLOW ) then
-		allIncomingHeal = maxHealth * MAX_INCOMING_HEAL_OVERFLOW - health + myCurrentHealAbsorb;
-	end
-	
-	local otherIncomingHeal = 0;
-	
-	--Split up incoming heals.
-	if ( allIncomingHeal >= myIncomingHeal ) then
-		otherIncomingHeal = allIncomingHeal - myIncomingHeal;
-	else
-		myIncomingHeal = allIncomingHeal;
-	end
-
-	local overAbsorb = false;
-	--We don't fill outside the the health bar with absorbs.  Instead, an overAbsorbGlow is shown.
-	if ( health - myCurrentHealAbsorb + allIncomingHeal + totalAbsorb >= maxHealth or health + totalAbsorb >= maxHealth ) then
-		if ( totalAbsorb > 0 ) then
-			overAbsorb = true;
-		end
-		
-		if ( allIncomingHeal > myCurrentHealAbsorb ) then
-			totalAbsorb = max(0,maxHealth - (health - myCurrentHealAbsorb + allIncomingHeal));
-		else
-			totalAbsorb = max(0,maxHealth - health);
-		end
-	end
-	if ( overAbsorb ) then
-		frame.overAbsorbGlow:Show();
-	else
-		frame.overAbsorbGlow:Hide();
-	end
-	
-	local healthTexture = frame.healthBar:GetStatusBarTexture();
-	
-	local myCurrentHealAbsorbPercent = myCurrentHealAbsorb / maxHealth;
-	
-	local healAbsorbTexture = nil;
-	
-	--If allIncomingHeal is greater than myCurrentHealAbsorb, then the current
-	--heal absorb will be completely overlayed by the incoming heals so we don't show it.
-	if ( myCurrentHealAbsorb > allIncomingHeal ) then
-		local shownHealAbsorb = myCurrentHealAbsorb - allIncomingHeal;
-		local shownHealAbsorbPercent = shownHealAbsorb / maxHealth;
-		healAbsorbTexture = CompactUnitFrameUtil_UpdateFillBar(frame, healthTexture, frame.myHealAbsorb, shownHealAbsorb, -shownHealAbsorbPercent);
-		
-		--If there are incoming heals the left shadow would be overlayed by the incoming heals
-		--so it isn't shown.
-		if ( allIncomingHeal > 0 ) then
-			frame.myHealAbsorbLeftShadow:Hide();
-		else
-			frame.myHealAbsorbLeftShadow:SetPoint("TOPLEFT", healAbsorbTexture, "TOPLEFT", 0, 0);
-			frame.myHealAbsorbLeftShadow:SetPoint("BOTTOMLEFT", healAbsorbTexture, "BOTTOMLEFT", 0, 0);
-			frame.myHealAbsorbLeftShadow:Show();
-		end
-		
-		-- The right shadow is only shown if there are absorbs on the health bar.
-		if ( totalAbsorb > 0 ) then
-			frame.myHealAbsorbRightShadow:SetPoint("TOPLEFT", healAbsorbTexture, "TOPRIGHT", -8, 0);
-			frame.myHealAbsorbRightShadow:SetPoint("BOTTOMLEFT", healAbsorbTexture, "BOTTOMRIGHT", -8, 0);
-			frame.myHealAbsorbRightShadow:Show();
-		else
-			frame.myHealAbsorbRightShadow:Hide();
-		end
-	else
-		frame.myHealAbsorb:Hide();
-		frame.myHealAbsorbRightShadow:Hide();
-		frame.myHealAbsorbLeftShadow:Hide();
-	end
-	
-	--Show myIncomingHeal on the health bar.
-	local incomingHealsTexture = CompactUnitFrameUtil_UpdateFillBar(frame, healthTexture, frame.myHealPrediction, myIncomingHeal, -myCurrentHealAbsorbPercent);
-	--Append otherIncomingHeal on the health bar.
-	incomingHealsTexture = CompactUnitFrameUtil_UpdateFillBar(frame, incomingHealsTexture, frame.otherHealPrediction, otherIncomingHeal);
-	
-	--Appen absorbs to the correct section of the health bar.
-	local appendTexture = nil;
-	if ( healAbsorbTexture ) then
-		--If there is a healAbsorb part shown, append the absorb to the end of that.
-		appendTexture = healAbsorbTexture;
-	else
-		--Otherwise, append the absorb to the end of the the incomingHeals part;
-		appendTexture = incomingHealsTexture;
-	end
-	CompactUnitFrameUtil_UpdateFillBar(frame, appendTexture, frame.totalAbsorb, totalAbsorb)
 end
 
 --WARNING: This function is very similar to the function UnitFrameUtil_UpdateFillBar in UnitFrame.lua.
@@ -890,6 +767,7 @@ function CompactUnitFrame_UpdateRoleIcon(frame)
 		end
 	end
 end
+
 
 function CompactUnitFrame_UpdateReadyCheck(frame)
 	if ( not frame.readyCheckIcon or frame.readyCheckDecay and GetReadyCheckTimeLeft() <= 0 ) then
@@ -1290,6 +1168,37 @@ function CompactUnitFrame_HideAllDispelDebuffs(frame)
 	end
 end
 
+function CompactUnitFrame_UpdateLevel(frame)
+	if ( frame.optionTable.showLevel ) then
+		local effectiveLevel = UnitEffectiveLevel(frame.unit);
+		if ( effectiveLevel > 0 ) then
+			-- Normal level target
+			frame.LevelFrame.levelText:SetText(effectiveLevel);
+			-- Color level number
+			--if ( UnitCanAttack("player", frame.unit) ) then
+				local color = GetCreatureDifficultyColor(effectiveLevel);
+				frame.LevelFrame.levelText:SetVertexColor(color.r, color.g, color.b);
+			--else
+				--frame.LevelFrame.levelText:SetVertexColor(1.0, 0.82, 0.0);
+			--end
+
+			frame.LevelFrame.levelText:Show();
+			frame.LevelFrame.highLevelTexture:Hide();
+		else
+			-- Target is too high level to tell
+			frame.LevelFrame.levelText:Hide();
+			frame.LevelFrame.highLevelTexture:Show();
+		end
+	else
+		if ( frame.LevelFrame and frame.LevelFrame.levelText ) then
+			frame.LevelFrame.levelText:Hide();
+		end
+		if ( frame.LevelFrame and frame.LevelFrame.highLevelTexture ) then
+			frame.LevelFrame.highLevelTexture:Hide();
+		end
+	end
+end
+
 --Dropdown
 function CompactUnitFrameDropDown_Initialize(self)
 	local unit = self:GetParent().unit;
@@ -1334,11 +1243,10 @@ local texCoords = {
 DefaultCompactUnitFrameOptions = {
 	useClassColors = true,
 	displaySelectionHighlight = true,
-	displayAggroHighlight = true,
+	--displayAggroHighlight = true,
 	displayName = true,
 	fadeOutOfRange = true,
 	displayStatusText = true,
-	displayHealPrediction = true,
 	displayRoleIcon = true,
 	displayRaidRoleIcon = true,
 	displayDispelDebuffs = true,
@@ -1399,39 +1307,10 @@ function DefaultCompactUnitFrameSetup(frame)
 		end
 	end
 	
-	frame.myHealPrediction:ClearAllPoints();
-	frame.myHealPrediction:SetColorTexture(1,1,1);
-	frame.myHealPrediction:SetGradient("VERTICAL", 8/255, 93/255, 72/255, 11/255, 136/255, 105/255);
-	frame.myHealAbsorb:ClearAllPoints();
-	frame.myHealAbsorb:SetTexture("Interface\\RaidFrame\\Absorb-Fill", true, true);
-	frame.myHealAbsorbLeftShadow:ClearAllPoints();
-	frame.myHealAbsorbRightShadow:ClearAllPoints();
-	frame.otherHealPrediction:ClearAllPoints();
-	frame.otherHealPrediction:SetColorTexture(1,1,1);
-	frame.otherHealPrediction:SetGradient("VERTICAL", 11/255, 53/255, 43/255, 21/255, 89/255, 72/255);
-	frame.totalAbsorb:ClearAllPoints();
-	frame.totalAbsorb:SetTexture("Interface\\RaidFrame\\Shield-Fill");
-	frame.totalAbsorb.overlay = frame.totalAbsorbOverlay;
-	frame.totalAbsorbOverlay:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true);	--Tile both vertically and horizontally
-	frame.totalAbsorbOverlay:SetAllPoints(frame.totalAbsorb);
-	frame.totalAbsorbOverlay.tileSize = 32;
-	frame.overAbsorbGlow:ClearAllPoints();
-	frame.overAbsorbGlow:SetTexture("Interface\\RaidFrame\\Shield-Overshield");
-	frame.overAbsorbGlow:SetBlendMode("ADD");
-	frame.overAbsorbGlow:SetPoint("BOTTOMLEFT", frame.healthBar, "BOTTOMRIGHT", -7, 0);
-	frame.overAbsorbGlow:SetPoint("TOPLEFT", frame.healthBar, "TOPRIGHT", -7, 0);
-	frame.overAbsorbGlow:SetWidth(16);
-	frame.overHealAbsorbGlow:ClearAllPoints();
-	frame.overHealAbsorbGlow:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb");
-	frame.overHealAbsorbGlow:SetBlendMode("ADD");
-	frame.overHealAbsorbGlow:SetPoint("BOTTOMRIGHT", frame.healthBar, "BOTTOMLEFT", 7, 0);
-	frame.overHealAbsorbGlow:SetPoint("TOPRIGHT", frame.healthBar, "TOPLEFT", 7, 0);
-	frame.overHealAbsorbGlow:SetWidth(16);
-
 	frame.roleIcon:ClearAllPoints();
 	frame.roleIcon:SetPoint("TOPLEFT", 3, -2);
 	frame.roleIcon:SetSize(12, 12);
-	
+
 	frame.name:SetPoint("TOPLEFT", frame.roleIcon, "TOPRIGHT", 0, -1);
 	frame.name:SetPoint("TOPRIGHT", -3, -3);
 	frame.name:SetJustifyH("LEFT");
@@ -1489,11 +1368,11 @@ function DefaultCompactUnitFrameSetup(frame)
 	frame.selectionHighlight:SetTexture("Interface\\RaidFrame\\Raid-FrameHighlights");
 	frame.selectionHighlight:SetTexCoord(unpack(texCoords["Raid-TargetFrame"]));
 	frame.selectionHighlight:SetAllPoints(frame);
-	
+	--[[
 	frame.aggroHighlight:SetTexture("Interface\\RaidFrame\\Raid-FrameHighlights");
 	frame.aggroHighlight:SetTexCoord(unpack(texCoords["Raid-AggroFrame"]));
 	frame.aggroHighlight:SetAllPoints(frame);
-	
+	--]]
 	frame.centerStatusIcon:ClearAllPoints();
 	frame.centerStatusIcon:SetPoint("CENTER", frame, "BOTTOM", 0, options.height / 3 + 2);
 	frame.centerStatusIcon:SetSize(buffSize * 2, buffSize * 2);
@@ -1551,11 +1430,10 @@ end
 
 DefaultCompactMiniFrameOptions = {
 	displaySelectionHighlight = true,
-	displayAggroHighlight = true,
+	--displayAggroHighlight = true,
 	displayName = true,
 	fadeOutOfRange = true,
 	--displayStatusText = true,
-	displayHealPrediction = true,
 	--displayDispelDebuffs = true,
 }
 
@@ -1574,35 +1452,6 @@ function DefaultCompactMiniFrameSetup(frame)
 	frame.healthBar:SetPoint("TOPLEFT", frame, "TOPLEFT", 1, -1);
 	frame.healthBar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -1, 1);
 	frame.healthBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Fill", "BORDER");
-	
-	frame.myHealPrediction:ClearAllPoints();
-	frame.myHealPrediction:SetColorTexture(1,1,1);
-	frame.myHealPrediction:SetGradient("VERTICAL", 8/255, 93/255, 72/255, 11/255, 136/255, 105/255);
-	frame.myHealAbsorb:ClearAllPoints();
-	frame.myHealAbsorb:SetTexture("Interface\\RaidFrame\\Absorb-Fill", true, true);
-	frame.myHealAbsorbLeftShadow:ClearAllPoints();
-	frame.myHealAbsorbRightShadow:ClearAllPoints();
-	frame.otherHealPrediction:ClearAllPoints();
-	frame.otherHealPrediction:SetColorTexture(1,1,1);
-	frame.otherHealPrediction:SetGradient("VERTICAL", 3/255, 72/255, 5/255, 2/255, 101/255, 18/255);
-	frame.totalAbsorb:ClearAllPoints();
-	frame.totalAbsorb:SetTexture("Interface\\RaidFrame\\Shield-Fill");
-	frame.totalAbsorb.overlay = frame.totalAbsorbOverlay;
-	frame.totalAbsorbOverlay:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true);	--Tile both vertically and horizontally
-	frame.totalAbsorbOverlay:SetAllPoints(frame.totalAbsorb);
-	frame.totalAbsorbOverlay.tileSize = 32;
-	frame.overAbsorbGlow:ClearAllPoints();
-	frame.overAbsorbGlow:SetTexture("Interface\\RaidFrame\\Shield-Overshield");
-	frame.overAbsorbGlow:SetBlendMode("ADD");
-	frame.overAbsorbGlow:SetPoint("BOTTOMLEFT", frame.healthBar, "BOTTOMRIGHT", -7, 0);
-	frame.overAbsorbGlow:SetPoint("TOPLEFT", frame.healthBar, "TOPRIGHT", -7, 0);
-	frame.overAbsorbGlow:SetWidth(16);
-	frame.overHealAbsorbGlow:ClearAllPoints();
-	frame.overHealAbsorbGlow:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb");
-	frame.overHealAbsorbGlow:SetBlendMode("ADD");
-	frame.overHealAbsorbGlow:SetPoint("BOTTOMRIGHT", frame.healthBar, "BOTTOMLEFT", 7, 0);
-	frame.overHealAbsorbGlow:SetPoint("TOPRIGHT", frame.healthBar, "TOPLEFT", 7, 0);
-	frame.overHealAbsorbGlow:SetWidth(16);
 
 	frame.name:SetPoint("LEFT", 5, 1);
 	frame.name:SetPoint("RIGHT", -3, 1);
@@ -1612,11 +1461,11 @@ function DefaultCompactMiniFrameSetup(frame)
 	frame.selectionHighlight:SetTexture("Interface\\RaidFrame\\Raid-FrameHighlights");
 	frame.selectionHighlight:SetTexCoord(unpack(texCoords["Raid-TargetFrame"]));
 	frame.selectionHighlight:SetAllPoints(frame);
-	
+	--[[
 	frame.aggroHighlight:SetTexture("Interface\\RaidFrame\\Raid-FrameHighlights");
 	frame.aggroHighlight:SetTexCoord(unpack(texCoords["Raid-AggroFrame"]));
 	frame.aggroHighlight:SetAllPoints(frame);
-	
+	--]]
 	if ( options.displayBorder ) then
 		frame.horizTopBorder:ClearAllPoints();
 		frame.horizTopBorder:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", 0, -7);
@@ -1656,22 +1505,25 @@ function DefaultCompactMiniFrameSetup(frame)
 end
 
 DefaultCompactNamePlateFriendlyFrameOptions = {
-	useClassColors = true,
+	useClassColors = false,
 	displaySelectionHighlight = true,
-	displayAggroHighlight = false,
+	highlightOnMouseover = true,
+	highlightNameOnMouseover = true,
+	--displayAggroHighlight = false,
+	--playLoseAggroHighlight = false,
 	displayName = true,
 	fadeOutOfRange = false,
 	--displayStatusText = true,
-	displayHealPrediction = true,
 	--displayDispelDebuffs = true,
-	colorNameBySelection = true,
-	colorNameWithExtendedColors = true,
-	colorHealthWithExtendedColors = true,
+	colorNameBySelection = false,
+	colorNameWithExtendedColors = false,
+	colorHealthWithExtendedColors = false,
 	colorHealthBySelection = true,
-	considerSelectionInCombatAsHostile = true,
+	considerSelectionInCombatAsHostile = false,
 	smoothHealthUpdates = false,
 	displayNameWhenSelected = true,
 	displayNameByPlayerNameRules = true,
+	showLevel = true,
 
 	selectedBorderColor = CreateColor(1, 1, 1, .35),
 	tankBorderColor = CreateColor(1, 1, 0, .6),
@@ -1679,86 +1531,39 @@ DefaultCompactNamePlateFriendlyFrameOptions = {
 }
 
 DefaultCompactNamePlateEnemyFrameOptions = {
+	useClassColors = false,
 	displaySelectionHighlight = true,
-	displayAggroHighlight = false,
-	playLoseAggroHighlight = true,
+	highlightOnMouseover = true,
+	highlightNameOnMouseover = true,
+	--displayAggroHighlight = false,
+	--playLoseAggroHighlight = false,
 	displayName = true,
 	fadeOutOfRange = false,
-	displayHealPrediction = true,
-	colorNameBySelection = true,
+	colorNameBySelection = false,
 	colorHealthBySelection = true,
-	considerSelectionInCombatAsHostile = true,
+	considerSelectionInCombatAsHostile = false,
 	smoothHealthUpdates = false,
 	displayNameWhenSelected = true,
 	displayNameByPlayerNameRules = true,
 	greyOutWhenTapDenied = true,
-	showClassificationIndicator = true,
+	showClassificationIndicator = false,
+	showLevel = true,
 
 	selectedBorderColor = CreateColor(1, 1, 1, .55),
 	tankBorderColor = CreateColor(1, 1, 0, .6),
 	defaultBorderColor = CreateColor(0, 0, 0, .8),
 }
 
-DefaultCompactNamePlatePlayerFrameOptions = {
-	displaySelectionHighlight = false,
-	displayAggroHighlight = false,
-	displayName = false,
-	fadeOutOfRange = false,
-	displayHealPrediction = true,
-	colorNameBySelection = true,
-	smoothHealthUpdates = false,
-	displayNameWhenSelected = false,
-	hideCastbar = true,
-	healthBarColorOverride = CreateColor(0, 1, 0),
-
-	defaultBorderColor = CreateColor(0, 0, 0, .8),
-}
-
 DefaultCompactNamePlateFrameSetUpOptions = {
-	healthBarHeight = 4,
+	healthBarHeight = 10,
 	healthBarAlpha = 0.75,
-	castBarHeight = 8,
-	castBarFontHeight = 10,
 	useLargeNameFont = false,
-
-	castBarShieldWidth = 10,
-	castBarShieldHeight = 12,
-
-	castIconWidth = 10,
-	castIconHeight = 10,
-}
-
-DefaultCompactNamePlatePlayerFrameSetUpOptions = {
-	healthBarHeight = 4,
-	healthBarAlpha = 1,
-	castBarHeight = 8,
-	castBarFontHeight = 10,
-	useLargeNameFont = false,
-
-	castBarShieldWidth = 10,
-	castBarShieldHeight = 12,
-
-	castIconWidth = 10,
-	castIconHeight = 10,
 }
 
 function DefaultCompactNamePlateFrameSetup(frame, options)
 	if ( not options or type(options) ~= "table" ) then
 		error("Cannot setup target nameplate. Missing options table.")
 	end
-
-	frame.castBar:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 12, 6);
-	frame.castBar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -12, 6);
-	frame.castBar:SetStatusBarTexture("Interface/TargetingFrame/UI-TargetingFrame-BarFill");
-
-	frame.castBar.Text:SetAllPoints(frame.castBar);
-	frame.castBar.Text:SetFontObject(SystemFont_NamePlateCastBar);
-
-	CastingBarFrame_AddWidgetForFade(frame.castBar, frame.castBar.Icon);
-	CastingBarFrame_AddWidgetForFade(frame.castBar, frame.castBar.BorderShield);
-	
-	frame.healthBar:SetPoint("BOTTOMLEFT", frame.castBar, "TOPLEFT", 0, 2);
-	frame.healthBar:SetPoint("BOTTOMRIGHT", frame.castBar, "TOPRIGHT", 0, 2);
 	
 	DefaultCompactNamePlateFrameSetupInternal(frame, DefaultCompactNamePlateFrameSetUpOptions, options);
 end
@@ -1771,19 +1576,8 @@ function DefaultCompactNamePlateEnemyFrameSetup(frame)
 	DefaultCompactNamePlateFrameSetup(frame, DefaultCompactNamePlateEnemyFrameOptions);	
 end
 
-function DefaultCompactNamePlatePlayerFrameSetup(frame)
-	frame.healthBar:SetPoint("LEFT", frame, "LEFT", 12, 5);
-	frame.healthBar:SetPoint("RIGHT", frame, "RIGHT", -12, 5);
-		
-	DefaultCompactNamePlateFrameSetupInternal(frame, DefaultCompactNamePlatePlayerFrameSetUpOptions, DefaultCompactNamePlatePlayerFrameOptions);
-end
-
 function DefaultCompactNamePlateFrameSetupInternal(frame, setupOptions, frameOptions)
 	frame:SetAllPoints(frame:GetParent());
-
-	frame.castBar:SetHeight(setupOptions.castBarHeight);
-	local fontName, fontSize, fontFlags = frame.castBar.Text:GetFont();
-	frame.castBar.Text:SetFont(fontName, setupOptions.castBarFontHeight, fontFlags);
 
 	if setupOptions.useFixedSizeFont then
 		frame.name:SetIgnoreParentScale(false);
@@ -1802,68 +1596,9 @@ function DefaultCompactNamePlateFrameSetupInternal(frame, setupOptions, frameOpt
 	end
 
 	frame.healthBar:SetShown(not setupOptions.hideHealthbar);
-
-	frame.castBar.BorderShield:SetSize(setupOptions.castBarShieldWidth, setupOptions.castBarShieldHeight);
-
-	frame.castBar.BorderShield:ClearAllPoints();
-	frame.castBar.BorderShield:SetPoint("CENTER", frame.castBar, "LEFT", 0, 0);
-
-	frame.castBar.Icon:SetSize(setupOptions.castIconWidth, setupOptions.castIconHeight);
-	frame.castBar.Icon:ClearAllPoints();
-	frame.castBar.Icon:SetPoint("CENTER", frame.castBar, "LEFT", 0, 0);
-
 	frame.healthBar:SetHeight(setupOptions.healthBarHeight);
 
 	frame.selectionHighlight:SetParent(frame.healthBar);
-	frame.aggroHighlight:SetParent(frame.healthBar);
-
-	frame.myHealPrediction = frame.healthBar.myHealPrediction;
-	frame.otherHealPrediction = frame.healthBar.otherHealPrediction;
-	frame.totalAbsorb = frame.healthBar.totalAbsorb;
-	frame.totalAbsorbOverlay = frame.healthBar.totalAbsorbOverlay;
-	frame.overAbsorbGlow = frame.healthBar.overAbsorbGlow;
-	frame.myHealAbsorb = frame.healthBar.myHealAbsorb;
-	frame.myHealAbsorbLeftShadow = frame.healthBar.myHealAbsorbLeftShadow;
-	frame.myHealAbsorbRightShadow = frame.healthBar.myHealAbsorbRightShadow;
-	frame.overHealAbsorbGlow = frame.healthBar.overHealAbsorbGlow;
-	
-	frame.myHealPrediction:ClearAllPoints();
-	frame.myHealPrediction:SetVertexColor(0.0, 0.659, 0.608);
-
-	frame.myHealAbsorb:ClearAllPoints();
-	frame.myHealAbsorb:SetTexture("Interface\\RaidFrame\\Absorb-Fill", true, true);
-
-	frame.myHealAbsorbLeftShadow:ClearAllPoints();
-	frame.myHealAbsorbRightShadow:ClearAllPoints();
-
-	frame.otherHealPrediction:ClearAllPoints();
-	frame.otherHealPrediction:SetVertexColor(0.0, 0.659, 0.608);
-
-	frame.totalAbsorb:ClearAllPoints();
-	frame.totalAbsorb:SetTexture("Interface\\RaidFrame\\Shield-Fill");
-	frame.totalAbsorb.overlay = frame.totalAbsorbOverlay;
-
-	frame.totalAbsorbOverlay:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true);	--Tile both vertically and horizontally
-	frame.totalAbsorbOverlay:SetAllPoints(frame.totalAbsorb);
-	frame.totalAbsorbOverlay.tileSize = 20;
-
-	frame.overAbsorbGlow:ClearAllPoints();
-	frame.overAbsorbGlow:SetTexture("Interface\\RaidFrame\\Shield-Overshield");
-	frame.overAbsorbGlow:SetBlendMode("ADD");
-	frame.overAbsorbGlow:SetPoint("BOTTOMLEFT", frame.healthBar, "BOTTOMRIGHT", -4, -1);
-	frame.overAbsorbGlow:SetPoint("TOPLEFT", frame.healthBar, "TOPRIGHT", -4, 1);
-	frame.overAbsorbGlow:SetWidth(8);
-
-	frame.overHealAbsorbGlow:ClearAllPoints();
-	frame.overHealAbsorbGlow:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb");
-	frame.overHealAbsorbGlow:SetBlendMode("ADD");
-	frame.overHealAbsorbGlow:SetPoint("BOTTOMRIGHT", frame.healthBar, "BOTTOMLEFT", 2, -1);
-	frame.overHealAbsorbGlow:SetPoint("TOPRIGHT", frame.healthBar, "TOPLEFT", 2, 1);
-	frame.overHealAbsorbGlow:SetWidth(8);
-
-	frame.classificationIndicator = frame.ClassificationFrame.classificationIndicator;
-
-	frame.LoseAggroAnim:Stop();
 
 	CompactUnitFrame_SetOptionTable(frame, frameOptions)
 end

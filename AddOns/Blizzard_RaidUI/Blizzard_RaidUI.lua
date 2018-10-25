@@ -1085,10 +1085,10 @@ function RaidPulloutButton_UpdateSwapFrames(self, unit)
 	end
 	securecall("UnitFrameHealthBar_Initialize", unit, self.healthbar, nil, true);
 	securecall("UnitFrameManaBar_Initialize", unit, self.manabar, nil);
-	securecall("UnitFrameThreatIndicator_Initialize", unit, self);
+	--securecall("UnitFrameThreatIndicator_Initialize", unit, self);
 	securecall("UnitFrameHealthBar_Update", self.healthbar, unit);
 	securecall("UnitFrameManaBar_Update", self.manabar, unit);
-	securecall("UnitFrame_UpdateThreatIndicator", self.threatIndicator, nil, unit);
+	--securecall("UnitFrame_UpdateThreatIndicator", self.threatIndicator, nil, unit);
 end
 
 function RaidPulloutButton_UpdateDead(button, isDead, class)

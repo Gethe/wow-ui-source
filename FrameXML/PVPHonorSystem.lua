@@ -553,7 +553,7 @@ function HonorExhaustionToolTipText(self)
 		tooltipText = tooltipText..append;
 	end
 
-	if ( SHOW_NEWBIE_TIPS ~= "1" ) then
+	if ( GetCVar("showNewbieTips") ~= "1" ) then
 		GameTooltip:SetText(tooltipText);
 	else
 		if ( GameTooltip.canAddRestStateLine ) then
