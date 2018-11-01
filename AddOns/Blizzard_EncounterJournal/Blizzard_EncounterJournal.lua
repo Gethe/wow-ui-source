@@ -139,6 +139,7 @@ function EncounterJournal_OnLoad(self)
 	self:RegisterEvent("EJ_LOOT_DATA_RECIEVED");
 	self:RegisterEvent("EJ_DIFFICULTY_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+	self:RegisterEvent("PORTRAITS_UPDATED");
 	self:RegisterEvent("SEARCH_DB_LOADED");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 
@@ -416,6 +417,8 @@ function EncounterJournal_OnEvent(self, event, ...)
 		if not unit then
 			EncounterJournal_UpdatePortraits();
 		end
+	elseif event == "PORTRAITS_UPDATED" then
+		EncounterJournal_UpdatePortraits();
 	elseif event == "SEARCH_DB_LOADED" then
 		EncounterJournal_RestartSearchTracking();
 	elseif event == "PLAYER_LEVEL_UP" and EncounterJournal:IsShown() then

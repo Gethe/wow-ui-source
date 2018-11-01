@@ -365,47 +365,14 @@ function WorldQuestPinMixin:RefreshVisuals()
 	local bountyQuestID = self.dataProvider:GetBountyQuestID();
 	self.BountyRing:SetShown(bountyQuestID and IsQuestCriteriaForBounty(self.questID, bountyQuestID));
 
-	if self.dataProvider:IsMarkingActiveQuests() and C_QuestLog.IsOnQuest(self.questID) then
-		self.Texture:SetAtlas("worldquest-questmarker-questionmark");
-		self.Texture:SetSize(20, 30);
-	elseif self.worldQuestType == LE_QUEST_TAG_TYPE_PVP then
-		local _, width, height = GetAtlasInfo("worldquest-icon-pvp-ffa");
-		self.Texture:SetAtlas("worldquest-icon-pvp-ffa");
-		self.Texture:SetSize(width * 2, height * 2);
-	elseif self.worldQuestType == LE_QUEST_TAG_TYPE_PET_BATTLE then
-		self.Texture:SetAtlas("worldquest-icon-petbattle");
+	local inProgress = self.dataProvider:IsMarkingActiveQuests() and C_QuestLog.IsOnQuest(self.questID);
+	local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskillLineID);
+	self.Texture:SetAtlas(atlas);
+	if self.worldQuestType == LE_QUEST_TAG_TYPE_PET_BATTLE then
 		self.Texture:SetSize(26, 22);
-	elseif self.worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION and WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID] then
-		local _, width, height = GetAtlasInfo(WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID]);
-		self.Texture:SetAtlas(WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID]);
-		self.Texture:SetSize(width * 2, height * 2);
-	elseif self.worldQuestType == LE_QUEST_TAG_TYPE_DUNGEON then
-		local _, width, height = GetAtlasInfo("worldquest-icon-dungeon");
-		self.Texture:SetAtlas("worldquest-icon-dungeon");
-		self.Texture:SetSize(width * 2, height * 2);
-	elseif self.worldQuestType == LE_QUEST_TAG_TYPE_RAID then
-		local _, width, height = GetAtlasInfo("worldquest-icon-raid");
-		self.Texture:SetAtlas("worldquest-icon-raid");
-		self.Texture:SetSize(width * 2, height * 2);
-	elseif self.worldQuestType == LE_QUEST_TAG_TYPE_INVASION then
-		local _, width, height = GetAtlasInfo("worldquest-icon-burninglegion");
-		self.Texture:SetAtlas("worldquest-icon-burninglegion");
-		self.Texture:SetSize(width * 2, height * 2);
-	elseif self.worldQuestType == LE_QUEST_TAG_TYPE_FACTION_ASSAULT then
-		local factionTag = UnitFactionGroup("player");
-		if factionTag == "Alliance" then
-			local _, width, height = GetAtlasInfo("worldquest-icon-horde");
-			self.Texture:SetAtlas("worldquest-icon-horde");
-			self.Texture:SetSize(width * 2, height * 2);
-		else -- "Horde" or "Neutral"
-			local _, width, height = GetAtlasInfo("worldquest-icon-alliance");
-			self.Texture:SetAtlas("worldquest-icon-alliance");
-			self.Texture:SetSize(width * 2, height * 2);
-		end
 	else
-		self.Texture:SetAtlas("worldquest-questmarker-questbang");
-		self.Texture:SetSize(12, 30);
-	end	
+		self.Texture:SetSize(width * 2, height * 2);
+	end
 end
 
 function WorldQuestPinMixin:OnMouseEnter()

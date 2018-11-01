@@ -280,6 +280,7 @@ function ContainerFrame_OnShow(self)
 		PlaySound(SOUNDKIT.IG_BACKPACK_OPEN);
 	end
  	ContainerFrame_Update(self);
+	UpdateContainerFrameAnchors();
 	
 	-- If there are tokens watched then decide if we should show the bar
 	if ( ManageBackpackTokenFrame ) then
@@ -1032,7 +1033,6 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 
 	-- Add the bag to the baglist
 	frame:Show();
-	UpdateContainerFrameAnchors();
 	frame:Raise();
 	if (ContainerFrame1.isHelpBoxShown and ContainerFrame1.helpBoxFrame) then
 		ContainerFrame1.helpBoxFrame:Raise();

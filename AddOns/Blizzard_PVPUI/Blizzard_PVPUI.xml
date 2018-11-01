@@ -127,20 +127,20 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="NewSeason" inherits="Game42Font" text="NEW_SEASON_YAY">
+				<FontString parentKey="NewSeason" font="Game42Font" text="NEW_SEASON_YAY">
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-50"/>
 					</Anchors>
 					<Color r="0" g="0" b="0"/>
 				</FontString>
-				<FontString parentKey="SeasonDescription" font="Game14Font" justifyH="center" justifyV="center" wordwrap="true">
+				<FontString parentKey="SeasonDescription" font="SystemFont_Med3" justifyH="center" justifyV="center" wordwrap="true">
 					<Size x="300" y="30"/>
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-110"/>
 					</Anchors>
 					<Color r="0.2824" g="0.0157" b="0.0157"/>
 				</FontString>
-				<FontString parentKey="SeasonDescription2" font="Game14Font" justifyH="center" justifyV="center" wordwrap="true">
+				<FontString parentKey="SeasonDescription2" font="SystemFont_Med3" justifyH="center" justifyV="center" wordwrap="true">
 					<Size x="300" y="30"/>
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.SeasonDescription" relativePoint="BOTTOM" x="0" y="-35"/>
@@ -158,6 +158,7 @@
 				<Scripts>
 					<OnClick>
 						self:GetParent():Hide();
+						SetCVar("newPvpSeason", GetCurrentArenaSeason());
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1467,131 +1468,12 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Cooldown parentKey="HonorLevelDisplay" reverse="true" hideCountdownNumbers="true" rotation="180" mixin="PVPUIHonorLevelDisplayMixin">
-								<Size x="128" y="128"/>
-								<Anchors>
-									<Anchor point="TOP" x="0" y="-25"/>
-								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture parentKey="Background">
-											<Size x="95" y="95"/>
-											<Anchors>
-												<Anchor point="CENTER"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="BORDER">
-										<Texture atlas="pvpqueue-sidebar-honorbar-background" useAtlasSize="true">
-											<Anchors>
-												<Anchor point="CENTER" x="0" y="-1"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="ARTWORK">
-										<FontString parentKey="LevelLabel" inherits="GameFontNormal">
-											<Anchors>
-												<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="1"/>
-											</Anchors>
-										</FontString>
-										<Texture parentKey="LevelBadge">
-											<Size x="69" y="69"/>
-											<Anchors>
-												<Anchor point="CENTER"/>
-											</Anchors>
-										</Texture>
-										<Texture parentKey="FactionBadge">
-											<Size x="59" y="69"/>
-											<Anchors>
-												<Anchor point="CENTER"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Frames>
-									<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
-									<Frame parentKey="NextRewardLevel">
-										<Size x="36" y="36"/>
-										<Anchors>
-											<Anchor point="BOTTOM" x="0" y="-1"/>
-										</Anchors>
-										<Layers>
-											<Layer level="BACKGROUND">
-												<Texture parentKey="RewardIcon">
-													<Size x="28" y="28"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-													<Color r="0" g="0" b="0"/>
-												</Texture>
-											</Layer>
-											<Layer level="BACKGROUND" textureSubLevel="1">
-												<Texture parentKey="IconCover">
-													<Size x="36" y="36"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-													<Color r="0" g="0" b="0" a="0.5"/>
-												</Texture>
-												<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-													<Size x="36" y="36"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-													<MaskedTextures>
-														<MaskedTexture childKey="RewardIcon"/>
-														<MaskedTexture childKey="IconCover"/>
-													</MaskedTextures>
-												</MaskTexture>
-											</Layer>
-											<Layer level="BORDER">
-												<Texture parentKey="RingBorder" atlas="pvpqueue-rewardring-black">
-													<Size x="48" y="48"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-											<Layer level="ARTWORK">
-												<FontString parentKey="LevelLabel" inherits="Game10Font_o1">
-													<Anchors>
-														<Anchor point="CENTER" x="1"/>
-													</Anchors>
-													<Color r="0.498" g="0.498" b="0.498"/>
-												</FontString>
-											</Layer>
-										</Layers>
-										<Scripts>
-											<OnEnter>
-												self:GetParent():ShowNextRewardTooltip();
-											</OnEnter>
-											<OnLeave function="GameTooltip_Hide"/>
-										</Scripts>
-									</Frame>
-								</Frames>
-								<SwipeTexture file="Interface\PVPFrame\pvpqueue-sidebar-honorbar-fill"/>
-								<Scripts>
-									<OnLoad method="OnLoad"/>
-									<OnShow method="OnShow"/>
-									<OnHide method="OnHide"/>
-									<OnEvent method="OnEvent"/>
-									<OnMouseUp method="OnMouseUp"/>
-									<OnEnter method="OnEnter"/>
-									<OnLeave function="GameTooltip_Hide"/>
-								</Scripts>
-							</Cooldown>
-							<Frame parentKey="CasualPanel" hidden="true">
-								<Anchors>
-									<Anchor point="LEFT"/>
-									<Anchor point="RIGHT"/>
-									<Anchor point="TOP" relativeKey="$parent.HonorLevelDisplay" relativePoint="BOTTOM"/>
-									<Anchor point="BOTTOM"/>
-								</Anchors>
+							<Frame parentKey="CasualPanel" setAllPoints="true" hidden="true">
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString parentKey="HKLabel" inherits="GameFontNormal" text="HONORABLE_KILLS">
 											<Anchors>
-												<Anchor point="TOP" x="0" y="-31"/>
+												<Anchor point="TOP" x="0" y="-184"/>
 											</Anchors>
 										</FontString>
 										<FontString parentKey="HKValue" inherits="GameFontNormalHuge2">
@@ -1602,18 +1484,184 @@
 										</FontString>
 									</Layer>
 								</Layers>
-							</Frame>
-							<Frame parentKey="RatedPanel" hidden="true">
-								<Anchors>
-									<Anchor point="LEFT"/>
-									<Anchor point="RIGHT"/>
-									<Anchor point="TOP" relativeKey="$parent.HonorLevelDisplay" relativePoint="BOTTOM"/>
-									<Anchor point="BOTTOM"/>
-								</Anchors>
 								<Frames>
+									<Cooldown parentKey="HonorLevelDisplay" reverse="true" hideCountdownNumbers="true" rotation="180" mixin="PVPUIHonorLevelDisplayMixin">
+										<Size x="128" y="128"/>
+										<Anchors>
+											<Anchor point="TOP" x="0" y="-25"/>
+										</Anchors>
+										<Layers>
+											<Layer level="BACKGROUND">
+												<Texture parentKey="Background">
+													<Size x="95" y="95"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="BORDER">
+												<Texture atlas="pvpqueue-sidebar-honorbar-background" useAtlasSize="true">
+													<Anchors>
+														<Anchor point="CENTER" x="0" y="-1"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="ARTWORK">
+												<FontString parentKey="LevelLabel" inherits="GameFontNormal">
+													<Anchors>
+														<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="1"/>
+													</Anchors>
+												</FontString>
+												<Texture parentKey="LevelBadge">
+													<Size x="69" y="69"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+												<Texture parentKey="FactionBadge">
+													<Size x="59" y="69"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+										</Layers>
+										<Frames>
+											<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
+											<Frame parentKey="NextRewardLevel">
+												<Size x="36" y="36"/>
+												<Anchors>
+													<Anchor point="BOTTOM" x="0" y="-1"/>
+												</Anchors>
+												<Layers>
+													<Layer level="BACKGROUND">
+														<Texture parentKey="RewardIcon">
+															<Size x="28" y="28"/>
+															<Anchors>
+																<Anchor point="CENTER"/>
+															</Anchors>
+															<Color r="0" g="0" b="0"/>
+														</Texture>
+													</Layer>
+													<Layer level="BACKGROUND" textureSubLevel="1">
+														<Texture parentKey="IconCover">
+															<Size x="36" y="36"/>
+															<Anchors>
+																<Anchor point="CENTER"/>
+															</Anchors>
+															<Color r="0" g="0" b="0" a="0.5"/>
+														</Texture>
+														<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+															<Size x="36" y="36"/>
+															<Anchors>
+																<Anchor point="CENTER"/>
+															</Anchors>
+															<MaskedTextures>
+																<MaskedTexture childKey="RewardIcon"/>
+																<MaskedTexture childKey="IconCover"/>
+															</MaskedTextures>
+														</MaskTexture>
+													</Layer>
+													<Layer level="BORDER">
+														<Texture parentKey="RingBorder" atlas="pvpqueue-rewardring-black">
+															<Size x="48" y="48"/>
+															<Anchors>
+																<Anchor point="CENTER"/>
+															</Anchors>
+														</Texture>
+													</Layer>
+													<Layer level="ARTWORK">
+														<FontString parentKey="LevelLabel" inherits="Game10Font_o1">
+															<Anchors>
+																<Anchor point="CENTER" x="1"/>
+															</Anchors>
+															<Color r="0.498" g="0.498" b="0.498"/>
+														</FontString>
+													</Layer>
+												</Layers>
+												<Scripts>
+													<OnEnter>
+														self:GetParent():ShowNextRewardTooltip();
+													</OnEnter>
+													<OnLeave function="GameTooltip_Hide"/>
+												</Scripts>
+											</Frame>
+										</Frames>
+										<SwipeTexture file="Interface\PVPFrame\pvpqueue-sidebar-honorbar-fill"/>
+										<Scripts>
+											<OnLoad method="OnLoad"/>
+											<OnShow method="OnShow"/>
+											<OnHide method="OnHide"/>
+											<OnEvent method="OnEvent"/>
+											<OnMouseUp method="OnMouseUp"/>
+											<OnEnter method="OnEnter"/>
+											<OnLeave function="GameTooltip_Hide"/>
+										</Scripts>
+									</Cooldown>
+								</Frames>
+							</Frame>
+							<Frame parentKey="RatedPanel" setAllPoints="true" hidden="true">
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Label" inherits="GameFontNormal" text="WEEKLY_CHEST">
+											<Anchors>
+												<Anchor point="TOP" relativePoint="TOP" x="0" y="-12"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Frame parentKey="WeeklyChest" mixin="PVPWeeklyChestMixin">
+										<Size x="84" y="70"/>
+										<Anchors>
+											<Anchor point="TOP" y="-48"/>
+										</Anchors>
+										<Layers>
+											<Layer level="BACKGROUND">
+												<Texture parentKey="FlairTexture" atlas="pvpqueue-chest-background">
+													<Size x="187" y="152"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+												<Texture parentKey="SpinTextureBottom" inherits="store-itemicon-border-glowspin" alpha="0.2" alphaMode="ADD">
+													<Size x="202" y="205"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="BORDER">
+												<Texture parentKey="SpinTextureTop" inherits="store-itemicon-border-glowspin" alpha="0.7" alphaMode="ADD">
+													<Size x="202" y="205"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="OVERLAY">
+												<Texture parentKey="ChestTexture">
+													<Size x="187" y="152"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnShow method="OnShow"/>
+											<OnEnter method="OnEnter"/>
+											<OnLeave function="GameTooltip_Hide"/>
+										</Scripts>
+										<Animations>
+											<AnimationGroup parentKey="SpinAnim" looping="REPEAT">
+												<Rotation childKey="SpinTextureTop" order="1" duration="60" degrees="-360"/>
+											</AnimationGroup>
+										</Animations>
+									</Frame>
 									<Frame parentKey="Tier" inherits="PVPRatedTierTemplate">
 										<Anchors>
-											<Anchor point="TOP" x="0" y="-50"/>
+											<Anchor point="TOP" x="0" y="-203"/>
 										</Anchors>
 										<Layers>
 											<Layer level="ARTWORK">
@@ -1714,7 +1762,7 @@
 												<Anchor point="CENTER"/>
 											</Anchors>
 										</Texture>
-										<FontString inherits="Game14Font" text="NEW_PVP_SEASON_REWARD_PREVIEW">
+										<FontString inherits="SystemFont_Med3" text="NEW_PVP_SEASON_REWARD_PREVIEW">
 											<Size x="300" y="0"/>
 											<Anchors>
 												<Anchor point="BOTTOM" relativePoint="TOP" y="15"/>
@@ -1744,7 +1792,6 @@
 						</Frames>
 						<Scripts>
 							<OnShow method="OnShow"/>
-							<OnHide method="OnHide"/>
 						</Scripts>
 					</Frame>
 				</Frames>

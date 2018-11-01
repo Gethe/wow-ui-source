@@ -87,6 +87,22 @@ local AzeriteEmpoweredItem =
 			},
 		},
 		{
+			Name = "GetPowerText",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "azeriteEmpoweredItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "powerID", Type = "number", Nilable = false },
+				{ Name = "upgraded", Type = "bool", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "powerText", Type = "AzeriteEmpoweredItemPowerText", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSpecsForPower",
 			Type = "Function",
 
@@ -98,21 +114,6 @@ local AzeriteEmpoweredItem =
 			Returns =
 			{
 				{ Name = "specInfo", Type = "table", InnerType = "AzeriteSpecInfo", Nilable = false },
-			},
-		},
-		{
-			Name = "GetUpgradedAzeritePowerInfo",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
-				{ Name = "powerID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "upgradePowerInfo", Type = "UpgradedAzeritePowerInfo", Nilable = false },
 			},
 		},
 		{
@@ -295,6 +296,15 @@ local AzeriteEmpoweredItem =
 			},
 		},
 		{
+			Name = "AzeriteEmpoweredItemPowerText",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "AzeriteEmpoweredItemTierInfo",
 			Type = "Structure",
 			Fields =
@@ -310,15 +320,6 @@ local AzeriteEmpoweredItem =
 			{
 				{ Name = "classID", Type = "number", Nilable = false },
 				{ Name = "specID", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "UpgradedAzeritePowerInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
 			},
 		},
 	},

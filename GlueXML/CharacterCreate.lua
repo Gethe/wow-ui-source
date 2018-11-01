@@ -166,7 +166,7 @@ CHARCREATE_CLASS_INFO = {
 		spells = {
 			{name = CLASS_DRUID_SPELLNAME1, desc = CLASS_DRUID_SPELLDESC1, texture = [[Interface\Icons\Ability_Racial_BearForm]]}, -- Bear Form
 			{name = CLASS_DRUID_SPELLNAME2, desc = CLASS_DRUID_SPELLDESC2, texture = [[Interface\Icons\Ability_Druid_CatForm]]}, -- Cat Form
-			{name = CLASS_DRUID_SPELLNAME3, desc = CLASS_DRUID_SPELLDESC3, texture = [[Interface\Icons\Spell_Nature_HealingTouch]]}, -- Healing Touch
+			{name = CLASS_DRUID_SPELLNAME3, desc = CLASS_DRUID_SPELLDESC3, texture = [[Interface\Icons\SPELL_NATURE_RESISTNATURE]]}, -- Regrowth
 		},
 	},
 	DEMONHUNTER = {

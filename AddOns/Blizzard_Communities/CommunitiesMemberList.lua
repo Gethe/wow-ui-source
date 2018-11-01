@@ -362,7 +362,7 @@ function CommunitiesMemberListMixin:UpdateWatermark()
 		if clubInfo.clubType == Enum.ClubType.Guild then
 			SetLargeGuildTabardTextures("player", self.WatermarkFrame.Watermark, nil, nil);
 			self.WatermarkFrame.Watermark:SetVertexColor(1.0, 1.0, 1.0);
-			self.WatermarkFrame.Watermark:SetAlpha(0.06);
+			self.WatermarkFrame.Watermark:SetAlpha(0.15);
 		else
 			C_Club.SetAvatarTexture(self.WatermarkFrame.Watermark, clubInfo.avatarId, clubInfo.clubType);
 			self.WatermarkFrame.Watermark:SetTexCoord(0, 1, 0, 1);

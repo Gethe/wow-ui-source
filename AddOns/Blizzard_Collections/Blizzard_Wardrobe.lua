@@ -2105,7 +2105,7 @@ function WardrobeSetsTransmogModelMixin:RefreshTooltip()
 	if ( waitingOnQuality ) then
 		GameTooltip:SetText(RETRIEVING_ITEM_INFO, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 	else
-		local setQuality = Round(totalQuality / numTotalSlots);
+		local setQuality = (numTotalSlots > 0 and totalQuality > 0) and Round(totalQuality / numTotalSlots) or LE_ITEM_QUALITY_COMMON;
 		local color = ITEM_QUALITY_COLORS[setQuality];
 		local setInfo = C_TransmogSets.GetSetInfo(self.setID);
 		GameTooltip:SetText(setInfo.name, color.r, color.g, color.b);
@@ -2895,6 +2895,12 @@ function WardrobeSetsDataProviderMixin:SortSets(sets, reverseUIOrder)
 		if ( set1.favorite ~= set2.favorite ) then
 			return set1.favorite;
 		end
+		if ( set1.expansionID ~= set2.expansionID ) then
+			return set1.expansionID > set2.expansionID;
+		end
+		if ( set1.patchID ~= set2.patchID ) then
+			return set1.patchID > set2.patchID;
+		end
 		if ( set1.uiOrder ~= set2.uiOrder ) then
 			if ( reverseUIOrder ) then
 				return set1.uiOrder < set2.uiOrder;
@@ -3262,6 +3268,7 @@ function WardrobeSetsCollectionMixin:DisplaySet(setID)
 		self.DetailsFrame.LongName:Hide();
 	end
 	self.DetailsFrame.Label:SetText(setInfo.label);
+	self.DetailsFrame.LimitedSet:SetShown(setInfo.limitedTimeSet);
 
 	local newSourceIDs = C_TransmogSets.GetSetNewSources(setID);
 

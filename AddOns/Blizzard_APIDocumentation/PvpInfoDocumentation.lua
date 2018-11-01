@@ -266,6 +266,27 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetWarModeRewardBonus",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "rewardBonus", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetWeeklyChestInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "rewardAchieved", Type = "bool", Nilable = false },
+				{ Name = "lastWeekRewardAchieved", Type = "bool", Nilable = false },
+				{ Name = "lastWeekRewardClaimed", Type = "bool", Nilable = false },
+				{ Name = "pvpTierMaxFromWins", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "HasArenaSkirmishWinToday",
 			Type = "Function",
 

@@ -186,29 +186,29 @@ function PTR_IssueReporter.Init()
     function PTR_IssueReporter.SendResults(reportType, ...)
         --reset idle time
         local packageString = PTR_FeedbackDiagnostic:Get()
-        local finalMessage = string.format('%s,%s,%s', PTR_IssueReporter.Data.MESSAGE_KEY, reportType, packageString)
+        local finalMessage = string.format('%s,%s,%s', PTR_IssueReporter.Data.MESSAGE_KEY or "", reportType or "", packageString or "")
         if (reportType == PTR_IssueReporter.Data.BOSS_KILL) then
             local choice, bossName, bossID, bossDifficulty, comments = ...
             bossName = bossName:gsub(",", " ")
             bossDifficulty = bossDifficulty:gsub(",", " ")
             comments = comments:gsub(","," ")
-            finalMessage = string.format('%s,%s,%s,%s,%s,%s', finalMessage, choice, bossName, bossID, bossDifficulty, comments)
+            finalMessage = string.format('%s,%s,%s,%s,%s,%s', finalMessage or "", choice or "", bossName or "", bossID or "", bossDifficulty or "", comments or "")
         elseif (reportType == PTR_IssueReporter.Data.QUEST_TURNED_IN) then
             local choice, questID, comments, history = ...
             comments = comments:gsub(","," ")
-            finalMessage = string.format('%s,%s,%s,%s,%s', finalMessage, choice, questID, comments, history)
+            finalMessage = string.format('%s,%s,%s,%s,%s', finalMessage or "", choice or "", questID or "", comments or "", history or "")
         elseif (PTR_IssueReporter.TriggerEvents[reportType]) then
             local choice, instanceID, comments = ...
             comments = comments:gsub(","," ")
             if (reportType == PTR_IssueReporter.Data.SELF_REPORTED_CONFUSED) or (reportType == PTR_IssueReporter.Data.SELF_REPORTED_BUG) then
-                finalMessage = string.format('%s,%s', finalMessage, comments)
+                finalMessage = string.format('%s,%s', finalMessage or "", comments or "")
             else
-                finalMessage = string.format('%s,%s,%s,%s', finalMessage, choice, instanceID, comments)
+                finalMessage = string.format('%s,%s,%s,%s', finalMessage or "", choice or "", instanceID or "", comments or "")
             end
         else
             local comments = ...
             comments = comments:gsub(","," ")
-            finalMessage = string.format('%s,%s', finalMessage, comments)
+            finalMessage = string.format('%s,%s', finalMessage or "", comments or "")
         end
 
         if (GMSubmitBug) then
@@ -467,10 +467,10 @@ function PTR_IssueReporter.Init()
         return true
     end
     
-    function PTR_IssueReporter.AddUnitIDToTracking(unitID)
+    function PTR_IssueReporter.AddUnitIDToTracking(unitID, encounterName)
         if UnitExists(unitID) then
             local classid = UnitClassification(unitID)
-            local name = UnitName(unitID)
+            local name = encounterName or UnitName(unitID)
             local _,_,_,_,_,creatureID,guid = strsplit("-", UnitGUID(unitID) or "", 7)
             local instanceName, instanceType, difficultyID, difficultyName, _ = GetInstanceInfo()
             PTR_IssueReporter.AlertFrame.Classification[difficultyName] = PTR_IssueReporter.AlertFrame.Classification[difficultyName] or {}
@@ -481,6 +481,11 @@ function PTR_IssueReporter.Init()
                 end
             end
         end
+    end
+    
+    function PTR_IssueReporter.DoesEncounterHaveID(encounterName)
+        local instanceName, instanceType, difficultyID, difficultyName, _ = GetInstanceInfo()
+        return ((PTR_IssueReporter.AlertFrame.Classification[difficultyName]) and (PTR_IssueReporter.AlertFrame.Classification[difficultyName][encounterName]))   
     end
 
     do
@@ -579,9 +584,15 @@ function PTR_IssueReporter.Init()
             else
                 PTR_IssueReporter.SetupBugButton(bossname)
             end
+        elseif (event == "ENCOUNTER_START") then
+            local eventArgs = {...}
+            PTR_IssueReporter.Data.CurrentEncounter = eventArgs[2]
         elseif (event == "PLAYER_TARGET_CHANGED") then
             PTR_IssueReporter.AddUnitIDToTracking(PTR_IssueReporter.Data.targetToken)
-            PTR_IssueReporter.AddUnitIDToTracking(PTR_IssueReporter.Data.bossToken)-- Checking this here for cases such as the first boss in Hellfire raid where the boss was a door and not something you'd target.           
+            -- Checking this here for cases such as the first boss in Hellfire raid where the Encounter Event Name does not match a creature that exists in the encounter. 
+            if (PTR_IssueReporter.Data.CurrentEncounter) and UnitExists(PTR_IssueReporter.Data.bossToken) and not PTR_IssueReporter.DoesEncounterHaveID(PTR_IssueReporter.Data.CurrentEncounter) then 
+                PTR_IssueReporter.AddUnitIDToTracking(PTR_IssueReporter.Data.bossToken, PTR_IssueReporter.Data.CurrentEncounter)          
+            end
         elseif (event == "PLAYER_FOCUS_CHANGED") then
             PTR_IssueReporter.AddUnitIDToTracking(PTR_IssueReporter.Data.focusToken)
         elseif (event == "PLAYER_REGEN_ENABLED") then
@@ -600,6 +611,7 @@ function PTR_IssueReporter.Init()
     PTR_IssueReporter.AlertFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
     PTR_IssueReporter.AlertFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
     PTR_IssueReporter.AlertFrame:RegisterEvent("PLAYER_FOCUS_CHANGED")
+    PTR_IssueReporter.AlertFrame:RegisterEvent("ENCOUNTER_START")
     PTR_IssueReporter.AlertFrame:RegisterEvent("ENCOUNTER_END")
     PTR_IssueReporter.AlertFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
     PTR_IssueReporter.AlertFrame:RegisterEvent("PLAYER_REGEN_DISABLED")

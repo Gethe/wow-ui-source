@@ -805,7 +805,7 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 			assert(worldQuestType);
 
 			local inProgress = questLogIndex ~= 0;
-			WorldMap_SetupWorldQuestButton(block.TrackedQuest, worldQuestType, rarity, isElite, tradeskillLineIndex, inProgress, isSuperTracked, nil, nil, isTrackedWorldQuest);
+			QuestUtil.SetupWorldQuestButton(block.TrackedQuest, worldQuestType, rarity, isElite, tradeskillLineIndex, inProgress, isSuperTracked, nil, nil, isTrackedWorldQuest);
 
 			block.TrackedQuest:SetScale(.9);
 			block.TrackedQuest:SetPoint("TOPRIGHT", block.currentLine, "TOPLEFT", 18, 0);

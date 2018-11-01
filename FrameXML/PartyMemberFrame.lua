@@ -328,19 +328,19 @@ function PartyMemberFrame_UpdateNotPresentIcon(self)
 		if(status == Enum.SummonStatus.Pending) then
 			self.notPresentIcon.texture:SetAtlas("Raid-Icon-SummonPending");
 			self.notPresentIcon.texture:SetTexCoord(0, 1, 0, 1);
-			self.notPresentIcon.tooltip = nil;
+			self.notPresentIcon.tooltip = INCOMING_SUMMON_TOOLTIP_SUMMON_PENDING;
 			self.notPresentIcon.Border:Hide();
 			self.notPresentIcon:Show();
 		elseif( status == Enum.SummonStatus.Accepted ) then
 			self.notPresentIcon.texture:SetAtlas("Raid-Icon-SummonAccepted");
 			self.notPresentIcon.texture:SetTexCoord(0, 1, 0, 1);
-			self.notPresentIcon.tooltip = nil;
+			self.notPresentIcon.tooltip = INCOMING_SUMMON_TOOLTIP_SUMMON_ACCEPTED;
 			self.notPresentIcon.Border:Hide();
 			self.notPresentIcon:Show();
 		elseif( status == Enum.SummonStatus.Declined ) then
 			self.notPresentIcon.texture:SetAtlas("Raid-Icon-SummonDeclined");
 			self.notPresentIcon.texture:SetTexCoord(0, 1, 0, 1);
-			self.notPresentIcon.tooltip = nil;
+			self.notPresentIcon.tooltip = INCOMING_SUMMON_TOOLTIP_SUMMON_DECLINED;
 			self.notPresentIcon.Border:Hide();
 			self.notPresentIcon:Show();
 		end

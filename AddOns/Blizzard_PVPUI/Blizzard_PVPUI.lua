@@ -198,7 +198,6 @@ local pvpFrames = { "HonorFrame", "ConquestFrame", "LFGListPVPStub" }
 
 function PVPQueueFrame_OnLoad(self)
 	--set up side buttons
-	local englishFaction = UnitFactionGroup("player");
 	SetPortraitToTexture(self.CategoryButton1.Icon, "Interface\\Icons\\achievement_bg_winwsg");
 	self.CategoryButton1.Name:SetText(PVP_TAB_HONOR);
 
@@ -558,19 +557,18 @@ end
 
 function HonorFrame_Queue()
 	local HonorFrame = HonorFrame;
-    local isParty = IsInGroup(LE_PARTY_CATEGORY_HOME);
 	if ( HonorFrame.type == "specific" and HonorFrame.SpecificFrame.selectionID ) then
-		JoinBattlefield(HonorFrame.SpecificFrame.selectionID, isParty);
+		JoinBattlefield(HonorFrame.SpecificFrame.selectionID);
 	elseif ( HonorFrame.type == "bonus" and HonorFrame.BonusFrame.selectedButton ) then
 		if ( HonorFrame.BonusFrame.selectedButton.arenaID ) then
-			JoinSkirmish(HonorFrame.BonusFrame.selectedButton.arenaID, isParty);
+			JoinSkirmish(HonorFrame.BonusFrame.selectedButton.arenaID);
 		elseif (HonorFrame.BonusFrame.selectedButton.queueID) then
 			ClearAllLFGDungeons(LE_LFG_CATEGORY_WORLDPVP);
 			JoinSingleLFG(LE_LFG_CATEGORY_WORLDPVP, HonorFrame.BonusFrame.selectedButton.queueID);
 		elseif (HonorFrame.BonusFrame.selectedButton.isBrawl) then
 			C_PvP.JoinBrawl();
 		else
-			JoinBattlefield(HonorFrame.BonusFrame.selectedButton.bgID, isParty);
+			JoinBattlefield(HonorFrame.BonusFrame.selectedButton.bgID);
 		end
 	end
 end
@@ -774,7 +772,6 @@ local function ShouldShowBrawlHelpBox(brawlActive, isMaxLevel)
 end
 
 function HonorFrameBonusFrame_Update()
-	local englishFaction = UnitFactionGroup("player");
 	local selectButton = nil;
 	local battlegroundEnlistmentActive, brawlEnlistmentActive = C_PvP.IsBattlegroundEnlistmentBonusActive();
 
@@ -1669,12 +1666,12 @@ end
 function PVPConquestBarMixin:GetConquestLevelInfo()
 	local CONQUEST_QUESTLINE_ID = 782;
 	local quests = C_QuestLine.GetQuestLineQuests(CONQUEST_QUESTLINE_ID)
-	local currentQuestID = quests[1];
+	local currentQuestID = 0;
 	for i, questID in ipairs(quests) do
-		if not IsQuestFlaggedCompleted(questID) and not C_QuestLog.IsOnQuest(questID) then
+		currentQuestID = questID;
+		if C_QuestLog.IsOnQuest(questID) and not IsQuestFlaggedCompleted(questID) then
 			break;
 		end
-		currentQuestID = questID;
 	end
 
 	if not HaveQuestData(currentQuestID) then
@@ -1756,6 +1753,70 @@ function NewPvpSeasonMixin:OnShow()
 	self.SeasonDescription2:SetText(BFA_PVP_SEASON_DESCRIPTION_TWO);
 end
 
-function NewPvpSeasonMixin:OnHide()
-	SetCVar("newPvpSeason", GetCurrentArenaSeason());
+PVPWeeklyChestMixin = { };
+
+function PVPWeeklyChestMixin:GetState()
+	local rewardAchieved, lastWeekRewardAchieved, lastWeekRewardClaimed, pvpTierMaxFromWins = C_PvP.GetWeeklyChestInfo();
+	if lastWeekRewardAchieved and not lastWeekRewardClaimed then
+		return "collect";
+	elseif rewardAchieved then
+		return "complete";
+	end
+	return "incomplete";
+end
+
+function PVPWeeklyChestMixin:OnShow()
+	local state = self:GetState();
+	local atlas;
+	if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0]) then
+		atlas = "pvpqueue-chest-horde-"..state;
+	else
+		atlas = "pvpqueue-chest-alliance-"..state;
+	end
+	self.ChestTexture:SetAtlas(atlas);
+
+	if state == "collect" then
+		self.SpinTextureBottom:Show();
+		self.SpinTextureTop:Show();
+		self.SpinAnim:Play();
+	else
+		self.SpinTextureBottom:Hide();
+		self.SpinTextureTop:Hide();
+		self.SpinAnim:Stop();
+	end
+end
+
+function PVPWeeklyChestMixin:OnEnter()
+	local state = self:GetState();
+	local title, description, showItemLevel;
+	if state == "incomplete" then
+		title = WEEKLY_CHEST;
+		description = WEEKY_CHEST_TOOLTIP_INCOMPLETE;
+		showItemLevel = true;
+	elseif state == "complete" then
+		title = WEEKLY_CHEST_EARNED;
+		description = WEEKY_CHEST_TOOLTIP_COMPLETE;
+		showItemLevel = true;
+	elseif state == "collect" then
+		title = WEEKLY_CHEST;
+		description = WEEKY_CHEST_TOOLTIP_COLLECT;
+		showItemLevel = false;
+	end
+
+	if showItemLevel then
+		local rewardAchieved, lastWeekRewardAchieved, lastWeekRewardClaimed, pvpTierMaxFromWins = C_PvP.GetWeeklyChestInfo();
+		local activityItemLevel, weeklyItemLevel = C_PvP.GetRewardItemLevelsByTierEnum(pvpTierMaxFromWins);
+		description = description:format(weeklyItemLevel);
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	local WORD_WRAP = true;
+	GameTooltip_SetTitle(GameTooltip, title);
+	GameTooltip_AddColoredLine(GameTooltip, description, NORMAL_FONT_COLOR, WORD_WRAP);
+	if state == "incomplete" then
+		local current, max = ConquestFrame.ConquestBar:GetConquestLevelInfo();
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddColoredLine(GameTooltip, WEEKLY_CHEST_REQUIREMENTS:format(current, max), HIGHLIGHT_FONT_COLOR, WORD_WRAP);	
+	end
+	GameTooltip:Show();
 end

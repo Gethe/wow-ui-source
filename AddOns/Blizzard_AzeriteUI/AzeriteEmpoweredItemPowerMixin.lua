@@ -415,8 +415,6 @@ end
 
 function AzeriteEmpoweredItemPowerMixin:SetFinalPowerTooltipDescriptions(tooltip)
 	local empoweredItemLocation = self.azeriteItemDataSource:GetItemLocation();
-	local titleOffset = 10; 
-	local descriptionOffset = 12; 
 
 	local finalPowers = nil;
 	if(self.owningTierFrame:IsFinalTier()) then
@@ -425,10 +423,13 @@ function AzeriteEmpoweredItemPowerMixin:SetFinalPowerTooltipDescriptions(tooltip
 
 	if(finalPowers) then 
 		tooltip:AddLine(" "); 
-		for powerIndex, powerID in ipairs(finalPowers) do 
-			local powerInfo = C_AzeriteEmpoweredItem.GetUpgradedAzeritePowerInfo(empoweredItemLocation, powerID);
-			GameTooltip_AddColoredLine(tooltip,DASH_WITH_TEXT:format(powerInfo.name), HIGHLIGHT_FONT_COLOR, true, titleOffset);
-			GameTooltip_AddNormalLine(tooltip, powerInfo.description, true, descriptionOffset);
+		for powerIndex, powerID in ipairs(finalPowers) do
+			local WRAP = true;
+			local UPGRADED = true;
+			local powerInfoUpgraded = C_AzeriteEmpoweredItem.GetPowerText(empoweredItemLocation, powerID, UPGRADED);
+			GameTooltip_AddColoredLine(tooltip,DASH_WITH_TEXT:format(powerInfoUpgraded.name), HIGHLIGHT_FONT_COLOR, WRAP);
+			local powerInfoBase = C_AzeriteEmpoweredItem.GetPowerText(empoweredItemLocation, powerID, not UPGRADED);
+			GameTooltip_AddNormalLine(tooltip, GetHighlightedNumberDifferenceString(powerInfoBase.description, powerInfoUpgraded.description), WRAP, TOOLTIP_INDENT_OFFSET);
 		end
 	end
 end

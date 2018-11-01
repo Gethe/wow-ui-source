@@ -174,7 +174,7 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 		if ( xp > 0 ) then
 			GameTooltip_AddColoredLine(tooltip, BONUS_OBJECTIVE_EXPERIENCE_FORMAT:format(xp), HIGHLIGHT_FONT_COLOR);
 			if (C_PvP.IsWarModeDesired() and C_QuestLog.QuestHasWarModeBonus(questID)) then
-				tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE_XP);
+				tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE_XP_FORMAT:format(C_PvP.GetWarModeRewardBonus()));
 			end
 			hasAnySingleLineRewards = true;
 		end
@@ -201,7 +201,7 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 		if ( money > 0 ) then
 			SetTooltipMoney(tooltip, money, nil);
 			if (C_PvP.IsWarModeDesired() and QuestUtils_IsQuestWorldQuest(questID) and C_QuestLog.QuestHasWarModeBonus(questID)) then
-				tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE);
+				tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE_FORMAT:format(C_PvP.GetWarModeRewardBonus()));
 			end
 			hasAnySingleLineRewards = true;
 		end

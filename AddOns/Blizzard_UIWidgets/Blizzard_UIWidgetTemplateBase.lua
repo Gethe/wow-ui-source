@@ -18,9 +18,9 @@ function UIWidgetTemplateTooltipFrameMixin:SetTooltipOwner()
 end
 
 function UIWidgetTemplateTooltipFrameMixin:OnEnter()
-	self:SetTooltipOwner();
-
 	if self.tooltip and self.tooltip ~= "" then
+		self:SetTooltipOwner();
+
 		if self.tooltipContainsHyperLink then
 			-- prestring is thrown out because calling SetHyperlink clears the tooltip
 			GameTooltip:SetHyperlink(self.hyperLinkString);
@@ -160,10 +160,21 @@ function UIWidgetBaseSpellTemplateMixin:Setup(spellInfo, enabledState, width, ic
 
 	self.Text:SetWidth(textWidth);
 	SetTextColorForEnabledState(self.Text, enabledState);
+	self.spellID = spellInfo.spellID;
 	self:SetTooltip(spellInfo.tooltip);
 
 	self:SetWidth(iconWidth + textWidth);
 	self:SetHeight(self.Icon:GetHeight());
+end
+
+function UIWidgetBaseSpellTemplateMixin:OnEnter()
+	if not self.tooltip or self.tooltip == "" then
+		self:SetTooltipOwner();
+		GameTooltip:SetSpellByID(self.spellID);
+		GameTooltip:Show();
+	else
+		UIWidgetTemplateTooltipFrameMixin.OnEnter(self);
+	end
 end
 
 function UIWidgetBaseSpellTemplateMixin:SetFontColor(color)

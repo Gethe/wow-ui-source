@@ -382,7 +382,7 @@ function ChallengesFrameWeeklyInfoMixin:SetUp(hasWeeklyRun, bestData)
 				frame = CreateFrame("Frame", nil, self.Child, "ChallengesKeystoneFrameAffixTemplate");
 				frame:SetPoint("LEFT", self.Child.Affixes[i-1], "RIGHT", 10, 0);
 			end
-			frame:SetUp(affix);
+			frame:SetUp(affix.id);
 		end
 		self:Show();
 	end

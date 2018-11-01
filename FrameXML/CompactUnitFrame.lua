@@ -969,19 +969,19 @@ function CompactUnitFrame_UpdateCenterStatusIcon(frame)
 				frame.centerStatusIcon.texture:SetAtlas("Raid-Icon-SummonPending");
 				frame.centerStatusIcon.texture:SetTexCoord(0, 1, 0, 1);
 				frame.centerStatusIcon.border:Hide();
-				frame.centerStatusIcon.tooltip = nil;
+				frame.centerStatusIcon.tooltip = INCOMING_SUMMON_TOOLTIP_SUMMON_PENDING;
 				frame.centerStatusIcon:Show();
 			elseif( status == Enum.SummonStatus.Accepted ) then
 				frame.centerStatusIcon.texture:SetAtlas("Raid-Icon-SummonAccepted");
 				frame.centerStatusIcon.texture:SetTexCoord(0, 1, 0, 1);
 				frame.centerStatusIcon.border:Hide();
-				frame.centerStatusIcon.tooltip = nil;
+				frame.centerStatusIcon.tooltip = INCOMING_SUMMON_TOOLTIP_SUMMON_ACCEPTED;
 				frame.centerStatusIcon:Show();
 			elseif( status == Enum.SummonStatus.Declined ) then
 				frame.centerStatusIcon.texture:SetAtlas("Raid-Icon-SummonDeclined");
 				frame.centerStatusIcon.texture:SetTexCoord(0, 1, 0, 1);
 				frame.centerStatusIcon.border:Hide();
-				frame.centerStatusIcon.tooltip = nil;
+				frame.centerStatusIcon.tooltip = INCOMING_SUMMON_TOOLTIP_SUMMON_DECLINED;
 				frame.centerStatusIcon:Show();
 			end
 		elseif ( frame.optionTable.displayInOtherPhase and frame.inDistance and (not UnitInPhase(frame.unit) or UnitIsWarModePhased(frame.unit)) ) then

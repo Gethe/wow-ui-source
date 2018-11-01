@@ -48,6 +48,132 @@ end
 
 -- Quest Utils API
 
+QuestUtil = {};
+
+function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskillLineIndex)
+	local iconAtlas;
+	local tradeskillLineID = tradeskillLineIndex and select(7, GetProfessionInfo(tradeskillLineIndex));
+	if ( inProgress ) then
+		return "worldquest-questmarker-questionmark", 10, 15;
+	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PVP ) then
+		iconAtlas =  "worldquest-icon-pvp-ffa";
+	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PET_BATTLE ) then
+		iconAtlas =  "worldquest-icon-petbattle";
+	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION and WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID] ) then
+		iconAtlas =  WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID];
+	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_DUNGEON ) then
+		iconAtlas =  "worldquest-icon-dungeon";
+	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_RAID ) then
+		iconAtlas =  "worldquest-icon-raid";
+	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_INVASION ) then
+		iconAtlas =  "worldquest-icon-burninglegion";
+	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_FACTION_ASSAULT ) then
+		local factionTag = UnitFactionGroup("player");
+		if factionTag == "Alliance" then
+			iconAtlas = "worldquest-icon-alliance";
+		else -- "Horde" or "Neutral"
+			iconAtlas = "worldquest-icon-horde";
+		end
+	else
+		return "worldquest-questmarker-questbang", 6, 15;
+	end
+
+	local _, width, height = GetAtlasInfo(iconAtlas);
+	return iconAtlas, width, height;
+end
+
+local function ApplyTextureToPOI(texture, width, height)
+	texture:SetTexCoord(0, 1, 0, 1);
+	texture:ClearAllPoints();
+	texture:SetPoint("CENTER", texture:GetParent());
+	texture:SetSize(width or 32, height or 32);
+end
+
+local function ApplyAtlasTexturesToPOI(button, normal, pushed, highlight, width, height)
+	button:SetSize(20, 20);
+	button:SetNormalAtlas(normal);
+	ApplyTextureToPOI(button:GetNormalTexture(), width, height);
+
+	button:SetPushedAtlas(pushed);
+	ApplyTextureToPOI(button:GetPushedTexture(), width, height);
+
+	button:SetHighlightAtlas(highlight);
+	ApplyTextureToPOI(button:GetHighlightTexture(), width, height);
+
+	if button.SelectedGlow then
+		button.SelectedGlow:SetAtlas(pushed);
+		ApplyTextureToPOI(button.SelectedGlow, width, height);
+	end
+end
+
+local function ApplyStandardTexturesToPOI(button, selected)
+	button:SetSize(20, 20);
+	button:SetNormalTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
+	ApplyTextureToPOI(button:GetNormalTexture());
+	if selected then
+		button:GetNormalTexture():SetTexCoord(0.500, 0.625, 0.375, 0.5);
+	else
+		button:GetNormalTexture():SetTexCoord(0.875, 1, 0.375, 0.5);
+	end
+
+
+	button:SetPushedTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
+	ApplyTextureToPOI(button:GetPushedTexture());
+	if selected then
+		button:GetPushedTexture():SetTexCoord(0.375, 0.500, 0.375, 0.5);
+	else
+		button:GetPushedTexture():SetTexCoord(0.750, 0.875, 0.375, 0.5);
+	end
+
+	button:SetHighlightTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
+	ApplyTextureToPOI(button:GetHighlightTexture());
+	button:GetHighlightTexture():SetTexCoord(0.625, 0.750, 0.875, 1);
+end
+
+function QuestUtil.SetupWorldQuestButton(button, worldQuestType, rarity, isElite, tradeskillLineIndex, inProgress, selected, isCriteria, isSpellTarget, isEffectivelyTracked)
+	button.Glow:SetShown(selected);
+
+	if rarity == LE_WORLD_QUEST_QUALITY_COMMON then
+		ApplyStandardTexturesToPOI(button, selected);
+	elseif rarity == LE_WORLD_QUEST_QUALITY_RARE then
+		ApplyAtlasTexturesToPOI(button, "worldquest-questmarker-rare", "worldquest-questmarker-rare-down", "worldquest-questmarker-rare", 18, 18);
+	elseif rarity == LE_WORLD_QUEST_QUALITY_EPIC then
+		ApplyAtlasTexturesToPOI(button, "worldquest-questmarker-epic", "worldquest-questmarker-epic-down", "worldquest-questmarker-epic", 18, 18);
+	end
+
+	if ( button.SelectedGlow ) then
+		button.SelectedGlow:SetShown(rarity ~= LE_WORLD_QUEST_QUALITY_COMMON and selected);
+	end
+
+	if ( isElite ) then
+		button.Underlay:SetAtlas("worldquest-questmarker-dragon");
+		button.Underlay:Show();
+	else
+		button.Underlay:Hide();
+	end
+
+	local tradeskillLineID = tradeskillLineIndex and select(7, GetProfessionInfo(tradeskillLineIndex));
+	local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskillLineIndex)
+	button.Texture:SetAtlas(atlas);
+	button.Texture:SetSize(width, height);
+
+	if ( button.TimeLowFrame ) then
+		button.TimeLowFrame:Hide();
+	end
+
+	if ( button.CriteriaMatchRing ) then
+		button.CriteriaMatchRing:SetShown(isCriteria);
+	end
+
+	if ( button.TrackedCheck ) then
+		button.TrackedCheck:SetShown(isEffectivelyTracked);
+	end
+
+	if ( button.SpellTargetGlow ) then
+		button.SpellTargetGlow:SetShown(isSpellTarget);
+	end
+end
+
 function QuestUtils_GetQuestTagTextureCoords(tagID, worldQuestType)
 	if IsQuestWorldQuest_Internal(worldQuestType) then
 		return WORLD_QUEST_TYPE_TCOORDS[worldQuestType];
@@ -110,6 +236,15 @@ function QuestUtils_GetQuestName(questID)
 	return questName or "";
 end
 
+local function ShouldShowWarModeBonus(questID, warModeBonus, currencyID, currencyAmount)
+	local warModeBonusPercentage = warModeBonus / 100;
+	if Round(currencyAmount * warModeBonusPercentage) < 1 then
+		return false;
+	end
+
+	return C_PvP.IsWarModeDesired() and QuestUtils_IsQuestWorldQuest(questID) and C_QuestLog.QuestHasWarModeBonus(questID) and not C_CurrencyInfo.GetFactionGrantedByCurrency(currencyID);
+end
+
 --currencyContainerTooltip should be an InternalEmbeddedItemTooltipTemplate
 function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyContainerTooltip)
 	local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
@@ -129,19 +264,24 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 			return currency1.currencyID > currency2.currencyID;
 		end
 	);
+
 	local addedQuestCurrencies = 0;
-	local alreadyUsedCurrencyContainerId = 0; --In the case of multiple currency containers needing to displayed, we only display the first. 
+	local alreadyUsedCurrencyContainerId = 0; --In the case of multiple currency containers needing to displayed, we only display the first.
+	local warModeBonus = C_PvP.GetWarModeRewardBonus();
+
 	for i, currencyInfo in ipairs(currencies) do
 		local isCurrencyContainer = C_CurrencyInfo.IsCurrencyContainer(currencyInfo.currencyID, currencyInfo.numItems);
-		if ( currencyContainerTooltip and isCurrencyContainer and (alreadyUsedCurrencyContainerId == 0) ) then 
+		if ( currencyContainerTooltip and isCurrencyContainer and (alreadyUsedCurrencyContainerId == 0) ) then
 			if ( EmbeddedItemTooltip_SetCurrencyByID(currencyContainerTooltip, currencyInfo.currencyID, currencyInfo.numItems) ) then
-				if (C_PvP.IsWarModeDesired() and QuestUtils_IsQuestWorldQuest(questID) and C_QuestLog.QuestHasWarModeBonus(questID) and not C_CurrencyInfo.GetFactionGrantedByCurrency(currencyInfo.currencyID)) then 
-					currencyContainerTooltip.Tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE);
+				if ShouldShowWarModeBonus(questID, warModeBonus, currencyInfo.currencyID, currencyInfo.numItems) then
+					currencyContainerTooltip.Tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE_FORMAT:format(warModeBonus));
 					currencyContainerTooltip.Tooltip:Show();
 				end
+
 				if ( not tooltip ) then
 					break;
 				end
+
 				addedQuestCurrencies = addedQuestCurrencies + 1;
 				alreadyUsedCurrencyContainerId = currencyInfo.currencyID;
 			end
@@ -157,9 +297,11 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 					local currencyColor = GetColorForCurrencyReward(currencyInfo.currencyID, currencyInfo.numItems);
 					tooltip:AddLine(text, currencyColor:GetRGB());
 				end
-				if (C_PvP.IsWarModeDesired() and QuestUtils_IsQuestWorldQuest(questID) and C_QuestLog.QuestHasWarModeBonus(questID) and not C_CurrencyInfo.GetFactionGrantedByCurrency(currencyInfo.currencyID)) then 
-					tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE);
+
+				if ShouldShowWarModeBonus(questID, warModeBonus, currencyInfo.currencyID, currencyInfo.numItems) then
+					tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE_FORMAT:format(warModeBonus));
 				end
+
 				addedQuestCurrencies = addedQuestCurrencies + 1;
 			end
 		end

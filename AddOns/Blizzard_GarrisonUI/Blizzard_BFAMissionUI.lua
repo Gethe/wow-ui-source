@@ -131,7 +131,6 @@ do
 		self.TitleScroll.ScrollMiddle:SetAtlas(styleData.titleScollMiddle);
 
 		self.TitleScroll:SetPoint("BOTTOM", self.OverlayElements.Topper, "BOTTOM", 0, styleData.TitleScrollOffset);
-		self.TitleText.layoutIndex = 1;
 		self.TitleText:SetParent(self.TitleScroll); -- Reusing existing title text label from base template
 		self.TitleText:ClearAllPoints();
 		self.TitleText:SetPoint("CENTER", self.TitleScroll, "CENTER", 0, 1);

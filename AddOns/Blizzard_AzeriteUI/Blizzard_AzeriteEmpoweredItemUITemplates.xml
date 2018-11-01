@@ -81,7 +81,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="AzeriteEmpoweredItemUITemplate" frameStrata="LOW" mixin="AzeriteEmpoweredItemUIMixin" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" virtual="true">
+	<Frame name="AzeriteEmpoweredItemUITemplate" mixin="AzeriteEmpoweredItemUIMixin" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" virtual="true">
 		<Size x="615" y="628"/>
 		<Frames>
 			<Frame parentKey="BorderFrame" inherits="PortraitFrameTemplate" frameStrata="DIALOG" frameLevel="500" setAllPoints="true">

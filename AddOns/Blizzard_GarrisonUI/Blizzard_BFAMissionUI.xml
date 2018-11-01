@@ -37,7 +37,6 @@
 				</Layers>
 			</Frame>
 			<Frame parentKey="TitleScroll" frameLevel="520" inherits="ResizeLayoutFrame">
-				<Size x="1" y="30.5"/>
 				<Anchors>
 					<Anchor point="BOTTOM" relativeKey="$parent.OverlayElements.Topper" relativePoint="BOTTOM" x="0" y="0"/>
 				</Anchors>
@@ -51,6 +50,9 @@
 					<Layer level="ARTWORK">
 						<Texture parentKey="ScrollLeft">
 							<Size x="39" y="30.5"/>
+							<KeyValues>
+								<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+							</KeyValues>
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
 								<Anchor point="BOTTOMLEFT"/>
@@ -58,12 +60,18 @@
 						</Texture>
 						<Texture parentKey="ScrollRight">
 							<Size x="39" y="30.5"/>
+							<KeyValues>
+								<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+							</KeyValues>
 							<Anchors>
 								<Anchor point="TOPRIGHT"/>
 								<Anchor point="BOTTOMRIGHT"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="ScrollMiddle" hWrapMode="REPEAT">
+							<KeyValues>
+								<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+							</KeyValues>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.ScrollLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
 								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollRight" relativePoint="BOTTOMLEFT" x="0" y="2"/>

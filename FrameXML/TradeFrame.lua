@@ -35,9 +35,9 @@ function TradeFrame_OnEvent(self, event, ...)
 		end
 
 		TradeFrameTradeButton_Enable();
-		TradeFrame_Update();
+		TradeFrame_Update(self);
 	elseif ( event == "GET_ITEM_INFO_RECEIVED" ) then
-		TradeFrame_Update();
+		TradeFrame_Update(self);
 	elseif ( event == "TRADE_CLOSED" ) then
 		HideUIPanel(self);
 		StaticPopup_Hide("TRADE_POTENTIAL_BIND_ENCHANT");
@@ -61,9 +61,9 @@ function TradeFrame_OnEvent(self, event, ...)
 	end
 end
 
-function TradeFrame_Update()
-	SetPortraitTexture(TradeFramePlayerPortrait, "player");
-	SetPortraitTexture(TradeFrameRecipientPortrait, "NPC");
+function TradeFrame_Update(self)
+	PortraitFrameTemplate_SetPortraitToUnit(self, "player");
+	PortraitFrameTemplate_SetPortraitToUnit(self.RecipientOverlay, "NPC");
 	TradeFramePlayerNameText:SetText(GetUnitName("player"));
 	TradeFrameRecipientNameText:SetText(GetUnitName("NPC"));
 	for i=1, MAX_TRADE_ITEMS, 1 do

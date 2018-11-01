@@ -482,7 +482,7 @@ function PetJournal_ShowPetSelect(self)
 	self.selected:Show();
 	PetJournal.SpellSelect.slotIndex = slotIndex;
 	PetJournal.SpellSelect.abilityIndex = abilityIndex;
-	PetJournal.SpellSelect:SetFrameLevel(PetJournalLoadoutBorder:GetFrameLevel()+1);
+	PetJournal.SpellSelect:SetFrameLevel(CollectionsJournal.NineSlice:GetFrameLevel() + 1);
 	PetJournal_HideAbilityTooltip();
 
 	--Setup spell one

@@ -1422,3 +1422,47 @@ end
 function GetClampedCurrentExpansionLevel()
 	return math.min(GetClientDisplayExpansionLevel(), math.max(GetAccountExpansionLevel(), GetExpansionLevel()));
 end
+
+function GetHighlightedNumberDifferenceString(baseString, newString)
+	local outputString = "";
+	-- output string is being built from the new string
+	local newStringIndex = 1;
+	-- find a stretch of digits (including . and , because of different locales) - but has to end in a digit
+	local PATTERN = "([,%.%d]*%d+)";
+	local start1, end1, baseNumberString = string.find(baseString, PATTERN);
+	local start2, end2, newNumberString = string.find(newString, PATTERN);
+	while start1 and start2 do
+		-- add from the new string until the matched spot
+		outputString = outputString .. string.sub(newString, newStringIndex, start2 - 1);
+		newStringIndex = end2 + 1;
+
+		if baseNumberString ~= newNumberString then
+			-- need to remove , and . before comparing numbers because of locales
+			local scrubbedBaseNumberString = gsub(baseNumberString, "[,%.]", "");
+			local scrubbedNewNumberString = gsub(newNumberString, "[,%.]", "");
+			local baseNumber = tonumber(scrubbedBaseNumberString);
+			local newNumber = tonumber(scrubbedNewNumberString);
+			if baseNumber and newNumber then
+				local delta = newNumber - baseNumber;
+				if delta > 0 then
+					newNumberString = GREEN_FONT_COLOR_CODE..string.format(newNumberString)..FONT_COLOR_CODE_CLOSE;
+				elseif delta < 0 then
+					newNumberString = RED_FONT_COLOR_CODE..string.format(newNumberString)..FONT_COLOR_CODE_CLOSE;
+				end
+			end
+		end
+
+		outputString = outputString..newNumberString;
+
+		start1, end1, baseNumberString = string.find(baseString, PATTERN, end1 + 1);
+		start2, end2, newNumberString = string.find(newString, PATTERN, end2 + 1);
+	end
+
+	outputString = outputString .. string.sub(newString, newStringIndex, string.len(newString));
+	return outputString;
+end
+
+function GetUnscaledFrameRect(frame, scale)
+	local frameLeft, frameBottom, frameWidth, frameHeight = frame:GetScaledRect();
+	return frameLeft / scale, frameBottom / scale, frameWidth / scale, frameHeight / scale;
+end

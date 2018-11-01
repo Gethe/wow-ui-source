@@ -12,7 +12,7 @@ local MythicPlusInfo =
 
 			Returns =
 			{
-				{ Name = "affixIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "affixIDs", Type = "table", InnerType = "MythicPlusKeystoneAffix", Nilable = false },
 			},
 		},
 		{
@@ -185,6 +185,15 @@ local MythicPlusInfo =
 
 	Tables =
 	{
+		{
+			Name = "MythicPlusKeystoneAffix",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "seasonID", Type = "number", Nilable = false },
+			},
+		},
 		{
 			Name = "MythicPlusDate",
 			Type = "Structure",
