@@ -361,8 +361,8 @@ function DefaultWidgetLayout(widgetContainer, sortedWidgets)
 		end
 	end
 
-	widgetContainer:SetHeight(widgetsHeight);
-	widgetContainer:SetWidth(maxWidgetWidth);
+	widgetContainer:SetHeight(math.max(widgetsHeight, 1));
+	widgetContainer:SetWidth(math.max(maxWidgetWidth, 1));
 end
 
 -- widgetContainer will be used as the parent for all widgets created within that system. It can be nil if you want, and parenting can be done in widgetInitFunction or widgetLayoutFunction instead 

@@ -16,19 +16,11 @@ end
 
 function Sound_ToggleSound()
 	if ( GetCVar("Sound_EnableAllSound") == "0" ) then
-		ActionStatus_DisplayMessage(SOUND_DISABLED, true);
+		SetCVar("Sound_EnableAllSound", 1);
+		ActionStatus_DisplayMessage(TOGGLE_ALL_SOUND_SOUND_ENABLED, true);
 	else
-		if ( GetCVar("Sound_EnableSFX") == "0" ) then
-			SetCVar("Sound_EnableSFX", 1);
-			SetCVar("Sound_EnableAmbience", 1);
-			SetCVar("Sound_EnableDialog", 1);
-			ActionStatus_DisplayMessage(SOUND_EFFECTS_ENABLED, true);
-		else
-			SetCVar("Sound_EnableSFX", 0);
-			SetCVar("Sound_EnableAmbience", 0);
-			SetCVar("Sound_EnableDialog", 0);
-			ActionStatus_DisplayMessage(SOUND_EFFECTS_DISABLED, true);
-		end
+		SetCVar("Sound_EnableAllSound", 0);
+		ActionStatus_DisplayMessage(TOGGLE_ALL_SOUND_SOUND_DISABLED, true);
 	end
 end
 

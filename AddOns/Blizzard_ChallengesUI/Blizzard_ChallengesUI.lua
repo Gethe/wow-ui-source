@@ -239,6 +239,21 @@ function ChallengesFrame_Update(self)
 		self.WeeklyInfo.Child.RunStatus:SetPoint("TOP", self, "TOP", 0, -74);
 		self.WeeklyInfo.Child.RunStatus:SetText(MYTHIC_PLUS_MISSING_KEYSTONE_MESSAGE);
 	end
+
+	local lastSeasonNumber = tonumber(GetCVar("newMythicPlusSeason"));
+	local currentSeason = C_MythicPlus.GetCurrentSeason(); 
+	if (currentSeason and lastSeasonNumber < currentSeason) then 
+		local affixes = C_MythicPlus.GetCurrentAffixes();
+		if (affixes) then
+			for i, affix in ipairs(affixes) do
+				if(affix.seasonID == currentSeason) then 
+					self.SeasonChangeNoticeFrame.Affix:SetUp(affix.id);
+					break; 
+				end
+			end
+		end
+		self.SeasonChangeNoticeFrame:Show(); 
+	end
 end
 
 ChallengeModeWeeklyChestMixin = {};
@@ -336,6 +351,7 @@ function ChallengesDungeonIconMixin:SetUp(mapInfo, isFirst)
         self.HighestLevel:Hide();
     end
 end
+
 
 function ChallengesDungeonIconMixin:OnEnter()
     local name = C_ChallengeMode.GetMapUIInfo(self.mapID);
@@ -805,4 +821,11 @@ function ChallengeModeBannerPartyMemberMixin:SetUp(unitToken)
     self:SetAlpha(0);
     self:Show();
     self.AnimIn:Play();
+end
+
+
+function MythicPlusSeasonChangeNoticeOnCloseClick(self)
+	self:GetParent():Hide(); 
+	SetCVar("newMythicPlusSeason", C_MythicPlus.GetCurrentSeason()); 
+	PlaySound(SOUNDKIT.UI_80_ISLANDS_TUTORIAL_CLOSE);
 end

@@ -41,6 +41,10 @@
 				layoutIndex is required to be included in the layout system. You can choose not to have
 				a layoutIndex, in which case this region/frame should be anchored separately
 				<KeyValue key="layoutIndex" value="3" type="number"/>
+				
+				Some LayoutFrames (like ResizeLayoutFrame) set ignoreLayoutIndex to true, meaning that layoutIndex is completely ignored, and ALL child regions are processed in the layout.
+				If you want to keep a region out of the layout calculations for these LayoutFrames you must set ignoreInLayout to true
+				<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 
 				Padding values for the 4 sides of the region/frame
 				<KeyValue key="topPadding" value="20" type="number"/>
@@ -63,7 +67,9 @@
 				ResizeLayoutFrame simply resizes based on the extents of it's child frames & regions.
 				You will need to set the anchors of all children & regions yourself.
 				Note that layoutIndex is NOT required to be included in the ResizeLayoutFrame system (and it does nothing if it is set).
-			
+
+				Because we set ignoreLayoutIndex to true on ResizeLayoutFrame, you must specifically use the ignoreInLayout keyValue if you want something to not be included in the size calculation
+
 				Use fixedWidth/fixedHeight if you want a fixed size; otherwise size will be dynamically
 				calculated based on the sizes of child frames
 				<KeyValue key="fixedWidth" value="300" type="number"/>

@@ -642,7 +642,7 @@ function UnitPopup_UpdateButtonInfo(info)
 			info.hasArrow = nil;
 			info.tooltipTitle = PVP_LABEL_WAR_MODE;
 			info.tooltipInstruction = PVP_WAR_MODE_ENABLED;
-			if (not C_PvP.CanToggleWarMode()) then
+			if (not C_PvP.CanToggleWarMode(true)) then
 				info.tooltipWarning = UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0] and PVP_WAR_MODE_NOT_NOW_HORDE or PVP_WAR_MODE_NOT_NOW_ALLIANCE;
 			end
 		else

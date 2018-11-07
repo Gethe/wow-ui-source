@@ -1540,9 +1540,20 @@ PVPUISeasonRewardFrameMixin = { };
 
 local REWARD_QUEST_ID = 53096;
 local SEASON_REWARD_ACHIEVEMENTS = {
-	[PLAYER_FACTION_GROUP[0]] = 13136,
-	[PLAYER_FACTION_GROUP[1]] = 13137,
+	[BFA_START_SEASON] = {
+		[PLAYER_FACTION_GROUP[0]] = 13136,
+		[PLAYER_FACTION_GROUP[1]] = 13137,
+	},
+	[BFA_START_SEASON + 1] = {
+		[PLAYER_FACTION_GROUP[0]] = 13227,
+		[PLAYER_FACTION_GROUP[1]] = 13228,
+	},
 };
+
+function PVPUISeasonRewardFrameMixin:GetAchievementID()
+	local seasonAchievements = SEASON_REWARD_ACHIEVEMENTS[GetCurrentArenaSeason()];
+	return seasonAchievements and seasonAchievements[UnitFactionGroup("player")];
+end
 
 function PVPUISeasonRewardFrameMixin:OnShow()
 	if self:IsRewardAvailable() then
@@ -1576,7 +1587,7 @@ function PVPUISeasonRewardFrameMixin:Update()
 		self.Icon:SetTexture(texture);
 		self.Icon:Show();
 		local completed = false;
-		local achievementID = SEASON_REWARD_ACHIEVEMENTS[UnitFactionGroup("player")];
+		local achievementID = self:GetAchievementID();
 		if achievementID and GetAchievementNumCriteria(achievementID) > 0 then
 			completed = select(3, GetAchievementCriteriaInfo(achievementID, 1));
 		end
@@ -1593,7 +1604,7 @@ function PVPUISeasonRewardFrameMixin:Update()
 end
 
 function PVPUISeasonRewardFrameMixin:UpdateTooltip()
-	local achievementID = SEASON_REWARD_ACHIEVEMENTS[UnitFactionGroup("player")];
+	local achievementID = self:GetAchievementID();
 	if not achievementID then
 		return;
 	end
@@ -1644,22 +1655,23 @@ end
 
 function PVPConquestBarMixin:Update()
 	local locked = not IsPlayerAtEffectiveMaxLevel();
-	self:SetDisabled(ConquestFrame.seasonState == SEASON_STATE_PRESEASON or ConquestFrame.seasonState == SEASON_STATE_OFFSEASON or locked);
 	self.Lock:SetShown(locked);
 
-	local current, max, rewardItemTexture, questID = self:GetConquestLevelInfo();
-	if max == 0 or self.disabled then
+	local inactiveSeason = ConquestFrame.seasonState ~= SEASON_STATE_ACTIVE;
+	local currentValue, maxValue, questID = self:GetConquestLevelInfo();
+	local questDone = questID and questID == 0;
+	if locked or inactiveSeason or questDone or maxValue == 0 then
 		self:SetValue(0);
 	else
-		self:SetValue(current / max * 100);
+		self:SetValue(currentValue / maxValue * 100);
 	end
-	self.Label:SetFormattedText(CONQUEST_BAR, current, max);
-	if rewardItemTexture and questID and not self.disabled then
-		self.Reward.Icon:SetTexture(rewardItemTexture);
-		self.Reward.questID = questID;
+	self:SetDisabled(inactiveSeason or locked or questDone);
+	self.Label:SetFormattedText(CONQUEST_BAR, currentValue, maxValue);
+
+	if locked or inactiveSeason or not questID then
+		self.Reward:Clear();
 	else
-		self.Reward.Icon:SetColorTexture(0, 0, 0);
-		self.Reward.questID = nil;
+		self.Reward:SetUp(questID);
 	end
 end
 
@@ -1668,28 +1680,27 @@ function PVPConquestBarMixin:GetConquestLevelInfo()
 	local quests = C_QuestLine.GetQuestLineQuests(CONQUEST_QUESTLINE_ID)
 	local currentQuestID = 0;
 	for i, questID in ipairs(quests) do
-		currentQuestID = questID;
-		if C_QuestLog.IsOnQuest(questID) and not IsQuestFlaggedCompleted(questID) then
+		if C_QuestLog.IsOnQuest(questID) then
+			currentQuestID = questID;
 			break;
 		end
 	end
 
+	-- if not on a current quest that means all caught up for this week
+	if currentQuestID == 0 then
+		return 0, 0, 0;
+	end
+
 	if not HaveQuestData(currentQuestID) then
-		return 0, 0, nil, nil;
+		return 0, 0, nil;
 	end
 
 	local objectives = C_QuestLog.GetQuestObjectives(currentQuestID);
 	if not objectives or not objectives[1] then
-		return 0, 0, nil, nil;
+		return 0, 0, nil;
 	end
 
-	local rewardItemTexture;
-	if HaveQuestRewardData(currentQuestID) then
-		local itemIndex = 1;
-		rewardItemTexture = select(2, GetQuestLogRewardInfo(itemIndex, currentQuestID));
-	end
-
-	return objectives[1].numFulfilled, objectives[1].numRequired, rewardItemTexture, currentQuestID;
+	return objectives[1].numFulfilled, objectives[1].numRequired, currentQuestID;
 end
 
 function PVPConquestBarMixin:SetDisabled(disabled)
@@ -1702,27 +1713,79 @@ function PVPConquestBarMixin:SetDisabled(disabled)
 		local alpha = disabled and 0.6 or 1;
 		self.Border:SetAlpha(alpha);
 		self.Background:SetAlpha(alpha);
-		self.Reward:SetAlpha(alpha);
 		self.disabled = disabled;
 	end
 end
 
 function PVPConquestBarMixin:OnEnter()
-	if ConquestFrame.seasonState == SEASON_STATE_PRESEASON or ConquestFrame.seasonState == SEASON_STATE_OFFSEASON then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(PVP_CONQUEST);
-		local WORD_WRAP = true;
-		GameTooltip_AddColoredLine(GameTooltip, CONQUEST_REQUIRES_PVP_SEASON, HIGHLIGHT_FONT_COLOR, WORD_WRAP);
-		GameTooltip:Show();
-	end
+	self.Reward:TryShowTooltip();
+end
+
+function PVPConquestBarMixin:OnLeave()
+	self.Reward:HideTooltip();
 end
 
 PVPConquestBarRewardMixin = { };
 
-function PVPConquestBarRewardMixin:OnEnter()
-	if self.questID then
-		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-		GameTooltip:SetQuestLogItem("reward", 1, self.questID);
+function PVPConquestBarRewardMixin:SetUp(questID)
+	self.questID = questID;
+	if questID == 0 then
+		self:SetTexture("Interface\\Icons\\inv_misc_bag_10", 0.2);
+		self.CheckMark:Show();
+		self.CheckMark:SetDesaturated(true);
+	else
+		if IsQuestComplete(questID) then
+			self.CheckMark:Show();
+			self.CheckMark:SetDesaturated(false);
+		else
+			self.CheckMark:Hide();
+		end
+		local itemTexture;
+		if HaveQuestRewardData(questID) then
+			local itemIndex = 1;
+			itemTexture = select(2, GetQuestLogRewardInfo(itemIndex, questID));
+		end
+		self:SetTexture(itemTexture, 1);
+	end
+end
+
+function PVPConquestBarRewardMixin:Clear()
+	self:SetTexture(nil, 1);
+	self.questID = nil;
+	self.CheckMark:Hide();
+end
+
+function PVPConquestBarRewardMixin:SetTexture(texture, alpha)
+	if texture then
+		self.Icon:SetTexture(texture);
+	else
+		self.Icon:SetColorTexture(0, 0, 0);
+	end
+	self.Icon:SetAlpha(alpha);
+end
+
+function PVPConquestBarRewardMixin:TryShowTooltip()
+	local WORD_WRAP = true;
+	if ConquestFrame.seasonState == SEASON_STATE_PRESEASON or ConquestFrame.seasonState == SEASON_STATE_OFFSEASON then
+		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_CONQUEST, HIGHLIGHT_FONT_COLOR);
+		GameTooltip_AddColoredLine(EmbeddedItemTooltip, CONQUEST_REQUIRES_PVP_SEASON, NORMAL_FONT_COLOR, WORD_WRAP);
+		EmbeddedItemTooltip:Show();
+	elseif self.questID == 0 then
+		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_CONQUEST, HIGHLIGHT_FONT_COLOR);
+		GameTooltip_AddColoredLine(EmbeddedItemTooltip, CONQUEST_BAR_REWARD_DONE, NORMAL_FONT_COLOR, WORD_WRAP);
+		EmbeddedItemTooltip:Show();
+	elseif self.questID and self:IsMouseOver() then
+		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+		GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_CONQUEST);
+		if IsQuestComplete(self.questID) then
+			GameTooltip_AddNormalLine(EmbeddedItemTooltip, CONQUEST_BAR_REWARD_COLLECT, WORD_WRAP);
+			GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
+		end
+		GameTooltip_AddNormalLine(EmbeddedItemTooltip, SAMPLE_REWARD_WITH_COLON);
+		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
+		GameTooltip_AddQuestRewardsToTooltip(EmbeddedItemTooltip, self.questID, TOOLTIP_QUEST_REWARDS_STYLE_NONE);
 		self.UpdateTooltip = self.OnEnter;
 
 		if IsModifiedClick("DRESSUP") then
@@ -1730,17 +1793,26 @@ function PVPConquestBarRewardMixin:OnEnter()
 		else
 			ResetCursor();
 		end
+		EmbeddedItemTooltip:Show();
 	end
+end
+
+function PVPConquestBarRewardMixin:HideTooltip()
+	EmbeddedItemTooltip:Hide();
+	self.UpdateTooltip = nil;
+end
+
+function PVPConquestBarRewardMixin:OnEnter()
+	self:TryShowTooltip();
 end
 
 function PVPConquestBarRewardMixin:OnLeave()
 	ResetCursor();
-	GameTooltip_Hide();
-	self.UpdateTooltip = nil;
+	self:HideTooltip();
 end
 
 function PVPConquestBarRewardMixin:OnClick()
-	if self.questID and IsModifiedClick() then
+	if self.questID and self.questID > 0 and IsModifiedClick() then
 		HandleModifiedItemClick(GetQuestLogItemLink("reward", 1, self.questID));
 	end
 end
@@ -1790,21 +1862,23 @@ function PVPWeeklyChestMixin:OnEnter()
 	local state = self:GetState();
 	local title, description, showItemLevel;
 	if state == "incomplete" then
-		title = WEEKLY_CHEST;
-		description = WEEKY_CHEST_TOOLTIP_INCOMPLETE;
+		title = RATED_PVP_WEEKLY_CHEST;
+		description = RATED_PVP_WEEKLY_CHEST_TOOLTIP_INCOMPLETE;
 		showItemLevel = true;
 	elseif state == "complete" then
-		title = WEEKLY_CHEST_EARNED;
-		description = WEEKY_CHEST_TOOLTIP_COMPLETE;
+		title = RATED_PVP_WEEKLY_CHEST_EARNED;
+		description = RATED_PVP_WEEKLY_CHEST_TOOLTIP_COMPLETE;
 		showItemLevel = true;
 	elseif state == "collect" then
-		title = WEEKLY_CHEST;
-		description = WEEKY_CHEST_TOOLTIP_COLLECT;
+		title = RATED_PVP_WEEKLY_CHEST;
+		description = RATED_PVP_WEEKLY_CHEST_TOOLTIP_COLLECT;
 		showItemLevel = false;
 	end
 
 	if showItemLevel then
 		local rewardAchieved, lastWeekRewardAchieved, lastWeekRewardClaimed, pvpTierMaxFromWins = C_PvP.GetWeeklyChestInfo();
+		-- it's -1 if you haven't won any matches in the current season
+		pvpTierMaxFromWins = max(pvpTierMaxFromWins, 0);
 		local activityItemLevel, weeklyItemLevel = C_PvP.GetRewardItemLevelsByTierEnum(pvpTierMaxFromWins);
 		description = description:format(weeklyItemLevel);
 	end
@@ -1816,7 +1890,7 @@ function PVPWeeklyChestMixin:OnEnter()
 	if state == "incomplete" then
 		local current, max = ConquestFrame.ConquestBar:GetConquestLevelInfo();
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
-		GameTooltip_AddColoredLine(GameTooltip, WEEKLY_CHEST_REQUIREMENTS:format(current, max), HIGHLIGHT_FONT_COLOR, WORD_WRAP);	
+		GameTooltip_AddColoredLine(GameTooltip, RATED_PVP_WEEKLY_CHEST_REQUIREMENTS:format(current, max), HIGHLIGHT_FONT_COLOR, WORD_WRAP);	
 	end
 	GameTooltip:Show();
 end

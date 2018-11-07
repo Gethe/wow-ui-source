@@ -46,6 +46,11 @@ TOOLTIP_QUEST_REWARDS_STYLE_QUEST_CHOICE = {
 	postHeaderBlankLineCount = 0,
 }
 
+TOOLTIP_QUEST_REWARDS_STYLE_NONE = {
+	prefixBlankLineCount = 0,
+	postHeaderBlankLineCount = 0,
+}
+
 function GameTooltip_UnitColor(unit)
 	local r, g, b;
 	if ( UnitPlayerControlled(unit) ) then
@@ -826,8 +831,8 @@ local function WidgetLayout(widgetContainer, sortedWidgets)
 		widgetFrame:EnableMouse(false);
 	end
 
-	widgetContainer:SetHeight(widgetsHeight);
-	widgetContainer:SetWidth(maxWidgetWidth);
+	widgetContainer:SetHeight(math.max(widgetsHeight, 1));
+	widgetContainer:SetWidth(math.max(maxWidgetWidth, 1));
 end
 
 function GameTooltip_AddWidgetSet(self, widgetSetID)

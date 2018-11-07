@@ -1530,6 +1530,7 @@ function PvpTalentFrameMixin:Update()
 	self:UpdateModelScenes();
 
 	self.InvisibleWarmodeButton:Update();
+	self.WarmodeIncentive:Update();
 end
 
 function PvpTalentFrameMixin:UpdateModelScenes(forceUpdate)
@@ -1760,16 +1761,64 @@ function PvpTalentWarmodeButtonMixin:OnEnter()
 		GameTooltip_AddInstructionLine(GameTooltip, PVP_WAR_MODE_ENABLED);
 	end
 	local wrap = true;
-	GameTooltip_AddNormalLine(GameTooltip, PVP_WAR_MODE_DESCRIPTION, wrap);
-	if(not C_PvP.CanToggleWarMode(true)) then
-		if (not C_PvP.CanToggleWarModeInArea()) then
-			local text = UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0] and PVP_WAR_MODE_NOT_NOW_HORDE or PVP_WAR_MODE_NOT_NOW_ALLIANCE;
-			GameTooltip_AddColoredLine(GameTooltip, text, RED_FONT_COLOR, wrap);
+	local warModeRewardBonus = C_PvP.GetWarModeRewardBonus();
+	GameTooltip_AddNormalLine(GameTooltip, PVP_WAR_MODE_DESCRIPTION_FORMAT:format(warModeRewardBonus), wrap);
+
+	-- Determine if the player can toggle warmode on/off.
+	local canToggleWarmode = C_PvP.CanToggleWarMode(true);
+	local canToggleWarmodeOFF = C_PvP.CanToggleWarMode(false);
+
+	-- Confirm there is a reason to show an error message
+	if(not canToggleWarmode or not canToggleWarmodeOFF) then
+
+		local warmodeErrorText;
+
+		-- Outdoor world environment
+		if(not C_PvP.CanToggleWarModeInArea()) then
+			if(self:GetWarModeDesired()) then
+				if(not canToggleWarmodeOFF and not IsResting()) then
+					warmodeErrorText = UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0] and PVP_WAR_MODE_NOT_NOW_HORDE_RESTAREA or PVP_WAR_MODE_NOT_NOW_ALLIANCE_RESTAREA;
+				end
+			else
+				if(not canToggleWarmode) then
+					warmodeErrorText = UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0] and PVP_WAR_MODE_NOT_NOW_HORDE or PVP_WAR_MODE_NOT_NOW_ALLIANCE;
+				end
+			end
+		end
+
+		-- player is not allowed to toggle warmode in combat.
+		if(warmodeErrorText) then
+			GameTooltip_AddColoredLine(GameTooltip, warmodeErrorText, RED_FONT_COLOR, wrap);
 		elseif (UnitAffectingCombat("player")) then
 			GameTooltip_AddColoredLine(GameTooltip, SPELL_FAILED_AFFECTING_COMBAT, RED_FONT_COLOR, wrap);
 		end
 	end
+		
 	GameTooltip:Show();
+end
+
+WarmodeIncentiveMixin = {};
+
+function WarmodeIncentiveMixin:OnEnter()
+	local base, current, bonus = self:GetPercentages();
+
+	if bonus > 0 then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, WAR_MODE_CALL_TO_ARMS);
+		GameTooltip_AddNormalLine(GameTooltip, WAR_MODE_BONUS_INCENTIVE_TOOLTIP:format(bonus, current));
+		GameTooltip:Show();
+	end
+end
+
+function WarmodeIncentiveMixin:GetPercentages()
+	local basePercentage = C_PvP.GetWarModeRewardBonusDefault();
+	local currentPercentage = C_PvP.GetWarModeRewardBonus();
+	return basePercentage, currentPercentage, currentPercentage - basePercentage;
+end
+
+function WarmodeIncentiveMixin:Update()
+	local base, current, bonus = self:GetPercentages();
+	self:SetShown(bonus > 0);
 end
 
 PvpTalentListMixin = {};

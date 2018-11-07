@@ -149,6 +149,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(MapLinkDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(SelectableGraveyardDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(AreaPOIDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(MapIndicatorQuestDataProviderMixin));
 
 	if IsGMClient() then
 		self:AddDataProvider(CreateFromMixins(WorldMap_DebugDataProviderMixin));

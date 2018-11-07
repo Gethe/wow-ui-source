@@ -30,13 +30,12 @@ end
 BaseLayoutMixin = {};
 
 function BaseLayoutMixin:OnLoad()
-	self.usesLayoutIndex = true;
 end
 
 function BaseLayoutMixin:AddLayoutChildren(layoutChildren, ...)
 	for i = 1, select("#", ...) do
 		local region = select(i, ...);
-		if region:IsShown() and not region.ignoreInLayout and (not self.usesLayoutIndex or region.layoutIndex) then
+		if region:IsShown() and not region.ignoreInLayout and (self.ignoreLayoutIndex or region.layoutIndex) then
 			layoutChildren[#layoutChildren + 1] = region;
 		end
 	end
@@ -53,7 +52,7 @@ function BaseLayoutMixin:GetLayoutChildren()
 	local children = {};
 	self:AddLayoutChildren(children, self:GetChildren());
 	self:AddLayoutChildren(children, self:GetRegions());
-	if self.usesLayoutIndex then
+	if not self.ignoreLayoutIndex then
 		table.sort(children, LayoutIndexComparator);
 	end
 
@@ -262,7 +261,7 @@ local function GetSize(desired, fixed, minimum, maximum)
 end
 
 function ResizeLayoutMixin:OnLoad()
-	self.usesLayoutIndex = false;
+	self.ignoreLayoutIndex = true;
 end
 
 function ResizeLayoutMixin:Layout()

@@ -16,6 +16,15 @@ local MythicPlusInfo =
 			},
 		},
 		{
+			Name = "GetCurrentSeason",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "seasonID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetLastWeeklyBestInformation",
 			Type = "Function",
 

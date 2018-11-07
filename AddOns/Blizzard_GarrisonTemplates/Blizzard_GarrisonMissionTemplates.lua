@@ -306,7 +306,7 @@ function GarrisonMission:UpdateMissionData(missionPage)
 	local rewardsFrame = missionPage.RewardsFrame;
 	-- if animating, stop it
 	if ( rewardsFrame.elapsedTime ) then
-		GarrisonMissionPageRewardsFrame_SetSuccessChance(rewardsFrame, rewardsFrame.endingChance, missionEffects);
+		GarrisonMissionPageRewardsFrame_SetSuccessChance(rewardsFrame, rewardsFrame.endingChance);
 		GarrisonMissionPageRewardsFrame_StopUpdate(rewardsFrame);
 	end	
 	if ( rewardsFrame.currentChance and successChance > rewardsFrame.currentChance ) then
@@ -327,7 +327,7 @@ function GarrisonMission:UpdateMissionData(missionPage)
 		if ( rewardsFrame.currentChance and successChance < rewardsFrame.currentChance and missionPage:IsShown()) then
 			PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_REDUCED_SUCCESS_CHANCE);
 		end
-		GarrisonMissionPageRewardsFrame_SetSuccessChance(rewardsFrame, successChance, missionEffects);
+		GarrisonMissionPageRewardsFrame_SetSuccessChance(rewardsFrame, successChance);
 	end
 
 	local followersWithAbilitiesGained = nil;
@@ -2127,12 +2127,10 @@ function GarrisonMissionPage_UpdateRewardQuantities(rewardsFrame, currencyMultip
 	end
 end
 
-function GarrisonMissionPageRewardsFrame_SetSuccessChance(self, chance, missionEffects)
+function GarrisonMissionPageRewardsFrame_SetSuccessChance(self, chance)
 	local successChanceColor = GREEN_FONT_COLOR;
-	if (missionEffects) then
-		if (missionEffects.hasSuccessChanceNegativeEffect) then
-			successChanceColor = RED_FONT_COLOR;
-		end
+	if (chance < 0) then
+		successChanceColor = RED_FONT_COLOR;
 	end
 
 	self.Chance:SetFormattedText(successChanceColor:WrapTextInColorCode(PERCENTAGE_STRING), chance);
@@ -2145,7 +2143,7 @@ function GarrisonMissionPageRewardsFrame_OnUpdate(self, elapsed)
 	-- 0 to 100 should take 1 second
 	local newChance = math.floor(self.startingChance + self.elapsedTime * 100);
 	newChance = min(newChance, self.endingChance);
-	GarrisonMissionPageRewardsFrame_SetSuccessChance(self, newChance, self:GetParent().missionEffects);
+	GarrisonMissionPageRewardsFrame_SetSuccessChance(self, newChance);
 	if ( newChance == self.endingChance ) then
 		if ( newChance == 100 ) then
 			PlaySound(SOUNDKIT.UI_GARRISON_MISSION_100_PERCENT_CHANCE_REACHED_NOT_USED);	-- 100% chance reached

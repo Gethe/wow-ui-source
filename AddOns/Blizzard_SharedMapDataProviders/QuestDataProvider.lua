@@ -84,7 +84,7 @@ function QuestDataProviderMixin:RefreshAllData(fromOnShow)
 	local doesMapShowTaskObjectives = C_TaskQuest.DoesMapShowTaskQuestObjectives(mapID);
 	if questsOnMap then
 		for i, info in ipairs(questsOnMap) do
-			if self:ShouldShowQuest(info.questID, mapInfo.mapType, doesMapShowTaskObjectives) then
+			if self:ShouldShowQuest(info.questID, mapInfo.mapType, doesMapShowTaskObjectives, info.isMapIndicatorQuest) then
 				local pin = self:AddQuest(info.questID, info.x, info.y, i);
 				table.insert(pinsToQuantize, pin);
 			end
@@ -100,7 +100,7 @@ function QuestDataProviderMixin:RefreshAllData(fromOnShow)
 	end
 end
 
-function QuestDataProviderMixin:ShouldShowQuest(questID, mapType, doesMapShowTaskObjectives)
+function QuestDataProviderMixin:ShouldShowQuest(questID, mapType, doesMapShowTaskObjectives, isMapIndicatorQuest)
 	if self.focusedQuestID and self.focusedQuestID ~= questID then
 		return false;
 	end
@@ -111,6 +111,9 @@ function QuestDataProviderMixin:ShouldShowQuest(questID, mapType, doesMapShowTas
 	end
 	if QuestUtils_IsQuestBonusObjective(questID) then
 		return false;
+	end
+	if isMapIndicatorQuest or not HaveQuestData(questID) then 
+		return false; 
 	end
 	return MapUtil.ShouldMapTypeShowQuests(mapType);
 end

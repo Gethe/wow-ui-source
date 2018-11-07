@@ -1,0 +1,18 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="MapIndicatorQuestDataProvider.lua"/>
+
+	<Frame name="MapIndicatorQuestPinTemplate" mixin="MapIndicatorQuestPinMixin" enableMouse="true" hidden="true" virtual="true">
+		<Size x="24" y="24"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="24" y="24"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

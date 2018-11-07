@@ -275,6 +275,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetWarModeRewardBonusDefault",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "defaultBonus", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetWeeklyChestInfo",
 			Type = "Function",
 

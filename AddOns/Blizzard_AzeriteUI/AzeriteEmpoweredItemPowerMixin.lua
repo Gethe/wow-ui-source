@@ -409,7 +409,6 @@ function AzeriteEmpoweredItemPowerMixin:IsSpecAllowed()
 end
 
 function AzeriteEmpoweredItemPowerMixin:SetPowerButtonState()
-	self.IconNotSelectableOverlay:SetShown(not self.isHeartOfAzerothEquipped);
 	self.IconNotSelectableOverlay:SetAlpha(self:GetIconNotSelectableOverlayAlphaValue());
 end
 

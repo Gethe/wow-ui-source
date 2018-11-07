@@ -2246,6 +2246,8 @@ function FriendsFrame_GetInviteRestrictionText(restriction)
 		return ERR_TRAVEL_PASS_NO_INFO;
 	elseif ( restriction == INVITE_RESTRICTION_CLIENT ) then
 		return ERR_TRAVEL_PASS_NOT_WOW;
+	elseif ( restriction == INVITE_RESTRICTION_REGION ) then
+		return ERR_TRAVEL_PASS_NOT_SAME_REGION;
 	else
 		return "";
 	end

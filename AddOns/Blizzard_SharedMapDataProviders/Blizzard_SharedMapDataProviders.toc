@@ -36,3 +36,4 @@ BannerDataProvider.xml
 ContributionCollectorDataProvider.xml
 MapLinkDataProvider.xml
 SelectableGraveyardDataProvider.xml
+MapIndicatorQuestDataProvider.xml

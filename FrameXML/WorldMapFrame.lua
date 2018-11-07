@@ -168,13 +168,17 @@ function TaskPOI_OnEnter(self)
 	end
 
 	for objectiveIndex = 1, self.numObjectives do
-		local objectiveText, objectiveType, finished = GetQuestObjectiveInfo(self.questID, objectiveIndex, false);
-		if ( objectiveText and #objectiveText > 0 ) then
+		local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(self.questID, objectiveIndex, false);
+
+		if(self.shouldShowObjectivesAsStatusBar) then 
+			local percent = math.ceil(numFulfilled/numRequired) * 100
+			GameTooltip_ShowProgressBar(WorldMapTooltip, 0, numRequired, numFulfilled, PERCENTAGE_STRING:format(percent));
+		elseif ( objectiveText and #objectiveText > 0 ) then
 			local color = finished and GRAY_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
 			WorldMapTooltip:AddLine(QUEST_DASH .. objectiveText, color.r, color.g, color.b, true);
 		end
 	end
-
+	local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(self.questID, 1, false);
 	local percent = C_TaskQuest.GetQuestProgressBarInfo(self.questID);
 	if ( percent ) then
 		GameTooltip_ShowProgressBar(WorldMapTooltip, 0, 100, percent, PERCENTAGE_STRING:format(percent));

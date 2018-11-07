@@ -322,7 +322,7 @@
 				<Texture parentKey="ActualHealthBar" file="Interface\RaidFrame\Raid-Bar-Resource-Fill">
 					<Size x="35" y="7"/>
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-2" y="1"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
 					</Anchors>
 					<Color r="0" g="1" b="0"/>
 				</Texture>

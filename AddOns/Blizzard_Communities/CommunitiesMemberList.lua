@@ -1454,7 +1454,7 @@ function GuildMemberListDropDownMenuMixin:OnShow()
 
 	local function CommunitiesClubSelectedCallback(event, clubId)
 		if clubId and self:IsVisible() then
-			local clubInfo = self:GetSelectedClubInfo();
+			local clubInfo = communitiesFrame:GetSelectedClubInfo();
 			if clubInfo and clubInfo.clubType ~= Enum.ClubType.Guild then
 				self:Hide();
 			end

@@ -426,16 +426,6 @@
 					<OnLeave function="SocialAchievementButton_OnLeave"/>
 				</Scripts>
 			</Button>
-			<Button parentKey="ItemButton" inherits="SocialShareButton">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.AchievementButton" relativePoint="RIGHT" x="7" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="SocialItemButton_OnClick"/>
-					<OnEnter function="SocialItemButton_OnEnter"/>
-					<OnLeave function="SocialItemButton_OnLeave"/>
-				</Scripts>
-			</Button>
 			<!-- Post tweet button -->
 			<Button parentKey="PostButton" inherits="UIPanelButtonTemplate" text="SOCIAL_TWITTER_POST_BUTTON" motionScriptsWhileDisabled="true">
 				<Size x="100" y="27"/>

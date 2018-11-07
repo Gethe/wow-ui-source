@@ -440,6 +440,14 @@
 							</MaskedTextures>
 						</MaskTexture>
 					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="CheckMark" atlas="pvpqueue-conquestbar-checkmark" hidden="true">
+							<Size x="30" y="26"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="14" y="-4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 				</Layers>
 				<Scripts>
 					<OnEnter method="OnEnter"/>
@@ -477,7 +485,7 @@
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 			<OnEnter method="OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</StatusBar>
 
@@ -1603,7 +1611,7 @@
 							<Frame parentKey="RatedPanel" setAllPoints="true" hidden="true">
 								<Layers>
 									<Layer level="ARTWORK">
-										<FontString parentKey="Label" inherits="GameFontNormal" text="WEEKLY_CHEST">
+										<FontString parentKey="Label" inherits="GameFontNormal" text="RATED_PVP_WEEKLY_CHEST">
 											<Anchors>
 												<Anchor point="TOP" relativePoint="TOP" x="0" y="-12"/>
 											</Anchors>

@@ -23,7 +23,6 @@ function SocialPostFrame_OnLoad(self)
 	self.SocialMessageFrame.EditBox:SetCountInvisibleLetters(false);
 	
 	self:RegisterEvent("TWITTER_POST_RESULT");
-	self:RegisterEvent("SOCIAL_ITEM_RECEIVED");
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
 	self:RegisterEvent("SCREENSHOT_SUCCEEDED");
 end
@@ -38,8 +37,6 @@ function SocialPostFrame_OnEvent(self, event, ...)
 		elseif (result == LE_TWITTER_RESULT_FAIL) then
 			DEFAULT_CHAT_FRAME:AddMessage(SOCIAL_TWITTER_TWEET_FAILED, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		end
-	elseif (event == "SOCIAL_ITEM_RECEIVED") then
-		SocialItemButton_Update();
 	elseif (event == "ACHIEVEMENT_EARNED") then
 		local id, alreadyEarned = ...;
 		local _, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuildAch, wasEarnedByMe, earnedBy = GetAchievementInfo(id);
@@ -60,7 +57,6 @@ function SocialPostFrame_OnShow(self)
 	
 	SocialScreenshotButton_Update();
 	SocialAchievementButton_Update();
-	SocialItemButton_Update();
 	SocialPostButton_Update();
 	self:SetAttribute("isshown", true);
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
@@ -217,12 +213,7 @@ function SocialPostButton_OnClick(self)
 				C_Social.TwitterPostScreenshot(text, SocialPostFrame.screenshotIndex, SocialPostFrame.ImageFrame.TextureFrame.Texture, usedCustomText);
 			end
 		else
-			local itemID = nil;
-			local hasItemLink = SocialPostFrame.lastItemLink and string.find(rawText, SocialPostFrame.lastItemLink);
-			if ( hasItemLink ) then
-				itemID = SocialPostFrame.lastItemID;
-			end
-			C_Social.TwitterPostMessage(text, itemID, usedCustomText);
+			C_Social.TwitterPostMessage(text, SocialPostFrame.lastItemID, usedCustomText);
 		end
 		SocialPostFrame:Hide();
 		SocialPostFrame.SocialMessageFrame.EditBox:SetText("");
@@ -540,27 +531,6 @@ function SocialAchievementButton_OnLeave(self)
 	GameTooltip_Hide();
 end
 
---------------------------------------------------------------------------------
--- Item Button Handlers
---------------------------------------------------------------------------------
-
-function SocialItemButton_Update()
-	-- Show icon of last received item, or default item icon
-	local self = SocialPostFrame.ItemButton;
-	local id, name, icon, quality, level, creationContext = C_Social.GetLastItem();
-	if (id) then
-		self.Icon:SetTexture(icon);
-		local r, g, b = GetItemQualityColor(quality);
-		self.QualityBorder:SetVertexColor(r, g, b);
-		self.QualityBorder:Show();
-		self:Enable();
-	else
-		self.Icon:SetAtlas("WoWShare-ItemIcon", true);
-		self.QualityBorder:Hide();
-		self:Disable();
-	end
-end
-
 function SocialPrefillItemText(itemID, earned, creationContext, name, quality)
 	if (creationContext == nil) then
 		creationContext = "";
@@ -579,49 +549,18 @@ function SocialPrefillItemText(itemID, earned, creationContext, name, quality)
 	
 	-- Populate editbox with item prefill text
 	local r, g, b, colorString = GetItemQualityColor(quality);
-	local itemNameColored = format("|c%s[%s]|r", colorString, name);
-	local linkFormatStr = "|cff3b94d9" .. SOCIAL_ITEM_ARMORY_LINK .. "/%s/%s|r";
-	local armoryLink = format(linkFormatStr, itemID, creationContext);
-	local text = format(SOCIAL_ITEM_PREFILL_TEXT_ALL, prefillText, itemNameColored, armoryLink);
+	local itemNameColored = format("|c%s%s|r", colorString, name);
+	local text = format(SOCIAL_ITEM_PREFILL_TEXT_ALL, prefillText, itemNameColored);
 	
 	local prefillTextLength = strlen(prefillText);
 	SocialPostFrame.SocialMessageFrame.EditBox:SetText(text);
 	SocialPostFrame.SocialMessageFrame.EditBox:HighlightText(0, prefillTextLength);
 	SocialPostFrame.SocialMessageFrame.EditBox:SetCursorPosition(prefillTextLength);
-	SocialPostFrame.lastItemLink = armoryLink;
 	SocialPostFrame.lastItemID = itemID;
 	SocialPostFrame.lastPrefilledText = prefillText;
 	
 	SocialPostFrame_SetDefaultView();
 end
-
-function SocialItemButton_OnClick(self)
-	local id, name, icon, quality, level, creationContext = C_Social.GetLastItem();
-	if (id) then
-		SocialPrefillItemText(id, true, creationContext, name, quality);
-	end
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
-end
-
-function SocialItemButton_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", -38, -12);
-	local id, name, icon, quality, level, creationContext = C_Social.GetLastItem();
-	if (id) then
-		GameTooltip:SetText(SOCIAL_ITEM_PREFILL_TOOLTIP, 1, 1, 1);
-		GameTooltip:AddLine(" ");
-		local r, g, b, colorString = GetItemQualityColor(quality);
-		GameTooltip:AddLine(format("|c%s%s|r", colorString, name));
-		GameTooltip:AddLine(format(ITEM_LEVEL, level));
-	else
-		GameTooltip:SetText(SOCIAL_ITEM_PREFILL_NONE);
-	end
-	GameTooltip:Show();
-end
-
-function SocialItemButton_OnLeave(self)
-	GameTooltip_Hide();
-end
-
 
 --------------------------------------------------------------------------------
 -- Cropping Functions

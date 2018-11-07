@@ -1138,6 +1138,37 @@
 							<OnClick method="OnClick"/>
 						</Scripts>
 					</Button>
+					<Frame parentKey="WarmodeIncentive" mixin="WarmodeIncentiveMixin" enableMouseMotion="true" frameStrata="HIGH">
+						<Size x="21" y="21"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.InvisibleWarmodeButton" relativePoint="TOP" x="27" y="-20"/>
+						</Anchors>
+						<HitRectInsets>
+ 							<AbsInset left="-10" right="-10" top="-10" bottom="-10"/>
+ 						</HitRectInsets>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Icon" file="Interface\Icons\INV_Misc_Coin_17" setAllPoints="true"/>
+								<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" setAllPoints="true">
+									<MaskedTextures>
+										<MaskedTexture childKey="Icon"/>
+									</MaskedTextures>
+								</MaskTexture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="IconRing" atlas="pvptalents-warmode-incentive-ring">
+									<Size x="30" y="30"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter method="OnEnter"/>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Frame>
 					<Frame parentKey="WarmodeTutorialBox" inherits="GlowBoxTemplate" hidden="true" frameStrata="DIALOG">
 						<Size x="220" y="100"/>
 						<Anchors>

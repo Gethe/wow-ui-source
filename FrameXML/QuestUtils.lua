@@ -67,6 +67,8 @@ function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskill
 		iconAtlas =  "worldquest-icon-raid";
 	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_INVASION ) then
 		iconAtlas =  "worldquest-icon-burninglegion";
+	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_ISLANDS ) then 
+		iconAtlas ="poi-islands-table";
 	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_FACTION_ASSAULT ) then
 		local factionTag = UnitFactionGroup("player");
 		if factionTag == "Alliance" then
