@@ -1292,6 +1292,12 @@ function GarrisonMissionPageEnvironment_OnEnter(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetText(environment);
 		GameTooltip:AddLine(environmentDesc, 1, 1, 1, 1);
+
+		if ( C_Garrison.IsEnvironmentCountered(missionPage.missionInfo.missionID) ) then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddInstructionLine(GameTooltip, GARRISON_MISSION_ENVIRONMENT_COUNTERED, 1);
+		end
+
 		GameTooltip:Show();
 	end
 end

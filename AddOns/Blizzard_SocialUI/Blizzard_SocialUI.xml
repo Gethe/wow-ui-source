@@ -197,23 +197,22 @@
 	<OffScreenFrame name="OffScreenFrame" hidden="true">
 		<Size x="1024" y="1024"/>
 		<Anchors>
-			<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" />
+			<Anchor point="TOPLEFT" />
+			<Anchor point="BOTTOMRIGHT" />
 		</Anchors>
 		<Frames>
-			<Button name="OffscreenAchievement" parentKey="OffscreenAchievement" inherits="AchievementTemplate">
+			<Button name="$parentAchievement" hidden="true" parentKey="Achievement" inherits="AchievementTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
 				<Size x="496" y="142"/>
 			</Button>
+			<GameTooltip name="$parentItemTooltip" hidden="true" parentKey="ItemTooltip" inherits="GameTooltipTemplate" clampedToScreen="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" />
+				</Anchors>
+			</GameTooltip>
 		</Frames>
-		<Scripts>
-			<OnShow>
-				if (self.UsesNPOT()) then
-					self:SetAllPoints();
-				end
-			</OnShow>
-		</Scripts>
 	</OffScreenFrame>
 	
 	<Frame name="SocialPostFrame" hidden="true" parent="UIParent" frameStrata="HIGH" toplevel="true" movable="true" enableMouse="true" inherits="BasicFrameTemplate">
@@ -424,6 +423,16 @@
 					<OnClick function="SocialAchievementButton_OnClick"/>
 					<OnEnter function="SocialAchievementButton_OnEnter"/>
 					<OnLeave function="SocialAchievementButton_OnLeave"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="ItemButton" inherits="SocialShareButton">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.AchievementButton" relativePoint="RIGHT" x="7" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="SocialItemButton_OnClick"/>
+					<OnEnter function="SocialItemButton_OnEnter"/>
+					<OnLeave function="SocialItemButton_OnLeave"/>
 				</Scripts>
 			</Button>
 			<!-- Post tweet button -->

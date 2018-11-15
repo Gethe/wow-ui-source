@@ -171,7 +171,7 @@ function TaskPOI_OnEnter(self)
 		local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(self.questID, objectiveIndex, false);
 
 		if(self.shouldShowObjectivesAsStatusBar) then 
-			local percent = math.ceil(numFulfilled/numRequired) * 100
+			local percent = math.floor((numFulfilled/numRequired) * 100);
 			GameTooltip_ShowProgressBar(WorldMapTooltip, 0, numRequired, numFulfilled, PERCENTAGE_STRING:format(percent));
 		elseif ( objectiveText and #objectiveText > 0 ) then
 			local color = finished and GRAY_FONT_COLOR or HIGHLIGHT_FONT_COLOR;

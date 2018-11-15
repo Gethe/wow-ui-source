@@ -656,7 +656,7 @@ TRAVEL PASS
 
 												self.minHeight = 113 + self.EditBox.PromptText:GetHeight() * 2
 												self:GetParent():SetHeight(self.minHeight);
-												self.EditBox:SetPoint("TOPLEFT", 4, -4);
+												self.EditBox:SetPoint("TOPLEFT", 4, -5);
 											</OnLoad>
 											<OnMouseDown>
 												self.EditBox:SetFocus();

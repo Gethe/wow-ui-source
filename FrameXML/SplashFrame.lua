@@ -80,12 +80,18 @@ local function UpdateOtherSplashScreenCvar(tag)
 	SetCVar(SPLASH_SCREENS[tag].cVar, SPLASH_SCREENS[tag].id);
 end
 
-local function GetSplashFrameTag()
+local function GetSplashFrameTag(forceShow)
 	local passesExpansionCheck = not SPLASH_SCREENS[CURRENT_SPLASH_TAG].expansion or GetExpansionLevel() >= SPLASH_SCREENS[CURRENT_SPLASH_TAG].expansion;
 
 	if passesExpansionCheck and (not SPLASH_SCREENS[CURRENT_SPLASH_TAG].minDisplayLevel or UnitLevel("player") >= SPLASH_SCREENS[CURRENT_SPLASH_TAG].minDisplayLevel) then
 		local lastScreenID = tonumber(GetCVar(SPLASH_SCREENS[CURRENT_SPLASH_TAG].cVar)) or 0;
 		local seasonScreenID = tonumber(GetCVar(SPLASH_SCREENS[SEASON_SPLASH_TAG].cVar)) or 0;
+
+		if (forceShow) then
+			lastScreenID = lastScreenID - 1; 
+			seasonScreenID = seasonScreenID - 1; 
+		end
+
 		if seasonScreenID < C_MythicPlus.GetCurrentSeason() then
 			UpdateOtherSplashScreenCvar(CURRENT_SPLASH_TAG);
 			return SEASON_SPLASH_TAG;
@@ -130,12 +136,13 @@ end
 
 local function CheckSplashScreenShow()
 	if SplashFrameCanBeShown() and not IsCharacterNewlyBoosted() then
-		local tag = GetSplashFrameTag();
+		local shouldForceCurrent = false; 
+		local tag = GetSplashFrameTag(shouldForceCurrent);
 		if tag then
 			-- check if they've seen this screen already
 			local lastScreenID = tonumber(GetCVar(SPLASH_SCREENS[tag].cVar)) or 0;
 			if lastScreenID < SPLASH_SCREENS[tag].id then
-				SplashFrame_Open(tag);
+				SplashFrame_Open(tag, shouldForceCurrent);
 				SplashFrame.firstTimeViewed = true;
 				SetCVar(SPLASH_SCREENS[tag].cVar, SPLASH_SCREENS[tag].id); -- update cVar value
 			end
@@ -158,13 +165,20 @@ local function ApplyFactionOverrides()
 	end
 end
 
+function SplashFrame_ShowCurrent()
+	local shouldForceCurrent = true; 
+	tag = GetSplashFrameTag(shouldForceCurrent); 
+	SplashFrame_Open(tag, shouldForceCurrent);
+end
+
 function SplashFrame_OnEvent(self, event)
 	if ( IsKioskModeEnabled() ) then
 		return;
 	end
 
 	if( event == "QUEST_LOG_UPDATE" ) then
-		local tag = GetSplashFrameTag();
+		local shouldForceCurrent = false; 
+		local tag = GetSplashFrameTag(shouldForceCurrent);
 		if( self:IsShown() and tag )then
 			SplashFrame_SetStartButtonDisplay( ShouldShowStartButton(SPLASH_SCREENS[tag].questID, tag) );
 		end
@@ -271,8 +285,8 @@ function SplashFrame_SetStartButtonDisplay( showStartButton )
 	end
 end
 
-function SplashFrame_Open( tag )
-	tag = tag or GetSplashFrameTag();
+function SplashFrame_Open( tag, forceShow )
+	tag = tag or GetSplashFrameTag(forceShow);
 	if not tag then return end
 
 	-- need an event for expansion becoming active

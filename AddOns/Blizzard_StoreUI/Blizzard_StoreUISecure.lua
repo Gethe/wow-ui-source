@@ -217,6 +217,8 @@ Import("BLIZZARD_STORE_VAS_ERROR_LOWER_BOX_LEVEL");
 Import("BLIZZARD_STORE_VAS_ERROR_MAX_CHARACTERS_ON_SERVER");
 Import("BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_DISTANT");
 Import("BLIZZARD_STORE_VAS_ERROR_BOOSTED_TOO_RECENTLY");
+Import("BLIZZARD_STORE_VAS_ERROR_NOT_GUILD_MASTER");
+Import("BLIZZARD_STORE_VAS_ERROR_NOT_IN_GUILD");
 Import("BLIZZARD_STORE_VAS_ERROR_OTHER");
 Import("BLIZZARD_STORE_VAS_ERROR_LABEL");
 Import("BLIZZARD_STORE_LEGION_PURCHASE_READY");
@@ -1370,6 +1372,12 @@ local vasErrorData = {
 	},
 	[Enum.VasError.RaceClassComboIneligible] = { --We should still handle this one even though we shortcut it in case something slips through
 		msg = BLIZZARD_STORE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE,
+	},
+	[Enum.VasError.GuildRankInsufficient] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_NOT_GUILD_MASTER,
+	},
+	[Enum.VasError.CharacterWithoutGuild] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_NOT_IN_GUILD,
 	},
 	[Enum.VasError.IneligibleMapID] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_MAP_ID,

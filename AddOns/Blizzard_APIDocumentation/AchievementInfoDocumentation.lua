@@ -7,6 +7,20 @@ local AchievementInfo =
 	Functions =
 	{
 		{
+			Name = "GetSupercedingAchievements",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "achievementID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "supercedingAchievements", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetPortraitTexture",
 			Type = "Function",
 

@@ -862,6 +862,16 @@ function QueueStatusDropDown_AddPVPRoleCheckButtons()
 	end
 end
 
+local function LeaveQueueWithMatchReadyCheck(idx)
+	local status, mapName, teamSize, registeredMatch, suspendedQueue, queueType = GetBattlefieldStatus(idx);
+	if queueType == "ARENA" or queueType == "ARENASKIRMISH" or (queueType == "BATTLEGROUND" and registeredMatch) then
+		UIErrorsFrame:AddExternalErrorMessage(PVP_MATCH_READY_ERROR);
+	else
+		local acceptPort = false;
+		AcceptBattlefieldPort(idx, acceptPort);
+	end
+end
+
 function QueueStatusDropDown_AddBattlefieldButtons(idx)
 	local info = UIDropDownMenu_CreateInfo();
 	local status, mapName, teamSize, registeredMatch,_,_,_,_, asGroup = GetBattlefieldStatus(idx);
@@ -881,9 +891,9 @@ function QueueStatusDropDown_AddBattlefieldButtons(idx)
 
 	if ( status == "queued" ) then
 		info.text = LEAVE_QUEUE;
-		info.func = wrapFunc(AcceptBattlefieldPort);
+		info.func = wrapFunc(LeaveQueueWithMatchReadyCheck);
 		info.arg1 = idx;
-		info.arg2 = false;
+		info.arg2 = nil;
 		info.disabled = IsInGroup() and not UnitIsGroupLeader("player");
 		UIDropDownMenu_AddButton(info);
 	elseif ( status == "locked" ) then
@@ -899,9 +909,9 @@ function QueueStatusDropDown_AddBattlefieldButtons(idx)
 
 		if ( teamSize == 0 ) then
 			info.text = LEAVE_QUEUE;
-			info.func = wrapFunc(AcceptBattlefieldPort);
+			info.func = wrapFunc(LeaveQueueWithMatchReadyCheck);
 			info.arg1 = idx;
-			info.arg2 = false;
+			info.arg2 = nil;
 			UIDropDownMenu_AddButton(info);
 		end
 	elseif ( status == "active" ) then

@@ -133,7 +133,7 @@
 					</Anchors>
 					<Color r="0.2824" g="0.0157" b="0.0157"/>
 				</FontString>
-				<FontString parentKey="SeasonDescription3" font="SystemFont_Med3" justifyH="center" justifyV="center" wordwrap="true" text="MYTHIC_PLUS_SEASON_DESC3">
+				<FontString parentKey="SeasonDescription3" font="SystemFont_Med3" justifyH="center" justifyV="center" wordwrap="true">
 					<Size x="300" y="30"/>
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.SeasonDescription2" relativePoint="BOTTOM" x="0" y="-35"/>

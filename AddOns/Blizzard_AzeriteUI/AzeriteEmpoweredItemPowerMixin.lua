@@ -35,6 +35,7 @@ function AzeriteEmpoweredItemPowerMixin:Reset()
 	self.SwirlContainer.RevealAnim:Stop();
 	self.SwirlContainer:Hide();
 	self.needsBuffAvailableSoundPlayed = nil;
+	self:SetFrameStrata("MEDIUM");
 end
 
 function AzeriteEmpoweredItemPowerMixin:OnShow()

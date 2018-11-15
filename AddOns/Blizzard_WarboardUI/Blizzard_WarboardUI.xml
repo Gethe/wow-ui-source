@@ -71,7 +71,7 @@
 								<KeyValue key="layoutIndex" value="1" type="number"/>
 							</KeyValues>
 						</Texture>
-						<FontString parentKey="Text" font="Game16Font" justifyV="MIDDLE" maxLines="2">
+						<FontString parentKey="Text" font="SystemFont_Large" justifyV="MIDDLE" maxLines="2">
 							<Size y="30"/>
 							<KeyValues>
 								<KeyValue key="layoutIndex" value="2" type="number"/>
@@ -114,7 +114,7 @@
 				<Scripts>
 					<OnSizeChanged>self:GetParent():GetParent():SetPendingUpdate();</OnSizeChanged>
 				</Scripts>
-				<FontString inherits="Game12Font" justifyH="LEFT" justifyV="TOP"/>
+				<FontString inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP"/>
 			</SimpleHTML>
 			<Frame parentKey="WidgetContainer" hidden="true">
 				<Anchors>
@@ -219,7 +219,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Text" inherits="Game16Font" justifyH="CENTER">
+						<FontString parentKey="Text" inherits="SystemFont_Large" justifyH="CENTER">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Middle"/>
 							</Anchors>

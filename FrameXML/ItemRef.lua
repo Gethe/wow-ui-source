@@ -1,3 +1,13 @@
+local function FormatLink(linkType, linkDisplayText, ...)
+	local linkFormatTable = { ("|H%s"):format(linkType), ... };
+	local returnLink = table.concat(linkFormatTable, ":");
+	if linkDisplayText then
+		return returnLink .. ("|h%s|h"):format(linkDisplayText);
+	else
+		return returnLink;
+	end
+end
+
 function SetItemRef(link, text, button, chatFrame)
 	
 	-- Going forward, use linkType and linkData instead of strsub and strsplit everywhere
@@ -287,9 +297,10 @@ function SetItemRef(link, text, button, chatFrame)
 		Social_ShowAchievement(tonumber(achievementID), StringToBoolean(earned));
 		return;
 	elseif ( strsub(link, 1, 9) == "shareitem" ) then
-		local itemID, earned, creationContext = link:match("shareitem:(%d+):(%d+):(.*)");
+		local strippedItemLink, earned = link:match("^shareitem:(.-):(%d+)$");
+		local itemLink = FormatLink("item", nil, strippedItemLink);
 		SocialFrame_LoadUI();
-		Social_ShowItem(itemID, creationContext, StringToBoolean(earned));
+		Social_ShowItem(itemLink, earned);
 		return;
 	elseif ( strsub(link, 1, 16) == "transmogillusion" ) then
 		local fixedLink = GetFixedLink(text);
@@ -437,11 +448,6 @@ function GetFixedLink(text, quality)
 	end
 	--Nothing to change.
 	return text;
-end
-
-local function FormatLink(linkType, linkDisplayText, ...)
-	local linkFormatTable = { ("|H%s"):format(linkType), ... };
-	return table.concat(linkFormatTable, ":") .. ("|h%s|h"):format(linkDisplayText);
 end
 
 function GetBattlePetAbilityHyperlink(abilityID, maxHealth, power, speed)

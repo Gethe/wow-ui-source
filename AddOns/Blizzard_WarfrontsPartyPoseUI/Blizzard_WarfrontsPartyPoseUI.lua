@@ -47,14 +47,14 @@ do
 		{
 			addModelSceneActors =
 			{
-				grunt1 = 83860, -- ORCMALE_HD.m2 (Grunt)
-				grunt2 = 87186, -- TROLLFEMALE_HD.m2 (Witch Doctor)
-				grunt3 = 85979, -- BLOODELFFEMALE_HD.m2 (Warcaster)
-				grunt4 = 81941, -- GOBLINMALE.m2 (Wistel)
-				grunt5 = 83958, -- TROLLMALE_HD.m2 (Axe Thrower)
-				grunt6 = 84011, -- TAURENFEMALE_HD.m2 (Warrior)
-				grunt7 = 83858, -- ORCFEMALE_HD.m2 (Grunt)
-				grunt8 = 83766, -- ORCMALE_HD.m2 (Peon)
+				grunt1 = 83860, -- Orc Male Grunt
+				grunt2 = 87186, -- Troll Female Witch Doctor
+				grunt3 = 85979, -- Blood Elf Female Warcaster
+				grunt4 = 81941, -- Goblin Male Wistel
+				grunt5 = 83958, -- Troll Male Axe Thrower
+				grunt6 = 84011, -- Tauren Female Warrior
+				grunt7 = 83858, -- Orc Female Grunt
+				grunt8 = 83766, -- Orc Male Peon
 			},
 
 			ModelSceneBG = "scoreboard-background-warfronts-horde",
@@ -65,14 +65,14 @@ do
 		{
 			addModelSceneActors =
 			{
-				grunt1 = 86715, -- humanguard_m.m2 (human male footman)
-				grunt2 = 86833, -- DWARFFEMALE_HD.m2 (dwarf female rifleman)
-				grunt3 = 84310, -- GNOMEFEMALE_HD.m2 (gnome female engineer)
-				grunt4 = 86989, -- HUMANFEMALE_HD.m2 (human female priest)
-				grunt5 = 86823, -- DWARFMALE_HD.m2 (dwarf male rifleman)
-				grunt6 = 86814, -- humanknight_m.m2 (human male knight)
-				grunt7 = 87004, -- HUMANFEMALE_HD.m2 (human female sorceress)
-				grunt8 = 87528, -- draeneipeacekeeper_m.m2 (draenei male paladin)
+				grunt1 = 86715, -- Human Male Footman
+				grunt2 = 86833, -- Dwarf Female Rifleman
+				grunt3 = 84310, -- Gnome Female Engineer
+				grunt4 = 86989, -- Guman Female Priest
+				grunt5 = 86823, -- Dwarf Male Rifleman
+				grunt6 = 86814, -- Human Male Knight
+				grunt7 = 87004, -- Human Female Sorceress
+				grunt8 = 87528, -- Draenei Male Paladin
 			},
 
 			ModelSceneBG = "scoreboard-background-warfronts-alliance",
@@ -83,14 +83,14 @@ do
 		{
 			addModelSceneActors =
 			{
-				grunt1 = 88884, -- fleshgolem2.m2 (abomination)
-				grunt2 = 88884, -- fleshgolem2.m2 (abomination)
-				grunt3 = 88884, -- fleshgolem2.m2 (abomination)
-				grunt4 = 88884, -- fleshgolem2.m2 (abomination)
-				grunt5 = 88884, -- fleshgolem2.m2 (abomination)
-				grunt6 = 88884, -- fleshgolem2.m2 (abomination)
-				grunt7 = 88884, -- fleshgolem2.m2 (abomination)
-				grunt8 = 88884, -- fleshgolem2.m2 (abomination)
+				grunt1 = 90225, -- Female Goblin (Mizzyk)
+				grunt2 = 88848, -- Male Undead Alchemist
+				grunt3 = 90077, -- Female Blood Elf Dark Ranger
+				grunt4 = 90325, -- Goblin Male (Zarvik Blastwix)
+				grunt5 = 89568, -- Undead Male (Father Norlath)
+				grunt6 = 88845, -- Undead Male Lancer
+				grunt7 = 88889, -- Female Undead Alchemist
+				grunt8 = 90370, -- Undead Female (Apothecary Zinge)
 			},
 
 			ModelSceneBG = "scoreboard-background-warfronts-darkshore-horde",
@@ -101,14 +101,14 @@ do
 		{
 			addModelSceneActors =
 			{
-				grunt1 = 87180, -- wisp_norig.m2 (wisp)
-				grunt2 = 87180, -- wisp_norig.m2 (wisp)
-				grunt3 = 87180, -- wisp_norig.m2 (wisp)
-				grunt4 = 87180, -- wisp_norig.m2 (wisp)
-				grunt5 = 87180, -- wisp_norig.m2 (wisp)
-				grunt6 = 87180, -- wisp_norig.m2 (wisp)
-				grunt7 = 87180, -- wisp_norig.m2 (wisp)
-				grunt8 = 87180, -- wisp_norig.m2 (wisp)
+				grunt1 = 69424, -- Moonsaber
+				grunt2 = 89354, -- Night Elf Female Sentinel
+				grunt3 = 88840, -- Night Elf Female Huntress
+				grunt4 = 34520, -- Human Female (Lorna Crowley)
+				grunt5 = 88878, -- Night Elf Male Sentinel
+				grunt6 = 88882, -- Night Elf Male Druid
+				grunt7 = 89222, -- Worgen Male Footman
+				grunt8 = 33840, -- Worgen Female (Celestine of the Harvest)
 			},
 
 			ModelSceneBG = "scoreboard-background-warfronts-darkshore-alliance",

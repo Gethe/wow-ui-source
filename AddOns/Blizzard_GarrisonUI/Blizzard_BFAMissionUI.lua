@@ -351,3 +351,53 @@ end
 
 function BFAMission:CheckTutorials(advance)
 end
+
+---------------------------------------------------------------------------------
+-- BFA Mission Page
+---------------------------------------------------------------------------------
+BFAFollowerMissionPageMixin = { }
+
+function BFAFollowerMissionPageMixin:SetCounters(followers, enemies, missionID)
+	OrderHallFollowerMissionPageMixin.SetCounters(self, followers, enemies, missionID);
+
+	--Handling UI for Environment Mechanics being countered
+	if ( not C_Garrison.IsEnvironmentCountered(missionID) ) then
+		self.Stage.MissionEnvIcon.CrossLeft:Hide();
+		self.Stage.MissionEnvIcon.CrossRight:Hide();
+		
+		if ( self.environment ) then
+			if ( not self.Stage.MissionEnvIcon.EnvironmentHighlight:IsPlaying() ) then
+				self.Stage.MissionEnvIcon.EnvironmentHighlight:Play();
+			end
+		else 
+			self.Stage.MissionEnvIcon.EnvironmentHighlight:Stop();
+		end
+	elseif ( not self.Stage.MissionEnvIcon.CrossLeft:IsShown()) then
+		self.Stage.MissionEnvIcon.CrossLeft:Show();
+		self.Stage.MissionEnvIcon.CrossRight:Show();
+		self.Stage.MissionEnvIcon.EnvironmentHighlight:Stop();
+		self.Stage.MissionEnvIcon.Countered:Play();
+	end
+end
+
+function BFAFollowerMissionPageMixin:GenerateSuccessTooltip(tooltipAnchor)
+	if ( self.environment and not C_Garrison.IsEnvironmentCountered(self.missionInfo.missionID) ) then
+		GameTooltip:ClearAllPoints();
+		GameTooltip:SetPoint("BOTTOMLEFT", tooltipAnchor, "BOTTOMRIGHT", 10, 0);
+		GameTooltip:SetOwner(tooltipAnchor, "ANCHOR_PRESERVE");
+		GameTooltip_AddNormalLine(GameTooltip, GARRISON_MISSION_CHANCE_TOOLTIP_HEADER);
+		local missionID = tooltipAnchor:GetParent():GetParent().missionInfo.missionID;
+		GameTooltip_AddColoredLine(GameTooltip, string.format(GARRISON_MISSION_PERCENT_CHANCE, C_Garrison.GetMissionSuccessChance(missionID)), HIGHLIGHT_FONT_COLOR);
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddNormalLine(GameTooltip, tooltipAnchor:GetParent().tooltipText, true, true);
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		local _, _, environment, environmentDesc = C_Garrison.GetMissionInfo(self.missionInfo.missionID);
+		if ( environment ) then
+			GameTooltip_AddNormalLine(GameTooltip, environment);
+			GameTooltip_AddColoredLine(GameTooltip, environmentDesc, HIGHLIGHT_FONT_COLOR, true);
+		end
+		GameTooltip:Show();
+	else
+		GarrisonMissionPageMixin.GenerateSuccessTooltip(self, tooltipAnchor);
+	end
+end

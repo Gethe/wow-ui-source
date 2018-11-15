@@ -11,22 +11,16 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Channel" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
-					<Size x="50" y="0"/>
+				<FontString parentKey="Creator" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+					<Size x="80" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" x="9" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Creator" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
-					<Size x="55" y="0"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Channel" relativePoint="RIGHT" x="8" y="0"/>
-					</Anchors>
-				</FontString>
 				<FontString parentKey="Link" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
-					<Size x="245" y="0"/>
+					<Size x="270" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Creator" relativePoint="RIGHT" x="8" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Creator" relativePoint="RIGHT" x="12" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Expires" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">

@@ -194,6 +194,9 @@ function RealmList_UpdateTabs()
 			tab:Hide();
 		elseif ( i <= numTabs ) then
 			local name, isTournament, isInvalidLocale = C_RealmList.GetCategoryInfo(categories[i]);
+			if not name or name == "" then
+				name = "Invalid Category";
+			end
 			tab:SetText(name);
 			GlueTemplates_TabResize(0, tab);
 			tab:Show();

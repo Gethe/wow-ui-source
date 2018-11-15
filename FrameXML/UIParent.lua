@@ -1209,6 +1209,8 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_ALIVE" or event == "RAISED_AS_GHOUL" ) then
 		StaticPopup_Hide("DEATH");
 		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
+		StaticPopup_Hide("RESURRECT_NO_TIMER");
+		StaticPopup_Hide("RESURRECT");
 		if ( UnitIsGhost("player") ) then
 			GhostFrame:Show();
 		else

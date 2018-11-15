@@ -444,8 +444,8 @@ function WorldMapBountyBoardMixin:CacheMapsForSelectionBounty()
 
 	self.cachedMapInfo = {};
 	local mapID = self:GetMapID();
-	local zones = MapUtil.GetRelatedBountyZoneMaps(mapID);
-	for i, zoneMapID in ipairs(zones) do
+	local bountySetMaps = MapUtil.GetBountySetMaps(C_Map.GetBountySetIDForMap(mapID));
+	for i, zoneMapID in ipairs(bountySetMaps) do
 		local numQuests = self:CalculateNumActiveWorldQuestsForSelectedBountyByMap(zoneMapID);
 		if numQuests > 0 then
 			table.insert(self.cachedMapInfo, { mapID = zoneMapID, count = numQuests });

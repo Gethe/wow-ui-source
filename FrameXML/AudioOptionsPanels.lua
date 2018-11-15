@@ -335,7 +335,7 @@ function AudioOptionsVoicePanel_OnEvent(self, event, ...)
 	elseif event == "UPDATE_BINDINGS" then
 		AudioOptionsVoicePanel_UpdateCommunicationModeUI(self);
 	elseif event == "VOICE_CHAT_ERROR" or event == "VOICE_CHAT_CONNECTION_SUCCESS" then
-		AudioOptionsVoicePanelEnableVoice_UpdateControls(self);
+		AudioOptionsVoicePanel_Refresh(self);
 	end
 end
 

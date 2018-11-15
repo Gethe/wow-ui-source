@@ -1,19 +1,22 @@
-SOCIAL_MESSAGE_MAX_CHARS = 140;
-SOCIAL_DEFAULT_FRAME_WIDTH = 388;
-SOCIAL_DEFAULT_FRAME_HEIGHT = 190;
-SOCIAL_IMAGE_FRAME_MIN_WIDTH = 354; -- This is SOCIAL_DEFAULT_FRAME_WIDTH - SOCIAL_IMAGE_PADDING_WIDTH - 2 * (width of TextureFrame border, which is 4)
-SOCIAL_IMAGE_FRAME_MAX_WIDTH = 640;
-SOCIAL_IMAGE_FRAME_MAX_HEIGHT = 400;
-SOCIAL_SCREENSHOT_TOOLTIP_MAX_WIDTH = 236;
-SOCIAL_SCREENSHOT_TOOLTIP_MAX_HEIGHT = 146;
-SOCIAL_IMAGE_FRAME_ASPECT_RATIO = SOCIAL_IMAGE_FRAME_MAX_WIDTH / SOCIAL_IMAGE_FRAME_MAX_HEIGHT;
-SOCIAL_SCREENSHOT_CROP_MIN_WIDTH = 100;
-SOCIAL_SCREENSHOT_CROP_MIN_HEIGHT = 100;
-SOCIAL_IMAGE_PADDING_HEIGHT = 50;
-SOCIAL_IMAGE_PADDING_WIDTH = 26;
-SOCIAL_IMAGE_TYPE_ACHIEVEMENT = 1;
-SOCIAL_IMAGE_TYPE_SCREENSHOT = 2;
-SOCIAL_ACHIEVEMENT_OFFSCREEN_ID = 0;
+local SOCIAL_MESSAGE_MAX_CHARS = 140;
+local SOCIAL_DEFAULT_FRAME_WIDTH = 388;
+local SOCIAL_DEFAULT_FRAME_HEIGHT = 190;
+local SOCIAL_IMAGE_FRAME_MAX_WIDTH = 640;
+local SOCIAL_IMAGE_FRAME_MAX_HEIGHT = 400;
+local SOCIAL_SCREENSHOT_TOOLTIP_MAX_WIDTH = 236;
+local SOCIAL_SCREENSHOT_TOOLTIP_MAX_HEIGHT = 146;
+local SOCIAL_IMAGE_FRAME_ASPECT_RATIO = SOCIAL_IMAGE_FRAME_MAX_WIDTH / SOCIAL_IMAGE_FRAME_MAX_HEIGHT;
+local SOCIAL_SCREENSHOT_CROP_MIN_WIDTH = 100;
+local SOCIAL_SCREENSHOT_CROP_MIN_HEIGHT = 100;
+local SOCIAL_IMAGE_PADDING_HEIGHT = 50;
+local SOCIAL_IMAGE_PADDING_WIDTH = 26;
+local SOCIAL_IMAGE_TYPE_ACHIEVEMENT = 1;
+local SOCIAL_IMAGE_TYPE_SCREENSHOT = 2;
+local SOCIAL_IMAGE_TYPE_ITEM = 3;
+local SOCIAL_OFFSCREEN_SNAPSHOT_ID = 0;
+local SOCIAL_OFFSCREEN_STATE_HIDE = 0;
+local SOCIAL_OFFSCREEN_STATE_SHOW_ACHIEVEMENT = 1;
+local SOCIAL_OFFSCREEN_STATE_SHOW_ITEM = 2;
 
 --------------------------------------------------------------------------------
 -- SocialFrame Events
@@ -23,6 +26,7 @@ function SocialPostFrame_OnLoad(self)
 	self.SocialMessageFrame.EditBox:SetCountInvisibleLetters(false);
 	
 	self:RegisterEvent("TWITTER_POST_RESULT");
+	self:RegisterEvent("SOCIAL_ITEM_RECEIVED");
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
 	self:RegisterEvent("SCREENSHOT_SUCCEEDED");
 end
@@ -37,6 +41,8 @@ function SocialPostFrame_OnEvent(self, event, ...)
 		elseif (result == LE_TWITTER_RESULT_FAIL) then
 			DEFAULT_CHAT_FRAME:AddMessage(SOCIAL_TWITTER_TWEET_FAILED, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		end
+	elseif (event == "SOCIAL_ITEM_RECEIVED") then
+		SocialItemButton_Update();
 	elseif (event == "ACHIEVEMENT_EARNED") then
 		local id, alreadyEarned = ...;
 		local _, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuildAch, wasEarnedByMe, earnedBy = GetAchievementInfo(id);
@@ -57,6 +63,7 @@ function SocialPostFrame_OnShow(self)
 	
 	SocialScreenshotButton_Update();
 	SocialAchievementButton_Update();
+	SocialItemButton_Update();
 	SocialPostButton_Update();
 	self:SetAttribute("isshown", true);
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
@@ -96,7 +103,7 @@ function SocialPostFrame_OnAttributeChanged(self, name, value)
 	elseif (name == "achievementview") then
 		SocialPostFrame_ShowAchievement(value, self:GetAttribute("earned"));
 	elseif (name == "itemview") then
-		SocialPostFrame_ShowItem(value, self:GetAttribute("creationcontext"), self:GetAttribute("earned"));
+		SocialPostFrame_ShowItem(value, self:GetAttribute("earned"));
 	elseif (name == "screenshotview") then
 		SocialPostFrame_ShowScreenshot(value);
 	elseif (name == "insertlink") then
@@ -114,9 +121,9 @@ function SocialPostFrame_ShowAchievement(achievementID, earned)
 	SocialPrefillAchievementText(achievementID, earned);
 end
 
-function SocialPostFrame_ShowItem(itemID, creationContext, earned)
+function SocialPostFrame_ShowItem(itemLink, earned)
 	SocialPostFrame:Show();
-	SocialPrefillItemText(itemID, earned, creationContext);
+	SocialPrefillItemText(itemLink, earned);
 end
 
 function SocialPostFrame_ShowScreenshot(index)
@@ -125,9 +132,9 @@ function SocialPostFrame_ShowScreenshot(index)
 end
 
 function SocialPostFrame_InsertLink(link)
-	local itemID, creationContext = GetItemInfoFromHyperlink(link);
+	local itemID = GetItemInfoFromHyperlink(link);
 	if (itemID) then
-		SocialPostFrame_ShowItem(itemID, creationContext, false);
+		SocialPostFrame_ShowItem(link, false);
 		return true;
 	else
 		local achieveID = GetAchievementInfoFromHyperlink(link);
@@ -207,13 +214,16 @@ function SocialPostButton_OnClick(self)
 	if ((SocialPostFrame.ImageFrame:IsShown() or (text and text ~= "")) and self.tempEnabled) then
 		if (SocialPostFrame.ImageFrame:IsShown()) then
 			if (SocialPostFrame.ImageFrame.type == SOCIAL_IMAGE_TYPE_ACHIEVEMENT) then
-				local width, height = OffScreenFrame.OffscreenAchievement:GetSize();
-				C_Social.TwitterPostAchievement(text, width, height, SOCIAL_ACHIEVEMENT_OFFSCREEN_ID, OffScreenFrame, SocialPostFrame.lastAchievementID, usedCustomText);
+				local width, height = OffScreenFrame.Achievement:GetSize();
+				C_Social.TwitterPostAchievement(text, width, height, SOCIAL_OFFSCREEN_SNAPSHOT_ID, OffScreenFrame, SocialPostFrame.lastAchievementID, usedCustomText);
+			elseif (SocialPostFrame.ImageFrame.type == SOCIAL_IMAGE_TYPE_ITEM) then
+				local width, height = OffScreenFrame.ItemTooltip:GetSize();
+				C_Social.TwitterPostItem(text, width, height, SOCIAL_OFFSCREEN_SNAPSHOT_ID, OffScreenFrame, SocialPostFrame.lastItemID, usedCustomText);
 			elseif (SocialPostFrame.ImageFrame.type == SOCIAL_IMAGE_TYPE_SCREENSHOT) then
 				C_Social.TwitterPostScreenshot(text, SocialPostFrame.screenshotIndex, SocialPostFrame.ImageFrame.TextureFrame.Texture, usedCustomText);
 			end
 		else
-			C_Social.TwitterPostMessage(text, SocialPostFrame.lastItemID, usedCustomText);
+			C_Social.TwitterPostMessage(text);
 		end
 		SocialPostFrame:Hide();
 		SocialPostFrame.SocialMessageFrame.EditBox:SetText("");
@@ -261,7 +271,7 @@ function SocialPostFrame_SetImageView(width, height, imageType)
 	width = width + tlX - brX;
 	height = height - tlY + brY;
 
-	-- Show the image frame for screenshots or achievements
+	-- Show the image frame for screenshots, achievements or items
 	local frameHeight = height + SOCIAL_IMAGE_PADDING_HEIGHT; -- Extra room for buttons, padding
 	local frame = SocialPostFrame.ImageFrame;
 	frame.type = imageType;
@@ -395,6 +405,38 @@ function SocialScreenshotButton_OnLeave(self)
 	SocialScreenshotTooltip:Hide();
 end
 
+function SocialPostFrame_AddOffscreenFrameImage(offscreenSubFrame, imageType, removeImageText)
+	local width, height = offscreenSubFrame:GetSize();
+	local frameWidth = width;
+	local frameHeight = height;
+	local aspectRatio = frameWidth / frameHeight;
+	local frame = SocialPostFrame.ImageFrame;
+	if (height > SOCIAL_IMAGE_FRAME_MAX_HEIGHT) then
+		frameHeight = SOCIAL_IMAGE_FRAME_MAX_HEIGHT;
+		frameWidth = frameHeight * aspectRatio;
+	end
+	if (frameWidth > SOCIAL_IMAGE_FRAME_MAX_WIDTH) then
+		frameWidth = SOCIAL_IMAGE_FRAME_MAX_WIDTH;
+	end
+	
+	SocialPostFrame_SetImageView(frameWidth, frameHeight, imageType);
+	if (height > SOCIAL_IMAGE_FRAME_MAX_HEIGHT) then
+		frame.TextureFrame:SetSize(frameHeight * aspectRatio, frameHeight);
+	end
+	
+	SocialScreenshotCrop_SetEnabled(false);
+	
+	OffScreenFrame:ApplySnapshot(frame.TextureFrame.Texture, SOCIAL_OFFSCREEN_SNAPSHOT_ID);
+	local texCoordX = width / OffScreenFrame:GetWidth();
+	local texCoordY = height / OffScreenFrame:GetHeight();
+	frame.TextureFrame.Texture:SetTexCoord(0, texCoordX, 0, texCoordY);
+	
+	frame.CropCancelButton:Hide();
+	frame.CropSaveButton:Hide();
+	frame.CropScreenshotButton:Hide();
+	SetRemoveButtonText(removeImageText);
+end
+
 --------------------------------------------------------------------------------
 -- Achievement Button Handlers
 --------------------------------------------------------------------------------
@@ -410,40 +452,6 @@ function SocialAchievementButton_Update()
 		self.Icon:SetAtlas("WoWShare-AchievementIcon", true);
 		self:Disable();
 	end
-end
-
-function SocialPostFrame_SetAchievementView(achievementID)
-	local width, height = OffScreenFrame.OffscreenAchievement:GetSize();
-	local frameWidth = width;
-	local frameHeight = height;
-	local achieveAspectRatio = frameWidth / frameHeight;
-	local frame = SocialPostFrame.ImageFrame;
-	if (height > SOCIAL_IMAGE_FRAME_MAX_HEIGHT) then
-		frameHeight = SOCIAL_IMAGE_FRAME_MAX_HEIGHT;
-		frameWidth = frameHeight * achieveAspectRatio;
-	end
-	if (frameWidth < SOCIAL_IMAGE_FRAME_MIN_WIDTH) then
-		frameWidth = SOCIAL_IMAGE_FRAME_MIN_WIDTH;
-	elseif (frameWidth > SOCIAL_IMAGE_FRAME_MAX_WIDTH) then
-		frameWidth = SOCIAL_IMAGE_FRAME_MAX_WIDTH;
-	end
-	
-	SocialPostFrame_SetImageView(frameWidth, frameHeight, SOCIAL_IMAGE_TYPE_ACHIEVEMENT);
-	if (height > SOCIAL_IMAGE_FRAME_MAX_HEIGHT) then
-		frame.TextureFrame:SetSize(frameHeight * achieveAspectRatio, frameHeight);
-	end
-	
-	SocialScreenshotCrop_SetEnabled(false);
-	
-	OffScreenFrame:ApplySnapshot(frame.TextureFrame.Texture, SOCIAL_ACHIEVEMENT_OFFSCREEN_ID);
-	local texCoordX = width / OffScreenFrame:GetWidth();
-	local texCoordY = height / OffScreenFrame:GetHeight();
-	frame.TextureFrame.Texture:SetTexCoord(0, texCoordX, 0, texCoordY);
-	
-	frame.CropCancelButton:Hide();
-	frame.CropSaveButton:Hide();
-	frame.CropScreenshotButton:Hide();
-	SetRemoveButtonText(SOCIAL_ACHIEVEMENT_REMOVE_BUTTON);
 end
 
 function SocialPrefillAchievementText(achievementID, earned, name)
@@ -472,10 +480,30 @@ function SocialPrefillAchievementText(achievementID, earned, name)
 	SocialRenderAchievement(achievementID);
 end
 
+local function UpdateOffScreenFrame(self, state)
+	self:SetShown(state ~= SOCIAL_OFFSCREEN_STATE_HIDE);
+	self.Achievement:SetShown(state == SOCIAL_OFFSCREEN_STATE_SHOW_ACHIEVEMENT);
+	self.ItemTooltip:SetShown(state == SOCIAL_OFFSCREEN_STATE_SHOW_ITEM);
+end
+
+local function TakeOffscreenSnapshot(offscreenSubFrame, imageType, removeImageText)
+	offscreenSubFrame.frameCount = 1;
+	offscreenSubFrame:SetScript("OnUpdate", function(self)
+		if (self.frameCount < 2) then
+			self.frameCount = self.frameCount + 1;
+		else
+			SOCIAL_OFFSCREEN_SNAPSHOT_ID = OffScreenFrame:TakeSnapshot();
+			UpdateOffScreenFrame(OffScreenFrame, SOCIAL_OFFSCREEN_STATE_HIDE);
+			SocialPostFrame_AddOffscreenFrameImage(offscreenSubFrame, imageType, removeImageText);
+			offscreenSubFrame:SetScript("OnUpdate", nil);
+		end
+	end);
+end
+
 function SocialRenderAchievement(achievementID)
-	local button = OffScreenFrame.OffscreenAchievement;
+	local button = OffScreenFrame.Achievement;
 	AchievementFrameAchievements_SetupButton(button);
-	
+
 	-- Set button to collapsed state so that AchievementButton_DisplayAchievement() expands
 	-- the frame and renders all the objectives
 	AchievementButton_Collapse(button);
@@ -484,22 +512,8 @@ function SocialRenderAchievement(achievementID)
 	button.plusMinus:Hide();
 	button.check:Hide();
 
-	-- Set an OnUpdate function to get a snapshot of the achievement after 2 frames. This is necessary
-	-- because the progressbar updates data in its OnLayerUpdate() function, which gets called after the
-	-- first time that this OnUpdate() script function gets called.
-	button.frameCount = 1;
-	OffScreenFrame:Show();
-	button:SetScript("OnUpdate", function(self)
-		if (self.frameCount < 2) then
-			self.frameCount = self.frameCount + 1;
-		else
-			-- Take a snapshot of the achievement frame offscreen so that we can use it as a texture
-			SOCIAL_ACHIEVEMENT_OFFSCREEN_ID = OffScreenFrame:TakeSnapshot();
-			OffScreenFrame:Hide();
-			SocialPostFrame_SetAchievementView(achievementID);
-			button:SetScript("OnUpdate", nil);
-		end
-	end);
+	UpdateOffScreenFrame(OffScreenFrame, SOCIAL_OFFSCREEN_STATE_SHOW_ACHIEVEMENT);
+	TakeOffscreenSnapshot(button, SOCIAL_IMAGE_TYPE_ACHIEVEMENT, SOCIAL_ACHIEVEMENT_REMOVE_BUTTON);
 end
 
 function SocialAchievementButton_OnClick(self)
@@ -531,14 +545,30 @@ function SocialAchievementButton_OnLeave(self)
 	GameTooltip_Hide();
 end
 
-function SocialPrefillItemText(itemID, earned, creationContext, name, quality)
-	if (creationContext == nil) then
-		creationContext = "";
+--------------------------------------------------------------------------------
+-- Item Button Handlers
+--------------------------------------------------------------------------------
+
+function SocialItemButton_Update()
+	-- Show icon of last received item, or default item icon
+	local self = SocialPostFrame.ItemButton;
+	local id, _, icon, quality = C_Social.GetLastItem();
+	if (id) then
+		self.Icon:SetTexture(icon);
+		local r, g, b = GetItemQualityColor(quality);
+		self.QualityBorder:SetVertexColor(r, g, b);
+		self.QualityBorder:Show();
+		self:Enable();
+	else
+		self.Icon:SetAtlas("WoWShare-ItemIcon", true);
+		self.QualityBorder:Hide();
+		self:Disable();
 	end
-	if (name == nil or quality == nil) then
-		local ignored;
-		name, ignored, quality = GetItemInfo(itemID);
-	end
+end
+
+function SocialPrefillItemText(itemLink, earned)
+	local itemID = GetItemInfoFromHyperlink(itemLink);
+	local name = GetItemInfo(itemLink);
 	
 	local prefillText;
 	if (earned) then
@@ -548,9 +578,8 @@ function SocialPrefillItemText(itemID, earned, creationContext, name, quality)
 	end
 	
 	-- Populate editbox with item prefill text
-	local r, g, b, colorString = GetItemQualityColor(quality);
-	local itemNameColored = format("|c%s%s|r", colorString, name);
-	local text = format(SOCIAL_ITEM_PREFILL_TEXT_ALL, prefillText, itemNameColored);
+	local itemName = format("[%s]", name);
+	local text = format(SOCIAL_ITEM_PREFILL_TEXT_ALL, prefillText, itemName);
 	
 	local prefillTextLength = strlen(prefillText);
 	SocialPostFrame.SocialMessageFrame.EditBox:SetText(text);
@@ -559,7 +588,43 @@ function SocialPrefillItemText(itemID, earned, creationContext, name, quality)
 	SocialPostFrame.lastItemID = itemID;
 	SocialPostFrame.lastPrefilledText = prefillText;
 	
-	SocialPostFrame_SetDefaultView();
+	SocialRenderItem(itemLink);
+end
+
+function SocialItemButton_OnClick(self)
+	local id, _, _, _, _, itemLink = C_Social.GetLastItem();
+	if (id) then
+		SocialPrefillItemText(itemLink, true);
+	end
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
+end
+
+function SocialItemButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", -38, -12);
+	local _, name, _, quality, level = C_Social.GetLastItem();
+	if (name) then
+		GameTooltip:SetText(SOCIAL_ITEM_PREFILL_TOOLTIP, 1, 1, 1);
+		GameTooltip:AddLine(" ");
+		local r, g, b, colorString = GetItemQualityColor(quality);
+		GameTooltip:AddLine(format("|c%s%s|r", colorString, name));
+		GameTooltip:AddLine(format(ITEM_LEVEL, level));
+	else
+		GameTooltip:SetText(SOCIAL_ITEM_PREFILL_NONE);
+	end
+	GameTooltip:Show();
+end
+
+function SocialItemButton_OnLeave(self)
+	GameTooltip_Hide();
+end
+
+function SocialRenderItem(itemLink)
+	local tooltip = OffScreenFrame.ItemTooltip;
+	tooltip:SetOwner(OffScreenFrame, "ANCHOR_PRESERVE");
+	tooltip:SetHyperlink(itemLink);
+
+	UpdateOffScreenFrame(OffScreenFrame, SOCIAL_OFFSCREEN_STATE_SHOW_ITEM);
+	TakeOffscreenSnapshot(tooltip, SOCIAL_IMAGE_TYPE_ITEM, SOCIAL_ITEM_REMOVE_BUTTON);
 end
 
 --------------------------------------------------------------------------------

@@ -1401,7 +1401,7 @@ function PVPUIHonorInsetMixin:DisplayRatedPanel()
 
 	local seasonState = ConquestFrame.seasonState;
 
-	panel.SeasonRewardFrame:SetShown(seasonState == SEASON_STATE_ACTIVE or seasonState == SEASON_STATE_DISABLED);
+	panel.SeasonRewardFrame:SetShown(seasonState ~= SEASON_STATE_PRESEASON);
 
 	if seasonState == SEASON_STATE_PRESEASON then
 		panel.Tier:Hide();
@@ -1538,7 +1538,7 @@ end
 
 PVPUISeasonRewardFrameMixin = { };
 
-local REWARD_QUEST_ID = 53096;
+local SEASON_REWARD_QUESTLINE_ID = 815;
 local SEASON_REWARD_ACHIEVEMENTS = {
 	[BFA_START_SEASON] = {
 		[PLAYER_FACTION_GROUP[0]] = 13136,
@@ -1552,37 +1552,38 @@ local SEASON_REWARD_ACHIEVEMENTS = {
 
 function PVPUISeasonRewardFrameMixin:GetAchievementID()
 	local seasonAchievements = SEASON_REWARD_ACHIEVEMENTS[GetCurrentArenaSeason()];
-	return seasonAchievements and seasonAchievements[UnitFactionGroup("player")];
+	local achievementID = seasonAchievements and seasonAchievements[UnitFactionGroup("player")];
+	if achievementID then
+		local id, name, points, completed = GetAchievementInfo(achievementID);
+		local supercedingAchievements = C_AchievementInfo.GetSupercedingAchievements(achievementID);
+		while completed and supercedingAchievements[1] do
+			achievementID = supercedingAchievements[1];
+			id, name, points, completed = GetAchievementInfo(achievementID);
+			supercedingAchievements = C_AchievementInfo.GetSupercedingAchievements(achievementID);
+		end
+	end
+	return achievementID;
 end
 
 function PVPUISeasonRewardFrameMixin:OnShow()
-	if self:IsRewardAvailable() then
-		self:Update();
-	else
-		self:RegisterEvent("QUEST_LOG_UPDATE");
-	end
+	self:RegisterEvent("QUEST_LOG_UPDATE");
+	self:Update();
 end
 
 function PVPUISeasonRewardFrameMixin:OnHide()
 	self:UnregisterEvent("QUEST_LOG_UPDATE");
 end
 
-function PVPUISeasonRewardFrameMixin:IsRewardAvailable()
-	return HaveQuestData(REWARD_QUEST_ID) and HaveQuestRewardData(REWARD_QUEST_ID);
-end
-
 function PVPUISeasonRewardFrameMixin:OnEvent(event, ...)
 	if event == "QUEST_LOG_UPDATE" then
-		if self:IsRewardAvailable() then
-			self:UnregisterEvent("QUEST_LOG_UPDATE");
-			self:Update();
-		end
+		self:Update();
 	end
 end
 
 function PVPUISeasonRewardFrameMixin:Update()
 	local itemIndex = 1;
-	local name, texture, count, quality, isUsable = GetQuestLogRewardInfo(itemIndex, REWARD_QUEST_ID);
+	local questID = QuestUtils_GetCurrentQuestLineQuest(SEASON_REWARD_QUESTLINE_ID);
+	local name, texture, count, quality, isUsable = GetQuestLogRewardInfo(itemIndex, questID);
 	if texture then
 		self.Icon:SetTexture(texture);
 		self.Icon:Show();
@@ -1626,7 +1627,8 @@ function PVPUISeasonRewardFrameMixin:UpdateTooltip()
 			GameTooltip_ShowProgressBar(EmbeddedItemTooltip, 0, reqQuantity, quantity, FormatPercentage(quantity / reqQuantity, roundToNearestInteger));
 			EmbeddedItemTooltip:AddLine(" ");
 			GameTooltip_AddNormalLine(EmbeddedItemTooltip, REWARD, wordWrap);
-			EmbeddedItemTooltip_SetItemByQuestReward(EmbeddedItemTooltip.ItemTooltip, 1, REWARD_QUEST_ID);
+			local questID = QuestUtils_GetCurrentQuestLineQuest(SEASON_REWARD_QUESTLINE_ID);
+			EmbeddedItemTooltip_SetItemByQuestReward(EmbeddedItemTooltip.ItemTooltip, 1, questID);
 		end
 	end
 	EmbeddedItemTooltip:Show();
@@ -1657,7 +1659,7 @@ function PVPConquestBarMixin:Update()
 	local locked = not IsPlayerAtEffectiveMaxLevel();
 	self.Lock:SetShown(locked);
 
-	local inactiveSeason = ConquestFrame.seasonState ~= SEASON_STATE_ACTIVE;
+	local inactiveSeason = ConquestFrame.seasonState == SEASON_STATE_PRESEASON or ConquestFrame.seasonState == SEASON_STATE_DISABLED;
 	local currentValue, maxValue, questID = self:GetConquestLevelInfo();
 	local questDone = questID and questID == 0;
 	if locked or inactiveSeason or questDone or maxValue == 0 then
@@ -1677,14 +1679,7 @@ end
 
 function PVPConquestBarMixin:GetConquestLevelInfo()
 	local CONQUEST_QUESTLINE_ID = 782;
-	local quests = C_QuestLine.GetQuestLineQuests(CONQUEST_QUESTLINE_ID)
-	local currentQuestID = 0;
-	for i, questID in ipairs(quests) do
-		if C_QuestLog.IsOnQuest(questID) then
-			currentQuestID = questID;
-			break;
-		end
-	end
+	local currentQuestID = QuestUtils_GetCurrentQuestLineQuest(CONQUEST_QUESTLINE_ID);
 
 	-- if not on a current quest that means all caught up for this week
 	if currentQuestID == 0 then

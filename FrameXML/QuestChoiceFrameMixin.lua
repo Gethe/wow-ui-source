@@ -1,3 +1,4 @@
+MAX_PLAYER_CHOICE_OPTIONS = 4;
 CURRENCY_SPACING = 5;
 CURRENCY_HEIGHT = 20;
 MAX_CURRENCIES = 3;
@@ -252,6 +253,17 @@ function QuestChoiceFrameMixin:GetNumOptions()
 	return self.numActiveOptionFrames;
 end
 
+function QuestChoiceFrameMixin:ThrowTooManyOptionsError(playerChoiceID, badOptID)
+	local showingOptionIDs = {};
+	for _, option in ipairs(self.Options) do
+		table.insert(showingOptionIDs, option.optID);
+	end
+
+	table.insert(showingOptionIDs, badOptID);
+	local errorMessage = "|n|nPLAYERCHOICE DATA ERROR: Too many visible options! Max allowed is "..MAX_PLAYER_CHOICE_OPTIONS..".|n|nCurrently showing PlayerChoice ID "..playerChoiceID.."|nCurrently showing OptionIDs: "..table.concat(showingOptionIDs, ", ").."|n";
+	error(errorMessage);
+end
+
 function QuestChoiceFrameMixin:Update()
 	self.hasPendingUpdate = false;
 
@@ -275,6 +287,11 @@ function QuestChoiceFrameMixin:Update()
 
 		local existingOption = self:GetExistingOptionForGroup(groupID);
 		local button;
+
+		if not existingOption and self:GetNumOptions() == MAX_PLAYER_CHOICE_OPTIONS then
+			self:ThrowTooManyOptionsError(choiceID, optID);	-- This will cause a lua error and execution will stop
+		end
+
 		if existingOption then
 			-- only supporting two grouped options
 			existingOption.hasMultipleButtons = true;

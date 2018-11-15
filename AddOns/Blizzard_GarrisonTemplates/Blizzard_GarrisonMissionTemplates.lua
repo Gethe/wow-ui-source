@@ -2227,6 +2227,10 @@ function GarrisonMissionPageMixin:SetCounters(followers, enemies, missionID)
 	end
 end
 
+function GarrisonMissionPageMixin:GenerateSuccessTooltip(tooltipAnchor)
+	GarrisonMissionPageRewardTemplate_TooltipHitBox_GenerateSuccessTooltip(tooltipAnchor);
+end
+
 function GarrisonMissionPageMixin:CheckCounter(enemies, counterID)
 	for i = 1, #enemies do
 		local enemyFrame = enemies[i];
@@ -2441,6 +2445,32 @@ function GarrisonMissionComplete_OnRewardEvent(self, event, ...)
 		end
 	end
 end
+
+function GarrisonMissionPageRewardTemplate_MissionXPTooltipHitBox_OnEnter(self)
+	if (self:GetParent().MissionXP.hasBonusBaseXP) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_AddColoredLine(GameTooltip, GARRISON_MISSION_BONUS_BASE_XP_TOOLTIP, HIGHLIGHT_FONT_COLOR, nil, true);
+		GameTooltip:Show();
+	end
+end
+
+function GarrisonMissionPageRewardTemplate_TooltipHitBox_OnEnter(self)
+	local missionPage = self:GetParent():GetParent();
+	missionPage:GenerateSuccessTooltip(self);
+end
+
+function GarrisonMissionPageRewardTemplate_TooltipHitBox_GenerateSuccessTooltip(tooltipAnchor)
+	GameTooltip:ClearAllPoints();
+	GameTooltip:SetPoint("BOTTOMLEFT", tooltipAnchor, "BOTTOMRIGHT", 10, 0);
+	GameTooltip:SetOwner(tooltipAnchor, "ANCHOR_PRESERVE");
+	GameTooltip_AddNormalLine(GameTooltip, GARRISON_MISSION_CHANCE_TOOLTIP_HEADER);
+	local missionID = tooltipAnchor:GetParent():GetParent().missionInfo.missionID;
+	GameTooltip_AddColoredLine(GameTooltip, GARRISON_MISSION_PERCENT_CHANCE:format(C_Garrison.GetMissionSuccessChance(missionID)), HIGHLIGHT_FONT_COLOR);
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddNormalLine(GameTooltip, tooltipAnchor:GetParent().tooltipText, true, true);
+	GameTooltip:Show();
+end
+
 
 
 ---------------------------------------------------------------------------------

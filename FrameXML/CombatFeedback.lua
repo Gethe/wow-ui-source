@@ -24,6 +24,7 @@ CombatFeedbackText["IMMUNE"]	= IMMUNE;
 CombatFeedbackText["DEFLECT"]	= DEFLECT;
 CombatFeedbackText["ABSORB"]	= ABSORB;
 CombatFeedbackText["REFLECT"]	= REFLECT;
+CombatFeedbackText["BLOCK_REDUCED"]	= BLOCK_REDUCED;
 
 
 function CombatFeedback_Initialize(self, feedbackText, fontHeight)
@@ -55,6 +56,9 @@ function CombatFeedback_OnCombatEvent(self, event, flags, amount, type)
 				b = 0.0;
 			end
 			text = BreakUpLargeNumbers(amount);
+			if(flags == "BLOCK_REDUCED") then
+				text = COMBAT_TEXT_BLOCK_REDUCED:format(text);
+			end
 		elseif ( flags == "ABSORB" ) then
 			fontHeight = fontHeight * 0.75;
 			text = CombatFeedbackText["ABSORB"];

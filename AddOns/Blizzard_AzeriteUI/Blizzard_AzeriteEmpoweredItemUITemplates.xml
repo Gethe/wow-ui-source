@@ -136,14 +136,6 @@
 										<Texture parentKey="Rank3Plug" atlas="Azerite-Center-TraitPlug-Rune3" useAtlasSize="true" inherits="AzeritePlugTexture" />
 										<Texture parentKey="Rank2Plug" atlas="Azerite-Center-TraitPlug-Rune4" useAtlasSize="true" inherits="AzeritePlugTexture" />
 									</Layer>
-									<Layer level="ARTWORK" textureSubLevel="6">
-										<Texture parentKey="Shadow" atlas="Azerite-TopShadow" useAtlasSize="true" inherits="AzeriteUITexture">
-											<Anchors>
-												<Anchor point="TOPLEFT" x="90" y="-20" />
-												<Anchor point="TOPRIGHT" x="0" y="-20" />
-											</Anchors>
-										</Texture>
-									</Layer>
 								</Layers>
 								<Frames>
 									<Frame parentKey="Channel" inherits="AzeriteEmpoweredItemChannelTemplate" setAllPoints="true" />

@@ -1251,10 +1251,6 @@ function CompactUnitFrame_UtilIsPriorityDebuff(unit, index, filter)
 		if ( spellId == 25771 ) then	--Forbearance
 			return true;
 		end
-	elseif ( classFilename == "PRIEST" ) then
-		if ( spellId == 6788 ) then	--Weakened Soul
-			return true;
-		end
 	end
 
 	return false;
@@ -1882,12 +1878,25 @@ function DefaultCompactNamePlateFrameSetupInternal(frame, setupOptions, frameOpt
 
 	frame.overHealAbsorbGlow:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb");
 	frame.overHealAbsorbGlow:SetBlendMode("ADD");
+	
+	frame.myHealPrediction:ClearAllPoints();
+
+	frame.myHealAbsorb:ClearAllPoints();
+
+	frame.myHealAbsorbLeftShadow:ClearAllPoints();
+	frame.myHealAbsorbRightShadow:ClearAllPoints();
+
+	frame.otherHealPrediction:ClearAllPoints();
+
+	frame.totalAbsorb:ClearAllPoints();
+
+	frame.totalAbsorbOverlay:SetAllPoints(frame.totalAbsorb);
 
 	frame.classificationIndicator = frame.ClassificationFrame.classificationIndicator;
 
 	frame.LoseAggroAnim:Stop();
 
-	CompactUnitFrame_SetOptionTable(frame, frameOptions)
+	CompactUnitFrame_SetOptionTable(frame, frameOptions);
 end
 
 function DefaultCompactNamePlateFrameAnchorInternal(frame, setupOptions)
@@ -1903,19 +1912,6 @@ function DefaultCompactNamePlateFrameAnchorInternal(frame, setupOptions)
 
 	PixelUtil.SetPoint(frame.name, "BOTTOM", frame.healthBar, "TOP", 0, 4);
 	PixelUtil.SetHeight(frame.name, frame.name:GetLineHeight());
-
-	frame.myHealPrediction:ClearAllPoints();
-
-	frame.myHealAbsorb:ClearAllPoints();
-
-	frame.myHealAbsorbLeftShadow:ClearAllPoints();
-	frame.myHealAbsorbRightShadow:ClearAllPoints();
-
-	frame.otherHealPrediction:ClearAllPoints();
-
-	frame.totalAbsorb:ClearAllPoints();
-
-	frame.totalAbsorbOverlay:SetAllPoints(frame.totalAbsorb);
 
 	frame.overAbsorbGlow:ClearAllPoints();
 	PixelUtil.SetPoint(frame.overAbsorbGlow, "BOTTOMLEFT", frame.healthBar, "BOTTOMRIGHT", -4, -1);

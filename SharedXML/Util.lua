@@ -249,12 +249,9 @@ function SplitTextIntoHeaderAndNonHeader(text)
 end
 
 function GetItemInfoFromHyperlink(link)
-	local hyperlink = link:match("|Hitem:.-|h");
-	if (hyperlink) then
-		local itemID, creationContext = GetItemCreationContext(hyperlink);
-		return tonumber(itemID), creationContext;
-	else
-		return nil;
+	local strippedItemLink, itemID = link:match("|Hitem:((%d+).-)|h");
+	if itemID then
+		return tonumber(itemID), strippedItemLink;
 	end
 end
 

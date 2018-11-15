@@ -2,6 +2,29 @@ local NUM_REWARDS_PER_MEDAL = 2;
 local MAXIMUM_REWARDS_LEVEL = 10;
 local MAX_PER_ROW = 9;
 
+local LEGENDARY_COMPLETION_LEVEL = 15;
+local EPIC_COMPLETION_LEVEL = 10;
+local RARE_COMPLETION_LEVEL = 7;
+local UNCOMMON_COMPLETION_LEVEL = 4;
+local COMMON_COMPLETION_LEVEL = 2;
+
+
+local function GetRunQualityBasedOnLevel(level)
+	if (level >= LEGENDARY_COMPLETION_LEVEL) then
+		return LE_ITEM_QUALITY_LEGENDARY; 
+	elseif (level < LEGENDARY_COMPLETION_LEVEL and level >= EPIC_COMPLETION_LEVEL) then
+		return LE_ITEM_QUALITY_EPIC;
+	elseif (level < EPIC_COMPLETION_LEVEL and level >= RARE_COMPLETION_LEVEL) then
+		return LE_ITEM_QUALITY_RARE;
+	elseif (level < RARE_COMPLETION_LEVEL and level >= UNCOMMON_COMPLETION_LEVEL) then
+		return LE_ITEM_QUALITY_UNCOMMON;
+	elseif (level < UNCOMMON_COMPLETION_LEVEL and level >= COMMON_COMPLETION_LEVEL) then
+		return LE_ITEM_QUALITY_COMMON;
+	else 
+		return LE_ITEM_QUALITY_POOR;
+	end
+end 
+
 local function CreateFrames(self, array, num, template)
     while (#self[array] < num) do
 		local frame = CreateFrame("Frame", nil, self, template);
@@ -131,18 +154,34 @@ end
 
 function ChallengesFrame_Update(self)
     local sortedMaps = {};
+
     local hasWeeklyRun = false;
     for i = 1, #self.maps do
-		local _, level, _, _, members = C_MythicPlus.GetSeasonBestForMap(self.maps[i])
-        if (not level) then
-            level = 0;
+		local inTimeInfo, overtimeInfo = C_MythicPlus.GetSeasonBestForMap(self.maps[i]);
+		local level, quality; 
+        if (not inTimeInfo) then
+			if(overtimeInfo) then 
+				level = overtimeInfo.level; 
+			else
+				level = 0; 
+			end
+			tinsert(sortedMaps, { id = self.maps[i], level = level, quality = LE_ITEM_QUALITY_POOR});
         else
+			level = inTimeInfo.level; 
+			quality = GetRunQualityBasedOnLevel(level);
             hasWeeklyRun = true;
-        end
-        tinsert(sortedMaps, { id = self.maps[i], level = level});
-    end
+			tinsert(sortedMaps, { id = self.maps[i], level = level, quality = quality, inTime = true});
+		end
 
-    table.sort(sortedMaps, function(a, b) return a.level > b.level end);
+    end
+	
+    table.sort(sortedMaps, 
+	function(a, b) 
+		if(a.inTime ~= b.inTime) then 
+			return a.inTime;
+		end 
+		return a.level > b.level; 
+	end);
 
 	local weeklySortedMaps = {};
 	 for i = 1, #self.maps do
@@ -248,6 +287,8 @@ function ChallengesFrame_Update(self)
 			for i, affix in ipairs(affixes) do
 				if(affix.seasonID == currentSeason) then 
 					self.SeasonChangeNoticeFrame.Affix:SetUp(affix.id);
+					local affixName = C_ChallengeMode.GetAffixInfo(affix.id);
+					self.SeasonChangeNoticeFrame.SeasonDescription3:SetText(MYTHIC_PLUS_SEASON_DESC3:format(affixName));
 					break; 
 				end
 			end
@@ -339,13 +380,12 @@ function ChallengesDungeonIconMixin:SetUp(mapInfo, isFirst)
 
     self.Icon:SetTexture(texture);
     self.Icon:SetDesaturated(mapInfo.level == 0);
+
+	local color = ITEM_QUALITY_COLORS[mapInfo.quality]; 
+
     if (mapInfo.level > 0) then
         self.HighestLevel:SetText(mapInfo.level);
-        if (isFirst) then
-            self.HighestLevel:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-        else
-            self.HighestLevel:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-        end
+        self.HighestLevel:SetTextColor(color.r, color.g, color.b);
         self.HighestLevel:Show();
     else
         self.HighestLevel:Hide();
@@ -358,15 +398,48 @@ function ChallengesDungeonIconMixin:OnEnter()
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
     GameTooltip:SetText(name, 1, 1, 1);
 
-    local seasonBestDurationSec, seasonBestLevel, _, _, members = C_MythicPlus.GetSeasonBestForMap(self.mapID);
+    local inTimeInfo, overtimeInfo = C_MythicPlus.GetSeasonBestForMap(self.mapID);
+	local isOverTimeRun = false; 
+
+	local seasonBestDurationSec, seasonBestLevel, members; 
+
+	--If there is a best overtime run we want to show that as well. 
+	if(not inTimeInfo and overtimeInfo) then 
+		seasonBestDurationSec = overtimeInfo.durationSec; 
+		seasonBestLevel = overtimeInfo.level;
+		members = overtimeInfo.members;
+
+		isOverTimeRun = true; 
+	elseif(inTimeInfo) then 
+		seasonBestDurationSec = inTimeInfo.durationSec; 
+		seasonBestLevel = inTimeInfo.level; 
+		members = inTimeInfo.members;
+	end
+
     if (seasonBestDurationSec and seasonBestLevel) then
         if (addSpacer) then
             GameTooltip:AddLine(" ");
         end
-        GameTooltip:AddLine(MYTHIC_PLUS_SEASON_BEST);
-        GameTooltip:AddLine(MYTHIC_PLUS_POWER_LEVEL:format(seasonBestLevel), 1, 1, 1);
-        GameTooltip:AddLine(GetTimeStringFromSeconds(seasonBestDurationSec), 1, 1, 1);
-		GameTooltip:AddLine(" ");
+
+		-- Completed a higher key, but not in time. 
+		if (overtimeInfo and inTimeInfo and  overtimeInfo.level > inTimeInfo.level) then 
+			GameTooltip_AddNormalLine(GameTooltip, MYTHIC_PLUS_OVERTIME_SEASON_BEST);
+			GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_POWER_LEVEL:format(overtimeInfo.level), HIGHLIGHT_FONT_COLOR);
+			GameTooltip_AddColoredLine(GameTooltip, GetTimeStringFromSeconds(overtimeInfo.durationSec), HIGHLIGHT_FONT_COLOR);
+			GameTooltip_AddBlankLineToTooltip(GameTooltip); 
+		end 
+
+		-- If this is an overtime run we want to display a little bit differently. 
+		if (isOverTimeRun) then 
+			GameTooltip_AddNormalLine(GameTooltip, MYTHIC_PLUS_OVERTIME_SEASON_BEST);
+		else 
+			GameTooltip_AddNormalLine(GameTooltip, MYTHIC_PLUS_SEASON_BEST);
+		end 
+
+        GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_POWER_LEVEL:format(seasonBestLevel), HIGHLIGHT_FONT_COLOR);
+        GameTooltip_AddColoredLine(GameTooltip, GetTimeStringFromSeconds(seasonBestDurationSec), HIGHLIGHT_FONT_COLOR);
+		GameTooltip_AddBlankLineToTooltip(GameTooltip); 
+
 		for i, member in ipairs(members) do
 			if (member.name) then
 				local role = GetSpecializationRoleByID(member.specID);
@@ -380,7 +453,7 @@ function ChallengesDungeonIconMixin:OnEnter()
 				elseif (role == "HEALER") then
 					texture = CreateAtlasMarkup("roleicon-tiny-healer");
 				end
-				GameTooltip:AddLine(MYTHIC_PLUS_LEADER_BOARD_NAME_ICON:format(texture, member.name), color.r, color.g, color.b);
+				  GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_LEADER_BOARD_NAME_ICON:format(texture, member.name), color);
 			end
 		end
     end
