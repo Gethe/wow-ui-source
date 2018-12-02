@@ -1414,7 +1414,7 @@ function UIParent_OnEvent(self, event, ...)
 				elseif spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING then
 					StaticPopup_Show("SPELL_CONFIRMATION_WARNING", spellConfirmation.text, nil, spellConfirmation.spellID);
 				elseif spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_BONUS_ROLL then
-					BonusRollFrame_StartBonusRoll(spellConfirmation.spellID, spellConfirmation.text, spellConfirmation.duration, spellConfirmation.currencyID, spellConfirmation.currencyCost);
+					BonusRollFrame_StartBonusRoll(spellConfirmation.spellID, spellConfirmation.text, spellConfirmation.duration, spellConfirmation.currencyID, spellConfirmation.currencyCost, spellConfirmation.difficultyID);
 				end
 			end
 		end
@@ -1958,8 +1958,8 @@ function UIParent_OnEvent(self, event, ...)
 	-- Quest Choice trigger event
 
 	elseif ( event == "QUEST_CHOICE_UPDATE" ) then
-		local uiTextureKitID = select(4, GetQuestChoiceInfo());
-		if (uiTextureKitID and uiTextureKitID ~= 0) then
+		local choiceInfo = C_QuestChoice.GetQuestChoiceInfo();
+		if (choiceInfo.uiTextureKitID and choiceInfo.uiTextureKitID ~= 0) then
 			WarboardQuestChoice_LoadUI();
 			WarboardQuestChoiceFrame:TryShow();
 		else

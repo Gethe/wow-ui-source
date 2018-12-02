@@ -777,7 +777,9 @@ function CommunitiesFrameMixin:OnHide()
 
 	self:CloseActiveDialogs();
 	C_Club.ClearClubPresenceSubscription();
+	C_Club.ClearAutoAdvanceStreamViewMarker();
 	C_Club.Flush();
+	self:SetFocusedStream(nil, nil);
 	FrameUtil.UnregisterFrameForEvents(self, COMMUNITIES_FRAME_EVENTS);
 	UpdateMicroButtons();
 end

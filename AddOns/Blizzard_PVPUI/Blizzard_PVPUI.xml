@@ -14,8 +14,6 @@
 		</Layers>
 		<Scripts>
 			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
-			<OnEvent method="OnEvent"/>
 			<OnEnter method="UpdateTooltip"/>
 			<OnLeave method="OnLeave"/>
 		</Scripts>
@@ -48,25 +46,25 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="3">
-				<Texture parentKey="BottomBorder" atlas="parchmentpopup-bottom" horizTile="true" useAtlasSize="true" >
+				<Texture parentKey="BottomBorder" atlas="parchmentpopup-bottom" useAtlasSize="true" >
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftCorner" relativePoint="BOTTOMRIGHT" y="2"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" relativePoint="BOTTOMLEFT" y="2"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="TopBorder" atlas="parchmentpopup-top" horizTile="true" useAtlasSize="true" >
+				<Texture parentKey="TopBorder" atlas="parchmentpopup-top" useAtlasSize="true" >
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner" relativePoint="TOPRIGHT" y="-1"/>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="TOPLEFT" y="-1"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="LeftBorder" atlas="parchmentpopup-left" vertTile="true" useAtlasSize="true">
+				<Texture parentKey="LeftBorder" atlas="parchmentpopup-left" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner" relativePoint="BOTTOMLEFT" x="2"/>
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftCorner" relativePoint="TOPLEFT" x="2"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="RightBorder" atlas="parchmentpopup-right" vertTile="true" useAtlasSize="true">
+				<Texture parentKey="RightBorder" atlas="parchmentpopup-right" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="BOTTOMRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" relativePoint="TOPRIGHT"/>
@@ -106,7 +104,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="2">
-				<Texture parentKey="Background" atlas="parchmentpopup-background" vertTile="true" horizTile="true">
+				<Texture parentKey="Background" atlas="parchmentpopup-background">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="20" y="-20"/>
 						<Anchor point="BOTTOMRIGHT" x="-20" y="20"/>

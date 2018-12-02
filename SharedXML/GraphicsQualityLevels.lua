@@ -20,14 +20,14 @@ VideoData["Graphics_Quality"]={
 				"Graphics_OutlineModeDropDown",
 			},
 	numQualityLevels = 10,
-	SetDisplayValue = 
+	SetDisplayValue =
 		function(self,value)
 		end,
-	preGetValue = 
+	preGetValue =
 		function(self)
 			self.selectedID = nil;
 		end,
-	GetValueNew = 
+	GetValueNew =
 		function(self)
 			if(self.preGetValue) then
 				self:preGetValue();
@@ -44,7 +44,7 @@ VideoData["Graphics_Quality"]={
 		end,
 	description =  "Video Quality:",
 	dependtarget = Graphics_ControlRefreshValue,
-	initialize = 
+	initialize =
 		function(self)
 			self:SetWidth(550);
 			local parent = self:GetParent():GetName();
@@ -90,7 +90,7 @@ VideoData["Graphics_Quality"]={
 				end
 			end
 		end,
-	onvaluechanged = 
+	onvaluechanged =
 		function(self, value)
 			value = floor(value + 0.5);
 			self.savevalue = value;
@@ -196,9 +196,9 @@ VideoData["Display_DisplayModeDropDown"]={
 VideoData["Display_PrimaryMonitorDropDown"]={
 	name = PRIMARY_MONITOR;
 	description = OPTION_TOOLTIP_PRIMARY_MONITOR,
-	
+
 	table = {},
-	tablefunction = 
+	tablefunction =
 		function(self)
 			local count = GetMonitorCount();
 			for i=1, count do
@@ -213,11 +213,11 @@ VideoData["Display_PrimaryMonitorDropDown"]={
 				self.table[i] = name;
 			end
 		end,
-	SetValue = 
+	SetValue =
 		function (self, value)
 			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value-1);
 		end,
-	doGetValue = 
+	doGetValue =
 		function (self)
 			return 1+BlizzardOptionsPanel_GetCVarSafe(self.cvar);
 		end,
@@ -253,13 +253,13 @@ end
 
 VideoData["Display_ResolutionDropDown"]={
 	name = WINDOW_SIZE;
-	description = OPTION_TOOLTIP_RESOLUTION,	
-	
-	tablefunction = 
+	description = OPTION_TOOLTIP_RESOLUTION,
+
+	tablefunction =
 		function(self)
 			return GetScreenResolutions(Display_PrimaryMonitorDropDown:GetValue());
 		end,
-	getValues = 
+	getValues =
 		function(self)
 			return DecodeResolution(self.table[self:GetValue()]);
 		end,
@@ -273,7 +273,7 @@ VideoData["Display_ResolutionDropDown"]={
 			local width, height = DecodeResolution(self.table[value]);
 			SetScreenResolution(width, height, Display_DisplayModeDropDown:fullscreenmode());
 		end,
-	doGetValue = 
+	doGetValue =
 		function(self)
 			return GetCurrentResolution(Display_PrimaryMonitorDropDown:GetValue(), Display_DisplayModeDropDown:fullscreenmode());
 		end,
@@ -293,7 +293,7 @@ VideoData["Display_ResolutionDropDown"]={
 VideoData["Display_VerticalSyncDropDown"]={
 	name = VERTICAL_SYNC;
 	description = OPTION_TOOLTIP_VERTICAL_SYNC,
-	
+
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
@@ -367,7 +367,7 @@ end
 
 local function GenerateAntiAliasingDropDownData()
 	local data = {};
-	
+
 	data[#data + 1] = {
 		text = VIDEO_OPTIONS_NONE,
 		cvars =	{
@@ -1034,7 +1034,7 @@ VideoData["RaidGraphics_OutlineModeDropDown"]={
 VideoData["Advanced_BufferingDropDown"]={
 	name = TRIPLE_BUFFER;
 	description = OPTION_TOOLTIP_TRIPLE_BUFFER,
-	
+
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
@@ -1056,7 +1056,7 @@ VideoData["Advanced_BufferingDropDown"]={
 VideoData["Advanced_LagDropDown"]={
 	name = FIX_LAG;
 	description = OPTION_TOOLTIP_FIX_LAG,
-	
+
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
@@ -1139,7 +1139,7 @@ VideoData["Advanced_ResampleQualityDropDown"]={
 VideoData["Advanced_MaxFPSSlider"]={
 	name = MAXFPS;
 	tooltip = OPTION_MAXFPS,
-	initialize = 
+	initialize =
 		function(self)
 			local value = self:GetCurrentValue();
 			if(value == 0) then
@@ -1154,7 +1154,7 @@ VideoData["Advanced_MaxFPSSlider"]={
 VideoData["Advanced_MaxFPSBKSlider"]={
 	name = MAXFPSBK;
 	tooltip = OPTION_MAXFPSBK,
-	initialize = 
+	initialize =
 		function(self)
 			local value = self:GetCurrentValue();
 			if(value == 0) then
@@ -1197,7 +1197,7 @@ VideoData["Advanced_UseUIScale"]={
 VideoData["Advanced_AdapterDropDown"]={
 	name = GRAPHICS_CARD,
 	description = OPTION_TOOLTIP_GRAPHICS_CARD,
-	tablefunction = 
+	tablefunction =
 		function(self)
 			self.adapters = C_VideoOptions.GetGxAdapterInfo();
 			local adapterNames = {};
@@ -1220,7 +1220,7 @@ VideoData["Advanced_AdapterDropDown"]={
 				SetCVar("gxAdapter", self.adapters[value - 1].name);
 			end
 		end,
-	doGetValue = 
+	doGetValue =
 		function(self)
 			local adapter = GetCVar("gxAdapter");
 			if ( adapter == "" ) then
@@ -1261,8 +1261,62 @@ VideoData["Advanced_MultisampleAlphaTest"]={
 }
 
 VideoData["Display_RenderScaleSlider"]={
-	name = RENDER_SCALE;
+	name = RENDER_SCALE,
 	tooltip = OPTION_TOOLTIP_RENDER_SCALE,
+	graphicsCVar = "RenderScale",
+	dependtarget = Graphics_ControlRefreshValue,
+	preventValueChangeHandlerFromSettingLabel = true,
+
+	SetDisplayValue = function(self,value)
+		self.noclick = true;
+		self:sliderSetValue(value);
+		self:updatecustomfield(value);
+		self.noclick = false;
+	end,
+
+	SetCVarValue = function(self, value)
+		BlizzardOptionsPanel_SetCVarSafe(self.graphicsCVar, value);
+	end,
+
+	initialize = function(self)
+		self:SetDisplayValue(tonumber(BlizzardOptionsPanel_GetCVarSafe(self.graphicsCVar)));
+	end,
+
+	onload = function(self)
+		self:SetMinMaxValues(GetMinRenderScale(), GetMaxRenderScale());
+		self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+
+		self.Text:SetFontObject("OptionsFontSmall");
+		self.Text:ClearAllPoints();
+		self.Text:SetPoint("RIGHT", self, "LEFT", -20, 0);
+		self.Text:SetText(RENDER_SCALE);
+
+		-- Alias Low and High fontStrings to be Value and Resolution respectively.
+		self.Value = self.Low;
+		self.Value:ClearAllPoints();
+		self.Value:SetPoint("LEFT", self, "RIGHT", 3, 2);
+
+		self.Resolution = self.High;
+		self.Resolution:ClearAllPoints();
+		self.Resolution:SetPoint("TOP", self, "BOTTOM", 0, 0);
+
+		self.sliderSetValue = self.SetValue;
+		self.SetValue = self.SetCVarValue;
+	end,
+
+	updatecustomfield = function(self, value)
+		local renderScale = value;
+		local roundToNearestInteger = true;
+		self.Value:SetText(FormatPercentage(renderScale, roundToNearestInteger));
+		local width, height = GetPhysicalScreenSize();
+		self.Resolution:SetText(math.floor(width * renderScale).."x"..math.floor(height * renderScale));
+	end,
+
+	onvaluechanged = function(self, value)
+		self:updatecustomfield(value);
+	end,
+
+	restart = true,
 }
 
 -------------------------------------------------------------------------------------------------------
@@ -1270,7 +1324,7 @@ VideoData["Advanced_GraphicsAPIDropDown"]={
 	name = GXAPI;
 	description = OPTION_TOOLTIP_GXAPI;
 
-	tablefunction = 
+	tablefunction =
 		function(self)
 			self.cvarValues = { GetGraphicsAPIs() };	-- this is a table of the cvar values, ie "d3d9", "opengl", etc
 			local temp = { };
@@ -1283,7 +1337,7 @@ VideoData["Advanced_GraphicsAPIDropDown"]={
 		function (self, value)
 			SetCVar("gxapi", self.cvarValues[value]);
 		end,
-	doGetValue = 
+	doGetValue =
 		function(self)
 			local api = GetCVar("gxapi");
 			for i = 1, #self.cvarValues do

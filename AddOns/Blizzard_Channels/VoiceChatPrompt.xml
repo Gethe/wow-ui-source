@@ -38,6 +38,11 @@
 				</Scripts>
 			</Button>
 		</Frames>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
 	</ContainedAlertFrame>
 
 	<ContainedAlertFrame name="VoiceChatChannelActivatedNotification" mixin="VoiceChatChannelActivatedNotificationMixin" inherits="VoiceChatPromptTemplate">

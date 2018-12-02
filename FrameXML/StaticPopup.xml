@@ -182,6 +182,11 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Instructions" justifyH="LEFT" justifyV="MIDDLE" inherits="GameFontDisableSmall" setAllPoints="true">
+							<Color r="0.35" g="0.35" b="0.35"/>
+						</FontString>
+					</Layer>
 				</Layers>
 				<Scripts>
 					<OnEnterPressed>

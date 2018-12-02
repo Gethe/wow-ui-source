@@ -693,6 +693,7 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	--disable model tab and abilities tab, no boss selected
 	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.modelTab, false);
 	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.bossTab, false);
+	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.lootTab, C_EncounterJournal.InstanceHasLoot());
 
 	if (EncounterJournal_SearchForOverview(instanceID)) then
 		EJ_Tabs[1].frame = "overviewScroll";
@@ -759,6 +760,7 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	self.info.encounterTitle:SetText(ename);
 
 	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.overviewTab, (rootSectionID > 0));
+	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.lootTab, C_EncounterJournal.InstanceHasLoot());	
 
 	local sectionInfo = C_EncounterJournal.GetSectionInfo(rootSectionID);
 

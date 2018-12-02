@@ -16,12 +16,11 @@ function BannerDataProvider:RefreshAllData(fromOnShow)
 end
 
 function BannerDataProvider:AddBanner(mapBannerInfo)
-	local timeLeftMinutes = C_AreaPoiInfo.GetAreaPOITimeLeft(mapBannerInfo.areaPoiID);
+	local secondsLeft = C_AreaPoiInfo.GetAreaPOISecondsLeft(mapBannerInfo.areaPoiID);
 	local descriptionLabel = nil;
-	if timeLeftMinutes then
-		local hoursLeft = math.floor(timeLeftMinutes / 60);
-		local minutesLeft = timeLeftMinutes % 60;
-		descriptionLabel = INVASION_TIME_FORMAT:format(hoursLeft, minutesLeft)
+	if secondsLeft and secondsLeft > 0 then
+		local timeString = SecondsToTime(secondsLeft);
+		descriptionLabel = INVASION_TIME_FORMAT:format(timeString);
 	end
 
 	local atlas, width, height = GetAtlasInfo(mapBannerInfo.atlasName);

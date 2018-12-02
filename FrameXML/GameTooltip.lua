@@ -1,10 +1,19 @@
 
+--[[ Optionals:
+	headerText - string
+	headerColor - color
+	wrapHeaderText - bool
+	atLeastShowAzerite - bool
+	fullItemDescription - bool
+--]]
+
 TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT = {
 	headerText = QUEST_REWARDS,
 	headerColor = NORMAL_FONT_COLOR,
 	prefixBlankLineCount = 1,
 	postHeaderBlankLineCount = 0,
 	wrapHeaderText = true,
+	fullItemDescription = true,
 }
 
 TOOLTIP_QUEST_REWARDS_STYLE_CONTRIBUTION = {
@@ -13,6 +22,7 @@ TOOLTIP_QUEST_REWARDS_STYLE_CONTRIBUTION = {
 	prefixBlankLineCount = 0,
 	postHeaderBlankLineCount = 1,
 	wrapHeaderText = false,
+	fullItemDescription = true,
 }
 
 TOOLTIP_QUEST_REWARDS_STYLE_PVP_BOUNTY = {
@@ -21,6 +31,7 @@ TOOLTIP_QUEST_REWARDS_STYLE_PVP_BOUNTY = {
 	prefixBlankLineCount = 0,
 	postHeaderBlankLineCount = 0,
 	wrapHeaderText = false,
+	fullItemDescription = true,
 }
 
 TOOLTIP_QUEST_REWARDS_STYLE_ISLANDS_QUEUE = {
@@ -29,6 +40,7 @@ TOOLTIP_QUEST_REWARDS_STYLE_ISLANDS_QUEUE = {
 	prefixBlankLineCount = 0,
 	postHeaderBlankLineCount = 1,
 	wrapHeaderText = false,
+	fullItemDescription = true,
 }
 
 TOOLTIP_QUEST_REWARDS_STYLE_EMISSARY_REWARD = {
@@ -38,17 +50,25 @@ TOOLTIP_QUEST_REWARDS_STYLE_EMISSARY_REWARD = {
 	postHeaderBlankLineCount = 0,
 	wrapHeaderText = true,
 	atLeastShowAzerite = true,
+	fullItemDescription = true,
 }
 
 TOOLTIP_QUEST_REWARDS_STYLE_QUEST_CHOICE = {
 	-- Doesn't include a header to allow individual player choice responses to set their own
 	prefixBlankLineCount = 1,
 	postHeaderBlankLineCount = 0,
+	fullItemDescription = true,
 }
 
 TOOLTIP_QUEST_REWARDS_STYLE_NONE = {
 	prefixBlankLineCount = 0,
 	postHeaderBlankLineCount = 0,
+}
+
+TOOLTIP_QUEST_REWARDS_STYLE_CONQUEST_BAR = {
+	prefixBlankLineCount = 0,
+	postHeaderBlankLineCount = 0,
+	fullItemDescription = true,
 }
 
 function GameTooltip_UnitColor(unit)
@@ -166,7 +186,9 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 	
 	if ( GetQuestLogRewardXP(questID) > 0 or GetNumQuestLogRewardCurrencies(questID) > 0 or GetNumQuestLogRewards(questID) > 0 or
 		GetQuestLogRewardMoney(questID) > 0 or GetQuestLogRewardArtifactXP(questID) > 0 or GetQuestLogRewardHonor(questID) > 0 ) then
-		tooltip.ItemTooltip:Hide();
+		if tooltip.ItemTooltip then
+			tooltip.ItemTooltip:Hide();
+		end
 
 		GameTooltip_AddBlankLinesToTooltip(tooltip, style.prefixBlankLineCount);
 		if style.headerText and style.headerColor then
@@ -174,10 +196,9 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 		end
 		GameTooltip_AddBlankLinesToTooltip(tooltip, style.postHeaderBlankLineCount);
 
-		local fullItemDescription = true;
-		local hasAnySingleLineRewards, showRetrievingData = QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style.atLeastShowAzerite, fullItemDescription);
+		local hasAnySingleLineRewards, showRetrievingData = QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style);
 		
-		if hasAnySingleLineRewards and tooltip.ItemTooltip:IsShown() then
+		if hasAnySingleLineRewards and tooltip.ItemTooltip and tooltip.ItemTooltip:IsShown() then
 			GameTooltip_AddBlankLinesToTooltip(tooltip, 1);
 			if showRetrievingData then
 				GameTooltip_AddColoredLine(tooltip, RETRIEVING_DATA, RED_FONT_COLOR);
@@ -873,6 +894,9 @@ function EmbeddedItemTooltip_SetItemByID(self, id)
 end
 
 function EmbeddedItemTooltip_SetItemByQuestReward(self, questLogIndex, questID)
+	if not questLogIndex then
+		return false;
+	end
 	local itemName, itemTexture, quantity, quality, isUsable, itemID = GetQuestLogRewardInfo(questLogIndex, questID);
 	if itemName and itemTexture then
 		self.itemID = itemID;

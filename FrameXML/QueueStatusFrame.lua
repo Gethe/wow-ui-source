@@ -864,7 +864,7 @@ end
 
 local function LeaveQueueWithMatchReadyCheck(idx)
 	local status, mapName, teamSize, registeredMatch, suspendedQueue, queueType = GetBattlefieldStatus(idx);
-	if queueType == "ARENA" or queueType == "ARENASKIRMISH" or (queueType == "BATTLEGROUND" and registeredMatch) then
+	if status == "confirm" and (queueType == "ARENA" or queueType == "ARENASKIRMISH" or (queueType == "BATTLEGROUND" and registeredMatch)) then
 		UIErrorsFrame:AddExternalErrorMessage(PVP_MATCH_READY_ERROR);
 	else
 		local acceptPort = false;

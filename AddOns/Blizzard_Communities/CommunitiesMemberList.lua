@@ -614,10 +614,6 @@ function CommunitiesMemberListMixin:OnEvent(event, ...)
 		if voiceChannelID == self:GetVoiceChannelID() then
 			self:MarkMemberListDirty();
 		end
-	elseif event == "GUILD_ROSTER_UPDATE" then
-		if C_Club.GetGuildClubId() == self:GetSelectedClubId() then
-			self:MarkMemberListDirty();
-		end
 	elseif event == "VOICE_CHAT_CHANNEL_ACTIVATED" or event == "VOICE_CHAT_CHANNEL_DEACTIVATED" then
 		local voiceChannelID = ...;
 		if voiceChannelID == self:GetVoiceChannelID() then
@@ -651,8 +647,7 @@ function CommunitiesMemberListMixin:OnEvent(event, ...)
 			GuildRoster();
 		end
 
-		local clubInfo = self:GetSelectedClubInfo();
-		if clubInfo and clubInfo.clubType == Enum.ClubType.Guild then
+		if C_Club.GetGuildClubId() == self:GetSelectedClubId() then
 			self:MarkMemberListDirty();
 			self:MarkSortDirty();
 		end

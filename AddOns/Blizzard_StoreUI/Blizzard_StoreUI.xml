@@ -356,6 +356,75 @@
 				</Layer>
 			</Layers>
 		</EditBox>
+		<Button name="StoreAutoCompleteButtonTemplate" parentArray="Buttons" virtual="true">
+			<Size x="140" y="14"/>
+			<ButtonText parentKey="Text" justifyH="LEFT"/>
+			<NormalFont style="GameFontWhiteTiny2"/>
+			<HighlightFont style="GameFontWhiteTiny2"/>
+			<DisabledFont style="GameFontDisableTiny2"/>
+			<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+		</Button>
+		<EditBox name="StoreEditBoxWithAutoCompleteTemplate" inherits="StoreEditBoxHorizontalLabelTemplate" letters="100" virtual="true">
+			<Frames>
+				<Frame parentKey="AutoCompleteBox" hidden="true">
+					<Size x="154" y="5"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" x="-4" y="14"/>
+					</Anchors>
+					<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
+						<BackgroundInsets left="10" right="5" top="4" bottom="9"/>
+						<TileSize val="16"/>
+						<EdgeSize val="16"/>
+					</Backdrop>
+					<Layers>
+						<Layer level="BACKGROUND">
+							<Texture parentKey="Shade">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="11" y="-7"/>
+									<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+								</Anchors>
+								<Color r="0" g="0" b="0" a=".8"/>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Frames>
+						<Button inherits="StoreAutoCompleteButtonTemplate">
+							<Anchors>
+								<Anchor point="TOP" x="6" y="-12"/>
+							</Anchors>
+							<Scripts>
+								<OnClick function="StoreAutoCompleteButton_OnClick"/>
+							</Scripts>
+						</Button>
+					</Frames>
+					<Scripts>
+						<OnShow>
+							self:SetFrameLevel(self:GetParent():GetFrameLevel()+4);
+						</OnShow>
+						<OnHide function="StoreAutoCompleteBox_OnHide"/>
+					</Scripts>
+				</Frame>
+			</Frames>
+			<Scripts>
+				<OnCursorChanged function="StoreEditBoxWithAutoCompleteTemplate_OnCursorChanged"/>
+				<OnTextChanged function="StoreEditBoxWithAutoCompleteTemplate_OnTextChanged"/>
+				<OnLeave function="VASCharacterSelection_ClearStoreTooltip"/>
+				<OnShow>
+					self:SetFrameLevel(self:GetParent():GetFrameLevel()+7);
+				</OnShow>
+				<OnKeyDown inherit="append">
+					if (key == "DOWN") then
+						StoreAutoCompleteIncrementSelection(self);
+					elseif (key == "UP") then
+						StoreAutoCompleteDecrementSelection(self);
+					elseif (key == "ENTER") then
+						StoreAutoCompleteSelectionEnterPressed(self);
+					elseif (key == "ESCAPE") then
+						self.AutoCompleteBox:Hide();
+					end
+				</OnKeyDown>
+			</Scripts>
+		</EditBox>
 		<Button name="StoreDropDownMenuButtonTemplate" virtual="true" parentArray="Buttons">
 			<Size x="100" y="16"/>
 			<Layers>
@@ -1623,14 +1692,6 @@
 				</Button>
 			</Frames>
 		</Frame>
-		<Button name="StoreAutoCompleteButtonTemplate" parentArray="Buttons" virtual="true">
-			<Size x="140" y="14"/>
-			<ButtonText parentKey="Text" justifyH="LEFT"/>
-			<NormalFont style="GameFontWhiteTiny2"/>
-			<HighlightFont style="GameFontWhiteTiny2"/>
-			<DisabledFont style="GameFontDisableTiny2"/>
-			<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
-		</Button>
 		<Frame name="StoreVASRaceFactionIconFrameTemplate" parentArray="Icons" virtual="true">
 			<Size x="26" y="26"/>
 			<Layers>
@@ -2491,6 +2552,19 @@
 									<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="0" y="-16"/>
 								</Anchors>
 							</FontString>
+							<FontString parentKey="NoEligibleCharactersErrorMessage" inherits="GameFontBlack" hidden="true" justifyH="LEFT">
+								<Size x="300"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.$parent.ProductDescription" relativePoint="BOTTOMLEFT" x="0" y="-80"/>
+								</Anchors>
+								<Color r="1.0" g="0.1" b="0.1"/>
+							</FontString>
+							<FontString parentKey="FollowGuildErrorMessage" inherits="GameFontBlack" hidden="true" justifyH="LEFT">
+								<Size x="300"/>
+								<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="2" y="-8"/>
+								</Anchors>
+							</FontString>
 						</Layer>
 						<Layer level="ARTWORK">
 							<Texture parentKey="ClassIcon" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes">
@@ -2637,14 +2711,15 @@
 								<OnLeave function="VASCharacterSelection_ClearStoreTooltip"/>
 							</Scripts>
 						</EditBox>
-						<EditBox parentKey="NewGuildMaster" letters="12" inherits="StoreEditBoxHorizontalLabelTemplate">
+						<EditBox parentKey="NewGuildMaster" letters="12" inherits="StoreEditBoxWithAutoCompleteTemplate">
+							<KeyValues>
+								<KeyValue key="autoCompleteType" value="guildMembers" type="string"/>
+							</KeyValues>
 							<Anchors>
 								<Anchor point="TOPRIGHT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMRIGHT" x="8" y="-52"/>
 							</Anchors>
 							<Scripts>
-								<OnTextChanged function="VASCharacterSelection_GuildVASEditbox_OnTextChanged"/>
 								<OnEnter function="VASCharacterSelection_NewGuildMaster_OnEnter"/>
-								<OnLeave function="VASCharacterSelection_ClearStoreTooltip"/>
 							</Scripts>
 						</EditBox>
 						<EditBox parentKey="OldGuildNewName" letters="24" inherits="StoreEditBoxHorizontalLabelTemplate">
@@ -2657,86 +2732,28 @@
 								<OnLeave function="VASCharacterSelection_ClearStoreTooltip"/>
 							</Scripts>
 						</EditBox>
-						<CheckButton parentKey="TransferRealmCheckbox" inherits="StoreCheckButtonWithLabelTemplate">
+						<CheckButton parentKey="FollowGuildCheckbox" inherits="StoreCheckButtonWithLabelTemplate">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="2" y="-8"/>
 							</Anchors>
 							<Scripts>
-								<OnClick function="TransferRealmCheckbox_OnClick"/>
+								<OnClick function="FollowGuildCheckbox_OnClick"/>
 							</Scripts>
 						</CheckButton>
-						<EditBox parentKey="TransferRealmEditbox" letters="100" inherits="StoreEditBoxHorizontalLabelTemplate">
+						<EditBox parentKey="TransferRealmEditbox" inherits="StoreEditBoxWithAutoCompleteTemplate">
+							<KeyValues>
+								<KeyValue key="autoCompleteType" value="realms" type="string"/>
+							</KeyValues>
 							<Anchors>
 								<Anchor point="TOPRIGHT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMRIGHT" x="8" y="-10"/>
 							</Anchors>
 							<Scripts>
-								<OnCursorChanged function="VASCharacterSelectionTransferRealmEditBox_OnCursorChanged"/>
-								<OnTextChanged function="VASCharacterSelectionTransferRealmEditBox_OnTextChanged"/>
 								<OnEnter function="VASCharacterSelection_TransferRealmEditbox_OnEnter"/>
-								<OnLeave function="VASCharacterSelection_ClearStoreTooltip"/>
-								<OnShow>
-									self:SetFrameLevel(self:GetParent():GetFrameLevel()+7);
-								</OnShow>
-								<OnKeyDown inherit="append">
-									if (key == "DOWN") then
-										StoreAutoCompleteIncrementSelection();
-									elseif (key == "UP") then
-										StoreAutoCompleteDecrementSelection();
-									elseif (key == "ENTER") then
-										StoreAutoCompleteSelectionEnterPressed();
-									elseif (key == "ESCAPE") then
-										self:GetParent().TransferRealmAutoCompleteBox:Hide();
-									end
-								</OnKeyDown>
 							</Scripts>
 						</EditBox>
-						<Frame parentKey="TransferRealmAutoCompleteBox" hidden="true">
-							<Size x="154" y="5"/>
-							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.TransferRealmEditbox" relativePoint="BOTTOM" x="-4" y="14"/>
-							</Anchors>
-							<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-								<BackgroundInsets>
-									<AbsInset left="10" right="5" top="4" bottom="9"/>
-								</BackgroundInsets>
-								<TileSize>
-									<AbsValue val="16"/>
-								</TileSize>
-								<EdgeSize>
-									<AbsValue val="16"/>
-								</EdgeSize>
-							</Backdrop>
-							<Layers>
-								<Layer level="BACKGROUND">
-									<Texture parentKey="Shade">
-										<Anchors>
-											<Anchor point="TOPLEFT" x="11" y="-7"/>
-											<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
-										</Anchors>
-										<Color r="0" g="0" b="0" a=".8"/>
-									</Texture>
-								</Layer>
-							</Layers>
-							<Frames>
-								<Button name="AutoCompleteButton1" inherits="StoreAutoCompleteButtonTemplate">
-									<Anchors>
-										<Anchor point="TOP" x="6" y="-12"/>
-									</Anchors>
-									<Scripts>
-										<OnClick function="VASCharacterSelectionTransferRealmEditBoxAutoCompleteButton_OnClick"/>
-									</Scripts>
-								</Button>
-							</Frames>
-							<Scripts>
-								<OnShow>
-									self:SetFrameLevel(self:GetParent():GetFrameLevel()+4);
-								</OnShow>
-								<OnHide function="TransferRealmAutoCompleteBox_OnHide"/>
-							</Scripts>
-						</Frame>
 						<CheckButton parentKey="TransferAccountCheckbox" inherits="StoreCheckButtonWithLabelTemplate">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.TransferRealmCheckbox" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.TransferRealmEditbox" relativePoint="BOTTOMLEFT" x="-168" y="-12"/>
 							</Anchors>
 							<Scripts>
 								<OnClick function="TransferAccountCheckbox_OnClick"/>
@@ -2837,34 +2854,12 @@
 			</Scripts>
 		</Frame>
 
-		<Frame name="StoreBulletPointTemplate" inherits="BulletPointWithTextureTemplate" hyperlinksEnabled="true" virtual="true">
+		<Frame name="StoreBulletPointTemplate" inherits="BulletPointWithTextureTemplate" mixin="StoreBulletPointMixin" hyperlinksEnabled="true" virtual="true">
 			<Scripts>
-				<OnLoad inherit="prepend">
-					self.Text:SetFontObject("GameFontNormalMed1");
-					self.Text:SetTextColor(1, 0.84, 0.55);
-				</OnLoad>
-				<OnHyperlinkEnter>
-					local grandparent = self:GetParent():GetParent();
-					local onEnterScript = grandparent:GetScript("OnEnter");
-					if onEnterScript then
-						onEnterScript(grandparent);
-					end
-				</OnHyperlinkEnter>
-				<OnHyperlinkLeave>
-					local grandparent = self:GetParent():GetParent();
-					local onLeaveScript = grandparent:GetScript("OnLeave");
-					if onLeaveScript then
-						onLeaveScript(grandparent);
-					end
-				</OnHyperlinkLeave>
-				<OnHyperlinkClick>
-					local grandparent = self:GetParent():GetParent();
-					if not grandparent:IsEnabled() then
-					return;
-					end
-
-					GetURLIndexAndLoadURL(link);
-				</OnHyperlinkClick>
+				<OnLoad method="OnLoad"/>
+				<OnHyperlinkEnter method="OnHyperlinkEnter"/>
+				<OnHyperlinkLeave method="OnHyperlinkLeave"/>
+				<OnHyperlinkClick method="OnHyperlinkClick"/>
 			</Scripts>
 		</Frame>
 	</ScopedModifier>

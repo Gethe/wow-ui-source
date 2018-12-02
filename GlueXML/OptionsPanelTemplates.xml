@@ -69,15 +69,18 @@
 		</Layers>
 	</CheckButton>
 	<Slider name="OptionsSliderTemplate" inherits="HorizontalSliderTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="type" value="CONTROLTYPE_SLIDER" type="global"/>
+		</KeyValues>
 		<Size x="144" y="17"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="OptionsFontHighlight">
+				<FontString name="$parentText" parentKey="Text" inherits="OptionsFontHighlight">
 					<Anchors>
 						<Anchor point="BOTTOM" relativePoint="TOP"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentLow" inherits="OptionsFontSmall" text="LOW">
+				<FontString name="$parentLow" parentKey="Low" inherits="OptionsFontSmall" text="LOW">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
 							<Offset>
@@ -86,7 +89,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentHigh" inherits="OptionsFontSmall" text="HIGH">
+				<FontString name="$parentHigh" parentKey="High" inherits="OptionsFontSmall" text="HIGH">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT">
 							<Offset>

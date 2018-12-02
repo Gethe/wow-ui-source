@@ -94,7 +94,7 @@ local AzeriteEmpoweredItem =
 			{
 				{ Name = "azeriteEmpoweredItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
 				{ Name = "powerID", Type = "number", Nilable = false },
-				{ Name = "upgraded", Type = "bool", Nilable = true },
+				{ Name = "level", Type = "AzeritePowerLevel", Nilable = false },
 			},
 
 			Returns =
@@ -286,6 +286,19 @@ local AzeriteEmpoweredItem =
 
 	Tables =
 	{
+		{
+			Name = "AzeritePowerLevel",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Base", Type = "AzeritePowerLevel", EnumValue = 0 },
+				{ Name = "Upgraded", Type = "AzeritePowerLevel", EnumValue = 1 },
+				{ Name = "Downgraded", Type = "AzeritePowerLevel", EnumValue = 2 },
+			},
+		},
 		{
 			Name = "AzeriteEmpoweredItemPowerInfo",
 			Type = "Structure",

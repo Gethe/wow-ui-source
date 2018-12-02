@@ -14,8 +14,8 @@ function AlertFrameSystems_Register()
 	GarrisonTalentAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("GarrisonTalentAlertFrameTemplate", GarrisonTalentAlertFrame_SetUp);
 	WorldQuestCompleteAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("WorldQuestCompleteAlertFrameTemplate", WorldQuestCompleteAlertFrame_SetUp, WorldQuestCompleteAlertFrame_Coalesce);
 	LegendaryItemAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("LegendaryItemAlertFrameTemplate", LegendaryItemAlertFrame_SetUp);
-	NewPetAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("NewPetAlertFrameTemplate", NewPetAlertFrame_SetUp);
-	NewMountAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("NewMountAlertFrameTemplate", NewMountAlertFrame_SetUp);
+	NewPetAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewPetAlertFrameTemplate", NewPetAlertFrame_SetUp);
+	NewMountAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewMountAlertFrameTemplate", NewMountAlertFrame_SetUp);
 end
 
 -- [[ GuildChallengeAlertFrame ]] --
@@ -471,13 +471,13 @@ LOOTWONALERTFRAME_VALUES={
 function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded, wonRoll, showRatedBG, isSecondaryResult)
 	local itemName, itemHyperLink, itemRarity, itemTexture, _;
 	if (isCurrency) then
-		local currencyID = C_CurrencyInfo.GetCurrencyIDFromLink(itemLink); 
+		local currencyID = C_CurrencyInfo.GetCurrencyIDFromLink(itemLink);
 		itemName, _, itemTexture, _, _, _, _, itemRarity = GetCurrencyInfo(itemLink);
-		itemName, itemTexture, quantity, itemRarity = CurrencyContainerUtil.GetCurrencyContainerInfoForAlert(currencyID, quantity, itemName, itemTexture, itemRarity); 
+		itemName, itemTexture, quantity, itemRarity = CurrencyContainerUtil.GetCurrencyContainerInfoForAlert(currencyID, quantity, itemName, itemTexture, itemRarity);
 		if ( lootSource == LOOT_SOURCE_GARRISON_CACHE ) then
 			itemName = format(GARRISON_RESOURCES_LOOT, quantity);
 		else
-			if (quantity > 1) then 
+			if (quantity > 1) then
 				itemName = format(CURRENCY_QUANTITY_TEMPLATE, quantity, itemName);
 			end
 		end

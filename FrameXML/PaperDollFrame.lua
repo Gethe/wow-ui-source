@@ -1590,7 +1590,11 @@ function PaperDollItemSlotButton_OnModifiedClick(self, button)
 	if ( IsModifiedClick("EXPANDITEM") ) then
 		local itemLocation = ItemLocation:CreateFromEquipmentSlot(self:GetID());
 		if C_Item.DoesItemExist(itemLocation) and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) then
-			OpenAzeriteEmpoweredItemUIFromItemLocation(itemLocation);
+			if C_Item.CanViewItemPowers(itemLocation) then 
+				OpenAzeriteEmpoweredItemUIFromItemLocation(itemLocation);
+			else 
+				UIErrorsFrame:AddExternalErrorMessage(AZERITE_PREVIEW_UNAVAILABLE_FOR_CLASS);
+			end
 		else
 			SocketInventoryItem(self:GetID());
 		end

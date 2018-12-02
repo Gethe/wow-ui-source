@@ -7,6 +7,20 @@ local AchievementInfo =
 	Functions =
 	{
 		{
+			Name = "GetRewardItemID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "achievementID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "rewardItemID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetSupercedingAchievements",
 			Type = "Function",
 

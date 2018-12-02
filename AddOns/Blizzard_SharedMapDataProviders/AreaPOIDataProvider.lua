@@ -73,9 +73,9 @@ function AreaPOIPinMixin:TryShowTooltip()
 		end
 
 		if isTimed then
-			local timeLeftMinutes = C_AreaPoiInfo.GetAreaPOITimeLeft(self.areaPoiID);
-			if timeLeftMinutes then
-				local timeString = SecondsToTime(timeLeftMinutes * 60);
+			local secondsLeft = C_AreaPoiInfo.GetAreaPOISecondsLeft(self.areaPoiID);
+			if secondsLeft and secondsLeft > 0 then
+				local timeString = SecondsToTime(secondsLeft);
 				GameTooltip_AddNormalLine(GameTooltip, BONUS_OBJECTIVE_TIME_LEFT:format(timeString));
 			end
 		end

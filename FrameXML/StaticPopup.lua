@@ -4142,6 +4142,7 @@ StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"] = {
 	hasEditBox = 1,
 	maxLetters = 32,
 	editBoxSecureText = true,
+	editBoxWidth = 250,
 	autoCompleteSource = C_Club.GetInvitationCandidates,
 	autoCompleteArgs = {}, -- set dynamically below.
 	OnShow = function(self, data)
@@ -4151,9 +4152,11 @@ StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"] = {
 		if clubInfo.clubType == Enum.ClubType.BattleNet then
 			AutoCompleteEditBox_SetAutoCompleteSource(self.editBox, C_Club.GetInvitationCandidates, data.clubId);
 			self.SubText:SetText(INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_BNET_FRIEND);
+			self.editBox.Instructions:SetText(INVITE_COMMUNITY_MEMBER_POPUP_INVITE_EDITBOX_INSTRUCTIONS);
 		else
 			AutoCompleteEditBox_SetAutoCompleteSource(self.editBox, GetAutoCompleteResults, AUTOCOMPLETE_LIST.COMMUNITY.include, AUTOCOMPLETE_LIST.COMMUNITY.exclude);
 			self.SubText:SetText(INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_CHARACTER);
+			self.editBox.Instructions:SetText("");
 		end
 	end,
 	OnHide = function(self)
@@ -4478,6 +4481,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	local editBox = _G[dialog:GetName().."EditBox"];
 	if ( info.hasEditBox ) then
 		editBox:Show();
+
+		editBox.Instructions:SetText(info.editBoxInstructions or "");
 
 		if ( info.maxLetters ) then
 			editBox:SetMaxLetters(info.maxLetters);
@@ -4867,6 +4872,7 @@ function StaticPopup_EditBoxOnTextChanged(self, userInput)
 			EditBoxOnTextChanged(self, self:GetParent().data);
 		end
 	end
+	self.Instructions:SetShown(self:GetText() == "");
 end
 
 function StaticPopup_OnLoad(self)

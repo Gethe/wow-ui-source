@@ -6,6 +6,7 @@ MAX_LFG_LIST_SEARCH_AUTOCOMPLETE_ENTRIES = 6;
 MAX_LFG_LIST_GROUP_DROPDOWN_ENTRIES = 17;
 LFG_LIST_DELISTED_FONT_COLOR = {r=0.3, g=0.3, b=0.3};
 LFG_LIST_COMMENT_FONT_COLOR = {r=0.6, g=0.6, b=0.6};
+GROUP_FINDER_CATEGORY_ID_DUNGEONS = 2;
 
 ACTIVITY_RETURN_VALUES = {
 	fullName = 1,
@@ -71,6 +72,15 @@ StaticPopupDialogs["LFG_LIST_INVITING_CONVERT_TO_RAID"] = {
 	whileDead = 1,
 	hideOnEscape = 1,
 }
+
+local function ResolveCategoryFilters(categoryID, filters)
+	-- Dungeons ONLY display recommended groups.
+	if categoryID == GROUP_FINDER_CATEGORY_ID_DUNGEONS then
+		return bit.band(bit.bnot(LE_LFG_LIST_FILTER_NOT_RECOMMENDED), bit.bor(filters, LE_LFG_LIST_FILTER_RECOMMENDED));
+	end
+	
+	return filters;
+end
 
 -------------------------------------------------------
 ----------Base Frame
@@ -1044,7 +1054,8 @@ function LFGListEntryCreationActivityFinder_Show(self, categoryID, groupID, filt
 end
 
 function LFGListEntryCreationActivityFinder_UpdateMatching(self)
-	self.matchingActivities = C_LFGList.GetAvailableActivities(self.categoryID, self.groupID, self.filters, self.Dialog.EntryBox:GetText());
+	local filters = ResolveCategoryFilters(self.categoryID, self.filters);
+	self.matchingActivities = C_LFGList.GetAvailableActivities(self.categoryID, self.groupID, filters, self.Dialog.EntryBox:GetText());
 	LFGListUtil_SortActivitiesByRelevancy(self.matchingActivities);
 	if ( not self.selectedActivity or not tContains(self.matchingActivities, self.selectedActivity) ) then
 		self.selectedActivity = self.matchingActivities[1];
@@ -1728,7 +1739,9 @@ end
 function LFGListSearchPanel_DoSearch(self)
 	local searchText = self.SearchBox:GetText();
 	local languages = C_LFGList.GetLanguageSearchFilter();
-	C_LFGList.Search(self.categoryID, self.filters, self.preferredFilters, languages);
+	
+	local filters = ResolveCategoryFilters(self.categoryID, self.filters);
+	C_LFGList.Search(self.categoryID, filters, self.preferredFilters, languages);
 	self.searching = true;
 	self.searchFailed = false;
 	self.selectedResult = nil;
@@ -1977,7 +1990,8 @@ function LFGListSearchPanel_UpdateAutoComplete(self)
 	end
 
 	--Choose the autocomplete results
-	local matchingActivities = C_LFGList.GetAvailableActivities(self.categoryID, nil, self.filters, text);
+	local filters = ResolveCategoryFilters(self.categoryID, self.filters);
+	local matchingActivities = C_LFGList.GetAvailableActivities(self.categoryID, nil, filters, text);
 	LFGListUtil_SortActivitiesByRelevancy(matchingActivities);
 
 	local numResults = math.min(#matchingActivities, MAX_LFG_LIST_SEARCH_AUTOCOMPLETE_ENTRIES);

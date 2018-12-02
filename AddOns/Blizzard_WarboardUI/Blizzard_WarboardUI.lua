@@ -130,17 +130,17 @@ function WarboardQuestChoiceFrameMixin:SetupTextureKits(frame, regions)
 end
 
 function WarboardQuestChoiceFrameMixin:TryShow()
-	local uiTextureKitID, hideWarboardHeader = select(4, GetQuestChoiceInfo());
-	self.uiTextureKitID = uiTextureKitID;
+	local choiceInfo = C_QuestChoice.GetQuestChoiceInfo();
+	self.uiTextureKitID = choiceInfo.uiTextureKitID;
 
 	self:SetupTextureKits(self.BorderFrame, borderFrameTextureKitRegions);
 	self:SetupTextureKits(self.Title, titleTextureKitRegions);
 	self:SetupTextureKits(self.Background, backgroundTextureKitRegions);
 
-	self.BorderFrame.Header:SetShown(not hideWarboardHeader);
+	self.BorderFrame.Header:SetShown(not choiceInfo.hideWarboardHeader);
 	self.optionDescriptionColor = WARBOARD_OPTION_TEXT_COLOR;
 	self.optionHeaderTitleColor = BLACK_FONT_COLOR;
-	local textureKit = GetUITextureKitInfo(uiTextureKitID);
+	local textureKit = GetUITextureKitInfo(choiceInfo.uiTextureKitID);
 	local textureKitColor = textureKitColors[textureKit];
 	if textureKitColor then
 		self.optionDescriptionColor = textureKitColor.description;

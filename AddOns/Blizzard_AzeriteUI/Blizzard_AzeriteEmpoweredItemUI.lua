@@ -169,6 +169,14 @@ function AzeriteEmpoweredItemUIMixin:GetPowerIdsForFinalSelectedTier()
 	return powerIds;
 end
 
+function AzeriteEmpoweredItemUIMixin:IsFinalPowerSelected() 
+	for tierIndex, tierFrame in ipairs(self.tiersByIndex) do
+		if(tierFrame:IsFinalTier()) then 
+			return tierFrame:HasAnySelected();
+		end
+	end
+end 
+
 function AzeriteEmpoweredItemUIMixin:IsAnyTierRevealing()
 	for tierIndex, tierFrame in ipairs(self.tiersByIndex) do
 		if tierFrame:IsRevealing() then
@@ -255,6 +263,8 @@ function AzeriteEmpoweredItemUIMixin:OnItemSet()
 		PortraitFrameTemplate_SetPortraitToAsset(self.BorderFrame, azeriteEmpoweredItem:GetItemIcon());
 		self.BorderFrame.TitleText:SetText(azeriteEmpoweredItem:GetItemName());
 	end);
+
+	self.oldItem = azeriteEmpoweredItem;
 
 	FrameUtil.RegisterFrameForEvents(self, AZERITE_EMPOWERED_FRAME_EVENTS);
 	self:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", "player");

@@ -63,6 +63,20 @@ local EncounterJournal =
 				{ Name = "info", Type = "EncounterJournalSectionInfo", Nilable = false },
 			},
 		},
+		{
+			Name = "InstanceHasLoot",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "instanceID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "hasLoot", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

@@ -250,7 +250,7 @@ local function ShouldShowWarModeBonus(questID, currencyID)
 	return QuestUtils_IsQuestWorldQuest(questID) and C_QuestLog.QuestHasWarModeBonus(questID) and not C_CurrencyInfo.GetFactionGrantedByCurrency(currencyID);
 end
 
-function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, atLeastShowAzerite, fullItemDescription)
+function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 	local hasAnySingleLineRewards = false;
 	local isWarModeDesired = C_PvP.IsWarModeDesired();
 	local questHasWarModeBonus = C_QuestLog.QuestHasWarModeBonus(questID);
@@ -271,7 +271,7 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, atLeastShowAzerit
 	end
 
 	-- currency
-	if not atLeastShowAzerite then
+	if not style.atLeastShowAzerite then
 		local numAddedQuestCurrencies, usingCurrencyContainer = QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, tooltip.ItemTooltip);
 		if ( numAddedQuestCurrencies > 0 ) then
 			hasAnySingleLineRewards = not usingCurrencyContainer or numAddedQuestCurrencies > 1;
@@ -299,9 +299,12 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, atLeastShowAzerit
 	local showRetrievingData = false;
 	local numQuestRewards = GetNumQuestLogRewards(questID);	
 	if numQuestRewards > 0 then
-		if fullItemDescription then 
+		if style.fullItemDescription then 
 			-- we want to do a full item description
-			showRetrievingData = EmbeddedItemTooltip_SetItemByQuestReward(tooltip.ItemTooltip , 1, questID);  -- Only support one currently
+			local itemIndex = QuestUtils_GetBestQualityItemRewardIndex(questID);  -- Only support one item reward currently
+			if not EmbeddedItemTooltip_SetItemByQuestReward(tooltip.ItemTooltip, itemIndex, questID) then
+				showRetrievingData = true;
+			end
 			-- check for item compare input of flag
 			if not showRetrievingData then
 				if IsModifiedClick("COMPAREITEMS") or GetCVarBool("alwaysCompareItems") then
@@ -329,7 +332,7 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, atLeastShowAzerit
 	
 	-- atLeastShowAzerite: show azerite if nothing else is awarded
 	-- and in the case of double azerite, only show the currency container one
-	if atLeastShowAzerite and not hasAnySingleLineRewards and not tooltip.ItemTooltip:IsShown() then
+	if style.atLeastShowAzerite and not hasAnySingleLineRewards and not tooltip.ItemTooltip:IsShown() then
 		local numAddedQuestCurrencies, usingCurrencyContainer = QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, tooltip.ItemTooltip);
 		if ( numAddedQuestCurrencies > 0 ) then
 			hasAnySingleLineRewards = not usingCurrencyContainer or numAddedQuestCurrencies > 1;
@@ -417,4 +420,18 @@ function QuestUtils_GetCurrentQuestLineQuest(questLineID)
 		end
 	end
 	return currentQuestID;
+end
+
+function QuestUtils_GetBestQualityItemRewardIndex(questID)
+	local index;
+	local bestQuality = -1;
+	local numQuestRewards = GetNumQuestLogRewards(questID);
+	for i = 1, numQuestRewards do
+		local itemName, itemTexture, quantity, quality, isUsable, itemID = GetQuestLogRewardInfo(i, questID);
+		if quality > bestQuality then
+			index = i;
+			bestQuality = quality;
+		end
+	end
+	return index;
 end

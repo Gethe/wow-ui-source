@@ -64,7 +64,7 @@
 			<Layer level="OVERLAY">
 				<FontString parentKey="Title" inherits="GameFontNormal" text="ISLANDS_QUEUE_WEEKLY_QUEST">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-5" y="18"/> 
+						<Anchor point="TOPLEFT" x="-5" y="22"/> 
 					</Anchors>
 				</FontString>
 			</Layer>

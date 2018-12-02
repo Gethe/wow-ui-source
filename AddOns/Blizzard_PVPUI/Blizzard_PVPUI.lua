@@ -1538,7 +1538,6 @@ end
 
 PVPUISeasonRewardFrameMixin = { };
 
-local SEASON_REWARD_QUESTLINE_ID = 815;
 local SEASON_REWARD_ACHIEVEMENTS = {
 	[BFA_START_SEASON] = {
 		[PLAYER_FACTION_GROUP[0]] = 13136,
@@ -1566,30 +1565,18 @@ function PVPUISeasonRewardFrameMixin:GetAchievementID()
 end
 
 function PVPUISeasonRewardFrameMixin:OnShow()
-	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:Update();
 end
 
-function PVPUISeasonRewardFrameMixin:OnHide()
-	self:UnregisterEvent("QUEST_LOG_UPDATE");
-end
-
-function PVPUISeasonRewardFrameMixin:OnEvent(event, ...)
-	if event == "QUEST_LOG_UPDATE" then
-		self:Update();
-	end
-end
-
 function PVPUISeasonRewardFrameMixin:Update()
-	local itemIndex = 1;
-	local questID = QuestUtils_GetCurrentQuestLineQuest(SEASON_REWARD_QUESTLINE_ID);
-	local name, texture, count, quality, isUsable = GetQuestLogRewardInfo(itemIndex, questID);
-	if texture then
+	local achievementID = self:GetAchievementID();
+	if achievementID then
+		local rewardItemID = C_AchievementInfo.GetRewardItemID(achievementID);
+		local texture = rewardItemID and select(5, GetItemInfoInstant(rewardItemID)) or nil;
 		self.Icon:SetTexture(texture);
 		self.Icon:Show();
 		local completed = false;
-		local achievementID = self:GetAchievementID();
-		if achievementID and GetAchievementNumCriteria(achievementID) > 0 then
+		if  GetAchievementNumCriteria(achievementID) > 0 then
 			completed = select(3, GetAchievementCriteriaInfo(achievementID, 1));
 		end
 		if completed then
@@ -1625,10 +1612,12 @@ function PVPUISeasonRewardFrameMixin:UpdateTooltip()
 			GameTooltip_AddNormalLine(EmbeddedItemTooltip, criteriaString, wordWrap);
 			local roundToNearestInteger = true;
 			GameTooltip_ShowProgressBar(EmbeddedItemTooltip, 0, reqQuantity, quantity, FormatPercentage(quantity / reqQuantity, roundToNearestInteger));
-			EmbeddedItemTooltip:AddLine(" ");
-			GameTooltip_AddNormalLine(EmbeddedItemTooltip, REWARD, wordWrap);
-			local questID = QuestUtils_GetCurrentQuestLineQuest(SEASON_REWARD_QUESTLINE_ID);
-			EmbeddedItemTooltip_SetItemByQuestReward(EmbeddedItemTooltip.ItemTooltip, 1, questID);
+			local rewardItemID = C_AchievementInfo.GetRewardItemID(achievementID);
+			if rewardItemID then
+				GameTooltip_AddBlankLinesToTooltip(EmbeddedItemTooltip, 1);
+				GameTooltip_AddNormalLine(EmbeddedItemTooltip, REWARD, wordWrap);
+				EmbeddedItemTooltip_SetItemByID(EmbeddedItemTooltip.ItemTooltip, rewardItemID);
+			end
 		end
 	end
 	EmbeddedItemTooltip:Show();
@@ -1737,7 +1726,7 @@ function PVPConquestBarRewardMixin:SetUp(questID)
 		end
 		local itemTexture;
 		if HaveQuestRewardData(questID) then
-			local itemIndex = 1;
+			local itemIndex = QuestUtils_GetBestQualityItemRewardIndex(questID);
 			itemTexture = select(2, GetQuestLogRewardInfo(itemIndex, questID));
 		end
 		self:SetTexture(itemTexture, 1);
@@ -1761,7 +1750,7 @@ end
 
 function PVPConquestBarRewardMixin:TryShowTooltip()
 	local WORD_WRAP = true;
-	if ConquestFrame.seasonState == SEASON_STATE_PRESEASON or ConquestFrame.seasonState == SEASON_STATE_OFFSEASON then
+	if ConquestFrame.seasonState == SEASON_STATE_PRESEASON then
 		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_CONQUEST, HIGHLIGHT_FONT_COLOR);
 		GameTooltip_AddColoredLine(EmbeddedItemTooltip, CONQUEST_REQUIRES_PVP_SEASON, NORMAL_FONT_COLOR, WORD_WRAP);
@@ -1780,7 +1769,7 @@ function PVPConquestBarRewardMixin:TryShowTooltip()
 		end
 		GameTooltip_AddNormalLine(EmbeddedItemTooltip, SAMPLE_REWARD_WITH_COLON);
 		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
-		GameTooltip_AddQuestRewardsToTooltip(EmbeddedItemTooltip, self.questID, TOOLTIP_QUEST_REWARDS_STYLE_NONE);
+		GameTooltip_AddQuestRewardsToTooltip(EmbeddedItemTooltip, self.questID, TOOLTIP_QUEST_REWARDS_STYLE_CONQUEST_BAR);
 		self.UpdateTooltip = self.OnEnter;
 
 		if IsModifiedClick("DRESSUP") then

@@ -89,8 +89,19 @@ function StackSplitMixin:UpdateStackSplitFrame(maxStack)
 	end
 end
 
+function StackSplitMixin:UpdateStackText()
+	if ( self.isMultiStack ) then 
+		self.StackSplitText:SetText(STACKS:format(self.split/self.minSplit));
+		self.StackItemCountText:SetText(TOTAL_STACKS:format(self.split));
+	else 
+		self.StackSplitText:SetText(self.split);
+	end
+end 
+
 function StackSplitMixin:OnChar(text)
-	if ( text < "0" or text > "9" ) then
+	if ( self.isMultiStack and self.maxStack < self.minSplit * text ) then 
+		return; 
+	elseif ( text < "0" or text > "9") then
 		return;
 	end
 
@@ -109,7 +120,9 @@ function StackSplitMixin:OnChar(text)
 
 	if ( split <= self.maxStack ) then
 		self.split = split;
-		self.StackSplitText:SetText(split);
+
+		self:UpdateStackText(); 
+
 		if ( split == self.maxStack ) then
 			self.RightButton:Disable();
 		else
@@ -140,7 +153,9 @@ function StackSplitMixin:OnKeyDown(key)
 		else
 			self.LeftButton:Enable();
 		end
-		self.StackSplitText:SetText(self.split);
+
+		self:UpdateStackText();
+
 		if ( self.money == self.maxStack ) then
 			self.RightButton:Disable();
 		else
@@ -194,13 +209,7 @@ function StackSplitLeftButton_OnClick()
 	end
 
 	StackSplitFrame.split = StackSplitFrame.split - StackSplitFrame.minSplit;
-	if(StackSplitFrame.isMultiStack) then 
-		StackSplitFrame.StackItemCountText:SetText(TOTAL_STACKS:format(StackSplitFrame.split));
-		StackSplitFrame.StackSplitText:SetText(STACKS:format(StackSplitFrame.split/StackSplitFrame.minSplit));
-	else
-		StackSplitFrame.split = StackSplitFrame.split + StackSplitFrame.minSplit;
-		StackSplitFrame.StackSplitText:SetText(StackSplitFrame.split);
-	end
+	StackSplitFrame:UpdateStackText();
 
 	if ( StackSplitFrame.split == StackSplitFrame.minSplit ) then
 		StackSplitFrame.LeftButton:Disable();
@@ -212,14 +221,10 @@ function StackSplitRightButton_OnClick()
 	if ( StackSplitFrame.split == StackSplitFrame.maxStack ) then
 		return;
 	end
+
 	StackSplitFrame.split = StackSplitFrame.split + StackSplitFrame.minSplit;
-	if(StackSplitFrame.isMultiStack) then 
-		StackSplitFrame.StackItemCountText:SetText(TOTAL_STACKS:format(StackSplitFrame.split));
-		StackSplitFrame.StackSplitText:SetText(STACKS:format(StackSplitFrame.split/StackSplitFrame.minSplit));
-	else
-		StackSplitFrame.split = StackSplitFrame.split + StackSplitFrame.minSplit;
-		StackSplitFrame.StackSplitText:SetText(StackSplitFrame.split);
-	end
+	StackSplitFrame:UpdateStackText();
+
 	if ( StackSplitFrame.split == StackSplitFrame.maxStack ) then
 		StackSplitFrame.RightButton:Disable();
 	end

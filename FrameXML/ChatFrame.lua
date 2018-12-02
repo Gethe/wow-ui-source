@@ -1070,15 +1070,11 @@ local CastRandomManager;
 local CastRandomTable = {};
 
 local function CastRandomManager_OnEvent(self, event, ...)
-	local unit, name, rank = ...;
-
-	if ( not name ) then
-		-- This was a server-side only spell affecting the player somehow, don't do anything with cast sequencing, just bail.
-		return;
-	end
+	local unit, castID, spellID = ...;
 
 	if ( unit == "player" ) then
-		name, rank = strlower(name), strlower(rank);
+		local name = strlower(GetSpellInfo(spellID));
+		local rank = strlower(GetSpellSubtext(spellID));
 		local nameplus = name.."()";
 		local fullname = name.."("..rank..")";
 		for sequence, entry in pairs(CastRandomTable) do
@@ -2345,14 +2341,19 @@ SlashCmdList["FRAMESTACK"] = function(msg)
 	UIParentLoadAddOn("Blizzard_DebugTools");
 
 	local showHiddenArg, showRegionsArg, showAnchorsArg;
+	local pattern = "^%s*(%S+)(.*)$";
+	showHiddenArg, msg = string.match(msg or "", pattern);
+	showRegionsArg, msg = string.match(msg or "", pattern);
+	showAnchorsArg, msg = string.match(msg or "", pattern);
 
-	showHiddenArg, msg = string.match(msg or "", "^%s*(%S+)(.*)$");
-	showRegionsArg, msg = string.match(msg or "", "^%s*(%S+)(.*)$");
-	showAnchorsArg, msg =  string.match(msg or "", "^%s*(%S+)(.*)$");
+	-- If no parameters are passed the defaults specified by these cvars are used instead.
+	local showHiddenDefault = FrameStackTooltip_IsShowHiddenEnabled();
+	local showRegionsDefault = FrameStackTooltip_IsShowRegionsEnabled();
+	local showAnchorsDefault = FrameStackTooltip_IsShowAnchorsEnabled();
 
-	local showHidden = StringToBoolean(showHiddenArg or "", false);
-	local showRegions = StringToBoolean(showRegionsArg or "", true);
-	local showAnchors = StringToBoolean(showAnchorsArg or "", true);
+	local showHidden = StringToBoolean(showHiddenArg or "", showHiddenDefault);
+	local showRegions = StringToBoolean(showRegionsArg or "", showRegionsDefault);
+	local showAnchors = StringToBoolean(showAnchorsArg or "", showAnchorsDefault);
 
 	FrameStackTooltip_Toggle(showHidden, showRegions, showAnchors);
 end

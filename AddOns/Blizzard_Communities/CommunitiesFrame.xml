@@ -417,7 +417,7 @@
 					<KeyValue key="frame" value="CommunitiesGuildLogFrame" type="Global"/>
 				</KeyValues>
 			</Button>
-			<Frame parentKey="GuildMemberDetailFrame" frameLevel="100" inherits="CommunitiesGuildMemberDetailFrameTemplate" hidden="true">
+			<Frame parentKey="GuildMemberDetailFrame" frameLevel="1000" inherits="CommunitiesGuildMemberDetailFrameTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="-8" y="-76"/>
 				</Anchors>

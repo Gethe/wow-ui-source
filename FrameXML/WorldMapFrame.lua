@@ -148,15 +148,14 @@ function TaskPOI_OnEnter(self)
 		local color = WORLD_QUEST_QUALITY_COLORS[rarity];
 		WorldMapTooltip:SetText(title, color.r, color.g, color.b);
 		QuestUtils_AddQuestTypeToTooltip(WorldMapTooltip, self.questID, NORMAL_FONT_COLOR);
-
-		if ( factionID ) then
-			local factionName = GetFactionInfoByID(factionID);
-			if ( factionName ) then
-				if (capped) then
-					WorldMapTooltip:AddLine(factionName, GRAY_FONT_COLOR:GetRGB());
-				else
-					WorldMapTooltip:AddLine(factionName);
-				end
+			
+		local factionName = factionID and GetFactionInfoByID(factionID);
+		if (factionName) then
+			local reputationYieldsRewards = (not capped) or C_Reputation.IsFactionParagon(factionID);
+			if (reputationYieldsRewards) then
+				WorldMapTooltip:AddLine(factionName);
+			else 
+				WorldMapTooltip:AddLine(factionName, GRAY_FONT_COLOR:GetRGB());
 			end
 		end
 
@@ -171,6 +170,10 @@ function TaskPOI_OnEnter(self)
 		local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(self.questID, objectiveIndex, false);
 
 		if(self.shouldShowObjectivesAsStatusBar) then 
+			local questLogIndex = GetQuestLogIndexByID(self.questID);
+			local _, questDescription = GetQuestLogQuestText(questLogIndex);
+			GameTooltip_AddColoredLine(WorldMapTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
+
 			local percent = math.floor((numFulfilled/numRequired) * 100);
 			GameTooltip_ShowProgressBar(WorldMapTooltip, 0, numRequired, numFulfilled, PERCENTAGE_STRING:format(percent));
 		elseif ( objectiveText and #objectiveText > 0 ) then

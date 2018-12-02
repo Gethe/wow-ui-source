@@ -41,7 +41,6 @@ function MapIndicatorQuestDataProviderMixin:AddMapIndicatorQuest(info)
 	local pin = self:GetMap():AcquirePin(self:GetPinTemplate());
 
 	pin.questID = info.questID;
-	pin.worldQuest = true; 
 	pin.numObjectives = C_QuestLog.GetNumQuestObjectives(pin.questID);
 	pin.shouldShowObjectivesAsStatusBar = true; 
 

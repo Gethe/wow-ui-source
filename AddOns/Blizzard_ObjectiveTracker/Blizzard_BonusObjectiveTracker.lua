@@ -473,53 +473,15 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 		GameTooltip:AddLine(RETRIEVING_DATA, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 	else
 		local isWorldQuest = block.module.ShowWorldQuests;
-		if (isWorldQuest) then
-			local headerLine = 1;
-			local needsSpacer = false;
-
-			local mapID, zoneMapID = C_TaskQuest.GetQuestZoneID(questID)
-			if (mapID and zoneMapID) then
-				local mapInfo = C_Map.GetMapInfo(zoneMapID);
-
-				if (mapInfo) then
-					GameTooltipTextLeft1:SetFontObject(GameTooltipText);
-					GameTooltip:SetText(mapInfo.name, 0.4, 0.733, 1.0);
-					needsSpacer = true;
-					headerLine = headerLine + 1;
-
-					local title, factionID, capped = C_TaskQuest.GetQuestInfoByQuestID(questID);
-
-					if ( factionID ) then
-						local factionName = GetFactionInfoByID(factionID);
-						if ( factionName ) then
-							if (capped) then
-								GameTooltip:AddLine(factionName, GRAY_FONT_COLOR:GetRGB());
-							else
-								GameTooltip:AddLine(factionName, 0.4, 0.733, 1.0);
-							end
-							headerLine = headerLine + 1;
-						end
-					end
-				end
-			end
-
+		if ( isWorldQuest ) then
 			QuestUtils_AddQuestTypeToTooltip(GameTooltip, questID, NORMAL_FONT_COLOR);
-
-			if (needsSpacer) then
-				GameTooltip:AddLine(" ");
-				headerLine = headerLine + 1;
-			end
-
-			_G["GameTooltipTextLeft"..headerLine]:SetFontObject(GameTooltipHeaderText);
 			GameTooltip:AddLine(REWARDS, NORMAL_FONT_COLOR:GetRGB());
 		else
 			GameTooltip:SetText(REWARDS, NORMAL_FONT_COLOR:GetRGB());
 		end
 		GameTooltip:AddLine(isWorldQuest and WORLD_QUEST_TOOLTIP_DESCRIPTION or BONUS_OBJECTIVE_TOOLTIP_DESCRIPTION, 1, 1, 1, 1);
 		GameTooltip:AddLine(" ");
-		
-		local atLeastShowAzerite, fullItemDescription = false, false;	
-		QuestUtils_AddQuestRewardsToTooltip(GameTooltip, questID, atLeastShowAzerite, fullItemDescription);
+		GameTooltip_AddQuestRewardsToTooltip(GameTooltip, questID, TOOLTIP_QUEST_REWARDS_STYLE_NONE);
 	end
 
 	GameTooltip:Show();

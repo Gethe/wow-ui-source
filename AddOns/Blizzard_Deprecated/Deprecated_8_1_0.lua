@@ -3,12 +3,12 @@
 -- Please upgrade to the updated APIs as soon as possible.
 
 if not IsPublicBuild() then
-	--return;
+	return;
 end
 
 -- Summons API update
 
-do 
+do
 	-- Use C_SummonInfo.GetSummonConfirmTimeLeft() instead.
 	GetSummonConfirmTimeLeft = C_SummonInfo.GetSummonConfirmTimeLeft;
 
@@ -23,10 +23,10 @@ do
 
 	-- Use C_SummonInfo.CancelSummon() instead.
 	CancelSummon = C_SummonInfo.CancelSummon;
-	
+
 	-- Use C_DateAndTime.GetCurrentCalendarTime() instead.
 	C_Calendar.GetDate = C_DateAndTime.GetCurrentCalendarTime;
-	
+
 	local function ConvertToOldStyleDate(calendarTime)
 		calendarTime.weekDay = calendarTime.weekday;
 		calendarTime.day = calendarTime.monthDay;
@@ -36,26 +36,26 @@ do
 		calendarTime.weekday = nil;
 		return calendarTime;
 	end
-	
+
 	-- Use C_DateAndTime.GetCalendarTimeFromEpoch() instead.
 	C_DateAndTime.GetDateFromEpoch = function(epoch)
 		local currentCalendarTime = C_DateAndTime.GetCalendarTimeFromEpoch(epoch);
 		return ConvertToOldStyleDate(currentCalendarTime);
 	end
-	
+
 	-- Use C_DateAndTime.GetCurrentCalendarTime() instead.
 	C_DateAndTime.GetTodaysDate = function()
 		local currentCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
 		return ConvertToOldStyleDate(currentCalendarTime);
 	end
-	
+
 	-- Use C_DateAndTime.GetCurrentCalendarTime() and C_DateAndTime.AdjustTimeByDays instead.
 	C_DateAndTime.GetYesterdaysDate = function()
 		local currentCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
 		currentCalendarTime = C_DateAndTime.AdjustTimeByDays(currentCalendarTime, -1);
 		return ConvertToOldStyleDate(currentCalendarTime);
 	end
-	
+
 end
 
 -- Friend list API update
@@ -158,7 +158,7 @@ do
 		end
 	end
 
-	-- Use C_FriendList.IsIgnored or the new C_FriendList.IsIgnoredByGuid instead. 
+	-- Use C_FriendList.IsIgnored or the new C_FriendList.IsIgnoredByGuid instead.
 	IsIgnored = C_FriendList.IsIgnored;
 
 	-- Use C_FriendList.SendWho instead
@@ -248,5 +248,59 @@ do
 			end
 		end
 		return bountyMaps;
+	end
+end
+
+-- Quest Choice
+do
+	-- Use C_QuestChoice.GetQuestChoiceInfo instead
+	function GetQuestChoiceInfo()
+		local questChoiceInfo =  C_QuestChoice.GetQuestChoiceInfo();
+		if not questChoiceInfo then
+			return nil;
+		end
+		return	questChoiceInfo.choiceID,
+				questChoiceInfo.questionText,
+				questChoiceInfo.numOptions,
+				questChoiceInfo.uiTextureKitID,
+				questChoiceInfo.hideWarboardHeader,
+				questChoiceInfo.keepOpenAfterChoice,
+				questChoiceInfo.soundKitID;
+	end
+
+	-- Use C_QuestChoice.GetQuestChoiceOptionInfo instead
+	function GetQuestChoiceOptionInfo(optionIndex)
+		local questChoiceOptionInfo =  C_QuestChoice.GetQuestChoiceOptionInfo(optionIndex);
+		if not questChoiceOptionInfo then
+			return nil;
+		end
+		return	questChoiceOptionInfo.responseID,
+				questChoiceOptionInfo.buttonText,
+				questChoiceOptionInfo.description,
+				questChoiceOptionInfo.header,
+				questChoiceOptionInfo.choiceArtID,
+				questChoiceOptionInfo.confirmation,
+				questChoiceOptionInfo.widgetSetID,
+				questChoiceOptionInfo.disabledButton,
+				questChoiceOptionInfo.desaturatedArt,
+				questChoiceOptionInfo.groupID,
+				questChoiceOptionInfo.headerIconAtlasElement,
+				questChoiceOptionInfo.subHeader,
+				questChoiceOptionInfo.buttonTooltip,
+				questChoiceOptionInfo.rewardQuestID,
+				questChoiceOptionInfo.soundKitID;
+	end
+end
+
+-- Point of Interest
+do
+	-- Use C_AreaPoiInfo.GetAreaPOISecondsLeft instead
+	function C_AreaPoiInfo.GetAreaPOITimeLeft(areaPoiID)
+		local seconds = C_AreaPoiInfo.GetAreaPOISecondsLeft(areaPoiID);
+		if seconds then
+			return math.floor(seconds / 60);
+		end
+
+		return nil;
 	end
 end

@@ -32,6 +32,10 @@ local ReportSystem =
 			},
 		},
 		{
+			Name = "ReportServerLag",
+			Type = "Function",
+		},
+		{
 			Name = "SetPendingReportPetTarget",
 			Type = "Function",
 

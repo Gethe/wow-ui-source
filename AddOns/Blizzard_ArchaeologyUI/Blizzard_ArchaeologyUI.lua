@@ -297,7 +297,10 @@ function ArchaeologyFrame_CurrentArtifactUpdate(self)
 	self.historyScroll.child.text:SetText(description);
 
 	self.historyTitle:ClearAllPoints();
-	local runeName, _, _, _, _, _, _, _, _, runeStoneIconPath = GetItemInfo(RaceitemID);
+	local runeName, runeStoneIconPath;
+	if RaceitemID > 0 then
+		runeName, _, _, _, _, _, _, _, _, runeStoneIconPath = GetItemInfo(RaceitemID);
+	end
 	local endFound = false;
 	for i=1,ARCHAEOLOGY_MAX_STONES do
 		if i > numSockets or not runeName then

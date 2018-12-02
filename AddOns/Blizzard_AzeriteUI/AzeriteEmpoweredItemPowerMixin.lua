@@ -421,15 +421,31 @@ function AzeriteEmpoweredItemPowerMixin:SetFinalPowerTooltipDescriptions(tooltip
 		finalPowers = self.owningTierFrame:GetOwner():GetPowerIdsForFinalSelectedTier();
 	end
 
-	if(finalPowers) then 
-		tooltip:AddLine(" "); 
-		for powerIndex, powerID in ipairs(finalPowers) do
-			local WRAP = true;
-			local UPGRADED = true;
-			local powerInfoUpgraded = C_AzeriteEmpoweredItem.GetPowerText(empoweredItemLocation, powerID, UPGRADED);
-			GameTooltip_AddColoredLine(tooltip,DASH_WITH_TEXT:format(powerInfoUpgraded.name), HIGHLIGHT_FONT_COLOR, WRAP);
-			local powerInfoBase = C_AzeriteEmpoweredItem.GetPowerText(empoweredItemLocation, powerID, not UPGRADED);
-			GameTooltip_AddNormalLine(tooltip, GetHighlightedNumberDifferenceString(powerInfoBase.description, powerInfoUpgraded.description), WRAP, TOOLTIP_INDENT_OFFSET);
+	if(not finalPowers) then
+		return;
+	end
+
+	local WRAP = true;
+	local type = nil;
+	local finalPowerSelected = false;
+	local base = Enum.AzeritePowerLevel.Base;  
+
+	if(self:IsSelected()) then 
+		type = Enum.AzeritePowerLevel.Downgraded; 
+		finalPowerSelected = true; 
+	else 
+		type = Enum.AzeritePowerLevel.Upgraded; 
+	end 
+	tooltip:AddLine(" "); 
+	for powerIndex, powerID in ipairs(finalPowers) do
+		local powerInfoModified = C_AzeriteEmpoweredItem.GetPowerText(empoweredItemLocation, powerID, type);
+		GameTooltip_AddColoredLine(tooltip,DASH_WITH_TEXT:format(powerInfoModified.name), HIGHLIGHT_FONT_COLOR, WRAP);
+		local powerInfoBase = C_AzeriteEmpoweredItem.GetPowerText(empoweredItemLocation, powerID, base);
+
+		if(finalPowerSelected) then 
+			GameTooltip_AddNormalLine(tooltip, GetHighlightedNumberDifferenceString(powerInfoModified.description, powerInfoBase.description), WRAP, TOOLTIP_INDENT_OFFSET);
+		else 
+			GameTooltip_AddNormalLine(tooltip, GetHighlightedNumberDifferenceString(powerInfoBase.description, powerInfoModified.description), WRAP, TOOLTIP_INDENT_OFFSET);
 		end
 	end
 end

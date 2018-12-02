@@ -67,7 +67,12 @@ function QuestChoiceFrameMixin:OnEvent(event)
 end
 
 function QuestChoiceFrameMixin:OnShow()
-	PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
+	local choiceInfo = C_QuestChoice.GetQuestChoiceInfo();
+	if(choiceInfo and choiceInfo.soundKitID) then 
+		PlaySound(choiceInfo.soundKitID);
+	else 
+		PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
+	end 
 end
 
 function QuestChoiceFrameMixin:OnHide()
@@ -267,29 +272,29 @@ end
 function QuestChoiceFrameMixin:Update()
 	self.hasPendingUpdate = false;
 
-	local choiceID, questionText, numOptions = GetQuestChoiceInfo();
-	if (not choiceID or choiceID == 0 or numOptions == 0) then
+	local choiceInfo = C_QuestChoice.GetQuestChoiceInfo();	
+	if (not choiceInfo or choiceInfo.choiceID == 0 or choiceInfo.numOptions == 0) then
 		self:Hide();
 		return;
 	end
 	for i, option in ipairs(self.Options) do
 		option.groupID = nil;
 	end
-	self.choiceID = choiceID;
-	self.QuestionText:SetText(questionText);
+	self.choiceID = choiceInfo.choiceID;
+	self.QuestionText:SetText(choiceInfo.questionText);
 
 	self.numActiveOptionFrames = 0;
 
 	local anOptionHasMultipleButtons = false;
 
-	for i=1, numOptions do
-		local optID, buttonText, description, header, artFile, confirmationText, widgetSetID, disabledButton, desaturatedArt, groupID, headerIconAtlasElement, subHeader, buttonTooltip, rewardQuestID = C_QuestChoice.GetQuestChoiceOptionInfo(i);
+	for i=1, choiceInfo.numOptions do
+		local optionInfo = C_QuestChoice.GetQuestChoiceOptionInfo(i);
 
-		local existingOption = self:GetExistingOptionForGroup(groupID);
+		local existingOption = self:GetExistingOptionForGroup(optionInfo.groupID);
 		local button;
 
 		if not existingOption and self:GetNumOptions() == MAX_PLAYER_CHOICE_OPTIONS then
-			self:ThrowTooManyOptionsError(choiceID, optID);	-- This will cause a lua error and execution will stop
+			self:ThrowTooManyOptionsError(choiceInfo.choiceID, optionInfo.responseID);	-- This will cause a lua error and execution will stop
 		end
 
 		if existingOption then
@@ -297,35 +302,37 @@ function QuestChoiceFrameMixin:Update()
 			existingOption.hasMultipleButtons = true;
 			anOptionHasMultipleButtons = true;
 			button = existingOption.OptionButtonsContainer.OptionButton2;
-			if not disabledButton then
+			if not optionInfo.disabledButton then
 				existingOption.hasActiveButton = true;
 			end
 			-- for grouped options the art is only desaturated if all of them are
-			if not desaturatedArt then
+			if not optionInfo.desaturatedArt then
 				existingOption.hasDesaturatedArt = false;
 			end
 		else
 			self.numActiveOptionFrames = self.numActiveOptionFrames + 1;
 			local option = self.Options[self.numActiveOptionFrames];
 			option.hasMultipleButtons = false;
-			option.hasActiveButton = not disabledButton;
-			option.hasDesaturatedArt = desaturatedArt;
-			option.groupID = groupID;
-			option.optID = optID;
+			option.hasActiveButton = not optionInfo.disabledButton;
+			option.hasDesaturatedArt = optionInfo.desaturatedArt;
+			option.groupID = optionInfo.groupID;
+			option.optID = optionInfo.responseID;
 			button = option.OptionButtonsContainer.OptionButton1;
-			option.OptionText:SetText(description);
-			option:ConfigureHeader(header, headerIconAtlasElement);
-			option:ConfigureSubHeader(subHeader);
-			option.Artwork:SetTexture(artFile);
-
-			self:UpdateOptionWidgetRegistration(option, widgetSetID);
+			option.OptionText:SetText(optionInfo.description);
+			option:ConfigureHeader(optionInfo.header, optionInfo.headerIconAtlasElement);
+			option:ConfigureSubHeader(optionInfo.subHeader);
+			option.Artwork:SetTexture(optionInfo.choiceArtID);
+			option.soundKitID = optionInfo.soundKitID; 
+			
+			self:UpdateOptionWidgetRegistration(option, optionInfo.widgetSetID);
 		end
-		button.confirmationText = confirmationText;
-		button.tooltip = buttonTooltip;
-		button.rewardQuestID = rewardQuestID;
-		button:SetText(buttonText);
-		button.optID = optID;
-		button:SetEnabled(not disabledButton);
+		button.confirmationText = optionInfo.confirmationText;
+		button.tooltip = optionInfo.buttonTooltip;
+		button.rewardQuestID = optionInfo.rewardQuestID;
+		button:SetText(optionInfo.buttonText);
+		button.optID = optionInfo.responseID;
+		button.soundKitID = optionInfo.soundKitID;
+		button:SetEnabled(not optionInfo.disabledButton);
 	end
 
 	-- buttons
@@ -445,7 +452,12 @@ end
 QuestChoiceOptionButtonMixin = {};
 
 function QuestChoiceOptionButtonMixin:OnClick()
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	if(self.soundKitID) then 
+		PlaySound(self.soundKitID);
+	else 
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	end
+
 	local parent = self:GetParent():GetParent();
 	if ( self.optID ) then
 		if ( IsInGroup() and (parent.choiceID == GORGROND_GARRISON_ALLIANCE_CHOICE or parent.choiceID == GORGROND_GARRISON_HORDE_CHOICE) ) then
@@ -454,8 +466,8 @@ function QuestChoiceOptionButtonMixin:OnClick()
 			StaticPopup_Show("CONFIRM_PLAYER_CHOICE", self.confirmationText, nil, { response = self.optID, owner = parent:GetParent() });
 		else
 			SendQuestChoiceResponse(self.optID);
-			local keepOpenAfterChoice = select(6, GetQuestChoiceInfo());
-			if ( not keepOpenAfterChoice ) then
+			local choiceInfo = C_QuestChoice.GetQuestChoiceInfo();
+			if ( not choiceInfo.keepOpenAfterChoice ) then
 				HideUIPanel(parent:GetParent());
 			end
 		end
