@@ -181,19 +181,6 @@ function CommunitiesListMixin:Update()
 	local selectedClubId = self:GetCommunitiesFrame():GetSelectedClubId();
 		
 	local clubs = self:GetCommunitiesList();
-	if selectedClubId == nil and self.mostRecentAcceptedInviteOrTicket then
-		for i, clubInfo in ipairs(clubs) do
-			if clubInfo.clubId == self.mostRecentAcceptedInviteOrTicket then
-				self:GetCommunitiesFrame():SelectClub(self.mostRecentAcceptedInviteOrTicket);
-				self.mostRecentAcceptedInviteOrTicket = nil;
-				self:ScrollToClub(self:GetCommunitiesFrame():GetSelectedClubId());
-
-				-- Selecting a club already triggered a second update.
-				return;
-			end
-		end
-	end
-	
 	self:ValidateTickets();
 
 	local isInGuild = IsInGuild();
@@ -314,29 +301,16 @@ function CommunitiesListMixin:OnLoad()
 end
 
 function CommunitiesListMixin:RegisterEventCallbacks()
-	local function CommunityInviteAcceptedCallback(event, invitationId, clubId)
-		self.mostRecentAcceptedInviteOrTicket = clubId;
-	end
-
 	local function CommunityInviteDeclinedCallback(event, invitationId, clubId)
 		self.declinedInvitationIds[#self.declinedInvitationIds + 1] = invitationId;
 		self:GetCommunitiesFrame():UpdateClubSelection();
 		self:UpdateInvitations();
 		self:Update();
 	end
-
-	local function CommunityTicketAcceptedCallback(event, ticketId, clubId)
-		self.mostRecentAcceptedInviteOrTicket = clubId;
-	end
-
-	self.inviteAcceptedCallback = CommunityInviteAcceptedCallback;
-	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.InviteAccepted, self.inviteAcceptedCallback);
 	
 	self.inviteDeclinedCallback = CommunityInviteDeclinedCallback;
 	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.InviteDeclined, self.inviteDeclinedCallback);
 
-	self.ticketAcceptedCallback = CommunityTicketAcceptedCallback;
-	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.TicketAccepted, self.ticketAcceptedCallback);
 end
 
 function CommunitiesListMixin:OnShow()
@@ -352,9 +326,7 @@ function CommunitiesListMixin:OnShow()
 end
 
 function CommunitiesListMixin:OnHide()
-	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.InviteAccepted, self.inviteAcceptedCallback);
 	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.InviteDeclined, self.inviteDeclinedCallback);
-	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.TicketAccpted, self.ticketAcceptedCallback);
 	FrameUtil.UnregisterFrameForEvents(self, COMMUNITIES_LIST_EVENTS);
 end
 

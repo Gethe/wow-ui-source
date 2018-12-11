@@ -16,14 +16,13 @@ local Club =
 			},
 		},
 		{
-			Name = "AddClubStreamToChatWindow",
+			Name = "AddClubStreamChatChannel",
 			Type = "Function",
 
 			Arguments =
 			{
 				{ Name = "clubId", Type = "string", Nilable = false },
 				{ Name = "streamId", Type = "string", Nilable = false },
-				{ Name = "chatWindowIndex", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -221,6 +220,10 @@ local Club =
 			},
 		},
 		{
+			Name = "Flush",
+			Type = "Function",
+		},
+		{
 			Name = "FocusStream",
 			Type = "Function",
 
@@ -277,6 +280,20 @@ local Club =
 			Returns =
 			{
 				{ Name = "info", Type = "ClubInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetClubLimits",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubType", Type = "ClubType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "clubLimits", Type = "ClubLimits", Nilable = false },
 			},
 		},
 		{
@@ -368,6 +385,7 @@ local Club =
 				{ Name = "filter", Type = "string", Nilable = true },
 				{ Name = "maxResults", Type = "number", Nilable = true },
 				{ Name = "cursorPosition", Type = "number", Nilable = true },
+				{ Name = "allowFullMatch", Type = "bool", Nilable = true },
 				{ Name = "clubId", Type = "string", Nilable = false },
 			},
 
@@ -1516,6 +1534,14 @@ local Club =
 				{ Name = "invitationId", Type = "string", Nilable = false },
 				{ Name = "isMyInvitation", Type = "bool", Nilable = false },
 				{ Name = "invitee", Type = "ClubMemberInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "ClubLimits",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "maximumNumberOfStreams", Type = "number", Nilable = false },
 			},
 		},
 		{

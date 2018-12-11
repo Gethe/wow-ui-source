@@ -229,7 +229,7 @@ local Calendar =
 			},
 		},
 		{
-			Name = "EventGetClubID",
+			Name = "EventGetClubId",
 			Type = "Function",
 
 			Returns =
@@ -380,12 +380,12 @@ local Calendar =
 			Type = "Function",
 		},
 		{
-			Name = "EventSetClubID",
+			Name = "EventSetClubId",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "clubID", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -487,12 +487,19 @@ local Calendar =
 			Type = "Function",
 		},
 		{
-			Name = "GetDate",
+			Name = "GetClubCalendarEvents",
 			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "startTime", Type = "CalendarTime", Nilable = false },
+				{ Name = "endTime", Type = "CalendarTime", Nilable = false },
+			},
 
 			Returns =
 			{
-				{ Name = "date", Type = "CalendarTime", Nilable = false },
+				{ Name = "events", Type = "table", InnerType = "CalendarDayEvent", Nilable = false },
 			},
 		},
 		{
@@ -527,6 +534,22 @@ local Calendar =
 			Returns =
 			{
 				{ Name = "info", Type = "CalendarEventIndexInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetEventIndexInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "eventID", Type = "string", Nilable = false },
+				{ Name = "monthOffset", Type = "number", Nilable = true },
+				{ Name = "monthDay", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "eventIndexInfo", Type = "CalendarEventIndexInfo", Nilable = true },
 			},
 		},
 		{
@@ -630,6 +653,15 @@ local Calendar =
 			},
 		},
 		{
+			Name = "GetNextClubId",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "clubId", Type = "string", Nilable = true },
+			},
+		},
+		{
 			Name = "GetNumDayEvents",
 			Type = "Function",
 
@@ -702,7 +734,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "clubID", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "string", Nilable = false },
 				{ Name = "minLevel", Type = "number", Nilable = false },
 				{ Name = "maxLevel", Type = "number", Nilable = false },
 				{ Name = "maxRankOrder", Type = "number", Nilable = true },
@@ -755,6 +787,15 @@ local Calendar =
 			Arguments =
 			{
 				{ Name = "offsetMonths", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetNextClubId",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -887,23 +928,11 @@ local Calendar =
 			},
 		},
 		{
-			Name = "CalendarTime",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "monthDay", Type = "number", Nilable = false },
-				{ Name = "month", Type = "number", Nilable = false },
-				{ Name = "weekday", Type = "number", Nilable = false },
-				{ Name = "year", Type = "number", Nilable = false },
-				{ Name = "hour", Type = "number", Nilable = false },
-				{ Name = "minute", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "CalendarDayEvent",
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "eventID", Type = "string", Nilable = false },
 				{ Name = "title", Type = "string", Nilable = false },
 				{ Name = "isCustomTitle", Type = "bool", Nilable = false },
 				{ Name = "startTime", Type = "CalendarTime", Nilable = false },

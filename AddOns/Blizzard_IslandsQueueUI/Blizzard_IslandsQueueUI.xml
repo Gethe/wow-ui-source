@@ -64,7 +64,7 @@
 			<Layer level="OVERLAY">
 				<FontString parentKey="Title" inherits="GameFontNormal" text="ISLANDS_QUEUE_WEEKLY_QUEST">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-5" y="18"/> 
+						<Anchor point="TOPLEFT" x="-5" y="22"/> 
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -205,6 +205,7 @@
 		<Scripts>
 			<OnEvent method="OnEvent"/>
 			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 			<OnEnter>
 				self.OverlayFrame.Text:Show(); 
 			</OnEnter>
@@ -441,7 +442,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="TitleBanner">
+			<Frame parentKey="TitleBanner" frameLevel="1150">
 				<Size x="200" y="40"/> 
 				<Anchors>
 					<Anchor point="TOP" x="0" y="20"/> 

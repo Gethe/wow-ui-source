@@ -23,6 +23,7 @@
 ..\SharedXML\TransformTree\TransformTree.xml
 ..\SharedXML\KeyCommand.lua
 ..\SharedXML\CustomBindingButtonMixin.lua
+..\SharedXML\PixelUtil.lua
 MixinUtil.lua
 
 ## intrinsics
@@ -60,11 +61,14 @@ ObjectAPI\PlayerLocation.lua
 WorldFrame.xml
 UIParent.xml
 QuestUtils.lua
+AchievementUtil.lua
 MapUtil.lua
 AzeriteUtil.lua
 VehicleUtil.lua
 AuraUtil.lua
+CalendarUtil.lua
 CommunitiesUtil.lua
+ItemUtil.lua
 CurrencyContainer.lua
 ## IME.xml needs to be loaded after UIParent.xml
 ..\SharedXML\IME.xml
@@ -72,6 +76,7 @@ MoneyFrame.lua
 MoneyFrame.xml
 MoneyInputFrame.lua
 MoneyInputFrame.xml
+..\SharedXML\PanelThemes.lua
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\SharedBasicControls.xml

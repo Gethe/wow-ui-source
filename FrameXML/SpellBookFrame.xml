@@ -92,7 +92,7 @@
 			<AbsDimension x="30" y="30"/>
 		</Size>
 	</Frame>
-	<CheckButton name="SpellBookSkillLineTabTemplate" virtual="true" hidden="true">
+	<CheckButton name="SpellBookSkillLineTabTemplate" frameLevel="510" virtual="true" hidden="true">
 		<Size>
 			<AbsDimension x="32" y="32"/>
 		</Size>
@@ -694,11 +694,7 @@
 		<Frames>
 			<CheckButton name="$parentSpellButtonTop" inherits="ProfessionButtonTemplate" parentKey="button2" id="2">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-109" y="-3"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-109" y="-3" />
 				</Anchors>
 			</CheckButton>
 			<CheckButton name="$parentSpellButtonBottom" inherits="ProfessionButtonTemplate" parentKey="button1" id="1">
@@ -712,9 +708,7 @@
 				</Anchors>
 			</StatusBar>
 			<Button name="$parentUnlearnButton" parentKey="unlearn">
-				<Size>
-					<AbsDimension x="16" y="16"/>
-				</Size>
+				<Size x="16" y="16" />
 				<Anchors>
 					<Anchor point="RIGHT"  relativeTo="$parentStatusBar" relativePoint="LEFT" x="-21" y="1"/>
 				</Anchors>
@@ -754,62 +748,11 @@
 		</Scripts>
 	</Frame>
 	<Frame name="SecondaryProfessionTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="437" y="46"/>
-		</Size>
-		<Layers>
-			<Layer level="OVERLAY">
-				<FontString name="$parentProfessionName" inherits="QuestFont_Shadow_Small" justifyH="LEFT" parentKey="professionName" text="TRADE_SKILLS">
-					<Size>
-						<AbsDimension x="0" y="0"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT"  x="2" y="-1"/>
-					</Anchors>
-					<Shadow>
-						<Offset>
-							<AbsDimension x="1" y="-1"/>
-						</Offset>
-						<Color r="0" g="0" b="0"/>
-					</Shadow>
-					<Color r="1" g=".82" b="0"/>
-				</FontString>
-				<FontString name="$parentRank" inherits="GameFontHighlightSmall" justifyH="LEFT" parentKey="rank" text="TRADE_SKILLS">
-					<Size>
-						<AbsDimension x="0" y="0"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentProfessionName" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentMissing" inherits="QuestFont_Large" justifyH="LEFT" parentKey="missingHeader" text="">
-					<Size>
-						<AbsDimension x="0" y="0"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT"  x="4" y="-15"/>
-					</Anchors>
-					<Color r="0.15" g="0.1" b="0.1"/>
-				</FontString>
-				<FontString inherits="SubSpellFont" justifyH="LEFT" parentKey="missingText" text="">
-					<Size>
-						<AbsDimension x="250" y="0"/>
-					</Size>
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT" x="-5" y="0"/>
-					</Anchors>
-					<Color r="0.1" g="0.05" b="0.05"/>
-				</FontString>
-			</Layer>
-		</Layers>
+		<Size x="437" y="46"/>
 		<Frames>
 			<CheckButton name="$parentSpellButtonRight" inherits="ProfessionButtonTemplate" parentKey="button1" id="1">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-109" y="-3"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-109" y="-3"/>
 				</Anchors>
 			</CheckButton>
 			<CheckButton name="$parentSpellButtonLeft" inherits="ProfessionButtonTemplate" parentKey="button2" id="2">
@@ -819,10 +762,49 @@
 			</CheckButton>
 			<StatusBar name="$parentStatusBar" inherits="ProfessionStatusBarTemplate" parentKey="statusBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentRank" relativePoint="BOTTOMLEFT" x="14" y="-5"/>
+					<Anchor point="BOTTOMLEFT" x="16" y="-1"/>
 				</Anchors>
 			</StatusBar>
-		</Frames>
+		</Frames>		
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentRank" inherits="GameFontHighlightSmall" justifyH="LEFT" parentKey="rank" text="TRADE_SKILLS">
+					<Size x="0" y="0" />
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.statusBar" relativePoint="TOPLEFT" x="-14" y="4"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.statusBar" relativePoint="TOPRIGHT" x="25" y="4"/>
+					</Anchors>
+				</FontString>				
+				<FontString name="$parentProfessionName" inherits="QuestFont_Shadow_Small" justifyH="LEFT" parentKey="professionName" text="TRADE_SKILLS">
+					<Size x="0" y="0" />
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.rank" relativePoint="TOPLEFT" x="0" y="2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.rank" relativePoint="TOPRIGHT" x="0" y="2"/>
+					</Anchors>
+					<Shadow>
+						<Offset>
+							<AbsDimension x="1" y="-1"/>
+						</Offset>
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+					<Color r="1" g=".82" b="0"/>
+				</FontString>
+				<FontString name="$parentMissing" inherits="QuestFont_Large" justifyH="LEFT" parentKey="missingHeader" text="">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"  x="4" y="-15"/>
+					</Anchors>
+					<Color r="0.15" g="0.1" b="0.1"/>
+				</FontString>
+				<FontString inherits="SubSpellFont" justifyH="LEFT" parentKey="missingText" text="">
+					<Size x="250" y="0" />
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT" x="-5" y="0"/>
+					</Anchors>
+					<Color r="0.1" g="0.05" b="0.05"/>
+				</FontString>
+			</Layer>
+		</Layers>
 	</Frame>
 
 	<Frame name="SpellBookFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate" frameStrata="MEDIUM">

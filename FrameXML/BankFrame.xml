@@ -37,16 +37,9 @@
             </OnReceiveDrag>
 		</Scripts>
 	</Button>
-	<Button name="BankItemButtonBagTemplate" inherits="ItemButtonTemplate" virtual="true">
+	<CheckButton name="BankItemButtonBagTemplate" inherits="ItemButtonTemplate" virtual="true">
 		<Frames>
 			<Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate"/>
-			<Frame name="$parentHighlightFrame" parentKey="HighlightFrame" setAllPoints="true">
-				<Layers>
-					<Layer>
-						<Texture name="$parentTexture" parentKey="HighlightTexture" alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight" setAllPoints="true" hidden="true"/>
-					</Layer>
-				</Layers>
-			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="BankFrameBagButton_OnLoad"/>
@@ -70,7 +63,8 @@
 				BankFrameItemButtonBag_OnClick(self, nil);
 			</OnReceiveDrag>
 		</Scripts>
-	</Button>
+		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+	</CheckButton>
 	<Button name="ReagentBankItemButtonGenericTemplate" inherits="BankItemButtonGenericTemplate" virtual="true">
 		<Scripts>
 			<OnLoad function="ReagentBankFrameItemButton_OnLoad"/>
@@ -305,41 +299,41 @@
 					</Button>
 					<!-- The other 27 items are created in BankFrame_OnLoad -->
 
-					<Button parentKey="Bag1" inherits="BankItemButtonBagTemplate" id="1">
+					<CheckButton parentKey="Bag1" inherits="BankItemButtonBagTemplate" id="1">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Item1" relativePoint="BOTTOMLEFT" x="0" y="-164"/>
 						</Anchors>
-					</Button>
-					<Button parentKey="Bag2" inherits="BankItemButtonBagTemplate" id="2">
+					</CheckButton>
+					<CheckButton parentKey="Bag2" inherits="BankItemButtonBagTemplate" id="2">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Bag1" relativePoint="TOPRIGHT" x="12" y="0"/>
 						</Anchors>
-					</Button>
-					<Button parentKey="Bag3" inherits="BankItemButtonBagTemplate" id="3">
+					</CheckButton>
+					<CheckButton parentKey="Bag3" inherits="BankItemButtonBagTemplate" id="3">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Bag2" relativePoint="TOPRIGHT" x="12" y="0"/>
 						</Anchors>
-					</Button>
-					<Button parentKey="Bag4" inherits="BankItemButtonBagTemplate" id="4">
+					</CheckButton>
+					<CheckButton parentKey="Bag4" inherits="BankItemButtonBagTemplate" id="4">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Bag3" relativePoint="TOPRIGHT" x="12" y="0"/>
 						</Anchors>
-					</Button>
-					<Button parentKey="Bag5" inherits="BankItemButtonBagTemplate" id="5">
+					</CheckButton>
+					<CheckButton parentKey="Bag5" inherits="BankItemButtonBagTemplate" id="5">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Bag4" relativePoint="TOPRIGHT" x="12" y="0"/>
 						</Anchors>
-					</Button>
-					<Button parentKey="Bag6" inherits="BankItemButtonBagTemplate" id="6">
+					</CheckButton>
+					<CheckButton parentKey="Bag6" inherits="BankItemButtonBagTemplate" id="6">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Bag5" relativePoint="TOPRIGHT" x="12" y="0"/>
 						</Anchors>
-					</Button>
-					<Button parentKey="Bag7" inherits="BankItemButtonBagTemplate" id="7">
+					</CheckButton>
+					<CheckButton parentKey="Bag7" inherits="BankItemButtonBagTemplate" id="7">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Bag6" relativePoint="TOPRIGHT" x="12" y="0"/>
 						</Anchors>
-					</Button>
+					</CheckButton>
 					<Frame name="BankFramePurchaseInfo" hidden="false">
 						<Size x="380" y="78"/>
 						<Anchors>

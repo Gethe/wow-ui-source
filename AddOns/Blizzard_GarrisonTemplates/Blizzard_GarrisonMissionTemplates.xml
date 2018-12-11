@@ -294,12 +294,7 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.MissionXP"/>
 				</Anchors>
 				<Scripts>
-					<OnEnter>
-						if (self:GetParent().MissionXP.hasBonusBaseXP) then
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetText(GARRISON_MISSION_BONUS_BASE_XP_TOOLTIP, nil, nil, nil, nil, true);
-						end
-					</OnEnter>
+					<OnEnter function="GarrisonMissionPageRewardTemplate_MissionXPTooltipHitBox_OnEnter"/>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
@@ -309,17 +304,7 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ChanceLabel"/>
 				</Anchors>
 				<Scripts>
-					<OnEnter>
-						GameTooltip:ClearAllPoints();
-						GameTooltip:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 10, 0);
-						GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
-						GameTooltip:SetText(GARRISON_MISSION_CHANCE_TOOLTIP_HEADER);
-						local missionID = self:GetParent():GetParent().missionInfo.missionID;
-						GameTooltip:AddLine(string.format(GARRISON_MISSION_PERCENT_CHANCE, C_Garrison.GetMissionSuccessChance(missionID)), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-						GameTooltip:AddLine(" ");
-						GameTooltip:AddLine(self:GetParent().tooltipText, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, 1);
-						GameTooltip:Show();
-					</OnEnter>
+					<OnEnter function="GarrisonMissionPageRewardTemplate_TooltipHitBox_OnEnter"/>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
@@ -648,9 +633,40 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
+						<Texture parentKey="Highlight" hidden="true" alpha="0" alphaMode="ADD" atlas="groupfinder-eye-highlight" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="1"/>
+							</Anchors>
+						</Texture>
 						<Texture parentKey="Texture" setAllPoints="true"/>
 					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="CrossLeft" hidden="true" alpha="1" atlas="GarrMission_EncounterBar-Xleft">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CrossRight" hidden="true" alpha="1" atlas="GarrMission_EncounterBar-Xright">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Countered" setToFinalAlpha="true">
+						<Scale childKey="CrossLeft" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="CrossLeft" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="CrossRight" startDelay="0.1" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="CrossRight" startDelay="0.1" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="EnvironmentHighlight" setToFinalAlpha="true" looping="REPEAT">
+						<Scale childKey="Highlight" startDelay="0.1" endDelay="2.9" smoothing="NONE" duration="1.0" order="1" fromScaleX="0.39" fromScaleY="0.39" toScaleX=".6" toScaleY=".6"/>
+						<Alpha childKey="Highlight" startDelay="0.1" endDelay="2.9" smoothing="NONE" duration="1.0" order="1" fromAlpha=".6" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
 				<Scripts>
 					<OnEnter function="GarrisonMissionPageEnvironment_OnEnter"/>
 					<OnLeave function="GameTooltip_Hide"/>
@@ -960,10 +976,6 @@
 				<Anchors>
 					<Anchor point="BOTTOM" x="164" y="-423" relativePoint="TOPLEFT"/>
 				</Anchors>
-				<Scripts>
-					<OnMouseDown function="GarrisonFollowerPageModel_SpellCast_OnMouseDown"/>
-					<OnMouseUp function="GarrisonFollowerPageModel_SpellCast_OnMouseUp"/>
-				</Scripts>
 			</Frame>
 		</Frames>
 	</ScrollFrame>

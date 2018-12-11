@@ -35,6 +35,12 @@ local WaitingOnVASToComplete = 0;
 local WaitingOnVASToCompleteToken = nil;
 local WasVeteran = false;
 local StoreFrameHasBeenShown = false;
+local CharacterWaitingOnGuildFollowInfo = nil;
+local RealmWaitingOnGuildMasterInfo = nil;
+local GuildMasterInfo = {};
+local CharacterList = {};
+local GuildMemberAutoCompleteList;
+local GuildMemberNameToGuid = {};
 
 --Imports
 Import("bit");
@@ -84,7 +90,7 @@ Import("CreateFromSecureMixins");
 Import("ShrinkUntilTruncateFontStringMixin");
 Import("IsTrialAccount");
 Import("IsVeteranTrialAccount");
-Import("PortraitFrameTemplateMixin");
+Import("PortraitFrameTemplate_SetPortraitToAsset");
 
 --GlobalStrings
 Import("BLIZZARD_STORE");
@@ -120,6 +126,9 @@ Import("BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR");
 Import("BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE");
 Import("BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_EUR");
 Import("BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_KR");
+Import("BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES");
+Import("BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES_EUR");
+Import("BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES_KR");
 Import("BLIZZARD_STORE_CONFIRMATION_OTHER");
 Import("BLIZZARD_STORE_CONFIRMATION_OTHER_EUR");
 Import("BLIZZARD_STORE_BROWSE_TEST_CURRENCY");
@@ -205,6 +214,7 @@ Import("BLIZZARD_STORE_VAS_ERROR_HAS_HEIRLOOM");
 Import("BLIZZARD_STORE_VAS_ERROR_HAS_CAGED_BATTLE_PET");
 Import("BLIZZARD_STORE_VAS_ERROR_CHARACTER_LOCKED");
 Import("BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_RECENT");
+Import("BLIZZARD_STORE_VAS_ERROR_CHARACTER_HAS_VAS_PENDING");
 Import("BLIZZARD_STORE_VAS_ERROR_INVALID_DESTINATION_ACCOUNT");
 Import("BLIZZARD_STORE_VAS_ERROR_INVALID_SOURCE_ACCOUNT");
 Import("BLIZZARD_STORE_VAS_ERROR_DISALLOWED_SOURCE_ACCOUNT");
@@ -213,6 +223,15 @@ Import("BLIZZARD_STORE_VAS_ERROR_LOWER_BOX_LEVEL");
 Import("BLIZZARD_STORE_VAS_ERROR_MAX_CHARACTERS_ON_SERVER");
 Import("BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_DISTANT");
 Import("BLIZZARD_STORE_VAS_ERROR_BOOSTED_TOO_RECENTLY");
+Import("BLIZZARD_STORE_VAS_ERROR_NOT_GUILD_MASTER");
+Import("BLIZZARD_STORE_VAS_ERROR_NOT_IN_GUILD");
+Import("BLIZZARD_STORE_VAS_ERROR_NEW_LEADER_INVALID");
+Import("BLIZZARD_STORE_VAS_ERROR_AUTHENTICATOR_INSUFFICIENT");
+Import("BLIZZARD_STORE_VAS_ERROR_ALREADY_RENAME_FLAGGED");
+Import("BLIZZARD_STORE_VAS_ERROR_GM_SENORITY_INSUFFICIENT");
+Import("BLIZZARD_STORE_VAS_ERROR_OPERATION_ALREADY_IN_PROGRESS");
+Import("BLIZZARD_STORE_VAS_ERROR_LOCKED_FOR_VAS");
+Import("BLIZZARD_STORE_VAS_ERROR_MOVE_IN_PROGRESS");
 Import("BLIZZARD_STORE_VAS_ERROR_OTHER");
 Import("BLIZZARD_STORE_VAS_ERROR_LABEL");
 Import("BLIZZARD_STORE_LEGION_PURCHASE_READY");
@@ -243,6 +262,8 @@ Import("BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE_CN");
 Import("BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE_CN");
 Import("BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE_CN");
 Import("BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER_CN");
+Import("BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE");
+Import("BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE");
 Import("BLIZZARD_STORE_BOOST_UNREVOKED_CONSUMPTION");
 Import("BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100");
 Import("BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100_CN");
@@ -258,6 +279,7 @@ Import("FREE_CHARACTER_UPGRADE_READY");
 Import("FREE_CHARACTER_UPGRADE_READY_DESCRIPTION");
 Import("CHARACTER_UPGRADE_CLASS_TRIAL_UNLOCK_READY_DESCRIPTION");
 Import("ACCEPT");
+Import("VAS_RP_PARENTHESES");
 Import("VAS_SELECT_CHARACTER_DISABLED");
 Import("VAS_SELECT_CHARACTER");
 Import("VAS_CHARACTER_LABEL");
@@ -267,8 +289,26 @@ Import("VAS_CHARACTER_SELECTION_DESCRIPTION");
 Import("VAS_SELECTED_CHARACTER_DESCRIPTION");
 Import("VAS_NEW_CHARACTER_NAME_LABEL");
 Import("VAS_NAME_CHANGE_TOOLTIP");
+Import("VAS_TRANSFER_REALM_TOOLTIP");
+Import("VAS_NEW_GUILD_NAME_LABEL");
+Import("VAS_GUILD_NAME_CHANGE_TOOLTIP");
+Import("VAS_GUILD_NAME_CHANGE_TRANSFER_TOOLTIP");
+Import("VAS_GUILD_FACTION_NAME_CHANGE_CHECKBOX_TOOLTIP");
+Import("VAS_NEW_GUILD_MASTER_FACTION_CHANGE_TOOLTIP");
+Import("VAS_NEW_GUILD_MASTER_TRANSFER_TOOLTIP");
+Import("VAS_OLD_GUILD_NEW_NAME_CHANGE_TOOLTIP");
+Import("VAS_NEW_GUILD_MASTER_LABEL");
+Import("VAS_NEW_GUILD_MASTER_EMPTY_TEXT");
+Import("VAS_OLD_GUILD_NEW_NAME_LABEL");
+Import("VAS_OLD_GUILD_NEW_NAME_EMPTY_TEXT");
 Import("VAS_DESTINATION_REALM_LABEL");
 Import("VAS_NAME_CHANGE_CONFIRMATION");
+Import("VAS_GUILD_FACTION_CHANGE_CONFIRMATION");
+Import("VAS_GUILD_FACTION_CHANGE_PLUS_NAME_CHANGE_CONFIRMATION");
+Import("VAS_GUILD_TRANSFER_CONFIRMATION");
+Import("VAS_GUILD_TRANSFER_PLUS_NAME_CHANGE_CONFIRMATION");
+Import("VAS_GUILD_TRANSFER_PLUS_FACTION_CHANGE_CONFIRMATION");
+Import("VAS_GUILD_TRANSFER_PLUS_NAME_AND_FACTION_CHANGE_CONFIRMATION");
 Import("VAS_APPEARANCE_CHANGE_CONFIRMATION");
 Import("VAS_FACTION_CHANGE_CONFIRMATION");
 Import("VAS_RACE_CHANGE_CONFIRMATION");
@@ -296,11 +336,19 @@ Import("BLIZZARD_STORE_VAS_TRANSFER_ACCOUNT");
 Import("BLIZZARD_STORE_VAS_TRANSFER_FACTION_BUNDLE");
 Import("BLIZZARD_STORE_VAS_EMAIL_ADDRESS");
 Import("BLIZZARD_STORE_VAS_DESTINATION_BNET_ACCOUNT");
-Import("BLIZZARD_STORE_VAS_REALMS_AND_MORE");
+Import("BLIZZARD_STORE_VAS_AUTOCOMPLETE_AND_MORE");
 Import("BLIZZARD_STORE_VAS_REALMS_PREVIOUS");
 Import("BLIZZARD_STORE_VAS_ERROR_INVALID_BNET_ACCOUNT");
 Import("BLIZZARD_STORE_VAS_PREVIOUS_ENTRIES");
 Import("BLIZZARD_STORE_VAS_NEXT_ENTRIES");
+Import("BLIZZARD_STORE_VAS_RENAME_GUILD");
+Import("BLIZZARD_STORE_VAS_FOLLOW_GUILD_TRANSFER");
+Import("BLIZZARD_STORE_VAS_FOLLOW_GUILD_FACTION_TRANSFER");
+Import("BLIZZARD_STORE_VAS_FOLLOW_GUILD_FACTION_CHANGE");
+Import("BLIZZARD_STORE_VAS_FOLLOW_GUILD_TRANSFER_ERROR");
+Import("BLIZZARD_STORE_VAS_FOLLOW_GUILD_FACTION_TRANSFER_ERROR");
+Import("BLIZZARD_STORE_VAS_ERROR_NO_ELIGIBLE_CHARACTERS");
+Import("BLIZZARD_STORE_VAS_ERROR_NO_GUILD_MASTERS");
 Import("TOKEN_CURRENT_AUCTION_VALUE");
 Import("TOKEN_MARKET_PRICE_NOT_AVAILABLE");
 Import("OKAY");
@@ -320,6 +368,7 @@ Import("COPPER_AMOUNT_TEXTURE_STRING");
 Import("FACTION_HORDE");
 Import("FACTION_ALLIANCE");
 Import("LIST_DELIMITER");
+Import("HTML_START");
 Import("HTML_START_CENTERED");
 Import("HTML_END");
 Import("BLIZZARD_STORE_BUNDLE_DISCOUNT_BANNER");
@@ -335,6 +384,11 @@ Import("LE_MODEL_BLEND_OPERATION_NONE");
 
 --Lua constants
 local WOW_TOKEN_CATEGORY_ID = 30;
+local SEE_YOU_LATER_BUNDLE_PRODUCT_ID = 488;
+
+local SPLASH_DISPLAY_TYPE_SINGLE_SPLASH = 1;
+local SPLASH_DISPLAY_TYPE_DUAL_PANE = 2;
+local SPLASH_DISPLAY_TYPE_TRI_PANE = 3;
 
 -- Mirror of the same variables in GlueParent.lua and UIParent.lua
 local WOW_GAMES_CATEGORY_ID = 33;
@@ -373,6 +427,8 @@ local PI = math.pi;
 
 local CHARACTER_TRANSFER_FACTION_BUNDLE_PRODUCT_ID = 239;
 local CHARACTER_TRANSFER_PRODUCT_ID = 189;
+local GUILD_TRANSFER_FACTION_BUNDLE_PRODUCT_ID = 477;
+local GUILD_TRANSFER_PRODUCT_ID = 476;
 
 local currencyMult = 100;
 
@@ -476,6 +532,45 @@ local function currencyFormatNZD(dollars, cents)
 	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_NZD, formatCurrency(dollars, cents, false));
 end
 
+local function GetFactionIcon(faction, returnOpposite)
+	if faction ~= 0 and faction ~= 1 then
+		return "";
+	end
+
+	if returnOpposite then
+		faction = (faction == 0) and 1 or 0;
+	end
+
+	if faction == 0 then
+		return "Interface\\Icons\\inv_misc_tournaments_banner_orc";
+	elseif faction == 1 then
+		return "Interface\\Icons\\achievement_pvp_a_16";
+	end
+end
+
+local function GetFactionName(faction, returnOpposite)
+	if faction ~= 0 and faction ~= 1 then
+		return "";
+	end
+
+	if returnOpposite then
+		faction = (faction == 0) and 1 or 0;
+	end
+
+	if (faction == 0) then
+		return FACTION_HORDE;
+	elseif (faction == 1) then
+		return FACTION_ALLIANCE;
+	end
+end
+
+function GetURLIndexAndLoadURL(self, link)
+	local linkType, index = string.split(":", link);
+	if ( linkType == "urlIndex" ) then
+		LoadURLIndex(tonumber(index));
+	end
+end
+
 -- This is copied from WowTokenUI.lua
 function GetSecureMoneyString(money, separateThousands, forceColorBlind)
 	local goldString, silverString, copperString;
@@ -520,6 +615,19 @@ function GetSecureMoneyString(money, separateThousands, forceColorBlind)
 	return moneyString;
 end
 
+local function StoreFrame_HasPriceData(productID)
+	return not C_StoreSecure.IsDynamicBundle(productID) or C_StoreSecure.HasDynamicPriceData(productID);
+end
+
+local function StoreFrame_GetProductPriceText(entryInfo, currencyFormat)
+	local productID = entryInfo.productID;
+	if not StoreFrame_HasPriceData(productID) then
+		return "";
+	else
+		return currencyFormat(entryInfo.sharedData.currentDollars, entryInfo.sharedData.currentCents);
+	end
+end
+
 ----------
 --Values
 ---
@@ -540,6 +648,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
+		vasGuildServicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES,
 		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_USD,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
@@ -562,6 +671,12 @@ local currencySpecific = {
 			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
+			[Enum.VasServiceType.GuildNameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.GuildFactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
 		},
 	},
 	[CURRENCY_GBP] = {
@@ -571,6 +686,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_EUR,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_EUR,
+		vasGuildServicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES_EUR,
 		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER_EUR,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_GBP,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
@@ -596,6 +712,12 @@ local currencySpecific = {
 			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
+			[Enum.VasServiceType.GuildNameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.GuildFactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
 		},
 	},
 	[CURRENCY_KRW] = {
@@ -605,6 +727,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_SECOND_CHANCE_KR,
 		servicesConfirmationNotice = BLIZZARD_STORE_SECOND_CHANCE_KR,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_KR,
+		vasGuildServicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES_KR,
 		expansionConfirmationNotice = BLIZZARD_STORE_SECOND_CHANCE_KR,
 		browseWarning = BLIZZARD_STORE_SECOND_CHANCE_KR,
 		paymentMethodText = "",
@@ -630,6 +753,12 @@ local currencySpecific = {
 			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
+			[Enum.VasServiceType.GuildNameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.GuildFactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
 		},
 	},
 	[CURRENCY_EUR] = {
@@ -639,6 +768,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_EUR,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_EUR,
+		vasGuildServicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES_EUR,
 		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER_EUR,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_EUR,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
@@ -664,6 +794,12 @@ local currencySpecific = {
 			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
+			[Enum.VasServiceType.GuildNameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.GuildFactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
 		},
 	},
 	[CURRENCY_RUB] = {
@@ -673,6 +809,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_EUR,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_EUR,
+		vasGuildServicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES_EUR,
 		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER_EUR,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_RUB,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
@@ -698,6 +835,12 @@ local currencySpecific = {
 			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
+			[Enum.VasServiceType.GuildNameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.GuildFactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
 		},
 	},
 	[CURRENCY_ARS] = {
@@ -707,6 +850,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
+		vasGuildServicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES,
 		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_ARS,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
@@ -729,6 +873,12 @@ local currencySpecific = {
 			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
+			[Enum.VasServiceType.GuildNameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.GuildFactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
 		},
 	},
 	[CURRENCY_CLP] = {
@@ -738,6 +888,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
+		vasGuildServicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES,
 		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_CLP,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
@@ -760,6 +911,12 @@ local currencySpecific = {
 			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
+			[Enum.VasServiceType.GuildNameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.GuildFactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
 		},
 	},
 	[CURRENCY_MXN] = {
@@ -769,6 +926,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
+		vasGuildServicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES,
 		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_MXN,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
@@ -791,6 +949,12 @@ local currencySpecific = {
 			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
+			[Enum.VasServiceType.GuildNameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.GuildFactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
 		},
 	},
 	[CURRENCY_BRL] = {
@@ -800,6 +964,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
+		vasGuildServicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES,
 		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_BRL,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
@@ -822,6 +987,12 @@ local currencySpecific = {
 			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
+			[Enum.VasServiceType.GuildNameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.GuildFactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
 		},
 	},
 	[CURRENCY_AUD] = {
@@ -831,6 +1002,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
+		vasGuildServicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES,
 		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_AUD,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
@@ -853,6 +1025,12 @@ local currencySpecific = {
 			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
+			[Enum.VasServiceType.GuildNameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.GuildFactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
 		},
 	},
 	[CURRENCY_CPT] = {
@@ -862,6 +1040,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
+		vasGuildServicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES,
 		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_CN,
 		paymentMethodText = "",
@@ -885,6 +1064,12 @@ local currencySpecific = {
 			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER_CN,
 			},
+			[Enum.VasServiceType.GuildNameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.GuildFactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
 		},
 	},
 	[CURRENCY_TPT] = {
@@ -894,6 +1079,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
+		vasGuildServicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES,
 		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_TW,
 		paymentMethodText = "",
@@ -916,6 +1102,12 @@ local currencySpecific = {
 			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
+			[Enum.VasServiceType.GuildNameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.GuildFactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
 		},
 	},
 	[CURRENCY_BETA] = {
@@ -925,6 +1117,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_TEST,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_TEST,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_TEST,
+		vasGuildServicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_TEST,
 		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_TEST,
 		paymentMethodText = BLIZZARD_STORE_CONFIRMATION_TEST,
 		paymentMethodSubtext = "",
@@ -946,6 +1139,12 @@ local currencySpecific = {
 			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
+			[Enum.VasServiceType.GuildNameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.GuildFactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
 		},
 	},
 	[CURRENCY_JPY] = {
@@ -955,6 +1154,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
+		vasGuildServicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES,
 		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_JPY,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
@@ -977,6 +1177,12 @@ local currencySpecific = {
 			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
+			[Enum.VasServiceType.GuildNameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.GuildFactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
 		},
 	},
 	[CURRENCY_CAD] = {
@@ -986,6 +1192,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
+		vasGuildServicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES,
 		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_CAD,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
@@ -1008,6 +1215,12 @@ local currencySpecific = {
 			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
+			[Enum.VasServiceType.GuildNameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.GuildFactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
 		},
 	},
 	[CURRENCY_NZD] = {
@@ -1017,6 +1230,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
+		vasGuildServicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES,
 		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_NZD,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
@@ -1039,6 +1253,12 @@ local currencySpecific = {
 			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
+			[Enum.VasServiceType.GuildNameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.GuildFactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
 		},
 	},
 };
@@ -1047,6 +1267,16 @@ local function currencyInfo()
 	local currency = C_StoreSecure.GetCurrencyID();
 	local info = currencySpecific[currency];
 	return info;
+end
+
+local function currencyFormatShort(...)
+	local info = currencyInfo();
+	return info.formatShort(...);
+end
+
+local function currencyFormatLong(...)
+	local info = currencyInfo();
+	return info.formatLong(...);
 end
 
 --Error message data
@@ -1106,6 +1336,10 @@ local errorData = {
 
 --VAS Error message data
 local vasErrorData = {
+	[Enum.VasError.CharacterHasVasPending] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_CHARACTER_HAS_VAS_PENDING,
+		notUserFixable = true,
+	},
 	[Enum.VasError.InvalidDestinationAccount] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_INVALID_DESTINATION_ACCOUNT,
 	},
@@ -1120,6 +1354,12 @@ local vasErrorData = {
 	},
 	[Enum.VasError.LowerBoxLevel] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_LOWER_BOX_LEVEL,
+	},
+	[Enum.VasError.OperationAlreadyInProgress] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_OPERATION_ALREADY_IN_PROGRESS,
+	},
+	[Enum.VasError.LockedForVas] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_LOCKED_FOR_VAS,
 	},
 	[Enum.VasError.RealmNotEligible] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_REALM_NOT_ELIGIBLE,
@@ -1136,11 +1376,18 @@ local vasErrorData = {
 	[Enum.VasError.HasMail] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_HAS_MAIL,
 	},
+	[Enum.VasError.MoveInProgress] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_MOVE_IN_PROGRESS,
+	},
 	[Enum.VasError.UnderMinLevelReq] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_UNDER_MIN_LEVEL_REQ,
 	},
 	[Enum.VasError.CharacterTransferTooSoon] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_FACTION_CHANGE_TOO_SOON,
+	},
+	[Enum.VasError.CharLocked] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_CHARACTER_LOCKED,
+		notUserFixable = true,
 	},
 	[Enum.VasError.TooMuchMoneyForLevel] = {
 		msg = function(character)
@@ -1166,11 +1413,18 @@ local vasErrorData = {
 	[Enum.VasError.HasAuctions] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_HAS_AUCTIONS,
 	},
+	[Enum.VasError.LastSaveTooRecent] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_RECENT,
+		notUserFixable = true,
+	},
 	[Enum.VasError.NameNotAvailable] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_NAME_NOT_AVAILABLE,
 	},
 	[Enum.VasError.LastRenameTooRecent] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_LAST_RENAME_TOO_RECENT,
+	},
+	[Enum.VasError.AlreadyRenameFlagged] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_ALREADY_RENAME_FLAGGED,
 	},
 	[Enum.VasError.CustomizeAlreadyRequested] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_CUSTOMIZE_ALREADY_REQUESTED,
@@ -1184,6 +1438,18 @@ local vasErrorData = {
 	[Enum.VasError.RaceClassComboIneligible] = { --We should still handle this one even though we shortcut it in case something slips through
 		msg = BLIZZARD_STORE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE,
 	},
+	[Enum.VasError.GuildRankInsufficient] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_NOT_GUILD_MASTER,
+	},
+	[Enum.VasError.CharacterWithoutGuild] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_NOT_IN_GUILD,
+	},
+	[Enum.VasError.GmSeniorityInsufficient] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_GM_SENORITY_INSUFFICIENT,
+	},
+	[Enum.VasError.AuthenticatorInsufficient] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_AUTHENTICATOR_INSUFFICIENT,
+	},
 	[Enum.VasError.IneligibleMapID] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_MAP_ID,
 	},
@@ -1196,23 +1462,18 @@ local vasErrorData = {
 	[Enum.VasError.HasHeirloom] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_HAS_HEIRLOOM,
 	},
-	[Enum.VasError.CharLocked] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_CHARACTER_LOCKED,
-		notUserFixable = true,
-	},
-	[Enum.VasError.LastSaveTooRecent] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_RECENT,
-		notUserFixable = true,
+	[Enum.VasError.LastSaveTooDistant] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_DISTANT,
 	},
 	[Enum.VasError.HasCagedBattlePet] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_HAS_CAGED_BATTLE_PET,
 	},
-	[Enum.VasError.LastSaveTooDistant] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_DISTANT,
-	},
 	[Enum.VasError.BoostedTooRecently] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_BOOSTED_TOO_RECENTLY,
 		notUserFixable = true,
+	},
+	[Enum.VasError.NewLeaderInvalid] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_NEW_LEADER_INVALID,
 	}
 };
 
@@ -1305,21 +1566,23 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 		card.NewTexture:Show();
 	elseif ( card.HotTexture and hot ) then
 		card.HotTexture:Show();
-	elseif ( card.DiscountMiddle and discountPercentage ) then
-		if card.style == "double-wide" then
-			card.DiscountText:SetWidth(200);
-			card.DiscountText:SetText(BLIZZARD_STORE_BUNDLE_DISCOUNT_BANNER:format(discountPercentage));
-		else
-			card.DiscountText:SetWidth(50);
-			card.DiscountText:SetText(BLIZZARD_STORE_DISCOUNT_TEXT_FORMAT:format(discountPercentage));
-		end
+	elseif ( card.DiscountMiddle and discountPercentage and entryInfo.productID ~= SEE_YOU_LATER_BUNDLE_PRODUCT_ID ) then
+		if StoreFrame_HasPriceData(entryInfo.productID) then
+			if card.style == "double-wide" then
+				card.DiscountText:SetWidth(200);
+				card.DiscountText:SetText(BLIZZARD_STORE_BUNDLE_DISCOUNT_BANNER:format(discountPercentage));
+			else
+				card.DiscountText:SetWidth(50);
+				card.DiscountText:SetText(BLIZZARD_STORE_DISCOUNT_TEXT_FORMAT:format(discountPercentage));
+			end
 
-		local stringWidth = card.DiscountText:GetStringWidth();
-		card.DiscountLeft:SetPoint("RIGHT", card.DiscountRight, "LEFT", -stringWidth, 0);
-		card.DiscountMiddle:Show();
-		card.DiscountLeft:Show();
-		card.DiscountRight:Show();
-		card.DiscountText:Show();
+			local stringWidth = card.DiscountText:GetStringWidth();
+			card.DiscountLeft:SetPoint("RIGHT", card.DiscountRight, "LEFT", -stringWidth, 0);
+			card.DiscountMiddle:Show();
+			card.DiscountLeft:Show();
+			card.DiscountRight:Show();
+			card.DiscountText:Show();
+		end
 	end
 
 	if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.Boost) then
@@ -1349,7 +1612,7 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 		card.BuyButton:SetEnabled(shouldEnableBuyButton);
 	end
 
-	card.CurrentPrice:SetText(currencyFormat(entryInfo.sharedData.currentDollars, entryInfo.sharedData.currentCents));
+	card.CurrentPrice:SetText(StoreFrame_GetProductPriceText(entryInfo, currencyFormat));
 
 	if ( card.SplashBannerText ) then
 		if ( entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_NEW ) then
@@ -1387,6 +1650,20 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 			card.Card:SetTexture("Interface\\Store\\Store-Main");
 			card.Card:SetTexCoord(0.00097656, 0.56347656, 0.00097656, 0.46093750);
 		end
+	end
+
+	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.HiddenPrice) == Enum.BattlepayDisplayFlag.HiddenPrice then
+		card.NormalPrice:Hide();
+		card.SalePrice:Hide();
+		card.Strikethrough:Hide();
+		card.CurrentPrice:Hide();
+	elseif (discounted) then
+		StoreProductCard_ShowDiscount(card, StoreFrame_GetProductPriceText(entryInfo, currencyFormat), discountReset);
+	else
+		card.NormalPrice:Hide();
+		card.SalePrice:Hide();
+		card.Strikethrough:Hide();
+		card.CurrentPrice:Show();
 	end
 
 	if (card == StoreFrame.SplashSingle) then
@@ -1471,20 +1748,6 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 		StoreProductCard_HideIcon(card);
 	end
 
-	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.HiddenPrice) == Enum.BattlepayDisplayFlag.HiddenPrice then
-		card.NormalPrice:Hide();
-		card.SalePrice:Hide();
-		card.Strikethrough:Hide();
-		card.CurrentPrice:Hide();
-	elseif (discounted) then
-		StoreProductCard_ShowDiscount(card, currencyFormat(entryInfo.sharedData.currentDollars, entryInfo.sharedData.currentCents), discountReset);
-	else
-		card.NormalPrice:Hide();
-		card.SalePrice:Hide();
-		card.Strikethrough:Hide();
-		card.CurrentPrice:Show();
-	end
-
 	card:SetID(entryID);
 	StoreProductCard_UpdateState(card);
 
@@ -1550,6 +1813,41 @@ function StoreFrame_CheckAndUpdateEntryID(isSplash, isThreeSplash)
 	end
 end
 
+function StoreFrame_DetermineSplashTypeAndDisplayedEntries(products)
+	local entries = {};
+	local splashType = nil;
+	for i, entryID in ipairs(products) do
+		local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
+		if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.UseDualPaneLayoutForSplash) == Enum.BattlepayDisplayFlag.UseDualPaneLayoutForSplash then
+			if splashType == nil or splashType == SPLASH_DISPLAY_TYPE_DUAL_PANE then
+				local entryIndex = #entries + 1;
+				entries[entryIndex] = entryID;
+				if entryIndex == 1 then
+					splashType = SPLASH_DISPLAY_TYPE_DUAL_PANE;
+				elseif entryIndex >= 2 then
+					break;
+				end
+			end
+		elseif bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.UseTriPaneLayoutForSplash) == Enum.BattlepayDisplayFlag.UseTriPaneLayoutForSplash then
+			if splashType == nil or splashType == SPLASH_DISPLAY_TYPE_TRI_PANE then
+				local entryIndex = #entries + 1;
+				entries[entryIndex] = entryID;
+				if entryIndex == 1 then
+					splashType = SPLASH_DISPLAY_TYPE_TRI_PANE;
+				elseif entryIndex >= 3 then
+					break;
+				end
+			end
+		elseif splashType == nil then
+			splashType = SPLASH_DISPLAY_TYPE_SINGLE_SPLASH;
+			entries[1] = entryID;
+			break;
+		end
+	end
+	
+	return splashType, entries;
+end
+
 function StoreFrame_SetSplashCategory(forceModelUpdate)
 	local id = selectedCategoryID;
 	local self = StoreFrame;
@@ -1565,7 +1863,6 @@ function StoreFrame_SetSplashCategory(forceModelUpdate)
 		card:Hide();
 	end
 
-	local currencyFormat = info.formatShort;
 	self.Notice:Hide();
 
 	local products = C_StoreSecure.GetProducts(selectedCategoryID);
@@ -1574,28 +1871,38 @@ function StoreFrame_SetSplashCategory(forceModelUpdate)
 		return;
 	end
 
-	local isThreeSplash = #products >= 3;
-	local isSplashPair = #products == 2;
+	local splashType, entries = StoreFrame_DetermineSplashTypeAndDisplayedEntries(products);
+	local isThreeSplash = splashType == SPLASH_DISPLAY_TYPE_TRI_PANE;
+	local isSplashPair = splashType == SPLASH_DISPLAY_TYPE_DUAL_PANE;
 
 	StoreFrame_CheckAndUpdateEntryID(true, isThreeSplash);
 
 	StoreFrame_HideAllSplashFrames(self);
 	if (isThreeSplash) then
 		self.SplashPrimary:Show();
-		self.SplashSecondary1:Show();
-		self.SplashSecondary2:Show();
-		StoreFrame_UpdateCard(self.SplashPrimary, products[1], nil, forceModelUpdate);
-		StoreFrame_UpdateCard(self.SplashSecondary1, products[2], nil, forceModelUpdate);
-		StoreFrame_UpdateCard(self.SplashSecondary2, products[3], nil, forceModelUpdate);
+		self.SplashSecondary1:SetShown(#entries >= 2);
+		self.SplashSecondary2:SetShown(#entries >= 3);
+		StoreFrame_UpdateCard(self.SplashPrimary, entries[1], nil, forceModelUpdate);
+		
+		if #entries >= 2 then
+			StoreFrame_UpdateCard(self.SplashSecondary1, entries[2], nil, forceModelUpdate);
+			
+			if #entries >= 3 then
+				StoreFrame_UpdateCard(self.SplashSecondary2, entries[3], nil, forceModelUpdate);
+			end
+		end
 	elseif (isSplashPair) then
 		self.SplashPairFirst:Show();
-		self.SplashPairSecond:Show();
-		StoreFrame_UpdateCard(self.SplashPairFirst, products[1], nil, forceModelUpdate);
-		StoreFrame_UpdateCard(self.SplashPairSecond, products[2], nil, forceModelUpdate);
+		self.SplashPairSecond:SetShown(#entries >= 2);
+		StoreFrame_UpdateCard(self.SplashPairFirst, entries[1], nil, forceModelUpdate);
+		
+		if #entries >= 2 then
+			StoreFrame_UpdateCard(self.SplashPairSecond, entries[2], nil, forceModelUpdate);
+		end
 	else
 		self.SplashSingle:Show();
-		selectedEntryID = products[1]; -- This is the only card here so just auto select it so the buy button works
-		StoreFrame_UpdateCard(self.SplashSingle, products[1], nil, forceModelUpdate);
+		selectedEntryID = entries[1]; -- This is the only card here so just auto select it so the buy button works
+		StoreFrame_UpdateCard(self.SplashSingle, entries[1], nil, forceModelUpdate);
 	end
 
 	StoreFrame_UpdateBuyButton();
@@ -1619,8 +1926,6 @@ function StoreFrame_SetNormalCategory(forceModelUpdate, numCardsPerPage)
 	StoreFrame_CheckAndUpdateEntryID(false);
 
 	StoreFrame_HideAllSplashFrames(self);
-
-	local currencyFormat = info.formatShort;
 
 	local products = C_StoreSecure.GetProducts(id);
 	local numTotal = #products;
@@ -1925,6 +2230,7 @@ function StoreFrame_OnLoad(self)
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 	self:RegisterEvent("SIMPLE_CHECKOUT_CLOSED");
 	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
+	self:RegisterEvent("DYNAMIC_BUNDLE_PRICE_UPDATED");
 
 	-- We have to call this from CharacterSelect on the glue screen because the addon engine will load
 	-- the store addon more than once if we try to make it ondemand, forcing us to load it before we
@@ -1935,7 +2241,7 @@ function StoreFrame_OnLoad(self)
 
 	self.TitleText:SetText(BLIZZARD_STORE);
 
-	SetPortraitToTexture(self.portrait, "Interface\\Icons\\WoW_Store");
+	PortraitFrameTemplate_SetPortraitToAsset(self, "Interface\\Icons\\WoW_Store");
 	StoreFrame_UpdateBuyButton();
 
 	if ( IsOnGlueScreen() ) then
@@ -2020,6 +2326,11 @@ function StoreFrame_OnEvent(self, event, ...)
 	if ( event == "STORE_PRODUCTS_UPDATED" ) then
 		StoreFrame_UpdateSelectedCategory();
 		StoreFrame_UpdateCategories(self);
+		
+		if self:IsShown() then
+			C_StoreSecure.RequestAllDynamicPriceInfo();
+		end
+		
 		if (selectedCategoryID) then
 			--FIXME - Not the right place to put this check, but I want to stop the error
 			StoreFrame_SetCategory();
@@ -2104,6 +2415,10 @@ function StoreFrame_OnEvent(self, event, ...)
 		if not SimpleCheckout:IsShown() then
 			self:Hide();
 			_G.GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
+		end
+	elseif (event == "DYNAMIC_BUNDLE_PRICE_UPDATED") then
+		if (selectedCategoryID) then
+			StoreFrame_SetCategory();
 		end
 	end
 end
@@ -2272,6 +2587,26 @@ local function SelectBoostForPurchase(category, boostType, boostReason, characte
 	BoostDeliveredUsageGUID = characterToApplyToGUID;
 end
 
+local function IsVASTransferProduct(productID)
+	return productID == CHARACTER_TRANSFER_PRODUCT_ID or productID == CHARACTER_TRANSFER_FACTION_BUNDLE_PRODUCT_ID or productID == GUILD_TRANSFER_PRODUCT_ID or productID == GUILD_TRANSFER_FACTION_BUNDLE_PRODUCT_ID;
+end
+
+local function GetBaseProductInfo(productID)
+	if productID == CHARACTER_TRANSFER_FACTION_BUNDLE_PRODUCT_ID then
+		return C_StoreSecure.GetProductInfo(CHARACTER_TRANSFER_PRODUCT_ID);
+	elseif productID == GUILD_TRANSFER_FACTION_BUNDLE_PRODUCT_ID then
+		return C_StoreSecure.GetProductInfo(GUILD_TRANSFER_PRODUCT_ID);
+	end
+end
+
+local function GetBundleProductInfo(productID)
+	if productID == CHARACTER_TRANSFER_PRODUCT_ID then
+		return C_StoreSecure.GetProductInfo(CHARACTER_TRANSFER_FACTION_BUNDLE_PRODUCT_ID);
+	elseif productID == GUILD_TRANSFER_PRODUCT_ID then
+		return C_StoreSecure.GetProductInfo(GUILD_TRANSFER_FACTION_BUNDLE_PRODUCT_ID);
+	end
+end
+
 function StoreFrame_OnAttributeChanged(self, name, value)
 	--Note - Setting attributes is how the external UI should communicate with this frame. That way, their taint won't be spread to this code.
 	if ( name == "action" ) then
@@ -2348,16 +2683,18 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 				end
 			end
 
-			desc = "";
+			local desc;
 			if (hasOther) then
 				desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
 			elseif (hasNonUserFixable) then
+				desc = "";
 				for i = 1, #errors do
 					if (vasErrorData[errors[i]].notUserFixable) then
 						desc = StoreVASValidationFrame_AppendError(desc, errors[i], character);
 					end
 				end
 			else
+				desc = BLIZZARD_STORE_VAS_ERROR_LABEL;
 				for i = 1, #errors do
 					desc = StoreVASValidationFrame_AppendError(desc, errors[i], character);
 				end
@@ -2367,7 +2704,7 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 		end
 	elseif ( name == "isvastransferproduct" ) then
 		local productID = value;
-		self:SetAttribute('isvastransferproductresult', productID == CHARACTER_TRANSFER_PRODUCT_ID or productID == CHARACTER_TRANSFER_FACTION_BUNDLE_PRODUCT_ID);
+		self:SetAttribute('isvastransferproductresult', IsVASTransferProduct(productID));
 	end
 end
 
@@ -2390,7 +2727,6 @@ function StoreFrame_UpdateActivePanel(self)
 	elseif ( WaitingOnConfirmation ) then
 		if (StoreVASValidationFrame and StoreVASValidationFrame:IsShown()) then
 			StoreVASValidationFrame.CharacterSelectionFrame.RealmSelector.Button:Disable();
-			StoreVASValidationFrame.CharacterSelectionFrame.CharacterSelector.Button:Disable();
 			StoreVASValidationFrame.CharacterSelectionFrame.ContinueButton:Hide();
 			StoreVASValidationFrame.CharacterSelectionFrame.Spinner:Show();
 		else
@@ -2424,7 +2760,6 @@ function StoreFrame_UpdateActivePanel(self)
 		StoreFrame_HidePurchaseSent(self);
 		if (StoreVASValidationFrame and StoreVASValidationFrame:IsShown()) then
 			StoreVASValidationFrame.CharacterSelectionFrame.RealmSelector.Button:Enable();
-			StoreVASValidationFrame.CharacterSelectionFrame.CharacterSelector.Button:Enable();
 			StoreVASValidationFrame.CharacterSelectionFrame.Spinner:Hide();
 		end
 		local info = currencyInfo();
@@ -2581,12 +2916,11 @@ function SplashSingleBuyButton_OnLeave(self)
 	StoreProductCard_OnLeave(parent);
 end
 
-
 function StoreFrame_BeginPurchase(entryID)
 	local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
-	if ( entryInfo.alreadyOwned ) then
+	if entryInfo.alreadyOwned then
 		StoreFrame_OnError(StoreFrame, Enum.StoreError.AlreadyOwned, false, "FakeOwned");
-	elseif ( C_StoreSecure.PurchaseProduct(entryInfo.productID) ) then
+	elseif C_StoreSecure.PurchaseProduct(entryInfo.productID) then
 		if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService) then
 			WaitingOnVASToComplete = WaitingOnVASToComplete + 1;
 		else
@@ -2665,19 +2999,20 @@ end
 local VASServiceType = nil;
 local SelectedRealm = nil;
 local SelectedCharacter = nil;
-local NewCharacterName = nil;
+local NameChangeNewName = nil;
+local OldGuildNewName = nil;
+local NewGuildMaster = nil;
 local SelectedDestinationRealm = nil;
 local DestinationRealmMapping = {};
 local StoreDropdownLists = {};
 local SelectedDestinationWowAccount = nil;
 local SelectedDestinationBnetAccount = nil;
 local SelectedDestinationBnetWowAccount = nil;
-local CharacterTransferFactionChangeBundle = nil;
+local TransferFactionChangeBundle = false;
+local IsGuildFollow = false;
 local RealmAutoCompleteList;
 local IsVasBnetTransferValidated = false;
-local RealmAutoCompleteIndexByKey = {};
 local RealmList = {};
-local RealmRpPvpMap = {};
 
 ------------------------------------------
 function StoreConfirmationFrame_OnLoad(self)
@@ -2706,13 +3041,8 @@ function BuildCharacterTransferConfirmationString(character)
 		sep = ", ";
 	end
 
-	if (CharacterTransferFactionChangeBundle) then
-		local newFaction;
-		if (character.faction == 0) then
-			newFaction = FACTION_ALLIANCE;
-		elseif (character.faction == 1) then
-			newFaction = FACTION_HORDE;
-		end
+	if (TransferFactionChangeBundle) then
+		local newFaction = GetFactionName(character.faction, true);
 		confStr = confStr .. sep .. newFaction;
 		sep = ", ";
 	end
@@ -2724,6 +3054,31 @@ function BuildCharacterTransferConfirmationString(character)
 	return confStr;
 end
 
+local function IsGuildVasServiceType(serviceType)
+	return	serviceType == Enum.VasServiceType.GuildNameChange or
+			serviceType == Enum.VasServiceType.GuildFactionChange or 
+			serviceType == Enum.VasServiceType.GuildTransfer or 
+			serviceType == Enum.VasServiceType.GuildFactionTransfer;
+end
+
+local function IsVasServiceTypeEligibleForGuildFollow(serviceType)
+	return	serviceType == Enum.VasServiceType.FactionChange or
+			serviceType == Enum.VasServiceType.CharacterTransfer or
+			serviceType == Enum.VasServiceType.FactionTransfer;
+end
+
+local function GetCharactersForSelectedRealm()
+	return C_StoreSecure.GetCharactersForRealm(SelectedRealm.virtualRealmAddress, IsGuildVasServiceType(VASServiceType));
+end
+
+local function GetGuildMasterInfoForCharacter(guid)
+	if not GuildMasterInfo[guid] then
+		GuildMasterInfo[guid] = C_StoreSecure.GetVASGuildMasterInfoForCharacterByGUID(guid);
+	end
+
+	return GuildMasterInfo[guid];
+end
+
 function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, walletName, productDecorator)
 	local currency = C_StoreSecure.GetCurrencyID();
 
@@ -2732,7 +3087,6 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, wall
 	name = name:gsub("|n", " ");
 	self.ProductName:SetText(name);
 	local info = currencyInfo();
-	local format = info.formatLong;
 	local notice;
 
 	if (productDecorator == Enum.BattlepayProductDecorator.Boost) then
@@ -2744,30 +3098,57 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, wall
 	elseif (productDecorator == Enum.BattlepayProductDecorator.Expansion) then
 		notice = info.expansionConfirmationNotice;
 	elseif (productDecorator == Enum.BattlepayProductDecorator.VasService) then
-		local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
-		local character = characters[SelectedCharacter];
+		local character = CharacterList[SelectedCharacter];
+
+		local guildMasterInfo;
+		if IsGuildVasServiceType(VASServiceType) then
+			guildMasterInfo = GetGuildMasterInfoForCharacter(character.guid);
+			if not guildMasterInfo then
+				-- We should never get to this point without guild master info
+				return;
+			end
+		end
+
 		local confirmationNotice;
 		if (VASServiceType == Enum.VasServiceType.NameChange) then
-			notice = string.format(VAS_NAME_CHANGE_CONFIRMATION, character.name, NewCharacterName);
+			notice = string.format(VAS_NAME_CHANGE_CONFIRMATION, character.name, NameChangeNewName);
 			confirmationNotice = info.vasNameChangeConfirmationNotice;
 		elseif (VASServiceType == Enum.VasServiceType.FactionChange) then
-			local newFaction;
-			if (character.faction == 0) then
-				newFaction = FACTION_ALLIANCE;
-			elseif (character.faction == 1) then
-				newFaction = FACTION_HORDE;
-			end
-			notice = string.format(VAS_FACTION_CHANGE_CONFIRMATION, character.name, SelectedRealm, newFaction);
+			local newFaction = GetFactionName(character.faction, true);
+			notice = string.format(VAS_FACTION_CHANGE_CONFIRMATION, character.name, SelectedRealm.realmName, newFaction);
 			confirmationNotice = info.servicesConfirmationNotice;
 		elseif (VASServiceType == Enum.VasServiceType.RaceChange) then
-			notice = string.format(VAS_RACE_CHANGE_CONFIRMATION, character.name, SelectedRealm);
+			notice = string.format(VAS_RACE_CHANGE_CONFIRMATION, character.name, SelectedRealm.realmName);
 			confirmationNotice = info.servicesConfirmationNotice;
 		elseif (VASServiceType == Enum.VasServiceType.AppearanceChange) then
-			notice = string.format(VAS_APPEARANCE_CHANGE_CONFIRMATION, character.name, SelectedRealm);
+			notice = string.format(VAS_APPEARANCE_CHANGE_CONFIRMATION, character.name, SelectedRealm.realmName);
 			confirmationNotice = info.servicesConfirmationNotice;
 		elseif (VASServiceType == Enum.VasServiceType.CharacterTransfer ) then
-			notice = string.format(VAS_CHARACTER_TRANSFER_CONFIRMATION, character.name, SelectedRealm, BuildCharacterTransferConfirmationString(character));
+			notice = string.format(VAS_CHARACTER_TRANSFER_CONFIRMATION, character.name, SelectedRealm.realmName, BuildCharacterTransferConfirmationString(character));
 			confirmationNotice = info.servicesConfirmationNotice;
+		elseif (VASServiceType == Enum.VasServiceType.GuildNameChange) then
+			notice = string.format(VAS_NAME_CHANGE_CONFIRMATION, guildMasterInfo.guildName, NameChangeNewName);
+			confirmationNotice = info.vasGuildServicesConfirmationNotice;
+		elseif (VASServiceType == Enum.VasServiceType.GuildFactionChange) then
+			local newFaction = GetFactionName(character.faction, true);
+			if NameChangeNewName then
+				notice = string.format(VAS_GUILD_FACTION_CHANGE_PLUS_NAME_CHANGE_CONFIRMATION, guildMasterInfo.guildName, SelectedRealm.realmName, newFaction, NameChangeNewName, NewGuildMaster, guildMasterInfo.guildName);
+			else
+				notice = string.format(VAS_GUILD_FACTION_CHANGE_CONFIRMATION, guildMasterInfo.guildName, SelectedRealm.realmName, newFaction, OldGuildNewName, NewGuildMaster, OldGuildNewName);
+			end
+			confirmationNotice = info.vasGuildServicesConfirmationNotice;
+		elseif (VASServiceType == Enum.VasServiceType.GuildTransfer) then
+			local newFaction = GetFactionName(character.faction, true);
+			if TransferFactionChangeBundle and NameChangeNewName then
+				notice = string.format(VAS_GUILD_TRANSFER_PLUS_NAME_AND_FACTION_CHANGE_CONFIRMATION, guildMasterInfo.guildName, SelectedRealm.realmName, SelectedDestinationRealm, NameChangeNewName, newFaction, NewGuildMaster);
+			elseif TransferFactionChangeBundle then
+				notice = string.format(VAS_GUILD_TRANSFER_PLUS_FACTION_CHANGE_CONFIRMATION, guildMasterInfo.guildName, SelectedRealm.realmName, SelectedDestinationRealm, newFaction, NewGuildMaster);
+			elseif NameChangeNewName then
+				notice = string.format(VAS_GUILD_TRANSFER_PLUS_NAME_CHANGE_CONFIRMATION, guildMasterInfo.guildName, SelectedRealm.realmName, SelectedDestinationRealm, NameChangeNewName, NewGuildMaster);
+			else
+				notice = string.format(VAS_GUILD_TRANSFER_CONFIRMATION, guildMasterInfo.guildName, SelectedRealm.realmName, SelectedDestinationRealm, NewGuildMaster);
+			end
+			confirmationNotice = info.vasGuildServicesConfirmationNotice;
 		end
 		notice = notice .. "|n|n" .. confirmationNotice;
 	else
@@ -2787,7 +3168,7 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, wall
 	end
 	self.NoticeFrame.Notice:SetText(notice);
 	self.NoticeFrame:Show();
-	self.NoticeFrame.Price:SetText(format(dollars, cents));
+	self.NoticeFrame.Price:SetText(currencyFormatLong(dollars, cents));
 
 	self:ClearAllPoints();
 	self:SetPoint("CENTER", 0, 18);
@@ -2837,12 +3218,13 @@ function StoreConfirmationFrame_Update(self)
 	if ( not finalIcon ) then
 		finalIcon = "Interface\\Icons\\INV_Misc_Note_02";
 	end
-	-- Character Transfer is a special snowflake here
-	if (productID == CHARACTER_TRANSFER_FACTION_BUNDLE_PRODUCT_ID) then
-		local baseProductInfo = C_StoreSecure.GetProductInfo(CHARACTER_TRANSFER_PRODUCT_ID);
+
+	local baseProductInfo = GetBaseProductInfo(productID)
+	if baseProductInfo then
 		name = baseProductInfo.sharedData.name;
 		finalIcon = baseProductInfo.sharedData.texture;
 	end
+
 	StoreConfirmationFrame_SetNotice(self, finalIcon, name, currentDollars, currentCents, walletName, productInfo.sharedData.productDecorator);
 	IsUpgrade = productInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.Boost;
 	IsLegion = productInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.Expansion;
@@ -2929,14 +3311,31 @@ function StoreVASValidationFrame_OnLoad(self)
 	self.CharacterSelectionFrame.RealmSelector.Label:SetText(VAS_REALM_LABEL);
 	self.CharacterSelectionFrame.CharacterSelector.Label:SetText(VAS_CHARACTER_LABEL);
 	self.CharacterSelectionFrame.NewCharacterName.Label:SetText(VAS_NEW_CHARACTER_NAME_LABEL);
+	self.CharacterSelectionFrame.NewGuildName.Label:SetText(VAS_NEW_GUILD_NAME_LABEL);
+	self.CharacterSelectionFrame.NewGuildMaster.Label:SetText(VAS_NEW_GUILD_MASTER_LABEL);
+	self.CharacterSelectionFrame.NewGuildMaster.EmptyText:SetText(VAS_NEW_GUILD_MASTER_EMPTY_TEXT);
+	self.CharacterSelectionFrame.OldGuildNewName.Label:SetText(VAS_OLD_GUILD_NEW_NAME_LABEL);
+	self.CharacterSelectionFrame.OldGuildNewName.EmptyText:SetText(VAS_OLD_GUILD_NEW_NAME_EMPTY_TEXT);
+	self.CharacterSelectionFrame.RenameGuildCheckbox.Label:SetText(BLIZZARD_STORE_VAS_RENAME_GUILD);
+	self.CharacterSelectionFrame.RenameGuildEditbox.EmptyText:SetText(VAS_NEW_GUILD_NAME_LABEL);
+	self.CharacterSelectionFrame.TransferRealmEditbox.Label:SetText(VAS_DESTINATION_REALM_LABEL);
+	self.CharacterSelectionFrame.TransferRealmEditbox.EmptyText:SetText(BLIZZARD_STORE_VAS_REALM_NAME);
+	self.CharacterSelectionFrame.TransferAccountCheckbox.Label:SetText(BLIZZARD_STORE_VAS_TRANSFER_ACCOUNT);
+	self.CharacterSelectionFrame.TransferBattlenetAccountEditbox.EmptyText:SetText(BLIZZARD_STORE_VAS_EMAIL_ADDRESS);
+
+	self.CharacterSelectionFrame.FollowGuildCheckbox.Label:SetMaxLines(2);
 
 	SecureMixin(self.CharacterSelectionFrame.SelectedCharacterDescription, ShrinkUntilTruncateFontStringMixin);
 	self.CharacterSelectionFrame.SelectedCharacterDescription:SetFontObjectsToTry("GameFontHighlightSmall2", "GameFontWhiteTiny", "GameFontWhiteTiny2");
 
+	SecureMixin(self.CharacterSelectionFrame.FollowGuildErrorMessage, ShrinkUntilTruncateFontStringMixin);
+	self.CharacterSelectionFrame.FollowGuildErrorMessage:SetFontObjectsToTry("GameFontBlack", "GameFontBlackSmall", "GameFontBlackSmall2", "GameFontBlackTiny", "GameFontBlackTiny2");
+
 	local labelsToShrink = {
-		"TransferRealmCheckbox",
+		"FollowGuildCheckbox",
 		"TransferAccountCheckbox",
 		"TransferFactionCheckbox",
+		"RenameGuildCheckbox",
 	};
 
 	for i, checkbox in ipairs(labelsToShrink) do
@@ -2946,6 +3345,9 @@ function StoreVASValidationFrame_OnLoad(self)
 
 	if (IsOnGlueScreen()) then
 		self.CharacterSelectionFrame.NewCharacterName:SetFontObject("GlueEditBoxFont");
+		self.CharacterSelectionFrame.NewGuildName:SetFontObject("GlueEditBoxFont");
+		self.CharacterSelectionFrame.NewGuildMaster:SetFontObject("GlueEditBoxFont");
+		self.CharacterSelectionFrame.OldGuildNewName:SetFontObject("GlueEditBoxFont");
 		self.CharacterSelectionFrame.TransferRealmEditbox:SetFontObject("GlueEditBoxFont");
 		self.CharacterSelectionFrame.TransferBattlenetAccountEditbox:SetFontObject("GlueEditBoxFont");
 	end
@@ -2956,63 +3358,95 @@ function StoreVASValidationFrame_OnLoad(self)
 	self:RegisterEvent("VAS_TRANSFER_VALIDATION_UPDATE");
 	self:RegisterEvent("VAS_QUEUE_STATUS_UPDATE");
 	self:RegisterEvent("STORE_OPEN_SIMPLE_CHECKOUT");
+	self:RegisterEvent("STORE_GUILD_FOLLOW_INFO_RECEIVED");
+	self:RegisterEvent("STORE_GUILD_MASTER_INFO_RECEIVED");
 end
 
-function StoreVASValidationFrame_SetVASStart(self)
+local InstructionsShowing = false;
+
+function StoreVASValidationFrame_GetProductInfo(self)
 	local entryInfo = C_StoreSecure.GetEntryInfo(selectedEntryID);
-	local productID = entryInfo.productID;
-	local productInfo = C_StoreSecure.GetProductInfo(productID);
+	self.productID = entryInfo.productID;
+	self.productInfo = C_StoreSecure.GetProductInfo(self.productID);
+end
 
-	local finalIcon = productInfo.sharedData.texture;
-	if ( not finalIcon ) then
-		finalIcon = "Interface\\Icons\\INV_Misc_Note_02";
-	end
-	SetPortraitToTexture(self.Icon, finalIcon);
-	self.ProductName:SetText(productInfo.sharedData.name);
-	self.ProductDescription:SetText(productInfo.sharedData.description);
-
-	local currencyInfo = currencyInfo();
-
-	local vasDisclaimerData = currencyInfo.vasDisclaimerData;
-
-	if (vasDisclaimerData and vasDisclaimerData[productInfo.sharedData.vasServiceType]) then
-		local disclaimer = vasDisclaimerData[productInfo.sharedData.vasServiceType].disclaimer;
-		if (productInfo.sharedData.vasServiceType == Enum.VasServiceType.CharacterTransfer or productInfo.sharedData.vasServiceType == Enum.VasServiceType.FactionChange ) then
-			disclaimer = string.format(disclaimer, VAS_QUEUE_SEVERAL_MINUTES);
+local function UpdateCharacterSelectorState()
+	if InstructionsShowing then
+		StoreVASValidationFrame.CharacterSelectionFrame.NoEligibleCharactersErrorMessage:Hide();
+	else
+		if #CharacterList == 0 then
+			StoreVASValidationFrame.CharacterSelectionFrame.CharacterSelector.Button:Disable();
+			StoreVASValidationFrame.CharacterSelectionFrame.CharacterSelector.Text:SetText(VAS_SELECT_CHARACTER_DISABLED);
+			if IsGuildVasServiceType(VASServiceType) then
+				StoreVASValidationFrame.CharacterSelectionFrame.NoEligibleCharactersErrorMessage:SetText(BLIZZARD_STORE_VAS_ERROR_NO_GUILD_MASTERS);
+			else
+				StoreVASValidationFrame.CharacterSelectionFrame.NoEligibleCharactersErrorMessage:SetText(BLIZZARD_STORE_VAS_ERROR_NO_ELIGIBLE_CHARACTERS);
+			end
+			StoreVASValidationFrame.CharacterSelectionFrame.NoEligibleCharactersErrorMessage:Show();
+		else
+			StoreVASValidationFrame.CharacterSelectionFrame.CharacterSelector.Button:Enable();
+			if SelectedCharacter then
+				local character = CharacterList[SelectedCharacter];
+				local level = character.level;
+				if (level == 0) then
+					level = 1;
+				end
+				StoreVASValidationFrame.CharacterSelectionFrame.CharacterSelector.Text:SetText(string.format(VAS_CHARACTER_SELECTION_DESCRIPTION, RAID_CLASS_COLORS[character.classFileName].colorStr, character.name, level, character.className));
+			else
+				StoreVASValidationFrame.CharacterSelectionFrame.CharacterSelector.Text:SetText(VAS_SELECT_CHARACTER);
+			end
+			StoreVASValidationFrame.CharacterSelectionFrame.NoEligibleCharactersErrorMessage:Hide();
 		end
-		self.Disclaimer:SetTextColor(0, 0, 0);
-		self.Disclaimer:SetText(HTML_START_CENTERED..disclaimer..HTML_END);
-		self.Disclaimer:Show();
 	end
+end
 
-	VASServiceType = productInfo.sharedData.vasServiceType;
-
-	SelectedCharacter = nil;
-	for list, _ in pairs(StoreDropdownLists) do
-		list:Hide();
+local function UpdateCharacterList()
+	if IsGuildVasServiceType(VASServiceType) and not C_StoreSecure.HaveRealmGuildMasterInfo(SelectedRealm.virtualRealmAddress) then
+		-- wait for STORE_GUILD_MASTER_INFO_RECEIVED event before populating character list
+		RealmWaitingOnGuildMasterInfo = SelectedRealm.virtualRealmAddress;
+		C_StoreSecure.RequestRealmGuildMasterInfo(SelectedRealm.virtualRealmAddress);
+	else
+		CharacterList = GetCharactersForSelectedRealm();
+		UpdateCharacterSelectorState();
 	end
+end
 
-	self.CharacterSelectionFrame.ContinueButton:Disable();
-	self.CharacterSelectionFrame.ContinueButton:Show();
-	self.CharacterSelectionFrame.Spinner:Hide();
-	local realmList = C_StoreSecure.GetRealmList();
-	SelectedRealm = #realmList > 0 and realmList[1] or _G.GetServerName();
+function StoreVASValidationFrame_Init(self)
+	RealmList = C_StoreSecure.GetRealmList();
+	SelectedRealm = RealmList[1];
+
+	VASServiceType = self.productInfo.sharedData.vasServiceType;
+
+	UpdateCharacterList();
 
 	SelectedDestinationRealm = nil;
 	SelectedDestinationWowAccount = nil;
 	SelectedDestinationBnetAccount = nil;
 	SelectedDestinationBnetWowAccount = nil;
-	CharacterTransferFactionChangeBundle = nil;
+	TransferFactionChangeBundle = false;
+	IsGuildFollow = false;
 	IsVasBnetTransferValidated = false;
 	RealmAutoCompleteList = nil;
-	self.CharacterSelectionFrame.RealmSelector.Text:SetText(SelectedRealm);
+	DestinationRealmMapping = {};
+	SelectedCharacter = nil;
+	NameChangeNewName = nil;
+	OldGuildNewName = nil;
+	NewGuildMaster = nil;
+
+	self.Disclaimer:Hide();
+	self.CharacterSelectionFrame.ContinueButton:Disable();
+	self.CharacterSelectionFrame.ContinueButton:Show();
+	self.CharacterSelectionFrame.Spinner:Hide();
+
+	self.CharacterSelectionFrame.RealmSelector.Text:SetText(SelectedRealm.realmName);
 	self.CharacterSelectionFrame.RealmSelector.Button:Enable();
-	self.CharacterSelectionFrame.CharacterSelector.Text:SetText(VAS_SELECT_CHARACTER);
-	self.CharacterSelectionFrame.CharacterSelector.Button:Enable();
+	self.CharacterSelectionFrame.RealmSelector:Show();
+	self.CharacterSelectionFrame.CharacterSelector:Show();
 	self.CharacterSelectionFrame.NewCharacterName:Hide();
-	self.CharacterSelectionFrame.TransferRealmCheckbox:Hide();
+	self.CharacterSelectionFrame.FollowGuildCheckbox:Hide();
+	self.CharacterSelectionFrame.FollowGuildErrorMessage:Hide();
 	self.CharacterSelectionFrame.TransferRealmEditbox:Hide();
-	self.CharacterSelectionFrame.TransferRealmAutoCompleteBox:Hide();
+	self.CharacterSelectionFrame.TransferRealmEditbox.AutoCompleteBox:Hide();
 	self.CharacterSelectionFrame.TransferAccountCheckbox:Hide();
 	self.CharacterSelectionFrame.TransferAccountDropDown:Hide();
 	self.CharacterSelectionFrame.TransferFactionCheckbox:Hide();
@@ -3024,14 +3458,31 @@ function StoreVASValidationFrame_SetVASStart(self)
 	self.CharacterSelectionFrame.SelectedCharacterDescription:Hide();
 	self.CharacterSelectionFrame.ValidationDescription:Hide();
 	self.CharacterSelectionFrame.ChangeIconFrame:Hide();
+	self.CharacterSelectionFrame.GuildIcon:Hide();
+	self.CharacterSelectionFrame.SelectedGuildName:Hide();
+	self.CharacterSelectionFrame.NewGuildName:Hide();
+	self.CharacterSelectionFrame.RenameGuildCheckbox:Hide();
+	self.CharacterSelectionFrame.RenameGuildEditbox:Hide();
+	self.CharacterSelectionFrame.NewGuildMaster:Hide();
+	self.CharacterSelectionFrame.OldGuildNewName:Hide();
 	self.CharacterSelectionFrame:Show();
 
-	if ( VASServiceType == Enum.VasServiceType.CharacterTransfer or VASServiceType == Enum.VasServiceType.FactionChange ) then
-			C_StoreGlue.RequestCurrentVASTransferQueues();
+	for list, _ in pairs(StoreDropdownLists) do
+		list:Hide();
 	end
 
+	local finalIcon = self.productInfo.sharedData.texture;
+	if ( not finalIcon ) then
+		finalIcon = "Interface\\Icons\\INV_Misc_Note_02";
+	end
+	SetPortraitToTexture(self.Icon, finalIcon);
+	self.ProductName:SetText(self.productInfo.sharedData.name);
+
+	self.ProductInstructions:Hide();
+	self.ProductDescription:Show();
+
 	self:ClearAllPoints();
-	if ( VASServiceType == Enum.VasServiceType.CharacterTransfer ) then
+	if (VASServiceType == Enum.VasServiceType.CharacterTransfer or VASServiceType == Enum.VasServiceType.GuildTransfer or VASServiceType == Enum.VasServiceType.GuildFactionChange) then
 		self:SetHeight(740);
 		self:SetPoint("CENTER", 0, -20);
 	else
@@ -3042,37 +3493,23 @@ function StoreVASValidationFrame_SetVASStart(self)
 	self:Show();
 end
 
-function StoreVASValidationFrame_AppendError(desc, errorID, character, firstAppend)
-	local errorData = vasErrorData[errorID];
-	local str;
-	if (type(errorData.msg) == "function") then
-		str = errorData.msg(character);
-	else
-		str = errorData.msg;
+function StoreVASValidationFrame_CheckForInstructions(self)
+	if self.productInfo.sharedData.instructions ~= "" then
+		InstructionsShowing = true;
+		StoreVASValidationFrame_Init(self);
+		self.ProductInstructions:SetTextColor(0, 0, 0);
+		self.ProductInstructions:SetText(HTML_START..self.productInfo.sharedData.instructions..HTML_END);
+		self.ProductInstructions:Show();
+		self.ProductDescription:Hide();
+		self.CharacterSelectionFrame.RealmSelector:Hide();
+		self.CharacterSelectionFrame.CharacterSelector:Hide();
+		self.CharacterSelectionFrame.ContinueButton:Enable();
+		self.CharacterSelectionFrame.ContinueButton:Show();
+		return true;
 	end
 
-	local sep = desc ~= "" and (firstAppend and "|n|n" or "|n") or "";
-	return desc .. sep .. str;
-end
-
-function StoreVASValidationFrame_UpdateCharacterTransferValidationPosition()
-	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
-	local bottomWidget;
-	local xOffset = 8;
-	local yOffset = -24;
-	if (frame.TransferBnetWoWAccountDropDown:IsShown()) then
-		bottomWidget = frame.TransferBnetWoWAccountDropDown;
-		xOffset = 16;
-		yOffset = -16;
-	elseif (frame.TransferFactionCheckbox:IsShown()) then
-		bottomWidget = frame.TransferFactionCheckbox;
-	elseif (frame.TransferBattlenetAccountEditbox:IsShown()) then
-		bottomWidget = frame.TransferBattlenetAccountEditbox;
-	else
-		bottomWidget = frame.TransferAccountCheckbox;
-	end
-	frame.ValidationDescription:ClearAllPoints();
-	frame.ValidationDescription:SetPoint("TOPLEFT", bottomWidget, "BOTTOMLEFT", xOffset, yOffset);
+	InstructionsShowing = false;
+	return false;
 end
 
 local VasQueueStatusToString
@@ -3091,6 +3528,82 @@ if (IsOnGlueScreen()) then
 		[Enum.VasQueueStatus.Over6Days] = "SIX_DAY",
 		[Enum.VasQueueStatus.Over7Days] = "SEVEN_DAY",
 	}
+end
+
+local function UpdateQueueStatusDisclaimer(self, queueTime)
+	local currencyInfo = currencyInfo();
+	local vasDisclaimerData = currencyInfo.vasDisclaimerData;
+	if vasDisclaimerData and vasDisclaimerData[VASServiceType] then
+		if (queueTime > Enum.VasQueueStatus.UnderAnHour) then
+			self.Disclaimer:SetTextColor(_G.RED_FONT_COLOR:GetRGB());
+		else
+			self.Disclaimer:SetTextColor(0, 0, 0);
+		end
+
+		self.Disclaimer:SetText(HTML_START_CENTERED..string.format(vasDisclaimerData[VASServiceType].disclaimer, _G["VAS_QUEUE_"..VasQueueStatusToString[queueTime]])..HTML_END);
+		self.Disclaimer:Show();
+	end
+end
+
+function StoreVASValidationFrame_SetVASStart(self)
+	StoreVASValidationFrame_Init(self);
+
+	self.ProductDescription:SetText(self.productInfo.sharedData.description);
+
+	if ( VASServiceType == Enum.VasServiceType.CharacterTransfer or VASServiceType == Enum.VasServiceType.FactionChange) then
+		UpdateQueueStatusDisclaimer(self, Enum.VasQueueStatus.UnderAnHour);
+		C_StoreGlue.RequestCurrentVASTransferQueues();
+	elseif IsGuildVasServiceType(VASServiceType) then
+		UpdateQueueStatusDisclaimer(self, Enum.VasQueueStatus.Over1Days);
+	else
+		UpdateQueueStatusDisclaimer(self, Enum.VasQueueStatus.UnderAnHour);
+	end
+end
+
+function StoreVASValidationFrame_AppendError(desc, errorID, character, firstAppend)
+	local errorData = vasErrorData[errorID];
+	local str;
+	if (type(errorData.msg) == "function") then
+		str = errorData.msg(character);
+	else
+		str = errorData.msg;
+	end
+
+	local sep = desc ~= "" and (firstAppend and "|n|n" or "|n") or "";
+	return desc .. sep .. str;
+end
+
+function StoreVASValidationFrame_UpdateGuildFactionChangeValidationPosition()
+	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
+	if (frame.OldGuildNewName:IsShown()) then
+		frame.ValidationDescription:ClearAllPoints();
+		frame.ValidationDescription:SetPoint("TOPLEFT", frame.OldGuildNewName.Label, "BOTTOMLEFT", 0, -16);
+	else
+		frame.ValidationDescription:ClearAllPoints();
+		frame.ValidationDescription:SetPoint("TOPLEFT", frame.NewGuildMaster.Label, "BOTTOMLEFT", 0, -16);
+	end
+end
+
+function StoreVASValidationFrame_UpdateCharacterTransferValidationPosition()
+	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
+	local bottomWidget;
+	local xOffset = 8;
+	local yOffset = -16;
+	if (frame.ChangeIconFrame:IsShown()) then
+		bottomWidget = frame.ChangeIconFrame;
+	elseif (frame.TransferBnetWoWAccountDropDown:IsShown()) then
+		bottomWidget = frame.TransferBnetWoWAccountDropDown;
+		xOffset = 16;
+		yOffset = -16;
+	elseif (frame.TransferFactionCheckbox:IsShown()) then
+		bottomWidget = frame.TransferFactionCheckbox;
+	elseif (frame.TransferBattlenetAccountEditbox:IsShown()) then
+		bottomWidget = frame.TransferBattlenetAccountEditbox;
+	else
+		bottomWidget = frame.TransferAccountCheckbox;
+	end
+	frame.ValidationDescription:ClearAllPoints();
+	frame.ValidationDescription:SetPoint("TOPLEFT", bottomWidget, "BOTTOMLEFT", xOffset, yOffset);
 end
 
 function StoreVASValidationFrame_SyncFontHeights(...)
@@ -3115,7 +3628,10 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 		WaitingOnConfirmation = false;
 		StoreFrame_UpdateActivePanel(StoreFrame);
 		if ( StoreFrame:IsShown() ) then
-			StoreVASValidationFrame_SetVASStart(self);
+			StoreVASValidationFrame_GetProductInfo(self);
+			if not StoreVASValidationFrame_CheckForInstructions(self) then
+				StoreVASValidationFrame_SetVASStart(self);
+			end
 			self:Raise();
 		end
 	elseif ( event == "STORE_VAS_PURCHASE_ERROR" ) then
@@ -3159,27 +3675,32 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 	elseif ( event == "VAS_QUEUE_STATUS_UPDATE" ) then
 		local transfer, factionTransfer = C_StoreGlue.GetVasTransferQueues();
 		local queueTime = Enum.VasQueueStatus.UnderAnHour;
-		if (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
+		if VASServiceType == Enum.VasServiceType.CharacterTransfer then
 			queueTime = transfer;
-		elseif (VASServiceType == Enum.VasServiceType.FactionChange) then
+		elseif VASServiceType == Enum.VasServiceType.FactionChange then
 			queueTime = factionTransfer;
 		end
-		if (queueTime > Enum.VasQueueStatus.UnderAnHour) then
-				self.Disclaimer:SetTextColor(_G.RED_FONT_COLOR:GetRGB());
-		else
-				self.Disclaimer:SetTextColor(0, 0, 0);
-		end
-		local currencyInfo = currencyInfo();
-		local vasDisclaimerData = currencyInfo.vasDisclaimerData;
-		self.Disclaimer:SetText(HTML_START_CENTERED..string.format(vasDisclaimerData[VASServiceType].disclaimer, _G["VAS_QUEUE_"..VasQueueStatusToString[queueTime]])..HTML_END);
+
+		UpdateQueueStatusDisclaimer(self, queueTime);
 	elseif ( event == "STORE_OPEN_SIMPLE_CHECKOUT" ) then
 		self:Hide();
+	elseif ( event == "STORE_GUILD_FOLLOW_INFO_RECEIVED" ) then
+		local characterGuid, guildFollowInfo = ...;
+		if CharacterWaitingOnGuildFollowInfo == characterGuid then 
+			CharacterWaitingOnGuildFollowInfo = nil;
+			VASCharacterSelectionCharacterSelector_Callback(SelectedCharacter, guildFollowInfo);
+		end
+	elseif ( event == "STORE_GUILD_MASTER_INFO_RECEIVED" ) then
+		local realmAddress = ...;
+		if RealmWaitingOnGuildMasterInfo == realmAddress then 
+			RealmWaitingOnGuildMasterInfo = nil;
+			VASCharacterSelectionRealmSelector_Callback(SelectedRealm);
+		end
 	end
 end
 
 function StoreVASValidationFrame_SetErrors(errors)
-	local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
-	local character = characters[SelectedCharacter];
+	local character = CharacterList[SelectedCharacter];
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 	local hasOther = false;
 	local hasNonUserFixable = false;
@@ -3191,33 +3712,30 @@ function StoreVASValidationFrame_SetErrors(errors)
 		end
 	end
 
-	local desc = BLIZZARD_STORE_VAS_ERROR_LABEL;
+	local desc;
 	if (hasOther) then
 		desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
 	elseif (hasNonUserFixable) then
+		desc = "";
 		for i = 1, #errors do
 			if (vasErrorData[errors[i]].notUserFixable) then
 				desc = StoreVASValidationFrame_AppendError(desc, errors[i], character, i == 1);
 			end
 		end
 	else
+		desc = BLIZZARD_STORE_VAS_ERROR_LABEL;
 		for i = 1, #errors do
 			desc = StoreVASValidationFrame_AppendError(desc, errors[i], character, i == 1);
 		end
 	end
 	frame.ChangeIconFrame:Hide();
-	if (VASServiceType == Enum.VasServiceType.NameChange) then
-		frame.ValidationDescription:ClearAllPoints();
-		frame.ValidationDescription:SetPoint("TOPLEFT", frame.NewCharacterName, "BOTTOMLEFT", -5, -6);
+	if (VASServiceType == Enum.VasServiceType.GuildFactionChange) then
+		StoreVASValidationFrame_UpdateGuildFactionChangeValidationPosition();
 	elseif (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
 		StoreVASValidationFrame_UpdateCharacterTransferValidationPosition();
-	else
-		frame.ValidationDescription:ClearAllPoints();
-		frame.ValidationDescription:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 8, -24);
 	end
 	frame.Spinner:Hide();
 	frame.RealmSelector.Button:Enable();
-	frame.CharacterSelector.Button:Enable();
 	frame.ValidationDescription:SetFontObject("GameFontBlackSmall2");
 	frame.ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
 	frame.ValidationDescription:SetText(desc);
@@ -3252,6 +3770,8 @@ function StoreVASValidationFrame_OnShow(self)
 end
 
 function StoreVASValidationFrame_OnHide(self)
+	self.productID = nil;
+	self.productInfo = nil;
 	StoreFrame_UpdateCoverState();
 end
 
@@ -3259,7 +3779,7 @@ function StoreVASValidationState_Lock()
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 	frame.RealmSelector.Button:Disable();
 	frame.CharacterSelector.Button:Disable();
-	frame.TransferRealmCheckbox:Disable();
+	frame.FollowGuildCheckbox:Disable();
 	frame.TransferRealmEditbox:Disable();
 	frame.TransferAccountCheckbox:Disable();
 	frame.TransferAccountDropDown.Button:Disable();
@@ -3267,14 +3787,18 @@ function StoreVASValidationState_Lock()
 	frame.TransferBattlenetAccountEditbox:Disable();
 	frame.TransferBnetWoWAccountDropDown.Button:Disable();
 	frame.NewCharacterName:Disable();
+	frame.NewGuildName:Disable();
 	frame.ContinueButton:Disable();
+	frame.RenameGuildCheckbox:Disable();
+	frame.RenameGuildEditbox:Disable();
+	frame.NewGuildMaster:Disable();
+	frame.OldGuildNewName:Disable();
 end
 
 function StoreVASValidationState_Unlock()
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 	frame.RealmSelector.Button:Enable();
-	frame.CharacterSelector.Button:Enable();
-	frame.TransferRealmCheckbox:Enable();
+	frame.FollowGuildCheckbox:Enable();
 	frame.TransferRealmEditbox:Enable();
 	frame.TransferAccountCheckbox:Enable();
 	frame.TransferAccountDropDown.Button:Enable();
@@ -3282,19 +3806,33 @@ function StoreVASValidationState_Unlock()
 	frame.TransferBattlenetAccountEditbox:Enable();
 	frame.TransferBnetWoWAccountDropDown.Button:Enable();
 	frame.NewCharacterName:Enable();
+	frame.NewGuildName:Enable();
 	frame.ContinueButton:Enable();
+	frame.RenameGuildCheckbox:Enable();
+	frame.RenameGuildEditbox:Enable();
+	frame.NewGuildMaster:Enable();
+	frame.OldGuildNewName:Enable();
+	UpdateCharacterSelectorState()
 end
 
 -------------------------------
 local isRotating = false;
 
-function StoreProductCard_ShouldAddDiscountInformationToTooltip(self)
+function StoreProductCard_ShouldAddDiscountInformationToTooltip(self, entryInfo)
+	if not StoreFrame_HasPriceData(entryInfo.productID) then
+		return false;
+	end
+	
+	if entryInfo.productID == SEE_YOU_LATER_BUNDLE_PRODUCT_ID then
+		return false;
+	end
+	
 	return self.style == "double-wide"; -- For now, all bundles are double-wide and there are no other double-wide cards.
 end
 
 function StoreProductCard_ShouldAddBundleInformationToTooltip(self, entryInfo)
 	-- For now, we're not displaying this part of the tooltip.
-	return false; -- self.style == "double-wide" and #entryInfo.sharedData.deliverables > 0;
+	return self.style == "double-wide" and #entryInfo.sharedData.deliverables > 0 and C_StoreSecure.IsDynamicBundle(entryInfo.productID);
 end
 
 function StoreProductCard_UpdateState(card)
@@ -3321,7 +3859,14 @@ function StoreProductCard_UpdateState(card)
 					xoffset = -4;
 				end
 				local name = entryInfo.sharedData.name:gsub("|n", " ");
-				local description = entryInfo.sharedData.description or "";
+				local description;
+				if card.productTooltipDescription then
+					description = card.productTooltipDescription;
+				elseif entryInfo.sharedData.description then
+					description = entryInfo.sharedData.description;
+				else
+					description = "";
+				end
 				if StoreProductCard_ShouldAddBundleInformationToTooltip(card, entryInfo) then
 					description = description..BLIZZARD_STORE_BUNDLE_TOOLTIP_HEADER;
 					for i, deliverableInfo in ipairs(entryInfo.sharedData.deliverables) do
@@ -3333,14 +3878,13 @@ function StoreProductCard_UpdateState(card)
 					end
 				end
 
-				if StoreProductCard_ShouldAddDiscountInformationToTooltip(card) then
-					local info = currencyInfo();
+				if StoreProductCard_ShouldAddDiscountInformationToTooltip(card, entryInfo) then
 					local discounted, discountPercentage, discountDollars, discountCents = StoreFrame_GetDiscountInformation(entryInfo.sharedData);
-					if info and discounted then
+					if discounted then
 						if description then
-							description = description..(BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_ADDENDUM:format(discountPercentage, info.formatShort(discountDollars, discountCents)));
+							description = description..(BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_ADDENDUM:format(discountPercentage, currencyFormatShort(discountDollars, discountCents)));
 						else
-							description = BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_REPLACEMENT:format(discountPercentage, info.formatShort(discountDollars, discountCents));
+							description = BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_REPLACEMENT:format(discountPercentage, currencyFormatShort(discountDollars, discountCents));
 						end
 					end
 				end
@@ -3351,6 +3895,9 @@ function StoreProductCard_UpdateState(card)
 					name = "";
 					description = BLIZZARD_STORE_LOG_OUT_TO_PURCHASE_THIS_PRODUCT;
 				end
+				
+				description = strtrim(description, "\n\r"); -- Ensure we don't end the description with a new line.
+				
 				StoreTooltip_Show(name, description, entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.WoWToken);
 			end
 		end
@@ -3419,7 +3966,7 @@ function StoreProductCard_CheckShowStorePreviewOnClick(self)
 		showPreview = IsModifiedClick("DRESSUP");
 	end
 	if ( showPreview ) then
-		local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());		
+		local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());
 		if ( entryInfo.displayID ) then
 			StoreFrame_ShowPreview(entryInfo.name, entryInfo.displayID, entryInfo.modelSceneID);
 		end
@@ -4121,18 +4668,20 @@ end
 ------------------------------------
 function VASCharacterSelectionRealmSelector_Callback(value)
 	SelectedRealm = value;
+
+	UpdateCharacterList();
+
 	SelectedCharacter = nil;
 	RealmAutoCompleteList = nil;
+	DestinationRealmMapping = {};
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
-	frame.RealmSelector.Text:SetText(value);
-	frame.CharacterSelector.Text:SetText(VAS_SELECT_CHARACTER);
-	frame.CharacterSelector.Button:Enable();
+	frame.RealmSelector.Text:SetText(SelectedRealm.realmName);
 	frame.ClassIcon:Hide();
 	frame.SelectedCharacterName:Hide();
 	frame.SelectedCharacterDescription:Hide();
 	frame.SelectedCharacterFrame:Hide();
-	frame.TransferRealmCheckbox:Hide();
-	frame.TransferRealmCheckbox:SetChecked(false);
+	frame.FollowGuildCheckbox:Hide();
+	frame.FollowGuildErrorMessage:Hide();
 	frame.TransferRealmEditbox:Hide();
 	frame.TransferRealmEditbox:SetText("");
 	frame.TransferAccountCheckbox:Hide();
@@ -4144,14 +4693,29 @@ function VASCharacterSelectionRealmSelector_Callback(value)
 	frame.TransferBattlenetAccountEditbox:SetText("");
 	frame.TransferBnetWoWAccountDropDown:Hide();
 	frame.ValidationDescription:Hide();
+	frame.ChangeIconFrame:Hide();
 	frame.NewCharacterName:SetText("");
-	frame.ContinueButton:Disable();
 	frame.NewCharacterName:Hide();
+	frame.GuildIcon:Hide();
+	frame.SelectedGuildName:Hide();
+	frame.NewGuildName:SetText("");
+	frame.NewGuildName:Hide();
+	frame.RenameGuildCheckbox:Hide();
+	frame.RenameGuildCheckbox:SetChecked(false);
+	frame.RenameGuildEditbox:Hide();
+	frame.RenameGuildEditbox:SetText("");
+	frame.NewGuildMaster:Hide();
+	frame.NewGuildMaster:SetText("");
+	frame.OldGuildNewName:Hide();
+	frame.OldGuildNewName:SetText("");
+
+	if not InstructionsShowing then
+		frame.ContinueButton:Disable();
+	end
 end
 
 function VASCharacterSelectionChangeIconFrame_OnEnter(self)
-	local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
-	local character = characters[SelectedCharacter];
+	local character = CharacterList[SelectedCharacter];
 
 	local races = C_StoreSecure.GetEligibleRacesForVASService(character.guid, VASServiceType);
 
@@ -4211,11 +4775,7 @@ function VASCharacterSelectionChangeIconFrame_SetIcons(character, serviceType)
 	end
 
 	if (serviceType == Enum.VasServiceType.FactionChange) then
-		if (character.faction == 0) then
-			toIcon.Icon:SetTexture("Interface\\Icons\\achievement_pvp_a_16");
-		elseif (character.faction == 1) then
-			toIcon.Icon:SetTexture("Interface\\Icons\\inv_misc_tournaments_banner_orc");
-		end
+		toIcon.Icon:SetTexture(GetFactionIcon(character.faction, true));
 	else
 		toIcon.Icon:SetTexture("Interface\\Icons\\inv_misc_questionmark");
 	end
@@ -4226,42 +4786,192 @@ function VASCharacterSelectionChangeIconFrame_SetIcons(character, serviceType)
 	frame:Show();
 end
 
-function VASCharacterSelectionCharacterSelector_Callback(value)
+local function UpdateFactionTransferCheckBoxForFaction(self, faction)
+	local bundleProductInfo = GetBundleProductInfo(self.productID);
+	local newFaction = GetFactionName(faction, true);
+	-- We don't filter the character list, this prevents a lua error if a neutral pandarian is selected.
+	if bundleProductInfo and newFaction ~= "" then
+		local bundlePrice = bundleProductInfo.sharedData.currentDollars + (bundleProductInfo.sharedData.currentCents / 100);
+		local basePrice = self.productInfo.sharedData.currentDollars + (self.productInfo.sharedData.currentCents / 100);
+		local diffPrice = bundlePrice - basePrice;
+		local diffDollars = math.floor(diffPrice);
+		local diffCents = (diffPrice - diffDollars) * 100;
+		self.CharacterSelectionFrame.TransferFactionCheckbox.Label:SetText(string.format(BLIZZARD_STORE_VAS_TRANSFER_FACTION_BUNDLE, newFaction, currencyFormatLong(diffDollars, diffCents)));
+		self.CharacterSelectionFrame.TransferFactionCheckbox.Label:ApplyFontObjects();
+		self.CharacterSelectionFrame.TransferFactionCheckbox:SetChecked(false);
+		self.CharacterSelectionFrame.TransferFactionCheckbox:Show();
+	else
+		self.CharacterSelectionFrame.TransferFactionCheckbox:Hide();
+	end
+end
+
+local function UpdateFollowGuildCheckbox(self, faction, guildFollowInfo)
+	local guildFollowMatches = false;
+	if IsVasServiceTypeEligibleForGuildFollow(VASServiceType) and guildFollowInfo then
+		if VASServiceType == Enum.VasServiceType.CharacterTransfer then
+			guildFollowMatches = guildFollowInfo.transferredRealm;
+		elseif VASServiceType == Enum.VasServiceType.FactionChange then
+			guildFollowMatches = guildFollowInfo.factionChanged;
+		end
+	end
+
+	if guildFollowMatches then
+		local followGuildNotAllowed = VASServiceType == Enum.VasServiceType.FactionChange and guildFollowInfo.transferredRealm and guildFollowInfo.factionChanged;
+		if followGuildNotAllowed then
+			local errorString;
+			if guildFollowInfo.transferredRealm and guildFollowInfo.factionChanged then
+				errorString = BLIZZARD_STORE_VAS_FOLLOW_GUILD_FACTION_TRANSFER_ERROR:format(guildFollowInfo.transferredRealm, GetFactionName(faction, true));
+			else
+				errorString = BLIZZARD_STORE_VAS_FOLLOW_GUILD_TRANSFER_ERROR:format(guildFollowInfo.transferredRealm);
+			end
+			self.CharacterSelectionFrame.FollowGuildCheckbox:Hide();
+			self.CharacterSelectionFrame.FollowGuildErrorMessage:SetText(errorString);
+			self.CharacterSelectionFrame.FollowGuildErrorMessage:Show();
+		else
+			local checkboxString;
+			if guildFollowInfo.transferredRealm and guildFollowInfo.factionChanged then
+				local bundleProductInfo = GetBundleProductInfo(self.productID);
+				local bundlePrice = bundleProductInfo.sharedData.currentDollars + (bundleProductInfo.sharedData.currentCents / 100);
+				local basePrice = self.productInfo.sharedData.currentDollars + (self.productInfo.sharedData.currentCents / 100);
+				local diffPrice = bundlePrice - basePrice;
+				local diffDollars = math.floor(diffPrice);
+				local diffCents = (diffPrice - diffDollars) * 100;
+				checkboxString = BLIZZARD_STORE_VAS_FOLLOW_GUILD_FACTION_TRANSFER:format(guildFollowInfo.transferredRealm, GetFactionName(faction, true), currencyFormatLong(diffDollars, diffCents));
+			elseif guildFollowInfo.transferredRealm then
+				checkboxString = BLIZZARD_STORE_VAS_FOLLOW_GUILD_TRANSFER:format(guildFollowInfo.transferredRealm);
+			else
+				checkboxString = BLIZZARD_STORE_VAS_FOLLOW_GUILD_FACTION_CHANGE;
+			end
+			if VASServiceType == Enum.VasServiceType.FactionChange then
+				self.CharacterSelectionFrame.FollowGuildCheckbox:SetPoint("TOPLEFT", self.CharacterSelectionFrame.SelectedCharacterFrame, "BOTTOMLEFT", 2, -3)
+			else
+				self.CharacterSelectionFrame.FollowGuildCheckbox:SetPoint("TOPLEFT", self.CharacterSelectionFrame.SelectedCharacterFrame, "BOTTOMLEFT", 2, -8)
+			end
+			self.CharacterSelectionFrame.FollowGuildCheckbox.Label:SetText(checkboxString);
+			self.CharacterSelectionFrame.FollowGuildCheckbox:SetChecked(true);
+			self.CharacterSelectionFrame.FollowGuildCheckbox:Show();
+			self.CharacterSelectionFrame.FollowGuildErrorMessage:Hide();
+		end
+
+		self.CharacterSelectionFrame.ChangeIconFrame:SetPoint("TOPLEFT", self.CharacterSelectionFrame.SelectedCharacterFrame, "BOTTOMLEFT", 0, -42);
+		self.CharacterSelectionFrame.TransferRealmEditbox:SetPoint("TOPRIGHT", self.CharacterSelectionFrame.SelectedCharacterFrame, "BOTTOMRIGHT", 8, -47);
+
+		FollowGuildCheckbox_OnClick(self.CharacterSelectionFrame.FollowGuildCheckbox);
+	else
+		self.CharacterSelectionFrame.FollowGuildCheckbox:Hide();
+		self.CharacterSelectionFrame.FollowGuildErrorMessage:Hide();
+		self.CharacterSelectionFrame.ChangeIconFrame:SetPoint("TOPLEFT", self.CharacterSelectionFrame.SelectedCharacterFrame, "BOTTOMLEFT", 0, -4);
+		self.CharacterSelectionFrame.TransferRealmEditbox:SetPoint("TOPRIGHT", self.CharacterSelectionFrame.SelectedCharacterFrame, "BOTTOMRIGHT", 8, -10);
+	end
+end
+
+function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 	SelectedCharacter = value;
+	GuildMemberAutoCompleteList = nil;
+	GuildMemberNameToGuid = {};
 
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
-	local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
-	local character = characters[SelectedCharacter];
+	local character = CharacterList[SelectedCharacter];
 	local level = character.level;
 	if (level == 0) then
 		level = 1;
 	end
-	frame.CharacterSelector.Text:SetText(string.format(VAS_CHARACTER_SELECTION_DESCRIPTION, RAID_CLASS_COLORS[character.classFileName].colorStr, character.name, level, character.className));
+
+	if IsVasServiceTypeEligibleForGuildFollow(VASServiceType) then
+		if not guildFollowInfo then
+			if CharacterWaitingOnGuildFollowInfo ~= character.guid then
+				-- wait for STORE_GUILD_FOLLOW_INFO_RECEIVED event
+				CharacterWaitingOnGuildFollowInfo = character.guid;
+				C_StoreSecure.RequestCharacterGuildFollowInfo(character.guid);
+			end
+			return;
+		end
+	end
+
 	frame.SelectedCharacterFrame:Show();
-	frame.ClassIcon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[character.classFileName]));
-	frame.ClassIcon:Show();
-	frame.SelectedCharacterName:SetText(character.name);
-	frame.SelectedCharacterName:Show();
-	frame.SelectedCharacterDescription:SetText(string.format(VAS_SELECTED_CHARACTER_DESCRIPTION, level, character.raceName, character.className));
-	frame.SelectedCharacterDescription:Show();
+
+	if IsGuildVasServiceType(VASServiceType) then
+		local guildMasterInfo = GetGuildMasterInfoForCharacter(character.guid);
+
+		frame.GuildIcon:SetTexture(GetFactionIcon(character.faction));
+		frame.GuildIcon:Show();
+		frame.SelectedGuildName:SetText(guildMasterInfo.guildName);
+		frame.SelectedGuildName:Show();
+
+		frame.ClassIcon:Hide();
+		frame.SelectedCharacterName:Hide();
+		frame.SelectedCharacterDescription:Hide();
+	else
+		frame.GuildIcon:Hide();
+		frame.SelectedGuildName:Hide();
+
+		frame.ClassIcon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[character.classFileName]));
+		frame.ClassIcon:Show();
+		frame.SelectedCharacterName:SetText(character.name);
+		frame.SelectedCharacterName:Show();
+		frame.SelectedCharacterDescription:SetText(string.format(VAS_SELECTED_CHARACTER_DESCRIPTION, level, character.raceName, character.className));
+		frame.SelectedCharacterDescription:Show();
+	end
+
 	frame.ValidationDescription:SetFontObject("GameFontBlack");
 	frame.ValidationDescription:SetTextColor(0, 0, 0);
 	frame.ValidationDescription:Hide();
 
 	StoreVASValidationState_Unlock();
 
-	local bottomWidget = frame.SelectedCharacterFrame;
 	if (VASServiceType == Enum.VasServiceType.NameChange) then
 		frame.NewCharacterName:SetText("");
 		frame.NewCharacterName:Show();
 		frame.NewCharacterName:SetFocus();
-		bottomWidget = frame.NewCharacterName;
 		frame.ContinueButton:Disable();
 		frame.ValidationDescription:ClearAllPoints();
-		frame.ValidationDescription:SetPoint("TOPLEFT", bottomWidget, "BOTTOMLEFT", -5, -6);
+		frame.ValidationDescription:SetPoint("TOPLEFT", frame.NewCharacterName, "BOTTOMLEFT", -5, -6);
+	elseif (VASServiceType == Enum.VasServiceType.GuildNameChange) then
+		frame.NewGuildName:SetText("");
+		frame.NewGuildName:Show();
+		frame.NewGuildName:SetFocus();
+		frame.ContinueButton:Disable();
+		frame.ValidationDescription:ClearAllPoints();
+		frame.ValidationDescription:SetPoint("TOPLEFT", frame.NewGuildName, "BOTTOMLEFT", -5, -6);
+	elseif (VASServiceType == Enum.VasServiceType.GuildFactionChange) then
+		frame.RenameGuildCheckbox:ClearAllPoints();
+		frame.RenameGuildCheckbox:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 5, -8);
+		frame.RenameGuildCheckbox:Show();
+		frame.RenameGuildCheckbox.Label:ApplyFontObjects();
+		frame.RenameGuildCheckbox:SetChecked(false);
+		frame.RenameGuildEditbox:ClearAllPoints();
+		frame.RenameGuildEditbox:SetPoint("TOPRIGHT", frame.SelectedCharacterFrame, "BOTTOMRIGHT", 8, -12);
+		frame.RenameGuildEditbox:SetText("");
+		frame.RenameGuildEditbox:Hide();
+		frame.NewGuildMaster:SetText("");
+		frame.NewGuildMaster:Show();
+		frame.OldGuildNewName:SetText("");
+		frame.OldGuildNewName:Show();
+		frame.ContinueButton:Disable();
+	elseif (VASServiceType == Enum.VasServiceType.GuildTransfer) then
+		frame.TransferRealmEditbox.Label:Show();
+		frame.TransferRealmEditbox:SetText("");
+		frame.TransferRealmEditbox:Show();
+		frame.NewGuildMaster:SetText("");
+		frame.NewGuildMaster:Show();
+		frame.RenameGuildCheckbox:ClearAllPoints();
+		frame.RenameGuildCheckbox:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 5, -88);
+		frame.RenameGuildCheckbox:Show();
+		frame.RenameGuildCheckbox.Label:ApplyFontObjects();
+		frame.RenameGuildCheckbox:SetChecked(false);
+		frame.RenameGuildEditbox:ClearAllPoints();
+		frame.RenameGuildEditbox:SetPoint("TOPRIGHT", frame.SelectedCharacterFrame, "BOTTOMRIGHT", 8, -92);
+		frame.RenameGuildEditbox:SetText("");
+		frame.RenameGuildEditbox:Hide();
+		frame.TransferFactionCheckbox:ClearAllPoints();
+		frame.TransferFactionCheckbox:SetPoint("TOPLEFT", frame.RenameGuildCheckbox, "BOTTOMLEFT", 0, -4);
+
+		UpdateFactionTransferCheckBoxForFaction(StoreVASValidationFrame, character.faction);
+
+		frame.ContinueButton:Disable();
+		frame.ValidationDescription:ClearAllPoints();
+		frame.ValidationDescription:SetPoint("TOPLEFT", frame.TransferFactionCheckbox, "BOTTOMLEFT", 8, -16);
 	elseif (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
-		frame.TransferRealmCheckbox:Show();
-		frame.TransferRealmCheckbox.Label:ApplyFontObjects();
 		if (C_StoreSecure.GetCurrencyID() ~= CURRENCY_KRW) then
 			frame.TransferAccountCheckbox:Show();
 			frame.TransferAccountCheckbox.Label:ApplyFontObjects();
@@ -4269,47 +4979,25 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 			frame.TransferFactionCheckbox:SetPoint("TOPLEFT", frame.TransferAccountCheckbox, "BOTTOMLEFT", 0, -4);
 		else
 			frame.TransferFactionCheckbox:ClearAllPoints();
-			frame.TransferFactionCheckbox:SetPoint("TOPLEFT", frame.TransferRealmCheckbox, "BOTTOMLEFT", 0, -4);
+			frame.TransferFactionCheckbox:SetPoint("TOPLEFT", frame.TransferRealmEditbox, "BOTTOMLEFT", 0, -4);
 		end
-		frame.TransferRealmCheckbox:SetChecked(false);
+		frame.TransferRealmEditbox:Show();
 		frame.TransferRealmEditbox:SetText("");
-		frame.TransferRealmEditbox:Hide();
 		frame.TransferBattlenetAccountEditbox:Hide();
 		frame.TransferBattlenetAccountEditbox:SetText("");
 		frame.TransferBnetWoWAccountDropDown:Hide();
 		frame.TransferAccountCheckbox:SetChecked(false);
 		frame.TransferAccountDropDown.Text:SetText(BLIZZARD_STORE_VAS_SELECT_ACCOUNT);
 		frame.TransferAccountDropDown:Hide();
-		frame.TransferFactionCheckbox:SetChecked(false);
 		SelectedDestinationWowAccount = nil;
 		SelectedDestinationBnetWowAccount = nil;
-		local newFaction;
-		if (character.faction == 0) then
-			newFaction = FACTION_ALLIANCE;
-		elseif (character.faction == 1) then
-			newFaction = FACTION_HORDE;
-		end
-		-- We don't filter the character list, this prevents a lua error if a neutral pandarian is selected.
-		if (newFaction) then
-			local bundleProductInfo = C_StoreSecure.GetProductInfo(CHARACTER_TRANSFER_FACTION_BUNDLE_PRODUCT_ID);
-			local baseProductInfo = C_StoreSecure.GetProductInfo(CHARACTER_TRANSFER_PRODUCT_ID);
-			local bundlePrice = bundleProductInfo.sharedData.currentDollars + (bundleProductInfo.sharedData.currentCents / 100);
-			local basePrice = baseProductInfo.sharedData.currentDollars + (baseProductInfo.sharedData.currentCents / 100);
-			local diffPrice = bundlePrice - basePrice;
-			local diffDollars = math.floor(diffPrice);
-			local diffCents = (diffPrice - diffDollars) * 100;
-			local info = currencyInfo();
-			local format = info.formatLong;
-			frame.TransferFactionCheckbox.Label:SetText(string.format(BLIZZARD_STORE_VAS_TRANSFER_FACTION_BUNDLE, newFaction, format(diffDollars, diffCents)));
-		end
-		frame.TransferFactionCheckbox:SetShown(newFaction ~= nil);
-		if (frame.TransferFactionCheckbox:IsShown()) then
-			frame.TransferFactionCheckbox.Label:ApplyFontObjects();
-		end
 
-		StoreVASValidationFrame_SyncFontHeights(frame.TransferRealmCheckbox.Label, frame.TransferAccountCheckbox.Label, frame.TransferFactionCheckbox.Label);
+		UpdateFactionTransferCheckBoxForFaction(StoreVASValidationFrame, character.faction);
+
+		StoreVASValidationFrame_SyncFontHeights(frame.TransferAccountCheckbox.Label, frame.TransferFactionCheckbox.Label);
 		frame.ContinueButton:Disable();
 	else
+		local bottomWidget = frame.SelectedCharacterFrame;
 		if (VASServiceType == Enum.VasServiceType.RaceChange or VASServiceType == Enum.VasServiceType.FactionChange) then
 			local races = C_StoreSecure.GetEligibleRacesForVASService(character.guid, VASServiceType);
 
@@ -4342,38 +5030,65 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 		frame.ValidationDescription:SetPoint("TOPLEFT", bottomWidget, "BOTTOMLEFT", 8, -16);
 		frame.ContinueButton:Enable();
 	end
+
+	UpdateFollowGuildCheckbox(StoreVASValidationFrame, character.faction, guildFollowInfo);
 end
 
-function VASRealmList_BuildAutoCompleteList()
-	local realms = C_StoreSecure.GetVASRealmList();
+function VASRealmList_BuildAutoCompleteLists()
+	local character = CharacterList[SelectedCharacter];
 
-	local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
-	local character = characters[SelectedCharacter];
-
-	local infoTable = {};
-	for i = 1, #realms do
-		if (realms[i].virtualRealmAddress ~= character.currentServer) then
-			local pvp = realms[i].pvp;
-			local rp = realms[i].rp;
-			local name = realms[i].realmName;
-			RealmRpPvpMap[name] = { rp=rp, pvp=pvp };
-			infoTable[#infoTable + 1] = name;
-			DestinationRealmMapping[name] = realms[i].virtualRealmAddress;
+	if not RealmAutoCompleteList and (VASServiceType == Enum.VasServiceType.CharacterTransfer or VASServiceType == Enum.VasServiceType.GuildTransfer) then
+		local realms = C_StoreSecure.GetVASRealmList();
+		
+		local infoTable = {};
+		for _, realm in ipairs(realms) do
+			if (realm.virtualRealmAddress ~= character.currentServer) then
+				local name = realm.realmName;
+				local listText = name;
+				if realm.rp then
+					listText = listText .. " " .. VAS_RP_PARENTHESES;
+				end
+				table.insert(infoTable, {value = name, text = listText});
+				DestinationRealmMapping[name] = realm.virtualRealmAddress;
+			end
 		end
+
+		RealmAutoCompleteList = infoTable;
 	end
 
-	RealmAutoCompleteList = infoTable;
+	if not GuildMemberAutoCompleteList and (VASServiceType == Enum.VasServiceType.GuildFactionChange or VASServiceType == Enum.VasServiceType.GuildTransfer) then
+		local guildMasterInfo = GetGuildMasterInfoForCharacter(character.guid);
+
+		local infoTable = {};
+		for _, memberInfo in ipairs(guildMasterInfo.guildMemberInfos) do
+			if (memberInfo.guid ~= character.guid) then
+				table.insert(infoTable, {value = memberInfo.memberName, text = memberInfo.memberName});
+				GuildMemberNameToGuid[memberInfo.memberName] = memberInfo.guid;
+			end
+		end
+
+		GuildMemberAutoCompleteList = infoTable;
+	end
 end
 
-function VASRealmList_GetAutoCompleteEntries(text, cursorPosition)
-	if (text == "") then
+local function GetStoreAutoCompleteList(self)
+	if self.autoCompleteType == "realms" then
+		return RealmAutoCompleteList;
+	elseif self.autoCompleteType == "guildMembers" then
+		return GuildMemberAutoCompleteList;
+	end
+end
+
+function StoreGetAutoCompleteEntries(self, text, cursorPosition)
+	local autoCompleteList = GetStoreAutoCompleteList(self);
+	if not autoCompleteList or text == "" then
 		return {};
 	end
 	local entries = {};
 	local str = string.lower(string.sub(text, 1, cursorPosition));
-	for i, v in ipairs(RealmAutoCompleteList) do
-		if (string.find(string.lower(v), str)) then
-			table.insert(entries, v);
+	for _, info in ipairs(autoCompleteList) do
+		if (string.find(string.lower(info.value), str)) then
+			table.insert(entries, info);
 		end
 	end
 	return entries;
@@ -4384,31 +5099,29 @@ local VAS_AUTO_COMPLETE_OFFSET = 0;
 local VAS_AUTO_COMPLETE_SELECTION = nil;
 local VAS_AUTO_COMPLETE_ENTRIES = nil;
 
-function VASCharacterSelectionTransferRealmEditBoxAutoCompleteButton_OnClick(self)
+function StoreAutoCompleteButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	VAS_AUTO_COMPLETE_SELECTION = nil;
 	VAS_AUTO_COMPLETE_OFFSET = 0;
-	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 
-	frame.TransferRealmEditbox:SetText(self.info);
-	frame.TransferRealmAutoCompleteBox:Hide();
+	self:GetParent():GetParent():SetText(self.info);
+	self:GetParent():Hide();
 end
 
-function VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(self, text, cursorPosition)
-	if (not RealmAutoCompleteList) then
-		VASRealmList_BuildAutoCompleteList();
-	end
-	VAS_AUTO_COMPLETE_ENTRIES = VASRealmList_GetAutoCompleteEntries(text, cursorPosition);
+function StoreUpdateAutoComplete(self, text, cursorPosition)
+	VASRealmList_BuildAutoCompleteLists();
 
-	if (text == VAS_AUTO_COMPLETE_ENTRIES[1]) then
+	VAS_AUTO_COMPLETE_ENTRIES = StoreGetAutoCompleteEntries(self, text, cursorPosition);
+
+	if (VAS_AUTO_COMPLETE_ENTRIES[1] and text == VAS_AUTO_COMPLETE_ENTRIES[1].value) then
 		return;
 	end
 
 	local maxWidth = 0;
 	local shownButtons = 0;
 	local buttonOffset = 0;
-	local box = self:GetParent().TransferRealmAutoCompleteBox;
+	local box = self.AutoCompleteBox;
 	if (VAS_AUTO_COMPLETE_OFFSET > 0) then
 		local button = box.Buttons[1];
 		button.Text:SetText(BLIZZARD_STORE_VAS_REALMS_PREVIOUS);
@@ -4427,20 +5140,11 @@ function VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(self, text
 			button:SetPoint("TOP", box.Buttons[i-1], "BOTTOM");
 		end
 		local entryIndex = i + VAS_AUTO_COMPLETE_OFFSET - buttonOffset;
-		button:SetScript("OnClick", VASCharacterSelectionTransferRealmEditBoxAutoCompleteButton_OnClick);
-		button.info = VAS_AUTO_COMPLETE_ENTRIES[entryIndex];
-		local rpPvpInfo = RealmRpPvpMap[VAS_AUTO_COMPLETE_ENTRIES[entryIndex]];
-		local tag = _G.VAS_PVE_PARENTHESES;
-		if (rpPvpInfo.pvp and rpPvpInfo.rp) then
-			tag = _G.VAS_RPPVP_PARENTHESES;
-		elseif (rpPvpInfo.pvp) then
-			tag = _G.VAS_PVP_PARENTHESES;
-		elseif (rpPvpInfo.rp) then
-			tag = _G.VAS_RP_PARENTHESES;
-		end
+		button:SetScript("OnClick", StoreAutoCompleteButton_OnClick);
+		button.info = VAS_AUTO_COMPLETE_ENTRIES[entryIndex].value;
 		button:SetNormalFontObject("GameFontWhiteTiny2");
 		button:SetHighlightFontObject("GameFontWhiteTiny2");
-		button.Text:SetText(VAS_AUTO_COMPLETE_ENTRIES[entryIndex] .. " " .. tag);
+		button.Text:SetText(VAS_AUTO_COMPLETE_ENTRIES[entryIndex].text);
 		button:Show();
 		if (i - buttonOffset == VAS_AUTO_COMPLETE_SELECTION) then
 			button:LockHighlight();
@@ -4460,7 +5164,7 @@ function VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(self, text
 		button:SetScript("OnClick", StoreAutoCompleteHasMore_OnClick);
 		button:SetNormalFontObject("GameFontDisableTiny2");
 		button:SetHighlightFontObject("GameFontDisableTiny2");
-		button.Text:SetText(string.format(BLIZZARD_STORE_VAS_REALMS_AND_MORE, (#VAS_AUTO_COMPLETE_ENTRIES - VAS_AUTO_COMPLETE_OFFSET - VAS_AUTO_COMPLETE_MAX_ENTRIES)));
+		button.Text:SetText(string.format(BLIZZARD_STORE_VAS_AUTOCOMPLETE_AND_MORE, (#VAS_AUTO_COMPLETE_ENTRIES - VAS_AUTO_COMPLETE_OFFSET - VAS_AUTO_COMPLETE_MAX_ENTRIES)));
 		button:Show();
 		shownButtons = shownButtons + 1;
 	end
@@ -4483,9 +5187,9 @@ function StoreAutoCompleteGoBack_OnClick(self)
 	VAS_AUTO_COMPLETE_OFFSET = math.max(VAS_AUTO_COMPLETE_OFFSET - VAS_AUTO_COMPLETE_MAX_ENTRIES, 0);
 	VAS_AUTO_COMPLETE_SELECTION = nil;
 
-	local frame = StoreVASValidationFrame.CharacterSelectionFrame.TransferRealmEditbox;
+	local frame = self:GetParent():GetParent();
 
-	VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(frame, frame:GetText(), frame:GetCursorPosition());
+	StoreUpdateAutoComplete(frame, frame:GetText(), frame:GetCursorPosition());
 end
 
 function StoreAutoCompleteHasMore_OnClick(self)
@@ -4494,12 +5198,12 @@ function StoreAutoCompleteHasMore_OnClick(self)
 	VAS_AUTO_COMPLETE_OFFSET = math.min(VAS_AUTO_COMPLETE_OFFSET + VAS_AUTO_COMPLETE_MAX_ENTRIES, #VAS_AUTO_COMPLETE_ENTRIES - 1);
 	VAS_AUTO_COMPLETE_SELECTION = nil;
 
-	local frame = StoreVASValidationFrame.CharacterSelectionFrame.TransferRealmEditbox;
+	local frame = self:GetParent():GetParent();
 
-	VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(frame, frame:GetText(), frame:GetCursorPosition());
+	StoreUpdateAutoComplete(frame, frame:GetText(), frame:GetCursorPosition());
 end
 
-function StoreAutoCompleteIncrementSelection()
+function StoreAutoCompleteIncrementSelection(self)
 	if (VAS_AUTO_COMPLETE_OFFSET > 0 and VAS_AUTO_COMPLETE_SELECTION == #VAS_AUTO_COMPLETE_ENTRIES - VAS_AUTO_COMPLETE_OFFSET) then
 		return;
 	elseif (VAS_AUTO_COMPLETE_SELECTION == VAS_AUTO_COMPLETE_MAX_ENTRIES) then
@@ -4512,33 +5216,29 @@ function StoreAutoCompleteIncrementSelection()
 		VAS_AUTO_COMPLETE_SELECTION = 1;
 	end
 
-	local frame = StoreVASValidationFrame.CharacterSelectionFrame.TransferRealmEditbox;
-
-	VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(frame, frame:GetText(), frame:GetCursorPosition());
+	StoreUpdateAutoComplete(self, self:GetText(), self:GetCursorPosition());
 end
 
-function StoreAutoCompleteDecrementSelection()
+function StoreAutoCompleteDecrementSelection(self)
 	if (VAS_AUTO_COMPLETE_SELECTION and #VAS_AUTO_COMPLETE_ENTRIES > 0) then
 		if (VAS_AUTO_COMPLETE_SELECTION == 1 and VAS_AUTO_COMPLETE_OFFSET > 0) then
 			VAS_AUTO_COMPLETE_OFFSET = VAS_AUTO_COMPLETE_OFFSET - 1;
 		elseif (VAS_AUTO_COMPLETE_SELECTION > 1) then
 			VAS_AUTO_COMPLETE_SELECTION = VAS_AUTO_COMPLETE_SELECTION - 1;
 		end
-		local frame = StoreVASValidationFrame.CharacterSelectionFrame.TransferRealmEditbox;
 
-		VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(frame, frame:GetText(), frame:GetCursorPosition());
+		StoreUpdateAutoComplete(self, self:GetText(), self:GetCursorPosition());
 	end
 end
 
-function StoreAutoCompleteSelectionEnterPressed()
+function StoreAutoCompleteSelectionEnterPressed(self)
 	if (VAS_AUTO_COMPLETE_SELECTION) then
 		local info = VAS_AUTO_COMPLETE_ENTRIES[VAS_AUTO_COMPLETE_SELECTION + VAS_AUTO_COMPLETE_OFFSET];
 		VAS_AUTO_COMPLETE_SELECTION = nil;
 		VAS_AUTO_COMPLETE_OFFSET = 0;
-		local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 
-		frame.TransferRealmEditbox:SetText(info);
-		frame.TransferRealmAutoCompleteBox:Hide();
+		self:SetText(info.value);
+		self.AutoCompleteBox:Hide();
 	end
 end
 
@@ -4550,35 +5250,178 @@ local function PlayCheckboxSound(self)
 	PlaySound(sound);
 end
 
-function TransferRealmCheckbox_OnClick(self)
+function VASCharacterSelection_NewCharacterName_OnTextChanged(self)
+	self:GetParent().ValidationDescription:Hide();
+
+	local character = CharacterList[SelectedCharacter];
+
+	local newNameText = self:GetText();
+	local enabled = newNameText ~= "" and newNameText ~= character.name;
+
+	self:GetParent().ContinueButton:SetEnabled(enabled);
+end
+
+function VASCharacterSelection_NewGuildName_OnTextChanged(self)
+	self:GetParent().ValidationDescription:Hide();
+
+	local character = CharacterList[SelectedCharacter];
+	local guildMasterInfo = GetGuildMasterInfoForCharacter(character.guid);
+
+	local newNameText = self:GetText();
+	local enabled = newNameText ~= "" and newNameText ~= guildMasterInfo.guildName;
+
+	self:GetParent().ContinueButton:SetEnabled(enabled);
+end
+
+function RenameGuildCheckbox_OnClick(self)
 	PlayCheckboxSound(self);
-	if (not self:GetChecked()) then
-		SelectedDestinationRealm = nil;
-		self:GetParent().TransferRealmEditbox:SetText("");
-		self:GetParent().TransferRealmAutoCompleteBox:Hide();
+
+	if VASServiceType == Enum.VasServiceType.GuildTransfer then
+		self:GetParent().RenameGuildEditbox:SetText("");
+
+		if (self:GetChecked()) then
+			self:GetParent().RenameGuildEditbox:Show();
+		else
+			self:GetParent().RenameGuildEditbox:Hide();
+		end
+
+		VASCharacterSelection_GuildTransfer_GatherAndValidateData();
+	elseif VASServiceType == Enum.VasServiceType.GuildFactionChange then
+		self:GetParent().RenameGuildEditbox:SetText("");
+		self:GetParent().OldGuildNewName:SetText("");
+
+		if (self:GetChecked()) then
+			self:GetParent().RenameGuildEditbox:Show();
+			self:GetParent().OldGuildNewName:Hide();
+		else
+			self:GetParent().RenameGuildEditbox:Hide();
+			self:GetParent().OldGuildNewName:Show();
+		end
+
+		VASCharacterSelection_GuildFactionChange_GatherAndValidateData();
 	end
-	self:GetParent().TransferRealmEditbox:SetShown(self:GetChecked());
+end
+
+function VASCharacterSelection_GuildVASEditbox_OnTextChanged(self)
+	self.EmptyText:SetShown(not self:GetText() or self:GetText() == "");
+
+	if VASServiceType == Enum.VasServiceType.GuildTransfer then
+		VASCharacterSelection_GuildTransfer_GatherAndValidateData();
+	elseif VASServiceType == Enum.VasServiceType.GuildFactionChange then
+		VASCharacterSelection_GuildFactionChange_GatherAndValidateData();
+	end
+end
+
+function VASCharacterSelection_GuildFactionChange_GatherAndValidateData()
+	local renameGuildCheckbox = StoreVASValidationFrame.CharacterSelectionFrame.RenameGuildCheckbox;
+	local renameGuildEditbox = StoreVASValidationFrame.CharacterSelectionFrame.RenameGuildEditbox;
+	local newGuildMasterEditBox = StoreVASValidationFrame.CharacterSelectionFrame.NewGuildMaster;
+	local oldGuildNewNameEditBox = StoreVASValidationFrame.CharacterSelectionFrame.OldGuildNewName;
+	local continueButton = StoreVASValidationFrame.CharacterSelectionFrame.ContinueButton;
+
+	StoreVASValidationFrame_UpdateGuildFactionChangeValidationPosition();
+
+	local passed = false;
+
+	NewGuildMaster = newGuildMasterEditBox:GetText();
+
+	if GuildMemberNameToGuid[NewGuildMaster] then
+		if (renameGuildCheckbox:GetChecked()) then
+			passed = renameGuildEditbox:GetText() and renameGuildEditbox:GetText() ~= "";
+		else
+			passed = oldGuildNewNameEditBox:GetText() and oldGuildNewNameEditBox:GetText() ~= "";
+		end
+	end
+
+	if passed then
+		continueButton:Enable();
+	else
+		continueButton:Disable();
+	end
+end
+
+function VASCharacterSelection_GuildTransfer_GatherAndValidateData()
+	local character = CharacterList[SelectedCharacter];
+
+	local transferRealmEditbox = StoreVASValidationFrame.CharacterSelectionFrame.TransferRealmEditbox;
+	local newGuildMasterEditBox = StoreVASValidationFrame.CharacterSelectionFrame.NewGuildMaster;
+	local renameGuildCheckbox = StoreVASValidationFrame.CharacterSelectionFrame.RenameGuildCheckbox;
+	local renameGuildEditbox = StoreVASValidationFrame.CharacterSelectionFrame.RenameGuildEditbox;
+	local continueButton = StoreVASValidationFrame.CharacterSelectionFrame.ContinueButton;
+
+	local passed = false;
+
+	if transferRealmEditbox:GetText() and transferRealmEditbox:GetText() ~= "" then
+		SelectedDestinationRealm = transferRealmEditbox:GetText();
+		NewGuildMaster = newGuildMasterEditBox:GetText();
+
+		if DestinationRealmMapping[SelectedDestinationRealm] and GuildMemberNameToGuid[NewGuildMaster] then
+			if (renameGuildCheckbox:GetChecked()) then
+				passed = renameGuildEditbox:GetText() and renameGuildEditbox:GetText() ~= "";
+			else
+				passed = true;
+			end
+		end
+	end
+
+	if passed then
+		continueButton:Enable();
+	else
+		continueButton:Disable();
+	end
+end
+
+function FollowGuildCheckbox_OnClick(self)
+	PlayCheckboxSound(self);
+
+	IsGuildFollow = self:GetChecked();
+
+	local showOthers = not self:GetChecked() and VASServiceType ~= Enum.VasServiceType.FactionChange;
+	self:GetParent().TransferRealmEditbox:SetShown(showOthers);
+	self:GetParent().TransferAccountCheckbox:SetShown(showOthers);
+
+	self:GetParent().TransferAccountDropDown:SetShown(showOthers and self:GetParent().TransferAccountCheckbox:GetChecked());
+	self:GetParent().TransferBattlenetAccountEditbox:SetShown(showOthers and SelectedDestinationWowAccount == BLIZZARD_STORE_VAS_DIFFERENT_BNET);
+	self:GetParent().TransferFactionCheckbox:SetShown(showOthers and not self:GetParent().TransferAccountCheckbox:GetChecked());
+
+	if not showOthers then
+		SelectedDestinationRealm = nil;
+		SelectedDestinationWowAccount = nil;
+		SelectedDestinationBnetAccount = nil;
+		SelectedDestinationBnetWowAccount = nil;
+
+		self:GetParent().TransferRealmEditbox:SetText("");
+		self:GetParent().TransferAccountCheckbox:SetChecked(false);
+		self:GetParent().TransferAccountDropDown.Text:SetText(BLIZZARD_STORE_VAS_SELECT_ACCOUNT);
+	end
+
 	VASCharacterSelectionTransferGatherAndValidateData();
 end
 
-function VASCharacterSelectionTransferRealmEditBox_OnCursorChanged(self)
+function StoreEditBoxWithAutoCompleteTemplate_OnCursorChanged(self)
 	VAS_AUTO_COMPLETE_OFFSET = 0;
 	VAS_AUTO_COMPLETE_SELECTION = nil;
 
-	VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(self, self:GetText(), self:GetCursorPosition());
+	StoreUpdateAutoComplete(self, self:GetText(), self:GetCursorPosition());
 end
 
-function VASCharacterSelectionTransferRealmEditBox_OnTextChanged(self)
+function StoreEditBoxWithAutoCompleteTemplate_OnTextChanged(self)
 	VAS_AUTO_COMPLETE_OFFSET = 0;
 	VAS_AUTO_COMPLETE_SELECTION = nil;
 
 	self.EmptyText:SetShown(not self:GetText() or self:GetText() == "");
-	VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(self, self:GetText(), self:GetCursorPosition());
+	StoreUpdateAutoComplete(self, self:GetText(), self:GetCursorPosition());
 
-	VASCharacterSelectionTransferGatherAndValidateData();
+	if VASServiceType == Enum.VasServiceType.GuildTransfer then
+		VASCharacterSelection_GuildTransfer_GatherAndValidateData();
+	elseif VASServiceType == Enum.VasServiceType.GuildFactionChange then
+		VASCharacterSelection_GuildFactionChange_GatherAndValidateData();
+	elseif VASServiceType == Enum.VasServiceType.CharacterTransfer then
+		VASCharacterSelectionTransferGatherAndValidateData();
+	end
 end
 
-function TransferRealmAutoCompleteBox_OnHide(self)
+function StoreAutoCompleteBox_OnHide(self)
 	VAS_AUTO_COMPLETE_OFFSET = 0;
 	VAS_AUTO_COMPLETE_SELECTION = nil;
 end
@@ -4599,7 +5442,7 @@ function TransferAccountCheckbox_OnClick(self)
 	self:GetParent().TransferFactionCheckbox:SetShown(not self:GetChecked());
 	if (self:GetChecked()) then
 		self:GetParent().TransferFactionCheckbox:SetChecked(false);
-		CharacterTransferFactionChangeBundle = false;
+		TransferFactionChangeBundle = false;
 	end
 	VASCharacterSelectionTransferGatherAndValidateData();
 end
@@ -4621,11 +5464,11 @@ function VASCharacterSelectionRealmSelector_OnClick(self)
 		return;
 	end
 
-	local realms = C_StoreSecure.GetRealmList();
+	RealmList = C_StoreSecure.GetRealmList();
 
 	local infoTable = {};
-	for i = 1, #realms do
-		infoTable[#infoTable+1] = {text=realms[i], value=realms[i], checked=(SelectedRealm == realms[i])};
+	for i = 1, #RealmList do
+		infoTable[#infoTable+1] = {text=RealmList[i].realmName, value=RealmList[i], checked=(SelectedRealm == RealmList[i])};
 	end
 
 	StoreDropDown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionRealmSelector_Callback);
@@ -4644,10 +5487,14 @@ function VASCharacterSelectionCharacterSelector_OnClick(self)
 		return;
 	end
 
+	if RealmWaitingOnGuildMasterInfo == SelectedRealm.virtualRealmAddress then
+		-- We are waiting for guild master info, just return until we get it
+		return;
+	end
+
 	local infoTable = {};
-	local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
-	for i = 1, #characters do
-		local character = characters[i];
+	for i = 1, #CharacterList do
+		local character = CharacterList[i];
 		local level = character.level;
 		if (level == 0) then
 			level = 1;
@@ -4678,8 +5525,29 @@ function VASCharacterSelectionTimeout()
 	StoreVASValidationFrame_SetErrors({ "Other" });
 end
 
+function VASCharacterSelection_CheckForValidName(self, nameToCheck, validNameCheckFunction)
+	local valid, reason = validNameCheckFunction(nameToCheck);
+	if not valid then
+		self:GetParent().ValidationDescription:SetFontObject("GameFontBlackSmall2");
+		self:GetParent().ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
+		self:GetParent().ValidationDescription:SetText(_G[reason]);
+		self:GetParent().ValidationDescription:Show();
+		StoreVASValidationState_Unlock();
+		self:GetParent().ContinueButton:Disable();
+		return false;
+	end
+
+	return true;
+end
+
 function VASCharacterSelectionContinueButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+
+	if InstructionsShowing then
+		InstructionsShowing = false;
+		StoreVASValidationFrame_SetVASStart(self:GetParent():GetParent());
+		return;
+	end
 
 	if (not SelectedRealm or not SelectedCharacter) then
 		-- This should not happen, as this button should be disabled unless you have both selected.
@@ -4689,9 +5557,7 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 	StoreVASValidationState_Lock();
 	VASCharacterSelectionStartTimeout();
 
-	local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
-
-	if (not characters[SelectedCharacter]) then
+	if (not CharacterList[SelectedCharacter]) then
 		-- This should not happen
 		return;
 	end
@@ -4706,16 +5572,44 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 	-- Glue screen only
 
 	if ( VASServiceType == Enum.VasServiceType.NameChange ) then
-		NewCharacterName = self:GetParent().NewCharacterName:GetText();
+		NameChangeNewName = self:GetParent().NewCharacterName:GetText();
 
-		local valid, reason = _G.C_CharacterCreation.IsCharacterNameValid(NewCharacterName);
-		if ( not valid) then
-			self:GetParent().ValidationDescription:SetFontObject("GameFontBlackSmall2");
-			self:GetParent().ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
-			self:GetParent().ValidationDescription:SetText(_G[reason]);
-			self:GetParent().ValidationDescription:Show();
-			StoreVASValidationState_Unlock();
-			self:GetParent().ContinueButton:Disable();
+		if not VASCharacterSelection_CheckForValidName(self, NameChangeNewName, _G.C_CharacterCreation.IsCharacterNameValid) then
+			return;
+		end
+	elseif ( VASServiceType == Enum.VasServiceType.GuildNameChange ) then
+		NameChangeNewName = self:GetParent().NewGuildName:GetText();
+
+		if not VASCharacterSelection_CheckForValidName(self, NameChangeNewName, _G.C_CharacterCreation.IsGuildNameValid) then
+			return;
+		end
+	elseif ( VASServiceType == Enum.VasServiceType.GuildFactionChange ) then
+		if self:GetParent().RenameGuildCheckbox:GetChecked() then
+			NameChangeNewName = self:GetParent().RenameGuildEditbox:GetText();
+			OldGuildNewName = nil;
+			if not VASCharacterSelection_CheckForValidName(self, NameChangeNewName, _G.C_CharacterCreation.IsGuildNameValid) then
+				return;
+			end
+		else
+			NameChangeNewName = nil;
+			OldGuildNewName = self:GetParent().OldGuildNewName:GetText();
+			if not VASCharacterSelection_CheckForValidName(self, OldGuildNewName, _G.C_CharacterCreation.IsGuildNameValid) then
+				return;
+			end
+		end
+
+		if not VASCharacterSelection_CheckForValidName(self, NewGuildMaster, _G.C_CharacterCreation.IsCharacterNameValid) then
+			return;
+		end
+	elseif ( VASServiceType == Enum.VasServiceType.GuildTransfer ) then
+		if self:GetParent().RenameGuildCheckbox:GetChecked() then
+			NameChangeNewName = self:GetParent().RenameGuildEditbox:GetText();
+			if not VASCharacterSelection_CheckForValidName(self, NameChangeNewName, _G.C_CharacterCreation.IsGuildNameValid) then
+				return;
+			end
+		end
+
+		if not VASCharacterSelection_CheckForValidName(self, NewGuildMaster, _G.C_CharacterCreation.IsCharacterNameValid) then
 			return;
 		end
 	end
@@ -4738,7 +5632,7 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 			wowAccountGUID = C_StoreSecure.GetWoWAccountGUIDFromName(SelectedDestinationWowAccount, true);
 		end
 	end
-	if ( C_StoreSecure.PurchaseVASProduct(entryInfo.productID, characters[SelectedCharacter].guid, NewCharacterName, DestinationRealmMapping[SelectedDestinationRealm], CharacterTransferFactionChangeBundle, wowAccountGUID, bnetAccountGUID) ) then
+	if ( C_StoreSecure.PurchaseVASProduct(entryInfo.productID, CharacterList[SelectedCharacter].guid, NameChangeNewName, OldGuildNewName, GuildMemberNameToGuid[NewGuildMaster], DestinationRealmMapping[SelectedDestinationRealm], wowAccountGUID, bnetAccountGUID, TransferFactionChangeBundle, IsGuildFollow) ) then
 		WaitingOnConfirmation = true;
 		WaitingOnConfirmationTime = GetTime();
 		WaitingOnVASToCompleteToken = WaitingOnVASToComplete;
@@ -4746,10 +5640,52 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 	end
 end
 
-function VASCharacterSelectionNewCharacterName_OnEnter(self)
+function VASCharacterSelection_NewCharacterName_OnEnter(self)
  	StoreTooltip:ClearAllPoints();
 	StoreTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
 	StoreTooltip_Show("", VAS_NAME_CHANGE_TOOLTIP);
+end
+
+function VASCharacterSelection_TransferRealmEditbox_OnEnter(self)
+ 	StoreTooltip:ClearAllPoints();
+	StoreTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
+	StoreTooltip_Show("", VAS_TRANSFER_REALM_TOOLTIP);
+end
+
+function VASCharacterSelection_NewGuildName_OnEnter(self)
+ 	StoreTooltip:ClearAllPoints();
+	StoreTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
+	if VASServiceType == Enum.VasServiceType.GuildTransfer then
+		StoreTooltip_Show("", VAS_GUILD_NAME_CHANGE_TRANSFER_TOOLTIP);
+	else
+		StoreTooltip_Show("", VAS_GUILD_NAME_CHANGE_TOOLTIP);
+	end
+end
+
+function VASCharacterSelection_RenameGuildCheckbox_OnEnter(self)
+ 	StoreTooltip:ClearAllPoints();
+	StoreTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
+	StoreTooltip_Show("", VAS_GUILD_FACTION_NAME_CHANGE_CHECKBOX_TOOLTIP);
+end
+
+function VASCharacterSelection_NewGuildMaster_OnEnter(self)
+ 	StoreTooltip:ClearAllPoints();
+	StoreTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
+	if VASServiceType == Enum.VasServiceType.GuildTransfer then
+		StoreTooltip_Show("", VAS_NEW_GUILD_MASTER_TRANSFER_TOOLTIP);
+	else
+		StoreTooltip_Show("", VAS_NEW_GUILD_MASTER_FACTION_CHANGE_TOOLTIP);
+	end
+end
+
+function VASCharacterSelection_OldGuildNewName_OnEnter(self)
+ 	StoreTooltip:ClearAllPoints();
+	StoreTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
+	StoreTooltip_Show("", VAS_OLD_GUILD_NEW_NAME_CHANGE_TOOLTIP);
+end
+
+function VASCharacterSelection_ClearStoreTooltip(self)
+ 	StoreTooltip:Hide();
 end
 
 function VASCharacterSelectionTransferAccountDropDown_OnClick(self)
@@ -4759,8 +5695,7 @@ function VASCharacterSelectionTransferAccountDropDown_OnClick(self)
 		self:GetParent().List:Hide();
 		return;
 	end
-	local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
-	local character = characters[SelectedCharacter];
+	local character = CharacterList[SelectedCharacter];
 	local gameAccounts = _G.C_Login.GetGameAccounts();
 	local infoTable = {};
 	for i, gameAccount in ipairs(gameAccounts) do
@@ -4785,8 +5720,12 @@ end
 
 function TransferFactionCheckbox_OnClick(self)
 	PlayCheckboxSound(self);
-	CharacterTransferFactionChangeBundle = self:GetChecked();
-	VASCharacterSelectionTransferGatherAndValidateData();
+	TransferFactionChangeBundle = self:GetChecked();
+	if VASServiceType == Enum.VasServiceType.GuildTransfer then
+		VASCharacterSelection_GuildTransfer_GatherAndValidateData();
+	else
+		VASCharacterSelectionTransferGatherAndValidateData();
+	end
 end
 
 function StripWoWAccountLicenseInfo(gameAccount)
@@ -4822,61 +5761,68 @@ end
 
 function VASCharacterSelectionTransferCheckEditBoxes()
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
-	local valid = false;
-	if (frame.TransferRealmCheckbox:GetChecked()) then
-		valid = frame.TransferRealmEditbox:GetText() and frame.TransferRealmEditbox:GetText() ~= "";
+	
+	if not frame.TransferAccountCheckbox:GetChecked() and not(frame.TransferRealmEditbox:GetText() and frame.TransferRealmEditbox:GetText() ~= "") then
+		return false
 	end
-	local checkAccount = frame.TransferAccountCheckbox:GetChecked() and SelectedDestinationWowAccount == BLIZZARD_STORE_VAS_DIFFERENT_BNET;
-	if (checkAccount) then
+
+	if frame.TransferAccountCheckbox:GetChecked() and SelectedDestinationWowAccount == BLIZZARD_STORE_VAS_DIFFERENT_BNET then
 		local text = frame.TransferBattlenetAccountEditbox:GetText();
-		valid = text and text ~= "" and string.find(text, ".+@.+\...+");
-	end
-	if (not frame.TransferRealmCheckbox:GetChecked() and not checkAccount) then
-		valid = true;
-	end
-	return valid;
-end
-
-function VASCharacterSelectionTransferGatherAndValidateData()
-	local noCheck = true;
-	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
-	local button = frame.ContinueButton;
-	local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
-	local character = characters[SelectedCharacter];
-
-	StoreVASValidationFrame_UpdateCharacterTransferValidationPosition();
-
-	if (not VASCharacterSelectionTransferCheckEditBoxes()) then
-		button:Disable();
-		return;
-	end
-
-	button:Disable();
-	if (frame.TransferRealmCheckbox:GetChecked()) then
-		noCheck = false;
-		SelectedDestinationRealm = frame.TransferRealmEditbox:GetText();
-		if (not DestinationRealmMapping[SelectedDestinationRealm] or DestinationRealmMapping[SelectedDestinationRealm] == character.currentServer) then
-			return;
+		if not(text and text ~= "" and string.find(text, ".+@.+\...+")) then
+			return false;
 		end
 	end
-	if (frame.TransferAccountCheckbox:GetChecked()) then
-		noCheck = false;
-		if (SelectedDestinationWowAccount == nil) then
-			return;
-		elseif (SelectedDestinationWowAccount == BLIZZARD_STORE_VAS_DIFFERENT_BNET) then
-			if (not IsVasBnetTransferValidated) then
-				SelectedDestinationBnetAccount = frame.TransferBattlenetAccountEditbox:GetText();
-			elseif (SelectedDestinationBnetWowAccount == nil) then
-				return;
+
+	return true;
+end
+
+local function ShouldContinueButtonBeEnabled()
+	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
+
+	if VASServiceType == Enum.VasServiceType.FactionChange then
+		return true;
+	end
+
+	if frame.FollowGuildCheckbox:IsShown() and frame.FollowGuildCheckbox:GetChecked() then
+		return true;
+	end
+
+	if not VASCharacterSelectionTransferCheckEditBoxes() then
+		return false;
+	end
+
+	if SelectedDestinationRealm and SelectedDestinationRealm ~= "" and not DestinationRealmMapping[SelectedDestinationRealm] then
+		return false;
+	end
+
+	if frame.TransferAccountCheckbox:GetChecked() then
+		if not SelectedDestinationWowAccount then
+			return false;
+		elseif SelectedDestinationWowAccount == BLIZZARD_STORE_VAS_DIFFERENT_BNET then
+			if IsVasBnetTransferValidated and not SelectedDestinationBnetWowAccount then
+				return false;
 			end
 		end
 	end
 
-	if (noCheck) then
-		return;
+	return true;
+end
+
+function VASCharacterSelectionTransferGatherAndValidateData()
+	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
+
+	StoreVASValidationFrame_UpdateCharacterTransferValidationPosition();
+	SelectedDestinationRealm = frame.TransferRealmEditbox:GetText();
+
+	if frame.TransferAccountCheckbox:GetChecked() then
+		if SelectedDestinationWowAccount == BLIZZARD_STORE_VAS_DIFFERENT_BNET then
+			if not IsVasBnetTransferValidated then
+				SelectedDestinationBnetAccount = frame.TransferBattlenetAccountEditbox:GetText();
+			end
+		end
 	end
 
-	button:Enable();
+	frame.ContinueButton:SetEnabled(ShouldContinueButtonBeEnabled());
 end
 
 ------------------------------------
@@ -5128,4 +6074,37 @@ function StoreFrameSplashSingle_SetStyle(self, style, overrideBackground)
 		self.Checkmark:ClearAllPoints();
 		self.Checkmark:SetPoint("BOTTOM", self.Magnifier, "TOP", 5, 2);
 	end
+end
+
+StoreBulletPointMixin = {};
+
+function StoreBulletPointMixin:OnLoad()
+	BulletPointWithTextureMixin.OnLoad(self);
+	self.Text:SetFontObject("GameFontNormalMed1");
+	self.Text:SetTextColor(1, 0.84, 0.55);
+end
+
+function StoreBulletPointMixin:OnHyperlinkEnter()
+	local grandparent = self:GetParent():GetParent();
+	local onEnterScript = grandparent:GetScript("OnEnter");
+	if onEnterScript then
+		onEnterScript(grandparent);
+	end
+end
+
+function StoreBulletPointMixin:OnHyperlinkLeave()
+	local grandparent = self:GetParent():GetParent();
+	local onLeaveScript = grandparent:GetScript("OnLeave");
+	if onLeaveScript then
+		onLeaveScript(grandparent);
+	end
+end
+
+function StoreBulletPointMixin:OnHyperlinkClick(link)
+	local grandparent = self:GetParent():GetParent();
+	if not grandparent:IsEnabled() then
+		return;
+	end
+
+	GetURLIndexAndLoadURL(self, link);
 end

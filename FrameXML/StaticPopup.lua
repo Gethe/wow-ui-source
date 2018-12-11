@@ -996,7 +996,7 @@ StaticPopupDialogs["CONFIRM_REPORT_BATTLEPET_NAME"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		C_ChatInfo.ReportPlayer(PLAYER_REPORT_TYPE_BAD_BATTLEPET_NAME);
+		C_ReportSystem.ReportPlayer(PLAYER_REPORT_TYPE_BAD_BATTLEPET_NAME);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -1009,7 +1009,7 @@ StaticPopupDialogs["CONFIRM_REPORT_PET_NAME"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		C_ChatInfo.ReportPlayer(PLAYER_REPORT_TYPE_BAD_PET_NAME);
+		C_ReportSystem.ReportPlayer(PLAYER_REPORT_TYPE_BAD_PET_NAME);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -1171,7 +1171,7 @@ StaticPopupDialogs["RESET_CHAT"] = {
 	OnAccept = function(self)
 		FCF_ResetChatWindows();
 		if ( ChatConfigFrame:IsShown() ) then
-			ChatConfig_UpdateChatSettings();
+			ChatConfig_ResetChatSettings();
 		end
 	end,
 	timeout = 0,
@@ -1630,6 +1630,11 @@ StaticPopupDialogs["GROUP_INVITE_CONFIRMATION"] = {
 		end
 	end,
 	OnHyperlinkEnter = function(self, link, text, region, boundsLeft, boundsBottom, boundsWidth, boundsHeight)
+		local linkType = string.match(link, '(.-):');
+		if ( linkType ~= "player" ) then
+			return;
+		end
+
 		self.linkRegion = region;
 		self.linkText = text;
 		self.nextUpdateTime = GetTime();
@@ -2218,7 +2223,7 @@ StaticPopupDialogs["ADD_FRIEND"] = {
 	autoCompleteArgs = { AUTOCOMPLETE_LIST.ADDFRIEND.include, AUTOCOMPLETE_LIST.ADDFRIEND.exclude },
 	maxLetters = 12 + 1 + 64,
 	OnAccept = function(self)
-		AddFriend(self.editBox:GetText());
+		C_FriendList.AddFriend(self.editBox:GetText());
 	end,
 	OnShow = function(self)
 		self.editBox:SetFocus();
@@ -2229,7 +2234,7 @@ StaticPopupDialogs["ADD_FRIEND"] = {
 	end,
 	EditBoxOnEnterPressed = function(self)
 		local parent = self:GetParent();
-		AddFriend(parent.editBox:GetText());
+		C_FriendList.AddFriend(parent.editBox:GetText());
 		parent:Hide();
 	end,
 	EditBoxOnEscapePressed = function(self)
@@ -2249,12 +2254,14 @@ StaticPopupDialogs["SET_FRIENDNOTE"] = {
 	countInvisibleLetters = true,
 	editBoxWidth = 350,
 	OnAccept = function(self)
-		SetFriendNotes(FriendsFrame.NotesID, self.editBox:GetText());
+		if(not C_FriendList.SetFriendNotes(FriendsFrame.NotesID, self.editBox:GetText())) then
+			UIErrorsFrame:AddExternalErrorMessage(ERR_FRIEND_NOT_FOUND);
+		end
 	end,
 	OnShow = function(self)
-		local name, level, class, area, connected, status, note = GetFriendInfo(FriendsFrame.NotesID);
-		if ( note ) then
-			self.editBox:SetText(note);
+		local info = C_FriendList.GetFriendInfo(FriendsFrame.NotesID);
+		if ( info.notes ) then
+			self.editBox:SetText(info.notes);
 		end
 		self.editBox:SetFocus();
 	end,
@@ -2264,7 +2271,9 @@ StaticPopupDialogs["SET_FRIENDNOTE"] = {
 	end,
 	EditBoxOnEnterPressed = function(self)
 		local parent = self:GetParent();
-		SetFriendNotes(FriendsFrame.NotesID, parent.editBox:GetText());
+		if(not C_FriendList.SetFriendNotes(FriendsFrame.NotesID, parent.editBox:GetText())) then
+			UIErrorsFrame:AddExternalErrorMessage(ERR_FRIEND_NOT_FOUND);
+		end
 		parent:Hide();
 	end,
 	EditBoxOnEscapePressed = function(self)
@@ -2492,7 +2501,7 @@ StaticPopupDialogs["ADD_IGNORE"] = {
 	autoCompleteArgs = { AUTOCOMPLETE_LIST.IGNORE.include, AUTOCOMPLETE_LIST.IGNORE.exclude },
 	maxLetters = 12 + 1 + 64, --name space realm (77 max)
 	OnAccept = function(self)
-		AddIgnore(self.editBox:GetText());
+		C_FriendList.AddIgnore(self.editBox:GetText());
 	end,
 	OnShow = function(self)
 		self.editBox:SetFocus();
@@ -2503,7 +2512,7 @@ StaticPopupDialogs["ADD_IGNORE"] = {
 	end,
 	EditBoxOnEnterPressed = function(self)
 		local parent = self:GetParent();
-		AddIgnore(parent.editBox:GetText());
+		C_FriendList.AddIgnore(parent.editBox:GetText());
 		parent:Hide();
 	end,
 	EditBoxOnEscapePressed = function(self)
@@ -3247,14 +3256,14 @@ StaticPopupDialogs["CONFIRM_SUMMON"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnShow = function(self)
-		self.timeleft = GetSummonConfirmTimeLeft();
+		self.timeleft = C_SummonInfo.GetSummonConfirmTimeLeft();
 		SetupLockOnDeclineButtonAndEscape(self);
 	end,
 	OnAccept = function(self)
-		ConfirmSummon();
+		C_SummonInfo.ConfirmSummon();
 	end,
 	OnCancel = function()
-		CancelSummon();
+		C_SummonInfo.CancelSummon();
 	end,
 	OnUpdate = function(self, elapsed)
 		if ( UnitAffectingCombat("player") or (not PlayerCanTeleport()) ) then
@@ -3273,13 +3282,13 @@ StaticPopupDialogs["CONFIRM_SUMMON_SCENARIO"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnShow = function(self)
-		self.timeleft = GetSummonConfirmTimeLeft();
+		self.timeleft = C_SummonInfo.GetSummonConfirmTimeLeft();
 	end,
 	OnAccept = function(self)
-		ConfirmSummon();
+		C_SummonInfo.ConfirmSummon();
 	end,
 	OnCancel = function()
-		CancelSummon();
+		C_SummonInfo.CancelSummon();
 	end,
 	OnUpdate = function(self, elapsed)
 		if ( UnitAffectingCombat("player") or (not PlayerCanTeleport()) ) then
@@ -3300,13 +3309,13 @@ StaticPopupDialogs["CONFIRM_SUMMON_STARTING_AREA"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnShow = function(self)
-		self.timeleft = GetSummonConfirmTimeLeft();
+		self.timeleft = C_SummonInfo.GetSummonConfirmTimeLeft();
 	end,
 	OnAccept = function(self)
-		ConfirmSummon();
+		C_SummonInfo.ConfirmSummon();
 	end,
 	OnCancel = function()
-		CancelSummon();
+		C_SummonInfo.CancelSummon();
 	end,
 	OnUpdate = function(self, elapsed)
 		if ( UnitAffectingCombat("player") or (not PlayerCanTeleport()) ) then
@@ -4104,7 +4113,7 @@ local function InviteToClub(clubId, text)
 	local clubInfo = C_Club.GetClubInfo(clubId);
 	local isBattleNetClub = clubInfo.clubType == Enum.ClubType.BattleNet;
 	if isBattleNetClub then
-		local invitationCandidates = C_Club.GetInvitationCandidates(nil, nil, nil, clubId);
+		local invitationCandidates = C_Club.GetInvitationCandidates(nil, nil, nil, nil, clubId);
 		for i, candidate in ipairs(invitationCandidates) do
 			if candidate.name == text then
 				C_Club.SendInvitation(clubId, candidate.memberId);
@@ -4132,6 +4141,8 @@ StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"] = {
 	hideOnEscape = 1,
 	hasEditBox = 1,
 	maxLetters = 32,
+	editBoxSecureText = true,
+	editBoxWidth = 250,
 	autoCompleteSource = C_Club.GetInvitationCandidates,
 	autoCompleteArgs = {}, -- set dynamically below.
 	OnShow = function(self, data)
@@ -4141,9 +4152,11 @@ StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"] = {
 		if clubInfo.clubType == Enum.ClubType.BattleNet then
 			AutoCompleteEditBox_SetAutoCompleteSource(self.editBox, C_Club.GetInvitationCandidates, data.clubId);
 			self.SubText:SetText(INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_BNET_FRIEND);
+			self.editBox.Instructions:SetText(INVITE_COMMUNITY_MEMBER_POPUP_INVITE_EDITBOX_INSTRUCTIONS);
 		else
 			AutoCompleteEditBox_SetAutoCompleteSource(self.editBox, GetAutoCompleteResults, AUTOCOMPLETE_LIST.COMMUNITY.include, AUTOCOMPLETE_LIST.COMMUNITY.exclude);
 			self.SubText:SetText(INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_CHARACTER);
+			self.editBox.Instructions:SetText("");
 		end
 	end,
 	OnHide = function(self)
@@ -4469,6 +4482,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	if ( info.hasEditBox ) then
 		editBox:Show();
 
+		editBox.Instructions:SetText(info.editBoxInstructions or "");
+
 		if ( info.maxLetters ) then
 			editBox:SetMaxLetters(info.maxLetters);
 			editBox:SetCountInvisibleLetters(info.countInvisibleLetters);
@@ -4687,6 +4702,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		button1:Enable();
 	end
 
+	editBox:SetSecureText(info.editBoxSecureText);
 	editBox.hasAutoComplete = info.autoCompleteSource ~= nil;
 	if ( editBox.hasAutoComplete ) then
 		AutoCompleteEditBox_SetAutoCompleteSource(editBox, info.autoCompleteSource, unpack(info.autoCompleteArgs));
@@ -4755,9 +4771,9 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 				end
 			elseif ( which == "CONFIRM_SUMMON" or which == "CONFIRM_SUMMON_SCENARIO" or which == "CONFIRM_SUMMON_STARTING_AREA" ) then
 				if ( timeleft < 60 ) then
-					text:SetFormattedText(StaticPopupDialogs[which].text, GetSummonConfirmSummoner(), GetSummonConfirmAreaName(), timeleft, SECONDS);
+					text:SetFormattedText(StaticPopupDialogs[which].text, C_SummonInfo.GetSummonConfirmSummoner() or "", C_SummonInfo.GetSummonConfirmAreaName(), timeleft, SECONDS);
 				else
-					text:SetFormattedText(StaticPopupDialogs[which].text, GetSummonConfirmSummoner(), GetSummonConfirmAreaName(), ceil(timeleft / 60), MINUTES);
+					text:SetFormattedText(StaticPopupDialogs[which].text, C_SummonInfo.GetSummonConfirmSummoner() or "", C_SummonInfo.GetSummonConfirmAreaName(), ceil(timeleft / 60), MINUTES);
 				end
 			elseif ( which == "BFMGR_INVITED_TO_ENTER") then
 				if ( timeleft < 60 ) then
@@ -4856,6 +4872,7 @@ function StaticPopup_EditBoxOnTextChanged(self, userInput)
 			EditBoxOnTextChanged(self, self:GetParent().data);
 		end
 	end
+	self.Instructions:SetShown(self:GetText() == "");
 end
 
 function StaticPopup_OnLoad(self)

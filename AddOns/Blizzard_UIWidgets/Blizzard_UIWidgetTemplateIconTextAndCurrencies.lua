@@ -51,7 +51,7 @@ function UIWidgetTemplateIconTextAndCurrenciesMixin:Setup(widgetInfo)
 	end
 
 	local descHeight = 0;
-	local showDescription = (widgetInfo.descriptionShownState == Enum.WidgetShownState.Shown) and widgetInfo.description;
+	local showDescription = (widgetInfo.descriptionShownState == Enum.WidgetShownState.Shown) and (widgetInfo.description ~= "");
 	if showDescription then
 		self.Description:SetText(widgetInfo.description);
 		self.Description:SetEnabledState(widgetInfo.descriptionEnabledState);

@@ -3,60 +3,32 @@
 	<!-- this code is shared between the Frame and Glue -->
 	<Script file="..\SharedXML\VideoOptionsPanels.lua"/>
 	<Script file="..\SharedXML\GraphicsQualityLevels.lua"/>
+
+	<Frame name="VideoOptionsWarningTemplate" enableMouse="true" hidden="true" parentKey="warning" virtual="true">
+		<Size x="20" y="20"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter function="VideoOptionsWarning_OnEnter"/>
+			<OnLeave function="VideoOptionsWarning_OnLeave"/>
+		</Scripts>
+	</Frame>
+
 	<Frame name="VideoOptionsDropDownMenuTemplate" inherits="DropDownMenuTemplate" virtual="true">
 		<Frames>
-			<Frame name="$parentWarning" enableMouse="true" hidden="true" parentKey="warning">
-				<Size>
-					<AbsDimension x="20" y="20"/>
-				</Size>
+			<Frame name="$parentWarning" inherits="VideoOptionsWarningTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-12" y="1" />
+					<Anchor point="LEFT" relativePoint="RIGHT" x="-12" y="1"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
-							<Size>
-								<AbsDimension x="20" y="20"/>
-							</Size>
-							<Anchors>
-								<Anchor point="CENTER" />
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter>
-						if ( self.tooltip ) then
-							VideoOptionsTooltip:SetOwner(self, "ANCHOR_LEFT");
-							VideoOptionsTooltip:SetText(self.tooltip, 1.0, 1.0, 1.0, 1, 1);
-						end
-					</OnEnter>
-					<OnLeave>
-						VideoOptionsTooltip:Hide();
-					</OnLeave>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnEnter>
-				-- also called by $childButton
-				if(self.tooltip ~= nil) then
-					VideoOptionsTooltip:SetOwner(self);
-					if(self.name == nil) then
-						self.name = " ";
-					end
-					VideoOptionsTooltip:SetText(self.name .. ":", nil, nil, nil, nil, 1);
-					VideoOptionsTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, 1.0, 1);
-					VideoOptionsTooltip:Show();
-				end
-			</OnEnter>
-			<OnLeave>
-				-- also called by $childButton
-				VideoOptionsTooltip:Hide();
-			</OnLeave>
-			<OnLoad>
-				VideoOptionsDropDown_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="VideoOptionsDropDown_OnLoad"/>
+			<OnEnter function="VideoOptionsControl_OnEnter"/>
+			<OnLeave function="VideoOptionsControl_OnLeave"/>
 		</Scripts>
 	</Frame>
 	<Frame name="RaidVideoOptionsDropDownMenuTemplate" inherits="VideoOptionsDropDownMenuTemplate" virtual="true">
@@ -67,58 +39,19 @@
 
 	<Slider name="VideoOptionsSliderTemplate" inherits="OptionsSliderTemplate" virtual="true" obeyStepOnDrag="true">
 		<Frames>
-			<Frame name="$parentWarning" enableMouse="true" hidden="true" parentKey="warning">
-				<Size x="20" y="20"/>
+			<Frame name="$parentWarning" inherits="VideoOptionsWarningTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="20" y="1"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
-							<Size>
-								<AbsDimension x="20" y="20"/>
-							</Size>
-							<Anchors>
-								<Anchor point="CENTER" />
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter>
-						if ( self.tooltip ) then
-							VideoOptionsTooltip:SetOwner(self, "ANCHOR_LEFT");
-							VideoOptionsTooltip:SetText(self.tooltip, 1.0, 1.0, 1.0, 1, 1);
-						end
-					</OnEnter>
-					<OnLeave>
-						VideoOptionsTooltip:Hide();
-					</OnLeave>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnEnter>
-				-- also called by $childButton
-				if(self.tooltip ~= nil) then
-					VideoOptionsTooltip:SetOwner(self);
-					if(self.name == nil) then
-						self.name = " ";
-					end
-					VideoOptionsTooltip:SetText(self.name .. ":", nil, nil, nil, nil, 1);
-					VideoOptionsTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, 1.0, 1);
-					VideoOptionsTooltip:Show();
-				end
-			</OnEnter>
-			<OnLeave>
-				-- also called by $childButton
-				VideoOptionsTooltip:Hide();
-			</OnLeave>
-			<OnLoad>
-				VideoOptionsSlider_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="VideoOptionsSlider_OnLoad"/>
+			<OnEnter function="VideoOptionsControl_OnEnter"/>
+			<OnLeave function="VideoOptionsControl_OnLeave"/>
 		</Scripts>
 	</Slider>
+
 	<Slider name="RaidVideoOptionsSliderTemplate" inherits="VideoOptionsSliderTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="raid" value="true" type="boolean"/>
@@ -127,27 +60,13 @@
 
 	<CheckButton name="VideoOptionsSmallCheckButtonTemplate" inherits="OptionsSmallCheckButtonTemplate" virtual="true">
 		<Scripts>
-			<OnEnter>
-				if(self.tooltip ~= nil) then
-					VideoOptionsTooltip:SetOwner(self);
-					if(self.name == nil) then
-						self.name = " ";
-					end
-					VideoOptionsTooltip:SetText(self.name .. ":", nil, nil, nil, nil, 1);
-					VideoOptionsTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, 1.0, 1);
-					VideoOptionsTooltip:Show();
-				end
-			</OnEnter>
-			<OnLeave>
-				VideoOptionsTooltip:Hide();
-			</OnLeave>
+			<OnLoad function="VideoOptionsCheckbox_OnLoad"/>
+			<OnEnter function="VideoOptionsControl_OnEnter"/>
+			<OnLeave function="VideoOptionsControl_OnLeave"/>
 			<OnClick>
 				BlizzardOptionsPanel_CheckButton_OnClick(self);
 				Graphics_EnableApply(self);
 			</OnClick>
-			<OnLoad>
-				VideoOptionsCheckbox_OnLoad(self);
-			</OnLoad>
 		</Scripts>
 	</CheckButton>
 	<Frame name="RaidVideoOptionsSmallCheckButtonTemplate" inherits="VideoOptionsSmallCheckButtonTemplate" virtual="true">
@@ -261,60 +180,10 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-                self:SetMinMaxValues(GetMinRenderScale(), GetMaxRenderScale());
-                self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-
-                local name = self:GetName();
-                self.type = CONTROLTYPE_SLIDER;
-                self.cvar = "RenderScale";
-                self.tooltip = OPTION_TOOLTIP_RENDER_SCALE;
-                self.name = RENDER_SCALE;
-
-                self.SetDisplayValue = self.SetValue;
-                self.SetValue = function(self, value)
-                self:SetDisplayValue(value);
-
-                if self:IsVisible() then
-                BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-                end
-                end
-
-                self.GetCurrentValue = function(self)
-                return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-                end;
-
-                self.Text = _G[name.."Text"];
-                self.Text:SetFontObject("OptionsFontSmall");
-                self.Text:ClearAllPoints();
-                self.Text:SetPoint("RIGHT", self, "LEFT", -20, 0);
-                self.Text:SetText(RENDER_SCALE);
-
-                self.Value = _G[name.."Low"];
-                self.Value:ClearAllPoints();
-                self.Value:SetPoint("LEFT", self, "RIGHT", 3, 2);
-
-                self.Resolution = _G[name.."High"];
-                self.Resolution:ClearAllPoints();
-                self.Resolution:SetPoint("TOP", self, "BOTTOM", 0, 0);
-
-                VideoOptionsSlider_OnLoad(self);
-              </OnLoad>
 							<OnEvent>
-								local x, y = GetCurrentScaledResolution();
-								self.Resolution:SetText(x .."x".. y);
+								Graphics_ControlRefreshValue(self);
 							</OnEvent>
-							<OnValueChanged>
-								if(userInput) then
-									Graphics_EnableApply(self);
-									self.newValue = value;
-									BlizzardOptionsPanel_SetCVarSafe(self.cvar, value)
-									VideoOptions_OnClick(self, value);
-								end
-								self.Value:SetFormattedText(PERCENTAGE_STRING, math.floor((value * 100) + .5));
-								local x, y = GetCurrentScaledResolution();
-								self.Resolution:SetText(x .."x".. y);
-							</OnValueChanged>
+							<OnValueChanged function="Graphics_SliderOnValueChanged"/>
 						</Scripts>
 					</Slider>
 
@@ -1956,16 +1825,9 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						InterfaceOptionsLanguagesPanelLocaleDropDown_OnLoad(self)
-					</OnLoad>
-					<OnEnter>
-						VideoOptionsTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-						VideoOptionsTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
-					</OnEnter>
-					<OnLeave>
-						VideoOptionsTooltip:Hide();
-					</OnLeave>
+					<OnLoad function="InterfaceOptionsLanguagesPanelLocaleDropDown_OnLoad"/>
+					<OnEnter function="InterfaceOptionsLanguagePanelLocalDropDown_OnEnter"/>
+					<OnLeave function="InterfaceOptionsLanguagePanelLocalDropDown_OnLeave"/>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentAudioLocaleDropDown" inherits="DropDownMenuTemplate" enableMouse="true">
@@ -1986,36 +1848,11 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						InterfaceOptionsLanguagesPanelAudioLocaleDropDown_OnLoad(self)
-					</OnLoad>
-					<OnEnter>
-						VideoOptionsTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-						VideoOptionsTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
-					</OnEnter>
-					<OnLeave>
-						VideoOptionsTooltip:Hide();
-					</OnLeave>
+					<OnLoad function="InterfaceOptionsLanguagesPanelAudioLocaleDropDown_OnLoad"/>
+					<OnEnter function="InterfaceOptionsLanguagePanelLocalDropDown_OnEnter"/>
+					<OnLeave function="InterfaceOptionsLanguagePanelLocalDropDown_OnLeave"/>
 				</Scripts>
 			</Frame>
-			<!--
-			<CheckButton name="$parentUseEnglishAudio" inherits="InterfaceOptionsCheckButtonTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentLocaleDropDown" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="48" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "useEnglishAudio";
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
--->
 		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">

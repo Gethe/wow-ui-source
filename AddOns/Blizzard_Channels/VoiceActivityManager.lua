@@ -108,7 +108,7 @@ function VoiceActivityManagerMixin:OnMemberRemoved(memberID, channelID)
 	self:ReleaseNotifications(memberID, channelID);
 end
 
-function VoiceActivityManagerMixin:OnChannelRemoved(statusCode, channelID)
+function VoiceActivityManagerMixin:OnChannelRemoved(channelID)
 	self:ReleaseNotifications("*", channelID);
 end
 

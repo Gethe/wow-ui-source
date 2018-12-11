@@ -14,7 +14,29 @@ QUEST_LOG_STORY_LAYOUT_INDEX = 25;
 
 QuestLogMixin = { };
 
+function QuestLogMixin:GetCurrentMapID()
+	if self:GetParent():IsShown() then
+		return self:GetParent():GetMapID();
+	end
+
+	return C_Map.GetBestMapForUnit("player");
+end
+
+function QuestLogMixin:SyncQuestSystemWithCurrentMap()
+	local mapID = self:GetCurrentMapID();
+	if mapID then
+		C_QuestLog.SetMapForQuestPOIs(mapID);
+		return true;
+	end
+
+	return false;
+end
+
 function QuestLogMixin:Refresh()
+	if QuestMapFrame.DetailsFrame.questMapID and self.DetailsFrame.questMapID ~= self:GetParent():GetMapID() then
+		QuestMapFrame_CloseQuestDetails();
+	end
+	self:SyncQuestSystemWithCurrentMap();
 	SortQuestSortTypes();
 	SortQuests();
 	QuestMapFrame_ResetFilters();
@@ -22,14 +44,7 @@ function QuestLogMixin:Refresh()
 end
 
 function QuestLogMixin:UpdatePOIs()
-	local mapID;
-	if self:GetParent():IsShown() then
-		mapID = self:GetParent():GetMapID();
-	else
-		mapID = C_Map.GetBestMapForUnit("player");
-	end
-	if mapID then
-		C_QuestLog.SetMapForQuestPOIs(mapID);
+	if self:SyncQuestSystemWithCurrentMap() then
 		QuestMapUpdateAllQuests();
 		QuestPOIUpdateIcons();
 		QuestObjectiveTracker_UpdatePOIs();
@@ -67,7 +82,7 @@ function QuestMapFrame_OnLoad(self)
 	self:RegisterEvent("CVAR_UPDATE");
 
 	self:InitLayoutIndexManager();
-	
+
 	self.completedCriteria = {};
 	QuestPOI_Initialize(QuestScrollFrame.Contents);
 	QuestMapQuestOptionsDropDown.questID = 0;		-- for QuestMapQuestOptionsDropDown_Initialize
@@ -165,7 +180,7 @@ function QuestMapFrame_OnEvent(self, event, ...)
 		elseif ( arg2 and arg2 > 0) then
 			QuestMapFrame:GetParent():SetMapID(arg2);
 		end
-	elseif ( event == "PLAYER_ENTERING_WORLD" ) then	
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		self:Refresh();
 	elseif ( event == "CVAR_UPDATE" ) then
 		local arg1 =...;
@@ -307,6 +322,7 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	if ( mapID ~= 0 ) then
 		QuestMapFrame:GetParent():SetMapID(mapID);
 	end
+	QuestMapFrame.DetailsFrame.questMapID = questID;
 
 	QuestMapFrame_UpdateQuestDetailsButtons();
 
@@ -328,6 +344,7 @@ function QuestMapFrame_CloseQuestDetails(optPortraitOwnerCheckFrame)
 	QuestMapFrame.DetailsFrame.questID = nil;
 	QuestMapFrame:GetParent():ClearFocusedQuestID();
 	QuestMapFrame.DetailsFrame.returnMapID = nil;
+	QuestMapFrame.DetailsFrame.questMapID = nil;
 	QuestMapFrame_UpdateAll();
 	QuestFrame_HideQuestPortrait(optPortraitOwnerCheckFrame);
 
@@ -697,7 +714,7 @@ function QuestLogQuests_Update(poiTable)
 				campaignHeader.Text:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 				campaignNextObj:Hide();
 			elseif (campaignChapterID) then
-				local campaignChapterInfo = C_CampaignInfo.GetCampaignChapterInfo(campaignChapterID);		
+				local campaignChapterInfo = C_CampaignInfo.GetCampaignChapterInfo(campaignChapterID);
 				if (campaignChapterInfo) then
 					campaignHeader.Progress:SetText(campaignChapterInfo.name);
 					campaignHeader.Progress:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
@@ -877,7 +894,7 @@ function QuestMapLogTitleButton_OnEnter(self)
 	end
 
 	QuestMapFrame:GetParent():SetHighlightedQuestID(self.questID);
-	
+
 	GameTooltip:ClearAllPoints();
 	GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 34, 0);
 	GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
@@ -1117,7 +1134,7 @@ end
 
 function QuestMapLog_ShowWarCampaignTooltip(self)
 	local tooltip = QuestScrollFrame.WarCampaignTooltip;
-	
+
 	local warCampaignQuestID = C_CampaignInfo.GetCurrentCampaignID();
 
 	tooltip:SetWarCampaign(warCampaignQuestID);

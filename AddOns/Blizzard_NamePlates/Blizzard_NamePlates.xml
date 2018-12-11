@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_NamePlates.lua" />
 
 	<Frame name="NamePlateDriverFrame" toplevel="true" mixin="NamePlateDriverMixin">
@@ -51,94 +51,11 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="NamePlateFullBorderTemplate" mixin="NamePlateBorderTemplateMixin" setAllPoints="true" useParentLevel="true" virtual="true">
-		<KeyValues>
-			<KeyValue key="numLayers" value="3" type="number" />
-		</KeyValues>
+	<Frame name="NamePlateFullBorderTemplate" mixin="NamePlateBorderTemplateMixin" ignoreParentScale="true" setAllPoints="true" useParentLevel="true" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-8">
 				<!-- Left -->
-				<Texture parentArray="Textures">
-					<Size x="2.0" />
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="0.0" y="2.0" />
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="0.0" y="-2.0" />
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</Texture>
-
-				<!-- Right -->
-				<Texture parentArray="Textures">
-					<Size x="2.0" />
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="2.0" />
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-2.0" />
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</Texture>
-
-				<!-- Bottom -->
-				<Texture parentArray="Textures">
-					<Size y="2.0" />
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" />
-						<Anchor point="TOPLEFT" relativePoint="BOTTOMRIGHT" />
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</Texture>
-
-				<!-- Top -->
-				<Texture parentArray="Textures">
-					<Size y="2.0" />
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" />
-						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" />
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</Texture>
-
-				<!-- Left -->
-				<Texture parentArray="Textures">
-					<Size x="1.5" />
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="0" y="1.5" />
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="0" y="-1.5" />
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</Texture>
-
-				<!-- Right -->
-				<Texture parentArray="Textures">
-					<Size x="1.5" />
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="1.5" />
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-1.5" />
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</Texture>
-
-				<!-- Bottom -->
-				<Texture parentArray="Textures">
-					<Size y="1.5" />
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" />
-						<Anchor point="TOPLEFT" relativePoint="BOTTOMRIGHT" />
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</Texture>
-
-				<!-- Top -->
-				<Texture parentArray="Textures">
-					<Size y="1.5" />
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" />
-						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" />
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</Texture>
-
-				<!-- Left -->
-				<Texture parentArray="Textures">
+				<Texture parentKey="Left" parentArray="Textures">
 					<Size x="1.0" />
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="0" y="1.0" />
@@ -148,7 +65,7 @@
 				</Texture>
 
 				<!-- Right -->
-				<Texture parentArray="Textures">
+				<Texture parentKey="Right" parentArray="Textures">
 					<Size x="1.0" />
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="1.0" />
@@ -158,21 +75,21 @@
 				</Texture>
 
 				<!-- Bottom -->
-				<Texture parentArray="Textures">
+				<Texture parentKey="Bottom" parentArray="Textures">
 					<Size y="1.0" />
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" />
-						<Anchor point="TOPLEFT" relativePoint="BOTTOMRIGHT" />
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" />
+						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" />
 					</Anchors>
 					<Color r="1" g="1" b="1" a="1"/>
 				</Texture>
 
 				<!-- Top -->
-				<Texture parentArray="Textures">
+				<Texture parentKey="Top" parentArray="Textures">
 					<Size y="1.0" />
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" />
 						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" />
+                        <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" />
 					</Anchors>
 					<Color r="1" g="1" b="1" a="1"/>
 				</Texture>
@@ -180,75 +97,11 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="NamePlateSecondaryBarBorderTemplate" mixin="NamePlateBorderTemplateMixin" setAllPoints="true" useParentLevel="true" virtual="true">
-		<KeyValues>
-			<KeyValue key="numLayers" value="3" type="number" />
-		</KeyValues>
-		
+	<Frame name="NamePlateSecondaryBarBorderTemplate" mixin="NamePlateBorderTemplateMixin" ignoreParentScale="true" setAllPoints="true" useParentLevel="true" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-8">
 				<!-- Left -->
-				<Texture parentArray="Textures">
-					<Size x="2.0" />
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="0.0" y="0.0" />
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="0.0" y="-2.0" />
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</Texture>
-
-				<!-- Right -->
-				<Texture parentArray="Textures">
-					<Size x="2.0" />
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="0.0" />
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-2.0" />
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</Texture>
-
-				<!-- Bottom -->
-				<Texture parentArray="Textures">
-					<Size y="2.0" />
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" />
-						<Anchor point="TOPLEFT" relativePoint="BOTTOMRIGHT" />
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</Texture>
-
-				<!-- Left -->
-				<Texture parentArray="Textures">
-					<Size x="1.5" />
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="0" y="0.5" />
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="0" y="-1.5" />
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</Texture>
-
-				<!-- Right -->
-				<Texture parentArray="Textures">
-					<Size x="1.5" />
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="0.5" />
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-1.5" />
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</Texture>
-
-				<!-- Bottom -->
-				<Texture parentArray="Textures">
-					<Size y="1.5" />
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" />
-						<Anchor point="TOPLEFT" relativePoint="BOTTOMRIGHT" />
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</Texture>
-
-				<!-- Left -->
-				<Texture parentArray="Textures">
+				<Texture parentKey="Left" parentArray="Textures">
 					<Size x="1.0" />
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="0" y="1.0" />
@@ -258,7 +111,7 @@
 				</Texture>
 
 				<!-- Right -->
-				<Texture parentArray="Textures">
+				<Texture parentKey="Right" parentArray="Textures">
 					<Size x="1.0" />
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="1.0" />
@@ -268,11 +121,11 @@
 				</Texture>
 
 				<!-- Bottom -->
-				<Texture parentArray="Textures">
+				<Texture parentKey="Bottom" parentArray="Textures">
 					<Size y="1.0" />
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" />
-						<Anchor point="TOPLEFT" relativePoint="BOTTOMRIGHT" />
+                        <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" />
+                        <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" />
 					</Anchors>
 					<Color r="1" g="1" b="1" a="1"/>
 				</Texture>
@@ -280,10 +133,13 @@
 		</Layers>
 	</Frame>
 
-	<Button name="BaseNamePlateUnitFrameTemplate" parentKey="UnitFrame" setAllPoints="true" useParentLevel="true" virtual="true">
+	<Button name="BaseNamePlateUnitFrameTemplate" parentKey="UnitFrame" useParentLevel="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="disableMouse" value="true" type="boolean"/>
 		</KeyValues>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
 		
 		<Frames>
 			<StatusBar parentKey="healthBar" frameLevel="90">
@@ -408,14 +264,12 @@
 			</Frame>
 		</Frames>
 		<Layers>
-			
 			<Layer level="ARTWORK">
 				<FontString parentKey="name" inherits="SystemFont_NamePlate" wordwrap="false" justifyH="CENTER" ignoreParentScale="true">
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.healthBar" relativePoint="TOP" y="4" />
 					</Anchors>
 				</FontString>
-				<FontString parentKey="statusText" inherits="GameFontDisable" />
 			</Layer>
 			
 			<Layer level="OVERLAY">

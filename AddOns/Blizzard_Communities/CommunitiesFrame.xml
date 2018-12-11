@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="CommunitiesFrame.lua"/>
-	
+
 	<Frame name="GuildBenefitsFrameTemplate" virtual="true">
 		<Frames>
 			<Frame parentKey="Perks" inherits="CommunitiesGuildPerksFrameTemplate">
@@ -85,7 +85,7 @@
 						<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="BOTTOMRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBorderBottomRight" relativePoint="TOPRIGHT" />
 					</Anchors>
-				</Texture>				
+				</Texture>
 				<Texture parentKey="InsetBorderTopLeft2" inherits="UI-Frame-InnerTopLeft">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.Perks" relativePoint="TOPLEFT" x="3" y="3"/>
@@ -105,7 +105,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Frame name="GuildDetailsFrameTemplate" virtual="true">
 		<Frames>
 			<Frame parentKey="Info" name="$parentInfo" inherits="CommunitiesGuildInfoFrameTemplate">
@@ -176,7 +176,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Button name="CommunitiesSubPanelButtonScriptTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
@@ -184,7 +184,7 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="CommunitiesControlFrameTemplate" mixin="CommunitiesControlFrameMixin" virtual="true">
 		<Frames>
 			<Button parentKey="CommunitiesSettingsButton" inherits="CommunitiesSettingsButtonTemplate">
@@ -216,44 +216,22 @@
 			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>
-		
-	<Frame name="CommunitiesFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate" mixin="CommunitiesFrameMixin">
+
+	<Frame name="CommunitiesFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplateMinimizable" mixin="CommunitiesFrameMixin">
 		<Size x="814" y="426"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Layers>
-			<Layer level="ARTWORK">
-				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.portrait"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.portrait"/>
-					</Anchors>
-					<MaskedTextures>
-						<MaskedTexture childKey="portrait"/>
-					</MaskedTextures>
-				</MaskTexture>
-			</Layer>
-		</Layers>
 		<Frames>
-			<Frame parentKey="PortraitOverlay" setAllPoints="true" frameLevel="500">
+			<Frame parentKey="PortraitOverlay" frameLevel="300" setAllPoints="true">
 				<Layers>
-					<Layer level="OVERLAY" textureSubLevel="-1">
+					<Layer level="BACKGROUND" textureSubLevel="1">
 						<Texture parentKey="Portrait">
 							<Size x="61" y="61"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-6" y="8" />
 							</Anchors>
 						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture inherits="UI-Frame-Portrait" parentKey="PortraitFrame">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-14" y="11"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
 						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Portrait"/>
@@ -263,8 +241,6 @@
 								<MaskedTexture childKey="Portrait"/>
 							</MaskedTextures>
 						</MaskTexture>
-					</Layer>
-					<Layer level="BACKGROUND" textureSubLevel="1">
 						<Texture parentKey="TabardBackground" file="Interface\GuildFrame\GuildFrame" hidden="true">
 							<Size x="62" y="62"/>
 							<Anchors>
@@ -294,17 +270,8 @@
 			</Frame>
 			<Frame parentKey="MaximizeMinimizeFrame" inherits="MaximizeMinimizeButtonFrameTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="10" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="8.5" y="0"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture atlas="UI-OuterBorderButtonPatch" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER" relativePoint="LEFT" x="6" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Scripts>
 					<OnLoad function="CommunitiesFrameMaximizeMinimizeButton_OnLoad" inherit="append"/>
 				</Scripts>
@@ -355,10 +322,13 @@
 			</Frame>
 			<Frame parentKey="VoiceChatHeadset" inherits="VoiceChatHeadsetTemplate">
 				<Size x="30" y="30"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-15" y="-26"/>
-				</Anchors>
+				<!-- Anchored in code -->
 			</Frame>
+			<Button parentKey="CommunitiesCalendarButton" inherits="CommunitiesCalendarButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.VoiceChatHeadset" relativePoint="LEFT" x="-2" y="-1"/>
+				</Anchors>
+			</Button>
 			<Frame parentKey="MemberList" inherits="CommunitiesMemberListFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-165" y="-63"/>
@@ -447,7 +417,7 @@
 					<KeyValue key="frame" value="CommunitiesGuildLogFrame" type="Global"/>
 				</KeyValues>
 			</Button>
-			<Frame parentKey="GuildMemberDetailFrame" frameLevel="100" inherits="CommunitiesGuildMemberDetailFrameTemplate" hidden="true">
+			<Frame parentKey="GuildMemberDetailFrame" frameLevel="1000" inherits="CommunitiesGuildMemberDetailFrameTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="-8" y="-76"/>
 				</Anchors>

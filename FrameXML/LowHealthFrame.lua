@@ -138,11 +138,9 @@ function LowHealthFrameMixin:EvaluateVisibleState()
 		if not self.pulseAnim:IsPlaying() then
 			self:Show();
 			self.pulseAnim:Play();
-			if (healthState == LOW_HEALTH_FRAME_STATE_LOW_HEALTH) then
-				self.fadeStart = GetTime() + 2;
-				self.fadeEnd = GetTime() + 3;
-				self:SetScript("OnUpdate", LowHealth_OnUpdate);
-			end
+			self.fadeStart = GetTime() + 2;
+			self.fadeEnd = GetTime() + 3;
+			self:SetScript("OnUpdate", LowHealth_OnUpdate);
 		end
 	else
 		error("Unknown Low Health Frame State");

@@ -106,14 +106,14 @@ end
 -- If the multi-bar is shown, a different texture needs to be displayed that is smaller. 
 function StatusTrackingManagerMixin:SetDoubleBarSize(bar, width)
 	local textureHeight = self:GetInitialBarHeight(); 
-	local statusBarHeight = textureHeight - 5; 
+	local statusBarHeight = textureHeight - 4; 
 	if( self.largeSize ) then 
 		self.SingleBarLargeUpper:SetSize(width, statusBarHeight); 
 		self.SingleBarLargeUpper:SetPoint("CENTER", bar, 0, 4);
 		self.SingleBarLargeUpper:Show();
 		
 		self.SingleBarLarge:SetSize(width, statusBarHeight); 
-		self.SingleBarLarge:SetPoint("CENTER", bar, 0, -5);
+		self.SingleBarLarge:SetPoint("CENTER", bar, 0, -9);
 		self.SingleBarLarge:Show(); 
 	else		
 		self.SingleBarSmallUpper:SetSize(width, statusBarHeight); 
@@ -121,12 +121,13 @@ function StatusTrackingManagerMixin:SetDoubleBarSize(bar, width)
 		self.SingleBarSmallUpper:Show(); 
 		
 		self.SingleBarSmall:SetSize(width, statusBarHeight); 
-		self.SingleBarSmall:SetPoint("CENTER", bar, 0, -5);
+		self.SingleBarSmall:SetPoint("CENTER", bar, 0, -9);
 		self.SingleBarSmall:Show(); 
 	end
 
-	bar.StatusBar:SetSize(width, statusBarHeight);  
-	bar:SetSize(width, statusBarHeight);
+	local progressWidth = width - self:GetEndCapWidth() * 2;
+	bar.StatusBar:SetSize(progressWidth, statusBarHeight);
+	bar:SetSize(progressWidth, statusBarHeight);
 end
 
 --Same functionality as previous function except shows only one bar. 
@@ -134,15 +135,16 @@ function StatusTrackingManagerMixin:SetSingleBarSize(bar, width)
 	local textureHeight = self:GetInitialBarHeight();
 	if( self.largeSize ) then  
 		self.SingleBarLarge:SetSize(width, textureHeight); 
-		self.SingleBarLarge:SetPoint("CENTER", bar, 0, 4);
+		self.SingleBarLarge:SetPoint("CENTER", bar, 0, 0);
 		self.SingleBarLarge:Show(); 
 	else
 		self.SingleBarSmall:SetSize(width, textureHeight); 
-		self.SingleBarSmall:SetPoint("CENTER", bar, 0, 4);
+		self.SingleBarSmall:SetPoint("CENTER", bar, 0, 0);
 		self.SingleBarSmall:Show(); 
 	end
-	bar.StatusBar:SetSize(width, textureHeight);  
-	bar:SetSize(width, textureHeight);
+	local progressWidth = width - self:GetEndCapWidth() * 2;
+	bar.StatusBar:SetSize(progressWidth, textureHeight);
+	bar:SetSize(progressWidth, textureHeight);
 end
 
 function StatusTrackingManagerMixin:LayoutBar(bar, barWidth, isTopBar, isDouble)
@@ -153,13 +155,13 @@ function StatusTrackingManagerMixin:LayoutBar(bar, barWidth, isTopBar, isDouble)
 	
 	if ( isDouble ) then
 		if ( isTopBar ) then
-			bar:SetPoint("BOTTOM", self:GetParent(), 0, -11);
+			bar:SetPoint("BOTTOM", self:GetParent(), 0, -10);
 		else		
-			bar:SetPoint("BOTTOM", self:GetParent(), 0, -20);
+			bar:SetPoint("BOTTOM", self:GetParent(), 0, -19);
 		end
 		self:SetDoubleBarSize(bar, barWidth);
 	else 
-		bar:SetPoint("BOTTOM", self:GetParent(), 0, -17);
+		bar:SetPoint("BOTTOM", self:GetParent(), 0, -14);
 		self:SetSingleBarSize(bar, barWidth);
 	end
 end
@@ -204,4 +206,12 @@ function StatusTrackingManagerMixin:OnEvent(event)
 		self:UpdateBarVisibility();
 	end	
 	self:UpdateBarsShown(); 
+end
+
+function StatusTrackingManagerMixin:GetEndCapWidth()
+	return self.endCapWidth;
+end
+
+function StatusTrackingManagerMixin:SetEndCapWidth(width)
+	self.endCapWidth = width;
 end

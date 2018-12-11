@@ -371,7 +371,7 @@ function CommunitiesGuildRecruitmentDropDown_Initialize(self)
 
 	info.text = ADD_FRIEND;
 	info.arg1 = "addfriend";
-	if ( GetFriendInfo(name) ) then
+	if ( C_FriendList.GetFriendInfo(name) ) then
 		info.disabled = 1;
 	end
 	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
@@ -392,7 +392,7 @@ function CommunitiesGuildRecruitmentDropDown_OnClick(self, button, action)
 	elseif ( action == "whisper" ) then
 		ChatFrame_SendTell(name);
 	elseif ( action == "addfriend" ) then
-		AddOrRemoveFriend(name);
+		C_FriendList.AddOrRemoveFriend(name);
 	elseif ( action == "decline" ) then
 		DeclineGuildApplicant(self.index);
 	end

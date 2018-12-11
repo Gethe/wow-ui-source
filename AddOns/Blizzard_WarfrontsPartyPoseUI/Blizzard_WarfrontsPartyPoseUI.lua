@@ -1,51 +1,11 @@
-local WARFRONTS_GRUNT_ACTORS_HORDE =
-{
-	grunt1 = 83860, -- ORCMALE_HD.m2 (Grunt)
-	grunt2 = 87186, -- TROLLFEMALE_HD.m2 (Witch Doctor)
-	grunt3 = 85979, -- BLOODELFFEMALE_HD.m2 (Warcaster)
-	grunt4 = 81941, -- GOBLINMALE.m2 (Wistel)
-	grunt5 = 83958, -- TROLLMALE_HD.m2 (Axe Thrower)
-	grunt6 = 84011, -- TAURENFEMALE_HD.m2 (Warrior)
-	grunt7 = 83858, -- ORCFEMALE_HD.m2 (Grunt)
-	grunt8 = 83766, -- ORCMALE_HD.m2 (Peon)
-}
-
-local WARFRONTS_GRUNT_ACTORS_ALLIANCE =
-{
-	grunt1 = 86715, -- humanguard_m.m2 (human male footman)
-	grunt2 = 86833, -- DWARFFEMALE_HD.m2 (dwarf female rifleman)
-	grunt3 = 84310, -- GNOMEFEMALE_HD.m2 (gnome female engineer)
-	grunt4 = 86989, -- HUMANFEMALE_HD.m2 (human female priest)
-	grunt5 = 86823, -- DWARFMALE_HD.m2 (dwarf male rifleman)
-	grunt6 = 86814, -- humanknight_m.m2 (human male knight)
-	grunt7 = 87004, -- HUMANFEMALE_HD.m2 (human female sorceress)
-	grunt8 = 87528, -- draeneipeacekeeper_m.m2 (draenei male paladin)
-}
-
 WarfrontsPartyPoseMixin = CreateFromMixins(PartyPoseMixin);
 
 function WarfrontsPartyPoseMixin:PlayRewardsAnimations()
 	self.RewardAnimations.RewardFrame:Show();
-	if (self:CanResumeAnimation()) then 
+	if (self:CanResumeAnimation()) then
 		self:PlayNextRewardAnimation();
 	end
-	self.isPlayingRewards = true; 
-end
-
-function WarfrontsPartyPoseMixin:AddActor(scene, displayID, name)
-	local actor = scene:GetActorByTag(name);
-	if (actor) then
-		if (actor:SetModelByCreatureDisplayID(displayID)) then
-			self:SetupShadow(actor);
-		end
-	end
-end
-
-function WarfrontsPartyPoseMixin:AddModelSceneActors(playerFactionGroup)
-	local actors = playerFactionGroup == "Horde" and WARFRONTS_GRUNT_ACTORS_HORDE or WARFRONTS_GRUNT_ACTORS_ALLIANCE;
-	for scriptTag, displayID in pairs(actors) do
-		self:AddActor(self.ModelScene, displayID, scriptTag);
-	end
+	self.isPlayingRewards = true;
 end
 
 function WarfrontsPartyPoseMixin:SetLeaveButtonText()
@@ -53,82 +13,122 @@ function WarfrontsPartyPoseMixin:SetLeaveButtonText()
 end
 
 do
-	local warfrontsStyleData =
+	local themeData =
 	{
 		Horde =
 		{
 			topperOffset = -37,
+			borderPaddingX = 30,
+			borderPaddingY = 20,
 			Topper = "scoreboard-horde-header",
-			topperBehindFrame = false,
-
 			TitleBG = "scoreboard-header-horde",
-			ModelSceneBG = "scoreboard-background-warfronts-horde",
-
-			Top = "_scoreboard-horde-tiletop",
-			Bottom = "_scoreboard-horde-tilebottom",
-			Left = "!scoreboard-horde-tileleft",
-			Right = "!scoreboard-horde-tileright",
-			TopLeft = "scoreboard-horde-corner",
-			TopRight = "scoreboard-horde-corner",
-			BottomLeft = "scoreboard-horde-corner",
-			BottomRight = "scoreboard-horde-corner",
-
-			-- one-off
-			bottomCornerYOffset = -24;
+			nineSliceLayout = "PartyPoseKit",
+			nineSliceTextureKitName = "horde",
+			partyCategory = LE_PARTY_CATEGORY_HOME,
 		},
 
 		Alliance =
 		{
 			topperOffset = -28,
+			borderPaddingX = 30,
+			borderPaddingY = 20,
 			Topper = "scoreboard-alliance-header",
-			topperBehindFrame = false,
-
 			TitleBG = "scoreboard-header-alliance",
-			ModelSceneBG = "scoreboard-background-warfronts-alliance",
-
-			Top = "_scoreboard-alliance-tiletop",
-			Bottom = "_scoreboard-alliance-tilebottom",
-			Left = "!scoreboard-alliance-tileleft",
-			Right = "!scoreboard-alliance-tileright",
-			TopLeft = "scoreboard-alliance-corner",
-			TopRight = "scoreboard-alliance-corner",
-			BottomLeft = "scoreboard-alliance-corner",
-			BottomRight = "scoreboard-alliance-corner",
-
-			-- one-off
-			bottomCornerYOffset = -20;
+			nineSliceLayout = "PartyPoseKit",
+			nineSliceTextureKitName = "alliance",
+			partyCategory = LE_PARTY_CATEGORY_HOME,
 		},
 	}
 
-	function WarfrontsPartyPoseMixin:LoadScreenData(mapID, winner)
-		local partyPoseInfo = C_PartyPose.GetPartyPoseInfoByMapID(mapID);
+	local modelSceneData =
+	{
+		-- Horde Arathi
+		[1876] =
+		{
+			addModelSceneActors =
+			{
+				grunt1 = 83860, -- Orc Male Grunt
+				grunt2 = 87186, -- Troll Female Witch Doctor
+				grunt3 = 85979, -- Blood Elf Female Warcaster
+				grunt4 = 81941, -- Goblin Male Wistel
+				grunt5 = 83958, -- Troll Male Axe Thrower
+				grunt6 = 84011, -- Tauren Female Warrior
+				grunt7 = 83858, -- Orc Female Grunt
+				grunt8 = 83766, -- Orc Male Peon
+			},
 
+			ModelSceneBG = "scoreboard-background-warfronts-horde",
+		},
+
+		-- Alliance Arathi
+		[1943] =
+		{
+			addModelSceneActors =
+			{
+				grunt1 = 86715, -- Human Male Footman
+				grunt2 = 86833, -- Dwarf Female Rifleman
+				grunt3 = 84310, -- Gnome Female Engineer
+				grunt4 = 86989, -- Guman Female Priest
+				grunt5 = 86823, -- Dwarf Male Rifleman
+				grunt6 = 86814, -- Human Male Knight
+				grunt7 = 87004, -- Human Female Sorceress
+				grunt8 = 87528, -- Draenei Male Paladin
+			},
+
+			ModelSceneBG = "scoreboard-background-warfronts-alliance",
+		},
+
+		-- Horde Darkshore
+		[2111] =
+		{
+			addModelSceneActors =
+			{
+				grunt1 = 90225, -- Female Goblin (Mizzyk)
+				grunt2 = 88848, -- Male Undead Alchemist
+				grunt3 = 90077, -- Female Blood Elf Dark Ranger
+				grunt4 = 90325, -- Goblin Male (Zarvik Blastwix)
+				grunt5 = 89568, -- Undead Male (Father Norlath)
+				grunt6 = 88845, -- Undead Male Lancer
+				grunt7 = 88889, -- Female Undead Alchemist
+				grunt8 = 90370, -- Undead Female (Apothecary Zinge)
+			},
+
+			ModelSceneBG = "scoreboard-background-warfronts-darkshore-horde",
+		},
+
+		-- Alliance Darkshore
+		[2105] =
+		{
+			addModelSceneActors =
+			{
+				grunt1 = 69424, -- Moonsaber
+				grunt2 = 89354, -- Night Elf Female Sentinel
+				grunt3 = 88840, -- Night Elf Female Huntress
+				grunt4 = 34520, -- Human Female (Lorna Crowley)
+				grunt5 = 88878, -- Night Elf Male Sentinel
+				grunt6 = 88882, -- Night Elf Male Druid
+				grunt7 = 89222, -- Worgen Male Footman
+				grunt8 = 33840, -- Worgen Female (Celestine of the Harvest)
+			},
+
+			ModelSceneBG = "scoreboard-background-warfronts-darkshore-alliance",
+		},
+	}
+
+	function WarfrontsPartyPoseMixin:GetPartyPoseData(mapID, winner)
+		local partyPoseData = PartyPoseMixin.GetPartyPoseData(self, mapID, winner);
 		local playerFactionGroup = UnitFactionGroup("player");
-
-		self:SetLeaveButtonText();
-
-		local winnerFactionGroup = PLAYER_FACTION_GROUP[winner];
-		self:PlaySounds(partyPoseInfo, winnerFactionGroup);
-
-		if (winnerFactionGroup == playerFactionGroup) then
-			self.TitleText:SetText(PARTY_POSE_VICTORY);
-			self:SetModelScene(partyPoseInfo.victoryModelSceneID, LE_PARTY_CATEGORY_HOME);
-		else
-			self.TitleText:SetText(PARTY_POSE_DEFEAT);
-			self:SetModelScene(partyPoseInfo.defeatModelSceneID, LE_PARTY_CATEGORY_HOME);
-		end
-
-		self:AddModelSceneActors(playerFactionGroup);
-
-		self:SetupTheme(warfrontsStyleData[playerFactionGroup]);
+		partyPoseData.themeData = themeData[playerFactionGroup];
+		partyPoseData.modelSceneData = modelSceneData[mapID];
+		return partyPoseData;
 	end
 end
 
 function WarfrontsPartyPoseMixin:OnLoad()
-	self:RegisterEvent("SCENARIO_COMPLETED"); 
-	self:RegisterEvent("QUEST_LOOT_RECEIVED"); 
-	self:RegisterEvent("QUEST_CURRENCY_LOOT_RECEIVED"); 
-	PartyPoseMixin.OnLoad(self); 
+	self:RegisterEvent("SCENARIO_COMPLETED");
+	self:RegisterEvent("QUEST_LOOT_RECEIVED");
+	self:RegisterEvent("QUEST_CURRENCY_LOOT_RECEIVED");
+	PartyPoseMixin.OnLoad(self);
 	self.isPlayingRewards = false;
 end
 
@@ -139,36 +139,34 @@ end
 
 function WarfrontsPartyPoseMixin:OnEvent(event, ...)
 	PartyPoseMixin.OnEvent(self, event, ...);
-	if (event == "UI_MODEL_SCENE_INFO_UPDATED") then
-		self:AddModelSceneActors(UnitFactionGroup("player"));
-	elseif (event == "SCENARIO_COMPLETED") then
+	if (event == "SCENARIO_COMPLETED") then
 		self.pendingRewardData = {};
-		self.questID = ...; 
+		self.questID = ...;
 	elseif (event == "QUEST_LOOT_RECEIVED") then
 		local questID, rewardItemLink, quantity = ...;
-		if (questID == self.questID) then 
+		if (questID == self.questID) then
 			local item = Item:CreateFromItemLink(rewardItemLink);
 			item:ContinueOnItemLoad(function()
-				local id = item:GetItemID(); 
-				local quality = item:GetItemQuality(); 
+				local id = item:GetItemID();
+				local quality = item:GetItemQuality();
 				local texture = item:GetItemIcon();
 				local name = item:GetItemName();
 				self:AddReward(name, texture, quality, id, "item", rewardItemLink, quantity, quantity, false);
-				if (not self.isPlayingRewards) then 
-					self:PlayRewardsAnimations(); 
+				if (not self.isPlayingRewards) then
+					self:PlayRewardsAnimations();
 				end
 			end);
 		end
 	elseif (event == "QUEST_CURRENCY_LOOT_RECEIVED") then
-		local questID, currencyId, quantity = ...; 
-		if (questID == self.questID) then 
+		local questID, currencyId, quantity = ...;
+		if (questID == self.questID) then
 			local name, _, texture, _, _, _, _, quality = GetCurrencyInfo(currencyId);
 			local originalQuantity = quantity;
 			local isCurrencyContainer = C_CurrencyInfo.IsCurrencyContainer(currencyId, quantity);
 			name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyId, quantity, name, texture, quality);
 			self:AddReward(name, texture, quality, currencyId, "currency", currencyLink, quantity, originalQuantity, isCurrencyContainer);
-			if (not self.isPlayingRewards) then 
-				self:PlayRewardsAnimations(); 
+			if (not self.isPlayingRewards) then
+				self:PlayRewardsAnimations();
 			end
 		end
 	end

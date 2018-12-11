@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
   <Script file="Blizzard_ClassNameplateBar_Warlock.lua"/>
 
 	<Frame name="ClassNameplateBarShardFrame" parentArray="Shards" virtual="true" mixin="ClassNameplateBarWarlockShardMixin">
@@ -14,26 +14,26 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture atlas="Warlock-Shard-Spark" parentKey="Spark"/>
-				<Texture parentKey="ShardOn" atlas="Warlock-ReadyShard" useAtlasSize="true" alpha="0">
+				<Texture parentKey="ShardOn" atlas="Warlock-ReadyShard" useAtlasSize="true" alpha="0" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="ShardGlow" atlas="Warlock-ReadyShard-Glow" useAtlasSize="true" alphaMode="ADD" alpha="0">
+				<Texture parentKey="ShardGlow" atlas="Warlock-ReadyShard-Glow" useAtlasSize="true" alphaMode="ADD" alpha="0" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\PlayerFrame\UI-WarlockShard" alpha="0" parentKey="ShardSmokeA">
+				<Texture file="Interface\PlayerFrame\UI-WarlockShard" alpha="0" parentKey="ShardSmokeA" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-8" y="5"/>
 					</Anchors>
 					<TexCoords left="0.01562500" right="0.51562500" top="0.34375000" bottom="0.59375000"/>
 				</Texture>
-				<Texture file="Interface\PlayerFrame\UI-WarlockShard" alpha="0" parentKey="ShardSmokeB">
+				<Texture file="Interface\PlayerFrame\UI-WarlockShard" alpha="0" parentKey="ShardSmokeB" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.ShardSmokeA"/>
@@ -73,7 +73,7 @@
 		</Animations>
 	</Frame>
 
-	<Frame name="ClassNameplateBarWarlockFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarWarlock">
+	<Frame name="ClassNameplateBarWarlockFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarWarlock" ignoreParentScale="true">
 		<Size x="101" y="24"/>
 		<KeyValues>
 			<KeyValue key="scale" value="0.7" type="number"/>

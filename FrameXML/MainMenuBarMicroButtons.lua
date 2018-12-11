@@ -621,6 +621,21 @@ end
 
 TalentMicroButtonMixin = {};
 
+function TalentMicroButtonMixin:OnLoad()
+	LoadMicroButtonTextures(self, "Talents");
+	self.tooltipText = MicroButtonTooltipText(TALENTS_BUTTON, "TOGGLETALENTS");
+	self.newbieText = NEWBIE_TOOLTIP_TALENTS;
+
+	self.minLevel = SHOW_SPEC_LEVEL;
+	self:RegisterEvent("PLAYER_LEVEL_UP");
+	self:RegisterEvent("UPDATE_BINDINGS");
+	self:RegisterEvent("PLAYER_TALENT_UPDATE");
+	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
+	self:RegisterEvent("HONOR_LEVEL_UPDATE");
+	self:RegisterEvent("PLAYER_PVP_TALENT_UPDATE");
+	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
+end
+
 function TalentMicroButtonMixin:HasTalentAlertToShow()
 	return not AreTalentsLocked() and GetNumUnspentTalents() > 0;
 end
@@ -656,7 +671,7 @@ function TalentMicroButtonMixin:EvaluateAlertVisibility()
 end
 
 --Talent button specific functions
-function TalentMicroButton_OnEvent(self, event, ...)
+function TalentMicroButtonMixin:OnEvent(event, ...)
 	if ( event == "PLAYER_LEVEL_UP" ) then
 		local level = ...;
 		if (level == SHOW_SPEC_LEVEL) then
@@ -668,7 +683,7 @@ function TalentMicroButton_OnEvent(self, event, ...)
 				MicroButtonPulse(self);
 			end
 		end
-	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED" ) then
+	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED" or event == "PLAYER_LEVEL_CHANGED" ) then
 		self:EvaluateAlertVisibility();
 	elseif ( event == "PLAYER_TALENT_UPDATE" or event == "NEUTRAL_FACTION_SELECT_RESULT" or event == "HONOR_LEVEL_UPDATE" ) then
 		UpdateMicroButtons();
@@ -688,7 +703,7 @@ function TalentMicroButton_OnEvent(self, event, ...)
 	end
 end
 
-function TalentMicroButton_OnClick(self)
+function TalentMicroButtonMixin:OnClick(self)
     ToggleTalentFrame(self.suggestedTab);
 end
 
@@ -958,6 +973,7 @@ end
 function MicroButtonAlert_OnLoad(self)
 	if self.MicroButton then
 		self:SetParent(self.MicroButton);
+		self:SetFrameStrata("DIALOG");
 	end
 	self.Text:SetSpacing(4);
 	MicroButtonAlert_SetText(self, self.label);

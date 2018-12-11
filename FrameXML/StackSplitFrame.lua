@@ -1,59 +1,107 @@
+StackSplitMixin = { }; 
 
-function OpenStackSplitFrame(maxStack, parent, anchor, anchorTo, stackCount)
-	if ( StackSplitFrame.owner ) then
-		StackSplitFrame.owner.hasStackSplit = 0;
+function StackSplitMixin:OpenStackSplitFrame(maxStack, parent, anchor, anchorTo, stackCount)
+	if ( self.owner ) then
+		self.owner.hasStackSplit = 0;
 	end
 	
 	if ( not maxStack or maxStack < 1 ) then
-		StackSplitFrame:Hide();
+		self:Hide();
 		return;
 	end
 
-	StackSplitFrame.maxStack = maxStack;
-	StackSplitFrame.owner = parent;
+	self.maxStack = maxStack;
+	self.owner = parent;
 	parent.hasStackSplit = 1;
-	StackSplitFrame.minSplit = stackCount or 1;
-	StackSplitFrame.split = StackSplitFrame.minSplit;
-	StackSplitFrame.typing = 0;
-	StackSplitText:SetText(StackSplitFrame.split);
-	StackSplitLeftButton:Disable();
-	StackSplitRightButton:Enable();
+	self.minSplit = stackCount or 1;
+	self.split = self.minSplit;
+	self.typing = 0;
+	self.StackSplitText:SetText(self.split);
+	self.LeftButton:Disable();
+	self.RightButton:Enable();
 
-	StackSplitFrame:ClearAllPoints();
-	StackSplitFrame:SetPoint(anchor, parent, anchorTo, 0, 0);
-	StackSplitFrame:Show();
+	self:ClearAllPoints();
+	self:SetPoint(anchor, parent, anchorTo, 0, 0);
+	self:Show();
+	self:ChooseFrameType(self.minSplit);
 end
 
-function UpdateStackSplitFrame(maxStack)
-	StackSplitFrame.maxStack = maxStack;
-	if ( StackSplitFrame.maxStack < 2 ) then
-		if ( StackSplitFrame.owner ) then
-			StackSplitFrame.owner.hasStackSplit = 0;
+function StackSplitMixin:ChooseFrameType(splitAmount)
+	if(splitAmount == 1) then 
+		self:SetSize(172, 96);
+		self.isMultiStack = false;
+		self.SingleItemSplitBackground:Show(); 
+		self.MultiItemSplitBackground:Hide();
+		self.StackItemCountText:Hide();
+
+		self.StackSplitText:ClearAllPoints();
+		self.StackSplitText:SetPoint("RIGHT", self, "RIGHT", -50, 18);
+
+		self.OkayButton:ClearAllPoints();
+		self.OkayButton:SetPoint("RIGHT", self, "BOTTOM", -3, 32)
+
+		self.CancelButton:ClearAllPoints();
+		self.CancelButton:SetPoint("LEFT", self, "BOTTOM", 5, 32)
+	else
+		self.isMultiStack = true; 
+		self:SetSize(172, 120);
+		self.SingleItemSplitBackground:Hide(); 
+		self.MultiItemSplitBackground:Show();
+		self.StackSplitText:ClearAllPoints();
+		self.StackSplitText:SetPoint("CENTER", self, "CENTER", 5, 30);
+		self.StackSplitText:SetText(STACKS:format(self.split/self.minSplit));
+		self.StackItemCountText:SetText(TOTAL_STACKS:format(self.split));
+		self.StackItemCountText:Show();
+
+		self.OkayButton:ClearAllPoints();
+		self.OkayButton:SetPoint("RIGHT", self, "BOTTOM", -3, 40);
+
+		self.CancelButton:ClearAllPoints();
+		self.CancelButton:SetPoint("LEFT", self, "BOTTOM", 5, 40);
+	end
+end
+
+function StackSplitMixin:UpdateStackSplitFrame(maxStack)
+	self.maxStack = maxStack;
+	if ( self.maxStack < 2 ) then
+		if ( self.owner ) then
+			self.owner.hasStackSplit = 0;
 		end
-		StackSplitFrame:Hide();
+		self:Hide();
 		return;
 	end
 
-	if ( StackSplitFrame.split > StackSplitFrame.maxStack ) then
-		StackSplitFrame.split = StackSplitFrame.maxStack;
-		StackSplitText:SetText(StackSplitFrame.split);
+	if ( self.split > self.maxStack ) then
+		self.split = self.maxStack;
+		self.StackSplitText:SetText(self.split);
 	end
 
-	if ( StackSplitFrame.split == StackSplitFrame.maxStack ) then
-		StackSplitRightButton:Disable();
+	if ( self.split == self.maxStack ) then
+		self.RightButton:Disable();
 	else
-		StackSplitRightButton:Enable();
+		self.RightButton:Enable();
 	end
 
-	if ( StackSplitFrame.split == 1 ) then
-		StackSplitLeftButton:Disable();
+	if ( self.split == 1 ) then
+		self.LeftButton:Disable();
 	else
-		StackSplitLeftButton:Enable();
+		self.LeftButton:Enable();
 	end
 end
 
-function StackSplitFrame_OnChar(self,text)
-	if ( text < "0" or text > "9" ) then
+function StackSplitMixin:UpdateStackText()
+	if ( self.isMultiStack ) then 
+		self.StackSplitText:SetText(STACKS:format(self.split/self.minSplit));
+		self.StackItemCountText:SetText(TOTAL_STACKS:format(self.split));
+	else 
+		self.StackSplitText:SetText(self.split);
+	end
+end 
+
+function StackSplitMixin:OnChar(text)
+	if ( self.isMultiStack and self.maxStack < self.minSplit * text ) then 
+		return; 
+	elseif ( text < "0" or text > "9") then
 		return;
 	end
 
@@ -72,23 +120,25 @@ function StackSplitFrame_OnChar(self,text)
 
 	if ( split <= self.maxStack ) then
 		self.split = split;
-		StackSplitText:SetText(split);
+
+		self:UpdateStackText(); 
+
 		if ( split == self.maxStack ) then
-			StackSplitRightButton:Disable();
+			self.RightButton:Disable();
 		else
-			StackSplitRightButton:Enable();
+			self.RightButton:Enable();
 		end
 		if ( split == self.minSplit ) then
-			StackSplitLeftButton:Disable();
+			self.LeftButton:Disable();
 		else
-			StackSplitLeftButton:Enable();
+			self.LeftButton:Enable();
 		end
 	elseif ( split == 0 ) then
 		self.split = 1;
 	end
 end
 
-function StackSplitFrame_OnKeyDown(self,key)
+function StackSplitMixin:OnKeyDown(key)
 	local numKey = gsub(key, "NUMPAD", "");
 	if ( key == "BACKSPACE" or key == "DELETE" ) then
 		if ( self.typing == 0 or self.split == self.minSplit ) then
@@ -99,24 +149,26 @@ function StackSplitFrame_OnKeyDown(self,key)
 		if ( self.split <= self.minSplit ) then
 			self.split = self.minSplit;
 			self.typing = 0;
-			StackSplitLeftButton:Disable();
+			self.LeftButton:Disable();
 		else
-			StackSplitLeftButton:Enable();
+			self.LeftButton:Enable();
 		end
-		StackSplitText:SetText(self.split);
+
+		self:UpdateStackText();
+
 		if ( self.money == self.maxStack ) then
-			StackSplitRightButton:Disable();
+			self.RightButton:Disable();
 		else
-			StackSplitRightButton:Enable();
+			self.RightButton:Enable();
 		end
 	elseif ( key == "ENTER" ) then
-		StackSplitFrameOkay_Click();
+		StackSplitOkayButton_OnClick();
 	elseif ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" ) then
-		StackSplitFrameCancel_Click();
+		StackSplitCancelButton_OnClick();
 	elseif ( key == "LEFT" or key == "DOWN" ) then
-		StackSplitFrameLeft_Click();
+		StackSplitLeftButton_OnClick();
 	elseif (key == "RIGHT" or key == "UP" ) then
-		StackSplitFrameRight_Click();
+		StackSplitRightButton_OnClick();
 	elseif ( not ( tonumber(numKey) ) and GetBindingAction(key) ) then
 		--Running bindings not used by the StackSplit frame allows players to retain control of their characters.
 		RunBinding(GetBindingAction(key));
@@ -126,7 +178,7 @@ function StackSplitFrame_OnKeyDown(self,key)
 	self.down[key] = true;
 end
 
-function StackSplitFrame_OnKeyUp(self,key)
+function StackSplitMixin:OnKeyUp(key)
 	local numKey = gsub(key, "NUMPAD", "");
 	if ( not ( tonumber(numKey) ) and GetBindingAction(key) ) then
 		--If we don't run the up bindings as well, interesting things happen (like you never stop moving)
@@ -138,45 +190,7 @@ function StackSplitFrame_OnKeyUp(self,key)
 	end
 end
 
-function StackSplitFrameLeft_Click()
-	if ( StackSplitFrame.split == StackSplitFrame.minSplit ) then
-		return;
-	end
-
-	StackSplitFrame.split = StackSplitFrame.split - StackSplitFrame.minSplit;
-	StackSplitText:SetText(StackSplitFrame.split);
-	if ( StackSplitFrame.split == StackSplitFrame.minSplit ) then
-		StackSplitLeftButton:Disable();
-	end
-	StackSplitRightButton:Enable();
-end
-
-function StackSplitFrameRight_Click()
-	if ( StackSplitFrame.split == StackSplitFrame.maxStack ) then
-		return;
-	end
-
-	StackSplitFrame.split = StackSplitFrame.split + StackSplitFrame.minSplit;
-	StackSplitText:SetText(StackSplitFrame.split);
-	if ( StackSplitFrame.split == StackSplitFrame.maxStack ) then
-		StackSplitRightButton:Disable();
-	end
-	StackSplitLeftButton:Enable();
-end
-
-function StackSplitFrameOkay_Click()
-	StackSplitFrame:Hide();
-	
-	if ( StackSplitFrame.owner ) then
-		StackSplitFrame.owner.SplitStack(StackSplitFrame.owner, StackSplitFrame.split);
-	end
-end
-
-function StackSplitFrameCancel_Click()
-	StackSplitFrame:Hide();
-end
-
-function StackSplitFrame_OnHide (self)	
+function StackSplitMixin:OnHide ()	
 	for key in next, (self.down or {}) do
 		if ( GetBindingAction(key) ) then
 			RunBinding(GetBindingAction(key), "up");
@@ -184,7 +198,47 @@ function StackSplitFrame_OnHide (self)
 		self.down[key] = nil;
 	end
 	
-	if ( StackSplitFrame.owner ) then
-		StackSplitFrame.owner.hasStackSplit = 0;
+	if ( self.owner ) then
+		self.owner.hasStackSplit = 0;
 	end
+end
+
+function StackSplitLeftButton_OnClick()
+	if ( StackSplitFrame.split == StackSplitFrame.minSplit ) then
+		return;
+	end
+
+	StackSplitFrame.split = StackSplitFrame.split - StackSplitFrame.minSplit;
+	StackSplitFrame:UpdateStackText();
+
+	if ( StackSplitFrame.split == StackSplitFrame.minSplit ) then
+		StackSplitFrame.LeftButton:Disable();
+	end
+	StackSplitFrame.RightButton:Enable();
+end
+
+function StackSplitRightButton_OnClick()
+	if ( StackSplitFrame.split == StackSplitFrame.maxStack ) then
+		return;
+	end
+
+	StackSplitFrame.split = StackSplitFrame.split + StackSplitFrame.minSplit;
+	StackSplitFrame:UpdateStackText();
+
+	if ( StackSplitFrame.split == StackSplitFrame.maxStack ) then
+		StackSplitFrame.RightButton:Disable();
+	end
+	StackSplitFrame.LeftButton:Enable();
+end
+
+function StackSplitOkayButton_OnClick()
+	StackSplitFrame:Hide();
+	
+	if ( StackSplitFrame.owner ) then
+		StackSplitFrame.owner.SplitStack(StackSplitFrame.owner, StackSplitFrame.split);
+	end
+end
+
+function StackSplitCancelButton_OnClick()
+	StackSplitFrame:Hide();
 end

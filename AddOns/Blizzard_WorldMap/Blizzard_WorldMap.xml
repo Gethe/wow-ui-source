@@ -41,18 +41,11 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="BorderFrame" inherits="PortraitFrameTemplate" frameStrata="HIGH" setAllPoints="true">
+			<Frame parentKey="BorderFrame" inherits="PortraitFrameTemplateMinimizable" frameStrata="HIGH" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK" textureSubLevel="5">
 						<Texture parentKey="Underlay" hidden="true">
 							<Color r="0" g="0" b="0" a=".5"/>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY" textureSubLevel="1">
-						<Texture parentKey="ButtonFrameEdge" atlas="UI-OuterBorderButtonPatch" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="-36" y="0"/>
-							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="-5">
@@ -60,7 +53,7 @@
 							<Size x="0" y="3"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="2" y="-63"/>
-								<Anchor point="TOPRIGHT" x="-2" y="-63"/>
+								<Anchor point="RIGHT" relativeKey="$parent.$parent.ScrollContainer"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -78,7 +71,7 @@
 					</Button>
 					<Frame parentKey="MaximizeMinimizeFrame" inherits="MaximizeMinimizeButtonFrameTemplate">
 						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="10" y="0"/>
+							<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="8.5" y="0"/>
 						</Anchors>
 					</Frame>
 				</Frames>

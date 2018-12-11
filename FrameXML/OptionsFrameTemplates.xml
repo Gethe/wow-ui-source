@@ -111,100 +111,17 @@
 		</HighlightTexture>
     </Button>
 	<Frame name="OptionsFrameListTemplate" virtual="true">
-		<Layers>
-		<!--
-			<Layer level="ARTWORK">
-				<FontString name="$parentLabel" inherits="GameFontHighlight" text="CATEGORY">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
-							<Offset>
-								<AbsDimension x="6" y="4"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		-->
-			<Layer level="BACKGROUND">
-				<!-- Yay. It's a backdrop. -->
-				<Texture name="$parentTopLeft" file="Interface\Tooltips\UI-Tooltip-Border">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-					<TexCoords left="0.5" right="0.625" top="0" bottom="1"/>
-				</Texture>
-				<Texture name="$parentBottomLeft" file="Interface\Tooltips\UI-Tooltip-Border">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-					<TexCoords left="0.75" right="0.875" top="0" bottom="1"/>
-				</Texture>
-				<Texture name="$parentBottomRight" file="Interface\Tooltips\UI-Tooltip-Border">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-					<TexCoords left="0.875" right="1" top="0" bottom="1"/>
-				</Texture>
-				<Texture name="$parentTopRight" file="Interface\Tooltips\UI-Tooltip-Border">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-					<TexCoords left="0.625" right="0.75" top="0" bottom="1"/>
-				</Texture>
-				<Texture name="$parentLeft" file="Interface\Tooltips\UI-Tooltip-Border">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
-					</Anchors>
-					<TexCoords left="0" right="0.125" top="0" bottom="1"/>
-				</Texture>
-				<Texture name="$parentRight" file="Interface\Tooltips\UI-Tooltip-Border">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="TOPRIGHT"/>
-					</Anchors>
-					<TexCoords left="0.125" right="0.25" top="0" bottom="1"/>
-				</Texture>
-				<Texture name="$parentBottom" file="Interface\OptionsFrame\UI-OptionsFrame-Spacer">
-					<Size>
-						<AbsDimension x="0" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBottomLeft" relativePoint="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTop" file="Interface\OptionsFrame\UI-OptionsFrame-Spacer">
-					<Size>
-						<AbsDimension x="0" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="7"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="TOPRIGHT" relativeTo="$parentTopRight" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
+		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
 		<Frames>
 			<ScrollFrame name="$parentList" hidden="true">
 				<Size>
@@ -222,17 +139,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="12"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="0" right="0" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>				
 				<Scripts>
 					<OnLoad>
 						self:SetBackdropBorderColor(.6, .6, .6, .6);
@@ -255,7 +161,7 @@
 								<Offset>
 									<AbsDimension x="0" y="19"/>
 								</Offset>
-							</Anchor>	
+							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnValueChanged>
@@ -320,12 +226,12 @@
 		<HighlightFont style="GameFontHighlight"/>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD">
 			<Anchors>
-				<Anchor point="TOPLEFT">	
+				<Anchor point="TOPLEFT">
 					<Offset>
 						<AbsDimension x="0" y="1"/>
 					</Offset>
 				</Anchor>
-				<Anchor point="BOTTOMRIGHT">	
+				<Anchor point="BOTTOMRIGHT">
 					<Offset>
 						<AbsDimension x="0" y="1"/>
 					</Offset>

@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="ModelPreviewFrame.lua"/>
-	<Frame name="ModelPreviewFrame" frameStrata="FULLSCREEN_DIALOG" frameLevel="5" inherits="ButtonFrameTemplate" parent="UIParent" hidden="true">
+	<Frame name="ModelPreviewFrame" toplevel="true" frameStrata="FULLSCREEN_DIALOG" frameLevel="5" inherits="ButtonFrameTemplate" parent="UIParent" hidden="true">
 		<Size x="415" y="565"/>
 		<Anchors>
 			<Anchor point="CENTER" relativePoint="CENTER" x="0" y="40"/>
@@ -63,7 +63,7 @@
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="YesMountsTex" file="Interface\PetBattles\MountJournal-BG" setAllPoints="true">
-							<TexCoords left="0" right="0.78515625" top="0" bottom="1"/>	
+							<TexCoords left="0" right="0.78515625" top="0" bottom="1"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">

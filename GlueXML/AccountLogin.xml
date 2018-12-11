@@ -34,14 +34,15 @@
 		</PushedTexture>
 	</Button>
 	<Frame name="CachedLoginFrameTemplate" virtual="true" parentArray="Frames" hidden="true">
-		<Size x="230" y="45"/>
+		<Size x="235" y="45"/>
 		<Frames>
-			<Button parentKey="LoginButton" inherits="GlueButtonTemplateBlue">
+			<Button parentKey="LoginButton" inherits="GlueButtonTemplateBlue, TruncatedButtonTemplate">
 				<Size x="220" y="45"/>
 				<Anchors>
 					<Anchor point="LEFT"/>
 				</Anchors>
 				<Scripts>
+					<OnLoad function="CachedLoginButton_OnLoad"/>
 					<OnClick function="CachedLoginButton_OnClick"/>
 					<OnUpdate>
 						self:SetEnabled(C_Login.IsLoginReady());
@@ -51,10 +52,9 @@
 					<AbsInset left="20" right="20" top="10" bottom="10"/>
 				</HitRectInsets>
 			</Button>
-			<Button parentKey="DeleteButton" inherits="GlueButtonTemplateBlue" text="X">
-				<Size x="30" y="45"/>
+			<Button parentKey="DeleteButton" inherits="GlueCloseButton">
 				<Anchors>
-					<Anchor point="RIGHT"/>
+					<Anchor point="RIGHT" x="0" y="2"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="CachedLoginDeleteButton_OnClick"/>
@@ -62,9 +62,6 @@
 						self:SetEnabled(C_Login.IsLoginReady());
 					</OnUpdate>
 				</Scripts>
-				<HitRectInsets>
-					<AbsInset left="0" right="0" top="10" bottom="10"/>
-				</HitRectInsets>
 			</Button>
 		</Frames>
 	</Frame>

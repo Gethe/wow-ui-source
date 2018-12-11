@@ -123,7 +123,7 @@
 			<OnHide function="SideDressUpFrame_OnHide"/>
 		</Scripts>
 	</Frame> 
-	<Frame name="DressUpFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplate">
+	<Frame name="DressUpFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplateMinimizable">
 		<Size x="450" y="545"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="70" y="-104"/>
@@ -146,25 +146,18 @@
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="10" y="0"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture atlas="UI-OuterBorderButtonPatch" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER" relativePoint="LEFT" x="6" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Scripts>
 					<OnLoad>						
 						function OnMaximize(frame)
 							frame:GetParent():SetSize(450, 545);
+							UpdateUIPanelPositions(frame);
 						end
 						
 						self:SetOnMaximizedCallback(OnMaximize);
 						
 						function OnMinimize(frame)
 							frame:GetParent():SetSize(334, 423);
+							UpdateUIPanelPositions(frame);
 						end
 						
 						self:SetOnMinimizedCallback(OnMinimize);

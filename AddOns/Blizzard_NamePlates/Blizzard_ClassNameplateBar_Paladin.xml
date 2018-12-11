@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
   <Script file="Blizzard_ClassNameplateBar_Paladin.lua"/>
   
 	<Frame name="ClassNameplateBarPaladinRuneFrame" virtual="true">
@@ -13,7 +13,7 @@
 		</Animations>
 	</Frame>
 		
-	<Frame name="ClassNameplateBarPaladinFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarPaladin">
+	<Frame name="ClassNameplateBarPaladinFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarPaladin" ignoreParentScale="true">
 		<Size x="85" y="20"/>
 		<Frames>
 			<Frame parentKey="Rune1" parentArray="Runes" inherits="ClassNameplateBarPaladinRuneFrame">
@@ -23,12 +23,12 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="OffTexture" atlas="nameplates-holypower1-off" useAtlasSize="true" alpha="1">
+						<Texture parentKey="OffTexture" atlas="nameplates-holypower1-off" useAtlasSize="true" alpha="1" texelSnappingBias="0.0" snapToPixelGrid="false">
 							<Anchors>
 								<Anchor point="LEFT"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="OnTexture" atlas="nameplates-holypower1-on" useAtlasSize="true" alpha="0">
+						<Texture parentKey="OnTexture" atlas="nameplates-holypower1-on" useAtlasSize="true" alpha="0" texelSnappingBias="0.0" snapToPixelGrid="false">
 							<Anchors>
 								<Anchor point="LEFT"/>
 							</Anchors>
@@ -43,12 +43,12 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="OffTexture" atlas="nameplates-holypower2-off" useAtlasSize="true" alpha="1">
+						<Texture parentKey="OffTexture" atlas="nameplates-holypower2-off" useAtlasSize="true" alpha="1" texelSnappingBias="0.0" snapToPixelGrid="false">
 							<Anchors>
 								<Anchor point="LEFT"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="OnTexture" atlas="nameplates-holypower2-on" useAtlasSize="true" alpha="0">
+						<Texture parentKey="OnTexture" atlas="nameplates-holypower2-on" useAtlasSize="true" alpha="0" texelSnappingBias="0.0" snapToPixelGrid="false">
 							<Anchors>
 								<Anchor point="LEFT"/>
 							</Anchors>
@@ -63,12 +63,12 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="OffTexture" atlas="nameplates-holypower3-off" useAtlasSize="true" alpha="1">
+						<Texture parentKey="OffTexture" atlas="nameplates-holypower3-off" useAtlasSize="true" alpha="1" texelSnappingBias="0.0" snapToPixelGrid="false">
 							<Anchors>
 								<Anchor point="LEFT"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="OnTexture" atlas="nameplates-holypower3-on" useAtlasSize="true" alpha="0">
+						<Texture parentKey="OnTexture" atlas="nameplates-holypower3-on" useAtlasSize="true" alpha="0" texelSnappingBias="0.0" snapToPixelGrid="false">
 							<Anchors>
 								<Anchor point="LEFT"/>
 							</Anchors>
@@ -83,12 +83,12 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="OffTexture" atlas="nameplates-holypower4-off" useAtlasSize="true" alpha="1">
+						<Texture parentKey="OffTexture" atlas="nameplates-holypower4-off" useAtlasSize="true" alpha="1" texelSnappingBias="0.0" snapToPixelGrid="false">
 							<Anchors>
 								<Anchor point="LEFT"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="OnTexture" atlas="nameplates-holypower4-on" useAtlasSize="true" alpha="0">
+						<Texture parentKey="OnTexture" atlas="nameplates-holypower4-on" useAtlasSize="true" alpha="0" texelSnappingBias="0.0" snapToPixelGrid="false">
 							<Anchors>
 								<Anchor point="LEFT"/>
 							</Anchors>
@@ -103,13 +103,13 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="OffTexture" atlas="nameplates-holypower4-off" useAtlasSize="true" alpha="1">
+						<Texture parentKey="OffTexture" atlas="nameplates-holypower4-off" useAtlasSize="true" alpha="1" texelSnappingBias="0.0" snapToPixelGrid="false">
 							<Anchors>
 								<Anchor point="LEFT"/>
 							</Anchors>
 							<TexCoords left="1" right="0" top="0" bottom="1"/>
 						</Texture>
-						<Texture parentKey="OnTexture" atlas="nameplates-holypower4-on" useAtlasSize="true" alpha="0">
+						<Texture parentKey="OnTexture" atlas="nameplates-holypower4-on" useAtlasSize="true" alpha="0" texelSnappingBias="0.0" snapToPixelGrid="false">
 							<Anchors>
 								<Anchor point="LEFT"/>
 							</Anchors>

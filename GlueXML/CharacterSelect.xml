@@ -1131,6 +1131,15 @@
 								<Anchors>
 									<Anchor point="BOTTOM" x="-18" y="15"/>
 								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture parentKey="NewLabel" atlas="CharacterCreate-NewLabel" useAtlasSize="true" hidden="true">
+											<Anchors>
+												<Anchor point="TOPLEFT" x="-10" y="17"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
 								<Scripts>
 									<OnLoad>
 										self:SetWidth(self:GetTextWidth() + 50);

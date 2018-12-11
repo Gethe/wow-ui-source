@@ -235,12 +235,35 @@
 			<Layer level="BORDER">
 				<FontString parentKey="MemberCount" inherits="GameFontNormalSmall">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="4" y="12"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="17"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="WatermarkFrame" setAllPoints="true" clipChildren="true">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Watermark" alphaMode="ADD" alpha="0.10">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="44" y="131"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-84" y="131"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="44" y="3"/>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-84" y="3"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="WatermarkCircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Watermark" x="6" y="-6"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Watermark" x="-6" y="6"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Watermark"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+			</Frame>
 			<CheckButton parentKey="ShowOfflineButton" inherits="UICheckButtonTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="26"/>
@@ -320,7 +343,7 @@
 					<OnHide function="CommunitiesMemberListDropDown_OnHide"/>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="InsetFrame" frameLevel="100" inherits="InsetFrameTemplate">
+			<Frame parentKey="InsetFrame" useParentLevel="false" inherits="InsetFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-3" y="3"/>
 					<Anchor point="BOTTOMRIGHT" x="-2" y="-2"/>
@@ -328,6 +351,7 @@
 				<Scripts>
 					<OnLoad>
 						self.Bg:Hide();
+						self:SetFrameLevel(100);
 					</OnLoad>
 				</Scripts>
 			</Frame>

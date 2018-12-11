@@ -1,25 +1,15 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
   <Script file="Blizzard_ClassNameplateBar_RogueDruid.lua"/>
   
 	<Frame name="ClassNameplateBarComboPointFrame" virtual="true">
 		<Size x="13" y="13"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" atlas="ClassOverlay-ComboPoint-Off" useAtlasSize="false">
-					<Size x="13" y="13"/>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
+				<Texture parentKey="Background" atlas="ClassOverlay-ComboPoint-Off" useAtlasSize="false" texelSnappingBias="0.0" snapToPixelGrid="false" />
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Point" atlas="ClassOverlay-ComboPoint" useAtlasSize="false" alpha="0">
-					<Size x="13" y="13"/>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
+				<Texture parentKey="Point" atlas="ClassOverlay-ComboPoint" useAtlasSize="false" alpha="0" texelSnappingBias="0.0" snapToPixelGrid="false" />
 			</Layer>
 		</Layers>
 		<Animations>
@@ -32,7 +22,7 @@
 		</Animations>
 	</Frame>
 		
-	<Frame name="ClassNameplateBarRogueDruidFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ComboPointPowerBar, ClassNameplateBarRogueDruid">
+	<Frame name="ClassNameplateBarRogueDruidFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ComboPointPowerBar, ClassNameplateBarRogueDruid" ignoreParentScale="true">
 		<Size x="80" y="13"/>
 		<Frames>
 			<Frame parentKey="Combo1" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">

@@ -258,168 +258,6 @@ TRAVEL PASS
 			</Anchors>
 		</HighlightTexture>
 	</Button>
-	<!--
-	<Button name="FriendsFrameButtonTemplate" virtual="true">
-		<Size x="298" y="31"/>
-		<Frames>
-			<Frame name="$parentButtonText" setAllPoints="true">
-				<Layers>
-					<Layer level="BORDER">
-						<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="10" y="-3"/>
-							</Anchors>
-						</FontString>
-						<Texture name="$parentLink" file="Interface/FriendsFrame/UI-FriendsFrame-Link" hidden="true">
-							<Size x="16" y="16"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT" x="0" y="0"/>
-							</Anchors>
-						</Texture>
-						<FontString name="$parentLocation" inherits="GameFontNormal" justifyH="LEFT">
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT"/>
-								<Anchor point="TOPRIGHT" x="10" y="-3"/>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentInfo" inherits="GameFontHighlightSmall" justifyH="LEFT">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT"/>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentNoteHiddenText" inherits="GameFontNormalSmall" justifyH="LEFT" hidden="true">
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentInfo" relativePoint="RIGHT" x="5" y="0"/>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentNoteText" inherits="GameFontNormalSmall" justifyH="LEFT">
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentInfo" relativePoint="RIGHT" x="2" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button name="$parentSummonButton" inherits="ActionButtonTemplate">
-						<Size x="24" y="24"/>
-						<Anchors>
-							<Anchor point="LEFT" x="12" y="1"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentIcon"/>
-							</Layer>
-							<Layer level="ARTWORK">
-								<Texture name="$parentFlash" file="Interface\Buttons\UI-QuickslotRed" hidden="true"/>
-								<FontString name="$parentHotKey" inherits="NumberFontNormalSmallGray" justifyH="RIGHT">
-									<Size x="32" y="10"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="-2" y="-2"/>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT">
-									<Anchors>
-										<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-							<Layer level="OVERLAY">
-								<FontString name="$parentName" inherits="GameFontHighlightSmallOutline">
-									<Size x="32" y="10"/>
-									<Anchors>
-										<Anchor point="BOTTOM" x="0" y="2"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate">
-								<Size x="28" y="28"/>
-								<Anchors>
-									<Anchor point="CENTER" x="0" y="-1"/>
-								</Anchors>
-							</Cooldown>
-						</Frames>
-						<Scripts>
-							<OnLoad>
-								_G[self:GetName().."Icon"]:SetTexture("Interface\\Icons\\Spell_Shadow_Teleport");
-								self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
-								local normalTexture = _G[self:GetName().."NormalTexture"];
-								normalTexture:SetWidth(40);
-								normalTexture:SetHeight(40);
-							</OnLoad>
-							<OnEvent>
-								FriendsFrame_SummonButton_OnEvent(self, event, ...);
-							</OnEvent>
-							<OnShow>
-								FriendsFrame_SummonButton_OnShow(self);
-							</OnShow>
-							<OnClick>
-								FriendsFrame_ClickSummonButton(self, button, down);
-							</OnClick>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:AddLine(RAF_SUMMON_LINKED, 1, 1, 1, true);
-								if ( self.duration ) then
-									GameTooltip:AddLine(COOLDOWN_REMAINING .. " " .. SecondsToTime(self.duration - (GetTime() - self.start)), 1, 1, 1, true);
-								end
-								if ( SHOW_NEWBIE_TIPS == "1" ) then
-									GameTooltip:AddLine(NEWBIE_TOOLTIP_RAF_SUMMON_LINKED, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
-								end
-								GameTooltip:Show();
-							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
-						</Scripts>
-					</Button>
-					<Button name="$parentNote">
-						<Size x="7" y="8"/>
-						<Anchors>
-							<Anchor point="RIGHT" relativeTo="$parentName" relativePoint="LEFT" x="0" y="0"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentIcon" file="Interface/FriendsFrame/UI-FriendsFrame-Note">
-									<Size x="7" y="8"/>
-									<Anchors>
-										<Anchor point="TOPLEFT"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad>
-								self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-							</OnLoad>
-							<OnClick>
-								FriendsFrame.NotesID = self:GetParent():GetParent():GetID();
-								local dialog = StaticPopup_Show("SET_FRIENDNOTE", GetFriendInfo(FriendsFrame.NotesID));
-								PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
-							</OnClick>
-						</Scripts>
-						<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
-							<Size x="7" y="8"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-1" y="0"/>
-							</Anchors>
-						</HighlightTexture>
-					</Button>
-				</Frames>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-			</OnLoad>
-			<OnClick>
-				FriendsFrameFriendButton_OnClick(self, button);
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-			</OnClick>
-		</Scripts>
-		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
-	</Button>
-	-->
 	<Button name="FriendsFrameIgnoreButtonTemplate" virtual="true">
 		<Size x="298" y="16"/>
 		<Layers>
@@ -556,7 +394,7 @@ TRAVEL PASS
 		<Scripts>
 			<OnClick>
 				if ( self.sortType ) then
-					SortWho(self.sortType);
+					C_FriendList.SortWho(self.sortType);
 				end
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			</OnClick>
@@ -818,7 +656,7 @@ TRAVEL PASS
 
 												self.minHeight = 113 + self.EditBox.PromptText:GetHeight() * 2
 												self:GetParent():SetHeight(self.minHeight);
-												self.EditBox:SetPoint("TOPLEFT", 4, -4);
+												self.EditBox:SetPoint("TOPLEFT", 4, -5);
 											</OnLoad>
 											<OnMouseDown>
 												self.EditBox:SetFocus();
@@ -1481,7 +1319,7 @@ TRAVEL PASS
 									if ( server and UnitRealmRelationship("target") ~= LE_REALM_RELATION_SAME ) then
 										fullname = name.."-"..server;
 									end
-									AddIgnore(fullname);
+									C_FriendList.AddIgnore(fullname);
 									PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 								else
 									StaticPopup_Show("ADD_IGNORE");
@@ -1600,7 +1438,7 @@ TRAVEL PASS
 									</OnLeave>
 									<OnMouseUp>
 										if ( WHOFRAME_DROPDOWN_LIST[UIDropDownMenu_GetSelectedID(self)].sortType ) then
-											SortWho(WHOFRAME_DROPDOWN_LIST[UIDropDownMenu_GetSelectedID(self)].sortType);
+											C_FriendList.SortWho(WHOFRAME_DROPDOWN_LIST[UIDropDownMenu_GetSelectedID(self)].sortType);
 											PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 										end
 									</OnMouseUp>
@@ -1676,7 +1514,7 @@ TRAVEL PASS
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								AddFriend(WhoFrame.selectedName);
+								C_FriendList.AddFriend(WhoFrame.selectedName);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -1743,13 +1581,13 @@ TRAVEL PASS
 				</Frames>
 				<Scripts>
 					<OnLoad>
-						SetWhoToUI(false);
+						C_FriendList.SetWhoToUi(false);
 					</OnLoad>
 					<OnShow>
-						SetWhoToUI(true);
+						C_FriendList.SetWhoToUi(true);
 					</OnShow>
 					<OnHide>
-						SetWhoToUI(false);
+						C_FriendList.SetWhoToUi(false);
 					</OnHide>
 				</Scripts>
 			</Frame>

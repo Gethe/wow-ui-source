@@ -2,40 +2,40 @@
 ..\FrameXML\UI.xsd">
 	<Script file="PetStable.lua"/>
 	<Texture name="PetStable-ActiveBG" file="Interface\PetStableFrame\PetStable-Parts" virtual="true" >
-		<Size x="81" y="373"/>	
-		<TexCoords left="0.00195313" right="0.16015625" top="0.00195313" bottom="0.73046875"/>	
+		<Size x="81" y="373"/>
+		<TexCoords left="0.00195313" right="0.16015625" top="0.00195313" bottom="0.73046875"/>
 	</Texture>
 	<Texture name="PetStable-StableSlot" file="Interface\PetStableFrame\PetStable-Parts" virtual="true" >
-		<Size x="41" y="41"/>	
-		<TexCoords left="0.00195313" right="0.08203125" top="0.73437500" bottom="0.81445313"/>	
+		<Size x="41" y="41"/>
+		<TexCoords left="0.00195313" right="0.08203125" top="0.73437500" bottom="0.81445313"/>
 	</Texture>
 	<Texture name="PetStable-DietIcon" file="Interface\PetStableFrame\PetStable-Parts" virtual="true" >
-		<Size x="25" y="23"/>	
-		<TexCoords left="0.08593750" right="0.13476563" top="0.73437500" bottom="0.77929688"/>	
+		<Size x="25" y="23"/>
+		<TexCoords left="0.08593750" right="0.13476563" top="0.73437500" bottom="0.77929688"/>
 	</Texture>
 	<Texture name="PetStable-TabSel-Left" file="Interface\PetStableFrame\PetStable-Parts" virtual="true" >
-		<Size x="8" y="16"/>	
-		<TexCoords left="0.13867188" right="0.15429688" top="0.73437500" bottom="0.76562500"/>	
+		<Size x="8" y="16"/>
+		<TexCoords left="0.13867188" right="0.15429688" top="0.73437500" bottom="0.76562500"/>
 	</Texture>
 	<Texture name="PetStable-TabSel-Right" file="Interface\PetStableFrame\PetStable-Parts" virtual="true" >
-		<Size x="8" y="16"/>	
-		<TexCoords left="0.08593750" right="0.10156250" top="0.78320313" bottom="0.81445313"/>	
+		<Size x="8" y="16"/>
+		<TexCoords left="0.08593750" right="0.10156250" top="0.78320313" bottom="0.81445313"/>
 	</Texture>
 	<Texture name="PetStable-TabUnsel-Left" file="Interface\PetStableFrame\PetStable-Parts" virtual="true" >
-		<Size x="8" y="16"/>	
-		<TexCoords left="0.10546875" right="0.12109375" top="0.78320313" bottom="0.81445313"/>	
+		<Size x="8" y="16"/>
+		<TexCoords left="0.10546875" right="0.12109375" top="0.78320313" bottom="0.81445313"/>
 	</Texture>
 	<Texture name="PetStable-TabUnsel-Right" file="Interface\PetStableFrame\PetStable-Parts" virtual="true" >
-		<Size x="8" y="16"/>	
-		<TexCoords left="0.12500000" right="0.14062500" top="0.78320313" bottom="0.81445313"/>	
+		<Size x="8" y="16"/>
+		<TexCoords left="0.12500000" right="0.14062500" top="0.78320313" bottom="0.81445313"/>
 	</Texture>
 	<Texture name="PetStable-ModelBG" file="Interface\PetStableFrame\PetStable-Parts" virtual="true" >
-		<Size x="314" y="281"/>	
-		<TexCoords left="0.16406250" right="0.77734375" top="0.00195313" bottom="0.55078125"/>	
+		<Size x="314" y="281"/>
+		<TexCoords left="0.16406250" right="0.77734375" top="0.00195313" bottom="0.55078125"/>
 	</Texture>
 	<Texture name="PetStable-StableBG" file="Interface\PetStableFrame\PetStable-Parts" virtual="true" >
-		<Size x="314" y="116"/>	
-		<TexCoords left="0.16406250" right="0.77734375" top="0.55468750" bottom="0.78125000"/>	
+		<Size x="314" y="116"/>
+		<TexCoords left="0.16406250" right="0.77734375" top="0.55468750" bottom="0.78125000"/>
 	</Texture>
 
 	<Button name="PetStableSlotTemplate" virtual="true">
@@ -147,7 +147,7 @@
 			<Layer level="BACKGROUND">
 				<Texture name="PetStableFrameModelBg" inherits="PetStable-ModelBG">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="PetStableFrameInset" x="3" y="-3"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="3" y="-3"/>
 					</Anchors>
 				</Texture>
 			</Layer>

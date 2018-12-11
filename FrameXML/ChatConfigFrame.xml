@@ -1885,10 +1885,7 @@
 				<Scripts>
 					<OnLoad function="ChatConfigCombat_OnLoad"/>
 					<OnShow function="ChatConfigCombat_OnShow"/>
-					<OnHide>
-						ChatConfigBackgroundFrame:SetPoint("TOPLEFT", ChatConfigCategoryFrame, "TOPRIGHT", 1, 0);
-						ChatConfig_HideCombatTabs();
-					</OnHide>
+					<OnHide function="ChatConfigCombat_OnHide"/>
 				</Scripts>
 			</Frame>
 			<Button name="$parentDefaultButton" parentKey="DefaultButton" inherits="UIPanelButtonTemplate" text="CHAT_DEFAULTS">

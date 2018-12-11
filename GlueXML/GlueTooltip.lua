@@ -78,11 +78,12 @@ function GlueTooltip_Clear(self)
 	self:SetHeight(1);
 end
 
-function GlueTooltip_AddLine(self, text, r, g, b, a, wrap)
+function GlueTooltip_AddLine(self, text, r, g, b, a, wrap, indentedWordWrap)
 	r = r or self.defaultColor.r;
 	g = g or self.defaultColor.g;
 	b = b or self.defaultColor.b;
 	a = a or 1;
+	indentedWordWrap = indentedWordWrap or false;
 	-- find a free line
 	local freeLine;
 	for i = 1, GLUETOOLTIP_NUM_LINES do
@@ -99,6 +100,7 @@ function GlueTooltip_AddLine(self, text, r, g, b, a, wrap)
 	freeLine:SetText(text);
 	freeLine:Show();
 	freeLine:SetWidth(0);
+	freeLine:SetIndentedWordWrap(indentedWordWrap);
 
 	local wrapWidth = 230;
 	if (wrap and freeLine:GetWidth() > wrapWidth) then

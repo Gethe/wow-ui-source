@@ -720,7 +720,7 @@
 		</Scripts>
 	</Button>
 
-	<Button name="EncounterTabTemplate" virtual="true">
+	<Button name="EncounterTabTemplate" frameLevel="510" virtual="true">
 		<Size x="63" y="57"/>
 		<NormalTexture inherits="UI-EJ-Tab-UnSelected"/>
 		<PushedTexture inherits="UI-EJ-Tab-Selected"/>
@@ -2184,7 +2184,7 @@
 									<OnClick function="EncounterJournalInstanceButton_OnClick"/>
 								</Scripts>
 							</Button>
-							<Button name="$parentOverviewTab" inherits="EncounterTabTemplate" useParentLevel="true" parentKey="overviewTab" id="1">
+							<Button name="$parentOverviewTab" inherits="EncounterTabTemplate" parentKey="overviewTab" id="1">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-12" y="-35"/>
 								</Anchors>
@@ -2214,7 +2214,7 @@
 									</OnClick>
 								</Scripts>
 							</Button>
-							<Button name="$parentLootTab" inherits="EncounterTabTemplate" useParentLevel="true" parentKey="lootTab" id="2">
+							<Button name="$parentLootTab" inherits="EncounterTabTemplate" parentKey="lootTab" id="2">
 								<Anchors>
 									<Anchor point="TOP" relativeTo="$parentOverviewTab" relativePoint="BOTTOM" x="0" y="2"/>
 								</Anchors>
@@ -2238,7 +2238,7 @@
 									</OnLoad>
 								</Scripts>
 							</Button>
-							<Button name="$parentBossTab" inherits="EncounterTabTemplate" useParentLevel="true" parentKey="bossTab" id="3">
+							<Button name="$parentBossTab" inherits="EncounterTabTemplate" parentKey="bossTab" id="3">
 								<Anchors>
 									<Anchor point="TOP" relativeTo="$parentLootTab" relativePoint="BOTTOM" x="0" y="2"/>
 								</Anchors>
@@ -2268,7 +2268,7 @@
 									</OnClick>
 								</Scripts>
 							</Button>
-							<Button name="$parentModelTab" inherits="EncounterTabTemplate" useParentLevel="true" parentKey="modelTab" id="4">
+							<Button name="$parentModelTab" inherits="EncounterTabTemplate" parentKey="modelTab" id="4">
 								<Anchors>
 									<Anchor point="TOP" relativeTo="$parentBossTab" relativePoint="BOTTOM" x="0" y="2"/>
 								</Anchors>

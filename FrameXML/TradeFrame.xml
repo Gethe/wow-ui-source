@@ -154,28 +154,7 @@
 	<Frame name="TradeFrame" inherits="ButtonFrameTemplate" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
 		<Size x="344" y="446"/>
 		<Layers>
-			<Layer level="OVERLAY" textureSubLevel="-1">
-				<Texture name="TradeFramePlayerPortrait">
-					<Size x="60" y="60"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-5" y="5"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture name="TradeFrameRecipientPortrait">
-					<Size x="60" y="60"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="TradeFrame" relativePoint="TOPRIGHT" x="-180" y="7"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
-				<Texture name="TradeRecipientPortraitFrame" inherits="UI-Frame-Portrait" parentKey="portraitFrame">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="TradeFrameRecipientPortrait" x="-6" y="4"/>
-					</Anchors>
-				</Texture>
 				<Texture name="TradeRecipientBotLeftCorner" inherits="UI-Frame-BotCornerLeft">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeTo="TradeFrame" relativePoint="BOTTOMRIGHT" x="-178" y="-3"/>
@@ -183,7 +162,7 @@
 				</Texture>
 				<Texture name="TradeRecipientLeftBorder" inherits="!UI-Frame-LeftTile" parentKey="leftBorderBar">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="TradeRecipientPortraitFrame" relativePoint="BOTTOMLEFT" x="8" y="0" />
+						<Anchor point="TOPLEFT" relativeTo="TradeFrame" relativePoint="TOPRIGHT" x="-178" y="-50" />
 						<Anchor point="BOTTOMLEFT" relativeTo="TradeRecipientBotLeftCorner" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
@@ -223,6 +202,28 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="RecipientOverlay" frameLevel="550" inherits="ResizeLayoutFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-180" y="7"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="portrait">
+							<Size x="60" y="60"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="portraitFrame" inherits="UI-Frame-Portrait">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.portrait" x="-6" y="4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame name="TradeHighlightPlayer" inherits="TradeHighlightTemplate">
 				<Size x="150" y="266"/>
 				<Anchors>

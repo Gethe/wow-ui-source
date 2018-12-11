@@ -198,11 +198,7 @@
 			</Frame>
 			<Button name="$parentTab1" inherits="OptionsFrameTabButtonTemplate" text="GAME" id="1" hidden="true">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="$parentCategories" relativePoint="TOPLEFT">
-						<Offset>
-							<AbsDimension x="6" y="-3"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentCategories" relativePoint="TOPLEFT" x="6" y="-2"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -211,31 +207,10 @@
 						InterfaceOptionsFrame_TabOnClick();
 					</OnClick>
 				</Scripts>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentTabSpacer" file="Interface\OptionsFrame\UI-OptionsFrame-Spacer">	
-							<Size>
-								<AbsDimension x="85" y="16"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="-10" y="-6"/>
-									</Offset>
-								</Anchor>
-								<Anchor point="RIGHT" relativeTo="InterfaceOptionsFrameCategoriesTopRight" relativePoint="LEFT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 			</Button>
 			<Button name="$parentTab2" inherits="OptionsFrameTabButtonTemplate" text="ADDONS" id="2" hidden="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTab1" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-16" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentTab1" relativePoint="TOPRIGHT" x="-16" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -243,37 +218,7 @@
 						PanelTemplates_Tab_OnClick(self, InterfaceOptionsFrame);
 						InterfaceOptionsFrame_TabOnClick();
 					</OnClick>
-				</Scripts>				
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentTabSpacer1" file="Interface\OptionsFrame\UI-OptionsFrame-Spacer" hidden="true">	
-							<Size>
-								<AbsDimension x="64" y="16"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="11" y="-6"/>
-									</Offset>
-								</Anchor>
-								<Anchor point="LEFT" relativeTo="InterfaceOptionsFrameAddOnsTopLeft" relativePoint="RIGHT"/>
-							</Anchors>
-						</Texture>
-						<Texture name="$parentTabSpacer2" file="Interface\OptionsFrame\UI-OptionsFrame-Spacer" hidden="true">	
-							<Size>
-								<AbsDimension x="16" y="16"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="-9" y="-6"/>
-									</Offset>
-								</Anchor>
-								<Anchor point="RIGHT" relativeTo="InterfaceOptionsFrameAddOnsTopRight" relativePoint="LEFT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>				
+				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>

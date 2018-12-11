@@ -6,26 +6,21 @@ local COMMUNITIES_TICKET_MANAGER_DIALOG_EVENTS = {
 
 local INVITE_MANAGER_COLUMN_INFO = {
 	[1] = {
-		title = COMMUNITIES_INVITE_MANAGER_COLUMN_TITLE_CHANNEL,
-		width = 60,
+		title = COMMUNITIES_INVITE_MANAGER_COLUMN_TITLE_CREATOR,
+		width = 96,
 	},
 	
 	[2] = {
-		title = COMMUNITIES_INVITE_MANAGER_COLUMN_TITLE_CREATOR,
-		width = 66,
+		title = COMMUNITIES_INVITE_MANAGER_COLUMN_TITLE_LINK,
+		width = 284,
 	},
 	
 	[3] = {
-		title = COMMUNITIES_INVITE_MANAGER_COLUMN_TITLE_LINK,
-		width = 254,
-	},
-	
-	[4] = {
 		title = COMMUNITIES_INVITE_MANAGER_COLUMN_TITLE_EXPIRES,
 		width = 75,
 	},
 	
-	[5] = {
+	[4] = {
 		title = COMMUNITIES_INVITE_MANAGER_COLUMN_TITLE_USES,
 		width = 0,
 	},
@@ -151,11 +146,7 @@ end
 CommunitiesTicketEntryMixin = {};
 
 function CommunitiesTicketEntryMixin:OnUpdate()
-	if self.Channel:IsTruncated() and self.Channel:IsMouseOver() then
-		GameTooltip:SetOwner(self);
-		GameTooltip:AddLine(self.Channel:GetText(), HIGHLIGHT_FONT_COLOR);
-		GameTooltip:Show();
-	elseif self.Creator:IsTruncated() and self.Creator:IsMouseOver() then
+	if self.Creator:IsTruncated() and self.Creator:IsMouseOver() then
 		GameTooltip:SetOwner(self);
 		GameTooltip:AddLine(self.Creator:GetText(), HIGHLIGHT_FONT_COLOR);
 		GameTooltip:Show();
@@ -167,7 +158,7 @@ end
 function CommunitiesTicketEntryMixin:OnEnter()
 	self.CopyLinkButton:Show();
 	
-	if self.Channel:IsTruncated() or self.Creator:IsTruncated() then
+	if self.Creator:IsTruncated() then
 		self:SetScript("OnUpdate", CommunitiesTicketEntryMixin.OnUpdate);
 	end
 end
@@ -200,15 +191,7 @@ function CommunitiesTicketEntryMixin:SetTicket(ticketInfo)
 	
 	self.Creator:SetText(ticketInfo.creator.name or "");
 	self.Creator:SetTextColor(CommunitiesUtil.GetMemberRGB(ticketInfo.creator));
-	
-	self.Channel:SetText(COMMUNITIES_INVITE_MANAGER_NO_CHANNEL);
-	if ticketInfo.defaultStreamId then
-		local streamInfo = C_Club.GetStreamInfo(clubId, ticketInfo.defaultStreamId);
-		if streamInfo then
-			self.Channel:SetText(streamInfo.name);
-		end
-	end
-	
+		
 	self.Link:SetText(ClubTicketUtil.FormatTicket(clubInfo, ticketInfo.ticketId));
 	
 	if ticketInfo.allowedRedeemCount == 0 then

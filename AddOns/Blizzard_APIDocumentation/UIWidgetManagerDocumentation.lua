@@ -156,6 +156,20 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "GetSpellDisplayVisualizationInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "SpellDisplayVisualizationInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetStackedResourceTrackerWidgetVisualizationInfo",
 			Type = "Function",
 
@@ -271,9 +285,9 @@ local UIWidgetManager =
 		{
 			Name = "UIWidgetVisualizationType",
 			Type = "Enumeration",
-			NumValues = 13,
+			NumValues = 14,
 			MinValue = 0,
-			MaxValue = 12,
+			MaxValue = 13,
 			Fields =
 			{
 				{ Name = "IconAndText", Type = "UIWidgetVisualizationType", EnumValue = 0 },
@@ -289,6 +303,7 @@ local UIWidgetManager =
 				{ Name = "BulletTextList", Type = "UIWidgetVisualizationType", EnumValue = 10 },
 				{ Name = "ScenarioHeaderCurrenciesAndBackground", Type = "UIWidgetVisualizationType", EnumValue = 11 },
 				{ Name = "TextureWithState", Type = "UIWidgetVisualizationType", EnumValue = 12 },
+				{ Name = "SpellDisplay", Type = "UIWidgetVisualizationType", EnumValue = 13 },
 			},
 		},
 		{
@@ -306,6 +321,35 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "SpellDisplayIconSizeType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Small", Type = "SpellDisplayIconSizeType", EnumValue = 0 },
+				{ Name = "Medium", Type = "SpellDisplayIconSizeType", EnumValue = 1 },
+				{ Name = "Large", Type = "SpellDisplayIconSizeType", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "StatusBarValueTextType",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 0,
+			MaxValue = 5,
+			Fields =
+			{
+				{ Name = "Hidden", Type = "StatusBarValueTextType", EnumValue = 0 },
+				{ Name = "Percentage", Type = "StatusBarValueTextType", EnumValue = 1 },
+				{ Name = "Value", Type = "StatusBarValueTextType", EnumValue = 2 },
+				{ Name = "Time", Type = "StatusBarValueTextType", EnumValue = 3 },
+				{ Name = "TimeShowOneLevelOnly", Type = "StatusBarValueTextType", EnumValue = 4 },
+				{ Name = "ValueOverMax", Type = "StatusBarValueTextType", EnumValue = 5 },
+			},
+		},
+		{
 			Name = "BulletTextListWidgetVisualizationInfo",
 			Type = "Structure",
 			Fields =
@@ -313,6 +357,7 @@ local UIWidgetManager =
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "enabledState", Type = "WidgetEnabledState", Nilable = false },
 				{ Name = "lines", Type = "table", InnerType = "string", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 			},
@@ -326,6 +371,7 @@ local UIWidgetManager =
 				{ Name = "barPercent", Type = "number", Nilable = false },
 				{ Name = "neutralPercent", Type = "number", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 			},
@@ -342,6 +388,7 @@ local UIWidgetManager =
 				{ Name = "rightText", Type = "string", Nilable = false },
 				{ Name = "rightTooltip", Type = "string", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 			},
@@ -360,6 +407,7 @@ local UIWidgetManager =
 				{ Name = "rightBarValue", Type = "number", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 			},
@@ -393,6 +441,7 @@ local UIWidgetManager =
 			{
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "currencies", Type = "table", InnerType = "UIWidgetCurrencyInfo", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 			},
@@ -418,8 +467,9 @@ local UIWidgetManager =
 			Fields =
 			{
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
-				{ Name = "value", Type = "number", Nilable = false },
+				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 			},
@@ -437,6 +487,7 @@ local UIWidgetManager =
 				{ Name = "description", Type = "string", Nilable = false },
 				{ Name = "currencies", Type = "table", InnerType = "UIWidgetCurrencyInfo", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 			},
@@ -449,6 +500,32 @@ local UIWidgetManager =
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "currencies", Type = "table", InnerType = "UIWidgetCurrencyInfo", Nilable = false },
 				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
+				{ Name = "leftCurrencyWidth", Type = "number", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "widgetTag", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "UIWidgetSpellInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "SpellDisplayVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
+				{ Name = "enabledState", Type = "WidgetEnabledState", Nilable = false },
+				{ Name = "spellInfo", Type = "UIWidgetSpellInfo", Nilable = false },
+				{ Name = "iconSizeType", Type = "SpellDisplayIconSizeType", Nilable = false },
+				{ Name = "widgetWidth", Type = "number", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 			},
@@ -461,6 +538,7 @@ local UIWidgetManager =
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "resources", Type = "table", InnerType = "UIWidgetCurrencyInfo", Nilable = false },
 				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 			},
@@ -475,10 +553,12 @@ local UIWidgetManager =
 				{ Name = "barMax", Type = "number", Nilable = false },
 				{ Name = "barValue", Type = "number", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
 				{ Name = "barWidth", Type = "number", Nilable = false },
-				{ Name = "barValueInSeconds", Type = "number", Nilable = false },
+				{ Name = "barValueTextType", Type = "StatusBarValueTextType", Nilable = false },
 				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
 				{ Name = "fillTextureKitID", Type = "number", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 			},
@@ -492,6 +572,7 @@ local UIWidgetManager =
 				{ Name = "enabledState", Type = "WidgetEnabledState", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "widgetWidth", Type = "number", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 			},
@@ -505,6 +586,7 @@ local UIWidgetManager =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "backgroundTextureKitID", Type = "number", Nilable = false },
 				{ Name = "portraitTextureKitID", Type = "number", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 			},

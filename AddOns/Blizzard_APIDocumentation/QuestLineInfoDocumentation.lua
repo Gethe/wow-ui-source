@@ -49,6 +49,15 @@ local QuestLineInfo =
 				{ Name = "questIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "RequestQuestLinesForMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =

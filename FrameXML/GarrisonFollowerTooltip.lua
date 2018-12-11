@@ -26,10 +26,10 @@ function GarrisonFollowerTooltip_Show(garrisonFollowerID, collected, quality, le
 	data.noAbilityDescriptions = noAbilityDescriptions;
 	data.underBiased = underBiased;
 	data.underBiasedReason = underBiasedReason;
-	GarrisonFollowerTooltip_ShowWithData(data);
+	GarrisonFollowerTooltip_ShowWithData(data, tooltipFrame);
 end
 
-function GarrisonFollowerTooltip_ShowWithData(data)
+function GarrisonFollowerTooltip_ShowWithData(data, tooltipFrame)
 	if (not tooltipFrame) then
 		if (data.followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
 			tooltipFrame = GarrisonShipyardFollowerTooltip;

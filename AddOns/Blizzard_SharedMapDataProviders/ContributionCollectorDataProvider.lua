@@ -40,28 +40,34 @@ function ContributionCollectorPinMixin:OnMouseLeave() -- override
 end
 
 function ContributionCollectorPinMixin:AddContributionsToTooltip(tooltip, ...)
+	local addedContribution = false;
+
 	for i = 1, select("#", ...) do
 		local contributionID = select(i, ...);
 		local contributionName = C_ContributionCollector.GetName(contributionID);
 		local state, stateAmount, timeOfNextStateChange = C_ContributionCollector.GetState(contributionID);
 		local appearanceData = C_ContributionCollector.GetContributionAppearance(contributionID, state);
 
-		if i ~= 1 then
-			tooltip:AddLine(" ");
-		end
-
-		tooltip:AddLine(contributionName, HIGHLIGHT_FONT_COLOR:GetRGB());
-
-		local tooltipLine = appearanceData.tooltipLine;
-		if tooltipLine then
-			if timeOfNextStateChange and appearanceData.tooltipUseTimeRemaining then
-				local time = math.max(timeOfNextStateChange - GetServerTime(), 60); -- Never display times below one minute
-				tooltipLine = tooltipLine:format(SecondsToTime(time, true, true, 1));
-			else
-				tooltipLine = tooltipLine:format(FormatPercentage(stateAmount));
+		if appearanceData then
+			if addedContribution then
+				tooltip:AddLine(" ");
 			end
 
-			tooltip:AddLine(tooltipLine, appearanceData.stateColor:GetRGB());
+			tooltip:AddLine(contributionName, HIGHLIGHT_FONT_COLOR:GetRGB());
+
+			local tooltipLine = appearanceData.tooltipLine;
+			if tooltipLine then
+				if timeOfNextStateChange and appearanceData.tooltipUseTimeRemaining then
+					local time = math.max(timeOfNextStateChange - GetServerTime(), 60); -- Never display times below one minute
+					tooltipLine = tooltipLine:format(SecondsToTime(time, true, true, 1));
+				else
+					tooltipLine = tooltipLine:format(FormatPercentage(stateAmount));
+				end
+
+				tooltip:AddLine(tooltipLine, appearanceData.stateColor:GetRGB());
+			end
+
+			addedContribution = true;
 		end
 	end
 end

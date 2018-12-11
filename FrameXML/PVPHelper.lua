@@ -316,7 +316,7 @@ function PVPReadyDialog_Display(self, index, displayName, isRated, queueType, ga
 			self.background:SetTexture("Interface\\LFGFrame\\UI-PVP-BACKGROUND-"..(factionGroup or "Alliance"));
 			self.label:SetText(BATTLEGROUND_IS_READY);
 		end
-	elseif ( queueType == "ARENA" ) then
+	elseif ( queueType == "ARENA" or queueType == "ARENASKIRMISH" ) then
 		self.background:SetTexCoord(0, 1, 25/128, 91/128);
 		self.background:SetTexture("Interface\\PVPFrame\\PvpBg-NagrandArena-ToastBG");
 		showTitle = false;

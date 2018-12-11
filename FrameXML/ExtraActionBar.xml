@@ -9,9 +9,6 @@
 			<Layer level="BACKGROUND">
 				<Texture name="$parentIcon" parentKey="icon"/>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel = "1">
-				<Texture name="$parentFlash" file="Interface\Buttons\UI-QuickslotRed" hidden="true"/>
-			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
 				<FontString name="$parentHotKey" parentKey="HotKey" inherits="NumberFontNormalGray">
 					<Size x="0" y="0"/>

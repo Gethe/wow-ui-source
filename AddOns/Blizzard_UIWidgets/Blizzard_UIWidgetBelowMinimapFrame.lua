@@ -20,8 +20,8 @@ local function WidgetsLayout(widgetContainer, sortedWidgets)
 		end
 	end
 
-	widgetContainer:SetHeight(widgetsHeight);
-	widgetContainer:SetWidth(maxWidgetWidth);
+	widgetContainer:SetHeight(math.max(widgetsHeight, 1));
+	widgetContainer:SetWidth(math.max(maxWidgetWidth, 1));
 	UIParent_ManageFramePositions();
 end
 

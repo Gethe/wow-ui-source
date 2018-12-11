@@ -31,31 +31,37 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="AlliedRaceOverviewBulletsTemplate" virtual="true">
-		<Size x="240" y="20"/>
+	<Frame name="AlliedRaceOverviewBulletsTemplate" mixin="AlliedRacesBulletFrameMixin" virtual="true">
+		<Size x="200" y="20"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Bullet" inherits="UI-PaperOverlay-Bullet">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Check" inherits="UI-PaperOverlay-Check">
+				<Texture parentKey="Check" atlas="AlliedRace-UnlockingFrame-Checkmark" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>			
 			</Layer>
 			<Layer level="OVERLAY">
+				<FontString parentKey="Dash" inherits="GameFontBlackMedium" text="QUEST_DASH">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
 				<FontString parentKey="Text" inherits="GameFontBlackMedium" justifyH="LEFT" justifyV="TOP">
 					<Size x="230" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Bullet" relativePoint="TOPRIGHT" x="9" y="0"/>
+						<Anchor point="TOPLEFT" x="27" y="0"/>
 					</Anchors>
 					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
 				</FontString>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="AlliedRaceAbilityTemplate" virtual="true">
@@ -74,6 +80,7 @@
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" />
 					</Anchors>
+					<Color r="0.208" g="0" b="0"/>
 				</FontString>
 				<Texture atlas="AlliedRace-TraitsBorder" useAtlasSize="true">
 					<Anchors>
@@ -139,6 +146,7 @@
 								
 								local alliedRaceFrame = self:GetParent():GetParent(); 
 								alliedRaceFrame:UpdateModel(self.MaleModelID);
+								alliedRaceFrame:SetRaceNameForGender("male");
 								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER); 
 							</OnClick>
 						</Scripts>
@@ -154,6 +162,7 @@
 								alliedRaceModelFrame.AlliedRacesMaleButton:SetChecked(false);
 								local alliedRaceFrame = self:GetParent():GetParent(); 
 								alliedRaceFrame:UpdateModel(self.FemaleModelID);
+								alliedRaceFrame:SetRaceNameForGender("female");
 								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER); 
 							</OnClick>
 						</Scripts>
@@ -247,101 +256,71 @@
 						<ScrollChild>
 							<Frame parentKey="Child">
 								<Size x="275" y="1"/>
-								<Layers>
-									<Layer level="OVERLAY" textureSubLevel="1">
-										<Texture>
-											<Color r="1" g="0" b="0" a="0"/>
-										</Texture>
-									</Layer>
-									<Layer level="BACKGROUND">
-										<FontString parentKey="RaceDescriptionText" inherits="QuestFont" justifyH="LEFT" >
-											<Anchors>
-												<Anchor point="TOPLEFT" x="40" y="-10"/>
-												<Anchor point="TOPRIGHT" x="20" y="-10" />
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
 								<Frames>
 									<Frame parentKey="ObjectivesFrame">
-										<Size x="260" y="24"/>
-										<Frames>
-											<Button parentKey="HeaderButton">
-												<Size x="1" y="24"/>
-												<Anchors>
-													<Anchor point="TOPLEFT" x="-2" y="0"/>
-													<Anchor point="RIGHT" x="-2" y="0"/>
-												</Anchors>
-												<Layers>
-													<Layer level="OVERLAY">
-														<FontString parentKey="ExpandedIcon" inherits="GameFontNormalLarge">
-															<Size x="12" y="12"/>
-															<Anchors>
-																<Anchor point="LEFT" x="5" y="0"/>
-															</Anchors>
-														</FontString>
-														<Texture parentKey="AbilityIcon">
-															<Size x="18" y="18"/>
-															<Anchors>
-																<Anchor point="LEFT" relativeKey="$parent.ExpandedIcon" relativePoint="RIGHT" x="5" y="0"/>
-															</Anchors>
-														</Texture>
-														<FontString parentKey="Title" justifyH="LEFT" inherits="GameFontNormal">
-															<Size x="200" y="10"/>
-															<Anchors>
-																<Anchor point="LEFT" x="8" y="0"/>
-															</Anchors>
-														</FontString>
-													</Layer>
-													<Layer level="BACKGROUND">
-														<Texture parentKey="PaperHeaderBackgroundLeft" inherits="UI-PaperOverlay-PaperHeader-SelectUp-Left">
-															<Anchors>
-																<Anchor point="LEFT" x="-1" y="-1"/>
-															</Anchors>
-														</Texture>
-														<Texture parentKey="PaperHeaderBackgroundRight" inherits="UI-PaperOverlay-PaperHeader-SelectUp-Right">
-															<Anchors>
-																<Anchor point="RIGHT" x="3" y="-1"/>
-															</Anchors>
-														</Texture>
-														<Texture parentKey="PaperHeaderBackgroundMiddle" inherits="UI-PaperOverlay-PaperHeader-SelectUp-Mid" >
-															<Anchors>
-																<Anchor point="LEFT" relativeKey="$parent.PaperHeaderBackgroundLeft" relativePoint="RIGHT" x="-32" y="0"/>
-																<Anchor point="RIGHT" relativeKey="$parent.PaperHeaderBackgroundRight" relativePoint="LEFT" x="32" y="0"/>
-															</Anchors>
-														</Texture>
-													</Layer>
-												</Layers>
-											</Button>
-										</Frames>
+										<Size x="287" y="0"/>
+										<Anchors>
+											<Anchor point="TOP" x="28" y="-20"/>
+										</Anchors>
 										<Layers>
+											<Layer level="BORDER">
+												<Texture parentKey="HeaderBackground" atlas="AlliedRace-UnlockingFrame-BoxTopper" useAtlasSize="true">
+													<Anchors>
+														<Anchor point="TOP"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="BACKGROUND">
+												<Texture parentKey="DescriptionBGBottom" atlas="AlliedRace-UnlockingFrame-Box" useAtlasSize="true">
+													<Anchors>
+														<Anchor point="BOTTOM" x="1" y="0"/>
+													</Anchors>
+												</Texture>
+												<Texture parentKey="DescriptionBG" atlas="!AlliedRace-UnlockingFrame-BoxTile">
+													<Size x="287" y="0"/>
+													<Anchors>
+														<Anchor point="TOP" relativeKey="$parent.HeaderBackground" relativePoint="BOTTOM" x="1" y="6"/>
+														<Anchor point="BOTTOM" relativeKey="$parent.DescriptionBGBottom" relativePoint="TOP" x="1" y="0"/>
+													</Anchors>
+												</Texture>
+											</Layer>
 											<Layer level="ARTWORK">
+												<FontString parentKey="Title" justifyH="LEFT" inherits="GameFontNormal" text="ALLIED_RACE_UNLOCK_TEXT">
+													<Size x="200" y="0"/>
+													<Anchors>
+														<Anchor point="LEFT" relativeKey="$parent.HeaderBackground" x="11" y="3"/>
+													</Anchors>
+													<Color r="0.929" g="0.788" b="0.620"/>
+												</FontString>
 												<FontString parentKey="Description" inherits="GameFontBlack" justifyH="LEFT">
 													<Size x="260" y="30"/>
 													<Anchors>
-														<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.HeaderButton" x="=-20" y="-9"/>
+														<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.HeaderBackground" x="=-20" y="-9"/>
 													</Anchors>
 													<Color r="0.25" g="0.1484375" b=".02" a="1"/>
 												</FontString>
 											</Layer>
-											<Layer level="BACKGROUND">
-												<Texture parentKey="DescriptionBG" inherits="UI-PaperOverlay-AbilityTextBG">
-													<Size x="12" y="12"/>
-													<Anchors>
-														<Anchor point="TOPLEFT" relativeKey="$parent.RaceDescriptionText" x="-5" y="12"/>
-														<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RaceDescriptionText" x="9" y="-11"/>
-													</Anchors>
-												</Texture>
-												<Texture parentKey="DescriptionBGBottom" inherits="UI-PaperOverlay-AbilityTextBottomBorder">
-													<Anchors>
-														<Anchor point="LEFT" relativeKey="$parent.DescriptionBG" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-														<Anchor point="RIGHT" relativeKey="$parent.DescriptionBG" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-													</Anchors>
-												</Texture>
-											</Layer>
 										</Layers>
 									</Frame>
 								</Frames>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString parentKey="RaceDescriptionText" inherits="QuestFont" justifyH="LEFT" >
+											<Anchors>
+												<Anchor point="LEFT" x="30"/>
+												<Anchor point="RIGHT" x="20"/>
+												<Anchor point="TOP" relativeKey="$parent.ObjectivesFrame" relativePoint="BOTTOM" y="-20"/>
+											</Anchors>
+											<Color r="0.208" g="0" b="0"/>
+										</FontString>
+										<FontString parentKey="RacialTraitsLabel" inherits="QuestFont" text="RACIAL_TRAITS">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.RaceDescriptionText" relativePoint="BOTTOMLEFT" x="0" y="-17"/>
+											</Anchors>
+											<Color r="0.208" g="0" b="0"/>
+										</FontString>
+									</Layer>
+								</Layers>
 							</Frame>
 						</ScrollChild>
 						<Frames>
@@ -383,15 +362,16 @@
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Banner" atlas="AlliedRace-UnlockingFrame-RaceBanner" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.ModelFrame" relativePoint="TOPRIGHT" x="-70" y="0"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ModelFrame" relativePoint="TOPRIGHT" x="-76" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
+			<OnLoad  method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide  method="OnHide"/>
+			<OnShow  method="OnShow"/>
 		</Scripts> 
 	</Frame>
 </Ui>

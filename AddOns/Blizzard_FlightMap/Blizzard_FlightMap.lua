@@ -8,7 +8,7 @@ function FlightMapMixin:SetupTitle()
 	self.BorderFrame.Bg:SetParent(self);
 	self.BorderFrame.TopTileStreaks:Hide();
 
-	SetPortraitToTexture(self.BorderFrame.portrait, [[Interface/Icons/icon_petfamily_flying]]);
+	PortraitFrameTemplate_SetPortraitToAsset(self.BorderFrame, [[Interface/Icons/icon_petfamily_flying]]);
 end
 
 function FlightMapMixin:OnLoad()
@@ -72,9 +72,9 @@ function FlightMapMixin:OnShow()
 	self:SetMapID(mapID);
 
 	MapCanvasMixin.OnShow(self);
-	
+
 	self:ResetZoom();
-	
+
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end
 

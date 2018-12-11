@@ -9,22 +9,28 @@ function ArtifactBarMixin:ShouldBeVisible()
 end
 
 function ArtifactBarMixin:Update()
-	local artifactItemID, _, _, _, artifactTotalXP, artifactPointsSpent, _, _, _, _, _, _, artifactTier = C_ArtifactUI.GetEquippedArtifactInfo();
-	local numPointsAvailableToSpend, xp, xpForNextPoint = ArtifactBarGetNumArtifactTraitsPurchasableFromXP(artifactPointsSpent, artifactTotalXP, artifactTier);
+	local artifactItemID = C_ArtifactUI.GetEquippedArtifactItemID();
+	if artifactItemID then
+		local item = Item:CreateFromItemID(artifactItemID);
+		item:ContinueOnItemLoad(function()
+			local artifactItemID, _, _, _, artifactTotalXP, artifactPointsSpent, _, _, _, _, _, _, artifactTier = C_ArtifactUI.GetEquippedArtifactInfo();
+			local numPointsAvailableToSpend, xp, xpForNextPoint = ArtifactBarGetNumArtifactTraitsPurchasableFromXP(artifactPointsSpent, artifactTotalXP, artifactTier);
 
-	self:SetBarValues(xp, 0, xpForNextPoint, numPointsAvailableToSpend + artifactPointsSpent);
+			self:SetBarValues(xp, 0, xpForNextPoint, numPointsAvailableToSpend + artifactPointsSpent);
 	
-	self.StatusBar.artifactItemID = artifactItemID;
-	self.xp = xp;
-	self.totalXP = artifactTotalXP;
-	self.xpForNextPoint = xpForNextPoint;
-	self.numPointsAvailableToSpend = numPointsAvailableToSpend;
-	self:Show();
-	self.Tick:SetShown(numPointsAvailableToSpend > 0);
-	self.StatusBar.Underlay:SetShown(numPointsAvailableToSpend > 0);
-	self.StatusBar.Overlay:Show();
-	self.StatusBar.Overlay:SetAlpha(numPointsAvailableToSpend > 0 and .35 or .25);
-	self:UpdateTick();
+			self.StatusBar.artifactItemID = artifactItemID;
+			self.xp = xp;
+			self.totalXP = artifactTotalXP;
+			self.xpForNextPoint = xpForNextPoint;
+			self.numPointsAvailableToSpend = numPointsAvailableToSpend;
+			self:Show();
+			self.Tick:SetShown(numPointsAvailableToSpend > 0);
+			self.StatusBar.Underlay:SetShown(numPointsAvailableToSpend > 0);
+			self.StatusBar.Overlay:Show();
+			self.StatusBar.Overlay:SetAlpha(numPointsAvailableToSpend > 0 and .35 or .25);
+			self:UpdateTick();
+		end);
+	end
 end
 
 function ArtifactBarMixin:UpdateOverlayFrameText()

@@ -17,27 +17,28 @@
 			<OnHide method="OnHideMainFrame"/>
 			<OnEvent method="OnEventMainFrame"/>
 		</Scripts>
-		<Layers>
-			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture parentKey="Topper">
-					<Anchors>
-						<Anchor point="BOTTOM" relativePoint="TOP"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="CloseButtonBorder">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.CloseButton" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
-			<Frame parentKey="TitleScroll" inherits="ResizeLayoutFrame">
-				<Size x="1" y="30"/>
+			<Frame parentKey="OverlayElements" frameLevel="510" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Topper">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="CloseButtonBorder">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.CloseButton" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="TitleScroll" frameLevel="520" inherits="ResizeLayoutFrame">
 				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.Topper" relativePoint="BOTTOM" x="0" y="0"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.OverlayElements.Topper" relativePoint="BOTTOM" x="0" y="0"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="fixedHeight" value="35" type="number"/>
@@ -49,6 +50,9 @@
 					<Layer level="ARTWORK">
 						<Texture parentKey="ScrollLeft">
 							<Size x="39" y="30.5"/>
+							<KeyValues>
+								<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+							</KeyValues>
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
 								<Anchor point="BOTTOMLEFT"/>
@@ -56,12 +60,18 @@
 						</Texture>
 						<Texture parentKey="ScrollRight">
 							<Size x="39" y="30.5"/>
+							<KeyValues>
+								<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+							</KeyValues>
 							<Anchors>
 								<Anchor point="TOPRIGHT"/>
 								<Anchor point="BOTTOMRIGHT"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="ScrollMiddle" hWrapMode="REPEAT">
+							<KeyValues>
+								<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+							</KeyValues>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.ScrollLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
 								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollRight" relativePoint="BOTTOMLEFT" x="0" y="2"/>
@@ -70,21 +80,9 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Button parentKey="Tab1" name="$parentTab1" inherits="OrderHallFrameTabButtonTemplate" id="1" text="GARRISON_MISSIONS">
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="7" y="-31"/>
-				</Anchors>
-			</Button>
-			<Button parentKey="Tab2" name="$parentTab2" inherits="OrderHallFrameTabButtonTemplate" id="2" text="GARRISON_FOLLOWERS">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-16" y="0"/>
-				</Anchors>
-			</Button>
-			<Button parentKey="Tab3" name="$parentTab3" inherits="OrderHallFrameTabButtonTemplate" id="3" text="ADVENTURE_MAP_TITLE">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT" x="-16" y="0"/>
-				</Anchors>
-			</Button>
+			<Button parentKey="Tab1" name="$parentTab1" inherits="OrderHallFrameTabButtonTemplate" id="1" text="GARRISON_MISSIONS"/>
+			<Button parentKey="Tab2" name="$parentTab2" inherits="OrderHallFrameTabButtonTemplate" id="2" text="GARRISON_FOLLOWERS"/>
+			<Button parentKey="Tab3" name="$parentTab3" inherits="OrderHallFrameTabButtonTemplate" id="3" text="ADVENTURE_MAP_TITLE"/>
 			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader" name="$parentFollowers" hidden="true" mixin="GarrisonFollowerList" frameStrata="HIGH">
 				<Size x="305" y="535"/>
 				<KeyValues>
@@ -194,7 +192,7 @@
 						</Layers>
 					</Frame>
 
-					<Button parentKey="MissionPage" inherits="OrderHallMissionPageTemplate" hidden="true" mixin="GarrisonMissionPageMixin,GarrisonFollowerMissionPageMixin,OrderHallFollowerMissionPageMixin"/>
+					<Button parentKey="MissionPage" inherits="OrderHallMissionPageTemplate" hidden="true" mixin="GarrisonMissionPageMixin,GarrisonFollowerMissionPageMixin,OrderHallFollowerMissionPageMixin, BFAFollowerMissionPageMixin"/>
 
 					<!-- We need 13 preload models;
 						potentially (2 troops with 5 displayIDs each) + (1 follower with 2 displayIDs) + (1 enemy model)

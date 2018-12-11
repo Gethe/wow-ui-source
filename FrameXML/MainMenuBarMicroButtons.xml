@@ -113,21 +113,9 @@
 			<Anchor point="BOTTOMLEFT" relativeTo="SpellbookMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad>
-				LoadMicroButtonTextures(self, "Talents");
-				self.tooltipText = MicroButtonTooltipText(TALENTS_BUTTON, "TOGGLETALENTS");
-				self.newbieText = NEWBIE_TOOLTIP_TALENTS;
-
-				self.minLevel = SHOW_SPEC_LEVEL;
-				self:RegisterEvent("PLAYER_LEVEL_UP");
-				self:RegisterEvent("UPDATE_BINDINGS");
-				self:RegisterEvent("PLAYER_TALENT_UPDATE");
-				self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
-        		self:RegisterEvent("HONOR_LEVEL_UPDATE");
-	      		self:RegisterEvent("PLAYER_PVP_TALENT_UPDATE");
-			</OnLoad>
-			<OnClick function="TalentMicroButton_OnClick"/>
-			<OnEvent function="TalentMicroButton_OnEvent"/>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Button>
 	<Button name="AchievementMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">

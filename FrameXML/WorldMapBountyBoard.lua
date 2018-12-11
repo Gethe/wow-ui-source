@@ -86,7 +86,7 @@ function WorldMapBountyBoardMixin:Refresh()
 		return;
 	end
 
-	self.bounties, self.displayLocation, self.lockedQuestID = GetQuestBountyInfoForMapID(mapID, self.bounties);
+	self.bounties, self.displayLocation, self.lockedQuestID, self.bountySetID = GetQuestBountyInfoForMapID(mapID, self.bounties);
 
 	if not self.displayLocation then
 		self:Clear();
@@ -444,8 +444,8 @@ function WorldMapBountyBoardMixin:CacheMapsForSelectionBounty()
 
 	self.cachedMapInfo = {};
 	local mapID = self:GetMapID();
-	local zones = MapUtil.GetRelatedBountyZoneMaps(mapID);
-	for i, zoneMapID in ipairs(zones) do
+	local bountySetMaps = MapUtil.GetBountySetMaps(self.bountySetID);
+	for i, zoneMapID in ipairs(bountySetMaps) do
 		local numQuests = self:CalculateNumActiveWorldQuestsForSelectedBountyByMap(zoneMapID);
 		if numQuests > 0 then
 			table.insert(self.cachedMapInfo, { mapID = zoneMapID, count = numQuests });

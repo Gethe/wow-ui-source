@@ -62,6 +62,20 @@ local GarrisonInfo =
 				{ Name = "atGarrisonMissionNPC", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "IsEnvironmentCountered",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "missionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "environmentCountered", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

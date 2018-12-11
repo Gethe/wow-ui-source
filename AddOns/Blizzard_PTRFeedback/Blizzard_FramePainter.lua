@@ -1,9 +1,9 @@
 FramePainter = {}
 FramePainter.Assets = {
-    [1] = "Interface\\Addons\\Blizzard_PTRFeedback\\Assets\\Borders\\watermarkBorder",
-    [2] = "Interface\\Addons\\Blizzard_PTRFeedback\\Assets\\Borders\\watermarkBorder",
-    [3] = "Interface\\Addons\\Blizzard_PTRFeedback\\Assets\\Icons\\InformationIcon.blp",
-    [4] = "Interface\\Addons\\Blizzard_PTRFeedback\\Assets\\Icons\\InformationIcon-Highlight.blp",
+    [1] = "Interface\\DialogFrame\\UI-DialogBox-TestWatermark-Border",
+    [2] = "Interface\\DialogFrame\\UI-DialogBox-TestWatermark-Border",
+    [3] = "Interface\\FriendsFrame\\InformationIcon.blp",
+    [4] = "Interface\\FriendsFrame\\InformationIcon-Highlight.blp",
 }
 
 function FramePainter.Help()
@@ -68,7 +68,7 @@ function FramePainter.AddBackground(frame, texturePath)
         frame.Background:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT")
         frame.Background:SetVertTile(true)
         frame.Background:SetHorizTile(true)
-        frame.Background:SetTexture(texturePath, true)
+        frame.Background:SetTexture(texturePath, true, true)
         frame.Background:SetDrawLayer("ARTWORK")
     end
 end

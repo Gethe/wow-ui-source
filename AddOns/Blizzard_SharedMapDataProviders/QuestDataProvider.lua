@@ -30,10 +30,10 @@ function QuestDataProviderMixin:OnAdded(mapCanvas)
 end
 
 function QuestDataProviderMixin:OnRemoved(mapCanvas)
-	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
-
 	self:GetMap():UnregisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
 	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
+
+	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 end
 
 function QuestDataProviderMixin:SetFocusedQuestID(questID)
@@ -84,7 +84,7 @@ function QuestDataProviderMixin:RefreshAllData(fromOnShow)
 	local doesMapShowTaskObjectives = C_TaskQuest.DoesMapShowTaskQuestObjectives(mapID);
 	if questsOnMap then
 		for i, info in ipairs(questsOnMap) do
-			if self:ShouldShowQuest(info.questID, mapInfo.mapType, doesMapShowTaskObjectives) then
+			if self:ShouldShowQuest(info.questID, mapInfo.mapType, doesMapShowTaskObjectives, info.isMapIndicatorQuest) then
 				local pin = self:AddQuest(info.questID, info.x, info.y, i);
 				table.insert(pinsToQuantize, pin);
 			end
@@ -100,7 +100,7 @@ function QuestDataProviderMixin:RefreshAllData(fromOnShow)
 	end
 end
 
-function QuestDataProviderMixin:ShouldShowQuest(questID, mapType, doesMapShowTaskObjectives)
+function QuestDataProviderMixin:ShouldShowQuest(questID, mapType, doesMapShowTaskObjectives, isMapIndicatorQuest)
 	if self.focusedQuestID and self.focusedQuestID ~= questID then
 		return false;
 	end
@@ -108,6 +108,12 @@ function QuestDataProviderMixin:ShouldShowQuest(questID, mapType, doesMapShowTas
 		if not doesMapShowTaskObjectives then
 			return false;
 		end
+	end
+	if QuestUtils_IsQuestBonusObjective(questID) then
+		return false;
+	end
+	if isMapIndicatorQuest or not HaveQuestData(questID) then 
+		return false; 
 	end
 	return MapUtil.ShouldMapTypeShowQuests(mapType);
 end
@@ -135,6 +141,11 @@ function QuestDataProviderMixin:OnCanvasSizeChanged()
 	self.poiQuantizer:Resize(math.ceil(self.poiQuantizer.size * ratio), self.poiQuantizer.size);
 end
 
+local function GetQuestCompleteIcon(questID)
+	local isLegendaryQuest = C_QuestLog.IsLegendaryQuest(questID);
+	return isLegendaryQuest and "Interface/WorldMap/UI-WorldMap-QuestIcon-Legendary" or "Interface/WorldMap/UI-WorldMap-QuestIcon";
+end
+
 function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset)
 	local pin = self:GetMap():AcquirePin(self:GetPinTemplate());
 	pin.questID = questID;
@@ -156,6 +167,9 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset)
 
 	if isComplete then
 		pin.style = "normal";
+		
+		local questCompleteIcon = GetQuestCompleteIcon(questID);
+		
 		-- If the quest is super tracked we want to show the selected circle behind it.
 		if ( isSuperTracked ) then
 			pin.Texture:SetSize(89, 90);
@@ -170,7 +184,7 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset)
 			pin.PushedTexture:SetTexCoord(0.375, 0.500, 0.375, 0.5);
 			pin.Highlight:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
 			pin.Highlight:SetTexCoord(0.625, 0.750, 0.875, 1);
-			pin.Number:SetTexture("Interface/WorldMap/UI-WorldMap-QuestIcon");
+			pin.Number:SetTexture(questCompleteIcon);
 			pin.Number:SetTexCoord(0, 0.5, 0, 0.5);
 			pin.Number:Show();
 		else
@@ -178,9 +192,9 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset)
 			pin.PushedTexture:SetSize(95, 95);
 			pin.Highlight:SetSize(95, 95);
 			pin.Number:SetSize(85, 85);
-			pin.Texture:SetTexture("Interface/WorldMap/UI-WorldMap-QuestIcon");
-			pin.PushedTexture:SetTexture("Interface/WorldMap/UI-WorldMap-QuestIcon");
-			pin.Highlight:SetTexture("Interface/WorldMap/UI-WorldMap-QuestIcon");
+			pin.Texture:SetTexture(questCompleteIcon);
+			pin.PushedTexture:SetTexture(questCompleteIcon);
+			pin.Highlight:SetTexture(questCompleteIcon);
 			pin.Texture:SetTexCoord(0, 0.5, 0, 0.5);
 			pin.PushedTexture:SetTexCoord(0, 0.5, 0.5, 1);
 			pin.Highlight:SetTexCoord(0.5, 1, 0, 0.5);

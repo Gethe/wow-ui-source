@@ -4,7 +4,19 @@ local PTR_IssueReporter = CreateFrame("Frame", nil, UIParent)
 function PTR_IssueReporter.Init()
     Blizzard_PTRIssueReporter_Saved = Blizzard_PTRIssueReporter_Saved or {}
     --------------------------------------------------ALWAYS DISPLAYED BUTTONS--------------------------------------------------
-    local IgnoreLocations = {1813, 1814, 1879, 1882, 1883, 1892,  1893, 1897, 1898, 1907}
+    local IgnoreLocations = {
+        1813, -- Un'gol Ruins (Islands 1)
+        1814, -- Havenswood (Islands 2)
+        1907, -- Snowblossom Village (Islands 3)
+        1893, -- The Dread Chain (Islands 4)
+        1898, -- Skittering Hollow (Islands 5)
+        1897, -- Molten Cay (Islands 6)
+        1879, -- Jorundall (Islands 7)
+        1882, -- Verdant Wilds (Islands 8)
+        1892, -- The Rotting Mire (Islands 9)
+        1883, -- Whispering Reef (Islands 10)
+    }
+
     PTR_IssueReporter.Body = CreateFrame("Frame", nil, PTR_IssueReporter)
     PTR_IssueReporter.Data = {
         targetQuests = {
@@ -15,18 +27,23 @@ function PTR_IssueReporter.Init()
         AlertQueueSize = 3,
         QuestHistorySize = 5,
         npcAlertQuestion = "Did you experience any bugs with this enemy?",
-        watermark = "Interface\\Addons\\Blizzard_PTRFeedback\\Assets\\Textures\\watermark",
-        textureFile = "Interface\\Addons\\Blizzard_PTRFeedback\\Assets\\Textures\\UI-Background-Marble",
-        textureFile2 = "Interface\\Addons\\Blizzard_PTRFeedback\\Assets\\Textures\\UI-Background-Marble",
-        pushedTexture = "Interface\\Addons\\Blizzard_PTRFeedback\\Assets\\Buttons\\UI-Quickslot-Depress",
+        watermark = "Interface\\FrameGeneral\\UI-Background-TestWatermark",
+        textureFile = "Interface\\FrameGeneral\\UI-Background-Marble",
+        textureFile2 = "Interface\\FrameGeneral\\UI-Background-Marble",
+        pushedTexture = "Interface\\Buttons\\UI-Quickslot-Depress",
         fontString = "GameFontNormal",
-        confusedIcon = "Interface\\Addons\\Blizzard_PTRFeedback\\Assets\\Icons\\TutorialFrame-QuestionMark",
-        bugreport = "Interface\\Addons\\Blizzard_PTRFeedback\\Assets\\Icons\\HelpIcon-Bug",
+        confusedIcon = "Interface\\TutorialFrame\\TutorialFrame-QuestionMark",
+        bugreport = "Interface\\HelpFrame\\HelpIcon-Bug.blp",
+        bossreport = "Interface\\HelpFrame\\HelpIcon-Bug-Red",
         height = 50,
         lastSubmitTime,
         unitToken = "player",
         targetToken = "target",
+        bossToken = "boss1",
         alertFrameText = "Did you experience any bugs with this creature?",
+        bossBugButtonText = "Bug & Feedback - %s",
+        bossMouseoverText = "I have encountered a bug or want to submit feedback for %s.",
+        bugMouseoverText = "I have encountered a bug.",
         SELF_REPORTED_CONFUSED = 1,
         SELF_REPORTED_BUG = 2,
         BOSS_KILL = 3,
@@ -40,9 +57,11 @@ function PTR_IssueReporter.Init()
     PTR_IssueReporter.TriggerEvents = {
         [1] = {enabled = true, label = "Confused Report", question = "", checkboxes = {}},
         [2] = {enabled = true, label = "Bug Report", question = "", checkboxes = {}},
-        [5] = {enabled = false, label = "Island Expedition", question = "Did you experience any bugs with this Island Expedition?", checkboxes = {"Yes", "No"}},
-        [6] = {enabled = false, label = "Warfront", question = "Did you experience any bugs with this Warfront?", checkboxes = {"Yes", "No"}},
+        [5] = {enabled = true, label = "Island Expedition", question = "Did you experience any bugs with this Island Expedition?", checkboxes = {"Yes", "No"}},
+        [6] = {enabled = true, label = "Warfront", question = "Did you experience any bugs with this Warfront?", checkboxes = {"Yes", "No"}},
     }
+    PTR_IssueReporter.BossTriggeredTimerDuration = 600 -- how long the Boss Bug button will remain active after a failed boss encounter pull
+    PTR_IssueReporter.BossBugTriggered = GetTime()
 
     function PTR_IssueReporter.Reminder(enable, ...)
         if (not Blizzard_PTRIssueReporter_Saved.sawHighlight) then
@@ -88,6 +107,70 @@ function PTR_IssueReporter.Init()
         end)
         return newbutton
     end
+    
+    function PTR_IssueReporter.SetupBugButton(bossName)
+        if (bossName) then
+            PTR_IssueReporter.BossBugTriggered = GetTime()
+            if (PTR_IssueReporter.ReportBug.bossName ~= bossName) then
+                PTR_IssueReporter.ReportBug.bossName = bossName
+                PTR_IssueReporter.ReportBug:SetHighlightTexture(PTR_IssueReporter.Data.bossreport, "ADD")
+                PTR_IssueReporter.ReportBug:SetNormalTexture(PTR_IssueReporter.Data.bossreport)
+                
+                local instanceName, instanceType, difficultyID, difficultyName, _ = GetInstanceInfo()
+                local bossID = PTR_IssueReporter.AlertFrame.Classification[difficultyName][bossName]
+                
+                PTR_IssueReporter.ReportBug:SetScript("OnClick", function(self, button, down)
+                    
+                    PTR_IssueReporter.SetBossInfo(bossName, bossID, difficultyName)
+                    PTR_IssueReporter.Data.alertFrameText = PTR_IssueReporter.Data.npcAlertQuestion
+                    PTR_IssueReporter.AlertFrame:Show()
+                    PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
+                end)
+                
+                PTR_IssueReporter.ReportBug:SetScript("OnEnter", function(self)
+                    GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
+                    GameTooltip:SetText(string.format(PTR_IssueReporter.Data.bossBugButtonText, bossName), 1, 1, 1, true);
+                    GameTooltip:AddLine(string.format(PTR_IssueReporter.Data.bossMouseoverText, bossName), nil, nil, nil, true);
+                    GameTooltip:SetMinimumWidth(100);
+                    GameTooltip:Show()
+                    end)
+                PTR_IssueReporter.ReportBug:SetScript("OnLeave", function(self)
+                    self:SetButtonState("NORMAL")
+                    GameTooltip:Hide()
+                end)
+                
+                PTR_IssueReporter.ReportBug:HookScript("OnEnter", function() ActionButton_HideOverlayGlow(PTR_IssueReporter.ReportBug) end)
+                ActionButton_ShowOverlayGlow(PTR_IssueReporter.ReportBug)
+            end
+        else
+            PTR_IssueReporter.ReportBug.bossName = nil
+            PTR_IssueReporter.ReportBug:SetHighlightTexture(PTR_IssueReporter.Data.bugreport, "ADD")
+            PTR_IssueReporter.ReportBug:SetNormalTexture(PTR_IssueReporter.Data.bugreport)
+            
+            PTR_IssueReporter.ReportBug:SetScript("OnClick", function(self, button, down)
+                PTR_IssueReporter.PopEvent(PTR_IssueReporter.Data.SELF_REPORTED_BUG)
+                PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
+            end)
+            
+            PTR_IssueReporter.ReportBug:SetScript("OnEnter", function(self)
+                GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
+                GameTooltip:SetText("Bug", 1, 1, 1, true);
+                GameTooltip:AddLine(PTR_IssueReporter.Data.bugMouseoverText, nil, nil, nil, true);
+                GameTooltip:SetMinimumWidth(100);
+                GameTooltip:Show()
+                end)
+            PTR_IssueReporter.ReportBug:SetScript("OnLeave", function(self)
+                self:SetButtonState("NORMAL")
+                GameTooltip:Hide()
+            end)
+            
+            if (Blizzard_PTRIssueReporter_Saved.sawHighlight) then
+                ActionButton_HideOverlayGlow(PTR_IssueReporter.ReportBug)
+            end
+            
+            PTR_IssueReporter.ReportBug:HookScript("OnEnter", function() PTR_IssueReporter.Reminder(false, PTR_IssueReporter.Confused, PTR_IssueReporter.ReportBug) end)
+        end
+    end
 
     function PTR_IssueReporter.ExclusiveCheckButton(buttons, index)
         for i=1,#buttons do
@@ -103,29 +186,29 @@ function PTR_IssueReporter.Init()
     function PTR_IssueReporter.SendResults(reportType, ...)
         --reset idle time
         local packageString = PTR_FeedbackDiagnostic:Get()
-        local finalMessage = string.format('%s,%s,%s', PTR_IssueReporter.Data.MESSAGE_KEY, reportType, packageString)
+        local finalMessage = string.format('%s,%s,%s', PTR_IssueReporter.Data.MESSAGE_KEY or "", reportType or "", packageString or "")
         if (reportType == PTR_IssueReporter.Data.BOSS_KILL) then
             local choice, bossName, bossID, bossDifficulty, comments = ...
             bossName = bossName:gsub(",", " ")
             bossDifficulty = bossDifficulty:gsub(",", " ")
             comments = comments:gsub(","," ")
-            finalMessage = string.format('%s,%s,%s,%s,%s,%s', finalMessage, choice, bossName, bossID, bossDifficulty, comments)
+            finalMessage = string.format('%s,%s,%s,%s,%s,%s', finalMessage or "", choice or "", bossName or "", bossID or "", bossDifficulty or "", comments or "")
         elseif (reportType == PTR_IssueReporter.Data.QUEST_TURNED_IN) then
             local choice, questID, comments, history = ...
             comments = comments:gsub(","," ")
-            finalMessage = string.format('%s,%s,%s,%s,%s', finalMessage, choice, questID, comments, history)
+            finalMessage = string.format('%s,%s,%s,%s,%s', finalMessage or "", choice or "", questID or "", comments or "", history or "")
         elseif (PTR_IssueReporter.TriggerEvents[reportType]) then
             local choice, instanceID, comments = ...
             comments = comments:gsub(","," ")
             if (reportType == PTR_IssueReporter.Data.SELF_REPORTED_CONFUSED) or (reportType == PTR_IssueReporter.Data.SELF_REPORTED_BUG) then
-                finalMessage = string.format('%s,%s', finalMessage, comments)
+                finalMessage = string.format('%s,%s', finalMessage or "", comments or "")
             else
-                finalMessage = string.format('%s,%s,%s,%s', finalMessage, choice, instanceID, comments)
+                finalMessage = string.format('%s,%s,%s,%s', finalMessage or "", choice or "", instanceID or "", comments or "")
             end
         else
             local comments = ...
             comments = comments:gsub(","," ")
-            finalMessage = string.format('%s,%s', finalMessage, comments)
+            finalMessage = string.format('%s,%s', finalMessage or "", comments or "")
         end
 
         if (GMSubmitBug) then
@@ -178,32 +261,29 @@ function PTR_IssueReporter.Init()
         "|cffFFFFFFPlease Provide:|r\n-What you were doing\n-What you observed\n\n|cffFFFFFFAutomatically Collected:|r\n-Your world location\n-Your character information")
 
     --create buttons
-    local Confused = PTR_IssueReporter.CreateIssueButton("Confused",
+    PTR_IssueReporter.Confused = PTR_IssueReporter.CreateIssueButton("Confused",
         PTR_IssueReporter.Data.confusedIcon,
         "I'm not sure what I should do\nand/or where I should go.")
-    local ReportBug = PTR_IssueReporter.CreateIssueButton("Bug",
+    PTR_IssueReporter.ReportBug = PTR_IssueReporter.CreateIssueButton("Bug",
         PTR_IssueReporter.Data.bugreport,
-        "I have encountered a bug.")
-    ReportBug:SetScript("OnClick", function(self, button, down)
-        PTR_IssueReporter.PopEvent(PTR_IssueReporter.Data.SELF_REPORTED_BUG)
-        PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
-    end)
+        PTR_IssueReporter.Data.bugMouseoverText)
+    
 
-    Confused:SetScript("OnClick", function(self, button, down)
+    PTR_IssueReporter.Confused:SetScript("OnClick", function(self, button, down)
         PTR_IssueReporter.PopEvent(PTR_IssueReporter.Data.SELF_REPORTED_CONFUSED)
         PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
     end)
 
 
-    Confused:HookScript("OnEnter", function() PTR_IssueReporter.Reminder(false, Confused, ReportBug) end)
-    ReportBug:HookScript("OnEnter", function() PTR_IssueReporter.Reminder(false, Confused, ReportBug) end)
+    PTR_IssueReporter.Confused:HookScript("OnEnter", function() PTR_IssueReporter.Reminder(false, PTR_IssueReporter.Confused, PTR_IssueReporter.ReportBug) end)
+    PTR_IssueReporter.ReportBug:HookScript("OnEnter", function() PTR_IssueReporter.Reminder(false, PTR_IssueReporter.Confused, PTR_IssueReporter.ReportBug) end)
 
-    ReportBug:SetPoint("TOPLEFT", PTR_IssueReporter.Body, "TOP", 2, -6)
-    Confused:SetPoint("TOPRIGHT", PTR_IssueReporter.Body, "TOP", -2, -6)
+    PTR_IssueReporter.ReportBug:SetPoint("TOPLEFT", PTR_IssueReporter.Body, "TOP", 2, -6)
+    PTR_IssueReporter.Confused:SetPoint("TOPRIGHT", PTR_IssueReporter.Body, "TOP", -2, -6)
     PTR_IssueReporter.Body.Texture = PTR_IssueReporter.Body:CreateTexture()
     PTR_IssueReporter.Body.Texture:SetTexture(PTR_IssueReporter.Data.textureFile)
-    PTR_IssueReporter.Body.Texture:SetPoint("TOPLEFT", Confused, "TOPLEFT")
-    PTR_IssueReporter.Body.Texture:SetPoint("BOTTOMRIGHT", ReportBug, "BOTTOMRIGHT")
+    PTR_IssueReporter.Body.Texture:SetPoint("TOPLEFT", PTR_IssueReporter.Confused, "TOPLEFT")
+    PTR_IssueReporter.Body.Texture:SetPoint("BOTTOMRIGHT", PTR_IssueReporter.ReportBug, "BOTTOMRIGHT")
     PTR_IssueReporter.Body.Texture:SetDrawLayer("BACKGROUND")
 
     --behaviors
@@ -213,14 +293,14 @@ function PTR_IssueReporter.Init()
         local left, bottom, width, height = self:GetRect()
         Blizzard_PTRIssueReporter_Saved.x = left
         Blizzard_PTRIssueReporter_Saved.y = bottom
-        PTR_IssueReporter.Reminder(false, Confused, ReportBug)
+        PTR_IssueReporter.Reminder(false, PTR_IssueReporter.Confused, PTR_IssueReporter.ReportBug)
     end)
     PTR_IssueReporter:SetScript("OnHide", function(self)
         self:Show()
     end)
 
     --timers/reminders/notifications, only one time ever on login
-    C_Timer.After(1, function(self) PTR_IssueReporter.Reminder(true, Confused, ReportBug) end)
+    C_Timer.After(1, function(self) PTR_IssueReporter.Reminder(true, PTR_IssueReporter.Confused, PTR_IssueReporter.ReportBug) end)
 
     --------------------------------------------------ALWAYS DISPLAYED BUTTONS--------------------------------------------------
     --========================================================================================================================--
@@ -308,8 +388,9 @@ function PTR_IssueReporter.Init()
         PTR_IssueReporter.AlertFrame.CreatureID = creatureId
         PTR_IssueReporter.AlertFrame.Name = name
         PTR_IssueReporter.AlertFrame.Difficulty = difficulty
-
-        PTR_IssueReporter.AlertFrame.Model:SetCreature(PTR_IssueReporter.AlertFrame.CreatureID)
+        if (PTR_IssueReporter.AlertFrame.CreatureID) then
+            PTR_IssueReporter.AlertFrame.Model:SetCreature(PTR_IssueReporter.AlertFrame.CreatureID)
+        end
         if (#PTR_IssueReporter.AlertFrame.Difficulty == 0) then
             PTR_IssueReporter.AlertFrame.Title:SetText(string.format("%s", PTR_IssueReporter.AlertFrame.Name))
         else
@@ -385,12 +466,33 @@ function PTR_IssueReporter.Init()
         end
         return true
     end
+    
+    function PTR_IssueReporter.AddUnitIDToTracking(unitID, encounterName)
+        if UnitExists(unitID) then
+            local classid = UnitClassification(unitID)
+            local name = encounterName or UnitName(unitID)
+            local _,_,_,_,_,creatureID,guid = strsplit("-", UnitGUID(unitID) or "", 7)
+            local instanceName, instanceType, difficultyID, difficultyName, _ = GetInstanceInfo()
+            PTR_IssueReporter.AlertFrame.Classification[difficultyName] = PTR_IssueReporter.AlertFrame.Classification[difficultyName] or {}
+            if (name and classid) then
+                if (classid == "elite" or classid == "worldboss" or classid == "rare" or classid == "rareelite") and (not PTR_IssueReporter.AlertFrame.Classification[difficultyName][name]) then
+                    PTR_IssueReporter.AlertFrame.Classification[difficultyName][name] = creatureID
+                    PTR_IssueReporter.AlertFrame.ClassByID[creatureID] = classid
+                end
+            end
+        end
+    end
+    
+    function PTR_IssueReporter.DoesEncounterHaveID(encounterName)
+        local instanceName, instanceType, difficultyID, difficultyName, _ = GetInstanceInfo()
+        return ((PTR_IssueReporter.AlertFrame.Classification[difficultyName]) and (PTR_IssueReporter.AlertFrame.Classification[difficultyName][encounterName]))   
+    end
 
     do
         PTR_IssueReporter.AlertFrame.CheckButtons[1] = FramePainter.NewCheckBox("CENTER", PTR_IssueReporter.AlertFrame, "BOTTOMLEFT", "Yes", PTR_IssueReporter.AlertFrame:GetWidth()*(1/3), 80)
         PTR_IssueReporter.AlertFrame.CheckButtons[2] = FramePainter.NewCheckBox("CENTER", PTR_IssueReporter.AlertFrame, "BOTTOMLEFT", "No", PTR_IssueReporter.AlertFrame:GetWidth()*(2/3), 80)
 
-        PTR_IssueReporter.AlertFrame.AdditionalInfo = FramePainter.NewEditBox("BugAdditionalCommentsBossKill", "BOTTOM", PTR_IssueReporter.AlertFrame, "BOTTOM", "Additional Comments?", PTR_IssueReporter.AlertFrame:GetWidth(), 40)
+        PTR_IssueReporter.AlertFrame.AdditionalInfo = FramePainter.NewEditBox("BugAdditionalCommentsBossKill", "BOTTOM", PTR_IssueReporter.AlertFrame, "BOTTOM", "Additional Comments or Feedback?", PTR_IssueReporter.AlertFrame:GetWidth(), 40)
         FramePainter.AddBackground(PTR_IssueReporter.AlertFrame.AdditionalInfo, PTR_IssueReporter.Data.textureFile)
         --set scripts
         for i=1,#PTR_IssueReporter.AlertFrame.CheckButtons do
@@ -440,6 +542,11 @@ function PTR_IssueReporter.Init()
     end)
 
     PTR_IssueReporter.AlertFrame:SetScript("OnEvent", function(self, event, ...)
+        if (PTR_IssueReporter.ReportBug.bossName) then --If this exists then the Bug Reporter button is currently set to a Boss Mob
+            if (GetTime() >= (PTR_IssueReporter.BossTriggeredTimerDuration + PTR_IssueReporter.BossBugTriggered)) then
+                PTR_IssueReporter.SetupBugButton()
+            end
+        end
         if (event == "COMBAT_LOG_EVENT_UNFILTERED") then
             local eventArgs = {...}
             if (CombatLogGetCurrentEventInfo) then
@@ -465,27 +572,29 @@ function PTR_IssueReporter.Init()
                 end
             end
         elseif (event == "ENCOUNTER_END") then
-            local bossname = select(2,...)
-            local instanceName, instanceType, difficultyID, difficultyName, _ = GetInstanceInfo()
-            PTR_IssueReporter.AlertFrame.Classification[difficultyName] = PTR_IssueReporter.AlertFrame.Classification[difficultyName] or {}
-            local bossID = PTR_IssueReporter.AlertFrame.Classification[difficultyName][bossname]
-            if (bossID) then
-                PTR_IssueReporter.AddBoss(bossname, bossID, difficultyName)
-            end
-        elseif (event == "UNIT_TARGET") then
-            if (select(1,...) == PTR_IssueReporter.Data.unitToken) then
-                local classid = UnitClassification(PTR_IssueReporter.Data.targetToken)
-                local name = UnitName(PTR_IssueReporter.Data.targetToken)
-                local _,_,_,_,_,creatureID,guid = strsplit("-", UnitGUID(PTR_IssueReporter.Data.targetToken) or "", 7)
+            local eventArgs = {...}
+            local bossname = eventArgs[2]
+            if eventArgs[5] == 1 then -- Checking to see if the ENCOUNTER_END returned the encounter as successful or failed
                 local instanceName, instanceType, difficultyID, difficultyName, _ = GetInstanceInfo()
                 PTR_IssueReporter.AlertFrame.Classification[difficultyName] = PTR_IssueReporter.AlertFrame.Classification[difficultyName] or {}
-                if (name and classid) then
-                    if (classid == "elite" or classid == "worldboss" or classid == "rare" or classid == "rareelite") and (not PTR_IssueReporter.AlertFrame.Classification[difficultyName][name]) then
-                        PTR_IssueReporter.AlertFrame.Classification[difficultyName][name] = creatureID
-                        PTR_IssueReporter.AlertFrame.ClassByID[creatureID] = classid
-                    end
-                end
+                local bossID = PTR_IssueReporter.AlertFrame.Classification[difficultyName][bossname]
+                PTR_IssueReporter.AddBoss(bossname, bossID, difficultyName)
+                PTR_IssueReporter.PushNextBoss()
+                PTR_IssueReporter.SetupBugButton()
+            else
+                PTR_IssueReporter.SetupBugButton(bossname)
             end
+        elseif (event == "ENCOUNTER_START") then
+            local eventArgs = {...}
+            PTR_IssueReporter.Data.CurrentEncounter = eventArgs[2]
+        elseif (event == "PLAYER_TARGET_CHANGED") then
+            PTR_IssueReporter.AddUnitIDToTracking(PTR_IssueReporter.Data.targetToken)
+            -- Checking this here for cases such as the first boss in Hellfire raid where the Encounter Event Name does not match a creature that exists in the encounter. 
+            if (PTR_IssueReporter.Data.CurrentEncounter) and UnitExists(PTR_IssueReporter.Data.bossToken) and not PTR_IssueReporter.DoesEncounterHaveID(PTR_IssueReporter.Data.CurrentEncounter) then 
+                PTR_IssueReporter.AddUnitIDToTracking(PTR_IssueReporter.Data.bossToken, PTR_IssueReporter.Data.CurrentEncounter)          
+            end
+        elseif (event == "PLAYER_FOCUS_CHANGED") then
+            PTR_IssueReporter.AddUnitIDToTracking(PTR_IssueReporter.Data.focusToken)
         elseif (event == "PLAYER_REGEN_ENABLED") then
             --combat ended
             PTR_IssueReporter.PushNextBoss()
@@ -495,13 +604,18 @@ function PTR_IssueReporter.Init()
                 PTR_IssueReporter.AlertFrame.hideFromCombat = true
                 PTR_IssueReporter.AlertFrame:Hide()
             end
+        elseif (event == "PLAYER_ENTERING_WORLD") then
+            PTR_IssueReporter.SetupBugButton()
         end
     end)
     PTR_IssueReporter.AlertFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-    PTR_IssueReporter.AlertFrame:RegisterEvent("UNIT_TARGET")
+    PTR_IssueReporter.AlertFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
+    PTR_IssueReporter.AlertFrame:RegisterEvent("PLAYER_FOCUS_CHANGED")
+    PTR_IssueReporter.AlertFrame:RegisterEvent("ENCOUNTER_START")
     PTR_IssueReporter.AlertFrame:RegisterEvent("ENCOUNTER_END")
     PTR_IssueReporter.AlertFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
     PTR_IssueReporter.AlertFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+    PTR_IssueReporter.AlertFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 
     ------------------------------------------------BOSS KILL / RARE KILL PROMPT------------------------------------------------
     --========================================================================================================================--
@@ -632,7 +746,7 @@ function PTR_IssueReporter.Init()
     PTR_IssueReporter.EventPopup:SetFrameStrata("HIGH")
     table.insert(UISpecialFrames, PTR_IssueReporter.EventPopup:GetName())
     PTR_IssueReporter.EventPopup.Reason = 0
-    PTR_IssueReporter.EventPopup:SetSize(300, 30)
+    PTR_IssueReporter.EventPopup:SetSize(350, 30)
     if (Blizzard_PTRIssueReporter_Saved.PopupX and Blizzard_PTRIssueReporter_Saved.PopupY) then
         PTR_IssueReporter.EventPopup:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", Blizzard_PTRIssueReporter_Saved.PopupX, Blizzard_PTRIssueReporter_Saved.PopupY)
     else
@@ -814,6 +928,14 @@ function PTR_IssueReporter.Init()
 
         return 0
     end
+    
+    function PTR_IssueReporter.StringToArrayByCharacter(StringToConvert, char)
+        local lines = {}
+        for s in StringToConvert:gmatch("[^"..char.."]+") do
+            table.insert(lines, s)
+        end
+        return lines
+    end
 
     function PTR_IssueReporter.PopEvent(reason)
         PTR_IssueReporter.EventPopup.Body.EditBox:ClearFocus()
@@ -824,7 +946,17 @@ function PTR_IssueReporter.Init()
         end
         local title, description = eventPackage.label, eventPackage.question
         if (PTR_IssueReporter.EventPopup.MapInfo) and (PTR_IssueReporter.EventPopup.MapInfo.name) then
-            title = string.format("%s - %s", title, PTR_IssueReporter.EventPopup.MapInfo.name)
+            local mapName = PTR_IssueReporter.StringToArrayByCharacter(PTR_IssueReporter.EventPopup.MapInfo.name, "(")
+            if (mapName[1]) then
+                mapName = mapName[1]
+            else
+                mapName = PTR_IssueReporter.EventPopup.MapInfo.name
+            end
+            if (title == "Warfront") then
+                title = mapName
+            else
+                title = string.format("%s - %s", title, mapName)
+            end
         end
         PTR_IssueReporter.EventPopup.Label:SetText(title)
         PTR_IssueReporter.EventPopup.Body.EditBox:SetText("")
@@ -871,7 +1003,7 @@ function PTR_IssueReporter.Init()
     end)
     PTR_IssueReporter.EventPopup:Hide()
     PTR_IssueReporter:Show()
-    PTR_IssueReporter:SetClampRectInsets(0, 0, 0, -ReportBug:GetHeight())
+    PTR_IssueReporter:SetClampRectInsets(0, 0, 0, -PTR_IssueReporter.ReportBug:GetHeight())
 end
 
 --========================================================================================================================--

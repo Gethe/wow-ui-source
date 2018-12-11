@@ -135,10 +135,11 @@ local INSTANCE_LOOT_BUTTON_HEIGHT = 64;
 
 function EncounterJournal_OnLoad(self)
 	EncounterJournalTitleText:SetText(ADVENTURE_JOURNAL);
-	SetPortraitToTexture(EncounterJournalPortrait,"Interface\\EncounterJournal\\UI-EJ-PortraitIcon");
+	PortraitFrameTemplate_SetPortraitToAsset(EncounterJournal, "Interface\\EncounterJournal\\UI-EJ-PortraitIcon");
 	self:RegisterEvent("EJ_LOOT_DATA_RECIEVED");
 	self:RegisterEvent("EJ_DIFFICULTY_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+	self:RegisterEvent("PORTRAITS_UPDATED");
 	self:RegisterEvent("SEARCH_DB_LOADED");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 
@@ -416,6 +417,8 @@ function EncounterJournal_OnEvent(self, event, ...)
 		if not unit then
 			EncounterJournal_UpdatePortraits();
 		end
+	elseif event == "PORTRAITS_UPDATED" then
+		EncounterJournal_UpdatePortraits();
 	elseif event == "SEARCH_DB_LOADED" then
 		EncounterJournal_RestartSearchTracking();
 	elseif event == "PLAYER_LEVEL_UP" and EncounterJournal:IsShown() then
@@ -464,8 +467,8 @@ function EncounterJournal_FindCreatureButtonForDisplayInfo(displayInfo)
 			return button;
 		end
 	end
-	
-	return nil;	
+
+	return nil;
 end
 
 function EncounterJournal_UpdatePortraits()
@@ -690,6 +693,7 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	--disable model tab and abilities tab, no boss selected
 	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.modelTab, false);
 	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.bossTab, false);
+	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.lootTab, C_EncounterJournal.InstanceHasLoot());
 
 	if (EncounterJournal_SearchForOverview(instanceID)) then
 		EJ_Tabs[1].frame = "overviewScroll";
@@ -756,6 +760,7 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	self.info.encounterTitle:SetText(ename);
 
 	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.overviewTab, (rootSectionID > 0));
+	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.lootTab, C_EncounterJournal.InstanceHasLoot());	
 
 	local sectionInfo = C_EncounterJournal.GetSectionInfo(rootSectionID);
 
@@ -1819,12 +1824,6 @@ function EncounterJournal_SetFlagIcon(texture, index)
 	local iconSize = 32;
 	local columns = 256/iconSize;
 	local rows = 64/iconSize;
-
-	-- Mythic flag should use heroic Icon
-	if (index == 12) then
-		index = 3;
-	end
-
 	local l = mod(index, columns) / columns;
 	local r = l + (1/columns);
 	local t = floor(index/columns) / rows;
@@ -1863,7 +1862,7 @@ function EncounterJournal_GetSearchDisplay(index)
 			icon = "Interface\\EncounterJournal\\UI-EJ-GenericSearchCreature";
 		else
 			typeText = ENCOUNTER_JOURNAL_ABILITY;
-			if (sectionInfo) then 
+			if (sectionInfo) then
 				icon = sectionInfo.abilityIcon;
 			end
 		end
@@ -2285,11 +2284,11 @@ function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sec
 	if instanceID then
 		NavBar_Reset(EncounterJournal.navBar);
 		EncounterJournal_DisplayInstance(instanceID);
-		
+
 		if difficultyID then
 			EJ_SetDifficulty(difficultyID);
 		end
-		
+
 		if encounterID then
 			if sectionID then
 				if (EncounterJournal_CheckForOverview(sectionID)) then
@@ -2589,7 +2588,7 @@ function EncounterJournal_InitLootFilter(self, level)
 
 		if ( filterClassID > 0 ) then
 			classID = filterClassID;
-			
+
 			local classInfo = C_CreatureInfo.GetClassInfo(filterClassID);
 			if classInfo then
 				classDisplayName = classInfo.className;

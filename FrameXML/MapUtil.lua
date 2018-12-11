@@ -67,35 +67,14 @@ function MapUtil.GetDisplayableMapForPlayer()
 	return C_Map.GetFallbackWorldMapID();
 end
 
-function MapUtil.GetRelatedBountyZoneMaps(mapID)
-	local mapInfo = C_Map.GetMapInfo(mapID);
-	local targetBountySetID;
-	-- find the world map and any bountySetID on the way
-	while mapInfo and mapInfo.mapType ~= Enum.UIMapType.World do
-		if mapInfo.mapType == Enum.UIMapType.Continent then
-			local continentBountySetID = C_Map.GetBountySetIDForMap(mapInfo.mapID);
-			if continentBountySetID > 0 then
-				targetBountySetID = continentBountySetID;
-			end
-		end
-		mapInfo = C_Map.GetMapInfo(mapInfo.parentMapID);
+function MapUtil.GetBountySetMaps(bountySetID)
+	if not MapUtil.bountySetMaps then
+		MapUtil.bountySetMaps = { };
 	end
-
-	local ALL_DESCENDANTS = true;
-	local bountyMaps = { };
-	if targetBountySetID and mapInfo and mapInfo.mapType == Enum.UIMapType.World then
-		-- check all first-order continents on that world for same bountySetID
-		local continents = C_Map.GetMapChildrenInfo(mapInfo.mapID, Enum.UIMapType.Continent);
-		for i, continentInfo in ipairs(continents) do
-			local continentBountySetID = C_Map.GetBountySetIDForMap(continentInfo.mapID);
-			if continentBountySetID == targetBountySetID then
-				-- add all child zones
-				local zones = C_Map.GetMapChildrenInfo(continentInfo.mapID, Enum.UIMapType.Zone, ALL_DESCENDANTS);
-				for i, zoneInfo in ipairs(zones) do
-					tinsert(bountyMaps, zoneInfo.mapID);
-				end
-			end
-		end
+	local bountySetMaps = MapUtil.bountySetMaps[bountySetID];
+	if not bountySetMaps then
+		bountySetMaps = C_Map.GetBountySetMaps(bountySetID);
+		MapUtil.bountySetMaps[bountySetID] = bountySetMaps;
 	end
-	return bountyMaps;
+	return bountySetMaps;
 end

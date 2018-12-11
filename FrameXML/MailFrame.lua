@@ -153,7 +153,7 @@ end
 function InboxFrame_Update()
 	local numItems, totalItems = GetInboxNumItems();
 	local index = ((InboxFrame.pageNum - 1) * INBOXITEMS_TO_DISPLAY) + 1;
-	local packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead, x, y, z, isGM, firstItemQuantity;
+	local packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead, x, y, z, isGM, firstItemQuantity, firstItemLink;
 	local icon, button, expireTime, senderText, subjectText, buttonIcon;
 	
 	if ( totalItems > numItems ) then
@@ -169,7 +169,7 @@ function InboxFrame_Update()
 	for i=1, INBOXITEMS_TO_DISPLAY do
 		if ( index <= numItems ) then
 			-- Setup mail item
-			packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead, x, y, z, isGM, firstItemQuantity, firstItemID = GetInboxHeaderInfo(index);
+			packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead, x, y, z, isGM, firstItemQuantity, firstItemLink = GetInboxHeaderInfo(index);
 			
 			-- Set icon
 			if ( packageIcon ) and ( not isGM ) then
@@ -190,7 +190,7 @@ function InboxFrame_Update()
 			button.itemCount = itemCount;
 			SetItemButtonCount(button, firstItemQuantity);
 			if ( firstItemQuantity ) then
-				SetItemButtonQuality(button, select(3, GetItemInfo(firstItemID)), firstItemID);
+				SetItemButtonQuality(button, select(3, GetItemInfo(firstItemLink)), firstItemLink);
 			else
 				button.IconBorder:Hide();
 				button.IconOverlay:Hide();

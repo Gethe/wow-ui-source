@@ -17,7 +17,6 @@ function GetTextureInfo(obj)
 			assetType = "FileID";
 		end
 
-
 		if not assetName then
 			assetName = "UnknownAsset";
 			assetType = "Unknown";
@@ -214,13 +213,45 @@ function ExtractHyperlinkString(linkString)
 	return preString ~= nil, preString, hyperlinkString, postString;
 end
 
-function GetItemInfoFromHyperlink(link)
-	local hyperlink = link:match("|Hitem:.-|h");
-	if (hyperlink) then
-		local itemID, creationContext = GetItemCreationContext(hyperlink);
-		return tonumber(itemID), creationContext;
-	else
+function SplitTextIntoLines(text, delimiter)
+	local lines = {};
+	local startIndex = 1;
+	local foundIndex = string.find(text, delimiter);
+	while foundIndex do
+		table.insert(lines, text:sub(startIndex, foundIndex - 1));
+		startIndex = foundIndex + 2;
+		foundIndex = string.find(text, delimiter, startIndex);
+	end
+	if startIndex <= #text then
+		table.insert(lines, text:sub(startIndex));
+	end
+	return lines;
+end
+
+function SplitTextIntoHeaderAndNonHeader(text)
+	local foundIndex = string.find(text, "|n");
+	if not foundIndex then
+		-- There was no newline...the whole thing is a header
+		return text;
+	elseif #text == 2 then
+		-- There was a newline, but that was all that was in the string.
 		return nil;
+	elseif foundIndex == 1 then
+		-- There was a newline at the very beginning...the whole rest of the string is a header
+		return text:sub(3);
+	elseif foundIndex == #text - 1 then
+		-- There was a newline at the very end...the whole rest of the string is a header
+		return text:sub(1, foundIndex - 1);
+	else
+		-- There was a newline somewhere in the middle...everything before it is the header and everything after it is the non-header
+		return text:sub(1, foundIndex - 1), text:sub(foundIndex + 2);
+	end
+end
+
+function GetItemInfoFromHyperlink(link)
+	local strippedItemLink, itemID = link:match("|Hitem:((%d+).-)|h");
+	if itemID then
+		return tonumber(itemID), strippedItemLink;
 	end
 end
 
@@ -594,6 +625,23 @@ function CreateColor(r, g, b, a)
 	return color;
 end
 
+local function ExtractHexByte(str, index)
+	return tonumber(str:sub(index, index + 1), 16);
+end
+
+function CreateColorFromHexString(hexColor)
+	if #hexColor == 8 then
+		local a, r, g, b = ExtractHexByte(hexColor, 1), ExtractHexByte(hexColor, 3), ExtractHexByte(hexColor, 5), ExtractHexByte(hexColor, 7);
+		return CreateColor(r, g, b, a);
+	else
+		GMError("CreateColorFromHexString input must be hexadecimal digits in this format: AARRGGBB.");
+	end
+end
+
+function CreateColorFromBytes(r, g, b, a)
+	return CreateColor(r / 255, g / 255, b / 255, a / 255);
+end
+
 function AreColorsEqual(left, right)
 	if left and right then
 		return left:IsEqualTo(right);
@@ -854,6 +902,10 @@ function FormatPercentage(percentage, roundToNearestInteger)
 	return PERCENTAGE_STRING:format(percentage);
 end
 
+function FormatFraction(numerator, denominator)
+	return GENERIC_FRACTION_STRING:format(numerator, denominator);
+end
+
 function CreateTextureMarkup(file, fileWidth, fileHeight, width, height, left, right, top, bottom, xOffset, yOffset)
 	return ("|T%s:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d|t"):format(
 		  file
@@ -892,6 +944,10 @@ function SetupAtlasesOnRegions(frame, regionsToAtlases, useAtlasSize)
 	end
 end
 
+function GetFinalNameFromTextureKit(fmt, textureKit)
+	return fmt:format(textureKit);
+end
+
 function SetupTextureKitOnFrameByID(textureKitID, frame, fmt, setVisibilityOfRegions, useAtlasSize)
 	local textureKit = GetUITextureKitInfo(textureKitID);
 	SetupTextureKitOnFrame(textureKit, frame, fmt, setVisibilityOfRegions, useAtlasSize);
@@ -908,9 +964,9 @@ function SetupTextureKitOnFrame(textureKit, frame, fmt, setVisibility, useAtlasS
 
 	if textureKit then
 		if frame:GetObjectType() == "StatusBar" then
-			frame:SetStatusBarAtlas(fmt:format(textureKit));
+			frame:SetStatusBarAtlas(GetFinalNameFromTextureKit(fmt, textureKit));
 		elseif frame.SetAtlas then
-			frame:SetAtlas(fmt:format(textureKit), useAtlasSize);
+			frame:SetAtlas(GetFinalNameFromTextureKit(fmt, textureKit), useAtlasSize);
 		end
 	end
 end
@@ -1360,14 +1416,50 @@ function CallMethodOnNearestAncestor(self, methodName, ...)
 	return false;
 end
 
-function FormateFullDateWithoutYear(messageDate)
-	return FULLDATE_NO_YEAR:format(CALENDAR_WEEKDAY_NAMES[messageDate.weekDay], CALENDAR_FULLDATE_MONTH_NAMES[messageDate.month], messageDate.day);
-end
-
-function AreFullDatesEqual(firstDate, secondDate)
-	return firstDate.month == secondDate.month and firstDate.day == secondDate.day and firstDate.year == secondDate.year;
-end
-
 function GetClampedCurrentExpansionLevel()
 	return math.min(GetClientDisplayExpansionLevel(), math.max(GetAccountExpansionLevel(), GetExpansionLevel()));
+end
+
+function GetHighlightedNumberDifferenceString(baseString, newString)
+	local outputString = "";
+	-- output string is being built from the new string
+	local newStringIndex = 1;
+	-- find a stretch of digits (including . and , because of different locales) - but has to end in a digit
+	local PATTERN = "([,%.%d]*%d+)";
+	local start1, end1, baseNumberString = string.find(baseString, PATTERN);
+	local start2, end2, newNumberString = string.find(newString, PATTERN);
+	while start1 and start2 do
+		-- add from the new string until the matched spot
+		outputString = outputString .. string.sub(newString, newStringIndex, start2 - 1);
+		newStringIndex = end2 + 1;
+
+		if baseNumberString ~= newNumberString then
+			-- need to remove , and . before comparing numbers because of locales
+			local scrubbedBaseNumberString = gsub(baseNumberString, "[,%.]", "");
+			local scrubbedNewNumberString = gsub(newNumberString, "[,%.]", "");
+			local baseNumber = tonumber(scrubbedBaseNumberString);
+			local newNumber = tonumber(scrubbedNewNumberString);
+			if baseNumber and newNumber then
+				local delta = newNumber - baseNumber;
+				if delta > 0 then
+					newNumberString = GREEN_FONT_COLOR_CODE..string.format(newNumberString)..FONT_COLOR_CODE_CLOSE;
+				elseif delta < 0 then
+					newNumberString = RED_FONT_COLOR_CODE..string.format(newNumberString)..FONT_COLOR_CODE_CLOSE;
+				end
+			end
+		end
+
+		outputString = outputString..newNumberString;
+
+		start1, end1, baseNumberString = string.find(baseString, PATTERN, end1 + 1);
+		start2, end2, newNumberString = string.find(newString, PATTERN, end2 + 1);
+	end
+
+	outputString = outputString .. string.sub(newString, newStringIndex, string.len(newString));
+	return outputString;
+end
+
+function GetUnscaledFrameRect(frame, scale)
+	local frameLeft, frameBottom, frameWidth, frameHeight = frame:GetScaledRect();
+	return frameLeft / scale, frameBottom / scale, frameWidth / scale, frameHeight / scale;
 end

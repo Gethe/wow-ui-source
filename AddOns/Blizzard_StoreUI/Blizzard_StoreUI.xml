@@ -5,30 +5,6 @@
 	<Script file="Blizzard_StoreUIOutbound.lua" />
 	<Script file="Blizzard_StoreUISecure.lua" />
 	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
-		<Button name="StoreDialogTemplate" virtual="true">
-			<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-				<BackgroundInsets>
-					<AbsInset left="11" right="12" top="12" bottom="11" />
-				</BackgroundInsets>
-				<TileSize>
-					<AbsValue val="32" />
-				</TileSize>
-				<EdgeSize>
-					<AbsValue val="32" />
-				</EdgeSize>
-			</Backdrop>
-			<Layers>
-				<Layer level="BACKGROUND">
-					<Texture parentKey="Background">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="11" y="-12" />
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-12" y="11" />
-						</Anchors>
-						<Color r="0" g="0" b="0" a="0.8" />
-					</Texture>
-				</Layer>
-			</Layers>
-		</Button>
 		<Button name="StoreButtonTemplate" virtual="true">
 			<Size x="40" y="22" />
 			<Layers>
@@ -243,6 +219,27 @@
 			<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
 			<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
 		</CheckButton>
+		<CheckButton name="StoreCheckButtonWithLabelTemplate" inherits="StoreCheckButtonTemplate" virtual="true">
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture parentKey="Shade">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="7" y="-7"/>
+							<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+						</Anchors>
+						<Color r="0" g="0" b="0" a=".8"/>
+					</Texture>
+				</Layer>
+				<Layer level="ARTWORK">
+					<FontString parentKey="Label" inherits="GameFontBlack" justifyH="LEFT">
+						<Size x="280" y="14"/>
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT" x="4" y="0"/>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+		</CheckButton>
 		<CheckButton name="StoreQuantitySelectionTemplate" virtual="true">
 			<Size x="14" y="14" />
 			<HitRectInsets>
@@ -278,15 +275,9 @@
 				<TexCoords left="0.25" right="0.5" top="0" bottom="1" />
 			</CheckedTexture>
 		</CheckButton>
-		<EditBox name="StoreEditBoxTemplate" autoFocus="false" virtual="true">
-			<Size x="150" y="20"/>
+		<EditBox name="StoreEditBoxBaseTemplate" autoFocus="false" virtual="true">
 			<Layers>
 				<Layer level="BACKGROUND" textureSubLevel="1">
-					<FontString parentKey="Label" inherits="GameFontBlack">
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="-4" y="2"/>
-						</Anchors>
-					</FontString>
 					<Texture parentKey="Left" file="Interface\Common\Common-Input-Border">
 						<Size x="8" y="20"/>
 						<Anchors>
@@ -319,6 +310,13 @@
 						<Color r="0" b="0" g="0" a=".8"/>
 					</Texture>
 				</Layer>
+				<Layer level="ARTWORK">
+					<FontString parentKey="EmptyText" inherits="GameFontDisable" hidden="true">
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+					</FontString>
+				</Layer>
 			</Layers>
 			<Scripts>
 				<OnEscapePressed>
@@ -332,6 +330,100 @@
 				</OnEditFocusGained>
 			</Scripts>
 			<FontString inherits="ChatFontNormal"/>
+		</EditBox>
+		<EditBox name="StoreEditBoxTemplate" inherits="StoreEditBoxBaseTemplate" virtual="true">
+			<Size x="150" y="20"/>
+			<Layers>
+				<Layer level="BACKGROUND" textureSubLevel="1">
+					<FontString parentKey="Label" inherits="GameFontBlack">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="-4" y="2"/>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+		</EditBox>
+		<EditBox name="StoreEditBoxHorizontalLabelTemplate" inherits="StoreEditBoxBaseTemplate" virtual="true">
+			<Size x="140" y="22"/>
+			<Layers>
+				<Layer level="BACKGROUND" textureSubLevel="1">
+					<FontString parentKey="Label" inherits="GameFontBlack" justifyH="LEFT">
+						<Size x="155" y="30"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="LEFT" x="-9" y="0"/>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+		</EditBox>
+		<Button name="StoreAutoCompleteButtonTemplate" parentArray="Buttons" virtual="true">
+			<Size x="140" y="14"/>
+			<ButtonText parentKey="Text" justifyH="LEFT"/>
+			<NormalFont style="GameFontWhiteTiny2"/>
+			<HighlightFont style="GameFontWhiteTiny2"/>
+			<DisabledFont style="GameFontDisableTiny2"/>
+			<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+		</Button>
+		<EditBox name="StoreEditBoxWithAutoCompleteTemplate" inherits="StoreEditBoxHorizontalLabelTemplate" letters="100" virtual="true">
+			<Frames>
+				<Frame parentKey="AutoCompleteBox" hidden="true">
+					<Size x="154" y="5"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" x="-4" y="14"/>
+					</Anchors>
+					<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
+						<BackgroundInsets left="10" right="5" top="4" bottom="9"/>
+						<TileSize val="16"/>
+						<EdgeSize val="16"/>
+					</Backdrop>
+					<Layers>
+						<Layer level="BACKGROUND">
+							<Texture parentKey="Shade">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="11" y="-7"/>
+									<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+								</Anchors>
+								<Color r="0" g="0" b="0" a=".8"/>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Frames>
+						<Button inherits="StoreAutoCompleteButtonTemplate">
+							<Anchors>
+								<Anchor point="TOP" x="6" y="-12"/>
+							</Anchors>
+							<Scripts>
+								<OnClick function="StoreAutoCompleteButton_OnClick"/>
+							</Scripts>
+						</Button>
+					</Frames>
+					<Scripts>
+						<OnShow>
+							self:SetFrameLevel(self:GetParent():GetFrameLevel()+4);
+						</OnShow>
+						<OnHide function="StoreAutoCompleteBox_OnHide"/>
+					</Scripts>
+				</Frame>
+			</Frames>
+			<Scripts>
+				<OnCursorChanged function="StoreEditBoxWithAutoCompleteTemplate_OnCursorChanged"/>
+				<OnTextChanged function="StoreEditBoxWithAutoCompleteTemplate_OnTextChanged"/>
+				<OnLeave function="VASCharacterSelection_ClearStoreTooltip"/>
+				<OnShow>
+					self:SetFrameLevel(self:GetParent():GetFrameLevel()+7);
+				</OnShow>
+				<OnKeyDown inherit="append">
+					if (key == "DOWN") then
+						StoreAutoCompleteIncrementSelection(self);
+					elseif (key == "UP") then
+						StoreAutoCompleteDecrementSelection(self);
+					elseif (key == "ENTER") then
+						StoreAutoCompleteSelectionEnterPressed(self);
+					elseif (key == "ESCAPE") then
+						self.AutoCompleteBox:Hide();
+					end
+				</OnKeyDown>
+			</Scripts>
 		</EditBox>
 		<Button name="StoreDropDownMenuButtonTemplate" virtual="true" parentArray="Buttons">
 			<Size x="100" y="16"/>
@@ -966,7 +1058,7 @@
 				</Layer>
 				<Layer level="ARTWORK">
 					<FontString parentKey="ProductName" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="BOTTOM">
-						<Size x="250" y="30" />
+						<Size x="250" y="50" />
 						<Anchors>
 							<Anchor point="BOTTOM" relativePoint="CENTER" y="-22"/>
 						</Anchors>
@@ -1600,14 +1692,6 @@
 				</Button>
 			</Frames>
 		</Frame>
-		<Button name="StoreAutoCompleteButtonTemplate" parentArray="Buttons" virtual="true">
-			<Size x="140" y="14"/>
-			<ButtonText parentKey="Text" justifyH="LEFT"/>
-			<NormalFont style="GameFontWhiteTiny2"/>
-			<HighlightFont style="GameFontWhiteTiny2"/>
-			<DisabledFont style="GameFontDisableTiny2"/>
-			<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
-		</Button>
 		<Frame name="StoreVASRaceFactionIconFrameTemplate" parentArray="Icons" virtual="true">
 			<Size x="26" y="26"/>
 			<Layers>
@@ -1709,7 +1793,7 @@
 			<!-- Anchors are set in lua -->
 			<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 				<BackgroundInsets>
-					<AbsInset left="11" right="12" top="11" bottom="11"/>
+					<AbsInset left="11" right="12" top="11" bottom="10"/>
 				</BackgroundInsets>
 				<TileSize>
 					<AbsValue val="32" />
@@ -1732,13 +1816,16 @@
 				<Button parentKey="Button1" inherits="StoreButtonTemplate" text="OKAY" id="1">
 					<Size x="120" y="22"/>
 					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="16"/>
+						<Anchor point="BOTTOM" x="0" y="22"/>
 					</Anchors>
 					<Scripts>
 						<OnClick>
 							self:GetParent():Hide();
 						</OnClick>
 					</Scripts>
+					<NormalFont style="GameFontNormal" />
+					<HighlightFont style="GameFontHighlight" />
+					<DisabledFont style="GameFontDisable" />
 				</Button>
 			</Frames>
 			<Scripts>
@@ -2067,9 +2154,7 @@
 				</Button>
 				<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
-							<Offset x="4" y="5" />
-						</Anchor>
+						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="5" y="4" />
 					</Anchors>
 					<Scripts>
 						<OnClick function="StoreFrameCloseButton_OnClick" />
@@ -2131,12 +2216,12 @@
 						These functions will fail to load properly if this template is instantiated outside
 						of the initial LoadAddon call becuase we'll have lost the scoped modifiers and the
 						reference to the addon environment if we instantiate them later.
-				
+
 						Except for the first category, which is declared in .xml, we have to manually set these
 						scripts after the frame has been instantiated in Lua for them to work properly.
 
 						-->
-				
+
 						<OnEnter function="StoreCategory_OnEnter" />
 						<OnLeave function="StoreCategory_OnLeave" />
 						<OnClick function="StoreCategory_OnClick" />
@@ -2187,7 +2272,7 @@
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="14" />
 						</Anchors>
-					</Texture>	
+					</Texture>
 					<Texture parentKey="ParchmentBottom" inherits="store-receipt-parchment-bottom">
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="144" />
@@ -2282,12 +2367,7 @@
 								<Anchor point="TOP" x="0" y="-30"/>
 							</Anchors>
 							<Scripts>
-								<OnHyperlinkClick>
-									local linkType, index = string.split(":", link);
-									if ( linkType == "urlIndex" ) then
-										LoadURLIndex(tonumber(index));
-									end
-								</OnHyperlinkClick>
+								<OnHyperlinkClick function="GetURLIndexAndLoadURL" />
 							</Scripts>
 							<FontString inherits="GameFontBlackMedium" justifyH="LEFT" />
 						</SimpleHTML>
@@ -2308,12 +2388,7 @@
 						<Anchor point="BOTTOM" x="0" y="50" />
 					</Anchors>
 					<Scripts>
-						<OnHyperlinkClick>
-							local linkType, index = string.split(":", link);
-							if ( linkType == "urlIndex" ) then
-								LoadURLIndex(tonumber(index));
-							end
-						</OnHyperlinkClick>
+						<OnHyperlinkClick function="GetURLIndexAndLoadURL" />
 					</Scripts>
 					<FontString inherits="GameFontNormalSmall" justifyH="LEFT" />
 				</SimpleHTML>
@@ -2428,12 +2503,17 @@
 						<Anchor point="TOP" relativeKey="$parent.BottomLine" relativePoint="BOTTOM" x="0" y="-9"/>
 					</Anchors>
 					<Scripts>
-						<OnHyperlinkClick>
-							local linkType, index = string.split(":", link);
-							if ( linkType == "urlIndex" ) then
-								LoadURLIndex(tonumber(index));
-							end
-						</OnHyperlinkClick>
+						<OnHyperlinkClick function="GetURLIndexAndLoadURL" />
+					</Scripts>
+					<FontString inherits="GameFontBlackSmall2" justifyH="LEFT" />
+				</SimpleHTML>
+				<SimpleHTML parentKey="ProductInstructions" justifyH="LEFT">
+					<Size x="280" y="600"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMLEFT" x="8" y="-30"/>
+					</Anchors>
+					<Scripts>
+						<OnHyperlinkClick function="GetURLIndexAndLoadURL" />
 					</Scripts>
 					<FontString inherits="GameFontBlackSmall2" justifyH="LEFT" />
 				</SimpleHTML>
@@ -2454,6 +2534,12 @@
 									<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="TOPLEFT" x="72" y="-16"/>
 								</Anchors>
 							</FontString>
+							<FontString parentKey="SelectedGuildName" inherits="GameFontNormalHugeOutline2" justifyH="LEFT">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="TOPLEFT" x="72"/>
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMRIGHT"/>
+								</Anchors>
+							</FontString>
 							<FontString parentKey="SelectedCharacterDescription" inherits="GameFontHighlightSmall2" justifyH="LEFT">
 								<Size x="220" y="14"/>
 								<Anchors>
@@ -2466,6 +2552,19 @@
 									<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="0" y="-16"/>
 								</Anchors>
 							</FontString>
+							<FontString parentKey="NoEligibleCharactersErrorMessage" inherits="GameFontBlack" hidden="true" justifyH="LEFT">
+								<Size x="300"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.$parent.ProductDescription" relativePoint="BOTTOMLEFT" x="0" y="-80"/>
+								</Anchors>
+								<Color r="1.0" g="0.1" b="0.1"/>
+							</FontString>
+							<FontString parentKey="FollowGuildErrorMessage" inherits="GameFontBlack" hidden="true" justifyH="LEFT">
+								<Size x="300"/>
+								<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="2" y="-8"/>
+								</Anchors>
+							</FontString>
 						</Layer>
 						<Layer level="ARTWORK">
 							<Texture parentKey="ClassIcon" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes">
@@ -2473,6 +2572,13 @@
 								<Anchors>
 									<Anchor point="LEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="LEFT" x="12" y="0"/>
 								</Anchors>
+							</Texture>
+							<Texture parentKey="GuildIcon">
+								<Size x="48" y="48"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="LEFT" x="12" y="0"/>
+								</Anchors>
+								<TexCoords left="0.0625" right="0.9375" top="0.0625" bottom="0.9375"/>
 							</Texture>
 						</Layer>
 					</Layers>
@@ -2563,143 +2669,87 @@
 								<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="16" y="-24"/>
 							</Anchors>
 							<Scripts>
-								<OnTextChanged>
-									self:GetParent().ValidationDescription:Hide();
-									self:GetParent().ContinueButton:SetEnabled(self:GetText() ~= "");
-								</OnTextChanged>
-								<OnEnter function="VASCharacterSelectionNewCharacterName_OnEnter"/>
-								<OnLeave>
-									StoreTooltip:Hide();
-								</OnLeave>
+								<OnTextChanged function="VASCharacterSelection_NewCharacterName_OnTextChanged"/>
+								<OnEnter function="VASCharacterSelection_NewCharacterName_OnEnter"/>
+								<OnLeave function="VASCharacterSelection_ClearStoreTooltip"/>
 							</Scripts>
 						</EditBox>
-						<CheckButton parentKey="TransferRealmCheckbox" inherits="StoreCheckButtonTemplate">
+						<EditBox parentKey="NewGuildName" letters="24" inherits="StoreEditBoxTemplate">
+							<Size x="240" y="22"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="16" y="-24"/>
+							</Anchors>
+							<Scripts>
+								<OnTextChanged function="VASCharacterSelection_NewGuildName_OnTextChanged"/>
+								<OnEnter function="VASCharacterSelection_NewGuildName_OnEnter"/>
+								<OnLeave function="VASCharacterSelection_ClearStoreTooltip"/>
+							</Scripts>
+						</EditBox>
+						<CheckButton parentKey="RenameGuildCheckbox" inherits="StoreCheckButtonWithLabelTemplate">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="5" y="-8"/>
+							</Anchors>
+							<Scripts>
+								<OnClick function="RenameGuildCheckbox_OnClick"/>
+								<OnEnter function="VASCharacterSelection_RenameGuildCheckbox_OnEnter"/>
+								<OnLeave function="VASCharacterSelection_ClearStoreTooltip"/>
+							</Scripts>
+						</CheckButton>
+						<EditBox parentKey="RenameGuildEditbox" letters="24" inherits="StoreEditBoxTemplate">
+							<Size x="140" y="22"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMRIGHT" x="8" y="-12"/>
+							</Anchors>
+							<Scripts>
+								<OnTextChanged function="VASCharacterSelection_GuildVASEditbox_OnTextChanged"/>
+								<OnEnter function="VASCharacterSelection_NewGuildName_OnEnter"/>
+								<OnLeave function="VASCharacterSelection_ClearStoreTooltip"/>
+							</Scripts>
+						</EditBox>
+						<EditBox parentKey="NewGuildMaster" letters="12" inherits="StoreEditBoxWithAutoCompleteTemplate">
+							<KeyValues>
+								<KeyValue key="autoCompleteType" value="guildMembers" type="string"/>
+							</KeyValues>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMRIGHT" x="8" y="-52"/>
+							</Anchors>
+							<Scripts>
+								<OnEnter function="VASCharacterSelection_NewGuildMaster_OnEnter"/>
+							</Scripts>
+						</EditBox>
+						<EditBox parentKey="OldGuildNewName" letters="24" inherits="StoreEditBoxHorizontalLabelTemplate">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMRIGHT" x="8" y="-92"/>
+							</Anchors>
+							<Scripts>
+								<OnTextChanged function="VASCharacterSelection_GuildVASEditbox_OnTextChanged"/>
+								<OnEnter function="VASCharacterSelection_OldGuildNewName_OnEnter"/>
+								<OnLeave function="VASCharacterSelection_ClearStoreTooltip"/>
+							</Scripts>
+						</EditBox>
+						<CheckButton parentKey="FollowGuildCheckbox" inherits="StoreCheckButtonWithLabelTemplate">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="2" y="-8"/>
 							</Anchors>
-							<Layers>
-								<Layer level="BACKGROUND">
-									<Texture parentKey="Shade">
-										<Anchors>
-											<Anchor point="TOPLEFT" x="7" y="-7"/>
-											<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
-										</Anchors>
-										<Color r="0" g="0" b="0" a=".8"/>
-									</Texture>
-								</Layer>
-								<Layer level="ARTWORK">
-									<FontString parentKey="Label" inherits="GameFontBlack" text="BLIZZARD_STORE_VAS_TRANSFER_REALM" justifyH="LEFT">
-										<Size x="124" y="14"/>
-										<Anchors>
-											<Anchor point="LEFT" relativePoint="RIGHT" x="4" y="0"/>
-										</Anchors>
-									</FontString>
-								</Layer>
-							</Layers>
 							<Scripts>
-								<OnClick function="TransferRealmCheckbox_OnClick"/>
+								<OnClick function="FollowGuildCheckbox_OnClick"/>
 							</Scripts>
 						</CheckButton>
-						<EditBox parentKey="TransferRealmEditbox" letters="100" inherits="StoreEditBoxTemplate">
-							<Size x="140" y="22"/>
+						<EditBox parentKey="TransferRealmEditbox" inherits="StoreEditBoxWithAutoCompleteTemplate">
+							<KeyValues>
+								<KeyValue key="autoCompleteType" value="realms" type="string"/>
+							</KeyValues>
 							<Anchors>
 								<Anchor point="TOPRIGHT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMRIGHT" x="8" y="-10"/>
 							</Anchors>
-							<Layers>
-								<Layer level="ARTWORK">
-									<FontString parentKey="EmptyText" inherits="GameFontDisable" text="BLIZZARD_STORE_VAS_REALM_NAME">
-										<Anchors>
-											<Anchor point="LEFT"/>
-										</Anchors>
-									</FontString>
-								</Layer>
-							</Layers>
 							<Scripts>
-								<OnCursorChanged function="VASCharacterSelectionTransferRealmEditBox_OnCursorChanged"/>
-								<OnTextChanged function="VASCharacterSelectionTransferRealmEditBox_OnTextChanged"/>
-								<OnShow>
-									self:SetFrameLevel(self:GetParent():GetFrameLevel()+7);
-								</OnShow>
-								<OnKeyDown inherit="append">
-									if (key == "DOWN") then
-										StoreAutoCompleteIncrementSelection();
-									elseif (key == "UP") then
-										StoreAutoCompleteDecrementSelection();
-									elseif (key == "ENTER") then
-										StoreAutoCompleteSelectionEnterPressed();
-									elseif (key == "ESCAPE") then
-										self:GetParent().TransferRealmAutoCompleteBox:Hide();
-									end
-								</OnKeyDown>
+								<OnEnter function="VASCharacterSelection_TransferRealmEditbox_OnEnter"/>
 							</Scripts>
 						</EditBox>
-						<Frame parentKey="TransferRealmAutoCompleteBox" hidden="true">
-							<Size x="154" y="5"/>
+						<CheckButton parentKey="TransferAccountCheckbox" inherits="StoreCheckButtonWithLabelTemplate">
 							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.TransferRealmEditbox" relativePoint="BOTTOM" x="-4" y="14"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.TransferRealmEditbox" relativePoint="BOTTOMLEFT" x="-168" y="-12"/>
 							</Anchors>
-							<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-								<BackgroundInsets>
-									<AbsInset left="10" right="5" top="4" bottom="9"/>
-								</BackgroundInsets>
-								<TileSize>
-									<AbsValue val="16"/>
-								</TileSize>
-								<EdgeSize>
-									<AbsValue val="16"/>
-								</EdgeSize>
-							</Backdrop>
-							<Layers>
-								<Layer level="BACKGROUND">
-									<Texture parentKey="Shade">
-										<Anchors>
-											<Anchor point="TOPLEFT" x="11" y="-7"/>
-											<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
-										</Anchors>
-										<Color r="0" g="0" b="0" a=".8"/>
-									</Texture>
-								</Layer>
-							</Layers>
-							<Frames>
-								<Button name="AutoCompleteButton1" inherits="StoreAutoCompleteButtonTemplate">
-									<Anchors>
-										<Anchor point="TOP" x="6" y="-12"/>
-									</Anchors>
-									<Scripts>
-										<OnClick function="VASCharacterSelectionTransferRealmEditBoxAutoCompleteButton_OnClick"/>
-									</Scripts>
-								</Button>
-							</Frames>
-							<Scripts>
-								<OnShow>
-									self:SetFrameLevel(self:GetParent():GetFrameLevel()+4);
-								</OnShow>
-								<OnHide function="TransferRealmAutoCompleteBox_OnHide"/>
-							</Scripts>
-						</Frame>
-						<CheckButton parentKey="TransferAccountCheckbox" inherits="StoreCheckButtonTemplate">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.TransferRealmCheckbox" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-							</Anchors>
-							<Layers>
-								<Layer level="BACKGROUND">
-									<Texture parentKey="Shade">
-										<Anchors>
-											<Anchor point="TOPLEFT" x="7" y="-7"/>
-											<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
-										</Anchors>
-										<Color r="0" g="0" b="0" a=".8"/>
-									</Texture>
-								</Layer>
-								<Layer level="ARTWORK">
-									<FontString parentKey="Label" inherits="GameFontBlack" text="BLIZZARD_STORE_VAS_TRANSFER_ACCOUNT" justifyH="LEFT">
-										<Size x="124" y="14"/>
-										<Anchors>
-											<Anchor point="LEFT" relativePoint="RIGHT" x="4" y="0"/>
-										</Anchors>
-									</FontString>
-								</Layer>
-							</Layers>
 							<Scripts>
 								<OnClick function="TransferAccountCheckbox_OnClick"/>
 							</Scripts>
@@ -2715,29 +2765,10 @@
 								</OnLoad>
 							</Scripts>
 						</Frame>
-						<CheckButton parentKey="TransferFactionCheckbox" inherits="StoreCheckButtonTemplate">
+						<CheckButton parentKey="TransferFactionCheckbox" inherits="StoreCheckButtonWithLabelTemplate">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.TransferAccountCheckbox" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 							</Anchors>
-							<Layers>
-								<Layer level="BACKGROUND">
-									<Texture parentKey="Shade">
-										<Anchors>
-											<Anchor point="TOPLEFT" x="7" y="-7"/>
-											<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
-										</Anchors>
-										<Color r="0" g="0" b="0" a=".8"/>
-									</Texture>
-								</Layer>
-								<Layer level="ARTWORK">
-									<FontString parentKey="Label" inherits="GameFontBlack" justifyH="LEFT">
-										<Size x="280" y="14"/>
-										<Anchors>
-											<Anchor point="LEFT" relativePoint="RIGHT" x="4" y="0"/>
-										</Anchors>
-									</FontString>
-								</Layer>
-							</Layers>
 							<Frames>
 								<Frame parentKey="LabelMouseOver" enableMouse="true">
 									<Anchors>
@@ -2751,6 +2782,8 @@
 								</Frame>
 							</Frames>
 							<Scripts>
+								<OnEnter function="VASCharacterSelectionChangeIconFrame_OnEnter"/>
+								<OnLeave function="VASCharacterSelectionChangeIconFrame_OnLeave"/>
 								<OnClick function="TransferFactionCheckbox_OnClick"/>
 							</Scripts>
 						</CheckButton>
@@ -2761,11 +2794,6 @@
 							</Anchors>
 							<Layers>
 								<Layer level="ARTWORK">
-									<FontString parentKey="EmptyText" inherits="GameFontDisable" text="BLIZZARD_STORE_VAS_EMAIL_ADDRESS">
-										<Anchors>
-											<Anchor point="LEFT"/>
-										</Anchors>
-									</FontString>
 									<FontString inherits="GameFontBlack" text="BLIZZARD_STORE_VAS_DESTINATION_BNET_ACCOUNT">
 										<Anchors>
 											<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="-4" y="4"/>
@@ -2820,38 +2848,13 @@
 				<OnLoad function="StoreTooltip_OnLoad" />
 			</Scripts>
 		</Frame>
-		
-		<Frame name="StoreBulletPointTemplate" inherits="BulletPointWithTextureTemplate" hyperlinksEnabled="true" virtual="true">
+
+		<Frame name="StoreBulletPointTemplate" inherits="BulletPointWithTextureTemplate" mixin="StoreBulletPointMixin" hyperlinksEnabled="true" virtual="true">
 			<Scripts>
-				<OnLoad inherit="prepend">
-					self.Text:SetFontObject("GameFontNormalMed1");
-					self.Text:SetTextColor(1, 0.84, 0.55);
-				</OnLoad>
-				<OnHyperlinkEnter>
-					local grandparent = self:GetParent():GetParent();
-					local onEnterScript = grandparent:GetScript("OnEnter");
-					if onEnterScript then
-						onEnterScript(grandparent);
-					end
-				</OnHyperlinkEnter>
-				<OnHyperlinkLeave>
-					local grandparent = self:GetParent():GetParent();
-					local onLeaveScript = grandparent:GetScript("OnLeave");
-					if onLeaveScript then
-						onLeaveScript(grandparent);
-					end
-				</OnHyperlinkLeave>
-				<OnHyperlinkClick>
-					local grandparent = self:GetParent():GetParent();
-					if not grandparent:IsEnabled() then
-						return;
-					end
-					
-					local linkType, index = string.split(":", link);
-					if ( linkType == "urlIndex" ) then
-						LoadURLIndex(tonumber(index));
-					end
-				</OnHyperlinkClick>
+				<OnLoad method="OnLoad"/>
+				<OnHyperlinkEnter method="OnHyperlinkEnter"/>
+				<OnHyperlinkLeave method="OnHyperlinkLeave"/>
+				<OnHyperlinkClick method="OnHyperlinkClick"/>
 			</Scripts>
 		</Frame>
 	</ScopedModifier>

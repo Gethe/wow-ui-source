@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="InspectPVPFrame.lua"/>
-	
+
 	<Frame name="InspectPvpStatTemplate" virtual="true">
 		<Size x="160" y="60"/>
 		<Layers>
@@ -35,19 +35,19 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Button name="InspectPvpTalentSlotTemplate" virtual="true" inherits="PvpTalentSlotTemplate" mixin="InspectPvpTalentSlotMixin" motionScriptsWhileDisabled="true">
 		<Size x="46" y="46"/>
 		<KeyValues>
 			<KeyValue key="isInspect" value="true" type="boolean"/>
 		</KeyValues>
 	</Button>
-	
+
 	<Frame name="InspectPVPFrame" enableMouse="true" parent="InspectFrame" hidden="true" useParentLevel="true" setAllPoints="true" id="2">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="BG" file="Interface\PVPFrame\PVP-Conquest-Misc">
-					<Size x="320" y="355"/>	
+					<Size x="320" y="355"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="8" y="-64"/>
 					</Anchors>
@@ -131,13 +131,7 @@
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.TalentSlot2" relativePoint="BOTTOM" x="0" y="2"/>
 				</Anchors>
-			</Button>	
-			<Frame parentKey="PortraitMouseOverFrame">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="InspectFramePortraitFrame" relativePoint="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="InspectFramePortraitFrame" relativePoint="BOTTOMRIGHT"/>
-				</Anchors>
-			</Frame>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad function="InspectPVPFrame_OnLoad"/>

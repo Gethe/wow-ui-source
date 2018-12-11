@@ -35,20 +35,26 @@ function PetFrame_OnLoad (self)
 		ToggleDropDownMenu(1, nil, PetFrameDropDown, "PetFrame", 44, 8);
 	end
 	SecureUnitButton_OnLoad(self, "pet", showmenu);
-	
-	local _, class = UnitClass("player");
-	if ( class == "DEATHKNIGHT" or class == "ROGUE") then
+end
+
+function PetFrame_UpdateAnchoring(self)
+	if self.unit == "player" and PlayerVehicleHasComboPoints() then
 		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -75);
-	elseif ( class == "SHAMAN" or class == "DRUID" ) then
-		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -100);
-	elseif ( class == "WARLOCK" ) then
-		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -90);
-	elseif ( class == "PALADIN" ) then
-		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -90);
-	elseif ( class == "PRIEST" ) then
-		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -90);
-	elseif ( class == "MONK" ) then
-		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 90, -100);
+	else
+		local _, class = UnitClass("player");
+		if ( class == "DEATHKNIGHT" or class == "ROGUE") then
+			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -75);
+		elseif ( class == "SHAMAN" or class == "DRUID" ) then
+			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -100);
+		elseif ( class == "WARLOCK" ) then
+			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -90);
+		elseif ( class == "PALADIN" ) then
+			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -90);
+		elseif ( class == "PRIEST" ) then
+			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -90);
+		elseif ( class == "MONK" ) then
+			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 90, -100);
+		end
 	end
 end
 
@@ -75,6 +81,8 @@ function PetFrame_Update (self, override)
 			self:Hide();
 		end
 	end
+	
+	PetFrame_UpdateAnchoring(self)
 end
 
 function PetFrame_OnEvent (self, event, ...)

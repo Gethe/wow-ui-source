@@ -164,7 +164,8 @@ function OrderHallMission:SetupTabs()
 		local tab = self["Tab"..tabList[1]];
 		local prevTab = tab;
 		tab:ClearAllPoints();
-		tab:SetPoint("BOTTOMLEFT", self, 7, -31);
+
+		tab:SetPoint("BOTTOMLEFT", self, tab.xOffset or 7, tab.yOffset or -31);
 		tab:Show();
 
 		for i = 2, #tabList do
@@ -362,10 +363,9 @@ function OrderHallMission:SetupCompleteDialog()
 
 		local _, className = UnitClass("player");
 
-		completeDialog.BorderFrame.Stage.LocBack:SetAtlas("legionmission-complete-background-"..className);
-		completeDialog.BorderFrame.Stage.LocBack:SetTexCoord(0, 1, 0, 1);
-		completeDialog.BorderFrame.Stage.LocMid:Hide();
-		completeDialog.BorderFrame.Stage.LocFore:Hide();
+		GarrisonMissionStage_SetBack(completeDialog.BorderFrame.Stage, "legionmission-complete-background-"..className);
+		GarrisonMissionStage_SetMid(completeDialog.BorderFrame.Stage, nil);
+		GarrisonMissionStage_SetFore(completeDialog.BorderFrame.Stage, nil);
 
 		local neutralChestDisplayID = 71671;
 		self.MissionComplete.BonusRewards.ChestModel:SetDisplayInfo(neutralChestDisplayID);

@@ -90,11 +90,6 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="JunkIcon" atlas="bags-junkcoin" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="1" y="0"/>
-					</Anchors>
-				</Texture>
 				<Texture parentKey="UpgradeIcon" atlas="bags-greenarrow" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -155,6 +150,13 @@
 						<Anchor point="CENTER" x="0" y="-1"/>
 					</Anchors>
 					<Color r="0.603" g="0.875" b="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="5">
+				<Texture parentKey="JunkIcon" atlas="bags-junkcoin" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="0"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>

@@ -274,7 +274,7 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="ReputationFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" hidden="true" id="2">
 		<HitRectInsets>
 			<AbsInset left="0" right="30" top="0" bottom="75"/>
@@ -369,11 +369,11 @@
 					<Anchor point="TOPRIGHT" relativeTo="ReputationBar14" relativePoint="BOTTOMRIGHT" x="0" y="-3"/>
 				</Anchors>
 			</Button>
-			
+
 			<ScrollFrame name="ReputationListScrollFrame" inherits="FauxScrollFrameTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="CharacterFrameInset" x="0" y="-4"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInset" x="-27" y="2"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Inset" x="0" y="-4"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.Inset" x="-27" y="2"/>
 				</Anchors>
 				<Scripts>
 					<OnVerticalScroll>
@@ -578,7 +578,7 @@
 							<OnLoad>
 								_G[self:GetName().."Text"]:SetText(SHOW_FACTION_ON_MAINSCREEN);
 							</OnLoad>
-							<OnClick function="ReputationDetailMainScreenCheckBox_OnClick"/> 
+							<OnClick function="ReputationDetailMainScreenCheckBox_OnClick"/>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetText(REPUTATION_SHOW_AS_XP, nil, nil, nil, nil, true);

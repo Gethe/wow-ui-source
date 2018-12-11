@@ -1,7 +1,180 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ChallengesUI.lua"/>
-
+	<Frame name="MythicPlusSeasonChangesNoticeTemplate" frameStrata="HIGH" enableMouse="true" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="BottomLeftCorner" atlas="parchmentpopup-bottomleft">
+					<Size x="167" y="167"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomRightCorner" atlas="parchmentpopup-bottomright">
+					<Size x="167" y="167"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopLeftCorner" atlas="parchmentpopup-topleft">
+					<Size x="167" y="167"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopRightCorner" atlas="parchmentpopup-topright">
+					<Size x="167" y="167"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="3">
+				<Texture parentKey="BottomBorder" atlas="parchmentpopup-bottom">
+					<Size x="256" y="167"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftCorner" relativePoint="BOTTOMRIGHT" y="2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" relativePoint="BOTTOMLEFT" y="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopBorder" atlas="parchmentpopup-top">
+					<Size x="256" y="167"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner" relativePoint="TOPRIGHT" y="-1"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="TOPLEFT" y="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeftBorder" atlas="parchmentpopup-left">
+					<Size x="167" y="256"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner" relativePoint="BOTTOMLEFT" x="2"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftCorner" relativePoint="TOPLEFT" x="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightBorder" atlas="parchmentpopup-right">
+					<Size x="167" y="256"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="4">
+				<Texture parentKey="LeftHide" atlas="parchmentpopup-hide-left" useAtlasSize="true"> 
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner" relativePoint="BOTTOMLEFT" x="10" y="10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeftHide2" atlas="parchmentpopup-hide-left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftCorner" relativePoint="TOPLEFT" x="10" y="-10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightHide" atlas="parchmentpopup-hide-right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="BOTTOMRIGHT" x="-8" y="8"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightHide2" atlas="parchmentpopup-hide-right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" relativePoint="TOPRIGHT" x="-10" y="-10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomHide" atlas="parchmentpopup-hide-bottom" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftCorner" relativePoint="BOTTOMRIGHT" x="-10" y="11"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomHide2" atlas="parchmentpopup-hide-bottom" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" relativePoint="BOTTOMLEFT" x="15" y="11"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="parchmentpopup-background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-20"/>
+						<Anchor point="BOTTOMRIGHT" x="-20" y="20"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="5">
+				<Texture parentKey="TopLeftFiligree" atlas="parchmentpopup-filigree" alphaMode="ADD" alpha=".45" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="5" y ="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopRightFiligree" atlas="parchmentpopup-filigree" alphaMode="ADD" alpha=".45" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-5" y="2"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="6">
+				<FontString parentKey="NewSeason" inherits="Game42Font" text="NEW_SEASON_YAY">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-50"/>
+					</Anchors>
+					<Color r="0" g="0" b="0"/>
+				</FontString>
+				<FontString parentKey="SeasonDescription" font="SystemFont_Med3" justifyH="center" justifyV="center" wordwrap="true" text="MYTHIC_PLUS_SEASON_DESC1">
+					<Size x="300" y="30"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-110"/>
+					</Anchors>
+					<Color r="0.2824" g="0.0157" b="0.0157"/>
+				</FontString>
+				<FontString parentKey="SeasonDescription2" font="SystemFont_Med3" justifyH="center" justifyV="center" wordwrap="true" text="MYTHIC_PLUS_SEASON_DESC2">
+					<Size x="300" y="30"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.SeasonDescription" relativePoint="BOTTOM" x="0" y="-35"/>
+					</Anchors>
+					<Color r="0.2824" g="0.0157" b="0.0157"/>
+				</FontString>
+				<FontString parentKey="SeasonDescription3" font="SystemFont_Med3" justifyH="center" justifyV="center" wordwrap="true">
+					<Size x="300" y="30"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.SeasonDescription2" relativePoint="BOTTOM" x="0" y="-35"/>
+					</Anchors>
+					<Color r="0.2824" g="0.0157" b="0.0157"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Affix" inherits="ChallengesKeystoneFrameAffixTemplate">
+				<Size x="77" y="77"/> 
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.SeasonDescription3" y="-92"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Border" atlas="mythicplus-popup-ring" useAtlasSize="true"/>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Portrait">
+							<Size x="77" y="77"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Border"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="Leave" inherits="UIPanelButtonNoTooltipTemplate" text="CLOSE">
+				<Size x="125" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.Background" y="25"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						MythicPlusSeasonChangeNoticeOnCloseClick(self);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
 	<Frame name="ChallengesKeystoneFrameAffixTemplate" parentArray="Affixes" enableMouse="true" virtual="true" mixin="ChallengesKeystoneFrameAffixMixin">
 		<Size x="52" y="52"/>
 		<Layers>
@@ -556,7 +729,7 @@
                     </Anchors>
                 </Texture>
             </Layer>
-            <Layer level="ARTWORK">
+            <Layer level="BORDER" textureSubLevel="2">
                 <FontString parentKey="HighestLevel" inherits="SystemFont_Huge1_Outline" justifyH="CENTER">
                     <Anchors>
                         <Anchor point="TOP" x="0" y="-4"/>
@@ -585,7 +758,6 @@
 					<Anchor point="BOTTOMRIGHT" x="-4" y="4" />
 				</Anchors>
 			</Frame>
-            
             <ScrollFrame parentKey="WeeklyInfo" mixin="ChallengesFrameWeeklyInfoMixin">
                 <Size x="550" y="392"/>
                 <Anchors>
@@ -612,7 +784,7 @@
                                     </Shadow>
                                 </FontString>
                                 <FontString parentKey="RunStatus" inherits="GameFontNormalMed2" justifyH="CENTER" hidden="false">
-                                    <Size x="500" />
+                                    <Size x="430" />
                                     <Anchors>
                                         <Anchor point="BOTTOM" relativeKey="$parent.Label" x="0" y="-90"/>
                                     </Anchors>
@@ -841,7 +1013,13 @@
 				</ScrollChild>
             </ScrollFrame>
             <Frame inherits="ChallengesDungeonIconFrameTemplate" hidden="true"/>
-		</Frames>
+				<Frame parentKey="SeasonChangeNoticeFrame" hidden="true" inherits="MythicPlusSeasonChangesNoticeTemplate">
+					<Size x="545" y="390"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y ="-12"/>
+					</Anchors>
+				</Frame>
+			</Frames>
         <Layers>
             <Layer level="BACKGROUND" textureSubLevel="1">
                 <Texture parentKey="Background">

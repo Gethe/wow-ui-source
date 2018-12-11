@@ -113,11 +113,8 @@ function BankFrameItemButton_Update (button)
 		SetItemButtonCount(button,0);
 	end
 	
-	if ( isFiltered ) then
-		button.searchOverlay:Show();
-	else
-		button.searchOverlay:Hide();
-	end
+	button:UpdateItemContextMatching();
+	button:SetMatchesSearch(not isFiltered);
 
 	SetItemButtonQuality(button, quality, itemID);
 
@@ -283,6 +280,13 @@ function BankFrame_OnEvent (self, event, ...)
 	end
 end
 
+function BankFrame_UpdateItems(self)
+	for i=1, NUM_BANKGENERIC_SLOTS, 1 do
+		local button = BankSlotsFrame["Item"..i];
+		BankFrameItemButton_Update(button);
+	end
+end
+
 function BankFrame_OnShow (self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 
@@ -294,14 +298,10 @@ function BankFrame_OnShow (self)
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN");
 	self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
 
-	local button;
-	for i=1, NUM_BANKGENERIC_SLOTS, 1 do
-		button = BankSlotsFrame["Item"..i];
-		BankFrameItemButton_Update(button);
-	end
+	BankFrame_UpdateItems(self);
 	
 	for i=1, NUM_BANKBAGSLOTS, 1 do
-		button = BankSlotsFrame["Bag"..i];
+		local button = BankSlotsFrame["Bag"..i];
 		BankFrameItemButton_Update(button);
 	end
 	UpdateBagSlotStatus();
@@ -357,15 +357,15 @@ function BankFrameItemButtonGeneric_OnModifiedClick (self, button)
 	if ( not CursorHasItem() and IsModifiedClick("SPLITSTACK") ) then
 		local texture, itemCount, locked = GetContainerItemInfo(container, self:GetID());
 		if ( not locked and itemCount and itemCount > 1) then
-			OpenStackSplitFrame(self.count, self, "BOTTOMLEFT", "TOPLEFT");
+			StackSplitFrame:OpenStackSplitFrame(self.count, self, "BOTTOMLEFT", "TOPLEFT");
 		end
 		return;
 	end
 end
 
 function UpdateBagButtonHighlight (id) 
-	local texture = BankSlotsFrame["Bag"..(id)].HighlightFrame.HighlightTexture;
-	if ( not texture ) then
+	local bankSlot = BankSlotsFrame["Bag"..(id)];
+	if ( not bankSlot ) then
 		return;
 	end
 
@@ -373,11 +373,11 @@ function UpdateBagButtonHighlight (id)
 	for i=1, NUM_CONTAINER_FRAMES, 1 do
 		frame = _G["ContainerFrame"..i];
 		if ( ( frame:GetID() == (id + NUM_BAG_SLOTS) ) and frame:IsShown() ) then
-			texture:Show();
+			bankSlot:SetChecked(true);
 			return;
 		end
 	end
-	texture:Hide();
+	bankSlot:SetChecked(false);
 end
 
 function BankFrameItemButtonBag_OnClick (self, button) 

@@ -252,11 +252,7 @@ function GuildBankFrame_Update()
 			SetItemButtonCount(button, itemCount);
 			SetItemButtonDesaturated(button, locked);
 			
-			if ( isFiltered ) then
-				button.searchOverlay:Show();
-			else
-				button.searchOverlay:Hide();
-			end
+			button:SetMatchesSearch(not isFiltered);
 
 			SetItemButtonQuality(button, quality, GetGuildBankItemLink(tab, i));
 		end
@@ -649,7 +645,7 @@ function GuildBankItemButton_OnClick(self, button)
 		if ( not CursorHasItem() ) then
 			local texture, count, locked = GetGuildBankItemInfo(GetCurrentGuildBankTab(), self:GetID());
 			if ( not locked and count and count > 1) then
-				OpenStackSplitFrame(count, self, "BOTTOMLEFT", "TOPLEFT");
+				StackSplitFrame:OpenStackSplitFrame(count, self, "BOTTOMLEFT", "TOPLEFT");
 			end
 		end
 		return;

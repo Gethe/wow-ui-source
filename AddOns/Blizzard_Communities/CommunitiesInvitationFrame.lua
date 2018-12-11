@@ -59,6 +59,7 @@ function CommunitiesInvitationFrameMixin:DisplayInvitation(invitationInfo)
 	local clubTypeText = isCharacterClub and COMMUNITIES_INVITATION_FRAME_TYPE_CHARACTER or COMMUNITIES_INVITATION_FRAME_TYPE;
 	self.Type:SetText(clubTypeText);
 	C_Club.SetAvatarTexture(self.Icon, clubInfo.avatarId, clubInfo.clubType);
+	self.IconRing:SetAtlas(clubInfo.clubType == Enum.ClubType.BattleNet and "communities-ring-blue" or "communities-ring-gold");
 	self.Name:SetText(clubInfo.name);
 	
 	if clubInfo.description ~= "" then

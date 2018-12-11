@@ -116,6 +116,7 @@ function PartyMemberFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_PHASE");
 	self:RegisterEvent("UNIT_FLAGS");
 	self:RegisterEvent("UNIT_OTHER_PARTY_CHANGED");
+	self:RegisterEvent("INCOMING_SUMMON_CHANGED");
 	local id = self:GetID();
 	self:RegisterUnitEvent("UNIT_AURA", "party"..id, "partypet"..id);
 	self:RegisterUnitEvent("UNIT_PET",  "party"..id, "partypet"..id);
@@ -322,6 +323,27 @@ function PartyMemberFrame_UpdateNotPresentIcon(self)
 		self.notPresentIcon.Border:Show();
 		self.notPresentIcon.tooltip = PARTY_IN_PUBLIC_GROUP_MESSAGE;
 		self.notPresentIcon:Show();
+	elseif ( C_IncomingSummon.HasIncomingSummon(self.unit) ) then
+		local status = C_IncomingSummon.IncomingSummonStatus(self.unit);
+		if(status == Enum.SummonStatus.Pending) then
+			self.notPresentIcon.texture:SetAtlas("Raid-Icon-SummonPending");
+			self.notPresentIcon.texture:SetTexCoord(0, 1, 0, 1);
+			self.notPresentIcon.tooltip = INCOMING_SUMMON_TOOLTIP_SUMMON_PENDING;
+			self.notPresentIcon.Border:Hide();
+			self.notPresentIcon:Show();
+		elseif( status == Enum.SummonStatus.Accepted ) then
+			self.notPresentIcon.texture:SetAtlas("Raid-Icon-SummonAccepted");
+			self.notPresentIcon.texture:SetTexCoord(0, 1, 0, 1);
+			self.notPresentIcon.tooltip = INCOMING_SUMMON_TOOLTIP_SUMMON_ACCEPTED;
+			self.notPresentIcon.Border:Hide();
+			self.notPresentIcon:Show();
+		elseif( status == Enum.SummonStatus.Declined ) then
+			self.notPresentIcon.texture:SetAtlas("Raid-Icon-SummonDeclined");
+			self.notPresentIcon.texture:SetTexCoord(0, 1, 0, 1);
+			self.notPresentIcon.tooltip = INCOMING_SUMMON_TOOLTIP_SUMMON_DECLINED;
+			self.notPresentIcon.Border:Hide();
+			self.notPresentIcon:Show();
+		end
 	elseif ( (notInSameWarMode or not inPhase) and UnitIsConnected(partyID) ) then
 		self:SetAlpha(0.6);
 		self.notPresentIcon.texture:SetTexture("Interface\\TargetingFrame\\UI-PhasingIcon");
@@ -329,7 +351,11 @@ function PartyMemberFrame_UpdateNotPresentIcon(self)
 		self.notPresentIcon.Border:Hide();
 		self.notPresentIcon.tooltip = PARTY_PHASED_MESSAGE;
 		if ( notInSameWarMode ) then
-			self.notPresentIcon.tooltip = PARTY_WARMODE_MESSAGE;
+			if C_PvP.IsWarModeDesired() then
+				self.notPresentIcon.tooltip = PARTY_PLAYER_WARMODE_DISABLED;
+			else
+				self.notPresentIcon.tooltip = PARTY_PLAYER_WARMODE_ENABLED;
+			end
 		end
 		self.notPresentIcon:Show();
 	else
@@ -414,12 +440,13 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "UNIT_CONNECTION" ) and ( arg1 == "party"..selfID ) then
 		PartyMemberFrame_UpdateArt(self);
-		PartyMemberFrame_UpdateOnlineStatus(self);
 	elseif ( event == "UNIT_PHASE" or event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE" or event == "UNIT_FLAGS") then
 		if ( event ~= "UNIT_PHASE" or arg1 == unit ) then
 			PartyMemberFrame_UpdateNotPresentIcon(self);
 		end
 	elseif ( event == "UNIT_OTHER_PARTY_CHANGED" and arg1 == unit ) then
+		PartyMemberFrame_UpdateNotPresentIcon(self);
+	elseif ( event == "INCOMING_SUMMON_CHANGED" ) then
 		PartyMemberFrame_UpdateNotPresentIcon(self);
 	end
 end

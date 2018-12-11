@@ -672,9 +672,10 @@ EMOTE455_TOKEN = "FORTHEHORDE"
 EMOTE517_TOKEN = "WHOA"
 EMOTE518_TOKEN = "OOPS"
 EMOTE521_TOKEN = "MEOW"
+EMOTE522_TOKEN = "BOOP"
 
 -- NOTE: The indices used to iterate the tokens may not be contiguous, keep that in mind when updating this value.
-local MAXEMOTEINDEX = 521;
+local MAXEMOTEINDEX = 522;
 
 
 ICON_LIST = {
@@ -1069,15 +1070,11 @@ local CastRandomManager;
 local CastRandomTable = {};
 
 local function CastRandomManager_OnEvent(self, event, ...)
-	local unit, name, rank = ...;
-
-	if ( not name ) then
-		-- This was a server-side only spell affecting the player somehow, don't do anything with cast sequencing, just bail.
-		return;
-	end
+	local unit, castID, spellID = ...;
 
 	if ( unit == "player" ) then
-		name, rank = strlower(name), strlower(rank);
+		local name = strlower(GetSpellInfo(spellID));
+		local rank = strlower(GetSpellSubtext(spellID));
 		local nameplus = name.."()";
 		local fullname = name.."("..rank..")";
 		for sequence, entry in pairs(CastRandomTable) do
@@ -2103,7 +2100,7 @@ SlashCmdList["WHO"] = function(msg)
 		ShowWhoPanel();
 	end
 	WhoFrameEditBox:SetText(msg);
-	SendWho(msg);
+	C_FriendList.SendWho(msg);
 end
 
 SlashCmdList["CHANNEL"] = function(msg, editBox)
@@ -2114,14 +2111,14 @@ end
 SlashCmdList["FRIENDS"] = function(msg)
 	local player, note = strmatch(msg, "%s*([^%s]+)%s*(.*)");
 	if ( player ~= "" or UnitIsPlayer("target") ) then
-		AddOrRemoveFriend(player, note);
+		C_FriendList.AddOrRemoveFriend(player, note);
 	else
 		ToggleFriendsPanel();
 	end
 end
 
 SlashCmdList["REMOVEFRIEND"] = function(msg)
-	RemoveFriend(msg);
+	C_FriendList.RemoveFriend(msg);
 end
 
 SlashCmdList["IGNORE"] = function(msg)
@@ -2134,7 +2131,7 @@ SlashCmdList["IGNORE"] = function(msg)
 				BNSetBlocked(bNetIDAccount, not BNIsBlocked(bNetIDAccount));
 			end
 		else
-			AddOrDelIgnore(msg);
+			C_FriendList.AddOrDelIgnore(msg);
 		end
 	else
 		ToggleIgnorePanel();
@@ -2143,7 +2140,7 @@ end
 
 SlashCmdList["UNIGNORE"] = function(msg)
 	if ( msg ~= "" or UnitIsPlayer("target") ) then
-		DelIgnore(msg);
+		C_FriendList.DelIgnore(msg);
 	else
 		ToggleIgnorePanel();
 	end
@@ -2344,14 +2341,19 @@ SlashCmdList["FRAMESTACK"] = function(msg)
 	UIParentLoadAddOn("Blizzard_DebugTools");
 
 	local showHiddenArg, showRegionsArg, showAnchorsArg;
+	local pattern = "^%s*(%S+)(.*)$";
+	showHiddenArg, msg = string.match(msg or "", pattern);
+	showRegionsArg, msg = string.match(msg or "", pattern);
+	showAnchorsArg, msg = string.match(msg or "", pattern);
 
-	showHiddenArg, msg = string.match(msg or "", "^%s*(%S+)(.*)$");
-	showRegionsArg, msg = string.match(msg or "", "^%s*(%S+)(.*)$");
-	showAnchorsArg, msg =  string.match(msg or "", "^%s*(%S+)(.*)$");
+	-- If no parameters are passed the defaults specified by these cvars are used instead.
+	local showHiddenDefault = FrameStackTooltip_IsShowHiddenEnabled();
+	local showRegionsDefault = FrameStackTooltip_IsShowRegionsEnabled();
+	local showAnchorsDefault = FrameStackTooltip_IsShowAnchorsEnabled();
 
-	local showHidden = StringToBoolean(showHiddenArg or "", false);
-	local showRegions = StringToBoolean(showRegionsArg or "", true);
-	local showAnchors = StringToBoolean(showAnchorsArg or "", true);
+	local showHidden = StringToBoolean(showHiddenArg or "", showHiddenDefault);
+	local showRegions = StringToBoolean(showRegionsArg or "", showRegionsDefault);
+	local showAnchors = StringToBoolean(showAnchorsArg or "", showAnchorsDefault);
 
 	FrameStackTooltip_Toggle(showHidden, showRegions, showAnchors);
 end
@@ -2359,6 +2361,15 @@ end
 SlashCmdList["EVENTTRACE"] = function(msg)
 	UIParentLoadAddOn("Blizzard_DebugTools");
 	EventTraceFrame_HandleSlashCmd(msg);
+end
+
+if IsGMClient() then
+	SLASH_TEXELVIS1 = "/texelvis";
+	SLASH_TEXELVIS2 = "/tvis";
+	SlashCmdList["TEXELVIS"] = function(msg) 
+		UIParentLoadAddOn("Blizzard_DebugTools");
+		TexelSnappingVisualizer:Show();
+	end
 end
 
 SlashCmdList["TABLEINSPECT"] = function(msg)
@@ -2746,7 +2757,7 @@ end
 function ChatFrame_AddNewCommunitiesChannel(chatFrameIndex, clubId, streamId, setEditBoxToChannel)
 	local clubInfo = C_Club.GetClubInfo(clubId);
 	if clubInfo then
-		C_Club.AddClubStreamToChatWindow(clubId, streamId, chatFrameIndex);
+		C_Club.AddClubStreamChatChannel(clubId, streamId);
 		
 		local channelColor = DEFAULT_CHAT_CHANNEL_COLOR;
 		local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
@@ -3289,11 +3300,12 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif (type == "LOOT") then
 			-- Append [Share] hyperlink if this is a valid social item and you are the looter.
-			-- arg5 contains the name of the player who looted
-			if (C_Social.IsSocialEnabled() and UnitName("player") == arg5) then
-				local itemID, creationContext = GetItemInfoFromHyperlink(arg1);
+			if (C_Social.IsSocialEnabled() and UnitGUID("player") == arg12) then
+				-- Because it is being placed inside another hyperlink (the shareitem link created below), we have to strip off the hyperlink markup
+				-- The item link markup will be added back in when the shareitem link is clicked (in ItemRef.lua) and then passed to the social panel
+				local itemID, strippedItemLink = GetItemInfoFromHyperlink(arg1);
 				if (itemID and C_Social.GetLastItem() == itemID) then
-					arg1 = arg1 .. " " .. Social_GetShareItemLink(itemID, creationContext, true);
+					arg1 = arg1 .. " " .. Social_GetShareItemLink(strippedItemLink, true);
 				end
 			end
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
@@ -3742,19 +3754,15 @@ function ChatFrame_SendTell(name, chatFrame)
 	ChatEdit_ParseText(editBox, 0);
 end
 
-function ChatFrame_SendSmartTell(name, chatFrame)
-	local editBox = ChatEdit_ChooseBoxForSend(chatFrame);
-
-	--DEBUG FIXME - for now, we're not going to remove spaces from names. We need to make sure X-server still works.
-	-- Remove spaces from the server name for slash command parsing
-	--name = gsub(name, " ", "");
-
+function ChatFrame_SendBNetTell(tokenizedName)
+	local editBox = ChatEdit_ChooseBoxForSend();
+	editBox:SetAttribute("tellTarget", tokenizedName);
+	editBox:SetAttribute("chatType", "BN_WHISPER");
 	if ( editBox ~= ChatEdit_GetActiveWindow() ) then
-		ChatFrame_OpenChat(SLASH_SMART_WHISPER1.." "..name.." ", chatFrame);
+		ChatFrame_OpenChat("");
 	else
-		editBox:SetText(SLASH_SMART_WHISPER1.." "..name.." ");
+		ChatEdit_UpdateHeader(editBox);
 	end
-	ChatEdit_ParseText(editBox, 0);
 end
 
 function ChatFrame_ReplyTell(chatFrame)
@@ -3946,6 +3954,20 @@ function ChatEdit_OnLoad(self)
 		self:Show();
 	end
 
+	local function ChatEditAutoComplete(editBox, fullText, nameInfo)
+		if nameInfo.bnetID ~= nil and nameInfo.bnetID ~= 0 then
+			editBox:SetAttribute("tellTarget", nameInfo.name);
+			editBox:SetAttribute("chatType", "BN_WHISPER");
+			editBox:SetText("");
+			ChatEdit_UpdateHeader(editBox);
+			return true;
+		end
+		
+		return false;
+	end
+	
+	AutoCompleteEditBox_SetCustomAutoCompleteFunction(self, ChatEditAutoComplete);
+	
 	self:SetParent(UIParent);
 end
 
@@ -4572,7 +4594,8 @@ function ChatEdit_OnChar(self)
 	end
 	if (command and target and self.autoCompleteSource and self.autoCompleteParams) then --if they typed a command with a autocompletable target
 		local utf8Position = self:GetUTF8CursorPosition();
-		local nameToShow = self.autoCompleteSource(target, 1, utf8Position, unpack(self.autoCompleteParams))[1];
+		local allowFullMatch = false;
+		local nameToShow = self.autoCompleteSource(target, 1, utf8Position, allowFullMatch, unpack(self.autoCompleteParams))[1];
 		if (nameToShow and nameToShow.name) then
 			local name = Ambiguate(nameToShow.name, "all");
 			--We're going to be setting the text programatically which will clear the userInput flag on the editBox.
@@ -4783,32 +4806,24 @@ function ChatEdit_ExtractTellTarget(editBox, msg, chatType)
 		return false;
 	end
 
-	if((strsub(target, 1, 1) == "|") and not(strsub(target, 1, 2) == "|K")) then
+	if ( strsub(target, 1, 1) == "|" ) then
 		return false;
 	end
 
-	if ( #GetAutoCompleteResults(target, 1, 0, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude, true) > 0 ) then
+	if ( #GetAutoCompleteResults(target, 1, 0, true, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude) > 0 ) then
 		--Even if there's a space, we still want to let the person keep typing -- they may be trying to type whatever is in AutoComplete.
 		return false;
 	end
 
-	if(strsub(target, 1, 2) == "|K") then
-		target, msg = BNTokenFindName(target);
-		--If there is a space just after the name (to trigger a parse), remove it.
-		if ( strsub(msg, 1, 1) == " " ) then
-			msg = strsub(msg, 2);
+	--Keep pulling off everything after the last space until we either have something on the AutoComplete list or only a single word is left.
+	while ( strfind(target, "%s") ) do
+		--Pull off everything after the last space.
+		target = strmatch(target, "(.+)%s+[^%s]*");
+		if ( #GetAutoCompleteResults(target, 1, 0, true, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude) > 0 ) then
+			break;
 		end
-	else
-		--Keep pulling off everything after the last space until we either have something on the AutoComplete list or only a single word is left.
-		while ( strfind(target, "%s") ) do
-			--Pull off everything after the last space.
-			target = strmatch(target, "(.+)%s+[^%s]*");
-			if ( #GetAutoCompleteResults(target, 1, 0, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude, true) > 0 ) then
-				break;
-			end
-		end
-		msg = strsub(msg, strlen(target) + 2);
 	end
+	msg = strsub(msg, strlen(target) + 2);
 
 	if ( chatType ~= "WHISPER" and BNet_GetBNetIDAccount(target) ) then --"WHISPER" forces character whisper
 		chatType = "BN_WHISPER";
@@ -5207,15 +5222,12 @@ end
 SHARE_ICON_COLOR = "ffffd200";
 SHARE_ICON_TEXT = "|TInterface\\ChatFrame\\UI-ChatIcon-Share:18:18|t";
 
-function Social_GetShareItemLink(itemID, creationContext, earned)
-	if (creationContext == nil) then
-		creationContext = "";
-	end
+function Social_GetShareItemLink(strippedItemLink, earned)
 	local earnedNum = 0;
 	if (earned) then
 		earnedNum = 1;
 	end
-	return format("|c%s|Hshareitem:%d:%d:%s|h%s|h|r", SHARE_ICON_COLOR, itemID, earnedNum, creationContext, SHARE_ICON_TEXT);
+	return format("|c%s|Hshareitem:%s:%d|h%s|h|r", SHARE_ICON_COLOR, strippedItemLink, earnedNum, SHARE_ICON_TEXT);
 end
 
 function Social_GetShareAchievementLink(achievementID, earned)

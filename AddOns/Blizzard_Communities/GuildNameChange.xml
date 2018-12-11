@@ -1,0 +1,142 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+
+	<Button name="CommunitiesGuildNameChangeAlertFrameTemplate" inherits="GlowBoxTemplate" enableMouse="true" frameStrata="DIALOG" hidden="true" virtual="true">
+		<Size x="256" y="36"/>
+		<Anchors>
+			<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString inherits="GameFontHighlightLeft" justifyH="CENTER" text="GUILD_NAME_ALERT" parentKey="Alert">
+					<Size x="190" y="0"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontDisableSmall" justifyH="CENTER" text="CLICK_HERE_FOR_MORE_INFO" parentKey="ClickText">
+					<Size x="180" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="CENTER" x="0" y="-1"/>
+					</Anchors>
+				</FontString>
+				<Texture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="LEFT" x="8" y="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="-8" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				self:GetParent().GuildNameAlertFrame.topAnchored = false;
+				self:GetParent():ValidateDisplayMode();
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<Frame name="CommunitiesGuildNameChangeFrameTemplate" enableMouse="true" frameStrata="DIALOG" hidden="true" virtual="true">
+		<Size x="300" y="300"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="6" y="-68"/>
+			<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="2"/>
+						<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
+					</Anchors>
+					<Color r="1" g=".9" b="0" a="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Error" inherits="GameFontHighlight" justifyH="CENTER" text="GUILD_NAME_ALERT_WARNING">
+					<Size x="280" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-80"/>
+					</Anchors>
+					<Color r="1" g="0" b="0" a="1"/>
+				</FontString>
+				<FontString parentKey="GMText" inherits="GameFontHighlightCenter" text="GUILD_NAME_ALERT_GM_HELP">
+					<Size x="280" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Error" relativePoint="BOTTOM" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="MemberText" inherits="GameFontHighlightCenter" text="GUILD_NAME_ALERT_MEMBER_HELP" hidden="true">
+					<Size x="280" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Error" relativePoint="BOTTOM" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RenameText" inherits="GameFontNormalMed3" text="RENAME_GUILD_LABEL">
+					<Size x="240" y="0"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="90"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="6" y="6"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():GetParent():SetGuildNameAlertBannerMode(true);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox parentKey="EditBox" letters="24" inherits="InputBoxTemplate" autoFocus="false">
+				<Size x="200" y="20"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.RenameText" relativePoint="BOTTOM" x="0" y="-10"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad/>
+					<OnEscapePressed function="EditBox_ClearFocus"/>
+					<OnEditFocusLost>
+					</OnEditFocusLost>
+					<OnEditFocusGained>
+						self:HighlightText();
+					</OnEditFocusGained>
+				</Scripts>
+			</EditBox>
+			<Button parentKey="Button" inherits="UIPanelButtonTemplate" text="ACCEPT">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.EditBox" relativePoint="BOTTOM" x="0" y="-10"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if IsGuildLeader() then
+							SubmitRequiredGuildRename(self:GetParent().EditBox:GetText());
+						else
+							self:GetParent():GetParent():SetGuildNameAlertBannerMode(true);
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>

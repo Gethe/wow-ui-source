@@ -1092,6 +1092,33 @@
 							</Layer>
 						</Layers>
 						<Frames>
+							<Frame parentKey="LimitedSet" inherits="ResizeLayoutFrame">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="6" y="-6"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture parentKey="Icon" atlas="worldquest-icon-clock" useAtlasSize="true" scale="0.8">
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+											</Anchors>
+										</Texture>
+										<FontString parentKey="Text" font="GameFontHighlightSmall" text="TRANSMOG_SET_LIMITED_TIME_SET">
+											<Anchors>
+												<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT"/>
+											</Anchors>
+											<Color r="1.0" g="0.5" b="0.25"/>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnEnter>
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+										GameTooltip_SetTitle(GameTooltip, TRANSMOG_SET_LIMITED_TIME_SET_TOOLTIP, NORMAL_FONT_COLOR, true);
+									</OnEnter>
+									<OnLeave function="GameTooltip_Hide"/>
+								</Scripts>
+							</Frame>
 							<Button name="WardrobeSetsCollectionVariantSetsButton" parentKey="VariantSetsButton" inherits="UIMenuButtonStretchTemplate" frameLevel="6">
 								<Size x="108" y="22"/>
 								<Anchors>

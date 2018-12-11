@@ -322,6 +322,9 @@ function QuestObjectiveTracker_DoQuestObjectives(block, numObjectives, questComp
 							line.Glow.Anim:Play();
 							line.state = "ADDING";
 							PlaySound(SOUNDKIT.UI_QUEST_ROLLING_FORWARD_01);
+							if ( objectiveType == "progressbar" ) then
+								QUEST_TRACKER_MODULE:AddProgressBar(block, line, block.id, finished);
+							end
 						else
 							QUEST_TRACKER_MODULE:AddObjective(block, objectiveIndex, text);
 							if ( objectiveType == "progressbar" ) then

@@ -16,12 +16,11 @@ function BannerDataProvider:RefreshAllData(fromOnShow)
 end
 
 function BannerDataProvider:AddBanner(mapBannerInfo)
-	local timeLeftMinutes = C_AreaPoiInfo.GetAreaPOITimeLeft(mapBannerInfo.areaPoiID);
+	local secondsLeft = C_AreaPoiInfo.GetAreaPOISecondsLeft(mapBannerInfo.areaPoiID);
 	local descriptionLabel = nil;
-	if timeLeftMinutes then
-		local hoursLeft = math.floor(timeLeftMinutes / 60);
-		local minutesLeft = timeLeftMinutes % 60;
-		descriptionLabel = INVASION_TIME_FORMAT:format(hoursLeft, minutesLeft)
+	if secondsLeft and secondsLeft > 0 then
+		local timeString = SecondsToTime(secondsLeft);
+		descriptionLabel = INVASION_TIME_FORMAT:format(timeString);
 	end
 
 	local atlas, width, height = GetAtlasInfo(mapBannerInfo.atlasName);
@@ -29,5 +28,7 @@ function BannerDataProvider:AddBanner(mapBannerInfo)
 	bannerLabelTextureInfo.atlas = mapBannerInfo.atlasName;
 	bannerLabelTextureInfo.width = width;
 	bannerLabelTextureInfo.height = height;
-	self:GetMap():TriggerEvent("SetAreaLabel", MAP_AREA_LABEL_TYPE.AREA_POI_BANNER, mapBannerInfo.name, descriptionLabel, INVASION_FONT_COLOR, INVASION_DESCRIPTION_FONT_COLOR, bannerLabelTextureInfo);
+	local fontColor = mapBannerInfo.uiTextureKit == "LegionInvasion" and INVASION_FONT_COLOR or AREA_NAME_FONT_COLOR;
+	local descriptionFontColor = mapBannerInfo.uiTextureKit == "LegionInvasion" and INVASION_DESCRIPTION_FONT_COLOR or AREA_DESCRIPTION_FONT_COLOR;
+	self:GetMap():TriggerEvent("SetAreaLabel", MAP_AREA_LABEL_TYPE.AREA_POI_BANNER, mapBannerInfo.name, descriptionLabel, fontColor, descriptionFontColor, bannerLabelTextureInfo);
 end

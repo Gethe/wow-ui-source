@@ -7,15 +7,9 @@
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
+			<BackgroundInsets left="9" right="9" top="9" bottom="9"/>
+			<TileSize val="32"/>
+			<EdgeSize val="32"/>
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -85,7 +79,7 @@
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						HideUIPanel(GameMenuFrame);
-						SplashFrame_Open();
+						SplashFrame_ShowCurrent();
 					</OnClick>
 				</Scripts>
 			</Button>

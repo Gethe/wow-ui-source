@@ -146,7 +146,9 @@ function QuestObjectiveFindGroup_OnLeave(self)
 end
 
 function QuestObjectiveFindGroup_OnClick(self)
-	LFGListUtil_FindQuestGroup(self.questID);
+	local isFromGreenEyeButton = true;
+	--We only want green eye button groups to display the create a group button if there are already groups there. 
+	LFGListUtil_FindQuestGroup(self.questID, isFromGreenEyeButton);
 end
 
 local defaultInitialAnchorOffsets = { 0, 0 };

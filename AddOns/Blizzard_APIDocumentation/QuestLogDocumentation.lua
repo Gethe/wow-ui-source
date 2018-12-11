@@ -36,6 +36,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "GetNumQuestObjectives",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "leaderboardCount", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetQuestInfo",
 			Type = "Function",
 
@@ -90,6 +104,20 @@ local QuestLog =
 			{
 				{ Name = "achievementID", Type = "number", Nilable = false },
 				{ Name = "storyMapID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "IsLegendaryQuest",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isLegendaryQuest", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -314,6 +342,8 @@ local QuestLog =
 				{ Name = "questID", Type = "number", Nilable = false },
 				{ Name = "x", Type = "number", Nilable = false },
 				{ Name = "y", Type = "number", Nilable = false },
+				{ Name = "type", Type = "number", Nilable = false },
+				{ Name = "isMapIndicatorQuest", Type = "bool", Nilable = false },
 			},
 		},
 	},

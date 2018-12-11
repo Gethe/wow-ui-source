@@ -10,7 +10,7 @@ function WorldMapActionButtonMixin:OnEvent(event, ...)
 	elseif event == "CURRENT_SPELL_CAST_CHANGED" then
 		self:UpdateCastingState();
 	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
-		local unitTag, spellName, rank, lineID, spellID = ...;
+		local unitTag, castID, spellID = ...;
 		if spellID == GetWorldMapActionButtonSpellInfo() then
 			PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_NUKE_FROM_ORBIT);
 		end

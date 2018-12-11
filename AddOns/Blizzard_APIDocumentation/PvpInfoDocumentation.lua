@@ -10,9 +10,23 @@ local PvpInfo =
 			Name = "CanToggleWarMode",
 			Type = "Function",
 
+			Arguments =
+			{
+				{ Name = "toggle", Type = "bool", Nilable = false },
+			},
+
 			Returns =
 			{
 				{ Name = "canTogglePvP", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanToggleWarModeInArea",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canTogglePvPInArea", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -213,6 +227,21 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetRewardItemLevelsByTierEnum",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "pvpTierEnum", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "activityItemLevel", Type = "number", Nilable = false },
+				{ Name = "weeklyItemLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSeasonBestInfo",
 			Type = "Function",
 
@@ -234,6 +263,36 @@ local PvpInfo =
 			Returns =
 			{
 				{ Name = "battlemasterListInfo", Type = "BattlemasterListInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetWarModeRewardBonus",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "rewardBonus", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetWarModeRewardBonusDefault",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "defaultBonus", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetWeeklyChestInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "rewardAchieved", Type = "bool", Nilable = false },
+				{ Name = "lastWeekRewardAchieved", Type = "bool", Nilable = false },
+				{ Name = "lastWeekRewardClaimed", Type = "bool", Nilable = false },
+				{ Name = "pvpTierMaxFromWins", Type = "number", Nilable = false },
 			},
 		},
 		{

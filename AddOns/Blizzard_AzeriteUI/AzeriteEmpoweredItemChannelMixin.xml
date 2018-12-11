@@ -3,9 +3,9 @@
 	<Frame name="AzeriteEmpoweredItemChannelTemplate" mixin="AzeriteEmpoweredItemChannelMixin" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="5">
-				<Texture parentKey="Fill" atlas="Azerite-CenterBG-ChannelGlowBar-Filling" useAtlasSize="true" inherits="AzeriteUITexture">
+				<Texture parentKey="Fill" atlas="Azerite-CenterBG-ChannelGlowBar-Filling-Rank5" useAtlasSize="true" inherits="AzeriteUITexture">
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="217" />
+						<Anchor point="CENTER" x="0" y="275" />
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -39,7 +39,7 @@
 						<Anchor point="TOP" relativeKey="$parent.Fill" />
 					</Anchors>
 				</Texture>
-				<MaskTexture parentKey="FillMask" atlas="Azerite-CenterBG-ChannelGlowBar-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" inherits="AzeriteUITexture">
+				<MaskTexture parentKey="FillMask" atlas="Azerite-CenterBG-ChannelGlowBar-MaskRank5" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" inherits="AzeriteUITexture">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Fill" />
 					</Anchors>
@@ -55,7 +55,7 @@
 				</MaskTexture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="4">
-				<Texture parentKey="FillShine" atlas="Azerite-CenterBG-ChannelGlowBar-Shinny" useAtlasSize="true" inherits="AzeriteUITexture">
+				<Texture parentKey="FillShine" atlas="Azerite-CenterBG-ChannelGlowBar-Shinny-Rank5" useAtlasSize="true" inherits="AzeriteUITexture">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Fill" x="0" y="-4" />
 					</Anchors>

@@ -70,11 +70,8 @@
 		<Size x="256" y="3"/>
 	</Texture>
 	<Texture name="_UI-Frame-TitleTileBg" atlas="_UI-Frame-TitleTileBg" virtual="true" horizTile="true" >
-		<Size x="256" y="17"/>
+		<Size x="256" y="18"/> <!-- TODO: Fix asset to fit space, or bake it into all frames -->
 	</Texture>
-
-	<Texture name="_UI-Frame-TittleTile-HiRes" atlas="_UI-Frame-TittleTile-HiRes" virtual="true" horizTile="true" useAtlasSize="true"/>
-
 	<Texture name="_UI-Frame-TitleTile" atlas="_UI-Frame-TitleTile" virtual="true" horizTile="true" >
 		<Size x="256" y="28"/>
 	</Texture>
@@ -111,9 +108,6 @@
 	<Texture name="UI-Frame-InnerBotRight" atlas="UI-Frame-InnerBotRight" virtual="true">
 		<Size x="6" y="6"/>
 	</Texture>
-	<Texture name="UI-Frame-BtnCornerLeft" atlas="UI-Frame-BtnCornerLeft" virtual="true">
-		<Size x="12" y="32"/>
-	</Texture>
 	<Texture name="UI-Frame-BotCornerLeft" atlas="UI-Frame-BotCornerLeft" virtual="true">
 		<Size x="14" y="14"/>
 	</Texture>
@@ -122,9 +116,6 @@
 	</Texture>
 	<Texture name="UI-Frame-BtnDivMiddle" atlas="UI-Frame-BtnDivMiddle" virtual="true">
 		<Size x="13" y="25"/>
-	</Texture>
-	<Texture name="UI-Frame-BtnCornerRight" atlas="UI-Frame-BtnCornerRight" virtual="true">
-		<Size x="12" y="32"/>
 	</Texture>
 	<Texture name="UI-Frame-BotCornerRight" atlas="UI-Frame-BotCornerRight" virtual="true">
 		<Size x="11" y="11"/>
@@ -153,9 +144,7 @@
 	</Button>
 	<Button name="UIPanelCloseButton" inherits="UIPanelCloseButtonNoScripts" virtual="true">
 		<Scripts>
-			<OnClick>
-				HideParentPanel(self);
-			</OnClick>
+			<OnClick function="UIPanelCloseButton_OnClick"/>
 		</Scripts>
 	</Button>
 	<Frame name="ShadowOverlayTemplate" virtual="true">
@@ -323,14 +312,14 @@
 		</Scripts>
 	</Button>
 
-	<!--A super simple standard button that will widen on load to fit its text if its 
+	<!--A super simple standard button that will widen on load to fit its text if its
 	localized version is bigger than its current size + 40 padding.  It will never reshrink.-->
 	<Button name="UIPanelDynamicResizeButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad function="DynamicResizeButton_Resize" inherit="append"/>
 		</Scripts>
 	</Button>
-	
+
 	<CheckButton name="UIRadioButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="16" y="16"/>
@@ -379,11 +368,85 @@
 
 <!--
 *******************************************************************************
-    PortraitFrameTemplate
-	This is an empty frame with space for a portrait/icon in the top left corner.
+   Frame border element
+	Can have any arbitrary NineSlice theme applied, appears over all frame
+	content, but under any elements like tutorials, notifications, custom
+	artwork, etc...
 *******************************************************************************
 -->
-	<Frame name="PortraitFrameTemplateNoCloseButton" virtual="true" mixin="PortraitFrameTemplateMixin">
+	<Frame name="NineSlicePanelTemplate" mixin="NineSlicePanelMixin" frameLevel="500" setAllPoints="true" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+<!--
+*******************************************************************************
+    InsetFrameTemplate
+
+	This is the inner frame used for content by many panels.
+*******************************************************************************
+-->
+	<Frame name="InsetFrameTemplate" useParentLevel="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<!-- TODO: Convert this to atlas -->
+				<Texture parentKey="Bg" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate"/>
+		</Frames>
+	</Frame>
+
+<!--
+*******************************************************************************
+   Simple Panel templates
+	Barebones panel templates that can have space for a button bar at the bottom
+	and an inset for content, the inset defaults to being vertically centered
+	with sufficient padding for a bottom row of buttons
+*******************************************************************************
+-->
+	<Frame name="SimplePanelTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="SimplePanelTemplate" type="string"/>
+		</KeyValues>
+		<Size x="338" y="424"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true" parentKey="Bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-6"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Inset" inherits="InsetFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-26"/>
+					<Anchor point="BOTTOMRIGHT" x="-6" y="26"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate"/>
+		</Frames>
+	</Frame>
+
+<!--
+*******************************************************************************
+    Default Panel templates
+	This is a standard empty frame with a title.
+	It makes its own nine-slice border.
+*******************************************************************************
+-->
+	<Frame name="DefaultPanelTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="ButtonFrameTemplateNoPortrait" type="string"/>
+		</KeyValues>
 		<Size x="338" y="424"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-6">
@@ -394,6 +457,54 @@
 					</Anchors>
 				</Texture>
 				<Texture name="$parentTitleBg" parentKey="TitleBg" inherits="_UI-Frame-TitleTileBg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-2"/>
+						<Anchor point="TOPRIGHT" x="-25" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<Texture name="$parentTopTileStreaks" parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-21"/>
+						<Anchor point="TOPRIGHT" x="-2" y="-21"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentTitleText" inherits="GameFontNormal" parentKey="TitleText" wordwrap="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="25"/>
+						<Anchor point="TOPRIGHT" x="-25"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate"/>
+		</Frames>
+	</Frame>
+
+<!--
+*******************************************************************************
+    PortraitFrameTemplate
+	This is an empty frame with space for a portrait/icon in the top left corner.
+*******************************************************************************
+-->
+	<Frame name="PortraitFrameTemplateNoCloseButton" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="PortraitFrameTemplate" type="string"/>
+		</KeyValues>
+		<Size x="338" y="424"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true" parentKey="Bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-21"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TitleBg" inherits="_UI-Frame-TitleTileBg">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="2" y="-3"/>
 						<Anchor point="TOPRIGHT" x="-25" y="-3"/>
@@ -409,27 +520,6 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentPortraitFrame" parentKey="PortraitFrame" inherits="UI-Frame-Portrait">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-14" y="11"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTopRightCorner" parentKey="TopRightCorner" inherits="UI-Frame-TopCornerRight">
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="0" y="1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTopLeftCorner" parentKey="TopLeftCorner" inherits="UI-Frame-TopLeftCorner" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-6" y="1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTopBorder" parentKey="TopBorder" inherits="_UI-Frame-TitleTile">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.PortraitFrame" relativePoint="TOPRIGHT" x="0" y="-10" />
-						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
 				<FontString name="$parentTitleText" inherits="GameFontNormal" text="" parentKey="TitleText" wordwrap="false">
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-5"/>
@@ -439,244 +529,33 @@
 				</FontString>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="$parentTopTileStreaks" parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
+				<Texture parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="-21"/>
 						<Anchor point="TOPRIGHT" x="-2" y="-21"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBotLeftCorner" parentKey="BotLeftCorner" inherits="UI-Frame-BotCornerLeft">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-6" y="-5"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBotRightCorner" parentKey="BotRightCorner" inherits="UI-Frame-BotCornerRight">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="0" y="-5"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBottomBorder" parentKey="BottomBorder" inherits="_UI-Frame-Bot">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentLeftBorder" parentKey="LeftBorder" inherits="!UI-Frame-LeftTile">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.PortraitFrame" relativePoint="BOTTOMLEFT" x="8" y="0" />
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BotLeftCorner" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentRightBorder" parentKey="RightBorder" inherits="!UI-Frame-RightTile">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="BOTTOMRIGHT" x="1"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BotRightCorner" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
+		<Frames>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate"/>
+		</Frames>
 	</Frame>
+
 	<Frame name="PortraitFrameTemplate" inherits="PortraitFrameTemplateNoCloseButton" virtual="true">
 		<Frames>
-			<Button name="$parentCloseButton" inherits="UIPanelCloseButton" parentKey="CloseButton">
+			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
-						<Offset x="4" y="5"/>
-					</Anchor>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="5.6" y="5"/>
 				</Anchors>
-				<Scripts>
-					<OnClick function="PortraitFrameCloseButton_OnClick" />
-				</Scripts>
 			</Button>
 		</Frames>
 	</Frame>
 
-	<Frame name="PortraitFrameTemplateNoCloseButton-HiRes" virtual="true">
-		<Size x="338" y="424"/>
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-6">
-				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true" parentKey="Bg">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="1" y="-18"/>
-						<Anchor point="BOTTOMRIGHT" x="-1" y="2"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTitleBg" inherits="_UI-Frame-TitleTileBG">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="53" y="-2"/>
-						<Anchor point="TOPRIGHT" x="-22" y="-2"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="-1">
-				<Texture name="$parentPortrait" parentKey="portrait">
-					<Size x="61" y="61"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-6" y="8" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentPortraitFrame" parentKey="PortraitFrame" atlas="UI-Frame-Portrait-HiRes">
-					<Size x="78" y="80"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-9" y="13"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTopRightCorner" parentKey="TopRightCorner" atlas="UI-Frame-TopCornerRight-HiRes">
-					<Size x="52.666667" y="46"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="2" y="1.6666667"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTopLeftCorner" parentKey="TopLeftCorner" inherits="UI-Frame-TopLeftCorner" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-6" y="1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTopBorder" parentKey="TopBorder" inherits="_UI-Frame-TittleTile-HiRes">
-					<Size x="0" y="23.333333"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentPortraitFrame" relativePoint="TOPRIGHT" x="0" y="-11.333333"/>
-						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentTitleText" inherits="GameFontNormal" parentKey="TitleText">
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentTitleBg" x="0" y="-2"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture name="$parentTopTileStreaks" parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Bg"/>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.Bg"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBotLeftCorner" parentKey="BotLeftCorner" atlas="UI-Frame-BotCornerLeft-HiRes">
-					<Size x="15" y="16.333333"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-1.666667" y="-2"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBotRightCorner" parentKey="BotRightCorner" atlas="UI-Frame-BotCornerRight-HiRes">
-					<Size x="15.666667" y="16.333333"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBottomBorder" parentKey="BottomBorder" atlas="_UI-Frame-Bot-HiRes">
-					<Size x="0" y="5.333333"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentLeftBorder" parentKey="LeftBorder" atlas="!UI-Frame-LeftTile-HiRes" vertTile="true">
-					<Size x="5.333333" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentPortraitFrame" relativePoint="BOTTOMLEFT" x="7.333333" y="0" />
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentRightBorder" parentKey="RightBorder" atlas="!UI-Frame-RightTile-HiRes">
-					<Size x="5.666667" y="0"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
-	<Frame name="PortraitFrameTemplate-HiRes" inherits="PortraitFrameTemplateNoCloseButton-HiRes" virtual="true">
-		<Frames>
-			<Button name="$parentCloseButton" inherits="UIPanelCloseButton" parentKey="CloseButton">
-				<Size x="31" y="31"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="5.2" y="5.8"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick function="PortraitFrameCloseButton_OnClick" />
-				</Scripts>
-			</Button>
-		</Frames>
-	</Frame>
-
-<!--
-*******************************************************************************
-    InsetFrameTemplate
-
-	This is the inner frame used by ButtonFrameTemplate
-*******************************************************************************
--->
-	<Frame name="InsetFrameTemplate" virtual="true">
-		<Size x="64" y="64"/>
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-5">
-				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" parentKey="Bg">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER" textureSubLevel="-5">
-				<Texture name="$parentInsetTopLeftCorner" inherits="UI-Frame-InnerTopLeft" parentKey="InsetBorderTopLeft">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Bg"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentInsetTopRightCorner" inherits="UI-Frame-InnerTopRight" parentKey="InsetBorderTopRight">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.Bg"/>
-					</Anchors>
-				</Texture>
-
-				<Texture name="$parentInsetBotLeftCorner" inherits="UI-Frame-InnerBotLeftCorner" parentKey="InsetBorderBottomLeft">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Bg" y="-1"/>
-					</Anchors>
-				</Texture>
-
-				<Texture name="$parentInsetBotRightCorner" inherits="UI-Frame-InnerBotRight" parentKey="InsetBorderBottomRight">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bg" y="-1"/>
-					</Anchors>
-				</Texture>
-
-				<Texture name="$parentInsetTopBorder" inherits="_UI-Frame-InnerTopTile" parentKey="InsetBorderTop">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentInsetBottomBorder" inherits="_UI-Frame-InnerBotTile" parentKey="InsetBorderBottom">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBorderBottomRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentInsetLeftBorder" inherits="!UI-Frame-InnerLeftTile" parentKey="InsetBorderLeft">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="BOTTOMLEFT" x="0" y="0" />
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentInsetRightBorder" inherits="!UI-Frame-InnerRightTile" parentKey="InsetBorderRight">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBorderBottomRight" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
+	<Frame name="PortraitFrameTemplateMinimizable" inherits="PortraitFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="PortraitFrameTemplateMinimizable" type="string"/>
+		</KeyValues>
 	</Frame>
 
 <!--
@@ -691,61 +570,8 @@
 *******************************************************************************
 -->
 	<Frame name="ButtonFrameTemplate" inherits="PortraitFrameTemplate" virtual="true">
-		<Layers>
-			<Layer level="BORDER" textureSubLevel="1">
-				<Texture name="$parentBtnCornerLeft" inherits="UI-Frame-BtnCornerLeft">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-2" y="-1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBtnCornerRight" inherits="UI-Frame-BtnCornerRight">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentButtonBottomBorder" inherits="_UI-Frame-BtnBotTile">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBtnCornerLeft" relativePoint="BOTTOMRIGHT" y="3"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBtnCornerRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
-			<Frame name="$parentInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="Inset">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="4" y="-60" />
-					<Anchor point="BOTTOMRIGHT" x="-6" y="26" />
-				</Anchors>
-			</Frame>
-		</Frames>
-	</Frame>
-
-
-	<Frame name="ButtonFrameTemplate-HighRes" inherits="PortraitFrameTemplate-HiRes" virtual="true">
-		<Layers>
-			<!-- HiRes versions of these (bottom corners and border) don't exist yet, leaving these hidden for now -->
-			<Layer level="BORDER" textureSubLevel="1">
-				<Texture name="$parentBtnCornerLeft" inherits="UI-Frame-BtnCornerLeft" hidden="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-2" y="-1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBtnCornerRight" inherits="UI-Frame-BtnCornerRight" hidden="true">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentButtonBottomBorder" inherits="_UI-Frame-BtnBotTile" hidden="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBtnCornerLeft" relativePoint="BOTTOMRIGHT" y="3"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBtnCornerRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame name="$parentInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="Inset">
+			<Frame name="$parentInset" parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="4" y="-60" />
 					<Anchor point="BOTTOMRIGHT" x="-6" y="26" />
@@ -754,6 +580,22 @@
 		</Frames>
 	</Frame>
 <!--
+*******************************************************************************
+    ButtonFrameTemplateMinimizable
+	This is a Button Frame that is minimizable
+
+	Show/hide the Button bar using:
+	ButtonFrameTemplate_HideButtonBar(self)
+	ButtonFrameTemplate_ShowButtonBar(self)
+*******************************************************************************
+-->
+	<Frame name="ButtonFrameTemplateMinimizable" inherits="ButtonFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="PortraitFrameTemplateMinimizable" type="string"/>
+		</KeyValues>
+	</Frame>
+
+	<!--
 *******************************************************************************
     MagicButtonTemplate
 	This is a template for buttons that can be used with ButtonFrameTemplate.
@@ -1861,18 +1703,18 @@
 			<OnLeave function="TruncatedButton_OnLeave"/>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="TruncatedTooltipScriptTemplate" virtual="true">
 		<Scripts>
 			<OnEnter function="TruncatedTooltipScript_OnEnter"/>
 			<OnLeave function="TruncatedTooltipScript_OnLeave"/>
 		</Scripts>
 	</Frame>
-	
+
 	<!--
 *******************************************************************************
 	ColumnDisplayTemplate
-	This template will handle the column headers for a list. Currently, any 
+	This template will handle the column headers for a list. Currently, any
 	adjoining scroll frame or list needs to be spaced manually to line up with
 	the columns. It might be cool to support an API for displaying data with
 	default behavior. That would lose us some flexibility though, and is
@@ -1899,7 +1741,7 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Button name="ColumnDisplayButtonTemplate" virtual="true">
 		<Size x="10" y="24"/>
 		<Layers>

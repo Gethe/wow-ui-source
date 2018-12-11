@@ -9,6 +9,8 @@
 ..\..\SharedXML\LayoutFrame.lua
 ..\..\SharedXML\ManagedLayoutFrame.lua
 ..\..\SharedXML\BulletPoint.lua
+..\..\SharedXML\AnchorUtil.xml
+..\..\SharedXML\PanelThemes.lua
 Blizzard_SimpleCheckout.xml
 Blizzard_StoreUI.xml
 Blizzard_StoreUIInsecure.xml

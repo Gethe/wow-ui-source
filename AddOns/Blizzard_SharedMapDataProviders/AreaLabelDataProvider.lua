@@ -24,14 +24,14 @@ function AreaLabelDataProviderMixin:OnAdded(mapCanvas)
 end
 
 function AreaLabelDataProviderMixin:OnRemoved(mapCanvas)
-	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
-
 	self:GetMap():UnregisterCallback("SetAreaLabel", self.setAreaLabelCallback);
 	self:GetMap():UnregisterCallback("ClearAreaLabel", self.clearAreaLabelCallback);	
 	
 	self.Label.dataProvider = nil;
 	self.Label:ClearAllPoints();
 	self.Label:Hide();
+
+	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 end
 
 function AreaLabelDataProviderMixin:GetOffsetY()
@@ -193,7 +193,6 @@ function AreaLabelFrameMixin:EvaluateLabels()
 		end
 		
 		if areaLabelInfo.textureInfo then
-			self.Texture:SetAtlas(areaLabelInfo.textureInfo.atlas);
 			self.Texture:SetAtlas(areaLabelInfo.textureInfo.atlas);
 			self.Texture:SetSize(areaLabelInfo.textureInfo.width, areaLabelInfo.textureInfo.height);
 			self.Texture:Show();

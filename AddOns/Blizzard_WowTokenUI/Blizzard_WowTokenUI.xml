@@ -74,7 +74,7 @@
 			<DisabledFont style="GameFontDisable"/>
 			<HighlightTexture inherits="UIPanelButtonHighlightTexture" />
 		</Button>
-		<Frame name="WowTokenRedemptionFrame" inherits="PortraitFrameTemplateNoCloseButton" frameStrata="DIALOG" parent="UIParent" enableMouse="true" hidden="true">
+		<Frame name="WowTokenRedemptionFrame" inherits="DefaultPanelTemplate" frameStrata="DIALOG" parent="UIParent" enableMouse="true" hidden="true">
 			<Size x="650" y="450"/>
 			<!-- Anchored to the screen as a whole in lua -->
 			<Layers>
@@ -89,9 +89,7 @@
 			<Frames>
 				<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
-							<Offset x="4" y="5" />
-						</Anchor>
+						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="5" y="4"/>
 					</Anchors>
 					<Scripts>
 						<OnClick function="WowTokenRedemptionFrameCloseButton_OnClick" />
@@ -268,7 +266,7 @@
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-16"/>
 						</Anchors>
-						<TexCoords left="0.9248046875" right="0.98828125" top="0.3720703125" bottom="0.4365234375"/>	
+						<TexCoords left="0.9248046875" right="0.98828125" top="0.3720703125" bottom="0.4365234375"/>
 					</Texture>
 					<Texture parentKey="CautionIcon" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew" hidden="true">
 						<Size x="32" y="32"/>

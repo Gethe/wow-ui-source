@@ -403,6 +403,13 @@
 					<Color r="0.0" g="0.0" b="0.0" a="0.75"/>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="NewLabel" atlas="CharacterCreate-NewLabel" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-26" y="22"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnMouseDown>
@@ -527,6 +534,14 @@
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<Color r="0.0" g="0.0" b="0.0" a="0.75"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="PadLock" atlas="UI-CharacterCreate-PadLock" hidden="true">
+					<Size x="37" y="45"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="1"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -1673,8 +1688,27 @@
 							<Anchor point="CENTER" relativeTo="CharCreateRaceFrame" x="0" y="0"/>
 							<Anchor point="BOTTOM" x="0" y="-6"/>
 						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<Texture parentKey="NewLabel" atlas="CharacterCreate-NewLabel" useAtlasSize="true" hidden="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-16" y="16"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
 						<Scripts>
 							<OnClick function="CharCreateAlliedRacesButton_OnClick"/>
+						</Scripts>
+					</Button>
+					<Button name="CharCreateCoreRacesButton" inherits="CharCreateNavButtonTemplate" text="CHARACTER_CREATE_CORE_RACES" hidden="true">
+						<Size x="180" y="62"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeTo="CharCreateRaceFrame" x="0" y="0"/>
+							<Anchor point="BOTTOM" x="0" y="-6"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="CharCreateCoreRacesButton_OnClick"/>
 						</Scripts>
 					</Button>
 					<Button name="CharCreateMoreInfoButton" inherits="CharCreateNavButtonTemplate" text="CHAR_CREATE_MORE_INFO">
@@ -1701,6 +1735,11 @@
 							</Layer>
 						</Layers>
 						<Scripts>
+							<OnLoad function="CharCreateMoreInfoButton_OnLoad"/>
+							<OnEnter function="CharCreateMoreInfoButton_OnEnter"/>
+							<OnLeave>
+								CharacterCreateTooltip:Hide();
+							</OnLeave>
 							<OnClick>
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								if ( self.infoShown ) then
@@ -2054,7 +2093,7 @@
 									<Layer level="OVERLAY">
 										<FontString inherits="GlueFontNormalSmall" parentKey="number" text="8">
 											<Anchors>
-												<Anchor point="CENTER" relativeKey="$parent.arrow" x="7" y="1"/>
+												<Anchor point="CENTER" relativePoint="LEFT" x="8" y="-3"/>
 											</Anchors>
 										</FontString>
 										<Texture file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk" alphaMode="ADD">

@@ -81,7 +81,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="AzeriteEmpoweredItemUITemplate" frameStrata="LOW" mixin="AzeriteEmpoweredItemUIMixin" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" virtual="true">
+	<Frame name="AzeriteEmpoweredItemUITemplate" mixin="AzeriteEmpoweredItemUIMixin" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" virtual="true">
 		<Size x="615" y="628"/>
 		<Frames>
 			<Frame parentKey="BorderFrame" inherits="PortraitFrameTemplate" frameStrata="DIALOG" frameLevel="500" setAllPoints="true">
@@ -131,21 +131,15 @@
 										</Texture>
 									</Layer>
 									<Layer level="ARTWORK" textureSubLevel="-1">
-										<Texture parentKey="Rank4Plug" atlas="Azerite-Center-TraitPlug-Rune1" useAtlasSize="true" inherits="AzeritePlugTexture" />
-										<Texture parentKey="Rank3Plug" atlas="Azerite-Center-TraitPlug-Rune2" useAtlasSize="true" inherits="AzeritePlugTexture" />
-										<Texture parentKey="Rank2Plug" atlas="Azerite-Center-TraitPlug-Rune3" useAtlasSize="true" inherits="AzeritePlugTexture" />
-									</Layer>
-									<Layer level="ARTWORK" textureSubLevel="6">
-										<Texture parentKey="Shadow" atlas="Azerite-TopShadow" useAtlasSize="true" inherits="AzeriteUITexture">
-											<Anchors>
-												<Anchor point="TOPLEFT" x="90" y="0" />
-												<Anchor point="TOPRIGHT" x="0" y="0" />
-											</Anchors>
-										</Texture>
+										<Texture parentKey="Rank5Plug" atlas="Azerite-Center-TraitPlug-Rune1" useAtlasSize="true" inherits="AzeritePlugTexture" />
+										<Texture parentKey="Rank4Plug" atlas="Azerite-Center-TraitPlug-Rune2" useAtlasSize="true" inherits="AzeritePlugTexture" />
+										<Texture parentKey="Rank3Plug" atlas="Azerite-Center-TraitPlug-Rune3" useAtlasSize="true" inherits="AzeritePlugTexture" />
+										<Texture parentKey="Rank2Plug" atlas="Azerite-Center-TraitPlug-Rune4" useAtlasSize="true" inherits="AzeritePlugTexture" />
 									</Layer>
 								</Layers>
 								<Frames>
 									<Frame parentKey="Channel" inherits="AzeriteEmpoweredItemChannelTemplate" setAllPoints="true" />
+									<Frame parentKey="Rank5Slot" inherits="AzeriteEmpoweredItemSlotTemplate" />
 									<Frame parentKey="Rank4Slot" inherits="AzeriteEmpoweredItemSlotTemplate" />
 									<Frame parentKey="Rank3Slot" inherits="AzeriteEmpoweredItemSlotTemplate" />
 									<Frame parentKey="Rank2Slot" inherits="AzeriteEmpoweredItemSlotTemplate" />
@@ -153,6 +147,31 @@
 								</Frames>
 							</Frame>
 
+							<Frame inherits="AzeriteRankFrameTemplate">
+								<Layers>
+									<Layer level="BORDER" textureSubLevel="-1">
+										<Texture parentKey="GearBg" atlas="Azerite-TitanBG-GearRank5" useAtlasSize="true" inherits="AzeriteGearBackgroundTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="0">
+										<Texture parentKey="Gear" atlas="Azerite-TitanBG-GearRank5-Front" useAtlasSize="true" inherits="AzeriteGearTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="1">
+										<Texture parentKey="RingBg" atlas="Azerite-TitanBG-Rank5" useAtlasSize="true" inherits="AzeriteRingBackgroundTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="2">
+										<Texture name="RG" parentKey="RingBgGlow" atlas="Azerite-TitanBG-Glow-Rank5" useAtlasSize="true" inherits="AzeriteRingGlowTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="2">
+										<Texture parentKey="RingLights" atlas="Azerite-TitanBG-LightsRank5" useAtlasSize="true" inherits="AzeriteRingLightsTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="3">
+										<Texture parentKey="Ring" atlas="Azerite-GoldRing-Rank5" useAtlasSize="true" inherits="AzeriteRingBorderTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="4">
+										<Texture parentKey="PlugBg" atlas="Azerite-Center-TraitBG" useAtlasSize="true" inherits="AzeritePlugBackgroundTexture" />
+									</Layer>
+								</Layers>
+							</Frame>
 							<Frame inherits="AzeriteRankFrameTemplate">
 								<Layers>
 									<Layer level="BORDER" textureSubLevel="-1">

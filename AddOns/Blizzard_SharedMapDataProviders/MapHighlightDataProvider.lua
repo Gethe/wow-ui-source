@@ -13,8 +13,9 @@ function MapHighlightDataProviderMixin:OnAdded(mapCanvas)
 end
 
 function MapHighlightDataProviderMixin:OnRemoved(mapCanvas)
-	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 	self:GetMap():RemoveAllPinsByTemplate("MapHighlightPinTemplate");
+
+	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 end
 
 --[[ THE Pin ]]--

@@ -187,6 +187,13 @@ function Graphics_Refresh(self)
 	VideoOptionsPanel_Refresh( Advanced_);
 end
 
+function Advanced_Refresh(self)
+	for i, control in ipairs(self.controls) do
+		control.selectedID = nil;
+	end
+	VideoOptionsPanel_Refresh(self);
+end
+
 function VideoOptionsPanel_Refresh (self)
 	inrefresh = true;
 	BlizzardOptionsPanel_Refresh(self);
@@ -543,15 +550,16 @@ function VideoOptions_OnClick(self, value)
 	self.newValue = value;
 	if(self.dependent ~= nil) then
 		for i, key in ipairs(self.dependent) do
-			_G[key].isdependtarget = true;
-			if(_G[key].onrefresh) then
-				_G[key]:onrefresh();
+			local keyObject = _G[key];
+			keyObject.isdependtarget = true;
+			if(keyObject.onrefresh) then
+				keyObject:onrefresh();
 			end
-			local func = _G[key].dependtarget;
+			local func = keyObject.dependtarget;
 			if(func ~= nil) then
-				func(_G[key]);
+				func(keyObject);
 			end
-			_G[key].isdependtarget = false;
+			keyObject.isdependtarget = false;
 		end
 	end
 	if ( self.capTargets ) then
@@ -881,6 +889,34 @@ function VideoOptionsSlider_OnLoad(self)
 	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 end
 
+function VideoOptionsControl_OnEnter(self)
+	if(self.tooltip ~= nil) then
+		VideoOptionsTooltip:SetOwner(self);
+		if(self.name == nil) then
+			self.name = " ";
+		end
+		VideoOptionsTooltip:SetText(self.name .. ":", nil, nil, nil, nil, 1);
+		VideoOptionsTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, 1.0, 1);
+		VideoOptionsTooltip:Show();
+	end
+end
+
+function VideoOptionsControl_OnLeave(self)
+	VideoOptionsTooltip:Hide();
+end
+
+function VideoOptionsWarning_OnEnter(self)
+	if ( self.tooltip ) then
+		VideoOptionsTooltip:SetOwner(self, "ANCHOR_LEFT");
+		VideoOptionsTooltip:SetText(self.tooltip, 1.0, 1.0, 1.0, 1, 1);
+	end
+end
+
+function VideoOptionsWarning_OnLeave(self)
+	VideoOptionsTooltip:Hide();
+end
+
+
 -------------------------------------------------------------------------------------------------------
 
 function VideoOptionsPanel_OnLoad (self, okay, cancel, default, refresh)
@@ -926,7 +962,7 @@ function Advanced_OnLoad (self)
 	self.hasApply = true;
 
 	VideoOptionsPanel_OnLoad(self);
-	BlizzardOptionsPanel_OnLoad(self, VideoOptionsPanel_Okay, VideoOptionsPanel_Cancel, Advanced_Default, VideoOptionsPanel_Refresh);
+	BlizzardOptionsPanel_OnLoad(self, VideoOptionsPanel_Okay, VideoOptionsPanel_Cancel, Advanced_Default, Advanced_Refresh);
 	OptionsFrame_AddCategory(VideoOptionsFrame, self);
 
 	if(true) then
@@ -1012,7 +1048,14 @@ function InterfaceOptionsLanguagesPanel_UpdateRestartTexture()
 	end
 end
 
+function InterfaceOptionsLanguagePanelLocalDropDown_OnEnter(self)
+	VideoOptionsTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+	VideoOptionsTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+end
 
+function InterfaceOptionsLanguagePanelLocalDropDown_OnLeave(self)
+	VideoOptionsTooltip:Hide();
+end
 
 function InterfaceOptionsLanguagesPanelLocaleDropDown_OnLoad (self)
 	self.type = CONTROLTYPE_DROPDOWN;
@@ -1254,7 +1297,10 @@ function Graphics_SliderOnValueChanged(self, value, userInput)
 		self.newValue = value;
 		VideoOptions_OnClick(self, value);
 	end
-	self.Label:SetText(value);
+
+	if not self.preventValueChangeHandlerFromSettingLabel then
+		self.Label:SetText(value);
+	end
 end
 
 function Graphics_SliderOnShow(self)

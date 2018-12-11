@@ -103,8 +103,8 @@
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture atlas="bluemenu-Ring">
-					<Size x="94" y="94"/>
+				<Texture parentKey="IconRing" atlas="communities-ring-blue">
+					<Size x="78" y="78"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 					</Anchors>

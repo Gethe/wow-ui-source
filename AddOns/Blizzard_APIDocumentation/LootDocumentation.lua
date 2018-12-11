@@ -6,6 +6,15 @@ local Loot =
 
 	Functions =
 	{
+		{
+			Name = "IsLegacyLootModeEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isLegacyLootModeEnabled", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -47,6 +56,7 @@ local Loot =
 				{ Name = "sex", Type = "number", Nilable = false },
 				{ Name = "personalLootToast", Type = "bool", Nilable = false },
 				{ Name = "currencyID", Type = "number", Nilable = true },
+				{ Name = "isSecondaryResult", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -105,6 +115,7 @@ local Loot =
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
 			},
 		},
 		{

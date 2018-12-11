@@ -17,10 +17,10 @@ function TokenButton_OnLoad(self)
 	self.stripe = _G[name.."Stripe"];
 end
 
-function TokenFrame_OnLoad()
-	TokenFrameContainerScrollBar.Show =
+function TokenFrame_OnLoad(self)
+	self.Container.scrollBar.Show =
 		function (self)
-			TokenFrameContainer:SetPoint("BOTTOMRIGHT", CharacterFrameInset, "BOTTOMRIGHT", -23, 4);
+			TokenFrameContainer:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", -23, 4);
 			for _, button in next, _G["TokenFrameContainer"].buttons do
 				button:SetWidth(295);
 			end
@@ -28,9 +28,9 @@ function TokenFrame_OnLoad()
 			getmetatable(self).__index.Show(self);
 		end
 
-	TokenFrameContainerScrollBar.Hide =
+	self.Container.scrollBar.Hide =
 		function (self)
-			TokenFrameContainer:SetPoint("BOTTOMRIGHT", CharacterFrameInset, "BOTTOMRIGHT", -4, 4);
+			TokenFrameContainer:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", -4, 4);
 			for _, button in next, TokenFrameContainer.buttons do
 				button:SetWidth(317);
 			end
@@ -43,13 +43,13 @@ end
 function TokenFrame_OnShow(self)
 
 	-- Create buttons if not created yet
-	if (not TokenFrameContainer.buttons) then
-		-- if the currency frame was opened via a keybind before the character frame was opened, CharacterFrameInset would not exist during the TokenUI addon load
-		TokenFrameContainer:SetPoint("TOPLEFT", CharacterFrameInset, "TOPLEFT", 4, -4);
-		TokenFrameContainer:SetWidth(328);
-		TokenFrameContainer:SetHeight(360);
-		HybridScrollFrame_CreateButtons(TokenFrameContainer, "TokenButtonTemplate", 1, -2, "TOPLEFT", "TOPLEFT", 0, -TOKEN_BUTTON_OFFSET);
-		local buttons = TokenFrameContainer.buttons;
+	if (not self.Container.buttons) then
+		-- if the currency frame was opened via a keybind before the character frame was opened, CharacterFrame.Inset would not exist during the TokenUI addon load
+		self.Container:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", 4, -4);
+		self.Container:SetWidth(328);
+		self.Container:SetHeight(360);
+		HybridScrollFrame_CreateButtons(self.Container, "TokenButtonTemplate", 1, -2, "TOPLEFT", "TOPLEFT", 0, -TOKEN_BUTTON_OFFSET);
+		local buttons = self.Container.buttons;
 		local numButtons = #buttons;
 		for i=1, numButtons do
 			if ( mod(i, 2) == 1 ) then
@@ -59,7 +59,7 @@ function TokenFrame_OnShow(self)
 	end
 
 	SetButtonPulse(CharacterFrameTab3, 0, 1);	--Stop the button pulse
-	CharacterFrameTitleText:SetText(UnitPVPName("player"));
+	PortraitFrameTemplate_SetTitle(CharacterFrame, UnitPVPName("player"));
 	TokenFrame_Update();
 end
 

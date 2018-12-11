@@ -42,11 +42,16 @@
 				self:SetPadding(16, 0);
 				self:RegisterForDrag("LeftButton");
 				self.shoppingTooltips = { ItemRefShoppingTooltip1, ItemRefShoppingTooltip2 };
-				self.UpdateTooltip = function(self)
-					if ( not self.comparing and IsModifiedClick("COMPAREITEMS")) then
+				self.updateTooltipTime = 0;
+				self.UpdateTooltip = function(self, elapsed)
+					if ( IsModifiedClick("COMPAREITEMS")) then
+						self.updateTooltipTime = self.updateTooltipTime - elapsed;
+						if ( self.updateTooltipTime > 0 ) then
+							return;
+						end
+						self.updateTooltipTime = TOOLTIP_UPDATE_TIME;
 						GameTooltip_ShowCompareItem(self);
-						self.comparing = true;
-					elseif ( self.comparing and not IsModifiedClick("COMPAREITEMS")) then
+					else
 						for _, frame in pairs(self.shoppingTooltips) do
 							frame:Hide();
 						end
@@ -57,9 +62,9 @@
 				end
 			</OnLoad>
 			<OnTooltipSetItem>
+				self.updateTooltipTime = 0;
 				if ( IsModifiedClick("COMPAREITEMS") and self:IsMouseOver()) then
 					GameTooltip_ShowCompareItem(self);
-					self.comparing = true;
 				end
 			</OnTooltipSetItem>
 			<OnDragStart>
@@ -70,17 +75,16 @@
 				ValidateFramePosition(self);
 				if ( IsModifiedClick("COMPAREITEMS") ) then --We do this to choose where the comparison is shown
 					GameTooltip_ShowCompareItem(self);
-					self.comparing = true;
 				end
 			</OnDragStop> 
 			<OnEnter>
+				self.updateTooltipTime = 0;
 				self:SetScript("OnUpdate", self.UpdateTooltip);
 			</OnEnter>
 			<OnLeave>
 				for _, frame in pairs(self.shoppingTooltips) do
 					frame:Hide();
 				end
-				self.comparing = false;
 				self:SetScript("OnUpdate", nil);
 			</OnLeave>
 			<OnHide>

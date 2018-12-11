@@ -238,17 +238,17 @@
 					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
             </Button>
-			<Frame name="CharacterFrameInsetRight" inherits="InsetFrameTemplate" hidden="true">
+			<Frame name="$parentInsetRight" parentKey="InsetRight" inherits="InsetFrameTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="CharacterFrameInset" relativePoint="TOPRIGHT" x="1" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPRIGHT" x="1" y="0"/>
 					<Anchor point="BOTTOMRIGHT"  x="-4" y="4"/>
 				</Anchors>
 			</Frame>
 
 			<Frame name="CharacterStatsPane" hidden="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="CharacterFrameInsetRight" x="3" y="-3"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInsetRight" x="-3" y="2"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.InsetRight" x="3" y="-3"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetRight" x="-3" y="2"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">

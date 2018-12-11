@@ -7,6 +7,34 @@ local Item =
 	Functions =
 	{
 		{
+			Name = "CanScrapItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canBeScrapped", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanViewItemPowers",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isItemViewable", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "DoesItemExist",
 			Type = "Function",
 

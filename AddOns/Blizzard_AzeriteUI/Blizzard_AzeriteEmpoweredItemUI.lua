@@ -10,14 +10,15 @@ local AZERITE_EMPOWERED_FRAME_EVENTS = {
 	"AZERITE_ITEM_POWER_LEVEL_CHANGED",
 	"AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED",
 	"PLAYER_EQUIPMENT_CHANGED",
+	"SCRAPPING_MACHINE_SCRAPPING_FINISHED",
 };
 
-AZERITE_EMPOWERED_ITEM_MAX_TIERS = 4;
+AZERITE_EMPOWERED_ITEM_MAX_TIERS = 5;
 
 function AzeriteEmpoweredItemUIMixin:OnLoad()
 	CallbackRegistryBaseMixin.OnLoad(self);
 
-	UIPanelWindows[self:GetName()] = { area = "left", pushable = 1, xoffset = 35, yoffset = -9, bottomClampOverride = 100, showFailedFunc = function() self:OnShowFailed(); end, };
+	UIPanelWindows[self:GetName()] = { area = "left", pushable = 1, xoffset = 35, yoffset = -9, bottomClampOverride = 100, checkFit = 1, showFailedFunc = function() self:OnShowFailed(); end, };
 
 	self.BorderFrame.Bg:SetParent(self);
 	self.BorderFrame.TopTileStreaks:Hide();
@@ -36,7 +37,12 @@ function AzeriteEmpoweredItemUIMixin:OnLoad()
 		rankFrame.GearBg.transformNode = rankFrame.RingBg.transformNode:CreateNodeFromTexture(rankFrame.GearBg);
 		rankFrame.RingLights.transformNode = rankFrame.RingBg.transformNode:CreateNodeFromTexture(rankFrame.RingLights);
 	end
-	
+
+	local _, classFilename = UnitClass("player");
+	if ( classFilename == "DRUID" ) then
+		self.ClipFrame.BackgroundFrame.RankFrames[1].RingBg:SetAtlas("Azerite-TitanBG-Rank5-1Gear");
+	end
+
 	local function TierReset(framePool, frame)
 		FramePool_HideAndClearAnchors(framePool, frame);
 		frame:Reset();
@@ -100,6 +106,8 @@ function AzeriteEmpoweredItemUIMixin:OnEvent(event, ...)
 		if self.azeriteItemDataSource:DidEquippedItemChange(equipmentSlot) then
 			self:Clear();
 		end
+	elseif event == "SCRAPPING_MACHINE_SCRAPPING_FINISHED" then  
+		HideUIPanel(self);
 	end
 end
 
@@ -150,6 +158,24 @@ function AzeriteEmpoweredItemUIMixin:CanSelectPowers()
 	end
 	return true;
 end
+
+function AzeriteEmpoweredItemUIMixin:GetPowerIdsForFinalSelectedTier()
+	local powerIds = { }
+	for tierIndex, tierFrame in ipairs(self.tiersByIndex) do
+		if(not tierFrame:IsFinalTier()) then 
+			table.insert(powerIds, tierFrame:GetSelectedPowerID());
+		end
+	end
+	return powerIds;
+end
+
+function AzeriteEmpoweredItemUIMixin:IsFinalPowerSelected() 
+	for tierIndex, tierFrame in ipairs(self.tiersByIndex) do
+		if(tierFrame:IsFinalTier()) then 
+			return tierFrame:HasAnySelected();
+		end
+	end
+end 
 
 function AzeriteEmpoweredItemUIMixin:IsAnyTierRevealing()
 	for tierIndex, tierFrame in ipairs(self.tiersByIndex) do
@@ -234,9 +260,11 @@ function AzeriteEmpoweredItemUIMixin:OnItemSet()
 	local azeriteEmpoweredItem = self.azeriteItemDataSource:GetItem();
 	azeriteEmpoweredItem:LockItem();
 	self.itemDataLoadedCancelFunc = azeriteEmpoweredItem:ContinueWithCancelOnItemLoad(function()
-		SetPortraitToTexture(self.BorderFrame.portrait, azeriteEmpoweredItem:GetItemIcon());
+		PortraitFrameTemplate_SetPortraitToAsset(self.BorderFrame, azeriteEmpoweredItem:GetItemIcon());
 		self.BorderFrame.TitleText:SetText(azeriteEmpoweredItem:GetItemName());
 	end);
+
+	self.oldItem = azeriteEmpoweredItem;
 
 	FrameUtil.RegisterFrameForEvents(self, AZERITE_EMPOWERED_FRAME_EVENTS);
 	self:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", "player");
@@ -270,7 +298,7 @@ end
 
 function AzeriteEmpoweredItemUIMixin:UpdateTiers()
 	local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem();
-	local azeriteItemPowerLevel = azeriteItemLocation and C_AzeriteItem.GetPowerLevel(azeriteItemLocation) or 0;
+	local azeriteItemPowerLevel = azeriteItemLocation and not AzeriteUtil.IsAzeriteItemLocationBankBag(azeriteItemLocation) and C_AzeriteItem.GetPowerLevel(azeriteItemLocation) or 0;
 
 	for tierIndex, tierFrame in ipairs(self.tiersByIndex) do
 		tierFrame:Update(azeriteItemPowerLevel);
@@ -305,13 +333,19 @@ function AzeriteEmpoweredItemUIMixin:AdjustSizeForTiers(numTiers)
 		self.ClipFrame.BackgroundFrame.KeyOverlay.Texture:SetAtlas("Azerite-CenterBG-3Ranks", true);
 		self.ClipFrame.BackgroundFrame.KeyOverlay.Texture:SetPoint("CENTER", 3, 125);
 		self.ClipFrame.BackgroundFrame.Bg:SetAtlas("Azerite-Background-3Ranks", true);
-		
+
 		self:SetSize(474, 484);
-	else
+	elseif numTiers == 4 then
 		self.ClipFrame.BackgroundFrame.KeyOverlay.Texture:SetAtlas("Azerite-CenterBG-4Ranks", true);
 		self.ClipFrame.BackgroundFrame.KeyOverlay.Texture:SetPoint("CENTER", 0, 187);
 		self.ClipFrame.BackgroundFrame.Bg:SetAtlas("Azerite-Background", true);
 		self:SetSize(615, 628);
+	elseif numTiers == 5 then
+		self.ClipFrame.BackgroundFrame.KeyOverlay.Texture:SetAtlas("Azerite-CenterBG-5Ranks", true);
+		self.ClipFrame.BackgroundFrame.KeyOverlay.Texture:SetPoint("CENTER", 0, 245);
+		self.ClipFrame.BackgroundFrame.Bg:SetAtlas("Azerite-Background", false);
+		self.ClipFrame.BackgroundFrame.Bg:SetSize(1260, 1260);
+		self:SetSize(754, 764);
 	end
 	self.ClipFrame.BackgroundFrame.KeyOverlay.Channel:AdjustSizeForTiers(numTiers);
 	UpdateUIPanelPositions(self);

@@ -4,151 +4,12 @@ function WorldMap_IsWorldQuestEffectivelyTracked(questID)
 	return IsWorldQuestHardWatched(questID) or (IsWorldQuestWatched(questID) and GetSuperTrackedQuestID() == questID);
 end
 
-local function ApplyTextureToPOI(texture, width, height)
-	texture:SetTexCoord(0, 1, 0, 1);
-	texture:ClearAllPoints();
-	texture:SetPoint("CENTER", texture:GetParent());
-	texture:SetSize(width or 32, height or 32);
-end
-
-local function ApplyAtlasTexturesToPOI(button, normal, pushed, highlight, width, height)
-	button:SetSize(20, 20);
-	button:SetNormalAtlas(normal);
-	ApplyTextureToPOI(button:GetNormalTexture(), width, height);
-
-	button:SetPushedAtlas(pushed);
-	ApplyTextureToPOI(button:GetPushedTexture(), width, height);
-
-	button:SetHighlightAtlas(highlight);
-	ApplyTextureToPOI(button:GetHighlightTexture(), width, height);
-
-	if button.SelectedGlow then
-		button.SelectedGlow:SetAtlas(pushed);
-		ApplyTextureToPOI(button.SelectedGlow, width, height);
-	end
-end
-
-local function ApplyStandardTexturesToPOI(button, selected)
-	button:SetSize(20, 20);
-	button:SetNormalTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
-	ApplyTextureToPOI(button:GetNormalTexture());
-	if selected then
-		button:GetNormalTexture():SetTexCoord(0.500, 0.625, 0.375, 0.5);
-	else
-		button:GetNormalTexture():SetTexCoord(0.875, 1, 0.375, 0.5);
-	end
-
-
-	button:SetPushedTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
-	ApplyTextureToPOI(button:GetPushedTexture());
-	if selected then
-		button:GetPushedTexture():SetTexCoord(0.375, 0.500, 0.375, 0.5);
-	else
-		button:GetPushedTexture():SetTexCoord(0.750, 0.875, 0.375, 0.5);
-	end
-
-	button:SetHighlightTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
-	ApplyTextureToPOI(button:GetHighlightTexture());
-	button:GetHighlightTexture():SetTexCoord(0.625, 0.750, 0.875, 1);
-end
-
-function WorldMap_SetupWorldQuestButton(button, worldQuestType, rarity, isElite, tradeskillLineIndex, inProgress, selected, isCriteria, isSpellTarget, isEffectivelyTracked)
-	button.Glow:SetShown(selected);
-
-	if rarity == LE_WORLD_QUEST_QUALITY_COMMON then
-		ApplyStandardTexturesToPOI(button, selected);
-	elseif rarity == LE_WORLD_QUEST_QUALITY_RARE then
-		ApplyAtlasTexturesToPOI(button, "worldquest-questmarker-rare", "worldquest-questmarker-rare-down", "worldquest-questmarker-rare", 18, 18);
-	elseif rarity == LE_WORLD_QUEST_QUALITY_EPIC then
-		ApplyAtlasTexturesToPOI(button, "worldquest-questmarker-epic", "worldquest-questmarker-epic-down", "worldquest-questmarker-epic", 18, 18);
-	end
-
-	if ( button.SelectedGlow ) then
-		button.SelectedGlow:SetShown(rarity ~= LE_WORLD_QUEST_QUALITY_COMMON and selected);
-	end
-
-	if ( isElite ) then
-		button.Underlay:SetAtlas("worldquest-questmarker-dragon");
-		button.Underlay:Show();
-	else
-		button.Underlay:Hide();
-	end
-
-	local tradeskillLineID = tradeskillLineIndex and select(7, GetProfessionInfo(tradeskillLineIndex));
-	if ( worldQuestType == LE_QUEST_TAG_TYPE_PVP ) then
-		if ( inProgress ) then
-			button.Texture:SetAtlas("worldquest-questmarker-questionmark");
-			button.Texture:SetSize(10, 15);
-		else
-			button.Texture:SetAtlas("worldquest-icon-pvp-ffa", true);
-		end
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PET_BATTLE ) then
-		if ( inProgress ) then
-			button.Texture:SetAtlas("worldquest-questmarker-questionmark");
-			button.Texture:SetSize(10, 15);
-		else
-			button.Texture:SetAtlas("worldquest-icon-petbattle", true);
-		end
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION and WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID] ) then
-		if ( inProgress ) then
-			button.Texture:SetAtlas("worldquest-questmarker-questionmark");
-			button.Texture:SetSize(10, 15);
-		else
-			button.Texture:SetAtlas(WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID], true);
-		end
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_DUNGEON ) then
-		if ( inProgress ) then
-			button.Texture:SetAtlas("worldquest-questmarker-questionmark");
-			button.Texture:SetSize(10, 15);
-		else
-			button.Texture:SetAtlas("worldquest-icon-dungeon", true);
-		end
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_RAID ) then
-		if ( inProgress ) then
-			button.Texture:SetAtlas("worldquest-questmarker-questionmark");
-			button.Texture:SetSize(10, 15);
-		else
-			button.Texture:SetAtlas("worldquest-icon-raid", true);
-		end
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_INVASION ) then
-		if ( inProgress ) then
-			button.Texture:SetAtlas("worldquest-questmarker-questionmark");
-			button.Texture:SetSize(10, 15);
-		else
-			button.Texture:SetAtlas("worldquest-icon-burninglegion", true);
-		end
-	else
-		if ( inProgress ) then
-			button.Texture:SetAtlas("worldquest-questmarker-questionmark");
-			button.Texture:SetSize(10, 15);
-		else
-			button.Texture:SetAtlas("worldquest-questmarker-questbang");
-			button.Texture:SetSize(6, 15);
-		end
-	end
-
-	if ( button.TimeLowFrame ) then
-		button.TimeLowFrame:Hide();
-	end
-
-	if ( button.CriteriaMatchRing ) then
-		button.CriteriaMatchRing:SetShown(isCriteria);
-	end
-
-	if ( button.TrackedCheck ) then
-		button.TrackedCheck:SetShown(isEffectivelyTracked);
-	end
-
-	if ( button.SpellTargetGlow ) then
-		button.SpellTargetGlow:SetShown(isSpellTarget);
-	end
-end
-
 WORLD_QUEST_REWARD_TYPE_FLAG_GOLD = 0x0001;
 WORLD_QUEST_REWARD_TYPE_FLAG_RESOURCES = 0x0002;
 WORLD_QUEST_REWARD_TYPE_FLAG_ARTIFACT_POWER = 0x0004;
 WORLD_QUEST_REWARD_TYPE_FLAG_MATERIALS = 0x0008;
 WORLD_QUEST_REWARD_TYPE_FLAG_EQUIPMENT = 0x0010;
+WORLD_QUEST_REWARD_TYPE_FLAG_REPUTATION = 0x0020;
 function WorldMap_GetWorldQuestRewardType(questID)
 	if ( not HaveQuestRewardData(questID) ) then
 		C_TaskQuest.RequestPreloadRewardData(questID);
@@ -170,6 +31,8 @@ function WorldMap_GetWorldQuestRewardType(questID)
 			worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_RESOURCES);
 		elseif ( currencyID == azeriteCurrencyID ) then
 			worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_ARTIFACT_POWER);
+		elseif ( C_CurrencyInfo.GetFactionGrantedByCurrency(currencyID) ~= nil ) then
+			worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_REPUTATION);
 		end
 	end
 
@@ -235,6 +98,8 @@ function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters)
 				typeMatchesFilters = true;
 			elseif ( GetCVarBool("worldQuestFilterEquipment") and bit.band(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_EQUIPMENT) ~= 0 ) then
 				typeMatchesFilters = true;
+			elseif ( GetCVarBool("worldQuestFilterReputation") and bit.band(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_REPUTATION) ~= 0 ) then
+				typeMatchesFilters = true;
 			end
 
 			-- We always want to show quests that do not fit any of the enumerated reward types.
@@ -248,23 +113,26 @@ function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters)
 end
 
 function WorldMap_AddQuestTimeToTooltip(questID)
-	local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(questID);
-	if ( timeLeftMinutes and timeLeftMinutes > 0 ) then
-		local color = NORMAL_FONT_COLOR;
-		if ( timeLeftMinutes <= WORLD_QUESTS_TIME_CRITICAL_MINUTES ) then
-			color = RED_FONT_COLOR;
-		end
+	local displayTimeLeft = select(7, GetQuestTagInfo(questID));
+	if (displayTimeLeft) then
+		local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(questID);
+		if ( timeLeftMinutes and timeLeftMinutes > 0 ) then
+			local color = NORMAL_FONT_COLOR;
+			if ( timeLeftMinutes <= WORLD_QUESTS_TIME_CRITICAL_MINUTES ) then
+				color = RED_FONT_COLOR;
+			end
 
-		local timeString;
-		if timeLeftMinutes <= 60 then
-			timeString = SecondsToTime(timeLeftMinutes * 60);
-		elseif timeLeftMinutes < 24 * 60  then
-			timeString = D_HOURS:format(math.floor(timeLeftMinutes) / 60);
-		else
-			timeString = D_DAYS:format(math.floor(timeLeftMinutes) / 1440);
-		end
+			local timeString;
+			if timeLeftMinutes <= 60 then
+				timeString = SecondsToTime(timeLeftMinutes * 60);
+			elseif timeLeftMinutes < 24 * 60  then
+				timeString = D_HOURS:format(math.floor(timeLeftMinutes) / 60);
+			else
+				timeString = D_DAYS:format(math.floor(timeLeftMinutes) / 1440);
+			end
 
-		WorldMapTooltip:AddLine(BONUS_OBJECTIVE_TIME_LEFT:format(timeString), color.r, color.g, color.b);
+			WorldMapTooltip:AddLine(BONUS_OBJECTIVE_TIME_LEFT:format(timeString), color.r, color.g, color.b);
+		end
 	end
 end
 
@@ -283,15 +151,14 @@ function TaskPOI_OnEnter(self)
 		local color = WORLD_QUEST_QUALITY_COLORS[rarity];
 		WorldMapTooltip:SetText(title, color.r, color.g, color.b);
 		QuestUtils_AddQuestTypeToTooltip(WorldMapTooltip, self.questID, NORMAL_FONT_COLOR);
-
-		if ( factionID ) then
-			local factionName = GetFactionInfoByID(factionID);
-			if ( factionName ) then
-				if (capped) then
-					WorldMapTooltip:AddLine(factionName, GRAY_FONT_COLOR:GetRGB());
-				else
-					WorldMapTooltip:AddLine(factionName);
-				end
+			
+		local factionName = factionID and GetFactionInfoByID(factionID);
+		if (factionName) then
+			local reputationYieldsRewards = (not capped) or C_Reputation.IsFactionParagon(factionID);
+			if (reputationYieldsRewards) then
+				WorldMapTooltip:AddLine(factionName);
+			else 
+				WorldMapTooltip:AddLine(factionName, GRAY_FONT_COLOR:GetRGB());
 			end
 		end
 
@@ -303,13 +170,21 @@ function TaskPOI_OnEnter(self)
 	end
 
 	for objectiveIndex = 1, self.numObjectives do
-		local objectiveText, objectiveType, finished = GetQuestObjectiveInfo(self.questID, objectiveIndex, false);
-		if ( objectiveText and #objectiveText > 0 ) then
+		local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(self.questID, objectiveIndex, false);
+
+		if(self.shouldShowObjectivesAsStatusBar) then 
+			local questLogIndex = GetQuestLogIndexByID(self.questID);
+			local _, questDescription = GetQuestLogQuestText(questLogIndex);
+			GameTooltip_AddColoredLine(WorldMapTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
+
+			local percent = math.floor((numFulfilled/numRequired) * 100);
+			GameTooltip_ShowProgressBar(WorldMapTooltip, 0, numRequired, numFulfilled, PERCENTAGE_STRING:format(percent));
+		elseif ( objectiveText and #objectiveText > 0 ) then
 			local color = finished and GRAY_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
 			WorldMapTooltip:AddLine(QUEST_DASH .. objectiveText, color.r, color.g, color.b, true);
 		end
 	end
-
+	local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(self.questID, 1, false);
 	local percent = C_TaskQuest.GetQuestProgressBarInfo(self.questID);
 	if ( percent ) then
 		GameTooltip_ShowProgressBar(WorldMapTooltip, 0, 100, percent, PERCENTAGE_STRING:format(percent));

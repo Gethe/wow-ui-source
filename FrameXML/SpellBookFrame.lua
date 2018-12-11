@@ -9,21 +9,24 @@ BOOKTYPE_PET = "pet";
 
 local MaxSpellBookTypes = 5;
 local SpellBookInfo = {};
-SpellBookInfo[BOOKTYPE_SPELL] 		= { 	showFrames = {"SpellBookSpellIconsFrame", "SpellBookSideTabsFrame", "SpellBookPageNavigationFrame"}, 		
+SpellBookInfo[BOOKTYPE_SPELL] 		= { 	showFrames = {"SpellBookSpellIconsFrame", "SpellBookSideTabsFrame", "SpellBookPageNavigationFrame"},
 											title = SPELLBOOK,
-											updateFunc = function() SpellBook_UpdatePlayerTab(); end
-										};									
-SpellBookInfo[BOOKTYPE_PROFESSION] 	= { 	showFrames = {"SpellBookProfessionFrame"}, 	
-											title = TRADE_SKILLS,					
+											updateFunc = function() SpellBook_UpdatePlayerTab(); end,
+											mousewheelNavigation = true,
+										};
+SpellBookInfo[BOOKTYPE_PROFESSION] 	= { 	showFrames = {"SpellBookProfessionFrame"},
+											title = TRADE_SKILLS,
 											updateFunc = function() SpellBook_UpdateProfTab(); end,
 											bgFileL="Interface\\Spellbook\\Professions-Book-Left",
-											bgFileR="Interface\\Spellbook\\Professions-Book-Right"
+											bgFileR="Interface\\Spellbook\\Professions-Book-Right",
+											mousewheelNavigation = false,
 										};
-SpellBookInfo[BOOKTYPE_PET] 		= { 	showFrames = {"SpellBookSpellIconsFrame", "SpellBookPageNavigationFrame"}, 		
+SpellBookInfo[BOOKTYPE_PET] 		= { 	showFrames = {"SpellBookSpellIconsFrame", "SpellBookPageNavigationFrame"},
 											title = PET,
-											updateFunc =  function() SpellBook_UpdatePetTab(); end
-										};										
-								
+											updateFunc =  function() SpellBook_UpdatePetTab(); end,
+											mousewheelNavigation = true,
+										};
+
 SPELLBOOK_PAGENUMBERS = {};
 
 SpellBookFrames = {	"SpellBookSpellIconsFrame", "SpellBookProfessionFrame",  "SpellBookSideTabsFrame", "SpellBookPageNavigationFrame" };
@@ -55,17 +58,17 @@ function ToggleSpellBook(bookType)
 	if ( (not HasPetSpells() or not PetHasSpellbook()) and bookType == BOOKTYPE_PET ) then
 		return;
 	end
-	
+
 	local isShown = SpellBookFrame:IsShown();
 	if ( isShown and (SpellBookFrame.bookType == bookType) ) then
 		HideUIPanel(SpellBookFrame);
 		return;
 	elseif isShown then
 		SpellBookFrame_PlayOpenSound()
-		SpellBookFrame.bookType = bookType;	
+		SpellBookFrame.bookType = bookType;
 		SpellBookFrame_Update();
-	else	
-		SpellBookFrame.bookType = bookType;	
+	else
+		SpellBookFrame.bookType = bookType;
 		ShowUIPanel(SpellBookFrame);
 	end
 
@@ -114,19 +117,18 @@ function SpellBookFrame_OnLoad(self)
 	SPELLBOOK_PAGENUMBERS[7] = 1;
 	SPELLBOOK_PAGENUMBERS[8] = 1;
 	SPELLBOOK_PAGENUMBERS[BOOKTYPE_PET] = 1;
-	
+
 	-- Set to the class tab by default
 	SpellBookFrame.selectedSkillLine = 2;
 
 	-- Initialize tab flashing
 	SpellBookFrame.flashTabs = nil;
-	
+
 	-- Initialize portrait texture
-	SetPortraitToTexture(SpellBookFramePortrait, "Interface\\Spellbook\\Spellbook-Icon");
-	
+	PortraitFrameTemplate_SetPortraitToAsset(self, "Interface\\Spellbook\\Spellbook-Icon");
+
 	ButtonFrameTemplate_HideButtonBar(SpellBookFrame);
 	ButtonFrameTemplate_HideAttic(SpellBookFrame);
-	SpellBookFrameInsetBg:Hide();
 end
 
 function SpellBookFrame_OnEvent(self, event, ...)
@@ -157,7 +159,7 @@ function SpellBookFrame_OnEvent(self, event, ...)
 	elseif (event == "SKILL_LINES_CHANGED" or event == "TRIAL_STATUS_UPDATE") then
 		SpellBook_UpdateProfTab();
 	elseif (event == "PLAYER_GUILD_UPDATE") then
-		-- default to class tab if the selected one is gone - happens if you leave a guild with perks 
+		-- default to class tab if the selected one is gone - happens if you leave a guild with perks
 		if ( GetNumSpellTabs() < SpellBookFrame.selectedSkillLine ) then
 			SpellBookFrame.selectedSkillLine = 2;
 			SpellBookFrame_Update();
@@ -184,19 +186,19 @@ end
 
 function SpellBookFrame_OnShow(self)
 	SpellBookFrame_Update();
-	
+
 	-- If there are tabs waiting to flash, then flash them... yeah..
 	if ( self.flashTabs ) then
 		UIFrameFlash(SpellBookTabFlashFrame, 0.5, 0.5, 30, nil);
 	end
 
 	-- Show multibar slots
-	MultiActionBar_ShowAllGrids();
+	MultiActionBar_ShowAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_SPELLBOOK);
 	UpdateMicroButtons();
 
 	SpellBookFrame_PlayOpenSound();
 	MicroButtonPulseStop(SpellbookMicroButton);
-	
+
 	-- if boosted, find the first locked spell and display a tip next to it
 	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL and IsCharacterNewlyBoosted() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOOSTED_SPELL_BOOK) ) then
 		local spellSlot;
@@ -209,7 +211,7 @@ function SpellBookFrame_OnShow(self)
 				end
 			end
 		end
-		
+
 		if ( spellSlot ) then
 			SpellLockedTooltip:Show();
 			SpellLockedTooltip:SetPoint("LEFT", spellSlot, "RIGHT", 16, 0);
@@ -225,19 +227,19 @@ function SpellBookFrame_Update()
 	-- Hide all tabs
 	SpellBookFrameTabButton3:Hide();
 	SpellBookFrameTabButton4:Hide();
-	SpellBookFrameTabButton5:Hide();	
+	SpellBookFrameTabButton5:Hide();
 
-	-- Setup tabs	
+	-- Setup tabs
 	-- player spells and professions are always shown
 	SpellBookFrameTabButton1:Show();
 	SpellBookFrameTabButton1.bookType = BOOKTYPE_SPELL;
 	SpellBookFrameTabButton1.binding = "TOGGLESPELLBOOK";
 	SpellBookFrameTabButton1:SetText(SpellBookInfo[BOOKTYPE_SPELL].title);
 	SpellBookFrameTabButton2:Show();
-	SpellBookFrameTabButton2.bookType = BOOKTYPE_PROFESSION;	
+	SpellBookFrameTabButton2.bookType = BOOKTYPE_PROFESSION;
 	SpellBookFrameTabButton2:SetText(SpellBookInfo[BOOKTYPE_PROFESSION].title);
 	SpellBookFrameTabButton2.binding = "TOGGLEPROFESSIONBOOK";
-	
+
 	local tabIndex = 3;
 	-- check to see if we have a pet
 	local hasPetSpells, petToken = HasPetSpells();
@@ -246,17 +248,17 @@ function SpellBookFrame_Update()
 		SpellBookFrame.petTitle = _G["PET_TYPE_"..petToken];
 		local nextTab = _G["SpellBookFrameTabButton"..tabIndex];
 		nextTab:Show();
-		nextTab.bookType = BOOKTYPE_PET;		
+		nextTab.bookType = BOOKTYPE_PET;
 		nextTab.binding = "TOGGLEPETBOOK";
 		nextTab:SetText(SpellBookInfo[BOOKTYPE_PET].title);
 		tabIndex = tabIndex+1;
 	elseif (SpellBookFrame.bookType == BOOKTYPE_PET) then
 		SpellBookFrame.bookType = _G["SpellBookFrameTabButton"..tabIndex-1].bookType;
 	end
-	
+
 	local level = UnitLevel("player");
-	
-	
+
+
 	-- Make sure the correct tab is selected
 	for i=1,MaxSpellBookTypes do
 		local tab = _G["SpellBookFrameTabButton"..i];
@@ -268,7 +270,7 @@ function SpellBookFrame_Update()
 			PanelTemplates_DeselectTab(tab);
 		end
 	end
-	
+
 	-- setup display
 	for i, frame in ipairs(SpellBookFrames) do
 		local found = false;
@@ -286,17 +288,17 @@ function SpellBookFrame_Update()
 
 	if SpellBookInfo[SpellBookFrame.bookType].bgFileL then
 		SpellBookPage1:SetTexture(SpellBookInfo[SpellBookFrame.bookType].bgFileL);
-	else	
+	else
 		SpellBookPage1:SetTexture("Interface\\Spellbook\\Spellbook-Page-1");
 	end
 	if SpellBookInfo[SpellBookFrame.bookType].bgFileR then
 		SpellBookPage2:SetTexture(SpellBookInfo[SpellBookFrame.bookType].bgFileR);
-	else	
+	else
 		SpellBookPage2:SetTexture("Interface\\Spellbook\\Spellbook-Page-2");
 	end
-	
-	SpellBookFrameTitleText:SetText(SpellBookInfo[SpellBookFrame.bookType].title);
-	
+
+	PortraitFrameTemplate_SetTitle(SpellBookFrame, SpellBookInfo[SpellBookFrame.bookType].title);
+
 	local tabUpdate = SpellBookInfo[SpellBookFrame.bookType].updateFunc;
 	if(tabUpdate) then
 		tabUpdate()
@@ -386,15 +388,15 @@ function SpellBookFrame_OnHide(self)
 	end
 
 	-- Hide multibar slots
-	MultiActionBar_HideAllGrids();
-	
+	MultiActionBar_HideAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_SPELLBOOK);
+
 	SpellLockedTooltip:Hide();
-	
+
 	-- Do this last, it can cause taint.
 	UpdateMicroButtons();
 end
 
-function SpellButton_OnLoad(self) 
+function SpellButton_OnLoad(self)
 	self:RegisterForDrag("LeftButton");
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 end
@@ -430,7 +432,7 @@ function SpellButton_OnEvent(self, event, ...)
 
 		local _, actionID = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
 		local onActionBar = false;
-		
+
 		if ( slotType == "SPELL" ) then
 			if (FindFlyoutSlotBySpellID(actionID) > 0) then
 				-- We're part of a flyout
@@ -477,7 +479,7 @@ function SpellButton_OnHide(self)
 	self:UnregisterEvent("CURSOR_UPDATE");
 	self:UnregisterEvent("ACTIONBAR_SLOT_CHANGED");
 end
- 
+
 function SpellButton_OnEnter(self)
 	local slot = SpellBook_GetSpellBookSlot(self);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -486,7 +488,7 @@ function SpellButton_OnEnter(self)
 	else
 		self.UpdateTooltip = nil;
 	end
-	
+
 	ClearOnBarHighlightMarks();
 	ClearPetActionHighlightMarks();
 	local slotType, actionID = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
@@ -499,7 +501,7 @@ function SpellButton_OnEnter(self)
 		UpdatePetActionHighlightMarks(actionID);
 		PetActionBar_Update(PetActionBarFrame);
 	end
-	
+
 	if ( self.SpellHighlightTexture and self.SpellHighlightTexture:IsShown() ) then
 		GameTooltip:AddLine(SPELLBOOK_SPELL_NOT_ON_ACTION_BAR, LIGHTBLUE_FONT_COLOR.r, LIGHTBLUE_FONT_COLOR.g, LIGHTBLUE_FONT_COLOR.b);
 	end
@@ -544,7 +546,7 @@ function SpellButton_OnClick(self, button)
 		return;
 	end
 
-	if (self.isPassive) then 
+	if (self.isPassive) then
 		return;
 	end
 
@@ -566,7 +568,7 @@ function SpellButton_OnClick(self, button)
 	end
 end
 
-function SpellButton_OnModifiedClick(self, button) 
+function SpellButton_OnModifiedClick(self, button)
 	local slot = SpellBook_GetSpellBookSlot(self);
 	if ( slot > MAX_SPELLS ) then
 		return;
@@ -603,7 +605,7 @@ function SpellButton_OnModifiedClick(self, button)
 	end
 end
 
-function SpellButton_OnDrag(self) 
+function SpellButton_OnDrag(self)
 	local slot, slotType = SpellBook_GetSpellBookSlot(self);
 	if (not slot or slot > MAX_SPELLS or not _G[self:GetName().."IconTexture"]:IsShown() or (slotType == "FUTURESPELL")) then
 		return;
@@ -669,7 +671,7 @@ function SpellButton_UpdateButton(self)
 	SpellBookFrame.selectedSkillLineOffset = offset;
 	local isOffSpec = (offSpecID ~= 0) and (SpellBookFrame.bookType == BOOKTYPE_SPELL);
 	self.offSpecID = offSpecID;
-	
+
 	if (not self.SpellName.shadowX) then
 		self.SpellName.shadowX, self.SpellName.shadowY = self.SpellName:GetShadowOffset();
 	end
@@ -763,7 +765,7 @@ function SpellButton_UpdateButton(self)
 	else
 		self.FlyoutArrow:Hide();
 	end
-	
+
 	iconTexture:SetTexture(texture);
 	spellString:SetText(spellName);
 
@@ -783,7 +785,7 @@ function SpellButton_UpdateButton(self)
 				elseif ( isPassive ) then
 					subSpellName = SPELL_PASSIVE;
 				end
-			end			
+			end
 
 			-- If there is no spell sub-name, move the bottom row of text up
 			if ( subSpellName ~= "" ) then
@@ -796,7 +798,7 @@ function SpellButton_UpdateButton(self)
 	iconTexture:Show();
 	spellString:Show();
 	subSpellString:Show();
-	
+
 	if (not (slotType == "FUTURESPELL")) then
 		slotFrame:Show();
 		self.UnlearnedFrame:Hide();
@@ -831,7 +833,7 @@ function SpellButton_UpdateButton(self)
 			self.AbilityHighlight:Hide();
 			self.GlyphIcon:Hide();
 		end
-		
+
 		if self.SpellHighlightTexture then
 			self.SpellHighlightTexture:Hide();
 			if ( SpellBookFrame.selectedSkillLine == 2 or SpellBookFrame.bookType == BOOKTYPE_PET ) then
@@ -937,6 +939,10 @@ function SpellButton_UpdateButton(self)
 	else
 		SpellButton_UpdateSelection(self);
 	end
+
+	if GameTooltip:GetOwner() == self then
+		SpellButton_OnEnter(self);
+	end
 end
 
 function SpellBookPrevPageButton_OnClick()
@@ -967,7 +973,7 @@ end
 
 function SpellBookFrame_OnMouseWheel(self, value, scrollBar)
 	--do nothing if not on an appropriate book type
-	if(SpellBookFrame.bookType ~= BOOKTYPE_SPELL) then
+	if not SpellBookInfo[SpellBookFrame.bookType].mousewheelNavigation then
 		return;
 	end
 
@@ -977,7 +983,7 @@ function SpellBookFrame_OnMouseWheel(self, value, scrollBar)
 		if(currentPage > 1) then
 			SpellBookPrevPageButton_OnClick()
 		end
-	else 
+	else
 		if(currentPage < maxPages) then
 			SpellBookNextPageButton_OnClick()
 		end
@@ -994,7 +1000,7 @@ function SpellBookSkillLineTab_OnClick(self)
 	else
 		self:SetChecked(true);
 	end
-	
+
 	-- Stop tab flashing
 	if ( self ) then
 		local tabFlash = _G[self:GetName().."Flash"];
@@ -1121,14 +1127,14 @@ local maxShines = 1;
 local shineGet = {}
 function SpellBook_GetAutoCastShine ()
 	local shine = shineGet[1];
-	
+
 	if ( shine ) then
 		tremove(shineGet, 1);
 	else
 		shine = CreateFrame("FRAME", "AutocastShine" .. maxShines, SpellBookFrame, "SpellBookShineTemplate");
 		maxShines = maxShines + 1;
 	end
-	
+
 	return shine;
 end
 
@@ -1136,7 +1142,7 @@ function SpellBook_ReleaseAutoCastShine (shine)
 	if ( not shine ) then
 		return;
 	end
-	
+
 	shine:Hide();
 	AutoCastShine_AutoCastStop(shine);
 	tinsert(shineGet, shine);
@@ -1152,7 +1158,7 @@ function SpellBookFrame_UpdateSkillLineTabs()
 		local prevTab = _G["SpellBookSkillLineTab"..i-1];
 		if ( i <= numSkillLineTabs and SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
 			local name, texture, _, _, isGuild, offSpecID, shouldHide, specID = GetSpellTabInfo(i);
-			
+
 			if ( shouldHide ) then
 				_G["SpellBookSkillLineTab"..i.."Flash"]:Hide();
 				skillLineTab:Hide();
@@ -1176,7 +1182,7 @@ function SpellBookFrame_UpdateSkillLineTabs()
 						skillLineTab:SetPoint("TOPLEFT", prevTab, "BOTTOMLEFT", 0, -17);
 					end
 				end
-				
+
 				-- Guild tab must show the Guild Banner
 				if (isGuild) then
 					skillLineTab:SetNormalTexture("Interface\\SpellBook\\GuildSpellbooktabBG");
@@ -1209,7 +1215,7 @@ function SpellBook_UpdatePlayerTab()
 	local _, _, offset, numSlots = GetSpellTabInfo(SpellBookFrame.selectedSkillLine);
 	SpellBookFrame.selectedSkillLineOffset = offset;
 	SpellBookFrame.selectedSkillLineNumSlots = numSlots;
-	
+
 	SpellBookFrame_UpdatePages();
 
 	SpellBookFrame_UpdateSkillLineTabs();
@@ -1235,7 +1241,7 @@ function UpdateProfessionButton(self)
 		self.highlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square");
 		self.spellString:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	end
-	
+
 	self.iconTexture:SetTexture(texture);
 	local start, duration, enable = GetSpellCooldown(spellIndex, SpellBookFrame.bookType);
 	CooldownFrame_Set(self.cooldown, start, duration, enable);
@@ -1250,9 +1256,9 @@ function UpdateProfessionButton(self)
 	else
 		self.unlearn:Hide();
 	end
-	
+
 	self.spellString:SetText(spellName);
-	self.subSpellString:SetText("");	
+	self.subSpellString:SetText("");
 	if spellID then
 		local spell = Spell:CreateFromSpellID(spellID);
 		spell:ContinueOnSpellLoad(function()
@@ -1260,7 +1266,7 @@ function UpdateProfessionButton(self)
 		end);
 	end
 	self.iconTexture:SetTexture(texture);
-	
+
 	SpellButton_UpdateSelection(self);
 end
 
@@ -1268,29 +1274,29 @@ function FormatProfession(frame, index)
 	if index then
 		frame.missingHeader:Hide();
 		frame.missingText:Hide();
-		
+
 		local name, texture, rank, maxRank, numSpells, spelloffset, skillLine, rankModifier, specializationIndex, specializationOffset, skillLineName = GetProfessionInfo(index);
 		frame.skillName = name;
 		frame.spellOffset = spelloffset;
 		frame.skillLine = skillLine;
 		frame.specializationIndex = specializationIndex;
 		frame.specializationOffset = specializationOffset;
-		
+
 		frame.statusBar:SetMinMaxValues(1,maxRank);
 		frame.statusBar:SetValue(rank);
-		
+
 		local prof_title = "";
 		if (skillLineName) then
 			prof_title = skillLineName;
 		else
 			for i=1,#PROFESSION_RANKS do
-				local value,title = PROFESSION_RANKS[i][1], PROFESSION_RANKS[i][2]; 
+				local value,title = PROFESSION_RANKS[i][1], PROFESSION_RANKS[i][2];
 				if maxRank < value then break end
 				prof_title = title;
 			end
 		end
 		frame.rank:SetText(prof_title);
-		
+
 		frame.statusBar:Show();
 		if rank == maxRank then
 			frame.statusBar.capRight:Show();
@@ -1311,35 +1317,35 @@ function FormatProfession(frame, index)
 				frame.statusBar.tooltip = RED_FONT_COLOR_CODE..CAP_REACHED_TRIAL..FONT_COLOR_CODE_CLOSE;
 			end
 		end
-		
+
 		if frame.icon and texture then
-			SetPortraitToTexture(frame.icon, texture);	
+			SetPortraitToTexture(frame.icon, texture);
 			frame.unlearn:Show();
 		end
-		
+
 		frame.professionName:SetText(name);
-		
+
 		if ( rankModifier > 0 ) then
 			frame.statusBar.rankText:SetFormattedText(TRADESKILL_RANK_WITH_MODIFIER, rank, rankModifier, maxRank);
 		else
 			frame.statusBar.rankText:SetFormattedText(TRADESKILL_RANK, rank, maxRank);
 		end
 
-		
-		if numSpells <= 0 then		
+
+		if numSpells <= 0 then
 			frame.button1:Hide();
 			frame.button2:Hide();
-		elseif numSpells == 1 then		
+		elseif numSpells == 1 then
 			frame.button2:Hide();
 			frame.button1:Show();
-			UpdateProfessionButton(frame.button1);		
-		else -- if numSpells >= 2 then	
+			UpdateProfessionButton(frame.button1);
+		else -- if numSpells >= 2 then
 			frame.button1:Show();
 			frame.button2:Show();
-			UpdateProfessionButton(frame.button1);			
+			UpdateProfessionButton(frame.button1);
 			UpdateProfessionButton(frame.button2);
 		end
-		
+
 		if numSpells >  2 then
 			local errorStr = "Found "..numSpells.." skills for "..name.." the max is 2:"
 			for i=1,numSpells do
@@ -1347,20 +1353,20 @@ function FormatProfession(frame, index)
 			end
 			assert(false, errorStr)
 		end
-	else		
+	else
 		frame.missingHeader:Show();
 		frame.missingText:Show();
-		
+
 		if frame.icon then
-			SetPortraitToTexture(frame.icon, "Interface\\Icons\\INV_Scroll_04");	
-			frame.unlearn:Hide();			
+			SetPortraitToTexture(frame.icon, "Interface\\Icons\\INV_Scroll_04");
+			frame.unlearn:Hide();
 			frame.specialization:SetText("");
-		end			
+		end
 		frame.button1:Hide();
 		frame.button2:Hide();
 		frame.statusBar:Hide();
 		frame.rank:SetText("");
-		frame.professionName:SetText("");		
+		frame.professionName:SetText("");
 	end
 end
 
@@ -1373,7 +1379,7 @@ function SpellBook_UpdateProfTab()
 	FormatProfession(SecondaryProfession2, fish);
 	FormatProfession(SecondaryProfession3, arch);
 	SpellBookPage1:SetDesaturated(false);
-	SpellBookPage2:SetDesaturated(false);	
+	SpellBookPage2:SetDesaturated(false);
 end
 
 -- *************************************************************************************

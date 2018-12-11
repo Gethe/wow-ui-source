@@ -31,6 +31,10 @@ function AzeriteEmpoweredItemTierMixin:SetOwner(owningFrame, azeriteItemDataSour
 	self.azeriteItemDataSource = azeriteItemDataSource;
 end
 
+function AzeriteEmpoweredItemTierMixin:GetOwner()
+	return self.owningFrame;
+end
+
 function AzeriteEmpoweredItemTierMixin:SetTierInfo(tierIndex, numTiers, tierInfo, prereqTier)
 	self.tierIndex = tierIndex;
 	self.tierOffset = AZERITE_EMPOWERED_ITEM_MAX_TIERS - numTiers;

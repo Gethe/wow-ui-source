@@ -2,17 +2,17 @@ UIPanelWindows["ScrappingMachineFrame"] = {area = "center", pushable = 3, showFa
 ScrappingMachineMixin = {};
 
 function ScrappingMachineMixin:SetupScrapButtonPool()
-	self.ItemSlots.scrapButtons:ReleaseAll(); 
-	
-	local width, height = 53, 53; 
-	local columnNum, rowNum = 3, 3; 
-	local slotCount = 0; 
-	
+	self.ItemSlots.scrapButtons:ReleaseAll();
+
+	local width, height = 53, 53;
+	local columnNum, rowNum = 3, 3;
+	local slotCount = 0;
+
 	for i = 1, columnNum do
 		for j = 1, rowNum do
 			local button = self.ItemSlots.scrapButtons:Acquire();
-			button.SlotNumber = slotCount; 
-			slotCount = slotCount + 1; 
+			button.SlotNumber = slotCount;
+			slotCount = slotCount + 1;
 			button:SetPoint("TOPLEFT", self.ItemSlots, "TOPLEFT", ((j - 1) * (width - j) + 2), -((i - 1) * (height - i) + 2));
 			button:Show();
 		end
@@ -24,7 +24,7 @@ function ScrappingMachineMixin:ClearAllScrapButtons()
 		if(button) then
 			button:ClearSlot();
 		end
-	end 
+	end
 end
 
 function ScrappingMachineMixin:ScrapItems()
@@ -32,36 +32,39 @@ function ScrappingMachineMixin:ScrapItems()
 end
 
 function ScrappingMachineMixin:UpdateScrapButtonState()
-	self.ScrapButton:SetEnabled(C_ScrappingMachineUI.HasScrappableItems()); 
+	self.ScrapButton:SetEnabled(C_ScrappingMachineUI.HasScrappableItems());
 end
 
 function ScrappingMachineMixin:OnLoad()
 	self.ItemSlots.scrapButtons = CreateFramePool("BUTTON", self.ItemSlots, "ScrappingMachineItemSlot");
-	self:SetupScrapButtonPool(); 
-	
+	self:SetupScrapButtonPool();
+
 	UIPanelWindows[self:GetName()] = {area = "left", pushable = 3, showFailedFunc = C_ScrappingMachineUI.CloseScrappingMachine, };
-	
-	if ("Horde" == UnitFactionGroup("player")) then 
-		self.Background:SetAtlas("scrappingmachine-background-goblin", false); 
+
+	if ("Horde" == UnitFactionGroup("player")) then
+		self.Background:SetAtlas("scrappingmachine-background-goblin", false);
 	else
 		self.Background:SetAtlas("scrappingmachine-background-gnomish", false);
 	end
-	
-	SetPortraitToTexture(self.portrait, "Interface\\Icons\\inv_gizmo_03");
-	self.TitleText:SetText(SCRAPPING_MACHINE_TITLE);	 
+
+	PortraitFrameTemplate_SetPortraitToAsset(self, "Interface\\Icons\\inv_gizmo_03");
+	PortraitFrameTemplate_SetTitle(self, SCRAPPING_MACHINE_TITLE);
 end
 
 function ScrappingMachineMixin:OnShow()
 	PlaySound(SOUNDKIT.UI_80_SCRAPPING_WINDOW_OPEN);
 	self:UpdateScrapButtonState();
-	self:RegisterEvent("BAG_UPDATE"); 
+	self:RegisterEvent("BAG_UPDATE");
 	self:RegisterEvent("SCRAPPING_MACHINE_CLOSE");
 	self:RegisterEvent("SCRAPPING_MACHINE_PENDING_ITEM_CHANGED");
 	self:RegisterEvent("SCRAPPING_MACHINE_SCRAPPING_FINISHED");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_START", "player");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "player");
-	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player"); 
+	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player");
 	self.TitleText:SetText(C_ScrappingMachineUI.GetScrappingMachineName());
+	
+	local forceUpdate = true;
+	OpenAllBags(self, forceUpdate);
 end
 
 function ScrappingMachineMixin:OnEvent(event, ...)
@@ -82,7 +85,7 @@ function ScrappingMachineMixin:OnEvent(event, ...)
 		end
 	elseif (event == "SCRAPPING_MACHINE_CLOSE") then
 		HideUIPanel(self);
-	elseif (event == "SCRAPPING_MACHINE_SCRAPPING_FINISHED") then 
+	elseif (event == "SCRAPPING_MACHINE_SCRAPPING_FINISHED") then
 		C_ScrappingMachineUI.RemoveAllScrapItems();
 	elseif (event == "UNIT_SPELLCAST_SUCCEEDED") then
 		local unitTag, lineID, spellID = ...;
@@ -95,19 +98,22 @@ end
 function ScrappingMachineMixin:CloseScrappingMachine()
 	self.scrapCastLineID = nil;
 	self:ClearAllScrapButtons();
-	C_ScrappingMachineUI.CloseScrappingMachine(); 
+	C_ScrappingMachineUI.CloseScrappingMachine();
 end
 
 function ScrappingMachineMixin:OnHide()
 	self:UnregisterEvent("UNIT_SPELLCAST_START");
 	self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED");
-	self:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED"); 
-	self:UnregisterEvent("BAG_UPDATE"); 
+	self:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED");
+	self:UnregisterEvent("BAG_UPDATE");
 	self:UnregisterEvent("SCRAPPING_MACHINE_CLOSE");
 	self:UnregisterEvent("SCRAPPING_MACHINE_PENDING_ITEM_CHANGED");
 	self:UnregisterEvent("SCRAPPING_MACHINE_SCRAPPING_FINISHED");
 	PlaySound(SOUNDKIT.UI_80_SCRAPPING_WINDOW_CLOSE);
 	self:CloseScrappingMachine();
+	
+	local forceUpdate = true;
+	CloseAllBags(self, forceUpdate);
 end
 
 ScrappingMachineItemSlotMixin = {};
@@ -118,43 +124,43 @@ function ScrappingMachineItemSlotMixin:RefreshIcon()
 		self:ClearSlot();
 		return;
 	end
-	
+
 	self.item = Item:CreateFromItemLocation(self.itemLocation);
 	if (self.item:IsItemEmpty()) then
 		self:ClearSlot();
 		return;
 	end
-	
+
 	self.itemDataLoadedCancelFunc = self.item:ContinueWithCancelOnItemLoad(function()
-		local itemName = self.item:GetItemName(); 
-		local itemRarity = self.item:GetItemQuality(); 
-		local itemTexture = self.item:GetItemIcon(); 
+		local itemName = self.item:GetItemName();
+		local itemRarity = self.item:GetItemQuality();
+		local itemTexture = self.item:GetItemIcon();
 		self.itemLink = self.item:GetItemLink();
-		if (itemName) then 
+		if (itemName) then
 			self.Icon:SetTexture(itemTexture);
-			SetItemButtonQuality(self, itemRarity, self.itemLink); 
+			SetItemButtonQuality(self, itemRarity, self.itemLink);
 			self.Icon:Show();
-		end		
+		end
 	end);
 end
 
 function ScrappingMachineItemSlotMixin:ClearSlot()
 	self.Icon:Hide();
 	self.IconBorder:Hide();
-	self.IconOverlay:Hide(); 
+	self.IconOverlay:Hide();
 	self.itemLink = nil;
 end
 
 function ScrappingMachineItemSlotMixin:Clear()
-	self.itemLocation = nil; 
-	self.item = nil; 
+	self.itemLocation = nil;
+	self.item = nil;
 	if (self.itemDataLoadedCancelFunc) then
 		self.itemDataLoadedCancelFunc();
-		self.itemDataLoadedCancelFunc = nil; 
+		self.itemDataLoadedCancelFunc = nil;
 	end
-	self.itemName = nil; 
+	self.itemName = nil;
 	self.itemRarity = nil;
-	self.itemTexture = nil; 
+	self.itemTexture = nil;
 	self.itemLink = nil;
 end
 
@@ -174,8 +180,8 @@ function ScrappingMachineItemSlotMixin:OnEvent(event, ...)
 end
 
 function ScrappingMachineItemSlotMixin:OnClick(button)
-	self:Clear(); 
-	C_ScrappingMachineUI.RemoveItemToScrap(self.SlotNumber); 
+	self:Clear();
+	C_ScrappingMachineUI.RemoveItemToScrap(self.SlotNumber);
 	C_ScrappingMachineUI.DropPendingScrapItemFromCursor(self.SlotNumber);
 end
 

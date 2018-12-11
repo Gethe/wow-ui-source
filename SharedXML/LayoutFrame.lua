@@ -29,10 +29,13 @@ end
 
 BaseLayoutMixin = {};
 
+function BaseLayoutMixin:OnLoad()
+end
+
 function BaseLayoutMixin:AddLayoutChildren(layoutChildren, ...)
 	for i = 1, select("#", ...) do
 		local region = select(i, ...);
-		if region.layoutIndex and region:IsShown() then
+		if region:IsShown() and not region.ignoreInLayout and (self.ignoreLayoutIndex or region.layoutIndex) then
 			layoutChildren[#layoutChildren + 1] = region;
 		end
 	end
@@ -49,7 +52,9 @@ function BaseLayoutMixin:GetLayoutChildren()
 	local children = {};
 	self:AddLayoutChildren(children, self:GetChildren());
 	self:AddLayoutChildren(children, self:GetRegions());
-	table.sort(children, LayoutIndexComparator);
+	if not self.ignoreLayoutIndex then
+		table.sort(children, LayoutIndexComparator);
+	end
 
 	return children;
 end
@@ -238,8 +243,8 @@ end
 
 ResizeLayoutMixin = CreateFromMixins(BaseLayoutMixin);
 
-local function GetExtents(frame, left, right, top, bottom)
-	local frameLeft, frameBottom, frameWidth, frameHeight = frame:GetRect();
+local function GetExtents(childFrame, left, right, top, bottom, layoutFrameScale)
+	local frameLeft, frameBottom, frameWidth, frameHeight = GetUnscaledFrameRect(childFrame, layoutFrameScale);
 	local frameRight = frameLeft + frameWidth;
 	local frameTop = frameBottom + frameHeight;
 
@@ -255,12 +260,20 @@ local function GetSize(desired, fixed, minimum, maximum)
 	return fixed or Clamp(desired, minimum or desired, maximum or desired);
 end
 
+function ResizeLayoutMixin:OnLoad()
+	self.ignoreLayoutIndex = true;
+end
+
 function ResizeLayoutMixin:Layout()
 	self:MarkClean();
 
+	-- GetExtents will fail if the LayoutFrame has 0 width or height, so set them to 1 to start
+	self:SetSize(1, 1);
+
 	local left, right, top, bottom;
+	local layoutFrameScale = self:GetEffectiveScale();
 	for childIndex, child in ipairs(self:GetLayoutChildren()) do
-		left, right, top, bottom = GetExtents(child, left, right, top, bottom);
+		left, right, top, bottom = GetExtents(child, left, right, top, bottom, layoutFrameScale);
 	end
 
 	local width = GetSize((right - left) + (self.widthPadding or 0), self.fixedWidth, self.minimumWidth, self.maximumWidth);

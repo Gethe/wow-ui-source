@@ -3,7 +3,7 @@
 	<Texture name="HybridScrollBarButton" virtual="true">
 		<TexCoords left="0.25" right="0.75" top="0.25" bottom="0.75"/>
 	</Texture>
-	
+
 	<Slider name="HybridScrollBarBackgroundTemplate" parentKey="scrollBar" virtual="true">
 		<Size x="20" y="0"/>
 		<Anchors>
@@ -45,7 +45,7 @@
 			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
 		</ThumbTexture>
 	</Slider>
-	
+
 	<Slider name="HybridScrollBarTemplate" inherits="HybridScrollBarBackgroundTemplate" virtual="true">
 		<Frames>
 			<Button name="$parentScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
@@ -102,7 +102,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.45" top="0.1640625" bottom="1"/>
 				</Texture>
-			</Layer>	
+			</Layer>
 		</Layers>
 		<Frames>
 			<Button name="$parentScrollUpButton" parentKey="UpButton" inherits="UIPanelScrollUpButtonTemplate">
@@ -130,7 +130,7 @@
 		<ThumbTexture name="$parentThumbTexture" inherits="HybridScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob" parentKey="thumbTexture">
 			<Size x="18" y="24"/>
 			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
-		</ThumbTexture>		
+		</ThumbTexture>
 	</Slider>
 
 	<Slider name="MinimalHybridScrollBarTemplate" parentKey="scrollBar" virtual="true">
@@ -174,8 +174,8 @@
 			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
 		</ThumbTexture>
 	</Slider>
-	
-	<ScrollFrame name="HybridScrollFrameTemplate" virtual="true">			
+
+	<ScrollFrame name="HybridScrollFrameTemplate" virtual="true">
 		<Scripts>
 			<OnLoad function="HybridScrollFrame_OnLoad"/>
 			<OnMouseWheel function="HybridScrollFrame_OnMouseWheel"/>
@@ -195,10 +195,15 @@
 			<Anchor point="BOTTOMRIGHT"/>
 		</Anchors>
 		<Frames>
-			<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate"/>
+			<Slider name="$parentScrollBar" parentKey="ScrollBar" inherits="HybridScrollBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-17"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="12"/>
+				</Anchors>
+			</Slider>
 		</Frames>
 	</ScrollFrame>
-	
+
 	<!-- This is a scrollframe with no border and a black texture for a track -->
 	<ScrollFrame name="MinimalHybridScrollFrameTemplate" inherits="HybridScrollFrameTemplate" virtual="true">
 		<Frames>
@@ -208,6 +213,6 @@
 					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="17"/>
 				</Anchors>
 			</Slider>
-		</Frames>		
+		</Frames>
 	</ScrollFrame>
 </Ui>

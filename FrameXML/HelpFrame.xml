@@ -2232,7 +2232,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						C_ChatInfo.ReportPlayer(PLAYER_REPORT_TYPE_CHEATING, self:GetParent().target, self:GetParent().CommentFrame.EditBox:GetText());
+						C_ReportSystem.ReportPlayer(PLAYER_REPORT_TYPE_CHEATING, self:GetParent().target, self:GetParent().CommentFrame.EditBox:GetText());
 						StaticPopupSpecial_Hide(self:GetParent());
 					</OnClick>
 				</Scripts>

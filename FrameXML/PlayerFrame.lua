@@ -19,7 +19,7 @@ function PlayerFrame_OnLoad(self)
 	self.statusSign = -1;
 	CombatFeedback_Initialize(self, PlayerHitIndicator, 30);
 	PlayerFrame_Update();
-	self:RegisterEvent("UNIT_LEVEL");
+	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
 	self:RegisterEvent("UNIT_FACTION");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_ENTER_COMBAT");
@@ -39,6 +39,7 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("PVP_TIMER_UPDATE");
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
 	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("HONOR_LEVEL_UPDATE");
 	self:RegisterUnitEvent("UNIT_COMBAT", "player", "vehicle");
 	self:RegisterUnitEvent("UNIT_MAXPOWER", "player", "vehicle");
 
@@ -106,11 +107,20 @@ function PlayerFrame_UpdatePvPStatus()
 		if ( not PlayerPVPIcon:IsShown() ) then
 			PlaySound(SOUNDKIT.IG_PVP_UPDATE);
 		end
-		PlayerPrestigePortrait:Hide();
-		PlayerPrestigeBadge:Hide();
-		PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA");
-		PlayerPVPIcon:Show();
-		
+		local honorLevel = UnitHonorLevel("player");
+		local honorRewardInfo = C_PvP.GetHonorRewardInfo(honorLevel);
+		if (honorRewardInfo) then
+			PlayerPrestigePortrait:SetAtlas("honorsystem-portrait-neutral", false);
+			PlayerPrestigeBadge:SetTexture(honorRewardInfo.badgeFileDataID);
+			PlayerPrestigePortrait:Show();
+			PlayerPrestigeBadge:Show();
+			PlayerPVPIcon:Hide();
+		else
+			PlayerPrestigePortrait:Hide();
+			PlayerPrestigeBadge:Hide();
+			PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA");
+			PlayerPVPIcon:Show();
+		end
 
 		-- Setup newbie tooltip
 		PlayerPVPIconHitArea.tooltipTitle = PVPFFA;
@@ -124,17 +134,35 @@ function PlayerFrame_UpdatePvPStatus()
 			PlaySound(SOUNDKIT.IG_PVP_UPDATE);
 		end
 
-		
-		PlayerPrestigePortrait:Hide();
-		PlayerPrestigeBadge:Hide();
-		PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
+		local honorLevel = UnitHonorLevel("player");
+		local honorRewardInfo = C_PvP.GetHonorRewardInfo(honorLevel);
+		if (honorRewardInfo) then
+			-- ugly special case handling for mercenary mode
+			if ( UnitIsMercenary("player") ) then
+				if ( factionGroup == "Horde" ) then
+					factionGroup = "Alliance";
+				elseif ( factionGroup == "Alliance" ) then
+					factionGroup = "Horde";
+				end
+			end
 
-		-- ugly special case handling for mercenary mode
-		if ( UnitIsMercenary("player") ) then
-			if ( factionGroup == "Horde" ) then
-				PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Alliance");
-			elseif ( factionGroup == "Alliance" ) then
-				PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Horde");
+			PlayerPrestigePortrait:SetAtlas("honorsystem-portrait-"..factionGroup, false);
+			PlayerPrestigeBadge:SetTexture(honorRewardInfo.badgeFileDataID);
+			PlayerPrestigePortrait:Show();
+			PlayerPrestigeBadge:Show();
+			PlayerPVPIcon:Hide();
+		else
+			PlayerPrestigePortrait:Hide();
+			PlayerPrestigeBadge:Hide();
+			PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
+
+			-- ugly special case handling for mercenary mode
+			if ( UnitIsMercenary("player") ) then
+				if ( factionGroup == "Horde" ) then
+					PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Alliance");
+				elseif ( factionGroup == "Alliance" ) then
+					PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Horde");
+				end
 			end
 		end
 
@@ -158,10 +186,8 @@ function PlayerFrame_OnEvent(self, event, ...)
 	UnitFrame_OnEvent(self, event, ...);
 
 	local arg1, arg2, arg3, arg4, arg5 = ...;
-	if ( event == "UNIT_LEVEL" ) then
-		if ( arg1 == "player" ) then
-			PlayerFrame_Update();
-		end
+	if ( event == "PLAYER_LEVEL_CHANGED" ) then
+		PlayerFrame_Update();
 	elseif ( event == "UNIT_COMBAT" ) then
 		if ( arg1 == self.unit ) then
 			CombatFeedback_OnCombatEvent(self, arg2, arg3, arg4, arg5);
@@ -262,6 +288,8 @@ function PlayerFrame_OnEvent(self, event, ...)
 		if ( PLAYER_FRAME_CASTBARS_SHOWN ) then
 			PlayerFrame_AttachCastBar();
 		end
+	elseif ( event == "HONOR_LEVEL_UPDATE" ) then
+		PlayerFrame_UpdatePvPStatus();
 	end
 end
 
@@ -711,6 +739,8 @@ function PlayerFrame_ShowVehicleTexture()
 	elseif ( class == "PRIEST" ) then
 		PriestBarFrame:Hide();
 	end
+
+	ComboPointPlayerFrame:Setup();
 end
 
 
@@ -727,6 +757,8 @@ function PlayerFrame_HideVehicleTexture()
 	elseif ( class == "PRIEST" ) then
 		PriestBarFrame_CheckAndShow();
 	end
+
+	ComboPointPlayerFrame:Setup();
 end
 
 function PlayerFrame_OnDragStart(self)

@@ -6,6 +6,15 @@ local Unit =
 	Functions =
 	{
 		{
+			Name = "PlayerVehicleHasComboPoints",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "vehicleHasComboPoints", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetPortraitTexture",
 			Type = "Function",
 
@@ -281,6 +290,15 @@ local Unit =
 			Name = "IncomingResurrectChanged",
 			Type = "Event",
 			LiteralName = "INCOMING_RESURRECT_CHANGED",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "IncomingSummonChanged",
+			Type = "Event",
+			LiteralName = "INCOMING_SUMMON_CHANGED",
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "string", Nilable = false },

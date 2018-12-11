@@ -125,6 +125,20 @@ local MountJournal =
 			},
 		},
 		{
+			Name = "GetMountFromItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "mountID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetMountFromSpell",
 			Type = "Function",
 
@@ -189,6 +203,22 @@ local MountJournal =
 				{ Name = "isSelfMount", Type = "bool", Nilable = false },
 				{ Name = "mountTypeID", Type = "number", Nilable = false },
 				{ Name = "uiModelSceneID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMountUsabilityByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mountID", Type = "number", Nilable = false },
+				{ Name = "checkIndoors", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUsable", Type = "bool", Nilable = false },
+				{ Name = "useError", Type = "string", Nilable = true },
 			},
 		},
 		{

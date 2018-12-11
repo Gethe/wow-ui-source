@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="MainMenuBar.lua"/>
-	<Frame name="MainMenuBar" enableMouse="true" parent="UIParent" mixin="MainMenuBarMixin">
+	<Frame name="MainMenuBar" toplevel="true"  enableMouse="true" parent="UIParent" mixin="MainMenuBarMixin">
 		<Anchors>
 			<Anchor point="BOTTOM"/>
 		</Anchors>

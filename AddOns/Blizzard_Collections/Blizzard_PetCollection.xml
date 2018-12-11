@@ -1834,9 +1834,6 @@
 					</CheckButton>
  				</Frames>
 				<Scripts>
-					<OnShow>
-						self:SetFrameLevel(self:GetFrameLevel() + 5);
-					</OnShow>
 					<OnHide>
 						PetJournalPrimaryAbilityTooltip:Hide();
 						PetJournalSecondaryAbilityTooltip:Hide();

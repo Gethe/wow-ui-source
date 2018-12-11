@@ -46,6 +46,66 @@ local LFGListInfo =
 			Type = "Function",
 		},
 		{
+			Name = "GetActiveEntryInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "entryData", Type = "LfgEntryData", Nilable = false },
+			},
+		},
+		{
+			Name = "GetApplicantInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "applicantID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "applicantData", Type = "LfgApplicantData", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSearchResultInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "searchResultID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "searchResultData", Type = "LfgSearchResultData", Nilable = false },
+			},
+		},
+		{
+			Name = "HasActiveEntryInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasActiveEntryInfo", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasSearchResultInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "searchResultID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasSearchResultInfo", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "Search",
 			Type = "Function",
 
@@ -116,6 +176,7 @@ local LFGListInfo =
 				{ Name = "searchResultID", Type = "number", Nilable = false },
 				{ Name = "newStatus", Type = "string", Nilable = false },
 				{ Name = "oldStatus", Type = "string", Nilable = false },
+				{ Name = "groupName", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -145,6 +206,7 @@ local LFGListInfo =
 			Payload =
 			{
 				{ Name = "searchResultID", Type = "number", Nilable = false },
+				{ Name = "groupName", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -174,6 +236,60 @@ local LFGListInfo =
 
 	Tables =
 	{
+		{
+			Name = "LfgEntryData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "activityID", Type = "number", Nilable = false },
+				{ Name = "requiredItemLevel", Type = "number", Nilable = false },
+				{ Name = "requiredHonorLevel", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "comment", Type = "string", Nilable = false },
+				{ Name = "voiceChat", Type = "string", Nilable = false },
+				{ Name = "duration", Type = "number", Nilable = false },
+				{ Name = "autoAccept", Type = "bool", Nilable = false },
+				{ Name = "privateGroup", Type = "bool", Nilable = false },
+				{ Name = "questID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "LfgApplicantData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "applicantID", Type = "number", Nilable = false },
+				{ Name = "applicationStatus", Type = "string", Nilable = false },
+				{ Name = "pendingApplicationStatus", Type = "string", Nilable = true },
+				{ Name = "numMembers", Type = "number", Nilable = false },
+				{ Name = "isNew", Type = "bool", Nilable = false },
+				{ Name = "comment", Type = "string", Nilable = false },
+				{ Name = "displayOrderID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "LfgSearchResultData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "searchResultID", Type = "number", Nilable = false },
+				{ Name = "activityID", Type = "number", Nilable = false },
+				{ Name = "leaderName", Type = "string", Nilable = true },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "comment", Type = "string", Nilable = false },
+				{ Name = "voiceChat", Type = "string", Nilable = false },
+				{ Name = "requiredItemLevel", Type = "number", Nilable = false },
+				{ Name = "requiredHonorLevel", Type = "number", Nilable = false },
+				{ Name = "numMembers", Type = "number", Nilable = false },
+				{ Name = "numBNetFriends", Type = "number", Nilable = false },
+				{ Name = "numCharFriends", Type = "number", Nilable = false },
+				{ Name = "numGuildMates", Type = "number", Nilable = false },
+				{ Name = "isDelisted", Type = "bool", Nilable = false },
+				{ Name = "autoAccept", Type = "bool", Nilable = false },
+				{ Name = "age", Type = "number", Nilable = false },
+				{ Name = "questID", Type = "number", Nilable = true },
+			},
+		},
 		{
 			Name = "WowLocale",
 			Type = "Structure",

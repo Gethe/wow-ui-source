@@ -3,7 +3,15 @@
 	<Script file="LayoutFrame.lua"/>
 
 	<ScopedModifier scriptsUseGivenEnv="true">
-		<Frame name="VerticalLayoutFrame" virtual="true" mixin="LayoutMixin, VerticalLayoutMixin">
+			<Frame name="BaseLayoutFrameTemplate" virtual="true">
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="Layout"/>
+					<OnUpdate method="OnUpdate"/>
+				</Scripts>
+			</Frame>
+
+			<Frame name="VerticalLayoutFrame" virtual="true" inherits="BaseLayoutFrameTemplate" mixin="LayoutMixin, VerticalLayoutMixin">
 			<!--
 			<KeyValues>
 				Use fixedWidth/fixedHeight if you want a fixed size; otherwise size will be dynamically
@@ -26,10 +34,6 @@
 				<KeyValue key="spacing" value="10" type="number"/>
 			</KeyValues>
 			-->
-			<Scripts>
-				<OnShow method="Layout"/>
-				<OnUpdate method="OnUpdate"/>
-			</Scripts>
 
 			<!--
 				FontStrings, Textures and Frames can have the following key/value pairs
@@ -37,6 +41,10 @@
 				layoutIndex is required to be included in the layout system. You can choose not to have
 				a layoutIndex, in which case this region/frame should be anchored separately
 				<KeyValue key="layoutIndex" value="3" type="number"/>
+				
+				Some LayoutFrames (like ResizeLayoutFrame) set ignoreLayoutIndex to true, meaning that layoutIndex is completely ignored, and ALL child regions are processed in the layout.
+				If you want to keep a region out of the layout calculations for these LayoutFrames you must set ignoreInLayout to true
+				<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 
 				Padding values for the 4 sides of the region/frame
 				<KeyValue key="topPadding" value="20" type="number"/>
@@ -49,17 +57,19 @@
 			-->
 		</Frame>
 
-		<Frame name="HorizontalLayoutFrame" virtual="true" mixin="LayoutMixin, HorizontalLayoutMixin">
+		<Frame name="HorizontalLayoutFrame" virtual="true" inherits="BaseLayoutFrameTemplate" mixin="LayoutMixin, HorizontalLayoutMixin">
 			<!-- Uses the same key/value pairs as VerticalLayoutFrame -->
-			<Scripts>
-				<OnShow method="Layout"/>
-				<OnUpdate method="OnUpdate"/>
-			</Scripts>
 		</Frame>
 
-		<Frame name="ResizeLayoutFrame" mixin="ResizeLayoutMixin" virtual="true">
+		<Frame name="ResizeLayoutFrame" virtual="true" inherits="BaseLayoutFrameTemplate" mixin="ResizeLayoutMixin">
 			<!--
 			<KeyValues>
+				ResizeLayoutFrame simply resizes based on the extents of it's child frames & regions.
+				You will need to set the anchors of all children & regions yourself.
+				Note that layoutIndex is NOT required to be included in the ResizeLayoutFrame system (and it does nothing if it is set).
+
+				Because we set ignoreLayoutIndex to true on ResizeLayoutFrame, you must specifically use the ignoreInLayout keyValue if you want something to not be included in the size calculation
+
 				Use fixedWidth/fixedHeight if you want a fixed size; otherwise size will be dynamically
 				calculated based on the sizes of child frames
 				<KeyValue key="fixedWidth" value="300" type="number"/>
@@ -72,10 +82,6 @@
 				<KeyValue key="heightPadding" value="300" type="number"/>
 			</KeyValues>
 			-->
-			<Scripts>
-				<OnShow method="Layout"/>
-				<OnUpdate method="OnUpdate"/>
-			</Scripts>
 		</Frame>
 	</ScopedModifier>
 </Ui>

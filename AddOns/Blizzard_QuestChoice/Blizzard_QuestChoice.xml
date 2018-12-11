@@ -18,6 +18,15 @@
 		<TexCoords left="0.82617188" right="0.89062500" top="0.30468750" bottom="0.48046875"/>
 	</Texture>
 
+	<Button name="QuestChoiceOptionButtonTemplate" parentArray="Buttons" mixin="QuestChoiceOptionButtonMixin" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="175" y="22"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+	
 	<Button name="QuestChoiceItemTemplate" mixin="QuestChoiceItemButtonMixin" virtual="true">
 		<Size x="167" y="41"/>
 		<Layers>
@@ -201,37 +210,12 @@
 					<Anchor point="BOTTOM"/>
 				</Anchors>
 				<Frames>
-					<Button parentKey="OptionButton1" parentArray="Buttons" mixin="QuestChoiceOptionButtonMixin" inherits="UIPanelButtonTemplate">
-						<Size x="175" y="22"/>
+					<Button parentKey="OptionButton1" inherits="QuestChoiceOptionButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPRIGHT"/>
 						</Anchors>
-						<ButtonText name="$parentText" parentKey="Text">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="4" y="0"/>
-								<Anchor point="BOTTOMRIGHT" x="-4" y="0"/>
-							</Anchors>
-						</ButtonText>
-						<Scripts>
-							<OnClick method="OnClick"/>
-							<OnEnter method="OnEnter"/>
-							<OnLeave method="OnLeave"/>
-						</Scripts>
 					</Button>
-					<Button parentKey="OptionButton2" parentArray="Buttons" mixin="QuestChoiceOptionButtonMixin" inherits="UIPanelButtonTemplate">
-						<Size x="175" y="22"/>
-						<ButtonText name="$parentText" parentKey="Text">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="4" y="0"/>
-								<Anchor point="BOTTOMRIGHT" x="-4" y="0"/>
-							</Anchors>
-						</ButtonText>
-						<Scripts>
-							<OnClick method="OnClick"/>
-							<OnEnter method="OnEnter"/>
-							<OnLeave method="OnLeave"/>
-						</Scripts>
-					</Button>
+					<Button parentKey="OptionButton2" inherits="QuestChoiceOptionButtonTemplate"/>
 				</Frames>
 			</Frame>
 			<Frame parentKey="Rewards" inherits="QuestChoiceRewardsTemplate">
@@ -239,23 +223,41 @@
 					<Anchor point="BOTTOM" relativeKey="$parent.OptionButtonsContainer" relativePoint="TOP" y="5"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="Header">
-				<Size x="256" y="32"/>
+			<Frame parentKey="Header" inherits="HorizontalLayoutFrame" hidden="true">
+				<KeyValues>
+					<KeyValue key="fixedHeight" value="32" type="number"/>
+					<KeyValue key="spacing" value="5" type="number"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" y="10"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
 						<Texture parentKey="Background" file="Interface\QuestionFrame\TitleBanner">
+							<Size x="256" y="32"/>
 							<TexCoords top="0" left="0" bottom=".5" right="1" />
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Text" font="SystemFont_Large" justifyH="CENTER" justifyV="MIDDLE" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin">
+						<Texture parentKey="Icon">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="28" y="2"/>
-								<Anchor point="BOTTOMRIGHT" x="-28" y="2"/>
+								<Anchor point="TOPLEFT" />
 							</Anchors>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="1" type="number"/>
+							</KeyValues>
+						</Texture>
+						<FontString parentKey="Text" font="Game16Font" justifyV="MIDDLE" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin">
+							<Size y="30"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+							</Anchors>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
+							</KeyValues>
 							<Color r="0" g="0" b="0"/>
 						</FontString>
 					</Layer>
@@ -267,10 +269,9 @@
 				</Scripts>
 			</Frame>
 			<SimpleHTML parentKey="OptionText" inherits="InlineHyperlinkFrameTemplate">
-				<Size x="200"/>
+				<Size x="200" y="10"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.Artwork" relativePoint="BOTTOM" y="-8"/>
-					<Anchor point="BOTTOM" relativeKey="$parent.Rewards" relativePoint="TOP" y="35"/>
 				</Anchors>
 				<Scripts>
 					<OnSizeChanged>self:GetParent():GetParent():SetPendingUpdate();</OnSizeChanged>

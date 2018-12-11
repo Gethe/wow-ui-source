@@ -125,9 +125,9 @@ function GarrisonMission:ShowMission(missionInfo)
 	end
 	missionPage.Stage.MissionEnvIcon.Texture:SetTexture(environmentTexture);
 	if ( locPrefix ) then
-		missionPage.Stage.LocBack:SetAtlas("_"..locPrefix.."-Back", true);
-		missionPage.Stage.LocMid:SetAtlas ("_"..locPrefix.."-Mid", true);
-		missionPage.Stage.LocFore:SetAtlas("_"..locPrefix.."-Fore", true);
+		GarrisonMissionStage_SetBack(missionPage.Stage, "_"..locPrefix.."-Back");
+		GarrisonMissionStage_SetMid(missionPage.Stage, "_"..locPrefix.."-Mid");
+		GarrisonMissionStage_SetFore(missionPage.Stage, "_"..locPrefix.."-Fore");
 	end
 	missionPage.MissionType:SetAtlas(missionInfo.typeAtlas);
 
@@ -306,7 +306,7 @@ function GarrisonMission:UpdateMissionData(missionPage)
 	local rewardsFrame = missionPage.RewardsFrame;
 	-- if animating, stop it
 	if ( rewardsFrame.elapsedTime ) then
-		GarrisonMissionPageRewardsFrame_SetSuccessChance(rewardsFrame, rewardsFrame.endingChance, missionEffects);
+		GarrisonMissionPageRewardsFrame_SetSuccessChance(rewardsFrame, rewardsFrame.endingChance);
 		GarrisonMissionPageRewardsFrame_StopUpdate(rewardsFrame);
 	end	
 	if ( rewardsFrame.currentChance and successChance > rewardsFrame.currentChance ) then
@@ -327,7 +327,7 @@ function GarrisonMission:UpdateMissionData(missionPage)
 		if ( rewardsFrame.currentChance and successChance < rewardsFrame.currentChance and missionPage:IsShown()) then
 			PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_REDUCED_SUCCESS_CHANCE);
 		end
-		GarrisonMissionPageRewardsFrame_SetSuccessChance(rewardsFrame, successChance, missionEffects);
+		GarrisonMissionPageRewardsFrame_SetSuccessChance(rewardsFrame, successChance);
 	end
 
 	local followersWithAbilitiesGained = nil;
@@ -895,9 +895,9 @@ function GarrisonMission:MissionCompleteInitialize(missionList, index)
 	end
 	self:SortEnemies(enemies);
 	if ( locPrefix ) then
-		stage.LocBack:SetAtlas("_"..locPrefix.."-Back", true);
-		stage.LocMid:SetAtlas ("_"..locPrefix.."-Mid", true);
-		stage.LocFore:SetAtlas("_"..locPrefix.."-Fore", true);
+		GarrisonMissionStage_SetBack(stage, "_"..locPrefix.."-Back");
+		GarrisonMissionStage_SetMid(stage, "_"..locPrefix.."-Mid");
+		GarrisonMissionStage_SetFore(stage, "_"..locPrefix.."-Fore");
 	end
 	
 	stage.MissionInfo.MissionType:SetAtlas(mission.typeAtlas, true);
@@ -2127,12 +2127,10 @@ function GarrisonMissionPage_UpdateRewardQuantities(rewardsFrame, currencyMultip
 	end
 end
 
-function GarrisonMissionPageRewardsFrame_SetSuccessChance(self, chance, missionEffects)
+function GarrisonMissionPageRewardsFrame_SetSuccessChance(self, chance)
 	local successChanceColor = GREEN_FONT_COLOR;
-	if (missionEffects) then
-		if ((chance < 0 and missionEffects.hasUncounterableSuccessChanceNegativeEffect) or missionEffects.hasSuccessChanceNegativeEffect) then
-			successChanceColor = RED_FONT_COLOR;
-		end
+	if (chance < 0) then
+		successChanceColor = RED_FONT_COLOR;
 	end
 
 	self.Chance:SetFormattedText(successChanceColor:WrapTextInColorCode(PERCENTAGE_STRING), chance);
@@ -2145,7 +2143,7 @@ function GarrisonMissionPageRewardsFrame_OnUpdate(self, elapsed)
 	-- 0 to 100 should take 1 second
 	local newChance = math.floor(self.startingChance + self.elapsedTime * 100);
 	newChance = min(newChance, self.endingChance);
-	GarrisonMissionPageRewardsFrame_SetSuccessChance(self, newChance, self:GetParent().missionEffects);
+	GarrisonMissionPageRewardsFrame_SetSuccessChance(self, newChance);
 	if ( newChance == self.endingChance ) then
 		if ( newChance == 100 ) then
 			PlaySound(SOUNDKIT.UI_GARRISON_MISSION_100_PERCENT_CHANCE_REACHED_NOT_USED);	-- 100% chance reached
@@ -2229,6 +2227,10 @@ function GarrisonMissionPageMixin:SetCounters(followers, enemies, missionID)
 	end
 end
 
+function GarrisonMissionPageMixin:GenerateSuccessTooltip(tooltipAnchor)
+	GarrisonMissionPageRewardTemplate_TooltipHitBox_GenerateSuccessTooltip(tooltipAnchor);
+end
+
 function GarrisonMissionPageMixin:CheckCounter(enemies, counterID)
 	for i = 1, #enemies do
 		local enemyFrame = enemies[i];
@@ -2272,33 +2274,31 @@ local rateMid = 0.3;
 local rateFore = 0.8;
 
 function GarrisonMissionController_OnStageUpdate(self, elapsed)
-	local changeBack = rateBack/100 * elapsed;
-	local changeMid = rateMid/100 * elapsed;
-	local changeFore = rateFore/100 * elapsed;
+	local changeBack = (rateBack / 100) * elapsed;
+	local changeMid = (rateMid / 100) * elapsed;
+	local changeFore = (rateFore / 100) * elapsed;
 	
-	local backL, _, _, _, backR = self.LocBack:GetTexCoord();
-	local midL, _, _, _, midR = self.LocMid:GetTexCoord();
-	local foreL, _, _, _, foreR = self.LocFore:GetTexCoord();
+	self.backProgress = (self.backProgress or 0) + changeBack;
+	if self.backProgress >= 1 then
+		self.backProgress = self.backProgress - 1;
+	end
 	
-	backL = backL + changeBack;
-	backR = backR + changeBack;
-	midL = midL + changeMid;
-	midR = midR + changeMid;
-	foreL = foreL + changeFore;
-	foreR = foreR + changeFore;
+	self.midProgress = (self.midProgress or 0) + changeMid;
+	if self.midProgress >= 1 then
+		self.midProgress = self.midProgress - 1;
+	end
+
+	self.foreProgress = (self.foreProgress or 0) + changeFore;
+	if self.foreProgress >= 1 then
+		self.foreProgress = self.foreProgress - 1;
+	end
 	
-	if (backL >= 1) then
-		backL = backL - 1;
-		backR = backR - 1;
-	end
-	if (midL >= 1) then
-		midL = midL - 1;
-		midR = midR - 1;
-	end
-	if (foreL >= 1) then
-		foreL = foreL - 1;
-		foreR = foreR - 1;
-	end
+	local backL = self.backProgress;
+	local backR = backL + self.locBackTexCoordRange;
+	local midL = self.midProgress;
+	local midR = midL + self.locMidTexCoordRange;
+	local foreL = self.foreProgress;
+	local foreR = foreL + self.locForeTexCoordRange;
 	
 	self.LocBack:SetTexCoord(backL, backR, 0, 1);
 	self.LocMid:SetTexCoord (midL, midR, 0, 1);
@@ -2318,17 +2318,64 @@ function GarrisonMissionController_OnClickMissionStartButton(buttonFrame)
 	mainFrame:OnClickStartMissionButton();
 end
 
+function GarrisonMissionStage_SetBack(self, back)
+	if back then
+		-- Make sure the atlas exists. Many locations don't have an atlas for each layer.
+		local _, backWidth = GetAtlasInfo(back);
+		if backWidth then
+			self.LocBack:SetAtlas(back, true);
+			
+			local texWidth = self.LocBack:GetWidth();
+			self.locBackTexCoordRange = texWidth / backWidth;
+			self.LocBack:Show();
+		else
+			self.LocBack:Hide();
+		end
+	else
+		self.LocBack:Hide();
+	end
+end
+
+function GarrisonMissionStage_SetMid(self, mid)
+	if mid then
+		-- Make sure the atlas exists. Many locations don't have an atlas for each layer.
+		local _, midWidth = GetAtlasInfo(mid);
+		if midWidth then
+			self.LocMid:SetAtlas(mid, true);
+			
+			local texWidth = self.LocMid:GetWidth();
+			self.locMidTexCoordRange = texWidth / midWidth;
+			self.LocMid:Show();
+		else
+			self.LocMid:Hide();
+		end
+	else
+		self.LocMid:Hide();
+	end
+end
+
+function GarrisonMissionStage_SetFore(self, fore)
+	if fore then
+		-- Make sure the atlas exists. Many locations don't have an atlas for each layer.
+		local _, foreWidth = GetAtlasInfo(fore);
+		if foreWidth then 
+			self.LocFore:SetAtlas(fore, true);
+			
+			local texWidth = self.LocFore:GetWidth();
+			self.locForeTexCoordRange = texWidth / foreWidth;
+			self.LocFore:Show();
+		else
+			self.LocFore:Hide();
+		end
+	else
+		self.LocFore:Hide();
+	end
+end
+
 function GarrisonMissionStage_OnLoad(self)
-	self.LocBack:SetAtlas("_GarrMissionLocation-TannanJungle-Back", true);
-	self.LocMid:SetAtlas ("_GarrMissionLocation-TannanJungle-Mid", true);
-	self.LocFore:SetAtlas("_GarrMissionLocation-TannanJungle-Fore", true);
-	local _, backWidth = GetAtlasInfo("_GarrMissionLocation-TannanJungle-Back");
-	local _, midWidth = GetAtlasInfo("_GarrMissionLocation-TannanJungle-Mid");
-	local _, foreWidth = GetAtlasInfo("_GarrMissionLocation-TannanJungle-Fore");
-	local texWidth = self.LocBack:GetWidth();
-	self.LocBack:SetTexCoord(0, texWidth/backWidth,  0, 1);
-	self.LocMid:SetTexCoord (0, texWidth/midWidth, 0, 1);
-	self.LocFore:SetTexCoord(0, texWidth/foreWidth, 0, 1);
+	GarrisonMissionStage_SetBack(self, "_GarrMissionLocation-TannanJungle-Back");
+	GarrisonMissionStage_SetMid(self, "_GarrMissionLocation-TannanJungle-Mid");
+	GarrisonMissionStage_SetFore(self, "_GarrMissionLocation-TannanJungle-Fore");
 end
 
 function GarrisonFollowerPlacerFrame_OnClick(self, button)
@@ -2398,6 +2445,32 @@ function GarrisonMissionComplete_OnRewardEvent(self, event, ...)
 		end
 	end
 end
+
+function GarrisonMissionPageRewardTemplate_MissionXPTooltipHitBox_OnEnter(self)
+	if (self:GetParent().MissionXP.hasBonusBaseXP) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_AddColoredLine(GameTooltip, GARRISON_MISSION_BONUS_BASE_XP_TOOLTIP, HIGHLIGHT_FONT_COLOR, nil, true);
+		GameTooltip:Show();
+	end
+end
+
+function GarrisonMissionPageRewardTemplate_TooltipHitBox_OnEnter(self)
+	local missionPage = self:GetParent():GetParent();
+	missionPage:GenerateSuccessTooltip(self);
+end
+
+function GarrisonMissionPageRewardTemplate_TooltipHitBox_GenerateSuccessTooltip(tooltipAnchor)
+	GameTooltip:ClearAllPoints();
+	GameTooltip:SetPoint("BOTTOMLEFT", tooltipAnchor, "BOTTOMRIGHT", 10, 0);
+	GameTooltip:SetOwner(tooltipAnchor, "ANCHOR_PRESERVE");
+	GameTooltip_AddNormalLine(GameTooltip, GARRISON_MISSION_CHANCE_TOOLTIP_HEADER);
+	local missionID = tooltipAnchor:GetParent():GetParent().missionInfo.missionID;
+	GameTooltip_AddColoredLine(GameTooltip, GARRISON_MISSION_PERCENT_CHANCE:format(C_Garrison.GetMissionSuccessChance(missionID)), HIGHLIGHT_FONT_COLOR);
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddNormalLine(GameTooltip, tooltipAnchor:GetParent().tooltipText, true, true);
+	GameTooltip:Show();
+end
+
 
 
 ---------------------------------------------------------------------------------

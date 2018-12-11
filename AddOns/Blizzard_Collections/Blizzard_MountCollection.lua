@@ -49,7 +49,7 @@ end
 
 function MountJournal_OnShow(self)
 	MountJournal_FullUpdate(self);
-	SetPortraitToTexture(CollectionsJournalPortrait, "Interface\\Icons\\MountJournalPortrait");
+	PortraitFrameTemplate_SetPortraitToAsset(CollectionsJournal, "Interface\\Icons\\MountJournalPortrait");
 end
 
 function MountJournal_OnHide(self)

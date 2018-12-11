@@ -29,6 +29,24 @@ local PartyInfo =
 				{ Name = "invalidQueues", Type = "table", InnerType = "QueueSpecificInfo", Nilable = false },
 			},
 		},
+		{
+			Name = "GetInviteReferralInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "inviteGUID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "outReferredByGuid", Type = "string", Nilable = false },
+				{ Name = "outReferredByName", Type = "string", Nilable = false },
+				{ Name = "outRelationType", Type = "PartyRequestJoinRelation", Nilable = false },
+				{ Name = "outIsQuickJoin", Type = "bool", Nilable = false },
+				{ Name = "outClubId", Type = "string", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -225,6 +243,21 @@ local PartyInfo =
 
 	Tables =
 	{
+		{
+			Name = "PartyRequestJoinRelation",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "None", Type = "PartyRequestJoinRelation", EnumValue = 0 },
+				{ Name = "Friend", Type = "PartyRequestJoinRelation", EnumValue = 1 },
+				{ Name = "Guild", Type = "PartyRequestJoinRelation", EnumValue = 2 },
+				{ Name = "Club", Type = "PartyRequestJoinRelation", EnumValue = 3 },
+				{ Name = "NumPartyRequestJoinRelations", Type = "PartyRequestJoinRelation", EnumValue = 4 },
+			},
+		},
 	},
 };
 

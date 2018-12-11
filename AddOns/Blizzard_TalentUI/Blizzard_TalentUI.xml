@@ -484,10 +484,10 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="SpecializationFrameTemplate" virtual="true">
+	<Frame name="SpecializationFrameTemplate" useParentLevel="true" parent="PlayerTalentFrame" virtual="true">
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrameInsetBg" x="0" y="0"/>
-			<Anchor point="BOTTOMRIGHT" relativeTo="PlayerTalentFrameInsetBg" x="0" y="0"/>
+			<Anchor point="TOPLEFT" relativeKey="$parent.Inset.Bg" x="0" y="0"/>
+			<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset.Bg" x="0" y="0"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BORDER" textureSubLevel="-1">
@@ -913,13 +913,13 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="PlayerTalentFrameSpecialization" inherits="SpecializationFrameTemplate" useParentLevel="true" parent="PlayerTalentFrame">
+	<Frame name="PlayerTalentFrameSpecialization" inherits="SpecializationFrameTemplate">
 		<Scripts>
 			<OnLoad function="PlayerTalentFrameSpec_OnLoad"/>
 		</Scripts>
 	</Frame>
 
-	<Frame name="PlayerTalentFramePetSpecialization" inherits="SpecializationFrameTemplate" useParentLevel="true" parent="PlayerTalentFrame">
+	<Frame name="PlayerTalentFramePetSpecialization" inherits="SpecializationFrameTemplate">
 		<Scripts>
 			<OnLoad function="PlayerTalentFrame_PetSpec_OnLoad"/>
 		</Scripts>
@@ -927,8 +927,8 @@
 
 	<Frame name="PlayerTalentFrameTalents" useParentLevel="true" setAllPoints="true" parent="PlayerTalentFrame">
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrameInsetBg" x="0" y="0"/>
-			<Anchor point="BOTTOMRIGHT" relativeTo="PlayerTalentFrameInsetBg" x="0" y="0"/>
+			<Anchor point="TOPLEFT" relativeKey="$parent.Inset.Bg" x="0" y="0"/>
+			<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset.Bg" x="0" y="0"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -1138,6 +1138,37 @@
 							<OnClick method="OnClick"/>
 						</Scripts>
 					</Button>
+					<Frame parentKey="WarmodeIncentive" mixin="WarmodeIncentiveMixin" enableMouseMotion="true" frameStrata="HIGH">
+						<Size x="21" y="21"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.InvisibleWarmodeButton" relativePoint="TOP" x="27" y="-20"/>
+						</Anchors>
+						<HitRectInsets>
+ 							<AbsInset left="-10" right="-10" top="-10" bottom="-10"/>
+ 						</HitRectInsets>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Icon" file="Interface\Icons\INV_Misc_Coin_17" setAllPoints="true"/>
+								<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" setAllPoints="true">
+									<MaskedTextures>
+										<MaskedTexture childKey="Icon"/>
+									</MaskedTextures>
+								</MaskTexture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="IconRing" atlas="pvptalents-warmode-incentive-ring">
+									<Size x="30" y="30"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter method="OnEnter"/>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Frame>
 					<Frame parentKey="WarmodeTutorialBox" inherits="GlowBoxTemplate" hidden="true" frameStrata="DIALOG">
 						<Size x="220" y="100"/>
 						<Anchors>
@@ -1176,11 +1207,11 @@
 								SetClampedTextureRotation(self.Arrow.Arrow, 90);
 								SetClampedTextureRotation(self.Arrow.Glow, 90);
 								self.Arrow.Glow:ClearAllPoints();
-								self.Arrow.Glow:SetPoint("CENTER", self.Arrow.Arrow, -3, 0); 
+								self.Arrow.Glow:SetPoint("CENTER", self.Arrow.Arrow, -3, 0);
 							</OnLoad>
 							<OnShow>
 								self:SetHeight(self.Text:GetHeight() + 20);
-								self:SetWidth(self.Text:GetWidth() + 20); 
+								self:SetWidth(self.Text:GetWidth() + 20);
 							</OnShow>
 						</Scripts>
 					</Frame>
@@ -1227,11 +1258,11 @@
 										SetClampedTextureRotation(self.Arrow.Arrow, 90);
 										SetClampedTextureRotation(self.Arrow.Glow, 90);
 										self.Arrow.Glow:ClearAllPoints();
-										self.Arrow.Glow:SetPoint("CENTER", self.Arrow.Arrow, -3, 0); 
+										self.Arrow.Glow:SetPoint("CENTER", self.Arrow.Arrow, -3, 0);
 									</OnLoad>
 									<OnShow>
 										self:SetHeight(self.Text:GetHeight() + 20);
-										self:SetWidth(self.Text:GetWidth() + 20); 
+										self:SetWidth(self.Text:GetWidth() + 20);
 									</OnShow>
 								</Scripts>
 							</Frame>
@@ -1258,48 +1289,17 @@
 							<Anchor point="TOP" relativeKey="$parent.TalentSlot2" relativePoint="BOTTOM" x="0" y="-10"/>
 						</Anchors>
 					</Button>
-					<Frame name="$parentTalentList" parentKey="TalentList" mixin="PvpTalentListMixin" inherits="ButtonFrameTemplate" hidden="true">
-						<Size x="186" y="404"/>
+					<Frame name="$parentTalentList" parentKey="TalentList" mixin="PvpTalentListMixin" inherits="SimplePanelTemplate" hidden="true">
+						<Size x="187" y="404"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeTo="PlayerTalentFrame" relativePoint="BOTTOMRIGHT" x="-4" y="26"/>
+							<Anchor point="LEFT" relativeTo="PlayerTalentFrame" relativePoint="RIGHT" x="0" y="0"/>
 						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<Texture name="$parentMyTopLeftCorner" parentKey="MyTopLeftCorner" inherits="UI-Frame-BotCornerLeft">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="-6" y="-15"/>
-									</Anchors>
-									<TexCoords left="0" right="1" top="1" bottom="0"/>
-								</Texture>
-								<Texture name="$parentMyTopRightCorner" parentKey="MyTopRightCorner" inherits="UI-Frame-BotCornerRight">
-									<Anchors>
-										<Anchor point="TOPRIGHT" x="0" y="-15"/>
-									</Anchors>
-									<TexCoords left="0" right="1" top="1" bottom="0"/>
-								</Texture>
-								<Texture name="$parentMyTopBorder" parentKey="MyTopBorder" inherits="_UI-Frame-Bot">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentMyTopLeftCorner" relativePoint="TOPRIGHT" y="-4"/>
-										<Anchor point="TOPRIGHT" relativeTo="$parentMyTopRightCorner" relativePoint="TOPLEFT" y="-4"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
 						<Frames>
-							<ScrollFrame name="$parentScrollFrame" inherits="HybridScrollFrameTemplate" parentKey="ScrollFrame">
-								<Size x="120" y="278"/>
+							<ScrollFrame name="$parentScrollFrame" inherits="BasicHybridScrollFrameTemplate" parentKey="ScrollFrame">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parent" x="9" y="-28"/>
-									<Anchor point="BOTTOMRIGHT" relativeTo="$parent" x="-21" y="28"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="5" y="-3"/>
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" x="-20" y="3"/>
 								</Anchors>
-								<Frames>
-									<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate" parentKey="ScrollBar">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-5" y="-16"/>
-											<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-6" y="13"/>
-										</Anchors>
-									</Slider>
-								</Frames>
 							</ScrollFrame>
 							<Button inherits="MagicButtonTemplate" text="CLOSE">
 								<Size x="100" y="22"/>
@@ -1356,8 +1356,8 @@
 
 	<Frame name="PlayerTalentFrameLockInfo" parent="PlayerTalentFrame" hidden="true" enableMouse="true">
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrameBg" x="0" y="0"/>
-			<Anchor point="BOTTOMRIGHT" relativeTo="PlayerTalentFrameBg" x="-2" y="0"/>
+			<Anchor point="TOPLEFT" relativeKey="$parent.Inset.Bg" x="0" y="0"/>
+			<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset.Bg" x="-2" y="0"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUNDBORDER">
@@ -1449,7 +1449,7 @@
 				<Texture name="$parentPortrait" parentKey="Portrait">
 					<Size x="60" y="60"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="PlayerTalentFramePortrait"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Portrait"/>
 					</Anchors>
 				</Texture>
 			</Layer>

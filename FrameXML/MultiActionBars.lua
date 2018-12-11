@@ -105,36 +105,36 @@ function MultiActionBar_Update ()
 	UIParent_ManageFramePositions();
 end
 
-function MultiActionBar_ShowAllGrids ()
-	MultiActionBar_UpdateGrid("MultiBarBottomLeft", true);
-	MultiActionBar_UpdateGrid("MultiBarBottomRight", true);
-	MultiActionBar_UpdateGrid("MultiBarRight", true);
-	MultiActionBar_UpdateGrid("MultiBarLeft", true);
+function MultiActionBar_ShowAllGrids (reason)
+	MultiActionBar_UpdateGrid("MultiBarBottomLeft", true, reason);
+	MultiActionBar_UpdateGrid("MultiBarBottomRight", true, reason);
+	MultiActionBar_UpdateGrid("MultiBarRight", true, reason);
+	MultiActionBar_UpdateGrid("MultiBarLeft", true, reason);
 end
 
-function MultiActionBar_HideAllGrids ()
-	MultiActionBar_UpdateGrid("MultiBarBottomLeft", false);
-	MultiActionBar_UpdateGrid("MultiBarBottomRight", false);
-	MultiActionBar_UpdateGrid("MultiBarRight", false);
-	MultiActionBar_UpdateGrid("MultiBarLeft", false);
+function MultiActionBar_HideAllGrids (reason)
+	MultiActionBar_UpdateGrid("MultiBarBottomLeft", false, reason);
+	MultiActionBar_UpdateGrid("MultiBarBottomRight", false, reason);
+	MultiActionBar_UpdateGrid("MultiBarRight", false, reason);
+	MultiActionBar_UpdateGrid("MultiBarLeft", false, reason);
 end
 
-function MultiActionBar_UpdateGrid (barName, show)
+function MultiActionBar_UpdateGrid (barName, show, reason)
 	for i = 1, NUM_MULTIBAR_BUTTONS do
 		local button = _G[barName.."Button"..i];
 		if ( show and not button.noGrid) then
-			ActionButton_ShowGrid(button);
+			ActionButton_ShowGrid(button, reason);
 		else
-			ActionButton_HideGrid(button);
+			ActionButton_HideGrid(button, reason);
 		end
 	end
 end
 
 function MultiActionBar_UpdateGridVisibility ()
 	if ( ALWAYS_SHOW_MULTIBARS == "1" or ALWAYS_SHOW_MULTIBARS == 1 ) then
-		MultiActionBar_ShowAllGrids();
+		MultiActionBar_ShowAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
 	else
-		MultiActionBar_HideAllGrids();
+		MultiActionBar_HideAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
 	end
 end
 

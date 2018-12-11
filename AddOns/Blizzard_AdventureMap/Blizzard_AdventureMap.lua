@@ -7,8 +7,8 @@ function AdventureMapMixin:SetupTitle()
 	self.BorderFrame.Bg:SetColorTexture(0, 0, 0, 1);
 	self.BorderFrame.Bg:SetParent(self);
 	self.BorderFrame.TopTileStreaks:Hide();
-	
-	SetPortraitToTexture(self.BorderFrame.portrait, [[Interface/Icons/inv_misc_map02]]);
+
+	PortraitFrameTemplate_SetPortraitToAsset(self.BorderFrame, [[Interface/Icons/inv_misc_map02]]);
 end
 
 -- Override
@@ -19,7 +19,7 @@ function AdventureMapMixin:OnLoad()
 	self:SetMapInsetPool(mapInsetPool);
 
 	self:RegisterEvent("ADVENTURE_MAP_UPDATE_INSETS");
-	
+
 	self:SetupTitle();
 
 	self:AddStandardDataProviders();

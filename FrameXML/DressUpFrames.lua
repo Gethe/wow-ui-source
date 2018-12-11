@@ -29,7 +29,10 @@ function DressUpVisual(...)
 		SideDressUpModel:TryOn(...);
 	else
 		DressUpFrame_Show();
-		DressUpModel:TryOn(...);
+		local result = DressUpModel:TryOn(...);
+		if ( result ~= Enum.ItemTryOnReason.Success ) then
+			UIErrorsFrame:AddExternalErrorMessage(ERR_NOT_EQUIPPABLE);
+		end
 	end
 	return true;
 end
@@ -37,13 +40,18 @@ end
 function DressUpBattlePetLink(link)
 	if( link ) then 
 		
-		local _, _, _, linkType, speciesIDString, _, _, _, _, _, battlePetID = strsplit(":|H", link);
-		if ( linkType == "battlepet" ) then
+		local _, _, _, linkType, linkID, _, _, _, _, _, battlePetID = strsplit(":|H", link);
+		if ( linkType == "item") then
+			local _, _, _, creatureID, _, _, _, _, _, _, _, displayID = C_PetJournal.GetPetInfoByItemID(tonumber(linkID));
+			if (creatureID and displayID) then
+				return DressUpBattlePet(creatureID, displayID);
+			end
+		elseif ( linkType == "battlepet" ) then
 			local speciesID, _, _, _, _, displayID, _, _, _, _, creatureID = C_PetJournal.GetPetInfoByPetID(battlePetID);
-			if ( speciesID == tonumber(speciesIDString)) then
+			if ( speciesID == tonumber(linkID)) then
 				return DressUpBattlePet(creatureID, displayID);
 			else
-				local _, _, _, creatureID, _, _, _, _, _, _, _, displayID = C_PetJournal.GetPetInfoBySpeciesID(tonumber(speciesIDString));
+				local _, _, _, creatureID, _, _, _, _, _, _, _, displayID = C_PetJournal.GetPetInfoBySpeciesID(tonumber(linkID));
 				return DressUpBattlePet(creatureID, displayID);
 			end
 		end
@@ -85,13 +93,19 @@ end
 
 function DressUpMountLink(link)
 	if( link ) then 
-		local _, _, _, linkType, spellID = strsplit(":|H", link);
-		if linkType == "spell" then
-			local mountID = C_MountJournal.GetMountFromSpell(tonumber(spellID));
-			if ( mountID ) then
-				local creatureDisplayID = C_MountJournal.GetMountInfoExtraByID(mountID);
-				return DressUpMount(creatureDisplayID);
-			end
+
+		local mountID = 0;
+
+		local _, _, _, linkType, linkID = strsplit(":|H", link);
+		if linkType == "item" then
+			mountID = C_MountJournal.GetMountFromItem(tonumber(linkID));
+		elseif linkType == "spell" then
+			mountID = C_MountJournal.GetMountFromSpell(tonumber(linkID));
+		end
+
+		if ( mountID ) then
+			local creatureDisplayID = C_MountJournal.GetMountInfoExtraByID(mountID);
+			return DressUpMount(creatureDisplayID);
 		end
 	end
 	return false

@@ -52,6 +52,11 @@ local GuildInfo =
 				{ Name = "guid", Type = "string", Nilable = false },
 				{ Name = "rankOrder", Type = "number", Nilable = false },
 			},
+
+			Returns =
+			{
+				{ Name = "isGuildRankAssignmentAllowed", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "QueryGuildMemberRecipes",

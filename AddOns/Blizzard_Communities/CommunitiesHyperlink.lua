@@ -34,3 +34,16 @@ function CommunitiesHyperlink.OnClickLink(ticketId)
 		C_Club.RequestTicket(ticketId);
 	end
 end
+
+function CommunitiesHyperlink.OnClickReference(clubId)
+	local clubInfo = C_Club.GetClubInfo(clubId);
+	if clubInfo then
+		Communities_LoadUI();
+		
+		if not CommunitiesFrame:IsShown() then
+			ShowUIPanel(CommunitiesFrame);
+		end
+		
+		CommunitiesFrame:SelectClub(clubId);
+	end
+end

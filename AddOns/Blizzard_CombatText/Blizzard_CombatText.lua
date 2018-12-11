@@ -196,6 +196,9 @@ function CombatText_OnEvent(self, event, ...)
 			return
 		end
 		message = "-"..BreakUpLargeNumbers(data);
+		if(arg1 and arg1 == "BLOCK" and arg3 and arg3 > 0) then
+			message = COMBAT_TEXT_BLOCK_REDUCED:format(arg3);
+		end
 	elseif ( messageType == "SPELL_CAST" ) then
 		message = "<"..data..">";
 	elseif ( messageType == "SPELL_AURA_START" ) then

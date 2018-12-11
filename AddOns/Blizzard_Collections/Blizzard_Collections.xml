@@ -42,7 +42,7 @@
 					<Anchor point="LEFT" relativeTo="$parentTab4" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>
 			</Button>
-			
+
 			<Frame parentKey="HeirloomTabHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
 				<Size x="220" y="100"/>
 				<Anchors>
@@ -125,8 +125,8 @@
 
 		<Scripts>
 			<OnLoad>
-				CollectionsJournalTitleText:SetText(COLLECTIONS);
-				SetPortraitToTexture(CollectionsJournalPortrait, "Interface\\Icons\\MountJournalPortrait");
+				PortraitFrameTemplate_SetTitle(self, COLLECTIONS);
+				PortraitFrameTemplate_SetPortraitToAsset(self, "Interface\\Icons\\MountJournalPortrait");
 				PanelTemplates_SetNumTabs(self, 5);
 
 				PanelTemplates_SetTab(self, tonumber(GetCVar("petJournalTab")) or 1);

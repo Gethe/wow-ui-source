@@ -20,6 +20,7 @@ CommunitiesSettings.xml
 CommunitiesTicketManagerDialog.xml
 CommunitiesErrors.lua
 CommunitiesHyperlink.lua
+CommunitiesCalendar.xml
 GuildRewards.xml
 GuildPerks.xml
 GuildInfo.xml

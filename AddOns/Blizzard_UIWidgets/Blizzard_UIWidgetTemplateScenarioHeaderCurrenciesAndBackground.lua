@@ -29,15 +29,18 @@ function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:Setup(widget
 		currencyFrame:Setup(currencyInfo, enabledState);
 		currencyFrame.Text:SetPoint("LEFT", currencyFrame.Icon, "RIGHT", 8, 0);
 
-		-- Keep the currency frame width the same for anchoring
-		currencyFrame:SetWidth(95);
-
 		if previousCurrencyFrame then
 			currencyFrame:SetPoint("TOPLEFT", previousCurrencyFrame, "TOPRIGHT", 10, 0);
 			totalCurrencyWidth = totalCurrencyWidth + currencyFrame:GetWidth() + 10;
+			currencyFrame:SetWidth(95);
 		else
 			currencyFrame:SetPoint("TOPLEFT", self.CurrencyContainer, "TOPLEFT", 0, 0);
 			totalCurrencyWidth = totalCurrencyWidth + currencyFrame:GetWidth();
+			if widgetInfo.leftCurrencyWidth > 0 then
+				currencyFrame:SetWidth(widgetInfo.leftCurrencyWidth);
+			else
+				currencyFrame:SetWidth(95);
+			end
 		end
 
 		totalCurrencyHeight = currencyFrame:GetHeight();
@@ -52,6 +55,16 @@ function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:Setup(widget
 
 	self:SetWidth(self.Frame:GetWidth());
 	self:SetHeight(self.Frame:GetHeight());
+end
+
+function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:CustomDebugSetup(color)
+	for currency in self.currencyPool:EnumerateActive() do
+		if not currency._debugBGTex then
+			currency._debugBGTex = currency:CreateTexture()
+			currency._debugBGTex:SetColorTexture(color:GetRGBA());
+			currency._debugBGTex:SetAllPoints(currency);
+		end
+	end
 end
 
 function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:OnLoad()

@@ -843,13 +843,6 @@
 					<Anchor point="BOTTOMRIGHT" relativeTo="LookingForGuildFrame" x="-6" y="3"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						-- Override OnLoad for HiRes test because we need to position this button manually.
-						MagicButton_OnLoad(self);
-						self.LeftSeparator:Hide();
-						self:ClearAllPoints();
-						self:SetPoint("BOTTOMRIGHT", LookingForGuildFrame, "BOTTOMRIGHT", -6, 3);
-					</OnLoad>
 					<OnClick>
 						LookingForGuildFrameTab2:Click();
 					</OnClick>
@@ -981,9 +974,9 @@
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
+				<AbsInset left="11" right="11" top="11" bottom="11"/>
 			</BackgroundInsets>
 			<TileSize>
 				<AbsValue val="32"/>

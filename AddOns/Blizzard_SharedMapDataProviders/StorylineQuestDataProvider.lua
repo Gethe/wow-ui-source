@@ -8,7 +8,7 @@ function StorylineQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 	local mapID = self:GetMap():GetMapID();
 	local mapInfo = C_Map.GetMapInfo(mapID);
-	if (mapInfo and mapInfo.mapType ~= Enum.UIMapType.Continent) and (mapInfo.mapType ~= Enum.UIMapType.World) and (mapInfo.mapType ~= Enum.UIMapType.Cosmic) then
+	if (mapInfo and MapUtil.ShouldMapTypeShowQuests(mapInfo.mapType)) then
 		for _, questLineInfo in pairs(C_QuestLine.GetAvailableQuestLines(mapID)) do
 			if (not questLineInfo.isHidden or IsTrackingHiddenQuests()) then
 				local pin = self:GetMap():AcquirePin("StorylineQuestPinTemplate", questLineInfo.questID);
@@ -21,10 +21,24 @@ end
 
 function StorylineQuestDataProviderMixin:OnShow()
 	self:RegisterEvent("QUESTLINE_UPDATE");
+	local mapID = self:GetMap():GetMapID();
+	local mapInfo = C_Map.GetMapInfo(mapID);
+	if (mapInfo and MapUtil.ShouldMapTypeShowQuests(mapInfo.mapType)) then
+		C_QuestLine.RequestQuestLinesForMap(mapID)
+	end
 end
 
 function StorylineQuestDataProviderMixin:OnHide()
 	self:UnregisterEvent("QUESTLINE_UPDATE");
+end
+
+function StorylineQuestDataProviderMixin:OnMapChanged()
+	local mapID = self:GetMap():GetMapID();
+	local mapInfo = C_Map.GetMapInfo(mapID);
+	if (mapInfo and MapUtil.ShouldMapTypeShowQuests(mapInfo.mapType)) then
+		C_QuestLine.RequestQuestLinesForMap(mapID)
+	end
+	MapCanvasDataProviderMixin.OnMapChanged(self)
 end
 
 function StorylineQuestDataProviderMixin:OnEvent(event, ...)

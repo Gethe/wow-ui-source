@@ -502,12 +502,39 @@ function FrameStackTooltip_OnDisplaySizeChanged(self)
 	end
 end
 
+function FrameStackTooltip_IsShowHiddenEnabled()
+	return GetCVarBool("fstack_showhidden");
+end
+
+function FrameStackTooltip_IsShowRegionsEnabled()
+	return GetCVarBool("fstack_showregions");
+end
+
+function FrameStackTooltip_IsShowAnchorsEnabled()
+	return GetCVarBool("fstack_showanchors");
+end
+
+function FrameStackTooltip_OnFramestackVisibilityUpdated(self)
+	if ( self:IsVisible() ) then
+		--[[Since these properties impact the contents displayed on the framestack,
+		toggle the framestack off and then on to reinitialize it.--]]
+		FrameStackTooltip_Hide(self);
+
+		local showHidden = FrameStackTooltip_IsShowHiddenEnabled();
+		local showRegions = FrameStackTooltip_IsShowRegionsEnabled();
+		local showAnchors = FrameStackTooltip_IsShowAnchorsEnabled();
+
+		FrameStackTooltip_Show(self, showHidden, showRegions, showAnchors);
+	end
+end
+
 function FrameStackTooltip_OnLoad(self)
 	DebugTooltip_OnLoad(self);
 	self.nextUpdate = 0;
 
 	FrameStackTooltip_OnDisplaySizeChanged(self);
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:RegisterEvent("FRAMESTACK_VISIBILITY_UPDATED");
 
 	self.commandKeys =
 	{
@@ -555,6 +582,8 @@ end
 function FrameStackTooltip_OnEvent(self, event, ...)
 	if ( event == "DISPLAY_SIZE_CHANGED" ) then
 		FrameStackTooltip_OnDisplaySizeChanged(self);
+	elseif ( event == "FRAMESTACK_VISIBILITY_UPDATED" ) then
+		FrameStackTooltip_OnFramestackVisibilityUpdated(self);
 	end
 end
 
@@ -658,19 +687,27 @@ function FrameStackTooltip_OnTooltipSetFrameStack(self, highlightFrame)
 	end
 end
 
+function FrameStackTooltip_Show(self, showHidden, showRegions, showAnchors)
+	self:SetOwner(UIParent, "ANCHOR_NONE");
+	self:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -(CONTAINER_OFFSET_X or 0) - 13, (CONTAINER_OFFSET_Y or 0));
+	self.default = 1;
+	self.showRegions = showRegions;
+	self.showHidden = showHidden;
+	self.showAnchors = showAnchors;
+	self:SetFrameStack(showHidden, showRegions);
+end
+
+function FrameStackTooltip_Hide(self)
+	self:Hide();
+	FrameStackHighlight:Hide();
+end
+
 function FrameStackTooltip_Toggle(showHidden, showRegions, showAnchors)
 	local tooltip = FrameStackTooltip;
 	if ( tooltip:IsVisible() ) then
-		tooltip:Hide();
-		FrameStackHighlight:Hide();
+		FrameStackTooltip_Hide(tooltip);
 	else
-		tooltip:SetOwner(UIParent, "ANCHOR_NONE");
-		tooltip:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -(CONTAINER_OFFSET_X or 0) - 13, (CONTAINER_OFFSET_Y or 0));
-		tooltip.default = 1;
-		tooltip.showRegions = showRegions;
-		tooltip.showHidden = showHidden;
-		tooltip.showAnchors = showAnchors;
-		tooltip:SetFrameStack(showHidden, showRegions);
+		FrameStackTooltip_Show(tooltip, showHidden, showRegions, showAnchors);
 	end
 end
 
