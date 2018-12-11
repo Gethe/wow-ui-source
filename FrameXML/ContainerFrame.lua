@@ -572,7 +572,6 @@ function ContainerFrame_Update(self)
 	local shouldDoRelicChecks = shouldDoSpecializedTutorialChecks and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH);
 	local shouldDoAzeriteChecks = shouldDoSpecializedTutorialChecks and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT);
 
-	local anyItemMatchesContext = false;
 	for i=1, self.size, 1 do
 		itemButton = _G[name.."Item"..i];
 		
@@ -640,7 +639,6 @@ function ContainerFrame_Update(self)
 		end
 		
 		itemButton:UpdateItemContextMatching();
-		anyItemMatchesContext = anyItemMatchesContext or itemButton:DoesItemMatchItemContext();
 		
 		ContainerFrameItemButton_UpdateItemUpgradeIcon(itemButton);
 
@@ -689,8 +687,7 @@ function ContainerFrame_UpdateAll(startingFrom)
 		local frame = _G["ContainerFrame"..i];
 		local bagButton = ContainerFrame_GetBagButton(frame);
 		local hasRelevantItemContext = hasItemContext and bagButton ~= nil;
-		local needsItemContextUpdate = not hasItemContext and bagButton ~= nil and bagButton:DoesItemMatchItemContext() ~= nil;
-		if ( frame:IsShown() or hasRelevantItemContext or needsItemContextUpdate ) then
+		if ( frame:IsShown() or hasRelevantItemContext ) then
 			ContainerFrame_Update(frame);
 		end
 	end

@@ -113,23 +113,26 @@ function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters)
 end
 
 function WorldMap_AddQuestTimeToTooltip(questID)
-	local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(questID);
-	if ( timeLeftMinutes and timeLeftMinutes > 0 ) then
-		local color = NORMAL_FONT_COLOR;
-		if ( timeLeftMinutes <= WORLD_QUESTS_TIME_CRITICAL_MINUTES ) then
-			color = RED_FONT_COLOR;
-		end
+	local displayTimeLeft = select(7, GetQuestTagInfo(questID));
+	if (displayTimeLeft) then
+		local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(questID);
+		if ( timeLeftMinutes and timeLeftMinutes > 0 ) then
+			local color = NORMAL_FONT_COLOR;
+			if ( timeLeftMinutes <= WORLD_QUESTS_TIME_CRITICAL_MINUTES ) then
+				color = RED_FONT_COLOR;
+			end
 
-		local timeString;
-		if timeLeftMinutes <= 60 then
-			timeString = SecondsToTime(timeLeftMinutes * 60);
-		elseif timeLeftMinutes < 24 * 60  then
-			timeString = D_HOURS:format(math.floor(timeLeftMinutes) / 60);
-		else
-			timeString = D_DAYS:format(math.floor(timeLeftMinutes) / 1440);
-		end
+			local timeString;
+			if timeLeftMinutes <= 60 then
+				timeString = SecondsToTime(timeLeftMinutes * 60);
+			elseif timeLeftMinutes < 24 * 60  then
+				timeString = D_HOURS:format(math.floor(timeLeftMinutes) / 60);
+			else
+				timeString = D_DAYS:format(math.floor(timeLeftMinutes) / 1440);
+			end
 
-		WorldMapTooltip:AddLine(BONUS_OBJECTIVE_TIME_LEFT:format(timeString), color.r, color.g, color.b);
+			WorldMapTooltip:AddLine(BONUS_OBJECTIVE_TIME_LEFT:format(timeString), color.r, color.g, color.b);
+		end
 	end
 end
 

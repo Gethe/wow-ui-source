@@ -966,7 +966,7 @@ function ConquestFrame_OnShow(self)
 	RequestPVPOptionsEnabled();
 	ConquestFrame_Update(self);
 	local lastSeasonNumber = tonumber(GetCVar("newPvpSeason"));
-	if lastSeasonNumber < (GetCurrentArenaSeason()) then
+	if lastSeasonNumber < (GetCurrentArenaSeason() - BFA_START_SEASON + 1) then
 		PVPQueueFrame.NewSeasonPopup:Show(); 
 	end
 end
@@ -1877,4 +1877,9 @@ function PVPWeeklyChestMixin:OnEnter()
 		GameTooltip_AddColoredLine(GameTooltip, RATED_PVP_WEEKLY_CHEST_REQUIREMENTS:format(current, max), HIGHLIGHT_FONT_COLOR, WORD_WRAP);	
 	end
 	GameTooltip:Show();
+end
+
+function PVPNewSeasonPopupOnClick(self)
+	self:GetParent():Hide();
+	SetCVar("newPvpSeason", GetCurrentArenaSeason() - BFA_START_SEASON + 1);
 end

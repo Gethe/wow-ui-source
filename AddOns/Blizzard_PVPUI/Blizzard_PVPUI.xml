@@ -155,8 +155,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						self:GetParent():Hide();
-						SetCVar("newPvpSeason", GetCurrentArenaSeason());
+						PVPNewSeasonPopupOnClick(self);
 					</OnClick>
 				</Scripts>
 			</Button>

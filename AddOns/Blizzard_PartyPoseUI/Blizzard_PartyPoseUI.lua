@@ -78,6 +78,13 @@ function PartyPoseRewardsMixin:SetRewardsQuality(quality)
 		self.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
 		self.Name:SetVertexColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 	end
+
+	if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(self.id) then
+		self.IconOverlay:SetAtlas([[AzeriteIconFrame]]);
+		self.IconOverlay:Show();
+	else
+		self.IconOverlay:Hide();
+	end
 end
 
 function PartyPoseRewardsMixin:PlayRewardAnimation()

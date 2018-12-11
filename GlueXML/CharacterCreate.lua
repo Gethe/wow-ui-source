@@ -814,7 +814,7 @@ local function UpdateClassButtonEnabledState(button, classID, classData)
 	elseif ( classData.disabledReason == Enum.CreationClassDisabledReason.InvalidForSelectedRace ) then
 		button:Disable();
 		SetButtonDesaturated(button, true);
-		local validRaces = C_CharacterCreation.GetValidRacesForClass(button.classID);
+		local validRaces = C_CharacterCreation.GetValidRacesForClass(button.classID, Enum.CharacterCreateRaceMode.AllRaces);
 		local validRaceNames = {};
 		for i, raceData in ipairs(validRaces) do
 			tinsert(validRaceNames, raceData.name);

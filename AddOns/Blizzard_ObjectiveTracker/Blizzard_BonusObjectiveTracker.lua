@@ -679,26 +679,29 @@ local function UpdateScenarioBonusObjectives(module)
 end
 
 local function TryAddingTimeLeftLine(module, block, questID)
-	local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(questID);
-	if ( timeLeftMinutes and module.tickerSeconds ) then
-		local text = "";
-		if ( timeLeftMinutes > 0 ) then
-			if ( timeLeftMinutes < WORLD_QUESTS_TIME_CRITICAL_MINUTES ) then
-				local timeString = SecondsToTime(timeLeftMinutes * 60);
-				text = BONUS_OBJECTIVE_TIME_LEFT:format(timeString);
-				-- want to update the time every 10 seconds
-				module.tickerSeconds = 10;
-			else
-				-- want to update 10 seconds before the difference becomes 0 minutes
-				-- once at 0 minutes we want a 10 second update to catch the transition below WORLD_QUESTS_TIME_CRITICAL_MINUTES
-				local timeToAlert = min((timeLeftMinutes - WORLD_QUESTS_TIME_CRITICAL_MINUTES) * 60 - 10, 10);
-				if ( module.tickerSeconds == 0 or timeToAlert < module.tickerSeconds ) then
-					module.tickerSeconds = timeToAlert;
+	local displayTimeLeft = select(7, GetQuestTagInfo(questID));
+	if (displayTimeLeft) then
+		local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(questID);
+		if ( timeLeftMinutes and module.tickerSeconds ) then
+			local text = "";
+			if ( timeLeftMinutes > 0 ) then
+				if ( timeLeftMinutes < WORLD_QUESTS_TIME_CRITICAL_MINUTES ) then
+					local timeString = SecondsToTime(timeLeftMinutes * 60);
+					text = BONUS_OBJECTIVE_TIME_LEFT:format(timeString);
+					-- want to update the time every 10 seconds
+					module.tickerSeconds = 10;
+				else
+					-- want to update 10 seconds before the difference becomes 0 minutes
+					-- once at 0 minutes we want a 10 second update to catch the transition below WORLD_QUESTS_TIME_CRITICAL_MINUTES
+					local timeToAlert = min((timeLeftMinutes - WORLD_QUESTS_TIME_CRITICAL_MINUTES) * 60 - 10, 10);
+					if ( module.tickerSeconds == 0 or timeToAlert < module.tickerSeconds ) then
+						module.tickerSeconds = timeToAlert;
+					end
 				end
 			end
+			module:AddObjective(block, "TimeLeft", text, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["TimeLeft"], true);
+			block.currentLine.Icon:Hide();
 		end
-		module:AddObjective(block, "TimeLeft", text, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["TimeLeft"], true);
-		block.currentLine.Icon:Hide();
 	end
 end
 

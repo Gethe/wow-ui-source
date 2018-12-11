@@ -184,7 +184,7 @@ function ItemButtonMixin:SetItemMatchesItemContext(matchesContext)
 	self:UpdateItemContextOverlay(self);
 end
 
-function ItemButtonMixin:DoesItemMatchItemContext()
+function ItemButtonMixin:GetItemContextMatch()
 	return self.matchesItemContext;
 end
 

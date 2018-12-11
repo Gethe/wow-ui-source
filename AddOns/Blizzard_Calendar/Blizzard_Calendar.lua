@@ -3629,18 +3629,6 @@ function CalendarCreateEventFrame_Update()
 		CalendarCreateEventFrame.selectedTextureIndex = nil;
 		CalendarCreateEventFrame.calendarType = nil;
 		CalendarCreateEventTexture_Update();
-		-- reset the community selected
-		local nextClubId = C_Calendar.GetNextClubId();
-		local clubInfo = nextClubId and C_Club.GetClubInfo(nextClubId) or nil;
-		if clubInfo ~= nil then
-			C_Calendar.EventSetClubId(nextClubId);
-			UIDropDownMenu_SetSelectedValue(CalendarCreateEventCommunityDropDown, clubInfo.name);
-			UIDropDownMenu_SetText(CalendarCreateEventCommunityDropDown, clubInfo.name);
-		else
-			C_Calendar.EventSetClubId(nil);
-			UIDropDownMenu_SetSelectedValue(CalendarCreateEventCommunityDropDown, nil);
-			UIDropDownMenu_SetText(CalendarCreateEventCommunityDropDown, CALENDER_INVITE_SELECT_COMMUNITY);
-		end
 		-- hide the creator and the community name
 		CalendarCreateEventCreatorName:Hide();
 		CalendarCreateEventCommunityName:Hide();
@@ -3661,6 +3649,19 @@ function CalendarCreateEventFrame_Update()
 				CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_CREATE_GUILD_EVENT);
 				CalendarCreateEventMassInviteButton:Hide();
 			elseif ( calendarType == "COMMUNITY_EVENT" ) then
+				-- reset the community selected
+				local nextClubId = C_Calendar.GetNextClubId();
+				local clubInfo = nextClubId and C_Club.GetClubInfo(nextClubId) or nil;
+				if clubInfo ~= nil then
+					C_Calendar.EventSetClubId(nextClubId);
+					UIDropDownMenu_SetSelectedValue(CalendarCreateEventCommunityDropDown, clubInfo.name);
+					UIDropDownMenu_SetText(CalendarCreateEventCommunityDropDown, clubInfo.name);
+				else
+					C_Calendar.EventSetClubId(nil);
+					UIDropDownMenu_SetSelectedValue(CalendarCreateEventCommunityDropDown, nil);
+					UIDropDownMenu_SetText(CalendarCreateEventCommunityDropDown, CALENDER_INVITE_SELECT_COMMUNITY);
+				end
+			
 				CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_CREATE_COMMUNITY_EVENT);
 				CalendarCreateEventMassInviteButton:Hide();
 			else

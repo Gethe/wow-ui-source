@@ -243,12 +243,18 @@
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture parentKey="Icon">
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+							</Anchors>
 							<KeyValues>
 								<KeyValue key="layoutIndex" value="1" type="number"/>
 							</KeyValues>
 						</Texture>
 						<FontString parentKey="Text" font="Game16Font" justifyV="MIDDLE" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin">
 							<Size y="30"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+							</Anchors>
 							<KeyValues>
 								<KeyValue key="layoutIndex" value="2" type="number"/>
 							</KeyValues>

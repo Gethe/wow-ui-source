@@ -306,13 +306,8 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 		pin.Underlay:Hide();
 	end
 
-	local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(info.questId);
-	if timeLeftMinutes and timeLeftMinutes <= WORLD_QUESTS_TIME_LOW_MINUTES then
-		pin.TimeLowFrame:Show();
-	else
-		pin.TimeLowFrame:Hide();
-	end
-
+	pin.TimeLowFrame:SetShown(displayTimeLeft and QuestUtils_IsQuestWithinLowTimeThreshold(info.questId));
+	
 	pin:SetPosition(info.x, info.y);
 
 	C_TaskQuest.RequestPreloadRewardData(info.questId);

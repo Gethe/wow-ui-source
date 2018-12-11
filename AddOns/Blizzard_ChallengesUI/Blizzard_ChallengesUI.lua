@@ -228,9 +228,8 @@ function ChallengesFrame_Update(self)
 	weeklyChest.name = C_ChallengeMode.GetMapUIInfo(weeklySortedMaps[1].id);
 	weeklyChest.ownedKeystoneLevel = C_MythicPlus.GetOwnedKeystoneLevel();
 	weeklyChest.level, weeklyChest.rewardLevel, weeklyChest.nextRewardLevel, weeklyChest.nextBestLevel = C_MythicPlus.GetWeeklyChestRewardLevel();
-
 	--Need to check if a player has any season best data, if not then we want to show them keystone intro screen.
-	if (sortedMaps[1].level > 0 or weeklyChest.ownedKeystoneLevel and weeklyChest.name ~= nil) then
+	if (sortedMaps[1].level > 0 or weeklyChest.ownedKeystoneLevel) then
 		if (C_MythicPlus.IsWeeklyRewardAvailable()) then
 			self.WeeklyInfo:HideAffixes();
 			self.WeeklyInfo.Child.Label:Hide();
@@ -271,12 +270,29 @@ function ChallengesFrame_Update(self)
 		end
 		weeklyChest:Show();
 	else
-		weeklyChest:Hide();
-		self.WeeklyInfo.Child.Label:Hide();
-		self.WeeklyInfo:HideAffixes();
-		self.WeeklyInfo.Child.RunStatus:ClearAllPoints();
-		self.WeeklyInfo.Child.RunStatus:SetPoint("TOP", self, "TOP", 0, -74);
-		self.WeeklyInfo.Child.RunStatus:SetText(MYTHIC_PLUS_MISSING_KEYSTONE_MESSAGE);
+		if (C_MythicPlus.IsWeeklyRewardAvailable()) then
+			self.WeeklyInfo:HideAffixes();
+			self.WeeklyInfo.Child.Label:Hide();
+
+			weeklyChest.challengeMapId, weeklyChest.level = C_MythicPlus.GetLastWeeklyBestInformation();
+			weeklyChest.name = C_ChallengeMode.GetMapUIInfo(weeklyChest.challengeMapId);
+			weeklyChest.rewardLevel = C_MythicPlus.GetRewardLevelFromKeystoneLevel(weeklyChest.level);
+
+			self.WeeklyInfo.Child.RunStatus:ClearAllPoints();
+			self.WeeklyInfo.Child.RunStatus:SetPoint("TOP", weeklyChest.CollectChest.FinalKeyLevel, "TOP", 0, 50);
+			self.WeeklyInfo.Child.RunStatus:SetText(MYTHIC_PLUS_CLAIM_REWARD_MESSAGE);
+
+			weeklyChest.CollectChest.FinalKeyLevel:SetText(MYTHIC_PLUS_WEEKLY_CHEST_LEVEL:format(weeklyChest.name, weeklyChest.level));
+			weeklyChest:SetupChest(weeklyChest.CollectChest);
+			weeklyChest:Show();
+		else 
+			weeklyChest:Hide();
+			self.WeeklyInfo.Child.Label:Hide();
+			self.WeeklyInfo:HideAffixes();
+			self.WeeklyInfo.Child.RunStatus:ClearAllPoints();
+			self.WeeklyInfo.Child.RunStatus:SetPoint("TOP", self, "TOP", 0, -74);
+			self.WeeklyInfo.Child.RunStatus:SetText(MYTHIC_PLUS_MISSING_KEYSTONE_MESSAGE);
+		end
 	end
 
 	local lastSeasonNumber = tonumber(GetCVar("newMythicPlusSeason"));

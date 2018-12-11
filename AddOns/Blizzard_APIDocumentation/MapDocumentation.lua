@@ -36,17 +36,17 @@ local Map =
 			},
 		},
 		{
-			Name = "GetBountySetIDForMap",
+			Name = "GetBountySetMaps",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "uiMapID", Type = "number", Nilable = false },
+				{ Name = "bountySetID", Type = "number", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "bountySetID", Type = "number", Nilable = false },
+				{ Name = "mapIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{

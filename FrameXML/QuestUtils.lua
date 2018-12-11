@@ -435,3 +435,8 @@ function QuestUtils_GetBestQualityItemRewardIndex(questID)
 	end
 	return index;
 end
+
+function QuestUtils_IsQuestWithinLowTimeThreshold(questID)
+	local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(questID);
+	return timeLeftMinutes and timeLeftMinutes <= WORLD_QUESTS_TIME_LOW_MINUTES;
+end

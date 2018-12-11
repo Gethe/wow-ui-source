@@ -549,8 +549,6 @@ function ChannelFrameMixin:OnGroupLeft(partyCategory, partyGUID)
 	-- ...need to verify some things related to zoning out of the instance/bg/etc...
 	VoiceChatPromptActivateChannel:Hide();
 	VoiceChatChannelActivatedNotification:Hide();
-
-	-- TODO: Channel removal now happens as a matter of course on the server. Verify that the channel is being removed properly.
 end
 
 function ChannelFrameMixin:OnClubAdded(clubId)

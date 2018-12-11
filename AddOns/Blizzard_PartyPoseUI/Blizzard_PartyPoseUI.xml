@@ -35,13 +35,22 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER" textureSubLevel="2">
-				<Texture parentKey="IconBorder" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
-					</Anchors>
-				</Texture>
-			</Layer>
+      <Layer level="BORDER" textureSubLevel="2">
+        <Texture parentKey="IconOverlay" hidden="true">
+          <!-- The overlay is inset to prevent an overlap with the IconBorder.-->
+          <Size x="47" y="47" />
+          <Anchors>
+            <Anchor point="CENTER" relativeKey="$parent.Icon"/>
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="BORDER" textureSubLevel="3">
+        <Texture parentKey="IconBorder" useAtlasSize="true">
+          <Anchors>
+            <Anchor point="CENTER" relativeKey="$parent.Icon"/>
+          </Anchors>
+        </Texture>
+      </Layer>
 			<Layer level="BORDER">
 				<FontString parentKey="Name" inherits="GameFontHighlightMedium" justifyH="LEFT">
 					<Size x="160" y="40"/>

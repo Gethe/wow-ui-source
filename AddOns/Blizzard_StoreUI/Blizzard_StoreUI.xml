@@ -2669,14 +2669,9 @@
 								<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="16" y="-24"/>
 							</Anchors>
 							<Scripts>
-								<OnTextChanged>
-									self:GetParent().ValidationDescription:Hide();
-									self:GetParent().ContinueButton:SetEnabled(self:GetText() ~= "");
-								</OnTextChanged>
+								<OnTextChanged function="VASCharacterSelection_NewCharacterName_OnTextChanged"/>
 								<OnEnter function="VASCharacterSelection_NewCharacterName_OnEnter"/>
-								<OnLeave>
-									StoreTooltip:Hide();
-								</OnLeave>
+								<OnLeave function="VASCharacterSelection_ClearStoreTooltip"/>
 							</Scripts>
 						</EditBox>
 						<EditBox parentKey="NewGuildName" letters="24" inherits="StoreEditBoxTemplate">
