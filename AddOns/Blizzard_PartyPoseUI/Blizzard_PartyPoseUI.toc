@@ -1,4 +1,4 @@
-## Interface: 80000
+## Interface: 80100
 ## Title: Blizzard_PartyPoseUI
 ## Notes: Every time I'm here it's a party! :3
 ## Author: Blizzard Entertainment

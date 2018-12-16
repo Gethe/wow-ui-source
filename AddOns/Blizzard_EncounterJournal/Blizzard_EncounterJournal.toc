@@ -1,4 +1,4 @@
-## Interface: 80000
+## Interface: 80100
 ## Title: Blizzard Dungeon Journal
 ## Notes:  Show Boss Info
 ## Secure: 1

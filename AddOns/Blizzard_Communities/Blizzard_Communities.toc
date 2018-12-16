@@ -1,4 +1,4 @@
-## Interface: 80000
+## Interface: 80100
 ## Title: Blizzard_Communities
 ## Secure: 1
 ## RequiredDep: Blizzard_GuildRecruitmentUI, Blizzard_GuildControlUI

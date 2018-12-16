@@ -1,4 +1,4 @@
-## Interface: 80000
+## Interface: 80100
 ## Title: Blizzard_AchievementUI
 ## Notes: Hooray for Achievements! Everybody loves Achievements =D
 ## Secure: 1

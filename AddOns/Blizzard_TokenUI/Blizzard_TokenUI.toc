@@ -1,4 +1,4 @@
-## Interface: 80000
+## Interface: 80100
 ## Title: Blizzard_TokenUI
 ## Secure: 1
 Blizzard_TokenUI.lua
