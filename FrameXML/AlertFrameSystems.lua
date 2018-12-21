@@ -963,7 +963,7 @@ NewRecipeLearnedAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewRecipe
 
 -- [[WorldQuestCompleteAlertFrame ]] --
 function WorldQuestCompleteAlertFrame_GetIconForQuestID(questID)
-	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, displayTimeLeft = GetQuestTagInfo(questID);
+	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(questID);
 
 	if ( worldQuestType == LE_QUEST_TAG_TYPE_PVP ) then
 		return "Interface\\Icons\\achievement_arena_2v2_1";

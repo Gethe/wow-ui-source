@@ -5,6 +5,7 @@
 	wrapHeaderText - bool
 	atLeastShowAzerite - bool
 	fullItemDescription - bool
+	prioritizeCurrencyOverItem - bool
 --]]
 
 TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT = {
@@ -50,6 +51,17 @@ TOOLTIP_QUEST_REWARDS_STYLE_EMISSARY_REWARD = {
 	postHeaderBlankLineCount = 0,
 	wrapHeaderText = true,
 	atLeastShowAzerite = true,
+	fullItemDescription = true,
+}
+
+TOOLTIP_QUEST_REWARDS_PRIORITIZE_CURRENCY_OVER_ITEM = {
+	headerText = QUEST_REWARDS,
+	headerColor = NORMAL_FONT_COLOR,
+	prefixBlankLineCount = 1,
+	postHeaderBlankLineCount = 0,
+	wrapHeaderText = true,
+	prioritizeCurrencyOverItem = true,
+	atLeastShowAzerite = true, 
 	fullItemDescription = true,
 }
 

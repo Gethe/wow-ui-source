@@ -128,7 +128,7 @@ local EXTRA_GUILD_COLUMN_ACHIEVEMENT = 1;
 local EXTRA_GUILD_COLUMN_PROFESSION = 2;
 local EXTRA_GUILD_COLUMNS = {
 	[EXTRA_GUILD_COLUMN_ACHIEVEMENT] = {
-		dropdownText = GUILD_ROSTER_DROPDOWN_PLAYER_STATUS,
+		dropdownText = GUILD_ROSTER_DROPDOWN_ACHIEVEMENT_POINTS,
 		title = COMMUNITIES_ROSTER_COLUMN_TITLE_ACHIEVEMENT,
 		attribute = "achievementPoints",
 		width = 115,
@@ -1183,9 +1183,11 @@ function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 		if memberInfo.presence == Enum.ClubMemberPresence.OnlineMobile then
 			self.Zone:SetText(COMMUNITIES_PRESENCE_MOBILE_CHAT);
 		elseif memberInfo.presence == Enum.ClubMemberPresence.Offline then
-			self.Zone:SetText(COMMUNITIES_PRESENCE_OFFLINE);
-		elseif memberInfo.lastOnlineYear then
-			self.Zone:SetText(RecentTimeDate(memberInfo.lastOnlineYear, memberInfo.lastOnlineMonth, memberInfo.lastOnlineDay, memberInfo.lastOnlineHour));
+			if memberInfo.lastOnlineYear then
+				self.Zone:SetText(RecentTimeDate(memberInfo.lastOnlineYear, memberInfo.lastOnlineMonth, memberInfo.lastOnlineDay, memberInfo.lastOnlineHour));
+			else
+				self.Zone:SetText(COMMUNITIES_PRESENCE_OFFLINE);
+			end
 		elseif memberInfo.zone then
 			self.Zone:SetText(memberInfo.zone);
 		else

@@ -43,6 +43,7 @@ function MapIndicatorQuestDataProviderMixin:AddMapIndicatorQuest(info)
 	pin.questID = info.questID;
 	pin.numObjectives = C_QuestLog.GetNumQuestObjectives(pin.questID);
 	pin.shouldShowObjectivesAsStatusBar = true; 
+	pin.questRewardTooltipStyle = TOOLTIP_QUEST_REWARDS_PRIORITIZE_CURRENCY_OVER_ITEM; 
 
 	local worldQuestType = info.type;
 	local inProgress = false; --We don't want this to display like a normal quest that's in progress.

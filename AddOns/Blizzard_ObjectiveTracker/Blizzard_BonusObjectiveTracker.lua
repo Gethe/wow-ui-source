@@ -678,9 +678,8 @@ local function UpdateScenarioBonusObjectives(module)
 	end
 end
 
-local function TryAddingTimeLeftLine(module, block, questID)
-	local displayTimeLeft = select(7, GetQuestTagInfo(questID));
-	if (displayTimeLeft) then
+local function TryAddingExpirationWarningLine(module, block, questID)
+	if ( QuestUtils_ShouldDisplayExpirationWarning(questID) ) then
 		local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(questID);
 		if ( timeLeftMinutes and module.tickerSeconds ) then
 			local text = "";
@@ -732,7 +731,7 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 		end
 
 		if ( QuestUtils_IsQuestWorldQuest(questID) ) then
-			local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, displayTimeLeft = GetQuestTagInfo(questID);
+			local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(questID);
 			assert(worldQuestType);
 
 			local inProgress = questLogIndex ~= 0;
@@ -779,7 +778,7 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 			if ( objectiveType == "progressbar" ) then
 				if ( module.ShowWorldQuests and not hasAddedTimeLeft ) then
 					-- Add time left (if any) right before the progress bar
-					TryAddingTimeLeftLine(module, block, questID);
+					TryAddingExpirationWarningLine(module, block, questID);
 					hasAddedTimeLeft = true;
 				end
 
@@ -798,7 +797,7 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 		end
 		if ( module.ShowWorldQuests and not hasAddedTimeLeft ) then
 			-- No progress bar, try adding it at the end
-			TryAddingTimeLeftLine(module, block, questID);
+			TryAddingExpirationWarningLine(module, block, questID);
 		end
 		block:SetHeight(block.height + module.blockPadding);
 

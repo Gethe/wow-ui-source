@@ -3832,7 +3832,22 @@ end
 
 function StoreProductCard_ShouldAddBundleInformationToTooltip(self, entryInfo)
 	-- For now, we're not displaying this part of the tooltip.
-	return self.style == "double-wide" and #entryInfo.sharedData.deliverables > 0 and C_StoreSecure.IsDynamicBundle(entryInfo.productID);
+	return #entryInfo.sharedData.deliverables > 0 and C_StoreSecure.IsDynamicBundle(entryInfo.productID);
+end
+
+local function AppendBundleInformationToTooltipDescription(card, entryInfo, tooltipDescription)
+	if StoreProductCard_ShouldAddBundleInformationToTooltip(card, entryInfo) then
+		tooltipDescription = tooltipDescription..BLIZZARD_STORE_BUNDLE_TOOLTIP_HEADER;
+		for i, deliverableInfo in ipairs(entryInfo.sharedData.deliverables) do
+			if deliverableInfo.owned then
+				tooltipDescription = tooltipDescription..BLIZZARD_STORE_BUNDLE_TOOLTIP_OWNED_DELIVERABLE:format(deliverableInfo.name);
+			else
+				tooltipDescription = tooltipDescription..BLIZZARD_STORE_BUNDLE_TOOLTIP_UNOWNED_DELIVERABLE:format(deliverableInfo.name);
+			end
+		end
+	end
+	
+	return tooltipDescription;
 end
 
 function StoreProductCard_UpdateState(card)
@@ -3867,16 +3882,8 @@ function StoreProductCard_UpdateState(card)
 				else
 					description = "";
 				end
-				if StoreProductCard_ShouldAddBundleInformationToTooltip(card, entryInfo) then
-					description = description..BLIZZARD_STORE_BUNDLE_TOOLTIP_HEADER;
-					for i, deliverableInfo in ipairs(entryInfo.sharedData.deliverables) do
-						if deliverableInfo.owned then
-							description = description..BLIZZARD_STORE_BUNDLE_TOOLTIP_OWNED_DELIVERABLE:format(deliverableInfo.name);
-						else
-							description = description..BLIZZARD_STORE_BUNDLE_TOOLTIP_UNOWNED_DELIVERABLE:format(deliverableInfo.name);
-						end
-					end
-				end
+				
+				description = AppendBundleInformationToTooltipDescription(card, entryInfo, description);
 
 				if StoreProductCard_ShouldAddDiscountInformationToTooltip(card, entryInfo) then
 					local discounted, discountPercentage, discountDollars, discountCents = StoreFrame_GetDiscountInformation(entryInfo.sharedData);
@@ -3931,8 +3938,11 @@ function StoreSplashSingleCard_OnEnter(self)
 		else
 			StoreTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT", 7, -6);
 		end
-
-		StoreTooltip_Show(self.productTooltipTitle, self.productTooltipDescription);
+		
+		local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());
+		local description = AppendBundleInformationToTooltipDescription(self, entryInfo, self.productTooltipDescription);
+		description = strtrim(description, "\n\r"); -- Ensure we don't end the description with a new line.
+		StoreTooltip_Show(self.productTooltipTitle, description);
 	end
 end
 
