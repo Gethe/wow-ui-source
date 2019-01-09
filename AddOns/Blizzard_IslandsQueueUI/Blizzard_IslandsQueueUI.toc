@@ -1,4 +1,4 @@
-## Interface: 80000
+## Interface: 80100
 ## Title: Blizzard_IslandsQueueUI
 ## Notes: All aboard for da' island! (Island Queue Screen) 
 ## Author: Blizzard Entertainment

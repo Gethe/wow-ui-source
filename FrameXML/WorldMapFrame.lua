@@ -59,7 +59,7 @@ function WorldMap_GetWorldQuestRewardType(questID)
 end
 
 function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters)
-	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, displayTimeLeft = GetQuestTagInfo(info.questId);
+	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(info.questId);
 
 	if ( not ignoreTypeFilters ) then
 		if ( worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION ) then
@@ -113,26 +113,23 @@ function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters)
 end
 
 function WorldMap_AddQuestTimeToTooltip(questID)
-	local displayTimeLeft = select(7, GetQuestTagInfo(questID));
-	if (displayTimeLeft) then
-		local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(questID);
-		if ( timeLeftMinutes and timeLeftMinutes > 0 ) then
-			local color = NORMAL_FONT_COLOR;
-			if ( timeLeftMinutes <= WORLD_QUESTS_TIME_CRITICAL_MINUTES ) then
-				color = RED_FONT_COLOR;
-			end
-
-			local timeString;
-			if timeLeftMinutes <= 60 then
-				timeString = SecondsToTime(timeLeftMinutes * 60);
-			elseif timeLeftMinutes < 24 * 60  then
-				timeString = D_HOURS:format(math.floor(timeLeftMinutes) / 60);
-			else
-				timeString = D_DAYS:format(math.floor(timeLeftMinutes) / 1440);
-			end
-
-			WorldMapTooltip:AddLine(BONUS_OBJECTIVE_TIME_LEFT:format(timeString), color.r, color.g, color.b);
+	local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(questID);
+	if ( timeLeftMinutes and timeLeftMinutes > 0 ) then
+		local color = NORMAL_FONT_COLOR;
+		if ( timeLeftMinutes <= WORLD_QUESTS_TIME_CRITICAL_MINUTES ) then
+			color = RED_FONT_COLOR;
 		end
+
+		local timeString;
+		if timeLeftMinutes <= 60 then
+			timeString = SecondsToTime(timeLeftMinutes * 60);
+		elseif timeLeftMinutes < 24 * 60  then
+			timeString = D_HOURS:format(math.floor(timeLeftMinutes) / 60);
+		else
+			timeString = D_DAYS:format(math.floor(timeLeftMinutes) / 1440);
+		end
+
+		WorldMapTooltip:AddLine(BONUS_OBJECTIVE_TIME_LEFT:format(timeString), color.r, color.g, color.b);
 	end
 end
 
@@ -147,7 +144,7 @@ function TaskPOI_OnEnter(self)
 
 	local title, factionID, capped = C_TaskQuest.GetQuestInfoByQuestID(self.questID);
 	if ( self.worldQuest ) then
-		local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, displayTimeLeft = GetQuestTagInfo(self.questID);
+		local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(self.questID);
 		local color = WORLD_QUEST_QUALITY_COLORS[rarity];
 		WorldMapTooltip:SetText(title, color.r, color.g, color.b);
 		QuestUtils_AddQuestTypeToTooltip(WorldMapTooltip, self.questID, NORMAL_FONT_COLOR);
@@ -162,9 +159,7 @@ function TaskPOI_OnEnter(self)
 			end
 		end
 
-		if displayTimeLeft then
-			WorldMap_AddQuestTimeToTooltip(self.questID);
-		end
+		WorldMap_AddQuestTimeToTooltip(self.questID);
 	else
 		WorldMapTooltip:SetText(title);
 	end
@@ -190,7 +185,7 @@ function TaskPOI_OnEnter(self)
 		GameTooltip_ShowProgressBar(WorldMapTooltip, 0, 100, percent, PERCENTAGE_STRING:format(percent));
 	end
 
-	GameTooltip_AddQuestRewardsToTooltip(WorldMapTooltip, self.questID);
+	GameTooltip_AddQuestRewardsToTooltip(WorldMapTooltip, self.questID, self.questRewardTooltipStyle);
 
 	if ( self.worldQuest and WorldMapTooltip.AddDebugWorldQuestInfo ) then
 		WorldMapTooltip:AddDebugWorldQuestInfo(self.questID);

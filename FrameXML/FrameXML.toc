@@ -1,5 +1,5 @@
 # Do not delete the following line!
-## Interface: 80000
+## Interface: 80100
 
 ## add C namespace augmentations here
 ..\SharedXML\C_TimerAugment.lua

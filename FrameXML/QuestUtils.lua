@@ -298,7 +298,8 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 	-- items
 	local showRetrievingData = false;
 	local numQuestRewards = GetNumQuestLogRewards(questID);	
-	if numQuestRewards > 0 then
+	local numCurrencyRewards = GetNumQuestLogRewardCurrencies(questID);
+	if numQuestRewards > 0 and (not style.prioritizeCurrencyOverItem or numCurrencyRewards == 0) then
 		if style.fullItemDescription then 
 			-- we want to do a full item description
 			local itemIndex = QuestUtils_GetBestQualityItemRewardIndex(questID);  -- Only support one item reward currently
@@ -436,7 +437,20 @@ function QuestUtils_GetBestQualityItemRewardIndex(questID)
 	return index;
 end
 
-function QuestUtils_IsQuestWithinLowTimeThreshold(questID)
+function QuestUtils_IsQuestWithinTimeThreshold(questID, threshold)
 	local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(questID);
-	return timeLeftMinutes and timeLeftMinutes <= WORLD_QUESTS_TIME_LOW_MINUTES;
+	return timeLeftMinutes and timeLeftMinutes <= threshold;
+end
+
+function QuestUtils_IsQuestWithinLowTimeThreshold(questID)
+	return QuestUtils_IsQuestWithinTimeThreshold(questID, WORLD_QUESTS_TIME_LOW_MINUTES);
+end
+
+function QuestUtils_IsQuestWithinCriticalTimeThreshold(questID)
+	return QuestUtils_IsQuestWithinTimeThreshold(questID, WORLD_QUESTS_TIME_CRITICAL_MINUTES);
+end
+
+function QuestUtils_ShouldDisplayExpirationWarning(questID)
+	local displayExpiration = select(7, GetQuestTagInfo(questID));
+	return displayExpiration;
 end

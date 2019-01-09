@@ -1,4 +1,4 @@
-## Interface: 80000
+## Interface: 80100
 ## Title: Blizzard_WarfrontsPartyPoseUI
 ## Notes: Okay, maybe not the ideal location for a party.. (Warfronts End Screen) 
 ## Author: Blizzard Entertainment

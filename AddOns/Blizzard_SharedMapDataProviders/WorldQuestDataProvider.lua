@@ -248,6 +248,21 @@ function WorldQuestDataProviderMixin:GetPinTemplate()
 	return "WorldQuestPinTemplate";
 end
 
+function WorldQuestDataProviderMixin:ShouldShowExpirationIcon(questID, worldQuestType)
+	if QuestUtils_ShouldDisplayExpirationWarning(questID) then
+		if worldQuestType == LE_QUEST_TAG_TYPE_FACTION_ASSAULT or worldQuestType == LE_QUEST_TAG_TYPE_INVASION then
+			if QuestUtils_IsQuestWithinCriticalTimeThreshold(questID) then
+				return true;
+			end
+		else
+			if QuestUtils_IsQuestWithinLowTimeThreshold(questID) then
+				return true;
+			end
+		end
+	end
+	return false;
+end
+
 function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	local pin = self:GetMap():AcquirePin(self:GetPinTemplate());
 	pin.questID = info.questId;
@@ -257,7 +272,7 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	pin.numObjectives = info.numObjectives;
 	pin:UseFrameLevelType("PIN_FRAME_LEVEL_WORLD_QUEST", self:GetMap():GetNumActivePinsByTemplate(self:GetPinTemplate()));
 
-	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, displayTimeLeft = GetQuestTagInfo(info.questId);
+	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(info.questId);
 	local tradeskillLineID = tradeskillLineIndex and select(7, GetProfessionInfo(tradeskillLineIndex));
 
 	pin.worldQuestType = worldQuestType;
@@ -306,7 +321,7 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 		pin.Underlay:Hide();
 	end
 
-	pin.TimeLowFrame:SetShown(displayTimeLeft and QuestUtils_IsQuestWithinLowTimeThreshold(info.questId));
+	pin.TimeLowFrame:SetShown(self:ShouldShowExpirationIcon(info.questId, worldQuestType));
 	
 	pin:SetPosition(info.x, info.y);
 
@@ -341,7 +356,7 @@ function WorldQuestPinMixin:OnLoad()
 end
 
 function WorldQuestPinMixin:RefreshVisuals()
-	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, displayTimeLeft = GetQuestTagInfo(self.questID);
+	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(self.questID);
 	local tradeskillLineID = tradeskillLineIndex and select(7, GetProfessionInfo(tradeskillLineIndex));
 	local selected = self.questID == GetSuperTrackedQuestID();
 	self.Glow:SetShown(selected);

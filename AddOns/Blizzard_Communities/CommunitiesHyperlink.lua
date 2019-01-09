@@ -6,11 +6,12 @@ local pendingTicketIds = {};
 local ticketListener;
 local function CommunitiesHyperlink_OnEvent(self, event, ...)
 	if event == "CLUB_TICKET_RECEIVED" then
-		local error, ticketId, clubInfo = ...;
+		local ticketId = ...;
+		local error, clubInfo, showError = C_Club.GetLastTicketResponse(ticketId);
 		if pendingTicketIds[ticketId] then
 			if error == Enum.ClubErrorType.ErrorCommunitiesNone then
 				CommunitiesFrame.CommunitiesList:AddTicket(ticketId, clubInfo);
-			else
+			elseif showError then
 				local errorString = GetCommunitiesErrorString(ERROR_CLUB_ACTION_REDEEM_TICKET, error, Enum.ClubType.BattleNet);
 				UIErrorsFrame:AddMessage(ERROR_CLUB_ACTION_REDEEM_TICKET:format(""), RED_FONT_COLOR:GetRGB());
 			end

@@ -1,4 +1,4 @@
-## Interface: 80000
+## Interface: 80100
 ## Title: Blizzard_IslandsPartyPoseUI
 ## Notes: What's better than a party? An island party! (Island End Screen) 
 ## Author: Blizzard Entertainment

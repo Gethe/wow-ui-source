@@ -1,4 +1,4 @@
-## Interface: 80000
+## Interface: 80100
 ## Title: Blizzard Garrison Templates
 ## Secure: 1
 ## Author: Blizzard Entertainment

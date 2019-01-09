@@ -1,4 +1,4 @@
-## Interface: 80000
+## Interface: 80100
 ## Title: Blizzard Inspect UI
 ## Secure: 1
 ## LoadOnDemand: 1
