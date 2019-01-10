@@ -116,7 +116,7 @@ function AdventureMapQuestChoiceDialogMixin:RefreshRewards()
 	for itemIndex = 1, GetNumQuestLogRewards(self.questID) do
 		local name, texture, count, quality, isUsable = GetQuestLogRewardInfo(itemIndex, self.questID);
 		self:AddReward(name, texture, nil, count, "GameFontHighlightSmall");
-	end	
+	end
 
 	local money = GetQuestLogRewardMoney(self.questID);
 	if money > 0  then
@@ -131,7 +131,8 @@ function AdventureMapQuestChoiceDialogMixin:RefreshRewards()
 	else
 		self.Rewards:Show();
 		self.RewardsHeader:Show();
-		local _, _, height = GetAtlasInfo("AdventureMapQuest-RewardsPanel");
+		local info = C_Texture.GetAtlasInfo("AdventureMapQuest-RewardsPanel");
+		local height = info and info.height or 1; -- prevent divide by 0
 		self.rewardsHeight = math.min(math.ceil(numActiveRewardFrames / 2) * (REWARD_FRAME_HEIGHT + REWARD_FRAME_PADDING) + 53, height);
 		self.Rewards:SetHeight(self.rewardsHeight);
 		self.Rewards:SetTexCoord(0, 1, 0, self.rewardsHeight / height);
@@ -177,7 +178,7 @@ function AdventureMapQuestChoiceDialogMixin:RefreshDetails()
 		self.Details.Child.TitleHeader:SetText(questTitle);
 		self.Details.Child.DescriptionText:SetText(descriptionText);
 		self.Details.Child.ObjectivesText:SetText(objectiveText);
-		
+
 		local height = 45;
 		for i, element in ipairs(self.Details.Child.Elements) do
 			height = height + element:GetHeight();

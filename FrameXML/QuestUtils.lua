@@ -67,7 +67,7 @@ function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskill
 		iconAtlas =  "worldquest-icon-raid";
 	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_INVASION ) then
 		iconAtlas =  "worldquest-icon-burninglegion";
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_ISLANDS ) then 
+	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_ISLANDS ) then
 		iconAtlas ="poi-islands-table";
 	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_FACTION_ASSAULT ) then
 		local factionTag = UnitFactionGroup("player");
@@ -80,8 +80,8 @@ function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskill
 		return "worldquest-questmarker-questbang", 6, 15;
 	end
 
-	local _, width, height = GetAtlasInfo(iconAtlas);
-	return iconAtlas, width, height;
+	local info = C_Texture.GetAtlasInfo(iconAtlas);
+	return iconAtlas, info and info.width, info and info.height;
 end
 
 local function ApplyTextureToPOI(texture, width, height)
@@ -242,8 +242,8 @@ local function ShouldShowWarModeBonus(questID, currencyID)
 	if not C_PvP.IsWarModeDesired() then
 		return false;
 	end
-	
-	if not C_CurrencyInfo.DoesWarModeBonusApply(currencyID) then 
+
+	if not C_CurrencyInfo.DoesWarModeBonusApply(currencyID) then
 		return false;
 	end
 
@@ -254,14 +254,14 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 	local hasAnySingleLineRewards = false;
 	local isWarModeDesired = C_PvP.IsWarModeDesired();
 	local questHasWarModeBonus = C_QuestLog.QuestHasWarModeBonus(questID);
-	
+
 	-- xp
 	local totalXp, baseXp = GetQuestLogRewardXP(questID);
 	if ( baseXp > 0 ) then
 		GameTooltip_AddColoredLine(tooltip, BONUS_OBJECTIVE_EXPERIENCE_FORMAT:format(baseXp), HIGHLIGHT_FONT_COLOR);
 		if (isWarModeDesired and questHasWarModeBonus) then
 			tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE_XP_FORMAT:format(C_PvP.GetWarModeRewardBonus()));
-		end		
+		end
 		hasAnySingleLineRewards = true;
 	end
 	local artifactXP = GetQuestLogRewardArtifactXP(questID);
@@ -277,14 +277,14 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 			hasAnySingleLineRewards = not usingCurrencyContainer or numAddedQuestCurrencies > 1;
 		end
 	end
-	
+
 	-- honor
 	local honorAmount = GetQuestLogRewardHonor(questID);
 	if ( honorAmount > 0 ) then
 		GameTooltip_AddColoredLine(tooltip, BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT:format("Interface\\ICONS\\Achievement_LegionPVPTier4", honorAmount, HONOR), HIGHLIGHT_FONT_COLOR);
 		hasAnySingleLineRewards = true;
 	end
-	
+
 	-- money
 	local money = GetQuestLogRewardMoney(questID);
 	if ( money > 0 ) then
@@ -315,7 +315,7 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 						tooltip:Hide();
 					end
 				end
-			end				
+			end
 		else
 			-- we want to do an abbreviated item description
 			local name, texture, numItems, quality, isUsable = GetQuestLogRewardInfo(1, questID);
@@ -327,10 +327,10 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 			if text then
 				local color = ITEM_QUALITY_COLORS[quality];
 				GameTooltip:AddLine(text, color.r, color.g, color.b);
-			end			
+			end
 		end
 	end
-	
+
 	-- atLeastShowAzerite: show azerite if nothing else is awarded
 	-- and in the case of double azerite, only show the currency container one
 	if style.atLeastShowAzerite and not hasAnySingleLineRewards and not tooltip.ItemTooltip:IsShown() then
@@ -343,7 +343,7 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 				tooltip:Show();
 			end
 		end
-	end	
+	end
 	return hasAnySingleLineRewards, showRetrievingData;
 end
 
@@ -370,7 +370,7 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 	local addedQuestCurrencies = 0;
 	local alreadyUsedCurrencyContainerId = 0; --In the case of multiple currency containers needing to displayed, we only display the first.
 	local warModeBonus = C_PvP.GetWarModeRewardBonus();
-	
+
 	for i, currencyInfo in ipairs(currencies) do
 		local isCurrencyContainer = C_CurrencyInfo.IsCurrencyContainer(currencyInfo.currencyID, currencyInfo.numItems);
 		if ( currencyContainerTooltip and isCurrencyContainer and (alreadyUsedCurrencyContainerId == 0) ) then
@@ -403,7 +403,7 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 				if ShouldShowWarModeBonus(questID, currencyInfo.currencyID) then
 					tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE_FORMAT:format(warModeBonus));
 				end
-				
+
 				addedQuestCurrencies = addedQuestCurrencies + 1;
 			end
 		end

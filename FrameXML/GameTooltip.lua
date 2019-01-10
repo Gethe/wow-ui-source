@@ -446,6 +446,17 @@ function GameTooltip_OnHide(self)
 		end
 	end
 	self.comparing = false;
+	
+	ShoppingTooltip1:Hide();
+	ShoppingTooltip2:Hide();
+	if (BattlePetTooltip) then
+		BattlePetTooltip:Hide();
+	end
+
+	if self.ItemTooltip then
+		self.ItemTooltip:Hide();
+	end
+	self:SetPadding(0, 0);	
 end
 
 function GameTooltip_CycleSecondaryComparedItem(self)

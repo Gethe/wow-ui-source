@@ -82,6 +82,10 @@ function Voice_GetGameErrorStringFromStatusCode(statusCode)
 	end
 end
 
+function Voice_IsConnectionError(statusCode)
+	return statusCode == Enum.VoiceChatStatusCode.ProxyConnectionTimeOut or statusCode == Enum.VoiceChatStatusCode.ProxyConnectionUnexpectedDisconnect;
+end
+
 local SUPPRESS_ALERT_MESSAGE = true;
 local voiceChatStatusAlertBlacklist =
 {

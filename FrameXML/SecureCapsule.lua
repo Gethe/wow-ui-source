@@ -569,3 +569,4 @@ retain("AnchorMixin");
 retain("ShrinkUntilTruncateFontStringMixin");
 retain("GetFinalNameFromTextureKit")
 retain("PortraitFrameTemplate_SetPortraitToAsset");
+retain("C_Texture");

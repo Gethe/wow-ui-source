@@ -27,6 +27,7 @@ function VoiceChatHeadsetButtonMixin:OnLoad()
 	self:RegisterEvent("VOICE_CHAT_CHANNEL_DEACTIVATED");
 	self:RegisterEvent("VOICE_CHAT_LOGOUT");
 	self:RegisterEvent("VOICE_CHAT_PENDING_CHANNEL_JOIN_STATE");
+	self:RegisterEvent("VOICE_CHAT_ERROR");
 end
 
 function VoiceChatHeadsetButtonMixin:OnEvent(event, ...)
@@ -42,6 +43,8 @@ function VoiceChatHeadsetButtonMixin:OnEvent(event, ...)
 		self:ClearPendingState();
 	elseif event == "VOICE_CHAT_PENDING_CHANNEL_JOIN_STATE" then
 		self:OnVoiceChatPendingChannelJoinState(...);
+	elseif event == "VOICE_CHAT_ERROR" then
+		self:OnVoiceChatError(...);
 	end
 end
 
@@ -84,6 +87,13 @@ function VoiceChatHeadsetButtonMixin:OnVoiceChatPendingChannelJoinState(channelT
 	-- A channelType of None indicates login failed, so clear all pending states in that case
 	if self:VoiceChannelMatches(false, channelType, clubId, streamId) or (channelType == Enum.ChatChannelType.None)  then
 		self:GetParent():SetPendingState(pendingState);
+	end
+end
+
+function VoiceChatHeadsetButtonMixin:OnVoiceChatError(platformCode, statusCode)
+	if Voice_IsConnectionError(statusCode) then
+		self:ClearPendingState();
+		self:ClearVoiceChannel();
 	end
 end
 

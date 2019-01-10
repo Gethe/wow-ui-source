@@ -669,15 +669,6 @@ function ContainerFrame_Update(self)
 			end
 		end
 	end
-		
-	local bagButton = ContainerFrame_GetBagButton(self);
-	if ( bagButton ) then
-		if not ItemButtonUtil.HasItemContext() then
-			bagButton:SetItemMatchesItemContext(nil);
-		else
-			bagButton:SetItemMatchesItemContext(anyItemMatchesContext);
-		end
-	end
 end
 
 function ContainerFrame_UpdateAll(startingFrom)

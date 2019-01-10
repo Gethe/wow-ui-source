@@ -5,7 +5,9 @@ function InsanityPowerBar:OnLoad()
 	self.spec = SPEC_PRIEST_SHADOW;
 	self:SetPowerTokens("INSANITY");
 	self.insane = false;
-	self.fullTentacleWidth = select(2, GetAtlasInfo("Insanity-Tentacles"))
+
+	local info = C_Texture.GetAtlasInfo("Insanity-Tentacles");
+	self.fullTentacleWidth = info and info.width or 1; -- Prevent divide by 0.
 
 	ClassPowerBar.OnLoad(self);
 end
@@ -13,14 +15,19 @@ end
 function InsanityPowerBar:OnEvent(event, arg1, arg2)
 	if (event == "UNIT_AURA") then
 		local insane = IsInsane();
+		
 		if (insane and not self.insane) then
-			-- Gained insanity
+			-- Gained insanity	
+			self:StopInsanityVisuals();
+
 			self.InsanityOn.Anim:Play();
 			self.DrippyPurpleMid.Anim:Play();
 			self.DrippyPurpleLoop.Anim:Play();
 			self.InsanitySpark.Anim:Play();
 		elseif (not insane and self.insane) then
 			-- Lost insanity
+			self:StopInsanityVisuals();
+			
 			self.InsanityOn.Fadeout:Play();
 			self.DrippyPurpleMid.Fadeout:Play();
 			self.DrippyPurpleLoop.Fadeout:Play();
@@ -37,6 +44,18 @@ function InsanityPowerBar:Setup()
 	if (showBar) then
 		self:RegisterUnitEvent("UNIT_AURA", "player");
 	end
+end
+
+function InsanityPowerBar:StopInsanityVisuals()
+	self.InsanityOn.Anim:Stop();
+	self.DrippyPurpleMid.Anim:Stop();
+	self.DrippyPurpleLoop.Anim:Stop();
+	self.InsanitySpark.Anim:Stop();
+
+	self.InsanityOn.Fadeout:Stop();
+	self.DrippyPurpleMid.Fadeout:Stop();
+	self.DrippyPurpleLoop.Fadeout:Stop();
+	self.InsanitySpark.Fadeout:Stop();			
 end
 
 function InsanityPowerBar:UpdatePower()

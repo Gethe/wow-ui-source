@@ -41,8 +41,14 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo)
 		self.Bar:SetWidth(215);
 	end
 
-	self.Bar:SetMinMaxValues(widgetInfo.barMin, widgetInfo.barMax);
-	self.Bar:SetValue(widgetInfo.barValue);
+	local minVal, maxVal, barVal = widgetInfo.barMin, widgetInfo.barMax, widgetInfo.barValue;
+	if minVal > 0 and minVal == maxVal and barVal == maxVal then
+		-- If all 3 values are the same and greater than 0, show the bar as full
+		minVal, maxVal, barVal = 0, 1, 1;
+	end
+
+	self.Bar:SetMinMaxValues(minVal, maxVal);
+	self.Bar:SetValue(barVal);
 
 	self.Bar.Label:SetShown(widgetInfo.barValueTextType ~= Enum.StatusBarValueTextType.Hidden);
 
@@ -54,6 +60,8 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo)
 		self.Bar.Label:SetText(widgetInfo.barValue);
 	elseif widgetInfo.barValueTextType == Enum.StatusBarValueTextType.ValueOverMax then
 		self.Bar.Label:SetText(FormatFraction(widgetInfo.barValue, widgetInfo.barMax));
+	elseif widgetInfo.barValueTextType == Enum.StatusBarValueTextType.ValueOverMaxNormalized then
+		self.Bar.Label:SetText(FormatFraction(widgetInfo.barValue - widgetInfo.barMin, widgetInfo.barMax - widgetInfo.barMin));
 	elseif widgetInfo.barValueTextType == Enum.StatusBarValueTextType.Percentage then
 		local barPercent = PercentageBetween(widgetInfo.barValue, widgetInfo.barMin, widgetInfo.barMax);
 		local barPercentText = FormatPercentage(barPercent, true);
@@ -80,9 +88,9 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo)
 		self.Bar:SetPoint("TOP", self, "TOP", 0, -8);
 	end
 
-	local barWidth = self.Bar:GetWidth() + 6;
+	local barWidth = self.Bar:GetWidth() + 16;
 
-	local totalWidth = math.max(barWidth, labelHeight);
+	local totalWidth = math.max(barWidth, labelWidth);
 	self:SetWidth(totalWidth);
 
 	local barHeight = self.Bar:GetHeight() + 16;

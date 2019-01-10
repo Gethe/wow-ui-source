@@ -1189,6 +1189,9 @@
 	<Binding name="TOGGLECOMMENTATOR" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		C_Commentator.ToggleCheats();
 	</Binding>
+	<Binding name="DUMPMOVEMENTCAPTURE" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		DumpMovementCapture();
+	</Binding>
 
 	<!-- Camera key bindings header="CAMERA" -->
 	<Binding name="NEXTVIEW" category="BINDING_HEADER_CAMERA">

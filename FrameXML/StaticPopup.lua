@@ -995,8 +995,11 @@ StaticPopupDialogs["CONFIRM_REPORT_BATTLEPET_NAME"] = {
 	text = REPORT_BATTLEPET_NAME_CONFIRMATION,
 	button1 = ACCEPT,
 	button2 = CANCEL,
+	OnShow = function(self)
+		self.reportToken = C_ReportSystem.InitiateReportPlayer(PLAYER_REPORT_TYPE_BAD_BATTLEPET_NAME);
+	end,
 	OnAccept = function(self)
-		C_ReportSystem.ReportPlayer(PLAYER_REPORT_TYPE_BAD_BATTLEPET_NAME);
+		C_ReportSystem.SendReportPlayer(self.reportToken);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -1008,8 +1011,11 @@ StaticPopupDialogs["CONFIRM_REPORT_PET_NAME"] = {
 	text = REPORT_PET_NAME_CONFIRMATION,
 	button1 = ACCEPT,
 	button2 = CANCEL,
+	OnShow = function(self)
+		self.reportToken = C_ReportSystem.InitiateReportPlayer(PLAYER_REPORT_TYPE_BAD_PET_NAME);
+	end,
 	OnAccept = function(self)
-		C_ReportSystem.ReportPlayer(PLAYER_REPORT_TYPE_BAD_PET_NAME);
+		C_ReportSystem.SendReportPlayer(self.reportToken);
 	end,
 	timeout = 0,
 	whileDead = 1,

@@ -21,6 +21,7 @@ EJ_ALERT_TIME_DIFF = 60*60*24*7*2; -- 2 weeks
 
 local g_microButtonAlertsEnabled = true;
 local g_visibleMicroButtonAlerts = {};
+local g_acknowledgedMicroButtonAlerts = {};
 local g_visibleExternalAlerts = {};
 local g_flashingMicroButtons = {};
 
@@ -540,7 +541,7 @@ function MainMenuMicroButton_UpdateAlertsEnabled(frameToSkip)
 			if frameToSkip ~= priorityFrame then
 				priorityFrame.MicroButton:EvaluateAlertVisibility();
 				if priorityFrame:IsShown() then
-					break;
+					return;
 				end
 			end
 		end
@@ -556,6 +557,8 @@ function MainMenuMicroButton_UpdateAlertsEnabled(frameToSkip)
 		g_visibleMicroButtonAlerts = {};
 		g_flashingMicroButtons = {};
 	end
+	-- wipe acknowledgements so future events can still show the appropriate ones
+	wipe(g_acknowledgedMicroButtonAlerts);
 end
 
 function MainMenuMicroButton_AreAlertsEffectivelyEnabled()
@@ -564,6 +567,10 @@ end
 
 function MainMenuMicroButton_ShowAlert(alert, text, tutorialIndex)
 	if not MainMenuMicroButton_AreAlertsEffectivelyEnabled() then
+		return false;
+	end
+
+	if g_acknowledgedMicroButtonAlerts[alert] then
 		return false;
 	end
 
@@ -984,6 +991,10 @@ function MicroButtonAlert_OnShow(self)
 	if ( self.tutorialIndex and GetCVarBitfield("closedInfoFrames", self.tutorialIndex) ) then
 		self:Hide();
 	end
+end
+
+function MicroButtonAlert_OnAcknowledged(self)
+	g_acknowledgedMicroButtonAlerts[self] = true;
 end
 
 function MicroButtonAlert_OnHide(self)

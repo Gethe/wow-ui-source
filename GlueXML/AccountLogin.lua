@@ -15,6 +15,7 @@ function AccountLogin_OnLoad(self)
 	self:RegisterEvent("SCREEN_FIRST_DISPLAYED");
 	self:RegisterEvent("LOGIN_STATE_CHANGED");
 	self:RegisterEvent("LAUNCHER_LOGIN_STATUS_CHANGED");
+	self:RegisterEvent("SHOULD_RECONNECT_TO_REALM_LIST");
 
 	AccountLogin_CheckLoginState(self);
 end
@@ -27,6 +28,8 @@ function AccountLogin_OnEvent(self, event, ...)
 		AccountLogin_CheckLoginState(self);
 	elseif ( event == "LAUNCHER_LOGIN_STATUS_CHANGED" ) then
 		AccountLogin_Update();
+	elseif ( event == "SHOULD_RECONNECT_TO_REALM_LIST" ) then
+		C_LoginUI.ReconnectToRealmList();
 	end
 end
 

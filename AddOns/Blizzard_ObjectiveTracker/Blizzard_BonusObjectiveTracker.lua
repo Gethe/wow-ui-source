@@ -485,6 +485,7 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 	end
 
 	GameTooltip:Show();
+	GameTooltip.recalculatePadding = true;
 	block.module.tooltipBlock = block;
 end
 

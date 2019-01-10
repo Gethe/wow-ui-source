@@ -11,4 +11,3 @@ WM_InvasionDataProvider.xml
 WM_DebugDataProvider.xml
 Blizzard_WorldMapTemplates.xml
 Blizzard_WorldMap.xml
-Blizzard_WorldMapTooltip.xml

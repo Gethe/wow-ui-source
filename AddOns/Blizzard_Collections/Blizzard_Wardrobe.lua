@@ -995,7 +995,10 @@ function WardrobeItemsCollectionMixin:OnShow()
 	local needsUpdate = false;	-- we don't need to update if we call WardrobeCollectionFrame_SetActiveSlot as that will do an update
 	if ( self.jumpToLatestCategoryID and self.jumpToLatestCategoryID ~= self.activeCategory ) then
 		local slot = WardrobeCollectionFrame_GetSlotFromCategoryID(self.jumpToLatestCategoryID);
-		self:SetActiveSlot(slot, LE_TRANSMOG_TYPE_APPEARANCE, self.jumpToLatestCategoryID);
+		-- The model got reset from OnShow, which restored all equipment.
+		-- But ChangeModelsSlot tries to be smart and only change the difference from the previous slot to the current slot, so some equipment will remain left on.
+		local ignorePreviousSlot = true;
+		self:SetActiveSlot(slot, LE_TRANSMOG_TYPE_APPEARANCE, self.jumpToLatestCategoryID, ignorePreviousSlot);
 		self.jumpToLatestCategoryID = nil;
 	elseif ( self.activeSlot ) then
 		-- redo the model for the active slot
@@ -1293,8 +1296,8 @@ function WardrobeItemsCollectionMixin:IsValidWeaponCategoryForSlot(categoryID, s
 	return false;
 end
 
-function WardrobeItemsCollectionMixin:SetActiveSlot(slot, transmogType, category)
-	local previousSlot = self.activeSlot;
+function WardrobeItemsCollectionMixin:SetActiveSlot(slot, transmogType, category, ignorePreviousSlot)
+	local previousSlot = ignorePreviousSlot and nil or self.activeSlot;
 	self.activeSlot = slot;
 	self.transmogType = transmogType;
 
@@ -1951,7 +1954,7 @@ function WardrobeItemsModelMixin:OnMouseDown(button)
 		if ( transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
 			local sourceID = self:GetParent():GetAnAppearanceSourceFromVisual(self.visualInfo.visualID, nil);
 			-- don't specify a slot for ranged weapons
-			if ( WardrobeUtils_IsCategoryRanged(self:GetParent():GetActiveCategory()) ) then
+			if ( WardrobeUtils_IsCategoryRanged(self:GetParent():GetActiveCategory()) or  WardrobeUtils_IsCategoryLegionArtifact(self:GetParent():GetActiveCategory()) ) then
 				slot = nil;
 			end
 			DressUpVisual(sourceID, slot);

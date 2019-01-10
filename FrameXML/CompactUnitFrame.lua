@@ -307,6 +307,7 @@ function CompactUnitFrame_UpdateAll(frame)
 		CompactUnitFrame_UpdateAuras(frame);
 		CompactUnitFrame_UpdateCenterStatusIcon(frame);
 		CompactUnitFrame_UpdateClassificationIndicator(frame);
+		CompactUnitFrame_UpdateWidgetSet(frame);
 	end
 end
 
@@ -1017,6 +1018,57 @@ function CompactUnitFrame_UpdateClassificationIndicator(frame)
 		end
 	elseif ( frame.classificationIndicator ) then
 		frame.classificationIndicator:Hide();
+	end
+end
+
+local function WidgetsLayout(widgetContainer, sortedWidgets)
+	local widgetsWidth = 0;
+	local maxWidgetHeight = 0;
+
+	for index, widgetFrame in ipairs(sortedWidgets) do
+		if ( index == 1 ) then
+			widgetFrame:SetPoint("LEFT", widgetContainer, "LEFT", 0, 0);
+		else
+			local relative = sortedWidgets[index - 1];
+			widgetFrame:SetPoint("LEFT", relative, "RIGHT", 2, 0);
+		end
+
+		widgetsWidth = widgetsWidth + widgetFrame:GetWidth();
+
+		local widgetHeight = widgetFrame:GetHeight();
+		if widgetHeight > maxWidgetHeight then
+			maxWidgetHeight = widgetHeight;
+		end
+	end
+
+	widgetContainer:SetHeight(math.max(maxWidgetHeight, 1));
+	widgetContainer:SetWidth(math.max(widgetsWidth, 1));
+end
+
+function CompactUnitFrame_UpdateWidgetSet(frame)
+	if not frame.WidgetContainer then
+		return;
+	end
+
+	local widgetSetID = UnitWidgetSet(frame.unit);
+
+	if frame.widgetSetID and frame.widgetSetID ~= widgetSetID then
+		CompactUnitFrame_ClearWidgetSet(frame);
+	end
+
+	if widgetSetID then
+		frame.WidgetContainer:Show();
+		UIWidgetManager:RegisterWidgetSetContainer(widgetSetID, frame.WidgetContainer, WidgetsLayout);
+	end
+
+	frame.widgetSetID = widgetSetID;
+end
+
+function CompactUnitFrame_ClearWidgetSet(frame)
+	if frame.widgetSetID then
+		UIWidgetManager:UnregisterWidgetSetContainer(frame.widgetSetID, frame.WidgetContainer);
+		frame.WidgetContainer:Hide();
+		frame.widgetSetID = nil;
 	end
 end
 

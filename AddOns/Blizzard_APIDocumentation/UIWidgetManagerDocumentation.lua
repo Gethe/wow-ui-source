@@ -336,9 +336,9 @@ local UIWidgetManager =
 		{
 			Name = "StatusBarValueTextType",
 			Type = "Enumeration",
-			NumValues = 6,
+			NumValues = 7,
 			MinValue = 0,
-			MaxValue = 5,
+			MaxValue = 6,
 			Fields =
 			{
 				{ Name = "Hidden", Type = "StatusBarValueTextType", EnumValue = 0 },
@@ -347,6 +347,19 @@ local UIWidgetManager =
 				{ Name = "Time", Type = "StatusBarValueTextType", EnumValue = 3 },
 				{ Name = "TimeShowOneLevelOnly", Type = "StatusBarValueTextType", EnumValue = 4 },
 				{ Name = "ValueOverMax", Type = "StatusBarValueTextType", EnumValue = 5 },
+				{ Name = "ValueOverMaxNormalized", Type = "StatusBarValueTextType", EnumValue = 6 },
+			},
+		},
+		{
+			Name = "WidgetCurrencyClass",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Currency", Type = "WidgetCurrencyClass", EnumValue = 0 },
+				{ Name = "Item", Type = "WidgetCurrencyClass", EnumValue = 1 },
 			},
 		},
 		{

@@ -1685,6 +1685,23 @@ function EncounterJournal_SetTabEnabled(tab, enabled)
 	tab:SetEnabled(enabled);
 	tab:GetDisabledTexture():SetDesaturated(not enabled);
 	tab.unselected:SetDesaturated(not enabled);
+	if not enabled then
+		EncounterJournal_ValidateSelectedTab();
+	end
+end
+
+function EncounterJournal_ValidateSelectedTab()
+	local info = EncounterJournal.encounter.info;
+	local selectedTabButton = info[EJ_Tabs[info.tab].button];
+	if not selectedTabButton:IsEnabled() then
+		for index, data in ipairs(EJ_Tabs) do
+			local tabButton = info[data.button];
+			if tabButton:IsEnabled() then
+				EncounterJournal_SetTab(index);
+				break;
+			end
+		end
+	end
 end
 
 function EncounterJournal_SetLootButton(item)

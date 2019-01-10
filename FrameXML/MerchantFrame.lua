@@ -269,7 +269,7 @@ function MerchantFrame_UpdateMerchantInfo()
 			local isHeirloom = merchantItemID and C_Heirloom.IsItemHeirloom(merchantItemID);
 			local isKnownHeirloom = isHeirloom and C_Heirloom.PlayerHasHeirloom(merchantItemID);
 
-			itemButton.showNonrefundablePrompt = isHeirloom;
+			itemButton.showNonrefundablePrompt = not C_MerchantFrame.IsMerchantItemRefundable(index);
 
 			itemButton.hasItem = true;
 			itemButton:SetID(index);

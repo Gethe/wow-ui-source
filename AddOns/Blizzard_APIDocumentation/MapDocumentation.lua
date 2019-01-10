@@ -50,20 +50,6 @@ local Map =
 			},
 		},
 		{
-			Name = "GetBountySetMaps",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "bountySetID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "mapIDs", Type = "table", InnerType = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetFallbackWorldMapID",
 			Type = "Function",
 

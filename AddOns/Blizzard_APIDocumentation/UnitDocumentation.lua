@@ -211,6 +211,20 @@ local Unit =
 				{ Name = "sex", Type = "number", Nilable = true },
 			},
 		},
+		{
+			Name = "UnitWidgetSet",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "uiWidgetSet", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =

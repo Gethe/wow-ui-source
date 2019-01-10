@@ -253,20 +253,20 @@ end
 function QuestPinMixin:OnMouseEnter()
 	local questLogIndex = GetQuestLogIndexByID(self.questID);
 	local title = GetQuestLogTitle(questLogIndex);
-	WorldMapTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT", 5, 2);
-	WorldMapTooltip:SetText(title);
-	QuestUtils_AddQuestTypeToTooltip(WorldMapTooltip, self.questID, NORMAL_FONT_COLOR);
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT", 5, 2);
+	GameTooltip:SetText(title);
+	QuestUtils_AddQuestTypeToTooltip(GameTooltip, self.questID, NORMAL_FONT_COLOR);
 
 	if poiButton and poiButton.style ~= "numeric" then
 		local completionText = GetQuestLogCompletionText(questLogIndex) or QUEST_WATCH_QUEST_READY;
-		WorldMapTooltip:AddLine(QUEST_DASH..completionText, 1, 1, 1, true);
+		GameTooltip:AddLine(QUEST_DASH..completionText, 1, 1, 1, true);
 	else
 		local numItemDropTooltips = GetNumQuestItemDrops(questLogIndex);
 		if numItemDropTooltips > 0 then
 			for i = 1, numItemDropTooltips do
 				local text, objectiveType, finished = GetQuestLogItemDrop(i, questLogIndex);
 				if ( text and not finished ) then
-					WorldMapTooltip:AddLine(QUEST_DASH..text, 1, 1, 1, true);
+					GameTooltip:AddLine(QUEST_DASH..text, 1, 1, 1, true);
 				end
 			end
 		else
@@ -274,17 +274,17 @@ function QuestPinMixin:OnMouseEnter()
 			for i = 1, numObjectives do
 				local text, objectiveType, finished = GetQuestLogLeaderBoard(i, questLogIndex);
 				if ( text and not finished ) then
-					WorldMapTooltip:AddLine(QUEST_DASH..text, 1, 1, 1, true);
+					GameTooltip:AddLine(QUEST_DASH..text, 1, 1, 1, true);
 				end
 			end
 		end
 	end
-	WorldMapTooltip:Show();
+	GameTooltip:Show();
 	self:GetMap():TriggerEvent("SetHighlightedQuestPOI", self.questID);
 end
 
 function QuestPinMixin:OnMouseLeave()
-	WorldMapTooltip:Hide();
+	GameTooltip:Hide();
 	self:GetMap():TriggerEvent("ClearHighlightedQuestPOI");
 end
 

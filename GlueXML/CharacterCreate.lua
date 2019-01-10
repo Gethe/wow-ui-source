@@ -92,8 +92,11 @@ RACE_ICON_TCOORDS = {
 	["MAGHARORC_MALE"]			= {0.375, 0.5, 0.25, 0.5},
 	["MAGHARORC_FEMALE"]		= {0.375, 0.5, 0.75, 1.0},
 
-	["ZANDALARITROLL_MALE"]		= {0.25, 0.375, 0.25, 0.5},
-	["ZANDALARITROLL_FEMALE"]	= {0.25, 0.375, 0.75, 1.0},
+	["ZANDALARITROLL_MALE"]		= {0.25, 0.375, 0, 0.25},
+	["ZANDALARITROLL_FEMALE"]	= {0.25, 0.375, 0.5, 0.75},
+
+	["KULTIRAN_MALE"]		= {0, 0.125, 0, 0.25},
+	["KULTIRAN_FEMALE"]		= {0, 0.125, 0.5, 0.75},
 };
 
 CHARCREATE_CLASS_TOOLTIP = {};
@@ -217,6 +220,8 @@ MODEL_CAMERA_CONFIG = {
 		["ZandalariTroll"] = { tx = 0.402, ty = 0.016, tz = 2.076, cz = 1.980, distance = 0.943, light =  0.75 },
 		["DarkIronDwarf"] = { tx = 0.037, ty = 0.009, tz = 1.298, cz = 1.265, distance = 0.839, light =  0.85 },
 		["MagharOrc"] = { tx = -0.0322, ty = -0.0771, tz = 2.114, cz = 2.030, distance = 1.200, light =  0.75 },
+		["ZandalariTroll"] = { tx = 0.095, ty = -0.008, tz = 2.6, cz = 2.5, distance = 1.0, light =  0.85 },
+		["KulTiran"] = { tx = 0.055, ty = 0.006, tz = 2.3, cz = 2.2, distance = 1.2, light =  0.75 },
 	},
 	[1] = {
 		["Draenei"] = { tx = 0.155, ty = 0.009, tz = 2.177, cz = 1.971, distance = 0.734, light =  0.75 },
@@ -249,6 +254,8 @@ MODEL_CAMERA_CONFIG = {
 		["ZandalariTroll"] = { tx = 0.031, ty = -0.082, tz = 2.226, cz = 2.248, distance = 0.674, light =  0.75 },
 		["DarkIronDwarf"] = { tx = -0.060, ty = -0.010, tz = 1.326, cz = 1.343, distance = 0.720, light =  0.80 },
 		["MagharOrc"] = { tx = -0.069, ty = -0.007, tz = 1.863, cz = 1.718, distance = 0.585, light =  0.75 },
+		["ZandalariTroll"] = { tx = 0.031, ty = -0.082, tz = 2.5, cz = 2.4, distance = 1.9, light =  0.75 },
+		["KulTiran"] = { tx = -0.044, ty = -0.015, tz = 2.3, cz = 2.2, distance = 1.2, light =  0.75 },
 	}
 };
 
@@ -2276,7 +2283,9 @@ function CharacterCreate_UpdateCharacterTypeButtons()
 	local raceData = C_CharacterCreation.GetRaceDataByID(C_CharacterCreation.GetSelectedRace());
 	for index, button in ipairs(CharCreateCharacterTypeFrame.typeButtons) do
 		UpdateLevelText(button, classInfo, raceData);
-		if (button.characterType == Enum.CharacterCreateType.TrialBoost) then
+		if (button.characterType == Enum.CharacterCreateType.Normal) then
+			button:SetEnabled(C_CharacterCreation.IsClassAndRaceValidForCharacterCreation(Enum.CharacterCreateType.Normal, classInfo.classID, raceData.raceID));
+		elseif (button.characterType == Enum.CharacterCreateType.TrialBoost) then
 			button:SetEnabled(IsBoostAllowed(classInfo, raceData));
 		end
 	end

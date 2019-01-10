@@ -419,6 +419,11 @@ function EquipmentFlyout_DisplaySpecialButton(button, paperDollItemSlot)
 	local location = button.location;
 	button.UpgradeIcon:Hide();
 	button.IconOverlay:Hide();
+	
+	local quality = nil;
+	local itemID = nil;
+	SetItemButtonQuality(button, quality, itemID);
+
 	if ( location == EQUIPMENTFLYOUT_IGNORESLOT_LOCATION ) then
 		SetItemButtonTexture(button, "Interface\\PaperDollInfoFrame\\UI-GearManager-LeaveItem-Opaque");
 		SetItemButtonCount(button, nil);

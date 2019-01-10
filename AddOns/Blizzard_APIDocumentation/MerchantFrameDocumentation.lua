@@ -20,6 +20,20 @@ local MerchantFrame =
 				{ Name = "buybackItemID", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "IsMerchantItemRefundable",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "refundable", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
