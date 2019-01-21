@@ -2276,7 +2276,9 @@ function CharacterCreate_UpdateCharacterTypeButtons()
 	local raceData = C_CharacterCreation.GetRaceDataByID(C_CharacterCreation.GetSelectedRace());
 	for index, button in ipairs(CharCreateCharacterTypeFrame.typeButtons) do
 		UpdateLevelText(button, classInfo, raceData);
-		if (button.characterType == Enum.CharacterCreateType.TrialBoost) then
+		if (button.characterType == Enum.CharacterCreateType.Normal) then
+			button:SetEnabled(C_CharacterCreation.IsClassAndRaceValidForCharacterCreation(Enum.CharacterCreateType.Normal, classInfo.classID, raceData.raceID));
+		elseif (button.characterType == Enum.CharacterCreateType.TrialBoost) then
 			button:SetEnabled(IsBoostAllowed(classInfo, raceData));
 		end
 	end

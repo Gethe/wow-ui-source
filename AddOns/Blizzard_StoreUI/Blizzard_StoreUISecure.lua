@@ -3433,6 +3433,12 @@ function StoreVASValidationFrame_Init(self)
 	OldGuildNewName = nil;
 	NewGuildMaster = nil;
 
+	if not InstructionsShowing then
+		RealmWaitingOnGuildMasterInfo = nil;
+		RealmWithGuildMasterInfo = nil;
+		UpdateCharacterList();
+	end
+
 	self.Disclaimer:Hide();
 	self.CharacterSelectionFrame.ContinueButton:Disable();
 	self.CharacterSelectionFrame.ContinueButton:Show();
@@ -3577,10 +3583,10 @@ function StoreVASValidationFrame_UpdateGuildFactionChangeValidationPosition()
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 	if (frame.OldGuildNewName:IsShown()) then
 		frame.ValidationDescription:ClearAllPoints();
-		frame.ValidationDescription:SetPoint("TOPLEFT", frame.OldGuildNewName.Label, "BOTTOMLEFT", 0, -16);
+		frame.ValidationDescription:SetPoint("TOPLEFT", frame.OldGuildNewName.Label, "BOTTOMLEFT", 0, -8);
 	else
 		frame.ValidationDescription:ClearAllPoints();
-		frame.ValidationDescription:SetPoint("TOPLEFT", frame.NewGuildMaster.Label, "BOTTOMLEFT", 0, -16);
+		frame.ValidationDescription:SetPoint("TOPLEFT", frame.NewGuildMaster.Label, "BOTTOMLEFT", 0, -8);
 	end
 end
 
@@ -3588,13 +3594,12 @@ function StoreVASValidationFrame_UpdateCharacterTransferValidationPosition()
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 	local bottomWidget;
 	local xOffset = 8;
-	local yOffset = -16;
+	local yOffset = -8;
 	if (frame.ChangeIconFrame:IsShown()) then
 		bottomWidget = frame.ChangeIconFrame;
 	elseif (frame.TransferBnetWoWAccountDropDown:IsShown()) then
 		bottomWidget = frame.TransferBnetWoWAccountDropDown;
 		xOffset = 16;
-		yOffset = -16;
 	elseif (frame.TransferFactionCheckbox:IsShown()) then
 		bottomWidget = frame.TransferFactionCheckbox;
 	elseif (frame.TransferBattlenetAccountEditbox:IsShown()) then
@@ -3621,6 +3626,18 @@ function StoreVASValidationFrame_SyncFontHeights(...)
 		local obj = select(i, ...);
 		obj:SetFontObject(smallestObject:GetFontObject());
 	end
+end
+
+local function StoreVASValidationFrame_ValidationDescription_SetText(text, isError)
+	local frame = StoreVASValidationFrame.CharacterSelectionFrame.ValidationDescription;
+
+	if isError then
+		frame:SetTextColor(1.0, 0.1, 0.1);
+	else
+		frame:SetTextColor(0, 0, 0);
+	end
+
+	frame:SetText(HTML_START..text..HTML_END);
 end
 
 function StoreVASValidationFrame_OnEvent(self, event, ...)
@@ -3666,10 +3683,8 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			frame.ValidationDescription:Hide();
 		else
 			frame.ValidationDescription:ClearAllPoints();
-			frame.ValidationDescription:SetPoint("TOPLEFT", frame.TransferBattlenetAccountEditbox, "BOTTOMLEFT", -4, -16);
-			frame.ValidationDescription:SetFontObject("GameFontBlackSmall2");
-			frame.ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
-			frame.ValidationDescription:SetText(BLIZZARD_STORE_VAS_ERROR_INVALID_BNET_ACCOUNT);
+			frame.ValidationDescription:SetPoint("TOPLEFT", frame.TransferBattlenetAccountEditbox, "BOTTOMLEFT", -4, -8);
+			StoreVASValidationFrame_ValidationDescription_SetText(BLIZZARD_STORE_VAS_ERROR_INVALID_BNET_ACCOUNT, true);
 			frame.ValidationDescription:Show();
 		end
 	elseif ( event == "VAS_QUEUE_STATUS_UPDATE" ) then
@@ -3736,9 +3751,7 @@ function StoreVASValidationFrame_SetErrors(errors)
 	end
 	frame.Spinner:Hide();
 	frame.RealmSelector.Button:Enable();
-	frame.ValidationDescription:SetFontObject("GameFontBlackSmall2");
-	frame.ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
-	frame.ValidationDescription:SetText(desc);
+	StoreVASValidationFrame_ValidationDescription_SetText(desc, true);
 	frame.ValidationDescription:Show();
 	StoreVASValidationState_Unlock();
 	frame.ContinueButton:Show();
@@ -4923,7 +4936,6 @@ function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 		frame.SelectedCharacterDescription:Show();
 	end
 
-	frame.ValidationDescription:SetFontObject("GameFontBlack");
 	frame.ValidationDescription:SetTextColor(0, 0, 0);
 	frame.ValidationDescription:Hide();
 
@@ -4935,14 +4947,14 @@ function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 		frame.NewCharacterName:SetFocus();
 		frame.ContinueButton:Disable();
 		frame.ValidationDescription:ClearAllPoints();
-		frame.ValidationDescription:SetPoint("TOPLEFT", frame.NewCharacterName, "BOTTOMLEFT", -5, -6);
+		frame.ValidationDescription:SetPoint("TOPLEFT", frame.NewCharacterName, "BOTTOMLEFT", -5, -8);
 	elseif (VASServiceType == Enum.VasServiceType.GuildNameChange) then
 		frame.NewGuildName:SetText("");
 		frame.NewGuildName:Show();
 		frame.NewGuildName:SetFocus();
 		frame.ContinueButton:Disable();
 		frame.ValidationDescription:ClearAllPoints();
-		frame.ValidationDescription:SetPoint("TOPLEFT", frame.NewGuildName, "BOTTOMLEFT", -5, -6);
+		frame.ValidationDescription:SetPoint("TOPLEFT", frame.NewGuildName, "BOTTOMLEFT", -5, -8);
 	elseif (VASServiceType == Enum.VasServiceType.GuildFactionChange) then
 		frame.RenameGuildCheckbox:ClearAllPoints();
 		frame.RenameGuildCheckbox:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 5, -8);
@@ -4980,7 +4992,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 
 		frame.ContinueButton:Disable();
 		frame.ValidationDescription:ClearAllPoints();
-		frame.ValidationDescription:SetPoint("TOPLEFT", frame.TransferFactionCheckbox, "BOTTOMLEFT", 8, -16);
+		frame.ValidationDescription:SetPoint("TOPLEFT", frame.TransferFactionCheckbox, "BOTTOMLEFT", 8, -8);
 	elseif (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
 		if (C_StoreSecure.GetCurrencyID() ~= CURRENCY_KRW) then
 			frame.TransferAccountCheckbox:Show();
@@ -5015,9 +5027,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 				frame.ChangeIconFrame:Hide();
 				frame.ValidationDescription:ClearAllPoints();
 				frame.ValidationDescription:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 8, -8);
-				frame.ValidationDescription:SetFontObject("GameFontBlackSmall2");
-				frame.ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
-				frame.ValidationDescription:SetText(StoreVASValidationFrame_AppendError(BLIZZARD_STORE_VAS_ERROR_LABEL, Enum.VasError.RaceClassComboIneligible, character, true));
+				StoreVASValidationFrame_ValidationDescription_SetText(StoreVASValidationFrame_AppendError(BLIZZARD_STORE_VAS_ERROR_LABEL, Enum.VasError.RaceClassComboIneligible, character, true), true);
 				frame.ValidationDescription:Show();
 				frame.ContinueButton:Disable();
 				return;
@@ -5027,17 +5037,17 @@ function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 			VASCharacterSelectionChangeIconFrame_SetIcons(character, VASServiceType);
 
 			if (VASServiceType == Enum.VasServiceType.RaceChange) then
-				frame.ValidationDescription:SetText(VAS_RACE_CHANGE_VALIDATION_DESCRIPTION);
+				StoreVASValidationFrame_ValidationDescription_SetText(VAS_RACE_CHANGE_VALIDATION_DESCRIPTION);
 			elseif (VASServiceType == Enum.VasServiceType.FactionChange) then
-				frame.ValidationDescription:SetText(VAS_FACTION_CHANGE_VALIDATION_DESCRIPTION);
+				StoreVASValidationFrame_ValidationDescription_SetText(VAS_FACTION_CHANGE_VALIDATION_DESCRIPTION);
 			end
 			frame.ValidationDescription:Show();
 		elseif (VASServiceType == Enum.VasServiceType.AppearanceChange) then
-			frame.ValidationDescription:SetText(VAS_APPEARANCE_CHANGE_VALIDATION_DESCRIPTION);
+			StoreVASValidationFrame_ValidationDescription_SetText(VAS_APPEARANCE_CHANGE_VALIDATION_DESCRIPTION);
 			frame.ValidationDescription:Show();
 		end
 		frame.ValidationDescription:ClearAllPoints();
-		frame.ValidationDescription:SetPoint("TOPLEFT", bottomWidget, "BOTTOMLEFT", 8, -16);
+		frame.ValidationDescription:SetPoint("TOPLEFT", bottomWidget, "BOTTOMLEFT", 8, -8);
 		frame.ContinueButton:Enable();
 	end
 
@@ -5538,9 +5548,7 @@ end
 function VASCharacterSelection_CheckForValidName(self, nameToCheck, validNameCheckFunction)
 	local valid, reason = validNameCheckFunction(nameToCheck);
 	if not valid then
-		self:GetParent().ValidationDescription:SetFontObject("GameFontBlackSmall2");
-		self:GetParent().ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
-		self:GetParent().ValidationDescription:SetText(_G[reason]);
+		StoreVASValidationFrame_ValidationDescription_SetText(_G[reason], true);
 		self:GetParent().ValidationDescription:Show();
 		StoreVASValidationState_Unlock();
 		self:GetParent().ContinueButton:Disable();

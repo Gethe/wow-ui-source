@@ -2546,12 +2546,6 @@
 									<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterName" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 								</Anchors>
 							</FontString>
-							<FontString parentKey="ValidationDescription" inherits="GameFontBlack" hidden="true" justifyH="LEFT">
-								<Size x="300" y="0"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="0" y="-16"/>
-								</Anchors>
-							</FontString>
 							<FontString parentKey="NoEligibleCharactersErrorMessage" inherits="GameFontBlack" hidden="true" justifyH="LEFT">
 								<Size x="300"/>
 								<Anchors>
@@ -2583,6 +2577,16 @@
 						</Layer>
 					</Layers>
 					<Frames>
+						<SimpleHTML parentKey="ValidationDescription" hidden="true">
+							<Size x="300" y="100"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="0" y="-16"/>
+							</Anchors>
+							<Scripts>
+								<OnHyperlinkClick function="GetURLIndexAndLoadURL" />
+							</Scripts>
+							<FontString inherits="GameFontBlackSmall2" justifyH="LEFT" />
+						</SimpleHTML>
 						<Frame parentKey="ChangeIconFrame" hidden="true">
 							<Size x="302" y="46"/>
 							<Anchors>
