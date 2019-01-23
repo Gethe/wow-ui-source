@@ -184,8 +184,10 @@ function SplashFrame_OnEvent(self, event)
 		end
 	elseif( event == "PLAYER_ENTERING_WORLD" ) then
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
+		self:RegisterEvent("CHALLENGE_MODE_MAPS_UPDATE");
 		self.playerEntered = true;
 		ApplyFactionOverrides();
+		C_MythicPlus.RequestMapInfo();
 	elseif( event == "VARIABLES_LOADED" ) then
 		self:UnregisterEvent("VARIABLES_LOADED");
 		self.varsLoaded = true;
@@ -196,6 +198,13 @@ function SplashFrame_OnEvent(self, event)
 			CheckSplashScreenShow();
 		end
 	end
+
+	if( event == "CHALLENGE_MODE_MAPS_UPDATE" ) then 
+		if (self.playerEntered) then 
+			self:UnregisterEvent("CHALLENGE_MODE_MAPS_UPDATE");
+			CheckSplashScreenShow(); 
+		end 
+	end 
 end
 
 function SplashFrame_Display(tag, showStartButton)
