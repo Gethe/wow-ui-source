@@ -1,9 +1,6 @@
 TOOLTIP_UPDATE_TIME = 0.2;
 BOSS_FRAME_CASTBAR_HEIGHT = 16;
 
--- Mirror of the same Variable in StoreSecureUI.lua and GlueParent.lua
-WOW_GAMES_CATEGORY_ID = 33;
-
 -- Alpha animation stuff
 FADEFRAMES = {};
 FLASHFRAMES = {};

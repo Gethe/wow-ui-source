@@ -91,6 +91,10 @@ function OverrideActionBar_OnEvent(self, event, ...)
 end
 
 function OverrideActionBar_OnShow(self)
+	OverrideActionBar_UpdateMicroButtons();
+end
+
+function OverrideActionBar_UpdateMicroButtons()
 	local anchorX, anchorY = OverrideActionBar_GetMicroButtonAnchor();
 	UpdateMicroButtonsParent(OverrideActionBar);
 	MoveMicroButtons("BOTTOMLEFT", OverrideActionBar, "BOTTOMLEFT", anchorX, anchorY, true);
@@ -102,7 +106,8 @@ function OverrideActionBar_UpdateSkin()
 		OverrideActionBar_Setup(UnitVehicleSkin("player"), GetVehicleBarIndex());
 	else
 		OverrideActionBar_Setup(GetOverrideBarSkin(), GetOverrideBarIndex());
-	end	
+	end
+	OverrideActionBar_UpdateMicroButtons();
 end
 
 function OverrideActionBar_SetSkin(skin)

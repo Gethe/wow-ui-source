@@ -816,31 +816,22 @@ local function WidgetLayout(widgetContainer, sortedWidgets)
 end
 
 function GameTooltip_AddWidgetSet(self, widgetSetID)
-	if self.widgetSetID == widgetSetID then
-		GameTooltip_InsertFrame(self, self.widgetContainer);
+	if not widgetSetID then
 		return;
 	end
 
-	GameTooltip_ClearWidgetSet(self);
-
-	if widgetSetID then
-		if not self.widgetContainer then
-			self.widgetContainer = CreateFrame("FRAME", nil, self);
-		else
-			self.widgetContainer:SetParent(self);
-		end
-
-		UIWidgetManager:RegisterWidgetSetContainer(widgetSetID, self.widgetContainer, WidgetLayout);
-		GameTooltip_InsertFrame(self, self.widgetContainer);
+	if not self.widgetContainer then
+		self.widgetContainer = CreateFrame("FRAME", nil, self, "UIWidgetContainerTemplate");
+		self.widgetContainer.showAndHideOnWidgetSetRegistration = false;
 	end
 
-	self.widgetSetID = widgetSetID;
+	self.widgetContainer:RegisterForWidgetSet(widgetSetID, WidgetLayout);
+	GameTooltip_InsertFrame(self, self.widgetContainer);
 end
 
 function GameTooltip_ClearWidgetSet(self)
-	if self.widgetSetID then
-		UIWidgetManager:UnregisterWidgetSetContainer(self.widgetSetID, self.widgetContainer);
-		self.widgetSetID = nil;
+	if self.widgetContainer then
+		self.widgetContainer:UnregisterForWidgetSet();
 	end
 end
 

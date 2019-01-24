@@ -37,8 +37,13 @@
 			<OnEvent function="ItemAnim_OnEvent"/>
 		</Scripts>
 	</Frame>
-	<CheckButton name="BagSlotButtonTemplate" inherits="ItemButtonTemplate, ItemAnimTemplate" virtual="true">
+	<ItemButton name="BagSlotButtonTemplate" mixin="BagSlotMixin" inherits="ItemAnimTemplate" virtual="true">
 		<Size x="30" y="30"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SlotHighlightTexture" alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight" setAllPoints="true" hidden="true"/>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnLoad>
                 BagSlotButton_OnLoad(self);
@@ -71,13 +76,17 @@
 				ResetCursor();
 			</OnLeave>
 		</Scripts>
-		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
-	</CheckButton>
-	<CheckButton name="MainMenuBarBackpackButton" inherits="ItemButtonTemplate, ItemAnimTemplate" parent="MicroButtonAndBagsBar" id="0">
+	</ItemButton>
+	<ItemButton name="MainMenuBarBackpackButton" mixin="BagSlotMixin" inherits="ItemAnimTemplate" parent="MicroButtonAndBagsBar" id="0">
 		<Size x="40" y="40"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT" x="-4" y="-4"/>
 		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SlotHighlightTexture" alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight" setAllPoints="true" hidden="true"/>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnLoad function="MainMenuBarBackpackButton_OnLoad" />
 			<OnClick function="MainMenuBarBackpackButton_OnClick" />
@@ -89,9 +98,8 @@
 				MainMenuBarBackpackButton_OnEvent(self, event, ...);
 			</OnEvent>
 		</Scripts>
-		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
-	</CheckButton>
-	<CheckButton name="CharacterBag0Slot" inherits="BagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
+	</ItemButton>
+	<ItemButton name="CharacterBag0Slot" inherits="BagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="MainMenuBarBackpackButton" relativePoint="LEFT">
 				<Offset>
@@ -99,8 +107,8 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-	</CheckButton>
-	<CheckButton name="CharacterBag1Slot" inherits="BagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
+	</ItemButton>
+	<ItemButton name="CharacterBag1Slot" inherits="BagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="CharacterBag0Slot" relativePoint="LEFT">
 				<Offset>
@@ -108,8 +116,8 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-	</CheckButton>
-	<CheckButton name="CharacterBag2Slot" inherits="BagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
+	</ItemButton>
+	<ItemButton name="CharacterBag2Slot" inherits="BagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="CharacterBag1Slot" relativePoint="LEFT">
 				<Offset>
@@ -117,8 +125,8 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-	</CheckButton>
-	<CheckButton name="CharacterBag3Slot" inherits="BagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
+	</ItemButton>
+	<ItemButton name="CharacterBag3Slot" inherits="BagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="CharacterBag2Slot" relativePoint="LEFT">
 				<Offset>
@@ -126,7 +134,7 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-	</CheckButton>
+	</ItemButton>
 
     <Frame name="AzeriteInBagsHelpBox" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG" toplevel="true" clampedToScreen="true">
         <Size x="220" y="100"/>

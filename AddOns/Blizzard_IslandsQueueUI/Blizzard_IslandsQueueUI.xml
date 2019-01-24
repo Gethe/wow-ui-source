@@ -337,8 +337,11 @@
 			</Frame>
 		</Frames>
 	</Frame>	
-	<Frame name="IslandsQueueFrameCardFrameTemplate" virtual="true">
-		<Size x="950" y="642"/> 
+	<Frame name="IslandsQueueFrameCardFrameTemplate" virtual="true" inherits="UIWidgetContainerTemplate">
+		<Size x="950" y="642"/>
+		<KeyValues>
+			<KeyValue key="showAndHideOnWidgetSetRegistration" value="false" type="boolean"/>
+		</KeyValues>
 		<Frames>
 			<Frame parentKey="CenterCard" frameLevel="1000" parentArray="IslandCards" inherits="IslandsQueueFrameIslandCardTemplate">
 				<Size x="438" y="302"/>

@@ -36,6 +36,7 @@ ChallengeModeInfoDocumentation.lua
 ChatBubblesDocumentation.lua
 ChatInfoDocumentation.lua
 CinematicDocumentation.lua
+ClassColorDocumentation.lua
 ClassTrialDocumentation.lua
 ClubDocumentation.lua
 CombatLogDocumentation.lua

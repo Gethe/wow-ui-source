@@ -1,6 +1,11 @@
+
+## first
+..\SharedXML\SharedConstants.lua
+
 ##DebugHook.lua
 ..\SharedXML\C_TimerAugment.lua
 ..\SharedXML\Util.lua
+..\SharedXML\TimeUtil.lua
 ..\SharedXML\AnchorUtil.xml
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua

@@ -106,7 +106,6 @@ retain("BACKPACK_CONTAINER");
 retain("NUM_BAG_SLOTS");
 retain("RAID_CLASS_COLORS");
 retain("CLASS_ICON_TCOORDS");
-retain("C_PetJournal");
 retain("C_Timer");
 retain("C_ModelInfo");
 retain("IsModifiedClick");
@@ -570,3 +569,7 @@ retain("ShrinkUntilTruncateFontStringMixin");
 retain("GetFinalNameFromTextureKit")
 retain("PortraitFrameTemplate_SetPortraitToAsset");
 retain("C_Texture");
+
+-- retain shared constants
+retain("WOW_GAMES_CATEGORY_ID");
+retain("WOW_GAME_TIME_CATEGORY_ID");

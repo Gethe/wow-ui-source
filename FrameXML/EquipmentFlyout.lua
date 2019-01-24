@@ -59,7 +59,7 @@ function EquipmentFlyout_CreateButton()
 	local buttonAnchor = EquipmentFlyoutFrame.buttonFrame;
 	local numButtons = #buttons;
 	
-	local button = CreateFrame("BUTTON", "EquipmentFlyoutFrameButton" .. numButtons + 1, buttonAnchor, "EquipmentFlyoutButtonTemplate");
+	local button = CreateFrame("ItemButton", "EquipmentFlyoutFrameButton" .. numButtons + 1, buttonAnchor, "EquipmentFlyoutButtonTemplate");
 
 	local pos = numButtons/EQUIPMENTFLYOUT_ITEMS_PER_ROW;
 	if ( math.floor(pos) == pos ) then

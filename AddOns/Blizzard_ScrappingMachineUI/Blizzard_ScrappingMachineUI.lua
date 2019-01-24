@@ -63,8 +63,9 @@ function ScrappingMachineMixin:OnShow()
 	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player");
 	self.TitleText:SetText(C_ScrappingMachineUI.GetScrappingMachineName());
 	
-	local forceUpdate = true;
-	OpenAllBags(self, forceUpdate);
+	OpenAllBags(self);
+	
+	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 end
 
 function ScrappingMachineMixin:OnEvent(event, ...)
@@ -112,8 +113,9 @@ function ScrappingMachineMixin:OnHide()
 	PlaySound(SOUNDKIT.UI_80_SCRAPPING_WINDOW_CLOSE);
 	self:CloseScrappingMachine();
 	
-	local forceUpdate = true;
-	CloseAllBags(self, forceUpdate);
+	CloseAllBags(self);
+	
+	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 end
 
 ScrappingMachineItemSlotMixin = {};

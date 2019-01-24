@@ -1097,6 +1097,10 @@ function SpecButton_OnClick(self)
 end
 
 function PlayerTalentFrame_UpdateSpecFrame(self, spec)
+	if ( not C_SpecializationInfo.IsInitialized() ) then
+		return;
+	end
+
 	local playerTalentSpec = GetSpecialization(nil, self.isPet, specs[selectedSpec].talentGroup);
 	local shownSpec = spec or playerTalentSpec or 1;
 	local numSpecs = GetNumSpecializations(nil, self.isPet);
@@ -1149,9 +1153,9 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 
 	-- display spec info in the scrollframe
 	local scrollChild = self.spellsScroll.child;
-	local id, name, description, icon, _, primaryStat = GetSpecializationInfo(shownSpec, nil, self.isPet, nil, sex);
+	local specID, name, description, icon, _, primaryStat = GetSpecializationInfo(shownSpec, nil, self.isPet, nil, sex);
 	local primarySpecID = GetPrimarySpecialization();
-	self.previewSpecCost = (id ~= primarySpecID) and GetSpecChangeCost() or nil;
+	self.previewSpecCost = (specID ~= primarySpecID) and GetSpecChangeCost() or nil;
 	SetPortraitToTexture(scrollChild.specIcon, icon);
 	scrollChild.specName:SetText(name);
 	scrollChild.description:SetText(description);
@@ -1244,7 +1248,7 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 		-- GetSpecializationSpells adds a spell level after each spell ID, but we only care about the spell ID
 		bonusesIncrement = 2;
 	else
-		bonuses = C_SpecializationInfo.GetSpellsDisplay(id);
+		bonuses = C_SpecializationInfo.GetSpellsDisplay(specID);
 	end
 	if ( bonuses ) then
 		for i=1,#bonuses,bonusesIncrement do

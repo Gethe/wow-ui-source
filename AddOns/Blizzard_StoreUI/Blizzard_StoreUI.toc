@@ -12,6 +12,7 @@
 ..\..\SharedXML\AnchorUtil.xml
 ..\..\SharedXML\PanelThemes.lua
 Blizzard_SimpleCheckout.xml
+Blizzard_ProductCardTemplates.xml
 Blizzard_StoreUI.xml
 Blizzard_StoreUIInsecure.xml
 Localization.lua

@@ -100,6 +100,22 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "ReplaceIconAndGroupExpressions",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "input", Type = "string", Nilable = false },
+				{ Name = "noIconReplacement", Type = "bool", Nilable = true },
+				{ Name = "noGroupReplacement", Type = "bool", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "output", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "ResetDefaultZoneChannels",
 			Type = "Function",
 		},

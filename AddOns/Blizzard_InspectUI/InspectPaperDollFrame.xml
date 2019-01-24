@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
     <Script file="InspectPaperDollFrame.lua"/>
-    <Button name="InspectPaperDollItemSlotButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+    <ItemButton name="InspectPaperDollItemSlotButtonTemplate" virtual="true">
         <Scripts>
             <OnLoad>
 				InspectPaperDollItemSlotButton_OnLoad(self);
@@ -38,8 +38,8 @@
 				</Anchor>
 			</Anchors>
 		</NormalTexture>
-    </Button>
-	<Button name="InspectPaperDollItemSlotButtonLeftTemplate" inherits="InspectPaperDollItemSlotButtonTemplate" virtual="true">
+    </ItemButton>
+	<ItemButton name="InspectPaperDollItemSlotButtonLeftTemplate" inherits="InspectPaperDollItemSlotButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture name="$parentFrame" inherits="Char-LeftSlot">	
@@ -49,8 +49,8 @@
 				</Texture>
 			</Layer>
 		</Layers>
-	</Button>
-	<Button name="InspectPaperDollItemSlotButtonRightTemplate" inherits="InspectPaperDollItemSlotButtonTemplate" virtual="true">
+	</ItemButton>
+	<ItemButton name="InspectPaperDollItemSlotButtonRightTemplate" inherits="InspectPaperDollItemSlotButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture name="$parentFrame" inherits="Char-RightSlot">	
@@ -60,8 +60,8 @@
 				</Texture>
 			</Layer>
 		</Layers>
-	</Button>
-	<Button name="InspectPaperDollItemSlotButtonBottomTemplate" inherits="InspectPaperDollItemSlotButtonTemplate" virtual="true">
+	</ItemButton>
+	<ItemButton name="InspectPaperDollItemSlotButtonBottomTemplate" inherits="InspectPaperDollItemSlotButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture name="$parentFrame" inherits="Char-BottomSlot">	
@@ -71,7 +71,7 @@
 				</Texture>
 			</Layer>
 		</Layers>
-	</Button>
+	</ItemButton>
     <Frame name="InspectPaperDollFrame" setAllPoints="true" useParentLevel="true" parent="InspectFrame" id="1">
         <Layers>
             <Layer level="OVERLAY">
@@ -228,12 +228,12 @@
             </PlayerModel>
 			<Frame name="InspectPaperDollItemsFrame" setAllPoints="true">
 				<Frames>
-					<Button name="InspectHeadSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
+					<ItemButton name="InspectHeadSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="InspectFrameInset" x="4" y="-2"/>
 						</Anchors>
-					</Button>
-					<Button name="InspectNeckSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
+					</ItemButton>
+					<ItemButton name="InspectNeckSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="InspectHeadSlot" relativePoint="BOTTOMLEFT">
 								<Offset>
@@ -241,8 +241,8 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-					</Button>
-					<Button name="InspectShoulderSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
+					</ItemButton>
+					<ItemButton name="InspectShoulderSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="InspectNeckSlot" relativePoint="BOTTOMLEFT">
 								<Offset>
@@ -250,8 +250,8 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-					</Button>
-					<Button name="InspectBackSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
+					</ItemButton>
+					<ItemButton name="InspectBackSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="InspectShoulderSlot" relativePoint="BOTTOMLEFT">
 								<Offset>
@@ -259,8 +259,8 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-					</Button>
-					<Button name="InspectChestSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
+					</ItemButton>
+					<ItemButton name="InspectChestSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="InspectBackSlot" relativePoint="BOTTOMLEFT">
 								<Offset>
@@ -268,8 +268,8 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-					</Button>
-					<Button name="InspectShirtSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
+					</ItemButton>
+					<ItemButton name="InspectShirtSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="InspectChestSlot" relativePoint="BOTTOMLEFT">
 								<Offset>
@@ -277,8 +277,8 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-					</Button>
-					<Button name="InspectTabardSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
+					</ItemButton>
+					<ItemButton name="InspectTabardSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="InspectShirtSlot" relativePoint="BOTTOMLEFT">
 								<Offset>
@@ -286,8 +286,8 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-					</Button>
-					<Button name="InspectWristSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
+					</ItemButton>
+					<ItemButton name="InspectWristSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="InspectTabardSlot" relativePoint="BOTTOMLEFT">
 								<Offset>
@@ -295,13 +295,13 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-					</Button>
-					<Button name="InspectHandsSlot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
+					</ItemButton>
+					<ItemButton name="InspectHandsSlot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="InspectFrameInset" x="-4" y="-2"/>
 						</Anchors>
-					</Button>
-					<Button name="InspectWaistSlot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
+					</ItemButton>
+					<ItemButton name="InspectWaistSlot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="InspectHandsSlot" relativePoint="BOTTOMLEFT">
 								<Offset>
@@ -309,8 +309,8 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-					</Button>
-					<Button name="InspectLegsSlot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
+					</ItemButton>
+					<ItemButton name="InspectLegsSlot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="InspectWaistSlot" relativePoint="BOTTOMLEFT">
 								<Offset>
@@ -318,8 +318,8 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-					</Button>
-					<Button name="InspectFeetSlot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
+					</ItemButton>
+					<ItemButton name="InspectFeetSlot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="InspectLegsSlot" relativePoint="BOTTOMLEFT">
 								<Offset>
@@ -327,8 +327,8 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-					</Button>
-					<Button name="InspectFinger0Slot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
+					</ItemButton>
+					<ItemButton name="InspectFinger0Slot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="InspectFeetSlot" relativePoint="BOTTOMLEFT">
 								<Offset>
@@ -336,8 +336,8 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-					</Button>
-					<Button name="InspectFinger1Slot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
+					</ItemButton>
+					<ItemButton name="InspectFinger1Slot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="InspectFinger0Slot" relativePoint="BOTTOMLEFT">
 								<Offset>
@@ -345,8 +345,8 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-					</Button>
-					<Button name="InspectTrinket0Slot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
+					</ItemButton>
+					<ItemButton name="InspectTrinket0Slot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="InspectFinger1Slot" relativePoint="BOTTOMLEFT">
 								<Offset>
@@ -354,8 +354,8 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-					</Button>
-					<Button name="InspectTrinket1Slot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
+					</ItemButton>
+					<ItemButton name="InspectTrinket1Slot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="InspectTrinket0Slot" relativePoint="BOTTOMLEFT">
 								<Offset>
@@ -363,8 +363,8 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-					</Button>
-					<Button name="InspectMainHandSlot" inherits="InspectPaperDollItemSlotButtonBottomTemplate">
+					</ItemButton>
+					<ItemButton name="InspectMainHandSlot" inherits="InspectPaperDollItemSlotButtonBottomTemplate">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
@@ -381,8 +381,8 @@
 								</Texture>
 							</Layer>
 						</Layers>
-					</Button>
-					<Button name="InspectSecondaryHandSlot" inherits="InspectPaperDollItemSlotButtonBottomTemplate">
+					</ItemButton>
+					<ItemButton name="InspectSecondaryHandSlot" inherits="InspectPaperDollItemSlotButtonBottomTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="InspectMainHandSlot" relativePoint="TOPRIGHT">
 								<Offset>
@@ -390,7 +390,7 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-					</Button>
+					</ItemButton>
 				</Frames>
 			</Frame>
 		</Frames>

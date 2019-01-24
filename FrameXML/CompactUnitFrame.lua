@@ -356,6 +356,7 @@ function CompactUnitFrame_UpdateVisible(frame)
 		frame.unitExists = true;
 		frame:Show();
 	else
+		CompactUnitFrame_ClearWidgetSet(frame);
 		frame:Hide();
 		frame.unitExists = false;
 	end
@@ -1051,24 +1052,12 @@ function CompactUnitFrame_UpdateWidgetSet(frame)
 	end
 
 	local widgetSetID = UnitWidgetSet(frame.unit);
-
-	if frame.widgetSetID and frame.widgetSetID ~= widgetSetID then
-		CompactUnitFrame_ClearWidgetSet(frame);
-	end
-
-	if widgetSetID then
-		frame.WidgetContainer:Show();
-		UIWidgetManager:RegisterWidgetSetContainer(widgetSetID, frame.WidgetContainer, WidgetsLayout);
-	end
-
-	frame.widgetSetID = widgetSetID;
+	frame.WidgetContainer:RegisterForWidgetSet(widgetSetID, WidgetsLayout);
 end
 
 function CompactUnitFrame_ClearWidgetSet(frame)
-	if frame.widgetSetID then
-		UIWidgetManager:UnregisterWidgetSetContainer(frame.widgetSetID, frame.WidgetContainer);
-		frame.WidgetContainer:Hide();
-		frame.widgetSetID = nil;
+	if frame.WidgetContainer then
+		frame.WidgetContainer:UnregisterForWidgetSet();
 	end
 end
 
@@ -1780,7 +1769,7 @@ DefaultCompactNamePlateEnemyFrameOptions = {
 	greyOutWhenTapDenied = true,
 	showClassificationIndicator = true,
 
-	selectedBorderColor = CreateColor(1, 1, 1, .55),
+	selectedBorderColor = CreateColor(1, 1, 1, .9),
 	tankBorderColor = CreateColor(1, 1, 0, .6),
 	defaultBorderColor = CreateColor(0, 0, 0, 1),
 }

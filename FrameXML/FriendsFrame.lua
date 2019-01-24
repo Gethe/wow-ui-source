@@ -488,7 +488,7 @@ function FriendsList_CanWhisperFriend(friendType, friendIndex)
 		return true;
 	elseif friendType == FRIENDS_BUTTON_TYPE_WOW then
 		local info = C_FriendList.GetFriendInfoByIndex(friendIndex);
-		return info.isOnline;
+		return info.connected;
 	end
 
 	return false;

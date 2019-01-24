@@ -117,6 +117,13 @@ local function SetupUnitButtonConfiguration( header, newChild, defaultConfigFunc
 			                      selfHandle, configCode, selfHandle);
 		end
 	end
+
+	local copyAttributes = header:GetAttribute("_initialAttributeNames");
+	if ( type(copyAttributes) == "string" ) then
+		for name in copyAttributes:gmatch("[^,]+") do
+			newChild:SetAttribute(name, scrub(header:GetAttribute("_initialAttribute-" .. name)));
+		end
+	end
 end
 
 -- creates child frames and finished configuring them

@@ -58,7 +58,7 @@
 	</Frame>
 	<Frame name="RecipientTradeItemTemplate" inherits="TradeItemTemplate" virtual="true">
 		<Frames>
-			<Button name="$parentItemButton" inherits="ItemButtonTemplate">
+			<ItemButton name="$parentItemButton">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parent"/>
 				</Anchors>
@@ -96,12 +96,12 @@
 						CursorOnUpdate(self);
 					</OnUpdate>
 				</Scripts>
-			</Button>
+			</ItemButton>
 		</Frames>
 	</Frame>
 	<Frame name="PlayerTradeItemTemplate" inherits="TradeItemTemplate" virtual="true">
 		<Frames>
-			<Button name="$parentItemButton" inherits="ItemButtonTemplate">
+			<ItemButton name="$parentItemButton">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parent"/>
 				</Anchors>
@@ -147,7 +147,7 @@
 						CursorOnUpdate(self);
 					</OnUpdate>
 				</Scripts>
-			</Button>
+			</ItemButton>
 		</Frames>
 	</Frame>
 

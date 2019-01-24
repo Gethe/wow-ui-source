@@ -808,17 +808,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:StaticReanchor()
 end
 
 function ScenarioStage_UpdateOptionWidgetRegistration(stageBlock, widgetSetID)
-	if stageBlock.widgetSetID and stageBlock.widgetSetID ~= widgetSetID then
-		UIWidgetManager:UnregisterWidgetSetContainer(stageBlock.widgetSetID, stageBlock.WidgetContainer);
-		stageBlock.WidgetContainer:Hide();
-	end
-
-	if widgetSetID then
-		UIWidgetManager:RegisterWidgetSetContainer(widgetSetID, stageBlock.WidgetContainer);
-		stageBlock.WidgetContainer:Show();
-	end
-
-	stageBlock.widgetSetID = widgetSetID;
+	stageBlock.WidgetContainer:RegisterForWidgetSet(widgetSetID);
 end
 
 function ScenarioStage_CustomizeBlock(stageBlock, scenarioType, widgetSetID, textureKitID)

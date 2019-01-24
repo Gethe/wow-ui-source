@@ -10,6 +10,17 @@ WORLD_QUEST_TYPE_DUNGEON_TYPES = {
 	[LE_QUEST_TAG_TYPE_RAID] = true,
 }
 
+WorldQuestsSecondsFormatter = CreateFromMixins(SecondsFormatterMixin);
+WorldQuestsSecondsFormatter:OnLoad(SECONDS_PER_MIN, SecondsFormatter.Abbreviation.None, false);
+
+function WorldQuestsSecondsFormatter:GetDesiredUnitCount(seconds)
+	return seconds > SECONDS_PER_DAY and 2 or 1;
+end
+
+function WorldQuestsSecondsFormatter:GetMinInterval(seconds)
+	return SecondsFormatter.Interval.Minutes;
+end
+
 local function IsQuestWorldQuest_Internal(worldQuestType)
 	return worldQuestType ~= nil;
 end
@@ -438,16 +449,21 @@ function QuestUtils_GetBestQualityItemRewardIndex(questID)
 end
 
 function QuestUtils_IsQuestWithinTimeThreshold(questID, threshold)
-	local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(questID);
-	return timeLeftMinutes and timeLeftMinutes <= threshold;
+	local secondsRemaining = C_TaskQuest.GetQuestTimeLeftSeconds(questID);
+	return secondsRemaining and secondsRemaining <= threshold or false;
 end
 
 function QuestUtils_IsQuestWithinLowTimeThreshold(questID)
-	return QuestUtils_IsQuestWithinTimeThreshold(questID, WORLD_QUESTS_TIME_LOW_MINUTES);
+	return QuestUtils_IsQuestWithinTimeThreshold(questID, MinutesToSeconds(WORLD_QUESTS_TIME_LOW_MINUTES));
 end
 
 function QuestUtils_IsQuestWithinCriticalTimeThreshold(questID)
-	return QuestUtils_IsQuestWithinTimeThreshold(questID, WORLD_QUESTS_TIME_CRITICAL_MINUTES);
+	return QuestUtils_IsQuestWithinTimeThreshold(questID, MinutesToSeconds(WORLD_QUESTS_TIME_CRITICAL_MINUTES));
+end
+
+function QuestUtils_GetQuestTimeColor(secondsRemaining)
+	local isWithinCriticalTime = secondsRemaining <= MinutesToSeconds(WORLD_QUESTS_TIME_CRITICAL_MINUTES);
+	return isWithinCriticalTime and RED_FONT_COLOR or NORMAL_FONT_COLOR;
 end
 
 function QuestUtils_ShouldDisplayExpirationWarning(questID)

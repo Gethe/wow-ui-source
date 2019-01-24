@@ -46,6 +46,7 @@ function SetItemButtonTexture(button, texture)
 	if ( not button ) then
 		return;
 	end
+	
 	local icon = button.Icon or button.icon or _G[button:GetName().."IconTexture"];
 	if ( texture ) then
 		icon:Show();
@@ -165,9 +166,37 @@ end
 
 ItemButtonMixin = {};
 
-function ItemButtonMixin:GetItemLocation()
-	-- TODO: Item locations for item button mixins are currently only supported for bag items.
-	return ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
+function ItemButtonMixin:PostOnLoad()
+	self.itemContextChangedCallback = function()
+		self:UpdateItemContextMatching();
+	end
+end
+
+function ItemButtonMixin:RegisterCallback()
+	if not self.itemContextChangedCallbackIsSet then
+		ItemButtonUtil.RegisterCallback(ItemButtonUtil.Event.ItemContextChanged, self.itemContextChangedCallback);
+		self.itemContextChangedCallbackIsSet = true;
+	end
+end
+
+function ItemButtonMixin:UnregisterCallback()
+	if self.itemContextChangedCallbackIsSet then
+		ItemButtonUtil.UnregisterCallback(ItemButtonUtil.Event.ItemContextChanged, self.itemContextChangedCallback);
+		self.itemContextChangedCallbackIsSet = false;
+	end
+end
+
+function ItemButtonMixin:PostOnShow()
+	self:UpdateItemContextMatching();
+	
+	local hasFunctionSet = self.GetItemContextMatchResult ~= nil;
+	if hasFunctionSet then
+		self:RegisterCallback();
+	end
+end
+
+function ItemButtonMixin:PostOnHide()
+	self:UnregisterCallback();
 end
 
 function ItemButtonMixin:SetMatchesSearch(matchesSearch)
@@ -179,31 +208,19 @@ function ItemButtonMixin:GetMatchesSearch()
 	return self.matchesSearch;
 end
 
-function ItemButtonMixin:SetItemMatchesItemContext(matchesContext)
-	self.matchesItemContext = matchesContext;
-	self:UpdateItemContextOverlay(self);
-end
-
-function ItemButtonMixin:GetItemContextMatch()
-	return self.matchesItemContext;
-end
-
 function ItemButtonMixin:UpdateItemContextMatching()
-	local itemLocation = self:GetItemLocation();
-	if C_Item.DoesItemExist(itemLocation) then
-		-- Ideally we'd only have 1 context active at a time, perhaps with a priority system.
-		if ItemButtonUtil.GetItemContext() == ItemButtonUtil.ItemContextEnum.Scrapping then
-			self:SetItemMatchesItemContext(C_Item.CanScrapItem(itemLocation));
-		else
-			self:SetItemMatchesItemContext(nil);
-		end
+	local hasFunctionSet = self.GetItemContextMatchResult ~= nil;
+	if hasFunctionSet then
+		self.itemContextMatchResult = self:GetItemContextMatchResult();
 	else
-		self:SetItemMatchesItemContext(nil);
+		self.itemContextMatchResult = ItemButtonUtil.ItemContextMatchResult.DoesNotApply;
 	end
+	
+	self:UpdateItemContextOverlay(self);
 end
 
 function ItemButtonMixin:UpdateItemContextOverlay()
 	local matchesSearch = self.matchesSearch == nil or self.matchesSearch;
-	local matchesContext = self.matchesItemContext == nil or self.matchesItemContext;
+	local matchesContext = self.itemContextMatchResult == ItemButtonUtil.ItemContextMatchResult.DoesNotApply or self.itemContextMatchResult == ItemButtonUtil.ItemContextMatchResult.Match;
 	self.ItemContextOverlay:SetShown(not matchesSearch or not matchesContext);
 end

@@ -222,7 +222,7 @@
 					<Anchor point="TOP" relativeTo="$parentText" relativePoint="BOTTOM" x="0" y="-5"/>
 				</Anchors>
 			</Frame>
-			<Button parentKey="ItemFrame" name="$parentItemFrame" inherits="ItemButtonTemplate" hidden="true">
+			<ItemButton parentKey="ItemFrame" name="$parentItemFrame" hidden="true">
 				<Size>
 					<AbsDimension x="37" y="37"/>
 				</Size>
@@ -282,7 +282,7 @@
 					</OnLoad>
 					<OnEvent function="StaticPopupItemFrame_OnEvent"/>
 				</Scripts>
-			</Button>
+			</ItemButton>
 		</Frames>
 		<Scripts>
 			<OnUpdate>

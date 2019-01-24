@@ -51,8 +51,6 @@ function UIWidgetBaseTemplateMixin:OnLoad()
 end
 
 function UIWidgetBaseTemplateMixin:Setup(widgetInfo)
-	self.orderIndex = widgetInfo.orderIndex;
-	self.widgetTag = widgetInfo.widgetTag;
 	self:Show();
 end
 

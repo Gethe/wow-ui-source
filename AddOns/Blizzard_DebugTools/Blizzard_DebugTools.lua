@@ -312,6 +312,10 @@ function EventTraceFrame_HandleSlashCmd (msg)
 	end
 end
 
+function EventTraceFrame_AddMessage(fmt, ...)
+	EventTraceFrame_OnEvent(_EventTraceFrame, fmt:format(...));
+end
+
 function EventTraceFrame_OnMouseWheel (self, delta)
 	local scrollBar = _G["EventTraceFrameScroll"];
 	local minVal, maxVal = scrollBar:GetMinMaxValues();
@@ -529,6 +533,10 @@ function FrameStackTooltip_OnFramestackVisibilityUpdated(self)
 end
 
 function FrameStackTooltip_OnLoad(self)
+	Mixin(self, CallbackRegistryBaseMixin);
+	CallbackRegistryBaseMixin.OnLoad(self);
+	self:GenerateCallbackEvents({ "FrameStackOnHighlightFrameChanged", "FrameStackOnShow", "FrameStackOnHide", "FrameStackOnTooltipCleared" });
+
 	DebugTooltip_OnLoad(self);
 	self.nextUpdate = 0;
 
@@ -680,6 +688,8 @@ function FrameStackTooltip_OnTooltipSetFrameStack(self, highlightFrame)
 	if self.shouldSetFSObj then
 		fsobj = self.highlightFrame;
 		self.shouldSetFSObj = nil;
+
+		self:TriggerEvent(self.Event.FrameStackOnHighlightFrameChanged, fsobj);
 	end
 
 	if fsobj then
@@ -794,12 +804,16 @@ function FrameStackTooltip_OnShow(self)
 			self:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -20, -20);
 		end
 	end
+
+	self:TriggerEvent(self.Event.FrameStackOnShow);
 end
 
 function FrameStackTooltip_OnHide(self)
+	self:TriggerEvent(self.Event.FrameStackOnHide);
 end
 
 function FrameStackTooltip_OnTooltipCleared(self)
+	self:TriggerEvent(self.Event.FrameStackOnTooltipCleared);
 end
 
 FrameStackTooltip_OnEnter = FrameStackTooltip_OnShow;

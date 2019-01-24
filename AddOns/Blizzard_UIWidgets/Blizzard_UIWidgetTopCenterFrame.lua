@@ -43,6 +43,7 @@ local function WidgetsLayout(widgetContainer, sortedWidgets)
 end
 
 function UIWidgetTopCenterContainerMixin:OnLoad()
+	UIWidgetContainerMixin.OnLoad(self);
 	local setID = C_UIWidgetManager.GetTopCenterWidgetSetID();
-	UIWidgetManager:RegisterWidgetSetContainer(setID, self, WidgetsLayout);
+	self:RegisterForWidgetSet(setID, WidgetsLayout);
 end

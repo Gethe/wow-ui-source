@@ -326,10 +326,6 @@ function CommunitiesChatMixin:FormatMessage(clubId, streamId, message)
 		content = message.content;
 	end
 	
-	local noIconReplacement = false; -- We are replacing icon tags. For example: {skull}
-	local noGroupReplacement = true; -- We don't want to replace group tags. For example: {g1}
-	content = ChatFrame_ReplaceIconAndGroupExpressions(content, noIconReplacement, noGroupReplacement);
-
 	if CHAT_TIMESTAMP_FORMAT then
 		return BetterDate(CHAT_TIMESTAMP_FORMAT, message.messageId.epoch / 1000000)..COMMUNITIES_CHAT_MESSAGE_FORMAT:format(link or name, content);
 	else

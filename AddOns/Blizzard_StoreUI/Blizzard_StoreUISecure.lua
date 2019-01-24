@@ -46,7 +46,6 @@ local GuildMemberNameToGuid = {};
 --Imports
 Import("bit");
 Import("C_StoreSecure");
-Import("C_PetJournal");
 Import("C_CharacterServices");
 Import("C_SharedCharacterServices");
 Import("C_ClassTrial");
@@ -375,9 +374,11 @@ Import("HTML_END");
 Import("BLIZZARD_STORE_BUNDLE_DISCOUNT_BANNER");
 Import("BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_ADDENDUM");
 Import("BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_REPLACEMENT");
-Import("BLIZZARD_STORE_BUNDLE_TOOLTIP_HEADER");
 Import("BLIZZARD_STORE_BUNDLE_TOOLTIP_OWNED_DELIVERABLE");
 Import("BLIZZARD_STORE_BUNDLE_TOOLTIP_UNOWNED_DELIVERABLE");
+
+Import("WOW_GAMES_CATEGORY_ID");
+Import("WOW_GAME_TIME_CATEGORY_ID");
 
 --Lua enums
 Import("SOUNDKIT");
@@ -385,15 +386,6 @@ Import("LE_MODEL_BLEND_OPERATION_NONE");
 
 --Lua constants
 local WOW_TOKEN_CATEGORY_ID = 30;
-local SEE_YOU_LATER_BUNDLE_PRODUCT_ID = 488;
-
-local SPLASH_DISPLAY_TYPE_SINGLE_SPLASH = 1;
-local SPLASH_DISPLAY_TYPE_DUAL_PANE = 2;
-local SPLASH_DISPLAY_TYPE_TRI_PANE = 3;
-
--- Mirror of the same variables in GlueParent.lua and UIParent.lua
-local WOW_GAMES_CATEGORY_ID = 33;
-local WOW_GAME_TIME_CATEGORY_ID = 37;
 
 --Data
 local CURRENCY_UNKNOWN = 0;
@@ -417,9 +409,6 @@ local NUM_STORE_PRODUCT_CARDS = 8;
 local NUM_STORE_PRODUCT_CARD_ROWS = 2;
 local NUM_STORE_PRODUCT_CARDS_PER_ROW = 4;
 local ROTATIONS_PER_SECOND = .5;
-local BATTLEPAY_SPLASH_BANNER_TEXT_FEATURED = 0;
-local BATTLEPAY_SPLASH_BANNER_TEXT_DISCOUNT = 1;
-local BATTLEPAY_SPLASH_BANNER_TEXT_NEW = 2;
 local COPPER_PER_SILVER = 100;
 local SILVER_PER_GOLD = 100;
 local COPPER_PER_GOLD = COPPER_PER_SILVER * SILVER_PER_GOLD;
@@ -616,11 +605,11 @@ function GetSecureMoneyString(money, separateThousands, forceColorBlind)
 	return moneyString;
 end
 
-local function StoreFrame_HasPriceData(productID)
+function StoreFrame_HasPriceData(productID)
 	return not C_StoreSecure.IsDynamicBundle(productID) or C_StoreSecure.HasDynamicPriceData(productID);
 end
 
-local function StoreFrame_GetProductPriceText(entryInfo, currencyFormat)
+function StoreFrame_GetProductPriceText(entryInfo, currencyFormat)
 	local productID = entryInfo.productID;
 	if not StoreFrame_HasPriceData(productID) then
 		return "";
@@ -1264,19 +1253,19 @@ local currencySpecific = {
 	},
 };
 
-local function currencyInfo()
+function StoreFrame_CurrencyInfo()
 	local currency = C_StoreSecure.GetCurrencyID();
 	local info = currencySpecific[currency];
 	return info;
 end
 
-local function currencyFormatShort(...)
-	local info = currencyInfo();
+function StoreFrame_CurrencyFormatShort(...)
+	local info = StoreFrame_CurrencyInfo();
 	return info.formatShort(...);
 end
 
 local function currencyFormatLong(...)
-	local info = currencyInfo();
+	local info = StoreFrame_CurrencyInfo();
 	return info.formatLong(...);
 end
 
@@ -1483,7 +1472,33 @@ local factionColors = {
 	[1] = "ff4a54e8",
 };
 
-local tooltipSides = {};
+--template list from Blizzard_ProductCardTemplates.xml
+local productCardTemplateData = {
+	SmallStoreCardTemplate = {
+		numRows = 2,
+		numColumns = 4,
+	},
+	MediumStoreCardTemplate = {
+		numRows = 2,
+		numColumns = 2,
+	},
+	HorizontalLargeStoreCardTemplate = {
+		numRows = 2,
+		numColumns = 1,
+	},
+	VerticalLargeStoreCardTemplate = {
+		numRows = 1,
+		numColumns = 2,
+	},
+	HorizontalFullStoreCardTemplate = {
+		numRows = 1,
+		numColumns = 1,
+	},	
+	VerticalFullStoreCardTemplate = {
+		numRows = 1,
+		numColumns = 1,
+	}
+};
 
 --Code
 local function getIndex(tbl, value)
@@ -1509,295 +1524,10 @@ function StoreFrame_GetDiscountInformation(data)
 	end
 end
 
-function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
-	local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
-	if entryInfo.sharedData.tooltip ~= "" then
-		card.productTooltipTitle = entryInfo.sharedData.name;
-		card.productTooltipDescription = entryInfo.sharedData.tooltip;
-	else
-		card.productTooltipTitle = nil;
-		card.productTooltipDescription = nil;
-	end
+function StoreFrame_CheckAndUpdateEntryID(isSplash)
+	local products = C_StoreSecure.GetProducts(StoreFrame_GetSelectedCategoryID());
 
-	StoreProductCard_ResetCornerPieces(card);
-
-	local info = currencyInfo();
-
-	if (not info) then
-		card:Hide();
-		return;
-	end
-
-	local currencyFormat;
-	if (StoreProductCard_IsSplashPage(card)) then
-		currencyFormat = info.formatLong;
-	else
-		currencyFormat = info.formatShort;
-	end
-
-	local discounted, discountPercentage = StoreFrame_GetDiscountInformation(entryInfo.sharedData);
-
-	if card.Checkmark then
-		card.Checkmark:Hide();
-	end
-	if (card.NewTexture) then
-		card.NewTexture:Hide();
-	end
-
-	if (card.HotTexture) then
-		card.HotTexture:Hide();
-	end
-
-	if (card.DiscountMiddle) then
-		card.DiscountLeft:Hide();
-		card.DiscountMiddle:Hide();
-		card.DiscountRight:Hide();
-		card.DiscountText:Hide();
-	end
-
-	-- These were never update when we changed the API. For now, nothing is new or hot.
-	local new = false;
-	local hot = false;
-
-	if ( entryInfo.alreadyOwned ) then
-		if card.Checkmark then
-			card.Checkmark:Show();
-		end
-	elseif ( card.NewTexture and new ) then
-		card.NewTexture:Show();
-	elseif ( card.HotTexture and hot ) then
-		card.HotTexture:Show();
-	elseif ( card.DiscountMiddle and discountPercentage and entryInfo.productID ~= SEE_YOU_LATER_BUNDLE_PRODUCT_ID ) then
-		if StoreFrame_HasPriceData(entryInfo.productID) then
-			if card.style == "double-wide" then
-				card.DiscountText:SetWidth(200);
-				card.DiscountText:SetText(BLIZZARD_STORE_BUNDLE_DISCOUNT_BANNER:format(discountPercentage));
-			else
-				card.DiscountText:SetWidth(50);
-				card.DiscountText:SetText(BLIZZARD_STORE_DISCOUNT_TEXT_FORMAT:format(discountPercentage));
-			end
-
-			local stringWidth = card.DiscountText:GetStringWidth();
-			card.DiscountLeft:SetPoint("RIGHT", card.DiscountRight, "LEFT", -stringWidth, 0);
-			card.DiscountMiddle:Show();
-			card.DiscountLeft:Show();
-			card.DiscountRight:Show();
-			card.DiscountText:Show();
-		end
-	end
-
-	if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.Boost) then
-		if card.UpgradeArrow then
-			card.UpgradeArrow:Show();
-		end
-		card.boostType = entryInfo.sharedData.boostType;
-	else
-		if card.UpgradeArrow then
-			card.UpgradeArrow:Hide();
-		end
-		card.boostType = nil;
-	end
-
-	if (card.BuyButton) then
-		local text = BLIZZARD_STORE_BUY;
-		if (info.browseBuyButtonText) then
-			text = info.browseBuyButtonText;
-		end
-		card.BuyButton:SetText(text);
-
-		local alreadyOwned = entryInfo.alreadyOwned;
-		local buyableHere = entryInfo.sharedData.buyableHere;
-		local trialRestricted = selectedCategoryID ~= WOW_GAMES_CATEGORY_ID and IsTrialAccount();
-		local veteranRestricted = selectedCategoryID ~= WOW_GAME_TIME_CATEGORY_ID and IsVeteranTrialAccount();
-		local shouldEnableBuyButton = buyableHere and not alreadyOwned and not trialRestricted and not veteranRestricted;
-		card.BuyButton:SetEnabled(shouldEnableBuyButton);
-	end
-
-	card.CurrentPrice:SetText(StoreFrame_GetProductPriceText(entryInfo, currencyFormat));
-
-	if ( card.SplashBannerText ) then
-		if ( entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_NEW ) then
-			card.SplashBannerText:SetText(BLIZZARD_STORE_SPLASH_BANNER_NEW);
-		elseif ( entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_DISCOUNT ) then
-			if ( discounted ) then
-				card.SplashBannerText:SetText(string.format(BLIZZARD_STORE_SPLASH_BANNER_DISCOUNT_FORMAT, discountPercentage));
-			else
-				card.SplashBannerText:SetText(BLIZZARD_STORE_SPLASH_BANNER_FEATURED);
-			end
-		elseif ( entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_FEATURED ) then
-			card.SplashBannerText:SetText(BLIZZARD_STORE_SPLASH_BANNER_FEATURED);
-		end
-	end
-
-	card.NormalPrice:SetText(currencyFormat(entryInfo.sharedData.normalDollars, entryInfo.sharedData.normalCents));
-	card.ProductName:SetText(entryInfo.sharedData.name);
-	if (entryInfo.sharedData.overrideTextColor) then
-		card.ProductName:SetTextColor(entryInfo.sharedData.overrideTextColor.r, entryInfo.sharedData.overrideTextColor.g, entryInfo.sharedData.overrideTextColor.b);
-	else
-		card.ProductName:SetTextColor(1, 1, 1);
-	end
-
-	if (not card.isSplash) then
-		if (entryInfo.sharedData.overrideBackground) then
-			card.Card:SetTexCoord(0, 1, 0, 1);
-			card.Card:SetAtlas(entryInfo.sharedData.overrideBackground, true);
-		end
-	elseif StoreFrame_CardIsSplashPair(StoreFrame, card) then
-		if (entryInfo.sharedData.overrideBackground) then
-			card.Card:SetTexCoord(0, 1, 0, 1);
-			card.Card:SetAtlas(entryInfo.sharedData.overrideBackground, true);
-		else
-			card.Card:SetSize(576, 471);
-			card.Card:SetTexture("Interface\\Store\\Store-Main");
-			card.Card:SetTexCoord(0.00097656, 0.56347656, 0.00097656, 0.46093750);
-		end
-	end
-
-	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.HiddenPrice) == Enum.BattlepayDisplayFlag.HiddenPrice then
-		card.NormalPrice:Hide();
-		card.SalePrice:Hide();
-		card.Strikethrough:Hide();
-		card.CurrentPrice:Hide();
-	elseif (discounted) then
-		StoreProductCard_ShowDiscount(card, StoreFrame_GetProductPriceText(entryInfo, currencyFormat), discountReset);
-	else
-		card.NormalPrice:Hide();
-		card.SalePrice:Hide();
-		card.Strikethrough:Hide();
-		card.CurrentPrice:Show();
-	end
-
-	if (card == StoreFrame.SplashSingle) then
-		if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.UseHorizontalLayoutForFullCard) == Enum.BattlepayDisplayFlag.UseHorizontalLayoutForFullCard then
-			StoreFrameSplashSingle_SetStyle(StoreFrame.SplashSingle, "horizontal", entryInfo.sharedData.overrideBackground);
-		else
-			StoreFrameSplashSingle_SetStyle(StoreFrame.SplashSingle, nil, entryInfo.sharedData.overrideBackground);
-		end
-		if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.WoWToken) then
-			local price = C_WowTokenPublic.GetCurrentMarketPrice();
-			if (price) then
-				card.CurrentMarketPrice:SetText(string.format(TOKEN_CURRENT_AUCTION_VALUE, GetSecureMoneyString(price, true)));
-			else
-				card.CurrentMarketPrice:SetText(string.format(TOKEN_CURRENT_AUCTION_VALUE, TOKEN_MARKET_PRICE_NOT_AVAILABLE));
-			end
-			card.CurrentPrice:ClearAllPoints();
-			card.CurrentPrice:SetPoint("TOPLEFT", card.CurrentMarketPrice, "BOTTOMLEFT", 0, -28);
-			card.NormalPrice:ClearAllPoints();
-			card.NormalPrice:SetPoint("TOPLEFT", card.CurrentMarketPrice, "BOTTOMLEFT", 0, -28);
-			card.CurrentMarketPrice:Show();
-		else
-			card.CurrentMarketPrice:Hide();
-		end
-	end
-
-	if (card.Description) then
-		local description = entryInfo.sharedData.description;
-		if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.WoWToken) then
-			local balanceEnabled = select(3, C_WowTokenPublic.GetCommerceSystemStatus());
-			local balanceAmount = C_WowTokenSecure.GetBalanceRedeemAmount();
-			description = BLIZZARD_STORE_TOKEN_DESC_30_DAYS;
-		end
-
-		local baseDescription, bullets = description:match("(.-)$bullet(.*)");
-		if not bullets or not card.DescriptionBulletPointContainer then
-			if (card ~= StoreFrame.SplashSingle) then
-				card.Description:SetJustifyH("CENTER");
-			end
-
-			card.Description:SetText(description);
-		else
-			local bulletPoints = {};
-			while bullets ~= nil and bullets ~= "" do
-				local bullet = bullets:match("(.-)$bullet") or bullets;
-				bullet = strtrim(bullet, "\n\r");
-				bullets = bullets:match("$bullet(.*)");
-				table.insert(bulletPoints, bullet);
-			end
-
-			card.Description:SetJustifyH("LEFT");
-
-			if baseDescription ~= "" then
-				card.Description:SetText(strtrim(baseDescription, "\n\r"));
-				card.Description:Show();
-				card.DescriptionBulletPointContainer:SetPoint("TOP", card.Description, "BOTTOM", 0, -3);
-			else
-				card.Description:Hide();
-				card.DescriptionBulletPointContainer:SetPoint("TOP", card.Description, "TOP");
-			end
-
-			card.DescriptionBulletPointContainer:SetContents(bulletPoints);
-		end
-	end
-
-	StoreProductCard_HideMagnifier(card);
-
-	local hasAnyCard = #entryInfo.sharedData.cards > 0;
-	local allowShowingModel = bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.CardDoesNotShowModel) ~= Enum.BattlepayDisplayFlag.CardDoesNotShowModel;
-	local showAnyModel = allowShowingModel and hasAnyCard;
-	local tryToShowTexture = not showAnyModel or bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.CardAlwaysShowsTexture) == Enum.BattlepayDisplayFlag.CardAlwaysShowsTexture;
-
-	if showAnyModel then
-		local showShadows = (card ~= StoreFrame.SplashSingle);
-		StoreProductCard_ShowModel(card, entryInfo, showShadows, forceModelUpdate);
-	else
-		StoreProductCard_HideModel(card);
-	end
-
-	if tryToShowTexture and card.Icon and (entryInfo.sharedData.texture or card ~= StoreFrame.SplashSingle) then
-		StoreProductCard_ShowIcon(card, entryInfo.sharedData);
-	else
-		StoreProductCard_HideIcon(card);
-	end
-
-	card:SetID(entryID);
-	StoreProductCard_UpdateState(card);
-
-	if card == StoreFrame.SplashSingle then
-		StoreProductCard_UpdateMagnifier(card);
-	end
-
-	if (card.BannerFadeIn and not card:IsShown()) then
-		card.BannerFadeIn.FadeAnim:Play();
-		card.BannerFadeIn:Show();
-	end
-
-	if (entryInfo.alreadyOwned and StoreFrame_DoesProductGroupShowOwnedAsDisabled(selectedCategoryID)) then
-		card:Disable();
-		card.Card:SetDesaturated(true);
-		if card.Checkmark then
-			card.Checkmark:Hide();
-		end
-	else
-		card:Enable();
-		card.Card:SetDesaturated(false);
-	end
-
-	if (card.DisabledOverlay) then
-		local restrictedInGame = entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not IsOnGlueScreen();
-		local disabled = not card:IsEnabled();
-
-		-- If the only reason we can't buy this product is that we're in-world, redirect to the glue shop.
-		if not disabled and restrictedInGame then
-			card.disabledTooltip = BLIZZARD_STORE_LOG_OUT_TO_PURCHASE_THIS_PRODUCT;
-		else
-			card.disabledTooltip = nil;
-		end
-
-		local disabledOverlayShouldBeShown = disabled or restrictedInGame;
-		card.DisabledOverlay:SetShown(disabledOverlayShouldBeShown);
-	end
-
-	card:Show();
-end
-
-function StoreFrame_CheckAndUpdateEntryID(isSplash, isThreeSplash)
-	local products = C_StoreSecure.GetProducts(selectedCategoryID);
-
-	if (isSplash and isThreeSplash) then
-		if (selectedEntryID ~= products[1] and selectedEntryID ~= products[2] and selectedEntryID ~= products[3]) then
-			selectedEntryID = nil;
-		end
-	elseif (not isSplash) then
+	if (not isSplash) then
 		local found = false;
 		for i=1, NUM_STORE_PRODUCT_CARDS do
 			local entryID = products[i + NUM_STORE_PRODUCT_CARDS * (selectedPageNum - 1)];
@@ -1816,128 +1546,79 @@ end
 
 function StoreFrame_DetermineSplashTypeAndDisplayedEntries(products)
 	local entries = {};
-	local splashType = nil;
+	local template;
 	for i, entryID in ipairs(products) do
 		local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
 		if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.UseDualPaneLayoutForSplash) == Enum.BattlepayDisplayFlag.UseDualPaneLayoutForSplash then
-			if splashType == nil or splashType == SPLASH_DISPLAY_TYPE_DUAL_PANE then
+			if template == nil or template == "VerticalLargeStoreCardTemplate" then
 				local entryIndex = #entries + 1;
 				entries[entryIndex] = entryID;
 				if entryIndex == 1 then
-					splashType = SPLASH_DISPLAY_TYPE_DUAL_PANE;
+					template = "VerticalLargeStoreCardTemplate";
 				elseif entryIndex >= 2 then
 					break;
 				end
 			end
-		elseif bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.UseTriPaneLayoutForSplash) == Enum.BattlepayDisplayFlag.UseTriPaneLayoutForSplash then
-			if splashType == nil or splashType == SPLASH_DISPLAY_TYPE_TRI_PANE then
-				local entryIndex = #entries + 1;
-				entries[entryIndex] = entryID;
-				if entryIndex == 1 then
-					splashType = SPLASH_DISPLAY_TYPE_TRI_PANE;
-				elseif entryIndex >= 3 then
-					break;
-				end
-			end
-		elseif splashType == nil then
-			splashType = SPLASH_DISPLAY_TYPE_SINGLE_SPLASH;
+		elseif template == nil then
 			entries[1] = entryID;
+			if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.UseHorizontalLayoutForFullCard) == Enum.BattlepayDisplayFlag.UseHorizontalLayoutForFullCard then
+				template = "HorizontalFullStoreCardTemplate";
+			else
+				template = "VerticalFullStoreCardTemplate";
+			end
 			break;
 		end
 	end
 	
-	return splashType, entries;
+	return template, entries;
 end
 
-function StoreFrame_SetSplashCategory(forceModelUpdate)
-	local id = selectedCategoryID;
-	local self = StoreFrame;
 
-	local info = currencyInfo();
-
-	if ( not info ) then
-		return;
-	end
-
-	for i = 1, NUM_STORE_PRODUCT_CARDS do
-		local card = self.ProductCards[i];
-		card:Hide();
-	end
-
-	self.Notice:Hide();
-
-	local products = C_StoreSecure.GetProducts(selectedCategoryID);
-
-	if (#products == 0) then
-		return;
-	end
-
-	local splashType, entries = StoreFrame_DetermineSplashTypeAndDisplayedEntries(products);
-	local isThreeSplash = splashType == SPLASH_DISPLAY_TYPE_TRI_PANE;
-	local isSplashPair = splashType == SPLASH_DISPLAY_TYPE_DUAL_PANE;
-
-	StoreFrame_CheckAndUpdateEntryID(true, isThreeSplash);
-
-	StoreFrame_HideAllSplashFrames(self);
-	if (isThreeSplash) then
-		self.SplashPrimary:Show();
-		self.SplashSecondary1:SetShown(#entries >= 2);
-		self.SplashSecondary2:SetShown(#entries >= 3);
-		StoreFrame_UpdateCard(self.SplashPrimary, entries[1], nil, forceModelUpdate);
-		
-		if #entries >= 2 then
-			StoreFrame_UpdateCard(self.SplashSecondary1, entries[2], nil, forceModelUpdate);
-			
-			if #entries >= 3 then
-				StoreFrame_UpdateCard(self.SplashSecondary2, entries[3], nil, forceModelUpdate);
-			end
-		end
-	elseif (isSplashPair) then
-		self.SplashPairFirst:Show();
-		self.SplashPairSecond:SetShown(#entries >= 2);
-		StoreFrame_UpdateCard(self.SplashPairFirst, entries[1], nil, forceModelUpdate);
-		
-		if #entries >= 2 then
-			StoreFrame_UpdateCard(self.SplashPairSecond, entries[2], nil, forceModelUpdate);
-		end
-	else
-		self.SplashSingle:Show();
-		selectedEntryID = entries[1]; -- This is the only card here so just auto select it so the buy button works
-		StoreFrame_UpdateCard(self.SplashSingle, entries[1], nil, forceModelUpdate);
-	end
-
-	StoreFrame_UpdateBuyButton();
-
-	self.PageText:Hide();
-	self.NextPageButton:Hide();
-	self.PrevPageButton:Hide();
-end
-
-function StoreFrame_SetNormalCategory(forceModelUpdate, numCardsPerPage)
-	local id = selectedCategoryID;
+function StoreFrame_SetCategoryProductCards(forceModelUpdate, template, products)
+	local id = StoreFrame_GetSelectedCategoryID();
+	products = products or C_StoreSecure.GetProducts(id);
 	local self = StoreFrame;
 	local pageNum = selectedPageNum;
 
-	local info = currencyInfo();
+	local numRows = productCardTemplateData[template].numRows;
+	local numColumns = productCardTemplateData[template].numColumns;
 
-	if ( not info ) then
+	if not StoreFrame_CurrencyInfo() then
 		return;
 	end
 
 	StoreFrame_CheckAndUpdateEntryID(false);
 
-	StoreFrame_HideAllSplashFrames(self);
-
-	local products = C_StoreSecure.GetProducts(id);
 	local numTotal = #products;
 
-	for i = 1, numCardsPerPage do
-		local card = self.ProductCards[i];
-		local entryID = products[i + numCardsPerPage * (pageNum - 1)];
-		if ( not entryID ) then
-			card:Hide();
-		else
-			StoreFrame_UpdateCard(card, entryID, nil, forceModelUpdate);
+	self.productCardPoolCollection:ReleaseAll();
+
+	local numCardsPerPage = numRows * numColumns;
+	local firstCard = nil;
+	local previousCard = nil;
+	for row = 1, numRows do
+		for col = 1, numColumns do
+			local entryID = products[col + (row - 1) * numColumns + numCardsPerPage * (pageNum - 1)];
+			if not entryID then
+				break;
+			end
+
+			local card = self.productCardPoolCollection:Acquire(template);
+
+			-- move to func
+			if row == 1 and col == 1 then
+				card:SetPoint("TOPLEFT", self.RightInset, "TOPLEFT", 6, -6);
+				firstCard = card;
+			elseif col == 1 then
+				card:SetPoint("TOP", firstCard, "BOTTOM", 0, 0);
+				firstCard = card; -- reset firstCard to the first card of THIS row
+			else
+				card:SetPoint("TOPLEFT", previousCard, "TOPRIGHT", 0, 0);
+			end
+
+			card:UpdateCard(entryID, forceModelUpdate);
+			card:Show();
+			previousCard = card;
 		end
 	end
 
@@ -1960,15 +1641,39 @@ function StoreFrame_SetNormalCategory(forceModelUpdate, numCardsPerPage)
 end
 
 function StoreFrame_SetCategory(forceModelUpdate)
-	local productGroupInfo = C_StoreSecure.GetProductGroupInfo(selectedCategoryID);
+	local self = StoreFrame;
+	local productGroupInfo = C_StoreSecure.GetProductGroupInfo(StoreFrame_GetSelectedCategoryID());
+
 	if productGroupInfo and productGroupInfo.displayType == Enum.BattlepayGroupDisplayType.Splash then
-		StoreFrame_SetSplashCategory(forceModelUpdate);
-	elseif productGroupInfo and productGroupInfo.displayType == Enum.BattlepayGroupDisplayType.DoubleWide then
-		StoreFrame_SetCardStyle(StoreFrame, "double-wide", NUM_STORE_PRODUCT_CARDS_PER_ROW / 2);
-		StoreFrame_SetNormalCategory(forceModelUpdate, NUM_STORE_PRODUCT_CARDS / 2);
+		local id = StoreFrame_GetSelectedCategoryID();		
+		if StoreFrame_CurrencyInfo() then
+			self.productCardPoolCollection:ReleaseAll();
+			self.Notice:Hide();
+
+			local products = C_StoreSecure.GetProducts(id);
+
+			if #products == 0 then
+				return;
+			end
+
+			local template, entries = StoreFrame_DetermineSplashTypeAndDisplayedEntries(products);
+
+			StoreFrame_CheckAndUpdateEntryID(true);
+
+			StoreFrame_SetCategoryProductCards(forceModelUpdate, template, entries);
+
+			self.PageText:Hide();
+			self.NextPageButton:Hide();
+			self.PrevPageButton:Hide();
+			self.BuyButton:Hide();
+		end
 	else
-		StoreFrame_SetCardStyle(StoreFrame, nil, NUM_STORE_PRODUCT_CARDS_PER_ROW);
-		StoreFrame_SetNormalCategory(forceModelUpdate, NUM_STORE_PRODUCT_CARDS);
+		if productGroupInfo and productGroupInfo.displayType == Enum.BattlepayGroupDisplayType.DoubleWide then
+			StoreFrame_SetCategoryProductCards(forceModelUpdate, "MediumStoreCardTemplate");
+		else
+			StoreFrame_SetCategoryProductCards(forceModelUpdate, "SmallStoreCardTemplate");
+		end
+		self.BuyButton:Show();
 	end
 	StoreFrame_CheckMarketPriceUpdates();
 end
@@ -1997,9 +1702,7 @@ end
 
 function StoreFrame_FindCardForBoost(boostType)
 	if StoreFrame_GoToPageForBoost(boostType) then
-		for i=1, NUM_STORE_PRODUCT_CARDS do
-			local card = StoreFrame.ProductCards[i];
-
+		for card in StoreFrame.productCardPoolCollection:EnumerateActive() do
 			if card and card:IsShown() and card.boostType == boostType then
 				return card;
 			end
@@ -2012,107 +1715,6 @@ function StoreFrame_SelectBoostForPurchase(boostType)
 	if card then
 		card:GetScript("OnClick")(card);
 		StoreFrame.BuyButton:GetScript("OnClick")(StoreFrame.BuyButton);
-	end
-end
-
-function StoreFrame_SetCardStyle(self, style, numPerRow)
-	numPerRow = numPerRow or NUM_STORE_PRODUCT_CARDS_PER_ROW;
-	for i, card in ipairs(self.ProductCards) do
-		card.style = style;
-		if style == "double-wide" then
-			card:SetWidth(146 * 2);
-			card.Card:SetAtlas("shop-card-bundle", true);
-			card.Card:SetTexCoord(0, 1, 0, 1);
-
-			card.HighlightTexture:SetAtlas("shop-card-bundle-hover", true);
-			card.HighlightTexture:SetTexCoord(0, 1, 0, 1);
-
-			card.SelectedTexture:SetAtlas("shop-card-bundle-selected", true);
-			card.SelectedTexture:SetTexCoord(0, 1, 0, 1);
-
-			card.ProductName:SetWidth(146 * 2 - 30);
-			card.ProductName:ClearAllPoints();
-			card.ProductName:SetPoint("BOTTOM", 0, 33);
-
-			card.CurrentPrice:ClearAllPoints();
-			card.CurrentPrice:SetPoint("BOTTOM", 0, 23);
-
-			if i > (numPerRow * NUM_STORE_PRODUCT_CARD_ROWS) then
-				card:Hide();
-			elseif i ~= 1 then
-				card:ClearAllPoints();
-				if i % numPerRow == 1 then
-					card:SetPoint("TOP", self.ProductCards[i - numPerRow], "BOTTOM", 0, 0);
-				else
-					card:SetPoint("TOPLEFT", self.ProductCards[i - 1], "TOPRIGHT", 0, 0);
-				end
-			end
-		else
-			card:SetWidth(146);
-			card.Card:SetSize(146, 209);
-			card.Card:SetTexture("Interface\\Store\\Store-Main");
-			card.Card:SetTexCoord(0.18457031, 0.32714844, 0.64550781, 0.84960938);
-
-			card.HighlightTexture:SetSize(140, 203);
-			card.HighlightTexture:SetTexture("Interface\\Store\\Store-Main");
-			card.HighlightTexture:SetTexCoord(0.37011719, 0.50683594, 0.54199219, 0.74023438);
-
-			card.SelectedTexture:SetSize(140, 203);
-			card.SelectedTexture:SetTexture("Interface\\Store\\Store-Main");
-			card.SelectedTexture:SetTexCoord(0.37011719, 0.50683594, 0.74218750, 0.94042969);
-
-			card.ProductName:SetWidth(120);
-			card.ProductName:ClearAllPoints();
-			card.ProductName:SetPoint("BOTTOM", 0, 42);
-
-			card.CurrentPrice:ClearAllPoints();
-			card.CurrentPrice:SetPoint("BOTTOM", 0, 32);
-
-			if i ~= 1 then
-				card:ClearAllPoints();
-				if i % numPerRow == 1 then
-					card:SetPoint("TOP", self.ProductCards[i - numPerRow], "BOTTOM", 0, 0);
-				else
-					card:SetPoint("TOPLEFT", self.ProductCards[i - 1], "TOPRIGHT", 0, 0);
-				end
-			end
-		end
-
-		if i % numPerRow == 0 then
-			tooltipSides[card] = "LEFT";
-		else
-			tooltipSides[card] = "RIGHT";
-		end
-	end
-end
-
-function StoreFrame_CreateCards(self, num, numPerRow)
-	for i=1, num do
-		local card = self.ProductCards[i];
-		if ( not card ) then
-			card = CreateForbiddenFrame("Button", nil, self, "StoreProductCardTemplate");
-
-			StoreProductCard_OnLoad(card);
-			self.ProductCards[i] = card;
-
-			if ( i % numPerRow == 1 ) then
-				card:SetPoint("TOP", self.ProductCards[i - numPerRow], "BOTTOM", 0, 0);
-			else
-				card:SetPoint("TOPLEFT", self.ProductCards[i - 1], "TOPRIGHT", 0, 0);
-			end
-
-			if ((i % numPerRow) == 0) then
-				tooltipSides[card] = "LEFT";
-			else
-				tooltipSides[card] = "RIGHT";
-			end
-
-			card:SetScript("OnEnter", StoreProductCard_OnEnter);
-			card:SetScript("OnLeave", StoreProductCard_OnLeave);
-			card:SetScript("OnClick", StoreProductCard_OnClick);
-			card:SetScript("OnMouseDown", StoreProductCard_OnMouseDown);
-			card:SetScript("OnMouseUp", StoreProductCard_OnMouseUp);
-		end
 	end
 end
 
@@ -2152,10 +1754,10 @@ function StoreCategoryFrame_SetGroupID(self, groupID)
 	local productGroupInfo = C_StoreSecure.GetProductGroupInfo(groupID);
 	self.Icon:SetTexture(productGroupInfo.texture);
 	self.Text:SetText(productGroupInfo.groupName);
-	self.SelectedTexture:SetShown(selectedCategoryID == groupID);
+	self.SelectedTexture:SetShown(StoreFrame_GetSelectedCategoryID() == groupID);
 
 	local disabled = StoreFrame_IsProductGroupDisabled(groupID);
-	self:SetEnabled(selectedCategoryID ~= groupID and not disabled);
+	self:SetEnabled(StoreFrame_GetSelectedCategoryID() ~= groupID and not disabled);
 	self.Category:SetDesaturated(disabled);
 	self.Icon:SetDesaturated(disabled);
 	self.IconFrame:SetDesaturated(disabled);
@@ -2275,19 +1877,17 @@ function StoreFrame_OnLoad(self)
 	end
 	self:SetPoint("CENTER", nil, "CENTER", 0, 20); --Intentionally not anchored to UIParent.
 	StoreDialog:SetPoint("CENTER", nil, "CENTER", 0, 150);
-	StoreFrame_CreateCards(self, NUM_STORE_PRODUCT_CARDS, NUM_STORE_PRODUCT_CARDS_PER_ROW);
 
-	StoreFrame_HideAllSplashFrames(self);
+	self.productCardPoolCollection = CreateFixedSizeFramePoolCollection();
 
-	-- Single and primary are only used for the checkmark tooltip
-	tooltipSides[StoreFrame.SplashSingle] = "RIGHT";
-	tooltipSides[StoreFrame.SplashPrimary] = "RIGHT";
-	tooltipSides[StoreFrame.SplashSecondary1] = "RIGHT";
-	tooltipSides[StoreFrame.SplashSecondary2] = "LEFT";
+	-- we preallocate all the card pools because if we create frames outside 
+	-- of the LoadAddOn call, then the scripts aren't set properly due to scoped modifier issues
+	local forbidden = true;
+	local preallocate = true;
+	for template, info in pairs(productCardTemplateData) do
+		self.productCardPoolCollection:CreatePool("Button", self, template, nil, forbidden, info.numRows * info.numColumns, preallocate);
+	end
 
-	StoreFrame.SplashSingle.SplashBannerText:SetShadowColor(0, 0, 0, 0);
-	StoreFrame.SplashPrimary.SplashBannerText:SetShadowColor(0, 0, 0, 0);
-	StoreFrame.SplashPrimary.Description:SetSpacing(5);
 	StoreFrame.Notice.Description:SetSpacing(5);
 	StoreFrame_UpdateActivePanel(self);
 
@@ -2305,12 +1905,12 @@ local JustFinishedOrdering = false;
 
 function StoreFrame_GetDefaultCategory()
 	local productGroups = C_StoreSecure.GetProductGroups();
-	local needsNewCategory = not selectedCategoryID or StoreFrame_IsProductGroupDisabled(selectedCategoryID);
+	local needsNewCategory = not StoreFrame_GetSelectedCategoryID() or StoreFrame_IsProductGroupDisabled(StoreFrame_GetSelectedCategoryID());
 	local isTrial = IsTrialAccount();
 	for i = 1, #productGroups do
 		local groupID = productGroups[i];
 		if not StoreFrame_IsProductGroupDisabled(groupID) then
-			if needsNewCategory or isTrial or groupID == selectedCategoryID then
+			if needsNewCategory or isTrial or groupID == StoreFrame_GetSelectedCategoryID() then
 				return groupID;
 			end
 		end
@@ -2323,6 +1923,14 @@ function StoreFrame_UpdateSelectedCategory()
 	selectedCategoryID = StoreFrame_GetDefaultCategory();
 end
 
+function StoreFrame_GetSelectedCategoryID()
+	return selectedCategoryID;
+end
+
+function StoreFrame_SetSelectedCategoryID(categoryID)
+	selectedCategoryID = categoryID;
+end
+
 function StoreFrame_OnEvent(self, event, ...)
 	if ( event == "STORE_PRODUCTS_UPDATED" ) then
 		StoreFrame_UpdateSelectedCategory();
@@ -2332,7 +1940,7 @@ function StoreFrame_OnEvent(self, event, ...)
 			C_StoreSecure.RequestAllDynamicPriceInfo();
 		end
 		
-		if (selectedCategoryID) then
+		if StoreFrame_GetSelectedCategoryID() then
 			--FIXME - Not the right place to put this check, but I want to stop the error
 			StoreFrame_SetCategory();
 		end
@@ -2378,7 +1986,7 @@ function StoreFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "TOKEN_MARKET_PRICE_UPDATED" ) then
 		local result = ...;
-		if (selectedCategoryID == WOW_TOKEN_CATEGORY_ID) then
+		if (StoreFrame_GetSelectedCategoryID() == WOW_TOKEN_CATEGORY_ID) then
 			StoreFrame_SetCategory();
 		end
 	elseif ( event == "TOKEN_STATUS_CHANGED" ) then
@@ -2418,7 +2026,7 @@ function StoreFrame_OnEvent(self, event, ...)
 			_G.GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
 		end
 	elseif (event == "DYNAMIC_BUNDLE_PRICE_UPDATED") then
-		if (selectedCategoryID) then
+		if StoreFrame_GetSelectedCategoryID() then
 			StoreFrame_SetCategory();
 		end
 	end
@@ -2508,25 +2116,19 @@ end
 
 function StoreFrame_UpdateBuyButton()
 	local self = StoreFrame;
-	local info = currencyInfo();
+	local info = StoreFrame_CurrencyInfo();
 
-	if (not info) then
+	if not info then
 		return;
 	end
 
-	if (StoreFrame.SplashSingle:IsShown() or StoreFrame.SplashPairFirst:IsShown()) then
-		self.BuyButton:Hide();
-	else
-		self.BuyButton:Show();
-	end
-
 	local text = BLIZZARD_STORE_BUY;
-	if (info.browseBuyButtonText) then
+	if info.browseBuyButtonText then
 		text = info.browseBuyButtonText;
 	end
 	self.BuyButton:SetText(text);
 
-	if (not selectedEntryID) then
+	if not selectedEntryID then
 		self.BuyButton:Disable();
 		self.BuyButton.PulseAnim:Stop();
 		return;
@@ -2539,9 +2141,9 @@ function StoreFrame_UpdateBuyButton()
 		return;
 	end
 
-	if ( not self.BuyButton:IsEnabled() ) then
+	if not self.BuyButton:IsEnabled() then
 		self.BuyButton:Enable();
-		if ( self.BuyButton:IsVisible() ) then
+		if self.BuyButton:IsVisible() then
 			self.BuyButton.PulseAnim:Play();
 		end
 	end
@@ -2566,19 +2168,10 @@ function StoreFrame_UpdateCoverState()
 	end
 end
 
-function StoreFrame_HideAllSplashFrames(self)
-	self.SplashSingle:Hide();
-	self.SplashPrimary:Hide();
-	self.SplashSecondary1:Hide();
-	self.SplashSecondary2:Hide();
-	self.SplashPairFirst:Hide();
-	self.SplashPairSecond:Hide();
-end
-
 local function SetStoreCategoryFromAttribute(category)
 	StoreFrame_UpdateCategories(StoreFrame);
 	selectedPageNum = 1;
-	selectedCategoryID = category;
+	StoreFrame_SetSelectedCategoryID(category);
 	StoreFrame_SetCategory();
 end
 
@@ -2662,9 +2255,11 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 		SelectBoostForPurchase(WOW_SERVICES_CATEGORY_ID, value.boostType, value.reason, value.guid);
 	elseif ( name == "selectgametime" ) then
 		SetStoreCategoryFromAttribute(WOW_GAME_TIME_CATEGORY_ID);
-		if StoreFrame.SplashSingle:IsShown() then
-			local buyButton = StoreFrame.SplashSingle.BuyButton;
-			buyButton:GetScript("OnClick")(buyButton);
+		for card in StoreFrame.productCardPoolCollection:EnumerateActive() do
+			if card and card:IsShown() then
+				local buyButton = card.BuyButton;
+				buyButton:GetScript("OnClick")(buyButton);
+			end
 		end
 	elseif ( name == "getvaserrormessage" ) then
 		if (IsOnGlueScreen()) then
@@ -2756,7 +2351,7 @@ function StoreFrame_UpdateActivePanel(self)
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_NO_ITEMS, BLIZZARD_STORE_CHECK_BACK_LATER);
 	elseif ( not IsOnGlueScreen() and not StoreFrame_HasFreeBagSlots() ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_BAG_FULL, BLIZZARD_STORE_BAG_FULL_DESC);
-	elseif ( not currencyInfo() ) then
+	elseif ( not StoreFrame_CurrencyInfo() ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_INTERNAL_ERROR, BLIZZARD_STORE_INTERNAL_ERROR_SUBTEXT);
 	else
 		StoreFrame_HideAlert(self);
@@ -2765,7 +2360,7 @@ function StoreFrame_UpdateActivePanel(self)
 			StoreVASValidationFrame.CharacterSelectionFrame.RealmSelector.Button:Enable();
 			StoreVASValidationFrame.CharacterSelectionFrame.Spinner:Hide();
 		end
-		local info = currencyInfo();
+		local info = StoreFrame_CurrencyInfo();
 		self.BrowseNotice:SetText(info.browseNotice);
 	end
 end
@@ -2888,35 +2483,12 @@ function StoreFrameCloseButton_OnClick(self)
 	StoreFrame:Hide();
 end
 
-function StoreFrameBuyButton_OnClick(self)
-	local parent = self:GetParent();
-	local entryID = StoreFrame_CardIsSplashPair(parent) and parent:GetID() or selectedEntryID;
-	StoreFrame_BeginPurchase(entryID);
-	PlaySound(SOUNDKIT.UI_IG_STORE_BUY_BUTTON);
-end
-
-function StoreFrameBuyButton_OnEnter(self)
-	local parent = self:GetParent();
-	if StoreFrame_CardIsSplashPair(parent) then
-		StoreSplashPairCard_OnEnter(parent);
-	end
-end
-
-function StoreFrameBuyButton_OnLeave(self)
-	local parent = self:GetParent();
-	if StoreFrame_CardIsSplashPair(parent) then
-		StoreSplashPairCard_OnLeave(parent);
-	end
-end
-
 function SplashSingleBuyButton_OnEnter(self)
-	local parent = self:GetParent();
-	StoreSplashSingleCard_OnEnter(parent);
+	self:GetParent():OnEnter();
 end
 
 function SplashSingleBuyButton_OnLeave(self)
-	local parent = self:GetParent();
-	StoreProductCard_OnLeave(parent);
+	self:GetParent():OnLeave();
 end
 
 function StoreFrame_BeginPurchase(entryID)
@@ -3089,7 +2661,7 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, wall
 
 	name = name:gsub("|n", " ");
 	self.ProductName:SetText(name);
-	local info = currencyInfo();
+	local info = StoreFrame_CurrencyInfo();
 	local notice;
 
 	if (productDecorator == Enum.BattlepayProductDecorator.Boost) then
@@ -3232,7 +2804,7 @@ function StoreConfirmationFrame_Update(self)
 	IsUpgrade = productInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.Boost;
 	IsLegion = productInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.Expansion;
 	BoostType = productInfo.sharedData.boostType;
-	local info = currencyInfo();
+	local info = StoreFrame_CurrencyInfo();
 	self.NoticeFrame.BrowseNotice:SetText(info.browseNotice);
 	self.NoticeFrame.BrowseNotice:SetShown(not info.hideConfirmationBrowseNotice);
 
@@ -3538,7 +3110,7 @@ if (IsOnGlueScreen()) then
 end
 
 local function UpdateQueueStatusDisclaimer(self, queueTime)
-	local currencyInfo = currencyInfo();
+	local currencyInfo = StoreFrame_CurrencyInfo();
 	local vasDisclaimerData = currencyInfo.vasDisclaimerData;
 	if vasDisclaimerData and vasDisclaimerData[VASServiceType] then
 		if (queueTime > Enum.VasQueueStatus.UnderAnHour) then
@@ -3830,157 +3402,10 @@ function StoreVASValidationState_Unlock()
 	UpdateCharacterSelectorState()
 end
 
--------------------------------
-local isRotating = false;
-
-function StoreProductCard_ShouldAddDiscountInformationToTooltip(self, entryInfo)
-	if not StoreFrame_HasPriceData(entryInfo.productID) then
-		return false;
-	end
-	
-	if entryInfo.productID == SEE_YOU_LATER_BUNDLE_PRODUCT_ID then
-		return false;
-	end
-	
-	return self.style == "double-wide"; -- For now, all bundles are double-wide and there are no other double-wide cards.
-end
-
-function StoreProductCard_ShouldAddBundleInformationToTooltip(self, entryInfo)
-	-- For now, we're not displaying this part of the tooltip.
-	return #entryInfo.sharedData.deliverables > 0 and C_StoreSecure.IsDynamicBundle(entryInfo.productID);
-end
-
-local function AppendBundleInformationToTooltipDescription(card, entryInfo, tooltipDescription)
-	if StoreProductCard_ShouldAddBundleInformationToTooltip(card, entryInfo) then
-		tooltipDescription = tooltipDescription..BLIZZARD_STORE_BUNDLE_TOOLTIP_HEADER;
-		for i, deliverableInfo in ipairs(entryInfo.sharedData.deliverables) do
-			if deliverableInfo.owned then
-				tooltipDescription = tooltipDescription..BLIZZARD_STORE_BUNDLE_TOOLTIP_OWNED_DELIVERABLE:format(deliverableInfo.name);
-			else
-				tooltipDescription = tooltipDescription..BLIZZARD_STORE_BUNDLE_TOOLTIP_UNOWNED_DELIVERABLE:format(deliverableInfo.name);
-			end
-		end
-	end
-	
-	return tooltipDescription;
-end
-
-function StoreProductCard_UpdateState(card)
-	-- No product associated with this card
-	if (card:GetID() == 0 or not card:IsShown()) then return end;
-
-	if (card.HighlightTexture) then
-		local entryID = card:GetID();
-		local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
-		local enableHighlight = card:GetID() ~= selectedEntryID and not isRotating and (entryInfo.sharedData.productDecorator ~= Enum.BattlepayProductDecorator.VasService or IsOnGlueScreen());
-		card.HighlightTexture:SetAlpha(enableHighlight and 1 or 0);
-		if (not card.Description and GetMouseFocus() == card) then
-			if (isRotating) then
-				StoreTooltip:Hide()
-			else
-				local point, rpoint, xoffset;
-				if (tooltipSides[card] == "LEFT") then
-					point = "BOTTOMRIGHT";
-					rpoint = "TOPLEFT";
-					xoffset = 4;
-				else
-					point = "BOTTOMLEFT";
-					rpoint ="TOPRIGHT";
-					xoffset = -4;
-				end
-				local name = entryInfo.sharedData.name:gsub("|n", " ");
-				local description;
-				if card.productTooltipDescription then
-					description = card.productTooltipDescription;
-				elseif entryInfo.sharedData.description then
-					description = entryInfo.sharedData.description;
-				else
-					description = "";
-				end
-				
-				description = AppendBundleInformationToTooltipDescription(card, entryInfo, description);
-
-				if StoreProductCard_ShouldAddDiscountInformationToTooltip(card, entryInfo) then
-					local discounted, discountPercentage, discountDollars, discountCents = StoreFrame_GetDiscountInformation(entryInfo.sharedData);
-					if discounted then
-						if description then
-							description = description..(BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_ADDENDUM:format(discountPercentage, currencyFormatShort(discountDollars, discountCents)));
-						else
-							description = BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_REPLACEMENT:format(discountPercentage, currencyFormatShort(discountDollars, discountCents));
-						end
-					end
-				end
-
-				StoreTooltip:ClearAllPoints();
-				StoreTooltip:SetPoint(point, card, rpoint, xoffset, 0);
-				if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not IsOnGlueScreen()) then
-					name = "";
-					description = BLIZZARD_STORE_LOG_OUT_TO_PURCHASE_THIS_PRODUCT;
-				end
-				
-				description = strtrim(description, "\n\r"); -- Ensure we don't end the description with a new line.
-				
-				StoreTooltip_Show(name, description, entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.WoWToken);
-			end
-		end
-	end
-	if (card.Magnifier and card ~= StoreFrame.SplashSingle) then
-		local enableMagnifier = not isRotating;
-		card.Magnifier:SetAlpha(enableMagnifier and 1 or 0);
-	end
-	if ( card.SelectedTexture ) then
-		card.SelectedTexture:SetShown(card:GetID() == selectedEntryID);
-	end
-end
-
 function StoreProductCard_UpdateAllStates()
-	for i = 1, NUM_STORE_PRODUCT_CARDS do
-		local card = StoreFrame.ProductCards[i];
-		StoreProductCard_UpdateState(card);
+	for card in StoreFrame.productCardPoolCollection:EnumerateActive() do
+		card:UpdateState();
 	end
-
-	StoreProductCard_UpdateState(StoreFrame.SplashSingle);
-	StoreProductCard_UpdateState(StoreFrame.SplashPrimary);
-	StoreProductCard_UpdateState(StoreFrame.SplashSecondary1);
-	StoreProductCard_UpdateState(StoreFrame.SplashSecondary2);
-end
-
-function StoreSplashSingleCard_OnEnter(self)
-	if self.productTooltipTitle then
-		StoreTooltip:ClearAllPoints();
-		if self.anchorRight then
-			StoreTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", -7, -6);
-		else
-			StoreTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT", 7, -6);
-		end
-		
-		local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());
-		local description = AppendBundleInformationToTooltipDescription(self, entryInfo, self.productTooltipDescription);
-		description = strtrim(description, "\n\r"); -- Ensure we don't end the description with a new line.
-		StoreTooltip_Show(self.productTooltipTitle, description);
-	end
-end
-
-function StoreProductCard_OnEnter(self)
-	local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());
-	if (entryInfo.sharedData.productDecorator ~= Enum.BattlepayProductDecorator.VasService or IsOnGlueScreen()) then
-		if (self.HighlightTexture) then
-			self.HighlightTexture:SetShown(selectedEntryID ~= self:GetID());
-		end
-
-		StoreProductCard_UpdateMagnifier(self);
-	end
-	StoreProductCard_UpdateState(self);
-end
-
-function StoreProductCard_OnLeave(self)
-	if (self.HighlightTexture) then
-		self.HighlightTexture:Hide();
-	end
-	if (self.Magnifier and self ~= StoreFrame.SplashSingle) then
-		StoreProductCard_HideMagnifier(self);
-	end
-	StoreTooltip:Hide();
 end
 
 function StoreProductCard_CheckShowStorePreviewOnClick(self)
@@ -4000,21 +3425,6 @@ function StoreProductCard_CheckShowStorePreviewOnClick(self)
 	return showPreview;
 end
 
-function StoreProductCard_OnClick(self,button,down)
-	local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());
-	if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not IsOnGlueScreen()) then
-		return;
-	end
-
-	if ( not StoreProductCard_CheckShowStorePreviewOnClick(self) ) then
-		selectedEntryID = self:GetID();
-		StoreProductCard_UpdateAllStates();
-
-		StoreFrame_UpdateBuyButton();
-		PlaySound(SOUNDKIT.UI_IG_STORE_PAGE_NAV_BUTTON);
-	end
-end
-
 function StoreProductCard_OnMouseDown(self, ...)
 	self.ModelScene:OnMouseDown(...);
 end
@@ -4023,115 +3433,8 @@ function StoreProductCard_OnMouseUp(self, ...)
 	self.ModelScene:OnMouseUp(...);
 end
 
-local basePoints = {};
-
-function StoreProductCard_OnLoad(self)
-	if (not StoreProductCard_IsSplashPage(self)) then
-		self.ProductName:SetSpacing(3);
-	else
-		self.ProductName:SetSpacing(0);
-	end
-
-	if (StoreFrame_CardIsSplashPair(StoreFrame, self)) then
-		SecureMixin(self.ProductName, ShrinkUntilTruncateFontStringMixin);
-		self.ProductName:SetFontObjectsToTry("GameFontNormalLarge2", "GameFontNormalLarge", "GameFontNormalMed3");
-	end
-
-
-	if (self.Description and self == StoreFrame.SplashSingle) then
-		self.Description:SetSpacing(2);
-	end
-
-	self.CurrentPrice:SetTextColor(1.0, 0.82, 0);
-	basePoints[self] = { self.NormalPrice:GetPoint() };
-end
-
-function StoreProductCard_HideMagnifier(self)
-	if self.Magnifier then
-		self.Magnifier:Hide();
-	end
-end
-
-function StoreProductCard_UpdateMagnifier(self)
-	if self.Magnifier then
-		self.Magnifier:SetShown(StoreProductCard_ShouldShowMagnifyingGlass(self));
-	end
-end
-
-function StoreProductCard_ShouldShowMagnifyingGlass(self)
-	local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());
-	return entryInfo and #entryInfo.sharedData.cards > 0;
-end
-
-function StoreSplashPairCard_OnEnter(self)
-	local disabled = not self:IsEnabled();
-	local hasDisabledTooltip = disabled and self.disabledTooltip;
-	local hasProductTooltip = not disabled and self.productTooltipTitle;
-	if hasDisabledTooltip or hasProductTooltip then
-		StoreTooltip:ClearAllPoints();
-		if self.anchorRight then
-			StoreTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", -7, -6);
-		else
-			StoreTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT", 7, -6);
-		end
-
-		if hasDisabledTooltip then
-			StoreTooltip_Show("", self.disabledTooltip);
-		elseif hasProductTooltip then
-			StoreTooltip_Show(self.productTooltipTitle, self.productTooltipDescription);
-		end
-	end
-
-	if disabled then
-		return;
-	end
-
-	if self.HighlightTexture then
-		self.HighlightTexture:Show();
-	end
-
-	StoreProductCard_UpdateMagnifier(self);
-end
-
-function StoreSplashPairCard_OnLeave(self)
-	if self.Magnifier then
-		if GetMouseFocus() == self.Magnifier then
-			return;
-		end
-	end
-
-	StoreProductCard_HideMagnifier(self);
-	self.HighlightTexture:Hide();
-	StoreTooltip:ClearAllPoints();
-	StoreTooltip:Hide();
-end
-
 function StoreSplashSingleProductCard_OnClick(self)
 	StoreProductCard_CheckShowStorePreviewOnClick(self);
-end
-
-function StoreProductCard_HideIcon(self)
-	if self.IconBorder then
-		self.IconBorder:Hide();
-	end
-
-	if self.Icon then
-		self.Icon:Hide();
-	end
-
-	if self.InvisibleMouseOverFrame then
-		self.InvisibleMouseOverFrame:Hide();
-	end
-
-	if self.GlowSpin then
-		self.GlowSpin:Hide();
-		self.GlowSpin.SpinAnim:Stop();
-	end
-
-	if self.GlowPulse then
-		self.GlowPulse:Hide();
-		self.GlowPulse.PulseAnim:Stop();
-	end
 end
 
 function StoreProductCard_ShowModel(self, entryInfo, showShadows, forceModelUpdate)
@@ -4191,234 +3494,6 @@ function StoreProductCard_HideModel(self)
 	end
 end
 
-function StoreProductCard_ShowIcon(self, displayData)
-	local icon = displayData.texture;
-	if not icon then
-		icon = "Interface\\Icons\\INV_Misc_Note_02";
-	end
-
-	local itemID = displayData.itemID;
-	local overrideTexture = displayData.overrideTexture;
-
-	self.IconBorder:Show();
-	self.Icon:Show();
-	self.InvisibleMouseOverFrame:SetShown(itemID);
-
-	self.Icon:ClearAllPoints();
-	self.Icon:SetPoint("CENTER", self, "TOP", 0, -69);
-	if (not overrideTexture) then
-		if (self == StoreFrame.SplashSingle) then
-			self.Icon:ClearAllPoints();
-			self.Icon:SetPoint("TOPLEFT", 88, -99);
-		end
-		self.Icon:SetSize(64, 64);
-		SetPortraitToTexture(self.Icon, icon);
-		self.IconBorder:Show();
-	else
-		self.Icon:SetAtlas(overrideTexture, true);
-		if (self == StoreFrame.SplashSingle) then
-			local adjustX, adjustY;
-			local width, height = self.Icon:GetSize();
-			if (width > 64) then
-				adjustX = -(width - 64);
-			else
-				adjustX = 64 - width;
-			end
-
-			if (height > 64) then
-				adjustY = height - 64;
-			else
-				adjustY = -(64 - height);
-			end
-
-			self.Icon:ClearAllPoints();
-			self.Icon:SetPoint("TOPLEFT", 88 + math.floor(adjustX / 2), -99 + math.floor(adjustY / 2));
-		elseif self.style == "double-wide" then
-			self.Icon:ClearAllPoints();
-			self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT");
-		end
-		self.IconBorder:Hide();
-	end
-
-	if (self.GlowSpin and not overrideTexture) then
-		self.GlowSpin.SpinAnim:Play();
-		self.GlowSpin:Show();
-	elseif (self.GlowSpin) then
-		self.GlowSpin.SpinAnim:Stop();
-		self.GlowSpin:Hide();
-	end
-
-	if (self.GlowPulse and not overrideTexture) then
-		self.GlowPulse.PulseAnim:Play();
-		self.GlowPulse:Show();
-	elseif (self.GlowPulse) then
-		self.GlowPulse.PulseAnim:Stop();
-		self.GlowPulse:Hide();
-	end
-end
-
-function StoreProductCard_IsSplashPage(card)
-	return card.isSplash;
-end
-
-function StoreProductCard_ShowDiscount(card, discountText)
-	card.SalePrice:SetText(discountText);
-
-	card.NormalPrice:SetTextColor(0.8, 0.66, 0);
-
-	if (not StoreProductCard_IsSplashPage(card)) then
-		local width = card.NormalPrice:GetStringWidth() + card.SalePrice:GetStringWidth();
-
-		if ((width + 20 + (card:GetWidth()/8)) > card:GetWidth()) then
-			card.NormalPrice:ClearAllPoints();
-			card.NormalPrice:SetPoint(unpack(basePoints[card]));
-			card.SalePrice:ClearAllPoints();
-			card.SalePrice:SetPoint("TOP", card.NormalPrice, "BOTTOM", 0, -4);
-		else
-			local diff = card.NormalPrice:GetStringWidth() - card.SalePrice:GetStringWidth();
-			local _, _, _, _, yOffset = unpack(basePoints[card]);
-			if card.style == "double-wide" then
-				yOffset = 23;
-			end
-
-			card.NormalPrice:ClearAllPoints();
-			card.NormalPrice:SetJustifyH("RIGHT");
-			card.NormalPrice:SetPoint("BOTTOMRIGHT", card, "BOTTOM", diff/2, yOffset);
-			card.SalePrice:ClearAllPoints();
-			card.SalePrice:SetJustifyH("LEFT");
-			card.SalePrice:SetPoint("BOTTOMLEFT", card.NormalPrice, "BOTTOMRIGHT", 4, -1);
-		end
-	elseif (StoreFrame_CardIsSplashPair(StoreFrame, card)) then
-		local normalWidth = card.NormalPrice:GetStringWidth();
-		local totalWidth = normalWidth + card.SalePrice:GetStringWidth();
-		card.NormalPrice:ClearAllPoints();
-		card.NormalPrice:SetPoint("TOP", card.ProductName, "BOTTOM", (normalWidth - totalWidth) / 2, -12);
-	elseif (card ~= StoreFrame.SplashSingle and card ~= StoreFrame.SplashPrimary) then
-		local width = card.NormalPrice:GetStringWidth() + card.SalePrice:GetStringWidth();
-
-		if ((width + 120 + (card:GetWidth()/8)) > card:GetWidth()) then
-			card.SalePrice:ClearAllPoints();
-			card.SalePrice:SetPoint("TOPLEFT", card.NormalPrice, "BOTTOMLEFT", 0, -4);
-		else
-			card.SalePrice:ClearAllPoints();
-			card.SalePrice:SetPoint("BOTTOMLEFT", card.NormalPrice, "BOTTOMRIGHT", 4, 0);
-		end
-	end
-
-	card.CurrentPrice:Hide();
-	card.NormalPrice:Show();
-	card.SalePrice:Show();
-
-	card.Strikethrough:Show();
-end
-
-function StoreProductCardMagnifyingGlass_OnEnter(self)
-	StoreProductCard_OnEnter(self:GetParent());
-end
-
-function StoreProductCardMagnifyingGlass_OnLeave(self)
-	StoreProductCard_OnLeave(self:GetParent());
-end
-
-function StoreProductCardMagnifyingGlass_OnClick(self, button, down)
-	local card = self:GetParent();
-	local entryID = card:GetID();
-	local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
-	if #entryInfo.sharedData.cards > 1 then
-		StoreFrame_ShowPreviews(entryInfo.sharedData.cards);
-	elseif #entryInfo.sharedData.cards > 0 then
-		local card = entryInfo.sharedData.cards[1];
-		StoreFrame_ShowPreview(card.name, card.creatureDisplayInfoID, card.modelSceneID);
-	end
-end
-
-function StoreProductCardCheckmark_OnEnter(self)
-	StoreProductCard_OnEnter(self:GetParent());
-	if ( not isRotating ) then
-		local point, rpoint, xoffset;
-		if (tooltipSides[self:GetParent()] == "LEFT") then
-			point = "BOTTOMRIGHT";
-			rpoint = "TOPLEFT";
-			xoffset = 4;
-		else
-			point = "BOTTOMLEFT";
-			rpoint ="TOPRIGHT";
-			xoffset = -4;
-		end
-		StoreTooltip:ClearAllPoints();
-		StoreTooltip:SetPoint(point, self, rpoint, xoffset, 0);
-		StoreTooltip_Show(BLIZZARD_STORE_YOU_ALREADY_OWN_THIS);
-	end
-end
-
-function StoreProductCardItem_OnEnter(self)
-	local card = self:GetParent();
-	StoreProductCard_OnEnter(card);
-	local entryID = card:GetID();
-	local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
-
-	local x, y, point;
-
-	if (card == StoreFrame.SplashSingle or card == StoreFrame.SplashPrimary) then
-		x = card.Icon:GetLeft();
-		y = card.Icon:GetTop();
-		point = "BOTTOMRIGHT";
-	elseif (tooltipSides[card] == "LEFT") then
-		x = card:GetLeft() + 4;
-		y = card:GetTop();
-		point = "BOTTOMRIGHT";
-	else
-		x = card:GetRight() - 4;
-		y = card:GetTop();
-		point = "BOTTOMLEFT";
-	end
-
-	if entryInfo.sharedData.itemID then
-		self.hasItemTooltip = true;
-		StoreTooltip:Hide();
-		Outbound.SetItemTooltip(entryInfo.sharedData.itemID, x, y, point);
-	end
-end
-
-function StoreProductCardItem_OnLeave(self)
-	StoreProductCard_OnLeave(self:GetParent());
-	StoreProductCard_UpdateState(self:GetParent());
-
-	if self.hasItemTooltip then
-		Outbound.ClearItemTooltip();
-		self.hasItemTooltip = false;
-	end
-end
-
-function StoreProductCardCheckmark_OnLeave(self)
-	if ( not self:GetParent():IsMouseOver() ) then
-		StoreProductCard_OnLeave(self:GetParent());
-	end
-	StoreTooltip:Hide();
-end
-
-function StoreProductCard_ResetCornerPieces(card)
-	if (card.NewTexture) then
-		card.NewTexture:Hide();
-	end
-
-	if (card.HotTexture) then
-		card.HotTexture:Hide();
-	end
-
-	if (card.DiscountMiddle) then
-		card.DiscountMiddle:Hide();
-		card.DiscountLeft:Hide();
-		card.DiscountRight:Hide();
-		card.DiscountText:Hide();
-	end
-
-	if (card.Checkmark) then
-		card.Checkmark:Hide();
-	end
-end
-
-------------------------------
 function StoreCategory_OnEnter(self)
 	if self.disabledTooltip then
 	 	StoreTooltip:ClearAllPoints();
@@ -4435,11 +3510,14 @@ function StoreCategory_OnLeave(self)
 end
 
 function StoreCategory_OnClick(self,button,down)
-	local oldId = selectedCategoryID;
-	selectedCategoryID = self:GetID();
-	if ( oldId ~= selectedCategoryID ) then
-		selectedEntryID = nil;
+	if self:GetID() == StoreFrame_GetSelectedCategoryID() then
+		-- category hasn't changed
+		return;
 	end
+
+	selectedEntryID = nil;
+	StoreFrame_SetSelectedCategoryID(self:GetID());
+
 	StoreFrame_UpdateCategories(StoreFrame);
 
 	selectedPageNum = 1;
@@ -4502,9 +3580,12 @@ function StoreTooltip_Show(name, description, isToken)
 	end
 	self:SetHeight(buffer*bufferCount + nheight + dheight);
 	local parent = self:GetParent();
-	local card = parent.ProductCards[1];
-	local modelFrameLevel = card.ModelScene:GetFrameLevel();
-	self:SetFrameLevel(modelFrameLevel+2);
+	local modelFrameLevel = 200; -- just a reasonable safe default value
+	for card in StoreFrame.productCardPoolCollection:EnumerateActive() do
+		modelFrameLevel = card.ModelScene:GetFrameLevel() + 2;
+		break;
+	end
+	self:SetFrameLevel(modelFrameLevel);
 end
 
 ----------------------------------
@@ -5973,7 +5054,7 @@ function StoreFrame_UpdateMarketPrice()
 end
 
 function StoreFrame_CheckMarketPriceUpdates()
-	if (StoreFrame:IsShown() and selectedCategoryID == WOW_TOKEN_CATEGORY_ID) then
+	if (StoreFrame:IsShown() and StoreFrame_GetSelectedCategoryID() == WOW_TOKEN_CATEGORY_ID) then
 		C_WowTokenPublic.UpdateMarketPrice();
 		local _, pollTimeSeconds = C_WowTokenPublic.GetCommerceSystemStatus();
 		if (not priceUpdateTimer or pollTimeSeconds ~= currentPollTimeSeconds) then
@@ -5990,110 +5071,17 @@ function StoreFrame_CheckMarketPriceUpdates()
 	end
 end
 
-function StoreCardDetail_SetLayerAboveModelScene(self)
-	local modelScene = self:GetParent().ModelScene;
-	if modelScene then
-		self:SetFrameLevel(modelScene:GetFrameLevel()+1);
-	end
+function StoreFrame_SetSelectedEntryID(entryID)
+	selectedEntryID = entryID;
 end
 
-function StoreFrame_CardIsSplashPair(self, card)
-	return card == self.SplashPairFirst or card == self.SplashPairSecond;
+function StoreFrame_GetSelectedEntryID()
+	return selectedEntryID;
 end
 
-function StoreFrameSplashSingle_SetStyle(self, style, overrideBackground)
-	self.Card:ClearAllPoints();
-	if overrideBackground then
-		self.Card:SetPoint("CENTER");
-		self.Card:SetAtlas(overrideBackground, true);
-		self.Card:SetTexCoord(0, 1, 0, 1);
-	else
-		self.Card:SetPoint("TOPLEFT");
-		self.Card:SetPoint("BOTTOMRIGHT");
-		self.Card:SetTexture("Interface\\Store\\Store-Main");
-		self.Card:SetTexCoord(0.00097656, 0.56347656, 0.00097656, 0.46093750);
-	end
-
-	if style == "horizontal" then
-		self.SplashBanner:Hide();
-		self.SplashBannerText:Hide();
-		self.ModelScene:SetViewInsets(20, 20, 20, 200);
-
-		self.ProductName:ClearAllPoints();
-		self.CurrentPrice:ClearAllPoints();
-		self.NormalPrice:ClearAllPoints();
-		self.Description:ClearAllPoints();
-
-		if not self.ProductName.SetFontObjectsToTry then
-			SecureMixin(self.ProductName, ShrinkUntilTruncateFontStringMixin);
-		end
-		self.ProductName:SetWidth(535);
-		self.ProductName:SetMaxLines(1);
-		self.ProductName:SetPoint("CENTER", 0, -32);
-		self.ProductName:SetJustifyH("CENTER");
-		self.ProductName:SetFontObjectsToTry("Game30Font", "GameFontNormalHuge2", "GameFontNormalLarge2");
-
-		self.CurrentPrice:SetPoint("TOP", self.ProductName, "BOTTOM", 0, -6);
-
-		local normalWidth = self.NormalPrice:GetStringWidth();
-		local totalWidth = normalWidth + self.SalePrice:GetStringWidth();
-		self.NormalPrice:SetPoint("TOP", self.ProductName, "BOTTOM", (normalWidth - totalWidth) / 2, -9);
-
-		self.Description:SetPoint("TOP", self.CurrentPrice, "BOTTOM", 0, -12);
-		self.Description:SetFontObject("GameFontNormalMed1");
-		self.Description:SetWidth(490);
-		self.Description:SetJustifyH("CENTER");
-
-		self.SalePrice:SetFontObject("GameFontNormalLarge2");
-
-		self.BuyButton:ClearAllPoints();
-		self.BuyButton:SetPoint("BOTTOM", 0, 33);
-
-		self.Magnifier:ClearAllPoints();
-		self.Magnifier:SetPoint("TOPLEFT", self.Card, "TOPLEFT", 8, -8);
-
-		self.Checkmark:ClearAllPoints();
-		self.Checkmark:SetPoint("LEFT", self.Magnifier, "RIGHT", 9, 0);
-		self.Checkmark:Hide();
-	else
-		self.SplashBanner:Show();
-		self.SplashBannerText:Show();
-		self.ModelScene:SetViewInsets(20, 400, 136, 180);
-
-		self.ProductName:ClearAllPoints();
-		self.CurrentPrice:ClearAllPoints();
-		self.NormalPrice:ClearAllPoints();
-		self.Description:ClearAllPoints();
-
-		if not self.ProductName.SetFontObjectsToTry then
-			SecureMixin(self.ProductName, ShrinkUntilTruncateFontStringMixin);
-		end
-		self.ProductName:SetWidth(300);
-		self.ProductName:SetMaxLines(1);
-		self.ProductName:SetPoint("TOPLEFT", self.IconBorder, "TOPRIGHT", -45, -70);
-		self.ProductName:SetJustifyH("LEFT");
-		self.ProductName:SetFontObjectsToTry("GameFontNormalWTF2", "Game30Font", "GameFontNormalHuge3");
-
-		self.CurrentPrice:SetPoint("TOPLEFT", self.Description, "BOTTOMLEFT", 0, -28);
-
-		self.NormalPrice:SetPoint("TOPLEFT", self.Description, "BOTTOMLEFT", 0, -28);
-
-		self.Description:SetPoint("TOPLEFT", self.ProductName, "BOTTOMLEFT", 0, -16);
-		self.Description:SetFontObject("GameFontNormalLarge");
-		self.Description:SetWidth(340);
-		self.Description:SetJustifyH("LEFT");
-
-		self.SalePrice:SetFontObject("GameFontNormalLarge2");
-
-		self.BuyButton:ClearAllPoints();
-		self.BuyButton:SetPoint("TOPLEFT", self.CurrentPrice, "BOTTOMLEFT", 0, -20);
-
-		self.Magnifier:ClearAllPoints();
-		self.Magnifier:SetPoint("LEFT", self.Shadows, "BOTTOMRIGHT", -40, 20);
-
-		self.Checkmark:ClearAllPoints();
-		self.Checkmark:SetPoint("BOTTOM", self.Magnifier, "TOP", 5, 2);
-	end
+function StoreFrameBuyButton_OnClick(self)
+	StoreFrame_BeginPurchase(selectedEntryID);
+	PlaySound(SOUNDKIT.UI_IG_STORE_BUY_BUTTON);
 end
 
 StoreBulletPointMixin = {};

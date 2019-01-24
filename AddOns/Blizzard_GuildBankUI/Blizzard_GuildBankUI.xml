@@ -21,7 +21,7 @@
 </Texture>
  -->
 	
-	<Button name="GuildBankItemButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+	<ItemButton name="GuildBankItemButtonTemplate" virtual="true">
 		<Frames>
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>
@@ -51,7 +51,7 @@
 				end
 			</OnEvent>
 		</Scripts>
-	</Button>
+	</ItemButton>
 	<Frame name="GuildBankFrameColumnTemplate" virtual="true">
 		<Size x="100" y="311"/>
 		<Layers>
@@ -62,76 +62,76 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentButton1" inherits="GuildBankItemButtonTemplate">
+			<ItemButton name="$parentButton1" inherits="GuildBankItemButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="7" y="-3"/>
 				</Anchors>
-			</Button>
-			<Button name="$parentButton2" inherits="GuildBankItemButtonTemplate">
+			</ItemButton>
+			<ItemButton name="$parentButton2" inherits="GuildBankItemButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentButton1" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
 				</Anchors>
-			</Button>
-			<Button name="$parentButton3" inherits="GuildBankItemButtonTemplate">
+			</ItemButton>
+			<ItemButton name="$parentButton3" inherits="GuildBankItemButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentButton2" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
 				</Anchors>
-			</Button>
-			<Button name="$parentButton4" inherits="GuildBankItemButtonTemplate">
+			</ItemButton>
+			<ItemButton name="$parentButton4" inherits="GuildBankItemButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentButton3" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
 				</Anchors>
-			</Button>
-			<Button name="$parentButton5" inherits="GuildBankItemButtonTemplate">
+			</ItemButton>
+			<ItemButton name="$parentButton5" inherits="GuildBankItemButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentButton4" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
 				</Anchors>
-			</Button>
-			<Button name="$parentButton6" inherits="GuildBankItemButtonTemplate">
+			</ItemButton>
+			<ItemButton name="$parentButton6" inherits="GuildBankItemButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentButton5" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
 				</Anchors>
-			</Button>
-			<Button name="$parentButton7" inherits="GuildBankItemButtonTemplate">
+			</ItemButton>
+			<ItemButton name="$parentButton7" inherits="GuildBankItemButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentButton6" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
 				</Anchors>
-			</Button>
-			<Button name="$parentButton8" inherits="GuildBankItemButtonTemplate">
+			</ItemButton>
+			<ItemButton name="$parentButton8" inherits="GuildBankItemButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentButton1" relativePoint="TOPRIGHT" x="12" y="0"/>
 				</Anchors>
-			</Button>
-			<Button name="$parentButton9" inherits="GuildBankItemButtonTemplate">
+			</ItemButton>
+			<ItemButton name="$parentButton9" inherits="GuildBankItemButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentButton8" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
 				</Anchors>
-			</Button>
-			<Button name="$parentButton10" inherits="GuildBankItemButtonTemplate" id="10">
+			</ItemButton>
+			<ItemButton name="$parentButton10" inherits="GuildBankItemButtonTemplate" id="10">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentButton9" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
 				</Anchors>
-			</Button>
-			<Button name="$parentButton11" inherits="GuildBankItemButtonTemplate" id="11">
+			</ItemButton>
+			<ItemButton name="$parentButton11" inherits="GuildBankItemButtonTemplate" id="11">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentButton10" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
 				</Anchors>
-			</Button>
-			<Button name="$parentButton12" inherits="GuildBankItemButtonTemplate" id="12">
+			</ItemButton>
+			<ItemButton name="$parentButton12" inherits="GuildBankItemButtonTemplate" id="12">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentButton11" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
 				</Anchors>
-			</Button>
-			<Button name="$parentButton13" inherits="GuildBankItemButtonTemplate" id="13">
+			</ItemButton>
+			<ItemButton name="$parentButton13" inherits="GuildBankItemButtonTemplate" id="13">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentButton12" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
 				</Anchors>
-			</Button>
-			<Button name="$parentButton14" inherits="GuildBankItemButtonTemplate" id="14">
+			</ItemButton>
+			<ItemButton name="$parentButton14" inherits="GuildBankItemButtonTemplate" id="14">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentButton13" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
 				</Anchors>
-			</Button>
+			</ItemButton>
 		</Frames>
 	</Frame>
 	<Frame name="GuildBankTabTemplate" enableMouse="true" virtual="true">

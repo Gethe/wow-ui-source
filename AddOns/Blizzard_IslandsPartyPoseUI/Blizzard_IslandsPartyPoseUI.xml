@@ -21,11 +21,14 @@
 					<Anchor point="CENTER"/>
 				</Anchors>
 			</ModelScene>
-			<Frame parentKey="Score">
+			<Frame parentKey="Score" inherits="UIWidgetContainerTemplate">
 				<Size x="100" y="40"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ModelScene" x="15" y="-55"/>
 				</Anchors>
+				<KeyValues>
+					<KeyValue key="showAndHideOnWidgetSetRegistration" value="false" type="boolean"/>
+				</KeyValues>
 			</Frame>
 			<Button parentKey="LeaveButton" inherits="UIPanelButtonNoTooltipResizeToFitTemplate">
 				<KeyValues>

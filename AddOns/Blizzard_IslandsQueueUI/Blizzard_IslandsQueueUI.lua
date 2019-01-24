@@ -147,7 +147,7 @@ function IslandsQueueFrameMixin:OnLoad()
 
 	self.portrait:Hide();
 	SetPortraitToTexture(self.ArtOverlayFrame.portrait, "Interface\\Icons\\icon_treasuremap");
-	UIWidgetManager:RegisterWidgetSetContainer(ISLANDS_QUEUE_WIDGET_SET_ID, self.IslandCardsFrame, WidgetsLayout);
+	self.IslandCardsFrame:RegisterForWidgetSet(ISLANDS_QUEUE_WIDGET_SET_ID, WidgetsLayout);
 	self:RegisterEvent("ISLANDS_QUEUE_CLOSE");
 end
 

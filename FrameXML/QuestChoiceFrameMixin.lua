@@ -161,17 +161,11 @@ function QuestChoiceFrameMixin:WidgetInit(widgetFrame)
 end
 
 function QuestChoiceFrameMixin:UpdateOptionWidgetRegistration(option, widgetSetID)
-	if option.widgetSetID and option.widgetSetID ~= widgetSetID then
-		UIWidgetManager:UnregisterWidgetSetContainer(option.widgetSetID, option.WidgetContainer);
-		option.WidgetContainer:Hide();
+	if not option.WidgetContainer then
+		return;
 	end
 
-	if widgetSetID then
-		option.WidgetContainer:Show();
-		UIWidgetManager:RegisterWidgetSetContainer(widgetSetID, option.WidgetContainer, function(...) self:WidgetLayout(...) end, function(...) self:WidgetInit(...) end);
-	end
-
-	option.widgetSetID = widgetSetID;
+	option.WidgetContainer:RegisterForWidgetSet(widgetSetID,  function(...) self:WidgetLayout(...) end, function(...) self:WidgetInit(...) end);
 end
 
 function QuestChoiceFrameMixin:UpdateHeight()

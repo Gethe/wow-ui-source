@@ -11,3 +11,10 @@ do
 	-- Use GameTooltip instead.
 	WorldmapTooltip = GameTooltip;
 end
+
+-- Pool Collection Changes
+do
+	-- Use CreateFramePoolCollection instead.
+	CreatePoolCollection = CreateFramePoolCollection;
+	PoolCollection = FramePoolCollectionMixin;
+end

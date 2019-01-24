@@ -95,6 +95,20 @@ local QuestTaskInfo =
 			},
 		},
 		{
+			Name = "GetQuestTimeLeftSeconds",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "secondsLeft", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetQuestZoneID",
 			Type = "Function",
 

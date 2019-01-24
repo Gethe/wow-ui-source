@@ -1,11 +1,15 @@
 # Do not delete the following line!
 ## Interface: 80100
 
+## first
+..\SharedXML\SharedConstants.lua
+
 ## add C namespace augmentations here
 ..\SharedXML\C_TimerAugment.lua
 
 ## add snippets independent of modules here
 ..\SharedXML\Util.lua
+..\SharedXML\TimeUtil.lua
 ..\SharedXML\AnchorUtil.xml
 ..\SharedXML\EasingUtil.lua
 ..\SharedXML\BindingUtil.lua
