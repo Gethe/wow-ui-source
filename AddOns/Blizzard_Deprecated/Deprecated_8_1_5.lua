@@ -18,3 +18,8 @@ do
 	CreatePoolCollection = CreateFramePoolCollection;
 	PoolCollection = FramePoolCollectionMixin;
 end
+
+-- PVP changes
+do
+	InActiveBattlefield = C_PvP.IsActiveBattlefield;
+end

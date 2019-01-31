@@ -31,6 +31,7 @@ BattleNetDocumentation.lua
 BattlePetDocumentation.lua
 BlackMarketInfoDocumentation.lua
 BrowserDocumentation.lua
+CVarDocumentation.lua
 CalendarDocumentation.lua
 ChallengeModeInfoDocumentation.lua
 ChatBubblesDocumentation.lua

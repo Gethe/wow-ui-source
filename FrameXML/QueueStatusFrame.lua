@@ -22,6 +22,10 @@ function QueueStatusMinimapButton_OnClick(self, button)
 		QueueStatusDropDown_Show(self.DropDown, self:GetName());
 	else
 		local inBattlefield, showScoreboard = QueueStatus_InActiveBattlefield();
+		if IsInLFDBattlefield() then
+			inBattlefield = true;
+			showScoreboard = true;
+		end
 		local lfgListActiveEntry = C_LFGList.HasActiveEntryInfo();
 		if ( inBattlefield ) then
 			if ( showScoreboard ) then
@@ -994,6 +998,12 @@ function QueueStatusDropDown_AddLFGButtons(category)
 					info.disabled = false;
 					UIDropDownMenu_AddButton(info);
 					addExitOption = false;
+				else
+					info.text = TOGGLE_SCOREBOARD;
+					info.func = wrapFunc(ToggleWorldStateScoreFrame);
+					info.arg1 = nil;
+					info.arg2 = nil;
+					UIDropDownMenu_AddButton(info);
 				end
 			elseif ( IsInLFGDungeon() ) then
 				info.text = TELEPORT_OUT_OF_DUNGEON;

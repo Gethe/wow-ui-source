@@ -130,7 +130,7 @@
 		<Size x="300" y="16"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentQuestIcon" file="Interface\GossipFrame\AvailableQuestIcon">
+				<Texture name="$parentQuestIcon" file="Interface\GossipFrame\AvailableQuestIcon" parentKey="Icon">
 					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="4" y="2"/>

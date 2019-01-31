@@ -3774,10 +3774,10 @@ end
 ------------------------------------
 function VASCharacterSelectionRealmSelector_Callback(value)
 	SelectedRealm = value;
+	SelectedCharacter = nil;
 
 	UpdateCharacterList();
 
-	SelectedCharacter = nil;
 	RealmAutoCompleteList = nil;
 	DestinationRealmMapping = {};
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;

@@ -229,8 +229,19 @@ function FullStoreCardMixin:GetTooltipOffsets()
 	return x, y, point, rpoint;
 end
 
-function FullStoreCardMixin:SetIconStyle(icon, overrideTexture, useSquareBorder)
+function FullStoreCardMixin:ShouldShowIcon(entryInfo)
+	return StoreCardMixin.ShouldShowIcon(self, entryInfo) and entryInfo.sharedData.texture;
+end
+
+function FullStoreCardMixin:ShowIcon(displayData)
+	local icon = displayData.texture or self:GetDefaultIconName();
+	local shouldShow = displayData.itemID ~= nil;
+	self.InvisibleMouseOverFrame:SetShown(shouldShow);
+	
 	self.Icon:ClearAllPoints();
+	
+	local overrideTexture = displayData.overrideTexture;
+	local useSquareBorder = bit.band(displayData.flags, Enum.BattlepayDisplayFlag.UseSquareIconBorder) == Enum.BattlepayDisplayFlag.UseSquareIconBorder;
 
 	if overrideTexture then
 		self.IconBorder:Hide();
@@ -274,10 +285,11 @@ function FullStoreCardMixin:SetIconStyle(icon, overrideTexture, useSquareBorder)
 			self.IconBorder:SetTexCoord(0.55957031, 0.79589844, 0.26269531, 0.51660156);
 			self.IconBorder:SetSize(242, 260);
 			self.IconBorder:SetPoint("TOPLEFT", 4, -4);
-		end
+		end		
 		self.IconBorder:Show();
 	end
-
+	self.Icon:Show();
+	
 	if self.GlowSpin and not overrideTexture then
 		self.GlowSpin.SpinAnim:Play();
 		self.GlowSpin:Show();
@@ -293,12 +305,6 @@ function FullStoreCardMixin:SetIconStyle(icon, overrideTexture, useSquareBorder)
 		self.GlowPulse.PulseAnim:Stop();
 		self.GlowPulse:Hide();
 	end
-end
-
-function FullStoreCardMixin:ShowIcon(displayData)
-	StoreCardMixin.ShowIcon(self, displayData);
-	local shouldShow = displayData.itemID ~= nil;
-	self.InvisibleMouseOverFrame:SetShown(shouldShow);
 end
 
 function FullStoreCardMixin:Layout()

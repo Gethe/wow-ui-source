@@ -67,6 +67,7 @@ local BATTLEPAY_SPLASH_BANNER_TEXT_NEW = 2;
 
 local SEE_YOU_LATER_BUNDLE_PRODUCT_ID = 488;
 
+local DEFAULT_ICON_NAME = "Interface\\Icons\\INV_Misc_Note_02";
 --------------------------------------------------
 -- DEFAULT STORE CARD MIXIN
 StoreCardMixin = {};
@@ -306,7 +307,33 @@ end
 function StoreCardMixin:SetStyle(overrideBackground)
 end
 
-function StoreCardMixin:SetIconStyle(icon, overrideTexture, useSquareBorder)
+function StoreCardMixin:ShouldShowIcon(entryInfo)
+	local showAnyModel = self:ShouldShowModel(entryInfo);
+	local tryToShowTexture = not showAnyModel or bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.CardAlwaysShowsTexture) == Enum.BattlepayDisplayFlag.CardAlwaysShowsTexture;
+	
+	return tryToShowTexture;
+end
+
+function StoreCardMixin:ShouldShowModel(entryInfo)
+	local hasAnyCard = #entryInfo.sharedData.cards > 0;
+	local allowShowingModel = bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.CardDoesNotShowModel) ~= Enum.BattlepayDisplayFlag.CardDoesNotShowModel;
+	local showAnyModel = allowShowingModel and hasAnyCard;
+
+	return showAnyModel;
+end
+
+function StoreCardMixin:GetDefaultIconName()
+	return DEFAULT_ICON_NAME;
+end
+
+function StoreCardMixin:ShowIcon(displayData)
+	local icon = displayData.texture or self:GetDefaultIconName();
+	local overrideTexture = displayData.overrideTexture;
+	local useSquareBorder = bit.band(displayData.flags, Enum.BattlepayDisplayFlag.UseSquareIconBorder) == Enum.BattlepayDisplayFlag.UseSquareIconBorder;
+	
+	self.IconBorder:Show();
+	self.Icon:Show();
+
 	self.Icon:ClearAllPoints();
 	self.Icon:SetPoint("CENTER", self, "TOP", 0, -69);
 
@@ -349,19 +376,6 @@ function StoreCardMixin:SetIconStyle(icon, overrideTexture, useSquareBorder)
 		self.GlowPulse.PulseAnim:Stop();
 		self.GlowPulse:Hide();
 	end
-end
-
-function StoreCardMixin:ShowIcon(displayData)
-	local icon = displayData.texture or "Interface\\Icons\\INV_Misc_Note_02";
-
-	local itemID = displayData.itemID;
-	local overrideTexture = displayData.overrideTexture;
-	local useSquareBorder = bit.band(displayData.flags, Enum.BattlepayDisplayFlag.UseSquareIconBorder) == Enum.BattlepayDisplayFlag.UseSquareIconBorder;
-	
-	self.IconBorder:Show();
-	self.Icon:Show();
-
-	self:SetIconStyle(icon, overrideTexture, useSquareBorder)
 end
 
 function StoreCardMixin:HideIcon()
@@ -455,23 +469,18 @@ function StoreCardMixin:UpdateCard(entryID, forceModelUpdate)
 	self:SetupDescription(entryInfo);
 	self.Magnifier:Hide();
 	
-	local hasAnyCard = #entryInfo.sharedData.cards > 0;
-	local allowShowingModel = bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.CardDoesNotShowModel) ~= Enum.BattlepayDisplayFlag.CardDoesNotShowModel;
-	local showAnyModel = allowShowingModel and hasAnyCard;
-	local tryToShowTexture = not showAnyModel or bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.CardAlwaysShowsTexture) == Enum.BattlepayDisplayFlag.CardAlwaysShowsTexture;
-
-	if showAnyModel then
+	if self:ShouldShowModel(entryInfo) then
 		local showShadows = self:ShouldModelShowShadows();
 		StoreProductCard_ShowModel(self, entryInfo, showShadows, forceModelUpdate);
 	else
 		StoreProductCard_HideModel(self);
 	end	
 
-	if tryToShowTexture then		
+	if self:ShouldShowIcon(entryInfo) then
 		self:ShowIcon(entryInfo.sharedData);
 	else
 		self:HideIcon();
-	end
+	end	
 
 	self:SetID(entryID);
 	self:UpdateState();

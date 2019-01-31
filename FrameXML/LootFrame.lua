@@ -610,6 +610,11 @@ end
 
 function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, currencyCost, difficultyID)
 	local frame = BonusRollFrame;
+	
+	if ( frame:IsShown() and frame.spellID == spellID ) then
+		return;
+	end
+	
 	-- No valid currency data--use the fall back.
 	if ( currencyID == 0 ) then
 		currencyID = BONUS_ROLL_REQUIRED_CURRENCY;

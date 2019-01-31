@@ -38,7 +38,7 @@ end
 
 function WorldStateScoreFrame_OnEvent(self, event, ...)
 	if	event == "UPDATE_BATTLEFIELD_SCORE" or event == "UPDATE_WORLD_STATES" then
-		if InActiveBattlefield() and (self:IsVisible() or GetBattlefieldWinner()) then
+		if C_PvP.IsActiveBattlefield() and (self:IsVisible() or GetBattlefieldWinner()) then
 			WorldStateScoreFrame_Resize();
 			WorldStateScoreFrame_Update();
 		end
@@ -693,7 +693,7 @@ function ToggleWorldStateScoreFrame()
 			end
 		end
 
-		if ( ( not IsActiveBattlefieldArena() or GetBattlefieldWinner() or C_PvP.IsInBrawl() ) and inBattlefield ) then
+		if ( ( not IsActiveBattlefieldArena() or GetBattlefieldWinner() or C_PvP.IsInBrawl() ) and inBattlefield or IsInLFDBattlefield() ) then
 			ShowUIPanel(WorldStateScoreFrame);
 		end
 	end

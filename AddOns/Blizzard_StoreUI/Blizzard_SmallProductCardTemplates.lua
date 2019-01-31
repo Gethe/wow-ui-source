@@ -195,10 +195,10 @@ function MediumStoreCardMixin:SetDiscountText(discountPercentage)
 	self.DiscountText:SetText(BLIZZARD_STORE_BUNDLE_DISCOUNT_BANNER:format(discountPercentage));
 end
 
-function MediumStoreCardMixin:SetIconStyle(icon, overrideTexture, useSquareBorder)
-	StoreCardMixin.SetIconStyle(self, icon, overrideTexture, useSquareBorder);
+function MediumStoreCardMixin:ShowIcon(displayData)
+	StoreCardMixin.ShowIcon(self, displayData)
 	
-	if overrideTexture then
+	if displayData.overrideTexture then
 		self.Icon:ClearAllPoints();
 		self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT");	
 	end

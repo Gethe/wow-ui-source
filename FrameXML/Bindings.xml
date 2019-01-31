@@ -1149,7 +1149,10 @@
 	</Binding>
 
 	<!-- Debug function key bindings -->
-	<Binding name="TOGGLESTATS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+  <Binding name="RELOADUI" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+    ReloadUI();
+  </Binding>
+  <Binding name="TOGGLESTATS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		ToggleStats();
 	</Binding>
 	<Binding name="TOGGLETRIS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">

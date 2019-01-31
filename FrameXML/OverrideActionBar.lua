@@ -104,10 +104,10 @@ function OverrideActionBar_UpdateSkin()
 	-- For now, a vehicle has precedence over override bars (hopefully designers make it so these never conflict)
 	if ( HasVehicleActionBar() ) then
 		OverrideActionBar_Setup(UnitVehicleSkin("player"), GetVehicleBarIndex());
+		OverrideActionBar_UpdateMicroButtons();
 	else
 		OverrideActionBar_Setup(GetOverrideBarSkin(), GetOverrideBarIndex());
 	end
-	OverrideActionBar_UpdateMicroButtons();
 end
 
 function OverrideActionBar_SetSkin(skin)

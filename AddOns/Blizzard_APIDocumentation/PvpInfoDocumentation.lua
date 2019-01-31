@@ -305,6 +305,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "IsActiveBattlefield",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isActiveBattlefield", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsBattlegroundEnlistmentBonusActive",
 			Type = "Function",
 

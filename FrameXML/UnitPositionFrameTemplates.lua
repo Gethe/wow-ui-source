@@ -225,7 +225,7 @@ function UnitPositionFrameMixin:UpdateFull(timeNow)
 	self:AddUnitInternal(timeNow, "player", self:GetOrCreateUnitAppearanceData("player"));
 
 	local memberCount, unitBase = self:GetMemberCountAndUnitTokenPrefix();
-	local overridePartyType = (InActiveBattlefield() and IsInRaid() and IsInGroup(LE_PARTY_CATEGORY_HOME)) and LE_PARTY_CATEGORY_HOME or nil;
+	local overridePartyType = (C_PvP.IsActiveBattlefield() and IsInRaid() and IsInGroup(LE_PARTY_CATEGORY_HOME)) and LE_PARTY_CATEGORY_HOME or nil;
 	local partyAppearance = self:GetOrCreateUnitAppearanceData("party");
 	local raidAppearance = self:GetOrCreateUnitAppearanceData("raid");
 
@@ -245,7 +245,7 @@ function UnitPositionFrameMixin:UpdatePeriodic(timeNow)
 	self:SetUnitAppearanceInternal(timeNow, "player", self:GetOrCreateUnitAppearanceData("player"));
 
 	local memberCount, unitBase = self:GetMemberCountAndUnitTokenPrefix();
-	local overridePartyType = (InActiveBattlefield() and IsInRaid() and IsInGroup(LE_PARTY_CATEGORY_HOME)) and LE_PARTY_CATEGORY_HOME or nil;
+	local overridePartyType = (C_PvP.IsActiveBattlefield() and IsInRaid() and IsInGroup(LE_PARTY_CATEGORY_HOME)) and LE_PARTY_CATEGORY_HOME or nil;
 	local partyAppearance = self:GetOrCreateUnitAppearanceData("party");
 	local raidAppearance = self:GetOrCreateUnitAppearanceData("raid");
 

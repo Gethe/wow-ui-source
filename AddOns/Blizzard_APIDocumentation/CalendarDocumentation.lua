@@ -363,7 +363,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "eventIndex", Type = "number", Nilable = false },
+				{ Name = "inviteIndex", Type = "number", Nilable = false },
 			},
 		},
 		{

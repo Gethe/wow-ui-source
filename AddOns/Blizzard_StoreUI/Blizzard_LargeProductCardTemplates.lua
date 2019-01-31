@@ -154,6 +154,43 @@ function VerticalLargeStoreCardMixin:UpdateState()
 	-- we override the StoreCardMixin:UpdateState here to prevent "selected" functionality in LargeCards
 end
 
+function VerticalLargeStoreCardMixin:ShouldShowIcon(entryInfo)
+	return StoreCardMixin.ShouldShowIcon(self, entryInfo) and not entryInfo.sharedData.overrideBackground;
+end
+
+function VerticalLargeStoreCardMixin:SetupDescription(entryInfo)
+	local description = entryInfo.sharedData.description;
+	if entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.WoWToken then
+		description = BLIZZARD_STORE_TOKEN_DESC_30_DAYS;
+	end
+
+	local baseDescription, bullets = description:match("(.-)$bullet(.*)");
+	if not bullets then
+		self.Description:SetText(description);
+	else
+		local bulletPoints = {};
+		while bullets ~= nil and bullets ~= "" do
+			local bullet = bullets:match("(.-)$bullet") or bullets;
+			bullet = strtrim(bullet, "\n\r");
+			bullets = bullets:match("$bullet(.*)");
+			table.insert(bulletPoints, bullet);
+		end
+
+		self.Description:SetJustifyH("LEFT");
+
+		if baseDescription ~= "" then
+			self.Description:SetText(strtrim(baseDescription, "\n\r"));
+			self.Description:Show();
+			self.DescriptionBulletPointContainer:SetPoint("TOP", self.Description, "BOTTOM", 0, -3);
+		else
+			self.Description:Hide();
+			self.DescriptionBulletPointContainer:SetPoint("TOP", self.Description, "TOP");
+		end
+
+		self.DescriptionBulletPointContainer:SetContents(bulletPoints);
+	end
+end
+
 function VerticalLargeStoreCardMixin:Layout()
 	self:SetSize(286, 471);
 	self.Card:ClearAllPoints();
