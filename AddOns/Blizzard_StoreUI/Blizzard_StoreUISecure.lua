@@ -37,6 +37,7 @@ local WasVeteran = false;
 local StoreFrameHasBeenShown = false;
 local CharacterWaitingOnGuildFollowInfo = nil;
 local RealmWaitingOnGuildMasterInfo = nil;
+local RealmWithGuildMasterInfo = nil;
 local GuildMasterInfo = {};
 local CharacterList = {};
 local GuildMemberAutoCompleteList;
@@ -2461,13 +2462,15 @@ function StoreFrame_OnHide(self)
 end
 
 function StoreFrame_OnMouseWheel(self, value)
-	if ( value > 0 ) then
-		if ( self.PrevPageButton:IsShown() and self.PrevPageButton:IsEnabled() ) then
-			StoreFramePrevPageButton_OnClick(self.PrevPageButton);
-		end
-	else
-		if ( self.NextPageButton:IsShown() and self.NextPageButton:IsEnabled() ) then
-			StoreFrameNextPageButton_OnClick(self.NextPageButton);
+	if not StoreVASValidationFrame:IsShown() and not StoreConfirmationFrame:IsShown() then
+		if ( value > 0 ) then
+			if ( self.PrevPageButton:IsShown() and self.PrevPageButton:IsEnabled() ) then
+				StoreFramePrevPageButton_OnClick(self.PrevPageButton);
+			end
+		else
+			if ( self.NextPageButton:IsShown() and self.NextPageButton:IsEnabled() ) then
+				StoreFrameNextPageButton_OnClick(self.NextPageButton);
+			end
 		end
 	end
 end
@@ -3401,7 +3404,7 @@ local function UpdateCharacterSelectorState()
 end
 
 local function UpdateCharacterList()
-	if IsGuildVasServiceType(VASServiceType) and not C_StoreSecure.HaveRealmGuildMasterInfo(SelectedRealm.virtualRealmAddress) then
+	if IsGuildVasServiceType(VASServiceType) and RealmWithGuildMasterInfo ~= SelectedRealm.virtualRealmAddress then
 		-- wait for STORE_GUILD_MASTER_INFO_RECEIVED event before populating character list
 		RealmWaitingOnGuildMasterInfo = SelectedRealm.virtualRealmAddress;
 		C_StoreSecure.RequestRealmGuildMasterInfo(SelectedRealm.virtualRealmAddress);
@@ -3417,7 +3420,11 @@ function StoreVASValidationFrame_Init(self)
 
 	VASServiceType = self.productInfo.sharedData.vasServiceType;
 
-	UpdateCharacterList();
+	if not InstructionsShowing then
+		RealmWaitingOnGuildMasterInfo = nil;
+		RealmWithGuildMasterInfo = nil;
+		UpdateCharacterList();
+	end
 
 	SelectedDestinationRealm = nil;
 	SelectedDestinationWowAccount = nil;
@@ -3709,6 +3716,7 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 		local realmAddress = ...;
 		if RealmWaitingOnGuildMasterInfo == realmAddress then 
 			RealmWaitingOnGuildMasterInfo = nil;
+			RealmWithGuildMasterInfo = realmAddress;
 			VASCharacterSelectionRealmSelector_Callback(SelectedRealm);
 		end
 	end
@@ -4691,10 +4699,10 @@ end
 ------------------------------------
 function VASCharacterSelectionRealmSelector_Callback(value)
 	SelectedRealm = value;
+	SelectedCharacter = nil;
 
 	UpdateCharacterList();
 
-	SelectedCharacter = nil;
 	RealmAutoCompleteList = nil;
 	DestinationRealmMapping = {};
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
@@ -4892,6 +4900,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 	SelectedCharacter = value;
 	GuildMemberAutoCompleteList = nil;
 	GuildMemberNameToGuid = {};
+	IsGuildFollow = false;
 
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 	local character = CharacterList[SelectedCharacter];
