@@ -682,8 +682,8 @@ end
 local function TryAddingExpirationWarningLine(module, block, questID)
 	if ( QuestUtils_ShouldDisplayExpirationWarning(questID) ) then
 		local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(questID);
+		local text = "";
 		if ( timeLeftMinutes and module.tickerSeconds ) then
-			local text = "";
 			if ( timeLeftMinutes > 0 ) then
 				if ( timeLeftMinutes < WORLD_QUESTS_TIME_CRITICAL_MINUTES ) then
 					local timeString = SecondsToTime(timeLeftMinutes * 60);
@@ -699,9 +699,9 @@ local function TryAddingExpirationWarningLine(module, block, questID)
 					end
 				end
 			end
-			module:AddObjective(block, "TimeLeft", text, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["TimeLeft"], true);
-			block.currentLine.Icon:Hide();
 		end
+		module:AddObjective(block, "TimeLeft", text, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["TimeLeft"], true);
+		block.currentLine.Icon:Hide();
 	end
 end
 

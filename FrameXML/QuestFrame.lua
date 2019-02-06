@@ -300,13 +300,13 @@ function QuestFrameGreetingPanel_OnShow()
 	QuestFrame_SetTitleTextColor(AvailableQuestsText, material);
 	local numActiveQuests = GetNumActiveQuests();
 	local numAvailableQuests = GetNumAvailableQuests();
+	local lastTitleButton = nil;
 	if ( numActiveQuests == 0 ) then
 		CurrentQuestsText:Hide();
 		QuestGreetingFrameHorizontalBreak:Hide();
 	else
 		CurrentQuestsText:SetPoint("TOPLEFT", "GreetingText", "BOTTOMLEFT", 0, -10);
 		CurrentQuestsText:Show();
-		local lastTitleButton = nil;
 		for i=1, numActiveQuests do
 			local questTitleButton = QuestFrameGreetingPanel.titleButtonPool:Acquire();
 			local title, isComplete = GetActiveTitle(i);
@@ -344,14 +344,14 @@ function QuestFrameGreetingPanel_OnShow()
 		QuestGreetingFrameHorizontalBreak:Hide();
 	else
 		if ( numActiveQuests > 0 ) then
-			QuestGreetingFrameHorizontalBreak:SetPoint("TOPLEFT", "QuestTitleButton"..numActiveQuests, "BOTTOMLEFT",22,-10);
+			QuestGreetingFrameHorizontalBreak:SetPoint("TOPLEFT", lastTitleButton, "BOTTOMLEFT",22,-10);
 			QuestGreetingFrameHorizontalBreak:Show();
 			AvailableQuestsText:SetPoint("TOPLEFT", "QuestGreetingFrameHorizontalBreak", "BOTTOMLEFT", -12, -10);
 		else
 			AvailableQuestsText:SetPoint("TOPLEFT", "GreetingText", "BOTTOMLEFT", 0, -10);
 		end
 		AvailableQuestsText:Show();
-		local lastTitleButton = nil;
+		lastTitleButton = nil;
 		for i=(numActiveQuests + 1), (numActiveQuests + numAvailableQuests) do
 			local questTitleButton = QuestFrameGreetingPanel.titleButtonPool:Acquire();
 			local isTrivial, frequency, isRepeatable, isLegendary = GetAvailableQuestInfo(i - numActiveQuests);

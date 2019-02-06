@@ -175,11 +175,19 @@ function SocialQueueUtil_GetRelationshipInfo(guid, missingNameFallback, clubId)
 	end
 
 	local name, normalizedRealmName = select(6, GetPlayerInfoByGUID(guid));
-	name = (name or missingNameFallback) or UNKNOWNOBJECT;
+	name = name or missingNameFallback;
+	
+	local hasName = name ~= nil;
+	if ( not hasName ) then
+		name = UNKNOWNOBJECT;
+	elseif ( normalizedRealmName and normalizedRealmName ~= "" ) then
+		name = FULL_PLAYER_NAME:format(name, normalizedRealmName);
+	end
+	
 	local linkName = name;
 	local playerLink;
 
-	if name ~= UNKNOWNOBJECT then
+	if ( hasName ) then
 		playerLink = GetPlayerLink(linkName, name);
 	end
 

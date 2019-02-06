@@ -33,12 +33,13 @@ local HIDE_MOST = {
 --------Data on what locks exist and what frames are ruled by them--------
 FRAMELOCK_STATES = {
 	COMMENTATOR_SPECTATING_MODE = Mixin({
-		GeneralDockManager	= "hidden",
-		QuickJoinToastButton	= "hidden",
-		ChatFrameMenuButton	= "hidden",
-		CombatLogQuickButtonFrame = "hidden",
-		ArenaEnemyFrames = "hidden",
-		ChatFrame1			= "hidden",
+		GeneralDockManager					= "hidden",
+		QuickJoinToastButton				= "hidden",
+		ChatFrameMenuButton					= "hidden",
+		CombatLogQuickButtonFrame 			= "hidden",
+		ArenaEnemyFrames 					= "hidden",
+		ChatFrame1							= "hidden",
+		ChatFrameChannelButton				= "hidden",
 		--Additional chat frames are added to this list as they are created.
 	}, HIDE_MOST),
 	PETBATTLES = HIDE_MOST,

@@ -3008,6 +3008,18 @@ StaticPopupDialogs["BIND_ENCHANT"] = {
 	showAlert = 1,
 	hideOnEscape = 1
 };
+StaticPopupDialogs["BIND_SOCKET"] = {
+	text = ACTION_WILL_BIND_ITEM,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		C_ItemSocketInfo.CompleteSocketing();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	showAlert = 1,
+	hideOnEscape = 1
+};
 StaticPopupDialogs["ACTION_WILL_BIND_ITEM"] = {
 	text = ACTION_WILL_BIND_ITEM,
 	button1 = OKAY,

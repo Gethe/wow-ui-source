@@ -6,6 +6,10 @@ local ItemSocketInfo =
 
 	Functions =
 	{
+		{
+			Name = "CompleteSocketing",
+			Type = "Function",
+		},
 	},
 
 	Events =
@@ -14,6 +18,11 @@ local ItemSocketInfo =
 			Name = "SocketInfoAccept",
 			Type = "Event",
 			LiteralName = "SOCKET_INFO_ACCEPT",
+		},
+		{
+			Name = "SocketInfoBindConfirm",
+			Type = "Event",
+			LiteralName = "SOCKET_INFO_BIND_CONFIRM",
 		},
 		{
 			Name = "SocketInfoClose",

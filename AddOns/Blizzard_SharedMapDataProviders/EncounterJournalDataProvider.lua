@@ -62,13 +62,23 @@ function EncounterJournalPinMixin:Refresh()
 	else
 		self.Background:Hide();
 	end
+	
+	local complete = C_EncounterJournal.IsEncounterComplete(encounterID);
+	self.DefeatedOpacity:SetShown(complete);
+	self.DefeatedOverlay:SetShown(complete);
+	self.Background:SetDesaturation(complete and 0.7 or 0);
 end
 
 function EncounterJournalPinMixin:OnMouseEnter()
 	if self.tooltipTitle then
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-		GameTooltip:SetText(self.tooltipTitle, 1, 1, 1);
-		GameTooltip:AddLine(self.tooltipText, nil, nil, nil, true);
+		GameTooltip_SetTitle(GameTooltip, self.tooltipTitle);
+		
+		if C_EncounterJournal.IsEncounterComplete(self.encounterID) then
+			GameTooltip_AddColoredLine(GameTooltip, DUNGEON_ENCOUNTER_DEFEATED, RED_FONT_COLOR);
+		end
+		
+		GameTooltip_AddNormalLine(GameTooltip, self.tooltipText, true);
 		GameTooltip:Show();
 	end
 end

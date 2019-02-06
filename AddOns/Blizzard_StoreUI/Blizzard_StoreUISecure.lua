@@ -2992,12 +2992,6 @@ function StoreVASValidationFrame_Init(self)
 
 	VASServiceType = self.productInfo.sharedData.vasServiceType;
 
-	if not InstructionsShowing then
-		RealmWaitingOnGuildMasterInfo = nil;
-		RealmWithGuildMasterInfo = nil;
-		UpdateCharacterList();
-	end
-
 	SelectedDestinationRealm = nil;
 	SelectedDestinationWowAccount = nil;
 	SelectedDestinationBnetAccount = nil;

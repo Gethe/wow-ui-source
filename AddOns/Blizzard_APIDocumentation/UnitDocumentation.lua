@@ -212,6 +212,20 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitTreatAsPlayerForDisplay",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "treatAsPlayer", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitWidgetSet",
 			Type = "Function",
 

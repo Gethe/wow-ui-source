@@ -47,26 +47,7 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo)
 		minVal, maxVal, barVal = 0, 1, 1;
 	end
 
-	self.Bar:SetMinMaxValues(minVal, maxVal);
-	self.Bar:SetValue(barVal);
-
-	self.Bar.Label:SetShown(widgetInfo.barValueTextType ~= Enum.StatusBarValueTextType.Hidden);
-
-	local maxTimeCount = self:GetMaxTimeCount(widgetInfo);
-
-	if maxTimeCount then
-		self.Bar.Label:SetText(SecondsToTime(widgetInfo.barValue, false, true, maxTimeCount, true));
-	elseif widgetInfo.barValueTextType == Enum.StatusBarValueTextType.Value then
-		self.Bar.Label:SetText(widgetInfo.barValue);
-	elseif widgetInfo.barValueTextType == Enum.StatusBarValueTextType.ValueOverMax then
-		self.Bar.Label:SetText(FormatFraction(widgetInfo.barValue, widgetInfo.barMax));
-	elseif widgetInfo.barValueTextType == Enum.StatusBarValueTextType.ValueOverMaxNormalized then
-		self.Bar.Label:SetText(FormatFraction(widgetInfo.barValue - widgetInfo.barMin, widgetInfo.barMax - widgetInfo.barMin));
-	elseif widgetInfo.barValueTextType == Enum.StatusBarValueTextType.Percentage then
-		local barPercent = PercentageBetween(widgetInfo.barValue, widgetInfo.barMin, widgetInfo.barMax);
-		local barPercentText = FormatPercentage(barPercent, true);
-		self.Bar.Label:SetText(barPercentText);
-	end
+	self.Bar:Setup(minVal, maxVal, barVal, widgetInfo.barValueTextType);
 
 	local showSpark = widgetInfo.barValue > widgetInfo.barMin and widgetInfo.barValue < widgetInfo.barMax;
 	self.Bar.Spark:SetShown(showSpark);
@@ -97,12 +78,4 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo)
 
 	local totalHeight = barHeight + labelHeight;
 	self:SetHeight(totalHeight);
-end
-
-function UIWidgetTemplateStatusBarMixin:GetMaxTimeCount(widgetInfo)
-	if widgetInfo.barValueTextType == Enum.StatusBarValueTextType.Time then
-		return 2;
-	elseif widgetInfo.barValueTextType == Enum.StatusBarValueTextType.TimeShowOneLevelOnly then
-		return 1;
-	end
 end

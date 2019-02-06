@@ -74,6 +74,15 @@ local DateAndTime =
 				{ Name = "date", Type = "CalendarTime", Nilable = false },
 			},
 		},
+		{
+			Name = "GetServerTimeLocal",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "serverTimeLocal", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =

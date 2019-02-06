@@ -1797,7 +1797,8 @@ end
 
 function PVPConquestBarRewardMixin:OnClick()
 	if self.questID and self.questID > 0 and IsModifiedClick() then
-		HandleModifiedItemClick(GetQuestLogItemLink("reward", 1, self.questID));
+		local itemIndex = QuestUtils_GetBestQualityItemRewardIndex(self.questID);
+		HandleModifiedItemClick(GetQuestLogItemLink("reward", itemIndex, self.questID));
 	end
 end
 

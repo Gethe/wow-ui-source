@@ -77,6 +77,20 @@ local EncounterJournal =
 				{ Name = "hasLoot", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "IsEncounterComplete",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "journalEncounterID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isEncounterComplete", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

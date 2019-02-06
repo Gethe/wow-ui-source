@@ -1315,8 +1315,6 @@ VideoData["Display_RenderScaleSlider"]={
 	onvaluechanged = function(self, value)
 		self:updatecustomfield(value);
 	end,
-
-	restart = true,
 }
 
 -------------------------------------------------------------------------------------------------------
@@ -1326,7 +1324,7 @@ VideoData["Advanced_GraphicsAPIDropDown"]={
 
 	tablefunction =
 		function(self)
-			self.cvarValues = { GetGraphicsAPIs() };	-- this is a table of the cvar values, ie "d3d9", "opengl", etc
+			self.cvarValues = { GetGraphicsAPIs() };	-- this is a table of the cvar values, ie "d3d11", "metal", etc
 			local temp = { };
 			for i = 1, #self.cvarValues do
 				tinsert(temp, _G["GXAPI_"..strupper(self.cvarValues[i])]);
@@ -1347,8 +1345,7 @@ VideoData["Advanced_GraphicsAPIDropDown"]={
 			end
 		end,
 	lookup = Graphics_TableLookupSafe,
-	clientRestart = true,
-	gameRestart = true,
+	restart = true,
 }
 
 VideoData["Advanced_PhysicsInteractionDropDown"]={

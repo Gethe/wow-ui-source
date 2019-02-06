@@ -1297,7 +1297,11 @@ function WardrobeItemsCollectionMixin:IsValidWeaponCategoryForSlot(categoryID, s
 end
 
 function WardrobeItemsCollectionMixin:SetActiveSlot(slot, transmogType, category, ignorePreviousSlot)
-	local previousSlot = ignorePreviousSlot and nil or self.activeSlot;
+	local previousSlot;
+	if not ignorePreviousSlot then
+		previousSlot = self.activeSlot;
+	end
+
 	self.activeSlot = slot;
 	self.transmogType = transmogType;
 

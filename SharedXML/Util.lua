@@ -355,6 +355,18 @@ function Wrap(value, max)
 	return (value - 1) % max + 1;
 end
 
+function ClampDegrees(value)
+	return ClampMod(value, 360);
+end
+
+function ClampMod(value, mod)
+	return ((value % mod) + mod) % mod;
+end
+
+function NegateIf(value, condition)
+	return condition and -value or value;
+end
+
 function PercentageBetween(value, startValue, endValue)
 	if startValue == endValue then
 		return 0.0;
@@ -952,16 +964,18 @@ function SetupTextureKitOnFrame(textureKit, frame, fmt, setVisibility, useAtlasS
 		return;
 	end
 
-	if setVisibility then
-		frame:SetShown(textureKit ~= nil);
-	end
+	local success = false;
 
 	if textureKit then
 		if frame:GetObjectType() == "StatusBar" then
-			frame:SetStatusBarAtlas(GetFinalNameFromTextureKit(fmt, textureKit));
+			success = frame:SetStatusBarAtlas(GetFinalNameFromTextureKit(fmt, textureKit));
 		elseif frame.SetAtlas then
-			frame:SetAtlas(GetFinalNameFromTextureKit(fmt, textureKit), useAtlasSize);
+			success = frame:SetAtlas(GetFinalNameFromTextureKit(fmt, textureKit), useAtlasSize);
 		end
+	end
+
+	if setVisibility then
+		frame:SetShown(success);
 	end
 end
 
