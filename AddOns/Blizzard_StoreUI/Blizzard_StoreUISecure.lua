@@ -2992,6 +2992,12 @@ function StoreVASValidationFrame_Init(self)
 
 	VASServiceType = self.productInfo.sharedData.vasServiceType;
 
+	if not InstructionsShowing then
+		RealmWaitingOnGuildMasterInfo = nil;
+		RealmWithGuildMasterInfo = nil;
+		UpdateCharacterList();
+	end
+
 	SelectedDestinationRealm = nil;
 	SelectedDestinationWowAccount = nil;
 	SelectedDestinationBnetAccount = nil;
@@ -3975,6 +3981,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 	SelectedCharacter = value;
 	GuildMemberAutoCompleteList = nil;
 	GuildMemberNameToGuid = {};
+	IsGuildFollow = false;
 
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 	local character = CharacterList[SelectedCharacter];
