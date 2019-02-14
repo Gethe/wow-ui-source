@@ -340,6 +340,25 @@ function QuestInfo_ShowObjectivesText()
 	return QuestInfoObjectivesText;
 end
 
+function QuestInfo_ShowWaypoint()
+	local questID;
+	if ( QuestInfoFrame.questLog ) then
+		questID = select(8, GetQuestLogTitle(GetQuestLogSelection()));
+	else
+		questID = GetQuestID();
+	end
+
+	local waypointTitle = C_QuestLog.GetNextWaypointText(questID);
+	if ( not waypointTitle ) then
+		QuestInfoWaypointButton:Hide();
+		return nil;
+	end
+	
+	QuestInfoWaypointButton:SetWaypointText(waypointTitle);
+	QuestInfoWaypointButton:Show();
+	return QuestInfoWaypointButton;
+end
+
 function QuestInfo_ShowSpacer()
 	return QuestInfoSpacerFrame;
 end
@@ -893,7 +912,8 @@ QUEST_TEMPLATE_DETAIL = { questLog = nil, chooseItems = nil, contentWidth = 275,
 		QuestInfo_ShowSpecialObjectives, 0, -10,
 		QuestInfo_ShowGroupSize, 0, -10,
 		QuestInfo_ShowRewards, 0, -15,
-		QuestInfo_ShowSpacer, 0, -15,
+		QuestInfo_ShowWaypoint, 0, -15,
+		QuestInfo_ShowSpacer, 0, -20,
 	}
 }
 
@@ -908,7 +928,8 @@ QUEST_TEMPLATE_LOG = { questLog = true, chooseItems = nil, contentWidth = 285,
 		QuestInfo_ShowSpecialObjectives, 0, -10,
 		QuestInfo_ShowRequiredMoney, 0, 0,
 		QuestInfo_ShowGroupSize, 0, -10,
-		QuestInfo_ShowDescriptionHeader, 0, -10,
+		QuestInfo_ShowWaypoint, 0, -15,
+		QuestInfo_ShowDescriptionHeader, 0, -20,
 		QuestInfo_ShowDescriptionText, 0, -5,
 		QuestInfo_ShowSeal, 0, 0,
 		QuestInfo_ShowRewards, 0, -10,
@@ -937,7 +958,8 @@ QUEST_TEMPLATE_MAP_DETAILS = { questLog = true, chooseItems = nil, contentWidth 
 		QuestInfo_ShowSpecialObjectives, 0, -10,
 		QuestInfo_ShowRequiredMoney, 0, 0,
 		QuestInfo_ShowGroupSize, 0, -10,
-		QuestInfo_ShowDescriptionHeader, 0, -10,
+		QuestInfo_ShowWaypoint, 0, -15,
+		QuestInfo_ShowDescriptionHeader, 0, -20,
 		QuestInfo_ShowDescriptionText, 0, -5,
 		QuestInfo_ShowSeal, 0, 0,
 		QuestInfo_ShowSpacer, 0, 0,
@@ -983,4 +1005,63 @@ function QuestInfoRewardItemCodeTemplate_OnClick(self, button)
 			QuestInfoItem_OnClick(self);
 		end
 	end
+end
+
+QuestInfoWaypointButtonMixin = {};
+
+function QuestInfoWaypointButtonMixin:OnLoad()
+	self.Texture:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
+	self.Texture:SetTexCoord(0.875, 1, 0.375, 0.5);
+	self.PushedTexture:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
+	self.PushedTexture:SetTexCoord(0.750, 0.875, 0.375, 0.5);
+	self.HighlightTexture:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
+	self.HighlightTexture:SetTexCoord(0.625, 0.750, 0.875, 1);
+	self:RegisterEvent("SUPER_TRACKED_QUEST_CHANGED");
+end
+
+function QuestInfoWaypointButtonMixin:OnShow()
+	self:UpdateSuperTrackedIcon();
+end
+
+function QuestInfoWaypointButtonMixin:OnEvent()
+	self:UpdateSuperTrackedIcon();
+end
+
+function QuestInfoWaypointButtonMixin:SetWaypointText(waypointTitle)
+	self.DisplayText:SetText(waypointTitle);
+end
+
+function QuestInfoWaypointButtonMixin:GetActiveQuestID()
+	if ( QuestInfoFrame.questLog ) then
+		return select(8, GetQuestLogTitle(GetQuestLogSelection()));
+	else
+		return GetQuestID();
+	end
+	
+	return nil;
+end
+
+function QuestInfoWaypointButtonMixin:UpdateSuperTrackedIcon()
+	local questID = self:GetActiveQuestID();
+	local isSuperTracked = questID == GetSuperTrackedQuestID();
+	if isSuperTracked then
+		self.Texture:SetTexCoord(0.500, 0.625, 0.375, 0.5);
+		self.PushedTexture:SetTexCoord(0.375, 0.500, 0.375, 0.5);
+	else
+		self.Texture:SetTexCoord(0.875, 1, 0.375, 0.5);
+		self.PushedTexture:SetTexCoord(0.750, 0.875, 0.375, 0.5);
+	end
+end
+
+function QuestInfoWaypointButtonMixin:OnClick()
+	local questID = self:GetActiveQuestID();
+	SetSuperTrackedQuestID(questID);
+end
+
+function QuestInfoWaypointButtonMixin:OnMouseDown()
+	self.Icon:SetPoint("CENTER", 2, -2);
+end
+
+function QuestInfoWaypointButtonMixin:OnMouseUp()
+	self.Icon:SetPoint("CENTER", 0, 0);
 end

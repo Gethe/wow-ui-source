@@ -22,4 +22,6 @@ end
 -- PVP changes
 do
 	InActiveBattlefield = C_PvP.IsActiveBattlefield;
+	HasInspectHonorData = function() return true; end;
+	RequestInspectHonorData = function() return; end;
 end

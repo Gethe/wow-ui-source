@@ -813,6 +813,8 @@ local function WidgetLayout(widgetContainer, sortedWidgets)
 
 	widgetContainer:SetHeight(math.max(widgetsHeight, 1));
 	widgetContainer:SetWidth(math.max(maxWidgetWidth, 1));
+
+	widgetContainer.shownWidgetCount = #sortedWidgets;
 end
 
 function GameTooltip_AddWidgetSet(self, widgetSetID)
@@ -823,10 +825,14 @@ function GameTooltip_AddWidgetSet(self, widgetSetID)
 	if not self.widgetContainer then
 		self.widgetContainer = CreateFrame("FRAME", nil, self, "UIWidgetContainerTemplate");
 		self.widgetContainer.showAndHideOnWidgetSetRegistration = false;
+		self.widgetContainer:Hide();
 	end
 
 	self.widgetContainer:RegisterForWidgetSet(widgetSetID, WidgetLayout);
-	GameTooltip_InsertFrame(self, self.widgetContainer);
+
+	if self.widgetContainer.shownWidgetCount > 0 then
+		GameTooltip_InsertFrame(self, self.widgetContainer);
+	end
 end
 
 function GameTooltip_ClearWidgetSet(self)

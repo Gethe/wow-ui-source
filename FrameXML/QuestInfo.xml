@@ -601,6 +601,57 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Button name="QuestInfoWaypointButton" mixin="QuestInfoWaypointButtonMixin">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="10" y="6"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Icon" atlas="poi-traveldirections-arrow">
+							<Size x="13" y="17"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<FontString parentKey="DisplayText" inherits="QuestFontNormalSmall" justifyH="LEFT">
+							<Size x="285" y="22"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="4" y="0"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" />
+						</FontString>
+					</Layer>
+				</Layers>
+				<NormalTexture parentKey="Texture">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</NormalTexture>
+				<PushedTexture parentKey="PushedTexture">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</PushedTexture>
+				<HighlightTexture parentKey="HighlightTexture" alphaMode="Add">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</HighlightTexture>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+					<OnShow method="OnShow"/>
+					<OnClick method="OnClick"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+				</Scripts>
+			</Button>
 			<Frame name="QuestInfoSpacerFrame">
 				<Size x="5" y="5"/>
 			</Frame>

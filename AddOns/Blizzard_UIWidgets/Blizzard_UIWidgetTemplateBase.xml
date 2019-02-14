@@ -92,7 +92,7 @@
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Icon">
-					<Size x="26" y="26"/>
+					<Size x="18" y="18"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" />
 					</Anchors>

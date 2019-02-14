@@ -510,6 +510,10 @@ function FrameStackTooltip_IsShowHiddenEnabled()
 	return GetCVarBool("fstack_showhidden");
 end
 
+function FrameStackTooltip_IsHighlightEnabled()
+	return GetCVarBool("fstack_showhighlight");
+end
+
 function FrameStackTooltip_IsShowRegionsEnabled()
 	return GetCVarBool("fstack_showregions");
 end
@@ -712,6 +716,18 @@ function FrameStackTooltip_Hide(self)
 	FrameStackHighlight:Hide();
 end
 
+function FrameStackTooltip_ToggleDefaults()
+	local tooltip = FrameStackTooltip;
+	if ( tooltip:IsVisible() ) then
+		FrameStackTooltip_Hide(tooltip);
+	else
+		local showHidden = FrameStackTooltip_IsShowHiddenEnabled();
+		local showRegions = FrameStackTooltip_IsShowRegionsEnabled();
+		local showAnchors = FrameStackTooltip_IsShowAnchorsEnabled();
+		FrameStackTooltip_Show(tooltip, showHidden, showRegions, showAnchors);
+	end
+end
+
 function FrameStackTooltip_Toggle(showHidden, showRegions, showAnchors)
 	local tooltip = FrameStackTooltip;
 	if ( tooltip:IsVisible() ) then
@@ -778,10 +794,11 @@ function FrameStackTooltip_OnUpdate(self)
 		self.nextUpdate = now + FRAMESTACK_UPDATE_TIME;
 		self.highlightFrame = self:SetFrameStack(self.showHidden, self.showRegions, self.highlightIndexChanged);
 		self.highlightIndexChanged = 0;
-		if self.highlightFrame then
+		if self.highlightFrame and FrameStackTooltip_IsHighlightEnabled() then
 			FrameStackHighlight:HighlightFrame(self.highlightFrame, self.showAnchors);
 		end
 	end
+
 end
 
 function FrameStackTooltip_OnShow(self)

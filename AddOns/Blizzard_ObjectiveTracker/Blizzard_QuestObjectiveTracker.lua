@@ -1,7 +1,7 @@
 
 QUEST_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable();
 QUEST_TRACKER_MODULE.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST;
-QUEST_TRACKER_MODULE.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_QUEST + OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED;
+QUEST_TRACKER_MODULE.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_QUEST + OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED + OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED;
 QUEST_TRACKER_MODULE.usedBlocks = { };
 
 QUEST_TRACKER_MODULE.buttonOffsets = {
@@ -24,8 +24,8 @@ end
 
 function QUEST_TRACKER_MODULE:OnFreeTypedLine(line)
 	line.block = nil;
-	line.Check:Hide();
 	if ( line.state ) then
+		line.Check:Hide();
 		line.state = nil;
 		line.Glow.Anim:Stop();
 		line.Glow:SetAlpha(0);
@@ -91,6 +91,7 @@ function QUEST_TRACKER_MODULE:OnBlockHeaderClick(block, mouseButton)
 end
 
 local LINE_TYPE_ANIM = { template = "QuestObjectiveAnimLineTemplate", freeLines = { } };
+local LINE_TYPE_WAYPOINT = { template = "QuestObjectiveWaypointLineTemplate", freeLines = { } };
 
 -- *****************************************************************************************************
 -- ***** ANIMATIONS
@@ -242,6 +243,7 @@ function QuestObjectiveTracker_UpdatePOIs()
 			-- see if we already have a block for this quest
 			local block = QUEST_TRACKER_MODULE:GetExistingBlock(questID);
 			if ( block ) then
+				local isSuperTracked = questID == GetSuperTrackedQuestID();
 				if ( isComplete and isComplete < 0 ) then
 					isComplete = false;
 				elseif ( numObjectives == 0 and playerMoney >= requiredMoney and not startEvent ) then
@@ -255,6 +257,8 @@ function QuestObjectiveTracker_UpdatePOIs()
 						numPOINumeric = numPOINumeric + 1;
 						poiButton = QuestPOI_GetButton(ObjectiveTrackerFrame.BlocksFrame, questID, "numeric", numPOINumeric);
 					end
+				elseif ( isSuperTracked and C_QuestLog.GetNextWaypoint(questID) ~= nil ) then
+					poiButton = QuestPOI_GetButton(ObjectiveTrackerFrame.BlocksFrame, questID, "waypoint", nil);
 				elseif ( isComplete ) then
 					poiButton = QuestPOI_GetButton(ObjectiveTrackerFrame.BlocksFrame, questID, "remote", nil);
 				end
@@ -384,6 +388,7 @@ function QUEST_TRACKER_MODULE:Update()
 			end
 				
 			if ( showQuest ) then
+				local isSuperTracked = questID == GetSuperTrackedQuestID();
 				local isSequenced = IsQuestSequenced(questID);
 				local existingBlock = QUEST_TRACKER_MODULE:GetExistingBlock(questID);
 				local block = QUEST_TRACKER_MODULE:GetBlock(questID);
@@ -416,6 +421,13 @@ function QUEST_TRACKER_MODULE:Update()
 							else
 								QUEST_TRACKER_MODULE:AddObjective(block, "QuestComplete", QUEST_WATCH_QUEST_READY, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
 							end
+							
+							if ( isSuperTracked ) then
+								local waypointTitle = C_QuestLog.GetNextWaypointText(questID);
+								if ( waypointTitle ~= nil ) then
+									QUEST_TRACKER_MODULE:AddObjective(block, "Waypoint", waypointTitle, LINE_TYPE_WAYPOINT, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Waypoint"], nil, 20);
+								end
+							end
 						end
 					end
 				elseif ( questFailed ) then
@@ -426,6 +438,14 @@ function QUEST_TRACKER_MODULE:Update()
 						local text = GetMoneyString(playerMoney).." / "..GetMoneyString(requiredMoney);
 						QUEST_TRACKER_MODULE:AddObjective(block, "Money", text);
 					end
+					
+					if ( isSuperTracked ) then
+						local waypointTitle = C_QuestLog.GetNextWaypointText(questID);
+						if ( waypointTitle ~= nil ) then
+							QUEST_TRACKER_MODULE:AddObjective(block, "Waypoint", waypointTitle, LINE_TYPE_WAYPOINT, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Waypoint"], nil, 20);
+						end
+					end
+
 					-- timer bar
 					if ( failureTime and block.currentLine ) then
 						local currentLine = block.currentLine;
@@ -460,6 +480,8 @@ function QUEST_TRACKER_MODULE:Update()
 								numPOINumeric = numPOINumeric + 1;
 								poiButton = QuestPOI_GetButton(ObjectiveTrackerFrame.BlocksFrame, questID, "numeric", numPOINumeric);
 							end
+						elseif ( isSuperTracked and C_QuestLog.GetNextWaypoint(questID) ~= nil ) then
+							poiButton = QuestPOI_GetButton(ObjectiveTrackerFrame.BlocksFrame, questID, "waypoint", nil);
 						elseif ( isComplete ) then
 							poiButton = QuestPOI_GetButton(ObjectiveTrackerFrame.BlocksFrame, questID, "remote", nil);
 						end

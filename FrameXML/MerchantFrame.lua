@@ -688,7 +688,7 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 		end
 	end
 	
-	if ( not usingCurrency and maxQuality <= LE_ITEM_QUALITY_UNCOMMON and not itemButton.showNonrefundablePrompt) then
+	if ( not usingCurrency and maxQuality <= LE_ITEM_QUALITY_UNCOMMON and not itemButton.showNonrefundablePrompt) or (not itemsString and not itemButton.price) then
 		BuyMerchantItem( itemButton:GetID(), numToPurchase );
 		return;
 	end

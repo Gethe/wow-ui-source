@@ -48,9 +48,9 @@ function UIWidgetTemplateDoubleStateIconRowMixin:SetupIcons(icons, textureKitID,
 		textureKitFormatter = "rightIcon";
 	end
 
-	for index, captureIconInfo in ipairs(icons) do
+	for index, iconInfo in ipairs(icons) do
 		local iconFrame = self.iconPool:Acquire();
-		local iconShowing = iconFrame:Setup(textureKitID, textureKitFormatter..index, captureIconInfo);
+		local iconShowing = iconFrame:Setup(textureKitID, textureKitFormatter..index, iconInfo);
 
 		if iconShowing then
 			if previousIconFrame then

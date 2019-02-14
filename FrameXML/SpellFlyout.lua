@@ -5,7 +5,7 @@ local SPELLFLYOUT_FINAL_SPACING = 4;
 
 
 function SpellFlyoutButton_OnClick(self)
-	
+
 	if ( IsModifiedClick("CHATLINK") ) then
 		if ( MacroFrameText and MacroFrameText:HasFocus() ) then
 			if ( self.spellName ) then
@@ -16,7 +16,8 @@ function SpellFlyoutButton_OnClick(self)
 			if ( tradeSkillSpellID ) then
 				ChatEdit_InsertLink(tradeSkillLink);
 			else
-				ChatEdit_InsertLink(GetSpellLink(self.spellID));
+				local spellLink = GetSpellLink(self.spellID);
+				ChatEdit_InsertLink(spellLink);
 			end
 		end
 		SpellFlyoutButton_UpdateState(self);
@@ -213,7 +214,7 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 	end
 
 	local offSpec = specID and (specID ~= 0);
-	
+
 	-- Save previous parent to update at the end
 	local oldParent = self:GetParent();
 	local oldIsActionBar = self.isActionBar;
@@ -228,30 +229,30 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 		self:Hide();
 		return;
 	end
-	
+
 	if (not direction) then
 		direction = "UP";
 	end
-	
+
 	-- Update all spell buttons for this flyout
 	local prevButton = nil;
 	local numButtons = 0;
 	for i=1, numSlots do
 		local spellID, overrideSpellID, isKnown, spellName, slotSpecID = GetFlyoutSlotInfo(flyoutID, i);
 		local visible = true;
-		
+
 		-- Ignore Call Pet spells if there isn't a pet in that slot
 		local petIndex, petName = GetCallPetSpellInfo(spellID);
 		if (isActionBar and petIndex and (not petName or petName == "")) then
 			visible = false;
 		end
-		
+
 		if ( ((not offSpec or slotSpecID == 0) and visible and isKnown) or (offSpec and slotSpecID == specID) ) then
 			local button = _G["SpellFlyoutButton"..numButtons+1];
 			if (not button) then
 				button = CreateFrame("CHECKBUTTON", "SpellFlyoutButton"..numButtons+1, SpellFlyout, "SpellFlyoutButtonTemplate");
 			end
-			
+
 			button:ClearAllPoints();
 			if (direction == "UP") then
 				if (prevButton) then
@@ -278,10 +279,10 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 					button:SetPoint("LEFT", SPELLFLYOUT_INITIAL_SPACING, 0);
 				end
 			end
-			
+
 			button:Show();
 			button.showFullTooltip = showFullTooltip;
-			
+
 			_G[button:GetName().."Icon"]:SetTexture(GetSpellTexture(overrideSpellID));
 			_G[button:GetName().."Icon"]:SetDesaturated(offSpec);
 			button.offSpec = offSpec;
@@ -297,32 +298,32 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 			SpellFlyoutButton_UpdateUsable(button);
 			SpellFlyoutButton_UpdateCount(button);
 			SpellFlyoutButton_UpdateGlyphState(button, reason);
-			
+
 			prevButton = button;
 			numButtons = numButtons+1;
 		end
 	end
-	
+
 	-- Hide unused buttons
 	local unusedButtonIndex = numButtons+1;
 	while (_G["SpellFlyoutButton"..unusedButtonIndex]) do
 		_G["SpellFlyoutButton"..unusedButtonIndex]:Hide();
 		unusedButtonIndex = unusedButtonIndex+1;
 	end
-	
+
 	if (numButtons == 0) then
 		self:Hide();
 		return;
 	end
-	
+
 	-- Show the flyout
 	self:SetFrameStrata("DIALOG");
 	self:ClearAllPoints();
-	
+
 	if (not distance) then
 		distance = 0;
 	end
-	
+
 	self.BgEnd:ClearAllPoints();
 	if (direction == "UP") then
 		self:SetPoint("BOTTOM", parent, "TOP", 0, 0);
@@ -361,7 +362,7 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 		self.HorizBg:SetPoint("RIGHT", self.BgEnd, "LEFT");
 		self.HorizBg:SetPoint("LEFT", distance, 0);
 	end
-	
+
 	if (direction == "UP" or direction == "DOWN") then
 		self:SetWidth(prevButton:GetWidth());
 		self:SetHeight((prevButton:GetHeight()+SPELLFLYOUT_DEFAULT_SPACING) * numButtons - SPELLFLYOUT_DEFAULT_SPACING + SPELLFLYOUT_INITIAL_SPACING + SPELLFLYOUT_FINAL_SPACING);
@@ -369,7 +370,7 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 		self:SetHeight(prevButton:GetHeight());
 		self:SetWidth((prevButton:GetWidth()+SPELLFLYOUT_DEFAULT_SPACING) * numButtons - SPELLFLYOUT_DEFAULT_SPACING + SPELLFLYOUT_INITIAL_SPACING + SPELLFLYOUT_FINAL_SPACING);
 	end
-	
+
 	self:SetBorderColor(0.7, 0.7, 0.7);
 
 	self:Show();

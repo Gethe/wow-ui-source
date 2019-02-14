@@ -1152,6 +1152,10 @@
   <Binding name="RELOADUI" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
     ReloadUI();
   </Binding>
+	<Binding name="FSTACK" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		LoadAddOn("Blizzard_DebugTools");
+		FrameStackTooltip_ToggleDefaults();
+	</Binding>
   <Binding name="TOGGLESTATS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		ToggleStats();
 	</Binding>

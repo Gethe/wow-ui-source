@@ -956,6 +956,7 @@ local Calendar =
 				{ Name = "difficultyName", Type = "string", Nilable = false },
 				{ Name = "dontDisplayBanner", Type = "bool", Nilable = false },
 				{ Name = "dontDisplayEnd", Type = "bool", Nilable = false },
+				{ Name = "clubID", Type = "string", Nilable = false },
 			},
 		},
 		{

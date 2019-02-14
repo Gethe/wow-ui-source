@@ -3,7 +3,7 @@ function CommunitiesGuildPerksFrame_OnLoad(self)
 	self.Container.update = function ()
 		CommunitiesGuildPerks_Update(self);
 	end;
-	
+
 	HybridScrollFrame_CreateButtons(self.Container, "CommunitiesGuildPerksButtonTemplate", 8, 0, "TOPLEFT", "TOPLEFT", 0, 0, "TOP", "BOTTOM");
 end
 
@@ -20,7 +20,9 @@ end
 function CommunitiesGuildPerksButton_OnEnter(self)
 	self:GetParent().activeButton = self;
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 36, 0);
-	GameTooltip:SetHyperlink(GetSpellLink(self.spellID));
+
+	local spellLink = GetSpellLink(self.spellID);
+	GameTooltip:SetHyperlink(spellLink);
 end
 
 function CommunitiesGuildPerksButton_OnLeave(self)
@@ -30,7 +32,8 @@ end
 
 function CommunitiesGuildPerksButton_OnClick(self)
 	if ( IsModifiedClick("CHATLINK") ) then
-		ChatEdit_LinkItem(nil, GetSpellLink(self.spellID));
+		local spellLink = GetSpellLink(self.spellID);
+		ChatEdit_LinkItem(nil, spellLink);
 	end
 end
 

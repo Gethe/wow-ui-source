@@ -465,6 +465,8 @@ local glueScreenTags =
 		["HIGHMOUNTAINTAUREN"] = true,
 		["DARKIRONDWARF"] = true,
 		["MAGHARORC"] = true,
+		["ZANDALARITROLL"] = true,
+		["KULTIRAN"] = true,
 	},
 };
 

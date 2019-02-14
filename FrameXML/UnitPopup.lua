@@ -854,6 +854,31 @@ local function UnitPopup_GetIsLocalPlayer(menu)
 	return false;
 end
 
+local function UnitPopup_GetBNetIDAccount(dropdownMenu)
+	if ( dropdownMenu.bnetIDAccount ) then
+		return dropdownMenu.bnetIDAccount;
+	elseif ( dropdownMenu.guid and C_AccountInfo.IsGUIDBattleNetAccountType(dropdownMenu.guid) ) then
+		return C_AccountInfo.GetIDFromBattleNetAccountGUID(dropdownMenu.guid);
+	else
+		local guid = dropdownMenu.guid or (dropdownMenu.unit and UnitGUID(dropdownMenu.unit));
+		if ( guid ) then
+			return select(17, BNGetGameAccountInfoByGUID(guid));
+		end
+	end
+	
+	return nil;
+end
+
+local function UnitPopup_IsBNetFriend(dropdownMenu)
+	local battleNetAccountID = UnitPopup_GetBNetIDAccount(dropdownMenu);
+	return battleNetAccountID and BNIsFriend(battleNetAccountID);
+end
+
+local function UnitPopup_CanAddBNetFriend(dropdownMenu, isLocalPlayer, haveBattleTag, isPlayer)
+	local hasClubInfo = dropdownMenu.clubInfo ~= nil and dropdownMenu.clubMemberInfo ~= nil;
+	return not isLocalPlayer and haveBattleTag and (isPlayer or hasClubInfo) and not UnitPopup_IsBNetFriend(dropdownMenu);
+end
+
 function UnitPopup_HideButtons ()
 	local dropdownMenu = UIDROPDOWNMENU_INIT_MENU;
 	local inInstance, instanceType = IsInInstance();
@@ -887,11 +912,15 @@ function UnitPopup_HideButtons ()
 			end
 		elseif ( value == "ADD_FRIEND_MENU" ) then
 			local hasClubInfo = dropdownMenu.clubInfo ~= nil and dropdownMenu.clubMemberInfo ~= nil;
-			if ( not haveBattleTag or (not isPlayer and not hasClubInfo) ) then
+			if ( isLocalPlayer or not haveBattleTag or (not isPlayer and not hasClubInfo) ) then
 				shown = false;
 			end
 		elseif ( value == "GUILD_BATTLETAG_FRIEND" ) then
-			if ( not haveBattleTag or UnitName("player" ) == dropdownMenu.name ) then
+			if ( not UnitPopup_CanAddBNetFriend(dropdownMenu, isLocalPlayer, haveBattleTag, isPlayer) ) then
+				shown = false;
+			end
+		elseif ( value == "BATTLETAG_FRIEND" ) then
+			if ( not UnitPopup_CanAddBNetFriend(dropdownMenu, isLocalPlayer, haveBattleTag, isPlayer) ) then
 				shown = false;
 			end
 		elseif ( value == "INVITE" or value == "SUGGEST_INVITE" or value == "REQUEST_INVITE" ) then
@@ -1296,7 +1325,9 @@ function UnitPopup_HideButtons ()
 				shown = false;
 			end
 		elseif value == "COMMUNITIES_BATTLETAG_FRIEND" then
-			if dropdownMenu.clubInfo == nil
+			if not haveBattleTag
+				or not UnitPopup_CanAddBNetFriend(dropdownMenu, isLocalPlayer, haveBattleTag, isPlayer)
+				or dropdownMenu.clubInfo == nil
 				or dropdownMenu.clubMemberInfo == nil
 				or dropdownMenu.clubMemberInfo.isSelf then
 				shown = false;

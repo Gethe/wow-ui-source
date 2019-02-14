@@ -207,7 +207,8 @@
 			</OnLeave>
 			<OnClick>
 				if ( IsModifiedClick("CHATLINK") ) then
-					GuildFrame_LinkItem(_, _, GetSpellLink(self.spellID));
+					local spellLink = GetSpellLink(self.spellID);
+					GuildFrame_LinkItem(button, nil, spellLink);
 				end
 			</OnClick>
 		</Scripts>
