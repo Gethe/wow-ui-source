@@ -684,6 +684,10 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 		if ( itemsString ) then
 			itemsString = itemsString .. LIST_DELIMITER .. GetMoneyString(itemButton.price);
 		else
+			if itemButton.price < MERCHANT_HIGH_PRICE_COST then
+				BuyMerchantItem( itemButton:GetID(), numToPurchase );
+				return;
+			end
 			itemsString = GetMoneyString(itemButton.price);
 		end
 	end

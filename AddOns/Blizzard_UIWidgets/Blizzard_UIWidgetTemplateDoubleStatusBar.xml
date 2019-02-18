@@ -83,12 +83,12 @@
 		<Frames>
 			<StatusBar parentKey="LeftBar" inherits="UIWidgetTemplateDoubleStatusBar_StatusBarTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="17" y="-5"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOP" x="-7" y="-5"/>
 				</Anchors>
 			</StatusBar>
 			<StatusBar parentKey="RightBar" inherits="UIWidgetTemplateDoubleStatusBar_StatusBarTemplate" reverseFill="true">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-17" y="-5"/>
+					<Anchor point="TOPLEFT" relativePoint="TOP" x="7" y="-5"/>
 				</Anchors>
 			</StatusBar>
 		</Frames>

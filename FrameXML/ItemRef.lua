@@ -4,7 +4,7 @@ local function FormatLink(linkType, linkDisplayText, ...)
 	if linkDisplayText then
 		return returnLink .. ("|h%s|h"):format(linkDisplayText);
 	else
-		return returnLink;
+		return returnLink .. "|h";
 	end
 end
 

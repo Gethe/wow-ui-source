@@ -198,6 +198,20 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitPvpClassification",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "classification", Type = "PvpUnitClassification", Nilable = true },
+			},
+		},
+		{
 			Name = "UnitSex",
 			Type = "Function",
 
@@ -1220,6 +1234,27 @@ local Unit =
 				{ Name = "Fury", Type = "PowerType", EnumValue = 17 },
 				{ Name = "Pain", Type = "PowerType", EnumValue = 18 },
 				{ Name = "NumPowerTypes", Type = "PowerType", EnumValue = 19 },
+			},
+		},
+		{
+			Name = "PvpUnitClassification",
+			Type = "Enumeration",
+			NumValues = 11,
+			MinValue = 0,
+			MaxValue = 10,
+			Fields =
+			{
+				{ Name = "FlagCarrierHorde", Type = "PvpUnitClassification", EnumValue = 0 },
+				{ Name = "FlagCarrierAlliance", Type = "PvpUnitClassification", EnumValue = 1 },
+				{ Name = "FlagCarrierNeutral", Type = "PvpUnitClassification", EnumValue = 2 },
+				{ Name = "CartRunnerHorde", Type = "PvpUnitClassification", EnumValue = 3 },
+				{ Name = "CartRunnerAlliance", Type = "PvpUnitClassification", EnumValue = 4 },
+				{ Name = "AssassinHorde", Type = "PvpUnitClassification", EnumValue = 5 },
+				{ Name = "AssassinAlliance", Type = "PvpUnitClassification", EnumValue = 6 },
+				{ Name = "OrbCarrierBlue", Type = "PvpUnitClassification", EnumValue = 7 },
+				{ Name = "OrbCarrierGreen", Type = "PvpUnitClassification", EnumValue = 8 },
+				{ Name = "OrbCarrierOrange", Type = "PvpUnitClassification", EnumValue = 9 },
+				{ Name = "OrbCarrierPurple", Type = "PvpUnitClassification", EnumValue = 10 },
 			},
 		},
 	},

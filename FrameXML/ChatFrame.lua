@@ -1074,7 +1074,7 @@ local function CastRandomManager_OnEvent(self, event, ...)
 
 	if ( unit == "player" ) then
 		local name = strlower(GetSpellInfo(spellID));
-		local rank = strlower(GetSpellSubtext(spellID));
+		local rank = strlower(GetSpellSubtext(spellID) or "");
 		local nameplus = name.."()";
 		local fullname = name.."("..rank..")";
 		for sequence, entry in pairs(CastRandomTable) do
@@ -5203,6 +5203,6 @@ function Social_GetShareAchievementLink(achievementID, earned)
 end
 
 function Social_GetShareScreenshotLink()
-	local index = C_Social.GetLastScreenshot();
+	local index = C_Social.GetLastScreenshotIndex();
 	return format("|c%s|Hsharess:%d|h%s|h|r", SHARE_ICON_COLOR, index, SHARE_ICON_TEXT);
 end

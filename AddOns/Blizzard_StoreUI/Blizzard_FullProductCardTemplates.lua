@@ -268,13 +268,15 @@ function FullStoreCardMixin:ShowIcon(displayData)
 
 		if useSquareBorder then -- square icon borders use atlases
 			self.Icon:SetTexture(icon);
+
+			self.IconBorder:ClearAllPoints();
+			self.Icon:ClearAllPoints();
+			self.Icon:SetPoint("TOPLEFT", 88, -99);
+
 			self.IconBorder:SetAtlas("collections-itemborder-collected");
 			self.IconBorder:SetTexCoord(0, 1, 0, 1);
 			self.IconBorder:SetSize(80, 81);
-			self.IconBorder:ClearAllPoints();
 			self.IconBorder:SetPoint("CENTER", self.Icon, "CENTER", 0, -3);
-			self.Icon:ClearAllPoints();
-			self.Icon:SetPoint("TOPLEFT", 88, -99);
 		else -- round icon borders use textures
 			SetPortraitToTexture(self.Icon, icon);
 			self.IconBorder:ClearAllPoints();
@@ -500,7 +502,7 @@ function VerticalFullStoreCardMixin:SetStyle(overrideBackground)
 	end
 	self.ProductName:SetWidth(300);
 	self.ProductName:SetMaxLines(1);
-	self.ProductName:SetPoint("TOPLEFT", self.IconBorder, "TOPRIGHT", -45, -70);
+	self.ProductName:SetPoint("TOPLEFT", self, "TOP", -83, -70);
 	self.ProductName:SetJustifyH("LEFT");
 	self.ProductName:SetFontObjectsToTry("GameFontNormalWTF2", "Game30Font", "GameFontNormalHuge3");
 

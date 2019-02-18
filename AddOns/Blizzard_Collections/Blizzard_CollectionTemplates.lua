@@ -83,7 +83,6 @@ function CollectionsWrappedModelSceneMixin:StartUnwrapAnimation(OnFinishedCallba
 			end
 		end)
 
-
 		C_Timer.After(1.6, function()
 			self.isUnwrapping = nil;
 			if OnFinishedCallback then
@@ -198,5 +197,60 @@ function CollectionsPagingMixin:Update()
 		self.NextPageButton:Disable();
 	else
 		self.NextPageButton:Enable();
+	end
+end
+
+--------------------------------------------------
+-- TOY FANFARE MIXIN - overwrites portions of CollectionsWrappedModelSceneMixin
+ToyWrappedModelSceneMixin = CreateFromMixins(CollectionsWrappedModelSceneMixin);
+
+function ToyWrappedModelSceneMixin:PrepareForFanfare(needsFanFare)
+	self.needsFanFare = needsFanFare;
+
+	local wrappedActor = self:GetActorByTag("wrapped");
+	if wrappedActor then
+		wrappedActor:SetModelByCreatureDisplayID(COLLECTIONS_FANFARE_CREATURE_DISPLAY_ID);
+		if self:NeedsFanfare() then
+			wrappedActor:Show();
+			if not self:IsUnwrapAnimating() then
+				wrappedActor:SetAnimation(0);
+				wrappedActor:SetAlpha(1);
+			end
+		else
+			wrappedActor:Hide();
+		end
+	end
+end
+
+function ToyWrappedModelSceneMixin:StartUnwrapAnimation(OnFinishedCallback)
+	if not self:NeedsFanfare() or self:IsUnwrapAnimating() then
+		return;
+	end
+
+	local wrappedActor = self:GetActorByTag("wrapped");
+
+	if wrappedActor then
+		self.isUnwrapping = true;
+		self.needsFanFare = false;
+
+		self.UnwrapAnim.WrappedAnim:SetTarget(wrappedActor);
+		self.UnwrapAnim:Play();
+
+		wrappedActor:SetAnimation(148);
+
+		PlaySound(SOUNDKIT.UI_STORE_UNWRAP);
+
+		C_Timer.After(0.8, function()
+			for actor in self:EnumerateActiveActors() do
+				actor:SetSpellVisualKit(73393, true);
+			end
+		end)
+
+		C_Timer.After(3.0, function()
+			self.isUnwrapping = nil;
+			if OnFinishedCallback then
+				OnFinishedCallback();
+			end
+		end)
 	end
 end

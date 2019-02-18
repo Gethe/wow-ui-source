@@ -375,23 +375,6 @@ function BankFrameItemButtonGeneric_OnModifiedClick (self, button)
 	end
 end
 
-function UpdateBagButtonHighlight (id) 
-	local bankSlot = BankSlotsFrame["Bag"..(id)];
-	if ( not bankSlot ) then
-		return;
-	end
-
-	local frame;
-	for i=1, NUM_CONTAINER_FRAMES, 1 do
-		frame = _G["ContainerFrame"..i];
-		if ( ( frame:GetID() == (id + NUM_BAG_SLOTS) ) and frame:IsShown() ) then
-			bankSlot:SetChecked(true);
-			return;
-		end
-	end
-	bankSlot:SetChecked(false);
-end
-
 function BankFrameItemButtonBag_OnClick (self, button) 
 	local inventoryID = self:GetInventorySlot();
 	local hadItem = PutItemInBag(inventoryID);
@@ -400,13 +383,11 @@ function BankFrameItemButtonBag_OnClick (self, button)
 		-- open bag
 		ToggleBag(id+NUM_BAG_SLOTS);
 	end
-	UpdateBagButtonHighlight(id);
 end
 
 function BankFrameItemButtonBag_Pickup (self)
 	local inventoryID = self:GetInventorySlot();
 	PickupBagFromSlot(inventoryID);
-	UpdateBagButtonHighlight(self:GetID());
 end
 
 function BankFrame_TabOnClick(self)

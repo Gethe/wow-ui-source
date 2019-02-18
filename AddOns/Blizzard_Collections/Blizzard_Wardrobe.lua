@@ -1443,7 +1443,7 @@ function WardrobeItemsCollectionMixin:FilterVisuals()
 	local filteredVisualsList = { };
 	for i = 1, #visualsList do
 		if ( isAtTransmogrifier ) then
-			if ( visualsList[i].isUsable and visualsList[i].isCollected ) then
+			if ( (visualsList[i].isUsable and visualsList[i].isCollected) or visualsList[i].alwaysShowItem ) then
 				tinsert(filteredVisualsList, visualsList[i]);
 			end
 		else

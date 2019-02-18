@@ -59,17 +59,35 @@ function WaypointPinMixin:OnLoad()
 	self.UpdateTooltip = self.OnMouseEnter;
 end
 
+local MAX_NUMBER_OF_QUEST_TITLES = 3;
 function WaypointPinMixin:OnMouseEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT", 5, 2);
 	
 	local waypointTitle = C_QuestLog.GetNextWaypointText(self.questID);
+	if not waypointTitle then
+		GameTooltip:Hide();
+		return;
+	end
+
 	GameTooltip_SetTitle(GameTooltip, waypointTitle, GREEN_FONT_COLOR);
 	
 	GameTooltip_AddColoredLine(GameTooltip, WAYPOINT_BEST_ROUTE_TOOLTIP, HIGHLIGHT_FONT_COLOR);
 	
-	local questLogIndex = GetQuestLogIndexByID(self.questID);
-	local questTitle = GetQuestLogTitle(questLogIndex);
-	GameTooltip_AddNormalLine(GameTooltip, questTitle);
+	local questIDs = C_QuestLog.GetNextWaypointQuestIDs(self.questID);
+	if not questIDs then
+		GameTooltip:Hide();
+		return;
+	end
+
+	for i, questID in ipairs(questIDs) do
+		if i <= MAX_NUMBER_OF_QUEST_TITLES then
+			local questTitle = C_QuestLog.GetQuestInfo(questID);
+			GameTooltip_AddNormalLine(GameTooltip, questTitle);
+		else
+			GameTooltip_AddNormalLine(GameTooltip, WAYPOINT_TOOLTIP_MORE_QUESTS_FORMAT:format(#questIDs - MAX_NUMBER_OF_QUEST_TITLES));
+			break;
+		end
+	end
 
 	GameTooltip:Show();
 end

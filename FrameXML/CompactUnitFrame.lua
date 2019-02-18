@@ -561,6 +561,7 @@ function CompactUnitFrame_UpdateAuras(frame)
 	CompactUnitFrame_UpdateBuffs(frame);
 	CompactUnitFrame_UpdateDebuffs(frame);
 	CompactUnitFrame_UpdateDispellableDebuffs(frame);
+	CompactUnitFrame_UpdateClassificationIndicator(frame);
 end
 
 function CompactUnitFrame_UpdateSelectionHighlight(frame)
@@ -1006,19 +1007,23 @@ function CompactUnitFrame_UpdateCenterStatusIcon(frame)
 end
 
 function CompactUnitFrame_UpdateClassificationIndicator(frame)
-	if ( frame.optionTable.showClassificationIndicator ) then
-		local classification = UnitClassification(frame.unit);
-		if ( classification == "elite" or classification == "worldboss" ) then
-			frame.classificationIndicator:SetAtlas("nameplates-icon-elite-gold");
-			frame.classificationIndicator:Show();
-		elseif ( classification == "rareelite" ) then
-			frame.classificationIndicator:SetAtlas("nameplates-icon-elite-silver");
-			frame.classificationIndicator:Show();
+	if frame.classificationIndicator then
+		if frame.optionTable.showPvPClassificationIndicator and CompactUnitFrame_UpdatePvPClassificationIndicator(frame) then
+			return;
+		elseif ( frame.optionTable.showClassificationIndicator ) then
+			local classification = UnitClassification(frame.unit);
+			if ( classification == "elite" or classification == "worldboss" ) then
+				frame.classificationIndicator:SetAtlas("nameplates-icon-elite-gold");
+				frame.classificationIndicator:Show();
+			elseif ( classification == "rareelite" ) then
+				frame.classificationIndicator:SetAtlas("nameplates-icon-elite-silver");
+				frame.classificationIndicator:Show();
+			else
+				frame.classificationIndicator:Hide();
+			end
 		else
 			frame.classificationIndicator:Hide();
 		end
-	elseif ( frame.classificationIndicator ) then
-		frame.classificationIndicator:Hide();
 	end
 end
 
@@ -1215,6 +1220,31 @@ function CompactUnitFrame_UpdateDispellableDebuffs(frame)
 		local dispellDebuffFrame = frame.dispelDebuffFrames[i];
 		dispellDebuffFrame:Hide();
 	end
+end
+
+local PvPClassificationIcons = {
+	[Enum.PvpUnitClassification.FlagCarrierHorde] = "nameplates-icon-flag-horde",
+	[Enum.PvpUnitClassification.FlagCarrierAlliance] = "nameplates-icon-flag-alliance",
+	[Enum.PvpUnitClassification.FlagCarrierNeutral] = "nameplates-icon-flag-neutral",
+	[Enum.PvpUnitClassification.CartRunnerHorde] = "nameplates-icon-cart-horde",
+	[Enum.PvpUnitClassification.CartRunnerAlliance] = "nameplates-icon-cart-alliance",
+	[Enum.PvpUnitClassification.AssassinHorde] = "nameplates-icon-bounty-horde",
+	[Enum.PvpUnitClassification.AssassinAlliance] = "nameplates-icon-bounty-alliance",
+	[Enum.PvpUnitClassification.OrbCarrierBlue] = "nameplates-icon-orb-blue",
+	[Enum.PvpUnitClassification.OrbCarrierGreen] = "nameplates-icon-orb-green",
+	[Enum.PvpUnitClassification.OrbCarrierOrange] = "nameplates-icon-orb-orange",
+	[Enum.PvpUnitClassification.OrbCarrierPurple] = "nameplates-icon-orb-purple",
+}
+
+function CompactUnitFrame_UpdatePvPClassificationIndicator(frame)
+	local classificationIcon = PvPClassificationIcons[UnitPvpClassification(frame.unit)];
+
+	if classificationIcon then
+		frame.classificationIndicator:SetAtlas(classificationIcon);
+		frame.classificationIndicator:Show();
+	end
+
+	return classificationIcon ~= nil;
 end
 
 --Utility Functions
@@ -1747,6 +1777,7 @@ DefaultCompactNamePlateFriendlyFrameOptions = {
 	smoothHealthUpdates = false,
 	displayNameWhenSelected = true,
 	displayNameByPlayerNameRules = true,
+	showPvPClassificationIndicator = true,
 
 	selectedBorderColor = CreateColor(1, 1, 1, .35),
 	tankBorderColor = CreateColor(1, 1, 0, .6),
@@ -1768,6 +1799,7 @@ DefaultCompactNamePlateEnemyFrameOptions = {
 	displayNameByPlayerNameRules = true,
 	greyOutWhenTapDenied = true,
 	showClassificationIndicator = true,
+	showPvPClassificationIndicator = true,
 
 	selectedBorderColor = CreateColor(1, 1, 1, .9),
 	tankBorderColor = CreateColor(1, 1, 0, .6),

@@ -34,7 +34,7 @@ local textureKitStatusBars = {
 	["RightBar"] = "%s-bar-fill-right",
 }
 
-local BAR_WIDTH = 92;
+local DEFAULT_BAR_WIDTH = 92;
 local ICON_OFFSET = 12;
 
 function UIWidgetTemplateDoubleStatusBarMixin:Setup(widgetInfo)
@@ -45,6 +45,11 @@ function UIWidgetTemplateDoubleStatusBarMixin:Setup(widgetInfo)
 	SetupTextureKitOnRegions(textureKit, self.RightBar, rightBarTextureKitRegions);
 	SetupTextureKitOnRegions(textureKit, self, textureKitStatusBars);
 
+	local barWidth = (widgetInfo.barWidth > 0) and widgetInfo.barWidth or DEFAULT_BAR_WIDTH;
+
+	self.LeftBar:SetWidth(barWidth);
+	self.RightBar:SetWidth(barWidth);
+
 	self.LeftBar:Setup(widgetInfo.leftBarMin, widgetInfo.leftBarMax, widgetInfo.leftBarValue, widgetInfo.barValueTextType);
 	self.RightBar:Setup(widgetInfo.rightBarMin, widgetInfo.rightBarMax, widgetInfo.rightBarValue, widgetInfo.barValueTextType);
 
@@ -52,7 +57,7 @@ function UIWidgetTemplateDoubleStatusBarMixin:Setup(widgetInfo)
 	self.LeftBar.Spark:SetShown(showSpark);
 	if showSpark then
 		local leftBarPercent = PercentageBetween(widgetInfo.leftBarValue, widgetInfo.leftBarMin, widgetInfo.leftBarMax);
-		local sparkXOffset = BAR_WIDTH * leftBarPercent;
+		local sparkXOffset = barWidth * leftBarPercent;
 
 		self.LeftBar.Spark:ClearAllPoints();
 		self.LeftBar.Spark:SetPoint("CENTER", self.LeftBar, "LEFT", sparkXOffset, 0);
@@ -62,7 +67,7 @@ function UIWidgetTemplateDoubleStatusBarMixin:Setup(widgetInfo)
 	self.RightBar.Spark:SetShown(showSpark);
 	if showSpark then
 		local rightBarPercent = PercentageBetween(widgetInfo.rightBarValue, widgetInfo.rightBarMin, widgetInfo.rightBarMax);
-		local sparkXOffset = -BAR_WIDTH * rightBarPercent;
+		local sparkXOffset = -barWidth * rightBarPercent;
 
 		self.RightBar.Spark:ClearAllPoints();
 		self.RightBar.Spark:SetPoint("CENTER", self.RightBar, "RIGHT", sparkXOffset, 0);
@@ -87,6 +92,8 @@ function UIWidgetTemplateDoubleStatusBarMixin:Setup(widgetInfo)
 	self.RightBar.SparkGlow:SetPoint("RIGHT", self.RightBar.Spark, 4, 0);
 	
 	self.Label:SetText(widgetInfo.text);
+
+	self:SetWidth(barWidth * 2 + 14);
 
 	if widgetInfo.text ~= "" then
 		self:SetHeight(self.Label:GetHeight() + 43);

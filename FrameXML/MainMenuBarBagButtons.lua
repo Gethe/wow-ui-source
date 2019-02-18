@@ -68,7 +68,7 @@ function BagSlotButton_OnEvent(self, event, ...)
 	if ( event == "BAG_UPDATE_DELAYED" ) then
 		PaperDollItemSlotButton_Update(self);
 	elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
-		self:SetMatchesSearch(IsContainerFiltered(self:GetBagID()));
+		self:SetMatchesSearch(not IsContainerFiltered(self:GetBagID()));
 	else
 		PaperDollItemSlotButton_OnEvent(self, event, ...);
 	end
@@ -177,7 +177,7 @@ function MainMenuBarBackpackButton_OnEvent(self, event, ...)
 			end
 		end
 	elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
-		self:SetMatchesSearch(IsContainerFiltered(BACKPACK_CONTAINER));
+		self:SetMatchesSearch(not IsContainerFiltered(BACKPACK_CONTAINER));
 	elseif ( event == "AZERITE_EMPOWERED_ITEM_LOOTED" ) then
 		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_BAG) then
 			if AzeriteUtil.AreAnyAzeriteEmpoweredItemsEquipped() then

@@ -22,7 +22,8 @@ function UIWidgetTemplateDoubleStateIconRowMixin:Setup(widgetInfo)
 	local biggestHeight = math.max(biggestLeftHeight, biggestRightHeight);
 	biggestHeight = math.max(biggestHeight, 1);
 
-	local totalWidth = totalLeftWidth + totalRightWidth;
+	local maxWidth = math.max(totalLeftWidth, totalRightWidth);
+	local totalWidth = maxWidth * 2;
 	totalWidth = math.max(totalWidth, 1);
 
 	self:SetWidth(totalWidth);

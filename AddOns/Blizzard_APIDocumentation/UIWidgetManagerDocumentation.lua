@@ -472,6 +472,7 @@ local UIWidgetManager =
 				{ Name = "rightBarValue", Type = "number", Nilable = false },
 				{ Name = "barValueTextType", Type = "StatusBarValueTextType", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "barWidth", Type = "number", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
 				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
