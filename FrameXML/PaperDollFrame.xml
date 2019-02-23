@@ -570,17 +570,6 @@
 						<Scripts>
 							<OnClick function="PaperDollEquipmentManagerPaneEquipSet_OnClick"/>
 						</Scripts>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="ButtonBackground">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="PaperDollEquipmentManagerPane"/>
-										<Anchor point="BOTTOMRIGHT" relativeTo="PaperDollEquipmentManagerPane" relativePoint="TOPRIGHT" x="0" y="-23"/>
-									</Anchors>
-									<Color r="0" g="0" b="0"/>
-								</Texture>
-							</Layer>
-						</Layers>
 					</Button>
 					<Button name="$parentSaveSet" text="SAVE" parentKey="SaveSet" inherits="UIPanelButtonTemplate">
 						<Size x="87" y="22"/>

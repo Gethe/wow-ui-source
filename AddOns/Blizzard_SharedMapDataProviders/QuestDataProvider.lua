@@ -19,10 +19,10 @@ function QuestDataProviderMixin:OnAdded(mapCanvas)
 	end
 
 	if not self.setFocusedQuestIDCallback then
-		self.setFocusedQuestIDCallback = function(event, ...) self:SetFocusedQuestID(...); end;
+		self.setFocusedQuestIDCallback = function(event, ...) self:RefreshAllData(...); end;
 	end
 	if not self.clearFocusedQuestIDCallback then
-		self.clearFocusedQuestIDCallback = function(event, ...) self:ClearFocusedQuestID(...); end;
+		self.clearFocusedQuestIDCallback = function(event, ...) self:RefreshAllData(...); end;
 	end
 	
 	self:GetMap():RegisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
@@ -34,16 +34,6 @@ function QuestDataProviderMixin:OnRemoved(mapCanvas)
 	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
 
 	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
-end
-
-function QuestDataProviderMixin:SetFocusedQuestID(questID)
-	self.focusedQuestID = questID;
-	self:RefreshAllData();
-end
-
-function QuestDataProviderMixin:ClearFocusedQuestID(questID)
-	self.focusedQuestID = nil;
-	self:RefreshAllData();
 end
 
 function QuestDataProviderMixin:OnEvent(event, ...)
@@ -82,12 +72,27 @@ function QuestDataProviderMixin:RefreshAllData(fromOnShow)
 	local mapInfo = C_Map.GetMapInfo(mapID);
 	local questsOnMap = C_QuestLog.GetQuestsOnMap(mapID);
 	local doesMapShowTaskObjectives = C_TaskQuest.DoesMapShowTaskQuestObjectives(mapID);
+	
+	local function CheckAddQuest(questID, x, y, isMapIndicatorQuest, frameLevelOffset)
+		if self:ShouldShowQuest(questID, mapInfo.mapType, doesMapShowTaskObjectives, isMapIndicatorQuest) then
+			local pin = self:AddQuest(questID, x, y, frameLevelOffset);
+			table.insert(pinsToQuantize, pin);
+		end
+	end
+
 	if questsOnMap then
 		for i, info in ipairs(questsOnMap) do
-			if self:ShouldShowQuest(info.questID, mapInfo.mapType, doesMapShowTaskObjectives, info.isMapIndicatorQuest) then
-				local pin = self:AddQuest(info.questID, info.x, info.y, i);
-				table.insert(pinsToQuantize, pin);
-			end
+			CheckAddQuest(info.questID, info.x, info.y, info.isMapIndicatorQuest, i);
+		end
+	end
+	
+	local waypointQuestID = QuestMapFrame_GetFocusedQuestID() or GetSuperTrackedQuestID();
+	if waypointQuestID then
+		local x, y = C_QuestLog.GetNextWaypointForMap(waypointQuestID, mapID);
+		if x and y then
+			local isMapIndicatorQuest = false;
+			local frameLevelOffset = questsOnMap and (#questsOnMap + 1) or 0;
+			CheckAddQuest(waypointQuestID, x, y, isMapIndicatorQuest, frameLevelOffset);
 		end
 	end
 
@@ -101,7 +106,8 @@ function QuestDataProviderMixin:RefreshAllData(fromOnShow)
 end
 
 function QuestDataProviderMixin:ShouldShowQuest(questID, mapType, doesMapShowTaskObjectives, isMapIndicatorQuest)
-	if self.focusedQuestID and self.focusedQuestID ~= questID then
+	local focusedQuestID = QuestMapFrame_GetFocusedQuestID();
+	if focusedQuestID and focusedQuestID ~= questID then
 		return false;
 	end
 	if QuestUtils_IsQuestWorldQuest(questID) then
@@ -251,13 +257,18 @@ function QuestPinMixin:OnLoad()
 end
 
 function QuestPinMixin:OnMouseEnter()
-	local questLogIndex = GetQuestLogIndexByID(self.questID);
+	local questID = self.questID;
+	local questLogIndex = GetQuestLogIndexByID(questID);
 	local title = GetQuestLogTitle(questLogIndex);
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT", 5, 2);
 	GameTooltip:SetText(title);
-	QuestUtils_AddQuestTypeToTooltip(GameTooltip, self.questID, NORMAL_FONT_COLOR);
+	QuestUtils_AddQuestTypeToTooltip(GameTooltip, questID, NORMAL_FONT_COLOR);
 
-	if poiButton and poiButton.style ~= "numeric" then
+	local wouldShowWaypointText = questID == GetSuperTrackedQuestID() or questID == QuestMapFrame_GetFocusedQuestID();
+	local waypointText = wouldShowWaypointText and C_QuestLog.GetNextWaypointText(questID);
+	if waypointText then
+		GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH..waypointText, HIGHLIGHT_FONT_COLOR);
+	elseif poiButton and poiButton.style ~= "numeric" then
 		local completionText = GetQuestLogCompletionText(questLogIndex) or QUEST_WATCH_QUEST_READY;
 		GameTooltip:AddLine(QUEST_DASH..completionText, 1, 1, 1, true);
 	else
@@ -280,7 +291,7 @@ function QuestPinMixin:OnMouseEnter()
 		end
 	end
 	GameTooltip:Show();
-	self:GetMap():TriggerEvent("SetHighlightedQuestPOI", self.questID);
+	self:GetMap():TriggerEvent("SetHighlightedQuestPOI", questID);
 end
 
 function QuestPinMixin:OnMouseLeave()

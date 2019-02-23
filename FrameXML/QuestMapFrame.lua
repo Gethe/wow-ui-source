@@ -286,6 +286,10 @@ function QuestMapFrame_ResetFilters()
 	QuestMapFrame.ignoreQuestLogUpdate = nil;
 end
 
+function QuestMapFrame_GetFocusedQuestID()
+	return QuestMapFrame.DetailsFrame.questID;
+end
+
 function QuestMapFrame_ShowQuestDetails(questID)
 	local questLogIndex = GetQuestLogIndexByID(questID);
 	SelectQuestLogEntry(questLogIndex);

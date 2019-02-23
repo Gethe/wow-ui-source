@@ -584,7 +584,7 @@ function SocialPrefillItemText(itemLink, earned)
 	SocialPostFrame.lastItemID = itemID;
 	SocialPostFrame.lastPrefilledText = prefillText;
 	
-	SocialRenderItem(itemLink);
+	SocialRenderItem(itemID);
 end
 
 function SocialItemButton_OnClick(self)
@@ -614,10 +614,10 @@ function SocialItemButton_OnLeave(self)
 	GameTooltip_Hide();
 end
 
-function SocialRenderItem(itemLink)
+function SocialRenderItem(itemID)
 	local tooltip = OffScreenFrame.ItemTooltip;
 	tooltip:SetOwner(OffScreenFrame, "ANCHOR_PRESERVE");
-	tooltip:SetHyperlink(itemLink);
+	tooltip:SetOwnedItemByID(itemID);
 
 	UpdateOffScreenFrame(OffScreenFrame, SOCIAL_OFFSCREEN_STATE_SHOW_ITEM);
 	TakeOffscreenSnapshot(tooltip, SOCIAL_IMAGE_TYPE_ITEM, SOCIAL_ITEM_REMOVE_BUTTON);

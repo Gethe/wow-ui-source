@@ -34,6 +34,15 @@ local ToyBoxInfo =
 	Events =
 	{
 		{
+			Name = "NewToyAdded",
+			Type = "Event",
+			LiteralName = "NEW_TOY_ADDED",
+			Payload =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "ToysUpdated",
 			Type = "Event",
 			LiteralName = "TOYS_UPDATED",

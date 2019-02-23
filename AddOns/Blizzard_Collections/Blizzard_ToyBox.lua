@@ -3,7 +3,7 @@ local TOY_FANFARE_MODEL_SCENE = 253;
 
 function ToyBox_OnLoad(self)
 	self.firstCollectedToyID = 0; -- used to track which toy gets the favorite helpbox
-	self.mostRecentCollectedToyID = UIParent.mostRecentCollectedToyID or nil;
+	self.autoPageToCollectedToyID = UIParent.autoPageToCollectedToyID or nil;
 	self.newToys = UIParent.newToys or {};
 	self.fanfareToys = {};
 
@@ -26,7 +26,7 @@ end
 function ToyBox_OnEvent(self, event, itemID, new, fanfare)
 	if ( event == "TOYS_UPDATED" ) then
 		if (new) then
-			self.mostRecentCollectedToyID = itemID;
+			self.autoPageToCollectedToyID = itemID;
 			if ( not CollectionsJournal:IsShown() ) then
 				CollectionsJournal_SetTab(CollectionsJournal, 3);
 			end
@@ -321,12 +321,12 @@ end
 function ToyBox_UpdatePages()
 	local maxPages = 1 + math.floor( math.max((C_ToyBox.GetNumFilteredToys() - 1), 0) / TOYS_PER_PAGE);
 	ToyBox.PagingFrame:SetMaxPages(maxPages)
-	if ToyBox.mostRecentCollectedToyID then
-		local toyPage = ToyBox_FindPageForToyID(ToyBox.mostRecentCollectedToyID);
+	if ToyBox.autoPageToCollectedToyID then
+		local toyPage = ToyBox_FindPageForToyID(ToyBox.autoPageToCollectedToyID);
 		if toyPage then
 			ToyBox.PagingFrame:SetCurrentPage(toyPage);
 		end
-		ToyBox.mostRecentCollectedToyID = nil;
+		ToyBox.autoPageToCollectedToyID = nil;
 	end
 end
 

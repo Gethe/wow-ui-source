@@ -1914,7 +1914,7 @@ function UIParent_OnEvent(self, event, ...)
 				end
 				self.newToys[itemID] = true;
 
-				self.mostRecentCollectedToyID = itemID;
+				self.autoPageToCollectedToyID = itemID;
 				SetCVar("petJournalTab", 3);
 			end
 		end

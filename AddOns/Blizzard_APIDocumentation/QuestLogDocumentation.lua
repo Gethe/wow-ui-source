@@ -68,20 +68,6 @@ local QuestLog =
 			},
 		},
 		{
-			Name = "GetNextWaypointQuestIDs",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "questID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "questIDs", Type = "table", InnerType = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetNextWaypointText",
 			Type = "Function",
 
@@ -92,7 +78,7 @@ local QuestLog =
 
 			Returns =
 			{
-				{ Name = "titleText", Type = "string", Nilable = false },
+				{ Name = "waypointText", Type = "string", Nilable = false },
 			},
 		},
 		{
