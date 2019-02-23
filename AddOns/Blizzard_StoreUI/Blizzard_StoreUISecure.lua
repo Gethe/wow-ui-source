@@ -1356,12 +1356,6 @@ local vasErrorData = {
 	[Enum.VasError.LowerBoxLevel] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_LOWER_BOX_LEVEL,
 	},
-	[Enum.VasError.OperationAlreadyInProgress] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_OPERATION_ALREADY_IN_PROGRESS,
-	},
-	[Enum.VasError.LockedForVas] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LOCKED_FOR_VAS,
-	},
 	[Enum.VasError.RealmNotEligible] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_REALM_NOT_ELIGIBLE,
 	},
@@ -1376,9 +1370,6 @@ local vasErrorData = {
 	},
 	[Enum.VasError.HasMail] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_HAS_MAIL,
-	},
-	[Enum.VasError.MoveInProgress] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_MOVE_IN_PROGRESS,
 	},
 	[Enum.VasError.UnderMinLevelReq] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_UNDER_MIN_LEVEL_REQ,
@@ -1424,9 +1415,6 @@ local vasErrorData = {
 	[Enum.VasError.LastRenameTooRecent] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_LAST_RENAME_TOO_RECENT,
 	},
-	[Enum.VasError.AlreadyRenameFlagged] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_ALREADY_RENAME_FLAGGED,
-	},
 	[Enum.VasError.CustomizeAlreadyRequested] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_CUSTOMIZE_ALREADY_REQUESTED,
 	},
@@ -1444,12 +1432,6 @@ local vasErrorData = {
 	},
 	[Enum.VasError.CharacterWithoutGuild] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_NOT_IN_GUILD,
-	},
-	[Enum.VasError.GmSeniorityInsufficient] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_GM_SENORITY_INSUFFICIENT,
-	},
-	[Enum.VasError.AuthenticatorInsufficient] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_AUTHENTICATOR_INSUFFICIENT,
 	},
 	[Enum.VasError.IneligibleMapID] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_MAP_ID,
@@ -3455,6 +3437,7 @@ function StoreVASValidationFrame_Init(self)
 	self.CharacterSelectionFrame.RealmSelector.Button:Enable();
 	self.CharacterSelectionFrame.RealmSelector:Show();
 	self.CharacterSelectionFrame.CharacterSelector:Show();
+	self.CharacterSelectionFrame.NoEligibleCharactersErrorMessage:Hide();
 	self.CharacterSelectionFrame.NewCharacterName:Hide();
 	self.CharacterSelectionFrame.FollowGuildCheckbox:Hide();
 	self.CharacterSelectionFrame.FollowGuildErrorMessage:Hide();
