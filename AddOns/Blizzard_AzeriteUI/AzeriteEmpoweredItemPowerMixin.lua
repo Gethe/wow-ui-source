@@ -78,11 +78,13 @@ function AzeriteEmpoweredItemPowerMixin:OnFinalEffectUpdate(elapsed)
 end
 
 function AzeriteEmpoweredItemPowerMixin:SetupModelScene(forceUpdate)
+	self.ClickEffect:Hide();
 	self.clickEffectActor = AzeriteModelInfo.SetupModelScene(self.ClickEffect, AzeriteModelInfo.ModelSceneTypePowerClick, forceUpdate);
 	if self.clickEffectActor then
 		self.clickEffectActor:SetAnimation(0, 0, 0, 0);
 	end
 
+	self.CanSelectEffect:Hide();
 	AzeriteModelInfo.SetupModelScene(self.CanSelectEffect, AzeriteModelInfo.ModelSceneTypePowerReadyForSelection, forceUpdate);
 end
 
@@ -208,6 +210,8 @@ function AzeriteEmpoweredItemPowerMixin:PlayTransitionAnimation()
 		self.IconBorder:SetAlpha(self:GetBorderAlphaValue());
 		self.IconNotSelectableOverlay:SetAlpha(self:GetIconNotSelectableOverlayAlphaValue());
 	end
+
+	self.CanSelectEffect:Show();
 
 	self.TransitionAnimation.IconOn:SetFromAlpha(self.IconOn:GetAlpha());
 	self.TransitionAnimation.IconOn:SetToAlpha(self:GetIconOnAlphaValue());
@@ -476,6 +480,7 @@ function AzeriteEmpoweredItemPowerMixin:OnTransitionAnimationFinished()
 		self.needsBuffAvailableSoundPlayed = nil;
 		PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_BUFFAVAILABLE);
 	end
+	self.CanSelectEffect:SetShown(self.CanSelectEffect:GetAlpha() ~= 0);
 end
 
 function AzeriteEmpoweredItemPowerMixin:CancelItemLoadCallback()
@@ -618,8 +623,18 @@ end
 
 function AzeriteEmpoweredItemPowerMixin:PlayClickedAnimation()
 	if self.clickEffectActor then
+		self.ClickEffect:Show();
 		self.clickEffectActor:SetAnimation(0, 0, 1, 0);
-		C_Timer.After(.2, function() self.clickEffectActor:SetAnimation(0, 0, 0, 0); end);
+		C_Timer.After(.2, 
+			function()
+				self.clickEffectActor:SetAnimation(0, 0, 0, 0);
+				C_Timer.After(5, 
+					function()
+						self.ClickEffect:Hide();
+					end
+				);
+			end
+		);
 	end
 end
 

@@ -45,12 +45,14 @@ function Voice_FormatTextForChannelID(channelID, text)
 end
 
 local SUPPRESS_ERROR_MESSAGE = true;
+local DISPLAY_BASIC_ERROR_ONLY = false;
+
 local voiceChatStatusToGameError =
 {
 	[Enum.VoiceChatStatusCode.Success] = SUPPRESS_ERROR_MESSAGE,
-	[Enum.VoiceChatStatusCode.OperationPending] = SUPPRESS_ERROR_MESSAGE,
-	[Enum.VoiceChatStatusCode.ClientAlreadyLoggedIn] = SUPPRESS_ERROR_MESSAGE,
-	[Enum.VoiceChatStatusCode.AlreadyInChannel] = SUPPRESS_ERROR_MESSAGE,
+	[Enum.VoiceChatStatusCode.OperationPending] = DISPLAY_BASIC_ERROR_ONLY,
+	[Enum.VoiceChatStatusCode.ClientAlreadyLoggedIn] = DISPLAY_BASIC_ERROR_ONLY,
+	[Enum.VoiceChatStatusCode.AlreadyInChannel] = DISPLAY_BASIC_ERROR_ONLY,
 	[Enum.VoiceChatStatusCode.TooManyRequests] = LE_GAME_ERR_VOICE_CHAT_TOO_MANY_REQUESTS,
 	[Enum.VoiceChatStatusCode.ChannelNameTooShort] = LE_GAME_ERR_VOICE_CHAT_CHANNEL_NAME_TOO_SHORT,
 	[Enum.VoiceChatStatusCode.ChannelNameTooLong] = LE_GAME_ERR_VOICE_CHAT_CHANNEL_NAME_TOO_LONG,
@@ -58,6 +60,8 @@ local voiceChatStatusToGameError =
 	[Enum.VoiceChatStatusCode.TargetNotFound] = LE_GAME_ERR_VOICE_CHAT_TARGET_NOT_FOUND,
 	[Enum.VoiceChatStatusCode.ProxyConnectionTimeOut] = LE_GAME_ERR_VOICE_CHAT_SERVICE_LOST,
 	[Enum.VoiceChatStatusCode.ProxyConnectionUnexpectedDisconnect] = LE_GAME_ERR_VOICE_CHAT_SERVICE_LOST,
+	[Enum.VoiceChatStatusCode.UnableToLaunchProxy] = LE_GAME_ERR_VOICE_CHAT_GENERIC_UNABLE_TO_CONNECT,
+	[Enum.VoiceChatStatusCode.ProxyConnectionUnableToConnect] = LE_GAME_ERR_VOICE_CHAT_GENERIC_UNABLE_TO_CONNECT,
 	[Enum.VoiceChatStatusCode.PlayerSilenced] = LE_GAME_ERR_VOICE_CHAT_PLAYER_SILENCED,
 	[Enum.VoiceChatStatusCode.PlayerVoiceChatParentalDisabled] = LE_GAME_ERR_VOICE_CHAT_PARENTAL_DISABLE_ALL,
 	[Enum.VoiceChatStatusCode.Disabled] = LE_GAME_ERR_VOICE_CHAT_DISABLED,
@@ -69,7 +73,7 @@ function Voice_GetGameErrorFromStatusCode(statusCode)
 		return nil;
 	end
 
-	return gameError or LE_GAME_ERR_VOICE_CHAT_GENERIC_UNABLE_TO_CONNECT;
+	return gameError;
 end
 
 function Voice_GetGameErrorStringFromStatusCode(statusCode)
@@ -77,8 +81,10 @@ function Voice_GetGameErrorStringFromStatusCode(statusCode)
 	if gameError then
 		local stringId = GetGameMessageInfo(gameError);
 		if stringId then
-			return _G[stringId];
+			return _G[stringId] .. VOICE_CHAT_ERROR_CODE_FORMATTER:format(statusCode);
 		end
+	elseif gameError == DISPLAY_BASIC_ERROR_ONLY then
+		return VOICE_CHAT_ERROR_CODE_FORMATTER:format(statusCode);
 	end
 end
 
@@ -86,6 +92,9 @@ function Voice_IsConnectionError(statusCode)
 	return statusCode == Enum.VoiceChatStatusCode.ProxyConnectionTimeOut or statusCode == Enum.VoiceChatStatusCode.ProxyConnectionUnexpectedDisconnect;
 end
 
+-- This exists so that the chat frame isn't spammed with voice errors related to certain features being disabled.
+-- However, panels like Voice Options should be able to display the current system error, so they use
+-- a different filtering/blacklisting table.
 local SUPPRESS_ALERT_MESSAGE = true;
 local voiceChatStatusAlertBlacklist =
 {

@@ -2196,18 +2196,13 @@ function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
 				if ( validCreationDate and _CalendarFrame_CanInviteeRSVP(event.inviteStatus) ) then
 					-- spacer
 					if ( _CalendarFrame_IsSignUpEvent(event.calendarType, event.inviteType) ) then
+						-- We no longer show remove event in the dropdown, only Sign Up.
 						if ( event.inviteStatus == CALENDAR_INVITESTATUS_NOT_SIGNEDUP ) then
 							-- sign up
 							if ( needSpacer ) then
 								UIMenu_AddButton(self, "");
 							end
 							UIMenu_AddButton(self, CALENDAR_SIGNUP, nil, CalendarDayContextMenu_SignUp);
-						else
-							-- cancel sign up
-							if ( needSpacer ) then
-								UIMenu_AddButton(self, "");
-							end
-							UIMenu_AddButton(self, CALENDAR_REMOVE_SIGNUP, nil, CalendarDayContextMenu_RemoveInvite);
 						end
 					elseif ( event.modStatus ~= "CREATOR" ) then
 						if ( needSpacer ) then

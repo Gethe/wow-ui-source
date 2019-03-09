@@ -150,11 +150,9 @@ function QuestMapFrame_OnEvent(self, event, ...)
 		QuestMapFrame_UpdateQuestDetailsButtons();
 		QuestMapFrame_UpdateAll();
 	elseif ( event == "SUPER_TRACKED_QUEST_CHANGED" ) then
+		QuestMapFrame_CloseQuestDetails(self:GetParent());
 		local questID = ...;
-		if ( questID ~= QuestMapFrame.DetailsFrame.questID ) then
-			QuestMapFrame_CloseQuestDetails(self:GetParent());
-			QuestPOI_SelectButtonByQuestID(QuestScrollFrame.Contents, questID);
-		end
+		QuestPOI_SelectButtonByQuestID(QuestScrollFrame.Contents, questID);
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		if ( QuestMapFrame.DetailsFrame.questID ) then
 			QuestMapFrame_UpdateQuestDetailsButtons();
@@ -284,10 +282,6 @@ function QuestMapFrame_ResetFilters()
 		end
 	end
 	QuestMapFrame.ignoreQuestLogUpdate = nil;
-end
-
-function QuestMapFrame_GetFocusedQuestID()
-	return QuestMapFrame.DetailsFrame.questID;
 end
 
 function QuestMapFrame_ShowQuestDetails(questID)

@@ -3117,7 +3117,7 @@ function AdventureJournal_Reward_OnEnter(self)
 			frame.Item1.UpdateTooltip = function() AdventureJournal_Reward_OnEnter(self) end;
 			if ( rewardData.itemLink ) then
 				tooltip:SetHyperlink(rewardData.itemLink);
-				GameTooltip_ShowCompareItem(tooltip, frame.Item1);
+				GameTooltip_ShowCompareItem(tooltip, frame.Item1.tooltip);
 
 				local quality = select(3, GetItemInfo(rewardData.itemLink));
 				SetItemButtonQuality(frame.Item1, quality, rewardData.itemLink);

@@ -1062,7 +1062,7 @@ local function PlayBattlefieldBanner(self)
 		local bannerName, bannerDescription;
 
 		if (C_PvP.IsInBrawl()) then
-			local brawlInfo = C_PvP.GetBrawlInfo();
+			local brawlInfo = C_PvP.GetActiveBrawlInfo();
 			if (brawlInfo) then
 				bannerName = brawlInfo.name;
 				bannerDescription = brawlInfo.shortDescription;
@@ -4848,7 +4848,7 @@ function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture
 		emblemB = tabardData[9];
 		emblemFilename = tabardData[10];
 	else
-		bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFilename = GetGuildLogoInfo(unit);
+		bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFilename, emblemIndex = GetGuildLogoInfo(unit);
 	end
 	if ( emblemFilename ) then
 		if ( backgroundTexture ) then
@@ -4858,11 +4858,9 @@ function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture
 			borderTexture:SetVertexColor(borderR / 255, borderG / 255, borderB / 255);
 		end
 		if ( emblemSize ) then
-			local index = emblemFilename:match("([%d]+)");
-			if ( index) then
-				index = tonumber(index);
-				local xCoord = mod(index, columns) * emblemSize;
-				local yCoord = floor(index / columns) * emblemSize;
+			if ( emblemIndex) then
+				local xCoord = mod(emblemIndex, columns) * emblemSize;
+				local yCoord = floor(emblemIndex / columns) * emblemSize;
 				emblemTexture:SetTexCoord(xCoord + offset, xCoord + emblemSize - offset, yCoord + offset, yCoord + emblemSize - offset);
 			end
 			emblemTexture:SetVertexColor(emblemR / 255, emblemG / 255, emblemB / 255);

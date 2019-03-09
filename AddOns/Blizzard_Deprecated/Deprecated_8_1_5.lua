@@ -23,6 +23,13 @@ do
 	InActiveBattlefield = C_PvP.IsActiveBattlefield;
 	HasInspectHonorData = function() return true; end;
 	RequestInspectHonorData = function() return; end;
+	C_PvP.GetBrawlInfo = function()
+		local info = C_PvP.GetAvailableBrawlInfo();
+		if info then
+			info.active = info.canQueue;
+		end
+		return info;
+	end
 end
 
 -- SocialUI changes

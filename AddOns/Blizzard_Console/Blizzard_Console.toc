@@ -3,6 +3,7 @@
 ## Secure: 1
 ## Author: Blizzard Entertainment
 ## SavedVariablesMachine: Blizzard_Console_SavedVars
+## AllowLoad: Both
 
 Blizzard_Console_AutoComplete.lua
 Blizzard_Console_AutoComplete.xml

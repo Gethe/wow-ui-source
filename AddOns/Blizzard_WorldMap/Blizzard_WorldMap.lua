@@ -37,6 +37,9 @@ function WorldMapMixin:Minimize()
 
 	self:SynchronizeDisplayState();
 
+	self.BorderFrame.MaximizeMinimizeFrame.MinimizeButton:Hide();
+	self.BorderFrame.MaximizeMinimizeFrame.MaximizeButton:Show();
+
 	self:OnFrameSizeChanged();
 end
 
@@ -51,6 +54,9 @@ function WorldMapMixin:Maximize()
 
 	self:UpdateMaximizedSize();
 	self:SynchronizeDisplayState();
+
+	self.BorderFrame.MaximizeMinimizeFrame.MinimizeButton:Show();
+	self.BorderFrame.MaximizeMinimizeFrame.MaximizeButton:Hide();
 
 	self:OnFrameSizeChanged();
 end

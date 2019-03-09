@@ -134,10 +134,10 @@
 		ChatFrame2:ScrollToBottom();
 	</Binding>
 	<Binding name="TOGGLE_VOICE_SELF_MUTE" category="BINDING_HEADER_CHAT">
-		C_VoiceChat.ToggleMuted();
+		VoiceChat_ToggleMutedFromUserAction();
 	</Binding>
 	<Binding name="TOGGLE_VOICE_SELF_DEAFEN" category="BINDING_HEADER_CHAT">
-		C_VoiceChat.ToggleDeafened();
+		VoiceChat_ToggleDeafenedFromUserAction();
 	</Binding>
 	<Binding name="TOGGLE_VOICE_PUSH_TO_TALK" category="BINDING_HEADER_CHAT" customBindingID="VoicePushToTalk">
 		nop(); -- Action handler is custom

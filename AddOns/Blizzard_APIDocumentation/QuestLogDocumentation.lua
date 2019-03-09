@@ -36,52 +36,6 @@ local QuestLog =
 			},
 		},
 		{
-			Name = "GetNextWaypoint",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "questID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "mapID", Type = "number", Nilable = false },
-				{ Name = "x", Type = "number", Nilable = false },
-				{ Name = "y", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetNextWaypointForMap",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "questID", Type = "number", Nilable = false },
-				{ Name = "uiMapID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "x", Type = "number", Nilable = false },
-				{ Name = "y", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetNextWaypointText",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "questID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "waypointText", Type = "string", Nilable = false },
-			},
-		},
-		{
 			Name = "GetNumQuestObjectives",
 			Type = "Function",
 

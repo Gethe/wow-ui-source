@@ -40,7 +40,7 @@ function SocialQueueUtil_GetQueueName(queue, nameFormatter)
 		local isBrawl = queue.isBrawl;
 		local name = queue.mapName;
 		if (isBrawl) then
-			local brawlInfo = C_PvP.GetBrawlInfo();
+			local brawlInfo = C_PvP.GetAvailableBrawlInfo();
 			if (brawlInfo and brawlInfo.active) then
 				name = brawlInfo.name;
 			end

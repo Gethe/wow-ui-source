@@ -61,7 +61,7 @@
 			<Layer level="OVERLAY">
 				<FontString parentKey="Label" inherits="GameFontHighlight">
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="CENTER" y="0.5"/>
 					</Anchors>
 				</FontString>
 			</Layer>

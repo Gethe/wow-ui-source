@@ -339,6 +339,23 @@ function AudioOptionsVoicePanel_OnEvent(self, event, ...)
 	end
 end
 
+function DisplayUniversalAccessDialogIfRequiredForVoiceChatKeybind(keys)
+	if IsMacClient() then
+		local hasNonMetaKey = false;
+		for i, key in ipairs(keys) do
+			if not IsMetaKey(key) then
+				hasNonMetaKey = true;
+				break;
+			end
+		end
+		if hasNonMetaKey then
+			if not MacOptions_IsUniversalAccessEnabled() then
+				StaticPopup_Show("MAC_OPEN_UNIVERSAL_ACCESS");
+			end
+		end
+	end
+end
+
 function AudioOptionsVoicePanel_InitializeCommunicationModeUI(self)
 	if not self.PushToTalkKeybindButton then
 		local handler = CustomBindingHandler:CreateHandler(Enum.CustomBindingType.VoicePushToTalk);
@@ -349,10 +366,14 @@ function AudioOptionsVoicePanel_InitializeCommunicationModeUI(self)
 			end
 		end);
 
-		handler:SetOnBindingCompletedCallback(function(completedSuccessfully)
+		handler:SetOnBindingCompletedCallback(function(completedSuccessfully, keys)
 			self.ChatModeDropdown.PushToTalkNotification:SetText("");
 			BindingButtonTemplate_SetSelected(self.PushToTalkKeybindButton, false);
 			AudioOptionsVoicePanel_UpdateCommunicationModeUI(self);
+
+			if completedSuccessfully and keys then
+				DisplayUniversalAccessDialogIfRequiredForVoiceChatKeybind(keys);
+			end
 		end);
 
 		self.PushToTalkKeybindButton = CustomBindingManager:RegisterHandlerAndCreateButton(handler, "CustomBindingButtonTemplateWithLabel", self);

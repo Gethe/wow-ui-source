@@ -214,6 +214,7 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 						local pin = self.activePins[info.questId];
 						if pin then
 							pin:RefreshVisuals();
+							pin.numObjectives = info.numObjectives;	-- Fix for quests with sequenced objectives
 							pin:SetPosition(info.x, info.y); -- Fix for WOW8-48605 - WQ starting location may move based on player location and viewed map
 
 							if self.pingPin and self.pingPin:IsAttachedToQuest(info.questId) then

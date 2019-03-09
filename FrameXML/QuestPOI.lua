@@ -45,7 +45,7 @@ function QuestPOI_GetButton(parent, questID, style, index)
 			end
 		end
 	else
-		-- completed or waypoint POI
+		-- completed POI
 		for _, button in pairs(parent.poiTable["completed"]) do
 			if ( not button.used ) then
 				poiButton = button;
@@ -64,8 +64,6 @@ function QuestPOI_GetButton(parent, questID, style, index)
 			if ( style == "normal" ) then
 				poiButton.FullHighlightTexture:Show();
 				poiButton.IconHighlightTexture:Hide();
-				poiButton.Icon:SetTexCoord(0, 0.5, 0, 0.5);
-				poiButton.Icon:SetTexture("Interface\\WorldMap\\UI-WorldMap-QuestIcon");
 				poiButton.Icon:SetSize(24, 24);
 				poiButton.NormalTexture:SetAlpha(1);
 				poiButton.PushedTexture:SetAlpha(1);
@@ -74,27 +72,13 @@ function QuestPOI_GetButton(parent, questID, style, index)
 			elseif ( style == "map" ) then
 				poiButton.FullHighlightTexture:Hide();
 				poiButton.IconHighlightTexture:Show();
-				poiButton.Icon:SetTexCoord(0, 0.5, 0, 0.5);
-				poiButton.Icon:SetTexture("Interface\\WorldMap\\UI-WorldMap-QuestIcon");
 				poiButton.Icon:SetSize(32, 32);
 				poiButton.NormalTexture:SetAlpha(0);
 				poiButton.PushedTexture:SetAlpha(0);
 			elseif ( style == "remote" ) then
 				poiButton.FullHighlightTexture:Show();
 				poiButton.IconHighlightTexture:Hide();
-				poiButton.Icon:SetTexCoord(0, 0.5, 0, 0.5);
-				poiButton.Icon:SetTexture("Interface\\WorldMap\\UI-WorldMap-QuestIcon");
 				poiButton.Icon:SetSize(24, 24);
-				poiButton.NormalTexture:SetAlpha(1);
-				poiButton.PushedTexture:SetAlpha(1);
-				poiButton.NormalTexture:SetTexCoord(0.500, 0.625, 0.875, 1.0);
-				poiButton.PushedTexture:SetTexCoord(0.375, 0.500, 0.875, 1.0);
-			elseif ( style == "waypoint" ) then
-				poiButton.FullHighlightTexture:Show();
-				poiButton.IconHighlightTexture:Hide();
-				poiButton.Icon:SetTexCoord(0, 1, 0, 1);
-				poiButton.Icon:SetAtlas("poi-traveldirections-arrow");
-				poiButton.Icon:SetSize(13, 17);
 				poiButton.NormalTexture:SetAlpha(1);
 				poiButton.PushedTexture:SetAlpha(1);
 				poiButton.NormalTexture:SetTexCoord(0.500, 0.625, 0.875, 1.0);
@@ -174,9 +158,6 @@ function QuestPOI_ClearSelection(parent)
 			poiButton.NormalTexture:SetTexCoord(0.875, 1, 0.875, 1);
 			poiButton.PushedTexture:SetTexCoord(0.750, 0.875, 0.875, 1);
 		elseif ( style == "remote" ) then
-			poiButton.NormalTexture:SetTexCoord(0.500, 0.625, 0.875, 1.0);
-			poiButton.PushedTexture:SetTexCoord(0.375, 0.500, 0.875, 1.0);
-		elseif ( style == "waypoint" ) then
 			poiButton.NormalTexture:SetTexCoord(0.500, 0.625, 0.875, 1.0);
 			poiButton.PushedTexture:SetTexCoord(0.375, 0.500, 0.875, 1.0);
 		elseif ( style == "map" ) then

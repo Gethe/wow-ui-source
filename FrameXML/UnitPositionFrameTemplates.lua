@@ -162,11 +162,19 @@ function UnitPositionFrameMixin:UpdateUnitTooltips(tooltipFrame)
 	end
 
 	if tooltipText ~= "" then
+		self.previousOwner = tooltipFrame:GetOwner();
 		tooltipFrame:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
 		tooltipFrame:SetText(tooltipText);
 	elseif tooltipFrame:GetOwner() == self then
 		tooltipFrame:ClearLines();
 		tooltipFrame:Hide();
+		if self.previousOwner and self.previousOwner ~= self and self.previousOwner:IsVisible() and self.previousOwner:IsMouseOver() then
+			local func = self.previousOwner:HasScript("OnEnter") and self.previousOwner:GetScript("OnEnter");
+			if func then
+				func(self.previousOwner);
+			end
+		end
+		self.previousOwner = nil;
 	end
 end
 

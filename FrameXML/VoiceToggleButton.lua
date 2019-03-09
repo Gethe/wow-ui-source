@@ -30,6 +30,26 @@ MUTE_SILENCE_STATE_PARENTAL_MUTE = 4;
 MUTE_SILENCE_STATE_MUTE_AND_SILENCE = 3;
 MUTE_SILENCE_STATE_MUTE_AND_PARENTAL_MUTE = 5;
 
+function VoiceChat_ToggleMutedFromUserAction()
+	if C_VoiceChat.IsMuted() then
+		PlaySound(SOUNDKIT.UI_VOICECHAT_MUTEOFF);
+	else
+		PlaySound(SOUNDKIT.UI_VOICECHAT_MUTEON);
+	end
+
+	C_VoiceChat.ToggleMuted();
+end
+
+function VoiceChat_ToggleDeafenedFromUserAction()
+	if C_VoiceChat.IsDeafened() then
+		PlaySound(SOUNDKIT.UI_VOICECHAT_DEAFENOFF);
+	else
+		PlaySound(SOUNDKIT.UI_VOICECHAT_DEAFENON);
+	end
+
+	C_VoiceChat.ToggleDeafened();
+end
+
 function VoiceToggleMuteMixin:IsForPublicChannel()
 	return true;	-- default to showing public channel silence state
 end
@@ -61,7 +81,7 @@ function VoiceToggleMuteMixin:SetupMuteButton()
 
 	self.stateFlags = CreateFromMixins(FlagsMixin);
 	self:SetAccessorFunction(GetSelfMuteAndSilenceState);
-	self:SetMutatorFunction(C_VoiceChat.ToggleMuted);
+	self:SetMutatorFunction(VoiceChat_ToggleMutedFromUserAction);
 	self:SetTooltipFunction(GetMuteSelfButtonTooltipText);
 end
 
@@ -97,7 +117,7 @@ VoiceToggleDeafenMixin = CreateFromMixins(VoiceToggleButtonOnlyVisibleWhenLogged
 function VoiceToggleDeafenMixin:OnLoad()
 	VoiceToggleButtonOnlyVisibleWhenLoggedInMixin.OnLoad(self);
 	self:SetAccessorFunction(C_VoiceChat.IsDeafened);
-	self:SetMutatorFunction(C_VoiceChat.SetDeafened);
+	self:SetMutatorFunction(VoiceChat_ToggleDeafenedFromUserAction);
 	self:AddStateAtlas(false, "chatframe-button-icon-speaker-on");
 	self:AddStateAtlas(true, "chatframe-button-icon-speaker-off");
 	self:AddStateAtlasFallback("chatframe-button-icon-speaker-on");

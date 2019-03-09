@@ -1039,39 +1039,17 @@ VideoData["Advanced_BufferingDropDown"]={
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
 			cvars =	{
-				gxTripleBuffer = 0,
+				gxMaxFrameLatency = 2,
 			},
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_ENABLED,
 			cvars =	{
-				gxTripleBuffer = 1,
+				gxMaxFrameLatency = 3,
 			},
 		},
 	},
 	restart = true;
-}
-
--------------------------------------------------------------------------------------------------------
-VideoData["Advanced_LagDropDown"]={
-	name = FIX_LAG;
-	description = OPTION_TOOLTIP_FIX_LAG,
-
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_DISABLED,
-			cvars =	{
-				gxFixLag = 0,
-			},
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_ENABLED,
-			cvars =	{
-				gxFixLag = 1,
-			},
-		},
-	},
-	restart = true,
 }
 
 VideoData["Advanced_MultisampleAntiAliasingDropDown"]={

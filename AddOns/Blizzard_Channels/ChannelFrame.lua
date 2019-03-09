@@ -43,8 +43,6 @@ do
 		self:RegisterEvent("CLUB_MEMBER_ROLE_UPDATED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ACTIVE_STATE_CHANGED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSMIT_CHANGED");
-		self:RegisterEvent("VOICE_CHAT_MUTED_CHANGED");
-		self:RegisterEvent("VOICE_CHAT_DEAFENED_CHANGED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ME_CHANGED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ADDED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_GUID_UPDATED");
@@ -149,10 +147,6 @@ function ChannelFrameMixin:OnEvent(event, ...)
 		self:OnMemberActiveStateChanged(...);
 	elseif event == "VOICE_CHAT_CHANNEL_TRANSMIT_CHANGED" then
 		self:OnChatChannelTransmitChanged(...);
-	elseif event == "VOICE_CHAT_MUTED_CHANGED" then
-		self:OnMutedChanged(...);
-	elseif event == "VOICE_CHAT_DEAFENED_CHANGED" then
-		self:OnDeafenedChanged(...);
 	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ME_CHANGED" then
 		self:OnMemberMuted(...);
 	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_ADDED" then
@@ -411,12 +405,15 @@ function ChannelFrameMixin:OnVoiceChannelDisplayNameChanged(channelID, channelNa
 end
 
 function ChannelFrameMixin:OnVoiceChatError(platformCode, statusCode)
-	local errorCode = Voice_GetGameErrorFromStatusCode(statusCode);
 	local errorString = Voice_GetGameAlertStringFromStatusCode(statusCode);
 	if errorString then
-		UIErrorsFrame:TryDisplayMessage(errorCode, errorString, RED_FONT_COLOR:GetRGB());
 		ChatFrame_DisplayUsageError(errorString);
 		self.lastError = statusCode;
+	end
+
+	local errorCode = Voice_GetGameErrorFromStatusCode(statusCode);
+	if errorCode then
+		UIErrorsFrame:TryDisplayMessage(errorCode, errorString, RED_FONT_COLOR:GetRGB());
 	end
 end
 
@@ -588,22 +585,6 @@ function ChannelFrameMixin:OnMemberActiveStateChanged(memberID, channelID, isAct
 				PlaySound(SOUNDKIT.UI_VOICECHAT_MEMBERLEAVECHANNEL);
 			end
 		end
-	end
-end
-
-function ChannelFrameMixin:OnMutedChanged(isMuted)
-	if isMuted then
-		PlaySound(SOUNDKIT.UI_VOICECHAT_MUTEON);
-	else
-		PlaySound(SOUNDKIT.UI_VOICECHAT_MUTEOFF);
-	end
-end
-
-function ChannelFrameMixin:OnDeafenedChanged(isDeafened)
-	if isDeafened then
-		PlaySound(SOUNDKIT.UI_VOICECHAT_DEAFENON);
-	else
-		PlaySound(SOUNDKIT.UI_VOICECHAT_DEAFENOFF);
 	end
 end
 

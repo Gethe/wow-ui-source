@@ -160,9 +160,10 @@ function SetItemRef(link, text, button, chatFrame)
 				end
 			else
 				if ( BNIsFriend(bnetIDAccount)) then
-					ChatFrame_SendBNetTell(name, chatFrame);
+					ChatFrame_SendBNetTell(name);
 				else
-					ChatFrame_DisplaySystemMessageInCurrent(ERR_BNET_IS_NOT_YOUR_FRIEND:format(name));
+					local displayName = BNGetDisplayName(bnetIDAccount);
+					ChatFrame_SendBNetTell(displayName)
 				end
 			end
 		end

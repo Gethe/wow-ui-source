@@ -583,11 +583,26 @@ function GameTooltip_AnchorComparisonTooltips(self, anchorFrame, shoppingTooltip
 	local sideAnchorFrame = anchorFrame;
 	if anchorFrame.IsEmbedded then
 		sideAnchorFrame = anchorFrame:GetParent():GetParent();
-	end
+	end	
+
 	local leftPos = sideAnchorFrame:GetLeft();
 	local rightPos = sideAnchorFrame:GetRight();
-	local side;
-	local anchorType = self:GetAnchorType();
+
+	local selfLeftPos = self:GetLeft();
+	local selfRightPos = self:GetRight();
+
+	-- if we get the Left, we have the Right
+	if ( leftPos and selfLeftPos) then
+		leftPos = math.min(selfLeftPos, leftPos);-- get the left most bound
+		rightPos = math.max(selfRightPos, rightPos);-- get the right most bound
+	else
+		leftPos = leftPos or selfLeftPos or 0;
+		rightPos = rightPos or selfRightPos or 0;
+	end
+
+	-- sometimes the sideAnchorFrame is an actual tooltip, and sometimes it's a script region, so make sure we're getting the actual anchor type
+	local anchorType = sideAnchorFrame.GetAnchorType and sideAnchorFrame:GetAnchorType() or self:GetAnchorType();
+	
 	local totalWidth = 0;
 	if ( primaryItemShown  ) then
 		totalWidth = totalWidth + shoppingTooltip1:GetWidth();
@@ -595,20 +610,16 @@ function GameTooltip_AnchorComparisonTooltips(self, anchorFrame, shoppingTooltip
 	if ( secondaryItemShown  ) then
 		totalWidth = totalWidth + shoppingTooltip2:GetWidth();
 	end
-	-- find correct side
+
 	local rightDist = 0;
-	if ( not rightPos ) then
-		rightPos = 0;
-	end
-	if ( not leftPos ) then
-		leftPos = 0;
-	end
+	local screenWidth = GetScreenWidth();
+	rightDist = screenWidth - rightPos;
 
-	rightDist = GetScreenWidth() - rightPos;
-
-	if ( anchorType and totalWidth < leftPos and (anchorType == "ANCHOR_LEFT" or anchorType == "ANCHOR_TOPLEFT" or anchorType == "ANCHOR_BOTTOMLEFT") ) then
+	-- find correct side
+	local side;
+	if ( anchorType and (totalWidth < leftPos) and (anchorType == "ANCHOR_LEFT" or anchorType == "ANCHOR_TOPLEFT" or anchorType == "ANCHOR_BOTTOMLEFT") ) then
 		side = "left";
-	elseif ( anchorType and totalWidth < rightDist and (anchorType == "ANCHOR_RIGHT" or anchorType == "ANCHOR_TOPRIGHT" or anchorType == "ANCHOR_BOTTOMRIGHT") ) then
+	elseif ( anchorType and (totalWidth < rightDist) and (anchorType == "ANCHOR_RIGHT" or anchorType == "ANCHOR_TOPRIGHT" or anchorType == "ANCHOR_BOTTOMRIGHT") ) then
 		side = "right";
 	elseif ( rightDist < leftPos ) then
 		side = "left";
@@ -618,10 +629,17 @@ function GameTooltip_AnchorComparisonTooltips(self, anchorFrame, shoppingTooltip
 
 	-- see if we should slide the tooltip
 	if ( anchorType and anchorType ~= "ANCHOR_PRESERVE" ) then
+		local slideAmount = 0;
 		if ( (side == "left") and (totalWidth > leftPos) ) then
-			self:SetAnchorType(anchorType, (totalWidth - leftPos), 0);
-		elseif ( (side == "right") and (rightPos + totalWidth) >  GetScreenWidth() ) then
-			self:SetAnchorType(anchorType, -((rightPos + totalWidth) - GetScreenWidth()), 0);
+			slideAmount = totalWidth - leftPos;
+		elseif ( (side == "right") and (rightPos + totalWidth) >  screenWidth ) then
+			slideAmount = screenWidth - (rightPos + totalWidth);
+		end
+
+		if ( sideAnchorFrame.SetAnchorType ) then
+			sideAnchorFrame:SetAnchorType(anchorType, slideAmount, 0);
+		else
+			self:SetAnchorType(anchorType, slideAmount, 0);
 		end
 	end
 

@@ -99,6 +99,11 @@ local SocialInfo =
 			Documentation = { "Not allowed to be called by addons" },
 		},
 		{
+			Name = "TwitterDisconnect",
+			Type = "Function",
+			Documentation = { "Not allowed to be called by addons" },
+		},
+		{
 			Name = "TwitterGetMSTillCanPost",
 			Type = "Function",
 

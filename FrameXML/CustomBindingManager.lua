@@ -23,9 +23,9 @@ end
 	end
 end
 
---[[private]] function CustomBindingManager:OnBindingCompleted(frame, completedSuccessfully)
+--[[private]] function CustomBindingManager:OnBindingCompleted(frame, completedSuccessfully, keys)
 	for handler, frame in self:EnumerateHandlers(frame:GetCustomBindingType()) do
-		handler:CallOnBindingCompletedCallback(completedSuccessfully);
+		handler:CallOnBindingCompletedCallback(completedSuccessfully, keys);
 	end
 end
 

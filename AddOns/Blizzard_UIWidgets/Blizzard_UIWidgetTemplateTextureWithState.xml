@@ -17,7 +17,7 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Text" inherits="GameFontNormalLarge">
+				<FontString parentKey="Text" mixin="ShrinkUntilTruncateFontStringMixin" inherits="GameFontNormalLarge">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>

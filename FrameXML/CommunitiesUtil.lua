@@ -52,10 +52,11 @@ end
 
 local PRESENCE_SORT_ORDER = {
 	[Enum.ClubMemberPresence.Online] = 1,
-	[Enum.ClubMemberPresence.Away] = 2,
-	[Enum.ClubMemberPresence.Busy] = 3,
-	[Enum.ClubMemberPresence.Offline] = 4,
-	[Enum.ClubMemberPresence.Unknown] = 5,
+	[Enum.ClubMemberPresence.OnlineMobile] = 2,
+	[Enum.ClubMemberPresence.Away] = 3,
+	[Enum.ClubMemberPresence.Busy] = 4,
+	[Enum.ClubMemberPresence.Offline] = 5,
+	[Enum.ClubMemberPresence.Unknown] = 6,
 };
 
 local function CompareMembers(lhsMemberInfo, rhsMemberInfo)

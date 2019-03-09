@@ -176,6 +176,13 @@
 			<Frame parentKey="MissionTab" setAllPoints="true" useParentLevel="true">
 				<Frames>
 					<Frame parentKey="MissionList" inherits="GarrisonMissionListTemplate" mixin="OrderHallMissionListMixin" name="$parentMissions">
+						<Scripts>
+							<OnLoad inherit="prepend">
+								self.CompleteDialog:ClearAllPoints();
+								self.CompleteDialog:SetPoint("TOPLEFT", -34, 63);
+								self.CompleteDialog:SetSize(961, 660);
+							</OnLoad>
+						</Scripts>
 					</Frame>
 					<Frame parentKey="ZoneSupportMissionPageBackground" hidden="true" frameLevel="1">
 						<Layers>

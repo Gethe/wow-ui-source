@@ -2921,7 +2921,11 @@ function WardrobeSetsDataProviderMixin:SortSets(sets, reverseUIOrder, ignorePatc
 				return set1.uiOrder > set2.uiOrder;
 			end
 		end
-		return set1.setID > set2.setID;
+		if reverseUIOrder then
+			return set1.setID < set2.setID;
+		else
+			return set1.setID > set2.setID;
+		end
 	end
 
 	table.sort(sets, comparison);

@@ -19,7 +19,6 @@ OBJECTIVE_TRACKER_COLOR = {
 	["Complete"] = { r = 0.6, g = 0.6, b = 0.6 },
 	["TimeLeft"] = { r = DIM_RED_FONT_COLOR.r, g = DIM_RED_FONT_COLOR.g, b = DIM_RED_FONT_COLOR.b },
 	["TimeLeftHighlight"] = { r = RED_FONT_COLOR.r, g = RED_FONT_COLOR.g, b = RED_FONT_COLOR.b },
-	["Waypoint"] = { r = GREEN_FONT_COLOR.r, g = GREEN_FONT_COLOR.g, b = GREEN_FONT_COLOR.b },
 };
 	OBJECTIVE_TRACKER_COLOR["Normal"].reverse = OBJECTIVE_TRACKER_COLOR["NormalHighlight"];
 	OBJECTIVE_TRACKER_COLOR["NormalHighlight"].reverse = OBJECTIVE_TRACKER_COLOR["Normal"];
@@ -287,7 +286,7 @@ OBJECTIVE_DASH_STYLE_SHOW = 1;
 OBJECTIVE_DASH_STYLE_HIDE = 2;
 OBJECTIVE_DASH_STYLE_HIDE_AND_COLLAPSE = 3;
 
-function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddObjective(block, objectiveKey, text, lineType, useFullHeight, dashStyle, colorStyle, adjustForNoText, overrideHeight)
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddObjective(block, objectiveKey, text, lineType, useFullHeight, dashStyle, colorStyle, adjustForNoText)
 	local line = self:GetLine(block, objectiveKey, lineType);
 	-- width
 	if ( block.lineWidth ~= line.width ) then
@@ -317,8 +316,7 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddObjective(block, objectiveKey, text
 	end
 
 	-- set the text
-	local textHeight = self:SetStringText(line.Text, text, useFullHeight, colorStyle, block.isHighlighted);
-	local height = overrideHeight or textHeight;
+	local height = self:SetStringText(line.Text, text, useFullHeight, colorStyle, block.isHighlighted);
 	line:SetHeight(height);
 
 	local yOffset;

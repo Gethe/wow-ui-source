@@ -372,8 +372,13 @@ end
 
 local function GetDisplayNameFromCategory(category)
 	if (category == LE_LFG_CATEGORY_BATTLEFIELD) then
-		local brawlInfo = C_PvP.GetBrawlInfo();
-		if (brawlInfo and brawlInfo.active and brawlInfo.name) then
+		local brawlInfo;
+		if (C_PvP.IsInBrawl()) then
+			brawlInfo = C_PvP.GetActiveBrawlInfo();
+		else
+			brawlInfo = C_PvP.GetAvailableBrawlInfo();
+		end
+		if (brawlInfo and brawlInfo.canQueue and brawlInfo.name) then
 			return brawlInfo.name;
 		end
 	end
@@ -470,8 +475,8 @@ function QueueStatusEntry_SetUpLFG(entry, category)
 	elseif ( mode == "lfgparty" or mode == "abandonedInDungeon" ) then
 		local title;
 		if (C_PvP.IsInBrawl()) then
-			local brawlInfo = C_PvP.GetBrawlInfo();
-			if (brawlInfo and brawlInfo.active and brawlInfo.longDescription) then
+			local brawlInfo = C_PvP.GetActiveBrawlInfo();
+			if (brawlInfo and brawlInfo.canQueue and brawlInfo.longDescription) then
 				title = brawlInfo.name;
 				if (subtitle) then
 					subtitle = QUEUED_STATUS_BRAWL_RULES_SUBTITLE:format(brawlInfo.longDescription, subtitle);

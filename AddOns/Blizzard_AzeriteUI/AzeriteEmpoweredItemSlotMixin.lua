@@ -52,8 +52,17 @@ end
 
 function AzeriteEmpoweredItemSlotMixin:PlayLockedInEffect()
 	if self.lockedInEffectActor then
+		self.LockedInEffect:Show();
 		self.lockedInEffectActor:SetAnimation(0, 0, 1, 0);
-		C_Timer.After(1, function() self.lockedInEffectActor:SetAnimation(0, 0, 0, 0); end);
+		C_Timer.After(1, 
+			function() 
+				self.lockedInEffectActor:SetAnimation(0, 0, 0, 0); 
+				C_Timer.After(5, 
+					function() self.LockedInEffect:Hide(); 
+					end
+				);
+			end
+		);
 	end
 end
 
@@ -66,6 +75,7 @@ function AzeriteEmpoweredItemSlotMixin:SetupModelScene(forceUpdate)
 		if self.lockedInEffectActor then
 			self.lockedInEffectActor:SetAnimation(0, 0, 0, 0);
 		end
+		self.LockedInEffect:Hide();
 	end
 end
 

@@ -3021,6 +3021,7 @@ function StoreVASValidationFrame_Init(self)
 	self.CharacterSelectionFrame.RealmSelector.Button:Enable();
 	self.CharacterSelectionFrame.RealmSelector:Show();
 	self.CharacterSelectionFrame.CharacterSelector:Show();
+	self.CharacterSelectionFrame.NoEligibleCharactersErrorMessage:Hide();
 	self.CharacterSelectionFrame.NewCharacterName:Hide();
 	self.CharacterSelectionFrame.FollowGuildCheckbox:Hide();
 	self.CharacterSelectionFrame.FollowGuildErrorMessage:Hide();
@@ -3989,7 +3990,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 			if CharacterWaitingOnGuildFollowInfo ~= character.guid then
 				-- wait for STORE_GUILD_FOLLOW_INFO_RECEIVED event
 				CharacterWaitingOnGuildFollowInfo = character.guid;
-				C_StoreSecure.RequestCharacterGuildFollowInfo(character.guid);
+				C_StoreSecure.RequestCharacterGuildFollowInfo(character.guid, SelectedRealm.virtualRealmAddress);
 			end
 			return;
 		end

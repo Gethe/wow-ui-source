@@ -1336,8 +1336,10 @@ function ContainerFrameItemButton_CalculateItemTooltipAnchors(self, mainTooltip)
 	local x = self:GetRight();
 	local anchorFromLeft = x < GetScreenWidth() / 2;
 	if ( anchorFromLeft ) then
+		mainTooltip:SetAnchorType("ANCHOR_RIGHT", 0, 0);
 		mainTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
 	else
+		mainTooltip:SetAnchorType("ANCHOR_LEFT", 0, 0);
 		mainTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT");
 	end
 end
@@ -1382,7 +1384,7 @@ function ContainerFrameItemButton_OnEnter(self)
 
 	ContainerFrameItemButton_CalculateItemTooltipAnchors(self, GameTooltip);
 
-	if ( requiresCompareTooltipReanchor and (IsModifiedClick("COMPAREITEMS") or GetCVarBool("alwaysCompareItems")) ) then
+	if ( IsModifiedClick("COMPAREITEMS") or GetCVarBool("alwaysCompareItems") ) then
 		GameTooltip_ShowCompareItem(GameTooltip);
 	end
 
