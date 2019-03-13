@@ -711,6 +711,10 @@ local SET_MODEL_PAN_AND_ZOOM_LIMITS = {
 	["MagharOrc3"] = { maxZoom = 3.2960524559021, panMaxLeft = -0.22763830423355, panMaxRight = 0.32022559642792, panMaxTop = -0.038521766662598, panMaxBottom = -2.0473554134369 },
 	["DarkIronDwarf2"] = { maxZoom = 2.9605259895325, panMaxLeft = -0.50352156162262, panMaxRight = 0.4159924685955, panMaxTop = -0.07211934030056, panMaxBottom = -1.4946432113648 },
 	["DarkIronDwarf3"] = { maxZoom = 2.8947370052338, panMaxLeft = -0.37057432532311, panMaxRight = 0.43383255600929, panMaxTop = -0.084960877895355, panMaxBottom = -1.7173190116882 },
+	["KulTiran2"] = { maxZoom =  1.71052598953247, panMaxLeft = -0.667941331863403, panMaxRight = 0.589463412761688, panMaxTop = -0.373320609331131, panMaxBottom = -2.7329957485199 },
+	["KulTiran3"] = { maxZoom =  2.22368383407593, panMaxLeft = -0.43183308839798, panMaxRight = 0.445900857448578, panMaxTop = -0.303212702274323, panMaxBottom = -2.49550628662109 },
+	["ZandalariTroll2"] = { maxZoom =  2.1710512638092, panMaxLeft = -0.487841755151749, panMaxRight = 0.561356604099274, panMaxTop = -0.385127544403076, panMaxBottom = -2.78562784194946 },
+	["ZandalariTroll3"] = { maxZoom =  3.32894563674927, panMaxLeft = -0.376705944538116, panMaxRight = 0.488780438899994, panMaxTop = -0.20890490710735, panMaxBottom = -2.67064166069031 },
 };
 
 function WardrobeCollectionFrame_SetContainer(parent)
@@ -995,7 +999,10 @@ function WardrobeItemsCollectionMixin:OnShow()
 	local needsUpdate = false;	-- we don't need to update if we call WardrobeCollectionFrame_SetActiveSlot as that will do an update
 	if ( self.jumpToLatestCategoryID and self.jumpToLatestCategoryID ~= self.activeCategory ) then
 		local slot = WardrobeCollectionFrame_GetSlotFromCategoryID(self.jumpToLatestCategoryID);
-		self:SetActiveSlot(slot, LE_TRANSMOG_TYPE_APPEARANCE, self.jumpToLatestCategoryID);
+		-- The model got reset from OnShow, which restored all equipment.
+		-- But ChangeModelsSlot tries to be smart and only change the difference from the previous slot to the current slot, so some equipment will remain left on.
+		local ignorePreviousSlot = true;
+		self:SetActiveSlot(slot, LE_TRANSMOG_TYPE_APPEARANCE, self.jumpToLatestCategoryID, ignorePreviousSlot);
 		self.jumpToLatestCategoryID = nil;
 	elseif ( self.activeSlot ) then
 		-- redo the model for the active slot
@@ -1293,8 +1300,12 @@ function WardrobeItemsCollectionMixin:IsValidWeaponCategoryForSlot(categoryID, s
 	return false;
 end
 
-function WardrobeItemsCollectionMixin:SetActiveSlot(slot, transmogType, category)
-	local previousSlot = self.activeSlot;
+function WardrobeItemsCollectionMixin:SetActiveSlot(slot, transmogType, category, ignorePreviousSlot)
+	local previousSlot;
+	if not ignorePreviousSlot then
+		previousSlot = self.activeSlot;
+	end
+
 	self.activeSlot = slot;
 	self.transmogType = transmogType;
 
@@ -1432,7 +1443,7 @@ function WardrobeItemsCollectionMixin:FilterVisuals()
 	local filteredVisualsList = { };
 	for i = 1, #visualsList do
 		if ( isAtTransmogrifier ) then
-			if ( visualsList[i].isUsable and visualsList[i].isCollected ) then
+			if ( (visualsList[i].isUsable and visualsList[i].isCollected) or visualsList[i].alwaysShowItem ) then
 				tinsert(filteredVisualsList, visualsList[i]);
 			end
 		else
@@ -1951,7 +1962,7 @@ function WardrobeItemsModelMixin:OnMouseDown(button)
 		if ( transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
 			local sourceID = self:GetParent():GetAnAppearanceSourceFromVisual(self.visualInfo.visualID, nil);
 			-- don't specify a slot for ranged weapons
-			if ( WardrobeUtils_IsCategoryRanged(self:GetParent():GetActiveCategory()) ) then
+			if ( WardrobeUtils_IsCategoryRanged(self:GetParent():GetActiveCategory()) or  WardrobeUtils_IsCategoryLegionArtifact(self:GetParent():GetActiveCategory()) ) then
 				slot = nil;
 			end
 			DressUpVisual(sourceID, slot);
@@ -2885,7 +2896,7 @@ local IN_PROGRESS_FONT_COLOR_CODE = "|cff40c040";
 
 WardrobeSetsDataProviderMixin = {};
 
-function WardrobeSetsDataProviderMixin:SortSets(sets, reverseUIOrder)
+function WardrobeSetsDataProviderMixin:SortSets(sets, reverseUIOrder, ignorePatchID)
 	local comparison = function(set1, set2)
 		local groupFavorite1 = set1.favoriteSetID and true;
 		local groupFavorite2 = set2.favoriteSetID and true;
@@ -2898,8 +2909,10 @@ function WardrobeSetsDataProviderMixin:SortSets(sets, reverseUIOrder)
 		if ( set1.expansionID ~= set2.expansionID ) then
 			return set1.expansionID > set2.expansionID;
 		end
-		if ( set1.patchID ~= set2.patchID ) then
-			return set1.patchID > set2.patchID;
+		if not ignorePatchID then
+			if ( set1.patchID ~= set2.patchID ) then
+				return set1.patchID > set2.patchID;
+			end
 		end
 		if ( set1.uiOrder ~= set2.uiOrder ) then
 			if ( reverseUIOrder ) then
@@ -2908,7 +2921,11 @@ function WardrobeSetsDataProviderMixin:SortSets(sets, reverseUIOrder)
 				return set1.uiOrder > set2.uiOrder;
 			end
 		end
-		return set1.setID > set2.setID;
+		if reverseUIOrder then
+			return set1.setID < set2.setID;
+		else
+			return set1.setID > set2.setID;
+		end
 	end
 
 	table.sort(sets, comparison);
@@ -2974,7 +2991,9 @@ function WardrobeSetsDataProviderMixin:GetVariantSets(baseSetID)
 			if ( baseSet ) then
 				tinsert(variantSets, baseSet);
 			end
-			self:SortSets(variantSets, true);
+			local reverseUIOrder = true;
+			local ignorePatchID = true;
+			self:SortSets(variantSets, reverseUIOrder, ignorePatchID);
 		end
 	end
 	return variantSets;

@@ -1,4 +1,3 @@
-local SOCIAL_MESSAGE_MAX_CHARS = 140;
 local SOCIAL_DEFAULT_FRAME_WIDTH = 388;
 local SOCIAL_DEFAULT_FRAME_HEIGHT = 190;
 local SOCIAL_IMAGE_FRAME_MAX_WIDTH = 640;
@@ -52,7 +51,7 @@ function SocialPostFrame_OnEvent(self, event, ...)
 	elseif (event == "SCREENSHOT_SUCCEEDED") then
 		SocialScreenshotButton_Update();
 		if (SocialPostFrame.ImageFrame.type == SOCIAL_IMAGE_TYPE_SCREENSHOT) then
-			SocialScreenshotImage_Set(C_Social.GetLastScreenshot());
+			SocialScreenshotImage_Set(C_Social.GetLastScreenshotIndex());
 		end
 	end
 end
@@ -165,14 +164,11 @@ function MessageBoxEdit_OnTextChanged(self)
 end
 
 function SocialPostButton_Update()
-	local maxChars = SOCIAL_MESSAGE_MAX_CHARS;
-	if (SocialPostFrame.ImageFrame:IsShown()) then
-		maxChars = maxChars - C_Social.GetNumCharactersPerMedia();
-	end
+	local maxTweetLength = C_Social.GetMaxTweetLength();
 	local text = SocialPostFrame.SocialMessageFrame.EditBox:GetDisplayText();
 	local tweetLength = C_Social.GetTweetLength(text);
 	
-	local charsLeft = maxChars - tweetLength;
+	local charsLeft = maxTweetLength - tweetLength;
 	SocialPostFrame.PostButton.CharsLeftString:SetText(tostring(charsLeft));
 	if (charsLeft < 0) then
 		SocialPostFrame.PostButton.CharsLeftString:SetFontObject("GameFontRedLarge");
@@ -180,7 +176,7 @@ function SocialPostButton_Update()
 		SocialPostFrame.PostButton.tempEnabled = false;
 	else
 		SocialPostFrame.PostButton.CharsLeftString:SetFontObject("GameFontNormalLarge");
-		if (charsLeft == SOCIAL_MESSAGE_MAX_CHARS) then
+		if (tweetLength == 0 and not SocialPostFrame.ImageFrame:IsShown()) then
 			SocialPostFrame.PostButton:Disable();
 		elseif (not SocialPostFrame.addonSetText) then
 			SocialPostFrame.PostButton:Enable();
@@ -347,8 +343,8 @@ end
 
 function SocialScreenshotButton_Update()
 	local self = SocialPostFrame.ScreenshotButton;
-	local index = C_Social.GetLastScreenshot();
-	if (index > 0 and C_Social.GetScreenshotByIndex(index)) then
+	local index = C_Social.GetLastScreenshotIndex();
+	if (index > 0 and C_Social.GetScreenshotInfoByIndex(index)) then
 		C_Social.SetTextureToScreenshot(self.Icon, index);
 		C_Social.SetTextureToScreenshot(SocialScreenshotTooltip.Image, index);
 		self:Enable();
@@ -365,8 +361,8 @@ end
 
 function SocialPrefillScreenshotText(index)
 	-- Populate editbox with social prefill text and expand to screenshot view
-	local valid, width, height = C_Social.GetScreenshotByIndex(index);
-	if (valid) then
+	local width, height = C_Social.GetScreenshotInfoByIndex(index);
+	if width then
 		local text = SOCIAL_SCREENSHOT_PREFILL_TEXT;
 		local prefillTextLength = strlen(SOCIAL_SCREENSHOT_PREFILL_TEXT);
 		SocialPostFrame.SocialMessageFrame.EditBox:SetText(text);
@@ -383,16 +379,16 @@ end
 
 function SocialScreenshotButton_OnClick(self)
 	local alreadyShown = SocialPostFrame.ImageFrame:IsShown();
-	SocialPrefillScreenshotText(C_Social.GetLastScreenshot());
+	SocialPrefillScreenshotText(C_Social.GetLastScreenshotIndex());
 	if (alreadyShown) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 	end
 end
 
 function SocialScreenshotButton_OnEnter(self)
-	local index = C_Social.GetLastScreenshot();
-	local valid, width, height = C_Social.GetScreenshotByIndex(index);
-	if (valid) then
+	local index = C_Social.GetLastScreenshotIndex();
+	local width, height = C_Social.GetScreenshotInfoByIndex(index);
+	if width then
 		SocialScreenshotButton_ShowTooltip(self, width, height);
 	else
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", -38, -12);
@@ -588,7 +584,7 @@ function SocialPrefillItemText(itemLink, earned)
 	SocialPostFrame.lastItemID = itemID;
 	SocialPostFrame.lastPrefilledText = prefillText;
 	
-	SocialRenderItem(itemLink);
+	SocialRenderItem(itemID);
 end
 
 function SocialItemButton_OnClick(self)
@@ -618,10 +614,10 @@ function SocialItemButton_OnLeave(self)
 	GameTooltip_Hide();
 end
 
-function SocialRenderItem(itemLink)
+function SocialRenderItem(itemID)
 	local tooltip = OffScreenFrame.ItemTooltip;
 	tooltip:SetOwner(OffScreenFrame, "ANCHOR_PRESERVE");
-	tooltip:SetHyperlink(itemLink);
+	tooltip:SetOwnedItemByID(itemID);
 
 	UpdateOffScreenFrame(OffScreenFrame, SOCIAL_OFFSCREEN_STATE_SHOW_ITEM);
 	TakeOffscreenSnapshot(tooltip, SOCIAL_IMAGE_TYPE_ITEM, SOCIAL_ITEM_REMOVE_BUTTON);

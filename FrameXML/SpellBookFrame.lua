@@ -589,7 +589,8 @@ function SpellButton_OnModifiedClick(self, button)
 			if ( tradeSkillSpellID ) then
 				ChatEdit_InsertLink(tradeSkillLink);
 			else
-				ChatEdit_InsertLink(GetSpellLink(slot, SpellBookFrame.bookType));
+				local spellLink = GetSpellLink(slot, SpellBookFrame.bookType);
+				ChatEdit_InsertLink(spellLink);
 			end
 			return;
 		end

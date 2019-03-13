@@ -446,6 +446,17 @@ function GameTooltip_OnHide(self)
 		end
 	end
 	self.comparing = false;
+	
+	ShoppingTooltip1:Hide();
+	ShoppingTooltip2:Hide();
+	if (BattlePetTooltip) then
+		BattlePetTooltip:Hide();
+	end
+
+	if self.ItemTooltip then
+		self.ItemTooltip:Hide();
+	end
+	self:SetPadding(0, 0);	
 end
 
 function GameTooltip_CycleSecondaryComparedItem(self)
@@ -572,11 +583,26 @@ function GameTooltip_AnchorComparisonTooltips(self, anchorFrame, shoppingTooltip
 	local sideAnchorFrame = anchorFrame;
 	if anchorFrame.IsEmbedded then
 		sideAnchorFrame = anchorFrame:GetParent():GetParent();
-	end
+	end	
+
 	local leftPos = sideAnchorFrame:GetLeft();
 	local rightPos = sideAnchorFrame:GetRight();
-	local side;
-	local anchorType = self:GetAnchorType();
+
+	local selfLeftPos = self:GetLeft();
+	local selfRightPos = self:GetRight();
+
+	-- if we get the Left, we have the Right
+	if ( leftPos and selfLeftPos) then
+		leftPos = math.min(selfLeftPos, leftPos);-- get the left most bound
+		rightPos = math.max(selfRightPos, rightPos);-- get the right most bound
+	else
+		leftPos = leftPos or selfLeftPos or 0;
+		rightPos = rightPos or selfRightPos or 0;
+	end
+
+	-- sometimes the sideAnchorFrame is an actual tooltip, and sometimes it's a script region, so make sure we're getting the actual anchor type
+	local anchorType = sideAnchorFrame.GetAnchorType and sideAnchorFrame:GetAnchorType() or self:GetAnchorType();
+	
 	local totalWidth = 0;
 	if ( primaryItemShown  ) then
 		totalWidth = totalWidth + shoppingTooltip1:GetWidth();
@@ -584,20 +610,16 @@ function GameTooltip_AnchorComparisonTooltips(self, anchorFrame, shoppingTooltip
 	if ( secondaryItemShown  ) then
 		totalWidth = totalWidth + shoppingTooltip2:GetWidth();
 	end
-	-- find correct side
+
 	local rightDist = 0;
-	if ( not rightPos ) then
-		rightPos = 0;
-	end
-	if ( not leftPos ) then
-		leftPos = 0;
-	end
+	local screenWidth = GetScreenWidth();
+	rightDist = screenWidth - rightPos;
 
-	rightDist = GetScreenWidth() - rightPos;
-
-	if ( anchorType and totalWidth < leftPos and (anchorType == "ANCHOR_LEFT" or anchorType == "ANCHOR_TOPLEFT" or anchorType == "ANCHOR_BOTTOMLEFT") ) then
+	-- find correct side
+	local side;
+	if ( anchorType and (totalWidth < leftPos) and (anchorType == "ANCHOR_LEFT" or anchorType == "ANCHOR_TOPLEFT" or anchorType == "ANCHOR_BOTTOMLEFT") ) then
 		side = "left";
-	elseif ( anchorType and totalWidth < rightDist and (anchorType == "ANCHOR_RIGHT" or anchorType == "ANCHOR_TOPRIGHT" or anchorType == "ANCHOR_BOTTOMRIGHT") ) then
+	elseif ( anchorType and (totalWidth < rightDist) and (anchorType == "ANCHOR_RIGHT" or anchorType == "ANCHOR_TOPRIGHT" or anchorType == "ANCHOR_BOTTOMRIGHT") ) then
 		side = "right";
 	elseif ( rightDist < leftPos ) then
 		side = "left";
@@ -607,10 +629,17 @@ function GameTooltip_AnchorComparisonTooltips(self, anchorFrame, shoppingTooltip
 
 	-- see if we should slide the tooltip
 	if ( anchorType and anchorType ~= "ANCHOR_PRESERVE" ) then
+		local slideAmount = 0;
 		if ( (side == "left") and (totalWidth > leftPos) ) then
-			self:SetAnchorType(anchorType, (totalWidth - leftPos), 0);
-		elseif ( (side == "right") and (rightPos + totalWidth) >  GetScreenWidth() ) then
-			self:SetAnchorType(anchorType, -((rightPos + totalWidth) - GetScreenWidth()), 0);
+			slideAmount = totalWidth - leftPos;
+		elseif ( (side == "right") and (rightPos + totalWidth) >  screenWidth ) then
+			slideAmount = screenWidth - (rightPos + totalWidth);
+		end
+
+		if ( sideAnchorFrame.SetAnchorType ) then
+			sideAnchorFrame:SetAnchorType(anchorType, slideAmount, 0);
+		else
+			self:SetAnchorType(anchorType, slideAmount, 0);
 		end
 	end
 
@@ -802,34 +831,31 @@ local function WidgetLayout(widgetContainer, sortedWidgets)
 
 	widgetContainer:SetHeight(math.max(widgetsHeight, 1));
 	widgetContainer:SetWidth(math.max(maxWidgetWidth, 1));
+
+	widgetContainer.shownWidgetCount = #sortedWidgets;
 end
 
 function GameTooltip_AddWidgetSet(self, widgetSetID)
-	if self.widgetSetID == widgetSetID then
-		GameTooltip_InsertFrame(self, self.widgetContainer);
+	if not widgetSetID then
 		return;
 	end
 
-	GameTooltip_ClearWidgetSet(self);
-
-	if widgetSetID then
-		if not self.widgetContainer then
-			self.widgetContainer = CreateFrame("FRAME", nil, self);
-		else
-			self.widgetContainer:SetParent(self);
-		end
-
-		UIWidgetManager:RegisterWidgetSetContainer(widgetSetID, self.widgetContainer, WidgetLayout);
-		GameTooltip_InsertFrame(self, self.widgetContainer);
+	if not self.widgetContainer then
+		self.widgetContainer = CreateFrame("FRAME", nil, self, "UIWidgetContainerTemplate");
+		self.widgetContainer.showAndHideOnWidgetSetRegistration = false;
+		self.widgetContainer:Hide();
 	end
 
-	self.widgetSetID = widgetSetID;
+	self.widgetContainer:RegisterForWidgetSet(widgetSetID, WidgetLayout);
+
+	if self.widgetContainer.shownWidgetCount > 0 then
+		GameTooltip_InsertFrame(self, self.widgetContainer);
+	end
 end
 
 function GameTooltip_ClearWidgetSet(self)
-	if self.widgetSetID then
-		UIWidgetManager:UnregisterWidgetSetContainer(self.widgetSetID, self.widgetContainer);
-		self.widgetSetID = nil;
+	if self.widgetContainer then
+		self.widgetContainer:UnregisterForWidgetSet();
 	end
 end
 

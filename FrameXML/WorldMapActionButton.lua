@@ -117,10 +117,10 @@ function WorldMapActionButtonMixin:OnClick()
 end
 
 function WorldMapActionButtonMixin:OnEnter()
-	WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, -60);
-	WorldMapTooltip:SetSpellByID(self.spellID);
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, -60);
+	GameTooltip:SetSpellByID(self.spellID);
 end
 
 function WorldMapActionButtonMixin:OnLeave()
-	WorldMapTooltip:Hide();
+	GameTooltip:Hide();
 end

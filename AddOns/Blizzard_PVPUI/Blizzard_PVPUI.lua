@@ -818,12 +818,12 @@ function HonorFrameBonusFrame_Update()
 	do
 		-- brawls
 		local button = HonorFrame.BonusFrame.BrawlButton;
-		local brawlInfo = C_PvP.GetBrawlInfo();
+		local brawlInfo = C_PvP.GetAvailableBrawlInfo();
 		local isMaxLevel = IsPlayerAtEffectiveMaxLevel();
-		button.canQueue = brawlInfo and brawlInfo.active and isMaxLevel;
+		button.canQueue = brawlInfo and brawlInfo.canQueue and isMaxLevel;
 		button.isBrawl = true;
 
-		if (brawlInfo and brawlInfo.active) then
+		if (brawlInfo and brawlInfo.canQueue) then
 			button:Enable();
 			button.Title:SetText(brawlInfo.name);
 			button.Title:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
@@ -841,7 +841,7 @@ function HonorFrameBonusFrame_Update()
 			button.Reward:Hide();
 			button:Disable();
 		end
-		HonorFrame.BonusFrame.BrawlHelpBox:SetShown(ShouldShowBrawlHelpBox(brawlInfo and brawlInfo.active, (IsPlayerAtEffectiveMaxLevel())));
+		HonorFrame.BonusFrame.BrawlHelpBox:SetShown(ShouldShowBrawlHelpBox(brawlInfo and brawlInfo.canQueue, (IsPlayerAtEffectiveMaxLevel())));
 	end
 
 	-- select a button if one isn't selected
@@ -1797,7 +1797,8 @@ end
 
 function PVPConquestBarRewardMixin:OnClick()
 	if self.questID and self.questID > 0 and IsModifiedClick() then
-		HandleModifiedItemClick(GetQuestLogItemLink("reward", 1, self.questID));
+		local itemIndex = QuestUtils_GetBestQualityItemRewardIndex(self.questID);
+		HandleModifiedItemClick(GetQuestLogItemLink("reward", itemIndex, self.questID));
 	end
 end
 

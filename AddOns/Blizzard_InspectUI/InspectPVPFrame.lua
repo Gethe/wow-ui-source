@@ -64,11 +64,6 @@ end
 function InspectPVPFrame_OnShow()
 	ButtonFrameTemplate_HideButtonBar(InspectFrame);
 	InspectPVPFrame_Update();
-	if ( not HasInspectHonorData() ) then
-		RequestInspectHonorData();
-	else
-		InspectPVPFrame_Update();
-	end
 end
 
 function InspectPVPFrame_OnHide(self)
@@ -83,7 +78,7 @@ end
 function InspectPVPFrame_Update()
 	local parent = InspectPVPFrame:GetParent();
 	local factionGroup = UnitFactionGroup(INSPECTED_UNIT);
-	local _, _, _, _, lifetimeHKs, _ = GetInspectHonorData();
+	local _, _, _, _, lifetimeHKs, _, honorLevel = GetInspectHonorData();
 	local level = UnitLevel(INSPECTED_UNIT);
 
 	InspectPVPFrame.HKs:SetFormattedText(INSPECT_HONORABLE_KILLS, lifetimeHKs);
@@ -97,7 +92,7 @@ function InspectPVPFrame_Update()
 		end
 	else
 		InspectPVPFrame.SmallWreath:SetShown(false);
-		InspectPVPFrame.HonorLevel:SetFormattedText(HONOR_LEVEL_LABEL, UnitHonorLevel(INSPECTED_UNIT));
+		InspectPVPFrame.HonorLevel:SetFormattedText(HONOR_LEVEL_LABEL, honorLevel);
 		InspectPVPFrame.HonorLevel:Show();
 		local rating, played, won = GetInspectRatedBGData();
 		InspectPVPFrame.RatedBG.Rating:SetText(rating);

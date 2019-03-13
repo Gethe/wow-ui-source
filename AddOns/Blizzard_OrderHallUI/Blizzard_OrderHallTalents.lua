@@ -269,7 +269,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	if (uiTextureKit) then
 		self.Background:SetAtlas(uiTextureKit.."-background");
 		local atlas = uiTextureKit.."-logo";
-		if (GetAtlasInfo(atlas)) then
+		if (C_Texture.GetAtlasInfo(atlas)) then
 			PortraitFrameTemplate_SetPortraitAtlasRaw(self, atlas);
 		else
 			PortraitFrameTemplate_SetPortraitToUnit(self, "npc");

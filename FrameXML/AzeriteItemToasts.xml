@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="AzeriteItemToasts.lua"/>
 
-	<Frame name="AzeriteUnlockedItemTemplate" inherits="ItemButtonTemplate" virtual="true">
+	<ItemButton name="AzeriteUnlockedItemTemplate" virtual="true">
 		<Size x="37" y="37" />
 		<KeyValues>
 			<KeyValue key="topPadding" value="0" type="number"/>
@@ -28,7 +28,7 @@
 				<Texture parentKey="IconOverlay" />
 			</Layer>
 		</Layers>
-	</Frame>
+	</ItemButton>
 
 	<Frame name="AzeriteLevelUpToast" parent="UIParent" hidden="true" mixin="AzeriteItemLevelUpToastMixin">
 		<Size x="128" y="128"/>

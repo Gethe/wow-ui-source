@@ -113,32 +113,21 @@ function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters)
 end
 
 function WorldMap_AddQuestTimeToTooltip(questID)
-	local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(questID);
-	if ( timeLeftMinutes and timeLeftMinutes > 0 ) then
-		local color = NORMAL_FONT_COLOR;
-		if ( timeLeftMinutes <= WORLD_QUESTS_TIME_CRITICAL_MINUTES ) then
-			color = RED_FONT_COLOR;
-		end
-
-		local timeString;
-		if timeLeftMinutes <= 60 then
-			timeString = SecondsToTime(timeLeftMinutes * 60);
-		elseif timeLeftMinutes < 24 * 60  then
-			timeString = D_HOURS:format(math.floor(timeLeftMinutes) / 60);
-		else
-			timeString = D_DAYS:format(math.floor(timeLeftMinutes) / 1440);
-		end
-
-		WorldMapTooltip:AddLine(BONUS_OBJECTIVE_TIME_LEFT:format(timeString), color.r, color.g, color.b);
+	local secondsRemaining = C_TaskQuest.GetQuestTimeLeftSeconds(questID);
+	if (secondsRemaining) then
+		local color = QuestUtils_GetQuestTimeColor(secondsRemaining);
+		local formatterOutput = WorldQuestsSecondsFormatter:Format(secondsRemaining);
+		local formattedTime = BONUS_OBJECTIVE_TIME_LEFT:format(formatterOutput);
+		GameTooltip_AddColoredLine(GameTooltip, formattedTime, color);
 	end
 end
 
 function TaskPOI_OnEnter(self)
-	WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
 	if ( not HaveQuestData(self.questID) ) then
-		WorldMapTooltip:SetText(RETRIEVING_DATA, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-		WorldMapTooltip:Show();
+		GameTooltip:SetText(RETRIEVING_DATA, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+		GameTooltip:Show();
 		return;
 	end
 
@@ -146,57 +135,64 @@ function TaskPOI_OnEnter(self)
 	if ( self.worldQuest ) then
 		local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(self.questID);
 		local color = WORLD_QUEST_QUALITY_COLORS[rarity];
-		WorldMapTooltip:SetText(title, color.r, color.g, color.b);
-		QuestUtils_AddQuestTypeToTooltip(WorldMapTooltip, self.questID, NORMAL_FONT_COLOR);
+		GameTooltip:SetText(title, color.r, color.g, color.b);
+		QuestUtils_AddQuestTypeToTooltip(GameTooltip, self.questID, NORMAL_FONT_COLOR);
 			
 		local factionName = factionID and GetFactionInfoByID(factionID);
 		if (factionName) then
 			local reputationYieldsRewards = (not capped) or C_Reputation.IsFactionParagon(factionID);
 			if (reputationYieldsRewards) then
-				WorldMapTooltip:AddLine(factionName);
+				GameTooltip:AddLine(factionName);
 			else 
-				WorldMapTooltip:AddLine(factionName, GRAY_FONT_COLOR:GetRGB());
+				GameTooltip:AddLine(factionName, GRAY_FONT_COLOR:GetRGB());
 			end
 		end
 
 		WorldMap_AddQuestTimeToTooltip(self.questID);
 	else
-		WorldMapTooltip:SetText(title);
+		GameTooltip:SetText(title);
 	end
+
+	local questDescription; 
+	local questCompleted = IsQuestComplete(self.questID);
+
+	if (questCompleted and self.shouldShowObjectivesAsStatusBar) then 
+		questDescription = QUEST_WATCH_QUEST_READY; 
+		GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
+	elseif (not questCompleted and self.shouldShowObjectivesAsStatusBar) then
+		local questLogIndex = GetQuestLogIndexByID(self.questID);
+		questDescription = select(2, GetQuestLogQuestText(questLogIndex));
+		GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
+	end 
 
 	for objectiveIndex = 1, self.numObjectives do
 		local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(self.questID, objectiveIndex, false);
-
 		if(self.shouldShowObjectivesAsStatusBar) then 
-			local questLogIndex = GetQuestLogIndexByID(self.questID);
-			local _, questDescription = GetQuestLogQuestText(questLogIndex);
-			GameTooltip_AddColoredLine(WorldMapTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
-
 			local percent = math.floor((numFulfilled/numRequired) * 100);
-			GameTooltip_ShowProgressBar(WorldMapTooltip, 0, numRequired, numFulfilled, PERCENTAGE_STRING:format(percent));
+			GameTooltip_ShowProgressBar(GameTooltip, 0, numRequired, numFulfilled, PERCENTAGE_STRING:format(percent));
 		elseif ( objectiveText and #objectiveText > 0 ) then
 			local color = finished and GRAY_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
-			WorldMapTooltip:AddLine(QUEST_DASH .. objectiveText, color.r, color.g, color.b, true);
+			GameTooltip:AddLine(QUEST_DASH .. objectiveText, color.r, color.g, color.b, true);
 		end
 	end
 	local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(self.questID, 1, false);
 	local percent = C_TaskQuest.GetQuestProgressBarInfo(self.questID);
 	if ( percent ) then
-		GameTooltip_ShowProgressBar(WorldMapTooltip, 0, 100, percent, PERCENTAGE_STRING:format(percent));
+		GameTooltip_ShowProgressBar(GameTooltip, 0, 100, percent, PERCENTAGE_STRING:format(percent));
 	end
 
-	GameTooltip_AddQuestRewardsToTooltip(WorldMapTooltip, self.questID, self.questRewardTooltipStyle);
+	GameTooltip_AddQuestRewardsToTooltip(GameTooltip, self.questID, self.questRewardTooltipStyle);
 
-	if ( self.worldQuest and WorldMapTooltip.AddDebugWorldQuestInfo ) then
-		WorldMapTooltip:AddDebugWorldQuestInfo(self.questID);
+	if ( self.worldQuest and GameTooltip.AddDebugWorldQuestInfo ) then
+		GameTooltip:AddDebugWorldQuestInfo(self.questID);
 	end
 
-	WorldMapTooltip:Show();
-	WorldMapTooltip.recalculatePadding = true;
+	GameTooltip:Show();
+	GameTooltip.recalculatePadding = true;
 end
 
 function TaskPOI_OnLeave(self)
-	WorldMapTooltip:Hide();
+	GameTooltip:Hide();
 end
 
 function WorldMapPing_StartPingQuest(questID)

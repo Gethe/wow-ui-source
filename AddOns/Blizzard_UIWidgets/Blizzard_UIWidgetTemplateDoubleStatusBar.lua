@@ -34,7 +34,7 @@ local textureKitStatusBars = {
 	["RightBar"] = "%s-bar-fill-right",
 }
 
-local BAR_WIDTH = 92;
+local DEFAULT_BAR_WIDTH = 92;
 local ICON_OFFSET = 12;
 
 function UIWidgetTemplateDoubleStatusBarMixin:Setup(widgetInfo)
@@ -45,17 +45,34 @@ function UIWidgetTemplateDoubleStatusBarMixin:Setup(widgetInfo)
 	SetupTextureKitOnRegions(textureKit, self.RightBar, rightBarTextureKitRegions);
 	SetupTextureKitOnRegions(textureKit, self, textureKitStatusBars);
 
-	self.LeftBar.Spark:SetShown(widgetInfo.leftBarValue > widgetInfo.leftBarMin and widgetInfo.leftBarValue < widgetInfo.leftBarMax);
+	local barWidth = (widgetInfo.barWidth > 0) and widgetInfo.barWidth or DEFAULT_BAR_WIDTH;
 
-	local leftBarPercent = PercentageBetween(widgetInfo.leftBarValue, widgetInfo.leftBarMin, widgetInfo.leftBarMax);
-	local sparkXOffset = BAR_WIDTH * leftBarPercent;
-	self.LeftBar:SetMinMaxValues(widgetInfo.leftBarMin, widgetInfo.leftBarMax);
-	self.LeftBar:SetValue(widgetInfo.leftBarValue);
-	self.LeftBar.Text:SetText(widgetInfo.leftBarValue);
-	
-	self.LeftBar.Spark:ClearAllPoints();
-	self.LeftBar.Spark:SetPoint("CENTER", self.LeftBar, "LEFT", sparkXOffset, 0);
-	
+	self.LeftBar:SetWidth(barWidth);
+	self.RightBar:SetWidth(barWidth);
+
+	self.LeftBar:Setup(widgetInfo.leftBarMin, widgetInfo.leftBarMax, widgetInfo.leftBarValue, widgetInfo.barValueTextType);
+	self.RightBar:Setup(widgetInfo.rightBarMin, widgetInfo.rightBarMax, widgetInfo.rightBarValue, widgetInfo.barValueTextType);
+
+	local showSpark = widgetInfo.leftBarValue > widgetInfo.leftBarMin and widgetInfo.leftBarValue < widgetInfo.leftBarMax;
+	self.LeftBar.Spark:SetShown(showSpark);
+	if showSpark then
+		local leftBarPercent = PercentageBetween(widgetInfo.leftBarValue, widgetInfo.leftBarMin, widgetInfo.leftBarMax);
+		local sparkXOffset = barWidth * leftBarPercent;
+
+		self.LeftBar.Spark:ClearAllPoints();
+		self.LeftBar.Spark:SetPoint("CENTER", self.LeftBar, "LEFT", sparkXOffset, 0);
+	end
+
+	showSpark = widgetInfo.rightBarValue > widgetInfo.rightBarMin and widgetInfo.rightBarValue < widgetInfo.rightBarMax;
+	self.RightBar.Spark:SetShown(showSpark);
+	if showSpark then
+		local rightBarPercent = PercentageBetween(widgetInfo.rightBarValue, widgetInfo.rightBarMin, widgetInfo.rightBarMax);
+		local sparkXOffset = -barWidth * rightBarPercent;
+
+		self.RightBar.Spark:ClearAllPoints();
+		self.RightBar.Spark:SetPoint("CENTER", self.RightBar, "RIGHT", sparkXOffset, 0);
+	end
+
 	self.LeftBar.Icon:ClearAllPoints();
 	self.LeftBar.Icon:SetPoint("CENTER", self.LeftBar, "LEFT", -ICON_OFFSET, 0);
 	
@@ -63,29 +80,26 @@ function UIWidgetTemplateDoubleStatusBarMixin:Setup(widgetInfo)
 	self.LeftBar.IconGlow:SetPoint("CENTER", self.LeftBar, "LEFT", -ICON_OFFSET, 0);
 	
 	self.LeftBar.SparkGlow:ClearAllPoints();
-	self.LeftBar.SparkGlow:SetPoint("LEFT", self.Spark, -4, 0);
+	self.LeftBar.SparkGlow:SetPoint("LEFT", self.LeftBar.Spark, -4, 0);
 
-	self.RightBar.Spark:SetShown(widgetInfo.rightBarValue > widgetInfo.rightBarMin and widgetInfo.rightBarValue < widgetInfo.rightBarMax);
-
-	local rightBarPercent = PercentageBetween(widgetInfo.rightBarValue, widgetInfo.rightBarMin, widgetInfo.rightBarMax);
-	sparkXOffset = -BAR_WIDTH * rightBarPercent;
-	self.RightBar:SetMinMaxValues(widgetInfo.rightBarMin, widgetInfo.rightBarMax);
-	self.RightBar:SetValue(widgetInfo.rightBarValue);
-	self.RightBar.Text:SetText(widgetInfo.rightBarValue);
-	
-	self.RightBar.Spark:ClearAllPoints();
-	self.RightBar.Spark:SetPoint("CENTER", self.RightBar, "RIGHT", sparkXOffset, 0);
-	
 	self.RightBar.Icon:ClearAllPoints();
 	self.RightBar.Icon:SetPoint("CENTER", self.RightBar, "RIGHT", ICON_OFFSET, 0);
 	
 	self.RightBar.IconGlow:ClearAllPoints();
 	self.RightBar.IconGlow:SetPoint("CENTER", self.RightBar, "RIGHT", ICON_OFFSET, 0);
 	
-	self.LeftBar.SparkGlow:ClearAllPoints(); 
-	self.LeftBar.SparkGlow:SetPoint("RIGHT", self.Spark, -4, 0);
+	self.RightBar.SparkGlow:ClearAllPoints(); 
+	self.RightBar.SparkGlow:SetPoint("RIGHT", self.RightBar.Spark, 4, 0);
 	
 	self.Label:SetText(widgetInfo.text);
+
+	self:SetWidth(barWidth * 2 + 14);
+
+	if widgetInfo.text ~= "" then
+		self:SetHeight(self.Label:GetHeight() + 43);
+	else
+		self:SetHeight(32);
+	end
 end
 
 function UIWidgetTemplateDoubleStatusBarMixin:PlayBarGlow(playRightBarGlow)

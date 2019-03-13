@@ -41,8 +41,7 @@ function PlayerReportFrameMixin:InitiateReport(reportType, playerName, playerLoc
 		return;
 	end
 
-	self.reportType = reportType;
-	self.playerLocation = playerLocation;
+	self.reportToken = C_ReportSystem.InitiateReportPlayer(reportType, playerLocation);
 
 	self.Title:SetText(REPORT_PLAYER_LABEL:format(reportReason));
 	self.Name:SetText(playerName);
@@ -52,9 +51,7 @@ end
 
 function PlayerReportFrameMixin:ConfirmReport()
 	local comments = self.CommentBox:GetText();
-	if self.playerLocation:IsValid() then 
-		C_ReportSystem.ReportPlayer(self.reportType, self.playerLocation, comments);
-	end
+	C_ReportSystem.SendReportPlayer(self.reportToken, comments);
 	StaticPopupSpecial_Hide(self);
 end
 

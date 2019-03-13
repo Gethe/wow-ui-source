@@ -131,8 +131,9 @@ do
 	-- Use C_FriendList.IsFriend instead. No longer accepts unit tokens.
 	IsCharacterFriend = C_FriendList.IsFriend;
 
-	-- Use C_FriendList.GetNumIngores instead
-	GetNumIngores = C_FriendList.GetNumIngores;
+	-- Use C_FriendList.GetNumIgnores instead
+	GetNumIgnores = C_FriendList.GetNumIgnores;
+	GetNumIngores = C_FriendList.GetNumIgnores;
 
 	-- Use C_FriendList.GetIgnoreName instead
 	GetIgnoreName = C_FriendList.GetIgnoreName;
@@ -202,7 +203,10 @@ do
 	SetPendingReportTarget = C_ReportSystem.SetPendingReportTarget;
 
 	-- Moved to C_ReportSystem
-	C_ChatInfo.ReportPlayer = C_ReportSystem.ReportPlayer;
+	C_ChatInfo.ReportPlayer = function(complaintType, playerLocation, comment)
+		local reportToken = C_ReportSystem.InitiateReportPlayer(complaintType, playerLocation);
+		C_ReportSystem.SendReportPlayer(reportToken, comment);
+	end
 	C_ChatInfo.CanReportPlayer = C_ReportSystem.CanReportPlayer;
 end
 
@@ -251,6 +255,16 @@ do
 	end
 end
 
+-- Texture Utils
+do
+	function GetAtlasInfo(atlas)
+		local info = C_Texture.GetAtlasInfo(atlas);
+		if info then
+			local file = info.filename or info.file;
+			return file, info.width, info.height, info.leftTexCoord, info.rightTexCoord, info.topTexCoord, info.bottomTexCoord, info.tilesHorizontally, info.tilesVertically;
+		end
+	end
+end
 -- Quest Choice
 do
 	-- Use C_QuestChoice.GetQuestChoiceInfo instead

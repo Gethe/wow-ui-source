@@ -26,7 +26,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="ItemButton" name="$parentItemButton" inherits="ItemButtonTemplate">
+			<ItemButton parentKey="ItemButton" name="$parentItemButton">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parent"/>
 				</Anchors>
@@ -58,7 +58,7 @@
 						end
 					</OnHide>
 				</Scripts>
-			</Button>
+			</ItemButton>
 			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeTo="$parentNameFrame" relativePoint="BOTTOMLEFT">
@@ -370,7 +370,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button parentKey="ItemButton" name="$parentItemButton" inherits="ItemButtonTemplate">
+					<ItemButton parentKey="ItemButton" name="$parentItemButton">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parent"/>
 						</Anchors>
@@ -398,7 +398,7 @@
 							</OnEnter>
 							<OnLeave function="GameTooltip_HideResetCursor"/>
 						</Scripts>
-					</Button>
+					</ItemButton>
 					<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeTo="$parentNameFrame" relativePoint="BOTTOMLEFT" x="0" y="25"/>

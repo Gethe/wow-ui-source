@@ -865,15 +865,6 @@ local Club =
 			},
 		},
 		{
-			Name = "SetCommunityID",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "communityID", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "SetFavorite",
 			Type = "Function",
 

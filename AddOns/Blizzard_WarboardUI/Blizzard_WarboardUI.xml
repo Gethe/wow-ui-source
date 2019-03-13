@@ -2,6 +2,11 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_WarboardUI.lua"/>
 
+	<Button name="WarboardChoiceOptionButtonTemplate" inherits="QuestChoiceOptionButtonTemplate" virtual="true">
+		<Size x="210" y="22"/>
+	</Button>
+
+
 	<Button name="WarboardQuestChoiceOptionTemplate" mixin="WarboardQuestChoiceOptionFrameMixin" virtual="true">
 		<Size x="240" y="332"/>
 		<Layers>
@@ -36,17 +41,17 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="OptionButtonsContainer">
-				<Size x="175" y="22"/>
+				<Size x="210" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="29"/>
 				</Anchors>
 				<Frames>
-					<Button parentKey="OptionButton1" inherits="QuestChoiceOptionButtonTemplate">
+					<Button parentKey="OptionButton1" inherits="WarboardChoiceOptionButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
 					</Button>
-					<Button parentKey="OptionButton2" inherits="QuestChoiceOptionButtonTemplate"/>
+					<Button parentKey="OptionButton2" inherits="WarboardChoiceOptionButtonTemplate"/>
 				</Frames>
 			</Frame>
 			<Frame parentKey="Header" useParentLevel="true" inherits="HorizontalLayoutFrame" hidden="true">
@@ -122,7 +127,7 @@
 				</Scripts>
 				<FontString inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP"/>
 			</SimpleHTML>
-			<Frame parentKey="WidgetContainer" hidden="true">
+			<Frame parentKey="WidgetContainer" inherits="UIWidgetContainerTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="BOTTOM" relativeKey="$parent.OptionButtonsContainer" relativePoint="TOP" y="5"/>
 				</Anchors>
@@ -143,7 +148,7 @@
 			<KeyValue key="rightPadding" value="50" type="number"/>
 			<KeyValue key="spacing" value="20" type="number"/>
 			<KeyValue key="fixedPaddingAndSpacing" value="true" type="boolean"/>
-			<KeyValue key="optionButtonWidth" value="175" type="number"/>
+			<KeyValue key="optionButtonWidth" value="210" type="number"/>
 			<KeyValue key="optionButtonHeight" value="22" type="number"/>
 			<KeyValue key="optionButtonVerticalSpacing" value="8" type="number"/>
 			<KeyValue key="optionButtonHorizontalSpacing" value="40" type="number"/>

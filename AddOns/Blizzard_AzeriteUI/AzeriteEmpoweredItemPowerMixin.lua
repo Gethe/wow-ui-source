@@ -18,7 +18,7 @@ function AzeriteEmpoweredItemPowerMixin:Setup(owningTierFrame, azeriteItemDataSo
 		self.IconOff:SetAtlas("Azerite-CenterTrait-Off", true);
 		self.IconDesaturated:SetAtlas("Azerite-CenterTrait-On", true);
 	else
-		local spellTexture = GetSpellTexture(self:GetSpellID()); 
+		local spellTexture = GetSpellTexture(self:GetSpellID());
 		self.IconOn:SetTexture(spellTexture);
 		self.IconOff:SetTexture(spellTexture);
 		self.IconDesaturated:SetTexture(spellTexture);
@@ -54,7 +54,7 @@ function AzeriteEmpoweredItemPowerMixin:OnEvent(event, ...)
 		local forceUpdate = true;
 		self:SetupModelScene(forceUpdate);
 	elseif event == "AZERITE_EMPOWERED_ITEM_EQUIPPED_STATUS_CHANGED" then
-		self.isHeartOfAzerothEquipped = ...; 
+		self.isHeartOfAzerothEquipped = ...;
 		self:SetPowerButtonState();
 		self:UpdateStyle();
 	end
@@ -78,11 +78,13 @@ function AzeriteEmpoweredItemPowerMixin:OnFinalEffectUpdate(elapsed)
 end
 
 function AzeriteEmpoweredItemPowerMixin:SetupModelScene(forceUpdate)
+	self.ClickEffect:Hide();
 	self.clickEffectActor = AzeriteModelInfo.SetupModelScene(self.ClickEffect, AzeriteModelInfo.ModelSceneTypePowerClick, forceUpdate);
 	if self.clickEffectActor then
 		self.clickEffectActor:SetAnimation(0, 0, 0, 0);
 	end
 
+	self.CanSelectEffect:Hide();
 	AzeriteModelInfo.SetupModelScene(self.CanSelectEffect, AzeriteModelInfo.ModelSceneTypePowerReadyForSelection, forceUpdate);
 end
 
@@ -209,6 +211,8 @@ function AzeriteEmpoweredItemPowerMixin:PlayTransitionAnimation()
 		self.IconNotSelectableOverlay:SetAlpha(self:GetIconNotSelectableOverlayAlphaValue());
 	end
 
+	self.CanSelectEffect:Show();
+
 	self.TransitionAnimation.IconOn:SetFromAlpha(self.IconOn:GetAlpha());
 	self.TransitionAnimation.IconOn:SetToAlpha(self:GetIconOnAlphaValue());
 
@@ -217,13 +221,13 @@ function AzeriteEmpoweredItemPowerMixin:PlayTransitionAnimation()
 
 	self.TransitionAnimation.Effect:SetFromAlpha(self.CanSelectEffect:GetAlpha());
 	self.TransitionAnimation.Effect:SetToAlpha(self:GetCanSelectEffectAlphaValue());
-	
+
 	self.TransitionAnimation.Desaturation:SetFromAlpha(self.IconDesaturated:GetAlpha());
 	self.TransitionAnimation.Desaturation:SetToAlpha(self:GetDesaturationValue());
 
 	self.TransitionAnimation.BorderSelectable:SetFromAlpha(self.IconBorderSelectable:GetAlpha());
 	self.TransitionAnimation.BorderSelectable:SetToAlpha(self:GetBorderSelectableAlphaValue());
-	
+
 	self.TransitionAnimation.IconBorder:SetFromAlpha(self.IconBorder:GetAlpha());
 	self.TransitionAnimation.IconBorder:SetToAlpha(self:GetBorderAlphaValue());
 
@@ -318,8 +322,8 @@ function AzeriteEmpoweredItemPowerMixin:GetBorderAlphaValue()
 end
 
 function AzeriteEmpoweredItemPowerMixin:GetIconNotSelectableOverlayAlphaValue()
-	if not self.isHeartOfAzerothEquipped then 
-		return 1; 
+	if not self.isHeartOfAzerothEquipped then
+		return 1;
 	end
 
 	if self.azeriteItemDataSource:IsPreviewSource() then
@@ -428,23 +432,23 @@ function AzeriteEmpoweredItemPowerMixin:SetFinalPowerTooltipDescriptions(tooltip
 	local WRAP = true;
 	local type = nil;
 	local finalPowerSelected = false;
-	local base = Enum.AzeritePowerLevel.Base;  
+	local base = Enum.AzeritePowerLevel.Base;
 
-	if(self:IsSelected()) then 
-		type = Enum.AzeritePowerLevel.Downgraded; 
-		finalPowerSelected = true; 
-	else 
-		type = Enum.AzeritePowerLevel.Upgraded; 
-	end 
-	tooltip:AddLine(" "); 
+	if(self:IsSelected()) then
+		type = Enum.AzeritePowerLevel.Downgraded;
+		finalPowerSelected = true;
+	else
+		type = Enum.AzeritePowerLevel.Upgraded;
+	end
+	tooltip:AddLine(" ");
 	for powerIndex, powerID in ipairs(finalPowers) do
 		local powerInfoModified = C_AzeriteEmpoweredItem.GetPowerText(empoweredItemLocation, powerID, type);
 		GameTooltip_AddColoredLine(tooltip,DASH_WITH_TEXT:format(powerInfoModified.name), HIGHLIGHT_FONT_COLOR, WRAP);
 		local powerInfoBase = C_AzeriteEmpoweredItem.GetPowerText(empoweredItemLocation, powerID, base);
 
-		if(finalPowerSelected) then 
+		if(finalPowerSelected) then
 			GameTooltip_AddNormalLine(tooltip, GetHighlightedNumberDifferenceString(powerInfoModified.description, powerInfoBase.description), WRAP, TOOLTIP_INDENT_OFFSET);
-		else 
+		else
 			GameTooltip_AddNormalLine(tooltip, GetHighlightedNumberDifferenceString(powerInfoBase.description, powerInfoModified.description), WRAP, TOOLTIP_INDENT_OFFSET);
 		end
 	end
@@ -476,6 +480,7 @@ function AzeriteEmpoweredItemPowerMixin:OnTransitionAnimationFinished()
 		self.needsBuffAvailableSoundPlayed = nil;
 		PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_BUFFAVAILABLE);
 	end
+	self.CanSelectEffect:SetShown(self.CanSelectEffect:GetAlpha() ~= 0);
 end
 
 function AzeriteEmpoweredItemPowerMixin:CancelItemLoadCallback()
@@ -541,10 +546,11 @@ end
 
 function AzeriteEmpoweredItemPowerMixin:OnClick()
 	if IsModifiedClick("CHATLINK") then
-		ChatEdit_InsertLink(GetSpellLink(self:GetSpellID()));
+		local spellLink = GetSpellLink(self:GetSpellID());
+		ChatEdit_InsertLink(spellLink);
 		return;
 	end
-	
+
 	if self.azeriteItemDataSource:IsPreviewSource() then
 		UIErrorsFrame:AddExternalErrorMessage(AZERITE_POWER_UNSELECTABLE_IN_PREVIEW);
 		return;
@@ -573,8 +579,8 @@ function AzeriteEmpoweredItemPowerMixin:OnClick()
 		return;
 	end
 
-	if not self.isHeartOfAzerothEquipped then 
-		return; 
+	if not self.isHeartOfAzerothEquipped then
+		return;
 	end
 
 	assert(self:CanBeSelected());
@@ -617,8 +623,18 @@ end
 
 function AzeriteEmpoweredItemPowerMixin:PlayClickedAnimation()
 	if self.clickEffectActor then
+		self.ClickEffect:Show();
 		self.clickEffectActor:SetAnimation(0, 0, 1, 0);
-		C_Timer.After(.2, function() self.clickEffectActor:SetAnimation(0, 0, 0, 0); end);
+		C_Timer.After(.2, 
+			function()
+				self.clickEffectActor:SetAnimation(0, 0, 0, 0);
+				C_Timer.After(5, 
+					function()
+						self.ClickEffect:Hide();
+					end
+				);
+			end
+		);
 	end
 end
 
@@ -670,7 +686,7 @@ function AzeriteEmpoweredItemPowerMixin:PrepareForRevealAnimation()
 	self.IconNotSelectableOverlay:SetAlpha(0);
 	self.IconBorderSelectable:SetAlpha(0);
 	self.CanSelectEffect:SetAlpha(0);
-	
+
 	self.SwirlContainer:Show();
 end
 

@@ -162,9 +162,9 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 
 		self.Contents.Description:SetText("");
 		self.Contents.RequirementLabel:SetPoint("TOPLEFT", self.Contents.Description, "BOTTOMLEFT", 0, 0);
-		local spell = Spell:CreateFromSpellID(self.selectedRecipeID);
-		self.spellDataLoadedCancelFunc = spell:ContinueWithCancelOnSpellLoad(function()
-			local recipeDescription = C_TradeSkillUI.GetRecipeDescription(spell:GetSpellID());
+		local baseSpell = Spell:CreateFromSpellID(TradeSkillFrame_GetBaseRecipeID(self.selectedRecipeID));
+		self.spellDataLoadedCancelFunc = baseSpell:ContinueWithCancelOnSpellLoad(function()
+			local recipeDescription = C_TradeSkillUI.GetRecipeDescription(baseSpell:GetSpellID());
 			if recipeDescription and #recipeDescription > 0 then
 				self.Contents.Description:SetText(recipeDescription);
 				self.Contents.RequirementLabel:SetPoint("TOPLEFT", self.Contents.Description, "BOTTOMLEFT", 0, -18);

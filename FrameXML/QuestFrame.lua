@@ -281,7 +281,13 @@ function QuestFrameProgressItems_Update()
 	QuestProgressScrollFrameScrollBar:SetValue(0);
 end
 
+function QuestFrameGreetingPanel_OnLoad(self)
+	self.titleButtonPool = CreateFramePool("BUTTON", self, "QuestTitleButtonTemplate");
+end
+
 function QuestFrameGreetingPanel_OnShow()
+	QuestFrameGreetingPanel.titleButtonPool:ReleaseAll();
+
 	QuestFrameRewardPanel:Hide();
 	QuestFrameProgressPanel:Hide();
 	QuestFrameDetailPanel:Hide();
@@ -294,40 +300,43 @@ function QuestFrameGreetingPanel_OnShow()
 	QuestFrame_SetTitleTextColor(AvailableQuestsText, material);
 	local numActiveQuests = GetNumActiveQuests();
 	local numAvailableQuests = GetNumAvailableQuests();
+	local lastTitleButton = nil;
 	if ( numActiveQuests == 0 ) then
 		CurrentQuestsText:Hide();
 		QuestGreetingFrameHorizontalBreak:Hide();
 	else
 		CurrentQuestsText:SetPoint("TOPLEFT", "GreetingText", "BOTTOMLEFT", 0, -10);
 		CurrentQuestsText:Show();
-		QuestTitleButton1:SetPoint("TOPLEFT", "CurrentQuestsText", "BOTTOMLEFT", -10, -5);
 		for i=1, numActiveQuests do
-			local questTitleButton = _G["QuestTitleButton"..i];
-			local questTitleButtonIcon = _G[questTitleButton:GetName() .. "QuestIcon"];
+			local questTitleButton = QuestFrameGreetingPanel.titleButtonPool:Acquire();
 			local title, isComplete = GetActiveTitle(i);
 			if ( IsActiveQuestTrivial(i) ) then
 				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, title);
-				questTitleButtonIcon:SetVertexColor(0.75,0.75,0.75);
+				questTitleButton.Icon:SetVertexColor(0.75,0.75,0.75);
 			else
 				questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, title);
-				questTitleButtonIcon:SetVertexColor(1,1,1);
+				questTitleButton.Icon:SetVertexColor(1,1,1);
 			end
 			if ( isComplete ) then
 				if ( IsActiveQuestLegendary(i) ) then
-					questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveLegendaryQuestIcon");
+					questTitleButton.Icon:SetTexture("Interface\\GossipFrame\\ActiveLegendaryQuestIcon");
 				else
-					questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon");
+					questTitleButton.Icon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon");
 				end
 			else
-				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\IncompleteQuestIcon");
+				questTitleButton.Icon:SetTexture("Interface\\GossipFrame\\IncompleteQuestIcon");
 			end
 			questTitleButton:SetHeight(questTitleButton:GetTextHeight() + 2);
 			questTitleButton:SetID(i);
 			questTitleButton.isActive = 1;
 			questTitleButton:Show();
-			if ( i > 1 ) then
-				questTitleButton:SetPoint("TOPLEFT", "QuestTitleButton"..(i-1),"BOTTOMLEFT", 0, -2)
+			if ( lastTitleButton ) then
+				questTitleButton:SetPoint("TOPLEFT", lastTitleButton,"BOTTOMLEFT", 0, -2);
+			else
+				questTitleButton:SetPoint("TOPLEFT", "CurrentQuestsText", "BOTTOMLEFT", -10, -5);
 			end
+			questTitleButton:Show();
+			lastTitleButton = questTitleButton;
 		end
 	end
 	if ( numAvailableQuests == 0 ) then
@@ -335,45 +344,45 @@ function QuestFrameGreetingPanel_OnShow()
 		QuestGreetingFrameHorizontalBreak:Hide();
 	else
 		if ( numActiveQuests > 0 ) then
-			QuestGreetingFrameHorizontalBreak:SetPoint("TOPLEFT", "QuestTitleButton"..numActiveQuests, "BOTTOMLEFT",22,-10);
+			QuestGreetingFrameHorizontalBreak:SetPoint("TOPLEFT", lastTitleButton, "BOTTOMLEFT",22,-10);
 			QuestGreetingFrameHorizontalBreak:Show();
 			AvailableQuestsText:SetPoint("TOPLEFT", "QuestGreetingFrameHorizontalBreak", "BOTTOMLEFT", -12, -10);
 		else
 			AvailableQuestsText:SetPoint("TOPLEFT", "GreetingText", "BOTTOMLEFT", 0, -10);
 		end
 		AvailableQuestsText:Show();
-		_G["QuestTitleButton"..(numActiveQuests + 1)]:SetPoint("TOPLEFT", "AvailableQuestsText", "BOTTOMLEFT", -10, -5);
+		lastTitleButton = nil;
 		for i=(numActiveQuests + 1), (numActiveQuests + numAvailableQuests) do
-			local questTitleButton = _G["QuestTitleButton"..i];
-			local questTitleButtonIcon = _G[questTitleButton:GetName() .. "QuestIcon"];
+			local questTitleButton = QuestFrameGreetingPanel.titleButtonPool:Acquire();
 			local isTrivial, frequency, isRepeatable, isLegendary = GetAvailableQuestInfo(i - numActiveQuests);
 			if ( isLegendary ) then
-				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableLegendaryQuestIcon");
+				questTitleButton.Icon:SetTexture("Interface\\GossipFrame\\AvailableLegendaryQuestIcon");
 			elseif ( frequency == LE_QUEST_FREQUENCY_DAILY or frequency == LE_QUEST_FREQUENCY_WEEKLY ) then
-				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\DailyQuestIcon");
+				questTitleButton.Icon:SetTexture("Interface\\GossipFrame\\DailyQuestIcon");
 			elseif ( isRepeatable ) then
-				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\DailyActiveQuestIcon");
+				questTitleButton.Icon:SetTexture("Interface\\GossipFrame\\DailyActiveQuestIcon");
 			else
-				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableQuestIcon");
+				questTitleButton.Icon:SetTexture("Interface\\GossipFrame\\AvailableQuestIcon");
 			end
 			if ( isTrivial ) then
 				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));
-				questTitleButtonIcon:SetVertexColor(0.5,0.5,0.5);
+				questTitleButton.Icon:SetVertexColor(0.5,0.5,0.5);
 			else
 				questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));
-				questTitleButtonIcon:SetVertexColor(1,1,1);
+				questTitleButton.Icon:SetVertexColor(1,1,1);
 			end
 			questTitleButton:SetHeight(questTitleButton:GetTextHeight() + 2);
 			questTitleButton:SetID(i - numActiveQuests);
 			questTitleButton.isActive = 0;
 			questTitleButton:Show();
-			if ( i > numActiveQuests + 1 ) then
-				questTitleButton:SetPoint("TOPLEFT", "QuestTitleButton"..(i-1),"BOTTOMLEFT", 0, -2)
+			if ( lastTitleButton ) then
+				questTitleButton:SetPoint("TOPLEFT", lastTitleButton,"BOTTOMLEFT", 0, -2);
+			else
+				questTitleButton:SetPoint("TOPLEFT", "AvailableQuestsText", "BOTTOMLEFT", -10, -5);
 			end
+			questTitleButton:Show();
+			lastTitleButton = questTitleButton;
 		end
-	end
-	for i=(numActiveQuests + numAvailableQuests + 1), C_QuestLog.GetMaxNumQuestsCanAccept() do
-		_G["QuestTitleButton"..i]:Hide();
 	end
 end
 

@@ -10,7 +10,7 @@ function StorylineQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	local mapInfo = C_Map.GetMapInfo(mapID);
 	if (mapInfo and MapUtil.ShouldMapTypeShowQuests(mapInfo.mapType)) then
 		for _, questLineInfo in pairs(C_QuestLine.GetAvailableQuestLines(mapID)) do
-			if (not questLineInfo.isHidden or IsTrackingHiddenQuests()) then
+			if (not C_QuestLog.IsOnQuest(questLineInfo.questID) and (not questLineInfo.isHidden or IsTrackingHiddenQuests())) then
 				local pin = self:GetMap():AcquirePin("StorylineQuestPinTemplate", questLineInfo.questID);
 				pin:SetPosition(questLineInfo.x, questLineInfo.y);
 				pin:Show();
@@ -73,18 +73,18 @@ end
 function StorylineQuestPinMixin:OnMouseEnter()
 	local questLineInfo = C_QuestLine.GetQuestLineInfo(self.questID, self.mapID);
 	if (questLineInfo) then
-		WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT");
-		WorldMapTooltip:SetText(questLineInfo.questName);
-		WorldMapTooltip:AddLine(AVAILABLE_QUEST, 1, 1, 1, true);
+		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+		GameTooltip:SetText(questLineInfo.questName);
+		GameTooltip:AddLine(AVAILABLE_QUEST, 1, 1, 1, true);
 		if (questLineInfo.floorLocation == Enum.QuestLineFloorLocation.Below) then
-			WorldMapTooltip:AddLine(QUESTLINE_LOCATED_BELOW, 0.5, 0.5, 0.5, true);
+			GameTooltip:AddLine(QUESTLINE_LOCATED_BELOW, 0.5, 0.5, 0.5, true);
 		elseif (questLineInfo.floorLocation == Enum.QuestLineFloorLocation.Above) then
-			WorldMapTooltip:AddLine(QUESTLINE_LOCATED_ABOVE, 0.5, 0.5, 0.5, true);
+			GameTooltip:AddLine(QUESTLINE_LOCATED_ABOVE, 0.5, 0.5, 0.5, true);
 		end
-		WorldMapTooltip:Show();
+		GameTooltip:Show();
 	end
 end
 
 function StorylineQuestPinMixin:OnMouseLeave()
-	WorldMapTooltip:Hide();
+	GameTooltip:Hide();
 end

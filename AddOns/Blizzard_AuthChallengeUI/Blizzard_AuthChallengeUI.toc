@@ -2,4 +2,5 @@
 ## Title: Blizzard Auth Challenge UI
 ## Secure: 1
 ## LoadOnDemand: 0
+## AllowLoad: Both
 Blizzard_AuthChallengeUI.xml

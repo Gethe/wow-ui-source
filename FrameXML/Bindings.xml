@@ -134,10 +134,10 @@
 		ChatFrame2:ScrollToBottom();
 	</Binding>
 	<Binding name="TOGGLE_VOICE_SELF_MUTE" category="BINDING_HEADER_CHAT">
-		C_VoiceChat.ToggleMuted();
+		VoiceChat_ToggleMutedFromUserAction();
 	</Binding>
 	<Binding name="TOGGLE_VOICE_SELF_DEAFEN" category="BINDING_HEADER_CHAT">
-		C_VoiceChat.ToggleDeafened();
+		VoiceChat_ToggleDeafenedFromUserAction();
 	</Binding>
 	<Binding name="TOGGLE_VOICE_PUSH_TO_TALK" category="BINDING_HEADER_CHAT" customBindingID="VoicePushToTalk">
 		nop(); -- Action handler is custom
@@ -1149,7 +1149,14 @@
 	</Binding>
 
 	<!-- Debug function key bindings -->
-	<Binding name="TOGGLESTATS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+  <Binding name="RELOADUI" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+    ReloadUI();
+  </Binding>
+	<Binding name="FSTACK" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		LoadAddOn("Blizzard_DebugTools");
+		FrameStackTooltip_ToggleDefaults();
+	</Binding>
+  <Binding name="TOGGLESTATS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		ToggleStats();
 	</Binding>
 	<Binding name="TOGGLETRIS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
@@ -1188,6 +1195,9 @@
 	<!-- Commentator Mode Bindings -->
 	<Binding name="TOGGLECOMMENTATOR" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		C_Commentator.ToggleCheats();
+	</Binding>
+	<Binding name="DUMPMOVEMENTCAPTURE" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		DumpMovementCapture();
 	</Binding>
 
 	<!-- Camera key bindings header="CAMERA" -->

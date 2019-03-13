@@ -1074,7 +1074,7 @@ local function CastRandomManager_OnEvent(self, event, ...)
 
 	if ( unit == "player" ) then
 		local name = strlower(GetSpellInfo(spellID));
-		local rank = strlower(GetSpellSubtext(spellID));
+		local rank = strlower(GetSpellSubtext(spellID) or "");
 		local nameplus = name.."()";
 		local fullname = name.."("..rank..")";
 		for sequence, entry in pairs(CastRandomTable) do
@@ -1700,6 +1700,13 @@ SecureCmdList["LOGOUT"] = function(msg)
 	Logout();
 end
 
+SecureCmdList["QUIT"] = function(msg)
+	if (IsKioskModeEnabled()) then
+		return;
+	end
+	Quit();
+end
+
 -- Pre-populate the secure command hash table
 for index, value in pairs(SecureCmdList) do
 	local i = 1;
@@ -1823,13 +1830,6 @@ end
 
 SlashCmdList["INSPECT"] = function(msg)
 	InspectUnit("target");
-end
-
-SlashCmdList["QUIT"] = function(msg)
-	if (IsKioskModeEnabled()) then
-		return;
-	end
-	Quit();
 end
 
 SlashCmdList["JOIN"] = 	function(msg)
@@ -3150,42 +3150,6 @@ function ChatFrame_CanChatGroupPerformExpressionExpansion(chatGroup)
 	return false;
 end
 
-do
-	local seenGroups = {};
-	function ChatFrame_ReplaceIconAndGroupExpressions(message, noIconReplacement, noGroupReplacement)
-		wipe(seenGroups);
-
-		for tag in string.gmatch(message, "%b{}") do
-			local term = strlower(string.gsub(tag, "[{}]", ""));
-			if ( not noIconReplacement and ICON_TAG_LIST[term] and ICON_LIST[ICON_TAG_LIST[term]] ) then
-				message = string.gsub(message, tag, ICON_LIST[ICON_TAG_LIST[term]] .. "0|t");
-			elseif ( not noGroupReplacement and GROUP_TAG_LIST[term] ) then
-				local groupIndex = GROUP_TAG_LIST[term];
-				if not seenGroups[groupIndex] then
-					seenGroups[groupIndex] = true;
-					local groupList = "[";
-					for i=1, GetNumGroupMembers() do
-						local name, rank, subgroup, level, class, classFileName = GetRaidRosterInfo(i);
-						if ( name and subgroup == groupIndex ) then
-							local classColorTable = RAID_CLASS_COLORS[classFileName];
-							if ( classColorTable ) then
-								name = string.format("\124cff%.2x%.2x%.2x%s\124r", classColorTable.r*255, classColorTable.g*255, classColorTable.b*255, name);
-							end
-							groupList = groupList..(groupList == "[" and "" or PLAYER_LIST_DELIMITER)..name;
-						end
-					end
-					if groupList ~= "[" then
-						groupList = groupList.."]";
-						message = string.gsub(message, tag, groupList, 1);
-					end
-				end
-			end
-		end
-
-		return message;
-	end
-end
-
 function ChatFrame_MessageEventHandler(self, event, ...)
 	if ( strsub(event, 1, 8) == "CHAT_MSG" ) then
 		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 = ...;
@@ -3471,7 +3435,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 
 			-- Search for icon links and replace them with texture links.
-			arg1 = ChatFrame_ReplaceIconAndGroupExpressions(arg1, arg17, not ChatFrame_CanChatGroupPerformExpressionExpansion(chatGroup)); -- If arg17 is true, don't convert to raid icons
+			arg1 = C_ChatInfo.ReplaceIconAndGroupExpressions(arg1, arg17, not ChatFrame_CanChatGroupPerformExpressionExpansion(chatGroup)); -- If arg17 is true, don't convert to raid icons
 
 			--Remove groups of many spaces
 			arg1 = RemoveExtraSpaces(arg1);
@@ -5239,6 +5203,6 @@ function Social_GetShareAchievementLink(achievementID, earned)
 end
 
 function Social_GetShareScreenshotLink()
-	local index = C_Social.GetLastScreenshot();
+	local index = C_Social.GetLastScreenshotIndex();
 	return format("|c%s|Hsharess:%d|h%s|h|r", SHARE_ICON_COLOR, index, SHARE_ICON_TEXT);
 end

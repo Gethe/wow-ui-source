@@ -219,10 +219,7 @@ function GuildFrame_OpenAchievement(button, achievementID)
 end
 
 function GuildFrame_LinkItem(button, itemID, itemLink)
-	local _;
-	if ( not itemLink ) then
-		_, itemLink = GetItemInfo(itemID);
-	end
+	itemLink = itemLink or select(2, GetItemInfo(itemID));
 	if ( itemLink ) then
 		if ( ChatEdit_GetActiveWindow() ) then
 			ChatEdit_InsertLink(itemLink);
@@ -464,7 +461,8 @@ end
 function GuildPerksButton_OnEnter(self)
 	GuildPerksContainer.activeButton = self;
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 36, 0);
-	GameTooltip:SetHyperlink(GetSpellLink(self.spellID));
+	local spellLink = GetSpellLink(self.spellID);
+	GameTooltip:SetHyperlink(spellLink);
 end
 
 function GuildPerks_Update()

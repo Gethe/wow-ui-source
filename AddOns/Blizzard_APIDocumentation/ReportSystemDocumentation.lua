@@ -21,19 +21,33 @@ local ReportSystem =
 			},
 		},
 		{
-			Name = "ReportPlayer",
+			Name = "InitiateReportPlayer",
 			Type = "Function",
 
 			Arguments =
 			{
 				{ Name = "complaintType", Type = "string", Nilable = false },
 				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = true },
-				{ Name = "comment", Type = "string", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "token", Type = "number", Nilable = false },
 			},
 		},
 		{
 			Name = "ReportServerLag",
 			Type = "Function",
+		},
+		{
+			Name = "SendReportPlayer",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "token", Type = "number", Nilable = false },
+				{ Name = "comment", Type = "string", Nilable = true },
+			},
 		},
 		{
 			Name = "SetPendingReportPetTarget",

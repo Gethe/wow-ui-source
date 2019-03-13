@@ -343,16 +343,8 @@ do
 	function PartyPoseMixin:LoadPartyPose(partyPoseData, forceUpdate)
 		self.partyPoseData = partyPoseData;
 
-		if partyPoseData.partyPoseInfo.widgetSetID ~= self.widgetSetID then
-			if self.widgetSetID then
-				UIWidgetManager:UnregisterWidgetSetContainer(self.widgetSetID, self.Score);
-			end
-
-			if partyPoseData.partyPoseInfo.widgetSetID then
-				UIWidgetManager:RegisterWidgetSetContainer(partyPoseData.partyPoseInfo.widgetSetID, self.Score);
-			end
-
-			self.widgetSetID = partyPoseData.partyPoseInfo.widgetSetID;
+		if self.Score then
+			self.Score:RegisterForWidgetSet(partyPoseData.partyPoseInfo.widgetSetID);
 		end
 
 		if (partyPoseData.playerWon) then

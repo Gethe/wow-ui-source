@@ -1,10 +1,16 @@
  <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="ItemButtonTemplate.lua"/>
- 	<Button name="ItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" mixin="ItemButtonMixin" virtual="true">
-		<Size>
-			<AbsDimension x="37" y="37"/>
-		</Size>
+ 	<Button name="ItemButton" registerForClicks="LeftButtonUp, RightButtonUp" mixin="ItemButtonMixin" intrinsic="true">
+		<!--
+		<KeyValues>	
+			Set a function to use to get item context match results. This will automatically enable item context highlighting.
+			Should take self as the only parameter and return an ItemButtonUtil.ItemContextMatchResult.
+			<KeyValue key="GetItemContextMatchResult" value="BagButton_GetItemContextMatchResult" type="global"/>
+		</KeyValues>
+		-->
+		
+		<Size x="37" y="37"/>
 		<Layers>
 			<Layer level="BORDER">
 				<Texture name="$parentIconTexture" parentKey="icon"/>
@@ -56,16 +62,15 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnLoad method="PostOnLoad" intrinsicOrder="postcall"/>
+			<OnShow method="PostOnShow" intrinsicOrder="postcall"/>
+			<OnHide method="PostOnHide" intrinsicOrder="postcall"/>
+		</Scripts>
 		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
-			<Size>
-				<AbsDimension x="64" y="64"/>
-			</Size>
+			<Size x="64" y="64"/>
 			<Anchors>
-				<Anchor point="CENTER">
-					<Offset>
-						<AbsDimension x="0" y="-1"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="CENTER" x="0" y="-1"/>
 			</Anchors>
 		</NormalTexture>
 		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>

@@ -312,6 +312,10 @@ function EventTraceFrame_HandleSlashCmd (msg)
 	end
 end
 
+function EventTraceFrame_AddMessage(fmt, ...)
+	EventTraceFrame_OnEvent(_EventTraceFrame, fmt:format(...));
+end
+
 function EventTraceFrame_OnMouseWheel (self, delta)
 	local scrollBar = _G["EventTraceFrameScroll"];
 	local minVal, maxVal = scrollBar:GetMinMaxValues();
@@ -506,6 +510,10 @@ function FrameStackTooltip_IsShowHiddenEnabled()
 	return GetCVarBool("fstack_showhidden");
 end
 
+function FrameStackTooltip_IsHighlightEnabled()
+	return GetCVarBool("fstack_showhighlight");
+end
+
 function FrameStackTooltip_IsShowRegionsEnabled()
 	return GetCVarBool("fstack_showregions");
 end
@@ -529,6 +537,10 @@ function FrameStackTooltip_OnFramestackVisibilityUpdated(self)
 end
 
 function FrameStackTooltip_OnLoad(self)
+	Mixin(self, CallbackRegistryBaseMixin);
+	CallbackRegistryBaseMixin.OnLoad(self);
+	self:GenerateCallbackEvents({ "FrameStackOnHighlightFrameChanged", "FrameStackOnShow", "FrameStackOnHide", "FrameStackOnTooltipCleared" });
+
 	DebugTooltip_OnLoad(self);
 	self.nextUpdate = 0;
 
@@ -680,6 +692,8 @@ function FrameStackTooltip_OnTooltipSetFrameStack(self, highlightFrame)
 	if self.shouldSetFSObj then
 		fsobj = self.highlightFrame;
 		self.shouldSetFSObj = nil;
+
+		self:TriggerEvent(self.Event.FrameStackOnHighlightFrameChanged, fsobj);
 	end
 
 	if fsobj then
@@ -700,6 +714,18 @@ end
 function FrameStackTooltip_Hide(self)
 	self:Hide();
 	FrameStackHighlight:Hide();
+end
+
+function FrameStackTooltip_ToggleDefaults()
+	local tooltip = FrameStackTooltip;
+	if ( tooltip:IsVisible() ) then
+		FrameStackTooltip_Hide(tooltip);
+	else
+		local showHidden = FrameStackTooltip_IsShowHiddenEnabled();
+		local showRegions = FrameStackTooltip_IsShowRegionsEnabled();
+		local showAnchors = FrameStackTooltip_IsShowAnchorsEnabled();
+		FrameStackTooltip_Show(tooltip, showHidden, showRegions, showAnchors);
+	end
 end
 
 function FrameStackTooltip_Toggle(showHidden, showRegions, showAnchors)
@@ -768,10 +794,11 @@ function FrameStackTooltip_OnUpdate(self)
 		self.nextUpdate = now + FRAMESTACK_UPDATE_TIME;
 		self.highlightFrame = self:SetFrameStack(self.showHidden, self.showRegions, self.highlightIndexChanged);
 		self.highlightIndexChanged = 0;
-		if self.highlightFrame then
+		if self.highlightFrame and FrameStackTooltip_IsHighlightEnabled() then
 			FrameStackHighlight:HighlightFrame(self.highlightFrame, self.showAnchors);
 		end
 	end
+
 end
 
 function FrameStackTooltip_OnShow(self)
@@ -794,12 +821,16 @@ function FrameStackTooltip_OnShow(self)
 			self:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -20, -20);
 		end
 	end
+
+	self:TriggerEvent(self.Event.FrameStackOnShow);
 end
 
 function FrameStackTooltip_OnHide(self)
+	self:TriggerEvent(self.Event.FrameStackOnHide);
 end
 
 function FrameStackTooltip_OnTooltipCleared(self)
+	self:TriggerEvent(self.Event.FrameStackOnTooltipCleared);
 end
 
 FrameStackTooltip_OnEnter = FrameStackTooltip_OnShow;

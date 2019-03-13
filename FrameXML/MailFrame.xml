@@ -224,7 +224,7 @@
 		</Scripts>
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 	</Button>
-	<Button name="OpenMailAttachment" parentArray="OpenMailAttachments" inherits="ItemButtonTemplate" virtual="true">
+	<ItemButton name="OpenMailAttachment" parentArray="OpenMailAttachments" virtual="true">
 		<Scripts>
 			<OnLoad>
 				self:RegisterEvent("MAIL_INBOX_UPDATE");
@@ -261,7 +261,7 @@
 			</OnLeave>
 		</Scripts>
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
-	</Button>
+	</ItemButton>
 	<Frame name="MailFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="-1">
@@ -1164,7 +1164,7 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
-			<Button name="OpenMailLetterButton" inherits="ItemButtonTemplate">
+			<ItemButton name="OpenMailLetterButton">
 				<Scripts>
 					<OnLoad>
 						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -1181,24 +1181,24 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
-			</Button>
-			<Button name="OpenMailAttachmentButton1" inherits="OpenMailAttachment" id="1"/>
-			<Button name="OpenMailAttachmentButton2" inherits="OpenMailAttachment" id="2"/>
-			<Button name="OpenMailAttachmentButton3" inherits="OpenMailAttachment" id="3"/>
-			<Button name="OpenMailAttachmentButton4" inherits="OpenMailAttachment" id="4"/>
-			<Button name="OpenMailAttachmentButton5" inherits="OpenMailAttachment" id="5"/>
-			<Button name="OpenMailAttachmentButton6" inherits="OpenMailAttachment" id="6"/>
-			<Button name="OpenMailAttachmentButton7" inherits="OpenMailAttachment" id="7"/>
-			<Button name="OpenMailAttachmentButton8" inherits="OpenMailAttachment" id="8"/>
-			<Button name="OpenMailAttachmentButton9" inherits="OpenMailAttachment" id="9"/>
-			<Button name="OpenMailAttachmentButton10" inherits="OpenMailAttachment" id="10"/>
-			<Button name="OpenMailAttachmentButton11" inherits="OpenMailAttachment" id="11"/>
-			<Button name="OpenMailAttachmentButton12" inherits="OpenMailAttachment" id="12"/>
-			<Button name="OpenMailAttachmentButton13" inherits="OpenMailAttachment" id="13"/>
-			<Button name="OpenMailAttachmentButton14" inherits="OpenMailAttachment" id="14"/>
-			<Button name="OpenMailAttachmentButton15" inherits="OpenMailAttachment" id="15"/>
-			<Button name="OpenMailAttachmentButton16" inherits="OpenMailAttachment" id="16"/>
-			<Button name="OpenMailMoneyButton" inherits="ItemButtonTemplate">
+			</ItemButton>
+			<ItemButton name="OpenMailAttachmentButton1" inherits="OpenMailAttachment" id="1"/>
+			<ItemButton name="OpenMailAttachmentButton2" inherits="OpenMailAttachment" id="2"/>
+			<ItemButton name="OpenMailAttachmentButton3" inherits="OpenMailAttachment" id="3"/>
+			<ItemButton name="OpenMailAttachmentButton4" inherits="OpenMailAttachment" id="4"/>
+			<ItemButton name="OpenMailAttachmentButton5" inherits="OpenMailAttachment" id="5"/>
+			<ItemButton name="OpenMailAttachmentButton6" inherits="OpenMailAttachment" id="6"/>
+			<ItemButton name="OpenMailAttachmentButton7" inherits="OpenMailAttachment" id="7"/>
+			<ItemButton name="OpenMailAttachmentButton8" inherits="OpenMailAttachment" id="8"/>
+			<ItemButton name="OpenMailAttachmentButton9" inherits="OpenMailAttachment" id="9"/>
+			<ItemButton name="OpenMailAttachmentButton10" inherits="OpenMailAttachment" id="10"/>
+			<ItemButton name="OpenMailAttachmentButton11" inherits="OpenMailAttachment" id="11"/>
+			<ItemButton name="OpenMailAttachmentButton12" inherits="OpenMailAttachment" id="12"/>
+			<ItemButton name="OpenMailAttachmentButton13" inherits="OpenMailAttachment" id="13"/>
+			<ItemButton name="OpenMailAttachmentButton14" inherits="OpenMailAttachment" id="14"/>
+			<ItemButton name="OpenMailAttachmentButton15" inherits="OpenMailAttachment" id="15"/>
+			<ItemButton name="OpenMailAttachmentButton16" inherits="OpenMailAttachment" id="16"/>
+			<ItemButton name="OpenMailMoneyButton">
 				<Scripts>
 					<OnLoad>
 						self:RegisterEvent("MAIL_INBOX_UPDATE");
@@ -1228,7 +1228,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
-			</Button>
+			</ItemButton>
 			<Button name="OpenMailCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size x="80" y="22"/>
 				<Anchors>

@@ -404,9 +404,19 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="NewLabel" atlas="CharacterCreate-NewLabel" useAtlasSize="true" hidden="true">
+				<FontString parentKey="NewString" inherits="GameFontHighlight" maxLines="1" justifyH="CENTER" text="NEW_ALLIED_RACE_NOTIFICATION" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-26" y="22"/>
+						<Anchor point="TOPLEFT" x="-8" y="4"/>
+					</Anchors>
+					<Shadow>
+						<Color r="0.32" g="0.5" b="1.0"/>
+					</Shadow>
+				</FontString>
+
+				<Texture parentKey="NewGlow" atlas="collections-newglow" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NewString" x="-20" y="10"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NewString" x="20" y="-10"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -1690,9 +1700,19 @@
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY" textureSubLevel="1">
-								<Texture parentKey="NewLabel" atlas="CharacterCreate-NewLabel" useAtlasSize="true" hidden="true">
+								<FontString parentKey="NewString" inherits="GameFontHighlight" maxLines="1" justifyH="CENTER" text="NEW_ALLIED_RACE_NOTIFICATION" hidden="true">
 									<Anchors>
-										<Anchor point="TOPLEFT" x="-16" y="16"/>
+										<Anchor point="TOPLEFT" x="2" y="-2"/>
+									</Anchors>
+									<Shadow>
+										<Color r="0.32" g="0.5" b="1.0"/>
+									</Shadow>
+								</FontString>
+
+								<Texture parentKey="NewGlow" atlas="collections-newglow" hidden="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.NewString" x="-20" y="10"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NewString" x="20" y="-10"/>
 									</Anchors>
 								</Texture>
 							</Layer>

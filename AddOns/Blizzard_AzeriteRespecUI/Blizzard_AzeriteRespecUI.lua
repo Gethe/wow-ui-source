@@ -40,6 +40,7 @@ end
 function AzeriteRespecMixin:OnHide()
 	PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_REFORGE_ETHEREALWINDOW_CLOSE)
 	StaticPopup_Hide("CONFIRM_AZERITE_EMPOWERED_RESPEC");
+	StaticPopup_Hide("CONFIRM_AZERITE_EMPOWERED_RESPEC_EXPENSIVE");
 	C_AzeriteEmpoweredItem.CloseAzeriteEmpoweredItemRespec();
 	self:SetRespecItem(nil);
 end
@@ -59,9 +60,15 @@ function AzeriteRespecMixin:GetRespecItemLocation()
 	return self.respecItemLocation;
 end
 
+local SHOW_EXPENSIVE_WARNING_THRESHOLD = 1000 * COPPER_PER_SILVER * SILVER_PER_GOLD;
 function AzeriteRespecMixin:AzeriteRespecItem()
 	local item = Item:CreateFromItemLocation(self.respecItemLocation);
-	StaticPopup_Show("CONFIRM_AZERITE_EMPOWERED_RESPEC", item:GetItemLink(), nil, {empoweredItemLocation = self.respecItemLocation, respecCost = self.respecCost});
+	local data = {empoweredItemLocation = self.respecItemLocation, respecCost = self.respecCost};
+	if self.respecCost >= SHOW_EXPENSIVE_WARNING_THRESHOLD then
+		StaticPopup_Show("CONFIRM_AZERITE_EMPOWERED_RESPEC_EXPENSIVE", item:GetItemLink(), nil, data);
+	else
+		StaticPopup_Show("CONFIRM_AZERITE_EMPOWERED_RESPEC", item:GetItemLink(), nil, data);
+	end
 end
 
 function AzeriteRespecMixin:UpdateAzeriteRespecButtonState()

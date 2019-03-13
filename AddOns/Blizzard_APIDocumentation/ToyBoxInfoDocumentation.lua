@@ -6,10 +6,42 @@ local ToyBoxInfo =
 
 	Functions =
 	{
+		{
+			Name = "ClearFanfare",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "NeedsFanfare",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "needsFanfare", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
 	{
+		{
+			Name = "NewToyAdded",
+			Type = "Event",
+			LiteralName = "NEW_TOY_ADDED",
+			Payload =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+		},
 		{
 			Name = "ToysUpdated",
 			Type = "Event",
@@ -18,6 +50,7 @@ local ToyBoxInfo =
 			{
 				{ Name = "itemID", Type = "number", Nilable = true },
 				{ Name = "isNew", Type = "bool", Nilable = true },
+				{ Name = "hasFanfare", Type = "bool", Nilable = true },
 			},
 		},
 	},

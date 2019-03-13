@@ -162,11 +162,19 @@ function UnitPositionFrameMixin:UpdateUnitTooltips(tooltipFrame)
 	end
 
 	if tooltipText ~= "" then
+		self.previousOwner = tooltipFrame:GetOwner();
 		tooltipFrame:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
 		tooltipFrame:SetText(tooltipText);
 	elseif tooltipFrame:GetOwner() == self then
 		tooltipFrame:ClearLines();
 		tooltipFrame:Hide();
+		if self.previousOwner and self.previousOwner ~= self and self.previousOwner:IsVisible() and self.previousOwner:IsMouseOver() then
+			local func = self.previousOwner:HasScript("OnEnter") and self.previousOwner:GetScript("OnEnter");
+			if func then
+				func(self.previousOwner);
+			end
+		end
+		self.previousOwner = nil;
 	end
 end
 
@@ -225,7 +233,7 @@ function UnitPositionFrameMixin:UpdateFull(timeNow)
 	self:AddUnitInternal(timeNow, "player", self:GetOrCreateUnitAppearanceData("player"));
 
 	local memberCount, unitBase = self:GetMemberCountAndUnitTokenPrefix();
-	local overridePartyType = (InActiveBattlefield() and IsInRaid() and IsInGroup(LE_PARTY_CATEGORY_HOME)) and LE_PARTY_CATEGORY_HOME or nil;
+	local overridePartyType = (C_PvP.IsActiveBattlefield() and IsInRaid() and IsInGroup(LE_PARTY_CATEGORY_HOME)) and LE_PARTY_CATEGORY_HOME or nil;
 	local partyAppearance = self:GetOrCreateUnitAppearanceData("party");
 	local raidAppearance = self:GetOrCreateUnitAppearanceData("raid");
 
@@ -245,7 +253,7 @@ function UnitPositionFrameMixin:UpdatePeriodic(timeNow)
 	self:SetUnitAppearanceInternal(timeNow, "player", self:GetOrCreateUnitAppearanceData("player"));
 
 	local memberCount, unitBase = self:GetMemberCountAndUnitTokenPrefix();
-	local overridePartyType = (InActiveBattlefield() and IsInRaid() and IsInGroup(LE_PARTY_CATEGORY_HOME)) and LE_PARTY_CATEGORY_HOME or nil;
+	local overridePartyType = (C_PvP.IsActiveBattlefield() and IsInRaid() and IsInGroup(LE_PARTY_CATEGORY_HOME)) and LE_PARTY_CATEGORY_HOME or nil;
 	local partyAppearance = self:GetOrCreateUnitAppearanceData("party");
 	local raidAppearance = self:GetOrCreateUnitAppearanceData("raid");
 

@@ -1,9 +1,13 @@
 local TOYS_PER_PAGE = 18;
+local TOY_FANFARE_MODEL_SCENE = 253;
 
 function ToyBox_OnLoad(self)
 	self.firstCollectedToyID = 0; -- used to track which toy gets the favorite helpbox
-	self.mostRecentCollectedToyID = UIParent.mostRecentCollectedToyID or nil;
+	self.autoPageToCollectedToyID = UIParent.autoPageToCollectedToyID or nil;
 	self.newToys = UIParent.newToys or {};
+	self.fanfareToys = {};
+
+	self.fanfarePool = CreateFramePool("MODELSCENE", self, "ToySpellButtonFanfareModelSceneTemplate");
 
 	ToyBox_UpdatePages();
 	ToyBox_UpdateProgressBar(self);
@@ -11,6 +15,7 @@ function ToyBox_OnLoad(self)
 	UIDropDownMenu_Initialize(self.toyOptionsMenu, ToyBoxOptionsMenu_Init, "MENU");
 
 	self:RegisterEvent("TOYS_UPDATED");
+	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 
 	self.OnPageChanged = function(userAction)
 		PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
@@ -18,13 +23,17 @@ function ToyBox_OnLoad(self)
 	end
 end
 
-function ToyBox_OnEvent(self, event, itemID, new)
+function ToyBox_OnEvent(self, event, itemID, new, fanfare)
 	if ( event == "TOYS_UPDATED" ) then
 		if (new) then
-			self.mostRecentCollectedToyID = itemID;
+			self.autoPageToCollectedToyID = itemID;
 			if ( not CollectionsJournal:IsShown() ) then
 				CollectionsJournal_SetTab(CollectionsJournal, 3);
 			end
+		end
+
+		if fanfare then
+			self.fanfareToys[itemID] = true;
 		end
 
 		ToyBox_UpdatePages();
@@ -34,7 +43,10 @@ function ToyBox_OnEvent(self, event, itemID, new)
 		if (new) then
 			self.newToys[itemID] = true;
 		end
+	elseif event == "UI_MODEL_SCENE_INFO_UPDATED" then
+		ToyBox_UpdateButtons();
 	end
+
 end
 
 function ToyBox_OnShow(self)
@@ -142,8 +154,36 @@ function ToySpellButton_OnClick(self, button)
 			ToyBox_ShowToyDropdown(self.itemID, self, 0, 0);
 		end
 	else
-		UseToy(self.itemID);
+		if ( ToyBox.fanfareToys[self.itemID] ~= nil ) then
+			ToyBox.fanfareToys[self.itemID] = false;
+
+			if ( self.modelScene ) then
+				local function OnFinishedCallback()
+					C_ToyBoxInfo.ClearFanfare(self.itemID);
+					ToySpellButton_UpdateButton(self);
+				end
+				self.modelScene:StartUnwrapAnimation(OnFinishedCallback);
+
+				ToySpellButton_FadeInIcon(self);
+			end
+		else
+			UseToy(self.itemID);
+		end
 	end
+end
+
+function ToySpellButton_FadeInIcon(self)
+	self.iconTexture:SetAlpha(0.0);
+	self.slotFrameCollected:SetAlpha(0.0);
+	self.iconTexture:Show();
+	self.slotFrameCollected:Show();
+
+	local function ShowHighlightTexture()
+		self.HighlightTexture:Show();
+	end
+	self.IconFadeIn:SetScript("OnFinished", ShowHighlightTexture);
+
+	self.IconFadeIn:Play();
 end
 
 function ToySpellButton_OnModifiedClick(self, button)
@@ -180,64 +220,94 @@ function ToySpellButton_UpdateButton(self)
 
 	self:Show();
 
-	local itemID, toyName, icon = C_ToyBox.GetToyInfo(self.itemID);
-
-	if (itemID == nil or toyName == nil) then
+	local itemID, toyName, icon, isFavorite, hasFanfare = C_ToyBox.GetToyInfo(self.itemID);
+	if (itemID == nil) or (toyName == nil) then
 		return;
+	end
+
+	if ToyBox.fanfareToys[itemID] == nil and hasFanfare then
+		ToyBox.fanfareToys[itemID] = true;
 	end
 
 	if string.len(toyName) == 0 then
 		toyName = itemID;
 	end
 
+	if not ToyBox.newToys[self.itemID] then
+		toyNewString:Hide();
+		toyNewGlow:Hide();
+	else
+		toyNewString:Show();
+		toyNewGlow:Show();
+	end
+
 	iconTexture:SetTexture(icon);
 	iconTextureUncollected:SetTexture(icon);
 	iconTextureUncollected:SetDesaturated(true);
+
+	if not ToyBox.fanfareToys[itemID] then
+		if self.modelScene then
+			ToyBox.fanfarePool:Release(self.modelScene);
+			self.modelScene = nil;
+		end
+
+		if (PlayerHasToy(self.itemID)) then
+			iconTexture:Show();
+			iconTextureUncollected:Hide();
+			toyString:SetTextColor(1, 0.82, 0, 1);
+			toyString:SetShadowColor(0, 0, 0, 1);
+			slotFrameCollected:Show();
+			slotFrameUncollected:Hide();
+			slotFrameUncollectedInnerGlow:Hide();
+
+			if(ToyBox.firstCollectedToyID == 0) then
+				ToyBox.firstCollectedToyID = self.itemID;
+			end
+
+			if (ToyBox.firstCollectedToyID == self.itemID and not ToyBox.favoriteHelpBox:IsVisible() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE)) then
+				ToyBox.favoriteHelpBox:Show();
+				ToyBox.favoriteHelpBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -5, -20);
+			end
+		else
+			iconTexture:Hide();
+			iconTextureUncollected:Show();
+			toyString:SetTextColor(0.33, 0.27, 0.20, 1);
+			toyString:SetShadowColor(0, 0, 0, 0.33);
+			slotFrameCollected:Hide();
+			slotFrameUncollected:Show();
+			slotFrameUncollectedInnerGlow:Show();
+		end
+
+		if (C_ToyBox.GetIsFavorite(itemID)) then
+			iconFavoriteTexture:Show();
+		else
+			iconFavoriteTexture:Hide();
+		end		
+		CollectionsSpellButton_UpdateCooldown(self);
+	else
+		-- we are presenting fanfare
+		if not self.modelScene then
+			self.modelScene = ToyBox.fanfarePool:Acquire();
+			self.modelScene:SetParent(self);
+			self.modelScene:ClearAllPoints();
+			self.modelScene:SetPoint("CENTER");
+		end
+		if self.modelScene then
+			iconTexture:Hide();
+			slotFrameCollected:Hide();
+			slotFrameUncollected:Hide();
+			iconTextureUncollected:Hide();
+			toyString:SetTextColor(1, 0.82, 0, 1);
+			self.cooldown:Hide();
+			self.HighlightTexture:Hide();
+			self.modelScene:TransitionToModelSceneID(TOY_FANFARE_MODEL_SCENE, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, true);
+			self.modelScene:PrepareForFanfare(true);
+			self.modelScene:Show();
+		end
+	end
+
 	toyString:SetText(toyName);
 	toyString:Show();
-
-	if (ToyBox.newToys[self.itemID] ~= nil) then
-		toyNewString:Show();
-		toyNewGlow:Show();
-	else
-		toyNewString:Hide();
-		toyNewGlow:Hide();
-	end
-
-	if (C_ToyBox.GetIsFavorite(itemID)) then
-		iconFavoriteTexture:Show();
-	else
-		iconFavoriteTexture:Hide();
-	end
-
-	if (PlayerHasToy(self.itemID)) then
-		iconTexture:Show();
-		iconTextureUncollected:Hide();
-		toyString:SetTextColor(1, 0.82, 0, 1);
-		toyString:SetShadowColor(0, 0, 0, 1);
-		slotFrameCollected:Show();
-		slotFrameUncollected:Hide();
-		slotFrameUncollectedInnerGlow:Hide();
-
-		if(ToyBox.firstCollectedToyID == 0) then
-			ToyBox.firstCollectedToyID = self.itemID;
-		end
-
-		if (ToyBox.firstCollectedToyID == self.itemID and not ToyBox.favoriteHelpBox:IsVisible() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE)) then
-			ToyBox.favoriteHelpBox:Show();
-			ToyBox.favoriteHelpBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -5, -20);
-		end
-	else
-		iconTexture:Hide();
-		iconTextureUncollected:Show();
-		toyString:SetTextColor(0.33, 0.27, 0.20, 1);
-		toyString:SetShadowColor(0, 0, 0, 0.33);
-		slotFrameCollected:Hide();
-		slotFrameUncollected:Show();
-		slotFrameUncollectedInnerGlow:Show();
-	end
-
-	CollectionsSpellButton_UpdateCooldown(self);
 end
 
 function ToyBox_UpdateButtons()
@@ -251,12 +321,12 @@ end
 function ToyBox_UpdatePages()
 	local maxPages = 1 + math.floor( math.max((C_ToyBox.GetNumFilteredToys() - 1), 0) / TOYS_PER_PAGE);
 	ToyBox.PagingFrame:SetMaxPages(maxPages)
-	if ToyBox.mostRecentCollectedToyID then
-		local toyPage = ToyBox_FindPageForToyID(ToyBox.mostRecentCollectedToyID);
+	if ToyBox.autoPageToCollectedToyID then
+		local toyPage = ToyBox_FindPageForToyID(ToyBox.autoPageToCollectedToyID);
 		if toyPage then
 			ToyBox.PagingFrame:SetCurrentPage(toyPage);
 		end
-		ToyBox.mostRecentCollectedToyID = nil;
+		ToyBox.autoPageToCollectedToyID = nil;
 	end
 end
 

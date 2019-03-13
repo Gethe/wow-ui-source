@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<StatusBar name="UIWidgetTemplateDoubleStatusBar_StatusBarTemplate" virtual="true">
+	<StatusBar name="UIWidgetTemplateDoubleStatusBar_StatusBarTemplate" virtual="true" mixin="UIWidgetBaseStatusBarTemplateMixin">
 		<Size x="92" y="22"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -59,9 +59,9 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Text" inherits="GameFontHighlight">
+				<FontString parentKey="Label" inherits="GameFontHighlight">
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="CENTER" y="0.5"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -83,12 +83,12 @@
 		<Frames>
 			<StatusBar parentKey="LeftBar" inherits="UIWidgetTemplateDoubleStatusBar_StatusBarTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="17"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOP" x="-7" y="-5"/>
 				</Anchors>
 			</StatusBar>
 			<StatusBar parentKey="RightBar" inherits="UIWidgetTemplateDoubleStatusBar_StatusBarTemplate" reverseFill="true">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-17"/>
+					<Anchor point="TOPLEFT" relativePoint="TOP" x="7" y="-5"/>
 				</Anchors>
 			</StatusBar>
 		</Frames>
@@ -96,7 +96,7 @@
 			<Layer level="OVERLAY">
 				<FontString parentKey="Label" inherits="GameFontHighlight" >
 					<Anchors>
-						<Anchor point="BOTTOM" y="5"/>
+						<Anchor point="TOP" y="-38"/>
 					</Anchors>
 				</FontString>
 			</Layer>

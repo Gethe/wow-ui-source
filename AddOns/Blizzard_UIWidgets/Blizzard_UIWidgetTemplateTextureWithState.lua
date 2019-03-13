@@ -9,6 +9,10 @@ UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.Tex
 
 UIWidgetTemplateTextureWithStateMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
+function UIWidgetTemplateTextureWithStateMixin:OnLoad()
+	UIWidgetBaseTemplateMixin.OnLoad(self); 
+	self.Text:SetFontObjectsToTry(); 
+end 
 function UIWidgetTemplateTextureWithStateMixin:Setup(widgetInfo)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
 	self.Text:SetText(widgetInfo.name); 

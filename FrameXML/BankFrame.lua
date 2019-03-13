@@ -37,6 +37,12 @@ function BankFrameBagButton_OnEvent (self, event, ...)
 	end
 end
 
+BankItemButtonBagMixin = {};
+
+function BankItemButtonBagMixin:GetItemContextMatchResult()
+	return ItemButtonUtil.GetItemContextMatchResultForContainer(self:GetID() + NUM_BAG_SLOTS);
+end
+
 function BankFrameItemButton_OnEnter (self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
@@ -122,6 +128,12 @@ function BankFrameItemButton_Update (button)
 	BankFrame_UpdateCooldown(container, button);
 end
 
+BankItemButtonMixin = {};
+
+function BankItemButtonMixin:GetItemContextMatchResult()
+	return ItemButtonUtil.GetItemContextMatchResultForItem(ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID()));
+end
+
 function BankFrame_UpdateCooldown(container, button)
 	local cooldown = button.Cooldown;
 	local start, duration, enable;
@@ -155,7 +167,7 @@ function BankSlotsFrame_OnLoad(self)
 
 	--Create bank item buttons, button background textures, and rivets between buttons
 	for i = 2, 28 do
-		local button = CreateFrame("Button", "BankFrameItem"..i, self, "BankItemButtonGenericTemplate");
+		local button = CreateFrame("ItemButton", "BankFrameItem"..i, self, "BankItemButtonGenericTemplate");
 		button:SetID(i);
 		self["Item"..i] = button;
 		if ((i%7) == 1) then
@@ -363,23 +375,6 @@ function BankFrameItemButtonGeneric_OnModifiedClick (self, button)
 	end
 end
 
-function UpdateBagButtonHighlight (id) 
-	local bankSlot = BankSlotsFrame["Bag"..(id)];
-	if ( not bankSlot ) then
-		return;
-	end
-
-	local frame;
-	for i=1, NUM_CONTAINER_FRAMES, 1 do
-		frame = _G["ContainerFrame"..i];
-		if ( ( frame:GetID() == (id + NUM_BAG_SLOTS) ) and frame:IsShown() ) then
-			bankSlot:SetChecked(true);
-			return;
-		end
-	end
-	bankSlot:SetChecked(false);
-end
-
 function BankFrameItemButtonBag_OnClick (self, button) 
 	local inventoryID = self:GetInventorySlot();
 	local hadItem = PutItemInBag(inventoryID);
@@ -388,13 +383,11 @@ function BankFrameItemButtonBag_OnClick (self, button)
 		-- open bag
 		ToggleBag(id+NUM_BAG_SLOTS);
 	end
-	UpdateBagButtonHighlight(id);
 end
 
 function BankFrameItemButtonBag_Pickup (self)
 	local inventoryID = self:GetInventorySlot();
 	PickupBagFromSlot(inventoryID);
-	UpdateBagButtonHighlight(self:GetID());
 end
 
 function BankFrame_TabOnClick(self)
@@ -511,7 +504,7 @@ function ReagentBankFrame_OnShow(self)
 			local leftOffset = 6;
 			for subColumn = 1, self.numSubColumn do
 				for row = 0, self.numRow-1 do
-					local button = CreateFrame("Button", "ReagentBankFrameItem"..id, ReagentBankFrame, "ReagentBankItemButtonGenericTemplate");
+					local button = CreateFrame("ItemButton", "ReagentBankFrameItem"..id, ReagentBankFrame, "ReagentBankItemButtonGenericTemplate");
 					button:SetID(id);
 					button:SetPoint("TOPLEFT", ReagentBankFrame["BG"..column], "TOPLEFT", leftOffset, -(3+row*slotOffsetY));
 					ReagentBankFrame["Item"..id] = button;

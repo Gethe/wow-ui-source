@@ -3,7 +3,7 @@
 	<Include file="AzeritePaperDollItemOverlay.xml"/>
     <Script file="PaperDollFrame.lua"/>
 
-    <Button name="PaperDollItemSlotButtonTemplate" inherits="ItemButtonTemplate, PaperDollAzeriteItemOverlayTemplate" virtual="true">
+    <ItemButton name="PaperDollItemSlotButtonTemplate" inherits="PaperDollAzeriteItemOverlayTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="ignoreTexture" file="Interface\PaperDollInfoFrame\UI-GearManager-LeaveItem-Transparent">
@@ -51,8 +51,8 @@
 				PaperDollItemSlotButton_OnLeave(self, motion);
 			</OnLeave>
         </Scripts>
-    </Button>
-	<Button name="PaperDollItemSlotButtonLeftTemplate" parentArray="EquipmentSlots" inherits="PaperDollItemSlotButtonTemplate" virtual="true">
+    </ItemButton>
+	<ItemButton name="PaperDollItemSlotButtonLeftTemplate" parentArray="EquipmentSlots" inherits="PaperDollItemSlotButtonTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue type="boolean" key="IsLeftSide" value="true"/>
 		</KeyValues>
@@ -65,8 +65,8 @@
 				</Texture>
 			</Layer>
 		</Layers>
-	</Button>
-	<Button name="PaperDollItemSlotButtonRightTemplate" parentArray="EquipmentSlots" inherits="PaperDollItemSlotButtonTemplate" virtual="true">
+	</ItemButton>
+	<ItemButton name="PaperDollItemSlotButtonRightTemplate" parentArray="EquipmentSlots" inherits="PaperDollItemSlotButtonTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue type="boolean" key="IsLeftSide" value="false"/>
 		</KeyValues>
@@ -79,8 +79,8 @@
 				</Texture>
 			</Layer>
 		</Layers>
-	</Button>
-	<Button name="PaperDollItemSlotButtonBottomTemplate" parentArray="WeaponSlots" inherits="PaperDollItemSlotButtonTemplate" virtual="true">
+	</ItemButton>
+	<ItemButton name="PaperDollItemSlotButtonBottomTemplate" parentArray="WeaponSlots" inherits="PaperDollItemSlotButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture name="$parentFrame" inherits="Char-BottomSlot">
@@ -90,7 +90,7 @@
 				</Texture>
 			</Layer>
 		</Layers>
-	</Button>
+	</ItemButton>
 	<Button name="PlayerTitleButtonTemplate" virtual="true">
 		<Size x="169" y="22"/>
 		<Anchors>
@@ -570,17 +570,6 @@
 						<Scripts>
 							<OnClick function="PaperDollEquipmentManagerPaneEquipSet_OnClick"/>
 						</Scripts>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="ButtonBackground">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="PaperDollEquipmentManagerPane"/>
-										<Anchor point="BOTTOMRIGHT" relativeTo="PaperDollEquipmentManagerPane" relativePoint="TOPRIGHT" x="0" y="-23"/>
-									</Anchors>
-									<Color r="0" g="0" b="0"/>
-								</Texture>
-							</Layer>
-						</Layers>
 					</Button>
 					<Button name="$parentSaveSet" text="SAVE" parentKey="SaveSet" inherits="UIPanelButtonTemplate">
 						<Size x="87" y="22"/>
@@ -726,87 +715,87 @@
             </PlayerModel>
 			<Frame name="PaperDollItemsFrame" mixin="PaperDollItemsMixin" setAllPoints="true">
 				<Frames>
-					<Button name="CharacterHeadSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+					<ItemButton name="CharacterHeadSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.$parent.$parent.Inset" x="4" y="-2"/>
 						</Anchors>
-					</Button>
-					<Button name="CharacterNeckSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+					</ItemButton>
+					<ItemButton name="CharacterNeckSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterHeadSlot" relativePoint="BOTTOMLEFT"  x="0" y="-4"/>
 						</Anchors>
-					</Button>
-					<Button name="CharacterShoulderSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+					</ItemButton>
+					<ItemButton name="CharacterShoulderSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterNeckSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
-					</Button>
-					<Button name="CharacterBackSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+					</ItemButton>
+					<ItemButton name="CharacterBackSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterShoulderSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
-					</Button>
-					<Button name="CharacterChestSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+					</ItemButton>
+					<ItemButton name="CharacterChestSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterBackSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
-					</Button>
-					<Button name="CharacterShirtSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+					</ItemButton>
+					<ItemButton name="CharacterShirtSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterChestSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
-					</Button>
-					<Button name="CharacterTabardSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+					</ItemButton>
+					<ItemButton name="CharacterTabardSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterShirtSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
-					</Button>
-					<Button name="CharacterWristSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+					</ItemButton>
+					<ItemButton name="CharacterWristSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterTabardSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
-					</Button>
-					<Button name="CharacterHandsSlot" inherits="PaperDollItemSlotButtonRightTemplate">
+					</ItemButton>
+					<ItemButton name="CharacterHandsSlot" inherits="PaperDollItemSlotButtonRightTemplate">
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeKey="$parent.$parent.$parent.Inset" x="-4" y="-2"/>
 						</Anchors>
-					</Button>
-					<Button name="CharacterWaistSlot" inherits="PaperDollItemSlotButtonRightTemplate">
+					</ItemButton>
+					<ItemButton name="CharacterWaistSlot" inherits="PaperDollItemSlotButtonRightTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterHandsSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
-					</Button>
-					<Button name="CharacterLegsSlot" inherits="PaperDollItemSlotButtonRightTemplate">
+					</ItemButton>
+					<ItemButton name="CharacterLegsSlot" inherits="PaperDollItemSlotButtonRightTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterWaistSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
-					</Button>
-					<Button name="CharacterFeetSlot" inherits="PaperDollItemSlotButtonRightTemplate">
+					</ItemButton>
+					<ItemButton name="CharacterFeetSlot" inherits="PaperDollItemSlotButtonRightTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterLegsSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
-					</Button>
-					<Button name="CharacterFinger0Slot" inherits="PaperDollItemSlotButtonRightTemplate">
+					</ItemButton>
+					<ItemButton name="CharacterFinger0Slot" inherits="PaperDollItemSlotButtonRightTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterFeetSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
-					</Button>
-					<Button name="CharacterFinger1Slot" inherits="PaperDollItemSlotButtonRightTemplate">
+					</ItemButton>
+					<ItemButton name="CharacterFinger1Slot" inherits="PaperDollItemSlotButtonRightTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterFinger0Slot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
-					</Button>
-					<Button name="CharacterTrinket0Slot" inherits="PaperDollItemSlotButtonRightTemplate">
+					</ItemButton>
+					<ItemButton name="CharacterTrinket0Slot" inherits="PaperDollItemSlotButtonRightTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterFinger1Slot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
-					</Button>
-					<Button name="CharacterTrinket1Slot" inherits="PaperDollItemSlotButtonRightTemplate">
+					</ItemButton>
+					<ItemButton name="CharacterTrinket1Slot" inherits="PaperDollItemSlotButtonRightTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterTrinket0Slot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
-					</Button>
-					<Button name="CharacterMainHandSlot" inherits="PaperDollItemSlotButtonBottomTemplate">
+					</ItemButton>
+					<ItemButton name="CharacterMainHandSlot" inherits="PaperDollItemSlotButtonBottomTemplate">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="130" y="16"/>
 						</Anchors>
@@ -819,8 +808,8 @@
 								</Texture>
 							</Layer>
 						</Layers>
-					</Button>
-					<Button name="CharacterSecondaryHandSlot" inherits="PaperDollItemSlotButtonBottomTemplate">
+					</ItemButton>
+					<ItemButton name="CharacterSecondaryHandSlot" inherits="PaperDollItemSlotButtonBottomTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterMainHandSlot" relativePoint="TOPRIGHT" x="5" y="0"/>
 						</Anchors>
@@ -833,7 +822,7 @@
 								</Texture>
 							</Layer>
 						</Layers>
-					</Button>
+					</ItemButton>
 					<Frame parentKey="UnspentAzeriteHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
 						<Size x="200" y="100"/>
 						<Layers>

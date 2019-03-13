@@ -3,6 +3,17 @@
 	<Frame name="UIWidgetManager" toplevel="true" mixin="UIWidgetManagerMixin">
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="UIWidgetContainerTemplate" virtual="true" mixin="UIWidgetContainerMixin">
+		<KeyValues>
+			<!--Set this to false if you don't want visibility managed by the WidgetContainerMixin-->
+			<KeyValue key="showAndHideOnWidgetSetRegistration" value="true" type="boolean"/>
+		</KeyValues>
+
+		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
 			<OnUpdate method="OnUpdate"/>
 		</Scripts>

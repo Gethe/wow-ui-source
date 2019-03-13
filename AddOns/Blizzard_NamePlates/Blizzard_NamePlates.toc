@@ -2,6 +2,7 @@
 ## Title: Blizzard NamePlates
 ## Secure: 1
 ## LoadOnDemand: 0
+## RequiredDep: Blizzard_UIWidgets
 
 Blizzard_NamePlates.xml
 Blizzard_ClassNameplateBar.xml

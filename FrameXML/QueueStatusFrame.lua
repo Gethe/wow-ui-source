@@ -22,6 +22,10 @@ function QueueStatusMinimapButton_OnClick(self, button)
 		QueueStatusDropDown_Show(self.DropDown, self:GetName());
 	else
 		local inBattlefield, showScoreboard = QueueStatus_InActiveBattlefield();
+		if IsInLFDBattlefield() then
+			inBattlefield = true;
+			showScoreboard = true;
+		end
 		local lfgListActiveEntry = C_LFGList.HasActiveEntryInfo();
 		if ( inBattlefield ) then
 			if ( showScoreboard ) then
@@ -368,8 +372,13 @@ end
 
 local function GetDisplayNameFromCategory(category)
 	if (category == LE_LFG_CATEGORY_BATTLEFIELD) then
-		local brawlInfo = C_PvP.GetBrawlInfo();
-		if (brawlInfo and brawlInfo.active and brawlInfo.name) then
+		local brawlInfo;
+		if (C_PvP.IsInBrawl()) then
+			brawlInfo = C_PvP.GetActiveBrawlInfo();
+		else
+			brawlInfo = C_PvP.GetAvailableBrawlInfo();
+		end
+		if (brawlInfo and brawlInfo.canQueue and brawlInfo.name) then
 			return brawlInfo.name;
 		end
 	end
@@ -466,8 +475,8 @@ function QueueStatusEntry_SetUpLFG(entry, category)
 	elseif ( mode == "lfgparty" or mode == "abandonedInDungeon" ) then
 		local title;
 		if (C_PvP.IsInBrawl()) then
-			local brawlInfo = C_PvP.GetBrawlInfo();
-			if (brawlInfo and brawlInfo.active and brawlInfo.longDescription) then
+			local brawlInfo = C_PvP.GetActiveBrawlInfo();
+			if (brawlInfo and brawlInfo.canQueue and brawlInfo.longDescription) then
 				title = brawlInfo.name;
 				if (subtitle) then
 					subtitle = QUEUED_STATUS_BRAWL_RULES_SUBTITLE:format(brawlInfo.longDescription, subtitle);
@@ -994,6 +1003,12 @@ function QueueStatusDropDown_AddLFGButtons(category)
 					info.disabled = false;
 					UIDropDownMenu_AddButton(info);
 					addExitOption = false;
+				else
+					info.text = TOGGLE_SCOREBOARD;
+					info.func = wrapFunc(ToggleWorldStateScoreFrame);
+					info.arg1 = nil;
+					info.arg2 = nil;
+					UIDropDownMenu_AddButton(info);
 				end
 			elseif ( IsInLFGDungeon() ) then
 				info.text = TELEPORT_OUT_OF_DUNGEON;

@@ -51,6 +51,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						MicroButtonAlert_OnAcknowledged(self:GetParent());
 						self:GetParent():Hide();
 						local tutIdx = self:GetParent().tutorialIndex;
 						if ( tutIdx ) then

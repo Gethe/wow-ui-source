@@ -92,8 +92,11 @@ RACE_ICON_TCOORDS = {
 	["MAGHARORC_MALE"]			= {0.375, 0.5, 0.25, 0.5},
 	["MAGHARORC_FEMALE"]		= {0.375, 0.5, 0.75, 1.0},
 
-	["ZANDALARITROLL_MALE"]		= {0.25, 0.375, 0.25, 0.5},
-	["ZANDALARITROLL_FEMALE"]	= {0.25, 0.375, 0.75, 1.0},
+	["ZANDALARITROLL_MALE"]		= {0.25, 0.375, 0, 0.25},
+	["ZANDALARITROLL_FEMALE"]	= {0.25, 0.375, 0.5, 0.75},
+
+	["KULTIRAN_MALE"]		= {0, 0.125, 0, 0.25},
+	["KULTIRAN_FEMALE"]		= {0, 0.125, 0.5, 0.75},
 };
 
 CHARCREATE_CLASS_TOOLTIP = {};
@@ -217,6 +220,8 @@ MODEL_CAMERA_CONFIG = {
 		["ZandalariTroll"] = { tx = 0.402, ty = 0.016, tz = 2.076, cz = 1.980, distance = 0.943, light =  0.75 },
 		["DarkIronDwarf"] = { tx = 0.037, ty = 0.009, tz = 1.298, cz = 1.265, distance = 0.839, light =  0.85 },
 		["MagharOrc"] = { tx = -0.0322, ty = -0.0771, tz = 2.114, cz = 2.030, distance = 1.200, light =  0.75 },
+		["ZandalariTroll"] = { tx = -0.01642, ty = -0.082216, tz = 2.5657, cz = 2.418, distance = 1.2, light =  0.85 },
+		["KulTiran"] = { tx = 0.05591, ty = -0.04111, tz = 2.3603, cz = 2.23827, distance = 1.2, light =  0.75 },
 	},
 	[1] = {
 		["Draenei"] = { tx = 0.155, ty = 0.009, tz = 2.177, cz = 1.971, distance = 0.734, light =  0.75 },
@@ -249,6 +254,8 @@ MODEL_CAMERA_CONFIG = {
 		["ZandalariTroll"] = { tx = 0.031, ty = -0.082, tz = 2.226, cz = 2.248, distance = 0.674, light =  0.75 },
 		["DarkIronDwarf"] = { tx = -0.060, ty = -0.010, tz = 1.326, cz = 1.343, distance = 0.720, light =  0.80 },
 		["MagharOrc"] = { tx = -0.069, ty = -0.007, tz = 1.863, cz = 1.718, distance = 0.585, light =  0.75 },
+		["ZandalariTroll"] = { tx = 0.09207, ty = -0.061662, tz = 2.52246, cz = 2.418, distance = 0.9324, light =  0.75 },
+		["KulTiran"] = { tx = -0.069, ty = -0.006851, tz = 2.230568, cz = 2.12476, distance = 1.14324, light =  0.75 },
 	}
 };
 
@@ -595,7 +602,8 @@ end
 local fixedRaceAtlasNames = {
 	["highmountaintauren"] = "highmountain",
 	["lightforgeddraenei"] = "lightforged",
-	["scourge"] = "undead"
+	["scourge"] = "undead",
+	["zandalaritroll"] = "zandalari",
 };
 
 function GetRaceAtlas(raceName, gender)
@@ -687,7 +695,10 @@ function CharacterCreateEnumerateRaces(modeChange)
 		button.NormalTexture:SetAtlas(atlas);
 		button.PushedTexture:SetAtlas(atlas);
 		button.nameFrame.text:SetText(name);
-		button.NewLabel:SetShown(CharacterCreate_IsNewAlliedRace(raceData.raceID));
+		
+		local isNewAlliedRace = CharacterCreate_IsNewAlliedRace(raceData.raceID);
+		button.NewString:SetShown(isNewAlliedRace);
+		button.NewGlow:SetShown(isNewAlliedRace);
 		
 		local kioskModeData = IsKioskGlueEnabled() and KioskModeSplash_GetModeData();
 		local raceList = kioskModeData and KioskModeSplash_GetRaceList();
@@ -2626,8 +2637,10 @@ end
 
 function CharacterCreate_RefreshNewAlliedRaces()
 	local hasNewAlliedRaces = #CharacterCreate.newAlliedRaces > 0;
-	CharSelectCreateCharacterButton.NewLabel:SetShown(hasNewAlliedRaces);
-	CharCreateAlliedRacesButton.NewLabel:SetShown(hasNewAlliedRaces);
+	CharSelectCreateCharacterButton.NewString:SetShown(hasNewAlliedRaces);
+	CharSelectCreateCharacterButton.NewGlow:SetShown(hasNewAlliedRaces);
+	CharCreateAlliedRacesButton.NewString:SetShown(hasNewAlliedRaces);
+	CharCreateAlliedRacesButton.NewGlow:SetShown(hasNewAlliedRaces);
 end
 
 function CharacterCreate_IsNewAlliedRace(raceID)

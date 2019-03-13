@@ -296,7 +296,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button parentKey="ResultIcon">
+					<Button parentKey="ResultIcon" registerForClicks="LeftButtonUp,RightButtonUp">
 						<KeyValues>
 							<KeyValue key="hasItem" value="true" type="boolean"/>
 						</KeyValues>

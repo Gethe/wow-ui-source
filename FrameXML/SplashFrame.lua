@@ -1,5 +1,5 @@
-BASE_SPLASH_SCREEN_VERSION = 14;
-NEWEST_SPLASH_SCREEN_VERSION = 15;
+BASE_SPLASH_SCREEN_VERSION = 15;
+NEWEST_SPLASH_SCREEN_VERSION = 16;
 SEASON_SPLASH_SCREEN_VERSION = 2; 
 
 local FACTION_OVERRIDES = {
@@ -12,20 +12,20 @@ local FACTION_OVERRIDES = {
 }
 
 SPLASH_SCREENS = {
-	["8_1_LEVEL"] = {	
-		id = NEWEST_SPLASH_SCREEN_VERSION, -- 8.1 Live
+	["8_1_5_LEVEL"] = {	
+		id = NEWEST_SPLASH_SCREEN_VERSION, -- 8.1.5 Live
 		expansion = LE_EXPANSION_BATTLE_FOR_AZEROTH,
 		header = SPLASH_BASE_HEADER,
-		label = SPLASH_BATTLEFORAZEROTH_8_1_0_LABEL, 
-		leftTex = "splash-810-topleft",
-		rightTex = "splash-810-right",
-		bottomTex = "splash-810-botleft",
-		feature1Title = SPLASH_BATTLEFORAZEROTH_8_1_FEATURE1_TITLE,
-		feature1Desc = SPLASH_BATTLEFORAZEROTH_8_1_FEATURE1_DESC,
-		feature2Title = SPLASH_BATTLEFORAZEROTH_8_1_FEATURE2_TITLE,
-		feature2Desc = SPLASH_BATTLEFORAZEROTH_8_1_FEATURE2_DESC,
-		rightTitle = SPLASH_BATTLE_FOR_DARKSHORE,
-		rightDescSubText = SPLASH_BATTLEFORAZEROTH_8_1_0_RIGHT_DESC,
+		label = SPLASH_BATTLEFORAZEROTH_8_1_5_LABEL, 
+		leftTex = "splash-815-topleft",
+		rightTex = "splash-815-right",
+		bottomTex = "splash-815-botleft",
+		feature1Title = SPLASH_BATTLEFORAZEROTH_8_1_5_FEATURE1_TITLE,
+		feature1Desc = SPLASH_BATTLEFORAZEROTH_8_1_5_FEATURE1_DESC,
+		feature2Title = SPLASH_BATTLEFORAZEROTH_8_1_5_FEATURE2_TITLE,
+		feature2Desc = SPLASH_BATTLEFORAZEROTH_8_1_5_FEATURE2_DESC,
+		rightTitle = SPLASH_BATTLEFORAZEROTH_8_1_5_RIGHT_TITLE,
+		rightDescSubText = SPLASH_BATTLEFORAZEROTH_8_1_5_RIGHT_DESC,
 		rightTitleMaxLines = 2,
 		cVar="splashScreenNormal",
 		hideStartButton = true,
@@ -41,39 +41,11 @@ SPLASH_SCREENS = {
 					},
 		},
 	},
-
-	["8_1_NEW_SEASON"] = {	
-		id = SEASON_SPLASH_SCREEN_VERSION, -- 8.1 New seasons rollout 
-		expansion = LE_EXPANSION_BATTLE_FOR_AZEROTH,
-		header = SPLASH_NEW_HEADER_SEASON,
-		leftTex = "splash-8102-topleft",
-		rightTex = "splash-8102-right",
-		bottomTex = "splash-8102-botleft",
-		feature1Title = SPLASH_BATTLEFORAZEROTH_8_1_0_2_FEATURE1_TITLE,
-		feature1Desc = SPLASH_BATTLEFORAZEROTH_8_1_SEASON_FEATURE1_DESC,
-		feature2Title = SPLASH_BATTLEFORAZEROTH_8_1_0_2_FEATURE2_TITLE,
-		feature2Desc = SPLASH_BATTLEFORAZEROTH_8_1_SEASON_FEATURE2_DESC,
-		rightTitle = SPLASH_BATTLEFORAZEROTH_8_1_0_2_RIGHT_TITLE,
-		rightDescSubText = SPLASH_BATTLEFORAZEROTH_8_1_SEASON_RIGHT_DESC,
-		rightTitleMaxLines = 2,
-		cVar="splashScreenSeason",
-		hideStartButton = true,
-		minQuestLevel = 120,
-		minDisplayLevel = 120,
-		features = {
-			[1] = { EnterFunc = function() end,
-					LeaveFunc = function() end,
-					},
-			[2] = { EnterFunc = function() end,
-					LeaveFunc = function() end,
-					},
-		},
-	},
 };
 
 BASE_SPLASH_TAG = nil;
-CURRENT_SPLASH_TAG = "8_1_LEVEL";
-SEASON_SPLASH_TAG = "8_1_NEW_SEASON";
+CURRENT_SPLASH_TAG = "8_1_5_LEVEL";
+SEASON_SPLASH_TAG = nil; -- This will be nil in patches that don't have a season change
 
 -- For the case where we want to skip showing the first screen. 
 local function UpdateOtherSplashScreenCvar(tag)
@@ -85,18 +57,28 @@ local function GetSplashFrameTag(forceShow)
 
 	if passesExpansionCheck and (not SPLASH_SCREENS[CURRENT_SPLASH_TAG].minDisplayLevel or UnitLevel("player") >= SPLASH_SCREENS[CURRENT_SPLASH_TAG].minDisplayLevel) then
 		local lastScreenID = tonumber(GetCVar(SPLASH_SCREENS[CURRENT_SPLASH_TAG].cVar)) or 0;
-		local seasonScreenID = tonumber(GetCVar(SPLASH_SCREENS[SEASON_SPLASH_TAG].cVar)) or 0;
 
-		if (forceShow) then
-			lastScreenID = lastScreenID - 1; 
-			seasonScreenID = seasonScreenID - 1; 
-		end
+		if SEASON_SPLASH_TAG == nil then 
+			if (forceShow) then
+				lastScreenID = lastScreenID - 1; 
+			end
 
-		if seasonScreenID < C_MythicPlus.GetCurrentSeason() then
-			UpdateOtherSplashScreenCvar(CURRENT_SPLASH_TAG);
-			return SEASON_SPLASH_TAG;
-		elseif lastScreenID < SPLASH_SCREENS[CURRENT_SPLASH_TAG].id then 
-			return CURRENT_SPLASH_TAG;
+			if lastScreenID < SPLASH_SCREENS[CURRENT_SPLASH_TAG].id then 
+				return CURRENT_SPLASH_TAG;
+			end
+		else 
+			local seasonScreenID = tonumber(GetCVar(SPLASH_SCREENS[SEASON_SPLASH_TAG].cVar)) or 0;
+			if (forceShow) then
+				lastScreenID = lastScreenID - 1; 
+				seasonScreenID = seasonScreenID - 1; 
+			end
+
+			if seasonScreenID < C_MythicPlus.GetCurrentSeason() then
+				UpdateOtherSplashScreenCvar(CURRENT_SPLASH_TAG);
+				return SEASON_SPLASH_TAG;
+			elseif lastScreenID < SPLASH_SCREENS[CURRENT_SPLASH_TAG].id then 
+				return CURRENT_SPLASH_TAG;
+			end
 		end
 	else
 		return BASE_SPLASH_TAG; -- Kept this for when we have an expansion. Won't be used until then though. 

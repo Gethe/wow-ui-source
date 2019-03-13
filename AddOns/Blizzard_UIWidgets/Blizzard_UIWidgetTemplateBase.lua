@@ -51,8 +51,6 @@ function UIWidgetBaseTemplateMixin:OnLoad()
 end
 
 function UIWidgetBaseTemplateMixin:Setup(widgetInfo)
-	self.orderIndex = widgetInfo.orderIndex;
-	self.widgetTag = widgetInfo.widgetTag;
 	self:Show();
 end
 
@@ -185,4 +183,59 @@ UIWidgetBaseColoredTextMixin = {}
 
 function UIWidgetBaseColoredTextMixin:SetEnabledState(enabledState)
 	SetTextColorForEnabledState(self, enabledState);
+end
+
+UIWidgetBaseStatusBarTemplateMixin = {}
+
+function UIWidgetBaseStatusBarTemplateMixin:Setup(barMin, barMax, barValue, barValueTextType)
+	self:SetMinMaxValues(barMin, barMax);
+	self:SetValue(barValue);
+
+	self.Label:SetShown(barValueTextType ~= Enum.StatusBarValueTextType.Hidden);
+
+	local maxTimeCount = self:GetMaxTimeCount(barValueTextType);
+
+	if maxTimeCount then
+		self.Label:SetText(SecondsToTime(barValue, false, true, maxTimeCount, true));
+	elseif barValueTextType == Enum.StatusBarValueTextType.Value then
+		self.Label:SetText(barValue);
+	elseif barValueTextType == Enum.StatusBarValueTextType.ValueOverMax then
+		self.Label:SetText(FormatFraction(barValue, barMax));
+	elseif barValueTextType == Enum.StatusBarValueTextType.ValueOverMaxNormalized then
+		self.Label:SetText(FormatFraction(barValue - barMin, barMax - barMin));
+	elseif barValueTextType == Enum.StatusBarValueTextType.Percentage then
+		local barPercent = PercentageBetween(barValue, barMin, barMax);
+		local barPercentText = FormatPercentage(barPercent, true);
+		self.Label:SetText(barPercentText);
+	end
+end
+
+function UIWidgetBaseStatusBarTemplateMixin:GetMaxTimeCount(barValueTextType)
+	if barValueTextType == Enum.StatusBarValueTextType.Time then
+		return 2;
+	elseif barValueTextType == Enum.StatusBarValueTextType.TimeShowOneLevelOnly then
+		return 1;
+	end
+end
+
+UIWidgetBaseStateIconTemplateMixin = {}
+
+function UIWidgetBaseStateIconTemplateMixin:Setup(textureKitID, textureKitFormatter, captureIconInfo)
+	if captureIconInfo.iconState == Enum.IconState.ShowState1 then
+		SetupTextureKitOnFrameByID(textureKitID, self.Icon, "%s-"..textureKitFormatter.."-state1", true, true);
+		self:SetTooltip(captureIconInfo.state1Tooltip);
+	elseif captureIconInfo.iconState == Enum.IconState.ShowState2 then
+		SetupTextureKitOnFrameByID(textureKitID, self.Icon, "%s-"..textureKitFormatter.."-state2", true, true);
+		self:SetTooltip(captureIconInfo.state2Tooltip);
+	else
+		self.Icon:Hide();
+	end
+
+	local iconShown = self.Icon:IsShown();
+
+	self:SetWidth(self.Icon:GetWidth());
+	self:SetHeight(self.Icon:GetHeight());
+
+	self:SetShown(iconShown);
+	return iconShown;
 end

@@ -995,8 +995,11 @@ StaticPopupDialogs["CONFIRM_REPORT_BATTLEPET_NAME"] = {
 	text = REPORT_BATTLEPET_NAME_CONFIRMATION,
 	button1 = ACCEPT,
 	button2 = CANCEL,
+	OnShow = function(self)
+		self.reportToken = C_ReportSystem.InitiateReportPlayer(PLAYER_REPORT_TYPE_BAD_BATTLEPET_NAME);
+	end,
 	OnAccept = function(self)
-		C_ReportSystem.ReportPlayer(PLAYER_REPORT_TYPE_BAD_BATTLEPET_NAME);
+		C_ReportSystem.SendReportPlayer(self.reportToken);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -1008,8 +1011,11 @@ StaticPopupDialogs["CONFIRM_REPORT_PET_NAME"] = {
 	text = REPORT_PET_NAME_CONFIRMATION,
 	button1 = ACCEPT,
 	button2 = CANCEL,
+	OnShow = function(self)
+		self.reportToken = C_ReportSystem.InitiateReportPlayer(PLAYER_REPORT_TYPE_BAD_PET_NAME);
+	end,
 	OnAccept = function(self)
-		C_ReportSystem.ReportPlayer(PLAYER_REPORT_TYPE_BAD_PET_NAME);
+		C_ReportSystem.SendReportPlayer(self.reportToken);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -1991,6 +1997,47 @@ StaticPopupDialogs["CONFIRM_AZERITE_EMPOWERED_RESPEC"] = {
 	hasMoneyFrame = 1,
 };
 
+StaticPopupDialogs["CONFIRM_AZERITE_EMPOWERED_RESPEC_EXPENSIVE"] = {
+	text = CONFIRM_AZERITE_EMPOWERED_ITEM_RESPEC_EXPENSIVE,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self, data)
+		PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_REFORGE);
+		C_AzeriteEmpoweredItem.ConfirmAzeriteEmpoweredItemRespec(data.empoweredItemLocation);
+	end,
+	OnShow = function(self, data)
+		self.button1:Disable();
+		self.button2:Enable();
+		self.editBox:SetFocus();
+	end,
+	OnHide = function(self)
+		ChatEdit_FocusActiveWindow();
+		self.editBox:SetText("");
+	end,
+	EditBoxOnEnterPressed = function(self)
+		if ( self:GetParent().button1:IsEnabled() ) then
+			self:GetParent().button1:Click();
+		end
+	end,
+	EditBoxOnTextChanged = function (self)
+		local parent = self:GetParent();
+		if ( strupper(parent.editBox:GetText()) ==  CONFIRM_AZERITE_EMPOWERED_RESPEC_STRING ) then
+			parent.button1:Enable();
+		else
+			parent.button1:Disable();
+		end
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide();
+	end,
+
+	timeout = 0,
+	exclusive = 1,
+	showAlert = 1,
+	hideOnEscape = 1,
+	hasEditBox = 1,
+	maxLetters = 32,
+};
 
 StaticPopupDialogs["DELETE_ITEM"] = {
 	text = DELETE_ITEM,
@@ -2996,6 +3043,18 @@ StaticPopupDialogs["BIND_ENCHANT"] = {
 	button2 = CANCEL,
 	OnAccept = function(self)
 		BindEnchant();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	showAlert = 1,
+	hideOnEscape = 1
+};
+StaticPopupDialogs["BIND_SOCKET"] = {
+	text = ACTION_WILL_BIND_ITEM,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		C_ItemSocketInfo.CompleteSocketing();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -4456,6 +4515,10 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		text:SetText(text_arg1);
 		info.text = text_arg1;
 		info.timeout = text_arg2;
+	elseif ( which == "CONFIRM_AZERITE_EMPOWERED_RESPEC_EXPENSIVE" ) then
+		local separateThousands = true;
+		local goldDisplay = GetMoneyString(data.respecCost, separateThousands);
+		text:SetFormattedText(info.text, goldDisplay, text_arg1, CONFIRM_AZERITE_EMPOWERED_RESPEC_STRING);
 	else
 		text:SetFormattedText(info.text, text_arg1, text_arg2);
 		text.text_arg1 = text_arg1;

@@ -30,6 +30,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetActiveBrawlInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "brawlInfo", Type = "PvpBrawlInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetArenaCrowdControlInfo",
 			Type = "Function",
 
@@ -75,7 +84,7 @@ local PvpInfo =
 			},
 		},
 		{
-			Name = "GetBrawlInfo",
+			Name = "GetAvailableBrawlInfo",
 			Type = "Function",
 			Documentation = { "If nil is returned, PVP_BRAWL_INFO_UPDATED event will be sent when the data is ready." },
 
@@ -302,6 +311,15 @@ local PvpInfo =
 			Returns =
 			{
 				{ Name = "hasArenaSkirmishWinToday", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsActiveBattlefield",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isActiveBattlefield", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -620,9 +638,8 @@ local PvpInfo =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "shortDescription", Type = "string", Nilable = false },
 				{ Name = "longDescription", Type = "string", Nilable = false },
-				{ Name = "active", Type = "bool", Nilable = false },
+				{ Name = "canQueue", Type = "bool", Nilable = false },
 				{ Name = "timeLeftUntilNextChange", Type = "number", Nilable = false },
-				{ Name = "lfgDungeonID", Type = "number", Nilable = false },
 				{ Name = "brawlType", Type = "BrawlType", Nilable = false },
 				{ Name = "mapNames", Type = "table", InnerType = "string", Nilable = false },
 			},

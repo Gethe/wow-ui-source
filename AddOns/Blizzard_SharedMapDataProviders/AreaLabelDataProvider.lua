@@ -158,14 +158,8 @@ function AreaLabelFrameMixin:ClearAllLabels()
 	self.dirty = true;
 end
 
-function AreaLabelFrameMixin:EvaluateLabels()
-	if not self.dirty then
-		return;
-	end
-	self.dirty = false;
-
-	local highestPriorityAreaLabelType;
-
+function AreaLabelFrameMixin:GetHighestPriorityLabelInfo()
+	local highestPriorityAreaLabelType = nil;
 	for areaLabelName, areaLabelType in pairs(MAP_AREA_LABEL_TYPE) do
 		local areaLabelInfo = self.labelInfoByType[areaLabelType];
 		if areaLabelInfo and areaLabelInfo.name then
@@ -176,9 +170,31 @@ function AreaLabelFrameMixin:EvaluateLabels()
 	end
 
 	if highestPriorityAreaLabelType then
-		local areaLabelInfo = self.labelInfoByType[highestPriorityAreaLabelType];
+		return self.labelInfoByType[highestPriorityAreaLabelType];
+	end
+end
+
+function AreaLabelFrameMixin:IsDirty()
+	local areaLabelInfo = self:GetHighestPriorityLabelInfo();
+	if areaLabelInfo and type(areaLabelInfo.description) == "function" then
+		return true;
+	end
+
+	return self.dirty;
+end
+
+function AreaLabelFrameMixin:EvaluateLabels()
+	if not self:IsDirty() then
+		return;
+	end
+	self.dirty = false;
+
+	local areaLabelInfo = self:GetHighestPriorityLabelInfo();
+	if areaLabelInfo then
 		self.Name:SetText(areaLabelInfo.name);
-		self.Description:SetText(areaLabelInfo.description);
+
+		local description = (type(areaLabelInfo.description) == "function" and areaLabelInfo.description()) or areaLabelInfo.description;
+		self.Description:SetText(description);
 
 		if areaLabelInfo.nameColor then
 			self.Name:SetVertexColor(areaLabelInfo.nameColor:GetRGB());

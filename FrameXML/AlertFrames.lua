@@ -440,6 +440,7 @@ function AlertFrameMixin:OnLoad()
 	self:RegisterEvent("QUEST_LOOT_RECEIVED");
 	self:RegisterEvent("NEW_PET_ADDED");
 	self:RegisterEvent("NEW_MOUNT_ADDED");
+	self:RegisterEvent("NEW_TOY_ADDED");
 end
 
 function AlertFrameMixin:OnEvent(event, ...)
@@ -605,6 +606,9 @@ function AlertFrameMixin:OnEvent(event, ...)
 			-- May be invasion reward
 			InvasionAlertSystem:AddCoalesceData(questID, rewardItemLink, texture);
 		end
+	elseif ( event == "NEW_TOY_ADDED") then
+		local toyID = ...;
+		NewToyAlertSystem:AddAlert(toyID);
 	end
 end
 

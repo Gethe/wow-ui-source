@@ -2596,4 +2596,17 @@
 			</Layer>
 		</Layers>
 	</ContainedAlertFrame>
+
+  <ContainedAlertFrame name="NewToyAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" mixin="NewToyAlertFrameMixin" inherits="ItemAlertFrameTemplate">
+    <Layers>
+      <Layer level="BACKGROUND" textureSubLevel="1">
+        <Texture parentKey="Background" atlas="LootToast-MoreAwesome" useAtlasSize="true">
+          <Anchors>
+            <Anchor point="CENTER"/>
+          </Anchors>
+        </Texture>
+      </Layer>
+    </Layers>
+  </ContainedAlertFrame>
+  
 </Ui>

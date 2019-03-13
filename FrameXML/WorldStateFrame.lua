@@ -38,7 +38,7 @@ end
 
 function WorldStateScoreFrame_OnEvent(self, event, ...)
 	if	event == "UPDATE_BATTLEFIELD_SCORE" or event == "UPDATE_WORLD_STATES" then
-		if InActiveBattlefield() and (self:IsVisible() or GetBattlefieldWinner()) then
+		if C_PvP.IsActiveBattlefield() and (self:IsVisible() or GetBattlefieldWinner()) then
 			WorldStateScoreFrame_Resize();
 			WorldStateScoreFrame_Update();
 		end
@@ -84,8 +84,7 @@ function WorldStateScoreFrame_Update()
 	local firstFrameAfterCustomStats = WorldStateScoreFrameHonorGained;
 	WorldStateScoreFramePrestige:SetShown(UnitLevel("player") == MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT]);
 
-	-- LFD Battlefield scoreboard has the same contents as arena skirmish
-	if ( isArena or isLFDBattlefield ) then
+	if ( isArena ) then
 		-- Hide unused tabs
 		WorldStateScoreFrameTab1:Hide();
 		WorldStateScoreFrameTab2:Hide();
@@ -97,7 +96,7 @@ function WorldStateScoreFrame_Update()
 		WorldStateScoreFrameHonorGained:Hide();
 		WorldStateScoreFrameBgRating:Hide();
 
-		if ( isWargame or isSkirmish or isLFDBattlefield ) then
+		if ( isWargame or isSkirmish ) then
 			WorldStateScoreFrameRatingChange:Hide()
 		end
 		WorldStateScoreFrameName:SetWidth(325)
@@ -105,7 +104,7 @@ function WorldStateScoreFrame_Update()
 		-- Reanchor some columns.
 		WorldStateScoreFrameDamageDone:SetPoint("LEFT", WorldStateScoreFrameKB, "RIGHT", -5, 0);
 		WorldStateScoreFrameTeam:Hide();
-		if ( not isWargame and not isSkirmish and not isLFDBattlefield ) then
+		if ( not isWargame and not isSkirmish ) then
 			WorldStateScoreFrameRatingChange:Show();
 			WorldStateScoreFrameRatingChange:SetPoint("LEFT", WorldStateScoreFrameHealingDone, "RIGHT", 0, 0);
 			WorldStateScoreFrameRatingChange.sortType = "bgratingChange";
@@ -208,29 +207,6 @@ function WorldStateScoreFrame_Update()
 				WorldStateScoreWinnerFrameLeft:SetVertexColor(0.19, 0.57, 0.11);
 				WorldStateScoreWinnerFrameRight:SetVertexColor(0.19, 0.57, 0.11);
 				WorldStateScoreWinnerFrameText:SetVertexColor(0.1, 1.0, 0.1);
-			else
-				-- Gold Team won
-				WorldStateScoreWinnerFrameLeft:SetVertexColor(0.85, 0.71, 0.26);
-				WorldStateScoreWinnerFrameRight:SetVertexColor(0.85, 0.71, 0.26);
-				WorldStateScoreWinnerFrameText:SetVertexColor(1, 0.82, 0);
-			end
-		elseif ( isLFDBattlefield ) then
-			if ( GetBattlefieldTeamInfo(battlefieldWinner) ) then
-				local teamName;
-				if ( battlefieldWinner == 0) then
-					teamName = ARENA_TEAM_NAME_PURPLE;
-				else
-					teamName = ARENA_TEAM_NAME_GOLD;
-				end
-				WorldStateScoreWinnerFrameText:SetFormattedText(VICTORY_TEXT_LFD_BATTLEFIELD_WINS, teamName);
-			else
-				WorldStateScoreWinnerFrameText:SetText(VICTORY_TEXT_LFD_BATTLEFIELD_DRAW);
-			end
-			if ( battlefieldWinner == 0 ) then
-				-- Purple Team won
-				WorldStateScoreWinnerFrameLeft:SetVertexColor(0.57, 0.11, 0.57);
-				WorldStateScoreWinnerFrameRight:SetVertexColor(0.57, 0.11, 0.57);
-				WorldStateScoreWinnerFrameText:SetVertexColor(1, 0.1, 1);
 			else
 				-- Gold Team won
 				WorldStateScoreWinnerFrameLeft:SetVertexColor(0.85, 0.71, 0.26);
@@ -383,7 +359,7 @@ function WorldStateScoreFrame_Update()
 				teamDataFailed = 1;
 			end
 
-			if ( isArena or isLFDBattlefield ) then
+			if ( isArena ) then
 				scoreButton.name.text:SetWidth(350);
 				if ( isRegistered ) then
 					scoreButton.team:SetText(teamName);
@@ -474,11 +450,6 @@ function WorldStateScoreFrame_Update()
 						scoreButton.factionLeft:SetVertexColor(0.19, 0.57, 0.11);
 						scoreButton.factionRight:SetVertexColor(0.19, 0.57, 0.11);
 						scoreButton.name.text:SetVertexColor(0.1, 1.0, 0.1);
-					elseif ( isLFDBattlefield ) then
-						-- Purple Team
-						scoreButton.factionLeft:SetVertexColor(0.57, 0.11, 0.57);
-						scoreButton.factionRight:SetVertexColor(0.57, 0.11, 0.57);
-						scoreButton.name.text:SetVertexColor(1, 0.1, 1);
 					else
 						-- Horde
 						scoreButton.factionLeft:SetVertexColor(0.52, 0.075, 0.18);
@@ -491,11 +462,6 @@ function WorldStateScoreFrame_Update()
 						scoreButton.factionLeft:SetVertexColor(0.85, 0.71, 0.26);
 						scoreButton.factionRight:SetVertexColor(0.85, 0.71, 0.26);
 						scoreButton.name.text:SetVertexColor(1, 0.82, 0);
-					elseif ( isLFDBattlefield ) then
-						-- Gold Team
-						scoreButton.factionLeft:SetVertexColor(0.85, 0.71, 0.26);
-						scoreButton.factionRight:SetVertexColor(0.85, 0.71, 0.26);
-						scoreButton.name.text:SetVertexColor(1, 0.82, 0);
 					else
 						-- Alliance
 						scoreButton.factionLeft:SetVertexColor(0.11, 0.26, 0.51);
@@ -503,7 +469,7 @@ function WorldStateScoreFrame_Update()
 						scoreButton.name.text:SetVertexColor(0, 0.68, 0.94);
 					end
 				end
-				if ( ( not isArena and not isLFDBattlefield ) and ( name == UnitName("player") ) ) then
+				if ( ( not isArena ) and ( name == UnitName("player") ) ) then
 					scoreButton.name.text:SetVertexColor(1.0, 0.82, 0);
 				end
 				scoreButton.factionLeft:Show();
@@ -693,7 +659,7 @@ function ToggleWorldStateScoreFrame()
 			end
 		end
 
-		if ( ( not IsActiveBattlefieldArena() or GetBattlefieldWinner() or C_PvP.IsInBrawl() ) and inBattlefield ) then
+		if ( ( not IsActiveBattlefieldArena() or GetBattlefieldWinner() or C_PvP.IsInBrawl() ) and inBattlefield or IsInLFDBattlefield() ) then
 			ShowUIPanel(WorldStateScoreFrame);
 		end
 	end

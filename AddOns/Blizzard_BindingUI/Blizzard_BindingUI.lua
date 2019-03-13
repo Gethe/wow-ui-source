@@ -198,13 +198,17 @@ local function CreatePushToTalkBindingButton()
 		end
 	end);
 
-	handler:SetOnBindingCompletedCallback(function(completedSuccessfully)
+	handler:SetOnBindingCompletedCallback(function(completedSuccessfully, keys)
 		KeyBindingFrame_SetSelected(nil);
 
 		if completedSuccessfully then
 			KeyBindingFrame.outputText:SetText(KEY_BOUND);
 		else
 			KeyBindingFrame.outputText:SetText("");
+		end
+
+		if completedSuccessfully and keys then
+			DisplayUniversalAccessDialogIfRequiredForVoiceChatKeybind(keys);
 		end
 	end);
 

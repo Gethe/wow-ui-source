@@ -214,6 +214,7 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 						local pin = self.activePins[info.questId];
 						if pin then
 							pin:RefreshVisuals();
+							pin.numObjectives = info.numObjectives;	-- Fix for quests with sequenced objectives
 							pin:SetPosition(info.x, info.y); -- Fix for WOW8-48605 - WQ starting location may move based on player location and viewed map
 
 							if self.pingPin and self.pingPin:IsAttachedToQuest(info.questId) then
@@ -357,7 +358,6 @@ end
 
 function WorldQuestPinMixin:RefreshVisuals()
 	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(self.questID);
-	local tradeskillLineID = tradeskillLineIndex and select(7, GetProfessionInfo(tradeskillLineIndex));
 	local selected = self.questID == GetSuperTrackedQuestID();
 	self.Glow:SetShown(selected);
 	self.SelectedGlow:SetShown(rarity ~= LE_WORLD_QUEST_QUALITY_COMMON and selected);
@@ -376,7 +376,7 @@ function WorldQuestPinMixin:RefreshVisuals()
 	self.BountyRing:SetShown(bountyQuestID and IsQuestCriteriaForBounty(self.questID, bountyQuestID));
 
 	local inProgress = self.dataProvider:IsMarkingActiveQuests() and C_QuestLog.IsOnQuest(self.questID);
-	local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskillLineID);
+	local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskillLineIndex);
 	self.Texture:SetAtlas(atlas);
 	if self.worldQuestType == LE_QUEST_TAG_TYPE_PET_BATTLE then
 		self.Texture:SetSize(26, 22);

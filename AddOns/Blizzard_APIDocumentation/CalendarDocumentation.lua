@@ -363,7 +363,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "eventIndex", Type = "number", Nilable = false },
+				{ Name = "inviteIndex", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -765,6 +765,11 @@ local Calendar =
 				{ Name = "monthDay", Type = "number", Nilable = false },
 				{ Name = "index", Type = "number", Nilable = false },
 			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "RemoveEvent",
@@ -951,6 +956,7 @@ local Calendar =
 				{ Name = "difficultyName", Type = "string", Nilable = false },
 				{ Name = "dontDisplayBanner", Type = "bool", Nilable = false },
 				{ Name = "dontDisplayEnd", Type = "bool", Nilable = false },
+				{ Name = "clubID", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -1038,6 +1044,8 @@ local Calendar =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "eventID", Type = "string", Nilable = false },
+				{ Name = "year", Type = "number", Nilable = false },
 				{ Name = "month", Type = "number", Nilable = false },
 				{ Name = "monthDay", Type = "number", Nilable = false },
 				{ Name = "weekday", Type = "number", Nilable = false },
@@ -1047,6 +1055,8 @@ local Calendar =
 				{ Name = "title", Type = "string", Nilable = false },
 				{ Name = "calendarType", Type = "string", Nilable = false },
 				{ Name = "texture", Type = "number", Nilable = false },
+				{ Name = "inviteStatus", Type = "number", Nilable = false },
+				{ Name = "clubID", Type = "string", Nilable = false },
 			},
 		},
 		{

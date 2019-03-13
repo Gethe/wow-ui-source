@@ -4,6 +4,7 @@
 ## Author: Blizzard Entertainment
 ## Version: 1.0
 ## LoadOnDemand: 1
+## RequiredDep: Blizzard_UIWidgets
 
 Blizzard_IslandsQueueUI.lua
 Blizzard_IslandsQueueUI.xml

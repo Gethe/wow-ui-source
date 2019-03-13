@@ -45,7 +45,7 @@ function AdventureMap_QuestOfferDataProviderMixin:RefreshAllData(fromOnShow)
 	local mapAreaID = self:GetMap():GetMapID();
 	for offerIndex = 1, C_AdventureMap.GetNumQuestOffers() do
 		local questID, isTrivial, frequency, isLegendary, title, description, normalizedX, normalizedY, insetIndex = C_AdventureMap.GetQuestOfferInfo(offerIndex);
-		if AdventureMap_IsQuestValid(mapAreaID, questID, normalizedX, normalizedY) and not AdventureMap_IsPositionBlockedByZoneChoice(mapAreaID, normalizedX, normalizedY, insetIndex) then
+		if AdventureMap_IsQuestValid(questID, normalizedX, normalizedY) and not AdventureMap_IsPositionBlockedByZoneChoice(mapAreaID, normalizedX, normalizedY, insetIndex) then
 			self:AddQuest(questID, isTrivial, frequency, isLegendary, title, description, normalizedX, normalizedY, insetIndex);
 		end
 	end

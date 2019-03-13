@@ -1039,39 +1039,17 @@ VideoData["Advanced_BufferingDropDown"]={
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
 			cvars =	{
-				gxTripleBuffer = 0,
+				gxMaxFrameLatency = 2,
 			},
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_ENABLED,
 			cvars =	{
-				gxTripleBuffer = 1,
+				gxMaxFrameLatency = 3,
 			},
 		},
 	},
 	restart = true;
-}
-
--------------------------------------------------------------------------------------------------------
-VideoData["Advanced_LagDropDown"]={
-	name = FIX_LAG;
-	description = OPTION_TOOLTIP_FIX_LAG,
-
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_DISABLED,
-			cvars =	{
-				gxFixLag = 0,
-			},
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_ENABLED,
-			cvars =	{
-				gxFixLag = 1,
-			},
-		},
-	},
-	restart = true,
 }
 
 VideoData["Advanced_MultisampleAntiAliasingDropDown"]={
@@ -1315,8 +1293,6 @@ VideoData["Display_RenderScaleSlider"]={
 	onvaluechanged = function(self, value)
 		self:updatecustomfield(value);
 	end,
-
-	restart = true,
 }
 
 -------------------------------------------------------------------------------------------------------
@@ -1326,7 +1302,7 @@ VideoData["Advanced_GraphicsAPIDropDown"]={
 
 	tablefunction =
 		function(self)
-			self.cvarValues = { GetGraphicsAPIs() };	-- this is a table of the cvar values, ie "d3d9", "opengl", etc
+			self.cvarValues = { GetGraphicsAPIs() };	-- this is a table of the cvar values, ie "d3d11", "metal", etc
 			local temp = { };
 			for i = 1, #self.cvarValues do
 				tinsert(temp, _G["GXAPI_"..strupper(self.cvarValues[i])]);
@@ -1347,8 +1323,7 @@ VideoData["Advanced_GraphicsAPIDropDown"]={
 			end
 		end,
 	lookup = Graphics_TableLookupSafe,
-	clientRestart = true,
-	gameRestart = true,
+	restart = true,
 }
 
 VideoData["Advanced_PhysicsInteractionDropDown"]={

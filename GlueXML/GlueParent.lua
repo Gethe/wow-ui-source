@@ -18,10 +18,6 @@ GLUE_SECONDARY_SCREENS = {
 
 ACCOUNT_SUSPENDED_ERROR_CODE = 53;
 
--- Mirror of the same variables in Blizzard_StoreUISecure.lua and UIParent.lua
-local WOW_GAMES_CATEGORY_ID = 33; 
-WOW_GAME_TIME_CATEGORY_ID = 37;
-
 local function OnDisplaySizeChanged(self)
 	local width = GetScreenWidth();
 	local height = GetScreenHeight();
@@ -469,6 +465,8 @@ local glueScreenTags =
 		["HIGHMOUNTAINTAUREN"] = true,
 		["DARKIRONDWARF"] = true,
 		["MAGHARORC"] = true,
+		["ZANDALARITROLL"] = true,
+		["KULTIRAN"] = true,
 	},
 };
 

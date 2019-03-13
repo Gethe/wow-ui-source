@@ -227,6 +227,12 @@
 				<BarColor r="1.0" g="0.7" b="0.0"/>
 			</StatusBar>
 
+			<Frame parentKey="WidgetContainer" scale="0.5" inherits="UIWidgetContainerTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.castBar" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Frame>
+
 			<Frame parentKey="BuffFrame" inherits="HorizontalLayoutFrame" mixin="NameplateBuffContainerMixin">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.healthBar" x="-1"/>

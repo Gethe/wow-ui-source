@@ -87,4 +87,17 @@
 			</Layer>
 		</Layers>
 	</Frame>
+
+	<Frame name="UIWidgetBaseStateIconTemplate" inherits="UIWidgetTemplateTooltipFrame" mixin="UIWidgetBaseStateIconTemplateMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
 </Ui>

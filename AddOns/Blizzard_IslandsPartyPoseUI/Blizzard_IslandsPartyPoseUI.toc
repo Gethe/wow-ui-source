@@ -2,7 +2,7 @@
 ## Title: Blizzard_IslandsPartyPoseUI
 ## Notes: What's better than a party? An island party! (Island End Screen) 
 ## Author: Blizzard Entertainment
-## RequiredDep: Blizzard_PartyPoseUI
+## RequiredDep: Blizzard_PartyPoseUI, Blizzard_UIWidgets
 ## Version: 1.0
 ## LoadOnDemand: 1
 

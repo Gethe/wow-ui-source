@@ -47,6 +47,10 @@ local ModelSettings = {
 	["MagharOrcFemale"] = { panMaxLeft = -0.4, panMaxRight = 0.3, panMaxTop = 1.2, panMaxBottom = -0.3, panValue = 37 },
 	["DarkIronDwarfMale"] = { panMaxLeft = -0.4, panMaxRight = 0.6, panMaxTop = 0.9, panMaxBottom = -0.2, panValue = 44 },
 	["DarkIronDwarfFemale"] = { panMaxLeft = -0.3, panMaxRight = 0.3, panMaxTop = 0.9, panMaxBottom = -0.2, panValue = 47 },
+	["KulTiranMale"] = { panMaxLeft = -0.6, panMaxRight = 0.7, panMaxTop = 1.5, panMaxBottom = -0.6, panValue = 38 },
+	["KulTiranFemale"] = { panMaxLeft = -0.6, panMaxRight = 0.7, panMaxTop = 1.5, panMaxBottom = -0.6, panValue = 38 },
+	["ZandalariTrollMale"] = { panMaxLeft = -0.5, panMaxRight = 0.6, panMaxTop = 1.3, panMaxBottom = -0.4, panValue = 27 },
+	["ZandalariTrollFemale"] = { panMaxLeft = -0.4, panMaxRight = 0.5, panMaxTop = 1.5, panMaxBottom = -0.4, panValue = 31 },
 }
 
 local playerRaceSex;

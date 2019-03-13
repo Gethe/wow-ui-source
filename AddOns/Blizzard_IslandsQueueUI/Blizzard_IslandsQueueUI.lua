@@ -124,6 +124,11 @@ local function SetWidgetFrameAnchors(frame, anchorFrame)
 	frame:SetFrameLevel(anchorFrame:GetFrameLevel() +10);
 end
 
+local function WidgetInit(widgetFrame)
+	widgetFrame.Text:SetSize(165, 50); 
+	widgetFrame.Text:SetFontObjectsToTry(GameFontNormalLarge, GameFontNormalMed1, GameFontNormal);
+end 
+
 local function WidgetsLayout(widgetContainer, sortedWidgets)
 	for index, widgetFrame in ipairs(sortedWidgets) do
 		if ( index == 1 ) then
@@ -147,7 +152,7 @@ function IslandsQueueFrameMixin:OnLoad()
 
 	self.portrait:Hide();
 	SetPortraitToTexture(self.ArtOverlayFrame.portrait, "Interface\\Icons\\icon_treasuremap");
-	UIWidgetManager:RegisterWidgetSetContainer(ISLANDS_QUEUE_WIDGET_SET_ID, self.IslandCardsFrame, WidgetsLayout);
+	self.IslandCardsFrame:RegisterForWidgetSet(ISLANDS_QUEUE_WIDGET_SET_ID, WidgetsLayout, WidgetInit);
 	self:RegisterEvent("ISLANDS_QUEUE_CLOSE");
 end
 

@@ -3,7 +3,7 @@ AzeriteItemLevelUpToastMixin = {};
 function AzeriteItemLevelUpToastMixin:OnLoad()
 	self:RegisterEvent("AZERITE_ITEM_POWER_LEVEL_CHANGED");
 
-	self.itemFramePool = CreateFramePool("FRAME", self.UnlockItemsFrame, "AzeriteUnlockedItemTemplate");
+	self.itemFramePool = CreateFramePool("ItemButton", self.UnlockItemsFrame, "AzeriteUnlockedItemTemplate");
 end
 
 function AzeriteItemLevelUpToastMixin:OnShow()

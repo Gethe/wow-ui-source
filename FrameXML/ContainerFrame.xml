@@ -67,7 +67,7 @@
         </KeyValues>
     </Frame>
 	
-	<Button name="ContainerFrameItemButtonTemplate" inherits="ItemButtonTemplate" hidden="true" virtual="true">
+	<ItemButton name="ContainerFrameItemButtonTemplate" mixin="ContainerFrameItemButtonMixin" hidden="true" virtual="true">
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 		</Anchors>
@@ -200,7 +200,7 @@
 				ContainerFrameItemButton_OnDrag(self);
 			</OnReceiveDrag>
 		</Scripts>
-	</Button>
+	</ItemButton>
 	<Frame name="ContainerFrameTemplate" frameStrata="MEDIUM" toplevel="true" movable="true" enableMouse="true" hidden="true" virtual="true">
 		<Size x="256" y="256"/>
 		<Layers>
@@ -268,42 +268,42 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Button name="$parentItem1" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem2" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem3" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem4" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem5" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem6" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem7" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem8" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem9" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem10" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem11" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem12" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem13" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem14" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem15" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem16" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem17" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem18" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem19" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem20" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem21" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem22" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem23" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem24" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem25" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem26" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem27" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem28" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem29" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem30" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem31" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem32" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem33" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem34" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem35" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem36" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem1" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem2" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem3" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem4" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem5" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem6" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem7" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem8" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem9" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem10" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem11" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem12" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem13" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem14" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem15" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem16" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem17" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem18" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem19" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem20" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem21" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem22" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem23" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem24" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem25" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem26" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem27" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem28" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem29" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem30" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem31" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem32" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem33" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem34" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem35" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem36" inherits="ContainerFrameItemButtonTemplate"/>
 
 			<Button name="$parentPortraitButton" parentKey="PortraitButton">
 				<Size x="40" y="40"/>

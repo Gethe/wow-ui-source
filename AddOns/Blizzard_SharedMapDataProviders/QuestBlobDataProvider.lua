@@ -187,9 +187,9 @@ function QuestBlobPinMixin:UpdateTooltip()
 	end
 
 	local title, _, _, _, _, _, _, questID = GetQuestLogTitle(questLogIndex);
-	WorldMapTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT", 5, 2);
-	WorldMapTooltip:SetText(title);
-	QuestUtils_AddQuestTypeToTooltip(WorldMapTooltip, questID, NORMAL_FONT_COLOR);
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT", 5, 2);
+	GameTooltip:SetText(title);
+	QuestUtils_AddQuestTypeToTooltip(GameTooltip, questID, NORMAL_FONT_COLOR);
 
 	local numObjectives = GetNumQuestLeaderBoards(questLogIndex);
 	for i = 1, numObjectives do
@@ -203,10 +203,10 @@ function QuestBlobPinMixin:UpdateTooltip()
 		end
 
 		if text and not finished then
-			WorldMapTooltip:AddLine(QUEST_DASH..text, 1, 1, 1, true);
+			GameTooltip:AddLine(QUEST_DASH..text, 1, 1, 1, true);
 		end
 	end
-	WorldMapTooltip:Show();
+	GameTooltip:Show();
 end
 
 function QuestBlobPinMixin:OnMouseEnter()
@@ -214,7 +214,7 @@ function QuestBlobPinMixin:OnMouseEnter()
 end
 
 function QuestBlobPinMixin:OnMouseLeave()
-	if WorldMapTooltip:GetOwner() == self then
-		WorldMapTooltip:Hide();
+	if GameTooltip:GetOwner() == self then
+		GameTooltip:Hide();
 	end
 end

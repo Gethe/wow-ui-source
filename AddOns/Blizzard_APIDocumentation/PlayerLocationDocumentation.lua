@@ -92,6 +92,20 @@ local PlayerLocation =
 				{ Name = "isConnected", Type = "bool", Nilable = true },
 			},
 		},
+		{
+			Name = "UnitIsSameServer",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "unitIsSameServer", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

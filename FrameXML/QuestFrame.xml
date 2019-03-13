@@ -50,14 +50,20 @@
 		</Layers> 
  		<Frames>
 			<Frame name="QuestNpcNameFrame">
-				<Size x="300" y="14"/>
+				<Size x="0" y="14"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="QuestFrame" relativePoint="TOP" x="0" y="-5"/>
+					<Anchor point="TOP" relativeTo="QuestFrame" relativePoint="TOP" x="0" y="-4"/>
+					<Anchor point="LEFT" relativeTo="QuestFramePortrait" relativePoint="RIGHT" x="10" y="0"/>
+					<Anchor point="RIGHT" x="-38" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<FontString name="QuestFrameNpcNameText" inherits="GameFontHighlight" text="Title Text">
+						<FontString name="QuestFrameNpcNameText" inherits="GameFontHighlight">
 							<Size x="235" y="20"/>
+							<Anchors>
+								<Anchor point="LEFT"/>
+								<Anchor point="RIGHT"/>
+							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -320,138 +326,12 @@
 										</FontString>
 									</Layer>
 								</Layers>
-								<Frames>
-									<Button name="QuestTitleButton1" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="CurrentQuestsText" relativePoint="BOTTOMLEFT" x="-10" y="-20"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton2" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton1"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton3" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton2"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton4" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton3"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton5" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton4"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton6" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton5"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton7" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton6"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton8" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton7"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton9" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton8"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton10" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton9"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton11" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton10"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton12" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton11"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton13" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton12"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton14" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton13"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton15" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton14"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton16" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton15"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton17" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton16"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton18" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton17"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton19" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton18"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton20" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton19"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton21" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton20"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton22" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton21"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton23" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton22"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton24" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton23"/>
-										</Anchors>
-									</Button>
-									<Button name="QuestTitleButton25" inherits="QuestTitleButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton24"/>
-										</Anchors>
-									</Button>
-								</Frames>
 							</Frame>
 						</ScrollChild>
 					</ScrollFrame>
 				</Frames>
 				<Scripts>
+					<OnLoad function="QuestFrameGreetingPanel_OnLoad"/>
 					<OnShow function="QuestFrameGreetingPanel_OnShow"/>
 				</Scripts>
  			</Frame>

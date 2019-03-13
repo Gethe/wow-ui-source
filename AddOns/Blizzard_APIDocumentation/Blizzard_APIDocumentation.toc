@@ -31,11 +31,13 @@ BattleNetDocumentation.lua
 BattlePetDocumentation.lua
 BlackMarketInfoDocumentation.lua
 BrowserDocumentation.lua
+CVarDocumentation.lua
 CalendarDocumentation.lua
 ChallengeModeInfoDocumentation.lua
 ChatBubblesDocumentation.lua
 ChatInfoDocumentation.lua
 CinematicDocumentation.lua
+ClassColorDocumentation.lua
 ClassTrialDocumentation.lua
 ClubDocumentation.lua
 CombatLogDocumentation.lua
@@ -125,6 +127,7 @@ SummonInfoDocumentation.lua
 SystemDocumentation.lua
 TalkingHeadDocumentation.lua
 TaxiMapDocumentation.lua
+TextureUtilsDocumentation.lua
 ToyBoxInfoDocumentation.lua
 TradeInfoDocumentation.lua
 TradeSkillUIDocumentation.lua

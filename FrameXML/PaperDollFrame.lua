@@ -1608,7 +1608,8 @@ end
 function PaperDollItemSlotButton_Update(self)
 	local textureName = GetInventoryItemTexture("player", self:GetID());
 	local cooldown = _G[self:GetName().."Cooldown"];
-	if ( textureName ) then
+	local hasItem = textureName ~= nil;
+	if ( hasItem ) then
 		SetItemButtonTexture(self, textureName);
 		SetItemButtonCount(self, GetInventoryItemCount("player", self:GetID()));
 		if ( GetInventoryItemBroken("player", self:GetID())
@@ -1623,7 +1624,6 @@ function PaperDollItemSlotButton_Update(self)
 			local start, duration, enable = GetInventoryItemCooldown("player", self:GetID());
 			CooldownFrame_Set(cooldown, start, duration, enable);
 		end
-		self.hasItem = 1;
 	else
 		local textureName = self.backgroundTextureName;
 		if ( self.checkRelic and UnitHasRelicSlot("player") ) then
@@ -1636,7 +1636,6 @@ function PaperDollItemSlotButton_Update(self)
 		if ( cooldown ) then
 			cooldown:Hide();
 		end
-		self.hasItem = nil;
 	end
 
 	local quality = GetInventoryItemQuality("player", self:GetID());
@@ -1652,7 +1651,7 @@ function PaperDollItemSlotButton_Update(self)
 	end
 
 	if self.HasPaperDollAzeriteItemOverlay then
-		self:SetAzeriteItem(self.hasItem and ItemLocation:CreateFromEquipmentSlot(self:GetID()) or nil);
+		self:SetAzeriteItem(hasItem and ItemLocation:CreateFromEquipmentSlot(self:GetID()) or nil);
 	end
 
 	PaperDollItemSlotButton_UpdateLock(self);
@@ -1969,7 +1968,7 @@ function PaperDollFrameItemFlyout_PostGetItems(itemSlotButton, itemDisplayTable,
 		end
 		numItems = numItems + 1;
 	end
-	if ( itemSlotButton.hasItem ) then
+	if ( GetInventoryItemTexture("player", itemSlotButton:GetID()) ~= nil ) then
 		tinsert(itemDisplayTable, 1, EQUIPMENTFLYOUT_PLACEINBAGS_LOCATION);
 		numItems = numItems + 1;
 	end

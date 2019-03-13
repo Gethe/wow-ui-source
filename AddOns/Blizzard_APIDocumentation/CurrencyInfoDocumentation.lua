@@ -124,6 +124,9 @@ local CurrencyInfo =
 			{
 				{ Name = "currencyType", Type = "number", Nilable = true },
 				{ Name = "quantity", Type = "number", Nilable = true },
+				{ Name = "quantityChange", Type = "number", Nilable = true },
+				{ Name = "quantityGainSource", Type = "number", Nilable = true },
+				{ Name = "quantityLostSource", Type = "number", Nilable = true },
 			},
 		},
 		{

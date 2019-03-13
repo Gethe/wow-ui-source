@@ -13,7 +13,7 @@
 		</Scripts>
 	</CheckButton>
 
-	<Frame name="OverrideActionBar" frameStrata="HIGH" parent="UIParent" enableMouse="true" toplevel="true" hidden="true">
+	<Frame name="OverrideActionBar" frameStrata="MEDIUM" parent="UIParent" enableMouse="true" toplevel="true" hidden="true">
 		<Animations>
 			<AnimationGroup parentKey="slideOut">
 				<Translation offsetX="0" offsetY="-180" duration="0.4" order="1"/>

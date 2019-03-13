@@ -1,32 +1,51 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ToyBox.lua"/>
-	
-	<CheckButton name="ToySpellButtonTemplate" inherits="CollectionsSpellButtonTemplate" virtual="true">
-		<Scripts>
-			<OnLoad>
-				CollectionsSpellButton_OnLoad(self, ToySpellButton_UpdateButton)
-			</OnLoad>
-			
-			<OnClick>
-				if ( IsModifiedClick() ) then
-					ToySpellButton_OnModifiedClick(self, button);
-				elseif (not self.isPassive) then
-					ToySpellButton_OnClick(self, button);
-				end
-			</OnClick>
-			
-			<OnShow function="ToySpellButton_OnShow"/>
-			<OnHide function="ToySpellButton_OnHide"/>
-			
-			<OnDragStart function="ToySpellButton_OnDrag"/>
-			<OnReceiveDrag function="ToySpellButton_OnDrag"/>
-			
-			<OnEnter function="ToySpellButton_OnEnter"/>
-		</Scripts>
-	</CheckButton>
 
-	<Frame name="ToyBox" parent="CollectionsJournal" setAllPoints="true" hidden="true">
+
+  <ModelScene name="ToySpellButtonFanfareModelSceneTemplate" useParentLevel="true" inherits="NonInteractableModelSceneMixinTemplate" mixin="ToyWrappedModelSceneMixin" virtual="true">
+    <KeyValues>
+      <KeyValue key="normalIntensity" value="0.75" type="number"/>
+      <KeyValue key="highlightIntensity" value="1.2" type="number"/>
+    </KeyValues>
+
+    <Size x="300" y="300"/>
+
+    <Scripts>
+      <OnEnter method="OnMouseEnter" />
+      <OnLeave method="OnMouseLeave" />
+      <OnShow method="OnShow" />
+    </Scripts>
+
+    <Animations>
+      <AnimationGroup parentKey="UnwrapAnim" setToFinalAlpha="true">
+        <Alpha parentKey="WrappedAnim" startDelay="1.2" fromAlpha="1" toAlpha="0" duration="0.3" order="1"/>
+      </AnimationGroup>
+    </Animations>
+  </ModelScene>
+
+
+  <CheckButton name="ToySpellButtonTemplate" inherits="CollectionsSpellButtonTemplate" virtual="true">
+    <Scripts>
+      <OnLoad>
+        CollectionsSpellButton_OnLoad(self, ToySpellButton_UpdateButton)
+      </OnLoad>
+      <OnClick>
+        if ( IsModifiedClick() ) then
+        ToySpellButton_OnModifiedClick(self, button);
+        elseif (not self.isPassive) then
+        ToySpellButton_OnClick(self, button);
+        end
+      </OnClick>
+      <OnShow function="ToySpellButton_OnShow"/>
+      <OnHide function="ToySpellButton_OnHide"/>
+      <OnDragStart function="ToySpellButton_OnDrag"/>
+      <OnReceiveDrag function="ToySpellButton_OnDrag"/>
+      <OnEnter function="ToySpellButton_OnEnter"/>
+    </Scripts>
+  </CheckButton>
+
+  <Frame name="ToyBox" parent="CollectionsJournal" setAllPoints="true" hidden="true">
 		<Frames>
 			<StatusBar parentKey="progressBar" inherits="CollectionsProgressBarTemplate" />
 			

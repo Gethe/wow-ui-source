@@ -448,7 +448,7 @@
 								<Anchor point="LEFT"/>
 							</Anchors>						
 						</Texture>						
-						<FontString parentKey="CharsLeftString" inherits="GameFontNormalLarge" text="140">
+						<FontString parentKey="CharsLeftString" inherits="GameFontNormalLarge" text="280">
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="-10" y="2"/>
 							</Anchors>

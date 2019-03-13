@@ -18,6 +18,7 @@ if tbl then
 
 	Import("ipairs");
 	Import("GetFinalNameFromTextureKit");
+	Import("C_Texture");
 end
 ---------------
 
@@ -102,7 +103,11 @@ local function SetupPieceVisuals(piece, setupInfo, pieceLayout, textureKit)
 	SetupTextureCoordinates(piece, setupInfo, pieceLayout);
 
 	-- textureKit is optional, that's fine; but if it's nil the caller should ensure that there are no format specifiers in .atlas
-	piece:SetAtlas(GetFinalNameFromTextureKit(pieceLayout.atlas, textureKit), true);
+	local atlasName = GetFinalNameFromTextureKit(pieceLayout.atlas, textureKit);
+	local info = C_Texture.GetAtlasInfo(atlasName);
+	piece:SetHorizTile(info and info.tilesHorizontally or false);
+	piece:SetVertTile(info and info.tilesVertically or false);
+	piece:SetAtlas(atlasName, true);
 end
 
 local function SetupCorner(container, piece, setupInfo, pieceLayout)

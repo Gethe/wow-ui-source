@@ -97,6 +97,15 @@ local SpecializationInfo =
 			},
 		},
 		{
+			Name = "IsInitialized",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isSpecializationDataInitialized", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPvpTalentLocked",
 			Type = "Function",
 

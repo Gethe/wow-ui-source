@@ -175,7 +175,7 @@ function ContainerFrame_OnHide(self)
 
 	local bagButton = ContainerFrame_GetBagButton(self);
 	if ( bagButton ) then
-		bagButton:SetChecked(false);
+		bagButton.SlotHighlightTexture:Hide();
 	end
 	ContainerFrame1.bagsShown = ContainerFrame1.bagsShown - 1;
 	-- Remove the closed bag from the list and collapse the rest of the entries
@@ -226,7 +226,7 @@ function ContainerFrame_OnShow(self)
 
 	local bagButton = ContainerFrame_GetBagButton(self);
 	if ( bagButton ) then
-		bagButton:SetChecked(true);
+		bagButton.SlotHighlightTexture:Show();
 	end
 	
 	self.FilterIcon:Hide();
@@ -669,16 +669,15 @@ function ContainerFrame_Update(self)
 			end
 		end
 	end
+
+	local bagButton = ContainerFrame_GetBagButton(self);
+	bagButton:UpdateItemContextMatching();
 end
 
-function ContainerFrame_UpdateAll(startingFrom)
-	startingFrom = startingFrom or 1;
-	local hasItemContext = ItemButtonUtil.HasItemContext();
-	for i = startingFrom, NUM_CONTAINER_FRAMES, 1 do
+function ContainerFrame_UpdateAll()
+	for i = 1, NUM_CONTAINER_FRAMES, 1 do
 		local frame = _G["ContainerFrame"..i];
-		local bagButton = ContainerFrame_GetBagButton(frame);
-		local hasRelevantItemContext = hasItemContext and bagButton ~= nil;
-		if ( frame:IsShown() or hasRelevantItemContext ) then
+		if ( frame:IsShown() ) then
 			ContainerFrame_Update(frame);
 		end
 	end
@@ -1337,8 +1336,10 @@ function ContainerFrameItemButton_CalculateItemTooltipAnchors(self, mainTooltip)
 	local x = self:GetRight();
 	local anchorFromLeft = x < GetScreenWidth() / 2;
 	if ( anchorFromLeft ) then
+		mainTooltip:SetAnchorType("ANCHOR_RIGHT", 0, 0);
 		mainTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
 	else
+		mainTooltip:SetAnchorType("ANCHOR_LEFT", 0, 0);
 		mainTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT");
 	end
 end
@@ -1383,7 +1384,7 @@ function ContainerFrameItemButton_OnEnter(self)
 
 	ContainerFrameItemButton_CalculateItemTooltipAnchors(self, GameTooltip);
 
-	if ( requiresCompareTooltipReanchor and (IsModifiedClick("COMPAREITEMS") or GetCVarBool("alwaysCompareItems")) ) then
+	if ( IsModifiedClick("COMPAREITEMS") or GetCVarBool("alwaysCompareItems") ) then
 		GameTooltip_ShowCompareItem(GameTooltip);
 	end
 
@@ -1417,6 +1418,12 @@ function ContainerFrameItemButton_OnLeave(self)
 	if ArtifactFrame then
 		ArtifactFrame:OnInventoryItemMouseLeave(self:GetParent():GetID(), self:GetID());
 	end
+end
+
+ContainerFrameItemButtonMixin = {};
+
+function ContainerFrameItemButtonMixin:GetItemContextMatchResult()
+	return ItemButtonUtil.GetItemContextMatchResultForItem(ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID()));
 end
 
 function ContainerFramePortraitButton_OnEnter(self)
@@ -1527,16 +1534,13 @@ function ToggleAllBags()
 	end
 end
 
-function OpenAllBags(frame, forceUpdate)
+function OpenAllBags(frame)
 	if ( not UIParent:IsShown() ) then
 		return;
 	end
 	
 	for i=0, NUM_BAG_FRAMES, 1 do
 		if (IsBagOpen(i)) then
-			if forceUpdate then
-				ContainerFrame_UpdateAll();
-			end
 			return;
 		end
 	end
@@ -1552,17 +1556,10 @@ function OpenAllBags(frame, forceUpdate)
 	end
 	ContainerFrame1.allBags = false;
 	CheckBagSettingsTutorial();
-	
-	if forceUpdate then
-		ContainerFrame_UpdateAll(NUM_BAG_FRAMES + 1);
-	end
 end
 
-function CloseAllBags(frame, forceUpdate)
+function CloseAllBags(frame)
 	if ( frame and frame:GetName() ~= FRAME_THAT_OPENED_BAGS) then
-		if forceUpdate then
-			ContainerFrame_UpdateAll();
-		end
 		return;
 	end
 
@@ -1570,10 +1567,6 @@ function CloseAllBags(frame, forceUpdate)
 	CloseBackpack();
 	for i=1, NUM_BAG_FRAMES, 1 do
 		CloseBag(i);
-	end
-	
-	if forceUpdate then
-		ContainerFrame_UpdateAll(NUM_BAG_FRAMES + 1);
 	end
 end
 

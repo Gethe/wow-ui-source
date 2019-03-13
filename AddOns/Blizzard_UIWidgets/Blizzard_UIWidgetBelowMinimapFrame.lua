@@ -26,6 +26,7 @@ local function WidgetsLayout(widgetContainer, sortedWidgets)
 end
 
 function UIWidgetBelowMinimapContainerMixin:OnLoad()
+	UIWidgetContainerMixin.OnLoad(self);
 	local setID = C_UIWidgetManager.GetBelowMinimapWidgetSetID();
-	UIWidgetManager:RegisterWidgetSetContainer(setID, self, WidgetsLayout);
+	self:RegisterForWidgetSet(setID, WidgetsLayout);
 end

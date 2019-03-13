@@ -330,7 +330,7 @@ function MountListDragButton_OnClick(self, button)
 			local spellName = GetSpellInfo(id);
 			ChatEdit_InsertLink(spellName);
 		else
-			local spellLink = GetSpellLink(id)
+			local spellLink = GetSpellLink(id);
 			ChatEdit_InsertLink(spellLink);
 		end
 	else
@@ -350,7 +350,7 @@ function MountListItem_OnClick(self, button)
 			local spellName = GetSpellInfo(id);
 			ChatEdit_InsertLink(spellName);
 		else
-			local spellLink = GetSpellLink(id)
+			local spellLink = GetSpellLink(id);
 			ChatEdit_InsertLink(spellLink);
 		end
 	elseif ( self.spellID ~= MountJournal.selectedSpellID ) then

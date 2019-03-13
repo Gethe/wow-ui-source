@@ -88,3 +88,11 @@ function TradeSkillFrame_AreAllSourcesUnfiltered()
 	end
 	return true;
 end
+
+function TradeSkillFrame_GetBaseRecipeID(recipeID)
+	local info = C_TradeSkillUI.GetRecipeInfo(recipeID);
+	while info and info.previousRecipeID do
+		info = C_TradeSkillUI.GetRecipeInfo(info.previousRecipeID);
+	end
+	return info and info.recipeID or recipeID;
+end
