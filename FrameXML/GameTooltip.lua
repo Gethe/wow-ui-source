@@ -627,19 +627,20 @@ function GameTooltip_AnchorComparisonTooltips(self, anchorFrame, shoppingTooltip
 		side = "right";
 	end
 
-	-- see if we should slide the tooltip
-	if ( anchorType and anchorType ~= "ANCHOR_PRESERVE" ) then
-		local slideAmount = 0;
-		if ( (side == "left") and (totalWidth > leftPos) ) then
-			slideAmount = totalWidth - leftPos;
-		elseif ( (side == "right") and (rightPos + totalWidth) >  screenWidth ) then
-			slideAmount = screenWidth - (rightPos + totalWidth);
-		end
+	if ( totalWidth > 0 ) then -- if totalWidth > 0, we potenitally need to slide the tooltip
+		if ( anchorType and anchorType ~= "ANCHOR_PRESERVE" ) then
+			local slideAmount = 0;
+			if ( (side == "left") and (totalWidth > leftPos) ) then
+				slideAmount = totalWidth - leftPos;
+			elseif ( (side == "right") and (rightPos + totalWidth) >  screenWidth ) then
+				slideAmount = screenWidth - (rightPos + totalWidth);
+			end
 
-		if ( sideAnchorFrame.SetAnchorType ) then
-			sideAnchorFrame:SetAnchorType(anchorType, slideAmount, 0);
-		else
-			self:SetAnchorType(anchorType, slideAmount, 0);
+			if ( sideAnchorFrame.SetAnchorType ) then
+				sideAnchorFrame:SetAnchorType(anchorType, slideAmount, 0);
+			else
+				self:SetAnchorType(anchorType, slideAmount, 0);
+			end
 		end
 	end
 

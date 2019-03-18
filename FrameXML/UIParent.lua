@@ -4835,8 +4835,8 @@ function SetDoubleGuildTabardTextures(unit, leftEmblemTexture, rightEmblemTextur
 end
 
 function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
-	local bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFilename;
-	if ( tabardData ) then
+	local bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFileID, emblemIndex;
+	if ( tabardData )  then
 		bkgR = tabardData[1];
 		bkgG = tabardData[2];
 		bkgB = tabardData[3];
@@ -4846,11 +4846,12 @@ function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture
 		emblemR = tabardData[7];
 		emblemG = tabardData[8];
 		emblemB = tabardData[9];
-		emblemFilename = tabardData[10];
+		emblemFileID = tabardData[10];
+		emblemIndex = tabardData[11];
 	else
-		bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFilename, emblemIndex = GetGuildLogoInfo(unit);
+		bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFileID, emblemIndex = GetGuildLogoInfo(unit);
 	end
-	if ( emblemFilename ) then
+	if ( emblemFileID ) then
 		if ( backgroundTexture ) then
 			backgroundTexture:SetVertexColor(bkgR / 255, bkgG / 255, bkgB / 255);
 		end
@@ -4865,7 +4866,7 @@ function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture
 			end
 			emblemTexture:SetVertexColor(emblemR / 255, emblemG / 255, emblemB / 255);
 		elseif ( emblemTexture ) then
-			emblemTexture:SetTexture(emblemFilename);
+			emblemTexture:SetTexture(emblemFileID);
 			emblemTexture:SetVertexColor(emblemR / 255, emblemG / 255, emblemB / 255);
 		end
 	else

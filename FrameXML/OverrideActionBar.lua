@@ -95,9 +95,11 @@ function OverrideActionBar_OnShow(self)
 end
 
 function OverrideActionBar_UpdateMicroButtons()
-	local anchorX, anchorY = OverrideActionBar_GetMicroButtonAnchor();
-	UpdateMicroButtonsParent(OverrideActionBar);
-	MoveMicroButtons("BOTTOMLEFT", OverrideActionBar, "BOTTOMLEFT", anchorX, anchorY, true);
+	if ActionBarController_GetCurrentActionBarState() == LE_ACTIONBAR_STATE_OVERRIDE then
+		local anchorX, anchorY = OverrideActionBar_GetMicroButtonAnchor();
+		UpdateMicroButtonsParent(OverrideActionBar);
+		MoveMicroButtons("BOTTOMLEFT", OverrideActionBar, "BOTTOMLEFT", anchorX, anchorY, true);
+	end
 end
 
 function OverrideActionBar_UpdateSkin()
