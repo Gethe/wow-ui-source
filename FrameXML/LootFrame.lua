@@ -806,7 +806,7 @@ function GetBonusRollEncounterJournalLinkDifficulty()
 end
 
 function EncounterJournalLinkButton_IsLinkDataAvailable()
-    if ( BonusRollFrame.instanceID or BonusRollFrame.encounterID ) then
+    if ( BonusRollFrame.instanceID and BonusRollFrame.instanceID ~= 0 ) then
         local difficultyID = GetBonusRollEncounterJournalLinkDifficulty();
         -- Mythic+ doesn't yet have all the itemContext info available 
         --that we need to properly show item tooltips

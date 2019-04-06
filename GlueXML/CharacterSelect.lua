@@ -2051,7 +2051,7 @@ function CharacterServicesMaster_UpdateServiceButton()
     for _, boostType in pairs(characterServiceDisplayInfo) do
 		DisplayBattlepayTokens(upgradeInfo[boostType], boostType);
 	end
-
+--[[
 	local accountExpansion = GetAccountExpansionLevel();
 	local MINIMUM_BOOST_POPUP_SHOWN = 7;
 
@@ -2089,6 +2089,7 @@ function CharacterServicesMaster_UpdateServiceButton()
 			DisplayBattlepayTokenFreeFrame(freeFrame);
 		end
 	end
+--]]
 end
 
 function DisplayBattlepayTokens(upgradeInfo, boostType)
