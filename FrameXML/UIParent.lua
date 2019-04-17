@@ -1290,7 +1290,7 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Hide("CAMP");
 		StaticPopup_Hide("QUIT");
 	elseif ( event == "LOOT_BIND_CONFIRM" ) then
-		local texture, item, quantity, quality, locked = GetLootSlotInfo(arg1);
+		local texture, item, quantity, currencyID, quality, locked = GetLootSlotInfo(arg1);
 		local dialog = StaticPopup_Show("LOOT_BIND", ITEM_QUALITY_COLORS[quality].hex..item.."|r");
 		if ( dialog ) then
 			dialog.data = arg1;
