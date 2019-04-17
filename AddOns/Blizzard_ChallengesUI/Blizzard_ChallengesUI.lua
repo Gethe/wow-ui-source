@@ -134,7 +134,7 @@ end
 function ChallengesFrame_OnShow(self)
 	self:RegisterEvent("BAG_UPDATE");
 
-    PortraitFrameTemplate_SetPortraitToAsset(PVEFrame, "Interface\\Icons\\achievement_bg_wineos_underxminutes");
+    PVEFrame:SetPortraitToAsset("Interface\\Icons\\achievement_bg_wineos_underxminutes");
 	PVEFrame.TitleText:SetText(CHALLENGES);
 	PVEFrame_HideLeftInset();
 

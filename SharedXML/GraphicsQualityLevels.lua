@@ -190,7 +190,7 @@ VideoData["Display_DisplayModeDropDown"]={
 			return self.data[self:GetSafeValue()].fullscreen;
 		end,
 	lookup = Graphics_TableLookupSafe,
-	restart = true,
+	windowUpdate = true,
 }
 -------------------------------------------------------------------------------------------------------
 VideoData["Display_PrimaryMonitorDropDown"]={
@@ -231,7 +231,7 @@ VideoData["Display_PrimaryMonitorDropDown"]={
 			local ratio = GetMonitorAspectRatio(self:GetValue());
 			return (ratio>=1.0);
 		end,
-	restart = true,
+	windowUpdate = true,
 }
 
 -------------------------------------------------------------------------------------------------------
@@ -271,7 +271,7 @@ VideoData["Display_ResolutionDropDown"]={
 	SetValue =
 		function (self, value)
 			local width, height = DecodeResolution(self.table[value]);
-			SetScreenResolution(width, height, Display_DisplayModeDropDown:fullscreenmode());
+			SetScreenResolution(width, height);
 		end,
 	doGetValue =
 		function(self)
@@ -279,14 +279,10 @@ VideoData["Display_ResolutionDropDown"]={
 		end,
 	onrefresh =
 	function(self)
-		if(Display_DisplayModeDropDown:fullscreenmode()) then
-			VideoOptions_Disable(self);
-		else
-			VideoOptions_Enable(self);
-		end
+		VideoOptions_Enable(self);
 	end,
 	lookup = Graphics_TableLookupSafe,
-	restart = true,
+	windowUpdate = true,
 }
 
 -------------------------------------------------------------------------------------------------------
@@ -308,7 +304,7 @@ VideoData["Display_VerticalSyncDropDown"]={
 			},
 		},
 	},
-	restart = true,
+	windowUpdate = true,
 }
 
 -------------------------------------------------------------------------------------------------------
@@ -1211,11 +1207,6 @@ VideoData["Advanced_AdapterDropDown"]={
 			end
 		end,
 	restart = true,
-}
-
-VideoData["Advanced_StereoEnabled"]={
-	name = ENABLE_STEREO_VIDEO;
-	tooltip = OPTION_TOOLTIP_ENABLE_STEREO_VIDEO,
 }
 
 VideoData["Advanced_MultisampleAlphaTest"]={

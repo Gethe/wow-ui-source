@@ -57,7 +57,7 @@ function ToyBox_OnShow(self)
 		self.favoriteHelpBox:Hide();
 	end
 
-	PortraitFrameTemplate_SetPortraitToAsset(CollectionsJournal, "Interface\\Icons\\Trade_Archaeology_ChestofTinyGlassAnimals");
+	CollectionsJournal:SetPortraitToAsset("Interface\\Icons\\Trade_Archaeology_ChestofTinyGlassAnimals");
 	C_ToyBox.ForceToyRefilter();
 
 	ToyBox_UpdatePages();

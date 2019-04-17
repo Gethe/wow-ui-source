@@ -957,6 +957,7 @@ local Calendar =
 				{ Name = "dontDisplayBanner", Type = "bool", Nilable = false },
 				{ Name = "dontDisplayEnd", Type = "bool", Nilable = false },
 				{ Name = "clubID", Type = "string", Nilable = false },
+				{ Name = "isLocked", Type = "bool", Nilable = false },
 			},
 		},
 		{

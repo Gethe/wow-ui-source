@@ -45,6 +45,15 @@ function SecondsFormatterMixin:OnLoad(approximationSeconds, defaultAbbreviation,
 	self.approximationSeconds = approximationSeconds or 0;
 	self.defaultAbbreviation = defaultAbbreviation or SecondsFormatter.Abbreviation.None;
 	self.roundUpLastUnit = roundUpLastUnit or false;
+	self.stripIntervalWhitespace = false;
+end
+
+function SecondsFormatterMixin:SetStripIntervalWhitespace(strip)
+	self.stripIntervalWhitespace = strip;
+end
+
+function SecondsFormatterMixin:GetStripIntervalWhitespace()
+	return self.stripIntervalWhitespace;
 end
 
 function SecondsFormatterMixin:GetMaxInterval()
@@ -90,7 +99,9 @@ end
 
 function SecondsFormatterMixin:GetFormatString(interval, abbreviation)
 	local intervalDescription = self:GetIntervalDescription(interval);
-	return intervalDescription.formatString[abbreviation];
+	local formatString = intervalDescription.formatString[abbreviation];
+	local strip = self:GetStripIntervalWhitespace();
+	return strip and formatString:gsub(" ", "") or formatString;
 end
 
 function SecondsFormatterMixin:FormatZero(abbreviation)
@@ -99,6 +110,9 @@ function SecondsFormatterMixin:FormatZero(abbreviation)
 	return formatString:format(0);
 end
 
+function SecondsFormatterMixin:FormatMillseconds(millseconds, abbreviation)
+	return self:Format(millseconds/1000, abbreviation);
+end
 function SecondsFormatterMixin:Format(seconds, abbreviation)
 	if (seconds == nil) then
 		return "";

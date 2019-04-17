@@ -169,24 +169,51 @@ function QuestInfo_ShowDescriptionText()
 	return QuestInfoDescriptionText;
 end
 
+local function QuestInfo_GetQuestID()
+	if ( QuestInfoFrame.questLog ) then
+		return select(8, GetQuestLogTitle(GetQuestLogSelection()));
+	else
+		return GetQuestID();
+	end
+end
+
 function QuestInfo_ShowObjectives()
+	local questID = QuestInfo_GetQuestID();
 	local numObjectives = GetNumQuestLeaderBoards();
 	local objective;
 	local text, type, finished;
 	local objectivesTable = QuestInfoObjectivesFrame.Objectives;
 	local numVisibleObjectives = 0;
+	
+	local function AcquireObjective(index)
+		local newObjective = objectivesTable[index];
+		
+		if ( not newObjective ) then
+			newObjective = QuestInfoObjectivesFrame:CreateFontString("QuestInfoObjective"..index, "BACKGROUND", "QuestFontNormalSmall");
+			newObjective:SetPoint("TOPLEFT", objectivesTable[index - 1], "BOTTOMLEFT", 0, -2);
+			newObjective:SetJustifyH("LEFT");
+			newObjective:SetWidth(285);
+			objectivesTable[index] = newObjective;
+		end
+
+		return newObjective;
+	end
+
+	local waypointText = C_QuestLog.GetNextWaypointText(questID);
+	if ( waypointText ) then
+		numVisibleObjectives = numVisibleObjectives + 1;
+		objective = AcquireObjective(numVisibleObjectives);
+		objective:SetText(WAYPOINT_OBJECTIVE_FORMAT_OPTIONAL:format(waypointText));
+		objective:SetTextColor(0, 0, 0);
+		objective:SetWidth(ACTIVE_TEMPLATE.contentWidth);
+		objective:Show();
+	end
+
 	for i = 1, numObjectives do
 		text, type, finished = GetQuestLogLeaderBoard(i);
 		if (type ~= "spell" and type ~= "log" and numVisibleObjectives < MAX_OBJECTIVES) then
 			numVisibleObjectives = numVisibleObjectives+1;
-			objective = objectivesTable[numVisibleObjectives];
-			if ( not objective ) then
-				objective = QuestInfoObjectivesFrame:CreateFontString("QuestInfoObjective"..numVisibleObjectives, "BACKGROUND", "QuestFontNormalSmall");
-				objective:SetPoint("TOPLEFT", objectivesTable[numVisibleObjectives - 1], "BOTTOMLEFT", 0, -2);
-				objective:SetJustifyH("LEFT");
-				objective:SetWidth(285);
-				objectivesTable[numVisibleObjectives] = objective;
-			end
+			objective = AcquireObjective(numVisibleObjectives);
 			if ( not text or strlen(text) == 0 ) then
 				text = type;
 			end
@@ -893,7 +920,7 @@ QUEST_TEMPLATE_DETAIL = { questLog = nil, chooseItems = nil, contentWidth = 275,
 		QuestInfo_ShowSpecialObjectives, 0, -10,
 		QuestInfo_ShowGroupSize, 0, -10,
 		QuestInfo_ShowRewards, 0, -15,
-		QuestInfo_ShowSpacer, 0, -15,
+		QuestInfo_ShowSpacer, 0, -20,
 	}
 }
 
@@ -908,7 +935,7 @@ QUEST_TEMPLATE_LOG = { questLog = true, chooseItems = nil, contentWidth = 285,
 		QuestInfo_ShowSpecialObjectives, 0, -10,
 		QuestInfo_ShowRequiredMoney, 0, 0,
 		QuestInfo_ShowGroupSize, 0, -10,
-		QuestInfo_ShowDescriptionHeader, 0, -10,
+		QuestInfo_ShowDescriptionHeader, 0, -20,
 		QuestInfo_ShowDescriptionText, 0, -5,
 		QuestInfo_ShowSeal, 0, 0,
 		QuestInfo_ShowRewards, 0, -10,
@@ -937,7 +964,7 @@ QUEST_TEMPLATE_MAP_DETAILS = { questLog = true, chooseItems = nil, contentWidth 
 		QuestInfo_ShowSpecialObjectives, 0, -10,
 		QuestInfo_ShowRequiredMoney, 0, 0,
 		QuestInfo_ShowGroupSize, 0, -10,
-		QuestInfo_ShowDescriptionHeader, 0, -10,
+		QuestInfo_ShowDescriptionHeader, 0, -20,
 		QuestInfo_ShowDescriptionText, 0, -5,
 		QuestInfo_ShowSeal, 0, 0,
 		QuestInfo_ShowSpacer, 0, 0,

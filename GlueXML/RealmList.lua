@@ -179,6 +179,12 @@ function RealmList_UpdateOKButton()
 end
 
 function RealmList_UpdateTabs()
+	if RealmListBackground.RealmSelectionTabs then
+		for index, tab in pairs(RealmListBackground.RealmSelectionTabs) do
+			tab:Hide();
+		end
+	end
+
 	local categories = C_RealmList.GetAvailableCategories();
 	local numTabs = #categories;
 	local tab;
@@ -210,6 +216,7 @@ function RealmList_UpdateTabs()
 			tab:Hide();
 		end
 	end
+
 	GlueTemplates_SetNumTabs(RealmList, numTabs);
 
 	--Select the tab for our current category

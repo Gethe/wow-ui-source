@@ -297,7 +297,7 @@ function PartyPoseMixin:PlaySounds()
 end
 
 do
-	AnchorUtil.AddNineSliceLayout("PartyPoseFrameTemplate", {
+	NineSliceUtil.AddLayout("PartyPoseFrameTemplate", {
 		TopLeftCorner =	{ atlas = "scoreboard-frameborder-topleft", x = 0, y = 0, },
 		TopRightCorner =	{ atlas = "scoreboard-frameborder-topright", x = 0, y = 0, },
 		BottomLeftCorner =	{ atlas = "scoreboard-frameborder-bottomleft", x = 0, y = 0, },
@@ -308,7 +308,7 @@ do
 		RightEdge = { atlas = "scoreboard-frameborder-right",  },
 	});
 
-	AnchorUtil.AddNineSliceLayout("PartyPoseKit", {
+	NineSliceUtil.AddLayout("PartyPoseKit", {
 		mirrorLayout = true,
 		TopLeftCorner =	{ atlas = "scoreboard-%s-corner", x = 0, y = 0, },
 		TopRightCorner =	{ atlas = "scoreboard-%s-corner", x = 0, y = 0, },
@@ -337,7 +337,7 @@ do
 		self.Border:SetPoint("TOPLEFT", self, "TOPLEFT", -(self.partyPoseData.themeData.borderPaddingX or 0), self.partyPoseData.themeData.borderPaddingY or 0);
 		self.Border:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", self.partyPoseData.themeData.borderPaddingX or 0, -(self.partyPoseData.themeData.borderPaddingY or 0));
 
-		AnchorUtil.ApplyNineSliceLayoutByName(self.Border, self.partyPoseData.themeData.nineSliceLayout, self.partyPoseData.themeData.nineSliceTextureKitName);
+		NineSliceUtil.ApplyLayoutByName(self.Border, self.partyPoseData.themeData.nineSliceLayout, self.partyPoseData.themeData.nineSliceTextureKitName);
 	end
 
 	function PartyPoseMixin:LoadPartyPose(partyPoseData, forceUpdate)

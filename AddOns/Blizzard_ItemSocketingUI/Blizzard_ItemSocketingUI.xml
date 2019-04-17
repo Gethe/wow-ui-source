@@ -12,21 +12,21 @@
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="CENTER" x="5" y="5"/>
 					</Anchors>
-					<TexCoords left="0.28515625" right="0.565" top="0" bottom="0.21484375"/>
+				<TexCoords left="0.28515625" right="0.565" top="0" bottom="0.21484375"/>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
 				<Texture file="Interface\ItemSocketingFrame\UI-ItemSockets">
 					<Size x="72" y="74"/>
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 					<TexCoords left="0.71875" right="1" top="0.7109375" bottom="1"/>
 				</Texture>
-				<Texture name="$parentBackground" file="Interface\ItemSocketingFrame\UI-ItemSockets">
+				<Texture parentKey="Background" name="$parentBackground">
 					<Size x="43" y="44"/>
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -34,57 +34,39 @@
 				<Texture name="$parentIconTexture" parentKey="icon">
 					<Size x="38" y="38"/>
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<!--<Texture name="$parentBorder" file="Interface\ItemSocketingFrame\UI-ItemSockets">
-					<Size>
-						<AbsDimension x="53" y="53"/>
-					</Size>
-					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>-->
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString name="$parentColor" inherits="TextStatusBarText" text="Color" hidden="true">
-					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
-				</FontString>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="$parentShine" inherits="AnimatedShineTemplate">
 				<Anchors>
-					<Anchor point="CENTER">
-						<Offset>
-							<AbsDimension x="-1" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="CENTER" x="1" />
 				</Anchors>
 			</Frame>
-			<Frame name="$parentBracketFrame" setAllPoints="true">
+			<Frame parentKey="BracketFrame" name="$parentBracketFrame" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture name="$parentClosedBracket" file="Interface\ItemSocketingFrame\UI-ItemSockets">
+						<Texture parentKey="ClosedBracket" name="$parentClosedBracket">
 							<Size x="53" y="53"/>
 							<Anchors>
-								<Anchor point="CENTER" x="0" y="0"/>
+								<Anchor point="CENTER"/>
 							</Anchors>
-							<TexCoords left="0.5546875" right="0.7578125" top="0" bottom="0.20703125"/>
 						</Texture>
-						<Texture name="$parentOpenBracket" file="Interface\ItemSocketingFrame\UI-ItemSockets">
+						<Texture parentKey="OpenBracket" name="$parentOpenBracket">
 							<Size x="61" y="57"/>
 							<Anchors>
-								<Anchor point="CENTER" x="0" y="-1"/>
+								<Anchor point="CENTER"/>
 							</Anchors>
-							<TexCoords left="0.7578125" right="0.9921875" top="0" bottom="0.22265625"/>
 						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="ColorText" inherits="TextStatusBarText" text="Color" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -449,7 +431,7 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
-			<Button name="ItemSocketingSocket1" inherits="ItemSocketingSocketButtonTemplate" id="1">
+			<Button name="ItemSocketingSocket1" parentArray="Sockets" inherits="ItemSocketingSocketButtonTemplate" id="1">
 				<Anchors>
 					<Anchor point="BOTTOM" relativeTo="ItemSocketingFrame" x="100" y="99"/>
 				</Anchors>
@@ -465,7 +447,7 @@
 					</Layer>
 				</Layers>
 			</Button>
-			<Button name="ItemSocketingSocket2" inherits="ItemSocketingSocketButtonTemplate" id="2">
+			<Button name="ItemSocketingSocket2" parentArray="Sockets" inherits="ItemSocketingSocketButtonTemplate" id="2">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="ItemSocketingSocket1" relativePoint="RIGHT" x="40" y="0"/>
 				</Anchors>
@@ -481,7 +463,7 @@
 					</Layer>
 				</Layers>
 			</Button>
-			<Button name="ItemSocketingSocket3" inherits="ItemSocketingSocketButtonTemplate" id="3">
+			<Button name="ItemSocketingSocket3" parentArray="Sockets" inherits="ItemSocketingSocketButtonTemplate" id="3">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="ItemSocketingSocket2" relativePoint="RIGHT" x="40" y="0"/>
 				</Anchors>

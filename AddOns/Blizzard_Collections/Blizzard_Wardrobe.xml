@@ -1840,7 +1840,8 @@
 							</OnShow>
 						</Scripts>
 					</Frame>
-					<DressUpModel parentKey="Model" enableMouse="true" modelScale="2.0" inherits="ModelWithControlsTemplate">
+          
+					<DressUpModel parentKey="Model" mixin="DressUpModelFrameMixin" enableMouse="true" modelScale="2.0" inherits="ModelWithControlsTemplate">
 						<Size x="294" y="488"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="2" y="-4"/>
@@ -1853,12 +1854,8 @@
 								</Layer>
 							</Layers>				
 						<Scripts>
-							<OnLoad>
-								Model_OnLoad(self, MODELFRAME_MAX_PLAYER_ZOOM, 0, 0);
-							</OnLoad>
-							<OnHide>
-								self:SetSheathed(false);
-							</OnHide>
+							<OnLoad method="OnLoad" />
+							<OnHide method="OnHide" />
 						</Scripts>
 						<Frames>
 							<Button parentKey="ClearAllPendingButton" inherits="UIMenuButtonStretchTemplate" hidden="true">
@@ -2010,6 +2007,7 @@
 							</Button>
 						</Frames>
 					</DressUpModel>
+          
 					<Frame parentKey="MoneyFrame" name="WardrobeTransmogMoneyFrame" inherits="SmallMoneyFrameTemplate">
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.MoneyRight" x="6" y="0"/>

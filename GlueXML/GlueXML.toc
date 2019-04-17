@@ -4,9 +4,11 @@
 
 ##DebugHook.lua
 ..\SharedXML\C_TimerAugment.lua
+..\SharedXML\Mixin.lua
 ..\SharedXML\Util.lua
+..\SharedXML\SecureUtil.lua
 ..\SharedXML\TimeUtil.lua
-..\SharedXML\AnchorUtil.xml
+..\SharedXML\NineSlice.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
 ..\SharedXML\SoundKitConstants.lua
@@ -20,7 +22,6 @@ GlueFonts.xml
 GlueFontStyles.xml
 GlueLocalization.xml
 ..\SharedXML\LayoutFrame.xml
-..\SharedXML\PanelThemes.lua
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\SharedBasicControls.xml
@@ -49,8 +50,11 @@ GlueAddons.lua
 GlueParent.xml
 ## These SharedXML files need to be loaded after GlueParent.xml
 ..\SharedXML\IME.xml
+..\SharedXML\ModelFrameTemplates.xml
 ..\SharedXML\ModelFrames.xml
 ..\SharedXML\ModelPreviewFrame.xml
+..\SharedXML\DressUpModelFrameMixin.lua
+..\SharedXML\CharacterModelFrameMixin.lua
 GlueDialog.xml
 GlueTooltip.xml
 ..\SharedXML\AddonList.xml

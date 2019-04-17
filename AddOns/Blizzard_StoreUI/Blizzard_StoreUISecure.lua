@@ -87,10 +87,8 @@ Import("GetMouseFocus");
 Import("Enum");
 Import("SecureMixin");
 Import("CreateFromSecureMixins");
-Import("ShrinkUntilTruncateFontStringMixin");
 Import("IsTrialAccount");
 Import("IsVeteranTrialAccount");
-Import("PortraitFrameTemplate_SetPortraitToAsset");
 
 --GlobalStrings
 Import("BLIZZARD_STORE");
@@ -1501,7 +1499,7 @@ local productCardTemplateData = {
 };
 
 --Code
-local function getIndex(tbl, value)
+local function getIndex(tbl, value) --testing post-commit-hook
 	for k, v in pairs(tbl) do
 		if ( v == value ) then
 			return k;
@@ -1514,7 +1512,10 @@ function StoreFrame_GetDiscountInformation(data)
 		local normalPrice = (data.normalDollars * 100) + data.normalCents;
 		local discountPrice = (data.currentDollars * 100) + data.currentCents;
 		local discountTotal = normalPrice - discountPrice;
-		local discountPercentage = math.floor((discountTotal / normalPrice) * 100);
+		local discountPercentage = 0;
+		if normalPrice > 0 then
+			discountPercentage = math.floor((discountTotal / normalPrice) * 100);
+		end
 
 		local discountDollars = math.floor(discountTotal / 100);
 		local discountCents = discountTotal % 100;
@@ -1844,7 +1845,7 @@ function StoreFrame_OnLoad(self)
 
 	self.TitleText:SetText(BLIZZARD_STORE);
 
-	PortraitFrameTemplate_SetPortraitToAsset(self, "Interface\\Icons\\WoW_Store");
+	self:SetPortraitToAsset("Interface\\Icons\\WoW_Store");
 	StoreFrame_UpdateBuyButton();
 
 	if ( IsOnGlueScreen() ) then

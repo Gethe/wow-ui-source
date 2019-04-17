@@ -137,8 +137,8 @@ function TalkingHeadFrame_PlayCurrent()
 	if ( displayInfo and displayInfo ~= 0 ) then
 		local textureKit;
 		if ( textureKitID ~= 0 ) then
-			SetupTextureKits(textureKitID, frame.BackgroundFrame, talkingHeadTextureKitRegionFormatStrings, false, true);
-			SetupTextureKits(textureKitID, frame.PortraitFrame, talkingHeadTextureKitRegionFormatStrings, false, true);
+			SetupTextureKits(textureKitID, frame.BackgroundFrame, talkingHeadTextureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
+			SetupTextureKits(textureKitID, frame.PortraitFrame, talkingHeadTextureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
 			textureKit = GetUITextureKitInfo(textureKitID);
 		else
 			SetupAtlasesOnRegions(frame.BackgroundFrame, talkingHeadDefaultAtlases, true);

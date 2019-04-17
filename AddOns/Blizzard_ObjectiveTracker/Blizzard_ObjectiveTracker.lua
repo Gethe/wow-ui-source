@@ -49,6 +49,7 @@ OBJECTIVE_TRACKER_UPDATE_MODULE_WORLD_QUEST			= 0x02000;
 OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO			= 0x04000;
 OBJECTIVE_TRACKER_UPDATE_MODULE_ACHIEVEMENT			= 0x08000;
 OBJECTIVE_TRACKER_UPDATE_SCENARIO_SPELLS			= 0x10000;
+OBJECTIVE_TRACKER_UPDATE_MODULE_UI_WIDGETS			= 0x20000;
 -- special updates
 OBJECTIVE_TRACKER_UPDATE_STATIC						= 0x0000;
 OBJECTIVE_TRACKER_UPDATE_ALL						= 0xFFFFFFFF;
@@ -286,7 +287,7 @@ OBJECTIVE_DASH_STYLE_SHOW = 1;
 OBJECTIVE_DASH_STYLE_HIDE = 2;
 OBJECTIVE_DASH_STYLE_HIDE_AND_COLLAPSE = 3;
 
-function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddObjective(block, objectiveKey, text, lineType, useFullHeight, dashStyle, colorStyle, adjustForNoText)
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddObjective(block, objectiveKey, text, lineType, useFullHeight, dashStyle, colorStyle, adjustForNoText, overrideHeight)
 	local line = self:GetLine(block, objectiveKey, lineType);
 	-- width
 	if ( block.lineWidth ~= line.width ) then
@@ -316,7 +317,8 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddObjective(block, objectiveKey, text
 	end
 
 	-- set the text
-	local height = self:SetStringText(line.Text, text, useFullHeight, colorStyle, block.isHighlighted);
+	local textHeight = self:SetStringText(line.Text, text, useFullHeight, colorStyle, block.isHighlighted);
+	local height = overrideHeight or textHeight;
 	line:SetHeight(height);
 
 	local yOffset;
@@ -629,6 +631,7 @@ end
 
 function ObjectiveTracker_Initialize(self)
 	self.MODULES = {	SCENARIO_CONTENT_TRACKER_MODULE,
+						UI_WIDGET_TRACKER_MODULE,
 						AUTO_QUEST_POPUP_TRACKER_MODULE,
 						BONUS_OBJECTIVE_TRACKER_MODULE,
 						WORLD_QUEST_TRACKER_MODULE,
@@ -636,6 +639,7 @@ function ObjectiveTracker_Initialize(self)
 						ACHIEVEMENT_TRACKER_MODULE,
 	};
 	self.MODULES_UI_ORDER = {	SCENARIO_CONTENT_TRACKER_MODULE,
+								UI_WIDGET_TRACKER_MODULE,
 								AUTO_QUEST_POPUP_TRACKER_MODULE,
 								QUEST_TRACKER_MODULE,
 								BONUS_OBJECTIVE_TRACKER_MODULE,
@@ -662,6 +666,13 @@ function ObjectiveTracker_Initialize(self)
 	self:RegisterEvent("PLAYER_MONEY");
 	self:RegisterEvent("CVAR_UPDATE");
 	self.watchMoneyReasons = 0;
+
+	local function OnFocusedQuestChanged(event, ...)
+		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST);
+	end
+	
+	WorldMapFrame:RegisterCallback("SetFocusedQuestID", OnFocusedQuestChanged);
+	WorldMapFrame:RegisterCallback("ClearFocusedQuestID", OnFocusedQuestChanged);
 
 	self.initialized = true;
 end

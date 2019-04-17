@@ -179,7 +179,7 @@ function QuestChoiceFrameMixin:UpdateHeight()
 	for i=1, self.numActiveOptionFrames do
 		local option = self.Options[i];
 		self.maxDescriptionHeight = math.max(self.maxDescriptionHeight, option.OptionText:GetContentHeight());
-		if option.WidgetContainer and option.WidgetContainer:IsShown() then
+		if option.WidgetContainer and option.WidgetContainer:IsShown() and option.WidgetContainer.nativeHeight then
 			self.maxWidgetsHeight = math.max(self.maxWidgetsHeight, option.WidgetContainer.nativeHeight);
 		end
 	end

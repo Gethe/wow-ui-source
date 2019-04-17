@@ -47,8 +47,8 @@ function ScrappingMachineMixin:OnLoad()
 		self.Background:SetAtlas("scrappingmachine-background-gnomish", false);
 	end
 
-	PortraitFrameTemplate_SetPortraitToAsset(self, "Interface\\Icons\\inv_gizmo_03");
-	PortraitFrameTemplate_SetTitle(self, SCRAPPING_MACHINE_TITLE);
+	self:SetPortraitToAsset("Interface\\Icons\\inv_gizmo_03");
+	self:SetTitle(SCRAPPING_MACHINE_TITLE);
 end
 
 function ScrappingMachineMixin:OnShow()

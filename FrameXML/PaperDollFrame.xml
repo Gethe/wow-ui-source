@@ -1,10 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Include file="AzeritePaperDollItemOverlay.xml"/>
-    <Script file="PaperDollFrame.lua"/>
+  <Script file="PaperDollFrame.lua"/>
 
-    <ItemButton name="PaperDollItemSlotButtonTemplate" inherits="PaperDollAzeriteItemOverlayTemplate" virtual="true">
-		<Layers>
+  <ItemButton name="PaperDollItemSlotButtonTemplate" inherits="PaperDollAzeriteItemOverlayTemplate" virtual="true">
+    <Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="ignoreTexture" file="Interface\PaperDollInfoFrame\UI-GearManager-LeaveItem-Transparent">
 					<Size x="40" y="40"/>
@@ -606,11 +606,11 @@
 				</Scripts>
 			</ScrollFrame>
 
-			<PlayerModel name="CharacterModelFrame" inherits="ModelWithControlsTemplate">
-                <Size x="231" y="320"/>
-                <Anchors>
-                    <Anchor point="TOPLEFT" x="52" y="-66"/>
-                </Anchors>
+			<PlayerModel name="CharacterModelFrame" mixin ="CharacterModelFrameMixin" inherits="ModelWithControlsTemplate">
+				<Size x="231" y="320"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="52" y="-66"/>
+				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="CharacterModelFrameBackgroundTopLeft" parentKey="BackgroundTopLeft">
@@ -704,15 +704,12 @@
 						</Texture>
 					</Layer>
 				</Layers>
-                <Scripts>
-					<OnLoad>
-						Model_OnLoad(self, MODELFRAME_MAX_PLAYER_ZOOM, nil, nil, CharacterModelFrame_OnMouseUp);
-					</OnLoad>
-					<OnReceiveDrag>
-						AutoEquipCursorItem();
-					</OnReceiveDrag>
-                </Scripts>
-            </PlayerModel>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnReceiveDrag method="OnReceiveDrag"/>
+				</Scripts>
+			</PlayerModel>
+
 			<Frame name="PaperDollItemsFrame" mixin="PaperDollItemsMixin" setAllPoints="true">
 				<Frames>
 					<ItemButton name="CharacterHeadSlot" inherits="PaperDollItemSlotButtonLeftTemplate">

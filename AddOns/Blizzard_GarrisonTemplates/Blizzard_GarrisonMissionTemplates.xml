@@ -927,12 +927,7 @@
 					<Anchor point="TOPLEFT" x="0" y="0"/>
 				</Anchors>
 				<Frames>
-					<CinematicModel parentArray="Model" parentKey="Model1" inherits="GarrisonFollowerTabModelClusterModel" frameLevel="15">
-						<Scripts>
-							<OnMouseDown function="Model_OnMouseDown"/>
-							<OnMouseUp function="Model_OnMouseUp"/>
-						</Scripts>
-					</CinematicModel>
+					<CinematicModel parentArray="Model" parentKey="Model1" inherits="GarrisonFollowerTabModelClusterModel" frameLevel="15"/>
 					<CinematicModel parentArray="Model" parentKey="Model2" inherits="GarrisonFollowerTabModelClusterModel" frameLevel="14"/>
 					<CinematicModel parentArray="Model" parentKey="Model3" inherits="GarrisonFollowerTabModelClusterModel" frameLevel="13"/>
 					<CinematicModel parentArray="Model" parentKey="Model4" inherits="GarrisonFollowerTabModelClusterModel" frameLevel="12"/>

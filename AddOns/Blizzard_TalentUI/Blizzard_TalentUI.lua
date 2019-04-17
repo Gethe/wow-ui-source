@@ -195,8 +195,8 @@ function PlayerTalentFrame_OnLoad(self)
 
 	-- setup portrait texture
 	local _, class = UnitClass("player");
-	PortraitFrameTemplate_SetPortraitTextureRaw(self, "Interface\\TargetingFrame\\UI-Classes-Circles");
-	PortraitFrameTemplate_SetPortraitTexCoord(self, unpack(CLASS_ICON_TCOORDS[strupper(class)]));
+	self:SetPortraitTextureRaw("Interface\\TargetingFrame\\UI-Classes-Circles");
+	self:SetPortraitTexCoord(unpack(CLASS_ICON_TCOORDS[strupper(class)]));
 
 	-- initialize active spec
 	PlayerTalentFrame_UpdateActiveSpec(GetActiveSpecGroup(false));
@@ -486,22 +486,22 @@ function PlayerTalentFrame_UpdateTitleText(numTalentGroups)
 	if ( selectedTab == SPECIALIZATION_TAB or selectedTab == PET_SPECIALIZATION_TAB ) then
 		if ( spec and hasMultipleTalentGroups ) then
 			if (isActiveSpec and spec.nameActive) then
-				PortraitFrameTemplate_SetTitle(PlayerTalentFrame, spec.specNameActive);
+				PlayerTalentFrame:SetTitle(spec.specNameActive);
 			else
-				PortraitFrameTemplate_SetTitle(PlayerTalentFrame, spec.specName);
+				PlayerTalentFrame:SetTitle(spec.specName);
 			end
 		else
-			PortraitFrameTemplate_SetTitle(PlayerTalentFrame, SPECIALIZATION);
+			PlayerTalentFrame:SetTitle(SPECIALIZATION);
 		end
 	else
 		if ( spec and hasMultipleTalentGroups ) then
 			if (isActiveSpec and spec.nameActive) then
-				PortraitFrameTemplate_SetTitle(PlayerTalentFrame, spec.nameActive);
+				PlayerTalentFrame:SetTitle(spec.nameActive);
 			else
-				PortraitFrameTemplate_SetTitle(PlayerTalentFrame, spec.name);
+				PlayerTalentFrame:SetTitle(spec.name);
 			end
 		else
-			PortraitFrameTemplate_SetTitle(PlayerTalentFrame, TALENTS);
+			PlayerTalentFrame:SetTitle(TALENTS);
 		end
 	end
 

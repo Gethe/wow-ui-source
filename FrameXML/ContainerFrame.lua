@@ -1310,11 +1310,21 @@ end
 function ContainerFrameItemButton_OnModifiedClick(self, button)
 	if ( IsModifiedClick("EXPANDITEM") ) then
 		local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
-		if C_Item.DoesItemExist(itemLocation) and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) and C_Item.CanViewItemPowers(itemLocation) then
-			OpenAzeriteEmpoweredItemUIFromItemLocation(itemLocation);
-			return;
-		elseif SocketContainerItem(self:GetParent():GetID(), self:GetID()) then
-			return;
+		if C_Item.DoesItemExist(itemLocation) then
+			if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) and C_Item.CanViewItemPowers(itemLocation) then
+				OpenAzeriteEmpoweredItemUIFromItemLocation(itemLocation);
+				return;
+			end
+
+			local heartItemLocation = C_AzeriteItem.FindActiveAzeriteItem();
+			if heartItemLocation and heartItemLocation:IsEqualTo(itemLocation) then
+				OpenAzeriteEssenceUIFromItemLocation(itemLocation);
+				return;
+			end
+
+			if SocketContainerItem(self:GetParent():GetID(), self:GetID()) then
+				return;
+			end
 		end
 	end
 

@@ -8,7 +8,7 @@ function AdventureMapMixin:SetupTitle()
 	self.BorderFrame.Bg:SetParent(self);
 	self.BorderFrame.TopTileStreaks:Hide();
 
-	PortraitFrameTemplate_SetPortraitToAsset(self.BorderFrame, [[Interface/Icons/inv_misc_map02]]);
+	self.BorderFrame:SetPortraitToAsset([[Interface/Icons/inv_misc_map02]]);
 end
 
 -- Override

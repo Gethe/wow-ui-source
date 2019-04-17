@@ -13,8 +13,10 @@ local frameTextureKitRegions = {
 	["Frame"] = "%s-frame",
 }
 
-function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:Setup(widgetInfo)
-	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
+local DEFAULT_CURRENCY_FRAME_WIDTH = 95;
+
+function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:Setup(widgetInfo, widgetContainer)
+	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 	self.currencyPool:ReleaseAll();
 
 	local previousCurrencyFrame;
@@ -32,15 +34,13 @@ function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:Setup(widget
 		if previousCurrencyFrame then
 			currencyFrame:SetPoint("TOPLEFT", previousCurrencyFrame, "TOPRIGHT", 10, 0);
 			totalCurrencyWidth = totalCurrencyWidth + currencyFrame:GetWidth() + 10;
-			currencyFrame:SetWidth(95);
+			currencyFrame:SetWidth(DEFAULT_CURRENCY_FRAME_WIDTH);
 		else
 			currencyFrame:SetPoint("TOPLEFT", self.CurrencyContainer, "TOPLEFT", 0, 0);
 			totalCurrencyWidth = totalCurrencyWidth + currencyFrame:GetWidth();
-			if widgetInfo.leftCurrencyWidth > 0 then
-				currencyFrame:SetWidth(widgetInfo.leftCurrencyWidth);
-			else
-				currencyFrame:SetWidth(95);
-			end
+
+			local leftCurrencyWidth = (widgetInfo.widgetSizeSetting > 0) and widgetInfo.widgetSizeSetting or DEFAULT_CURRENCY_FRAME_WIDTH;
+			currencyFrame:SetWidth(leftCurrencyWidth);
 		end
 
 		totalCurrencyHeight = currencyFrame:GetHeight();
@@ -51,7 +51,7 @@ function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:Setup(widget
 	self.CurrencyContainer:SetWidth(totalCurrencyWidth);
 	self.CurrencyContainer:SetHeight(totalCurrencyHeight);
 
-	SetupTextureKits(widgetInfo.frameTextureKitID, self, frameTextureKitRegions, false, true);
+	SetupTextureKits(widgetInfo.frameTextureKitID, self, frameTextureKitRegions, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
 
 	self:SetWidth(self.Frame:GetWidth());
 	self:SetHeight(self.Frame:GetHeight());

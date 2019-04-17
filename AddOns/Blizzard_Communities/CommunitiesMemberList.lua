@@ -126,6 +126,8 @@ local GUILD_COLUMN_INFO = {
 
 local EXTRA_GUILD_COLUMN_ACHIEVEMENT = 1;
 local EXTRA_GUILD_COLUMN_PROFESSION = 2;
+local EXTRA_GUILD_COLUMN_APPLICANTS = 3;
+
 local EXTRA_GUILD_COLUMNS = {
 	[EXTRA_GUILD_COLUMN_ACHIEVEMENT] = {
 		dropdownText = GUILD_ROSTER_DROPDOWN_ACHIEVEMENT_POINTS,
@@ -140,6 +142,15 @@ local EXTRA_GUILD_COLUMNS = {
 		attribute = "profession", -- This is a special case since there are 2 separate sets of profession attributes.
 		width = 115,
 	};
+	
+	[EXTRA_GUILD_COLUMN_APPLICANTS] = {
+		dropdownText = CLUB_FINDER_APPLICANTS,
+		title = CLUB_FINDER_APPLICANTS,
+		attribute = "applicants",
+		width = 115,
+	};
+
+
 };
 
 CommunitiesMemberListMixin = {};
@@ -1447,7 +1458,12 @@ end
 function GuildMemberListDropDownMenuMixin:OnShow()
 	UIDropDownMenu_Initialize(self, GuildMemberListDropDownMenu_Initialize);
 	local communitiesFrame = self:GetCommunitiesFrame();
-	UIDropDownMenu_SetSelectedValue(self, communitiesFrame.MemberList:GetGuildColumnIndex());
+
+	if (communitiesFrame.MemberList:GetGuildColumnIndex() == EXTRA_GUILD_COLUMN_APPLICANTS) then
+		UIDropDownMenu_SetSelectedValue(self, EXTRA_GUILD_COLUMN_ACHIEVEMENT);
+	else 
+		UIDropDownMenu_SetSelectedValue(self, communitiesFrame.MemberList:GetGuildColumnIndex());
+	end 
 
 	local function CommunitiesClubSelectedCallback(event, clubId)
 		if clubId and self:IsVisible() then
@@ -1477,13 +1493,19 @@ function GuildMemberListDropDownMenu_Initialize(self)
 	for i, extraColumnInfo in ipairs(EXTRA_GUILD_COLUMNS) do
 		info.text = extraColumnInfo.dropdownText;
 		info.value = i;
-		info.func = function(button)
-			memberList:SetGuildColumnIndex(i);
-			UIDropDownMenu_SetSelectedValue(self, i);
+		if i == EXTRA_GUILD_COLUMN_APPLICANTS then 
+			info.func = function(button)
+				self:GetCommunitiesFrame():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST);
+				UIDropDownMenu_SetSelectedValue(self, i);
+			end
+		else 
+			info.func = function(button)
+				self:GetCommunitiesFrame():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
+				memberList:SetGuildColumnIndex(i);
+				UIDropDownMenu_SetSelectedValue(self, i);
+			end
 		end
-
 		UIDropDownMenu_AddButton(info);
 	end
-
 	UIDropDownMenu_SetSelectedValue(self, memberList:GetGuildColumnIndex());
 end

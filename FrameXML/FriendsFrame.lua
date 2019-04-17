@@ -56,8 +56,10 @@ local INVITE_RESTRICTION_CLIENT = 1;
 local INVITE_RESTRICTION_LEADER = 2;
 local INVITE_RESTRICTION_FACTION = 3;
 local INVITE_RESTRICTION_INFO = 4;
-local INVITE_RESTRICTION_REGION = 5;
-local INVITE_RESTRICTION_NONE = 6;
+local INVITE_RESTRICTION_WOW_PROJECT_ID = 5;
+local INVITE_RESTRICTION_WOW_PROJECT_MAINLINE = 6;
+local INVITE_RESTRICTION_WOW_PROJECT_CLASSIC = 7;
+local INVITE_RESTRICTION_NONE = 8;
 
 local FriendListEntries = { };
 local playerRealmName;
@@ -1269,7 +1271,7 @@ function FriendsFrame_UpdateFriendButton(button)
 	button.buttonType = FriendListEntries[index].buttonType;
 	button.id = FriendListEntries[index].id;
 	local height = FRIENDS_BUTTON_HEIGHTS[button.buttonType];
-	local nameText, nameColor, infoText, broadcastText;
+	local nameText, nameColor, infoText, broadcastText, isFavoriteFriend;
 	local hasTravelPassButton = false;
 	if ( button.buttonType == FRIENDS_BUTTON_TYPE_WOW ) then
 		local info = C_FriendList.GetFriendInfoByIndex(FriendListEntries[index].id);
@@ -1297,8 +1299,12 @@ function FriendsFrame_UpdateFriendButton(button)
 		button.summonButton:SetPoint("TOPRIGHT", button, "TOPRIGHT", 1, -1);
 		FriendsFrame_SummonButton_Update(button.summonButton);
 	elseif ( button.buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
-		local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isBnetAFK, isBnetDND, messageText, noteText, isRIDFriend, messageTime, canSoR = BNGetFriendInfo(FriendListEntries[index].id);
+		local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, 
+			bnetIDGameAccount, client, isOnline, lastOnline, isBnetAFK, 
+			isBnetDND, messageText, noteText, isRIDFriend, messageTime, 
+			wowProjectID, isReferAFriend, canSummonFriend, isFavorite = BNGetFriendInfo(FriendListEntries[index].id);
 		broadcastText = messageText;
+		isFavoriteFriend = isFavorite;
 		-- set up player name and character name
 		local characterName = characterName;
 		if ( accountName ) then
@@ -1323,7 +1329,7 @@ function FriendsFrame_UpdateFriendButton(button)
 		end
 
 		if ( isOnline ) then
-			local _, _, _, realmName, realmID, faction, _, _, _, zoneName, _, gameText, _, _, _, _, _, isGameAFK, isGameBusy, guid = BNGetGameAccountInfo(bnetIDGameAccount);
+			local _, _, _, realmName, realmID, faction, _, _, _, zoneName, _, gameText, _, _, _, _, _, isGameAFK, isGameBusy, guid, wowProjectID = BNGetGameAccountInfo(bnetIDGameAccount);
 			button.background:SetColorTexture(FRIENDS_BNET_BACKGROUND_COLOR.r, FRIENDS_BNET_BACKGROUND_COLOR.g, FRIENDS_BNET_BACKGROUND_COLOR.b, FRIENDS_BNET_BACKGROUND_COLOR.a);
 			if ( isBnetAFK or isGameAFK ) then
 				button.status:SetTexture(FRIENDS_TEXTURE_AFK);
@@ -1332,7 +1338,7 @@ function FriendsFrame_UpdateFriendButton(button)
 			else
 				button.status:SetTexture(FRIENDS_TEXTURE_ONLINE);
 			end
-			if ( client == BNET_CLIENT_WOW ) then
+			if ( client == BNET_CLIENT_WOW and wowProjectID == WOW_PROJECT_ID ) then
 				if ( not zoneName or zoneName == "" ) then
 					infoText = UNKNOWN;
 				else
@@ -1422,6 +1428,14 @@ function FriendsFrame_UpdateFriendButton(button)
 		button.name:SetTextColor(nameColor.r, nameColor.g, nameColor.b);
 		button.info:SetText(infoText);
 		button:Show();
+
+		if (isFavoriteFriend) then
+			button.Favorite:Show();
+			button.Favorite:ClearAllPoints()
+			button.Favorite:SetPoint("TOPLEFT", button.name, "TOPLEFT", button.name:GetStringWidth(), 0);
+		else
+			button.Favorite:Hide();
+		end
 	else
 		button:Hide();
 	end
@@ -1620,11 +1634,11 @@ function FriendsFrameTooltip_Show(self)
 		anchor = FriendsFrameTooltip_SetLine(FriendsTooltipHeader, nil, nameText);
 		-- game account 1
 		if ( bnetIDGameAccount ) then
-			local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, zoneName, level, gameText = BNGetGameAccountInfo(bnetIDGameAccount);
+			local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, zoneName, level, gameText, _, _, _, _, _, _, _, _, wowProjectID = BNGetGameAccountInfo(bnetIDGameAccount);
 			level = level or "";
 			race = race or "";
 			class = class or "";
-			if ( client == BNET_CLIENT_WOW ) then
+			if ( client == BNET_CLIENT_WOW and wowProjectID == WOW_PROJECT_ID ) then
 				if ( CanCooperateWithGameAccount(bnetIDGameAccount) ) then
 					text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, characterName, level, race, class);
 				else
@@ -1708,7 +1722,7 @@ function FriendsFrameTooltip_Show(self)
 	if ( numGameAccounts > 1 ) then
 		local headerSet = false;
 		for i = 1, numGameAccounts do
-			local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, zoneName, level, gameText = BNGetFriendGameAccountInfo(self.id, i);
+			local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, zoneName, level, gameText, _, _, _, _, _, _, _, _, wowProjectID = BNGetFriendGameAccountInfo(self.id, i);
 			-- the focused game account is already at the top of the tooltip
 			if ( not hasFocus and client ~= BNET_CLIENT_APP and client ~= BNET_CLIENT_CLNT ) then
 				if ( not headerSet ) then
@@ -1722,7 +1736,7 @@ function FriendsFrameTooltip_Show(self)
 				characterNameString = _G["FriendsTooltipGameAccount"..gameAccountIndex.."Name"];
 				gameAccountInfoString = _G["FriendsTooltipGameAccount"..gameAccountIndex.."Info"];
 				text = BNet_GetClientEmbeddedTexture(client, 18).." ";
-				if ( client == BNET_CLIENT_WOW ) then
+				if ( client == BNET_CLIENT_WOW and wowProjectID == WOW_PROJECT_ID ) then
 					if ( realmName == playerRealmName and faction == playerFactionGroup ) then
 						text = text..string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, characterName, level, race, class);
 					else
@@ -2218,10 +2232,16 @@ function FriendsFrame_GetInviteRestriction(index)
 	local restriction = INVITE_RESTRICTION_NO_GAME_ACCOUNTS;
 	local numGameAccounts = BNGetNumFriendGameAccounts(index);
 	for i = 1, numGameAccounts do
-		local hasFocus, characterName, client, realmName, realmID, faction, _, _, _, _, _, _, _, _, _, _, _, _, _, _, regionMismatch = BNGetFriendGameAccountInfo(index, i);
+		local hasFocus, characterName, client, realmName, realmID, faction, _, _, _, _, _, _, _, _, _, _, _, _, _, _, wowProjectID = BNGetFriendGameAccountInfo(index, i);
 		if ( client == BNET_CLIENT_WOW ) then
-			if ( regionMismatch ) then
-				restriction = max(INVITE_RESTRICTION_REGION, restriction);
+			if ( wowProjectID ~= WOW_PROJECT_ID ) then
+				if (wowProjectID == WOW_PROJECT_CLASSIC) then
+					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_CLASSIC, restriction);
+				elseif(wowProjectID == WOW_PROJECT_MAINLINE) then
+					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_MAINLINE, restriction);
+				else
+					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_ID, restriction);
+				end
 			elseif ( faction ~= playerFactionGroup ) then
 				restriction = max(INVITE_RESTRICTION_FACTION, restriction);
 			elseif ( realmID == 0 ) then
@@ -2246,8 +2266,12 @@ function FriendsFrame_GetInviteRestrictionText(restriction)
 		return ERR_TRAVEL_PASS_NO_INFO;
 	elseif ( restriction == INVITE_RESTRICTION_CLIENT ) then
 		return ERR_TRAVEL_PASS_NOT_WOW;
-	elseif ( restriction == INVITE_RESTRICTION_REGION ) then
-		return ERR_TRAVEL_PASS_NOT_SAME_REGION;
+	elseif ( restriction == INVITE_RESTRICTION_WOW_PROJECT_ID ) then
+		return ERR_TRAVEL_PASS_WRONG_PROJECT;
+	elseif ( restriction == INVITE_RESTRICTION_WOW_PROJECT_MAINLINE ) then
+		return ERR_TRAVEL_PASS_WRONG_PROJECT_MAINLINE_OVERRIDE;
+	elseif ( restriction == INVITE_RESTRICTION_WOW_PROJECT_CLASSIC ) then
+		return ERR_TRAVEL_PASS_WRONG_PROJECT_CLASSIC_OVERRIDE;
 	else
 		return "";
 	end
@@ -2314,10 +2338,12 @@ function TravelPassDropDown_Initialize(self)
 	end
 	for i = 1, numGameAccounts do
 		restriction = INVITE_RESTRICTION_NONE;
-		local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, _, level, _, _, _, _, bnetIDGameAccount = BNGetFriendGameAccountInfo(self.index, i);
+		local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, _, level, _, _, _, _, bnetIDGameAccount, _, _, _, wowProjectID = BNGetFriendGameAccountInfo(self.index, i);
 		if ( client == BNET_CLIENT_WOW ) then
 			if ( faction ~= playerFactionGroup ) then
-				restriction = INVITE_RESTRICTION_FACTIONINVITE_RESTRICTION_FACTION;
+				restriction = INVITE_RESTRICTION_FACTION;
+			elseif(wowProjectID ~= WOW_PROJECT_ID) then
+				restriction = INVITE_RESTRICTION_WOW_PROJECT_ID;
 			elseif ( realmID == 0 ) then
 				restriction = INVITE_RESTRICTION_INFO;
 			end

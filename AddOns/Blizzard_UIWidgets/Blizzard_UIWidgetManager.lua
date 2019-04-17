@@ -89,6 +89,7 @@ function UIWidgetContainerMixin:RegisterForWidgetSet(widgetSetID, widgetLayoutFu
 	self.widgetFrames = {};
 	self.timerWidgets = {};
 	self.numTimers = 0;
+	self.numWidgetsShowing = 0;
 
 	self:ProcessAllWidgets();
 
@@ -168,10 +169,28 @@ function UIWidgetContainerMixin:GatherWidgetsByWidgetTag(widgetArray, widgetTag)
 	end
 end
 
+-- Mark all currently shown widgets to be removed
+function UIWidgetContainerMixin:MarkAllWidgetsForRemoval()
+	for _, widgetFrame in pairs(self.widgetFrames) do
+		widgetFrame.markedForRemove = true;
+	end
+end
+
+-- Go through all widgets in this container and call AnimOut on any that are marked for removal. This will cause them to animate out and RemoveWidget will be called once that is done.
+function UIWidgetContainerMixin:AnimateOutAllMarkedWidgets()
+	for _, widgetFrame in pairs(self.widgetFrames) do
+		if widgetFrame.markedForRemove then
+			widgetFrame:AnimOut();
+		end
+	end
+end
+
+-- Removes all widgets from this container immediately (don't animate them out)
 function UIWidgetContainerMixin:RemoveAllWidgets()
 	self.widgetFrames = {};
 	self.timerWidgets = {};
 	self.numTimers = 0;
+	self.numWidgetsShowing = 0;
 
 	if self.ticker then
 		self.ticker:Cancel();
@@ -181,6 +200,7 @@ function UIWidgetContainerMixin:RemoveAllWidgets()
 	self.widgetPools:ReleaseAll();
 end
 
+-- This is called AFTER the widget is done animating out. The widgetFrame is actually released back to the pool and hidden.
 function UIWidgetContainerMixin:RemoveWidget(widgetID)
 	local widgetFrame = self.widgetFrames[widgetID];
 	if not widgetFrame then
@@ -225,6 +245,9 @@ function UIWidgetContainerMixin:CreateWidget(widgetID, widgetType, widgetTypeInf
 	widgetFrame.hasTimer = widgetInfo.hasTimer;
 	widgetFrame.orderIndex = widgetInfo.orderIndex;
 	widgetFrame.widgetTag = widgetInfo.widgetTag;
+	widgetFrame.inAnimType = widgetInfo.inAnimType;
+	widgetFrame.outAnimType = widgetInfo.outAnimType;
+	widgetFrame.markedForRemove = nil;
 	widgetFrame:EnableMouse(true);
 
 	-- If this is a widget with a timer, add it from the timer list
@@ -260,13 +283,17 @@ function UIWidgetContainerMixin:ProcessWidget(widgetID, widgetType)
 	if widgetAlreadyExisted then
 		-- Widget already existed
 		if not widgetInfo then
-			-- widgetInfo is nil, indicating it should no longer be shown...remove it
-			self:RemoveWidget(widgetID);
+			-- widgetInfo is nil, indicating it should no longer be shown...animate it out (RemoveWidget will be called once that is done)
+			widgetFrame:AnimOut();
+			widgetFrame.markedForRemove = nil;
 			return;
 		end
 
 		-- Otherwise the widget should still show...save the current orderIndex so we can determine if it changes after Setup is run
 		oldOrderIndex = widgetFrame.orderIndex;
+
+		-- Remove markedForRemove because it is still showing
+		widgetFrame.markedForRemove = nil;
 	else
 		-- Widget did not already exist
 		if widgetInfo then
@@ -282,7 +309,7 @@ function UIWidgetContainerMixin:ProcessWidget(widgetID, widgetType)
 	-- Ok we are now SURE that this widget should be shown and we have a frame for it
 
 	-- Run the Setup function on the widget (could change the orderIndex)
-	widgetFrame:Setup(widgetInfo);
+	widgetFrame:Setup(widgetInfo, self);
 
 	if WIDGET_DEBUG_TEXTURE_SHOW then
 		if not widgetFrame._debugBGTex then
@@ -308,14 +335,17 @@ function UIWidgetContainerMixin:ProcessWidget(widgetID, widgetType)
 end
 
 function UIWidgetContainerMixin:ProcessAllWidgets()
-	self:RemoveAllWidgets();
+	-- First mark all widgets for removal
+	self:MarkAllWidgetsForRemoval();
 
+	-- Add any new widgets and unmark any existing widgets that are still shown
 	local setWidgets = C_UIWidgetManager.GetAllWidgetsBySetID(self.widgetSetID);
 	for _, widgetInfo in ipairs(setWidgets) do
 		self:ProcessWidget(widgetInfo.widgetID, widgetInfo.widgetType);
 	end
 
-	self:UpdateWidgetLayout();
+	-- Animate out any widgets that are still marked for removal
+	self:AnimateOutAllMarkedWidgets();
 end
 
 local function SortWidgets(a, b)
@@ -326,6 +356,10 @@ local function SortWidgets(a, b)
 	end
 end
 
+function UIWidgetContainerMixin:GetNumWidgetsShowing()
+	return self.numWidgetsShowing;
+end
+
 function UIWidgetContainerMixin:UpdateWidgetLayout()
 	local sortedWidgets = {};
 	for _, widget in pairs(self.widgetFrames) do
@@ -334,6 +368,7 @@ function UIWidgetContainerMixin:UpdateWidgetLayout()
 
 	table.sort(sortedWidgets, SortWidgets);
 
+	self.numWidgetsShowing = #sortedWidgets;
 	self:layoutFunc(sortedWidgets);
 	self.dirtyLayout = false;
 end

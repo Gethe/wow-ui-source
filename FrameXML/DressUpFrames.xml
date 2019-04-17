@@ -1,7 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="DressUpFrames.lua"/>
-	<Frame name="SideDressUpFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+	
+	<Frame name="SideDressUpFrame" mixin="SideDressUpModelFrameFrameMixin" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
 		<Size>
 			<AbsDimension x="187" y="389"/>
 		</Size>
@@ -49,8 +50,8 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<DressUpModel name="SideDressUpModel" modelScale="1.0" inherits="ModelWithControlsTemplate">
+		<Frames>			
+			<DressUpModel name="SideDressUpModel" mixin="DressUpModelFrameMixin" modelScale="1.0" inherits="ModelWithControlsTemplate">
 				<Size>
 					<AbsDimension x="172" y="400"/>
 				</Size>
@@ -59,12 +60,10 @@
 					<Anchor point="BOTTOMRIGHT" x="-11" y="11"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						Model_OnLoad(self, MODELFRAME_MAX_PLAYER_ZOOM);
-					</OnLoad>
+					<OnLoad method="OnLoad" />
 				</Scripts>
-				<Frames>
-					<Button parentKey="ResetButton" name="$parentResetButton" inherits="UIPanelButtonTemplate" text="RESET">
+				<Frames>					
+					<Button parentKey="ResetButton" name="$parentResetButton" mixin="DressUpModelFrameResetButtonMixin" inherits="UIPanelButtonTemplate" text="RESET">
 						<Size>
 							<AbsDimension x="80" y="22"/>
 						</Size>
@@ -76,13 +75,11 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								SideDressUpModel:Dress();
-								PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
-							</OnClick>
+							<OnLoad method="OnLoad" />
+							<OnClick method="OnClick" />
 						</Scripts>
-					</Button>
-					<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+					</Button>					
+					<Button name="$parentCloseButton" mixin="DressUpModelFrameCloseButtonMixin" inherits="UIPanelCloseButton">
 						<Anchors>
 							<Anchor point="CENTER" relativeTo="SideDressUpFrame" relativePoint="TOPRIGHT">
 								<Offset>
@@ -105,25 +102,22 @@
 									</Anchors>
 								</Texture>
 							</Layer>
-						</Layers>
+						</Layers>						
 						<Scripts>
-							<OnClick>
-								HideUIPanel(self:GetParent():GetParent());
-							</OnClick>
+							<OnClick method="OnClick" />
 						</Scripts>
 					</Button>
 				</Frames>
-			</DressUpModel>
+			</DressUpModel>			
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self.ResetButton = SideDressUpModel.ResetButton;
-			</OnLoad>
-			<OnShow function="SideDressUpFrame_OnShow"/>
-			<OnHide function="SideDressUpFrame_OnHide"/>
+			<OnLoad method="OnLoad" />
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame> 
-	<Frame name="DressUpFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplateMinimizable">
+	
+	<Frame name="DressUpFrame" mixin="DressUpModelFrameFrameMixin" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplateMinimizable">
 		<Size x="450" y="545"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="70" y="-104"/>
@@ -142,66 +136,50 @@
 					<Anchor point="TOP" x="-23" y="-28"/>
 				</Anchors>
 			</Frame>
-			<Frame name="MaximizeMinimizeFrame" inherits="MaximizeMinimizeButtonFrameTemplate">
+			
+			<Frame name="MaximizeMinimizeFrame" mixin="DressUpModelFrameMaximizeMinimizeMixin" inherits="MaximizeMinimizeButtonFrameTemplate">
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="10" y="0"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>						
-						function OnMaximize(frame)
-							frame:GetParent():SetSize(450, 545);
-							UpdateUIPanelPositions(frame);
-						end
-						
-						self:SetOnMaximizedCallback(OnMaximize);
-						
-						function OnMinimize(frame)
-							frame:GetParent():SetSize(334, 423);
-							UpdateUIPanelPositions(frame);
-						end
-						
-						self:SetOnMinimizedCallback(OnMinimize);
-						
-						self:SetMinimizedCVar("miniDressUpFrame");
-					</OnLoad>
+					<OnLoad method="OnLoad" />
 				</Scripts>
 			</Frame>
-			<Button name="DressUpFrameCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+			
+			<Button name="DressUpFrameCancelButton" mixin="DressUpModelFrameCancelButtonMixin" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size x="80" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-7" y="4"/>
 				</Anchors>
 				<Scripts>
-					<OnClick function="HideParentPanel"/>
+					<OnClick method="OnClick"/>
 				</Scripts>
 			</Button>
-			<Button parentKey="ResetButton" name="DressUpFrameResetButton" inherits="UIPanelButtonTemplate" text="RESET">
+			
+			<Button parentKey="ResetButton" mixin="SideDressUpModelFrameResetButtonMixin" name="DressUpFrameResetButton" inherits="UIPanelButtonTemplate" text="RESET">
 				<Size x="80" y="22"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="DressUpFrameCancelButton" relativePoint="LEFT"/>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						self:GetParent().DressUpModel:Dress();
-						PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
-					</OnClick>
+					<OnLoad method="OnLoad" />
+					<OnClick method="OnClick" />
 				</Scripts>
 			</Button>
-			<DressUpModel name="DressUpModel" parentKey="DressUpModel" inherits="ModelWithControlsTemplate">
+			
+			<DressUpModel name="DressUpModel" mixin="DressUpModelFrameMixin" parentKey="DressUpModel" inherits="ModelWithControlsTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="7" y="-63"/>
 					<Anchor point="BOTTOMRIGHT" x="-9" y="28"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						Model_OnLoad(self, MODELFRAME_MAX_PLAYER_ZOOM);
-					</OnLoad>
-					<OnDressModel function="DressUpFrame_OnDressModel"/>
-					<OnHide>
-						self:SetSheathed(false);
-					</OnHide>
+					<OnLoad method="OnLoad" />
+					<OnDressModel method="OnDressModel"/>
+					<OnUpdate method="OnUpdate"/>
+					<OnHide method="OnHide" />
 				</Scripts>
 			</DressUpModel>
+			
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -214,16 +192,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				self.TitleText:SetText(DRESSUP_FRAME);
-			</OnLoad>
-			<OnShow>
-				SetPortraitTexture(DressUpFramePortrait, "player");
-				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-			</OnShow>
-			<OnHide>
-				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
-			</OnHide>
+			<OnLoad method="OnLoad" />
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
 		</Scripts>
 	</Frame>
 </Ui>

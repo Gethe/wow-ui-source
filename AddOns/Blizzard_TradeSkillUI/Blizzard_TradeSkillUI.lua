@@ -118,8 +118,8 @@ function TradeSkillUIMixin:RefreshTitle()
 	self.LinkNameButton:Hide();
 
 	if C_TradeSkillUI.IsTradeSkillGuild() then
-		PortraitFrameTemplate_SetTitleFormatted(self, GUILD_TRADE_SKILL_TITLE, skillLineName);
-		PortraitFrameTemplate_SetPortraitShown(self, false);
+		self:SetTitleFormatted(GUILD_TRADE_SKILL_TITLE, skillLineName);
+		self:SetPortraitShown(false);
 
 		self.TabardBackground:Show();
 		self.TabardEmblem:Show();
@@ -129,7 +129,7 @@ function TradeSkillUIMixin:RefreshTitle()
 		local linked, linkedName = C_TradeSkillUI.IsTradeSkillLinked();
 		if linked and linkedName then
 			self.LinkNameButton:Show();
-			PortraitFrameTemplate_SetTitleFormatted(self, "%s %s[%s]|r", TRADE_SKILL_TITLE:format(skillLineName), HIGHLIGHT_FONT_COLOR_CODE, linkedName);
+			self:SetTitleFormatted("%s %s[%s]|r", TRADE_SKILL_TITLE:format(skillLineName), HIGHLIGHT_FONT_COLOR_CODE, linkedName);
 			self.LinkNameButton.linkedName = linkedName;
 			self.LinkNameButton:SetWidth(self.TitleText:GetStringWidth());
 		else
@@ -140,8 +140,8 @@ function TradeSkillUIMixin:RefreshTitle()
 		self.TabardBackground:Hide();
 		self.TabardEmblem:Hide();
 		self.TabardBorder:Hide();
-		PortraitFrameTemplate_SetPortraitShown(self, true);
-		PortraitFrameTemplate_SetPortraitToAsset(self, C_TradeSkillUI.GetTradeSkillTexture(tradeSkillID));
+		self:SetPortraitShown(true);
+		self:SetPortraitToAsset(C_TradeSkillUI.GetTradeSkillTexture(tradeSkillID));
 	end
 end
 

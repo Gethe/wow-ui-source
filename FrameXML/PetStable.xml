@@ -1,6 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="PetStable.lua"/>
+
 	<Texture name="PetStable-ActiveBG" file="Interface\PetStableFrame\PetStable-Parts" virtual="true" >
 		<Size x="81" y="373"/>
 		<TexCoords left="0.00195313" right="0.16015625" top="0.00195313" bottom="0.73046875"/>
@@ -181,56 +182,44 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<PlayerModel name="PetStableModel" inherits="ModelWithZoomTemplate">
+      
+			<PlayerModel name="PetStableModel" mixin="PetStableModelFrameMixin" inherits="ModelWithZoomTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="PetStableFrameModelBg" x="2" y="-48"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="PetStableFrameModelBg" x="-3" y="3"/>
-                </Anchors>
-                <Scripts>
-					<OnLoad>
-						Model_OnLoad(self);
-						self:SetCamDistanceScale(1.3);
-					</OnLoad>
-                </Scripts>
+				</Anchors>
+
 				<Frames>
-					<Button name="PetStableModelRotateLeftButton">
+					<Button name="PetStableModelRotateLeftButton" mixin="ModelControlRotateButtonMixin">
 						<Size>
 							<AbsDimension x="35" y="35"/>
 						</Size>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
-							</OnLoad>
-							<OnClick>
-								Model_RotateLeft(PetStableModel);
-							</OnClick>
-						</Scripts>
+						<KeyValues>
+							<KeyValue key="rotateDirection" value="left" type="string"/>
+						</KeyValues>
 						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
-					<Button name="PetStableModelRotateRightButton">
+
+					<Button name="PetStableModelRotateRightButton" mixin="ModelControlRotateButtonMixin">
 						<Size>
 							<AbsDimension x="35" y="35"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="PetStableModelRotateLeftButton" relativePoint="TOPRIGHT"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
-							</OnLoad>
-							<OnClick>
-								Model_RotateRight(PetStableModel);
-							</OnClick>
-						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+            <KeyValues>
+              <KeyValue key="rotateDirection" value="right" type="string"/>
+            </KeyValues>
+            <NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
+          
 					<Frame name="PetStableModelShadow" inherits="ShadowOverlayTemplate" useParentLevel="true">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="-1" y="1"/>
@@ -238,7 +227,9 @@
 						</Anchors>
 					</Frame>
 				</Frames>
+        
 			</PlayerModel>
+      
 			<Frame name="PetStablePetInfo">
 				<Size x="310" y="40"/>
 				<Anchors>

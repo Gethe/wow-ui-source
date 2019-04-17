@@ -3,7 +3,7 @@ UIPanelWindows["AzeriteRespecFrame"] = {area = "left", pushable = 3, showFailedF
 AzeriteRespecMixin = {};
 
 function AzeriteRespecMixin:OnLoad()
-	PortraitFrameTemplate_SetPortraitToAsset(self, "Interface\\Icons\\inv_enchant_voidsphere");
+	self:SetPortraitToAsset("Interface\\Icons\\inv_enchant_voidsphere");
 	self.TitleText:SetText(AZERITE_RESPEC_TITLE);
 	self.CornerBL:SetPoint("BOTTOMLEFT", -1, 24);
 	self.CornerBR:SetPoint("BOTTOMRIGHT", 0, 24);

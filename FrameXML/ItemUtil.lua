@@ -78,3 +78,22 @@ function ItemButtonUtil.GetItemContextMatchResultForContainer(bagID)
 	return ItemButtonUtil.ItemContextMatchResult.Mismatch;
 end
 
+ItemUtil = {};
+function ItemUtil.GetItemDetails(itemLink, quantity, isCurrency, lootSource)
+	local itemName, itemRarity, itemTexture, _;
+	if (isCurrency) then
+		local currencyID = C_CurrencyInfo.GetCurrencyIDFromLink(itemLink);
+		itemName, _, itemTexture, _, _, _, _, itemRarity = GetCurrencyInfo(itemLink);
+		itemName, itemTexture, quantity, itemRarity = CurrencyContainerUtil.GetCurrencyContainerInfoForAlert(currencyID, quantity, itemName, itemTexture, itemRarity);
+		if ( lootSource == LOOT_SOURCE_GARRISON_CACHE ) then
+			itemName = format(GARRISON_RESOURCES_LOOT, quantity);
+		elseif (quantity > 1) then
+			itemName = format(CURRENCY_QUANTITY_TEMPLATE, quantity, itemName);
+		end
+
+		return itemName, itemTexture, quantity, itemRarity, itemLink;
+	else
+		itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
+		return itemName, itemTexture, quantity, itemRarity, itemLink;
+	end
+end

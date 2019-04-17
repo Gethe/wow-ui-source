@@ -71,6 +71,7 @@ UIPanelWindows["CommunitiesGuildNewsFiltersFrame"] =		{ area = "left",			pushabl
 UIPanelWindows["CinematicFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["ChatConfigFrame"] =				{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["WorldStateScoreFrame"] =		{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1,	ignoreControlLost = true, };
+UIPanelWindows["PVPMatchResults"] =				{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1,	ignoreControlLost = true, };
 UIPanelWindows["QuestChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 UIPanelWindows["WarboardQuestChoiceFrame"] =	{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 UIPanelWindows["GarrisonBuildingFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002, 	allowOtherPanels = 1};
@@ -416,6 +417,9 @@ function UIParent_OnLoad(self)
 
 	-- Event(s) for Azerite Empowered Items
 	self:RegisterEvent("RESPEC_AZERITE_EMPOWERED_ITEM_OPENED");
+
+	-- Event(s) for Heart of Azeroth forge
+	self:RegisterEvent("AZERITE_ESSENCE_FORGE_OPEN");
 
 	-- Events for Reporting SYSTEM
 	self:RegisterEvent("REPORT_PLAYER_RESULT");
@@ -963,6 +967,12 @@ function SetCollectionsJournalShown(shown, tabIndex)
 	end
 end
 
+function ToggleToyCollection(autoPageToCollectedToyID)
+	CollectionsJournal_LoadUI();
+	ToyBox.autoPageToCollectedToyID = autoPageToCollectedToyID;
+	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_TOYS);
+end
+
 function TogglePVPUI()
 	if (IsKioskModeEnabled()) then
 		return;
@@ -1053,6 +1063,14 @@ function OpenAzeriteEmpoweredItemUIFromLink(itemLink, overrideClassID, overrideS
 	ShowUIPanel(AzeriteEmpoweredItemUI);
 	if AzeriteEmpoweredItemUI:IsShown() then -- may fail to display
 		AzeriteEmpoweredItemUI:SetToItemLink(itemLink, overrideClassID, overrideSelectedPowersList);
+	end
+end
+
+function OpenAzeriteEssenceUIFromItemLocation(itemLocation)
+	UIParentLoadAddOn("Blizzard_AzeriteEssenceUI");
+
+	if AzeriteEssenceUI then
+		AzeriteEssenceUI:TryShow();
 	end
 end
 
@@ -1730,6 +1748,12 @@ function UIParent_OnEvent(self, event, ...)
 		ArtifactFrame_LoadUI();
 		ShowUIPanel(ArtifactRelicForgeFrame);
 
+	elseif ( event == "AZERITE_ESSENCE_FORGE_OPEN" ) then
+		UIParentLoadAddOn("Blizzard_AzeriteEssenceUI");
+		if AzeriteEssenceUI and AzeriteEssenceUI:TryShow() then
+			OpenAllBags(AzeriteEssenceUI);
+		end
+
 	elseif ( event == "ADVENTURE_MAP_OPEN" ) then
 		Garrison_LoadUI();
 		local followerTypeID = ...;
@@ -1915,7 +1939,7 @@ function UIParent_OnEvent(self, event, ...)
 				self.newToys[itemID] = true;
 
 				self.autoPageToCollectedToyID = itemID;
-				SetCVar("petJournalTab", 3);
+				SetCVar("petJournalTab", COLLECTIONS_JOURNAL_TAB_INDEX_TOYS);
 			end
 		end
 

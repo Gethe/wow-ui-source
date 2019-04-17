@@ -52,11 +52,16 @@ function BaseLayoutMixin:GetLayoutChildren()
 	local children = {};
 	self:AddLayoutChildren(children, self:GetChildren());
 	self:AddLayoutChildren(children, self:GetRegions());
+	self:AddLayoutChildren(children, self:GetAdditionalRegions());
 	if not self.ignoreLayoutIndex then
 		table.sort(children, LayoutIndexComparator);
 	end
 
 	return children;
+end
+
+function BaseLayoutMixin:GetAdditionalRegions()
+	-- optional;
 end
 
 function BaseLayoutMixin:Layout()
@@ -66,6 +71,7 @@ end
 function BaseLayoutMixin:OnUpdate()
 	if self:IsDirty() then
 		self:Layout();
+		self:MarkClean();
 	end
 end
 
@@ -75,10 +81,15 @@ end
 
 function BaseLayoutMixin:MarkClean()
 	self.dirty = false;
+	self:OnCleaned();
 end
 
 function BaseLayoutMixin:IsDirty()
 	return self.dirty;
+end
+
+function BaseLayoutMixin:OnCleaned()
+	-- implement in derived if you want
 end
 
 --------------------------------------------------------------------------------
@@ -119,8 +130,6 @@ function LayoutMixin:CalculateFrameSize(childrenWidth, childrenHeight)
 end
 
 function LayoutMixin:Layout()
-	self:MarkClean();
-
 	local children = self:GetLayoutChildren();
 	local childrenWidth, childrenHeight, hasExpandableChild = self:LayoutChildren(children);
 
@@ -262,21 +271,52 @@ end
 
 function ResizeLayoutMixin:OnLoad()
 	self.ignoreLayoutIndex = true;
+	self.isResizeFrame = true;
+end
+
+function ResizeLayoutMixin:MarkDirty()
+	BaseLayoutMixin.MarkDirty(self);
+
+	-- Tell any ancestors who may also be ResizeLayoutFrames that they should also become dirty
+	local parent = self:GetParent();
+	while parent do
+		if parent.isResizeFrame then
+			parent:MarkDirty();
+			return;
+		end
+
+		parent = parent:GetParent();
+	end
 end
 
 function ResizeLayoutMixin:Layout()
-	self:MarkClean();
-
 	-- GetExtents will fail if the LayoutFrame has 0 width or height, so set them to 1 to start
 	self:SetSize(1, 1);
+
+	-- GetExtents will also fail if the LayoutFrame has no anchors set, so if that is the case, set an anchor and then clear it after we are done
+	local hadNoAnchors = (self:GetNumPoints() == 0);
+	if hadNoAnchors then
+		self:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, 0);
+	end
 
 	local left, right, top, bottom;
 	local layoutFrameScale = self:GetEffectiveScale();
 	for childIndex, child in ipairs(self:GetLayoutChildren()) do
+		if child.isResizeFrame then
+			child:Layout();
+			child:MarkClean();
+		end
+
 		left, right, top, bottom = GetExtents(child, left, right, top, bottom, layoutFrameScale);
 	end
 
-	local width = GetSize((right - left) + (self.widthPadding or 0), self.fixedWidth, self.minimumWidth, self.maximumWidth);
-	local height = GetSize((top - bottom) + (self.heightPadding or 0), self.fixedHeight, self.minimumHeight, self.maximumHeight);
-	self:SetSize(width, height);
+	if left and right and top and bottom then
+		local width = GetSize((right - left) + (self.widthPadding or 0), self.fixedWidth, self.minimumWidth, self.maximumWidth);
+		local height = GetSize((top - bottom) + (self.heightPadding or 0), self.fixedHeight, self.minimumHeight, self.maximumHeight);
+		self:SetSize(width, height);
+	end
+
+	if hadNoAnchors then
+		self:ClearAllPoints();
+	end
 end

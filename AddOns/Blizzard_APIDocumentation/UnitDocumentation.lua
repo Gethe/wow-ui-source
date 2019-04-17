@@ -538,14 +538,34 @@ local Unit =
 			},
 		},
 		{
+			Name = "PlayerStartedLooking",
+			Type = "Event",
+			LiteralName = "PLAYER_STARTED_LOOKING",
+		},
+		{
 			Name = "PlayerStartedMoving",
 			Type = "Event",
 			LiteralName = "PLAYER_STARTED_MOVING",
 		},
 		{
+			Name = "PlayerStartedTurning",
+			Type = "Event",
+			LiteralName = "PLAYER_STARTED_TURNING",
+		},
+		{
+			Name = "PlayerStoppedLooking",
+			Type = "Event",
+			LiteralName = "PLAYER_STOPPED_LOOKING",
+		},
+		{
 			Name = "PlayerStoppedMoving",
 			Type = "Event",
 			LiteralName = "PLAYER_STOPPED_MOVING",
+		},
+		{
+			Name = "PlayerStoppedTurning",
+			Type = "Event",
+			LiteralName = "PLAYER_STOPPED_TURNING",
 		},
 		{
 			Name = "PlayerTargetChanged",

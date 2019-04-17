@@ -18,11 +18,6 @@ function TabardFrame_OnLoad(self)
 	MoneyFrame_SetMaxDisplayWidth(TabardFrameMoneyFrame, 160);
 end
 
-function TabardCharacterModelFrame_OnLoad(self)
-	self.rotation = 0;
-	TabardModel:SetRotation(self.rotation);
-end
-
 function TabardFrame_OnEvent(self, event, ...)
 	local unit = ...;
 	if ( event == "OPEN_TABARD_FRAME" ) then
@@ -45,18 +40,6 @@ function TabardFrame_OnEvent(self, event, ...)
 			TabardModel:SetUnit("player");
 		end
 	end
-end
-
-function TabardCharacterModelRotateLeftButton_OnClick(self)
-	Model_RotateLeft(self:GetParent());
-end
-
-function TabardCharacterModelRotateRightButton_OnClick(self)
-	Model_RotateRight(self:GetParent());
-end
-
-function TabardCharacterModelFrame_OnUpdate(self, elapsedTime)
-	Model_UpdateRotation(self, TabardCharacterModelRotateLeftButton, TabardCharacterModelRotateRightButton, elapsedTime);
 end
 
 function TabardCustomization_Left(id)

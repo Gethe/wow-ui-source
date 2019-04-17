@@ -43,7 +43,7 @@ local COMMUNITIES_STATIC_POPUPS = {
 function CommunitiesFrameMixin:OnLoad()
 	CallbackRegistryBaseMixin.OnLoad(self);
 
-	PortraitFrameTemplate_SetTitle(self, COMMUNITIES_FRAME_TITLE);
+	self:SetTitle(COMMUNITIES_FRAME_TITLE);
 
 	UIDropDownMenu_Initialize(self.StreamDropDownMenu, CommunitiesStreamDropDownMenu_Initialize);
 
@@ -324,6 +324,13 @@ COMMUNITIES_FRAME_DISPLAY_MODES = {
 		"GuildMemberListDropDownMenu",
 	},
 
+	APPLICANT_LIST = {
+		"CommunitiesList",
+		"ApplicantList",
+		"CommunitiesControlFrame",
+		"GuildMemberListDropDownMenu",
+	},
+
 	INVITATION = {
 		"CommunitiesList",
 		"InvitationFrame",
@@ -337,6 +344,11 @@ COMMUNITIES_FRAME_DISPLAY_MODES = {
 	GUILD_FINDER = {
 		"CommunitiesList",
 		"GuildFinderFrame",
+	},
+
+	COMMUNITY_FINDER = { 
+		"CommunitiesList", 
+		"CommunityAndGuildFinderFrame"
 	},
 
 	GUILD_BENEFITS = {
@@ -383,7 +395,7 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 	-- If we run into more cases where we need more specific controls on what
 	-- is displayed in a displayMode then we should add support for conditional
 	-- frames in displayMode based on clubType or perhaps a predicate function.
-	if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER then
+	if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST then
 		local isGuildCommunitySelected = false;
 		local clubId = self:GetSelectedClubId();
 		if clubId then
@@ -430,11 +442,11 @@ function CommunitiesFrameMixin:ValidateDisplayMode()
 		local guildDisplay = displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_BENEFITS or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_INFO;
 		local clubInfo = C_Club.GetClubInfo(clubId);
 		self.chatDisabled = C_Club.IsAccountMuted(clubId);
-		self.defaultMode = self.chatDisabled and COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER or COMMUNITIES_FRAME_DISPLAY_MODES.CHAT;
+		self.defaultMode = self.chatDisabled and COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER or COMMUNITIES_FRAME_DISPLAY_MODES.CHAT or COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST;
 		local isGuildCommunitySelected = clubInfo and clubInfo.clubType == Enum.ClubType.Guild;
 		if not isGuildCommunitySelected and guildDisplay then
 			self:SetDisplayMode(self.defaultMode);
-		elseif displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.TICKET then
+		elseif displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_FINDER or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.TICKET then
 			self:SetDisplayMode(self.defaultMode);
 		elseif self.chatDisabled and displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT then
 			self:SetDisplayMode(self.defaultMode);
@@ -445,7 +457,7 @@ function CommunitiesFrameMixin:ValidateDisplayMode()
 			self:SetDisplayMode(self.defaultMode);
 		end
 
-		if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER then
+		if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST then
 			self.GuildMemberListDropDownMenu:SetShown(isGuildCommunitySelected);
 		end
 
@@ -532,6 +544,7 @@ function CommunitiesFrameMixin:UpdateCommunitiesTabs()
 	self.GuildInfoTab:Hide();
 	if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT or
 			displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER or
+			displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST or
 			displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_BENEFITS or
 			displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_INFO then
 		self.ChatTab:Show();
@@ -894,7 +907,7 @@ function CommunitiesControlFrameMixin:Update()
 				self.GuildControlButton:SetShown(IsGuildLeader());
 
 				local myMemberInfo = C_Club.GetMemberInfoForSelf(clubId);
-				if communitiesFrame:GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER and myMemberInfo and myMemberInfo.guildRankOrder then
+				if ((communitiesFrame:GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER) or (communitiesFrame:GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST)) and myMemberInfo and myMemberInfo.guildRankOrder then
 					local permissions = C_GuildInfo.GuildControlGetRankFlags(myMemberInfo.guildRankOrder);
 					local hasInvitePermissions = permissions[GuildControlUIRankSettingsFrame.InviteCheckbox:GetID()];
 					self.GuildRecruitmentButton:SetShown(hasInvitePermissions);

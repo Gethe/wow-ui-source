@@ -2549,6 +2549,82 @@ SlashCmdList["RESET_COMMENTATOR_SETTINGS"] = function(msg)
 	PvPCommentator:SetDefaultCommentatorSettings();
 end
 
+SlashCmdList["VOICECHAT"] = function(msg)
+	if msg == "" then
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(VOICE_COMMAND_SYNTAX, info.r, info.g, info.b, info.id);
+		return;
+	end
+	local name = msg;
+	local lowerName = string.lower(name);
+
+	if lowerName == string.lower(VOICE_LEAVE_COMMAND) then
+		local channelID = C_VoiceChat.GetActiveChannelID();
+		if channelID then
+			C_VoiceChat.DeactivateChannel(channelID);
+		end
+		return;
+	end
+
+	local channelType;
+	local communityID;
+	local streamID;
+	if lowerName == string.lower(PARTY) then
+		channelType = Enum.ChatChannelType.Private_Party;
+	elseif lowerName == string.lower(INSTANCE) then
+		channelType = Enum.ChatChannelType.Public_Party;
+	elseif lowerName == string.lower(GUILD) then
+		communityID, streamID = CommunitiesUtil.FindGuildStreamByType(Enum.ClubStreamType.Guild);
+	elseif lowerName == string.lower(OFFICER) then
+		communityID, streamID = CommunitiesUtil.FindGuildStreamByType(Enum.ClubStreamType.Officer);
+	else
+		local communityName, streamName = string.split(":", name);
+		communityID, streamID = CommunitiesUtil.FindCommunityAndStreamByName(communityName, streamName);
+	end
+
+	if channelType then
+		if channelType ~= C_VoiceChat.GetActiveChannelType() then
+			local activate = true;
+			ChannelFrame:TryJoinVoiceChannelByType(channelType, activate);
+		end
+	elseif communityID and streamID then
+		local activeChannelID = C_VoiceChat.GetActiveChannelID();
+		local communityStreamChannel = C_VoiceChat.GetChannelForCommunityStream(communityID, streamID);
+		local communityStreamChannelID = communityStreamChannel and communityStreamChannel.channelID;
+		if not activeChannelID or activeChannelID ~= communityStreamChannelID then
+			ChannelFrame:TryJoinCommunityStreamChannel(communityID, streamID);
+		end
+	end
+end
+
+SlashCmdList["COMMUNITY"] = function(msg)
+	if msg == "" then
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(COMMUNITY_COMMAND_SYNTAX, info.r, info.g, info.b, info.id);
+		return;
+	end
+
+	local command, clubType = string.split(" ", string.lower(msg));
+	local loadCommunity = function()
+		if not CommunitiesFrame or not CommunitiesFrame:IsShown() then
+			Communities_LoadUI();
+			ToggleCommunitiesFrame();
+		end
+	end
+	if command == string.lower(COMMUNITY_COMMAND_JOIN) then
+		loadCommunity();
+		AddCommunitiesFlow_Toggle()
+	elseif command == string.lower(COMMUNITY_COMMAND_CREATE) then
+		if clubType == string.lower(COMMUNITY_COMMAND_CHARACTER) then
+			loadCommunity();
+			CommunitiesCreateCommunityDialog();
+		elseif clubType == string.lower(COMMUNITY_COMMAND_BATTLENET) then
+			loadCommunity();
+			CommunitiesCreateBattleNetDialog();
+		end
+	end
+end
+
 function ChatFrame_SetupListProxyTable(list)
 	if ( getmetatable(list) ) then
 		return;

@@ -1,7 +1,7 @@
  <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="QuestFrame.lua"/>
-	<Include file="QuestFrameTemplates.xml"/>
+  <Include file="QuestFrameTemplates.xml"/>
 
 	<Texture name="QuestPortrait-MrBrownstone" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
 		<Size x="197" y="230"/>	
@@ -344,7 +344,7 @@
 		</Scripts>
  	</Frame>
 	
-	<PlayerModel name="QuestNPCModel" enableMouse="true" hidden="true">
+	<PlayerModel name="QuestNPCModel" mixin ="QuestNPCModelFrameMixin" enableMouse="true" hidden="true">
 		<Size x="198" y="230"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -549,13 +549,5 @@
 				</Scripts>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad>
-				Model_OnLoad(self);
-				self:SetPortraitZoom(0.6);
-				self:SetRotation(0);
-			</OnLoad>
-			<OnEvent function="Model_OnEvent"/>
-		</Scripts>
 	</PlayerModel>
  </Ui>

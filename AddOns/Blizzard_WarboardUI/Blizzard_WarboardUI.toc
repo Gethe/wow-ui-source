@@ -1,6 +1,4 @@
-## Interface: 80100
 ## Title: Blizzard Warboard UI
-## Secure: 1
 ## LoadOnDemand: 1
 ## RequiredDep: Blizzard_QuestChoice, Blizzard_UIWidgets
 Blizzard_WarboardUI.xml

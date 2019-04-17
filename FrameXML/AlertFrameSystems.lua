@@ -470,24 +470,11 @@ LOOTWONALERTFRAME_VALUES={
 
 -- NOTE - This may also be called for an externally created frame. (E.g. bonus roll has its own frame)
 function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded, wonRoll, showRatedBG, isSecondaryResult)
-	local itemName, itemHyperLink, itemRarity, itemTexture, _;
-	if (isCurrency) then
-		local currencyID = C_CurrencyInfo.GetCurrencyIDFromLink(itemLink);
-		itemName, _, itemTexture, _, _, _, _, itemRarity = GetCurrencyInfo(itemLink);
-		itemName, itemTexture, quantity, itemRarity = CurrencyContainerUtil.GetCurrencyContainerInfoForAlert(currencyID, quantity, itemName, itemTexture, itemRarity);
-		if ( lootSource == LOOT_SOURCE_GARRISON_CACHE ) then
-			itemName = format(GARRISON_RESOURCES_LOOT, quantity);
-		else
-			if (quantity > 1) then
-				itemName = format(CURRENCY_QUANTITY_TEMPLATE, quantity, itemName);
-			end
-		end
-		itemHyperLink = itemLink;
-	else
-		itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
-	end
+	local itemName, itemTexture, quantity, itemRarity, itemLink = ItemUtil.GetItemDetails(itemLink, quantity, isCurrency, lootSource);
 
-	local isAzeriteEmpowered = C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemHyperLink);
+	self.isCurrency = isCurrency;
+
+	local isAzeriteEmpowered = C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemLink);
 	local windowInfo = wonRoll and LOOTWONALERTFRAME_VALUES.WonRoll or LOOTWONALERTFRAME_VALUES.Default;
 	if( showFactionBG ) then
 		local factionGroup = UnitFactionGroup("player");
@@ -537,49 +524,17 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 		self.glow.suppressGlow = true;
 	end
 
-	self.IconBorder:SetShown(not windowInfo.noIconBorder);
-	if ( windowInfo.iconUnderBG ) then
-		self.Icon:SetDrawLayer("BACKGROUND");
-	else
-		self.Icon:SetDrawLayer("BORDER");
-	end
+	self.Label:SetText(isSecondaryResult and YOU_RECEIVED_LABEL or windowInfo.labelText);
+	self.Label:SetPoint("TOPLEFT", self.lootItem.Icon, "TOPRIGHT", windowInfo.labelOffsetX, windowInfo.labelOffsetY);
 
-	if isSecondaryResult then
-		self.Label:SetText(YOU_RECEIVED_LABEL);
-	else
-		self.Label:SetText(windowInfo.labelText);
-	end
-	self.Label:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", windowInfo.labelOffsetX, windowInfo.labelOffsetY);
-
-	self.isCurrency = isCurrency;
-
-	self.Icon:SetTexture(itemTexture);
 	self.ItemName:SetText(itemName);
 	local color = ITEM_QUALITY_COLORS[itemRarity];
 	self.ItemName:SetVertexColor(color.r, color.g, color.b);
-	local atlas = LOOT_BORDER_BY_QUALITY[itemRarity];
-	local desaturate = false;
-	if (not atlas) then
-		atlas = "loottoast-itemborder-gold";
-		desaturate = true;
-	end
-	self.IconBorder:SetAtlas(atlas);
-	self.IconBorder:SetDesaturated(desaturate);
-	if not windowInfo.noIconBorder and not isCurrency and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemHyperLink) then
-		self.IconOverlay:SetAtlas("LootToast-Azerite-Border");
-		self.IconOverlay:Show();
-	else
-		self.IconOverlay:Hide();
-	end
-	if ( specID and specID > 0 and not isCurrency ) then
-		local id, name, description, texture, role, class = GetSpecializationInfoByID(specID);
-		self.SpecIcon:SetTexture(texture);
-		self.SpecIcon:Show();
-		self.SpecRing:Show();
-	else
-		self.SpecIcon:Hide();
-		self.SpecRing:Hide();
-	end
+	
+	local isIconBorderShown = not windowInfo.noIconBorder;
+	local isIconBorderDropShadowShown = false;
+	local iconDrawLayer = windowInfo.iconUnderBG and "BACKGROUND" or "BORDER";
+	self.lootItem:Init(itemLink, quantity, specID, isCurrency, isUpgraded, isIconBorderShown, isIconBorderDropShadowShown, iconDrawLayer);
 
 	if ( rollType == LOOT_ROLL_TYPE_NEED ) then
 		self.RollTypeIcon:SetTexture("Interface\\Buttons\\UI-GroupLoot-Dice-Up");
@@ -596,21 +551,7 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 		self.RollValue:Hide();
 	end
 
-	-- item upgraded?
-	self.animArrows:Stop();
-	if ( isUpgraded ) then
-		local upgradeTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[itemRarity] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[LE_ITEM_QUALITY_UNCOMMON];
-		for i = 1, self.numArrows do
-			self["Arrow"..i]:SetAtlas(upgradeTexture.arrow, true);
-		end
-		self.animArrows:Play();
-	else
-		for i = 1, self.numArrows do
-			self["Arrow"..i]:SetAlpha(0);
-		end
-	end
-
-	self.hyperlink = itemHyperLink;
+	self.hyperlink = itemLink;
 	if ( lessAwesome ) then
 		PlaySound(SOUNDKIT.UI_RAID_LOOT_TOAST_LESSER_ITEM_WON);
 	elseif ( isUpgraded ) then
@@ -737,6 +678,8 @@ function StorePurchaseAlertFrame_OnClick(self, button, down)
 		ToggleCollectionsJournal(1);
 	elseif (self.type == Enum.StoreDeliveryType.Battlepet) then
 		ToggleCollectionsJournal(2);
+	elseif (self.type == Enum.StoreDeliveryType.Toy) then
+		ToggleToyCollection(self.payloadID);
 	elseif (self.type == Enum.StoreDeliveryType.Collection) then
 		ToggleCollectionsJournal(5);
 	end
@@ -1141,7 +1084,5 @@ function NewToyAlertFrameMixin:OnClick(button, down)
 		return;
 	end
 
-	CollectionsJournal_LoadUI();
-	ToyBox.autoPageToCollectedToyID = self.toyID;
-	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_TOYS);
+	ToggleToyCollection(self.toyID);
 end

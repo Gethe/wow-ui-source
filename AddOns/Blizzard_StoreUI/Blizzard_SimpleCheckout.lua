@@ -9,8 +9,6 @@ local function Import(name)
 end
 
 Import("IsOnGlueScreen");
-Import("GetScreenWidth");
-Import("GetScreenHeight");
 Import("GetPhysicalScreenSize");
 Import("ConvertPixelsToUI");
 
@@ -35,9 +33,11 @@ function SimpleCheckoutMixin:OnEvent(event, ...)
 			self.requestedWidth = 800;
 			self.requestedHeight = 600;
 			self:RecalculateSize();
+			self:Show();
 			if (self:OpenCheckout(checkoutID)) then
-				self:Show();
 				self:SetFocus();
+			else
+				self:Hide();
 			end
 		else
 			self:CancelOpenCheckout();
@@ -99,9 +99,6 @@ local function SetOffsets(top, left, bottom, right, size, topOffset, leftOffset,
 end
 
 function SimpleCheckoutMixin:RecalculateSize()
-	local screenWidth = GetScreenWidth();
-	local screenHeight = GetScreenHeight();
-
 	local physicalWidth, physicalHeight = GetPhysicalScreenSize();
 
 	local pixelSize = ConvertPixelsToUI(1, self:GetEffectiveScale());

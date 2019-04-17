@@ -17,6 +17,10 @@ BNET_CLIENT_SC = "S1";
 BNET_CLIENT_DESTINY2 = "DST2";
 BNET_CLIENT_COD = "VIPR";
 
+WOW_PROJECT_MAINLINE = 1;
+WOW_PROJECT_CLASSIC = 2;
+WOW_PROJECT_ID = WOW_PROJECT_MAINLINE;
+
 --Name can be a realID or plain battletag with no 4 digit number (e.g. Murky McGrill or LichKing).
 function BNet_GetBNetIDAccount(name)
 	return GetAutoCompletePresenceID(name);

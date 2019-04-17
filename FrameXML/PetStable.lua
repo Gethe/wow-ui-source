@@ -20,7 +20,7 @@ function PetStable_OnLoad(self)
 	self:RegisterEvent("SPELLS_CHANGED");
 
 	-- Set portrait
-	PortraitFrameTemplate_SetPortraitToAsset(self, "Interface\\Icons\\ability_physical_taunt");
+	self:SetPortraitToAsset("Interface\\Icons\\ability_physical_taunt");
 	ButtonFrameTemplate_HideButtonBar(self);
 	self.Inset:ClearAllPoints();
 	self.Inset:SetPoint("TOPLEFT", 91, PANEL_INSET_TOP_OFFSET-2);
@@ -139,7 +139,7 @@ function PetStable_GetPetSlot(buttonID, active)
 end
 
 function PetStable_Update(updateModel)
-	PortraitFrameTemplate_SetTitleFormatted(PetStableFrame, PET_STABLE_TITLE, UnitName("player"));
+	PetStableFrame:SetTitleFormatted(PET_STABLE_TITLE, UnitName("player"));
 
 	-- So warlock pets don't show
 	local hasPetUI, isHunterPet = HasPetUI();

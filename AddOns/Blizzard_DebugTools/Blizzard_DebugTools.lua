@@ -834,3 +834,42 @@ function FrameStackTooltip_OnTooltipCleared(self)
 end
 
 FrameStackTooltip_OnEnter = FrameStackTooltip_OnShow;
+
+local DebugHighlightColors = {
+	CreateColor(0.1, 0.0, 0.0, 0.5),
+	CreateColor(0.0, 0.1, 0.0, 0.5),
+	CreateColor(0.0, 0.0, 0.1, 0.5),
+	CreateColor(0.1, 0.1, 0.0, 0.5),
+	CreateColor(0.1, 0.1, 0.1, 0.5),
+};
+
+local function GetDebugIdentifierLevel(debugIdentifierFrame)
+	local debugIdentifierLevel = 1;
+	local parent = debugIdentifierFrame:GetParent();
+	while parent and parent.DebugHighlight ~= nil do
+		debugIdentifierLevel = debugIdentifierLevel + 1;
+		parent = parent:GetParent();
+	end
+	
+	return debugIdentifierLevel;
+end
+
+function DebugIdentifierFrame_OnLoad(self)
+	if self.DebugName then
+		local debugNameText = string.gsub(self:GetDebugName(), "[.]", " ");
+		self.DebugName:SetText(debugNameText);
+		
+		C_Timer.After(0.05, function ()
+			local extraWidth = 10;
+			while (self.DebugName:IsTruncated()) do
+				self.DebugName:SetPoint("LEFT", -extraWidth, 0);
+				self.DebugName:SetPoint("RIGHT", extraWidth, 0);
+				extraWidth = extraWidth + 10;
+			end
+		end);
+	end
+	
+	local debugIdentifierLevel = GetDebugIdentifierLevel(self);
+	local debugHighlightColor = DebugHighlightColors[math.min(debugIdentifierLevel, #DebugHighlightColors)];
+	self.DebugHighlight:SetColorTexture(debugHighlightColor:GetRGBA());
+end

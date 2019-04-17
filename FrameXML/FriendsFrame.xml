@@ -34,7 +34,6 @@ TRAVEL PASS
 			</Layer>
 		</Layers>
 	</Frame>
-
 	<Frame name="FriendsFrameFriendDividerTemplate" virtual="true" enableMouse="true">
 		<Size x="298" y="16"/>
 		<Layers>
@@ -151,6 +150,9 @@ TRAVEL PASS
 					</Anchors>
 					<Color r="0.486" g="0.518" b="0.541" />
 				</FontString>
+				<Texture atlas="friendslist-favorite" hidden="true" parentKey="Favorite">
+					<Size x="17" y="17"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -412,7 +414,6 @@ TRAVEL PASS
 			</Anchors>
 		</HighlightTexture>
 	</Button>
-
 	<Button name="FriendsFrameTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>

@@ -254,3 +254,16 @@ function ToyWrappedModelSceneMixin:StartUnwrapAnimation(OnFinishedCallback)
 		end)
 	end
 end
+
+-- Used for pet and mount buttons when they will never be usable, e.g. they're faction restricted.
+function CollectionItemListButton_SetRedOverlayShown(self, showRedOverlay)
+	self.icon:SetDesaturated(showRedOverlay);
+	if showRedOverlay then
+		-- Desaturate and re-color as red to approximate coloration.
+		self.background:SetVertexColor(1, 0, 0);
+		self.icon:SetVertexColor(150/255, 50/255, 50/255);
+	else
+		self.background:SetVertexColor(1, 1, 1);
+		self.icon:SetVertexColor(1, 1, 1);
+	end
+end

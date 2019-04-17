@@ -125,7 +125,7 @@ function SpellBookFrame_OnLoad(self)
 	SpellBookFrame.flashTabs = nil;
 
 	-- Initialize portrait texture
-	PortraitFrameTemplate_SetPortraitToAsset(self, "Interface\\Spellbook\\Spellbook-Icon");
+	self:SetPortraitToAsset("Interface\\Spellbook\\Spellbook-Icon");
 
 	ButtonFrameTemplate_HideButtonBar(SpellBookFrame);
 	ButtonFrameTemplate_HideAttic(SpellBookFrame);
@@ -297,7 +297,7 @@ function SpellBookFrame_Update()
 		SpellBookPage2:SetTexture("Interface\\Spellbook\\Spellbook-Page-2");
 	end
 
-	PortraitFrameTemplate_SetTitle(SpellBookFrame, SpellBookInfo[SpellBookFrame.bookType].title);
+	SpellBookFrame:SetTitle(SpellBookInfo[SpellBookFrame.bookType].title);
 
 	local tabUpdate = SpellBookInfo[SpellBookFrame.bookType].updateFunc;
 	if(tabUpdate) then

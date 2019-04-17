@@ -98,30 +98,6 @@ do
 		},
 	};
 
-	AnchorUtil.AddNineSliceLayout("BFAMissionHorde", {
-		mirrorLayout = true,
-		TopLeftCorner =	{ atlas = "HordeFrame-Corner-TopLeft", x = -6, y = 6, },
-		TopRightCorner =	{ atlas = "HordeFrame-Corner-TopLeft", x = 6, y = 6, },
-		BottomLeftCorner =	{ atlas = "HordeFrame-Corner-TopLeft", x = -6, y = -6, },
-		BottomRightCorner =	{ atlas = "HordeFrame-Corner-TopLeft", x = 6, y = -6, },
-		TopEdge = { atlas = "_HordeFrameTile-Top", },
-		BottomEdge = { atlas = "_HordeFrameTile-Top", },
-		LeftEdge = { atlas = "!HordeFrameTile-Left", },
-		RightEdge = { atlas = "!HordeFrameTile-Left", },
-	});
-
-	AnchorUtil.AddNineSliceLayout("BFAMissionAlliance", {
-		mirrorLayout = true,
-		TopLeftCorner =	{ atlas = "AllianceFrameCorner-TopLeft", x = -6, y = 6, },
-		TopRightCorner =	{ atlas = "AllianceFrameCorner-TopLeft", x = 6, y = 6, },
-		BottomLeftCorner =	{ atlas = "AllianceFrameCorner-TopLeft", x = -6, y = -6, },
-		BottomRightCorner =	{ atlas = "AllianceFrameCorner-TopLeft", x = 6, y = -6, },
-		TopEdge = { atlas = "_AllianceFrameTile-Top", },
-		BottomEdge = { atlas = "_AllianceFrameTile-Top", },
-		LeftEdge = { atlas = "!AllianceFrameTile-Left", },
-		RightEdge = { atlas = "!AllianceFrameTile-Left", },
-	});
-
 	local function SetupTitleText(self, styleData)
 		self.OverlayElements.Topper:SetPoint("BOTTOM", self.Top, "TOP", 0, styleData.TopperOffset);
 		self.OverlayElements.Topper:SetAtlas(styleData.Topper, true);
@@ -171,8 +147,8 @@ do
 		self.GarrCorners:Hide();
 		self.Bottom:SetTexCoord(0, 1, 1, 0);
 
-		local nineSliceLayout = AnchorUtil.GetNineSliceLayout(styleData.nineSliceLayout);
-		AnchorUtil.ApplyNineSliceLayout(self, nineSliceLayout);
+		local nineSliceLayout = NineSliceUtil.GetLayout(styleData.nineSliceLayout);
+		NineSliceUtil.ApplyLayout(self, nineSliceLayout);
 		self.BackgroundTile:SetAtlas(styleData.BackgroundTile);
 
 		self.CloseButton:ClearAllPoints();

@@ -8,7 +8,7 @@ function FlightMapMixin:SetupTitle()
 	self.BorderFrame.Bg:SetParent(self);
 	self.BorderFrame.TopTileStreaks:Hide();
 
-	PortraitFrameTemplate_SetPortraitToAsset(self.BorderFrame, [[Interface/Icons/icon_petfamily_flying]]);
+	self.BorderFrame:SetPortraitToAsset([[Interface/Icons/icon_petfamily_flying]]);
 end
 
 function FlightMapMixin:OnLoad()

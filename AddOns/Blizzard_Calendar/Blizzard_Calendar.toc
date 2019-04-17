@@ -1,6 +1,4 @@
-## Interface: 80100
 ## Title: Blizzard Calendar
-## Secure: 1
 ## LoadOnDemand: 1
 Blizzard_Calendar.xml
 Localization.lua

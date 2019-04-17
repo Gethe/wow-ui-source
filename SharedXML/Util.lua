@@ -213,6 +213,10 @@ function ExtractHyperlinkString(linkString)
 	return preString ~= nil, preString, hyperlinkString, postString;
 end
 
+function ExtractQuestRewardID(linkString)
+	return linkString:match("^questreward:(%d+)$");
+end
+
 function SplitTextIntoLines(text, delimiter)
 	local lines = {};
 	local startIndex = 1;
@@ -259,6 +263,19 @@ function GetAchievementInfoFromHyperlink(link)
 	return tonumber(link:match("|Hachievement:(%d+)"));
 end
 
+function FormatValueWithSign(value)
+	local formatString = value < 0 and SYMBOLIC_NEGATIVE_NUMBER or SYMBOLIC_POSITIVE_NUMBER;
+	return formatString:format(math.abs(value));
+end
+
+function GetPlayerGuid()
+	return UnitGUID("player");
+end
+
+function IsPlayerGuid(guid)
+	return guid == GetPlayerGuid();
+end
+
 function FormatLargeNumber(amount)
 	amount = tostring(amount);
 	local newDisplay = "";
@@ -272,21 +289,11 @@ function FormatLargeNumber(amount)
 	return newDisplay;
 end
 
--- where ... are the mixins to mixin
-function Mixin(object, ...)
-	for i = 1, select("#", ...) do
-		local mixin = select(i, ...);
-		for k, v in pairs(mixin) do
-			object[k] = v;
-		end
-	end
 
+function CreateAndInitFromMixin(mixin, ...)
+	local object = CreateFromMixins(mixin);
+	object:Init(...);
 	return object;
-end
-
--- where ... are the mixins to mixin
-function CreateFromMixins(...)
-	return Mixin({}, ...)
 end
 
 COPPER_PER_SILVER = 100;
@@ -742,54 +749,6 @@ function GetFactionColor(factionGroupTag)
 	return PLAYER_FACTION_COLORS[PLAYER_FACTION_GROUP[factionGroupTag]];
 end
 
--- Mix this into a FontString to have it resize until it stops truncating, or gets too small
-ShrinkUntilTruncateFontStringMixin = {};
-
--- From largest to smallest
-function ShrinkUntilTruncateFontStringMixin:SetFontObjectsToTry(...)
-	self.fontObjectsToTry = { ... };
-	if self:GetText() then
-		self:ApplyFontObjects();
-	end
-end
-
-function ShrinkUntilTruncateFontStringMixin:ApplyFontObjects()
-	if not self.fontObjectsToTry then
-		error("No fonts applied to ShrinkUntilTruncateFontStringMixin, call SetFontObjectsToTry first");
-	end
-
-	for i, fontObject in ipairs(self.fontObjectsToTry) do
-		self:SetFontObject(fontObject);
-		if not self:IsTruncated() then
-			break;
-		end
-	end
-end
-
-function ShrinkUntilTruncateFontStringMixin:SetText(text)
-	if not self:GetFont() then
-		if not self.fontObjectsToTry then
-			error("No fonts applied to ShrinkUntilTruncateFontStringMixin, call SetFontObjectsToTry first");
-		end
-		self:SetFontObject(self.fontObjectsToTry[1]);
-	end
-
-	getmetatable(self).__index.SetText(self, text);
-	self:ApplyFontObjects();
-end
-
-function ShrinkUntilTruncateFontStringMixin:SetFormattedText(format, ...)
-	if not self:GetFont() then
-		if not self.fontObjectsToTry then
-			error("No fonts applied to ShrinkUntilTruncateFontStringMixin, call SetFontObjectsToTry first");
-		end
-		self:SetFontObject(self.fontObjectsToTry[1]);
-	end
-
-	getmetatable(self).__index.SetFormattedText(self, format, ...);
-	self:ApplyFontObjects();
-end
-
 -- Time --
 function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
 	local time = "";
@@ -938,6 +897,20 @@ function CreateAtlasMarkup(atlasName, height, width, offsetX, offsetY)
 	);
 end
 
+-- NOTE: Many of the TextureKit functions below use the following parameters
+-- If setVisibilityOfRegions is true, the frame will be shown or hidden based on whether the textureKit and atlas element were found
+-- If useAtlasSize is true, the frame will be resized to be the same size as the atlas element.
+-- Use the constants in TextureKitConstants for both
+
+TextureKitConstants = {
+	SetVisiblity = true;
+	DoNotSetVisibility = false;
+
+	UseAtlasSize = true;
+	IgnoreAtlasSize = false;
+}
+
+-- Pass in a frame and a table containing parentKeys (on frame) as keys and atlas member names as the values
 function SetupAtlasesOnRegions(frame, regionsToAtlases, useAtlasSize)
 	for region, atlas in pairs(regionsToAtlases) do
 		if frame[region] then
@@ -950,15 +923,25 @@ function SetupAtlasesOnRegions(frame, regionsToAtlases, useAtlasSize)
 	end
 end
 
-function GetFinalNameFromTextureKit(fmt, textureKit)
-	return fmt:format(textureKit);
+function GetFinalNameFromTextureKit(fmt, textureKits)
+	if type(textureKits) == "table" then
+		return fmt:format(unpack(textureKits));
+	else
+		return fmt:format(textureKits);
+	end
 end
 
+-- Pass in a TextureKit ID, a frame and a formatting string.
+-- The TextureKit name will be inserted into fmt (at the first %s). The resulting atlas name will be set on frame
+-- Use "%s" for fmt if the TextureKit name is the entire atlas element name
 function SetupTextureKitOnFrameByID(textureKitID, frame, fmt, setVisibilityOfRegions, useAtlasSize)
 	local textureKit = GetUITextureKitInfo(textureKitID);
 	SetupTextureKitOnFrame(textureKit, frame, fmt, setVisibilityOfRegions, useAtlasSize);
 end
 
+-- Pass in a TextureKit name, a frame and a formatting string.
+-- The TextureKit name will be inserted into fmt (at the first %s). The resulting atlas name will be set on frame
+-- Use "%s" for fmt if the TextureKit name is the entire atlas element name
 function SetupTextureKitOnFrame(textureKit, frame, fmt, setVisibility, useAtlasSize)
 	if not frame then
 		return;
@@ -979,6 +962,9 @@ function SetupTextureKitOnFrame(textureKit, frame, fmt, setVisibility, useAtlasS
 	end
 end
 
+-- Pass in a TextureKit name and a table containing frames as keys and formatting strings as values
+-- For each frame key in frames, the TextureKit name will be inserted into fmt (at the first %s). The resulting atlas name will be set on frame
+-- Use "%s" for fmt if the TextureKit name is the entire atlas element name
 function SetupTextureKitOnFrames(textureKit, frames, setVisibilityOfRegions, useAtlasSize)
 	if not textureKit and not setVisibilityOfRegions then
 		return;
@@ -989,11 +975,17 @@ function SetupTextureKitOnFrames(textureKit, frames, setVisibilityOfRegions, use
 	end
 end
 
+-- Pass in a TextureKit ID and a table containing frames as keys and formatting strings as values
+-- For each frame key in frames, the TextureKit name will be inserted into fmt (at the first %s). The resulting atlas name will be set on frame
+-- Use "%s" for fmt if the TextureKit name is the entire atlas element name
 function SetupTextureKitsOnFrames(textureKitID, frames, setVisibilityOfRegions, useAtlasSize)
 	local textureKit = GetUITextureKitInfo(textureKitID);
 	SetupTextureKitOnFrames(textureKit, frames, setVisibilityOfRegions, useAtlasSize);
 end
 
+-- Pass in a TextureKit name, a frame and a table containing parentKeys (on frame) as keys and formatting strings as values
+-- For each frame key in frames, the TextureKit name will be inserted into fmt (at the first %s). The resulting atlas name will be set on frame
+-- Use "%s" for fmt if the TextureKit name is the entire atlas element name
 function SetupTextureKitOnRegions(textureKit, frame, regions, setVisibilityOfRegions, useAtlasSize)
 	if not textureKit and not setVisibilityOfRegions then
 		return;
@@ -1009,11 +1001,18 @@ function SetupTextureKitOnRegions(textureKit, frame, regions, setVisibilityOfReg
 	return SetupTextureKitOnFrames(textureKit, frames, setVisibilityOfRegions, useAtlasSize);
 end
 
+-- Pass in a TextureKit ID, a frame and a table containing parentKeys (on frame) as keys and formatting strings as values
+-- For each frame key in frames, the TextureKit name will be inserted into fmt (at the first %s). The resulting atlas name will be set on frame
+-- Use "%s" for fmt if the TextureKit name is the entire atlas element name
 function SetupTextureKits(textureKitID, frame, regions, setVisibilityOfRegions, useAtlasSize)
 	local textureKit = GetUITextureKitInfo(textureKitID);
 	SetupTextureKitOnRegions(textureKit, frame, regions, setVisibilityOfRegions, useAtlasSize);
 end
 
+-- Pass in a TextureKit name, a frame and a table containing parentKeys (on frame) as keys and a table as values
+-- The values table should contain formatString as a member (setVisibility and useAtlasSize can also be added if desired)
+-- For each frame key in frames, the TextureKit name will be inserted into formatString (at the first %s). The resulting atlas name will be set on frame
+-- Use "%s" for formatString if the TextureKit name is the entire atlas element name
 function SetupTextureKitsFromRegionInfo(textureKit, frame, regionInfoList)
 	if not frame or not regionInfoList then
 		return;
@@ -1024,6 +1023,10 @@ function SetupTextureKitsFromRegionInfo(textureKit, frame, regionInfoList)
 	end
 end
 
+-- Pass in a TextureKit ID, a frame and a table containing parentKeys (on frame) as keys and a table as values
+-- The values table should contain formatString as a member (setVisibility and useAtlasSize can also be added if desired)
+-- For each frame key in frames, the TextureKit name will be inserted into formatString (at the first %s). The resulting atlas name will be set on frame
+-- Use "%s" for formatString if the TextureKit name is the entire atlas element name
 function SetupTextureKitsFromRegionInfoByID(textureKitID, frame, regionInfoList)
 	local textureKit = GetUITextureKitInfo(textureKitID);
 	SetupTextureKitsFromRegionInfo(textureKit, frame, regionInfoList);
@@ -1469,6 +1472,10 @@ end
 
 function GetUnscaledFrameRect(frame, scale)
 	local frameLeft, frameBottom, frameWidth, frameHeight = frame:GetScaledRect();
+	if frameLeft == nil then
+		return 1, 1, 1, 1;
+	end
+
 	return frameLeft / scale, frameBottom / scale, frameWidth / scale, frameHeight / scale;
 end
 
@@ -1507,4 +1514,11 @@ end
 
 function GetCVarDefault(name)
 	return C_CVar.GetCVarDefault(name);
+end
+
+function GetGroupMemberCountsForDisplay()
+	local data = GetGroupMemberCounts();
+	data.DAMAGER = data.DAMAGER + data.NOROLE; --People without a role count as damage
+	data.NOROLE = 0;
+	return data;
 end

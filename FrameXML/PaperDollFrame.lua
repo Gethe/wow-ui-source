@@ -351,13 +351,6 @@ function PaperDoll_IsEquippedSlot(slot)
 	return false;
 end
 
-function CharacterModelFrame_OnMouseUp(self, button)
-	if ( button == "LeftButton" ) then
-		AutoEquipCursorItem();
-	end
-	Model_OnMouseUp(self, button);
-end
-
 -- This makes sure the update only happens once at the end of the frame
 function PaperDollFrame_QueuedUpdate(self)
 	self:SetScript("OnUpdate", nil);
@@ -1421,7 +1414,7 @@ end
 
 function PaperDollFrame_OnShow(self)
 	CharacterStatsPane.initialOffsetY = 0;
-	PortraitFrameTemplate_SetTitle(CharacterFrame, UnitPVPName("player"));
+	CharacterFrame:SetTitle(UnitPVPName("player"));
 	PaperDollFrame_SetLevel();
 	PaperDollFrame_UpdateStats();
 	CharacterFrame_Expand();
@@ -1589,13 +1582,22 @@ end
 function PaperDollItemSlotButton_OnModifiedClick(self, button)
 	if ( IsModifiedClick("EXPANDITEM") ) then
 		local itemLocation = ItemLocation:CreateFromEquipmentSlot(self:GetID());
-		if C_Item.DoesItemExist(itemLocation) and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) then
-			if C_Item.CanViewItemPowers(itemLocation) then 
-				OpenAzeriteEmpoweredItemUIFromItemLocation(itemLocation);
-			else 
-				UIErrorsFrame:AddExternalErrorMessage(AZERITE_PREVIEW_UNAVAILABLE_FOR_CLASS);
+		if C_Item.DoesItemExist(itemLocation) then
+			if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) then
+				if C_Item.CanViewItemPowers(itemLocation) then 
+					OpenAzeriteEmpoweredItemUIFromItemLocation(itemLocation);
+				else 
+					UIErrorsFrame:AddExternalErrorMessage(AZERITE_PREVIEW_UNAVAILABLE_FOR_CLASS);
+				end
+				return;
 			end
-		else
+
+			local heartItemLocation = C_AzeriteItem.FindActiveAzeriteItem();
+			if heartItemLocation and heartItemLocation:IsEqualTo(itemLocation) then
+				OpenAzeriteEssenceUIFromItemLocation(itemLocation);
+				return;
+			end
+
 			SocketInventoryItem(self:GetID());
 		end
 		return;

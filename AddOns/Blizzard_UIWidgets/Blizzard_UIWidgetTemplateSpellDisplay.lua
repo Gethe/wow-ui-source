@@ -9,10 +9,10 @@ UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.Spe
 
 UIWidgetTemplateSpellDisplayMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
-function UIWidgetTemplateSpellDisplayMixin:Setup(widgetInfo)
-	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
+function UIWidgetTemplateSpellDisplayMixin:Setup(widgetInfo, widgetContainer)
+	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 
-	self.Spell:Setup(widgetInfo.spellInfo, widgetInfo.enabledState, widgetInfo.widgetWidth, widgetInfo.iconSizeType);
+	self.Spell:Setup(widgetInfo.spellInfo, widgetInfo.enabledState, widgetInfo.widgetSizeSetting, widgetInfo.iconSizeType);
 	if self.fontColor then
 		self.Spell:SetFontColor(self.fontColor);
 	end

@@ -1,6 +1,4 @@
-## Interface: 80100
 ## Title: Blizzard API Documentation
-## Secure: 1
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
 
@@ -24,6 +22,7 @@ AreaPoiInfoDocumentation.lua
 ArtifactUIDocumentation.lua
 AuctionHouseDocumentation.lua
 AzeriteEmpoweredItemDocumentation.lua
+AzeriteEssenceDocumentation.lua
 AzeriteItemDocumentation.lua
 BankDocumentation.lua
 BarberShopDocumentation.lua
@@ -40,6 +39,7 @@ CinematicDocumentation.lua
 ClassColorDocumentation.lua
 ClassTrialDocumentation.lua
 ClubDocumentation.lua
+ClubFinderDocumentation.lua
 CombatLogDocumentation.lua
 CommentatorFrameDocumentation.lua
 CompactUnitFramesDocumentation.lua
@@ -104,6 +104,7 @@ QuestLineInfoDocumentation.lua
 QuestLogDocumentation.lua
 QuestOfferDocumentation.lua
 QuestTaskInfoDocumentation.lua
+RaidLocksDocumentation.lua
 RecruitAFriendDocumentation.lua
 ReportSystemDocumentation.lua
 ReputationInfoDocumentation.lua

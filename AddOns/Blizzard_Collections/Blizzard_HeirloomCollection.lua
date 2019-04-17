@@ -20,7 +20,7 @@ function HeirloomsJournal_OnShow(self)
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL, true);
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_TAB, true);
 
-	PortraitFrameTemplate_SetPortraitToAsset(CollectionsJournal, "Interface\\Icons\\inv_misc_enggizmos_19");
+	CollectionsJournal:SetPortraitToAsset("Interface\\Icons\\inv_misc_enggizmos_19");
 	local classFilter, specFilter = C_Heirloom.GetClassAndSpecFilters();
 	if self.filtersSet == nil then
 		if UnitLevel("player") >= GetMaxPlayerLevel() then

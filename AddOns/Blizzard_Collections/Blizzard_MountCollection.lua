@@ -1,11 +1,93 @@
 local MOUNT_BUTTON_HEIGHT = 46;
 local PLAYER_MOUNT_LEVEL = 20;
 local SUMMON_RANDOM_FAVORITE_MOUNT_SPELL = 150544;
+local LOCKED_EQUIPMENT_LABEL_COLOR = CreateColor(0.450, 0.392, 0.341);
+local DESATURATED_EQUIPMENT_LABEL_COLOR = CreateColor(0.502, 0.502, 0.502);
 
 local MOUNT_FACTION_TEXTURES = {
 	[0] = "MountJournalIcons-Horde",
 	[1] = "MountJournalIcons-Alliance"
 };
+
+SuppressedMountEquipmentButtonMixin = {};
+function SuppressedMountEquipmentButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", self:GetWidth());
+	GameTooltip_AddErrorLine(GameTooltip, MOUNT_EQUIPMENT_EXEMPT, true);
+	GameTooltip:Show();
+end
+
+function SuppressedMountEquipmentButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+AlertMountEquipmentFeatureMixin = {};
+function AlertMountEquipmentFeatureMixin:ClearAlert()
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_MOUNT_EQUIPMENT_SLOT_FRAME, true);
+	self:SetShown(false);
+end
+
+function AlertMountEquipmentFeatureMixin:ValidateIsShown()
+	self:SetShown(not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_MOUNT_EQUIPMENT_SLOT_FRAME));
+end
+function AlertMountEquipmentFeatureMixin:OnShow()
+	self.Fade:Play();
+end
+
+function AlertMountEquipmentFeatureMixin:OnHide()
+	self.Fade:Stop();
+end
+
+MountEquipmentButtonMixin = {};
+function MountEquipmentButtonMixin:Initialize(item)
+	self.ItemIcon:SetTexture(item and item:GetItemIcon() or nil);
+	self.ItemBorder:SetShown(item ~= nil);
+	self:SetPendingApply(false);
+	self:SetDragSourceCompatible(false);
+end
+
+function MountEquipmentButtonMixin:OnReceiveDrag()
+	self:ApplyEquipmentAtCursor();
+end
+
+function MountEquipmentButtonMixin:OnClick()
+	if not IsModifiedClick() then
+		self:ApplyEquipmentAtCursor();
+	end
+end
+
+function MountEquipmentButtonMixin:ApplyEquipmentAtCursor()
+	if self:IsEnabled() then
+		local itemLocation = C_Cursor.GetCursorItem();
+		if MountJournal_ApplyEquipment(MountJournal, itemLocation) then
+			ClearCursor();
+			
+			PlaySound(SOUNDKIT.UI_MOUNT_SLOTEQUIPMENT);
+		end
+	end
+end
+
+function MountEquipmentButtonMixin:SetPendingApply(isPending)
+	if isPending then
+		self:SetButtonState("NORMAL");
+	end
+	self:SetEnabled(not isPending);
+	self.SlotBorder:SetShown(not isPending);
+	self.SlotBorderOpen:SetShown(isPending);
+end
+
+function MountEquipmentButtonMixin:SetDragSourceCompatible(isCompatible)
+	self.NotifyDragTargetAnim:SetPlaying(isCompatible and self:IsEnabled());
+end
+
+function MountEquipmentButtonMixin:OnEnter()
+	self.NewAlert:ClearAlert();
+
+	MountJournal_InitializeEquipmentTooltip(MountJournal);
+end
+
+function MountEquipmentButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end
 
 function MountJournal_OnLoad(self)
 	self:RegisterEvent("COMPANION_LEARNED");
@@ -14,10 +96,30 @@ function MountJournal_OnLoad(self)
 	self:RegisterEvent("MOUNT_JOURNAL_USABILITY_CHANGED");
 	self:RegisterEvent("MOUNT_JOURNAL_SEARCH_UPDATED");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
+	self:RegisterEvent("PLAYER_LEVEL_UP");
+	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
+	self:RegisterEvent("MOUNT_EQUIPMENT_APPLY_RESULT");
+	self:RegisterEvent("CURSOR_UPDATE");
+
 	self.ListScrollFrame.update = MountJournal_UpdateMountList;
 	self.ListScrollFrame.scrollBar.doNotHide = true;
 	HybridScrollFrame_CreateButtons(self.ListScrollFrame, "MountListButtonTemplate", 44, 0);
 	UIDropDownMenu_Initialize(self.mountOptionsMenu, MountOptionsMenu_Init, "MENU");
+
+	local bottomLeftInset = self.BottomLeftInset;
+	self.BackgroundOverlay = bottomLeftInset.BackgroundOverlay;
+	self.SlotLabel = bottomLeftInset.SlotLabel;
+	self.SlotButton = bottomLeftInset.SlotButton;
+	
+	local levelRequired = C_MountJournal.GetMountEquipmentLevelRequirement();
+	local levelRequiredText = MOUNT_EQUIPMENT_UNLOCK_REQUIREMENT:format(levelRequired); 
+	self.SlotRequirementLabel = bottomLeftInset.SlotRequirementLabel;
+	self.SlotRequirementLabel:SetText(levelRequiredText);
+	self.SlotRequirementLabel:SetTextColor(LOCKED_EQUIPMENT_LABEL_COLOR:GetRGB());
+	
+	self.SuppressedMountEquipmentButton = bottomLeftInset.SuppressedMountEquipmentButton;
+	
+	MountJournal_UpdateEquipment(self);
 end
 
 function MountJournal_OnEvent(self, event, ...)
@@ -32,7 +134,169 @@ function MountJournal_OnEvent(self, event, ...)
 		if (self:IsVisible()) then
 			MountJournal_UpdateMountDisplay(true);
 		end
+	elseif ( event == "PLAYER_LEVEL_UP" ) then
+		MountJournal_UpdateEquipment(self);
+	elseif ( event == "CURSOR_UPDATE" ) then
+		MountJournal_ValidateCursorDragSourceCompatible(self);
+	elseif ( event == "MOUNT_EQUIPMENT_APPLY_RESULT" ) then
+		local success = ...;
+		MountJournal_OnEquipmentApplyResult(self, success);
+	elseif (event == "PLAYER_MOUNT_DISPLAY_CHANGED" ) then
+		MountJournal_ReevaluateEquipmentSuppression(self);
 	end
+end
+
+function MountJournal_ApplyEquipment(self, itemLocation)
+	if itemLocation and C_MountJournal.IsItemMountEquipment(itemLocation) then
+		local item = Item:CreateFromItemLocation(itemLocation);
+		local continuableContainer = ContinuableContainer:Create();
+		continuableContainer:AddContinuable(item);
+		continuableContainer:ContinueOnLoad(function()
+			MountJournal_InitializeEquipmentSlot(self, item);
+		end);
+
+		-- Required if we're displaying a dialog, or are
+		-- about to request the server to apply the equipment.
+		local SetApplyPending = function()
+			-- The item needs to remain locked until the apply transaction
+			-- is completed or cancelled.
+			item:LockItem();
+			self.SlotButton:SetPendingApply(true);
+		end
+
+		if C_MountJournal.IsMountEquipmentApplied() then
+			local dialog = StaticPopup_Show("DIALOG_REPLACE_MOUNT_EQUIPMENT");
+			if not dialog then
+				return false;
+			end
+			
+			SetApplyPending();
+			dialog.item = item;
+		else
+			SetApplyPending();
+			C_MountJournal.ApplyMountEquipment(itemLocation);
+		end
+
+		return true;
+	end	
+
+	return false;
+end
+
+function MountJournal_ReevaluateEquipmentSuppression(self)
+	local includeRoot = true;
+	if not MountJournal_IsEquipmentUnlocked() then
+		local desaturationAmount = 0.7;
+		self.BottomLeftInset:DesaturateHierarchy(includeRoot, desaturationAmount);
+	else
+		local effectsSuppressed = C_MountJournal.AreMountEquipmentEffectsSuppressed();
+		local desaturationAmount = effectsSuppressed and 1 or 0;
+		self.BottomLeftInset:DesaturateHierarchy(includeRoot, desaturationAmount);
+		self.SuppressedMountEquipmentButton:SetShown(effectsSuppressed);
+
+		MountJournal_InitializeEquipmentSlot(self, self.item);
+	end
+end
+
+function MountJournal_OnEquipmentApplyDialogResult(self, dialog, isAccepted)
+	local item = dialog.item;
+	dialog.item = nil;
+
+	if isAccepted then
+		C_MountJournal.ApplyMountEquipment(item:GetItemLocation());
+	else
+		item:UnlockItem();
+		MountJournal_UpdateEquipment(self);
+	end
+end
+
+function MountJournal_OnEquipmentApplyResult(self, success)
+	-- No changes on success, however if this fails, the equipment is
+	-- reverted.
+	if not success then
+		MountJournal_UpdateEquipment(self);
+	end
+
+	self.SlotButton:SetPendingApply(false);
+end
+
+function MountJournal_InitializeEquipmentTooltip(self)
+	GameTooltip:Hide();
+	GameTooltip:SetOwner(self.SlotButton, "ANCHOR_RIGHT");
+
+	if self.item then
+		local itemID = self.item:GetItemID();
+		if itemID then
+			GameTooltip:SetItemByID(itemID);
+			GameTooltip:Show();
+		end
+	end
+end
+
+function MountJournal_ValidateCursorDragSourceCompatible(self)
+	local itemLocation = C_Cursor.GetCursorItem();
+	local isCompatible = itemLocation and C_MountJournal.IsItemMountEquipment(itemLocation) or false;
+	self.SlotButton:SetDragSourceCompatible(isCompatible);
+end
+
+function MountJournal_InitializeEquipmentSlot(self, item)	
+	self.item = item;
+	
+	if C_MountJournal.AreMountEquipmentEffectsSuppressed() then
+		self.SlotLabel:SetTextColor(DESATURATED_EQUIPMENT_LABEL_COLOR:GetRGB());
+	else
+		 if item then
+			local qualityColor = item:GetItemQualityColor().color;
+			self.SlotLabel:SetTextColor(qualityColor:GetRGB());
+		else
+			self.SlotLabel:SetTextColor(GameFontNormal:GetTextColor());
+		end
+	end
+
+	self.SlotButton:Initialize(item);
+
+	if item then
+		local itemName = item:GetItemName();
+		self.SlotLabel:SetText(itemName);
+
+		-- Replace the existing tooltip if necessary.
+		if GameTooltip:IsShown() and GameTooltip:GetOwner() == self.SlotButton then
+			MountJournal_InitializeEquipmentTooltip(self);
+		end	
+	else
+		self.SlotLabel:SetText(MOUNT_EQUIPMENT_NOTICE);
+	end
+end
+
+function MountJournal_IsEquipmentUnlocked()
+	local playerLevel = UnitLevel("player");
+	local requiredLevel = C_MountJournal.GetMountEquipmentLevelRequirement();
+	return playerLevel >= requiredLevel;
+end
+
+function MountJournal_UpdateEquipment(self)
+	local isUnlocked = MountJournal_IsEquipmentUnlocked();
+	self.SlotButton:SetShown(isUnlocked);
+	self.SlotLabel:SetShown(isUnlocked);
+	self.SlotRequirementLabel:SetShown(not isUnlocked);
+	self.BackgroundOverlay:SetShown(not isUnlocked);
+
+	if isUnlocked then
+		local itemID = C_MountJournal.GetAppliedMountEquipmentID();
+		if itemID then
+			local item = Item:CreateFromItemID(itemID);
+			local continuableContainer = ContinuableContainer:Create();
+			continuableContainer:AddContinuable(item);
+			continuableContainer:ContinueOnLoad(function()
+				MountJournal_InitializeEquipmentSlot(self, item);
+			end);
+		else
+			local invalidItem = nil;
+			MountJournal_InitializeEquipmentSlot(self, invalidItem);	
+		end
+	end
+
+	MountJournal_ReevaluateEquipmentSuppression(self);
 end
 
 function MountJournal_FullUpdate(self)
@@ -44,12 +308,15 @@ function MountJournal_FullUpdate(self)
 		end
 
 		MountJournal_UpdateMountDisplay();
+		MountJournal_UpdateEquipment(self);
 	end
 end
 
 function MountJournal_OnShow(self)
 	MountJournal_FullUpdate(self);
-	PortraitFrameTemplate_SetPortraitToAsset(CollectionsJournal, "Interface\\Icons\\MountJournalPortrait");
+	CollectionsJournal:SetPortraitToAsset("Interface\\Icons\\MountJournalPortrait");
+
+	self.SlotButton.NewAlert:ValidateIsShown();
 end
 
 function MountJournal_OnHide(self)
@@ -113,7 +380,7 @@ function MountJournal_UpdateMountList()
 				button.selectedTexture:Hide();
 			end
 			button:SetEnabled(true);
-			button.unusable:Hide();
+			CollectionItemListButton_SetRedOverlayShown(button, false);
 			button.iconBorder:Hide();
 			button.background:SetVertexColor(1, 1, 1, 1);
 			if (isUsable or needsFanfare) then
@@ -124,7 +391,7 @@ function MountJournal_UpdateMountList()
 				button.name:SetFontObject("GameFontNormal");
 			else
 				if (isCollected) then
-					button.unusable:Show();
+					CollectionItemListButton_SetRedOverlayShown(button, true);
 					button.DragButton:SetEnabled(true);
 					button.name:SetFontObject("GameFontNormal");
 					button.icon:SetAlpha(0.75);
@@ -161,7 +428,7 @@ function MountJournal_UpdateMountList()
 			button.index = nil;
 			button.spellID = 0;
 			button.selected = false;
-			button.unusable:Hide();
+			CollectionItemListButton_SetRedOverlayShown(button, false);
 			button.DragButton.ActiveTexture:Hide();
 			button.selectedTexture:Hide();
 			button:SetEnabled(false);
@@ -315,6 +582,28 @@ function MountJournalMountButton_OnClick(self)
 	if MountJournal.selectedMountID then
 		MountJournalMountButton_UseMount(MountJournal.selectedMountID);
 	end
+end
+
+function MountJournalMountButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(self:GetText(), HIGHLIGHT_FONT_COLOR:GetRGB());
+
+	local needsFanFare = MountJournal.selectedMountID and C_MountJournal.NeedsFanfare(MountJournal.selectedMountID);
+	if needsFanFare then
+		GameTooltip_AddNormalLine(GameTooltip, MOUNT_UNWRAP_TOOLTIP, true);
+	else
+		GameTooltip_AddNormalLine(GameTooltip, MOUNT_SUMMON_TOOLTIP, true);
+	end
+
+	if MountJournal.selectedMountID ~= nil then
+		local checkIndoors = true;
+		local isUsable, errorText = C_MountJournal.GetMountUsabilityByID(MountJournal.selectedMountID, checkIndoors);
+		if errorText ~= nil then
+			GameTooltip_AddErrorLine(GameTooltip, errorText, true);
+		end
+	end
+
+	GameTooltip:Show();
 end
 
 function MountListDragButton_OnClick(self, button)

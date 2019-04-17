@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Frame name="UIWidgetTemplateStatusBar" inherits="UIWidgetBaseTemplate" virtual="true" mixin="UIWidgetTemplateStatusBarMixin">
 		<Frames>
-			<StatusBar parentKey="Bar" drawLayer="BACKGROUND" minValue="0" maxValue="100" defaultValue="0" mixin="UIWidgetBaseStatusBarTemplateMixin">
+			<StatusBar parentKey="Bar" inherits="UIWidgetBaseStatusBarTemplate" drawLayer="BACKGROUND" minValue="0" maxValue="100" defaultValue="0" >
 				<Size x="215" y="15"/>
 				<Anchors>
 					<Anchor point="TOP" y="-8"/>

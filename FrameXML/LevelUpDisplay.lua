@@ -759,7 +759,7 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 
 					if textureKitID then
 						playAnim = self.scenarioFrame.TextureKitNewStage;
-						SetupTextureKits(textureKitID, self.scenarioFrame, textureKitRegionFormatStrings, false, true);
+						SetupTextureKits(textureKitID, self.scenarioFrame, textureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
 					else
 						if scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION then
 							playAnim = self.scenarioFrame.LegionInvasionNewStage;

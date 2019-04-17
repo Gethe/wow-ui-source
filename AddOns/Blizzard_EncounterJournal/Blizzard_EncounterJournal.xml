@@ -660,6 +660,26 @@
 	<Button name="EncounterBossButtonTemplate" virtual="true" hidden="true">
 		<Size x="325" y="55"/>
 		<Frames>
+			<Button frameLevel="150" parentKey="DefeatedOverlay">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="4" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Icon" atlas="Map-MarkedDefeated" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter function="EncounterJournalBossButtonDefeatedOverlay_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+
 			<Frame>
 				<Size x="1" y="1"/>
 				<Anchors>
@@ -703,20 +723,10 @@
 		</HighlightFont>
 		<DisabledFont style="GameFontHighlightMedium"/>
 		<Scripts>
-			<OnClick>
-				if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
-					if self.link then
-						ChatEdit_InsertLink(self.link);
-					end
-					return;
-				end
-				local _, _, _, rootSectionID = EJ_GetEncounterInfo(self.encounterID);
-				if ( rootSectionID == 0 ) then
-					EncounterJournal_SetTab(EncounterJournal.encounter.info.lootTab:GetID());
-				end
-				EncounterJournal_DisplayEncounter(self.encounterID);
-				PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
-			</OnClick>
+			<OnShow function="EncounterJournalBossButton_OnShow"/>
+			<OnHide function="EncounterJournalBossButton_OnHide"/>
+			<OnEvent function="EncounterJournalBossButton_OnEvent"/>
+			<OnClick function="EncounterJournalBossButton_OnClick"/>
 		</Scripts>
 	</Button>
 
@@ -2153,10 +2163,16 @@
 									</Anchors>
 									<Color r="0.902" g="0.788" b="0.671"/>
 								</FontString>
+								<Texture name="$parentDifficultyIcon" parentKey="difficultyIcon" file="Interface\EncounterJournal\UI-EJ-Icons">
+									<Size x="32" y="32"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="55" y="-10"/>
+									</Anchors>
+								</Texture>
 								<FontString name="$parentInstanceTitle" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="instanceTitle">
 									<Size x="290" y="12"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="65" y="-20"/>
+										<Anchor point="LEFT" relativeKey="$parent.difficultyIcon" relativePoint="RIGHT" x="-4" y="0"/>
 									</Anchors>
 									<Color r="0.902" g="0.788" b="0.671"/>
 								</FontString>

@@ -65,14 +65,19 @@ local textureKitColors = {
 		title = CreateColor(0.192, 0.051, 0.008),
 		description = CreateColor(0.412, 0.020, 0.020),
 	},
+	["marine"] = {
+		title = CreateColor(0.192, 0.051, 0.008),
+		description = CreateColor(0.192, 0.051, 0.008),
+	},
 };
 
 local borderFrameTextureKitRegions = {
 	["Header"] = "UI-Frame-%s-Header",
-	["TopRightCorner"] = "UI-Frame-%s-Corner",
+	["Corner"] = "UI-Frame-%s-Corner",
+	["TopRightCorner"] = "UI-Frame-%s-CornerTopRight",
 	["TopLeftCorner"] = "UI-Frame-%s-Corner",
-	["BottomLeftCorner"] = "UI-Frame-%s-Corner",
-	["BottomRightCorner"] = "UI-Frame-%s-Corner",
+	["BottomLeftCorner"] = "UI-Frame-%s-CornerBottomLeft",
+	["BottomRightCorner"] = "UI-Frame-%s-CornerBottomRight",
 	["TopEdge"] = "_UI-Frame-%s-TileTop",
 	["BottomEdge"] = "_UI-Frame-%s-TileBottom",
 	["LeftEdge"] = "!UI-Frame-%s-TileLeft",
@@ -81,31 +86,50 @@ local borderFrameTextureKitRegions = {
 };
 
 -- NOTE: Because the nineSlice is themed, the offsets may not be able to remain the same, ideally the artwork will be set up so that this isn't a problem
-AnchorUtil.AddNineSliceLayout("WarboardTextureKit", {
+NineSliceUtil.AddLayout("WarboardTextureKit", {
 	mirrorLayout = true,
-	TopLeftCorner =	{ atlas = borderFrameTextureKitRegions["TopLeftCorner"], x = -6, y = 6, },
-	TopRightCorner =	{ atlas = borderFrameTextureKitRegions["TopRightCorner"], x = 6, y = 6, },
-	BottomLeftCorner =	{ atlas = borderFrameTextureKitRegions["BottomLeftCorner"], x = -6, y = -6, },
-	BottomRightCorner =	{ atlas = borderFrameTextureKitRegions["BottomRightCorner"], x = 6, y = -6, },
+	TopLeftCorner =	{ atlas = borderFrameTextureKitRegions["Corner"], x = -6, y = 6, },
+	TopRightCorner =	{ atlas = borderFrameTextureKitRegions["Corner"], x = 6, y = 6, },
+	BottomLeftCorner =	{ atlas = borderFrameTextureKitRegions["Corner"], x = -6, y = -6, },
+	BottomRightCorner =	{ atlas = borderFrameTextureKitRegions["Corner"], x = 6, y = -6, },
 	TopEdge = { atlas = borderFrameTextureKitRegions["TopEdge"], },
 	BottomEdge = { atlas = borderFrameTextureKitRegions["BottomEdge"], mirrorLayout = false, },
 	LeftEdge = { atlas = borderFrameTextureKitRegions["LeftEdge"], },
 	RightEdge = { atlas = borderFrameTextureKitRegions["RightEdge"], mirrorLayout = false, },
 });
 
-local borderLayout = {
-	["alliance"] = { closeX = 0, closeY = 0, header = -55, showHeader = true, },
-	["horde"] = { closeX = -1, closeY = 1, header = -61, showHeader = true, },
-	["neutral"] = { closeX = -1, closeY = 1, header = 0, showHeader = false, },
+NineSliceUtil.AddLayout("WarboardTextureKit_FourCorners", {
+	mirrorLayout = true,
+	TopLeftCorner =	{ atlas = borderFrameTextureKitRegions["TopLeftCorner"], x = -6, y = 6, },
+	TopRightCorner =	{ atlas = borderFrameTextureKitRegions["TopRightCorner"], x = 6, y = 6, mirrorLayout = false},
+	BottomLeftCorner =	{ atlas = borderFrameTextureKitRegions["BottomLeftCorner"], x = -6, y = -6, mirrorLayout = false},
+	BottomRightCorner =	{ atlas = borderFrameTextureKitRegions["BottomRightCorner"], x = 6, y = -6, mirrorLayout = false},
+	TopEdge = { atlas = borderFrameTextureKitRegions["TopEdge"], },
+	BottomEdge = { atlas = borderFrameTextureKitRegions["BottomEdge"], mirrorLayout = false, },
+	LeftEdge = { atlas = borderFrameTextureKitRegions["LeftEdge"], },
+	RightEdge = { atlas = borderFrameTextureKitRegions["RightEdge"], mirrorLayout = false, },
+});
+
+local nineSliceLayout = {
+	["marine"] = "WarboardTextureKit_FourCorners",
 }
 
-local function SetupBorder(self, layout, textureKit)
-	AnchorUtil.ApplyNineSliceLayoutByName(self.NineSlice, "WarboardTextureKit", textureKit);
+local borderLayout = {
+	["alliance"] = { closeButtonX = 1, closeButtonY = 2, closeBorderX = 0, closeBorderY = 0, header = -55, showHeader = true, },
+	["horde"] = { closeButtonX = 1, closeButtonY = 2, closeBorderX = -1, closeBorderY = 1, header = -61, showHeader = true, },
+	["marine"] = { closeButtonX = 3, closeButtonY = 3, closeBorderX = -1, closeBorderY = 1, header = 0, showHeader = false, },
+	["neutral"] = { closeButtonX = 1, closeButtonY = 2, closeBorderX = -1, closeBorderY = 1, header = 0, showHeader = false, },
+}
+
+local function SetupBorder(self, layout, textureKit, nineSliceLayout)
+	NineSliceUtil.ApplyLayoutByName(self.NineSlice, nineSliceLayout, textureKit);
 
 	self.BorderFrame.Header:SetPoint("BOTTOM", self.BorderFrame, "TOP", 0, layout.header);
 	self.BorderFrame.Header:SetShown(layout.showHeader);
 
-	UIPanelCloseButton_SetBorderAtlas(self.CloseButton, borderFrameTextureKitRegions.CloseButtonBorder, layout.closeX, layout.closeY, textureKit);
+	UIPanelCloseButton_SetBorderAtlas(self.CloseButton, borderFrameTextureKitRegions.CloseButtonBorder, layout.closeBorderX, layout.closeBorderY, textureKit);
+
+	self.CloseButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", layout.closeButtonX, layout.closeButtonY);
 	self.CloseButton:SetFrameLevel(510);
 end
 
@@ -124,9 +148,7 @@ function WarboardQuestChoiceFrameMixin:ShowRewards(numChoices)
 end
 
 function WarboardQuestChoiceFrameMixin:SetupTextureKits(frame, regions)
-	local setVisibilityOfRegions = nil;
-	local useAtlasSize = true;
-	SetupTextureKits(self.uiTextureKitID, frame, regions, setVisibilityOfRegions, useAtlasSize);
+	SetupTextureKits(self.uiTextureKitID, frame, regions, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
 end
 
 function WarboardQuestChoiceFrameMixin:TryShow()
@@ -148,7 +170,8 @@ function WarboardQuestChoiceFrameMixin:TryShow()
 	end
 
 	local layout = borderLayout[textureKit] or borderLayout["neutral"];
-	SetupBorder(self, layout, textureKit);
+	local nineSliceLayout = nineSliceLayout[textureKit] or "WarboardTextureKit";
+	SetupBorder(self, layout, textureKit, nineSliceLayout);
 
 	for _, option in pairs(self.Options) do
 		option.OptionText:SetTextColor(self.optionDescriptionColor:GetRGBA());

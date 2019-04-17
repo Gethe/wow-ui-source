@@ -133,9 +133,9 @@ local UIModelInfo =
 		{
 			Name = "ModelSceneType",
 			Type = "Enumeration",
-			NumValues = 16,
+			NumValues = 17,
 			MinValue = 0,
-			MaxValue = 15,
+			MaxValue = 16,
 			Fields =
 			{
 				{ Name = "MountJournal", Type = "ModelSceneType", EnumValue = 0 },
@@ -154,6 +154,7 @@ local UIModelInfo =
 				{ Name = "AzeriteItemLevelUpToast", Type = "ModelSceneType", EnumValue = 13 },
 				{ Name = "AzeritePowers", Type = "ModelSceneType", EnumValue = 14 },
 				{ Name = "AzeriteRewardGlow", Type = "ModelSceneType", EnumValue = 15 },
+				{ Name = "HeartOfAzeroth", Type = "ModelSceneType", EnumValue = 16 },
 			},
 		},
 		{

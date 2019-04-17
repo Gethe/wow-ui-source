@@ -88,6 +88,8 @@ function CommunitiesAddDialogMixin:OnShow()
 	end
 	
 	self.CreateBattleNetGroupButton:SetEnabled(C_Club.ShouldAllowClubType(Enum.ClubType.BattleNet));
+
+	self.InviteLinkBox:SetFocus();
 end
 
 function CommunitiesAddDialogMixin:OnAttributeChanged(name, value)
@@ -155,6 +157,10 @@ function CommunitiesCreateDialogMixin:OnAttributeChanged(name, value)
 		self:SetShown(value);
 	elseif name == "setavatarid" then
 		self:SetAvatarId(value);
+	elseif name == "setclubtype" then
+		self:SetClubType(value);
+	elseif name == "cleartext" then
+		self:ClearText();
 	end
 end
 

@@ -57,7 +57,9 @@ function SocialQueueUtil_GetQueueName(queue, nameFormatter)
 		local name;
 		if ( queue.lfgListID ) then
 			local searchResultInfo = C_LFGList.GetSearchResultInfo(queue.lfgListID);
-			name = searchResultInfo.name;
+			if searchResultInfo then
+				name = searchResultInfo.name;
+			end
 		else
 			if ( queue.activityID ) then
 				name = C_LFGList.GetActivityInfo(queue.activityID);
@@ -80,23 +82,23 @@ function SocialQueueUtil_GetHeaderName(groupGUID)
 		return "";
 	else
 		members = SocialQueueUtil_SortGroupMembers(members);
-		
+
 		local clubId = members[1].clubId;
 		local playerName, color, relationship = SocialQueueUtil_GetRelationshipInfo(members[1].guid, nil, clubId);
 		if ( #members > 1 ) then
 			playerName = string.format(QUICK_JOIN_TOAST_EXTRA_PLAYERS, playerName, #members - 1);
 		end
 		playerName = color..playerName;
-		
+
 		if ( relationship == "club" and clubId ) then
 			local clubInfo = C_Club.GetClubInfo(clubId);
 			if ( clubInfo ) then
 				playerName = SOCIAL_QUEUE_COMMUNITIES_HEADER_FORMAT:format(playerName, clubInfo.name);
 			end
 		end
-		
+
 		playerName = playerName..FONT_COLOR_CODE_CLOSE;
-		
+
 		return playerName;
 	end
 end
@@ -168,7 +170,7 @@ end
 function SocialQueueUtil_GetRelationshipInfo(guid, missingNameFallback, clubId)
 	local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, zoneName, level, gameText, broadcast, broadcastTime, online, bnetIDGameAccount, bnetIDAccount = BNGetGameAccountInfoByGUID(guid);
 	if ( characterName and bnetIDAccount ) then
-		local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isBnetAFK, isBnetDND, messageText, noteText, isRIDFriend, messageTime, canSoR = BNGetFriendInfoByID(bnetIDAccount);
+		local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isBnetAFK, isBnetDND, messageText, noteText, isRIDFriend, messageTime = BNGetFriendInfoByID(bnetIDAccount);
 		if ( accountName ) then
 			return accountName, FRIENDS_BNET_NAME_COLOR_CODE, "bnfriend", GetBNPlayerLink(accountName, accountName, bnetIDAccount, 0, 0, 0);
 		end
@@ -176,14 +178,14 @@ function SocialQueueUtil_GetRelationshipInfo(guid, missingNameFallback, clubId)
 
 	local name, normalizedRealmName = select(6, GetPlayerInfoByGUID(guid));
 	name = name or missingNameFallback;
-	
+
 	local hasName = name ~= nil;
 	if ( not hasName ) then
 		name = UNKNOWNOBJECT;
 	elseif ( normalizedRealmName and normalizedRealmName ~= "" ) then
 		name = FULL_PLAYER_NAME:format(name, normalizedRealmName);
 	end
-	
+
 	local linkName = name;
 	local playerLink;
 
@@ -198,7 +200,7 @@ function SocialQueueUtil_GetRelationshipInfo(guid, missingNameFallback, clubId)
 	if ( IsGuildMember(guid) ) then
 		return name, RGBTableToColorCode(ChatTypeInfo.GUILD), "guild", playerLink;
 	end
-	
+
 	local clubInfo = clubId and C_Club.GetClubInfo(clubId) or nil;
 	if ( clubInfo ) then
 		return name, FRIENDS_WOW_NAME_COLOR_CODE, "club", playerLink;

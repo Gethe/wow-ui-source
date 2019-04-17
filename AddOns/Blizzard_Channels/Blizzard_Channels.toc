@@ -1,4 +1,3 @@
-## Interface: 80100
 ## Title: Blizzard Chat Channels UI
 ## LoadOnDemand: 0
 VoiceUtils.lua

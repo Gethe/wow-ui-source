@@ -79,4 +79,24 @@
 			</AnimationGroup>
 		</Animations>
 	</Frame>
+	
+	<Frame name="QuestObjectiveWaypointLineTemplate" inherits="ObjectiveTrackerLineTemplate" virtual="true">
+		<Size x="200" y="0"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" atlas="poi-traveldirections-arrow">
+					<Size x="13" y="17"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.Text:ClearAllPoints();
+				self.Text:SetPoint("LEFT", self.Icon, "RIGHT", 2, 1);
+			</OnLoad>
+		</Scripts>
+	</Frame>
 </Ui>

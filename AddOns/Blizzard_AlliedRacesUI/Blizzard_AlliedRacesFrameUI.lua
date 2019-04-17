@@ -5,7 +5,7 @@ function AlliedRacesFrameMixin:UpdatedBannerColor(bannerColor)
 end
 
 function AlliedRacesFrameMixin:SetFrameText(name, description)
-	PortraitFrameTemplate_SetTitle(self, name);
+	self:SetTitle(name);
 	self.RaceInfoFrame.AlliedRacesRaceName:SetText(name);
 	self.RaceInfoFrame.ScrollFrame.Child.RaceDescriptionText:SetText(description);
 end
@@ -85,7 +85,7 @@ function AlliedRacesFrameMixin:LoadRaceData(raceID)
 	self.ModelFrame.AlliedRacesMaleButton.MaleModelID = raceInfo.maleModelID;
 	self.ModelFrame.AlliedRacesFemaleButton.raceName = raceInfo.maleName;
 
-	PortraitFrameTemplate_SetPortraitAtlasRaw(self, raceInfo.crestAtlas);
+	self:SetPortraitAtlasRaw(raceInfo.crestAtlas);
 	self:UpdatedBannerColor(raceInfo.bannerColor);
 	self:RacialAbilitiesData(raceID);
 	self:UpdateObjectivesFrame(raceInfo.achievementID);

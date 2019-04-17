@@ -11,6 +11,13 @@ end
 CommunitiesSettingsDialogMixin = {}
 
 function CommunitiesSettingsDialogMixin:OnLoad()
+	self.LookingForDropdown:Initialize(); 
+	self.ClubFocusDropdown:Initialize(); 
+	self.ClubFocusDropdown.GuildFocusDropdownLabel:SetFontObject(GameFontNormal);
+	UIDropDownMenu_SetWidth(self.LookingForDropdown, 140);
+	UIDropDownMenu_SetWidth(self.ClubFocusDropdown, 140);
+	UIDropDownMenu_Initialize(self.LookingForDropdown, LookingForClubDropdownInitialize); 
+	UIDropDownMenu_Initialize(self.ClubFocusDropdown, ClubFocusClubDropdownInitialize); 
 end
 
 function CommunitiesSettingsDialogMixin:OnShow()
@@ -19,7 +26,8 @@ function CommunitiesSettingsDialogMixin:OnShow()
 	else
 		self.DialogLabel:SetText(COMMUNITIES_SETTINGS_CHARACTER_LABEL);
 	end
-	
+
+	self:SetDisabledStateOnCommunityFinderOptions(not self.ShouldListClub.Button:GetChecked()); 
 	CommunitiesFrame:RegisterDialogShown(self);
 end
 
@@ -82,6 +90,53 @@ function CommunitiesSettingsDialogMixin:UpdateCreateButton()
 	end
 end
 
+function CommunitiesSettingsDialogMixin:PostClub()
+	if (not self.ShouldListClub.Button:GetChecked()) then 
+		return; 
+	end
+
+	local clubInfo = C_Club.GetClubInfo(self.clubId);
+	local specsInList = self.LookingForDropdown:GetSpecsList(); 
+
+	local minItemLevel = self.MinIlvlOnly.EditBox:GetNumber();
+	local description = self.Description.EditBox:GetText():gsub("\n",""); 
+	local minimumLevel = 0; 
+
+	if (self.MaxLevelOnly.Button:GetChecked()) then 
+		minimumLevel = GetMaxLevelForExpansionLevel(LE_EXPANSION_BATTLE_FOR_AZEROTH);
+	end 
+
+	if(clubInfo) then 
+		C_ClubFinder.PostClub(clubInfo.clubId, minimumLevel, minItemLevel, clubInfo.name, description, specsInList, Enum.ClubFinderRequestType.Community);
+		self:Hide(); 
+	end
+end
+
+function CommunitiesSettingsDialogMixin:SetDisabledStateOnCommunityFinderOptions(shouldDisable)
+	self.AutoAcceptApplications.Button:SetEnabled(not shouldDisable);
+	self.MaxLevelOnly.Button:SetEnabled(not shouldDisable); 
+	self.MinIlvlOnly.Button:SetEnabled(not shouldDisable);
+	if (shouldDisable) then 
+		local fontColor = LIGHTGRAY_FONT_COLOR;
+		self.AutoAcceptApplications.Label:SetTextColor(fontColor:GetRGB());
+		self.MaxLevelOnly.Label:SetTextColor(fontColor:GetRGB());
+		self.MinIlvlOnly.Label:SetTextColor(fontColor:GetRGB());
+		self.LookingForDropdown.Label:SetTextColor(fontColor:GetRGB());
+		self.ClubFocusDropdown.GuildFocusDropdownLabel:SetTextColor(fontColor:GetRGB());
+		UIDropDownMenu_DisableDropDown(self.ClubFocusDropdown); 
+		UIDropDownMenu_DisableDropDown(self.LookingForDropdown);
+	else
+		local fontColor = HIGHLIGHT_FONT_COLOR;
+		self.AutoAcceptApplications.Label:SetTextColor(fontColor:GetRGB());
+		self.MaxLevelOnly.Label:SetTextColor(fontColor:GetRGB());
+		self.MinIlvlOnly.Label:SetTextColor(fontColor:GetRGB());
+		self.LookingForDropdown.Label:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+		self.ClubFocusDropdown.GuildFocusDropdownLabel:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+		UIDropDownMenu_EnableDropDown(self.ClubFocusDropdown); 
+		UIDropDownMenu_EnableDropDown(self.LookingForDropdown);
+	end 
+end 
+
 local function CommunitiesAvatarPickerDialog_OnOkay(self)
 	local communitiesAvatarPickerDialog = self:GetParent();
 	communitiesAvatarPickerDialog:Hide();
@@ -133,6 +188,7 @@ function CommunitiesSettingsDialogAcceptButton_OnClick(self)
 	local communitiesSettingsDialog = self:GetParent();
 	communitiesSettingsDialog:Hide();
 	C_Club.EditClub(communitiesSettingsDialog:GetClubId(), communitiesSettingsDialog:GetName(), communitiesSettingsDialog:GetShortName(), communitiesSettingsDialog:GetDescription(), communitiesSettingsDialog:GetAvatarId(), communitiesSettingsDialog:GetMessageOfTheDay());
+	communitiesSettingsDialog:PostClub(); 
 end
 
 function CommunitiesSettingsDialogDeleteButton_OnClick(self)

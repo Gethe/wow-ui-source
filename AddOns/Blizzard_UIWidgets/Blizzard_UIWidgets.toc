@@ -1,6 +1,4 @@
-## Interface: 80100
 ## Title: Blizzard_UIWidgets
-## Secure: 1
 ## LoadOnDemand: 0
 Blizzard_UIWidgetManager.lua
 Blizzard_UIWidgetManager.xml
@@ -30,12 +28,14 @@ Blizzard_UIWidgetTemplateBulletTextList.lua
 Blizzard_UIWidgetTemplateBulletTextList.xml
 Blizzard_UIWidgetTemplateScenarioHeaderCurrenciesAndBackground.lua
 Blizzard_UIWidgetTemplateScenarioHeaderCurrenciesAndBackground.xml
-Blizzard_UIWidgetTemplateTextureWithState.lua
-Blizzard_UIWidgetTemplateTextureWithState.xml
+Blizzard_UIWidgetTemplateTextureAndText.lua
+Blizzard_UIWidgetTemplateTextureAndText.xml
 Blizzard_UIWidgetTemplateSpellDisplay.xml
 Blizzard_UIWidgetTemplateSpellDisplay.lua
 Blizzard_UIWidgetTemplateDoubleStateIconRow.xml
 Blizzard_UIWidgetTemplateDoubleStateIconRow.lua
+Blizzard_UIWidgetTemplateTextureAndTextRow.xml
+Blizzard_UIWidgetTemplateTextureAndTextRow.lua
 
 Blizzard_UIWidgetTopCenterFrame.lua
 Blizzard_UIWidgetTopCenterFrame.xml

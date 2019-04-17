@@ -17,23 +17,6 @@ end
 
 setfenv(1, tbl);
 
-Import("pairs");
-Import("select");
-
-function Mixin(object, ...)
-	for i = 1, select("#", ...) do
-		local mixin = select(i, ...);
-		for k, v in pairs(mixin) do
-			object[k] = v;
-		end
-	end
-
-	return object;
-end
-
-function CreateFromMixins(...)
-	return Mixin({}, ...)
-end
 --------------------------------------------------
 
 --Imports
@@ -55,11 +38,11 @@ Import("GetMouseFocus");
 Import("Enum");
 Import("SecureMixin");
 Import("CreateFromSecureMixins");
-Import("ShrinkUntilTruncateFontStringMixin");
 Import("IsTrialAccount");
 Import("IsVeteranTrialAccount");
-Import("PortraitFrameTemplate_SetPortraitToAsset");
 Import("BLIZZARD_STORE_BUNDLE_TOOLTIP_HEADER");
+Import("GetScreenWidth");
+Import("GetScreenHeight");
 
 local BATTLEPAY_SPLASH_BANNER_TEXT_FEATURED = 0;
 local BATTLEPAY_SPLASH_BANNER_TEXT_DISCOUNT = 1;
@@ -179,7 +162,7 @@ function StoreCardMixin:ShouldAddBundleInformationToTooltip(entryInfo)
 end
 
 function StoreCardMixin:AppendBundleInformationToTooltipDescription(entryInfo, tooltipDescription)
-	if self:ShouldAddBundleInformationToTooltip(card, entryInfo) then
+	if self:ShouldAddBundleInformationToTooltip(entryInfo) then
 		tooltipDescription = tooltipDescription..BLIZZARD_STORE_BUNDLE_TOOLTIP_HEADER;
 		for i, deliverableInfo in ipairs(entryInfo.sharedData.deliverables) do
 			if deliverableInfo.owned then
@@ -486,7 +469,7 @@ function StoreCardMixin:UpdateCard(entryID, forceModelUpdate)
 	self:UpdateState();
 	self:InitMagnifier();
 
-	if not self:IsShown() then
+	if not self:IsShown() and self.SplashBanner and self.SplashBanner:IsShown() then
 		self.BannerFadeIn.FadeAnim:Play();
 		self.BannerFadeIn:Show();
 	end

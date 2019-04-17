@@ -197,11 +197,15 @@ function CommunitiesListMixin:Update()
 	-- We probably need to change the create flow as well, since it's possible you are
 	-- allowed to create more bnet groups, but not more wow communities or vice versa.
 	local shouldAddJoinCommunityEntry = C_Club.ShouldAllowClubType(Enum.ClubType.Character) or C_Club.ShouldAllowClubType(Enum.ClubType.BattleNet); 
+	local shouldFindCommunityEntry = C_Club.ShouldAllowClubType(Enum.ClubType.Character); 
 	
 	-- We need 1 for the blank entry at the top of the list.
 	local clubsHeight = height * (totalNumClubs + 1);
 	if shouldAddJoinCommunityEntry then
 		clubsHeight = clubsHeight + height;
+		if(shouldFindCommunityEntry) then 
+			clubsHeight = clubsHeight + height; 
+		end
 	end
 	
 	local usedHeight = height;
@@ -235,7 +239,7 @@ function CommunitiesListMixin:Update()
 				end
 			end
 			
-			if not isInGuild and displayIndex == 0 then
+			if not isInGuild and displayIndex == 0 and C_ClubFinder.ShouldShowClubFinder() then
 				button:SetGuildFinder();
 				button:SetFocused(self:GetCommunitiesFrame():GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER);
 				button:Show();
@@ -245,10 +249,15 @@ function CommunitiesListMixin:Update()
 				button:SetFocused(isInvitation or clubInfo.clubId == selectedClubId);
 				button:Show();
 				usedHeight = usedHeight + height;
-			elseif shouldAddJoinCommunityEntry then
-				button:SetAddCommunity();
+			elseif shouldFindCommunityEntry and C_ClubFinder.ShouldShowClubFinder() then
+				button:SetFindCommunity(); 
 				button:Show();
 				usedHeight = usedHeight + height;
+				shouldFindCommunityEntry = false;
+			elseif shouldAddJoinCommunityEntry then 
+				button:SetAddCommunity();
+				button:Show(); 
+				usedHeight = usedHeight + height; 
 				shouldAddJoinCommunityEntry = false;
 			else
 				button:SetClubInfo(nil);
@@ -437,7 +446,11 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket)
 	else
 		self.overrideOnClick = nil;
 	end
-	
+
+	if (self:GetCommunitiesFrame():GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST) then 
+		self:GetCommunitiesFrame():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
+	end 
+
 	if clubInfo then
 		if isInvitation then
 			self.Name:SetText(COMMUNITIES_LIST_INVITATION_DISPLAY:format(clubInfo.name));
@@ -503,13 +516,44 @@ function CommunitiesListEntryMixin:UpdateUnreadNotification()
 	self.UnreadNotificationIcon:SetShown(isNewInvitation or hasUnread);
 end
 
+function CommunitiesListEntryMixin:SetFindCommunity()
+	self.overrideOnClick = function()
+		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+		self:GetCommunitiesFrame():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_FINDER);
+		self:GetCommunitiesFrame():SelectClub(nil);
+	end;
+	
+	self.clubId = nil;
+	self.Name:SetText(COMMUNITY_FINDER_FIND_COMMUNITY);
+	self.Name:SetTextColor(GREEN_FONT_COLOR:GetRGB());
+	self.Name:SetPoint("LEFT", self.Icon, "RIGHT", 13, 0);
+	self.Selection:SetShown(self:GetCommunitiesFrame():GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_FINDER);
+
+	self.Background:SetTexture("Interface\\Common\\bluemenu-main");
+	self.Background:SetTexCoord(0.00390625, 0.87890625, 0.75195313, 0.83007813);
+	self.Selection:SetTexture("Interface\\Common\\bluemenu-main");
+	self.Selection:SetTexCoord(0.00390625, 0.87890625, 0.59179688, 0.66992188);
+	self.FavoriteIcon:Hide();
+	self.InvitationIcon:Hide();
+	self.Icon:Show();
+	self.CircleMask:Hide();
+	self.IconRing:Hide();
+	self.GuildTabardEmblem:Hide();
+	self.GuildTabardBackground:Hide();
+	self.GuildTabardBorder:Hide();
+	self.UnreadNotificationIcon:Hide();
+
+	self.Icon:SetAtlas("communities-icon-searchmagnifyingglass");
+	self.Icon:SetSize(30, 30);
+	self.Icon:SetPoint("TOPLEFT", 17, -18);
+end
+
 function CommunitiesListEntryMixin:SetAddCommunity()
 	self.overrideOnClick = function()
 		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 		if not AddCommunitiesFlow_IsShown() then
 			self:GetCommunitiesFrame():CloseActiveDialogs();
 		end
-		
 		AddCommunitiesFlow_Toggle();
 	end;
 	

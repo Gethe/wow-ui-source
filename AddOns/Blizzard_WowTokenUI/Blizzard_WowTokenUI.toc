@@ -1,8 +1,5 @@
-## Interface: 80100
 ## Title: Blizzard WoW Token UI
-## Secure: 1
 ## LoadOnDemand: 0
-..\..\SharedXML\AnchorUtil.xml
-..\..\SharedXML\PanelThemes.lua
+..\..\SharedXML\NineSlice.lua
 Blizzard_WowTokenUI.xml
 Blizzard_WowTokenUIInsecure.xml

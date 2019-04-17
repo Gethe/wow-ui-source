@@ -1,11 +1,11 @@
 WorldMapMixin = {};
 
 function WorldMapMixin:SetupTitle()
-	PortraitFrameTemplate_SetTitle(self.BorderFrame, MAP_AND_QUEST_LOG);
+	self.BorderFrame:SetTitle(MAP_AND_QUEST_LOG);
 	self.BorderFrame.Bg:SetParent(self);
 	self.BorderFrame.TopTileStreaks:Hide();
 
-	PortraitFrameTemplate_SetPortraitToAsset(self.BorderFrame, [[Interface\QuestFrame\UI-QuestLog-BookIcon]]);
+	self.BorderFrame:SetPortraitToAsset([[Interface\QuestFrame\UI-QuestLog-BookIcon]]);
 end
 
 function WorldMapMixin:SynchronizeDisplayState()
@@ -29,16 +29,13 @@ function WorldMapMixin:Minimize()
 	SetUIPanelAttribute(self, "bottomClampOverride", nil);
 	UpdateUIPanelPositions(self);
 
-	PortraitFrameTemplate_SetBorder(self.BorderFrame, "PortraitFrameTemplateMinimizable");
-	PortraitFrameTemplate_SetPortraitShown(self.BorderFrame, true);
+	self.BorderFrame:SetBorder("PortraitFrameTemplateMinimizable");
+	self.BorderFrame:SetPortraitShown(true);
 
 	self.BorderFrame.Tutorial:Show();
 	self.NavBar:SetPoint("TOPLEFT", self.TitleCanvasSpacerFrame, "TOPLEFT", 64, -25);
 
 	self:SynchronizeDisplayState();
-
-	self.BorderFrame.MaximizeMinimizeFrame.MinimizeButton:Hide();
-	self.BorderFrame.MaximizeMinimizeFrame.MaximizeButton:Show();
 
 	self:OnFrameSizeChanged();
 end
@@ -46,17 +43,14 @@ end
 function WorldMapMixin:Maximize()
 	self.isMaximized = true;
 
-	PortraitFrameTemplate_SetBorder(self.BorderFrame, "ButtonFrameTemplateNoPortraitMinimizable");
-	PortraitFrameTemplate_SetPortraitShown(self.BorderFrame, false);
+	self.BorderFrame:SetBorder("ButtonFrameTemplateNoPortraitMinimizable");
+	self.BorderFrame:SetPortraitShown(false);
 
 	self.BorderFrame.Tutorial:Hide();
 	self.NavBar:SetPoint("TOPLEFT", self.TitleCanvasSpacerFrame, "TOPLEFT", 8, -25);
 
 	self:UpdateMaximizedSize();
 	self:SynchronizeDisplayState();
-
-	self.BorderFrame.MaximizeMinimizeFrame.MinimizeButton:Show();
-	self.BorderFrame.MaximizeMinimizeFrame.MaximizeButton:Hide();
 
 	self:OnFrameSizeChanged();
 end

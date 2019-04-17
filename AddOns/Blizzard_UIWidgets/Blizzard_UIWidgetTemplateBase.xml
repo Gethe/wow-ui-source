@@ -1,12 +1,38 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Frame name="UIWidgetTemplateTooltipFrame" enableMouse="true" virtual="true" mixin="UIWidgetTemplateTooltipFrameMixin">
+		<!--Change this on inheriting frames to adjust where the tooltip anchors to-->
+		<KeyValues>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMLEFT" type="string"/>
+		</KeyValues>
 		<Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
+	<AnimationGroup name="UIWidgetInAnimation" virtual="true">
+		<Scripts>
+			<OnFinished>
+				self:GetParent():InAnimFinished();
+			</OnFinished>
+		</Scripts>
+	</AnimationGroup>
+	<AnimationGroup name="UIWidgetOutAnimation" virtual="true">
+		<Scripts>
+			<OnFinished>
+				self:GetParent():OutAnimFinished();
+			</OnFinished>
+		</Scripts>
+	</AnimationGroup>
 	<Frame name="UIWidgetBaseTemplate" inherits="UIWidgetTemplateTooltipFrame" virtual="true" hidden="true" mixin="UIWidgetBaseTemplateMixin">
+		<Animations>
+			<AnimationGroup parentKey="FadeInAnim" inherits="UIWidgetInAnimation" setToFinalAlpha="true">
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.25"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeOutAnim" inherits="UIWidgetOutAnimation" setToFinalAlpha="true">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.25"/>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
@@ -88,6 +114,8 @@
 		</Layers>
 	</Frame>
 
+	<StatusBar name="UIWidgetBaseStatusBarTemplate" inherits="UIWidgetTemplateTooltipFrame" mixin="UIWidgetBaseStatusBarTemplateMixin" virtual="true"/>
+	
 	<Frame name="UIWidgetBaseStateIconTemplate" inherits="UIWidgetTemplateTooltipFrame" mixin="UIWidgetBaseStateIconTemplateMixin" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
@@ -97,6 +125,30 @@
 						<Anchor point="TOPLEFT" />
 					</Anchors>
 				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="UIWidgetBaseTextureAndTextTemplate" inherits="UIWidgetTemplateTooltipFrame, ResizeLayoutFrame" mixin="UIWidgetBaseTextureAndTextTemplateMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Foreground">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" mixin="ShrinkUntilTruncateFontStringMixin" inherits="GameFontNormalLarge">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 	</Frame>

@@ -9,8 +9,8 @@ UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.Dou
 
 UIWidgetTemplateDoubleStateIconRowMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
-function UIWidgetTemplateDoubleStateIconRowMixin:Setup(widgetInfo)
-	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
+function UIWidgetTemplateDoubleStateIconRowMixin:Setup(widgetInfo, widgetContainer)
+	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 	self.iconPool:ReleaseAll();
 
 	local leftAligned = true;

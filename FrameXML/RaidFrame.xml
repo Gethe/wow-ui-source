@@ -141,6 +141,11 @@
 	</Frame>
 	<Frame name="RaidFrame"><!-- Parent set dynamically.   See ClaimRaidFrame()  -->
 		<Frames>
+			<Frame parentKey="RoleCount" inherits="RoleCountTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="12" y="-25"/>
+				</Anchors>
+			</Frame>
 			<CheckButton name="RaidFrameAllAssistCheckButton" parent="RaidFrame" motionScriptsWhileDisabled="true" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>

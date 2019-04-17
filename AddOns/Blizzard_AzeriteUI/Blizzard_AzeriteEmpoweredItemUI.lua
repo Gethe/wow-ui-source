@@ -260,7 +260,7 @@ function AzeriteEmpoweredItemUIMixin:OnItemSet()
 	local azeriteEmpoweredItem = self.azeriteItemDataSource:GetItem();
 	azeriteEmpoweredItem:LockItem();
 	self.itemDataLoadedCancelFunc = azeriteEmpoweredItem:ContinueWithCancelOnItemLoad(function()
-		PortraitFrameTemplate_SetPortraitToAsset(self.BorderFrame, azeriteEmpoweredItem:GetItemIcon());
+		self.BorderFrame:SetPortraitToAsset(azeriteEmpoweredItem:GetItemIcon());
 		self.BorderFrame.TitleText:SetText(azeriteEmpoweredItem:GetItemName());
 	end);
 

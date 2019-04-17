@@ -3,9 +3,9 @@
 	<Script file="CommunitiesSettings.lua"/>
 	
 	<Frame name="CommunitiesSettingsDialog" frameStrata="DIALOG" parent="UIParent" mixin="CommunitiesSettingsDialogMixin" topLevel="true" hidden="true">
-		<Size x="412" y="515"/>
+		<Size x="412" y="680"/>
 		<Anchors>
-			<Anchor point="TOP" relativeTo="UIParent" x="0" y="-142"/>
+			<Anchor point="TOP" relativeTo="UIParent" x="0" y="-80"/>
 		</Anchors>
 		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 			<BackgroundInsets left="11" right="11" top="11" bottom="11"/>
@@ -37,20 +37,10 @@
 						<Anchor point="TOPRIGHT" relativeKey="$parent.ShortNameLabel" relativePoint="BOTTOMRIGHT" x="0" y="-34"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="Separator">
-					<Size x="360" y="1"/>
-					<Anchors>
-						<Anchor point="LEFT" x="30" y="0"/>
-						<Anchor point="RIGHT" x="-30" y="0"/>
-						<Anchor point="TOP" x="0" y="-335"/>
-					</Anchors>
-					<Color r="1" g="1" b="1" a="0.2"/>
-				</Texture>
 				<FontString parentKey="MessageOfTheDayLabel" inherits="GameFontNormal" justifyH="LEFT" text="COMMUNITIES_SETTINGS_MOTD_LABEL">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Separator" x="0" y="-36"/>
-						<Anchor point="LEFT" relativeKey="$parent.NameLabel" relativePoint="LEFT"/>
-						<Anchor point="RIGHT" relativeKey="$parent.NameLabel" relativePoint="RIGHT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.DescriptionLabel" relativePoint="BOTTOMLEFT" x="0" y="-76"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.DescriptionLabel" relativePoint="BOTTOMRIGHT" x="0" y="-76"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -58,7 +48,7 @@
 				<Texture parentKey="IconPreviewRing" atlas="communities-ring-gold">
 					<Size x="80" y="80"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Separator" x="-48" y="58"/>
+						<Anchor point="TOP" relativeKey="$parent.MessageOfTheDayLabel" x="0" y="-100"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -139,6 +129,150 @@
 					</OnLoad>
 				</Scripts>
 			</ScrollFrame>
+			<Frame parentKey="ShouldListClub">
+				<Size x="300" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.ChangeAvatarButton" relativePoint="BOTTOM" x="-135" y="-80"/>
+				</Anchors>
+				<Frames>
+					<CheckButton parentKey="Button" inherits="ClubFinderCheckboxTemplate">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:GetParent():GetParent():SetDisabledStateOnCommunityFinderOptions(not self:GetChecked()); 
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" text="CLUB_FINDER_LIST_GUILD" justifyH="LEFT" inherits="GameFontHighlight">
+							<Size x="260" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.ShouldListClubButton" x="35" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="AutoAcceptApplications">
+				<Size x="300" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.ShouldListClub" relativePoint="BOTTOM" x="10" y="-30"/>
+				</Anchors>
+				<Frames>
+					<CheckButton parentKey="Button" inherits="ClubFinderCheckboxTemplate">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" text="Auto Accept Applicants" justifyH="LEFT" inherits="GameFontHighlight">
+							<Size x="260" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Button" x="30" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="MaxLevelOnly">
+				<Size x="300" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.AutoAcceptApplications" relativePoint="BOTTOM" x="0" y="-28"/>
+				</Anchors>
+				<Frames>
+					<CheckButton parentKey="Button" inherits="ClubFinderCheckboxTemplate">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" text="CLUB_FINDER_MAX_LEVEL_ONLY" justifyH="LEFT" inherits="GameFontHighlight">
+							<Size x="260" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Button" x="30" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="MinIlvlOnly">
+				<Size x="150" y="32"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MaxLevelOnly" relativePoint="BOTTOMLEFT" x="0" y="5"/>
+				</Anchors>
+				<Frames>
+					<CheckButton parentKey="Button" inherits="ClubFinderCheckboxTemplate">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+					</CheckButton>
+					<EditBox parentKey="EditBox" inherits="InputBoxTemplate" numeric="true" letters="3" setAllPoints="true" autoFocus="false">
+						<Size x="135" y="18"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.Label" relativePoint="RIGHT" x="200" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Text" inherits="GameFontDisable" setAllPoints="true" justifyH="LEFT" text="STAT_AVERAGE_ITEM_LEVEL"/>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEditFocusGained>
+								self.Text:Hide();
+							</OnEditFocusGained>
+							<OnEditFocusLost>
+								if ( self:GetText() == "" ) then
+									self.Text:Show();
+								end
+							</OnEditFocusLost>
+						</Scripts>
+					</EditBox>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" text="LFG_LIST_ITEM_LEVEL_REQ" justifyH="LEFT" inherits="GameFontHighlight">
+							<Size x="200" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Button" relativePoint="LEFT" x="30" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="ClubFocusDropdown" name="ClubFinderFocusDropdown" inherits="ClubFinderFocusDropdownTemplate">
+				<Size x="0" y="20"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.MinIlvlOnly" x="5" y="-70"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="LookingForDropdown" name="ClubFinderLookingForDropdown" inherits="UIDropDownMenuTemplate" mixin="LookingForDropdownMixin">
+				<Size x="0" y="20"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.ClubFocusDropdown" relativePoint="RIGHT" x="180" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" text="CLUB_FINDER_LOOKING_FOR" justifyH="LEFT" inherits="GameFontNormal">
+							<Size x="280" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="20" y="15"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 			<ScrollFrame parentKey="Description" inherits="InputScrollFrameTemplate">
 				<Size x="0" y="50"/>
 				<Anchors>

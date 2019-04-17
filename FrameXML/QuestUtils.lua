@@ -342,6 +342,14 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 		end
 	end
 
+	-- spells
+	local numQuestSpellRewards = GetNumQuestLogRewardSpells(questID);
+	if numQuestSpellRewards > 0 and not tooltip.ItemTooltip:IsShown() then
+		if not EmbeddedItemTooltip_SetSpellByQuestReward(tooltip.ItemTooltip, 1, questID) then
+			showRetrievingData = true;
+		end
+	end
+
 	-- atLeastShowAzerite: show azerite if nothing else is awarded
 	-- and in the case of double azerite, only show the currency container one
 	if style.atLeastShowAzerite and not hasAnySingleLineRewards and not tooltip.ItemTooltip:IsShown() then

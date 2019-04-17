@@ -8,7 +8,7 @@
         <Size x="208" y="46"/>
         <Layers>
             <Layer level="BACKGROUND">
-                <Texture atlas="PetList-ButtonBackground"/>
+                <Texture parentKey="background" atlas="PetList-ButtonBackground"/>
             </Layer>
             <Layer level="BORDER">
                 <Texture name="$parentIcon" parentKey="icon">
@@ -120,6 +120,8 @@
                     <OnHide>
                         self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
                     </OnHide>
+                    <OnEnter function="PetJournalDragButton_OnEnter"/>
+                    <OnLeave function="GameTooltip_Hide"/>
                     <OnEvent function="PetJournalDragButton_OnEvent"/>
                     <OnDragStart function="PetJournalDragButton_OnDragStart"/>
                 </Scripts>
@@ -610,6 +612,8 @@
 				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 				<Scripts>
 					<OnClick function="PetJournalPetLoadoutDragButton_OnClick"/>
+					<OnEnter function="PetJournalDragButton_OnEnter"/>
+                    <OnLeave function="GameTooltip_Hide"/>
 					<OnLoad>
 						self:RegisterForDrag("LeftButton");
 						self:RegisterForClicks("RightButtonUp");
@@ -1707,7 +1711,7 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<Button name="$parentSummonButton" inherits="MagicButtonTemplate" parentKey="SummonButton" text="BATTLE_PET_SUMMON">
+			<Button name="$parentSummonButton" motionScriptsWhileDisabled="true" inherits="MagicButtonTemplate" parentKey="SummonButton" text="BATTLE_PET_SUMMON">
 				<Size x="160" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT"/>

@@ -487,11 +487,9 @@ function RaidGroupFrame_Update()
 		end
 	end
 
-	if ( isRaid ) then
-		RaidFrameAllAssistCheckButton:Show();
-	else
-		RaidFrameAllAssistCheckButton:Hide();
-	end
+	RaidFrameAllAssistCheckButton:SetShown(isRaid);
+	RaidFrame.RoleCount:SetShown(isRaid);
+	
 	-- Update Class Count Buttons
 	RaidClassButton_Update();
 end

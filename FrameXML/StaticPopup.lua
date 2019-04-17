@@ -575,6 +575,23 @@ StaticPopupDialogs["CONFIRM_ACCEPT_SOCKETS"] = {
 	hideOnEscape = 1,
 };
 
+StaticPopupDialogs["DIALOG_REPLACE_MOUNT_EQUIPMENT"] = {
+	text = DIALOG_INSTRUCTION_REPLACE_MOUNT_EQUIPMENT,
+	button1 = YES,
+	button2 = NO,
+	
+	OnAccept = function(self)
+		MountJournal_OnEquipmentApplyDialogResult(MountJournal, self, true);
+		PlaySound(SOUNDKIT.UI_MOUNT_SLOTEQUIPMENT);
+	end,
+	OnCancel = function(self)
+		MountJournal_OnEquipmentApplyDialogResult(MountJournal, self, false);
+	end,
+	timeout = 0,
+	showAlert = 1,
+	hideOnEscape = 1,
+};
+
 StaticPopupDialogs["TAKE_GM_SURVEY"] = {
 	text = TAKE_GM_SURVEY,
 	button1 = YES,

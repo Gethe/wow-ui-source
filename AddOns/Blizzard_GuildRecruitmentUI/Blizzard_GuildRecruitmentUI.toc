@@ -1,5 +1,3 @@
-## Interface: 80100
 ## Title: Blizzard Guild Recruitment UI
-## Secure: 1
 ## LoadOnDemand: 1
 GuildRecruitment.xml

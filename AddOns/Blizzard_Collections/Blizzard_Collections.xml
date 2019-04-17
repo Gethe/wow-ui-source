@@ -125,8 +125,8 @@
 
 		<Scripts>
 			<OnLoad>
-				PortraitFrameTemplate_SetTitle(self, COLLECTIONS);
-				PortraitFrameTemplate_SetPortraitToAsset(self, "Interface\\Icons\\MountJournalPortrait");
+				self:SetTitle(COLLECTIONS);
+				self:SetPortraitToAsset("Interface\\Icons\\MountJournalPortrait");
 				PanelTemplates_SetNumTabs(self, 5);
 
 				PanelTemplates_SetTab(self, tonumber(GetCVar("petJournalTab")) or 1);

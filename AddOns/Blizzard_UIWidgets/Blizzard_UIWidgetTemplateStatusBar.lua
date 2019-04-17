@@ -20,26 +20,22 @@ local textureKitRegionFormatStrings = {
 }
 
 local fillTextureKitFormatString = "%s-Fill-%s";
+local DEFAULT_BAR_WIDTH = 215;
 
-function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo)
-	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
+function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
+	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 
 	local frameTextureKit = GetUITextureKitInfo(widgetInfo.frameTextureKitID);
-	local fillTextureKit = GetUITextureKitInfo(widgetInfo.fillTextureKitID);
+	local fillTextureKit = GetUITextureKitInfo(widgetInfo.textureKitID);
 	if frameTextureKit and fillTextureKit then
 		local fillAtlas = fillTextureKitFormatString:format(frameTextureKit, fillTextureKit);
 		self.Bar:SetStatusBarAtlas(fillAtlas);
 	end
 
-	SetupTextureKitOnRegions(frameTextureKit, self.Bar, textureKitRegionFormatStrings, false, true);
+	SetupTextureKitOnRegions(frameTextureKit, self.Bar, textureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
 
-	self:SetTooltip(widgetInfo.tooltip);
-
-	if widgetInfo.barWidth > 0 then
-		self.Bar:SetWidth(widgetInfo.barWidth);
-	else
-		self.Bar:SetWidth(215);
-	end
+	local barWidth = (widgetInfo.widgetSizeSetting > 0) and widgetInfo.widgetSizeSetting or DEFAULT_BAR_WIDTH;
+	self.Bar:SetWidth(barWidth);
 
 	local minVal, maxVal, barVal = widgetInfo.barMin, widgetInfo.barMax, widgetInfo.barValue;
 	if minVal > 0 and minVal == maxVal and barVal == maxVal then
@@ -47,7 +43,7 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo)
 		minVal, maxVal, barVal = 0, 1, 1;
 	end
 
-	self.Bar:Setup(minVal, maxVal, barVal, widgetInfo.barValueTextType);
+	self.Bar:Setup(minVal, maxVal, barVal, widgetInfo.barValueTextType, widgetInfo.tooltip, widgetInfo.overrideBarText, widgetInfo.overrideBarTextShownType);
 
 	local showSpark = widgetInfo.barValue > widgetInfo.barMin and widgetInfo.barValue < widgetInfo.barMax;
 	self.Bar.Spark:SetShown(showSpark);
@@ -69,9 +65,7 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo)
 		self.Bar:SetPoint("TOP", self, "TOP", 0, -8);
 	end
 
-	local barWidth = self.Bar:GetWidth() + 16;
-
-	local totalWidth = math.max(barWidth, labelWidth);
+	local totalWidth = math.max(self.Bar:GetWidth() + 16, labelWidth);
 	self:SetWidth(totalWidth);
 
 	local barHeight = self.Bar:GetHeight() + 16;

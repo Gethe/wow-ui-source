@@ -1,11 +1,10 @@
-## Interface: 80100
 ## Title: Blizzard UI Debug Tools
 ## Notes: Tools for developing addons
-## Secure: 1
 ## Author: Blizzard Entertainment
 ## Special Thanks: Iriel, Kirov, Esamynn
 ## Version: 1.0
 ## LoadOnDemand: 1
+## AllowLoad: Both
 Dump.lua
 Blizzard_DebugTools.lua
 Blizzard_DebugTools.xml

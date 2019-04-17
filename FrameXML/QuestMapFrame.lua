@@ -150,9 +150,11 @@ function QuestMapFrame_OnEvent(self, event, ...)
 		QuestMapFrame_UpdateQuestDetailsButtons();
 		QuestMapFrame_UpdateAll();
 	elseif ( event == "SUPER_TRACKED_QUEST_CHANGED" ) then
-		QuestMapFrame_CloseQuestDetails(self:GetParent());
 		local questID = ...;
-		QuestPOI_SelectButtonByQuestID(QuestScrollFrame.Contents, questID);
+		if ( questID ~= QuestMapFrame.DetailsFrame.questID ) then
+			QuestMapFrame_CloseQuestDetails(self:GetParent());
+			QuestPOI_SelectButtonByQuestID(QuestScrollFrame.Contents, questID);
+		end
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		if ( QuestMapFrame.DetailsFrame.questID ) then
 			QuestMapFrame_UpdateQuestDetailsButtons();
@@ -258,8 +260,11 @@ function QuestMapFrame_UpdateAll()
 		local questDetailID = QuestMapFrame.DetailsFrame.questID;
 		if ( questDetailID ) then
 			-- update rewards
-			SelectQuestLogEntry(GetQuestLogIndexByID(questDetailID));
-			QuestMapFrame_ShowQuestDetails(questDetailID);
+			local questLogIndex = GetQuestLogIndexByID(questDetailID);
+			if ( questLogIndex ~= 0 ) then
+				SelectQuestLogEntry(questLogIndex);
+				QuestMapFrame_ShowQuestDetails(questDetailID);
+			end
 		else
 			QuestLogQuests_Update(poiTable);
 		end
@@ -282,6 +287,10 @@ function QuestMapFrame_ResetFilters()
 		end
 	end
 	QuestMapFrame.ignoreQuestLogUpdate = nil;
+end
+
+function QuestMapFrame_GetFocusedQuestID()
+	return QuestMapFrame.DetailsFrame.questID;
 end
 
 function QuestMapFrame_ShowQuestDetails(questID)
@@ -624,7 +633,7 @@ function QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, titl
 			end
 		end
 		if ( requiredMoney > playerMoney ) then
-			local objectiveFrame = QuestScrollFrame.objectiveFramePool:Aquire();
+			local objectiveFrame = QuestScrollFrame.objectiveFramePool:Acquire();
 			objectiveFrame.questID = questID;
 			objectiveFrame:Show();
 			objectiveFrame.Text:SetText(GetMoneyString(playerMoney).." / "..GetMoneyString(requiredMoney));

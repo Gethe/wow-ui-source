@@ -231,9 +231,9 @@ function ChannelFrameMixin:TryCreateVoiceChannel(channelName)
 	end);
 end
 
-function ChannelFrameMixin:TryJoinVoiceChannelByType(channelType)
+function ChannelFrameMixin:TryJoinVoiceChannelByType(channelType, autoActivate)
 	self:TryExecuteCommand(function()
-		C_VoiceChat.RequestJoinChannelByChannelType(channelType);
+		C_VoiceChat.RequestJoinChannelByChannelType(channelType, autoActivate);
 	end);
 end
 

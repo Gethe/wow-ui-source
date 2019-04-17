@@ -19,11 +19,11 @@ function ItemUpgradeFrame_OnLoad(self)
 	self:RegisterEvent("ITEM_UPGRADE_MASTER_SET_ITEM");
 	self:RegisterEvent("ITEM_UPGRADE_MASTER_UPDATE");
 
-	PortraitFrameTemplate_SetPortraitToAsset(self, "Interface\\Icons\\Spell_Shaman_SpectralTransformation");
+	self:SetPortraitToAsset("Interface\\Icons\\Spell_Shaman_SpectralTransformation");
 	self.LeftStat[1].BG:Show();
 	self.RightStat[1].BG:Show();
 
-	PortraitFrameTemplate_SetTitle(self, ITEM_UPGRADE);
+	self:SetTitle(ITEM_UPGRADE);
 	ItemUpgradeFrameTopTileStreaks:Hide();
 	ItemUpgradeFrameBg:Hide();
 end

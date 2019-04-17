@@ -3,8 +3,8 @@ UIPanelWindows["ObliterumForgeFrame"] = {area = "left", pushable = 3, showFailed
 ObliterumForgeMixin = {};
 
 function ObliterumForgeMixin:OnLoad()
-	PortraitFrameTemplate_SetPortraitToAsset(self, "Interface\\Icons\\INV_Obliterum_Ash");
-	PortraitFrameTemplate_SetTitle(self, OBLITERUM_FORGE_TITLE);
+	self:SetPortraitToAsset("Interface\\Icons\\INV_Obliterum_Ash");
+	self:SetTitle(OBLITERUM_FORGE_TITLE);
 
 	self:RegisterEvent("OBLITERUM_FORGE_CLOSE");
 	self:RegisterEvent("OBLITERUM_FORGE_PENDING_ITEM_CHANGED");

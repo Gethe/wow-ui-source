@@ -1188,12 +1188,10 @@
 						tinsert(HelpFrameWindows, self);
 					</OnLoad>
 					<OnShow>
-						if (HelpBrowser:HasConnection()) then
 							HelpBrowser:Show();
 							HelpBrowser:NavigateHome("GMTicket");
 							HelpBrowser.homepage = "GMTicket";
 							self:Hide();
-						end
 					</OnShow>
 				</Scripts>
 			</Frame>

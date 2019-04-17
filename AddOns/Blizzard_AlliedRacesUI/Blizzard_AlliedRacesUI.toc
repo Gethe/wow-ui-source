@@ -1,6 +1,4 @@
-## Interface: 80100
-## Title: Blizzard_AlliedRacesIO
-## Notes: Hooray for new races! So neat! :3
+## Title: Blizzard_AlliedRacesUI
 ## Author: Blizzard Entertainment
 ## Version: 1.0
 ## LoadOnDemand: 1

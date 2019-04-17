@@ -9,8 +9,8 @@ UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.Tex
 
 UIWidgetTemplateTextWithStateMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
-function UIWidgetTemplateTextWithStateMixin:Setup(widgetInfo)
-	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
+function UIWidgetTemplateTextWithStateMixin:Setup(widgetInfo, widgetContainer)
+	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 
 	self.Text:SetText(widgetInfo.text);
 	self.Text:SetEnabledState(widgetInfo.enabledState);
@@ -19,12 +19,7 @@ function UIWidgetTemplateTextWithStateMixin:Setup(widgetInfo)
 		self.Text:SetTextColor(self.fontColor:GetRGB());
 	end
 
-	local width;
-	if widgetInfo.widgetWidth > 0 then
-		width = widgetInfo.widgetWidth;
-	else
-		width = self.Text:GetStringWidth();
-	end
+	local width = (widgetInfo.widgetSizeSetting > 0) and widgetInfo.widgetSizeSetting or self.Text:GetStringWidth();
 
 	self:SetWidth(width);
 	self:SetHeight(self.Text:GetStringHeight());

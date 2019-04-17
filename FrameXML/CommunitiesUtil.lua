@@ -250,3 +250,64 @@ function CommunitiesUtil.OpenInviteDialog(clubId, streamId)
 		StaticPopup_Show("INVITE_COMMUNITY_MEMBER", nil, nil, { clubId = clubId, streamId = streamId, });
 	end
 end
+
+function CommunitiesUtil.FindCommunityAndStreamByName(communityName, streamName)
+	local communityID, streamID;
+	if communityName then
+		communityName = string.lower(communityName);
+		local clubs = C_Club.GetSubscribedClubs();
+		if clubs then
+			for _, club in ipairs(clubs) do
+				if string.lower(club.name) == communityName then
+					communityID = club.clubId;
+					break;
+				end
+			end
+
+			if communityID then
+				local streams = C_Club.GetStreams(communityID);
+				if streams then
+					if streamName then
+						streamName = string.lower(streamName);
+						for _, stream in ipairs(streams) do
+							if streamName == string.lower(stream.name) then
+								streamID = stream.streamId;
+								break;
+							end
+						end
+					else
+						for _, stream in ipairs(streams) do
+							if stream.streamType == Enum.ClubStreamType.General then
+								streamID = stream.streamId;
+								break;
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+	return communityID, streamID;
+end
+
+function CommunitiesUtil.FindGuildStreamByType(clubStreamType)
+	if clubStreamType ~= Enum.ClubStreamType.Guild and clubStreamType ~= Enum.ClubStreamType.Officer then
+		return;
+	end
+
+	local communityID, streamID;
+	communityID = C_Club.GetGuildClubId();
+	if communityID then
+		local streams = C_Club.GetStreams(communityID);
+		if streams then
+			for _, stream in ipairs(streams) do
+				if stream.streamType == clubStreamType then
+					streamID = stream.streamId;
+					break;
+				end
+			end
+		end
+	end
+	return communityID, streamID;
+end
+

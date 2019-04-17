@@ -13,8 +13,8 @@ local frameTextureKitRegions = {
 	["Frame"] = "%s-frame",
 }
 
-function UIWidgetTemplateStackedResourceTrackerMixin:Setup(widgetInfo)
-	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
+function UIWidgetTemplateStackedResourceTrackerMixin:Setup(widgetInfo, widgetContainer)
+	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 	self.resourcePool:ReleaseAll();
 
 	local previousResourceFrame;
@@ -52,7 +52,7 @@ function UIWidgetTemplateStackedResourceTrackerMixin:Setup(widgetInfo)
 		previousResourceFrame = resourceFrame;
 	end
 	
-	SetupTextureKits(widgetInfo.frameTextureKitID, self, frameTextureKitRegions, false, true);
+	SetupTextureKits(widgetInfo.frameTextureKitID, self, frameTextureKitRegions, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
 
 	if hasFrame then
 		self:SetWidth(self.Frame:GetWidth() + 45);

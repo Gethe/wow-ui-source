@@ -100,6 +100,35 @@ function MapCanvasDataProviderMixin:SignalEvent(event, ...)
 	end
 end
 
+-- A base template for data providers that are enabled or disabled with a CVar, e.g. archaeology digsites.
+CVarMapCanvasDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
+
+function CVarMapCanvasDataProviderMixin:Init(cvar, scriptCVar)
+	self.cvar = cvar;
+	self.scriptCVar = scriptCVar;
+end
+
+function CVarMapCanvasDataProviderMixin:IsCVarSet()
+	return GetCVarBool(self.cvar);
+end
+
+function CVarMapCanvasDataProviderMixin:OnShow()
+	self:RegisterEvent("CVAR_UPDATE");
+end
+
+function CVarMapCanvasDataProviderMixin:OnHide()
+	self:UnregisterEvent("CVAR_UPDATE");
+end
+
+function CVarMapCanvasDataProviderMixin:OnEvent(event, ...)
+	if event == "CVAR_UPDATE" then
+		local eventName, value = ...;
+		if eventName == self.scriptCVar then
+			self:RefreshAllData();
+		end
+	end
+end
+
 -- Provides a basic interface for something that is visible on the map canvas, like icons, blobs or text
 MapCanvasPinMixin = {};
 

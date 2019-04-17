@@ -2,6 +2,7 @@ local contents = {};
 local issecure = issecure;
 local type = type;
 local pairs = pairs;
+local select = select;
 
 --Create a local version of this function just so we don't have to worry about changes
 local function copyTable(tab)
@@ -102,6 +103,8 @@ retain("GetCursorPosition");
 retain("GetRealmName");
 retain("PlaySound");
 retain("SetPortraitToTexture");
+retain("SetPortraitTexture");
+retain("getmetatable");
 retain("BACKPACK_CONTAINER");
 retain("NUM_BAG_SLOTS");
 retain("RAID_CLASS_COLORS");
@@ -555,23 +558,22 @@ function SecureMixin(object, ...)
 	return object;
 end
 
+-- This is Private because we need a pristine copy to reference in CreateFromSecureMixins.
+local SecureMixinPrivate = SecureMixin;
+
 -- where ... are the mixins to mixin
 function CreateFromSecureMixins(...)
 	if ( not issecure() ) then
 		return;
 	end
 
-	return SecureMixin({}, ...)
+	return SecureMixinPrivate({}, ...)
 end
 
 take("SecureMixin");
 take("CreateFromSecureMixins");
 
-retain("AnchorUtil");
-retain("AnchorMixin");
-retain("ShrinkUntilTruncateFontStringMixin");
 retain("GetFinalNameFromTextureKit")
-retain("PortraitFrameTemplate_SetPortraitToAsset");
 retain("C_Texture");
 
 -- retain shared constants

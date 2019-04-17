@@ -25,8 +25,9 @@ local HIDE_MOST = {
 	TemporaryEnchantFrame = "hidden",
 	ZoneAbilityFrame	= "hidden",
 	OrderHallCommandBar	= "hidden",
-	TalentMicroButtonAlert	="hidden";
-	WorldStateScoreFrame = "hidden";
+	TalentMicroButtonAlert	="hidden",
+	WorldStateScoreFrame = "hidden",
+	PVPMatchResults = "hidden",
 	UIWidgetTopCenterContainerFrame = "hidden",
 }
 

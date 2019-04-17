@@ -9,8 +9,8 @@ UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.Hor
 
 UIWidgetTemplateHorizontalCurrenciesMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
-function UIWidgetTemplateHorizontalCurrenciesMixin:Setup(widgetInfo)
-	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
+function UIWidgetTemplateHorizontalCurrenciesMixin:Setup(widgetInfo, widgetContainer)
+	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 	self.currencyPool:ReleaseAll();
 
 	local previousCurrencyFrame;

@@ -36,6 +36,52 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "GetNextWaypoint",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+				{ Name = "x", Type = "number", Nilable = false },
+				{ Name = "y", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNextWaypointForMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "x", Type = "number", Nilable = false },
+				{ Name = "y", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNextWaypointText",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "waypointText", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNumQuestObjectives",
 			Type = "Function",
 
@@ -274,6 +320,10 @@ local QuestLog =
 			Name = "QuestlineUpdate",
 			Type = "Event",
 			LiteralName = "QUESTLINE_UPDATE",
+			Payload =
+			{
+				{ Name = "requestRequired", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "SuperTrackedQuestChanged",
@@ -288,6 +338,11 @@ local QuestLog =
 			Name = "TaskProgressUpdate",
 			Type = "Event",
 			LiteralName = "TASK_PROGRESS_UPDATE",
+		},
+		{
+			Name = "TreasurePickerCacheFlush",
+			Type = "Event",
+			LiteralName = "TREASURE_PICKER_CACHE_FLUSH",
 		},
 		{
 			Name = "WorldQuestCompletedBySpell",

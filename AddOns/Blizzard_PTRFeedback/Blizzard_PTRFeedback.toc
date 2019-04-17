@@ -1,8 +1,11 @@
-## Interface: 80100
 ## Title: PTR Bug Reporter
-## Notes: Tool for gathering bugs from PTR
 ## OnlyBetaAndPTR: 1
+## Notes: Tool for gathering bugs from PTR
 ## SavedVariables: Blizzard_PTRIssueReporter_Saved
-Blizzard_FramePainter.lua
-Blizzard_Diagnostics.lua
+
+Bindings.xml
 Blizzard_PTRFeedback.lua
+Blizzard_PTRFeedback_Tooltips.lua
+Blizzard_PTRFeedback_Frames.lua
+Blizzard_PTRFeedback_Events.lua
+Blizzard_Reports.lua

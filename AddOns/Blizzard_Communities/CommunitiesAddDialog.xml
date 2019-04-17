@@ -102,6 +102,12 @@
 						<OnEscapePressed function="EditBox_ClearFocus"/>
 						<OnEditFocusLost function="EditBox_ClearHighlight"/>
 						<OnEditFocusGained function="EditBox_HighlightText"/>
+						<OnEnterPressed>
+							local joinButton = self:GetParent().JoinButton;
+							if joinButton:IsEnabled() then
+								joinButton:GetScript("OnClick")(joinButton);
+							end
+						</OnEnterPressed>
 					</Scripts>
 					<FontString inherits="ChatFontNormal"/>
 				</EditBox>
@@ -264,6 +270,12 @@
 						<OnTabPressed>
 							self:GetParent().ShortNameBox:SetFocus();
 						</OnTabPressed>
+						<OnEnterPressed>
+							local createButton = self:GetParent().CreateButton;
+							if createButton:IsEnabled() then
+								createButton:GetScript("OnClick")(createButton);
+							end
+						</OnEnterPressed>
 						<OnTextChanged>
 							self.Instructions:SetShown(self:GetText() == "");
 							self:GetParent():UpdateCreateButton();
@@ -291,6 +303,12 @@
 						<OnTabPressed>
 							self:GetParent().DescriptionFrame.EditBox:SetFocus();
 						</OnTabPressed>
+						<OnEnterPressed>
+							local createButton = self:GetParent().CreateButton;
+							if createButton:IsEnabled() then
+								createButton:GetScript("OnClick")(createButton);
+							end
+						</OnEnterPressed>
 						<OnEnter>
 							Outbound.ShowGameTooltip(COMMUNITIES_CREATE_DIALOG_SHORT_NAME_INSTRUCTIONS_TOOLTIP, self:GetRight(), self:GetTop(), true);
 						</OnEnter>

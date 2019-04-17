@@ -15,7 +15,7 @@ local EXCLUSION_CATEGORY_MAINHAND	= 2;
 -- ************************************************************************************************************************************************************
 
 function WardrobeFrame_OnLoad(self)
-	PortraitFrameTemplate_SetPortraitToAsset(self, "Interface\\Icons\\INV_Arcane_Orb");
+	self:SetPortraitToAsset("Interface\\Icons\\INV_Arcane_Orb");
 	WardrobeFrameTitleText:SetText(TRANSMOGRIFY);
 end
 
@@ -157,7 +157,7 @@ function WardrobeTransmogFrame_EvaluateModel(forceResetModel, resetSettings)
 		end
 		WardrobeTransmogFrame.Model.creatureDisplayID = creatureDisplayID;
 		if resetSettings then
-			Model_Reset(WardrobeTransmogFrame.Model);
+			WardrobeTransmogFrame.Model:ResetModel();
 		end
 		WardrobeTransmogFrame_Update();
 	end
@@ -803,7 +803,7 @@ function WardrobeCollectionFrame_OnLoad(self)
 	self.selectedCollectionTab = TAB_ITEMS;
 	self.selectedTransmogTab = TAB_ITEMS;
 
-	PortraitFrameTemplate_SetPortraitToAsset(CollectionsJournal, "Interface\\Icons\\inv_misc_enggizmos_19");
+	CollectionsJournal:SetPortraitToAsset("Interface\\Icons\\inv_misc_enggizmos_19");
 end
 
 WardrobeItemsCollectionMixin = { };
@@ -1043,7 +1043,7 @@ function WardrobeItemsCollectionMixin:OnHide()
 end
 
 function WardrobeCollectionFrame_OnShow(self)
-	PortraitFrameTemplate_SetPortraitToAsset(CollectionsJournal, "Interface\\Icons\\inv_chest_cloth_17");
+	CollectionsJournal:SetPortraitToAsset("Interface\\Icons\\inv_chest_cloth_17");
 
 	self:RegisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
 	self:RegisterUnitEvent("UNIT_MODEL_CHANGED", "player");

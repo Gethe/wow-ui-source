@@ -17,6 +17,13 @@ TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT = {
 	fullItemDescription = true,
 }
 
+
+TOOLTIP_QUEST_REWARDS_STYLE_NO_HEADER = {
+	prefixBlankLineCount = 0,
+	postHeaderBlankLineCount = 0,
+	fullItemDescription = true,
+}
+
 TOOLTIP_QUEST_REWARDS_STYLE_CONTRIBUTION = {
 	headerText = CONTRIBUTION_REWARD_TOOLTIP_TEXT,
 	headerColor = NORMAL_FONT_COLOR,
@@ -75,12 +82,6 @@ TOOLTIP_QUEST_REWARDS_STYLE_QUEST_CHOICE = {
 TOOLTIP_QUEST_REWARDS_STYLE_NONE = {
 	prefixBlankLineCount = 0,
 	postHeaderBlankLineCount = 0,
-}
-
-TOOLTIP_QUEST_REWARDS_STYLE_CONQUEST_BAR = {
-	prefixBlankLineCount = 0,
-	postHeaderBlankLineCount = 0,
-	fullItemDescription = true,
 }
 
 function GameTooltip_UnitColor(unit)
@@ -184,8 +185,12 @@ function GameTooltip_AddNormalLine(tooltip, text, wrap, leftOffset)
 	GameTooltip_AddColoredLine(tooltip, text, NORMAL_FONT_COLOR, wrap, leftOffset);
 end
 
-function GameTooltip_AddInstructionLine(tooltip, text, wrap)
-	GameTooltip_AddColoredLine(tooltip, text, GREEN_FONT_COLOR, wrap);
+function GameTooltip_AddInstructionLine(tooltip, text, wrap, leftOffset)
+	GameTooltip_AddColoredLine(tooltip, text, GREEN_FONT_COLOR, wrap, leftOffset);
+end
+
+function GameTooltip_AddErrorLine(tooltip, text, wrap, leftOffset)
+	GameTooltip_AddColoredLine(tooltip, text, RED_FONT_COLOR, wrap, leftOffset);
 end
 
 function GameTooltip_AddColoredLine(tooltip, text, color, wrap, leftOffset)
@@ -197,7 +202,8 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 	style = style or TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT;
 	
 	if ( GetQuestLogRewardXP(questID) > 0 or GetNumQuestLogRewardCurrencies(questID) > 0 or GetNumQuestLogRewards(questID) > 0 or
-		GetQuestLogRewardMoney(questID) > 0 or GetQuestLogRewardArtifactXP(questID) > 0 or GetQuestLogRewardHonor(questID) > 0 ) then
+		GetQuestLogRewardMoney(questID) > 0 or GetQuestLogRewardArtifactXP(questID) > 0 or GetQuestLogRewardHonor(questID) > 0 or
+		GetNumQuestLogRewardSpells(questID) > 0) then
 		if tooltip.ItemTooltip then
 			tooltip.ItemTooltip:Hide();
 		end
@@ -627,15 +633,16 @@ function GameTooltip_AnchorComparisonTooltips(self, anchorFrame, shoppingTooltip
 		side = "right";
 	end
 
-	if ( totalWidth > 0 ) then -- if totalWidth > 0, we potenitally need to slide the tooltip
-		if ( anchorType and anchorType ~= "ANCHOR_PRESERVE" ) then
-			local slideAmount = 0;
-			if ( (side == "left") and (totalWidth > leftPos) ) then
-				slideAmount = totalWidth - leftPos;
-			elseif ( (side == "right") and (rightPos + totalWidth) >  screenWidth ) then
-				slideAmount = screenWidth - (rightPos + totalWidth);
-			end
+	-- see if we should slide the tooltip
+	if ( totalWidth > 0 and (anchorType and anchorType ~= "ANCHOR_PRESERVE") ) then --we never slide a tooltip with a preserved anchor
+		local slideAmount = 0;
+		if ( (side == "left") and (totalWidth > leftPos) ) then
+			slideAmount = totalWidth - leftPos;
+		elseif ( (side == "right") and (rightPos + totalWidth) >  screenWidth ) then
+			slideAmount = screenWidth - (rightPos + totalWidth);
+		end
 
+		if (slideAmount ~= 0) then -- if we calculated a slideAmount, we need to slide
 			if ( sideAnchorFrame.SetAnchorType ) then
 				sideAnchorFrame:SetAnchorType(anchorType, slideAmount, 0);
 			else
@@ -806,6 +813,16 @@ function GameTooltip_AddProgressBar(self, min, max, value, text)
 	progressBar:SetAlpha(1);
 	progressBar:Show();
 	GameTooltip_InsertFrame(self, progressBar);
+end
+
+function GameTooltip_ShowHyperlink(self, hyperlinkString, classID, specID, clearTooltip)
+	local questRewardID = ExtractQuestRewardID(hyperlinkString);
+	if questRewardID then
+		-- quest reward hyperlinks are handled in lua
+		GameTooltip_AddQuestRewardsToTooltip(self, questRewardID, TOOLTIP_QUEST_REWARDS_STYLE_NO_HEADER);
+	else
+		self:SetHyperlink(hyperlinkString, classID, specID, clearTooltip);
+	end
 end
 
 local function WidgetLayout(widgetContainer, sortedWidgets)

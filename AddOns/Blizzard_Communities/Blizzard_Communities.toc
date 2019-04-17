@@ -1,6 +1,4 @@
-## Interface: 80100
 ## Title: Blizzard_Communities
-## Secure: 1
 ## RequiredDep: Blizzard_GuildRecruitmentUI, Blizzard_GuildControlUI
 ## LoadOnDemand: 1
 
@@ -16,6 +14,8 @@ CommunitiesAddDialogInsecure.xml
 CommunitiesAddDialog.xml
 CommunitiesAddDialogOutbound.lua
 CommunitiesTabs.xml
+ClubFinderApplicantList.xml
+ClubFinder.xml
 CommunitiesSettings.xml
 CommunitiesTicketManagerDialog.xml
 CommunitiesErrors.lua

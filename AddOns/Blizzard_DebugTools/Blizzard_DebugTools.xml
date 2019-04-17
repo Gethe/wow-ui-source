@@ -239,4 +239,30 @@
 			</Layer>
 		</Layers>
 	</Frame>
+	
+	<Frame name="DebugIdentifierFrameNoNameTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="DebugHighlight" setAllPoints="true">
+					<Color r="0.0" g="0.0" b="0.0" a="0.6"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="DebugIdentifierFrame_OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="DebugIdentifierFrameTemplate" inherits="DebugIdentifierFrameNoNameTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="DebugName" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="LEFT"/>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
 </Ui>

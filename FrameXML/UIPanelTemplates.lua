@@ -51,6 +51,33 @@ function BagSearch_OnChar(self, text)
 	end
 end
 
+local ROLE_COUNT_EVENTS = {
+	"GROUP_ROSTER_UPDATE",
+	"PLAYER_ROLES_ASSIGNED",
+};
+
+RoleCountMixin = {};
+
+function RoleCountMixin:OnShow()
+	self:Refresh();
+	FrameUtil.RegisterFrameForEvents(self, ROLE_COUNT_EVENTS);
+end
+
+function RoleCountMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, ROLE_COUNT_EVENTS);
+end
+
+function RoleCountMixin:OnEvent()
+	self:Refresh();
+end
+
+function RoleCountMixin:Refresh()
+	local counts = GetGroupMemberCountsForDisplay();
+	self.DamagerCount:SetText(counts.DAMAGER);
+	self.HealerCount:SetText(counts.HEALER);
+	self.TankCount:SetText(counts.TANK);
+end
+
 UIFrameCache = CreateFrame("FRAME");
 local caches = {};
 function UIFrameCache:New (frameType, baseName, parent, template)

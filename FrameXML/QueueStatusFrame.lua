@@ -17,6 +17,14 @@ function QueueStatusMinimapButton_OnLeave(self)
 	QueueStatusFrame:Hide();
 end
 
+local function ToggleMatchResultsFrame()
+	if PVPMatchUtil.IsActiveMatchComplete() then
+		TogglePVPMatchResultsFrame();
+	else
+		ToggleWorldStateScoreFrame();
+	end
+end
+
 function QueueStatusMinimapButton_OnClick(self, button)
 	if ( button == "RightButton" ) then
 		QueueStatusDropDown_Show(self.DropDown, self:GetName());
@@ -29,7 +37,7 @@ function QueueStatusMinimapButton_OnClick(self, button)
 		local lfgListActiveEntry = C_LFGList.HasActiveEntryInfo();
 		if ( inBattlefield ) then
 			if ( showScoreboard ) then
-				ToggleWorldStateScoreFrame();
+				ToggleMatchResultsFrame();
 			end
 		elseif ( lfgListActiveEntry ) then
 			LFGListUtil_OpenBestWindow(true);
