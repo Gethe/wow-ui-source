@@ -165,6 +165,7 @@ local GuildInfo =
 				{ Name = "emblemColorG", Type = "number", Nilable = true },
 				{ Name = "emblemColorB", Type = "number", Nilable = true },
 				{ Name = "emblemFileID", Type = "number", Nilable = true },
+				{ Name = "emblemIndex", Type = "number", Nilable = true },
 			},
 		},
 		{

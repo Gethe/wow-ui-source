@@ -1534,15 +1534,24 @@ function ToggleAllBags()
 	end
 end
 
-function OpenAllBags(frame)
+function OpenAllBags(frame, forceUpdate)
 	if ( not UIParent:IsShown() ) then
 		return;
 	end
 	
+	local anyBagIsOpen = false;
 	for i=0, NUM_BAG_FRAMES, 1 do
 		if (IsBagOpen(i)) then
-			return;
+			anyBagIsOpen = true;
 		end
+	end
+
+	if ( anyBagIsOpen ) then
+		if ( forceUpdate ) then
+			ContainerFrame_UpdateAll();
+		end
+		
+		return;
 	end
 
 	if( frame and not FRAME_THAT_OPENED_BAGS ) then
@@ -1558,8 +1567,12 @@ function OpenAllBags(frame)
 	CheckBagSettingsTutorial();
 end
 
-function CloseAllBags(frame)
+function CloseAllBags(frame, forceUpdate)
 	if ( frame and frame:GetName() ~= FRAME_THAT_OPENED_BAGS) then
+		if ( forceUpdate ) then
+			ContainerFrame_UpdateAll();
+		end
+
 		return;
 	end
 

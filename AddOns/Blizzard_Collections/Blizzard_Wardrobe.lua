@@ -579,7 +579,7 @@ function WardrobeTransmogButton_OnEnter(self)
 		end
 	end
 	WardrobeTransmogFrame.Model.controlFrame:Show();
-	self.UpdateTooltip = self.OnEnter;
+	self.UpdateTooltip = WardrobeTransmogButton_OnEnter;
 end
 
 function WardrobeTransmogButton_OnLeave(self)

@@ -8,7 +8,7 @@ end
 -- Tooltip Changes
 do
 	-- Use GameTooltip instead.
-	WorldmapTooltip = GameTooltip;
+	WorldMapTooltip = GameTooltip;
 end
 
 -- Pool Collection Changes
