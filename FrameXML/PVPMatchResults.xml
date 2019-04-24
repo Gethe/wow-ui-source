@@ -27,7 +27,7 @@
 			</Frame>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="5.6" y="5"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="3.6" y="3"/>
 				</Anchors>
 			</Button>
 			
@@ -413,7 +413,6 @@
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
 			<OnUpdate method="OnUpdate"/>
-			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
  <Frame name="PVPMatchResultsNameDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true" />

@@ -566,17 +566,17 @@ function CardRightClickOptionsMenuInitialize(self, level)
 	if UIDROPDOWNMENU_MENU_VALUE == 1 then
 		info.text = CLUB_FINDER_REPORT_SPAM; 
 		info.notCheckable = true; 
-		info.func = function() PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_SPAM, self:GetParent():GetCardName()); end
+		info.func = function() C_ReportSystem.OpenReportPlayerDialog(PLAYER_REPORT_TYPE_SPAM, self:GetParent():GetCardName()); end
 		UIDropDownMenu_AddButton(info, level); 
 
 		info.text = CLUB_FINDER_REPORT_NAME; 
 		info.notCheckable = true; 
-		info.func = function() PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_LANGUAGE, self:GetParent():GetCardName()); end
+		info.func = function() C_ReportSystem.OpenReportPlayerDialog(PLAYER_REPORT_TYPE_LANGUAGE, self:GetParent():GetCardName()); end
 		UIDropDownMenu_AddButton(info, level); 
 
 		info.text = CLUB_FINDER_REPORT_DESCRIPTION; 
 		info.notCheckable = true; 
-		info.func = function() PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_LANGUAGE, self:GetParent():GetCardName()); end 
+		info.func = function() C_ReportSystem.OpenReportPlayerDialog(PLAYER_REPORT_TYPE_LANGUAGE, self:GetParent():GetCardName()); end
 		UIDropDownMenu_AddButton(info, level); 
 	end
 	

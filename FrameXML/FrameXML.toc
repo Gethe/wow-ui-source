@@ -38,6 +38,7 @@ MixinUtil.lua
 ..\SharedXML\FrameStack.lua
 
 AnimatedStatusBar.xml
+PowerDependencyLine.xml
 FlowContainer.lua
 FrameLocks.lua
 PlayerMovementFrameFader.lua
@@ -97,6 +98,8 @@ UIPanelTemplates.xml
 SecureTemplates.xml
 SecureHandlerTemplates.xml
 SecureGroupHeaders.xml
+..\SharedXML\SharedAnimations.xml
+..\SharedXML\StaticModelInfo.lua
 ..\SharedXML\ModelFrameTemplates.xml
 ..\SharedXML\ModelFrames.xml
 ..\SharedXML\DressUpModelFrameMixin.lua
@@ -214,10 +217,10 @@ PetStable.xml
 VehicleSeatIndicator.xml
 DurabilityFrame.xml
 BattlegroundChatFilters.xml
-WorldStateFrame.xml
 PVPMatchUtil.lua
 PVPMatchTable.xml
 PVPMatchResults.xml
+PVPMatchScoreboard.xml
 PVEFrame.xml
 LFGFrame.xml
 LFDFrame.xml

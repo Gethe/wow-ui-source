@@ -1,24 +1,3 @@
-local PVPMatchResultsStyle = {
-	PanelColors = {
-			CreateColor(0.52, 0.075, 0.18),	-- Horde
-			CreateColor(0.72, 0.37, 1.0),	-- Horde Alternate
-			CreateColor(0, .32, .89),		-- Alliance
-			CreateColor(0.85, 0.71, 0.26),	-- Alliance Alternate
-	},
-	Theme = {
-		Horde = {
-			decoratorOffsetY = -37,
-			Decorator = "scoreboard-horde-header",
-			nineSliceLayout = "BFAMissionHorde",
-		},
-		Alliance = {
-			decoratorOffsetY = -28,
-			Decorator = "scoreboard-alliance-header",
-			nineSliceLayout = "BFAMissionAlliance",
-		},
-	},
-}
-
 local ACTIVE_EVENTS = {
 	"PVP_MATCH_COMPLETE",
 	"TREASURE_PICKER_CACHE_FLUSH",
@@ -30,13 +9,8 @@ local ACTIVE_EVENTS = {
 	"LFG_READY_CHECK_SHOW",
 };
 
-function PVPMatchResultsStyle.GetPanelColor(faction, useAlternateColor)
-	local index = PVPMatchUtil.GetColorIndex(faction, useAlternateColor);
-	return PVPMatchResultsStyle.PanelColors[index];
-end
-
 local LeaveMatchFormatter = CreateFromMixins(SecondsFormatterMixin);
-LeaveMatchFormatter:OnLoad(0, SecondsFormatter.Abbreviation.OneLetter, true);
+LeaveMatchFormatter:Init(0, SecondsFormatter.Abbreviation.OneLetter, true);
 LeaveMatchFormatter:SetStripIntervalWhitespace(true);
 function LeaveMatchFormatter:GetDesiredUnitCount(seconds)
 	return 1;
@@ -52,7 +26,6 @@ function PVPMatchResultsMixin:OnLoad()
 	
 	local tabContainer = self.content.tabContainer;
 	self.scrollFrame = self.content.scrollFrame;
-	self.scrollFrameBackground = self.scrollFrame.background;
 	self.scrollCategories = self.content.scrollCategories;
 	self.tabGroup = tabContainer.tabGroup;
 	self.tab1 = self.tabGroup.tab1;
@@ -79,7 +52,7 @@ function PVPMatchResultsMixin:OnLoad()
 	self.ratingButton = self.progressContainer.rating.button;
 	self.earningsArt = self.content.earningsArt;
 	self.earningsBackground = self.earningsArt.background;
-	self.tintFrames = {self.glowTop, self.earningsBackground, self.scrollFrameBackground};
+	self.tintFrames = {self.glowTop, self.earningsBackground, self.scrollFrame.background};
 	self.rewardFrames = {self.honorFrame, self.conquestFrame, self.ratingFrame};
 
 	self.earningsContainer:Hide();
@@ -104,6 +77,8 @@ function PVPMatchResultsMixin:OnLoad()
 	HybridScrollFrame_OnLoad(self.scrollFrame);
 	HybridScrollFrame_CreateButtons(self.scrollFrame, "PVPTableRowTemplate");
 	HybridScrollFrame_SetDoNotHideScrollBar(self.scrollFrame, true);
+
+	UIPanelCloseButton_SetBorderAtlas(self.CloseButton, "UI-Frame-GenericMetal-ExitButtonBorder", -1, 1);
 
 	self.itemPool = CreateFramePool("BUTTON", self.itemContainer, "PVPMatchResultsLoot");
 	self.tableBuilder = CreateTableBuilder(HybridScrollFrame_GetButtons(self.scrollFrame));
@@ -154,12 +129,6 @@ function PVPMatchResultsMixin:Init(winner, duration)
 	local isArena = IsActiveBattlefieldArena();
 	local isLFD = IsInLFDBattlefield();
 	local isFactionalMatch = not (isArena or isArenaSkirmish or isLFD);
-
-	-- The border is related to the character's faction, regardless of the
-	-- outcome of the match.
-	local factionGroup = UnitFactionGroup("player");
-	local teamIndex = (factionGroup and factionGroup == "Horde") and 0 or 1;
-	self:SetupBorder(teamIndex, isFactionalMatch);
 	
 	local formattedTime = PVPMatchUtil.MatchTimeFormatter:Format(duration);
 	self.matchTimeValue:SetText(PVP_TIME_ELAPSED:format(formattedTime));
@@ -175,20 +144,9 @@ function PVPMatchResultsMixin:Init(winner, duration)
 	end
 	self.tabGroup:SetShown(isFactionalMatch);
 
-	local useAlternateColor = not isFactionalMatch;
-	local r, g, b = PVPMatchResultsStyle.GetPanelColor(factionIndex, useAlternateColor):GetRGB();
-	for k, frame in pairs(self.tintFrames) do
-		frame:SetVertexColor(r, g, b);
-	end
+	self:SetupArtwork(factionIndex, isFactionalMatch);
 
-	local buttons = HybridScrollFrame_GetButtons(self.scrollFrame);
-	for k, button in pairs(buttons) do
-		button:Init(useAlternateColor);
-	end
-
-	ConstructPVPMatchTable(self.tableBuilder, PVPMatchUtil.IsRatedBattleground(), isArena, isLFD, useAlternateColor);
-	
-	-- 820FIXME IMPLEMENT NAME DROPDOWN
+	ConstructPVPMatchTable(self.tableBuilder, PVPMatchUtil.IsRatedBattleground(), isArena, isLFD, not isFactionalMatch);
 end
 function PVPMatchResultsMixin:TryDisplayRewards()
 	if self.haveConquestData and self.hasRewardTimerElapsed then
@@ -206,7 +164,7 @@ function PVPMatchResultsMixin:OnEvent(event, ...)
 		self:Reset();
 	elseif event == "PVP_MATCH_COMPLETE" then
 		local winner, duration = ...;
-		self:TryShow(winner, duration);
+		self:BeginShow(winner, duration);
 	elseif event == "TREASURE_PICKER_CACHE_FLUSH" then
 		self.haveConquestData = self:HaveConquestData();
 		if not haveConquestData then
@@ -215,7 +173,7 @@ function PVPMatchResultsMixin:OnEvent(event, ...)
 	elseif event == "POST_MATCH_ITEM_REWARD_UPDATE" or event == "POST_MATCH_CURRENCY_REWARD_UPDATE" then
 		if self.hasRewardTimerElapsed then
 			-- 820FIXME We've received an item reward late. Reinitialize the reward section. This is a stopgap
-			-- until we've resolved the complete item details as part of the match complete message.
+			-- until we've included the full set of item details as part of the match complete message.
 			self:TryDisplayRewards();
 		end
 	elseif event == "QUEST_LOG_UPDATE" then
@@ -236,7 +194,7 @@ function PVPMatchResultsMixin:OnEvent(event, ...)
 		self.requeueButton:Disable();
 	end
 end
-function PVPMatchResultsMixin:TryShow(winner, duration)
+function PVPMatchResultsMixin:BeginShow(winner, duration)
 	-- Get the conquest information if necessary. This will normally be cached
 	-- at the beginning of the match, but this is to deal with any rare cases
 	-- where the sparse item or treasure picker db's have been flushed on us.
@@ -245,8 +203,7 @@ function PVPMatchResultsMixin:TryShow(winner, duration)
 		self:RegisterEvent("QUEST_LOG_UPDATE");
 	end
 
-	-- 820FIXME The items earned are not known at match completion time. This is a stopgap
-	-- until we've resolved the complete item details as part of the match complete message.
+	-- See POST_MATCH_ITEM_REWARD_UPDATE
 	if not self.hasRewardTimerElapsed and not self.rewardTimer then
 		self.rewardTimer = C_Timer.NewTimer(1.0, 
 			function()
@@ -354,8 +311,6 @@ function PVPMatchResultsMixin:DisplayRewards()
 			end
 		end
 
-		-- Design ask is to mimic the garrision reward sequence. 
-		-- 1.1 (chest animation) - .75 (background burst animation) == .35.
 		local itemStartDelay = .35;
 		for itemFrame in self.itemPool:EnumerateActive() do
 			local animGroup = itemFrame.IconAnim;
@@ -366,8 +321,8 @@ function PVPMatchResultsMixin:DisplayRewards()
 end
 
 -- If this function returns false, it also comes with the side-effect of assigning
--- a callback and signalling QUEST_LOG_UPDATE. Unfortunately, this function has multiple steps
--- of failure, so we continue to call this until it succeeds after every QUEST_LOG_UPDATE event.
+-- a callback and signalling QUEST_LOG_UPDATE. Unfortunately, this function needs to be called
+-- until it succeeds, which occurs after every QUEST_LOG_UPDATE event.
 function PVPMatchResultsMixin:HaveConquestData()
 	local conquestQuestID = select(3, PVPGetConquestLevelInfo());
 	return HaveQuestRewardData(conquestQuestID);
@@ -398,7 +353,6 @@ end
 function PVPMatchResultsMixin:AddItemReward(item)
 	local frame = self.itemPool:Acquire();
 
-	-- Specialization icon is intended to be hidden.
 	local unusedSpecID;
 	local isCurrency = item.type == "currency";
 	local isIconBorderShown = true;
@@ -441,16 +395,29 @@ function PVPMatchResultsMixin:InitRatingFrame()
 
 	self.ratingFrame:Show();
 end
-function PVPMatchResultsMixin:SetupBorder(factionIndex, isFactionalMatch)
-	local theme = PVPMatchResultsStyle.Theme[factionIndex == 0 and "Horde" or "Alliance"];
+function PVPMatchResultsMixin:SetupArtwork(factionIndex, isFactionalMatch)
+	local useAlternateColor = not isFactionalMatch;
+	local buttons = HybridScrollFrame_GetButtons(self.scrollFrame);
+	for k, button in pairs(buttons) do
+		button:Init(useAlternateColor);
+	end
+
+	local r, g, b = PVPMatchStyle.GetPanelColor(factionIndex, useAlternateColor):GetRGB();
+	for k, frame in pairs(self.tintFrames) do
+		frame:SetVertexColor(r, g, b);
+	end
 
 	local themeDecoration = self.overlay.decorator;
-	local showDecoration = not isFactionalMatch;
-	if showDecoration then
+	local theme;
+	if isFactionalMatch then
+		theme = PVPMatchStyle.GetFactionPanelThemeByIndex(factionIndex);
 		themeDecoration:SetPoint("BOTTOM", self, "TOP", 0, theme.decoratorOffsetY);
-		themeDecoration:SetAtlas(theme.Decorator, true);
+		themeDecoration:SetAtlas(theme.decoratorTexture, true);
+	else
+		theme = PVPMatchStyle.GetNeutralPanelTheme();
 	end
-	themeDecoration:SetShown(showDecoration);
+
+	themeDecoration:SetShown(isFactionalMatch);
 
 	NineSliceUtil.ApplyLayoutByName(self, theme.nineSliceLayout);
 end
@@ -473,10 +440,6 @@ function PVPMatchResultsMixin:OnClose()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 
 	HideParentPanel(self);
-end
-function PVPMatchResultsMixin:OnHide()
-	-- 820FIXME IMPLEMENT NAME DROPDOWN
-	--CloseDropDownMenus();
 end
 function PVPMatchResultsMixin:OnTabGroupClicked(tab)
 	PanelTemplates_SetTab(self, tab:GetID());
@@ -516,12 +479,4 @@ function PVPMatchResultsRatingMixin:OnEnter()
 end
 function PVPMatchResultsRatingMixin:OnLeave()
 	GameTooltip:Hide();
-end
-
-function TogglePVPMatchResultsFrame()
-	if ( PVPMatchResults:IsShown() ) then
-		HideUIPanel(PVPMatchResults);
-	else
-		PVPMatchResults:TryShow(C_PvP.GetActiveMatchWinner(), C_PvP.GetActiveMatchDuration());
-	end
 end

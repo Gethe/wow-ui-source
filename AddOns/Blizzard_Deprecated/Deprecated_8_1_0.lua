@@ -202,11 +202,6 @@ do
 	-- Use C_ReportSystem.SetPendingReportTarget instead
 	SetPendingReportTarget = C_ReportSystem.SetPendingReportTarget;
 
-	-- Moved to C_ReportSystem
-	C_ChatInfo.ReportPlayer = function(complaintType, playerLocation, comment)
-		local reportToken = C_ReportSystem.InitiateReportPlayer(complaintType, playerLocation);
-		C_ReportSystem.SendReportPlayer(reportToken, comment);
-	end
 	C_ChatInfo.CanReportPlayer = C_ReportSystem.CanReportPlayer;
 end
 

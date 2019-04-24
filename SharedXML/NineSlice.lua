@@ -68,7 +68,14 @@ local function GetNineSlicePiece(container, pieceName)
 		end
 	end
 
-	return container[pieceName] or container:CreateTexture(), false;
+	local piece = container[pieceName];
+	if piece then
+		return piece, true;
+	else
+		piece = container:CreateTexture()
+		container[pieceName] = piece;
+		return piece, false;
+	end
 end
 
 local function PropagateLayoutSettingsToPieceLayout(userLayout, pieceLayout)
@@ -219,8 +226,8 @@ local layouts =
 		LeftEdge = { layer = "BORDER", subLevel = -5, atlas = "!UI-Frame-InnerLeftTile", },
 		RightEdge = { layer = "BORDER", subLevel = -5, atlas = "!UI-Frame-InnerRightTile", },
 	},
-	
-	BFAMissionHorde = 
+
+	BFAMissionHorde =
 	{
 		mirrorLayout = true,
 		TopLeftCorner =	{ atlas = "HordeFrame-Corner-TopLeft", x = -6, y = 6, },
@@ -233,7 +240,7 @@ local layouts =
 		RightEdge = { atlas = "!HordeFrameTile-Left", },
 	},
 
-	BFAMissionAlliance = 
+	BFAMissionAlliance =
 	{
 		mirrorLayout = true,
 		TopLeftCorner =	{ atlas = "AllianceFrameCorner-TopLeft", x = -6, y = 6, },
@@ -244,6 +251,30 @@ local layouts =
 		BottomEdge = { atlas = "_AllianceFrameTile-Top", },
 		LeftEdge = { atlas = "!AllianceFrameTile-Left", },
 		RightEdge = { atlas = "!AllianceFrameTile-Left", },
+	},
+
+	BFAMissionNeutral =
+	{
+		TopLeftCorner =	{ atlas = "UI-Frame-GenericMetal-Corner", x = -6, y = 6, mirrorLayout = true, },
+		TopRightCorner =	{ atlas = "UI-Frame-GenericMetal-Corner", x = 6, y = 6, mirrorLayout = true, },
+		BottomLeftCorner =	{ atlas = "UI-Frame-GenericMetal-Corner", x = -6, y = -6, mirrorLayout = true, },
+		BottomRightCorner =	{ atlas = "UI-Frame-GenericMetal-Corner", x = 6, y = -6, mirrorLayout = true, },
+		TopEdge = { atlas = "_UI-Frame-GenericMetal-TileTop", },
+		BottomEdge = { atlas = "_UI-Frame-GenericMetal-TileBottom", },
+		LeftEdge = { atlas = "!UI-Frame-GenericMetal-TileLeft", },
+		RightEdge = { atlas = "!UI-Frame-GenericMetal-TileRight", },
+	},
+
+	Dialog =
+	{
+		TopLeftCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerTopLeft", },
+		TopRightCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerTopRight", },
+		BottomLeftCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerBottomLeft", },
+		BottomRightCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerBottomRight", },
+		TopEdge = { atlas = "_UI-Frame-DiamondMetal-EdgeTop", },
+		BottomEdge = { atlas = "_UI-Frame-DiamondMetal-EdgeBottom", },
+		LeftEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeLeft", },
+		RightEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeRight", },
 	},
 }
 

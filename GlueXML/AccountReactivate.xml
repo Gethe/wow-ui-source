@@ -1,32 +1,13 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="AccountReactivate.lua"/>
-	
-	<Frame name="ReactivateDialogBackground" virtual="true" >
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="10"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="4" y="-4"/>
-						<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
-					</Anchors>
-					<Color r="0" b="0" g="0" a=".4"/>
-				</Texture>
-			</Layer>
-		</Layers>
+
+	<Frame name="ReactivateDialogBackground" virtual="true">
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTranslucentTemplate"/>
+		</Frames>
 	</Frame>
-	
+
 	<!-- Player has enough tokens or gold. -->
 	<Frame name="ReactivateAccountDialog" toplevel="true" parent="CharacterSelect" enableMouse="true" frameStrata="HIGH" hidden="true" inherits="ReactivateDialogBackground">
 		<Size x="450" y="64"/>
@@ -76,7 +57,7 @@
 			<OnEvent function="ReactivateAccountDialog_OnEvent"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="AccountReactivationInProgressDialog" toplevel="true" parent="CharacterSelect" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
 		<Size x="350" y="64"/>
 		<Anchors>
@@ -85,11 +66,11 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon" file="Interface\Store\Store-Main">
-					<Size x="188" y="185"/>	
+					<Size x="188" y="185"/>
 					<Anchors>
 						<Anchor point="TOP" x="0" y="20"/>
 					</Anchors>
-					<TexCoords left="0.18457031" right="0.36816406" top="0.46289063" bottom="0.64355469"/>	
+					<TexCoords left="0.18457031" right="0.36816406" top="0.46289063" bottom="0.64355469"/>
 				</Texture>
 				<FontString parentKey="Title" inherits="GlueFontNormalLarge" text="BLIZZARD_STORE_TRANSACTION_IN_PROGRESS">
 					<Size x="300" y="0"/>
@@ -102,7 +83,7 @@
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-8" relativeKey="$parent.Title" relativePoint="BOTTOM"/>
 					</Anchors>
-					<TexCoords left="0.50878906" right="0.79980469" top="0.63085938" bottom="0.63281250"/>	
+					<TexCoords left="0.50878906" right="0.79980469" top="0.63085938" bottom="0.63281250"/>
 				</Texture>
 				<FontString parentKey="Notice" inherits="GameFontGreen" text="ACCOUNT_REACTIVATE_LOGOUT_NOTICE">
 					<Size x="300" y="0"/>
@@ -118,7 +99,7 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-		
+
 	<Frame name="GoldReactivateConfirmationDialog" toplevel="true" parent="CharacterSelect" enableMouse="true" frameStrata="HIGH" hidden="true" inherits="ReactivateDialogBackground">
 		<Size x="450" y="64"/>
 		<Anchors>
@@ -185,7 +166,7 @@
 						AccountReactivationInProgressDialog:Show();
 						CharacterSelect_UpdateButtonState();
 						self:GetParent():Hide();
-					</OnClick> 
+					</OnClick>
 				</Scripts>
 			</Button>
 			<Button parentKey="Cancel" inherits="GlueDialogButtonTemplate" text="CANCEL">
@@ -215,7 +196,7 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-			
+
 	<Frame name="TokenReactivateConfirmationDialog" toplevel="true" parent="CharacterSelect" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
 		<Size x="450" y="64"/>
 		<Anchors>
@@ -263,7 +244,7 @@
 						C_WowTokenSecure.RedeemTokenConfirm(LE_TOKEN_REDEEM_TYPE_GAME_TIME);
 						AccountReactivationInProgressDialog:Show();
 						CharacterSelect_UpdateButtonState();
-					</OnClick> 
+					</OnClick>
 				</Scripts>
 			</Button>
 			<Button parentKey="Cancel" inherits="GlueDialogButtonTemplate" text="CANCEL">
@@ -286,7 +267,7 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	
+
 	<!-- Not Enough Gold and no tokens. Display if attempt to login with a greater than level 20 character/ -->
 	<Frame name="SubscriptionRequestDialog" toplevel="true" parent="CharacterSelect" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
 		<Size x="450" y="64"/>

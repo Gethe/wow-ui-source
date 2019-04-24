@@ -8,9 +8,7 @@
 	<Frame name="CalendarFrame" toplevel="true" parent="UIParent" enableMouse="true" enableKeyboard="true" frameStrata="HIGH" hidden="true">
 		<Size x="659" y="624"/>
 		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset x="15" y="-80"/>
-			</Anchor>
+			<Anchor point="TOPLEFT" x="15" y="-80"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BORDER">
@@ -18,27 +16,21 @@
 				<Texture name="$parentTopLeftTexture" file="Interface\Calendar\CalendarFrame_TopAndBottom">
 					<Size x="256" y="46"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.0" right="1.0" top="0.00390625" bottom="0.16015625"/>
 				</Texture>
 				<Texture name="$parentTopMiddleTexture" file="Interface\Calendar\CalendarFrame_TopAndBottom">
 					<Size x="256" y="46"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftTexture" relativePoint="TOPRIGHT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftTexture" relativePoint="TOPRIGHT"/>
 					</Anchors>
 					<TexCoords left="0.0" right="1.0" top="0.16796875" bottom="0.32421875"/>
 				</Texture>
 				<Texture name="$parentTopRightTexture" file="Interface\Calendar\CalendarFrame_TopAndBottom">
 					<Size x="147" y="30"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTopMiddleTexture" relativePoint="TOPRIGHT">
-							<Offset x="0" y="-16"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentTopMiddleTexture" relativePoint="TOPRIGHT" x="0" y="-16"/>
 					</Anchors>
 					<TexCoords left="0.0" right="0.57421875" top="0.328125" bottom="0.4296875"/>
 				</Texture>
@@ -46,27 +38,21 @@
 				<Texture name="$parentLeftTopTexture" file="Interface\Calendar\CalendarFrame_Sides">
 					<Size x="12" y="256"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftTexture" relativePoint="BOTTOMLEFT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftTexture" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 					<TexCoords left="0.0" right="0.09375" top="0.0" bottom="1.0"/>
 				</Texture>
 				<Texture name="$parentLeftMiddleTexture" file="Interface\Calendar\CalendarFrame_Sides">
 					<Size x="12" y="256"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentLeftTopTexture" relativePoint="BOTTOMLEFT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentLeftTopTexture" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 					<TexCoords left="0.09375" right="0.1875" top="0.0" bottom="1.0"/>
 				</Texture>
 				<Texture name="$parentLeftBottomTexture" file="Interface\Calendar\CalendarFrame_Sides">
 					<Size x="11" y="62"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentLeftMiddleTexture" relativePoint="BOTTOMLEFT">
-							<Offset x="2" y="0"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentLeftMiddleTexture" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 					</Anchors>
 					<TexCoords left="0.1953125" right="0.28125" top="0.0" bottom="0.2421875"/>
 				</Texture>
@@ -74,27 +60,21 @@
 				<Texture name="$parentRightTopTexture" file="Interface\Calendar\CalendarFrame_Sides">
 					<Size x="13" y="256"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightTexture" relativePoint="BOTTOMRIGHT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightTexture" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.296875" right="0.3984375" top="0.0" bottom="1.0"/>
 				</Texture>
 				<Texture name="$parentRightMiddleTexture" file="Interface\Calendar\CalendarFrame_Sides">
 					<Size x="11" y="256"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentRightTopTexture" relativePoint="BOTTOMRIGHT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="TOPRIGHT" relativeTo="$parentRightTopTexture" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.484375" top="0.0" bottom="1.0"/>
 				</Texture>
 				<Texture name="$parentRightBottomTexture" file="Interface\Calendar\CalendarFrame_Sides">
 					<Size x="11" y="62"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentRightMiddleTexture" relativePoint="BOTTOMRIGHT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="TOPRIGHT" relativeTo="$parentRightMiddleTexture" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 					<TexCoords left="0.484375" right="0.5703125" top="0.0" bottom="0.2421875"/>
 				</Texture>
@@ -102,27 +82,21 @@
 				<Texture name="$parentBottomLeftTexture" file="Interface\Calendar\CalendarFrame_TopAndBottom">
 					<Size x="256" y="9"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentLeftBottomTexture" relativePoint="BOTTOMLEFT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentLeftBottomTexture" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 					<TexCoords left="0.0" right="1.0" top="0.43359375" bottom="0.46875"/>
 				</Texture>
 				<Texture name="$parentBottomMiddleTexture" file="Interface\Calendar\CalendarFrame_TopAndBottom">
 					<Size x="256" y="9"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentBottomLeftTexture" relativePoint="RIGHT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentBottomLeftTexture" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="0.0" right="1.0" top="0.46875" bottom="0.50390625"/>
 				</Texture>
 				<Texture name="$parentBottomRightTexture" file="Interface\Calendar\CalendarFrame_TopAndBottom">
 					<Size x="145" y="9"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentBottomMiddleTexture" relativePoint="RIGHT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentBottomMiddleTexture" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="0.0" right="0.56640625" top="0.50390625" bottom="0.5390625"/>
 				</Texture>
@@ -131,9 +105,7 @@
 				<Texture name="CalendarWeekday1Background" file="Interface\Calendar\CalendarBackground">
 					<Size x="91" y="28"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentLeftTopTexture" relativePoint="TOPRIGHT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentLeftTopTexture" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CalendarWeekday2Background" file="Interface\Calendar\CalendarBackground">
@@ -151,9 +123,7 @@
 				<Texture name="CalendarWeekday4Background" file="Interface\Calendar\CalendarBackground">
 					<Size x="91" y="28"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="CalendarWeekday3Background" relativePoint="RIGHT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="CalendarWeekday3Background" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CalendarWeekday5Background" file="Interface\Calendar\CalendarBackground">
@@ -221,9 +191,7 @@
 				<Texture name="CalendarMonthBackground" file="Interface\Calendar\CalendarBackground">
 					<Size x="142" y="36"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset x="-3" y="-1"/>
-						</Anchor>
+						<Anchor point="TOP" x="-3" y="-1"/>
 					</Anchors>
 					<TexCoords left="0.0" right="0.5546875" top="0.828125" bottom="0.96875"/>
 				</Texture>
@@ -237,17 +205,13 @@
 				<Texture name="CalendarYearBackground" file="Interface\Calendar\CalendarBackground">
 					<Size x="47" y="24"/>
 					<Anchors>
-						<Anchor point="TOP" relativeTo="CalendarMonthBackground" relativePoint="BOTTOM">
-							<Offset x="-2" y="13"/>
-						</Anchor>
+						<Anchor point="TOP" relativeTo="CalendarMonthBackground" relativePoint="BOTTOM" x="-2" y="13"/>
 					</Anchors>
 					<TexCoords left="0.0" right="0.5546875" top="0.828125" bottom="0.96875"/>
 				</Texture>
 				<FontString name="CalendarYearName" inherits="GameFontNormalSmall" justifyH="CENTER">
 					<Anchors>
-						<Anchor point="CENTER" relativeTo="CalendarYearBackground">
-							<Offset x="0" y="-1"/>
-						</Anchor>
+						<Anchor point="CENTER" relativeTo="CalendarYearBackground" x="0" y="-1"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -274,9 +238,7 @@
 						<Texture name="CalendarTodayTextureGlow" file="Interface\Calendar\CurrentDay" alphaMode="ADD">
 							<Size x="112" y="130"/>
 							<Anchors>
-								<Anchor point="CENTER">
-									<Offset x="2" y="15"/>
-								</Anchor>
+								<Anchor point="CENTER" x="2" y="15"/>
 							</Anchors>
 							<TexCoords left="0.5625" right="1" top="0" bottom="0.5078125"/>
 						</Texture>
@@ -300,9 +262,7 @@
 			<Button name="CalendarPrevMonthButton">
 				<Size x="32" y="32"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="CalendarMonthBackground" relativePoint="LEFT">
-						<Offset x="0" y="-1"/>
-					</Anchor>
+					<Anchor point="RIGHT" relativeTo="CalendarMonthBackground" relativePoint="LEFT" x="0" y="-1"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="CalendarPrevMonthButton_OnClick"/>
@@ -315,9 +275,7 @@
 			<Button name="CalendarNextMonthButton">
 				<Size x="32" y="32"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="CalendarMonthBackground" relativePoint="RIGHT">
-						<Offset x="0" y="-1"/>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="CalendarMonthBackground" relativePoint="RIGHT" x="0" y="-1"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="CalendarNextMonthButton_OnClick"/>
@@ -330,27 +288,21 @@
 			<Frame name="CalendarFilterFrame">
 				<Size x="106" y="20"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="CalendarFrame" relativePoint="TOPRIGHT">
-						<Offset x="-44" y="-21"/>
-					</Anchor>
+					<Anchor point="TOPRIGHT" relativeTo="CalendarFrame" relativePoint="TOPRIGHT" x="-44" y="-21"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
 							<Size x="8" y="16"/>
 							<Anchors>
-								<Anchor point="LEFT">
-									<Offset x="-5" y="0"/>
-								</Anchor>
+								<Anchor point="LEFT" x="-5" y="0"/>
 							</Anchors>
 							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 						</Texture>
 						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
 							<Size x="8" y="16"/>
 							<Anchors>
-								<Anchor point="RIGHT">
-									<Offset x="0" y="0"/>
-								</Anchor>
+								<Anchor point="RIGHT" x="0" y="0"/>
 							</Anchors>
 							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 						</Texture>
@@ -364,9 +316,7 @@
 						</Texture>
 						<FontString name="$parentText" inherits="GameFontHighlightSmall" text="CALENDAR_FILTERS" justifyH="RIGHT">
 							<Anchors>
-								<Anchor point="RIGHT">
-									<Offset x="-24" y="0"/>
-								</Anchor>
+								<Anchor point="RIGHT" x="-24" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -375,9 +325,7 @@
 					<Button name="CalendarFilterButton">
 						<Size x="20" y="20"/>
 						<Anchors>
-							<Anchor point="RIGHT">
-								<Offset x="0" y="0"/>
-							</Anchor>
+							<Anchor point="RIGHT"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="CalendarFilterButton_OnClick"/>
@@ -385,33 +333,25 @@
 						<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
 							<Size x="20" y="20"/>
 							<Anchors>
-								<Anchor point="RIGHT">
-									<Offset x="3" y="0"/>
-								</Anchor>
+								<Anchor point="RIGHT" x="3" y="0"/>
 							</Anchors>
 						</NormalTexture>
 						<PushedTexture name="$parentPushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
 							<Size x="20" y="20"/>
 							<Anchors>
-								<Anchor point="RIGHT">
-									<Offset x="3" y="0"/>
-								</Anchor>
+								<Anchor point="RIGHT" x="3" y="0"/>
 							</Anchors>
 						</PushedTexture>
 						<DisabledTexture name="$parentDisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
 							<Size x="20" y="20"/>
 							<Anchors>
-								<Anchor point="RIGHT">
-									<Offset x="3" y="0"/>
-								</Anchor>
+								<Anchor point="RIGHT" x="3" y="0"/>
 							</Anchors>
 						</DisabledTexture>
 						<HighlightTexture name="$parentHighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
 							<Size x="20" y="20"/>
 							<Anchors>
-								<Anchor point="RIGHT">
-									<Offset x="3" y="0"/>
-								</Anchor>
+								<Anchor point="RIGHT" x="3" y="0"/>
 							</Anchors>
 						</HighlightTexture>
 					</Button>
@@ -425,9 +365,7 @@
 			<Button name="CalendarCloseButton" inherits="UIPanelCloseButton">
 				<Size x="32" y="34"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="5" y="-13"/>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="5" y="-13"/>
 				</Anchors>
 			</Button>
 
@@ -464,9 +402,7 @@
 					<Frame name="CalendarEventFrameBlocker" enableMouse="true" enableKeyboard="true" hidden="true">
 						<Size x="320" y="520"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-								<Offset x="0" y="-24"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-24"/>
 						</Anchors>
 						<Scripts>
 							<OnShow function="CalendarEventFrameBlocker_OnShow"/>
@@ -509,49 +445,20 @@
 	<Frame name="CalendarViewHolidayFrame" toplevel="true" parent="CalendarFrame" enableMouse="true" frameStrata="HIGH" hidden="true">
 		<Size x="320" y="320"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-				<Offset x="0" y="-24"/>
-			</Anchor>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-24"/>
 		</Anchors>
-		<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="CalendarViewHolidayBackground">
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="4" y="-4"/>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset x="-4" y="4"/>
-						</Anchor>
-					</Anchors>
-					<Color r="0.0" g="0.0" b="0.0" a="0.8"/>
-				</Texture>
-			</Layer>
 			<Layer level="BORDER">
 				<Texture name="CalendarViewHolidayInfoTexture" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="12" y="-13"/>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset x="-11" y="11"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="12" y="-13"/>
+						<Anchor point="BOTTOMRIGHT" x="-11" y="11"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
 			<Frame name="CalendarViewHolidayTitleFrame" inherits="CalendarTitleFrameTemplate">
 				<Scripts>
 					<OnLoad>
@@ -562,9 +469,7 @@
 			<ScrollFrame name="CalendarViewHolidayScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size x="270" y="278"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="15" y="-30"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="15" y="-30"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -608,37 +513,10 @@
 	<Frame name="CalendarViewRaidFrame" toplevel="true" parent="CalendarFrame" enableMouse="true" frameStrata="HIGH" hidden="true">
 		<Size x="320" y="150"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-				<Offset x="0" y="-24"/>
-			</Anchor>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-24"/>
 		</Anchors>
-		<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="CalendarViewRaidBackground">
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="4" y="-4"/>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset x="-4" y="4"/>
-						</Anchor>
-					</Anchors>
-					<Color r="0.0" g="0.0" b="0.0" a="0.8"/>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
 			<Frame name="CalendarViewRaidTitleFrame" inherits="CalendarTitleFrameTemplate">
 				<Scripts>
 					<OnLoad>
@@ -649,9 +527,7 @@
 			<ScrollFrame name="CalendarViewRaidScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size x="270" y="108"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="15" y="-30"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="15" y="-30"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -695,42 +571,14 @@
 	<Frame name="CalendarViewEventFrame" toplevel="true" parent="CalendarFrame" enableMouse="true" frameStrata="HIGH" hidden="true">
 		<Size x="320" y="500"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-				<Offset x="0" y="-24"/>
-			</Anchor>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-24"/>
 		</Anchors>
-		<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="CalendarViewEventBackground">
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="4" y="-4"/>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset x="-4" y="4"/>
-						</Anchor>
-					</Anchors>
-					<Color r="0.0" g="0.0" b="0.0" a="0.8"/>
-				</Texture>
-			</Layer>
 			<Layer level="BORDER">
 				<Texture name="CalendarViewEventIcon">
 					<Size x="60" y="60"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="16" y="-26"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="16" y="-26"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -738,52 +586,41 @@
 				<FontString name="CalendarViewEventTitle" inherits="GameFontNormal" justifyH="LEFT">
 					<Size x="220" y="12"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="CalendarViewEventIcon" relativePoint="TOPRIGHT">
-							<Offset x="2" y="0"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="CalendarViewEventIcon" relativePoint="TOPRIGHT" x="2" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="CalendarViewEventCommunityName" inherits="GameFontNormalSmall" justifyH="LEFT">
 					<Size x="220" y="12"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="CalendarViewEventTitle" relativePoint="BOTTOMLEFT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="CalendarViewEventTitle" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</FontString>
 				<FontString name="CalendarViewEventTypeName" inherits="GameFontNormalSmall" justifyH="LEFT">
 					<Size x="220" y="12"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="CalendarViewEventCommunityName" relativePoint="BOTTOMLEFT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="CalendarViewEventCommunityName" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</FontString>
 				<FontString name="CalendarViewEventCreatorName" inherits="GameFontNormalSmall" justifyH="LEFT">
 					<Size x="220" y="12"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="CalendarViewEventTypeName" relativePoint="BOTTOMLEFT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="CalendarViewEventTypeName" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</FontString>
 				<FontString name="CalendarViewEventDateLabel" inherits="GameFontHighlightSmall">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="CalendarViewEventCreatorName" relativePoint="BOTTOMLEFT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="CalendarViewEventCreatorName" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</FontString>
 				<FontString name="CalendarViewEventTimeLabel" inherits="GameFontHighlightSmall">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="CalendarViewEventDateLabel" relativePoint="BOTTOMLEFT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="CalendarViewEventDateLabel" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
 			<Frame name="CalendarViewEventTitleFrame" inherits="CalendarTitleFrameTemplate">
 				<Scripts>
 					<OnLoad>
@@ -794,9 +631,7 @@
 			<Frame name="CalendarViewEventDescriptionContainer">
 				<Size x="287" y="65"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="16" y="-95"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="16" y="-95"/>
 				</Anchors>
 				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 					<EdgeSize>
@@ -844,9 +679,7 @@
 			<Frame name="CalendarViewEventInviteListSection">
 				<Size x="320" y="320"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="0" y="-170"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="0" y="-170"/>
 				</Anchors>
 				<Animations>
 					<AnimationGroup looping="BOUNCE">
@@ -858,9 +691,7 @@
 						<Texture name="CalendarViewEventDivider" file="Interface\DialogFrame\UI-DialogBox-Divider">
 							<Size x="303" y="16"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="10" y="-30"/>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="10" y="-30"/>
 							</Anchors>
 							<TexCoords left="0.0" right="0.75390625" top="0.0" bottom="0.5"/>
 						</Texture>
@@ -883,9 +714,7 @@
 					</Button>
 					<Button name="CalendarViewEventDeclineButton" inherits="CalendarViewEventRSVPButtonTemplate" text="DECLINE">
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativePoint="TOP">
-								<Offset x="-10" y="-26"/>
-							</Anchor>
+							<Anchor point="TOPRIGHT" relativePoint="TOP" x="-10" y="-26"/>
 						</Anchors>
 						<Scripts>
 							<OnEnter function="CalendarViewEventDeclineButton_OnEnter"/>
@@ -902,9 +731,7 @@
 					</Button>
 					<Frame name="CalendarViewEventInviteList" inherits="CalendarEventInviteListTemplate">
 						<Anchors>
-							<Anchor point="TOP">
-								<Offset x="0" y="-60"/>
-							</Anchor>
+							<Anchor point="TOP" x="0" y="-60"/>
 						</Anchors>
 					</Frame>
 				</Frames>
@@ -960,42 +787,14 @@
 	<Frame name="CalendarCreateEventFrame" toplevel="true" parent="CalendarFrame" enableMouse="true" frameStrata="HIGH" hidden="true">
 		<Size x="320" y="580"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-				<Offset x="0" y="-24"/>
-			</Anchor>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-24"/>
 		</Anchors>
-		<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="CalendarCreateEventBackground">
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="4" y="-4"/>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset x="-4" y="4"/>
-						</Anchor>
-					</Anchors>
-					<Color r="0.0" g="0.0" b="0.0" a="0.8"/>
-				</Texture>
-			</Layer>
 			<Layer level="BORDER">
 				<Texture name="CalendarCreateEventIcon">
 					<Size x="50" y="50"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="16" y="-26"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="16" y="-26"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -1009,20 +808,18 @@
 				<FontString name="CalendarCreateEventTextureName" inherits="GameFontNormalSmall" justifyV="TOP" justifyH="LEFT" hidden="true">
 					<Size x="230" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventCommunityName" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventCommunityName" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</FontString>
 				<FontString name="CalendarCreateEventCreatorName" inherits="GameFontNormalSmall" justifyH="LEFT">
 					<Size x="220" y="12"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventTextureName" relativePoint="BOTTOMLEFT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventTextureName" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</FontString>
 				<FontString name="CalendarCreateEventDateLabel" inherits="GameFontHighlightSmall">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventCreatorName" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventCreatorName" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -1030,18 +827,15 @@
 				<Texture name="$parentButtonBackground" file="Interface\Buttons\UI-Button-Borders">
 					<Size x="256" y="26"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset x="11" y="9"/>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset x="-11" y="9"/>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" x="11" y="9"/>
+						<Anchor point="BOTTOMRIGHT" x="-11" y="9"/>
 					</Anchors>
 					<TexCoords left="0.0" right="1.0" top="0.59375" bottom="1.0"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
 			<Frame name="CalendarCreateEventTitleFrame" inherits="CalendarTitleFrameTemplate">
 				<Scripts>
 					<OnLoad>
@@ -1052,9 +846,7 @@
 			<EditBox name="CalendarCreateEventTitleEdit" letters="31" inherits="InputBoxTemplate" autoFocus="false">
 				<Size x="120" y="20"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="25" y="-84"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="25" y="-84"/>
 				</Anchors>
 				<Scripts>
 					<OnTabPressed>
@@ -1069,37 +861,27 @@
 			</EditBox>
 			<Frame name="CalendarCreateEventTypeDropDown" inherits="UIDropDownMenuTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="160" y="-82"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="160" y="-82"/>
 				</Anchors>
 			</Frame>
 			<Frame name="CalendarCreateEventHourDropDown" inherits="UIDropDownMenuTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="2" y="-114"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="2" y="-114"/>
 				</Anchors>
 			</Frame>
 			<Frame name="CalendarCreateEventMinuteDropDown" inherits="UIDropDownMenuTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="CalendarCreateEventHourDropDown" relativePoint="RIGHT">
-						<Offset x="-22" y="0"/>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="CalendarCreateEventHourDropDown" relativePoint="RIGHT" x="-22" y="0"/>
 				</Anchors>
 			</Frame>
 			<Frame name="CalendarCreateEventAMPMDropDown" inherits="UIDropDownMenuTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="CalendarCreateEventMinuteDropDown" relativePoint="RIGHT">
-						<Offset x="-22" y="0"/>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="CalendarCreateEventMinuteDropDown" relativePoint="RIGHT" x="-22" y="0"/>
 				</Anchors>
 			</Frame>
 			<Frame name="CalendarCreateEventDifficultyOptionDropDown" inherits="UIDropDownMenuTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="160" y="-114"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="160" y="-114"/>
 				</Anchors>
 			</Frame>
 			<Frame name="CalendarCreateEventCommunityDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
@@ -1110,9 +892,7 @@
 			<Frame name="CalendarCreateEventDescriptionContainer">
 				<Size x="287" y="65"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="16" y="-146"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="16" y="-146"/>
 				</Anchors>
 				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 					<EdgeSize>
@@ -1180,18 +960,14 @@
 			<Frame name="CalendarCreateEventInviteListSection">
 				<Size x="320" y="330"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="0" y="-210"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="0" y="-210"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
 						<Texture name="CalendarCreateEventDivider" file="Interface\DialogFrame\UI-DialogBox-Divider">
 							<Size x="303" y="16"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="10" y="-20"/>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="10" y="-20"/>
 							</Anchors>
 							<TexCoords left="0.0" right="0.75390625" top="0.0" bottom="0.5"/>
 						</Texture>
@@ -1201,9 +977,7 @@
 					<CheckButton name="CalendarCreateEventAutoApproveCheck" inherits="UICheckButtonTemplate" hidden="true">
 						<Size x="24" y="24"/>
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset x="20" y="0"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="20" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad function="CalendarCreateEventAutoApproveCheck_OnLoad"/>
@@ -1220,9 +994,7 @@
 					<CheckButton name="CalendarCreateEventLockEventCheck" inherits="UICheckButtonTemplate">
 						<Size x="24" y="24"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT">
-								<Offset x="-95" y="0"/>
-							</Anchor>
+							<Anchor point="TOPRIGHT" x="-95" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad function="CalendarCreateEventLockEventCheck_OnLoad"/>
@@ -1238,17 +1010,13 @@
 					</CheckButton>
 					<Frame name="CalendarCreateEventInviteList" inherits="CalendarEventInviteListTemplate">
 						<Anchors>
-							<Anchor point="TOP">
-								<Offset x="0" y="-50"/>
-							</Anchor>
+							<Anchor point="TOP" x="0" y="-50"/>
 						</Anchors>
 					</Frame>
 					<EditBox name="CalendarCreateEventInviteEdit" letters="32" inherits="InputBoxTemplate,AutoCompleteEditBoxTemplate" autoFocus="false">
 						<Size x="192" y="20"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventInviteList" relativePoint="BOTTOMLEFT">
-								<Offset x="6" y="-3"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventInviteList" relativePoint="BOTTOMLEFT" x="6" y="-3"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -1282,12 +1050,8 @@
 					</EditBox>
 					<Button name="CalendarCreateEventInviteButton" inherits="UIPanelButtonTemplate" text="INVITE">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventInviteEdit" relativePoint="TOPRIGHT">
-								<Offset x="0" y="1"/>
-							</Anchor>
-							<Anchor point="TOPRIGHT" relativeTo="CalendarCreateEventInviteList" relativePoint="BOTTOMRIGHT">
-								<Offset x="0" y="1"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventInviteEdit" relativePoint="TOPRIGHT" x="0" y="1"/>
+							<Anchor point="TOPRIGHT" relativeTo="CalendarCreateEventInviteList" relativePoint="BOTTOMRIGHT" x="0" y="1"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="CalendarCreateEventInviteButton_OnClick"/>
@@ -1298,21 +1062,15 @@
 			</Frame>
 			<Button name="CalendarCreateEventMassInviteButton" inherits="UIPanelButtonTemplate" text="CALENDAR_MASS_INVITE">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset x="12" y="12"/>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" x="12" y="12"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBorder" file="Interface\Buttons\UI-Button-Borders">
 							<Size x="106" y="26"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="-1" y="1"/>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset x="10" y="-3"/>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="-1" y="1"/>
+								<Anchor point="BOTTOMRIGHT" x="10" y="-3"/>
 							</Anchors>
 							<TexCoords left="0.0" right="0.4140625" top="0.0" bottom="0.40625"/>
 						</Texture>
@@ -1335,21 +1093,15 @@
 			</Button>
 			<Button name="CalendarCreateEventRaidInviteButton" inherits="UIPanelButtonTemplate" text="CALENDAR_INVITE_MEMBERS">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset x="12" y="12"/>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" x="12" y="12"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBorder" file="Interface\Buttons\UI-Button-Borders">
 							<Size x="106" y="26"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="-1" y="1"/>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset x="10" y="-3"/>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="-1" y="1"/>
+								<Anchor point="BOTTOMRIGHT" x="10" y="-3"/>
 							</Anchors>
 							<TexCoords left="0.0" right="0.4140625" top="0.0" bottom="0.40625"/>
 						</Texture>
@@ -1365,21 +1117,15 @@
 			</Button>
 			<Button name="CalendarCreateEventCreateButton" inherits="CalendarEventButtonTemplate">
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset x="-11" y="12"/>
-					</Anchor>
+					<Anchor point="BOTTOMRIGHT" x="-11" y="12"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBorder" file="Interface\Buttons\UI-Button-Borders">
 							<Size x="106" y="26"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="-10" y="1"/>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset x="1" y="-3"/>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="-10" y="1"/>
+								<Anchor point="BOTTOMRIGHT" x="1" y="-3"/>
 							</Anchors>
 							<TexCoords left="0.58203125" right="1.0" top="0.0" bottom="0.40625"/>
 						</Texture>
@@ -1440,56 +1186,36 @@
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT" relativeTo="CalendarCreateEventMassInviteButton" relativePoint="TOPLEFT"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString inherits="GameFontHighlightSmall" text="CALENDAR_MASSINVITE_GUILD_HELP" justifyH="CENTER">
 					<Size x="280" y="0"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset x="0" y="-76"/>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="-76"/>
 					</Anchors>
 				</FontString>
 				<FontString name="CalendarMassInviteLevelText" inherits="GameFontNormalSmall" text="LEVEL">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="46" y="-103"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="46" y="-103"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentLevelDivider" inherits="GameFontNormalSmall" text="-">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="80" y="-127"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="80" y="-127"/>
 					</Anchors>
 				</FontString>
 				<FontString name="CalendarMassInviteRankText" inherits="GameFontNormalSmall" text="CALENDAR_MASSINVITE_GUILD_MINRANK">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="170" y="-103"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="170" y="-103"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
 			<Frame name="CalendarMassInviteCommunityDropDown" inherits="UIDropDownMenuTemplate">
 				<Anchors>
-					<Anchor point="TOP">
-						<Offset x="0" y="-30"/>
-					</Anchor>
+					<Anchor point="TOP" x="0" y="-30"/>
 				</Anchors>
 			</Frame>
 			<Frame name="CalendarMassInviteTitleFrame" inherits="CalendarTitleFrameTemplate">
@@ -1503,9 +1229,7 @@
 			<EditBox name="CalendarMassInviteMinLevelEdit" numeric="true" letters="3" inherits="InputBoxTemplate" autoFocus="false">
 				<Size x="25" y="20"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="50" y="-122"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="50" y="-122"/>
 				</Anchors>
 				<Scripts>
 					<OnEnterPressed function="EditBox_ClearFocus"/>
@@ -1520,9 +1244,7 @@
 			<EditBox name="CalendarMassInviteMaxLevelEdit" numeric="true" letters="3" inherits="InputBoxTemplate" autoFocus="false">
 				<Size x="25" y="20"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="97" y="-122"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="97" y="-122"/>
 				</Anchors>
 				<Scripts>
 					<OnEnterPressed function="EditBox_ClearFocus"/>
@@ -1536,16 +1258,12 @@
 			</EditBox>
 			<Frame name="CalendarMassInviteRankMenu" inherits="UIDropDownMenuTemplate" clampedToScreen="true">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="149" y="-118"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="149" y="-118"/>
 				</Anchors>
 			</Frame>
 			<Button name="CalendarMassInviteAcceptButton" inherits="CalendarEventButtonTemplate" text="ACCEPT">
 				<Anchors>
-					<Anchor point="TOP">
-						<Offset x="0" y="-160"/>
-					</Anchor>
+					<Anchor point="TOP" x="0" y="-160"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="CalendarMassInviteAcceptButton_OnClick"/>
@@ -1574,34 +1292,20 @@
 	-->
 	<Frame name="CalendarEventPickerFrame" inherits="CalendarModalDialogTemplate" parent="CalendarFrame" clampedToScreen="true" hidden="true">
 		<Size x="290" y="226"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentButtonBackground" file="Interface\Buttons\UI-Button-Borders">
 					<Size x="256" y="26"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset x="11" y="9"/>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset x="-11" y="9"/>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" x="11" y="9"/>
+						<Anchor point="BOTTOMRIGHT" x="-11" y="9"/>
 					</Anchors>
 					<TexCoords left="0.0" right="1.0" top="0.59375" bottom="1.0"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
 			<Frame name="CalendarEventPickerTitleFrame" inherits="CalendarTitleFrameTemplate">
 				<Scripts>
 					<OnLoad>
@@ -1612,9 +1316,7 @@
 			<ScrollFrame name="CalendarEventPickerScrollFrame" inherits="HybridScrollFrameTemplate">
 				<Size x="239" y="165"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="20" y="-26"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="20" y="-26"/>
 				</Anchors>
 				<Frames>
 					<Slider name="CalendarEventPickerScrollBar" inherits="HybridScrollBarTemplate">
@@ -1629,21 +1331,15 @@
 			</ScrollFrame>
 			<Button name="CalendarEventPickerCloseButton" inherits="CalendarEventButtonTemplate" text="CLOSE">
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset x="-11" y="12"/>
-					</Anchor>
+					<Anchor point="BOTTOMRIGHT" x="-11" y="12"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBorder" file="Interface\Buttons\UI-Button-Borders">
 							<Size x="106" y="26"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="-10" y="1"/>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset x="1" y="-3"/>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="-10" y="1"/>
+								<Anchor point="BOTTOMRIGHT" x="1" y="-3"/>
 							</Anchors>
 							<TexCoords left="0.58203125" right="1.0" top="0.0" bottom="0.40625"/>
 						</Texture>
@@ -1665,52 +1361,32 @@
 	<Frame name="CalendarTexturePickerFrame" inherits="CalendarModalDialogTemplate" parent="CalendarFrame" hidden="true">
 		<Size x="290" y="286"/>
 		<Anchors>
-			<Anchor point="TOPRIGHT">
-				<Offset x="0" y="-24"/>
-			</Anchor>
+			<Anchor point="TOPRIGHT" x="0" y="-24"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentButtonBackground" file="Interface\Buttons\UI-Button-Borders">
 					<Size x="256" y="26"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset x="11" y="9"/>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset x="-11" y="9"/>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" x="11" y="9"/>
+						<Anchor point="BOTTOMRIGHT" x="-11" y="9"/>
 					</Anchors>
 					<TexCoords left="0.0" right="1.0" top="0.59375" bottom="1.0"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
 			<Frame name="CalendarTexturePickerTitleFrame" inherits="CalendarTitleFrameTemplate"/>
 			<ScrollFrame name="CalendarTexturePickerScrollFrame" inherits="HybridScrollFrameTemplate">
 				<Size x="239" y="225"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="20" y="-26"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="20" y="-26"/>
 				</Anchors>
 				<Frames>
 					<Slider name="CalendarTexturePickerScrollBar" inherits="HybridScrollBarTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-								<Offset x="0" y="0"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="0"/>
 						</Anchors>
 					</Slider>
 				</Frames>
@@ -1720,21 +1396,15 @@
 			</ScrollFrame>
 			<Button name="CalendarTexturePickerCancelButton" inherits="CalendarEventButtonTemplate" text="CANCEL">
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset x="-11" y="12"/>
-					</Anchor>
+					<Anchor point="BOTTOMRIGHT" x="-11" y="12"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBorder" file="Interface\Buttons\UI-Button-Borders">
 							<Size x="106" y="26"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="-10" y="1"/>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset x="1" y="-3"/>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="-10" y="1"/>
+								<Anchor point="BOTTOMRIGHT" x="1" y="-3"/>
 							</Anchors>
 							<TexCoords left="0.58203125" right="1.0" top="0.0" bottom="0.40625"/>
 						</Texture>
@@ -1746,21 +1416,15 @@
 			</Button>
 			<Button name="CalendarTexturePickerAcceptButton" inherits="CalendarEventButtonTemplate" text="ACCEPT">
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="CalendarTexturePickerCancelButton" relativePoint="LEFT">
-						<Offset x="-3" y="0"/>
-					</Anchor>
+					<Anchor point="RIGHT" relativeTo="CalendarTexturePickerCancelButton" relativePoint="LEFT" x="-3" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBorder" file="Interface\Buttons\UI-Button-Borders">
 							<Size x="106" y="26"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="-10" y="1"/>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset x="1" y="-3"/>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="-10" y="1"/>
+								<Anchor point="BOTTOMRIGHT" x="1" y="-3"/>
 							</Anchors>
 							<TexCoords left="0.58203125" right="1.0" top="0.0" bottom="0.40625"/>
 						</Texture>
@@ -1785,10 +1449,7 @@
 		 scripts at the appropriate times (e.g. when a modal dialog is up).
 	-->
 	<Frame name="CalendarClassButtonContainer" parent="CalendarFrame" hidden="true">
-		<Size x="18" y="270"/>
-		<Anchors>
-			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT"/>
-		</Anchors>
+		<Size x="24" y="535"/>
 		<Frames>
 			<Button name="CalendarClassTotalsButton">
 				<Size x="20" y="10"/>
@@ -1797,9 +1458,7 @@
 						<Texture name="$parentBackgroundMiddle" file="Interface\SpellBook\SpellBook-SkillLineTab">
 							<Size x="26" y="8"/>
 							<Anchors>
-								<Anchor point="LEFT">
-									<Offset x="-2" y="0"/>
-								</Anchor>
+								<Anchor point="LEFT" x="-2" y="0"/>
 							</Anchors>
 							<TexCoords left="0.0" right="0.625" top="0.21875" bottom="0.640625"/>
 						</Texture>

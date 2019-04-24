@@ -5,36 +5,36 @@
 		 Patchwerks
 	 -->
 	<Texture name="productchoice-icon-checkmark" file="Interface\FriendsFrame\Raf_Textures" virtual="true" >
-		<Size x="27" y="27"/>	
-		<TexCoords left="0.00195313" right="0.05468750" top="0.00195313" bottom="0.05468750"/>	
+		<Size x="27" y="27"/>
+		<TexCoords left="0.00195313" right="0.05468750" top="0.00195313" bottom="0.05468750"/>
 	</Texture>
 	<Texture name="productchoice-icon-magnifyingglass" file="Interface\FriendsFrame\Raf_Textures" virtual="true" >
-		<Size x="29" y="33"/>	
-		<TexCoords left="0.00195313" right="0.05859375" top="0.05859375" bottom="0.12304688"/>	
+		<Size x="29" y="33"/>
+		<TexCoords left="0.00195313" right="0.05859375" top="0.05859375" bottom="0.12304688"/>
 	</Texture>
 	<Texture name="productchoice-itemicon-border" file="Interface\FriendsFrame\Raf_Textures" virtual="true" >
-		<Size x="78" y="78"/>	
-		<TexCoords left="0.06250000" right="0.21484375" top="0.05859375" bottom="0.21093750"/>	
+		<Size x="78" y="78"/>
+		<TexCoords left="0.06250000" right="0.21484375" top="0.05859375" bottom="0.21093750"/>
 	</Texture>
 	<Texture name="productchoice-card-petshadow" file="Interface\FriendsFrame\Raf_Textures" virtual="true" >
-		<Size x="138" y="72"/>	
-		<TexCoords left="0.21875000" right="0.48828125" top="0.05859375" bottom="0.19921875"/>	
+		<Size x="138" y="72"/>
+		<TexCoords left="0.21875000" right="0.48828125" top="0.05859375" bottom="0.19921875"/>
 	</Texture>
 	<Texture name="productchoice-toast" file="Interface\FriendsFrame\Raf_Textures" virtual="true" >
-		<Size x="294" y="84"/>	
-		<TexCoords left="0.06250000" right="0.63671875" top="0.21484375" bottom="0.37890625"/>	
+		<Size x="294" y="84"/>
+		<TexCoords left="0.06250000" right="0.63671875" top="0.21484375" bottom="0.37890625"/>
 	</Texture>
 	<Texture name="productchoice-card-hover" file="Interface\FriendsFrame\Raf_Textures" virtual="true" >
-		<Size x="138" y="201"/>	
-		<TexCoords left="0.06250000" right="0.33203125" top="0.38281250" bottom="0.77539063"/>	
+		<Size x="138" y="201"/>
+		<TexCoords left="0.06250000" right="0.33203125" top="0.38281250" bottom="0.77539063"/>
 	</Texture>
 	<Texture name="productchoice-card-selected" file="Interface\FriendsFrame\Raf_Textures" virtual="true" >
-		<Size x="138" y="201"/>	
-		<TexCoords left="0.33593750" right="0.60546875" top="0.38281250" bottom="0.77539063"/>	
+		<Size x="138" y="201"/>
+		<TexCoords left="0.33593750" right="0.60546875" top="0.38281250" bottom="0.77539063"/>
 	</Texture>
 	<Texture name="productchoice-card" file="Interface\FriendsFrame\Raf_Textures" virtual="true" >
-		<Size x="146" y="209"/>	
-		<TexCoords left="0.60937500" right="0.89453125" top="0.38281250" bottom="0.79101563"/>	
+		<Size x="146" y="209"/>
+		<TexCoords left="0.60937500" right="0.89453125" top="0.38281250" bottom="0.79101563"/>
 	</Texture>
 	<!--
 		End Patchwerks
@@ -188,17 +188,6 @@
 								<Anchors>
 									<Anchor point="CENTER"/>
 								</Anchors>
-								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-									<BackgroundInsets>
-										<AbsInset left="11" right="12" top="12" bottom="11"/>
-									</BackgroundInsets>
-									<TileSize>
-										<AbsValue val="32"/>
-									</TileSize>
-									<EdgeSize>
-										<AbsValue val="32"/>
-									</EdgeSize>
-								</Backdrop>
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString parentKey="Text" inherits="GameFontHighlight" text="PRODUCT_CHOICE_NO_TAKE_BACKSIES">
@@ -210,6 +199,7 @@
 									</Layer>
 								</Layers>
 								<Frames>
+									<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 									<Frame parentKey="ItemPreview" inherits="ProductChoiceItemDisplayTemplate">
 										<Anchors>
 											<Anchor point="BOTTOM" x="0" y="60"/>

@@ -4,11 +4,6 @@
 	
 	<Frame name="ClubsRecruitmentDialogTemplate" enableMouse="true" frameStrata="DIALOG" mixin="ClubsRecruitmentDialogMixin" virtual="true">
 		<Size x="400" y="450"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets left="11" right="11" top="11" bottom="11"/>
-			<TileSize val="32"/>
-			<EdgeSize val="32"/>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="DialogLabel" text="GUILD_RECRUITMENT" inherits="GameFontHighlightMedium">
@@ -20,6 +15,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="BG" inherits="DialogBorderDarkTemplate"/>
 			<Frame parentKey="ShouldListClub">
 				<Size x="300" y="32"/>
 				<Anchors>
@@ -288,11 +284,6 @@
 	
 	<Frame name="ClubFinderRequestToJoinTemplate" enableMouse="true" frameStrata="DIALOG" mixin="ClubFinderRequestToJoinMixin" virtual="true">
 		<Size x="400" y="420"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets left="11" right="11" top="11" bottom="11"/>
-			<TileSize val="32"/>
-			<EdgeSize val="32"/>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="DialogLabel" text="CLUB_FINDER_REQUEST_TO_JOIN" inherits="GameFontHighlightMedium">
@@ -322,6 +313,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="BG" inherits="DialogBorderDarkTemplate"/>
 			<Frame parentKey="MessageFrame">
 				<Size x="335" y="80"/>
 				<Anchors>

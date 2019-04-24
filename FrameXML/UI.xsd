@@ -898,6 +898,7 @@
 				<xs:attribute name="font" type="xs:string"/>
 				<xs:attribute name="file" type="xs:string"/>
 				<xs:attribute name="hyperlinkFormat" type="xs:string" default="|H%s|h%s|h"/>
+				<xs:attribute name="resizeToFitContents" type="xs:boolean" default="false"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

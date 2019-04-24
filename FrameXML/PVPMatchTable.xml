@@ -67,12 +67,16 @@
 	</Frame>
   <Button name="PVPCellNameTemplate" mixin="PVPCellNameMixin" inherits="PVPStringTemplate" parentKey="cell" registerForClicks="LeftButtonUp,RightButtonUp" enableMouse="true" virtual="true">
     <Scripts>
-      <OnClick method="OnClick"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
     </Scripts>
   </Button>
-	<Frame name="PVPCellStringTemplate" mixin="PVPCellStringMixin" inherits="PVPStringTemplate" parentKey="cell" enableMouse="true" virtual="true"/>
+  <Button name="PVPCellStringTemplate" mixin="PVPCellStringMixin" inherits="PVPStringTemplate" parentKey="cell" enableMouse="true" virtual="true">
+    <Scripts>
+      <OnEnter method="OnEnter"/>
+      <OnLeave method="OnLeave"/>
+    </Scripts>
+  </Button>
   <Frame name="PVPCellStatTemplate" mixin="PVPCellStatMixin" inherits="PVPStringTemplate" parentKey="cell" enableMouse="true" virtual="true"/>
   <Button name="PVPHeaderStringTemplate" mixin="PVPHeaderStringMixin" inherits="PVPStringTemplate" parentKey="header" enableMouse="true" virtual="true">
     <Scripts>

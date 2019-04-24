@@ -30,6 +30,7 @@ end
 BaseLayoutMixin = {};
 
 function BaseLayoutMixin:OnLoad()
+	self.isLayoutFrame = true;
 end
 
 function BaseLayoutMixin:AddLayoutChildren(layoutChildren, ...)
@@ -71,12 +72,22 @@ end
 function BaseLayoutMixin:OnUpdate()
 	if self:IsDirty() then
 		self:Layout();
-		self:MarkClean();
 	end
 end
 
 function BaseLayoutMixin:MarkDirty()
 	self.dirty = true;
+
+	-- Tell any ancestors who may also be LayoutFrames that they should also become dirty
+	local parent = self:GetParent();
+	while parent do
+		if parent.isLayoutFrame then
+			parent:MarkDirty();
+			return;
+		end
+
+		parent = parent:GetParent();
+	end
 end
 
 function BaseLayoutMixin:MarkClean()
@@ -142,6 +153,7 @@ function LayoutMixin:Layout()
 	end
 
 	self:SetSize(frameWidth, frameHeight);
+	self:MarkClean();
 end
 
 --------------------------------------------------------------------------------
@@ -158,6 +170,10 @@ function VerticalLayoutMixin:LayoutChildren(children, expandToWidth)
 
 	-- Calculate width and height based on children
 	for i, child in ipairs(children) do
+		if child.isLayoutFrame then
+			child:Layout();
+		end
+
 		local childWidth, childHeight = child:GetSize();
 		local leftPadding, rightPadding, topPadding, bottomPadding = self:GetPadding(child);
 		if (child.expand) then
@@ -209,6 +225,10 @@ function HorizontalLayoutMixin:LayoutChildren(children, ignored, expandToHeight)
 
 	-- Calculate width and height based on children
 	for i, child in ipairs(children) do
+		if child.isLayoutFrame then
+			child:Layout();
+		end
+
 		local childWidth, childHeight = child:GetSize();
 		local leftPadding, rightPadding, topPadding, bottomPadding = self:GetPadding(child);
 		if (child.expand) then
@@ -270,23 +290,8 @@ local function GetSize(desired, fixed, minimum, maximum)
 end
 
 function ResizeLayoutMixin:OnLoad()
+	BaseLayoutMixin.OnLoad(self);
 	self.ignoreLayoutIndex = true;
-	self.isResizeFrame = true;
-end
-
-function ResizeLayoutMixin:MarkDirty()
-	BaseLayoutMixin.MarkDirty(self);
-
-	-- Tell any ancestors who may also be ResizeLayoutFrames that they should also become dirty
-	local parent = self:GetParent();
-	while parent do
-		if parent.isResizeFrame then
-			parent:MarkDirty();
-			return;
-		end
-
-		parent = parent:GetParent();
-	end
 end
 
 function ResizeLayoutMixin:Layout()
@@ -302,9 +307,8 @@ function ResizeLayoutMixin:Layout()
 	local left, right, top, bottom;
 	local layoutFrameScale = self:GetEffectiveScale();
 	for childIndex, child in ipairs(self:GetLayoutChildren()) do
-		if child.isResizeFrame then
+		if child.isLayoutFrame then
 			child:Layout();
-			child:MarkClean();
 		end
 
 		left, right, top, bottom = GetExtents(child, left, right, top, bottom, layoutFrameScale);
@@ -319,4 +323,6 @@ function ResizeLayoutMixin:Layout()
 	if hadNoAnchors then
 		self:ClearAllPoints();
 	end
+
+	self:MarkClean();
 end

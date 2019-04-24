@@ -16,6 +16,7 @@ LEVEL_UP_EVENTS = {
 	[10] = {"SpecializationUnlocked", "BGsUnlocked"},
 	[15] = {"TalentsUnlocked","LFDUnlocked"},
 	[20]= {"PvpTalentsUnlocked"},
+	[100]= {"MountEquipmentUnlocked"},
 }
 
 SUBICON_TEXCOOR_BOOK 	= {0.64257813, 0.72070313, 0.03710938, 0.11132813};
@@ -124,6 +125,13 @@ LEVEL_UP_TYPES = {
 										text=TALENT_POINTS,
 										subText=LEVEL_UP_FEATURE,
 										link=LEVEL_UP_FEATURE2..LEVEL_UP_TALENTS_LINK
+									},
+
+	["MountEquipmentUnlocked"] 	= 	{	icon="Interface\\Icons\\inv_blacksmith_leystonehoofplates_orange",
+										subIcon=SUBICON_TEXCOOR_LOCK,
+										text=MOUNT_EQUIPMENT_LEVEL_UP_FEATURE,
+										subText=LEVEL_UP_FEATURE,
+										link=LEVEL_UP_FEATURE2.." "..LEVEL_UP_MOUNT_EQUIPMENT_LINK
 									},
 
 	["BGsUnlocked"] 			= 	{	icon="Interface\\Icons\\Ability_DualWield",

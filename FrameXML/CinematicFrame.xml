@@ -60,22 +60,8 @@
 					<Anchor point="TOP" x="0" y="-20"/>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentCloseDialog" parentKey="closeDialog">
+			<Frame name="$parentCloseDialog" parentKey="closeDialog" inherits="DialogBorderTemplate">
 				<Size x="320" y="84"/>
-				<Anchors>
-					<Anchor point="CENTER"/>
-				</Anchors>
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentText" inherits="GameFontHighlight" text="CONFIRM_CLOSE_CINEMATIC">
@@ -101,7 +87,7 @@
 							<OnClick>
 								CinematicFrame_CancelCinematic();
 							</OnClick>
-						</Scripts>	
+						</Scripts>
 					</Button>
 					<Button name="$parentResumeButton" inherits="CinematicDialogButtonTemplate" text="NO">
 						<Anchors>
@@ -111,7 +97,7 @@
 							<OnClick>
 								self:GetParent():Hide();
 							</OnClick>
-						</Scripts>	
+						</Scripts>
 					</Button>
 				</Frames>
 				<Scripts>

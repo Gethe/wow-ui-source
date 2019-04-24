@@ -1,19 +1,10 @@
-
 local STANDARD_SIZE_TEXT_WIDTH = 196;
 local STANDARD_SIZE_WIDTH = 240;
 
 local WIDE_SIZE_TEXT_WIDTH = 356;
 local WIDE_SIZE_WIDTH = 501;
 
-local SOLO_OPTION_WIDTH = 500;
-
-local HEADER_SHOWN_ARTWORK_OFFSET_Y = -38;
-local HEADER_SHOWN_STATIC_HEIGHT = 220;
-
-local HEADER_HIDDEN_ARTWORK_OFFSET_Y = -19;
-local HEADER_HIDDEN_STATIC_HEIGHT = 299;
-
-local HEADERS_SHOWN_TOP_PADDING = 123;
+local HEADERS_SHOWN_TOP_PADDING = 185;
 local HEADERS_HIDDEN_TOP_PADDING = 150;
 
 WarboardQuestChoiceFrameMixin = CreateFromMixins(QuestChoiceFrameMixin);
@@ -135,10 +126,7 @@ end
 
 function WarboardQuestChoiceFrameMixin:OnLoad()
 	self.QuestionText = self.Title.Text;
-	self.initOptionHeight = 439;
-	self.initWindowHeight = 549;
-	self.initOptionBackgroundHeight = 439;
-	self.initOptionHeaderTextHeight = 0;
+	self.initOptionHeight = 370;
 
 	QuestChoiceFrameMixin.OnLoad(self);
 end
@@ -181,18 +169,12 @@ function WarboardQuestChoiceFrameMixin:TryShow()
 	QuestChoiceFrameMixin.TryShow(self);
 end
 
-function WarboardQuestChoiceFrameMixin:OnHeightChanged(heightDiff)
-	for _, option in pairs(self.Options) do
-		option.Background:SetHeight(self.initOptionBackgroundHeight + heightDiff);
-	end
-end
-
 function WarboardQuestChoiceFrameMixin:Update()
 	QuestChoiceFrameMixin.Update(self);
 
 	local hasHeaders = false;
-	local numOptions = self:GetNumOptions();
-	for i = 1, numOptions do
+	local lastActiveOption;
+	for i = 1, self.numActiveOptions do
 		local option = self.Options[i];
 		option.Artwork:SetDesaturated(option.hasDesaturatedArt);
 		option.ArtworkBorder:SetShown(not option.hasDesaturatedArt);
@@ -206,23 +188,21 @@ function WarboardQuestChoiceFrameMixin:Update()
 		else
 			option:SetupTextureKits(option.SubHeader, contentSubHeaderTextureKitRegions);
 		end
+		lastActiveOption = option;
 	end
 
-	-- resize solo options of standard size
-	local lastOption = self.Options[numOptions];
-	if numOptions == 1 and not lastOption.isWide then
-		lastOption:SetWidth(SOLO_OPTION_WIDTH);
-	end
 	-- title needs to reach across
-	self.Title:SetPoint("RIGHT", lastOption, "RIGHT", 3, 0);
+	if lastActiveOption then
+		self.Title:SetPoint("RIGHT", lastActiveOption, "RIGHT", 15, 0);
+	end
 
 	if hasHeaders then
-		self.topPadding = HEADERS_HIDDEN_TOP_PADDING;
-	else
 		self.topPadding = HEADERS_SHOWN_TOP_PADDING;
+	else
+		self.topPadding = HEADERS_HIDDEN_TOP_PADDING;
 	end
 
-	self:Layout();
+	self:MarkDirty();
 
 	local showWarfrontHelpbox = false;
 	if C_Scenario.IsInScenario() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARFRONT_CONSTRUCTION) then
@@ -239,61 +219,40 @@ end
 
 WarboardQuestChoiceOptionFrameMixin = CreateFromMixins(QuestChoiceOptionFrameMixin);
 
-function WarboardQuestChoiceOptionFrameMixin:ConfigureButtons()
-	local parent = self:GetParent();
-	local secondButton = self.OptionButtonsContainer.OptionButton2;
-	if self.hasMultipleButtons then
-		secondButton:Show();
-		secondButton:ClearAllPoints();
-		local firstButton = self.OptionButtonsContainer.OptionButton1;
-		if self:GetParent():GetNumOptions() == 1 then
-			self.OptionButtonsContainer:SetSize(parent.optionButtonWidth * 2 + parent.optionButtonHorizontalSpacing, parent.optionButtonHeight);
-			secondButton:SetPoint("LEFT", firstButton, "RIGHT", parent.optionButtonHorizontalSpacing, 0);
-			self:SetToWideSize();
-		else
-			self.OptionButtonsContainer:SetSize(parent.optionButtonWidth, parent.optionButtonHeight * 2 + parent.optionButtonVerticalSpacing);
-			secondButton:SetPoint("TOP", firstButton, "BOTTOM", 0, -parent.optionButtonVerticalSpacing);
-			self:SetToStandardSize();
-		end
+-- If there is only 1 option use a wider size
+function WarboardQuestChoiceOptionFrameMixin:UpdateOptionSize()
+	if self:GetParent():GetNumOptions() == 1 then
+		self:SetToWideSize();
 	else
-		if self:GetParent():GetNumOptions() == 1 then
-			self:SetToWideSize();
-		else
-			self:SetToStandardSize();
-		end
-		secondButton:Hide();
-		self.OptionButtonsContainer:SetSize(parent.optionButtonWidth, parent.optionButtonHeight);
+		self:SetToStandardSize();
 	end
-end
-
-function WarboardQuestChoiceOptionFrameMixin:SetupTextureKits(frame, regions)
-	self:GetParent():SetupTextureKits(frame, regions);
 end
 
 function WarboardQuestChoiceOptionFrameMixin:SetToStandardSize()
 	self:SetupTextureKits(self, standardSizeTextureKitRegions);
 	self.OptionText:SetWidth(STANDARD_SIZE_TEXT_WIDTH);
-	self:SetWidth(STANDARD_SIZE_WIDTH);
-	self.isWide = false;
+	self.fixedWidth = STANDARD_SIZE_WIDTH;
 end
 
 function WarboardQuestChoiceOptionFrameMixin:SetToWideSize()
 	self:SetupTextureKits(self, wideSizeTextureKitRegions);
 	self.OptionText:SetWidth(WIDE_SIZE_TEXT_WIDTH);
-	self:SetWidth(WIDE_SIZE_WIDTH);
-	self.isWide = true;
+	self.fixedWidth = WIDE_SIZE_WIDTH;
 end
 
-function WarboardQuestChoiceOptionFrameMixin:ConfigureHeader(header, headerIconAtlasElement)
-	QuestChoiceOptionFrameMixin.ConfigureHeader(self, header, headerIconAtlasElement);
-
-	if self.Header:IsShown() then
-		self.ArtworkBorder:SetPoint("TOP", 0, HEADER_SHOWN_ARTWORK_OFFSET_Y);
-		self:GetParent().optionStaticHeight = HEADER_SHOWN_STATIC_HEIGHT;
+-- If there is only 1 option align the buttons horizontally. Otherwise align vertically
+function WarboardQuestChoiceOptionFrameMixin:UpdateSecondButtonAnchors()
+	local button = self.OptionButtonsContainer.OptionButton2;
+	button:ClearAllPoints();
+	if self:GetParent():GetNumOptions() == 1 then
+		button:SetPoint("LEFT", self.OptionButtonsContainer.OptionButton1, "RIGHT", 40, 0);
 	else
-		self.ArtworkBorder:SetPoint("TOP", 0, HEADER_HIDDEN_ARTWORK_OFFSET_Y);
-		self:GetParent().optionStaticHeight = HEADER_HIDDEN_STATIC_HEIGHT;
+		button:SetPoint("TOP", self.OptionButtonsContainer.OptionButton1, "BOTTOM", 0, -8);
 	end
+end
+
+function WarboardQuestChoiceOptionFrameMixin:SetupTextureKits(frame, regions)
+	self:GetParent():SetupTextureKits(frame, regions);
 end
 
 function WarboardQuestChoiceOptionFrameMixin:ConfigureSubHeader(subHeader)
@@ -305,4 +264,8 @@ function WarboardQuestChoiceOptionFrameMixin:ConfigureSubHeader(subHeader)
 		self.SubHeader:Hide();
 		self.OptionText:SetPoint("TOP", self.ArtworkBorder, "BOTTOM", 0, -12);
 	end
+end
+
+function WarboardQuestChoiceOptionFrameMixin:GetPaddingFrame()
+	return self.WidgetContainer;
 end

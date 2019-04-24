@@ -152,7 +152,7 @@ local MountJournal =
 			},
 		},
 		{
-			Name = "GetMountEquipmentLevelRequirement",
+			Name = "GetMountEquipmentUnlockLevel",
 			Type = "Function",
 
 			Returns =
@@ -306,6 +306,15 @@ local MountJournal =
 			Returns =
 			{
 				{ Name = "isApplied", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsMountEquipmentUnlocked",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isUnlocked", Type = "bool", Nilable = false },
 			},
 		},
 		{

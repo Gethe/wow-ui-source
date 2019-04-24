@@ -11,7 +11,7 @@ WORLD_QUEST_TYPE_DUNGEON_TYPES = {
 }
 
 WorldQuestsSecondsFormatter = CreateFromMixins(SecondsFormatterMixin);
-WorldQuestsSecondsFormatter:OnLoad(SECONDS_PER_MIN, SecondsFormatter.Abbreviation.None, false);
+WorldQuestsSecondsFormatter:Init(SECONDS_PER_MIN, SecondsFormatter.Abbreviation.None, false);
 
 function WorldQuestsSecondsFormatter:GetDesiredUnitCount(seconds)
 	return seconds > SECONDS_PER_DAY and 2 or 1;

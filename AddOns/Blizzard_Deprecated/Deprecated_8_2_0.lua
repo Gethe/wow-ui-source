@@ -13,3 +13,10 @@ do
 	-- Use C_PvP.IsRatedMap() instead
 	IsRatedMap =  C_PvP.IsRatedMap;
 end
+
+-- Report system update
+do
+	--C_ChatInfo.ReportPlayer is no longer supported, addons must use C_ReportSystem.OpenReportPlayerDialog(complaintType, reportedPlayerName, reportedPlayerLocation) now
+	C_ChatInfo.ReportPlayer = function(complaintType, playerLocation, comment)
+	end
+end

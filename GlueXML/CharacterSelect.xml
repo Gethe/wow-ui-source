@@ -1615,17 +1615,6 @@
 										<Anchors>
 											<Anchor point="CENTER" x="0" y="0"/>
 										</Anchors>
-										<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-											<BackgroundInsets>
-												<AbsInset left="11" right="12" top="12" bottom="11"/>
-											</BackgroundInsets>
-											<TileSize>
-												<AbsValue val="32"/>
-											</TileSize>
-											<EdgeSize>
-												<AbsValue val="32"/>
-											</EdgeSize>
-										</Backdrop>
 										<Layers>
 											<Layer level="ARTWORK">
 												<FontString parentKey="Text" inherits="GameFontNormalMed2" text="CHARACTER_UPGRADE_KRW_FINISH_BUTTON_POPUP_TEXT">
@@ -1638,6 +1627,7 @@
 											</Layer>
 										</Layers>
 										<Frames>
+											<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 											<Button parentKey="ConfirmButton" inherits="GlueButtonSmallTemplate" text="CHARACTER_UPGRADE_FINISH_LABEL">
 												<Size x="160" y="34"/>
 												<Anchors>
@@ -2036,17 +2026,6 @@
                         <Anchors>
                             <Anchor point="CENTER" x="0" y="140"/>
                         </Anchors>
-                        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-                            <BackgroundInsets>
-                                <AbsInset left="11" right="12" top="12" bottom="11"/>
-                            </BackgroundInsets>
-                            <TileSize>
-                                <AbsValue val="32"/>
-                            </TileSize>
-                            <EdgeSize>
-                                <AbsValue val="32"/>
-                            </EdgeSize>
-                        </Backdrop>
                         <Layers>
                             <Layer level="ARTWORK">
                                 <FontString parentKey="Confirmation" inherits="GameFontNormalMed2" text="CONVERT_CONFIRMATION">
@@ -2065,6 +2044,7 @@
                             </Layer>
                         </Layers>
                         <Frames>
+                        	<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
                             <Button parentKey="ConfirmButton" inherits="GlueButtonSmallTemplate" text="ACCEPT_GLUE">
                                 <Size x="130" y="38"/>
                                 <Anchors>
@@ -2097,18 +2077,8 @@
                         <Anchors>
                             <Anchor point="CENTER" x="0" y="140"/>
                         </Anchors>
-                        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-                            <BackgroundInsets>
-                                <AbsInset left="11" right="12" top="12" bottom="10"/>
-                            </BackgroundInsets>
-                            <TileSize>
-                                <AbsValue val="32"/>
-                            </TileSize>
-                            <EdgeSize>
-                                <AbsValue val="32"/>
-                            </EdgeSize>
-                        </Backdrop>
                         <Frames>
+                        	<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
                             <Frame parentKey="Spinner" inherits="LoadingSpinnerTemplate">
                                 <Anchors>
                                     <Anchor point="TOP" x="0" y="-10" />
@@ -2262,17 +2232,6 @@
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="CharacterDeleteText1" inherits="GlueFontNormalLarge">
@@ -2296,6 +2255,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="BG" inherits="DialogBorderTemplate"/>
 					<Button name="CharacterDeleteButton1" inherits="GlueDialogButtonTemplate" id="1" text="OKAY">
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeTo="CharacterDeleteBackground" relativePoint="BOTTOM">
@@ -2387,17 +2347,6 @@
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="CharacterRenameText1" inherits="GlueFontNormalLarge" text="CHAR_RENAME_DESCRIPTION">
@@ -2421,6 +2370,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 					<Button name="CharacterRenameButton1" inherits="GlueDialogButtonTemplate" id="1" text="OKAY">
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeTo="CharacterRenameBackground" relativePoint="BOTTOM" x="-6" y="16"/>

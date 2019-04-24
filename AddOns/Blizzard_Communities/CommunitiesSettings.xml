@@ -7,11 +7,6 @@
 		<Anchors>
 			<Anchor point="TOP" relativeTo="UIParent" x="0" y="-80"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets left="11" right="11" top="11" bottom="11"/>
-			<TileSize val="32"/>
-			<EdgeSize val="32"/>
-		</Backdrop>
 		<Layers>
 			<Layer level="BORDER">
 				<FontString parentKey="DialogLabel" inherits="GameFontHighlight" text="COMMUNITIES_SETTINGS_LABEL">
@@ -71,6 +66,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="BG" inherits="DialogBorderDarkTemplate"/>
 			<EditBox parentKey="NameEdit" inherits="InputBoxTemplate" autoFocus="false" letters="50">
 				<Size x="0" y="22"/>
 					<Anchors>

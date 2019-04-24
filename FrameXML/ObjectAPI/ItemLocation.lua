@@ -57,6 +57,10 @@ function ItemLocationMixin:HasAnyLocation()
 	return self:IsEquipmentSlot() or self:IsBagAndSlot();
 end
 
+function ItemLocationMixin:IsValid()
+	return C_Item.DoesItemExist(self);
+end
+
 function ItemLocationMixin:IsEqualToBagAndSlot(otherBagID, otherSlotIndex)
 	local bagID, slotIndex = self:GetBagAndSlot();
 	if bagID and slotIndex then

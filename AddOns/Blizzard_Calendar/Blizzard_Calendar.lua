@@ -2143,7 +2143,7 @@ function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
 		-- add guild selections if the player has a guild
 		if ( IsInGuild() ) then
 			UIMenu_AddButton(self, CALENDAR_CREATE_GUILD_EVENT, nil, CalendarDayContextMenu_CreateGuildEvent);
-			
+
 			if ( CanEditGuildEvent() ) then
 				UIMenu_AddButton(self, CALENDAR_CREATE_GUILD_ANNOUNCEMENT, nil, CalendarDayContextMenu_CreateGuildAnnouncement);
 			end
@@ -3656,7 +3656,7 @@ function CalendarCreateEventFrame_Update()
 					UIDropDownMenu_SetSelectedValue(CalendarCreateEventCommunityDropDown, nil);
 					UIDropDownMenu_SetText(CalendarCreateEventCommunityDropDown, CALENDER_INVITE_SELECT_COMMUNITY);
 				end
-			
+
 				CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_CREATE_COMMUNITY_EVENT);
 				CalendarCreateEventMassInviteButton:Hide();
 			else
@@ -5324,7 +5324,7 @@ function CalendarClassButtonContainer_Show(parent)
 	if ( CalendarClassButtonContainer:GetParent() ~= parent ) then
 		CalendarClassButtonContainer:SetParent(parent);
 		CalendarClassButtonContainer:ClearAllPoints();
-		CalendarClassButtonContainer:SetPoint("TOPLEFT", parent, "TOPRIGHT", -2, -30);
+		CalendarClassButtonContainer:SetPoint("TOPLEFT", parent, "TOPRIGHT", -4, -30);
 	end
 	CalendarClassButtonContainer:Show();
 	_CalendarFrame_UpdateClassData();

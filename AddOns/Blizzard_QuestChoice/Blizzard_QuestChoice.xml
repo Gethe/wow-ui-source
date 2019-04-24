@@ -20,6 +20,9 @@
 
 	<Button name="QuestChoiceOptionButtonTemplate" parentArray="Buttons" mixin="QuestChoiceOptionButtonMixin" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="175" y="22"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
 		<Scripts>
 			<OnClick method="OnClick"/>
 			<OnEnter method="OnEnter"/>
@@ -190,7 +193,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	<Button name="QuestChoiceOptionTemplate" mixin="QuestChoiceOptionFrameMixin" virtual="true">
+	<Button name="QuestChoiceOptionTemplate" inherits="ResizeLayoutFrame" mixin="QuestChoiceOptionFrameMixin" virtual="true">
 		<Size x="210" y="268"/>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -204,27 +207,9 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="OptionButtonsContainer">
-				<Size x="175" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOM"/>
-				</Anchors>
-				<Frames>
-					<Button parentKey="OptionButton1" inherits="QuestChoiceOptionButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPRIGHT"/>
-						</Anchors>
-					</Button>
-					<Button parentKey="OptionButton2" inherits="QuestChoiceOptionButtonTemplate"/>
-				</Frames>
-			</Frame>
-			<Frame parentKey="Rewards" inherits="QuestChoiceRewardsTemplate">
-				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.OptionButtonsContainer" relativePoint="TOP" y="5"/>
-				</Anchors>
-			</Frame>
 			<Frame parentKey="Header" inherits="HorizontalLayoutFrame" hidden="true">
 				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					<KeyValue key="fixedHeight" value="32" type="number"/>
 					<KeyValue key="spacing" value="5" type="number"/>
 				</KeyValues>
@@ -268,20 +253,27 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<SimpleHTML parentKey="OptionText" inherits="InlineHyperlinkFrameTemplate">
+			<SimpleHTML parentKey="OptionText" inherits="InlineHyperlinkFrameTemplate" resizeToFitContents="true">
 				<Size x="200" y="10"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.Artwork" relativePoint="BOTTOM" y="-8"/>
 				</Anchors>
-				<Scripts>
-					<OnSizeChanged>self:GetParent():GetParent():SetPendingUpdate();</OnSizeChanged>
-				</Scripts>
 				<FontString inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP"/>
 			</SimpleHTML>
-			<Frame parentKey="WidgetContainer" inherits="UIWidgetContainerTemplate" hidden="true">
+			<Frame parentKey="Rewards" inherits="QuestChoiceRewardsTemplate">
 				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.OptionButtonsContainer" relativePoint="TOP" y="5"/>
+					<Anchor point="TOP" relativeKey="$parent.OptionText" relativePoint="BOTTOM" y="-5"/>
 				</Anchors>
+			</Frame>
+			<Frame parentKey="OptionButtonsContainer">
+				<Size x="175" y="22"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Rewards" relativePoint="BOTTOM" y="-5"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="OptionButton1" inherits="QuestChoiceOptionButtonTemplate"/>
+					<Button parentKey="OptionButton2" inherits="QuestChoiceOptionButtonTemplate" hidden="true" />
+				</Frames>
 			</Frame>
 		</Frames>
 	</Button>
@@ -299,10 +291,6 @@
 			<KeyValue key="leftPadding" value="66" type="number"/>
 			<KeyValue key="rightPadding" value="66" type="number"/>
 			<KeyValue key="spacing" value="47" type="number"/>
-			<KeyValue key="optionButtonWidth" value="175" type="number"/>
-			<KeyValue key="optionButtonHeight" value="22" type="number"/>
-			<KeyValue key="optionButtonVerticalSpacing" value="8" type="number"/>
-			<KeyValue key="optionButtonHorizontalSpacing" value="40" type="number"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="BORDER">

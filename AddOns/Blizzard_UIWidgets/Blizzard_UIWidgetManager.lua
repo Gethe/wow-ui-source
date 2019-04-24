@@ -346,6 +346,9 @@ function UIWidgetContainerMixin:ProcessAllWidgets()
 
 	-- Animate out any widgets that are still marked for removal
 	self:AnimateOutAllMarkedWidgets();
+
+	-- Force call UpdateWidgetLayout because some containers rely on it being called right away
+	self:UpdateWidgetLayout();
 end
 
 local function SortWidgets(a, b)

@@ -17,80 +17,32 @@
 	</Button>
 
 	<Frame name="InterfaceOptionsFrame" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH">
-		<Size>
-			<AbsDimension x="858" y="660"/>
-		</Size>
+		<Size x="858" y="660"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="11" top="12" bottom="10"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Size>
-						<AbsDimension x="300" y="68"/>
-					</Size>
+					<Size x="300" y="68"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="12"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="12"/>
 					</Anchors>
 				</Texture>
 				<FontString name="$parentHeaderText" inherits="GameFontNormal" text="UIOPTIONS_MENU">
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentHeader">
-							<Offset>
-								<AbsDimension x="0" y="-14"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" relativeTo="$parentHeader" x="0" y="-14"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
-<!--
-			<Button name="$parentApply" inherits="UIPanelButtonTemplate" text="APPLY">
-				<Size>
-					<AbsDimension x="96" y="22"/>
-				</Size>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-16" y="16"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						InterfaceOptionsFrameOkay_OnClick(self, true);
-					</OnClick>
-				</Scripts>
-			</Button>
--->
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<Button name="$parentCancel" inherits="UIPanelButtonTemplate" text="CANCEL">
-				<Size>
-					<AbsDimension x="96" y="22"/>
-				</Size>
+				<Size x="96" y="22"/>
 				<Anchors>
-					<!--
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentApply" relativePoint="BOTTOMLEFT"/>
-					-->
 					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-16" y="16"/>
-						</Offset>
+						<Offset x="-16" y="16"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -98,9 +50,7 @@
 				</Scripts>
 			</Button>
 			<Button name="$parentOkay" inherits="UIPanelButtonTemplate" text="OKAY">
-				<Size>
-					<AbsDimension x="96" y="22"/>
-				</Size>
+				<Size x="96" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentCancel" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
@@ -109,29 +59,19 @@
 				</Scripts>
 			</Button>
 			<Button name="$parentDefaults" inherits="UIPanelButtonTemplate" text="DEFAULTS">
-				<Size>
-					<AbsDimension x="96" y="22"/>
-				</Size>
+				<Size x="96" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="16" y="16"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" x="16" y="16"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="InterfaceOptionsFrameDefaults_OnClick"/>
 				</Scripts>
 			</Button>
 			<Frame name="$parentCategories" inherits="OptionsFrameListTemplate">
-				<Size>
-					<AbsDimension x="175" y="569"/>
-				</Size>
+				<Size x="175" y="569"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="22" y="-40"/>
-						</Offset>
+						<Offset x="22" y="-40"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -143,15 +83,9 @@
 				</Scripts>
 			</Frame>
 			<Frame name="$parentAddOns" inherits="OptionsFrameListTemplate" hidden="true">
-				<Size>
-					<AbsDimension x="175" y="569"/>
-				</Size>
+				<Size x="175" y="569"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="22" y="-40"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="22" y="-40"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -164,19 +98,13 @@
 			<Frame name="$parentPanelContainer">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentCategories" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="16" y="0"/>
-						</Offset>
+						<Offset x="16" y="0"/>
 					</Anchor>
 					<Anchor point="BOTTOMLEFT" relativeTo="$parentCategories" relativePoint="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="16" y="1"/>
-						</Offset>
+						<Offset x="16" y="1"/>
 					</Anchor>
 					<Anchor point="RIGHT">
-						<Offset>
-							<AbsDimension x="-22" y="0"/>
-						</Offset>
+						<Offset x="-22" y="0"/>
 					</Anchor>
 				</Anchors>
 				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">

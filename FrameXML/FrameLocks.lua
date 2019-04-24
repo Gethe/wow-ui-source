@@ -26,7 +26,7 @@ local HIDE_MOST = {
 	ZoneAbilityFrame	= "hidden",
 	OrderHallCommandBar	= "hidden",
 	TalentMicroButtonAlert	="hidden",
-	WorldStateScoreFrame = "hidden",
+	PVPMatchScoreboard = "hidden",
 	PVPMatchResults = "hidden",
 	UIWidgetTopCenterContainerFrame = "hidden",
 }

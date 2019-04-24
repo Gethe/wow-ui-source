@@ -3,14 +3,14 @@ function CinematicFrame_OnDisplaySizeChanged(self)
 	if (self:IsShown()) then
 	  local width = CinematicFrame:GetWidth();
 	  local height = CinematicFrame:GetHeight();
-	  
+
 	  local desiredHeight = width / 2;
 	  if ( desiredHeight > height ) then
 		  desiredHeight = height;
 	  end
-	  
+
 	  local blackBarHeight = ( height - desiredHeight ) / 2;
-  
+
 	  UpperBlackBar:SetHeight( blackBarHeight );
 	  LowerBlackBar:SetHeight( blackBarHeight );
 	end
@@ -27,9 +27,8 @@ function CinematicFrame_OnLoad(self)
 	self:RegisterEvent("CHAT_MSG_YELL");
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-	
-	CinematicFrame.Subtitle1:SetFontObjectsToTry("GameFontHighlightLarge", "GameFontHighlightMedium", "GameFontHighlight", "GameFontHighlightSmall"); 
-	
+
+	CinematicFrame.Subtitle1:SetFontObjectsToTry("GameFontHighlightLarge", "GameFontHighlightMedium", "GameFontHighlight", "GameFontHighlightSmall");
 end
 
 function CinematicFrame_OnShow(self)
@@ -47,12 +46,12 @@ function CinematicFrame_OnEvent(self, event, ...)
 		self.closeDialog:Hide();
 		ShowUIPanel(self, 1);
 		RaidNotice_Clear(self.raidBossEmoteFrame);
-		
+
 		LowHealthFrame:EvaluateVisibleState();
 	elseif ( event == "CINEMATIC_STOP" ) then
 		HideUIPanel(self);
 		RaidNotice_Clear(RaidBossEmoteFrame);	--Clear the normal boss emote frame. If there are any messages left over from the cinematic, we don't want to show them.
-		
+
 		LowHealthFrame:EvaluateVisibleState();
 
 		MovieFrame_OnCinematicStopped();
@@ -69,7 +68,7 @@ function CinematicFrame_OnEvent(self, event, ...)
 			else
 				body = format(SUBTITLE_FORMAT, sender, message);
 			end
-				
+
 			local chatType = string.match(event, "CHAT_MSG_(.*)");
 			CinematicFrame_AddSubtitle(chatType, body);
 		end
@@ -90,13 +89,13 @@ function CinematicFrame_AddSubtitle(chatType, body)
 	end
 
 	if ( not fontString ) then
-		--Scroll everything up. 
+		--Scroll everything up.
 		for i=1, #CinematicFrame.Subtitles - 1 do
 			CinematicFrame.Subtitles[i]:SetText(CinematicFrame.Subtitles[i + 1]:GetText());
 		end
 		fontString = CinematicFrame.Subtitles[#CinematicFrame.Subtitles];
 	end
-	
+
 	fontString:SetText(body);
 	fontString:Show();
 end

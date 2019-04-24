@@ -71,17 +71,6 @@
 			<Anchor point="TOPLEFT" x="0" y="0"/>
 			<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="KoreanRatingsViolence" file="Interface\Glues\Login\Glues-KoreanRating-3">
@@ -116,6 +105,9 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+		</Frames>
 		<Scripts>
 			<OnLoad function="KoreanRatings_OnLoad"/>
 			<OnEvent function="KoreanRatings_OnEvent"/>
@@ -443,17 +435,6 @@
 								<Anchors>
 									<Anchor point="CENTER" x="0" y="-20"/>
 								</Anchors>
-								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-									<BackgroundInsets>
-										<AbsInset left="11" right="12" top="12" bottom="11"/>
-									</BackgroundInsets>
-									<TileSize>
-										<AbsValue val="32"/>
-									</TileSize>
-									<EdgeSize>
-										<AbsValue val="32"/>
-									</EdgeSize>
-								</Backdrop>
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString parentKey="Title" inherits="GlueFontNormal" text="WOW_ACCOUNTS">
@@ -469,6 +450,7 @@
 									</Layer>
 								</Layers>
 								<Frames>
+									<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 									<Frame parentKey="Container">
 										<Anchors>
 											<Anchor point="TOPLEFT" x="12" y="-52"/>
@@ -607,17 +589,6 @@
 								<Anchors>
 									<Anchor point="CENTER" x="0" y="-20"/>
 								</Anchors>
-								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-									<BackgroundInsets>
-										<AbsInset left="11" right="12" top="12" bottom="11"/>
-									</BackgroundInsets>
-									<TileSize>
-										<AbsValue val="32"/>
-									</TileSize>
-									<EdgeSize>
-										<AbsValue val="32"/>
-									</EdgeSize>
-								</Backdrop>
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString parentKey="Title" inherits="GlueFontNormal" text="ENTER_CAPTCHA_TITLE">
@@ -641,6 +612,7 @@
 									</Layer>
 								</Layers>
 								<Frames>
+									<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 									<EditBox parentKey="EditBox" letters="16">
 										<Size x="160" y="37"/>
 										<Anchors>
@@ -718,23 +690,10 @@
 						</Layers>
 						<Frames>
 							<Frame parentKey="Background">
-								<Size>
-									<AbsDimension x="372" y="200"/>
-								</Size>
+								<Size x="372" y="200"/>
 								<Anchors>
 									<Anchor point="CENTER" x="0" y="-20"/>
 								</Anchors>
-								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-									<BackgroundInsets>
-										<AbsInset left="11" right="12" top="12" bottom="11"/>
-									</BackgroundInsets>
-									<TileSize>
-										<AbsValue val="32"/>
-									</TileSize>
-									<EdgeSize>
-										<AbsValue val="32"/>
-									</EdgeSize>
-								</Backdrop>
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString parentKey="Title" inherits="GlueFontNormal" text="ENTER_AUTHCODE_TITLE">
@@ -750,6 +709,7 @@
 									</Layer>
 								</Layers>
 								<Frames>
+									<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 									<EditBox parentKey="EditBox" letters="16">
 										<Size x="160" y="37"/>
 										<Anchors>

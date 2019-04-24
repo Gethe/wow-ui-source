@@ -1013,8 +1013,8 @@
 		ToggleBattlefieldMap();
 	</Binding>
 	<Binding name="TOGGLEWORLDSTATESCORES" category="BINDING_HEADER_INTERFACE">
-		ToggleWorldStateScoreFrame();
-	</Binding>
+    PVPMatchUtil.ToggleScoreboardOrResults();
+  </Binding>
 
 	<Binding name="TOGGLEGUILDTAB" header="BLANK12" category="BINDING_HEADER_INTERFACE">
 		ToggleGuildFrame();

@@ -57,11 +57,11 @@ PVPCellClassMixin = CreateFromMixins(TableBuilderElementMixin);
 
 function PVPCellClassMixin:Populate(rowData, dataIndex)
 	local classToken = rowData.classToken;
-	if classToken then
-		local icon = self.icon;
-		icon:SetTexture("Interface\\WorldStateFrame\\Icons-Classes");
-		local coords = CLASS_ICON_TCOORDS[classToken];
+	local coords = classToken and CLASS_ICON_TCOORDS[classToken];
+	local icon = self.icon;
+	if coords then
 		icon:SetTexCoord(unpack(coords));
+		icon:SetTexture("Interface\\WorldStateFrame\\Icons-Classes");
 	end
 end
 
@@ -87,11 +87,9 @@ PVPCellHonorLevelMixin = CreateFromMixins(TableBuilderElementMixin);
 function PVPCellHonorLevelMixin:Populate(rowData, dataIndex)
 	local honorLevel = rowData.honorLevel;
 	if honorLevel then
-		-- No info until level 5.
 		local honorRewardInfo = C_PvP.GetHonorRewardInfo(honorLevel);
-		if honorRewardInfo then
-			self.icon:SetTexture(honorRewardInfo.badgeFileDataID or 0);
-		end
+		local fileID = honorRewardInfo and honorRewardInfo.badgeFileDataID;
+		self.icon:SetTexture(fileID);
 	end
 end
 
@@ -142,16 +140,42 @@ end
 
 PVPCellStringMixin = CreateFromMixins(TableBuilderElementMixin);
 
-function PVPCellStringMixin:Init(dataProviderKey, useAlternateColor)
+function PVPCellStringMixin:Init(dataProviderKey, useAlternateColor, isAbbreviated, hasTooltip)
 	self.dataProviderKey = dataProviderKey;
 	self.useAlternateColor = useAlternateColor;
+	self.isAbbreviated = isAbbreviated;
+	self.hasTooltip = hasTooltip;
 end
+
 function PVPCellStringMixin:Populate(rowData, dataIndex)
 	local value = rowData[self.dataProviderKey];
+	if self.isAbbreviated then
+		value = AbbreviateNumbers(value);
+	end
+
 	local text = self.text;
 	text:SetText(value);
 
 	FormatCellColor(text, rowData, self.useAlternateColor);
+end
+
+function PVPCellStringMixin:OnEnter()
+	if self.hasTooltip then
+		local value = self.rowData[self.dataProviderKey];
+		if value then
+			if type(value) == "number" then
+				value = BreakUpLargeNumbers(value);
+			end
+
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			GameTooltip_AddNormalLine(GameTooltip, value, true);
+			GameTooltip:Show();
+		end
+	end
+end
+
+function PVPCellStringMixin:OnLeave()
+	GameTooltip:Hide();
 end
 
 PVPCellNameMixin = CreateFromMixins(TableBuilderElementMixin);
@@ -182,10 +206,6 @@ end
 
 function PVPCellNameMixin:OnLeave()
 	GameTooltip:Hide();
-end
-
-function PVPCellNameMixin:OnClick(mouseButton)
--- 820FIXME IMPLEMENT NAME DROPDOWN
 end
 
 PVPCellStatMixin = CreateFromMixins(TableBuilderElementMixin);
@@ -259,15 +279,17 @@ function ConstructPVPMatchTable(tableBuilder, isRatedBG, isArena, isLFD, useAlte
 		column:ConstructCells("BUTTON", "PVPCellStringTemplate", "deaths", useAlternateColor);
 	end
 	
+	local isAbbreviated = true;
+	local hasTooltip = true;
 	column = tableBuilder:AddColumn();
 	column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_DAMAGE_DONE, "CENTER", "damage", DAMAGE_DONE_TOOLTIP);
 	column:ConstrainToHeader(textPadding);
-	column:ConstructCells("BUTTON", "PVPCellStringTemplate", "damageDone", useAlternateColor);
+	column:ConstructCells("BUTTON", "PVPCellStringTemplate", "damageDone", useAlternateColor, isAbbreviated, hasTooltip);
 
 	column = tableBuilder:AddColumn();
 	column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_HEALING_DONE, "CENTER", "healing", HEALING_DONE_TOOLTIP);
 	column:ConstrainToHeader(textPadding);
-	column:ConstructCells("BUTTON", "PVPCellStringTemplate", "healingDone", useAlternateColor);
+	column:ConstructCells("BUTTON", "PVPCellStringTemplate", "healingDone", useAlternateColor, isAbbreviated, hasTooltip);
 
 	if categories.rating then
 		column = tableBuilder:AddColumn();

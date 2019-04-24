@@ -4,7 +4,6 @@
 Blizzard_AzeriteEmpoweredItemUITemplates.xml
 
 AzeritePowerLayoutInfo.lua
-AzeritePowerModelInfo.lua
 
 AzeriteEmpoweredItemChannelMixin.lua
 AzeriteEmpoweredItemChannelMixin.xml

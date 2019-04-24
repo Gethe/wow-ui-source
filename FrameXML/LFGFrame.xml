@@ -35,7 +35,7 @@
 				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 			</CheckButton>
-			
+
 			<Frame parentKey="lockedIndicator" hidden="true">
 				<Size x="17" y="21"/>
 				<Anchors>
@@ -51,7 +51,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			
+
 			<Frame parentKey="alert" hidden="true">
 				<Size x="28" y="28"/>
 				<Anchors>
@@ -64,7 +64,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad function="RaiseFrameLevel"/>
-				</Scripts>					
+				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -267,17 +267,6 @@
 				<Anchors>
 					<Anchor point="TOP"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentLabel" inherits="GameFontHighlight" justifyH="CENTER" text="READY_CHECK">
@@ -288,6 +277,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 					<Button name="$parentCloseButton">
 						<Size x="32" y="32"/>
 						<Anchors>
@@ -382,17 +372,6 @@
 			</Frame>
 			<Frame name="LFGDungeonReadyDialog" setAllPoints="true" toplevel="true" enableMouse="true">
 				<Size x="306" y="193"/>
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
-				</Backdrop>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBackground" parentKey="background" file="Interface\LFGFrame\UI-LFG-BACKGROUND-RANDOMDUNGEON">
@@ -437,6 +416,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 					<Button name="$parentCloseButton">
 						<Size x="32" y="32"/>
 						<Anchors>
@@ -861,17 +841,6 @@
 
 	<Frame name="LFGInvitePopup" parent="UIParent" frameStrata="DIALOG" hidden="true">
 		<Size x="306" y="180"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentText" inherits="GameFontHighlight" justifyH="CENTER">
@@ -889,6 +858,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonTemplate" parentArray="RoleButtons" id="1">
 				<Size x="70" y="70"/>
 				<KeyValues>

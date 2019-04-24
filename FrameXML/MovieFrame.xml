@@ -23,17 +23,6 @@
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString inherits="GameFontHighlight" text="CONFIRM_CLOSE_CINEMATIC">
@@ -45,14 +34,15 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 					<Button parentKey="ConfirmButton" inherits="CinematicDialogButtonTemplate" text="YES">
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-6" y="16"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
-                MovieFrame_OnMovieFinished(self:GetParent():GetParent());
-              </OnClick>
+                				MovieFrame_OnMovieFinished(self:GetParent():GetParent());
+              				</OnClick>
 						</Scripts>
 					</Button>
 					<Button parentKey="ResumeButton" inherits="CinematicDialogButtonTemplate" text="NO">

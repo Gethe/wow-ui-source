@@ -213,6 +213,9 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif ( strsub(link, 1, 10) == "talentpane" ) then
 		ToggleTalentFrame(TALENTS_TAB);
 		return;
+	elseif ( strsub(link, 1, 14) == "mountequipment" ) then
+		ToggleCollectionsJournal(1);
+		return;
 	elseif ( strsub(link, 1, 11) == "honortalent" ) then
 		ToggleTalentFrame(PVP_TALENTS_TAB);
 		return;

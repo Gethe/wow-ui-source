@@ -230,7 +230,7 @@
 					<BackgroundInsets>
 						<AbsInset left="0" right="0" top="5" bottom="5"/>
 					</BackgroundInsets>
-				</Backdrop>				
+				</Backdrop>
 				<Scripts>
 					<OnLoad>
 						self:SetBackdropBorderColor(.6, .6, .6, .6);
@@ -238,7 +238,7 @@
 					</OnLoad>
 					<OnMouseWheel>
 						GlueScrollFrameTemplate_OnMouseWheel(self, delta);
-					</OnMouseWheel>					
+					</OnMouseWheel>
 					<OnVerticalScroll>
 						FauxScrollFrame_OnVerticalScroll(self, offset, self:GetParent().buttonHeight, OptionsListScroll_Update);
 					</OnVerticalScroll>
@@ -255,7 +255,7 @@
 								<Offset>
 									<AbsDimension x="0" y="19"/>
 								</Offset>
-							</Anchor>	
+							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnValueChanged>
@@ -320,64 +320,34 @@
 		<HighlightFont style="GlueFontHighlight"/>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD">
 			<Anchors>
-				<Anchor point="TOPLEFT">	
-					<Offset>
-						<AbsDimension x="0" y="1"/>
-					</Offset>
-				</Anchor>
-				<Anchor point="BOTTOMRIGHT">	
-					<Offset>
-						<AbsDimension x="0" y="1"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="TOPLEFT" x="0" y="1"/>
+				<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
 			</Anchors>
 		</HighlightTexture>
 	</Button>
 
 	<Frame name="OptionsFrameTemplate" toplevel="true" parent="GlueParent" virtual="true" hidden="true" enableMouse="true" enableKeyboard="true" frameStrata="HIGH">
-		<Size>
-			<AbsDimension x="648" y="520"/><!-- this may be overwritten for the VideoOptions frame, see VideoOptionsPanels.lua -->
-		</Size>
+		<Size x="648" y="520"/><!-- this may be overwritten for the VideoOptions frame, see VideoOptionsPanels.lua -->
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="11" top="12" bottom="10"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Size>
-						<AbsDimension x="300" y="68"/>
-					</Size>
+					<Size x="300" y="68"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="12"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="12"/>
 					</Anchors>
 				</Texture>
 				<FontString name="$parentHeaderText" inherits="GlueFontNormal" text="OPTIONS">
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentHeader">
-							<Offset>
-								<AbsDimension x="0" y="-14"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" relativeTo="$parentHeader" x="0" y="-14"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<Frame name="$parentBackdrop" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="GlueParent" relativePoint="TOPLEFT"/>
@@ -397,15 +367,9 @@
 				</Scripts>
 			</Frame>
 			<Frame name="$parentCategoryFrame" inherits="OptionsFrameListTemplate">
-				<Size>
-					<AbsDimension x="175" y="429"/><!-- this may be overwritten for the VideoOptions frame, see VideoOptionsPanels.lua -->
-				</Size>
+				<Size x="175" y="429"/><!-- this may be overwritten for the VideoOptions frame, see VideoOptionsPanels.lua -->
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="22" y="-40"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="22" y="-40"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>

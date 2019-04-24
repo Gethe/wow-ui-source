@@ -1419,6 +1419,16 @@ function ContainerFrameItemButton_OnEnter(self)
 	if ArtifactFrame and self.hasItem then
 		ArtifactFrame:OnInventoryItemMouseEnter(self:GetParent():GetID(), self:GetID());
 	end
+
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_MOUNT_EQUIPMENT_SLOT_FRAME) then
+		local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
+		if itemLocation and itemLocation:IsValid() then
+			if C_MountJournal.IsMountEquipmentUnlocked() and (not CollectionsJournal or not CollectionsJournal:IsShown()) then
+				local tabIndex = 1;
+				CollectionsMicroButton_SetAlertShown(tabIndex);
+			end
+		end
+	end
 end
 
 function ContainerFrameItemButton_OnLeave(self)

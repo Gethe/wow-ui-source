@@ -436,6 +436,8 @@ function HorizontalFullStoreCardMixin:SetStyle(overrideBackground)
 	self.ProductName:SetPoint("CENTER", 0, -32);
 	self.ProductName:SetJustifyH("CENTER");
 	self.ProductName:SetFontObjectsToTry("Game30Font", "GameFontNormalHuge2", "GameFontNormalLarge2");
+	self.ProductName:SetShadowOffset(1, -1);
+	self.ProductName:SetShadowColor(0, 0, 0, 1);
 
 	self.CurrentPrice:SetPoint("TOP", self.ProductName, "BOTTOM", 0, -6);
 

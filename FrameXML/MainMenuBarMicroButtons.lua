@@ -756,28 +756,40 @@ do
 			local itemID, updateReason = ...;
 			if itemID and updateReason == "NEW" then
 				if MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, HEIRLOOMS_MICRO_BUTTON_SPEC_TUTORIAL, LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL) then
-					MicroButtonPulse(self);
-					SafeSetCollectionJournalTab(4);
+					local tabIndex = 4;
+					CollectionsMicroButton_SetAlert(tabIndex);
 				end
 			end
 		elseif ( event == "PET_JOURNAL_NEW_BATTLE_SLOT" ) then
 			if MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, COMPANIONS_MICRO_BUTTON_NEW_BATTLE_SLOT) then
-				MicroButtonPulse(self);
-				SafeSetCollectionJournalTab(2);
+				local tabIndex = 2;
+				CollectionsMicroButton_SetAlert(tabIndex);
 			end
 		elseif ( event == "TOYS_UPDATED" ) then
 			local itemID, new = ...;
 			if itemID and new then
 				if MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, TOYBOX_MICRO_BUTTON_SPEC_TUTORIAL, LE_FRAME_TUTORIAL_TOYBOX) then
-					MicroButtonPulse(self);
-					SafeSetCollectionJournalTab(3);
+					local tabIndex = 3;
+					CollectionsMicroButton_SetAlert(tabIndex);
 				end
 			end
 		elseif ( event == "COMPANION_LEARNED" or event == "PLAYER_ENTERING_WORLD" or event == "PET_JOURNAL_LIST_UPDATE" ) then
 			self:EvaluateAlertVisibility();
 		end
 	end
+	
+	function CollectionsMicroButton_SetAlert(tabIndex)
+		CollectionsMicroButton_SetAlertShown(true);
+		SafeSetCollectionJournalTab(tabIndex);
+	end
 
+	function CollectionsMicroButton_SetAlertShown(shown)
+		if shown then
+			MicroButtonPulse(CollectionsMicroButton);
+		else
+			MicroButtonPulseStop(CollectionsMicroButton);
+		end
+	end
 
 	function CollectionsMicroButton_OnEnter(self)
 		self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS");

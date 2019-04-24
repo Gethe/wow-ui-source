@@ -17,14 +17,6 @@ function QueueStatusMinimapButton_OnLeave(self)
 	QueueStatusFrame:Hide();
 end
 
-local function ToggleMatchResultsFrame()
-	if PVPMatchUtil.IsActiveMatchComplete() then
-		TogglePVPMatchResultsFrame();
-	else
-		ToggleWorldStateScoreFrame();
-	end
-end
-
 function QueueStatusMinimapButton_OnClick(self, button)
 	if ( button == "RightButton" ) then
 		QueueStatusDropDown_Show(self.DropDown, self:GetName());
@@ -37,7 +29,7 @@ function QueueStatusMinimapButton_OnClick(self, button)
 		local lfgListActiveEntry = C_LFGList.HasActiveEntryInfo();
 		if ( inBattlefield ) then
 			if ( showScoreboard ) then
-				ToggleMatchResultsFrame();
+				PVPMatchUtil.ToggleScoreboardOrResults();
 			end
 		elseif ( lfgListActiveEntry ) then
 			LFGListUtil_OpenBestWindow(true);
@@ -936,7 +928,7 @@ function QueueStatusDropDown_AddBattlefieldButtons(idx)
 
 		if ( not inArena or GetBattlefieldWinner() or C_Commentator.GetMode() > 0 or C_PvP.IsInBrawl() ) then
 			info.text = TOGGLE_SCOREBOARD;
-			info.func = wrapFunc(ToggleWorldStateScoreFrame);
+			info.func = wrapFunc(PVPMatchUtil.ToggleScoreboardOrResults);
 			info.arg1 = nil;
 			info.arg2 = nil;
 			UIDropDownMenu_AddButton(info);
@@ -1013,7 +1005,7 @@ function QueueStatusDropDown_AddLFGButtons(category)
 					addExitOption = false;
 				else
 					info.text = TOGGLE_SCOREBOARD;
-					info.func = wrapFunc(ToggleWorldStateScoreFrame);
+					info.func = wrapFunc(PVPMatchUtil.ToggleScoreboardOrResults);
 					info.arg1 = nil;
 					info.arg2 = nil;
 					UIDropDownMenu_AddButton(info);

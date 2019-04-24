@@ -1,5 +1,7 @@
 AzeriteItemLevelUpToastMixin = {};
 
+local TOAST_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(111, 1688020);	-- 7DU_ArgusRaid_TitanTrappedSoul01
+
 function AzeriteItemLevelUpToastMixin:OnLoad()
 	self:RegisterEvent("AZERITE_ITEM_POWER_LEVEL_CHANGED");
 
@@ -77,12 +79,7 @@ function AzeriteItemLevelUpToastMixin:PlayBanner(data)
 end
 
 function AzeriteItemLevelUpToastMixin:SetupModelScene(forceUpdate)
-	local AZERITE_ICON_EFFECT_MODEL_SCENE_ID = 111;
-	self.IconEffect:SetFromModelSceneID(AZERITE_ICON_EFFECT_MODEL_SCENE_ID, forceUpdate);
-	local iconEffectActor = self.IconEffect:GetActorByTag("effect");
-	if iconEffectActor then
-		iconEffectActor:SetModelByFileID(1688020); -- 7DU_ArgusRaid_TitanTrappedSoul01
-	end
+	StaticModelInfo.SetupModelScene(self.IconEffect, TOAST_MODEL_SCENE_INFO, forceUpdate);
 end
 
 function AzeriteItemLevelUpToastMixin:SetUpUnlockedEmpoweredItems(unlockedEmpoweredItemsInfo)

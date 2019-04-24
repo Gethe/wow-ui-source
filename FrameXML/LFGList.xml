@@ -20,7 +20,7 @@
 		<Size x="125" y="24"/>
 		<Frames>
 			<Frame parentKey="RoleCount" setAllPoints="true" inherits="RoleCountNoScriptsTemplate"/>
-			
+
 			<Frame parentKey="Enumerate" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
@@ -530,7 +530,7 @@
 				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
 				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
 				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 			</CheckButton>
 		</Frames>
 		<Scripts>
@@ -1601,14 +1601,6 @@
 								<Anchors>
 									<Anchor point="CENTER"/>
 								</Anchors>
-								<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-									<TileSize>
-										<AbsValue val="32"/>
-									</TileSize>
-									<EdgeSize>
-										<AbsValue val="32"/>
-									</EdgeSize>
-								</Backdrop>
 								<Layers>
 									<Layer level="BACKGROUND" textureSubLevel="-1">
 										<Texture parentKey="Bg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
@@ -1620,6 +1612,7 @@
 									</Layer>
 								</Layers>
 								<Frames>
+									<Frame parentKey="Border" inherits="DialogBorderNoCenterTemplate"/>
 									<EditBox parentKey="EntryBox" inherits="LFGListEditBoxTemplate" autoFocus="true">
 										<Size x="268" y="22"/>
 										<Anchors>
@@ -1841,17 +1834,6 @@
 	</Frame>
 	<Frame name="LFGListApplicationDialog" parent="UIParent" frameStrata="DIALOG" hidden="true" enableMouse="true">
 		<Size x="306" y="203"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Label" inherits="GameFontHighlight" text="LFG_LIST_CHOOSE_YOUR_ROLES">
@@ -1862,6 +1844,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<Button parentKey="HealerButton" inherits="LFGListRoleButtonTemplate">
 				<Size x="70" y="70"/>
 				<Anchors>
@@ -1948,17 +1931,6 @@
 	</Frame>
 	<Frame name="LFGListInviteDialog" parent="UIParent" frameStrata="DIALOG" hidden="true" enableMouse="true">
 		<Size x="314" y="210"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Label" inherits="GameFontHighlight" text="LFG_LIST_INVITED_TO_GROUP">
@@ -2002,6 +1974,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
 				<Size x="118" y="22"/>
 				<Anchors>

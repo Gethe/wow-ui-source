@@ -1,5 +1,8 @@
 PartyPoseRewardsMixin = { };
 
+local IMPACT_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(214, 1983536);	-- 8FX_AZERITE_GENERIC_IMPACTHIGH_CHEST
+local HOLD_MODEL_SCENE_INFO	= StaticModelInfo.CreateModelSceneEntry(234, 1983980);		-- 8FX_AZERITE_EMPOWER_STATECHEST
+
 function PartyPoseRewardsMixin:OnLoad()
 	local startingSound = SOUNDKIT.UI_80_ISLANDS_AZERITECOLLECTION_START;
 	local loopingSound = SOUNDKIT.UI_80_ISLANDS_AZERITECOLLECTION_LOOP;
@@ -195,20 +198,13 @@ function PartyPoseMixin:PlayModelSceneAnimations(forceUpdate)
 	self.RewardAnimations.ImpactModelScene:Show();
 	self.RewardAnimations.HoldModelScene:Show();
 
-	self.RewardAnimations.ImpactModelScene:SetFromModelSceneID(214, forceUpdate);
-	local impactActor = self.RewardAnimations.ImpactModelScene:GetActorByTag("effect");
+	local impactActor = StaticModelInfo.SetupModelScene(self.RewardAnimations.ImpactModelScene, IMPACT_MODEL_SCENE_INFO, forceUpdate);
 	if (impactActor) then
-		impactActor:SetModelByFileID(1983536); -- 8FX_AZERITE_GENERIC_IMPACTHIGH_CHEST
-
 		impactActor:SetAnimation(0, 0, 1, 0);
 		C_Timer.After(.2, function() impactActor:SetAnimation(0, 0, 0, 0); end);
 	end
 
-	self.RewardAnimations.HoldModelScene:SetFromModelSceneID(234, forceUpdate);
-	local holdActor = self.RewardAnimations.HoldModelScene:GetActorByTag("effect");
-	if (holdActor) then
-		holdActor:SetModelByFileID(1983980); -- 8FX_AZERITE_EMPOWER_STATECHEST
-	end
+	StaticModelInfo.SetupModelScene(self.RewardAnimations.HoldModelScene, HOLD_MODEL_SCENE_INFO, forceUpdate);
 
 	self.RewardAnimations.HoldModelScene.RewardModelAnim:Play();
 end
