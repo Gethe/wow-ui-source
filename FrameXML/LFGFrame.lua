@@ -677,6 +677,7 @@ local DUNGEON_BACKDROP_TABLE = {
 	edgeSize = 32,
 	insets = { left = 11, right = 12, top = 12, bottom = 11 }};
 
+-- TODO: replace both backdrops with nineslice when gold trim is created.
 local RAID_BACKDROP_TABLE = {
 	bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
 	edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Border",

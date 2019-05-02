@@ -55,6 +55,8 @@ function PVPMatchResultsMixin:OnLoad()
 	self.tintFrames = {self.glowTop, self.earningsBackground, self.scrollFrame.background};
 	self.rewardFrames = {self.honorFrame, self.conquestFrame, self.ratingFrame};
 
+	self.header:SetShadowOffset(1,-1);
+
 	self.earningsContainer:Hide();
 	self.progressHeader:SetText(PVP_PROGRESS_REWARDS_HEADER);
 	self.rewardsHeader:SetText(PVP_ITEM_REWARDS_HEADER);
@@ -146,7 +148,7 @@ function PVPMatchResultsMixin:Init(winner, duration)
 
 	self:SetupArtwork(factionIndex, isFactionalMatch);
 
-	ConstructPVPMatchTable(self.tableBuilder, PVPMatchUtil.IsRatedBattleground(), isArena, isLFD, not isFactionalMatch);
+	ConstructPVPMatchTable(self.tableBuilder, C_PvP.IsRatedBattleground(), isArena, isLFD, not isFactionalMatch);
 end
 function PVPMatchResultsMixin:TryDisplayRewards()
 	if self.haveConquestData and self.hasRewardTimerElapsed then
@@ -158,7 +160,7 @@ function PVPMatchResultsMixin:Reset()
 	self.rewardTimer = false;
 	self.earningsContainer:Hide();
 end
-function PVPMatchResultsMixin:OnEvent(event, ...)
+function PVPMatchResultsMixin:OnEvent(event, ...)	
 	if event == "PVP_MATCH_ACTIVE" then
 		FrameUtil.RegisterFrameForEvents(self, ACTIVE_EVENTS);
 		self:Reset();
@@ -349,6 +351,36 @@ function PVPMatchResultsMixin:OnUpdate()
 
 	local regionHeight = self.scrollFrame:GetHeight();
 	HybridScrollFrame_Update(self.scrollFrame, visibleElementHeight, regionHeight);
+end
+local scoreWidgetSetID = 249;
+local function ScoreWidgetLayout(widgetContainer, sortedWidgets)
+	local widgetsHeight = 0;
+	local maxWidgetWidth = 1;
+
+	for index, widgetFrame in ipairs(sortedWidgets) do
+		if ( index == 1 ) then
+			widgetFrame:SetPoint("TOPRIGHT", widgetContainer, "TOPRIGHT", 0, 0);
+		else
+			local relative = sortedWidgets[index - 1];
+			widgetFrame:SetPoint("TOPRIGHT", relative, "BOTTOMRIGHT", 0, 0);
+		end
+
+		widgetsHeight = widgetsHeight + widgetFrame:GetHeight();
+
+		local widgetWidth = widgetFrame:GetWidth();
+		if widgetWidth > maxWidgetWidth then
+			maxWidgetWidth = widgetWidth;
+		end
+	end
+
+	widgetContainer:SetHeight(math.max(widgetsHeight, 1));
+	widgetContainer:SetWidth(maxWidgetWidth);
+end
+function PVPMatchResultsMixin:OnShow()
+	self.Score:RegisterForWidgetSet(scoreWidgetSetID, ScoreWidgetLayout);
+end
+function PVPMatchResultsMixin:OnHide()
+	self.Score:UnregisterForWidgetSet(scoreWidgetSetID);
 end
 function PVPMatchResultsMixin:AddItemReward(item)
 	local frame = self.itemPool:Acquire();

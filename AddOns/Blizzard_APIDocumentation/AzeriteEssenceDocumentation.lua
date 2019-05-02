@@ -13,7 +13,7 @@ local AzeriteEssence =
 			Arguments =
 			{
 				{ Name = "essenceID", Type = "number", Nilable = false },
-				{ Name = "slot", Type = "AzeriteEssence", Nilable = false },
+				{ Name = "milestoneID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -23,7 +23,7 @@ local AzeriteEssence =
 			Arguments =
 			{
 				{ Name = "essenceID", Type = "number", Nilable = false },
-				{ Name = "slot", Type = "AzeriteEssence", Nilable = false },
+				{ Name = "milestoneID", Type = "number", Nilable = false },
 			},
 
 			Returns =
@@ -49,26 +49,18 @@ local AzeriteEssence =
 			Type = "Function",
 		},
 		{
-			Name = "GetActionSpell",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "spellID", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetActiveEssence",
+			Name = "GetEssenceHyperlink",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "AzeriteEssence", Nilable = false },
+				{ Name = "essenceID", Type = "number", Nilable = false },
+				{ Name = "rank", Type = "number", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "essenceID", Type = "number", Nilable = false },
+				{ Name = "link", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -95,8 +87,13 @@ local AzeriteEssence =
 			},
 		},
 		{
-			Name = "GetPendingActivationEssence",
+			Name = "GetMilestoneEssence",
 			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "milestoneID", Type = "number", Nilable = false },
+			},
 
 			Returns =
 			{
@@ -104,19 +101,49 @@ local AzeriteEssence =
 			},
 		},
 		{
-			Name = "GetSlotInfo",
+			Name = "GetMilestoneInfo",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "AzeriteEssence", Nilable = false },
+				{ Name = "milestoneID", Type = "number", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "locked", Type = "bool", Nilable = false, Default = false },
-				{ Name = "unlockLevel", Type = "number", Nilable = false, Default = 0 },
-				{ Name = "unlockDescription", Type = "string", Nilable = true },
+				{ Name = "info", Type = "AzeriteMilestoneInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMilestoneSpell",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "milestoneID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMilestones",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "milestones", Type = "table", InnerType = "AzeriteMilestoneInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPendingActivationEssence",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "essenceID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -144,6 +171,15 @@ local AzeriteEssence =
 			Arguments =
 			{
 				{ Name = "essenceID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnlockMilestone",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "milestoneID", Type = "number", Nilable = false },
 			},
 		},
 	},
@@ -191,6 +227,15 @@ local AzeriteEssence =
 			LiteralName = "AZERITE_ESSENCE_FORGE_OPEN",
 		},
 		{
+			Name = "AzeriteEssenceMilestoneUnlocked",
+			Type = "Event",
+			LiteralName = "AZERITE_ESSENCE_MILESTONE_UNLOCKED",
+			Payload =
+			{
+				{ Name = "milestoneID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "AzeriteEssenceUpdate",
 			Type = "Event",
 			LiteralName = "AZERITE_ESSENCE_UPDATE",
@@ -232,6 +277,18 @@ local AzeriteEssence =
 				{ Name = "unlocked", Type = "bool", Nilable = false },
 				{ Name = "valid", Type = "bool", Nilable = false },
 				{ Name = "icon", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "AzeriteMilestoneInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "ID", Type = "number", Nilable = false },
+				{ Name = "requiredLevel", Type = "number", Nilable = false },
+				{ Name = "canUnlock", Type = "bool", Nilable = false },
+				{ Name = "unlocked", Type = "bool", Nilable = false },
+				{ Name = "slot", Type = "AzeriteEssence", Nilable = true },
 			},
 		},
 	},

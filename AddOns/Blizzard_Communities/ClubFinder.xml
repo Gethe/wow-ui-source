@@ -1,7 +1,193 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="ClubFinder.lua"/>
+
+
+	<Frame name="ClubsFinderJoinClubWarningTemplate" enableMouse="true" frameStrata="DIALOG" mixin="ClubsFinderJoinClubWarningMixin" virtual="true">
+		<Size x="400" y="100"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="DialogLabel" justifyH="CENTER" justifyV="MIDDLE" inherits="GameFontHighlight">
+					<Size x="380" y="0"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="15"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="BG" inherits="DialogBorderDarkTemplate"/>
+			<Button parentKey="Accept" inherits="UIPanelButtonTemplate" text="ACCEPT">
+				<Size x="130" y="25"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.EditBox" relativePoint="BOTTOM" x="-80" y="15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnAcceptButtonClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="Cancel" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size x="130" y="25"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Accept" relativePoint="RIGHT" x="140" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnCancelButtonClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
 	
+	<Frame name="ClubFinderInvitationsFrameTemplate" mixin="ClubFinderInvitationsFrameMixin" hidden="true" virtual="true">
+		<Frames>
+			<Frame parentKey="WarningDialog" inherits="ClubsFinderJoinClubWarningTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="135"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+				<Size x="150" y="24"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="-80" y="22"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+						self:GetParent().WarningDialog:Show();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="DeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
+				<Size x="150" y="24"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="80" y="22"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+						self:GetParent():DeclineInvitation();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame parentKey="InsetFrame" inherits="InsetFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-3" y="3"/>
+					<Anchor point="BOTTOMRIGHT" x="3" y="-2"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.Bg:Hide();
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="communities-widebackground" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<FontString parentKey="InvitationText" inherits="GameFontNormalMed2">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-20"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Icon" hidden="true" file="Interface\CharacterFrame\TempPortraitAlphaMask">
+					<Size x="63" y="63"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.InvitationText" relaitvePoint="BOTTOM" x="0" y="-35"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<FontString parentKey="Name" inherits="Game30Font">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="0" y="-15"/>
+						<Anchor point="LEFT"/>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Type" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM" x="0" y="-6"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="MemberCount" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Type" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Leader" inherits="GameFontNormal" wordwrap="false">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.MemberCount" relativePoint="BOTTOM" x="0" y="0"/>
+						<Anchor point="LEFT" x="10" y="0"/>
+						<Anchor point="RIGHT" x="-10" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" justifyV="TOP" inherits="GameFontDisable">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Leader" relativePoint="BOTTOM" x="0" y="-18"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.AcceptButton" relativePoint="TOP" x="0" y="2"/>
+						<Anchor point="LEFT" x="30"/>
+						<Anchor point="RIGHT" x="-30"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="GuildBannerBackground" atlas="guildfinder-card-guildbanner-background">
+					<Size x="140" y="90"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="-10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="GuildBannerShadow" atlas="guildfinder-card-guildbanner-shadow">
+					<Size x="140" y="90"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.GuildBannerBackground" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="IconRing" atlas="communities-ring-blue">
+					<Size x="78" y="78"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="GuildBannerBorder" atlas="guildfinder-card-guildbanner-border">
+					<Size x="140" y="90"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.GuildBannerBackground" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="GuildBannerEmblemLogo">
+					<Size x="95" y="95"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.GuildBannerBackground" x="20" y="12"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+
 	<Frame name="ClubsRecruitmentDialogTemplate" enableMouse="true" frameStrata="DIALOG" mixin="ClubsRecruitmentDialogMixin" virtual="true">
 		<Size x="400" y="450"/>
 		<Layers>
@@ -619,7 +805,7 @@
 		<Size x="100" y="15"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="GuildFocusDropdownLabel" text="CLUB_FINDER_GUILD_FOCUS" justifyH="LEFT" inherits="GameFontHighlight">
+				<FontString parentKey="GuildFocusDropdownLabel" text="CLUB_FINDER_FOCUS" justifyH="LEFT" inherits="GameFontHighlight">
 					<Size x="100" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="20" y="15"/>
@@ -959,6 +1145,11 @@
 			<Anchors>
 				<Anchor point="RIGHT" relativeKey="$parent.DpsRoleFrame" relativePoint="RIGHT" x="160" y="10"/>
 			</Anchors>
+			<Scripts>
+				<OnEnterPressed>
+					self:GetParent():OnSearchButtonClick();
+				</OnEnterPressed>
+			</Scripts>
 		</EditBox>
 		<Button parentKey="Search" inherits="UIPanelButtonTemplate" text="SEARCH">
 			<Size x="150" y="20"/>

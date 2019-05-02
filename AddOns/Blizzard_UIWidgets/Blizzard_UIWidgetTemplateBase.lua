@@ -203,15 +203,29 @@ local function GetIconSize(iconSizeType)
 	return iconSizes[iconSizeType] and iconSizes[iconSizeType] or iconSizes[Enum.SpellDisplayIconSizeType.Large];
 end
 
-function UIWidgetBaseSpellTemplateMixin:Setup(spellInfo, enabledState, width, iconSizeType)
+function UIWidgetBaseSpellTemplateMixin:Setup(spellInfo, enabledState, width)
 	local name, _, icon = GetSpellInfo(spellInfo.spellID);
 	self.Icon:SetTexture(icon);
 	self.Icon:SetDesaturated(enabledState == Enum.WidgetEnabledState.Disabled);
 
-	local iconSize = GetIconSize(iconSizeType);
+	local iconSize = GetIconSize(spellInfo.iconSizeType);
 	self.Icon:SetSize(iconSize, iconSize);
 
-	self.Text:SetText(name);
+	if spellInfo.text ~= "" then
+		self.Text:SetText(spellInfo.text);
+	else
+		self.Text:SetText(name);
+	end
+
+	if spellInfo.stackDisplay > 0 then
+		self.StackCount:Show();
+		self.StackCount:SetText(spellInfo.stackDisplay);
+	else
+		self.StackCount:Hide();
+	end
+
+	self.Border:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Buff);
+	self.DebuffBorder:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Debuff);
 
 	local iconWidth = self.Icon:GetWidth() + 5;
 	local textWidth;
@@ -381,6 +395,153 @@ function UIWidgetBaseTextureAndTextTemplateMixin:Setup(text, tooltip, frameTextu
 
 	SetupTextureKitOnFrameByID(frameTextureKitID, self.Background, "%s"..textureKitAppend, TextureKitConstants.SetVisiblity, TextureKitConstants.UseAtlasSize);
 	SetupTextureKitOnFrameByID(textureKitID, self.Foreground, "%s"..textureKitAppend, TextureKitConstants.SetVisiblity, TextureKitConstants.UseAtlasSize);
+
+	self:MarkDirty(); -- The widget needs to resize based on whether the textures are shown or hidden
+end
+
+UIWidgetBaseControlZoneTemplateMixin = {}
+
+local zoneFormatString = "%s-%s-%s";
+local cappedFormatString = "%s-%s-%s-cap";
+local swipeTextureFormatString = "Interface\\Widgets\\%s-%s-fill"
+
+local textureKitRegionInfo = {
+	["Zone"] = {useAtlasSize = true, setVisibility = true},	-- formatString is filled on before passing to SetupTextureKitsFromRegionInfo (based on whether the zone is capped or not)
+	["FillingGlow"] = {formatString = "%s-%s-fillingglow", useAtlasSize = true},
+	["FallingGlow"] = {formatString = "%s-fallingglow", useAtlasSize = true},
+	["FullGlow"] = {formatString = "%s-fullglow", useAtlasSize = true},
+}
+
+function UIWidgetBaseControlZoneTemplateMixin:UpdateAnimations(zoneInfo, lastVals)
+	local isActive = (zoneInfo.activeState == Enum.ZoneControlActiveState.Active);
+	local isMaxed = (zoneInfo.current == zoneInfo.max);
+	local wasMaxed = lastVals and (lastVals.current == lastVals.max) or false;
+
+	if not lastVals or not isActive then
+		-- This is either the first update on this zone/state or the zone is inactive...turn off all animations
+		self.FillingGlowAnim:Stop();
+		self.FillingGlow:Hide();
+		self.FallingGlowAnim:Stop();
+		self.FallingGlow:Hide();
+		self.FullGlowAnim:Stop();
+		self.FullGlow:Hide();
+	else
+		if isMaxed then
+			if not wasMaxed then
+				-- This zone just got maxed...play the full glow
+				self.FullGlow:Show();
+				self.FullGlowAnim:Play();
+			end
+
+			-- The zone is maxed...turn off the filling and falling glows
+			self.FillingGlowAnim:Stop();
+			self.FillingGlow:Hide();
+
+			self.FallingGlowAnim:Stop();
+			self.FallingGlow:Hide();
+		else
+			local reverseAnims = (zoneInfo.state == Enum.ZoneControlState.State2);
+			local playFillingAnim, playFallingAnim;
+			if reverseAnims then
+				playFillingAnim = zoneInfo.current < lastVals.current;
+				playFallingAnim = zoneInfo.current > lastVals.current;
+			else
+				playFillingAnim = zoneInfo.current > lastVals.current;
+				playFallingAnim = zoneInfo.current < lastVals.current;
+			end
+
+			if playFillingAnim then
+				self.FillingGlow:Show();
+				self.FillingGlowAnim:Play();
+
+				self.FallingGlowAnim:Stop();
+				self.FallingGlow:Hide();
+			elseif playFallingAnim then
+				self.FillingGlowAnim:Stop();
+				self.FillingGlow:Hide();
+
+				self.FallingGlow:Show();
+				self.FallingGlowAnim:Play();
+			end
+
+			-- The zone is not maxed...turn off the full glow
+			self.FullGlowAnim:Stop();
+			self.FullGlow:Hide();
+		end
+	end
+end
+
+function UIWidgetBaseControlZoneTemplateMixin:Setup(zoneIndex, zoneInfo, lastVals, textureKitID)
+	local textureKit = GetUITextureKitInfo(textureKitID);
+	if not textureKit then
+		self:Hide();
+		return;
+	end
+
+	local currentVal = Clamp(zoneInfo.current, zoneInfo.min, zoneInfo.max);
+
+	local stateString = "state"..(zoneInfo.state + 1);
+	local zoneString = "zone"..zoneIndex;
+
+	local isActive = (zoneInfo.activeState == Enum.ZoneControlActiveState.Active);
+	if isActive then
+		self.Zone:SetDesaturated(false);
+	else
+		currentVal = 0;
+		self.Zone:SetDesaturated(true);
+	end
+
+	if currentVal >= zoneInfo.capturePoint then
+		textureKitRegionInfo.Zone.formatString = cappedFormatString;
+	else
+		textureKitRegionInfo.Zone.formatString = zoneFormatString;
+	end
+
+	SetupTextureKitsFromRegionInfo({textureKit, stateString, zoneString}, self, textureKitRegionInfo);
+
+	local swipeTextureName = swipeTextureFormatString:format(unpack({textureKit, stateString}));
+	self.Progress:SetSwipeTexture(swipeTextureName);
+
+	local percentageFull;
+	local reverse;
+	if zoneInfo.fillType == Enum.ZoneControlFillType.SingleFillClockwise then
+		percentageFull = ClampedPercentageBetween(currentVal, zoneInfo.min, zoneInfo.max);
+		reverse = true;
+	elseif zoneInfo.fillType == Enum.ZoneControlFillType.SingleFillCounterClockwise then
+		percentageFull = 1 - ClampedPercentageBetween(currentVal, zoneInfo.min, zoneInfo.max);
+		reverse = false;
+	elseif zoneInfo.fillType == Enum.ZoneControlFillType.DoubleFillClockwise then
+		if currentVal >= zoneInfo.capturePoint then
+			percentageFull = ClampedPercentageBetween(currentVal, zoneInfo.capturePoint, zoneInfo.max);
+		else
+			percentageFull = ClampedPercentageBetween(currentVal, zoneInfo.min, zoneInfo.capturePoint);
+		end
+		reverse = true;
+	elseif zoneInfo.fillType == Enum.ZoneControlFillType.DoubleFillCounterClockwise then
+		if currentVal >= zoneInfo.capturePoint then
+			percentageFull = 1 - ClampedPercentageBetween(currentVal, zoneInfo.capturePoint, zoneInfo.max);
+		else
+			percentageFull = 1 - ClampedPercentageBetween(currentVal, zoneInfo.min, zoneInfo.capturePoint);
+		end
+		reverse = false;
+	end
+
+	if percentageFull == 1 then
+		-- A cooldown at full duration actually draws nothing when what we want is a full bar...to achieve that, flip reverse and set the percentage to 0
+		percentageFull = 0;
+		reverse = not reverse;
+	end
+
+	self.Progress:SetReverse(reverse);
+	CooldownFrame_SetDisplayAsPercentage(self.Progress, percentageFull);
+
+	-- Set current to the clamped value
+	zoneInfo.current = currentVal;
+
+	-- And update the animations
+	self:UpdateAnimations(zoneInfo, lastVals);
+
+	self:SetTooltip(zoneInfo.tooltip);
 
 	self:MarkDirty(); -- The widget needs to resize based on whether the textures are shown or hidden
 end

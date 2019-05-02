@@ -3553,7 +3553,7 @@ function CalendarCreateEventFrame_OnEvent(self, event, ...)
 			if ( event == "GUILD_ROSTER_UPDATE" ) then
 				local canRequestRosterUpdate = ...;
 				if ( canRequestRosterUpdate ) then
-					GuildRoster();
+					C_GuildInfo.GuildRoster();
 				end
 			end
 			if ( C_Calendar.EventCanEdit() ) then
@@ -4645,7 +4645,7 @@ function CalendarMassInviteFrame_OnLoad(self)
 
 	-- try to fire off a guild roster event so we can properly update our guild options
 	if ( IsInGuild() and GetNumGuildMembers() == 0 ) then
-		GuildRoster();
+		C_GuildInfo.GuildRoster();
 	end
 end
 
@@ -4663,7 +4663,7 @@ function CalendarMassInviteFrame_OnEvent(self, event, ...)
 	if ( event == "GUILD_ROSTER_UPDATE" ) then
 		local canRequestRosterUpdate = ...;
 		if ( canRequestRosterUpdate ) then
-			GuildRoster();
+			C_GuildInfo.GuildRoster();
 		end
 	end
 	if ( self:IsShown() ) then

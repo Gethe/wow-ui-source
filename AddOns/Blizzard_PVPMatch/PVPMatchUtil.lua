@@ -42,14 +42,6 @@ function PVPMatchUtil.GetCellColor(factionIndex, useAlternateColor)
 	return PVPMatchUtil.CellColors[index];
 end
 
-function PVPMatchUtil.IsRatedBattleground()
-	return C_PvP.IsBattleground() and C_PvP.IsRatedMap();
-end
-
-function PVPMatchUtil.IsRatedArena()
-	return C_PvP.IsArena() and C_PvP.IsRatedMap();
-end
-
 function PVPMatchUtil.GetOptionalCategories(isRated, isArena, isLFD)
 	local categories = {};
 
@@ -70,27 +62,6 @@ function PVPMatchUtil.GetOptionalCategories(isRated, isArena, isLFD)
 	end
 
 	return categories;
-end
-
-function PVPMatchUtil.ToggleScoreboardOrResults()
-	local matchState = C_PvP.GetActiveMatchState();
-	local isComplete = matchState == Enum.PvpMatchState.Complete;
-	if isComplete then
-		if PVPMatchResults:IsShown() then
-			HideUIPanel(PVPMatchResults);
-		else
-			PVPMatchResults:BeginShow(C_PvP.GetActiveMatchWinner(), C_PvP.GetActiveMatchDuration());
-		end
-	else
-		if ( PVPMatchScoreboard:IsShown() ) then
-			HideUIPanel(PVPMatchScoreboard);
-		else
-			local isActive = matchState == Enum.PvpMatchState.Active;
-			if isActive and not (IsActiveBattlefieldArena() or IsArenaSkirmish()) then
-				PVPMatchScoreboard:BeginShow();
-			end
-		end
-	end
 end
 
 PVPMatchStyle = {

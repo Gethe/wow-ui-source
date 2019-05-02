@@ -39,7 +39,7 @@ local ReportSystem =
 		{
 			Name = "OpenReportPlayerDialog",
 			Type = "Function",
-			Documentation = { "Addons should use this to open the ReportPlayer dialog. InitiateReportPlayer and SendReportPlayer are no loner accessible to addons." },
+			Documentation = { "Addons should use this to open the ReportPlayer dialog. InitiateReportPlayer and SendReportPlayer are no longer accessible to addons." },
 
 			Arguments =
 			{

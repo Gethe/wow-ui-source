@@ -139,7 +139,7 @@ function AutoComplete_OnLoad(self)
 	AutoCompleteInstructions:SetText("|cffbbbbbb"..PRESS_TAB.."|r");
 	C_Timer.After(5, function()
 		if ( IsInGuild() ) then
-			GuildRoster();
+			C_GuildInfo.GuildRoster();
 		end
 	end);
 end

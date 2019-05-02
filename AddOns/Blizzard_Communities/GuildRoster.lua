@@ -24,7 +24,7 @@ function CommunitiesGuildMemberDetailMixin:OnEvent(event, ...)
 	if event == "GUILD_ROSTER_UPDATE" then
 		local canRequestRosterUpdate = ...;
 		if ( canRequestRosterUpdate ) then
-			GuildRoster();
+			C_GuildInfo.GuildRoster();
 		end
 		
 		local clubId = self:GetClubId();

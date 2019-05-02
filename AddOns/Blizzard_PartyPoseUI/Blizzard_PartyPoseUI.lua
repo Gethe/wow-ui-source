@@ -336,11 +336,35 @@ do
 		NineSliceUtil.ApplyLayoutByName(self.Border, self.partyPoseData.themeData.nineSliceLayout, self.partyPoseData.themeData.nineSliceTextureKitName);
 	end
 
+	local function WidgetsLayout(widgetContainerFrame, sortedWidgets)
+		local widgetsHeight = 0;
+		local maxWidgetWidth = 1;
+
+		for index, widgetFrame in ipairs(sortedWidgets) do
+			if ( index == 1 ) then
+				widgetFrame:SetPoint("TOP", widgetContainerFrame, "TOP", 0, 0);
+				widgetsHeight = widgetsHeight + widgetFrame:GetHeight();
+			else
+				local relative = sortedWidgets[index - 1];
+				widgetFrame:SetPoint("TOP", relative, "BOTTOM", 0, 5);
+				widgetsHeight = widgetsHeight + widgetFrame:GetHeight() - 5;
+			end
+
+			local widgetWidth = widgetFrame:GetWidth();
+			if widgetWidth > maxWidgetWidth then
+				maxWidgetWidth = widgetWidth;
+			end
+		end
+
+		widgetContainerFrame:SetHeight(math.max(widgetsHeight, 1));
+		widgetContainerFrame:SetWidth(maxWidgetWidth);
+	end
+
 	function PartyPoseMixin:LoadPartyPose(partyPoseData, forceUpdate)
 		self.partyPoseData = partyPoseData;
 
 		if self.Score then
-			self.Score:RegisterForWidgetSet(partyPoseData.partyPoseInfo.widgetSetID);
+			self.Score:RegisterForWidgetSet(partyPoseData.partyPoseInfo.widgetSetID, WidgetsLayout);
 		end
 
 		if (partyPoseData.playerWon) then

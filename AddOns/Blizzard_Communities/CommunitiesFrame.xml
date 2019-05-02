@@ -377,6 +377,12 @@
 					<Anchor point="BOTTOMRIGHT" x="-9" y="29"/>
 				</Anchors>
 			</Frame>
+			<Frame parentKey="ClubFinderInvitationFrame" inherits="ClubFinderInvitationsFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="24" y="-40"/>
+					<Anchor point="BOTTOMRIGHT" x="-9" y="29"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="TicketFrame" inherits="CommunitiesTicketFrameTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="24" y="-40"/>

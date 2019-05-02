@@ -75,7 +75,7 @@ function GuildRosterFrame_OnEvent(self, event, ...)
 		if ( currentGuildView ~= "tradeskill" ) then
 			local canRequestRosterUpdate = ...;
 			if ( canRequestRosterUpdate ) then
-				GuildRoster();
+				C_GuildInfo.GuildRoster();
 			end		
 			GuildRoster_Update();
 		end
@@ -627,7 +627,7 @@ end
 
 function GuildRosterViewDropdown_OnClick(self)
 	GuildRoster_SetView(self.value);
-	GuildRoster();
+	C_GuildInfo.GuildRoster();
 	GuildRoster_Update();
 	SetCVar("guildRosterView", currentGuildView);
 	UIDropDownMenu_SetSelectedValue(GuildRosterViewDropdown, currentGuildView);

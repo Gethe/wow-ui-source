@@ -4,6 +4,7 @@ local COMMUNITIES_LIST_EVENTS = {
 	"CLUB_UPDATED",
 	"CLUB_INVITATION_ADDED_FOR_SELF",
 	"CLUB_INVITATION_REMOVED_FOR_SELF",
+	"CLUB_FINDER_PLAYER_PENDING_LIST_RECIEVED",
 };
 	
 local COMMUNITIES_LIST_INITLAL_TOP_BORDER_OFFSET = -28;
@@ -36,6 +37,9 @@ function CommunitiesListMixin:OnEvent(event, ...)
 		tDeleteItem(self.declinedInvitationIds, invitationId);
 		self:UpdateInvitations();
 		self:Update();
+	elseif event == "CLUB_FINDER_PLAYER_PENDING_LIST_RECIEVED" then
+		self:UpdateFinderInvitations(); 
+		self:Update(); 
 	end
 end
 
@@ -51,6 +55,14 @@ function CommunitiesListMixin:UpdateInvitations()
 			end
 		end
 	end
+end
+
+function CommunitiesListMixin:UpdateFinderInvitations()
+	self.finderInvitations = C_ClubFinder.PlayerGetClubInvitationList();
+end 
+
+function CommunitiesListMixin:GetClubFinderInvitations()
+	return self.finderInvitations;
 end
 
 function CommunitiesListMixin:GetInvitations()
@@ -185,8 +197,16 @@ function CommunitiesListMixin:Update()
 
 	local isInGuild = IsInGuild();
 	local invitations = self:GetInvitations();
+	local clubFinderInvitations = self:GetClubFinderInvitations(); 
+	local numFinderInvitations = 0; 
+
+	if	(clubFinderInvitations) then 
+		numFinderInvitations = #clubFinderInvitations
+	end 
+
 	local tickets = self:GetTickets();
-	local totalNumClubs = #invitations + #tickets + #clubs;
+	local totalNumClubs = numFinderInvitations + #invitations + #tickets + #clubs;
+	
 	if not isInGuild then
 		totalNumClubs = totalNumClubs + 1;
 	end
@@ -209,6 +229,7 @@ function CommunitiesListMixin:Update()
 	end
 	
 	local usedHeight = height;
+	local shownGuildFinderButton = false; 
 	for i=1, #buttons do
 		local button = buttons[i];
 		local displayIndex = i + offset;
@@ -222,30 +243,33 @@ function CommunitiesListMixin:Update()
 			local clubInfo = nil;
 			local isTicket = displayIndex <= #tickets;
 			local isInvitation = displayIndex > #tickets and displayIndex <= #tickets + #invitations;
+			local isClubFinderInvitation = displayIndex > #tickets + #invitations and displayIndex <= numFinderInvitations + #tickets + #invitations; 
 
 			if isTicket then
 				clubInfo = tickets[displayIndex].clubInfo;
 			elseif isInvitation then
 				displayIndex = displayIndex - #tickets;
 				clubInfo = invitations[displayIndex].club;
+			elseif isClubFinderInvitation then 
+				displayIndex = displayIndex - #tickets - #invitations; 
+				clubInfo = clubFinderInvitations[displayIndex];
 			else
-				displayIndex = displayIndex - #tickets - #invitations;
+				displayIndex = displayIndex - #tickets - #invitations - numFinderInvitations;
 				if not isInGuild then
 					displayIndex = displayIndex - 1;
 				end
-				
 				if displayIndex > 0 and displayIndex <= #clubs then
 					clubInfo = clubs[displayIndex];
 				end
 			end
-			
 			if not isInGuild and displayIndex == 0 and C_ClubFinder.ShouldShowClubFinder() then
 				button:SetGuildFinder();
 				button:SetFocused(self:GetCommunitiesFrame():GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER);
 				button:Show();
+				shownGuildFinderButton = true;
 				usedHeight = usedHeight + height;
 			elseif clubInfo then
-				button:SetClubInfo(clubInfo, isInvitation, isTicket);
+				button:SetClubInfo(clubInfo, isInvitation, isTicket, isClubFinderInvitation);
 				button:SetFocused(isInvitation or clubInfo.clubId == selectedClubId);
 				button:Show();
 				usedHeight = usedHeight + height;
@@ -292,7 +316,8 @@ function CommunitiesListMixin:UpdateClub(clubInfo)
 		if button:GetClubId() == clubInfo.clubId then
 			local isInvitation = false;
 			local isTicket = false;
-			button:SetClubInfo(clubInfo, isInvitation, isTicket);
+			local isClubFinderInvitation = false;
+			button:SetClubInfo(clubInfo, isInvitation, isTicket, isClubFinderInvitation);
 			return;
 		end
 	end
@@ -302,6 +327,7 @@ function CommunitiesListMixin:OnLoad()
 	self.ListScrollFrame.update = function() 
 		self:Update(); 
 	end;
+	C_ClubFinder.PlayerRequestPendingClubsList(Enum.ClubFinderRequestType.All);
 	self.ListScrollFrame.ScrollBar.doNotHide = true;
 	self.ListScrollFrame.ScrollBar:SetValue(0);
 	
@@ -434,12 +460,13 @@ local COMMUNITIES_LIST_ENTRY_EVENTS = {
 
 CommunitiesListEntryMixin = {};
 
-function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket)
+function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket, isInviteFromFinder)
 	if isInvitation then
 		self.overrideOnClick = function(self, button)
 			if button == "LeftButton" then
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-				self:GetCommunitiesFrame():SelectClub(self.clubId);
+				local communitiesFrame = self:GetCommunitiesFrame(); 
+				communitiesFrame:SelectClub(self.clubId);
 				self:UpdateUnreadNotification();
 			end
 		end;
@@ -452,6 +479,52 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket)
 	end 
 
 	if clubInfo then
+		if(isInviteFromFinder) then 
+			self.Name:SetText(COMMUNITIES_LIST_INVITATION_DISPLAY:format(clubInfo.name));		
+			local fontColor = HIGHLIGHT_FONT_COLOR;
+			local isGuild = clubInfo.isGuild;
+			self.clubInfo = clubInfo;
+			self.overrideOnClick = function(self, button)
+				if button == "LeftButton" then
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+					local communitiesFrame = self:GetCommunitiesFrame();
+					communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION);
+					communitiesFrame.ClubFinderInvitationFrame:DisplayInvitation(self.clubInfo);
+					communitiesFrame:SelectClub(nil);
+				end
+			end;
+
+			if isGuild then
+				self.Background:SetAtlas("communities-nav-button-green-normal");
+				self.Background:SetTexCoord(0, 1, 0, 1);
+				self.Selection:SetAtlas("communities-nav-button-green-pressed");
+				self.Selection:SetTexCoord(0, 1, 0, 1);
+			else
+				self.Background:SetTexture("Interface\\Common\\bluemenu-main");
+				self.Background:SetTexCoord(0.00390625, 0.87890625, 0.75195313, 0.83007813);
+				self.Selection:SetTexture("Interface\\Common\\bluemenu-main");
+				self.Selection:SetTexCoord(0.00390625, 0.87890625, 0.59179688, 0.66992188);
+			end
+		
+			self.Name:SetTextColor(fontColor:GetRGB());
+			self.Name:SetPoint("LEFT", self.Icon, "RIGHT", 11, 0);
+			self.isInvitation = isInvitation;
+			self.isTicket = isTicket;
+			self.Selection:SetShown(true);
+			self.FavoriteIcon:SetShown(false);
+			self.InvitationIcon:SetShown(isInviteFromFinder);
+			SetLargeGuildTabardTextures("player", self.GuildTabardEmblem, self.GuildTabardBackground, self.GuildTabardBorder);
+			self.GuildTabardEmblem:SetShown(false);
+			self.GuildTabardBackground:SetShown(false);
+			self.GuildTabardBorder:SetShown(false);
+			self.Icon:SetShown(false);
+			self.Icon:SetSize(38, 38);
+			self.Icon:SetPoint("TOPLEFT", 11, -15);
+			self.CircleMask:SetShown(false);
+			self.IconRing:SetShown(false);
+			return; 
+		end 
+
 		if isInvitation then
 			self.Name:SetText(COMMUNITIES_LIST_INVITATION_DISPLAY:format(clubInfo.name));
 		else

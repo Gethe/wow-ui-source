@@ -3,7 +3,7 @@
 	<Script file="CommunitiesSettings.lua"/>
 	
 	<Frame name="CommunitiesSettingsDialog" frameStrata="DIALOG" parent="UIParent" mixin="CommunitiesSettingsDialogMixin" topLevel="true" hidden="true">
-		<Size x="412" y="680"/>
+		<Size x="432" y="680"/>
 		<Anchors>
 			<Anchor point="TOP" relativeTo="UIParent" x="0" y="-80"/>
 		</Anchors>
@@ -145,7 +145,7 @@
 				</Frames>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Label" text="CLUB_FINDER_LIST_GUILD" justifyH="LEFT" inherits="GameFontHighlight">
+						<FontString parentKey="Label" text="CLUB_FINDER_LIST_COMMUNITY" justifyH="LEFT" inherits="GameFontHighlight">
 							<Size x="260" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.ShouldListClubButton" x="35" y="0"/>
@@ -256,7 +256,7 @@
 			<Frame parentKey="LookingForDropdown" name="ClubFinderLookingForDropdown" inherits="UIDropDownMenuTemplate" mixin="LookingForDropdownMixin">
 				<Size x="0" y="20"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.ClubFocusDropdown" relativePoint="RIGHT" x="180" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.ClubFocusDropdown" relativePoint="RIGHT" x="190" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">

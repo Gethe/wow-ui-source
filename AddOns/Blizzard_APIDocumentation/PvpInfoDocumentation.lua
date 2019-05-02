@@ -483,6 +483,24 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "IsRatedArena",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isRatedArena", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsRatedBattleground",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isRatedBattleground", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsRatedMap",
 			Type = "Function",
 

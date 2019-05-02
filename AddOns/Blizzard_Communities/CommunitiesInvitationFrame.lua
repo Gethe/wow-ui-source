@@ -8,6 +8,7 @@ CommunitiesInvitationFrameMixin = {};
 
 function CommunitiesInvitationFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, COMMUNITIES_INVITATION_FRAME_EVENTS);
+	self:GetCommunitiesFrame().ClubFinderInvitationFrame:Hide(); 
 end
 
 function CommunitiesInvitationFrameMixin:OnHide()

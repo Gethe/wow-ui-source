@@ -58,7 +58,8 @@ end
 function LootItemExtendedMixin:SetIconOverlayAtlas(atlas)
 	local isValid = atlas ~= nil;
 	if isValid then
-		self.IconOverlay:SetAtlas(atlas);
+		local useAtlasSize = true;
+		self.IconOverlay:SetAtlas(atlas, useAtlasSize);
 	end
 	self.IconOverlay:SetShown(isValid);
 end

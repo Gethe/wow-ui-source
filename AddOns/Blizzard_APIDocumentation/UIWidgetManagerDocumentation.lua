@@ -271,6 +271,20 @@ local UIWidgetManager =
 				{ Name = "setID", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "GetZoneControlVisualizationInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "ZoneControlVisualizationInfo", Nilable = true },
+			},
+		},
 	},
 
 	Events =
@@ -376,9 +390,9 @@ local UIWidgetManager =
 		{
 			Name = "UIWidgetVisualizationType",
 			Type = "Enumeration",
-			NumValues = 16,
+			NumValues = 17,
 			MinValue = 0,
-			MaxValue = 15,
+			MaxValue = 16,
 			Fields =
 			{
 				{ Name = "IconAndText", Type = "UIWidgetVisualizationType", EnumValue = 0 },
@@ -397,6 +411,7 @@ local UIWidgetManager =
 				{ Name = "SpellDisplay", Type = "UIWidgetVisualizationType", EnumValue = 13 },
 				{ Name = "DoubleStateIconRow", Type = "UIWidgetVisualizationType", EnumValue = 14 },
 				{ Name = "TextureAndTextRow", Type = "UIWidgetVisualizationType", EnumValue = 15 },
+				{ Name = "ZoneControl", Type = "UIWidgetVisualizationType", EnumValue = 16 },
 			},
 		},
 		{
@@ -427,6 +442,18 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "SpellDisplayIconDisplayType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Buff", Type = "SpellDisplayIconDisplayType", EnumValue = 0 },
+				{ Name = "Debuff", Type = "SpellDisplayIconDisplayType", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "StatusBarOverrideBarTextShownType",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -452,6 +479,44 @@ local UIWidgetManager =
 				{ Name = "Medium", Type = "UIWidgetTextSizeType", EnumValue = 1 },
 				{ Name = "Large", Type = "UIWidgetTextSizeType", EnumValue = 2 },
 				{ Name = "Huge", Type = "UIWidgetTextSizeType", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "ZoneControlState",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "State1", Type = "ZoneControlState", EnumValue = 0 },
+				{ Name = "State2", Type = "ZoneControlState", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "ZoneControlActiveState",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Inactive", Type = "ZoneControlActiveState", EnumValue = 0 },
+				{ Name = "Active", Type = "ZoneControlActiveState", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "ZoneControlFillType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "SingleFillClockwise", Type = "ZoneControlFillType", EnumValue = 0 },
+				{ Name = "SingleFillCounterClockwise", Type = "ZoneControlFillType", EnumValue = 1 },
+				{ Name = "DoubleFillClockwise", Type = "ZoneControlFillType", EnumValue = 2 },
+				{ Name = "DoubleFillCounterClockwise", Type = "ZoneControlFillType", EnumValue = 3 },
 			},
 		},
 		{
@@ -703,6 +768,10 @@ local UIWidgetManager =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },
+				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "stackDisplay", Type = "number", Nilable = false },
+				{ Name = "iconSizeType", Type = "SpellDisplayIconSizeType", Nilable = false },
+				{ Name = "iconDisplayType", Type = "SpellDisplayIconDisplayType", Nilable = false },
 			},
 		},
 		{
@@ -713,7 +782,6 @@ local UIWidgetManager =
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "enabledState", Type = "WidgetEnabledState", Nilable = false },
 				{ Name = "spellInfo", Type = "UIWidgetSpellInfo", Nilable = false },
-				{ Name = "iconSizeType", Type = "SpellDisplayIconSizeType", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
 				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
@@ -818,6 +886,38 @@ local UIWidgetManager =
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
+				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+			},
+		},
+		{
+			Name = "ZoneEntry",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "state", Type = "ZoneControlState", Nilable = false },
+				{ Name = "activeState", Type = "ZoneControlActiveState", Nilable = false },
+				{ Name = "fillType", Type = "ZoneControlFillType", Nilable = false },
+				{ Name = "min", Type = "number", Nilable = false },
+				{ Name = "max", Type = "number", Nilable = false },
+				{ Name = "current", Type = "number", Nilable = false },
+				{ Name = "capturePoint", Type = "number", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ZoneControlVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
+				{ Name = "zoneEntries", Type = "table", InnerType = "ZoneEntry", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
 				{ Name = "frameTextureKitID", Type = "number", Nilable = false },

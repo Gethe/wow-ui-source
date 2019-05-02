@@ -25,12 +25,16 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame parentKey="Score" inherits="UIWidgetContainerTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-40" y="-30"/>
+				</Anchors>
+			</Frame>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="3.6" y="3"/>
 				</Anchors>
 			</Button>
-			
 			<Frame parentKey="content">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="30" y="-90"/>
@@ -398,7 +402,6 @@
 						<Anchor point="TOP" y="-25"/>
 						<Anchor point="BOTTOM" relativeKey="$parent.content" relativePoint="TOP"/>
 					</Anchors>
-					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>
 			</Layer>
       <Layer level="BORDER">
@@ -413,6 +416,8 @@
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
 			<OnUpdate method="OnUpdate"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
  <Frame name="PVPMatchResultsNameDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true" />

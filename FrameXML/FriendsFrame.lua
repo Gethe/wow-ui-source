@@ -312,7 +312,7 @@ function FriendsFrame_OnShow()
 	FriendsFrame_CheckQuickJoinHelpTip();
 	FriendsFrame_UpdateQuickJoinTab(#C_SocialQueue.GetAllGroups());
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
-	GuildRoster();
+	C_GuildInfo.GuildRoster();
 end
 
 function FriendsFrame_Update()
@@ -914,7 +914,7 @@ function FriendsFrame_OnEvent(self, event, ...)
 		if ( self:IsVisible() ) then
 			local canRequestGuildRoster = ...;
 			if ( canRequestGuildRoster ) then
-				GuildRoster();
+				C_GuildInfo.GuildRoster();
 			end
 		end
 	end

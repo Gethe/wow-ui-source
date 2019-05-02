@@ -14,7 +14,7 @@ function CommunitiesSettingsDialogMixin:OnLoad()
 	self.LookingForDropdown:Initialize(); 
 	self.ClubFocusDropdown:Initialize(); 
 	self.ClubFocusDropdown.GuildFocusDropdownLabel:SetFontObject(GameFontNormal);
-	UIDropDownMenu_SetWidth(self.LookingForDropdown, 140);
+	UIDropDownMenu_SetWidth(self.LookingForDropdown, 150);
 	UIDropDownMenu_SetWidth(self.ClubFocusDropdown, 140);
 	UIDropDownMenu_Initialize(self.LookingForDropdown, LookingForClubDropdownInitialize); 
 	UIDropDownMenu_Initialize(self.ClubFocusDropdown, ClubFocusClubDropdownInitialize); 

@@ -50,6 +50,9 @@ end
 
 function ClubFinderApplicantEntryMixin:UpdateMemberInfo(info)
 	self.Info = info;
+	if	(not info) then
+		return;
+	end
 
 	local className, classTag = GetClassInfo(info.classID);
 	self.ClassName = className; 
@@ -91,7 +94,9 @@ function ClubFinderApplicantEntryMixin:UpdateMemberInfo(info)
 			self.AllSpec:Show();
 		end
 	end 
-	self.Class:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classTag]));
+	if (classTag) then 
+		self.Class:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classTag]));
+	end
 	UIDropDownMenu_Initialize(self.RightClickDropdown, ApplicantRightClickOptionsMenuInitialize, "MENU");
 end 
 
@@ -184,7 +189,7 @@ function ClubFinderApplicantListMixin:OnShow()
 	if (communityFrame:GetSelectedClubId()) then 
 		local clubInfo = C_Club.GetClubInfo(communityFrame:GetSelectedClubId());
 		if (clubInfo) then 
-			C_ClubFinder.RequestApplicantList(clubInfo.clubId); 
+			C_ClubFinder.RequestApplicantList(Enum.ClubFinderRequestType.All); 
 		end 
 	end
 end 
@@ -230,7 +235,7 @@ function ClubFinderApplicantInviteButtonMixin:OnLeave()
 end 
 
 function ClubFinderApplicantInviteButtonMixin:OnClick() 
-	C_ClubFinder.RespondToApplicant(0, self:GetParent().Info.playerGUID, true, Enum.ClubFinderRequestType.Guild); --TO DO CLUBFINDER: Check which type we are (or have a way of figuring it out)
+	C_ClubFinder.RespondToApplicant(self:GetParent().Info.clubFinderGUID, self:GetParent().Info.playerGUID, true, Enum.ClubFinderRequestType.Guild); --TO DO CLUBFINDER: Check which type we are (or have a way of figuring it out)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end 
 
@@ -247,5 +252,5 @@ end
 
 function ClubFinderApplicantCancelButtonMixin:OnClick() 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	C_ClubFinder.RespondToApplicant(0, self:GetParent().Info.playerGUID, false, Enum.ClubFinderRequestType.Guild);--TO DO CLUBFINDER: Check which type we are (or have a way of figuring it out)
+	C_ClubFinder.RespondToApplicant(self:GetParent().Info.clubFinderGUID, self:GetParent().Info.playerGUID, false, Enum.ClubFinderRequestType.Guild);--TO DO CLUBFINDER: Check which type we are (or have a way of figuring it out)
 end 

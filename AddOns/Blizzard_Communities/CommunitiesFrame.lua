@@ -79,6 +79,12 @@ function CommunitiesFrameMixin:OnShow()
 	if self.CommunitiesList:IsShown() then
 		self.CommunitiesList:ScrollToClub(self:GetSelectedClubId());
 	end
+
+	if self.selectedClubInfo and self.selectedClubInfo.clubType == Enum.ClubType.Guild then 
+		C_ClubFinder.RequestApplicantList(Enum.ClubFinderRequestType.Guild); 
+	elseif self.selectedClubInfo and self.selectedClubInfo.clubType == Enum.ClubType.Character then
+		C_ClubFinder.RequestApplicantList(Enum.ClubFinderRequestType.Community); 
+	end
 end
 
 function CommunitiesFrameMixin:OnEvent(event, ...)
@@ -334,6 +340,7 @@ COMMUNITIES_FRAME_DISPLAY_MODES = {
 	INVITATION = {
 		"CommunitiesList",
 		"InvitationFrame",
+		"ClubFinderInvitationFrame",
 	},
 
 	TICKET = {
@@ -405,7 +412,7 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 			end
 		end
 		if isGuildCommunitySelected then
-			GuildRoster();
+			C_GuildInfo.GuildRoster();
 		end
 		self.GuildMemberListDropDownMenu:SetShown(isGuildCommunitySelected);
 	end
@@ -419,7 +426,7 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 end
 
 function CommunitiesFrameMixin:UpdateMaximizeMinimizeButton()
-	self.MaximizeMinimizeFrame.MinimizeButton:SetEnabled(self.displayMode ~= COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION and self.displayMode ~= COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER and not self.chatDisabled);
+	self.MaximizeMinimizeFrame.MinimizeButton:SetEnabled(self.displayMode ~= COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION and self.displayMode ~= COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER and self.displayMode ~= COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_FINDER and not self.chatDisabled);
 end
 
 function CommunitiesFrameMixin:GetNeedsGuildNameChange()
@@ -630,7 +637,7 @@ function CommunitiesFrameMixin:OnClubSelected(clubId)
 			self:ValidateDisplayMode();
 
 			if clubInfo.clubType == Enum.ClubType.Guild then
-				GuildRoster();
+				C_GuildInfo.GuildRoster();
 			end
 		else
 			SetPortraitToTexture(self.PortraitOverlay.Portrait, "Interface\\Icons\\Achievement_General_StayClassy");

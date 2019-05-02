@@ -58,7 +58,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture parentKey="IconOverlay" hidden="true" useAtlasSize="true">
+				<Texture parentKey="IconOverlay" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 					</Anchors>

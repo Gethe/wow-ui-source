@@ -397,6 +397,10 @@ function SetItemRef(link, text, button, chatFrame)
 			CommunitiesHyperlink.OnClickReference(clubId);
 		end
 		return;
+	elseif ( strsub(link, 1, 9) == "azessence" ) then
+		if ChatEdit_InsertLink(link) then
+			return;
+		end
 	end
 
 	if ( IsModifiedClick() ) then

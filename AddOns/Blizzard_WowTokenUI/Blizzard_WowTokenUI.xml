@@ -242,24 +242,7 @@
 		<Frame name="WowTokenDialog" parent="UIParent" frameStrata="DIALOG" toplevel="true" enableMouse="true" hidden="true">
 			<Size x="434" y="216" />
 			<!-- Anchors are set by the dialogs in lua -->
-			<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-				<TileSize>
-					<AbsValue val="32" />
-				</TileSize>
-				<EdgeSize>
-					<AbsValue val="32" />
-				</EdgeSize>
-			</Backdrop>
 			<Layers>
-				<Layer level="BACKGROUND">
-					<Texture>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="5" y="-5" />
-							<Anchor point="BOTTOMRIGHT" x="-5" y="5" />
-						</Anchors>
-						<Color r="0" g="0" b="0" a="1" />
-					</Texture>
-				</Layer>
 				<Layer level="BORDER">
 					<Texture parentKey="CompletionIcon" file="Interface\Store\Store-Main">
 						<Size x="66" y="67"/>
@@ -313,6 +296,7 @@
 				</Layer>
 			</Layers>
 			<Frames>
+				<Frame parentKey="Border" inherits="SecureDialogBorderOpaqueTemplate"/>
 				<Frame parentKey="Spinner" inherits="LoadingSpinnerTemplate" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="16"/>

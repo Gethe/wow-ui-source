@@ -1707,15 +1707,31 @@ SecureCmdList["QUIT"] = function(msg)
 	Quit();
 end
 
+function AddSecureCmd(cmd, cmdString)
+	if not issecure() then
+		error("Cannot call AddSecureCmd from insecure code");
+	end
+
+	hash_SecureCmdList[strupper(cmdString)] = cmd;
+end
+
+function AddSecureCmdAliases(cmd, ...)
+	for i = 1, select("#", ...) do
+		local cmdString = select(i, ...);
+		AddSecureCmd(cmd, cmdString);
+	end
+end
+
 -- Pre-populate the secure command hash table
 for index, value in pairs(SecureCmdList) do
 	local i = 1;
-	local cmdString = _G["SLASH_"..index..i];
-	while ( cmdString ) do
-		cmdString = strupper(cmdString);
-		hash_SecureCmdList[cmdString] = value;	-- add to hash
-		i = i + 1;
+	local cmdString = "";
+	while cmdString do
 		cmdString = _G["SLASH_"..index..i];
+		if cmdString then
+			AddSecureCmd(value, cmdString);
+			i = i + 1;
+		end
 	end
 end
 
@@ -2366,7 +2382,7 @@ end
 if IsGMClient() then
 	SLASH_TEXELVIS1 = "/texelvis";
 	SLASH_TEXELVIS2 = "/tvis";
-	SlashCmdList["TEXELVIS"] = function(msg) 
+	SlashCmdList["TEXELVIS"] = function(msg)
 		UIParentLoadAddOn("Blizzard_DebugTools");
 		TexelSnappingVisualizer:Show();
 	end
@@ -2775,7 +2791,7 @@ function ChatFrame_ContainsMessageGroup(chatFrame, group)
 			return true;
 		end
 	end
-	
+
 	return false;
 end
 
@@ -2834,16 +2850,16 @@ function ChatFrame_AddNewCommunitiesChannel(chatFrameIndex, clubId, streamId, se
 	local clubInfo = C_Club.GetClubInfo(clubId);
 	if clubInfo then
 		C_Club.AddClubStreamChatChannel(clubId, streamId);
-		
+
 		local channelColor = DEFAULT_CHAT_CHANNEL_COLOR;
 		local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
 		if clubInfo.clubType == Enum.ClubType.BattleNet then
 			channelColor = BATTLENET_FONT_COLOR;
-			
+
 			local channel = Chat_GetCommunitiesChannel(clubId, streamId);
 			ChangeChatColor(channel, channelColor:GetRGB());
 		end
-		
+
 		local chatFrame = _G["ChatFrame"..chatFrameIndex];
 		ChatFrame_AddCommunitiesChannel(chatFrame, channelName, channelColor, setEditBoxToChannel);
 	end
@@ -2884,7 +2900,7 @@ function ChatFrame_AddChannel(chatFrame, channel)
 end
 
 function ChatFrame_GetCommunitiesChannelLocalID(clubId, streamId)
-	local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);	
+	local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
 	local localID = GetChannelName(channelName);
 	return localID;
 end
@@ -3710,7 +3726,7 @@ function ChatFrame_OpenChat(text, chatFrame, desiredCursorPosition)
 		    return;
 		end
 	end
-	
+
 	local editBox = ChatEdit_ChooseBoxForSend(chatFrame);
 
 	ChatEdit_ActivateChat(editBox);
@@ -4002,12 +4018,12 @@ function ChatEdit_OnLoad(self)
 			ChatEdit_UpdateHeader(editBox);
 			return true;
 		end
-		
+
 		return false;
 	end
-	
+
 	AutoCompleteEditBox_SetCustomAutoCompleteFunction(self, ChatEditAutoComplete);
-	
+
 	self:SetParent(UIParent);
 end
 
@@ -4676,7 +4692,7 @@ local function processChatType(editBox, msg, index, send)
 	else
 		AutoCompleteEditBox_SetAutoCompleteSource(editBox, nil);
 	end
-	
+
 -- this is a special function for "ChatEdit_HandleChatType"
 	if ( ChatTypeInfo[index] ) then
 		if ( index == "WHISPER" or index == "SMART_WHISPER" ) then

@@ -217,10 +217,6 @@ PetStable.xml
 VehicleSeatIndicator.xml
 DurabilityFrame.xml
 BattlegroundChatFilters.xml
-PVPMatchUtil.lua
-PVPMatchTable.xml
-PVPMatchResults.xml
-PVPMatchScoreboard.xml
 PVEFrame.xml
 LFGFrame.xml
 LFDFrame.xml
@@ -278,6 +274,7 @@ AzeriteIslandsToast.xml
 SplashFrame.xml
 QuestChoiceFrameMixin.lua
 AzeriteEmpoweredItemDataSource.lua
+GuildUtil.lua
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

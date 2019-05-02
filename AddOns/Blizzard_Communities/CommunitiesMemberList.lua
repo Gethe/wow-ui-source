@@ -13,6 +13,7 @@ local COMMUNITIES_MEMBER_LIST_EVENTS = {
 	"CLUB_INVITATIONS_RECEIVED_FOR_CLUB",
 	"CLUB_MEMBER_ROLE_UPDATED",
 	"GUILD_ROSTER_UPDATE",
+	"CLUB_FINDER_RECRUITS_UPDATED",
 };
 
 local COMMUNITIES_MEMBER_LIST_ENTRY_EVENTS = {
@@ -472,7 +473,7 @@ function CommunitiesMemberListMixin:OnShow()
 	local function ClubSelectedCallback(event, clubId)
 		self:ResetColumnSort();
 		if clubId == C_Club.GetGuildClubId() then
-			GuildRoster();
+			C_GuildInfo.GuildRoster();
 		end
 
 		self:UpdateInvitations();
@@ -500,7 +501,7 @@ function CommunitiesMemberListMixin:OnShow()
 
 	local selectedClubId = self:GetSelectedClubId();
 	if selectedClubId ~= nil and selectedClubId == C_Club.GetGuildClubId() then
-		GuildRoster();
+		C_GuildInfo.GuildRoster();
 		QueryGuildRecipes();
 	end
 end
@@ -655,12 +656,19 @@ function CommunitiesMemberListMixin:OnEvent(event, ...)
 	elseif event == "GUILD_ROSTER_UPDATE" then
 		local canRequestGuildRosterUpdate = ...;
 		if canRequestGuildRosterUpdate then
-			GuildRoster();
+			C_GuildInfo.GuildRoster();
 		end
 
 		if C_Club.GetGuildClubId() == self:GetSelectedClubId() then
 			self:MarkMemberListDirty();
 			self:MarkSortDirty();
+		end
+	elseif event == "CLUB_FINDER_RECRUITS_UPDATED" then 
+		self.ApplicantInfoList = C_ClubFinder.GetApplicantInfoList();
+		if (self.ApplicantInfoList and #self.ApplicantInfoList > 0) then 
+			self.hasApplicants = true; 
+		else 
+			self.hasApplicants = false; 
 		end
 	end
 end
@@ -1494,6 +1502,9 @@ function GuildMemberListDropDownMenu_Initialize(self)
 		info.text = extraColumnInfo.dropdownText;
 		info.value = i;
 		if i == EXTRA_GUILD_COLUMN_APPLICANTS then 
+			if (memberList.hasApplicants) then 
+				info.text = extraColumnInfo.dropdownText.." "..CreateAtlasMarkup("communities-icon-notification", 10, 10);
+			end
 			info.func = function(button)
 				self:GetCommunitiesFrame():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST);
 				UIDropDownMenu_SetSelectedValue(self, i);
@@ -1507,5 +1518,6 @@ function GuildMemberListDropDownMenu_Initialize(self)
 		end
 		UIDropDownMenu_AddButton(info);
 	end
-	UIDropDownMenu_SetSelectedValue(self, memberList:GetGuildColumnIndex());
+
+	self.NotificationOverlay:SetShown(memberList.hasApplicants);
 end

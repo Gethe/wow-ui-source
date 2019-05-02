@@ -53,7 +53,7 @@ function PVPMatchScoreboardMixin:Init()
 
 	self:SetupArtwork(factionIndex, isFactionalMatch);
 
-	ConstructPVPMatchTable(self.tableBuilder, PVPMatchUtil.IsRatedBattleground(), isArena, isLFD, not isFactionalMatch);
+	ConstructPVPMatchTable(self.tableBuilder, C_PvP.IsRatedBattleground(), isArena, isLFD, not isFactionalMatch);
 end
 
 function PVPMatchScoreboardMixin:OnEvent(event, ...)

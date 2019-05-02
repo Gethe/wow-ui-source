@@ -74,7 +74,7 @@ function ClubFinderRequestToJoinMixin:Initialize()
 
 	for _, specId in ipairs(specIds) do 
 		if (self.card.recruitingSpecIds[specId]) then
-			local _, name, _, _, role = GetSpecializationInfoForSpecID(playerSpecID);
+			local _, name, _, _, role = GetSpecializationInfoForSpecID(specId);
 			table.insert(matchingSpecNames, name);
 			shouldShowSpecIndex = shouldShowSpecIndex + 1; 
 			self.Specs[shouldShowSpecIndex].SpecName:SetText(name); 
@@ -219,7 +219,11 @@ end
 LookingForDropdownMixin = CreateFromMixins(SettingsDropdownMixin); 
 
 function LookingForDropdownMixin:GetSpecsList()
-	return self.checkedList; 
+	local specList = { };
+	for i, spec in pairs(self.checkedList) do 
+		table.insert(specList, spec.specID);
+	end 
+	return specList; 
 end 
 
 function LookingForDropdownMixin:IsSpecInList(specID)
@@ -671,11 +675,15 @@ function ClubFinderGuildCardMixin:UpdateCard()
 	if (info.clubStatus) then 
 		self.RequestJoin:Hide(); 
 		self.RequestStatus:Show(); 
-		if (info.clubStatus == Enum.PlayerClubRequestStatus.Requested) then 
+		if(info.clubStatus == Enum.PlayerClubRequestStatus.None) then 
+			self.RequestJoin:Show(); 
+			self.RequestStatus:Hide(); 
+			self:SetDisabledState(false); 
+		elseif (info.clubStatus == Enum.PlayerClubRequestStatus.Pending) then 
 			self.RequestStatus:SetTextColor(GREEN_FONT_COLOR:GetRGB());
 			self.RequestStatus:SetText(CLUB_FINDER_PENDING);
 			self:SetDisabledState(false); 
-		elseif (info.clubStatus == Enum.PlayerClubRequestStatus.Accepted) then 
+		elseif (info.clubStatus == Enum.PlayerClubRequestStatus.Approved) then 
 			self.RequestStatus:SetText(CLUB_FINDER_ACCEPTED);
 			self.RequestStatus:SetTextColor(GREEN_FONT_COLOR:GetRGB());
 			self:SetDisabledState(false); 
@@ -781,11 +789,11 @@ function ClubFinderCommunitiesCardMixin:UpdateCard()
 	if (info.clubStatus) then 
 		self.RequestJoin:Hide(); 
 		self.RequestStatus:Show(); 
-		if (info.clubStatus == Enum.PlayerClubRequestStatus.Requested) then 
+		if (info.clubStatus == Enum.PlayerClubRequestStatus.Pending) then 
 			self.RequestStatus:SetTextColor(GREEN_FONT_COLOR:GetRGB());
 			self.RequestStatus:SetText(CLUB_FINDER_PENDING);
 			self:SetDisabledState(false); 
-		elseif (info.clubStatus == Enum.PlayerClubRequestStatus.Accepted) then 
+		elseif (info.clubStatus == Enum.PlayerClubRequestStatus.Approved) then 
 			self.RequestStatus:SetText(CLUB_FINDER_ACCEPTED);
 			self.RequestStatus:SetTextColor(GREEN_FONT_COLOR:GetRGB());
 			self:SetDisabledState(false); 
@@ -862,10 +870,14 @@ end
 
 function ClubFinderCommunitiesCardFrameMixin:BuildCardList()
 	self.CardList = { }; 
-	if not self.ListScrollFrame.buttons then
-		HybridScrollFrame_CreateButtons(self.ListScrollFrame, "ClubFinderCommunitiesCardTemplate", 10, -10, "TOPLEFT", nil, nil, -5);
-	end
 	self.CardList = C_ClubFinder.ReturnMatchingCommunityList(); 
+
+	if not self.ListScrollFrame.buttons and self.CardList and #self.CardList > 0 then
+		HybridScrollFrame_CreateButtons(self.ListScrollFrame, "ClubFinderCommunitiesCardTemplate", 10, -10, "TOPLEFT", nil, nil, -5);
+	else 
+		self.ListScrollFrame.scrollBar:Hide();
+		self:GetParent().InsetFrame.GuildDescription:SetText(CLUB_FINDER_SEARCH_NOTHING_FOUND); 
+	end
 end 
 
 function ClubFinderCommunitiesCardFrameMixin:BuildPendingCardList()
@@ -874,7 +886,7 @@ function ClubFinderCommunitiesCardFrameMixin:BuildPendingCardList()
 	end
 
 	self.PendingCardList = C_ClubFinder.PlayerReturnPendingCommunitiesList(); 
-	self.pendingCardListSize = #self.PendingCardList; 
+	self.pendingCardListSize = #self.PendingCardList;
 
 end 
 
@@ -963,7 +975,13 @@ end
 
 function ClubFinderGuildCardsMixin:BuildCardList()
 	self.CardList = C_ClubFinder.ReturnMatchingGuildList(); 
-	self.numPages = math.floor(#self.CardList / GUILD_CARDS_PER_PAGE); --Need to get the number of pages
+	self.numPages = 0;
+
+	if( #self.CardList == 0) then 
+		self:GetParent().InsetFrame.GuildDescription:SetText(CLUB_FINDER_SEARCH_NOTHING_FOUND); 
+	else 
+		self.numPages = math.floor(#self.CardList / GUILD_CARDS_PER_PAGE); --Need to get the number of pages
+	end
 end 
 
 function ClubFinderGuildCardsMixin:BuildPendingCardList()
@@ -1056,7 +1074,7 @@ function ClubFinderGuildAndCommunityMixin:OnLoad()
 	self.PendingClubs:SetEnabled(false); 
 	self.PendingClubs:SetText(CLUB_FINDER_PENDING_REQUESTS:format(0));
 	self.InsetFrame.GuildDescription:Show(); 
-	self.GuildCards.pendingCardListSize = 0; 
+	self.GuildCards.pendingCardListSize = 0;
 	self:Show(); 
 end 
 
@@ -1078,13 +1096,16 @@ end
 
 function ClubFinderGuildAndCommunityMixin:OnShow()
 	CommunitiesFrameInset:Hide(); 
-	self:RegisterEvent("CLUB_FINDER_CLUB_LIST_RETURNED"); 
+	self:RegisterEvent("CLUB_FINDER_CLUB_LIST_RETURNED");
+	self:RegisterEvent("CLUB_FINDER_MEMBERSHIP_LIST_CHANGED");
 	self:RegisterEvent("CLUB_FINDER_PLAYER_PENDING_LIST_RECIEVED");
+	self:RegisterEvent("CLUB_FINDER_POST_UPDATED");
+	self:RegisterEvent("CLUB_FINDER_RECRUIT_LIST_CHANGED");
+	self:RegisterEvent("CLUB_FINDER_RECRUITS_UPDATED");
 	
 	local GetGuildList = true;
-	C_ClubFinder.PlayerRequestPendingClubsList(GetGuildList);
-	C_ClubFinder.PlayerRequestPendingClubsList(not GetGuildList); 
-	C_ClubFinder.RequestApplicantList(); -- Leader's view of pending applications
+	C_ClubFinder.PlayerRequestPendingClubsList(Enum.ClubFinderRequestType.All); -- Player's applications to a guild or community
+	C_ClubFinder.RequestApplicantList(Enum.ClubFinderRequestType.All); -- Leader's view of pending applications from players wishing to join
 
 	self:UpdateType(self.shouldShowGuildFinderOnly); --Should show communities list first. 
 	self.OptionsList:Show(); 
@@ -1095,28 +1116,35 @@ function ClubFinderGuildAndCommunityMixin:OnHide()
 end 
 
 function ClubFinderGuildAndCommunityMixin:OnEvent(event, ...)
-	if (event == "CLUB_FINDER_CLUB_LIST_RETURNED") then 
-		local isGuild = ...; 
-		if (isGuild) then 
+	if (event == "CLUB_FINDER_CLUB_LIST_RETURNED") then
+		local requestType = ...;
+		local buildGuild = (requestType == Enum.ClubFinderRequestType.Guild) or (requestType == Enum.ClubFinderRequestType.All); 
+		local builCommunity = (requestType == Enum.ClubFinderRequestType.Community) or (requestType == Enum.ClubFinderRequestType.All); 
+		if (buildGuild) then
 			self.GuildCards:BuildCardList();
-			if (self.isGuildType) then 
-			self.GuildCards:RefreshLayout(); 
+			if (self.isGuildType) then
+				self.GuildCards:RefreshLayout(); 
 				self.GuildCards:Show(); 
 			end 
-		else 
+		end
+		if (builCommunity) then
 			self.CommunityCards:BuildCardList(); 
-			if (not self.isGuildType) then 
-			self.CommunityCards:RefreshLayout(); 
+			if (not self.isGuildType) then
+				self.CommunityCards:RefreshLayout(); 
 				self.CommunityCards:Show(); 
 			end
-		end		
-	elseif (event == "CLUB_FINDER_PLAYER_PENDING_LIST_RECIEVED") then 
-		local isGuild = ...;
-		if (isGuild) then	
+		end
+	elseif (event == "CLUB_FINDER_PLAYER_PENDING_LIST_RECIEVED") or (event == "CLUB_FINDER_RECRUIT_LIST_CHANGED") or (event == "CLUB_FINDER_RECRUITS_UPDATED") then 
+		local requestType = ...;
+		local buildGuild = (requestType == Enum.ClubFinderRequestType.Guild) or (requestType == Enum.ClubFinderRequestType.All); 
+		local builCommunity = (requestType == Enum.ClubFinderRequestType.Community) or (requestType == Enum.ClubFinderRequestType.All); 
+		if (buildGuild) then
 			self.GuildCards:BuildPendingCardList();
-		else 
+		end
+		if (builCommunity) then
 			self.CommunityCards:BuildPendingCardList();
-		end		
+		end
+		self:UpdateType(self.isGuildType);
 	end 
 end 
 
@@ -1161,4 +1189,90 @@ function ClubFinderPendingClubsMixin:OnClick()
 	else 
 		self:GetParent().CommunityCards:RefreshLayout(true); 
 	end
+end 
+
+
+ClubFinderInvitationsFrameMixin = { }; 
+
+function ClubFinderInvitationsFrameMixin:DisplayInvitation(clubInfo) 
+	self.clubInfo = clubInfo; 
+	if(not clubInfo) then 
+		return;
+	end
+	if (clubInfo.tabardInfo) then 
+		self.GuildBannerBackground:SetVertexColor(clubInfo.tabardInfo.backgroundColor.r, clubInfo.tabardInfo.backgroundColor.g, clubInfo.tabardInfo.backgroundColor.b);
+		self.GuildBannerBorder:SetVertexColor(clubInfo.tabardInfo.borderColor.r, clubInfo.tabardInfo.borderColor.g, clubInfo.tabardInfo.borderColor.b);
+		self.GuildBannerEmblemLogo:SetVertexColor(clubInfo.tabardInfo.emblemColor.r, clubInfo.tabardInfo.emblemColor.g, clubInfo.tabardInfo.emblemColor.b);
+		self.GuildBannerEmblemLogo:SetTexture(clubInfo.tabardInfo.emblemFileID);
+	end
+
+	local isGuild = clubInfo.isGuild; 
+
+	if	(isGuild) then 
+		self.Type:SetText(CLUB_FINDER_TYPE_GUILD); 
+	else 
+		self.Type:SetText(CLUB_FINDER_COMMUNITY_TYPE); 
+	end
+
+	self.Icon:SetShown(not isGuild); 
+	self.IconRing:SetShown(not isGuild); 
+	self.CircleMask:SetShown(not isGuild);
+	self.GuildBannerBackground:SetShown(isGuild); 
+	self.GuildBannerBorder:SetShown(isGuild); 
+	self.GuildBannerEmblemLogo:SetShown(isGuild); 
+	self.GuildBannerShadow:SetShown(isGuild);
+	self.Name:SetText(clubInfo.name);
+	self.Description:SetText(clubInfo.comment);
+	self.Leader:SetText(COMMUNITIES_INVIVATION_FRAME_LEADER_FORMAT:format(clubInfo.guildLeader)); 
+	self.MemberCount:SetText(COMMUNITIES_INVITATION_FRAME_MEMBER_COUNT:format(clubInfo.numActiveMembers or 1));
+	self.InvitationText:SetText(COMMUNITY_INVITATION_FRAME_INVITATION_TEXT:format(clubInfo.guildLeader));
+	self:GetParent().InvitationFrame:Hide();
+	self:Show(); 
+end 
+
+function ClubFinderInvitationsFrameMixin:AcceptInvitation()
+	C_ClubFinder.ApplicantAcceptClubInvite(self.clubInfo.clubFinderGUID);
+	self:GetParent():SelectClub(nil);
+	self:GetParent():UpdateClubSelection();
+	self:Hide();
+
+	if (self.clubInfo.isGuild) then 
+		C_ClubFinder.PlayerRequestPendingClubsList(Enum.ClubFinderRequestType.Guild)
+	else 
+		C_ClubFinder.PlayerRequestPendingClubsList(Enum.ClubFinderRequestType.Community)
+	end
+end 
+
+
+function ClubFinderInvitationsFrameMixin:DeclineInvitation()
+	C_ClubFinder.ApplicantDeclineClubInvite(self.clubInfo.clubFinderGUID);
+	self:GetParent():SelectClub(nil);
+	self:GetParent():UpdateClubSelection();
+	self:Hide();
+
+	if (self.clubInfo.isGuild) then 
+		C_ClubFinder.PlayerRequestPendingClubsList(Enum.ClubFinderRequestType.Guild)
+	else 
+		C_ClubFinder.PlayerRequestPendingClubsList(Enum.ClubFinderRequestType.Community)
+	end
+end 
+
+ClubsFinderJoinClubWarningMixin = { };
+
+function ClubsFinderJoinClubWarningMixin:OnShow() 
+	if (IsInGuild()) then 
+		self:SetSize(400, 80);
+		self.DialogLabel:SetText(CLUB_FINDER_ACCEPT_GUILD_ALREADY_IN_GUILD_WARNING); 
+	else 
+		self:SetSize(400, 90);
+		self.DialogLabel:SetText(CLUB_FINDER_ACCEPT_GUILD_STANDARD_WARNING); 
+	end 
+end
+
+function ClubsFinderJoinClubWarningMixin:OnAcceptButtonClick() 
+	self:GetParent():AcceptInvitation();
+end 
+
+function ClubsFinderJoinClubWarningMixin:OnCancelButtonClick()
+	self:Hide(); 
 end 

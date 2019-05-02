@@ -16,6 +16,20 @@ local GuildInfo =
 			},
 		},
 		{
+			Name = "GetGuildNewsInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "newsInfo", Type = "GuildNewsInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetGuildRankOrder",
 			Type = "Function",
 
@@ -42,6 +56,10 @@ local GuildInfo =
 			{
 				{ Name = "permissions", Type = "table", InnerType = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "GuildRoster",
+			Type = "Function",
 		},
 		{
 			Name = "IsGuildRankAssignmentAllowed",
@@ -281,6 +299,25 @@ local GuildInfo =
 
 	Tables =
 	{
+		{
+			Name = "GuildNewsInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "isSticky", Type = "bool", Nilable = false },
+				{ Name = "isHeader", Type = "bool", Nilable = false },
+				{ Name = "newsType", Type = "number", Nilable = false },
+				{ Name = "whoText", Type = "string", Nilable = true },
+				{ Name = "whatText", Type = "string", Nilable = true },
+				{ Name = "newsDataID", Type = "number", Nilable = false },
+				{ Name = "data", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "weekday", Type = "number", Nilable = false },
+				{ Name = "day", Type = "number", Nilable = false },
+				{ Name = "month", Type = "number", Nilable = false },
+				{ Name = "year", Type = "number", Nilable = false },
+				{ Name = "guildMembersPresent", Type = "number", Nilable = false },
+			},
+		},
 	},
 };
 
