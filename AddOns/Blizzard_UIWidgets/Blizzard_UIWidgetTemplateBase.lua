@@ -412,7 +412,7 @@ local textureKitRegionInfo = {
 	["FullGlow"] = {formatString = "%s-fullglow", useAtlasSize = true},
 }
 
-function UIWidgetBaseControlZoneTemplateMixin:UpdateAnimations(zoneInfo, lastVals)
+function UIWidgetBaseControlZoneTemplateMixin:UpdateAnimations(zoneInfo, zoneMode, lastVals)
 	local isActive = (zoneInfo.activeState == Enum.ZoneControlActiveState.Active);
 	local isMaxed = (zoneInfo.current == zoneInfo.max);
 	local wasMaxed = lastVals and (lastVals.current == lastVals.max) or false;
@@ -440,7 +440,17 @@ function UIWidgetBaseControlZoneTemplateMixin:UpdateAnimations(zoneInfo, lastVal
 			self.FallingGlowAnim:Stop();
 			self.FallingGlow:Hide();
 		else
-			local reverseAnims = (zoneInfo.state == Enum.ZoneControlState.State2);
+			local reverseAnims;
+			if zoneMode == Enum.ZoneControlMode.BothStatesAreGood then
+				reverseAnims = false;
+			elseif zoneMode == Enum.ZoneControlMode.State1IsGood then
+				reverseAnims = (zoneInfo.state == Enum.ZoneControlState.State2);
+			elseif zoneMode == Enum.ZoneControlMode.State2IsGood then
+				reverseAnims = (zoneInfo.state == Enum.ZoneControlState.State1);
+			else
+				reverseAnims = true;
+			end
+
 			local playFillingAnim, playFallingAnim;
 			if reverseAnims then
 				playFillingAnim = zoneInfo.current < lastVals.current;
@@ -471,7 +481,7 @@ function UIWidgetBaseControlZoneTemplateMixin:UpdateAnimations(zoneInfo, lastVal
 	end
 end
 
-function UIWidgetBaseControlZoneTemplateMixin:Setup(zoneIndex, zoneInfo, lastVals, textureKitID)
+function UIWidgetBaseControlZoneTemplateMixin:Setup(zoneIndex, zoneMode, zoneInfo, lastVals, textureKitID)
 	local textureKit = GetUITextureKitInfo(textureKitID);
 	if not textureKit then
 		self:Hide();
@@ -539,7 +549,7 @@ function UIWidgetBaseControlZoneTemplateMixin:Setup(zoneIndex, zoneInfo, lastVal
 	zoneInfo.current = currentVal;
 
 	-- And update the animations
-	self:UpdateAnimations(zoneInfo, lastVals);
+	self:UpdateAnimations(zoneInfo, zoneMode, lastVals);
 
 	self:SetTooltip(zoneInfo.tooltip);
 

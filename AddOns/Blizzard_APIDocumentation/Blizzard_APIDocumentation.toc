@@ -129,6 +129,7 @@ SystemDocumentation.lua
 TalkingHeadDocumentation.lua
 TaxiMapDocumentation.lua
 TextureUtilsDocumentation.lua
+TooltipConstantsDocumentation.lua
 ToyBoxInfoDocumentation.lua
 TradeInfoDocumentation.lua
 TradeSkillUIDocumentation.lua

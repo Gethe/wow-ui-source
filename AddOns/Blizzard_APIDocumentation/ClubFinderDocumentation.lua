@@ -327,9 +327,9 @@ local ClubFinder =
 		{
 			Name = "ClubFinderSettingFlags",
 			Type = "Enumeration",
-			NumValues = 15,
+			NumValues = 18,
 			MinValue = 0,
-			MaxValue = 14,
+			MaxValue = 17,
 			Fields =
 			{
 				{ Name = "None", Type = "ClubFinderSettingFlags", EnumValue = 0 },
@@ -347,6 +347,9 @@ local ClubFinder =
 				{ Name = "EnableListing", Type = "ClubFinderSettingFlags", EnumValue = 12 },
 				{ Name = "MaxLevelOnly", Type = "ClubFinderSettingFlags", EnumValue = 13 },
 				{ Name = "AutoAccept", Type = "ClubFinderSettingFlags", EnumValue = 14 },
+				{ Name = "FactionHorde", Type = "ClubFinderSettingFlags", EnumValue = 15 },
+				{ Name = "FactionAlliance", Type = "ClubFinderSettingFlags", EnumValue = 16 },
+				{ Name = "FactionNeutral", Type = "ClubFinderSettingFlags", EnumValue = 17 },
 			},
 		},
 		{

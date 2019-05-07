@@ -482,6 +482,20 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "ZoneControlMode",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "BothStatesAreGood", Type = "ZoneControlMode", EnumValue = 0 },
+				{ Name = "State1IsGood", Type = "ZoneControlMode", EnumValue = 1 },
+				{ Name = "State2IsGood", Type = "ZoneControlMode", EnumValue = 2 },
+				{ Name = "NeitherStateIsGood", Type = "ZoneControlMode", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "ZoneControlState",
 			Type = "Enumeration",
 			NumValues = 2,
@@ -917,6 +931,7 @@ local UIWidgetManager =
 			Fields =
 			{
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
+				{ Name = "mode", Type = "ZoneControlMode", Nilable = false },
 				{ Name = "zoneEntries", Type = "table", InnerType = "ZoneEntry", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },

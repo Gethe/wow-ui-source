@@ -942,9 +942,7 @@ function UnitPopup_HideButtons ()
 				if ( UnitInRaid(dropdownMenu.name) ~= nil ) then
 					shown = false;
 				end
-			elseif ( dropdownMenu == FriendsDropDown and dropdownMenu.isMobile ) then
-				shown = false;
-			elseif ( dropdownMenu == GuildMenuDropDown and dropdownMenu.isMobile ) then
+			elseif ( dropdownMenu.isMobile ) then
 				shown = false;
 			else
 				if ( dropdownMenu.name == UnitName("party1") or
@@ -966,7 +964,7 @@ function UnitPopup_HideButtons ()
 				shown = false;
 			end
 		elseif ( value == "BN_INVITE" or value == "BN_SUGGEST_INVITE" or value == "BN_REQUEST_INVITE" ) then
-			local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount = BNGetFriendInfoByID(dropdownMenu.bnetIDAccount);
+			local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, _, _, _, _, _, _, _, _, _, _, _, _, _, mobile = BNGetFriendInfoByID(dropdownMenu.bnetIDAccount);
 			if not bnetIDGameAccount then
 				shown = false;
 			else
@@ -976,7 +974,7 @@ function UnitPopup_HideButtons ()
 					shown = false;
 				elseif ( not dropdownMenu.bnetIDAccount or not BNFeaturesEnabledAndConnected() ) then
 					shown = false;
-				elseif ( UnitInParty(characterName) or UnitInRaid(characterName) ) then
+				elseif ( mobile or UnitInParty(characterName) or UnitInRaid(characterName) ) then
 					shown = false;
 				end
 			end
@@ -992,6 +990,10 @@ function UnitPopup_HideButtons ()
 			end
 
 			if whisperIsLocalPlayer or (isOffline and not dropdownMenu.bnetIDAccount) or ( dropdownMenu.unit and (not canCoop or not isPlayer)) or (dropdownMenu.bnetIDAccount and not BNIsFriend(dropdownMenu.bnetIDAccount)) then
+				shown = false;
+			end
+			
+			if ( dropdownMenu.isMobile ) then
 				shown = false;
 			end
 		elseif ( value == "DUEL" ) then
@@ -1065,6 +1067,8 @@ function UnitPopup_HideButtons ()
 		elseif ( value == "BN_TARGET" ) then
 			-- We don't want to show a menu option that will end up being blocked
 			if ( not dropdownMenu.bnetIDAccount or not BNIsFriend(dropdownMenu.bnetIDAccount) or InCombatLockdown() or not issecure() ) then
+				shown = false;
+			elseif ( dropdownMenu.isMobile ) then
 				shown = false;
 			end
 		elseif ( value == "PROMOTE" ) then

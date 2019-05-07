@@ -1530,12 +1530,24 @@
 						<Anchor point="TOP" x="20" y="-18"/>
 					</Anchors>
 					<Color r="1.0" g="0.82" b="0.0"/>
+					<Shadow>
+						<Offset>
+							<AbsDimension x="1" y="-1"/>
+						</Offset>
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
 				</FontString>
 				<FontString inherits="Game24Font" text="GARRISON_MISSION_ADDED_TOAST2">
 					<Anchors>
 						<Anchor point="TOP" x="20" y="-34"/>
 					</Anchors>
 					<Color r="1.0" g="0.82" b="0.0"/>
+					<Shadow>
+						<Offset>
+							<AbsDimension x="1" y="-1"/>
+						</Offset>
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
 				</FontString>
 				<FontString parentKey="Level" inherits="Game24Font">
 					<Anchors>
@@ -1554,6 +1566,12 @@
 						<Anchor point="TOP" x="-115" y="-48"/>
 					</Anchors>
 					<Color r="0.098" g="0.537" b="0.969" a="1"/>
+					<Shadow>
+						<Offset>
+							<AbsDimension x="1" y="-1"/>
+						</Offset>
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">

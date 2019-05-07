@@ -494,6 +494,7 @@ local FriendList =
 				{ Name = "dnd", Type = "bool", Nilable = false },
 				{ Name = "afk", Type = "bool", Nilable = false },
 				{ Name = "referAFriend", Type = "bool", Nilable = false },
+				{ Name = "mobile", Type = "bool", Nilable = false },
 			},
 		},
 		{

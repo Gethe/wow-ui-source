@@ -60,6 +60,7 @@ local INVITE_RESTRICTION_WOW_PROJECT_ID = 5;
 local INVITE_RESTRICTION_WOW_PROJECT_MAINLINE = 6;
 local INVITE_RESTRICTION_WOW_PROJECT_CLASSIC = 7;
 local INVITE_RESTRICTION_NONE = 8;
+local INVITE_RESTRICTION_MOBILE = 9;
 
 local FriendListEntries = { };
 local playerRealmName;
@@ -111,6 +112,10 @@ function FriendsFrame_ShouldShowSummonButton(self)
 		local info = C_FriendList.GetFriendInfoByIndex(id);
 
 		if ( not info.isReferAFriend ) then
+			return false, false;
+		end
+
+		if ( info.mobile ) then
 			return false, false;
 		end
 
@@ -201,7 +206,7 @@ function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame,
 	end
 end
 
-function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFrame, friendsList, bnetIDAccount, communityClubID, communityStreamID, communityEpoch, communityPosition)
+function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFrame, friendsList, bnetIDAccount, communityClubID, communityStreamID, communityEpoch, communityPosition, mobile)
 	if ( connected or friendsList ) then
 		if ( connected ) then
 			FriendsDropDown.initialize = FriendsFrameBNDropDown_Initialize;
@@ -220,7 +225,7 @@ function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFram
 		FriendsDropDown.chatTarget = name;
 		FriendsDropDown.chatFrame = chatFrame;
 		FriendsDropDown.bnetIDAccount = bnetIDAccount;
-		FriendsDropDown.isMobile = nil;
+		FriendsDropDown.isMobile = mobile;
 		ToggleDropDownMenu(1, nil, FriendsDropDown, "cursor");
 	end
 end
@@ -490,7 +495,7 @@ function FriendsList_CanWhisperFriend(friendType, friendIndex)
 		return true;
 	elseif friendType == FRIENDS_BUTTON_TYPE_WOW then
 		local info = C_FriendList.GetFriendInfoByIndex(friendIndex);
-		return info.connected;
+		return info.connected and not info.mobile;
 	end
 
 	return false;
@@ -936,12 +941,12 @@ function FriendsFrameFriendButton_OnClick(self, button)
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		if ( self.buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
 			-- bnet friend
-			local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline = BNGetFriendInfo(self.id);
-			FriendsFrame_ShowBNDropdown(accountName, isOnline, nil, nil, nil, 1, bnetIDAccount, nil, nil, nil, nil);
+			local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, _, _, _, _, _, _, _, _, _, _, _, mobile = BNGetFriendInfo(self.id);
+			FriendsFrame_ShowBNDropdown(accountName, isOnline, nil, nil, nil, 1, bnetIDAccount, nil, nil, nil, nil, mobile);
 		else
 			-- wow friend
 			local info = C_FriendList.GetFriendInfoByIndex(self.id);
-			FriendsFrame_ShowDropdown(info.name, info.connected, nil, nil, nil, 1, nil, nil, nil, nil);
+			FriendsFrame_ShowDropdown(info.name, info.connected, nil, nil, nil, 1, info.mobile, nil, nil, nil);
 		end
 	end
 end
@@ -1293,7 +1298,7 @@ function FriendsFrame_UpdateFriendButton(button)
 			nameText = info.name;
 			nameColor = FRIENDS_GRAY_COLOR;
 		end
-		infoText = info.area;
+		infoText = info.mobile and LOCATION_MOBILE_APP or info.area;
 		button.gameIcon:Hide();
 		button.summonButton:ClearAllPoints();
 		button.summonButton:SetPoint("TOPRIGHT", button, "TOPRIGHT", 1, -1);
@@ -1302,7 +1307,7 @@ function FriendsFrame_UpdateFriendButton(button)
 		local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, 
 			bnetIDGameAccount, client, isOnline, lastOnline, isBnetAFK, 
 			isBnetDND, messageText, noteText, isRIDFriend, messageTime, 
-			wowProjectID, isReferAFriend, canSummonFriend, isFavorite = BNGetFriendInfo(FriendListEntries[index].id);
+			wowProjectID, isReferAFriend, canSummonFriend, isFavorite, mobile = BNGetFriendInfo(FriendListEntries[index].id);
 		broadcastText = messageText;
 		isFavoriteFriend = isFavorite;
 		-- set up player name and character name
@@ -1329,7 +1334,7 @@ function FriendsFrame_UpdateFriendButton(button)
 		end
 
 		if ( isOnline ) then
-			local _, _, _, realmName, realmID, faction, _, _, _, zoneName, _, gameText, _, _, _, _, _, isGameAFK, isGameBusy, guid, wowProjectID = BNGetGameAccountInfo(bnetIDGameAccount);
+			local _, _, _, realmName, realmID, faction, _, _, _, zoneName, _, gameText, _, _, _, _, _, isGameAFK, isGameBusy, guid, wowProjectID, mobile = BNGetGameAccountInfo(bnetIDGameAccount);
 			button.background:SetColorTexture(FRIENDS_BNET_BACKGROUND_COLOR.r, FRIENDS_BNET_BACKGROUND_COLOR.g, FRIENDS_BNET_BACKGROUND_COLOR.b, FRIENDS_BNET_BACKGROUND_COLOR.a);
 			if ( isBnetAFK or isGameAFK ) then
 				button.status:SetTexture(FRIENDS_TEXTURE_AFK);
@@ -1342,7 +1347,7 @@ function FriendsFrame_UpdateFriendButton(button)
 				if ( not zoneName or zoneName == "" ) then
 					infoText = UNKNOWN;
 				else
-					infoText = zoneName;
+					infoText = mobile and LOCATION_MOBILE_APP or zoneName;
 				end
 			else
 				infoText = gameText;
@@ -1634,7 +1639,7 @@ function FriendsFrameTooltip_Show(self)
 		anchor = FriendsFrameTooltip_SetLine(FriendsTooltipHeader, nil, nameText);
 		-- game account 1
 		if ( bnetIDGameAccount ) then
-			local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, zoneName, level, gameText, _, _, _, _, _, _, _, _, wowProjectID = BNGetGameAccountInfo(bnetIDGameAccount);
+			local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, zoneName, level, gameText, _, _, _, _, _, _, _, _, wowProjectID, mobile = BNGetGameAccountInfo(bnetIDGameAccount);
 			level = level or "";
 			race = race or "";
 			class = class or "";
@@ -1645,7 +1650,7 @@ function FriendsFrameTooltip_Show(self)
 					text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, characterName..CANNOT_COOPERATE_LABEL, level, race, class);
 				end
 				FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Name, nil, text);
-				anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, string.format(FRIENDS_TOOLTIP_WOW_INFO_TEMPLATE, zoneName, realmName), -4);
+				anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, string.format(FRIENDS_TOOLTIP_WOW_INFO_TEMPLATE, mobile and LOCATION_MOBILE_APP or zoneName, realmName), -4);
 			else
 				if ( isOnline ) then
 					characterName = BNet_GetValidatedCharacterName(characterName, battleTag, client) or "";
@@ -1697,7 +1702,7 @@ function FriendsFrameTooltip_Show(self)
 		if ( info.connected ) then
 			FriendsTooltipHeader:SetTextColor(FRIENDS_WOW_NAME_COLOR.r, FRIENDS_WOW_NAME_COLOR.g, FRIENDS_WOW_NAME_COLOR.b);
 			FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Name, nil, string.format(FRIENDS_LEVEL_TEMPLATE, info.level, info.className));
-			anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, info.area);
+			anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, info.mobile and LOCATION_MOBILE_APP or info.area);
 		else
 			FriendsTooltipHeader:SetTextColor(FRIENDS_GRAY_COLOR.r, FRIENDS_GRAY_COLOR.g, FRIENDS_GRAY_COLOR.b);
 			FriendsTooltipGameAccount1Name:Hide();
@@ -2232,7 +2237,7 @@ function FriendsFrame_GetInviteRestriction(index)
 	local restriction = INVITE_RESTRICTION_NO_GAME_ACCOUNTS;
 	local numGameAccounts = BNGetNumFriendGameAccounts(index);
 	for i = 1, numGameAccounts do
-		local hasFocus, characterName, client, realmName, realmID, faction, _, _, _, _, _, _, _, _, _, _, _, _, _, _, wowProjectID = BNGetFriendGameAccountInfo(index, i);
+		local hasFocus, characterName, client, realmName, realmID, faction, _, _, _, _, _, _, _, _, _, _, _, _, _, _, wowProjectID, mobile = BNGetFriendGameAccountInfo(index, i);
 		if ( client == BNET_CLIENT_WOW ) then
 			if ( wowProjectID ~= WOW_PROJECT_ID ) then
 				if (wowProjectID == WOW_PROJECT_CLASSIC) then
@@ -2246,6 +2251,8 @@ function FriendsFrame_GetInviteRestriction(index)
 				restriction = max(INVITE_RESTRICTION_FACTION, restriction);
 			elseif ( realmID == 0 ) then
 				restriction = max(INVITE_RESTRICTION_INFO, restriction);
+			elseif ( mobile ) then
+				restriction = INVITE_RESTRICTION_MOBILE;
 			else
 				-- there is at lease 1 game account that can be invited
 				return INVITE_RESTRICTION_NONE;
@@ -2272,6 +2279,8 @@ function FriendsFrame_GetInviteRestrictionText(restriction)
 		return ERR_TRAVEL_PASS_WRONG_PROJECT_MAINLINE_OVERRIDE;
 	elseif ( restriction == INVITE_RESTRICTION_WOW_PROJECT_CLASSIC ) then
 		return ERR_TRAVEL_PASS_WRONG_PROJECT_CLASSIC_OVERRIDE;
+	elseif ( restriction == INVITE_RESTRICTION_MOBILE ) then
+		return ERR_TRAVEL_PASS_MOBILE;
 	else
 		return "";
 	end

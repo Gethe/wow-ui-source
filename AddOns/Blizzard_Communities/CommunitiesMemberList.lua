@@ -1453,6 +1453,7 @@ function CommunitiesMemberListDropdown_Initialize(self, level)
 		self.clubAssignableRoles = C_Club.GetAssignableRoles(clubInfo.clubId, memberInfo.memberId);
 		self.isSelf = memberInfo.isSelf;
 		self.guid = memberInfo.guid;
+		self.isMobile = memberInfo.presence == Enum.ClubMemberPresence.OnlineMobile;
 		UnitPopup_ShowMenu(self, clubTypeToUnitPopup[clubInfo.clubType], nil, memberInfo.name);
 	end
 end
