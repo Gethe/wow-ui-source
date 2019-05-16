@@ -208,7 +208,7 @@
 					<Anchor point="TOPLEFT" x="25" y="-50"/>
 				</Anchors>
 				<Frames>
-					<CheckButton parentKey="ShouldListClubButton" inherits="ClubFinderCheckboxTemplate">
+					<CheckButton parentKey="Button" inherits="ClubFinderCheckboxTemplate">
 						<Size x="32" y="32"/>
 						<Anchors>
 							<Anchor point="LEFT"/>
@@ -220,7 +220,7 @@
 						<FontString parentKey="Label" text="CLUB_FINDER_LIST_GUILD" justifyH="LEFT" inherits="GameFontHighlight">
 							<Size x="260" y="0"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.ShouldListClubButton" x="35" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.Button" x="35" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -425,6 +425,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 						self:GetParent():PostClub();
 					</OnClick>
 				</Scripts>
@@ -436,6 +437,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 						HideUIPanel(self:GetParent());
 					</OnClick>
 				</Scripts>
@@ -454,6 +456,12 @@
 				<Anchors>
 					<Anchor point="LEFT"/>
 				</Anchors>
+				<Scripts>
+					<OnClick>
+							self:OnClick();
+							self:GetParent():GetParent():EnableOrDisableApplyButton();
+					</OnClick>
+				</Scripts>
 			</CheckButton>
 		</Frames>
 		<Layers>
@@ -620,8 +628,9 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 						self:GetParent():ApplyToClub();
-						self:GetParent():Hide(); 
+						self:GetParent():Hide();
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -632,6 +641,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 						HideUIPanel(self:GetParent());
 					</OnClick>
 				</Scripts>
@@ -788,7 +798,8 @@
 					</Anchors>
 					<Scripts>
 						<OnClick>
-							self:GetParent():RequestToJoinClub(); 
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+							self:GetParent():RequestToJoinClub();
 						</OnClick>
 					</Scripts>
 				</Button>
@@ -969,6 +980,7 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 						self:GetParent():RequestToJoinClub();
 					</OnClick>
 				</Scripts>
@@ -1088,7 +1100,8 @@
 					</Anchors>
 					<Scripts>
 						<OnClick>
-							C_ClubFinder.SetPlayerApplicantSettings( Enum.ClubFinderSettingFlags.Tank, self:GetChecked());
+							self:OnClick();
+							C_ClubFinder.SetPlayerApplicantSettings(Enum.ClubFinderSettingFlags.Tank, self:GetChecked());
 						</OnClick>
 					</Scripts>
 				</CheckButton>
@@ -1111,6 +1124,7 @@
 					</Anchors>
 					<Scripts>
 						<OnClick>
+							self:OnClick();
 							C_ClubFinder.SetPlayerApplicantSettings(Enum.ClubFinderSettingFlags.Healer, self:GetChecked());
 						</OnClick>
 					</Scripts>
@@ -1134,6 +1148,7 @@
 					</Anchors>
 					<Scripts>
 						<OnClick>
+							self:OnClick();
 							C_ClubFinder.SetPlayerApplicantSettings(Enum.ClubFinderSettingFlags.Damage, self:GetChecked());
 						</OnClick>
 					</Scripts>
@@ -1158,7 +1173,8 @@
 			</Anchors>
 			<Scripts>
 				<OnClick>
-					self:GetParent():OnSearchButtonClick(); 
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+					self:GetParent():OnSearchButtonClick();
 				</OnClick>
 			</Scripts>
 		</Button>

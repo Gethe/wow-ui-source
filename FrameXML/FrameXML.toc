@@ -68,6 +68,7 @@ QuestUtils.lua
 AchievementUtil.lua
 MapUtil.lua
 AzeriteUtil.lua
+AzeriteEssenceUtil.lua
 VehicleUtil.lua
 AuraUtil.lua
 CalendarUtil.lua

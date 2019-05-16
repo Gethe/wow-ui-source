@@ -444,8 +444,6 @@ function LootAlertFrame_OnEnter(self)
 	GameTooltip:Show();
 end
 
-local LOOT_SOURCE_GARRISON_CACHE = 10;
-
 -- [[ LootUpgradeFrameTemplate ]] --
 LOOTUPGRADEFRAME_QUALITY_TEXTURES = {
 	[LE_ITEM_QUALITY_UNCOMMON]	= {border = "loottoast-itemborder-green",	arrow = "loottoast-arrow-green"},

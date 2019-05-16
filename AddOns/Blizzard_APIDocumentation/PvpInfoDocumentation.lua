@@ -176,6 +176,29 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetMatchPVPStatColumn",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "pvpStatID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "MatchPVPStatColumn", Nilable = true },
+			},
+		},
+		{
+			Name = "GetMatchPVPStatIDs",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "pvpStatIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNextHonorLevelForReward",
 			Type = "Function",
 
@@ -876,6 +899,18 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "MatchPVPStatColumn",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "pvpStatID", Type = "number", Nilable = false },
+				{ Name = "columnHeaderID", Type = "number", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "PVPPersonalRatedInfo",
 			Type = "Structure",
 			Fields =
@@ -942,15 +977,15 @@ local PvpInfo =
 			},
 		},
 		{
-			Name = "PVPScoreStatInfo",
+			Name = "PVPStatInfo",
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "pvpStatID", Type = "number", Nilable = false },
+				{ Name = "pvpStatValue", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "icon", Type = "string", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },
-				{ Name = "id", Type = "number", Nilable = false },
-				{ Name = "value", Type = "number", Nilable = false },
+				{ Name = "iconName", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -976,7 +1011,7 @@ local PvpInfo =
 				{ Name = "mmrChange", Type = "number", Nilable = false },
 				{ Name = "talentSpec", Type = "string", Nilable = false },
 				{ Name = "honorLevel", Type = "number", Nilable = false },
-				{ Name = "stats", Type = "table", InnerType = "PVPScoreStatInfo", Nilable = false },
+				{ Name = "stats", Type = "table", InnerType = "PVPStatInfo", Nilable = false },
 			},
 		},
 		{

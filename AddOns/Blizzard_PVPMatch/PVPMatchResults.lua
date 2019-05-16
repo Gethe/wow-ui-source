@@ -150,17 +150,14 @@ function PVPMatchResultsMixin:Init(winner, duration)
 
 	ConstructPVPMatchTable(self.tableBuilder, C_PvP.IsRatedBattleground(), isArena, isLFD, not isFactionalMatch);
 end
-function PVPMatchResultsMixin:TryDisplayRewards()
-	if self.haveConquestData and self.hasRewardTimerElapsed then
-		self:DisplayRewards();
-	end
-end
 function PVPMatchResultsMixin:Reset()
 	self.hasRewardTimerElapsed = false;
 	self.rewardTimer = false;
+	self.haveConquestData = false;
+	self.hasDisplayedRewards = false;
 	self.earningsContainer:Hide();
 end
-function PVPMatchResultsMixin:OnEvent(event, ...)	
+function PVPMatchResultsMixin:OnEvent(event, ...)
 	if event == "PVP_MATCH_ACTIVE" then
 		FrameUtil.RegisterFrameForEvents(self, ACTIVE_EVENTS);
 		self:Reset();
@@ -172,17 +169,17 @@ function PVPMatchResultsMixin:OnEvent(event, ...)
 		if not haveConquestData then
 			self:RegisterEvent("QUEST_LOG_UPDATE");
 		end
-	elseif event == "POST_MATCH_ITEM_REWARD_UPDATE" or event == "POST_MATCH_CURRENCY_REWARD_UPDATE" then
-		if self.hasRewardTimerElapsed then
-			-- 820FIXME We've received an item reward late. Reinitialize the reward section. This is a stopgap
-			-- until we've included the full set of item details as part of the match complete message.
-			self:TryDisplayRewards();
-		end
 	elseif event == "QUEST_LOG_UPDATE" then
 		self.haveConquestData = self:HaveConquestData();
 		if self.haveConquestData then
 			self:UnregisterEvent("QUEST_LOG_UPDATE");
-			self:TryDisplayRewards();
+			self:DisplayRewards();
+		end
+	elseif event == "POST_MATCH_ITEM_REWARD_UPDATE" or event == "POST_MATCH_CURRENCY_REWARD_UPDATE" then
+		if self.hasRewardTimerElapsed then
+			-- 820FIXME We've received an item reward late. Reinitialize the reward section. This is a stopgap
+			-- until we've included the full set of item details as part of the match complete message.
+			self:DisplayRewards();
 		end
 	elseif event == "PVP_MATCH_INACTIVE" then
 		FrameUtil.UnregisterFrameForEvents(self, ACTIVE_EVENTS);
@@ -211,7 +208,7 @@ function PVPMatchResultsMixin:BeginShow(winner, duration)
 			function()
 				self.rewardTimer = nil;
 				self.hasRewardTimerElapsed = true;
-				self:TryDisplayRewards();
+				self:DisplayRewards();
 			end
 		);
 	end
@@ -220,6 +217,11 @@ function PVPMatchResultsMixin:BeginShow(winner, duration)
 	ShowUIPanel(self);
 end
 function PVPMatchResultsMixin:DisplayRewards()
+	if self.hasDisplayedRewards or not self.haveConquestData or not self.hasRewardTimerElapsed then
+		return;
+	end
+	self.hasDisplayedRewards = true;
+	
 	self.itemPool:ReleaseAll();
 
 	for k, item in pairs(C_PvP.GetPostMatchItemRewards()) do
@@ -377,9 +379,11 @@ local function ScoreWidgetLayout(widgetContainer, sortedWidgets)
 	widgetContainer:SetWidth(maxWidgetWidth);
 end
 function PVPMatchResultsMixin:OnShow()
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 	self.Score:RegisterForWidgetSet(scoreWidgetSetID, ScoreWidgetLayout);
 end
 function PVPMatchResultsMixin:OnHide()
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	self.Score:UnregisterForWidgetSet(scoreWidgetSetID);
 end
 function PVPMatchResultsMixin:AddItemReward(item)
@@ -467,11 +471,6 @@ function PVPMatchResultsMixin:OnRequeueButtonClicked(button)
     RequeueSkirmish();
 
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
-end
-function PVPMatchResultsMixin:OnClose()
-	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
-
-	HideParentPanel(self);
 end
 function PVPMatchResultsMixin:OnTabGroupClicked(tab)
 	PanelTemplates_SetTab(self, tab:GetID());

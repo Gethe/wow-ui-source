@@ -14,6 +14,11 @@ local MountJournal =
 			{
 				{ Name = "itemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
 			},
+
+			Returns =
+			{
+				{ Name = "canContinue", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "AreMountEquipmentEffectsSuppressed",

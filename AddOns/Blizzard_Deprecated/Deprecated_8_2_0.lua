@@ -12,6 +12,25 @@ do
 	IsRatedArena = C_PvP.IsRatedArena;
 	-- Use C_PvP.IsRatedMap() instead
 	IsRatedMap =  C_PvP.IsRatedMap;
+
+	--GetNumBattlefieldStats is no longer supported, addons must use C_PvP.GetMatchPVPStatIDs() instead.
+	GetNumBattlefieldStats = function()
+		local pvpStatIDs = C_PvP.GetMatchPVPStatIDs();
+		return #pvpStatIDs;
+	end
+	-- GetBattlefieldStatInfo is no longer supported, addons must use C_PvP.GetMatchPVPStatColumn(pvpStatID) instead.
+	GetBattlefieldStatInfo = function(index)
+		local pvpStatIDs = C_PvP.GetMatchPVPStatIDs();
+		local pvpStatID = pvpStatIDs[index];
+		if pvpStatID then
+			local statColumn = C_PvP.GetMatchPVPStatColumn(pvpStatID);
+			if statColumn then
+				return statColumn.name, nil, statColumn.tooltip;
+			else
+				return "", nil, "";
+			end
+		end
+	end
 end
 
 -- Report system update
@@ -32,8 +51,12 @@ do
 	end
 end
 
---Guild Roster
+--Guild Info
 do
 	-- Use C_GuildInfo.GuildRoster instead
 	GuildRoster = C_GuildInfo.GuildRoster;
+	-- Use C_GuildInfo.CanEditOfficerNote instead
+	CanEditOfficerNote = C_GuildInfo.CanEditOfficerNote;
+	-- Use C_GuildInfo.CanViewOfficerNote instead
+	CanViewOfficerNote = C_GuildInfo.CanViewOfficerNote;
 end

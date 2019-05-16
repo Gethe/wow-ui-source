@@ -665,6 +665,7 @@ function ObjectiveTracker_Initialize(self)
 	self:RegisterEvent("QUEST_TURNED_IN");
 	self:RegisterEvent("PLAYER_MONEY");
 	self:RegisterEvent("CVAR_UPDATE");
+	self:RegisterEvent("WAYPOINT_UPDATE");
 	self.watchMoneyReasons = 0;
 
 	local function OnFocusedQuestChanged(event, ...)
@@ -770,6 +771,8 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST);
 		end
 	elseif ( event == "VARIABLES_LOADED" ) then
+		ObjectiveTracker_Update();
+	elseif ( event == "WAYPOINT_UPDATE" ) then
 		ObjectiveTracker_Update();
 	end
 end

@@ -374,6 +374,41 @@
 						<AbsDimension x="12" y="12"/>
 					</Size>
 				</Texture>
+				<Texture name="$parentTexture4" hidden="true">
+					<Size>
+						<AbsDimension x="12" y="12"/>
+					</Size>
+				</Texture>
+				<Texture name="$parentTexture5" hidden="true">
+					<Size>
+						<AbsDimension x="12" y="12"/>
+					</Size>
+				</Texture>
+				<Texture name="$parentTexture6" hidden="true">
+					<Size>
+						<AbsDimension x="12" y="12"/>
+					</Size>
+				</Texture>
+				<Texture name="$parentTexture7" hidden="true">
+					<Size>
+						<AbsDimension x="12" y="12"/>
+					</Size>
+				</Texture>
+				<Texture name="$parentTexture8" hidden="true">
+					<Size>
+						<AbsDimension x="12" y="12"/>
+					</Size>
+				</Texture>
+				<Texture name="$parentTexture9" hidden="true">
+					<Size>
+						<AbsDimension x="12" y="12"/>
+					</Size>
+				</Texture>
+				<Texture name="$parentTexture10" hidden="true">
+					<Size>
+						<AbsDimension x="12" y="12"/>
+					</Size>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>

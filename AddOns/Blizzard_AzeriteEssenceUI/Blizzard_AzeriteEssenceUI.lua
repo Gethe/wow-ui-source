@@ -1,6 +1,12 @@
 UIPanelWindows["AzeriteEssenceUI"] = { area = "left", pushable = 1 };
 
-AzeriteEssenceUIMixin  = { };
+AzeriteEssenceUIMixin = CreateFromMixins(CallbackRegistryBaseMixin);
+
+AzeriteEssenceUIMixin:GenerateCallbackEvents(
+{
+	"OnShow",
+	"OnHide",
+});
 
 local ESSENCE_BUTTON_HEIGHT = 41;
 local ESSENCE_HEADER_HEIGHT = 21;
@@ -30,18 +36,20 @@ local AZERITE_ESSENCE_FRAME_EVENTS = {
 };
 
 local MILESTONE_LOCATIONS = {
-	[1] = { left = 219, top = -218 },
-	[2] = { left = 92, top = -190 },
-	[3] = { left = 110, top = -287 },
-	[4] = { left = 223, top = -348 },
-	[5] = { left = 332, top = -280 },
-	[6] = { left = 330, top = -150 },	
-	[7] = { left = 213, top = -90 },
+	[1] = { left = 237, top = -235 },
+	[2] = { left = 100, top = -203 },
+	[3] = { left = 117, top = -310 },
+	[4] = { left = 242, top = -376 },
+	[5] = { left = 362, top = -301 },
+	[6] = { left = 356, top = -160 },	
+	[7] = { left = 232, top = -94 },
 };
 
 local LOCKED_RUNE_ATLASES = { "heartofazeroth-slot-minor-unlearned-bottomleft", "heartofazeroth-slot-minor-unlearned-topright" };
 
 function AzeriteEssenceUIMixin:OnLoad()
+	CallbackRegistryBaseMixin.OnLoad(self);
+
 	self.TopTileStreaks:Hide();	
 	self:SetupModelScene();
 	self:SetupMilestones();
@@ -145,7 +153,7 @@ function AzeriteEssenceUIMixin:OnShow()
 	local itemLocation = C_AzeriteItem.FindActiveAzeriteItem();
 	if itemLocation then
 		local item = Item:CreateFromItemLocation(itemLocation);
-		self.itemDataLoadedCancelFunc = item:ContinueWithCancelOnItemLoad(function()
+		item:ContinueOnItemLoad(function()
 			self:SetPortraitToAsset(item:GetItemIcon());
 			self:SetTitle(item:GetItemName());
 		end);
@@ -157,12 +165,19 @@ function AzeriteEssenceUIMixin:OnShow()
 	self:RefreshMilestones();
 
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);		-- temp?
+
+	self:TriggerEvent(AzeriteEssenceUIMixin.Event.OnShow);
 end
 
 function AzeriteEssenceUIMixin:OnHide()
 	if C_AzeriteEssence:IsAtForge() then
 		C_AzeriteEssence:CloseForge();
 		CloseAllBags(self);
+	end
+
+	if self.itemDataLoadedCancelFunc then
+		self.itemDataLoadedCancelFunc();
+		self.itemDataLoadedCancelFunc = nil;
 	end
 
 	FrameUtil.UnregisterFrameForEvents(self, AZERITE_ESSENCE_FRAME_EVENTS);
@@ -175,6 +190,8 @@ function AzeriteEssenceUIMixin:OnHide()
 	AzeriteEssenceLearnAnimFrame:StopAnim();
 	
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);	-- temp?
+
+	self:TriggerEvent(AzeriteEssenceUIMixin.Event.OnHide);
 end
 
 function AzeriteEssenceUIMixin:OnMouseUp(mouseButton)
@@ -220,8 +237,25 @@ function AzeriteEssenceUIMixin:RefreshPowerLevel()
 	end
 end
 
-function AzeriteEssenceUIMixin:MeetsPowerLevel(powerLevel)
-	return self.powerLevel >= powerLevel;
+function AzeriteEssenceUIMixin:OnEnterPowerLevelBadgeFrame()
+	local itemLocation = C_AzeriteItem.FindActiveAzeriteItem();
+	if itemLocation then
+		local item = Item:CreateFromItemLocation(itemLocation);
+		self.itemDataLoadedCancelFunc = item:ContinueWithCancelOnItemLoad(function()
+			GameTooltip:SetOwner(self.PowerLevelBadgeFrame, "ANCHOR_RIGHT", -7, -6);
+			GameTooltip_SetTitle(GameTooltip, item:GetItemName(), item:GetItemQualityColor().color);
+			GameTooltip_AddColoredLine(GameTooltip, string.format(HEART_OF_AZEROTH_LEVEL, self.powerLevel), WHITE_FONT_COLOR);
+			GameTooltip:Show();
+		end);
+	end
+end
+
+function AzeriteEssenceUIMixin:OnLeavePowerLevelBadgeFrame()
+	GameTooltip:Hide();
+	if self.itemDataLoadedCancelFunc then
+		self.itemDataLoadedCancelFunc();
+		self.itemDataLoadedCancelFunc = nil;
+	end
 end
 
 function AzeriteEssenceUIMixin:RefreshMilestones()
@@ -232,16 +266,16 @@ function AzeriteEssenceUIMixin:RefreshMilestones()
 	for i, lineContainer in ipairs(self.Lines) do
 		if lineContainer.toButton.unlocked then
 			lineContainer:SetState(PowerDependencyLineMixin.LINE_STATE_CONNECTED);
-			lineContainer:SetAlpha(0.25);
+			lineContainer:SetAlpha(0.15);
 		else
 			if lineContainer.fromButton.unlocked and lineContainer.toButton.canUnlock then
 				lineContainer:SetDisconnectedColor(DISCONNECTED_LINE_COLOR);
 				lineContainer:SetState(PowerDependencyLineMixin.LINE_STATE_DISCONNECTED);
-				lineContainer:SetAlpha(0.1);
+				lineContainer:SetAlpha(0.08);
 			else
 				lineContainer:SetDisconnectedColor(LOCKED_LINE_COLOR);
 				lineContainer:SetState(PowerDependencyLineMixin.LINE_STATE_DISCONNECTED);
-				lineContainer:SetAlpha(0.1);
+				lineContainer:SetAlpha(0.08);
 			end
 		end
 	end
@@ -339,6 +373,9 @@ function AzeriteEssenceListMixin:OnLoad()
 	self.dynamic = function(...) return self:CalculateScrollOffset(...); end
 	HybridScrollFrame_CreateButtons(self, "AzeriteEssenceButtonTemplate", 4, -ESSENCE_LIST_PADDING, "TOPLEFT", "TOPLEFT", 0, -ESSENCE_BUTTON_OFFSET, "TOP", "BOTTOM");
 	self.HeaderButton:SetParent(self.ScrollChild);
+
+	self:RegisterEvent("VARIABLES_LOADED");
+	self.collapsed = GetCVarBool("otherRolesAzeriteEssencesHidden");
 end
 
 function AzeriteEssenceListMixin:OnShow()
@@ -359,6 +396,9 @@ function AzeriteEssenceListMixin:OnEvent(event)
 		local forceUpdate = true;
 		self:SetupModelScene(true);
 	elseif event == "PENDING_AZERITE_ESSENCE_CHANGED" then
+		self:Refresh();
+	elseif event == "VARIABLES_LOADED" then
+		self.collapsed = GetCVarBool("otherRolesAzeriteEssencesHidden");
 		self:Refresh();
 	end
 end
@@ -425,6 +465,7 @@ end
 
 function AzeriteEssenceListMixin:ToggleHeader()
 	self.collapsed = not self.collapsed;
+	SetCVar("otherRolesAzeriteEssencesHidden", self.collapsed);
 	self:Refresh();
 end
 
@@ -762,7 +803,7 @@ function AzeriteMilestoneSlotMixin:Refresh()
 			stateFrame.EmptyGlow.Anim:Play();
 		end
 	else
-		if self:GetParent():MeetsPowerLevel(milestoneInfo.requiredLevel) then
+		if milestoneInfo.canUnlock then
 			self:ShowStateFrame(self.AvailableState);
 			if C_AzeriteEssence.IsAtForge() then
 				self.AvailableState.GlowAnim:Stop();

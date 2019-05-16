@@ -21,13 +21,15 @@ function CommunitiesSettingsDialogMixin:OnLoad()
 end
 
 function CommunitiesSettingsDialogMixin:OnShow()
-	if self:GetClubType() == Enum.ClubType.BattleNet then
+	local clubType = self:GetClubType();
+	if clubType == Enum.ClubType.BattleNet then
 		self.DialogLabel:SetText(COMMUNITIES_SETTINGS_LABEL);
 	else
 		self.DialogLabel:SetText(COMMUNITIES_SETTINGS_CHARACTER_LABEL);
 	end
 
 	self:SetDisabledStateOnCommunityFinderOptions(not self.ShouldListClub.Button:GetChecked()); 
+	self:HideOrShowCommunityFinderOptions(clubType == Enum.ClubType.Character);
 	CommunitiesFrame:RegisterDialogShown(self);
 end
 
@@ -107,7 +109,7 @@ function CommunitiesSettingsDialogMixin:PostClub()
 	end 
 
 	if(clubInfo) then 
-		C_ClubFinder.PostClub(clubInfo.clubId, minimumLevel, minItemLevel, clubInfo.name, description, specsInList, Enum.ClubFinderRequestType.Community);
+		C_ClubFinder.PostClub(clubInfo.clubId, self.ShouldListClub.Button:GetChecked(), self.AutoAcceptApplications.Button:GetChecked(), minimumLevel, minItemLevel, clubInfo.name, description, specsInList, Enum.ClubFinderRequestType.Community);
 		self:Hide(); 
 	end
 end
@@ -135,6 +137,27 @@ function CommunitiesSettingsDialogMixin:SetDisabledStateOnCommunityFinderOptions
 		UIDropDownMenu_EnableDropDown(self.ClubFocusDropdown); 
 		UIDropDownMenu_EnableDropDown(self.LookingForDropdown);
 	end 
+end 
+
+function CommunitiesSettingsDialogMixin:HideOrShowCommunityFinderOptions(shouldShow)
+	if(shouldShow) then 
+		self:SetHeight(680); 
+	else 
+		self:SetHeight(480); 
+	end 
+
+	self.MaxLevelOnly.Button:SetShown(shouldShow); 
+	self.MinIlvlOnly.Button:SetShown(shouldShow);
+	self.ClubFocusDropdown:SetShown(shouldShow);
+	self.LookingForDropdown:SetShown(shouldShow);
+	self.AutoAcceptApplications.Button:SetShown(shouldShow);
+	self.AutoAcceptApplications.Label:SetShown(shouldShow);
+	self.MaxLevelOnly.Label:SetShown(shouldShow);
+	self.MinIlvlOnly.Label:SetShown(shouldShow);
+	self.MinIlvlOnly.EditBox:SetShown(shouldShow);
+	self.LookingForDropdown.Label:SetShown(shouldShow);
+	self.ClubFocusDropdown.GuildFocusDropdownLabel:SetShown(shouldShow);
+	self.ShouldListClub:SetShown(shouldShow)
 end 
 
 local function CommunitiesAvatarPickerDialog_OnOkay(self)
@@ -189,6 +212,7 @@ function CommunitiesSettingsDialogAcceptButton_OnClick(self)
 	communitiesSettingsDialog:Hide();
 	C_Club.EditClub(communitiesSettingsDialog:GetClubId(), communitiesSettingsDialog:GetName(), communitiesSettingsDialog:GetShortName(), communitiesSettingsDialog:GetDescription(), communitiesSettingsDialog:GetAvatarId(), communitiesSettingsDialog:GetMessageOfTheDay());
 	communitiesSettingsDialog:PostClub(); 
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 end
 
 function CommunitiesSettingsDialogDeleteButton_OnClick(self)
@@ -199,13 +223,16 @@ function CommunitiesSettingsDialogDeleteButton_OnClick(self)
 			StaticPopup_Show("CONFIRM_DESTROY_COMMUNITY", nil, nil, clubInfo);
 		end
 	end
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 end
 
 function CommunitiesSettingsDialogCancelButton_OnClick(self)
 	local communitiesSettingsDialog = self:GetParent();
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 	communitiesSettingsDialog:Hide();
 end
 
 function CommunitiesSettingsButton_OnClick(self)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 	OpenCommunitiesSettingsDialog(self:GetParent():GetParent():GetSelectedClubId());
 end

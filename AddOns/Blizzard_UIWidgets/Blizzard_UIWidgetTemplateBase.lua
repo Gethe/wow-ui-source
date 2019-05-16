@@ -1,5 +1,10 @@
 UIWidgetTemplateTooltipFrameMixin = {}
 
+function UIWidgetTemplateTooltipFrameMixin:OnLoad()
+	self:EnableMouse(true);
+	self:SetMouseClickEnabled(false);
+end
+
 function UIWidgetTemplateTooltipFrameMixin:SetTooltip(tooltip, color)
 	self.tooltip = tooltip;
 	self.tooltipContainsHyperLink = false;
@@ -57,6 +62,7 @@ end
 UIWidgetBaseTemplateMixin = {}
 
 function UIWidgetBaseTemplateMixin:OnLoad()
+	UIWidgetTemplateTooltipFrameMixin.OnLoad(self);
 end
 
 function UIWidgetBaseTemplateMixin:InAnimFinished()
@@ -401,15 +407,21 @@ end
 
 UIWidgetBaseControlZoneTemplateMixin = {}
 
+function UIWidgetBaseControlZoneTemplateMixin:OnLoad()
+	UIWidgetBaseTemplateMixin.OnLoad(self);
+	ResizeLayoutMixin.OnLoad(self);
+end
+
 local zoneFormatString = "%s-%s-%s";
 local cappedFormatString = "%s-%s-%s-cap";
 local swipeTextureFormatString = "Interface\\Widgets\\%s-%s-fill"
 
 local textureKitRegionInfo = {
 	["Zone"] = {useAtlasSize = true, setVisibility = true},	-- formatString is filled on before passing to SetupTextureKitsFromRegionInfo (based on whether the zone is capped or not)
-	["FillingGlow"] = {formatString = "%s-%s-fillingglow", useAtlasSize = true},
-	["FallingGlow"] = {formatString = "%s-fallingglow", useAtlasSize = true},
+	["FallingGlowBackground"] = {formatString = "%s-fallingglow-bg", useAtlasSize = true},
+	["FallingGlowOverlay"] = {formatString = "%s-fallingglow", useAtlasSize = true},
 	["FullGlow"] = {formatString = "%s-fullglow", useAtlasSize = true},
+	["FullGlowStar"] = {formatString = "%s-starglow", useAtlasSize = true},
 }
 
 function UIWidgetBaseControlZoneTemplateMixin:UpdateAnimations(zoneInfo, zoneMode, lastVals)
@@ -419,26 +431,25 @@ function UIWidgetBaseControlZoneTemplateMixin:UpdateAnimations(zoneInfo, zoneMod
 
 	if not lastVals or not isActive then
 		-- This is either the first update on this zone/state or the zone is inactive...turn off all animations
-		self.FillingGlowAnim:Stop();
-		self.FillingGlow:Hide();
 		self.FallingGlowAnim:Stop();
-		self.FallingGlow:Hide();
+		self.FallingGlowBackground:Hide();
+		self.FallingGlowOverlay:Hide();
 		self.FullGlowAnim:Stop();
 		self.FullGlow:Hide();
+		self.FullGlowStar:Hide();
 	else
 		if isMaxed then
 			if not wasMaxed then
 				-- This zone just got maxed...play the full glow
+				self.FullGlowStar:Show();
 				self.FullGlow:Show();
 				self.FullGlowAnim:Play();
 			end
 
-			-- The zone is maxed...turn off the filling and falling glows
-			self.FillingGlowAnim:Stop();
-			self.FillingGlow:Hide();
-
+			-- The zone is maxed...turn off the falling glow
 			self.FallingGlowAnim:Stop();
-			self.FallingGlow:Hide();
+			self.FallingGlowBackground:Hide();
+			self.FallingGlowOverlay:Hide();
 		else
 			local reverseAnims;
 			if zoneMode == Enum.ZoneControlMode.BothStatesAreGood then
@@ -451,32 +462,29 @@ function UIWidgetBaseControlZoneTemplateMixin:UpdateAnimations(zoneInfo, zoneMod
 				reverseAnims = true;
 			end
 
-			local playFillingAnim, playFallingAnim;
+			local playFallingAnim, stopFallingAnim;
 			if reverseAnims then
-				playFillingAnim = zoneInfo.current < lastVals.current;
 				playFallingAnim = zoneInfo.current > lastVals.current;
+				stopFallingAnim = zoneInfo.current < lastVals.current;
 			else
-				playFillingAnim = zoneInfo.current > lastVals.current;
 				playFallingAnim = zoneInfo.current < lastVals.current;
+				stopFallingAnim = zoneInfo.current > lastVals.current;
 			end
 
-			if playFillingAnim then
-				self.FillingGlow:Show();
-				self.FillingGlowAnim:Play();
-
-				self.FallingGlowAnim:Stop();
-				self.FallingGlow:Hide();
-			elseif playFallingAnim then
-				self.FillingGlowAnim:Stop();
-				self.FillingGlow:Hide();
-
-				self.FallingGlow:Show();
+			if playFallingAnim then
+				self.FallingGlowBackground:Show();
+				self.FallingGlowOverlay:Show();
 				self.FallingGlowAnim:Play();
+			elseif stopFallingAnim then
+				self.FallingGlowAnim:Stop();
+				self.FallingGlowBackground:Hide();
+				self.FallingGlowOverlay:Hide();
 			end
 
 			-- The zone is not maxed...turn off the full glow
 			self.FullGlowAnim:Stop();
 			self.FullGlow:Hide();
+			self.FullGlowStar:Hide();
 		end
 	end
 end

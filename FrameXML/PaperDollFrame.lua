@@ -2846,9 +2846,25 @@ end
 
 PaperDollItemsMixin = {};
 
-function PaperDollItemsMixin:OnLoad()
-	self.isDirty = false;
-	self.onAzeriteUIShownCallback = function() self:OnAzeriteUIShown() end;
+do
+	local helpFlags = {
+		AzeriteEmpoweredItemTipClosed	= 0x0001,
+		AzeriteEmpoweredItemUIShown 	= 0x0002,
+		AzeriteEssenceUnlockTipClosed	= 0x0004,
+		AzeriteEssenceSlotTipClosed		= 0x0008,
+		AzeriteEssenceUIShown			= 0x0010,
+	};
+
+	function PaperDollItemsMixin:OnLoad()
+		self.isDirty = false;
+		self.onAzeriteEmpoweredItemUIShownCallback = function() self:OnAzeriteEmpoweredItemUIShown() end;
+		self.onAzeriteEssenceUIShownCallback = function() self:OnAzeriteEssenceUIShown() end;
+
+		self.helpFlags = CreateFromMixins(FlagsMixin);
+		self.helpFlags:OnLoad();
+		self.helpFlags:AddNamedFlagsFromTable(helpFlags);
+		self.clearableFlags = Flags_CreateMaskFromTable(helpFlags) - self.helpFlags.AzeriteEssenceUnlockTipClosed;
+	end
 end
 
 function PaperDollItemsMixin:MarkDirty()
@@ -2874,7 +2890,7 @@ function PaperDollItemsMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, PAPERDOLL_ITEMS_FRAME_EVENTS);
 
 	if AzeriteEmpoweredItemUI then
-		AzeriteEmpoweredItemUI:RegisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnShow, self.onAzeriteUIShownCallback);
+		AzeriteEmpoweredItemUI:RegisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnShow, self.onAzeriteEmpoweredItemUIShownCallback);
 	else
 		self:RegisterEvent("ADDON_LOADED");
 	end
@@ -2886,7 +2902,7 @@ function PaperDollItemsMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, PAPERDOLL_ITEMS_FRAME_EVENTS);
 
 	if AzeriteEmpoweredItemUI then
-		AzeriteEmpoweredItemUI:UnregisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnShow, self.onAzeriteUIShownCallback);
+		AzeriteEmpoweredItemUI:UnregisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnShow, self.onAzeriteEmpoweredItemUIShownCallback);
 	end
 	self:UnregisterEvent("ADDON_LOADED");
 end
@@ -2905,29 +2921,37 @@ function PaperDollItemsMixin:OnEvent(event, ...)
 	elseif event == "ADDON_LOADED" then
 		local addOnName = ...;
 		if addOnName == "Blizzard_AzeriteUI" then
-			self.wasAzeriteUIShown = true;
+			self.helpFlags:Set(self.helpFlags.AzeriteEmpoweredItemUIShown);
 			self:MarkDirty();
-			AzeriteEmpoweredItemUI:RegisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnShow, self.onAzeriteUIShownCallback);
+			AzeriteEmpoweredItemUI:RegisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnShow, self.onAzeriteEmpoweredItemUIShownCallback);
+		elseif addOnName == "Blizzard_AzeriteEssenceUI" then
+			self.helpFlags:Set(self.helpFlags.AzeriteEssenceUIShown);
+			self:MarkDirty();
+			AzeriteEssenceUI:RegisterCallback(AzeriteEssenceUIMixin.Event.OnShow, self.onAzeriteEssenceUIShownCallback);
 		end
 	end
 end
 
-function PaperDollItemsMixin:OnAzeriteUIShown()
-	self.wasAzeriteUIShown = true;
+function PaperDollItemsMixin:OnAzeriteEmpoweredItemUIShown()
+	self.helpFlags:Set(self.helpFlags.AzeriteEmpoweredItemUIShown);
+	self:MarkDirty();
+end
+
+function PaperDollItemsMixin:OnAzeriteEssenceUIShown()
+	self.helpFlags:Set(self.helpFlags.AzeriteEssenceUIShown);
 	self:MarkDirty();
 end
 
 function PaperDollItemsMixin:ResetHelpTipFlags()
-	self.wasHelpTipManuallyClosed = nil;
-	self.wasAzeriteUIShown = nil;
+	self.helpFlags:Clear(self.clearableFlags);
 end
 
-function PaperDollItemsMixin:ShouldShowHelpTip()
-	if self.wasHelpTipManuallyClosed then
+function PaperDollItemsMixin:ShouldShowAzeriteEmpoweredItemHelpTip()
+	if self.helpFlags:IsSet(self.helpFlags.AzeriteEmpoweredItemTipClosed) then
 		return false;
 	end
 
-	if self.wasAzeriteUIShown then
+	if self.helpFlags:IsSet(self.helpFlags.AzeriteEmpoweredItemUIShown) then
 		return false;
 	end
 
@@ -2938,48 +2962,104 @@ function PaperDollItemsMixin:ShouldShowHelpTip()
 	return true;
 end
 
-function PaperDollItemsMixin:OnHelpTipManuallyClosed()
-	self.wasHelpTipManuallyClosed = true;
+function PaperDollItemsMixin:ShouldShowAzeriteEssenceUnlockHelpTip()
+	if self.helpFlags:IsSet(self.helpFlags.AzeriteEssenceUnlockTipClosed) then
+		return false;
+	end
+
+	if self.helpFlags:IsSet(self.helpFlags.AzeriteEssenceUIShown) then
+		return false;
+	end
+
+	if AzeriteEssenceUI and AzeriteEssenceUI:IsShown() then
+		return false;
+	end
+
+	return true;
+end
+
+function PaperDollItemsMixin:ShouldShowAzeriteEssenceSlotHelpTip()
+	if self.helpFlags:IsSet(self.helpFlags.AzeriteEssenceSlotTipClosed) then
+		return false;
+	end
+
+	if self.helpFlags:IsSet(self.helpFlags.AzeriteEssenceUIShown) then
+		return false;
+	end
+
+	if AzeriteEssenceUI and AzeriteEssenceUI:IsShown() then
+		return false;
+	end
+
+	return true;
+end
+
+function PaperDollItemsMixin:OnHelpTipManuallyClosed(closeFlag)
+	self.helpFlags:Set(closeFlag);
+	self:MarkDirty();
 end
 
 function PaperDollItemsMixin:EvaluateHelpTip()
-	if not self:ShouldShowHelpTip() then
-		self.UnspentAzeriteHelpBox:Hide();
-		return;
+	local helpTipBox = self.HelpTipBox;
+	local bestHelpTipButton, helpTipText;
+	local helpCloseFlag = 0;
+	if not bestHelpTipButton and self:ShouldShowAzeriteEssenceUnlockHelpTip() then
+		local hasUnlockable, firstUnlockableIsSlot = AzeriteEssenceUtil.HasAnyUnlockableMilestones();
+		if hasUnlockable then
+			bestHelpTipButton = self:FindActiveAzeriteItemButton();
+			helpTipText = firstUnlockableIsSlot and AZERITE_ESSENCE_HELPTIP_UNLOCKED_SLOT or AZERITE_ESSENCE_HELPTIP_UNLOCKED_POWER;
+			helpCloseFlag = self.helpFlags.AzeriteEssenceUnlockTipClosed;
+		end
+	end
+	if not bestHelpTipButton and self:ShouldShowAzeriteEssenceSlotHelpTip() then
+		if AzeriteEssenceUtil.HasAnyEmptySlots() then
+			bestHelpTipButton = self:FindActiveAzeriteItemButton();
+			helpTipText = AZERITE_ESSENCE_HELPTIP_AVAILABLE_SLOT;
+			helpCloseFlag = self.helpFlags.AzeriteEssenceSlotTipClosed;
+		end
+	end
+	if not bestHelpTipButton and self:ShouldShowAzeriteEmpoweredItemHelpTip() then
+		bestHelpTipButton = self:FindBestAzeriteEmpoweredItemUIHelpTipButton();
+		helpTipText = AZERITE_EMPOWERED_UNSELECTED_TRAITS_HELPTIP;
+		helpCloseFlag = self.helpFlags.AzeriteEmpoweredItemTipClosed;
 	end
 
-	local bestHelpTipButton = self:FindBestHelpTipButton();
 	if bestHelpTipButton then
-		self.UnspentAzeriteHelpBox.Arrow:ClearAllPoints();
-		self.UnspentAzeriteHelpBox:ClearAllPoints();
-		self.UnspentAzeriteHelpBox.Arrow.Glow:ClearAllPoints();
-		self.UnspentAzeriteHelpBox:ClearAllPoints();
+		helpTipBox.Arrow:ClearAllPoints();
+		helpTipBox:ClearAllPoints();
+		helpTipBox.Arrow.Glow:ClearAllPoints();
+		helpTipBox:ClearAllPoints();
 
 		if bestHelpTipButton.IsLeftSide then
-			self.UnspentAzeriteHelpBox.Arrow.Arrow:SetRotation(-math.pi / 2);
-			self.UnspentAzeriteHelpBox.Arrow.Glow:SetRotation(-math.pi / 2);
+			helpTipBox.Arrow.Arrow:SetRotation(-math.pi / 2);
+			helpTipBox.Arrow.Glow:SetRotation(-math.pi / 2);
 
-			self.UnspentAzeriteHelpBox.Arrow:SetPoint("RIGHT", self.UnspentAzeriteHelpBox, "LEFT", 17, 0);
-			self.UnspentAzeriteHelpBox.Arrow.Glow:SetPoint("CENTER", self.UnspentAzeriteHelpBox.Arrow.Arrow, "CENTER", -3, 0);
-			self.UnspentAzeriteHelpBox.CloseButton:SetPoint("TOPRIGHT", self.UnspentAzeriteHelpBox, "TOPRIGHT", 6, 6);
-			self.UnspentAzeriteHelpBox:SetPoint("LEFT", bestHelpTipButton, "RIGHT", 30, 0);
+			helpTipBox.Arrow:SetPoint("RIGHT", helpTipBox, "LEFT", 17, 0);
+			helpTipBox.Arrow.Glow:SetPoint("CENTER", helpTipBox.Arrow.Arrow, "CENTER", -3, 0);
+			helpTipBox.CloseButton:SetPoint("TOPRIGHT", helpTipBox, "TOPRIGHT", 6, 6);
+			helpTipBox:SetPoint("LEFT", bestHelpTipButton, "RIGHT", 30, 0);
 		else
-			self.UnspentAzeriteHelpBox.Arrow.Arrow:SetRotation(math.pi / 2);
-			self.UnspentAzeriteHelpBox.Arrow.Glow:SetRotation(math.pi / 2);
+			helpTipBox.Arrow.Arrow:SetRotation(math.pi / 2);
+			helpTipBox.Arrow.Glow:SetRotation(math.pi / 2);
 
-			self.UnspentAzeriteHelpBox.Arrow:SetPoint("LEFT", self.UnspentAzeriteHelpBox, "RIGHT", -17, 0);
-			self.UnspentAzeriteHelpBox.Arrow.Glow:SetPoint("CENTER", self.UnspentAzeriteHelpBox.Arrow.Arrow, "CENTER", 4, 0);
-			self.UnspentAzeriteHelpBox.CloseButton:SetPoint("TOPRIGHT", self.UnspentAzeriteHelpBox, "TOPRIGHT", 4, 6);
-			self.UnspentAzeriteHelpBox:SetPoint("RIGHT", bestHelpTipButton, "LEFT", -30, 0);
+			helpTipBox.Arrow:SetPoint("LEFT", helpTipBox, "RIGHT", -17, 0);
+			helpTipBox.Arrow.Glow:SetPoint("CENTER", helpTipBox.Arrow.Arrow, "CENTER", 4, 0);
+			helpTipBox.CloseButton:SetPoint("TOPRIGHT", helpTipBox, "TOPRIGHT", 4, 6);
+			helpTipBox:SetPoint("RIGHT", bestHelpTipButton, "LEFT", -30, 0);
 		end
 
-		self.UnspentAzeriteHelpBox:Show();
+		helpTipBox:Show();
+		helpTipBox.Text:SetText(helpTipText);
+		helpTipBox:SetHeight(helpTipBox.Text:GetHeight() + 34);
+		helpTipBox.closeFlag = helpCloseFlag;
+		return true;
 	else
-		self.UnspentAzeriteHelpBox:Hide();
+		helpTipBox:Hide();
+		return false;
 	end
 end
 
-function PaperDollItemsMixin:FindBestHelpTipButton()
+function PaperDollItemsMixin:FindBestAzeriteEmpoweredItemUIHelpTipButton()
 	for equipSlotIndex, itemLocation in AzeriteUtil.EnumerateEquipedAzeriteEmpoweredItems() do
 		if C_AzeriteEmpoweredItem.HasAnyUnselectedPowers(itemLocation) then
 			-- Right now we're just going to try pointing at the lowest slot index
@@ -2987,5 +3067,13 @@ function PaperDollItemsMixin:FindBestHelpTipButton()
 		end
 	end
 
+	return nil;
+end
+
+function PaperDollItemsMixin:FindActiveAzeriteItemButton()
+	local itemLocation = C_AzeriteItem.FindActiveAzeriteItem();
+	if itemLocation then
+		return self.EquipmentSlots[itemLocation.equipmentSlotIndex];
+	end
 	return nil;
 end

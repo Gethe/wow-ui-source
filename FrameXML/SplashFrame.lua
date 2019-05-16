@@ -1,33 +1,63 @@
-BASE_SPLASH_SCREEN_VERSION = 15;
-NEWEST_SPLASH_SCREEN_VERSION = 16;
-SEASON_SPLASH_SCREEN_VERSION = 2; 
+BASE_SPLASH_SCREEN_VERSION = 16;
+NEWEST_SPLASH_SCREEN_VERSION = 17;
+SEASON_SPLASH_SCREEN_VERSION = 3; 
 
 local FACTION_OVERRIDES = {
 	["Alliance"] = {
-		questID = 53956,	
+		questID = 56031,
 	},
 	["Horde"] = {
-		questID = 54410,
+		questID = 56030,
 	},
 }
 
 SPLASH_SCREENS = {
-	["8_1_5_LEVEL"] = {	
-		id = NEWEST_SPLASH_SCREEN_VERSION, -- 8.1.5 Live
+	["8_2_LEVEL"] = {	
+		id = NEWEST_SPLASH_SCREEN_VERSION, -- 8.2 Live
 		expansion = LE_EXPANSION_BATTLE_FOR_AZEROTH,
 		header = SPLASH_BASE_HEADER,
-		label = SPLASH_BATTLEFORAZEROTH_8_1_5_LABEL, 
-		leftTex = "splash-815-topleft",
-		rightTex = "splash-815-right",
-		bottomTex = "splash-815-botleft",
-		feature1Title = SPLASH_BATTLEFORAZEROTH_8_1_5_FEATURE1_TITLE,
-		feature1Desc = SPLASH_BATTLEFORAZEROTH_8_1_5_FEATURE1_DESC,
-		feature2Title = SPLASH_BATTLEFORAZEROTH_8_1_5_FEATURE2_TITLE,
-		feature2Desc = SPLASH_BATTLEFORAZEROTH_8_1_5_FEATURE2_DESC,
-		rightTitle = SPLASH_BATTLEFORAZEROTH_8_1_5_RIGHT_TITLE,
-		rightDescSubText = SPLASH_BATTLEFORAZEROTH_8_1_5_RIGHT_DESC,
+		label = SPLASH_BATTLEFORAZEROTH_8_2_0_LABEL, 
+		leftTex = "splash-820-topleft",
+		rightTex = "splash-820-right",
+		bottomTex = "splash-820-botleft",
+		feature1Title = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE1_TITLE,
+		feature1Desc = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE1_DESC,
+		feature2Title = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE2_TITLE,
+		feature2Desc = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE2_DESC,
+		rightTitle = SPLASH_BATTLEFORAZEROTH_8_2_0_RIGHT_TITLE,
+		rightDescSubText = SPLASH_BATTLEFORAZEROTH_8_2_0_RIGHT_DESC,
 		rightTitleMaxLines = 2,
 		cVar="splashScreenNormal",
+		hideStartButton = true,
+		minQuestLevel = 120,
+		minDisplayLevel = 120,
+
+		features = {
+			[1] = { EnterFunc = function() end,
+					LeaveFunc = function() end,
+					},
+			[2] = { EnterFunc = function() end,
+					LeaveFunc = function() end,
+					},
+		},
+	},
+
+	["8_2_NEW_SEASON"] = {	
+		id = SEASON_SPLASH_SCREEN_VERSION, -- 8.2 New season rollout
+		expansion = LE_EXPANSION_BATTLE_FOR_AZEROTH,
+		header = SPLASH_BASE_HEADER,
+		label = SPLASH_BATTLEFORAZEROTH_8_2_0_2_LABEL, 
+		leftTex = "splash-8202-topleft",
+		rightTex = "splash-8202-right",
+		bottomTex = "splash-8202-botleft",
+		feature1Title = SPLASH_BATTLEFORAZEROTH_8_2_0_2_FEATURE1_TITLE,
+		feature1Desc = SPLASH_BATTLEFORAZEROTH_8_2_0_2_FEATURE1_DESC,
+		feature2Title = SPLASH_BATTLEFORAZEROTH_8_2_0_2_FEATURE2_TITLE,
+		feature2Desc = SPLASH_BATTLEFORAZEROTH_8_2_0_2_FEATURE2_DESC,
+		rightTitle = SPLASH_BATTLEFORAZEROTH_8_2_0_2_RIGHT_TITLE,
+		rightDescSubText = SPLASH_BATTLEFORAZEROTH_8_2_0_2_RIGHT_DESC,
+		rightTitleMaxLines = 2,
+		cVar="splashScreenSeason",
 		hideStartButton = true,
 		minQuestLevel = 120,
 		minDisplayLevel = 120,
@@ -44,8 +74,8 @@ SPLASH_SCREENS = {
 };
 
 BASE_SPLASH_TAG = nil;
-CURRENT_SPLASH_TAG = "8_1_5_LEVEL";
-SEASON_SPLASH_TAG = nil; -- This will be nil in patches that don't have a season change
+CURRENT_SPLASH_TAG = "8_2_LEVEL";
+SEASON_SPLASH_TAG = "8_2_NEW_SEASON"; -- This will be nil in patches that don't have a season change
 
 -- For the case where we want to skip showing the first screen. 
 local function UpdateOtherSplashScreenCvar(tag)

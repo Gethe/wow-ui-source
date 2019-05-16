@@ -190,6 +190,15 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "GetMasterVolumeScale",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "scale", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetMemberGUID",
 			Type = "Function",
 
@@ -546,6 +555,15 @@ local VoiceChat =
 			Arguments =
 			{
 				{ Name = "volume", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetMasterVolumeScale",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "scale", Type = "number", Nilable = false },
 			},
 		},
 		{

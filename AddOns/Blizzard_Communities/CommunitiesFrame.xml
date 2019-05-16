@@ -209,7 +209,8 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						self:GetParent():GetParent().RecruitmentDialog:Show(); 
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+						self:GetParent():GetParent().RecruitmentDialog:Show();
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -316,6 +317,12 @@
 					<Anchor point="TOPRIGHT" x="-10" y="-27"/>
 				</Anchors>
 			</Frame>
+			<Frame parentKey="CommunityMemberListDropDownMenu" inherits="CommunityMemberListDropDownMenuTemplate">
+				<Size x="40" y="28"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-10" y="-27"/>
+				</Anchors>
+			</Frame> 
 			<Frame parentKey="CommunitiesListDropDownMenu" inherits="CommunitiesListDropDownMenuTemplate">
 				<Size x="40" y="28"/>
 				<Anchors>

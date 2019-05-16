@@ -38,22 +38,25 @@ function PVPMatchScoreboardMixin:Init()
 	local isArena = IsActiveBattlefieldArena();
 	local isLFD = IsInLFDBattlefield();
 	local isFactionalMatch = not (isArena or isArenaSkirmish or isLFD);
-	local factionIndex = GetBattlefieldArenaFaction();
+	self.TabGroup:SetShown(isFactionalMatch);
 
-	if isFactionalMatch then
+	self:UpdateTabs();
+	
+	local factionIndex = GetBattlefieldArenaFaction();
+	self:SetupArtwork(factionIndex, isFactionalMatch);
+
+	ConstructPVPMatchTable(self.tableBuilder, C_PvP.IsRatedBattleground(), isArena, isLFD, not isFactionalMatch);
+end
+
+function PVPMatchScoreboardMixin:UpdateTabs()
+	if self.TabGroup:IsShown() then
 		local teamInfos = { 
 			C_PvP.GetTeamInfo(0),
 			C_PvP.GetTeamInfo(1), 
 		};
 		self.Tab2:SetText(PVP_TAB_FILTER_COUNTED:format(FACTION_ALLIANCE, teamInfos[2].size));
 		self.Tab3:SetText(PVP_TAB_FILTER_COUNTED:format(FACTION_HORDE, teamInfos[1].size));
-		PanelTemplates_ResizeTabsToFit(self, 600);
 	end
-	self.TabGroup:SetShown(isFactionalMatch);
-
-	self:SetupArtwork(factionIndex, isFactionalMatch);
-
-	ConstructPVPMatchTable(self.tableBuilder, C_PvP.IsRatedBattleground(), isArena, isLFD, not isFactionalMatch);
 end
 
 function PVPMatchScoreboardMixin:OnEvent(event, ...)
@@ -108,13 +111,18 @@ function PVPMatchScoreboardMixin:UpdateTable()
 		buttons[i]:SetShown(visible);
 	end
 
+	self:UpdateTabs();
+
 	local regionHeight = self.ScrollFrame:GetHeight();
 	HybridScrollFrame_Update(self.ScrollFrame, visibleElementHeight, regionHeight);
 end
-function PVPMatchScoreboardMixin:OnClose()
-	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 
-	HideParentPanel(self);
+function PVPMatchScoreboardMixin:OnShow()
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+end
+
+function PVPMatchScoreboardMixin:OnHide()
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 end
 
 function PVPMatchScoreboardMixin:OnTabGroupClicked(tab)

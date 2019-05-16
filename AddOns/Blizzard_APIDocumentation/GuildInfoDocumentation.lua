@@ -7,12 +7,30 @@ local GuildInfo =
 	Functions =
 	{
 		{
+			Name = "CanEditOfficerNote",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canEditOfficerNote", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanSpeakInGuildChat",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "canSpeakInGuildChat", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanViewOfficerNote",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canViewOfficerNote", Type = "bool", Nilable = false },
 			},
 		},
 		{

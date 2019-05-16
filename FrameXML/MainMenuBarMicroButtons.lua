@@ -433,13 +433,17 @@ function CharacterMicroButton_OnEvent(self, event, ...)
 			end
 			AzeriteEmpoweredItemUI:RegisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnShow, EvaluateAlertVisibility);
 			AzeriteEmpoweredItemUI:RegisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnHide, EvaluateAlertVisibility);
-
-			self:UnregisterEvent("ADDON_LOADED");
+		elseif addOnName == "Blizzard_AzeriteEssenceUI" then
+			local function EvaluateAlertVisibility()
+				self:EvaluateAlertVisibility();
+			end
+			AzeriteEssenceUI:RegisterCallback(AzeriteEssenceUIMixin.Event.OnShow, EvaluateAlertVisibility);
+			AzeriteEssenceUI:RegisterCallback(AzeriteEssenceUIMixin.Event.OnHide, EvaluateAlertVisibility);
 		end
 	end
 end
 
-function CharacterMicroButtonMixin:ShouldShowAzeriteAlert()
+function CharacterMicroButtonMixin:ShouldShowAzeriteItemAlert()
 	if AzeriteEmpoweredItemUI and AzeriteEmpoweredItemUI:IsShown() then
 		return false;
 	end
@@ -455,10 +459,32 @@ function CharacterMicroButtonMixin:ShouldShowAzeriteAlert()
 	return false;
 end
 
+function CharacterMicroButtonMixin:ShouldShowAzeriteEssenceSlotAlert()
+	if AzeriteEssenceUI and AzeriteEssenceUI:IsShown() then
+		return false;
+	end
+
+	if self:GetButtonState() == "PUSHED" then
+		return false;
+	end
+
+	if IsPlayerInWorld() and AzeriteEssenceUtil.HasAnyEmptySlots() then
+		return true;
+	end
+
+	return false;
+end
+
 function CharacterMicroButtonMixin:EvaluateAlertVisibility()
 	CharacterMicroButtonAlert:Hide();
 
-	if self:ShouldShowAzeriteAlert() then
+	if self:ShouldShowAzeriteEssenceSlotAlert() then
+		if MainMenuMicroButton_ShowAlert(CharacterMicroButtonAlert, CHARACTER_SHEET_MICRO_BUTTON_AZERITE_ESSENCE_SLOT_AVAILABLE) then
+			return;
+		end
+	end
+
+	if self:ShouldShowAzeriteItemAlert() then
 		if MainMenuMicroButton_ShowAlert(CharacterMicroButtonAlert, CHARACTER_SHEET_MICRO_BUTTON_AZERITE_AVAILABLE) then
 			return;
 		end

@@ -218,15 +218,15 @@ end
 function PVPCellStatMixin:Populate(rowData, dataIndex)
 	local value = TableBuilderDataProviderUtil.TraverseToValue(rowData, self.dataProviderKey);
 	if value then
-		local icon = value.icon;
-		local amount = value.value;
+		local iconName = value.iconName;
+		local amount = value.pvpStatValue;
 		local text = self.text;
-		if not icon or icon == "" then
+		if not iconName or iconName == "" then
 			text:SetText(amount);
 		else
-			local icon = string.gsub(icon, "\\", "/");
+			local markup = CreateAtlasMarkup(iconName,16,16,0,-2);
 			local count = FLAG_COUNT_TEMPLATE:format(amount);
-			local string = "|T"..icon..":16:16:0:-2|t"..count;
+			local string = markup..count;
 			text:SetText(string);
 		end
 
@@ -244,7 +244,7 @@ function ConstructPVPMatchTable(tableBuilder, isRatedBG, isArena, isLFD, useAlte
 	tableBuilder:SetTableMargins(5);
 
 	local column = tableBuilder:AddColumn();
-	column:ConstructHeader("BUTTON", "PVPHeaderIconTemplate", [[Interface/PVPFrame/Icons/prestige-icon-3]]);
+	column:ConstructHeader("BUTTON", "PVPHeaderIconTemplate", [[Interface/PVPFrame/Icons/prestige-icon-3]], "honorLevel");
 	column:ConstrainToHeader();
 	column:ConstructCells("BUTTON", "PVPCellHonorLevelTemplate");
 
@@ -305,14 +305,28 @@ function ConstructPVPMatchTable(tableBuilder, isRatedBG, isArena, isLFD, useAlte
 		column:ConstructCells("BUTTON", "PVPCellStringTemplate", "ratingChange", useAlternateColor);
 	end
 	
-	local mapStats = GetNumBattlefieldStats();
-	for statIndex = 1, mapStats do
-		local text, icon, tooltip = GetBattlefieldStatInfo(statIndex);
-		column = tableBuilder:AddColumn();
-		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", text, "CENTER", "stat"..statIndex, tooltip);
-		column:ConstrainToHeader(textPadding);
-		column:ConstructCells("BUTTON", "PVPCellStatTemplate", "stats."..statIndex, useAlternateColor);
+	local statColumns = {};
+	for pvpStatIndex, pvpStatID in ipairs(C_PvP.GetMatchPVPStatIDs()) do
+		local statColumn = C_PvP.GetMatchPVPStatColumn(pvpStatID);
+		statColumn.sortType = "stat"..pvpStatIndex;
+		statColumn.statPath = "stats."..pvpStatIndex;
+		tinsert(statColumns, statColumn)
 	end
+
+	table.sort(statColumns, function(a, b)
+		return a.orderIndex < b.orderIndex end
+	);
+
+	for i, statColumn in ipairs(statColumns) do
+		local name = statColumn.name;
+		if strlen(name) > 0 then
+		column = tableBuilder:AddColumn();
+			column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", statColumn.name, "CENTER", statColumn.sortType, statColumn.tooltip);
+		column:ConstrainToHeader(textPadding);
+			column:ConstructCells("BUTTON", "PVPCellStatTemplate", statColumn.statPath, useAlternateColor);
+		end
+	end
+
 
 	tableBuilder:Arrange();
 end

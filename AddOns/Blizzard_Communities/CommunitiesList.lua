@@ -591,7 +591,7 @@ end
 
 function CommunitiesListEntryMixin:SetFindCommunity()
 	self.overrideOnClick = function()
-		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		self:GetCommunitiesFrame():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_FINDER);
 		self:GetCommunitiesFrame():SelectClub(nil);
 	end;

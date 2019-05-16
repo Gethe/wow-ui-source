@@ -820,7 +820,7 @@
 							</Layer>
 						</Layers>
 					</ItemButton>
-					<Frame parentKey="UnspentAzeriteHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
+					<Frame parentKey="HelpTipBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
 						<Size x="200" y="100"/>
 						<Layers>
 							<Layer level="OVERLAY">
@@ -836,18 +836,13 @@
 							<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 								<Scripts>
 									<OnClick>
-										self:GetParent():GetParent():OnHelpTipManuallyClosed();
+										self:GetParent():GetParent():OnHelpTipManuallyClosed(self:GetParent().closeFlag);
 										HideParentPanel(self);
 									</OnClick>
 								</Scripts>
 							</Button>
 							<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate" />
 						</Frames>
-						<Scripts>
-							<OnShow>
-								self:SetHeight(self.Text:GetHeight() + 34);
-							</OnShow>
-						</Scripts>
 					</Frame>
 				</Frames>
 				<Scripts>

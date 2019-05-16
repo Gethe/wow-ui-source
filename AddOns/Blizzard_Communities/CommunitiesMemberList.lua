@@ -128,6 +128,9 @@ local GUILD_COLUMN_INFO = {
 local EXTRA_GUILD_COLUMN_ACHIEVEMENT = 1;
 local EXTRA_GUILD_COLUMN_PROFESSION = 2;
 local EXTRA_GUILD_COLUMN_APPLICANTS = 3;
+local EXTRA_GUILD_COLUMN_PENDING = 4;
+
+local COMMUNITY_APPLICANT_LIST_VALUE = 2; 
 
 local EXTRA_GUILD_COLUMNS = {
 	[EXTRA_GUILD_COLUMN_ACHIEVEMENT] = {
@@ -150,8 +153,12 @@ local EXTRA_GUILD_COLUMNS = {
 		attribute = "applicants",
 		width = 115,
 	};
-
-
+	[EXTRA_GUILD_COLUMN_PENDING] = {
+		dropdownText = CLUB_FINDER_PENDING,
+		title = CLUB_FINDER_PENDING,
+		attribute = "pending",
+		width = 115,
+	};
 };
 
 CommunitiesMemberListMixin = {};
@@ -460,6 +467,13 @@ end
 
 function CommunitiesMemberListMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, COMMUNITIES_MEMBER_LIST_EVENTS);
+	C_ClubFinder.RequestApplicantList(Enum.ClubFinderRequestType.All); 
+
+	local selectedClubId = self:GetSelectedClubId();
+	if (selectedClubId ~= nil) then 
+		self.communityPrivileges = C_Club.GetClubPrivileges(selectedClubId);
+	end
+
 
 	self:UpdateMemberList();
 
@@ -499,7 +513,6 @@ function CommunitiesMemberListMixin:OnShow()
 	self.selectedClubInfoChangedCallback = SelectedClubInfoChangedCallback;
 	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.SelectedClubInfoUpdated, self.selectedClubInfoChangedCallback);
 
-	local selectedClubId = self:GetSelectedClubId();
 	if selectedClubId ~= nil and selectedClubId == C_Club.GetGuildClubId() then
 		C_GuildInfo.GuildRoster();
 		QueryGuildRecipes();
@@ -664,11 +677,33 @@ function CommunitiesMemberListMixin:OnEvent(event, ...)
 			self:MarkSortDirty();
 		end
 	elseif event == "CLUB_FINDER_RECRUITS_UPDATED" then 
-		self.ApplicantInfoList = C_ClubFinder.GetApplicantInfoList();
-		if (self.ApplicantInfoList and #self.ApplicantInfoList > 0) then 
-			self.hasApplicants = true; 
-		else 
-			self.hasApplicants = false; 
+		local clubFinderType = ...; 
+		self.hasGuildApplicants = false; 
+		self.hasPendingGuildApplicants = false; 
+		self.hasCommunityApplicants = false; 
+		self.hasPendingCommunityApplicants = false; 
+
+		if (clubFinderType == Enum.ClubFinderRequestType.Guild or clubFinderType == Enum.ClubFinderRequestType.All) then 
+			local GuildApplicantInfoList = C_ClubFinder.ReturnGuildApplicantList();
+			local PendingGuildApplicantInfoList = C_ClubFinder.ReturnPendingGuildApplicantList();
+			if (GuildApplicantInfoList and #GuildApplicantInfoList > 0) then 
+				self.hasGuildApplicants = true; 
+			end
+			if(PendingGuildApplicantInfoList and #PendingGuildApplicantInfoList > 0) then 
+				self.hasPendingGuildApplicants = true; 
+			end 
+			self:GetCommunitiesFrame().GuildMemberListDropDownMenu:UpdateDropdown(); 
+		end
+		if (clubFinderType == Enum.ClubFinderRequestType.Community or clubFinderType == Enum.ClubFinderRequestType.All) then
+			local CommunityApplicantInfoList = C_ClubFinder.ReturnCommunityApplicantList(self:GetSelectedClubId());
+			local PendingCommunityApplicantInfoList = C_ClubFinder.ReturnPendingCommunityApplicantList(self:GetSelectedClubId());
+			if (CommunityApplicantInfoList and #CommunityApplicantInfoList > 0) then 
+				self.hasCommunityApplicants = true; 
+			end
+			if(PendingCommunityApplicantInfoList and #PendingCommunityApplicantInfoList > 0) then 
+				self.hasPendingCommunityApplicants = true; 
+			end 
+			self:GetCommunitiesFrame().CommunityMemberListDropDownMenu:UpdateDropdown(); 
 		end
 	end
 end
@@ -1464,8 +1499,13 @@ function GuildMemberListDropDownMenuMixin:OnLoad()
 	UIDropDownMenu_SetWidth(self, self.width or 115);
 end
 
-function GuildMemberListDropDownMenuMixin:OnShow()
+function GuildMemberListDropDownMenuMixin:UpdateDropdown() 
 	UIDropDownMenu_Initialize(self, GuildMemberListDropDownMenu_Initialize);
+end 
+
+function GuildMemberListDropDownMenuMixin:OnShow()
+	self:UpdateDropdown(); 
+
 	local communitiesFrame = self:GetCommunitiesFrame();
 
 	if (communitiesFrame.MemberList:GetGuildColumnIndex() == EXTRA_GUILD_COLUMN_APPLICANTS) then
@@ -1479,6 +1519,8 @@ function GuildMemberListDropDownMenuMixin:OnShow()
 			local clubInfo = communitiesFrame:GetSelectedClubInfo();
 			if clubInfo and clubInfo.clubType ~= Enum.ClubType.Guild then
 				self:Hide();
+			else 
+				communitiesFrame.CommunityMemberListDropDownMenu:Hide();
 			end
 		end
 	end
@@ -1499,16 +1541,43 @@ end
 function GuildMemberListDropDownMenu_Initialize(self)
 	local memberList = self:GetCommunitiesFrame().MemberList;
 	local info = UIDropDownMenu_CreateInfo();
+	local canGuildInvite = CanGuildInvite();
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
+
+	--Special case where we don't have anymore applicants in list, so we have to update the button. 
+	if (selectedValue == EXTRA_GUILD_COLUMN_APPLICANTS and not memberList.hasGuildApplicants) then 
+		self:GetCommunitiesFrame():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
+		UIDropDownMenu_SetSelectedValue(self, EXTRA_GUILD_COLUMN_ACHIEVEMENT);
+		memberList:SetGuildColumnIndex(EXTRA_GUILD_COLUMN_ACHIEVEMENT);
+	end 
+
 	for i, extraColumnInfo in ipairs(EXTRA_GUILD_COLUMNS) do
 		info.text = extraColumnInfo.dropdownText;
 		info.value = i;
 		if i == EXTRA_GUILD_COLUMN_APPLICANTS then 
-			if (memberList.hasApplicants) then 
+			if (memberList.hasGuildApplicants) then 
 				info.text = extraColumnInfo.dropdownText.." "..CreateAtlasMarkup("communities-icon-notification", 10, 10);
 			end
+			info.disabled = not memberList.hasGuildApplicants;
 			info.func = function(button)
-				self:GetCommunitiesFrame():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST);
+				local communitiesFrame = self:GetCommunitiesFrame();
+				communitiesFrame.ApplicantList.isPendingList = false; 
+				communitiesFrame.ApplicantList:RefreshLayout();
+				communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST);
+				memberList:SetGuildColumnIndex(i);
 				UIDropDownMenu_SetSelectedValue(self, i);
+				UIDropDownMenu_SetText(self, CLUB_FINDER_APPLICANTS);
+			end
+		elseif i == EXTRA_GUILD_COLUMN_PENDING then 
+			info.disabled = not memberList.hasPendingGuildApplicants;
+			info.func = function(button)
+				local communitiesFrame = self:GetCommunitiesFrame();
+				communitiesFrame.ApplicantList.isPendingList = true; 
+				communitiesFrame.ApplicantList:RefreshLayout();
+				communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST);
+				memberList:SetGuildColumnIndex(i);
+				UIDropDownMenu_SetSelectedValue(self, i);
+				UIDropDownMenu_SetText(self, CLUB_FINDER_PENDING);
 			end
 		else 
 			info.func = function(button)
@@ -1517,8 +1586,114 @@ function GuildMemberListDropDownMenu_Initialize(self)
 				UIDropDownMenu_SetSelectedValue(self, i);
 			end
 		end
-		UIDropDownMenu_AddButton(info);
+		local isFinderDropdownType = (i == EXTRA_GUILD_COLUMN_APPLICANTS or i == EXTRA_GUILD_COLUMN_PENDING); 
+
+		if (not isFinderDropdownType) then 
+			UIDropDownMenu_AddButton(info);
+		elseif(canGuildInvite and isFinderDropdownType) then
+			UIDropDownMenu_AddButton(info);
+		end
 	end
 
-	self.NotificationOverlay:SetShown(memberList.hasApplicants);
+	if (canGuildInvite) then 
+		self.NotificationOverlay:SetShown(memberList.hasGuildApplicants);
+	end
+
+	UIDropDownMenu_SetSelectedValue(self, memberList:GetGuildColumnIndex());
+end
+
+CommunityMemberListDropDownMenuMixin = {};
+
+function CommunityMemberListDropDownMenuMixin:OnLoad()
+	UIDropDownMenu_SetWidth(self, self.width or 115);
+end
+
+function CommunityMemberListDropDownMenuMixin:UpdateDropdown() 
+	UIDropDownMenu_Initialize(self, CommunityMemberListDropDownMenu_Initialize);
+end 
+
+function CommunityMemberListDropDownMenuMixin:OnShow()
+	self:UpdateDropdown();
+	UIDropDownMenu_SetSelectedValue(self, 1);
+	local communitiesFrame = self:GetCommunitiesFrame();
+
+	local function CommunitiesClubSelectedCallback(event, clubId)
+		if clubId and self:IsVisible() then
+			local clubInfo = communitiesFrame:GetSelectedClubInfo();
+			if clubInfo and clubInfo.clubType ~= Enum.ClubType.Character then
+				self:Hide();
+			else 
+				communitiesFrame.GuildMemberListDropDownMenu:Hide();
+			end
+		end
+	end
+
+	self.clubSelectedCallback = CommunitiesClubSelectedCallback;
+	communitiesFrame:RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
+end
+
+function CommunityMemberListDropDownMenuMixin:OnHide()
+	local communitiesFrame = self:GetCommunitiesFrame();
+	communitiesFrame:UnregisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
+end
+
+function CommunityMemberListDropDownMenuMixin:GetCommunitiesFrame()
+	return self:GetParent();
+end
+
+function CommunityMemberListDropDownMenu_Initialize(self)
+	local memberList = self:GetCommunitiesFrame().MemberList;
+	local info = UIDropDownMenu_CreateInfo();
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
+
+	--Special case where we don't have anymore applicants in list, so we have to update the button. 
+	if (selectedValue == COMMUNITY_APPLICANT_LIST_VALUE and not memberList.hasCommunityApplicants) then 
+		self:GetCommunitiesFrame():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
+		UIDropDownMenu_SetSelectedValue(self, 1);
+		UIDropDownMenu_SetText(self, CLUB_FINDER_COMMUNITY_ROSTER_DROPDOWN);		
+	end 
+
+	info.text = CLUB_FINDER_COMMUNITY_ROSTER_DROPDOWN;
+	info.value = 1;
+	info.checked = info.value == selectedValue;
+	info.func = function(button)
+		self:GetCommunitiesFrame():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
+		UIDropDownMenu_SetSelectedValue(self, 1);
+		UIDropDownMenu_SetText(self, CLUB_FINDER_COMMUNITY_ROSTER_DROPDOWN);
+	end
+	UIDropDownMenu_AddButton(info);
+
+	info.text = CLUB_FINDER_APPLICANTS;
+	info.value = COMMUNITY_APPLICANT_LIST_VALUE;
+	info.checked = info.value == selectedValue; 
+	info.disabled = not memberList.hasCommunityApplicants;
+	if (memberList.hasCommunityApplicants) then 
+		info.text = CLUB_FINDER_APPLICANTS.." "..CreateAtlasMarkup("communities-icon-notification", 10, 10);
+	end
+	info.func = function(button)
+		local communitiesFrame = self:GetCommunitiesFrame();
+		communitiesFrame.ApplicantList.isPendingList = false; 
+		communitiesFrame.ApplicantList:RefreshLayout();
+		communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST);
+		UIDropDownMenu_SetSelectedValue(self, 2);
+		UIDropDownMenu_SetText(self, CLUB_FINDER_APPLICANTS);
+	end
+	UIDropDownMenu_AddButton(info);
+
+	info.text = CLUB_FINDER_PENDING;
+	info.value = 3;
+	info.checked = info.value == selectedValue;
+	info.disabled =	not memberList.hasPendingCommunityApplicants;
+
+	info.func = function(button)
+		local communitiesFrame = self:GetCommunitiesFrame();
+		communitiesFrame.ApplicantList.isPendingList = true; 
+		communitiesFrame.ApplicantList:RefreshLayout();
+		communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST);
+		UIDropDownMenu_SetSelectedValue(self, 3);
+		UIDropDownMenu_SetText(self, CLUB_FINDER_PENDING);
+	end
+
+	UIDropDownMenu_AddButton(info);
+	self.NotificationOverlay:SetShown(memberList.hasCommunityApplicants);
 end

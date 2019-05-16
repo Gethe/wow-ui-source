@@ -328,6 +328,7 @@ COMMUNITIES_FRAME_DISPLAY_MODES = {
 		"MemberList",
 		"CommunitiesControlFrame",
 		"GuildMemberListDropDownMenu",
+		"CommunityMemberListDropDownMenu",
 	},
 
 	APPLICANT_LIST = {
@@ -335,6 +336,7 @@ COMMUNITIES_FRAME_DISPLAY_MODES = {
 		"ApplicantList",
 		"CommunitiesControlFrame",
 		"GuildMemberListDropDownMenu",
+		"CommunityMemberListDropDownMenu",
 	},
 
 	INVITATION = {
@@ -415,6 +417,10 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 			C_GuildInfo.GuildRoster();
 		end
 		self.GuildMemberListDropDownMenu:SetShown(isGuildCommunitySelected);
+		if (clubId) then
+			local privileges = C_Club.GetClubPrivileges(clubId);
+			self.CommunityMemberListDropDownMenu:SetShown(not isGuildCommunitySelected and privileges.canSendInvitation);
+		end
 	end
 
 	self:UpdateMaximizeMinimizeButton();
@@ -466,6 +472,8 @@ function CommunitiesFrameMixin:ValidateDisplayMode()
 
 		if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST then
 			self.GuildMemberListDropDownMenu:SetShown(isGuildCommunitySelected);
+			local privileges = C_Club.GetClubPrivileges(clubId);
+			self.CommunityMemberListDropDownMenu:SetShown(not isGuildCommunitySelected and privileges.canSendInvitation);
 		end
 
 		self.ChatTab:SetEnabled(not self.chatDisabled);

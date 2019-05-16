@@ -32,6 +32,8 @@ end
 function UIWidgetTemplateZoneControlMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 
+	SetupTextureKitOnFrameByID(widgetInfo.textureKitID, self.Background, "%s-lines", TextureKitConstants.SetVisiblity, TextureKitConstants.UseAtlasSize);
+
 	self.entryPool:ReleaseAll();
 
 	for index, zoneInfo in ipairs(widgetInfo.zoneEntries) do

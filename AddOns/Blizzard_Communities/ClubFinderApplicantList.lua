@@ -1,4 +1,4 @@
-local APPLICANT_COLUMN_INFO = {
+﻿local APPLICANT_COLUMN_INFO = {
 	[1] = {
 		title = COMMUNITIES_ROSTER_COLUMN_TITLE_LEVEL,
 		width = 40,
@@ -36,6 +36,10 @@ local APPLICANT_COLUMN_INFO = {
 	},
 };
 
+local TANK_SORT_VALUE = 4; 
+local HEALER_SORT_VALUE = 2; 
+local DPS_SORT_VALUE = 1; 
+
 ClubFinderApplicantEntryMixin = { };
 
 function ClubFinderApplicantEntryMixin:GetApplicantName()
@@ -45,6 +49,7 @@ end
 function ClubFinderApplicantEntryMixin:OnMouseDown(button)
 	if ( button == "RightButton" ) then
 		ToggleDropDownMenu(1, nil, self.RightClickDropdown, self, 100, 0);
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end
 end 
 
@@ -97,6 +102,32 @@ function ClubFinderApplicantEntryMixin:UpdateMemberInfo(info)
 	if (classTag) then 
 		self.Class:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classTag]));
 	end
+	local isPendingList = self:GetParent():GetParent():GetParent().isPendingList;
+	if (isPendingList) then 
+		self.RequestStatus:SetTextColor(GREEN_FONT_COLOR:GetRGB());
+
+		if (info.requestStatus == Enum.PlayerClubRequestStatus.Pending) then 
+			self.RequestStatus:SetText(CLUB_FINDER_PENDING);
+		elseif (info.requestStatus == Enum.PlayerClubRequestStatus.Approved) then
+			self.RequestStatus:SetText(CLUB_FINDER_APPROVED);
+		elseif (info.requestStatus == Enum.PlayerClubRequestStatus.AutoApproved) then 
+			self.RequestStatus:SetText(CLUB_FINDER_APPROVED);
+		elseif (info.requestStatus == Enum.PlayerClubRequestStatus.Joined) then 
+			self.RequestStatus:SetText(CLUB_FINDER_JOINED);
+		elseif (info.requestStatus == Enum.PlayerClubRequestStatus.JoinedAnother) then 
+			self.RequestStatus:SetText(CLUB_FINDER_JOINED_ANOTHER);
+		elseif (info.requestStatus == Enum.PlayerClubRequestStatus.Canceled) then 
+			self.RequestStatus:SetText(CLUB_FINDER_CANCELED);
+			self.RequestStatus:SetTextColor(RED_FONT_COLOR:GetRGB());
+		elseif (info.requestStatus == Enum.PlayerClubRequestStatus.Declined) then 
+			self.RequestStatus:SetText(CLUB_FINDER_DECLINED);
+			self.RequestStatus:SetTextColor(RED_FONT_COLOR:GetRGB());
+		end
+	end 
+	self.CancelInvitationButton:SetShown(not isPendingList); 
+	self.InviteButton:SetShown(not isPendingList); 
+	self.RequestStatus:SetShown(isPendingList); 
+
 	UIDropDownMenu_Initialize(self.RightClickDropdown, ApplicantRightClickOptionsMenuInitialize, "MENU");
 end 
 
@@ -126,6 +157,7 @@ function ClubFinderApplicantEntryMixin:OnEnter()
 	GameTooltip:Show();
 
 end
+
 function ClubFinderApplicantEntryMixin:OnLeave()
 	GameTooltip:Hide();
 end
@@ -171,11 +203,12 @@ function ApplicantRightClickOptionsMenuInitialize(self, level)
 	end
 end
 
-ClubFinderApplicantListMixin = { }; 
+ClubFinderApplicantListMixin = { };
 
 function ClubFinderApplicantListMixin:OnLoad()
 	self:RegisterEvent("CLUB_FINDER_RECRUITS_UPDATED");
 
+	C_ClubFinder.RequestApplicantList(Enum.ClubFinderRequestType.All);
 	self.ColumnDisplay:LayoutColumns(APPLICANT_COLUMN_INFO);
 	self.ColumnDisplay.Background:Hide();
 	self.ColumnDisplay.TopTileStreaks:Hide();
@@ -184,34 +217,153 @@ end
 
 function ClubFinderApplicantListMixin:OnShow()
 	CommunitiesFrameInset:Hide(); 
-
-	local communityFrame = self:GetParent();
-	if (communityFrame:GetSelectedClubId()) then 
-		local clubInfo = C_Club.GetClubInfo(communityFrame:GetSelectedClubId());
-		if (clubInfo) then 
-			C_ClubFinder.RequestApplicantList(Enum.ClubFinderRequestType.All); 
-		end 
-	end
+	self:ResetColumnSort();
+	self:BuildList();
 end 
 
 function ClubFinderApplicantListMixin:OnHide()
 	CommunitiesFrameInset:Show(); 
 end 
 function ClubFinderApplicantListMixin:OnEvent(event, ...)
-	if(event == "CLUB_FINDER_RECRUITS_UPDATED") then 
-		self.ApplicantInfoList = C_ClubFinder.GetApplicantInfoList();
-		self:RefreshLayout();
+	if (event == "CLUB_FINDER_RECRUITS_UPDATED") then 
+		self:BuildList();
 	end
 end 
 
+function ClubFinderApplicantListMixin:ResetColumnSort()
+	self.reverseActiveColumnSort = nil;
+	self.activeColumnSortIndex = nil; 
+end
+
+function ClubFinderApplicantListColumnDisplay_OnClick(self, columnIndex)
+	self:GetParent():SortByColumnIndex(columnIndex);
+end
+
+function ClubFinderApplicantSortFunction(shouldReverse, firstValue, secondValue)
+	if (shouldReverse) then 
+		return firstValue < secondValue
+	else 
+		return firstValue > secondValue
+	end
+end 
+
+function ClubFinderApplicantSpecSortReturnSpecValue(specIds)
+	local isDps, isHealer, isTank = false; 
+	local specReturnValue = 0; 
+	for _, specID in ipairs(specIds) do 
+		local role = GetSpecializationRoleByID(specID);
+		if(role == "DAMAGER") then
+			isDps = true; 
+		elseif (role == "HEALER") then 
+			isHealer = true; 
+		elseif (role == "TANK") then 
+			isTank = true; 
+		end
+	end 
+
+	if (isTank) then 
+		specReturnValue = specReturnValue + TANK_SORT_VALUE; 
+	end 
+	if (isHealer) then 
+		specReturnValue = specReturnValue + HEALER_SORT_VALUE; 
+	end 
+	if (isDps) then 
+		specReturnValue = specReturnValue + DPS_SORT_VALUE; 
+	end 
+
+	return specReturnValue; 
+end 
+
+function ClubFinderApplicantSortFunctionBySpecIds(shouldReverse, firstSpecIds, secondSpecIds)
+	local firstValue = ClubFinderApplicantSpecSortReturnSpecValue(firstSpecIds);
+	local secondValue = ClubFinderApplicantSpecSortReturnSpecValue(secondSpecIds);
+
+	if (shouldReverse) then 
+		return firstValue < secondValue
+	else 
+		return firstValue > secondValue
+	end
+end 
+
+function ClubFinderApplicantListMixin:SortByColumnIndex(columnIndex)
+	local sortAttribute = APPLICANT_COLUMN_INFO[columnIndex] and APPLICANT_COLUMN_INFO[columnIndex].attribute or nil;
+	if sortAttribute == nil or not self.ApplicantInfoList then
+		return;
+	end
+
+	self.reverseActiveColumnSort = columnIndex ~= self.activeColumnSortIndex and false or not self.reverseActiveColumnSort;
+
+	self.activeColumnSortIndex = columnIndex;
+
+	if sortAttribute == "name" then
+		table.sort(self.ApplicantInfoList, function(a, b) 
+			ClubFinderApplicantSortFunction(self.reverseActiveColumnSort, a.name:upper(), b.name:upper()); 
+		end);
+	elseif sortAttribute == "level" then
+		table.sort(self.ApplicantInfoList, function(a, b) 
+			return ClubFinderApplicantSortFunction(self.reverseActiveColumnSort, a.level, b.level); 
+		end);
+	elseif sortAttribute == "memberNote" then
+		table.sort(self.ApplicantInfoList, function(a, b) 
+			return ClubFinderApplicantSortFunction(self.reverseActiveColumnSort, a.message:upper(), b.message:upper()); 
+		end);
+	elseif sortAttribute == "classID" then 
+		table.sort(self.ApplicantInfoList, function(a, b) 
+			return ClubFinderApplicantSortFunction(self.reverseActiveColumnSort, a.classID, b.classID); 
+		end);
+	elseif sortAttribute == "ilvl" then
+		table.sort(self.ApplicantInfoList, function(a, b) 
+			return ClubFinderApplicantSortFunction(self.reverseActiveColumnSort, a.ilvl, b.ilvl); 
+		end);
+	elseif sortAttribute == "spec" then 
+		table.sort(self.ApplicantInfoList, function(a, b) 
+			return ClubFinderApplicantSortFunctionBySpecIds(self.reverseActiveColumnSort, a.specIds, b.specIds);
+		end);
+	end
+	self:RefreshLayout();
+end
+
+function ClubFinderApplicantListMixin:BuildList()
+	local communityFrame = self:GetParent();
+	local clubId = communityFrame:GetSelectedClubId();
+	if (not clubId) then 
+		return;
+	end
+
+	local clubInfo = C_Club.GetClubInfo(clubId);
+	if (not clubInfo) then 
+		return; 
+	end 
+
+	if (self.isPendingList) then 
+		if (clubInfo.clubType == Enum.ClubType.Guild) then
+			self.ApplicantInfoList = C_ClubFinder.ReturnPendingGuildApplicantList();
+		elseif (clubInfo.clubType == Enum.ClubType.Character) then 
+			self.ApplicantInfoList = C_ClubFinder.ReturnPendingCommunityApplicantList(communityFrame:GetSelectedClubId());
+		end
+	else 
+		if (clubInfo.clubType == Enum.ClubType.Guild) then
+			self.ApplicantInfoList = C_ClubFinder.ReturnGuildApplicantList();
+		elseif (clubInfo.clubType == Enum.ClubType.Character) then 
+			self.ApplicantInfoList = C_ClubFinder.ReturnCommunityApplicantList(communityFrame:GetSelectedClubId());
+		end
+	end 
+	self:RefreshLayout();
+end 
+
 function ClubFinderApplicantListMixin:RefreshLayout()
-	if (not self.ApplicantInfoList) then 
+	if (not self.ApplicantInfoList or #self.ApplicantInfoList == 0) then 
+		self.ListScrollFrame.scrollBar:Hide();
+		self.ListScrollFrame:Hide();
 		return; 
 	end 
 
 	if not self.ListScrollFrame.buttons then
 		HybridScrollFrame_CreateButtons(self.ListScrollFrame, "ClubFinderApplicantEntryTemplate", 0, 0);
 	end
+
+	self.ListScrollFrame.scrollBar:Show();
+	self.ListScrollFrame:Show();
 
 	for i, applicant in ipairs(self.ListScrollFrame.buttons) do 
 		if (self.ApplicantInfoList[i]) then 
@@ -234,9 +386,30 @@ function ClubFinderApplicantInviteButtonMixin:OnLeave()
 	GameTooltip:Hide(); 
 end 
 
-function ClubFinderApplicantInviteButtonMixin:OnClick() 
-	C_ClubFinder.RespondToApplicant(self:GetParent().Info.clubFinderGUID, self:GetParent().Info.playerGUID, true, Enum.ClubFinderRequestType.Guild); --TO DO CLUBFINDER: Check which type we are (or have a way of figuring it out)
+local function ClubFinderCancelOrAcceptApplicant(self, shouldInvite)
+	local communityFrame = self:GetParent():GetParent():GetParent():GetParent():GetParent();
+	local clubId = communityFrame:GetSelectedClubId();
+	if (clubId) then 
+		local clubInfo = C_Club.GetClubInfo(clubId);
+		if (clubInfo)  then 
+			local applicantType;
+
+			if(clubInfo.clubType == Enum.ClubType.Guild) then
+				applicantType = Enum.ClubFinderRequestType.Guild
+			elseif(clubInfo.clubType == Enum.ClubType.Character) then
+				applicantType = Enum.ClubFinderRequestType.Community
+			end
+
+			if(applicantType) then 
+				C_ClubFinder.RespondToApplicant(self:GetParent().Info.clubFinderGUID, self:GetParent().Info.playerGUID, shouldInvite, applicantType);
+			end
+		end
+	end
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end 
+
+function ClubFinderApplicantInviteButtonMixin:OnClick() 
+	ClubFinderCancelOrAcceptApplicant(self, true);
 end 
 
 ClubFinderApplicantCancelButtonMixin = { }; 
@@ -251,6 +424,5 @@ function ClubFinderApplicantCancelButtonMixin:OnLeave()
 end 
 
 function ClubFinderApplicantCancelButtonMixin:OnClick() 
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	C_ClubFinder.RespondToApplicant(self:GetParent().Info.clubFinderGUID, self:GetParent().Info.playerGUID, false, Enum.ClubFinderRequestType.Guild);--TO DO CLUBFINDER: Check which type we are (or have a way of figuring it out)
+	ClubFinderCancelOrAcceptApplicant(self, false);
 end 

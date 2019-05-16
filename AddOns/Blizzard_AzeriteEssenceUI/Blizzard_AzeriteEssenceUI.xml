@@ -87,7 +87,7 @@
 						<Texture parentKey="Rune" atlas="heartofazeroth-slot-minor-unactivated-rune" alphaMode="ADD">
 							<Size x="46" y="49"/>
 							<Anchors>
-								<Anchor point="CENTER" y="-2"/>
+								<Anchor point="CENTER" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -217,7 +217,8 @@
 				<Texture parentKey="Icon" atlas="heartofazeroth-node-on" setAllPoints="true"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="Glow" atlas="heartofazeroth-node-glow" useAtlasSize="true" alphaMode="ADD" alpha="0">
+				<Texture parentKey="Glow" atlas="heartofazeroth-node-glow" alphaMode="ADD" alpha="0">
+					<Size x="49" y="47"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -370,22 +371,27 @@
 	</Frame>
 
 	<Frame name="AzeriteEssenceUI" inherits="PortraitFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" mixin="AzeriteEssenceUIMixin">
-		<Size x="665" y="469"/>
+		<Size x="707" y="510"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<Frames>
 			<Frame parentKey="PowerLevelBadgeFrame" frameStrata="HIGH">
-				<Size x="64" y="64"/>
+				<Size x="36" y="36"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="25" y="-26"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="Ring" file="Interface\Minimap\MiniMap-TrackingBorder" setAllPoints="true"/>
+						<Texture parentKey="Ring" file="Interface\Minimap\MiniMap-TrackingBorder">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
 						<FontString parentKey="Label" inherits="SystemFont_Shadow_Med2">
 							<Anchors>
-								<Anchor point="CENTER" x="-13" y="13"/>
+								<Anchor point="CENTER" x="1" y="-1"/>
 							</Anchors>
 							<Color r="1.0" g="0.82" b="0"/> 
 						</FontString>
@@ -394,17 +400,25 @@
 						<Texture parentKey="BackgroundBlack" alpha="0.7">
 							<Size x="22" y="22"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT" x="8" y="-7"/>
+								<Anchor point="CENTER"/>
 							</Anchors>
 							<Color r="0" g="0" b="0"/>
 						</Texture>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnEnter>
+						self:GetParent():OnEnterPowerLevelBadgeFrame();
+					</OnEnter>
+					<OnLeave>
+						self:GetParent():OnLeavePowerLevelBadgeFrame();
+					</OnLeave>
+				</Scripts>
 			</Frame>
 			<Frame parentKey="LeftInset" useParentLevel="true" inherits="InsetFrameTemplate">
-				<Size x="443"/>
+				<Size x="485"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="4" y="-25"/>
+					<Anchor point="TOPLEFT" x="4" y="-24"/>
 					<Anchor point="BOTTOMLEFT" x="4" y="6"/>
 				</Anchors>
 			</Frame>
@@ -425,9 +439,9 @@
 				</Layers>
 			</Frame>
 			<ModelScene parentKey="ItemModelScene" inherits="NonInteractableModelSceneMixinTemplate" useParentLevel="true" drawLayer="BORDER">
-				<Size x="435" y="431"/>
+				<Size x="473" y="469"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" x="4" y="-3"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" x="6" y="-6"/>
 				</Anchors>
 			</ModelScene>
 			<Frame parentKey="StarsAnimationFrame1" inherits="AzeriteEssenceStarsAnimationFrameTemplate">
@@ -549,22 +563,24 @@
 		<Layers>
 			<Layer level="BORDER" textureSubLevel="-2">
 				<Texture parentKey="OrbBackground">
-					<Size x="435" y="431"/>
+					<Size x="475" y="471"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.ItemModelScene" x="-1" y="1"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ItemModelScene" x="0" y="1"/>
 					</Anchors>
 					<Color r="0" g="0" b="0" a="1"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="OrbGlass" atlas="heartofazeroth-orb-glass" useAtlasSize="true" alphaMode="ADD" alpha="0.6">
+				<Texture parentKey="OrbGlass" atlas="heartofazeroth-orb-glass" alphaMode="ADD" alpha="0.3">
+					<Size x="438" y="438"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.OrbBackground"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture parentKey="OrbShadow" atlas="heartofazeroth-orb-shadow" useAtlasSize="true">
+				<Texture parentKey="OrbShadow" atlas="heartofazeroth-orb-shadow">
+					<Size x="438" y="438"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.OrbBackground"/>
 					</Anchors>
@@ -572,7 +588,7 @@
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="3">
 				<Texture parentKey="ActivationGlow" atlas="heartofazeroth-orb-activated" alpha="0" alphaMode="ADD">
-					<Size x="400" y="400"/>
+					<Size x="438" y="438"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.OrbBackground"/>
 					</Anchors>
@@ -586,7 +602,7 @@
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="4">
 				<Texture parentKey="OrbRing" atlas="heartofazeroth-orb-ring">
-					<Size x="437" y="433"/>
+					<Size x="477" y="473"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.OrbBackground"/>
 					</Anchors>
@@ -662,13 +678,13 @@
 					</Anchors>
 				</Texture>
 				<Texture parentKey="OrbActivated" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-orb-activated">
-					<Size x="401" y="392"/>
+					<Size x="430" y="430"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="OrbActivated2" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-orb-activated">
-					<Size x="401" y="392"/>
+					<Size x="430" y="430"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.OrbActivated"/>
 					</Anchors>

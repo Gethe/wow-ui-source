@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Frame name="UIWidgetTemplateTooltipFrame" enableMouse="true" virtual="true" mixin="UIWidgetTemplateTooltipFrameMixin">
+	<Frame name="UIWidgetTemplateTooltipFrame" virtual="true" mixin="UIWidgetTemplateTooltipFrameMixin">
 		<!--Change this on inheriting frames to adjust where the tooltip anchors to-->
 		<KeyValues>
 			<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMLEFT" type="string"/>
@@ -9,7 +9,7 @@
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 		</Scripts>
-	</Frame>
+		</Frame>
 	<AnimationGroup name="UIWidgetInAnimation" virtual="true">
 		<Scripts>
 			<OnFinished>
@@ -169,7 +169,7 @@
 	<Frame name="UIWidgetBaseControlZoneTemplate" inherits="UIWidgetTemplateTooltipFrame, ResizeLayoutFrame" mixin="UIWidgetBaseControlZoneTemplateMixin" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="FillingGlow" useAtlasSize="true" ignoreParentAlpha="true" hidden="true">
+				<Texture parentKey="FallingGlowBackground" useAtlasSize="true" ignoreParentAlpha="true" hidden="true">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
@@ -186,7 +186,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="FallingGlow" useAtlasSize="true" ignoreParentAlpha="true" hidden="true">
+				<Texture parentKey="FallingGlowOverlay" useAtlasSize="true" ignoreParentAlpha="true" hidden="true">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
@@ -202,10 +202,18 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="FullGlowStar" useAtlasSize="true" ignoreParentAlpha="true" alphaMode="ADD" hidden="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown parentKey="Progress" hideCountdownNumbers="true">
+			<Cooldown parentKey="Progress" hideCountdownNumbers="true" useCircularEdge="true">
 				<Size x="60" y="59" />
 				<Anchors>
 					<Anchor point="CENTER" />
@@ -216,17 +224,17 @@
 			</Cooldown>
 		</Frames>
 		<Animations>
-			<AnimationGroup parentKey="FillingGlowAnim" setToFinalAlpha="true" looping="REPEAT">
-				<Alpha childKey="FillingGlow" fromAlpha="0.25" toAlpha="1" order="0" duration=".4"/>
-				<Alpha childKey="FillingGlow" fromAlpha="1" toAlpha="0.25" order="1" duration=".4"/>
-			</AnimationGroup>
 			<AnimationGroup parentKey="FallingGlowAnim" setToFinalAlpha="true" looping="REPEAT">
-				<Alpha childKey="FallingGlow" fromAlpha="0" toAlpha="0.5" order="0" duration=".4"/>
-				<Alpha childKey="FallingGlow" fromAlpha="0.5" toAlpha="0" order="1" duration=".4"/>
+				<Alpha childKey="FallingGlowBackground" fromAlpha="0.25" toAlpha="1" order="0" duration=".4"/>
+				<Alpha childKey="FallingGlowBackground" fromAlpha="1" toAlpha="0.25" order="1" duration=".4"/>
+				<Alpha childKey="FallingGlowOverlay" fromAlpha="0" toAlpha="0.8" order="0" duration=".4"/>
+				<Alpha childKey="FallingGlowOverlay" fromAlpha="0.8" toAlpha="0" order="1" duration=".4"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="FullGlowAnim" setToFinalAlpha="true">
 				<Alpha childKey="FullGlow" fromAlpha="0" toAlpha="1" order="0" duration=".4"/>
 				<Alpha childKey="FullGlow" fromAlpha="1" toAlpha="0" order="1" duration=".4"/>
+				<Alpha childKey="FullGlowStar" fromAlpha="0" toAlpha="1" order="0" duration=".4"/>
+				<Alpha childKey="FullGlowStar" fromAlpha="1" toAlpha="0" order="1" duration=".4"/>
 			</AnimationGroup>
 		</Animations>
 	</Frame>

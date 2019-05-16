@@ -248,7 +248,6 @@ function UIWidgetContainerMixin:CreateWidget(widgetID, widgetType, widgetTypeInf
 	widgetFrame.inAnimType = widgetInfo.inAnimType;
 	widgetFrame.outAnimType = widgetInfo.outAnimType;
 	widgetFrame.markedForRemove = nil;
-	widgetFrame:EnableMouse(true);
 
 	-- If this is a widget with a timer, add it from the timer list
 	if widgetFrame.hasTimer then

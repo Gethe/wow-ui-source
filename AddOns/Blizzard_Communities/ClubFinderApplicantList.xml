@@ -48,6 +48,12 @@
 		</Frames>
 		<Layers>
 			<Layer level="OVERLAY">
+				<FontString parentKey="RequestStatus" hidden="true" inherits="GameFontNormal">
+					<Size x="130" y="110"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
 				<FontString parentKey="Level" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
 					<Size x="40" y="0"/>
 					<Anchors>
@@ -129,6 +135,9 @@
 					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-3" y="60"/>
 					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="22" y="60"/>
 				</Anchors>
+				<KeyValues>
+					<KeyValue key="sortingFunction" value="ClubFinderApplicantListColumnDisplay_OnClick" type="global"/>
+				</KeyValues>
 			</Frame>
 			<ScrollFrame parentKey="ListScrollFrame" inherits="HybridScrollFrameTemplate">
 				<Anchors>

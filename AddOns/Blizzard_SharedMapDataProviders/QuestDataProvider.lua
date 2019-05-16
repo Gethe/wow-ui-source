@@ -73,9 +73,9 @@ function QuestDataProviderMixin:RefreshAllData(fromOnShow)
 	local questsOnMap = C_QuestLog.GetQuestsOnMap(mapID);
 	local doesMapShowTaskObjectives = C_TaskQuest.DoesMapShowTaskQuestObjectives(mapID);
 	
-	local function CheckAddQuest(questID, x, y, isMapIndicatorQuest, frameLevelOffset)
+	local function CheckAddQuest(questID, x, y, isMapIndicatorQuest, frameLevelOffset, isWaypoint)
 		if self:ShouldShowQuest(questID, mapInfo.mapType, doesMapShowTaskObjectives, isMapIndicatorQuest) then
-			local pin = self:AddQuest(questID, x, y, frameLevelOffset);
+			local pin = self:AddQuest(questID, x, y, frameLevelOffset, isWaypoint);
 			table.insert(pinsToQuantize, pin);
 		end
 	end
@@ -92,7 +92,8 @@ function QuestDataProviderMixin:RefreshAllData(fromOnShow)
 		if x and y then
 			local isMapIndicatorQuest = false;
 			local frameLevelOffset = questsOnMap and (#questsOnMap + 1) or 0;
-			CheckAddQuest(waypointQuestID, x, y, isMapIndicatorQuest, frameLevelOffset);
+			local isWaypoint = true;
+			CheckAddQuest(waypointQuestID, x, y, isMapIndicatorQuest, frameLevelOffset, isWaypoint);
 		end
 	end
 
@@ -152,7 +153,7 @@ local function GetQuestCompleteIcon(questID)
 	return isLegendaryQuest and "Interface/WorldMap/UI-WorldMap-QuestIcon-Legendary" or "Interface/WorldMap/UI-WorldMap-QuestIcon";
 end
 
-function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset)
+function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset, isWaypoint)
 	local pin = self:GetMap():AcquirePin(self:GetPinTemplate());
 	pin.questID = questID;
 
@@ -174,14 +175,24 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset)
 	if isComplete then
 		pin.style = "normal";
 		
-		local questCompleteIcon = GetQuestCompleteIcon(questID);
-		
 		-- If the quest is super tracked we want to show the selected circle behind it.
 		if ( isSuperTracked ) then
+			if isWaypoint then
+				pin.Number:SetTexCoord(0, 1.0, 0, 1.0);
+				pin.Number:SetAtlas("poi-traveldirections-arrow");
+
+				-- We want the asset to be 13x17, but we need this to work right with scaling. Experimentally determined, (13 * 2.5) x (17 * 2.5)
+				pin.Number:SetSize(32.5, 42.5);
+			else
+				local questCompleteIcon = GetQuestCompleteIcon(questID);
+				pin.Number:SetTexCoord(0, 0.5, 0, 0.5);
+				pin.Number:SetTexture(questCompleteIcon);
+				pin.Number:SetSize(74, 74);
+			end
+
 			pin.Texture:SetSize(89, 90);
 			pin.PushedTexture:SetSize(89, 90);
 			pin.Highlight:SetSize(89, 90);
-			pin.Number:SetSize(74, 74);
 			pin.Number:ClearAllPoints();
 			pin.Number:SetPoint("CENTER", -1, -1);
 			pin.Texture:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
@@ -190,20 +201,35 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset)
 			pin.PushedTexture:SetTexCoord(0.375, 0.500, 0.375, 0.5);
 			pin.Highlight:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
 			pin.Highlight:SetTexCoord(0.625, 0.750, 0.875, 1);
-			pin.Number:SetTexture(questCompleteIcon);
-			pin.Number:SetTexCoord(0, 0.5, 0, 0.5);
 			pin.Number:Show();
 		else
-			pin.Texture:SetSize(95, 95);
-			pin.PushedTexture:SetSize(95, 95);
-			pin.Highlight:SetSize(95, 95);
-			pin.Number:SetSize(85, 85);
-			pin.Texture:SetTexture(questCompleteIcon);
-			pin.PushedTexture:SetTexture(questCompleteIcon);
-			pin.Highlight:SetTexture(questCompleteIcon);
-			pin.Texture:SetTexCoord(0, 0.5, 0, 0.5);
-			pin.PushedTexture:SetTexCoord(0, 0.5, 0.5, 1);
-			pin.Highlight:SetTexCoord(0.5, 1, 0, 0.5);
+			if isWaypoint then
+				pin.Texture:SetTexCoord(0, 1.0, 0, 1.0);
+				pin.PushedTexture:SetTexCoord(0, 1.0, 0, 1.0);
+				pin.Highlight:SetTexCoord(0, 1.0, 0, 1.0);
+				pin.Texture:SetAtlas("poi-traveldirections-arrow");
+				pin.PushedTexture:SetAtlas("poi-traveldirections-arrow");
+				pin.Highlight:SetAtlas("poi-traveldirections-arrow");
+
+				-- We want the asset to be 13x17, but we need this to work right with scaling. Experimentally determined, (13 * 2.5) x (17 * 2.5)
+				pin.Number:SetSize(32.5, 42.5);
+				pin.Texture:SetSize(32.5, 42.5);
+				pin.PushedTexture:SetSize(32.5, 42.5);
+				pin.Highlight:SetSize(32.5, 42.5);
+			else
+				local questCompleteIcon = GetQuestCompleteIcon(questID);
+				pin.Number:SetSize(85, 85);
+				pin.Texture:SetSize(95, 95);
+				pin.PushedTexture:SetSize(95, 95);
+				pin.Highlight:SetSize(95, 95);
+				pin.Texture:SetTexCoord(0, 0.5, 0, 0.5);
+				pin.PushedTexture:SetTexCoord(0, 0.5, 0.5, 1);
+				pin.Highlight:SetTexCoord(0.5, 1, 0, 0.5);
+				pin.Texture:SetTexture(questCompleteIcon);
+				pin.PushedTexture:SetTexture(questCompleteIcon);
+				pin.Highlight:SetTexture(questCompleteIcon);
+			end
+
 			pin.moveHighlightOnMouseDown = true;
 			pin.Number:Hide();
 		end

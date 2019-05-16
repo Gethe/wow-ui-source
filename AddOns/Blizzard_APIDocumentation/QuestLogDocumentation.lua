@@ -345,6 +345,11 @@ local QuestLog =
 			LiteralName = "TREASURE_PICKER_CACHE_FLUSH",
 		},
 		{
+			Name = "WaypointUpdate",
+			Type = "Event",
+			LiteralName = "WAYPOINT_UPDATE",
+		},
+		{
 			Name = "WorldQuestCompletedBySpell",
 			Type = "Event",
 			LiteralName = "WORLD_QUEST_COMPLETED_BY_SPELL",

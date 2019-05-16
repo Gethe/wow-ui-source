@@ -50,15 +50,6 @@ local ClubFinder =
 			Type = "Function",
 		},
 		{
-			Name = "GetApplicantInfoList",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "applicants", Type = "table", InnerType = "ClubFinderApplicantInfo", Nilable = false },
-			},
-		},
-		{
 			Name = "GetClubRecruitmentSettings",
 			Type = "Function",
 
@@ -119,6 +110,8 @@ local ClubFinder =
 			Arguments =
 			{
 				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "enableListing", Type = "bool", Nilable = false },
+				{ Name = "autoAcceptApplicants", Type = "bool", Nilable = false },
 				{ Name = "minimumLevel", Type = "number", Nilable = false },
 				{ Name = "itemLevelRequirement", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
@@ -171,6 +164,29 @@ local ClubFinder =
 			},
 		},
 		{
+			Name = "ReturnCommunityApplicantList",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "table", InnerType = "ClubFinderApplicantInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "ReturnGuildApplicantList",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "info", Type = "table", InnerType = "ClubFinderApplicantInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "ReturnMatchingCommunityList",
 			Type = "Function",
 
@@ -186,6 +202,29 @@ local ClubFinder =
 			Returns =
 			{
 				{ Name = "recruitingClubs", Type = "table", InnerType = "RecruitingClubInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "ReturnPendingCommunityApplicantList",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "table", InnerType = "ClubFinderApplicantInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "ReturnPendingGuildApplicantList",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "info", Type = "table", InnerType = "ClubFinderApplicantInfo", Nilable = false },
 			},
 		},
 		{
@@ -260,6 +299,10 @@ local ClubFinder =
 			Type = "Event",
 			LiteralName = "CLUB_FINDER_RECRUITS_UPDATED",
 			Documentation = { "Signals when we recieve the recruits list" },
+			Payload =
+			{
+				{ Name = "type", Type = "ClubFinderRequestType", Nilable = false },
+			},
 		},
 	},
 

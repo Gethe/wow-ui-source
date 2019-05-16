@@ -170,6 +170,7 @@ function MountJournal_ApplyEquipment(self, itemLocation)
 	-- We're applying equipment from inventory, so we should have the item information in this context.
 	if itemLocation and C_MountJournal.IsItemMountEquipment(itemLocation) then
 		local pendingItem = Item:CreateFromItemLocation(itemLocation);
+		local canContinue = true;
 		if C_MountJournal.IsMountEquipmentApplied() then
 			local dialog = StaticPopup_Show("DIALOG_REPLACE_MOUNT_EQUIPMENT");
 			if not dialog then
@@ -179,14 +180,18 @@ function MountJournal_ApplyEquipment(self, itemLocation)
 		else
 			MountJournal_SetPendingApply(self, pendingItem);
 
-			C_MountJournal.ApplyMountEquipment(itemLocation);
+			canContinue = C_MountJournal.ApplyMountEquipment(itemLocation);
 		end
 
-		pendingItem:ContinueWithCancelOnItemLoad(function()
-			MountJournal_InitializeEquipmentSlot(self, pendingItem);
-		end);
-
-		return true;
+		if canContinue then
+			pendingItem:ContinueWithCancelOnItemLoad(function()
+				MountJournal_InitializeEquipmentSlot(self, pendingItem);
+			end);
+		else
+			MountJournal_ClearPendingAndUpdate(self);
+		end
+		
+		return canContinue;
 	end	
 
 	return false;
@@ -254,10 +259,13 @@ function MountJournal_ClearPendingAndUpdate(self)
 end
 
 function MountJournal_OnDialogApplyEquipmentChoice(self, isAccepted)
+	local canContinue = false;
 	if isAccepted then
 		local pendingItem = self.pendingItem;
-		C_MountJournal.ApplyMountEquipment(pendingItem:GetItemLocation());
-	else
+		canContinue = C_MountJournal.ApplyMountEquipment(pendingItem:GetItemLocation());
+	end
+
+	if not canContinue then
 		MountJournal_ClearPendingAndUpdate(self);
 	end
 end
