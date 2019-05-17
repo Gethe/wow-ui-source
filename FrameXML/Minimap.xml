@@ -264,6 +264,104 @@
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>
+					<Button name="MiniMapBattlefieldFrame" hidden="true">
+						<Size>
+							<AbsDimension x="33" y="33"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="13" y="-13"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="MiniMapBattlefieldIcon" file="Interface\BattlefieldFrame\UI-Battlefield-Icon">
+									<Size>
+										<AbsDimension x="32" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+												<AbsDimension x="-1" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture name="MiniMapBattlefieldBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
+									<Size>
+										<AbsDimension x="52" y="52"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER">
+								<Texture name="BattlegroundShine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD">
+									<Size>
+										<AbsDimension x="32" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+												<AbsDimension x="3" y="3"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.5625" right="1" top="0" bottom="1"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame name="MiniMapBattlefieldDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+								<Scripts>
+									<OnLoad>
+										MiniMapBattlefieldDropDown_OnLoad(self);
+									</OnLoad>
+								</Scripts>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+								self:SetFrameLevel(self:GetFrameLevel()+1);
+								MiniMapBattlefieldFrame.timeInQueue = 0;
+							</OnLoad>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+								GameTooltip:SetText(self.tooltip);
+							</OnEnter>
+							<OnUpdate>
+								if ( GameTooltip:IsOwned(self) ) then
+									BattlefieldFrame_UpdateStatus(1);
+									GameTooltip:SetText(self.tooltip);
+								end
+							</OnUpdate>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnClick>
+								-- Hide tooltip
+								if ( MiniMapBattlefieldFrame.status == "active") then
+									GameTooltip:Hide();
+									if ( button == "RightButton" ) then
+										ToggleDropDownMenu(1, nil, MiniMapBattlefieldDropDown, "MiniMapBattlefieldFrame", 10, -5);
+									elseif ( IsShiftKeyDown() ) then
+										ToggleBattlefieldMap();
+									else
+										ToggleWorldStateScoreFrame();
+									end
+								elseif ( button == "RightButton" ) then
+									GameTooltip:Hide();
+									ToggleDropDownMenu(1, nil, MiniMapBattlefieldDropDown, "MiniMapBattlefieldFrame", 10, -5);
+								end
+							</OnClick>
+						</Scripts>
+					</Button>
 					<Frame name="MinimapBackdrop">
 						<Size>
 							<AbsDimension x="192" y="192"/>
@@ -508,203 +606,6 @@
 								<DisabledTexture file="Interface\Minimap\UI-Minimap-ZoomOutButton-Disabled"/>
 								<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 							</Button>
-							<Button name="GarrisonLandingPageMinimapButton" hidden="true">
-								<Size x="53" y="53"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" x="32" y="-118"/>
-								</Anchors>
-								<HitRectInsets>
-									<AbsInset left="5" right="10" top="5" bottom="10"/>
-								</HitRectInsets>
-								<Layers>
-									<Layer level="BORDER">
-										<Texture parentKey="AlertBG" hidden="true" alpha="0" atlas="GarrLanding-MinimapAlertBG" useAtlasSize="true">
-											<Anchors>
-												<Anchor point="RIGHT" relativePoint="CENTER"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="ARTWORK">
-										<Texture parentKey="LoopingGlow" hidden="true" alpha="0" alphaMode="ADD" atlas="GarrLanding-CircleGlow" useAtlasSize="true">
-											<Anchors>
-												<Anchor point="CENTER"/>
-											</Anchors>
-										</Texture>
-										<Texture parentKey="SideToastGlow" hidden="true" alpha="0" alphaMode="ADD" atlas="GarrLanding-SideToast-Glow" useAtlasSize="true">
-											<Anchors>
-												<Anchor point="CENTER"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="OVERLAY">
-										<FontString parentKey="AlertText" hidden="true" alpha="0" justifyH="RIGHT" inherits="GameFontHighlightLeft">
-											<Size x="138" y="45"/>
-											<Anchors>
-												<Anchor point="RIGHT" relativePoint="LEFT" x="4" y="0"/>
-											</Anchors>
-										</FontString>
-										<Texture parentKey="CircleGlow" hidden="true" alpha="1" alphaMode="ADD" atlas="GarrLanding-CircleGlow" useAtlasSize="true">
-											<Anchors>
-												<Anchor point="CENTER"/>
-											</Anchors>
-										</Texture>
-										<Texture parentKey="SoftButtonGlow" hidden="true" alpha="1" alphaMode="ADD" atlas="GarrLanding-SideToast-Glow" useAtlasSize="true">
-											<Anchors>
-												<Anchor point="CENTER"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Animations>
-									<AnimationGroup parentKey="MinimapLoopPulseAnim" looping="REPEAT">
-										<Alpha childKey="LoopingGlow" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
-										<Alpha childKey="LoopingGlow" startDelay="0.5" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
-										<Scale childKey="LoopingGlow" duration="0.75" order="1" fromScaleX="0.75" fromScaleY="0.75" toScaleX="1.1" toScaleY="1.1"/>
-										<Scripts>
-											<OnPlay>
-												self:GetParent().LoopingGlow:Show();
-											</OnPlay>
-											<OnStop>
-												self:GetParent().LoopingGlow:Hide();
-											</OnStop>
-											<OnFinished>
-												self:GetParent().LoopingGlow:Hide();
-											</OnFinished>
-										</Scripts>
-									</AnimationGroup>
-									<AnimationGroup parentKey="MinimapPulseAnim" setToFinalAlpha="true">
-										<Alpha childKey="CircleGlow" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
-										<Alpha childKey="CircleGlow" startDelay="0.1" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
-										<Scale childKey="CircleGlow" duration="0.25" order="1" fromScaleX="0.75" fromScaleY="0.75" toScaleX="1.75" toScaleY="1.75"/>
-										<Alpha childKey="SoftButtonGlow" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
-										<Alpha childKey="SoftButtonGlow" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
-										<Scale childKey="SoftButtonGlow" duration="0.75" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.5" toScaleY="1.5"/>
-										<Scripts>
-											<OnPlay>
-												self:GetParent().CircleGlow:Show();
-												self:GetParent().SoftButtonGlow:Show();
-											</OnPlay>
-											<OnStop>
-												self:GetParent().CircleGlow:Hide();
-												self:GetParent().SoftButtonGlow:Hide();
-											</OnStop>
-											<OnFinished>
-												self:GetParent().CircleGlow:Hide();
-												self:GetParent().SoftButtonGlow:Hide();
-											</OnFinished>
-										</Scripts>
-									</AnimationGroup>
-									<AnimationGroup parentKey="MinimapAlertAnim" setToFinalAlpha="true">
-										<Alpha childKey="AlertText" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
-										<Alpha childKey="AlertBG" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
-										<Scale childKey="AlertBG" duration="0.25" order="1" fromScaleX="0.1" fromScaleY="1" toScaleX="1" toScaleY="1">
-											<Origin point="CENTER">
-												<Offset x="65" y="0"/>
-											</Origin>
-										</Scale>
-										<Alpha childKey="SideToastGlow" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
-										<Alpha childKey="SideToastGlow" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
-										<Scale childKey="SideToastGlow" duration="0.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="2" toScaleY="1">
-											<Origin point="RIGHT">
-												<Offset x="-10" y="0"/>
-											</Origin>
-										</Scale>
-										<Alpha childKey="AlertText" startDelay="5" duration="0.25" order="2" fromAlpha="1" toAlpha="0"/>
-										<Alpha childKey="AlertBG" startDelay="5" duration="0.25" order="2" fromAlpha="1" toAlpha="0"/>
-										<Scale childKey="AlertBG" startDelay="5" duration="0.25" order="2" fromScaleX="1" fromScaleY="1" toScaleX="0.1" toScaleY="1">
-											<Origin point="RIGHT">
-												<Offset x="0" y="0"/>
-											</Origin>
-										</Scale>
-										<Scripts>
-											<OnPlay>
-												self:GetParent().AlertBG:Show();
-												self:GetParent().AlertText:Show();
-												self:GetParent().SideToastGlow:Show();
-												self:GetParent().MinimapPulseAnim:Play();
-											</OnPlay>
-											<OnStop>
-												self:GetParent().AlertBG:Hide();
-												self:GetParent().AlertText:Hide();
-												self:GetParent().SideToastGlow:Hide();
-												self:GetParent().MinimapPulseAnim:Stop();
-											</OnStop>
-											<OnFinished>
-												self:GetParent().AlertBG:Hide();
-												self:GetParent().AlertText:Hide();
-												self:GetParent().SideToastGlow:Hide();
-												self:GetParent().MinimapPulseAnim:Stop();
-											</OnFinished>
-										</Scripts>
-									</AnimationGroup>
-								</Animations>
-								<Frames>
-									<Frame name="GarrisonLandingPageTutorialBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG" frameLevel="2" toplevel="true">
-										<Size x="220" y="100"/>
-										<Anchors>
-											<Anchor point="RIGHT" relativePoint="LEFT" x="-25" y="0"/>
-										</Anchors>
-										<Layers>
-											<Layer level="OVERLAY">
-												<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP">
-													<Size x="188" y="0"/>
-													<Anchors>
-														<Anchor point="TOPLEFT" x="16" y="-24"/>
-													</Anchors>
-												</FontString>
-											</Layer>
-											<Layer level="ARTWORK">
-												<Texture parentKey="Arrow" inherits="HelpPlateArrowDOWN">
-													<Size x="53" y="21"/>
-													<Anchors>
-														<Anchor point="LEFT" relativePoint="RIGHT" x="-3" y="0"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-										</Layers>
-										<Frames>
-											<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-												<Anchors>
-													<Anchor point="TOPRIGHT" x="6" y="6"/>
-												</Anchors>
-												<Scripts>
-													<OnClick>
-														self:GetParent():Hide();
-														SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_LANDING, true);
-													</OnClick>
-												</Scripts>
-											</Button>
-										</Frames>
-										<Scripts>
-											<OnLoad>
-												self.label = GARRISON_VIEW_MISSION_PROGRESS_HERE;
-												MicroButtonAlert_OnLoad(self);
-												SetClampedTextureRotation(self.Arrow, 270);--make arrow face right
-											</OnLoad>
-											<OnShow>
-												self:SetHeight(self.Text:GetHeight()+42);
-											</OnShow>
-										</Scripts>
-									</Frame>
-								</Frames>
-								<Scripts>
-									<OnLoad function="GarrisonLandingPageMinimapButton_OnLoad"/>
-									<OnEvent function="GarrisonLandingPageMinimapButton_OnEvent"/>
-									<OnClick function="GarrisonLandingPageMinimapButton_OnClick"/>
-									<OnEnter>
-										GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-										GameTooltip:SetText(self.title, 1, 1, 1);
-										GameTooltip:AddLine(self.description, nil, nil, nil, true);
-										GameTooltip:Show();
-									</OnEnter>
-									<OnLeave>
-										GameTooltip:Hide();
-									</OnLeave>
-								</Scripts>						
-								<NormalTexture atlas="GarrLanding-MinimapIcon-Alliance-Up" useAtlasSize="true"/>
-								<PushedTexture atlas="GarrLanding-MinimapIcon-Alliance-Down" useAtlasSize="true"/>
-								<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
-							</Button>
 						</Frames>
 					</Frame>
 				</Frames>
@@ -714,162 +615,6 @@
 					<OnEvent function="Minimap_OnEvent"/>
 				</Scripts>
 			</Minimap>
-			<Frame name="MiniMapInstanceDifficulty" hidden="true">
-				<Size>
-					<AbsDimension x="38" y="46"/>
-				</Size>			
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="22" y="-17"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="$parentTexture" file="Interface\Minimap\UI-DungeonDifficulty-Button">
-							<Size>
-								<AbsDimension x="64" y="46"/>
-							</Size>							
-							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>							
-							<TexCoords left="0.0" right="0.25" top="0.0703125" bottom="0.4140625"/>
-						</Texture>
-						<FontString name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER">
-							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="-1" y="-7"/>
-									</Offset>
-								</Anchor>
-							</Anchors>						
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self:RegisterEvent("PLAYER_DIFFICULTY_CHANGED");
-						self:RegisterEvent("INSTANCE_GROUP_SIZE_CHANGED");
-						self:RegisterEvent("UPDATE_INSTANCE_INFO");
-						self:RegisterEvent("GROUP_ROSTER_UPDATE");
-						self:RegisterEvent("PLAYER_GUILD_UPDATE");
-						self:RegisterEvent("PARTY_MEMBER_ENABLE");
-						self:RegisterEvent("PARTY_MEMBER_DISABLE");
-						self:RegisterEvent("GUILD_PARTY_STATE_UPDATED");
-					</OnLoad>
-					<OnEvent function="MiniMapInstanceDifficulty_OnEvent" />
-					<OnEnter function="MiniMapInstanceDifficulty_OnEnter"/>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Frame>
-			<Frame name="GuildInstanceDifficulty" hidden="true" enableMouse="true">
-				<Size>
-					<AbsDimension x="38" y="46"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="22" y="-17"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentBackground" file="Interface\GuildFrame\GuildDifficulty" parentKey="background">
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-							</Anchors>
-							<Size x="41" y="53"/>
-							<TexCoords left="0.00781250" right="0.32812500" top="0.01562500" bottom="0.84375000"/>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER">
-						<Texture name="$parentDarkBackground" file="Interface\GuildFrame\GuildDifficulty" alpha="0.7">
-							<Anchors>
-								<Anchor point="BOTTOM" relativeTo="$parentBackground" x="0" y="7"/>
-							</Anchors>
-							<Size x="30" y="21"/>
-							<TexCoords left="0.67968750" right="0.91406250" top="0.01562500" bottom="0.34375000"/>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture name="$parentEmblem" parentKey="emblem" file="Interface\GuildFrame\GuildEmblems_01">
-							<Size x="16" y="16"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="12" y="-10"/>
-							</Anchors>
-						</Texture>
-						<Texture name="$parentBorder" file="Interface\GuildFrame\GuildDifficulty" parentKey="border">
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-							</Anchors>
-							<Size x="41" y="53"/>
-							<TexCoords left="0.34375000" right="0.66406250" top="0.01562500" bottom="0.84375000"/>
-						</Texture>
-						<Texture name="$parentHeroicTexture" file="Interface\GuildFrame\GuildDifficulty">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="8" y="7"/>
-							</Anchors>
-							<Size x="12" y="13"/>
-							<TexCoords left="0.67968750" right="0.77343750" top="0.65625000" bottom="0.85937500"/>
-						</Texture>
-						<Texture name="$parentMythicTexture" file="Interface\GuildFrame\GuildDifficulty">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="8" y="7"/>
-							</Anchors>
-							<Size x="12" y="13"/>
-							<TexCoords left="0.77343750" right="0.8671875" top="0.65625000" bottom="0.85937500"/>
-						</Texture>
-						<Texture name="$parentChallengeModeTexture" file="Interface\Common\mini-hourglass">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="8" y="7"/>
-							</Anchors>
-							<Size x="12" y="12"/>
-						</Texture>
-						<FontString name="$parentText" inherits="GameFontNormalSmall" text="25">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="20" y="8"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture name="$parentHanger" file="Interface\GuildFrame\GuildDifficulty">
-							<Size x="39" y="16"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="1" y="-2"/>
-							</Anchors>
-							<TexCoords left="0.67968750" right="0.98437500" top="0.37500000" bottom="0.62500000"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter function="GuildInstanceDifficulty_OnEnter"/>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-			</Frame>
-			<Frame name="MiniMapChallengeMode" hidden="true" enableMouse="true">
-				<Size x="27" y="36"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="28" y="-23"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture file="Interface\Challenges\challenges-minimap-banner">
-							<Size x="64" y="64"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -879,10 +624,6 @@
 				self:RegisterEvent("ZONE_CHANGED_INDOORS");
 				self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 				Minimap_UpdateRotationSetting();
-				local raisedFrameLevel = self:GetFrameLevel() + 10;
-				MiniMapInstanceDifficulty:SetFrameLevel(raisedFrameLevel);
-				GuildInstanceDifficulty:SetFrameLevel(raisedFrameLevel);
-				MiniMapChallengeMode:SetFrameLevel(raisedFrameLevel);
 			</OnLoad>
 			<OnEvent function="Minimap_Update"/>
 		</Scripts>

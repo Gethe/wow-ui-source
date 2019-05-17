@@ -1,10 +1,18 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
+	<Include file="UIDropDownMenuTemplates.lua"/>
+	<Frame name="UIDropDownCustomMenuEntryTemplate" enableMouse="true" hidden="true" mixin="UIDropDownCustomMenuEntryMixin" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
 	<Button name="UIDropDownMenuButtonTemplate" virtual="true">
 		<Size x="100" y="16"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentHighlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true"/>
+				<Texture name="$parentHighlight" parentKey="Highlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true"/>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentCheck" file="Interface\Common\UI-DropDownRadioChecks">
@@ -25,7 +33,7 @@
 					</Anchors>
 					<TexCoords left="0.5" right="1.0" top="0.5" bottom="1.0"/>
 				</Texture>
-				<Texture name="$parentIcon" hidden="true">
+				<Texture parentKey="Icon" name="$parentIcon" hidden="true">
 					<Size>
 						<AbsDimension x="16" y="16"/>
 					</Size>
@@ -83,7 +91,7 @@
 				</Scripts>
 				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
 			</Button>
-			<Button name="$parentExpandArrow" hidden="true">
+			<Button name="$parentExpandArrow" hidden="true" motionScriptsWhileDisabled="true">
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>
@@ -92,7 +100,7 @@
 						<Offset>
 							<AbsDimension x="0" y="0"/>
 						</Offset>
-					</Anchor>                   
+					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -100,10 +108,16 @@
 					</OnClick>
 					<OnEnter>
 						local level =  self:GetParent():GetParent():GetID() + 1;
-						local listFrame = _G["DropDownList"..level];
-						if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint()) ~= self ) then
-							ToggleDropDownMenu(level, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self);
+
+						CloseDropDownMenus(level);
+
+						if self:IsEnabled() then
+							local listFrame = _G["DropDownList"..level];
+							if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint()) ~= self ) then
+								ToggleDropDownMenu(level, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self);
+							end
 						end
+
 						UIDropDownMenu_StopCounting(self:GetParent():GetParent());
 					</OnEnter>
 					<OnLeave>
@@ -123,63 +137,20 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnEnter>
-						UIDropDownMenu_StopCounting(self:GetParent():GetParent());
-						CloseDropDownMenus(self:GetParent():GetParent():GetID() + 1);
-						local parent = self:GetParent();
-						if ( parent.tooltipTitle and parent.tooltipWhileDisabled) then
-							if ( parent.tooltipOnButton ) then
-								GameTooltip:SetOwner(parent, "ANCHOR_RIGHT");
-								GameTooltip:AddLine(parent.tooltipTitle, 1.0, 1.0, 1.0);
-								GameTooltip:AddLine(parent.tooltipText, nil, nil, nil, true);
-								GameTooltip:Show();
-							else
-								GameTooltip_AddNewbieTip(parent, parent.tooltipTitle, 1.0, 1.0, 1.0, parent.tooltipText, 1);
-							end
-						end
-					</OnEnter>
-					<OnLeave>
-						UIDropDownMenu_StartCounting(self:GetParent():GetParent());
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnEnter function="UIDropDownMenuButtonInvisibleButton_OnEnter"/>
+					<OnLeave function="UIDropDownMenuButtonInvisibleButton_OnLeave"/>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>		
+			<OnLoad>
 				self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
 			</OnLoad>
 			<OnClick>
 				UIDropDownMenuButton_OnClick(self, button, down);
 			</OnClick>
-			<OnEnter>
-				if ( self.hasArrow ) then
-					local level =  self:GetParent():GetID() + 1;
-					local listFrame = _G["DropDownList"..level];
-					if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint()) ~= self ) then
-						ToggleDropDownMenu(self:GetParent():GetID() + 1, self.value, nil, nil, nil, nil, self.menuList, self);
-					end
-				else
-					CloseDropDownMenus(self:GetParent():GetID() + 1);
-				end
-				_G[self:GetName().."Highlight"]:Show();
-				UIDropDownMenu_StopCounting(self:GetParent());
-				if ( self.tooltipTitle ) then
-					if ( self.tooltipOnButton ) then
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:AddLine(self.tooltipTitle, 1.0, 1.0, 1.0);
-						GameTooltip:AddLine(self.tooltipText, nil, nil, nil, true);
-						GameTooltip:Show();
-					else
-						GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
-					end
-				end
-			</OnEnter>
-			<OnLeave>
-				_G[self:GetName().."Highlight"]:Hide();
-				UIDropDownMenu_StartCounting(self:GetParent());
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnEnter function="UIDropDownMenuButton_OnEnter"/>
+			<OnLeave function="UIDropDownMenuButton_OnLeave"/>
 			<OnEnable>
 				self.invisibleButton:Hide();
 			</OnEnable>
@@ -203,7 +174,7 @@
 			<Frame name="$parentBackdrop" setAllPoints="true">
 				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="9"/>
+						<AbsInset left="11" right="11" top="11" bottom="9"/>
 					</BackgroundInsets>
 					<TileSize>
 						<AbsValue val="32"/>
@@ -222,7 +193,7 @@
 						<AbsValue val="16"/>
 					</TileSize>
 					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="4"/>
+						<AbsInset left="5" right="4" top="4" bottom="4"/>
 					</BackgroundInsets>
 				</Backdrop>
 				<Scripts>
@@ -279,7 +250,7 @@
 		</Size>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentLeft" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+				<Texture name="$parentLeft" parentKey="Left" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
 					<Size>
 						<AbsDimension x="25" y="64"/>
 					</Size>
@@ -292,21 +263,21 @@
 					</Anchors>
 					<TexCoords left="0" right="0.1953125" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="$parentMiddle" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+				<Texture name="$parentMiddle" parentKey="Middle" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
 					<Size>
 						<AbsDimension x="115" y="64"/>
 					</Size>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="0.1953125" right="0.8046875" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="$parentRight" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+				<Texture name="$parentRight" parentKey="Right" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
 					<Size>
 						<AbsDimension x="25" y="64"/>
 					</Size>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="0.8046875" right="1" top="0" bottom="1"/>
 				</Texture>
@@ -315,7 +286,7 @@
 						<AbsDimension x="0" y="10"/>
 					</Size>
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentRight">
+						<Anchor point="RIGHT" relativeKey="$parent.Right">
 							<Offset>
 								<AbsDimension x="-43" y="2"/>
 							</Offset>
@@ -342,7 +313,7 @@
 					<AbsDimension x="24" y="24"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentRight">
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Right">
 						<Offset>
 							<AbsDimension x="-16" y="-18"/>
 						</Offset>
@@ -368,7 +339,7 @@
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
-				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
+				<NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
 					<Size>
 						<AbsDimension x="24" y="24"/>
 					</Size>
@@ -376,7 +347,7 @@
 						<Anchor point="RIGHT"/>
 					</Anchors>
 				</NormalTexture>
-				<PushedTexture name="$parentPushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
+				<PushedTexture name="$parentPushedTexture" parentKey="PushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
 					<Size>
 						<AbsDimension x="24" y="24"/>
 					</Size>
@@ -384,7 +355,7 @@
 						<Anchor point="RIGHT"/>
 					</Anchors>
 				</PushedTexture>
-				<DisabledTexture name="$parentDisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
+				<DisabledTexture name="$parentDisabledTexture" parentKey="DisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
 					<Size>
 						<AbsDimension x="24" y="24"/>
 					</Size>
@@ -392,7 +363,7 @@
 						<Anchor point="RIGHT"/>
 					</Anchors>
 				</DisabledTexture>
-				<HighlightTexture name="$parentHighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
+				<HighlightTexture name="$parentHighlightTexture" parentKey="HighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
 					<Size>
 						<AbsDimension x="24" y="24"/>
 					</Size>

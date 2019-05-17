@@ -55,7 +55,7 @@ local secureAttributeDrivers = {};
 local unitExistsWatchers = {};
 local unitExistsCache = setmetatable({},
                                      { __index = function(t,k)
-                                                     local v = UnitExists(k) or false;
+                                                     local v = UnitExists(k) or ShowBossFrameWhenUninteractable(k) or false;
                                                      t[k] = v;
                                                      return v;
                                                  end
@@ -189,7 +189,7 @@ SecureStateDriverManager:RegisterEvent("PLAYER_ENTERING_WORLD");
 SecureStateDriverManager:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
 SecureStateDriverManager:RegisterEvent("UPDATE_STEALTH");
 SecureStateDriverManager:RegisterEvent("PLAYER_TARGET_CHANGED");
-SecureStateDriverManager:RegisterEvent("PLAYER_FOCUS_CHANGED");
+--SecureStateDriverManager:RegisterEvent("PLAYER_FOCUS_CHANGED");
 SecureStateDriverManager:RegisterEvent("PLAYER_REGEN_DISABLED");
 SecureStateDriverManager:RegisterEvent("PLAYER_REGEN_ENABLED");
 SecureStateDriverManager:RegisterEvent("UNIT_PET");

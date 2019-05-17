@@ -25,11 +25,9 @@ function PetFrame_OnLoad (self)
 	CombatFeedback_Initialize(self, PetHitIndicator, 30);
 	PetFrame_Update(self);
 	self:RegisterUnitEvent("UNIT_PET", "player");
-	self:RegisterUnitEvent("UNIT_EXITED_VEHICLE", "player");
 	self:RegisterEvent("PET_ATTACK_START");
 	self:RegisterEvent("PET_ATTACK_STOP");
 	self:RegisterEvent("PET_UI_UPDATE");
-	self:RegisterEvent("PET_RENAMEABLE");
 	self:RegisterEvent("UNIT_HAPPINESS");
 	self:RegisterEvent("UNIT_MAXPOWER");
 	self:RegisterUnitEvent("UNIT_COMBAT", "pet", "player");
@@ -70,17 +68,7 @@ function PetFrame_OnEvent (self, event, ...)
 	UnitFrame_OnEvent(self, event, ...);
 	local arg1, arg2, arg3, arg4, arg5 = ...;
 	if ( event == "UNIT_PET" or event == "UNIT_EXITED_VEHICLE" or event == "PET_UI_UPDATE" ) then
-		local unit
-		if ( UnitInVehicle("player") ) then
-			if ( UnitHasVehiclePlayerFrameUI("player") ) then
-				unit = "player";
-			else
-				return;
-			end
-		else
-			unit = "pet";
-		end
-		UnitFrame_SetUnit(self, unit, PetFrameHealthBar, PetFrameManaBar);
+		UnitFrame_SetUnit(self, "pet", PetFrameHealthBar, PetFrameManaBar);
 		PetFrame_Update(self);
 	elseif ( event == "UNIT_COMBAT" ) then
 		if ( arg1 == self.unit ) then
@@ -95,8 +83,6 @@ function PetFrame_OnEvent (self, event, ...)
 		PetAttackModeTexture:Show();
 	elseif ( event == "PET_ATTACK_STOP" ) then
 		PetAttackModeTexture:Hide();
-	elseif ( event == "PET_RENAMEABLE" ) then
-		StaticPopup_Show("RENAME_PET");
 	elseif (event == "UNIT_HAPPINESS" ) then
 		PetFrame_SetHappiness();
 	elseif (event == "UNIT_MAXPOWER" ) then

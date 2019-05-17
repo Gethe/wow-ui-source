@@ -1,3 +1,6 @@
+
+DISPLAYED_COMMUNITIES_INVITATIONS = DISPLAYED_COMMUNITIES_INVITATIONS or {};
+
 PERFORMANCEBAR_UPDATE_INTERVAL = 1;
 MICRO_BUTTONS = {
 	"CharacterMicroButton",
@@ -17,7 +20,6 @@ local g_flashingMicroButtons = {};
 function LoadMicroButtonTextures(self, name)
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:RegisterEvent("UPDATE_BINDINGS");
-	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
 	local prefix = "Interface\\Buttons\\UI-MicroButton-";
 	self:SetNormalTexture(prefix..name.."-Up");
 	self:SetPushedTexture(prefix..name.."-Down");
@@ -109,7 +111,7 @@ function UpdateMicroButtons()
 		QuestLogMicroButton:SetButtonState("NORMAL");
 	end
 
-	if ( FriendsFrame and FriendsFrame:IsVisible() ) then
+	if ( (FriendsFrame and FriendsFrame:IsVisible()) or (CommunitiesFrame and CommunitiesFrame:IsVisible()) ) then
 		SocialsMicroButton:SetButtonState("PUSHED", 1);
 	else
 		SocialsMicroButton:SetButtonState("NORMAL");
@@ -192,6 +194,55 @@ end
 function CharacterMicroButton_SetNormal()
 	MicroButtonPortrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9);
 	MicroButtonPortrait:SetAlpha(1.0);
+end
+
+function SocialsMicroButton_OnEvent(self, event, ...)
+	if ( event == "UPDATE_BINDINGS" ) then
+		self.tooltipText = MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL");
+	elseif ( event == "BN_DISCONNECTED" or event == "BN_CONNECTED" ) then
+		UpdateMicroButtons();
+	elseif ( event == "INITIAL_CLUBS_LOADED" ) then
+		SocialsMicroButton_UpdateNotificationIcon(SocialsMicroButton);
+		previouslyDisplayedInvitations = DISPLAYED_COMMUNITIES_INVITATIONS;
+		DISPLAYED_COMMUNITIES_INVITATIONS = {};
+		local invitations = C_Club.GetInvitationsForSelf();
+		for i, invitation in ipairs(invitations) do
+			local clubId = invitation.club.clubId;
+			DISPLAYED_COMMUNITIES_INVITATIONS[clubId] = previouslyDisplayedInvitations[clubId];
+		end
+		UpdateMicroButtons();
+	elseif ( event == "STREAM_VIEW_MARKER_UPDATED" or event == "CLUB_INVITATION_ADDED_FOR_SELF" or event == "CLUB_INVITATION_REMOVED_FOR_SELF" ) then
+		SocialsMicroButton_UpdateNotificationIcon(SocialsMicroButton);
+	end
+end
+
+function MarkCommunitiesInvitiationDisplayed(clubId)
+	DISPLAYED_COMMUNITIES_INVITATIONS[clubId] = true;
+	SocialsMicroButton_UpdateNotificationIcon(SocialsMicroButton);
+end
+
+function HasUnseenCommunityInvitations()
+	local invitations = C_Club.GetInvitationsForSelf();
+	for i, invitation in ipairs(invitations) do
+		if not DISPLAYED_COMMUNITIES_INVITATIONS[invitation.club.clubId] then
+			return true;
+		end
+	end
+	
+	return false;
+end
+
+function SocialsMicroButton_UpdateNotificationIcon(self)
+	if CommunitiesFrame_IsEnabled() and self:IsEnabled() then
+		--self.NotificationOverlay:SetShown(HasUnseenCommunityInvitations() or CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages());
+		if (HasUnseenCommunityInvitations() or CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages()) then
+			if ((not CommunitiesFrame or not CommunitiesFrame:IsShown()) and not FriendsFrame:IsShown()) then
+				self:LockHighlight();
+			end
+		end
+	else
+		--self.NotificationOverlay:SetShown(false);
+	end
 end
 
 function MainMenuMicroButton_SetPushed()

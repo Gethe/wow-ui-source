@@ -1,9 +1,0 @@
-## Interface: 70300
-## Title: Blizzard Garrison Templates
-## Secure: 1
-## Author: Blizzard Entertainment
-## Version: 1.0
-## LoadOnDemand: 1
-
-Blizzard_GarrisonSharedTemplates.xml
-Blizzard_GarrisonMissionTemplates.xml

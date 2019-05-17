@@ -120,7 +120,8 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
-	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+	self:RegisterEvent("UNIT_PORTRAIT_UPDATE")
+	self:RegisterEvent("PORTRAITS_UPDATED");
 	if ( self.healAbsorbBar ) then
 		self:RegisterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED");
 	end
@@ -198,10 +199,10 @@ function UnitFramePortrait_Update (self)
 end
 
 function UnitFrame_OnEvent(self, event, ...)
-	local arg1 = ...
+	local eventUnit = ...
 
 	local unit = self.unit;
-	if ( arg1 == unit ) then
+	if ( eventUnit == unit ) then
 		if ( event == "UNIT_NAME_UPDATE" ) then
 			self.name:SetText(GetUnitName(unit));
 		elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
@@ -211,11 +212,10 @@ function UnitFrame_OnEvent(self, event, ...)
 				UnitFrameManaBar_UpdateType(self.manabar);
 			end
 		elseif ( event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_SUCCEEDED" ) then
-			local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible, spellID = UnitCastingInfo(unit);
+			local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible, spellID = UnitCastingInfo(unit);
 			UnitFrameManaCostPredictionBars_Update(self, event == "UNIT_SPELLCAST_START", startTime, endTime, spellID);
 		end
-	elseif ( not arg1 and event == "UNIT_PORTRAIT_UPDATE" ) then
-		-- this is an update all portraits signal
+	elseif ( event == "PORTRAITS_UPDATED" ) then
 		UnitFramePortrait_Update(self);
 	end
 end
@@ -360,7 +360,7 @@ function UnitFrameManaBar_UpdateType (manaBar)
 	if ( manaBar.unit ~= "pet") then
 	    if ( unitFrame:GetName() == "PlayerFrame" ) then
 		    manaBar.tooltipTitle = prefix;
-		    manaBar.tooltipText = _G["NEWBIE_TOOLTIP_MANABAR_"..powerType];
+		    manaBar.tooltipText = _G["NEWBIE_TOOLTIP_MANABAR"..powerType];
 	    else
 		    manaBar.tooltipTitle = nil;
 		    manaBar.tooltipText = nil;
@@ -600,11 +600,11 @@ function UnitFrameHealthBar_OnValueChanged(self, value)
 end
 
 function UnitFrameManaBar_UnregisterDefaultEvents(self)
-	self:UnregisterEvent("UNIT_POWER");
+	self:UnregisterEvent("UNIT_POWER_UPDATE");
 end
 
 function UnitFrameManaBar_RegisterDefaultEvents(self)
-	self:RegisterUnitEvent("UNIT_POWER", self.unit);
+	self:RegisterUnitEvent("UNIT_POWER_UPDATE", self.unit);
 end
 
 function UnitFrameManaBar_Initialize (unit, statusbar, statustext, frequentUpdates)

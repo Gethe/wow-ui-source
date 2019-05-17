@@ -2,6 +2,13 @@ function HonorFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_PVP_KILLS_CHANGED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_PVP_RANK_CHANGED");
+	self:RegisterEvent("UNIT_LEVEL");
+	self:RegisterEvent("PLAYER_GUILD_UPDATE");
+end
+
+function HonorFrame_OnShow(self)
+	HonorFrame_SetLevel();
+	HonorFrame_SetGuild();
 end
 
 function HonorFrame_OnEvent(self, event, ...)
@@ -9,38 +16,42 @@ function HonorFrame_OnEvent(self, event, ...)
 		HonorFrame_Update();
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		HonorFrame_Update(1);
+	elseif ( event == "UNIT_LEVEL" ) then
+		HonorFrame_SetLevel();
+	elseif ( event == "PLAYER_GUILD_UPDATE" ) then
+		HonorFrame_SetGuild();
 	end
 end
 
 function HonorFrame_Update(updateAll)
-	local hk, cp, dk, contribution, rank, highestRank, rankName, rankNumber;
+	local hk, dk, contribution, rank, highestRank, rankName, rankNumber;
 	
 	-- This only gets set on player entering the world
 	if ( updateAll ) then
 		-- Yesterday's values
-		hk, contribution = GetPVPYesterdayStats();
+		hk, dk, contribution = GetPVPYesterdayStats();
 		HonorFrameYesterdayHKValue:SetText(hk);
 		HonorFrameYesterdayContributionValue:SetText(contribution);
 		-- This Week's values
-		--hk, contribution = GetPVPThisWeekStats();
-		--HonorFrameThisWeekHKValue:SetText(hk);
-		--HonorFrameThisWeekContributionValue:SetText(contribution);
+		hk, contribution = GetPVPThisWeekStats();
+		HonorFrameThisWeekHKValue:SetText(hk);
+		HonorFrameThisWeekContributionValue:SetText(contribution);
 		-- Last Week's values
-		--hk, dk, contribution, rank = GetPVPLastWeekStats();
-		--HonorFrameLastWeekHKValue:SetText(hk);
-		--HonorFrameLastWeekContributionValue:SetText(contribution);
-		--HonorFrameLastWeekStandingValue:SetText(rank);
+		hk, dk, contribution, rank = GetPVPLastWeekStats();
+		HonorFrameLastWeekHKValue:SetText(hk);
+		HonorFrameLastWeekContributionValue:SetText(contribution);
+		HonorFrameLastWeekStandingValue:SetText(rank);
 	end
 	
 	-- This session's values
-	hk, cp = GetPVPSessionStats();
+	hk, dk = GetPVPSessionStats();
 	HonorFrameCurrentHKValue:SetText(hk);
-	--HonorFrameCurrentDKValue:SetText(dk);
+	HonorFrameCurrentDKValue:SetText(dk);
 	
 	-- Lifetime stats
-	hk, highestRank = GetPVPLifetimeStats();
+	hk, dk, highestRank = GetPVPLifetimeStats();
 	HonorFrameLifeTimeHKValue:SetText(hk);
-	--HonorFrameLifeTimeDKValue:SetText(dk);
+	HonorFrameLifeTimeDKValue:SetText(dk);
 	rankName, rankNumber = GetPVPRankInfo(highestRank);
 	if ( not rankName ) then
 		rankName = NONE;
@@ -74,4 +85,20 @@ function HonorFrame_Update(updateAll)
 
 	-- Recenter rank text
 	HonorFrameCurrentPVPTitle:SetPoint("TOP", "HonorFrame", "TOP", - HonorFrameCurrentPVPRank:GetWidth()/2, -83);
+end
+
+function HonorFrame_SetLevel()
+	HonorLevelText:SetFormattedText(PLAYER_LEVEL, UnitLevel("player"), UnitRace("player"), UnitClass("player"));
+end
+
+function HonorFrame_SetGuild()
+	local guildName;
+	local rank;
+	guildName, title, rank = GetGuildInfo("player");
+	if ( guildName ) then
+		HonorGuildText:Show();
+		HonorGuildText:SetFormattedText(GUILD_TITLE_TEMPLATE, title, guildName);
+	else
+		HonorGuildText:Hide();
+	end
 end

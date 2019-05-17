@@ -2,49 +2,70 @@
 ..\FrameXML\UI.xsd">
 	<Script file="ContainerFrame.lua"/>
 	
-	<Frame name="ArtifactRelicHelpBox" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG">
-		<Size x="220" y="100"/>
-		<Layers>
-			<Layer level="OVERLAY">
-				<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="ARTIFACT_TUTORIAL_SLOT_RELIC">
-					<Size x="188" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="16" y="-24"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="6" y="6"/>
-				</Anchors>
-				<Scripts>
-					<OnClick inherit="append">
-						SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH, true);
+	<Frame name="ContainerFrameHelpBoxTemplate" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG" virtual="true">
+        <!--
+        <KeyValues>
+            <KeyValue key="tutorialText" value="ARTIFACT_TUTORIAL_SLOT_RELIC" type="global"/>
+            <KeyValue key="tutorialIndex" value="LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH" type="global"/>
+        </KeyValues>
+        -->
+        <Size x="220" y="100"/>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP">
+                    <Size x="188" y="0"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="16" y="-24"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" x="6" y="6"/>
+                </Anchors>
+                <Scripts>
+                    <OnClick inherit="append">
+						SetCVarBitfield("closedInfoFrames", self:GetParent().tutorialIndex, true);
 					</OnClick>
-				</Scripts>
-			</Button>
-			<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="16"/>
-				</Anchors>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				self.Text:SetSpacing(4);
-				SetClampedTextureRotation(self.Arrow.Arrow, 270);
-				SetClampedTextureRotation(self.Arrow.Glow, 270);
+                </Scripts>
+            </Button>
+            <Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="16"/>
+                </Anchors>
+            </Frame>
+        </Frames>
+        <Scripts>
+            <OnLoad>
+                self.Text:SetText(self.tutorialText);
+                self.Text:SetSpacing(4);
+                SetClampedTextureRotation(self.Arrow.Arrow, 270);
+                SetClampedTextureRotation(self.Arrow.Glow, 270);
 
-				self.Arrow.Glow:ClearAllPoints();
-				self.Arrow.Glow:SetPoint("LEFT", self, "RIGHT");
-			</OnLoad>
-			<OnShow>
-				self:SetHeight(self.Text:GetHeight() + 42);
-			</OnShow>
-		</Scripts>
+                self.Arrow.Glow:ClearAllPoints();
+                self.Arrow.Glow:SetPoint("LEFT", self, "RIGHT");
+            </OnLoad>
+            <OnShow>
+                self:SetHeight(self.Text:GetHeight() + 42);
+            </OnShow>
+        </Scripts>
 	</Frame>
+
+    <Frame name="ArtifactRelicHelpBox" inherits="ContainerFrameHelpBoxTemplate">
+        <KeyValues>
+            <KeyValue key="tutorialText" value="ARTIFACT_TUTORIAL_SLOT_RELIC" type="global"/>
+            <KeyValue key="tutorialIndex" value="LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH" type="global"/>
+        </KeyValues>
+    </Frame>
+
+    <Frame name="AzeriteItemInBagHelpBox" inherits="ContainerFrameHelpBoxTemplate">
+        <KeyValues>
+            <KeyValue key="tutorialText" value="AZERITE_TUTORIAL_ITEM_IN_SLOT" type="global"/>
+            <KeyValue key="tutorialIndex" value="LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT" type="global"/>
+        </KeyValues>
+    </Frame>
 	
 	<Button name="ContainerFrameItemButtonTemplate" inherits="ItemButtonTemplate" hidden="true" virtual="true">
 		<Anchors>

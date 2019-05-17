@@ -200,7 +200,7 @@ function CraftFrame_Update()
 				else
 					craftButton:SetText(" "..craftName.." ["..numAvailable.."]");
 				end
-				if ( craftSubSpellName ~= "" ) then
+				if ( craftSubSpellName and craftSubSpellName ~= "" ) then
 					craftButtonSubText:SetText(format(PARENS_TEMPLATE, craftSubSpellName));
 				else 
 					craftButtonSubText:SetText("");

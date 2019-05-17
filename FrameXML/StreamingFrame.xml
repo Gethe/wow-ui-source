@@ -22,11 +22,11 @@
 			</AnimationGroup>
 		</Animations>
 		<Anchors>
-			<Anchor point="TOP" relativeTo="WorldStateAlwaysUpFrame" relativePoint="BOTTOM" x="0" y="-4"/>
+			<Anchor point="TOP" relativeTo="UIParent" relativePoint="TOP" x="0" y="-4"/>
 		</Anchors>
 		<Size x="48" y="48"/>
 		<Frames>
-            <Frame name="$parentFrame" setAllPoints="true" >
+			<Frame name="$parentFrame" setAllPoints="true" >
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture file="Interface\COMMON\StreamBackground" name="$parentBackground" setAllPoints="true" />

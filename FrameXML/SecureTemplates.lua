@@ -140,7 +140,7 @@ function SecureButton_GetModifiedUnit(self, button)
                         unit = gsub(unit, "^[pP][lL][aA][yY][eE][rR][pP][eE][tT]", "pet");
                 end
 
-                local noPet, hadPet = unit:gsub("[pP][eE][tT](%d)", "%1");
+                --[[local noPet, hadPet = unit:gsub("[pP][eE][tT](%d)", "%1");
                 if ( hadPet == 0 ) then
                         noPet, hadPet = unit:gsub("^[pP][eE][tT]", "player");
                 end
@@ -158,7 +158,7 @@ function SecureButton_GetModifiedUnit(self, button)
                         elseif ( (hadTarget == 0) or SecureButton_GetModifiedAttribute(self, "allowVehicleTarget", button) ) then
                                 unit = unit:gsub("^[pP][lL][aA][yY][eE][rR]", "pet"):gsub("^([%a]+)([%d]+)", "%1pet%2");
                         end
-                end
+                end]]
 
                 return unit;
         end
@@ -220,7 +220,7 @@ local InitializeSecureMenu = function(self)
 		menu = "OTHERBATTLEPET";
 	elseif( UnitIsOtherPlayersPet(unit) ) then
 		menu = "OTHERPET";
-	-- Last ditch checks 
+	-- Last ditch checks
 	elseif( UnitIsPlayer(unit) ) then
 		if( UnitInRaid(unit) ) then
 			menu = "RAID_PLAYER";
@@ -292,7 +292,6 @@ SECURE_ACTIONS.togglemenu = function(self, unit, button)
 		secureDropdown = CreateFrame("Frame", "SecureTemplatesDropdown", nil, "UIDropDownMenuTemplate");
 		secureDropdown:SetID(1);
 
-		table.insert(UnitPopupFrames, secureDropdown:GetName());
 		UIDropDownMenu_Initialize(secureDropdown, InitializeSecureMenu, "MENU");
 	end
 
@@ -338,13 +337,7 @@ SECURE_ACTIONS.action =
             local actionType, flyoutId = GetActionInfo(action);
             local cursorType = GetCursorInfo();
 
-            if ( actionType == "flyout" and not cursorType ) then
-				local direction = SecureButton_GetModifiedAttribute(self, "flyoutDirection", button);
-                SpellFlyout:Toggle(flyoutId, self, direction, 3, true);
-            else
-                SpellFlyout:Hide();
-                UseAction(action, unit, button);
-            end
+			UseAction(action, unit, button);
         end
     end;
 
@@ -383,7 +376,7 @@ SECURE_ACTIONS.spell =
             CastSpellByName(spell, unit);
         end
     end;
-	
+
 SECURE_ACTIONS.toy =
 	function (self, unit, button)
 		local toy = SecureButton_GetModifiedAttribute(self, "toy", button);
@@ -445,7 +438,7 @@ SECURE_ACTIONS.cancelaura =
     function (self, unit, button)
         local spell = SecureButton_GetModifiedAttribute(self, "spell", button);
         if ( spell ) then
-            CancelUnitBuff(unit, spell, SecureButton_GetModifiedAttribute(self, "rank", button));
+            CancelSpellByName(spell);
         else
             local slot = tonumber(SecureButton_GetModifiedAttribute(self, "target-slot", button));
             if ( slot and CANCELABLE_ITEMS[slot] ) then
@@ -459,7 +452,12 @@ SECURE_ACTIONS.cancelaura =
         end
     end;
 
-SECURE_ACTIONS.destroytotem = 
+SECURE_ACTIONS.leavevehicle =
+	function (self, unit, button)
+		VehicleExit();
+	end;
+
+SECURE_ACTIONS.destroytotem =
 	function(self, unit, button)
 		DestroyTotem(SecureButton_GetModifiedAttribute(self, "totem-slot", button));
 	end;
@@ -564,7 +562,7 @@ SECURE_ACTIONS.worldmarker =
 			end
 		end
 	end;
-	
+
 function SecureActionButton_OnClick(self, button, down)
     -- TODO check with Tom etc if this is kosher
     if (down) then

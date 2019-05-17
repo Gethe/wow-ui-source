@@ -548,6 +548,9 @@
 			</Button>
 			
 			<ScrollFrame name="ReputationListScrollFrame" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="296" y="354"/>
+				</Size>
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
@@ -827,14 +830,9 @@
 								if ( self:GetChecked() ) then
 									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 									SetWatchedFactionIndex(GetSelectedFaction());
-									SetWatchingHonorAsXP(false);
-									if (C_ArtifactUI.GetEquippedArtifactInfo()) then
-										SetCVar("showArtifactXPBar", false);
-									end
 								else
 									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 									SetWatchedFactionIndex(0);
-									SetCVar("showArtifactXPBar", true);
 								end
 								MainMenuBar_UpdateExperienceBars();
 							</OnClick>

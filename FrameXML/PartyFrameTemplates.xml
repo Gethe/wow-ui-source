@@ -212,16 +212,6 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentPowerBarAlt" inherits="UnitPowerBarAltTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="13" y="5"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						UnitPowerBarAlt_Initialize(self, "party"..self:GetParent():GetID(), 0.5, "GROUP_ROSTER_UPDATE");
-					</OnLoad>
-				</Scripts>
-			</Frame>
 			<Frame setAllPoints="true">
 				<Frames>
 					<Frame setAllPoints="true">
@@ -267,12 +257,6 @@
 										<Anchor point="TOPLEFT"/>
 									</Anchors>
 									<TexCoords left="0" right="0.296875" top="0.015625" bottom="0.3125"/>
-								</Texture>
-								<Texture name="$parentMasterIcon" file="Interface\GroupFrame\UI-Group-MasterLooter" hidden="true">
-									<Size x="16" y="16"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="32" y="0"/>
-									</Anchors>
 								</Texture>
 								<Texture name="$parentPVPIcon" hidden="true">
 									<Size x="32" y="32"/>

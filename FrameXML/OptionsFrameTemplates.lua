@@ -246,7 +246,7 @@ local function OptionsFrame_RunCancelForCategory (category)
 end
 
 local function OptionsFrame_RunDefaultForCategory (category, classicDefaults)
-	pcall(category.default, category, classicDefaults);
+	pcall(category.default, category, nil, classicDefaults);
 end
 
 local function OptionsFrame_RunRefreshForCategory (category)
@@ -290,7 +290,7 @@ function OptionsFrame_SetCurrentToDefaults (self, classicDefaults)
 		return;
 	end
 
-	displayedPanel.default(displayedPanel, classicDefaults);
+	displayedPanel.default(displayedPanel, nil, classicDefaults);
 	--Run the refresh method to refresh any values that were changed.
 	displayedPanel.refresh(displayedPanel);
 end

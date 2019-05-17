@@ -1,0 +1,65 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="CommunitiesTabs.lua"/>
+
+	<CheckButton name="CommunitiesFrameTabTemplate" virtual="true">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-3" y="11"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" file="INTERFACE\HELPFRAME\REPORTLAGICON-CHAT">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.03125" right="0.96875" top="0.03125" bottom="0.96875"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+				self:SetChecked(true);
+			</OnClick>
+			<OnEnter function="CommunitiesFrameTab_OnEnter"/>
+			<OnLeave function="CommunitiesFrameTab_OnLeave"/>
+		</Scripts>
+		<NormalTexture/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+	</CheckButton>
+	
+	<CheckButton name="CommunitiesChatTabTemplate" hidden="true" inherits="CommunitiesFrameTabTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="tooltip" value="COMMUNITIES_CHAT_TAB_TOOLTIP" type="global"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad>
+				self.Icon:SetTexture("Interface\\Icons\\UI_Chat");
+			</OnLoad>
+			<OnClick inherit="append">
+				self:GetParent():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.CHAT);
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	<CheckButton name="CommunitiesRosterTabTemplate" hidden="true" inherits="CommunitiesFrameTabTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="tooltip" value="COMMUNITIES_ROSTER_TAB_TOOLTIP" type="global"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad>
+				self.Icon:SetTexture("Interface\\Icons\\achievement_guildperk_everybodysfriend");
+			</OnLoad>
+			<OnClick inherit="append">
+				self:GetParent():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+</Ui>

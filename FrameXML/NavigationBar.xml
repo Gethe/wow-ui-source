@@ -260,7 +260,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentOverlay" parentKey="overlay">
+			<Frame parentKey="overlay">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="0" y="0"/>
 					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>

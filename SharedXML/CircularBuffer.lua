@@ -77,6 +77,23 @@ function CircularBufferMixin:RemoveIf(predicateFunction, transformFunction)
 	return true;
 end
 
+function CircularBufferMixin:TransformIf(predicateFunction, transformFunction, entryTransform)
+	local changed = false;
+	if self:IsEmpty() then
+		return changed;
+	end
+
+	entryTransform = entryTransform or PassThrough;
+	for i, entry in ipairs(self.elements) do
+		if securecall(predicateFunction, securecall(entryTransform, entry)) then
+			self.elements[i] = securecall(transformFunction, securecall(entryTransform, entry));
+			changed = true;
+		end
+	end
+
+	return changed;
+end
+
 function CircularBufferMixin:GetNumElements()
     return #self.elements;
 end

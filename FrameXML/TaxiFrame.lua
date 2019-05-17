@@ -1,6 +1,6 @@
 
-TAXI_MAP_WIDTH = 580;
-TAXI_MAP_HEIGHT = 580;
+TAXI_MAP_WIDTH = 316;
+TAXI_MAP_HEIGHT = 352;
 NUM_TAXI_BUTTONS = 0;
 NUM_TAXI_ROUTES = 0;
 TAXIROUTE_LINEFACTOR = 32/30; -- Multiplying factor for texture coordinates
@@ -31,22 +31,18 @@ TAXI_BUTTON_MIN_DIST = 18;
 
 function TaxiFrame_OnLoad(self)
 	self:RegisterEvent("TAXIMAP_CLOSED");
-	self.InsetBg:SetHorizTile(false);
-	self.InsetBg:SetVertTile(false);
-end
-
-function TaxiFrame_ShouldShowOldStyle()
-	return GetTaxiMapID() ~= 1007 and GetTaxiMapID() ~= 1184; -- Broken Isles/Argus
 end
 
 function TaxiFrame_OnShow(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 
-	self.TitleText:SetText(FLIGHT_MAP);
+	-- Show the merchant we're dealing with
+	TaxiMerchant:SetText(UnitName("npc"));
+	SetPortraitTexture(TaxiPortrait, "npc");
 
 	-- Set the texture coords on the map
-	self.InsetBg:SetTexCoord(0,1,0,1);
-	SetTaxiMap(self.InsetBg);
+	TaxiMap:SetTexCoord(0,1,0,1);
+	SetTaxiMap(TaxiMap);
 
 	-- Show the taxi node map and buttons
 	local num_nodes = NumTaxiNodes();
@@ -68,7 +64,7 @@ function TaxiFrame_OnShow(self)
 			numValidFlightNodes = numValidFlightNodes + 1;
 			local x, y = TaxiNodePosition(button:GetID());
 			local currX = x*TAXI_MAP_WIDTH;
-			local currY = y*TAXI_MAP_HEIGHT;
+			local currY = (1.0-y)*TAXI_MAP_HEIGHT;
 			taxiNodePositions[index].x = currX;
 			taxiNodePositions[index].y = currY;
 			-- check if we are obscuring a previous placement (eg: Ebon Hold and Light's Hope Chapel)
@@ -96,7 +92,7 @@ function TaxiFrame_OnShow(self)
 			end
 			-- set the button position
 			button:ClearAllPoints();
-			button:SetPoint("CENTER", self.InsetBg, "BOTTOMLEFT", floor(taxiNodePositions[index].x+.5), floor(taxiNodePositions[index].y+.5));
+			button:SetPoint("CENTER", "TaxiMap", "BOTTOMLEFT", floor(taxiNodePositions[index].x+.5), floor(taxiNodePositions[index].y+.5));
 			button:SetNormalTexture(TaxiButtonTypes[type].file);
 			local texture = button:GetHighlightTexture();
 			texture:SetAlpha(TaxiButtonTypes[type].highlightBrightness);

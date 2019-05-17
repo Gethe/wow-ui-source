@@ -168,7 +168,7 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer(self)
 		self.displayFrame.leaderOptions:Hide();
 	end
 	
-	if ( not IsInRaid() and UnitIsGroupLeader("player") and not HasLFGRestrictions() ) then
+	if ( not IsInRaid() and UnitIsGroupLeader("player") ) then
 		FlowContainer_AddLineBreak(container);
 		FlowContainer_AddSpacer(container, 20);
 		FlowContainer_AddObject(container, self.displayFrame.convertToRaid);
@@ -748,8 +748,8 @@ function CRFSort_Role(token1, token2)
 		role2 = select(10, GetRaidRosterInfo(id2));
 	end
 	
-	role1 = role1 or UnitGroupRolesAssigned(token1);
-	role2 = role2 or UnitGroupRolesAssigned(token2);
+	role1 = role1 or "NONE";
+	role2 = role2 or "NONE";
 	
 	local value1, value2 = roleValues[role1], roleValues[role2];
 	if ( value1 ~= value2 ) then
@@ -811,10 +811,10 @@ function CRFFlowFilterFunc(token)
 		return true;
 	end
 	
-	local role = UnitGroupRolesAssigned(token);
+	--[[local role = UnitGroupRolesAssigned(token);
 	if ( not filterOptions["displayRole"..role] ) then
 		return false;
-	end
+	end]]
 	
 	local raidID = UnitInRaid(token);
 	if ( raidID ) then
@@ -860,12 +860,12 @@ function CRF_CountStuff()
 			end
 		end
 	else
-		CRF_AddToCount(UnitIsDeadOrGhost("player") , UnitGroupRolesAssigned("player"));
+		CRF_AddToCount(UnitIsDeadOrGhost("player") , "NONE");--UnitGroupRolesAssigned("player"));
 		for i=1, GetNumSubgroupMembers() do
 			local unit = "party"..i;
-			CRF_AddToCount(UnitIsDeadOrGhost(unit), UnitGroupRolesAssigned(unit));
+			CRF_AddToCount(UnitIsDeadOrGhost(unit), "NONE");--UnitGroupRolesAssigned(unit));
 		end
-	end		
+	end
 end
 
 function CRF_AddToCount(isDead, assignedRole)

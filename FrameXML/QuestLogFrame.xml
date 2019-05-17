@@ -305,6 +305,7 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
+								self.isHeader = true;
 								QuestLogCollapseAllButtonNormalText:SetWidth(0);
 								QuestLogExpandTabMiddle:SetWidth(self:GetTextWidth() + 24);
 							</OnLoad>

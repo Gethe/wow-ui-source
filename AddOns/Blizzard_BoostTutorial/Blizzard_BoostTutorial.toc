@@ -1,7 +1,0 @@
-## Author: Blizzard Entertainment
-## Title: Blizzard BoostTutorial
-## Interface: 70300
-## Secure: 1
-## LoadOnDemand: 1
-## RequiredDep: Blizzard_TutorialTemplates
-Blizzard_BoostTutorial.lua

@@ -1,12 +1,7 @@
-CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "ReputationFrame", "SkillFrame"};--, "HonorFrame" }; -- TEMP: Disable the Honor tab until we recreate it.
+CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "ReputationFrame", "SkillFrame", "HonorFrame" };
 
 local NUM_CHARACTERFRAME_TABS = 5;
 function ToggleCharacter(tab, onlyShow)
-	-- TEMP: Disable the Honor tab until we recreate it.
-	if (tab == "HonorFrame") then
-		tab = "PaperDollFrame";
-	end
-
 	if ( tab == "PetPaperDollFrame" and not HasPetUI() and not PetPaperDollFrame:IsVisible() ) then
 		return;
 	end
@@ -55,14 +50,15 @@ function CharacterFrameTab_OnClick(self, button)
 	elseif ( name == "CharacterFrameTab4" ) then
 		ToggleCharacter("SkillFrame");
 	elseif ( name == "CharacterFrameTab5" ) then
-		-- TEMP: Disable the Honor tab until we recreate it.
-		--ToggleCharacter("HonorFrame");
+		ToggleCharacter("HonorFrame");
 	end
 
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 end
 
-function CharacterFrame_OnLoad(self)
+function CharacterFrame_OnLoad (self)
+	PortraitFrameTemplateMixin.OnLoad(self);
+
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("PLAYER_PVP_RANK_CHANGED");
@@ -75,9 +71,6 @@ function CharacterFrame_OnLoad(self)
 	-- Tab Handling code
 	PanelTemplates_SetNumTabs(self, NUM_CHARACTERFRAME_TABS);
 	PanelTemplates_SetTab(self, 1);
-
-	-- TEMP: Disable the Honor tab until we recreate it.
-	PanelTemplates_DisableTab(CharacterFrame, 5);
 end
 
 function CharacterFrame_OnEvent(self, event, ...)
@@ -93,11 +86,11 @@ function CharacterFrame_OnEvent(self, event, ...)
 		return;
 	elseif ( event == "UNIT_NAME_UPDATE" ) then
 		if ( arg1 == "player" ) then
-			CharacterFrameTitleText:SetText(UnitPVPName("player"));
+			CharacterNameText:SetText(UnitPVPName("player"));
 		end
 		return;
 	elseif ( event == "PLAYER_PVP_RANK_CHANGED" ) then
-		CharacterFrameTitleText:SetText(UnitPVPName("player"));
+		CharacterNameText:SetText(UnitPVPName("player"));
 	end
 end
 
@@ -108,14 +101,10 @@ function CharacterFrame_OnShow(self)
 	UpdateMicroButtons();
 	PlayerFrameHealthBar.showNumeric = true;
 	PlayerFrameManaBar.showNumeric = true;
-	PlayerFrameAlternateManaBar.showNumeric = true;
-	MonkStaggerBar.showNumeric = true;
-	MainMenuExpBar.showNumeric = true;
 	PetFrameHealthBar.showNumeric = true;
 	PetFrameManaBar.showNumeric = true;
 	ShowTextStatusBarText(PlayerFrameHealthBar);
 	ShowTextStatusBarText(PlayerFrameManaBar);
-	ShowTextStatusBarText(MainMenuExpBar);
 	ShowTextStatusBarText(PetFrameHealthBar);
 	ShowTextStatusBarText(PetFrameManaBar);
 
@@ -132,19 +121,12 @@ function CharacterFrame_OnHide(self)
 	UpdateMicroButtons();
 	PlayerFrameHealthBar.showNumeric = nil;
 	PlayerFrameManaBar.showNumeric = nil;
-	PlayerFrameAlternateManaBar.showNumeric = nil;
-	MonkStaggerBar.showNumeric = nil;
-	MainMenuExpBar.showNumeric =nil;
 	PetFrameHealthBar.showNumeric = nil;
 	PetFrameManaBar.showNumeric = nil;
 	HideTextStatusBarText(PlayerFrameHealthBar);
 	HideTextStatusBarText(PlayerFrameManaBar);
-	HideTextStatusBarText(PlayerFrameAlternateManaBar);
-	HideTextStatusBarText(MonkStaggerBar);
-	HideTextStatusBarText(MainMenuExpBar);
 	HideTextStatusBarText(PetFrameHealthBar);
 	HideTextStatusBarText(PetFrameManaBar);
-	HideWatchBarText(ReputationWatchBar);
 	PaperDollFrame.currentSideBar = nil;
 end
 

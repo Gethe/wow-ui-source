@@ -44,28 +44,28 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="StanceBarLeft" file="Interface\ShapeshiftBar\ShapeshiftBar">
-					<Size x="47" y="38"/>
+				<Texture name="StanceBarLeft" file="Interface\ShapeshiftBar\ShapeshiftBarEnds">
+					<Size x="45" y="50"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
-					<TexCoords left="0" right="0.734375" top="0" bottom="0.296875"/>
+					<TexCoords left="0" right="0.453125" top="0" bottom="1"/>
 				</Texture>
 				<Texture name="StanceBarMiddle" file="Interface\ShapeshiftBar\ShapeshiftBarMiddle">
-					<Size x="37" y="38"/>
+					<Size x="38" y="50"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="StanceBarLeft" relativePoint="RIGHT"/>
 					</Anchors>
-					<TexCoords left="0" right="2" top="0" bottom="1"/>
+					<TexCoords left="0" right="1" top="0" bottom="1"/>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">		
-				<Texture name="StanceBarRight" file="Interface\ShapeshiftBar\ShapeshiftBar">
-					<Size x="43" y="38"/>
+				<Texture name="StanceBarRight" file="Interface\ShapeshiftBar\ShapeshiftBarEnds">
+					<Size x="42" y="50"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="StanceBarMiddle" relativePoint="RIGHT"/>
 					</Anchors>
-					<TexCoords left="0.328125" right="1" top="0.3125" bottom="0.6015625"/>
+					<TexCoords left="0.453125" right="0.875" top="0" bottom="1"/>
 				</Texture>				
 			</Layer>
 		</Layers>

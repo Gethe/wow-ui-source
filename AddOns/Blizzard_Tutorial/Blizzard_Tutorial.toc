@@ -1,7 +1,0 @@
-## Author: Blizzard Entertainment
-## Title: Blizzard Tutorial
-## Interface: 70300
-## Secure: 1
-## RequiredDep: Blizzard_TutorialTemplates
-## LoadOnDemand: 1
-# Inspired by the Newbie Assistant written by 网易

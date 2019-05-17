@@ -137,6 +137,9 @@
 	</Frame>
 
 	<Frame name="PaperDollFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" id="1">
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="75"/>
+		</HitRectInsets>
 		<Layers>
 			<Layer level="BORDER">
 				<Texture file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-L1">

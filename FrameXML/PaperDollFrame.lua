@@ -5,6 +5,7 @@ NUM_RESISTANCE_TYPES = 5;
 NUM_STATS = 5;
 NUM_SHOPPING_TOOLTIPS = 2;
 ATTACK_POWER_MAGIC_NUMBER = 14;
+BASE_MOVEMENT_SPEED = 7;
 
 --[[ GENERAL FUNCTIONS ]]
 
@@ -643,7 +644,7 @@ function PaperDollStatTooltip(self)
 end
 
 function FormatPaperDollTooltipStat(name, base, posBuff, negBuff)
-	local effective = BreakUpLargeNumbers(max(0,base + posBuff + negBuff));
+	local effective = max(0,base + posBuff + negBuff);
 	local text = HIGHLIGHT_FONT_COLOR_CODE..name.." "..effective;
 	if ( ( posBuff == 0 ) and ( negBuff == 0 ) ) then
 		text = text..FONT_COLOR_CODE_CLOSE;

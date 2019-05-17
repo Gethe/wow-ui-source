@@ -108,16 +108,16 @@ local function CheckUseActionButton(button, checkingFromDown)
 	end
 end
 
-local isInPetBattle = C_PetBattles.IsInBattle;
+local isInPetBattle = false;
 local function CheckPetActionButtonEvent(id, isDown)
-	if isInPetBattle() and PetBattleFrame then
+	--[[if isInPetBattle() and PetBattleFrame then
 		if isDown then
 			PetBattleFrame_ButtonDown(id);
 		else
 			PetBattleFrame_ButtonUp(id);
 		end
 		return true;
-	end
+	end]]
 
 	return false;
 end
@@ -222,21 +222,14 @@ function ActionBarActionEventsFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self:RegisterEvent("TRADE_SKILL_SHOW");
 	self:RegisterEvent("TRADE_SKILL_CLOSE");
-	self:RegisterEvent("ARCHAEOLOGY_CLOSED");
 	self:RegisterEvent("PLAYER_ENTER_COMBAT");
 	self:RegisterEvent("PLAYER_LEAVE_COMBAT");
 	self:RegisterEvent("START_AUTOREPEAT_SPELL");
 	self:RegisterEvent("STOP_AUTOREPEAT_SPELL");
-	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
-	self:RegisterEvent("UNIT_EXITED_VEHICLE");
-	self:RegisterEvent("COMPANION_UPDATE");
 	self:RegisterEvent("UNIT_INVENTORY_CHANGED");
 	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
 	self:RegisterEvent("PET_STABLE_UPDATE");
 	self:RegisterEvent("PET_STABLE_SHOW");
-	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW");
-	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE");
-	self:RegisterEvent("UPDATE_SUMMONPETS_ACTION");
 	self:RegisterEvent("LOSS_OF_CONTROL_ADDED");
 	self:RegisterEvent("LOSS_OF_CONTROL_UPDATE");
 	self:RegisterEvent("SPELL_UPDATE_ICON");
@@ -545,50 +538,31 @@ function ActionButton_UpdateCount(self)
 end
 
 function ActionButton_UpdateCooldown(self)
-	local locStart, locDuration;
 	local start, duration, enable, charges, maxCharges, chargeStart, chargeDuration;
 	local modRate = 1.0;
 	local chargeModRate = 1.0;
 	if ( self.spellID ) then
-		locStart, locDuration = GetSpellLossOfControlCooldown(self.spellID);
 		start, duration, enable, modRate = GetSpellCooldown(self.spellID);
 		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = GetSpellCharges(self.spellID);
 	else
-		locStart, locDuration = GetActionLossOfControlCooldown(self.action);
 		start, duration, enable, modRate = GetActionCooldown(self.action);
 		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = GetActionCharges(self.action);
 	end
 
-	if ( (locStart + locDuration) > (start + duration) ) then
-		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_LOSS_OF_CONTROL ) then
-			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\edge-LoC");
-			self.cooldown:SetSwipeColor(0.17, 0, 0);
-			self.cooldown:SetHideCountdownNumbers(true);
-			self.cooldown.currentCooldownType = COOLDOWN_TYPE_LOSS_OF_CONTROL;
-		end
-
-		CooldownFrame_Set(self.cooldown, locStart, locDuration, true, true, modRate);
-		ClearChargeCooldown(self);
-	else
-		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_NORMAL ) then
-			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\edge");
-			self.cooldown:SetSwipeColor(0, 0, 0);
-			self.cooldown:SetHideCountdownNumbers(false);
-			self.cooldown.currentCooldownType = COOLDOWN_TYPE_NORMAL;
-		end
-
-		if( locStart > 0 ) then
-			self.cooldown:SetScript("OnCooldownDone", ActionButton_OnCooldownDone );
-		end
-
-		if ( charges and maxCharges and maxCharges > 1 and charges < maxCharges ) then
-			StartChargeCooldown(self, chargeStart, chargeDuration, chargeModRate);
-		else
-			ClearChargeCooldown(self);
-		end
-
-		CooldownFrame_Set(self.cooldown, start, duration, enable, false, modRate);
+	if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_NORMAL ) then
+		self.cooldown:SetEdgeTexture("Interface\\Cooldown\\edge");
+		self.cooldown:SetSwipeColor(0, 0, 0);
+		self.cooldown:SetHideCountdownNumbers(false);
+		self.cooldown.currentCooldownType = COOLDOWN_TYPE_NORMAL;
 	end
+
+	if ( charges and maxCharges and maxCharges > 1 and charges < maxCharges ) then
+		StartChargeCooldown(self, chargeStart, chargeDuration, chargeModRate);
+	else
+		ClearChargeCooldown(self);
+	end
+
+	CooldownFrame_Set(self.cooldown, start, duration, enable, false, modRate);
 end
 
 function ActionButton_OnCooldownDone(self)
@@ -642,11 +616,11 @@ function ActionButton_GetOverlayGlow()
 end
 
 function ActionButton_UpdateOverlayGlow(self)
-	local spellType, id, subType  = GetActionInfo(self.action);
+	--[[local spellType, id, subType  = GetActionInfo(self.action);
 	if ( spellType == "spell" and IsSpellOverlayed(id) ) then
 		ActionButton_ShowOverlayGlow(self);
 	elseif ( spellType == "macro" ) then
-		local _, _, spellId = GetMacroSpell(id);
+		local spellId = GetMacroSpell(id);
 		if ( spellId and IsSpellOverlayed(spellId) ) then
 			ActionButton_ShowOverlayGlow(self);
 		else
@@ -654,7 +628,7 @@ function ActionButton_UpdateOverlayGlow(self)
 		end
 	else
 		ActionButton_HideOverlayGlow(self);
-	end
+	end]]
 end
 
 function ActionButton_ShowOverlayGlow(self)
@@ -781,7 +755,7 @@ function ActionButton_OnEvent(self, event, ...)
 		if ( actionType == "spell" and id == arg1 ) then
 			ActionButton_ShowOverlayGlow(self);
 		elseif ( actionType == "macro" ) then
-			local _, _, spellId = GetMacroSpell(id);
+			local spellId = GetMacroSpell(id);
 			if ( spellId and spellId == arg1 ) then
 				ActionButton_ShowOverlayGlow(self);
 			end
@@ -793,7 +767,7 @@ function ActionButton_OnEvent(self, event, ...)
 		if ( actionType == "spell" and id == arg1 ) then
 			ActionButton_HideOverlayGlow(self);
 		elseif ( actionType == "macro" ) then
-			local _, _, spellId = GetMacroSpell(id);
+			local spellId = GetMacroSpell(id);
 			if (spellId and spellId == arg1 ) then
 				ActionButton_HideOverlayGlow(self);
 			end

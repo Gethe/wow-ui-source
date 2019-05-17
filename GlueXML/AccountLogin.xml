@@ -322,9 +322,7 @@
 							<OnClick function="AccountLogin_Exit"/>
 						</Scripts>
 					</Button>
-					<!-- CLASS-960: Disabling the credits for Blizzcon. -->
-					<!--<Button parentKey="CreditsButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="CREDITS">-->
-					<Button parentKey="CreditsButton" hidden="true" inherits="GlueButtonSmallTemplate" text="CREDITS">
+					<Button parentKey="CreditsButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="CREDITS">
 						<Anchors>
 							<Anchor point="BOTTOM" relativeKey="$parent.ExitButton" relativePoint="TOP" x="0" y="80"/>
 						</Anchors>

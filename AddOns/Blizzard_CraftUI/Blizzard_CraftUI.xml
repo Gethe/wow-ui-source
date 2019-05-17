@@ -23,6 +23,14 @@
 	</Button>
 	<Button name="CraftItemTemplate" inherits="QuestItemTemplate" virtual="true">
 		<Scripts>
+			<OnLoad>
+				self.hasItem = 1;
+				self.UpdateTooltip = function (self)
+					GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT");
+					GameTooltip:SetCraftItem(GetCraftSelectionIndex(), self:GetID());
+					CursorUpdate(self);
+				end;
+			</OnLoad>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT");
 				GameTooltip:SetCraftItem(GetCraftSelectionIndex(), self:GetID());
@@ -39,8 +47,8 @@
 				if ( IsControlKeyDown() ) then
 					DressUpItemLink(GetCraftReagentItemLink(GetCraftSelectionIndex(), self:GetID()));
 				elseif ( IsShiftKeyDown() ) then
-					if ( ChatFrameEditBox:IsVisible() ) then
-						ChatFrameEditBox:Insert(GetCraftReagentItemLink(GetCraftSelectionIndex(), self:GetID()));
+					if ( ChatEdit_GetActiveWindow() ) then
+						ChatEdit_InsertLink(GetCraftReagentItemLink(GetCraftSelectionIndex(), self:GetID()));
 					end
 				end
 			</OnClick>
@@ -546,13 +554,18 @@
 								<Scripts>
 									<OnLoad>
 										self.hasItem = 1;
+										self.UpdateTooltip = function (self)
+											GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+											GameTooltip:SetCraftSpell(GetCraftSelectionIndex());
+											CursorUpdate(self);
+										end;
 									</OnLoad>
 									<OnClick>
 										if ( IsControlKeyDown() ) then
 											DressUpItemLink(GetCraftItemLink(GetCraftSelectionIndex()));
 										elseif ( IsShiftKeyDown() ) then
-											if ( ChatFrameEditBox:IsVisible() ) then
-												ChatFrameEditBox:Insert(GetCraftItemLink(GetCraftSelectionIndex()));
+											if ( ChatEdit_GetActiveWindow() ) then
+												ChatEdit_InsertLink(GetCraftItemLink(GetCraftSelectionIndex()));
 											end
 										end
 									</OnClick>

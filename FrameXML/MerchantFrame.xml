@@ -412,19 +412,6 @@
 					</Frame>
 				</Frames>
 			</Frame>
-			<Frame name="MerchantExtraCurrencyInset" inherits="InsetFrameTemplate" useParentLevel="true">
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="4" y="4"/>
-					<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" x="169" y="27"/>
-				</Anchors>
-			</Frame>
-			<Frame name="MerchantExtraCurrencyBg" inherits="ThinGoldEdgeTemplate" >
-				<Size x="120" y="30"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" x="166" y="25"/>
-					<Anchor point="BOTTOMLEFT" x="7" y="6"/>
-				</Anchors>
-			</Frame>
 			<Frame name="MerchantMoneyInset" inherits="InsetFrameTemplate" useParentLevel="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMRIGHT" x="-171" y="27"/>
@@ -440,7 +427,7 @@
 			</Frame>
 			<Frame name="MerchantMoneyFrame" inherits="SmallMoneyFrameTemplate">
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="MerchantFrame" relativePoint="BOTTOMRIGHT" x="-6" y="10"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="MerchantFrame" relativePoint="BOTTOMRIGHT" x="-4" y="7"/>
 				</Anchors>
 			</Frame>
 			<Button name="MerchantPrevPageButton">

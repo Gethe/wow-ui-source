@@ -10,7 +10,7 @@
 				InspectPaperDollItemSlotButton_OnEvent(self, event, ...);
 			</OnEvent>
             <OnClick>
-				HandleModifiedItemClick(GetInventoryItemLink(InspectFrame.unit, self:GetID()));
+				InspectPaperDollItemSlotButton_OnClick(self, button);
 			</OnClick>
 			<OnUpdate>
 				CursorOnUpdate(self);
@@ -331,15 +331,6 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="122" y="127"/>
 						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture inherits="Char-Slot-Bottom-Left">
-									<Anchors>
-										<Anchor point="TOPRIGHT" relativeTo="$parentFrame" relativePoint="TOPLEFT"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
 					</Button>
 					<Button name="InspectSecondaryHandSlot" inherits="InspectPaperDollItemSlotButtonTemplate">
 						<Anchors>
@@ -358,15 +349,6 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture inherits="Char-Slot-Bottom-Right">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentFrame" relativePoint="TOPRIGHT"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
 					</Button>
 				</Frames>
 			</Frame>

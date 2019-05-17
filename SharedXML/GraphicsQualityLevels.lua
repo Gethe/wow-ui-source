@@ -155,7 +155,6 @@ VideoData["Display_DisplayModeDropDown"]={
 		[1] = {
 			text = VIDEO_OPTIONS_WINDOWED,
 			cvars =	{
-				gxWindow = 1,
 				gxMaximize = 0,
 			},
 			windowed = true;
@@ -164,10 +163,9 @@ VideoData["Display_DisplayModeDropDown"]={
 		[2] = {
 			text = VIDEO_OPTIONS_WINDOWED_FULLSCREEN,
 			cvars =	{
-				gxWindow = 1,
 				gxMaximize = 1,
 			},
-			windowed = true;
+			windowed = false;
 			fullscreen = true;
 		},
 	},
@@ -229,7 +227,7 @@ VideoData["Display_PrimaryMonitorDropDown"]={
 			local ratio = GetMonitorAspectRatio(self:GetValue());
 			return (ratio>=1.0);
 		end,
-	clientRestart = true,
+	restart = true,
 }
 
 -------------------------------------------------------------------------------------------------------
@@ -250,7 +248,7 @@ function DecodeResolution(valueString)
 end
 
 VideoData["Display_ResolutionDropDown"]={
-	name = RESOLUTION;
+	name = WINDOW_SIZE;
 	description = OPTION_TOOLTIP_RESOLUTION,	
 	
 	tablefunction = 
@@ -264,23 +262,20 @@ VideoData["Display_ResolutionDropDown"]={
 	readfilter =
 		function(self, value)
 			local width, height = DecodeResolution(value);
-			if ( width/height > 4/3 ) then
-				value = value.." ".. WIDESCREEN_TAG;
-			end
 			return value;
 		end,
 	SetValue =
 		function (self, value)
 			local width, height = DecodeResolution(self.table[value]);
-			SetScreenResolution(width, height);
+			SetScreenResolution(width, height, Display_DisplayModeDropDown:fullscreenmode());
 		end,
 	doGetValue = 
 		function(self)
-			return GetCurrentResolution(Display_PrimaryMonitorDropDown:GetValue());
+			return GetCurrentResolution(Display_PrimaryMonitorDropDown:GetValue(), Display_DisplayModeDropDown:fullscreenmode());
 		end,
 	onrefresh =
 	function(self)
-		if(Display_DisplayModeDropDown:windowedmode() and Display_DisplayModeDropDown:fullscreenmode()) then
+		if(Display_DisplayModeDropDown:fullscreenmode()) then
 			VideoOptions_Disable(self);
 		else
 			VideoOptions_Enable(self);
@@ -299,13 +294,13 @@ VideoData["Display_VerticalSyncDropDown"]={
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
 			cvars =	{
-				gxVSync = 0,
+				vsync = 0,
 			},
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_ENABLED,
 			cvars =	{
-				gxVSync = 1,
+				vsync = 1,
 			},
 		},
 	},
@@ -368,7 +363,7 @@ end
 
 local function GenerateAntiAliasingDropDownData()
 	local data = {};
-
+	
 	data[#data + 1] = {
 		text = VIDEO_OPTIONS_NONE,
 		cvars =	{
@@ -457,6 +452,9 @@ VideoData["Graphics_ParticleDensityDropDown"]={
 		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
 		},
+		[5] = {
+			text = VIDEO_OPTIONS_ULTRA,
+		},
 	},
 	dependent = {
 		"Graphics_Quality",
@@ -480,6 +478,9 @@ VideoData["RaidGraphics_ParticleDensityDropDown"]={
 		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
 		},
+		[5] = {
+			text = VIDEO_OPTIONS_ULTRA,
+		},
 	},
 	dependent = {
 		"RaidGraphics_Quality",
@@ -499,11 +500,13 @@ VideoData["Graphics_SSAODropDown"]={
 			text = VIDEO_OPTIONS_LOW,
 		},
 		{
+			text = VIDEO_OPTIONS_MEDIUM,
+		},
+		{
 			text = VIDEO_OPTIONS_HIGH,
 		},
 		{
 			text = VIDEO_OPTIONS_ULTRA,
-			tooltip = VIDEO_OPTIONS_SSAO_ULTRA,
 		},
 	},
 
@@ -523,6 +526,9 @@ VideoData["RaidGraphics_SSAODropDown"]={
 		},
 		{
 			text = VIDEO_OPTIONS_LOW,
+		},
+		{
+			text = VIDEO_OPTIONS_MEDIUM,
 		},
 		{
 			text = VIDEO_OPTIONS_HIGH,
@@ -994,35 +1000,6 @@ VideoData["Advanced_LagDropDown"]={
 	restart = true,
 }
 
--------------------------------------------------------------------------------------------------------
-VideoData["Advanced_HardwareCursorDropDown"]={
-	name = HARDWARE_CURSOR;
-	description = OPTION_TOOLTIP_HARDWARE_CURSOR,
-	
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_DISABLED,
-			cvars =	{
-				gxCursor = 0,
-			},
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_ENABLED,
-			cvars =	{
-				gxCursor = 1,
-			},
-		},
-	},
-	onload =
-		function(self)
-			local anisotropic, pixelShaders, vertexShaders, trilinear, buffering, maxAnisotropy, hardwareCursor = GetVideoCaps();
-			if ( not hardwareCursor ) then
-				VideoOptionsDropDownMenu_DisableDropDown(self);
-			end
-		end,
-	restart = true,
-}
-
 VideoData["Advanced_MultisampleAntiAliasingDropDown"]={
 	name = MULTISAMPLE_ANTIALIASING;
 	description = OPTION_TOOLTIP_ADVANCED_MSAA,
@@ -1066,7 +1043,7 @@ VideoData["Advanced_ResampleQualityDropDown"]={
 	data = {
 		{
 			text = VIDEO_OPTIONS_NONE,
-			cvars =	{
+			cvars =    {
 				resampleQuality = 0,
 			},
 		},
@@ -1116,6 +1093,21 @@ VideoData["Advanced_MaxFPSBKSlider"]={
 		end,
 }
 
+VideoData["Advanced_ContrastSlider"]={
+	name = OPTION_CONTRAST;
+	tooltip = OPTION_TOOLTIP_CONTRAST,
+}
+
+VideoData["Advanced_BrightnessSlider"]={
+	name = OPTIONS_BRIGHTNESS;
+	tooltip = OPTION_TOOLTIP_BRIGHTNESS,
+}
+
+VideoData["Advanced_GammaSlider"]={
+	name = GAMMA;
+	tooltip = OPTION_TOOLTIP_GAMMA,
+}
+
 VideoData["Advanced_MaxFPSCheckBox"]={
 	name = MAXFPS_CHECK;
 	tooltip = OPTION_MAXFPS_CHECK,
@@ -1124,11 +1116,51 @@ VideoData["Advanced_MaxFPSBKCheckBox"]={
 	name = MAXFPSBK_CHECK;
 	tooltip = OPTION_MAXFPSBK_CHECK,
 }
--------------------------------------------------------------------------------------------------------
 VideoData["Advanced_UseUIScale"]={
 	name = USE_UISCALE;
 	tooltip = OPTION_TOOLTIP_USE_UISCALE,
 }
+VideoData["Advanced_AdapterDropDown"]={
+	name = GRAPHICS_CARD,
+	description = OPTION_TOOLTIP_GRAPHICS_CARD,
+	tablefunction = 
+		function(self)
+			self.adapters = C_VideoOptions.GetGxAdapterInfo();
+			local adapterNames = {};
+			for idx, val in ipairs(self.adapters) do
+				if ( val.isExternal ) then
+					adapterNames[idx] = string.format(GX_ADAPTER_EXTERNAL, val.name);
+				elseif ( val.isLowPower ) then
+					adapterNames[idx] = string.format(GX_ADAPTER_LOW_POWER, val.name);
+				else
+					adapterNames[idx] = val.name;
+				end
+			end
+			return GX_ADAPTER_AUTO_DETECT, unpack(adapterNames);
+		end,
+	SetValue =
+		function (self, value)
+			if ( value == 1 ) then
+				SetCVar("gxAdapter", "");
+			else
+				SetCVar("gxAdapter", self.adapters[value - 1].name);
+			end
+		end,
+	doGetValue = 
+		function(self)
+			local adapter = GetCVar("gxAdapter");
+			if ( adapter == "" ) then
+				return 1;
+			end
+			for i = 1, #self.adapters do
+				if (string.lower(self.adapters[i].name) == string.lower(adapter)) then
+					return i + 1;
+				end
+			end
+		end,
+	restart = true,
+}
+
 VideoData["Advanced_StereoEnabled"]={
 	name = ENABLE_STEREO_VIDEO;
 	tooltip = OPTION_TOOLTIP_ENABLE_STEREO_VIDEO,

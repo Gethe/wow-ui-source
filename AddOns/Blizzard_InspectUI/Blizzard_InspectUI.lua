@@ -1,4 +1,4 @@
-INSPECTFRAME_SUBFRAMES = { "InspectPaperDollFrame", "InspectPVPFrame" };
+INSPECTFRAME_SUBFRAMES = { "InspectPaperDollFrame", "InspectHonorFrame" };
 
 function InspectFrame_Show(unit)
 	HideUIPanel(InspectFrame);
@@ -17,6 +17,7 @@ function InspectFrame_OnLoad(self)
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+	self:RegisterEvent("PORTRAITS_UPDATED");
 	self:RegisterEvent("INSPECT_READY");
 	self.unit = nil;
 	INSPECTED_UNIT = nil;
@@ -25,9 +26,6 @@ function InspectFrame_OnLoad(self)
 	PanelTemplates_SetNumTabs(self, 2);
 	PanelTemplates_SetTab(self, 1);
 	InspectNameText:SetFontObject("GameFontHighlight");
-
-	-- TEMP: Disable the Honor tab until we recreate it.
-	PanelTemplates_DisableTab(InspectFrame, 2);
 end
 
 function InspectFrame_OnEvent(self, event, unit, ...)
@@ -41,6 +39,7 @@ function InspectFrame_OnEvent(self, event, unit, ...)
 	if ( not self:IsShown() ) then
 		return;
 	end
+
 	if ( event == "PLAYER_TARGET_CHANGED" or event == "GROUP_ROSTER_UPDATE" ) then
 		if ( (event == "PLAYER_TARGET_CHANGED" and self.unit == "target") or
 		     (event == "GROUP_ROSTER_UPDATE" and self.unit ~= "target") ) then
@@ -52,19 +51,18 @@ function InspectFrame_OnEvent(self, event, unit, ...)
 			--end
 			HideUIPanel(InspectFrame);
 		end
-		return;
 	elseif ( event == "UNIT_NAME_UPDATE" ) then
-		local arg1 = ...;
-		if ( arg1 == self.unit ) then
+		local unit = ...;
+		if ( unit == self.unit ) then
 			InspectNameText:SetText(GetUnitName(self.unit, true));
 		end
-		return;
 	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
-		local arg1 = ...;
-		if ( not arg1 or arg1 == self.unit ) then
+		local unit = ...;
+		if unit == self.unit then
 			SetPortraitTexture(InspectFramePortrait, self.unit);
-		end
-		return;
+		end	
+	elseif ( event == "PORTRAITS_UPDATED" ) then
+		SetPortraitTexture(InspectFramePortrait, self.unit);
 	end
 end
 
@@ -98,11 +96,6 @@ function InspectFrame_OnHide(self)
 end
 
 function InspectSwitchTabs(newID)
-	-- TEMP: Disable the Honor tab until we recreate it.
-	if (newID > 1) then
-		return
-	end
-
 	local newFrame = _G[INSPECTFRAME_SUBFRAMES[newID]];
 	local oldFrame = _G[INSPECTFRAME_SUBFRAMES[PanelTemplates_GetSelectedTab(InspectFrame)]];
 	if ( newFrame ) then

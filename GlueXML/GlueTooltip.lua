@@ -8,6 +8,7 @@ function GlueTooltip_OnLoad(self)
 	self.SetText = GlueTooltip_SetText;
 	self.SetOwner = GlueTooltip_SetOwner;
 	self.GetOwner = GlueTooltip_GetOwner;
+	self.IsOwned = GlueTooltip_IsOwned;
 	self:SetBackdropBorderColor(1.0, 1.0, 1.0);
 	self:SetBackdropColor(0.09, 0.09, 0.19 );
 	self.defaultColor = NORMAL_FONT_COLOR;
@@ -42,6 +43,10 @@ end
 
 function GlueTooltip_GetOwner(self)
 	return self.owner;
+end
+
+function GlueTooltip_IsOwned(self, frame)
+	return self:GetOwner() == frame;
 end
 
 function GlueTooltip_SetText(self, text, r, g, b, a, wrap)

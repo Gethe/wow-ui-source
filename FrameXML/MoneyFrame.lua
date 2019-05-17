@@ -319,7 +319,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 
 	-- Breakdown the money into denominations
 	local gold = floor(money / (COPPER_PER_SILVER * SILVER_PER_GOLD));
-	local goldDisplay = BreakUpLargeNumbers(gold);
+	local goldDisplay = gold;
 	local silver = floor((money - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
 	local copper = mod(money, COPPER_PER_SILVER);
 
@@ -452,7 +452,8 @@ function MoneyFrame_Update(frameName, money, forceShow)
 			copperWidth = copperWidth - spacing;
 		end
 		-- hide copper if not enough room
-		if ( maxDisplayWidth and (width + copperWidth) > maxDisplayWidth ) then
+		--if ( maxDisplayWidth and (width + copperWidth) > maxDisplayWidth ) then
+		if ( false ) then
 			hideCopper = true;
 			frame.showTooltip = true;
 		else

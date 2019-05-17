@@ -46,7 +46,7 @@ function SetItemButtonTexture(button, texture)
 	if ( not button ) then
 		return;
 	end
-	local icon = button.icon or _G[button:GetName().."IconTexture"];
+	local icon = button.Icon or button.icon or _G[button:GetName().."IconTexture"];
 	if ( texture ) then
 		icon:Show();
 	else
@@ -60,7 +60,7 @@ function SetItemButtonTextureVertexColor(button, r, g, b)
 		return;
 	end
 	
-	local icon = button.icon or _G[button:GetName().."IconTexture"];
+	local icon = button.Icon or button.icon or _G[button:GetName().."IconTexture"];
 	icon:SetVertexColor(r, g, b);
 end
 
@@ -68,7 +68,7 @@ function SetItemButtonDesaturated(button, desaturated)
 	if ( not button ) then
 		return;
 	end
-	local icon = button.icon or _G[button:GetName().."IconTexture"];
+	local icon = button.Icon or button.icon or _G[button:GetName().."IconTexture"];
 	if ( not icon ) then
 		return;
 	end
@@ -101,14 +101,15 @@ function SetItemButtonSlotVertexColor(button, r, g, b)
 	_G[button:GetName().."SlotTexture"]:SetVertexColor(r, g, b);
 end
 
-function SetItemButtonQuality(button, quality, itemIDOrLink)
-	if itemIDOrLink and IsArtifactRelicItem(itemIDOrLink) then
-		button.IconBorder:SetTexture([[Interface\Artifacts\RelicIconFrame]]);
+function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
+	if itemIDOrLink then
+		button.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
 	else
 		button.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
 	end
+	button.IconOverlay:Hide();
 
-	if quality then
+	--[[if quality then
 		if quality >= LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality] then
 			button.IconBorder:Show();
 			button.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
@@ -117,7 +118,8 @@ function SetItemButtonQuality(button, quality, itemIDOrLink)
 		end
 	else
 		button.IconBorder:Hide();
-	end
+	end]]
+	button.IconBorder:Hide();
 end
 
 function HandleModifiedItemClick(link)
@@ -139,7 +141,7 @@ function HandleModifiedItemClick(link)
 		end
 	end
 	if ( IsModifiedClick("DRESSUP") ) then
-		return DressUpItemLink(link);
+		return DressUpItemLink(link) or DressUpBattlePetLink(link) or DressUpMountLink(link)
 	end
 	return false;
 end

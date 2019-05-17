@@ -1,8 +1,8 @@
 UNIT_POSITION_FRAME_DEFAULT_PIN_SIZE = 40;
 UNIT_POSITION_FRAME_DEFAULT_SUBLEVEL = 7;
-UNIT_POSITION_FRAME_DEFAULT_TEXTURE = "WhiteCircle-RaidBlips";
+UNIT_POSITION_FRAME_DEFAULT_TEXTURE = "Interface\\WorldMap\\WorldMapPartyIcon";
 UNIT_POSITION_FRAME_DEFAULT_SHOULD_SHOW_UNITS = true;
-UNIT_POSITION_FRAME_DEFAULT_USE_CLASS_COLOR = true;
+UNIT_POSITION_FRAME_DEFAULT_USE_CLASS_COLOR = false;
 
 -- NOTE: This is only using a single set of PVPQuery timers.  There's no reason to have a different set per-instance.
 PVPAFK_QUERY_DELAY_SECONDS = 5;
@@ -70,12 +70,12 @@ function UnitPositionFrameMixin:OnEvent(event, ...)
 end
 
 function UnitPositionFrameMixin:UpdateAppearanceData()
-	self:SetPinTexture("raid", "WhiteCircle-RaidBlips");
-	self:SetPinTexture("party", IsInRaid() and "WhiteDotCircle-RaidBlips" or "WhiteCircle-RaidBlips");
+	self:SetPinTexture("raid", "Interface\\WorldMap\\WorldMapPartyIcon");
+	self:SetPinTexture("party", "Interface\\WorldMap\\WorldMapPartyIcon");
 end
 
 function UnitPositionFrameMixin:ResetCurrentMouseOverUnits()
-	self.currentMouseOverUnits = {}
+	self.currentMouseOverUnits = {};
 	self.currentMouseOverUnitCount = 0;
 end
 
@@ -162,7 +162,7 @@ function UnitPositionFrameMixin:UpdateUnitTooltips(tooltipFrame)
 	end
 
 	if tooltipText ~= "" then
-		SetMapTooltipPosition(tooltipFrame, self, true);
+		tooltipFrame:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
 		tooltipFrame:SetText(tooltipText);
 	elseif tooltipFrame:GetOwner() == self then
 		tooltipFrame:ClearLines();
@@ -233,9 +233,7 @@ function UnitPositionFrameMixin:UpdateFull(timeNow)
 		local unit = unitBase..i;
 		if UnitExists(unit) and not UnitIsUnit(unit, "player") then
 			local appearance = UnitInSubgroup(unit, overridePartyType) and partyAppearance or raidAppearance;
---			self:AddUnitInternal(timeNow, unit, appearance, true );
-			-- 1.12 Classic change, we use texture not atlas for party/raid
-			self:AddUnitInternal(timeNow, unit, appearance, false);
+			self:AddUnitInternal(timeNow, unit, appearance);
 		end
 	end
 
@@ -298,7 +296,7 @@ function UnitPositionFrameUpdateSecureMixin:GetOrCreateUnitAppearanceData(unitTy
 			sublevel = UNIT_POSITION_FRAME_DEFAULT_SUBLEVEL,
 			texture = UNIT_POSITION_FRAME_DEFAULT_TEXTURE,
 			shouldShow = UNIT_POSITION_FRAME_DEFAULT_SHOULD_SHOW_UNITS,
-			useClassColor = unitType ~= "player", -- UNIT_POSITION_FRAME_DEFAULT_USE_CLASS_COLOR
+			useClassColor = UNIT_POSITION_FRAME_DEFAULT_USE_CLASS_COLOR,
 			showRotation = unitType == "player"; -- There's no point in trying to show rotation for anything except the local player.
 
 		};

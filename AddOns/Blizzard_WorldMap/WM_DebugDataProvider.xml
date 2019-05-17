@@ -1,0 +1,14 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="WM_DebugDataProvider.lua"/>
+
+	<Frame name="WorldMap_DebugObjectPinTemplate" mixin="WorldMap_DebugObjectPinMixin" enableMouseMotion="true" enableMouseClicks="true" hidden="true" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Texture" file="Interface\RaidFrame\UI-RaidFrame-Threat" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="WorldMap_DebugPortLocPinTemplate" inherits="BaseMapPoiPinTemplate" mixin="WorldMap_DebugPortLocPinMixin" virtual="true" />
+</Ui>

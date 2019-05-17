@@ -10,13 +10,13 @@ local MaxSpellBookTypes = 3;
 local SpellBookInfo = {};
 SpellBookInfo[BOOKTYPE_SPELL] = {
 	showFrames = {"SpellBookSpellIconsFrame", "SpellBookSideTabsFrame", "SpellBookPageNavigationFrame"},
-	title = SPELLBOOK,
-	updateFunc = function() SpellBook_UpdatePlayerTab(); end
+											title = SPELLBOOK,
+											updateFunc = function() SpellBook_UpdatePlayerTab(); end
 };
 SpellBookInfo[BOOKTYPE_PET] = {
 	showFrames = {"SpellBookSpellIconsFrame", "SpellBookPageNavigationFrame"},
-	title = PET,
-	updateFunc =  function() SpellBook_UpdatePetTab(); end
+											title = PET,
+											updateFunc =  function() SpellBook_UpdatePetTab(); end
 };
 
 SPELLBOOK_PAGENUMBERS = {};
@@ -344,12 +344,12 @@ function SpellButton_OnClick(self, button)
 	end
 
 	if ( button ~= "LeftButton" and SpellBookFrame.bookType == BOOKTYPE_PET ) then
-		ToggleSpellAutocast(slot, SpellBookFrame.bookType);
+			ToggleSpellAutocast(slot, SpellBookFrame.bookType);
 	else
 		local _, id = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
 		if ( SpellBookFrame.bookType ~= BOOKTYPE_SPELLBOOK ) then
-			CastSpell(slot, SpellBookFrame.bookType);
-		end
+				CastSpell(slot, SpellBookFrame.bookType);
+			end
 		SpellButton_UpdateSelection(self);
 	end
 end
@@ -371,11 +371,11 @@ function SpellButton_OnModifiedClick(self, button)
 			end
 			return;
 		else
-			local spellLink, tradeSkillLink = GetSpellLink(slot, SpellBookFrame.bookType);
-			if ( tradeSkillLink ) then
+			local tradeSkillLink, tradeSkillSpellID = GetSpellTradeSkillLink(slot, SpellBookFrame.bookType);
+			if ( tradeSkillSpellID ) then
 				ChatEdit_InsertLink(tradeSkillLink);
-			elseif ( spellLink ) then
-				ChatEdit_InsertLink(spellLink);
+			else
+				ChatEdit_InsertLink(GetSpellLink(slot, SpellBookFrame.bookType));
 			end
 			return;
 		end
@@ -412,12 +412,12 @@ end
 function SpellButton_UpdateSelection(self)
 	-- We only highlight professions that are open. We used to highlight active shapeshifts and pet
 	-- stances but we removed the highlight on those to avoid conflicting with the not-on-your-action-bar highlights.
-	local slot = SpellBook_GetSpellBookSlot(self);
-	if ( slot and IsSelectedSpellBookItem(slot, SpellBookFrame.bookType) ) then
-		self:SetChecked(true);
-	else
-		self:SetChecked(false);
-	end
+		local slot = SpellBook_GetSpellBookSlot(self);
+		if ( slot and IsSelectedSpellBookItem(slot, SpellBookFrame.bookType) ) then
+			self:SetChecked(true);
+		else
+			self:SetChecked(false);
+		end
 end
 
 function SpellButton_UpdateCooldown(self)
@@ -517,21 +517,28 @@ function SpellButton_UpdateButton(self)
 		self.shine = nil;
 	end
 
-	local spellName, subSpellName = GetSpellBookItemName(slot, SpellBookFrame.bookType);
+	local spellName, _, spellID = GetSpellBookItemName(slot, SpellBookFrame.bookType);
 	local isPassive = IsPassiveSpell(slot, SpellBookFrame.bookType);
 	self.isPassive = isPassive;
 	
-	if ( subSpellName == "" ) then
-		if ( IsTalentSpell(slot, SpellBookFrame.bookType, specID) ) then
-			if ( isPassive ) then
-				subSpellName = TALENT_PASSIVE;
-			else
-				subSpellName = TALENT;
+	iconTexture:SetTexture(texture);
+	spellString:SetText(spellName);
+
+	self.SpellSubName:SetHeight(6);
+	subSpellString:SetText("");
+	if spellID then
+		local spell = Spell:CreateFromSpellID(spellID);
+		spell:ContinueOnSpellLoad(function()
+			local subSpellName = spell:GetSpellSubtext();
+			if ( subSpellName == "" ) then
+				if ( isPassive ) then
+					subSpellName = SPELL_PASSIVE;
+				end
 			end
-		elseif ( isPassive ) then
-			subSpellName = SPELL_PASSIVE;
-		end
-	end			
+
+			subSpellString:SetText(subSpellName);
+		end);
+	end
 
 	if ( subSpellName == "" ) then
 		spellString:SetPoint("LEFT", self, "RIGHT", 5, 1);
@@ -539,9 +546,6 @@ function SpellButton_UpdateButton(self)
 		spellString:SetPoint("LEFT", self, "RIGHT", 5, 3);
 	end
 
-	iconTexture:SetTexture(texture);
-	spellString:SetText(spellName);
-	subSpellString:SetText(subSpellName);
 	iconTexture:Show();
 	spellString:Show();
 	subSpellString:Show();
@@ -556,7 +560,7 @@ function SpellButton_UpdateButton(self)
 		spellString:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	end
 
-	SpellButton_UpdateSelection(self);
+		SpellButton_UpdateSelection(self);
 end
 
 function SpellBookPrevPageButton_OnClick()
@@ -618,8 +622,8 @@ function SpellBook_GetSpellBookSlot(spellButton)
 	if ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
 		local slot = id + (SPELLS_PER_PAGE * (SPELLBOOK_PAGENUMBERS[BOOKTYPE_PET] - 1));
 		if ( SpellBookFrame.numPetSpells and slot <= SpellBookFrame.numPetSpells) then
-			local slotType, slotID = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
-			return slot, slotType, slotID;
+		local slotType, slotID = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
+		return slot, slotType, slotID;
 		end
 	else
 		local relativeSlot = id + ( SPELLS_PER_PAGE * (SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine] - 1));

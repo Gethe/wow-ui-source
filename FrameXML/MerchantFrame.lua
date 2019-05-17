@@ -8,7 +8,6 @@ function MerchantFrame_OnLoad(self)
 	self:RegisterEvent("MERCHANT_UPDATE");
 	self:RegisterEvent("MERCHANT_CLOSED");
 	self:RegisterEvent("MERCHANT_SHOW");
-	self:RegisterEvent("HEIRLOOMS_UPDATED");
 	self:RegisterEvent("MERCHANT_CONFIRM_TRADE_TIMER_REMOVAL");
 	self:RegisterForDrag("LeftButton");
 	self.page = 1;
@@ -24,7 +23,6 @@ function MerchantFrame_OnEvent(self, event, ...)
 	if ( event == "MERCHANT_UPDATE" ) then
 		self.update = true;
 	elseif ( event == "MERCHANT_CLOSED" ) then
-		self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
 		StaticPopup_Hide("CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL");
 		HideUIPanel(self);
 	elseif ( event == "MERCHANT_SHOW" ) then
@@ -132,7 +130,8 @@ function MerchantFrame_Update()
 end
 
 function MerchantFrameItem_UpdateQuality(self, link)
-	local quality = link and select(3, GetItemInfo(link)) or nil;
+	-- No quality borders for Classic.
+	--[[local quality = link and select(3, GetItemInfo(link)) or nil;
 	if ( quality ) then
 		self.Name:SetTextColor(ITEM_QUALITY_COLORS[quality].r, ITEM_QUALITY_COLORS[quality].g, ITEM_QUALITY_COLORS[quality].b);
 	else
@@ -140,7 +139,7 @@ function MerchantFrameItem_UpdateQuality(self, link)
 		MerchantFrame_RegisterForQualityUpdates();
 	end
 	
-	SetItemButtonQuality(self.ItemButton, quality, link);
+	SetItemButtonQuality(self.ItemButton, quality, link);]]
 end
 
 function MerchantFrame_RegisterForQualityUpdates()
@@ -186,7 +185,7 @@ function MerchantFrame_UpdateMerchantInfo()
 	
 	local numMerchantItems = GetMerchantNumItems();
 	
-	MerchantPageText:SetFormattedText(MERCHANT_PAGE_NUMBER, MerchantFrame.page, math.ceil(numMerchantItems / MERCHANT_ITEMS_PER_PAGE));
+	MerchantPageText:SetFormattedText(PAGE_NUMBER, MerchantFrame.page);
 
 	local name, texture, price, stackCount, numAvailable, isPurchasable, isUsable, extendedCost;
 	for i=1, MERCHANT_ITEMS_PER_PAGE do
@@ -196,7 +195,12 @@ function MerchantFrame_UpdateMerchantInfo()
 		local merchantMoney = _G["MerchantItem"..i.."MoneyFrame"];
 		local merchantAltCurrency = _G["MerchantItem"..i.."AltCurrencyFrame"];
 		if ( index <= numMerchantItems ) then
-			name, texture, price, stackCount, numAvailable, isPurchasable, isUsable, extendedCost = GetMerchantItemInfo(index);
+			name, texture, price, stackCount, numAvailable, isPurchasable, isUsable, extendedCost, currencyID = GetMerchantItemInfo(index);
+
+			if(currencyID) then
+				name, texture, numAvailable = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, numAvailable, name, texture, nil); 
+			end
+	
 			local canAfford = CanAffordMerchantItem(index);
 			_G["MerchantItem"..i.."Name"]:SetText(name);
 			SetItemButtonCount(itemButton, stackCount);
@@ -253,8 +257,8 @@ function MerchantFrame_UpdateMerchantInfo()
 			MerchantFrameItem_UpdateQuality(merchantButton, itemLink);
 
 			local merchantItemID = GetMerchantItemID(index);
-			local isHeirloom = merchantItemID and C_Heirloom.IsItemHeirloom(merchantItemID);
-			local isKnownHeirloom = isHeirloom and C_Heirloom.PlayerHasHeirloom(merchantItemID);
+			local isHeirloom = false;--merchantItemID and C_Heirloom.IsItemHeirloom(merchantItemID);
+			local isKnownHeirloom = false;--isHeirloom and C_Heirloom.PlayerHasHeirloom(merchantItemID);
 
 			itemButton.showNonrefundablePrompt = isHeirloom;
 
@@ -782,7 +786,7 @@ function MerchantFrame_UpdateRepairButtons()
 end
 
 function MerchantFrame_UpdateCurrencies()
-	local currencies = { GetMerchantCurrencies() };
+	--[[local currencies = { GetMerchantCurrencies() };
 	
 	if ( #currencies == 0 ) then	-- common case
 		MerchantFrame:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
@@ -842,7 +846,7 @@ function MerchantFrame_UpdateCurrencies()
 		else
 			break;
 		end
-	end
+	end]]
 end
 
 function MerchantFrame_ShowCurrencyTooltip(self)

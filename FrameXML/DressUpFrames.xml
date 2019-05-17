@@ -50,7 +50,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<DressUpModel name="SideDressUpModel" scale="1.0" inherits="ModelWithControlsTemplate">
+			<DressUpModel name="SideDressUpModel" modelScale="1.0" inherits="ModelWithControlsTemplate">
 				<Size>
 					<AbsDimension x="172" y="400"/>
 				</Size>
@@ -129,7 +129,7 @@
 			<Anchor point="TOPLEFT" x="0" y="-104"/>
 		</Anchors>
 		<HitRectInsets>
-			<AbsInset left="0" right="30" top="0" bottom="45"/>
+			<AbsInset left="0" right="30" top="0" bottom="75"/>
 		</HitRectInsets>
 		<Frames>
 			<Button name="DressUpFrameCloseButton" inherits="UIPanelCloseButton">
@@ -182,11 +182,11 @@
 						<Size>
 							<AbsDimension x="35" y="35"/>
 						</Size>
-						<Anchors>
+				<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
 								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 							</OnLoad>
 							<OnClick>

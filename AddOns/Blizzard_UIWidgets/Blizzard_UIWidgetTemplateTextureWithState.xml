@@ -1,0 +1,28 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="UIWidgetTemplateTextureWithState" inherits="UIWidgetBaseTemplate" mixin="UIWidgetTemplateTextureWithStateMixin" virtual="true">
+		<Size x="451" y="301"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Background">
+					<Size x="451" y="301"/> 
+					<Anchors>
+						<Anchor point="CENTER"/> 
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Portrait" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="GameFontNormalLarge">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

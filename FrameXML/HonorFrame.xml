@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="HonorFrame.lua"/>
 	<Include file="HonorFrameTemplates.xml"/>
-	<Frame name="HonorFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" hidden="true">
+	<Frame name="HonorFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" hidden="true" id="5">
 		<HitRectInsets>
 			<AbsInset left="0" right="30" top="0" bottom="75"/>
 		</HitRectInsets>
@@ -34,7 +34,7 @@
 				</Texture>
 				<FontString name="HonorLevelText" inherits="GameFontNormalSmall" text="Level level race class">
                     <Anchors>
-                        <Anchor point="TOP" relativeTo="CharacterFrameTitleText" relativePoint="BOTTOM" x="0" y="-6"/>
+                        <Anchor point="TOP" relativeTo="CharacterNameText" relativePoint="BOTTOM" x="0" y="-6"/>
                     </Anchors>
                 </FontString>
                 <FontString name="HonorGuildText" inherits="GameFontNormalSmall">
@@ -218,6 +218,7 @@
 		<Scripts>
 			<OnLoad function="HonorFrame_OnLoad"/>
 			<OnEvent function="HonorFrame_OnEvent"/>
+			<OnShow function="HonorFrame_OnShow"/>
 		</Scripts>
 	</Frame>
 </Ui>

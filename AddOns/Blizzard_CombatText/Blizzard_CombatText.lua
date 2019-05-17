@@ -137,7 +137,7 @@ function CombatText_OnEvent(self, event, ...)
 		if ( not messageType ) then
 			return;
 		end
-	elseif ( event == "UNIT_POWER" ) then
+	elseif ( event == "UNIT_POWER_UPDATE" ) then
 		if ( arg1 == self.unit ) then
 			local powerType, powerToken = UnitPowerType(self.unit);
 			local maxPower = UnitPowerMax(self.unit);
@@ -173,25 +173,8 @@ function CombatText_OnEvent(self, event, ...)
 		messageType = "ENTERING_COMBAT";
 	elseif ( event == "PLAYER_REGEN_ENABLED" ) then
 		messageType = "LEAVING_COMBAT";
-	--[[elseif ( event == "UNIT_COMBO_POINTS" ) then
-		local unit = ...;
-		if ( unit == "player" ) then
-			local comboPoints = GetComboPoints("player", "target");
-			if ( comboPoints > 0 ) then
-				messageType = "COMBO_POINTS";
-				data = comboPoints;
-				-- Show message as a crit if max combo points
-				if ( comboPoints == MAX_COMBO_POINTS ) then
-					displayType = "crit";
-				end
-			else
-				return;
-			end
-		else
-			return;
-		end
-	--]]
 	elseif ( event == "COMBAT_TEXT_UPDATE" ) then
+		data, arg3, arg4 = GetCurrentCombatTextEventInfo();
 		messageType = arg1;
 	elseif ( event == "RUNE_POWER_UPDATE" ) then
 		messageType = "RUNE";
@@ -577,34 +560,25 @@ function CombatText_UpdateDisplayedMessages()
 	if ( SHOW_COMBAT_TEXT == "0" ) then
 		CombatText:UnregisterEvent("COMBAT_TEXT_UPDATE");
 		CombatText:UnregisterEvent("UNIT_HEALTH");
-		CombatText:UnregisterEvent("UNIT_POWER");
+		CombatText:UnregisterEvent("UNIT_POWER_UPDATE");
 		CombatText:UnregisterEvent("PLAYER_REGEN_DISABLED");
 		CombatText:UnregisterEvent("PLAYER_REGEN_ENABLED");
-		--CombatText:UnregisterEvent("UNIT_COMBO_POINTS");
 		--CombatText:UnregisterEvent("RUNE_POWER_UPDATE");
 		--CombatText:UnregisterEvent("UNIT_ENTERED_VEHICLE");
 		--CombatText:UnregisterEvent("UNIT_EXITING_VEHICLE");
 		return;
 	end
 
-	-- [[
 	-- set the unit to track
-	if ( UnitHasVehicleUI("player") ) then
-		CombatText.unit = "vehicle";
-	else
-		CombatText.unit = "player";
-	end
-	CombatTextSetActiveUnit(CombatText.unit);
-	--]]
+	CombatText.unit = "player";
 	CombatTextSetActiveUnit("player")
 
 	-- register events
 	CombatText:RegisterEvent("COMBAT_TEXT_UPDATE");
 	CombatText:RegisterEvent("UNIT_HEALTH");
-	CombatText:RegisterEvent("UNIT_POWER");
+	CombatText:RegisterEvent("UNIT_POWER_UPDATE");
 	CombatText:RegisterEvent("PLAYER_REGEN_DISABLED");
 	CombatText:RegisterEvent("PLAYER_REGEN_ENABLED");
-	--CombatText:RegisterEvent("UNIT_COMBO_POINTS");
 	--CombatText:RegisterEvent("RUNE_POWER_UPDATE");
 	--CombatText:RegisterEvent("UNIT_ENTERED_VEHICLE");
 	--CombatText:RegisterEvent("UNIT_EXITING_VEHICLE");

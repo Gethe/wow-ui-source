@@ -527,8 +527,10 @@ function TalentFrame_DrawLines(buttonTier, buttonColumn, tier, column, requireme
 	end
 end
 
-function TalentFrameTalent_OnClick(self)
-	LearnTalent(PanelTemplates_GetSelectedTab(TalentFrame), self:GetID());
+function TalentFrameTalent_OnClick(self, mouseButton)
+	if ( mouseButton == "LeftButton" ) then
+		LearnTalent(PanelTemplates_GetSelectedTab(TalentFrame), self:GetID());
+	end
 end
 
 function TalentFrameTab_OnClick(self)

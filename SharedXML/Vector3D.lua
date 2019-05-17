@@ -3,6 +3,7 @@ local cos = math.cos;
 local sin = math.sin;
 local atan2 = math.atan2;
 local asin = math.asin;
+local sqrt = math.sqrt;
 
 function Vector3D_ScaleBy(scalar, x, y, z)
 	return x * scalar, y * scalar, z * scalar;
@@ -33,7 +34,7 @@ function Vector3D_GetLengthSquared(x, y, z)
 end
 
 function Vector3D_GetLength(x, y, z)
-	return math.sqrt(Vector3D_GetLengthSquared(x, y, z));
+	return sqrt(Vector3D_GetLengthSquared(x, y, z));
 end
 
 function Vector3D_Normalize(x, y, z)

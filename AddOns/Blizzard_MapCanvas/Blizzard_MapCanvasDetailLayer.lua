@@ -1,15 +1,16 @@
-MAP_CANVAS_TILE_WIDTH = 256;
-MAP_CANVAS_TILE_HEIGHT = 256;
 
 MapCanvasDetailLayerMixin = {};
 
 function MapCanvasDetailLayerMixin:OnLoad()
 	self.detailTilePool = CreateTexturePool(self, "BACKGROUND", -7, "MapCanvasDetailTileTemplate");
+	self.textureLoadGroup = CreateFromMixins(TextureLoadingGroupMixin);
 end
 
 function MapCanvasDetailLayerMixin:SetMapAndLayer(mapID, layerIndex)
-	if self.mapID ~= mapID or self.layerIndex ~= layerIndex then
+	local mapArtID = C_Map.GetMapArtID(mapID) -- phased map art may be different for the same mapID
+	if self.mapID ~= mapID or self.mapArtID ~= mapArtID or self.layerIndex ~= layerIndex then
 		self.mapID = mapID;
+		self.mapArtID = mapArtID;
 		self.layerIndex = layerIndex;
 
 		self:RefreshDetailTiles();
@@ -20,20 +21,48 @@ function MapCanvasDetailLayerMixin:GetLayerIndex()
 	return self.layerIndex;
 end
 
+function MapCanvasDetailLayerMixin:IsFullyLoaded()
+	return not self.isWaitingForLoad;
+end
+
+function MapCanvasDetailLayerMixin:SetLayerAlpha(layerAlpha)
+	self.layerAlpha = layerAlpha;
+	self:RefreshAlpha();
+end
+
+function MapCanvasDetailLayerMixin:GetLayerAlpha()
+	return self.layerAlpha or 1;
+end
+
+function MapCanvasDetailLayerMixin:SetGlobalAlpha(globalAlpha)
+	self.globalAlpha = globalAlpha;
+	self:RefreshAlpha();
+end
+
+function MapCanvasDetailLayerMixin:GetGlobalAlpha()
+	return self.globalAlpha or 1;
+end
+
 function MapCanvasDetailLayerMixin:RefreshDetailTiles()
 	self.detailTilePool:ReleaseAll();
+	self.textureLoadGroup:Reset();
+	self.isWaitingForLoad = true;
 
-	local numDetailTilesCols, numDetailTilesRows = C_MapCanvas.GetNumDetailTiles(self.mapID, self.layerIndex);
+	local layers = C_Map.GetMapArtLayers(self.mapID);
+	local layerInfo = layers[self.layerIndex];
+	local numDetailTilesRows = math.ceil(layerInfo.layerHeight / layerInfo.tileHeight);
+	local numDetailTilesCols = math.ceil(layerInfo.layerWidth / layerInfo.tileWidth);
+	local textures = C_Map.GetMapArtLayerTextures(self.mapID, self.layerIndex);
 
 	for tileCol = 1, numDetailTilesCols do
 		for tileRow = 1, numDetailTilesRows do
-			local texturePath = C_MapCanvas.GetDetailTileInfo(self.mapID, self.layerIndex, tileCol, tileRow);
-
 			local detailTile = self.detailTilePool:Acquire();
-			detailTile:SetTexture(texturePath);
+			self.textureLoadGroup:AddTexture(detailTile);
+			local textureIndex = (tileRow - 1) * numDetailTilesCols + tileCol;
+			detailTile:SetTexture(textures[textureIndex], nil, nil, "TRILINEAR");
 
-			local offsetX = math.floor(MAP_CANVAS_TILE_WIDTH * (tileCol - 1));
-			local offsetY = math.floor(MAP_CANVAS_TILE_HEIGHT * (tileRow - 1));
+			local offsetX = math.floor(layerInfo.tileWidth * (tileCol - 1));
+			local offsetY = math.floor(layerInfo.tileHeight * (tileRow - 1));
 
 			detailTile:ClearAllPoints();
 			detailTile:SetPoint("TOPLEFT", self, "TOPLEFT", offsetX, -offsetY);
@@ -41,12 +70,22 @@ function MapCanvasDetailLayerMixin:RefreshDetailTiles()
 			detailTile:Show();
 		end
 	end
+
+	self:RefreshAlpha();
 end
 
-function MapCanvasDetailLayer_CalculateTotalLayerSize(numDetailTilesCols, numDetailTilesRows)
-	-- The last tiles aren't fully used, we have to adjust the size slightly :(
-	local WIDTH_INSET = 175;
-	local HEIGHT_INSET = 120;
+function MapCanvasDetailLayerMixin:OnUpdate()
+	if self.isWaitingForLoad and self.textureLoadGroup:IsFullyLoaded() then
+		self.isWaitingForLoad = nil;
+		self:RefreshAlpha();
+		self.textureLoadGroup:Reset();
+	end
+end
 
-	return MAP_CANVAS_TILE_WIDTH * numDetailTilesCols - WIDTH_INSET, MAP_CANVAS_TILE_HEIGHT * numDetailTilesRows - HEIGHT_INSET;
+function MapCanvasDetailLayerMixin:RefreshAlpha()
+	if self:IsFullyLoaded() then
+		self:SetAlpha(self:GetLayerAlpha() * self:GetGlobalAlpha());
+	else
+		self:SetAlpha(0.0);
+	end
 end

@@ -127,6 +127,15 @@
 	<Binding name="COMBATLOGBOTTOM" category="BINDING_HEADER_CHAT">
 		ChatFrame2:ScrollToBottom();
 	</Binding>
+	<Binding name="TOGGLE_VOICE_SELF_MUTE" category="BINDING_HEADER_CHAT">
+		VoiceChat_ToggleMutedFromUserAction();
+	</Binding>
+	<Binding name="TOGGLE_VOICE_SELF_DEAFEN" category="BINDING_HEADER_CHAT">
+		VoiceChat_ToggleDeafenedFromUserAction();
+	</Binding>
+	<Binding name="TOGGLE_VOICE_PUSH_TO_TALK" category="BINDING_HEADER_CHAT" customBindingID="VoicePushToTalk">
+		nop(); -- Action handler is custom
+	</Binding>
 	<!-- Action bar bindings header="ACTIONBAR" -->
 	<Binding name="ACTIONBUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
 		if ( keystate == "down" ) then
@@ -765,28 +774,28 @@
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER1" category="BINDING_HEADER_TARGETING">
-		if ( UnitIsUnit("party1", "target") or UnitTargetsVehicleInRaidUI("party1") ) then
+		if ( UnitIsUnit("party1", "target") ) then
 			TargetUnit("partypet1");
 		else
 			TargetUnit("party1");
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER2" category="BINDING_HEADER_TARGETING">
-		if ( UnitIsUnit("party2", "target") or UnitTargetsVehicleInRaidUI("party2") ) then
+		if ( UnitIsUnit("party2", "target") ) then
 			TargetUnit("partypet2");
 		else
 			TargetUnit("party2");
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER3" category="BINDING_HEADER_TARGETING">
-		if ( UnitIsUnit("party3", "target") or UnitTargetsVehicleInRaidUI("party3") ) then
+		if ( UnitIsUnit("party3", "target") ) then
 			TargetUnit("partypet3");
 		else
 			TargetUnit("party3");
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER4" category="BINDING_HEADER_TARGETING">
-		if ( UnitIsUnit("party4", "target") or UnitTargetsVehicleInRaidUI("party4") ) then
+		if ( UnitIsUnit("party4", "target") ) then
 			TargetUnit("partypet4");
 		else
 			TargetUnit("party4");
@@ -873,9 +882,9 @@
 	<Binding name="ATTACKTARGET" category="BINDING_HEADER_TARGETING">
 		AttackTarget();
 	</Binding>
-	<Binding name="STARTATTACK" category="BINDING_HEADER_TARGETING">
-		StartAttack();
-	</Binding>
+  <Binding name="STARTATTACK" category="BINDING_HEADER_TARGETING">
+    StartAttack();
+  </Binding>
 	<Binding name="PETATTACK" category="BINDING_HEADER_TARGETING">
 		PetAttack();
 	</Binding>
@@ -889,9 +898,7 @@
 		TargetUnit("mouseover");
 	</Binding>
 	<Binding name="TARGETTALKER" category="BINDING_HEADER_TARGETING">
-		if ( #VOICECHAT_TALKERS > 0 ) then
-			VoiceChatTalkers.buttons[#VOICECHAT_TALKERS].button:Click();
-		end
+		nop();
 	</Binding>
 
 	<!-- UI Panels header="INTERFACE" -->
@@ -956,32 +963,32 @@
 		ToggleMiniMapRotation();
 	</Binding>
 	<Binding name="TOGGLEBATTLEFIELDMINIMAP" category="BINDING_HEADER_INTERFACE">
-		ToggleBattlefieldMinimap();
+		ToggleBattlefieldMap();
 	</Binding>
 	<Binding name="TOGGLEWORLDSTATESCORES" category="BINDING_HEADER_INTERFACE">
 		ToggleWorldStateScoreFrame();
 	</Binding>
 
-	<Binding name="TOGGLEGUILDTAB" header="BLANK12" category="BINDING_HEADER_INTERFACE">
-		ToggleGuildFrame();
-	</Binding>
-	<Binding name="TOGGLESOCIAL" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLESOCIAL" header="BLANK12" category="BINDING_HEADER_INTERFACE">
 		ToggleFriendsFrame();
 	</Binding>
 	<Binding name="TOGGLEFRIENDSTAB" category="BINDING_HEADER_INTERFACE">
-		ToggleFriendsFrame(1);
+		ToggleFriendsFrame(FRIEND_TAB_FRIENDS);
 	</Binding>
 	<Binding name="TOGGLEWHOTAB" category="BINDING_HEADER_INTERFACE">
-		ToggleFriendsFrame(2);
+		ToggleFriendsFrame(FRIEND_TAB_WHO);
 	</Binding>
-	<Binding name="TOGGLECHATTAB" category="BINDING_HEADER_INTERFACE">
-		ToggleFriendsFrame(3);
+	<Binding name="TOGGLEGUILDTAB" category="BINDING_HEADER_INTERFACE">
+		ToggleFriendsFrame(FRIEND_TAB_GUILD);
 	</Binding>
 	<Binding name="TOGGLERAIDTAB" category="BINDING_HEADER_INTERFACE">
 		ToggleRaidFrame();
 	</Binding>
-	<Binding name="TOGGLECHANNELPULLOUT" category="BINDING_HEADER_INTERFACE">
-		ChannelPullout_ToggleDisplay();
+	<Binding name="TOGGLEBLIZZARDGROUPSTAB" category="BINDING_HEADER_INTERFACE">
+		ToggleCommunitiesFrame();
+	</Binding>
+	<Binding name="TOGGLECHATTAB" category="BINDING_HEADER_INTERFACE">
+		ToggleChannelFrame();
 	</Binding>
 
   <!-- Misc header="MISC" -->
@@ -1011,13 +1018,6 @@
 	</Binding>
 	<Binding name="MASTERVOLUMEDOWN" category="BINDING_HEADER_MISC">
 		Sound_MasterVolumeDown();
-	</Binding>
-	<Binding name="TOGGLESELFMUTE" category="BINDING_HEADER_MISC">
-		if ( GetCVar("VoiceChatSelfMute") == "0" ) then
-			SetCVar("VoiceChatSelfMute", 1);
-		else
-			SetCVar("VoiceChatSelfMute", 0);
-		end
 	</Binding>
 	<Binding name="TOGGLEUI" category="BINDING_HEADER_MISC">
 		if ( UIParent:IsShown() ) then
@@ -1096,6 +1096,9 @@
 	</Binding>
 	<Binding name="TOGGLEANIMKITDISPLAY" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		ToggleAnimKitDisplay();
+	</Binding>
+	<Binding name="TOGGLEDEBUGAIDISPLAY" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleDebugAIDisplay();
 	</Binding>
 	<!-- Commentator Mode Bindings -->
 	<Binding name="TOGGLECOMMENTATOR" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
@@ -1216,7 +1219,7 @@
 	<ModifiedClick action="STICKYCAMERA" default="CTRL"/>
 	<ModifiedClick action="CHATLINK" default="SHIFT-BUTTON1"/>
 	<ModifiedClick action="DRESSUP" default="CTRL-BUTTON1"/>
-	<ModifiedClick action="SOCKETITEM" default="SHIFT-BUTTON2"/>
+	<ModifiedClick action="EXPANDITEM" default="SHIFT-BUTTON2"/>
 	<ModifiedClick action="SPLITSTACK" default="SHIFT"/>
 	<ModifiedClick action="PICKUPACTION" default="SHIFT"/>
 	<ModifiedClick action="PICKUPITEM" default="SHIFT"/>

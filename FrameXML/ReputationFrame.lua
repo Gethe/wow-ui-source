@@ -1,15 +1,5 @@
 NUM_FACTIONS_DISPLAYED = 15;
 REPUTATIONFRAME_FACTIONHEIGHT = 26;
-FACTION_BAR_COLORS = {
-	[1] = {r = 0.8, g = 0.3, b = 0.22},
-	[2] = {r = 0.8, g = 0.3, b = 0.22},
-	[3] = {r = 0.75, g = 0.27, b = 0},
-	[4] = {r = 0.9, g = 0.7, b = 0},
-	[5] = {r = 0, g = 0.6, b = 0.1},
-	[6] = {r = 0, g = 0.6, b = 0.1},
-	[7] = {r = 0, g = 0.6, b = 0.1},
-	[8] = {r = 0, g = 0.6, b = 0.1},
-};
 MAX_PLAYER_LEVEL = 0;
 MAX_REPUTATION_REACTION = 8;
 
@@ -31,6 +21,8 @@ end
 function ReputationFrame_OnEvent(self, event, ...)
 	if ( event == "UPDATE_FACTION" or event == "QUEST_LOG_UPDATE" ) then
 		ReputationFrame_Update();
+	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
+		ReputationWatchBar_UpdateMaxLevel();
 	end
 end
 
@@ -54,17 +46,17 @@ function ReputationFrame_Update()
 			local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild, factionID, hasBonusRepGain, canBeLFGBonus = GetFactionInfo(factionIndex);
 			if ( isHeader ) then
 				factionHeader.Text:SetText(name);
-				if ( isCollapsed ) then
+			if ( isCollapsed ) then
 					factionHeader:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
-				else
+			else
 					factionHeader:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up"); 
-				end
+			end
 				factionHeader.index = factionIndex;
 				factionHeader.isCollapsed = isCollapsed;
 				factionBar:Hide();
 				factionHeader:Show();
 				factionCheck:Hide();
-			else
+				else
 				factionStanding = GetText("FACTION_STANDING_LABEL"..standingID, gender);
 				factionName = _G["ReputationBar"..i.."FactionName"];
 				factionName:SetText(name);
@@ -75,22 +67,22 @@ function ReputationFrame_Update()
 				
 				if ( atWarWith ) then
 					atWarIndicator:Show();
-				else
+			else
 					atWarIndicator:Hide();
-				end
+			end
 
 				-- Normalize values
-				barMax = barMax - barMin;
-				barValue = barValue - barMin;
-				barMin = 0;
+			barMax = barMax - barMin;
+			barValue = barValue - barMin;
+			barMin = 0;
 				
 				factionBar.index = factionIndex;
 				factionBar.standingText = factionStanding;
 				factionBar.tooltip = HIGHLIGHT_FONT_COLOR_CODE.." "..barValue.." / "..barMax..FONT_COLOR_CODE_CLOSE;
-				factionBar:SetMinMaxValues(0, barMax);
-				factionBar:SetValue(barValue);
+			factionBar:SetMinMaxValues(0, barMax);
+			factionBar:SetValue(barValue);
 				color = FACTION_BAR_COLORS[standingID];
-				factionBar:SetStatusBarColor(color.r, color.g, color.b);
+			factionBar:SetStatusBarColor(color.r, color.g, color.b);
 				factionBar:SetID(factionIndex);
 				factionBar:Show();
 				factionHeader:Hide();
@@ -100,43 +92,43 @@ function ReputationFrame_Update()
 					factionCheck:Show();
 					factionName:SetWidth(100);
 					factionCheck:SetPoint("LEFT", factionName, "LEFT", factionName:GetStringWidth(), 0);
-				else
+			else
 					factionCheck:Hide();
 					factionName:SetWidth(110);
-				end
-				
-				-- Update details if this is the selected faction
-				if ( factionIndex == GetSelectedFaction() ) then
-					if ( ReputationDetailFrame:IsShown() ) then
-						ReputationDetailFactionName:SetText(name);
-						ReputationDetailFactionDescription:SetText(description);
-						if ( atWarWith ) then
+			end
+			
+			-- Update details if this is the selected faction
+			if ( factionIndex == GetSelectedFaction() ) then
+				if ( ReputationDetailFrame:IsShown() ) then
+					ReputationDetailFactionName:SetText(name);
+					ReputationDetailFactionDescription:SetText(description);
+					if ( atWarWith ) then
 							ReputationDetailAtWarCheckBox:SetChecked(1);
-						else
+					else
 							ReputationDetailAtWarCheckBox:SetChecked(nil);
-						end
-						if ( canToggleAtWar ) then
-							ReputationDetailAtWarCheckBox:Enable();
-							ReputationDetailAtWarCheckBoxText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-						else
-							ReputationDetailAtWarCheckBox:Disable();
-							ReputationDetailAtWarCheckBoxText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-
-						end
-						if ( IsFactionInactive(factionIndex) ) then
-							ReputationDetailInactiveCheckBox:SetChecked(1);
-						else
-							ReputationDetailInactiveCheckBox:SetChecked(nil);
-						end
-						if ( isWatched ) then
-							ReputationDetailMainScreenCheckBox:SetChecked(1);
-						else
-							ReputationDetailMainScreenCheckBox:SetChecked(nil);
-						end
 					end
+						if ( canToggleAtWar ) then
+						ReputationDetailAtWarCheckBox:Enable();
+						ReputationDetailAtWarCheckBoxText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+					else
+						ReputationDetailAtWarCheckBox:Disable();
+						ReputationDetailAtWarCheckBoxText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+
+					end
+					if ( IsFactionInactive(factionIndex) ) then
+							ReputationDetailInactiveCheckBox:SetChecked(1);
+					else
+							ReputationDetailInactiveCheckBox:SetChecked(nil);
+					end
+					if ( isWatched ) then
+							ReputationDetailMainScreenCheckBox:SetChecked(1);
+					else
+							ReputationDetailMainScreenCheckBox:SetChecked(nil);
+					end
+				end
 					_G["ReputationBar"..i.."Highlight1"]:Show();
 					_G["ReputationBar"..i.."Highlight2"]:Show();
-				else
+			else
 					_G["ReputationBar"..i.."Highlight1"]:Hide();
 					_G["ReputationBar"..i.."Highlight2"]:Hide();
 				end
@@ -155,10 +147,10 @@ function ReputationBar_OnClick(self)
 	if ( ReputationDetailFrame:IsShown() and (GetSelectedFaction() == self.index) ) then
 		ReputationDetailFrame:Hide();
 	else
-		SetSelectedFaction(self.index);
-		ReputationDetailFrame:Show();
-		ReputationFrame_Update();
-	end
+			SetSelectedFaction(self.index);
+			ReputationDetailFrame:Show();
+			ReputationFrame_Update();
+		end
 end
 
 function ReputationWatchBar_UpdateMaxLevel()

@@ -14,7 +14,7 @@
 			</Anchor>
 		</Anchors>
 		<HitRectInsets>
-			<AbsInset left="0" right="30" top="0" bottom="45"/>
+			<AbsInset left="0" right="30" top="0" bottom="75"/>
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">

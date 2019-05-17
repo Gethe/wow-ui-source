@@ -193,6 +193,7 @@ function InboxFrame_Update()
 				SetItemButtonQuality(button, select(3, GetItemInfo(firstItemID)), firstItemID);
 			else
 				button.IconBorder:Hide();
+				button.IconOverlay:Hide();
 			end
 			
 			buttonIcon = _G["MailItem"..i.."ButtonIcon"];
@@ -529,6 +530,8 @@ function OpenMail_Update()
 				OpenMailInvoiceAmountReceived:SetText(AMOUNT_PAID_COLON);
 				-- Clear buymode
 				OpenMailInvoiceBuyMode:SetText("");
+				-- Position amount paid
+				OpenMailInvoiceAmountReceived:SetPoint("TOPRIGHT", "OpenMailInvoiceSalePrice", "TOPRIGHT", 0, 0);
 				-- Update purchase price
 				MoneyFrame_Update("OpenMailTransactionAmountMoneyFrame", bid);	
 				-- Position buy line
@@ -552,8 +555,10 @@ function OpenMail_Update()
 				else
 					OpenMailInvoiceBuyMode:SetText("("..HIGH_BIDDER..")");
 				end
+				-- Position amount received
+				OpenMailInvoiceAmountReceived:SetPoint("TOPRIGHT", "OpenMailInvoiceHouseCut", "BOTTOMRIGHT", 0, -18);
 				-- Position buy line
-				OpenMailArithmeticLine:SetPoint("TOP", "OpenMailInvoiceHouseCut", "BOTTOMRIGHT", -114, -9);
+				OpenMailArithmeticLine:SetPoint("TOP", "OpenMailInvoiceHouseCut", "BOTTOMRIGHT", 0, 9);
 				MoneyFrame_Update("OpenMailSalePriceMoneyFrame", bid);
 				MoneyFrame_Update("OpenMailDepositMoneyFrame", deposit);
 				MoneyFrame_Update("OpenMailHouseCutMoneyFrame", consignment);
@@ -569,7 +574,7 @@ function OpenMail_Update()
 				OpenMailSalePriceMoneyFrame:Show();
 				OpenMailInvoiceNotYetSent:Hide();
 				OpenMailInvoiceMoneyDelay:Hide();
-			elseif (invoiceType == "seller_temp_invoice") then 
+			elseif (invoiceType == "seller_temp_invoice") then
 				if ( bid == buyout ) then
 					buyMode = "("..BUYOUT..")";
 				else
@@ -580,12 +585,14 @@ function OpenMail_Update()
 				OpenMailInvoiceAmountReceived:SetText(AUCTION_INVOICE_PENDING_FUNDS_COLON);
 				-- Clear buymode
 				OpenMailInvoiceBuyMode:SetText("");
+				-- Position amount paid
+				OpenMailInvoiceAmountReceived:SetPoint("TOPRIGHT", "OpenMailInvoiceSalePrice", "TOPRIGHT", 0, 0);
 				-- Update purchase price
 				MoneyFrame_Update("OpenMailTransactionAmountMoneyFrame", bid+deposit-consignment);	
 				-- Position buy line
 				OpenMailArithmeticLine:SetPoint("TOP", "OpenMailInvoicePurchaser", "BOTTOMLEFT", 125, 0);
 				-- How long they have to wait to get the money
-				OpenMailInvoiceMoneyDelay:SetFormattedText(AUCTION_INVOICE_FUNDS_DELAY, GameTime_GetFormattedTime(etaHour, etaMin, true));
+				OpenMailInvoiceMoneyDelay:SetFormattedText(AUCTION_INVOICE_FUNDS_DELAY, "12:22");
 				-- Not used for a temp sale invoice
 				OpenMailInvoiceSalePrice:Hide();
 				OpenMailInvoiceDeposit:Hide();

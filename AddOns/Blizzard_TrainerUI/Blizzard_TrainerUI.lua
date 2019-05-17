@@ -55,6 +55,8 @@ end
 
 function ClassTrainerFrame_OnLoad(self)
 	self:RegisterEvent("TRAINER_UPDATE");
+	self:RegisterEvent("TRAINER_DESCRIPTION_UPDATE");
+	self:RegisterEvent("TRAINER_SERVICE_INFO_NAME_UPDATE");
 	self:RegisterEvent("ADDON_LOADED");
 	ClassTrainerDetailScrollFrame.scrollBarHideable = 1;
 end
@@ -78,6 +80,12 @@ function ClassTrainerFrame_OnEvent(self, event, ...)
 		else
 			ClassTrainer_SelectFirstLearnableSkill();
 		end
+		ClassTrainerFrame_Update();
+	elseif ( event == "TRAINER_DESCRIPTION_UPDATE" ) then
+		ClassTrainer_SetSelection(GetTrainerSelectionIndex());
+	elseif ( event == "TRAINER_SERVICE_INFO_NAME_UPDATE" ) then
+		-- It would be really cool if I could uniquely identify the button associated
+		-- with a particular spell here, and only update the name on that button.
 		ClassTrainerFrame_Update();
 	end
 end
@@ -321,10 +329,12 @@ function ClassTrainer_SetSelection(id)
 		for i=1, numRequirements, 1 do
 			ability, hasReq = GetTrainerServiceAbilityReq(id, i);
 			abilityName, abilitySubText, abilityType = GetTrainerServiceInfo(id);
-			if ( hasReq or (abilityType == "used") ) then
-				requirements = requirements..separator..format((TRAINER_REQ_ABILITY), ability);
-			else
-				requirements = requirements..separator..format((TRAINER_REQ_ABILITY_RED), ability);
+			if (ability) then
+				if ( hasReq or (abilityType == "used") ) then
+					requirements = requirements..separator..format((TRAINER_REQ_ABILITY), ability);
+				else
+					requirements = requirements..separator..format((TRAINER_REQ_ABILITY_RED), ability);
+				end
 			end
 			separator = ", ";
 		end
@@ -476,6 +486,7 @@ function ClassTrainerFrameFilterDropDown_Initialize()
 	info.func = ClassTrainerFrameFilterDropDown_OnClick;
 	info.checked = checked;
 	info.keepShownOnClick = 1;
+	info.classicChecks = true;
 	UIDropDownMenu_AddButton(info);
 
 	-- Unavailable button
@@ -489,6 +500,7 @@ function ClassTrainerFrameFilterDropDown_Initialize()
 	info.func = ClassTrainerFrameFilterDropDown_OnClick;
 	info.checked = checked;
 	info.keepShownOnClick = 1;
+	info.classicChecks = true;
 	UIDropDownMenu_AddButton(info);
 
 	-- Already Known button
@@ -502,6 +514,7 @@ function ClassTrainerFrameFilterDropDown_Initialize()
 	info.func = ClassTrainerFrameFilterDropDown_OnClick;
 	info.checked = checked;
 	info.keepShownOnClick = 1;
+	info.classicChecks = true;
 	UIDropDownMenu_AddButton(info);
 end
 

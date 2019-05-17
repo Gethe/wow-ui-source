@@ -110,7 +110,7 @@
 				<Scripts>
 					<OnFinished>
 						if MainMenuBar.hideOnFinish then
-							MainMenuBar:Hide();
+						MainMenuBar:Hide();
 						end
 						ValidateActionBarTransition();
 					</OnFinished>
@@ -251,14 +251,14 @@
 					</OnLoad>
 					<OnEvent>
 						if ( event == "CVAR_UPDATE" ) then
-							TextStatusBar_OnEvent(self, event, ...);
+						TextStatusBar_OnEvent(self, event, ...);
 						else
-							ExpBar_Update();
+						ExpBar_Update();
 						end
 					</OnEvent>
 					<OnShow>
 						if ( GetCVar("xpBarText") == "1" ) then
-							ExpBar_UpdateTextString();
+						ExpBar_UpdateTextString();
 						end
 					</OnShow>
 					<OnEnter function="ExpBar_OnEnter"/>
@@ -272,7 +272,7 @@
 					</OnUpdate>
 					<OnValueChanged>
 						if (not self:IsShown()) then
-							return;
+						return;
 						end
 						TextStatusBar_OnValueChanged(self);
 					</OnValueChanged>
@@ -475,22 +475,22 @@
 					</OnLoad>
 					<OnUpdate>
 						if (self.updateInterval > 0) then
-							self.updateInterval = self.updateInterval - elapsed;
+						self.updateInterval = self.updateInterval - elapsed;
 						else
-							self.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL;
+						self.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL;
 
-							local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
-							local latency = latencyHome > latencyWorld and latencyHome or latencyWorld;
-							if (latency > PERFORMANCEBAR_MEDIUM_LATENCY) then
-								MainMenuBarPerformanceBar:SetVertexColor(1, 0, 0);
-							elseif (latency > PERFORMANCEBAR_LOW_LATENCY) then
-								MainMenuBarPerformanceBar:SetVertexColor(1, 1, 0);
-							else
-								MainMenuBarPerformanceBar:SetVertexColor(0, 1, 0);
-							end
-							if (self.hover) then
-								GameTooltip_AddNewbieTip(self, MAINMENUBAR_LATENCY_LABEL.." "..latency..MILLISECONDS_ABBR, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LATENCY);
-							end
+						local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
+						local latency = latencyHome > latencyWorld and latencyHome or latencyWorld;
+						if (latency > PERFORMANCEBAR_MEDIUM_LATENCY) then
+						MainMenuBarPerformanceBar:SetVertexColor(1, 0, 0);
+						elseif (latency > PERFORMANCEBAR_LOW_LATENCY) then
+						MainMenuBarPerformanceBar:SetVertexColor(1, 1, 0);
+						else
+						MainMenuBarPerformanceBar:SetVertexColor(0, 1, 0);
+						end
+						if (self.hover) then
+						GameTooltip_AddNewbieTip(self, MAINMENUBAR_LATENCY_LABEL.." "..latency..MILLISECONDS_ABBR, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LATENCY);
+						end
 						end
 					</OnUpdate>
 				</Scripts>
@@ -507,6 +507,26 @@
 						GameTooltip:Hide();
 					</OnLeave>
 				</Scripts>
+			</Button>
+			<Button name="MainMenuBarVehicleLeaveButton" hidden="true" motionScriptsWhileDisabled="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad function="MainMenuBarVehicleLeaveButton_OnLoad"/>
+					<OnEvent function="MainMenuBarVehicleLeaveButton_OnEvent"/>
+					<OnClick function="MainMenuBarVehicleLeaveButton_OnClicked"/>
+					<OnEnter function="MainMenuBarVehicleLeaveButton_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<NormalTexture file="Interface\Vehicles\UI-Vehicles-Button-Exit-Up">
+					<TexCoords left="0.140625" right="0.859375" top="0.140625" bottom="0.859375"/>
+				</NormalTexture>
+				<PushedTexture file="Interface\Vehicles\UI-Vehicles-Button-Exit-Down">
+					<TexCoords left="0.140625" right="0.859375" top="0.140625" bottom="0.859375"/>
+				</PushedTexture>
+				<HighlightTexture parentKey="Highlight" alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 			</Button>
 		</Frames>
 		<Scripts>

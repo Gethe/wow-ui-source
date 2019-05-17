@@ -8,19 +8,24 @@ function NavBar_Initialize(self, template, homeData, homeButton, overflowButton)
 	self.navList = {};
 	self.widthBuffer = NAVBAR_WIDTHBUFFER;
 	
+	local name = self:GetName();
+
 	if not self.dropDown then
-		self.dropDown = CreateFrame("Frame", self:GetName().."DropDown", self, "UIDropDownMenuTemplate");
+		local dropDownName = name and name.."DropDown" or nil;
+		self.dropDown = CreateFrame("Frame", dropDownName, self, "UIDropDownMenuTemplate");
 		UIDropDownMenu_Initialize(self.dropDown, NavBar_DropDown_Initialize, "MENU");
 	end
 	
 	if not homeButton then
-		homeButton = CreateFrame("BUTTON", self:GetName().."HomeButton", self, self.template);
+		local homeButtonName = name and name.."HomeButton" or nil;
+		homeButton = CreateFrame("BUTTON", homeButtonName, self, self.template);
 		homeButton:SetWidth(homeButton.text:GetStringWidth()+30);
 	end
 	homeButton:SetText(homeData.name or HOME);
 
 	if not overflowButton then
-		overflowButton = CreateFrame("BUTTON", self:GetName().."OverflowButton", self, self.template);
+		local overflowButtonName = name and name.."OverflowButton" or nil;
+		overflowButton = CreateFrame("BUTTON", overflowButtonName, self, self.template);
 		overflowButton:SetWidth(30);
 		
 		-- LOOK AT CLICK
@@ -83,7 +88,9 @@ function NavBar_AddButton(self, buttonData)
 	end
 	
 	if not navButton then
-		navButton = CreateFrame("BUTTON", self:GetName().."Button"..(#self.navList+1), self, self.template);
+		local name = self:GetName();
+		local buttonName = name and name.."Button"..(#self.navList+1);
+		navButton = CreateFrame("BUTTON", buttonName, self, self.template);
 		navButton.oldClick = navButton:GetScript("OnClick");
 		navButton:SetScript("OnClick", NavBar_ButtonOnClick);
 		if ( self.oldStyle ) then
@@ -271,13 +278,18 @@ end
 
 
 
-function NavBar_ListOverFlowButtons(self, index)
+function NavBar_ListOverFlowButtons(self)
 	local navBar = self:GetParent();
-	
-	local button = navBar.navList[index];
-	if not button:IsShown() then
-		return button:GetText(), NavBar_OverflowItemOnClick;
+	local list = { };
+	for i, button in ipairs(navBar.navList) do
+		if not button:IsShown() then
+			local entry = { text = button:GetText(), id = i, func = NavBar_OverflowItemOnClick };
+			tinsert(list, entry);
+		else
+			break;
+		end
 	end
+	return list;
 end
 
 
@@ -286,7 +298,7 @@ function NavBar_ToggleMenu(self)
 		CloseDropDownMenus();
 	end
 	self:GetParent().dropDown.buttonOwner = self;
-	ToggleDropDownMenu(nil, nil, self:GetParent().dropDown, self:GetName(), 20, 3);
+	ToggleDropDownMenu(nil, nil, self:GetParent().dropDown, self, 20, 3);
 end
 
 
@@ -296,21 +308,18 @@ function NavBar_DropDown_Initialize(self, level)
 		return;
 	end
 
-	
 	local info = UIDropDownMenu_CreateInfo();
-	local index = 1;
-	local text, func = navButton:listFunc(index);
-	while text do
-		info.text = text;
-		info.func = NavBar_DropDown_Click;
-		info.arg1 = index;
-		info.arg2 = func;
-		info.owner = navButton;
-		info.notCheckable = true;
-		UIDropDownMenu_AddButton(info, level);
-		
-		index = index + 1;
-		text, func = navButton:listFunc(index);
+	info.func = NavBar_DropDown_Click;
+	info.owner = navButton;
+	info.notCheckable = true;
+	local list = navButton:listFunc();
+	if ( list ) then
+		for i, entry in ipairs(list) do
+			info.text = entry.text;
+			info.arg1 = entry.id;
+			info.arg2 = entry.func;
+			UIDropDownMenu_AddButton(info, level);
+		end
 	end
 end
 

@@ -46,7 +46,7 @@ function QuestLog_OnLoad(self)
 	self:RegisterEvent("QUEST_WATCH_UPDATE");
 	self:RegisterEvent("UPDATE_FACTION");
 	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("PARTY_MEMBER_ENABLE");
 	self:RegisterEvent("PARTY_MEMBER_DISABLE");
 	self:RegisterEvent("PLAYER_LOGIN");
@@ -74,9 +74,9 @@ function QuestLog_OnEvent(self, event, ...)
 		QuestLog_Update();
 	else
 		QuestLog_Update();
-		if ( event == "PARTY_MEMBERS_CHANGED" ) then
+		if ( event == "GROUP_ROSTER_UPDATE" ) then
 			-- Determine whether the selected quest is pushable or not
-			if ( GetQuestLogPushable() and GetNumPartyMembers() > 0 ) then
+			if ( GetQuestLogPushable() and GetNumGroupMembers() > 0 ) then
 				QuestFramePushQuestButton:Enable();
 			else
 				QuestFramePushQuestButton:Disable();

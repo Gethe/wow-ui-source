@@ -53,15 +53,15 @@
 			<OnEvent>
 				ItemAnim_OnEvent(self, event, ...);
 				if ( event == "BAG_UPDATE_DELAYED" ) then
-					PaperDollItemSlotButton_Update(self);
+				PaperDollItemSlotButton_Update(self);
 				elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
-					if ( IsContainerFiltered(self:GetID() - CharacterBag0Slot:GetID() + 1) ) then
-						self.searchOverlay:Show();
-					else
-						self.searchOverlay:Hide();
-					end
+				if ( IsContainerFiltered(self:GetID() - CharacterBag0Slot:GetID() + 1) ) then
+				self.searchOverlay:Show();
 				else
-					PaperDollItemSlotButton_OnEvent(self, event, ...);
+				self.searchOverlay:Hide();
+				end
+				else
+				PaperDollItemSlotButton_OnEvent(self, event, ...);
 				end
 			</OnEvent>
 			<OnShow>
@@ -72,9 +72,9 @@
 			</OnHide>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					BagSlotButton_OnModifiedClick(self, button);
+				BagSlotButton_OnModifiedClick(self, button);
 				else
-					BagSlotButton_OnClick(self, button);
+				BagSlotButton_OnClick(self, button);
 				end
 			</OnClick>
 			<OnDragStart>
@@ -118,9 +118,9 @@
 			</OnLoad>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					BackpackButton_OnModifiedClick(self, button);
+				BackpackButton_OnModifiedClick(self, button);
 				else
-					BackpackButton_OnClick(self, button);
+				BackpackButton_OnClick(self, button);
 				end
 			</OnClick>
 			<OnReceiveDrag function="BackpackButton_OnClick"/>
@@ -129,7 +129,7 @@
 				GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0);
 				local keyBinding = GetBindingKey("TOGGLEBACKPACK");
 				if ( keyBinding ) then
-					GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..keyBinding..")"..FONT_COLOR_CODE_CLOSE);
+				GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..keyBinding..")"..FONT_COLOR_CODE_CLOSE);
 				end
 				GameTooltip:Show();
 			</OnEnter>

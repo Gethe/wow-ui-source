@@ -28,20 +28,12 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_REGEN_ENABLED");
 	self:RegisterEvent("PLAYER_UPDATE_RESTING");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
-	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");
-	self:RegisterEvent("VOICE_START");
-	self:RegisterEvent("VOICE_STOP");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("READY_CHECK");
 	self:RegisterEvent("READY_CHECK_CONFIRM");
 	self:RegisterEvent("READY_CHECK_FINISHED");
-	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
-	self:RegisterEvent("UNIT_ENTERING_VEHICLE");
-	self:RegisterEvent("UNIT_EXITING_VEHICLE");
-	self:RegisterEvent("UNIT_EXITED_VEHICLE");
 	self:RegisterEvent("PVP_TIMER_UPDATE");
 	self:RegisterEvent("VARIABLES_LOADED");
-	self:RegisterEvent("HONOR_PRESTIGE_UPDATE");
 	self:RegisterUnitEvent("UNIT_COMBAT", "player", "vehicle");
 	self:RegisterUnitEvent("UNIT_MAXPOWER", "player", "vehicle");
 
@@ -72,14 +64,9 @@ end
 function PlayerFrame_Update ()
 	if ( UnitExists("player") ) then
 		local level = UnitLevel(PlayerFrame.unit);
-		local effectiveLevel = UnitEffectiveLevel(PlayerFrame.unit);
-		if ( effectiveLevel ~= level ) then
-			PlayerLevelText:SetVertexColor(0.1, 1.0, 0.1, 1.0);
-		else
-			PlayerLevelText:SetVertexColor(1.0, 0.82, 0.0, 1.0);
-		end
-		PlayerFrame_UpdateLevelTextAnchor(effectiveLevel);
-		PlayerLevelText:SetText(effectiveLevel);
+		PlayerLevelText:SetVertexColor(1.0, 0.82, 0.0, 1.0);
+		PlayerFrame_UpdateLevelTextAnchor(level);
+		PlayerLevelText:SetText(level);
 		PlayerFrame_UpdatePartyLeader();
 		PlayerFrame_UpdatePvPStatus();
 		PlayerFrame_UpdateStatus();
@@ -90,25 +77,11 @@ end
 
 function PlayerFrame_UpdatePartyLeader()
 	if ( UnitIsGroupLeader("player") ) then
-		if ( HasLFGRestrictions() ) then
-			PlayerGuideIcon:Show();
-			PlayerLeaderIcon:Hide();
-		else
-			PlayerLeaderIcon:Show()
-			PlayerGuideIcon:Hide();
-		end
+		PlayerLeaderIcon:Show()
+		PlayerGuideIcon:Hide();
 	else
 		PlayerLeaderIcon:Hide();
 		PlayerGuideIcon:Hide();
-	end
-
-	local lootMethod;
-	local lootMaster;
-	lootMethod, lootMaster = GetLootMethod();
-	if ( lootMaster == 0 and IsInGroup() ) then
-		PlayerMasterIcon:Show();
-	else
-		PlayerMasterIcon:Hide();
 	end
 end
 
@@ -118,19 +91,11 @@ function PlayerFrame_UpdatePvPStatus()
 		if ( not PlayerPVPIcon:IsShown() ) then
 			PlaySound(SOUNDKIT.IG_PVP_UPDATE);
 		end
-		local prestige = UnitPrestige("player");
-		if (prestige > 0) then
-			PlayerPrestigePortrait:SetAtlas("honorsystem-portrait-neutral", false);
-			PlayerPrestigeBadge:SetTexture(GetPrestigeInfo(prestige));
-			PlayerPrestigePortrait:Show();
-			PlayerPrestigeBadge:Show();
-			PlayerPVPIcon:Hide();
-		else
-			PlayerPrestigePortrait:Hide();
-			PlayerPrestigeBadge:Hide();
-			PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA");
-			PlayerPVPIcon:Show();
-		end
+		PlayerPrestigePortrait:Hide();
+		PlayerPrestigeBadge:Hide();
+		PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA");
+		PlayerPVPIcon:Show();
+		
 
 		-- Setup newbie tooltip
 		PlayerPVPIconHitArea.tooltipTitle = PVPFFA;
@@ -144,36 +109,10 @@ function PlayerFrame_UpdatePvPStatus()
 			PlaySound(SOUNDKIT.IG_PVP_UPDATE);
 		end
 
-		local prestige = UnitPrestige("player");
-		if (prestige > 0) then
-			-- ugly special case handling for mercenary mode
-			if ( UnitIsMercenary("player") ) then
-				if ( factionGroup == "Horde" ) then
-					factionGroup = "Alliance";
-				elseif ( factionGroup == "Alliance" ) then
-					factionGroup = "Horde";
-				end
-			end
-
-			PlayerPrestigePortrait:SetAtlas("honorsystem-portrait-"..factionGroup, false);
-			PlayerPrestigeBadge:SetTexture(GetPrestigeInfo(prestige));
-			PlayerPrestigePortrait:Show();
-			PlayerPrestigeBadge:Show();
-			PlayerPVPIcon:Hide();
-		else
-			PlayerPrestigePortrait:Hide();
-			PlayerPrestigeBadge:Hide();
-			PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
-
-			-- ugly special case handling for mercenary mode
-			if ( UnitIsMercenary("player") ) then
-				if ( factionGroup == "Horde" ) then
-					PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Alliance");
-				elseif ( factionGroup == "Alliance" ) then
-					PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Horde");
-				end
-			end
-		end
+		
+		PlayerPrestigePortrait:Hide();
+		PlayerPrestigeBadge:Hide();
+		PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
 
 		PlayerPVPIcon:Show();
 
@@ -210,11 +149,7 @@ function PlayerFrame_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		PlayerFrame_ResetPosition(self);
 		PlayerFrame_ToPlayerArt(self);
---		if ( UnitHasVehicleUI("player") ) then
---			UnitFrame_SetUnit(self, "vehicle", PlayerFrameHealthBar, PlayerFrameManaBar);
---		else
---			UnitFrame_SetUnit(self, "player", PlayerFrameHealthBar, PlayerFrameManaBar);
---		end
+		UnitFrame_SetUnit(self, "player", PlayerFrameHealthBar, PlayerFrameManaBar);
 		self.inCombat = nil;
 		self.onHateList = nil;
 		PlayerFrame_Update();
@@ -245,23 +180,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 		PlayerFrame_UpdateGroupIndicator();
 		PlayerFrame_UpdatePartyLeader();
 		PlayerFrame_UpdateReadyCheck();
-	elseif ( event == "PARTY_LOOT_METHOD_CHANGED" ) then
-		local lootMethod;
-		local lootMaster;
-		lootMethod, lootMaster = GetLootMethod();
-		if ( lootMaster == 0 and IsInGroup() ) then
-			PlayerMasterIcon:Show();
-		else
-			PlayerMasterIcon:Hide();
-		end
-	elseif ( event == "VOICE_START") then
-		if ( arg1 == "player" ) then
-			PlayerFrame_UpdateVoiceStatus(true);
-		end
-	elseif ( event == "VOICE_STOP" ) then
-		if ( arg1 == "player" ) then
-			PlayerFrame_UpdateVoiceStatus(false);
-		end
 	elseif ( event == "PLAYTIME_CHANGED" ) then
 		PlayerFrame_UpdatePlaytime();
 	elseif ( event == "READY_CHECK" or event == "READY_CHECK_CONFIRM" ) then
@@ -313,8 +231,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 		if ( PLAYER_FRAME_CASTBARS_SHOWN ) then
 			PlayerFrame_AttachCastBar();
 		end
-	elseif ( event == "HONOR_PRESTIGE_UPDATE" ) then
-		PlayerFrame_UpdatePvPStatus();
 	end
 end
 
@@ -363,11 +279,7 @@ function PlayerFrame_UpdateArt(self)
 		else
 			SetUpAnimation(PlayerFrame, PlayerFrameAnimTable, PlayerFrame_SequenceFinished, true)
 		end
-		if ( UnitHasVehiclePlayerFrameUI("player") ) then
-			PlayerFrame_ToVehicleArt(self, UnitVehicleSkin("player"));
-		else
-			PlayerFrame_ToPlayerArt(self);
-		end
+		PlayerFrame_ToPlayerArt(self);
 	elseif ( self.updatePetFrame ) then
 		-- leaving a vehicle that didn't change player art
 		self.updatePetFrame = false;
@@ -410,7 +322,6 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 
 	PlayerName:SetPoint("CENTER",50,23);
 	PlayerLeaderIcon:SetPoint("TOPLEFT",44,-10);
-	PlayerMasterIcon:SetPoint("TOPLEFT",86,0);
 	PlayerFrameGroupIndicator:SetPoint("BOTTOMLEFT", PlayerFrame, "TOPLEFT", 97, -13);
 
 	PlayerFrameBackground:SetWidth(114);
@@ -433,7 +344,6 @@ function PlayerFrame_ToPlayerArt(self)
 	PlayerFrame_HideVehicleTexture();
 	PlayerName:SetPoint("CENTER",50,19);
 	PlayerLeaderIcon:SetPoint("TOPLEFT",44,-10);
-	PlayerMasterIcon:SetPoint("TOPLEFT",80,-10);
 	PlayerFrameGroupIndicator:SetPoint("BOTTOMLEFT", PlayerFrame, "TOPLEFT", 97, -20);
 	PlayerFrameHealthBar:SetWidth(119);
 	PlayerFrameHealthBar:SetPoint("TOPLEFT",106,-41);
@@ -504,15 +414,7 @@ function PlayerFrame_OnReceiveDrag ()
 end
 
 function PlayerFrame_UpdateStatus()
-	if ( UnitHasVehiclePlayerFrameUI("player") ) then
-		PlayerStatusTexture:Hide()
-		PlayerRestIcon:Hide()
-		PlayerAttackIcon:Hide()
-		PlayerRestGlow:Hide()
-		PlayerAttackGlow:Hide()
-		PlayerStatusGlow:Hide()
-		PlayerAttackBackground:Hide()
-	elseif ( IsResting() ) then
+	if ( IsResting() ) then
 		PlayerStatusTexture:SetVertexColor(1.0, 0.88, 0.25, 1.0);
 		PlayerStatusTexture:Show();
 		PlayerRestIcon:Show();
@@ -566,7 +468,8 @@ function PlayerFrame_UpdateGroupIndicator()
 end
 
 function PlayerFrameDropDown_OnLoad (self)
-	UIDropDownMenu_Initialize(self, PlayerFrameDropDown_Initialize, "MENU");
+	UIDropDownMenu_SetInitializeFunction(self, PlayerFrameDropDown_Initialize);
+	UIDropDownMenu_SetDisplayMode(self, "MENU");
 end
 
 function PlayerFrameDropDown_Initialize ()

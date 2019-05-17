@@ -1,6 +1,25 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<GameTooltip name="GameTooltipTemplate" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" virtual="true">
+	<GameTooltip name="GameTooltipCommonTemplate" frameStrata="TOOLTIP" hidden="true" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TopOverlay" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="TOP" x="0" y="1" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="BottomOverlay" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="BOTTOM" x="0" y="2" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</GameTooltip>
+	
+	<GameTooltip name="GameTooltipTemplate" clampedToScreen="true" inherits="GameTooltipCommonTemplate" virtual="true">
 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<EdgeSize>
 				<AbsValue val="16"/>
@@ -254,7 +273,7 @@
 			</OnTooltipCleared>
 		</Scripts>
 	</GameTooltip>
-	<GameTooltip name="ShoppingTooltipTemplate" frameStrata="TOOLTIP" hidden="true" virtual="true">
+	<GameTooltip name="ShoppingTooltipTemplate" inherits="GameTooltipCommonTemplate" virtual="true">
 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<EdgeSize>
 				<AbsValue val="16"/>
@@ -361,6 +380,11 @@
 			<OnLoad>
 				GameTooltip_OnLoad(self);
 			</OnLoad>
+			<OnTooltipCleared>
+				GameTooltip_ClearMoney(self);
+				GameTooltip_ClearInsertedFrames(self);
+				GameTooltip_UpdateStyle(self);
+			</OnTooltipCleared>
 		</Scripts>
 	</GameTooltip>
 	<Frame name="TooltipMoneyFrameTemplate" inherits="SmallMoneyFrameTemplate" virtual="true">
@@ -401,7 +425,7 @@
 		</Size>
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString name="$parentText" inherits="GameFontHighlightSmall">
+				<FontString parentKey="Text" inherits="GameFontHighlightSmall">
 					<Anchors>
 						<Anchor point="LEFT">
 							<Offset x="5" y="0"/>

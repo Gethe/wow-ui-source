@@ -1,4 +1,0 @@
-## Interface: 70300
-## Title: Blizzard Objective Tracker UI
-## Secure: 1
-## LoadOnDemand: 0

@@ -1,0 +1,23 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Button name="VoiceActivityNotificationPartyTemplate" inherits="VoiceActivityNotificationBaseTemplate" virtual="true">
+		<Size x="16" y="16"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Speaker" atlas="voicechat-icon-speaker">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Volume" inherits="VoiceActivityVolumeTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Speaker" relativePoint="RIGHT" x="-5"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Button>
+</Ui>

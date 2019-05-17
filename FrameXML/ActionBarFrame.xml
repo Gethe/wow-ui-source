@@ -14,20 +14,19 @@
 			</OnEvent>
 			<OnClick>
 				if button == "RightButton" and C_ActionBar.IsAutoCastPetAction(self.action) then
-					C_ActionBar.ToggleAutoCastPetAction(self.action);
+				C_ActionBar.ToggleAutoCastPetAction(self.action);
 				elseif (not self.zoneAbilityDisabled) then
-  					SecureActionButton_OnClick(self, button);
-  	 			end
-  	 		</OnClick>
+				SecureActionButton_OnClick(self, button);
+				end
+			</OnClick>
 			<PostClick>
 				ActionButton_UpdateState(self, button, down);
 			</PostClick>
 			<OnDragStart>
 				if ( LOCK_ACTIONBAR ~= "1" or IsModifiedClick("PICKUPACTION") ) then
-					SpellFlyout:Hide();
-					PickupAction(self.action);
-					ActionButton_UpdateState(self);
-					ActionButton_UpdateFlash(self);
+				PickupAction(self.action);
+				ActionButton_UpdateState(self);
+				ActionButton_UpdateFlash(self);
 				end
 			</OnDragStart>
 			<OnReceiveDrag>
@@ -37,8 +36,8 @@
 			</OnReceiveDrag>
 			<OnEnter>
 				if (self.NewActionTexture) then
-					ClearNewActionHighlight(self.action);
-					ActionButton_UpdateAction(self, true);
+				ClearNewActionHighlight(self.action);
+				ActionButton_UpdateAction(self, true);
 				end
 				ActionButton_SetTooltip(self);
 				ActionBarButtonEventsFrame.tooltipOwner = self;
@@ -164,8 +163,8 @@
 			<OnUpdate function="ActionButton_OverlayGlowOnUpdate"/>
 			<OnHide>
 				if ( self.animOut:IsPlaying() ) then
-					self.animOut:Stop();
-					ActionButton_OverlayGlowAnimOutFinished(self.animOut);
+				self.animOut:Stop();
+				ActionButton_OverlayGlowAnimOutFinished(self.animOut);
 				end
 			</OnHide>
 		</Scripts>

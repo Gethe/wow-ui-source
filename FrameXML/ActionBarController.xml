@@ -5,10 +5,7 @@
 	<Include file="ActionButtonTemplate.xml"/>
 	<Include file="ActionBarFrame.xml"/>
 	<Include file="MultiActionBars.xml"/>
-	<Include file="OverrideActionBar.xml"/>
 	<Include file="StanceBar.xml"/>
-	<Include file="ExtraActionBar.xml"/>
-	<Include file="PossessActionBar.xml"/>
 	
 	<Script file="ActionBarController.lua"/>
 	<Frame name="ActionBarController" parent="UIParent">

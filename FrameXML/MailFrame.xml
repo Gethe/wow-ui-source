@@ -118,6 +118,14 @@
 							</Anchors>
 						</FontString>
 					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="IconOverlay" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 				</Layers>
 				<Scripts>
 					<OnLoad>
@@ -181,6 +189,14 @@
 					<Size x="37" y="37"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconOverlay" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -603,7 +619,7 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								self.autoCompleteParams = AUTOCOMPLETE_LIST.MAIL;
+								AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, AUTOCOMPLETE_LIST.MAIL.include, AUTOCOMPLETE_LIST.MAIL.exclude);
 								self.addHighlightedText = true;
 								self.autoCompleteContext = "mail";
 							</OnLoad>
@@ -1026,47 +1042,83 @@
 								<Layers>
 									<Layer level="BACKGROUND">
 										<FontString name="OpenMailInvoiceItemLabel" inherits="InvoiceTextFontNormal" text="ITEM_SOLD_COLON">
-											<Size x="240" y="0"/>
+											<Size>
+												<AbsDimension x="240" y="0"/>
+											</Size>
 											<Anchors>
-												<Anchor point="TOPLEFT" x="30" y="-35"/>
+												<Anchor point="TOPLEFT">
+													<Offset>
+														<AbsDimension x="30" y="-35"/>
+													</Offset>
+												</Anchor>
 											</Anchors>
 										</FontString>
 										<FontString name="OpenMailInvoicePurchaser" inherits="InvoiceTextFontNormal" text="PURCHASED_BY_COLON">
 											<Anchors>
-												<Anchor point="TOPLEFT" relativeTo="OpenMailInvoiceItemLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+												<Anchor point="TOPLEFT" relativeTo="OpenMailInvoiceItemLabel" relativePoint="BOTTOMLEFT">
+													<Offset>
+														<AbsDimension x="0" y="-5"/>
+													</Offset>
+												</Anchor>
 											</Anchors>
 										</FontString>
 										<FontString name="OpenMailInvoiceBuyMode" inherits="InvoiceTextFontSmall">
 											<Anchors>
-												<Anchor point="LEFT" relativeTo="OpenMailInvoicePurchaser" relativePoint="RIGHT" x="5" y="0"/>
+												<Anchor point="LEFT" relativeTo="OpenMailInvoicePurchaser" relativePoint="RIGHT">
+													<Offset>
+														<AbsDimension x="5" y="0"/>
+													</Offset>
+												</Anchor>
 											</Anchors>
 										</FontString>
 										<FontString name="OpenMailInvoiceSalePrice" inherits="InvoiceTextFontNormal" text="SALE_PRICE_COLON">
 											<Anchors>
-												<Anchor point="TOPRIGHT" x="-27" y="-77"/>
+												<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoicePurchaser" relativePoint="BOTTOMLEFT">
+													<Offset>
+														<AbsDimension x="125" y="-26"/>
+													</Offset>
+												</Anchor>
 											</Anchors>
 										</FontString>
 										<FontString name="OpenMailInvoiceDeposit" inherits="InvoiceTextFontNormal" text="DEPOSIT_COLON">
 											<Anchors>
-												<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceSalePrice" relativePoint="BOTTOMRIGHT" x="0" y="-22"/>
+												<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceSalePrice" relativePoint="BOTTOMRIGHT">
+													<Offset>
+														<AbsDimension x="0" y="-13"/>
+													</Offset>
+												</Anchor>
 											</Anchors>
 										</FontString>
 										<FontString name="OpenMailInvoiceHouseCut" inherits="InvoiceTextFontNormal" text="AUCTION_HOUSE_CUT_COLON">
 											<Anchors>
-												<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceDeposit" relativePoint="BOTTOMRIGHT" x="0" y="-22"/>
+												<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceDeposit" relativePoint="BOTTOMRIGHT">
+													<Offset>
+														<AbsDimension x="0" y="-13"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="OpenMailInvoiceAmountReceived" inherits="InvoiceTextFontNormal" text="AMOUNT_RECEIVED_COLON">
+											<Anchors>
+												<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceHouseCut" relativePoint="BOTTOMRIGHT">
+													<Offset>
+														<AbsDimension x="0" y="-13"/>
+													</Offset>
+												</Anchor>
 											</Anchors>
 										</FontString>
 										<Texture name="OpenMailArithmeticLine" file="Interface\MailFrame\UI-MailFrame-InvoiceLine">
-											<Size x="256" y="32"/>
+											<Size>
+												<AbsDimension x="256" y="32"/>
+											</Size>
 											<Anchors>
-												<Anchor point="TOP" relativeTo="OpenMailInvoiceHouseCut" relativePoint="BOTTOMRIGHT" x="0" y="-22"/>
+												<Anchor point="TOP" relativeTo="OpenMailInvoiceHouseCut" relativePoint="BOTTOMRIGHT">
+													<Offset>
+														<AbsDimension x="0" y="9"/>
+													</Offset>
+												</Anchor>
 											</Anchors>
-										</Texture>										
-										<FontString name="OpenMailInvoiceAmountReceived" inherits="InvoiceTextFontNormal" text="AMOUNT_RECEIVED_COLON">
-											<Anchors>
-												<Anchor point="TOPRIGHT" relativeTo="OpenMailArithmeticLine" relativePoint="BOTTOMRIGHT" x="-14" y="10"/>
-											</Anchors>
-										</FontString>
+										</Texture>
 										<FontString name="OpenMailInvoiceNotYetSent" inherits="InvoiceTextFontNormal" text="AUCTION_INVOICE_FUNDS_NOT_YET_SENT">
 											<Anchors>
 												<Anchor point="CENTER" relativeTo="OpenMailInvoicePurchaser" relativePoint="BOTTOMLEFT" x="128" y="-90"/>
@@ -1082,7 +1134,11 @@
 								<Frames>
 									<Frame name="OpenMailTransactionAmountMoneyFrame" inherits="SmallMoneyFrameTemplate">
 										<Anchors>
-											<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceAmountReceived" relativePoint="BOTTOMRIGHT" x="16" y="-4"/>
+											<Anchor point="RIGHT" relativeTo="OpenMailInvoiceAmountReceived" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="130" y="0"/>
+												</Offset>
+											</Anchor>
 										</Anchors>
 										<Scripts>
 											<OnLoad>
@@ -1093,7 +1149,11 @@
 									</Frame>
 									<Frame name="OpenMailDepositMoneyFrame" inherits="SmallMoneyFrameTemplate">
 										<Anchors>
-											<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceDeposit" relativePoint="BOTTOMRIGHT" x="16" y="-4"/>
+											<Anchor point="RIGHT" relativeTo="OpenMailInvoiceDeposit" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="130" y="0"/>
+												</Offset>
+											</Anchor>
 										</Anchors>
 										<Layers>
 											<Layer level="BACKGROUND">
@@ -1113,7 +1173,11 @@
 									</Frame>
 									<Frame name="OpenMailHouseCutMoneyFrame" inherits="SmallMoneyFrameTemplate">
 										<Anchors>
-											<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceHouseCut" relativePoint="BOTTOMRIGHT" x="16" y="-4"/>
+											<Anchor point="RIGHT" relativeTo="OpenMailInvoiceHouseCut" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="130" y="0"/>
+												</Offset>
+											</Anchor>
 										</Anchors>
 										<Layers>
 											<Layer level="BACKGROUND">
@@ -1133,7 +1197,11 @@
 									</Frame>
 									<Frame name="OpenMailSalePriceMoneyFrame" inherits="SmallMoneyFrameTemplate">
 										<Anchors>
-											<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceSalePrice" relativePoint="BOTTOMRIGHT" x="16" y="-4"/>
+											<Anchor point="RIGHT" relativeTo="OpenMailInvoiceSalePrice" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="130" y="0"/>
+												</Offset>
+											</Anchor>
 										</Anchors>
 										<Scripts>
 											<OnLoad>

@@ -296,6 +296,10 @@ function BlizzardOptionsPanel_RefreshControl (control)
 	end
 end
 
+function BlizzardOptionsPanel_RefreshControlSingle(control)
+	BlizzardOptionsPanel_RefreshControl(control);
+end
+
 function BlizzardOptionsPanel_Okay (self)
 	for _, control in SecureNext, self.controls do
 		securecall(BlizzardOptionsPanel_OkayControl, control);

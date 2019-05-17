@@ -41,7 +41,7 @@ function APIDocumentationMixin:HandleAPILink(link, command)
 	local _, type, name, parentName = (":"):split(link);
 	local apiInfo = self:FindAPIByName(type, name, parentName);
 	if apiInfo then
-		if command == self.Commands.CopyAPI and CopyToClipboard then -- CopyToClipboard could be implemented as an edit box the user could copy from
+		if command == self.Commands.CopyAPI then
 			self:HandleCopyAPI(apiInfo);
 		elseif command == self.Commands.OpenDump then
 			self:HandleOpenDump(apiInfo);
@@ -124,12 +124,12 @@ function APIDocumentationMixin:OutputUsage()
 	self:WriteLine(self:GetIndentString() .. "/api <system name> search <api name>");
 	self:WriteLine(self:GetIndentString() .. "or");
 	self:WriteLine(self:GetIndentString() .. "/api <system name> s <api name>");
-	self:WriteLine(self:GetIndentString() .. "Example: /api artifactui search relic");
+	self:WriteLine(self:GetIndentString() .. "Example: /api item search bound");
 	self:WriteLine(" ");
 
 	self:WriteLine("List all API in a system");
 	self:WriteLine(self:GetIndentString() .. "/api <system name> list");
-	self:WriteLine(self:GetIndentString() .. "Example: /api artifactui list");
+	self:WriteLine(self:GetIndentString() .. "Example: /api item list");
 	self:WriteLine(" ");
 	self:WriteLine("All searches support Lua patterns.");
 end

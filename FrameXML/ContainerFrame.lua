@@ -9,10 +9,10 @@ CONTAINER_WIDTH = 192;
 CONTAINER_SPACING = 0;
 VISIBLE_CONTAINER_SPACING = 3;
 CONTAINER_OFFSET_Y = 70;
-CONTAINER_OFFSET_X = 0;
+CONTAINER_OFFSET_X = -4;
 CONTAINER_SCALE = 0.75;
 --BACKPACK_MONEY_OFFSET_DEFAULT = -231;
-BACKPACK_MONEY_OFFSET_DEFAULT = -216;
+BACKPACK_MONEY_OFFSET_DEFAULT = -215;
 BACKPACK_MONEY_HEIGHT_OFFSET_PER_EXTRA_ROW = 41;
 BACKPACK_BASE_HEIGHT = 240;
 BACKPACK_HEIGHT_OFFSET_PER_EXTRA_ROW = 43;
@@ -142,17 +142,16 @@ function ToggleBackpack()
 	else
 		ToggleBag(0);
 		-- If there are tokens watched then show the bar
-		if ( ManageBackpackTokenFrame ) then
+		--[[if ( ManageBackpackTokenFrame ) then
 			BackpackTokenFrame_Update();
 			ManageBackpackTokenFrame();
-		end
+		end]]
 	end
 end
 
 function ContainerFrame_OnHide(self)
 	self:UnregisterEvent("BAG_UPDATE");
 	self:UnregisterEvent("UNIT_INVENTORY_CHANGED");
-	self:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	self:UnregisterEvent("ITEM_LOCK_CHANGED");
 	self:UnregisterEvent("BAG_UPDATE_COOLDOWN");
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
@@ -206,16 +205,11 @@ function ContainerFrame_OnHide(self)
 		end
 		PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE);
 	end
-
-	if ArtifactRelicHelpBox:IsShown() and ArtifactRelicHelpBox.owner == self then
-		ArtifactRelicHelpBox:Hide();
-	end
 end
 
 function ContainerFrame_OnShow(self)
 	self:RegisterEvent("BAG_UPDATE");
 	self:RegisterEvent("UNIT_INVENTORY_CHANGED");
-	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	self:RegisterEvent("ITEM_LOCK_CHANGED");
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
@@ -226,14 +220,10 @@ function ContainerFrame_OnShow(self)
 	--self.FilterIcon:Hide();
 	if ( self:GetID() == 0 ) then
 		local shouldShow = true;
-		if (IsCharacterNewlyBoosted() or FRAME_THAT_OPENED_BAGS ~= nil) then
-			shouldShow = false;
-		else
-			for i = BACKPACK_CONTAINER + 1, NUM_BAG_SLOTS, 1 do
-				if ( not GetInventoryItemID("player", ContainerIDToInventoryID(i)) ) then
-					shouldShow = false;
-					break;
-				end
+		for i = BACKPACK_CONTAINER + 1, NUM_BAG_SLOTS, 1 do
+			if ( not GetInventoryItemID("player", ContainerIDToInventoryID(i)) ) then
+				shouldShow = false;
+				break;
 			end
 		end
 		if ( shouldShow and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CLEAN_UP_BAGS) ) then
@@ -286,9 +276,9 @@ function ContainerFrame_OnShow(self)
  	ContainerFrame_Update(self);
 	
 	-- If there are tokens watched then decide if we should show the bar
-	if ( ManageBackpackTokenFrame ) then
+	--[[if ( ManageBackpackTokenFrame ) then
 		ManageBackpackTokenFrame();
-	end
+	end]]
 end
 
 function OpenBag(id, force)
@@ -390,14 +380,10 @@ end
 
 function CheckBagSettingsTutorial()
 	local shouldShow = true;
-	if (IsCharacterNewlyBoosted() or FRAME_THAT_OPENED_BAGS ~= nil) then
-		shouldShow = false;
-	else
-		for i = BACKPACK_CONTAINER + 1, NUM_BAG_SLOTS, 1 do
-			if ( not GetInventoryItemID("player", ContainerIDToInventoryID(i)) ) then
-				shouldShow = false;
-				break;
-			end
+	for i = BACKPACK_CONTAINER + 1, NUM_BAG_SLOTS, 1 do
+		if ( not GetInventoryItemID("player", ContainerIDToInventoryID(i)) ) then
+			shouldShow = false;
+			break;
 		end
 	end
 	if (shouldShow and GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CLEAN_UP_BAGS) and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BAG_SETTINGS)) then
@@ -461,20 +447,11 @@ function ContainerFrame_GetOpenFrame()
 	end
 end
 
-function ContainerFrame_ConsiderItemButtonForRelicTutorial(itemButton, itemID)
-	if itemID and not ArtifactRelicHelpBox:IsShown() and IsArtifactRelicItem(itemID) then
-		if C_ArtifactUI.DoesEquippedArtifactHaveAnyRelicsSlotted() then
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH, true);
-			return;
-		end
-
-		if C_ArtifactUI.CanApplyArtifactRelic(itemID, true) then
-			ArtifactRelicHelpBox.owner = itemButton:GetParent();
-			ArtifactRelicHelpBox:ClearAllPoints();
-			ArtifactRelicHelpBox:SetPoint("RIGHT", itemButton, "LEFT", -27, 0);
-			ArtifactRelicHelpBox:Show();
-		end
-	end
+function ContainerFrame_AnchorTutorialToItemButton(tutorialFrame, itemButton)
+	tutorialFrame.owner = itemButton:GetParent();
+	tutorialFrame:ClearAllPoints();
+	tutorialFrame:SetPoint("RIGHT", itemButton, "LEFT", -27, 0);
+	tutorialFrame:Show();
 end
 
 --[[
@@ -540,12 +517,6 @@ function ContainerFrame_Update(frame)
 	end
 	--]]
 
-	if ArtifactRelicHelpBox:IsShown() and ArtifactRelicHelpBox.owner == frame then
-		ArtifactRelicHelpBox:Hide();
-	end
-
-	local shouldDoRelicChecks = not BagHelpBox:IsShown() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH);
-
 	for i=1, frame.size, 1 do
 		itemButton = _G[name.."Item"..i];
 		
@@ -555,7 +526,7 @@ function ContainerFrame_Update(frame)
 --]]
 		
 		SetItemButtonTexture(itemButton, texture);
-		-- SetItemButtonQuality(itemButton, quality, itemID);
+		SetItemButtonQuality(itemButton, quality, itemID);
 		SetItemButtonCount(itemButton, itemCount);
 		SetItemButtonDesaturated(itemButton, locked);
 		
@@ -646,9 +617,6 @@ function ContainerFrame_Update(frame)
 			itemButton.searchOverlay:Show();
 		else
 			itemButton.searchOverlay:Hide();
-			if shouldDoRelicChecks then
-				ContainerFrame_ConsiderItemButtonForRelicTutorial(itemButton, itemID);
-			end
 		end
 	end
 end
@@ -824,7 +792,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 
 		BACKPACK_HEIGHT = BACKPACK_BASE_HEIGHT + middleBgHeight;
 		frame:SetHeight(BACKPACK_HEIGHT);
-		ManageBackpackTokenFrame(frame);
+		--ManageBackpackTokenFrame(frame);
 	else
 		bgTextureBottom:SetHeight(CONTAINER_BOTTOM_TEXTURE_DEFAULT_HEIGHT);
 		bgTextureBottom:SetTexCoord(0, 1, CONTAINER_BOTTOM_TEXTURE_DEFAULT_TOP_COORD, CONTAINER_BOTTOM_TEXTURE_DEFAULT_BOTTOM_COORD);
@@ -1269,17 +1237,6 @@ function ContainerFrameItemButton_OnClick(self, button)
 				-- a confirmation dialog has been shown
 				return;
 			end
-		elseif ( not BankFrame:IsShown() and (not GuildBankFrame or not GuildBankFrame:IsShown()) and not MailFrame:IsShown() and (not VoidStorageFrame or not VoidStorageFrame:IsShown()) and
-					(not AuctionFrame or not AuctionFrame:IsShown()) and not TradeFrame:IsShown() and (not ItemUpgradeFrame or not ItemUpgradeFrame:IsShown()) and
-					(not ObliterumForgeFrame or not ObliterumForgeFrame:IsShown()) and (not ChallengesKeystoneFrame or not ChallengesKeystoneFrame:IsShown()) ) then
-			local itemID = select(10, GetContainerItemInfo(self:GetParent():GetID(), self:GetID()));
-			if ( itemID and IsArtifactRelicItem(itemID) ) then
-				if ( C_ArtifactUI.CanApplyArtifactRelic(itemID, false) ) then
-					SocketContainerItem(self:GetParent():GetID(), self:GetID());
-				elseif ( C_ArtifactUI.GetEquippedArtifactInfo() ) then
-					UIErrorsFrame:AddMessage(ERR_ARTIFACT_RELIC_DOES_NOT_MATCH_ARTIFACT, RED_FONT_COLOR:GetRGBA());
-				end
-			end
 		end
 		UseContainerItem(self:GetParent():GetID(), self:GetID(), nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));
 		StackSplitFrame:Hide();
@@ -1289,9 +1246,6 @@ end
 function ContainerFrameItemButton_OnModifiedClick(self, button)
 	if ( HandleModifiedItemClick(GetContainerItemLink(self:GetParent():GetID(), self:GetID())) ) then
 		return;
-	end
-	if ( IsModifiedClick("SOCKETITEM") ) then
-		SocketContainerItem(self:GetParent():GetID(), self:GetID());
 	end
 	if ( not CursorHasItem() and IsModifiedClick("SPLITSTACK") ) then
 		local texture, itemCount, locked = GetContainerItemInfo(self:GetParent():GetID(), self:GetID());
@@ -1374,7 +1328,7 @@ function ContainerFrameItemButton_OnEnter(self)
 
 	local requiresCompareTooltipReanchor = ContainerFrameItemButton_CalculateItemTooltipAnchors(self, GameTooltip);
 
-	if ( requiresCompareTooltipReanchor and (IsModifiedClick("COMPAREITEMS") or GetCVarBool("alwaysCompareItems")) ) then
+	if ( (IsModifiedClick("COMPAREITEMS") or GetCVarBool("alwaysCompareItems")) ) then
 		GameTooltip_ShowCompareItem(GameTooltip);
 	end
 

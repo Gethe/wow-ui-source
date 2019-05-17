@@ -10,10 +10,18 @@
 	</Button>
 	<Button name="TradeSkillItemTemplate" inherits="QuestItemTemplate" virtual="true">
 		<Scripts>
+			<OnLoad>
+				self.hasItem = 1;
+				self.UpdateTooltip = function (self)
+					GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT");
+					GameTooltip:SetTradeSkillItem(TradeSkillFrame.selectedSkill, self:GetID());
+					CursorUpdate(self);
+				end;
+			</OnLoad>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT");
 				GameTooltip:SetTradeSkillItem(TradeSkillFrame.selectedSkill, self:GetID());
-				CursorUpdate();
+				CursorUpdate(self);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -23,8 +31,8 @@
 				if ( IsControlKeyDown() ) then
 					DressUpItemLink(GetTradeSkillReagentItemLink(TradeSkillFrame.selectedSkill, self:GetID()));
 				elseif ( IsShiftKeyDown() ) then
-					if ( ChatFrameEditBox:IsVisible() ) then
-						ChatFrameEditBox:Insert(GetTradeSkillReagentItemLink(TradeSkillFrame.selectedSkill, self:GetID()));
+					if ( ChatEdit_GetActiveWindow() ) then
+						ChatEdit_InsertLink(GetTradeSkillReagentItemLink(TradeSkillFrame.selectedSkill, self:GetID()));
 					end
 				end
 			</OnClick>
@@ -560,13 +568,20 @@
 								<Scripts>
 									<OnLoad>
 										self.hasItem = 1;
+										self.UpdateTooltip = function (self)
+											if ( TradeSkillFrame.selectedSkill ~= 0 ) then
+												GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+												GameTooltip:SetTradeSkillItem(TradeSkillFrame.selectedSkill);
+												CursorUpdate(self);
+											end
+										end;
 									</OnLoad>
 									<OnClick>
 										if ( IsControlKeyDown() ) then
 											DressUpItemLink(GetTradeSkillItemLink(TradeSkillFrame.selectedSkill));
 										elseif ( IsShiftKeyDown() ) then
-											if ( ChatFrameEditBox:IsVisible() ) then
-												ChatFrameEditBox:Insert(GetTradeSkillItemLink(TradeSkillFrame.selectedSkill));
+											if ( ChatEdit_GetActiveWindow() ) then
+												ChatEdit_InsertLink(GetTradeSkillItemLink(TradeSkillFrame.selectedSkill));
 											end
 										end
 									</OnClick>
@@ -574,7 +589,7 @@
 										if ( TradeSkillFrame.selectedSkill ~= 0 ) then
 											GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 											GameTooltip:SetTradeSkillItem(TradeSkillFrame.selectedSkill);
-											CursorUpdate();
+											CursorUpdate(self);
 										end
 									</OnEnter>
 									<OnLeave>

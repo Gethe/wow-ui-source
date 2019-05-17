@@ -1,5 +1,5 @@
-TOOLTIP_DEFAULT_COLOR = { r = 1, g = 1, b = 1 };
-TOOLTIP_DEFAULT_BACKGROUND_COLOR = { r = 0.09, g = 0.09, b = 0.19 };
+TOOLTIP_DEFAULT_COLOR = CreateColor(1, 1, 1);
+TOOLTIP_DEFAULT_BACKGROUND_COLOR = CreateColor(0.09, 0.09, 0.19);
 
 -- Panel Positions
 PANEL_INSET_LEFT_OFFSET = 4;
@@ -108,6 +108,13 @@ function MagicButton_OnLoad(self)
 	end
 end
 
+function DynamicResizeButton_Resize(self)
+	local padding = 40;
+	local width = self:GetWidth();
+	local textWidth = self:GetTextWidth() + padding;
+	self:SetWidth(math.max(width, textWidth));
+end
+
 -- ButtonFrameTemplate code
 function ButtonFrameTemplate_HideButtonBar(self)
 	if self.bottomInset then
@@ -152,19 +159,18 @@ end
 
 function ButtonFrameTemplate_HidePortrait(self)
 	self.portrait:Hide();
-	self.portraitFrame:Hide();
-	self.topLeftCorner:Show();
-	self.topBorderBar:SetPoint("TOPLEFT", self.topLeftCorner, "TOPRIGHT",  0, 0);
-	self.leftBorderBar:SetPoint("TOPLEFT", self.topLeftCorner, "BOTTOMLEFT",  0, 0);
+	self.PortraitFrame:Hide();
+	self.TopLeftCorner:Show();
+	self.TopBorder:SetPoint("TOPLEFT", self.TopLeftCorner, "TOPRIGHT",  0, 0);
+	self.LeftBorder:SetPoint("TOPLEFT", self.TopLeftCorner, "BOTTOMLEFT",  0, 0);
 end
-
 
 function ButtonFrameTemplate_ShowPortrait(self)
 	self.portrait:Show();
-	self.portraitFrame:Show();
-	self.topLeftCorner:Hide();
-	self.topBorderBar:SetPoint("TOPLEFT", self.portraitFrame, "TOPRIGHT",  0, -10);
-	self.leftBorderBar:SetPoint("TOPLEFT", self.portraitFrame, "BOTTOMLEFT",  8, 0);
+	self.PortraitFrame:Show();
+	self.TopLeftCorner:Hide();
+	self.TopBorder:SetPoint("TOPLEFT", self.PortraitFrame, "TOPRIGHT",  0, -10);
+	self.LeftBorder:SetPoint("TOPLEFT", self.PortraitFrame, "BOTTOMLEFT",  8, 0);
 end
 
 -- A bit ugly, we want the talent frame to display a dialog box in certain conditions.
@@ -176,98 +182,6 @@ function PortraitFrameCloseButton_OnClick(self)
 	else
 		HideParentPanel(self);
 	end
-end
-
-
--- Function to handle the update of manually calculated scrollframes.  Used mostly for listings with an indeterminate number of items
-function FauxScrollFrame_Update(frame, numItems, numToDisplay, buttonHeight, button, smallWidth, bigWidth, highlightFrame, smallHighlightWidth, bigHighlightWidth, alwaysShowScrollBar )
-	-- If more than one screen full of skills then show the scrollbar
-	local frameName = frame:GetName();
-	local scrollBar = _G[ frameName.."ScrollBar" ];
-	local showScrollBar;
-	if ( numItems > numToDisplay or alwaysShowScrollBar ) then
-		frame:Show();
-		showScrollBar = 1;
-	else
-		scrollBar:SetValue(0);
-		frame:Hide();
-	end
-	if ( frame:IsShown() ) then
-		local scrollChildFrame = _G[ frameName.."ScrollChildFrame" ];
-		local scrollUpButton = _G[ frameName.."ScrollBarScrollUpButton" ];
-		local scrollDownButton = _G[ frameName.."ScrollBarScrollDownButton" ];
-		local scrollFrameHeight = 0;
-		local scrollChildHeight = 0;
-
-		if ( numItems > 0 ) then
-			scrollFrameHeight = (numItems - numToDisplay) * buttonHeight;
-			scrollChildHeight = numItems * buttonHeight;
-			if ( scrollFrameHeight < 0 ) then
-				scrollFrameHeight = 0;
-			end
-			scrollChildFrame:Show();
-		else
-			scrollChildFrame:Hide();
-		end
-		local maxRange = (numItems - numToDisplay) * buttonHeight;
-		if (maxRange < 0) then
-			maxRange = 0;
-		end
-		scrollBar:SetMinMaxValues(0, maxRange);
-		scrollBar:SetValueStep(buttonHeight);
-		scrollBar:SetStepsPerPage(numToDisplay-1);
-		scrollChildFrame:SetHeight(scrollChildHeight);
-
-		-- Arrow button handling
-		if ( scrollBar:GetValue() == 0 ) then
-			scrollUpButton:Disable();
-		else
-			scrollUpButton:Enable();
-		end
-		if ((scrollBar:GetValue() - scrollFrameHeight) == 0) then
-			scrollDownButton:Disable();
-		else
-			scrollDownButton:Enable();
-		end
-
-		-- Shrink because scrollbar is shown
-		if ( highlightFrame ) then
-			highlightFrame:SetWidth(smallHighlightWidth);
-		end
-		if ( button ) then
-			for i=1, numToDisplay do
-				_G[button..i]:SetWidth(smallWidth);
-			end
-		end
-	else
-		-- Widen because scrollbar is hidden
-		if ( highlightFrame ) then
-			highlightFrame:SetWidth(bigHighlightWidth);
-		end
-		if ( button ) then
-			for i=1, numToDisplay do
-				_G[button..i]:SetWidth(bigWidth);
-			end
-		end
-	end
-	return showScrollBar;
-end
-
-function FauxScrollFrame_OnVerticalScroll(self, value, itemHeight, updateFunction)
-	local scrollbar = _G[self:GetName().."ScrollBar"];
-	scrollbar:SetValue(value);
-	self.offset = floor((value / itemHeight) + 0.5);
-	if ( updateFunction ) then
-		updateFunction(self);
-	end
-end
-
-function FauxScrollFrame_GetOffset(frame)
-	return frame.offset;
-end
-
-function FauxScrollFrame_SetOffset(frame, offset)
-	frame.offset = offset;
 end
 
 -- Scrollframe functions
@@ -427,20 +341,8 @@ function EditBox_HandleTabbing(self, tabList)
 	_G[target]:SetFocus();
 end
 
-function EditBox_ClearFocus (self)
-	self:ClearFocus();
-end
-
 function EditBox_SetFocus (self)
 	self:SetFocus();
-end
-
-function EditBox_HighlightText (self)
-	self:HighlightText();
-end
-
-function EditBox_ClearHighlight (self)
-	self:HighlightText(0, 0);
 end
 
 function InputBoxInstructions_OnTextChanged(self)
@@ -459,6 +361,45 @@ end
 
 function InputBoxInstructions_OnEnable(self)
 	InputBoxInstructions_UpdateColorForEnabledState(self, self.enabledColor);
+end
+
+function SearchBoxTemplate_OnLoad(self)
+	self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
+	self:SetTextInsets(16, 20, 0, 0);
+	self.Instructions:SetText(SEARCH);
+	self.Instructions:ClearAllPoints();
+	self.Instructions:SetPoint("TOPLEFT", self, "TOPLEFT", 16, 0);
+	self.Instructions:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -20, 0);
+end
+
+function SearchBoxTemplate_OnEditFocusLost(self)
+	if ( self:GetText() == "" ) then
+		self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
+		self.clearButton:Hide();
+	end
+end
+
+function SearchBoxTemplate_OnEditFocusGained(self)
+	self.searchIcon:SetVertexColor(1.0, 1.0, 1.0);
+	self.clearButton:Show();
+end
+
+function SearchBoxTemplate_OnTextChanged(self)
+	if ( not self:HasFocus() and self:GetText() == "" ) then
+		self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
+		self.clearButton:Hide();
+	else
+		self.searchIcon:SetVertexColor(1.0, 1.0, 1.0);
+		self.clearButton:Show();
+	end
+	InputBoxInstructions_OnTextChanged(self);
+end
+
+function SearchBoxTemplateClearButton_OnClick(self)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	local editBox = self:GetParent();
+	editBox:SetText("");
+	editBox:ClearFocus();
 end
 
 -- functions to manage tab interfaces where only one tab of a group may be selected
@@ -505,11 +446,12 @@ end
 function PanelTemplates_TabResize(tab, padding, absoluteSize, minWidth, maxWidth, absoluteTextSize)
 	local tabName = tab:GetName();
 
-	local buttonMiddle = tab.Middle or _G[tabName.."Middle"];
-	local buttonMiddleDisabled = tab.MiddleDisabled or _G[tabName.."MiddleDisabled"];
-	local sideWidths = tab.Left and 2 * tab.Left:GetWidth() or 2 * _G[tabName.."Left"]:GetWidth();
+	local buttonMiddle = tab.Middle or tab.middleTexture or _G[tabName.."Middle"];
+	local buttonMiddleDisabled = tab.MiddleDisabled or (tabName and _G[tabName.."MiddleDisabled"]);
+	local left = tab.Left or tab.leftTexture or _G[tabName.."Left"];
+	local sideWidths = 2 * left:GetWidth();
 	local tabText = tab.Text or _G[tab:GetName().."Text"];
-	local highlightTexture = tab.HighlightTexture or _G[tabName.."HighlightTexture"];
+	local highlightTexture = tab.HighlightTexture or (tabName and _G[tabName.."HighlightTexture"]);
 
 	local width, tabWidth;
 	local textWidth;
@@ -669,8 +611,9 @@ function PanelTemplates_SelectTab(tab)
 	middleDisabled:Show();
 	rightDisabled:Show();
 
-	if ( GameTooltip and GameTooltip:IsOwned(tab) ) then
-		GameTooltip:Hide();
+	local tooltip = GetAppropriateTooltip();
+	if tooltip:IsOwned(tab) then
+		tooltip:Hide();
 	end
 end
 
@@ -910,4 +853,155 @@ function MaximizeMinimizeButtonFrameMixin:Minimize()
 	
 	self.MaximizeButton:Show();
 	self.MinimizeButton:Hide();
+end
+
+PortraitFrameTemplateMixin = {}
+
+function PortraitFrameTemplateMixin:OnLoad()
+
+	local use2XFrameTextures = GetCVarBool("useHighResolutionUITextures");
+	if (use2XFrameTextures) then
+		self.PortraitFrame:SetAtlas("UI-Frame-Portrait-2x");
+		self.TopRightCorner:SetAtlas("UI-Frame-TopCornerRight-2x");
+
+		self.TopBorder:SetAtlas("_UI-Frame-TittleTile2x");
+		
+		self.BotLeftCorner:SetAtlas("UI-Frame-BotCornerLeft-2x");
+		self.BotRightCorner:SetAtlas("UI-Frame-BotCornerRight-2x");
+
+		self.BottomBorder:SetAtlas("_UI-Frame-Bot2x");
+		self.LeftBorder:SetAtlas("!UI-Frame-LeftTile2x");
+		self.RightBorder:SetAtlas("!UI-Frame-RightTile2x");
+	end
+end
+
+-- Truncated Button code
+
+function TruncatedButton_OnSizeChanged(self, width, height)
+	self.Text:SetWidth(width - 5);
+	self.Text:SetHeight(height);
+end
+
+function TruncatedButton_OnEnter(self)
+	if self.Text:IsTruncated() then
+		local tooltip = GetAppropriateTooltip();
+		tooltip:SetOwner(self, "ANCHOR_RIGHT");
+		tooltip:SetText(self.Text:GetText());
+		tooltip:Show();
+	end
+end
+
+function TruncatedButton_OnLeave(self)
+	local tooltip = GetAppropriateTooltip();
+	if tooltip:GetOwner() == self then
+		tooltip:Hide();
+	end
+end
+
+-- Truncated Tooltip Script code
+
+function TruncatedTooltipScript_OnEnter(self)
+	local text = self.truncatedTooltipScriptText or self.Text;
+	if text:IsTruncated() then
+		local tooltip = GetAppropriateTooltip();
+		tooltip:SetOwner(self, "ANCHOR_RIGHT");
+		tooltip:SetText(text:GetText());
+		tooltip:Show();
+	end
+end
+
+function TruncatedTooltipScript_OnLeave(self)
+	local tooltip = GetAppropriateTooltip();
+	if tooltip:GetOwner() == self then
+		tooltip:Hide();
+	end
+end
+
+function GetAppropriateTopLevelParent()
+	return UIParent or GlueParent;
+end
+
+function SetAppropriateTopLevelParent(frame)
+	local parent = GetAppropriateTopLevelParent();
+	if parent then
+		frame:SetParent(parent);
+	end
+end
+
+function GetAppropriateTooltip()
+	return UIParent and GameTooltip or GlueTooltip;
+end
+
+ColumnDisplayMixin = {};
+
+function ColumnDisplayMixin:OnLoad()
+	self.columnHeaders = CreateFramePool("BUTTON", self, "ColumnDisplayButtonTemplate");
+end
+
+--[[
+The layout of your column display might look something like:
+local FOO_COLUMN_INFO = {
+	[1] = {
+		title = FOO_COLUMN_xxx_TITLE,
+		width = 60,
+	},
+	
+	...
+	
+	[5] = {
+		title = FOO_COLUMN_xxxxx_TITLE,
+		width = 0,
+	},
+};
+--]]
+
+function ColumnDisplayMixin:LayoutColumns(columnInfo, extraColumnInfo)
+	self.columnHeaders:ReleaseAll();
+	
+	local extraHeader = nil;
+	if extraColumnInfo then
+		extraHeader = self.columnHeaders:Acquire();
+		extraHeader:SetText(extraColumnInfo.title);
+		extraHeader:SetWidth(extraColumnInfo.width);
+		extraHeader:SetPoint("BOTTOMRIGHT", -28, 1);
+		extraHeader:SetID(#columnInfo + 1);
+		extraHeader:Show();
+	end
+	
+	local previousHeader = nil;
+	for i, info in ipairs(columnInfo) do
+		local header = self.columnHeaders:Acquire();
+		header:SetText(info.title);
+		header:SetWidth(info.width);
+		header:SetID(i);
+		if i == 1 then
+			header:SetPoint("BOTTOMLEFT", 2, 1);
+			if #columnInfo == 1 then
+				header:SetPoint("BOTTOMRIGHT");
+			end
+		else
+			header:SetPoint("BOTTOMLEFT", previousHeader, "BOTTOMRIGHT", -2, 0);
+			
+			if i == #columnInfo and info.width == 0 then
+				if extraHeader then
+					header:SetPoint("BOTTOMRIGHT", extraHeader, "BOTTOMLEFT", 2, 0);
+				else
+					header:SetPoint("BOTTOMRIGHT", -28, 1);
+				end
+			end
+		end
+		
+		header:Show();
+		previousHeader = header;
+	end
+end
+
+function ColumnDisplayMixin:OnClick(columnIndex)
+	if self.sortingFunction then
+		self.sortingFunction(self, columnIndex);
+	end
+end
+
+function ColumnDisplayButton_OnClick(self)
+	self:GetParent():OnClick(self:GetID());
 end

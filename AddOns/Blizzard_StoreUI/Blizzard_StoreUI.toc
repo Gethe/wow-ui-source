@@ -1,6 +1,5 @@
-## Interface: 70300
 ## Title: Blizzard Store UI
-## Secure: 1
+## AllowLoad: Both
 ..\..\SharedXML\Spline.lua
 ..\..\SharedXML\Pools.lua
 ..\..\SharedXML\ModelSceneTemplatesScripts.xml

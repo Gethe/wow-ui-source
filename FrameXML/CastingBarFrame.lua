@@ -75,8 +75,6 @@ function CastingBarFrame_SetUnit(self, unit, showTradeSkills, showShield)
 			self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START");
 			self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE");
 			self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP");
-			self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE");
-			self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE");
 			self:RegisterEvent("PLAYER_ENTERING_WORLD");
 			self:RegisterUnitEvent("UNIT_SPELLCAST_START", unit);
 			self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", unit);
@@ -89,8 +87,6 @@ function CastingBarFrame_SetUnit(self, unit, showTradeSkills, showShield)
 			self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START");
 			self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE");
 			self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP");
-			self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE");
-			self:UnregisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE");
 			self:UnregisterEvent("PLAYER_ENTERING_WORLD");
 			self:UnregisterEvent("UNIT_SPELLCAST_START");
 			self:UnregisterEvent("UNIT_SPELLCAST_STOP");
@@ -104,12 +100,12 @@ end
 function CastingBarFrame_OnShow(self)
 	if ( self.unit ) then
 		if ( self.casting ) then
-			local _, _, _, _, startTime = UnitCastingInfo(self.unit);
+			local _, _, _, startTime = CastingInfo();
 			if ( startTime ) then
 				self.value = (GetTime() - (startTime / 1000));
 			end
 		else
-			local _, _, _, _, _, endTime = UnitChannelInfo(self.unit);
+			local _, _, _, _, endTime = ChannelInfo();
 			if ( endTime ) then
 				self.value = ((endTime / 1000) - GetTime());
 			end
@@ -129,8 +125,8 @@ function CastingBarFrame_OnEvent(self, event, ...)
 	
 	local unit = self.unit;
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		local nameChannel = UnitChannelInfo(unit);
-		local nameSpell = UnitCastingInfo(unit);
+		local nameChannel = ChannelInfo();
+		local nameSpell = CastingInfo();
 		if ( nameChannel ) then
 			event = "UNIT_SPELLCAST_CHANNEL_START";
 			arg1 = unit;
@@ -147,7 +143,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 	end
 	
 	if ( event == "UNIT_SPELLCAST_START" ) then
-		local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit);
+		local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = CastingInfo();
 		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 			self:Hide();
 			return;
@@ -205,7 +201,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 		if ( not self:IsVisible() ) then
 			self:Hide();
 		end
-		if ( (self.casting and event == "UNIT_SPELLCAST_STOP" and select(4, ...) == self.castID) or
+		if ( (self.casting and event == "UNIT_SPELLCAST_STOP" and select(2, ...) == self.castID) or
 		     (self.channeling and event == "UNIT_SPELLCAST_CHANNEL_STOP") ) then
 			if ( self.Spark ) then
 				self.Spark:Hide();
@@ -229,7 +225,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" ) then
 		if ( self:IsShown() and
-		     (self.casting and select(4, ...) == self.castID) and not self.fadeOut ) then
+		     (self.casting and select(2, ...) == self.castID) and not self.fadeOut ) then
 			self:SetValue(self.maxValue);
 			self:SetStatusBarColor(self.failedCastColor:GetRGB());
 			if ( self.Spark ) then
@@ -249,7 +245,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "UNIT_SPELLCAST_DELAYED" ) then
 		if ( self:IsShown() ) then
-			local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit);
+			local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = CastingInfo();
 			if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 				-- if there is no name, there is no bar
 				self:Hide();
@@ -274,7 +270,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			end
 		end
 	elseif ( event == "UNIT_SPELLCAST_CHANNEL_START" ) then
-		local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill, notInterruptible = UnitChannelInfo(unit);
+		local name, text, texture, startTime, endTime, isTradeSkill, notInterruptible, spellID = ChannelInfo();
 		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 			-- if there is no name, there is no bar
 			self:Hide();
@@ -324,7 +320,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "UNIT_SPELLCAST_CHANNEL_UPDATE" ) then
 		if ( self:IsShown() ) then
-			local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill = UnitChannelInfo(unit);
+			local name, text, texture, startTime, endTime, isTradeSkill = ChannelInfo();
 			if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 				-- if there is no name, there is no bar
 				self:Hide();
@@ -363,11 +359,8 @@ function CastingBarFrame_UpdateInterruptibleState(self, notInterruptible)
 			end
 		end
 
-		if ( self.Icon ) then
-			self.Icon:SetTexture(texture);
-			if ( self.iconWhenNoninterruptible ) then
-				self.Icon:SetShown(not notInterruptible);
-			end
+		if ( self.Icon and self.iconWhenNoninterruptible ) then
+			self.Icon:SetShown(not notInterruptible);
 		end
 	end
 end

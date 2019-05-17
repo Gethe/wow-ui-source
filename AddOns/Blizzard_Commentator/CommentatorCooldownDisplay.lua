@@ -281,7 +281,7 @@ function CommentatorCooldownFrameMixin:Update()
 		self.ChargesText:SetText("");
 	end
 	
-	local spellName, spellSubname, spellIcon = GetSpellInfo(self.spellID);
+	local spellName, _, spellIcon = GetSpellInfo(self.spellID);
 	self.Icon:SetTexture(spellIcon);
 	
 	self:SetActive(self.info:IsCooldownActive(self.spellID));

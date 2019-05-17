@@ -113,6 +113,7 @@ local AUTOCOMPLETE_LIST = AUTOCOMPLETE_LIST;
 	AUTOCOMPLETE_LIST.IGNORE			= AUTOCOMPLETE_LIST_TEMPLATES.NOT_FRIEND;
 	AUTOCOMPLETE_LIST.LOOT_MASTER		= AUTOCOMPLETE_LIST_TEMPLATES.IN_GROUP;
 	AUTOCOMPLETE_LIST.WARGAME			= AUTOCOMPLETE_LIST_TEMPLATES.BNET_NOT_IN_PARTY;
+	AUTOCOMPLETE_LIST.COMMUNITY			= AUTOCOMPLETE_LIST_TEMPLATES.ALL_OTHER_CHARS;
 
 AUTOCOMPLETE_COLOR_KEYS = 
 {
@@ -146,7 +147,7 @@ end
 function AutoComplete_Update(parent, text, cursorPosition)
 	local self = AutoCompleteBox;
 	local attachPoint;
-	if ( not parent.autoCompleteParams ) then
+	if ( not parent.autoCompleteSource or not parent.autoCompleteParams ) then
 		return;
 	end
 	if ( not text or text == "" ) then
@@ -179,11 +180,18 @@ function AutoComplete_Update(parent, text, cursorPosition)
 		
 		self.parent = parent;
 		--We ask for one more result than we need so that we know whether or not results are continued
-		local possibilities = GetAutoCompleteResults(text, parent.autoCompleteParams.include, parent.autoCompleteParams.exclude, AUTOCOMPLETE_MAX_BUTTONS+1, cursorPosition);
+		local allowFullMatch = true;
+		local possibilities = parent.autoCompleteSource(text, AUTOCOMPLETE_MAX_BUTTONS+1, cursorPosition, allowFullMatch, unpack(parent.autoCompleteParams));
 
 		if (not possibilities) then
 			possibilities = {};
 		end
+		
+		-- We only want to show an exact match in the autocomplete dropdown if there are multiple results.
+		if (#possibilities == 1 and text == possibilities[1].name) then
+			possibilities[1] = nil;
+		end
+		
 		local realmStart = text:find("-", 1, true); 
 		if (realmStart) then
 			local realms = GetAutoCompleteRealms();
@@ -248,7 +256,7 @@ function AutoComplete_UpdateResults(self, results, context)
 	local maxWidth = 120;
 	for i=1, numReturns do
 		local button = _G["AutoCompleteButton"..i]
-		button.name = Ambiguate(results[i].name, "none");
+		button.nameInfo = results[i];
 		local displayName = Ambiguate(results[i].name, context or "all");
 		local displayText;
 		local displayInfo = AUTOCOMPLETE_COLOR_KEYS[results[i].priority]
@@ -315,6 +323,15 @@ function AutoComplete_IncrementSelection(editBox, up)
 	return false;
 end
 
+function AutoCompleteEditBox_SetAutoCompleteSource(self, source, ...)
+	self.autoCompleteSource = source;
+	self.autoCompleteParams = { ... };
+end
+
+function AutoCompleteEditBox_SetCustomAutoCompleteFunction(self, customAutoCompleteFunction)
+	self.customAutoCompleteFunction = customAutoCompleteFunction;
+end
+
 function AutoCompleteEditBox_OnTabPressed(editBox)
 	return AutoComplete_IncrementSelection(editBox, IsShiftKeyDown())
 end
@@ -346,21 +363,21 @@ function AutoCompleteEditBox_OnTextChanged(self, userInput)
 end
 
 function AutoCompleteEditBox_AddHighlightedText(editBox, text)
-	if ( not editBox.autoCompleteParams ) then
+	if ( not editBox.autoCompleteSource or not editBox.autoCompleteParams ) then
 		return;
 	end
 	local editBoxText = editBox:GetText();
 	local utf8Position = editBox:GetUTF8CursorPosition();
-	local nameInfo = GetAutoCompleteResults(text, editBox.autoCompleteParams.include, editBox.autoCompleteParams.exclude, 1, utf8Position)[1]; --just want first name
-	
+	local allowFullMatch = true;
+	local nameInfo = editBox.autoCompleteSource(text, 1, utf8Position, allowFullMatch, unpack(editBox.autoCompleteParams))[1]; --just want first name
 	if ( nameInfo and nameInfo.name ) then
 		--We're going to be setting the text programatically which will clear the userInput flag on the editBox. So we want to manually update the dropdown before we change the text.
 		AutoComplete_Update(editBox, editBoxText, utf8Position);
-		local name = Ambiguate(nameInfo.name, editBox.autoCompleteContext or "all")
+		local name = Ambiguate(nameInfo.name, editBox.autoCompleteContext or "all");
 		local newText = string.gsub(editBoxText, AUTOCOMPLETE_SIMPLE_REGEX,
 							string.format(AUTOCOMPLETE_SIMPLE_FORMAT_REGEX, name,
 								string.match(editBoxText, AUTOCOMPLETE_SIMPLE_REGEX)),
-								1)
+								1);
 		editBox:SetText(newText);
 		editBox:HighlightText(strlen(editBoxText), strlen(newText));	--This won't work if there is more after the name, but we aren't enabling this for normal chat (yet). Please fix me when we do.
 		editBox:SetCursorPosition(strlen(editBoxText));
@@ -390,13 +407,14 @@ function AutoCompleteButton_OnClick(self)
 	local autoComplete = self:GetParent();
 	local editBox = autoComplete.parent;
 	local editBoxText = editBox:GetText();
+	local name = Ambiguate(self.nameInfo.name, "none");
 	local newText;
 	
 	if (editBox.command) then
-		newText = editBox.command.." "..self.name;
+		newText = editBox.command.." "..name;
 	else
 		newText = string.gsub(editBoxText, AUTOCOMPLETE_SIMPLE_REGEX,
-			string.format(AUTOCOMPLETE_SIMPLE_FORMAT_REGEX, self.name,
+			string.format(AUTOCOMPLETE_SIMPLE_FORMAT_REGEX, name,
 				string.match(editBoxText, AUTOCOMPLETE_SIMPLE_REGEX)),
 				1);
 	end
@@ -405,8 +423,13 @@ function AutoCompleteButton_OnClick(self)
 		newText = newText.." ";
 	end
 	
+	autoComplete:Hide();
+	
+	if ( editBox.customAutoCompleteFunction ~= nil and editBox.customAutoCompleteFunction(editBox, newText, self.nameInfo) ) then
+		return;
+	end
+	
 	editBox:SetText(newText);
 	--When we change the text, we move to the end, so we'll be consistent and move to the end if we don't change it as well.
 	editBox:SetCursorPosition(strlen(newText));
-	autoComplete:Hide();
 end

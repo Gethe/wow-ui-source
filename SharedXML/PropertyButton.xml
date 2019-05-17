@@ -1,0 +1,43 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+	<Script file="PropertyButton.lua"/>
+
+	<Button name="PropertyButtonTemplate" registerForClicks="LeftButtonUp" mixin="PropertyBindingMixin, PropertyButtonMixin" hidden="true" virtual="true">
+		<!-- Expected KeyValues, values left blank for ease of copying.
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="" type="number"/>
+			<KeyValue key="fixedHeight" value="" type="number"/>
+			<KeyValue key="customToggleFunctionName" value="" type="string"/>
+
+			// If you would like to use a custom overlay icon on the button rather than just normal/pushed textures.
+			// Icon state is determined by predicates you define.
+
+			<KeyValue key="iconKey" value="" type="string"/>
+			<KeyValue key="fixedIconWidth" value="" type="number"/>
+			<KeyValue key="fixedIconHeight" value="" type="number"/>
+			<KeyValue key="iconPushedOffsetX" value="" type="number"/>
+			<KeyValue key="iconPushedOffsetY" value="" type="number"/>
+			<KeyValue key="iconPushedAlpha" value="" type="number"/>
+			<KeyValue key="iconNormalAlpha" value="" type="number"/>
+
+			// Standard button textures.
+			<KeyValue key="normalAtlas" value="" type="string"/>
+			<KeyValue key="pushedAtlas" value="" type="string"/>
+			<KeyValue key="highlightAtlas" value="" type="string"/>
+
+			// Whether or not this frame needs a tooltip
+			<KeyValue key="tooltipFrame" value="" type="global"/>
+			<KeyValue key="tooltipPoint" value="" type="string"/>
+		</KeyValues>
+		-->
+
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnClick method="OnClick"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+</Ui>

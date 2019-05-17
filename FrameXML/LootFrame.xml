@@ -165,58 +165,58 @@
 	</Frame>
 	<Frame name="GroupLootFrameTemplate" parent="UIParent" toplevel="true" frameStrata="DIALOG" hidden="true" virtual="true">
 		<Size x="243" y="84"/>
-		<Layers>
-			<Layer level="ARTWORK">
+				<Layers>
+					<Layer level="ARTWORK">
 				<Texture name="$parentSlotTexture" file="Interface\Buttons\UI-EmptySlot">
 					<Size>
 						<AbsDimension x="64" y="64"/>
 					</Size>
-					<Anchors>
+							<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
 								<AbsDimension x="3" y="-3"/>
 							</Offset>
 						</Anchor>
-					</Anchors>
-				</Texture>
+							</Anchors>
+						</Texture>
 				<Texture name="$parentNameFrame" file="Interface\MerchantFrame\UI-Merchant-LabelSlots">
 					<Size>
 						<AbsDimension x="128" y="64"/>
 					</Size>
-					<Anchors>
+							<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT">
 							<Offset>
 								<AbsDimension x="-9" y="-10"/>
 							</Offset>
 						</Anchor>
-					</Anchors>
-				</Texture>
+							</Anchors>
+						</Texture>
 				<FontString parentKey="Name" name="$parentName" inherits="GameFontNormalSmall" text="Item Name" justifyH="LEFT">
 					<Size>
 						<AbsDimension x="90" y="30"/>
 					</Size>
-					<Anchors>
+							<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT">
 							<Offset>
 								<AbsDimension x="-5" y="5"/>
 							</Offset>
 						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
+							</Anchors>
+						</FontString>
+					</Layer>
+							<Layer level="OVERLAY">
 				<Texture name="$parentDecoration" file="Interface\DialogFrame\UI-DialogBox-Gold-Dragon" hidden="true">
 					<Size>
 						<AbsDimension x="120" y="120"/>
 					</Size>
-					<Anchors>
+									<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
 								<AbsDimension x="-30" y="15"/>
 							</Offset>
 						</Anchor>
-					</Anchors>
-				</Texture>
+									</Anchors>
+						</Texture>
 				<Texture name="$parentCorner" file="Interface\DialogFrame\UI-DialogBox-Corner">
 					<Size>
 						<AbsDimension x="32" y="32"/>

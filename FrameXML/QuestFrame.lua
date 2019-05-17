@@ -1,4 +1,4 @@
-MAX_NUM_QUESTS = 32;
+MAX_NUM_QUESTS = 25; -- The max number of QuestTitleButtons.
 MAX_NUM_ITEMS = 10;
 MAX_REQUIRED_ITEMS = 6;
 QUEST_DESCRIPTION_GRADIENT_LENGTH = 30;
@@ -17,6 +17,7 @@ function QuestFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_ITEM_UPDATE");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+	self:RegisterEvent("PORTRAITS_UPDATED");
 	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
 end
 
@@ -25,10 +26,10 @@ function QuestFrame_OnEvent(self, event, ...)
 		HideUIPanel(QuestFrame);
 		return;
 	end
-	if ( (event == "QUEST_ITEM_UPDATE") and not QuestFrame:IsShown() ) then
+	if ( event == "QUEST_ITEM_UPDATE" and not QuestFrame:IsShown() ) then
 		return;
 	end
-	if ( (event == "UNIT_PORTRAIT_UPDATE") and not QuestFrame:IsShown() ) then
+	if (event == "UNIT_PORTRAIT_UPDATE" or event == "PORTRAITS_UPDATED") and not QuestFrame:IsShown() then
 		return;
 	end
 
@@ -40,11 +41,6 @@ function QuestFrame_OnEvent(self, event, ...)
 		QUEST_FRAME_AUTO_ACCEPT_QUEST_ID = 0;
         QUEST_FRAME_AUTO_ACCEPT_QUEST_START_ITEM_ID = 0;
 
-		if ( QuestIsFromAdventureMap() ) then
-			HideUIPanel(QuestLogPopupDetailFrame);
-			return;
-		end
-
         if(questStartItemID ~= nil and questStartItemID ~= 0) then
             QUEST_FRAME_AUTO_ACCEPT_QUEST_ID = GetQuestID();
             QUEST_FRAME_AUTO_ACCEPT_QUEST_START_ITEM_ID = questStartItemID;
@@ -53,15 +49,9 @@ function QuestFrame_OnEvent(self, event, ...)
             return;
 		end
 
-		if ( QuestGetAutoAccept() and QuestIsFromAreaTrigger()) then
-			PlayAutoAcceptQuestSound();
-			CloseQuest();
-			return;
-		else
-			HideUIPanel(QuestLogPopupDetailFrame);
-			QuestFrameDetailPanel:Hide();
-			QuestFrameDetailPanel:Show();
-		end
+		HideUIPanel(QuestLogPopupDetailFrame);
+		QuestFrameDetailPanel:Hide();
+		QuestFrameDetailPanel:Show();
 	elseif ( event == "QUEST_PROGRESS" ) then
 		HideUIPanel(QuestLogPopupDetailFrame);
 		QuestFrameProgressPanel:Hide();
@@ -120,7 +110,7 @@ function QuestFrameRewardPanel_OnShow()
 	QuestRewardScrollFrameScrollBar:SetValue(0);
 	local questPortrait, questPortraitText, questPortraitName = GetQuestPortraitTurnIn();
 	if (questPortrait ~= 0) then
-		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitText, questPortraitName, -3, -42);
+		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, 0, questPortraitText, questPortraitName, -3, -42);
 	else
 		QuestFrame_HideQuestPortrait();
 	end
@@ -197,7 +187,7 @@ end
 
 function QuestFrameProgressItems_Update()
 	local numRequiredItems = GetNumQuestItems();
-	local numRequiredCurrencies = GetNumQuestCurrencies();
+	local numRequiredCurrencies = 0;--GetNumQuestCurrencies();
 	local questItemName = "QuestProgressItem";
 	local buttonIndex = 1;
 	if ( numRequiredItems > 0 or GetQuestMoneyToGet() > 0 or numRequiredCurrencies > 0) then
@@ -300,7 +290,7 @@ function QuestFrameGreetingPanel_OnShow()
 		CurrentQuestsText:SetPoint("TOPLEFT", "GreetingText", "BOTTOMLEFT", 0, -10);
 		CurrentQuestsText:Show();
 		QuestTitleButton1:SetPoint("TOPLEFT", "CurrentQuestsText", "BOTTOMLEFT", -10, -5);
-		for i=1, numActiveQuests, 1 do
+		for i=1, numActiveQuests do
 			local questTitleButton = _G["QuestTitleButton"..i];
 			local title, isComplete = GetActiveTitle(i);
 			questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, title);
@@ -326,7 +316,7 @@ function QuestFrameGreetingPanel_OnShow()
 		end
 		AvailableQuestsText:Show();
 		_G["QuestTitleButton"..(numActiveQuests + 1)]:SetPoint("TOPLEFT", "AvailableQuestsText", "BOTTOMLEFT", -10, -5);
-		for i=(numActiveQuests + 1), (numActiveQuests + numAvailableQuests), 1 do
+		for i=(numActiveQuests + 1), (numActiveQuests + numAvailableQuests) do
 			local questTitleButton = _G["QuestTitleButton"..i];
 			questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));
 			questTitleButton:SetHeight(questTitleButton:GetTextHeight() + 2);
@@ -338,7 +328,7 @@ function QuestFrameGreetingPanel_OnShow()
 			end
 		end
 	end
-	for i=(numActiveQuests + numAvailableQuests + 1), MAX_NUM_QUESTS, 1 do
+	for i=(numActiveQuests + numAvailableQuests + 1), MAX_NUM_QUESTS do
 		_G["QuestTitleButton"..i]:Hide();
 	end
 end
@@ -622,7 +612,7 @@ function QuestFrame_UpdatePortraitText(text)
 	end
 end
 
-function QuestFrame_ShowQuestPortrait(parentFrame, portrait, text, name, x, y)
+function QuestFrame_ShowQuestPortrait(parentFrame, portraitDisplayID, mountPortraitDisplayID, text, name, x, y)
 	QuestNPCModel:SetParent(parentFrame);
 	QuestNPCModel:ClearAllPoints();
 	QuestNPCModel:SetPoint("TOPLEFT", parentFrame, "TOPRIGHT", x, y);
@@ -640,10 +630,10 @@ function QuestFrame_ShowQuestPortrait(parentFrame, portrait, text, name, x, y)
 		QuestNPCModelNameText:Hide();
 	end
 
-	if (portrait == -1) then
+	if (portraitDisplayID == -1) then
 		QuestNPCModel:SetUnit("player");
 	else
-		QuestNPCModel:SetDisplayInfo(portrait);
+		QuestNPCModel:SetDisplayInfo(portraitDisplayID, mountPortraitDisplayID);
 	end
 end
 
@@ -659,20 +649,15 @@ function QuestFrameDetailPanel_OnShow()
 	QuestFrameRewardPanel:Hide();
 	QuestFrameProgressPanel:Hide();
 	QuestFrameGreetingPanel:Hide();
-	if ( QuestGetAutoAccept() ) then
-		QuestFrameDeclineButton:Hide();
-		QuestFrameCloseButton:Disable();
-		QuestFrame.autoQuest = true;
-	else
-		QuestFrameDeclineButton:Show();
-	end
+	QuestFrameDeclineButton:Show();
+
 	local material = QuestFrame_GetMaterial();
 	QuestFrame_SetMaterial(QuestFrameDetailPanel, material);
 	QuestInfo_Display(QUEST_TEMPLATE_DETAIL, QuestDetailScrollChildFrame, QuestFrameAcceptButton, material);
 	QuestDetailScrollFrameScrollBar:SetValue(0);
-	local questPortrait, questPortraitText, questPortraitName = GetQuestPortraitGiver();
+	local questPortrait, questPortraitText, questPortraitName, questPortraitMount = GetQuestPortraitGiver();
 	if (questPortrait ~= 0) then
-		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitText, questPortraitName, -3, -42);
+		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitMount, questPortraitText, questPortraitName, -3, -42);
 	else
 		QuestFrame_HideQuestPortrait();
 	end
@@ -724,14 +709,10 @@ function QuestFrameDetailPanel_OnUpdate(self, elapsed)
 end
 
 function QuestDetailAcceptButton_OnClick()
-	if ( QuestFlagsPVP() ) then
-		QuestFrame.dialog = StaticPopup_Show("CONFIRM_ACCEPT_PVP_QUEST");
+	if ( QuestFrame.autoQuest ) then
+		AcknowledgeAutoAcceptQuest();
 	else
-		if ( QuestFrame.autoQuest ) then
-			AcknowledgeAutoAcceptQuest();
-		else
-			AcceptQuest();
-		end
+		AcceptQuest();
 	end
 end
 

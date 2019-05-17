@@ -1,63 +1,66 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="PetitionFrame.lua"/>
-	<Frame name="PetitionFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
+	<Frame name="PetitionFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="70"/>
+		</HitRectInsets>
 		<Layers>
-			<Layer level="OVERLAY" textureSubLevel="-1">
-                <Texture name="PetitionFramePortrait" file="Interface\PetitionFrame\GuildCharter-Icon">
-                    <Size x="58" y="58"/>
-                    <Anchors>
-                        <Anchor point="TOPLEFT" x="-5" y="5"/>
-                    </Anchors>
-                </Texture>
-            </Layer>
 			<Layer level="BACKGROUND">
-                <Texture name="PetitionFrameBg" file="Interface\QuestFrame\QuestBG">
-					<Size x="512" y="512"/>
+				<Texture name="PetitionFramePortrait" file="Interface\PetitionFrame\GuildCharter-Icon">
+					<Size x="58" y="58"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="7" y="-62"/>
+						<Anchor point="TOPLEFT" x="10" y="-8"/>
 					</Anchors>
 				</Texture>
             </Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-					<Size x="31" y="102"/>
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-3" y="-59"/>
-					</Anchors>
-					<TexCoords left="0" right="0.484375" top="0" bottom="0.4"/>
-				</Texture>
-				<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-					<Size x="31" y="106"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-3" y="25"/>
-					</Anchors>
-					<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-				</Texture>
-				<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-					<Size x="31" y="1"/>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
-						<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
-					</Anchors>
-					<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
-				</Texture>
-				<Texture file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Disabled">
-					<Size x="30" y="30"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="-3" y="-57"/>
+						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled">
-					<Size x="30" y="30"/>
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-3" y="20"/>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
 				<FontString name="PetitionFrameCharterTitle" inherits="QuestTitleFont" justifyH="LEFT">
 					<Size x="285" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="12" y="-80"/>
+						<Anchor point="TOPLEFT" x="30" y="-95"/>
 					</Anchors>
 				</FontString>
 				<FontString name="PetitionFrameCharterName" inherits="QuestFont" justifyH="LEFT">
@@ -150,7 +153,7 @@
 			<Frame name="PetitionNpcNameFrame">
 				<Size x="300" y="14"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="PetitionFrame" relativePoint="TOP" x="10" y="-5"/>
+					<Anchor point="TOP" relativeTo="PetitionFrame" relativePoint="TOP" x="10" y="-23"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -166,7 +169,7 @@
 			<Button name="PetitionFrameCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size x="75" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="PetitionFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="PetitionFrame" relativePoint="BOTTOMRIGHT" x="-40" y="72"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="HideParentPanel"/>
@@ -175,7 +178,7 @@
 			<Button name="PetitionFrameSignButton" inherits="UIPanelButtonTemplate" text="SIGN_CHARTER">
 				<Size x="110" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="PetitionFrame" x="4" y="4"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="PetitionFrame" x="22" y="72"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="PetitionFrameSignButton_OnClick"/>
@@ -184,11 +187,20 @@
 			<Button name="PetitionFrameRequestButton" inherits="UIPanelButtonTemplate" text="REQUEST_SIGNATURE">
 				<Size x="140" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="PetitionFrame" x="4" y="4"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="PetitionFrame" x="22" y="72"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="OfferPetition"/>
 				</Scripts>
+			</Button>
+			<Button name="PetitionFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="PetitionFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-42" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
 			</Button>
 			<Button name="PetitionFrameRenameButton" inherits="UIPanelButtonTemplate" text="RENAME_GUILD">
 				<Size x="10" y="22"/>

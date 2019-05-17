@@ -7,8 +7,8 @@ COMBO_FRAME_LAST_NUM_POINTS = 0;
 
 function ComboFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
-	self:RegisterEvent("UNIT_POWER_FREQUENT");
-	self:RegisterEvent("UNIT_MAXPOWER");
+	self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player");
+	self:RegisterUnitEvent("UNIT_MAXPOWER", "player");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	-- init alpha
 	self.ComboPoints[1].Highlight:SetAlpha(0);
@@ -37,6 +37,8 @@ function ComboFrame_UpdateMax(self)
 	for i = 1, #self.ComboPoints do
 		self.ComboPoints[i]:Hide();
 	end
+
+	ComboFrame_Update(self);
 end
 
 function ComboFrame_Update(self)

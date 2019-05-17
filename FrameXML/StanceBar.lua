@@ -19,7 +19,7 @@ end
 function StanceBar_Update ()
 	local numForms = GetNumShapeshiftForms();
 	local needFrameMgrUpdate = false;
-	if ( numForms > 0 and not IsPossessBarVisible()) then
+	if ( numForms > 0 ) then
 		if ( StanceBarFrame.numForms ~= numForms ) then
 			--Setup the Stance bar to display the appropriate number of slots
 			if ( numForms == 1 ) then
@@ -57,14 +57,14 @@ end
 
 function StanceBar_UpdateState ()
 	local numForms = GetNumShapeshiftForms();
-	local texture, name, isActive, isCastable;
+	local texture, isActive, isCastable;
 	local button, icon, cooldown;
 	local start, duration, enable;
 	for i=1, NUM_STANCE_SLOTS do
 		button = StanceBarFrame.StanceButtons[i];
 		icon = button.icon;
 		if ( i <= numForms ) then
-			texture, name, isActive, isCastable = GetShapeshiftFormInfo(i);
+			texture, isActive, isCastable = GetShapeshiftFormInfo(i);
 			icon:SetTexture(texture);
 			
 			--Cooldown stuffs

@@ -152,7 +152,7 @@ function GossipResize(titleButton)
 end
 
 function NPCFriendshipStatusBar_Update(frame, factionID --[[ = nil ]])
-	local statusBar = NPCFriendshipStatusBar;
+	--[[local statusBar = NPCFriendshipStatusBar;
 	local id, rep, maxRep, name, text, texture, reaction, threshold, nextThreshold = GetFriendshipReputation(factionID);
 	statusBar.friendshipFactionID = id;
 	if ( id and id > 0 ) then
@@ -173,7 +173,7 @@ function NPCFriendshipStatusBar_Update(frame, factionID --[[ = nil ]])
 		statusBar:Show();
 	else
 		statusBar:Hide();
-	end
+	end]]
 end
 
 function NPCFriendshipStatusBar_OnEnter(self)

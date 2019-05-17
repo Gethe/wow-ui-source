@@ -1,7 +1,6 @@
 function GameMenuFrame_OnShow(self)
 	UpdateMicroButtons();
 	Disable_BagButtons();
-	VoiceChat_Toggle();
 
 	GameMenuFrame_UpdateVisibleButtons(self);
 end
@@ -10,7 +9,7 @@ function GameMenuFrame_UpdateVisibleButtons(self)
 	local height = 272;
 	GameMenuButtonUIOptions:SetPoint("TOP", GameMenuButtonOptions, "BOTTOM", 0, -1);
 
-	local storeIsRestricted = IsTrialAccount() and not C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAMES_CATEGORY_ID);
+	local storeIsRestricted = IsTrialAccount();
 	if ( C_StorePublic.IsEnabled() and not storeIsRestricted ) then
 		height = height + 20;
 		GameMenuButtonStore:Show();
@@ -26,7 +25,7 @@ function GameMenuFrame_UpdateVisibleButtons(self)
 			height = height + 20;
 			GameMenuButtonLogout:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -16);
 		end
-		
+
 		if ( GameMenuButtonRatings:IsShown() ) then
 			height = height + 20;
 			GameMenuButtonLogout:SetPoint("TOP", GameMenuButtonRatings, "BOTTOM", 0, -16);
@@ -42,7 +41,7 @@ function GameMenuFrame_UpdateStoreButtonState(self)
 		self:Disable();
 	elseif ( C_StorePublic.IsDisabledByParentalControls() ) then
 		self.disabledTooltip = BLIZZARD_STORE_ERROR_PARENTAL_CONTROLS;
-		self:Disable();		
+		self:Disable();
 	elseif ( IsKioskModeEnabled() ) then
 		self.disabledTooltip = nil;
 		self:Disable();

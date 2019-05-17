@@ -21,7 +21,7 @@
 		<DisabledFont style="GameFontDisable"/>
 		<HighlightFont style="GameFontHighlight"/>
 	</Button>
-	<Frame name="CinematicFrame" setAllPoints="true" hidden="true" enableKeyboard="true" enableMouse="true">
+	<Frame name="CinematicFrame" setAllPoints="true" clampedtoscreen="true"  hidden="true" enableKeyboard="true" enableMouse="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="UpperBlackBar" name="UpperBlackBar">
@@ -46,20 +46,12 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Subtitle1" parentArray="Subtitles" inherits="GameFontHighlightLarge" justifyH="CENTER" justifyV="MIDDLE" hidden="true">
-					<Size x="512" y="0"/>
+				<FontString parentKey="Subtitle1" parentArray="Subtitles" inherits="GameFontHighlightLarge" justifyH="CENTER" justifyV="MIDDLE" hidden="true" mixin="ShrinkUntilTruncateFontStringMixin">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.LowerBlackBar" relativePoint="LEFT" x="5" y="0"/>
-						<Anchor point="RIGHT" relativeKey="$parent.LowerBlackBar" relativePoint="RIGHT" x="-5" y="0"/>
+						<Anchor point="BOTTOMLEFT" x="100" y="20"/>
+						<Anchor point="BOTTOMRIGHT" x="-100" y="20"/>
 					</Anchors>
 				</FontString>
-				<!--<FontString parentKey="Subtitle2" parentArray="Subtitles" inherits="GameFontHighlightLarge" justifyH="CENTER" justifyV="TOP" hidden="true">
-					<Size x="512" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Subtitle1" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.Subtitle1" relativePoint="BOTTOMRIGHT" x="0" y="-15"/>
-					</Anchors>
-				</FontString>-->
 			</Layer>
 		</Layers>
 		<Frames>

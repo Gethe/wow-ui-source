@@ -8,14 +8,23 @@ local BROWSE_PARAM_INDEX_PAGE = 7;
 local PRICE_TYPE_UNIT = 1;
 local PRICE_TYPE_STACK = 2;
 
-UIPanelWindows["AuctionFrame"] = { area = "doublewide", pushable = 0, width = 840 };
+local function GetPrices()
+	local startPrice = MoneyInputFrame_GetCopper(StartPrice);
+	local buyoutPrice = MoneyInputFrame_GetCopper(BuyoutPrice);
+	if ( AuctionFrameAuctions.priceType == PRICE_TYPE_UNIT) then
+		startPrice =  startPrice * AuctionsStackSizeEntry:GetNumber();
+		buyoutPrice = buyoutPrice * AuctionsStackSizeEntry:GetNumber();
+	end
+	return startPrice,buyoutPrice;
+end
 
 MoneyTypeInfo["AUCTION_DEPOSIT"] = {
 	UpdateFunc = function()
 		if ( not AuctionFrameAuctions.duration ) then
 			AuctionFrameAuctions.duration = 0
 		end
-		return CalculateAuctionDeposit(AuctionFrameAuctions.duration);
+		local startPrice, buyoutPrice = GetPrices();
+		return GetAuctionDeposit(AuctionFrameAuctions.duration, startPrice, buyoutPrice);
 	end,
 	collapse = 1,
 };
@@ -175,6 +184,8 @@ function AuctionFrame_Show()
 
 		BrowsePrevPageButton.isEnabled = false;
 		BrowseNextPageButton.isEnabled = false;
+		BrowsePrevPageButton:Hide();
+		BrowseNextPageButton:Hide();
 		
 		if ( not AuctionFrame:IsShown() ) then
 			CloseAuctionHouse();
@@ -245,7 +256,7 @@ function AuctionFrameBrowse_OnLoad(self)
 	self:RegisterEvent("AUCTION_ITEM_LIST_UPDATE");
 
 	-- set default sort
-	AuctionFrame_SetSort("list", "quality", false);
+	AuctionFrame_SetSort("list", "level", false);
 end
 
 function AuctionFrameBrowse_OnShow()
@@ -258,7 +269,7 @@ function AuctionFrameBrowse_UpdateArrows()
 	SortButton_UpdateArrow(BrowseLevelSort, "list", "level");
 	SortButton_UpdateArrow(BrowseDurationSort, "list", "duration");
 	SortButton_UpdateArrow(BrowseHighBidderSort, "list", "seller");
-	SortButton_UpdateArrow(BrowseCurrentBidSort, "list", "unitprice");
+	SortButton_UpdateArrow(BrowseCurrentBidSort, "list", "bid");
 end
 
 function AuctionFrameBrowse_OnEvent(self, event, ...)
@@ -288,7 +299,6 @@ end
 
 function BrowseDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, BrowseDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(BrowseDropDown,-1);
 end
 
 function BrowseDropDown_Initialize()
@@ -296,8 +306,9 @@ function BrowseDropDown_Initialize()
 	info.text = ALL;
 	info.value = -1;
 	info.func = BrowseDropDown_OnClick;
+	info.classicChecks = true;
 	UIDropDownMenu_AddButton(info);
-	for i=0, getn(ITEM_QUALITY_COLORS)-2  do
+	for i=0, getn(ITEM_QUALITY_COLORS)-4  do
 		info.text = _G["ITEM_QUALITY"..i.."_DESC"];
 		info.value = i;
 		info.func = BrowseDropDown_OnClick;
@@ -315,7 +326,6 @@ function AuctionFrameBrowse_Reset(self)
 	BrowseMinLevel:SetText("");
 	BrowseMaxLevel:SetText("");
 	IsUsableCheckButton:SetChecked(false);
-	ExactMatchCheckButton:SetChecked(false);
 	UIDropDownMenu_SetSelectedValue(BrowseDropDown,-1);
 	BrowseNoResultsText:Show();
 	BrowseQualitySort:Show();
@@ -331,14 +341,14 @@ function AuctionFrameBrowse_Reset(self)
 	AuctionFrameBrowse.selectedSubSubCategoryIndex = nil;
 
 	BrowseLevelSort:SetText(AuctionFrame_GetDetailColumnString(AuctionFrameBrowse.selectedCategoryIndex, AuctionFrameBrowse.selectedSubCategoryIndex));
-	AuctionFrameFilters_Update()
+	AuctionFrameFilters_Update();
 	BrowseWowTokenResults_Update();
 	self:Disable();
 end
 
 function BrowseResetButton_OnUpdate(self, elapsed)
 	if ( (BrowseName:GetText() == "") and (BrowseMinLevel:GetText() == "") and (BrowseMaxLevel:GetText() == "") and
-	     (not IsUsableCheckButton:GetChecked()) and (not ExactMatchCheckButton:GetChecked()) and (UIDropDownMenu_GetSelectedValue(BrowseDropDown) == -1) and
+	     (not IsUsableCheckButton:GetChecked()) and (UIDropDownMenu_GetSelectedValue(BrowseDropDown) == -1) and
 	     (not AuctionFrameBrowse.selectedCategoryIndex) and (not AuctionFrameBrowse.selectedSubCategoryIndex) and (not AuctionFrameBrowse.selectedSubSubCategoryIndex) )
 	then
 		self:Disable();
@@ -434,7 +444,7 @@ function AuctionFrameBrowse_Search()
 			AuctionFrameBrowse.page = 0;
 		end
 
-		AuctionFrameBrowse_SearchHelper(BrowseName:GetText(), BrowseMinLevel:GetNumber(), BrowseMaxLevel:GetNumber(), AuctionFrameBrowse.selectedCategoryIndex, AuctionFrameBrowse.selectedSubCategoryIndex, AuctionFrameBrowse.selectedSubSubCategoryIndex, AuctionFrameBrowse.page, IsUsableCheckButton:GetChecked(), UIDropDownMenu_GetSelectedValue(BrowseDropDown), ExactMatchCheckButton:GetChecked());
+		AuctionFrameBrowse_SearchHelper(BrowseName:GetText(), BrowseMinLevel:GetNumber(), BrowseMaxLevel:GetNumber(), AuctionFrameBrowse.selectedCategoryIndex, AuctionFrameBrowse.selectedSubCategoryIndex, AuctionFrameBrowse.selectedSubSubCategoryIndex, AuctionFrameBrowse.page, IsUsableCheckButton:GetChecked(), UIDropDownMenu_GetSelectedValue(BrowseDropDown), false);
 
 		-- Start "searching" messaging
 		AuctionFrameBrowse.isSearching = 1;
@@ -513,9 +523,11 @@ function AuctionFrameFilters_UpdateCategories(forceSelectionIntoView)
 		end
 	end
 	
+	local hasScrollBar = #OPEN_FILTER_LIST > NUM_FILTERS_TO_DISPLAY;
+
 	-- Display the list of open filters
 	local offset = FauxScrollFrame_GetOffset(BrowseFilterScrollFrame);
-	if ( forceSelectionIntoView and AuctionFrameBrowse.selectedCategoryIndex and ( not AuctionFrameBrowse.selectedSubCategoryIndex and not AuctionFrameBrowse.selectedSubSubCategoryIndex ) ) then
+	if ( forceSelectionIntoView and hasScrollBar and AuctionFrameBrowse.selectedCategoryIndex and ( not AuctionFrameBrowse.selectedSubCategoryIndex and not AuctionFrameBrowse.selectedSubSubCategoryIndex ) ) then
 		if ( AuctionFrameBrowse.selectedCategoryIndex <= offset ) then
 			FauxScrollFrame_OnVerticalScroll(BrowseFilterScrollFrame, math.max(0.0, (AuctionFrameBrowse.selectedCategoryIndex - 1) * BROWSE_FILTER_HEIGHT), BROWSE_FILTER_HEIGHT);
 			offset = FauxScrollFrame_GetOffset(BrowseFilterScrollFrame);
@@ -524,7 +536,6 @@ function AuctionFrameFilters_UpdateCategories(forceSelectionIntoView)
 	
 	local dataIndex = offset;
 
-	local hasScrollBar = #OPEN_FILTER_LIST > NUM_FILTERS_TO_DISPLAY;
 	for i = 1, NUM_FILTERS_TO_DISPLAY do
 		local button = AuctionFrameBrowse.FilterButtons[i];
 		button:SetWidth(hasScrollBar and 136 or 156);
@@ -742,8 +753,6 @@ function AuctionFrameBrowse_Update()
 				itemName:SetVertexColor(color.r, color.g, color.b);
 				local itemButton = _G[buttonName.."Item"];
 
-				SetItemButtonQuality(itemButton, quality, itemId);
-
 				-- Set level
 				if ( levelColHeader == "REQ_LEVEL_ABBR" and level > UnitLevel("player") ) then
 					_G[buttonName.."Level"]:SetText(RED_FONT_COLOR_CODE..level..FONT_COLOR_CODE_CLOSE);
@@ -858,11 +867,15 @@ function AuctionFrameBrowse_Update()
 			BrowsePrevPageButton.isEnabled = (AuctionFrameBrowse.page ~= 0);
 			BrowseNextPageButton.isEnabled = (AuctionFrameBrowse.page ~= (ceil(totalAuctions/NUM_AUCTION_ITEMS_PER_PAGE) - 1));
 			if ( isLastSlotEmpty ) then
+				BrowsePrevPageButton:Show();
+				BrowseNextPageButton:Show();
 				BrowseSearchCountText:Show();
 				local itemsMin = AuctionFrameBrowse.page * NUM_AUCTION_ITEMS_PER_PAGE + 1;
 				local itemsMax = itemsMin + numBatchAuctions - 1;
 				BrowseSearchCountText:SetFormattedText(NUMBER_OF_RESULTS_TEMPLATE, itemsMin, itemsMax, totalAuctions);
 			else
+				BrowsePrevPageButton:Hide();
+				BrowseNextPageButton:Hide();
 				BrowseSearchCountText:Hide();
 			end
 			
@@ -871,6 +884,8 @@ function AuctionFrameBrowse_Update()
 		else
 			BrowsePrevPageButton.isEnabled = false;
 			BrowseNextPageButton.isEnabled = false;
+			BrowsePrevPageButton:Hide();
+			BrowseNextPageButton:Hide();
 			BrowseSearchCountText:Hide();
 		end
 		FauxScrollFrame_Update(BrowseScrollFrame, numBatchAuctions, NUM_BROWSE_TO_DISPLAY, AUCTIONS_BUTTON_HEIGHT);
@@ -975,8 +990,10 @@ function BrowseWowTokenResults_Update()
 		BrowseSearchCountText:Hide();
 		BrowsePrevPageButton.isEnabled = false;
 		BrowsePrevPageButton:Disable();
+		BrowsePrevPageButton:Hide();
 		BrowseNextPageButton.isEnabled = false;	
 		BrowseNextPageButton:Disable();
+		BrowseNextPageButton:Hide();
 		FauxScrollFrame_Update(BrowseScrollFrame, 0, NUM_BROWSE_TO_DISPLAY, AUCTIONS_BUTTON_HEIGHT);
 		local marketPrice;
 		if (WowToken_IsWowTokenAuctionDialogShown()) then
@@ -1061,6 +1078,7 @@ function AuctionFrameBid_Update()
 	local index;
 	local isLastSlotEmpty;
 	local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, bidderFullName, owner, ownerFullName, itemID;
+	local _;
 	local duration;
 	BidBidButton:Disable();
 	BidBuyoutButton:Disable();
@@ -1108,8 +1126,6 @@ function AuctionFrameBid_Update()
 			itemName:SetVertexColor(color.r, color.g, color.b);
 
 			local itemButton = _G[buttonName.."Item"];
-
-			SetItemButtonQuality(itemButton, quality, itemID);
 
 			-- Set level
 			if ( levelColHeader == "REQ_LEVEL_ABBR" and level > UnitLevel("player") ) then
@@ -1176,7 +1192,7 @@ function AuctionFrameBid_Update()
 				end
 				-- Set bid
 				MoneyInputFrame_SetCopper(BidBidPrice, bidAmount + minIncrement);
-				
+				UpdateDeposit();
 				if ( not highBidder and GetMoney() >= MoneyInputFrame_GetCopper(BidBidPrice) ) then
 					BidBidButton:Enable();
 				end
@@ -1228,7 +1244,8 @@ function AuctionFrameAuctions_OnLoad(self)
 	self:RegisterEvent("AUCTION_MULTISELL_FAILURE");
 	self:RegisterEvent("TOKEN_DISTRIBUTIONS_UPDATED");
 	-- set default sort
-	AuctionFrame_SetSort("owner", "duration", false);
+	AuctionFrame_SetSort("owner", "status", false);
+	AuctionsRadioButton_OnClick(2);
 end
 
 function AuctionFrameAuctions_OnEvent(self, event, ...)
@@ -1312,6 +1329,7 @@ function AuctionFrameAuctions_Update()
 	local index;
 	local isLastSlotEmpty;
 	local auction, button, buttonName, buttonHighlight, iconTexture, itemName, color, itemCount, duration, timeToSell;
+	local _;
 	local highBidderFrame;
 	local closingTimeFrame, closingTimeText;
 	local buttonBuyoutFrame, buttonBuyoutMoney;
@@ -1389,8 +1407,6 @@ function AuctionFrameAuctions_Update()
 			buttonBuyoutFrame = _G[buttonName.."BuyoutFrame"];
 
 			local itemButton = _G[buttonName.."Item"];
-
-			SetItemButtonQuality(itemButton, quality, itemID);
 
 			if ( saleStatus == 1 ) then
 				-- Sold item
@@ -1582,48 +1598,31 @@ function PriceDropDown_OnClick(self)
 				MoneyInputFrame_SetCopper(StartPrice, startPrice * stackSize);
 				MoneyInputFrame_SetCopper(BuyoutPrice, buyoutPrice * stackSize);
 			end
+			UpdateDeposit();
 		end
 	end
 end
 
-function DurationDropDown_OnShow(self)
-	UIDropDownMenu_Initialize(self, DurationDropDown_Initialize);
-	if ( not AuctionFrameAuctions.duration ) then
+function AuctionsRadioButton_OnClick(index)
+	AuctionsShortAuctionButton:SetChecked(nil);
+	AuctionsMediumAuctionButton:SetChecked(nil);
+	AuctionsLongAuctionButton:SetChecked(nil);
+	if ( index == 1 ) then
+		AuctionsShortAuctionButton:SetChecked(1);
+		AuctionFrameAuctions.duration = 1;
+	elseif ( index ==2 ) then
+		AuctionsMediumAuctionButton:SetChecked(1);
 		AuctionFrameAuctions.duration = 2;
+	else
+		AuctionsLongAuctionButton:SetChecked(1);
+		AuctionFrameAuctions.duration = 3;
 	end
-	UIDropDownMenu_SetSelectedValue(DurationDropDown, AuctionFrameAuctions.duration);
-end
-
-function DurationDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-
-	info.text = AUCTION_DURATION_ONE;
-	info.value = 1;
-	info.checked = nil;
-	info.func = DurationDropDown_OnClick;
-	UIDropDownMenu_AddButton(info);
-
-	info.text = AUCTION_DURATION_TWO;
-	info.value = 2;
-	info.checked = nil;
-	info.func = DurationDropDown_OnClick;
-	UIDropDownMenu_AddButton(info);
-
-	info.text = AUCTION_DURATION_THREE;
-	info.value = 3;
-	info.checked = nil;
-	info.func = DurationDropDown_OnClick;
-	UIDropDownMenu_AddButton(info);
-end
-
-function DurationDropDown_OnClick(self)
-	AuctionFrameAuctions.duration = self.value;
-	UIDropDownMenu_SetSelectedValue(DurationDropDown, self.value);
 	UpdateDeposit();
 end
 
 function UpdateDeposit()
-	MoneyFrame_Update("AuctionsDepositMoneyFrame", CalculateAuctionDeposit(AuctionFrameAuctions.duration, AuctionsStackSizeEntry:GetNumber(), AuctionsNumStacksEntry:GetNumber()));
+	local startPrice, buyoutPrice = GetPrices();
+	MoneyFrame_Update("AuctionsDepositMoneyFrame", GetAuctionDeposit(AuctionFrameAuctions.duration or 0, startPrice, buyoutPrice, AuctionsStackSizeEntry:GetNumber(), AuctionsNumStacksEntry:GetNumber()));
 end
 
 function AuctionSellItemButton_OnEvent(self, event, ...)
@@ -1638,34 +1637,26 @@ function AuctionSellItemButton_OnEvent(self, event, ...)
 			PriceDropDown:Hide();
 			StartPrice:Hide();
 			BuyoutPrice:Hide();
-			DurationDropDown:Hide();
 			C_WowTokenPublic.UpdateTokenCount();
 			AuctionsWowTokenAuctionFrame_Update();
 			AuctionsWowTokenAuctionFrame:Show();
 			AuctionsItemButton:SetNormalTexture(texture);
 			AuctionsItemButtonName:SetText(name);
 			local color = ITEM_QUALITY_COLORS[quality];
-			AuctionsItemButtonName:SetVertexColor(color.r, color.g, color.b);
-			SetItemButtonQuality(AuctionsItemButton, quality, itemID)
 			AuctionWowToken_UpdateMarketPrice();
 			MoneyFrame_SetType(AuctionsDepositMoneyFrame, "AUCTION_DEPOSIT_TOKEN");
 			MoneyFrame_Update("AuctionsDepositMoneyFrame", 0, true);
 		else
 			StartPrice:Show();
 			BuyoutPrice:Show();
-			DurationDropDown:Show();
 			AuctionsWowTokenAuctionFrame:Hide();
 			AuctionsItemButton:SetNormalTexture(texture);
 			AuctionsItemButton.stackCount = stackCount;
 			AuctionsItemButton.totalCount = totalCount;
 			AuctionsItemButton.pricePerUnit = pricePerUnit;
 			AuctionsItemButtonName:SetText(name);
-			local color = ITEM_QUALITY_COLORS[quality];
-			if color then
-				AuctionsItemButtonName:SetVertexColor(color.r, color.g, color.b);
-			end
-			SetItemButtonQuality(AuctionsItemButton, quality, itemID)
-			if ( totalCount > 1 ) then
+
+			--[[if ( totalCount > 1 ) then
 				AuctionsItemButtonCount:SetText(totalCount);
 				AuctionsItemButtonCount:Show();
 				AuctionsStackSizeEntry:Show();
@@ -1687,7 +1678,14 @@ function AuctionSellItemButton_OnEvent(self, event, ...)
 				else
 					PriceDropDown:Show();
 				end
+			end]]
+			AuctionsItemButtonCount:SetText(count);
+			if (count > 1) then
+				AuctionsItemButtonCount:Show();
+			else
+				AuctionsItemButtonCount:Hide();
 			end
+
 			AuctionsStackSizeEntry:SetNumber(count);
 			AuctionsNumStacksEntry:SetNumber(1);
 			if ( name == LAST_ITEM_AUCTIONED and count == LAST_ITEM_COUNT ) then
@@ -1723,8 +1721,7 @@ end
 
 function AuctionsFrameAuctions_ValidateAuction()
 	AuctionsCreateAuctionButton:Disable();
-	AuctionsBuyoutText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-	AuctionsBuyoutError:Hide();
+	AuctionsBuyoutErrorText:Hide();
 	-- No item
 	if ( not GetAuctionSellItemInfo() ) then
 		return;
@@ -1735,12 +1732,11 @@ function AuctionsFrameAuctions_ValidateAuction()
 	end
 	-- Buyout price is less than the start price
 	if ( MoneyInputFrame_GetCopper(BuyoutPrice) > 0 and MoneyInputFrame_GetCopper(StartPrice) > MoneyInputFrame_GetCopper(BuyoutPrice) ) then
-		AuctionsBuyoutText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-		AuctionsBuyoutError:Show();
+		AuctionsBuyoutErrorText:Show();
 		return;
 	end
 	-- Start price is 0 or greater than the max allowed
-	if ( MoneyInputFrame_GetCopper(StartPrice) < 1 or MoneyInputFrame_GetCopper(StartPrice) > MAXIMUM_BID_PRICE) then
+	if ( MoneyInputFrame_GetCopper(StartPrice) < 1 or MoneyInputFrame_GetCopper(StartPrice) > MAXIMUM_BID_PRICE or MoneyInputFrame_GetCopper(BuyoutPrice) > MAXIMUM_BID_PRICE) then
 		return;
 	end
 	-- The stack size is greater than total count
@@ -1750,6 +1746,7 @@ function AuctionsFrameAuctions_ValidateAuction()
 		return;
 	end
 	AuctionsCreateAuctionButton:Enable();
+	UpdateDeposit();
 end
 
 --[[
@@ -1787,7 +1784,8 @@ function AuctionFrame_GetTimeLeftTooltipText(id, isToken)
 end
 
 local function SetupUnitPriceTooltip(tooltip, auctionItem, insertNewline)
-	if ( auctionItem and auctionItem.itemCount > 1 ) then
+	-- Mental division was a skill in Classic WoW.
+	--[[if ( auctionItem and auctionItem.itemCount > 1 ) then
 		local hasBid = auctionItem.bidAmount > 0;
 		local hasBuyout = auctionItem.buyoutPrice > 0;
 		
@@ -1805,7 +1803,7 @@ local function SetupUnitPriceTooltip(tooltip, auctionItem, insertNewline)
 
 		-- This is necessary to update the extents of the tooltip
 		tooltip:Show();
-	end
+	end]]
 end
 
 local function GetAuctionButton(buttonType, id)
@@ -1979,9 +1977,9 @@ function SortButton_UpdateArrow(button, type, sort)
 	button.Arrow:SetShown(sort == primaryColumn);
 	if (sort == primaryColumn) then
 		if (reversed) then
-			button.Arrow:SetTexCoord(0, 0.5625, 0, 1);
-		else
 			button.Arrow:SetTexCoord(0, 0.5625, 1, 0);
+		else
+			button.Arrow:SetTexCoord(0, 0.5625, 0, 1);
 		end
 	end
 end
@@ -2008,7 +2006,8 @@ function AuctionsCreateAuctionButton_OnClick()
 			startPrice = startPrice * AuctionsStackSizeEntry:GetNumber();
 			buyoutPrice = buyoutPrice * AuctionsStackSizeEntry:GetNumber();
 		end
-		StartAuction(startPrice, buyoutPrice, AuctionFrameAuctions.duration, AuctionsStackSizeEntry:GetNumber(), AuctionsNumStacksEntry:GetNumber());
+		local startPrice, buyoutPrice = GetPrices();
+		PostAuction(startPrice, buyoutPrice, AuctionFrameAuctions.duration, AuctionsStackSizeEntry:GetNumber(), AuctionsNumStacksEntry:GetNumber());
 	end
 end
 

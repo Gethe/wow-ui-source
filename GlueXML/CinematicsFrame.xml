@@ -121,9 +121,9 @@
 	</Button>
 	
 	<Frame name="CinematicsFrame" inherits="GlueModalFrameTemplate" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true" propagateKeyboardInput="false">
-		<Size x="262" y="512"/>
+		<Size x="450" y="430"/>
 		<Anchors>
-			<Anchor point="CENTER"/>
+			<Anchor point="TOP" x="0" y="-50"/>
 		</Anchors>
 		<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 			<EdgeSize>
@@ -169,58 +169,10 @@
 			<Button name="CinematicsButton1" inherits="CinematicsButtonTemplate" text="WORLD_OF_WARCRAFT" hidden="true" id="1">
 				<Size x="176" y="78"/>
 				<Anchors>
-					<Anchor point="TOP" x="0" y="-44"/>
+					<Anchor point="TOPLEFT" x="40" y="-44"/>
 				</Anchors>
 				<NormalTexture atlas="StreamCinematic-Classic-Up" />
 				<PushedTexture atlas="StreamCinematic-Classic-Down" />
-			</Button>
-			<Button name="CinematicsButton2" inherits="CinematicsButtonTemplate" text="BURNING_CRUSADE" hidden="true" id="2">
-				<Size x="176" y="78"/>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="CinematicsButton1" relativePoint="BOTTOM" x="0" y="-8"/>
-				</Anchors>
-				<NormalTexture atlas="StreamCinematic-BC-Up" />
-				<PushedTexture atlas="StreamCinematic-BC-Down" />
-			</Button>
-			<Button name="CinematicsButton3" inherits="CinematicsButtonTemplate" text="WRATH_OF_THE_LICH_KING" hidden="true" id="3">
-				<Size x="176" y="78"/>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="CinematicsButton2" relativePoint="BOTTOM" x="0" y="-8"/>
-				</Anchors>
-				<NormalTexture atlas="StreamCinematic-LK-Up" />
-				<PushedTexture atlas="StreamCinematic-LK-Down" />
-			</Button>
-			<Button name="CinematicsButton4" inherits="CinematicsButtonTemplate" text="CATACLYSM" hidden="true" id="4">
-				<Size x="176" y="78"/>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="CinematicsButton3" relativePoint="BOTTOM" x="0" y="-8"/>
-				</Anchors>
-				<NormalTexture atlas="StreamCinematic-CC-Up" />
-				<PushedTexture atlas="StreamCinematic-CC-Down" />
-			</Button>
-			<Button name="CinematicsButton5" inherits="CinematicsButtonTemplate" text="MISTS_OF_PANDARIA" hidden="true" id="5">
-				<Size x="176" y="78"/>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="CinematicsButton4" relativePoint="BOTTOM" x="0" y="-8"/>
-				</Anchors>
-				<NormalTexture atlas="StreamCinematic-MOP-Up" />
-				<PushedTexture atlas="StreamCinematic-MOP-Down" />
-			</Button>
-			<Button name="CinematicsButton6" inherits="CinematicsButtonTemplate" text="WARLORDS_OF_DRAENOR" hidden="true" id="6">
-				<Size x="176" y="78"/>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="CinematicsButton5" relativePoint="BOTTOM" x="0" y="-8"/>
-				</Anchors>
-				<NormalTexture atlas="StreamCinematic-WOD-Up" />
-				<PushedTexture atlas="StreamCinematic-WOD-Down" />
-			</Button>
-			<Button name="CinematicsButton7" inherits="CinematicsButtonTemplate" text="LEGION" hidden="true" id="7">
-				<Size x="176" y="78"/>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="CinematicsButton6" relativePoint="BOTTOM" x="0" y="-8"/>
-				</Anchors>
-				<NormalTexture atlas="StreamCinematic-Legion-Up" />
-				<PushedTexture atlas="StreamCinematic-Legion-Down" />
 			</Button>
 			<CheckButton name="CinematicSubtitlesCheckBox" inherits="GlueCheckButtonTemplate">
 				<Size x="20" y="20"/>

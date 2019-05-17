@@ -87,7 +87,7 @@
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="181" y="20"/>
+							<AbsDimension x="181" y="18"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -122,6 +122,15 @@
 						</FontString>
 					</Layer>
 					<Layer level="ARTWORK">
+						<FontString name="BrowseTabText" inherits="GameFontHighlightSmall" text="FILTERS">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="85" y="-85"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
 						<FontString name="BrowseNameText" inherits="GameFontHighlightSmall" text="NAME">
 							<Anchors>
 								<Anchor point="TOPLEFT">
@@ -136,6 +145,24 @@
 								<Anchor point="TOPLEFT">
 									<Offset>
 										<AbsDimension x="230" y="-38"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="BrowseIsUsableText" inherits="GameFontHighlightSmall" text="USABLE_ITEMS">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="485" y="-56"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="BrowseShowOnCharacterText" inherits="GameFontHighlightSmall" text="DISPLAY_ON_CHARACTER">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="685" y="-56"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -769,7 +796,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="BrowseCurrentBidSort" inherits="AuctionSortButtonTemplate" text="AUCTION_BROWSE_UNIT_PRICE_SORT">
+					<Button name="BrowseCurrentBidSort" inherits="AuctionSortButtonTemplate" text="CURRENT_BID">
 						<Size>
 							<AbsDimension x="207" y="19"/>
 						</Size>
@@ -782,7 +809,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								AuctionFrame_OnClickSortColumn("list", "unitprice");
+								AuctionFrame_OnClickSortColumn("list", "bid");
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -858,7 +885,81 @@
 							</Anchor>
 						</Anchors>
 					</Button>
-					<EditBox name="BrowseName" autoFocus="false" inherits="SearchBoxTemplate">
+					<Button name="BrowsePrevPageButton">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="BrowseButton8">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" text="PREV">
+									<Size>
+										<AbsDimension x="60" y="10"/>
+									</Size>
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+								AuctionFrameBrowse.page = AuctionFrameBrowse.page - 1;
+								self:Disable();
+								BrowseScrollFrameScrollBar:SetValue(0);
+								AuctionFrameBrowse_Search();
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<Button name="BrowseNextPageButton">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="BrowseButton8">
+								<Offset>
+									<AbsDimension x="2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontHighlightSmall" justifyH="RIGHT" text="NEXT">
+									<Size>
+										<AbsDimension x="60" y="10"/>
+									</Size>
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+								AuctionFrameBrowse.page = AuctionFrameBrowse.page + 1;
+								self:Disable();
+								BrowseScrollFrameScrollBar:SetValue(0);
+								AuctionFrameBrowse_Search();
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<EditBox name="BrowseName" autoFocus="false" inherits="InputBoxInstructionsTemplate">
 						<Size>
 							<AbsDimension x="140" y="16"/>
 						</Size>
@@ -882,7 +983,7 @@
 								self:ClearFocus();
 							</OnEnterPressed>
 						</Scripts>
-						<FontString inherits="ChatFontNormal" bytes="64"/>
+						<FontString inherits="ChatFontNormal"/>
 					</EditBox>
 					<EditBox name="BrowseMinLevel" letters="3" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
 						<Size>
@@ -972,17 +1073,13 @@
 							<AbsDimension x="24" y="24"/>
 						</Size>
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="BrowseDropDownButton" relativePoint="RIGHT">
+							<Anchor point="LEFT" relativeTo="BrowseIsUsableText" relativePoint="RIGHT">
 								<Offset>
-									<AbsDimension x="10" y="13"/>
+									<AbsDimension x="2" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-								IsUsableCheckButtonText:SetFontObject(GameFontHighlightSmall);
-								IsUsableCheckButtonText:SetText(USABLE_ITEMS);
-							</OnLoad>
 							<OnClick>
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							</OnClick>
@@ -993,17 +1090,13 @@
 							<AbsDimension x="24" y="24"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="IsUsableCheckButton" relativePoint="BOTTOMLEFT">
+							<Anchor point="LEFT" relativeTo="BrowseShowOnCharacterText" relativePoint="RIGHT">
 								<Offset>
-									<AbsDimension x="0" y="2"/>
+									<AbsDimension x="2" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-								ShowOnPlayerCheckButtonText:SetFontObject(GameFontHighlightSmall);
-								ShowOnPlayerCheckButtonText:SetText(DISPLAY_ON_CHARACTER);
-							</OnLoad>
 							<OnShow>
 								self:SetChecked(GetCVarBool("auctionDisplayOnCharacter"));
 							</OnShow>
@@ -1018,24 +1111,16 @@
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</CheckButton>
-					<Button name="BrowseResetButton" inherits="UIPanelButtonTemplate" text="RESET">
-						<Size>
-							<AbsDimension x="80" y="22"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="67" y="-35"/>
-						</Anchors>
-						<Scripts>
-							<OnClick function="AuctionFrameBrowse_Reset"/>
-							<OnUpdate function="BrowseResetButton_OnUpdate"/>
-						</Scripts>
-					</Button>
 					<Button name="BrowseSearchButton" inherits="UIPanelButtonTemplate" text="SEARCH">
 						<Size>
 							<AbsDimension x="80" y="22"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="BrowseResetButton" relativePoint="TOPLEFT" x="-5" y="0"/>
+							<Anchor point="LEFT" relativeTo="IsUsableCheckButton" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="10" y="0"/>
+								</Offset>
+							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -1043,80 +1128,6 @@
 							</OnClick>
 							<OnUpdate function="BrowseSearchButton_OnUpdate"/>
 						</Scripts>
-					</Button>
-					<Button name="BrowsePrevPageButton">
-						<Size>
-							<AbsDimension x="32" y="32"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="658" y="-53"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" text="PREV">
-									<Size>
-										<AbsDimension x="60" y="10"/>
-									</Size>
-									<Anchors>
-										<Anchor point="LEFT" relativePoint="RIGHT"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnClick>
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								AuctionFrameBrowse.page = AuctionFrameBrowse.page - 1;
-								self:Disable();
-								BrowseScrollFrameScrollBar:SetValue(0);
-								AuctionFrameBrowse_Search();
-							</OnClick>
-						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
-						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-					</Button>
-					<Button name="BrowseNextPageButton">
-						<Size>
-							<AbsDimension x="32" y="32"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPRIGHT">
-								<Offset>
-									<AbsDimension x="70" y="-53"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString inherits="GameFontHighlightSmall" justifyH="RIGHT" text="NEXT">
-									<Size>
-										<AbsDimension x="60" y="10"/>
-									</Size>
-									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnClick>
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								AuctionFrameBrowse.page = AuctionFrameBrowse.page + 1;
-								self:Disable();
-								BrowseScrollFrameScrollBar:SetValue(0);
-								AuctionFrameBrowse_Search();
-							</OnClick>
-						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
-						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 					<Button name="BrowseCloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 						<Size x="80" y="22"/>
@@ -1208,26 +1219,6 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<CheckButton name="ExactMatchCheckButton" inherits="UICheckButtonTemplate">
-						<Size x="24" y="24"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="25" y="-75"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								ExactMatchCheckButtonText:SetFontObject(GameFontHighlightSmall);
-								ExactMatchCheckButtonText:SetText(AH_EXACT_MATCH);
-							</OnLoad>
-							<OnClick>
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-							</OnClick>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-								GameTooltip:SetText(AH_EXACT_MATCH_TOOLTIP, nil, nil, nil, nil, true);
-							</OnEnter>
-							<OnLeave function="GameTooltip_Hide"/>
-						</Scripts>
-					</CheckButton>
 				</Frames>
 				<Scripts>
 					<OnLoad function="AuctionFrameBrowse_OnLoad"/>
@@ -1633,9 +1624,18 @@
 								<Anchor point="TOP" relativePoint="TOPLEFT" x="121" y="-55"/>
 							</Anchors>
 						</FontString>
-						<FontString name="AuctionsItemText" inherits="GameFontNormalSmall" text="AUCTION_ITEM">
+						<FontString name="AuctionsItemText" inherits="GameFontHighlightSmall" text="AUCTION_ITEM">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="25" y="-80"/>
+								<Anchor point="TOPLEFT" x="28" y="-83"/>
+							</Anchors>
+						</FontString>
+						<FontString name="AuctionsDurationText" inherits="GameFontHighlightSmall" text="AUCTION_DURATION">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="28" y="-203"/>
+									</Offset>
+								</Anchor>
 							</Anchors>
 						</FontString>
 						<FontString name="AuctionsSearchCountText" inherits="GameFontHighlightSmall">
@@ -1772,7 +1772,7 @@
 					<Button name="AuctionsItemButton">
 						<Size x="37" y="37"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="30" y="-94"/>
+							<Anchor point="TOPLEFT" x="28" y="-98"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -1782,13 +1782,6 @@
 										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="5" y="0"/>
 									</Anchors>
 								</FontString>
-								<Texture file="Interface\AuctionFrame\UI-AuctionFrame-ItemSlot">
-									<Size x="173" y="40"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="-2" y="2"/>
-									</Anchors>
-									<TexCoords left="0.15625" right="0.83203125" top="0.171875" bottom="0.796875"/>
-								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
 								<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
@@ -1804,6 +1797,14 @@
 										<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
 									</Anchors>
 								</FontString>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<Texture parentKey="IconOverlay" hidden="true">
+									<Size x="37" y="37"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
 							</Layer>
 						</Layers>
 						<Scripts>
@@ -2009,7 +2010,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Frame name="PriceDropDown" inherits="UIDropDownMenuTemplate" id="1">
+					<Frame name="PriceDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="AuctionFrameAuctions" relativePoint="TOPLEFT" x="217" y="-215"/>
 						</Anchors>
@@ -2031,13 +2032,13 @@
 					</Frame>
 					<Frame name="StartPrice" inherits="MoneyInputFrameTemplate">
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeTo="AuctionFrameAuctions" relativePoint="BOTTOMLEFT" x="35" y="170"/>
+							<Anchor point="BOTTOMLEFT" relativeTo="AuctionFrameAuctions" relativePoint="BOTTOMLEFT" x="31" y="264"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<FontString inherits="GameFontNormalSmall" text="STARTING_PRICE">
+								<FontString inherits="GameFontHighlightSmall" text="STARTING_PRICE">
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativeTo="StartPrice" relativePoint="TOPLEFT" x="-10" y="3"/>
+										<Anchor point="BOTTOMLEFT" relativeTo="StartPrice" relativePoint="TOPLEFT" x="-2" y="1"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -2048,15 +2049,75 @@
 							</OnLoad>
 						</Scripts>
 					</Frame>
+					<CheckButton name="AuctionsShortAuctionButton" inherits="AuctionRadioButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionsDurationText" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="3" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								_G[self:GetName().."Text"]:SetText("2 "..GetText("HOURS", nil, 2));
+							</OnLoad>
+							<OnClick>
+								AuctionsRadioButton_OnClick(self:GetID())
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="AuctionsMediumAuctionButton" inherits="AuctionRadioButtonTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionsShortAuctionButton" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								_G[self:GetName().."Text"]:SetText("8 "..GetText("HOURS", nil, 8));
+							</OnLoad>
+							<OnClick>
+								AuctionsRadioButton_OnClick(self:GetID())
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="AuctionsLongAuctionButton" inherits="AuctionRadioButtonTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionsMediumAuctionButton" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								_G[self:GetName().."Text"]:SetText("24 "..GetText("HOURS", nil, 24));
+							</OnLoad>
+							<OnClick>
+								AuctionsRadioButton_OnClick(self:GetID())
+							</OnClick>
+						</Scripts>
+					</CheckButton>
 					<Frame name="BuyoutPrice" inherits="MoneyInputFrameTemplate">
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeTo="AuctionFrameAuctions" relativePoint="BOTTOMLEFT" x="35" y="125"/>
+							<Anchor point="BOTTOMLEFT" relativeTo="AuctionFrameAuctions" relativePoint="BOTTOMLEFT" x="30" y="120"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<FontString name="AuctionsBuyoutText" inherits="GameFontNormalSmall">
+								<FontString name="AuctionsBuyoutText" inherits="GameFontHighlightSmall">
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativeTo="BuyoutPrice" relativePoint="TOPLEFT" x="-10" y="3"/>
+										<Anchor point="BOTTOMLEFT" relativeTo="BuyoutPrice" relativePoint="TOPLEFT" x="-2" y="1"/>
+									</Anchors>
+								</FontString>
+								<FontString name="AuctionsBuyoutErrorText" inherits="GameFontRedSmall" text="AUCTION_BUYOUT_ERROR">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativeTo="AuctionsBuyoutText" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="3"/>
+											</Offset>
+										</Anchor>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -2065,57 +2126,6 @@
 							<OnLoad>
 								MoneyInputFrame_SetOnValueChangedFunc(self, AuctionsFrameAuctions_ValidateAuction);
 							</OnLoad>
-						</Scripts>
-						<Frames>
-							<Frame name="AuctionsBuyoutError" enableMouse="true" hidden="true">
-								<Size>
-									<AbsDimension x="20" y="20"/>
-								</Size>
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="AuctionsBuyoutText" relativePoint="RIGHT" x="6" y="2" />
-								</Anchors>
-								<Layers>
-									<Layer level="ARTWORK">
-										<Texture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
-											<Size>
-												<AbsDimension x="20" y="20"/>
-											</Size>
-											<Anchors>
-												<Anchor point="CENTER" />
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnEnter>
-										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GameTooltip:SetText(AUCTION_BUYOUT_ERROR, 1.0, 0.0, 0.0, 1, true);
-									</OnEnter>
-									<OnLeave>
-										GameTooltip:Hide();
-									</OnLeave>
-								</Scripts>
-							</Frame>
-						</Frames>
-					</Frame>
-					<Frame name="DurationDropDown" inherits="UIDropDownMenuTemplate" id="1">
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="AuctionFrameAuctions" relativePoint="BOTTOMLEFT" x="217" y="89"/>
-						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<FontString inherits="GameFontNormalSmall" text="AUCTION_DURATION">
-									<Anchors>
-										<Anchor point="LEFT" relativeTo="DurationDropDown" relativePoint="RIGHT" x="-192" y="3"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad>
-								UIDropDownMenu_SetWidth(DurationDropDown, 80);
-							</OnLoad>
-							<OnShow function="DurationDropDown_OnShow"/>
 						</Scripts>
 					</Frame>
 					<Frame name="AuctionsDepositMoneyFrame" inherits="SmallMoneyFrameTemplate">
@@ -2279,6 +2289,10 @@
 				SetAuctionsTabShowing(false);
 				CloseAuctionHouse();
 			</OnHide>
+			<OnMouseWheel>
+				<!-- Disable camera zooming on auction frame. -->
+				return;
+			</OnMouseWheel>
 		</Scripts>
 	</Frame>
 	<Frame name="AuctionProgressFrame" hidden="true" toplevel="true" parent="UIParent">

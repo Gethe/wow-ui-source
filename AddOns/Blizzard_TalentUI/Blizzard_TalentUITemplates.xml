@@ -94,9 +94,7 @@
 			<OnLeave>
 				TalentFrameTalent_OnLeave(self);
 			</OnLeave>
-			<OnClick>
-				TalentFrameTalent_OnClick(self);
-			</OnClick>
+			<OnClick function="TalentFrameTalent_OnClick"/>
 		</Scripts>
 	</Button>
 </Ui>

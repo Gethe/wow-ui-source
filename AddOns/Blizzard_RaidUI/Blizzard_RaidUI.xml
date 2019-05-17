@@ -28,7 +28,7 @@
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconTexture" x="2" y="0"/>
 					</Anchors>
 				</FontString>
-			</Layer>		
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad>
@@ -89,12 +89,6 @@
 						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT" x="2" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentClass" inherits="GameFontNormalSmall" justifyH="CENTER">
-					<Size x="50" y="8"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT" x="2" y="0"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -146,34 +140,61 @@
 					</OnEnter>
 				</Scripts>
 			</Button>
-			<Button name="$parentLoot" inherits="RaidRoleIconTemplate">
-				<Size x="11" y="11"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentRole" relativePoint="RIGHT" x="0" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnEnter>
-						-- Sets the Master Looter Tooltip
-						if ( self:GetParent().loot ) then
-							GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-							GameTooltip:SetText(MASTER_LOOTER, nil, nil, nil, nil, true);
-						else
-							GameTooltip:Hide();
-						end	
-					</OnEnter>
-				</Scripts>
-			</Button>
 			<Frame name="$parentReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
 				<Size x="11" y="11"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentRank" relativePoint="RIGHT"  x="0" y="0"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>	
+					<OnLoad>
 						RaiseFrameLevelByTwo(self);
 					</OnLoad>
 				</Scripts>
 			</Frame>
+			<Button name="$parentClass">
+				<Size>
+					<AbsDimension x="50" y="8"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT" x="2" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForDrag("LeftButton");
+					</OnLoad>
+					<OnDragStart>
+						RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(self:GetParent().class, self:GetText()));
+					</OnDragStart>
+					<OnDragStop>
+						RaidPulloutStopMoving();
+					</OnDragStop>
+					<OnHide>
+						RaidPulloutStopMoving();
+					</OnHide>
+					<OnEnter>
+						-- Hack to highlight the text even though we've overwritten the color with SetTextColor.
+						self.textR, self.textG, self.textB = self.text:GetTextColor();
+						self.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					</OnEnter>
+					<OnLeave>
+						self.text:SetTextColor(self.textR, self.textG, self.textB);
+					</OnLeave>
+				</Scripts>
+				<ButtonText parentKey="text">
+					<Size>
+						<AbsDimension x="50" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</ButtonText>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontHighlightSmall"/>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -257,6 +278,20 @@
 				<Anchors>
 					<Anchor point="TOP" x="0" y="14"/>
 				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForDrag("LeftButton");
+					</OnLoad>
+					<OnDragStart>
+						RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(self:GetParent():GetID()));
+					</OnDragStart>
+					<OnDragStop>
+						RaidPulloutStopMoving();
+					</OnDragStop>
+					<OnHide>
+						RaidPulloutStopMoving();
+					</OnHide>
+				</Scripts>
 				<NormalFont style="GameFontNormalSmall"/>
 				<HighlightFont style="GameFontHighlightSmall"/>
 			</Button>
@@ -306,7 +341,7 @@
 						<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
 					</Anchors>
 					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
-				</Texture>	
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -339,13 +374,13 @@
 		</Scripts>
 	</Frame>
 	<Frame name="RaidPulloutButtonTemplate" hidden="true" virtual="true">
-		<Size x="70" y="25"/>
+		<Size x="57" y="25"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="$parentName" inherits="GameFontNormalSmall">
-					<Size x="65" y="12"/>
+					<Size x="55" y="12"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="2" y="5"/>
+						<Anchor point="TOPLEFT" x="2" y="2"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -368,9 +403,9 @@
 		</Layers>
 		<Frames>
 			<StatusBar name="$parentHealthBar" drawLayer="ARTWORK" inherits="TextStatusBar" enableMouse="false">
-				<Size x="68" y="6"/>
+				<Size x="51" y="5"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="1" y="-11"/>
+					<Anchor point="TOPLEFT" x="3" y="-12"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -380,11 +415,11 @@
 					</Layer>
 					<Layer level="BORDER">
 						<Texture name="$parentFrame" file="Interface\RaidFrame\UI-RaidFrame-HealthBar">
-							<Size x="70" y="8"/>
+							<Size x="55" y="7"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="-1" y="-1"/>
+								<Anchor point="BOTTOMLEFT" x="-2" y="-1"/>
 							</Anchors>
-							<TexCoords left="0" right="0.75" top="0" bottom="0.25"/>
+							<TexCoords left="0" right="0.859375" top="0" bottom="0.21875"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -398,7 +433,7 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<StatusBar name="$parentManaBar" drawLayer="ARTWORK" inherits="TextStatusBar" enableMouse="false">
-				<Size x="68" y="6"/>
+				<Size x="51" y="5"/>
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentHealthBar" relativePoint="BOTTOM" x="0" y="-1"/>
 				</Anchors>
@@ -410,11 +445,11 @@
 					</Layer>
 					<Layer level="BORDER">
 						<Texture name="$parentFrame" file="Interface\RaidFrame\UI-RaidFrame-HealthBar">
-							<Size x="70" y="8"/>
+							<Size x="55" y="7"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="-1" y="-1"/>
+								<Anchor point="BOTTOMLEFT" x="-2" y="-1"/>
 							</Anchors>
-							<TexCoords left="0" right="0.75" top="0" bottom="0.25"/>
+							<TexCoords left="0" right="0.859375" top="0.21875" bottom="0.4375"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -422,9 +457,9 @@
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
 			<StatusBar name="$parentTarget" drawLayer="ARTWORK" inherits="SecureFrameTemplate, TextStatusBar" enableMouse="false">
-				<Size x="68" y="14"/>
+				<Size x="55" y="14"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentManaBar" relativePoint="BOTTOM" x="0" y="-3"/>
+					<Anchor point="TOP" relativeTo="$parentManaBar" relativePoint="BOTTOM" x="0" y="-2"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -432,20 +467,11 @@
 							<Color r="0" g="0" b="0" a="0.33"/>
 						</Texture>
 					</Layer>
-					<Layer level="BORDER">
-						<Texture name="$parentFrame" file="Interface\RaidFrame\UI-RaidFrame-HealthBar" hidden="true">
-							<Size x="70" y="16"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-1" y="1"/>
-							</Anchors>
-							<TexCoords left="0" right="0.75" top="0.5" bottom="1"/>
-						</Texture>
-					</Layer>
 					<Layer level="OVERLAY">
 						<FontString name="$parentName" inherits="GameFontNormalSmall">
-							<Size x="67" y="12"/>
+							<Size x="55" y="12"/>
 							<Anchors>
-								<Anchor point="TOP" x="0" y="0"/>
+								<Anchor point="TOP" x="1" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -458,16 +484,28 @@
 						--UnitFrameHealthBar_OnValueChanged(self, value);
 					</OnValueChanged>
 					<OnMouseUp>
-						TargetUnit(self:GetParent().unit.."target");
-					</OnMouseUp> 
+						if ( button == "RightButton" ) then
+							ToggleDropDownMenu(1, nil, _G[self:GetParent():GetParent():GetName().."DropDown"]);
+						else
+							SecureUnitButton_OnClick(self, button);
+						end
+					</OnMouseUp>
+					<OnEnter>
+						if ( self.unit ) then
+							UnitFrame_UpdateTooltip(self);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="1.0" g="0" b="0"/>
 			</StatusBar>
-			<Frame name="$parentTargetTargetFrame" hidden="true">
-				<Size x="90" y="32"/>
+			<Frame name="$parentTargetTargetFrame" hidden="true" enableMouse="false">
+				<Size x="72" y="32"/>
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT" x="6" y="-15"/>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="6" y="-12"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -487,7 +525,7 @@
 						<AbsValue val="16"/>
 					</TileSize>
 					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
+						<AbsInset left="4" right="4" top="4" bottom="4"/>
 					</BackgroundInsets>
 				</Backdrop>
 				<Scripts>
@@ -499,11 +537,11 @@
 					</OnLoad>
 					<OnMouseUp>
 						TargetUnit(self:GetParent().unit.."targettarget");
-					</OnMouseUp> 
+					</OnMouseUp>
 				</Scripts>
 			</Frame>
 			<StatusBar name="$parentTargetTarget" drawLayer="ARTWORK" inherits="TextStatusBar" enableMouse="false" hidden="true">
-				<Size x="68" y="7"/>
+				<Size x="51" y="7"/>
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentTargetTargetFrame" x="0" y="-16"/>
 				</Anchors>
@@ -513,28 +551,19 @@
 							<Color r="0" g="0" b="0" a="0.33"/>
 						</Texture>
 					</Layer>
-					<Layer level="BORDER">
-						<Texture file="Interface\RaidFrame\UI-RaidFrame-HealthBar">
-							<Size x="70" y="8"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="-1" y="0"/>
-							</Anchors>
-							<TexCoords left="0" right="0.75" top="0.5" bottom="1"/>
-						</Texture>
-					</Layer>
 				</Layers>
 				<Frames>
 					<Frame>
-						<Size x="68" y="12"/>
+						<Size x="57" y="12"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="0" y="1"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="-1" y="0"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<FontString name="$parentName" inherits="GameFontNormalSmall">
-									<Size x="68" y="12"/>
+									<Size x="55" y="10"/>
 									<Anchors>
-										<Anchor point="TOPLEFT"/>
+										<Anchor point="TOPLEFT" x="-1" y="0"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -542,7 +571,7 @@
 						<Scripts>
 							<OnMouseUp>
 								TargetUnit(self:GetParent():GetParent().unit.."targettarget");
-							</OnMouseUp> 
+							</OnMouseUp>
 						</Scripts>
 					</Frame>
 				</Frames>
@@ -552,11 +581,16 @@
 					</OnValueChanged>
 					<OnMouseUp>
 						TargetUnit(self:GetParent().unit.."targettarget");
-					</OnMouseUp> 
+					</OnMouseUp>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
-			<Button name="$parentClearButton" setAllPoints="true" inherits="SecureUnitButtonTemplate">
+			<Button name="$parentClearButton" inherits="SecureUnitButtonTemplate">
+				<Size x="57" y="25"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
 				<Scripts>
 					<OnLoad>
 						RaidPulloutButton_OnLoad(self);
@@ -569,15 +603,25 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<Button name="$parentSpeaker" inherits="VoiceChatSpeakerTemplate" hidden="true">
-				<Size x="16" y="16"/>
+			<!-- For the record, this probably isn't how this should be done (the TargetTargetFrame should be the Secure Button Template, and the healthbar should be its child).
+			     But we've come this far, so we might as well go all the way... -->
+			<Button name="$parentTargetTargetClearButton" inherits="SecureUnitButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="-5" y="6"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentTargetTargetFrame"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentTargetTargetFrame"/>
 				</Anchors>
 				<Scripts>
-					<OnUpdate>
-						VoiceChat_OnUpdate(self, elapsed);
-					</OnUpdate>
+					<OnLoad>
+						RaidPulloutButton_OnLoad(self);
+					</OnLoad>
+					<OnEnter>
+						if ( self.unit ) then
+							UnitFrame_UpdateTooltip(self);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</Button>
 			<Frame name="$parentReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
@@ -629,7 +673,7 @@
 		</Scripts>
 	</Frame>
 	<Button name="RaidPulloutFrameTemplate" toplevel="true" parent="UIParent" movable="true" clampedToScreen="true" enableMouse="true" hidden="true" virtual="true">
-		<Size x="92" y="10"/>
+		<Size x="72" y="10"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="0"/>
 		</Anchors>
@@ -662,7 +706,7 @@
 						<AbsValue val="16"/>
 					</TileSize>
 					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
+						<AbsInset left="4" right="4" top="4" bottom="4"/>
 					</BackgroundInsets>
 				</Backdrop>
 				<Scripts>
@@ -682,6 +726,7 @@
 				self:RegisterEvent("GROUP_ROSTER_UPDATE");
 				self:RegisterEvent("UNIT_PET");
 				self:RegisterEvent("UNIT_NAME_UPDATE");
+				self:RegisterEvent("UNIT_CONNECTION");
 				self:RegisterEvent("READY_CHECK");
 				self:RegisterEvent("READY_CHECK_CONFIRM");
 				self:RegisterEvent("READY_CHECK_FINISHED");
@@ -708,8 +753,28 @@
 			<OnMouseUp>
 				self:StopMovingOrSizing();
 				self:SetFrameStrata("BACKGROUND");
-			</OnMouseUp> 
+			</OnMouseUp>
 		</Scripts>
+	</Button>
+	<Button name="RaidFrameReadyCheckButton" inherits="UIPanelButtonTemplate" parent="RaidFrame" text="READY_CHECK">
+		<Size>
+			<AbsDimension x="90" y="21"/>
+		</Size>
+		<Anchors>
+			<Anchor point="RIGHT" relativeTo="RaidFrameRaidInfoButton" relativePoint="LEFT">
+				<Offset>
+					<AbsDimension x="-2" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnClick>
+				DoReadyCheck();
+			</OnClick>
+		</Scripts>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontDisableSmall"/>
 	</Button>
 	<Button name="RaidClassButton15"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="14">
 		<Anchors>
