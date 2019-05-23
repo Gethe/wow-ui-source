@@ -22,15 +22,7 @@
 	<WorldFrame name="WorldFrame" movable="true" resizable="true" clipChildren="true" setAllPoints="true">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="FramerateLabel" hidden="true" inherits="SystemFont_Shadow_Med1" text="FRAMERATE_LABEL">
-					<Anchors>
-						<Anchor point="BOTTOM" relativePoint="BOTTOM">
-							<Offset>
-								<AbsDimension x="0" y="64"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
+				<FontString name="FramerateLabel" hidden="true" inherits="SystemFont_Shadow_Med1" text="FRAMERATE_LABEL"/>
 				<FontString name="FramerateText" hidden="true" inherits="SystemFont_Shadow_Med1">
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="FramerateLabel" relativePoint="RIGHT"/>

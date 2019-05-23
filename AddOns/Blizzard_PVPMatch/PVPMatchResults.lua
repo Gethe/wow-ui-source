@@ -21,6 +21,7 @@ end
 
 PVPMatchResultsMixin = {};
 function PVPMatchResultsMixin:OnLoad()
+	self:RegisterEvent("PLAYER_LEAVING_WORLD");
 	self:RegisterEvent("PVP_MATCH_ACTIVE");
 	self:RegisterEvent("PVP_MATCH_INACTIVE");
 	
@@ -53,7 +54,7 @@ function PVPMatchResultsMixin:OnLoad()
 	self.earningsArt = self.content.earningsArt;
 	self.earningsBackground = self.earningsArt.background;
 	self.tintFrames = {self.glowTop, self.earningsBackground, self.scrollFrame.background};
-	self.rewardFrames = {self.honorFrame, self.conquestFrame, self.ratingFrame};
+	self.progressFrames = {self.honorFrame, self.conquestFrame, self.ratingFrame};
 
 	self.header:SetShadowOffset(1,-1);
 
@@ -112,7 +113,6 @@ function PVPMatchResultsMixin:Init(winner, duration)
 	local baseWidth = self.leaveButton:GetFontString():GetStringWidth();
 	local timeWidthMargin = 100;
 	self.leaveButton:SetWidth(baseWidth + timeWidthMargin);
-	self.buttonContainer:MarkDirty();
 
 	self.UpdateLeaveButton = function()
 		local shutdownTime = GetBattlefieldInstanceExpiration()/1000;
@@ -128,13 +128,17 @@ function PVPMatchResultsMixin:Init(winner, duration)
 	self.requeueButton:SetEnabled(isArenaSkirmish);
 	self.requeueButton:SetShown(isArenaSkirmish);
 	
-	local isArena = IsActiveBattlefieldArena();
-	local isLFD = IsInLFDBattlefield();
-	local isFactionalMatch = not (isArena or isArenaSkirmish or isLFD);
-	
+	if isArenaSkirmish then
+		self.leaveButton:SetPoint("LEFT", self.requeueButton, "RIGHT", 30, 0 );
+	else
+		self.leaveButton:SetPoint("LEFT", self.buttonContainer, "LEFT", 0, 0 );
+	end
+	self.buttonContainer:MarkDirty();
+
 	local formattedTime = PVPMatchUtil.MatchTimeFormatter:Format(duration);
 	self.matchTimeValue:SetText(PVP_TIME_ELAPSED:format(formattedTime));
-
+	
+	local isFactionalMatch = C_PvP.IsMatchFactional();
 	if isFactionalMatch then
 		local teamInfos = { 
 			C_PvP.GetTeamInfo(0),
@@ -148,7 +152,7 @@ function PVPMatchResultsMixin:Init(winner, duration)
 
 	self:SetupArtwork(factionIndex, isFactionalMatch);
 
-	ConstructPVPMatchTable(self.tableBuilder, C_PvP.IsRatedBattleground(), isArena, isLFD, not isFactionalMatch);
+	ConstructPVPMatchTable(self.tableBuilder, not isFactionalMatch);
 end
 function PVPMatchResultsMixin:Reset()
 	self.hasRewardTimerElapsed = false;
@@ -158,7 +162,9 @@ function PVPMatchResultsMixin:Reset()
 	self.earningsContainer:Hide();
 end
 function PVPMatchResultsMixin:OnEvent(event, ...)
-	if event == "PVP_MATCH_ACTIVE" then
+	if event == "PLAYER_LEAVING_WORLD" then
+		HideUIPanel(self);
+	elseif event == "PVP_MATCH_ACTIVE" then
 		FrameUtil.RegisterFrameForEvents(self, ACTIVE_EVENTS);
 		self:Reset();
 	elseif event == "PVP_MATCH_COMPLETE" then
@@ -231,7 +237,7 @@ function PVPMatchResultsMixin:DisplayRewards()
 		end
 	end
 
-	for k, frame in pairs(self.rewardFrames) do
+	for k, frame in pairs(self.progressFrames) do
 		frame:Hide();
 	end
 
@@ -266,13 +272,14 @@ function PVPMatchResultsMixin:DisplayRewards()
 	-- Visibility of the progress elements can be mixed, but are expected to be in the order of
 	-- honor, then conquest, then rating.
 	local progressFramesShown = {};
-	local InsertIfShown = function(frame)
+	for k, frame in pairs(self.progressFrames) do
 		if frame:IsShown() then
 			tinsert(progressFramesShown, frame);
 		end
-	end;
-	for k, frame in pairs(self.rewardFrames) do
-		InsertIfShown(frame);
+
+		-- Want assurance that all points are cleared and cannot affect
+		-- the result of the anchoring to follow.
+		frame:ClearAllPoints();
 	end
 
 	local previousProgressFrame;

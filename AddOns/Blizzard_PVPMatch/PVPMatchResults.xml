@@ -373,21 +373,14 @@
 					<Anchor point="TOP" y="-30" relativeKey="$parent.content" relativePoint="BOTTOM"/>
 				</Anchors>
 				<Frames>
-					<Button parentKey="leaveButton" inherits="UIPanelButtonTemplate">
-						<Size y="20"/>
-						<Anchors>
-							<Anchor point="TOPLEFT"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-							</OnClick>
-						</Scripts>
-					</Button>
 					<Button parentKey="requeueButton" inherits="UIPanelButtonTemplate">
 						<Size x="153" y="21"/>
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.leaveButton" relativePoint="RIGHT" x="15"/>
+							<Anchor point="TOPLEFT"/>
 						</Anchors>
+					</Button>
+					<Button parentKey="leaveButton" inherits="UIPanelButtonTemplate">
+						<Size y="21"/>
 					</Button>
 				</Frames>
 			</Frame>

@@ -804,6 +804,14 @@ function CommunitiesFrameMixin:OnHide()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 
 	self:CloseActiveDialogs();
+	if(self.CommunityAndGuildFinderFrame:IsShown()) then 
+		self.CommunityAndGuildFinderFrame:Hide(); 
+	end 
+
+	if(self.GuildFinderFrame:IsShown()) then 
+		self.GuildFinderFrame:Hide();
+	end
+
 	C_Club.ClearClubPresenceSubscription();
 	C_Club.ClearAutoAdvanceStreamViewMarker();
 	C_Club.Flush();
@@ -900,7 +908,6 @@ function CommunitiesControlFrameMixin:Update()
 	if not self:IsShown() then
 		return;
 	end
-
 	self.CommunitiesSettingsButton:Hide();
 	self.GuildRecruitmentButton:Hide();
 	self.GuildControlButton:Hide();

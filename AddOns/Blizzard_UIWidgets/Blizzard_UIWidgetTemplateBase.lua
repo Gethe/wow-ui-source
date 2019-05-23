@@ -59,6 +59,35 @@ function UIWidgetTemplateTooltipFrameMixin:OnLeave()
 	self.mouseOver = false;
 end
 
+local function GetTextColorForEnabledState(enabledState, overrideNormalFontColor)
+	if enabledState == Enum.WidgetEnabledState.Disabled then
+		return DISABLED_FONT_COLOR;
+	elseif enabledState == Enum.WidgetEnabledState.Red then
+		return RED_FONT_COLOR;
+	elseif enabledState == Enum.WidgetEnabledState.Highlight then
+		return HIGHLIGHT_FONT_COLOR;
+	else
+		return overrideNormalFontColor or NORMAL_FONT_COLOR;
+	end
+end
+
+local function SetTextColorForEnabledState(fontString, enabledState, overrideNormalFontColor)
+	fontString:SetTextColor(GetTextColorForEnabledState(enabledState, overrideNormalFontColor):GetRGB());
+end
+
+function UIWidgetTemplateTooltipFrameMixin:SetFontColor(overrideNormalFontColor)
+	if self.ColoredStrings then
+		for _, fontString in ipairs(self.ColoredStrings) do
+			SetTextColorForEnabledState(fontString, self.enabledState, overrideNormalFontColor);
+		end
+	end
+end
+
+function UIWidgetTemplateTooltipFrameMixin:SetEnabledState(enabledState)
+	self.enabledState = enabledState;
+	self:SetFontColor();
+end
+
 UIWidgetBaseTemplateMixin = {}
 
 function UIWidgetBaseTemplateMixin:OnLoad()
@@ -144,26 +173,6 @@ function UIWidgetBaseResourceTemplateMixin:Setup(resourceInfo)
 	self:SetHeight(self.Icon:GetHeight());
 end
 
-function UIWidgetBaseResourceTemplateMixin:SetFontColor(color)
-	self.Text:SetTextColor(color:GetRGB());
-end
-
-local function GetTextColorForEnabledState(enabledState, useHighlightForNormal)
-	if enabledState == Enum.WidgetEnabledState.Disabled then
-		return DISABLED_FONT_COLOR;
-	elseif enabledState == Enum.WidgetEnabledState.Red then
-		return RED_FONT_COLOR;
-	elseif enabledState == Enum.WidgetEnabledState.Highlight then
-		return HIGHLIGHT_FONT_COLOR;
-	else
-		return useHighlightForNormal and HIGHLIGHT_FONT_COLOR or NORMAL_FONT_COLOR;
-	end
-end
-
-local function SetTextColorForEnabledState(fontString, enabledState, useHighlightForNormal)
-	fontString:SetTextColor(GetTextColorForEnabledState(enabledState, useHighlightForNormal):GetRGB());
-end
-
 UIWidgetBaseCurrencyTemplateMixin = {}
 
 function UIWidgetBaseCurrencyTemplateMixin:Setup(currencyInfo, enabledState, tooltipEnabledState)
@@ -172,8 +181,7 @@ function UIWidgetBaseCurrencyTemplateMixin:Setup(currencyInfo, enabledState, too
 	self.Icon:SetTexture(currencyInfo.iconFileID);
 	self.Icon:SetDesaturated(enabledState == Enum.WidgetEnabledState.Disabled);
 
-	SetTextColorForEnabledState(self.Text, enabledState);
-	SetTextColorForEnabledState(self.LeadingText, enabledState);
+	self:SetEnabledState(enabledState);
 
 	local totalWidth = self.Icon:GetWidth() + self.Text:GetWidth() + 5;
 
@@ -189,11 +197,6 @@ function UIWidgetBaseCurrencyTemplateMixin:Setup(currencyInfo, enabledState, too
 
 	self:SetWidth(totalWidth);
 	self:SetHeight(self.Icon:GetHeight());
-end
-
-function UIWidgetBaseCurrencyTemplateMixin:SetFontColor(color)
-	self.Text:SetTextColor(color:GetRGB());
-	self.LeadingText:SetTextColor(color:GetRGB());
 end
 
 UIWidgetBaseSpellTemplateMixin = {}
@@ -242,7 +245,7 @@ function UIWidgetBaseSpellTemplateMixin:Setup(spellInfo, enabledState, width)
 	end
 
 	self.Text:SetWidth(textWidth);
-	SetTextColorForEnabledState(self.Text, enabledState);
+	self:SetEnabledState(enabledState);
 	self.spellID = spellInfo.spellID;
 	self:SetTooltip(spellInfo.tooltip);
 
@@ -258,10 +261,6 @@ function UIWidgetBaseSpellTemplateMixin:OnEnter()
 	else
 		UIWidgetTemplateTooltipFrameMixin.OnEnter(self);
 	end
-end
-
-function UIWidgetBaseSpellTemplateMixin:SetFontColor(color)
-	self.Text:SetTextColor(color:GetRGB());
 end
 
 UIWidgetBaseColoredTextMixin = {}
@@ -381,6 +380,7 @@ local function GetTextSizeFont(textSizeType)
 end
 
 function UIWidgetBaseTextureAndTextTemplateMixin:OnLoad()
+	UIWidgetTemplateTooltipFrameMixin.OnLoad(self);
 	ResizeLayoutMixin.OnLoad(self); 
 	self.Text:SetFontObjectsToTry(); 
 end 
@@ -408,88 +408,107 @@ end
 UIWidgetBaseControlZoneTemplateMixin = {}
 
 function UIWidgetBaseControlZoneTemplateMixin:OnLoad()
-	UIWidgetBaseTemplateMixin.OnLoad(self);
+	UIWidgetTemplateTooltipFrameMixin.OnLoad(self);
 	ResizeLayoutMixin.OnLoad(self);
 end
 
 local zoneFormatString = "%s-%s-%s";
 local cappedFormatString = "%s-%s-%s-cap";
-local swipeTextureFormatString = "Interface\\Widgets\\%s-%s-fill"
+local swipeTextureFormatString = "Interface\\Widgets\\%s-%s-fill";
+local edgeTextureFormatString = "Interface\\UnitPowerBarAlt\\%s-spark%s";
 
 local textureKitRegionInfo = {
 	["Zone"] = {useAtlasSize = true, setVisibility = true},	-- formatString is filled on before passing to SetupTextureKitsFromRegionInfo (based on whether the zone is capped or not)
-	["FallingGlowBackground"] = {formatString = "%s-fallingglow-bg", useAtlasSize = true},
-	["FallingGlowOverlay"] = {formatString = "%s-fallingglow", useAtlasSize = true},
-	["FullGlow"] = {formatString = "%s-fullglow", useAtlasSize = true},
-	["FullGlowStar"] = {formatString = "%s-starglow", useAtlasSize = true},
+	["DangerGlowBackground"] = {formatString = "%s-fallingglow-bg", useAtlasSize = true},
+	["DangerGlowOverlay"] = {formatString = "%s-fallingglow", useAtlasSize = true},
+	["CapturedGlow"] = {formatString = "%s-fullglow", useAtlasSize = true},
+	["CapturedGlowStar"] = {formatString = "%s-starglow", useAtlasSize = true},
 }
 
-function UIWidgetBaseControlZoneTemplateMixin:UpdateAnimations(zoneInfo, zoneMode, lastVals)
-	local isActive = (zoneInfo.activeState == Enum.ZoneControlActiveState.Active);
-	local isMaxed = (zoneInfo.current == zoneInfo.max);
-	local wasMaxed = lastVals and (lastVals.current == lastVals.max) or false;
+local PLAY_ANIM = true;
+local STOP_ANIM = false;
 
-	if not lastVals or not isActive then
-		-- This is either the first update on this zone/state or the zone is inactive...turn off all animations
-		self.FallingGlowAnim:Stop();
-		self.FallingGlowBackground:Hide();
-		self.FallingGlowOverlay:Hide();
-		self.FullGlowAnim:Stop();
-		self.FullGlow:Hide();
-		self.FullGlowStar:Hide();
+function UIWidgetBaseControlZoneTemplateMixin:PlayOrStopCapturedAnimation(play)
+	if play then
+		self.CapturedGlowStar:Show();
+		self.CapturedGlow:Show();
+		self.CapturedGlowAnim:Play();
 	else
-		if isMaxed then
-			if not wasMaxed then
-				-- This zone just got maxed...play the full glow
-				self.FullGlowStar:Show();
-				self.FullGlow:Show();
-				self.FullGlowAnim:Play();
-			end
+		self.CapturedGlowAnim:Stop();
+		self.CapturedGlow:Hide();
+		self.CapturedGlowStar:Hide();
+	end
+end
 
-			-- The zone is maxed...turn off the falling glow
-			self.FallingGlowAnim:Stop();
-			self.FallingGlowBackground:Hide();
-			self.FallingGlowOverlay:Hide();
+function UIWidgetBaseControlZoneTemplateMixin:PlayOrStopDangerAnimation(play)
+	if play then
+		self.DangerGlowBackground:Show();
+		self.DangerGlowOverlay:Show();
+		self.DangerGlowAnim:Play();
+	else
+		self.DangerGlowAnim:Stop();
+		self.DangerGlowBackground:Hide();
+		self.DangerGlowOverlay:Hide();
+	end
+end
+
+function UIWidgetBaseControlZoneTemplateMixin:UpdateAnimations(zoneInfo, zoneMode, lastVals, dangerFlashType)
+	local isActive = (zoneInfo.activeState == Enum.ZoneControlActiveState.Active);
+	local isCaptured = (zoneInfo.current >= zoneInfo.capturePoint);
+	local wasCaptured = not lastVals or (lastVals.current >= lastVals.capturePoint);
+
+	if not isActive then
+		-- The zone is inactive...turn off all animations
+		self:PlayOrStopCapturedAnimation(STOP_ANIM);
+		self:PlayOrStopDangerAnimation(STOP_ANIM);
+	else
+		local zoneIsGood;
+		if zoneMode == Enum.ZoneControlMode.BothStatesAreGood then
+			zoneIsGood = true;
+		elseif zoneMode == Enum.ZoneControlMode.State1IsGood then
+			zoneIsGood = (zoneInfo.state == Enum.ZoneControlState.State1);
+		elseif zoneMode == Enum.ZoneControlMode.State2IsGood then
+			zoneIsGood = (zoneInfo.state == Enum.ZoneControlState.State2);
 		else
-			local reverseAnims;
-			if zoneMode == Enum.ZoneControlMode.BothStatesAreGood then
-				reverseAnims = false;
-			elseif zoneMode == Enum.ZoneControlMode.State1IsGood then
-				reverseAnims = (zoneInfo.state == Enum.ZoneControlState.State2);
-			elseif zoneMode == Enum.ZoneControlMode.State2IsGood then
-				reverseAnims = (zoneInfo.state == Enum.ZoneControlState.State1);
-			else
-				reverseAnims = true;
-			end
+			zoneIsGood = false;
+		end
 
-			local playFallingAnim, stopFallingAnim;
-			if reverseAnims then
-				playFallingAnim = zoneInfo.current > lastVals.current;
-				stopFallingAnim = zoneInfo.current < lastVals.current;
-			else
-				playFallingAnim = zoneInfo.current < lastVals.current;
-				stopFallingAnim = zoneInfo.current > lastVals.current;
-			end
+		if zoneIsGood and isCaptured and not wasCaptured then
+			-- This is a good zone that just got captured...play the captured animation
+			self:PlayOrStopCapturedAnimation(PLAY_ANIM);
+		end
 
-			if playFallingAnim then
-				self.FallingGlowBackground:Show();
-				self.FallingGlowOverlay:Show();
-				self.FallingGlowAnim:Play();
-			elseif stopFallingAnim then
-				self.FallingGlowAnim:Stop();
-				self.FallingGlowBackground:Hide();
-				self.FallingGlowOverlay:Hide();
-			end
+		local zoneStateUsesDangerAnim;
+		if zoneIsGood then
+			zoneStateUsesDangerAnim = (dangerFlashType == Enum.ZoneControlDangerFlashType.ShowOnGoodStates) or (dangerFlashType == Enum.ZoneControlDangerFlashType.ShowOnBoth);
+		else
+			zoneStateUsesDangerAnim = (dangerFlashType == Enum.ZoneControlDangerFlashType.ShowOnBadStates) or (dangerFlashType == Enum.ZoneControlDangerFlashType.ShowOnBoth);
+		end
 
-			-- The zone is not maxed...turn off the full glow
-			self.FullGlowAnim:Stop();
-			self.FullGlow:Hide();
-			self.FullGlowStar:Hide();
+		if not zoneStateUsesDangerAnim then
+			-- This zone doesn't use the danger animation...kill it and return
+			self:PlayOrStopDangerAnimation(STOP_ANIM);
+			return;
+		end
+
+		local playDangerAnim, stopDangerAnim;
+		if zoneIsGood then
+			playDangerAnim = lastVals and zoneInfo.current < lastVals.current;
+			stopDangerAnim = not lastVals or zoneInfo.current > lastVals.current;
+		else
+			playDangerAnim = lastVals and zoneInfo.current > lastVals.current;
+			stopDangerAnim = not lastVals or zoneInfo.current < lastVals.current;
+		end
+
+		if playDangerAnim then
+			self:PlayOrStopDangerAnimation(PLAY_ANIM);
+		elseif stopDangerAnim then
+			self:PlayOrStopDangerAnimation(STOP_ANIM);
 		end
 	end
 end
 
-function UIWidgetBaseControlZoneTemplateMixin:Setup(zoneIndex, zoneMode, zoneInfo, lastVals, textureKitID)
+function UIWidgetBaseControlZoneTemplateMixin:Setup(zoneIndex, zoneMode, leadingEdgeType, dangerFlashType, zoneInfo, lastVals, textureKitID)
 	local textureKit = GetUITextureKitInfo(textureKitID);
 	if not textureKit then
 		self:Hide();
@@ -521,12 +540,15 @@ function UIWidgetBaseControlZoneTemplateMixin:Setup(zoneIndex, zoneMode, zoneInf
 	self.Progress:SetSwipeTexture(swipeTextureName);
 
 	local percentageFull;
+	local capturePercentage;
 	local reverse;
 	if zoneInfo.fillType == Enum.ZoneControlFillType.SingleFillClockwise then
 		percentageFull = ClampedPercentageBetween(currentVal, zoneInfo.min, zoneInfo.max);
+		capturePercentage = ClampedPercentageBetween(zoneInfo.capturePoint, zoneInfo.min, zoneInfo.max);
 		reverse = true;
 	elseif zoneInfo.fillType == Enum.ZoneControlFillType.SingleFillCounterClockwise then
 		percentageFull = 1 - ClampedPercentageBetween(currentVal, zoneInfo.min, zoneInfo.max);
+		capturePercentage = 1 - ClampedPercentageBetween(zoneInfo.capturePoint, zoneInfo.min, zoneInfo.max);
 		reverse = false;
 	elseif zoneInfo.fillType == Enum.ZoneControlFillType.DoubleFillClockwise then
 		if currentVal >= zoneInfo.capturePoint then
@@ -550,6 +572,24 @@ function UIWidgetBaseControlZoneTemplateMixin:Setup(zoneIndex, zoneMode, zoneInf
 		reverse = not reverse;
 	end
 
+	local edgeColorString = zoneInfo.state == Enum.ZoneControlState.State1 and "blue" or "yellow";
+	local edgeTextureName = edgeTextureFormatString:format(unpack({textureKit, edgeColorString}));
+
+	if percentageFull == 0  or leadingEdgeType == Enum.ZoneControlLeadingEdgeType.NoLeadingEdge then
+		self.Progress:SetEdgeTexture("", 1, 1, 1, 0);
+	else
+		self.Progress:SetEdgeTexture(edgeTextureName);
+	end
+
+	if not isActive or not capturePercentage or zoneInfo.capturePoint <= 1 then
+		self.CapturePoint:SetEdgeTexture("", 1, 1, 1, 0);
+		CooldownFrame_SetDisplayAsPercentage(self.CapturePoint, 0);
+	else
+		self.CapturePoint:SetEdgeTexture(edgeTextureName);
+		self.CapturePoint:SetReverse(reverse);
+		CooldownFrame_SetDisplayAsPercentage(self.CapturePoint, capturePercentage);
+	end
+
 	self.Progress:SetReverse(reverse);
 	CooldownFrame_SetDisplayAsPercentage(self.Progress, percentageFull);
 
@@ -557,7 +597,7 @@ function UIWidgetBaseControlZoneTemplateMixin:Setup(zoneIndex, zoneMode, zoneInf
 	zoneInfo.current = currentVal;
 
 	-- And update the animations
-	self:UpdateAnimations(zoneInfo, zoneMode, lastVals);
+	self:UpdateAnimations(zoneInfo, zoneMode, lastVals, dangerFlashType);
 
 	self:SetTooltip(zoneInfo.tooltip);
 

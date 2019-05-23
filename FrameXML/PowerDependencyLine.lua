@@ -149,9 +149,7 @@ end
 do
 	local function OnLineRevealFinished(animGroup)
 		local lineContainer = animGroup:GetParent();
-		if lineContainer.animType then
-			lineContainer:PlayLineFadeAnim(lineContainer.animType);
-		end
+		lineContainer:OnRevealFinished();
 	end
 
 	function PowerDependencyLineMixin:BeginReveal(delay, duration)
@@ -167,6 +165,12 @@ do
 
 		self.RevealAnim:SetScript("OnFinished", OnLineRevealFinished);
 		self.RevealAnim:Play();
+	end
+end
+
+function PowerDependencyLineMixin:OnRevealFinished()
+	if self.animType then
+		self:PlayLineFadeAnim(self.animType);
 	end
 end
 

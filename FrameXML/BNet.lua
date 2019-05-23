@@ -66,9 +66,15 @@ function BNToastMixin:OnEvent(event, ...)
 	elseif ( event == "BN_BLOCK_FAILED_TOO_MANY" ) then
 		self:BlockFailed(...);
 	elseif ( event == "BN_FRIEND_ACCOUNT_ONLINE" ) then
-		self:AddToast(BN_TOAST_TYPE_ONLINE, ...);
+		local friendId, isCompanionApp = ...;
+		if not isCompanionApp then
+			self:AddToast(BN_TOAST_TYPE_ONLINE, friendId);
+		end
 	elseif ( event == "BN_FRIEND_ACCOUNT_OFFLINE" ) then
-		self:AddToast(BN_TOAST_TYPE_OFFLINE, ...);
+		local friendId, isCompanionApp = ...;
+		if not isCompanionApp then
+			self:AddToast(BN_TOAST_TYPE_OFFLINE, friendId);
+		end
 	elseif ( event == "BN_CUSTOM_MESSAGE_CHANGED" ) then
 		self:OnCustomMessageChanged(...);
 	elseif ( event == "BN_FRIEND_INVITE_ADDED" ) then

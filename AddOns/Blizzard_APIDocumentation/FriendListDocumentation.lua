@@ -393,6 +393,7 @@ local FriendList =
 			Payload =
 			{
 				{ Name = "friendId", Type = "number", Nilable = false },
+				{ Name = "isCompanionApp", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -402,6 +403,7 @@ local FriendList =
 			Payload =
 			{
 				{ Name = "friendId", Type = "number", Nilable = false },
+				{ Name = "isCompanionApp", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{

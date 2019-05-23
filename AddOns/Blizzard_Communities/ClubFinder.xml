@@ -2,7 +2,19 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="ClubFinder.lua"/>
 
-
+	<ScrollFrame name="ClubFinderEditBoxScrollFrameTemplate" inherits="InputScrollFrameTemplate" virtual="true">
+		<Size x="343" y="70"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="5" y="-5"/>
+			<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="maxLetters" value="400" type="number"/>
+			<KeyValue key="hideCharCount" value="true" type="boolean"/>
+			<KeyValue key="cursorOffset" value="0" type="number"/>
+		</KeyValues>
+	</ScrollFrame>
+	
 	<Frame name="ClubsFinderJoinClubWarningTemplate" enableMouse="true" frameStrata="DIALOG" mixin="ClubsFinderJoinClubWarningMixin" virtual="true">
 		<Size x="400" y="100"/>
 		<Layers>
@@ -320,34 +332,12 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox parentKey="EditBox" multiLine="true" letters="255" setAllPoints="true" autoFocus="false">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="5" y="-5"/>
-							<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString parentKey="InformationText" inherits="GameFontDisable" setAllPoints="true" justifyH="LEFT" justifyV="TOP" text="CLUB_FINDER_RECRUITMENT_DESCRIPTION"/>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnEditFocusGained>
-								self.InformationText:Hide();
-							</OnEditFocusGained>
-							<OnEditFocusLost>
-								if ( self:GetText() == "" ) then
-									self.InformationText:Show();
-								end
-							</OnEditFocusLost>
-						</Scripts>
-						<FontString inherits="GameFontHighlightSmall"/>
-					</EditBox>
+					<ScrollFrame parentKey="RecruitmentMessageInput" inherits="ClubFinderEditBoxScrollFrameTemplate">
+						<KeyValues>
+							<KeyValue key="instructions" value="CLUB_FINDER_RECRUITMENT_DESCRIPTION" type="global"/>
+						</KeyValues>
+					</ScrollFrame>
 				</Frames>
-				<Scripts>
-					<OnMouseDown>
-						self.EditBox:SetFocus();
-					</OnMouseDown>
-				</Scripts>
 			</Frame>
 			<Frame parentKey="MaxLevelOnly">
 				<Size x="150" y="32"/>
@@ -445,6 +435,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>
 	
@@ -572,34 +563,12 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox parentKey="EditBox" multiLine="true" letters="255" setAllPoints="true" autoFocus="false">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="5" y="-5"/>
-							<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString parentKey="InformationText" inherits="GameFontDisable" setAllPoints="true" justifyH="LEFT" justifyV="TOP" text="CLUB_FINDER_RECRUITING_NOTE"/>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnEditFocusGained>
-								self.InformationText:Hide();
-							</OnEditFocusGained>
-							<OnEditFocusLost>
-								if ( self:GetText() == "" ) then
-								self.InformationText:Show();
-								end
-							</OnEditFocusLost>
-						</Scripts>
-						<FontString inherits="GameFontHighlightSmall"/>
-					</EditBox>
+					<ScrollFrame parentKey="MessageScroll" inherits="ClubFinderEditBoxScrollFrameTemplate">
+						<KeyValues>
+							<KeyValue key="instructions" value="CLUB_FINDER_RECRUITING_NOTE" type="global"/>
+						</KeyValues>
+					</ScrollFrame>
 				</Frames>
-				<Scripts>
-					<OnMouseDown>
-						self.EditBox:SetFocus();
-					</OnMouseDown>
-				</Scripts>
 			</Frame>
 			<Frame parentKey="Spec1" parentArray="Specs" inherits="ClubFinderSpecializationCheckBoxTemplate">
 				<Anchors>

@@ -1197,7 +1197,7 @@ function TogglePVPScoreboardOrResults()
 				HideUIPanel(PVPMatchScoreboard);
 			else
 				local isActive = matchState == Enum.PvpMatchState.Active;
-				if isActive and not (IsActiveBattlefieldArena() or IsArenaSkirmish()) then
+				if isActive and not C_PvP.IsMatchConsideredArena() then
 					PVPMatchScoreboard:BeginShow();
 				end
 			end

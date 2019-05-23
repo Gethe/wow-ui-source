@@ -792,7 +792,7 @@ local function QueueReveal(self, powerButton, distance, tier)
 			if linkedPowerButton.hasSpentAny then
 				QueueReveal(self, linkedPowerButton, distance, tier);
 			else 
-				local distanceToLink = powerButton:CalculateDistanceTo(linkedPowerButton);
+				local distanceToLink = CalculateDistanceBetweenRegions(powerButton, linkedPowerButton);
 				local totalDistance = distance + distanceToLink;
 
 				QueueReveal(self, linkedPowerButton, totalDistance, tier);

@@ -6,6 +6,7 @@
 			<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMLEFT" type="string"/>
 		</KeyValues>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 		</Scripts>
@@ -33,9 +34,6 @@
 				<Alpha fromAlpha="1" toAlpha="0" duration="0.25"/>
 			</AnimationGroup>
 		</Animations>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
 	</Frame>
 	<Frame name="UIWidgetBaseResourceTemplate" inherits="UIWidgetTemplateTooltipFrame" mixin="UIWidgetBaseResourceTemplateMixin" virtual="true">
 		<Layers>
@@ -46,7 +44,7 @@
 						<Anchor point="LEFT" />
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Text" inherits="GameFontNormal_NoShadow" justifyH="CENTER">
+				<FontString parentKey="Text" inherits="GameFontNormal_NoShadow" justifyH="CENTER" parentArray="ColoredStrings">
 					<Size x="67"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="-2" />
@@ -59,7 +57,7 @@
 	<Frame name="UIWidgetBaseCurrencyTemplate" inherits="UIWidgetTemplateTooltipFrame" mixin="UIWidgetBaseCurrencyTemplateMixin" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="LeadingText" inherits="GameFontNormal_NoShadow" text="">
+				<FontString parentKey="LeadingText" inherits="GameFontNormal_NoShadow" text="" parentArray="ColoredStrings">
 					<Anchors>
 						<Anchor point="LEFT" />
 					</Anchors>
@@ -70,7 +68,7 @@
 						<Anchor point="TOPLEFT" />
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Text" inherits="GameFontNormal_NoShadow">
+				<FontString parentKey="Text" inherits="GameFontNormal_NoShadow" parentArray="ColoredStrings">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5" />
 					</Anchors>
@@ -102,7 +100,7 @@
 						<MaskedTexture childKey="Icon"/>
 					</MaskedTextures>
 				</MaskTexture>
-				<FontString parentKey="Text" inherits="GameFontNormal_NoShadow" justifyH="LEFT">
+				<FontString parentKey="Text" inherits="GameFontNormal_NoShadow" justifyH="LEFT" parentArray="ColoredStrings">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5" />
 					</Anchors>
@@ -169,7 +167,7 @@
 	<Frame name="UIWidgetBaseControlZoneTemplate" inherits="UIWidgetTemplateTooltipFrame, ResizeLayoutFrame" mixin="UIWidgetBaseControlZoneTemplateMixin" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="FallingGlowBackground" useAtlasSize="true" ignoreParentAlpha="true" hidden="true">
+				<Texture parentKey="DangerGlowBackground" useAtlasSize="true" ignoreParentAlpha="true" hidden="true">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
@@ -186,7 +184,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="FallingGlowOverlay" useAtlasSize="true" ignoreParentAlpha="true" hidden="true">
+				<Texture parentKey="DangerGlowOverlay" useAtlasSize="true" ignoreParentAlpha="true" hidden="true">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
@@ -194,7 +192,7 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="FullGlow" useAtlasSize="true" ignoreParentAlpha="true" alphaMode="ADD" hidden="true">
+				<Texture parentKey="CapturedGlow" useAtlasSize="true" ignoreParentAlpha="true" alphaMode="ADD" hidden="true">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
@@ -202,7 +200,7 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="FullGlowStar" useAtlasSize="true" ignoreParentAlpha="true" alphaMode="ADD" hidden="true">
+				<Texture parentKey="CapturedGlowStar" useAtlasSize="true" ignoreParentAlpha="true" alphaMode="ADD" hidden="true">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
@@ -213,6 +211,15 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Cooldown parentKey="CapturePoint" hideCountdownNumbers="true" useCircularEdge="true">
+				<Size x="60" y="59" />
+				<Anchors>
+					<Anchor point="CENTER" />
+				</Anchors>
+				<EdgeTexture>
+					<Color r="1" g="1" b="1" a="1"/>
+				</EdgeTexture>
+			</Cooldown>
 			<Cooldown parentKey="Progress" hideCountdownNumbers="true" useCircularEdge="true">
 				<Size x="60" y="59" />
 				<Anchors>
@@ -221,20 +228,27 @@
 				<SwipeTexture>
 					<Color r="1" g="1" b="1" a="1"/>
 				</SwipeTexture>
+				<EdgeTexture>
+					<Color r="1" g="1" b="1" a="1"/>
+				</EdgeTexture>
 			</Cooldown>
 		</Frames>
 		<Animations>
-			<AnimationGroup parentKey="FallingGlowAnim" setToFinalAlpha="true" looping="REPEAT">
-				<Alpha childKey="FallingGlowBackground" fromAlpha="0.25" toAlpha="1" order="0" duration=".4"/>
-				<Alpha childKey="FallingGlowBackground" fromAlpha="1" toAlpha="0.25" order="1" duration=".4"/>
-				<Alpha childKey="FallingGlowOverlay" fromAlpha="0" toAlpha="0.8" order="0" duration=".4"/>
-				<Alpha childKey="FallingGlowOverlay" fromAlpha="0.8" toAlpha="0" order="1" duration=".4"/>
+			<AnimationGroup parentKey="DangerGlowAnim" setToFinalAlpha="true">
+				<Alpha childKey="DangerGlowBackground" fromAlpha="0" toAlpha="1" order="0" duration=".4"/>
+				<Alpha childKey="DangerGlowBackground" fromAlpha="1" toAlpha="0" order="1" duration=".4"/>
+				<Alpha childKey="DangerGlowBackground" fromAlpha="0" toAlpha="1" order="2" duration=".4"/>
+				<Alpha childKey="DangerGlowBackground" fromAlpha="1" toAlpha="0" order="3" duration=".4"/>
+				<Alpha childKey="DangerGlowOverlay" fromAlpha="0" toAlpha="0.8" order="0" duration=".4"/>
+				<Alpha childKey="DangerGlowOverlay" fromAlpha="0.8" toAlpha="0" order="1" duration=".4"/>
+				<Alpha childKey="DangerGlowOverlay" fromAlpha="0" toAlpha="0.8" order="2" duration=".4"/>
+				<Alpha childKey="DangerGlowOverlay" fromAlpha="0.8" toAlpha="0" order="3" duration=".4"/>
 			</AnimationGroup>
-			<AnimationGroup parentKey="FullGlowAnim" setToFinalAlpha="true">
-				<Alpha childKey="FullGlow" fromAlpha="0" toAlpha="1" order="0" duration=".4"/>
-				<Alpha childKey="FullGlow" fromAlpha="1" toAlpha="0" order="1" duration=".4"/>
-				<Alpha childKey="FullGlowStar" fromAlpha="0" toAlpha="1" order="0" duration=".4"/>
-				<Alpha childKey="FullGlowStar" fromAlpha="1" toAlpha="0" order="1" duration=".4"/>
+			<AnimationGroup parentKey="CapturedGlowAnim" setToFinalAlpha="true">
+				<Alpha childKey="CapturedGlow" fromAlpha="0" toAlpha="1" order="0" duration=".4"/>
+				<Alpha childKey="CapturedGlow" fromAlpha="1" toAlpha="0" order="1" duration=".4"/>
+				<Alpha childKey="CapturedGlowStar" fromAlpha="0" toAlpha="1" order="0" duration=".4"/>
+				<Alpha childKey="CapturedGlowStar" fromAlpha="1" toAlpha="0" order="1" duration=".4"/>
 			</AnimationGroup>
 		</Animations>
 	</Frame>

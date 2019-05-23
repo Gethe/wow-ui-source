@@ -1,12 +1,15 @@
 local ACTIVE_EVENTS = {
+	"PLAYER_LEAVING_WORLD",
+	"PVP_MATCH_COMPLETE",
+	"PVP_MATCH_INACTIVE",
 	"UPDATE_BATTLEFIELD_SCORE",
 };
 
 PVPMatchScoreboardMixin = {};
 
 function PVPMatchScoreboardMixin:OnLoad()
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PVP_MATCH_ACTIVE");
-	self:RegisterEvent("PVP_MATCH_INACTIVE");
 
 	self.ScrollFrame = self.Content.ScrollFrame;
 	self.ScrollCategories = self.Content.ScrollCategories;
@@ -35,17 +38,19 @@ function PVPMatchScoreboardMixin:OnLoad()
 end
 
 function PVPMatchScoreboardMixin:Init()
-	local isArena = IsActiveBattlefieldArena();
-	local isLFD = IsInLFDBattlefield();
-	local isFactionalMatch = not (isArena or isArenaSkirmish or isLFD);
-	self.TabGroup:SetShown(isFactionalMatch);
+	if self.isInitialized then
+		return;
+	end
+	self.isInitialized = true;
 
+	local isFactionalMatch = C_PvP.IsMatchFactional();
+	self.TabGroup:SetShown(isFactionalMatch);
 	self:UpdateTabs();
 	
 	local factionIndex = GetBattlefieldArenaFaction();
 	self:SetupArtwork(factionIndex, isFactionalMatch);
 
-	ConstructPVPMatchTable(self.tableBuilder, C_PvP.IsRatedBattleground(), isArena, isLFD, not isFactionalMatch);
+	ConstructPVPMatchTable(self.tableBuilder, not isFactionalMatch);
 end
 
 function PVPMatchScoreboardMixin:UpdateTabs()
@@ -59,13 +64,26 @@ function PVPMatchScoreboardMixin:UpdateTabs()
 	end
 end
 
+function PVPMatchScoreboardMixin:InitPrivate()
+	self:Init();
+	FrameUtil.RegisterFrameForEvents(self, ACTIVE_EVENTS);
+end
+
+function PVPMatchScoreboardMixin:ShutdownPrivate()
+	FrameUtil.UnregisterFrameForEvents(self, ACTIVE_EVENTS);
+	self.isInitialized = false;
+	HideUIPanel(self);
+end
+
 function PVPMatchScoreboardMixin:OnEvent(event, ...)
-	if event == "PVP_MATCH_ACTIVE" then
-		self:Init();
-		FrameUtil.RegisterFrameForEvents(self, ACTIVE_EVENTS);
-	elseif event == "PVP_MATCH_INACTIVE" then
-		FrameUtil.UnregisterFrameForEvents(self, ACTIVE_EVENTS);
-		HideUIPanel(self);
+	if event == "PLAYER_ENTERING_WORLD" then
+		if C_PvP.GetActiveMatchState() == Enum.PvpMatchState.Active then
+			self:InitPrivate();
+		end
+	elseif event == "PVP_MATCH_ACTIVE" then
+		self:InitPrivate();
+	elseif event == "PVP_MATCH_INACTIVE" or event == "PLAYER_LEAVING_WORLD" or event == "PVP_MATCH_COMPLETE" then
+		self:ShutdownPrivate();
 	elseif event == "UPDATE_BATTLEFIELD_SCORE" then
 		self:UpdateTable();
 	end
@@ -132,5 +150,6 @@ function PVPMatchScoreboardMixin:OnTabGroupClicked(tab)
 end
 
 function PVPMatchScoreboardMixin:BeginShow()
+	self:Init();
 	ShowUIPanel(PVPMatchScoreboard);
 end

@@ -147,6 +147,15 @@ local AzeriteEssence =
 			},
 		},
 		{
+			Name = "HasNeverActivatedAnyEssences",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasNeverActivatedAnyEssences", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasPendingActivationEssence",
 			Type = "Function",
 

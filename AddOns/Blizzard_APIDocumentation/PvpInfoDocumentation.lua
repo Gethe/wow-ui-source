@@ -7,6 +7,24 @@ local PvpInfo =
 	Functions =
 	{
 		{
+			Name = "CanDisplayDeaths",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canDisplay", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanDisplayHonorableKills",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canDisplay", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanToggleWarMode",
 			Type = "Function",
 
@@ -494,6 +512,24 @@ local PvpInfo =
 			Returns =
 			{
 				{ Name = "isInBrawl", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsMatchConsideredArena",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "asArena", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsMatchFactional",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isFactional", Type = "bool", Nilable = false },
 			},
 		},
 		{

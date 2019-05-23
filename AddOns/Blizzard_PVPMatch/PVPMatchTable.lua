@@ -234,10 +234,10 @@ function PVPCellStatMixin:Populate(rowData, dataIndex)
 	end
 end
 
-function ConstructPVPMatchTable(tableBuilder, isRatedBG, isArena, isLFD, useAlternateColor)
+function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 	local iconPadding = 2;
 	local textPadding = 15;
-	local categories = PVPMatchUtil.GetOptionalCategories(isRatedBG, isArena, isLFD);
+	local categories = PVPMatchUtil.GetOptionalCategories();
 	
 	tableBuilder:Reset();
 	tableBuilder:SetDataProvider(C_PvP.GetScoreInfo);
@@ -291,20 +291,6 @@ function ConstructPVPMatchTable(tableBuilder, isRatedBG, isArena, isLFD, useAlte
 	column:ConstrainToHeader(textPadding);
 	column:ConstructCells("BUTTON", "PVPCellStringTemplate", "healingDone", useAlternateColor, isAbbreviated, hasTooltip);
 
-	if categories.rating then
-		column = tableBuilder:AddColumn();
-		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", BATTLEGROUND_RATING, "CENTER", "bgRating", BATTLEGROUND_RATING);
-		column:ConstrainToHeader(textPadding);
-		column:ConstructCells("BUTTON", "PVPCellStringTemplate", "rating", useAlternateColor);
-	end
-	
-	if categories.ratingChange then
-		column = tableBuilder:AddColumn();
-		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_RATING_CHANGE, "CENTER", "bgratingChange", RATING_CHANGE_TOOLTIP);
-		column:ConstrainToHeader(textPadding);
-		column:ConstructCells("BUTTON", "PVPCellStringTemplate", "ratingChange", useAlternateColor);
-	end
-	
 	local statColumns = {};
 	for pvpStatIndex, pvpStatID in ipairs(C_PvP.GetMatchPVPStatIDs()) do
 		local statColumn = C_PvP.GetMatchPVPStatColumn(pvpStatID);
@@ -326,7 +312,20 @@ function ConstructPVPMatchTable(tableBuilder, isRatedBG, isArena, isLFD, useAlte
 			column:ConstructCells("BUTTON", "PVPCellStatTemplate", statColumn.statPath, useAlternateColor);
 		end
 	end
-
+	
+	if categories.rating then
+		column = tableBuilder:AddColumn();
+		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", BATTLEGROUND_RATING, "CENTER", "bgRating", BATTLEGROUND_RATING);
+		column:ConstrainToHeader(textPadding);
+		column:ConstructCells("BUTTON", "PVPCellStringTemplate", "rating", useAlternateColor);
+	end
+	
+	if categories.ratingChange then
+		column = tableBuilder:AddColumn();
+		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_RATING_CHANGE, "CENTER", "bgratingChange", RATING_CHANGE_TOOLTIP);
+		column:ConstrainToHeader(textPadding);
+		column:ConstructCells("BUTTON", "PVPCellStringTemplate", "ratingChange", useAlternateColor);
+	end
 
 	tableBuilder:Arrange();
 end

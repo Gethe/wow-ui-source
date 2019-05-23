@@ -27,6 +27,17 @@ function GetTextureInfo(obj)
 	end
 end
 
+function CalculateDistanceBetweenRegions(regionA, regionB)
+	local ax, ay = regionA:GetCenter();
+	local bx, by = regionB:GetCenter();
+	if ax and bx then
+		local dx, dy = bx - ax, by - ay;
+		return math.sqrt(dx * dx + dy * dy);
+	else
+		return 0;
+	end
+end
+
 CLASS_ICON_TCOORDS = {
 	["WARRIOR"]		= {0, 0.25, 0, 0.25},
 	["MAGE"]		= {0.25, 0.49609375, 0, 0.25},

@@ -42,24 +42,14 @@ function PVPMatchUtil.GetCellColor(factionIndex, useAlternateColor)
 	return PVPMatchUtil.CellColors[index];
 end
 
-function PVPMatchUtil.GetOptionalCategories(isRated, isArena, isLFD)
+function PVPMatchUtil.GetOptionalCategories()
 	local categories = {};
-
-	local isArenaOrLFD = isArena or isLFD;
-	if not isRated and not isArenaOrLFD then
-		categories.honorableKills = true;
-	end	
-
-	if not isArenaOrLFD then
-		categories.deaths = true;
-	end
-
-	if isRated then
-		categories.rating = true;
-		categories.ratingChange = true;
-	elseif not isArenaOrLFD then
-		categories.honorGained = true;
-	end
+	categories.honorableKills = C_PvP.CanDisplayHonorableKills();
+	categories.deaths = C_PvP.CanDisplayDeaths();
+	
+	local isRated = C_PvP.IsRatedBattleground();
+	categories.rating = isRated;
+	categories.ratingChange = isRated;
 
 	return categories;
 end

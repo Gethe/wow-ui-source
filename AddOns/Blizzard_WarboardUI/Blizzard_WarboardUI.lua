@@ -60,6 +60,10 @@ local textureKitColors = {
 		title = CreateColor(0.192, 0.051, 0.008),
 		description = CreateColor(0.192, 0.051, 0.008),
 	},
+	["mechagon"] = {
+		title = CreateColor(0.969, 0.855, 0.667),
+		description = CreateColor(0.969, 0.855, 0.667),
+	},
 };
 
 local borderFrameTextureKitRegions = {
@@ -110,6 +114,7 @@ local borderLayout = {
 	["horde"] = { closeButtonX = 1, closeButtonY = 2, closeBorderX = -1, closeBorderY = 1, header = -61, showHeader = true, },
 	["marine"] = { closeButtonX = 3, closeButtonY = 3, closeBorderX = -1, closeBorderY = 1, header = 0, showHeader = false, },
 	["neutral"] = { closeButtonX = 1, closeButtonY = 2, closeBorderX = -1, closeBorderY = 1, header = 0, showHeader = false, },
+	["mechagon"] = { closeButtonX = 3, closeButtonY = 3, closeBorderX = -1, closeBorderY = 1, header = 0, showHeader = false, },
 }
 
 local function SetupBorder(self, layout, textureKit, nineSliceLayout)

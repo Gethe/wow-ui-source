@@ -248,10 +248,7 @@ end
 function StoreCardMixin:ShouldEnableBuyButton(entryInfo)
 	local alreadyOwned = entryInfo.alreadyOwned;
 	local buyableHere = entryInfo.sharedData.buyableHere;
-	local selectedCategoryID = StoreFrame_GetSelectedCategoryID();
-	local trialRestricted = selectedCategoryID ~= WOW_GAMES_CATEGORY_ID and IsTrialAccount();
-	local veteranRestricted = selectedCategoryID ~= WOW_GAME_TIME_CATEGORY_ID and IsVeteranTrialAccount();
-	return buyableHere and not alreadyOwned and not trialRestricted and not veteranRestricted;
+	return buyableHere and not alreadyOwned;
 end
 
 function StoreCardMixin:SetupBuyButton(info, entryInfo)

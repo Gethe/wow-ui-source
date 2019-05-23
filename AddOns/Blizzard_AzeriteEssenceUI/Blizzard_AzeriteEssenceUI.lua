@@ -22,6 +22,20 @@ local HEART_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(256, 196288
 local LEARN_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(259, 2101299);				-- 	8FX_Azerite_AbsorbCurrency_Small_ImpactBase.m2
 local UNLOCK_SLOT_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(269, 1983548);		-- 	8FX_Azerite_Generic_NovaHigh_Base.m2
 local UNLOCK_STAMINA_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(270, 1983548);	-- 	8FX_Azerite_Generic_NovaHigh_Base.m2
+local UNLOCK_SECONDARY_EFFECT_ID = 2924332;	-- 	CFX_Azerite_TimeLostTopaz_Major_Rank4_Cast.m2
+
+local LEARN_SHAKE_DELAY = 0.869;
+local LEARN_SHAKE = { { x = 0, y = -8}, { x = 0, y = 8}, { x = 0, y = -8}, { x = 0, y = 8}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, };
+local LEARN_SHAKE_DURATION = 0.20;
+local LEARN_SHAKE_FREQUENCY = 0.001;
+
+local REVEAL_START_DELAY = 1.2;
+local REVEAL_DELAY_SECS_PER_DISTANCE = 0.0035;
+local REVEAL_LINE_DURATION_SECS_PER_DISTANCE = 0.0012;
+local REVEAL_SWIRL_SLOT_SCALE = 1;
+local REVEAL_SWIRL_STAMINA_SCALE = 0.5;
+
+local MAX_ESSENCE_RANK = 4;
 
 local AZERITE_ESSENCE_FRAME_EVENTS = {
 	"UI_MODEL_SCENE_INFO_UPDATED",
@@ -108,8 +122,7 @@ function AzeriteEssenceUIMixin:SetupMilestones()
 			lineContainer:SetEndPoints(previousMilestoneFrame, milestoneFrame);
 			lineContainer:SetScrollAnimationProgressOffset(0);
 
-			lineContainer:SetState(PowerDependencyLineMixin.LINE_STATE_CONNECTED);
-			
+			milestoneFrame.linkLine = lineContainer;
 			lineContainer.fromButton = previousMilestoneFrame;
 			lineContainer.toButton = milestoneFrame;
 			tinsert(self.Lines, lineContainer);
@@ -124,11 +137,16 @@ function AzeriteEssenceUIMixin:OnEvent(event, ...)
 	if event == "UI_MODEL_SCENE_INFO_UPDATED" then
 		self:SetupModelScene();
 	elseif event == "AZERITE_ESSENCE_CHANGED" then
-		local essenceID = ...;
+		local essenceID, rank = ...;
 		self:RefreshSlots();
 		self.EssenceList:Update();
 		self.EssenceList:OnEssenceChanged(essenceID);
 		AzeriteEssenceLearnAnimFrame:PlayAnim();
+		if rank < MAX_ESSENCE_RANK then
+			PlaySound(SOUNDKIT.UI_82_HEARTOFAZEROTH_LEARNESSENCE_ANIM);
+		else
+			PlaySound(SOUNDKIT.UI_82_HEARTOFAZEROTH_LEARNESSENCE_ANIM_RANK4);		
+		end
 	elseif event == "AZERITE_ESSENCE_ACTIVATED" or event == "AZERITE_ESSENCE_ACTIVATION_FAILED" or event == "AZERITE_ESSENCE_UPDATE" then
 		self:ClearNewlyActivatedEssence();
 		self:RefreshSlots();
@@ -159,12 +177,14 @@ function AzeriteEssenceUIMixin:OnShow()
 		end);
 	end
 
+	self.shouldPlayReveal = C_AzeriteEssence:HasNeverActivatedAnyEssences();
+
 	FrameUtil.RegisterFrameForEvents(self, AZERITE_ESSENCE_FRAME_EVENTS);
 
 	self:RefreshPowerLevel();
 	self:RefreshMilestones();
 
-	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);		-- temp?
+	PlaySound(SOUNDKIT.UI_82_HEARTOFAZEROTH_WINDOW_OPEN);
 
 	self:TriggerEvent(AzeriteEssenceUIMixin.Event.OnShow);
 end
@@ -180,6 +200,10 @@ function AzeriteEssenceUIMixin:OnHide()
 		self.itemDataLoadedCancelFunc = nil;
 	end
 
+	if self.numRevealsPlaying then
+		self:CancelReveal();
+	end
+
 	FrameUtil.UnregisterFrameForEvents(self, AZERITE_ESSENCE_FRAME_EVENTS);
 
 	self:ClearNewlyActivatedEssence();
@@ -189,7 +213,7 @@ function AzeriteEssenceUIMixin:OnHide()
 	self.ActivationGlow:SetAlpha(0);
 	AzeriteEssenceLearnAnimFrame:StopAnim();
 	
-	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);	-- temp?
+	PlaySound(SOUNDKIT.UI_82_HEARTOFAZEROTH_WINDOW_CLOSE);
 
 	self:TriggerEvent(AzeriteEssenceUIMixin.Event.OnHide);
 end
@@ -213,6 +237,18 @@ function AzeriteEssenceUIMixin:OnEssenceActivated(essenceID, slotFrame)
 
 	self.ActivationGlow.Anim:Stop();
 	self.ActivationGlow.Anim:Play();
+
+	if self.shouldPlayReveal then
+		PlaySound(SOUNDKIT.UI_82_HEARTOFAZEROTH_SLOTFIRSTESSENCE);
+		C_Timer.After(REVEAL_START_DELAY,
+			function()
+				self:PlayReveal();
+			end
+		);
+	else
+		PlaySound(SOUNDKIT.UI_82_HEARTOFAZEROTH_SLOTESSENCE);
+	end
+
 	-- temp sounds
 	if slotFrame.slot == Enum.AzeriteEssence.MainSlot then
 		PlaySound(13827);
@@ -235,6 +271,10 @@ function AzeriteEssenceUIMixin:RefreshPowerLevel()
 		self.PowerLevelBadgeFrame:Hide();
 		self.powerLevel = 0;
 	end
+end
+
+function AzeriteEssenceUIMixin:MeetsPowerLevel(level)
+	return level <= self.powerLevel;
 end
 
 function AzeriteEssenceUIMixin:OnEnterPowerLevelBadgeFrame()
@@ -260,23 +300,21 @@ end
 
 function AzeriteEssenceUIMixin:RefreshMilestones()
 	for i, milestoneFrame in ipairs(self.Milestones) do
-		milestoneFrame:Refresh();
+		-- Main slot is always present
+		if self.shouldPlayReveal and (not milestoneFrame.slot or milestoneFrame.slot ~= Enum.AzeriteEssence.MainSlot) then
+			milestoneFrame:Hide();
+		else
+			milestoneFrame:Show();
+			milestoneFrame:Refresh();
+		end
 	end
 
 	for i, lineContainer in ipairs(self.Lines) do
-		if lineContainer.toButton.unlocked then
-			lineContainer:SetState(PowerDependencyLineMixin.LINE_STATE_CONNECTED);
-			lineContainer:SetAlpha(0.15);
+		if self.shouldPlayReveal then
+			lineContainer:Hide();
 		else
-			if lineContainer.fromButton.unlocked and lineContainer.toButton.canUnlock then
-				lineContainer:SetDisconnectedColor(DISCONNECTED_LINE_COLOR);
-				lineContainer:SetState(PowerDependencyLineMixin.LINE_STATE_DISCONNECTED);
-				lineContainer:SetAlpha(0.08);
-			else
-				lineContainer:SetDisconnectedColor(LOCKED_LINE_COLOR);
-				lineContainer:SetState(PowerDependencyLineMixin.LINE_STATE_DISCONNECTED);
-				lineContainer:SetAlpha(0.08);
-			end
+			lineContainer:Show();
+			lineContainer:Refresh();
 		end
 	end
 end
@@ -357,12 +395,111 @@ function AzeriteEssenceUIMixin:GetEffectiveEssence(milestoneID)
 	end
 end
 
+function AzeriteEssenceUIMixin:PlayReveal()
+	if not self.revealSwirlPool then
+		self.numRevealsPlaying = 0;
+		self.revealSwirlPool = CreateFramePool("FRAME", self, "PowerSwirlAnimationTemplate");
+
+		local previousFrame;
+		local totalDistance = 0;
+		for i, milestoneFrame in ipairs(self.Milestones) do
+			if previousFrame then
+				local delay = totalDistance * REVEAL_DELAY_SECS_PER_DISTANCE;
+				local distance = CalculateDistanceBetweenRegions(previousFrame, milestoneFrame);
+				milestoneFrame:BeginReveal(delay);
+				self:ApplyRevealSwirl(milestoneFrame, delay);
+				milestoneFrame.linkLine:BeginReveal(delay, distance);
+				self.numRevealsPlaying = self.numRevealsPlaying + 1;
+				totalDistance = totalDistance + distance;
+			end
+			previousFrame = milestoneFrame;
+		end
+
+		PlaySound(SOUNDKIT.UI_82_HEARTOFAZEROTH_NODESREVEAL);
+	end
+end
+
+function AzeriteEssenceUIMixin:ApplyRevealSwirl(milestoneFrame, delay)
+	local swirlFrame = self.revealSwirlPool:Acquire();
+	swirlFrame:SetAllPoints(milestoneFrame);
+	swirlFrame:SetFrameLevel(milestoneFrame:GetFrameLevel() + 1);
+	swirlFrame:SetScale(milestoneFrame.slot and REVEAL_SWIRL_SLOT_SCALE or REVEAL_SWIRL_STAMINA_SCALE);
+	swirlFrame.timer = C_Timer.NewTimer(delay,
+		function()
+			swirlFrame:Show();
+			swirlFrame.SelectedAnim:Play();
+		end
+	);
+end
+
+function AzeriteEssenceUIMixin:OnMilestoneRevealAnimationFinished()
+	self.numRevealsPlaying = self.numRevealsPlaying - 1;
+	if self.numRevealsPlaying == 0 then
+		self.numRevealsPlaying = nil;
+		self.revealSwirlPool:ReleaseAll();
+		self.shouldPlayReveal = false;
+		self:RefreshMilestones();
+	end
+end
+
+function AzeriteEssenceUIMixin:CancelReveal()
+	for i, milestoneFrame in ipairs(self.Milestones) do
+		milestoneFrame:CancelReveal();
+	end
+
+	for i, lineContainer in ipairs(self.Lines) do
+		lineContainer:CancelReveal();
+	end
+
+	for swirlFrame in self.revealSwirlPool:EnumerateActive() do
+		if swirlFrame.timer then
+			swirlFrame.timer:Cancel();
+		end
+		swirlFrame.SelectedAnim:Stop();
+	end
+	self.revealSwirlPool:ReleaseAll();
+
+	self.numRevealsPlaying = nil;
+	self.shouldPlayReveal = false;
+end
+
 AzeriteEssenceDependencyLineMixin = CreateFromMixins(PowerDependencyLineMixin);
 
 function AzeriteEssenceDependencyLineMixin:SetDisconnected()
 	self.FillScroll1:SetVertexColor(self.disconnectedColor:GetRGB());
 	self.FillScroll2:SetVertexColor(self.disconnectedColor:GetRGB());
 	PowerDependencyLineMixin.SetDisconnected(self);
+end
+
+function AzeriteEssenceDependencyLineMixin:Refresh()
+	if self.toButton.unlocked then
+		self:SetState(PowerDependencyLineMixin.LINE_STATE_CONNECTED);
+		self:SetAlpha(0.15);
+	else
+		if self.fromButton.unlocked and self.toButton.canUnlock then
+			self:SetDisconnectedColor(DISCONNECTED_LINE_COLOR);
+			self:SetState(PowerDependencyLineMixin.LINE_STATE_DISCONNECTED);
+			self:SetAlpha(0.08);
+		else
+			self:SetDisconnectedColor(LOCKED_LINE_COLOR);
+			self:SetState(PowerDependencyLineMixin.LINE_STATE_DISCONNECTED);
+			self:SetAlpha(0.08);
+		end
+	end
+end
+
+function AzeriteEssenceDependencyLineMixin:BeginReveal(delay, distance)
+	self:Show();
+	self:SetState(PowerDependencyLineMixin.LINE_STATE_CONNECTED);
+	PowerDependencyLineMixin.BeginReveal(self, delay, distance * REVEAL_LINE_DURATION_SECS_PER_DISTANCE);
+end
+
+function AzeriteEssenceDependencyLineMixin:CancelReveal()
+	self.RevealAnim:Stop();
+end
+
+function AzeriteEssenceDependencyLineMixin:OnRevealFinished()
+	self:Refresh();
 end
 
 AzeriteEssenceListMixin  = { };
@@ -393,8 +530,7 @@ end
 
 function AzeriteEssenceListMixin:OnEvent(event)
 	if event == "UI_MODEL_SCENE_INFO_UPDATED" then
-		local forceUpdate = true;
-		self:SetupModelScene(true);
+		self.LearnEssenceModelScene.effect = nil;
 	elseif event == "PENDING_AZERITE_ESSENCE_CHANGED" then
 		self:Refresh();
 	elseif event == "VARIABLES_LOADED" then
@@ -412,14 +548,7 @@ function AzeriteEssenceListMixin:SetPendingEssence(essenceID)
 	local essenceInfo = C_AzeriteEssence.GetEssenceInfo(essenceID);
 	if essenceInfo and essenceInfo.unlocked and essenceInfo.valid then
 		C_AzeriteEssence.SetPendingActivationEssence(essenceID);
-	end
-end
-
-function AzeriteEssenceListMixin:SetupModelScene(forceUpdate)
-	local scene = self.LearnEssenceModelScene;
-	if not scene.init or forceUpdate then
-		scene.init = true;
-		StaticModelInfo.SetupModelScene(scene, LEARN_MODEL_SCENE_INFO, forceUpdate);
+		PlaySound(SOUNDKIT.UI_82_HEARTOFAZEROTH_SELECTESSENCE);
 	end
 end
 
@@ -526,15 +655,35 @@ function AzeriteEssenceListMixin:OnEssenceChanged(essenceID)
 	if self.learnEssenceButton then
 		-- disable the scrollbar
 		ScrollBar_Disable(self.scrollBar);
-		-- set up scene
-		local scene = self.LearnEssenceModelScene;
-		self:SetupModelScene();
-		scene:SetPoint("CENTER", self.learnEssenceButton);
-		scene:Show();
 		-- play glow
 		self.learnEssenceButton.Glow.Anim:Play();
 		self.learnEssenceButton.Glow2.Anim:Play();
 		self.learnEssenceButton.Glow3.Anim:Play();
+		-- scene
+		C_Timer.After(0.769, 
+			function()
+				local scene = self.LearnEssenceModelScene;
+				scene:SetPoint("CENTER", self.learnEssenceButton);
+				if not scene.effect then
+					local forceUpdate = true;
+					scene.effect = StaticModelInfo.SetupModelScene(scene, LEARN_MODEL_SCENE_INFO, forceUpdate);
+				end
+				if scene.effect then
+					scene:Show();
+					scene.effect:SetAnimation(0, 0, 1, 0);
+					C_Timer.After(0.769,
+						function()
+							scene.effect:SetAnimation(0, 0, 0, 0);
+						end
+					);
+					C_Timer.After(0.769,
+						function()
+							scene.unlockEffect:SetAnimation(0, 0, 0, 0);
+						end
+					);
+				end
+			end
+		);
 		-- timer so the effect only plays once
 		C_Timer.After(2.969, function() self:CleanUpLearnEssence(); end);
 	end
@@ -696,7 +845,7 @@ end
 
 function AzeriteMilestoneBaseMixin:OnEvent(event, ...)
 	if event == "UI_MODEL_SCENE_INFO_UPDATED" then
-		self.unlockEffect = nil;
+		self.UnlockModelScene.unlockEffect = nil;
 	end
 end
 
@@ -706,7 +855,7 @@ end
 
 function AzeriteMilestoneBaseMixin:OnHide()
 	self:UnregisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
-	self.unlockEffect = nil;
+	self.UnlockModelScene.unlockEffect = nil;
 end
 
 function AzeriteMilestoneBaseMixin:OnMouseUp()
@@ -725,21 +874,26 @@ function AzeriteMilestoneBaseMixin:OnLeave()
 end
 
 function AzeriteMilestoneBaseMixin:OnUnlocked()
-	if not self.unlockEffect then
+	local scene = self.UnlockModelScene;
+	if not scene.unlockEffect then
 		local forceUpdate = true;
 		local sceneInfo = self.slot and UNLOCK_SLOT_MODEL_SCENE_INFO or UNLOCK_STAMINA_MODEL_SCENE_INFO;
-		self.unlockEffect = StaticModelInfo.SetupModelScene(self.UnlockModelScene, sceneInfo, forceUpdate);
+		scene.unlockEffect = StaticModelInfo.SetupModelScene(scene, sceneInfo, forceUpdate);	
+		scene.secondaryEffect = scene:GetActorByTag("effect2");
+		if scene.secondaryEffect then
+			scene.secondaryEffect:SetModelByFileID(UNLOCK_SECONDARY_EFFECT_ID);
+		end
 	end
 	
-	if self.unlockEffect then
-		self.UnlockModelScene:Show();
-		self.unlockEffect:SetAnimation(0, 0, 1, 0);
+	if scene.unlockEffect then
+		scene:Show();
+		scene.unlockEffect:SetAnimation(0, 0, 1, 0);
 		C_Timer.After(.2, 
 			function()
-				self.unlockEffect:SetAnimation(0, 0, 0, 0);
+				scene.unlockEffect:SetAnimation(0, 0, 0, 0);
 				C_Timer.After(5, 
 					function()
-						self.UnlockModelScene:Hide();
+						scene:Hide();
 					end
 				);
 				C_Timer.After(.4,
@@ -748,10 +902,67 @@ function AzeriteMilestoneBaseMixin:OnUnlocked()
 						self.SwirlContainer.SelectedAnim:Play();
 					end
 				);
+				if scene.secondaryEffect then
+					scene.secondaryEffect:SetAnimation(0, 0, 1, 0);
+					C_Timer.After(0.5, function() scene.secondaryEffect:SetAnimation(0, 0, 0, 0); end);
+				end
 			end
 		);
 		if GameTooltip:GetOwner() == self then
 			self:OnEnter();
+		end
+	end
+
+	if self.slot then
+		PlaySound(SOUNDKIT.UI_82_HEARTOFAZEROTH_UNLOCKESSENCESLOT);
+	else
+		PlaySound(SOUNDKIT.UI_82_HEARTOFAZEROTH_UNLOCKSTAMINANODE);
+	end
+end
+
+function AzeriteMilestoneBaseMixin:BeginReveal(delay)
+	self:Show();
+	self:Refresh();
+	self.RevealAnim.Start:SetEndDelay(delay);
+	self.RevealAnim:Play();
+end
+
+function AzeriteMilestoneBaseMixin:CancelReveal(delay)
+	self.RevealAnim:Stop();
+	self:SetAlpha(1);
+end
+
+function AzeriteMilestoneBaseMixin:ShouldShowUnlockState()
+	if C_AzeriteEssence.IsAtForge() then
+		return self.canUnlock;
+	else
+		return self:GetParent():MeetsPowerLevel(self.requiredLevel)
+	end
+end
+
+function AzeriteMilestoneBaseMixin:UpdateMilestoneInfo()
+	local milestoneInfo = C_AzeriteEssence.GetMilestoneInfo(self.milestoneID);
+
+	self.unlocked = milestoneInfo.unlocked;
+	self.canUnlock = milestoneInfo.canUnlock;
+	self.requiredLevel = milestoneInfo.requiredLevel;
+end
+
+function AzeriteMilestoneBaseMixin:AddStateToTooltip(requiredLevelString, returnToForgeString)
+	local wrapText = true;
+	if C_AzeriteEssence.IsAtForge() then
+		if self.canUnlock then
+			GameTooltip_AddColoredLine(GameTooltip, AZERITE_CLICK_TO_SELECT, GREEN_FONT_COLOR, wrapText);
+		elseif self:GetParent():MeetsPowerLevel(self.requiredLevel) then
+			GameTooltip_AddColoredLine(GameTooltip, AZERITE_MILESTONE_NO_ACTIVE_LINKS, RED_FONT_COLOR, wrapText);
+		else
+			GameTooltip_AddColoredLine(GameTooltip, string.format(requiredLevelString, self.requiredLevel), DISABLED_FONT_COLOR, wrapText);
+		end
+	else
+		if self:ShouldShowUnlockState() then
+			GameTooltip_AddColoredLine(GameTooltip, returnToForgeString, RED_FONT_COLOR, wrapText);
+		else
+			GameTooltip_AddColoredLine(GameTooltip, string.format(requiredLevelString, self.requiredLevel), DISABLED_FONT_COLOR, wrapText);
 		end
 	end
 end
@@ -775,12 +986,9 @@ function AzeriteMilestoneSlotMixin:ShowStateFrame(stateFrame)
 end
 
 function AzeriteMilestoneSlotMixin:Refresh()
-	local milestoneInfo = C_AzeriteEssence.GetMilestoneInfo(self.milestoneID);
+	self:UpdateMilestoneInfo();
 
-	self.unlocked = milestoneInfo.unlocked;
-	self.canUnlock = milestoneInfo.canUnlock;
-
-	if milestoneInfo.unlocked then
+	if self.unlocked then
 		self:ShowStateFrame(self.UnlockedState);
 		local essenceID = self:GetParent():GetEffectiveEssence(self.milestoneID);
 		local icon;
@@ -803,7 +1011,7 @@ function AzeriteMilestoneSlotMixin:Refresh()
 			stateFrame.EmptyGlow.Anim:Play();
 		end
 	else
-		if milestoneInfo.canUnlock then
+		if self:ShouldShowUnlockState() then
 			self:ShowStateFrame(self.AvailableState);
 			if C_AzeriteEssence.IsAtForge() then
 				self.AvailableState.GlowAnim:Stop();
@@ -814,7 +1022,7 @@ function AzeriteMilestoneSlotMixin:Refresh()
 			end
 		else
 			self:ShowStateFrame(self.LockedState);
-			self.LockedState.UnlockLevelText:SetText(milestoneInfo.requiredLevel);
+			self.LockedState.UnlockLevelText:SetText(self.requiredLevel);
 		end
 	end
 end
@@ -844,7 +1052,13 @@ function AzeriteMilestoneSlotMixin:OnMouseUp(button)
 end
 
 function AzeriteMilestoneSlotMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	local isMainSlot = self.slot == Enum.AzeriteEssence.MainSlot;
+	if isMainSlot then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -20, 0);
+	else
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -10, -5);
+	end
+
 	local essenceID = C_AzeriteEssence.GetMilestoneEssence(self.milestoneID);
 	if essenceID then
 		GameTooltip:SetAzeriteEssenceSlot(self.slot);
@@ -858,20 +1072,10 @@ function AzeriteMilestoneSlotMixin:OnEnter()
 		end
 	else
 		local wrapText = true;
-		local isMainSlot = self.slot == Enum.AzeriteEssence.MainSlot;
 		if not self.unlocked then
 			assert(not isMainSlot);
 			GameTooltip_SetTitle(GameTooltip, AZERITE_ESSENCE_PASSIVE_SLOT);
-			if self.canUnlock then
-				if C_AzeriteEssence.IsAtForge() then
-					GameTooltip_AddColoredLine(GameTooltip, AZERITE_CLICK_TO_SELECT, GREEN_FONT_COLOR, wrapText);
-				else
-					GameTooltip_AddColoredLine(GameTooltip, AZERITE_ESSENCE_UNLOCK_SLOT, RED_FONT_COLOR, wrapText);
-				end
-			else
-				local milestoneInfo = C_AzeriteEssence.GetMilestoneInfo(self.milestoneID);
-				GameTooltip_AddColoredLine(GameTooltip, string.format(AZERITE_ESSENCE_LOCKED_SLOT_LEVEL, milestoneInfo.requiredLevel), DISABLED_FONT_COLOR, wrapText);
-			end
+			self:AddStateToTooltip(AZERITE_ESSENCE_LOCKED_SLOT_LEVEL, AZERITE_ESSENCE_UNLOCK_SLOT);
 		else
 			if isMainSlot then
 				GameTooltip_SetTitle(GameTooltip, AZERITE_ESSENCE_EMPTY_MAIN_SLOT);
@@ -888,17 +1092,14 @@ end
 AzeriteMilestoneStaminaMixin = CreateFromMixins(AzeriteMilestoneBaseMixin);
 
 function AzeriteMilestoneStaminaMixin:Refresh()
-	local milestoneInfo = C_AzeriteEssence.GetMilestoneInfo(self.milestoneID);
+	self:UpdateMilestoneInfo();
 
-	self.unlocked = milestoneInfo.unlocked;
-	self.canUnlock = milestoneInfo.canUnlock;
-
-	if milestoneInfo.unlocked then
+	if self.unlocked then
 		self.Icon:SetAtlas("heartofazeroth-node-on");
 	else
 		self.Icon:SetAtlas("heartofazeroth-node-off");
 	end
-	if milestoneInfo.canUnlock then
+	if not self.unlocked and self:ShouldShowUnlockState() then
 		if C_AzeriteEssence.IsAtForge() then
 			self.GlowAnim:Stop();
 			self.ForgeGlowAnim:Play();
@@ -925,15 +1126,8 @@ function AzeriteMilestoneStaminaMixin:OnEnter()
 			local wrapText = true;
 			GameTooltip_SetTitle(GameTooltip, spell:GetSpellName());
 			GameTooltip_AddColoredLine(GameTooltip, spell:GetSpellDescription(), NORMAL_FONT_COLOR, wrapText);
-			if self.canUnlock then
-				if C_AzeriteEssence.IsAtForge() then
-					GameTooltip_AddColoredLine(GameTooltip, AZERITE_CLICK_TO_SELECT, GREEN_FONT_COLOR, wrapText);
-				else
-					GameTooltip_AddColoredLine(GameTooltip, AZERITE_ESSENCE_UNLOCK_MILESTONE, RED_FONT_COLOR, wrapText);
-				end
-			elseif not self.unlocked then
-				local milestoneInfo = C_AzeriteEssence.GetMilestoneInfo(self.milestoneID);
-				GameTooltip_AddColoredLine(GameTooltip, string.format(AZERITE_ESSENCE_LOCKED_MILESTONE_LEVEL, milestoneInfo.requiredLevel), DISABLED_FONT_COLOR, wrapText);
+			if not self.unlocked then
+				self:AddStateToTooltip(AZERITE_ESSENCE_LOCKED_MILESTONE_LEVEL, AZERITE_ESSENCE_UNLOCK_MILESTONE);
 			end
 			GameTooltip:Show();
 		end
@@ -960,11 +1154,26 @@ function AzeriteEssenceLearnAnimFrameMixin:PlayAnim()
 	end
 
 	self.Anim:Stop();
+
+	local runeIndex = random(1, 15);
+	local runeAtlas = "heartofazeroth-animation-rune"..runeIndex;
+	local useAtlasSize = true;
+	
 	for i, texture in ipairs(self.Textures) do
 		texture:SetAlpha(0);
+		if texture.isRune then
+			texture:SetAtlas(runeAtlas, useAtlasSize);
+		end
 	end
+
 	self:Show();
 	self.Anim:Play();
+
+	C_Timer.After(LEARN_SHAKE_DELAY,
+		function()
+			ShakeFrame(self:GetParent(), LEARN_SHAKE, LEARN_SHAKE_DURATION, LEARN_SHAKE_FREQUENCY);
+		end
+	);
 end
 
 function AzeriteEssenceLearnAnimFrameMixin:StopAnim()

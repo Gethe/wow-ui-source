@@ -424,7 +424,7 @@
 			</Frame>
 			<Frame parentKey="RecruitmentDialog" hidden="true" inherits="ClubsRecruitmentDialogTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" x="400" y="0"/>
+					<Anchor point="RIGHT" x="450" y="0"/>
 				</Anchors>
 			</Frame>
 			<Button parentKey="AddToChatButton" inherits="AddToChatButtonTemplate">

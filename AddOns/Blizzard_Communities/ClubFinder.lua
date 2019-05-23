@@ -11,13 +11,17 @@ function ClubsRecruitmentDialogMixin:OnLoad()
 	UIDropDownMenu_Initialize(self.ClubFocusDropdown, ClubFocusClubDropdownInitialize); 
 end 
 
+function ClubsRecruitmentDialogMixin:OnShow()
+	self:GetParent():RegisterDialogShown(self);
+end 
+
 function ClubsRecruitmentDialogMixin:PostClub() 
 	local communityFrame = self:GetParent();
 	local clubInfo = C_Club.GetClubInfo(communityFrame:GetSelectedClubId());
 	local specsInList = self.LookingForDropdown:GetSpecsList(); 
 
 	local minItemLevel = self.MinIlvlOnly.EditBox:GetNumber();
-	local description = self.RecruitmentMessageFrame.EditBox:GetText():gsub("\n",""); 
+	local description = self.RecruitmentMessageFrame.RecruitmentMessageInput.EditBox:GetText():gsub("\n",""); 
 	local minimumLevel = 0; 
 
 	if (self.MaxLevelOnly.Button:GetChecked()) then 
@@ -34,7 +38,7 @@ end
 ClubFinderRequestToJoinMixin = {};
 
 function ClubFinderRequestToJoinMixin:ApplyToClub()
-	local editbox = self.MessageFrame.EditBox;
+	local editbox = self.MessageFrame.MessageScroll.EditBox;
 	local selectedSpecs = { }; 
 	for i, spec in ipairs(self.Specs) do 
 		if(spec.CheckBox:GetChecked()) then 
@@ -43,6 +47,14 @@ function ClubFinderRequestToJoinMixin:ApplyToClub()
 	end 
 
 	C_ClubFinder.RequestMembershipToClub(self.info.clubFinderGUID, editbox:GetText():gsub("\n",""), selectedSpecs);
+	local requestType; 
+	if (self:GetParent().isGuildType) then 
+		requestType = Enum.ClubFinderRequestType.Guild; 
+	else 
+		requestType = Enum.ClubFinderRequestType.Community; 
+	end
+
+	C_ClubFinder.PlayerRequestPendingClubsList(requestType);
 
 	self.card.RequestJoin:Hide(); 
 	self.card.RequestStatus:SetTextColor(GREEN_FONT_COLOR:GetRGB());
@@ -907,31 +919,26 @@ function ClubFinderCommunitiesCardFrameMixin:OnLoad()
 	self.PendingCardList = { };
 	self.CardList = { };
 	self.pendingCardListSize = 0; 
+	self.isPendingListShowing = false;
+	self.ListScrollFrame.update = function() self:RefreshLayout() end;
+
+	HybridScrollFrame_CreateButtons(self.ListScrollFrame, "ClubFinderCommunitiesCardTemplate", 13, -10, "TOPLEFT", nil, nil, -5);
 end 
 
 function ClubFinderCommunitiesCardFrameMixin:BuildCardList()
-	self.CardList = { }; 
 	self.CardList = C_ClubFinder.ReturnMatchingCommunityList(); 
-
-	if not self.ListScrollFrame.buttons and self.CardList and #self.CardList > 0 then
-		HybridScrollFrame_CreateButtons(self.ListScrollFrame, "ClubFinderCommunitiesCardTemplate", 13, -10, "TOPLEFT", nil, nil, -5);
-	else 
-		self.ListScrollFrame.scrollBar:Hide();
-		self:GetParent().InsetFrame.GuildDescription:SetText(CLUB_FINDER_SEARCH_NOTHING_FOUND); 
-	end
+	self.ListScrollFrame.scrollBar:Hide();
+	self:GetParent().InsetFrame.GuildDescription:SetText(CLUB_FINDER_SEARCH_NOTHING_FOUND); 	
 end 
 
 function ClubFinderCommunitiesCardFrameMixin:BuildPendingCardList()
-	self.PendingCardList = { };
-	if not self.ListScrollFrame.buttons then
-		HybridScrollFrame_CreateButtons(self.ListScrollFrame, "ClubFinderCommunitiesCardTemplate", 13, -10, "TOPLEFT", nil, nil, -5);
-	end
-
 	self.PendingCardList = C_ClubFinder.PlayerReturnPendingCommunitiesList(); 
 	self.pendingCardListSize = #self.PendingCardList;
+	self.ListScrollFrame.scrollBar:Hide();
+	self:GetParent().InsetFrame.GuildDescription:SetText(CLUB_FINDER_SEARCH_NOTHING_FOUND); 
 end 
 
-function ClubFinderCommunitiesCardFrameMixin:RefreshLayout(shouldShowPendingList)
+function ClubFinderCommunitiesCardFrameMixin:RefreshLayout()
 	local playerSpecs = ClubFinderGetPlayerSpecIds(); 
 	local showingCards = 0; 
 	local numCardsTotal = 0; 
@@ -940,13 +947,13 @@ function ClubFinderCommunitiesCardFrameMixin:RefreshLayout(shouldShowPendingList
 
 	local index; 
 	if (self.ListScrollFrame.buttons) then 
-		if (shouldShowPendingList) then 
-			numCardsTotal = #self.PendingCardList;
+		if (self.isPendingListShowing) then 
+			numCardsTotal = self.pendingCardListSize;
 			for i = 1, #self.ListScrollFrame.buttons do 
 				index = offset + i;
 				local cardInfo = self.PendingCardList[index]; 
 				local currentCard = self.ListScrollFrame.buttons[i];
-				if(cardInfo) then 
+				if (cardInfo) then 
 					currentCard.playerSpecs = playerSpecs; 
 					currentCard.cardInfo = cardInfo;
 					currentCard:UpdateCard(); 
@@ -979,16 +986,14 @@ function ClubFinderCommunitiesCardFrameMixin:RefreshLayout(shouldShowPendingList
 		if (self:GetParent().InsetFrame.GuildDescription:IsShown()) then 
 			self:GetParent().InsetFrame.GuildDescription:Hide(); 
 		end
-
-		if (self.ListScrollFrame) then 
-			local totalHeight = numCardsTotal * 88;
-			HybridScrollFrame_Update(self.ListScrollFrame, totalHeight, self.ListScrollFrame:GetHeight());
-		end
-
 		self:Show(); 
 	else 
 		self:GetParent().InsetFrame.GuildDescription:Show(); 
 	end 
+
+	local displayedHeight = showingCards * 76;
+	local totalHeight = numCardsTotal * 76;
+	HybridScrollFrame_Update(self.ListScrollFrame, totalHeight, displayedHeight);
 end 
 
 ClubFinderGuildCardsMixin = { }; 
@@ -1015,6 +1020,7 @@ function ClubFinderGuildCardsMixin:PagePrevious()
 end
 
 function ClubFinderGuildCardsMixin:BuildCardList()
+	self.CardList = { }; 
 	self.CardList = C_ClubFinder.ReturnMatchingGuildList(); 
 	self.numPages = 0;
 
@@ -1036,8 +1042,8 @@ function ClubFinderGuildCardsMixin:HideCardList()
 		self.Cards[i]:Hide(); 
 	end
 end 
-
-function ClubFinderGuildCardsMixin:RefreshLayout(cardPage, shouldShowPendingList)
+		
+function ClubFinderGuildCardsMixin:RefreshLayout(cardPage)
 	if(not cardPage) then
 		cardPage = 1; 
 	end
@@ -1045,9 +1051,9 @@ function ClubFinderGuildCardsMixin:RefreshLayout(cardPage, shouldShowPendingList
 	self:HideCardList(); 
 
 	local playerSpecs = ClubFinderGetPlayerSpecIds(); 
-	local showingCards = false; 
+	local showingCards = false;
 
-	if (shouldShowPendingList) then 
+	if (self.isPendingListShowing) then
 		for i = 1, #self.Cards do 
 			local pendingCardIndex = (cardPage - 1) * GUILD_CARDS_PER_PAGE + i; 
 			local cardInfo = self.PendingCardList[pendingCardIndex]; 
@@ -1062,21 +1068,20 @@ function ClubFinderGuildCardsMixin:RefreshLayout(cardPage, shouldShowPendingList
 			end
 		end
 	else
-	for i = 1, #self.Cards do 
+		for i = 1, #self.Cards do 
 			local cardIndex = (cardPage - 1) * GUILD_CARDS_PER_PAGE + i; 
 			local cardInfo = self.CardList[cardIndex]; 
-		if(cardInfo) then 
-			self.Cards[i].playerSpecs = playerSpecs; 
-			self.Cards[i].cardInfo = cardInfo;
-			self.Cards[i]:UpdateCard(); 
-			self.Cards[i]:Show();  
-			showingCards = true; 
-		else 
-			self.Cards[i]:Hide(); 
-		end 
+			if(cardInfo) then 
+				self.Cards[i].playerSpecs = playerSpecs; 
+				self.Cards[i].cardInfo = cardInfo;
+				self.Cards[i]:UpdateCard(); 
+				self.Cards[i]:Show();  
+				showingCards = true; 
+			else 
+				self.Cards[i]:Hide(); 
+			end 
+		end
 	end
-	end	
-
 	if (showingCards) then 
 		if(self.numPages <= 1) then 
 			self.PreviousPage:Hide(); 
@@ -1150,15 +1155,23 @@ function ClubFinderGuildAndCommunityMixin:OnShow()
 	self:RegisterEvent("CLUB_FINDER_RECRUIT_LIST_CHANGED");
 	self:RegisterEvent("CLUB_FINDER_RECRUITS_UPDATED");
 	
-	local GetGuildList = true;
 	C_ClubFinder.PlayerRequestPendingClubsList(Enum.ClubFinderRequestType.All); -- Player's applications to a guild or community
-
 	self:UpdateType(self.shouldShowGuildFinderOnly); --Should show communities list first. 
 	self.OptionsList:Show(); 
 end 
 
+function ClubFinderGuildAndCommunityMixin:ResetToDefaults()
+	self.GuildCards.CardList = { }; 
+	self.CommunityCards.CardList = { };
+	self.GuildCards.PendingCardList = { }; 
+	self.CommunityCards.PendingCardList = { };
+	self.OptionsList.SearchBox:SetText("");
+	self.isPendingListShowing = true;
+end 
+
 function ClubFinderGuildAndCommunityMixin:OnHide()
 	CommunitiesFrameInset:Show(); 
+	self:ResetToDefaults();
 end 
 
 function ClubFinderGuildAndCommunityMixin:OnEvent(event, ...)
@@ -1169,6 +1182,7 @@ function ClubFinderGuildAndCommunityMixin:OnEvent(event, ...)
 		if (buildGuild) then
 			self.GuildCards:BuildCardList();
 			if (self.isGuildType) then
+				self.GuildCards.isPendingListShowing = false; 
 				self.GuildCards:RefreshLayout(); 
 				self.GuildCards:Show(); 
 			end 
@@ -1176,6 +1190,7 @@ function ClubFinderGuildAndCommunityMixin:OnEvent(event, ...)
 		if (builCommunity) then
 			self.CommunityCards:BuildCardList(); 
 			if (not self.isGuildType) then
+				self.CommunityCards.isPendingListShowing = false; 
 				self.CommunityCards:RefreshLayout(); 
 				self.CommunityCards:Show(); 
 			end
@@ -1193,6 +1208,12 @@ function ClubFinderGuildAndCommunityMixin:OnEvent(event, ...)
 			self.GuildCards:RefreshLayout(); 
 		end
 		self:UpdateType(self.isGuildType);
+
+		if (self.isGuildType) then 
+			self.PendingClubs:SetText(CLUB_FINDER_PENDING_REQUESTS:format(self.GuildCards.pendingCardListSize));
+		else 
+			self.PendingClubs:SetText(CLUB_FINDER_PENDING_REQUESTS:format(self.CommunityCards.pendingCardListSize));
+		end
 	end 
 end 
 
@@ -1231,13 +1252,16 @@ function ClubFinderGuildAndCommunityMixin:UpdateType(isGuild)
 end 
 
 ClubFinderPendingClubsMixin = { }; 
+
 function ClubFinderPendingClubsMixin:OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-
+	local parentFrame = self:GetParent();
 	if (self:GetParent().isGuildType) then 
-		self:GetParent().GuildCards:RefreshLayout(1, true);
+		parentFrame.GuildCards.isPendingListShowing = not parentFrame.GuildCards.isPendingListShowing;
+		self:GetParent().GuildCards:RefreshLayout(1);
 	else 
-		self:GetParent().CommunityCards:RefreshLayout(true); 
+		parentFrame.CommunityCards.isPendingListShowing = not parentFrame.CommunityCards.isPendingListShowing
+		self:GetParent().CommunityCards:RefreshLayout(); 
 	end
 end 
 

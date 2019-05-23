@@ -47,6 +47,7 @@ function AzeriteItemLevelUpToastMixin:PlayAzeriteItemPowerToast(azeriteItemLocat
 			itemColor = item:GetItemQualityColor(),
 			text = AZERITE_ITEM_LEVELED_UP_TOAST:format(newPowerLevel), 
 			unlockedEmpoweredItemsInfo = equippedUnlockedEmpoweredItemsInfo,
+			newPowerLevel = newPowerLevel,
 		}); 
 	end);
 end
@@ -67,9 +68,37 @@ function AzeriteItemLevelUpToastMixin:PlayBanner(data)
 	self.SubTextLabel:SetAlpha(0);
 	self.UnlockItemsFrame:SetAlpha(0);
 
+	self.itemFramePool:ReleaseAll();
+	self.UnlockItemsFrame.EssenceSlotFrame:Hide();
+	self.UnlockItemsFrame.EssenceStaminaFrame:Hide();
+
 	self:SetupModelScene();
 
-	self:SetUpUnlockedEmpoweredItems(data.unlockedEmpoweredItemsInfo);
+	local addedHeight, subText = self:SetUpAzeriteMilestoneUnlocks(data.newPowerLevel);
+	if addedHeight == 0 then
+		addedHeight, subText = self:SetUpUnlockedEmpoweredItems(data.unlockedEmpoweredItemsInfo);
+	end
+
+	local toastHeight = 77;
+	local effectiveToastHeight = toastHeight + addedHeight;
+	local effectiveScale = effectiveToastHeight / toastHeight;
+
+	self.ShowAnim.BGScaleAnim:SetToScale(1, effectiveScale);
+	self.ShowAnim.GlowLineBottomTranslation:SetOffset(0, -effectiveToastHeight);
+
+	for i, region in ipairs(self.BottomRegions) do
+		local point, parent, relativePoint, sourceX, sourceY = region:GetPoint();
+		region:SetPoint(point, parent, relativePoint, sourceX, -effectiveToastHeight);
+	end
+
+	self.UnlockItemsFrame:SetShown(addedHeight > 0);
+	self.UnlockItemsFrame:Layout();
+	if addedHeight and subText then
+		self.SubTextLabel:SetText(subText);
+		self.SubTextLabel:Show();
+	else
+		self.SubTextLabel:Hide();
+	end
 
 	self:SetAlpha(1);
 	self:Show();
@@ -82,25 +111,28 @@ function AzeriteItemLevelUpToastMixin:SetupModelScene(forceUpdate)
 	StaticModelInfo.SetupModelScene(self.IconEffect, TOAST_MODEL_SCENE_INFO, forceUpdate);
 end
 
-function AzeriteItemLevelUpToastMixin:SetUpUnlockedEmpoweredItems(unlockedEmpoweredItemsInfo)
-	local SMALL_TOAST_SCALE = 1.0;
-	local LARGE_TOAST_SCALE = 2.0;
+function AzeriteItemLevelUpToastMixin:SetUpAzeriteMilestoneUnlocks(powerLevel)
+	local height = 0;
+	local subText;
 
-	local toastHeight = 77;
-	local hasUnlocks = #unlockedEmpoweredItemsInfo > 0;
-	local effectiveScale = hasUnlocks and LARGE_TOAST_SCALE or SMALL_TOAST_SCALE;
-	local effectiveToastHeight = toastHeight * effectiveScale;
-
-	self.ShowAnim.BGScaleAnim:SetToScale(1, effectiveScale);
-	self.ShowAnim.GlowLineBottomTranslation:SetOffset(0, -effectiveToastHeight);
-
-	for i, region in ipairs(self.BottomRegions) do
-		local point, parent, relativePoint, sourceX, sourceY = region:GetPoint();
-		region:SetPoint(point, parent, relativePoint, sourceX, -effectiveToastHeight);
+	local hasMilestone, isSlot = AzeriteEssenceUtil.HasMilestoneAtPowerLevel(powerLevel);
+	if hasMilestone then
+		if isSlot then
+			self.UnlockItemsFrame.EssenceSlotFrame:Show();
+			subText = NEW_AZERITE_ESSENCE_SLOT_UNLOCKED;
+			height = 86;
+		else
+			self.UnlockItemsFrame.EssenceStaminaFrame:Show();
+			subText = NEW_AZERITE_ESSENCE_MILESTONE_UNLOCKED;
+			height = 83;
+		end
 	end
 
-	self.itemFramePool:ReleaseAll();
-	self.UnlockItemsFrame:SetShown(hasUnlocks);
+	return height, subText;
+end
+
+function AzeriteItemLevelUpToastMixin:SetUpUnlockedEmpoweredItems(unlockedEmpoweredItemsInfo)
+	local hasUnlocks = #unlockedEmpoweredItemsInfo > 0;
 
 	for i, unlockedEmpoweredItemInfo in ipairs(unlockedEmpoweredItemsInfo) do
 		local itemButton = self.itemFramePool:Acquire();
@@ -113,21 +145,21 @@ function AzeriteItemLevelUpToastMixin:SetUpUnlockedEmpoweredItems(unlockedEmpowe
 		itemButton:Show();
 	end
 
+	local height = 0;
+	local subText;
+
 	if hasUnlocks then
 		if #unlockedEmpoweredItemsInfo == 1 then
 			local unlockedItem = Item:CreateFromItemLocation(unlockedEmpoweredItemsInfo[1].unlockedItem);
 			local inventoryTypeName = unlockedItem:GetInventoryTypeName();
-			self.SubTextLabel:SetFormattedText(AZERITE_ITEM_LEVELED_UP_TOAST_UNLOCKED_SINGLE, _G[inventoryTypeName]);
+			subText = string.format(AZERITE_ITEM_LEVELED_UP_TOAST_UNLOCKED_SINGLE, _G[inventoryTypeName]);
 		else
-			self.SubTextLabel:SetText(AZERITE_ITEM_LEVELED_UP_TOAST_UNLOCKED_MULTIPLE);
+			subText = AZERITE_ITEM_LEVELED_UP_TOAST_UNLOCKED_MULTIPLE;
 		end
-		
-		self.SubTextLabel:Show();
-	else
-		self.SubTextLabel:Hide();
+		height = 77;
 	end
 
-	self.UnlockItemsFrame:Layout();
+	return height, subText;
 end
 function AzeriteItemLevelUpToastMixin:StopBanner()
 	self.ShowAnim:Stop();

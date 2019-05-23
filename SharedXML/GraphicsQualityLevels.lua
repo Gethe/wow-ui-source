@@ -16,7 +16,6 @@ VideoData["Graphics_Quality"]={
 				"Graphics_ProjectedTexturesDropDown",
 				"Graphics_SSAODropDown",
 				"Graphics_DepthEffectsDropDown",
-				"Graphics_LightingQualityDropDown",
 				"Graphics_OutlineModeDropDown",
 			},
 	numQualityLevels = 10,
@@ -128,7 +127,6 @@ VideoData["RaidGraphics_Quality"].childOptions = {
 				"RaidGraphics_ProjectedTexturesDropDown",
 				"RaidGraphics_SSAODropDown",
 				"RaidGraphics_DepthEffectsDropDown",
-				"RaidGraphics_LightingQualityDropDown",
 				"RaidGraphics_OutlineModeDropDown",
 			};
 VideoData["RaidGraphics_Quality"].numQualityLevels = 10;
@@ -743,7 +741,6 @@ VideoData["Graphics_FilteringDropDown"]={
 	dependent = {
 		"Graphics_Quality",
 	},
-	restart = true;
 }
 
 VideoData["RaidGraphics_FilteringDropDown"]={
@@ -773,7 +770,6 @@ VideoData["RaidGraphics_FilteringDropDown"]={
 	dependent = {
 		"RaidGraphics_Quality",
 	},
-	restart = true;
 }
 
 -------------------------------------------------------------------------------------------------------
@@ -926,54 +922,6 @@ VideoData["RaidGraphics_DepthEffectsDropDown"]={
 		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
 			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_HIGH,
-		},
-	},
-	dependent = {
-		"RaidGraphics_Quality",
-	},
-}
-
--------------------------------------------------------------------------------------------------------
-VideoData["Graphics_LightingQualityDropDown"]={
-	name = LIGHTING_QUALITY;
-	description = OPTION_TOOLTIP_LIGHTING_QUALITY,
-	graphicsCVar =	"graphicsLightingQuality",
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_LOW,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_LOW,
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_MEDIUM,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_MEDIUM,
-		},
-		[3] = {
-			text = VIDEO_OPTIONS_HIGH,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_HIGH,
-		},
-	},
-	dependent = {
-		"Graphics_Quality",
-	},
-}
-
--------------------------------------------------------------------------------------------------------
-VideoData["RaidGraphics_LightingQualityDropDown"]={
-	name = LIGHTING_QUALITY;
-	description = OPTION_TOOLTIP_LIGHTING_QUALITY,
-	graphicsCVar =	"raidGraphicsLightingQuality",
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_LOW,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_LOW,
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_MEDIUM,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_MEDIUM,
-		},
-		[3] = {
-			text = VIDEO_OPTIONS_HIGH,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_HIGH,
 		},
 	},
 	dependent = {
