@@ -1949,9 +1949,10 @@ local ChatInfo =
 			Payload =
 			{
 				{ Name = "mapname", Type = "string", Nilable = false },
-				{ Name = "timeLeft", Type = "number", Nilable = false },
+				{ Name = "daysLeft", Type = "number", Nilable = false },
+				{ Name = "hoursLeft", Type = "number", Nilable = false },
+				{ Name = "minutesLeft", Type = "number", Nilable = false },
 				{ Name = "locked", Type = "number", Nilable = false },
-				{ Name = "extended", Type = "number", Nilable = false },
 			},
 		},
 		{

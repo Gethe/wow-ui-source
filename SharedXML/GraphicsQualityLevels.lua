@@ -401,6 +401,7 @@ VideoData["Graphics_GroundClutterSlider"]={
 	name= GROUND_CLUTTER;
 	tooltip = OPTION_TOOLTIP_GROUND_CLUTTER,
 	graphicsCVar = "graphicsGroundClutter",
+	classic = 3,
 	dependent = {
 		"Graphics_Quality",
 	},
@@ -410,6 +411,7 @@ VideoData["RaidGraphics_GroundClutterSlider"]={
 	name= GROUND_CLUTTER;
 	tooltip = OPTION_TOOLTIP_GROUND_CLUTTER,
 	graphicsCVar = "raidGraphicsGroundClutter",
+	classic = 3,
 	dependent = {
 		"RaidGraphics_Quality",
 	},
@@ -420,6 +422,7 @@ VideoData["Graphics_EnvironmentalDetailSlider"]={
 	name = ENVIRONMENT_DETAIL;
 	tooltip = OPTION_TOOLTIP_ENVIRONMENT_DETAIL,
 	graphicsCVar = "graphicsEnvironmentDetail",
+	classic = 3,
 	dependent = {
 		"Graphics_Quality",
 	},
@@ -429,6 +432,7 @@ VideoData["RaidGraphics_EnvironmentalDetailSlider"]={
 	name = ENVIRONMENT_DETAIL;
 	tooltip = OPTION_TOOLTIP_ENVIRONMENT_DETAIL,
 	graphicsCVar = "raidGraphicsEnvironmentDetail",
+	classic = 3,
 	dependent = {
 		"RaidGraphics_Quality",
 	},
@@ -439,21 +443,16 @@ VideoData["Graphics_ParticleDensityDropDown"]={
 	name = PARTICLE_DENSITY;
 	description = OPTION_TOOLTIP_PARTICLE_DENSITY,
 	graphicsCVar =	"graphicsParticleDensity",
+	classic = 3,
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
 		},
 		[2] = {
-			text = VIDEO_OPTIONS_FAIR,
-		},
-		[3] = {
 			text = VIDEO_OPTIONS_MEDIUM,
 		},
-		[4] = {
+		[3] = {
 			text = VIDEO_OPTIONS_HIGH,
-		},
-		[5] = {
-			text = VIDEO_OPTIONS_ULTRA,
 		},
 	},
 	dependent = {
@@ -465,21 +464,16 @@ VideoData["RaidGraphics_ParticleDensityDropDown"]={
 	name = PARTICLE_DENSITY;
 	description = OPTION_TOOLTIP_PARTICLE_DENSITY,
 	graphicsCVar =	"raidGraphicsParticleDensity",
+	classic = 3,
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
 		},
 		[2] = {
-			text = VIDEO_OPTIONS_FAIR,
-		},
-		[3] = {
 			text = VIDEO_OPTIONS_MEDIUM,
 		},
-		[4] = {
+		[3] = {
 			text = VIDEO_OPTIONS_HIGH,
-		},
-		[5] = {
-			text = VIDEO_OPTIONS_ULTRA,
 		},
 	},
 	dependent = {
@@ -492,6 +486,7 @@ VideoData["Graphics_SSAODropDown"]={
 	name = SSAO_LABEL;
 	description = OPTION_TOOLTIP_SSAO,
 	graphicsCVar =	"graphicsSSAO",
+	classic = 1,
 	data = {
 		{
 			text = VIDEO_OPTIONS_DISABLED,
@@ -520,6 +515,7 @@ VideoData["RaidGraphics_SSAODropDown"]={
 	name = SSAO_LABEL;
 	description = OPTION_TOOLTIP_SSAO,
 	graphicsCVar =	"raidGraphicsSSAO",
+	classic = 1,
 	data = {
 		{
 			text = VIDEO_OPTIONS_DISABLED,
@@ -549,6 +545,7 @@ VideoData["Graphics_ShadowsDropDown"]={
 	name = SHADOW_QUALITY;
 	description = OPTION_TOOLTIP_SHADOW_QUALITY,
 	graphicsCVar =	"graphicsShadowQuality",
+	classic = 1,
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
@@ -584,6 +581,7 @@ VideoData["RaidGraphics_ShadowsDropDown"]={
 	name = SHADOW_QUALITY;
 	description = OPTION_TOOLTIP_SHADOW_QUALITY,
 	graphicsCVar =	"raidGraphicsShadowQuality",
+	classic = 1,
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
@@ -620,6 +618,7 @@ VideoData["Graphics_TextureResolutionDropDown"]={
 	name = TEXTURE_DETAIL;
 	description = OPTION_TOOLTIP_TEXTURE_DETAIL,
 	graphicsCVar =	"graphicsTextureResolution",
+	classic = 2,
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
@@ -639,6 +638,7 @@ VideoData["RaidGraphics_TextureResolutionDropDown"]={
 	name = TEXTURE_DETAIL;
 	description = OPTION_TOOLTIP_TEXTURE_DETAIL,
 	graphicsCVar =	"raidGraphicsTextureResolution",
+	classic = 2,
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
@@ -659,6 +659,7 @@ VideoData["Graphics_ProjectedTexturesDropDown"]={
 	name = PROJECTED_TEXTURES;
 	description = OPTION_TOOLTIP_PROJECTED_TEXTURES,
 	graphicsCVar =	"graphicsProjectedTextures",
+	classic = 2,
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
@@ -676,6 +677,7 @@ VideoData["RaidGraphics_ProjectedTexturesDropDown"]={
 	name = PROJECTED_TEXTURES;
 	description = OPTION_TOOLTIP_PROJECTED_TEXTURES,
 	graphicsCVar =	"raidGraphicsProjectedTextures",
+	classic = 2,
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
@@ -694,6 +696,7 @@ VideoData["Graphics_FilteringDropDown"]={
 	name = ANISOTROPIC;
 	description = OPTION_TOOLTIP_ANISOTROPIC,
 	graphicsCVar =	"graphicsTextureFiltering",
+	classic = 3,
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_BILINEAR,
@@ -723,6 +726,7 @@ VideoData["RaidGraphics_FilteringDropDown"]={
 	name = ANISOTROPIC;
 	description = OPTION_TOOLTIP_ANISOTROPIC,
 	graphicsCVar =	"raidGraphicsTextureFiltering",
+	classic = 3,
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_BILINEAR,
@@ -753,6 +757,7 @@ VideoData["Graphics_LiquidDetailDropDown"]={
 	name = LIQUID_DETAIL;
 	description = OPTION_TOOLTIP_LIQUID_DETAIL,
 	graphicsCVar = "graphicsLiquidDetail",
+	classic = 1,
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
@@ -780,6 +785,7 @@ VideoData["RaidGraphics_LiquidDetailDropDown"]={
 	name = LIQUID_DETAIL;
 	description = OPTION_TOOLTIP_LIQUID_DETAIL,
 	graphicsCVar = "raidGraphicsLiquidDetail",
+	classic = 1,
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
@@ -808,6 +814,7 @@ VideoData["Graphics_SunshaftsDropDown"]={
 	name = SUNSHAFTS;
 	description = OPTION_TOOLTIP_SUNSHAFTS,
 	graphicsCVar =	"graphicsSunshafts",
+	classic = 1,
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
@@ -831,6 +838,7 @@ VideoData["RaidGraphics_SunshaftsDropDown"]={
 	name = SUNSHAFTS;
 	description = OPTION_TOOLTIP_SUNSHAFTS,
 	graphicsCVar =	"raidGraphicsSunshafts",
+	classic = 1,
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
@@ -855,6 +863,7 @@ VideoData["Graphics_DepthEffectsDropDown"]={
 	name = DEPTH_EFFECTS;
 	description = OPTION_TOOLTIP_DEPTH_EFFECTS,
 	graphicsCVar =	"graphicsDepthEffects",
+	classic = 1,
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
@@ -882,6 +891,7 @@ VideoData["RaidGraphics_DepthEffectsDropDown"]={
 	name = DEPTH_EFFECTS;
 	description = OPTION_TOOLTIP_DEPTH_EFFECTS,
 	graphicsCVar =	"raidGraphicsDepthEffects",
+	classic = 1,
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
@@ -910,6 +920,7 @@ VideoData["Graphics_LightingQualityDropDown"]={
 	name = LIGHTING_QUALITY;
 	description = OPTION_TOOLTIP_LIGHTING_QUALITY,
 	graphicsCVar =	"graphicsLightingQuality",
+	classic = 3,
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
@@ -934,6 +945,7 @@ VideoData["RaidGraphics_LightingQualityDropDown"]={
 	name = LIGHTING_QUALITY;
 	description = OPTION_TOOLTIP_LIGHTING_QUALITY,
 	graphicsCVar =	"raidGraphicsLightingQuality",
+	classic = 3,
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,

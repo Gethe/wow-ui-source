@@ -628,20 +628,6 @@ function UnitPopup_AddDropDownTitle(unit, name, userData)
 		info.isTitle = true;
 		info.notCheckable = true;
 
-		local class;
-		if unit then
-			class = select(2, UnitClass(unit));
-		end
-
-		if not class and userData and userData.guid then
-			class = select(2, GetPlayerInfoByGUID(userData.guid));
-			end
-
-		if class then
-			local colorCode = select(4, GetClassColor(class));
-			info.disablecolor = "|c" .. colorCode;
-		end
-
 		UIDropDownMenu_AddButton(info);
 	end
 end

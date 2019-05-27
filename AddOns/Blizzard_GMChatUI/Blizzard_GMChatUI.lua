@@ -44,7 +44,7 @@ function GMChatFrame_OnLoad(self)
 	self.buttonFrame.minimizeButton:Hide();
 
 	self.editBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 8, -2);
-	self.editBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -43, -2);
+	self.editBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -8, -2);
 	self.editBox.isGM = true;
 	ChatEdit_DeactivateChat(self.editBox);
 end

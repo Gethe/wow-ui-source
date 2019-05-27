@@ -56,11 +56,6 @@
 										<Anchor point="CENTER" x="-63" y="-16"/>
 									</Anchors>
 								</FontString>
-								<FontString name="PlayerPVPTimerText" inherits="GameFontNormalSmall">
-									<Anchors>
-										<Anchor point="CENTER" relativePoint="TOPLEFT" x="38" y="-8"/>
-									</Anchors>
-								</FontString>
 								<FontString name="PlayerFrameHealthBarText" inherits="TextStatusBarText">
 									<Anchors>
 										<Anchor point="CENTER" x="50" y="3"/>

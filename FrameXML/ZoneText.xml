@@ -23,7 +23,7 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</FontString>
-				<FontString name="PVPInfoTextString" inherits="PVPInfoTextFont">
+				<FontString name="PVPInfoTextString" inherits="SubZoneTextFont">
 					<Size>
 						<AbsDimension x="512" y="0"/>
 					</Size>
@@ -60,7 +60,7 @@
 						<Anchor point="TOP" relativeTo="ZoneTextString" relativePoint="BOTTOM"/>
 					</Anchors>
 				</FontString>
-				<FontString name="PVPArenaTextString" inherits="PVPInfoTextFont">
+				<FontString name="PVPArenaTextString" inherits="SubZoneTextFont">
 					<Size>
 						<AbsDimension x="512" y="0"/>
 					</Size>

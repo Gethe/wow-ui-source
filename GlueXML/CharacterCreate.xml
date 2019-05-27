@@ -792,7 +792,6 @@
 											<Anchors>
 												<Anchor point="TOPLEFT"/>
 											</Anchors>
-											<TexCoords left="0.125" right="0.875" top="0.3125" bottom="0.6875"/>
 										</Texture>
 									</Layer>
 								</Layers>

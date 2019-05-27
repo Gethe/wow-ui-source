@@ -245,8 +245,8 @@ local function OptionsFrame_RunCancelForCategory (category)
 	pcall(category.cancel, category);
 end
 
-local function OptionsFrame_RunDefaultForCategory (category, classicDefaults)
-	pcall(category.default, category, nil, classicDefaults);
+local function OptionsFrame_RunDefaultForCategory (category)
+	pcall(category.default, category, nil);
 end
 
 local function OptionsFrame_RunRefreshForCategory (category)
@@ -274,25 +274,34 @@ function OptionsFrameDefault_OnClick (self)
 	-- NOTE: defer setting defaults until a popup dialog button is clicked
 end
 
-function OptionsFrame_SetAllToDefaults (self, classicDefaults)
+function OptionsFrame_SetAllToDefaults (self)
 	--Iterate through registered panels and run their default methods in a taint-safe fashion
 	for _, category in SecureNext, self.categoryList do
-		securecall(OptionsFrame_RunDefaultForCategory, category, classicDefaults);
+		securecall(OptionsFrame_RunDefaultForCategory, category);
 	end
 
 	--Refresh the categories to pick up changes made.
 	OptionsFrame_RefreshCategories(self);
 end
 
-function OptionsFrame_SetCurrentToDefaults (self, classicDefaults)
+function OptionsFrame_SetCurrentToDefaults (self)
 	local displayedPanel = self.panelContainer.displayedPanel;
 	if ( not displayedPanel or not displayedPanel.default ) then
 		return;
 	end
 
-	displayedPanel.default(displayedPanel, nil, classicDefaults);
+	displayedPanel.default(displayedPanel, nil);
 	--Run the refresh method to refresh any values that were changed.
 	displayedPanel.refresh(displayedPanel);
+end
+
+function OptionsFrame_SetCurrentToClassic (self)
+	local displayedPanel = self.panelContainer.displayedPanel;
+	if ( not displayedPanel or not displayedPanel.classic ) then
+		return;
+	end
+
+	displayedPanel.classic(displayedPanel);
 end
 
 function OptionsFrame_RefreshCategories (self)

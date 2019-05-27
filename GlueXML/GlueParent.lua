@@ -694,14 +694,12 @@ function SetExpansionLogo(texture, expansionLevel)
 	end
 end
 
+classicLogo = 'Interface\\Glues\\Common\\WOW_Classic-LogoHR';
+classicLogoTexCoords = { 0.125, 0.875, 0.3125, 0.6875 };
 function SetClassicLogo(texture)
-	local logo = 'Interface\\Glues\\Common\\WOW_Classic-LogoHR';
-	if logo then
-		texture:SetTexture(logo);
-		texture:Show();
-	else
-		texture:Hide();
-	end
+	texture:SetTexture(classicLogo);
+	texture:SetTexCoord(classicLogoTexCoords[1], classicLogoTexCoords[2], classicLogoTexCoords[3], classicLogoTexCoords[4]);
+	texture:Show();
 end
 
 function UpgradeAccount()

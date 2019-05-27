@@ -14,7 +14,7 @@
 		<Frames>
 			<Frame name="GMChatTab" parent="GMChatFrame" useParentLevel="true">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="GMChatFrame" relativePoint="TOPLEFT" x="-34" y="4"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="GMChatFrame" relativePoint="TOPLEFT" x="-1" y="4"/>
 					<Anchor point="TOPRIGHT" relativeTo="GMChatFrame" relativePoint="TOPRIGHT" x="2" y="28"/>
 				</Anchors>
 				<Layers>

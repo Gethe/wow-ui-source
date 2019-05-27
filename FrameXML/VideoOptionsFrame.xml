@@ -68,7 +68,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
-						VideoOptionsFrameDefault_OnClick(self, button, false);
+						VideoOptionsFrameDefault_OnClick(self, button);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -82,7 +82,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
-						VideoOptionsFrameDefault_OnClick(self, button, true);
+						VideoOptionsFrameClassic_OnClick(self, button);
 					</OnClick>
 				</Scripts>
 			</Button>

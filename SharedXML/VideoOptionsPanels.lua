@@ -333,18 +333,33 @@ function VideoOptionsPanel_Default (self)
 	end
 end
 
-function Graphics_Default (self, perControlCallback, classicDefaults)
-	SetDefaultVideoOptions(0, classicDefaults);
+function Graphics_Default (self, perControlCallback)
+	SetDefaultVideoOptions(0);
 	VideoOptionsPanel_Default( Display_);
 	VideoOptionsPanel_Default( Graphics_);
 	VideoOptionsPanel_Default( RaidGraphics_);
 	FinishChanges(self);
 end
 
-function Advanced_Default (self, perControlCallback, classicDefaults)
-	SetDefaultVideoOptions(1, classicDefaults);
+function Graphics_Classic (self)
+	for key, value in pairs(VideoData) do
+		local control = _G[key];
+		if(control.classic and control:GetValue() ~= control.classic) then
+			VideoOptions_OnClick(control, control.classic);
+			if(control.type == CONTROLTYPE_DROPDOWN) then
+				local text = control.data[control.classic].text;
+				VideoOptionsDropDownMenu_SetText(control, text);
+			elseif(control.type == CONTROLTYPE_SLIDER) then
+				control:SetDisplayValue(control.classic);
+			end
+		end
+	end
+end
+
+function Advanced_Default (self, perControlCallback)
+	SetDefaultVideoOptions(1);
 	if(not InGlue()) then
-		SetDefaultVideoOptions(2, classicDefaults);
+		SetDefaultVideoOptions(2);
 	end
 	for _, control in next, self.controls do
 		if(string.find(control:GetName(), "Advanced_")) then
@@ -908,6 +923,7 @@ end
 function Graphics_OnLoad (self)
 	self.name = GRAPHICS_LABEL;
 	self.hasApply = true;
+	self.classic = Graphics_Classic;
 	VideoOptionsPanel_OnLoad( Display_);
 	VideoOptionsPanel_OnLoad( Graphics_);
 	VideoOptionsPanel_OnLoad( RaidGraphics_);

@@ -89,6 +89,9 @@ function GroupMembersPinMixin:OnHide()
 	if self.dataProvider:ShouldShowUnit("player") then
 		self:StopPlayerPing();
 	end
+	if GameTooltip:GetOwner() == self then
+		GameTooltip:Hide();
+	end
 end
 
 function GroupMembersPinMixin:OnUpdate()

@@ -164,31 +164,10 @@ StaticPopupDialogs["CONFIRM_RESET_VIDEO_SETTINGS"] = {
 	button3 = CURRENT_SETTINGS,
 	button2 = CANCEL,
 	OnAccept = function ()
-		VideoOptionsFrame_SetAllToDefaults(false);
+		VideoOptionsFrame_SetAllToDefaults();
 	end,
 	OnAlt = function ()
-		VideoOptionsFrame_SetCurrentToDefaults(false);
-	end,
-	OnCancel = function() end,
-	showAlert = 1,
-	timeout = 0,
-	exclusive = 1,
-	hideOnEscape = 1,
-	whileDead = 1,
-}
-
-StaticPopupDialogs["CONFIRM_RESET_CLASSIC_VIDEO_SETTINGS"] = {
-	text = CONFIRM_RESET_SETTINGS,
-	button1 = ALL_SETTINGS,
-	button3 = CURRENT_SETTINGS,
-	button2 = CANCEL,
-	OnAccept = function ()
-		VideoOptionsFrame_SetAllToDefaults(false); -- Set to recommnded first to lock in main slider setting
-		VideoOptionsFrame_SetAllToDefaults(true);
-	end,
-	OnAlt = function ()
-		VideoOptionsFrame_SetCurrentToDefaults(false); -- Set to recommnded first to lock in main slider setting
-		VideoOptionsFrame_SetCurrentToDefaults(true);
+		VideoOptionsFrame_SetCurrentToDefaults();
 	end,
 	OnCancel = function() end,
 	showAlert = 1,

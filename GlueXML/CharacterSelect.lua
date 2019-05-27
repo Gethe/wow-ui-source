@@ -146,7 +146,7 @@ function CharacterSelect_OnLoad(self)
 	self:RegisterEvent("MIN_EXPANSION_LEVEL_UPDATED");
 	self:RegisterEvent("MAX_EXPANSION_LEVEL_UPDATED");
 	self:RegisterEvent("INITIAL_HOTFIXES_APPLIED");
-
+	self:RegisterEvent("UPDATE_NAME_RESERVATION");
     SetCharSelectModelFrame("CharacterSelectModel");
 
     -- Color edit box backdrops
@@ -414,8 +414,12 @@ end
 function CharacterSelect_OnUpdate(self, elapsed)
     if ( self.undeleteFailed ) then
         if (not GlueDialog:IsShown()) then
-            GlueDialog_Show(self.undeleteFailed == "name" and "UNDELETE_NAME_TAKEN" or "UNDELETE_FAILED");
-            self.undeleteFailed = false;
+			if ( self.undeleteFailed == "pvp" ) then
+				GlueDialog_Show("UNDELETE_FAILED_PVP");
+			else
+				GlueDialog_Show(self.undeleteFailed == "name" and "UNDELETE_NAME_TAKEN" or "UNDELETE_FAILED");
+			end
+			self.undeleteFailed = false;
         end
     end
 
@@ -539,6 +543,8 @@ function CharacterSelect_OnEvent(self, event, ...)
             CHARACTER_LIST_OFFSET = self.selectedIndex - MAX_CHARACTERS_DISPLAYED;
         end
         UpdateCharacterSelection(self);
+	elseif ( event == "UPDATE_NAME_RESERVATION" ) then
+		CharacterSelect_UpdateButtonState();
     elseif ( event == "FORCE_RENAME_CHARACTER" ) then
         GlueDialog_Hide();
         local message = ...;
@@ -581,7 +587,9 @@ function CharacterSelect_OnEvent(self, event, ...)
             self.undeleteFailed = nil;
         else
             self.undeleteGuid = nil;
-            if ( result == LE_CHARACTER_UNDELETE_RESULT_ERROR_NAME_TAKEN_BY_THIS_ACCOUNT ) then
+			if ( result == LE_CHARACTER_UNDELETE_RESULT_ERROR_PVP_TEAMS_VIOLATION ) then
+				self.undeleteFailed = "pvp";
+			elseif ( result == LE_CHARACTER_UNDELETE_RESULT_ERROR_NAME_TAKEN_BY_THIS_ACCOUNT ) then
                 self.undeleteFailed = "name";
             else
                 self.undeleteFailed = "other";
@@ -1207,8 +1215,12 @@ function CharacterSelect_SelectCharacter(index, noCreate)
             text = ENTER_WORLD_UNLOCK_TRIAL_CHARACTER;
 		elseif ( revokedCharacterUpgrade ) then
 			text = ENTER_WORLD_UNLOCK_REVOKED_CHARACTER_UPGRADE;
+		elseif (IsNameReservationOnly()) then
+			CharSelectEnterWorldButton:Disable();
+			return
         end
 
+		CharSelectEnterWorldButton:Enable();
         CharSelectEnterWorldButton:SetText(text);
     end
 end
@@ -1296,6 +1308,8 @@ function CharacterSelect_AllowedToEnterWorld()
     elseif (CharSelectServicesFlowFrame:IsShown()) then
         return false;
 	elseif (IsKioskModeEnabled() and (CharacterSelect.hasPendingTrialBoost or KioskMode_IsWaitingOnTrial())) then
+		return false;
+	elseif (IsNameReservationOnly()) then
 		return false;
     end
 
@@ -2584,6 +2598,11 @@ GlueDialogTypes["UNDELETE_NO_CHARACTERS"] = {
     button2 = nil,
 }
 
+GlueDialogTypes["UNDELETE_FAILED_PVP"] = {
+	text = CHAR_CREATE_PVP_TEAMS_VIOLATION,
+	button1 = OKAY,
+	escapeHides = true,
+}
 GlueDialogTypes["UNDELETE_SUCCEEDED"] = {
     text = UNDELETE_SUCCESS,
     button1 = OKAY,
@@ -3034,4 +3053,24 @@ function ConvertConfirmationConfirmButton_OnClick(self)
     self:GetParent():Hide();
     ConvertConsumptionTime();
     ConversionInProgressDialog:Show();
+end
+
+function CharSelectEnterWorldButton_OnEnter(button)
+	GlueTooltip:SetOwner(button, "ANCHOR_LEFT", 4, -8);
+	if ( not CharacterSelect_AllowedToEnterWorld() ) then
+		local hours = GetLaunchETA();
+		if (hours > 0) then
+			text = LAUNCH_ETA:format(hours);
+		else
+			text = LAUNCH_ETA_SOON;
+		end
+		
+		GlueTooltip:AddLine(text);
+	else
+		GlueTooltip:Hide();
+	end
+end
+
+function CharSelectEnterWorldButton_OnLeave(button)
+	GlueTooltip:Hide();
 end

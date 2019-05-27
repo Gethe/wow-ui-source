@@ -261,7 +261,7 @@ function CombatText_OnEvent(self, event, ...)
 			or arg3 == "RUNIC_POWER"
 			or arg3 == "DEMONIC_FURY") then
 			message = data.." ".._G[arg3];
-			info = PowerBarColor[arg3];
+			--info = PowerBarColor[arg3];
 		elseif ( arg3 == "HOLY_POWER"
 				or arg3 == "SOUL_SHARDS"
 				or arg3 == "CHI"

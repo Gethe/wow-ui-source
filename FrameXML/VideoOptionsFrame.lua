@@ -4,14 +4,18 @@ function VideoOptionsFrame_Toggle ()
 	ToggleFrame(VideoOptionsFrame);
 end
 
-function VideoOptionsFrame_SetAllToDefaults (classicDefaults)
-	OptionsFrame_SetAllToDefaults(VideoOptionsFrame, classicDefaults);
+function VideoOptionsFrame_SetAllToDefaults ()
+	OptionsFrame_SetAllToDefaults(VideoOptionsFrame);
 	VideoOptionsFrameApply:Disable();
 end
 
-function VideoOptionsFrame_SetCurrentToDefaults (classicDefaults)
-	OptionsFrame_SetCurrentToDefaults(VideoOptionsFrame, classicDefaults);
+function VideoOptionsFrame_SetCurrentToDefaults ()
+	OptionsFrame_SetCurrentToDefaults(VideoOptionsFrame);
 	VideoOptionsFrameApply:Disable();
+end
+
+function VideoOptionsFrame_SetCurrentToClassic ()
+	OptionsFrame_SetCurrentToClassic(VideoOptionsFrame);
 end
 
 function VideoOptionsFrame_OnLoad (self)
@@ -53,12 +57,13 @@ function VideoOptionsFrameCancel_OnClick (self, button)
 	VideoOptionsFrame_Toggle();
 end
 
-function VideoOptionsFrameDefault_OnClick (self, button, classicDefaults)
+function VideoOptionsFrameDefault_OnClick (self, button)
 	OptionsFrameDefault_OnClick(VideoOptionsFrame);
 
-	if ( classicDefaults ) then
-		StaticPopup_Show("CONFIRM_RESET_CLASSIC_VIDEO_SETTINGS");
-	else
-		StaticPopup_Show("CONFIRM_RESET_VIDEO_SETTINGS");
-	end
+	StaticPopup_Show("CONFIRM_RESET_VIDEO_SETTINGS");
+end
+
+function VideoOptionsFrameClassic_OnClick (self, button)
+	OptionsFrameDefault_OnClick(VideoOptionsFrame);
+	VideoOptionsFrame_SetCurrentToClassic();
 end

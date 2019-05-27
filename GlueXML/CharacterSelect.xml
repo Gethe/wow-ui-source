@@ -504,7 +504,6 @@
 									<Anchors>
 										<Anchor point="TOPLEFT" x="8" y="-16"/>
 									</Anchors>
-									<TexCoords left="0.125" right="0.875" top="0.3125" bottom="0.6875"/>
 								</Texture>
 							</Layer>
 						</Layers>
@@ -700,7 +699,7 @@
 							</Frame>
 						</Frames>
 					</Frame>
-					<Button name="CharSelectEnterWorldButton" inherits="GlueButtonTemplate" text="ENTER_WORLD">
+					<Button name="CharSelectEnterWorldButton" inherits="GlueButtonTemplate" text="ENTER_WORLD" motionScriptsWhileDisabled="true">
 						<Size>
 							<AbsDimension x="200" y="60"/>
 						</Size>
@@ -719,6 +718,12 @@
 							<OnUpdate>
 								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
+							<OnEnter>
+								CharSelectEnterWorldButton_OnEnter(self);
+							</OnEnter>
+							<OnLeave>
+								CharSelectEnterWorldButton_OnLeave(self)
+							</OnLeave>
 						</Scripts>
 					</Button>
 					<Button name="CharacterSelectRotateLeft">

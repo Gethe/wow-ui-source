@@ -1213,22 +1213,21 @@ function UIParent_OnEvent(self, event, ...)
 	-- Display instance reset info
 	elseif ( event == "RAID_INSTANCE_WELCOME" ) then
 		local dungeonName = arg1;
-		local lockExpireTime = arg2;
-		local locked = arg3;
-		local extended = arg4;
+		local daysLeft = arg2;
+		local hoursLeft = arg3;
+		local minutesLeft = arg4;
+		local locked = arg5;
+
 		local message;
 
 		if ( locked == 0 ) then
-			message = format(RAID_INSTANCE_WELCOME, dungeonName, SecondsToTime(lockExpireTime, nil, 1))
+			message = format(RAID_INSTANCE_WELCOME, dungeonName, daysLeft, hoursLeft, minutesLeft)
 		else
 			if ( lockExpireTime == 0 ) then
 				message = format(RAID_INSTANCE_WELCOME_EXTENDED, dungeonName);
 			else
-				if ( extended == 0 ) then
-					message = format(RAID_INSTANCE_WELCOME_LOCKED, dungeonName, SecondsToTime(lockExpireTime, nil, 1));
-				else
-					message = format(RAID_INSTANCE_WELCOME_LOCKED_EXTENDED, dungeonName, SecondsToTime(lockExpireTime, nil, 1));
-				end
+				message = format(RAID_INSTANCE_WELCOME_LOCKED, dungeonName, daysLeft, hoursLeft, minutesLeft);
+
 			end
 		end
 
