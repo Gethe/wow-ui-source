@@ -112,6 +112,11 @@
 										<Anchor point="TOPRIGHT" x="-3"/>
 									</Anchors>
 								</Texture>
+								<FontString parentKey="MatchmakingText" inherits="GameFontNormal" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="RIGHT" x="-10" y="2"/>
+									</Anchors>
+								</FontString>
 							</Layer>
 						</Layers>
 						<Frames>

@@ -47,10 +47,16 @@ function PVPMatchUtil.GetOptionalCategories()
 	categories.honorableKills = C_PvP.CanDisplayHonorableKills();
 	categories.deaths = C_PvP.CanDisplayDeaths();
 	
-	local isRated = C_PvP.IsRatedBattleground();
-	categories.rating = isRated;
-	categories.ratingChange = isRated;
-
+	if C_PvP.DoesMatchOutcomeAffectRating() then
+		if PVPMatchUtil.IsActiveMatchComplete() then
+			-- Skirmish is considered rated for matchmaking reasons.
+			categories.ratingChange = not IsArenaSkirmish();
+			categories.ratingPost = true;
+		else
+			categories.ratingPre = true;
+		end
+	end
+	
 	return categories;
 end
 
@@ -77,6 +83,45 @@ PVPMatchStyle = {
 		},
 	},
 }
+
+function PVPMatchUtil.UpdateMatchmakingText(fontString)
+	if C_PvP.IsRatedBattleground() or C_PvP.IsRatedArena() and not IsArenaSkirmish() then
+		local teamInfos = { 
+			C_PvP.GetTeamInfo(0),
+			C_PvP.GetTeamInfo(1), 
+		};
+
+		local factionIndex = GetBattlefieldArenaFaction();
+		local enemyFactionIndex = (factionIndex+1) % 2;
+		local yourMMR = BreakUpLargeNumbers(teamInfos[factionIndex+1].ratingMMR);
+		local enemyMMR = BreakUpLargeNumbers(teamInfos[enemyFactionIndex+1].ratingMMR);
+		local yourTeamString = MATCHMAKING_YOUR_AVG_RATING:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(yourMMR));
+		local enemyTeamString = MATCHMAKING_ENEMY_AVG_RATING:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(enemyMMR));
+		fontString:SetText(format("%s\n%s", yourTeamString, enemyTeamString));
+		fontString:Show();
+	else
+		fontString:Hide();
+	end
+end
+
+function PVPMatchUtil.UpdateTable(tableBuilder, scrollFrame)
+	local buttons = HybridScrollFrame_GetButtons(scrollFrame);
+	local buttonCount = #buttons;
+	local displayCount = GetNumBattlefieldScores();
+	local offset = HybridScrollFrame_GetOffset(scrollFrame);
+	local populateCount = math.min(buttonCount, displayCount);
+	tableBuilder:Populate(offset, populateCount);
+	
+	for i = 1, buttonCount do
+		local visible = i <= displayCount;
+		buttons[i]:SetShown(visible);
+	end
+
+	local buttonHeight = buttons[1]:GetHeight();
+	local visibleElementHeight = displayCount * buttonHeight;
+	local regionHeight = scrollFrame:GetHeight();
+	HybridScrollFrame_Update(scrollFrame, visibleElementHeight, regionHeight);
+end
 
 function PVPMatchStyle.GetPanelColor(factionIndex, useAlternateColor)
 	local index = PVPMatchUtil.GetColorIndex(factionIndex, useAlternateColor);

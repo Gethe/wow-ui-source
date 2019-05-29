@@ -79,12 +79,6 @@ function CommunitiesFrameMixin:OnShow()
 	if self.CommunitiesList:IsShown() then
 		self.CommunitiesList:ScrollToClub(self:GetSelectedClubId());
 	end
-
-	if self.selectedClubInfo and self.selectedClubInfo.clubType == Enum.ClubType.Guild then 
-		C_ClubFinder.RequestApplicantList(Enum.ClubFinderRequestType.Guild); 
-	elseif self.selectedClubInfo and self.selectedClubInfo.clubType == Enum.ClubType.Character then
-		C_ClubFinder.RequestApplicantList(Enum.ClubFinderRequestType.Community); 
-	end
 end
 
 function CommunitiesFrameMixin:OnEvent(event, ...)
@@ -328,21 +322,11 @@ COMMUNITIES_FRAME_DISPLAY_MODES = {
 		"MemberList",
 		"CommunitiesControlFrame",
 		"GuildMemberListDropDownMenu",
-		"CommunityMemberListDropDownMenu",
-	},
-
-	APPLICANT_LIST = {
-		"CommunitiesList",
-		"ApplicantList",
-		"CommunitiesControlFrame",
-		"GuildMemberListDropDownMenu",
-		"CommunityMemberListDropDownMenu",
 	},
 
 	INVITATION = {
 		"CommunitiesList",
 		"InvitationFrame",
-		"ClubFinderInvitationFrame",
 	},
 
 	TICKET = {
@@ -353,11 +337,6 @@ COMMUNITIES_FRAME_DISPLAY_MODES = {
 	GUILD_FINDER = {
 		"CommunitiesList",
 		"GuildFinderFrame",
-	},
-
-	COMMUNITY_FINDER = { 
-		"CommunitiesList", 
-		"CommunityAndGuildFinderFrame"
 	},
 
 	GUILD_BENEFITS = {
@@ -404,7 +383,7 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 	-- If we run into more cases where we need more specific controls on what
 	-- is displayed in a displayMode then we should add support for conditional
 	-- frames in displayMode based on clubType or perhaps a predicate function.
-	if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST then
+	if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER then
 		local isGuildCommunitySelected = false;
 		local clubId = self:GetSelectedClubId();
 		if clubId then
@@ -417,10 +396,6 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 			C_GuildInfo.GuildRoster();
 		end
 		self.GuildMemberListDropDownMenu:SetShown(isGuildCommunitySelected);
-		if (clubId) then
-			local privileges = C_Club.GetClubPrivileges(clubId);
-			self.CommunityMemberListDropDownMenu:SetShown(not isGuildCommunitySelected and privileges.canSendInvitation);
-		end
 	end
 
 	self:UpdateMaximizeMinimizeButton();
@@ -432,7 +407,7 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 end
 
 function CommunitiesFrameMixin:UpdateMaximizeMinimizeButton()
-	self.MaximizeMinimizeFrame.MinimizeButton:SetEnabled(self.displayMode ~= COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION and self.displayMode ~= COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER and self.displayMode ~= COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_FINDER and not self.chatDisabled);
+	self.MaximizeMinimizeFrame.MinimizeButton:SetEnabled(self.displayMode ~= COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION and self.displayMode ~= COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER and not self.chatDisabled);
 end
 
 function CommunitiesFrameMixin:GetNeedsGuildNameChange()
@@ -455,11 +430,11 @@ function CommunitiesFrameMixin:ValidateDisplayMode()
 		local guildDisplay = displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_BENEFITS or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_INFO;
 		local clubInfo = C_Club.GetClubInfo(clubId);
 		self.chatDisabled = C_Club.IsAccountMuted(clubId);
-		self.defaultMode = self.chatDisabled and COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER or COMMUNITIES_FRAME_DISPLAY_MODES.CHAT or COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST;
+		self.defaultMode = self.chatDisabled and COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER or COMMUNITIES_FRAME_DISPLAY_MODES.CHAT;
 		local isGuildCommunitySelected = clubInfo and clubInfo.clubType == Enum.ClubType.Guild;
 		if not isGuildCommunitySelected and guildDisplay then
 			self:SetDisplayMode(self.defaultMode);
-		elseif displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_FINDER or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.TICKET then
+		elseif displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.TICKET then
 			self:SetDisplayMode(self.defaultMode);
 		elseif self.chatDisabled and displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT then
 			self:SetDisplayMode(self.defaultMode);
@@ -470,10 +445,8 @@ function CommunitiesFrameMixin:ValidateDisplayMode()
 			self:SetDisplayMode(self.defaultMode);
 		end
 
-		if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST then
+		if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER then
 			self.GuildMemberListDropDownMenu:SetShown(isGuildCommunitySelected);
-			local privileges = C_Club.GetClubPrivileges(clubId);
-			self.CommunityMemberListDropDownMenu:SetShown(not isGuildCommunitySelected and privileges.canSendInvitation);
 		end
 
 		self.ChatTab:SetEnabled(not self.chatDisabled);
@@ -559,7 +532,6 @@ function CommunitiesFrameMixin:UpdateCommunitiesTabs()
 	self.GuildInfoTab:Hide();
 	if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT or
 			displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER or
-			displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST or
 			displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_BENEFITS or
 			displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_INFO then
 		self.ChatTab:Show();
@@ -804,14 +776,6 @@ function CommunitiesFrameMixin:OnHide()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 
 	self:CloseActiveDialogs();
-	if(self.CommunityAndGuildFinderFrame:IsShown()) then 
-		self.CommunityAndGuildFinderFrame:Hide(); 
-	end 
-
-	if(self.GuildFinderFrame:IsShown()) then 
-		self.GuildFinderFrame:Hide();
-	end
-
 	C_Club.ClearClubPresenceSubscription();
 	C_Club.ClearAutoAdvanceStreamViewMarker();
 	C_Club.Flush();
@@ -908,6 +872,7 @@ function CommunitiesControlFrameMixin:Update()
 	if not self:IsShown() then
 		return;
 	end
+
 	self.CommunitiesSettingsButton:Hide();
 	self.GuildRecruitmentButton:Hide();
 	self.GuildControlButton:Hide();
@@ -929,7 +894,7 @@ function CommunitiesControlFrameMixin:Update()
 				self.GuildControlButton:SetShown(IsGuildLeader());
 
 				local myMemberInfo = C_Club.GetMemberInfoForSelf(clubId);
-				if ((communitiesFrame:GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER) or (communitiesFrame:GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST)) and myMemberInfo and myMemberInfo.guildRankOrder then
+				if communitiesFrame:GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER and myMemberInfo and myMemberInfo.guildRankOrder then
 					local permissions = C_GuildInfo.GuildControlGetRankFlags(myMemberInfo.guildRankOrder);
 					local hasInvitePermissions = permissions[GuildControlUIRankSettingsFrame.InviteCheckbox:GetID()];
 					self.GuildRecruitmentButton:SetShown(hasInvitePermissions);

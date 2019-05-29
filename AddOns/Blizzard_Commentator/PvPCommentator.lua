@@ -211,6 +211,7 @@ function PvPCommentatorMixin:OnUpdate(elapsed)
 	self:CheckObserverState();
 	self:LayoutTeamFrames();
 
+	CommentatorTeamDisplay:SetElapsedMs(C_Commentator.GetElapsedMs())
 
 	self.targetSpeedFactor = IsShiftKeyDown() and 2.0 or 1.0;
 	self.currentSpeedFactor = DeltaLerp(self.currentSpeedFactor or 1.0, self.targetSpeedFactor, .05, elapsed);
@@ -315,6 +316,7 @@ function PvPCommentatorMixin:OnEvent(event, ...)
 			C_Commentator.SetCameraPosition(pos.x, pos.y, pos.z, SNAP_TO_POSITION);
 			C_Commentator.SnapCameraLookAtPoint();
 		end
+		CommentatorTeamDisplay:ResetDampeningTracker();
 	elseif event == "COMMENTATOR_PLAYER_UPDATE" then
 		self:FullPlayerRefresh();
 	elseif event == "COMMENTATOR_PLAYER_NAME_OVERRIDE_UPDATE" then

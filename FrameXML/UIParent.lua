@@ -4982,30 +4982,6 @@ function AbbreviateNumbers(value)
 	return tostring(value);
 end
 
-function GetTimeStringFromSeconds(timeAmount, hasMS, dropZeroHours)
-	local seconds, ms;
-	-- milliseconds
-	if ( hasMS ) then
-		seconds = floor(timeAmount / 1000);
-		ms = timeAmount - seconds * 1000;
-	else
-		seconds = timeAmount;
-	end
-
-	local hours = floor(seconds / 3600);
-	local minutes = floor((seconds / 60) - (hours * 60));
-	seconds = seconds - hours * 3600 - minutes * 60;
---	if ( hasMS ) then
---		return format(HOURS_MINUTES_SECONDS_MILLISECONDS, hours, minutes, seconds, ms);
---	else
-	if ( dropZeroHours and hours == 0 ) then
-		return format(MINUTES_SECONDS, minutes, seconds);
-	else
-		return format(HOURS_MINUTES_SECONDS, hours, minutes, seconds);
-	end
---	end
-end
-
 function IsInLFDBattlefield()
 	return IsLFGModeActive(LE_LFG_CATEGORY_BATTLEFIELD);
 end

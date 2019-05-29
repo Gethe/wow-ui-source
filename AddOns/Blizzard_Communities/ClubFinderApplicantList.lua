@@ -72,33 +72,55 @@ function ClubFinderApplicantEntryMixin:UpdateMemberInfo(info)
 	local isHealer = false; 
 	local isDps = false; 
 	local isTank = false; 
-	local firstBadgeSet = false; 
+
+	self.RoleIcon1:Hide();
+	self.RoleIcon2:Hide();
 
 	for _, specID in ipairs(info.specIds) do 
 		local role = GetSpecializationRoleByID(specID);
 		if(role == "DAMAGER") then
-			isHealer = true; 
-		elseif (role == "HEALER") then 
-			isTank = true; 
-		elseif (role == "TANK") then 
 			isDps = true; 
-		end
-		if(firstBadgeSet) then 
-			self.RoleIcon2:SetTexCoord(GetTexCoordsForRoleSmallCircle(role));
-			self.RoleIcon2:Show(); 
-		else 
-			self.RoleIcon1:SetTexCoord(GetTexCoordsForRoleSmallCircle(role));
-			self.RoleIcon1:Show(); 
-			firstBadgeSet = true;
-		end
-		
-		if (isHealer and isTank and isDps) then 
-			self.RoleIcon2:Hide();
-			self.RoleIcon1:Hide();
-			self.AllSpec:SetText("All");
-			self.AllSpec:Show();
+		elseif (role == "HEALER") then 
+			isHealer = true; 
+		elseif (role == "TANK") then 
+			isTank = true; 
 		end
 	end 
+
+	if (isHealer and isTank and isDps) then 
+		self.RoleIcon2:Hide();
+		self.RoleIcon1:Hide();
+		self.AllSpec:SetText("All");
+		self.AllSpec:Show();
+	else 
+		self.AllSpec:Hide();
+
+		local icon1Role;
+		if isTank then
+		  icon1Role = "TANK";
+		elseif isHealer then
+		  icon1Role = "HEALER";
+		elseif isDps then  
+		  icon1Role = "DAMAGER";
+		end
+
+		local icon2Role;
+		if isHealer and isTank then
+		  icon2Role= "HEALER";
+		elseif isDps and (isTank or isHealer) then
+		  icon2Role= "DAMAGER";
+		end
+
+		if (icon1Role) then
+			self.RoleIcon1:SetTexCoord(GetTexCoordsForRoleSmallCircle(icon1Role));
+			self.RoleIcon1:Show();
+		end
+
+		if (icon2Role) then
+			self.RoleIcon2:SetTexCoord(GetTexCoordsForRoleSmallCircle(icon2Role));
+			self.RoleIcon2:Show();
+		end
+	end
 	if (classTag) then 
 		self.Class:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classTag]));
 	end
@@ -207,12 +229,14 @@ ClubFinderApplicantListMixin = { };
 
 function ClubFinderApplicantListMixin:OnLoad()
 	self:RegisterEvent("CLUB_FINDER_RECRUITS_UPDATED");
-
 	C_ClubFinder.RequestApplicantList(Enum.ClubFinderRequestType.All);
 	self.ColumnDisplay:LayoutColumns(APPLICANT_COLUMN_INFO);
 	self.ColumnDisplay.Background:Hide();
 	self.ColumnDisplay.TopTileStreaks:Hide();
 	self.ColumnDisplay:Show();
+
+	HybridScrollFrame_CreateButtons(self.ListScrollFrame, "ClubFinderApplicantEntryTemplate", 0, 0);
+	self.ListScrollFrame.update = function() self:RefreshLayout() end;
 end
 
 function ClubFinderApplicantListMixin:OnShow()
@@ -352,27 +376,36 @@ function ClubFinderApplicantListMixin:BuildList()
 end 
 
 function ClubFinderApplicantListMixin:RefreshLayout()
+	local scrollFrame = self.ListScrollFrame;
 	if (not self.ApplicantInfoList or #self.ApplicantInfoList == 0) then 
-		self.ListScrollFrame.scrollBar:Hide();
-		self.ListScrollFrame:Hide();
+		scrollFrame.scrollBar:Hide();
+		scrollFrame:Hide();
 		return; 
 	end 
 
-	if not self.ListScrollFrame.buttons then
-		HybridScrollFrame_CreateButtons(self.ListScrollFrame, "ClubFinderApplicantEntryTemplate", 0, 0);
-	end
+	local offset = HybridScrollFrame_GetOffset(scrollFrame);
+	local showingCards = 0; 
+	local index; 
 
-	self.ListScrollFrame.scrollBar:Show();
-	self.ListScrollFrame:Show();
+	scrollFrame.scrollBar:Show();
+	scrollFrame:Show();
 
-	for i, applicant in ipairs(self.ListScrollFrame.buttons) do 
-		if (self.ApplicantInfoList[i]) then 
-			applicant:UpdateMemberInfo(self.ApplicantInfoList[i]); 
-			applicant:Show(); 
+	for i = 1, #scrollFrame.buttons do 
+		index = offset + i; 
+		local applicantInfo = self.ApplicantInfoList[index];
+		if (applicantInfo) then 
+			scrollFrame.buttons[i]:UpdateMemberInfo(applicantInfo); 
+			scrollFrame.buttons[i]:Show(); 
+			showingCards = showingCards + 1;
 		else 
-			applicant:Hide();
+			scrollFrame.buttons[i]:Hide();
 		end 
 	end 
+
+	local displayedHeight = showingCards * 20; 
+	local totalHeight = #self.ApplicantInfoList * 20; 
+
+	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 end 
 
 ClubFinderApplicantInviteButtonMixin = { }; 
@@ -402,6 +435,7 @@ local function ClubFinderCancelOrAcceptApplicant(self, shouldInvite)
 
 			if(applicantType) then 
 				C_ClubFinder.RespondToApplicant(self:GetParent().Info.clubFinderGUID, self:GetParent().Info.playerGUID, shouldInvite, applicantType);
+				C_ClubFinder.RequestApplicantList(applicantType);
 			end
 		end
 	end

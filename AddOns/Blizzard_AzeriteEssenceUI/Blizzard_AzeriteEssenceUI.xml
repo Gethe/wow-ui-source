@@ -20,11 +20,6 @@
 			<AnimationGroup parentKey="RevealAnim">
 				<Alpha parentKey="Start" duration=".001" order="1" fromAlpha="0" toAlpha="0"/>
 				<Alpha duration="0.75" order="2" fromAlpha="0" toAlpha="1"/>
-				<Scripts>
-					<OnFinished>
-						self:GetParent():GetParent():OnMilestoneRevealAnimationFinished();
-					</OnFinished>
-				</Scripts>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
@@ -141,6 +136,12 @@
 			<KeyValue key="isDraggable" type="boolean" value="true"/>
 		</KeyValues>
 		<Frames>
+			<ModelScene parentKey="RevealModelScene" drawLayer="OVERLAY" inherits="NonInteractableModelSceneMixinTemplate" hidden="true">
+				<Size x="2000" y="2000" />
+				<Anchors>
+					<Anchor point="CENTER" />
+				</Anchors>
+			</ModelScene>
 			<Frame parentKey="UnlockedState" parentArray="StateFrames" setAllPoints="true">
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="-1">
@@ -187,9 +188,17 @@
 						<Texture parentKey="GlassCover" atlas="heartofazeroth-slot-major-glass" setAllPoints="true" alphaMode="ADD"/>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="1">
-						<Texture parentKey="Ring" atlas="heartofazeroth-slot-major-ring" setAllPoints="true"/>
+						<Texture parentKey="DragHighlight" atlas="common-roundhighlight" alphaMode="ADD" hidden="true">
+							<Size x="59" y="59"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="Ring" atlas="heartofazeroth-slot-major-ring" setAllPoints="true"/>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="3">
 						<Texture parentKey="HighlightRing" atlas="heartofazeroth-slot-major-ring" setAllPoints="true" hidden="true" alpha="0.2" alphaMode="ADD"/>
 						<Texture parentKey="EmptyGlow" atlas="heartofazeroth-slot-yellowglow" useAtlasSize="true" alphaMode="ADD">
 							<Anchors>
@@ -632,6 +641,34 @@
 	<Frame name="AzeriteEssenceLearnAnimFrame" parent="UIParent" frameStrata="HIGH" frameLevel="10000" hidden="true" mixin="AzeriteEssenceLearnAnimFrameMixin">
 		<Size x="100" y="100"/>
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BlackCover" parentArray="Textures">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="UIParent"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="UIParent"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+				<Texture parentKey="BlackCover2" parentArray="Textures">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="UIParent"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="UIParent"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="Titans" parentArray="Textures" atlas="heartofazeroth-animation-titans" alphaMode="ADD" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="100" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Titans2" parentArray="Textures" atlas="heartofazeroth-animation-titans" alphaMode="ADD" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Titans"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Rune" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-rune4" useAtlasSize="true">
 					<KeyValues>
@@ -734,19 +771,15 @@
 						<Anchor point="CENTER" relativeKey="$parent.OrbActivated"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="GlassShards" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-glassshards" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.OrbActivated"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="GlassShards2" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-glassshards" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.OrbActivated"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="LensflareLine" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-LensflareLine">
+					<Size x="5000" y="387"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.OrbActivated"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LensflareLine3" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-LensflareLine">
 					<Size x="5000" y="387"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.OrbActivated"/>
@@ -764,6 +797,12 @@
 		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+				<Alpha childKey="BlackCover" duration="1" order="1" fromAlpha="1" toAlpha="0" smoothing="IN"/>
+				<Alpha childKey="BlackCover2" duration="1" order="1" fromAlpha="1" toAlpha="0" smoothing="IN"/>
+				<Alpha childKey="Titans" duration="1" order="1" fromAlpha="1" toAlpha="0" smoothing="IN"/>
+				<Alpha childKey="Titans2" duration="1" order="1" fromAlpha="1" toAlpha="0" smoothing="IN"/>
+				<Scale childKey="Titans" startDelay="0" duration="2" order="1" fromScaleX="0.875" fromScaleY="0.875" toScaleX="0.933" toScaleY="0.933"/>
+				<Scale childKey="Titans2" startDelay="0" duration="2" order="1" fromScaleX="0.875" fromScaleY="0.875" toScaleX="0.933" toScaleY="0.933"/>
 				<Alpha childKey="RuneStatic" duration="0" order="1" fromAlpha="0" toAlpha="0.5"/>
 				<Scale childKey="RingLargeFlip" smoothing="IN" duration="0.802" order="1" fromScaleX="6.68" fromScaleY="6.68" toScaleX="0.01" toScaleY="1.104"/>
 				<Scale childKey="RingLargeFlip2" smoothing="NONE" duration="0.802" order="1" fromScaleX="6.68" fromScaleY="6.68" toScaleX="0.01" toScaleY="1.104"/>
@@ -785,22 +824,19 @@
 				<Alpha childKey="Sunburst" startDelay="0.735" duration="0.134" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="Sunburst" startDelay="0.735" duration="0.134" order="1" fromScaleX="3.5" fromScaleY="3.5" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="LensflareLine" startDelay="0.802" duration="0" order="1" fromAlpha="0" toAlpha="0.2"/>
+				<Alpha childKey="LensflareLine3" startDelay="0.802" duration="0" order="1" fromAlpha="0" toAlpha="0.2"/>
 				<Alpha childKey="LensflareLine2" startDelay="0.802" duration="0" order="1" fromAlpha="0" toAlpha="0.2"/>
 				<Alpha childKey="Rune" startDelay="0.802" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="Rune2" startDelay="0.802" duration="0" order="1" fromAlpha="0" toAlpha="0.5"/>
 				<Scale childKey="RingLargeFlip" startDelay="0.802" duration="0.067" order="1" fromScaleX="1" fromScaleY="1" toScaleX="10" toScaleY="0.926"/>
 				<Scale childKey="RingLargeFlip2" startDelay="0.802" duration="0.067" order="1" fromScaleX="1" fromScaleY="1" toScaleX="10" toScaleY="0.926"/>
-				<Alpha childKey="Glowies" startDelay="0.802" duration="1.3" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha childKey="Glowies2" startDelay="0.802" duration="1.3" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha childKey="GlassShards" startDelay="0.802" duration="1.3" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha childKey="GlassShards2" startDelay="0.802" duration="1.3" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Glowies" startDelay="0.802" duration="1.2" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Glowies2" startDelay="0.802" duration="1.2" order="1" fromAlpha="1" toAlpha="0"/>
 				<Scale childKey="Rune" startDelay="0.802" duration="0.067" order="1" fromScaleX="0.01" fromScaleY="1.64" toScaleX="1.25" toScaleY="1.25"/>
 				<Scale childKey="Rune2" startDelay="0.802" duration="0.067" order="1" fromScaleX="0.01" fromScaleY="1.64" toScaleX="1.25" toScaleY="1.25"/>
 				<Scale childKey="RuneStatic" startDelay="0.802" duration="1.772" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.8" toScaleY="0.8"/>
-				<Scale childKey="Glowies" startDelay="0.802" duration="2" order="1" fromScaleX="0.3" fromScaleY="0.3" toScaleX="0.5" toScaleY="0.5"/>
-				<Scale childKey="Glowies2" startDelay="0.802" duration="2" order="1" fromScaleX="0.3" fromScaleY="0.3" toScaleX="0.5" toScaleY="0.5"/>
-				<Scale childKey="GlassShards" startDelay="0.802" duration="2" order="1" fromScaleX="0.45" fromScaleY="0.45" toScaleX="0.6" toScaleY="0.6"/>
-				<Scale childKey="GlassShards2" startDelay="0.802" duration="2" order="1" fromScaleX="0.45" fromScaleY="0.45" toScaleX="0.6" toScaleY="0.6"/>
+				<Scale childKey="Glowies" startDelay="0.802" duration="2" order="1" fromScaleX="0.4" fromScaleY="0.4" toScaleX="0.45" toScaleY="0.45"/>
+				<Scale childKey="Glowies2" startDelay="0.802" duration="2" order="1" fromScaleX="0.4" fromScaleY="0.4" toScaleX="0.45" toScaleY="0.45"/>
 				<Scale childKey="RingSmall" startDelay="0.869" duration="0.505" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.94" toScaleY="0.94"/>
 				<Scale childKey="RingLarge" startDelay="0.869" duration="0.505" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.926" toScaleY="0.926"/>
 				<Alpha childKey="Sunburst" startDelay="0.869" duration="0.505" order="1" fromAlpha="1" toAlpha="0.6"/>
@@ -811,6 +847,7 @@
 				<Alpha childKey="OrbActivated" startDelay="0.869" smoothing="NONE" duration="2.1" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="OrbActivated2" startDelay="0.869" smoothing="NONE" duration="2.1" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="LensflareLine" startDelay="1.3" smoothing="IN" duration="0.6" order="1" fromAlpha="0.2" toAlpha="0"/>
+				<Alpha childKey="LensflareLine3" startDelay="1.3" smoothing="IN" duration="0.6" order="1" fromAlpha="0.2" toAlpha="0"/>
 				<Alpha childKey="LensflareLine2" startDelay="1.3" smoothing="IN" duration="0.6" order="1" fromAlpha="0.2" toAlpha="0"/>
 				<Alpha childKey="Rune" startDelay="1.374" duration="1.47" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="Rune2" startDelay="1.374" duration="1.47" order="1" fromAlpha="0.5" toAlpha="0"/>

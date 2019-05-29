@@ -23,14 +23,21 @@ local LEARN_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(259, 210129
 local UNLOCK_SLOT_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(269, 1983548);		-- 	8FX_Azerite_Generic_NovaHigh_Base.m2
 local UNLOCK_STAMINA_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(270, 1983548);	-- 	8FX_Azerite_Generic_NovaHigh_Base.m2
 local UNLOCK_SECONDARY_EFFECT_ID = 2924332;	-- 	CFX_Azerite_TimeLostTopaz_Major_Rank4_Cast.m2
+local REVEAL_SLOT_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(286, 1983548);		-- 	8FX_Azerite_Generic_NovaHigh_Base.m2
+local REVEAL_SECONDARY_EFFECT_ID = 2924332;	-- 	CFX_Azerite_TimeLostTopaz_Major_Rank4_Cast.m2
 
 local LEARN_SHAKE_DELAY = 0.869;
-local LEARN_SHAKE = { { x = 0, y = -8}, { x = 0, y = 8}, { x = 0, y = -8}, { x = 0, y = 8}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, };
+local LEARN_SHAKE = { { x = 0, y = -20}, { x = 0, y = 20}, { x = 0, y = -20}, { x = 0, y = 20}, { x = -9, y = -8}, { x = 8, y = 8}, { x = -3, y = -8}, { x = 9, y = 8}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, };
 local LEARN_SHAKE_DURATION = 0.20;
 local LEARN_SHAKE_FREQUENCY = 0.001;
 
-local REVEAL_START_DELAY = 1.2;
-local REVEAL_DELAY_SECS_PER_DISTANCE = 0.0035;
+local REVEAL_SHAKE_DELAY = 0.869;
+local REVEAL_SHAKE = { { x = 0, y = -44}, { x = 0, y = 44}, { x = 0, y = -44}, { x = 0, y = 44}, { x = -9, y = -32}, { x = 8, y = 32}, { x = -3, y = -32}, { x = 9, y = 32}, { x = -11, y = -32}, { x = 1, y = 32}, { x = -13, y = -32}, { x = 7, y = 32}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, };
+local REVEAL_SHAKE_DURATION = 0.40;
+local REVEAL_SHAKE_FREQUENCY = 0.001;
+
+local REVEAL_START_DELAY = 0.9;
+local REVEAL_DELAY_SECS_PER_DISTANCE = 0.0036;
 local REVEAL_LINE_DURATION_SECS_PER_DISTANCE = 0.0012;
 local REVEAL_SWIRL_SLOT_SCALE = 1;
 local REVEAL_SWIRL_STAMINA_SCALE = 0.5;
@@ -240,6 +247,8 @@ function AzeriteEssenceUIMixin:OnEssenceActivated(essenceID, slotFrame)
 
 	if self.shouldPlayReveal then
 		PlaySound(SOUNDKIT.UI_82_HEARTOFAZEROTH_SLOTFIRSTESSENCE);
+		slotFrame:PlayRevealEffect();
+		ShakeFrame(self:GetParent(), REVEAL_SHAKE, REVEAL_SHAKE_DURATION, REVEAL_SHAKE_FREQUENCY);
 		C_Timer.After(REVEAL_START_DELAY,
 			function()
 				self:PlayReveal();
@@ -432,16 +441,6 @@ function AzeriteEssenceUIMixin:ApplyRevealSwirl(milestoneFrame, delay)
 	);
 end
 
-function AzeriteEssenceUIMixin:OnMilestoneRevealAnimationFinished()
-	self.numRevealsPlaying = self.numRevealsPlaying - 1;
-	if self.numRevealsPlaying == 0 then
-		self.numRevealsPlaying = nil;
-		self.revealSwirlPool:ReleaseAll();
-		self.shouldPlayReveal = false;
-		self:RefreshMilestones();
-	end
-end
-
 function AzeriteEssenceUIMixin:CancelReveal()
 	for i, milestoneFrame in ipairs(self.Milestones) do
 		milestoneFrame:CancelReveal();
@@ -461,6 +460,16 @@ function AzeriteEssenceUIMixin:CancelReveal()
 
 	self.numRevealsPlaying = nil;
 	self.shouldPlayReveal = false;
+end
+
+function AzeriteEssenceUIMixin:OnSwirlAnimationFinished()
+	self.numRevealsPlaying = self.numRevealsPlaying - 1;
+	if self.numRevealsPlaying == 0 then	
+		self.numRevealsPlaying = nil;
+		self.revealSwirlPool:ReleaseAll();
+		self.shouldPlayReveal = false;
+		self:RefreshMilestones();
+	end
 end
 
 AzeriteEssenceDependencyLineMixin = CreateFromMixins(PowerDependencyLineMixin);
@@ -660,7 +669,7 @@ function AzeriteEssenceListMixin:OnEssenceChanged(essenceID)
 		self.learnEssenceButton.Glow2.Anim:Play();
 		self.learnEssenceButton.Glow3.Anim:Play();
 		-- scene
-		C_Timer.After(0.769, 
+		C_Timer.After(0.79, 
 			function()
 				local scene = self.LearnEssenceModelScene;
 				scene:SetPoint("CENTER", self.learnEssenceButton);
@@ -674,11 +683,6 @@ function AzeriteEssenceListMixin:OnEssenceChanged(essenceID)
 					C_Timer.After(0.769,
 						function()
 							scene.effect:SetAnimation(0, 0, 0, 0);
-						end
-					);
-					C_Timer.After(0.769,
-						function()
-							scene.unlockEffect:SetAnimation(0, 0, 0, 0);
 						end
 					);
 				end
@@ -846,6 +850,9 @@ end
 function AzeriteMilestoneBaseMixin:OnEvent(event, ...)
 	if event == "UI_MODEL_SCENE_INFO_UPDATED" then
 		self.UnlockModelScene.unlockEffect = nil;
+		if self.RevealModelScene then
+			self.RevealModelScene.revealEffect = nil;
+		end
 	end
 end
 
@@ -869,6 +876,9 @@ end
 function AzeriteMilestoneBaseMixin:OnLeave()
 	if self.UnlockedState then
 		self.UnlockedState.HighlightRing:Hide();
+		if self.isDraggable then
+			self.UnlockedState.DragHighlight:Hide();
+		end
 	end
 	GameTooltip:Hide();
 end
@@ -888,10 +898,10 @@ function AzeriteMilestoneBaseMixin:OnUnlocked()
 	if scene.unlockEffect then
 		scene:Show();
 		scene.unlockEffect:SetAnimation(0, 0, 1, 0);
-		C_Timer.After(.2, 
+		C_Timer.After(.4,
 			function()
 				scene.unlockEffect:SetAnimation(0, 0, 0, 0);
-				C_Timer.After(5, 
+				C_Timer.After(2, 
 					function()
 						scene:Hide();
 					end
@@ -917,6 +927,37 @@ function AzeriteMilestoneBaseMixin:OnUnlocked()
 		PlaySound(SOUNDKIT.UI_82_HEARTOFAZEROTH_UNLOCKESSENCESLOT);
 	else
 		PlaySound(SOUNDKIT.UI_82_HEARTOFAZEROTH_UNLOCKSTAMINANODE);
+	end
+end
+
+function AzeriteMilestoneBaseMixin:PlayRevealEffect()
+	local scene = self.RevealModelScene;
+	if not scene.revealEffect then
+		local forceUpdate = true;
+		scene.revealEffect = StaticModelInfo.SetupModelScene(scene, REVEAL_SLOT_MODEL_SCENE_INFO, forceUpdate);	
+		scene.secondaryEffect = scene:GetActorByTag("effect2");
+		if scene.secondaryEffect then
+			scene.secondaryEffect:SetModelByFileID(REVEAL_SECONDARY_EFFECT_ID);
+		end
+	end
+	
+	if scene.revealEffect then
+		scene:Show();
+		scene.revealEffect:SetAnimation(0, 0, 1, 0);
+		C_Timer.After(.4, 
+			function()
+				scene.revealEffect:SetAnimation(0, 0, 0, 0);
+				C_Timer.After(2, 
+					function()
+						scene:Hide();
+					end
+				);
+				if scene.secondaryEffect then
+					scene.secondaryEffect:SetAnimation(0, 0, 1, 0);
+					C_Timer.After(0.5, function() scene.secondaryEffect:SetAnimation(0, 0, 0, 0); end);
+				end
+			end
+		);
 	end
 end
 
@@ -1069,6 +1110,11 @@ function AzeriteMilestoneSlotMixin:OnEnter()
 			if C_AzeriteEssence.CanActivateEssence(pendingEssenceID, self.milestoneID) then
 				self.UnlockedState.HighlightRing:Show();
 			end
+		elseif self.isDraggable then
+			local spellID = C_AzeriteEssence.GetMilestoneSpell(self.milestoneID);
+			if spellID then
+				self.UnlockedState.DragHighlight:Show();
+			end
 		end
 	else
 		local wrapText = true;
@@ -1155,7 +1201,7 @@ function AzeriteEssenceLearnAnimFrameMixin:PlayAnim()
 
 	self.Anim:Stop();
 
-	local runeIndex = random(1, 15);
+	local runeIndex = random(1, 16);
 	local runeAtlas = "heartofazeroth-animation-rune"..runeIndex;
 	local useAtlasSize = true;
 	

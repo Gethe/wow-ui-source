@@ -482,7 +482,7 @@ end
 function ScenarioChallengeDeathCountMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	GameTooltip:SetText(CHALLENGE_MODE_DEATH_COUNT_TITLE:format(self.count), 1, 1, 1);
-	GameTooltip:AddLine(CHALLENGE_MODE_DEATH_COUNT_DESCRIPTION:format(GetTimeStringFromSeconds(self.timeLost, false, true)));
+	GameTooltip:AddLine(CHALLENGE_MODE_DEATH_COUNT_DESCRIPTION:format(SecondsToClock(self.timeLost)));
 	GameTooltip:Show();
 end
 
@@ -502,7 +502,7 @@ function Scenario_ChallengeMode_UpdateTime(block, elapsedTime)
 	else
 		block.TimeLeft:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 	end
-	block.TimeLeft:SetText(GetTimeStringFromSeconds(timeLeft, false, true));
+	block.TimeLeft:SetText(SecondsToClock(timeLeft));
 end
 
 function Scenario_ChallengeMode_TimesUpLootStatus_OnEnter(self)
@@ -569,7 +569,7 @@ function Scenario_ProvingGrounds_UpdateTime(block, elapsedTime)
 	local anim = ScenarioProvingGroundsBlockAnim.CountdownAnim;
 	if ( elapsedTime < statusBar.duration ) then
 		statusBar:SetValue(statusBar.duration - elapsedTime);
-		statusBar.TimeLeft:SetText(GetTimeStringFromSeconds(statusBar.duration - elapsedTime));
+		statusBar.TimeLeft:SetText(SecondsToClock(statusBar.duration - elapsedTime, true));
 
 		local timeLeft = statusBar.duration - elapsedTime;
 		if (timeLeft <= 5) then

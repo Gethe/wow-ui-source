@@ -60,3 +60,13 @@ do
 	-- Use C_GuildInfo.CanViewOfficerNote instead
 	CanViewOfficerNote = C_GuildInfo.CanViewOfficerNote;
 end
+
+-- Time formatting
+do
+	-- Use SecondsToClock instead.
+	function GetTimeStringFromSeconds(timeAmount, asMs, dropZeroHours)
+		local seconds = asMs and floor(timeAmount / 1000) or timeAmount;
+		local displayZeroHours = not (dropZeroHours and hours == 0);
+		return SecondsToClock(seconds, displayZeroHours)
+	end
+end

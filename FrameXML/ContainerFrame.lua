@@ -1294,12 +1294,31 @@ function ContainerFrameItemButton_OnClick(self, button)
 					(not AuctionFrame or not AuctionFrame:IsShown()) and not TradeFrame:IsShown() and (not ItemUpgradeFrame or not ItemUpgradeFrame:IsShown()) and
 					(not ObliterumForgeFrame or not ObliterumForgeFrame:IsShown()) and (not ChallengesKeystoneFrame or not ChallengesKeystoneFrame:IsShown()) ) then
 			local itemID = select(10, GetContainerItemInfo(self:GetParent():GetID(), self:GetID()));
-			if ( itemID and IsArtifactRelicItem(itemID) ) then
-				if ( C_ArtifactUI.CanApplyArtifactRelic(itemID, false) ) then
-					SocketContainerItem(self:GetParent():GetID(), self:GetID());
-				elseif ( C_ArtifactUI.GetEquippedArtifactInfo() ) then
-					UIErrorsFrame:AddMessage(ERR_ARTIFACT_RELIC_DOES_NOT_MATCH_ARTIFACT, RED_FONT_COLOR:GetRGBA());
-				end
+			if itemID then
+				if IsArtifactRelicItem(itemID) then
+					if C_ArtifactUI.CanApplyArtifactRelic(itemID, false) then
+						SocketContainerItem(self:GetParent():GetID(), self:GetID());
+					elseif C_ArtifactUI.GetEquippedArtifactInfo() then
+						UIErrorsFrame:AddMessage(ERR_ARTIFACT_RELIC_DOES_NOT_MATCH_ARTIFACT, RED_FONT_COLOR:GetRGBA());
+					end
+				else
+					local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
+					if itemLocation:IsValid() and C_MountJournal.IsItemMountEquipment(itemLocation) then
+						CollectionsJournal_LoadUI();
+
+						if CollectionsJournal:IsShown() then
+							local tab = CollectionsJournal_GetTab(CollectionsJournal);
+							if tab == COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS then
+								MountJournal_ApplyEquipmentFromContainerClick(MountJournal, itemLocation);
+							else
+								CollectionsJournal_SetTab(CollectionsJournal, COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
+							end
+						else
+							ShowUIPanel(CollectionsJournal);
+							CollectionsJournal_SetTab(CollectionsJournal, COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
+						end
+					end
+				end 
 			end
 		end
 		UseContainerItem(self:GetParent():GetID(), self:GetID(), nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));

@@ -1190,7 +1190,7 @@ function TogglePVPScoreboardOrResults()
 			if PVPMatchResults:IsShown() then
 				HideUIPanel(PVPMatchResults);
 			else
-				PVPMatchResults:BeginShow(C_PvP.GetActiveMatchWinner(), C_PvP.GetActiveMatchDuration());
+				PVPMatchResults:BeginShow();
 			end
 		else
 			if PVPMatchScoreboard:IsShown() then

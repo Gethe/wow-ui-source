@@ -410,6 +410,8 @@ GAME_TOOLTIP_BACKDROP_STYLE_AZERITE_ITEM = {
 	overlayAtlasTop = "AzeriteTooltip-Topper";
 	overlayAtlasTopScale = .75,
 	overlayAtlasBottom = "AzeriteTooltip-Bottom";
+
+	padding = { left = 3, right = 3, top = 3, bottom = 3 },
 };
 
 function GameTooltip_SetBackdropStyle(self, style)
@@ -435,6 +437,10 @@ function GameTooltip_SetBackdropStyle(self, style)
 		else
 			self.BottomOverlay:Hide();
 		end
+	end
+
+	if style.padding then
+		self:SetPadding(style.padding.right, style.padding.bottom, style.padding.left, style.padding.top);
 	end
 end
 
@@ -462,7 +468,7 @@ function GameTooltip_OnHide(self)
 	if self.ItemTooltip then
 		self.ItemTooltip:Hide();
 	end
-	self:SetPadding(0, 0);	
+	self:SetPadding(0, 0, 0, 0);
 end
 
 function GameTooltip_CycleSecondaryComparedItem(self)

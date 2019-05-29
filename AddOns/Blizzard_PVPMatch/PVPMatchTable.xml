@@ -71,14 +71,15 @@
 			<OnLeave method="OnLeave"/>
     </Scripts>
   </Button>
-  <Button name="PVPCellStringTemplate" mixin="PVPCellStringMixin" inherits="PVPStringTemplate" parentKey="cell" enableMouse="true" virtual="true">
+	<Frame name="PVPCellStringTemplate" mixin="PVPCellStringMixin" inherits="PVPStringTemplate" parentKey="cell" enableMouse="true" virtual="true">
     <Scripts>
       <OnEnter method="OnEnter"/>
       <OnLeave method="OnLeave"/>
     </Scripts>
-  </Button>
+  </Frame>
   <Frame name="PVPCellStatTemplate" mixin="PVPCellStatMixin" inherits="PVPStringTemplate" parentKey="cell" enableMouse="true" virtual="true"/>
-  <Button name="PVPHeaderStringTemplate" mixin="PVPHeaderStringMixin" inherits="PVPStringTemplate" parentKey="header" enableMouse="true" virtual="true">
+  <Frame name="PVPNewRatingTemplate" mixin="PVPNewRatingMixin" inherits="PVPStringTemplate" parentKey="cell" enableMouse="true" virtual="true"/>
+	<Button name="PVPHeaderStringTemplate" mixin="PVPHeaderStringMixin" inherits="PVPStringTemplate" parentKey="header" enableMouse="true" virtual="true">
     <Scripts>
       <OnClick method="OnClick"/>
       <OnEnter method="OnEnter"/>

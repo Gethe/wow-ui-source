@@ -4,6 +4,9 @@
 
 	<Frame name="FlightMapFrame" inherits="MapCanvasFrameTemplate" mixin="FlightMapMixin">
 		<Size x="1004" y="689"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
 		<Frames>
 			<Frame parentKey="BorderFrame" inherits="PortraitFrameTemplate" frameStrata="HIGH" setAllPoints="true">
 				<Layers>

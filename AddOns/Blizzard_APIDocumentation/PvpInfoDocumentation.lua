@@ -48,6 +48,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "DoesMatchOutcomeAffectRating",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "doesAffect", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetActiveBrawlInfo",
 			Type = "Function",
 

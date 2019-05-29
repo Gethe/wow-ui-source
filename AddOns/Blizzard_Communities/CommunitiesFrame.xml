@@ -202,17 +202,14 @@
 					<KeyValue key="frame" value="GuildControlUI" type="Global"/>
 				</KeyValues>
 			</Button>
-			<Button parentKey="GuildRecruitmentButton" inherits="UIPanelButtonTemplate" text="GUILD_RECRUITMENT">
+			<Button parentKey="GuildRecruitmentButton" inherits="UIPanelButtonTemplate, CommunitiesSubPanelButtonScriptTemplate" text="GUILD_RECRUITMENT">
 				<Size x="130" y="20"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.GuildControlButton" relativePoint="LEFT" x="-2" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-						self:GetParent():GetParent().RecruitmentDialog:Show();
-					</OnClick>
-				</Scripts>
+				<KeyValues>
+					<KeyValue key="frame" value="CommunitiesGuildRecruitmentFrame" type="Global"/>
+				</KeyValues>
 			</Button>
 		</Frames>
 		<Scripts>
@@ -317,12 +314,6 @@
 					<Anchor point="TOPRIGHT" x="-10" y="-27"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="CommunityMemberListDropDownMenu" inherits="CommunityMemberListDropDownMenuTemplate">
-				<Size x="40" y="28"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-10" y="-27"/>
-				</Anchors>
-			</Frame> 
 			<Frame parentKey="CommunitiesListDropDownMenu" inherits="CommunitiesListDropDownMenuTemplate">
 				<Size x="40" y="28"/>
 				<Anchors>
@@ -333,7 +324,7 @@
 				<Size x="30" y="30"/>
 				<!-- Anchored in code -->
 			</Frame>
-			<Button parentKey="CommunitiesCalendarButton" hidden="true" inherits="CommunitiesCalendarButtonTemplate">
+			<Button parentKey="CommunitiesCalendarButton" inherits="CommunitiesCalendarButtonTemplate">
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.VoiceChatHeadset" relativePoint="LEFT" x="-2" y="-1"/>
 				</Anchors>
@@ -342,30 +333,6 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-165" y="-63"/>
 					<Anchor point="BOTTOMRIGHT" x="-26" y="28"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="ApplicantList" hidden="true" inherits="ClubFinderApplicantListFrameTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="24" y="-60"/>
-					<Anchor point="BOTTOMRIGHT" x="-9" y="29"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="GuildFinderFrame" inherits="ClubFinderGuildAndCommunityFrameTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="24" y="-60"/>
-					<Anchor point="BOTTOMRIGHT" x="-9" y="29"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad> 
-						self.shouldShowGuildFinderOnly = true; 
-						ClubFinderGuildAndCommunityMixin.OnLoad(self); 
-					</OnLoad>
-				</Scripts>
-			</Frame>
-			<Frame parentKey="CommunityAndGuildFinderFrame" inherits="ClubFinderGuildAndCommunityFrameTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="24" y="-60"/>
-					<Anchor point="BOTTOMRIGHT" x="-9" y="29"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="Chat" inherits="CommunitiesChatTemplate">
@@ -384,16 +351,16 @@
 					<Anchor point="BOTTOMRIGHT" x="-9" y="29"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="ClubFinderInvitationFrame" inherits="ClubFinderInvitationsFrameTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="24" y="-40"/>
-					<Anchor point="BOTTOMRIGHT" x="-9" y="29"/>
-				</Anchors>
-			</Frame>
 			<Frame parentKey="TicketFrame" inherits="CommunitiesTicketFrameTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="24" y="-40"/>
 					<Anchor point="BOTTOMRIGHT" x="-12" y="30"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="GuildFinderFrame" inherits="CommunitiesGuildFinderFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="24" y="-40"/>
+					<Anchor point="BOTTOMRIGHT" x="-9" y="29"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="GuildBenefitsFrame" inherits="GuildBenefitsFrameTemplate">
@@ -420,11 +387,6 @@
 				<Size x="638" y="508"/>
 				<Anchors>
 					<Anchor point="TOP" relativeTo="UIParent" x="0" y="-142"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="RecruitmentDialog" hidden="true" inherits="ClubsRecruitmentDialogTemplate">
-				<Anchors>
-					<Anchor point="RIGHT" x="450" y="0"/>
 				</Anchors>
 			</Frame>
 			<Button parentKey="AddToChatButton" inherits="AddToChatButtonTemplate">

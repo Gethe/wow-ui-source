@@ -799,7 +799,13 @@ function WhoList_Update()
 	else
 		WhoFrameGroupInviteButton:Enable();
 		WhoFrameAddFriendButton:Enable();
-		WhoFrame.selectedName = C_FriendList.GetWhoInfo(WhoFrame.selectedWho).fullName;
+		
+		local selectedWhoInfo = C_FriendList.GetWhoInfo(WhoFrame.selectedWho);
+		if selectedWhoInfo then
+			WhoFrame.selectedName = selectedWhoInfo.fullName;
+		else
+			WhoFrame.selectedName = "";
+		end
 	end
 
 	-- If need scrollbar resize columns

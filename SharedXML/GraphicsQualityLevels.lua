@@ -255,7 +255,7 @@ VideoData["Display_ResolutionDropDown"]={
 
 	tablefunction =
 		function(self)
-			return GetScreenResolutions(Display_PrimaryMonitorDropDown:GetValue());
+			return GetScreenResolutions(Display_PrimaryMonitorDropDown:GetValue(), Display_DisplayModeDropDown:fullscreenmode());
 		end,
 	getValues =
 		function(self)

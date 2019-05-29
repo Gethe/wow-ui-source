@@ -21,9 +21,9 @@ end
 
 PVPMatchResultsMixin = {};
 function PVPMatchResultsMixin:OnLoad()
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_LEAVING_WORLD");
 	self:RegisterEvent("PVP_MATCH_ACTIVE");
-	self:RegisterEvent("PVP_MATCH_INACTIVE");
 	
 	local tabContainer = self.content.tabContainer;
 	self.scrollFrame = self.content.scrollFrame;
@@ -32,10 +32,9 @@ function PVPMatchResultsMixin:OnLoad()
 	self.tab1 = self.tabGroup.tab1;
 	self.tab2 = self.tabGroup.tab2;
 	self.tab3 = self.tabGroup.tab3;
+	self.matchmakingText = tabContainer.matchmakingText;
 	self.leaveButton = self.buttonContainer.leaveButton;
 	self.requeueButton = self.buttonContainer.requeueButton;
-	local matchTimeContainer = tabContainer.matchTimeContainer;
-	self.matchTimeValue = matchTimeContainer.matchTimeValue;
 	self.earningsContainer = self.content.earningsContainer;
 	self.rewardsContainer = self.earningsContainer.rewardsContainer;
 	self.rewardsHeader = self.rewardsContainer.header;
@@ -61,7 +60,6 @@ function PVPMatchResultsMixin:OnLoad()
 	self.earningsContainer:Hide();
 	self.progressHeader:SetText(PVP_PROGRESS_REWARDS_HEADER);
 	self.rewardsHeader:SetText(PVP_ITEM_REWARDS_HEADER);
-	matchTimeContainer.matchTime:SetText(PVP_MATCH_TIME);
 
 	self.conquestButton:SetTooltipAnchor("ANCHOR_RIGHT");
 	self.requeueButton:SetScript("OnClick", function() self:OnRequeueButtonClicked(self.requeueButton) end);
@@ -88,12 +86,13 @@ function PVPMatchResultsMixin:OnLoad()
 	self.tableBuilder:SetHeaderContainer(self.scrollCategories);
 end
 
-function PVPMatchResultsMixin:Init(winner, duration)
+function PVPMatchResultsMixin:Init()
 	if self.isInitialized then
 		return;
 	end
 	self.isInitialized = true;
 
+	local winner = C_PvP.GetActiveMatchWinner();
 	local factionIndex = GetBattlefieldArenaFaction();
 	local enemyFactionIndex = (factionIndex+1)%2;
 	local GetOutcomeText = function()
@@ -135,9 +134,6 @@ function PVPMatchResultsMixin:Init(winner, duration)
 	end
 	self.buttonContainer:MarkDirty();
 
-	local formattedTime = PVPMatchUtil.MatchTimeFormatter:Format(duration);
-	self.matchTimeValue:SetText(PVP_TIME_ELAPSED:format(formattedTime));
-	
 	local isFactionalMatch = C_PvP.IsMatchFactional();
 	if isFactionalMatch then
 		local teamInfos = { 
@@ -150,26 +146,30 @@ function PVPMatchResultsMixin:Init(winner, duration)
 	end
 	self.tabGroup:SetShown(isFactionalMatch);
 
+	PVPMatchUtil.UpdateMatchmakingText(self.matchmakingText);
+
 	self:SetupArtwork(factionIndex, isFactionalMatch);
 
 	ConstructPVPMatchTable(self.tableBuilder, not isFactionalMatch);
 end
-function PVPMatchResultsMixin:Reset()
+function PVPMatchResultsMixin:Shutdown()
+	FrameUtil.UnregisterFrameForEvents(self, ACTIVE_EVENTS);
+	self:UnregisterEvent("QUEST_LOG_UPDATE");
+	self.isInitialized = false;
 	self.hasRewardTimerElapsed = false;
 	self.rewardTimer = false;
 	self.haveConquestData = false;
 	self.hasDisplayedRewards = false;
 	self.earningsContainer:Hide();
+	HideUIPanel(self);
 end
 function PVPMatchResultsMixin:OnEvent(event, ...)
-	if event == "PLAYER_LEAVING_WORLD" then
-		HideUIPanel(self);
-	elseif event == "PVP_MATCH_ACTIVE" then
+	if event == "PVP_MATCH_ACTIVE" or (event == "PLAYER_ENTERING_WORLD" and C_PvP.GetActiveMatchState() ~= Enum.PvpMatchState.Inactive) then
 		FrameUtil.RegisterFrameForEvents(self, ACTIVE_EVENTS);
-		self:Reset();
+	elseif event == "PLAYER_LEAVING_WORLD" then
+		self:Shutdown();
 	elseif event == "PVP_MATCH_COMPLETE" then
-		local winner, duration = ...;
-		self:BeginShow(winner, duration);
+		self:BeginShow();
 	elseif event == "TREASURE_PICKER_CACHE_FLUSH" then
 		self.haveConquestData = self:HaveConquestData();
 		if not haveConquestData then
@@ -187,19 +187,13 @@ function PVPMatchResultsMixin:OnEvent(event, ...)
 			-- until we've included the full set of item details as part of the match complete message.
 			self:DisplayRewards();
 		end
-	elseif event == "PVP_MATCH_INACTIVE" then
-		FrameUtil.UnregisterFrameForEvents(self, ACTIVE_EVENTS);
-		self:UnregisterEvent("QUEST_LOG_UPDATE");
-		self.isInitialized = false;
-
-		HideUIPanel(self);
 	elseif event == "LFG_ROLE_CHECK_DECLINED" or event == "LFG_READY_CHECK_DECLINED" then
 		self.requeueButton:Enable();
 	elseif event == "LFG_ROLE_CHECK_SHOW" or event == "LFG_READY_CHECK_SHOW" then
 		self.requeueButton:Disable();
 	end
 end
-function PVPMatchResultsMixin:BeginShow(winner, duration)
+function PVPMatchResultsMixin:BeginShow()
 	-- Get the conquest information if necessary. This will normally be cached
 	-- at the beginning of the match, but this is to deal with any rare cases
 	-- where the sparse item or treasure picker db's have been flushed on us.
@@ -219,7 +213,7 @@ function PVPMatchResultsMixin:BeginShow(winner, duration)
 		);
 	end
 
-	self:Init(winner, duration);
+	self:Init();
 	ShowUIPanel(self);
 end
 function PVPMatchResultsMixin:DisplayRewards()
@@ -343,23 +337,7 @@ function PVPMatchResultsMixin:OnUpdate()
 		self:UpdateLeaveButton();		
 	end
 
-	local buttons = HybridScrollFrame_GetButtons(self.scrollFrame);
-	local buttonCount = #buttons;
-	local displayCount = GetNumBattlefieldScores();
-	local buttonHeight = buttons[1]:GetHeight();
-	local visibleElementHeight = displayCount * buttonHeight;
-
-	local offset = HybridScrollFrame_GetOffset(self.scrollFrame);
-	local populateCount = math.min(buttonCount, displayCount);
-	self.tableBuilder:Populate(offset, populateCount);
-	
-	for i = 1, buttonCount do
-		local visible = i <= displayCount;
-		buttons[i]:SetShown(visible);
-	end
-
-	local regionHeight = self.scrollFrame:GetHeight();
-	HybridScrollFrame_Update(self.scrollFrame, visibleElementHeight, regionHeight);
+	PVPMatchUtil.UpdateTable(self.tableBuilder, self.scrollFrame);
 end
 local scoreWidgetSetID = 249;
 local function ScoreWidgetLayout(widgetContainer, sortedWidgets)
@@ -433,9 +411,14 @@ function PVPMatchResultsMixin:InitRatingFrame()
 		local tierInfo = C_PvP.GetPvpTierInfo(personalRatedInfo.tier);
 		self.ratingButton:Setup(tierInfo, ranking);
 	end
-	local deltaString = FormatValueWithSign(ratingChange);
-	self.ratingText:SetText(PVP_RATING_CHANGE:format(deltaString));
 
+	if ratingChange and ratingChange ~= 0 then
+		local deltaString = FormatValueWithSign(ratingChange);
+		self.ratingText:SetText(PVP_RATING_CHANGE:format(deltaString));
+	else
+		self.ratingText:SetText(PVP_RATING_UNCHANGED);
+	end
+	
 	self.ratingFrame:Show();
 end
 function PVPMatchResultsMixin:SetupArtwork(factionIndex, isFactionalMatch)
@@ -503,13 +486,16 @@ end
 function PVPMatchResultsRatingMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip_SetTitle(GameTooltip, PVP_RATING_HEADER);
-	GameTooltip_AddNormalLine(GameTooltip, PVP_RATING_PREVIOUS:format(self.rating));
 
-	local deltaString = FormatValueWithSign(self.ratingChange);
-	GameTooltip_AddNormalLine(GameTooltip, PVP_RATING_GAINED:format(deltaString));
-	GameTooltip_AddNormalLine(GameTooltip, PVP_RATING_CURRENT:format(self.ratingNew));
+	local ratingChange = self.ratingChange;
+	if ratingChange and ratingChange ~= 0 then
+		GameTooltip_AddNormalLine(GameTooltip, PVP_RATING_PREVIOUS:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(self.rating)));
+		GameTooltip_AddNormalLine(GameTooltip, PVP_RATING_GAINED:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(FormatValueWithSign(ratingChange))));
+		GameTooltip_AddNormalLine(GameTooltip, PVP_RATING_NEW:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(self.ratingNew)));
+	else
+		GameTooltip_AddNormalLine(GameTooltip, PVP_RATING_CURRENT:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(self.ratingNew)));
+	end
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-
 	GameTooltip_AddNormalLine(GameTooltip, self.friendlyMMR);
 	GameTooltip_AddNormalLine(GameTooltip, self.enemyMMR);
 	

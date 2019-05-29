@@ -100,9 +100,13 @@ function MountEquipmentButtonMixin:SetDragTargetAnimationPlaying(playing)
 end
 
 function MountEquipmentButtonMixin:OnEnter()
-	self.NewAlert:ClearAlert();
+	self:ClearAlert();
 	
 	MountJournal_InitializeEquipmentTooltip(MountJournal);
+end
+
+function MountEquipmentButtonMixin:ClearAlert()
+	self.NewAlert:ClearAlert();
 end
 
 function MountEquipmentButtonMixin:OnLeave()
@@ -164,6 +168,11 @@ function MountJournal_OnEvent(self, event, ...)
 	elseif (event == "PLAYER_MOUNT_DISPLAY_CHANGED" ) then
 		MountJournal_UpdateEquipmentPalette(self);
 	end
+end
+
+function MountJournal_ApplyEquipmentFromContainerClick(self, itemLocation)
+	self.SlotButton:ClearAlert();
+	MountJournal_ApplyEquipment(self, itemLocation);
 end
 
 function MountJournal_ApplyEquipment(self, itemLocation)

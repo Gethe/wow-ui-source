@@ -784,7 +784,7 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 			end
 		elseif ( self.type == TOAST_CHALLENGE_MODE_RECORD ) then
 			self.challengeModeFrame.LevelCompleted:SetFormattedText(CHALLENGE_MODE_POWER_LEVEL, self.level);
-			self.challengeModeFrame.RecordTime:SetFormattedText(CHALLENGE_MODE_NEW_BEST, GetTimeStringFromSeconds(self.recordTime / 1000));
+			self.challengeModeFrame.RecordTime:SetFormattedText(CHALLENGE_MODE_NEW_BEST, SecondsToClock(self.recordTime / 1000, true));
 			PlaySound(SOUNDKIT.UI_CHALLENGES_NEW_RECORD);
 			LevelUpDisplay:SetPoint("TOP", 0, -190);
 			playAnim = self.challengeModeFrame.challengeComplete;

@@ -441,7 +441,7 @@ function ChallengesDungeonIconMixin:OnEnter()
 		if (overtimeInfo and inTimeInfo and  overtimeInfo.level > inTimeInfo.level) then 
 			GameTooltip_AddNormalLine(GameTooltip, MYTHIC_PLUS_OVERTIME_SEASON_BEST);
 			GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_POWER_LEVEL:format(overtimeInfo.level), HIGHLIGHT_FONT_COLOR);
-			GameTooltip_AddColoredLine(GameTooltip, GetTimeStringFromSeconds(overtimeInfo.durationSec), HIGHLIGHT_FONT_COLOR);
+			GameTooltip_AddColoredLine(GameTooltip, SecondsToClock(overtimeInfo.durationSec, true), HIGHLIGHT_FONT_COLOR);
 			GameTooltip_AddBlankLineToTooltip(GameTooltip); 
 		end 
 
@@ -453,7 +453,7 @@ function ChallengesDungeonIconMixin:OnEnter()
 		end 
 
         GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_POWER_LEVEL:format(seasonBestLevel), HIGHLIGHT_FONT_COLOR);
-        GameTooltip_AddColoredLine(GameTooltip, GetTimeStringFromSeconds(seasonBestDurationSec), HIGHLIGHT_FONT_COLOR);
+        GameTooltip_AddColoredLine(GameTooltip, SecondsToClock(seasonBestDurationSec, true), HIGHLIGHT_FONT_COLOR);
 		GameTooltip_AddBlankLineToTooltip(GameTooltip); 
 
 		for i, member in ipairs(members) do

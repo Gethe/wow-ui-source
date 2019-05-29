@@ -32,6 +32,10 @@ function LootItemExtendedMixin:Init(itemLink, quantity, specID, isCurrency, isUp
 	else
 		self:SetArrowUpgradeTexture(nil);
 	end
+
+	self.ItemBurst:SetAlpha(0);
+	self.ItemBorderGlow:SetAlpha(0);
+	self.GlowSmokeBurst:SetAlpha(0);
 end
 
 function LootItemExtendedMixin:SetIconDrawLayer(drawLayer)

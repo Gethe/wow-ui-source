@@ -1,7 +1,6 @@
 local ACTIVE_EVENTS = {
 	"PLAYER_LEAVING_WORLD",
 	"PVP_MATCH_COMPLETE",
-	"PVP_MATCH_INACTIVE",
 	"UPDATE_BATTLEFIELD_SCORE",
 };
 
@@ -13,7 +12,9 @@ function PVPMatchScoreboardMixin:OnLoad()
 
 	self.ScrollFrame = self.Content.ScrollFrame;
 	self.ScrollCategories = self.Content.ScrollCategories;
-	self.TabGroup = self.Content.TabContainer.TabGroup;
+	self.TabContainer = self.Content.TabContainer;
+	self.TabGroup = self.TabContainer.TabGroup;
+	self.MatchmakingText = self.TabContainer.MatchmakingText;
 	self.Tab1 = self.TabGroup.Tab1;
 	self.Tab2 = self.TabGroup.Tab2;
 	self.Tab3 = self.TabGroup.Tab3;
@@ -43,6 +44,8 @@ function PVPMatchScoreboardMixin:Init()
 	end
 	self.isInitialized = true;
 
+	FrameUtil.RegisterFrameForEvents(self, ACTIVE_EVENTS);
+
 	local isFactionalMatch = C_PvP.IsMatchFactional();
 	self.TabGroup:SetShown(isFactionalMatch);
 	self:UpdateTabs();
@@ -57,16 +60,13 @@ function PVPMatchScoreboardMixin:UpdateTabs()
 	if self.TabGroup:IsShown() then
 		local teamInfos = { 
 			C_PvP.GetTeamInfo(0),
-			C_PvP.GetTeamInfo(1), 
+			C_PvP.GetTeamInfo(1),
 		};
 		self.Tab2:SetText(PVP_TAB_FILTER_COUNTED:format(FACTION_ALLIANCE, teamInfos[2].size));
 		self.Tab3:SetText(PVP_TAB_FILTER_COUNTED:format(FACTION_HORDE, teamInfos[1].size));
 	end
-end
 
-function PVPMatchScoreboardMixin:InitPrivate()
-	self:Init();
-	FrameUtil.RegisterFrameForEvents(self, ACTIVE_EVENTS);
+	PVPMatchUtil.UpdateMatchmakingText(self.MatchmakingText);
 end
 
 function PVPMatchScoreboardMixin:ShutdownPrivate()
@@ -76,13 +76,9 @@ function PVPMatchScoreboardMixin:ShutdownPrivate()
 end
 
 function PVPMatchScoreboardMixin:OnEvent(event, ...)
-	if event == "PLAYER_ENTERING_WORLD" then
-		if C_PvP.GetActiveMatchState() == Enum.PvpMatchState.Active then
-			self:InitPrivate();
-		end
-	elseif event == "PVP_MATCH_ACTIVE" then
-		self:InitPrivate();
-	elseif event == "PVP_MATCH_INACTIVE" or event == "PLAYER_LEAVING_WORLD" or event == "PVP_MATCH_COMPLETE" then
+	if event == "PVP_MATCH_ACTIVE" or (event == "PLAYER_ENTERING_WORLD" and C_PvP.GetActiveMatchState() == Enum.PvpMatchState.Active) then
+		self:Init();
+	elseif event == "PLAYER_LEAVING_WORLD" or event == "PVP_MATCH_COMPLETE" then
 		self:ShutdownPrivate();
 	elseif event == "UPDATE_BATTLEFIELD_SCORE" then
 		self:UpdateTable();
@@ -91,6 +87,8 @@ end
 
 function PVPMatchScoreboardMixin:OnUpdate()
 	RequestBattlefieldScoreData();
+
+	PVPMatchUtil.UpdateTable(self.tableBuilder, self.ScrollFrame);
 end
 
 function PVPMatchScoreboardMixin:SetupArtwork(factionIndex, isFactionalMatch)

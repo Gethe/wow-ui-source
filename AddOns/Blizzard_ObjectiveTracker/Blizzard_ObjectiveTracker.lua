@@ -570,7 +570,7 @@ function ObjectiveTrackerTimerBar_OnUpdate(self, elapsed)
 			return;
 		end
 	end
-	self.Label:SetText(GetTimeStringFromSeconds(timeRemaining, nil, true));
+	self.Label:SetText(SecondsToClock(timeRemaining));
 	self.Label:SetTextColor(ObjectiveTrackerTimerBar_GetTextColor(self.duration, self.duration - timeRemaining));
 end
 

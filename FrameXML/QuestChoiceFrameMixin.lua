@@ -458,8 +458,8 @@ function QuestChoiceOptionButtonMixin:OnClick()
 	if ( self.optID ) then
 		if ( IsInGroup() and (parent.choiceID == GORGROND_GARRISON_ALLIANCE_CHOICE or parent.choiceID == GORGROND_GARRISON_HORDE_CHOICE) ) then
 			StaticPopup_Show("CONFIRM_GORGROND_GARRISON_CHOICE", nil, nil, { response = self.optID, owner = parent:GetParent() });
-		elseif ( self.confirmationText ) then
-			StaticPopup_Show("CONFIRM_PLAYER_CHOICE", self.confirmationText, nil, { response = self.optID, owner = parent:GetParent() });
+		elseif ( self.confirmation ) then
+			StaticPopup_Show("CONFIRM_PLAYER_CHOICE", self.confirmation, nil, { response = self.optID, owner = parent:GetParent() });
 		else
 			SendQuestChoiceResponse(self.optID);
 			local choiceInfo = C_QuestChoice.GetQuestChoiceInfo();
@@ -542,7 +542,7 @@ function QuestChoiceOptionFrameMixin:UpdateSecondButtonAnchors()
 end
 
 function QuestChoiceOptionFrameMixin:ConfigureButton(button, optionInfo)
-	button.confirmationText = optionInfo.confirmationText;
+	button.confirmation = optionInfo.confirmation;
 	button.tooltip = optionInfo.buttonTooltip;
 	button.rewardQuestID = optionInfo.rewardQuestID;
 	button:SetText(optionInfo.buttonText);

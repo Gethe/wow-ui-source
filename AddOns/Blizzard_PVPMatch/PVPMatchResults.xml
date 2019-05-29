@@ -140,6 +140,11 @@
 										<Anchor point="BOTTOMRIGHT" x="-3"/>
 									</Anchors>
 								</Texture>
+								<FontString parentKey="matchmakingText" inherits="GameFontNormal" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="RIGHT" x="-10" y="0"/>
+									</Anchors>
+								</FontString>
 							</Layer>
 						</Layers>
 						<Frames>
@@ -175,29 +180,9 @@
 									</Button>
 								</Frames>
 							</Frame>
-							<Frame parentKey="matchTimeContainer">
-								<Size x="250" y="1"/>
-								<Anchors>
-									<Anchor point="RIGHT" x="-10"/>
-								</Anchors>
-								<Layers>
-									<Layer>
-										<FontString parentKey="matchTimeValue" inherits="Game12Font" justifyH="LEFT">
-											<Anchors>
-												<Anchor point="RIGHT"/>
-											</Anchors>
-										</FontString>
-										<FontString parentKey="matchTime" inherits="GameFontNormal" justifyH="RIGHT">
-											<Anchors>
-												<Anchor point="RIGHT" relativeKey="$parent.matchTimeValue" relativePoint="LEFT" x="-3"/>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-							</Frame>
 						</Frames>
 					</Frame>
-					<Frame parentKey="earningsContainer" inherits="ResizeLayoutFrame">
+					<Frame parentKey="earningsContainer" inherits="ResizeLayoutFrame" hidden="true">
 						<Size y="100"/>
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.tabContainer" relativePoint="BOTTOM" y="-11"/>

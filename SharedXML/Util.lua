@@ -761,6 +761,16 @@ function GetFactionColor(factionGroupTag)
 end
 
 -- Time --
+function SecondsToClock(seconds, displayZeroHours)
+	local hours = math.floor(seconds / 3600);
+	local minutes = math.floor(seconds / 60);
+	if hours > 0 or displayZeroHours then
+		return format(HOURS_MINUTES_SECONDS, hours, minutes, seconds % 60);
+	else
+		return format(MINUTES_SECONDS, minutes, seconds % 60);
+	end
+end
+
 function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
 	local time = "";
 	local count = 0;

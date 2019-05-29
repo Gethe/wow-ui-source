@@ -19,18 +19,20 @@ function ItemUpgradeFrame_OnLoad(self)
 	self:RegisterEvent("ITEM_UPGRADE_MASTER_SET_ITEM");
 	self:RegisterEvent("ITEM_UPGRADE_MASTER_UPDATE");
 
-	self:SetPortraitToAsset("Interface\\Icons\\Spell_Shaman_SpectralTransformation");
+	self:SetPortraitToAsset("Interface\\Icons\\inv_hammer_2h_silverhand_b_01");
 	self.LeftStat[1].BG:Show();
 	self.RightStat[1].BG:Show();
 
+	self.Inset:SetPoint("TOPLEFT", 4, -64);
+
 	self:SetTitle(ITEM_UPGRADE);
-	ItemUpgradeFrameTopTileStreaks:Hide();
-	ItemUpgradeFrameBg:Hide();
 end
 
 function ItemUpgradeFrame_OnShow(self)
 	PlaySound(SOUNDKIT.UI_ETHEREAL_WINDOW_OPEN);
 	ItemUpgradeFrame_Update();
+
+	self:RegisterEvent("BAG_UPDATE");
 
 	ItemUpgradeFrameMoneyFrame:Show();
 end
@@ -39,6 +41,8 @@ function ItemUpgradeFrame_OnHide(self)
 	PlaySound(SOUNDKIT.UI_ETHEREAL_WINDOW_CLOSE);
 	StaticPopup_Hide("CONFIRM_UPGRADE_ITEM");
 	CloseItemUpgrade();
+
+	self:UnregisterEvent("BAG_UPDATE");
 
 	ClearItemUpgrade();
 	HideStatsLeft();
@@ -49,12 +53,21 @@ end
 
 function ItemUpgradeFrame_OnEvent(self, event, ...)
 	if ( event == "ITEM_UPGRADE_MASTER_SET_ITEM" ) then
+		self.itemLevel = GetItemUpdateLevel();
 		ItemUpgradeFrame_Update();
 	elseif ( event == "ITEM_UPGRADE_MASTER_UPDATE" ) then
 		ItemUpgradeFrame_Update();
 		self.FinishedGlow.FinishedAnim:Play();
 		self.ItemUpgradedNotification:Show();
 		self.ItemUpgradedNotification.FinishedAnim:Play();
+	elseif ( event == "BAG_UPDATE" ) then
+		local itemLevel = GetItemUpdateLevel();
+		if self.itemLevel and self.itemLevel < itemLevel then
+			ItemUpgradeFrame_Update();
+			self.FinishedGlow.FinishedAnim:Play();
+			self.ItemUpgradedNotification:Show();
+			self.ItemUpgradedNotification.FinishedAnim:Play();
+		end
 	end
 end
 
@@ -70,12 +83,11 @@ function ItemUpgradeFrame_Update()
 		local _, _, _, hex = GetItemQualityColor(quality);
 		ItemUpgradeFrame.ItemButton.ItemName:SetText("|c"..hex..name.."|r");
 		ItemUpgradeFrame.ItemButton.BoundStatus:SetText(bound);
-		ItemUpgradeFrame.ItemButton.MissingText:Hide();
+		ItemUpgradeFrame.TextFrame.MissingText:Hide();
 		ItemUpgradeFrame.ItemButton.Cost.Amount:SetText(cost);
 		local _, _, currencyTexture = GetCurrencyInfo(currencyType);
 		ItemUpgradeFrame.ItemButton.Cost.Icon:SetTexture(currencyTexture);
 		ItemUpgradeFrame.MissingDescription:Hide();
-		ItemUpgradeFrame.MissingFadeOut:Hide();
 		ItemUpgradeFrame.TitleTextLeft:Show();
 		ItemUpgradeFrame.TitleTextRight:Show();
 		ItemUpgradeFrame.HorzBar:Show();
@@ -108,11 +120,10 @@ function ItemUpgradeFrame_Update()
 		ItemUpgradeFrame.ItemButton.IconTexture:SetTexCoord( 0, 0.640625, 0, 0.640625);
 		ItemUpgradeFrame.ItemButton.ItemName:SetText("");
 		ItemUpgradeFrame.ItemButton.BoundStatus:SetText("");
-		ItemUpgradeFrame.ItemButton.MissingText:Show();
+		ItemUpgradeFrame.TextFrame.MissingText:Show();
 		ItemUpgradeFrame.ItemButton.Cost.Icon:Hide();
 		ItemUpgradeFrame.ItemButton.Cost.Amount:Hide();
 		ItemUpgradeFrame.MissingDescription:Show();
-		ItemUpgradeFrame.MissingFadeOut:Show();
 		ItemUpgradeFrame.TitleTextLeft:Hide();
 		ItemUpgradeFrame.TitleTextRight:Hide();
 		ItemUpgradeFrame.UpgradeStatus:Hide();

@@ -60,8 +60,11 @@
 					<Anchor point="TOP" x="0" y="-20"/>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentCloseDialog" parentKey="closeDialog" inherits="DialogBorderTemplate">
+			<Frame name="$parentCloseDialog" parentKey="closeDialog">
 				<Size x="320" y="84"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentText" inherits="GameFontHighlight" text="CONFIRM_CLOSE_CINEMATIC">
@@ -79,6 +82,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 					<Button name="$parentConfirmButton" inherits="CinematicDialogButtonTemplate" text="YES">
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOM" x="-6" y="16"/>

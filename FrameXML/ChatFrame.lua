@@ -3165,11 +3165,17 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		self:AddMessage(CHAT_SERVER_RECONNECTED_MESSAGE, info.r, info.g, info.b, info.id);
 		return true;
 	elseif ( event == "BN_CONNECTED" ) then
+		local suppressNotification = ...;
 		local info = ChatTypeInfo["SYSTEM"];
-		self:AddMessage(BN_CHAT_CONNECTED, info.r, info.g, info.b, info.id);
+		if not suppressNotification then
+			self:AddMessage(BN_CHAT_CONNECTED, info.r, info.g, info.b, info.id);
+		end
 	elseif ( event == "BN_DISCONNECTED" ) then
+		local _, suppressNotification = ...;
 		local info = ChatTypeInfo["SYSTEM"];
-		self:AddMessage(BN_CHAT_DISCONNECTED, info.r, info.g, info.b, info.id);
+		if not suppressNotification then
+			self:AddMessage(BN_CHAT_DISCONNECTED, info.r, info.g, info.b, info.id);
+		end
 	elseif ( event == "PLAYER_REPORT_SUBMITTED" ) then
 		local guid = ...;
 		FCF_RemoveAllMessagesFromChanSender(self, guid);
