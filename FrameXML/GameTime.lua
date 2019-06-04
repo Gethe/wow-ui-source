@@ -98,6 +98,23 @@ function GameTime_GetTime(showAMPM)
 	end
 end
 
+function GameTime_UpdateTooltip()
+	-- title
+	GameTooltip:AddLine(TIMEMANAGER_TOOLTIP_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	-- realm time
+	GameTooltip:AddDoubleLine(
+		TIMEMANAGER_TOOLTIP_REALMTIME,
+		GameTime_GetGameTime(true),
+		NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b,
+		HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	-- local time
+	GameTooltip:AddDoubleLine(
+		TIMEMANAGER_TOOLTIP_LOCALTIME,
+		GameTime_GetLocalTime(true),
+		NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b,
+		HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+end
+
 function GameTimeFrame_Update(self, elapsed)
 	local hour, minute = GetGameTime();
 	local time = (hour * 60) + minute;
@@ -137,30 +154,6 @@ function GameTimeFrame_UpdateTooltip(self, hours, minutes)
 			GameTooltip:SetText(format(TIME_TWELVEHOURAM, hours, minutes));
 		else
 			GameTooltip:SetText(format(TIME_TWELVEHOURPM, hours, minutes));
-		end
-	end
-end
-
-function GameTime_GetTime()
-	local hour, minute = GetGameTime();
-
-	if ( GetCVarBool("timeMgrUseMilitaryTime") ) then
-		return format(TIME_TWENTYFOURHOURS, hour, minute);
-	else
-		local pm = 0;
-		if(hour >= 12) then
-			pm = 1;
-		end
-		if(hour > 12) then
-			hour = hour - 12;
-		end
-		if(hour == 0) then
-			hour = 12;
-		end
-		if(pm == 0) then
-			return format(TIME_TWELVEHOURAM, hour, minute);
-		else
-			return format(TIME_TWELVEHOURPM, hour, minute);
 		end
 	end
 end

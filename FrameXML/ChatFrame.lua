@@ -1675,21 +1675,6 @@ SlashCmdList["INVITE"] = function(msg)
 	InviteToGroup(msg);
 end
 
-SlashCmdList["REQUEST_INVITE"] = function(msg)
-	if(msg == "") then
-		msg = GetUnitName("target", true)
-	end
-	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
-		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
-		return;
-	end
-	if(msg == nil) then
-		ChatFrame_DisplayUsageError(ERR_NO_TARGET_OR_NAME);
-		return;
-	end
-	RequestInviteFromUnit(msg);
-end
-
 SlashCmdList["UNINVITE"] = function(msg)
 	if(msg == "") then
 		msg = GetUnitName("target", true);

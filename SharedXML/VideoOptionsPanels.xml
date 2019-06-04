@@ -504,7 +504,9 @@
 								end
 								local quality = floor(value + 0.5);
 								self.displayValue:SetText(quality);
-								if ( quality == GetDefaultGraphicsQuality() ) then
+								if ( value == ClassicGraphicsQuality ) then
+									Graphics_Quality_Title:SetText(GRAPHICS_QUALITY_CLASSIC);
+								elseif ( quality == GetDefaultGraphicsQuality() ) then
 									Graphics_Quality_Title:SetText(GRAPHICS_QUALITY_RECOMENDED);
 								else
 									Graphics_Quality_Title:SetText(GRAPHICS_QUALITY);
@@ -685,24 +687,9 @@
 						</Layers>
 					</Frame>
 
-					<Frame name="$parentDepthEffectsDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentSSAODropDown" relativePoint="BOTTOMLEFT"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="DEPTH_EFFECTS">
-									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
-
 					<Frame name="$parentLightingQualityDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentDepthEffectsDropDown" relativePoint="BOTTOMLEFT"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentSSAODropDown" relativePoint="BOTTOMLEFT"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -831,7 +818,9 @@
 								end
 								local quality = floor(value + 0.5);
 								self.displayValue:SetText(quality);
-								if ( quality == GetDefaultGraphicsQuality() ) then
+								if ( value == ClassicGraphicsQuality ) then
+									RaidGraphics_Quality_Title:SetText(GRAPHICS_QUALITY_CLASSIC);
+								elseif ( quality == GetDefaultGraphicsQuality() ) then
 									RaidGraphics_Quality_Title:SetText(GRAPHICS_QUALITY_RECOMENDED);
 								else
 									RaidGraphics_Quality_Title:SetText(GRAPHICS_QUALITY);
@@ -1013,24 +1002,9 @@
 						</Layers>
 					</Frame>
 
-					<Frame name="$parentDepthEffectsDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="15">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentSSAODropDown" relativePoint="BOTTOMLEFT"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="DEPTH_EFFECTS">
-									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
-
 					<Frame name="$parentLightingQualityDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="15">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentDepthEffectsDropDown" relativePoint="BOTTOMLEFT"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentSSAODropDown" relativePoint="BOTTOMLEFT"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -1088,6 +1062,7 @@
 		</Frames>
 		<Scripts>
 			<OnShow>
+				VideoOptionsFrameClassic:Show();
 				Display_EnableRaidSettingsText:SetPoint("LEFT", "RaidButton", "RIGHT", 30, 0);
 				if( not InGlue() ) then
 					local inInstance, instanceType = IsInInstance();
@@ -1098,6 +1073,9 @@
 				end
 				GraphicsOptions_SelectBase();
 			</OnShow>
+			<OnHide>
+				VideoOptionsFrameClassic:Hide();
+			</OnHide>
 		</Scripts>
 	</Frame>
 

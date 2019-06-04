@@ -555,6 +555,7 @@ DisplayPanelOptions = {
 	autoQuestWatch = { text = "AUTO_QUEST_WATCH_TEXT", tooltip = OPTION_TOOLTIP_AUTO_QUEST_PROGRESS },
 	hideOutdoorWorldState = { text = "HIDE_OUTDOOR_WORLD_STATE_TEXT" , tooltip = OPTION_TOOLTIP_HIDE_OUTDOOR_WORLD_STATE },
 	rotateMinimap = { text = "ROTATE_MINIMAP" },
+	showMinimapClock = { text = "SHOW_MINIMAP_CLOCK" },
 	showNewbieTips = { text = "SHOW_NEWBIE_TIPS_TEXT", tooltip = OPTION_TOOLTIP_SHOW_NEWBIE_TIPS },
 	showLoadingScreenTips = { text = "SHOW_TIPOFTHEDAY_TEXT", tooltip = OPTION_TOOLTIP_SHOW_TIPOFTHEDAY },
     showTutorials = { text = "SHOW_TUTORIALS" },

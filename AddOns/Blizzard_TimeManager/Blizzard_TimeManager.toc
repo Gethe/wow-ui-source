@@ -1,0 +1,7 @@
+## Interface: 0
+## Title: Blizzard Time Manager
+## Secure: 1
+## LoadOnDemand: 1
+## SavedVariablesPerCharacter: BlizzardStopwatchOptions
+Blizzard_TimeManager.xml
+Localization.lua

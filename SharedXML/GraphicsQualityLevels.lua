@@ -1,6 +1,8 @@
 -------------------------------------------------------------------------------------------------------
 -- Overall Quality
 -------------------------------------------------------------------------------------------------------
+ClassicGraphicsQuality = 3;
+
 VideoData["Graphics_Quality"]={
 	name = OVERALL_QUALITY;
 	childOptions = {
@@ -14,7 +16,6 @@ VideoData["Graphics_Quality"]={
 				"Graphics_SunshaftsDropDown",
 				"Graphics_ProjectedTexturesDropDown",
 				"Graphics_SSAODropDown",
-				"Graphics_DepthEffectsDropDown",
 				"Graphics_LightingQualityDropDown",
 			},
 	numQualityLevels = 10,
@@ -124,7 +125,6 @@ VideoData["RaidGraphics_Quality"].childOptions = {
 				"RaidGraphics_SunshaftsDropDown",
 				"RaidGraphics_ProjectedTexturesDropDown",
 				"RaidGraphics_SSAODropDown",
-				"RaidGraphics_DepthEffectsDropDown",
 				"RaidGraphics_LightingQualityDropDown",
 			};
 VideoData["RaidGraphics_Quality"].numQualityLevels = 10;
@@ -851,63 +851,6 @@ VideoData["RaidGraphics_SunshaftsDropDown"]={
 		[3] = {
 			text = VIDEO_OPTIONS_HIGH,
 			tooltip = VIDEO_OPTIONS_SUNSHAFTS_HIGH,
-		},
-	},
-	dependent = {
-		"RaidGraphics_Quality",
-	},
-}
-
--------------------------------------------------------------------------------------------------------
-VideoData["Graphics_DepthEffectsDropDown"]={
-	name = DEPTH_EFFECTS;
-	description = OPTION_TOOLTIP_DEPTH_EFFECTS,
-	graphicsCVar =	"graphicsDepthEffects",
-	classic = 1,
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_DISABLED,
-			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_DISABLED,
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_LOW,
-			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_LOW,
-		},
-		[3] = {
-			text = VIDEO_OPTIONS_MEDIUM,
-			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_MEDIUM,
-		},
-		[4] = {
-			text = VIDEO_OPTIONS_HIGH,
-			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_HIGH,
-		},
-	},
-	dependent = {
-		"Graphics_Quality",
-	},
-}
-
-VideoData["RaidGraphics_DepthEffectsDropDown"]={
-	name = DEPTH_EFFECTS;
-	description = OPTION_TOOLTIP_DEPTH_EFFECTS,
-	graphicsCVar =	"raidGraphicsDepthEffects",
-	classic = 1,
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_DISABLED,
-			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_DISABLED,
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_LOW,
-			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_LOW,
-		},
-		[3] = {
-			text = VIDEO_OPTIONS_MEDIUM,
-			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_MEDIUM,
-		},
-		[4] = {
-			text = VIDEO_OPTIONS_HIGH,
-			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_HIGH,
 		},
 	},
 	dependent = {

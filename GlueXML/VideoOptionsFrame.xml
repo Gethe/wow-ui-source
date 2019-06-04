@@ -72,7 +72,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentClassicDefault" inherits="GlueButtonSmallTemplateBlue" text="CLASSIC_DEFAULTS">
+			<Button name="$parentClassic" inherits="GlueButtonSmallTemplateBlue" text="CLASSIC_DEFAULTS">
 				<Size>
 					<AbsDimension x="140" y="38"/>
 				</Size>

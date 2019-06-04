@@ -72,7 +72,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentClassicDefaults" inherits="UIPanelButtonTemplate" text="CLASSIC_DEFAULTS">
+			<Button name="$parentClassic" inherits="UIPanelButtonTemplate" text="CLASSIC_DEFAULTS">
 				<Size>
 					<AbsDimension x="126" y="22"/>
 				</Size>

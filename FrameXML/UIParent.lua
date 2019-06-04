@@ -420,6 +420,10 @@ function GMSurveyFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_GMSurveyUI");
 end
 
+function TimeManager_LoadUI()
+	UIParentLoadAddOn("Blizzard_TimeManager");
+end
+
 function TokenFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_TokenUI");
 end
@@ -678,6 +682,7 @@ function UIParent_OnEvent(self, event, ...)
 
 		StoreFrame_CheckForFree(event);
 	elseif ( event == "PLAYER_LOGIN" ) then
+		TimeManager_LoadUI();
 		-- You can override this if you want a Combat Log replacement
 		CombatLog_LoadUI();
 	elseif ( event == "PLAYER_DEAD" ) then
@@ -4401,7 +4406,7 @@ end
 
 --Only really works on friends and guild-mates
 function GetDisplayedInviteType(guid)
-	if ( IsInGroup() ) then
+	--[[if ( IsInGroup() ) then
 		if ( UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
 			return "INVITE";
 		else
@@ -4418,7 +4423,8 @@ function GetDisplayedInviteType(guid)
 		else
 			return "INVITE";
 		end
-	end
+	end]]
+	return "INVITE";
 end
 
 function nop()

@@ -352,6 +352,10 @@ function Graphics_Classic (self)
 			elseif(control.type == CONTROLTYPE_SLIDER) then
 				control:SetDisplayValue(control.classic);
 			end
+		elseif(key == "Graphics_Quality" or key == "RaidGraphics_Quality") then
+			control.noclick = true;
+			Graphics_Quality:SetValue(""..ClassicGraphicsQuality);	-- set the slider only
+			control.noclick = false;
 		end
 	end
 end

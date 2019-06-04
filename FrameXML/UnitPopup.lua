@@ -927,11 +927,6 @@ function UnitPopup_HideButtons ()
 			end
 
 			local displayedInvite = GetDisplayedInviteType(guid);
-			if ( not inParty and dropdownMenu.unit and UnitInAnyGroup(dropdownMenu.unit, LE_PARTY_CATEGORY_HOME) ) then
-				--Handle the case where we don't have SocialQueue data about this unit (e.g. because it's a random person)
-				--in the world. In this case, we want to display REQUEST_INVITE if they're in a group.
-				displayedInvite = "REQUEST_INVITE";
-			end
 			if ( value ~= displayedInvite ) then
 				shown = false;
 			end
