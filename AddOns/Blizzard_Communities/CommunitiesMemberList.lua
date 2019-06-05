@@ -4,6 +4,7 @@ local COMMUNITIES_MEMBER_LIST_EVENTS = {
 	"CLUB_MEMBER_REMOVED",
 	"CLUB_MEMBER_UPDATED",
 	"CLUB_MEMBER_PRESENCE_UPDATED",
+	"CLUB_STREAMS_LOADED",
 	"VOICE_CHAT_CHANNEL_ACTIVATED",
 	"VOICE_CHAT_CHANNEL_DEACTIVATED",
 	"VOICE_CHAT_CHANNEL_JOINED",
@@ -595,7 +596,7 @@ function CommunitiesMemberListMixin:RefreshLayout()
 end
 
 function CommunitiesMemberListMixin:OnEvent(event, ...)
-	if event == "CLUB_MEMBER_ADDED" or event == "CLUB_MEMBER_REMOVED" or event == "CLUB_MEMBER_UPDATED" then
+	if event == "CLUB_MEMBER_ADDED" or event == "CLUB_MEMBER_REMOVED" or event == "CLUB_MEMBER_UPDATED" or event == "CLUB_STREAMS_LOADED" then
 		local clubId, memberId = ...;
 		if clubId == self:GetSelectedClubId() then
 			self:MarkMemberListDirty();

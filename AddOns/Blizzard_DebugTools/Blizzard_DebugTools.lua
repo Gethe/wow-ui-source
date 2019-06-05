@@ -738,6 +738,7 @@ function FrameStackTooltip_Toggle(showHidden, showRegions, showAnchors)
 end
 
 local function AnchorHighlight(frame, highlight, relativePoint)
+	highlight:ClearAllPoints();
 	highlight:SetAllPoints(frame);
 	highlight:Show();
 
@@ -770,7 +771,7 @@ function AnchorHighlightMixin:HighlightFrame(baseFrame, showAnchors)
 	AnchorHighlight(baseFrame, self);
 
 	local pointIndex = 1;
-	if (showAnchors) then
+	if (showAnchors and baseFrame.GetNumPoints) then
 		while pointIndex <= baseFrame:GetNumPoints() do
 			local _, anchorFrame, anchorRelativePoint = baseFrame:GetPoint(pointIndex);
 			AnchorHighlight(anchorFrame, self:RetrieveAnchorHighlight(pointIndex), anchorRelativePoint);
@@ -850,7 +851,7 @@ local function GetDebugIdentifierLevel(debugIdentifierFrame)
 		debugIdentifierLevel = debugIdentifierLevel + 1;
 		parent = parent:GetParent();
 	end
-	
+
 	return debugIdentifierLevel;
 end
 
@@ -858,7 +859,7 @@ function DebugIdentifierFrame_OnLoad(self)
 	if self.DebugName then
 		local debugNameText = string.gsub(self:GetDebugName(), "[.]", " ");
 		self.DebugName:SetText(debugNameText);
-		
+
 		C_Timer.After(0.05, function ()
 			local extraWidth = 10;
 			while (self.DebugName:IsTruncated()) do
@@ -868,7 +869,7 @@ function DebugIdentifierFrame_OnLoad(self)
 			end
 		end);
 	end
-	
+
 	local debugIdentifierLevel = GetDebugIdentifierLevel(self);
 	local debugHighlightColor = DebugHighlightColors[math.min(debugIdentifierLevel, #DebugHighlightColors)];
 	self.DebugHighlight:SetColorTexture(debugHighlightColor:GetRGBA());

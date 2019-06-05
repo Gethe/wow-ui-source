@@ -133,6 +133,7 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 		if clubId == self:GetSelectedClubId() then
 			self:UpdateClubSelection();
 		end
+		self:ClearSelectedStreamForClub(clubId);
 	elseif event == "CLUB_UPDATED" then
 		self:ValidateDisplayMode();
 		local clubId = ...;
@@ -745,6 +746,10 @@ function CommunitiesFrameMixin:SelectStream(clubId, streamId, forceUpdate)
 	end
 
 	self:UpdateCommunitiesButtons();
+end
+
+function CommunitiesFrameMixin:ClearSelectedStreamForClub(clubId)
+	self.selectedStreamForClub[clubId] = nil;
 end
 
 function CommunitiesFrameMixin:GetSelectedStreamForClub(clubId)

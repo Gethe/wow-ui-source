@@ -16,7 +16,7 @@ StaticPopupDialogs["DIALOG_REPLACE_MOUNT_EQUIPMENT"] = {
 	
 	OnAccept = function()
 		MountJournal_OnDialogApplyEquipmentChoice(MountJournal, true);
-		PlaySound(SOUNDKIT.UI_MOUNT_SLOTEQUIPMENT);
+		PlaySound(SOUNDKIT.UI_MOUNT_SLOTEQUIPMENT_APPROVAL);
 	end,
 	OnCancel = function()
 		MountJournal_OnDialogApplyEquipmentChoice(MountJournal, false);
@@ -74,14 +74,26 @@ function MountEquipmentButtonMixin:OnClick()
 	end
 end
 
-function MountEquipmentButtonMixin:ApplyEquipmentAtCursor()
-	if self:IsEnabled() then
-		local itemLocation = C_Cursor.GetCursorItem();
-		if MountJournal_ApplyEquipment(MountJournal, itemLocation) then
-			ClearCursor();
-			
-			PlaySound(SOUNDKIT.UI_MOUNT_SLOTEQUIPMENT);
+function MountJournal_CanApplyMountEquipment(itemLocation)
+	if itemLocation and itemLocation:IsValid() then
+		if C_MountJournal.IsItemMountEquipment(itemLocation) then
+			local item = Item:CreateFromItemLocation(itemLocation);
+			local itemID = item and item:GetItemID();
+			return itemID and itemID ~= C_MountJournal.GetAppliedMountEquipmentID();
 		end
+	end
+	return false;
+end
+
+function MountEquipmentButtonMixin:ApplyEquipmentAtCursor()
+	if self:IsEnabled() and MountJournal_ApplyEquipment(MountJournal, C_Cursor.GetCursorItem()) then
+		ClearCursor();
+	end
+end
+
+function MountJournal_ApplyEquipmentFromContainerClick(self, itemLocation)
+	if MountJournal_ApplyEquipment(self, itemLocation) then
+		self.SlotButton:ClearAlert();
 	end
 end
 
@@ -170,40 +182,36 @@ function MountJournal_OnEvent(self, event, ...)
 	end
 end
 
-function MountJournal_ApplyEquipmentFromContainerClick(self, itemLocation)
-	self.SlotButton:ClearAlert();
-	MountJournal_ApplyEquipment(self, itemLocation);
-end
-
 function MountJournal_ApplyEquipment(self, itemLocation)
-	-- We're applying equipment from inventory, so we should have the item information in this context.
-	if itemLocation and C_MountJournal.IsItemMountEquipment(itemLocation) then
-		local pendingItem = Item:CreateFromItemLocation(itemLocation);
-		local canContinue = true;
-		if C_MountJournal.IsMountEquipmentApplied() then
-			local dialog = StaticPopup_Show("DIALOG_REPLACE_MOUNT_EQUIPMENT");
-			if not dialog then
-				return false;
-			end
-			MountJournal_SetPendingApply(self, pendingItem);
-		else
-			MountJournal_SetPendingApply(self, pendingItem);
+	if not MountJournal_CanApplyMountEquipment(itemLocation) then
+		return false;
+	end
 
-			canContinue = C_MountJournal.ApplyMountEquipment(itemLocation);
+	local pendingItem = Item:CreateFromItemLocation(itemLocation);
+	local canContinue = true;
+	if C_MountJournal.IsMountEquipmentApplied() then
+		local dialog = StaticPopup_Show("DIALOG_REPLACE_MOUNT_EQUIPMENT");
+		if not dialog then
+			return false;
 		end
+		MountJournal_SetPendingApply(self, pendingItem);
+	else
+		MountJournal_SetPendingApply(self, pendingItem);
 
-		if canContinue then
-			pendingItem:ContinueWithCancelOnItemLoad(function()
-				MountJournal_InitializeEquipmentSlot(self, pendingItem);
-			end);
-		else
-			MountJournal_ClearPendingAndUpdate(self);
-		end
-		
-		return canContinue;
-	end	
+		canContinue = C_MountJournal.ApplyMountEquipment(itemLocation);
+	end
 
-	return false;
+	if canContinue then
+		pendingItem:ContinueWithCancelOnItemLoad(function()
+			MountJournal_InitializeEquipmentSlot(self, pendingItem);
+		end);
+
+		PlaySound(SOUNDKIT.UI_MOUNT_SLOTEQUIPMENT);
+	else
+		MountJournal_ClearPendingAndUpdate(self);
+	end
+
+	return canContinue;
 end
 
 function MountJournal_UpdateEquipmentPalette(self)
@@ -297,8 +305,8 @@ end
 
 function MountJournal_ValidateCursorDragSourceCompatible(self)
 	local itemLocation = C_Cursor.GetCursorItem();
-	local isCompatible = itemLocation and C_MountJournal.IsItemMountEquipment(itemLocation) or false;
-	self.SlotButton:SetDragTargetAnimationPlaying(isCompatible);
+	local canApply = MountJournal_CanApplyMountEquipment(itemLocation);
+	self.SlotButton:SetDragTargetAnimationPlaying(canApply);
 end
 
 function MountJournal_InitializeEquipmentSlot(self, item)	

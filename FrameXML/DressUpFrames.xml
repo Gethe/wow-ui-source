@@ -63,7 +63,7 @@
 					<OnLoad method="OnLoad" />
 				</Scripts>
 				<Frames>					
-					<Button parentKey="ResetButton" name="$parentResetButton" mixin="DressUpModelFrameResetButtonMixin" inherits="UIPanelButtonTemplate" text="RESET">
+					<Button parentKey="ResetButton" name="$parentResetButton" mixin="SideDressUpModelFrameResetButtonMixin" inherits="UIPanelButtonTemplate" text="RESET">
 						<Size>
 							<AbsDimension x="80" y="22"/>
 						</Size>
@@ -155,18 +155,7 @@
 					<OnClick method="OnClick"/>
 				</Scripts>
 			</Button>
-			
-			<Button parentKey="ResetButton" mixin="SideDressUpModelFrameResetButtonMixin" name="DressUpFrameResetButton" inherits="UIPanelButtonTemplate" text="RESET">
-				<Size x="80" y="22"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeTo="DressUpFrameCancelButton" relativePoint="LEFT"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad method="OnLoad" />
-					<OnClick method="OnClick" />
-				</Scripts>
-			</Button>
-			
+
 			<DressUpModel name="DressUpModel" mixin="DressUpModelFrameMixin" parentKey="DressUpModel" inherits="ModelWithControlsTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="7" y="-63"/>
@@ -179,6 +168,17 @@
 					<OnHide method="OnHide" />
 				</Scripts>
 			</DressUpModel>
+
+			<Button parentKey="ResetButton" mixin="DressUpModelFrameResetButtonMixin" name="DressUpFrameResetButton" inherits="UIPanelButtonTemplate" text="RESET">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="DressUpFrameCancelButton" relativePoint="LEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad" />
+					<OnClick method="OnClick" />
+				</Scripts>
+			</Button>
 			
 		</Frames>
 		<Layers>

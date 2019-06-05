@@ -1,7 +1,7 @@
 LootItemExtendedMixin = {};
 
-function LootItemExtendedMixin:Init(itemLink, quantity, specID, isCurrency, isUpgraded, isIconBorderShown, isIconBorderDropShadowShown, iconDrawLayer)
-	local itemName, itemTexture, quantity, itemRarity, itemLink = ItemUtil.GetItemDetails(itemLink, quantity, isCurrency);
+function LootItemExtendedMixin:Init(itemLink, originalQuantity, specID, isCurrency, isUpgraded, isIconBorderShown, isIconBorderDropShadowShown, iconDrawLayer)
+	local itemName, itemTexture, quantity, itemRarity, itemLink = ItemUtil.GetItemDetails(itemLink, originalQuantity, isCurrency);
 	
 	local atlas = LOOT_BORDER_BY_QUALITY[itemRarity];
 	local desaturate = false;

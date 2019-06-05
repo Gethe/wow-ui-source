@@ -722,7 +722,7 @@ function QuestLogQuests_Update(poiTable)
 				campaignHeader.Background:SetDesaturated(true);
 				campaignHeader.Text:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 				campaignNextObj:Hide();
-			elseif (campaignChapterID) then
+			elseif (campaignChapterID and warCampaignInfo.overrideStepActive == false) then
 				local campaignChapterInfo = C_CampaignInfo.GetCampaignChapterInfo(campaignChapterID);
 				if (campaignChapterInfo) then
 					campaignHeader.Progress:SetText(campaignChapterInfo.name);

@@ -73,11 +73,8 @@ function AzeriteEmpoweredItemSlotMixin:SetupModelScene(forceUpdate)
 	local modelSceneInfo = self.isFinalTier and FINAL_POWER_LOCKED_MODEL_SCENE_INFO or POWER_LOCKED_MODEL_SCENE_INFO;
 	if forceUpdate or self.modelSceneInfo ~= modelSceneInfo then
 		self.modelSceneInfo = modelSceneInfo;
-
-		self.lockedInEffectActor = StaticModelInfo.SetupModelScene(self.LockedInEffect, modelSceneInfo, forceUpdate);
-		if self.lockedInEffectActor then
-			self.lockedInEffectActor:SetAnimation(0, 0, 0, 0);
-		end
+		local stopAnim = true;
+		self.lockedInEffectActor = StaticModelInfo.SetupModelScene(self.LockedInEffect, modelSceneInfo, forceUpdate, stopAnim);
 		self.LockedInEffect:Hide();
 	end
 end

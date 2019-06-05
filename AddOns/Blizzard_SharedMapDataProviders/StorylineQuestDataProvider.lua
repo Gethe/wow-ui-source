@@ -63,7 +63,9 @@ function StorylineQuestPinMixin:OnAcquired(questID)
 	self.questID = questID;
 	self.mapID = self:GetMap():GetMapID();
 	local questLineInfo = C_QuestLine.GetQuestLineInfo(self.questID, self.mapID);
-	if (questLineInfo.isLegendary) then
+	if (questLineInfo.isDaily) then
+		self.Texture:SetAtlas("QuestDaily", true);
+	elseif (questLineInfo.isLegendary) then
 		self.Texture:SetAtlas("QuestLegendary", true);
 	elseif (questLineInfo.isHidden) then
 		self.Texture:SetAtlas("TrivialQuests", true);

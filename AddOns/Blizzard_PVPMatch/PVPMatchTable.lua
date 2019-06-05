@@ -243,6 +243,10 @@ end
 
 PVPNewRatingMixin = CreateFromMixins(TableBuilderElementMixin);
 
+function PVPNewRatingMixin:Init(useAlternateColor)
+	self.useAlternateColor = useAlternateColor;
+end
+
 function PVPNewRatingMixin:Populate(rowData, dataIndex)
 	local rating = rowData.rating;
 	local ratingChange = rowData.ratingChange;

@@ -28,6 +28,36 @@ SPLASH_SCREENS = {
 		rightDescSubText = SPLASH_BATTLEFORAZEROTH_8_2_0_RIGHT_DESC,
 		rightTitleMaxLines = 2,
 		cVar="splashScreenNormal",
+		hideStartButton = false,
+		minQuestLevel = 120,
+		minDisplayLevel = 120,
+
+		features = {
+			[1] = { EnterFunc = function() end,
+					LeaveFunc = function() end,
+					},
+			[2] = { EnterFunc = function() end,
+					LeaveFunc = function() end,
+					},
+		},
+	},
+
+	["8_2_ALTERNATE_LEVEL"] = {	
+		id = NEWEST_SPLASH_SCREEN_VERSION, -- 8.2 Live
+		expansion = LE_EXPANSION_BATTLE_FOR_AZEROTH,
+		header = SPLASH_BASE_HEADER,
+		label = SPLASH_BATTLEFORAZEROTH_8_2_0_LABEL, 
+		leftTex = "splash-820-topleft",
+		rightTex = "splash-820-right",
+		bottomTex = "splash-820-botleft",
+		feature1Title = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE1_TITLE,
+		feature1Desc = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE1_DESC,
+		feature2Title = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE2_TITLE,
+		feature2Desc = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE2_DESC,
+		rightTitle = SPLASH_BATTLEFORAZEROTH_8_2_0_RIGHT_TITLE,
+		rightDescSubText = SPLASH_BATTLEFORAZEROTH_8_2_0_RIGHT_DESC_ALT,
+		rightTitleMaxLines = 2,
+		cVar="splashScreenNormal",
 		hideStartButton = true,
 		minQuestLevel = 120,
 		minDisplayLevel = 120,
@@ -74,13 +104,21 @@ SPLASH_SCREENS = {
 };
 
 BASE_SPLASH_TAG = nil;
-CURRENT_SPLASH_TAG = "8_2_LEVEL";
+CURRENT_SPLASH_TAG = nil;
 SEASON_SPLASH_TAG = "8_2_NEW_SEASON"; -- This will be nil in patches that don't have a season change
 
 -- For the case where we want to skip showing the first screen. 
 local function UpdateOtherSplashScreenCvar(tag)
 	SetCVar(SPLASH_SCREENS[tag].cVar, SPLASH_SCREENS[tag].id);
 end
+
+local function SetSplashTagBasedOnPlayerCondition()
+	if (ShouldShowSpecialSplashScreen()) then 
+		CURRENT_SPLASH_TAG = "8_2_ALTERNATE_LEVEL";
+	else 
+		CURRENT_SPLASH_TAG = "8_2_LEVEL"
+	end 
+end 
 
 local function GetSplashFrameTag(forceShow)
 	local passesExpansionCheck = not SPLASH_SCREENS[CURRENT_SPLASH_TAG].expansion or GetExpansionLevel() >= SPLASH_SCREENS[CURRENT_SPLASH_TAG].expansion;
@@ -106,7 +144,7 @@ local function GetSplashFrameTag(forceShow)
 			if seasonScreenID < C_MythicPlus.GetCurrentSeason() then
 				UpdateOtherSplashScreenCvar(CURRENT_SPLASH_TAG);
 				return SEASON_SPLASH_TAG;
-			elseif lastScreenID < SPLASH_SCREENS[CURRENT_SPLASH_TAG].id then 
+			elseif lastScreenID < SPLASH_SCREENS[CURRENT_SPLASH_TAG].id then
 				return CURRENT_SPLASH_TAG;
 			end
 		end
@@ -127,7 +165,7 @@ local function ShouldShowStartButton( questID, tag )
 	if (SPLASH_SCREENS[tag].hideStartButton) then
 		return false;
 	end
-	return SplashFrame.firstTimeViewed and questID and not IsQuestFlaggedCompleted(questID) and (not SPLASH_SCREENS[tag].minQuestLevel or UnitLevel("player") >= SPLASH_SCREENS[tag].minQuestLevel);
+	return questID and not IsQuestFlaggedCompleted(questID) and (not SPLASH_SCREENS[tag].minQuestLevel or UnitLevel("player") >= SPLASH_SCREENS[tag].minQuestLevel);
 end
 
 local function ShouldEnableStartButton( questID )
@@ -198,6 +236,7 @@ function SplashFrame_OnEvent(self, event)
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
 		self:RegisterEvent("CHALLENGE_MODE_MAPS_UPDATE");
 		self.playerEntered = true;
+		SetSplashTagBasedOnPlayerCondition();
 		ApplyFactionOverrides();
 		C_MythicPlus.RequestMapInfo();
 	elseif( event == "VARIABLES_LOADED" ) then
@@ -275,11 +314,19 @@ function SplashFrame_SetStartButtonDisplay( showStartButton )
 	frame.RightDescription:SetText(SPLASH_SCREENS[tag].rightDesc);
 	if ( showStartButton ) then
 		frame.StartButton:Show();
-		frame.RightDescription:SetWidth(300);
-		frame.RightDescription:SetPoint("CENTER", 164, -78);
-		frame.RightDescriptionSubtext:Hide();
+		
+		frame.RightDescriptionSubtext:ClearAllPoints();
+		frame.RightDescriptionSubtext:SetPoint("TOP", frame.StartButton, "TOP", 0, 50);
+		frame.RightDescriptionSubtext:SetWidth(300);
+		local rightDescSubText = SPLASH_SCREENS[tag].rightDescSubText;
+		frame.RightDescriptionSubtext:SetText(rightDescSubText);
+		frame.RightDescriptionSubtext:Show();
+
+		frame.RightTitle:ClearAllPoints();
+		frame.RightTitle:SetPoint("TOP", frame.RightDescriptionSubtext, "TOP", 0, 85);
+
 		frame.BottomCloseButton:Hide();
-		if( ShouldEnableStartButton( SPLASH_SCREENS[tag].questID ) ) then
+		if( ShouldEnableStartButton( SPLASH_SCREENS[tag].questID )) then
 			frame.StartButton.Text:SetTextColor(1, 1, 1);
 			frame.StartButton.Texture:SetDesaturated(false);
 			frame.StartButton:Enable();
@@ -295,10 +342,17 @@ function SplashFrame_SetStartButtonDisplay( showStartButton )
 		frame.RightDescription:SetPoint("CENTER", 164, -100);
 		frame.BottomCloseButton:Show();
 
+		frame.RightTitle:ClearAllPoints();
+		frame.RightTitle:SetPoint("CENTER", 164, -80);
+
 		local rightDescSubText = SPLASH_SCREENS[tag].rightDescSubText;
 		local rightDescSubTextPredicate = SPLASH_SCREENS[tag].rightDescSubTextPredicate;
-		if rightDescSubText and rightDescSubText ~= "" and (not rightDescSubTextPredicate or rightDescSubTextPredicate()) then
+		if rightDescSubText and rightDescSubText ~= "" and (not rightDescSubTextPredicate or rightDescSubTextPredicate()) then 
 			frame.RightDescriptionSubtext:SetText(rightDescSubText);
+			frame.RightDescriptionSubtext:ClearAllPoints();
+			frame.RightDescriptionSubtext:SetPoint("BOTTOM", frame.RightTitle, "BOTTOM", 0, -50);
+			frame.RightDescriptionSubtext:SetWidth(234);
+
 			frame.RightDescriptionSubtext:Show();
 		else
 			frame.RightDescriptionSubtext:Hide();

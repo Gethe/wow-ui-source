@@ -8,7 +8,7 @@
 			<KeyValue key="swirlScale" type="number" value="1"/>
 		</KeyValues>
 		<Frames>
-			<ModelScene parentKey="UnlockModelScene" drawLayer="OVERLAY" inherits="NonInteractableModelSceneMixinTemplate" hidden="true">
+			<ModelScene parentKey="EffectsModelScene" drawLayer="OVERLAY" inherits="NonInteractableModelSceneMixinTemplate" hidden="true">
 				<Size x="700" y="700" />
 				<Anchors>
 					<Anchor point="CENTER" />
@@ -136,12 +136,6 @@
 			<KeyValue key="isDraggable" type="boolean" value="true"/>
 		</KeyValues>
 		<Frames>
-			<ModelScene parentKey="RevealModelScene" drawLayer="OVERLAY" inherits="NonInteractableModelSceneMixinTemplate" hidden="true">
-				<Size x="2000" y="2000" />
-				<Anchors>
-					<Anchor point="CENTER" />
-				</Anchors>
-			</ModelScene>
 			<Frame parentKey="UnlockedState" parentArray="StateFrames" setAllPoints="true">
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="-1">
@@ -501,6 +495,31 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightInset" x="-26" y="2"/>
 				</Anchors>
 				<Frames>
+					<Frame parentKey="Tutorial" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
+						<Size x="210" y="100"/>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Arrow" inherits="HelpPlateArrowDOWN">
+									<Anchors>
+										<Anchor point="BOTTOM" x="0" y="-19"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="AZERITE_ESSENCE_TUTORIAL_FIRST_ESSENCE">
+									<Size x="190" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="10" y="-18"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self:SetHeight(self.Text:GetHeight() + 34);
+							</OnLoad>
+						</Scripts>
+					</Frame>
 					<ModelScene parentKey="LearnEssenceModelScene" inherits="NonInteractableModelSceneMixinTemplate" frameStrata="HIGH" hidden="true">
 						<Size x="650" y="650"/>
 					</ModelScene>
@@ -801,8 +820,8 @@
 				<Alpha childKey="BlackCover2" duration="1" order="1" fromAlpha="1" toAlpha="0" smoothing="IN"/>
 				<Alpha childKey="Titans" duration="1" order="1" fromAlpha="1" toAlpha="0" smoothing="IN"/>
 				<Alpha childKey="Titans2" duration="1" order="1" fromAlpha="1" toAlpha="0" smoothing="IN"/>
-				<Scale childKey="Titans" startDelay="0" duration="2" order="1" fromScaleX="0.875" fromScaleY="0.875" toScaleX="0.933" toScaleY="0.933"/>
-				<Scale childKey="Titans2" startDelay="0" duration="2" order="1" fromScaleX="0.875" fromScaleY="0.875" toScaleX="0.933" toScaleY="0.933"/>
+				<Scale childKey="Titans" startDelay="0" duration="2" order="1" fromScaleX="0.9" fromScaleY="0.9" toScaleX="1" toScaleY="1"/>
+				<Scale childKey="Titans2" startDelay="0" duration="2" order="1" fromScaleX="0.9" fromScaleY="0.9" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="RuneStatic" duration="0" order="1" fromAlpha="0" toAlpha="0.5"/>
 				<Scale childKey="RingLargeFlip" smoothing="IN" duration="0.802" order="1" fromScaleX="6.68" fromScaleY="6.68" toScaleX="0.01" toScaleY="1.104"/>
 				<Scale childKey="RingLargeFlip2" smoothing="NONE" duration="0.802" order="1" fromScaleX="6.68" fromScaleY="6.68" toScaleX="0.01" toScaleY="1.104"/>

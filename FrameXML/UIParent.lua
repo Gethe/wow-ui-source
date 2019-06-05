@@ -1750,7 +1750,7 @@ function UIParent_OnEvent(self, event, ...)
 
 	elseif ( event == "AZERITE_ESSENCE_FORGE_OPEN" ) then
 		UIParentLoadAddOn("Blizzard_AzeriteEssenceUI");
-		if AzeriteEssenceUI and AzeriteEssenceUI:TryShow() then
+		if AzeriteEssenceUI and AzeriteEssenceUI:TryShow() and AzeriteEssenceUI:ShouldOpenBagsOnShow() then
 			OpenAllBags(AzeriteEssenceUI);
 		end
 

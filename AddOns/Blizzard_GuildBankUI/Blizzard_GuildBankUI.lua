@@ -797,7 +797,7 @@ end
 
 function GuildBankFrame_UpdateTabard()
 	--Set the tabard images
-	local tabardBackgroundUpper, tabardBackgroundLower, tabardEmblemUpper, tabardEmblemLower, tabardBorderUpper, tabardBorderLower = GetGuildTabardFileNames();
+	local tabardBackgroundUpper, tabardBackgroundLower, tabardEmblemUpper, tabardEmblemLower, tabardBorderUpper, tabardBorderLower = GetGuildTabardFiles();
 	if ( not tabardEmblemUpper ) then
 		tabardBackgroundUpper = 180158; --"Textures\\GuildEmblems\\Background_49_TU_U";
 		tabardBackgroundLower = 180159; --"Textures\\GuildEmblems\\Background_49_TL_U";

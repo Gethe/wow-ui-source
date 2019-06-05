@@ -82,10 +82,8 @@ end
 
 function AzeriteEmpoweredItemPowerMixin:SetupModelScene(forceUpdate)
 	self.ClickEffect:Hide();
-	self.clickEffectActor = StaticModelInfo.SetupModelScene(self.ClickEffect, CLICK_MODEL_SCENE_INFO, forceUpdate);
-	if self.clickEffectActor then
-		self.clickEffectActor:SetAnimation(0, 0, 0, 0);
-	end
+	local stopAnim = true;
+	self.clickEffectActor = StaticModelInfo.SetupModelScene(self.ClickEffect, CLICK_MODEL_SCENE_INFO, forceUpdate, stopAnim);
 
 	self.CanSelectEffect:Hide();
 	StaticModelInfo.SetupModelScene(self.CanSelectEffect, SELECTION_READY_MODEL_SCENE_INFO, forceUpdate);

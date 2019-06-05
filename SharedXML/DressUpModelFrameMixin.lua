@@ -27,7 +27,7 @@ end
 DressUpModelFrameResetButtonMixin = {};
 
 function DressUpModelFrameResetButtonMixin:OnLoad()
-	self.model = SideDressUpModel;
+	self.model = self:GetParent().DressUpModel;
 end
 
 function DressUpModelFrameResetButtonMixin:OnClick()
@@ -120,6 +120,5 @@ end
 SideDressUpModelFrameResetButtonMixin = CreateFromMixins(DressUpModelFrameResetButtonMixin);
 
 function SideDressUpModelFrameResetButtonMixin:OnLoad()
-	self.model = self:GetParent().DressUpModel;
+	self.model = SideDressUpModel;
 end
-
