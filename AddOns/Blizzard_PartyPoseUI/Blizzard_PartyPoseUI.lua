@@ -343,14 +343,14 @@ do
 		for index, widgetFrame in ipairs(sortedWidgets) do
 			if ( index == 1 ) then
 				widgetFrame:SetPoint("TOP", widgetContainerFrame, "TOP", 0, 0);
-				widgetsHeight = widgetsHeight + widgetFrame:GetHeight();
+				widgetsHeight = widgetsHeight + widgetFrame:GetWidgetHeight();
 			else
 				local relative = sortedWidgets[index - 1];
 				widgetFrame:SetPoint("TOP", relative, "BOTTOM", 0, 5);
-				widgetsHeight = widgetsHeight + widgetFrame:GetHeight() - 5;
+				widgetsHeight = widgetsHeight + widgetFrame:GetWidgetHeight() - 5;
 			end
 
-			local widgetWidth = widgetFrame:GetWidth();
+			local widgetWidth = widgetFrame:GetWidgetWidth();
 			if widgetWidth > maxWidgetWidth then
 				maxWidgetWidth = widgetWidth;
 			end

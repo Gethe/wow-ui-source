@@ -330,43 +330,6 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<Frames>
-					<Frame parentKey="Cost" enableMouse="true">
-						<Size x="32" y="13"/> 
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.TextFrame" relativePoint="BOTTOMRIGHT" x="-19" y="17"/>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture parentKey="Icon" hidden="true">
-									<Size x="13" y="13"/> 
-									<Anchors>
-										<Anchor point="RIGHT"/>
-									</Anchors>
-								</Texture>
-								<FontString parentKey="Amount" inherits="GameFontNormal" justifyH="RIGHT">
-									<Size x="0" y="12"/>
-									<Anchors>
-										<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="LEFT" x="-2" y=""/>
-									</Anchors>
-									<Color r="1" g="1" b="1" a="1"/>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnEnter>
-								local icon, name, quality, bound, numCurrUpgrades, numMaxUpgrades, cost, currencyID = GetItemUpgradeItemInfo();
-								if ( currencyID ) then
-									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-									GameTooltip:SetCurrencyByID(currencyID);
-								end
-							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
-						</Scripts>
-					</Frame>
-				</Frames>
 				<Scripts>
 					<OnLoad>
 						self:RegisterForDrag("LeftButton");

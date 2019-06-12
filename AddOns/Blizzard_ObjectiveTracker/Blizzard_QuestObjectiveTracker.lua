@@ -198,15 +198,39 @@ end
 -- *****************************************************************************************************
 
 local questTrackerOrderingFlags = {
-	{ isWarCampaign = true },
-	{ isWarCampaign = false },
+	{ flagIndex = 18 },		--isWarCampaign flag
+	{ flagIndex = 19 },		--hasOverrideSort flag
+	{ flagIndex = nil },
 };
 
-local function EnumQuestWatchDataHelper(func, orderingInfo, questID, ...)
+local function AnyFlagsMatched(questWatchInfoTable)
+	for i, flagIndexInfo in ipairs(questTrackerOrderingFlags) do
+		local flagIndex = flagIndexInfo.flagIndex;
+		if flagIndex then
+			if questWatchInfoTable[flagIndex] then
+				return true;
+			end
+		end
+	end
+	return false;
+end
+
+local function EnumQuestWatchDataHelper(func, flagIndex, questWatchInfoTable)
+	local questID = questWatchInfoTable[1];
 	if questID then
-		local isWarCampaign = select(17, ...);
-		if orderingInfo.isWarCampaign == isWarCampaign then
-			local done = func(questID, ...);
+		local pushQuest = false;
+		if flagIndex then
+			if questWatchInfoTable[flagIndex] then
+				pushQuest = true;
+			end
+		else
+			if not AnyFlagsMatched(questWatchInfoTable) then
+				pushQuest = true;
+			end
+		end
+
+		if pushQuest then
+			local done = func(questWatchInfoTable);
 			if done then
 				return true;
 			end
@@ -216,9 +240,16 @@ local function EnumQuestWatchDataHelper(func, orderingInfo, questID, ...)
 end
 
 local function EnumQuestWatchData(func)
-	for _, orderingInfo in ipairs(questTrackerOrderingFlags) do
+	local questWatchInfoList = {};
+
+	--cache the questWatchInfo
+	for i = 1, GetNumQuestWatches() do
+		questWatchInfoList[i] = {GetQuestWatchInfo(i)};
+	end
+
+	for _, orderingFlag in ipairs(questTrackerOrderingFlags) do
 		for i = 1, GetNumQuestWatches() do
-			if EnumQuestWatchDataHelper(func, orderingInfo, GetQuestWatchInfo(i)) then
+			if EnumQuestWatchDataHelper(func, orderingFlag.flagIndex, questWatchInfoList[i]) then
 				return;
 			end
 		end
@@ -238,8 +269,10 @@ function QuestObjectiveTracker_UpdatePOIs()
 	local numPOINumeric = 0;
 
 	EnumQuestWatchData(
-		function(questID, title, questLogIndex, numObjectives, requiredMoney, isComplete, startEvent, isAutoComplete, failureTime, timeElapsed, questType, isTask, isBounty, isStory, isOnMap, hasLocalPOI, isHidden, isWarCampaign)
+		function(questWatchInfoTable)
 			-- see if we already have a block for this quest
+			local questID, title, questLogIndex, numObjectives, requiredMoney, isComplete, startEvent, isAutoComplete, failureTime, timeElapsed, questType, isTask, isBounty, isStory, isOnMap, hasLocalPOI, isHidden, isWarCampaign, hasOverrideSort = unpack(questWatchInfoTable);
+
 			local block = QUEST_TRACKER_MODULE:GetExistingBlock(questID);
 			if ( block ) then
 				local shouldShowWaypoint = (questID == GetSuperTrackedQuestID()) or (questID == QuestMapFrame_GetFocusedQuestID());
@@ -376,8 +409,8 @@ function QUEST_TRACKER_MODULE:Update()
 	local showPOIs = GetCVarBool("questPOI");
 
 	EnumQuestWatchData(
-		function(questID, title, questLogIndex, numObjectives, requiredMoney, isComplete, startEvent, isAutoComplete, failureTime, timeElapsed, questType, isTask, isBounty, isStory, isOnMap, hasLocalPOI, isHidden, isWarCampaign)
-
+		function(questWatchInfoTable)
+			local questID, title, questLogIndex, numObjectives, requiredMoney, isComplete, startEvent, isAutoComplete, failureTime, timeElapsed, questType, isTask, isBounty, isStory, isOnMap, hasLocalPOI, isHidden, isWarCampaign, hasOverrideSort = unpack(questWatchInfoTable);
 			-- check filters
 			local showQuest = true;
 			if ( isTask or ( isBounty and not IsQuestComplete(questID) ) ) then

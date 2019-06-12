@@ -11,6 +11,7 @@ UIWidgetTemplateTextWithStateMixin = CreateFromMixins(UIWidgetBaseTemplateMixin)
 
 function UIWidgetTemplateTextWithStateMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
+	self:SetTooltip(widgetInfo.tooltip);
 
 	self.Text:SetText(widgetInfo.text);
 	self.Text:SetEnabledState(widgetInfo.enabledState);

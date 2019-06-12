@@ -1530,11 +1530,7 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "END_BOUND_TRADEABLE" ) then
 		local dialog = StaticPopup_Show("END_BOUND_TRADEABLE", nil, nil, arg1);
 	elseif ( event == "MACRO_ACTION_BLOCKED" or event == "ADDON_ACTION_BLOCKED" ) then
-		if ( not INTERFACE_ACTION_BLOCKED_SHOWN ) then
-			local info = ChatTypeInfo["SYSTEM"];
-			DEFAULT_CHAT_FRAME:AddMessage(INTERFACE_ACTION_BLOCKED, info.r, info.g, info.b, info.id);
-			INTERFACE_ACTION_BLOCKED_SHOWN = true;
-		end
+		DisplayInterfaceActionBlockedMessage();
 	elseif ( event == "MACRO_ACTION_FORBIDDEN" ) then
 		StaticPopup_Show("MACRO_ACTION_FORBIDDEN");
 	elseif ( event == "ADDON_ACTION_FORBIDDEN" ) then
@@ -3085,7 +3081,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	end
 
 	-- BelowMinimap Widgets - need to move below buffs/debuffs if at least 1 right action bar is showing
-	if UIWidgetBelowMinimapContainerFrame and UIWidgetBelowMinimapContainerFrame:GetHeight() > 0 then
+	if UIWidgetBelowMinimapContainerFrame and UIWidgetBelowMinimapContainerFrame:GetNumWidgetsShowing() > 0 then
 		if rightActionBars > 0 then
 			anchorY = min(anchorY, buffsAnchorY);
 		end
@@ -3182,10 +3178,29 @@ function ToggleFrame(frame)
 	end
 end
 
+-- We keep direct references to protect against replacement.
+local InCombatLockdown = InCombatLockdown;
+local issecure = issecure;
+
+-- We no longer allow addons to show or hide UI panels in combat.
+local function CheckProtectedFunctionsAllowed()
+	if ( InCombatLockdown() and not issecure() ) then
+		DisplayInterfaceActionBlockedMessage();
+		return false;
+	end
+
+	return true;
+end
+
 function ShowUIPanel(frame, force)
 	if ( not frame or frame:IsShown() ) then
 		return;
 	end
+
+	if ( not CheckProtectedFunctionsAllowed() ) then
+		return;
+	end
+
 	if ( not GetUIPanelWindowInfo(frame, "area") ) then
 		frame:Show();
 		return;
@@ -3199,6 +3214,10 @@ end
 
 function HideUIPanel(frame, skipSetPoint)
 	if ( not frame or not frame:IsShown() ) then
+		return;
+	end
+
+	if ( not CheckProtectedFunctionsAllowed() ) then
 		return;
 	end
 
@@ -5268,4 +5287,12 @@ end
 
 function IsPlayerAtEffectiveMaxLevel()
 	return IsLevelAtEffectiveMaxLevel(UnitLevel("player"));
+end
+
+function DisplayInterfaceActionBlockedMessage()
+	if ( not INTERFACE_ACTION_BLOCKED_SHOWN ) then
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(INTERFACE_ACTION_BLOCKED, info.r, info.g, info.b, info.id);
+		INTERFACE_ACTION_BLOCKED_SHOWN = true;
+	end
 end

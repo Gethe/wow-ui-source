@@ -881,6 +881,7 @@ local UIWidgetManager =
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "enabledState", Type = "WidgetEnabledState", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
 				{ Name = "frameTextureKitID", Type = "number", Nilable = false },

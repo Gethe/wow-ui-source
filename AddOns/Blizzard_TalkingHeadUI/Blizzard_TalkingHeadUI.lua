@@ -80,6 +80,7 @@ function TalkingHeadFrame_FadeoutFrames()
 	frame.TextFrame.Close:Play();
 	frame.BackgroundFrame.Close:Play();
 	frame.PortraitFrame.Close:Play();
+	frame.isClosing = true;
 end
 
 function TalkingHeadFrame_Reset(frame, text, name)
@@ -101,6 +102,8 @@ function TalkingHeadFrame_Reset(frame, text, name)
 	frame.MainFrame:SetAlpha(1);
 	frame.NameFrame.Name:SetText(name);
 	frame.TextFrame.Text:SetText(text);
+
+	frame.isClosing = false;
 end
 
 local talkingHeadTextureKitRegionFormatStrings = {
@@ -152,6 +155,7 @@ function TalkingHeadFrame_PlayCurrent()
 		frame.NameFrame.Name:SetShadowColor(shadowColor:GetRGBA());
 		frame.TextFrame.Text:SetTextColor(textColor:GetRGB());
 		frame.TextFrame.Text:SetShadowColor(shadowColor:GetRGBA());
+		local wasShown = frame:IsShown();
 		frame:Show();
 		if ( currentDisplayInfo ~= displayInfo ) then
 			model.uiCameraID = cameraID;
@@ -164,7 +168,7 @@ function TalkingHeadFrame_PlayCurrent()
 			TalkingHeadFrame_SetupAnimations(model);
 		end
 
-		if ( isNewTalkingHead ) then
+		if ( isNewTalkingHead or not wasShown or frame.isClosing ) then
 			TalkingHeadFrame_Reset(frame, textFormatted, name);
 			TalkingHeadFrame_FadeinFrames();
 		else
@@ -302,5 +306,6 @@ function TalkingHeadFrame_IdleAnim(self)
 end
 
 function TalkingHeadFrame_Close_OnFinished(self)
+	TalkingHeadFrame.isClosing = false;
 	TalkingHeadFrame:Hide();
 end

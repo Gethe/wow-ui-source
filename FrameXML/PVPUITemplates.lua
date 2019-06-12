@@ -16,8 +16,8 @@ function PVPConquestRewardMixin:Setup(questID, seasonState, tooltipAnchor)
 		end
 		local itemTexture;
 		if HaveQuestRewardData(questID) then
-			local itemIndex = QuestUtils_GetBestQualityItemRewardIndex(questID);
-			itemTexture = select(2, GetQuestLogRewardInfo(itemIndex, questID));
+			local itemIndex, rewardType = QuestUtils_GetBestQualityItemRewardIndex(questID);
+			itemTexture = select(2, QuestUtils_GetQuestLogRewardInfo(itemIndex, questID, rewardType));
 		end
 		self:SetTexture(itemTexture, 1);
 	end
@@ -91,8 +91,8 @@ end
 
 function PVPConquestRewardMixin:OnClick()
 	if self.questID and self.questID > 0 and IsModifiedClick() then
-		local itemIndex = QuestUtils_GetBestQualityItemRewardIndex(self.questID);
-		HandleModifiedItemClick(GetQuestLogItemLink("reward", itemIndex, self.questID));
+		local itemIndex, rewardType = QuestUtils_GetBestQualityItemRewardIndex(self.questID);
+		HandleModifiedItemClick(GetQuestLogItemLink(rewardType, itemIndex, self.questID));
 	end
 end
 

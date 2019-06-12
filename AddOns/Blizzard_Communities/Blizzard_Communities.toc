@@ -15,8 +15,6 @@ CommunitiesAddDialogInsecure.xml
 CommunitiesAddDialog.xml
 CommunitiesAddDialogOutbound.lua
 CommunitiesTabs.xml
-ClubFinderApplicantList.xml
-ClubFinder.xml
 CommunitiesSettings.xml
 CommunitiesTicketManagerDialog.xml
 CommunitiesErrors.lua

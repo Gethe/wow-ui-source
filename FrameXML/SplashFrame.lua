@@ -1,6 +1,7 @@
 BASE_SPLASH_SCREEN_VERSION = 16;
 NEWEST_SPLASH_SCREEN_VERSION = 17;
 SEASON_SPLASH_SCREEN_VERSION = 3; 
+PREVIOUS_SEASON_SPLASH_VERSION = 2; 
 
 local FACTION_OVERRIDES = {
 	["Alliance"] = {
@@ -140,6 +141,12 @@ local function GetSplashFrameTag(forceShow)
 				lastScreenID = lastScreenID - 1; 
 				seasonScreenID = seasonScreenID - 1; 
 			end
+
+			--The case where a player has never viewed a what's new for seasons. 
+			if seasonScreenID < PREVIOUS_SEASON_SPLASH_VERSION then 
+				SetCVar(SPLASH_SCREENS[SEASON_SPLASH_TAG].cVar, PREVIOUS_SEASON_SPLASH_VERSION);
+				seasonScreenID = PREVIOUS_SEASON_SPLASH_VERSION;
+			end 
 
 			if seasonScreenID < C_MythicPlus.GetCurrentSeason() then
 				UpdateOtherSplashScreenCvar(CURRENT_SPLASH_TAG);

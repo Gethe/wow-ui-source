@@ -84,9 +84,6 @@ function ItemUpgradeFrame_Update()
 		ItemUpgradeFrame.ItemButton.ItemName:SetText("|c"..hex..name.."|r");
 		ItemUpgradeFrame.ItemButton.BoundStatus:SetText(bound);
 		ItemUpgradeFrame.TextFrame.MissingText:Hide();
-		ItemUpgradeFrame.ItemButton.Cost.Amount:SetText(cost);
-		local _, _, currencyTexture = GetCurrencyInfo(currencyType);
-		ItemUpgradeFrame.ItemButton.Cost.Icon:SetTexture(currencyTexture);
 		ItemUpgradeFrame.MissingDescription:Hide();
 		ItemUpgradeFrame.TitleTextLeft:Show();
 		ItemUpgradeFrame.TitleTextRight:Show();
@@ -105,12 +102,8 @@ function ItemUpgradeFrame_Update()
 			ItemUpgradeFrameUpgradeButton:SetEnabled(numCurrUpgrades < numMaxUpgrades);
 		end
 		if ( canUpgradeItem ) then
-			ItemUpgradeFrame.ItemButton.Cost.Amount:Show();
-			ItemUpgradeFrame.ItemButton.Cost.Icon:Show();
 			ItemUpgradeFrame.NoMoreUpgrades:Hide();
 		else
-			ItemUpgradeFrame.ItemButton.Cost.Icon:Hide();
-			ItemUpgradeFrame.ItemButton.Cost.Amount:Hide();
 			ItemUpgradeFrame.NoMoreUpgrades:Show();
 		end
 
@@ -121,8 +114,6 @@ function ItemUpgradeFrame_Update()
 		ItemUpgradeFrame.ItemButton.ItemName:SetText("");
 		ItemUpgradeFrame.ItemButton.BoundStatus:SetText("");
 		ItemUpgradeFrame.TextFrame.MissingText:Show();
-		ItemUpgradeFrame.ItemButton.Cost.Icon:Hide();
-		ItemUpgradeFrame.ItemButton.Cost.Amount:Hide();
 		ItemUpgradeFrame.MissingDescription:Show();
 		ItemUpgradeFrame.TitleTextLeft:Hide();
 		ItemUpgradeFrame.TitleTextRight:Hide();
@@ -147,7 +138,7 @@ function ItemUpgradeFrame_Update()
 		local _, amount, currencyTexture = GetCurrencyInfo(currencyType);
 		ItemUpgradeFrameMoneyFrame.Currency.currencyID = currencyType;
 		ItemUpgradeFrameMoneyFrame.Currency.icon:SetTexture(currencyTexture);
-		ItemUpgradeFrameMoneyFrame.Currency.count:SetText(amount);
+		ItemUpgradeFrameMoneyFrame.Currency.count:SetText(cost);
 		ItemUpgradeFrameMoneyFrame.Currency:Show();
 		if ( cost > amount ) then
 			ItemUpgradeFrameUpgradeButton:Disable();
@@ -168,7 +159,7 @@ function ItemUpgradeFrame_UpgradeClick(self)
 	local currencyName, _, currencyTexture = GetCurrencyInfo(currencyType);
 	local itemsString = " |T"..currencyTexture..":0:0:0:-1|t "..format(CURRENCY_QUANTITY_TEMPLATE, cost, currencyName);
 	StaticPopup_Show("CONFIRM_UPGRADE_ITEM", itemsString, "", {["texture"] = icon, ["name"] = name,
-															["color"] = {r, g, b, 1}, ["link"] = nil});
+															["color"] = {r, g, b, 1}, ["link"] = C_ItemUpgrade.GetItemHyperlink()});
 end
 
 function ItemUpgradeFrame_AddItemClick(self, button)

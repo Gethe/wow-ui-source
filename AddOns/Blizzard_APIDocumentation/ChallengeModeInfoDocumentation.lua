@@ -61,6 +61,7 @@ local ChallengeModeInfo =
 				{ Name = "time", Type = "number", Nilable = false },
 				{ Name = "onTime", Type = "bool", Nilable = false },
 				{ Name = "keystoneUpgradeLevels", Type = "number", Nilable = false },
+				{ Name = "practiceRun", Type = "bool", Nilable = false },
 			},
 		},
 		{

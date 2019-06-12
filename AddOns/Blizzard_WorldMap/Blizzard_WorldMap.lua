@@ -234,6 +234,16 @@ function WorldMapMixin:OnShow()
 
 	PlayerMovementFrameFader.AddDeferredFrame(self, .5, 1.0, .5, function() return GetCVarBool("mapFade") and not self:IsMouseOver() end);
 	self.BorderFrame.Tutorial:CheckAndShowTooltip();
+
+	local miniWorldMap = GetCVarBool("miniWorldMap");
+	local maximized = self:IsMaximized();
+	if miniWorldMap ~= maximized then
+		if miniWorldMap then
+			self.BorderFrame.MaximizeMinimizeFrame:Minimize();
+		else
+			self.BorderFrame.MaximizeMinimizeFrame:Maximize();
+		end
+	end
 end
 
 function WorldMapMixin:OnHide()

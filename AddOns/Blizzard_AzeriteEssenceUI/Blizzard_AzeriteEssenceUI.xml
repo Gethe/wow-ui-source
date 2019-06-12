@@ -6,6 +6,7 @@
 		<KeyValues>
 			<KeyValue key="isDraggable" type="boolean" value="false"/>
 			<KeyValue key="swirlScale" type="number" value="1"/>
+			<KeyValue key="isMajorSlot" type="boolean" value="false"/>
 		</KeyValues>
 		<Frames>
 			<ModelScene parentKey="EffectsModelScene" drawLayer="OVERLAY" inherits="NonInteractableModelSceneMixinTemplate" hidden="true">
@@ -78,6 +79,14 @@
 						</Texture>
 					</Layer>
 				</Layers>
+				<Frames>
+					<ModelScene parentKey="PurpleGemModelScene" drawLayer="OVERLAY" inherits="NonInteractableModelSceneMixinTemplate" hidden="true" alpha="0.75">
+						<Size x="400" y="400"/>
+						<Anchors>
+							<Anchor point="CENTER" relativePoint="BOTTOM" x="3" y="11"/>
+						</Anchors>
+					</ModelScene>
+				</Frames>
 			</Frame>
 			<Frame parentKey="AvailableState" parentArray="StateFrames" setAllPoints="true">
 				<Layers>
@@ -134,6 +143,7 @@
 		<Size x="110" y="82"/>
 		<KeyValues>
 			<KeyValue key="isDraggable" type="boolean" value="true"/>
+			<KeyValue key="isMajorSlot" type="boolean" value="true"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="UnlockedState" parentArray="StateFrames" setAllPoints="true">
@@ -207,6 +217,20 @@
 						</Texture>
 					</Layer>
 				</Layers>
+				<Frames>
+					<ModelScene parentKey="BlueGemModelScene" drawLayer="OVERLAY" inherits="NonInteractableModelSceneMixinTemplate" hidden="true" alpha="0.75">
+						<Size x="400" y="400"/>
+						<Anchors>
+							<Anchor point="CENTER" relativePoint="TOP" x="3" y="-5"/>
+						</Anchors>
+					</ModelScene>
+					<ModelScene parentKey="PurpleGemModelScene" drawLayer="OVERLAY" inherits="NonInteractableModelSceneMixinTemplate" hidden="true" alpha="0.75">
+						<Size x="400" y="400"/>
+						<Anchors>
+							<Anchor point="CENTER" relativePoint="BOTTOM" x="3" y="11"/>
+						</Anchors>
+					</ModelScene>
+				</Frames>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -457,6 +481,11 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" x="6" y="-6"/>
 				</Anchors>
+				<Animations>
+					<AnimationGroup parentKey="AlphaAnim" looping="BOUNCE">
+						<Alpha parentKey="AlphaAnim" fromAlpha="0.45" toAlpha="0.55" duration="14"/>
+					</AnimationGroup>
+				</Animations>
 			</ModelScene>
 			<Frame parentKey="StarsAnimationFrame1" inherits="AzeriteEssenceStarsAnimationFrameTemplate">
 				<KeyValues>
@@ -615,6 +644,11 @@
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.OrbBackground"/>
 					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="AlphaAnim" looping="BOUNCE">
+							<Alpha parentKey="AlphaAnim" fromAlpha="0.25" toAlpha="0.6" duration="10"/>
+						</AnimationGroup>
+					</Animations>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">

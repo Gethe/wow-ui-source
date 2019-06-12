@@ -150,17 +150,22 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="Border" atlas="mythicplus-popup-ring" useAtlasSize="true"/>
+						<Texture parentKey="AffixBorder" atlas="mythicplus-popup-ring" useAtlasSize="true"/>
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture parentKey="Portrait">
-							<Size x="77" y="77"/>
+							<Size x="70" y="70"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Border"/>
+								<Anchor point="CENTER" relativeKey="$parent.AffixBorder"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnShow>
+						self.Border:Hide(); 
+					</OnShow>
+				</Scripts>
 			</Frame>
 			<Button parentKey="Leave" inherits="UIPanelButtonNoTooltipTemplate" text="CLOSE">
 				<Size x="125" y="22"/>

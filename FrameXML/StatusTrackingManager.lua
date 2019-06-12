@@ -196,6 +196,7 @@ function StatusTrackingManagerMixin:OnLoad()
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("UNIT_INVENTORY_CHANGED");
 	self:RegisterEvent("ARTIFACT_XP_UPDATE");
+	self:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED");
 	self:RegisterUnitEvent("UNIT_LEVEL", "player")
 	self:SetInitialBarSize();
 	self:UpdateBarsShown(); 

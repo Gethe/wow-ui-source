@@ -170,7 +170,7 @@ LEVEL_UP_TYPES = {
  	["PaliMountTauren2"] 	= {	spellID=69826	},
  	["PaliMountDraenei1"] 	= {	spellID=73629	},
  	["PaliMountDraenei2"] 	= {	spellID=73630	},
-
+ 	["PaliMountZandalariTroll1"] 	= {	spellID=290608	},
 	["TrackBeast"] 			= {	spellID=1494  },
 	["TrackHumanoid"] 		= {	spellID=19883  },
 	["TrackUndead"] 		= {	spellID=19884  },
@@ -220,6 +220,10 @@ LEVEL_UP_CLASS_HACKS = {
 								[20] = {"PaliMountDraenei1"},
 								[40] = {"PaliMountDraenei2"},
 							},
+	["PALADINZandalariTroll"]	= {
+									--  Level  = {unlock}
+										[20] = {"PaliMountZandalariTroll1"},
+									},
 	["DEMONHUNTER"]		= {
 							--  Level  = {unlock}
 								[99] = {"TalentsUnlocked"},

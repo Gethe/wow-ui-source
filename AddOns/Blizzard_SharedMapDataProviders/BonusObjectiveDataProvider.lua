@@ -36,6 +36,23 @@ function BonusObjectivePinMixin:OnAcquired(taskInfo)
 	self:SetPosition(taskInfo.x, taskInfo.y);
 	self.questID = taskInfo.questId;
 	self.numObjectives = taskInfo.numObjectives;
+	self.isQuestStart = taskInfo.isQuestStart;
+	self.isCombatAllyQuest = taskInfo.isCombatAllyQuest;
+	if taskInfo.isDaily then
+		self.Texture:SetAtlas("QuestDaily", false);
+	elseif taskInfo.isQuestStart then
+		self.Texture:SetAtlas("QuestNormal", false);
+	else
+		self.Texture:SetAtlas("QuestBonusObjective", false);
+	end
+
+	if taskInfo.isDaily or taskInfo.isQuestStart then
+		self:SetScalingLimits(1, 1.0, 1.2);
+		self.Texture:SetSize(22, 22);
+	else
+		self:SetScalingLimits(1, 0.825, 0.85);
+		self.Texture:SetSize(30, 30);
+	end
 end
 
 function BonusObjectivePinMixin:OnMouseEnter()

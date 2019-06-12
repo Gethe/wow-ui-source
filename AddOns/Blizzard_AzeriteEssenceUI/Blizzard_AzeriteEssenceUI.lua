@@ -34,6 +34,9 @@ local REVEAL_MODEL_SCENE_ACTOR_SETTINGS = {
 	["effect"] = { startDelay = 0, duration = 0.4, speed = 1 },
 	["effect2"] = { startDelay = 0.4, duration = 1.2, speed = 1 },
 };
+local MAJOR_BLUE_GEM_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(287, 165995);		-- 	BlueGlow_High.m2
+local MAJOR_PURPLE_GEM_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(288, 166008);	-- 	PurpleGlow_High.m2
+local MINOR_PURPLE_GEM_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(289, 166008);	-- 	PurpleGlow_High.m2
 
 local LEARN_SHAKE_DELAY = 0.869;
 local LEARN_SHAKE = { { x = 0, y = -20}, { x = 0, y = 20}, { x = 0, y = -20}, { x = 0, y = 20}, { x = -9, y = -8}, { x = 8, y = 8}, { x = -3, y = -8}, { x = 9, y = 8}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, };
@@ -84,6 +87,9 @@ function AzeriteEssenceUIMixin:OnLoad()
 	self:SetupModelScene();
 	self:SetupMilestones();
 	self:RefreshPowerLevel();
+
+	self.OrbGlass.AlphaAnim:Play();
+	self.ItemModelScene.AlphaAnim:Play();
 end
 
 function AzeriteEssenceUIMixin:SetupMilestones()
@@ -274,7 +280,7 @@ function AzeriteEssenceUIMixin:OnEssenceActivated(essenceID, slotFrame)
 		);
 	else
 		local soundID = SOUNDKIT.UI_82_HEARTOFAZEROTH_SLOTESSENCE;
-		if slotFrame:IsMainSlot() then
+		if slotFrame:IsMajorSlot() then
 			local essenceInfo = C_AzeriteEssence.GetEssenceInfo(essenceID);
 			if essenceInfo.rank == MAX_ESSENCE_RANK  then
 				soundID = SOUNDKIT.UI_82_HEARTOFAZEROTH_SLOTMAJORESSENCE_RANK4;
@@ -328,7 +334,7 @@ end
 function AzeriteEssenceUIMixin:RefreshMilestones()
 	for i, milestoneFrame in ipairs(self.Milestones) do
 		-- Main slot is always present
-		if self:ShouldPlayReveal() and (not milestoneFrame.slot or not milestoneFrame:IsMainSlot()) then
+		if self:ShouldPlayReveal() and (not milestoneFrame.slot or not milestoneFrame:IsMajorSlot()) then
 			milestoneFrame:Hide();
 		else
 			milestoneFrame:Show();
@@ -513,7 +519,7 @@ end
 function AzeriteEssenceDependencyLineMixin:Refresh()
 	if self.toButton.unlocked then
 		self:SetState(PowerDependencyLineMixin.LINE_STATE_CONNECTED);
-		self:SetAlpha(0.15);
+		self:SetAlpha(0.2);
 	else
 		if self.fromButton.unlocked and self.toButton.canUnlock then
 			self:SetDisconnectedColor(DISCONNECTED_LINE_COLOR);
@@ -889,6 +895,10 @@ function AzeriteMilestoneBaseMixin:OnEvent(event, ...)
 	if event == "UI_MODEL_SCENE_INFO_UPDATED" then
 		self.EffectsModelScene.primaryEffect = nil;
 		self.EffectsModelScene.secondaryEffect = nil;
+		if self.slot then
+			local forceUpdate = true;
+			self:UpdateGemModelScenes(forceUpdate);
+		end
 	end
 end
 
@@ -924,7 +934,7 @@ function AzeriteMilestoneBaseMixin:CheckAndSetUpUnlockEffect()
 		local forceUpdate = true;
 		local stopAnim = true;
 		local sceneInfo = self.slot and UNLOCK_SLOT_MODEL_SCENE_INFO or UNLOCK_STAMINA_MODEL_SCENE_INFO;
-		scene.primaryEffect, scene.secondaryEffect = StaticModelInfo.SetupModelScene(scene, sceneInfo, forceUpdate, true);
+		scene.primaryEffect, scene.secondaryEffect = StaticModelInfo.SetupModelScene(scene, sceneInfo, forceUpdate, stopAnim);
 	end
 end
 
@@ -1017,11 +1027,16 @@ function AzeriteMilestoneBaseMixin:AddStateToTooltip(requiredLevelString, return
 	end
 end
 
-function AzeriteMilestoneBaseMixin:IsMainSlot()
-	return self.slot == Enum.AzeriteEssence.MainSlot;
+function AzeriteMilestoneBaseMixin:IsMajorSlot()
+	return self.isMajorSlot;
 end
 
 AzeriteMilestoneSlotMixin = CreateFromMixins(AzeriteMilestoneBaseMixin);
+
+function AzeriteMilestoneSlotMixin:OnLoad()
+	self.UnlockedState.EmptyGlow.Anim:Play();
+	AzeriteMilestoneBaseMixin.OnLoad(self);
+end
 
 function AzeriteMilestoneSlotMixin:OnDragStart()
 	local spellID = C_AzeriteEssence.GetMilestoneSpell(self.milestoneID);
@@ -1039,11 +1054,42 @@ function AzeriteMilestoneSlotMixin:ShowStateFrame(stateFrame)
 	end
 end
 
+function AzeriteMilestoneSlotMixin:UpdateGemModelScenes(forceUpdate)
+	if not self.unlocked then
+		return;
+	end
+
+	if forceUpdate then
+		self.UnlockedState.PurpleGemModelScene.forceUpdate = true;
+		if self:IsMajorSlot() then
+			self.UnlockedState.BlueGemModelScene.forceUpdate = true;
+		end
+	end
+
+	if self:GetParent():GetEffectiveEssence(self.milestoneID) then
+		local purpleGemModelSceneInfo = MINOR_PURPLE_GEM_MODEL_SCENE_INFO;
+		if self:IsMajorSlot() then
+			purpleGemModelSceneInfo = MAJOR_PURPLE_GEM_MODEL_SCENE_INFO;
+			local scene = self.UnlockedState.BlueGemModelScene;
+			scene:Show();
+			scene.forceUpdate = not StaticModelInfo.SetupModelScene(scene, MAJOR_BLUE_GEM_MODEL_SCENE_INFO, scene.forceUpdate);
+		end
+		local scene = self.UnlockedState.PurpleGemModelScene;
+		scene:Show();
+		scene.forceUpdate = not StaticModelInfo.SetupModelScene(scene, purpleGemModelSceneInfo, scene.forceUpdate);
+	else
+		if self:IsMajorSlot() then
+			self.UnlockedState.BlueGemModelScene:Hide();
+		end
+		self.UnlockedState.PurpleGemModelScene:Hide();
+	end
+end
+
 function AzeriteMilestoneSlotMixin:Refresh()
 	self:UpdateMilestoneInfo();
 
 	if self.unlocked then
-		if self:IsMainSlot() and self:GetParent():ShouldPlayReveal() then
+		if self:IsMajorSlot() and self:GetParent():ShouldPlayReveal() then
 			self:CheckAndSetUpRevealEffect();
 		end
 		self:ShowStateFrame(self.UnlockedState);
@@ -1064,11 +1110,9 @@ function AzeriteMilestoneSlotMixin:Refresh()
 			stateFrame.Icon:Hide();
 			stateFrame.EmptyIcon:Show();
 			stateFrame.EmptyGlow:Show();
-			stateFrame.EmptyGlow.Anim:Stop();
-			stateFrame.EmptyGlow.Anim:Play();
 		end
 	else
-		if not self:IsMainSlot() then
+		if not self:IsMajorSlot() then
 			self:CheckAndSetUpUnlockEffect();
 		end
 		if self:ShouldShowUnlockState() then
@@ -1085,10 +1129,23 @@ function AzeriteMilestoneSlotMixin:Refresh()
 			self.LockedState.UnlockLevelText:SetText(self.requiredLevel);
 		end
 	end
+
+	self:UpdateGemModelScenes();
 end
 
 function AzeriteMilestoneSlotMixin:OnMouseUp(button)
 	if button == "LeftButton" then
+		if IsModifiedClick("CHATLINK") then
+			local essenceID = C_AzeriteEssence.GetMilestoneEssence(self.milestoneID);
+			if essenceID then 
+				local essenceInfo = C_AzeriteEssence.GetEssenceInfo(essenceID);
+				if essenceInfo then
+					if HandleModifiedItemClick(C_AzeriteEssence.GetEssenceHyperlink(essenceInfo.ID, essenceInfo.rank)) then
+						return;
+					end
+				end
+			end 
+		end
 		if C_AzeriteEssence.HasPendingActivationEssence() then
 			if self.unlocked then
 				if self:GetParent():HasNewlyActivatedEssence() then
@@ -1112,7 +1169,7 @@ function AzeriteMilestoneSlotMixin:OnMouseUp(button)
 end
 
 function AzeriteMilestoneSlotMixin:OnEnter()
-	if self:IsMainSlot() then
+	if self:IsMajorSlot() then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -20, 0);
 	else
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -10, -5);
@@ -1140,7 +1197,7 @@ function AzeriteMilestoneSlotMixin:OnEnter()
 			GameTooltip_SetTitle(GameTooltip, AZERITE_ESSENCE_PASSIVE_SLOT);
 			self:AddStateToTooltip(AZERITE_ESSENCE_LOCKED_SLOT_LEVEL, AZERITE_ESSENCE_UNLOCK_SLOT);
 		else
-			if self:IsMainSlot() then
+			if self:IsMajorSlot() then
 				GameTooltip_SetTitle(GameTooltip, AZERITE_ESSENCE_EMPTY_MAIN_SLOT);
 				GameTooltip_AddColoredLine(GameTooltip, AZERITE_ESSENCE_EMPTY_MAIN_SLOT_DESC, NORMAL_FONT_COLOR, wrapText);
 			else

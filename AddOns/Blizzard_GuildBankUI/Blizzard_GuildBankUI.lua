@@ -302,11 +302,7 @@ function GuildBankFrame_UpdateFiltered()
 			button = _G["GuildBankColumn"..column.."Button"..index];
 			_, _, _, isFiltered = GetGuildBankItemInfo(tab, i);
 			
-			if ( isFiltered ) then
-				button.searchOverlay:Show();
-			else
-				button.searchOverlay:Hide();
-			end
+			button:SetMatchesSearch(not isFiltered);
 		end
 	end
 end

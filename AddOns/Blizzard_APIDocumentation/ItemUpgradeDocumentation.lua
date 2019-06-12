@@ -6,6 +6,15 @@ local ItemUpgrade =
 
 	Functions =
 	{
+		{
+			Name = "GetItemHyperlink",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "link", Type = "string", Nilable = false },
+			},
+		},
 	},
 
 	Events =

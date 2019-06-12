@@ -27,6 +27,9 @@ function MapUtil.ShouldMapTypeShowQuests(mapType)
 end
 
 function MapUtil.ShouldShowTask(mapID, info)
+	if (info.isQuestStart and info.inProgress) then
+		return false
+	end
 	return (mapID == info.mapID) and HaveQuestData(info.questId);
 end
 

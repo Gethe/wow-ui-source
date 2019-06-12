@@ -1190,7 +1190,7 @@ function UnitPopup_HideButtons ()
 		elseif ( value == "RAID_DEMOTE" ) then
 			if ( ( not isLeader and not isAssistant ) or not dropdownMenu.name or not isPlayer ) then
 				shown = false;
-			elseif ( not GetPartyAssignment("MAINTANK", dropdownMenu.name, 1) and not GetPartyAssignment("MAINASSIST", dropdownMenu.name, 1) ) then
+			elseif ( not GetPartyAssignment("MAINTANK", dropdownMenu.unit) and not GetPartyAssignment("MAINASSIST", dropdownMenu.unit) ) then
 				if ( not isLeader  and isAssistant and UnitIsGroupAssistant(dropdownMenu.unit) ) then
 					shown = false;
 				elseif ( isLeader or isAssistant ) then

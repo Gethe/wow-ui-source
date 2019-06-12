@@ -352,9 +352,9 @@ local function ScoreWidgetLayout(widgetContainer, sortedWidgets)
 			widgetFrame:SetPoint("TOPRIGHT", relative, "BOTTOMRIGHT", 0, 0);
 		end
 
-		widgetsHeight = widgetsHeight + widgetFrame:GetHeight();
+		widgetsHeight = widgetsHeight + widgetFrame:GetWidgetHeight();
 
-		local widgetWidth = widgetFrame:GetWidth();
+		local widgetWidth = widgetFrame:GetWidgetWidth();
 		if widgetWidth > maxWidgetWidth then
 			maxWidgetWidth = widgetWidth;
 		end

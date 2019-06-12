@@ -1040,9 +1040,9 @@ local function WidgetsLayout(widgetContainer, sortedWidgets)
 			widgetFrame:SetPoint("LEFT", relative, "RIGHT", 2, 0);
 		end
 
-		widgetsWidth = widgetsWidth + widgetFrame:GetWidth();
+		widgetsWidth = widgetsWidth + widgetFrame:GetWidgetWidth();
 
-		local widgetHeight = widgetFrame:GetHeight();
+		local widgetHeight = widgetFrame:GetWidgetHeight();
 		if widgetHeight > maxWidgetHeight then
 			maxWidgetHeight = widgetHeight;
 		end

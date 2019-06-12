@@ -51,6 +51,20 @@ local PaperDollInfo =
 			},
 		},
 		{
+			Name = "GetInspectItemLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "equippedItemLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMinItemLevel",
 			Type = "Function",
 

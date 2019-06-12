@@ -211,17 +211,15 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown parentKey="CapturePoint" hideCountdownNumbers="true" useCircularEdge="true">
-				<Size x="60" y="59" />
+			<Cooldown parentKey="UncapturedSection" hideCountdownNumbers="true" useCircularEdge="true">
+				<Size x="60" y="60" />
 				<Anchors>
 					<Anchor point="CENTER" />
 				</Anchors>
-				<EdgeTexture>
-					<Color r="1" g="1" b="1" a="1"/>
-				</EdgeTexture>
+				<SwipeTexture file="Interface\Widgets\azsharawards-state-red-fill" />
 			</Cooldown>
 			<Cooldown parentKey="Progress" hideCountdownNumbers="true" useCircularEdge="true">
-				<Size x="60" y="59" />
+				<Size x="60" y="60" />
 				<Anchors>
 					<Anchor point="CENTER" />
 				</Anchors>

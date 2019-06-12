@@ -94,6 +94,14 @@ function UIWidgetBaseTemplateMixin:OnLoad()
 	UIWidgetTemplateTooltipFrameMixin.OnLoad(self);
 end
 
+function UIWidgetBaseTemplateMixin:GetWidgetWidth()
+	return self:GetWidth() * self:GetScale();
+end
+
+function UIWidgetBaseTemplateMixin:GetWidgetHeight()
+	return self:GetHeight() * self:GetScale();
+end
+
 function UIWidgetBaseTemplateMixin:InAnimFinished()
 end
 
@@ -410,6 +418,8 @@ UIWidgetBaseControlZoneTemplateMixin = {}
 function UIWidgetBaseControlZoneTemplateMixin:OnLoad()
 	UIWidgetTemplateTooltipFrameMixin.OnLoad(self);
 	ResizeLayoutMixin.OnLoad(self);
+
+	self.Progress:SetFrameLevel(self.UncapturedSection:GetFrameLevel() + 1);
 end
 
 local zoneFormatString = "%s-%s-%s";
@@ -452,7 +462,7 @@ function UIWidgetBaseControlZoneTemplateMixin:PlayOrStopDangerAnimation(play)
 	end
 end
 
-function UIWidgetBaseControlZoneTemplateMixin:UpdateAnimations(zoneInfo, zoneMode, lastVals, dangerFlashType)
+function UIWidgetBaseControlZoneTemplateMixin:UpdateAnimations(zoneInfo, zoneIsGood, lastVals, dangerFlashType)
 	local isActive = (zoneInfo.activeState == Enum.ZoneControlActiveState.Active);
 	local isCaptured = (zoneInfo.current >= zoneInfo.capturePoint);
 	local wasCaptured = not lastVals or (lastVals.current >= lastVals.capturePoint);
@@ -462,17 +472,6 @@ function UIWidgetBaseControlZoneTemplateMixin:UpdateAnimations(zoneInfo, zoneMod
 		self:PlayOrStopCapturedAnimation(STOP_ANIM);
 		self:PlayOrStopDangerAnimation(STOP_ANIM);
 	else
-		local zoneIsGood;
-		if zoneMode == Enum.ZoneControlMode.BothStatesAreGood then
-			zoneIsGood = true;
-		elseif zoneMode == Enum.ZoneControlMode.State1IsGood then
-			zoneIsGood = (zoneInfo.state == Enum.ZoneControlState.State1);
-		elseif zoneMode == Enum.ZoneControlMode.State2IsGood then
-			zoneIsGood = (zoneInfo.state == Enum.ZoneControlState.State2);
-		else
-			zoneIsGood = false;
-		end
-
 		if zoneIsGood and isCaptured and not wasCaptured then
 			-- This is a good zone that just got captured...play the captured animation
 			self:PlayOrStopCapturedAnimation(PLAY_ANIM);
@@ -566,6 +565,8 @@ function UIWidgetBaseControlZoneTemplateMixin:Setup(zoneIndex, zoneMode, leading
 		reverse = false;
 	end
 
+	local reverseUncapturedSection = reverse;
+
 	if percentageFull == 1 then
 		-- A cooldown at full duration actually draws nothing when what we want is a full bar...to achieve that, flip reverse and set the percentage to 0
 		percentageFull = 0;
@@ -581,13 +582,22 @@ function UIWidgetBaseControlZoneTemplateMixin:Setup(zoneIndex, zoneMode, leading
 		self.Progress:SetEdgeTexture(edgeTextureName);
 	end
 
-	if not isActive or not capturePercentage or zoneInfo.capturePoint <= 1 then
-		self.CapturePoint:SetEdgeTexture("", 1, 1, 1, 0);
-		CooldownFrame_SetDisplayAsPercentage(self.CapturePoint, 0);
+	local zoneIsGood;
+	if zoneMode == Enum.ZoneControlMode.BothStatesAreGood then
+		zoneIsGood = true;
+	elseif zoneMode == Enum.ZoneControlMode.State1IsGood then
+		zoneIsGood = (zoneInfo.state == Enum.ZoneControlState.State1);
+	elseif zoneMode == Enum.ZoneControlMode.State2IsGood then
+		zoneIsGood = (zoneInfo.state == Enum.ZoneControlState.State2);
 	else
-		self.CapturePoint:SetEdgeTexture(edgeTextureName);
-		self.CapturePoint:SetReverse(reverse);
-		CooldownFrame_SetDisplayAsPercentage(self.CapturePoint, capturePercentage);
+		zoneIsGood = false;
+	end
+
+	local showUncapturedSection = isActive and zoneIsGood and capturePercentage and (zoneInfo.capturePoint > 1);
+	self.UncapturedSection:SetShown(showUncapturedSection);
+	if showUncapturedSection then
+		self.UncapturedSection:SetReverse(reverseUncapturedSection);
+		CooldownFrame_SetDisplayAsPercentage(self.UncapturedSection, capturePercentage);
 	end
 
 	self.Progress:SetReverse(reverse);
@@ -597,7 +607,7 @@ function UIWidgetBaseControlZoneTemplateMixin:Setup(zoneIndex, zoneMode, leading
 	zoneInfo.current = currentVal;
 
 	-- And update the animations
-	self:UpdateAnimations(zoneInfo, zoneMode, lastVals, dangerFlashType);
+	self:UpdateAnimations(zoneInfo, zoneIsGood, lastVals, dangerFlashType);
 
 	self:SetTooltip(zoneInfo.tooltip);
 

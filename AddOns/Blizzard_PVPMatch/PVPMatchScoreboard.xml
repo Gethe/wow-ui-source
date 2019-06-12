@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="PVPMatchScoreboard.lua"/>
 	
-	<Frame name="PVPMatchScoreboard" mixin="PVPMatchScoreboardMixin" toplevel="true" parent="UIParent" hidden="true">
+	<Frame name="PVPMatchScoreboard" mixin="PVPMatchScoreboardMixin" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
 		<Size x="1024" y="420"/>
 		<Anchors>
 			<Anchor point="CENTER"/>

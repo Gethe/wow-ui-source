@@ -843,9 +843,9 @@ local function WidgetLayout(widgetContainer, sortedWidgets)
 			widgetFrame:SetPoint("TOPLEFT", relative, "BOTTOMLEFT", 0, -10);
 		end
 
-		widgetsHeight = widgetsHeight + widgetFrame:GetHeight() + 10;
+		widgetsHeight = widgetsHeight + widgetFrame:GetWidgetHeight() + 10;
 
-		local widgetWidth = widgetFrame:GetWidth();
+		local widgetWidth = widgetFrame:GetWidgetWidth();
 		if widgetWidth > maxWidgetWidth then
 			maxWidgetWidth = widgetWidth;
 		end
@@ -955,11 +955,20 @@ function EmbeddedItemTooltip_SetItemByID(self, id)
 	EmbeddedItemTooltip_UpdateSize(self);
 end
 
-function EmbeddedItemTooltip_SetItemByQuestReward(self, questLogIndex, questID)
+function EmbeddedItemTooltip_SetItemByQuestReward(self, questLogIndex, questID, rewardType)
 	if not questLogIndex then
 		return false;
 	end
-	local itemName, itemTexture, quantity, quality, isUsable, itemID = GetQuestLogRewardInfo(questLogIndex, questID);
+
+	rewardType = rewardType or "reward";
+	local getterFunc;
+	if rewardType == "choice" then
+		getterFunc = GetQuestLogChoiceInfo;
+	else
+		getterFunc = GetQuestLogRewardInfo;
+	end
+
+	local itemName, itemTexture, quantity, quality, isUsable, itemID = getterFunc(questLogIndex, questID);
 	if itemName and itemTexture then
 		self.itemID = itemID;
 		self.spellID = nil;
@@ -967,7 +976,7 @@ function EmbeddedItemTooltip_SetItemByQuestReward(self, questLogIndex, questID)
 		self:Show();
 		EmbeddedItemTooltip_PrepareForItem(self);
 		self.Tooltip:SetOwner(self, "ANCHOR_NONE");
-		self.Tooltip:SetQuestLogItem("reward", questLogIndex, questID);
+		self.Tooltip:SetQuestLogItem(rewardType, questLogIndex, questID);
 		SetItemButtonQuality(self, quality, itemID);
 		SetItemButtonCount(self, quantity);
 		self.Icon:SetTexture(itemTexture);

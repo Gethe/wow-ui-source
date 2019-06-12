@@ -1614,7 +1614,7 @@ function PvpTalentButtonMixin:Update(selectedHere, selectedOther)
 		self.Selected:Hide();
 		self.SelectedOtherCheck:Hide();
 		self.SelectedOtherOverlay:Hide();
-		self:Disable();
+		self.disallowNormalClicks = true;
 	else
 		if (C_SpecializationInfo.IsPvpTalentLocked(self.talentID)) then
 			self.New:Show();
@@ -1625,7 +1625,7 @@ function PvpTalentButtonMixin:Update(selectedHere, selectedOther)
 		self.Selected:SetShown(selectedHere);
 		self.SelectedOtherCheck:SetShown(selectedOther);
 		self.SelectedOtherOverlay:SetShown(selectedOther);
-		self:SetEnabled(not selectedOther);
+		self.disallowNormalClicks = selectedOther; 
 	end
 
 	self.Name:SetText(name);
@@ -1652,7 +1652,9 @@ function PvpTalentButtonMixin:OnClick()
 		return;
 	end
 
-	self.owner:SelectTalentForSlot(self.talentID, self.owner.selectedSlotIndex);
+	if(not self.disallowNormalClicks) then 
+		self.owner:SelectTalentForSlot(self.talentID, self.owner.selectedSlotIndex);
+	end
 end
 
 function PvpTalentButtonMixin:OnEnter()

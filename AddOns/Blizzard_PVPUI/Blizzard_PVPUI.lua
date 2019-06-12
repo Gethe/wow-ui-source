@@ -1596,8 +1596,7 @@ function PVPUISeasonRewardFrameMixin:UpdateTooltip()
 		else
 			local wordWrap = true;
 			GameTooltip_AddNormalLine(EmbeddedItemTooltip, criteriaString, wordWrap);
-			local roundToNearestInteger = true;
-			GameTooltip_ShowProgressBar(EmbeddedItemTooltip, 0, reqQuantity, quantity, FormatPercentage(quantity / reqQuantity, roundToNearestInteger));
+			GameTooltip_ShowProgressBar(EmbeddedItemTooltip, 0, reqQuantity, quantity, FormatPercentage(quantity / reqQuantity));
 			local rewardItemID = C_AchievementInfo.GetRewardItemID(achievementID);
 			if rewardItemID then
 				GameTooltip_AddBlankLinesToTooltip(EmbeddedItemTooltip, 1);

@@ -512,7 +512,7 @@ function QuestInfo_ShowRewards()
 	end
 
 	local totalRewards = numQuestRewards + numQuestChoices + numQuestCurrencies;
-	if ( totalRewards == 0 and money == 0 and xp == 0 and not playerTitle and numQuestSpellRewards == 0 and artifactXP == 0 ) then
+	if ( totalRewards == 0 and money == 0 and xp == 0 and not playerTitle and numQuestSpellRewards == 0 and artifactXP == 0 and honor == 0 ) then
 		rewardsFrame:Hide();
 		return nil;
 	end
@@ -700,7 +700,7 @@ function QuestInfo_ShowRewards()
 	end
 
 	-- Setup mandatory rewards
-	if ( numQuestRewards > 0 or numQuestCurrencies > 0 or money > 0 or xp > 0 ) then
+	if ( numQuestRewards > 0 or numQuestCurrencies > 0 or money > 0 or xp > 0 or honor > 0 ) then
 		-- receive text, will either say "You will receive" or "You will also receive"
 		local questItemReceiveText = rewardsFrame.ItemReceiveText;
 		if ( numQuestChoices > 0 or numQuestSpellRewards > 0 or playerTitle ) then

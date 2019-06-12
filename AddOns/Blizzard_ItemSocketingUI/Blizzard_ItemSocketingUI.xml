@@ -479,7 +479,7 @@
 					</Layer>
 				</Layers>
 			</Button>
-			<Button name="ItemSocketingSocketButton" text="SOCKET_GEMS">
+			<Button name="ItemSocketingSocketButton" text="APPLY">
 				<Size x="162" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-5" y="3"/>

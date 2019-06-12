@@ -1020,9 +1020,9 @@ local VoiceChat =
 		{
 			Name = "VoiceChatStatusCode",
 			Type = "Enumeration",
-			NumValues = 23,
+			NumValues = 25,
 			MinValue = 0,
-			MaxValue = 22,
+			MaxValue = 24,
 			Fields =
 			{
 				{ Name = "Success", Type = "VoiceChatStatusCode", EnumValue = 0 },
@@ -1048,6 +1048,8 @@ local VoiceChat =
 				{ Name = "InvalidCommunityStream", Type = "VoiceChatStatusCode", EnumValue = 20 },
 				{ Name = "PlayerSilenced", Type = "VoiceChatStatusCode", EnumValue = 21 },
 				{ Name = "PlayerVoiceChatParentalDisabled", Type = "VoiceChatStatusCode", EnumValue = 22 },
+				{ Name = "InvalidInputDevice", Type = "VoiceChatStatusCode", EnumValue = 23 },
+				{ Name = "InvalidOutputDevice", Type = "VoiceChatStatusCode", EnumValue = 24 },
 			},
 		},
 		{

@@ -12,6 +12,7 @@ BUFF_ROW_SPACING = 15;
 NUM_TEMP_ENCHANT_FRAMES = 3;
 BUFF_BUTTON_HEIGHT = 30;
 BUFF_FRAME_BASE_EXTENT = 13;	-- pixels from the top of the screen to the top edge of the buff frame, needed to calculate extent for UIParentManageFramePositions
+BUFF_FRAME_HEIGHT = 50;
 BUFF_HORIZ_SPACING = -5;
 DEFAULT_AURA_DURATION_FONT = "GameFontNormalSmall";
 
@@ -323,7 +324,7 @@ function BuffFrame_UpdateAllBuffAnchors()
 	-- check if we need to manage frames
 	local bottomEdgeExtent = BUFF_FRAME_BASE_EXTENT;
 	if ( DEBUFF_ACTUAL_DISPLAY > 0 ) then
-		bottomEdgeExtent = bottomEdgeExtent + DebuffButton1.offsetY + BUFF_BUTTON_HEIGHT + ceil(DEBUFF_ACTUAL_DISPLAY / BUFFS_PER_ROW) * (BUFF_BUTTON_HEIGHT + BUFF_ROW_SPACING);
+		bottomEdgeExtent = bottomEdgeExtent + DebuffButton1.offsetY + BUFF_FRAME_HEIGHT + ceil(DEBUFF_ACTUAL_DISPLAY / BUFFS_PER_ROW) * (BUFF_BUTTON_HEIGHT + BUFF_ROW_SPACING);
 	else
 		bottomEdgeExtent = bottomEdgeExtent + numAuraRows * (BUFF_BUTTON_HEIGHT + BUFF_ROW_SPACING);
 	end

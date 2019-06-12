@@ -765,9 +765,11 @@ end
 
 function ChallengeModeCompleteBannerMixin:OnEvent(event, ...)
     if (event == "CHALLENGE_MODE_COMPLETED") then
-        local mapID, level, time, onTime, keystoneUpgradeLevels = C_ChallengeMode.GetCompletionInfo();
+        local mapID, level, time, onTime, keystoneUpgradeLevels, practiceRun = C_ChallengeMode.GetCompletionInfo();
 
-        TopBannerManager_Show(self, { mapID = mapID, level = level, time = time, onTime = onTime, keystoneUpgradeLevels = keystoneUpgradeLevels });
+		if not practiceRun then
+			TopBannerManager_Show(self, { mapID = mapID, level = level, time = time, onTime = onTime, keystoneUpgradeLevels = keystoneUpgradeLevels });
+		end
     end
 end
 

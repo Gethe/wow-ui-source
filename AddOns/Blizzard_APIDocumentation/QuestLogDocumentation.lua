@@ -365,9 +365,9 @@ local QuestLog =
 		{
 			Name = "QuestTag",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 102,
+			MaxValue = 266,
 			Fields =
 			{
 				{ Name = "Group", Type = "QuestTag", EnumValue = 1 },
@@ -380,6 +380,7 @@ local QuestLog =
 				{ Name = "Raid25", Type = "QuestTag", EnumValue = 89 },
 				{ Name = "Scenario", Type = "QuestTag", EnumValue = 98 },
 				{ Name = "Account", Type = "QuestTag", EnumValue = 102 },
+				{ Name = "CombatAlly", Type = "QuestTag", EnumValue = 266 },
 			},
 		},
 		{
