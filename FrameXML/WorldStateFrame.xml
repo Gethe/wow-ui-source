@@ -52,7 +52,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="$parentHonorableKills" inherits="GameFontNormalSmall" parentKey="honorableKills">
+				<FontString name="$parentHonorableKills" inherits="GameFontNormal" parentKey="honorableKills">
 					<Anchors>
 						<Anchor point="CENTER" relativePoint="LEFT">
 							<Offset>
@@ -61,7 +61,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentKillingBlows" inherits="GameFontNormalSmall" parentKey="killingBlows">
+				<FontString name="$parentKillingBlows" inherits="GameFontNormal" parentKey="killingBlows">
 					<Anchors>
 						<Anchor point="CENTER" relativePoint="LEFT">
 							<Offset>
@@ -70,7 +70,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentDeaths" inherits="GameFontNormalSmall" parentKey="deaths">
+				<FontString name="$parentDeaths" inherits="GameFontNormal" parentKey="deaths">
 					<Anchors>
 						<Anchor point="CENTER" relativePoint="LEFT">
 							<Offset>
@@ -210,7 +210,36 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentName"  parentKey="name">
+			<Frame name="$parentRankButton" parentKey="rankButton" enableMouse="true">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentIcon" parentKey="icon"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						if ( self.tooltip ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltip);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Button 
+name="$parentName"  parentKey="name">
 				<Size x="160" y="16"/>
 				<Anchors>
 					<Anchor point="LEFT" x="15" y="1"/>

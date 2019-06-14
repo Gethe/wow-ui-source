@@ -2,10 +2,10 @@ local MAX_SCORE_BUTTONS = 22;
 local MAX_NUM_STAT_COLUMNS = 7;
 local SCOREFRAME_BASE_COLUMNS = 4;
 local SCOREFRAME_COLUMN_SPACING = 77;
-local SCOREFRAME_BUTTON_TEXT_OFFSET = -32;
+local SCOREFRAME_BUTTON_TEXT_OFFSET = -31;
 local SCOREFRAME_BASE_WIDTH = 530;
 
-SCORE_BUTTON_HEIGHT = 15;
+SCORE_BUTTON_HEIGHT = 16;
 
 function WorldStateScoreFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -184,7 +184,14 @@ function WorldStateScoreFrame_Update()
 		end
 		if ( index <= numScores ) then
 			scoreButton.index = index;
-			name, killingBlows, honorableKills, deaths, honorGained, faction, race, class, classToken, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec, honorLevel = GetBattlefieldScore(index);
+			name, killingBlows, honorableKills, deaths, honorGained, faction, rank, race, class, classToken = GetBattlefieldScore(index);
+			rankName, rankNumber = GetPVPRankInfo(rank, faction);
+			if ( rankNumber > 0 ) then
+				scoreButton.rankButton.icon:SetTexture(format("%s%02d","Interface\\PvPRankBadges\\PvPRank", rankNumber));
+				scoreButton.rankButton:Show();
+			else
+				scoreButton.rankButton:Hide();
+			end
 
 			scoreButton.name.text:SetText(name);
 			if ( not race ) then
@@ -195,6 +202,7 @@ function WorldStateScoreFrame_Update()
 			end
 			scoreButton.name.name = name;
 			scoreButton.name.tooltip = race.." "..class;
+			scoreButton.rankButton.tooltip = rankName;
 			scoreButton.killingBlows:SetText(killingBlows);
 			teamDataFailed = 0;
 			teamName, teamRating, newTeamRating, teamMMR = GetBattlefieldTeamInfo(faction);

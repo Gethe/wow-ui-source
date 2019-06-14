@@ -455,7 +455,7 @@ function GroupLootDropDown_OnLoad(self)
 end
 
 function GroupLootDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
+	--[[local info = UIDropDownMenu_CreateInfo();
 	info.isTitle = 1;
 	info.text = MASTER_LOOTER;
 	info.fontObject = GameFontNormalLeft;
@@ -469,7 +469,10 @@ function GroupLootDropDown_Initialize()
 	UIDropDownMenu_AddButton(info);
 	info.text = REQUEST_ROLL;
 	info.func = function() DoMasterLootRoll(LootFrame.selectedSlot); end;
-	UIDropDownMenu_AddButton(info);
+	UIDropDownMenu_AddButton(info);]]
+
+	-- Removing the Request Roll option but keeping the modern Master Loot UI, so we'll just shortcut straight to that.
+	MasterLooterFrame_Show();
 end
 
 function GroupLootFrame_OpenNewFrame(id, rollTime)

@@ -997,9 +997,9 @@ function UnitPopup_HideButtons ()
 				shown = false;
 			end
 		elseif ( value == "REPORT_PLAYER" ) then
-			if not playerLocation or not playerLocation:IsValid() or not C_ChatInfo.CanReportPlayer(playerLocation) then
+--			if not playerLocation or not playerLocation:IsValid() or not C_ChatInfo.CanReportPlayer(playerLocation) then
 				shown = false;
-			end
+--			end
 		elseif ( value == "REPORT_SPAM" ) then
 			if not playerLocation:IsChatLineID() and not playerLocation:IsCommunityInvitation() then
 				shown = false;
@@ -1241,7 +1241,8 @@ function UnitPopup_HideButtons ()
 			elseif ( dropdownMenu.name ) then
 				if ( dropdownMenu.name == UnitName("player") ) then
 					shown = false;
-				elseif ( not UnitInBattleground(dropdownMenu.name) and not IsInActiveWorldPVP(dropdownMenu.name) ) then
+--				elseif ( not UnitInBattleground(dropdownMenu.name) and not IsInActiveWorldPVP(dropdownMenu.name) ) then
+				elseif ( not UnitInBattleground(dropdownMenu.name) ) then
 					shown = false;
 				end
 			end

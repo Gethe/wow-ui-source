@@ -57,36 +57,23 @@ end
 function Minimap_SetTooltip( pvpType, factionName )
 	if ( GameTooltip:IsOwned(MinimapZoneTextButton) ) then
 		GameTooltip:SetOwner(MinimapZoneTextButton, "ANCHOR_LEFT");
-		local zoneName = GetZoneText();
-		local subzoneName = GetSubZoneText();
-		if ( subzoneName == zoneName ) then
-			subzoneName = "";
-		end
-		GameTooltip:AddLine( zoneName, 1.0, 1.0, 1.0 );
+		GameTooltip:AddLine( GetMinimapZoneText() );
 		if ( pvpType == "sanctuary" ) then
-			GameTooltip:AddLine( subzoneName, 0.41, 0.8, 0.94 );
-			GameTooltip:AddLine(SANCTUARY_TERRITORY, 0.41, 0.8, 0.94);
+			GameTooltip:AddLine(SANCTUARY_TERRITORY);
 		elseif ( pvpType == "arena" ) then
-			GameTooltip:AddLine( subzoneName, 1.0, 0.1, 0.1 );
-			GameTooltip:AddLine(FREE_FOR_ALL_TERRITORY, 1.0, 0.1, 0.1);
+			GameTooltip:AddLine(FREE_FOR_ALL_TERRITORY);
 		elseif ( pvpType == "friendly" ) then
 			if (factionName and factionName ~= "") then
-				GameTooltip:AddLine( subzoneName, 0.1, 1.0, 0.1 );
-				GameTooltip:AddLine(format(FACTION_CONTROLLED_TERRITORY, factionName), 0.1, 1.0, 0.1);
+				GameTooltip:AddLine(format(FACTION_CONTROLLED_TERRITORY, factionName));
 			end
 		elseif ( pvpType == "hostile" ) then
 			if (factionName and factionName ~= "") then
-				GameTooltip:AddLine( subzoneName, 1.0, 0.1, 0.1 );
-				GameTooltip:AddLine(format(FACTION_CONTROLLED_TERRITORY, factionName), 1.0, 0.1, 0.1);
+				GameTooltip:AddLine(format(FACTION_CONTROLLED_TERRITORY, factionName));
 			end
 		elseif ( pvpType == "contested" ) then
-			GameTooltip:AddLine( subzoneName, 1.0, 0.7, 0.0 );
-			GameTooltip:AddLine(CONTESTED_TERRITORY, 1.0, 0.7, 0.0);
+			GameTooltip:AddLine(CONTESTED_TERRITORY);
 		elseif ( pvpType == "combat" ) then
-			GameTooltip:AddLine( subzoneName, 1.0, 0.1, 0.1 );
-			GameTooltip:AddLine(COMBAT_ZONE, 1.0, 0.1, 0.1);
-		else
-			GameTooltip:AddLine( subzoneName, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b );
+			GameTooltip:AddLine(COMBAT_ZONE);
 		end
 		GameTooltip:Show();
 	end
