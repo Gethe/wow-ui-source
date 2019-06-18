@@ -1533,10 +1533,22 @@ local SEASON_REWARD_ACHIEVEMENTS = {
 		[PLAYER_FACTION_GROUP[0]] = 13227,
 		[PLAYER_FACTION_GROUP[1]] = 13228,
 	},
+	[BFA_START_SEASON + 2] = {
+		[PLAYER_FACTION_GROUP[0]] = 13636,
+		[PLAYER_FACTION_GROUP[1]] = 13637,
+	},	
 };
 
 function PVPUISeasonRewardFrameMixin:GetAchievementID()
-	local seasonAchievements = SEASON_REWARD_ACHIEVEMENTS[GetCurrentArenaSeason()];
+	local seasonID = GetCurrentArenaSeason();
+	if seasonID == NO_ARENA_SEASON then
+		seasonID = GetPreviousArenaSeason();
+	end
+	if seasonID and seasonID < BFA_START_SEASON then
+		return nil;
+	end
+
+	local seasonAchievements = SEASON_REWARD_ACHIEVEMENTS[seasonID];
 	local achievementID = seasonAchievements and seasonAchievements[UnitFactionGroup("player")];
 	if achievementID then
 		local id, name, points, completed = GetAchievementInfo(achievementID);

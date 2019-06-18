@@ -32,6 +32,20 @@ local AzeriteEssence =
 			},
 		},
 		{
+			Name = "CanDeactivateEssence",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "milestoneID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canDeactivate", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanOpenUI",
 			Type = "Function",
 

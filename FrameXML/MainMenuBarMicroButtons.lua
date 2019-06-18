@@ -484,15 +484,7 @@ function CharacterMicroButtonMixin:ShouldShowAzeriteEssenceSwapAlert()
 		return false;
 	end
 
-	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CHANGE_AZERITE_ESSENCES) then
-		return false;
-	end
-
-	if IsPlayerInWorld() and C_AzeriteEssence.GetNumUnlockedEssences() > 1 then
-		return true;
-	end
-
-	return false;
+	return AzeriteEssenceUtil.ShouldShowEssenceSwapTutorial();
 end
 
 function CharacterMicroButtonMixin:EvaluateAlertVisibility()
@@ -504,8 +496,10 @@ function CharacterMicroButtonMixin:EvaluateAlertVisibility()
 		end
 	end
 
-	if self:ShouldShowAzeriteEssenceSwapAlert() then
+	if not self.seenAzeriteEssenceSwapAlert and self:ShouldShowAzeriteEssenceSwapAlert() then
 		if MainMenuMicroButton_ShowAlert(CharacterMicroButtonAlert, CHARACTER_SHEET_MICRO_BUTTON_AZERITE_ESSENCE_CHANGE_ESSENCES) then
+			self.seenAzeriteEssenceSwapAlert = true;
+			AzeriteEssenceUtil.SetEssenceSwapTutorialSeen();
 			return;
 		end
 	end

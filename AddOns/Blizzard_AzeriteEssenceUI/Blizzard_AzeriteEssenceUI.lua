@@ -249,9 +249,7 @@ function AzeriteEssenceUIMixin:TryShow()
 	if C_AzeriteEssence.CanOpenUI() then
 		ShowUIPanel(AzeriteEssenceUI);
 		if not C_AzeriteEssence.IsAtForge() then
-			if C_AzeriteEssence.GetNumUnlockedEssences() > 1 then
-				SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CHANGE_AZERITE_ESSENCES, true);
-			end
+			AzeriteEssenceUtil.TryAcknowledgeEssenceSwapTutorial();
 		end
 		return true;
 	end

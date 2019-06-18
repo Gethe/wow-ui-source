@@ -8,7 +8,7 @@
 		</Anchors>
 	</Button>
 	
-	<Frame name="PVPMatchResults" mixin="PVPMatchResultsMixin" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+	<Frame name="PVPMatchResults" mixin="PVPMatchResultsMixin" toplevel="true" frameStrata="DIALOG" parent="UIParent" enableMouse="true" hidden="true">
 		<Size x="1024" y="620"/>
 		<Anchors>
 			<Anchor point="CENTER"/>

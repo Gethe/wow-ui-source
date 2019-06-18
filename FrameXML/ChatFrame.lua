@@ -2731,6 +2731,7 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_CHAT_WINDOWS");
 	self:RegisterEvent("CHAT_MSG_CHANNEL");
 	self:RegisterEvent("CHAT_MSG_COMMUNITIES_CHANNEL");
+	self:RegisterEvent("CLUB_REMOVED");
 	self:RegisterEvent("UPDATE_INSTANCE_INFO");
 	self:RegisterEvent("UPDATE_CHAT_COLOR_NAME_BY_CLASS");
 	self:RegisterEvent("VARIABLES_LOADED");
@@ -2905,11 +2906,14 @@ function ChatFrame_GetCommunitiesChannelLocalID(clubId, streamId)
 	return localID;
 end
 
-function ChatFrame_RemoveCommunitiesChannel(chatFrame, clubId, streamId)
+function ChatFrame_RemoveCommunitiesChannel(chatFrame, clubId, streamId, omitMessage)
 	local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
 	local channelIndex = ChatFrame_RemoveChannel(chatFrame, channelName);
-	local r, g, b = Chat_GetCommunitiesChannelColor(clubId, streamId);
-	chatFrame:AddMessage(COMMUNITIES_CHANNEL_REMOVED_FROM_CHAT_WINDOW:format(channelIndex, ChatFrame_ResolveChannelName(channelName)), r, g, b);
+	
+	if not omitMessage then
+		local r, g, b = Chat_GetCommunitiesChannelColor(clubId, streamId);
+		chatFrame:AddMessage(COMMUNITIES_CHANNEL_REMOVED_FROM_CHAT_WINDOW:format(channelIndex, ChatFrame_ResolveChannelName(channelName)), r, g, b);
+	end
 end
 
 function ChatFrame_RemoveChannel(chatFrame, channel)
@@ -3180,6 +3184,19 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		local guid = ...;
 		FCF_RemoveAllMessagesFromChanSender(self, guid);
 		return true;
+	elseif ( event == "CLUB_REMOVED" ) then
+		local clubId = ...;
+		local streamIDs = C_ChatInfo.GetClubStreamIDs(clubId);
+		for k, streamID in pairs(streamIDs) do
+			local channelName = Chat_GetCommunitiesChannelName(clubId, streamID);
+			for i = 1, FCF_GetNumActiveChatFrames() do
+				local chatWindow = _G["ChatFrame"..i];
+				if ChatFrame_ContainsChannel(chatWindow, channelName) then
+					local omitMessage = true;
+					ChatFrame_RemoveCommunitiesChannel(chatWindow, clubId, streamID, omitMessage);
+				end
+			end
+		end
 	end
 end
 

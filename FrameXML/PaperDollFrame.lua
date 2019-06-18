@@ -2853,6 +2853,7 @@ do
 		AzeriteEssenceUnlockTipClosed	= 0x0004,
 		AzeriteEssenceSlotTipClosed		= 0x0008,
 		AzeriteEssenceUIShown			= 0x0010,
+		AzeriteEssenceSwapTipClosed		= 0x0020,
 	};
 
 	function PaperDollItemsMixin:OnLoad()
@@ -2863,7 +2864,7 @@ do
 		self.helpFlags = CreateFromMixins(FlagsMixin);
 		self.helpFlags:OnLoad();
 		self.helpFlags:AddNamedFlagsFromTable(helpFlags);
-		self.clearableFlags = Flags_CreateMaskFromTable(helpFlags) - self.helpFlags.AzeriteEssenceUnlockTipClosed;
+		self.clearableFlags = Flags_CreateMaskFromTable(helpFlags) - self.helpFlags.AzeriteEssenceUnlockTipClosed - self.helpFlags.AzeriteEssenceSwapTipClosed;
 	end
 end
 
@@ -2994,6 +2995,18 @@ function PaperDollItemsMixin:ShouldShowAzeriteEssenceSlotHelpTip()
 	return true;
 end
 
+function PaperDollItemsMixin:ShouldShowAzeriteEssenceSwapHelpTip()
+	if self.helpFlags:IsSet(self.helpFlags.AzeriteEssenceSwapTipClosed) then
+		return false;
+	end
+
+	if self.helpFlags:IsSet(self.helpFlags.AzeriteEssenceUIShown) then
+		return false;
+	end
+
+	return AzeriteEssenceUtil.ShouldShowEssenceSwapTutorial();
+end
+
 function PaperDollItemsMixin:OnHelpTipManuallyClosed(closeFlag)
 	self.helpFlags:Set(closeFlag);
 	self:MarkDirty();
@@ -3018,6 +3031,13 @@ function PaperDollItemsMixin:EvaluateHelpTip()
 			helpCloseFlag = self.helpFlags.AzeriteEssenceSlotTipClosed;
 		end
 	end
+	if not bestHelpTipButton and self:ShouldShowAzeriteEssenceSwapHelpTip() then
+		bestHelpTipButton = self:FindActiveAzeriteItemButton();
+		helpTipText = CHARACTER_SHEET_MICRO_BUTTON_AZERITE_ESSENCE_CHANGE_ESSENCES;
+		helpCloseFlag = self.helpFlags.AzeriteEssenceSwapTipClosed;
+
+		AzeriteEssenceUtil.SetEssenceSwapTutorialSeen();
+	end	
 	if not bestHelpTipButton and self:ShouldShowAzeriteEmpoweredItemHelpTip() then
 		bestHelpTipButton = self:FindBestAzeriteEmpoweredItemUIHelpTipButton();
 		helpTipText = AZERITE_EMPOWERED_UNSELECTED_TRAITS_HELPTIP;

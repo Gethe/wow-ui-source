@@ -25,6 +25,20 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "GetClubStreamIDs",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "ids", Type = "table", InnerType = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNumActiveChannels",
 			Type = "Function",
 
