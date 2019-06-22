@@ -135,6 +135,7 @@ retain("SOUNDKIT");
 retain("GetScreenWidth");
 retain("GetScreenHeight");
 retain("GetPhysicalScreenSize");
+retain("GetScreenDPIScale");
 retain("ConvertPixelsToUI");
 retain("IsTrialAccount");
 retain("IsVeteranTrialAccount");

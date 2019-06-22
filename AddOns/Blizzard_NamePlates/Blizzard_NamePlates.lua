@@ -507,6 +507,12 @@ function NameplateBuffContainerMixin:UpdateAnchor()
 	local isTarget = self:GetParent().unit and UnitIsUnit(self:GetParent().unit, "target");
 	local targetYOffset = self:GetBaseYOffset() + (isTarget and self:GetTargetYOffset() or 0.0);
 	self:ClearAllPoints();
+	local parent = self:GetParent();
+	local healthBar = parent and parent.healthBar;
+	if healthBar then
+		self:SetPoint("LEFT", healthBar, "LEFT", -1, 0);
+	end
+
 	if (self:GetParent().unit and ShouldShowName(self:GetParent())) then
 		self:SetPoint("BOTTOM", self:GetParent(), "TOP", 0, targetYOffset);
 	else

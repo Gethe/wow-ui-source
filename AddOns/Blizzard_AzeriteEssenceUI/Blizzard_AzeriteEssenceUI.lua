@@ -736,7 +736,7 @@ function AzeriteEssenceListMixin:CleanUpLearnEssence()
 	self.learnEssenceButton = nil;
 
 	self.LearnEssenceModelScene:Hide();
-	ScrollBar_Enable(self.scrollBar);
+	self:Refresh();
 end
 
 function AzeriteEssenceListMixin:CalculateScrollOffset(offset)
@@ -843,7 +843,6 @@ function AzeriteEssenceListMixin:Refresh()
 		self.Tutorial:Show();
 		self.Tutorial:SetPoint("BOTTOM", self.buttons[1].Icon, "TOP", 0, 12);
 	else
-		ScrollBar_Enable(self.scrollBar);
 		self.Tutorial:Hide();
 	end
 end
