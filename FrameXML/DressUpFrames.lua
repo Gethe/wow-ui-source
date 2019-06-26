@@ -231,18 +231,6 @@ function DressUpOutfitMixin:LoadOutfit(outfitID)
 	DressUpSources(C_TransmogCollection.GetOutfitSources(outfitID))
 end
 
-function SideDressUpFrame_OnShow(self)
-	SetUIPanelAttribute(self.parentFrame, "width", self.openWidth);
-	UpdateUIPanelPositions(self.parentFrame);
-	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-end
-
-function SideDressUpFrame_OnHide(self)
-	SetUIPanelAttribute(self.parentFrame, "width", self.closedWidth);
-	UpdateUIPanelPositions();
-	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
-end
-
 function SetUpSideDressUpFrame(parentFrame, closedWidth, openWidth, point, relativePoint, offsetX, offsetY)
 	local self = SideDressUpFrame;
 	if ( self.parentFrame ) then

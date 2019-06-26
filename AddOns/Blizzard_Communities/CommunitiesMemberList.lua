@@ -4,6 +4,7 @@ local COMMUNITIES_MEMBER_LIST_EVENTS = {
 	"CLUB_MEMBER_REMOVED",
 	"CLUB_MEMBER_UPDATED",
 	"CLUB_MEMBER_PRESENCE_UPDATED",
+	"CLUB_STREAMS_LOADED",
 	"VOICE_CHAT_CHANNEL_ACTIVATED",
 	"VOICE_CHAT_CHANNEL_DEACTIVATED",
 	"VOICE_CHAT_CHANNEL_JOINED",
@@ -442,13 +443,13 @@ function CommunitiesMemberListMixin:OnLoad()
 	self.ListScrollFrame.scrollBar.doNotHide = true;
 	self.ListScrollFrame.scrollBar:SetValue(0);
 
-	self:SetExpandedDisplay(false);
 	self:SetGuildColumnIndex(EXTRA_GUILD_COLUMN_ACHIEVEMENT);
 end
 
 function CommunitiesMemberListMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, COMMUNITIES_MEMBER_LIST_EVENTS);
 
+	self:SetExpandedDisplay(false);
 	self:UpdateMemberList();
 
 	local function StreamSelectedCallback(event, streamId)
@@ -461,7 +462,7 @@ function CommunitiesMemberListMixin:OnShow()
 	local function ClubSelectedCallback(event, clubId)
 		self:ResetColumnSort();
 		if clubId == C_Club.GetGuildClubId() then
-			GuildRoster();
+			C_GuildInfo.GuildRoster();
 		end
 
 		self:UpdateInvitations();
@@ -489,7 +490,7 @@ function CommunitiesMemberListMixin:OnShow()
 
 	local selectedClubId = self:GetSelectedClubId();
 	if selectedClubId ~= nil and selectedClubId == C_Club.GetGuildClubId() then
-		GuildRoster();
+		C_GuildInfo.GuildRoster();
 		QueryGuildRecipes();
 	end
 end
@@ -595,7 +596,7 @@ function CommunitiesMemberListMixin:RefreshLayout()
 end
 
 function CommunitiesMemberListMixin:OnEvent(event, ...)
-	if event == "CLUB_MEMBER_ADDED" or event == "CLUB_MEMBER_REMOVED" or event == "CLUB_MEMBER_UPDATED" then
+	if event == "CLUB_MEMBER_ADDED" or event == "CLUB_MEMBER_REMOVED" or event == "CLUB_MEMBER_UPDATED" or event == "CLUB_STREAMS_LOADED" then
 		local clubId, memberId = ...;
 		if clubId == self:GetSelectedClubId() then
 			self:MarkMemberListDirty();
@@ -644,7 +645,7 @@ function CommunitiesMemberListMixin:OnEvent(event, ...)
 	elseif event == "GUILD_ROSTER_UPDATE" then
 		local canRequestGuildRosterUpdate = ...;
 		if canRequestGuildRosterUpdate then
-			GuildRoster();
+			C_GuildInfo.GuildRoster();
 		end
 
 		if C_Club.GetGuildClubId() == self:GetSelectedClubId() then
@@ -1434,6 +1435,7 @@ function CommunitiesMemberListDropdown_Initialize(self, level)
 		self.clubAssignableRoles = C_Club.GetAssignableRoles(clubInfo.clubId, memberInfo.memberId);
 		self.isSelf = memberInfo.isSelf;
 		self.guid = memberInfo.guid;
+		self.isMobile = memberInfo.presence == Enum.ClubMemberPresence.OnlineMobile;
 		UnitPopup_ShowMenu(self, clubTypeToUnitPopup[clubInfo.clubType], nil, memberInfo.name);
 	end
 end

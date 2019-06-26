@@ -34,7 +34,6 @@ TRAVEL PASS
 			</Layer>
 		</Layers>
 	</Frame>
-
 	<Frame name="FriendsFrameFriendDividerTemplate" virtual="true" enableMouse="true">
 		<Size x="298" y="16"/>
 		<Layers>
@@ -151,6 +150,9 @@ TRAVEL PASS
 					</Anchors>
 					<Color r="0.486" g="0.518" b="0.541" />
 				</FontString>
+				<Texture atlas="friendslist-favorite" hidden="true" parentKey="Favorite">
+					<Size x="17" y="17"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -412,7 +414,6 @@ TRAVEL PASS
 			</Anchors>
 		</HighlightTexture>
 	</Button>
-
 	<Button name="FriendsFrameTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
@@ -511,12 +512,7 @@ TRAVEL PASS
 								<Scripts>
 									<OnClick>
 										local infoFrame = self:GetParent().UnavailableInfoFrame;
-										if ( infoFrame:IsShown() ) then
-											infoFrame:Hide();
-										else
-											infoFrame:SetHeight(86 + infoFrame.Text:GetHeight());
-											infoFrame:Show();
-										end
+										infoFrame:SetShown(not infoFrame:IsShown());
 									</OnClick>
 								</Scripts>
 							</Button>
@@ -525,27 +521,7 @@ TRAVEL PASS
 								<Anchors>
 									<Anchor point="TOPLEFT" x="-110" y="-24"/>
 								</Anchors>
-								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-									<BackgroundInsets>
-										<AbsInset left="11" right="12" top="12" bottom="11"/>
-									</BackgroundInsets>
-									<TileSize>
-										<AbsValue val="32"/>
-									</TileSize>
-									<EdgeSize>
-										<AbsValue val="32"/>
-									</EdgeSize>
-								</Backdrop>
 								<Layers>
-									<Layer level="BACKGROUND" textureSubLevel="1">
-										<Texture>
-											<Anchors>
-												<Anchor point="TOPLEFT" x="10" y="-10"/>
-												<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
-											</Anchors>
-											<Color r="0" g="0" b="0" a="0.7"/>
-										</Texture>
-									</Layer>
 									<Layer level="ARTWORK">
 										<FontString text="BATTLENET_BROADCAST" inherits="GameFontNormalMed3">
 											<Anchors>
@@ -560,6 +536,7 @@ TRAVEL PASS
 									</OnShow>
 								</Scripts>
 								<Frames>
+									<Frame parentKey="Border" inherits="DialogBorderOpaqueTemplate"/>
 									<ScrollFrame name="$parentScrollFrame" parentKey="ScrollFrame" inherits="UIPanelScrollFrameTemplate">
 										<Size x="263" y="0"/>
 										<Anchors>
@@ -699,22 +676,8 @@ TRAVEL PASS
 									</ScrollFrame>
 								</Frames>
 							</Frame>
-							<Frame parentKey="UnavailableInfoFrame" hidden="true">
+							<Frame parentKey="UnavailableInfoFrame" inherits="DialogBorderTemplate" hidden="true">
 								<Size x="306" y="100"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="FriendsFrame" relativePoint="TOPRIGHT" x="-2" y="-18"/>
-								</Anchors>
-								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-									<BackgroundInsets>
-										<AbsInset left="11" right="12" top="12" bottom="11"/>
-									</BackgroundInsets>
-									<TileSize>
-										<AbsValue val="32"/>
-									</TileSize>
-									<EdgeSize>
-										<AbsValue val="32"/>
-									</EdgeSize>
-								</Backdrop>
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString parentKey="Label" inherits="FriendsFont_Large" text="BATTLENET_UNAVAILABLE">
@@ -737,6 +700,15 @@ TRAVEL PASS
 										</FontString>
 									</Layer>
 								</Layers>
+								<Scripts>
+									<OnLoad inherit="append">
+										self:ClearAllPoints();
+										self:SetPoint("TOPLEFT", FriendsFrame, "TOPRIGHT", -2, -18);
+									</OnLoad>
+									<OnShow>
+										self:SetHeight(86 + self.Text:GetHeight());
+									</OnShow>
+								</Scripts>
 							</Frame>
 						</Frames>
 					</Frame>
@@ -1816,18 +1788,8 @@ TRAVEL PASS
 	</Frame>
 	<Frame name="AddFriendFrame" parent="UIParent" hidden="true" frameStrata="DIALOG">
 		<Size x="446" y="272"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<Frame name="AddFriendInfoFrame" hidden="true">
 				<Size x="446" y="272"/>
 				<Anchors>
@@ -2208,17 +2170,6 @@ TRAVEL PASS
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="50"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentTitle" inherits="FriendsFont_Large" justifyH="LEFT">
@@ -2231,6 +2182,7 @@ TRAVEL PASS
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<Frame name="FriendsFriendsFrameDropDown" inherits="UIDropDownMenuTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="8" y="-40"/>
@@ -2388,17 +2340,6 @@ TRAVEL PASS
 
 	<Frame name="BattleTagInviteFrame" parent="UIParent" frameStrata="DIALOG" hidden="true">
 		<Size x="357" y="150"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="12" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString inherits="FriendsFont_Normal" text="BATTLE_TAG_REQUEST">
@@ -2421,6 +2362,7 @@ TRAVEL PASS
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<Button inherits="UIPanelButtonTemplate" text="SEND_REQUEST">
 				<Size x="128" y="22"/>
 				<Anchors>

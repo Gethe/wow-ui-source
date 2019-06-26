@@ -69,7 +69,7 @@ function QuickJoinMixin:OnEvent(event, ...)
 	elseif ( event == "GUILD_ROSTER_UPDATE" ) then
 		local canRequestGuildRoster = ...;
 		if ( canRequestGuildRoster ) then
-			GuildRoster();
+			C_GuildInfo.GuildRoster();
 		end
 
 		self:UpdateScrollFrame();

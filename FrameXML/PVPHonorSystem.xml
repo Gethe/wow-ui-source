@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="PVPHonorSystem.lua"/>
 
-	<Frame name="PVPHonorRewardCodeTemplate" virtual="true" mixin="PVPHonorRewardMixin">
+	<Frame name="PVPHonorRewardCodeTemplate" virtual="true" mixin="PVPHonorRewardCodeMixin">
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>

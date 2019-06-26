@@ -28,27 +28,10 @@
 	<Frame name="GlueDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Frames>
 			<Frame name="GlueDialogBackground">
-				<Size>
-					<AbsDimension x="512" y="256"/>
-				</Size>
+				<Size x="512" y="256"/>
 				<Anchors>
-					<Anchor point="CENTER">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="GlueDialogTitle" inherits="GlueFontNormalLarge">
@@ -78,6 +61,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="BG" inherits="DialogBorderTemplate"/>
 					<SimpleHTML name="GlueDialogHTML" hyperlinkFormat="|cff06ff07|H%s|h[%s]|h|r" hidden="true">
 						<Size>
 							<AbsDimension x="450" y="30"/>

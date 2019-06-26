@@ -156,6 +156,15 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "GetObjectiveTrackerWidgetSetID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "setID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetScenarioHeaderCurrenciesAndBackgroundWidgetVisualizationInfo",
 			Type = "Function",
 
@@ -226,7 +235,7 @@ local UIWidgetManager =
 			},
 		},
 		{
-			Name = "GetTextureWithStateVisualizationInfo",
+			Name = "GetTextureAndTextRowVisualizationInfo",
 			Type = "Function",
 
 			Arguments =
@@ -236,7 +245,21 @@ local UIWidgetManager =
 
 			Returns =
 			{
-				{ Name = "widgetInfo", Type = "TextureWithStateVisualizationInfo", Nilable = true },
+				{ Name = "widgetInfo", Type = "TextureAndTextRowVisualizationInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetTextureAndTextVisualizationInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "TextureAndTextVisualizationInfo", Nilable = true },
 			},
 		},
 		{
@@ -246,6 +269,20 @@ local UIWidgetManager =
 			Returns =
 			{
 				{ Name = "setID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetZoneControlVisualizationInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "ZoneControlVisualizationInfo", Nilable = true },
 			},
 		},
 	},
@@ -297,6 +334,30 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "WidgetAnimationType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "None", Type = "WidgetAnimationType", EnumValue = 0 },
+				{ Name = "Fade", Type = "WidgetAnimationType", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "CaptureBarWidgetGlowAnimType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "None", Type = "CaptureBarWidgetGlowAnimType", EnumValue = 0 },
+				{ Name = "Pulse", Type = "CaptureBarWidgetGlowAnimType", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "IconState",
 			Type = "Enumeration",
 			NumValues = 3,
@@ -329,9 +390,9 @@ local UIWidgetManager =
 		{
 			Name = "UIWidgetVisualizationType",
 			Type = "Enumeration",
-			NumValues = 15,
+			NumValues = 17,
 			MinValue = 0,
-			MaxValue = 14,
+			MaxValue = 16,
 			Fields =
 			{
 				{ Name = "IconAndText", Type = "UIWidgetVisualizationType", EnumValue = 0 },
@@ -346,9 +407,11 @@ local UIWidgetManager =
 				{ Name = "HorizontalCurrencies", Type = "UIWidgetVisualizationType", EnumValue = 9 },
 				{ Name = "BulletTextList", Type = "UIWidgetVisualizationType", EnumValue = 10 },
 				{ Name = "ScenarioHeaderCurrenciesAndBackground", Type = "UIWidgetVisualizationType", EnumValue = 11 },
-				{ Name = "TextureWithState", Type = "UIWidgetVisualizationType", EnumValue = 12 },
+				{ Name = "TextureAndText", Type = "UIWidgetVisualizationType", EnumValue = 12 },
 				{ Name = "SpellDisplay", Type = "UIWidgetVisualizationType", EnumValue = 13 },
 				{ Name = "DoubleStateIconRow", Type = "UIWidgetVisualizationType", EnumValue = 14 },
+				{ Name = "TextureAndTextRow", Type = "UIWidgetVisualizationType", EnumValue = 15 },
+				{ Name = "ZoneControl", Type = "UIWidgetVisualizationType", EnumValue = 16 },
 			},
 		},
 		{
@@ -379,6 +442,124 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "SpellDisplayIconDisplayType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Buff", Type = "SpellDisplayIconDisplayType", EnumValue = 0 },
+				{ Name = "Debuff", Type = "SpellDisplayIconDisplayType", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "StatusBarOverrideBarTextShownType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Never", Type = "StatusBarOverrideBarTextShownType", EnumValue = 0 },
+				{ Name = "Always", Type = "StatusBarOverrideBarTextShownType", EnumValue = 1 },
+				{ Name = "OnlyOnMouseover", Type = "StatusBarOverrideBarTextShownType", EnumValue = 2 },
+				{ Name = "OnlyNotOnMouseover", Type = "StatusBarOverrideBarTextShownType", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "UIWidgetTextSizeType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Small", Type = "UIWidgetTextSizeType", EnumValue = 0 },
+				{ Name = "Medium", Type = "UIWidgetTextSizeType", EnumValue = 1 },
+				{ Name = "Large", Type = "UIWidgetTextSizeType", EnumValue = 2 },
+				{ Name = "Huge", Type = "UIWidgetTextSizeType", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "ZoneControlMode",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "BothStatesAreGood", Type = "ZoneControlMode", EnumValue = 0 },
+				{ Name = "State1IsGood", Type = "ZoneControlMode", EnumValue = 1 },
+				{ Name = "State2IsGood", Type = "ZoneControlMode", EnumValue = 2 },
+				{ Name = "NeitherStateIsGood", Type = "ZoneControlMode", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "ZoneControlLeadingEdgeType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "NoLeadingEdge", Type = "ZoneControlLeadingEdgeType", EnumValue = 0 },
+				{ Name = "UseLeadingEdge", Type = "ZoneControlLeadingEdgeType", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "ZoneControlDangerFlashType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "ShowOnGoodStates", Type = "ZoneControlDangerFlashType", EnumValue = 0 },
+				{ Name = "ShowOnBadStates", Type = "ZoneControlDangerFlashType", EnumValue = 1 },
+				{ Name = "ShowOnBoth", Type = "ZoneControlDangerFlashType", EnumValue = 2 },
+				{ Name = "ShowOnNeither", Type = "ZoneControlDangerFlashType", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "ZoneControlState",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "State1", Type = "ZoneControlState", EnumValue = 0 },
+				{ Name = "State2", Type = "ZoneControlState", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "ZoneControlActiveState",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Inactive", Type = "ZoneControlActiveState", EnumValue = 0 },
+				{ Name = "Active", Type = "ZoneControlActiveState", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "ZoneControlFillType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "SingleFillClockwise", Type = "ZoneControlFillType", EnumValue = 0 },
+				{ Name = "SingleFillCounterClockwise", Type = "ZoneControlFillType", EnumValue = 1 },
+				{ Name = "DoubleFillClockwise", Type = "ZoneControlFillType", EnumValue = 2 },
+				{ Name = "DoubleFillCounterClockwise", Type = "ZoneControlFillType", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "WidgetCurrencyClass",
 			Type = "Enumeration",
 			NumValues = 2,
@@ -398,9 +579,14 @@ local UIWidgetManager =
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "enabledState", Type = "WidgetEnabledState", Nilable = false },
 				{ Name = "lines", Type = "table", InnerType = "string", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
+				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
 				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 			},
 		},
 		{
@@ -409,12 +595,21 @@ local UIWidgetManager =
 			Fields =
 			{
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
-				{ Name = "barPercent", Type = "number", Nilable = false },
-				{ Name = "neutralPercent", Type = "number", Nilable = false },
+				{ Name = "barValue", Type = "number", Nilable = false },
+				{ Name = "barMinValue", Type = "number", Nilable = false },
+				{ Name = "barMaxValue", Type = "number", Nilable = false },
+				{ Name = "neutralZoneSize", Type = "number", Nilable = false },
+				{ Name = "neutralZoneCenter", Type = "number", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+				{ Name = "glowAnimType", Type = "CaptureBarWidgetGlowAnimType", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
 				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 			},
 		},
 		{
@@ -428,10 +623,14 @@ local UIWidgetManager =
 				{ Name = "leftTooltip", Type = "string", Nilable = false },
 				{ Name = "rightText", Type = "string", Nilable = false },
 				{ Name = "rightTooltip", Type = "string", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
 				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 			},
 		},
 		{
@@ -452,10 +651,14 @@ local UIWidgetManager =
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "leftIcons", Type = "table", InnerType = "UIWidgetStateIconInfo", Nilable = false },
 				{ Name = "rightIcons", Type = "table", InnerType = "UIWidgetStateIconInfo", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
 				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 			},
 		},
 		{
@@ -467,16 +670,21 @@ local UIWidgetManager =
 				{ Name = "leftBarMin", Type = "number", Nilable = false },
 				{ Name = "leftBarMax", Type = "number", Nilable = false },
 				{ Name = "leftBarValue", Type = "number", Nilable = false },
+				{ Name = "leftBarTooltip", Type = "string", Nilable = false },
 				{ Name = "rightBarMin", Type = "number", Nilable = false },
 				{ Name = "rightBarMax", Type = "number", Nilable = false },
 				{ Name = "rightBarValue", Type = "number", Nilable = false },
+				{ Name = "rightBarTooltip", Type = "string", Nilable = false },
 				{ Name = "barValueTextType", Type = "StatusBarValueTextType", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
-				{ Name = "barWidth", Type = "number", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
 				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 			},
 		},
 		{
@@ -508,9 +716,14 @@ local UIWidgetManager =
 			{
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "currencies", Type = "table", InnerType = "UIWidgetCurrencyInfo", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
+				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
 				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 			},
 		},
 		{
@@ -522,10 +735,14 @@ local UIWidgetManager =
 				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },
 				{ Name = "dynamicTooltip", Type = "string", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
 				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 			},
 		},
 		{
@@ -535,10 +752,14 @@ local UIWidgetManager =
 			{
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
 				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 			},
 		},
 		{
@@ -553,10 +774,14 @@ local UIWidgetManager =
 				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = false },
 				{ Name = "currencies", Type = "table", InnerType = "UIWidgetCurrencyInfo", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
 				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 			},
 		},
 		{
@@ -566,11 +791,14 @@ local UIWidgetManager =
 			{
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "currencies", Type = "table", InnerType = "UIWidgetCurrencyInfo", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
+				{ Name = "textureKitID", Type = "number", Nilable = false },
 				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
-				{ Name = "leftCurrencyWidth", Type = "number", Nilable = false },
 				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 			},
 		},
 		{
@@ -580,6 +808,10 @@ local UIWidgetManager =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },
+				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "stackDisplay", Type = "number", Nilable = false },
+				{ Name = "iconSizeType", Type = "SpellDisplayIconSizeType", Nilable = false },
+				{ Name = "iconDisplayType", Type = "SpellDisplayIconDisplayType", Nilable = false },
 			},
 		},
 		{
@@ -590,11 +822,14 @@ local UIWidgetManager =
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "enabledState", Type = "WidgetEnabledState", Nilable = false },
 				{ Name = "spellInfo", Type = "UIWidgetSpellInfo", Nilable = false },
-				{ Name = "iconSizeType", Type = "SpellDisplayIconSizeType", Nilable = false },
-				{ Name = "widgetWidth", Type = "number", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
+				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
 				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 			},
 		},
 		{
@@ -604,10 +839,14 @@ local UIWidgetManager =
 			{
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "resources", Type = "table", InnerType = "UIWidgetCurrencyInfo", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
+				{ Name = "textureKitID", Type = "number", Nilable = false },
 				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
 				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 			},
 		},
 		{
@@ -621,13 +860,17 @@ local UIWidgetManager =
 				{ Name = "barValue", Type = "number", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },
-				{ Name = "barWidth", Type = "number", Nilable = false },
 				{ Name = "barValueTextType", Type = "StatusBarValueTextType", Nilable = false },
+				{ Name = "overrideBarText", Type = "string", Nilable = false },
+				{ Name = "overrideBarTextShownType", Type = "StatusBarOverrideBarTextShownType", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
+				{ Name = "textureKitID", Type = "number", Nilable = false },
 				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
-				{ Name = "fillTextureKitID", Type = "number", Nilable = false },
 				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 			},
 		},
 		{
@@ -638,24 +881,95 @@ local UIWidgetManager =
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "enabledState", Type = "WidgetEnabledState", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
-				{ Name = "widgetWidth", Type = "number", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
+				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
 				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 			},
 		},
 		{
-			Name = "TextureWithStateVisualizationInfo",
+			Name = "TextureAndTextEntryInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "TextureAndTextRowVisualizationInfo",
 			Type = "Structure",
 			Fields =
 			{
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "backgroundTextureKitID", Type = "number", Nilable = false },
-				{ Name = "portraitTextureKitID", Type = "number", Nilable = false },
+				{ Name = "entries", Type = "table", InnerType = "TextureAndTextEntryInfo", Nilable = false },
+				{ Name = "textSizeType", Type = "UIWidgetTextSizeType", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
+				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
 				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+			},
+		},
+		{
+			Name = "TextureAndTextVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
+				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
+				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+			},
+		},
+		{
+			Name = "ZoneEntry",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "state", Type = "ZoneControlState", Nilable = false },
+				{ Name = "activeState", Type = "ZoneControlActiveState", Nilable = false },
+				{ Name = "fillType", Type = "ZoneControlFillType", Nilable = false },
+				{ Name = "min", Type = "number", Nilable = false },
+				{ Name = "max", Type = "number", Nilable = false },
+				{ Name = "current", Type = "number", Nilable = false },
+				{ Name = "capturePoint", Type = "number", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ZoneControlVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
+				{ Name = "mode", Type = "ZoneControlMode", Nilable = false },
+				{ Name = "leadingEdgeType", Type = "ZoneControlLeadingEdgeType", Nilable = false },
+				{ Name = "dangerFlashType", Type = "ZoneControlDangerFlashType", Nilable = false },
+				{ Name = "zoneEntries", Type = "table", InnerType = "ZoneEntry", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
+				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 			},
 		},
 	},

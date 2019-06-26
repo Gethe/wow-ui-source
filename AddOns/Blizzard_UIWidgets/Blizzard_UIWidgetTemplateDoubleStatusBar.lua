@@ -37,21 +37,21 @@ local textureKitStatusBars = {
 local DEFAULT_BAR_WIDTH = 92;
 local ICON_OFFSET = 12;
 
-function UIWidgetTemplateDoubleStatusBarMixin:Setup(widgetInfo)
-	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
+function UIWidgetTemplateDoubleStatusBarMixin:Setup(widgetInfo, widgetContainer)
+	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 	local textureKit = GetUITextureKitInfo(widgetInfo.textureKitID);
 
 	SetupTextureKitOnRegions(textureKit, self.LeftBar, leftBarTextureKitRegions);
 	SetupTextureKitOnRegions(textureKit, self.RightBar, rightBarTextureKitRegions);
 	SetupTextureKitOnRegions(textureKit, self, textureKitStatusBars);
 
-	local barWidth = (widgetInfo.barWidth > 0) and widgetInfo.barWidth or DEFAULT_BAR_WIDTH;
+	local barWidth = (widgetInfo.widgetSizeSetting > 0) and widgetInfo.widgetSizeSetting or DEFAULT_BAR_WIDTH;
 
 	self.LeftBar:SetWidth(barWidth);
 	self.RightBar:SetWidth(barWidth);
 
-	self.LeftBar:Setup(widgetInfo.leftBarMin, widgetInfo.leftBarMax, widgetInfo.leftBarValue, widgetInfo.barValueTextType);
-	self.RightBar:Setup(widgetInfo.rightBarMin, widgetInfo.rightBarMax, widgetInfo.rightBarValue, widgetInfo.barValueTextType);
+	self.LeftBar:Setup(widgetInfo.leftBarMin, widgetInfo.leftBarMax, widgetInfo.leftBarValue, widgetInfo.barValueTextType, widgetInfo.leftBarTooltip);
+	self.RightBar:Setup(widgetInfo.rightBarMin, widgetInfo.rightBarMax, widgetInfo.rightBarValue, widgetInfo.barValueTextType, widgetInfo.rightBarTooltip);
 
 	local showSpark = widgetInfo.leftBarValue > widgetInfo.leftBarMin and widgetInfo.leftBarValue < widgetInfo.leftBarMax;
 	self.LeftBar.Spark:SetShown(showSpark);

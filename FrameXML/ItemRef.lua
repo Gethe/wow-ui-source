@@ -9,33 +9,10 @@ local function FormatLink(linkType, linkDisplayText, ...)
 end
 
 function SetItemRef(link, text, button, chatFrame)
-	
+
 	-- Going forward, use linkType and linkData instead of strsub and strsplit everywhere
 	local linkType, linkData = string.match(link, '(.-):(.*)');
 
-	-- Internal only links
-	if (IsGMClient()) then
-
-		-- Allow a link to arbitrary execute a string as code when a link is clicked - Debug:<luaTextHere>
-		if (linkType == "DebugExecute") then
-			assert(loadstring(linkData))();
-			return;
-		end
-
-		-- Allow a link to launch a record in WowEdit - WowEdit:<Table>:<ID>
-		if (linkType == "WowEdit") then
-			local table, id = strsplit(":", linkData);
-			if (table and id) then
-				WowEditLaunchEditor(table, id);
-				print(("Opening |cFF00FFFF%s|r record |cFF00FFFF%s|r"):format(table, id));
-			else
-				print(("ERROR - WowEdit link invalid parameters | Table:%s ID:%s"):format(tostring(table), tostring(id)));
-			end
-			return;
-		end
-
-	end
-	
 	if ( strsub(link, 1, 6) == "player" ) then
 		local namelink, isGMLink, isCommunityLink;
 		if ( strsub(link, 7, 8) == "GM" ) then
@@ -49,8 +26,8 @@ function SetItemRef(link, text, button, chatFrame)
 		end
 
 		local name, lineID, chatType, chatTarget, communityClubID, communityStreamID, communityEpoch, communityPosition;
-		
-		if ( isCommunityLink ) then 
+
+		if ( isCommunityLink ) then
 			name, communityClubID, communityStreamID, communityEpoch, communityPosition = strsplit(":", namelink);
 		else
 			name, lineID, chatType, chatTarget = strsplit(":", namelink);
@@ -212,6 +189,9 @@ function SetItemRef(link, text, button, chatFrame)
 		return;
 	elseif ( strsub(link, 1, 10) == "talentpane" ) then
 		ToggleTalentFrame(TALENTS_TAB);
+		return;
+	elseif ( strsub(link, 1, 14) == "mountequipment" ) then
+		ToggleCollectionsJournal(1);
 		return;
 	elseif ( strsub(link, 1, 11) == "honortalent" ) then
 		ToggleTalentFrame(PVP_TALENTS_TAB);
@@ -378,11 +358,11 @@ function SetItemRef(link, text, button, chatFrame)
 		local dayEvent = C_Calendar.GetDayEvent(monthOffset, monthDay, index);
 		if dayEvent then
 			Calendar_LoadUI();
-			
+
 			if not CalendarFrame:IsShown() then
 				Calendar_Toggle();
 			end
-			
+
 			C_Calendar.OpenEvent(monthOffset, monthDay, index);
 		end
 		return;
@@ -394,6 +374,10 @@ function SetItemRef(link, text, button, chatFrame)
 			CommunitiesHyperlink.OnClickReference(clubId);
 		end
 		return;
+	elseif ( strsub(link, 1, 9) == "azessence" ) then
+		if ChatEdit_InsertLink(link) then
+			return;
+		end
 	end
 
 	if ( IsModifiedClick() ) then
@@ -509,7 +493,7 @@ function GetClubTicketLink(ticketId, clubName, clubType)
 	local link = FormatLink("clubTicket", CLUB_INVITE_HYPERLINK_TEXT:format(clubName), ticketId);
 	if clubType == Enum.ClubType.BattleNet then
 		return BATTLENET_FONT_COLOR:WrapTextInColorCode(link);
-	else 
+	else
 		return NORMAL_FONT_COLOR:WrapTextInColorCode(link);
 	end
 end
@@ -519,7 +503,7 @@ function GetCalendarEventLink(monthOffset, monthDay, index)
 	if dayEvent then
 		return FormatLink("calendarEvent", dayEvent.title, monthOffset, monthDay, index);
 	end
-	
+
 	return nil;
 end
 
@@ -529,11 +513,11 @@ function GetCommunityLink(clubId)
 		local link = FormatLink("community", COMMUNITY_REFERENCE_FORMAT:format(clubInfo.name), clubId);
 		if clubInfo.clubType == Enum.ClubType.BattleNet then
 			return BATTLENET_FONT_COLOR:WrapTextInColorCode(link);
-		else 
+		else
 			return NORMAL_FONT_COLOR:WrapTextInColorCode(link);
 		end
 	end
-	
+
 	return nil;
 end
 

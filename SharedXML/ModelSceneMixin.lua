@@ -347,3 +347,41 @@ function ModelSceneMixin:SetDefaultLightDirection(x, y, z)
 	self.defaultLightDirectionY = y;
 	self.defaultLightDirectionZ = z;
 end
+
+-- actorSettings = {
+--	"actorTag" = { startDelay = 0, duration = 0, speed = 1 } -- duration 0 means no automatic stoppage
+-- }
+function ModelSceneMixin:ShowAndAnimateActors(actorSettings, onFinishedCallback)
+	self:Show();
+	local totalTime = 0;
+	for actorTag, actorInfo in pairs(actorSettings) do
+		local actor = self:GetActorByTag(actorTag);
+		if actor then
+			local runningTime = actorInfo.startDelay + actorInfo.duration;
+			if actorInfo.startDelay > 0 then
+				actor:SetAnimation(0, 0, 0, 0);
+				C_Timer.After(actorInfo.startDelay,
+					function()
+						actor:SetAnimation(0, 0, actorInfo.speed, 0);
+					end
+				);
+			else
+				actor:SetAnimation(0, 0, actorInfo.speed, 0);
+			end
+			if actorInfo.duration > 0 then
+				C_Timer.After(runningTime,
+					function()
+						actor:SetAnimation(0, 0, 0, 0);
+					end
+				);
+			end
+			if runningTime > totalTime then
+				totalTime = runningTime;
+			end
+		end
+	end
+
+	if onFinishedCallback and totalTime > 0 then
+		C_Timer.After(totalTime, onFinishedCallback);
+	end
+end

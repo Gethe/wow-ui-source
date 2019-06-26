@@ -61,6 +61,7 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 		CompactUnitFrame_UpdateSelectionHighlight(self);
 		CompactUnitFrame_UpdateName(self);
 		CompactUnitFrame_UpdateHealthBorder(self);
+		CompactUnitFrame_UpdateWidgetSet(self);
 	elseif ( event == "PLAYER_REGEN_ENABLED" or event == "PLAYER_REGEN_DISABLED" ) then
 		CompactUnitFrame_UpdateAuras(self);	--We filter differently based on whether the player is in Combat, so we need to update when that changes.
 	elseif ( event == "PLAYER_ROLES_ASSIGNED" ) then
@@ -73,72 +74,81 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 		CompactUnitFrame_UpdateMaxPower(self);
 		CompactUnitFrame_UpdatePower(self);
 		CompactUnitFrame_UpdatePowerColor(self);
-	elseif ( arg1 == self.unit or arg1 == self.displayedUnit ) then
-		if ( event == "UNIT_MAXHEALTH" ) then
-			CompactUnitFrame_UpdateMaxHealth(self);
-			CompactUnitFrame_UpdateHealth(self);
-			CompactUnitFrame_UpdateHealPrediction(self);
-		elseif ( event == "UNIT_HEALTH" or event == "UNIT_HEALTH_FREQUENT" ) then
-			CompactUnitFrame_UpdateHealth(self);
-			CompactUnitFrame_UpdateStatusText(self);
-			CompactUnitFrame_UpdateHealPrediction(self);
-		elseif ( event == "UNIT_MAXPOWER" ) then
-			CompactUnitFrame_UpdateMaxPower(self);
-			CompactUnitFrame_UpdatePower(self);
-		elseif ( event == "UNIT_POWER_UPDATE" ) then
-			CompactUnitFrame_UpdatePower(self);
-		elseif ( event == "UNIT_DISPLAYPOWER" or event == "UNIT_POWER_BAR_SHOW" or event == "UNIT_POWER_BAR_HIDE" ) then
-			CompactUnitFrame_UpdateMaxPower(self);
-			CompactUnitFrame_UpdatePower(self);
-			CompactUnitFrame_UpdatePowerColor(self);
-		elseif ( event == "UNIT_NAME_UPDATE" ) then
-			CompactUnitFrame_UpdateName(self);
-			CompactUnitFrame_UpdateHealthColor(self);	--This may signify that we now have the unit's class (the name cache entry has been received).
-		elseif ( event == "UNIT_AURA" ) then
-			CompactUnitFrame_UpdateAuras(self);
-		elseif ( event == "UNIT_THREAT_SITUATION_UPDATE" ) then
-			CompactUnitFrame_UpdateAggroHighlight(self);
-			CompactUnitFrame_UpdateAggroFlash(self);
-			CompactUnitFrame_UpdateHealthBorder(self);
-		elseif ( event == "UNIT_THREAT_LIST_UPDATE" ) then
-			if ( self.optionTable.considerSelectionInCombatAsHostile ) then
-				CompactUnitFrame_UpdateHealthColor(self);
+	else
+		local unitMatches = arg1 == self.unit or arg1 == self.displayedUnit;
+		if ( unitMatches ) then
+			if ( event == "UNIT_MAXHEALTH" ) then
+				CompactUnitFrame_UpdateMaxHealth(self);
+				CompactUnitFrame_UpdateHealth(self);
+				CompactUnitFrame_UpdateHealPrediction(self);
+			elseif ( event == "UNIT_HEALTH" or event == "UNIT_HEALTH_FREQUENT" ) then
+				CompactUnitFrame_UpdateHealth(self);
+				CompactUnitFrame_UpdateStatusText(self);
+				CompactUnitFrame_UpdateHealPrediction(self);
+			elseif ( event == "UNIT_MAXPOWER" ) then
+				CompactUnitFrame_UpdateMaxPower(self);
+				CompactUnitFrame_UpdatePower(self);
+			elseif ( event == "UNIT_POWER_UPDATE" ) then
+				CompactUnitFrame_UpdatePower(self);
+			elseif ( event == "UNIT_DISPLAYPOWER" or event == "UNIT_POWER_BAR_SHOW" or event == "UNIT_POWER_BAR_HIDE" ) then
+				CompactUnitFrame_UpdateMaxPower(self);
+				CompactUnitFrame_UpdatePower(self);
+				CompactUnitFrame_UpdatePowerColor(self);
+			elseif ( event == "UNIT_NAME_UPDATE" ) then
 				CompactUnitFrame_UpdateName(self);
+				CompactUnitFrame_UpdateHealthColor(self);	--This may signify that we now have the unit's class (the name cache entry has been received).
+			elseif ( event == "UNIT_AURA" ) then
+				CompactUnitFrame_UpdateAuras(self);
+			elseif ( event == "UNIT_THREAT_SITUATION_UPDATE" ) then
+				CompactUnitFrame_UpdateAggroHighlight(self);
+				CompactUnitFrame_UpdateAggroFlash(self);
+				CompactUnitFrame_UpdateHealthBorder(self);
+			elseif ( event == "UNIT_THREAT_LIST_UPDATE" ) then
+				if ( self.optionTable.considerSelectionInCombatAsHostile ) then
+					CompactUnitFrame_UpdateHealthColor(self);
+					CompactUnitFrame_UpdateName(self);
+				end
+				CompactUnitFrame_UpdateAggroFlash(self);
+				CompactUnitFrame_UpdateHealthBorder(self);
+			elseif ( event == "UNIT_CONNECTION" ) then
+				--Might want to set the health/mana to max as well so it's easily visible? This happens unless the player is out of AOI.
+				CompactUnitFrame_UpdateHealthColor(self);
+				CompactUnitFrame_UpdatePowerColor(self);
+				CompactUnitFrame_UpdateStatusText(self);
+			elseif ( event == "UNIT_HEAL_PREDICTION" ) then
+				CompactUnitFrame_UpdateHealPrediction(self);
+			elseif ( event == "UNIT_PET" ) then
+				CompactUnitFrame_UpdateAll(self);
+			elseif ( event == "READY_CHECK_CONFIRM" ) then
+				CompactUnitFrame_UpdateReadyCheck(self);
+			elseif ( event == "INCOMING_RESURRECT_CHANGED" ) then
+				CompactUnitFrame_UpdateCenterStatusIcon(self);
+			elseif ( event == "UNIT_OTHER_PARTY_CHANGED" ) then
+				CompactUnitFrame_UpdateCenterStatusIcon(self);
+			elseif ( event == "UNIT_ABSORB_AMOUNT_CHANGED" ) then
+				CompactUnitFrame_UpdateHealPrediction(self);
+			elseif ( event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" ) then
+				CompactUnitFrame_UpdateHealPrediction(self);
+			elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
+				CompactUnitFrame_UpdateStatusText(self);
+			elseif ( event == "UNIT_PHASE" or event == "UNIT_FLAGS" ) then
+				CompactUnitFrame_UpdateCenterStatusIcon(self);
+			elseif ( event == "GROUP_JOINED" ) then
+				CompactUnitFrame_UpdateAggroFlash(self);
+				CompactUnitFrame_UpdateHealthBorder(self);
+			elseif ( event == "GROUP_LEFT" ) then
+				CompactUnitFrame_UpdateHealthBorder(self);
+			elseif ( event == "UNIT_CLASSIFICATION_CHANGED" ) then
+				CompactUnitFrame_UpdateClassificationIndicator(self);
+			elseif ( event == "INCOMING_SUMMON_CHANGED" ) then
+				CompactUnitFrame_UpdateCenterStatusIcon(self);
 			end
-			CompactUnitFrame_UpdateAggroFlash(self);
-			CompactUnitFrame_UpdateHealthBorder(self);
-		elseif ( event == "UNIT_CONNECTION" ) then
-			--Might want to set the health/mana to max as well so it's easily visible? This happens unless the player is out of AOI.
-			CompactUnitFrame_UpdateHealthColor(self);
-			CompactUnitFrame_UpdatePowerColor(self);
-			CompactUnitFrame_UpdateStatusText(self);
-		elseif ( event == "UNIT_HEAL_PREDICTION" ) then
-			CompactUnitFrame_UpdateHealPrediction(self);
-		elseif ( event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE" or event == "UNIT_PET" ) then
-			CompactUnitFrame_UpdateAll(self);
-		elseif ( event == "READY_CHECK_CONFIRM" ) then
-			CompactUnitFrame_UpdateReadyCheck(self);
-		elseif ( event == "INCOMING_RESURRECT_CHANGED" ) then
-			CompactUnitFrame_UpdateCenterStatusIcon(self);
-		elseif ( event == "UNIT_OTHER_PARTY_CHANGED" ) then
-			CompactUnitFrame_UpdateCenterStatusIcon(self);
-		elseif ( event == "UNIT_ABSORB_AMOUNT_CHANGED" ) then
-			CompactUnitFrame_UpdateHealPrediction(self);
-		elseif ( event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" ) then
-			CompactUnitFrame_UpdateHealPrediction(self);
-		elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
-			CompactUnitFrame_UpdateStatusText(self);
-		elseif ( event == "UNIT_PHASE" or event == "UNIT_FLAGS" ) then
-			CompactUnitFrame_UpdateCenterStatusIcon(self);
-		elseif ( event == "GROUP_JOINED" ) then
-			CompactUnitFrame_UpdateAggroFlash(self);
-			CompactUnitFrame_UpdateHealthBorder(self);
-		elseif ( event == "GROUP_LEFT" ) then
-			CompactUnitFrame_UpdateHealthBorder(self);
-		elseif ( event == "UNIT_CLASSIFICATION_CHANGED" ) then
-			CompactUnitFrame_UpdateClassificationIndicator(self);
-		elseif ( event == "INCOMING_SUMMON_CHANGED" ) then
-			CompactUnitFrame_UpdateCenterStatusIcon(self);
+		end
+
+		if ( unitMatches or arg1 == "player" ) then
+			if ( event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE" ) then
+				CompactUnitFrame_UpdateAll(self);
+			end
 		end
 	end
 end
@@ -1039,9 +1049,9 @@ local function WidgetsLayout(widgetContainer, sortedWidgets)
 			widgetFrame:SetPoint("LEFT", relative, "RIGHT", 2, 0);
 		end
 
-		widgetsWidth = widgetsWidth + widgetFrame:GetWidth();
+		widgetsWidth = widgetsWidth + widgetFrame:GetWidgetWidth();
 
-		local widgetHeight = widgetFrame:GetHeight();
+		local widgetHeight = widgetFrame:GetWidgetHeight();
 		if widgetHeight > maxWidgetHeight then
 			maxWidgetHeight = widgetHeight;
 		end

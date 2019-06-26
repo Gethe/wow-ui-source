@@ -59,7 +59,7 @@ function TokenFrame_OnShow(self)
 	end
 
 	SetButtonPulse(CharacterFrameTab3, 0, 1);	--Stop the button pulse
-	PortraitFrameTemplate_SetTitle(CharacterFrame, UnitPVPName("player"));
+	CharacterFrame:SetTitle(UnitPVPName("player"));
 	TokenFrame_Update();
 end
 

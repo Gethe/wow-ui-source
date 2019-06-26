@@ -12,7 +12,7 @@
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						self:SetModel([[Spells\ograid_engine_flame.m2]]);
+						self:SetModel(1085621); --[[Spells\ograid_engine_flame.m2]]
 					</OnShow>
 					<OnModelLoaded>
 						self:MakeCurrentCameraCustom();
@@ -34,7 +34,7 @@
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						self:SetModel([[Spells\SPELLREFLECTION_STATE_SHIELD.m2]]);
+						self:SetModel(166940); --[[Spells\SPELLREFLECTION_STATE_SHIELD.m2]]
 					</OnShow>
 					<OnModelLoaded>
 						self:MakeCurrentCameraCustom();

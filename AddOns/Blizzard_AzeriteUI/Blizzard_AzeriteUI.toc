@@ -1,12 +1,9 @@
-## Interface: 80100
 ## Title: Blizzard Azerite UI
-## Secure: 1
 ## LoadOnDemand: 1
 
 Blizzard_AzeriteEmpoweredItemUITemplates.xml
 
 AzeritePowerLayoutInfo.lua
-AzeritePowerModelInfo.lua
 
 AzeriteEmpoweredItemChannelMixin.lua
 AzeriteEmpoweredItemChannelMixin.xml

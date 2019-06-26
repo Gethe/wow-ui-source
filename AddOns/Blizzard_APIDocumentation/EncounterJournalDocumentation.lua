@@ -91,6 +91,24 @@ local EncounterJournal =
 				{ Name = "isEncounterComplete", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "SetPreviewMythicPlusLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "level", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetPreviewPvpTier",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "tier", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =

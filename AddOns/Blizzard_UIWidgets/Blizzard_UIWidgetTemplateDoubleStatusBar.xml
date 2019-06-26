@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<StatusBar name="UIWidgetTemplateDoubleStatusBar_StatusBarTemplate" virtual="true" mixin="UIWidgetBaseStatusBarTemplateMixin">
+	<StatusBar name="UIWidgetTemplateDoubleStatusBar_StatusBarTemplate" inherits="UIWidgetBaseStatusBarTemplate" virtual="true">
 		<Size x="92" y="22"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -87,6 +87,9 @@
 				</Anchors>
 			</StatusBar>
 			<StatusBar parentKey="RightBar" inherits="UIWidgetTemplateDoubleStatusBar_StatusBarTemplate" reverseFill="true">
+				<KeyValues>
+					<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMRIGHT" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOP" x="7" y="-5"/>
 				</Anchors>

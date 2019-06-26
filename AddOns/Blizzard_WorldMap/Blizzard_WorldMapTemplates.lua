@@ -84,6 +84,8 @@ function WorldMapTrackingOptionsButtonMixin:OnSelection(value, checked)
 
 	if (value == "quests") then
 		SetCVar("questPOI", checked and "1" or "0", "QUEST_POI");
+	elseif (value == "dungeon entrances") then
+		SetCVar("showDungeonEntrancesOnMap", checked and "1" or "0", "SHOW_DUNGEON_ENTRANCES");
 	elseif (value == "digsites") then
 		SetCVar("digSites", checked and "1" or "0", "SHOW_DIG_SITES");
 	elseif (value == "tamers") then
@@ -121,6 +123,11 @@ function WorldMapTrackingOptionsButtonMixin:InitializeDropDown()
 	info.text = SHOW_QUEST_OBJECTIVES_ON_MAP_TEXT;
 	info.value = "quests";
 	info.checked = GetCVarBool("questPOI");
+	UIDropDownMenu_AddButton(info);
+
+	info.text = SHOW_DUNGEON_ENTRACES_ON_MAP_TEXT;
+	info.value = "dungeon entrances";
+	info.checked = GetCVarBool("showDungeonEntrancesOnMap");
 	UIDropDownMenu_AddButton(info);
 
 	local prof1, prof2, arch, fish, cook, firstAid = GetProfessions();

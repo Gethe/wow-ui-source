@@ -2110,6 +2110,14 @@ StaticPopupDialogs["DELETE_GOOD_ITEM"] = {
 	hasEditBox = 1,
 	maxLetters = 32,
 	OnShow = function(self)
+		local itemLocation = C_Cursor.GetCursorItem();
+		if itemLocation and C_Item.DoesItemExist(itemLocation) and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) then
+			local msg = C_SpellBook.ContainsAnyDisenchantSpell() and DELETE_AZERITE_SCRAPPABLE_OR_DISENCHANTABLE_ITEM or DELETE_AZERITE_SCRAPPABLE_ITEM;
+			local itemName = self.text.text_arg1;
+			local azeriteIconMarkup = CreateTextureMarkup("Interface\\Icons\\INV_AzeriteDebuff",64,64,16,16,0,1,0,1,0,-2);
+			self.text:SetText(string.format(msg, itemName, azeriteIconMarkup));
+		end
+
 		self.button1:Disable();
 		self.button2:Enable();
 		self.editBox:SetFocus();
@@ -2118,6 +2126,19 @@ StaticPopupDialogs["DELETE_GOOD_ITEM"] = {
 		ChatEdit_FocusActiveWindow();
 		self.editBox:SetText("");
 		MerchantFrame_ResetRefundItem();
+	end,
+	OnHyperlinkEnter = function(self, link, text, region, boundsLeft, boundsBottom, boundsWidth, boundsHeight)
+		GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
+		GameTooltip:ClearAllPoints();
+		local cursorClearance = 30;
+		GameTooltip:SetPoint("TOPLEFT", region, "BOTTOMLEFT", boundsLeft, boundsBottom - cursorClearance);
+		GameTooltip:SetHyperlink(link);
+	end,
+	OnHyperlinkLeave = function(self)
+		GameTooltip:Hide();
+	end,
+	OnHyperlinkClick = function(self, link, text, button)
+		GameTooltip:Hide();
 	end,
 	EditBoxOnEnterPressed = function(self)
 		if ( self:GetParent().button1:IsEnabled() ) then

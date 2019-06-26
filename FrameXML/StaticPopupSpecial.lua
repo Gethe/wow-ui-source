@@ -4,6 +4,14 @@ function PlayerReportFrameMixin:OnLoad()
 	self.CommentBox = self.Comment.ScrollFrame.CommentBox;
 	self.exclusive = true;
 	self.hideOnEscape = true;
+	self:RegisterEvent("OPEN_REPORT_PLAYER");
+end
+
+function PlayerReportFrameMixin:OnEvent(event, ...)
+	if ( event == "OPEN_REPORT_PLAYER" ) then
+		local reportToken, reportType, playerName = ...;
+		self:ShowReportDialog(reportToken, reportType, playerName);
+	end
 end
 
 function PlayerReportFrameMixin:OnShow()
@@ -15,7 +23,7 @@ function PlayerReportFrameMixin:OnHide()
 	self.CommentBox:SetText("");
 end
 
-function PlayerReportFrameMixin:InitiateReport(reportType, playerName, playerLocation)
+function PlayerReportFrameMixin:ShowReportDialog(reportToken, reportType, playerName)
 	if ( self:IsShown() ) then
 		StaticPopupSpecial_Hide(self);
 	end
@@ -41,7 +49,7 @@ function PlayerReportFrameMixin:InitiateReport(reportType, playerName, playerLoc
 		return;
 	end
 
-	self.reportToken = C_ReportSystem.InitiateReportPlayer(reportType, playerLocation);
+	self.reportToken = reportToken;
 
 	self.Title:SetText(REPORT_PLAYER_LABEL:format(reportReason));
 	self.Name:SetText(playerName);

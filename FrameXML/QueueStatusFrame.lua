@@ -29,7 +29,7 @@ function QueueStatusMinimapButton_OnClick(self, button)
 		local lfgListActiveEntry = C_LFGList.HasActiveEntryInfo();
 		if ( inBattlefield ) then
 			if ( showScoreboard ) then
-				ToggleWorldStateScoreFrame();
+				TogglePVPScoreboardOrResults();
 			end
 		elseif ( lfgListActiveEntry ) then
 			LFGListUtil_OpenBestWindow(true);
@@ -928,7 +928,7 @@ function QueueStatusDropDown_AddBattlefieldButtons(idx)
 
 		if ( not inArena or GetBattlefieldWinner() or C_Commentator.GetMode() > 0 or C_PvP.IsInBrawl() ) then
 			info.text = TOGGLE_SCOREBOARD;
-			info.func = wrapFunc(ToggleWorldStateScoreFrame);
+			info.func = wrapFunc(TogglePVPScoreboardOrResults);
 			info.arg1 = nil;
 			info.arg2 = nil;
 			UIDropDownMenu_AddButton(info);
@@ -1005,7 +1005,7 @@ function QueueStatusDropDown_AddLFGButtons(category)
 					addExitOption = false;
 				else
 					info.text = TOGGLE_SCOREBOARD;
-					info.func = wrapFunc(ToggleWorldStateScoreFrame);
+					info.func = wrapFunc(TogglePVPScoreboardOrResults);
 					info.arg1 = nil;
 					info.arg2 = nil;
 					UIDropDownMenu_AddButton(info);
@@ -1182,3 +1182,25 @@ function QueueStatus_InActiveBattlefield()
 	end
 end
 
+function TogglePVPScoreboardOrResults()
+	if IsAddOnLoaded("Blizzard_PVPMatch") then
+		local matchState = C_PvP.GetActiveMatchState();
+		local isComplete = matchState == Enum.PvpMatchState.Complete;
+		if isComplete then
+			if PVPMatchResults:IsShown() then
+				HideUIPanel(PVPMatchResults);
+			else
+				PVPMatchResults:BeginShow();
+			end
+		else
+			if PVPMatchScoreboard:IsShown() then
+				HideUIPanel(PVPMatchScoreboard);
+			else
+				local isActive = matchState == Enum.PvpMatchState.Active;
+				if isActive and not C_PvP.IsMatchConsideredArena() then
+					PVPMatchScoreboard:BeginShow();
+				end
+			end
+		end
+	end
+end

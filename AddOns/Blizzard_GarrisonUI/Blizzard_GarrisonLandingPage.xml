@@ -994,8 +994,6 @@
 								self:SetTargetDistance(0);
 								GarrisonMission_SetFollowerModelItems(self);
 							</OnShow>
-							<OnMouseDown function="Model_OnMouseDown"/>
-							<OnMouseUp function="Model_OnMouseUp"/>
 						</Scripts>
 					</CinematicModel>
 					<Button parentKey="Trait1" parentArray="Traits" inherits="GarrisonShipTraitTemplate">

@@ -692,7 +692,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				PortraitFrameTemplate_SetPortraitToAsset(self, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
+				self:SetPortraitToAsset("Interface\\LFGFrame\\UI-LFR-PORTRAIT");
 			</OnLoad>
 			<OnShow>
 				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);

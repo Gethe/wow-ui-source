@@ -15,7 +15,7 @@ local EXCLUSION_CATEGORY_MAINHAND	= 2;
 -- ************************************************************************************************************************************************************
 
 function WardrobeFrame_OnLoad(self)
-	PortraitFrameTemplate_SetPortraitToAsset(self, "Interface\\Icons\\INV_Arcane_Orb");
+	self:SetPortraitToAsset("Interface\\Icons\\INV_Arcane_Orb");
 	WardrobeFrameTitleText:SetText(TRANSMOGRIFY);
 end
 
@@ -157,7 +157,7 @@ function WardrobeTransmogFrame_EvaluateModel(forceResetModel, resetSettings)
 		end
 		WardrobeTransmogFrame.Model.creatureDisplayID = creatureDisplayID;
 		if resetSettings then
-			Model_Reset(WardrobeTransmogFrame.Model);
+			WardrobeTransmogFrame.Model:ResetModel();
 		end
 		WardrobeTransmogFrame_Update();
 	end
@@ -803,7 +803,7 @@ function WardrobeCollectionFrame_OnLoad(self)
 	self.selectedCollectionTab = TAB_ITEMS;
 	self.selectedTransmogTab = TAB_ITEMS;
 
-	PortraitFrameTemplate_SetPortraitToAsset(CollectionsJournal, "Interface\\Icons\\inv_misc_enggizmos_19");
+	CollectionsJournal:SetPortraitToAsset("Interface\\Icons\\inv_misc_enggizmos_19");
 end
 
 WardrobeItemsCollectionMixin = { };
@@ -997,7 +997,7 @@ function WardrobeItemsCollectionMixin:OnShow()
 	self:RegisterEvent("TRANSMOGRIFY_SUCCESS");
 
 	local needsUpdate = false;	-- we don't need to update if we call WardrobeCollectionFrame_SetActiveSlot as that will do an update
-	if ( self.jumpToLatestCategoryID and self.jumpToLatestCategoryID ~= self.activeCategory ) then
+	if ( self.jumpToLatestCategoryID and self.jumpToLatestCategoryID ~= self.activeCategory and not WardrobeFrame_IsAtTransmogrifier() ) then
 		local slot = WardrobeCollectionFrame_GetSlotFromCategoryID(self.jumpToLatestCategoryID);
 		-- The model got reset from OnShow, which restored all equipment.
 		-- But ChangeModelsSlot tries to be smart and only change the difference from the previous slot to the current slot, so some equipment will remain left on.
@@ -1043,7 +1043,7 @@ function WardrobeItemsCollectionMixin:OnHide()
 end
 
 function WardrobeCollectionFrame_OnShow(self)
-	PortraitFrameTemplate_SetPortraitToAsset(CollectionsJournal, "Interface\\Icons\\inv_chest_cloth_17");
+	CollectionsJournal:SetPortraitToAsset("Interface\\Icons\\inv_chest_cloth_17");
 
 	self:RegisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
 	self:RegisterUnitEvent("UNIT_MODEL_CHANGED", "player");
@@ -1323,6 +1323,9 @@ function WardrobeItemsCollectionMixin:SetActiveSlot(slot, transmogType, category
 				local appliedSourceID, appliedVisualID, selectedSourceID, selectedVisualID = self:GetActiveSlotInfo();
 				if ( selectedSourceID ~= NO_TRANSMOG_SOURCE_ID ) then
 					category = C_TransmogCollection.GetAppearanceSourceInfo(selectedSourceID);
+					if not self:IsValidWeaponCategoryForSlot(category, slot) then
+						category = nil;
+					end
 				end
 			end
 			if ( not category ) then
@@ -1419,7 +1422,7 @@ function WardrobeItemsCollectionMixin:ResetPage()
 		if ( self.jumpToVisualID ) then
 			selectedVisualID = self.jumpToVisualID;
 			self.jumpToVisualID = nil;
-		elseif ( self.jumpToLatestAppearanceID ) then
+		elseif ( self.jumpToLatestAppearanceID and not WardrobeFrame_IsAtTransmogrifier() ) then
 			selectedVisualID = self.jumpToLatestAppearanceID;
 			self.jumpToLatestAppearanceID = nil;
 		end
@@ -1997,6 +2000,11 @@ function WardrobeItemsModelMixin:OnEnter()
 	self:SetScript("OnUpdate", self.OnUpdate);
 	if ( C_TransmogCollection.IsNewAppearance(self.visualInfo.visualID) ) then
 		C_TransmogCollection.ClearNewAppearance(self.visualInfo.visualID);
+		local collection = self:GetParent();
+		if collection.jumpToLatestAppearanceID == self.visualInfo.visualID then
+			collection.jumpToLatestAppearanceID = nil;
+			collection.jumpToLatestCategoryID  = nil;
+		end
 		self.NewString:Hide();
 		self.NewGlow:Hide();
 	end
@@ -2537,7 +2545,7 @@ function WardrobeCollectionFrameWeaponDropDown_Init(self)
 
 	for categoryID = FIRST_TRANSMOG_COLLECTION_WEAPON_TYPE, LAST_TRANSMOG_COLLECTION_WEAPON_TYPE do
 		local name, isWeapon, canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
-		if ( name and isWeapon ) then
+		if ( name and isWeapon ) then		
 			if ( (slot == "MAINHANDSLOT" and canMainHand) or (slot == "SECONDARYHANDSLOT" and canOffHand) ) then
 				if ( not checkCategory or C_TransmogCollection.IsCategoryValidForItem(categoryID, equippedItemID) ) then
 					info.text = name;

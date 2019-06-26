@@ -1,10 +1,9 @@
-## Interface: 80100
 ## Title: Blizzard_Communities
-## Secure: 1
 ## RequiredDep: Blizzard_GuildRecruitmentUI, Blizzard_GuildControlUI
 ## LoadOnDemand: 1
 
 ..\..\SharedXML\SecureUIPanelTemplates.lua
+..\..\SharedXML\NineSlice.lua
 CommunitiesList.xml
 CommunitiesMemberList.xml
 CommunitiesChatFrame.xml

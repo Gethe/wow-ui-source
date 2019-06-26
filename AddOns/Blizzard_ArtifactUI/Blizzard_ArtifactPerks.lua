@@ -44,19 +44,17 @@ local TIER_2_FINAL_POWER_REVEAL_SHAKE_FREQUENCY = 0.001;
 
 local TIER_2_GLOW_TIME = 3.2;
 
-local TIER_2_FORGING_MODEL_SCENE_ID = 55;
-local TIER_2_FORGING_EFFECT_MODEL_ID = 382335;--"SPELLS\\EASTERN_PLAGUELANDS_BEAM_EFFECT.M2";
-
 local TIER_2_FORGE_EFFECT_FADE_IN_DELAY = 0;
 local TIER_2_BACKGROUND_FRONT_INTENSITY_IN_DELAY = 0;
 local TIER_2_BACKGROUND_FRONT_INTENSITY_IN_EFFECT = 0;
 local TIER_2_FORGE_EFFECT_FADE_OUT_DELAY = 0.5;
 local TIER_2_BACKGROUND_FRONT_INTENSITY_OUT_DELAY = 0.5;
 
-local TIER_2_SLAM_EFFECT_MODEL_SCENE_ID = 57;
-local TIER_2_SLAM_EFFECT_MODEL_ID = 1369310; --"SPELLS\\CFX_WARRIOR_THUNDERCLAP_CASTWORLD.M2"
 local TIER_2_SLAM_EFFECT_DELAY = 0.275;
 local TIER_2_SLAM_EFFECT_HIDE_DELAY = 0.5;
+
+local TIER2_FORGING_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(55, 382335);			--"SPELLS\\EASTERN_PLAGUELANDS_BEAM_EFFECT.M2";
+local TIER2_SLAM_EFFECT_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(57, 1369310);		--"SPELLS\\CFX_WARRIOR_THUNDERCLAP_CASTWORLD.M2"
 
 -------------------- Animation Constants End --------------------
 
@@ -295,20 +293,15 @@ function ArtifactPerksMixin:RefreshPowerTiers()
 			self.CrestFrame:SetPoint("CENTER", finalTier2Button, "CENTER");
 			self.CrestFrame:Show();
 			
+			local forceUpdate = true;
+
 			self.Tier2ForgingScene:Show();
-			self.Tier2ForgingScene:SetFromModelSceneID(TIER_2_FORGING_MODEL_SCENE_ID, true);
-			local forgingEffect = self.Tier2ForgingScene:GetActorByTag("effect");
+			local forgingEffect = StaticModelInfo.SetupModelScene(self.Tier2ForgingScene, TIER2_FORGING_MODEL_SCENE_INFO, forceUpdate);
 			if ( forgingEffect ) then
-				forgingEffect:SetModelByFileID(TIER_2_FORGING_EFFECT_MODEL_ID);
 				forgingEffect:SetAlpha(0.0);
-				self.Tier2ForgingScene.ForgingEffect = forgingEffect;
 			end
-			
-			self.Tier2SlamEffectModelScene:SetFromModelSceneID(TIER_2_SLAM_EFFECT_MODEL_SCENE_ID, true);
-			local slamEffect = self.Tier2SlamEffectModelScene:GetActorByTag("effect");
-			if ( slamEffect ) then
-				slamEffect:SetModelByFileID(TIER_2_SLAM_EFFECT_MODEL_ID);
-			end
+
+			StaticModelInfo.SetupModelScene(self.Tier2SlamEffectModelScene, TIER2_SLAM_EFFECT_MODEL_SCENE_INFO, forceUpdate);
 		else
 			self.CrestFrame:Hide();
 			self.Tier2SlamEffectModelScene:Hide();
@@ -492,216 +485,10 @@ function ArtifactPerksMixin:Refresh(newItem)
 	self.newItem = self.newItem or newItem;
 end
 
-ArtifactLineMixin = {};
+ArtifactLineMixin = CreateFromMixins(PowerDependencyLineMixin)
 
-ArtifactLineMixin.LINE_STATE_CONNECTED = 1;
-ArtifactLineMixin.LINE_STATE_DISCONNECTED = 2;
-ArtifactLineMixin.LINE_STATE_LOCKED = 3;
-
-ArtifactLineMixin.LINE_FADE_ANIM_TYPE_CONNECTED = 1;
-ArtifactLineMixin.LINE_FADE_ANIM_TYPE_UNLOCKED = 2;
-ArtifactLineMixin.LINE_FADE_ANIM_TYPE_LOCKED = 3;
-
-function ArtifactLineMixin:SetState(lineState)
-	self.lineState = lineState;
-	if lineState == self.LINE_STATE_CONNECTED then
-		self:SetConnected();
-	elseif lineState == self.LINE_STATE_DISCONNECTED then
-		self:SetDisconnected();
-	elseif lineState == self.LINE_STATE_LOCKED then
-		self:SetLocked();
-	end
-end
-
-function ArtifactLineMixin:SetConnected()
-	self.Fill:SetVertexColor(self.connectedColor:GetRGB());
-	self.FillScroll1:SetVertexColor(self.connectedColor:GetRGB());
-	if self.FillScroll2 then
-		self.FillScroll2:SetVertexColor(self.connectedColor:GetRGB());
-	end
-
-	self:PlayLineFadeAnim(self.LINE_FADE_ANIM_TYPE_CONNECTED);
-end
-
-function ArtifactLineMixin:SetDisconnected()
-	self.Fill:SetVertexColor(self.disconnectedColor:GetRGB());
-
-	self:PlayLineFadeAnim(self.LINE_FADE_ANIM_TYPE_UNLOCKED);
-end
-
-function ArtifactLineMixin:SetLocked()
-	self.Fill:SetVertexColor(self.connectedColor:GetRGB());
-
-	self:PlayLineFadeAnim(self.LINE_FADE_ANIM_TYPE_LOCKED);
-end
-
-function ArtifactLineMixin:PlayLineFadeAnim(lineAnimType)
-	self.FadeAnim:Finish();
-
-	self.FadeAnim.Background:SetFromAlpha(self.Background:GetAlpha());
-	self.FadeAnim.Fill:SetFromAlpha(self.Fill:GetAlpha());
-	self.FadeAnim.FillScroll1:SetFromAlpha(self.FillScroll1:GetAlpha());
-	if self.FillScroll2 then
-		self.FadeAnim.FillScroll2:SetFromAlpha(self.FillScroll2:GetAlpha());
-	end
-
-	local artifactDisabled = C_ArtifactUI.IsArtifactDisabled();
-	if artifactDisabled then
-		self.FillScroll1:SetDesaturated(true);
-		if self.FillScroll2 then
-			self.FillScroll2:SetDesaturated(true);
-		end
-	end
-
-	if lineAnimType == self.LINE_FADE_ANIM_TYPE_CONNECTED then
-		if artifactDisabled then
-			self.ScrollAnim:Stop();
-		else
-			self.ScrollAnim:Play(false, self.scrollElapsedOffset);
-		end
-
-		self.FadeAnim.Background:SetToAlpha(0.0);
-		self.FadeAnim.Fill:SetToAlpha(1.0);
-		self.FadeAnim.FillScroll1:SetToAlpha(1.0);
-		if self.FillScroll2 then
-			self.FadeAnim.FillScroll2:SetToAlpha(1.0);
-		end
-	elseif lineAnimType == self.LINE_FADE_ANIM_TYPE_UNLOCKED then
-		self.ScrollAnim:Stop();
-
-		self.FadeAnim.Background:SetToAlpha(1.0);
-		self.FadeAnim.Fill:SetToAlpha(1.0);
-		self.FadeAnim.FillScroll1:SetToAlpha(0.0);
-		if self.FillScroll2 then
-			self.FadeAnim.FillScroll2:SetToAlpha(0.0);
-		end
-
-	elseif lineAnimType == self.LINE_FADE_ANIM_TYPE_LOCKED then
-		self.ScrollAnim:Stop();
-
-		self.FadeAnim.Background:SetToAlpha(0.85);
-		self.FadeAnim.Fill:SetToAlpha(0.0);
-		self.FadeAnim.FillScroll1:SetToAlpha(0.0);
-		if self.FillScroll2 then
-			self.FadeAnim.FillScroll2:SetToAlpha(0.0);
-		end
-	end
-	self.animType = lineAnimType;
-	self.FadeAnim:Play();
-end
-
-function ArtifactLineMixin:SetEndPoints(fromButton, toButton)
-	if self.IsCurved then
-		self.Fill:SetSize(2, 2);
-		self.Fill:ClearAllPoints();
-		self.Fill:SetPoint("CENTER", fromButton);
-
-		self.Background:SetSize(2, 2);
-		self.Background:ClearAllPoints();
-		self.Background:SetPoint("CENTER", fromButton);
-
-		self.FillScroll1:SetSize(2, 2);
-		self.FillScroll1:ClearAllPoints();
-		self.FillScroll1:SetPoint("CENTER", fromButton);
-	else
-		self.Fill:SetStartPoint("CENTER", fromButton);
-		self.Fill:SetEndPoint("CENTER", toButton);
-
-		self.Background:SetStartPoint("CENTER", fromButton);
-		self.Background:SetEndPoint("CENTER", toButton);
-
-		self.FillScroll1:SetStartPoint("CENTER", fromButton);
-		self.FillScroll1:SetEndPoint("CENTER", toButton);
-
-		self.FillScroll2:SetStartPoint("CENTER", fromButton);
-		self.FillScroll2:SetEndPoint("CENTER", toButton);
-	end
-end
-
-function ArtifactLineMixin:SetConnectedColor(color)
-	self.connectedColor = color;
-end
-
-function ArtifactLineMixin:SetDisconnectedColor(color)
-	self.disconnectedColor = color;
-end
-
-do
-	local function OnLineRevealFinished(animGroup)
-		local lineContainer = animGroup:GetParent();
-		if lineContainer.animType then
-			lineContainer:PlayLineFadeAnim(lineContainer.animType);
-		end
-	end
-
-	function ArtifactLineMixin:BeginReveal(delay, duration)
-		if not self.RevealAnim then
-			return;
-		end
-		self:SetAlpha(0.0);
-
-		self.RevealAnim.Start1:SetEndDelay(delay);
-		self.RevealAnim.Start2:SetEndDelay(delay);
-
-		self.RevealAnim.LineScale:SetDuration(duration);
-
-		self.RevealAnim:SetScript("OnFinished", OnLineRevealFinished);
-		self.RevealAnim:Play();
-	end
-end
-
-function ArtifactLineMixin:IsRevealing()
-	return self.RevealAnim and self.RevealAnim:IsPlaying();
-end
-
-function ArtifactLineMixin:GetRevealDelay()
-	return self.RevealAnim and self.RevealAnim.Start1:GetEndDelay() or 0.0;
-end
-
-function ArtifactLineMixin:SetScrollAnimationProgressOffset(progress)
-	self.scrollElapsedOffset = (1 - progress) * self.ScrollAnim:GetDuration();
-end
-
-function ArtifactLineMixin:CalculateTiling(length)
-	local TEXTURE_WIDTH = 128;
-	local tileAmount = length / TEXTURE_WIDTH;
-	self.Fill:SetTexCoord(0, tileAmount, 0, 1);
-	self.Background:SetTexCoord(0, tileAmount, 0, 1);
-	self.FillScroll1:SetTexCoord(0, tileAmount, 0, 1);
-	if self.FillScroll2 then
-		self.FillScroll2:SetTexCoord(0, tileAmount, 0, 1);
-	end
-end
-
-function ArtifactLineMixin:SetVertexOffset(vertexIndex, x, y)
-	self.Fill:SetVertexOffset(vertexIndex, x, y);
-	self.Background:SetVertexOffset(vertexIndex, x, y);
-	self.FillScroll1:SetVertexOffset(vertexIndex, x, y);
-	if self.FillScroll2 then
-		self.FillScroll2:SetVertexOffset(vertexIndex, x, y);
-	end
-end
-
-function ArtifactLineMixin:SetAlpha(alpha, continueAnimating)
-	if not continueAnimating then
-		self.ScrollAnim:Stop();
-		self.FadeAnim:Stop();
-		if self.RevealAnim then
-			self.RevealAnim:Stop();
-		end
-	end
-
-	self.Background:SetAlpha(alpha);
-	self.Fill:SetAlpha(alpha);
-	self.FillScroll1:SetAlpha(alpha);
-	if self.FillScroll2 then
-		self.FillScroll2:SetAlpha(alpha);
-	end
-end
-
-function ArtifactLineMixin:OnReleased()
-	self.animType = nil;
-	self:SetAlpha(0.0);
+function ArtifactLineMixin:IsDeprecated()
+	return C_ArtifactUI.IsArtifactDisabled();
 end
 
 local function OnUnusedLineHidden(lineContainer)
@@ -825,12 +612,12 @@ function ArtifactPerksMixin:RefreshDependencies(powers)
 									local hasSpentAny = fromButton.hasSpentAny and toButton.hasSpentAny;
 									if hasSpentAny or (fromButton:IsActiveForLinks() and (toButton.hasEnoughPower or toButton:IsCompletelyPurchased())) or (toButton:IsActiveForLinks() and (fromButton.hasEnoughPower or fromButton:IsCompletelyPurchased())) then
 										if (fromButton:IsActiveForLinks() and toButton.hasSpentAny) or (toButton:IsActiveForLinks() and fromButton.hasSpentAny) then
-											state = ArtifactLineMixin.LINE_STATE_CONNECTED;
+											state = PowerDependencyLineMixin.LINE_STATE_CONNECTED;
 										else
-											state = ArtifactLineMixin.LINE_STATE_DISCONNECTED;
+											state = PowerDependencyLineMixin.LINE_STATE_DISCONNECTED;
 										end
 									else
-										state = ArtifactLineMixin.LINE_STATE_LOCKED;
+										state = PowerDependencyLineMixin.LINE_STATE_LOCKED;
 									end
 								end
 
@@ -876,7 +663,7 @@ function ArtifactPerksMixin:RefreshDependencies(powers)
 		if lastTier2Power and lastTier2Power:IsCompletelyPurchased() and lastTier2Power:HasSpentAny() then
 			local startingTier2Power = self:GetStartingPowerButtonByTier(2);
 			if startingTier2Power and startingTier2Power:IsCompletelyPurchased() and not startingTier2Power.links[lastTier2Power:GetPowerID()] then
-				local lineContainer = self:GenerateCurvedLine(lastTier2Power, startingTier2Power, ArtifactLineMixin.LINE_STATE_CONNECTED, artifactArtInfo);
+				local lineContainer = self:GenerateCurvedLine(lastTier2Power, startingTier2Power, PowerDependencyLineMixin.LINE_STATE_CONNECTED, artifactArtInfo);
 
 				lastTier2Power.links[startingTier2Power:GetPowerID()] = lineContainer;
 				startingTier2Power.links[lastTier2Power:GetPowerID()] = lineContainer;
@@ -1005,7 +792,7 @@ local function QueueReveal(self, powerButton, distance, tier)
 			if linkedPowerButton.hasSpentAny then
 				QueueReveal(self, linkedPowerButton, distance, tier);
 			else 
-				local distanceToLink = powerButton:CalculateDistanceTo(linkedPowerButton);
+				local distanceToLink = CalculateDistanceBetweenRegions(powerButton, linkedPowerButton);
 				local totalDistance = distance + distanceToLink;
 
 				QueueReveal(self, linkedPowerButton, totalDistance, tier);
@@ -1280,7 +1067,6 @@ end
 function ArtifactPerksMixin:AnimateInCrest()
 	local forgingEffect = self.Tier2ForgingScene:GetActorByTag("effect");
 	if ( forgingEffect ) then
-		self.ForgingEffect = forgingEffect;
 		self:StartWithDelay(TIER_2_FORGE_EFFECT_FADE_OUT_DELAY, function ()
 			self.Tier2ForgingScene.ForgingEffectAnimOut:Play();
 		end);

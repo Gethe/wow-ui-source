@@ -506,13 +506,6 @@ function ArtifactPowerButtonMixin:UpdateIcon()
 	end
 end
 
-function ArtifactPowerButtonMixin:CalculateDistanceTo(otherPowerButton)
-	local cx, cy = self:GetCenter();
-	local ocx, ocy = otherPowerButton:GetCenter();
-	local dx, dy = ocx - cx, ocy - cy;
-	return math.sqrt(dx * dx + dy * dy);
-end
-
 function ArtifactPowerButtonMixin:SetupButton(powerID, anchorRegion, textureKit)
 	local powerInfo = C_ArtifactUI.GetPowerInfo(powerID);
 

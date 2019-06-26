@@ -487,11 +487,9 @@ function RaidGroupFrame_Update()
 		end
 	end
 
-	if ( isRaid ) then
-		RaidFrameAllAssistCheckButton:Show();
-	else
-		RaidFrameAllAssistCheckButton:Hide();
-	end
+	RaidFrameAllAssistCheckButton:SetShown(isRaid);
+	RaidFrame.RoleCount:SetShown(isRaid);
+	
 	-- Update Class Count Buttons
 	RaidClassButton_Update();
 end
@@ -601,7 +599,7 @@ function RaidGroupButton_OnDragStop(raidButton)
 	if ( TARGET_RAID_SLOT and TARGET_RAID_SLOT:GetParent():GetID() ~= raidButton.subgroup ) then
 		if (TARGET_RAID_SLOT.button) then
 			local button = _G[TARGET_RAID_SLOT.button];
-			--button:SetPoint("TOPLEFT", this, "TOPLEFT", 0, 0);
+			raidButton:ClearAllPoints();
 			SwapRaidSubgroup(raidButton:GetID(), button:GetID());
 		else
 			local slot = TARGET_RAID_SLOT:GetParent():GetName().."Slot"..TARGET_RAID_SLOT:GetParent().nextIndex;

@@ -128,7 +128,7 @@ function PetJournal_OnShow(self)
 		end
 	end
 
-	PortraitFrameTemplate_SetPortraitToAsset(CollectionsJournal, "Interface\\Icons\\PetJournalPortrait");
+	CollectionsJournal:SetPortraitToAsset("Interface\\Icons\\PetJournalPortrait");
 end
 
 function PetJournal_OnHide(self)
@@ -853,6 +853,12 @@ function PetJournal_UpdatePetList()
 					pet.icon:SetDesaturated(true);
 					pet.petTypeIcon:SetDesaturated(true);
 					pet.dragButton:Disable();
+				else
+					-- Only display the unusable texture if you'll never be able to summon this pet.
+					local isSummonable, error, errorText = C_PetJournal.GetPetSummonInfo(petID);
+					local neverUsable = error == Enum.PetJournalError.InvalidFaction;
+					pet.iconBorder:SetShown(not neverUsable);
+					CollectionItemListButton_SetRedOverlayShown(pet, neverUsable);
 				end
 			else
 				pet.dragButton.levelBG:Hide();
@@ -930,6 +936,17 @@ function PetJournalListItem_OnClick(self, button)
 			PetJournal_ShowPetCard(self.index);
 		end
 	end
+end
+
+function PetJournalDragButton_OnEnter(self)
+	local petID = self:GetParent().petID;
+	if (not petID) then
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetCompanionPet(petID);
+	GameTooltip:Show();
 end
 
 function PetJournalDragButton_OnClick(self, button)
@@ -1804,6 +1821,14 @@ function PetJournalSummonButton_OnEnter(self)
 	else
 		GameTooltip:AddLine(BATTLE_PETS_SUMMON_TOOLTIP, nil, nil, nil, true);
 	end
+
+	if PetJournalPetCard.petID ~= nil then
+		local isSummonable, error, errorText = C_PetJournal.GetPetSummonInfo(PetJournalPetCard.petID);
+		if errorText then
+			GameTooltip_AddErrorLine(GameTooltip, errorText, true);
+		end
+	end
+
 	GameTooltip:Show();
 end
 

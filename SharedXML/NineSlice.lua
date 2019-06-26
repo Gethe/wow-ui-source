@@ -25,7 +25,7 @@ end
 --[[
 	Nine-slice utility for creating themed background frames without rewriting a lot of boilerplate code.
 	There are some utilities to help with anchoring, and others to create a border and theme it from scratch.
-	AnchorUtil.ApplyLayout makes use of a layout table, and is probably what most setups will use.
+	NineSliceUtil.ApplyLayout makes use of a layout table, and is probably what most setups will use.
 
 	What the layout table should look like:
 	- A table of tables, where each inner table describes a corner, edge, or center of the nine-slice frame.
@@ -68,7 +68,14 @@ local function GetNineSlicePiece(container, pieceName)
 		end
 	end
 
-	return container[pieceName] or container:CreateTexture(), false;
+	local piece = container[pieceName];
+	if piece then
+		return piece, true;
+	else
+		piece = container:CreateTexture()
+		container[pieceName] = piece;
+		return piece, false;
+	end
 end
 
 local function PropagateLayoutSettingsToPieceLayout(userLayout, pieceLayout)
@@ -145,7 +152,137 @@ local nineSliceSetup =
 	{ pieceName = "Center", fn = SetupCenter, },
 };
 
-function AnchorUtil.ApplyNineSliceLayout(container, userLayout, textureKit)
+local layouts =
+{
+	SimplePanelTemplate =
+	{
+		mirrorLayout = true,
+		TopLeftCorner =	{ atlas = "UI-Frame-SimpleMetal-CornerTopLeft", x = -5, y = 0, },
+		TopRightCorner = { atlas = "UI-Frame-SimpleMetal-CornerTopLeft", x = 2, y = 0, },
+		BottomLeftCorner = { atlas = "UI-Frame-SimpleMetal-CornerTopLeft", x = -5, y = -3, },
+		BottomRightCorner =	{ atlas = "UI-Frame-SimpleMetal-CornerTopLeft", x = 2, y = -3, },
+		TopEdge = { atlas = "_UI-Frame-SimpleMetal-EdgeTop", },
+		BottomEdge = { atlas = "_UI-Frame-SimpleMetal-EdgeTop", },
+		LeftEdge = { atlas = "!UI-Frame-SimpleMetal-EdgeLeft", },
+		RightEdge = { atlas = "!UI-Frame-SimpleMetal-EdgeLeft", },
+	},
+
+	PortraitFrameTemplate =
+	{
+		TopLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-PortraitMetal-CornerTopLeft", x = -13, y = 16, },
+		TopRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopRight", x = 4, y = 16, },
+		BottomLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomLeft", x = -13, y = -3, },
+		BottomRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomRight", x = 4, y = -3, },
+		TopEdge = { layer="OVERLAY", atlas = "_UI-Frame-Metal-EdgeTop", x = 0, y = 0, x1 = 0, y1 = 0, },
+		BottomEdge = { layer = "OVERLAY", atlas = "_UI-Frame-Metal-EdgeBottom", x = 0, y = 0, x1 = 0, y1 = 0, },
+		LeftEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeLeft", x = 0, y = 0, x1 = 0, y1 = 0 },
+		RightEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeRight", x = 0, y = 0, x1 = 0, y1 = 0, },
+	},
+
+	PortraitFrameTemplateMinimizable =
+	{
+		TopLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-PortraitMetal-CornerTopLeft", x = -13, y = 16, },
+		TopRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopRightDouble", x = 4, y = 16, },
+		BottomLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomLeft", x = -13, y = -3, },
+		BottomRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomRight", x = 4, y = -3, },
+		TopEdge = { layer="OVERLAY", atlas = "_UI-Frame-Metal-EdgeTop", x = 0, y = 0, x1 = 0, y1 = 0, },
+		BottomEdge = { layer = "OVERLAY", atlas = "_UI-Frame-Metal-EdgeBottom", x = 0, y = 0, x1 = 0, y1 = 0, },
+		LeftEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeLeft", x = 0, y = 0, x1 = 0, y1 = 0 },
+		RightEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeRight", x = 0, y = 0, x1 = 0, y1 = 0, },
+	},
+
+	ButtonFrameTemplateNoPortrait =
+	{
+		TopLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopLeft", x = -12, y = 16, },
+		TopRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopRight", x = 4, y = 16, },
+		BottomLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomLeft", x = -12, y = -3, },
+		BottomRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomRight", x = 4, y = -3, },
+		TopEdge = { layer = "OVERLAY", atlas = "_UI-Frame-Metal-EdgeTop", },
+		BottomEdge = { layer = "OVERLAY", atlas = "_UI-Frame-Metal-EdgeBottom", },
+		LeftEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeLeft", },
+		RightEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeRight", },
+	},
+
+	ButtonFrameTemplateNoPortraitMinimizable =
+	{
+		TopLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopLeft", x = -12, y = 16, },
+		TopRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopRightDouble", x = 4, y = 16, },
+		BottomLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomLeft", x = -12, y = -3, },
+		BottomRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomRight", x = 4, y = -3, },
+		TopEdge = { layer = "OVERLAY", atlas = "_UI-Frame-Metal-EdgeTop", },
+		BottomEdge = { layer = "OVERLAY", atlas = "_UI-Frame-Metal-EdgeBottom", },
+		LeftEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeLeft", },
+		RightEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeRight", },
+	},
+
+	InsetFrameTemplate =
+	{
+		TopLeftCorner = { layer = "BORDER", subLevel = -5, atlas = "UI-Frame-InnerTopLeft", },
+		TopRightCorner = { layer = "BORDER", subLevel = -5, atlas = "UI-Frame-InnerTopRight", },
+		BottomLeftCorner = { layer = "BORDER", subLevel = -5, atlas = "UI-Frame-InnerBotLeftCorner", x = 0, y = -1, },
+		BottomRightCorner = { layer = "BORDER", subLevel = -5, atlas = "UI-Frame-InnerBotRight", x = 0, y = -1, },
+		TopEdge = { layer = "BORDER", subLevel = -5, atlas = "_UI-Frame-InnerTopTile", },
+		BottomEdge = { layer = "BORDER", subLevel = -5, atlas = "_UI-Frame-InnerBotTile", },
+		LeftEdge = { layer = "BORDER", subLevel = -5, atlas = "!UI-Frame-InnerLeftTile", },
+		RightEdge = { layer = "BORDER", subLevel = -5, atlas = "!UI-Frame-InnerRightTile", },
+	},
+
+	BFAMissionHorde =
+	{
+		mirrorLayout = true,
+		TopLeftCorner =	{ atlas = "HordeFrame-Corner-TopLeft", x = -6, y = 6, },
+		TopRightCorner =	{ atlas = "HordeFrame-Corner-TopLeft", x = 6, y = 6, },
+		BottomLeftCorner =	{ atlas = "HordeFrame-Corner-TopLeft", x = -6, y = -6, },
+		BottomRightCorner =	{ atlas = "HordeFrame-Corner-TopLeft", x = 6, y = -6, },
+		TopEdge = { atlas = "_HordeFrameTile-Top", },
+		BottomEdge = { atlas = "_HordeFrameTile-Top", },
+		LeftEdge = { atlas = "!HordeFrameTile-Left", },
+		RightEdge = { atlas = "!HordeFrameTile-Left", },
+	},
+
+	BFAMissionAlliance =
+	{
+		mirrorLayout = true,
+		TopLeftCorner =	{ atlas = "AllianceFrameCorner-TopLeft", x = -6, y = 6, },
+		TopRightCorner =	{ atlas = "AllianceFrameCorner-TopLeft", x = 6, y = 6, },
+		BottomLeftCorner =	{ atlas = "AllianceFrameCorner-TopLeft", x = -6, y = -6, },
+		BottomRightCorner =	{ atlas = "AllianceFrameCorner-TopLeft", x = 6, y = -6, },
+		TopEdge = { atlas = "_AllianceFrameTile-Top", },
+		BottomEdge = { atlas = "_AllianceFrameTile-Top", },
+		LeftEdge = { atlas = "!AllianceFrameTile-Left", },
+		RightEdge = { atlas = "!AllianceFrameTile-Left", },
+	},
+
+	BFAMissionNeutral =
+	{
+		TopLeftCorner =	{ atlas = "UI-Frame-GenericMetal-Corner", x = -6, y = 6, mirrorLayout = true, },
+		TopRightCorner =	{ atlas = "UI-Frame-GenericMetal-Corner", x = 6, y = 6, mirrorLayout = true, },
+		BottomLeftCorner =	{ atlas = "UI-Frame-GenericMetal-Corner", x = -6, y = -6, mirrorLayout = true, },
+		BottomRightCorner =	{ atlas = "UI-Frame-GenericMetal-Corner", x = 6, y = -6, mirrorLayout = true, },
+		TopEdge = { atlas = "_UI-Frame-GenericMetal-TileTop", },
+		BottomEdge = { atlas = "_UI-Frame-GenericMetal-TileBottom", },
+		LeftEdge = { atlas = "!UI-Frame-GenericMetal-TileLeft", },
+		RightEdge = { atlas = "!UI-Frame-GenericMetal-TileRight", },
+	},
+
+	Dialog =
+	{
+		TopLeftCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerTopLeft", },
+		TopRightCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerTopRight", },
+		BottomLeftCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerBottomLeft", },
+		BottomRightCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerBottomRight", },
+		TopEdge = { atlas = "_UI-Frame-DiamondMetal-EdgeTop", },
+		BottomEdge = { atlas = "_UI-Frame-DiamondMetal-EdgeBottom", },
+		LeftEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeLeft", },
+		RightEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeRight", },
+	},
+}
+
+--------------------------------------------------
+-- NINE SLICE UTILS
+NineSliceUtil = {};
+
+function NineSliceUtil.ApplyLayout(container, userLayout, textureKit)
 	for pieceIndex, setup in ipairs(nineSliceSetup) do
 		local pieceName = setup.pieceName;
 		local pieceLayout = userLayout[pieceName];
@@ -165,6 +302,29 @@ function AnchorUtil.ApplyNineSliceLayout(container, userLayout, textureKit)
 	end
 end
 
-function AnchorUtil.ApplyNineSliceLayoutByName(container, userLayoutName, textureKit)
-	return AnchorUtil.ApplyNineSliceLayout(container, AnchorUtil.GetNineSliceLayout(userLayoutName), textureKit);
+function NineSliceUtil.ApplyLayoutByName(container, userLayoutName, textureKit)
+	return NineSliceUtil.ApplyLayout(container, NineSliceUtil.GetLayout(userLayoutName), textureKit);
+end
+
+function NineSliceUtil.GetLayout(layoutName)
+	return layouts[layoutName];
+end
+
+function NineSliceUtil.AddLayout(layoutName, layout)
+	layouts[layoutName] = layout;
+end
+
+--------------------------------------------------
+-- NINE SLICE PANEL MIXIN
+ NineSlicePanelMixin = {};
+
+function NineSlicePanelMixin:GetFrameLayoutType()
+	return self.layoutType or self:GetParent().layoutType;
+end
+
+function NineSlicePanelMixin:OnLoad()
+	local layout = NineSliceUtil.GetLayout(self:GetFrameLayoutType());
+	if layout then
+		NineSliceUtil.ApplyLayout(self, layout);
+	end
 end

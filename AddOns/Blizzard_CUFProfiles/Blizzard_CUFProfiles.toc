@@ -1,6 +1,4 @@
-## Interface: 80100
 ## Title: Blizzard_CUFProfiles
-## Secure: 1
 ## LoadOnDemand: 0
 
 Blizzard_CompactUnitFrameProfiles.xml

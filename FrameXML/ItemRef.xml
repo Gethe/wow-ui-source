@@ -39,7 +39,6 @@
 		<Scripts>
 			<OnLoad>
 				GameTooltip_OnLoad(self);
-				self:SetPadding(16, 0);
 				self:RegisterForDrag("LeftButton");
 				self.shoppingTooltips = { ItemRefShoppingTooltip1, ItemRefShoppingTooltip2 };
 				self.updateTooltipTime = 0;
@@ -63,6 +62,7 @@
 			</OnLoad>
 			<OnTooltipSetItem>
 				self.updateTooltipTime = 0;
+				self:SetPadding(16, 0);
 				if ( IsModifiedClick("COMPAREITEMS") and self:IsMouseOver()) then
 					GameTooltip_ShowCompareItem(self);
 				end

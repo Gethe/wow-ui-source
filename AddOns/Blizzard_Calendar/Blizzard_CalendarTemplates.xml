@@ -250,17 +250,13 @@
 	</Frame>
 	<Button name="CalendarCloseButtonTemplate" inherits="UIPanelCloseButton" virtual="true">
 		<Anchors>
-			<Anchor point="TOPRIGHT">
-				<Offset x="0" y="0"/>
-			</Anchor>
+			<Anchor point="TOPRIGHT" x="-3" y="-3"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\DialogFrame\UI-DialogBox-Corner">
 					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset x="-4" y="-4"/>
-						</Anchor>
+						<Anchor point="TOPRIGHT" x="-4" y="-4"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -505,7 +501,7 @@
 	</Button>
 	<Button name="CalendarMassInviteArenaButtonTemplate" inherits="CalendarEventButtonTemplate" virtual="true">
 		<Scripts>
-			<OnLoad>	
+			<OnLoad>
 				CalendarMassInviteArenaButton_OnLoad(self);
 			</OnLoad>
 			<OnClick>
@@ -659,7 +655,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-			</Layer>		
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad>

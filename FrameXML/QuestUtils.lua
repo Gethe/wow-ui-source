@@ -11,7 +11,7 @@ WORLD_QUEST_TYPE_DUNGEON_TYPES = {
 }
 
 WorldQuestsSecondsFormatter = CreateFromMixins(SecondsFormatterMixin);
-WorldQuestsSecondsFormatter:OnLoad(SECONDS_PER_MIN, SecondsFormatter.Abbreviation.None, false);
+WorldQuestsSecondsFormatter:Init(SECONDS_PER_MIN, SecondsFormatter.Abbreviation.None, false);
 
 function WorldQuestsSecondsFormatter:GetDesiredUnitCount(seconds)
 	return seconds > SECONDS_PER_DAY and 2 or 1;
@@ -313,8 +313,8 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 	if numQuestRewards > 0 and (not style.prioritizeCurrencyOverItem or numCurrencyRewards == 0) then
 		if style.fullItemDescription then 
 			-- we want to do a full item description
-			local itemIndex = QuestUtils_GetBestQualityItemRewardIndex(questID);  -- Only support one item reward currently
-			if not EmbeddedItemTooltip_SetItemByQuestReward(tooltip.ItemTooltip, itemIndex, questID) then
+			local itemIndex, rewardType = QuestUtils_GetBestQualityItemRewardIndex(questID);  -- Only support one item reward currently
+			if not EmbeddedItemTooltip_SetItemByQuestReward(tooltip.ItemTooltip, itemIndex, questID, rewardType) then
 				showRetrievingData = true;
 			end
 			-- check for item compare input of flag
@@ -339,6 +339,14 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 				local color = ITEM_QUALITY_COLORS[quality];
 				GameTooltip:AddLine(text, color.r, color.g, color.b);
 			end
+		end
+	end
+
+	-- spells
+	local numQuestSpellRewards = GetNumQuestLogRewardSpells(questID);
+	if numQuestSpellRewards > 0 and not tooltip.ItemTooltip:IsShown() then
+		if not EmbeddedItemTooltip_SetSpellByQuestReward(tooltip.ItemTooltip, 1, questID) then
+			showRetrievingData = true;
 		end
 	end
 
@@ -434,8 +442,16 @@ function QuestUtils_GetCurrentQuestLineQuest(questLineID)
 	return currentQuestID;
 end
 
+function QuestUtils_GetQuestLogRewardInfo(itemIndex, questID, rewardType)
+	if rewardType == "choice" then
+		return GetQuestLogChoiceInfo(itemIndex, questID);
+	else
+		return GetQuestLogRewardInfo(itemIndex, questID);
+	end
+end
+
 function QuestUtils_GetBestQualityItemRewardIndex(questID)
-	local index;
+	local index, rewardType;
 	local bestQuality = -1;
 	local numQuestRewards = GetNumQuestLogRewards(questID);
 	for i = 1, numQuestRewards do
@@ -443,9 +459,19 @@ function QuestUtils_GetBestQualityItemRewardIndex(questID)
 		if quality > bestQuality then
 			index = i;
 			bestQuality = quality;
+			rewardType = "reward";
 		end
 	end
-	return index;
+	local numQuestChoices = GetNumQuestLogChoices(questID);
+	for i = 1, numQuestChoices do
+		local itemName, itemTexture, quantity, quality, isUsable, itemID = GetQuestLogChoiceInfo(i, questID);
+		if quality > bestQuality then
+			index = i;
+			bestQuality = quality;
+			rewardType = "choice";
+		end
+	end
+	return index, rewardType;
 end
 
 function QuestUtils_IsQuestWithinTimeThreshold(questID, threshold)

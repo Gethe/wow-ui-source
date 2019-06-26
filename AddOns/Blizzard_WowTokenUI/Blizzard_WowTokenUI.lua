@@ -118,8 +118,6 @@ Import("LE_TOKEN_RESULT_ERROR_BALANCE_NEAR_CAP");
 Import("LE_TOKEN_REDEEM_TYPE_GAME_TIME");
 Import("LE_TOKEN_REDEEM_TYPE_BALANCE");
 Import("SOUNDKIT");
-Import("AnchorUtil");
-Import("AnchorMixin");
 
 BalanceEnabled = nil;
 BalanceAmount = 0;

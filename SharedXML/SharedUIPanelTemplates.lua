@@ -102,73 +102,23 @@ function ButtonFrameTemplate_ShowAttic(self)
 end
 
 function ButtonFrameTemplate_HidePortrait(self)
-	local layout = AnchorUtil.GetNineSliceLayout("ButtonFrameTemplateNoPortrait");
-	AnchorUtil.ApplyNineSliceLayout(self.NineSlice, layout);
-	PortraitFrameTemplate_SetPortraitShown(self, false);
+	self:SetBorder("ButtonFrameTemplateNoPortrait");
+	self:SetPortraitShown(false);
 end
 
 function ButtonFrameTemplate_ShowPortrait(self)
-	local layout = AnchorUtil.GetNineSliceLayout("PortraitFrameTemplate");
-	AnchorUtil.ApplyNineSliceLayout(self.NineSlice, layout);
-	PortraitFrameTemplate_SetPortraitShown(self, true);
+	self:SetBorder("PortraitFrameTemplate");
+	self:SetPortraitShown(true);
 end
 
 function ButtonFrameTemplateMinimizable_HidePortrait(self)
-	local layout = AnchorUtil.GetNineSliceLayout("ButtonFrameTemplateNoPortraitMinimizable");
-	AnchorUtil.ApplyNineSliceLayout(self.NineSlice, layout);
-	PortraitFrameTemplate_SetPortraitShown(self, false);
+	self:SetBorder("ButtonFrameTemplateNoPortraitMinimizable");
+	self:SetPortraitShown(false);
 end
 
 function ButtonFrameTemplateMinimizable_ShowPortrait(self)
-	local layout = AnchorUtil.GetNineSliceLayout("PortraitFrameTemplateMinimizable");
-	AnchorUtil.ApplyNineSliceLayout(self.NineSlice, layout);
-	PortraitFrameTemplate_SetPortraitShown(self, true);
-end
-
-function PortraitFrameTemplate_SetBorder(self, layoutName)
-	local layout = AnchorUtil.GetNineSliceLayout(layoutName);
-	AnchorUtil.ApplyNineSliceLayout(self.NineSlice, layout);
-end
-
-function PortraitFrameTemplate_SetPortraitToAsset(self, texture)
-	SetPortraitToTexture(self.portrait, texture);
-end
-
-function PortraitFrameTemplate_SetPortraitToUnit(self, unit)
-	SetPortraitTexture(self.portrait, unit);
-end
-
-function PortraitFrameTemplate_SetPortraitTextureRaw(self, texture)
-	self.portrait:SetTexture(texture);
-end
-
-function PortraitFrameTemplate_SetPortraitAtlasRaw(self, atlas, ...)
-	self.portrait:SetAtlas(atlas, ...);
-end
-
-function PortraitFrameTemplate_SetPortraitTexCoord(self, ...)
-	self.portrait:SetTexCoord(...);
-end
-
-function PortraitFrameTemplate_SetPortraitShown(self, shown)
-	self.portrait:SetShown(shown);
-end
-
-function PortraitFrameTemplate_SetTitleColor(self, color)
-	self.TitleText:SetTextColor(color:GetRGBA());
-end
-
-function PortraitFrameTemplate_SetTitle(self, title)
-	self.TitleText:SetText(title);
-end
-
-function PortraitFrameTemplate_SetTitleFormatted(self, fmt, ...)
-	self.TitleText:SetFormattedText(fmt, ...);
-end
-
-function PortraitFrameTemplate_SetTitleMaxLinesAndHeight(self, maxLines, height)
-	self.TitleText:SetMaxLines(maxLines);
-	self.TitleText:SetHeight(height);
+	self:SetBorder("PortraitFrameTemplateMinimizable");
+	self:SetPortraitShown(true);
 end
 
 -- A bit ugly, we want the talent frame to display a dialog box in certain conditions.
@@ -184,12 +134,12 @@ function UIPanelCloseButton_OnClick(self)
 end
 
 function UIPanelCloseButton_SetBorderAtlas(self, atlas, xOffset, yOffset, textureKit)
-	local border = self.Border or self:CreateTexture(nil, "OVERLAY", 7);
+	local border = self.Border or self:CreateTexture(nil, "OVERLAY", nil, 7);
 	self.Border = border;
 
 	if textureKit then
 		-- NOTE: Using atlas as the texture kit format string here.
-		SetupTextureKitOnFrame(textureKit, border, atlas, nil, true);
+		SetupTextureKitOnFrame(textureKit, border, atlas, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
 	else
 		border:SetAtlas(atlas, true);
 	end
@@ -329,6 +279,32 @@ function ScrollBar_AdjustAnchors(scrollBar, topAdj, bottomAdj, xAdj)
 	bottomAdj = bottomAdj or 0;
 	scrollBar:SetPoint("TOPLEFT", parent, "TOPRIGHT", x + xAdj, topY + topAdj);
 	scrollBar:SetPoint("BOTTOMLEFT", parent, "BOTTOMRIGHT", x + xAdj, bottomY + bottomAdj);
+end
+
+function ScrollBar_Disable(scrollBar)
+	scrollBar:Disable();
+	local scrollDownButton = scrollBar.ScrollDownButton or _G[scrollBar:GetName().."ScrollDownButton"];
+	if scrollDownButton then
+		scrollDownButton:Disable();
+	end
+	local scrollUpButton = scrollBar.ScrollUpButton or _G[scrollBar:GetName().."ScrollUpButton"];
+	if scrollUpButton then
+		scrollUpButton:Disable();
+	end
+end
+
+function ScrollBar_Enable(scrollBar)
+	scrollBar:Enable();
+	local currValue = scrollBar:GetValue();
+	local minVal, maxVal = scrollBar:GetMinMaxValues();
+	local scrollDownButton = scrollBar.ScrollDownButton or _G[scrollBar:GetName().."ScrollDownButton"];
+	if scrollDownButton and currValue < maxVal then
+		scrollDownButton:Enable();
+	end
+	local scrollUpButton = scrollBar.ScrollUpButton or _G[scrollBar:GetName().."ScrollUpButton"];
+	if scrollUpButton and currValue > minVal then
+		scrollUpButton:Enable();
+	end
 end
 
 function HideParentPanel(self)
@@ -539,7 +515,7 @@ function PanelTemplates_ResizeTabsToFit(frame, maxWidthForAllTabs)
 	for i = 1, frame.numTabs do
 		local tab = GetTabByIndex(frame, i);
 		currentWidth = currentWidth + tab:GetWidth();
-		if tab.Text:IsTruncated() then
+		if tab.Text and tab.Text:IsTruncated() then
 			truncatedText = true;
 		end
 	end

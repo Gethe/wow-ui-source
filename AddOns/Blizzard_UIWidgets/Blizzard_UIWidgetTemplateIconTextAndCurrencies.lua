@@ -13,8 +13,8 @@ local textureKitRegions = {
 	["Icon"] = "%s",
 }
 
-function UIWidgetTemplateIconTextAndCurrenciesMixin:Setup(widgetInfo)
-	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
+function UIWidgetTemplateIconTextAndCurrenciesMixin:Setup(widgetInfo, widgetContainer)
+	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 	self.currencyPool:ReleaseAll();
 
 	SetupTextureKits(widgetInfo.textureKitID, self, textureKitRegions);

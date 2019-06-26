@@ -57,8 +57,8 @@ function CharacterFrame_OnLoad (self)
 	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
 	ButtonFrameTemplate_HideButtonBar(self);
 	self.Inset:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", PANEL_DEFAULT_WIDTH + PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_BOTTOM_OFFSET);
-	PortraitFrameTemplate_SetTitleColor(self, HIGHLIGHT_FONT_COLOR);
-	PortraitFrameTemplate_SetTitleMaxLinesAndHeight(self, 1, 13);
+	self:SetTitleColor(HIGHLIGHT_FONT_COLOR);
+	self:SetTitleMaxLinesAndHeight(1, 13);
 
 	SetTextStatusBarTextPrefix(PlayerFrameHealthBar, HEALTH);
 	SetTextStatusBarTextPrefix(PlayerFrameManaBar, MANA);
@@ -71,12 +71,12 @@ function CharacterFrame_UpdatePortrait()
 	local masteryIndex = GetSpecialization();
 	if (masteryIndex == nil) then
 		local _, class = UnitClass("player");
-		PortraitFrameTemplate_SetPortraitToAsset(CharacterFrame, "Interface\\TargetingFrame\\UI-Classes-Circles");
-		PortraitFrameTemplate_SetPortraitTexCoord(CharacterFrame, unpack(CLASS_ICON_TCOORDS[class]));
+		CharacterFrame:SetPortraitToAsset("Interface\\TargetingFrame\\UI-Classes-Circles");
+		CharacterFrame:SetPortraitTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
 	else
 		local _, _, _, icon = GetSpecializationInfo(masteryIndex);
-		PortraitFrameTemplate_SetPortraitTexCoord(CharacterFrame, 0, 1, 0, 1);
-		PortraitFrameTemplate_SetPortraitToAsset(CharacterFrame, icon);
+		CharacterFrame:SetPortraitTexCoord(0, 1, 0, 1);
+		CharacterFrame:SetPortraitToAsset(icon);
 	end
 end
 
@@ -88,11 +88,11 @@ function CharacterFrame_OnEvent (self, event, ...)
 	local arg1 = ...;
 	if ( event == "UNIT_NAME_UPDATE" ) then
 		if ( arg1 == "player" ) then
-			PortraitFrameTemplate_SetTitle(self, UnitPVPName("player"));
+			self:SetTitle(UnitPVPName("player"));
 		end
 		return;
 	elseif ( event == "PLAYER_PVP_RANK_CHANGED" ) then
-		PortraitFrameTemplate_SetTitle(self, UnitPVPName("player"));
+		self:SetTitle(UnitPVPName("player"));
 	elseif ( event == "PLAYER_TALENT_UPDATE" or event == "ACTIVE_TALENT_GROUP_CHANGED" ) then
 		CharacterFrame_UpdatePortrait();
 	end

@@ -95,6 +95,7 @@ local WarCampaign =
 				{ Name = "visibilityConditionMatched", Type = "bool", Nilable = false },
 				{ Name = "playerConditionFailedReason", Type = "string", Nilable = true },
 				{ Name = "complete", Type = "bool", Nilable = false },
+				{ Name = "overrideStepActive", Type = "bool", Nilable = false },
 			},
 		},
 	},

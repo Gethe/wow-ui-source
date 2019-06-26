@@ -16,24 +16,6 @@ if ( tbl.IsOnGlueScreen() ) then
 end
 
 setfenv(1, tbl);
-
-Import("pairs");
-Import("select");
-
-function Mixin(object, ...)
-	for i = 1, select("#", ...) do
-		local mixin = select(i, ...);
-		for k, v in pairs(mixin) do
-			object[k] = v;
-		end
-	end
-
-	return object;
-end
-
-function CreateFromMixins(...)
-	return Mixin({}, ...)
-end
 --------------------------------------------------
 
 --Imports
@@ -55,10 +37,8 @@ Import("GetMouseFocus");
 Import("Enum");
 Import("SecureMixin");
 Import("CreateFromSecureMixins");
-Import("ShrinkUntilTruncateFontStringMixin");
 Import("IsTrialAccount");
 Import("IsVeteranTrialAccount");
-Import("PortraitFrameTemplate_SetPortraitToAsset");
 Import("BLIZZARD_STORE_BUY");
 
 local BATTLEPAY_SPLASH_BANNER_TEXT_FEATURED = 0;
@@ -456,6 +436,8 @@ function HorizontalFullStoreCardMixin:SetStyle(overrideBackground)
 	self.ProductName:SetPoint("CENTER", 0, -32);
 	self.ProductName:SetJustifyH("CENTER");
 	self.ProductName:SetFontObjectsToTry("Game30Font", "GameFontNormalHuge2", "GameFontNormalLarge2");
+	self.ProductName:SetShadowOffset(1, -1);
+	self.ProductName:SetShadowColor(0, 0, 0, 1);
 
 	self.CurrentPrice:SetPoint("TOP", self.ProductName, "BOTTOM", 0, -6);
 

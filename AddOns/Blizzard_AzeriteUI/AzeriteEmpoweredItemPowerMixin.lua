@@ -1,5 +1,8 @@
 AzeriteEmpoweredItemPowerMixin = {};
 
+local CLICK_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(219, 1983548); -- 8FX_AZERITE_GENERIC_NOVAHIGH_BASE;
+local SELECTION_READY_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(222, 1983980); -- 8FX_AZERITE_EMPOWER_STATECHEST
+
 function AzeriteEmpoweredItemPowerMixin:Setup(owningTierFrame, azeriteItemDataSource, azeritePowerID, baseAngle)
 	self:CancelItemLoadCallback();
 
@@ -79,13 +82,11 @@ end
 
 function AzeriteEmpoweredItemPowerMixin:SetupModelScene(forceUpdate)
 	self.ClickEffect:Hide();
-	self.clickEffectActor = AzeriteModelInfo.SetupModelScene(self.ClickEffect, AzeriteModelInfo.ModelSceneTypePowerClick, forceUpdate);
-	if self.clickEffectActor then
-		self.clickEffectActor:SetAnimation(0, 0, 0, 0);
-	end
+	local stopAnim = true;
+	self.clickEffectActor = StaticModelInfo.SetupModelScene(self.ClickEffect, CLICK_MODEL_SCENE_INFO, forceUpdate, stopAnim);
 
 	self.CanSelectEffect:Hide();
-	AzeriteModelInfo.SetupModelScene(self.CanSelectEffect, AzeriteModelInfo.ModelSceneTypePowerReadyForSelection, forceUpdate);
+	StaticModelInfo.SetupModelScene(self.CanSelectEffect, SELECTION_READY_MODEL_SCENE_INFO, forceUpdate);
 end
 
 function AzeriteEmpoweredItemPowerMixin:Update()

@@ -1,11 +1,13 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_AlliedRacesFrameUI.lua"/>
-	<Button name="AlliedRacesModelControlFrameButtonTemplate" virtual="true">
+	<Script file="AlliedRacesModelControlButtonMixin.lua"/>
+
+	<Button name="AlliedRacesModelControlFrameButtonTemplate" mixin="AlliedRacesModelControlButtonMixin" virtual="true">
 		<Size x="26" y="25"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture atlas="AlliedRace-UnlockingFrame-ZoomIn" virtual="true" parentKey="Icon" useAtlasSize="true">
+				<Texture atlas="AlliedRace-UnlockingFrame-ZoomIn" parentKey="Icon" useAtlasSize="true">
 					<Size x="26" y="25"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -22,15 +24,12 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnMouseDown>
-				self.Icon:SetPoint("CENTER", 1, -1);
-			</OnMouseDown>
-			<OnMouseUp> 
-				self.Icon:SetPoint("CENTER",0, 0);
-			</OnMouseUp>
+			<OnLoad method="OnLoad" />
+			<OnMouseDown method="OnMouseDown" />
+			<OnMouseUp method="OnMouseUp" />
+			<OnClick method="OnClick" />
 		</Scripts>
 	</Button>
-
 	<Frame name="AlliedRaceOverviewBulletsTemplate" mixin="AlliedRacesBulletFrameMixin" virtual="true">
 		<Size x="200" y="20"/>
 		<Layers>
@@ -63,7 +62,6 @@
 			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>
 	</Frame>
-
 	<Frame name="AlliedRaceAbilityTemplate" virtual="true">
 		<Size x="300" y="36"/>
 		<Layers>
@@ -101,14 +99,13 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-
 	<Frame name="AlliedRacesFrame" toplevel="true" parent="UIParent" inherits="ButtonFrameTemplate" mixin="AlliedRacesFrameMixin" enableMouse="true" hidden="true">
 		<Size x="704" y="607"/>
 		<Anchors>
 			<Anchor point="LEFT" x="20" y="40"/> 
 		</Anchors>
 		<Frames>
-			<PlayerModel parentKey="ModelFrame" enableMouse="true" useParentLevel="true" drawLayer="BORDER" inherits="ModelTemplate">
+			<PlayerModel parentKey="ModelFrame" mixin="ModelFrameMixin" enableMouse="true" useParentLevel="true" drawLayer="BORDER" inherits="ModelTemplate">
 				<Size x="313" y="580"/>
 				<Anchors>
 					<Anchor point="LEFT" x="5" y="-9"/>
@@ -170,76 +167,45 @@
 						<CheckedTexture atlas="AlliedRace-UnlockingFrame-GenderSelectionGlow"/>
 						<HighlightTexture atlas="AlliedRace-UnlockingFrame-GenderMouseOverGlow"/>
 					</CheckButton>
-					<Button parentKey="ZoomInButton" inherits="AlliedRacesModelControlFrameButtonTemplate">
+					<Button parentKey="ZoomInButton" mixin="AlliedRacesModelControlZoomButtonMixin" inherits="AlliedRacesModelControlFrameButtonTemplate">
 						<Size x="26" y="25"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ModelFrame" relativePoint="BOTTOM" x="-50" y="10" />
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:RegisterForClicks("AnyUp");
-							</OnLoad>
-							<OnClick>
-								local model = self:GetParent();
-								Model_OnMouseWheel(model, 1);
-								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER); 
-							</OnClick>
-						</Scripts>
+						<KeyValues>
+							<KeyValue key="zoomIn" value="true" type="boolean"/>
+						</KeyValues>
 					</Button>
-					<Button parentKey="ZoomOutButton" inherits="AlliedRacesModelControlFrameButtonTemplate">
+					<Button parentKey="ZoomOutButton" mixin="AlliedRacesModelControlZoomButtonMixin" inherits="AlliedRacesModelControlFrameButtonTemplate">
 						<Size x="26" y="25"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ZoomInButton" relativePoint="BOTTOMRIGHT"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:RegisterForClicks("AnyUp");
-								self.Icon:SetAtlas("AlliedRace-UnlockingFrame-ZoomOut", true);
-							</OnLoad>
-							<OnClick>
-								local model = self:GetParent();
-								Model_OnMouseWheel(model, -1);
-								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
-							</OnClick>
-						</Scripts>
+						<KeyValues>
+							<KeyValue key="zoomIn" value="false" type="boolean"/>
+						</KeyValues>
 					</Button>
-					<Button parentKey="RotateLeftButton" inherits="AlliedRacesModelControlFrameButtonTemplate">
+					<Button parentKey="RotateLeftButton" mixin="AlliedRacesModelControlRotateButtonMixin" inherits="AlliedRacesModelControlFrameButtonTemplate">
 						<Size x="26" y="25"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ZoomOutButton" relativePoint="BOTTOMRIGHT"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:RegisterForClicks("AnyUp");
-								self.Icon:SetAtlas("AlliedRace-UnlockingFrame-LeftRotation", true);
-							</OnLoad>
-							<OnClick>
-								Model_RotateLeft(self:GetParent());
-								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER); 
-							</OnClick>
-						</Scripts>
+						<KeyValues>
+							<KeyValue key="rotateDirection" value="left" type="string"/>
+						</KeyValues>
 					</Button>
-					<Button parentKey="RotateRightButton" inherits="AlliedRacesModelControlFrameButtonTemplate">
+					<Button parentKey="RotateRightButton" mixin="AlliedRacesModelControlRotateButtonMixin" inherits="AlliedRacesModelControlFrameButtonTemplate">
 						<Size x="26" y="25"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeKey="$parent.RotateLeftButton" relativePoint="BOTTOMRIGHT"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:RegisterForClicks("AnyUp");
-								self.Icon:SetAtlas("AlliedRace-UnlockingFrame-RightRotation", true);
-							</OnLoad>
-							<OnClick>
-								Model_RotateRight(self:GetParent());
-								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER); 
-							</OnClick>
-						</Scripts>
+						<KeyValues>
+							<KeyValue key="rotateDirection" value="right" type="string"/>
+						</KeyValues>
 					</Button>
 				</Frames>
 				<Scripts>
-					<OnMouseWheel>
-						Model_OnMouseWheel(self, delta);
-					</OnMouseWheel>
+					<OnMouseWheel method="OnMouseWheel" />
 				</Scripts>
 			</PlayerModel>
 			<Frame parentKey="RaceInfoFrame">

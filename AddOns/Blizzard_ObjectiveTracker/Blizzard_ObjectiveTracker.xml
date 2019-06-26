@@ -336,6 +336,7 @@
 					<Frame parentKey="QuestHeader" inherits="ObjectiveTrackerHeaderTemplate"/>
 					<Frame parentKey="AchievementHeader" inherits="ObjectiveTrackerHeaderTemplate"/>
 					<Frame parentKey="ScenarioHeader" inherits="ObjectiveTrackerHeaderTemplate"/>
+					<Frame parentKey="UIWidgetsHeader" inherits="ObjectiveTrackerHeaderTemplate"/>
 				</Frames>
 			</Frame>
 			<Frame parentKey="HeaderMenu">

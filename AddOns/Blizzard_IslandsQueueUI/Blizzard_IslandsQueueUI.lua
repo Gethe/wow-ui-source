@@ -119,12 +119,14 @@ end
 IslandsQueueFrameMixin = { };
 
 local function SetWidgetFrameAnchors(frame, anchorFrame)
+	frame:ClearAllPoints();
 	frame:SetPoint("CENTER", anchorFrame.Background, "CENTER", 0,0);
 	frame.Text:SetPoint("CENTER", anchorFrame.TitleScroll, "CENTER", 0, 0);
 	frame:SetFrameLevel(anchorFrame:GetFrameLevel() +10);
 end
 
 local function WidgetInit(widgetFrame)
+	widgetFrame.Background:SetSize(451, 301);
 	widgetFrame.Text:SetSize(165, 50); 
 	widgetFrame.Text:SetFontObjectsToTry(GameFontNormalLarge, GameFontNormalMed1, GameFontNormal);
 end 
@@ -133,15 +135,15 @@ local function WidgetsLayout(widgetContainer, sortedWidgets)
 	for index, widgetFrame in ipairs(sortedWidgets) do
 		if ( index == 1 ) then
 			widgetFrame.Background:SetRotation(ISLANDS_QUEUE_LEFT_CARD_ROTATION);
-			widgetFrame.Portrait:SetRotation(ISLANDS_QUEUE_LEFT_CARD_ROTATION);
+			widgetFrame.Foreground:SetRotation(ISLANDS_QUEUE_LEFT_CARD_ROTATION);
 			SetWidgetFrameAnchors(widgetFrame, widgetContainer.LeftCard)
 		elseif ( index == 2 ) then
 			widgetFrame.Background:SetRotation(ISLANDS_QUEUE_CENTER_CARD_ROTATION);
-			widgetFrame.Portrait:SetRotation(ISLANDS_QUEUE_CENTER_CARD_ROTATION);
+			widgetFrame.Foreground:SetRotation(ISLANDS_QUEUE_CENTER_CARD_ROTATION);
 			SetWidgetFrameAnchors(widgetFrame, widgetContainer.CenterCard)
 		elseif ( index == 3 ) then
 			widgetFrame.Background:SetRotation(ISLANDS_QUEUE_RIGHT_CARD_ROTATION);
-			widgetFrame.Portrait:SetRotation(ISLANDS_QUEUE_RIGHT_CARD_ROTATION);
+			widgetFrame.Foreground:SetRotation(ISLANDS_QUEUE_RIGHT_CARD_ROTATION);
 			SetWidgetFrameAnchors(widgetFrame, widgetContainer.RightCard)
 		end
 	end

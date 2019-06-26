@@ -21,11 +21,7 @@ end
 
 function StorylineQuestDataProviderMixin:OnShow()
 	self:RegisterEvent("QUESTLINE_UPDATE");
-	local mapID = self:GetMap():GetMapID();
-	local mapInfo = C_Map.GetMapInfo(mapID);
-	if (mapInfo and MapUtil.ShouldMapTypeShowQuests(mapInfo.mapType)) then
-		C_QuestLine.RequestQuestLinesForMap(mapID)
-	end
+	self:RequestQuestLinesForMap()
 end
 
 function StorylineQuestDataProviderMixin:OnHide()
@@ -33,17 +29,26 @@ function StorylineQuestDataProviderMixin:OnHide()
 end
 
 function StorylineQuestDataProviderMixin:OnMapChanged()
-	local mapID = self:GetMap():GetMapID();
-	local mapInfo = C_Map.GetMapInfo(mapID);
-	if (mapInfo and MapUtil.ShouldMapTypeShowQuests(mapInfo.mapType)) then
-		C_QuestLine.RequestQuestLinesForMap(mapID)
-	end
+	self:RequestQuestLinesForMap()
 	MapCanvasDataProviderMixin.OnMapChanged(self)
 end
 
 function StorylineQuestDataProviderMixin:OnEvent(event, ...)
 	if (event == "QUESTLINE_UPDATE") then
-		self:RefreshAllData();
+		local requestRequired = ...;
+		if(requestRequired) then
+			self:RequestQuestLinesForMap()
+		else
+			self:RefreshAllData();
+		end
+	end
+end
+
+function StorylineQuestDataProviderMixin:RequestQuestLinesForMap()
+	local mapID = self:GetMap():GetMapID();
+	local mapInfo = C_Map.GetMapInfo(mapID);
+	if (mapInfo and MapUtil.ShouldMapTypeShowQuests(mapInfo.mapType)) then
+		C_QuestLine.RequestQuestLinesForMap(mapID)
 	end
 end
 
@@ -58,7 +63,9 @@ function StorylineQuestPinMixin:OnAcquired(questID)
 	self.questID = questID;
 	self.mapID = self:GetMap():GetMapID();
 	local questLineInfo = C_QuestLine.GetQuestLineInfo(self.questID, self.mapID);
-	if (questLineInfo.isLegendary) then
+	if (questLineInfo.isDaily) then
+		self.Texture:SetAtlas("QuestDaily", true);
+	elseif (questLineInfo.isLegendary) then
 		self.Texture:SetAtlas("QuestLegendary", true);
 	elseif (questLineInfo.isHidden) then
 		self.Texture:SetAtlas("TrivialQuests", true);

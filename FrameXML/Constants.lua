@@ -3,6 +3,14 @@
 -- deprecated and moved to this file.
 --
 
+Constant = {
+	Currency = 
+	{
+		Honor = 1585,
+		Conquest = 1602,
+	}
+};
+
 --
 -- Expansion Info
 --
@@ -38,6 +46,7 @@ DISABLED_FONT_COLOR_CODE	= "|cff7f7f7f";
 FONT_COLOR_CODE_CLOSE		= "|r";
 
 NORMAL_FONT_COLOR			= CreateColor(1.0, 0.82, 0.0);
+WHITE_FONT_COLOR			= CreateColor(1.0, 1.0, 1.0);
 HIGHLIGHT_FONT_COLOR		= CreateColor(1.0, 1.0, 1.0);
 RED_FONT_COLOR				= CreateColor(1.0, 0.1, 0.1);
 DIM_RED_FONT_COLOR			= CreateColor(0.8, 0.1, 0.1);
@@ -873,7 +882,7 @@ FIRST_NUMBER_CAP_VALUE = 1000;
 
 -- GARRISONS
 GARRISON_HIGH_THREAT_VALUE = 300;
-
+LOOT_SOURCE_GARRISON_CACHE = 10;
 WOW_TOKEN_ITEM_ID = 122284;
 
 -- TRANSMOG

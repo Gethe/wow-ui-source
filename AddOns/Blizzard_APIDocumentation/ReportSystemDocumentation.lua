@@ -23,6 +23,7 @@ local ReportSystem =
 		{
 			Name = "InitiateReportPlayer",
 			Type = "Function",
+			Documentation = { "Not allowed to be called by addons" },
 
 			Arguments =
 			{
@@ -36,12 +37,25 @@ local ReportSystem =
 			},
 		},
 		{
+			Name = "OpenReportPlayerDialog",
+			Type = "Function",
+			Documentation = { "Addons should use this to open the ReportPlayer dialog. InitiateReportPlayer and SendReportPlayer are no longer accessible to addons." },
+
+			Arguments =
+			{
+				{ Name = "reportType", Type = "string", Nilable = false },
+				{ Name = "playerName", Type = "string", Nilable = false },
+				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = true },
+			},
+		},
+		{
 			Name = "ReportServerLag",
 			Type = "Function",
 		},
 		{
 			Name = "SendReportPlayer",
 			Type = "Function",
+			Documentation = { "Not allowed to be called by addons" },
 
 			Arguments =
 			{
@@ -95,6 +109,17 @@ local ReportSystem =
 
 	Events =
 	{
+		{
+			Name = "OpenReportPlayer",
+			Type = "Event",
+			LiteralName = "OPEN_REPORT_PLAYER",
+			Payload =
+			{
+				{ Name = "token", Type = "number", Nilable = false },
+				{ Name = "reportType", Type = "string", Nilable = false },
+				{ Name = "playerName", Type = "string", Nilable = false },
+			},
+		},
 		{
 			Name = "ReportPlayerResult",
 			Type = "Event",

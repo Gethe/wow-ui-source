@@ -2,29 +2,18 @@
 ..\FrameXML\UI.xsd">
 
 	<Script file="PVPHelper.lua"/>
-	
+
 	<Frame name="PVPHelperFrame">
 		<Scripts>
 			<OnLoad function="PVPHelperFrame_OnLoad"/>
 			<OnEvent function="PVPHelperFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
-	
-	<Frame name="PVPTimerFrame"/> 
-	
+
+	<Frame name="PVPTimerFrame"/>
+
 	<Frame name="PVPFramePopup" parent="UIParent" frameStrata="DIALOG" hidden="true">
 		<Size x="306" y="193"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="BORDER">
 				<Texture name="$parentBackground" file="Interface\PVPFrame\PVP-Conquest-Misc" >
@@ -65,6 +54,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<Button name="$parentMinimizeButton" parentKey="minimizeButton">
 				<Size x="32" y="32"/>
 				<Anchors>
@@ -111,20 +101,9 @@
 			<OnEvent function="PVPFramePopup_OnEvent"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="PVPRoleCheckPopup" parent="UIParent" frameStrata="DIALOG" hidden="true" enableMouse="true">
 		<Size x="306" y="180"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString inherits="GameFontHighlight" justifyH="CENTER" text="CONFIRM_YOUR_ROLE">
@@ -135,6 +114,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<Button parentKey="TankIcon" name="$parentRoleButtonTank" inherits="LFGRoleButtonTemplate" id="2">
 				<Size x="70" y="70"/>
 				<KeyValues>
@@ -175,7 +155,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self.checkButton.onClick = PVPRoleCheckPopup_RoleButtonClicked;	
+						self.checkButton.onClick = PVPRoleCheckPopup_RoleButtonClicked;
 						LFGRoleButtonTemplate_OnLoad(self);
 					</OnLoad>
 				</Scripts>
@@ -223,17 +203,6 @@
 	</Frame>
 	<Frame name="PVPReadyDialog" parent="UIParent" frameStrata="DIALOG" toplevel="true" enableMouse="true">
 		<Size x="306" y="210"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="2">
 				<Texture name="$parentBackground" parentKey="background" file="Interface\LFGFrame\UI-LFG-BACKGROUND-RANDOMDUNGEON">
@@ -278,6 +247,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<Button name="$parentCloseButton">
 				<Size x="32" y="32"/>
 				<Anchors>

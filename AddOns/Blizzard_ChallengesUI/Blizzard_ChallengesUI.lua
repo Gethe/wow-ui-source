@@ -134,7 +134,7 @@ end
 function ChallengesFrame_OnShow(self)
 	self:RegisterEvent("BAG_UPDATE");
 
-    PortraitFrameTemplate_SetPortraitToAsset(PVEFrame, "Interface\\Icons\\achievement_bg_wineos_underxminutes");
+    PVEFrame:SetPortraitToAsset("Interface\\Icons\\achievement_bg_wineos_underxminutes");
 	PVEFrame.TitleText:SetText(CHALLENGES);
 	PVEFrame_HideLeftInset();
 
@@ -441,7 +441,7 @@ function ChallengesDungeonIconMixin:OnEnter()
 		if (overtimeInfo and inTimeInfo and  overtimeInfo.level > inTimeInfo.level) then 
 			GameTooltip_AddNormalLine(GameTooltip, MYTHIC_PLUS_OVERTIME_SEASON_BEST);
 			GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_POWER_LEVEL:format(overtimeInfo.level), HIGHLIGHT_FONT_COLOR);
-			GameTooltip_AddColoredLine(GameTooltip, GetTimeStringFromSeconds(overtimeInfo.durationSec), HIGHLIGHT_FONT_COLOR);
+			GameTooltip_AddColoredLine(GameTooltip, SecondsToClock(overtimeInfo.durationSec, true), HIGHLIGHT_FONT_COLOR);
 			GameTooltip_AddBlankLineToTooltip(GameTooltip); 
 		end 
 
@@ -453,7 +453,7 @@ function ChallengesDungeonIconMixin:OnEnter()
 		end 
 
         GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_POWER_LEVEL:format(seasonBestLevel), HIGHLIGHT_FONT_COLOR);
-        GameTooltip_AddColoredLine(GameTooltip, GetTimeStringFromSeconds(seasonBestDurationSec), HIGHLIGHT_FONT_COLOR);
+        GameTooltip_AddColoredLine(GameTooltip, SecondsToClock(seasonBestDurationSec, true), HIGHLIGHT_FONT_COLOR);
 		GameTooltip_AddBlankLineToTooltip(GameTooltip); 
 
 		for i, member in ipairs(members) do
@@ -765,9 +765,11 @@ end
 
 function ChallengeModeCompleteBannerMixin:OnEvent(event, ...)
     if (event == "CHALLENGE_MODE_COMPLETED") then
-        local mapID, level, time, onTime, keystoneUpgradeLevels = C_ChallengeMode.GetCompletionInfo();
+        local mapID, level, time, onTime, keystoneUpgradeLevels, practiceRun = C_ChallengeMode.GetCompletionInfo();
 
-        TopBannerManager_Show(self, { mapID = mapID, level = level, time = time, onTime = onTime, keystoneUpgradeLevels = keystoneUpgradeLevels });
+		if not practiceRun then
+			TopBannerManager_Show(self, { mapID = mapID, level = level, time = time, onTime = onTime, keystoneUpgradeLevels = keystoneUpgradeLevels });
+		end
     end
 end
 

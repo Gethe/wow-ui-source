@@ -5,7 +5,7 @@ MEMBERS_PER_RAID_GROUP = 5;
 MAX_RAID_INFOS = 20;
 
 function RaidParentFrame_OnLoad(self)
-	PortraitFrameTemplate_SetPortraitToAsset(self, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
+	self:SetPortraitToAsset("Interface\\LFGFrame\\UI-LFR-PORTRAIT");
 	PanelTemplates_SetNumTabs(self, 2);
 	PanelTemplates_SetTab(self, 1);
 end

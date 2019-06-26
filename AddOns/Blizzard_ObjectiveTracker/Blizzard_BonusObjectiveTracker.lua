@@ -138,10 +138,6 @@ end
 
 function BonusObjectiveTracker_OnBlockLeave(block)
 	block.module:OnBlockHeaderLeave(block);
-	GameTooltipTextLeft1:SetFontObject(GameTooltipHeaderText);
-	for i = 2, 4 do
-		_G["GameTooltipTextLeft"..i]:SetFontObject(GameTooltipText);
-	end
 	GameTooltip:Hide();
 	block.module.tooltipBlock = nil;
 end

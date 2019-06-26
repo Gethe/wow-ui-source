@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="ScrollOfResurrection.lua"/>
-	
+
 	<Button name="ScrollOfResurrectionSelectionButtonTemplate" virtual="true">
 		<Size x="230" y="16"/>
 		<Layers>
@@ -19,30 +19,13 @@
 			<OnClick function="ScrollOfResurrectionSelectionButton_OnClick"/>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="ScrollOfResurrectionSelectionFrame" parent="UIParent" hidden="true" frameStrata="DIALOG">
 		<Size x="300" y="400"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" setAllPoints="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="11" y="-11"/>
-						<Anchor point="BOTTOMRIGHT" x="-11" y="11"/>
-					</Anchors>
-					<Color r="0" g="0" b="0" a="0.8"/>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK">
 				<FontString name="$parentTitle" inherits="GameFontNormalLarge" parentKey="title" text="SCROLL_OF_RESURRECTION" justifyH="CENTER">
 					<Anchors>
@@ -89,6 +72,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTranslucentTemplate"/>
 			<EditBox name="$parentTargetEditBox" autoFocus="false" letters="255" parentKey="targetEditBox">
 				<Size x="250" y="20"/>
 				<Anchors>
@@ -149,7 +133,7 @@
 						else
 							self.fill:Show();
 						end
-					</OnTextChanged> 
+					</OnTextChanged>
 					<OnEditFocusGained>
 						if ( ScrollOfResurrectionSelectionFrame.sendType ~= "email" ) then
 							ScrollOfResurrectionSelectionFrame.sendType = "email";
@@ -160,7 +144,7 @@
 					</OnEditFocusGained>
 					<OnEscapePressed>
 						self:ClearFocus();
-					</OnEscapePressed>	
+					</OnEscapePressed>
 				</Scripts>
 				<FontString inherits="FriendsFont_Small">
 					<Color r="1" g="1" b="1" />
@@ -202,7 +186,7 @@
 				<Scripts>
 					<OnClick>
 						local sendType = ScrollOfResurrectionSelectionFrame.sendType;
-						local target = ScrollOfResurrectionSelectionFrame.target; 
+						local target = ScrollOfResurrectionSelectionFrame.target;
 						local text = ScrollOfResurrectionSelectionFrame.text;
 						StaticPopupSpecial_Hide(self:GetParent());
 						ScrollOfResurrection_Show(sendType, target, text);
@@ -244,17 +228,6 @@
 	</Frame>
 	<Frame name="ScrollOfResurrectionFrame" parent="UIParent" hidden="true" enableMouse="true" frameStrata="DIALOG">
 		<Size x="386" y="300"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentTitle" inherits="GameFontNormalLarge" parentKey="title" text="SCROLL_OF_RESURRECTION" justifyH="CENTER">
@@ -270,6 +243,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<EditBox name="$parentTargetEditBox" autoFocus="false" letters="255" parentKey="targetEditBox">
 				<Size x="280" y="20"/>
 				<Anchors>
@@ -316,7 +290,7 @@
 						else
 							self.fill:Show();
 						end
-					</OnTextChanged> 
+					</OnTextChanged>
 					<OnEnterPressed>
 						ScrollOfResurrectionFrame.noteFrame.scrollFrame.editBox:SetFocus();
 					</OnEnterPressed>
@@ -325,7 +299,7 @@
 					</OnTabPressed>
 					<OnEscapePressed>
 						self:ClearFocus();
-					</OnEscapePressed>	
+					</OnEscapePressed>
 				</Scripts>
 				<FontString inherits="FriendsFont_Small">
 					<Color r="1" g="1" b="1" />
@@ -439,7 +413,7 @@
 										else
 											self.fill:Show();
 										end
-									</OnTextChanged> 
+									</OnTextChanged>
 									<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
 									<OnUpdate>
 										ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());

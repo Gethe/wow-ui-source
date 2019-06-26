@@ -7,21 +7,25 @@
 	</Button>
 
 
-	<Button name="WarboardQuestChoiceOptionTemplate" mixin="WarboardQuestChoiceOptionFrameMixin" virtual="true">
-		<Size x="240" y="332"/>
+	<Button name="WarboardQuestChoiceOptionTemplate" inherits="ResizeLayoutFrame" mixin="WarboardQuestChoiceOptionFrameMixin" virtual="true">
+		<Size x="370" y="332"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" atlas="UI-Frame-Horde-CardParchment">
 					<Size x="254" y="439"/>
 					<Anchors>
-						<Anchor point="TOP"/>
+						<Anchor point="TOPLEFT" x="-8" y="38"/>
+						<Anchor point="BOTTOMRIGHT" x="8" y="-30"/>
 					</Anchors>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="ArtworkBorder" atlas="UI-Frame-Horde-Portrait" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOP" x="0" y="-38"/>
+						<Anchor point="TOP"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="ArtworkBorderDisabled" atlas="UI-Frame-Horde-PortraitDisable" useAtlasSize="true" hidden="true">
@@ -40,27 +44,14 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="OptionButtonsContainer">
-				<Size x="210" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="29"/>
-				</Anchors>
-				<Frames>
-					<Button parentKey="OptionButton1" inherits="WarboardChoiceOptionButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT"/>
-						</Anchors>
-					</Button>
-					<Button parentKey="OptionButton2" inherits="WarboardChoiceOptionButtonTemplate"/>
-				</Frames>
-			</Frame>
 			<Frame parentKey="Header" useParentLevel="true" inherits="HorizontalLayoutFrame" hidden="true">
 				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					<KeyValue key="fixedHeight" value="32" type="number"/>
 					<KeyValue key="spacing" value="5" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOP" y="10"/>
+					<Anchor point="BOTTOM" relativePoint="TOP" y="15"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
@@ -117,24 +108,31 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<SimpleHTML parentKey="OptionText" inherits="InlineHyperlinkFrameTemplate">
+			<SimpleHTML parentKey="OptionText" inherits="InlineHyperlinkFrameTemplate" resizeToFitContents="true">
 				<Size x="196" y="10"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.ArtworkBorder" relativePoint="BOTTOM" x="0" y="-12"/>
 				</Anchors>
-				<Scripts>
-					<OnSizeChanged>self:GetParent():GetParent():SetPendingUpdate();</OnSizeChanged>
-				</Scripts>
 				<FontString inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP"/>
 			</SimpleHTML>
 			<Frame parentKey="WidgetContainer" inherits="UIWidgetContainerTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.OptionButtonsContainer" relativePoint="TOP" y="5"/>
+					<Anchor point="TOP" relativeKey="$parent.OptionText" relativePoint="BOTTOM" y="-5"/>
 				</Anchors>
+			</Frame>
+			<Frame parentKey="OptionButtonsContainer" inherits="ResizeLayoutFrame">
+				<Size x="210" y="22"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.WidgetContainer" relativePoint="BOTTOM" y="-5"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="OptionButton1" inherits="WarboardChoiceOptionButtonTemplate" />
+					<Button parentKey="OptionButton2" inherits="WarboardChoiceOptionButtonTemplate" hidden="true" />
+				</Frames>
 			</Frame>
 		</Frames>
 	</Button>
-	<Frame name="WarboardQuestChoiceFrame" frameStrata="HIGH" mixin="WarboardQuestChoiceFrameMixin" hidden="true" enableMouse="true" parent="UIParent" toplevel="true" inherits="HorizontalLayoutFrame">
+	<Frame name="WarboardQuestChoiceFrame" frameStrata="HIGH" hidden="true" enableMouse="true" parent="UIParent" toplevel="true" inherits="HorizontalLayoutFrame" mixin="WarboardQuestChoiceFrameMixin">
 		<Size x="600" y="544"/>
 		<Anchors>
 			<Anchor point="CENTER" />
@@ -143,15 +141,11 @@
 			<KeyValue key="fixedWidth" value="284" type="number"/>
 			<KeyValue key="expand" value="true" type="boolean"/>
 			<KeyValue key="topPadding" value="150" type="number"/>
-			<KeyValue key="bottomPadding" value="38" type="number"/>
-			<KeyValue key="leftPadding" value="50" type="number"/>
-			<KeyValue key="rightPadding" value="50" type="number"/>
+			<KeyValue key="bottomPadding" value="65" type="number"/>
+			<KeyValue key="leftPadding" value="65" type="number"/>
+			<KeyValue key="rightPadding" value="65" type="number"/>
 			<KeyValue key="spacing" value="20" type="number"/>
 			<KeyValue key="fixedPaddingAndSpacing" value="true" type="boolean"/>
-			<KeyValue key="optionButtonWidth" value="210" type="number"/>
-			<KeyValue key="optionButtonHeight" value="22" type="number"/>
-			<KeyValue key="optionButtonVerticalSpacing" value="8" type="number"/>
-			<KeyValue key="optionButtonHorizontalSpacing" value="40" type="number"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" setAllPoints="true"/>
@@ -205,7 +199,7 @@
 				<Size x="500" y="85"/>
 				<Anchors>
 					<Anchor point="TOP" x="0" y="-33"/>
-					<Anchor point="LEFT" relativeKey="$parent.Option1" relativePoint="LEFT" x="-3" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.Option1" relativePoint="LEFT" x="-15" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">

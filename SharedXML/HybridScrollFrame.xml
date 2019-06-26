@@ -48,7 +48,7 @@
 
 	<Slider name="HybridScrollBarTemplate" inherits="HybridScrollBarBackgroundTemplate" virtual="true">
 		<Frames>
-			<Button name="$parentScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
+			<Button name="$parentScrollUpButton" parentKey="ScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
 				<Anchors>
 					<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-2"/>
 				</Anchors>
@@ -57,7 +57,7 @@
 					<OnClick function ="HybridScrollFrameScrollButton_OnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
+			<Button name="$parentScrollDownButton" parentKey="ScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
 				<Anchors>
 					<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="2"/>
 				</Anchors>

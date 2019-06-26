@@ -433,13 +433,17 @@ function CharacterMicroButton_OnEvent(self, event, ...)
 			end
 			AzeriteEmpoweredItemUI:RegisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnShow, EvaluateAlertVisibility);
 			AzeriteEmpoweredItemUI:RegisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnHide, EvaluateAlertVisibility);
-
-			self:UnregisterEvent("ADDON_LOADED");
+		elseif addOnName == "Blizzard_AzeriteEssenceUI" then
+			local function EvaluateAlertVisibility()
+				self:EvaluateAlertVisibility();
+			end
+			AzeriteEssenceUI:RegisterCallback(AzeriteEssenceUIMixin.Event.OnShow, EvaluateAlertVisibility);
+			AzeriteEssenceUI:RegisterCallback(AzeriteEssenceUIMixin.Event.OnHide, EvaluateAlertVisibility);
 		end
 	end
 end
 
-function CharacterMicroButtonMixin:ShouldShowAzeriteAlert()
+function CharacterMicroButtonMixin:ShouldShowAzeriteItemAlert()
 	if AzeriteEmpoweredItemUI and AzeriteEmpoweredItemUI:IsShown() then
 		return false;
 	end
@@ -455,10 +459,52 @@ function CharacterMicroButtonMixin:ShouldShowAzeriteAlert()
 	return false;
 end
 
+function CharacterMicroButtonMixin:ShouldShowAzeriteEssenceSlotAlert()
+	if AzeriteEssenceUI and AzeriteEssenceUI:IsShown() then
+		return false;
+	end
+
+	if self:GetButtonState() == "PUSHED" then
+		return false;
+	end
+
+	if IsPlayerInWorld() and AzeriteEssenceUtil.HasAnyEmptySlots() then
+		return true;
+	end
+
+	return false;
+end
+
+function CharacterMicroButtonMixin:ShouldShowAzeriteEssenceSwapAlert()
+	if AzeriteEssenceUI and AzeriteEssenceUI:IsShown() then
+		return false;
+	end
+
+	if self:GetButtonState() == "PUSHED" then
+		return false;
+	end
+
+	return AzeriteEssenceUtil.ShouldShowEssenceSwapTutorial();
+end
+
 function CharacterMicroButtonMixin:EvaluateAlertVisibility()
 	CharacterMicroButtonAlert:Hide();
 
-	if self:ShouldShowAzeriteAlert() then
+	if self:ShouldShowAzeriteEssenceSlotAlert() then
+		if MainMenuMicroButton_ShowAlert(CharacterMicroButtonAlert, CHARACTER_SHEET_MICRO_BUTTON_AZERITE_ESSENCE_SLOT_AVAILABLE) then
+			return;
+		end
+	end
+
+	if not self.seenAzeriteEssenceSwapAlert and self:ShouldShowAzeriteEssenceSwapAlert() then
+		if MainMenuMicroButton_ShowAlert(CharacterMicroButtonAlert, CHARACTER_SHEET_MICRO_BUTTON_AZERITE_ESSENCE_CHANGE_ESSENCES) then
+			self.seenAzeriteEssenceSwapAlert = true;
+			AzeriteEssenceUtil.SetEssenceSwapTutorialSeen();
+			return;
+		end
+	end
+
+	if self:ShouldShowAzeriteItemAlert() then
 		if MainMenuMicroButton_ShowAlert(CharacterMicroButtonAlert, CHARACTER_SHEET_MICRO_BUTTON_AZERITE_AVAILABLE) then
 			return;
 		end
@@ -756,28 +802,40 @@ do
 			local itemID, updateReason = ...;
 			if itemID and updateReason == "NEW" then
 				if MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, HEIRLOOMS_MICRO_BUTTON_SPEC_TUTORIAL, LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL) then
-					MicroButtonPulse(self);
-					SafeSetCollectionJournalTab(4);
+					local tabIndex = 4;
+					CollectionsMicroButton_SetAlert(tabIndex);
 				end
 			end
 		elseif ( event == "PET_JOURNAL_NEW_BATTLE_SLOT" ) then
 			if MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, COMPANIONS_MICRO_BUTTON_NEW_BATTLE_SLOT) then
-				MicroButtonPulse(self);
-				SafeSetCollectionJournalTab(2);
+				local tabIndex = 2;
+				CollectionsMicroButton_SetAlert(tabIndex);
 			end
 		elseif ( event == "TOYS_UPDATED" ) then
 			local itemID, new = ...;
 			if itemID and new then
 				if MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, TOYBOX_MICRO_BUTTON_SPEC_TUTORIAL, LE_FRAME_TUTORIAL_TOYBOX) then
-					MicroButtonPulse(self);
-					SafeSetCollectionJournalTab(3);
+					local tabIndex = 3;
+					CollectionsMicroButton_SetAlert(tabIndex);
 				end
 			end
 		elseif ( event == "COMPANION_LEARNED" or event == "PLAYER_ENTERING_WORLD" or event == "PET_JOURNAL_LIST_UPDATE" ) then
 			self:EvaluateAlertVisibility();
 		end
 	end
+	
+	function CollectionsMicroButton_SetAlert(tabIndex)
+		CollectionsMicroButton_SetAlertShown(true);
+		SafeSetCollectionJournalTab(tabIndex);
+	end
 
+	function CollectionsMicroButton_SetAlertShown(shown)
+		if shown then
+			MicroButtonPulse(CollectionsMicroButton);
+		else
+			MicroButtonPulseStop(CollectionsMicroButton);
+		end
+	end
 
 	function CollectionsMicroButton_OnEnter(self)
 		self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS");

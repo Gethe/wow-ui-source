@@ -1,8 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Script file="SharedUIPanelTemplates.lua"/>
+  <Script file="SharedUIPanelTemplates.lua"/>
+	<Script file="PortraitFrame.lua"/>
 
-	<Texture name="UIPanelButtonHighlightTexture" file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD" virtual="true">
+  <Texture name="UIPanelButtonHighlightTexture" file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD" virtual="true">
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 	</Texture>
 
@@ -404,6 +405,76 @@
 
 <!--
 *******************************************************************************
+    Dialog Border Templates
+
+	This family of borders are used when you want your frame to look like a
+	dialog.
+*******************************************************************************
+-->
+	<Frame name="DialogBorderNoCenterTemplate" useParentLevel="true" inherits="NineSlicePanelTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="Dialog" type="string"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="DialogBorderTemplate" inherits="DialogBorderNoCenterTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<!-- TODO: Convert this to atlas -->
+				<Texture parentKey="Bg" file="Interface\DialogFrame\UI-DialogBox-Background" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="DialogBorderDarkTemplate" inherits="DialogBorderNoCenterTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<!-- TODO: Convert this to atlas -->
+				<Texture parentKey="Bg" file="Interface\DialogFrame\UI-DialogBox-Background-Dark" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="DialogBorderTranslucentTemplate" inherits="DialogBorderNoCenterTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<Texture parentKey="Bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.8"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="DialogBorderOpaqueTemplate" inherits="DialogBorderNoCenterTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<Texture parentKey="Bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+<!--
+*******************************************************************************
    Simple Panel templates
 	Barebones panel templates that can have space for a button bar at the bottom
 	and an inset for content, the inset defaults to being vertically centered
@@ -491,7 +562,7 @@
 	This is an empty frame with space for a portrait/icon in the top left corner.
 *******************************************************************************
 -->
-	<Frame name="PortraitFrameTemplateNoCloseButton" virtual="true">
+	<Frame name="PortraitFrameTemplateNoCloseButton" mixin="PortraitFrameMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="layoutType" value="PortraitFrameTemplate" type="string"/>
 		</KeyValues>

@@ -218,7 +218,7 @@ function UIDropDownMenuButton_OnEnter(self)
 			GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
 		end
 	end
-				
+
 	if ( self.mouseOverIcon ~= nil ) then
 		self.Icon:SetTexture(self.mouseOverIcon);
 		self.Icon:Show();
@@ -229,7 +229,7 @@ function UIDropDownMenuButton_OnLeave(self)
 	self.Highlight:Hide();
 	UIDropDownMenu_StartCounting(self:GetParent());
 	GameTooltip:Hide();
-				
+
 	if ( self.mouseOverIcon ~= nil ) then
 		if ( self.icon ~= nil ) then
 			self.Icon:SetTexture(self.icon);
@@ -568,11 +568,11 @@ function UIDropDownMenu_AddButton(info, level)
 			uncheck:SetDesaturated(false);
 			uncheck:SetAlpha(1);
 		end
-		
+
 		if info.customCheckIconAtlas or info.customCheckIconTexture then
 			check:SetTexCoord(0, 1, 0, 1);
 			uncheck:SetTexCoord(0, 1, 0, 1);
-			
+
 			if info.customCheckIconAtlas then
 				check:SetAtlas(info.customCheckIconAtlas);
 				uncheck:SetAtlas(info.customUncheckIconAtlas or info.customCheckIconAtlas);
@@ -935,8 +935,8 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 	UIDropDownMenuDelegate:SetAttribute("createframes", true);
 	UIDROPDOWNMENU_MENU_LEVEL = level;
 	UIDROPDOWNMENU_MENU_VALUE = value;
-	local listFrame = _G["DropDownList"..level];
 	local listFrameName = "DropDownList"..level;
+	local listFrame = _G[listFrameName];
 	local tempFrame;
 	local point, relativePoint, relativeTo;
 	if ( not dropDownFrame ) then

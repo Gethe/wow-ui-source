@@ -41,10 +41,19 @@ SecondsFormatterMixin = {}
 -- defaultAbbreviation: the default abbreviation for the format. Can be overrridden in SecondsFormatterMixin:Format()
 -- approximationSeconds: threshold for representing the seconds as an approximation (ex. "< 2 hours").
 -- roundUpLastUnit: determines if the last unit in the output format string is ceiled (floored by default).
-function SecondsFormatterMixin:OnLoad(approximationSeconds, defaultAbbreviation, roundUpLastUnit)
+function SecondsFormatterMixin:Init(approximationSeconds, defaultAbbreviation, roundUpLastUnit)
 	self.approximationSeconds = approximationSeconds or 0;
 	self.defaultAbbreviation = defaultAbbreviation or SecondsFormatter.Abbreviation.None;
 	self.roundUpLastUnit = roundUpLastUnit or false;
+	self.stripIntervalWhitespace = false;
+end
+
+function SecondsFormatterMixin:SetStripIntervalWhitespace(strip)
+	self.stripIntervalWhitespace = strip;
+end
+
+function SecondsFormatterMixin:GetStripIntervalWhitespace()
+	return self.stripIntervalWhitespace;
 end
 
 function SecondsFormatterMixin:GetMaxInterval()
@@ -90,7 +99,9 @@ end
 
 function SecondsFormatterMixin:GetFormatString(interval, abbreviation)
 	local intervalDescription = self:GetIntervalDescription(interval);
-	return intervalDescription.formatString[abbreviation];
+	local formatString = intervalDescription.formatString[abbreviation];
+	local strip = self:GetStripIntervalWhitespace();
+	return strip and formatString:gsub(" ", "") or formatString;
 end
 
 function SecondsFormatterMixin:FormatZero(abbreviation)
@@ -99,6 +110,9 @@ function SecondsFormatterMixin:FormatZero(abbreviation)
 	return formatString:format(0);
 end
 
+function SecondsFormatterMixin:FormatMillseconds(millseconds, abbreviation)
+	return self:Format(millseconds/1000, abbreviation);
+end
 function SecondsFormatterMixin:Format(seconds, abbreviation)
 	if (seconds == nil) then
 		return "";
@@ -162,25 +176,10 @@ function SecondsFormatterMixin:Format(seconds, abbreviation)
 		currentInterval = currentInterval - 1;
 	end
 
-	-- Return the 0 format if an acceptable representation couldn't be formed.
+	-- Return the zero format if an acceptable representation couldn't be formed.
 	if (output == "") then
 		return self:FormatZero(abbreviation);
 	end
 
 	return output;
 end
-
----[[
--- console: script print(SampleSecondsFormatter:Format(500));
--- output: "20 Hr"
---SampleSecondsFormatter
---SampleSecondsFormatter = CreateFromMixins(SecondsFormatterMixin);
---SampleSecondsFormatter:OnLoad(SECONDS_PER_MIN * 10, SecondsFormatter.Abbreviation.Truncate, true);
---function SampleSecondsFormatter:GetDesiredUnitCount(seconds)
---	return seconds > SECONDS_PER_DAY and 2 or 1;
---end
---
---function SampleSecondsFormatter:GetMinInterval(seconds)
---	return SecondsFormatter.Interval.Seconds;
---end
----]]

@@ -1,0 +1,96 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="PVPMatchTable.lua"/>
+
+  <Frame name="PVPTableRowTemplate" mixin="PVPRowMixin" enableMouse="true" virtual="true">
+    <Size y="16"/>
+    <Anchors>
+      <Anchor point="TOPLEFT"/>
+      <Anchor point="TOPRIGHT"/>
+    </Anchors>
+    <Layers>
+      <Layer level="BACKGROUND">
+				<Texture parentKey="backgroundLeft" parentArray="Backgrounds" file="Interface\WorldStateFrame\WorldStateFinalScore-Highlight">
+					<TexCoords left="0" right="1" top="0" bottom="1"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="backgroundRight" parentArray="Backgrounds" file="Interface\WorldStateFrame\WorldStateFinalScore-Highlight">
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="backgroundCenter" parentArray="Backgrounds" file="Interface\WorldStateFrame\WorldStateFinalScore-Highlight">
+					<TexCoords left="1" right="1" top="0" bottom="1"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.backgroundLeft" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.backgroundRight" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+      </Layer>
+    </Layers>
+  </Frame>
+  <Frame name="PVPStringTemplate" enableMouse="true" virtual="true">
+    <Size y="16"/>
+    <Layers>
+      <Layer level="BACKGROUND">
+				<FontString parentKey="text" inherits="Game12Font" setAllPoints="true"/>
+      </Layer>
+    </Layers>
+  </Frame>
+  <Frame name="PVPIconTemplate" enableMouse="true" virtual="true">
+    <Size x="1" y="1"/>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture parentKey="icon">
+          <Size x="16" y="16"/>
+          <Anchors>
+            <Anchor point="LEFT"/>
+          </Anchors>
+        </Texture>
+      </Layer>
+    </Layers>
+  </Frame>
+	<Frame name="PVPCellHonorLevelTemplate" mixin="PVPCellHonorLevelMixin" inherits="PVPIconTemplate" parentKey="cell" enableMouse="true" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+	<Frame name="PVPCellClassTemplate" mixin="PVPCellClassMixin" inherits="PVPIconTemplate" parentKey="cell" enableMouse="true" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+  <Button name="PVPCellNameTemplate" mixin="PVPCellNameMixin" inherits="PVPStringTemplate" parentKey="cell" registerForClicks="LeftButtonUp,RightButtonUp" enableMouse="true" virtual="true">
+    <Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+    </Scripts>
+  </Button>
+	<Frame name="PVPCellStringTemplate" mixin="PVPCellStringMixin" inherits="PVPStringTemplate" parentKey="cell" enableMouse="true" virtual="true">
+    <Scripts>
+      <OnEnter method="OnEnter"/>
+      <OnLeave method="OnLeave"/>
+    </Scripts>
+  </Frame>
+  <Frame name="PVPCellStatTemplate" mixin="PVPCellStatMixin" inherits="PVPStringTemplate" parentKey="cell" enableMouse="true" virtual="true"/>
+  <Frame name="PVPNewRatingTemplate" mixin="PVPNewRatingMixin" inherits="PVPStringTemplate" parentKey="cell" enableMouse="true" virtual="true"/>
+	<Button name="PVPHeaderStringTemplate" mixin="PVPHeaderStringMixin" inherits="PVPStringTemplate" parentKey="header" enableMouse="true" virtual="true">
+    <Scripts>
+      <OnClick method="OnClick"/>
+      <OnEnter method="OnEnter"/>
+      <OnLeave method="OnLeave"/>
+    </Scripts>
+  </Button>
+  <Button name="PVPHeaderIconTemplate" mixin="PVPHeaderIconMixin" inherits="PVPIconTemplate" parentKey="header" enableMouse="true" virtual="true">
+    <Scripts>
+      <OnClick method="OnClick"/>
+      <OnEnter method="OnEnter"/>
+      <OnLeave method="OnLeave"/>
+    </Scripts>
+  </Button>
+</Ui>

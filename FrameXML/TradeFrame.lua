@@ -62,8 +62,8 @@ function TradeFrame_OnEvent(self, event, ...)
 end
 
 function TradeFrame_Update(self)
-	PortraitFrameTemplate_SetPortraitToUnit(self, "player");
-	PortraitFrameTemplate_SetPortraitToUnit(self.RecipientOverlay, "NPC");
+	self:SetPortraitToUnit("player");
+	SetPortraitTexture(self.RecipientOverlay.portrait, "NPC");
 	TradeFramePlayerNameText:SetText(GetUnitName("player"));
 	TradeFrameRecipientNameText:SetText(GetUnitName("NPC"));
 	for i=1, MAX_TRADE_ITEMS, 1 do

@@ -1,3 +1,6 @@
+local POWER_LOCKED_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(221, 2101307); -- 8FX_AZERITE_ABSORBCURRENCY_LARGE_IMPACTBASE
+local FINAL_POWER_LOCKED_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(223, 2101307); -- 8FX_AZERITE_ABSORBCURRENCY_LARGE_IMPACTBASE
+
 AzeriteEmpoweredItemSlotMixin = {};
 
 function AzeriteEmpoweredItemSlotMixin:OnShow()
@@ -67,14 +70,11 @@ function AzeriteEmpoweredItemSlotMixin:PlayLockedInEffect()
 end
 
 function AzeriteEmpoweredItemSlotMixin:SetupModelScene(forceUpdate)
-	local modelSceneType = self.isFinalTier and AzeriteModelInfo.ModelSceneTypeFinalPowerLockedIn or AzeriteModelInfo.ModelSceneTypePowerLockedIn;
-	if forceUpdate or self.modelSceneType ~= modelSceneType then
-		self.modelSceneType = modelSceneType;
-
-		self.lockedInEffectActor = AzeriteModelInfo.SetupModelScene(self.LockedInEffect, modelSceneType, forceUpdate);
-		if self.lockedInEffectActor then
-			self.lockedInEffectActor:SetAnimation(0, 0, 0, 0);
-		end
+	local modelSceneInfo = self.isFinalTier and FINAL_POWER_LOCKED_MODEL_SCENE_INFO or POWER_LOCKED_MODEL_SCENE_INFO;
+	if forceUpdate or self.modelSceneInfo ~= modelSceneInfo then
+		self.modelSceneInfo = modelSceneInfo;
+		local stopAnim = true;
+		self.lockedInEffectActor = StaticModelInfo.SetupModelScene(self.LockedInEffect, modelSceneInfo, forceUpdate, stopAnim);
 		self.LockedInEffect:Hide();
 	end
 end

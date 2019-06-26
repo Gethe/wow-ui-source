@@ -912,7 +912,19 @@ function TargetFrameDropDown_Initialize (self)
 		elseif ( UnitInParty("target") ) then
 			menu = "PARTY";
 		else
-			menu = "PLAYER";
+			if ( not UnitIsMercenary("player") ) then
+				if ( UnitCanCooperate("player", "target") ) then
+					menu = "PLAYER";
+				else
+					menu = "ENEMY_PLAYER"
+				end
+			else
+				if ( UnitCanAttack("player", "target") ) then
+					menu = "ENEMY_PLAYER"
+				else
+					menu = "PLAYER";
+				end
+			end
 		end
 	else
 		menu = "TARGET";

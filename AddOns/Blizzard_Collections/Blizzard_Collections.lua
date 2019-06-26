@@ -7,6 +7,10 @@ function CollectionsJournal_SetTab(self, tab)
 	CollectionsJournal_UpdateSelectedTab(self);
 end
 
+function CollectionsJournal_GetTab(self)
+	return PanelTemplates_GetSelectedTab(self);
+end
+
 local function ShouldShowHeirloomTabHelpTip()
 	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_TAB) or IsKioskModeEnabled() then
 		return false;
@@ -40,7 +44,7 @@ function CollectionsJournal_ValidateTab(tabNum)
 end
 
 function CollectionsJournal_UpdateSelectedTab(self)
-	local selected = PanelTemplates_GetSelectedTab(self);
+	local selected = CollectionsJournal_GetTab(self);
 
 	if (not CollectionsJournal_ValidateTab(selected)) then
 		PanelTemplates_SetTab(self, 1);

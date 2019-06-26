@@ -24,7 +24,7 @@ function CommunitiesGuildMemberDetailMixin:OnEvent(event, ...)
 	if event == "GUILD_ROSTER_UPDATE" then
 		local canRequestRosterUpdate = ...;
 		if ( canRequestRosterUpdate ) then
-			GuildRoster();
+			C_GuildInfo.GuildRoster();
 		end
 		
 		local clubId = self:GetClubId();
@@ -110,9 +110,9 @@ function CommunitiesGuildMemberDetailMixin:DisplayMember(clubId, memberInfo)
 	
 	-- Update officer note
 	local officerNoteText = self.OfficerNoteBackground.OfficerNoteText;
-	if CanViewOfficerNote() then
+	if C_GuildInfo.CanViewOfficerNote() then
 		local officernote = memberInfo.officerNote;
-		if CanEditOfficerNote() then
+		if C_GuildInfo.CanEditOfficerNote() then
 			if not officernote or officernote == "" then
 				officernote = GUILD_OFFICERNOTE_EDITLABEL;
 			end
@@ -120,7 +120,7 @@ function CommunitiesGuildMemberDetailMixin:DisplayMember(clubId, memberInfo)
 		else
 			officerNoteText:SetTextColor(0.65, 0.65, 0.65);
 		end
-		self.OfficerNoteBackground:EnableMouse(CanEditOfficerNote());
+		self.OfficerNoteBackground:EnableMouse(C_GuildInfo.CanEditOfficerNote());
 		officerNoteText:SetText(officernote);
 
 		-- Resize detail frame

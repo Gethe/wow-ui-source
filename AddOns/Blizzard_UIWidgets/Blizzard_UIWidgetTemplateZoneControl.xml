@@ -1,0 +1,18 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Frame name="UIWidgetTemplateZoneControl" inherits="UIWidgetBaseTemplate, ResizeLayoutFrame" virtual="true" mixin="UIWidgetTemplateZoneControlMixin" scale="0.8">
+		<!--UIWidgetBaseControlZoneTemplate frames are placed and anchored inside of this-->
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" useAtlasSize="true" alpha="0.8" alphaMode="ADD">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="CENTER" y="9"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

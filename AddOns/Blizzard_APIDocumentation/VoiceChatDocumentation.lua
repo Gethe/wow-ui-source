@@ -190,6 +190,15 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "GetMasterVolumeScale",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "scale", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetMemberGUID",
 			Type = "Function",
 
@@ -306,6 +315,22 @@ local VoiceChat =
 			Returns =
 			{
 				{ Name = "sensitivity", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "IsChannelJoinPending",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelType", Type = "ChatChannelType", Nilable = false },
+				{ Name = "clubId", Type = "string", Nilable = true },
+				{ Name = "streamId", Type = "string", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "isPending", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -493,6 +518,7 @@ local VoiceChat =
 			Arguments =
 			{
 				{ Name = "channelType", Type = "ChatChannelType", Nilable = false },
+				{ Name = "autoActivate", Type = "bool", Nilable = true },
 			},
 		},
 		{
@@ -529,6 +555,15 @@ local VoiceChat =
 			Arguments =
 			{
 				{ Name = "volume", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetMasterVolumeScale",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "scale", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -943,8 +978,8 @@ local VoiceChat =
 			Payload =
 			{
 				{ Name = "channelType", Type = "ChatChannelType", Nilable = false },
-				{ Name = "clubId", Type = "string", Nilable = false },
-				{ Name = "streamId", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "string", Nilable = true },
+				{ Name = "streamId", Type = "string", Nilable = true },
 				{ Name = "pendingJoin", Type = "bool", Nilable = false },
 			},
 		},
@@ -985,9 +1020,9 @@ local VoiceChat =
 		{
 			Name = "VoiceChatStatusCode",
 			Type = "Enumeration",
-			NumValues = 23,
+			NumValues = 25,
 			MinValue = 0,
-			MaxValue = 22,
+			MaxValue = 24,
 			Fields =
 			{
 				{ Name = "Success", Type = "VoiceChatStatusCode", EnumValue = 0 },
@@ -1013,6 +1048,8 @@ local VoiceChat =
 				{ Name = "InvalidCommunityStream", Type = "VoiceChatStatusCode", EnumValue = 20 },
 				{ Name = "PlayerSilenced", Type = "VoiceChatStatusCode", EnumValue = 21 },
 				{ Name = "PlayerVoiceChatParentalDisabled", Type = "VoiceChatStatusCode", EnumValue = 22 },
+				{ Name = "InvalidInputDevice", Type = "VoiceChatStatusCode", EnumValue = 23 },
+				{ Name = "InvalidOutputDevice", Type = "VoiceChatStatusCode", EnumValue = 24 },
 			},
 		},
 		{

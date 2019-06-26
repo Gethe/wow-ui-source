@@ -1707,15 +1707,31 @@ SecureCmdList["QUIT"] = function(msg)
 	Quit();
 end
 
+function AddSecureCmd(cmd, cmdString)
+	if not issecure() then
+		error("Cannot call AddSecureCmd from insecure code");
+	end
+
+	hash_SecureCmdList[strupper(cmdString)] = cmd;
+end
+
+function AddSecureCmdAliases(cmd, ...)
+	for i = 1, select("#", ...) do
+		local cmdString = select(i, ...);
+		AddSecureCmd(cmd, cmdString);
+	end
+end
+
 -- Pre-populate the secure command hash table
 for index, value in pairs(SecureCmdList) do
 	local i = 1;
-	local cmdString = _G["SLASH_"..index..i];
-	while ( cmdString ) do
-		cmdString = strupper(cmdString);
-		hash_SecureCmdList[cmdString] = value;	-- add to hash
-		i = i + 1;
+	local cmdString = "";
+	while cmdString do
 		cmdString = _G["SLASH_"..index..i];
+		if cmdString then
+			AddSecureCmd(value, cmdString);
+			i = i + 1;
+		end
 	end
 end
 
@@ -2366,7 +2382,7 @@ end
 if IsGMClient() then
 	SLASH_TEXELVIS1 = "/texelvis";
 	SLASH_TEXELVIS2 = "/tvis";
-	SlashCmdList["TEXELVIS"] = function(msg) 
+	SlashCmdList["TEXELVIS"] = function(msg)
 		UIParentLoadAddOn("Blizzard_DebugTools");
 		TexelSnappingVisualizer:Show();
 	end
@@ -2549,6 +2565,82 @@ SlashCmdList["RESET_COMMENTATOR_SETTINGS"] = function(msg)
 	PvPCommentator:SetDefaultCommentatorSettings();
 end
 
+SlashCmdList["VOICECHAT"] = function(msg)
+	if msg == "" then
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(VOICE_COMMAND_SYNTAX, info.r, info.g, info.b, info.id);
+		return;
+	end
+	local name = msg;
+	local lowerName = string.lower(name);
+
+	if lowerName == string.lower(VOICE_LEAVE_COMMAND) then
+		local channelID = C_VoiceChat.GetActiveChannelID();
+		if channelID then
+			C_VoiceChat.DeactivateChannel(channelID);
+		end
+		return;
+	end
+
+	local channelType;
+	local communityID;
+	local streamID;
+	if lowerName == string.lower(PARTY) then
+		channelType = Enum.ChatChannelType.Private_Party;
+	elseif lowerName == string.lower(INSTANCE) then
+		channelType = Enum.ChatChannelType.Public_Party;
+	elseif lowerName == string.lower(GUILD) then
+		communityID, streamID = CommunitiesUtil.FindGuildStreamByType(Enum.ClubStreamType.Guild);
+	elseif lowerName == string.lower(OFFICER) then
+		communityID, streamID = CommunitiesUtil.FindGuildStreamByType(Enum.ClubStreamType.Officer);
+	else
+		local communityName, streamName = string.split(":", name);
+		communityID, streamID = CommunitiesUtil.FindCommunityAndStreamByName(communityName, streamName);
+	end
+
+	if channelType then
+		if channelType ~= C_VoiceChat.GetActiveChannelType() then
+			local activate = true;
+			ChannelFrame:TryJoinVoiceChannelByType(channelType, activate);
+		end
+	elseif communityID and streamID then
+		local activeChannelID = C_VoiceChat.GetActiveChannelID();
+		local communityStreamChannel = C_VoiceChat.GetChannelForCommunityStream(communityID, streamID);
+		local communityStreamChannelID = communityStreamChannel and communityStreamChannel.channelID;
+		if not activeChannelID or activeChannelID ~= communityStreamChannelID then
+			ChannelFrame:TryJoinCommunityStreamChannel(communityID, streamID);
+		end
+	end
+end
+
+SlashCmdList["COMMUNITY"] = function(msg)
+	if msg == "" then
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(COMMUNITY_COMMAND_SYNTAX, info.r, info.g, info.b, info.id);
+		return;
+	end
+
+	local command, clubType = string.split(" ", string.lower(msg));
+	local loadCommunity = function()
+		if not CommunitiesFrame or not CommunitiesFrame:IsShown() then
+			Communities_LoadUI();
+			ToggleCommunitiesFrame();
+		end
+	end
+	if command == string.lower(COMMUNITY_COMMAND_JOIN) then
+		loadCommunity();
+		AddCommunitiesFlow_Toggle()
+	elseif command == string.lower(COMMUNITY_COMMAND_CREATE) then
+		if clubType == string.lower(COMMUNITY_COMMAND_CHARACTER) then
+			loadCommunity();
+			CommunitiesCreateCommunityDialog();
+		elseif clubType == string.lower(COMMUNITY_COMMAND_BATTLENET) then
+			loadCommunity();
+			CommunitiesCreateBattleNetDialog();
+		end
+	end
+end
+
 function ChatFrame_SetupListProxyTable(list)
 	if ( getmetatable(list) ) then
 		return;
@@ -2639,6 +2731,7 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_CHAT_WINDOWS");
 	self:RegisterEvent("CHAT_MSG_CHANNEL");
 	self:RegisterEvent("CHAT_MSG_COMMUNITIES_CHANNEL");
+	self:RegisterEvent("CLUB_REMOVED");
 	self:RegisterEvent("UPDATE_INSTANCE_INFO");
 	self:RegisterEvent("UPDATE_CHAT_COLOR_NAME_BY_CLASS");
 	self:RegisterEvent("VARIABLES_LOADED");
@@ -2699,7 +2792,7 @@ function ChatFrame_ContainsMessageGroup(chatFrame, group)
 			return true;
 		end
 	end
-	
+
 	return false;
 end
 
@@ -2758,16 +2851,16 @@ function ChatFrame_AddNewCommunitiesChannel(chatFrameIndex, clubId, streamId, se
 	local clubInfo = C_Club.GetClubInfo(clubId);
 	if clubInfo then
 		C_Club.AddClubStreamChatChannel(clubId, streamId);
-		
+
 		local channelColor = DEFAULT_CHAT_CHANNEL_COLOR;
 		local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
 		if clubInfo.clubType == Enum.ClubType.BattleNet then
 			channelColor = BATTLENET_FONT_COLOR;
-			
+
 			local channel = Chat_GetCommunitiesChannel(clubId, streamId);
 			ChangeChatColor(channel, channelColor:GetRGB());
 		end
-		
+
 		local chatFrame = _G["ChatFrame"..chatFrameIndex];
 		ChatFrame_AddCommunitiesChannel(chatFrame, channelName, channelColor, setEditBoxToChannel);
 	end
@@ -2808,16 +2901,19 @@ function ChatFrame_AddChannel(chatFrame, channel)
 end
 
 function ChatFrame_GetCommunitiesChannelLocalID(clubId, streamId)
-	local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);	
+	local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
 	local localID = GetChannelName(channelName);
 	return localID;
 end
 
-function ChatFrame_RemoveCommunitiesChannel(chatFrame, clubId, streamId)
+function ChatFrame_RemoveCommunitiesChannel(chatFrame, clubId, streamId, omitMessage)
 	local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
 	local channelIndex = ChatFrame_RemoveChannel(chatFrame, channelName);
-	local r, g, b = Chat_GetCommunitiesChannelColor(clubId, streamId);
-	chatFrame:AddMessage(COMMUNITIES_CHANNEL_REMOVED_FROM_CHAT_WINDOW:format(channelIndex, ChatFrame_ResolveChannelName(channelName)), r, g, b);
+	
+	if not omitMessage then
+		local r, g, b = Chat_GetCommunitiesChannelColor(clubId, streamId);
+		chatFrame:AddMessage(COMMUNITIES_CHANNEL_REMOVED_FROM_CHAT_WINDOW:format(channelIndex, ChatFrame_ResolveChannelName(channelName)), r, g, b);
+	end
 end
 
 function ChatFrame_RemoveChannel(chatFrame, channel)
@@ -3073,15 +3169,34 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		self:AddMessage(CHAT_SERVER_RECONNECTED_MESSAGE, info.r, info.g, info.b, info.id);
 		return true;
 	elseif ( event == "BN_CONNECTED" ) then
+		local suppressNotification = ...;
 		local info = ChatTypeInfo["SYSTEM"];
-		self:AddMessage(BN_CHAT_CONNECTED, info.r, info.g, info.b, info.id);
+		if not suppressNotification then
+			self:AddMessage(BN_CHAT_CONNECTED, info.r, info.g, info.b, info.id);
+		end
 	elseif ( event == "BN_DISCONNECTED" ) then
+		local _, suppressNotification = ...;
 		local info = ChatTypeInfo["SYSTEM"];
-		self:AddMessage(BN_CHAT_DISCONNECTED, info.r, info.g, info.b, info.id);
+		if not suppressNotification then
+			self:AddMessage(BN_CHAT_DISCONNECTED, info.r, info.g, info.b, info.id);
+		end
 	elseif ( event == "PLAYER_REPORT_SUBMITTED" ) then
 		local guid = ...;
 		FCF_RemoveAllMessagesFromChanSender(self, guid);
 		return true;
+	elseif ( event == "CLUB_REMOVED" ) then
+		local clubId = ...;
+		local streamIDs = C_ChatInfo.GetClubStreamIDs(clubId);
+		for k, streamID in pairs(streamIDs) do
+			local channelName = Chat_GetCommunitiesChannelName(clubId, streamID);
+			for i = 1, FCF_GetNumActiveChatFrames() do
+				local chatWindow = _G["ChatFrame"..i];
+				if ChatFrame_ContainsChannel(chatWindow, channelName) then
+					local omitMessage = true;
+					ChatFrame_RemoveCommunitiesChannel(chatWindow, clubId, streamID, omitMessage);
+				end
+			end
+		end
 	end
 end
 
@@ -3634,7 +3749,7 @@ function ChatFrame_OpenChat(text, chatFrame, desiredCursorPosition)
 		    return;
 		end
 	end
-	
+
 	local editBox = ChatEdit_ChooseBoxForSend(chatFrame);
 
 	ChatEdit_ActivateChat(editBox);
@@ -3926,12 +4041,12 @@ function ChatEdit_OnLoad(self)
 			ChatEdit_UpdateHeader(editBox);
 			return true;
 		end
-		
+
 		return false;
 	end
-	
+
 	AutoCompleteEditBox_SetCustomAutoCompleteFunction(self, ChatEditAutoComplete);
-	
+
 	self:SetParent(UIParent);
 end
 
@@ -4600,7 +4715,7 @@ local function processChatType(editBox, msg, index, send)
 	else
 		AutoCompleteEditBox_SetAutoCompleteSource(editBox, nil);
 	end
-	
+
 -- this is a special function for "ChatEdit_HandleChatType"
 	if ( ChatTypeInfo[index] ) then
 		if ( index == "WHISPER" or index == "SMART_WHISPER" ) then

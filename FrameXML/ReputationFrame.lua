@@ -18,7 +18,7 @@ function ReputationFrame_OnLoad(self)
 end
 
 function ReputationFrame_OnShow(self)
-	PortraitFrameTemplate_SetTitle(CharacterFrame, UnitPVPName("player"));
+	CharacterFrame:SetTitle(UnitPVPName("player"));
 	ReputationFrame_Update(true);
 	SHOWED_LFG_PULSE = true;
 	self:RegisterEvent("QUEST_LOG_UPDATE");

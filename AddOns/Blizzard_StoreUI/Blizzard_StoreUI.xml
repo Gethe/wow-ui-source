@@ -458,19 +458,7 @@
 		</Button>
 		<Button name="StoreDropDownListTemplate" hidden="true" enableMouse="true" virtual="true" clampedToScreen="true">
 			<Frames>
-				<Frame parentKey="Backdrop" setAllPoints="true">
-					<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-						<BackgroundInsets>
-							<AbsInset left="11" right="12" top="12" bottom="9"/>
-						</BackgroundInsets>
-						<TileSize>
-							<AbsValue val="32"/>
-						</TileSize>
-						<EdgeSize>
-							<AbsValue val="32"/>
-						</EdgeSize>
-					</Backdrop>
-				</Frame>
+				<Frame parentKey="Border" inherits="SecureDialogBorderDarkTemplate"/>
 				<Button inherits="StoreDropDownMenuButtonTemplate" id="1">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="16" y="-16"/>
@@ -821,17 +809,6 @@
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
-					<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-						<BackgroundInsets>
-							<AbsInset left="11" right="12" top="12" bottom="11"/>
-						</BackgroundInsets>
-						<TileSize>
-							<AbsValue val="32"/>
-						</TileSize>
-						<EdgeSize>
-							<AbsValue val="32"/>
-						</EdgeSize>
-					</Backdrop>
 					<Layers>
 						<Layer level="ARTWORK">
 							<FontString parentKey="Title" inherits="GameFontNormalMed2">
@@ -850,6 +827,7 @@
 						</Layer>
 					</Layers>
 					<Frames>
+						<Frame parentKey="Border" inherits="SecureDialogBorderTemplate"/>
 						<Button parentKey="ConfirmButton" inherits="StoreButtonSmallTemplate">
 							<Size x="160" y="26"/>
 							<Anchors>
@@ -881,17 +859,6 @@
 		<Frame name="StoreDialog" parent="UIParent" frameStrata="DIALOG" toplevel="true" enableMouse="true" hidden="true">
 			<Size x="434" y="100" />
 			<!-- Anchors are set in lua -->
-			<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-				<BackgroundInsets>
-					<AbsInset left="11" right="12" top="11" bottom="10"/>
-				</BackgroundInsets>
-				<TileSize>
-					<AbsValue val="32" />
-				</TileSize>
-				<EdgeSize>
-					<AbsValue val="32" />
-				</EdgeSize>
-			</Backdrop>
 			<Layers>
 				<Layer level="ARTWORK">
 					<FontString parentKey="Description" inherits="GameFontNormalMed2">
@@ -903,6 +870,7 @@
 				</Layer>
 			</Layers>
 			<Frames>
+				<Frame parentKey="Border" inherits="SecureDialogBorderTemplate"/>
 				<Button parentKey="Button1" inherits="StoreButtonTemplate" text="OKAY" id="1">
 					<Size x="120" y="22"/>
 					<Anchors>
@@ -1001,14 +969,6 @@
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="20" />
 					</Anchors>
-					<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-						<TileSize>
-							<AbsValue val="32" />
-						</TileSize>
-						<EdgeSize>
-							<AbsValue val="32" />
-						</EdgeSize>
-					</Backdrop>
 					<Layers>
 						<Layer level="BACKGROUND">
 							<Texture>
@@ -1045,6 +1005,9 @@
 							</FontString>
 						</Layer>
 					</Layers>
+					<Frames>
+						<Frame parentKey="Border" inherits="SecureDialogBorderNoCenterTemplate"/>
+					</Frames>
 					<Scripts>
 						<OnShow>
 							StoreFrame_UpdateCoverState();
@@ -1058,24 +1021,7 @@
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="20" />
 					</Anchors>
-					<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-						<TileSize>
-							<AbsValue val="32" />
-						</TileSize>
-						<EdgeSize>
-							<AbsValue val="32" />
-						</EdgeSize>
-					</Backdrop>
 					<Layers>
-						<Layer level="BACKGROUND">
-							<Texture>
-								<Anchors>
-									<Anchor point="TOPLEFT" x="5" y="-5" />
-									<Anchor point="BOTTOMRIGHT" x="-5" y="5" />
-								</Anchors>
-								<Color r="0" g="0" b="0" a="1" />
-							</Texture>
-						</Layer>
 						<Layer level="BORDER">
 							<Texture parentKey="Icon" inherits="store-icon-purchasesent">
 								<Anchors>
@@ -1092,6 +1038,7 @@
 						</Layer>
 					</Layers>
 					<Frames>
+						<Frame parentKey="Border" inherits="SecureDialogBorderOpaqueTemplate"/>
 						<Button parentKey="OkayButton" inherits="StoreButtonTemplate">
 							<Size x="120" y="22" />
 							<Anchors>
@@ -1115,24 +1062,7 @@
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="40" />
 					</Anchors>
-					<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-						<TileSize>
-							<AbsValue val="32" />
-						</TileSize>
-						<EdgeSize>
-							<AbsValue val="32" />
-						</EdgeSize>
-					</Backdrop>
 					<Layers>
-						<Layer level="BACKGROUND">
-							<Texture>
-								<Anchors>
-									<Anchor point="TOPLEFT" x="5" y="-5" />
-									<Anchor point="BOTTOMRIGHT" x="-5" y="5" />
-								</Anchors>
-								<Color r="0" g="0" b="0" a="1" />
-							</Texture>
-						</Layer>
 						<Layer level="BORDER">
 							<Texture parentKey="Icon" inherits="store-error-icon">
 								<Anchors>
@@ -1166,6 +1096,7 @@
 						</Layer>
 					</Layers>
 					<Frames>
+						<Frame parentKey="Border" inherits="SecureDialogBorderOpaqueTemplate"/>
 						<Button parentKey="AcceptButton" inherits="StoreButtonTemplate">
 							<Size x="120" y="22" />
 							<Anchors>

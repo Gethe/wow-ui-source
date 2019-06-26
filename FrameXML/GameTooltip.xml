@@ -195,7 +195,7 @@
 			</OnShow>
 			<OnHide inherit="prepend">
 				self.ItemTooltip:Hide();
-				self:SetPadding(0, 0);
+				self:SetPadding(0, 0, 0, 0);
 				self.BottomFontString:Hide();
 			</OnHide>
 			<OnSizeChanged inherit="prepend">

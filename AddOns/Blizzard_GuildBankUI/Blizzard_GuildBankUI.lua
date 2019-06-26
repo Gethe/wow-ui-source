@@ -302,11 +302,7 @@ function GuildBankFrame_UpdateFiltered()
 			button = _G["GuildBankColumn"..column.."Button"..index];
 			_, _, _, isFiltered = GetGuildBankItemInfo(tab, i);
 			
-			if ( isFiltered ) then
-				button.searchOverlay:Show();
-			else
-				button.searchOverlay:Hide();
-			end
+			button:SetMatchesSearch(not isFiltered);
 		end
 	end
 end
@@ -797,10 +793,10 @@ end
 
 function GuildBankFrame_UpdateTabard()
 	--Set the tabard images
-	local tabardBackgroundUpper, tabardBackgroundLower, tabardEmblemUpper, tabardEmblemLower, tabardBorderUpper, tabardBorderLower = GetGuildTabardFileNames();
+	local tabardBackgroundUpper, tabardBackgroundLower, tabardEmblemUpper, tabardEmblemLower, tabardBorderUpper, tabardBorderLower = GetGuildTabardFiles();
 	if ( not tabardEmblemUpper ) then
-		tabardBackgroundUpper = "Textures\\GuildEmblems\\Background_49_TU_U";
-		tabardBackgroundLower = "Textures\\GuildEmblems\\Background_49_TL_U";
+		tabardBackgroundUpper = 180158; --"Textures\\GuildEmblems\\Background_49_TU_U";
+		tabardBackgroundLower = 180159; --"Textures\\GuildEmblems\\Background_49_TL_U";
 	end
 	GuildBankEmblemBackgroundUL:SetTexture(tabardBackgroundUpper);
 	GuildBankEmblemBackgroundUR:SetTexture(tabardBackgroundUpper);

@@ -41,7 +41,7 @@ function GuildFrame_OnShow(self)
 	if ( not PanelTemplates_GetSelectedTab(self) ) then
 		GuildFrame_TabClicked(GuildFrameTab1);
 	end
-	GuildRoster();
+	C_GuildInfo.GuildRoster();
 	UpdateMicroButtons();
 	GuildNameChangeAlertFrame.topAnchored = true;
 	GuildFrame.hasForcedNameChange = GetGuildRenameRequired();
@@ -363,7 +363,7 @@ function GuildFrame_TabClicked(self)
 		GuildFrameMembersCountLabel:Hide();
 	end
 	if ( updateRosterCount ) then
-		GuildRoster();
+		C_GuildInfo.GuildRoster();
 		GuildFrameMembersCount:Show();
 	else
 		GuildFrameMembersCount:Hide();
@@ -439,7 +439,7 @@ function GuildPerksFrame_OnEvent(self, event, ...)
 	if ( event == "GUILD_ROSTER_UPDATE" ) then
 		local canRequestRosterUpdate = ...;
 		if ( canRequestRosterUpdate ) then
-			GuildRoster();
+			C_GuildInfo.GuildRoster();
 		end
 	end
 end

@@ -324,7 +324,7 @@
 					</OnScrollRangeChanged>
 				</Scripts>
 				<ScrollChild>
-					<SimpleHTML name="CreditsText" file="credits.html">
+					<SimpleHTML name="CreditsText">
 						<Size x="250" y="740"/>
 						<FontString inherits="GlueFontHighlightSmall" spacing="2"/>
 						<FontStringHeader1 inherits="GlueFontNormalLarge" spacing="4"/>

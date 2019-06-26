@@ -533,7 +533,7 @@
 		<Frames>
 			<Frame name="$parentPowerBarAlt" parentKey="powerBarAlt" inherits="UnitPowerBarAltTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-25" y="5"/>
+					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-5" y="5"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>

@@ -1294,12 +1294,31 @@ function ContainerFrameItemButton_OnClick(self, button)
 					(not AuctionFrame or not AuctionFrame:IsShown()) and not TradeFrame:IsShown() and (not ItemUpgradeFrame or not ItemUpgradeFrame:IsShown()) and
 					(not ObliterumForgeFrame or not ObliterumForgeFrame:IsShown()) and (not ChallengesKeystoneFrame or not ChallengesKeystoneFrame:IsShown()) ) then
 			local itemID = select(10, GetContainerItemInfo(self:GetParent():GetID(), self:GetID()));
-			if ( itemID and IsArtifactRelicItem(itemID) ) then
-				if ( C_ArtifactUI.CanApplyArtifactRelic(itemID, false) ) then
-					SocketContainerItem(self:GetParent():GetID(), self:GetID());
-				elseif ( C_ArtifactUI.GetEquippedArtifactInfo() ) then
-					UIErrorsFrame:AddMessage(ERR_ARTIFACT_RELIC_DOES_NOT_MATCH_ARTIFACT, RED_FONT_COLOR:GetRGBA());
-				end
+			if itemID then
+				if IsArtifactRelicItem(itemID) then
+					if C_ArtifactUI.CanApplyArtifactRelic(itemID, false) then
+						SocketContainerItem(self:GetParent():GetID(), self:GetID());
+					elseif C_ArtifactUI.GetEquippedArtifactInfo() then
+						UIErrorsFrame:AddMessage(ERR_ARTIFACT_RELIC_DOES_NOT_MATCH_ARTIFACT, RED_FONT_COLOR:GetRGBA());
+					end
+				else
+					local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
+					if itemLocation:IsValid() and C_MountJournal.IsItemMountEquipment(itemLocation) then
+						CollectionsJournal_LoadUI();
+
+						if CollectionsJournal:IsShown() then
+							local tab = CollectionsJournal_GetTab(CollectionsJournal);
+							if tab == COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS then
+								MountJournal_ApplyEquipmentFromContainerClick(MountJournal, itemLocation);
+							else
+								CollectionsJournal_SetTab(CollectionsJournal, COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
+							end
+						else
+							ShowUIPanel(CollectionsJournal);
+							CollectionsJournal_SetTab(CollectionsJournal, COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
+						end
+					end
+				end 
 			end
 		end
 		UseContainerItem(self:GetParent():GetID(), self:GetID(), nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));
@@ -1310,11 +1329,21 @@ end
 function ContainerFrameItemButton_OnModifiedClick(self, button)
 	if ( IsModifiedClick("EXPANDITEM") ) then
 		local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
-		if C_Item.DoesItemExist(itemLocation) and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) and C_Item.CanViewItemPowers(itemLocation) then
-			OpenAzeriteEmpoweredItemUIFromItemLocation(itemLocation);
-			return;
-		elseif SocketContainerItem(self:GetParent():GetID(), self:GetID()) then
-			return;
+		if C_Item.DoesItemExist(itemLocation) then
+			if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) and C_Item.CanViewItemPowers(itemLocation) then
+				OpenAzeriteEmpoweredItemUIFromItemLocation(itemLocation);
+				return;
+			end
+
+			local heartItemLocation = C_AzeriteItem.FindActiveAzeriteItem();
+			if heartItemLocation and heartItemLocation:IsEqualTo(itemLocation) then
+				OpenAzeriteEssenceUIFromItemLocation(itemLocation);
+				return;
+			end
+
+			if SocketContainerItem(self:GetParent():GetID(), self:GetID()) then
+				return;
+			end
 		end
 	end
 
@@ -1408,6 +1437,16 @@ function ContainerFrameItemButton_OnEnter(self)
 
 	if ArtifactFrame and self.hasItem then
 		ArtifactFrame:OnInventoryItemMouseEnter(self:GetParent():GetID(), self:GetID());
+	end
+
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_MOUNT_EQUIPMENT_SLOT_FRAME) then
+		local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
+		if itemLocation and itemLocation:IsValid() then
+			if C_MountJournal.IsMountEquipmentUnlocked() and (not CollectionsJournal or not CollectionsJournal:IsShown()) then
+				local tabIndex = 1;
+				CollectionsMicroButton_SetAlertShown(tabIndex);
+			end
+		end
 	end
 end
 

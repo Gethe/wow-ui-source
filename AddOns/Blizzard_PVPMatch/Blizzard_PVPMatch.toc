@@ -1,0 +1,7 @@
+## Title: Blizzard_PVPMatch
+## LoadOnDemand: 0
+## RequiredDep: Blizzard_UIWidgets
+PVPMatchUtil.lua
+PVPMatchTable.xml
+PVPMatchResults.xml
+PVPMatchScoreboard.xml

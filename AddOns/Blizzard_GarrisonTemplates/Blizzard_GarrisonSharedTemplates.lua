@@ -722,10 +722,12 @@ function GarrisonFollowerButton_SetCounterButton(button, followerID, index, info
 		counter = button.Counters[index];
 	end
 	local numPerRow, innerSpacing, outerSpacingX, outerSpacingY, scale = GetFollowerButtonCounterSpacings(followerTypeID);
-	if ((index - 1) % numPerRow ~= 0) then
-		counter:SetPoint("RIGHT", button.Counters[index-1], "LEFT", -innerSpacing, 0);
-	else
-		counter:SetPoint("TOP", button.Counters[index-2], "BOTTOM", 0, -innerSpacing);
+	if index > 1 then
+		if ((index - 1) % numPerRow ~= 0) then
+			counter:SetPoint("RIGHT", button.Counters[index-1], "LEFT", -innerSpacing, 0);
+		else
+			counter:SetPoint("TOP", button.Counters[index-numPerRow], "BOTTOM", 0, -innerSpacing);
+		end
 	end
 	counter:SetScale(scale);
 	counter.info = info;

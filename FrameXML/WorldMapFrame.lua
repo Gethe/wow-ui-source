@@ -153,38 +153,45 @@ function TaskPOI_OnEnter(self)
 		GameTooltip:SetText(title);
 	end
 
-	local questDescription; 
-	local questCompleted = IsQuestComplete(self.questID);
+	if (self.isCombatAllyQuest) then	
+		GameTooltip_AddColoredLine(GameTooltip, AVAILABLE_FOLLOWER_QUEST, HIGHLIGHT_FONT_COLOR, true);
+		GameTooltip_AddColoredLine(GameTooltip, GRANTS_FOLLOWER_XP, GREEN_FONT_COLOR, true);
+	elseif (self.isQuestStart) then	
+		GameTooltip_AddColoredLine(GameTooltip, AVAILABLE_QUEST, HIGHLIGHT_FONT_COLOR, true);
+	else
+		local questDescription; 
+		local questCompleted = IsQuestComplete(self.questID);
 
-	if (questCompleted and self.shouldShowObjectivesAsStatusBar) then 
-		questDescription = QUEST_WATCH_QUEST_READY; 
-		GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
-	elseif (not questCompleted and self.shouldShowObjectivesAsStatusBar) then
-		local questLogIndex = GetQuestLogIndexByID(self.questID);
-		questDescription = select(2, GetQuestLogQuestText(questLogIndex));
-		GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
-	end 
+		if (questCompleted and self.shouldShowObjectivesAsStatusBar) then 
+			questDescription = QUEST_WATCH_QUEST_READY; 
+			GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
+		elseif (not questCompleted and self.shouldShowObjectivesAsStatusBar) then
+			local questLogIndex = GetQuestLogIndexByID(self.questID);
+			questDescription = select(2, GetQuestLogQuestText(questLogIndex));
+			GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
+		end 
 
-	for objectiveIndex = 1, self.numObjectives do
-		local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(self.questID, objectiveIndex, false);
-		if(self.shouldShowObjectivesAsStatusBar) then 
-			local percent = math.floor((numFulfilled/numRequired) * 100);
-			GameTooltip_ShowProgressBar(GameTooltip, 0, numRequired, numFulfilled, PERCENTAGE_STRING:format(percent));
-		elseif ( objectiveText and #objectiveText > 0 ) then
-			local color = finished and GRAY_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
-			GameTooltip:AddLine(QUEST_DASH .. objectiveText, color.r, color.g, color.b, true);
+		for objectiveIndex = 1, self.numObjectives do
+			local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(self.questID, objectiveIndex, false);
+			if(self.shouldShowObjectivesAsStatusBar) then 
+				local percent = math.floor((numFulfilled/numRequired) * 100);
+				GameTooltip_ShowProgressBar(GameTooltip, 0, numRequired, numFulfilled, PERCENTAGE_STRING:format(percent));
+			elseif ( objectiveText and #objectiveText > 0 ) then
+				local color = finished and GRAY_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
+				GameTooltip:AddLine(QUEST_DASH .. objectiveText, color.r, color.g, color.b, true);
+			end
 		end
-	end
-	local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(self.questID, 1, false);
-	local percent = C_TaskQuest.GetQuestProgressBarInfo(self.questID);
-	if ( percent ) then
-		GameTooltip_ShowProgressBar(GameTooltip, 0, 100, percent, PERCENTAGE_STRING:format(percent));
-	end
+		local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(self.questID, 1, false);
+		local percent = C_TaskQuest.GetQuestProgressBarInfo(self.questID);
+		if ( percent ) then
+			GameTooltip_ShowProgressBar(GameTooltip, 0, 100, percent, PERCENTAGE_STRING:format(percent));
+		end
 
-	GameTooltip_AddQuestRewardsToTooltip(GameTooltip, self.questID, self.questRewardTooltipStyle);
+		GameTooltip_AddQuestRewardsToTooltip(GameTooltip, self.questID, self.questRewardTooltipStyle);
 
-	if ( self.worldQuest and GameTooltip.AddDebugWorldQuestInfo ) then
-		GameTooltip:AddDebugWorldQuestInfo(self.questID);
+		if ( self.worldQuest and GameTooltip.AddDebugWorldQuestInfo ) then
+			GameTooltip:AddDebugWorldQuestInfo(self.questID);
+		end
 	end
 
 	GameTooltip:Show();

@@ -770,7 +770,31 @@
 					<OnLoad function="AudioOptionsPanelVoiceChatVolumeSlider_OnLoad"/>
 					<OnValueChanged function="AudioOptionsPanelVoiceChatVolumeSlider_OnValueChanged"/>
 				</Scripts>
-			</Slider>			
+			</Slider>
+
+			<Slider name="$parentVoiceChatDucking" parentKey="VoiceChatDucking" inherits="OptionsSliderTemplate">
+				<KeyValues>
+					<KeyValue key="isValueNormalized" value="true" type="boolean"/>
+					<KeyValue key="isValueInverted" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="185" y="16" />
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.OutputDeviceDropdown" relativePoint="BOTTOMLEFT" x="18" y="-45" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" parentKey="Label" inherits="GameFontNormalSmall" text="VOICE_CHAT_DUCKING_SCALE">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="-17" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="AudioOptionsPanelVoiceChatDuckingSlider_OnLoad"/>
+					<OnValueChanged function="AudioOptionsPanelVoiceChatDuckingSlider_OnValueChanged"/>
+				</Scripts>
+			</Slider>
 			
 			<Frame name="$parentMicDeviceDropdown" parentKey="MicDeviceDropdown" inherits="OptionsDropdownTemplate">
 				<Size x="160" y="32" />

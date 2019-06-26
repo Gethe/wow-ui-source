@@ -75,6 +75,16 @@ local EJ_DIFFICULTIES =
 	{ prefix = PLAYER_DIFFICULTY_TIMEWALKER, difficultyID = 33 },
 }
 
+local function GetEJDifficultyByDifficultyID(difficultyID)
+	for i, difficultyData in ipairs(EJ_DIFFICULTIES) do
+		if difficultyData.difficultyID == difficultyID then
+			return difficultyData;
+		end
+	end
+	
+	return nil;
+end
+
 local EJ_TIER_DATA =
 {
 	[1] = { backgroundAtlas = "UI-EJ-Classic", r = 1.0, g = 0.8, b = 0.0 },
@@ -135,7 +145,7 @@ local INSTANCE_LOOT_BUTTON_HEIGHT = 64;
 
 function EncounterJournal_OnLoad(self)
 	EncounterJournalTitleText:SetText(ADVENTURE_JOURNAL);
-	PortraitFrameTemplate_SetPortraitToAsset(EncounterJournal, "Interface\\EncounterJournal\\UI-EJ-PortraitIcon");
+	EncounterJournal:SetPortraitToAsset("Interface\\EncounterJournal\\UI-EJ-PortraitIcon");
 	self:RegisterEvent("EJ_LOOT_DATA_RECIEVED");
 	self:RegisterEvent("EJ_DIFFICULTY_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
@@ -297,6 +307,9 @@ function EncounterJournal_OnShow(self)
 	instanceSelect.raidsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 	instanceSelect.dungeonsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 	EncounterJournal_CheckLevelAndDisplayLootTab();
+
+	-- Request raid locks to show the defeated overlay for bosses the player has killed this week.
+	RequestRaidInfo();
 end
 
 function EncounterJournal_CheckLevelAndDisplayLootTab()
@@ -618,8 +631,19 @@ local function UpdateDifficultyVisibility()
 	UpdateDifficultyAnchoring(info.difficulty);
 end
 
+local IconIndexByDifficulty = {
+	[15] = 3, -- Heroic
+	[16] = 12, -- Mythic
+};
+
+local function GetIconIndexForDifficultyID(difficultyID)
+	return IconIndexByDifficulty[difficultyID];
+end
+
 function EncounterJournal_DisplayInstance(instanceID, noButton)
 	EJ_HideNonInstancePanels();
+
+	local difficultyID = EJ_GetDifficulty();
 
 	local self = EncounterJournal.encounter;
 	EncounterJournal.instanceSelect:Hide();
@@ -632,11 +656,23 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	EncounterJournal_LootUpdate();
 	EncounterJournal_ClearDetails()
 
-	local iname, description, bgImage, _, loreImage, buttonImage, dungeonAreaMapID = EJ_GetInstanceInfo();
-	self.instance.title:SetText(iname);
+	local instanceName, description, bgImage, _, loreImage, buttonImage, dungeonAreaMapID = EJ_GetInstanceInfo();
+	self.instance.title:SetText(instanceName);
 	self.instance.titleBG:SetWidth(self.instance.title:GetStringWidth() + 80);
 	self.instance.loreBG:SetTexture(loreImage);
-	self.info.instanceTitle:SetText(iname);
+	
+	self.info.instanceTitle:ClearAllPoints();
+	local iconIndex = GetIconIndexForDifficultyID(difficultyID);
+	local hasDifficultyIcon = iconIndex ~= nil;
+	self.info.difficultyIcon:SetShown(hasDifficultyIcon);
+	if hasDifficultyIcon then
+		self.info.instanceTitle:SetPoint("LEFT", self.info.difficultyIcon, "RIGHT", -6, -0);
+		EncounterJournal_SetFlagIcon(self.info.difficultyIcon, iconIndex);
+	else
+		self.info.instanceTitle:SetPoint("TOPLEFT", 65, -20);
+	end
+
+	self.info.instanceTitle:SetText(instanceName);
 	self.instance.mapButton:SetShown(dungeonAreaMapID and dungeonAreaMapID > 0);
 
 	self.instance.loreScroll.child.lore:SetText(description);
@@ -681,6 +717,9 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 		bossImage = bossImage or "Interface\\EncounterJournal\\UI-EJ-BOSS-Default";
 		bossButton.creature:SetTexture(bossImage);
 		bossButton:UnlockHighlight();
+		
+		EncounterJournalBossButton_UpdateDifficultyOverlay(bossButton);
+		
 		if ( not hasBossAbilities ) then
 			hasBossAbilities = rootSectionID > 0;
 		end
@@ -730,7 +769,7 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	if not noButton then
 		local buttonData = {
 			id = instanceID,
-			name = iname,
+			name = instanceName,
 			OnClick = EJNAV_RefreshInstance,
 			listFunc = EJNAV_GetInstanceList,
 		}
@@ -3224,4 +3263,57 @@ end
 function EncounterJournalTooltip_OnLoad(self)
 	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
 	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+end
+
+function EncounterJournalBossButton_UpdateDifficultyOverlay(self)
+	if self.encounterID then
+		local name, description, bossID, rootSectionID, link, journalInstanceID, dungeonEncounterID, mapID = EJ_GetEncounterInfo(self.encounterID);
+		local difficultyID = EJ_GetDifficulty();
+		local difficultyData = GetEJDifficultyByDifficultyID(difficultyID);
+		local defeatedOnCurrentDifficulty = mapID and dungeonEncounterID and C_RaidLocks.IsEncounterComplete(mapID, dungeonEncounterID, difficultyID);
+		local hasDefeatedBoss = difficultyData and defeatedOnCurrentDifficulty;
+		self.DefeatedOverlay:SetShown(hasDefeatedBoss);
+		if hasDefeatedBoss then
+			self.DefeatedOverlay.tooltipText = ENCOUNTER_JOURNAL_ENCOUNTER_STATUS_DEFEATED_TOOLTIP:format(difficultyData.prefix);
+		end
+	end
+end
+
+function EncounterJournalBossButton_OnShow(self)
+	self:RegisterEvent("UPDATE_INSTANCE_INFO");
+end
+
+function EncounterJournalBossButton_OnHide(self)
+	self:UnregisterEvent("UPDATE_INSTANCE_INFO");
+end
+
+function EncounterJournalBossButton_OnEvent(self, event)
+	if event == "UPDATE_INSTANCE_INFO" then
+		EncounterJournalBossButton_UpdateDifficultyOverlay(self)
+	end
+end
+
+function EncounterJournalBossButton_OnClick(self)
+	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+		if self.link then
+			ChatEdit_InsertLink(self.link);
+		end
+		return;
+	end
+	local _, _, _, rootSectionID = EJ_GetEncounterInfo(self.encounterID);
+	if ( rootSectionID == 0 ) then
+		EncounterJournal_SetTab(EncounterJournal.encounter.info.lootTab:GetID());
+	end
+	EncounterJournal_DisplayEncounter(self.encounterID);
+	PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
+end
+
+function EncounterJournalBossButtonDefeatedOverlay_OnEnter(self)
+	if self.tooltipText then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		
+		local wrap = true;
+		GameTooltip_AddNormalLine(GameTooltip, self.tooltipText, wrap);
+		GameTooltip:Show();
+	end
 end

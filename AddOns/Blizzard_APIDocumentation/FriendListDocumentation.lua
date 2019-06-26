@@ -362,6 +362,10 @@ local FriendList =
 			Name = "BnConnected",
 			Type = "Event",
 			LiteralName = "BN_CONNECTED",
+			Payload =
+			{
+				{ Name = "suppressNotification", Type = "bool", Nilable = false, Default = false },
+			},
 		},
 		{
 			Name = "BnCustomMessageChanged",
@@ -384,6 +388,7 @@ local FriendList =
 			Payload =
 			{
 				{ Name = "result", Type = "bool", Nilable = false },
+				{ Name = "suppressNotification", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -393,6 +398,7 @@ local FriendList =
 			Payload =
 			{
 				{ Name = "friendId", Type = "number", Nilable = false },
+				{ Name = "isCompanionApp", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -402,6 +408,7 @@ local FriendList =
 			Payload =
 			{
 				{ Name = "friendId", Type = "number", Nilable = false },
+				{ Name = "isCompanionApp", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -494,6 +501,7 @@ local FriendList =
 				{ Name = "dnd", Type = "bool", Nilable = false },
 				{ Name = "afk", Type = "bool", Nilable = false },
 				{ Name = "referAFriend", Type = "bool", Nilable = false },
+				{ Name = "mobile", Type = "bool", Nilable = false },
 			},
 		},
 		{

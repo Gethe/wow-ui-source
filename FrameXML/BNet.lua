@@ -17,6 +17,10 @@ BNET_CLIENT_SC = "S1";
 BNET_CLIENT_DESTINY2 = "DST2";
 BNET_CLIENT_COD = "VIPR";
 
+WOW_PROJECT_MAINLINE = 1;
+WOW_PROJECT_CLASSIC = 2;
+WOW_PROJECT_ID = WOW_PROJECT_MAINLINE;
+
 --Name can be a realID or plain battletag with no 4 digit number (e.g. Murky McGrill or LichKing).
 function BNet_GetBNetIDAccount(name)
 	return GetAutoCompletePresenceID(name);
@@ -62,9 +66,15 @@ function BNToastMixin:OnEvent(event, ...)
 	elseif ( event == "BN_BLOCK_FAILED_TOO_MANY" ) then
 		self:BlockFailed(...);
 	elseif ( event == "BN_FRIEND_ACCOUNT_ONLINE" ) then
-		self:AddToast(BN_TOAST_TYPE_ONLINE, ...);
+		local friendId, isCompanionApp = ...;
+		if not isCompanionApp then
+			self:AddToast(BN_TOAST_TYPE_ONLINE, friendId);
+		end
 	elseif ( event == "BN_FRIEND_ACCOUNT_OFFLINE" ) then
-		self:AddToast(BN_TOAST_TYPE_OFFLINE, ...);
+		local friendId, isCompanionApp = ...;
+		if not isCompanionApp then
+			self:AddToast(BN_TOAST_TYPE_OFFLINE, friendId);
+		end
 	elseif ( event == "BN_CUSTOM_MESSAGE_CHANGED" ) then
 		self:OnCustomMessageChanged(...);
 	elseif ( event == "BN_FRIEND_INVITE_ADDED" ) then

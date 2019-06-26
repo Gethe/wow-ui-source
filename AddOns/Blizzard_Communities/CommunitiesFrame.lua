@@ -43,7 +43,7 @@ local COMMUNITIES_STATIC_POPUPS = {
 function CommunitiesFrameMixin:OnLoad()
 	CallbackRegistryBaseMixin.OnLoad(self);
 
-	PortraitFrameTemplate_SetTitle(self, COMMUNITIES_FRAME_TITLE);
+	self:SetTitle(COMMUNITIES_FRAME_TITLE);
 
 	UIDropDownMenu_Initialize(self.StreamDropDownMenu, CommunitiesStreamDropDownMenu_Initialize);
 
@@ -133,6 +133,7 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 		if clubId == self:GetSelectedClubId() then
 			self:UpdateClubSelection();
 		end
+		self:ClearSelectedStreamForClub(clubId);
 	elseif event == "CLUB_UPDATED" then
 		self:ValidateDisplayMode();
 		local clubId = ...;
@@ -393,7 +394,7 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 			end
 		end
 		if isGuildCommunitySelected then
-			GuildRoster();
+			C_GuildInfo.GuildRoster();
 		end
 		self.GuildMemberListDropDownMenu:SetShown(isGuildCommunitySelected);
 	end
@@ -617,7 +618,7 @@ function CommunitiesFrameMixin:OnClubSelected(clubId)
 			self:ValidateDisplayMode();
 
 			if clubInfo.clubType == Enum.ClubType.Guild then
-				GuildRoster();
+				C_GuildInfo.GuildRoster();
 			end
 		else
 			SetPortraitToTexture(self.PortraitOverlay.Portrait, "Interface\\Icons\\Achievement_General_StayClassy");
@@ -745,6 +746,10 @@ function CommunitiesFrameMixin:SelectStream(clubId, streamId, forceUpdate)
 	end
 
 	self:UpdateCommunitiesButtons();
+end
+
+function CommunitiesFrameMixin:ClearSelectedStreamForClub(clubId)
+	self.selectedStreamForClub[clubId] = nil;
 end
 
 function CommunitiesFrameMixin:GetSelectedStreamForClub(clubId)

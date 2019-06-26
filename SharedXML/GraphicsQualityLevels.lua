@@ -16,7 +16,6 @@ VideoData["Graphics_Quality"]={
 				"Graphics_ProjectedTexturesDropDown",
 				"Graphics_SSAODropDown",
 				"Graphics_DepthEffectsDropDown",
-				"Graphics_LightingQualityDropDown",
 				"Graphics_OutlineModeDropDown",
 			},
 	numQualityLevels = 10,
@@ -128,7 +127,6 @@ VideoData["RaidGraphics_Quality"].childOptions = {
 				"RaidGraphics_ProjectedTexturesDropDown",
 				"RaidGraphics_SSAODropDown",
 				"RaidGraphics_DepthEffectsDropDown",
-				"RaidGraphics_LightingQualityDropDown",
 				"RaidGraphics_OutlineModeDropDown",
 			};
 VideoData["RaidGraphics_Quality"].numQualityLevels = 10;
@@ -190,7 +188,7 @@ VideoData["Display_DisplayModeDropDown"]={
 			return self.data[self:GetSafeValue()].fullscreen;
 		end,
 	lookup = Graphics_TableLookupSafe,
-	restart = true,
+	windowUpdate = true,
 }
 -------------------------------------------------------------------------------------------------------
 VideoData["Display_PrimaryMonitorDropDown"]={
@@ -231,7 +229,7 @@ VideoData["Display_PrimaryMonitorDropDown"]={
 			local ratio = GetMonitorAspectRatio(self:GetValue());
 			return (ratio>=1.0);
 		end,
-	restart = true,
+	windowUpdate = true,
 }
 
 -------------------------------------------------------------------------------------------------------
@@ -257,7 +255,7 @@ VideoData["Display_ResolutionDropDown"]={
 
 	tablefunction =
 		function(self)
-			return GetScreenResolutions(Display_PrimaryMonitorDropDown:GetValue());
+			return GetScreenResolutions(Display_PrimaryMonitorDropDown:GetValue(), Display_DisplayModeDropDown:fullscreenmode());
 		end,
 	getValues =
 		function(self)
@@ -271,7 +269,7 @@ VideoData["Display_ResolutionDropDown"]={
 	SetValue =
 		function (self, value)
 			local width, height = DecodeResolution(self.table[value]);
-			SetScreenResolution(width, height, Display_DisplayModeDropDown:fullscreenmode());
+			SetScreenResolution(width, height);
 		end,
 	doGetValue =
 		function(self)
@@ -279,14 +277,10 @@ VideoData["Display_ResolutionDropDown"]={
 		end,
 	onrefresh =
 	function(self)
-		if(Display_DisplayModeDropDown:fullscreenmode()) then
-			VideoOptions_Disable(self);
-		else
-			VideoOptions_Enable(self);
-		end
+		VideoOptions_Enable(self);
 	end,
 	lookup = Graphics_TableLookupSafe,
-	restart = true,
+	windowUpdate = true,
 }
 
 -------------------------------------------------------------------------------------------------------
@@ -308,7 +302,7 @@ VideoData["Display_VerticalSyncDropDown"]={
 			},
 		},
 	},
-	restart = true,
+	windowUpdate = true,
 }
 
 -------------------------------------------------------------------------------------------------------
@@ -747,7 +741,6 @@ VideoData["Graphics_FilteringDropDown"]={
 	dependent = {
 		"Graphics_Quality",
 	},
-	restart = true;
 }
 
 VideoData["RaidGraphics_FilteringDropDown"]={
@@ -777,7 +770,6 @@ VideoData["RaidGraphics_FilteringDropDown"]={
 	dependent = {
 		"RaidGraphics_Quality",
 	},
-	restart = true;
 }
 
 -------------------------------------------------------------------------------------------------------
@@ -930,54 +922,6 @@ VideoData["RaidGraphics_DepthEffectsDropDown"]={
 		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
 			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_HIGH,
-		},
-	},
-	dependent = {
-		"RaidGraphics_Quality",
-	},
-}
-
--------------------------------------------------------------------------------------------------------
-VideoData["Graphics_LightingQualityDropDown"]={
-	name = LIGHTING_QUALITY;
-	description = OPTION_TOOLTIP_LIGHTING_QUALITY,
-	graphicsCVar =	"graphicsLightingQuality",
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_LOW,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_LOW,
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_MEDIUM,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_MEDIUM,
-		},
-		[3] = {
-			text = VIDEO_OPTIONS_HIGH,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_HIGH,
-		},
-	},
-	dependent = {
-		"Graphics_Quality",
-	},
-}
-
--------------------------------------------------------------------------------------------------------
-VideoData["RaidGraphics_LightingQualityDropDown"]={
-	name = LIGHTING_QUALITY;
-	description = OPTION_TOOLTIP_LIGHTING_QUALITY,
-	graphicsCVar =	"raidGraphicsLightingQuality",
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_LOW,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_LOW,
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_MEDIUM,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_MEDIUM,
-		},
-		[3] = {
-			text = VIDEO_OPTIONS_HIGH,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_HIGH,
 		},
 	},
 	dependent = {
@@ -1211,11 +1155,6 @@ VideoData["Advanced_AdapterDropDown"]={
 			end
 		end,
 	restart = true,
-}
-
-VideoData["Advanced_StereoEnabled"]={
-	name = ENABLE_STEREO_VIDEO;
-	tooltip = OPTION_TOOLTIP_ENABLE_STEREO_VIDEO,
 }
 
 VideoData["Advanced_MultisampleAlphaTest"]={

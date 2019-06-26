@@ -1,10 +1,10 @@
-PVPHonorRewardMixin = {};
+PVPHonorRewardCodeMixin = {};
 
-function PVPHonorRewardMixin:OnLoad()
+function PVPHonorRewardCodeMixin:OnLoad()
     self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
 end
 
-function PVPHonorRewardMixin:OnEvent(event, ...)
+function PVPHonorRewardCodeMixin:OnEvent(event, ...)
     if (event == "GET_ITEM_INFO_RECEIVED" and self.rewardInfo and self.rewardInfo.waitingOnItem) then
         local id = ...;
         if (id == self.rewardInfo.id) then

@@ -77,6 +77,7 @@ function PetBattleFrame_OnLoad(self)
 	self:RegisterEvent("PET_BATTLE_XP_CHANGED");
 	self:RegisterEvent("PET_BATTLE_ACTION_SELECTED");
 	self:RegisterEvent("PET_BATTLE_PET_TYPE_CHANGED");
+	self:RegisterEvent("PET_BATTLE_OVERRIDE_ABILITY");
 	
 	-- Transitioning out of battle event
 	self:RegisterEvent("PET_BATTLE_OVER");
@@ -126,6 +127,11 @@ function PetBattleFrame_OnEvent(self, event, ...)
 		self.BottomFrame.TurnTimer.SkipButton:Disable();
 	elseif ( event == "PET_BATTLE_PET_TYPE_CHANGED" ) then
 		PetBattleFrame_UpdateAllActionButtons(self);
+	elseif ( event == "PET_BATTLE_OVERRIDE_ABILITY" ) then
+		local abilityIndex = ...;
+		local button = self.BottomFrame.abilityButtons[abilityIndex];
+		PetBattleAbilityButton_UpdateIcons(button);
+		PetBattleActionButton_UpdateState(button);
 	end
 end
 

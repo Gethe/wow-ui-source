@@ -1,6 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ 
 ..\FrameXML\UI.xsd">
+  <Script file="TabardModelControlButtonMixin.lua"/>
 	<Script file="TabardFrame.lua"/>
+  
 	<Frame name="TabardFrameCustomizeTemplate" virtual="true">
 		<Size x="164" y="20"/>
 		<Layers>
@@ -67,16 +69,17 @@
 			</Button>
 		</Frames>
 	</Frame>
+  
 	<Frame name="TabardFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
 		<!--<Size x="384" y="512"/>-->
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="TabardFramePortrait">
-                    <Size x="60" y="60"/>
-                    <Anchors>
-                        <Anchor point="TOPLEFT" x="7" y="-6"/>
-                    </Anchors>
-                </Texture>
+            <Size x="60" y="60"/>
+            <Anchors>
+                <Anchor point="TOPLEFT" x="7" y="-6"/>
+            </Anchors>
+        </Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="TabardFrameOuterFrameTopLeft" file="Interface\TabardFrame\TabardFrameOuterFrame">
@@ -192,48 +195,47 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<TabardModel name="TabardModel">
-                <Size x="303" y="317"/>
-                <Anchors>
-                    <Anchor point="BOTTOM" relativeTo="TabardFrame" relativePoint="BOTTOM" x="0" y="38"/>
-                </Anchors>
+      
+			<TabardModel name="TabardModel" mixin="TabardModelFrameMixin">
+        <Size x="303" y="317"/>
+        <Anchors>
+            <Anchor point="BOTTOM" relativeTo="TabardFrame" relativePoint="BOTTOM" x="0" y="38"/>
+        </Anchors>
 				<Frames>
-					<Button name="TabardCharacterModelRotateLeftButton">
+          
+					<Button name="TabardCharacterModelRotateLeftButton" mixin="TabardModelControlRotateButtonMixin">
 						<Size x="35" y="35"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeTo="TabardFrame" x="14" y="33"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
-							</OnLoad>
-							<OnClick function="TabardCharacterModelRotateLeftButton_OnClick"/>
-						</Scripts>
+						<KeyValues>
+							<KeyValue key="rotateDirection" value="left" type="string"/>
+						</KeyValues>
 						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
-					<Button name="TabardCharacterModelRotateRightButton">
+          
+					<Button name="TabardCharacterModelRotateRightButton" mixin="TabardModelControlRotateButtonMixin">
 						<Size x="35" y="35"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="TabardCharacterModelRotateLeftButton" relativePoint="TOPRIGHT" x="-5" y="0"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
-							</OnLoad>
-							<OnClick function="TabardCharacterModelRotateRightButton_OnClick"/>
-						</Scripts>
+						<KeyValues>
+							<KeyValue key="rotateDirection" value="right" type="string"/>
+						</KeyValues>
 						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
+          
 				</Frames>
 				<Scripts>
-                    <OnLoad function="TabardCharacterModelFrame_OnLoad"/>
-					<OnUpdate function="TabardCharacterModelFrame_OnUpdate"/>
-                </Scripts>
-            </TabardModel>
+          <OnLoad method="OnLoad"/>
+          <OnUpdate method="OnUpdate"/>
+        </Scripts>
+      </TabardModel>
+      
 			<Frame name="TabardFrameCostFrame">
 				<Size x="170" y="23"/>
 				<Anchors>
@@ -274,6 +276,7 @@
 					</Frame>					
 				</Frames>
 			</Frame>
+      
 			<Frame name="TabardFrameCustomizationFrame">
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -341,6 +344,7 @@
 					<OnLoad function="RaiseFrameLevel"/>
 				</Scripts>
 			</Frame>
+      
 			<Frame name="TabardFrameMoneyInset" inherits="InsetFrameTemplate" useParentLevel="true">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="4" y="4"/>
@@ -359,6 +363,7 @@
 					<Anchor point="BOTTOMRIGHT" relativeTo="TabardFrame" relativePoint="BOTTOMLEFT" x="175" y="8"/>
 				</Anchors>
 			</Frame>
+      
 			<Button name="TabardFrameAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
 				<Size x="80" y="22"/>
 				<Anchors>
@@ -370,6 +375,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+      
 			<Button name="TabardFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
 				<Size x="80" y="22"/>
 				<Anchors>
@@ -379,6 +385,7 @@
 					<OnClick function="HideParentPanel"/>
 				</Scripts>
 			</Button>
+    
 		</Frames>
 		<Scripts>
 			<OnLoad function="TabardFrame_OnLoad"/>

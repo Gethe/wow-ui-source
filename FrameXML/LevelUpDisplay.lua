@@ -16,6 +16,7 @@ LEVEL_UP_EVENTS = {
 	[10] = {"SpecializationUnlocked", "BGsUnlocked"},
 	[15] = {"TalentsUnlocked","LFDUnlocked"},
 	[20]= {"PvpTalentsUnlocked"},
+	[100]= {"MountEquipmentUnlocked"},
 }
 
 SUBICON_TEXCOOR_BOOK 	= {0.64257813, 0.72070313, 0.03710938, 0.11132813};
@@ -126,6 +127,13 @@ LEVEL_UP_TYPES = {
 										link=LEVEL_UP_FEATURE2..LEVEL_UP_TALENTS_LINK
 									},
 
+	["MountEquipmentUnlocked"] 	= 	{	icon="Interface\\Icons\\inv_blacksmith_leystonehoofplates_orange",
+										subIcon=SUBICON_TEXCOOR_LOCK,
+										text=MOUNT_EQUIPMENT_LEVEL_UP_FEATURE,
+										subText=LEVEL_UP_FEATURE,
+										link=LEVEL_UP_FEATURE2.." "..LEVEL_UP_MOUNT_EQUIPMENT_LINK
+									},
+
 	["BGsUnlocked"] 			= 	{	icon="Interface\\Icons\\Ability_DualWield",
 										subIcon=SUBICON_TEXCOOR_LOCK,
 										text=BATTLEFIELDS,
@@ -162,7 +170,7 @@ LEVEL_UP_TYPES = {
  	["PaliMountTauren2"] 	= {	spellID=69826	},
  	["PaliMountDraenei1"] 	= {	spellID=73629	},
  	["PaliMountDraenei2"] 	= {	spellID=73630	},
-
+ 	["PaliMountZandalariTroll1"] 	= {	spellID=290608	},
 	["TrackBeast"] 			= {	spellID=1494  },
 	["TrackHumanoid"] 		= {	spellID=19883  },
 	["TrackUndead"] 		= {	spellID=19884  },
@@ -212,6 +220,10 @@ LEVEL_UP_CLASS_HACKS = {
 								[20] = {"PaliMountDraenei1"},
 								[40] = {"PaliMountDraenei2"},
 							},
+	["PALADINZandalariTroll"]	= {
+									--  Level  = {unlock}
+										[20] = {"PaliMountZandalariTroll1"},
+									},
 	["DEMONHUNTER"]		= {
 							--  Level  = {unlock}
 								[99] = {"TalentsUnlocked"},
@@ -759,7 +771,7 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 
 					if textureKitID then
 						playAnim = self.scenarioFrame.TextureKitNewStage;
-						SetupTextureKits(textureKitID, self.scenarioFrame, textureKitRegionFormatStrings, false, true);
+						SetupTextureKits(textureKitID, self.scenarioFrame, textureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
 					else
 						if scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION then
 							playAnim = self.scenarioFrame.LegionInvasionNewStage;
@@ -776,7 +788,7 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 			end
 		elseif ( self.type == TOAST_CHALLENGE_MODE_RECORD ) then
 			self.challengeModeFrame.LevelCompleted:SetFormattedText(CHALLENGE_MODE_POWER_LEVEL, self.level);
-			self.challengeModeFrame.RecordTime:SetFormattedText(CHALLENGE_MODE_NEW_BEST, GetTimeStringFromSeconds(self.recordTime / 1000));
+			self.challengeModeFrame.RecordTime:SetFormattedText(CHALLENGE_MODE_NEW_BEST, SecondsToClock(self.recordTime / 1000, true));
 			PlaySound(SOUNDKIT.UI_CHALLENGES_NEW_RECORD);
 			LevelUpDisplay:SetPoint("TOP", 0, -190);
 			playAnim = self.challengeModeFrame.challengeComplete;

@@ -309,7 +309,7 @@ function GroupFinderFrame_Update(self, frame)
 end
 
 function GroupFinderFrame_OnShow(self)
-	PortraitFrameTemplate_SetPortraitToAsset(PVEFrame, "Interface\\LFGFrame\\UI-LFG-PORTRAIT");
+	PVEFrame:SetPortraitToAsset("Interface\\LFGFrame\\UI-LFG-PORTRAIT");
 	PVEFrame.TitleText:SetText(GROUP_FINDER);
 end
 

@@ -300,7 +300,7 @@ local Loot =
 				{ Name = "specID", Type = "number", Nilable = false },
 				{ Name = "sex", Type = "number", Nilable = false },
 				{ Name = "personalLootToast", Type = "bool", Nilable = false },
-				{ Name = "ITEM_TOAST_METHOD_LOOT", Type = "number", Nilable = false },
+				{ Name = "toastMethod", Type = "number", Nilable = false },
 				{ Name = "lessAwesome", Type = "bool", Nilable = false },
 				{ Name = "upgraded", Type = "bool", Nilable = false },
 			},

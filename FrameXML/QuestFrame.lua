@@ -4,9 +4,6 @@ QUEST_DESCRIPTION_GRADIENT_LENGTH = 30;
 QUEST_DESCRIPTION_GRADIENT_CPS = 70;
 QUESTINFO_FADE_IN = 0.5;
 
-QUEST_FRAME_AUTO_ACCEPT_QUEST_ID = 0;
-QUEST_FRAME_AUTO_ACCEPT_QUEST_START_ITEM_ID = 0;
-
 function QuestFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_GREETING");
 	self:RegisterEvent("QUEST_DETAIL");
@@ -37,8 +34,6 @@ function QuestFrame_OnEvent(self, event, ...)
 		QuestFrameGreetingPanel:Show();
 	elseif ( event == "QUEST_DETAIL" ) then
 		local questStartItemID = ...;
-		QUEST_FRAME_AUTO_ACCEPT_QUEST_ID = 0;
-        QUEST_FRAME_AUTO_ACCEPT_QUEST_START_ITEM_ID = 0;
 
 		if ( QuestIsFromAdventureMap() ) then
 			HideUIPanel(QuestLogPopupDetailFrame);
@@ -46,9 +41,7 @@ function QuestFrame_OnEvent(self, event, ...)
 		end
 
         if(questStartItemID ~= nil and questStartItemID ~= 0) then
-            QUEST_FRAME_AUTO_ACCEPT_QUEST_ID = GetQuestID();
-            QUEST_FRAME_AUTO_ACCEPT_QUEST_START_ITEM_ID = questStartItemID;
-			if (AutoQuestPopupTracker_AddPopUp(GetQuestID(), "OFFER")) then
+			if (AutoQuestPopupTracker_AddPopUp(GetQuestID(), "OFFER", questStartItemID)) then
                 PlayAutoAcceptQuestSound();
             end
             CloseQuest();

@@ -1,7 +1,6 @@
-## Interface: 80100
 ## Title: Blizzard Battlefield Map
-## Secure: 1
 ## LoadOnDemand: 1
 ## SavedVariablesPerCharacter: BattlefieldMapOptions
+## RequiredDep: Blizzard_MapCanvas
 Blizzard_BattlefieldMap.xml
 Localization.lua

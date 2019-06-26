@@ -68,6 +68,15 @@ local AzeriteItem =
 			},
 		},
 		{
+			Name = "IsAzeriteItemAtMaxLevel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isAtMax", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAzeriteItemByID",
 			Type = "Function",
 

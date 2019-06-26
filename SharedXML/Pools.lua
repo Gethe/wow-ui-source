@@ -20,23 +20,7 @@ if tbl then
 	Import("pairs");
 	Import("ipairs");
 	Import("next");
-	Import("select");
 	Import("CreateFrame");
-	
-	function Mixin(object, ...)
-		for i = 1, select("#", ...) do
-			local mixin = select(i, ...);
-			for k, v in pairs(mixin) do
-				object[k] = v;
-			end
-		end
-
-		return object;
-	end
-
-	function CreateFromMixins(...)
-		return Mixin({}, ...)
-	end
 end
 ----------------
 
@@ -239,6 +223,14 @@ end
 
 function FramePoolCollectionMixin:OnLoad()
 	self.pools = {};
+end
+
+function FramePoolCollectionMixin:GetOrCreatePool(frameType, parent, template, resetterFunc, forbidden)
+	local pool = self:GetPool(template);
+	if not pool then
+		pool = self:CreatePool(frameType, parent, template, resetterFunc, forbidden);
+	end
+	return pool;
 end
 
 function FramePoolCollectionMixin:CreatePool(frameType, parent, template, resetterFunc, forbidden)

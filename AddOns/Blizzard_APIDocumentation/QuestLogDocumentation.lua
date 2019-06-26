@@ -36,6 +36,52 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "GetNextWaypoint",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+				{ Name = "x", Type = "number", Nilable = false },
+				{ Name = "y", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNextWaypointForMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "x", Type = "number", Nilable = false },
+				{ Name = "y", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNextWaypointText",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "waypointText", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNumQuestObjectives",
 			Type = "Function",
 
@@ -274,6 +320,10 @@ local QuestLog =
 			Name = "QuestlineUpdate",
 			Type = "Event",
 			LiteralName = "QUESTLINE_UPDATE",
+			Payload =
+			{
+				{ Name = "requestRequired", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "SuperTrackedQuestChanged",
@@ -288,6 +338,16 @@ local QuestLog =
 			Name = "TaskProgressUpdate",
 			Type = "Event",
 			LiteralName = "TASK_PROGRESS_UPDATE",
+		},
+		{
+			Name = "TreasurePickerCacheFlush",
+			Type = "Event",
+			LiteralName = "TREASURE_PICKER_CACHE_FLUSH",
+		},
+		{
+			Name = "WaypointUpdate",
+			Type = "Event",
+			LiteralName = "WAYPOINT_UPDATE",
 		},
 		{
 			Name = "WorldQuestCompletedBySpell",
@@ -305,9 +365,9 @@ local QuestLog =
 		{
 			Name = "QuestTag",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 102,
+			MaxValue = 266,
 			Fields =
 			{
 				{ Name = "Group", Type = "QuestTag", EnumValue = 1 },
@@ -320,6 +380,7 @@ local QuestLog =
 				{ Name = "Raid25", Type = "QuestTag", EnumValue = 89 },
 				{ Name = "Scenario", Type = "QuestTag", EnumValue = 98 },
 				{ Name = "Account", Type = "QuestTag", EnumValue = 102 },
+				{ Name = "CombatAlly", Type = "QuestTag", EnumValue = 266 },
 			},
 		},
 		{

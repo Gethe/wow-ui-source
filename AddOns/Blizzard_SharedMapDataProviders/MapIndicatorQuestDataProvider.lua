@@ -31,7 +31,11 @@ function MapIndicatorQuestDataProviderMixin:RefreshAllData()
 	if (questsOnMap) then
 		for i, info in ipairs(questsOnMap) do
 			if(info.isMapIndicatorQuest) then 
-				self:AddMapIndicatorQuest(info);
+				if (info.type == LE_QUEST_TAG_TYPE_ISLANDS and not ShouldShowIslandsWeeklyPOI()) then 
+					break;
+				else 
+					self:AddMapIndicatorQuest(info);
+				end 
 			end
 		end
 	end

@@ -7,6 +7,29 @@ local MountJournal =
 	Functions =
 	{
 		{
+			Name = "ApplyMountEquipment",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canContinue", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "AreMountEquipmentEffectsSuppressed",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "areEffectsSuppressed", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ClearFanfare",
 			Type = "Function",
 
@@ -22,6 +45,15 @@ local MountJournal =
 		{
 			Name = "Dismiss",
 			Type = "Function",
+		},
+		{
+			Name = "GetAppliedMountEquipmentID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "itemID", Type = "number", Nilable = true },
+			},
 		},
 		{
 			Name = "GetCollectedFilterSetting",
@@ -122,6 +154,15 @@ local MountJournal =
 			Returns =
 			{
 				{ Name = "allDisplayInfo", Type = "table", InnerType = "MountCreatureDisplayInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMountEquipmentUnlockLevel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "level", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -249,6 +290,39 @@ local MountJournal =
 			},
 		},
 		{
+			Name = "IsItemMountEquipment",
+			Type = "Function",
+			Documentation = { "Determines if the item is mount equipment based on its class and subclass." },
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isMountEquipment", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsMountEquipmentApplied",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isApplied", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsMountEquipmentUnlocked",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isUnlocked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsSourceChecked",
 			Type = "Function",
 
@@ -360,6 +434,15 @@ local MountJournal =
 
 	Events =
 	{
+		{
+			Name = "MountEquipmentApplyResult",
+			Type = "Event",
+			LiteralName = "MOUNT_EQUIPMENT_APPLY_RESULT",
+			Payload =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
 		{
 			Name = "MountJournalSearchUpdated",
 			Type = "Event",

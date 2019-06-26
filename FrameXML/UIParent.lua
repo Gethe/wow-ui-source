@@ -70,7 +70,8 @@ UIPanelWindows["CommunitiesGuildNewsFiltersFrame"] =		{ area = "left",			pushabl
 -- Frames NOT using the new Templates
 UIPanelWindows["CinematicFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["ChatConfigFrame"] =				{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
-UIPanelWindows["WorldStateScoreFrame"] =		{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1,	ignoreControlLost = true, };
+UIPanelWindows["PVPMatchScoreboard"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1,	ignoreControlLost = true, };
+UIPanelWindows["PVPMatchResults"] =				{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1,	ignoreControlLost = true, };
 UIPanelWindows["QuestChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 UIPanelWindows["WarboardQuestChoiceFrame"] =	{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 UIPanelWindows["GarrisonBuildingFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002, 	allowOtherPanels = 1};
@@ -416,6 +417,9 @@ function UIParent_OnLoad(self)
 
 	-- Event(s) for Azerite Empowered Items
 	self:RegisterEvent("RESPEC_AZERITE_EMPOWERED_ITEM_OPENED");
+
+	-- Event(s) for Heart of Azeroth forge
+	self:RegisterEvent("AZERITE_ESSENCE_FORGE_OPEN");
 
 	-- Events for Reporting SYSTEM
 	self:RegisterEvent("REPORT_PLAYER_RESULT");
@@ -809,7 +813,7 @@ function ToggleGuildFrame()
 		elseif ( C_Club.IsRestricted() ~= Enum.ClubRestrictionReason.None ) then
 			return;
 		end
-		
+
 		ToggleCommunitiesFrame();
 	elseif ( IsInGuild() ) then
 		GuildFrame_LoadUI();
@@ -963,6 +967,12 @@ function SetCollectionsJournalShown(shown, tabIndex)
 	end
 end
 
+function ToggleToyCollection(autoPageToCollectedToyID)
+	CollectionsJournal_LoadUI();
+	ToyBox.autoPageToCollectedToyID = autoPageToCollectedToyID;
+	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_TOYS);
+end
+
 function TogglePVPUI()
 	if (IsKioskModeEnabled()) then
 		return;
@@ -1053,6 +1063,14 @@ function OpenAzeriteEmpoweredItemUIFromLink(itemLink, overrideClassID, overrideS
 	ShowUIPanel(AzeriteEmpoweredItemUI);
 	if AzeriteEmpoweredItemUI:IsShown() then -- may fail to display
 		AzeriteEmpoweredItemUI:SetToItemLink(itemLink, overrideClassID, overrideSelectedPowersList);
+	end
+end
+
+function OpenAzeriteEssenceUIFromItemLocation(itemLocation)
+	UIParentLoadAddOn("Blizzard_AzeriteEssenceUI");
+
+	if AzeriteEssenceUI then
+		AzeriteEssenceUI:TryShow();
 	end
 end
 
@@ -1253,7 +1271,7 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif ( event == "PARTY_INVITE_REQUEST" ) then
 		FlashClientIcon();
-		
+
 		local name, tank, healer, damage, isXRealm, allowMultipleRoles, inviterGuid = ...;
 
 		-- Color the name by our relationship
@@ -1382,7 +1400,7 @@ function UIParent_OnEvent(self, event, ...)
 		if ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
 			StaticPopup_Show("DEATH");
 		end
-		
+
 		local alreadyShowingSummonPopup = StaticPopup_Visible("CONFIRM_SUMMON_STARTING_AREA") or StaticPopup_Visible("CONFIRM_SUMMON_SCENARIO") or StaticPopup_Visible("CONFIRM_SUMMON")
 		if ( not alreadyShowingSummonPopup and C_SummonInfo.GetSummonConfirmTimeLeft() > 0 ) then
 			local summonReason = C_SummonInfo.GetSummonReason();
@@ -1512,11 +1530,7 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "END_BOUND_TRADEABLE" ) then
 		local dialog = StaticPopup_Show("END_BOUND_TRADEABLE", nil, nil, arg1);
 	elseif ( event == "MACRO_ACTION_BLOCKED" or event == "ADDON_ACTION_BLOCKED" ) then
-		if ( not INTERFACE_ACTION_BLOCKED_SHOWN ) then
-			local info = ChatTypeInfo["SYSTEM"];
-			DEFAULT_CHAT_FRAME:AddMessage(INTERFACE_ACTION_BLOCKED, info.r, info.g, info.b, info.id);
-			INTERFACE_ACTION_BLOCKED_SHOWN = true;
-		end
+		DisplayInterfaceActionBlockedMessage();
 	elseif ( event == "MACRO_ACTION_FORBIDDEN" ) then
 		StaticPopup_Show("MACRO_ACTION_FORBIDDEN");
 	elseif ( event == "ADDON_ACTION_FORBIDDEN" ) then
@@ -1730,6 +1744,12 @@ function UIParent_OnEvent(self, event, ...)
 		ArtifactFrame_LoadUI();
 		ShowUIPanel(ArtifactRelicForgeFrame);
 
+	elseif ( event == "AZERITE_ESSENCE_FORGE_OPEN" ) then
+		UIParentLoadAddOn("Blizzard_AzeriteEssenceUI");
+		if AzeriteEssenceUI and AzeriteEssenceUI:TryShow() and AzeriteEssenceUI:ShouldOpenBagsOnShow() then
+			OpenAllBags(AzeriteEssenceUI);
+		end
+
 	elseif ( event == "ADVENTURE_MAP_OPEN" ) then
 		Garrison_LoadUI();
 		local followerTypeID = ...;
@@ -1915,7 +1935,7 @@ function UIParent_OnEvent(self, event, ...)
 				self.newToys[itemID] = true;
 
 				self.autoPageToCollectedToyID = itemID;
-				SetCVar("petJournalTab", 3);
+				SetCVar("petJournalTab", COLLECTIONS_JOURNAL_TAB_INDEX_TOYS);
 			end
 		end
 
@@ -2018,7 +2038,7 @@ function UIParent_OnEvent(self, event, ...)
 		ShowUIPanel(GarrisonRecruiterFrame);
 	elseif ( event == "GARRISON_TALENT_NPC_OPENED") then
 		OrderHall_LoadUI();
-		OrderHallTalentFrame:SetGarrisonType(...); 
+		OrderHallTalentFrame:SetGarrisonType(...);
 		ToggleOrderHallTalentUI();
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
 		StoreFrame_CheckForFree(event);
@@ -2100,8 +2120,8 @@ function UIParent_OnEvent(self, event, ...)
 		AzeriteRespecFrame_LoadUI();
 		ShowUIPanel(AzeriteRespecFrame);
 	elseif (event == "ISLANDS_QUEUE_OPEN") then
-		IslandsQueue_LoadUI(); 
-		ShowUIPanel(IslandsQueueFrame); 
+		IslandsQueue_LoadUI();
+		ShowUIPanel(IslandsQueueFrame);
 	-- Events for Reporting system
 	elseif (event == "REPORT_PLAYER_RESULT") then
 		local success = ...;
@@ -2195,7 +2215,7 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["MultiBarBottomRight"] = {baseY = 2, watchBar = 1, maxLevel = 1, anchorTo = "ActionButton12", point = "TOPLEFT", rpoint = "TOPRIGHT", xOffset = 45};
 	["GroupLootContainer"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1};
 	["TutorialFrameAlertButton"] = {baseY = true, yOffset = -10, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, watchBar = 1};
-	["FramerateLabel"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1};
+	["FramerateLabel"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, anchorTo="WorldFrame" };
 	["ArcheologyDigsiteProgressBar"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, castingBar = 1};
 	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, talkingHeadFrame = 1, classResourceOverlayFrame = 1, classResourceOverlayOffset = 1};
 	["ClassResourceOverlayParentFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1 };
@@ -2735,7 +2755,7 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 	else
 		centerOffset = leftOffset;
 		UIParent:SetAttribute("CENTER_OFFSET", centerOffset);
-		
+
 		frame = self:GetUIPanel("doublewide");
 		if ( frame ) then
 			local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
@@ -3061,7 +3081,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	end
 
 	-- BelowMinimap Widgets - need to move below buffs/debuffs if at least 1 right action bar is showing
-	if UIWidgetBelowMinimapContainerFrame and UIWidgetBelowMinimapContainerFrame:GetHeight() > 0 then
+	if UIWidgetBelowMinimapContainerFrame and UIWidgetBelowMinimapContainerFrame:GetNumWidgetsShowing() > 0 then
 		if rightActionBars > 0 then
 			anchorY = min(anchorY, buffsAnchorY);
 		end
@@ -3158,10 +3178,29 @@ function ToggleFrame(frame)
 	end
 end
 
+-- We keep direct references to protect against replacement.
+local InCombatLockdown = InCombatLockdown;
+local issecure = issecure;
+
+-- We no longer allow addons to show or hide UI panels in combat.
+local function CheckProtectedFunctionsAllowed()
+	if ( InCombatLockdown() and not issecure() ) then
+		DisplayInterfaceActionBlockedMessage();
+		return false;
+	end
+
+	return true;
+end
+
 function ShowUIPanel(frame, force)
 	if ( not frame or frame:IsShown() ) then
 		return;
 	end
+
+	if ( not CheckProtectedFunctionsAllowed() ) then
+		return;
+	end
+
 	if ( not GetUIPanelWindowInfo(frame, "area") ) then
 		frame:Show();
 		return;
@@ -3175,6 +3214,10 @@ end
 
 function HideUIPanel(frame, skipSetPoint)
 	if ( not frame or not frame:IsShown() ) then
+		return;
+	end
+
+	if ( not CheckProtectedFunctionsAllowed() ) then
 		return;
 	end
 
@@ -3360,7 +3403,7 @@ function CloseWindows(ignoreCenter, frameToIgnore)
 	end
 
 	found = securecall("CloseSpecialWindows") or found;
-	
+
 	UpdateUIPanelPositions();
 
 	return found;
@@ -3370,7 +3413,7 @@ function CloseAllWindows_WithExceptions()
 	-- When the player loses control we close all UIs, unless they're handled below
 	local centerFrame = GetUIPanel("center");
 	local ignoreCenter = (centerFrame and GetUIPanelWindowInfo(centerFrame, "ignoreControlLost")) or IsOptionFrameOpen();
-	
+
 	CloseAllWindows(ignoreCenter);
 end
 
@@ -4938,11 +4981,14 @@ end
 NUMBER_ABBREVIATION_DATA = {
 	-- Order these from largest to smallest
 	-- (significandDivisor and fractionDivisor should multiply to be equal to breakpoint)
-	{ breakpoint = 100000000,	abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 10000000,	fractionDivisor = 1 },
-	{ breakpoint = 10000000,	abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 1000000,	fractionDivisor = 1 },
-	{ breakpoint = 1000000,		abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 100000,		fractionDivisor = 10 },
-	{ breakpoint = 10000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 1000,		fractionDivisor = 1 },
-	{ breakpoint = 1000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 100,		fractionDivisor = 10 },
+	{ breakpoint = 10000000000000,	abbreviation = FOURTH_NUMBER_CAP_NO_SPACE,		significandDivisor = 1000000000000,	fractionDivisor = 1 },
+	{ breakpoint = 1000000000000,	abbreviation = FOURTH_NUMBER_CAP_NO_SPACE,		significandDivisor = 100000000000,	fractionDivisor = 10 },
+	{ breakpoint = 10000000000,		abbreviation = THIRD_NUMBER_CAP_NO_SPACE,		significandDivisor = 1000000000,	fractionDivisor = 1 },
+	{ breakpoint = 1000000000,		abbreviation = THIRD_NUMBER_CAP_NO_SPACE,		significandDivisor = 100000000,	fractionDivisor = 10 },
+	{ breakpoint = 10000000,		abbreviation = SECOND_NUMBER_CAP_NO_SPACE,		significandDivisor = 1000000,	fractionDivisor = 1 },
+	{ breakpoint = 1000000,			abbreviation = SECOND_NUMBER_CAP_NO_SPACE,		significandDivisor = 100000,		fractionDivisor = 10 },
+	{ breakpoint = 10000,			abbreviation = FIRST_NUMBER_CAP_NO_SPACE,		significandDivisor = 1000,		fractionDivisor = 1 },
+	{ breakpoint = 1000,			abbreviation = FIRST_NUMBER_CAP_NO_SPACE,		significandDivisor = 100,		fractionDivisor = 10 },
 }
 
 function AbbreviateNumbers(value)
@@ -4953,30 +4999,6 @@ function AbbreviateNumbers(value)
 		end
 	end
 	return tostring(value);
-end
-
-function GetTimeStringFromSeconds(timeAmount, hasMS, dropZeroHours)
-	local seconds, ms;
-	-- milliseconds
-	if ( hasMS ) then
-		seconds = floor(timeAmount / 1000);
-		ms = timeAmount - seconds * 1000;
-	else
-		seconds = timeAmount;
-	end
-
-	local hours = floor(seconds / 3600);
-	local minutes = floor((seconds / 60) - (hours * 60));
-	seconds = seconds - hours * 3600 - minutes * 60;
---	if ( hasMS ) then
---		return format(HOURS_MINUTES_SECONDS_MILLISECONDS, hours, minutes, seconds, ms);
---	else
-	if ( dropZeroHours and hours == 0 ) then
-		return format(MINUTES_SECONDS, minutes, seconds);
-	else
-		return format(HOURS_MINUTES_SECONDS, hours, minutes, seconds);
-	end
---	end
 end
 
 function IsInLFDBattlefield()
@@ -5265,4 +5287,12 @@ end
 
 function IsPlayerAtEffectiveMaxLevel()
 	return IsLevelAtEffectiveMaxLevel(UnitLevel("player"));
+end
+
+function DisplayInterfaceActionBlockedMessage()
+	if ( not INTERFACE_ACTION_BLOCKED_SHOWN ) then
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(INTERFACE_ACTION_BLOCKED, info.r, info.g, info.b, info.id);
+		INTERFACE_ACTION_BLOCKED_SHOWN = true;
+	end
 end

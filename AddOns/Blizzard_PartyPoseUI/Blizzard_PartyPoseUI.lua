@@ -1,5 +1,8 @@
 PartyPoseRewardsMixin = { };
 
+local IMPACT_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(214, 1983536);	-- 8FX_AZERITE_GENERIC_IMPACTHIGH_CHEST
+local HOLD_MODEL_SCENE_INFO	= StaticModelInfo.CreateModelSceneEntry(234, 1983980);		-- 8FX_AZERITE_EMPOWER_STATECHEST
+
 function PartyPoseRewardsMixin:OnLoad()
 	local startingSound = SOUNDKIT.UI_80_ISLANDS_AZERITECOLLECTION_START;
 	local loopingSound = SOUNDKIT.UI_80_ISLANDS_AZERITECOLLECTION_LOOP;
@@ -195,20 +198,13 @@ function PartyPoseMixin:PlayModelSceneAnimations(forceUpdate)
 	self.RewardAnimations.ImpactModelScene:Show();
 	self.RewardAnimations.HoldModelScene:Show();
 
-	self.RewardAnimations.ImpactModelScene:SetFromModelSceneID(214, forceUpdate);
-	local impactActor = self.RewardAnimations.ImpactModelScene:GetActorByTag("effect");
+	local impactActor = StaticModelInfo.SetupModelScene(self.RewardAnimations.ImpactModelScene, IMPACT_MODEL_SCENE_INFO, forceUpdate);
 	if (impactActor) then
-		impactActor:SetModelByFileID(1983536); -- 8FX_AZERITE_GENERIC_IMPACTHIGH_CHEST
-
 		impactActor:SetAnimation(0, 0, 1, 0);
 		C_Timer.After(.2, function() impactActor:SetAnimation(0, 0, 0, 0); end);
 	end
 
-	self.RewardAnimations.HoldModelScene:SetFromModelSceneID(234, forceUpdate);
-	local holdActor = self.RewardAnimations.HoldModelScene:GetActorByTag("effect");
-	if (holdActor) then
-		holdActor:SetModelByFileID(1983980); -- 8FX_AZERITE_EMPOWER_STATECHEST
-	end
+	StaticModelInfo.SetupModelScene(self.RewardAnimations.HoldModelScene, HOLD_MODEL_SCENE_INFO, forceUpdate);
 
 	self.RewardAnimations.HoldModelScene.RewardModelAnim:Play();
 end
@@ -297,7 +293,7 @@ function PartyPoseMixin:PlaySounds()
 end
 
 do
-	AnchorUtil.AddNineSliceLayout("PartyPoseFrameTemplate", {
+	NineSliceUtil.AddLayout("PartyPoseFrameTemplate", {
 		TopLeftCorner =	{ atlas = "scoreboard-frameborder-topleft", x = 0, y = 0, },
 		TopRightCorner =	{ atlas = "scoreboard-frameborder-topright", x = 0, y = 0, },
 		BottomLeftCorner =	{ atlas = "scoreboard-frameborder-bottomleft", x = 0, y = 0, },
@@ -308,7 +304,7 @@ do
 		RightEdge = { atlas = "scoreboard-frameborder-right",  },
 	});
 
-	AnchorUtil.AddNineSliceLayout("PartyPoseKit", {
+	NineSliceUtil.AddLayout("PartyPoseKit", {
 		mirrorLayout = true,
 		TopLeftCorner =	{ atlas = "scoreboard-%s-corner", x = 0, y = 0, },
 		TopRightCorner =	{ atlas = "scoreboard-%s-corner", x = 0, y = 0, },
@@ -337,14 +333,38 @@ do
 		self.Border:SetPoint("TOPLEFT", self, "TOPLEFT", -(self.partyPoseData.themeData.borderPaddingX or 0), self.partyPoseData.themeData.borderPaddingY or 0);
 		self.Border:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", self.partyPoseData.themeData.borderPaddingX or 0, -(self.partyPoseData.themeData.borderPaddingY or 0));
 
-		AnchorUtil.ApplyNineSliceLayoutByName(self.Border, self.partyPoseData.themeData.nineSliceLayout, self.partyPoseData.themeData.nineSliceTextureKitName);
+		NineSliceUtil.ApplyLayoutByName(self.Border, self.partyPoseData.themeData.nineSliceLayout, self.partyPoseData.themeData.nineSliceTextureKitName);
+	end
+
+	local function WidgetsLayout(widgetContainerFrame, sortedWidgets)
+		local widgetsHeight = 0;
+		local maxWidgetWidth = 1;
+
+		for index, widgetFrame in ipairs(sortedWidgets) do
+			if ( index == 1 ) then
+				widgetFrame:SetPoint("TOP", widgetContainerFrame, "TOP", 0, 0);
+				widgetsHeight = widgetsHeight + widgetFrame:GetWidgetHeight();
+			else
+				local relative = sortedWidgets[index - 1];
+				widgetFrame:SetPoint("TOP", relative, "BOTTOM", 0, 5);
+				widgetsHeight = widgetsHeight + widgetFrame:GetWidgetHeight() - 5;
+			end
+
+			local widgetWidth = widgetFrame:GetWidgetWidth();
+			if widgetWidth > maxWidgetWidth then
+				maxWidgetWidth = widgetWidth;
+			end
+		end
+
+		widgetContainerFrame:SetHeight(math.max(widgetsHeight, 1));
+		widgetContainerFrame:SetWidth(maxWidgetWidth);
 	end
 
 	function PartyPoseMixin:LoadPartyPose(partyPoseData, forceUpdate)
 		self.partyPoseData = partyPoseData;
 
 		if self.Score then
-			self.Score:RegisterForWidgetSet(partyPoseData.partyPoseInfo.widgetSetID);
+			self.Score:RegisterForWidgetSet(partyPoseData.partyPoseInfo.widgetSetID, WidgetsLayout);
 		end
 
 		if (partyPoseData.playerWon) then

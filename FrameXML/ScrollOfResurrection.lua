@@ -69,7 +69,7 @@ function ScrollOfResurrectionSelection_OnShow(self)
 
 	--Request the guild roster info in case we don't have it yet.
 	if ( IsInGuild() and GetNumGuildMembers() == 0 ) then
-		GuildRoster();
+		C_GuildInfo.GuildRoster();
 		self.awaitingRosterUpdate = true;
 	end
 end

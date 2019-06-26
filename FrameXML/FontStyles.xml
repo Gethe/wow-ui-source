@@ -268,7 +268,7 @@
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
 	
-	<Font name="CommentatorTeamScoreFont" inherits="SystemFont_Huge2" virtual="true">
+	<Font name="CommentatorTeamScoreFont" inherits="SystemFont_Shadow_Large" virtual="true">
 		<Shadow>
 			<Color r="0" g="0" b="0" a="0.9"/>
 			<Offset>

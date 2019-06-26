@@ -1161,9 +1161,7 @@ function LFGListApplicationViewer_UpdateGroupData(self)
 		return;
 	end
 
-	local data = GetGroupMemberCounts();
-	data.DAMAGER = data.DAMAGER + data.NOROLE; --People without a role count as damage
-	data.NOROLE = 0;
+	local data = GetGroupMemberCountsForDisplay();
 	LFGListGroupDataDisplay_Update(self.DataDisplay, activeEntryInfo.activityID, data);
 end
 

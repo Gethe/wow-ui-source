@@ -1,4 +1,4 @@
- <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="QuestFrame.lua"/>
 	<Include file="QuestFrameTemplates.xml"/>
@@ -40,15 +40,15 @@
 		<Size x="338" y="496"/>
 		<Layers>
 			<Layer level="ARTWORK">
-                <Texture name="QuestFramePortrait">
-                    <Size x="60" y="60"/>
-                    <Anchors>
-                        <Anchor point="TOPLEFT" x="7" y="-6"/>
-                    </Anchors>
-                </Texture>
-            </Layer>
-		</Layers> 
- 		<Frames>
+				<Texture name="QuestFramePortrait">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
 			<Frame name="QuestNpcNameFrame">
 				<Size x="0" y="14"/>
 				<Anchors>
@@ -68,8 +68,8 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-                    <OnLoad function="RaiseFrameLevelByTwo"/>
-                </Scripts>
+					<OnLoad function="RaiseFrameLevelByTwo"/>
+				</Scripts>
 			</Frame>
  			<Frame name="QuestFrameRewardPanel" inherits="QuestFramePanelTemplate" hidden="true">
  				<Frames>
@@ -117,54 +117,30 @@
 					<ScrollFrame name="QuestProgressScrollFrame" inherits="QuestScrollFrameTemplate">
 						<ScrollChild>
 							<Frame name="QuestProgressScrollChildFrame">
-								<Size>
-									<AbsDimension x="300" y="403"/>
-								</Size>
+								<Size x="300" y="403"/>
 								<Layers>
 									<Layer level="BACKGROUND">
 										<FontString name="QuestProgressTitleText" inherits="QuestTitleFont" text="Quest Title" justifyH="LEFT">
-											<Size>
-												<AbsDimension x="285" y="0"/>
-											</Size>
+											<Size x="285" y="0"/>
 											<Anchors>
-												<Anchor point="TOPLEFT">
-													<Offset>
-														<AbsDimension x="5" y="-10"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="TOPLEFT" x="10" y="-10"/>
 											</Anchors>
 										</FontString>
 										<FontString name="QuestProgressText" inherits="QuestFont" justifyH="LEFT">
-											<Size>
-												<AbsDimension x="275" y="0"/>
-											</Size>
+											<Size x="275" y="0"/>
 											<Anchors>
-												<Anchor point="TOPLEFT" relativeTo="QuestProgressTitleText" relativePoint="BOTTOMLEFT">
-													<Offset>
-														<AbsDimension x="0" y="-5"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="TOPLEFT" relativeTo="QuestProgressTitleText" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 											</Anchors>
 										</FontString>
 										<FontString name="QuestProgressRequiredItemsText" inherits="QuestTitleFont" text="TURN_IN_ITEMS" justifyH="LEFT">
-											<Size>
-												<AbsDimension x="295" y="0"/>
-											</Size>
+											<Size x="295" y="0"/>
 											<Anchors>
-												<Anchor point="TOPLEFT" relativeTo="QuestProgressText" relativePoint="BOTTOMLEFT">
-													<Offset>
-														<AbsDimension x="0" y="-10"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="TOPLEFT" relativeTo="QuestProgressText" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 											</Anchors>
 										</FontString>
 										<FontString name="QuestProgressRequiredMoneyText" inherits="QuestFontNormalSmall" text="REQUIRED_MONEY" justifyH="LEFT">
 											<Anchors>
-												<Anchor point="TOPLEFT" relativeTo="QuestProgressRequiredItemsText" relativePoint="BOTTOMLEFT">
-													<Offset>
-														<AbsDimension x="0" y="-10"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="TOPLEFT" relativeTo="QuestProgressRequiredItemsText" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 											</Anchors>
 										</FontString>
 									</Layer>
@@ -172,11 +148,7 @@
 								<Frames>
 									<Frame name="QuestProgressRequiredMoneyFrame" inherits="MoneyFrameTemplate">
 										<Anchors>
-											<Anchor point="LEFT" relativeTo="QuestProgressRequiredMoneyText" relativePoint="RIGHT">
-												<Offset>
-													<AbsDimension x="10" y="0"/>
-												</Offset>
-											</Anchor>
+											<Anchor point="LEFT" relativeTo="QuestProgressRequiredMoneyText" relativePoint="RIGHT" x="10" y="0"/>
 										</Anchors>
 										<Scripts>
 											<OnLoad>
@@ -187,56 +159,32 @@
 									</Frame>
 									<Button name="QuestProgressItem1" inherits="QuestItemTemplate" id="1">
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="QuestProgressRequiredItemsText" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="-3" y="-5"/>
-												</Offset>
-											</Anchor>
+											<Anchor point="TOPLEFT" relativeTo="QuestProgressRequiredItemsText" relativePoint="BOTTOMLEFT" x="-3" y="-5"/>
 										</Anchors>
 									</Button>
 									<Button name="QuestProgressItem2" inherits="QuestItemTemplate" id="2">
 										<Anchors>
-											<Anchor point="LEFT" relativeTo="QuestProgressItem1" relativePoint="RIGHT">
-												<Offset>
-													<AbsDimension x="2" y="0"/>
-												</Offset>
-											</Anchor>
+											<Anchor point="LEFT" relativeTo="QuestProgressItem1" relativePoint="RIGHT" x="2" y="0"/>
 										</Anchors>
 									</Button>
 									<Button name="QuestProgressItem3" inherits="QuestItemTemplate" id="3">
 										<Anchors>
-											<Anchor point="TOP" relativeTo="QuestProgressItem1" relativePoint="BOTTOM">
-												<Offset>
-													<AbsDimension x="0" y="-3"/>
-												</Offset>
-											</Anchor>
+											<Anchor point="TOP" relativeTo="QuestProgressItem1" relativePoint="BOTTOM" x="0" y="-3"/>
 										</Anchors>
 									</Button>
 									<Button name="QuestProgressItem4" inherits="QuestItemTemplate" id="4">
 										<Anchors>
-											<Anchor point="LEFT" relativeTo="QuestProgressItem3" relativePoint="RIGHT">
-												<Offset>
-													<AbsDimension x="2" y="0"/>
-												</Offset>
-											</Anchor>
+											<Anchor point="LEFT" relativeTo="QuestProgressItem3" relativePoint="RIGHT" x="2" y="0"/>
 										</Anchors>
 									</Button>
 									<Button name="QuestProgressItem5" inherits="QuestItemTemplate" id="5">
 										<Anchors>
-											<Anchor point="TOP" relativeTo="QuestProgressItem3" relativePoint="BOTTOM">
-												<Offset>
-													<AbsDimension x="0" y="-3"/>
-												</Offset>
-											</Anchor>
+											<Anchor point="TOP" relativeTo="QuestProgressItem3" relativePoint="BOTTOM" x="0" y="-3"/>
 										</Anchors>
 									</Button>
 									<Button name="QuestProgressItem6" inherits="QuestItemTemplate" id="6">
 										<Anchors>
-											<Anchor point="LEFT" relativeTo="QuestProgressItem5" relativePoint="RIGHT">
-												<Offset>
-													<AbsDimension x="2" y="0"/>
-												</Offset>
-											</Anchor>
+											<Anchor point="LEFT" relativeTo="QuestProgressItem5" relativePoint="RIGHT" x="2" y="0"/>
 										</Anchors>
 									</Button>
 								</Frames>
@@ -334,17 +282,16 @@
 					<OnLoad function="QuestFrameGreetingPanel_OnLoad"/>
 					<OnShow function="QuestFrameGreetingPanel_OnShow"/>
 				</Scripts>
- 			</Frame>
- 		</Frames>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad function="QuestFrame_OnLoad"/>
 			<OnEvent function="QuestFrame_OnEvent"/>
 			<OnShow function="QuestFrame_OnShow"/>
 			<OnHide function="QuestFrame_OnHide"/>
 		</Scripts>
- 	</Frame>
-	
-	<PlayerModel name="QuestNPCModel" enableMouse="true" hidden="true">
+	</Frame>
+	<PlayerModel name="QuestNPCModel" mixin ="QuestNPCModelFrameMixin" enableMouse="true" hidden="true">
 		<Size x="198" y="230"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -471,7 +418,6 @@
 							<TexCoords left="0.00390625" right="0.77343750" top="0.00195313" bottom="0.126953125"/>	
 						</Texture>
 					</Layer>
-
 					<Layer level="OVERLAY">
 						<Texture name="QuestNPCModelTextBotLeftCorner" inherits="UI-Frame-BotCornerLeft" parentKey="BorderBottomLeft">
 							<Anchors>
@@ -549,13 +495,5 @@
 				</Scripts>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad>
-				Model_OnLoad(self);
-				self:SetPortraitZoom(0.6);
-				self:SetRotation(0);
-			</OnLoad>
-			<OnEvent function="Model_OnEvent"/>
-		</Scripts>
 	</PlayerModel>
- </Ui>
+</Ui>

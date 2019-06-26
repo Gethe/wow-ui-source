@@ -178,9 +178,10 @@
 					<Frame parentKey="MissionList" inherits="GarrisonMissionListTemplate" mixin="OrderHallMissionListMixin" name="$parentMissions">
 						<Scripts>
 							<OnLoad inherit="prepend">
-								self.CompleteDialog:ClearAllPoints();
-								self.CompleteDialog:SetPoint("TOPLEFT", -34, 63);
-								self.CompleteDialog:SetSize(961, 660);
+								self.CompleteDialog.Background:ClearAllPoints();
+								self.CompleteDialog.Background:SetPoint("TOPLEFT", -1, 20);
+								self.CompleteDialog.Background:SetPoint("BOTTOMRIGHT", 4, -3);
+								self.CompleteDialog.Background:SetSize(961, 660);
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -228,7 +229,11 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture setAllPoints="true">
+						<Texture>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-1" y="20"/>
+								<Anchor point="BOTTOMRIGHT" x="4" y="-3"/>
+							</Anchors>
 							<Color r="0" g="0" b="0" a="0.8"/>
 						</Texture>
 					</Layer>

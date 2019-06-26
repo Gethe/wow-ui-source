@@ -1,6 +1,4 @@
-## Interface: 80100
 ## Title: Blizzard World Map UI
-## Secure: 1
 ## Author: Blizzard Entertainment
 ## RequiredDep: Blizzard_MapCanvas, Blizzard_SharedMapDataProviders
 ## LoadOnDemand: 0

@@ -1,6 +1,4 @@
-## Interface: 80100
 ## Title: Blizzard_Commentator
-## Secure: 1
 ## SavedVariables: g_TeamDefinitions, g_TeamDisplaySavedVars
 ## LoadOnDemand: 1
 

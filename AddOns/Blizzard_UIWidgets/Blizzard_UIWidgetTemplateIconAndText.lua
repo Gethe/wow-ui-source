@@ -28,9 +28,9 @@ function UIWidgetTemplateIconAndTextMixin:OnAcquired(widgetInfo)
 	self:SetWidth(widgetWidth);
 end
 
-function UIWidgetTemplateIconAndTextMixin:Setup(widgetInfo)
-	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
-	SetupTextureKits(widgetInfo.textureKitID, self, textureKitRegions, true);
+function UIWidgetTemplateIconAndTextMixin:Setup(widgetInfo, widgetContainer)
+	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
+	SetupTextureKits(widgetInfo.textureKitID, self, textureKitRegions, TextureKitConstants.SetVisiblity);
 
 	self.Text:SetText(widgetInfo.text);
 	self:SetTooltip(widgetInfo.tooltip);

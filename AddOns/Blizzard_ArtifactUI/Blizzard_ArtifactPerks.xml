@@ -2,66 +2,10 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ArtifactPerks.lua"/>
 
-	<Frame name="ArtifactDependencyLineTemplate" frameLevel="1200" parentArray="DependencyLines" mixin="ArtifactLineMixin" virtual="true">
-		<Layers>
-			<Layer level="OVERLAY" textureSubLevel="-3">
-				<Line parentKey="Background" file="Interface/Artifacts/_Artifacts-DependencyBar-BG" thickness="12" hWrapMode="REPEAT" alpha="0" />
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="-2">
-				<Line parentKey="Fill" file="Interface/Artifacts/_Artifacts-DependencyBar-Fill" thickness="12" hWrapMode="REPEAT" alpha="0" />
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="-1">
-				<Line parentKey="FillScroll1" file="Interface/Artifacts/_Artifacts-DependencyBar-FillScroll1" thickness="12" hWrapMode="REPEAT" alphaMode="ADD" alpha="0" />
-				<Line parentKey="FillScroll2" file="Interface/Artifacts/_Artifacts-DependencyBar-FillScroll2" thickness="12" hWrapMode="REPEAT" alphaMode="ADD" alpha="0" />
-			</Layer>
-		</Layers>
-		<Animations>
-			<AnimationGroup parentKey="ScrollAnim" setToFinalAlpha="true" looping="REPEAT">
-				<TextureCoordTranslation childKey="FillScroll1" duration="8" order="1" offsetU="1" offsetV="0" />
-				<TextureCoordTranslation childKey="FillScroll2" duration="8" order="1" offsetU="-1" offsetV="0" />
-			</AnimationGroup>
-			<AnimationGroup parentKey="FadeAnim" setToFinalAlpha="true">
-				<Alpha parentKey="Background" childKey="Background" duration=".25" order="0"/>
-				<Alpha parentKey="Fill" childKey="Fill" duration=".25" order="0"/>
-				<Alpha parentKey="FillScroll1" childKey="FillScroll1" duration=".25" order="0"/>
-				<Alpha parentKey="FillScroll2" childKey="FillScroll2" duration=".25" order="0"/>
-			</AnimationGroup>
-			<AnimationGroup parentKey="RevealAnim" setToFinalAlpha="true">
-				<Alpha parentKey="Start1" childKey="FillScroll1" duration=".001" order="1" fromAlpha="0" toAlpha="0"/>
-				<Alpha parentKey="Start2" childKey="FillScroll2" duration=".001" order="1" fromAlpha="0" toAlpha="0"/>
-				
-				<Alpha childKey="Fill" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
-				<LineScale parentKey="LineScale" childKey="Fill" smoothing="IN" duration="0.75" order="2" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
-				<Alpha childKey="Fill" duration="1" order="3" fromAlpha="1" toAlpha="0"/>
-				<Alpha childKey="Background" smoothing="OUT" duration="0.75" order="3" fromAlpha="0" toAlpha="1"/>
-			</AnimationGroup>
-		</Animations>
-	</Frame>
+	<Frame name="ArtifactDependencyLineTemplate" frameLevel="1200" parentArray="DependencyLines" inherits="PowerDependencyLineTemplate" mixin="ArtifactLineMixin" virtual="true"/>
 
-	<Frame name="ArtifactCurvedDependencyLineTemplate" frameLevel="1200" parentArray="CurvedDependencyLines" mixin="ArtifactLineMixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="IsCurved" type="boolean" value="true"/>
-		</KeyValues>
-		<Layers>
-			<Layer level="OVERLAY" textureSubLevel="-3">
-				<Texture parentKey="Background" file="Interface/Artifacts/_Artifacts-DependencyBar-BG" hWrapMode="REPEAT" alpha="0" />
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="-2">
-				<Texture parentKey="Fill" file="Interface/Artifacts/_Artifacts-DependencyBar-Fill" hWrapMode="REPEAT" alpha="0" />
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="-1">
-				<Texture parentKey="FillScroll1" file="Interface/Artifacts/_Artifacts-DependencyBar-FillScroll1" hWrapMode="REPEAT" alphaMode="ADD" alpha="0" />
-			</Layer>
-		</Layers>
+	<Frame name="ArtifactCurvedDependencyLineTemplate" frameLevel="1200" parentArray="CurvedDependencyLines" inherits="PowerDependencyCurvedLineTemplate" mixin="ArtifactLineMixin" virtual="true">
 		<Animations>
-			<AnimationGroup parentKey="ScrollAnim" setToFinalAlpha="true" looping="REPEAT">
-				<TextureCoordTranslation childKey="FillScroll1" duration="8" order="1" offsetU="1" offsetV="0" />
-			</AnimationGroup>
-			<AnimationGroup parentKey="FadeAnim" setToFinalAlpha="true">
-				<Alpha parentKey="Background" childKey="Background" duration=".25" order="0"/>
-				<Alpha parentKey="Fill" childKey="Fill" duration=".25" order="0"/>
-				<Alpha parentKey="FillScroll1" childKey="FillScroll1" duration=".25" order="0"/>
-			</AnimationGroup>
 			<AnimationGroup parentKey="Tier2FadeInAnim" setToFinalAlpha="true">
 				<Alpha parentKey="Background" childKey="Background" fromAlpha="0" toAlpha="1" duration=".5" order="0"/>
 				<Alpha parentKey="Fill" childKey="Fill" fromAlpha="0" toAlpha="1" duration=".5" order="0"/>

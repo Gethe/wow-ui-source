@@ -198,6 +198,16 @@
 		 </Frames>
 	 </Button>
 
+	 <Button name="QuestInfoHonorFrameScriptTemplate" virtual="true">
+		 <Scripts>
+			 <OnEnter>
+				 GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				 GameTooltip:SetCurrencyByID(Constant.Currency.Honor);
+			 </OnEnter>
+			 <OnLeave function="GameTooltip_Hide" />
+		 </Scripts>
+	 </Button>
+
 	<Frame name="QuestInfoObjectivesFrame" hidden="true">
 		<Size x="285" y="10"/>
 		<Anchors>
@@ -300,7 +310,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="HonorFrame" inherits="LargeItemButtonTemplate" hidden="true"/>
+			<Button parentKey="HonorFrame" inherits="LargeItemButtonTemplate, QuestInfoHonorFrameScriptTemplate" hidden="true"/>
 			<Button parentArray="RewardButtons" name="$parentQuestInfoItem1" inherits="LargeQuestRewardItemButtonTemplate" hidden="true"/>
 			<Frame parentKey="MoneyFrame" name="QuestInfoMoneyFrame" inherits="MoneyFrameTemplate">
 				<Anchors>
@@ -491,7 +501,7 @@
 			</Frame>
 			<Button parentArray="RewardButtons" name="$parentQuestInfoItem1" inherits="SmallQuestRewardItemButtonTemplate" hidden="true"/>
 			<Button parentKey="XPFrame" inherits="SmallItemButtonTemplate" hidden="true"/>
-            <Button parentKey="HonorFrame" inherits="SmallItemButtonTemplate" hidden="true"/>
+			<Button parentKey="HonorFrame" inherits="SmallItemButtonTemplate, QuestInfoHonorFrameScriptTemplate" hidden="true"/>
 			<Button parentKey="ArtifactXPFrame" inherits="SmallItemButtonTemplate" hidden="true">
 				<Layers>
 					<Layer level="BORDER">

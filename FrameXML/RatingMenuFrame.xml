@@ -1,50 +1,25 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Frame name="RatingMenuFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
-		<Size>
-			<AbsDimension x="288" y="224"/>
-		</Size>
+		<Size x="288" y="224"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="RatingMenuFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Size>
-						<AbsDimension x="256" y="64"/>
-					</Size>
+					<Size x="256" y="64"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="12"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="12"/>
 					</Anchors>
 				</Texture>
 				<FontString inherits="GameFontNormal" text="RATINGS_MENU">
 					<Anchors>
-						<Anchor point="TOP" relativeTo="RatingMenuFrameHeader">
-							<Offset>
-								<AbsDimension x="0" y="-14"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" relativeTo="RatingMenuFrameHeader" x="0" y="-14"/>
 					</Anchors>
 				</FontString>
 				<Texture name="RatingMenuAge">
-					<Size>
-						<AbsDimension x="80" y="80"/>
-					</Size>
+					<Size x="80" y="80"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeTo="RatingMenuFrame" relativePoint="TOPRIGHT">
 							<Offset x="-10" y="-30"/>
@@ -52,9 +27,7 @@
 					</Anchors>
 				</Texture>
 				<FontString name="RatingMenuFrameText" inherits="GameFontNormal" justifyH="RIGHT" text="RATINGS_TEXT">
-					<Size>
-						<AbsDimension x="150" y="80"/>
-					</Size>
+					<Size x="150" y="80"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeTo="RatingMenuAge" relativePoint="TOPLEFT">
 							<Offset x="-10" y="0"/>
@@ -62,9 +35,7 @@
 					</Anchors>
 				</FontString>
 				<Texture name="RatingMenuDrugs">
-					<Size>
-						<AbsDimension x="64" y="64"/>
-					</Size>
+					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="RatingMenuAge" relativePoint="BOTTOM">
 							<Offset x="4" y="-5"/>
@@ -72,9 +43,7 @@
 					</Anchors>
 				</Texture>
 				<Texture name="RatingMenuViolence">
-					<Size>
-						<AbsDimension x="64" y="64"/>
-					</Size>
+					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="RIGHT" relativeTo="RatingMenuDrugs" relativePoint="LEFT">
 							<Offset x="-5" y="0"/>
@@ -82,9 +51,7 @@
 					</Anchors>
 				</Texture>
 				<Texture name="RatingMenuCrime">
-					<Size>
-						<AbsDimension x="64" y="64"/>
-					</Size>
+					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="RIGHT" relativeTo="RatingMenuViolence" relativePoint="LEFT">
 							<Offset x="-5" y="0"/>
@@ -94,16 +61,11 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<Button name="RatingMenuButtonOkay" inherits="OptionsButtonTemplate" text="OKAY">
-				<Size>
-					<AbsDimension x="100" y="21"/>
-				</Size>
+				<Size x="100" y="21"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-16" y="16"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMRIGHT" x="-16" y="16"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

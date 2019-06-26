@@ -119,9 +119,6 @@ function PVPTimerFrame_OnUpdate(self, elapsed)
 	
 	BATTLEFIELD_SHUTDOWN_TIMER = BATTLEFIELD_SHUTDOWN_TIMER - elapsed;
 
-	-- Set the time for the score frame
-	WorldStateScoreFrameTimer:SetFormattedText(SecondsToTimeAbbrev(BATTLEFIELD_SHUTDOWN_TIMER));
-
 	-- Check if I should send a message only once every 3 seconds (BATTLEFIELD_TIMER_DELAY)
 	frame.timerDelay = frame.timerDelay + elapsed;
 	if ( frame.timerDelay < BATTLEFIELD_TIMER_DELAY ) then

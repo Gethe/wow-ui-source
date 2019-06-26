@@ -198,10 +198,6 @@ function QuestLogOwnerMixin:SetFocusedQuestID(questID)
 	-- override in your mixin
 end
 
-function QuestLogOwnerMixin:GetFocusedQuestID()
-	-- override in your mixin
-end
-
 function QuestLogOwnerMixin:ClearFocusedQuestID()
 	-- override in your mixin
 end

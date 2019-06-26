@@ -205,6 +205,15 @@ local CommentatorFrame =
 			},
 		},
 		{
+			Name = "GetElapsedMs",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "timeLeft", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetExcludeDistance",
 			Type = "Function",
 

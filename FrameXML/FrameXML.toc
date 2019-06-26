@@ -1,16 +1,14 @@
-# Do not delete the following line!
-## Interface: 80100
-
-## first
 ..\SharedXML\SharedConstants.lua
 
 ## add C namespace augmentations here
 ..\SharedXML\C_TimerAugment.lua
 
 ## add snippets independent of modules here
+..\SharedXML\Mixin.lua
 ..\SharedXML\Util.lua
+..\SharedXML\SecureUtil.lua
 ..\SharedXML\TimeUtil.lua
-..\SharedXML\AnchorUtil.xml
+..\SharedXML\NineSlice.lua
 ..\SharedXML\EasingUtil.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
@@ -28,6 +26,7 @@
 ..\SharedXML\KeyCommand.lua
 ..\SharedXML\CustomBindingButtonMixin.lua
 ..\SharedXML\PixelUtil.lua
+..\SharedXML\TableBuilder.lua
 MixinUtil.lua
 
 ## intrinsics
@@ -39,6 +38,7 @@ MixinUtil.lua
 ..\SharedXML\FrameStack.lua
 
 AnimatedStatusBar.xml
+PowerDependencyLine.xml
 FlowContainer.lua
 FrameLocks.lua
 PlayerMovementFrameFader.lua
@@ -68,11 +68,13 @@ QuestUtils.lua
 AchievementUtil.lua
 MapUtil.lua
 AzeriteUtil.lua
+AzeriteEssenceUtil.lua
 VehicleUtil.lua
 AuraUtil.lua
 CalendarUtil.lua
 CommunitiesUtil.lua
 ItemUtil.lua
+ItemDisplay.xml
 CurrencyContainer.lua
 ## IME.xml needs to be loaded after UIParent.xml
 ..\SharedXML\IME.xml
@@ -80,7 +82,6 @@ MoneyFrame.lua
 MoneyFrame.xml
 MoneyInputFrame.lua
 MoneyInputFrame.xml
-..\SharedXML\PanelThemes.lua
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\SharedBasicControls.xml
@@ -98,7 +99,15 @@ UIPanelTemplates.xml
 SecureTemplates.xml
 SecureHandlerTemplates.xml
 SecureGroupHeaders.xml
+..\SharedXML\SharedAnimations.xml
+..\SharedXML\StaticModelInfo.lua
+..\SharedXML\ModelFrameTemplates.xml
 ..\SharedXML\ModelFrames.xml
+..\SharedXML\DressUpModelFrameMixin.lua
+..\SharedXML\CharacterModelFrameMixin.lua
+PetStableModelMixin.lua
+QuestNPCModelFrameMixin.lua
+TabardModelFrameMixin.lua
 WardrobeOutfits.xml
 DressUpFrames.xml
 ItemButtonTemplate.xml
@@ -136,6 +145,7 @@ ZoneText.xml
 BuilderSpenderFrame.xml
 UnitFrame.xml
 Cooldown.xml
+PVPUITemplates.xml
 PVPHonorSystem.xml
 ActionBarController.xml
 TutorialFrame.xml
@@ -208,7 +218,6 @@ PetStable.xml
 VehicleSeatIndicator.xml
 DurabilityFrame.xml
 BattlegroundChatFilters.xml
-WorldStateFrame.xml
 PVEFrame.xml
 LFGFrame.xml
 LFDFrame.xml
@@ -266,6 +275,7 @@ AzeriteIslandsToast.xml
 SplashFrame.xml
 QuestChoiceFrameMixin.lua
 AzeriteEmpoweredItemDataSource.lua
+GuildUtil.lua
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

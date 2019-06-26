@@ -177,9 +177,9 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, owne
 		self.StartWorkOrderButton:SetEnabled(self.available > 0);
 
 		if UnitExists("npc") then
-			PortraitFrameTemplate_SetPortraitToUnit(self, "npc");
+			self:SetPortraitToUnit("npc");
 		else
-			PortraitFrameTemplate_SetPortraitToAsset(self, "Interface\\QuestFrame\\UI-QuestLog-BookIcon");
+			self:SetPortraitToAsset("Interface\\QuestFrame\\UI-QuestLog-BookIcon");
 		end
 
 	    local followerName = C_Garrison.GetFollowerInfoForBuilding(self.plotID);

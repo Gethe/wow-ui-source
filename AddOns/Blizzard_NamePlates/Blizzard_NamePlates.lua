@@ -223,6 +223,7 @@ function NamePlateDriverMixin:SetupClassNameplateBars()
 		local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player", issecure());
 		if namePlatePlayer then
 			self.classNamePlatePowerBar:SetParent(namePlatePlayer);
+			self.classNamePlatePowerBar:ClearAllPoints();
 			self.classNamePlatePowerBar:SetPoint("TOPLEFT", namePlatePlayer.UnitFrame.healthBar, "BOTTOMLEFT", 0, 0);
 			self.classNamePlatePowerBar:SetPoint("TOPRIGHT", namePlatePlayer.UnitFrame.healthBar, "BOTTOMRIGHT", 0, 0);
 			self.classNamePlatePowerBar:Show();
@@ -377,7 +378,7 @@ function NamePlateBaseMixin:OnAdded(namePlateUnitToken, driverFrame)
 	CompactUnitFrame_SetUnit(self.UnitFrame, namePlateUnitToken);
 
 	self:ApplyOffsets();
-	
+
 	if C_Commentator.IsSpectating() then
 		self.UnitFrame.BuffFrame:SetActive(false);
 		if self.UnitFrame.CommentatorDisplayInfo then
@@ -505,6 +506,13 @@ end
 function NameplateBuffContainerMixin:UpdateAnchor()
 	local isTarget = self:GetParent().unit and UnitIsUnit(self:GetParent().unit, "target");
 	local targetYOffset = self:GetBaseYOffset() + (isTarget and self:GetTargetYOffset() or 0.0);
+	self:ClearAllPoints();
+	local parent = self:GetParent();
+	local healthBar = parent and parent.healthBar;
+	if healthBar then
+		self:SetPoint("LEFT", healthBar, "LEFT", -1, 0);
+	end
+
 	if (self:GetParent().unit and ShouldShowName(self:GetParent())) then
 		self:SetPoint("BOTTOM", self:GetParent(), "TOP", 0, targetYOffset);
 	else
@@ -531,10 +539,10 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter, showAll)
 				self.buffList[i]:Hide();
 			end
 		end
-		
+
 		return;
 	end
-	
+
 	self.unit = unit;
 	self.filter = filter;
 	self:UpdateAnchor();
@@ -618,19 +626,23 @@ function NamePlateBorderTemplateMixin:UpdateSizes()
 	local upwardExtendHeightMinPixels = self.upwardExtendHeightMinPixels or minPixels;
 
 	PixelUtil.SetWidth(self.Left, borderSize, minPixels);
+	self.Left:ClearAllPoints();
 	PixelUtil.SetPoint(self.Left, "TOPRIGHT", self, "TOPLEFT", 0, upwardExtendHeightPixels, 0, upwardExtendHeightMinPixels);
 	PixelUtil.SetPoint(self.Left, "BOTTOMRIGHT", self, "BOTTOMLEFT", 0, -borderSize, 0, minPixels);
 
 	PixelUtil.SetWidth(self.Right, borderSize, minPixels);
+	self.Right:ClearAllPoints();
 	PixelUtil.SetPoint(self.Right, "TOPLEFT", self, "TOPRIGHT", 0, upwardExtendHeightPixels, 0, upwardExtendHeightMinPixels);
 	PixelUtil.SetPoint(self.Right, "BOTTOMLEFT", self, "BOTTOMRIGHT", 0, -borderSize, 0, minPixels);
 
 	PixelUtil.SetHeight(self.Bottom, borderSize, minPixels);
+	self.Bottom:ClearAllPoints();
 	PixelUtil.SetPoint(self.Bottom, "TOPLEFT", self, "BOTTOMLEFT", 0, 0);
 	PixelUtil.SetPoint(self.Bottom, "TOPRIGHT", self, "BOTTOMRIGHT", 0, 0);
 
 	if self.Top then
 		PixelUtil.SetHeight(self.Top, borderSize, minPixels);
+		self.Top:ClearAllPoints();
 		PixelUtil.SetPoint(self.Top, "BOTTOMLEFT", self, "TOPLEFT", 0, 0);
 		PixelUtil.SetPoint(self.Top, "BOTTOMRIGHT", self, "TOPRIGHT", 0, 0);
 	end

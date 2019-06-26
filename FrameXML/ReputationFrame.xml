@@ -434,17 +434,6 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="ReputationFrame" relativePoint="TOPRIGHT" x="0" y="-28"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="ReputationDetailFactionName" inherits="GameFontNormal" justifyH="LEFT" nonspacewrap="true">
@@ -482,6 +471,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 					<Button name="ReputationDetailCloseButton" inherits="UIPanelCloseButton">
 						<Anchors>
 							<Anchor point="TOPRIGHT" x="-3" y="-3"/>

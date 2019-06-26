@@ -437,7 +437,7 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket)
 	else
 		self.overrideOnClick = nil;
 	end
-	
+
 	if clubInfo then
 		if isInvitation then
 			self.Name:SetText(COMMUNITIES_LIST_INVITATION_DISPLAY:format(clubInfo.name));
@@ -509,7 +509,6 @@ function CommunitiesListEntryMixin:SetAddCommunity()
 		if not AddCommunitiesFlow_IsShown() then
 			self:GetCommunitiesFrame():CloseActiveDialogs();
 		end
-		
 		AddCommunitiesFlow_Toggle();
 	end;
 	

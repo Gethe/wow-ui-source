@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_AuthChallengeUI.lua"/>
-	
+
 	<ScopedModifier fullLockdown="true" scriptsUseGivenEnv="true">
 		<EditBox name="AuthChallengeEditBoxTemplate" enableMouse="true" hidden="true" virtual="true">
 			<Size x="163" y="20"/>
@@ -60,42 +60,31 @@
 				<OnTabPressed function="AuthChallengeUI_OnTabPressed"/>
 			</Scripts>
 			<FontString inherits="GameFontHighlightOutline"/>
-		</EditBox>	
+		</EditBox>
 		<Button name="AuthChallengeButtonTemplate" virtual="true">
 			<Size x="120" y="22"/>
 			<ButtonText name="$parentText"/>
 			<NormalTexture file="Interface\Buttons\UI-Panel-Button-Up">
-				<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>				
-			</NormalTexture>			
+				<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
+			</NormalTexture>
 			<PushedTexture file="Interface\Buttons\UI-Panel-Button-Down">
-				<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>				
+				<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 			</PushedTexture>
 			<NormalFont style="GameFontNormal"/>
 			<HighlightFont style="GameFontHighlight"/>
 			<DisabledFont style="GameFontDisable"/>
 			<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 		</Button>
-		
+
 		<Frame name="AuthChallengeFrame" setAllPoints="true" hidden="true" frameStrata="BLIZZARD" enableKeyboard="true" enableMouse="true">
 			<Frames>
 				<Frame parentKey="WaitFrame" hidden="true">
 					<Size x="320" y="148"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
-					</Anchors>				
-					<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-						<BackgroundInsets>
-							<AbsInset left="11" right="12" top="12" bottom="11"/>
-						</BackgroundInsets>
-						<TileSize>
-							<AbsValue val="32"/>
-						</TileSize>
-						<EdgeSize>
-							<AbsValue val="32"/>
-						</EdgeSize>
-					</Backdrop>
+					</Anchors>
 					<Layers>
-						<Layer level="ARTWORK">					
+						<Layer level="ARTWORK">
 							<FontString inherits="GameFontNormalLarge" text="BLIZZARD_CHALLENGE_CONNECTING">
 								<Anchors>
 									<Anchor point="TOP" x="0" y="-73"/>
@@ -104,11 +93,12 @@
 						</Layer>
 					</Layers>
 					<Frames>
+						<Frame parentKey="Border" inherits="SecureDialogBorderTemplate"/>
 						<Frame>
 							<Size x="48" y="48"/>
 							<Anchors>
 								<Anchor point="TOP" x="0" y="-18"/>
-							</Anchors>						
+							</Anchors>
 							<Layers>
 								<Layer level="BACKGROUND">
 									<Texture file="Interface\COMMON\StreamBackground" setAllPoints="true">
@@ -119,7 +109,7 @@
 									<Texture file="Interface\COMMON\StreamFrame" setAllPoints="true"/>
 								</Layer>
 							</Layers>
-						</Frame>					
+						</Frame>
 						<Frame parentKey="AnimFrame">
 							<Size x="48" y="48"/>
 							<Anchors>
@@ -149,27 +139,16 @@
 							<Scripts>
 								<OnClick function="AuthChallengeUI_Cancel"/>
 							</Scripts>
-						</Button>					
+						</Button>
 					</Frames>
 				</Frame>
 				<Frame parentKey="InputFrame" hidden="true">
 					<Size x="500" y="200"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
-					</Anchors>				
-					<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-						<BackgroundInsets>
-							<AbsInset left="11" right="12" top="12" bottom="11"/>
-						</BackgroundInsets>
-						<TileSize>
-							<AbsValue val="32"/>
-						</TileSize>
-						<EdgeSize>
-							<AbsValue val="32"/>
-						</EdgeSize>
-					</Backdrop>
+					</Anchors>
 					<Layers>
-						<Layer level="ARTWORK">					
+						<Layer level="ARTWORK">
 							<FontString parentKey="Prompt" inherits="GameFontNormalLarge">
 								<Size x="460" y="0"/>
 								<Anchors>
@@ -183,7 +162,7 @@
 									<Anchor point="TOP" relativeKey="$parent.Prompt" relativePoint="BOTTOM" x="0" y="-18"/>
 								</Anchors>
 								<Color r="0.510" g="0.773" b="1.0"/>
-							</FontString>							
+							</FontString>
 							<FontString parentKey="Error" inherits="GameFontNormal">
 								<Size x="460" y="0"/>
 								<Anchors>
@@ -192,8 +171,9 @@
 								<Color r="1" g="0.1" b="0.1"/>
 							</FontString>
 						</Layer>
-					</Layers>					
+					</Layers>
 					<Frames>
+						<Frame parentKey="Border" inherits="SecureDialogBorderTemplate"/>
 						<EditBox parentKey="Input1" inherits="AuthChallengeEditBoxTemplate" autoFocus="true">
 							<Anchors>
 								<Anchor point="TOP" relativeKey="$parent.Info" relativePoint="BOTTOM" x="0" y="-38"/>
@@ -213,7 +193,7 @@
 							<Anchors>
 								<Anchor point="TOP" relativeKey="$parent.Input3" relativePoint="BOTTOM" x="0" y="-40"/>
 							</Anchors>
-						</EditBox>							
+						</EditBox>
 						<Button inherits="AuthChallengeButtonTemplate" text="BLIZZARD_CHALLENGE_SUBMIT">
 							<Size x="120" y="22"/>
 							<Anchors>
@@ -231,7 +211,7 @@
 							<Scripts>
 								<OnClick function="AuthChallengeUI_Cancel"/>
 							</Scripts>
-						</Button>						
+						</Button>
 					</Frames>
 				</Frame>
 				<Frame parentKey="DeniedFrame" hidden="true">
@@ -239,22 +219,11 @@
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
-					<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-						<BackgroundInsets>
-							<AbsInset left="11" right="12" top="12" bottom="11"/>
-						</BackgroundInsets>
-						<TileSize>
-							<AbsValue val="32"/>
-						</TileSize>
-						<EdgeSize>
-							<AbsValue val="32"/>
-						</EdgeSize>
-					</Backdrop>
 					<Layers>
 						<Layer level="BORDER">
 							<Texture parentKey="Background" file="Interface\Store\Store-Main">
 								<Size x="188" y="185"/>
-								<TexCoords left="0.18457031" right="0.36816406" top="0.46289063" bottom="0.64355469"/>								
+								<TexCoords left="0.18457031" right="0.36816406" top="0.46289063" bottom="0.64355469"/>
 								<Anchors>
 									<Anchor point="CENTER" x="0" y="50"/>
 								</Anchors>
@@ -282,6 +251,7 @@
 						</Layer>
 					</Layers>
 					<Frames>
+						<Frame parentKey="Border" inherits="SecureDialogBorderTemplate"/>
 						<Button inherits="AuthChallengeButtonTemplate" text="BLIZZARD_CHALLENGE_OKAY">
 							<Size x="120" y="22"/>
 							<Anchors>
@@ -298,22 +268,11 @@
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
-					<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-						<BackgroundInsets>
-							<AbsInset left="11" right="12" top="12" bottom="11"/>
-						</BackgroundInsets>
-						<TileSize>
-							<AbsValue val="32"/>
-						</TileSize>
-						<EdgeSize>
-							<AbsValue val="32"/>
-						</EdgeSize>
-					</Backdrop>
 					<Layers>
 						<Layer level="BORDER">
 							<Texture parentKey="Background" file="Interface\Store\Store-Main">
 								<Size x="188" y="185"/>
-								<TexCoords left="0.18457031" right="0.36816406" top="0.46289063" bottom="0.64355469"/>								
+								<TexCoords left="0.18457031" right="0.36816406" top="0.46289063" bottom="0.64355469"/>
 								<Anchors>
 									<Anchor point="CENTER" x="0" y="50"/>
 								</Anchors>
@@ -341,6 +300,7 @@
 						</Layer>
 					</Layers>
 					<Frames>
+						<Frame parentKey="Border" inherits="SecureDialogBorderTemplate"/>
 						<Button inherits="AuthChallengeButtonTemplate" text="BLIZZARD_CHALLENGE_OKAY">
 							<Size x="120" y="22"/>
 							<Anchors>
@@ -351,12 +311,12 @@
 							</Scripts>
 						</Button>
 					</Frames>
-				</Frame>				
+				</Frame>
 			</Frames>
 			<Scripts>
 				<OnLoad function="AuthChallengeUI_OnLoad"/>
 				<OnKeyDown function="AuthChallengeUI_OnKeyDown"/>
-			</Scripts>			
+			</Scripts>
 		</Frame>
 	</ScopedModifier>
 </Ui>

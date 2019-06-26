@@ -193,6 +193,33 @@
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="TOP" x="0" y="-122" />
 				</Anchors>
+				<Frames>
+					<Frame parentKey="EssenceSlotFrame" hidden="true">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="10" type="number"/>
+						</KeyValues>
+						<Size x="46" y="46"/>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="GlassCover" atlas="heartofazeroth-slot-minor-glass" alphaMode="ADD" setAllPoints="true"/>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="Ring" atlas="heartofazeroth-slot-minor-ring" setAllPoints="true"/>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="EssenceStaminaFrame" hidden="true">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="11" type="number"/>
+						</KeyValues>
+						<Size x="34" y="43"/>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Icon" atlas="heartofazeroth-node-on" setAllPoints="true"/>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
 			</Frame>
 		</Frames>
 		<Layers>

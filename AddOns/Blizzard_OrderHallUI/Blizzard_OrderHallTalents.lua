@@ -37,7 +37,7 @@ StaticPopupDialogs["ORDER_HALL_TALENT_RESEARCH"] = {
 OrderHallTalentFrameMixin = { }
 
 do
-	AnchorUtil.AddNineSliceLayout("BFAOrderTalentHorde", {
+	NineSliceUtil.AddLayout("BFAOrderTalentHorde", {
 		mirrorLayout = true,
 		TopLeftCorner =	{ atlas = "talenttree-horde-corner", x = -7, y = 7, },
 		TopRightCorner =	{ atlas = "talenttree-horde-corner", x = 7, y = 7, },
@@ -49,7 +49,7 @@ do
 		RightEdge = { atlas = "!talenttree-horde-tileright", mirrorLayout = false, },
 	});
 
-	AnchorUtil.AddNineSliceLayout("BFAOrderTalentAlliance", {
+	NineSliceUtil.AddLayout("BFAOrderTalentAlliance", {
 		mirrorLayout = true,
 		TopLeftCorner =	{ atlas = "talenttree-alliance-corner", x = -7, y = 7, },
 		TopRightCorner =	{ atlas = "talenttree-alliance-corner", x = 7, y = 7, },
@@ -87,7 +87,7 @@ do
 	};
 
 	local function SetupBorder(self, styleData)
-		AnchorUtil.ApplyNineSliceLayoutByName(self.NineSlice, styleData.nineSliceLayout);
+		NineSliceUtil.ApplyLayoutByName(self.NineSlice, styleData.nineSliceLayout);
 
 		self.OverlayElements.CornerLogo:SetAtlas(styleData.Portrait, true);
 		self.OverlayElements.CornerLogo:SetPoint("TOPLEFT", self, "TOPLEFT", styleData.portraitOffsetX, styleData.portraitOffsetY);
@@ -119,7 +119,7 @@ do
 			self.Currency.Icon:SetSize(27, 26);
 			self.Background:SetPoint("TOPLEFT", self.Bg, "TOPLEFT", 4, -40);
 
-			AnchorUtil.ApplyNineSliceLayoutByName(self.NineSlice, "PortraitFrameTemplate");
+			NineSliceUtil.ApplyLayoutByName(self.NineSlice, "PortraitFrameTemplate");
 		end
 	end
 end
@@ -131,7 +131,7 @@ function OrderHallTalentFrameMixin:UpdateThemedFrameVisibility(isThemed)
 	self.TitleBg:SetShown(isBase);
 	self.Bg:SetShown(isBase);
 	self.Inset:SetShown(isBase);
-	PortraitFrameTemplate_SetPortraitShown(self, isBase);
+	self:SetPortraitShown(isBase);
 
 	-- Custom themed elements
 	self.OverlayElements.CornerLogo:SetShown(isThemed);
@@ -270,18 +270,18 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		self.Background:SetAtlas(uiTextureKit.."-background");
 		local atlas = uiTextureKit.."-logo";
 		if (C_Texture.GetAtlasInfo(atlas)) then
-			PortraitFrameTemplate_SetPortraitAtlasRaw(self, atlas);
+			self:SetPortraitAtlasRaw(atlas);
 		else
-			PortraitFrameTemplate_SetPortraitToUnit(self, "npc");
+			self:SetPortraitToUnit("npc");
 		end
 	else
 		local _, className, classID = UnitClass("player");
 
 		self.Background:SetAtlas("orderhalltalents-background-"..className);
 		if (not classAgnostic) then
-			PortraitFrameTemplate_SetPortraitToAsset(self, "INTERFACE\\ICONS\\crest_"..className);
+			self:SetPortraitToAsset("INTERFACE\\ICONS\\crest_"..className);
 		else
-			PortraitFrameTemplate_SetPortraitToUnit(self, "npc");
+			self:SetPortraitToUnit("npc");
 		end
 	end
 
