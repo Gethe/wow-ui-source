@@ -234,7 +234,7 @@ function SplashFrame_OnEvent(self, event)
 	end
 
 	if( event == "QUEST_LOG_UPDATE" ) then
-		local shouldForceCurrent = false; 
+		local shouldForceCurrent = true; 
 		local tag = GetSplashFrameTag(shouldForceCurrent);
 		if( self:IsShown() and tag )then
 			SplashFrame_SetStartButtonDisplay( ShouldShowStartButton(SPLASH_SCREENS[tag].questID, tag) );
