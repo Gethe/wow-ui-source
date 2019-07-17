@@ -3057,7 +3057,7 @@ end
 
 function CharSelectEnterWorldButton_OnEnter(button)
 	GlueTooltip:SetOwner(button, "ANCHOR_LEFT", 4, -8);
-	if ( not CharacterSelect_AllowedToEnterWorld() ) then
+	if ( not button:IsEnabled() ) then
 		local hours = GetLaunchETA();
 		if (hours > 0) then
 			text = LAUNCH_ETA:format(hours);
@@ -3065,7 +3065,7 @@ function CharSelectEnterWorldButton_OnEnter(button)
 			text = LAUNCH_ETA_SOON;
 		end
 		
-		GlueTooltip:AddLine(text);
+		GlueTooltip:SetText(text);
 	else
 		GlueTooltip:Hide();
 	end

@@ -190,7 +190,7 @@ function PvPCommentatorMixin:SetDefaultBindings()
 	SetBinding("T", "TOGGLESMOOTHFOLLOWTRANSITIONS");
 	SetBinding("C", "TOGGLECAMERACOLLISION");
 	SetBinding("V", "CYCLEFOLLOWTRANSITONSPEED");
-	SaveBindings(GetCurrentBindingSet());
+	AttemptToSaveBindings(GetCurrentBindingSet());
 end
 
 function PvPCommentatorMixin:SetNeedsFullRefresh(needed)

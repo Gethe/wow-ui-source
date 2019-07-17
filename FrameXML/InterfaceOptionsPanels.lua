@@ -149,7 +149,7 @@ function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, 
 				self.value = value;
 				UIDropDownMenu_SetSelectedValue(self, value);
 				SetModifiedClick("AUTOLOOTTOGGLE", value);
-				SaveBindings(GetCurrentBindingSet());
+				AttemptToSaveBindings(GetCurrentBindingSet());
 				self.tooltip = _G["OPTION_TOOLTIP_AUTO_LOOT_"..value.."_KEY"];
 			end
 		self.GetValue =
@@ -282,7 +282,7 @@ function InterfaceOptionsCombatPanelSelfCastKeyDropDown_OnEvent (self, event, ..
 				self.value = value;
 				UIDropDownMenu_SetSelectedValue(self, value);
 				SetModifiedClick("SELFCAST", value);
-				SaveBindings(GetCurrentBindingSet());
+				AttemptToSaveBindings(GetCurrentBindingSet());
 				self.tooltip = _G["OPTION_TOOLTIP_AUTO_SELF_CAST_"..value.."_KEY"];
 			end;
 		self.GetValue =
@@ -453,7 +453,7 @@ end
 				self.value = value;
 				UIDropDownMenu_SetSelectedValue(self, value);
 				SetModifiedClick("FOCUSCAST", value);
-				SaveBindings(GetCurrentBindingSet());
+				AttemptToSaveBindings(GetCurrentBindingSet());
 				self.tooltip = _G["OPTION_TOOLTIP_FOCUS_CAST_"..value.."_KEY"];
 			end;
 		self.GetValue =
@@ -1192,7 +1192,7 @@ function InterfaceOptionsActionBarsPanelPickupActionKeyDropDown_OnEvent (self, e
 				self.value = value;
 				UIDropDownMenu_SetSelectedValue(self, value);
 				SetModifiedClick("PICKUPACTION", value);
-				SaveBindings(GetCurrentBindingSet());
+				AttemptToSaveBindings(GetCurrentBindingSet());
 				self.tooltip = _G["OPTION_TOOLTIP_PICKUP_ACTION_"..value.."_KEY"];
 			end
 		self.GetValue =

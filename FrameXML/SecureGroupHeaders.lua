@@ -300,7 +300,7 @@ local function GetGroupRosterInfo(kind, index)
 			elseif ( GetPartyAssignment("MAINASSIST", unit) ) then
 				role = "MAINASSIST";
 			end
-			assignedRole = UnitGroupRolesAssigned(unit)
+			assignedRole = "NONE";--UnitGroupRolesAssigned(unit)
 		end
 		subgroup = 1;
 	end

@@ -46,7 +46,7 @@ function InspectHonorFrame_Update()
 	InspectHonorFrameLifeTimeRankValue:SetText(rankName);
 
 	-- Set rank name and number
-	rankName, rankNumber = GetPVPRankInfo(UnitPVPRank("player"));
+	rankName, rankNumber = GetPVPRankInfo(UnitPVPRank("target"));
 	if ( not rankName ) then
 		rankName = NONE;
 	end
@@ -64,13 +64,13 @@ function InspectHonorFrame_Update()
 	end
 	
 	-- Set rank progress and bar color
-	local factionGroup, factionName = UnitFactionGroup("player");
+	local factionGroup, factionName = UnitFactionGroup("target");
 	if ( factionGroup == "Alliance" ) then
 		InspectHonorFrameProgressBar:SetStatusBarColor(0.05, 0.15, 0.36);
 	else
 		InspectHonorFrameProgressBar:SetStatusBarColor(0.63, 0.09, 0.09);
 	end
-	InspectHonorFrameProgressBar:SetValue(GetPVPRankProgress());
+	InspectHonorFrameProgressBar:SetValue(GetInspectPVPRankProgress());
 
 	-- Recenter rank text
 	InspectHonorFrameCurrentPVPTitle:SetPoint("TOP", "InspectHonorFrame", "TOP", - InspectHonorFrameCurrentPVPRank:GetWidth()/2, -83);

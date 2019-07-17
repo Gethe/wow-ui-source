@@ -617,10 +617,10 @@ function SetStoreUIShown(shown)
 end
 
 function OpenDeathRecapUI(id)
-	if (not DeathRecapFrame) then
+	--[[if (not DeathRecapFrame) then
 		DeathRecap_LoadUI();
 	end
-	DeathRecapFrame_OpenRecap(id);
+	DeathRecapFrame_OpenRecap(id);]]
 end
 
 function InspectUnit(unit)
@@ -3702,10 +3702,10 @@ function RefreshBuffs(frame, unit, numBuffs, suffix, checkCVar)
 			buffIcon:SetTexture(icon);
 
 			-- setup the cooldown
-			local coolDown = _G[buffName.."Cooldown"];
+			--[[local coolDown = _G[buffName.."Cooldown"];
 			if ( coolDown ) then
 				CooldownFrame_Set(coolDown, expirationTime - duration, duration, true);
-			end
+			end]]
 
 			-- show the aura
 			_G[buffName]:Show();
@@ -3760,10 +3760,10 @@ function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
 			debuffTotal = debuffTotal + 1;
 
 			-- setup the cooldown
-			local coolDown = _G[debuffName.."Cooldown"];
+			--[[local coolDown = _G[debuffName.."Cooldown"];
 			if ( coolDown ) then
 				CooldownFrame_Set(coolDown, expirationTime - duration, duration, true);
-			end
+			end]]
 
 			-- show the aura
 			_G[debuffName]:Show();
