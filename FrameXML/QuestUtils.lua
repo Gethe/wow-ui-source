@@ -249,12 +249,13 @@ function QuestUtils_GetQuestName(questID)
 	return questName or "";
 end
 
-local function ShouldShowWarModeBonus(questID, currencyID)
+local function ShouldShowWarModeBonus(questID, currencyID, firstInstance)
 	if not C_PvP.IsWarModeDesired() then
 		return false;
 	end
 
-	if not C_CurrencyInfo.DoesWarModeBonusApply(currencyID) then
+	local warModeBonusApplies, limitOncePerTooltip = C_CurrencyInfo.DoesWarModeBonusApply(currencyID);
+	if not warModeBonusApplies or (limitOncePerTooltip and not firstInstance) then
 		return false;
 	end
 
@@ -370,10 +371,15 @@ end
 function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyContainerTooltip)
 	local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
 	local currencies = { };
+	local uniqueCurrencyIDs = { };
 	for i = 1, numQuestCurrencies do
 		local name, texture, numItems, currencyID = GetQuestLogRewardCurrencyInfo(i, questID);
 		local rarity = select(8, GetCurrencyInfo(currencyID));
-		local currencyInfo = { name = name, texture = texture, numItems = numItems, currencyID = currencyID, rarity = rarity };
+		local firstInstance = not uniqueCurrencyIDs[currencyID];
+		if firstInstance then
+			uniqueCurrencyIDs[currencyID] = true;
+		end
+		local currencyInfo = { name = name, texture = texture, numItems = numItems, currencyID = currencyID, rarity = rarity, firstInstance = firstInstance };
 		tinsert(currencies, currencyInfo);
 	end
 
@@ -394,7 +400,7 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 		local isCurrencyContainer = C_CurrencyInfo.IsCurrencyContainer(currencyInfo.currencyID, currencyInfo.numItems);
 		if ( currencyContainerTooltip and isCurrencyContainer and (alreadyUsedCurrencyContainerId == 0) ) then
 			if ( EmbeddedItemTooltip_SetCurrencyByID(currencyContainerTooltip, currencyInfo.currencyID, currencyInfo.numItems) ) then
-				if ShouldShowWarModeBonus(questID, currencyInfo.currencyID) then
+				if ShouldShowWarModeBonus(questID, currencyInfo.currencyID, currencyInfo.firstInstance) then
 					currencyContainerTooltip.Tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE_FORMAT:format(warModeBonus));
 					currencyContainerTooltip.Tooltip:Show();
 				end
@@ -419,7 +425,7 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 					tooltip:AddLine(text, currencyColor:GetRGB());
 				end
 
-				if ShouldShowWarModeBonus(questID, currencyInfo.currencyID) then
+				if ShouldShowWarModeBonus(questID, currencyInfo.currencyID, currencyInfo.firstInstance) then
 					tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE_FORMAT:format(warModeBonus));
 				end
 

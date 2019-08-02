@@ -18,6 +18,7 @@ local CurrencyInfo =
 			Returns =
 			{
 				{ Name = "warModeApplies", Type = "bool", Nilable = true },
+				{ Name = "limitOncePerTooltip", Type = "bool", Nilable = true },
 			},
 		},
 		{
