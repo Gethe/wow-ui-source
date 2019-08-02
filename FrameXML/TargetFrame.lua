@@ -960,6 +960,8 @@ function TargetofTargetHealthCheck(self)
 		else
 			self.portrait:SetVertexColor(1.0, 1.0, 1.0, 1.0);
 		end
+	else
+		self.portrait:SetVertexColor(1.0, 1.0, 1.0, 1.0);
 	end
 end
 

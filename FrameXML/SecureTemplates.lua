@@ -216,8 +216,6 @@ local InitializeSecureMenu = function(self)
 		menu = "VEHICLE";
 	elseif( UnitIsUnit(unit, "pet") ) then
 		menu = "PET";
-	elseif( UnitIsOtherPlayersBattlePet(unit) ) then
-		menu = "OTHERBATTLEPET";
 	elseif( UnitIsOtherPlayersPet(unit) ) then
 		menu = "OTHERPET";
 	-- Last ditch checks

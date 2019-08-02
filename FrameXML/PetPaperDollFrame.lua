@@ -164,6 +164,11 @@ function PetExpBar_Update()
 	local currXP, nextXP = GetPetExperience();
 	PetPaperDollFrameExpBar:SetMinMaxValues(min(0, currXP), nextXP);
 	PetPaperDollFrameExpBar:SetValue(currXP);
+	if (nextXP == 0) then
+		PetPaperDollFrameExpBar:Hide();
+	else
+		PetPaperDollFrameExpBar:Show();
+	end
 end
 
 function PetTab_Update()

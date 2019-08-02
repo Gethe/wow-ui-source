@@ -2663,6 +2663,7 @@ function StoreFrameNextPageButton_OnClick(self)
 end
 
 local VASServiceType = nil;
+local VASServiceCanChangeAccount = nil;
 local SelectedRealm = nil;
 local SelectedCharacter = nil;
 local NewCharacterName = nil;
@@ -2986,6 +2987,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 	end
 
 	VASServiceType = productInfo.sharedData.vasServiceType;
+	VASServiceCanChangeAccount = productInfo.sharedData.canChangeAccount;
 
 	SelectedCharacter = nil;
 	for list, _ in pairs(StoreDropdownLists) do
@@ -4262,7 +4264,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 	elseif (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
 		frame.TransferRealmCheckbox:Show();
 		frame.TransferRealmCheckbox.Label:ApplyFontObjects();
-		if (StoreVASValidationFrame.productInfo.sharedData.canChangeAccount) then
+		if (VASServiceCanChangeAccount) then
 			frame.TransferAccountCheckbox:Show();
 			frame.TransferAccountCheckbox.Label:ApplyFontObjects();
 			frame.TransferFactionCheckbox:ClearAllPoints();
@@ -4283,7 +4285,8 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 		frame.TransferFactionCheckbox:SetChecked(false);
 		SelectedDestinationWowAccount = nil;
 		SelectedDestinationBnetWowAccount = nil;
-		local newFaction;
+		local newFaction = nil;
+		--[[
 		if (character.faction == 0) then
 			newFaction = FACTION_ALLIANCE;
 		elseif (character.faction == 1) then
@@ -4302,6 +4305,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 			local format = info.formatLong;
 			frame.TransferFactionCheckbox.Label:SetText(string.format(BLIZZARD_STORE_VAS_TRANSFER_FACTION_BUNDLE, newFaction, format(diffDollars, diffCents)));
 		end
+		]]--
 		frame.TransferFactionCheckbox:SetShown(newFaction ~= nil);
 		if (frame.TransferFactionCheckbox:IsShown()) then
 			frame.TransferFactionCheckbox.Label:ApplyFontObjects();

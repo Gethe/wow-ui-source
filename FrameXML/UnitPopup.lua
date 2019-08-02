@@ -21,7 +21,7 @@ UnitPopupButtons = {
 	["CANCEL"] = { text = CANCEL, space = 1, isCloseCommand = true, },
 	["CLOSE"] = { text = CLOSE, space = 1, isCloseCommand = true, },
 	["TRADE"] = { text = TRADE, dist = 2 },
-	["INSPECT"] = { text = INSPECT, disabledInKioskMode = false },
+	["INSPECT"] = { text = INSPECT, dist = 1, disabledInKioskMode = false },
 	["TARGET"] = { text = TARGET, },
 	["IGNORE"]	= {
 		text = function(dropdownMenu)

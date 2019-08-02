@@ -1231,7 +1231,7 @@ function UIParent_OnEvent(self, event, ...)
 			if ( lockExpireTime == 0 ) then
 				message = format(RAID_INSTANCE_WELCOME_EXTENDED, dungeonName);
 			else
-				message = format(RAID_INSTANCE_WELCOME_LOCKED, dungeonName, daysLeft, hoursLeft, minutesLeft);
+				message = format(RAID_INSTANCE_WELCOME, dungeonName, daysLeft, hoursLeft, minutesLeft);
 
 			end
 		end

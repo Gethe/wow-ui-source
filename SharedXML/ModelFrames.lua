@@ -146,13 +146,7 @@ function Model_OnUpdate(self, elapsedTime, rotationsPerSecond)
 		local scale = UIParent:GetEffectiveScale();
 		ModelPanningFrame:SetPoint("BOTTOMLEFT", cursorX / scale - 16, cursorY / scale - 16);	-- half the texture size to center it on the cursor
 		-- settings
-		local settings;
-		local hasAlternateForm, inAlternateForm = HasAlternateForm();
-		if ( hasAlternateForm and inAlternateForm ) then
-			settings = ModelSettings[playerRaceSex.."Alt"];
-		else
-			settings = ModelSettings[playerRaceSex];
-		end
+		local settings = ModelSettings[playerRaceSex];
 		
 		local zoom = self.zoomLevel or self.minZoom;
 		zoom = 1 + zoom - self.minZoom;	-- want 1 at minimum zoom

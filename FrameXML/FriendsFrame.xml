@@ -3236,12 +3236,17 @@ TRAVEL PASS
                 </Anchor>
               </Anchors>
             </FontString>
-            <FontString name="GuildMemberDetailZoneText" inherits="GameFontHighlight">
-              <Size x="147" y="12"/>
+            <FontString name="GuildMemberDetailZoneText" inherits="GameFontHighlightLeft">
+              <Size y="12"/>
               <Anchors>
                 <Anchor point="LEFT" relativeTo="GuildMemberDetailZoneLabel" relativePoint="RIGHT">
                   <Offset>
                     <AbsDimension x="2" y="0"/>
+                  </Offset>
+                </Anchor>
+                <Anchor point="RIGHT" relativeTo="GuildMemberDetailFrame" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="-10" y="0"/>
                   </Offset>
                 </Anchor>
               </Anchors>
@@ -3255,11 +3260,17 @@ TRAVEL PASS
                 </Anchor>
               </Anchors>
             </FontString>
-            <FontString name="GuildMemberDetailRankText" inherits="GameFontHighlight">
-              <Anchors>
+            <FontString name="GuildMemberDetailRankText" inherits="GameFontHighlightLeft">
+              <Size y="12"/>
+              <Anchors> <!-- Reanchored in Lua. -->
                 <Anchor point="LEFT" relativeTo="GuildMemberDetailRankLabel" relativePoint="RIGHT">
                   <Offset>
                     <AbsDimension x="2" y="0"/>
+                  </Offset>
+                </Anchor>
+                <Anchor point="RIGHT" relativeTo="GuildMemberDetailFrame" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="-10" y="0"/>
                   </Offset>
                 </Anchor>
               </Anchors>
@@ -3395,8 +3406,8 @@ TRAVEL PASS
               <AbsDimension x="28" y="28"/>
             </Size>
             <Anchors>
-              <Anchor point="LEFT" relativeTo="GuildMemberDetailFrame" relativePoint="RIGHT">
-                <Offset x="-60" y="50"/>
+              <Anchor point="TOPLEFT" relativeTo="GuildMemberDetailFrame" relativePoint="TOPLEFT">
+                <Offset x="155" y="-63"/>
               </Anchor>
             </Anchors>
             <HitRectInsets>

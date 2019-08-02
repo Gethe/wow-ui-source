@@ -56,6 +56,34 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
+	<Frame name="ChatConfigTextBoxTemplate" inherits="ChatConfigBoxTemplate" virtual="true">
+		<Size x="270" y="26"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" parentKey="Text" inherits="GameFontHighlight" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="8" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="ChatConfigTextBoxTemplateWithButton" inherits="ChatConfigTextBoxTemplate" virtual="true">
+		<Frames>
+			<Button name="$parentButton" parentKey="Button" inherits="UIPanelButtonTemplate">
+				<Size>
+					<AbsDimension x="110" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" x="-8" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
 	<Frame name="ChatConfigBoxWithHeaderTemplate" inherits="ChatConfigBoxTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -580,6 +608,14 @@
 						<Size x="10" y="10"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="13" y="-30"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentAvailable" inherits="ChatConfigBoxWithHeaderTemplate">
+						<Size x="10" y="10"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="-25"/>
+							</Anchor>
 						</Anchors>
 					</Frame>
 				</Frames>

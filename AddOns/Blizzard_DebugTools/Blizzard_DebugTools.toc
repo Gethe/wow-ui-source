@@ -4,6 +4,7 @@
 ## Special Thanks: Iriel, Kirov, Esamynn
 ## Version: 1.0
 ## LoadOnDemand: 1
+## AllowLoad: Both
 Dump.lua
 Blizzard_DebugTools.lua
 Blizzard_DebugTools.xml

@@ -104,8 +104,6 @@ ChatTypeInfo["CHANNEL17"]								= { sticky = 1, flashTab = false, flashTabOnGen
 ChatTypeInfo["CHANNEL18"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["CHANNEL19"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["CHANNEL20"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["ACHIEVEMENT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["GUILD_ACHIEVEMENT"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["PARTY_LEADER"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["BN_WHISPER"]								= { sticky = 1, flashTab = true, flashTabOnGeneral = true };
 ChatTypeInfo["BN_WHISPER_INFORM"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
@@ -116,9 +114,6 @@ ChatTypeInfo["BN_INLINE_TOAST_ALERT"]					= { sticky = 0, flashTab = true, flash
 ChatTypeInfo["BN_INLINE_TOAST_BROADCAST"]				= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
 ChatTypeInfo["BN_INLINE_TOAST_BROADCAST_INFORM"]		= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
 ChatTypeInfo["BN_WHISPER_PLAYER_OFFLINE"] 				= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["PET_BATTLE_COMBAT_LOG"]					= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["PET_BATTLE_INFO"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["GUILD_ITEM_LOOTED"]						= ChatTypeInfo["GUILD_ACHIEVEMENT"];
 ChatTypeInfo["COMMUNITIES_CHANNEL"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 
 --NEW_CHAT_TYPE -Add the info here.
@@ -231,9 +226,6 @@ ChatTypeGroup["SKILL"] = {
 ChatTypeGroup["LOOT"] = {
 	"CHAT_MSG_LOOT",
 };
-ChatTypeGroup["CURRENCY"] = {
-	"CHAT_MSG_CURRENCY",
-};
 ChatTypeGroup["MONEY"] = {
 	"CHAT_MSG_MONEY",
 };
@@ -248,13 +240,6 @@ ChatTypeGroup["PET_INFO"] = {
 };
 ChatTypeGroup["COMBAT_MISC_INFO"] = {
 	"CHAT_MSG_COMBAT_MISC_INFO";
-};
-ChatTypeGroup["ACHIEVEMENT"] = {
-	"CHAT_MSG_ACHIEVEMENT";
-};
-ChatTypeGroup["GUILD_ACHIEVEMENT"] = {
-	"CHAT_MSG_GUILD_ACHIEVEMENT",
-	"CHAT_MSG_GUILD_ITEM_LOOTED",
 };
 ChatTypeGroup["CHANNEL"] = {
 	"CHAT_MSG_CHANNEL_JOIN",
@@ -277,12 +262,6 @@ ChatTypeGroup["BN_INLINE_TOAST_ALERT"] = {
 	"CHAT_MSG_BN_INLINE_TOAST_ALERT",
 	"CHAT_MSG_BN_INLINE_TOAST_BROADCAST",
 	"CHAT_MSG_BN_INLINE_TOAST_BROADCAST_INFORM",
-};
-ChatTypeGroup["PET_BATTLE_COMBAT_LOG"] = {
-	"CHAT_MSG_PET_BATTLE_COMBAT_LOG",
-};
-ChatTypeGroup["PET_BATTLE_INFO"] = {
-	"CHAT_MSG_PET_BATTLE_INFO",
 };
 
 --NEW_CHAT_TYPE - Add the chat type above.

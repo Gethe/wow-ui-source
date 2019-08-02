@@ -72,6 +72,7 @@ local THROTTLED_MESSAGE_TYPES = {
 };
 
 local BLACK_LISTED_MESSAGE_TYPES = {
+--[[
 	[LE_GAME_ERR_ABILITY_COOLDOWN] = true,
 	[LE_GAME_ERR_SPELL_COOLDOWN] = true,
 	[LE_GAME_ERR_SPELL_FAILED_ANOTHER_IN_PROGRESS] = true,
@@ -94,6 +95,7 @@ local BLACK_LISTED_MESSAGE_TYPES = {
 	[LE_GAME_ERR_OUT_OF_RUNES] = true,
 	[LE_GAME_ERR_OUT_OF_FURY] = true,
 	[LE_GAME_ERR_OUT_OF_MAELSTROM] = true,
+]]
 };
 
 function UIErrorsMixin:FlashFontString(fontString)
