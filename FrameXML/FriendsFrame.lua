@@ -502,8 +502,9 @@ function FriendsList_CanWhisperFriend(friendType, friendIndex)
 end
 
 function FriendsList_Update(forceUpdate)
-	local numBNetTotal, numBNetOnline = BNGetNumFriends();
+	local numBNetTotal, numBNetOnline, numBNetFavorite, numBNetFavoriteOnline = BNGetNumFriends();
 	local numBNetOffline = numBNetTotal - numBNetOnline;
+	local numBNetFavoriteOffline = numBNetFavorite - numBNetFavoriteOnline;
 	local numWoWTotal = C_FriendList.GetNumFriends();
 	local numWoWOnline = C_FriendList.GetNumOnlineFriends();
 	local numWoWOffline = numWoWTotal - numWoWOnline;
@@ -515,6 +516,7 @@ function FriendsList_Update(forceUpdate)
 
 	local addButtonIndex = 0;
 	local totalButtonHeight = 0;
+	
 	local function AddButtonInfo(buttonType, id)
 		addButtonIndex = addButtonIndex + 1;
 		if ( not FriendListEntries[addButtonIndex] ) then
@@ -539,9 +541,21 @@ function FriendsList_Update(forceUpdate)
 			end
 		end
 	end
+
+	local bnetFriendIndex = 0;
+	-- favorite friends, online and offline
+	for i = 1, numBNetFavorite do
+		bnetFriendIndex = bnetFriendIndex + 1;
+		AddButtonInfo(FRIENDS_BUTTON_TYPE_BNET, bnetFriendIndex);
+	end
+	if (numBNetFavorite > 0) then
+		AddButtonInfo(FRIENDS_BUTTON_TYPE_DIVIDER, nil);
+	end
+	
 	-- online Battlenet friends
-	for i = 1, numBNetOnline do
-		AddButtonInfo(FRIENDS_BUTTON_TYPE_BNET, i);
+	for i = 1, numBNetOnline - numBNetFavoriteOnline do
+		bnetFriendIndex = bnetFriendIndex + 1;
+		AddButtonInfo(FRIENDS_BUTTON_TYPE_BNET, bnetFriendIndex);
 	end
 	-- online WoW friends
 	for i = 1, numWoWOnline do
@@ -551,9 +565,11 @@ function FriendsList_Update(forceUpdate)
 	if ( (numBNetOnline > 0 or numWoWOnline > 0) and (numBNetOffline > 0 or numWoWOffline > 0) ) then
 		AddButtonInfo(FRIENDS_BUTTON_TYPE_DIVIDER, nil);
 	end
+
 	-- offline Battlenet friends
-	for i = 1, numBNetOffline do
-		AddButtonInfo(FRIENDS_BUTTON_TYPE_BNET, i + numBNetOnline);
+	for i = 1, numBNetOffline - numBNetFavoriteOffline do
+		bnetFriendIndex = bnetFriendIndex + 1;
+		AddButtonInfo(FRIENDS_BUTTON_TYPE_BNET, bnetFriendIndex);
 	end
 	-- offline WoW friends
 	for i = 1, numWoWOffline do

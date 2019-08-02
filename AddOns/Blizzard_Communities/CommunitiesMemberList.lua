@@ -444,12 +444,12 @@ function CommunitiesMemberListMixin:OnLoad()
 	self.ListScrollFrame.scrollBar:SetValue(0);
 
 	self:SetGuildColumnIndex(EXTRA_GUILD_COLUMN_ACHIEVEMENT);
+	self:SetExpandedDisplay(false);
 end
 
 function CommunitiesMemberListMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, COMMUNITIES_MEMBER_LIST_EVENTS);
 
-	self:SetExpandedDisplay(false);
 	self:UpdateMemberList();
 
 	local function StreamSelectedCallback(event, streamId)
