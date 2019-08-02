@@ -771,7 +771,7 @@ function AnchorHighlightMixin:HighlightFrame(baseFrame, showAnchors)
 	AnchorHighlight(baseFrame, self);
 
 	local pointIndex = 1;
-	if (showAnchors and baseFrame.GetNumPoints) then
+	if (showAnchors and baseFrame.GetNumPoints and baseFrame.GetPoint) then -- TODO: Fix for lines
 		while pointIndex <= baseFrame:GetNumPoints() do
 			local _, anchorFrame, anchorRelativePoint = baseFrame:GetPoint(pointIndex);
 			AnchorHighlight(anchorFrame, self:RetrieveAnchorHighlight(pointIndex), anchorRelativePoint);

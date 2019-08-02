@@ -337,7 +337,7 @@
 					</Slider>
 				</Frames>
 			</ScrollFrame>
-			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate">
+			<Frame parentKey="DropDown" hidden="true" inherits="UIDropDownMenuTemplate">
 				<Scripts>
 					<OnLoad function="CommunitiesMemberListDropDown_OnLoad"/>
 					<OnHide function="CommunitiesMemberListDropDown_OnHide"/>
@@ -367,6 +367,43 @@
 
 	<Frame name="GuildMemberListDropDownMenuTemplate" inherits="UIDropDownMenuTemplate" mixin="GuildMemberListDropDownMenuMixin" virtual="true">
 		<Size x="40" y="28"/>
+		<Frames>
+			<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="UnreadNotificationIcon" atlas="communities-icon-notification">
+							<Size x="11" y="11"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="-19" y="-4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="CommunityMemberListDropDownMenuTemplate" inherits="UIDropDownMenuTemplate" mixin="CommunityMemberListDropDownMenuMixin" virtual="true">
+		<Size x="40" y="28"/>
+		<Frames>
+			<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="UnreadNotificationIcon" atlas="communities-icon-notification">
+							<Size x="11" y="11"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="-19" y="-4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>

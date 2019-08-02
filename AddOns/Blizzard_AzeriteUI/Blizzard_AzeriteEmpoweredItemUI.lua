@@ -123,7 +123,15 @@ function AzeriteEmpoweredItemUIMixin:OnTierAnimationStateChanged(tierFrame, anim
 
 		if tierFrame:IsFirstTier() and tierFrame:HasAnySelected() then
 			if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_FIRST_POWER_LOCKED_IN) then
-				self.FirstPowerLockedInHelpBox:Show();
+				local helpTipInfo = {
+					text = AZERITE_TUTORIAL_FIRST_POWER_LOCKED_IN,
+					buttonStyle = HelpTip.ButtonStyle.Close,
+					cvarBitfield = "closedInfoFrames",
+					bitfieldFlag = LE_FRAME_TUTORIAL_AZERITE_FIRST_POWER_LOCKED_IN,
+					targetPoint = HelpTip.Point.RightEdgeCenter,
+					offsetX = 10,
+				};
+				HelpTip:Show(self, helpTipInfo, tierFrame.tierSlot);
 			end
 		end
 	end
@@ -223,7 +231,7 @@ function AzeriteEmpoweredItemUIMixin:Clear()
 	HideAll(self.ClipFrame.BackgroundFrame.KeyOverlay.Slots);
 	HideAll(self.ClipFrame.BackgroundFrame.KeyOverlay.Plugs);
 
-	self.FirstPowerLockedInHelpBox:Hide();
+	HelpTip:Hide(self, AZERITE_TUTORIAL_FIRST_POWER_LOCKED_IN);
 
 	self:MarkDirty();
 

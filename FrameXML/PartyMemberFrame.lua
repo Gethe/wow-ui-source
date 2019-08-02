@@ -474,68 +474,61 @@ function PartyMemberFrame_RefreshPetDebuffs (self, id)
 	RefreshDebuffs(_G["PartyMemberFrame"..id.."PetFrame"], "partypet"..id, nil, nil, true);
 end
 
-function PartyMemberBuffTooltip_Update (self)
-	local name, icon;
+function PartyMemberBuffTooltip_Update(self)
 	local numBuffs = 0;
 	local numDebuffs = 0;
-	local index = 1;
-	local filter;
 
 	PartyMemberBuffTooltip:SetID(self:GetID());
 
-	if ( SHOW_CASTABLE_BUFFS == "1" ) then
-		filter = "RAID";
-	else
-		filter = nil;
-	end
-	for i=1, MAX_PARTY_TOOLTIP_BUFFS do
-		name, icon = UnitBuff(self.unit, i, filter);
+	local filter = ( SHOW_CASTABLE_BUFFS == "1" ) and "HELPFUL|RAID" or "HELPFUL";
+	local index = 1;
+	AuraUtil.ForEachAura(self.unit, filter, MAX_PARTY_TOOLTIP_BUFFS, function(...)
+		local name, icon = ...;
 		if ( icon ) then
-			_G["PartyMemberBuffTooltipBuff"..index.."Icon"]:SetTexture(icon);
-			_G["PartyMemberBuffTooltipBuff"..index]:Show();
+			PartyMemberBuffTooltip.Buff[index].Icon:SetTexture(icon);
+			PartyMemberBuffTooltip.Buff[index]:Show();
 			index = index + 1;
 			numBuffs = numBuffs + 1;
 		end
-	end
+		return index > MAX_PARTY_TOOLTIP_BUFFS
+	end);
+
 	for i=index, MAX_PARTY_TOOLTIP_BUFFS do
-		_G["PartyMemberBuffTooltipBuff"..i]:Hide();
+		PartyMemberBuffTooltip.Buff[i]:Hide();
 	end
 
 	if ( numBuffs == 0 ) then
-		PartyMemberBuffTooltipDebuff1:SetPoint("TOP", "PartyMemberBuffTooltipBuff1", "TOP", 0, 0);
+		PartyMemberBuffTooltip.Debuff[1]:SetPoint("TOP", PartyMemberBuffTooltip.Buff[1], "TOP", 0, 0);
 	elseif ( numBuffs <= 8 ) then
-		PartyMemberBuffTooltipDebuff1:SetPoint("TOP", "PartyMemberBuffTooltipBuff1", "BOTTOM", 0, -2);
+		PartyMemberBuffTooltip.Debuff[1]:SetPoint("TOP", PartyMemberBuffTooltip.Buff[1], "BOTTOM", 0, -2);
 	else
-		PartyMemberBuffTooltipDebuff1:SetPoint("TOP", "PartyMemberBuffTooltipBuff9", "BOTTOM", 0, -2);
+		PartyMemberBuffTooltip.Debuff[1]:SetPoint("TOP", PartyMemberBuffTooltip.Buff[9], "BOTTOM", 0, -2);
 	end
 
+	filter = ( SHOW_DISPELLABLE_DEBUFFS == "1" ) and "HARMFUL|RAID" or "HARMFUL";
 	index = 1;
-
-	local debuffButton, debuffStack, debuffType, color, countdown;
-	if ( SHOW_DISPELLABLE_DEBUFFS == "1" ) then
-		filter = "RAID";
-	else
-		filter = nil;
-	end
-	for i=1, MAX_PARTY_TOOLTIP_DEBUFFS do
-		local debuffBorder = _G["PartyMemberBuffTooltipDebuff"..index.."Border"]
-		local partyDebuff = _G["PartyMemberBuffTooltipDebuff"..index.."Icon"];
-		name, icon, debuffStack, debuffType = UnitDebuff(self.unit, i, filter);
+	AuraUtil.ForEachAura(self.unit, filter, MAX_PARTY_TOOLTIP_DEBUFFS, function(...)
+		local debuffBorder = PartyMemberBuffTooltip.Debuff[index].Border;
+		local partyDebuff = PartyMemberBuffTooltip.Debuff[index].Icon;
+		local name, icon, debuffStack, debuffType = ...;
 		if ( icon ) then
 			partyDebuff:SetTexture(icon);
+			local color;
 			if ( debuffType ) then
 				color = DebuffTypeColor[debuffType];
 			else
 				color = DebuffTypeColor["none"];
 			end
 			debuffBorder:SetVertexColor(color.r, color.g, color.b);
-			_G["PartyMemberBuffTooltipDebuff"..index]:Show();
+			PartyMemberBuffTooltip.Debuff[index]:Show();
 			numDebuffs = numDebuffs + 1;
 			index = index + 1;
 		end
-	end
+		return index > MAX_PARTY_TOOLTIP_DEBUFFS;
+	end);
+
 	for i=index, MAX_PARTY_TOOLTIP_DEBUFFS do
-		_G["PartyMemberBuffTooltipDebuff"..i]:Hide();
+		PartyMemberBuffTooltip.Debuff[i]:Hide();
 	end
 
 	-- Size the tooltip

@@ -59,6 +59,7 @@ function QuestPOI_GetButton(parent, questID, style, index)
 				parent.poiOnCreateFunc(poiButton);
 			end
 		end
+
 		if ( poiButton.style ~= style ) then
 			-- default style is "normal"
 			if ( style == "normal" ) then
@@ -99,10 +100,18 @@ function QuestPOI_GetButton(parent, questID, style, index)
 				poiButton.PushedTexture:SetAlpha(1);
 				poiButton.NormalTexture:SetTexCoord(0.500, 0.625, 0.875, 1.0);
 				poiButton.PushedTexture:SetTexCoord(0.375, 0.500, 0.875, 1.0);
+			elseif ( style == "disabled" ) then
+				poiButton.FullHighlightTexture:Hide();
+				poiButton.IconHighlightTexture:Hide();
+				poiButton.Icon:SetTexCoord(0, 1, 0, 1);
+				poiButton.Icon:SetAtlas("QuestSharing-QuestLog-Padlock", true);
+				poiButton.NormalTexture:SetAlpha(0);
+				poiButton.PushedTexture:SetAlpha(0);
 			end
 		end
 	end
 
+	poiButton:SetEnabled(style ~= "disabled");
 	poiButton.questID = questID;
 	poiButton.style = style;
 	poiButton.used = true;
@@ -216,18 +225,22 @@ function QuestPOI_HideAllButtons(parent)
 end
 
 function QuestPOIButton_OnMouseDown(self)
-	if ( self.style == "numeric" ) then
-		self.Number:SetPoint("CENTER", 1, -1);
-	else
-		self.Icon:SetPoint("CENTER", 0, -1);
+	if self:IsEnabled() then
+		if ( self.style == "numeric" ) then
+			self.Number:SetPoint("CENTER", 1, -1);
+		else
+			self.Icon:SetPoint("CENTER", 0, -1);
+		end
 	end
 end
 
 function QuestPOIButton_OnMouseUp(self)
-	if ( self.style == "numeric" ) then
-		self.Number:SetPoint("CENTER", 0, 0);
-	else
-		self.Icon:SetPoint("CENTER", -1, 0);
+	if self:IsEnabled() then
+		if ( self.style == "numeric" ) then
+			self.Number:SetPoint("CENTER", 0, 0);
+		else
+			self.Icon:SetPoint("CENTER", -1, 0);
+		end
 	end
 end
 
@@ -250,4 +263,19 @@ function QuestPOIButton_OnClick(self)
 	end
 
 	SetSuperTrackedQuestID(questID);
+end
+
+function QuestPOIButton_OnEnter(self)
+	if not self:IsEnabled() then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, QUEST_SESSION_ON_HOLD_TOOLTIP_TITLE);
+		GameTooltip_AddNormalLine(GameTooltip, QUEST_SESSION_ON_HOLD_TOOLTIP_TEXT);
+		GameTooltip:Show();
+	end
+end
+
+function QuestPOIButton_OnLeave(self)
+	if GameTooltip:GetOwner() == self then
+		GameTooltip:Hide();
+	end
 end

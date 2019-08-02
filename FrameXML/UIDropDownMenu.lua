@@ -183,8 +183,6 @@ function UIDropDownMenuButtonInvisibleButton_OnEnter(self)
 				GameTooltip_AddColoredLine(GameTooltip, parent.tooltipWarning, RED_FONT_COLOR, true);
 			end
 			GameTooltip:Show();
-		else
-			GameTooltip_AddNewbieTip(parent, parent.tooltipTitle, 1.0, 1.0, 1.0, parent.tooltipText, 1);
 		end
 	end
 end
@@ -214,8 +212,6 @@ function UIDropDownMenuButton_OnEnter(self)
 				GameTooltip_AddNormalLine(GameTooltip, self.tooltipText, true);
 			end
 			GameTooltip:Show();
-		else
-			GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
 		end
 	end
 

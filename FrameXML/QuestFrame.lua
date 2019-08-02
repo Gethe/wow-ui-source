@@ -68,6 +68,7 @@ function QuestFrame_OnEvent(self, event, ...)
 		QuestFrameCompleteQuestButton:Enable();
 		QuestFrameRewardPanel:Hide();
 		QuestFrameRewardPanel:Show();
+		QuestFrame.Indicators:SetQuest(GetQuestID());
 	elseif ( event == "QUEST_ITEM_UPDATE" ) then
 		if ( QuestFrameDetailPanel:IsShown() ) then
 			QuestInfo_ShowRewards();
@@ -498,6 +499,8 @@ function QuestFrameDetailPanel_OnShow()
 	else
 		QuestFrame_HideQuestPortrait();
 	end
+
+	QuestFrame.Indicators:SetQuest(GetQuestID());
 end
 
 function QuestDetailAcceptButton_OnClick()

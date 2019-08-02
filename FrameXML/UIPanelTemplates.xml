@@ -461,6 +461,26 @@
 		</PushedTexture>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 	</Button>
+
+    <Button name="UIPanelBorderedButtonTemplate" virtual="true">
+        <Size x="40" y="40"/>
+        <Layers>
+            <Layer level="BORDER">
+                <Texture parentKey="Icon">
+                    <Size x="38" y="38"/>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK" textureSubLevel="-1">
+                <Texture parentKey="Border" file="Interface\Common\WhiteIconFrame" setAllPoints="true"/>
+            </Layer>
+        </Layers>
+        <PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+        <HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+    </Button>
+
 	<Button name="UIPanelLargeSilverButton" virtual="true">
 		<Size>
 			<AbsDimension x="96" y="46"/>
@@ -548,7 +568,7 @@
 			</OnMouseUp>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="RoleCountNoScriptsTemplate" virtual="true">
 		<Size x="125" y="17"/>
 		<Layers>
@@ -592,7 +612,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Frame name="RoleCountTemplate" mixin="RoleCountMixin" inherits="RoleCountNoScriptsTemplate" virtual="true">
 		<Scripts>
 			<OnShow method="OnShow"/>

@@ -7,19 +7,16 @@ end
 
 function DestinyFrame_UpdateRecruitInfo(self)
 	local active, faction = C_RecruitAFriend.GetRecruitInfo();
-	if ( active ) then
-		if ( PLAYER_FACTION_GROUP[faction] == "Horde" ) then
-			self.RecruitAFriendSuggestion:ClearAllPoints();
-			self.RecruitAFriendSuggestion:SetPoint("LEFT", DestinyHordeButton, "RIGHT", 10, 0);
-			RecruitAFriend_ShowInfoDialog(self.RecruitAFriendSuggestion, RECRUIT_A_FRIEND_FACTION_PANDAREN_HORDE);
-			RecruitAFriend_SetInfoDialogDirection(self.RecruitAFriendSuggestion, "left");
+	if active then
+		if PLAYER_FACTION_GROUP[faction] == "Horde" then
+			self.RecruitAFriendSuggestionHorde:ShowHelpBox(RECRUIT_A_FRIEND_FACTION_PANDAREN_HORDE);
+			self.RecruitAFriendSuggestionAlliance:Hide();
 		else
-			self.RecruitAFriendSuggestion:ClearAllPoints();
-			self.RecruitAFriendSuggestion:SetPoint("RIGHT", DestinyAllianceButton, "LEFT", -10, 0);
-			RecruitAFriend_ShowInfoDialog(self.RecruitAFriendSuggestion, RECRUIT_A_FRIEND_FACTION_PANDAREN_ALLIANCE);
-			RecruitAFriend_SetInfoDialogDirection(self.RecruitAFriendSuggestion, "right");
+			self.RecruitAFriendSuggestionAlliance:ShowHelpBox(RECRUIT_A_FRIEND_FACTION_PANDAREN_ALLIANCE);
+			self.RecruitAFriendSuggestionHorde:Hide();
 		end
 	else
-		self.RecruitAFriendSuggestion:Hide();
+		self.RecruitAFriendSuggestionHorde:Hide();
+		self.RecruitAFriendSuggestionAlliance:Hide();
 	end
 end

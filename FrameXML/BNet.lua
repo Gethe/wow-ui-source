@@ -26,13 +26,26 @@ function BNet_GetBNetIDAccount(name)
 	return GetAutoCompletePresenceID(name);
 end
 
+function BNet_GetBNetAccountName(accountInfo)
+	if not accountInfo then
+		return;
+	end
+
+	local name = accountInfo.accountName;
+	if name == "" then
+		name = BNet_GetTruncatedBattleTag(accountInfo.battleTag);
+	end
+
+	return name;
+end
+
 --Name must be a character name from your friends list.
 function BNet_GetBNetIDAccountFromCharacterName(name)
 	local _, numBNetOnline = BNGetNumFriends();
 	for i = 1, numBNetOnline do
-		local opaqueID, displayName, battleTag, _, characterName = BNGetFriendInfo(i);
-		if ( (characterName and strcmputf8i(name, characterName) == 0) ) then
-			return opaqueID;
+		local accountInfo = C_BattleNet.GetAccountInfoByFriendIndex(i);
+		if accountInfo and accountInfo.characterName and (strcmputf8i(name, accountInfo.characterName) == 0) then
+			return accountInfo.bnetAccountID;
 		end
 	end
 end
@@ -123,9 +136,9 @@ function BNToastMixin:OnClick()
 
 		FriendsTabHeaderTab1:Click();
 	elseif toastType == BN_TOAST_TYPE_ONLINE or toastType == BN_TOAST_TYPE_BROADCAST then
-		local bnetIDAccount, accountName = BNGetFriendInfoByID(toastData);
-		if accountName then --This player may have been removed from our friends list, so we may not have a name.
-			ChatFrame_SendBNetTell(accountName);
+		local accountInfo = C_BattleNet.GetAccountInfoByID(toastData);
+		if accountInfo then --This player may have been removed from our friends list, so we may not have a name.
+			ChatFrame_SendBNetTell(accountInfo.accountName);
 		end
 	elseif toastType == BN_TOAST_TYPE_CLUB_INVITATION then
 		Communities_LoadUI();
@@ -230,50 +243,52 @@ function BNToastMixin:ShowToast()
 		doubleLine:Show();
 		doubleLine:SetFormattedText(BN_TOAST_PENDING_INVITES, toastData);
 	elseif ( toastType == BN_TOAST_TYPE_ONLINE ) then
-		local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client = BNGetFriendInfoByID(toastData);
+		local accountInfo = C_BattleNet.GetAccountInfoByID(toastData);
+
 		-- don't display a toast if we didn't get the data in time
-		if ( not accountName ) then
+		if not accountInfo then
 			return;
 		end
 
-		if (battleTag) then
-			characterName = BNet_GetValidatedCharacterName(characterName, battleTag, client) or "";
-			characterName = BNet_GetClientEmbeddedTexture(client, 14, 14, 0, -1)..characterName;
-			middleLine:SetFormattedText(characterName);
-			middleLine:SetTextColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);
-			middleLine:Show();
-		end
+		local characterName = BNet_GetValidatedCharacterNameWithClientEmbeddedTexture(accountInfo.characterName, accountInfo.battleTag, accountInfo.clientProgram, 14, 14, 0, -1);
+		middleLine:SetFormattedText(characterName);
+		middleLine:SetTextColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);
+		middleLine:Show();
 
 		self.IconTexture:SetTexCoord(0, 0.25, 0.5, 1);
 		topLine:Show();
-		topLine:SetText(FRIENDS_BNET_NAME_COLOR:WrapTextInColorCode(accountName));
+		topLine:SetText(FRIENDS_BNET_NAME_COLOR:WrapTextInColorCode(accountInfo.accountName));
 		bottomLine:Show();
 		bottomLine:SetText(FRIENDS_GRAY_COLOR:WrapTextInColorCode(BN_TOAST_ONLINE));
 	elseif ( toastType == BN_TOAST_TYPE_OFFLINE ) then
-		local bnetIDAccount, accountName = BNGetFriendInfoByID(toastData);
+		local accountInfo = C_BattleNet.GetAccountInfoByID(toastData);
+
 		-- don't display a toast if we didn't get the data in time
-		if ( not accountName ) then
+		if not accountInfo then
 			return;
 		end
+
 		self.IconTexture:SetTexCoord(0, 0.25, 0.5, 1);
 		topLine:Show();
-		topLine:SetFormattedText(FRIENDS_BNET_NAME_COLOR:WrapTextInColorCode(accountName));
+		topLine:SetFormattedText(FRIENDS_BNET_NAME_COLOR:WrapTextInColorCode(accountInfo.accountName));
 		bottomLine:Show();
 		bottomLine:SetText(BN_TOAST_OFFLINE);
 		bottomLine:SetTextColor(FRIENDS_GRAY_COLOR.r, FRIENDS_GRAY_COLOR.g, FRIENDS_GRAY_COLOR.b);
 		doubleLine:Hide();
 		middleLine:Hide();
 	elseif ( toastType == BN_TOAST_TYPE_BROADCAST ) then
-		local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isAFK, isDND, messageText = BNGetFriendInfoByID(toastData);
-		if ( not messageText or messageText == "" ) then
+		local accountInfo = C_BattleNet.GetAccountInfoByID(toastData);
+
+		if not accountInfo or accountInfo.customMessage == "" then
 			return;
 		end
+
 		BNToastFrameIconTexture:SetTexCoord(0, 0.25, 0, 0.5);
 		topLine:Show();
-		topLine:SetText(accountName);
+		topLine:SetText(accountInfo.accountName);
 		topLine:SetTextColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);
 		bottomLine:Show();
-		bottomLine:SetText(messageText);
+		bottomLine:SetText(accountInfo.customMessage);
 		bottomLine:SetTextColor(FRIENDS_GRAY_COLOR.r, FRIENDS_GRAY_COLOR.g, FRIENDS_GRAY_COLOR.b);
 		doubleLine:Hide();
 		middleLine:Hide();
@@ -418,19 +433,28 @@ function BNet_GetClientTexture(client)
 	end
 end
 
--- if we don't have a character name or it's for a game that doesn't have toons like Heroes, use the battletag
-function BNet_GetValidatedCharacterName(characterName, battleTag, client)
-	if ( not characterName or characterName == "" or client == BNET_CLIENT_HEROES ) then
-		if ( battleTag and battleTag ~= "" ) then
-			local symbol = string.find(battleTag, "#");
-			if ( symbol ) then
-				return string.sub(battleTag, 1, symbol - 1);
-			else
-				return battleTag;
-			end
+function BNet_GetTruncatedBattleTag(battleTag)
+	if battleTag then
+		local symbol = string.find(battleTag, "#");
+		if ( symbol ) then
+			return string.sub(battleTag, 1, symbol - 1);
 		else
-			return nil;
+			return battleTag;
 		end
+	else
+		return "";
+	end
+end
+
+-- if we don't have a character name or it's for a game that doesn't have toons like Heroes, use the battletag
+function BNet_GetValidatedCharacterName(characterName, battleTag, client, clientTextureSize)
+	if (not characterName) or (characterName == "") or (client == BNET_CLIENT_HEROES) then
+		return BNet_GetTruncatedBattleTag(battleTag);
 	end
 	return characterName;
 end
+
+function BNet_GetValidatedCharacterNameWithClientEmbeddedTexture(characterName, battleTag, client, texWidth, texHeight, texXOffset, texYOffset)
+	return BNet_GetClientEmbeddedTexture(client, texWidth, texHeight, texXOffset, texYOffset)..BNet_GetValidatedCharacterName(characterName, battleTag, client);
+end
+

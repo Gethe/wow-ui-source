@@ -493,146 +493,124 @@ local function ShouldAuraBeLarge(caster)
 end
 
 function TargetFrame_UpdateAuras (self)
-	local frame, frameName;
-	local frameIcon, frameCount, frameCooldown;
 	local numBuffs = 0;
 	local playerIsTarget = UnitIsUnit(PlayerFrame.unit, self.unit);
-	local selfName = self:GetName();
 	local canAssist = UnitCanAssist("player", self.unit);
+	local selfName = self:GetName();
 
-	for i = 1, MAX_TARGET_BUFFS do
-        local buffName, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, _ , spellId, _, _, casterIsPlayer, nameplateShowAll = UnitBuff(self.unit, i, nil);
-        if (buffName) then
-            frameName = selfName.."Buff"..(i);
-            frame = _G[frameName];
-            if ( not frame ) then
-                if ( not icon ) then
-                    break;
-                else
-                    frame = CreateFrame("Button", frameName, self, "TargetBuffFrameTemplate");
-                    frame.unit = self.unit;
-                end
-            end
-            if ( icon and ( not self.maxBuffs or i <= self.maxBuffs ) ) then
-                frame:SetID(i);
+	local index = 1;
+	local maxBuffs = math.min(self.maxBuffs or MAX_TARGET_BUFFS, MAX_TARGET_BUFFS);
+	AuraUtil.ForEachAura(self.unit, "HELPFUL", maxBuffs, function(...)
+        local buffName, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, _ , spellId, _, _, casterIsPlayer, nameplateShowAll = ...;
+        if ( icon ) then
+			numBuffs = numBuffs + 1;
+			local frame = self.Buff and self.Buff[numBuffs];
+			if ( not frame ) then
+				local frameName = selfName.."Buff"..numBuffs;
+				frame = CreateFrame("Button", frameName, self, "TargetBuffFrameTemplate");
+				frame.unit = self.unit;
+			end
+            frame:SetID(index);
 
-                -- set the icon
-                frameIcon = _G[frameName.."Icon"];
-                frameIcon:SetTexture(icon);
+            -- set the icon
+            frame.Icon:SetTexture(icon);
 
-                -- set the count
-                frameCount = _G[frameName.."Count"];
-                if ( count > 1 and self.showAuraCount ) then
-                    frameCount:SetText(count);
-                    frameCount:Show();
-                else
-                    frameCount:Hide();
-                end
-
-                -- Handle cooldowns
-                frameCooldown = _G[frameName.."Cooldown"];
-                CooldownFrame_Set(frameCooldown, expirationTime - duration, duration, duration > 0, true);
-
-                -- Show stealable frame if the target is not the current player and the buff is stealable.
-                local frameStealable = _G[frameName.."Stealable"];
-                if ( not playerIsTarget and canStealOrPurge ) then
-                    frameStealable:Show();
-                else
-                    frameStealable:Hide();
-                end
-
-                -- set the buff to be big if the buff is cast by the player or his pet
-				numBuffs = numBuffs + 1;
-                largeBuffList[numBuffs] = ShouldAuraBeLarge(caster);
-
-                frame:ClearAllPoints();
-                frame:Show();
+            -- set the count
+            local frameCount = frame.Count;
+            if ( count > 1 and self.showAuraCount ) then
+                frameCount:SetText(count);
+                frameCount:Show();
             else
-                frame:Hide();
+                frameCount:Hide();
             end
-        else
-            break;
-        end
-	end
 
-	for i = numBuffs + 1, MAX_TARGET_BUFFS do
-		local frame = _G[selfName.."Buff"..i];
-		if ( frame ) then
-			frame:Hide();
-		else
-			break;
+            -- Handle cooldowns
+            CooldownFrame_Set(frame.Cooldown, expirationTime - duration, duration, duration > 0, true);
+
+            -- Show stealable frame if the target is not the current player and the buff is stealable.
+            frame.Stealable:SetShown(not playerIsTarget and canStealOrPurge);
+
+            -- set the buff to be big if the buff is cast by the player or his pet
+            largeBuffList[numBuffs] = ShouldAuraBeLarge(caster);
+
+            frame:ClearAllPoints();
+            frame:Show();
+        end
+		index = index + 1;
+		return numBuffs >= maxBuffs;
+	end);
+
+	if self.Buff then
+		for i = numBuffs + 1, MAX_TARGET_BUFFS do
+			local frame = self.Buff[i];
+			if ( frame ) then
+				frame:Hide();
+			else
+				break;
+			end
 		end
 	end
 
-	local color;
-	local frameBorder;
 	local numDebuffs = 0;
-
-	local frameNum = 1;
-	local index = 1;
-
-	local maxDebuffs = self.maxDebuffs or MAX_TARGET_DEBUFFS;
-	while ( frameNum <= maxDebuffs and index <= maxDebuffs ) do
-	    local debuffName, icon, count, debuffType, duration, expirationTime, caster, _, _, _, _, _, casterIsPlayer, nameplateShowAll = UnitDebuff(self.unit, index, "INCLUDE_NAME_PLATE_ONLY");
-		if ( debuffName ) then
-			if ( TargetFrame_ShouldShowDebuffs(self.unit, caster, nameplateShowAll, casterIsPlayer) ) then
-				frameName = selfName.."Debuff"..frameNum;
-				frame = _G[frameName];
-				if ( icon ) then
-					if ( not frame ) then
-						frame = CreateFrame("Button", frameName, self, "TargetDebuffFrameTemplate");
-						frame.unit = self.unit;
-					end
-					frame:SetID(index);
-
-					-- set the icon
-					frameIcon = _G[frameName.."Icon"];
-					frameIcon:SetTexture(icon);
-
-					-- set the count
-					frameCount = _G[frameName.."Count"];
-					if ( count > 1 and self.showAuraCount ) then
-						frameCount:SetText(count);
-						frameCount:Show();
-					else
-						frameCount:Hide();
-					end
-
-					-- Handle cooldowns
-					frameCooldown = _G[frameName.."Cooldown"];
-					CooldownFrame_Set(frameCooldown, expirationTime - duration, duration, duration > 0, true);
-
-					-- set debuff type color
-					if ( debuffType ) then
-						color = DebuffTypeColor[debuffType];
-					else
-						color = DebuffTypeColor["none"];
-					end
-					frameBorder = _G[frameName.."Border"];
-					frameBorder:SetVertexColor(color.r, color.g, color.b);
-
-					-- set the debuff to be big if the buff is cast by the player or his pet
-					numDebuffs = numDebuffs + 1;
-					largeDebuffList[numDebuffs] = ShouldAuraBeLarge(caster);
-
-					frame:ClearAllPoints();
-					frame:Show();
-
-					frameNum = frameNum + 1;
+	local maxDebuffs = math.min(self.maxDebuffs or MAX_TARGET_DEBUFFS, MAX_TARGET_DEBUFFS);
+	
+	index = 1;
+	AuraUtil.ForEachAura(self.unit, "HARMFUL|INCLUDE_NAME_PLATE_ONLY", maxDebuffs, function(...)
+	    local debuffName, icon, count, debuffType, duration, expirationTime, caster, _, _, _, _, _, casterIsPlayer, nameplateShowAll = ...;
+		if ( TargetFrame_ShouldShowDebuffs(self.unit, caster, nameplateShowAll, casterIsPlayer) ) then
+			if ( icon ) then
+				numDebuffs = numDebuffs + 1;
+		        local frame = self.Debuff and self.Debuff[numDebuffs];
+				if ( not frame ) then
+					local frameName = selfName.."Debuff"..numDebuffs;
+					frame = CreateFrame("Button", frameName, self, "TargetDebuffFrameTemplate");
+					frame.unit = self.unit;
 				end
+				frame:SetID(index);
+
+				-- set the icon
+				frame.Icon:SetTexture(icon);
+
+				-- set the count
+				local frameCount = frame.Count;
+				if ( count > 1 and self.showAuraCount ) then
+					frameCount:SetText(count);
+					frameCount:Show();
+				else
+					frameCount:Hide();
+				end
+
+				-- Handle cooldowns
+				CooldownFrame_Set(frame.Cooldown, expirationTime - duration, duration, duration > 0, true);
+
+				-- set debuff type color
+				local color;
+				if ( debuffType ) then
+					color = DebuffTypeColor[debuffType];
+				else
+					color = DebuffTypeColor["none"];
+				end
+				frame.Border:SetVertexColor(color.r, color.g, color.b);
+
+				-- set the debuff to be big if the buff is cast by the player or his pet
+				largeDebuffList[numDebuffs] = ShouldAuraBeLarge(caster);
+
+				frame:ClearAllPoints();
+				frame:Show();
 			end
-		else
-			break;
 		end
 		index = index + 1;
-	end
+		return numDebuffs >= maxDebuffs;
+	end);
 
-	for i = frameNum, MAX_TARGET_DEBUFFS do
-		local frame = _G[selfName.."Debuff"..i];
-		if ( frame ) then
-			frame:Hide();
-		else
-			break;
+	if self.Debuff then
+		for i = numDebuffs + 1, MAX_TARGET_DEBUFFS do
+			local frame = self.Debuff[i];
+			if ( frame ) then
+				frame:Hide();
+			else
+				break;
+			end
 		end
 	end
 

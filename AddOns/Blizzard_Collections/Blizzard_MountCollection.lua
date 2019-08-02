@@ -71,6 +71,16 @@ end
 function MountEquipmentButtonMixin:OnClick()
 	if not IsModifiedClick() then
 		self:ApplyEquipmentAtCursor();
+	else
+		if IsModifiedClick("CHATLINK") then
+			local itemID = C_MountJournal.GetAppliedMountEquipmentID();
+			local item = itemID and Item:CreateFromItemID(itemID);
+			if item then
+				item:ContinueOnItemLoad(function()
+					ChatEdit_InsertLink(item:GetItemLink())
+				end);
+			end
+		end
 	end
 end
 
@@ -526,7 +536,7 @@ function MountJournal_UpdateMountDisplay(forceSceneChange)
 		local creatureName, spellID, icon, active, isUsable, sourceType = C_MountJournal.GetMountInfoByID(MountJournal.selectedMountID);
 		local needsFanfare = C_MountJournal.NeedsFanfare(MountJournal.selectedMountID);
 		if ( MountJournal.MountDisplay.lastDisplayed ~= spellID or forceSceneChange ) then
-			local creatureDisplayID, descriptionText, sourceText, isSelfMount, _, modelSceneID = C_MountJournal.GetMountInfoExtraByID(MountJournal.selectedMountID);
+			local creatureDisplayID, descriptionText, sourceText, isSelfMount, _, modelSceneID, animID, spellVisualKitID, disablePlayerMountPreview = C_MountJournal.GetMountInfoExtraByID(MountJournal.selectedMountID);
 			if not creatureDisplayID then
 				creatureDisplayID = MountJournalMountButton_ChooseFallbackMountToDisplay(MountJournal.selectedMountID);
 			end
@@ -568,6 +578,21 @@ function MountJournal_UpdateMountDisplay(forceSceneChange)
 				else
 					mountActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_ANIM);
 					mountActor:SetAnimation(0);
+				end
+
+				local playerActor = MountJournal.MountDisplay.ModelScene:GetPlayerActor();
+				if (playerActor) then
+					if disablePlayerMountPreview or isSelfMount then
+						playerActor:ClearModel();
+					else
+						local sheathWeapons = true;
+						if (playerActor:SetModelByUnit("player", sheathWeapons)) then
+							local calcMountScale = mountActor:CalculateMountScale(playerActor);
+							local inverseScale = 1 / calcMountScale; 
+							playerActor:SetRequestedScale( inverseScale );
+							mountActor:AttachToMount(playerActor, animID, spellVisualKitID);
+						end
+					end
 				end
 			end
 		end

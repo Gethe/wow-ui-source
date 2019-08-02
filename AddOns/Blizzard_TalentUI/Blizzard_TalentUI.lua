@@ -1480,7 +1480,15 @@ end
 function PvpTalentFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, PvpTalentFrameEvents);
 	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_TALENTS_FIRST_UNLOCK)) then
-		self.TrinketSlot.HelpBox:Show();
+		local helpTipInfo = {
+			text = PVP_TALENT_FIRST_TALENT,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_PVP_TALENTS_FIRST_UNLOCK,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			offsetX = -2,
+		};
+		HelpTip:Show(self.TrinketSlot, helpTipInfo);
 	end
 	self:Update();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
@@ -1680,7 +1688,16 @@ function PvpTalentWarmodeButtonMixin:OnShow()
 	self:RegisterEvent("ZONE_CHANGED");
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_WARMODE_UNLOCK)) then
-		self:GetParent().WarmodeTutorialBox:Show();
+		local helpTipInfo = {
+			text = WAR_MODE_TUTORIAL,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_PVP_WARMODE_UNLOCK,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			offsetX = -4,
+		};
+		local parent = self:GetParent();
+		HelpTip:Show(parent, helpTipInfo, parent.InvisibleWarmodeButton);
 	end
 	self:Update();
 end
@@ -1753,10 +1770,7 @@ function PvpTalentWarmodeButtonMixin:OnClick()
 
 		self:Update();
 
-		if (self:GetParent().WarmodeTutorialBox:IsVisible()) then
-			self:GetParent().WarmodeTutorialBox:Hide();
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_WARMODE_UNLOCK, true);
-		end
+		HelpTip:Acknowledge(self:GetParent(), WAR_MODE_TUTORIAL);
 	end
 end
 

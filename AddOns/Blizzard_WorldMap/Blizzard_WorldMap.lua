@@ -244,6 +244,8 @@ function WorldMapMixin:OnShow()
 			self.BorderFrame.MaximizeMinimizeFrame:Maximize();
 		end
 	end
+
+	self:TriggerEvent("WorldMapOnShow");
 end
 
 function WorldMapMixin:OnHide()
@@ -256,6 +258,7 @@ function WorldMapMixin:OnHide()
 	self.BorderFrame.Tutorial:CheckAndHideHelpInfo();
 
 	self:OnUIClose();
+	self:TriggerEvent("WorldMapOnHide");
 end
 
 function WorldMapMixin:RefreshOverlayFrames()
@@ -377,7 +380,8 @@ function WorldMapMixin:AttachQuestLog()
 	QuestMapFrame:SetParent(self);
 	QuestMapFrame:SetFrameStrata("HIGH");
 	QuestMapFrame:ClearAllPoints();
-	QuestMapFrame:SetPoint("TOPRIGHT", -6, -20);
+	QuestMapFrame:SetPoint("TOPRIGHT", -3, -25);
+	QuestMapFrame:SetPoint("BOTTOMRIGHT", -3, 3);
 	QuestMapFrame:Hide();
 	self.QuestLog = QuestMapFrame;
 end

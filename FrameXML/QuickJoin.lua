@@ -14,8 +14,6 @@ function QuickJoinMixin:OnLoad()
 
 	self.ScrollFrame.update = function() self:UpdateScrollFrame(); end
 	self.ScrollFrame.dynamic = function(...) return self:GetTopButton(...) end
-	self.ScrollFrame.scrollBar.doNotHide = true;
-	self.ScrollFrame.scrollBar.trackBG:Hide();
 
 	self.entries = CreateFromMixins(QuickJoinEntriesMixin);
 	self.entries:Init();

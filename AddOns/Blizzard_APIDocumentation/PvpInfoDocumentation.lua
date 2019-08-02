@@ -80,7 +80,7 @@ local PvpInfo =
 
 			Returns =
 			{
-				{ Name = "duration", Type = "number", Nilable = false },
+				{ Name = "seconds", Type = "number", Nilable = false },
 			},
 		},
 		{

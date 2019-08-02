@@ -7,7 +7,7 @@ function ToyBox_OnLoad(self)
 	self.newToys = UIParent.newToys or {};
 	self.fanfareToys = {};
 
-	self.fanfarePool = CreateFramePool("MODELSCENE", self, "ToySpellButtonFanfareModelSceneTemplate");
+	self.fanfarePool = CreateFramePool("MODELSCENE", self, "NonInteractableWrappedModelSceneTemplate");
 
 	ToyBox_UpdatePages();
 	ToyBox_UpdateProgressBar(self);

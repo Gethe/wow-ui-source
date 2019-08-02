@@ -103,8 +103,6 @@ function ExpBarMixin:OnEnter()
 		end
 	end
 
-	GameTooltip_AddNewbieTip(self, label, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_XPBAR, 1);
-	GameTooltip.canAddRestStateLine = 1;
 	self.ExhaustionTick:ExhaustionToolTipText();
 end
 
@@ -164,15 +162,7 @@ function ExhaustionTickMixin:ExhaustionToolTipText()
 		tooltipText = tooltipText..append;
 	end
 
-	if ( SHOW_NEWBIE_TIPS ~= "1" ) then
-		GameTooltip:SetText(tooltipText);
-	else
-		if ( GameTooltip.canAddRestStateLine ) then
-			GameTooltip:AddLine("\n"..tooltipText);
-			GameTooltip:Show();
-			GameTooltip.canAddRestStateLine = nil;
-		end
-	end
+	GameTooltip:SetText(tooltipText);
 end
 
 function ExhaustionTickMixin:OnLoad()

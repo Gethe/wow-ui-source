@@ -33,7 +33,7 @@ function LowHealthFrameMixin:OnEvent(event, ...)
 		self:SetInCombat(true);
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		self:SetInCombat(false);
-	elseif event == "UNIT_MAXHEALTH" or event == "UNIT_HEALTH" then
+	elseif event == "UNIT_MAXHEALTH" or event == "UNIT_HEALTH_FREQUENT" then
 		self:EvaluateVisibleState();
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self.playerEntered = true;
@@ -63,12 +63,12 @@ end
 
 function LowHealthFrameMixin:ListenForHealthEvents()
 	self:RegisterUnitEvent("UNIT_MAXHEALTH", "player");
-	self:RegisterUnitEvent("UNIT_HEALTH", "player");
+	self:RegisterUnitEvent("UNIT_HEALTH_FREQUENT", "player");
 end
 
 function LowHealthFrameMixin:StopListeningForHealthEvents()
 	self:UnregisterEvent("UNIT_MAXHEALTH");
-	self:UnregisterEvent("UNIT_HEALTH");
+	self:UnregisterEvent("UNIT_HEALTH_FREQUENT");
 
 end
 

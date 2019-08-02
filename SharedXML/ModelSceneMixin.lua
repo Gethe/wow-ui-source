@@ -13,6 +13,12 @@ if tbl then
 
 	if ( tbl.IsOnGlueScreen() ) then
 		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
+
+		Import("GetCharacterInfo");
+		Import("GetCharacterSelection");
+	else
+		Import("UnitRace");
+		Import("UnitSex");
 	end
 
 	setfenv(1, tbl);
@@ -143,6 +149,36 @@ end
 
 function ModelSceneMixin:GetActorByTag(tag)
 	return self.tagToActor[tag];
+end
+
+function ModelSceneMixin:GetPlayerActor()
+	local playerRaceName;
+	local playerGender;
+	if IsOnGlueScreen() then
+		local _, _, raceFilename, _, _, _, _, _, genderEnum = GetCharacterInfo(GetCharacterSelection());
+		playerRaceName = raceFilename;
+		playerGender = genderEnum;
+	else
+		playerRaceName = UnitRace("player");
+		playerGender = UnitSex("player");
+	end
+
+	if not playerRaceName or not playerGender then
+		return nil;
+	end
+	playerGender = (playerGender == 2) and "male" or "female";
+	playerRaceName = playerRaceName:lower();
+	local playerRaceActor = playerRaceName.."-"..playerGender;
+
+	local actor = self:GetActorByTag(playerRaceActor);
+	if not actor then		
+		actor = self:GetActorByTag(playerRaceName);
+		if not actor then
+			actor = self:GetActorByTag("player");
+		end
+	end
+
+	return actor;
 end
 
 function ModelSceneMixin:ReleaseAllActors()

@@ -64,7 +64,7 @@
 					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="135"/>
 				</Anchors>
 			</Frame>
-			<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+			<Button parentKey="AcceptButton" motionScriptsWhileDisabled="true" inherits="UIPanelButtonTemplate" text="ACCEPT">
 				<Size x="150" y="24"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="-80" y="22"/>
@@ -72,8 +72,36 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
-						self:GetParent().WarningDialog:Show();
+						if (self:GetParent().clubInfo.isGuild) then
+							self:GetParent().WarningDialog:Show();
+						else
+							self:GetParent():AcceptInvitation();
+						end
 					</OnClick>
+					<OnEnter>
+						self:GetParent():OnAcceptButtonEnter();
+					</OnEnter>
+					<OnLeave>
+						self:GetParent():OnAcceptButtonLeave();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button parentKey="ApplyButton" motionScriptsWhileDisabled="true" inherits="UIPanelButtonTemplate" text="APPLY">
+				<Size x="150" y="24"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="-80" y="22"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+						self:GetParent():ApplyToLinkedClub();
+					</OnClick>
+					<OnEnter>
+						self:GetParent():OnApplyButtonEnter();
+					</OnEnter>
+					<OnLeave>
+						self:GetParent():OnApplyButtonLeave();
+					</OnLeave>
 				</Scripts>
 			</Button>
 			<Button parentKey="DeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
@@ -162,13 +190,13 @@
 					</Anchors>
 				</FontString>
 				<Texture parentKey="GuildBannerBackground" atlas="guildfinder-card-guildbanner-background">
-					<Size x="140" y="90"/>
+					<Size x="140" y="96"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="-10"/>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="GuildBannerShadow" atlas="guildfinder-card-guildbanner-shadow">
-					<Size x="140" y="90"/>
+					<Size x="140" y="96"/>
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.GuildBannerBackground" x="0" y="0"/>
 					</Anchors>
@@ -182,7 +210,7 @@
 					</Anchors>
 				</Texture>
 				<Texture parentKey="GuildBannerBorder" atlas="guildfinder-card-guildbanner-border">
-					<Size x="140" y="90"/>
+					<Size x="140" y="96"/>
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.GuildBannerBackground" x="0" y="0"/>
 					</Anchors>
@@ -190,9 +218,9 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="GuildBannerEmblemLogo">
-					<Size x="95" y="95"/>
+					<Size x="82" y="82"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.GuildBannerBackground" x="20" y="12"/>
+						<Anchor point="CENTER" relativeKey="$parent.GuildBannerBackground" x="0" y="15"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -225,6 +253,12 @@
 						<Anchors>
 							<Anchor point="LEFT"/>
 						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:OnClick();
+								self:GetParent():GetParent():SetDisabledStateOnCommunityFinderOptions(not self:GetChecked());
+							</OnClick>
+						</Scripts>
 					</CheckButton>
 				</Frames>
 				<Layers>
@@ -238,13 +272,13 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="ClubFocusDropdown" inherits="ClubFinderFocusDropdownTemplate">
+			<Frame parentKey="ClubFocusDropdown" name="ClubFinderClubFocusDropdown" inherits="ClubFinderFocusDropdownTemplate">
 				<Size x="0" y="20"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ShouldListClub" x="-14" y="-60"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="LookingForDropdown" inherits="UIDropDownMenuTemplate" mixin="LookingForDropdownMixin">
+			<Frame parentKey="LookingForDropdown" name="ClubFinderLookingForDropdown" inherits="UIDropDownMenuTemplate" mixin="LookingForDropdownMixin">
 				<Size x="0" y="20"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ClubFocusDropdown" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
@@ -334,6 +368,7 @@
 				<Frames>
 					<ScrollFrame parentKey="RecruitmentMessageInput" inherits="ClubFinderEditBoxScrollFrameTemplate">
 						<KeyValues>
+							<KeyValue key="maxLetters" value="250" type="number"/>
 							<KeyValue key="instructions" value="CLUB_FINDER_RECRUITMENT_DESCRIPTION" type="global"/>
 						</KeyValues>
 					</ScrollFrame>
@@ -374,6 +409,15 @@
 						<Anchors>
 							<Anchor point="LEFT"/>
 						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:OnClick();
+								if (not self:GetChecked()) then
+									self:GetParent().EditBox:SetText("");
+									self:GetParent().EditBox.Text:Show();
+								end
+							</OnClick>
+						</Scripts>
 					</CheckButton>
 					<EditBox parentKey="EditBox" inherits="InputBoxTemplate" numeric="true" letters="3" setAllPoints="true" autoFocus="false">
 						<Size x="135" y="18"/>
@@ -436,10 +480,12 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 	
-	<Frame name="ClubFinderSpecializationCheckBoxTemplate" virtual="true">
+	<Frame name="ClubFinderBigSpecializationCheckBoxTemplate" virtual="true">
 		<Size x="200" y="40"/>
 		<Frames>
 			<CheckButton parentKey="CheckBox" inherits="ClubFinderCheckboxTemplate">
@@ -466,6 +512,34 @@
 			</Layer>
 		</Layers>
 	</Frame>
+
+	<Frame name="ClubFinderLittleSpecializationCheckBoxTemplate" virtual="true">
+		<Size x="200" y="32"/>
+		<Frames>
+			<CheckButton parentKey="CheckBox" inherits="ClubFinderCheckboxTemplate">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:OnClick();
+						self:GetParent():GetParent():EnableOrDisableApplyButton();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="SpecName" justifyH="LEFT" inherits="GameFontHighlightSmall">
+					<Size x="200" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.CheckBox" relativePoint="LEFT" x="35"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
 	
 	<Frame name="ClubFinderRequestToJoinTemplate" enableMouse="true" frameStrata="DIALOG" mixin="ClubFinderRequestToJoinMixin" virtual="true">
 		<Size x="400" y="420"/>
@@ -483,17 +557,18 @@
 							<Anchor point="BOTTOM" relativeKey="$parent.DialogLabel" relativePoint="BOTTOM" x="0" y="-15" />
 						</Anchors>
 				</FontString>
-				<FontString parentKey="ClubDescription" justifyV="TOP" wordwrap="true" inherits="GameFontNormal">
-					<Size x="350" y="0"/>
-					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent.ClubName" relativePoint="BOTTOM" x="0" y="-55"/>
-					</Anchors>
+				<FontString parentKey="ClubDescription" wordwrap="true" inherits="GameFontNormal">
+					<Size x="350" y="150"/>
+				</FontString>
+				<FontString parentKey="ClubDescription2" justifyV="BOTTOM" wordwrap="true" inherits="GameFontNormal" text="CLUB_FINDER_NOT_RECRUITING_YOUR_SPECS">
+					<Size x="350" y="150"/>
+				</FontString>
+				<FontString parentKey="ErrorDescription" justifyV="BOTTOM" inherits="GameFontNormal" text="CLUB_FINDER_NO_MATCHING_SPEC_DIALOG_ERR_STRING">
+					<Size x="350" y="150"/>
+					<Color r="1.0" g="0.1" b="0.1"/>
 				</FontString>
 				<FontString parentKey="RecruitingSpecDescriptions" justifyV="TOP" wordwrap="true" inherits="GameFontNormal">
 					<Size x="350" y="0"/>
-					<Anchors>
-						<Anchor point="CENTER" y="-30"/>
-					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -502,7 +577,7 @@
 			<Frame parentKey="MessageFrame">
 				<Size x="335" y="80"/>
 				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.ClubDescription" relativePoint="BOTTOM" x="0" y="-100"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.ClubDescription" relativePoint="BOTTOM" x="0" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -570,32 +645,18 @@
 					</ScrollFrame>
 				</Frames>
 			</Frame>
-			<Frame parentKey="Spec1" parentArray="Specs" inherits="ClubFinderSpecializationCheckBoxTemplate">
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.RecruitingSpecDescriptions" relativePoint="BOTTOMLEFT" x="-10" y="-50"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="Spec2" parentArray="Specs"  inherits="ClubFinderSpecializationCheckBoxTemplate">
-				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.Spec1" relativePoint="BOTTOM" y="-25"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="Spec3" parentArray="Specs" inherits="ClubFinderSpecializationCheckBoxTemplate">
-				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.Spec2" relativePoint="BOTTOM" y="-25" />
-				</Anchors>
-			</Frame>
-			<Frame parentKey="Spec4" parentArray="Specs" inherits="ClubFinderSpecializationCheckBoxTemplate">
-				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.Spec3" relativePoint="BOTTOM" y="-25"/>
-				</Anchors>
-			</Frame>
-			<Button parentKey="Apply" inherits="UIPanelButtonTemplate" text="APPLY">
+			<Button parentKey="Apply" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="APPLY">
 				<Size x="120" y="25"/>
 				<Anchors>
 					<Anchor point="BOTTOM" relativeKey="$parent.EditBox" relativePoint="BOTTOM" x="-80" y="15"/>
 				</Anchors>
 				<Scripts>
+					<OnEnter>
+						self:GetParent():ApplyButtonOnEnter();
+					</OnEnter>
+					<OnLeave>
+						self:GetParent():ApplyButtonOnLeave();
+					</OnLeave>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 						self:GetParent():ApplyToClub();
@@ -616,6 +677,9 @@
 				</Scripts>
 			</Button>
 		</Frames>
+		<Scripts>
+			<OnHide method="OnHide"/>
+		</Scripts>
 	</Frame>
 	
 	<Frame name="ClubPendingRecruitListFrameTemplate" mixin="ClubPendingRecruitListMixin" virtual="true">
@@ -701,13 +765,15 @@
 				</Layer>
 				<Layer level="BORDER">
 					<Texture parentKey="GuildBannerBackground" atlas="guildfinder-card-guildbanner-background">
-						<Size x="120" y="70"/>
+						<Size x="140" y="96"/>
 						<Anchors>
-							<Anchor point="TOP" x="0" y="5"/>
+							<Anchor point="TOP" x="0" y="8"/>
 						</Anchors>
 					</Texture>
+				</Layer>
+				<Layer level="BORDER" textureSubLevel="-2">
 					<Texture parentKey="GuildBannerShadow" atlas="guildfinder-card-guildbanner-shadow">
-						<Size x="120" y="70"/>
+						<Size x="140" y="96"/>
 						<Anchors>
 							<Anchor point="BOTTOM" relativeKey="$parent.GuildBannerBackground" x="0" y="0"/>
 						</Anchors>
@@ -715,7 +781,7 @@
 				</Layer>
 				<Layer level="BORDER" textureSubLevel="2">
 					<Texture parentKey="GuildBannerBorder" atlas="guildfinder-card-guildbanner-border">
-						<Size x="120" y="70"/>
+						<Size x="140" y="96"/>
 						<Anchors>
 							<Anchor point="BOTTOM" relativeKey="$parent.GuildBannerBackground" x="0" y="0"/>
 						</Anchors>
@@ -723,20 +789,20 @@
 				</Layer>
 				<Layer level="ARTWORK">
 					<Texture parentKey="GuildBannerEmblemLogo">
-						<Size x="85" y="85"/>
+						<Size x="74" y="74"/>
 						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.GuildBannerBackground" x="20" y="12"/>
+							<Anchor point="CENTER" relativeKey="$parent.GuildBannerBackground" x="0" y="15"/>
 						</Anchors>
 					</Texture>
 					<FontString parentKey="Name" inherits="GameFontHighlightMedium">
 						<Size x="150" y="0"/>
 						<Anchors>
-							<Anchor point="BOTTOM" relativeKey="$parent.GuildBannerShadow" x="0" y="-25"/>
+							<Anchor point="BOTTOM" relativeKey="$parent.GuildBannerShadow" x="0" y="-12"/>
 						</Anchors>
 					</FontString>
 					<FontString parentKey="MemberCount" inherits="GameFontHighlight">
 						<Anchors>
-							<Anchor point="BOTTOM" relativeKey="$parent.Name" relativePoint="BOTTOM" x="-10" y="-20"/>
+							<Anchor point="BOTTOM" relativeKey="$parent.Name" relativePoint="BOTTOM" x="-10" y="-16"/>
 						</Anchors>
 					</FontString>
 					<Texture parentKey="MemberIcon" atlas="groupfinder-waitdot">
@@ -745,10 +811,10 @@
 							<Anchor point="RIGHT" relativeKey="$parent.MemberCount" relativePoint="RIGHT" x="25" y="0"/>
 						</Anchors>
 					</Texture>
-					<FontString parentKey="Description" wordwrap="true" inherits="GameFontNormal">
-						<Size x="150" y="110"/>
+					<FontString parentKey="Description" justifyH="CENTER" inherits="GameFontNormal">
+						<Size x="155" y="110"/>
 						<Anchors>
-							<Anchor point="BOTTOM" relativeKey="$parent.MemberIcon" relativePoint="BOTTOM" x="-20" y="-110"/>
+							<Anchor point="BOTTOM" relativeKey="$parent.MemberIcon" relativePoint="BOTTOM" x="-10" y="-110"/>
 						</Anchors>
 					</FontString>
 					<FontString parentKey="RequestStatus" inherits="GameFontNormal">
@@ -763,7 +829,7 @@
 				<Button parentKey="RequestJoin" inherits="UIPanelButtonTemplate" text="CLUB_FINDER_REQUEST_TO_JOIN">
 					<Size x="150" y="25"/>
 					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent.Description" relativePoint="BOTTOM" x="0" y="-35"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.Description" relativePoint="BOTTOM" x="0" y="-31"/>
 					</Anchors>
 					<Scripts>
 						<OnClick>
@@ -775,6 +841,7 @@
 				<Frame parentKey="RightClickDropdown" inherits="UIDropDownMenuTemplate" hidden="true"/>
 			</Frames>
 			<Scripts>
+				<OnLoad method="OnLoad"/>
 				<OnEnter method="OnEnter"/>
 				<OnLeave method="OnLeave"/>
 				<OnMouseDown method="OnMouseDown"/>
@@ -788,7 +855,7 @@
 				<FontString parentKey="GuildFocusDropdownLabel" text="CLUB_FINDER_FOCUS" justifyH="LEFT" inherits="GameFontHighlight">
 					<Size x="100" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="20" y="15"/>
+						<Anchor point="TOPLEFT" x="20" y="13"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -853,9 +920,30 @@
 				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
+			<Frame parentKey="SearchingSpinner" inherits="LoadingSpinnerTemplate">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="GameFontNormalLarge" text="SEARCHING">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="TOP" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.Anim:Play();
+					</OnLoad>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>
 
@@ -912,9 +1000,9 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="RequestStatus" hidden="true" inherits="GameFontNormal">
-					<Size x="150" y="110"/>
+					<Size x="80" y="68"/>
 					<Anchors>
-						<Anchor point="RIGHT" x="35" y="0"/>
+						<Anchor point="RIGHT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -969,6 +1057,7 @@
 			<Frame parentKey="RightClickDropdown" inherits="UIDropDownMenuTemplate" hidden="true"/>
 		</Frames>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 			<OnMouseDown method="OnMouseDown"/>
@@ -993,7 +1082,8 @@
 			</ScrollFrame>
 		</Frames> 
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad"/> 
+			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>
 
@@ -1002,25 +1092,25 @@
 		<Frame parentKey="TypeDropdown" hidden="true" mixin="ClubFinderTypeDropdownMixin" inherits="UIDropDownMenuTemplate">
 			<Size x="100" y="15"/>
 			<Anchors>
-				<Anchor point="TOPLEFT" x="-1" y="18"/>
+				<Anchor point="TOPLEFT" x="0" y="18"/>
 			</Anchors>
 			<Layers>
 				<Layer level="ARTWORK">
 					<FontString parentKey="Label" text="CLUB_FINDER_TYPE" justifyH="LEFT" inherits="GameFontHighlight">
 						<Size x="100" y="0"/>
 						<Anchors>
-							<Anchor point="TOP" x="-5" y="13"/>
+							<Anchor point="TOP" x="-2" y="13"/>
 						</Anchors>
 					</FontString>
 				</Layer>
 			</Layers>
 		</Frame>
-		<Frame parentKey="ClubFocusDropdown" hidden="true" inherits="ClubFinderFocusDropdownTemplate">
+		<Frame parentKey="ClubFocusDropdown" hidden="true" name="ClubFinderFocusDropdown" inherits="ClubFinderFocusDropdownTemplate">
 			<Anchors>
 				<Anchor point="TOPLEFT" x="-1" y="18"/>
 			</Anchors>
 		</Frame>
-		<Frame parentKey="ClubSizeDropdown" hidden="true" mixin="ClubSizeDropdownMixin" inherits="UIDropDownMenuTemplate">
+		<Frame parentKey="ClubSizeDropdown" name="ClubFinderSizeDropdown" hidden="true" mixin="ClubSizeDropdownMixin" inherits="UIDropDownMenuTemplate">
 			<Size x="100" y="10"/>
 			<Anchors>
 				<Anchor point="RIGHT" relativeKey="$parent.GuildFocusDropdown" relativePoint="RIGHT" x="0" y="0"/>
@@ -1030,13 +1120,13 @@
 					<FontString parentKey="Label" text="CLUB_FINDER_GUILD_SIZE" justifyH="LEFT" inherits="GameFontHighlight">
 						<Size x="100" y="0"/>
 						<Anchors>
-							<Anchor point="TOP" x="-5" y="13"/>
+							<Anchor point="TOP" x="5" y="13"/>
 						</Anchors>
 					</FontString>
 				</Layer>
 			</Layers>
 		</Frame>
-		<Frame parentKey="SortByDropdown" hidden="true" mixin="ClubSizeDropdownMixin" inherits="UIDropDownMenuTemplate">
+		<Frame parentKey="SortByDropdown" name="ClubFinderSortByDropdown" hidden="true" mixin="ClubSortByDropdownMixin" inherits="UIDropDownMenuTemplate">
 			<Size x="100" y="15"/>
 			<Anchors>
 				<Anchor point="RIGHT" relativeKey="$parent.GuildFocusDropdown" relativePoint="RIGHT" x="50" y="0"/>
@@ -1046,7 +1136,7 @@
 					<FontString parentKey="Label" text="CLUB_FINDER_SORT_BY" justifyH="LEFT" inherits="GameFontHighlight">
 						<Size x="100" y="0"/>
 						<Anchors>
-							<Anchor point="TOP" x="-5" y="13"/>
+							<Anchor point="TOP" x="3" y="13"/>
 						</Anchors>
 					</FontString>
 				</Layer>
@@ -1187,10 +1277,10 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="GuildDescription" text="CLUB_FINDER_NO_OPTIONS_SELECTED_GUILD_MESSAGE" inherits="GameFontNormalMed1">
+						<FontString parentKey="GuildDescription" text="COMMUNITIES_GUILD_FINDER_DESCRIPTION2" inherits="GameFontNormalMed1">
 							<Size x="500" y="500"/>
 							<Anchors>
-								<Anchor point="CENTER" y="20"/>
+								<Anchor point="CENTER" y="30"/>
 							</Anchors>
 						</FontString>
 					</Layer>

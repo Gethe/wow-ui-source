@@ -20,6 +20,7 @@ if tbl then
 	Import("error");
 	Import("getmetatable");
 	Import("ipairs");
+	Import("LE_MODEL_BLEND_OPERATION_NONE");
 end
 --------------------------------------------------
 
@@ -69,4 +70,37 @@ function ShrinkUntilTruncateFontStringMixin:SetFormattedText(format, ...)
 
 	getmetatable(self).__index.SetFormattedText(self, format, ...);
 	self:ApplyFontObjects();
+end
+
+--------------------------------------------------
+function SetupPlayerForModelScene(modelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress)
+	if not modelScene then
+		return;
+	end
+
+	local actor = modelScene:GetPlayerActor();
+	if actor then
+		if IsOnGlueScreen() then
+			actor:SetPlayerModelFromGlues();
+			actor:Undress();
+		else
+			sheatheWeapons = (sheatheWeapons == nil) or sheatheWeapons;
+			autoDress = autoDress or false;
+			actor:SetModelByUnit("player", sheatheWeapons, autoDress);
+		end
+
+		if itemModifiedAppearanceIDs then
+			for i, itemModifiedAppearanceID in ipairs(itemModifiedAppearanceIDs) do
+				actor:TryOn(itemModifiedAppearanceID);
+			end
+		end
+		actor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+	end
+end
+
+function SetupItemPreviewActor(actor, displayID)
+	if actor then
+		actor:SetModelByCreatureDisplayID(displayID);
+		actor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+	end
 end

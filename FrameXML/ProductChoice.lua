@@ -58,26 +58,28 @@ function ProductChoiceFrame_OnFriendsListShown()
 end
 
 function ProductChoiceFrame_ShowAlerts(self, forceShowMain, forceShowSecond)
-	if ( #C_ProductChoice.GetChoices() > 0 ) then
+	if #C_ProductChoice.GetChoices() > 0 then
 		--Create the frames if they don't already exist.
 		--If we created them, we haven't displayed them yet and so should show them.
-		if ( not self.mainAlertFrame ) then
+		if not self.mainAlertFrame then
 			forceShowMain = true;
-			self.mainAlertFrame = CreateFrame("FRAME", nil, QuickJoinToastButton, "RecruitInfoDialogTemplate");
+			self.mainAlertFrame = CreateFrame("FRAME", nil, QuickJoinToastButton, "RecruitHelpBoxTemplate_Left");
 		end
-		if ( not self.secondAlertFrame ) then
+		if not self.secondAlertFrame then
 			forceShowSecond = true;
-			self.secondAlertFrame = CreateFrame("FRAME", nil, FriendsTabHeaderRecruitAFriendButton, "RecruitInfoDialogTemplate");
+			self.secondAlertFrame = CreateFrame("FRAME", nil, FriendsTabHeader.OldRAFRewardsButton, "RecruitHelpBoxTemplate_Left");
 		end
 
 		--Show the alerts we want to show
-		if ( forceShowMain ) then
+		if forceShowMain then
 			self.mainAlertFrame:SetPoint("LEFT", QuickJoinToastButton, "RIGHT", 15, 0);
-			RecruitAFriend_ShowInfoDialog(self.mainAlertFrame, RAF_PRODUCT_CHOICE_EARNED, true);
+			local showOKButton = true;
+			self.mainAlertFrame:ShowHelpBox(RAF_PRODUCT_CHOICE_EARNED, showOKButton);
 		end
-		if ( forceShowSecond ) then
-			self.secondAlertFrame:SetPoint("LEFT", FriendsTabHeaderRecruitAFriendButton, "RIGHT", 25, 0);
-			RecruitAFriend_ShowInfoDialog(self.secondAlertFrame, RAF_PRODUCT_CHOICE_CLAIM, false);
+		if forceShowSecond then
+			self.secondAlertFrame:SetPoint("LEFT", FriendsTabHeader.OldRAFRewardsButton, "RIGHT", 25, 0);
+			local noOKButton = false;
+			self.secondAlertFrame:ShowHelpBox(RAF_PRODUCT_CHOICE_CLAIM, noOKButton);
 		end
 	end
 end

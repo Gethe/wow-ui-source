@@ -135,7 +135,7 @@ function NPE_QuestManager:QUEST_LOG_UPDATE()
 					self:_DoCallback(self.Events.Quest_ObjectivesComplete, questData);
 				end
 			else
-				if (IsQuestFlaggedCompleted(questID)) then
+				if (C_QuestLog.IsQuestFlaggedCompleted(questID)) then
 					questData:Complete();
 					self:_DoCallback(self.Events.Quest_TurnedIn, questData);
 				end

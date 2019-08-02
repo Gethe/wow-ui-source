@@ -300,13 +300,6 @@ function FormatLargeNumber(amount)
 	return newDisplay;
 end
 
-
-function CreateAndInitFromMixin(mixin, ...)
-	local object = CreateFromMixins(mixin);
-	object:Init(...);
-	return object;
-end
-
 COPPER_PER_SILVER = 100;
 SILVER_PER_GOLD = 100;
 COPPER_PER_GOLD = COPPER_PER_SILVER * SILVER_PER_GOLD;

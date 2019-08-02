@@ -249,16 +249,29 @@ function QuestUtils_GetQuestName(questID)
 	return questName or "";
 end
 
-local function ShouldShowWarModeBonus(questID, currencyID)
+local function ShouldShowWarModeBonus(questID, currencyID, firstInstance)
 	if not C_PvP.IsWarModeDesired() then
 		return false;
 	end
 
-	if not C_CurrencyInfo.DoesWarModeBonusApply(currencyID) then
+	local warModeBonusApplies, limitOncePerTooltip = C_CurrencyInfo.DoesWarModeBonusApply(currencyID);
+	if not warModeBonusApplies or (limitOncePerTooltip and not firstInstance) then
 		return false;
 	end
 
 	return QuestUtils_IsQuestWorldQuest(questID) and C_QuestLog.QuestHasWarModeBonus(questID) and not C_CurrencyInfo.GetFactionGrantedByCurrency(currencyID);
+end
+
+function QuestUtils_GetReplayQuestDecoration()
+	return CreateAtlasMarkup("QuestSharing-QuestLog-Replay", 16, 19);
+end
+
+function QuestUtils_DecorateQuestText(questID, text)
+	if C_QuestLog.IsQuestReplayable(questID) then
+		return QuestUtils_GetReplayQuestDecoration() .. text;
+	end
+
+	return text;
 end
 
 function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
@@ -305,13 +318,13 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 		end
 		hasAnySingleLineRewards = true;
 	end
-	
+
 	-- items
 	local showRetrievingData = false;
-	local numQuestRewards = GetNumQuestLogRewards(questID);	
+	local numQuestRewards = GetNumQuestLogRewards(questID);
 	local numCurrencyRewards = GetNumQuestLogRewardCurrencies(questID);
 	if numQuestRewards > 0 and (not style.prioritizeCurrencyOverItem or numCurrencyRewards == 0) then
-		if style.fullItemDescription then 
+		if style.fullItemDescription then
 			-- we want to do a full item description
 			local itemIndex, rewardType = QuestUtils_GetBestQualityItemRewardIndex(questID);  -- Only support one item reward currently
 			if not EmbeddedItemTooltip_SetItemByQuestReward(tooltip.ItemTooltip, itemIndex, questID, rewardType) then
@@ -370,10 +383,15 @@ end
 function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyContainerTooltip)
 	local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
 	local currencies = { };
+	local uniqueCurrencyIDs = { };
 	for i = 1, numQuestCurrencies do
 		local name, texture, numItems, currencyID = GetQuestLogRewardCurrencyInfo(i, questID);
 		local rarity = select(8, GetCurrencyInfo(currencyID));
-		local currencyInfo = { name = name, texture = texture, numItems = numItems, currencyID = currencyID, rarity = rarity };
+		local firstInstance = not uniqueCurrencyIDs[currencyID];
+		if firstInstance then
+			uniqueCurrencyIDs[currencyID] = true;
+		end
+		local currencyInfo = { name = name, texture = texture, numItems = numItems, currencyID = currencyID, rarity = rarity, firstInstance = firstInstance };
 		tinsert(currencies, currencyInfo);
 	end
 
@@ -394,7 +412,7 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 		local isCurrencyContainer = C_CurrencyInfo.IsCurrencyContainer(currencyInfo.currencyID, currencyInfo.numItems);
 		if ( currencyContainerTooltip and isCurrencyContainer and (alreadyUsedCurrencyContainerId == 0) ) then
 			if ( EmbeddedItemTooltip_SetCurrencyByID(currencyContainerTooltip, currencyInfo.currencyID, currencyInfo.numItems) ) then
-				if ShouldShowWarModeBonus(questID, currencyInfo.currencyID) then
+				if ShouldShowWarModeBonus(questID, currencyInfo.currencyID, currencyInfo.firstInstance) then
 					currencyContainerTooltip.Tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE_FORMAT:format(warModeBonus));
 					currencyContainerTooltip.Tooltip:Show();
 				end
@@ -419,7 +437,7 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 					tooltip:AddLine(text, currencyColor:GetRGB());
 				end
 
-				if ShouldShowWarModeBonus(questID, currencyInfo.currencyID) then
+				if ShouldShowWarModeBonus(questID, currencyInfo.currencyID, currencyInfo.firstInstance) then
 					tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE_FORMAT:format(warModeBonus));
 				end
 
@@ -495,4 +513,30 @@ end
 function QuestUtils_ShouldDisplayExpirationWarning(questID)
 	local displayExpiration = select(7, GetQuestTagInfo(questID));
 	return displayExpiration;
+end
+
+function QuestUtils_DoesQuestSessionQuestQualifyForBonusRewardBox(questID)
+	-- You must be in a quest session to get bonus loot
+	if not C_QuestSession.HasJoined() then
+		return false;
+	end
+
+	-- The quest must not be trivial (this checks the player's effective level);
+	if C_QuestLog.IsQuestTrivial(questID) then
+		return false;
+	end;
+
+	-- One of the following conditions needs to be true in order to receive bonus loot:
+	-- Either:
+	-- 1. You must be replaying a quest that you haven't recently replayed, or
+	if C_QuestLog.IsQuestReplayable(questID) and C_QuestLog.IsQuestReplayedRecently(questID) then
+		return false;
+	end
+
+	-- or, 2. You must be playing content that is lower than the player's expansion level (expansion level is relative to the player's actual level)
+	if GetQuestExpansion(questID) >= GetExpansionForLevel(UnitLevel("player")) then
+		return false;
+	end
+
+	return true;
 end

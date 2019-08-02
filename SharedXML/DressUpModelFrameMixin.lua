@@ -27,11 +27,19 @@ end
 DressUpModelFrameResetButtonMixin = {};
 
 function DressUpModelFrameResetButtonMixin:OnLoad()
-	self.model = self:GetParent().DressUpModel;
+	self.modelScene = self:GetParent().ModelScene;
 end
 
 function DressUpModelFrameResetButtonMixin:OnClick()
-	self.model:Dress();
+	
+	self.modelScene:TransitionToModelSceneID(290, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
+
+	local playerActor = self.modelScene:GetPlayerActor();
+
+	if (playerActor) then
+		playerActor:SetSheathed(false);
+		playerActor:Dress();
+	end	
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 end
 
@@ -41,7 +49,7 @@ end
 DressUpModelFrameCloseButtonMixin = {};
 
 function DressUpModelFrameCloseButtonMixin:OnClick()
-	HideUIPanel(self:GetParent():GetParent());
+	HideUIPanel(self:GetParent());
 end
 
 
@@ -93,14 +101,9 @@ function DressUpModelFrameFrameMixin:OnHide()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 end
 
-
 --------------------------------------------------
 -- SIDE DRESS UP MODEL FRAME FRAME MIXIN
 SideDressUpModelFrameFrameMixin = {};
-
-function SideDressUpModelFrameFrameMixin:OnLoad()
-	self.ResetButton = SideDressUpModel.ResetButton;
-end
 
 function SideDressUpModelFrameFrameMixin:OnShow()
 	SetUIPanelAttribute(self.parentFrame, "width", self.openWidth);
@@ -112,13 +115,4 @@ function SideDressUpModelFrameFrameMixin:OnHide()
 	SetUIPanelAttribute(self.parentFrame, "width", self.closedWidth);
 	UpdateUIPanelPositions();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
-end
-
-
---------------------------------------------------
--- SIDE DRESS UP MODEL FRAME RESET BUTTON MIXIN
-SideDressUpModelFrameResetButtonMixin = CreateFromMixins(DressUpModelFrameResetButtonMixin);
-
-function SideDressUpModelFrameResetButtonMixin:OnLoad()
-	self.model = SideDressUpModel;
 end

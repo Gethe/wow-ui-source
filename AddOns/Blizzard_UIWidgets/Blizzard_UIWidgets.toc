@@ -38,6 +38,8 @@ Blizzard_UIWidgetTemplateTextureAndTextRow.xml
 Blizzard_UIWidgetTemplateTextureAndTextRow.lua
 Blizzard_UIWidgetTemplateZoneControl.xml
 Blizzard_UIWidgetTemplateZoneControl.lua
+Blizzard_UIWidgetTemplateCaptureZone.xml
+Blizzard_UIWidgetTemplateCaptureZone.lua
 
 Blizzard_UIWidgetTopCenterFrame.lua
 Blizzard_UIWidgetTopCenterFrame.xml

@@ -5,8 +5,6 @@ local SEAL_QUESTS = {
 	[43926] = { bgAtlas = "QuestBG-Horde", text = "|cff480404"..QUEST_WARCHIEF_VOLJIN.."|r", sealAtlas = "Quest-Horde-WaxSeal"},
 	[47221] = { bgAtlas = "QuestBG-TheHandofFate", },
 	[47835] = { bgAtlas = "QuestBG-TheHandofFate", },
-	[49929] = { bgAtlas = "QuestBG-Alliance", text = "|cff042c54"..QUEST_KING_ANDUIN_WRYNN.."|r", sealAtlas = "Quest-Alliance-WaxSeal" },
-	[49930] = { bgAtlas = "QuestBG-Horde", text = "|cff480404"..QUEST_WARCHIEF_SYLVANAS_WINDRUNNER.."|r", sealAtlas = "Quest-Horde-WaxSeal" },
 	[50476] = { bgAtlas = "QuestBG-Horde", sealAtlas = "Quest-Horde-WaxSeal" },
 	-- BfA start quests
 	[46727] = { bgAtlas = "QuestBG-Alliance", text = "|cff042c54"..QUEST_KING_ANDUIN_WRYNN.."|r", sealAtlas = "Quest-Alliance-WaxSeal" },
@@ -129,20 +127,35 @@ function QuestInfo_Display(template, parentFrame, acceptButton, material, mapVie
 	end
 end
 
-function QuestInfo_ShowTitle()
-	local questTitle;
+local function QuestInfo_GetQuestID()
 	if ( QuestInfoFrame.questLog ) then
-		questTitle = GetQuestLogTitle(GetQuestLogSelection());
-		if ( not questTitle ) then
-			questTitle = "";
-		end
-		if ( IsCurrentQuestFailed() ) then
-			questTitle = questTitle.." - ("..FAILED..")";
-		end
+		local questID = select(8, GetQuestLogTitle(GetQuestLogSelection()));
+		return questID;
 	else
-		questTitle = GetTitleText();
+		return GetQuestID();
 	end
-	QuestInfoTitleHeader:SetText(questTitle);
+end
+
+-- NOTE: Also returns whether or not to do failure checking
+local function QuestInfo_GetTitle()
+	if ( QuestInfoFrame.questLog ) then
+		local title = GetQuestLogTitle(GetQuestLogSelection());
+		title = title or "";
+		return title, true;
+	else
+		local title = GetTitleText();
+		return title, false;
+	end
+end
+
+function QuestInfo_ShowTitle()
+	local title, doFailureBehavior = QuestInfo_GetTitle();
+
+	if doFailureBehavior and IsCurrentQuestFailed() then
+		title = QUEST_TITLE_FORMAT_FAILED:format(title);
+	end
+
+	QuestInfoTitleHeader:SetText(title);
 	QuestInfoTitleHeader:SetWidth(ACTIVE_TEMPLATE.contentWidth);
 	return QuestInfoTitleHeader;
 end
@@ -172,14 +185,6 @@ function QuestInfo_ShowDescriptionText()
 	return QuestInfoDescriptionText;
 end
 
-local function QuestInfo_GetQuestID()
-	if ( QuestInfoFrame.questLog ) then
-		return select(8, GetQuestLogTitle(GetQuestLogSelection()));
-	else
-		return GetQuestID();
-	end
-end
-
 function QuestInfo_ShowObjectives()
 	local questID = QuestInfo_GetQuestID();
 	local numObjectives = GetNumQuestLeaderBoards();
@@ -187,10 +192,10 @@ function QuestInfo_ShowObjectives()
 	local text, type, finished;
 	local objectivesTable = QuestInfoObjectivesFrame.Objectives;
 	local numVisibleObjectives = 0;
-	
+
 	local function AcquireObjective(index)
 		local newObjective = objectivesTable[index];
-		
+
 		if ( not newObjective ) then
 			newObjective = QuestInfoObjectivesFrame:CreateFontString("QuestInfoObjective"..index, "BACKGROUND", "QuestFontNormalSmall");
 			newObjective:SetPoint("TOPLEFT", objectivesTable[index - 1], "BOTTOMLEFT", 0, -2);
@@ -828,7 +833,7 @@ function QuestInfo_ShowRewards()
 				currencyID = GetQuestCurrencyID(questItem.type, i);
 			end
 			if (name and texture and numItems) then
-				name, texture, numItems, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, numItems, name, texture, quality); 
+				name, texture, numItems, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, numItems, name, texture, quality);
 				questItem:SetID(i)
 				questItem:Show();
 				-- For the tooltip

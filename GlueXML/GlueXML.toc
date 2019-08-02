@@ -32,8 +32,8 @@ GlueButtons.xml
 GlueDropDownMenu.xml
 GlueContextMenu.xml
 
-..\SharedXML\HybridScrollFrame.lua
 ..\SharedXML\HybridScrollFrame.xml
+..\SharedXML\ScrollList.xml
 ..\SharedXML\Vector2D.lua
 ..\SharedXML\Vector3D.lua
 ..\SharedXML\Spline.lua

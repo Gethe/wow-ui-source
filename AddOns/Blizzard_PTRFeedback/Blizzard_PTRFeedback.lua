@@ -450,7 +450,7 @@ function PTR_IssueReporter.BuildSurveyFrameFromSurveyData(surveyFrame, survey, d
         local newString = ""        
         if (collector.collectorType == types.RunFunction) then
             if (collector.collectorFunction) and (type(collector.collectorFunction) == "function") then
-                newString = collector.collectorFunction()
+                newString = collector.collectorFunction(dataPackage)
             end
         elseif (collector.collectorType == types.FromDataPackage) then
             local data = tostring(dataPackage[collector.dataPackageKey])

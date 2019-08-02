@@ -1,5 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
+	<Script file="HybridScrollFrame.lua"/>
+
 	<Texture name="HybridScrollBarButton" virtual="true">
 		<TexCoords left="0.25" right="0.75" top="0.25" bottom="0.75"/>
 	</Texture>
@@ -97,8 +99,8 @@
 				</Texture>
 				<Texture name="$parentMiddle" parentKey="Middle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTop" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottom" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Top" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bottom" relativePoint="TOPRIGHT"/>
 					</Anchors>
 					<TexCoords left="0" right="0.45" top="0.1640625" bottom="1"/>
 				</Texture>

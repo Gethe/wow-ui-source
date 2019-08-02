@@ -144,6 +144,8 @@ retain("C_Club");
 retain("UnitFactionGroup");
 retain("FrameUtil");
 retain("strlenutf8");
+retain("UnitRace");
+retain("UnitSex");
 
 --For auth challenge
 take("C_AuthChallenge");

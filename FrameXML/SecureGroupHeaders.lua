@@ -1023,24 +1023,21 @@ function SecureAuraHeader_Update(self)
 		end
 
 		local i = 1;
-		repeat
+		AuraUtil.ForEachAura(unit, fullFilter, nil, function(...)
 			local aura, _, duration = freshTable();
-			aura.name, _, _, _, duration, aura.expires, aura.caster, _, aura.shouldConsolidate, _ = UnitAura(unit, i, fullFilter);
-			if ( aura.name ) then
-				aura.filter = fullFilter;
-				aura.index = i;
-				local targetList = sortingTable;
-				if ( consolidateTable and aura.shouldConsolidate ) then
-					if ( not aura.expires or duration > consolidateDuration or (aura.expires - time >= max(consolidateThreshold, duration * consolidateFraction)) ) then
-						targetList = consolidateTable;
-					end
+			aura.name, _, _, _, duration, aura.expires, aura.caster, _, aura.shouldConsolidate, _ = ...;
+			aura.filter = fullFilter;
+			aura.index = i;
+			local targetList = sortingTable;
+			if ( consolidateTable and aura.shouldConsolidate ) then
+				if ( not aura.expires or duration > consolidateDuration or (aura.expires - time >= max(consolidateThreshold, duration * consolidateFraction)) ) then
+					targetList = consolidateTable;
 				end
-				tinsert(targetList, aura);
-			else
-				releaseTable(aura);
 			end
+			tinsert(targetList, aura);
 			i = i + 1;
-		until ( not aura.name );
+			return false;
+		end);
 	end
 	if ( includeWeapons and not weaponPosition ) then
 		weaponPosition = 0;

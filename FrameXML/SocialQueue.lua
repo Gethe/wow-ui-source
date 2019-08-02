@@ -168,12 +168,9 @@ function SocialQueueUtil_SetTooltip(tooltip, playerDisplayName, queues, canJoin,
 end
 
 function SocialQueueUtil_GetRelationshipInfo(guid, missingNameFallback, clubId)
-	local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, zoneName, level, gameText, broadcast, broadcastTime, online, bnetIDGameAccount, bnetIDAccount = BNGetGameAccountInfoByGUID(guid);
-	if ( characterName and bnetIDAccount ) then
-		local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isBnetAFK, isBnetDND, messageText, noteText, isRIDFriend, messageTime = BNGetFriendInfoByID(bnetIDAccount);
-		if ( accountName ) then
-			return accountName, FRIENDS_BNET_NAME_COLOR_CODE, "bnfriend", GetBNPlayerLink(accountName, accountName, bnetIDAccount, 0, 0, 0);
-		end
+	local accountInfo = C_BattleNet.GetAccountInfoByGUID(guid);
+	if accountInfo then
+		return accountInfo.accountName, FRIENDS_BNET_NAME_COLOR_CODE, "bnfriend", GetBNPlayerLink(accountInfo.accountName, accountInfo.accountName, accountInfo.bnetAccountID, 0, 0, 0);
 	end
 
 	local name, normalizedRealmName = select(6, GetPlayerInfoByGUID(guid));

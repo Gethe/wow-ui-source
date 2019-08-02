@@ -10,6 +10,10 @@ function MinutesToSeconds(minutes)
 	return minutes * SECONDS_PER_MIN;
 end
 
+function HasTimePassed(testTime, amountOfTime)
+	return ((time() - testTime) >= amountOfTime);
+end
+
 SecondsFormatter = {};
 SecondsFormatter.Abbreviation = 
 {

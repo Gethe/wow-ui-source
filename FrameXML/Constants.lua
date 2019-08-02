@@ -4,7 +4,7 @@
 --
 
 Constant = {
-	Currency = 
+	Currency =
 	{
 		Honor = 1585,
 		Conquest = 1602,
@@ -70,6 +70,11 @@ DEFAULT_CHAT_CHANNEL_COLOR	= CreateColor(1.0, 0.753, 0.753);
 DIM_GREEN_FONT_COLOR		= CreateColor(0.251, 0.753, 0.251); -- Used for officer chat in guilds.
 BLACK_FONT_COLOR			= CreateColor(0.0, 0.0, 0.0);
 LINK_FONT_COLOR				= CreateColor(102.0 / 255.0, 187.0 / 255.0, 255.0 / 255.0); -- Light blue that we use for system links. E.g. calendar events and nydus links in the shop.
+
+QUEST_OBJECTIVE_FONT_COLOR = CreateColor(0.8, 0.8, 0.8);
+QUEST_OBJECTIVE_HIGHLIGHT_FONT_COLOR = HIGHLIGHT_FONT_COLOR;
+QUEST_OBJECTIVE_DISABLED_FONT_COLOR	= DISABLED_FONT_COLOR;
+QUEST_OBJECTIVE_DISABLED_HIGHLIGHT_FONT_COLOR = LIGHTGRAY_FONT_COLOR;
 
 AREA_NAME_FONT_COLOR = CreateColor(1.0, 0.9294, 0.7607);
 AREA_DESCRIPTION_FONT_COLOR = HIGHLIGHT_FONT_COLOR;
@@ -284,6 +289,11 @@ BAG_ITEM_QUALITY_COLORS = {
 	[LE_ITEM_QUALITY_HEIRLOOM] = {r=0, g=0.8, b=1},
 	[LE_ITEM_QUALITY_WOW_TOKEN] = {r=0, g=0.8, b=1},
 }
+
+BAG_ITEM_QUALITY_COLOR_OBJECTS = {};
+for colorName, colorTable in pairs(BAG_ITEM_QUALITY_COLORS) do
+	BAG_ITEM_QUALITY_COLOR_OBJECTS[colorName] = CreateColor(colorTable.r, colorTable.g, colorTable.b);
+end
 
 NEW_ITEM_ATLAS_BY_QUALITY = {
 	[LE_ITEM_QUALITY_POOR] = "bags-glow-white",
@@ -545,6 +555,7 @@ QuestDifficultyColors = {
 	["standard"]		= { r = 0.25, g = 0.75, b = 0.25, font = "QuestDifficulty_Standard" };
 	["trivial"]			= { r = 0.50, g = 0.50, b = 0.50, font = "QuestDifficulty_Trivial" };
 	["header"]			= { r = 0.70, g = 0.70, b = 0.70, font = "QuestDifficulty_Header" };
+	["disabled"]		= { r = 0.498, g = 0.498, b = 0.498, font = "QuestDifficulty_Impossible" };
 };
 
 QuestDifficultyHighlightColors = {
@@ -554,6 +565,7 @@ QuestDifficultyHighlightColors = {
 	["standard"]		= { r = 0.43, g = 0.93, b = 0.43, font = "QuestDifficulty_Standard" };
 	["trivial"]			= { r = 0.70, g = 0.70, b = 0.70,  font = "QuestDifficulty_Trivial" };
 	["header"]			= { r = 1.00, g = 1.00, b = 1.00, font = "QuestDifficulty_Header" };
+	["disabled"]		= { r = 0.60, g = 0.60, b = 0.60, font = "QuestDifficulty_Impossible" };
 };
 
 --

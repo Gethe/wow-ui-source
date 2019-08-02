@@ -20,6 +20,42 @@
 	<Texture name="DialogButtonHighlightTexture" file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD" virtual="true">
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 	</Texture>
+	<Frame name="DialogBoxFrame" virtual="true" toplevel="true" frameStrata="DIALOG" hidden="true">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Frames>
+			<Button name="$parentButton">
+				<Size x="128" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="16"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<ButtonText text="OKAY"/>
+				<NormalFont style="DialogButtonNormalText"/>
+				<HighlightFont style="DialogButtonHighlightText"/>
+			</Button>
+		</Frames>
+	</Frame>
+
 	<Frame name="UIPanelDialogTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">

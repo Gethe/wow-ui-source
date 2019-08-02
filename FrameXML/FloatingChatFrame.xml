@@ -171,12 +171,6 @@
 					<OnEvent>
 						FCFDockOverflowButton_OnEvent(self, event, ...);
 					</OnEvent>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, CHAT_OVERFLOW_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHAT_OVERFLOW, 1);
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
 					<OnClick>
 						FCFDockOverflowButton_OnClick(self, button);
 					</OnClick>
@@ -333,14 +327,6 @@
 					end
 				end
 			</OnDoubleClick>
-			<OnEnter>
-				local chatFrame = _G["ChatFrame"..self:GetID()];
-
-				GameTooltip_AddNewbieTip(self, CHAT_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHATOPTIONS, 1);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
 			<OnDragStart>
 				local chatFrame = _G["ChatFrame"..self:GetID()];
 				if ( chatFrame == DEFAULT_CHAT_FRAME ) then
@@ -713,10 +699,6 @@
 				PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
 				ChatFrame_ToggleMenu();
 			</OnClick>
-			<OnEnter>
-				GameTooltip_AddNewbieTip(self, CHAT_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHATMENU, 1);
-			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Up"/>
 		<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Down"/>

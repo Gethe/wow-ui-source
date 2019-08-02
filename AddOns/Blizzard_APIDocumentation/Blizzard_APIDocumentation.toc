@@ -103,6 +103,7 @@ QuestChoiceDocumentation.lua
 QuestLineInfoDocumentation.lua
 QuestLogDocumentation.lua
 QuestOfferDocumentation.lua
+QuestSessionDocumentation.lua
 QuestTaskInfoDocumentation.lua
 RaidLocksDocumentation.lua
 RecruitAFriendDocumentation.lua

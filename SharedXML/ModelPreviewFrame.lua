@@ -36,24 +36,26 @@ end
 
 function ModelPreviewFrame_ShowModel(displayID, modelSceneID, allowZoom, forceUpdate)
 	local self = ModelPreviewFrame;
-	self.displayInfoEntries = nil;
+	local displayInfoEntry = self.displayInfoEntries[self.carouselIndex];
+	local itemModifiedAppearanceIDs = displayInfoEntry.itemModifiedAppearanceIDs;
+
 	ModelPreviewFrame_SetStyle(self, nil);
-	ModelPreviewFrame_ShowModelInternal(displayID, modelSceneID, allowZoom, forceUpdate);
+	ModelPreviewFrame_ShowModelInternal(displayID, modelSceneID, allowZoom, forceUpdate, itemModifiedAppearanceIDs);
 end
 
-function ModelPreviewFrame_ShowModelInternal(displayID, modelSceneID, allowZoom, forceUpdate)
+function ModelPreviewFrame_ShowModelInternal(displayID, modelSceneID, allowZoom, forceUpdate, itemModifiedAppearanceIDs)
 	local display = ModelPreviewFrame.Display;
 	display.displayID = displayID;
 	display.modelSceneID = modelSceneID;
 	display.allowZoom = allowZoom;
 	display.ModelScene:SetFromModelSceneID(modelSceneID, forceUpdate);
 
-	local item = display.ModelScene:GetActorByTag("item");
-	if ( item ) then
-		item:SetModelByCreatureDisplayID(displayID);
-		item:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+	if displayID and displayID > 0 then
+		local actor = display.ModelScene:GetActorByTag("item");
+		SetupItemPreviewActor(actor, displayID);
+	else
+		SetupPlayerForModelScene(display.ModelScene, itemModifiedAppearanceIDs);
 	end
-
 	ModelPreviewFrame:Show();
 end
 
@@ -70,7 +72,7 @@ function ModelPreviewFrame_SetCarouselIndex(self, index, allowZoom, forceUpdate)
 	self.Display.CarouselText:SetText(MODEL_PREVIEW_FRAME_CAROUSEL_TEXT_FORMAT:format(self.carouselIndex, #self.displayInfoEntries));
 	
 	local displayInfoEntry = self.displayInfoEntries[self.carouselIndex];
-	ModelPreviewFrame_ShowModelInternal(displayInfoEntry.creatureDisplayInfoID, displayInfoEntry.modelSceneID, allowZoom, forceUpdate);
+	ModelPreviewFrame_ShowModelInternal(displayInfoEntry.creatureDisplayInfoID, displayInfoEntry.modelSceneID, allowZoom, forceUpdate, displayInfoEntry.itemModifiedAppearanceIDs);
 	self.Display.Name:SetText(displayInfoEntry.title);
 end
 

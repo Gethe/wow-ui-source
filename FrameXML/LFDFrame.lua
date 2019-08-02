@@ -91,6 +91,7 @@ function LFDFrame_OnEvent(self, event, ...)
 		if ( not LFDQueueFrame.type or (type(LFDQueueFrame.type) == "number" and not IsLFGDungeonJoinable(LFDQueueFrame.type)) ) then
 			local bestChoice = GetRandomDungeonBestChoice();
 			if ( bestChoice ) then
+				UIDropDownMenu_Initialize(LFDQueueFrameTypeDropDown, LFDQueueFrameTypeDropDown_Initialize);
 				LFDQueueFrame_SetType(bestChoice);
 			end
 		end
@@ -380,9 +381,9 @@ function LFDQueueFrameTypeDropDown_Initialize()
 
 	for i=1, GetNumRandomDungeons() do
 		local id, name = GetLFGRandomDungeonInfo(i);
-		if ( LFG_IsRandomDungeonDisplayable(id) ) then
-			local isAvailable = IsLFGDungeonJoinable(id);
-			if ( isAvailable ) then
+		local isAvailableForAll, isAvailableForPlayer = IsLFGDungeonJoinable(id);
+		if ( isAvailableForPlayer ) then
+			if ( isAvailableForAll ) then
 				info.text = name;
 				info.value = id;
 				info.isTitle = nil;

@@ -131,17 +131,13 @@ function PVPHeaderStringMixin:Init(textID, textAlignment, sortType, tooltipText)
 end
 
 local function FormatCellColor(frame, rowData, useAlternateColor)
-	local faction = rowData.faction;
-	local guid = rowData.guid;
-	local GetCellColor = function(useAlternateColor)
-		if IsPlayerGuid(guid) then
-			return WHITE_FONT_COLOR;
-		else
-			return PVPMatchUtil.GetCellColor(faction, useAlternateColor);
-		end
-	end;
+	local color;
+	if IsPlayerGuid(rowData.guid) then
+		color = WHITE_FONT_COLOR;
+	else
+		color = PVPMatchUtil.GetCellColor(rowData.faction, useAlternateColor);
+	end
 
-	local color = GetCellColor(useAlternateColor);
 	frame:SetVertexColor(color:GetRGB());
 end
 
@@ -223,21 +219,29 @@ function PVPCellStatMixin:Init(dataProviderKey, useAlternateColor)
 end
 
 function PVPCellStatMixin:Populate(rowData, dataIndex)
-	local value = TableBuilderDataProviderUtil.TraverseToValue(rowData, self.dataProviderKey);
-	if value then
-		local iconName = value.iconName;
-		local amount = value.pvpStatValue;
-		local text = self.text;
-		if not iconName or iconName == "" then
-			text:SetText(amount);
-		else
-			local markup = CreateAtlasMarkup(iconName,16,16,0,-2);
-			local count = FLAG_COUNT_TEMPLATE:format(amount);
-			local string = markup..count;
-			text:SetText(string);
-		end
+	local entry = TableBuilderDataProviderUtil.TraverseToValue(rowData, self.dataProviderKey);
+	if entry then
+		local value = entry.pvpStatValue;
+		if value then
+			local text = self.text;
+			local iconName = entry.iconName;
+			if iconName and iconName ~= "" then
+				if value > 0 then
+					local markup = CreateAtlasMarkup(iconName,16,16,0,-2);
+					local markupCount = FLAG_COUNT_TEMPLATE:format(value);
+					local string = markup..markupCount;
+					text:SetText(string);
+				else
+					text:SetText("");
+				end
+			else
+				text:SetText(value);
+			end
 
-		FormatCellColor(text, rowData, self.useAlternateColor);
+			FormatCellColor(text, rowData, self.useAlternateColor);
+		else
+			text:SetText("");
+		end
 	end
 end
 
@@ -318,9 +322,11 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 	local statColumns = {};
 	for pvpStatIndex, pvpStatID in ipairs(C_PvP.GetMatchPVPStatIDs()) do
 		local statColumn = C_PvP.GetMatchPVPStatColumn(pvpStatID);
-		statColumn.sortType = "stat"..pvpStatIndex;
-		statColumn.statPath = "stats."..pvpStatIndex;
-		tinsert(statColumns, statColumn)
+		if statColumn then
+			statColumn.sortType = "stat"..pvpStatIndex;
+			statColumn.statPath = "stats."..pvpStatIndex;
+			tinsert(statColumns, statColumn)
+		end
 	end
 
 	table.sort(statColumns, function(a, b)

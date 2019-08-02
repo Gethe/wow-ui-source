@@ -837,7 +837,7 @@ function QueueStatusDropDown_AddWorldPvPButtons(idx)
 		info.arg1 = queueID;
 		UIDropDownMenu_AddButton(info);
 	elseif ( status == "confirm" ) then
-		info.text = ENTER_BATTLE;
+		info.text = ENTER_LFG;
 		info.func = wrapFunc(BattlefieldMgrEntryInviteResponse);
 		info.arg1 = queueID;
 		info.arg2 = 1;
@@ -910,7 +910,7 @@ function QueueStatusDropDown_AddBattlefieldButtons(idx)
 		info.disabled = true;
 		UIDropDownMenu_AddButton(info);
 	elseif ( status == "confirm" ) then
-		info.text = ENTER_BATTLE;
+		info.text = ENTER_LFG;
 		info.func = wrapFunc(AcceptBattlefieldPort);
 		info.arg1 = idx;
 		info.arg2 = 1;
@@ -997,7 +997,7 @@ function QueueStatusDropDown_AddLFGButtons(category)
 			if ( IsInLFDBattlefield() ) then
 				local _, instanceType = IsInInstance();
 				if ( instanceType ~= "arena" and instanceType ~= "pvp" ) then
-					info.text = ENTER_DUNGEON;
+					info.text = ENTER_LFG;
 					info.func = wrapFunc(LFGTeleport);
 					info.arg1 = false;
 					info.disabled = false;
@@ -1066,7 +1066,7 @@ function QueueStatusDropDown_AddLFGButtons(category)
 			info.disabled = true;
 			UIDropDownMenu_AddButton(info);
 		elseif ( statuses["proposal.unaccepted"] ) then
-			info.text = ENTER_DUNGEON;
+			info.text = ENTER_LFG;
 			info.func = wrapFunc(AcceptProposal);
 			info.arg1 = nil;
 			info.disabled = false;

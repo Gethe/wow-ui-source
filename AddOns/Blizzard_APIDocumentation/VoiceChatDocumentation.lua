@@ -195,7 +195,7 @@ local VoiceChat =
 
 			Returns =
 			{
-				{ Name = "scale", Type = "number", Nilable = true },
+				{ Name = "scale", Type = "number", Nilable = false },
 			},
 		},
 		{

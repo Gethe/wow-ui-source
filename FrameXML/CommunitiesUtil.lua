@@ -243,7 +243,11 @@ function CommunitiesUtil.OpenInviteDialog(clubId, streamId)
 	
 	local privileges = C_Club.GetClubPrivileges(clubId);
 	if clubInfo.clubType == Enum.ClubType.Guild then
-		StaticPopup_Show("ADD_GUILDMEMBER");
+		if(ClubFinderDoesSelectedClubHaveActiveListing()) then 
+			StaticPopup_Show("ADD_GUILDMEMBER_WITH_FINDER_LINK");
+		else 
+			StaticPopup_Show("ADD_GUILDMEMBER");
+		end 
 	elseif privileges.canCreateTicket then
 		StaticPopup_Show("INVITE_COMMUNITY_MEMBER_WITH_INVITE_LINK", nil, nil, { clubId = clubId, streamId = streamId, });
 	else

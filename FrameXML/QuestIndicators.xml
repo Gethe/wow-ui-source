@@ -1,0 +1,60 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<Script file="QuestIndicators.lua"/>
+
+	<Frame name="QuestIndicatorBaseTemplate" mixin="QuestIndicatorBaseMixin" enableMouseMotion="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+		</KeyValues>
+		<Size x="20" y="20"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" setAllPoints="true" />
+				<Texture parentKey="IconHighlight" hidden="true" setAllPoints="true" alphaMode="ADD" alpha=".3"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="QuestReplayIndicatorTemplate" inherits="QuestIndicatorBaseTemplate" mixin="QuestReplayIndicatorMixin" virtual="true"/>
+	<Frame name="QuestSessionBonusRewardsTemplate" inherits="QuestIndicatorBaseTemplate" mixin="QuestSessionBonusRewardsMixin" virtual="true">
+		<Scripts>
+			<OnLeave method="OnLeave"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="QuestIndicatorsTemplate" inherits="ResizeLayoutFrame" mixin="QuestIndicatorsMixin" virtual="true">
+		<KeyValues>
+			<!--
+				Additional supported keys for atlases, if not specified appropriate defaults will be used.
+				<KeyValue key="inset" value="QuestSharing-QuestPane-ModifiersBG" type="string"/>
+				<KeyValue key="indicatorOffBonus" value="QuestSharing-QuestPane-ModifiersLootIconOff" type="string"/>
+				<KeyValue key="indicatorOffReplay" value="QuestSharing-QuestPane-ModifiersReplayIconOff" type="string"/>
+				<KeyValue key="initialOffsetX" value="0" type="number"/>
+				<KeyValue key="initialOffsetY" value="0" type="number"/>
+			-->
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Inset">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="BonusIndicator" parentArray="Indicators" inherits="QuestSessionBonusRewardsTemplate"/>
+			<Frame parentKey="ReplayIndicator" parentArray="Indicators" inherits="QuestReplayIndicatorTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>
+

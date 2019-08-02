@@ -354,7 +354,8 @@ function QuickJoinToastMixin:OnEnter()
 			GameTooltip:Show();
 		end
 	else
-		GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_SOCIAL);
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL"));
 	end
 end
 

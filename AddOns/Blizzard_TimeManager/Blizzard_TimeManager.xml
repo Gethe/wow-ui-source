@@ -333,10 +333,6 @@
 					<Anchor point="BOTTOMRIGHT" x="-2" y="3"/>
 				</Anchors>
 				<Scripts>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_STOPWATCH_RESETBUTTON, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick function="StopwatchResetButton_OnClick"/>
 				</Scripts>
 				<NormalTexture file="Interface\TimeManager\ResetButton"/>
@@ -348,10 +344,6 @@
 					<Anchor point="RIGHT" relativeTo="StopwatchResetButton" relativePoint="LEFT" x="5" y="0"/>
 				</Anchors>
 				<Scripts>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_STOPWATCH_PLAYPAUSEBUTTON, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick function="StopwatchPlayPauseButton_OnClick"/>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>

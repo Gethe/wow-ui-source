@@ -44,7 +44,8 @@ end
 
 function MicroButton_OnEnter(self)
 	if ( self:IsEnabled() or self.minLevel or self.disabledTooltip or self.factionGroup) then
-		GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, self.tooltipText);
 		if ( not self:IsEnabled() ) then
 			if ( self.factionGroup == "Neutral" ) then
 				GameTooltip:AddLine(FEATURE_NOT_AVAILBLE_PANDAREN, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
@@ -324,7 +325,7 @@ local function HasUnseenInvitations()
 			return true;
 		end
 	end
-	
+
 	return false;
 end
 
@@ -404,7 +405,8 @@ end
 
 function CharacterMicroButton_OnEnter(self)
 	self.tooltipText = MicroButtonTooltipText(CHARACTER_BUTTON, "TOGGLECHARACTER0");
-	GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHARACTER);
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, self.tooltipText);
 end
 
 function CharacterMicroButton_OnEvent(self, event, ...)
@@ -511,7 +513,6 @@ function CharacterMicroButtonMixin:EvaluateAlertVisibility()
 	end
 end
 
-
 function CharacterMicroButton_UpdatePulsing(self)
 	if IsPlayerInWorld() and AzeriteUtil.DoEquippedItemsHaveUnselectedPowers() then
 		MicroButtonPulse(self);
@@ -548,6 +549,7 @@ MAIN_MENU_MICRO_ALERT_PRIORITY = {
 	"TalentMicroButtonAlert",
 	"CharacterMicroButtonAlert",
 	"EJMicroButtonAlert",
+	"QuestLogMicroButtonAlert",
 };
 
 function MainMenuMicroButton_AddExternalAlert(externalAlert)
@@ -823,7 +825,7 @@ do
 			self:EvaluateAlertVisibility();
 		end
 	end
-	
+
 	function CollectionsMicroButton_SetAlert(tabIndex)
 		CollectionsMicroButton_SetAlertShown(true);
 		SafeSetCollectionJournalTab(tabIndex);
@@ -839,7 +841,8 @@ do
 
 	function CollectionsMicroButton_OnEnter(self)
 		self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS");
-		GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_MOUNTS_AND_PETS);
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, self.tooltipText);
 	end
 
 	function CollectionsMicroButton_OnClick(self)
@@ -1021,6 +1024,55 @@ function StoreMicroButtonMixin:EvaluateAlertVisibility(level)
 			MainMenuMicroButton_ShowAlert(StoreMicroButtonAlert, STORE_MICRO_BUTTON_ALERT_TRIAL_CAP_REACHED);
 			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRIAL_BANKED_XP, true);
 		end
+	end
+end
+
+QuestLogMicroButtonMixin = {};
+
+function QuestLogMicroButtonMixin:OnLoad()
+	LoadMicroButtonTextures(self, "Quest");
+	self:RegisterEvent("GROUP_FORMED");
+	self:UpdateTooltipText();
+end
+
+function QuestLogMicroButtonMixin:OnEvent(event, ...)
+	if event == "GROUP_FORMED" then
+		self:EvaluateAlertVisibility();
+	elseif event == "UPDATE_BINDINGS" then
+		self:UpdateTooltipText();
+	end
+end
+
+function QuestLogMicroButtonMixin:UpdateTooltipText()
+	self.tooltipText = MicroButtonTooltipText(QUESTLOG_BUTTON, "TOGGLEQUESTLOG");
+	self.newbieText = NEWBIE_TOOLTIP_QUESTLOG;
+end
+
+function QuestLogMicroButtonMixin:OnClick()
+	ToggleQuestLog();
+end
+
+function QuestLogMicroButtonMixin:EvaluateAlertVisibility()
+	QuestLogMicroButtonAlert:Hide();
+	self:UpdatePulsing();
+
+	if ShouldShowQuestSessionAlert() and (WorldMapFrame and not WorldMapFrame:IsShown()) then
+		-- LE_FRAME_TUTORIAL_QUEST_SESSION is the index, but don't check it here since we want to force the user to go to the management button
+		MainMenuMicroButton_ShowAlert(QuestLogMicroButtonAlert, QUEST_SESSION_TUTORIAL_TEXT);
+
+		WorldMapFrame:RegisterCallback("WorldMapOnShow", function() QuestLogMicroButtonAlert:Hide(); end)
+	end
+end
+
+function ShouldShowQuestSessionAlert()
+	return IsInGroup(LE_PARTY_CATEGORY_HOME) and not IsInRaid() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_QUEST_SESSION);
+end
+
+function QuestLogMicroButtonMixin:UpdatePulsing()
+	if ShouldShowQuestSessionAlert() then
+		MicroButtonPulse(self);
+	else
+		MicroButtonPulseStop(self);
 	end
 end
 

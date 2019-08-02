@@ -46,6 +46,10 @@ function ClubFinderApplicantEntryMixin:GetApplicantName()
 	return self.Info.name;
 end 
 
+function ClubFinderApplicantEntryMixin:GetApplicantStatus()
+	return self.Info.requestStatus;
+end		
+
 function ClubFinderApplicantEntryMixin:OnMouseDown(button)
 	if ( button == "RightButton" ) then
 		ToggleDropDownMenu(1, nil, self.RightClickDropdown, self, 100, 0);
@@ -86,11 +90,15 @@ function ClubFinderApplicantEntryMixin:UpdateMemberInfo(info)
 			isTank = true; 
 		end
 	end 
-
-	if (isHealer and isTank and isDps) then 
+	if(not isHealer and not isDps and not isTank) then 
 		self.RoleIcon2:Hide();
 		self.RoleIcon1:Hide();
-		self.AllSpec:SetText("All");
+		self.AllSpec:SetText(NONE);
+		self.AllSpec:Show();
+	elseif (isHealer and isTank and isDps) then 
+		self.RoleIcon2:Hide();
+		self.RoleIcon1:Hide();
+		self.AllSpec:SetText(ALL);
 		self.AllSpec:Show();
 	else 
 		self.AllSpec:Hide();
@@ -162,20 +170,25 @@ function ClubFinderApplicantEntryMixin:OnEnter()
 	GameTooltip_AddNormalLine(GameTooltip, CLUB_FINDER_SPECIALIZATIONS);
 	local className, classTag = GetClassInfo(self.Info.classID);
 	local color = CreateColor(GetClassColor(classTag));
-	for _, specID in ipairs(self.Info.specIds) do 
-		local _, name, _, _, role = GetSpecializationInfoForSpecID(specID);
-		local texture;
-		if (role == "TANK") then
-			texture = CreateAtlasMarkup("roleicon-tiny-tank");
-		elseif (role == "DAMAGER") then
-			texture = CreateAtlasMarkup("roleicon-tiny-dps");
-		elseif (role == "HEALER") then
-			texture = CreateAtlasMarkup("roleicon-tiny-healer");
+
+	if(#self.Info.specIds == 0) then 
+		GameTooltip_AddColoredLine(GameTooltip, CLUB_FINDER_APPLICANT_LIST_NO_MATCHING_SPECS, RED_FONT_COLOR);
+	else 
+		for _, specID in ipairs(self.Info.specIds) do 
+			local _, name, _, _, role = GetSpecializationInfoForSpecID(specID);
+			local texture;
+			if (role == "TANK") then
+				texture = CreateAtlasMarkup("roleicon-tiny-tank");
+			elseif (role == "DAMAGER") then
+				texture = CreateAtlasMarkup("roleicon-tiny-dps");
+			elseif (role == "HEALER") then
+				texture = CreateAtlasMarkup("roleicon-tiny-healer");
+			end
+			GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_LEADER_BOARD_NAME_ICON:format(texture, name.. " " ..className), color);
 		end
-		GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_LEADER_BOARD_NAME_ICON:format(texture, name.. " " ..className), color);
 	end
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-	GameTooltip_AddColoredLine(GameTooltip, self.Info.message, HIGHLIGHT_FONT_COLOR, true);
+	GameTooltip_AddColoredLine(GameTooltip,	CLUB_FINDER_CLUB_DESCRIPTION:format(self.Info.message), GRAY_FONT_COLOR, true);
 	GameTooltip:Show();
 
 end
@@ -206,6 +219,16 @@ function ApplicantRightClickOptionsMenuInitialize(self, level)
 		info.isTitle = true; 
 		info.notCheckable = true; 
 		UIDropDownMenu_AddButton(info, level);
+	
+		if(self:GetParent():GetApplicantStatus() == Enum.PlayerClubRequestStatus.Declined) then 
+			info.text = CLUB_FINDER_INVITE_APPLICANT_REDO; 
+			info.colorCode = GREEN_FONT_COLOR_CODE; 
+			info.isTitle = false; 
+			info.notCheckable = true; 
+			info.disabled = nil; 
+			info.func = function() ClubFinderCancelOrAcceptApplicant(self, true); end
+			UIDropDownMenu_AddButton(info, level);
+		end	
 
 		info.text = WHISPER;
 		info.colorCode = HIGHLIGHT_FONT_COLOR_CODE; 
@@ -236,6 +259,7 @@ function ClubFinderApplicantListMixin:OnLoad()
 	self.ColumnDisplay:Show();
 
 	HybridScrollFrame_CreateButtons(self.ListScrollFrame, "ClubFinderApplicantEntryTemplate", 0, 0);
+	HybridScrollFrame_SetDoNotHideScrollBar(self.ListScrollFrame, true);
 	self.ListScrollFrame.update = function() self:RefreshLayout() end;
 end
 
@@ -360,26 +384,20 @@ function ClubFinderApplicantListMixin:BuildList()
 	end 
 
 	if (self.isPendingList) then 
-		if (clubInfo.clubType == Enum.ClubType.Guild) then
-			self.ApplicantInfoList = C_ClubFinder.ReturnPendingGuildApplicantList();
-		elseif (clubInfo.clubType == Enum.ClubType.Character) then 
-			self.ApplicantInfoList = C_ClubFinder.ReturnPendingCommunityApplicantList(communityFrame:GetSelectedClubId());
-		end
+		self.ApplicantInfoList = C_ClubFinder.ReturnPendingClubApplicantList(clubId);
 	else 
-		if (clubInfo.clubType == Enum.ClubType.Guild) then
-			self.ApplicantInfoList = C_ClubFinder.ReturnGuildApplicantList();
-		elseif (clubInfo.clubType == Enum.ClubType.Character) then 
-			self.ApplicantInfoList = C_ClubFinder.ReturnCommunityApplicantList(communityFrame:GetSelectedClubId());
-		end
+		self.ApplicantInfoList = C_ClubFinder.ReturnClubApplicantList(clubId);
 	end 
-	self:RefreshLayout();
+	if (not self.ApplicantInfoList or #self.ApplicantInfoList == 0 and communityFrame:GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST) then 
+		communityFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
+	else 
+		self:RefreshLayout();
+	end
 end 
 
 function ClubFinderApplicantListMixin:RefreshLayout()
 	local scrollFrame = self.ListScrollFrame;
 	if (not self.ApplicantInfoList or #self.ApplicantInfoList == 0) then 
-		scrollFrame.scrollBar:Hide();
-		scrollFrame:Hide();
 		return; 
 	end 
 
@@ -419,7 +437,7 @@ function ClubFinderApplicantInviteButtonMixin:OnLeave()
 	GameTooltip:Hide(); 
 end 
 
-local function ClubFinderCancelOrAcceptApplicant(self, shouldInvite)
+function ClubFinderCancelOrAcceptApplicant(self, shouldInvite)
 	local communityFrame = self:GetParent():GetParent():GetParent():GetParent():GetParent();
 	local clubId = communityFrame:GetSelectedClubId();
 	if (clubId) then 
@@ -435,7 +453,6 @@ local function ClubFinderCancelOrAcceptApplicant(self, shouldInvite)
 
 			if(applicantType) then 
 				C_ClubFinder.RespondToApplicant(self:GetParent().Info.clubFinderGUID, self:GetParent().Info.playerGUID, shouldInvite, applicantType);
-				C_ClubFinder.RequestApplicantList(applicantType);
 			end
 		end
 	end
