@@ -6,7 +6,7 @@ local ISLANDS_QUEUE_RIGHT_CARD_ROTATION = math.rad(-1.15);
 local ISLAND_QUEUE_DIFFICULTY_EVENTS = {
 	"GROUP_ROSTER_UPDATE",
 	"LFG_UPDATE_RANDOM_INFO",
-	"PLAYER_AVG_ITEM_LEVEL_UPDATE", 
+	"PLAYER_AVG_ITEM_LEVEL_UPDATE",
 };
 
 IslandsQueueWeeklyQuestMixin = { };
@@ -76,7 +76,7 @@ function IslandsQueueWeeklyQuestMixin:SetElementsEnabled(enabled)
 end
 
 function IslandsQueueWeeklyQuestMixin:UpdateQuestProgressBar()
-	if IsQuestFlaggedCompleted(self.questID) then
+	if C_QuestLog.IsQuestFlaggedCompleted(self.questID) then
 		self.OverlayFrame.Text:SetText(GOAL_COMPLETED);
 		self.QuestReward.CompletedCheck:Show();
 		self.QuestReward.Completed = true;
@@ -127,9 +127,9 @@ end
 
 local function WidgetInit(widgetFrame)
 	widgetFrame.Background:SetSize(451, 301);
-	widgetFrame.Text:SetSize(165, 50); 
+	widgetFrame.Text:SetSize(165, 50);
 	widgetFrame.Text:SetFontObjectsToTry(GameFontNormalLarge, GameFontNormalMed1, GameFontNormal);
-end 
+end
 
 local function WidgetsLayout(widgetContainer, sortedWidgets)
 	for index, widgetFrame in ipairs(sortedWidgets) do
@@ -215,17 +215,17 @@ end
 function IslandsQueueFrameDifficultyMixin:OnShow()
 	RequestLFDPlayerLockInfo();
 	RequestLFDPartyLockInfo();
-	
+
 	FrameUtil.RegisterFrameForEvents(self, ISLAND_QUEUE_DIFFICULTY_EVENTS);
-	
-	self:UpdateQueueText(); 
+
+	self:UpdateQueueText();
 	self:RefreshDifficultyButtons();
-	
+
 	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ISLANDS_QUEUE_BUTTON)) then
 		self.QueueButton.Flash:Show();
 		self.QueueButton.FlashAnim:Play();
 	end
-	
+
 	self:PreloadQuestRewardInformation();
 end
 
@@ -238,10 +238,10 @@ function IslandsQueueFrameDifficultyMixin:OnLoad()
 end
 
 function IslandsQueueFrameDifficultyMixin:OnEvent(event, ...)
-	if (event == "GROUP_ROSTER_UPDATE" or event == "LFG_UPDATE_RANDOM_INFO") then 
-		self:RefreshDifficultyButtons(); 
+	if (event == "GROUP_ROSTER_UPDATE" or event == "LFG_UPDATE_RANDOM_INFO") then
+		self:RefreshDifficultyButtons();
 		self:UpdateQueueText();
-	elseif (event == "PLAYER_AVG_ITEM_LEVEL_UPDATE") then 
+	elseif (event == "PLAYER_AVG_ITEM_LEVEL_UPDATE") then
 		RequestLFDPlayerLockInfo();
 		RequestLFDPartyLockInfo();
 	end
@@ -276,7 +276,7 @@ function IslandsQueueFrameDifficultyMixin:RefreshDifficultyButtons()
 		button.NormalTexture:SetAtlas("islands-queue-difficultyselector-"..buttonIndex);
 		self.previousDifficulty = button;
 		button.difficulty = info.difficultyId;
-		button.tooltipText = ButtonTooltips[buttonIndex]; 
+		button.tooltipText = ButtonTooltips[buttonIndex];
 		button.questId = info.previewRewardQuestId;
 		local isAvailable, _, _, totalGroupSizeRequired = IsLFGDungeonJoinable(button.difficulty);
 
@@ -294,13 +294,13 @@ function IslandsQueueFrameDifficultyMixin:RefreshDifficultyButtons()
 				button.notAvailableText = nil;
 				button.CanQueue = true;
 			end
-			button:SetEnabled(true); 
+			button:SetEnabled(true);
 			button.NormalTexture:SetDesaturated(false);
-			button:SetAlpha(1); 
-		else 
+			button:SetAlpha(1);
+		else
 			button.notAvailableText = nil;
 			button.NormalTexture:SetDesaturated(false);
-			button:SetAlpha(1); 
+			button:SetAlpha(1);
 			button:SetEnabled(true);
 			button.CanQueue = true;
 		end

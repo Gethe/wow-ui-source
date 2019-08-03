@@ -80,6 +80,12 @@ function QuestMapFrame_OnLoad(self)
 	self:RegisterEvent("AJ_QUEST_LOG_OPEN");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("CVAR_UPDATE");
+	self:RegisterEvent("GROUP_FORMED");
+	self:RegisterEvent("GROUP_LEFT");
+	self:RegisterEvent("QUEST_SESSION_JOINED");
+	self:RegisterEvent("QUEST_SESSION_LEFT");
+	self:RegisterEvent("QUEST_SESSION_CREATED");
+	self:RegisterEvent("QUEST_SESSION_DESTROYED");
 
 	self:InitLayoutIndexManager();
 
@@ -98,7 +104,6 @@ function QuestMapFrame_OnEvent(self, event, ...)
 				TriggerTutorial(55);
 			end
 		end
-
 
 		local updateButtons = false;
 		if ( QuestLogPopupDetailFrame.questID ) then
@@ -150,11 +155,7 @@ function QuestMapFrame_OnEvent(self, event, ...)
 		QuestMapFrame_UpdateQuestDetailsButtons();
 		QuestMapFrame_UpdateAll();
 	elseif ( event == "SUPER_TRACKED_QUEST_CHANGED" ) then
-		local questID = ...;
-		if ( questID ~= QuestMapFrame.DetailsFrame.questID ) then
-			QuestMapFrame_CloseQuestDetails(self:GetParent());
-			QuestPOI_SelectButtonByQuestID(QuestScrollFrame.Contents, questID);
-		end
+		QuestMapFrame_UpdateSuperTrackedQuest(self);
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		if ( QuestMapFrame.DetailsFrame.questID ) then
 			QuestMapFrame_UpdateQuestDetailsButtons();
@@ -189,11 +190,167 @@ function QuestMapFrame_OnEvent(self, event, ...)
 		if ( arg1 == "QUEST_POI" ) then
 			QuestMapFrame_UpdateAll();
 		end
+	elseif event == "GROUP_FORMED" or event == "GROUP_LEFT" or event == "QUEST_SESSION_JOINED" or event == "QUEST_SESSION_LEFT" or event == "QUEST_SESSION_CREATED" or event == "QUEST_SESSION_DESTROYED" then
+		QuesetMapFrame_UpdateQuestSessionState(self);
 	end
 end
 
 function QuestMapFrame_OnHide(self)
 	QuestMapFrame_CloseQuestDetails(self:GetParent());
+end
+
+local SESSION_MANAGEMENT_START = "start";
+local SESSION_MANAGEMENT_JOIN = "join";
+local SESSION_MANAGEMENT_DROP = "drop";
+
+local function GetSessionManagementType()
+	if CanStartQuestSession() then
+		return SESSION_MANAGEMENT_START;
+	elseif CanJoinQuestSession() then
+		return SESSION_MANAGEMENT_JOIN;
+	elseif CanDropQuestSession() then
+		return SESSION_MANAGEMENT_DROP;
+	end
+end
+
+local sessionTypeToCommandName =
+{
+	[SESSION_MANAGEMENT_START] = QUEST_SESSION_START_SESSION,
+	[SESSION_MANAGEMENT_JOIN] = QUEST_SESSION_JOIN_SESSION,
+	[SESSION_MANAGEMENT_DROP] = QUEST_SESSION_DROP_SESSION,
+}
+
+local sessionTypeToTooltip =
+{
+	[SESSION_MANAGEMENT_START] = QUEST_SESSION_START_SESSION_TOOLTIP,
+	[SESSION_MANAGEMENT_JOIN] = QUEST_SESSION_JOIN_SESSION_TOOLTIP,
+	[SESSION_MANAGEMENT_DROP] = QUEST_SESSION_DROP_SESSION_TOOLTIP,
+}
+
+QuestSessionManagementMixin = {};
+
+function QuestSessionManagementMixin:OnShow()
+	self:RegisterEvent("GROUP_FORMED");
+	self:EvaluateAlertVisibility();
+end
+
+function QuestSessionManagementMixin:OnHide()
+	self:UnregisterEvent("GROUP_FORMED");
+	UpdateMicroButtons();
+end
+
+function QuestSessionManagementMixin:OnEvent()
+	self:EvaluateAlertVisibility();
+end
+
+function QuestSessionManagementMixin:OnClick(button, down)
+	if button == "LeftButton" then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+
+		local sessionType = GetSessionManagementType();
+		if sessionType == SESSION_MANAGEMENT_START then
+			QuestSessionManager:StartSession();
+		elseif sessionType == SESSION_MANAGEMENT_JOIN then
+			QuestSessionManager:JoinSession();
+		elseif sessionType == SESSION_MANAGEMENT_DROP then
+			QuestSessionManager:DropSession();
+		end
+
+		HelpTip:Acknowledge(self.ExecuteSessionCommand, QUEST_SESSION_WORLD_MAP_TUTORIAL_TEXT);
+	end
+end
+
+function QuestSessionManagementMixin:UpdateVisibility(sessionType)
+	self:SetShown(sessionType ~= nil);
+
+	if sessionType then
+		self.CommandText:SetText(sessionTypeToCommandName[sessionType]);
+		self.HelpText:SetText(self:GetHelpText(sessionType));
+	end
+
+	return sessionType;
+end
+
+function QuestSessionManagementMixin:ShowTooltip()
+	local sessionType = GetSessionManagementType();
+	local title = sessionTypeToCommandName[sessionType];
+	local text = sessionTypeToTooltip[sessionType];
+
+	if title and text then
+		GameTooltip:SetOwner(self.ExecuteSessionCommand, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, title);
+
+		local wrap = true;
+		GameTooltip_AddNormalLine(GameTooltip, text, wrap);
+		GameTooltip:Show();
+	end
+end
+
+function QuestSessionManagementMixin:UpdateTooltip()
+	if GameTooltip:GetOwner() == self.ExecuteSessionCommand then
+		GameTooltip:Hide();
+		self:ShowTooltip();
+	end
+end
+
+function QuestSessionManagementMixin:EvaluateAlertVisibility()
+	if ShouldShowQuestSessionAlert() then
+		local helpTipInfo = {
+			text = QUEST_SESSION_WORLD_MAP_TUTORIAL_TEXT,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_QUEST_SESSION,
+			targetPoint = HelpTip.Point.TopEdgeCenter,
+			offsetY = 4,
+		};
+
+		HelpTip:Show(self.ExecuteSessionCommand, helpTipInfo);
+	end
+end
+
+function QuestSessionManagementMixin:OnEnter()
+	self:ShowTooltip();
+end
+
+function QuestSessionManagementMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+function QuestSessionManagementMixin:GetHelpText(sessionType)
+	if sessionType == SESSION_MANAGEMENT_START then
+		return QUEST_SESSION_MANAGEMENT_START;
+	elseif sessionType == SESSION_MANAGEMENT_JOIN then
+		return QUEST_SESSION_MANAGEMENT_JOIN_REQUEST;
+	elseif sessionType == SESSION_MANAGEMENT_DROP then
+		return QUEST_SESSION_MANAGEMENT_DROP;
+	end
+end
+
+function QuestSessionManagementExecute_OnClick(self, button, down)
+	self:GetParent():OnClick(button, down);
+end
+
+function QuestSessionManagementExecute_OnEnter(self)
+	self:GetParent():OnEnter();
+end
+
+function QuestSessionManagementExecute_OnLeave(self)
+	self:GetParent():OnLeave();
+end
+
+function QuesetMapFrame_UpdateQuestSessionState(self)
+	local sessionType = GetSessionManagementType();
+	self.QuestSessionManagement:UpdateVisibility(sessionType);
+	self.QuestSessionManagement:UpdateTooltip();
+	if sessionType then
+		self.QuestsFrame:SetPoint("BOTTOMRIGHT", self.QuestSessionManagement, "TOPRIGHT", -27, 1);
+	else
+		self.QuestsFrame:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -27, 0);
+	end
+end
+
+function QuestMapFrame_OnShow(self)
+	QuesetMapFrame_UpdateQuestSessionState(self);
 end
 
 -- opening/closing the quest frame is different from showing/hiding because of fullscreen map mode
@@ -277,7 +434,6 @@ function QuestMapFrame_ResetFilters()
 	QuestMapFrame.ignoreQuestLogUpdate = true;
 	for questLogIndex = 1, numEntries do
 		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling = GetQuestLogTitle(questLogIndex);
-		local difficultyColor = GetQuestDifficultyColor(level, isScaling);
 		if ( isHeader ) then
 			if (isOnMap) then
 				ExpandQuestHeader(questLogIndex, true);
@@ -301,6 +457,8 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	QuestInfo_Display(QUEST_TEMPLATE_MAP_DETAILS, QuestMapFrame.DetailsFrame.ScrollFrame.Contents);
 	QuestInfo_Display(QUEST_TEMPLATE_MAP_REWARDS, QuestMapFrame.DetailsFrame.RewardsFrame, nil, nil, true);
 	QuestMapFrame.DetailsFrame.ScrollFrame.ScrollBar:SetValue(0);
+	QuestMapFrame.DetailsFrame.Indicators:SetQuest(questID);
+	QuestMapFrame.QuestSessionManagement:Hide();
 
 	local mapFrame = QuestMapFrame:GetParent();
 	local questPortrait, questPortraitText, questPortraitName, questPortraitMount = GetQuestLogPortraitGiver();
@@ -365,18 +523,26 @@ function QuestMapFrame_PingQuestID(questId)
 	QuestMapFrame:GetParent():PingQuestID(questId);
 end
 
+function QuestMapFrame_UpdateSuperTrackedQuest(self)
+	local questID = GetSuperTrackedQuestID();
+	if ( questID ~= QuestMapFrame.DetailsFrame.questID ) then
+		QuestMapFrame_CloseQuestDetails(self:GetParent());
+		QuestPOI_SelectButtonByQuestID(QuestScrollFrame.Contents, questID);
+	end
+end
+
 function QuestMapFrame_UpdateQuestDetailsButtons()
 	local questLogSelection = GetQuestLogSelection();
 	local _, _, _, _, _, _, _, questID = GetQuestLogTitle(questLogSelection);
-	if ( CanAbandonQuest(questID)) then
-		QuestMapFrame.DetailsFrame.AbandonButton:Enable();
-		QuestLogPopupDetailFrame.AbandonButton:Enable();
-	else
-		QuestMapFrame.DetailsFrame.AbandonButton:Disable();
-		QuestLogPopupDetailFrame.AbandonButton:Disable();
-	end
 
-	if ( IsQuestWatched(questLogSelection) ) then
+	local isQuestDisabled = C_QuestLog.IsQuestDisabledForSession(questID);
+
+	local canAbandon = not isQuestDisabled and CanAbandonQuest(questID);
+	QuestMapFrame.DetailsFrame.AbandonButton:SetEnabled(canAbandon);
+	QuestLogPopupDetailFrame.AbandonButton:SetEnabled(canAbandon);
+
+	local isWatched = IsQuestWatched(questLogSelection);
+	if isWatched then
 		QuestMapFrame.DetailsFrame.TrackButton:SetText(UNTRACK_QUEST_ABBREV);
 		QuestLogPopupDetailFrame.TrackButton:SetText(UNTRACK_QUEST_ABBREV);
 	else
@@ -384,13 +550,14 @@ function QuestMapFrame_UpdateQuestDetailsButtons()
 		QuestLogPopupDetailFrame.TrackButton:SetText(TRACK_QUEST_ABBREV);
 	end
 
-	if ( GetQuestLogPushable() and IsInGroup() ) then
-		QuestMapFrame.DetailsFrame.ShareButton:Enable();
-		QuestLogPopupDetailFrame.ShareButton:Enable();
-	else
-		QuestMapFrame.DetailsFrame.ShareButton:Disable();
-		QuestLogPopupDetailFrame.ShareButton:Disable();
-	end
+	-- Need to be able to remove watch if the quest got disabled
+	local enableTrackButton = isWatched or not isQuestDisabled;
+	QuestMapFrame.DetailsFrame.TrackButton:SetEnabled(enableTrackButton);
+	QuestLogPopupDetailFrame.TrackButton:SetEnabled(enableTrackButton);
+
+	local enableShare = not isQuestDisabled and GetQuestLogPushable() and IsInGroup();
+	QuestMapFrame.DetailsFrame.ShareButton:SetEnabled(enableShare);
+	QuestLogPopupDetailFrame.ShareButton:Enable(enableShare);
 end
 
 function QuestMapFrame_ReturnFromQuestDetails()
@@ -398,6 +565,7 @@ function QuestMapFrame_ReturnFromQuestDetails()
 		QuestMapFrame:GetParent():SetMapID(QuestMapFrame.DetailsFrame.returnMapID);
 	end
 	QuestMapFrame_CloseQuestDetails();
+	QuesetMapFrame_UpdateQuestSessionState(QuestMapFrame);
 end
 
 function QuestMapFrame_OpenToQuestDetails(questID)
@@ -515,11 +683,22 @@ end
 -- ***** QUEST LIST
 -- *****************************************************************************************************
 
+local function GetObjectiveTextColor(isDisabledQuest, isHighlighted)
+	if isDisabledQuest then
+		return isHighlighted and QUEST_OBJECTIVE_DISABLED_HIGHLIGHT_FONT_COLOR or QUEST_OBJECTIVE_DISABLED_FONT_COLOR;
+	end
+
+	return isHighlighted and QUEST_OBJECTIVE_HIGHLIGHT_FONT_COLOR or QUEST_OBJECTIVE_FONT_COLOR;
+end
+
+local function SetupObjectiveTextColor(text, isDisabledQuest, isHighlighted)
+	local color = GetObjectiveTextColor(isDisabledQuest, isHighlighted);
+	text:SetTextColor(color:GetRGB());
+end
+
 function QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling, layoutIndex)
-	local totalHeight = 8;
 	local button = QuestScrollFrame.titleFramePool:Acquire();
 	button.questID = questID;
-	local difficultyColor = GetQuestDifficultyColor(level, isScaling);
 
 	if ( displayQuestID ) then
 		title = questID.." - "..title;
@@ -540,10 +719,11 @@ function QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, titl
 		title = "["..partyMembersOnQuest.."] "..title;
 	end
 
-	button.Text:SetText(title);
+	button.Text:SetText(QuestUtils_DecorateQuestText(questID, title));
+
+	local difficultyColor = GetQuestDifficultyColor(level, isScaling, questID);
 	button.Text:SetTextColor( difficultyColor.r, difficultyColor.g, difficultyColor.b );
 
-	totalHeight = totalHeight + button.Text:GetHeight();
 	if ( IsQuestHardWatched(questLogIndex) ) then
 		button.Check:Show();
 		button.Check:SetPoint("LEFT", button.Text, button.Text:GetWrappedWidth() + 2, 0);
@@ -599,6 +779,10 @@ function QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, titl
 	elseif ( numObjectives == 0 and playerMoney >= requiredMoney and not startEvent) then
 		isComplete = true;
 	end
+
+	local isDisabledQuest = C_QuestLog.IsQuestDisabledForSession(questID);
+	local totalHeight = 8 + button.Text:GetHeight();
+
 	-- objectives
 	if ( isComplete ) then
 		local objectiveFrame = QuestScrollFrame.objectiveFramePool:Acquire();
@@ -606,6 +790,7 @@ function QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, titl
 		objectiveFrame:Show();
 		local completionText = GetQuestLogCompletionText(questLogIndex) or QUEST_WATCH_QUEST_READY;
 		objectiveFrame.Text:SetText(completionText);
+		SetupObjectiveTextColor(objectiveFrame.Text, isDisabledQuest, false);
 		local height = objectiveFrame.Text:GetStringHeight();
 		objectiveFrame:SetHeight(height);
 		objectiveFrame:SetPoint("TOPLEFT", button.Text, "BOTTOMLEFT", 0, -3);
@@ -619,6 +804,7 @@ function QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, titl
 				objectiveFrame.questID = questID;
 				objectiveFrame:Show();
 				objectiveFrame.Text:SetText(text);
+				SetupObjectiveTextColor(objectiveFrame.Text, isDisabledQuest, false);
 				local height = objectiveFrame.Text:GetStringHeight();
 				objectiveFrame:SetHeight(height);
 				if ( prevObjective ) then
@@ -637,6 +823,7 @@ function QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, titl
 			objectiveFrame.questID = questID;
 			objectiveFrame:Show();
 			objectiveFrame.Text:SetText(GetMoneyString(playerMoney).." / "..GetMoneyString(requiredMoney));
+			SetupObjectiveTextColor(objectiveFrame.Text, isDisabledQuest, false);
 			local height = objectiveFrame.Text:GetStringHeight();
 			objectiveFrame:SetHeight(height);
 			if ( prevObjective ) then
@@ -649,11 +836,13 @@ function QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, titl
 			totalHeight = totalHeight + height;
 		end
 	end
-	-- POI
 
-	if ( hasLocalPOI and GetCVarBool("questPOI") ) then
+	-- POI
+	if (hasLocalPOI or isDisabledQuest) and GetCVarBool("questPOI") then
 		local poiButton;
-		if ( isComplete ) then
+		if isDisabledQuest then
+			poiButton = QuestPOI_GetButton(QuestScrollFrame.Contents, questID, "disabled", nil);
+		elseif isComplete then
 			poiButton = QuestPOI_GetButton(QuestScrollFrame.Contents, questID, "normal", nil);
 		else
 			for i = 1, #poiTable do
@@ -663,10 +852,12 @@ function QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, titl
 				end
 			end
 		end
-		if ( poiButton ) then
+
+		if poiButton then
 			poiButton:SetPoint("TOPLEFT", button, 6, -4);
 			poiButton.parent = button;
 		end
+
 		-- extra room because of POI icon
 		totalHeight = totalHeight + 6;
 		button.Text:SetPoint("TOPLEFT", 31, -8);
@@ -677,11 +868,13 @@ function QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, titl
 	button:SetHeight(totalHeight);
 	button.questLogIndex = questLogIndex;
 	button:ClearAllPoints();
-	if ( prevButton ) then
+
+	if prevButton then
 		button:SetPoint("TOPLEFT", prevButton, "BOTTOMLEFT", 0, 0);
 	else
 		button:SetPoint("TOPLEFT", 1, -6);
 	end
+
 	button.layoutIndex = layoutIndex;
 	button:Show();
 	prevButton = button;
@@ -792,49 +985,54 @@ function QuestLogQuests_Update(poiTable)
 
 	for questLogIndex = 1, numEntries do
 		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling = GetQuestLogTitle(questLogIndex);
-		if ( isHeader ) then
-			headerTitle = title;
-			headerOnMap = isOnMap;
-			headerShown = false;
-			headerLogIndex = questLogIndex;
-			headerCollapsed = isCollapsed;
-		elseif ( not isTask and not isHidden and (not isBounty or IsQuestComplete(questID))) then
-			-- we have at least one valid entry, show the header for it
-			if ( not headerShown and not C_CampaignInfo.IsCampaignQuest(questID) ) then
-				headerShown = true;
-				noHeaders = false;
-				button = QuestScrollFrame.headerFramePool:Acquire();
-				if (headerCollapsed) then
-					button:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
-				else
-					button:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up");
-				end
-				button:SetHighlightTexture("Interface\\Buttons\\UI-PlusButton-Hilight");
-				if ( headerTitle ) then
-					button:SetText(headerTitle);
-					button:SetHitRectInsets(0, -button.ButtonText:GetWidth(), 0, 0);
-				else
-					button:SetText("");
-					button:SetHitRectInsets(0, 0, 0, 0);
-				end
-				button:ClearAllPoints();
-				if ( prevButton ) then
-					button:SetPoint("TOPLEFT", prevButton, "BOTTOMLEFT", 0, 0);
-				else
-					button:SetPoint("TOPLEFT", 1, -6);
-				end
-				button.layoutIndex = QuestMapFrame:GetManagedLayoutIndex("Other");
-				button:Show();
-				button.questLogIndex = headerLogIndex;
-				prevButton = button;
-			end
 
-			if (not headerCollapsed or C_CampaignInfo.IsCampaignQuest(questID)) then
-				local layoutKey = "Other";
-				if (C_CampaignInfo.IsCampaignQuest(questID)) then
-					layoutKey = "Campaign";
+		-- TODO: This is a work-around for quest sharing potentially signalling a UI update when nothing is actually in the quest log.
+		-- Figure out the real fix (probably related to waiting until quests have stablized)
+		if title ~= nil then
+			if ( isHeader ) then
+				headerTitle = title;
+				headerOnMap = isOnMap;
+				headerShown = false;
+				headerLogIndex = questLogIndex;
+				headerCollapsed = isCollapsed;
+			elseif ( not isTask and not isHidden and (not isBounty or IsQuestComplete(questID))) then
+				-- we have at least one valid entry, show the header for it
+				if ( not headerShown and not C_CampaignInfo.IsCampaignQuest(questID) ) then
+					headerShown = true;
+					noHeaders = false;
+					button = QuestScrollFrame.headerFramePool:Acquire();
+					if (headerCollapsed) then
+						button:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
+					else
+						button:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up");
+					end
+					button:SetHighlightTexture("Interface\\Buttons\\UI-PlusButton-Hilight");
+					if ( headerTitle ) then
+						button:SetText(headerTitle);
+						button:SetHitRectInsets(0, -button.ButtonText:GetWidth(), 0, 0);
+					else
+						button:SetText("");
+						button:SetHitRectInsets(0, 0, 0, 0);
+					end
+					button:ClearAllPoints();
+					if ( prevButton ) then
+						button:SetPoint("TOPLEFT", prevButton, "BOTTOMLEFT", 0, 0);
+					else
+						button:SetPoint("TOPLEFT", 1, -6);
+					end
+					button.layoutIndex = QuestMapFrame:GetManagedLayoutIndex("Other");
+					button:Show();
+					button.questLogIndex = headerLogIndex;
+					prevButton = button;
 				end
-				prevButton = QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling, QuestMapFrame:GetManagedLayoutIndex(layoutKey));
+
+				if (not headerCollapsed or C_CampaignInfo.IsCampaignQuest(questID)) then
+					local layoutKey = "Other";
+					if (C_CampaignInfo.IsCampaignQuest(questID)) then
+						layoutKey = "Campaign";
+					end
+					prevButton = QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling, QuestMapFrame:GetManagedLayoutIndex(layoutKey));
+				end
 			end
 		end
 	end
@@ -885,20 +1083,21 @@ function QuestMapLogHeaderButton_OnClick(self, button)
 end
 
 function QuestMapLogTitleButton_OnEnter(self)
-	--if (self.questLogIndex > GetNumQuestLogEntries()) then
-	--	return;
-	--end
 	-- do block highlight
 	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling = GetQuestLogTitle(self.questLogIndex);
-	local _, difficultyHighlightColor = GetQuestDifficultyColor(level, isScaling);
-	if ( isHeader ) then
-		_, difficultyHighlightColor = QuestDifficultyColors["header"];
+	local difficultyHighlightColor;
+	if isHeader then
+		difficultyHighlightColor = QuestDifficultyHighlightColors["header"];
+	else
+		difficultyHighlightColor = select(2, GetQuestDifficultyColor(level, isScaling, questID));
 	end
-	self.Text:SetTextColor( difficultyHighlightColor.r, difficultyHighlightColor.g, difficultyHighlightColor.b );
 
+	self.Text:SetTextColor(difficultyHighlightColor.r, difficultyHighlightColor.g, difficultyHighlightColor.b);
+
+	local isDisabledQuest = C_QuestLog.IsQuestDisabledForSession(questID);
 	for line in QuestScrollFrame.objectiveFramePool:EnumerateActive() do
 		if ( line.questID == self.questID ) then
-			line.Text:SetTextColor(1, 1, 1);
+			SetupObjectiveTextColor(line.Text, isDisabledQuest, true);
 		end
 	end
 
@@ -914,6 +1113,10 @@ function QuestMapLogTitleButton_OnEnter(self)
 		GameTooltip:SetPoint("TOPRIGHT", self, "TOPLEFT", -5, 0);
 		GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
 		GameTooltip:SetText(title);
+	end
+
+	if C_QuestLog.IsQuestReplayable(questID) then
+		GameTooltip_AddInstructionLine(GameTooltip, QuestUtils_GetReplayQuestDecoration()..QUEST_SESSION_QUEST_TOOLTIP_IS_REPLAY, false);
 	end
 
 	-- quest tag
@@ -998,13 +1201,15 @@ function QuestMapLogTitleButton_OnEnter(self)
 	local partyMembersOnQuest = 0;
 	for i=1, GetNumSubgroupMembers() do
 		if ( IsUnitOnQuestByQuestID(self.questID, "party"..i) ) then
-			--Add the header line if this the first party member found that is on the quest.
-			if ( partyMembersOnQuest == 0 ) then
-				GameTooltip:AddLine(" ");
-				GameTooltip:AddLine(PARTY_QUEST_STATUS_ON);
-			end
-			partyMembersOnQuest = partyMembersOnQuest + 1;
-			GameTooltip:AddLine(LIGHTYELLOW_FONT_COLOR_CODE..GetUnitName("party"..i, true)..FONT_COLOR_CODE_CLOSE);
+			-- Found at least one party member who is also on the quest, set it up!
+			GameTooltip:AddLine(" ");
+			GameTooltip:AddLine(PARTY_QUEST_STATUS_ON);
+
+			local omitTitle = true;
+			local ignoreActivePlayer = true;
+			GameTooltip:SetQuestPartyProgress(self.questID, omitTitle, ignoreActivePlayer);
+
+			break;
 		end
 	end
 
@@ -1015,14 +1220,13 @@ end
 function QuestMapLogTitleButton_OnLeave(self)
 	-- remove block highlight
 	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling = GetQuestLogTitle(self.questLogIndex);
-	local difficultyColor = GetQuestDifficultyColor(level, isScaling);
-	if ( isHeader ) then
-		difficultyColor = QuestDifficultyColors["header"];
-	end
+	local difficultyColor = isHeader and QuestDifficultyColors["header"] or GetQuestDifficultyColor(level, isScaling, questID);
 	self.Text:SetTextColor( difficultyColor.r, difficultyColor.g, difficultyColor.b );
+
+	local isDisabledQuest = C_QuestLog.IsQuestDisabledForSession(questID);
 	for line in QuestScrollFrame.objectiveFramePool:EnumerateActive() do
 		if ( line.questID == self.questID ) then
-			line.Text:SetTextColor(0.8, 0.8, 0.8);
+			SetupObjectiveTextColor(line.Text, isDisabledQuest, false);
 		end
 	end
 
@@ -1174,7 +1378,6 @@ function QuestLogPopupDetailFrame_OnHide(self)
 end
 
 function QuestLogPopupDetailFrame_Show(questLogIndex)
-
 	local questID = select(8, GetQuestLogTitle(questLogIndex));
 	if ( QuestLogPopupDetailFrame.questID == questID and QuestLogPopupDetailFrame:IsShown() ) then
 		HideUIPanel(QuestLogPopupDetailFrame);

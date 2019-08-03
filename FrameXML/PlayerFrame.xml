@@ -204,12 +204,6 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="PlayerPVPIcon"/>
 						</Anchors>
-						<Scripts>
-							<OnEnter>
-								GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
-							</OnEnter>
-							<OnLeave function="GameTooltip_Hide"/>
-						</Scripts>
 					</Frame>
 					<Frame name="PlayerStatusGlow" hidden="true">
 						<Size x="32" y="32"/>

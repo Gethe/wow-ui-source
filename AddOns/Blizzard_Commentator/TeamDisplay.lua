@@ -207,11 +207,11 @@ function CommentatorTeamDisplayMixin:AssignPlayerToTeam(playerName, teamName)
 	self:RefreshPlayerNamesAndScores();
 end
 
-function CommentatorTeamDisplayMixin:SetElapsedMs(milliseconds)
+function CommentatorTeamDisplayMixin:SetMatchDuration(seconds)
 	local ElapsedTime = self.ElapsedTime;
-	local visible = milliseconds >= 0.0;
+	local visible = seconds >= 0.0;
 	if visible then
-		ElapsedTime:SetFormattedText(SecondsToClock(milliseconds / 1000));
+		ElapsedTime:SetFormattedText(SecondsToClock(seconds));
 		ElapsedTime:Show();
 	else
 		ElapsedTime:Hide();

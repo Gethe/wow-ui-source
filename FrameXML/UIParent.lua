@@ -66,6 +66,7 @@ UIPanelWindows["CommunitiesGuildLogFrame"] =	{ area = "left",			pushable = 1,	wh
 UIPanelWindows["CommunitiesGuildTextEditFrame"] = 			{ area = "left",			pushable = 1,	whileDead = 1 };
 UIPanelWindows["CommunitiesGuildRecruitmentFrame"] =		{ area = "left",			pushable = 1,	whileDead = 1 };
 UIPanelWindows["CommunitiesGuildNewsFiltersFrame"] =		{ area = "left",			pushable = 1,	whileDead = 1 };
+UIPanelWindows["ClubFinderGuildRecruitmentDialog"] =		{ area = "left",			pushable = 1,	whileDead = 1 };
 
 -- Frames NOT using the new Templates
 UIPanelWindows["CinematicFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
@@ -136,8 +137,6 @@ end
 UISpecialFrames = {
 	"ItemRefTooltip",
 	"ColorPickerFrame",
-	"ScrollOfResurrectionFrame",
-	"ScrollOfResurrectionSelectionFrame",
 	"FloatingPetBattleAbilityTooltip",
 	"FloatingGarrisonFollowerTooltip",
 	"FloatingGarrisonShipyardFollowerTooltip"
@@ -251,9 +250,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("RAID_INSTANCE_WELCOME");
-	self:RegisterEvent("LEVEL_GRANT_PROPOSED");
 	self:RegisterEvent("RAISED_AS_GHOUL");
-	self:RegisterEvent("SOR_START_EXPERIENCE_INCOMPLETE");
 	self:RegisterEvent("SPELL_CONFIRMATION_PROMPT");
 	self:RegisterEvent("SPELL_CONFIRMATION_TIMEOUT");
 	self:RegisterEvent("SAVED_VARIABLES_TOO_LARGE");
@@ -1381,7 +1378,6 @@ function UIParent_OnEvent(self, event, ...)
 		UpdateMicroButtons();
 
 		-- Fix for Bug 124392
-		StaticPopup_Hide("LEVEL_GRANT_PROPOSED");
 		StaticPopup_Hide("CONFIRM_LEAVE_BATTLEFIELD");
 
 		local _, instanceType = IsInInstance();
@@ -1822,13 +1818,6 @@ function UIParent_OnEvent(self, event, ...)
 		end
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(BENCHMARK_TAXI_MODE_OFF, info.r, info.g, info.b, info.id);
-	elseif ( event == "LEVEL_GRANT_PROPOSED" ) then
-		local isAlliedRace, hasHeritageArmorUnlocked = UnitAlliedRaceInfo("player");
-		if (isAlliedRace and not hasHeritageArmorUnlocked) then
-			StaticPopup_Show("LEVEL_GRANT_PROPOSED_ALLIED_RACE", arg1);
-		else
-			StaticPopup_Show("LEVEL_GRANT_PROPOSED", arg1);
-		end
 	elseif ( event == "CHAT_MSG_WHISPER" and arg6 == "GM" ) then	--GMChatUI
 		GMChatFrame_LoadUI(event, ...);
 	elseif ( event == "WOW_MOUSE_NOT_FOUND" ) then
@@ -1897,9 +1886,6 @@ function UIParent_OnEvent(self, event, ...)
 		TrialAccountCapReached_Inform("money");
 	elseif ( event == "TRIAL_CAP_REACHED_LEVEL" ) then
 		TrialAccountCapReached_Inform("level");
-
-	elseif( event == "SOR_START_EXPERIENCE_INCOMPLETE" ) then
-		StaticPopup_Show("ERR_SOR_STARTING_EXPERIENCE_INCOMPLETE");
 
 	-- Events for Black Market UI handling
 	elseif ( event == "BLACK_MARKET_OPEN" ) then
@@ -4407,19 +4393,16 @@ function RefreshBuffs(frame, unit, numBuffs, suffix, checkCVar)
 
 	local unitStatus, statusColor;
 	local debuffTotal = 0;
-	local name, icon, count, debuffType, duration, expirationTime;
 
-	local filter;
-	if ( checkCVar and SHOW_CASTABLE_BUFFS == "1" and UnitCanAssist("player", unit) ) then
-		filter = "RAID";
-	end
+	local filter = ( checkCVar and SHOW_CASTABLE_BUFFS == "1" and UnitCanAssist("player", unit) ) and "HELPFUL|RAID" or "HELPFUL";
+	local numFrames = 0;
+	AuraUtil.ForEachAura(unit, filter, numBuffs, function(...)
+		local name, icon, count, debuffType, duration, expirationTime = ...;
 
-	for i=1, numBuffs do
-		name, icon, count, debuffType, duration, expirationTime = UnitBuff(unit, i, filter);
-
-		local buffName = frameName..suffix..i;
+		-- if we have an icon to show then proceed with setting up the aura
 		if ( icon ) then
-			-- if we have an icon to show then proceed with setting up the aura
+			numFrames = numFrames + 1;
+			local buffName = frameName..suffix..numFrames;
 
 			-- set the icon
 			local buffIcon = _G[buffName.."Icon"];
@@ -4433,40 +4416,45 @@ function RefreshBuffs(frame, unit, numBuffs, suffix, checkCVar)
 
 			-- show the aura
 			_G[buffName]:Show();
+		end
+		return numFrames >= numBuffs;
+	end);
+
+	for i=numFrames + 1,numBuffs do
+		local buffName = frameName..suffix..i;
+		local frame = _G[buffName];
+		if frame then
+			frame:Hide();
 		else
-			-- no icon, hide the aura
-			_G[buffName]:Hide();
+			break;
 		end
 	end
 end
 
 function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
 	local frameName = frame:GetName();
+	suffix = suffix or "Debuff";
+	local frameNameWithSuffix = frameName..suffix;
 
 	frame.hasDispellable = nil;
 
 	numDebuffs = numDebuffs or MAX_PARTY_DEBUFFS;
-	suffix = suffix or "Debuff";
 
 	local unitStatus, statusColor;
 	local debuffTotal = 0;
-	local name, icon, count, debuffType, duration, expirationTime, caster;
 	local isEnemy = UnitCanAttack("player", unit);
 
-	local filter;
-	if ( checkCVar and SHOW_DISPELLABLE_DEBUFFS == "1" and UnitCanAssist("player", unit) ) then
-		filter = "RAID";
+	local filter = ( checkCVar and SHOW_DISPELLABLE_DEBUFFS == "1" and UnitCanAssist("player", unit) ) and "HARMFUL|RAID" or "HARMFUL";
+
+	if strsub(unit, 1, 5) == "party" then
+		unitStatus = _G[frameName.."Status"];
 	end
+	AuraUtil.ForEachAura(unit, filter, numDebuffs, function(...)
+		local name, icon, count, debuffType, duration, expirationTime, caster = ...;
 
-	for i=1, numDebuffs do
-		if ( unit == "party"..i ) then
-			unitStatus = _G[frameName.."Status"];
-		end
-
-		name, icon, count, debuffType, duration, expirationTime, caster = UnitDebuff(unit, i, filter);
-
-		local debuffName = frameName..suffix..i;
 		if ( icon and ( SHOW_CASTABLE_DEBUFFS == "0" or not isEnemy or caster == "player" ) ) then
+			debuffTotal = debuffTotal + 1;
+			local debuffName = frameNameWithSuffix..debuffTotal;
 			-- if we have an icon to show then proceed with setting up the aura
 
 			-- set the icon
@@ -4481,7 +4469,6 @@ function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
 			-- record interesting data for the aura button
 			statusColor = debuffColor;
 			frame.hasDispellable = 1;
-			debuffTotal = debuffTotal + 1;
 
 			-- setup the cooldown
 			local coolDown = _G[debuffName.."Cooldown"];
@@ -4491,10 +4478,13 @@ function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
 
 			-- show the aura
 			_G[debuffName]:Show();
-		else
-			-- no icon, hide the aura
-			_G[debuffName]:Hide();
 		end
+		return debuffTotal >= numDebuffs;
+	end);
+	
+	for i=debuffTotal+1,numDebuffs do
+		local debuffName = frameNameWithSuffix..i;
+		_G[debuffName]:Hide();
 	end
 
 	frame.debuffTotal = debuffTotal;
@@ -4507,12 +4497,16 @@ function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
 	end
 end
 
-function GetQuestDifficultyColor(level, isScaling)
+function GetQuestDifficultyColor(level, isScaling, optQuestID)
+	if optQuestID and C_QuestLog.IsQuestDisabledForSession(optQuestID) then
+		return QuestDifficultyColors["disabled"], QuestDifficultyHighlightColors["disabled"];
+	end
+
 	if (isScaling) then
 		return GetScalingQuestDifficultyColor(level);
 	end
 
-	return GetRelativeDifficultyColor(UnitLevel("player"), level);
+	return GetRelativeDifficultyColor(UnitEffectiveLevel("player"), level);
 end
 
 function GetCreatureDifficultyColor(level)
@@ -4537,7 +4531,7 @@ function GetRelativeDifficultyColor(unitLevel, challengeLevel)
 end
 
 function GetScalingQuestDifficultyColor(questLevel)
-	local playerLevel = UnitLevel("player");
+	local playerLevel = UnitEffectiveLevel("player");
 	local levelDiff = questLevel - playerLevel;
 	if ( levelDiff >= 5 ) then
 		return QuestDifficultyColors["impossible"], QuestDifficultyHighlightColors["impossible"];
@@ -4877,6 +4871,26 @@ function SetDoubleGuildTabardTextures(unit, leftEmblemTexture, rightEmblemTextur
 	end
 end
 
+function SetLargeTabardTexturesFromColorRGB(unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
+	local newTabardData = { }; 
+	if (tabardData) then 
+		local rgbFormatMultiplier = 255;
+		newTabardData[1] = tabardData.backgroundColor.r * rgbFormatMultiplier; 
+		newTabardData[2] = tabardData.backgroundColor.g * rgbFormatMultiplier; 
+		newTabardData[3] = tabardData.backgroundColor.b * rgbFormatMultiplier; 
+		newTabardData[4] = tabardData.borderColor.r * rgbFormatMultiplier; 
+		newTabardData[5] = tabardData.borderColor.g * rgbFormatMultiplier; 
+		newTabardData[6] = tabardData.borderColor.b * rgbFormatMultiplier; 
+		newTabardData[7] = tabardData.emblemColor.r * rgbFormatMultiplier;
+		newTabardData[8] = tabardData.emblemColor.g * rgbFormatMultiplier;
+		newTabardData[9] = tabardData.emblemColor.b * rgbFormatMultiplier;
+		newTabardData[10] = tabardData.emblemFileID; 
+		newTabardData[11] = tabardData.emblemStyle;
+	end
+
+	SetLargeGuildTabardTextures(unit, emblemTexture, backgroundTexture, borderTexture, newTabardData);
+end 
+
 function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
 	local bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFileID, emblemIndex;
 	if ( tabardData )  then
@@ -5007,10 +5021,18 @@ end
 
 function LeaveInstanceParty()
 	if ( IsInLFDBattlefield() ) then
-		LFGTeleport(true);
-	else
-		LeaveParty();
+		local mapID = select(8, GetInstanceInfo());
+		local queuedList = GetLFGQueuedList(LE_LFG_CATEGORY_BATTLEFIELD);
+		for queueID in pairs(queuedList) do
+			local queueMapID = select(16, GetLFGInfoServer(LE_LFG_CATEGORY_BATTLEFIELD, queueID));
+			-- teleport out if maps match (99% of the time, it works every time)
+			if mapID == queueMapID then
+				LFGTeleport(true);
+				return;
+			end
+		end
 	end
+	LeaveParty();
 end
 
 function ConfirmOrLeaveLFGParty()

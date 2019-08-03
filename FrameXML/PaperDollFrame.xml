@@ -820,30 +820,6 @@
 							</Layer>
 						</Layers>
 					</ItemButton>
-					<Frame parentKey="HelpTipBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
-						<Size x="200" y="100"/>
-						<Layers>
-							<Layer level="OVERLAY">
-								<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="AZERITE_EMPOWERED_UNSELECTED_TRAITS_HELPTIP">
-									<Size x="190" y="0"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="10" y="-18"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-								<Scripts>
-									<OnClick>
-										self:GetParent():GetParent():OnHelpTipManuallyClosed(self:GetParent().closeFlag);
-										HideParentPanel(self);
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate" />
-						</Frames>
-					</Frame>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>

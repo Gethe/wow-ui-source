@@ -386,7 +386,7 @@ local function ActivatePooledFrames(framePool, numEntriesInUse)
 end
 
 function HeirloomsMixin:LayoutCurrentPage()
-	self.UpgradeLevelHelpBox:Hide();
+	HelpTip:Hide(self, HEIRLOOMS_JOURNAL_TUTORIAL_UPGRADE);
 
 	local pageLayoutData = self.heirloomLayoutData[self.PagingFrame:GetCurrentPage()];
 
@@ -601,10 +601,18 @@ function HeirloomsMixin:UpdateButton(button)
 end
 
 function HeirloomsMixin:ConsiderShowingUpgradeTutorial(button)
-	if not self.UpgradeLevelHelpBox:IsShown() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_LEVEL) then
-		self.UpgradeLevelHelpBox:ClearAllPoints();
-		self.UpgradeLevelHelpBox:SetPoint("TOPLEFT", button.levelBackground, "BOTTOM", -37, -17);
-		self.UpgradeLevelHelpBox:Show();
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_LEVEL) then
+		local helpTipInfo = {
+			text = HEIRLOOMS_JOURNAL_TUTORIAL_UPGRADE,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_LEVEL,
+			targetPoint = HelpTip.Point.BottomEdgeRight,
+			alignment = HelpTip.Alignment.Left,
+			offsetX = -16,
+			offsetY = 5,
+		};
+		HelpTip:Show(self, helpTipInfo, button.levelBackground);
 	end
 end
 

@@ -3172,7 +3172,6 @@ function CalendarViewEventAcceptButton_OnEnter(self)
 		GameTooltip:SetText(CALENDAR_TOOLTIP_AVAILABLEBUTTON, nil, nil, nil, nil, true);
 	end
 	GameTooltip:Show();
-	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_AVAILABLEBUTTON, 1);
 end
 
 function CalendarViewEventAcceptButton_OnClick(self)
@@ -3187,7 +3186,6 @@ function CalendarViewEventTentativeButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	GameTooltip:SetText(CALENDAR_TOOLTIP_TENTATIVEBUTTON, nil, nil, nil, nil, true);
 	GameTooltip:Show();
-	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_TENTATIVEBUTTON, 1);
 end
 
 function CalendarViewEventTentativeButton_OnClick(self)
@@ -3198,7 +3196,6 @@ function CalendarViewEventDeclineButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	GameTooltip:SetText(CALENDAR_TOOLTIP_DECLINEBUTTON, nil, nil, nil, nil, true);
 	GameTooltip:Show();
-	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_DECLINEBUTTON, 1);
 end
 
 function CalendarViewEventDeclineButton_OnClick(self)
@@ -3213,7 +3210,6 @@ function CalendarViewEventRemoveButton_OnEnter(self)
 		GameTooltip:SetText(CALENDAR_TOOLTIP_REMOVEBUTTON, nil, nil, nil, nil, true);
 	end
 	GameTooltip:Show();
-	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_REMOVEBUTTON, 1);
 end
 
 function CalendarViewEventRemoveButton_OnClick(self)
@@ -4576,7 +4572,6 @@ function CalendarCreateEventRaidInviteButton_OnEnter(self)
 		GameTooltip:SetText(CALENDAR_TOOLTIP_INVITEMEMBERS_BUTTON_PARTY, nil, nil, nil, nil, true);
 	end
 	GameTooltip:Show();
-	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_INVITETORAID_BUTTON, 1);
 end
 
 function CalendarCreateEventRaidInviteButton_Update()

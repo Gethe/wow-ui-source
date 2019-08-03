@@ -772,7 +772,7 @@
 									</OnClick>
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GameTooltip_AddNewbieTip(self, MOVE_FILTER_UP, 1.0, 1.0, 1.0);
+										GameTooltip_SetTitle(GameTooltip, MOVE_FILTER_UP);
 									</OnEnter>
 									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
@@ -802,7 +802,7 @@
 									</OnClick>
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GameTooltip_AddNewbieTip(self, MOVE_FILTER_DOWN, 1.0, 1.0, 1.0);
+										GameTooltip_SetTitle(GameTooltip, MOVE_FILTER_DOWN);
 									</OnEnter>
 									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>

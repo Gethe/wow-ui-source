@@ -105,7 +105,8 @@
 			</OnClick>
 			<OnEnter>
 				self.tooltipText = MicroButtonTooltipText(SPELLBOOK_ABILITIES_BUTTON, "TOGGLESPELLBOOK");
-				GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_SPELLBOOK);
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip_SetTitle(GameTooltip, self.tooltipText);
 			</OnEnter>
 		</Scripts>
 	</Button>
@@ -143,22 +144,14 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="QuestLogMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+	<Button name="QuestLogMicroButton" inherits="MainMenuBarMicroButton" mixin="QuestLogMicroButtonMixin" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="AchievementMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad>
-				LoadMicroButtonTextures(self, "Quest");
-				self.tooltipText = MicroButtonTooltipText(QUESTLOG_BUTTON, "TOGGLEQUESTLOG");
-				self.newbieText = NEWBIE_TOOLTIP_QUESTLOG;
-			</OnLoad>
-			<OnEvent>
-				self.tooltipText = MicroButtonTooltipText(QUESTLOG_BUTTON, "TOGGLEQUESTLOG");
-			</OnEvent>
-			<OnClick>
-				ToggleQuestLog();
-			</OnClick>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
 	<Button name="GuildMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
@@ -529,6 +522,14 @@
 		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOM" relativeTo="StoreMicroButton" relativePoint="TOP" x="0" y="-8"/>
+		</Anchors>
+	</Frame>
+	<Frame name="QuestLogMicroButtonAlert" inherits="MicroButtonAlertTemplate">
+		<KeyValues>
+			<KeyValue key="MicroButton" value="QuestLogMicroButton" type="global"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="QuestLogMicroButton" relativePoint="TOP" x="0" y="-8"/>
 		</Anchors>
 	</Frame>
 </Ui>

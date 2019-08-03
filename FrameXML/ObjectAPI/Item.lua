@@ -1,8 +1,6 @@
 Item = {};
 ItemMixin = {};
 
-local ItemEventListener;
-
 --[[static]] function Item:CreateFromItemLocation(itemLocation)
 	if type(itemLocation) ~= "table" or type(itemLocation.HasAnyLocation) ~= "function" or not itemLocation:HasAnyLocation() then
 		error("Usage: Item:CreateFromItemLocation(notEmptyItemLocation)", 2);
@@ -91,7 +89,7 @@ end
 
 function ItemMixin:IsItemInPlayersControl()
 	local itemLocation = self:GetItemLocation();
-	return itemLocation and C_Item.DoesItemExist(itemLocation); 
+	return itemLocation and C_Item.DoesItemExist(itemLocation);
 end
 
 -- Item API
@@ -221,7 +219,7 @@ function ItemMixin:IsItemDataCached()
 	if not self:IsItemEmpty() then
 		return C_Item.IsItemDataCached(self:GetItemLocation());
 	end
-	return true; 
+	return true;
 end
 
 function ItemMixin:IsDataEvictable()
@@ -245,79 +243,4 @@ function ItemMixin:ContinueWithCancelOnItemLoad(callbackFunction)
 	end
 
 	return ItemEventListener:AddCancelableCallback(self:GetItemID(), callbackFunction);
-end
-
---[ Item Event Listener ]
-
-ItemEventListener = CreateFrame("Frame");
-ItemEventListener.callbacks = {};
-
-ItemEventListener:SetScript("OnEvent", 
-	function(self, event, ...)
-		if event == "ITEM_DATA_LOAD_RESULT" then
-			local itemID, success = ...;
-			if success then
-				self:FireCallbacks(itemID);
-			else
-				self:ClearCallbacks(itemID);
-			end
-		end
-	end
-);
-ItemEventListener:RegisterEvent("ITEM_DATA_LOAD_RESULT");
-
-local CANCELED_SENTINEL = -1;
-
-function ItemEventListener:AddCallback(itemID, callbackFunction)
-	local callbacks = self:GetOrCreateCallbacks(itemID);
-	table.insert(callbacks, callbackFunction);
-	C_Item.RequestLoadItemDataByID(itemID);
-end
-
-function ItemEventListener:AddCancelableCallback(itemID, callbackFunction)
-	local callbacks = self:GetOrCreateCallbacks(itemID);
-	table.insert(callbacks, callbackFunction);
-	C_Item.RequestLoadItemDataByID(itemID);
-
-	local index = #callbacks;
-	return function()
-		if #callbacks > 0 and callbacks[index] ~= CANCELED_SENTINEL then
-			callbacks[index] = CANCELED_SENTINEL;
-			return true;
-		end
-		return false;
-	end;
-end
-
-function ItemEventListener:FireCallbacks(itemID)
-	local callbacks = self:GetCallbacks(itemID);
-	if callbacks then
-		self:ClearCallbacks(itemID);
-		for i, callback in ipairs(callbacks) do
-			if callback ~= CANCELED_SENTINEL then
-				xpcall(callback, CallErrorHandler);
-			end
-		end
-
-		for i = #callbacks, 1, -1 do
-			callbacks[i] = nil;
-		end
-	end
-end
-
-function ItemEventListener:ClearCallbacks(itemID)
-	self.callbacks[itemID] = nil;
-end
-
-function ItemEventListener:GetCallbacks(itemID)
-	return self.callbacks[itemID];
-end
-
-function ItemEventListener:GetOrCreateCallbacks(itemID)
-	local callbacks = self.callbacks[itemID];
-	if not callbacks then
-		callbacks = {};
-		self.callbacks[itemID] = callbacks;
-	end
-	return callbacks;
 end

@@ -263,7 +263,7 @@
 				<PushedTexture file="Interface\Buttons\UI-Panel-HideButton-Down"/>
 				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
-			<Button name="$parentEnterBattleButton" inherits="UIPanelButtonTemplate" text="BATTLEFIELD_JOIN" parentKey="enterButton">
+			<Button name="$parentEnterBattleButton" inherits="UIPanelButtonTemplate" text="ENTER_LFG" parentKey="enterButton">
 				<Size x="115" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-7" y="25"/>

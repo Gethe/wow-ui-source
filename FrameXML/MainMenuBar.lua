@@ -138,7 +138,8 @@ function MainMenuBarVehicleLeaveButton_OnEnter(self)
 		GameTooltip:AddLine(TAXI_CANCEL_DESCRIPTION, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 		GameTooltip:Show();
 	else
-		GameTooltip_AddNewbieTip(self, LEAVE_VEHICLE, 1.0, 1.0, 1.0, nil);
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, LEAVE_VEHICLE);
 	end
 end
 
@@ -234,17 +235,13 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 	local i, j, k = 0, 0, 0;
 
 	GameTooltip_SetDefaultAnchor(GameTooltip, self);
-
-	GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
+	GameTooltip_SetTitle(GameTooltip, self.tooltipText);
 
 	-- latency
 	local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
 	string = format(MAINMENUBAR_LATENCY_LABEL, latencyHome, latencyWorld);
 	GameTooltip:AddLine(" ");
 	GameTooltip:AddLine(string, 1.0, 1.0, 1.0);
-	if ( SHOW_NEWBIE_TIPS == "1" ) then
-		GameTooltip:AddLine(NEWBIE_TOOLTIP_LATENCY, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-	end
 	GameTooltip:AddLine(" ");
 
 	-- protocol types
@@ -253,33 +250,21 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 		string = format(MAINMENUBAR_PROTOCOLS_LABEL, ipTypes[ipTypeHome or 0] or UNKNOWN, ipTypes[ipTypeWorld or 0] or UNKNOWN);
 		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(string, 1.0, 1.0, 1.0);
-		if ( SHOW_NEWBIE_TIPS == "1" ) then
-			GameTooltip:AddLine(NEWBIE_TOOLTIP_PROTOCOLS, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-		end
 		GameTooltip:AddLine(" ");
 	end
 
 	-- framerate
 	string = format(MAINMENUBAR_FPS_LABEL, GetFramerate());
 	GameTooltip:AddLine(string, 1.0, 1.0, 1.0);
-	if ( SHOW_NEWBIE_TIPS == "1" ) then
-		GameTooltip:AddLine(NEWBIE_TOOLTIP_FRAMERATE, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-	end
 	GameTooltip:AddLine(" ");
 
 	string = format(MAINMENUBAR_BANDWIDTH_LABEL, GetAvailableBandwidth());
 	GameTooltip:AddLine(string, 1.0, 1.0, 1.0);
-	if ( SHOW_NEWBIE_TIPS == "1" ) then
-		GameTooltip:AddLine(NEWBIE_TOOLTIP_BANDWIDTH, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-	end
 	GameTooltip:AddLine(" ");
 
 	local percent = floor(GetDownloadedPercentage()*100+0.5);
 	string = format(MAINMENUBAR_DOWNLOAD_PERCENT_LABEL, percent);
 	GameTooltip:AddLine(string, 1.0, 1.0, 1.0);
-	if ( SHOW_NEWBIE_TIPS == "1" ) then
-		GameTooltip:AddLine(NEWBIE_TOOLTIP_DOWNLOAD_PERCENT, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-	end
 
 	-- Downloaded cinematics
 	local firstMovie = true;
@@ -287,10 +272,6 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 		local inProgress, downloaded, total = MainMenu_GetMovieDownloadProgress(i);
 		if ( inProgress ) then
 			if ( firstMovie ) then
-				if ( SHOW_NEWBIE_TIPS == "1" ) then
-					-- The "Cinematics" header looks bad when it's next to the newbie tooltip text, so add an extra line break
-					GameTooltip:AddLine(" ");
-				end
 				GameTooltip:AddLine("   "..CINEMATICS, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 				firstMovie = false;
 			end
@@ -336,9 +317,6 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 
 		GameTooltip:AddLine("\n");
 		GameTooltip:AddLine(string, 1.0, 1.0, 1.0);
-		if ( SHOW_NEWBIE_TIPS == "1" ) then
-			GameTooltip:AddLine(NEWBIE_TOOLTIP_MEMORY, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-		end
 
 		local size;
 		for i=1, NUM_ADDONS_TO_DISPLAY, 1 do

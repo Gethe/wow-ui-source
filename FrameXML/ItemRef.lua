@@ -378,6 +378,16 @@ function SetItemRef(link, text, button, chatFrame)
 		if ChatEdit_InsertLink(link) then
 			return;
 		end
+	elseif ( strsub(link, 1, 10) == "clubFinder" ) then 
+		if ( IsModifiedClick("CHATLINK") and button == "LeftButton" ) then
+			if ChatEdit_InsertLink(text) then
+				return;
+			end
+		end
+		Communities_LoadUI(); 	
+		local _, clubFinderId = strsplit(":", link);
+		CommunitiesFrame:ClubFinderHyperLinkClicked(clubFinderId);
+		return;
 	end
 
 	if ( IsModifiedClick() ) then
@@ -497,6 +507,21 @@ function GetClubTicketLink(ticketId, clubName, clubType)
 		return NORMAL_FONT_COLOR:WrapTextInColorCode(link);
 	end
 end
+
+function GetClubFinderLink(clubFinderId, clubName)
+	local clubType = C_ClubFinder.GetClubTypeFromFinderGUID(clubFinderId);
+	local fontColor = NORMAL_FONT_COLOR; 
+	local linkGlobalString;
+	if(clubType == Enum.ClubFinderRequestType.Guild) then 
+		linkGlobalString = CLUB_FINDER_LINK_GUILD;
+	elseif(clubType == Enum.ClubFinderRequestType.Community) then 
+		linkGlobalString = CLUB_FINDER_LINK_COMMUNITY;
+		fontColor = BATTLENET_FONT_COLOR;
+	else 
+		linkGlobalString = ""
+	end 
+	return fontColor:WrapTextInColorCode(FormatLink("clubFinder", linkGlobalString:format(clubName), clubFinderId));
+end 
 
 function GetCalendarEventLink(monthOffset, monthDay, index)
 	local dayEvent = C_Calendar.GetDayEvent(monthOffset, monthDay, index);

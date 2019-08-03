@@ -1219,7 +1219,7 @@ local Club =
 			Name = "ClubRoleIdentifier",
 			Type = "Enumeration",
 			NumValues = 4,
-			MinValue = 0,
+			MinValue = 1,
 			MaxValue = 4,
 			Fields =
 			{

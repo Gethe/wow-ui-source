@@ -143,11 +143,11 @@ function UnitPowerBarAlt_HidePills(self)
 end
 
 function UnitPowerBarAlt_SetUp(self, barID)
-	local barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, anchorTop, powerName, powerTooltip, costString;
+	local barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, anchorTop, powerName, powerTooltip, costString, forcePercentage;
 	if ( barID ) then
-		barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, anchorTop, powerName, powerTooltip, costString = GetAlternatePowerInfoByID(barID);
+		barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, anchorTop, powerName, powerTooltip, costString, _, forcePercentage = GetAlternatePowerInfoByID(barID);
 	else
-		barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, anchorTop, powerName, powerTooltip, costString, barID = UnitAlternatePowerInfo(self.unit);
+		barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, anchorTop, powerName, powerTooltip, costString, barID, forcePercentage = UnitAlternatePowerInfo(self.unit);
 	end
 	
 	self.startInset = startInset;
@@ -155,7 +155,8 @@ function UnitPowerBarAlt_SetUp(self, barID)
 	self.smooth = smooth;
 	self.powerName = powerName;
 	self.powerTooltip = powerTooltip;
-	
+	self.statusFrame.showPercentage = forcePercentage;
+
 	local sizeInfo = ALT_POWER_BAR_PLAYER_SIZES[barType];
 	if ( barID == DOUBLE_SIZE_FIST_BAR and self.scale == 1 ) then --Double the player's own power bar for task 55676
 		sizeInfo = ALT_POWER_BAR_PLAYER_SIZES.doubleCircular;

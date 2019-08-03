@@ -709,24 +709,30 @@ end
 -- [[ GarrisonRandomMissionAlertFrame ]] --
 function GarrisonRandomMissionAlertFrame_SetUp(frame, missionInfo)
 	frame.Level:SetText(missionInfo.level);
+	
+	local followerOptions = GarrisonFollowerOptions[missionInfo.followerTypeID];
+	local showItemLevel = followerOptions.showILevelOnMission and missionInfo.iLevel ~= 0;
+	if showItemLevel then
 	frame.ItemLevel:SetText("(" .. missionInfo.iLevel .. ")");
-	if (missionInfo.iLevel ~= 0 and missionInfo.isRare) then
-		frame.Level:SetPoint("TOP", "$parent", "TOP", -115, -14);
-		frame.ItemLevel:SetPoint("TOP", "$parent", "TOP", -115, -37);
-		frame.Rare:SetPoint("TOP", "$parent", "TOP", -115, -48);
-	elseif (missionInfo.isRare) then
-		frame.Level:SetPoint("TOP", "$parent", "TOP", -115, -19);
-		frame.Rare:SetPoint("TOP", "$parent", "TOP", -115, -45);
-	elseif (missionInfo.iLevel ~= 0) then
-		frame.Level:SetPoint("TOP", "$parent", "TOP", -115, -19);
-		frame.ItemLevel:SetPoint("TOP", "$parent", "TOP", -115, -45);
-	else
-		frame.Level:SetPoint("TOP", "$parent", "TOP", -115, -28);
 	end
 
-	frame.ItemLevel:SetShown(missionInfo.iLevel ~= 0);
+	if (showItemLevel and missionInfo.isRare) then
+		frame.Level:SetPoint("TOP", -115, -14);
+		frame.ItemLevel:SetPoint("TOP", -115, -37);
+		frame.Rare:SetPoint("TOP", -115, -48);
+	elseif (missionInfo.isRare) then
+		frame.Level:SetPoint("TOP", -115, -19);
+		frame.Rare:SetPoint("TOP", -115, -45);
+	elseif (showItemLevel) then
+		frame.Level:SetPoint("TOP", -115, -19);
+		frame.ItemLevel:SetPoint("TOP", -115, -45);
+	else
+		frame.Level:SetPoint("TOP", -115, -28);
+	end
+
+	frame.ItemLevel:SetShown(showItemLevel);
 	frame.Rare:SetShown(missionInfo.isRare);
-	frame.garrisonType = GarrisonFollowerOptions[missionInfo.followerTypeID].garrisonType;
+	frame.garrisonType = followerOptions.garrisonType;
 	PlaySound(SOUNDKIT.UI_GARRISON_TOAST_MISSION_COMPLETE);
 end
 

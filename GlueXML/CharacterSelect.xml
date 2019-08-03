@@ -68,6 +68,15 @@
 						<Anchor point="TOPLEFT" x="-20" y="8"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="FactionEmblem" useAtlasSize="true" scale=".8">
+					<KeyValues>
+						<KeyValue key="Horde" value="-4" type="number"/>
+						<KeyValue key="Alliance" value="0" type="number"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-46" y="-6"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -77,7 +86,7 @@
 						<FontString name="$parentLastVersion" inherits="GlueFontHighlightSmall" justifyH="LEFT" parentKey="LastVersion">
 							<Size x="0" y="0"/>
 							<Anchors>
-								<Anchor point="TOPRIGHT" x="-48" y="-5"/>
+								<Anchor point="TOPRIGHT" x="-57" y="-5"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentName" inherits="GlueFontNormal" justifyH="LEFT" parentKey="name">
@@ -878,13 +887,6 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad>
-								self:SetShown(C_Login.IsLauncherLogin());
-								self:RegisterEvent("LAUNCHER_LOGIN_STATUS_CHANGED");
-							</OnLoad>
-							<OnEvent>
-								self:SetShown(C_Login.IsLauncherLogin());
-							</OnEvent>
 							<OnClick>
 								GlueMenuFrame_Show();
 							</OnClick>

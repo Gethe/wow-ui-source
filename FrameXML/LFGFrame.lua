@@ -707,16 +707,16 @@ function LFGDungeonReadyPopup_Update()
 
 	local leaveText = LEAVE_QUEUE;
 	if ( subtypeID == LFG_SUBTYPEID_RAID or subtypeID == LFG_SUBTYPEID_FLEXRAID ) then
-		LFGDungeonReadyDialog.enterButton:SetText(ENTER_RAID);
+		LFGDungeonReadyDialog.enterButton:SetText(ENTER_LFG);
 	elseif ( subtypeID == LFG_SUBTYPEID_SCENARIO ) then
 		if ( numMembers > 1 ) then
-			LFGDungeonReadyDialog.enterButton:SetText(ENTER_SCENARIO);
+			LFGDungeonReadyDialog.enterButton:SetText(ENTER_LFG);
 		else
 			LFGDungeonReadyDialog.enterButton:SetText(ACCEPT);
 			leaveText = CANCEL;
 		end
 	else
-		LFGDungeonReadyDialog.enterButton:SetText(ENTER_DUNGEON);
+		LFGDungeonReadyDialog.enterButton:SetText(ENTER_LFG);
 	end
 	LFGDungeonReadyDialog.leaveButton:SetText(leaveText);
 

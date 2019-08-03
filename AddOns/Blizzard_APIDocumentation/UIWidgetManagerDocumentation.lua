@@ -58,6 +58,20 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "GetCaptureZoneVisualizationInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "CaptureZoneVisualizationInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetDoubleIconAndTextWidgetVisualizationInfo",
 			Type = "Function",
 
@@ -358,130 +372,6 @@ local UIWidgetManager =
 			},
 		},
 		{
-			Name = "IconState",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 0,
-			MaxValue = 2,
-			Fields =
-			{
-				{ Name = "Hidden", Type = "IconState", EnumValue = 0 },
-				{ Name = "ShowState1", Type = "IconState", EnumValue = 1 },
-				{ Name = "ShowState2", Type = "IconState", EnumValue = 2 },
-			},
-		},
-		{
-			Name = "StatusBarValueTextType",
-			Type = "Enumeration",
-			NumValues = 7,
-			MinValue = 0,
-			MaxValue = 6,
-			Fields =
-			{
-				{ Name = "Hidden", Type = "StatusBarValueTextType", EnumValue = 0 },
-				{ Name = "Percentage", Type = "StatusBarValueTextType", EnumValue = 1 },
-				{ Name = "Value", Type = "StatusBarValueTextType", EnumValue = 2 },
-				{ Name = "Time", Type = "StatusBarValueTextType", EnumValue = 3 },
-				{ Name = "TimeShowOneLevelOnly", Type = "StatusBarValueTextType", EnumValue = 4 },
-				{ Name = "ValueOverMax", Type = "StatusBarValueTextType", EnumValue = 5 },
-				{ Name = "ValueOverMaxNormalized", Type = "StatusBarValueTextType", EnumValue = 6 },
-			},
-		},
-		{
-			Name = "UIWidgetVisualizationType",
-			Type = "Enumeration",
-			NumValues = 17,
-			MinValue = 0,
-			MaxValue = 16,
-			Fields =
-			{
-				{ Name = "IconAndText", Type = "UIWidgetVisualizationType", EnumValue = 0 },
-				{ Name = "CaptureBar", Type = "UIWidgetVisualizationType", EnumValue = 1 },
-				{ Name = "StatusBar", Type = "UIWidgetVisualizationType", EnumValue = 2 },
-				{ Name = "DoubleStatusBar", Type = "UIWidgetVisualizationType", EnumValue = 3 },
-				{ Name = "IconTextAndBackground", Type = "UIWidgetVisualizationType", EnumValue = 4 },
-				{ Name = "DoubleIconAndText", Type = "UIWidgetVisualizationType", EnumValue = 5 },
-				{ Name = "StackedResourceTracker", Type = "UIWidgetVisualizationType", EnumValue = 6 },
-				{ Name = "IconTextAndCurrencies", Type = "UIWidgetVisualizationType", EnumValue = 7 },
-				{ Name = "TextWithState", Type = "UIWidgetVisualizationType", EnumValue = 8 },
-				{ Name = "HorizontalCurrencies", Type = "UIWidgetVisualizationType", EnumValue = 9 },
-				{ Name = "BulletTextList", Type = "UIWidgetVisualizationType", EnumValue = 10 },
-				{ Name = "ScenarioHeaderCurrenciesAndBackground", Type = "UIWidgetVisualizationType", EnumValue = 11 },
-				{ Name = "TextureAndText", Type = "UIWidgetVisualizationType", EnumValue = 12 },
-				{ Name = "SpellDisplay", Type = "UIWidgetVisualizationType", EnumValue = 13 },
-				{ Name = "DoubleStateIconRow", Type = "UIWidgetVisualizationType", EnumValue = 14 },
-				{ Name = "TextureAndTextRow", Type = "UIWidgetVisualizationType", EnumValue = 15 },
-				{ Name = "ZoneControl", Type = "UIWidgetVisualizationType", EnumValue = 16 },
-			},
-		},
-		{
-			Name = "IconAndTextWidgetState",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 0,
-			MaxValue = 3,
-			Fields =
-			{
-				{ Name = "Hidden", Type = "IconAndTextWidgetState", EnumValue = 0 },
-				{ Name = "Shown", Type = "IconAndTextWidgetState", EnumValue = 1 },
-				{ Name = "ShownWithDynamicIconFlashing", Type = "IconAndTextWidgetState", EnumValue = 2 },
-				{ Name = "ShownWithDynamicIconNotFlashing", Type = "IconAndTextWidgetState", EnumValue = 3 },
-			},
-		},
-		{
-			Name = "SpellDisplayIconSizeType",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 0,
-			MaxValue = 2,
-			Fields =
-			{
-				{ Name = "Small", Type = "SpellDisplayIconSizeType", EnumValue = 0 },
-				{ Name = "Medium", Type = "SpellDisplayIconSizeType", EnumValue = 1 },
-				{ Name = "Large", Type = "SpellDisplayIconSizeType", EnumValue = 2 },
-			},
-		},
-		{
-			Name = "SpellDisplayIconDisplayType",
-			Type = "Enumeration",
-			NumValues = 2,
-			MinValue = 0,
-			MaxValue = 1,
-			Fields =
-			{
-				{ Name = "Buff", Type = "SpellDisplayIconDisplayType", EnumValue = 0 },
-				{ Name = "Debuff", Type = "SpellDisplayIconDisplayType", EnumValue = 1 },
-			},
-		},
-		{
-			Name = "StatusBarOverrideBarTextShownType",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 0,
-			MaxValue = 3,
-			Fields =
-			{
-				{ Name = "Never", Type = "StatusBarOverrideBarTextShownType", EnumValue = 0 },
-				{ Name = "Always", Type = "StatusBarOverrideBarTextShownType", EnumValue = 1 },
-				{ Name = "OnlyOnMouseover", Type = "StatusBarOverrideBarTextShownType", EnumValue = 2 },
-				{ Name = "OnlyNotOnMouseover", Type = "StatusBarOverrideBarTextShownType", EnumValue = 3 },
-			},
-		},
-		{
-			Name = "UIWidgetTextSizeType",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 0,
-			MaxValue = 3,
-			Fields =
-			{
-				{ Name = "Small", Type = "UIWidgetTextSizeType", EnumValue = 0 },
-				{ Name = "Medium", Type = "UIWidgetTextSizeType", EnumValue = 1 },
-				{ Name = "Large", Type = "UIWidgetTextSizeType", EnumValue = 2 },
-				{ Name = "Huge", Type = "UIWidgetTextSizeType", EnumValue = 3 },
-			},
-		},
-		{
 			Name = "ZoneControlMode",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -560,6 +450,131 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "IconState",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Hidden", Type = "IconState", EnumValue = 0 },
+				{ Name = "ShowState1", Type = "IconState", EnumValue = 1 },
+				{ Name = "ShowState2", Type = "IconState", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "StatusBarValueTextType",
+			Type = "Enumeration",
+			NumValues = 7,
+			MinValue = 0,
+			MaxValue = 6,
+			Fields =
+			{
+				{ Name = "Hidden", Type = "StatusBarValueTextType", EnumValue = 0 },
+				{ Name = "Percentage", Type = "StatusBarValueTextType", EnumValue = 1 },
+				{ Name = "Value", Type = "StatusBarValueTextType", EnumValue = 2 },
+				{ Name = "Time", Type = "StatusBarValueTextType", EnumValue = 3 },
+				{ Name = "TimeShowOneLevelOnly", Type = "StatusBarValueTextType", EnumValue = 4 },
+				{ Name = "ValueOverMax", Type = "StatusBarValueTextType", EnumValue = 5 },
+				{ Name = "ValueOverMaxNormalized", Type = "StatusBarValueTextType", EnumValue = 6 },
+			},
+		},
+		{
+			Name = "UIWidgetVisualizationType",
+			Type = "Enumeration",
+			NumValues = 18,
+			MinValue = 0,
+			MaxValue = 17,
+			Fields =
+			{
+				{ Name = "IconAndText", Type = "UIWidgetVisualizationType", EnumValue = 0 },
+				{ Name = "CaptureBar", Type = "UIWidgetVisualizationType", EnumValue = 1 },
+				{ Name = "StatusBar", Type = "UIWidgetVisualizationType", EnumValue = 2 },
+				{ Name = "DoubleStatusBar", Type = "UIWidgetVisualizationType", EnumValue = 3 },
+				{ Name = "IconTextAndBackground", Type = "UIWidgetVisualizationType", EnumValue = 4 },
+				{ Name = "DoubleIconAndText", Type = "UIWidgetVisualizationType", EnumValue = 5 },
+				{ Name = "StackedResourceTracker", Type = "UIWidgetVisualizationType", EnumValue = 6 },
+				{ Name = "IconTextAndCurrencies", Type = "UIWidgetVisualizationType", EnumValue = 7 },
+				{ Name = "TextWithState", Type = "UIWidgetVisualizationType", EnumValue = 8 },
+				{ Name = "HorizontalCurrencies", Type = "UIWidgetVisualizationType", EnumValue = 9 },
+				{ Name = "BulletTextList", Type = "UIWidgetVisualizationType", EnumValue = 10 },
+				{ Name = "ScenarioHeaderCurrenciesAndBackground", Type = "UIWidgetVisualizationType", EnumValue = 11 },
+				{ Name = "TextureAndText", Type = "UIWidgetVisualizationType", EnumValue = 12 },
+				{ Name = "SpellDisplay", Type = "UIWidgetVisualizationType", EnumValue = 13 },
+				{ Name = "DoubleStateIconRow", Type = "UIWidgetVisualizationType", EnumValue = 14 },
+				{ Name = "TextureAndTextRow", Type = "UIWidgetVisualizationType", EnumValue = 15 },
+				{ Name = "ZoneControl", Type = "UIWidgetVisualizationType", EnumValue = 16 },
+				{ Name = "CaptureZone", Type = "UIWidgetVisualizationType", EnumValue = 17 },
+			},
+		},
+		{
+			Name = "IconAndTextWidgetState",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Hidden", Type = "IconAndTextWidgetState", EnumValue = 0 },
+				{ Name = "Shown", Type = "IconAndTextWidgetState", EnumValue = 1 },
+				{ Name = "ShownWithDynamicIconFlashing", Type = "IconAndTextWidgetState", EnumValue = 2 },
+				{ Name = "ShownWithDynamicIconNotFlashing", Type = "IconAndTextWidgetState", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "SpellDisplayIconSizeType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Small", Type = "SpellDisplayIconSizeType", EnumValue = 0 },
+				{ Name = "Medium", Type = "SpellDisplayIconSizeType", EnumValue = 1 },
+				{ Name = "Large", Type = "SpellDisplayIconSizeType", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "SpellDisplayIconDisplayType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Buff", Type = "SpellDisplayIconDisplayType", EnumValue = 0 },
+				{ Name = "Debuff", Type = "SpellDisplayIconDisplayType", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "StatusBarOverrideBarTextShownType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Never", Type = "StatusBarOverrideBarTextShownType", EnumValue = 0 },
+				{ Name = "Always", Type = "StatusBarOverrideBarTextShownType", EnumValue = 1 },
+				{ Name = "OnlyOnMouseover", Type = "StatusBarOverrideBarTextShownType", EnumValue = 2 },
+				{ Name = "OnlyNotOnMouseover", Type = "StatusBarOverrideBarTextShownType", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "UIWidgetTextSizeType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Small", Type = "UIWidgetTextSizeType", EnumValue = 0 },
+				{ Name = "Medium", Type = "UIWidgetTextSizeType", EnumValue = 1 },
+				{ Name = "Large", Type = "UIWidgetTextSizeType", EnumValue = 2 },
+				{ Name = "Huge", Type = "UIWidgetTextSizeType", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "WidgetCurrencyClass",
 			Type = "Enumeration",
 			NumValues = 2,
@@ -602,6 +617,41 @@ local UIWidgetManager =
 				{ Name = "neutralZoneCenter", Type = "number", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },
 				{ Name = "glowAnimType", Type = "CaptureBarWidgetGlowAnimType", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
+				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+			},
+		},
+		{
+			Name = "ZoneEntry",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "state", Type = "ZoneControlState", Nilable = false },
+				{ Name = "activeState", Type = "ZoneControlActiveState", Nilable = false },
+				{ Name = "fillType", Type = "ZoneControlFillType", Nilable = false },
+				{ Name = "min", Type = "number", Nilable = false },
+				{ Name = "max", Type = "number", Nilable = false },
+				{ Name = "current", Type = "number", Nilable = false },
+				{ Name = "capturePoint", Type = "number", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CaptureZoneVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
+				{ Name = "mode", Type = "ZoneControlMode", Nilable = false },
+				{ Name = "leadingEdgeType", Type = "ZoneControlLeadingEdgeType", Nilable = false },
+				{ Name = "dangerFlashType", Type = "ZoneControlDangerFlashType", Nilable = false },
+				{ Name = "zoneInfo", Type = "ZoneEntry", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
 				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
@@ -882,6 +932,7 @@ local UIWidgetManager =
 				{ Name = "enabledState", Type = "WidgetEnabledState", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },
+				{ Name = "textSizeType", Type = "UIWidgetTextSizeType", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
 				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
@@ -935,21 +986,6 @@ local UIWidgetManager =
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
-			},
-		},
-		{
-			Name = "ZoneEntry",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "state", Type = "ZoneControlState", Nilable = false },
-				{ Name = "activeState", Type = "ZoneControlActiveState", Nilable = false },
-				{ Name = "fillType", Type = "ZoneControlFillType", Nilable = false },
-				{ Name = "min", Type = "number", Nilable = false },
-				{ Name = "max", Type = "number", Nilable = false },
-				{ Name = "current", Type = "number", Nilable = false },
-				{ Name = "capturePoint", Type = "number", Nilable = false },
-				{ Name = "tooltip", Type = "string", Nilable = false },
 			},
 		},
 		{

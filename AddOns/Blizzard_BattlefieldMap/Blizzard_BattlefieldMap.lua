@@ -71,10 +71,6 @@ function BattlefieldMapTabMixin:OnClick(button)
 	ValidateFramePosition(self);
 end
 
-function BattlefieldMapTabMixin:OnEnter()
-	GameTooltip_AddNewbieTip(self, BATTLEFIELDMINIMAP_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_BATTLEFIELDMINIMAP_OPTIONS, 1);
-end
-
 function BattlefieldMapTabMixin:OnDragStart()
 	if not BattlefieldMapOptions.locked then
 		BattlefieldMapFrame:StartMoving();

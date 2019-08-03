@@ -369,8 +369,6 @@
 							if(speciesID and speciesID > 0) then
 								BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
 							end
-						else
-							GameTooltip_AddNewbieTip(self, ENCHANT_SLOT, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ENCHANTSLOT, 1);
 						end
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>

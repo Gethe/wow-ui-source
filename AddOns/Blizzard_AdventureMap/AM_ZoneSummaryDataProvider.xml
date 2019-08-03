@@ -25,7 +25,7 @@
 					<Anchors>
 						<Anchor point="TOP" relativePoint="BOTTOM" y="-0" />
 					</Anchors>
-					<Color r="1.0" g="0.82" b="0"/>
+					<Color color="NORMAL_FONT_COLOR"/>
 				</FontString>
 			</Layer>
 

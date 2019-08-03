@@ -57,6 +57,7 @@ QuestLogOwnerMixin.lua
 
 ObjectAPI\ContinuableContainer.lua
 ObjectAPI\ItemLocation.lua
+ObjectAPI\AsyncCallbackSystem.lua
 ObjectAPI\Item.lua
 ObjectAPI\Spell.lua
 ObjectAPI\PlayerLocation.lua
@@ -75,6 +76,7 @@ CalendarUtil.lua
 CommunitiesUtil.lua
 ItemUtil.lua
 ItemDisplay.xml
+HelpTip.xml
 CurrencyContainer.lua
 ## IME.xml needs to be loaded after UIParent.xml
 ..\SharedXML\IME.xml
@@ -112,8 +114,8 @@ WardrobeOutfits.xml
 DressUpFrames.xml
 ItemButtonTemplate.xml
 NavigationBar.xml
-..\SharedXML\HybridScrollFrame.lua
 ..\SharedXML\HybridScrollFrame.xml
+..\SharedXML\ScrollList.xml
 GameMenuFrame.xml
 CharacterFrameTemplates.xml
 TextStatusBar.lua
@@ -178,6 +180,7 @@ SpellBookFrame.xml
 CharacterFrame.xml
 PaperDollFrame.xml
 ReputationFrame.xml
+QuestIndicators.xml
 QuestFrame.xml
 QuestPOI.xml
 QuestInfo.xml
@@ -188,7 +191,6 @@ LootFrame.xml
 ItemTextFrame.xml
 TaxiFrame.xml
 BankFrame.xml
-ScrollOfResurrection.xml
 RoleSelectionTemplate.xml
 ItemRef.xml
 SocialQueue.xml
@@ -276,6 +278,7 @@ SplashFrame.xml
 QuestChoiceFrameMixin.lua
 AzeriteEmpoweredItemDataSource.lua
 GuildUtil.lua
+QuestSession.xml
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

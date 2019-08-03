@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="AM_QuestDialog.lua"/>
-	
+
 	<Button name="AdventureMapQuestRewardTemplate" enableMouse="true" virtual="true">
 		<Size x="135" y="41" />
 		<Layers>
@@ -58,7 +58,7 @@
 		<Anchors>
 			<Anchor point="CENTER" />
 		</Anchors>
-		
+
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Portrait" />
@@ -83,7 +83,7 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Rewards" y="-10" />
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Rewards" relativePoint="TOPRIGHT" y="-42" />
 					</Anchors>
-					<Color r="1.0" g="0.9294" b="0.7607"/>
+					<Color color="AREA_NAME_FONT_COLOR"/>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -118,7 +118,7 @@
 							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="6" y="-6"/>
 							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="6"/>
 						</Anchors>
-						
+
 						<Frames>
 							<Button parentKey="ScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
 								<Anchors>
@@ -182,29 +182,24 @@
 								</Texture>
 							</Layer>
 						</Layers>
-						
+
 						<Scripts>
 							<OnValueChanged>
 								self:GetParent():SetVerticalScroll(value);
 							</OnValueChanged>
 						</Scripts>
-						
+
 						<ThumbTexture parentKey="ThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
 							<Size x="18" y="24"/>
 							<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
 						</ThumbTexture>
 					</Slider>
 				</Frames>
-				
+
 				<ScrollChild>
 					<Frame parentKey="Child">
 						<Size x="255" y="1"/>
 						<Layers>
-							<Layer level="OVERLAY" textureSubLevel="1">
-								<Texture>
-									<Color r="1" g="0" b="0" a=".0"/>
-								</Texture>
-							</Layer>
 							<Layer level="BACKGROUND">
 								<FontString parentKey="TitleHeader" parentArray="Elements" inherits="QuestTitleFont" justifyH="LEFT">
 									<Anchors>
@@ -269,7 +264,7 @@
 			<OnHide method="OnHide" />
 			<OnEvent method="OnEvent" />
 		</Scripts>
-		
+
 		<Animations>
 			<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
 				<Alpha fromAlpha="0" toAlpha="0" duration=".3" order="1"/>

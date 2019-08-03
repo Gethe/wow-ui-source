@@ -169,7 +169,9 @@ function PVPMatchResultsMixin:OnEvent(event, ...)
 	elseif event == "PLAYER_LEAVING_WORLD" then
 		self:Shutdown();
 	elseif event == "PVP_MATCH_COMPLETE" then
+		if not C_Commentator.IsSpectating() then
 		self:BeginShow();
+		end
 	elseif event == "TREASURE_PICKER_CACHE_FLUSH" then
 		self.haveConquestData = self:HaveConquestData();
 		if not haveConquestData then
@@ -402,6 +404,7 @@ function PVPMatchResultsMixin:InitConquestFrame(currency)
 end
 function PVPMatchResultsMixin:InitRatingFrame()
 	local localPlayerScoreInfo = C_PvP.GetScoreInfoByPlayerGuid(GetPlayerGuid());
+	if localPlayerScoreInfo then
 	local ratingChange = localPlayerScoreInfo.ratingChange;
 	local rating = localPlayerScoreInfo.rating;
 	self.ratingButton:Init(rating, ratingChange);
@@ -420,6 +423,7 @@ function PVPMatchResultsMixin:InitRatingFrame()
 	end
 	
 	self.ratingFrame:Show();
+	end
 end
 function PVPMatchResultsMixin:SetupArtwork(factionIndex, isFactionalMatch)
 	local useAlternateColor = not isFactionalMatch;

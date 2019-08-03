@@ -69,6 +69,17 @@ end
 
 function PlayerFrame_Update ()
 	if ( UnitExists("player") ) then
+		PlayerFrame_UpdateLevel();
+		PlayerFrame_UpdatePartyLeader();
+		PlayerFrame_UpdatePvPStatus();
+		PlayerFrame_UpdateStatus();
+		PlayerFrame_UpdatePlaytime();
+		PlayerFrame_UpdateLayout();
+	end
+end
+
+function PlayerFrame_UpdateLevel()
+	if ( UnitExists("player") ) then
 		local level = UnitLevel(PlayerFrame.unit);
 		local effectiveLevel = UnitEffectiveLevel(PlayerFrame.unit);
 		if ( effectiveLevel ~= level ) then
@@ -78,11 +89,6 @@ function PlayerFrame_Update ()
 		end
 		PlayerFrame_UpdateLevelTextAnchor(effectiveLevel);
 		PlayerLevelText:SetText(effectiveLevel);
-		PlayerFrame_UpdatePartyLeader();
-		PlayerFrame_UpdatePvPStatus();
-		PlayerFrame_UpdateStatus();
-		PlayerFrame_UpdatePlaytime();
-		PlayerFrame_UpdateLayout();
 	end
 end
 

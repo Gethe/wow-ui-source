@@ -33,7 +33,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Text" inherits="GameFontHighlight" text="Invite">
+						<FontString parentKey="Text" inherits="GameFontHighlightSmall" text="Invite">
 						</FontString>
 					</Layer>
 				</Layers>

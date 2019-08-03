@@ -5,6 +5,11 @@ TOURNAMENT_OBSERVE_PLAYER_PRIMARY = 1;
 TOURNAMENT_OBSERVE_PLAYER_SECONDARY = 2;
 TOURNAMENT_OBSERVE_PLAYER_PRIMARY_SNAP = 3;
 
+-- Limits can be overwritten in another addon.
+COMMENTATOR_MAX_OFFENSIVE_SPELLS = COMMENTATOR_MAX_OFFENSIVE_SPELLS or 5;
+COMMENTATOR_MAX_DEFENSIVE_SPELLS = COMMENTATOR_MAX_DEFENSIVE_SPELLS or 5;
+COMMENTATOR_MAX_DEBUFF_SPELLS = COMMENTATOR_MAX_DEBUFF_SPELLS or 2;
+
 local TOURNAMENTARENA_ZONESTATE_SCANNING = "scanning";					-- [ Waiting to join a match ] --
 local TOURNAMENTARENA_ZONESTATE_TRANSFERRING_IN = "transferring_in";		-- [ Joining a match ] --
 local TOURNAMENTARENA_ZONESTATE_TRANSFERRING_OUT = "transferring_out";	-- [ Leaving a match ] --
@@ -43,14 +48,13 @@ function PvPCommentatorMixin:OnLoad()
 
 	self.unitFrames = {};
 	self.sortedUnitFrames = {};
-	local TEAM_POSITIONS = { "left", "right", };
 
 	for teamIndex = 1, C_Commentator.GetMaxNumTeams() do
+		local alignment = teamIndex == 1 and "LEFT" or "RIGHT";
 		self.unitFrames[teamIndex] = {};
-		
 		for playerIndex = 1, C_Commentator.GetMaxNumPlayersPerTeam() do
 			local newFrame = CreateFrame("FRAME", nil, WorldFrame, "CommentatorUnitFrameTemplate");
-			newFrame:Initialize(TEAM_POSITIONS[teamIndex]);
+			newFrame:Initialize(alignment);
 			self.unitFrames[teamIndex][playerIndex] = newFrame;
 		end
 	end
@@ -211,7 +215,7 @@ function PvPCommentatorMixin:OnUpdate(elapsed)
 	self:CheckObserverState();
 	self:LayoutTeamFrames();
 
-	CommentatorTeamDisplay:SetElapsedMs(C_Commentator.GetElapsedMs())
+	CommentatorTeamDisplay:SetMatchDuration(C_Commentator.GetMatchDuration());
 
 	self.targetSpeedFactor = IsShiftKeyDown() and 2.0 or 1.0;
 	self.currentSpeedFactor = DeltaLerp(self.currentSpeedFactor or 1.0, self.targetSpeedFactor, .05, elapsed);
@@ -391,7 +395,7 @@ function PvPCommentatorMixin:LayoutTeamFrames()
 			if unitFrame:IsValid() then
 				local newYOffset = offsetY + unitFrame:GetAdditionalYSpacing();
 			
-				if unitFrame.align == "right" then
+				if unitFrame.align == "RIGHT" then
 					unitFrame:SetPoint("TOPRIGHT", WorldFrame, -X_OFFSET, newYOffset);
 				else
 					unitFrame:SetPoint("TOPLEFT", WorldFrame, X_OFFSET, newYOffset);

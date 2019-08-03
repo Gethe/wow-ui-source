@@ -37,3 +37,9 @@ end
 function CreateFromMixins(...)
 	return Mixin({}, ...)
 end
+
+function CreateAndInitFromMixin(mixin, ...)
+	local object = CreateFromMixins(mixin);
+	object:Init(...);
+	return object;
+end

@@ -1084,6 +1084,9 @@ function WardrobeCollectionFrame_OnHide(self)
 	self:UnregisterEvent("TRANSMOG_COLLECTION_CAMERA_UPDATE");
 	C_TransmogCollection.EndSearch();
 	self.jumpToVisualID = nil;
+	for i, frame in ipairs(WardrobeCollectionFrame.ContentFrames) do
+		frame:Hide();
+	end
 end
 
 function WardrobeCollectionFrame_UpdateTabButtons()
@@ -1510,10 +1513,13 @@ end
 
 function WardrobeCollectionFrame_GetWeaponInfoForEnchant(slot)
 	if ( not WardrobeFrame_IsAtTransmogrifier() and DressUpFrame:IsShown() ) then
-		local appearanceSourceID = DressUpModel:GetSlotTransmogSources(GetInventorySlotInfo(slot));
-		if ( WardrobeCollectionFrame_CanEnchantSource(appearanceSourceID) ) then
-			local _, appearanceVisualID = C_TransmogCollection.GetAppearanceSourceInfo(appearanceSourceID);
-			return appearanceSourceID, appearanceVisualID;
+		local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
+		if playerActor then
+			local appearanceSourceID = playerActor:GetSlotTransmogSources(GetInventorySlotInfo(slot));
+			if ( WardrobeCollectionFrame_CanEnchantSource(appearanceSourceID) ) then
+				local _, appearanceVisualID = C_TransmogCollection.GetAppearanceSourceInfo(appearanceSourceID);
+				return appearanceSourceID, appearanceVisualID;
+			end
 		end
 	end
 

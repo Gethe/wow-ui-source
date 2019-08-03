@@ -53,7 +53,7 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function WatchData:Check()
-	if (self.Quest and IsQuestFlaggedCompleted(self.Quest)) then
+	if (self.Quest and C_QuestLog.IsQuestFlaggedCompleted(self.Quest)) then
 		self.IsComplete = true;
 		return;
 	end
@@ -72,22 +72,6 @@ function WatchData:Check()
 
 	self.IsComplete = self:_CheckIsComplete();
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Range Manager

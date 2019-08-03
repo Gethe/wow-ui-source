@@ -1,8 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	
+
 	<Script file="Blizzard_ObjectiveTracker.lua"/>
-	
+
 	<Frame name="ObjectiveTrackerBlockTemplate" hidden="true" virtual="true">
 		<Size x="232" y="10"/>
 		<Layers>
@@ -14,7 +14,7 @@
 					</Anchors>
 					<Color r="0.75" g="0.61" b="0"/>
 				</FontString>
-			</Layer>			
+			</Layer>
 		</Layers>
 		<Frames>
 			<Button name="$parentHeader" parentKey="HeaderButton">
@@ -29,7 +29,7 @@
 					<OnLeave function="ObjectiveTrackerBlockHeader_OnLeave"/>
 				</Scripts>
 			</Button>
-		</Frames>	
+		</Frames>
 	</Frame>
 
 	<Frame name="ObjectiveTrackerHeaderTemplate" virtual="true" hidden="true">
@@ -91,7 +91,7 @@
 				<Alpha childKey="LineSheen" startDelay="0.15" duration="0.5" order="1" fromAlpha="0" toAlpha="0.75"/>
 				<Alpha childKey="LineSheen" startDelay="0.75" duration="0.5" order="1" fromAlpha="0.75" toAlpha="0"/>
 				<Translation childKey="LineSheen" startDelay="0.15" duration="1.5" order="1" offsetX="250" offsetY="0"/>
-				
+
 				<Scripts>
 					<OnFinished function="ObjectiveTrackerHeader_OnAnimFinished"/>
 				</Scripts>
@@ -99,12 +99,12 @@
 		</Animations>
 		<Scripts>
 			<OnLoad>
-        self.height = OBJECTIVE_TRACKER_HEADER_HEIGHT;
-        self.Text:SetFontObjectsToTry(GameFontNormalMed2, SystemFont_Shadow_Med1);
-      </OnLoad>
+        		self.height = OBJECTIVE_TRACKER_HEADER_HEIGHT;
+        		self.Text:SetFontObjectsToTry(GameFontNormalMed2, SystemFont_Shadow_Med1);
+      		</OnLoad>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="ObjectiveTrackerLineTemplate" virtual="true">
 		<Size x="232" y="16"/>
 		<Layers>
@@ -128,11 +128,11 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="ObjectiveTrackerCheckLineTemplate" virtual="true">
 		<Size x="232" y="16"/>
 		<Layers>
-			<Layer level="ARTWORK">	
+			<Layer level="ARTWORK">
 				<FontString parentKey="Text" inherits="ObjectiveFont">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="20" y="0"/>
@@ -143,7 +143,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" x="1" y="2"/>
 					</Anchors>
-				</Texture>				
+				</Texture>
 				<Texture parentKey="Icon">
 					<Size x="16" y="16"/>
 					<Anchors>
@@ -166,7 +166,7 @@
 							<Alpha startDelay="0.467" fromAlpha="1" toAlpha="0" duration="0.267" order="1"/>
 						</AnimationGroup>
 					</Animations>
-				</Texture>				
+				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="CheckFlash" file="Interface\Scenarios\ScenarioIcon-Check" alphaMode="ADD" alpha="0" hidden="true">
@@ -181,7 +181,7 @@
 							<Alpha fromAlpha="1" toAlpha="0" startDelay="0.167" duration="0.23" order="2"/>
 						</AnimationGroup>
 					</Animations>
-				</Texture>			
+				</Texture>
 				<Texture parentKey="Sheen" file="Interface\Scenarios\Objective-Sheen" alpha="0">
 					<Size x="32" y="0"/>
 					<Anchors>
@@ -196,7 +196,7 @@
 							<Alpha startDelay="0.2" fromAlpha="1" toAlpha="0" duration="0.133" order="1" smoothing="IN"/>
 						</AnimationGroup>
 					</Animations>
-				</Texture>				
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -206,7 +206,7 @@
 			<OnHide function="ObjectiveTrackerCheckLine_OnHide"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="ObjectiveTrackerTimerBarTemplate" virtual="true" hidden="true">
 		<Size x="192" y="20"/>
 		<Anchors>
@@ -217,7 +217,7 @@
 				<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">
 					<Anchors>
 						<Anchor point="LEFT"/>
-					</Anchors>				
+					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -249,7 +249,7 @@
 								<Anchor point="TOPLEFT" relativeKey="$parent.BorderLeft" relativePoint="TOPRIGHT"/>
 								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderRight" relativePoint="BOTTOMLEFT"/>
 							</Anchors>
-						</Texture>						
+						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="-1">
 						<Texture>
@@ -265,7 +265,7 @@
 			<OnUpdate function="ObjectiveTrackerTimerBar_OnUpdate"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="ObjectiveTrackerProgressBarTemplate" virtual="true" hidden="true">
 		<Size x="192" y="25"/>
 		<Anchors>
@@ -333,7 +333,13 @@
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<Frames>
-					<Frame parentKey="QuestHeader" inherits="ObjectiveTrackerHeaderTemplate"/>
+					<Frame parentKey="QuestHeader" inherits="ObjectiveTrackerHeaderTemplate" mixin="QuestHeaderMixin">
+						<Scripts>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
+						</Scripts>
+					</Frame>
 					<Frame parentKey="AchievementHeader" inherits="ObjectiveTrackerHeaderTemplate"/>
 					<Frame parentKey="ScenarioHeader" inherits="ObjectiveTrackerHeaderTemplate"/>
 					<Frame parentKey="UIWidgetsHeader" inherits="ObjectiveTrackerHeaderTemplate"/>
@@ -382,4 +388,4 @@
 			<OnSizeChanged function="ObjectiveTracker_OnSizeChanged"/>
 		</Scripts>
 	</Frame>
-</Ui>	
+</Ui>

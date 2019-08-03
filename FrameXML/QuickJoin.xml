@@ -69,50 +69,11 @@
 	<Frame name="QuickJoinFrame" parent="FriendsFrame" hidden="true" setAllPoints="true" mixin="QuickJoinMixin">
 		<Frames>
 			<Frame name="QuickJoinFrameDropDown" inherits="UIDropDownMenuTemplate"/>
-			<ScrollFrame name="QuickJoinScrollFrame" parentKey="ScrollFrame" inherits="HybridScrollFrameTemplate">
-				<Size x="302" y="307"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="FriendsFrame" x="8" y="-87"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size x="29" y="102"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-6" y="5"/>
-							</Anchors>
-							<TexCoords left="0" right="0.445" top="0" bottom="0.4"/>
-						</Texture>
-						<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size x="29" y="106"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-6" y="-5"/>
-							</Anchors>
-							<TexCoords left="0.515625" right="0.960625" top="0" bottom="0.4140625"/>
-						</Texture>
-						<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size x="29" y="1"/>
-							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
-								<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
-							</Anchors>
-							<TexCoords left="0" right="0.445" top=".75" bottom="1.0"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Slider name="$parentScrollBar" inherits="MinimalHybridScrollBarTemplate" parentKey="scrollBar">
-						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="FriendsFrame" relativePoint="TOPRIGHT" x="-14" y="-101"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="12"/>
-						</Anchors>
-					</Slider>
-				</Frames>
-			</ScrollFrame>
+			<ScrollFrame name="QuickJoinScrollFrame" parentKey="ScrollFrame" inherits="FriendsFrameScrollFrame" />
 			<Button parentKey="JoinQueueButton" inherits="MagicButtonTemplate" text="JOIN_QUEUE" motionScriptsWhileDisabled="true">
-				<Size x="135" y="22"/>
+				<Size x="135" y="21"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-3" y="4"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="FriendsFrame" x="-6" y="4"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="QuickJoin_JoinQueueButtonOnClick"/>

@@ -800,7 +800,8 @@ function SpellButton_UpdateButton(self)
 	spellString:Show();
 	subSpellString:Show();
 
-	if (not (slotType == "FUTURESPELL")) then
+	local isDisabled = spellID and C_SpellBook.IsSpellDisabled(spellID);
+	if (not (slotType == "FUTURESPELL") and not isDisabled) then
 		slotFrame:Show();
 		self.UnlearnedFrame:Hide();
 		self.TrainFrame:Hide();
@@ -888,10 +889,16 @@ function SpellButton_UpdateButton(self)
 			self.SpellSubName:SetTextColor(0.25, 0.12, 0);
 			self.SpellName:SetShadowOffset(0, 0);
 			self.SpellName:SetPoint("LEFT", self, "RIGHT", 8, 6);
-		elseif (level and level > UnitLevel("player")) then
+		elseif (level and level > UnitLevel("player") or isDisabled) then
 			self.SeeTrainerString:Hide();
 			self.RequiredLevelString:Show();
-			self.RequiredLevelString:SetFormattedText(SPELLBOOK_AVAILABLE_AT, level);
+			
+			local displayedLevel = level;
+			if(isDisabled) then
+				displayedLevel = GetSpellLevelLearned(slot, SpellBookFrame.bookType);
+			end	
+
+			self.RequiredLevelString:SetFormattedText(SPELLBOOK_AVAILABLE_AT, displayedLevel);
 			self.RequiredLevelString:SetTextColor(0.25, 0.12, 0);
 			self.UnlearnedFrame:Show();
 			self.TrainFrame:Hide();

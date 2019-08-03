@@ -127,7 +127,7 @@ local UIModelInfo =
 			MaxValue = 1,
 			Fields =
 			{
-				{ Name = "AlignLightToOrbitDelta", Type = "ModelSceneSetting", EnumValue = 0 },
+				{ Name = "AlignLightToOrbitDelta", Type = "ModelSceneSetting", EnumValue = 1 },
 			},
 		},
 		{

@@ -3478,12 +3478,10 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			elseif ( arg1 == "FRIEND_REMOVED" or arg1 == "BATTLETAG_FRIEND_REMOVED" ) then
 				message = format(globalstring, arg2);
 			elseif ( arg1 == "FRIEND_ONLINE" or arg1 == "FRIEND_OFFLINE") then
-				local _, accountName, battleTag, _, characterName, _, client = BNGetFriendInfoByID(arg13);
-				if (client and client ~= "") then
-					local _, _, battleTag = BNGetFriendInfoByID(arg13);
-					characterName = BNet_GetValidatedCharacterName(characterName, battleTag, client) or "";
-					local characterNameText = BNet_GetClientEmbeddedTexture(client, 14)..characterName;
-					local linkDisplayText = ("[%s] (%s)"):format(arg2, characterNameText);
+				local accountInfo = C_BattleNet.GetAccountInfoByID(arg13);
+				if accountInfo and accountInfo.clientProgram ~= "" then
+					local characterName = BNet_GetValidatedCharacterNameWithClientEmbeddedTexture(accountInfo.characterName, accountInfo.battleTag, accountInfo.clientProgram, 14);
+					local linkDisplayText = ("[%s] (%s)"):format(arg2, characterName);
 					local playerLink = GetBNPlayerLink(arg2, linkDisplayText, arg13, arg11, Chat_GetChatCategory(type), 0);
 					message = format(globalstring, playerLink);
 				else

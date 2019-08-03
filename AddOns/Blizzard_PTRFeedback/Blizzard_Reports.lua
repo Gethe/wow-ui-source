@@ -88,18 +88,38 @@ function PTR_IssueReporter.CreateReports()
     creatureReport:RegisterPopEvent(event.Tooltip, tooltips.unit)
     
     --------------------------------------- Quest Reporting -------------------------------------------
+    local IsQuestDisabledFromQuestSync = function(dataPackage)
+        if (dataPackage) and (dataPackage.ID) and (C_QuestLog) and (C_QuestLog.IsQuestDisabledForSession) and (C_QuestLog.IsQuestDisabledForSession(dataPackage.ID)) then
+            return 1
+        else
+            return 0
+        end   
+    end
+    
+    local IsQuestSyncEnabled = function()
+        if (C_QuestSession) and (C_QuestSession.Exists) and (C_QuestSession.Exists()) then
+            return 1
+        else
+            return 0
+        end
+    end    
+    
     local questReport = PTR_IssueReporter.CreateSurvey(4, "Bug Report: %s")
     questReport:PopulateDynamicTitleToken(1, "Name")
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(questReport)
     
     questReport:AddDataCollection(baseCollectors + 1, collector.FromDataPackage, "ID")
     questReport:AddDataCollection(baseCollectors + 2, collector.OpenEndedQuestion, "What was the issue with this quest?")
+    questReport:AddDataCollection(baseCollectors + 3, collector.RunFunction, IsQuestSyncEnabled)
+    questReport:AddDataCollection(baseCollectors + 4, collector.RunFunction, IsQuestDisabledFromQuestSync)
     
     local AutoQuestReport = PTR_IssueReporter.CreateSurvey(4, "Bug Report: Quest")
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(AutoQuestReport)
     
     AutoQuestReport:AddDataCollection(baseCollectors + 1, collector.FromDataPackage, "ID")
     AutoQuestReport:AddDataCollection(baseCollectors + 2, collector.OpenEndedQuestion, "Did you experience any issues?")
+    AutoQuestReport:AddDataCollection(baseCollectors + 3, collector.RunFunction, IsQuestSyncEnabled)
+    AutoQuestReport:AddDataCollection(baseCollectors + 4, collector.RunFunction, IsQuestDisabledFromQuestSync)
     
     questReport:RegisterPopEvent(event.Tooltip, tooltips.quest)
     AutoQuestReport:RegisterFrameAttachedSurvey(QuestFrame, event.QuestRewardFrameShown, {event.QuestFrameClosed, event.QuestTurnedIn}, 0, 0) 

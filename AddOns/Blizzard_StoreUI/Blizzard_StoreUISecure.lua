@@ -1942,7 +1942,6 @@ function StoreFrame_OnEvent(self, event, ...)
 		end
 		
 		if StoreFrame_GetSelectedCategoryID() then
-			--FIXME - Not the right place to put this check, but I want to stop the error
 			StoreFrame_SetCategory();
 		end
 		if (UnrevokeWaitingForProducts) then
@@ -3461,10 +3460,11 @@ function StoreProductCard_ShowModel(self, entryInfo, showShadows, forceModelUpda
 			actorTag = baseActorTag;
 		end
 
-		local actor = self.ModelScene:GetActorByTag(actorTag);
-		if actor then
-			actor:SetModelByCreatureDisplayID(card.creatureDisplayInfoID);
-			actor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+		if card.creatureDisplayInfoID and card.creatureDisplayInfoID > 0 then
+			local actor = self.ModelScene:GetActorByTag(actorTag);
+			SetupItemPreviewActor(actor, card.creatureDisplayInfoID);
+		else
+			SetupPlayerForModelScene(self.ModelScene, card.itemModifiedAppearanceIDs);
 		end
 	end
 
@@ -4080,7 +4080,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 		frame.ValidationDescription:ClearAllPoints();
 		frame.ValidationDescription:SetPoint("TOPLEFT", frame.TransferFactionCheckbox, "BOTTOMLEFT", 8, -8);
 	elseif (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
-		if (C_StoreSecure.GetCurrencyID() ~= CURRENCY_KRW) then
+		if (StoreVASValidationFrame.productInfo.sharedData.canChangeAccount) then
 			frame.TransferAccountCheckbox:Show();
 			frame.TransferAccountCheckbox.Label:ApplyFontObjects();
 			frame.TransferFactionCheckbox:ClearAllPoints();

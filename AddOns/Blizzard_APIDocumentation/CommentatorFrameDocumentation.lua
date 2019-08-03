@@ -205,15 +205,6 @@ local CommentatorFrame =
 			},
 		},
 		{
-			Name = "GetElapsedMs",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "timeLeft", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetExcludeDistance",
 			Type = "Function",
 
@@ -238,6 +229,20 @@ local CommentatorFrame =
 			Returns =
 			{
 				{ Name = "angle", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetIndirectSpellID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "trackedSpellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "indirectSpellID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -283,6 +288,15 @@ local CommentatorFrame =
 				{ Name = "minLevel", Type = "number", Nilable = false },
 				{ Name = "maxLevel", Type = "number", Nilable = false },
 				{ Name = "numInstances", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMatchDuration",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "seconds", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -369,6 +383,24 @@ local CommentatorFrame =
 			Returns =
 			{
 				{ Name = "numPlayers", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPlayerAuraInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "teamIndex", Type = "number", Nilable = false },
+				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "startTime", Type = "number", Nilable = false },
+				{ Name = "duration", Type = "number", Nilable = false },
+				{ Name = "enable", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -571,33 +603,33 @@ local CommentatorFrame =
 			},
 		},
 		{
-			Name = "GetTrackedDefensiveCooldowns",
+			Name = "GetTrackedSpellID",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "teamIndex", Type = "number", Nilable = false },
-				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "indirectSpellID", Type = "number", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "trackedDefensiveCooldowns", Type = "table", InnerType = "number", Nilable = true },
+				{ Name = "trackedSpellID", Type = "number", Nilable = false },
 			},
 		},
 		{
-			Name = "GetTrackedOffensiveCooldowns",
+			Name = "GetTrackedSpells",
 			Type = "Function",
 
 			Arguments =
 			{
 				{ Name = "teamIndex", Type = "number", Nilable = false },
 				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "category", Type = "TrackedSpellCategory", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "trackedCooldowns", Type = "table", InnerType = "number", Nilable = true },
+				{ Name = "spells", Type = "table", InnerType = "number", Nilable = true },
 			},
 		},
 		{
@@ -665,22 +697,6 @@ local CommentatorFrame =
 			},
 		},
 		{
-			Name = "IsTrackedDefensiveCooldown",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "teamIndex", Type = "number", Nilable = false },
-				{ Name = "playerIndex", Type = "number", Nilable = false },
-				{ Name = "spellID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "isTrackedCooldown", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "IsTrackedOffensiveAura",
 			Type = "Function",
 
@@ -695,7 +711,7 @@ local CommentatorFrame =
 			},
 		},
 		{
-			Name = "IsTrackedOffensiveCooldown",
+			Name = "IsTrackedSpell",
 			Type = "Function",
 
 			Arguments =
@@ -703,11 +719,12 @@ local CommentatorFrame =
 				{ Name = "teamIndex", Type = "number", Nilable = false },
 				{ Name = "playerIndex", Type = "number", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "category", Type = "TrackedSpellCategory", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "isTrackedCooldown", Type = "bool", Nilable = false },
+				{ Name = "isTracked", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -983,6 +1000,16 @@ local CommentatorFrame =
 			},
 		},
 		{
+			Name = "SetRequestedDebuffCooldowns",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specID", Type = "number", Nilable = false },
+				{ Name = "spellIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetRequestedDefensiveCooldowns",
 			Type = "Function",
 
@@ -1135,6 +1162,20 @@ local CommentatorFrame =
 
 	Tables =
 	{
+		{
+			Name = "TrackedSpellCategory",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Offensive", Type = "TrackedSpellCategory", EnumValue = 0 },
+				{ Name = "Defensive", Type = "TrackedSpellCategory", EnumValue = 1 },
+				{ Name = "Debuff", Type = "TrackedSpellCategory", EnumValue = 2 },
+				{ Name = "Count", Type = "TrackedSpellCategory", EnumValue = 3 },
+			},
+		},
 		{
 			Name = "NameOverrideEntry",
 			Type = "Structure",
