@@ -4,6 +4,7 @@ function HonorFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_PVP_RANK_CHANGED");
 	self:RegisterEvent("UNIT_LEVEL");
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
+	HonorFrame_UpdateShown();
 end
 
 function HonorFrame_OnShow(self)
@@ -20,6 +21,14 @@ function HonorFrame_OnEvent(self, event, ...)
 		HonorFrame_SetLevel();
 	elseif ( event == "PLAYER_GUILD_UPDATE" ) then
 		HonorFrame_SetGuild();
+	end
+end
+
+function HonorFrame_UpdateShown()
+	if ( not HonorSystemEnabled() ) then
+		CharacterFrameTab5:Hide();
+	else
+		CharacterFrameTab5:Show();
 	end
 end
 

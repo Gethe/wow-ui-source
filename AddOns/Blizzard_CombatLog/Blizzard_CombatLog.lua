@@ -68,7 +68,7 @@ COMBATLOG_DEFAULT_COLORS = {
 };
 COMBATLOG_DEFAULT_SETTINGS = {
 	-- Settings
-	fullText = false;
+	fullText = true;
 	textMode = TEXT_MODE_A;
 	timestamp = false;
 	timestampFormat = TEXT_MODE_A_TIMESTAMP;
@@ -94,11 +94,11 @@ COMBATLOG_DEFAULT_SETTINGS = {
 	noMeleeSwingColoring = false;
 	missColoring = true;
 	braces = false;
-	unitBraces = true;
-	sourceBraces = true;
-	destBraces = true;
+	unitBraces = false;
+	sourceBraces = false;
+	destBraces = false;
 	spellBraces = false;
-	itemBraces = true;
+	itemBraces = false;
 	showHistory = true;
 	lineColorPriority = 1; -- 1 = source->dest->event, 2 = dest->source->event, 3 = event->source->dest
 	unitIcons = true;
@@ -1334,15 +1334,6 @@ do
 				checked = function() return filter.missColoring; end;
 				func = function(self, arg1, arg2, checked)
 					filter.missColoring = checked;
-					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
-				end;
-				keepShownOnClick = true;
-			},
-			{
-				text = "Braces";
-				checked = function() return filter.braces; end;
-				func = function(self, arg1, arg2, checked)
-					filter.braces = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
 				keepShownOnClick = true;
@@ -3471,7 +3462,7 @@ end
 local oldSetItemRef = SetItemRef;
 function SetItemRef(link, text, button, chatFrame)
 
-	if ( strsub(link, 1, 4) == "unit") then
+	--[[if ( strsub(link, 1, 4) == "unit") then
 		local _, guid, name = strsplit(":", link);
 
 		if ( IsModifiedClick("CHATLINK") ) then
@@ -3526,7 +3517,7 @@ function SetItemRef(link, text, button, chatFrame)
 			ChatEdit_InsertLink (link);
 			return;
 		end
-	end
+	end]]
 	oldSetItemRef(link, text, button, chatFrame);
 end
 

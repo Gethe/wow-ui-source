@@ -502,10 +502,18 @@ function ToggleTalentFrame()
 	end
 end
 
+function BattlefieldMapAllowed()
+	return UIWidgetManager.widgetPools:GetNumActive() > 0 or (MiniMapBattlefieldFrame and MiniMapBattlefieldFrame.status == "active");
+end
+
 function ToggleBattlefieldMap()
 	BattlefieldMap_LoadUI();
 	if ( BattlefieldMapFrame ) then
-		BattlefieldMapFrame:Toggle();
+		if (BattlefieldMapAllowed()) then
+			BattlefieldMapFrame:Toggle();
+		else
+			BattlefieldMapFrame:Hide();
+		end
 	end
 end
 

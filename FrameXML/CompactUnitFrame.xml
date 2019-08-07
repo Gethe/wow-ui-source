@@ -167,8 +167,8 @@
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture name="$parentMyHealAbsorb" parentKey="myHealAbsorb"/>
-				<Texture name="$parentMyHealAbsorbLeftShadow" parentKey="myHealAbsorbLeftShadow" file="Interface\RaidFrame\Absorb-Edge"/>
-				<Texture name="$parentMyHealAbsorbRightShadow" parentKey="myHealAbsorbRightShadow" file="Interface\RaidFrame\Absorb-Edge">
+				<Texture name="$parentMyHealAbsorbLeftShadow" parentKey="myHealAbsorbLeftShadow" file="Interface\RaidFrame\Absorb-Edge" hidden="true"/>
+				<Texture name="$parentMyHealAbsorbRightShadow" parentKey="myHealAbsorbRightShadow" file="Interface\RaidFrame\Absorb-Edge" hidden="true">
 					<TexCoords left="1" right="0" top="0" bottom="1"/>
 				</Texture>
 			</Layer>

@@ -1267,40 +1267,17 @@ StaticPopupDialogs["DEATH"] = {
 	button1 = DEATH_RELEASE,
 	button2 = USE_SOULSTONE,	-- rez option 1
 	button3 = USE_SOULSTONE,	-- rez option 2
-	--button4 = DEATH_RECAP,
 	OnShow = function(self)
 		self.timeleft = GetReleaseTimeRemaining();
+		self.resyncTime = 0; -- Timer so that we don't call GetReleaseTimeRemaining too frequently.
 
 		if ( self.timeleft == -1 ) then
 			self.text:SetText(DEATH_RELEASE_NOTIMER);
 		end
-		--[[if ( not self.UpdateRecapButton ) then
-			self.UpdateRecapButton = function( self )
-				if ( DeathRecap_HasEvents() ) then
-					self.button4:Enable();
-					self.button4:SetScript("OnEnter", nil );
-					self.button4:SetScript("OnLeave", nil);
-				else
-					self.button4:Disable();
-					self.button4:SetMotionScriptsWhileDisabled(true);
-					self.button4:SetScript("OnEnter", function(self)
-						GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-						GameTooltip:SetText(DEATH_RECAP_UNAVAILABLE);
-						GameTooltip:Show();
-					end );
-					self.button4:SetScript("OnLeave", GameTooltip_Hide);
-				end
-			end
-		end
-
-		self:UpdateRecapButton();]]
 	end,
 	OnHide = function(self)
 		self.button2.option = nil;
 		self.button3.option = nil;
-		--[[self.button4:SetScript("OnEnter", nil );
-		self.button4:SetScript("OnLeave", nil);
-		self.button4:SetMotionScriptsWhileDisabled(false);]]
 	end,
 	OnButton1 = function(self)
 		RepopMe();
@@ -1314,11 +1291,13 @@ StaticPopupDialogs["DEATH"] = {
 	OnButton3 = function(self, data, reason)
 		return OnResurrectButtonClick(self.button3.option, reason);
 	end,
-	--[[OnButton4 = function()
-		OpenDeathRecapUI();
-		return true;
-	end,]]
 	OnUpdate = function(self, elapsed)
+		self.resyncTime = self.resyncTime - elapsed;
+		if (self.resyncTime <= 0) then
+			self.timeleft = GetReleaseTimeRemaining();
+			self.resyncTime = 5;
+		end
+
 		if ( IsFalling() and not IsOutOfBounds()) then
 			self.button1:Disable();
 			self.button2:Disable();
@@ -1370,10 +1349,6 @@ StaticPopupDialogs["DEATH"] = {
 			self.button3.option = option2;
 			self.button3:SetEnabled(option2.canUse);
 		end
-
-		--[[if ( self.UpdateRecapButton) then
-			self:UpdateRecapButton();
-		end]]
 	end,
 	DisplayButton2 = function(self)
 		local option1, option2 = GetSelfResurrectDialogOptions();
@@ -1391,7 +1366,8 @@ StaticPopupDialogs["DEATH"] = {
 	noCancelOnReuse = 1,
 	hideOnEscape = false,
 	noCloseOnAlt = true,
-	cancels = "RECOVER_CORPSE"
+	cancels = "RECOVER_CORPSE",
+	timeoutInformationalOnly = 1,
 };
 StaticPopupDialogs["RESURRECT"] = {
 	StartDelay = GetCorpseRecoveryDelay,

@@ -303,3 +303,11 @@ function PoolCollection:EnumerateActive()
 		return currentObject;
 	end, nil;
 end
+
+function PoolCollection:GetNumActive()
+	local count = 0;
+	for _, pool in pairs(self.pools) do
+		count = count + pool:GetNumActive();
+	end
+	return count;
+end

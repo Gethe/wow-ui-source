@@ -132,15 +132,8 @@ function QuestRewardCompleteButton_OnClick()
 	if ( QuestInfoFrame.itemChoice == 0 and GetNumQuestChoices() > 0 ) then
 		QuestChooseRewardError();
 	else
-		local money = GetQuestMoneyToGet();
-		if ( money and money > 0 ) then
-			QuestFrame.dialog = StaticPopup_Show("CONFIRM_COMPLETE_EXPENSIVE_QUEST");
-			if ( QuestFrame.dialog ) then
-				MoneyFrame_Update(QuestFrame.dialog:GetName().."MoneyFrame", money);
-			end
-		else
-			GetQuestReward(QuestInfoFrame.itemChoice);
-		end
+		GetQuestReward(QuestInfoFrame.itemChoice);
+		PlaySound(SOUNDKIT.IG_QUEST_LIST_COMPLETE);
 	end
 end
 

@@ -82,6 +82,13 @@ function PlayerFrame_UpdatePartyLeader()
 		PlayerLeaderIcon:Hide();
 		PlayerGuideIcon:Hide();
 	end
+
+	local lootMethod, lootMaster = GetLootMethod();
+	if ( lootMaster == 0 and IsInGroup() ) then
+		PlayerMasterIcon:Show();
+	else
+		PlayerMasterIcon:Hide();
+	end
 end
 
 function PlayerFrame_UpdatePvPStatus()

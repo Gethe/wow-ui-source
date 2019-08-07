@@ -5,6 +5,9 @@ function ToggleCharacter(tab, onlyShow)
 	if ( tab == "PetPaperDollFrame" and not HasPetUI() and not PetPaperDollFrame:IsVisible() ) then
 		return;
 	end
+	if ( tab == "HonorFrame" and not HonorSystemEnabled() and not HonorFrame:IsVisible() ) then
+		return;
+	end
 	local subFrame = _G[tab];
 	if ( subFrame ) then
 		if (not subFrame.hidden) then
@@ -114,6 +117,8 @@ function CharacterFrame_OnShow(self)
 	end
 	
 	MicroButtonPulseStop(CharacterMicroButton);	--Stop the button pulse
+
+	HonorFrame_UpdateShown();
 end
 
 function CharacterFrame_OnHide(self)
