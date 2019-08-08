@@ -2,6 +2,40 @@
 ..\FrameXML\UI.xsd">
 	<Script file="QuestMapFrame.lua"/>
 
+	<Button name="QuestLogPathButtonTemplate" frameLevel="10" hidden="true" virtual="true">
+		<Size x="16" y="24"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="16" y="24"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="HighlightIcon" alphaMode="ADD" alpha="0.3" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown>
+				self.Icon:SetPoint("CENTER", 1, -1);
+			</OnMouseDown>
+			<OnMouseUp>
+				self.Icon:SetPoint("CENTER", 0, 0);
+			</OnMouseUp>
+			<OnClick>
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+				QuestMapFrame_ToggleShowDestination();
+			</OnClick>
+		</Scripts>
+	</Button>
+
 	<Button name="QuestLogHeaderTemplate" virtual="true">
 		<Size x="16" y="16"/>
 		<KeyValues>
@@ -630,6 +664,24 @@
 							<Anchor point="TOPRIGHT" x="10" y="30"/>
 						</Anchors>
 					</Frame>
+					<Button parentKey="DestinationMapButton" inherits="QuestLogPathButtonTemplate">
+						<Scripts>
+							<OnLoad>
+								self.Icon:SetAtlas("questlog-waypoint-finaldestination-questionmark");
+								self.Icon:SetSize(16, 24);
+								self.HighlightIcon:SetAtlas("questlog-waypoint-finaldestination-questionmark");
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button parentKey="WaypointMapButton" inherits="QuestLogPathButtonTemplate">
+						<Scripts>
+							<OnLoad>
+								self.Icon:SetAtlas("poi-traveldirections-arrow", false);
+								self.Icon:SetSize(15, 19);
+								self.HighlightIcon:SetAtlas("poi-traveldirections-arrow", false);
+							</OnLoad>
+						</Scripts>
+					</Button>
 					<Frame parentKey="RewardsFrame">
 						<Size x="287" y="275"/>
 						<Anchors>
@@ -684,6 +736,18 @@
 								self.ScrollBar.trackBG:SetAlpha(0.5);
 								ScrollFrame_OnLoad(self);
 							</OnLoad>
+							<OnScrollRangeChanged>
+								ScrollFrame_OnScrollRangeChanged(self, xrange, yrange);
+								if yrange > 0 then
+									self:GetParent().DestinationMapButton:SetPoint("TOPRIGHT", -2, -4);
+									self:GetParent().WaypointMapButton:SetPoint("TOPRIGHT", -2, -4);
+									QuestInfo_AdjustTitleWidth(-19);
+								else
+									self:GetParent().DestinationMapButton:SetPoint("TOPRIGHT", 14, -4);
+									self:GetParent().WaypointMapButton:SetPoint("TOPRIGHT", 14, -4);
+									QuestInfo_AdjustTitleWidth(-2);
+								end
+							</OnScrollRangeChanged>
 						</Scripts>
 					</ScrollFrame>
 					<Button>

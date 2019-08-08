@@ -30,7 +30,7 @@ local QuestSession =
 
 			Returns =
 			{
-				{ Name = "details", Type = "QuestSessionPlayerDetails", Nilable = true },
+				{ Name = "details", Type = "QuestSessionJoinRequestDetails", Nilable = true },
 			},
 		},
 		{
@@ -167,6 +167,15 @@ local QuestSession =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "guid", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "QuestSessionJoinRequestDetails",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "requesterDetails", Type = "QuestSessionPlayerDetails", Nilable = false },
+				{ Name = "joinedMembers", Type = "table", InnerType = "string", Nilable = false },
 			},
 		},
 	},

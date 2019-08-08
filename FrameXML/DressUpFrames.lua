@@ -155,21 +155,7 @@ function DressUpMount(mountID)
 			mountActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_ANIM);
 			mountActor:SetAnimation(0);
 		end
-
-		local playerActor = frame.ModelScene:GetPlayerActor();
-		if (playerActor) then
-			if disablePlayerMountPreview or isSelfMount then
-				playerActor:ClearModel();
-			else
-				local sheatheWeapons = true;
-				if (playerActor:SetModelByUnit("player", sheatheWeapons)) then
-					local calcMountScale = mountActor:CalculateMountScale(playerActor);
-					local inverseScale = 1 / calcMountScale; 
-					playerActor:SetRequestedScale( inverseScale );
-					mountActor:AttachToMount(playerActor, animID, spellVisualKitID);
-				end
-			end
-		end
+		frame.ModelScene:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview);
 	end
 	return true;
 end

@@ -539,6 +539,7 @@ takeenum("VasPurchaseState");
 takeenum("BattlepaySpecialProducts");
 takeenum("BattlepayProductGroupFlag");
 takeenum("BattlepayGroupDisplayType");
+takeenum("BattlepayCardType");
 retainenum("ModelSceneSetting");
 retainenum("ClubType");
 retainenum("ClubFieldType");

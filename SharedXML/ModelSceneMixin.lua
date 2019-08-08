@@ -151,33 +151,55 @@ function ModelSceneMixin:GetActorByTag(tag)
 	return self.tagToActor[tag];
 end
 
-function ModelSceneMixin:GetPlayerActor()
-	local playerRaceName;
-	local playerGender;
-	if IsOnGlueScreen() then
-		local _, _, raceFilename, _, _, _, _, _, genderEnum = GetCharacterInfo(GetCharacterSelection());
-		playerRaceName = raceFilename;
-		playerGender = genderEnum;
-	else
-		playerRaceName = UnitRace("player");
-		playerGender = UnitSex("player");
-	end
-
-	if not playerRaceName or not playerGender then
-		return nil;
-	end
-	playerGender = (playerGender == 2) and "male" or "female";
-	playerRaceName = playerRaceName:lower();
-	local playerRaceActor = playerRaceName.."-"..playerGender;
-
-	local actor = self:GetActorByTag(playerRaceActor);
-	if not actor then		
-		actor = self:GetActorByTag(playerRaceName);
-		if not actor then
-			actor = self:GetActorByTag("player");
+function ModelSceneMixin:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview)
+	local playerActor = self:GetPlayerActor("player-rider");
+	if (playerActor) then
+		if disablePlayerMountPreview or isSelfMount then
+			playerActor:ClearModel();
+		else
+			local sheathWeapons = true;
+			if (playerActor:SetModelByUnit("player", sheathWeapons)) then
+				local calcMountScale = mountActor:CalculateMountScale(playerActor);
+				local inverseScale = 1 / calcMountScale; 
+				playerActor:SetRequestedScale( inverseScale );
+				mountActor:AttachToMount(playerActor, animID, spellVisualKitID);
+			end
 		end
 	end
+end
 
+function ModelSceneMixin:GetPlayerActor(overrideActorName)
+	local playerRaceName;
+	local playerGender;
+	local actor;
+
+	if overrideActorName then
+		actor = self:GetActorByTag(overrideActorName);
+	else
+
+		if IsOnGlueScreen() then
+			local _, _, raceFilename, _, _, _, _, _, genderEnum = GetCharacterInfo(GetCharacterSelection());
+			playerRaceName = raceFilename;
+			playerGender = genderEnum;
+		else
+			playerRaceName = UnitRace("player");
+			playerGender = UnitSex("player");
+		end
+
+		if not playerRaceName or not playerGender then
+			return nil;
+		end
+		playerGender = (playerGender == 2) and "male" or "female";
+		playerRaceName = playerRaceName:lower();
+		local playerRaceActor = playerRaceName.."-"..playerGender;
+		actor = self:GetActorByTag(playerRaceActor);
+		if not actor then		
+			actor = self:GetActorByTag(playerRaceName);
+			if not actor then
+				actor = self:GetActorByTag("player");
+			end
+		end
+	end
 	return actor;
 end
 

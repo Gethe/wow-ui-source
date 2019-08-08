@@ -1,5 +1,5 @@
 function CanStartQuestSession()
-	return IsInGroup() and not C_QuestSession.Exists();
+	return IsInGroup(LE_PARTY_CATEGORY_HOME) and not IsInRaid() and not C_QuestSession.Exists();
 end
 
 function CanJoinQuestSession()
@@ -87,7 +87,7 @@ function QuestSessionDialogMixin:GetMemberFrame(guid)
 end
 
 function QuestSessionDialogMixin:SetMemberResponse(guid, response)
-	self.trackedResponses[guid] = response;
+	self:TrackResponse(guid, response);
 
 	local memberFrame = self:GetMemberFrame(guid);
 	if memberFrame then
@@ -111,27 +111,39 @@ function QuestSessionDialogMixin:SetMemberResponse(guid, response)
 end
 
 function QuestSessionDialogMixin:HasTrackedResponse(guid)
-	local response = self.trackedResponses[guid];
-	return response and response ~= HAS_NOT_RESPONSED;
+	if self.trackedResponses then
+		local response = self.trackedResponses[guid];
+		return response and response ~= HAS_NOT_RESPONSED;
+	end
+
+	return false;
+end
+
+function QuestSessionDialogMixin:TrackResponse(guid, response)
+	if not self.trackedResponses then
+		self.trackedResponses = {};
+	end
+
+	self.trackedResponses[guid] = response;
 end
 
 function QuestSessionDialogMixin:SetupPlayerContainer()
 	self.playerPool = CreateFramePool("FRAME", self.PlayerContainer, "QuestSessionMemberTemplate");
+
+	self.PlayerContainer:Show();
+	self.Divider:SetPoint("TOP", self.PlayerContainer, "BOTTOM", 0, -15);
 end
 
 function QuestSessionDialogMixin:ResetPlayerContainer()
 	if self.playerPool then
 		self.playerPool:ReleaseAll();
 		self.memberFrames = {};
-
-		-- This is temporary.  Just something to track player responses so that the dialog can be dismissed properly.
-		-- Doesn't work if people leave/join the party at this time; will be replaced with dedicated events to handle dialog tracking
 		self.trackedResponses = {};
 	end
 end
 
-function QuestSessionDialogMixin:CheckAddUnit(unit, previousFrame, excludeGUID)
-	if UnitExists(unit) and UnitGUID(unit) ~= excludeGUID then
+function QuestSessionDialogMixin:CheckAddUnit(unit, previousFrame)
+	if UnitExists(unit) then
 		return self:AddUnit(unit, previousFrame);
 	end
 
@@ -140,12 +152,30 @@ end
 
 local unitTagOrdering = { "player", "party1", "party2", "party3", "party4", };
 
-function QuestSessionDialogMixin:AddParty(excludeGUID)
+function QuestSessionDialogMixin:AddParty()
 	self:ResetPlayerContainer();
 
 	local previousFrame;
 	for index, unit in ipairs(unitTagOrdering) do
-		previousFrame = self:CheckAddUnit(unit, previousFrame, excludeGUID);
+		previousFrame = self:CheckAddUnit(unit, previousFrame);
+	end
+end
+
+function QuestSessionDialogMixin:AddPlayers(playerGUIDs)
+	self:ResetPlayerContainer();
+
+	local invertedGUIDs = tInvert(playerGUIDs);
+	local orderedUnits = {};
+
+	for index, unit in ipairs(unitTagOrdering) do
+		if invertedGUIDs[UnitGUID(unit)] then
+			table.insert(orderedUnits, unit);
+		end
+	end
+
+	local previousFrame;
+	for index, unit in ipairs(orderedUnits) do
+		previousFrame = self:CheckAddUnit(unit, previousFrame);
 	end
 end
 
@@ -169,22 +199,17 @@ QuestSessionStartDialogMixin = {};
 
 function QuestSessionStartDialogMixin:OnLoad()
 	QuestSessionDialogMixin.OnLoad(self);
-	QuestSessionManager:SetStartDialog(self);
 
-	self:RegisterEvent("QUEST_SESSION_MEMBER_CONFIRM");
 	self:RegisterEvent("QUEST_SESSION_MEMBER_START_RESPONSE");
 	self:RegisterEvent("QUEST_SESSION_JOINED");
 	self:RegisterEvent("QUEST_SESSION_LEFT");
 	self:RegisterEvent("QUEST_SESSION_DESTROYED");
 
 	self:SetupPlayerContainer();
-	self:CheckShowSessionStartPrompt();
 end
 
 function QuestSessionStartDialogMixin:OnEvent(event, ...)
-	if event == "QUEST_SESSION_MEMBER_CONFIRM" then
-		self:CheckShowSessionStartPrompt();
-	elseif event == "QUEST_SESSION_MEMBER_START_RESPONSE" then
+	if event == "QUEST_SESSION_MEMBER_START_RESPONSE" then
 		self:SetMemberResponse(...);
 	elseif event == "QUEST_SESSION_JOINED" then
 		self:StartHideDialog();
@@ -195,7 +220,7 @@ function QuestSessionStartDialogMixin:OnEvent(event, ...)
 	end
 end
 
-function QuestSessionStartDialogMixin:CheckShowSessionStartPrompt()
+function QuestSessionStartDialogMixin:CheckShow()
 	local details = C_QuestSession.GetSessionBeginDetails();
 	if details then
 		self.Title:SetText(QUEST_SESSION_START_SESSION);
@@ -237,7 +262,6 @@ function QuestSessionJoinVoteDialogMixin:OnLoad()
 	self:RegisterEvent("QUEST_SESSION_MEMBER_JOIN_RESPONSE");
 	self:RegisterEvent("QUEST_SESSION_LEFT");
 	self:SetupPlayerContainer();
-	QuestSessionManager:SetJoinDialog(self);
 end
 
 function QuestSessionJoinVoteDialogMixin:OnEvent(event, ...)
@@ -251,12 +275,12 @@ end
 function QuestSessionJoinVoteDialogMixin:CheckShow()
 	self.details = C_QuestSession.GetSessionJoinRequestDetails();
 	if self.details then
-		self.Title:SetText(QUEST_SESSION_JOIN_SESSION_TITLE:format(self.details.name));
-		self.Body:SetText(QUEST_SESSION_JOIN_SESSION_BODY:format(self.details.name));
+		self.Title:SetText(QUEST_SESSION_JOIN_SESSION_TITLE:format(self.details.requesterDetails.name));
+		self.Body:SetText(QUEST_SESSION_JOIN_SESSION_BODY:format(self.details.requesterDetails.name));
 		self.Body:SetVertexColor(NORMAL_FONT_COLOR:GetRGB());
 
 		self:ResetPlayerContainer();
-		self:AddParty(self.details.guid);
+		self:AddPlayers(self.details.joinedMembers);
 		self:CheckButtonEnabledState();
 		self:ShowDialog();
 	end
@@ -275,7 +299,7 @@ end
 function QuestSessionJoinVoteDialogMixin:SendSessionResponse(accept)
 	assert(self.details);
 	self:SetButtonsEnabled(false);
-	C_QuestSession.SendSessionJoinRequestResponse(self.details.guid, accept);
+	C_QuestSession.SendSessionJoinRequestResponse(self.details.requesterDetails.guid, accept);
 end
 
 function QuestSessionJoinVoteDialogMixin:CheckButtonEnabledState()
@@ -385,29 +409,34 @@ end
 QuestSessionManagerMixin = {};
 
 function QuestSessionManagerMixin:OnLoad()
+	self:RegisterEvent("QUEST_SESSION_MEMBER_CONFIRM");
 	self:RegisterEvent("QUEST_SESSION_JOIN_REQUEST");
 	self:RegisterEvent("QUEST_SESSION_NOTIFICATION");
+
+	self:CheckShowSessionStartPrompt();
+	self:CheckShowSessionJoinRequestPrompt();
 end
 
 function QuestSessionManagerMixin:OnEvent(event, ...)
-	if event == "QUEST_SESSION_JOIN_REQUEST" then
+	if event == "QUEST_SESSION_MEMBER_CONFIRM" then
+		self:CheckShowSessionStartPrompt();
+	elseif event == "QUEST_SESSION_JOIN_REQUEST" then
 		self:CheckShowSessionJoinRequestPrompt();
 	elseif event == "QUEST_SESSION_NOTIFICATION" then
 		self:OnQuestSessionNotification(...);
 	end
 end
 
-function QuestSessionManagerMixin:SetStartDialog(frame)
-	self.StartDialog = frame;
-end
-
-function QuestSessionManagerMixin:SetJoinDialog(frame)
-	self.JoinDialog = frame;
-	self:CheckShowSessionJoinRequestPrompt();
+function QuestSessionManagerMixin:CheckShowSessionStartPrompt()
+	self.StartDialog:CheckShow();
 end
 
 function QuestSessionManagerMixin:CheckShowSessionJoinRequestPrompt()
 	self.JoinDialog:CheckShow();
+end
+
+function QuestSessionManagerMixin:IsErrorNotification(result)
+	return result == Enum.QuestSessionResult.InRaid;
 end
 
 function QuestSessionManagerMixin:OnQuestSessionNotification(result, guid)
@@ -417,16 +446,27 @@ function QuestSessionManagerMixin:OnQuestSessionNotification(result, guid)
 		-- TODO: Figure out if this always implicitly applies to active player
 		self.StartDialog:SetMemberResponse(UnitGUID("player"), false);
 	end
+
+	if self:IsErrorNotification(result) then
+		-- TODO: Play error sound?
+		self:DismissDialogs();
+	end
+end
+
+function QuestSessionManagerMixin:DismissDialogs()
+	for index, frame in ipairs(self.SessionManagementDialogs) do
+		frame:HideImmediate();
+	end
 end
 
 function QuestSessionManagerMixin:StartSession()
-	QuestSessionCheckStartDialog:Setup();
-	QuestSessionCheckStartDialog:ShowDialog();
+	self.CheckStartDialog:Setup();
+	self.CheckStartDialog:ShowDialog();
 end
 
 function QuestSessionManagerMixin:JoinSession()
-	QuestSessionCheckJoinDialog:Setup();
-	QuestSessionCheckJoinDialog:ShowDialog();
+	self.CheckJoinDialog:Setup();
+	self.CheckJoinDialog:ShowDialog();
 end
 
 function QuestSessionManagerMixin:DropSession()

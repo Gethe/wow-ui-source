@@ -28,11 +28,13 @@ function CommunitiesSettingsDialogMixin:OnShow()
 		self.DialogLabel:SetText(COMMUNITIES_SETTINGS_CHARACTER_LABEL);
 	end
 
+	self:HideOrShowCommunityFinderOptions(clubType == Enum.ClubType.Character);
+
 	if (clubType == Enum.ClubType.Character) then 
 		self:UpdateSettingsInfoFromClubInfo(); 
 	end
 	self:SetDisabledStateOnCommunityFinderOptions(not self.ShouldListClub.Button:GetChecked()); 
-	self:HideOrShowCommunityFinderOptions(clubType == Enum.ClubType.Character);
+
 	self:RegisterEvent("CLUB_FINDER_POST_UPDATED");
 	
 	CommunitiesFrame:RegisterDialogShown(self);
@@ -191,6 +193,8 @@ function CommunitiesSettingsDialogMixin:UpdateSettingsInfoFromClubInfo()
 				self.LookingForDropdown:SetCheckedList(clubPostingInfo.recruitingSpecIds);
 				self.LookingForDropdown:UpdateDropdownText();
 
+				C_ClubFinder.SetAllRecruitmentSettings(clubPostingInfo.recruitmentFlags);
+
 				local index = C_ClubFinder.GetFocusIndexFromFlag(clubPostingInfo.recruitmentFlags);
 				C_ClubFinder.SetRecruitmentSettings(index, true);
 				UIDropDownMenu_Initialize(self.ClubFocusDropdown, ClubFocusClubDropdownInitialize)
@@ -205,6 +209,7 @@ function CommunitiesSettingsDialogMixin:UpdateSettingsInfoFromClubInfo()
 					self.MinIlvlOnly.EditBox.Text:Show();
 				end
 				
+
 				local isMaxLevelChecked = CommunitiesSettingsGetRecruitmentSettingByValue(Enum.ClubFinderSettingFlags.MaxLevelOnly);
 				self.MaxLevelOnly.Button:SetChecked(isMaxLevelChecked);
 

@@ -264,6 +264,22 @@ function StoreCardMixin:SetCardTexture(entryInfo)
 	end
 end
 
+function StoreCardMixin:UpdatePricing(entryInfo, discounted, currencyFormat)
+	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.HiddenPrice) == Enum.BattlepayDisplayFlag.HiddenPrice then
+		self.NormalPrice:Hide();
+		self.SalePrice:Hide();
+		self.Strikethrough:Hide();
+		self.CurrentPrice:Hide();
+	elseif discounted then
+		self:ShowDiscount(StoreFrame_GetProductPriceText(entryInfo, currencyFormat));	
+	else
+		self.NormalPrice:Hide();
+		self.SalePrice:Hide();
+		self.Strikethrough:Hide();
+		self.CurrentPrice:Show();
+	end
+end
+
 function StoreCardMixin:ShowDiscount(discountText)
 	self.SalePrice:SetText(discountText);
 	self.NormalPrice:SetTextColor(0.8, 0.66, 0);
@@ -429,19 +445,7 @@ function StoreCardMixin:UpdateCard(entryID, forceModelUpdate)
 
 	self:SetCardTexture(entryInfo);
 
-	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.HiddenPrice) == Enum.BattlepayDisplayFlag.HiddenPrice then
-		self.NormalPrice:Hide();
-		self.SalePrice:Hide();
-		self.Strikethrough:Hide();
-		self.CurrentPrice:Hide();
-	elseif discounted then		
-		self:ShowDiscount(StoreFrame_GetProductPriceText(entryInfo, currencyFormat));	
-	else
-		self.NormalPrice:Hide();
-		self.SalePrice:Hide();
-		self.Strikethrough:Hide();
-		self.CurrentPrice:Show();
-	end
+	self:UpdatePricing(entryInfo, discounted, currencyFormat);
 
 	self:SetStyle(entryInfo.sharedData.overrideBackground);
 

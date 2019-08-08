@@ -11,15 +11,14 @@
 --		x - x offset
 --		y - y offset
 --		displayMode - border type
---		autoHideDelay - how long until the menu disappears
 --
 --
-function EasyMenu(menuList, menuFrame, anchor, x, y, displayMode, autoHideDelay )
+function EasyMenu(menuList, menuFrame, anchor, x, y, displayMode )
 	if ( displayMode == "MENU" ) then
 		menuFrame.displayMode = displayMode;
 	end
 	UIDropDownMenu_Initialize(menuFrame, EasyMenu_Initialize, displayMode, nil, menuList);
-	ToggleDropDownMenu(1, nil, menuFrame, anchor, x, y, menuList, nil, autoHideDelay);
+	ToggleDropDownMenu(1, nil, menuFrame, anchor, x, y, menuList, nil);
 end
 
 function EasyMenu_Initialize( frame, level, menuList )

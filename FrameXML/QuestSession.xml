@@ -57,7 +57,7 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="QuestSessionDialogTemplate" toplevel="true" enableMouse="true" inherits="ResizeLayoutFrame" mixin="QuestSessionDialogMixin" parent="UIParent" hidden="true" virtual="true">
+	<Frame name="QuestSessionDialogTemplate" parentArray="SessionManagementDialogs" toplevel="true" enableMouse="true" inherits="ResizeLayoutFrame" mixin="QuestSessionDialogMixin" hidden="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="heightPadding" value="0" type="number"/>
 			<KeyValue key="widthPadding" value="30" type="number"/>
@@ -101,7 +101,7 @@
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 				</KeyValues>
 			</Frame>
-			<Frame parentKey="PlayerContainer" inherits="ResizeLayoutFrame">
+			<Frame parentKey="PlayerContainer" inherits="ResizeLayoutFrame" hidden="true">
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-15"/>
 				</Anchors>
@@ -116,7 +116,7 @@
 					<Anchors>
 						<Anchor point="LEFT" x="30"/>
 						<Anchor point="RIGHT" x="-30"/>
-						<Anchor point="TOP" relativeKey="$parent.PlayerContainer" relativePoint="BOTTOM" y="-15"/>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="0"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Body" inherits="GameFontHighlight" justifyH="LEFT" text="QUEST_SESSION_UNIFIED_QUERY">
@@ -140,45 +140,46 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="QuestSessionManager" hidden="true" mixin="QuestSessionManagerMixin">
+	<Frame name="QuestSessionManager" mixin="QuestSessionManagerMixin" parent="UIParent">
+		<Frames>
+			<Frame parentKey="CheckStartDialog" inherits="QuestSessionDialogTemplate" mixin="QuestSessionCheckStartDialogMixin">
+				<KeyValues>
+					<KeyValue key="confirmText" value="QUEST_SESSION_CHECK_START_SESSION_BUTTON" type="global"/>
+					<KeyValue key="cancelText" value="CANCEL" type="global"/>
+				</KeyValues>
+			</Frame>
+
+			<Frame parentKey="StartDialog" inherits="QuestSessionDialogTemplate" mixin="QuestSessionStartDialogMixin">
+				<KeyValues>
+					<KeyValue key="confirmText" value="QUEST_SESSION_I_AM_READY" type="global"/>
+					<KeyValue key="cancelText" value="QUEST_SESSION_I_AM_NOT_READY" type="global"/>
+					<KeyValue key="showDivider" value="true" type="boolean"/>
+				</KeyValues>
+				<Scripts>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="CheckJoinDialog" inherits="QuestSessionDialogTemplate" mixin="QuestSessionCheckJoinDialogMixin">
+				<KeyValues>
+					<KeyValue key="confirmText" value="QUEST_SESSION_CHECK_JOIN_SESSION_BUTTON" type="global"/>
+					<KeyValue key="cancelText" value="CANCEL" type="global"/>
+				</KeyValues>
+			</Frame>
+
+			<Frame parentKey="JoinDialog" inherits="QuestSessionDialogTemplate" mixin="QuestSessionJoinVoteDialogMixin">
+				<KeyValues>
+					<KeyValue key="confirmText" value="ACCEPT" type="global"/>
+					<KeyValue key="cancelText" value="DECLINE" type="global"/>
+					<KeyValue key="showDivider" value="true" type="boolean"/>
+				</KeyValues>
+				<Scripts>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnEvent method="OnEvent"/>
-		</Scripts>
-	</Frame>
-
-	<Frame name="QuestSessionCheckStartDialog" inherits="QuestSessionDialogTemplate" mixin="QuestSessionCheckStartDialogMixin">
-		<KeyValues>
-			<KeyValue key="confirmText" value="QUEST_SESSION_CHECK_START_SESSION_BUTTON" type="global"/>
-			<KeyValue key="cancelText" value="CANCEL" type="global"/>
-		</KeyValues>
-	</Frame>
-
-	<Frame name="QuestSessionStartDialog" inherits="QuestSessionDialogTemplate" mixin="QuestSessionStartDialogMixin">
-		<KeyValues>
-			<KeyValue key="confirmText" value="QUEST_SESSION_I_AM_READY" type="global"/>
-			<KeyValue key="cancelText" value="QUEST_SESSION_I_AM_NOT_READY" type="global"/>
-			<KeyValue key="showDivider" value="true" type="boolean"/>
-		</KeyValues>
-		<Scripts>
-			<OnEvent method="OnEvent"/>
-		</Scripts>
-	</Frame>
-
-	<Frame name="QuestSessionCheckJoinDialog" inherits="QuestSessionDialogTemplate" mixin="QuestSessionCheckJoinDialogMixin">
-		<KeyValues>
-			<KeyValue key="confirmText" value="QUEST_SESSION_CHECK_JOIN_SESSION_BUTTON" type="global"/>
-			<KeyValue key="cancelText" value="CANCEL" type="global"/>
-		</KeyValues>
-	</Frame>
-
-	<Frame name="QuestSessionJoinVoteDialog" inherits="QuestSessionDialogTemplate" mixin="QuestSessionJoinVoteDialogMixin">
-		<KeyValues>
-			<KeyValue key="confirmText" value="ACCEPT" type="global"/>
-			<KeyValue key="cancelText" value="DECLINE" type="global"/>
-			<KeyValue key="showDivider" value="true" type="boolean"/>
-		</KeyValues>
-		<Scripts>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>

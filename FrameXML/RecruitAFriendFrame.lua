@@ -1,11 +1,14 @@
 RecruitAFriendFrameMixin = {};
 
 function RecruitAFriendFrameMixin:OnLoad()
+	self:SetRAFSystemEnabled(C_RecruitAFriend.IsEnabled());
 	self:SetRAFRecruitingEnabled(C_RecruitAFriend.IsRecruitingEnabled());
+	self:RegisterEvent("RAF_SYSTEM_ENABLED_STATUS");
 	self:RegisterEvent("RAF_RECRUITING_ENABLED_STATUS");
 	self:RegisterEvent("RAF_SYSTEM_INFO_UPDATED");
 	self:RegisterEvent("RAF_INFO_UPDATED");
 	self:RegisterEvent("BN_FRIEND_INFO_CHANGED");
+	self:RegisterEvent("VARIABLES_LOADED");
 
 	self.recruitScrollFrame = self.RecruitList.ScrollFrame;
 
@@ -32,7 +35,10 @@ function RecruitAFriendFrameMixin:OnHide()
 end
 
 function RecruitAFriendFrameMixin:OnEvent(event, ...)
-	if event == "RAF_RECRUITING_ENABLED_STATUS" then
+	if event == "RAF_SYSTEM_ENABLED_STATUS" then
+		local rafEnabled = ...;
+		self:SetRAFSystemEnabled(rafEnabled);
+	elseif event == "RAF_RECRUITING_ENABLED_STATUS" then
 		local rafRecruitingEnabled = ...;
 		self:SetRAFRecruitingEnabled(rafRecruitingEnabled);
 	elseif event == "RAF_SYSTEM_INFO_UPDATED" then
@@ -44,6 +50,37 @@ function RecruitAFriendFrameMixin:OnEvent(event, ...)
 	elseif event == "BN_FRIEND_INFO_CHANGED" then
 		if self.rafInfo then
 			self:UpdateRecruitList(self.rafInfo.recruits);
+		end
+	elseif event == "VARIABLES_LOADED" then
+		self.varsLoaded = true;
+		self:UpdateRAFTutorialTips();
+	end
+end
+
+function RecruitAFriendFrameMixin:SetRAFSystemEnabled(rafEnabled)
+	self.rafEnabled = rafEnabled;
+	self:UpdateRAFTutorialTips();
+end
+
+function RecruitAFriendFrameMixin:UpdateRAFTutorialTips()
+	if self.varsLoaded and self.rafEnabled then
+		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_RAF_INTRO) then
+			local introHelpTipInfo = {
+				text = RAF_INTRO_TUTORIAL_TEXT,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = LE_FRAME_TUTORIAL_RAF_INTRO,
+				targetPoint = HelpTip.Point.RightEdgeCenter,
+			};
+			HelpTip:Show(QuickJoinToastButton, introHelpTipInfo);
+		elseif self:ShowRewardTutorial() then
+			local rewardHelpTipInfo = {
+				text = RAF_REWARD_TUTORIAL_TEXT,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				targetPoint = HelpTip.Point.RightEdgeCenter,
+			};
+			HelpTip:Show(QuickJoinToastButton, rewardHelpTipInfo);
+			self.shownRewardTutorial = true;
 		end
 	end
 end
@@ -210,10 +247,12 @@ function RecruitAFriendFrameMixin:UpdateNextReward(nextReward)
 
 	if nextReward.canClaim then
 		self.RewardClaiming.EarnInfo:SetText(RAF_YOU_HAVE_EARNED);
-	elseif nextReward.monthsRequired == 0 then
-		self.RewardClaiming.EarnInfo:SetText(RAF_FIRST_REWARD_AFTER:format(nextReward.availableInMonths));
-	else
+	elseif nextReward.monthCost > 1 then
 		self.RewardClaiming.EarnInfo:SetText(RAF_NEXT_REWARD_AFTER:format(nextReward.availableInMonths));
+	elseif nextReward.monthsRequired == 0 then
+		self.RewardClaiming.EarnInfo:SetText(RAF_FIRST_REWARD);
+	else
+		self.RewardClaiming.EarnInfo:SetText(RAF_NEXT_REWARD);
 	end
 
 	if nextReward.petInfo then
@@ -265,6 +304,12 @@ function RecruitAFriendFrameMixin:UpdateRAFInfo(rafInfo)
 
 		self.rafInfo = rafInfo;
 	end
+
+	self:UpdateRAFTutorialTips();
+end
+
+function RecruitAFriendFrameMixin:ShowRewardTutorial()
+	return not self:IsShown() and not self.shownRewardTutorial and self.rafInfo and self.rafInfo.nextReward and self.rafInfo.nextReward.canClaim;
 end
 
 function RecruitAFriendFrameMixin:ShowRecruitDropDown(recruitButton)
@@ -406,6 +451,15 @@ function RecruitAFriendRewardsFrameMixin:OnLoad()
 	self.rewardPool = CreateFramePool("FRAME", self, "RecruitAFriendRewardTemplate");
 end
 
+function RecruitAFriendRewardsFrameMixin:OnShow()
+	HideUIPanel(DressUpFrame);
+	SetUpSideDressUpFrame(self, 500, 682, "LEFT", "RIGHT", -5, 0);
+end
+
+function RecruitAFriendRewardsFrameMixin:OnHide()
+	CloseSideDressUpFrame(self);
+end
+
 function RecruitAFriendRewardsFrameMixin:UpdateRewards(rewards)
 	self.rewardPool:ReleaseAll();
 
@@ -518,7 +572,7 @@ function RecruitAFriendRewardButtonMixin:SetTooltipOwner()
 		anchorPoint = "ANCHOR_LEFT";
 		xOffset = -5;
 	end
-	GameTooltip:SetOwner(self.Icon, anchorPoint, xOffset, -self:GetHeight());
+	GameTooltip:SetOwner(self, anchorPoint, xOffset, -self:GetHeight());
 end
 
 function RecruitAFriendRewardButtonMixin:OnEnter()
@@ -537,7 +591,7 @@ function RecruitAFriendRewardButtonMixin:OnEnter()
 		GameTooltip:SetItemByID(self.rewardInfo.itemInfo.itemID);
 	elseif self.rewardInfo.appearanceInfo then
 		self.item:ContinueOnItemLoad(function()
-			local mouseStillOnMe = (GameTooltip:GetOwner() == self.Icon);
+			local mouseStillOnMe = (GameTooltip:GetOwner() == self);
 			local idsMatch = self.rewardInfo.appearanceInfo and (self.rewardInfo.appearanceInfo.itemID == self.item.itemID);
 
 			if mouseStillOnMe and idsMatch then
@@ -559,9 +613,9 @@ function RecruitAFriendRewardButtonMixin:OnEnter()
 	end
 
 	if self.dressupReward then
-		self.Icon.UpdateTooltip = function() self:OnEnter(); end;
+		self.UpdateTooltip = function() self:OnEnter(); end;
 	else
-		self.Icon.UpdateTooltip = nil;
+		self.UpdateTooltip = nil;
 	end
 
 	if IsModifiedClick("DRESSUP") and self.dressupReward then
@@ -572,7 +626,7 @@ function RecruitAFriendRewardButtonMixin:OnEnter()
 end
 
 function RecruitAFriendRewardButtonMixin:OnLeave()
-	self.Icon.UpdateTooltip = nil;
+	self.UpdateTooltip = nil;
 	ResetCursor();
 	GameTooltip_Hide();
 end
@@ -597,6 +651,15 @@ RecruitAFriendRewardButtonWithFanfareMixin = CreateFromMixins(RecruitAFriendRewa
 
 function RecruitAFriendRewardButtonWithFanfareMixin:OnLoad()
 	self.ModelScene:EnableMouse(false);
+end
+
+function RecruitAFriendRewardButtonWithFanfareMixin:OnClick()
+	if IsModifiedClick("DRESSUP") and self.dressupReward then
+		if RecruitAFriendRewardsFrame:IsShown() then
+			StaticPopupSpecial_Hide(RecruitAFriendRewardsFrame);
+		end
+		RecruitAFriendRewardButtonMixin.OnClick(self);
+	end
 end
 
 function RecruitAFriendRewardButtonWithFanfareMixin:WaitingForFlash()
@@ -716,6 +779,7 @@ function RecruitAFriendRecruitmentFrameMixin:UpdateRecruitmentInfo(recruitmentIn
 		self.Description:SetText(RAF_RECRUITMENT_DESC:format(maxRecruitLinkUses, daysInCycle));
 		self.FactionAndRealm:SetText(RAF_RECRUITS_FACTION_AND_REALM:format(PLAYER_FACTION_NAME, PLAYER_REALM_NAME));
 
+		self.EditBox.Instructions:SetText(RAF_NO_ACTIVE_LINK:format(daysInCycle));
 		self.EditBox.Instructions:Show();
 		self.EditBox:SetText("");
 
