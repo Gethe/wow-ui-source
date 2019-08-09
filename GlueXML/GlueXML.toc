@@ -82,7 +82,6 @@ KioskModeSplash.xml
 GlueMenuFrame.xml
 
 ## Should only load internally
-DesignerMenu.xml
 DevBuildAlert.xml
 
 ## This Always Runs Last, Add New Items above it.

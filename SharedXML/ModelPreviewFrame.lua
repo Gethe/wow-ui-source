@@ -30,7 +30,12 @@ end
 function ModelPreviewFrame_ShowModels(displayInfoEntries, allowZoom, forceUpdate)
 	local self = ModelPreviewFrame;
 	self.displayInfoEntries = displayInfoEntries;
-	ModelPreviewFrame_SetStyle(self, "carousel");
+
+	if #displayInfoEntries > 1 then
+		ModelPreviewFrame_SetStyle(self, "carousel");
+	else
+		ModelPreviewFrame_SetStyle(self, nil);
+	end
 	ModelPreviewFrame_SetCarouselIndex(self, 1, allowZoom, forceUpdate);
 end
 

@@ -148,6 +148,10 @@ local function QuestInfo_GetTitle()
 	end
 end
 
+function QuestInfo_AdjustTitleWidth(delta)
+	QuestInfoTitleHeader:SetWidth(ACTIVE_TEMPLATE.contentWidth + delta);
+end
+
 function QuestInfo_ShowTitle()
 	local title, doFailureBehavior = QuestInfo_GetTitle();
 

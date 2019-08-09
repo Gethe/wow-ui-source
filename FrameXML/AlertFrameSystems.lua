@@ -678,7 +678,7 @@ function StorePurchaseAlertFrame_OnClick(self, button, down)
 		ToggleCollectionsJournal(2);
 	elseif (self.type == Enum.StoreDeliveryType.Toy) then
 		ToggleToyCollection(self.payloadID);
-	elseif (self.type == Enum.StoreDeliveryType.Collection) then
+	elseif (self.type == Enum.StoreDeliveryType.Appearance or self.type == Enum.StoreDeliveryType.AppearanceSet) then
 		ToggleCollectionsJournal(5);
 	end
 end

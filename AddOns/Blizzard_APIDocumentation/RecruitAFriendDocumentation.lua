@@ -98,9 +98,9 @@ local RecruitAFriend =
 	Events =
 	{
 		{
-			Name = "PartyReferAFriendUpdated",
+			Name = "PartyRecruitAFriendUpdated",
 			Type = "Event",
-			LiteralName = "PARTY_REFER_A_FRIEND_UPDATED",
+			LiteralName = "PARTY_RECRUIT_A_FRIEND_UPDATED",
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "string", Nilable = false },
@@ -261,6 +261,7 @@ local RecruitAFriend =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "recruitmentCode", Type = "string", Nilable = false },
 				{ Name = "recruitmentURL", Type = "string", Nilable = false },
 				{ Name = "remainingTimeSeconds", Type = "number", Nilable = false },
 				{ Name = "totalUses", Type = "number", Nilable = false },

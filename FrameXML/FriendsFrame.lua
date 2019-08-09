@@ -269,7 +269,7 @@ function FriendsFrame_OnLoad(self)
 	self:RegisterEvent("BN_INFO_CHANGED");
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
 	self:RegisterEvent("BATTLETAG_INVITE_SHOW");
-	self:RegisterEvent("PARTY_REFER_A_FRIEND_UPDATED");
+	self:RegisterEvent("PARTY_RECRUIT_A_FRIEND_UPDATED");
 	self:RegisterEvent("SOCIAL_QUEUE_UPDATE");
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	self:RegisterEvent("GROUP_JOINED");
@@ -299,14 +299,33 @@ function FriendsFrame_OnLoad(self)
 	FriendsFrame_UpdateQuickJoinTab(0);
 end
 
+local function IsIntroRAFHelpTipShowing()
+	return HelpTip:IsShowing(QuickJoinToastButton, RAF_INTRO_TUTORIAL_TEXT);
+end
+
+local function IsRAFHelpTipShowing()
+	return HelpTip:IsShowing(QuickJoinToastButton, RAF_INTRO_TUTORIAL_TEXT) or HelpTip:IsShowing(QuickJoinToastButton, RAF_REWARD_TUTORIAL_TEXT);
+end
+
 function FriendsFrame_OnShow()
 	FriendsList_Update(true);
-	FriendsFrame_Update();
 	UpdateMicroButtons();
 	FriendsFrame_CheckQuickJoinHelpTip();
 	FriendsFrame_UpdateQuickJoinTab(#C_SocialQueue.GetAllGroups());
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 	C_GuildInfo.GuildRoster();
+
+	if IsRAFHelpTipShowing() then
+		PanelTemplates_SetTab(FriendsTabHeader, 3);
+		if IsIntroRAFHelpTipShowing() then
+			FriendsTabHeader.Tab3.New:Show();
+			HelpTip:Acknowledge(QuickJoinToastButton, RAF_INTRO_TUTORIAL_TEXT);
+		else
+			HelpTip:Acknowledge(QuickJoinToastButton, RAF_REWARD_TUTORIAL_TEXT);
+		end
+	end
+
+	FriendsFrame_Update();
 end
 
 function FriendsFrame_Update()
@@ -374,6 +393,8 @@ function FriendsFrame_OnHide()
 		end
 	end
 	FriendsFriendsFrame:Hide();
+	RecruitAFriendFrame:UpdateRAFTutorialTips();
+	FriendsTabHeader.Tab3.New:Hide();
 end
 
 FriendsTabHeaderMixin = {};
@@ -871,7 +892,7 @@ function FriendsFrame_OnEvent(self, event, ...)
 				end
 			end
 		end
-	elseif ( event == "PARTY_REFER_A_FRIEND_UPDATED" ) then
+	elseif ( event == "PARTY_RECRUIT_A_FRIEND_UPDATED" ) then
 		if ( self:IsShown() ) then
 			local buttons = FriendsListFrameScrollFrame.buttons;
 			for _, button in pairs(buttons) do

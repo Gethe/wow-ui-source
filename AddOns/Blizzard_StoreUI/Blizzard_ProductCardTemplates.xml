@@ -172,28 +172,30 @@
 							</Texture>
 						</Layer>
 					</Layers>
-				</Frame>				
-			</Frames>		
+				</Frame>
+			</Frames>
 		</Button>
 		
-		<Button name="SmallStoreCardTemplate" mixin="SmallStoreCardMixin" inherits="DefaultStoreCardTemplate" virtual="true">
-		</Button>
+		<!-- Card Templates WITHOUT a Buy Button-->
+		<Button name="SmallStoreCardTemplate" mixin="SmallStoreCardMixin" inherits="DefaultStoreCardTemplate" virtual="true" />
 
-		<Button name="MediumStoreCardTemplate" mixin="MediumStoreCardMixin" inherits="DefaultStoreCardTemplate" virtual="true">
-		</Button>
+		<Button name="MediumStoreCardTemplate" mixin="MediumStoreCardMixin" inherits="DefaultStoreCardTemplate" virtual="true" />
 
-		<Button name="HorizontalLargeStoreCardTemplate" mixin="HorizontalLargeStoreCardMixin" inherits="LargeStoreCardTemplate" virtual="true">
-		</Button>
+		<Button name="HorizontalLargeStoreCardTemplate" mixin="HorizontalLargeStoreCardMixin" inherits="DefaultStoreCardTemplate" virtual="true" />
 
-		<Button name="VerticalLargeStoreCardTemplate" mixin="VerticalLargeStoreCardMixin" inherits="LargeStoreCardTemplate" virtual="true">			
-		</Button>
-		
-		<Button name="HorizontalFullStoreCardTemplate" mixin="HorizontalFullStoreCardMixin" inherits="LargeStoreCardTemplate" virtual="true" hidden="true">
-		</Button>	
+		<Button name="VerticalLargeStoreCardTemplate" mixin="VerticalLargeStoreCardMixin" inherits="DefaultStoreCardTemplate" virtual="true" />
 
-		<Button name="VerticalFullStoreCardTemplate" mixin="VerticalFullStoreCardMixin" inherits="LargeStoreCardTemplate" virtual="true" hidden="true">
-		</Button>
-		
+		<!-- Card Templates WITH a Buy Button-->
+		<Button name="MediumStoreCardWithBuyButtonTemplate" mixin="MediumStoreCardWithBuyButtonMixin" inherits="LargeStoreCardTemplate" virtual="true" />
+
+		<Button name="HorizontalLargeStoreCardWithBuyButtonTemplate" mixin="HorizontalLargeStoreCardWithBuyButtonMixin" inherits="LargeStoreCardTemplate" virtual="true" />
+
+		<Button name="VerticalLargeStoreCardWithBuyButtonTemplate" mixin="VerticalLargeStoreCardWithBuyButtonMixin" inherits="LargeStoreCardTemplate" virtual="true" />
+
+		<Button name="HorizontalFullStoreCardWithBuyButtonTemplate" mixin="HorizontalFullStoreCardMixin" inherits="LargeStoreCardTemplate" virtual="true" />
+
+		<Button name="VerticalFullStoreCardWithBuyButtonTemplate" mixin="VerticalFullStoreCardMixin" inherits="LargeStoreCardTemplate" virtual="true" />
+
 	</ScopedModifier>
 </Ui>
 

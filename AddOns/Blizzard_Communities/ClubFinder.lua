@@ -81,6 +81,8 @@ function ClubsRecruitmentDialogMixin:UpdateSettingsInfoFromClubInfo()
 				self.LookingForDropdown:SetCheckedList(clubPostingInfo.recruitingSpecIds);
 				self.LookingForDropdown:UpdateDropdownText();
 
+				C_ClubFinder.SetAllRecruitmentSettings(clubPostingInfo.recruitmentFlags);
+
 				local index = C_ClubFinder.GetFocusIndexFromFlag(clubPostingInfo.recruitmentFlags);
 				C_ClubFinder.SetRecruitmentSettings(index, true);
 				UIDropDownMenu_Initialize(self.ClubFocusDropdown, ClubFocusClubDropdownInitialize); 
@@ -1064,7 +1066,7 @@ function ClubFinderCommunitiesCardMixin:UpdateCard()
 	self.MemberCount:SetText(info.numActiveMembers); 
 	self.RightClickDropdown.isGuildCard = false; 
 
-	if (info.emblemInfo) then 
+	if (info.emblemInfo > 0) then 
 		C_Club.SetAvatarTexture(self.CommunityLogo, info.emblemInfo, Enum.ClubType.Character);
 	end
 
@@ -1247,7 +1249,7 @@ function ClubFinderCommunitiesCardFrameMixin:RefreshLayout()
 	local requestMoreValues = numCardsTotal ~= 0 and numCardsTotal - lastDisplayed < threshold;
 
 	if (not self.isPendingListShowing and not self.requestedNextPage and  requestMoreValues and numCardsTotal < self.totalListSize) then
-		C_ClubFinder.RequestNextCommunityPage();
+		C_ClubFinder.RequestNextCommunityPage(lastDisplayed + 1, showingCards);
 		self.requestedNextPage = true; 
 	end 
 end 
@@ -1386,7 +1388,9 @@ function ClubFinderGuildCardsMixin:RefreshLayout(cardPage)
 	local shouldRequestNextNormalPage = shouldShowNextNormal and (cardPage + LOAD_PAGES_IN_ADVANCE) > self.numPages; 
 
 	if (shouldRequestNextNormalPage) then 
-		C_ClubFinder.RequestNextGuildPage();
+		local startingIndex = cardPage * GUILD_CARDS_PER_PAGE;
+		local pageSize = LOAD_PAGES_IN_ADVANCE * GUILD_CARDS_PER_PAGE;
+		C_ClubFinder.RequestNextGuildPage(startingIndex, pageSize);
 		self.requestedPage = true; 
 	end 
 
@@ -1409,6 +1413,8 @@ ClubFinderGuildAndCommunityMixin = { };
 function ClubFinderGuildAndCommunityMixin:OnLoad()
 	self.PendingClubs:SetEnabled(false); 
 	self:RegisterEvent("CLUB_FINDER_LINKED_CLUB_RETURNED");
+	self:RegisterEvent("CLUB_FINDER_POST_UPDATED");
+	self:RegisterEvent("CLUB_FINDER_APPLICATIONS_UPDATED");
 	self.PendingClubs:SetText(CLUB_FINDER_PENDING_REQUESTS:format(0));
 	self.InsetFrame.GuildDescription:Show(); 
 	self.GuildCards.pendingCardListSize = 0;
@@ -1521,6 +1527,15 @@ function ClubFinderGuildAndCommunityMixin:OnEvent(event, ...)
 		local clubInfo = ...; 
 		local communitiesFrame = self:GetParent();
 		communitiesFrame.ClubFinderInvitationFrame:DisplayInvitation(clubInfo, true);
+	elseif (event == "CLUB_FINDER_APPLICATIONS_UPDATED") or (event == "CLUB_FINDER_POST_UPDATED") then
+		local updateGuild = (requestType == Enum.ClubFinderRequestType.Guild) or (requestType == Enum.ClubFinderRequestType.All); 
+		local updateCommunity = (requestType == Enum.ClubFinderRequestType.Community) or (requestType == Enum.ClubFinderRequestType.All); 
+		if (updateGuild) then
+			self.GuildCards:RefreshLayout();
+		end
+		if (updateCommunity) then
+			self.CommunityCards:RefreshLayout();
+		end
 	end 
 end 
 
@@ -1601,7 +1616,7 @@ function ClubFinderInvitationsFrameMixin:DisplayInvitation(clubInfo, isLinkInvit
 		SetLargeTabardTexturesFromColorRGB("player", self.GuildBannerEmblemLogo, self.GuildBannerBackground, self.GuildBannerBorder, clubInfo.tabardInfo);
 	end
 
-	if(clubInfo.emblemInfo and not isGuild) then 
+	if(clubInfo.emblemInfo > 0 and not isGuild) then 
 		C_Club.SetAvatarTexture(self.Icon, clubInfo.emblemInfo, Enum.ClubType.Character);
 	end
 

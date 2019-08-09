@@ -263,10 +263,22 @@ local ClubFinder =
 		{
 			Name = "RequestNextCommunityPage",
 			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "startingIndex", Type = "number", Nilable = false },
+				{ Name = "pageSize", Type = "number", Nilable = false },
+			},
 		},
 		{
 			Name = "RequestNextGuildPage",
 			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "startingIndex", Type = "number", Nilable = false },
+				{ Name = "pageSize", Type = "number", Nilable = false },
+			},
 		},
 		{
 			Name = "RequestSubscribedClubPostingIDs",
@@ -377,6 +389,15 @@ local ClubFinder =
 	Events =
 	{
 		{
+			Name = "ClubFinderApplicationsUpdated",
+			Type = "Event",
+			LiteralName = "CLUB_FINDER_APPLICATIONS_UPDATED",
+			Payload =
+			{
+				{ Name = "clubFinderGUIDs", Type = "table", InnerType = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "ClubFinderClubListReturned",
 			Type = "Event",
 			LiteralName = "CLUB_FINDER_CLUB_LIST_RETURNED",
@@ -414,6 +435,10 @@ local ClubFinder =
 			Name = "ClubFinderPostUpdated",
 			Type = "Event",
 			LiteralName = "CLUB_FINDER_POST_UPDATED",
+			Payload =
+			{
+				{ Name = "clubFinderGUIDs", Type = "table", InnerType = "string", Nilable = false },
+			},
 		},
 		{
 			Name = "ClubFinderRecruitListChanged",

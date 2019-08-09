@@ -95,44 +95,63 @@ function QuestMapFrame_OnLoad(self)
 	UIDropDownMenu_Initialize(QuestMapQuestOptionsDropDown, QuestMapQuestOptionsDropDown_Initialize, "MENU");
 end
 
+local questSessionManagementEvents =
+{
+	["GROUP_FORMED"] = true,
+	["GROUP_LEFT"] = true,
+	["GROUP_ROSTER_UPDATE"] = true,
+	["QUEST_SESSION_JOINED"] = true,
+	["QUEST_SESSION_LEFT"] = true,
+	["QUEST_SESSION_CREATED"] = true,
+	["QUEST_SESSION_DESTROYED"] = true,
+};
+
+local function QuestMapFrame_DoFullUpdate()
+	if (not IsTutorialFlagged(55) and TUTORIAL_QUEST_TO_WATCH) then
+		local isComplete = select(6, GetQuestLogTitle(GetQuestLogIndexByID(TUTORIAL_QUEST_TO_WATCH)));
+		if (isComplete) then
+			TriggerTutorial(55);
+		end
+	end
+
+	local updateButtons = false;
+	if ( QuestLogPopupDetailFrame.questID ) then
+		if ( GetQuestLogIndexByID(QuestLogPopupDetailFrame.questID) == 0 ) then
+			HideUIPanel(QuestLogPopupDetailFrame);
+		else
+			QuestLogPopupDetailFrame_Update();
+			updateButtons = true;
+		end
+	end
+
+	local questDetailID = QuestMapFrame.DetailsFrame.questID;
+
+	if ( questDetailID ) then
+		if ( GetQuestLogIndexByID(questDetailID) == 0 ) then
+			-- this will call QuestMapFrame_UpdateAll
+			QuestMapFrame_ReturnFromQuestDetails();
+			return;
+		else
+			updateButtons = true;
+		end
+	end
+
+	if ( updateButtons ) then
+		QuestMapFrame_UpdateQuestDetailsButtons();
+	end
+
+	QuestMapFrame_UpdateAll();
+	QuestMapFrame_UpdateAllQuestCriteria();
+
+	if ( tooltipButton ) then
+		QuestMapLogTitleButton_OnEnter(tooltipButton);
+	end
+end
+
 function QuestMapFrame_OnEvent(self, event, ...)
 	local arg1, arg2 = ...;
 	if ( (event == "QUEST_LOG_UPDATE" or (event == "UNIT_QUEST_LOG_CHANGED" and arg1 == "player")) and not self.ignoreQuestLogUpdate ) then
-		if (not IsTutorialFlagged(55) and TUTORIAL_QUEST_TO_WATCH) then
-			local isComplete = select(6, GetQuestLogTitle(GetQuestLogIndexByID(TUTORIAL_QUEST_TO_WATCH)));
-			if (isComplete) then
-				TriggerTutorial(55);
-			end
-		end
-
-		local updateButtons = false;
-		if ( QuestLogPopupDetailFrame.questID ) then
-			if ( GetQuestLogIndexByID(QuestLogPopupDetailFrame.questID) == 0 ) then
-				HideUIPanel(QuestLogPopupDetailFrame);
-			else
-				QuestLogPopupDetailFrame_Update();
-				updateButtons = true;
-			end
-		end
-		local questDetailID = QuestMapFrame.DetailsFrame.questID;
-		if ( questDetailID ) then
-			if ( GetQuestLogIndexByID(questDetailID) == 0 ) then
-				-- this will call QuestMapFrame_UpdateAll
-				QuestMapFrame_ReturnFromQuestDetails();
-				return;
-			else
-				updateButtons = true;
-			end
-		end
-		if ( updateButtons ) then
-			QuestMapFrame_UpdateQuestDetailsButtons();
-		end
-		QuestMapFrame_UpdateAll();
-		QuestMapFrame_UpdateAllQuestCriteria();
-
-		if ( tooltipButton ) then
-			QuestMapLogTitleButton_OnEnter(tooltipButton);
-		end
+		QuestMapFrame_DoFullUpdate();
 	elseif ( event == "QUEST_LOG_CRITERIA_UPDATE" ) then
 		local questID, criteriaID, description, fulfilled, required = ...;
 
@@ -190,7 +209,9 @@ function QuestMapFrame_OnEvent(self, event, ...)
 		if ( arg1 == "QUEST_POI" ) then
 			QuestMapFrame_UpdateAll();
 		end
-	elseif event == "GROUP_FORMED" or event == "GROUP_LEFT" or event == "QUEST_SESSION_JOINED" or event == "QUEST_SESSION_LEFT" or event == "QUEST_SESSION_CREATED" or event == "QUEST_SESSION_DESTROYED" then
+	end
+
+	if questSessionManagementEvents[event] then
 		QuesetMapFrame_UpdateQuestSessionState(self);
 	end
 end
@@ -449,6 +470,14 @@ function QuestMapFrame_GetFocusedQuestID()
 	return QuestMapFrame.DetailsFrame.questID;
 end
 
+local ignoreWaypointsByQuestID = { };
+
+function QuestMapFrame_ToggleShowDestination()
+	local questID = QuestMapFrame.DetailsFrame.questID;
+	ignoreWaypointsByQuestID[questID] = not ignoreWaypointsByQuestID[questID];
+	QuestMapFrame_ShowQuestDetails(QuestMapFrame.DetailsFrame.questID);
+end
+
 function QuestMapFrame_ShowQuestDetails(questID)
 	local questLogIndex = GetQuestLogIndexByID(questID);
 	SelectQuestLogEntry(questLogIndex);
@@ -485,11 +514,23 @@ function QuestMapFrame_ShowQuestDetails(questID)
 
 	-- save current view
 	QuestMapFrame.DetailsFrame.returnMapID = QuestMapFrame:GetParent():GetMapID();
-	local mapID = GetQuestUiMapID(questID);
+
+	-- destination/waypoint
+	local ignoreWaypoints = false;
+	if C_QuestLog.GetNextWaypoint(questID) then
+		ignoreWaypoints = ignoreWaypointsByQuestID[questID];
+		QuestMapFrame.DetailsFrame.DestinationMapButton:SetShown(not ignoreWaypoints);
+		QuestMapFrame.DetailsFrame.WaypointMapButton:SetShown(ignoreWaypoints);
+	else
+		QuestMapFrame.DetailsFrame.DestinationMapButton:Hide();
+		QuestMapFrame.DetailsFrame.WaypointMapButton:Hide();
+	end
+
+	local mapID = GetQuestUiMapID(questID, ignoreWaypoints);
+	QuestMapFrame.DetailsFrame.questMapID = mapID;
 	if ( mapID ~= 0 ) then
 		QuestMapFrame:GetParent():SetMapID(mapID);
 	end
-	QuestMapFrame.DetailsFrame.questMapID = questID;
 
 	QuestMapFrame_UpdateQuestDetailsButtons();
 

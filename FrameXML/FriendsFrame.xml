@@ -4,6 +4,13 @@
 
 	<Button name="FriendsTabTemplate" inherits="TabButtonTemplate" mixin="FriendsTabMixin" virtual="true">
 		<Size x="280" y="32"/>
+		<Frames>
+			<Frame parentKey="New" inherits="NewCallout">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" x="-6"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnClick method="OnClick"/>

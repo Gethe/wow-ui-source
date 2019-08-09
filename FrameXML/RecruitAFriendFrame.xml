@@ -39,6 +39,8 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 
@@ -46,7 +48,12 @@
 		<Size x="42" y="42"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Icon" setAllPoints="true" />
+				<Texture parentKey="Icon">
+					<Size x="42" y="42"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -65,7 +72,12 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" setAllPoints="true" />
+						<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame">
+							<Size x="42" y="42"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="1">
 						<Texture parentKey="CheckMark" atlas="worldquest-tracker-checkmark" useAtlasSize="true">
@@ -215,7 +227,7 @@
 
 	<Frame name="RecruitAFriendFrame" parent="FriendsFrame" hidden="true" setAllPoints="true" mixin="RecruitAFriendFrameMixin">
 		<Frames>
-			<Frame parentKey="RewardClaiming">
+			<Frame parentKey="RewardClaiming" useParentLevel="true">
 				<Size y="100"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="4" y="-83"/>
@@ -247,8 +259,9 @@
 				</Layers>
 				<Frames>
 					<Button parentKey="NextRewardButton" inherits="RecruitAFriendRewardButtonTemplate" mixin="RecruitAFriendRewardButtonWithFanfareMixin">
+						<Size x="50" y="50"/>
 						<Anchors>
-							<Anchor point="LEFT" x="25"/>
+							<Anchor point="LEFT" x="17"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -338,7 +351,7 @@
 					 </Button>
 				</Frames>
 			</Frame>
-			<Frame parentKey="RecruitList">
+			<Frame parentKey="RecruitList" useParentLevel="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.RewardClaiming" relativePoint="BOTTOMLEFT"/>
 					<Anchor point="BOTTOMRIGHT" x="-6" y="26"/>
@@ -412,9 +425,9 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			 <OnLoad method="OnLoad" />
-			 <OnEvent method="OnEvent" />
-			 <OnHide method="OnHide" />
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent" />
+			<OnHide method="OnHide" />
 		</Scripts>
 	</Frame>
 
