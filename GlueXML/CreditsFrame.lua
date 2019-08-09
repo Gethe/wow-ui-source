@@ -1,11 +1,11 @@
 function CreditsFrame_OnLoad(self)
 	self.creditsType = 1;
-	self.maxCreditsType = 2;
+	self.maxCreditsType = 1;
 end
 
 function CreditsFrame_OnShow(self)
 	StopGlueAmbience();
-	CreditsFrame.creditsType = GetClientDisplayExpansionLevel();
+	CreditsFrame.creditsType = CREDITS_TYPE_CLASSIC;
 	CreditsFrame.maxCreditsType = CreditsFrame.creditsType;
 	CreditsFrame_Update(self);
 end
@@ -15,10 +15,18 @@ function CreditsFrame_OnHide(self)
 end
 
 function CreditsFrame_Update(self)
-	PlayGlueMusic(GLUE_CREDITS_SOUND_KITS[CreditsFrame.creditsType]);
-	local expansionInfo = GetExpansionDisplayInfo(CreditsFrame.creditsType);
-	if expansionInfo then
-		CreditsLogo:SetTexture(expansionInfo.logo);
+	PlayCreditsMusic(GLUE_CREDITS_SOUND_KITS[CreditsFrame.creditsType]);
+
+	-- TODO: This would be better if it was driven by data in Constants.lua.
+	if (CreditsFrame.creditsType == CREDITS_TYPE_CLASSIC) then
+		SetClassicLogo(CreditsLogo);
+	elseif (CreditsFrame.creditsType == CREDITS_TYPE_VANILLA) then
+		local expansionInfo;
+		expansionInfo = GetExpansionDisplayInfo(LE_EXPANSION_CLASSIC);
+		if expansionInfo then
+			CreditsLogo:SetTexCoord(0, 1, 0, 1);
+			CreditsLogo:SetTexture(expansionInfo.logo);
+		end
 	end
 	
 	CreditsFrame_SetSpeed(CREDITS_SCROLL_RATE_PLAY);
@@ -45,24 +53,35 @@ function CreditsFrame_Update(self)
 	CreditsFrame_CacheTextures(self, 1);
 
 	-- Set Credits Text
-	CreditsText:SetText(GetCreditsText(CreditsFrame.creditsType));
-
-	-- Set Switch Button Text
-	local creditsType = CreditsFrame.creditsType;
-	if ( creditsType < CreditsFrame.maxCreditsType ) then
-		CreditsFrameSwitchButton1:Show();
-		CreditsFrameSwitchButton1:SetText(CREDITS_TITLES[creditsType + 1]);
-		CreditsFrameSwitchButton1:SetID(creditsType + 1);
-	else
-		CreditsFrameSwitchButton1:Hide();
+	-- TODO: This would be better if it was driven by data in Constants.lua.
+	if (CreditsFrame.creditsType == CREDITS_TYPE_CLASSIC) then
+		CreditsText:SetText(GetClassicCreditsText());
+	elseif (CreditsFrame.creditsType == CREDITS_TYPE_VANILLA) then
+		CreditsText:SetText(GetCreditsText(CreditsFrame.creditsType));
 	end
 
-	if ( creditsType > 0 ) then
+	-- Set Switch Button Text
+	CreditsFrameSwitchButton1:Hide();
+	CreditsFrameSwitchButton2:Hide();
+
+	local creditsType = CreditsFrame.creditsType;
+	if ( creditsType < CreditsFrame.maxCreditsType ) then
+		if (CreditsFrame.maxCreditsType > 2) then
+			CreditsFrameSwitchButton1:Show();
+			CreditsFrameSwitchButton1:SetText(CREDITS_TITLES[creditsType + 1]);
+			CreditsFrameSwitchButton1:SetID(creditsType + 1);
+		else
+			-- If we have only 2 credits, use Button2 (so that it doesn't look like the button is just jumping back and forth).
+			CreditsFrameSwitchButton2:Show();
+			CreditsFrameSwitchButton2:SetText(CREDITS_TITLES[creditsType + 1]);
+			CreditsFrameSwitchButton2:SetID(creditsType + 1);
+		end
+	end
+
+	if ( creditsType > 1 ) then
 		CreditsFrameSwitchButton2:Show();
 		CreditsFrameSwitchButton2:SetText(CREDITS_TITLES[creditsType - 1]);
 		CreditsFrameSwitchButton2:SetID(creditsType - 1);
-	else
-		CreditsFrameSwitchButton2:Hide();
 	end
 end
 

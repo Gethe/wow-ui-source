@@ -413,9 +413,11 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						MoneyInputFrame_SetCompact(self, 62, 7);
+						MoneyInputFrame_SetCompact(self, 56, 7);
 						MoneyInputFrame_SetOnValueChangedFunc(self, TradeFrame_UpdateMoney);
 						self:RegisterEvent("PLAYER_TRADE_MONEY");
+						self.copper:SetPoint("LEFT", "TradePlayerInputMoneyFrameSilver", "RIGHT", 11, 0);
+						self.silver:SetPoint("LEFT", "TradePlayerInputMoneyFrameGold", "RIGHT", 22, 0);
 					</OnLoad>
 					<OnEvent>
 						MoneyInputFrame_SetCopper(self, GetPlayerTradeMoney());

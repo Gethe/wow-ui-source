@@ -134,12 +134,16 @@ end
 BattlefieldMapMixin = {};
 
 function BattlefieldMapMixin:Toggle()
-	if self:IsShown() then
-		SetCVar("showBattlefieldMinimap", "0");	
-		self:Hide();
+	if (BattlefieldMapAllowed()) then
+		if self:IsShown() then
+			SetCVar("showBattlefieldMinimap", "0");	
+			self:Hide();
+		else
+			SetCVar("showBattlefieldMinimap", "1");
+			self:Show();
+		end
 	else
-		SetCVar("showBattlefieldMinimap", "1");
-		self:Show();
+		self:Hide();
 	end
 end
 
@@ -157,6 +161,8 @@ function BattlefieldMapMixin:OnLoad()
 	self:RegisterEvent("ADDON_LOADED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+	self:RegisterEvent("UPDATE_ALL_UI_WIDGETS");
+	self:RegisterEvent("UPDATE_UI_WIDGET");
 end
 
 function BattlefieldMapMixin:OnShow()
@@ -195,11 +201,13 @@ function BattlefieldMapMixin:OnEvent(event, ...)
 			self:UpdateUnitsVisibility();
 			self:UnregisterEvent("ADDON_LOADED");
 		end
-	elseif event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED_NEW_AREA" then
-		if GetCVar("showBattlefieldMinimap") == "1" then
+	elseif event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED_NEW_AREA" or event == "UPDATE_ALL_UI_WIDGETS" or event == "UPDATE_UI_WIDGET" then
+		if GetCVar("showBattlefieldMinimap") == "1" and BattlefieldMapAllowed() then
 			local mapID = MapUtil.GetDisplayableMapForPlayer();
 			self:SetMapID(mapID);
 			self:Show();
+		else
+			self:Hide();
 		end
 	end
 end

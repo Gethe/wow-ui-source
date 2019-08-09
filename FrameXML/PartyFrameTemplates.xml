@@ -251,6 +251,12 @@
 										<Anchor point="TOPLEFT"/>
 									</Anchors>
 								</Texture>
+								<Texture name="$parentMasterIcon" file="Interface\GroupFrame\UI-Group-MasterLooter" hidden="true">
+									<Size x="16" y="16"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="32" y="0"/>
+									</Anchors>
+								</Texture>
 								<Texture name="$parentGuideIcon" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" hidden="true">
 									<Size x="19" y="19"/>
 									<Anchors>

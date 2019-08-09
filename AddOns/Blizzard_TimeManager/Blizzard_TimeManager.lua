@@ -522,7 +522,7 @@ end
 function TimeManager_FireAlarmWarning()
 	TimeManagerClockButton.checkAlarmWarning = false;
 
-	--PlaySound(SOUNDKIT.TUTORIAL_POPUP);
+	PlaySound(SOUNDKIT.ALARM_CLOCK_WARNING_1);
 end
 
 function TimeManager_FireAlarm()
@@ -535,7 +535,7 @@ function TimeManager_FireAlarm()
 		DEFAULT_CHAT_FRAME:AddMessage(Settings.alarmMessage, info.r, info.g, info.b, info.id);
 		RaidNotice_AddMessage(RaidWarningFrame, Settings.alarmMessage, ChatTypeInfo["RAID_WARNING"]);
 	end
-	PlaySound(SOUNDKIT.TUTORIAL_POPUP);
+	PlaySound(SOUNDKIT.ALARM_CLOCK_WARNING_2);
 	UIFrameFlash(TimeManagerAlarmFiredTexture, 0.5, 0.5, -1);
 	-- show the clock if necessary, but record its current state so it can return to that state after
 	-- the player turns the alarm off
@@ -645,7 +645,7 @@ end
 
 function Stopwatch_FinishCountdown()
 	Stopwatch_Clear();
-	PlaySound(SOUNDKIT.TUTORIAL_POPUP);
+	PlaySound(SOUNDKIT.ALARM_CLOCK_WARNING_3);
 end
 
 function StopwatchCloseButton_OnClick()

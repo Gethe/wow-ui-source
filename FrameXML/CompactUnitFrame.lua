@@ -750,7 +750,7 @@ end
 
 
 function CompactUnitFrame_UpdateReadyCheck(frame)
-	if ( not frame.readyCheckIcon or frame.readyCheckDecay and GetReadyCheckTimeLeft() <= 0 ) then
+	if ( not frame.optionTable.displayReadyCheck or not frame.readyCheckIcon or frame.readyCheckDecay and GetReadyCheckTimeLeft() <= 0 ) then
 		return;
 	end
 
@@ -1238,6 +1238,7 @@ DefaultCompactUnitFrameOptions = {
 	displayIncomingResurrect = true,
 	displayInOtherGroup = true,
 	displayInOtherPhase = true,
+	displayReadyCheck = true,
 
 	--If class colors are enabled also show the class colors for npcs in your raid frames or
 	--raid-frame-style party frames.
@@ -1415,6 +1416,7 @@ DefaultCompactMiniFrameOptions = {
 	fadeOutOfRange = true,
 	--displayStatusText = true,
 	--displayDispelDebuffs = true,
+	displayReadyCheck = false,
 }
 
 DefaultCompactMiniFrameSetUpOptions = {

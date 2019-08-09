@@ -155,7 +155,7 @@ function PartyMemberFrame_UpdateMember (self)
 		end
 
 		UnitFrame_Update(self, true);
-		else
+	else
 		if VoiceActivityManager then
 			VoiceActivityManager:UnregisterFrameForVoiceActivityNotifications(self);
 			self.voiceNotification = nil;
@@ -218,6 +218,7 @@ function PartyMemberFrame_UpdateLeader (self)
 	local id = self:GetID();
 	local leaderIcon = _G["PartyMemberFrame"..id.."LeaderIcon"];
 	local guideIcon = _G["PartyMemberFrame"..id.."GuideIcon"];
+	local masterIcon = _G["PartyMemberFrame"..id.."MasterIcon"];
 
 	if( UnitIsGroupLeader("party"..id) ) then
 		leaderIcon:Show();
@@ -225,6 +226,13 @@ function PartyMemberFrame_UpdateLeader (self)
 	else
 		guideIcon:Hide();
 		leaderIcon:Hide();
+	end
+
+	local lootMethod, lootMaster = GetLootMethod();
+	if ( lootMaster == id ) then
+		masterIcon:Show();
+	else
+		masterIcon:Hide();
 	end
 end
 
@@ -328,6 +336,7 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 	elseif ( event == "GROUP_ROSTER_UPDATE" or event == "UPDATE_ACTIVE_BATTLEFIELD" ) then
 		PartyMemberFrame_UpdateMember(self);
 		PartyMemberFrame_UpdateArt(self);
+		PartyMemberFrame_UpdateLeader(self);
 		return;
 	elseif ( event == "PARTY_LEADER_CHANGED" ) then
 		PartyMemberFrame_UpdateLeader(self);
