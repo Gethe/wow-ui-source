@@ -762,12 +762,15 @@ end
 
 -- Time --
 function SecondsToClock(seconds, displayZeroHours)
+	seconds = math.max(seconds, 0);
 	local hours = math.floor(seconds / 3600);
+	seconds = seconds - (hours * 3600);
 	local minutes = math.floor(seconds / 60);
+	seconds = seconds % 60;
 	if hours > 0 or displayZeroHours then
-		return format(HOURS_MINUTES_SECONDS, hours, minutes, seconds % 60);
+		return format(HOURS_MINUTES_SECONDS, hours, minutes, seconds);
 	else
-		return format(MINUTES_SECONDS, minutes, seconds % 60);
+		return format(MINUTES_SECONDS, minutes, seconds);
 	end
 end
 
