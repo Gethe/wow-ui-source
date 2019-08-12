@@ -16,7 +16,6 @@ VideoData["Graphics_Quality"]={
 				"Graphics_SunshaftsDropDown",
 				"Graphics_ProjectedTexturesDropDown",
 				"Graphics_SSAODropDown",
-				"Graphics_LightingQualityDropDown",
 			},
 	numQualityLevels = 10,
 	SetDisplayValue = 
@@ -125,7 +124,6 @@ VideoData["RaidGraphics_Quality"].childOptions = {
 				"RaidGraphics_SunshaftsDropDown",
 				"RaidGraphics_ProjectedTexturesDropDown",
 				"RaidGraphics_SSAODropDown",
-				"RaidGraphics_LightingQualityDropDown",
 			};
 VideoData["RaidGraphics_Quality"].numQualityLevels = 10;
 VideoData["RaidGraphics_Quality"].updatecustomfield =
@@ -851,56 +849,6 @@ VideoData["RaidGraphics_SunshaftsDropDown"]={
 		[3] = {
 			text = VIDEO_OPTIONS_HIGH,
 			tooltip = VIDEO_OPTIONS_SUNSHAFTS_HIGH,
-		},
-	},
-	dependent = {
-		"RaidGraphics_Quality",
-	},
-}
-
--------------------------------------------------------------------------------------------------------
-VideoData["Graphics_LightingQualityDropDown"]={
-	name = LIGHTING_QUALITY;
-	description = OPTION_TOOLTIP_LIGHTING_QUALITY,
-	graphicsCVar =	"graphicsLightingQuality",
-	classic = 3,
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_LOW,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_LOW,
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_MEDIUM,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_MEDIUM,
-		},
-		[3] = {
-			text = VIDEO_OPTIONS_HIGH,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_HIGH,
-		},
-	},
-	dependent = {
-		"Graphics_Quality",
-	},
-}
-
--------------------------------------------------------------------------------------------------------
-VideoData["RaidGraphics_LightingQualityDropDown"]={
-	name = LIGHTING_QUALITY;
-	description = OPTION_TOOLTIP_LIGHTING_QUALITY,
-	graphicsCVar =	"raidGraphicsLightingQuality",
-	classic = 3,
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_LOW,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_LOW,
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_MEDIUM,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_MEDIUM,
-		},
-		[3] = {
-			text = VIDEO_OPTIONS_HIGH,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_HIGH,
 		},
 	},
 	dependent = {
