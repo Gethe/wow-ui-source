@@ -125,7 +125,7 @@
 			<OnShow function="KoreanRatings_OnShow"/>
 		</Scripts>
 	</Button>
-	<Frame name="AccountLogin" toplevel="true" parent="GlueParentScreenFrame" setAllPoints="true" enableKeyboard="true" hidden="false">
+	<Frame name="AccountLogin" toplevel="true" parent="GlueParentScreenFrame" setAllPoints="true" enableKeyboard="true" hidden="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="BlackLoginBackground">
@@ -134,7 +134,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ModelFFX name="LoginBackgroundModel" setAllPoints="true" fogNear="0" fogFar="1200" glow="0.08">
+			<ModelFFX name="LoginBackgroundModel" setAllPoints="true" fogNear="0" fogFar="1200" glow="0.30">
 				<FogColor r="0.25" g="0.06" b="0.015"/>
 			</ModelFFX>
 			<Frame parentKey="UI" setAllPoints="true">

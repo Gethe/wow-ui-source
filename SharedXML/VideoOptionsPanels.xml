@@ -686,21 +686,6 @@
 							</Layer>
 						</Layers>
 					</Frame>
-
-					<Frame name="$parentLightingQualityDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentSSAODropDown" relativePoint="BOTTOMLEFT"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="LIGHTING_QUALITY">
-									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
 				</Frames>
 				<Scripts>
 					<OnLoad>
@@ -994,21 +979,6 @@
 						<Layers>
 							<Layer level="BACKGROUND">
 								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="SSAO_LABEL">
-									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
-
-					<Frame name="$parentLightingQualityDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="15">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentSSAODropDown" relativePoint="BOTTOMLEFT"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="LIGHTING_QUALITY">
 									<Anchors>
 										<Anchor point="RIGHT" relativePoint="LEFT"/>
 									</Anchors>
