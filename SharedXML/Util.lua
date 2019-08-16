@@ -224,6 +224,10 @@ function ExtractHyperlinkString(linkString)
 	return preString ~= nil, preString, hyperlinkString, postString;
 end
 
+function ExtractLinkData(link)
+	return string.match(link, "(.-):(.*)");
+end
+
 function ExtractQuestRewardID(linkString)
 	return linkString:match("^questreward:(%d+)$");
 end
@@ -725,7 +729,7 @@ end
 RAID_CLASS_COLORS = {};
 do
 	local classes = {"HUNTER", "WARLOCK", "PRIEST", "PALADIN", "MAGE", "ROGUE", "DRUID", "SHAMAN", "WARRIOR", "DEATHKNIGHT", "MONK", "DEMONHUNTER"};
-	
+
 	for i, className in ipairs(classes) do
 		RAID_CLASS_COLORS[className] = C_ClassColor.GetClassColor(className);
 	end
@@ -904,7 +908,7 @@ function CreateTextureMarkup(file, fileWidth, fileHeight, width, height, left, r
 	);
 end
 
-function CreateAtlasMarkup(atlasName, height, width, offsetX, offsetY)
+function CreateAtlasMarkup(atlasName, width, height, offsetX, offsetY)
 	return ("|A:%s:%d:%d:%d:%d|a"):format(
 		  atlasName
 		, height or 0

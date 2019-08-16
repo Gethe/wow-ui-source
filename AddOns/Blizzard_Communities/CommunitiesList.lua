@@ -11,6 +11,7 @@ local COMMUNITIES_LIST_EVENTS = {
 	
 local COMMUNITIES_LIST_INITLAL_TOP_BORDER_OFFSET = -28;
 local COMMUNITIES_LIST_INITLAL_BOTTOM_BORDER_OFFSET = 40;
+local COMMUNITIES_LIST_GUILD_FINDER_OFFSET = 28;
 
 CommunitiesListMixin = {};
 
@@ -43,6 +44,7 @@ function CommunitiesListMixin:OnEvent(event, ...)
 		self:UpdateFinderInvitations(); 
 		self:Update(); 
 	elseif event == "GUILD_ROSTER_UPDATE" then 
+		self:UpdateCommunitiesList();
 		self:Update();
 	end
 end
@@ -265,8 +267,11 @@ function CommunitiesListMixin:Update()
 					clubInfo = clubs[displayIndex];
 				end
 			end
-			if not isInGuild and displayIndex == 0 then
+			if (not isInGuild and displayIndex == 0) then
 				button:SetGuildFinder();
+				local communitiesFrame = self:GetCommunitiesFrame();
+				communitiesFrame.GuildFinderFrame.isGuildType = true;
+				communitiesFrame.GuildFinderFrame:UpdateType(); 
 				button:SetFocused(self:GetCommunitiesFrame():GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER);
 				button:Show();
 				shownGuildFinderButton = true;
@@ -286,14 +291,23 @@ function CommunitiesListMixin:Update()
 				button:Show(); 
 				usedHeight = usedHeight + height; 
 				shouldAddJoinCommunityEntry = false;
+			elseif isInGuild then 
+				button:SetGuildFinder();
+				button:Show();
+				shownGuildFinderButton = true;
+				usedHeight = usedHeight + height + COMMUNITIES_LIST_GUILD_FINDER_OFFSET;
 			else
 				button:SetClubInfo(nil);
 				button:Hide();
 			end
 		end
 	end
-	
 	local totalHeight = clubsHeight + COMMUNITIES_LIST_INITLAL_TOP_BORDER_OFFSET + COMMUNITIES_LIST_INITLAL_BOTTOM_BORDER_OFFSET;
+
+	if (isInGuild) then 
+		totalHeight = totalHeight + COMMUNITIES_LIST_GUILD_FINDER_OFFSET;
+	end 
+
 	HybridScrollFrame_Update(scrollFrame, totalHeight, usedHeight);
 end
 
@@ -353,6 +367,7 @@ end
 
 function CommunitiesListMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, COMMUNITIES_LIST_EVENTS);
+
 	HybridScrollFrame_CreateButtons(self.ListScrollFrame, "CommunitiesListEntryTemplate", 0, -COMMUNITIES_LIST_INITLAL_TOP_BORDER_OFFSET);
 	self:UpdateCommunitiesList();
 	self:UpdateInvitations();
@@ -591,8 +606,12 @@ end
 function CommunitiesListEntryMixin:SetFindCommunity()
 	self.overrideOnClick = function()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		self:GetCommunitiesFrame():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_FINDER);
-		self:GetCommunitiesFrame():SelectClub(nil);
+		local communitiesFrame = self:GetCommunitiesFrame();
+		communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_FINDER);
+
+		communitiesFrame.CommunityFinderFrame.isGuildType = false;
+		communitiesFrame.CommunityFinderFrame:UpdateType(); 
+		communitiesFrame:SelectClub(nil);
 	end;
 	
 	self.clubId = nil;
@@ -659,8 +678,13 @@ end
 function CommunitiesListEntryMixin:SetGuildFinder()
 	self.overrideOnClick = function ()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+
 		local communitiesFrame = self:GetCommunitiesFrame();
 		communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER);
+
+		communitiesFrame.GuildFinderFrame.isGuildType = true;
+		communitiesFrame.GuildFinderFrame:UpdateType(); 
+
 		communitiesFrame:SelectClub(nil);
 		communitiesFrame.Inset:Hide();
 	end;
@@ -761,7 +785,7 @@ function CommunitiesListEntryMixin:OnClick(button)
 		self:GetCommunitiesFrame():SelectClub(self.clubId);
 	elseif button == "RightButton" then
 		local clubInfo = C_Club.GetClubInfo(self:GetClubId());
-		if not clubInfo or clubInfo.clubType == Enum.ClubType.Guild then
+		if not clubInfo then
 			return;
 		end
 
@@ -785,7 +809,11 @@ function CommunitiesListEntryDropDown_Initialize(self, level)
 		if clubInfo and memberInfo then
 			self.clubMemberInfo = memberInfo;
 			self.clubInfo = clubInfo;
-			UnitPopup_ShowMenu(self, "COMMUNITIES_COMMUNITY", nil, clubInfo.name);
+			if clubInfo.clubType == Enum.ClubType.Guild then 
+				UnitPopup_ShowMenu(self, "GUILDS_GUILD", nil, clubInfo.name);
+			else 
+				UnitPopup_ShowMenu(self, "COMMUNITIES_COMMUNITY", nil, clubInfo.name);
+			end
 		end
 	end
 end

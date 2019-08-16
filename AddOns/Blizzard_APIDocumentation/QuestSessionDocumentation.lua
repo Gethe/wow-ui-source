@@ -7,12 +7,57 @@ local QuestSession =
 	Functions =
 	{
 		{
+			Name = "CanDrop",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "allowed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanJoin",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "allowed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanStart",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "allowed", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "Exists",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "exists", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAvailableSessionCommand",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "command", Type = "QuestSessionCommand", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPendingCommand",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "command", Type = "QuestSessionCommand", Nilable = false },
 			},
 		},
 		{
@@ -49,6 +94,15 @@ local QuestSession =
 			Returns =
 			{
 				{ Name = "hasJoined", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasPendingCommand",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasPendingCommand", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -105,6 +159,15 @@ local QuestSession =
 			Name = "QuestSessionDestroyed",
 			Type = "Event",
 			LiteralName = "QUEST_SESSION_DESTROYED",
+		},
+		{
+			Name = "QuestSessionEnabledStateChanged",
+			Type = "Event",
+			LiteralName = "QUEST_SESSION_ENABLED_STATE_CHANGED",
+			Payload =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "QuestSessionJoinRequest",

@@ -13,7 +13,7 @@ CommunitiesSettingsDialogMixin = {}
 function CommunitiesSettingsDialogMixin:OnLoad()
 	self.LookingForDropdown:Initialize(); 
 	self.ClubFocusDropdown:Initialize(); 
-	self.ClubFocusDropdown.GuildFocusDropdownLabel:SetFontObject(GameFontNormal);
+	self.ClubFocusDropdown.Label:SetFontObject(GameFontNormal);
 	UIDropDownMenu_SetWidth(self.LookingForDropdown, 150);
 	UIDropDownMenu_SetWidth(self.ClubFocusDropdown, 140);
 	UIDropDownMenu_Initialize(self.LookingForDropdown, LookingForClubDropdownInitialize); 
@@ -64,13 +64,10 @@ function CommunitiesSettingsDialogMixin:SetClubId(clubId)
 		self.Description.EditBox.Instructions:SetText(self.clubType == Enum.ClubType.BattleNet and COMMUNITIES_CREATE_DIALOG_DESCRIPTION_INSTRUCTIONS_BATTLE_NET or COMMUNITIES_CREATE_DIALOG_DESCRIPTION_INSTRUCTIONS);
 		self.MessageOfTheDay.EditBox:SetText(clubInfo.broadcast);
 
-		local clubPostingInfoList = C_ClubFinder.GetRecruitingClubInfoFromClubID(clubId);
-		if (clubPostingInfoList and #clubPostingInfoList > 0) then
-			local clubPostingInfo = clubPostingInfoList[0];
-			if (clubPostingInfo) then
-				self.clubPostingInfo = clubPostingInfo;
-				-- TODO: Setup the UI to mirror the clubPostingInfo
-			end
+		local clubPostingInfo = C_ClubFinder.GetRecruitingClubInfoFromClubID(clubId);
+		if (clubPostingInfo) then
+			self.clubPostingInfo = clubPostingInfo;
+			-- TODO: Setup the UI to mirror the clubPostingInfo
 		end
 	end
 end
@@ -163,7 +160,6 @@ function CommunitiesSettingsGetRecruitmentSettingByValue(value)
 end 
 
 function CommunitiesSettingsDialogMixin:ResetClubFinderSettings()
-	self.Description.EditBox:SetText("");
 	self.MinIlvlOnly.Button:SetChecked(false);
 	self.MinIlvlOnly.EditBox:SetText(""); 
 	self.MinIlvlOnly.EditBox.Text:Show();
@@ -185,40 +181,37 @@ function CommunitiesSettingsDialogMixin:UpdateSettingsInfoFromClubInfo()
 	local clubInfo = C_Club.GetClubInfo(self.clubId);
 	self:ResetClubFinderSettings();
 	if(clubInfo) then
-		local clubPostingInfoList = C_ClubFinder.GetRecruitingClubInfoFromClubID(clubInfo.clubId);
-		if (clubPostingInfoList and #clubPostingInfoList > 0) then
-			local clubPostingInfo = clubPostingInfoList[1];
-			if (clubPostingInfo) then
-				self.Description.EditBox:SetText(clubPostingInfo.comment);
-				self.LookingForDropdown:SetCheckedList(clubPostingInfo.recruitingSpecIds);
-				self.LookingForDropdown:UpdateDropdownText();
+		local clubPostingInfo = C_ClubFinder.GetRecruitingClubInfoFromClubID(clubInfo.clubId);
+		if (clubPostingInfo) then
+			self.Description.EditBox:SetText(clubPostingInfo.comment);
+			self.LookingForDropdown:SetCheckedList(clubPostingInfo.recruitingSpecIds);
+			self.LookingForDropdown:UpdateDropdownText();
 
-				C_ClubFinder.SetAllRecruitmentSettings(clubPostingInfo.recruitmentFlags);
+			C_ClubFinder.SetAllRecruitmentSettings(clubPostingInfo.recruitmentFlags);
 
-				local index = C_ClubFinder.GetFocusIndexFromFlag(clubPostingInfo.recruitmentFlags);
-				C_ClubFinder.SetRecruitmentSettings(index, true);
-				UIDropDownMenu_Initialize(self.ClubFocusDropdown, ClubFocusClubDropdownInitialize)
+			local index = C_ClubFinder.GetFocusIndexFromFlag(clubPostingInfo.recruitmentFlags);
+			C_ClubFinder.SetRecruitmentSettings(index, true);
+			UIDropDownMenu_Initialize(self.ClubFocusDropdown, ClubFocusClubDropdownInitialize)
 
-				if (clubPostingInfo.minILvl > 0) then 
-					self.MinIlvlOnly.EditBox:SetText(clubPostingInfo.minILvl); 
-					self.MinIlvlOnly.EditBox.Text:Hide();
-					self.MinIlvlOnly.Button:SetChecked(true);
-				else
-					self.MinIlvlOnly.Button:SetChecked(false);
-					self.MinIlvlOnly.EditBox:SetText(""); 
-					self.MinIlvlOnly.EditBox.Text:Show();
-				end
+			if (clubPostingInfo.minILvl > 0) then 
+				self.MinIlvlOnly.EditBox:SetText(clubPostingInfo.minILvl); 
+				self.MinIlvlOnly.EditBox.Text:Hide();
+				self.MinIlvlOnly.Button:SetChecked(true);
+			else
+				self.MinIlvlOnly.Button:SetChecked(false);
+				self.MinIlvlOnly.EditBox:SetText(""); 
+				self.MinIlvlOnly.EditBox.Text:Show();
+			end
 				
 
-				local isMaxLevelChecked = CommunitiesSettingsGetRecruitmentSettingByValue(Enum.ClubFinderSettingFlags.MaxLevelOnly);
-				self.MaxLevelOnly.Button:SetChecked(isMaxLevelChecked);
+			local isMaxLevelChecked = CommunitiesSettingsGetRecruitmentSettingByValue(Enum.ClubFinderSettingFlags.MaxLevelOnly);
+			self.MaxLevelOnly.Button:SetChecked(isMaxLevelChecked);
 
-				local autoAccept = CommunitiesSettingsGetRecruitmentSettingByValue(Enum.ClubFinderSettingFlags.AutoAccept);
-				self.AutoAcceptApplications.Button:SetChecked(autoAccept);
+			local autoAccept = CommunitiesSettingsGetRecruitmentSettingByValue(Enum.ClubFinderSettingFlags.AutoAccept);
+			self.AutoAcceptApplications.Button:SetChecked(autoAccept);
 
-				local enableListing = CommunitiesSettingsGetRecruitmentSettingByValue(Enum.ClubFinderSettingFlags.EnableListing);
-				self.ShouldListClub.Button:SetChecked(enableListing);
-			end
+			local enableListing = CommunitiesSettingsGetRecruitmentSettingByValue(Enum.ClubFinderSettingFlags.EnableListing);
+			self.ShouldListClub.Button:SetChecked(enableListing);
 		end
 	end
 end
@@ -234,7 +227,7 @@ function CommunitiesSettingsDialogMixin:SetDisabledStateOnCommunityFinderOptions
 		self.MaxLevelOnly.Label:SetTextColor(fontColor:GetRGB());
 		self.MinIlvlOnly.Label:SetTextColor(fontColor:GetRGB());
 		self.LookingForDropdown.Label:SetTextColor(fontColor:GetRGB());
-		self.ClubFocusDropdown.GuildFocusDropdownLabel:SetTextColor(fontColor:GetRGB());
+		self.ClubFocusDropdown.Label:SetTextColor(fontColor:GetRGB());
 		UIDropDownMenu_DisableDropDown(self.ClubFocusDropdown); 
 		UIDropDownMenu_DisableDropDown(self.LookingForDropdown);
 	else
@@ -243,7 +236,7 @@ function CommunitiesSettingsDialogMixin:SetDisabledStateOnCommunityFinderOptions
 		self.MaxLevelOnly.Label:SetTextColor(fontColor:GetRGB());
 		self.MinIlvlOnly.Label:SetTextColor(fontColor:GetRGB());
 		self.LookingForDropdown.Label:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
-		self.ClubFocusDropdown.GuildFocusDropdownLabel:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+		self.ClubFocusDropdown.Label:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
 		UIDropDownMenu_EnableDropDown(self.ClubFocusDropdown); 
 		UIDropDownMenu_EnableDropDown(self.LookingForDropdown);
 	end 
@@ -266,7 +259,7 @@ function CommunitiesSettingsDialogMixin:HideOrShowCommunityFinderOptions(shouldS
 	self.MinIlvlOnly.Label:SetShown(shouldShow);
 	self.MinIlvlOnly.EditBox:SetShown(shouldShow);
 	self.LookingForDropdown.Label:SetShown(shouldShow);
-	self.ClubFocusDropdown.GuildFocusDropdownLabel:SetShown(shouldShow);
+	self.ClubFocusDropdown.Label:SetShown(shouldShow);
 	self.ShouldListClub:SetShown(shouldShow)
 end 
 

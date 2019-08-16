@@ -1,12 +1,41 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_StoreButtonMixin.lua" />
+	<Script file="Blizzard_ProductCardBuyButtonMixin.lua" />
 	<Script file="Blizzard_ProductCardTemplates.lua" />
 	<Script file="Blizzard_SmallProductCardTemplates.lua" />
 	<Script file="Blizzard_LargeProductCardTemplates.lua" />
-	<Script file="Blizzard_FullProductCardTemplates.lua" />	
-	<Script file="Blizzard_ProductCardMagnifierTemplates.lua" />	
+	<Script file="Blizzard_FullProductCardTemplates.lua" />
+	<Script file="Blizzard_ProductCardMagnifierTemplates.lua" />
 	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
-	
+
+			<Button name="CustomBuyButtonTemplate" inherits="StoreButtonTemplate" mixin="StoreBuyButtonMixin" virtual="true">
+				<Layers>
+					<Layer level="LOW">
+						<Texture parentKey="Strikethrough" >
+							<Size x="1" y="1"/>
+							<Color r="0.50" g="0.50" b="0.50"/>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<FontString parentKey="LeftText" inherits="GameFontNormalMed2" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="CENTER" x="-10" y="0" />
+							</Anchors>
+						</FontString>
+						<FontString parentKey="RightText" inherits="GameFontNormalMed2" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.LeftText" relativePoint="RIGHT" x="20" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnMouseUp method="OnMouseUp" />
+					<OnMouseDown method="OnMouseDown" />
+				</Scripts>
+			</Button>
+
 		<Button name="DefaultStoreCardTemplate" motionScriptsWhileDisabled="true" virtual="true">
 			<Size x="146" y="209" />
 			<Layers>
@@ -41,7 +70,7 @@
 					<Texture parentKey="DiscountLeft" inherits="store-corner-discount-left" hidden="true" />
 					<Texture parentKey="DiscountMiddle" inherits="store-corner-discount-middle" hidden="true" />
 					<FontString parentKey="DiscountText" inherits="GameFontNormalMed2" justifyH="CENTER" text="-25%" hidden="true" />
-				</Layer>			
+				</Layer>
 				<Layer level="OVERLAY">
 					<Texture parentKey="Strikethrough" inherits="store-strikethrough" hidden="true" />
 				</Layer>
@@ -157,7 +186,7 @@
 						<KeyValue key="templateType" value="StoreBulletPointTemplate" type="string"/>
 					</KeyValues>
 				</Frame>			
-				<Button parentKey="BuyButton" inherits="StoreButtonTemplate" motionScriptsWhileDisabled="true">
+				<Button parentKey="BuyButton" inherits="CustomBuyButtonTemplate" motionScriptsWhileDisabled="true">
 					<Scripts>
 						<OnClick function="ProductCardBuyButton_OnClick" />
 						<OnEnter function="ProductCardBuyButton_OnEnter" />

@@ -11,7 +11,7 @@ end
 function SetItemRef(link, text, button, chatFrame)
 
 	-- Going forward, use linkType and linkData instead of strsub and strsplit everywhere
-	local linkType, linkData = string.match(link, '(.-):(.*)');
+	local linkType, linkData = ExtractLinkData(link);
 
 	if ( strsub(link, 1, 6) == "player" ) then
 		local namelink, isGMLink, isCommunityLink;
@@ -510,18 +510,18 @@ end
 
 function GetClubFinderLink(clubFinderId, clubName)
 	local clubType = C_ClubFinder.GetClubTypeFromFinderGUID(clubFinderId);
-	local fontColor = NORMAL_FONT_COLOR; 
+	local fontColor = NORMAL_FONT_COLOR;
 	local linkGlobalString;
-	if(clubType == Enum.ClubFinderRequestType.Guild) then 
+	if(clubType == Enum.ClubFinderRequestType.Guild) then
 		linkGlobalString = CLUB_FINDER_LINK_GUILD;
-	elseif(clubType == Enum.ClubFinderRequestType.Community) then 
+	elseif(clubType == Enum.ClubFinderRequestType.Community) then
 		linkGlobalString = CLUB_FINDER_LINK_COMMUNITY;
 		fontColor = BATTLENET_FONT_COLOR;
-	else 
+	else
 		linkGlobalString = ""
-	end 
+	end
 	return fontColor:WrapTextInColorCode(FormatLink("clubFinder", linkGlobalString:format(clubName), clubFinderId));
-end 
+end
 
 function GetCalendarEventLink(monthOffset, monthDay, index)
 	local dayEvent = C_Calendar.GetDayEvent(monthOffset, monthDay, index);

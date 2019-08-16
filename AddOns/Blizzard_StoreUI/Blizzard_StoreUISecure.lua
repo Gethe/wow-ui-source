@@ -2983,7 +2983,7 @@ function StoreConfirmationFrame_Update(self)
 
 	local baseProductInfo = GetBaseProductInfo(productID)
 	if baseProductInfo then
-		name = baseProductInfo.sharedData.name;
+		name = baseProductInfo.sharedData.name or name;
 		finalIcon = baseProductInfo.sharedData.texture;
 	end
 
@@ -3634,6 +3634,7 @@ function StoreProductCard_ShowModel(self, entryInfo, showShadows, forceModelUpda
 	if self.Shadows then
 		self.Shadows:SetShown(showShadows);
 	end
+	self.ModelScene:ClearScene();
 	self.ModelScene:SetFromModelSceneID(modelSceneID, forceModelUpdate);
 
 	local hasMultipleModels = #cards > 1;

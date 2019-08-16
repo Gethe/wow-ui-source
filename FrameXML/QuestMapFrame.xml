@@ -580,6 +580,7 @@
 							<OnLeave function="QuestSessionManagementExecute_OnLeave"/>
 						</Scripts>
 						<NormalTexture atlas="QuestSharing-QuestLog-Button" useAtlasSize="true"/>
+						<DisabledTexture atlas="QuestSharing-QuestLog-Button" useAtlasSize="true" desaturated="true"/>
 						<PushedTexture atlas="QuestSharing-QuestLog-ButtonPressed" useAtlasSize="true"/>
 					 	<HighlightTexture atlas="QuestSharing-QuestLog-ButtonHighlight" alphaMode="ADD"/>
 					</Button>
@@ -603,6 +604,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
+					<OnLoad method="OnLoad"/>
 					<OnShow method="OnShow"/>
 					<OnHide method="OnHide"/>
 					<OnEvent method="OnEvent"/>
@@ -659,11 +661,6 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Frame parentKey="Indicators" inherits="QuestIndicatorsTemplate">
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="10" y="30"/>
-						</Anchors>
-					</Frame>
 					<Button parentKey="DestinationMapButton" inherits="QuestLogPathButtonTemplate">
 						<Scripts>
 							<OnLoad>
@@ -873,6 +870,10 @@
 						</Scripts>
 					</Button>
 				</Frames>
+				<Scripts>
+					<OnShow function="QuestDetailsFrame_OnShow"/>
+					<OnHide function="QuestDetailsFrame_OnHide"/>
+				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>

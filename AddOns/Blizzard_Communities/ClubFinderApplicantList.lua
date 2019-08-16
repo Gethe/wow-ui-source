@@ -48,7 +48,15 @@ end
 
 function ClubFinderApplicantEntryMixin:GetApplicantStatus()
 	return self.Info.requestStatus;
-end		
+end
+
+function ClubFinderApplicantEntryMixin:GetPlayerGUID()
+	return self.Info.playerGUID;
+end 
+
+function ClubFinderApplicantEntryMixin:GetClubGUID()
+	return self.Info.clubFinderGUID;
+end
 
 function ClubFinderApplicantEntryMixin:OnMouseDown(button)
 	if ( button == "RightButton" ) then
@@ -201,17 +209,15 @@ function ApplicantRightClickOptionsMenuInitialize(self, level)
 	local info = UIDropDownMenu_CreateInfo();
 
 	if UIDROPDOWNMENU_MENU_VALUE == 1 then
-		info.text = CLUB_FINDER_REPORT_SPAM; 
-		info.notCheckable = true; 
-		UIDropDownMenu_AddButton(info, level); 
+		info.text = CLUB_FINDER_REPORT_NAME;
+		info.notCheckable = true;
+		info.func = function()  ClubFinderReportFrame:ShowReportDialog(Enum.ClubFinderPostingReportType.ApplicantsName, self:GetParent():GetClubGUID(), self:GetParent():GetPlayerGUID(), self:GetParent().Info); end
+		UIDropDownMenu_AddButton(info, level);
 
-		info.text = CLUB_FINDER_REPORT_NAME; 
-		info.notCheckable = true; 
-		UIDropDownMenu_AddButton(info, level); 
-
-		info.text = CLUB_FINDER_REPORT_DESCRIPTION; 
-		info.notCheckable = true; 
-		UIDropDownMenu_AddButton(info, level); 
+		info.text = CLUB_FINDER_REPORT_JOIN_NOTE;
+		info.notCheckable = true;
+		info.func = function() ClubFinderReportFrame:ShowReportDialog(Enum.ClubFinderPostingReportType.JoinNote, self:GetParent():GetClubGUID(), self:GetParent():GetPlayerGUID(), self:GetParent().Info); end
+		UIDropDownMenu_AddButton(info, level);
 	end
 	
 	if (level == 1) then 
@@ -251,11 +257,7 @@ end
 ClubFinderApplicantListMixin = { };
 
 function ClubFinderApplicantListMixin:OnLoad()
-	self:RegisterEvent("CLUB_FINDER_RECRUITS_UPDATED");
-	C_ClubFinder.RequestApplicantList(Enum.ClubFinderRequestType.All);
 	self.ColumnDisplay:LayoutColumns(APPLICANT_COLUMN_INFO);
-	self.ColumnDisplay.Background:Hide();
-	self.ColumnDisplay.TopTileStreaks:Hide();
 	self.ColumnDisplay:Show();
 
 	HybridScrollFrame_CreateButtons(self.ListScrollFrame, "ClubFinderApplicantEntryTemplate", 0, 0);
@@ -264,18 +266,11 @@ function ClubFinderApplicantListMixin:OnLoad()
 end
 
 function ClubFinderApplicantListMixin:OnShow()
-	CommunitiesFrameInset:Hide(); 
 	self:ResetColumnSort();
-	self:BuildList();
+	CommunitiesFrameInset:Show(); 
 end 
 
 function ClubFinderApplicantListMixin:OnHide()
-	CommunitiesFrameInset:Show(); 
-end 
-function ClubFinderApplicantListMixin:OnEvent(event, ...)
-	if (event == "CLUB_FINDER_RECRUITS_UPDATED") then 
-		self:BuildList();
-	end
 end 
 
 function ClubFinderApplicantListMixin:ResetColumnSort()
@@ -371,6 +366,71 @@ function ClubFinderApplicantListMixin:SortByColumnIndex(columnIndex)
 	self:RefreshLayout();
 end
 
+function ClubFinderApplicantListMixin:GuildMemberUpdate()
+	local communitiesFrame = self:GetParent();
+	local clubId = communitiesFrame:GetSelectedClubId();
+	if (not clubId) then 
+		return;
+	end
+
+	local clubInfo = C_Club.GetClubInfo(clubId);
+
+	if clubInfo and clubInfo.clubType == Enum.ClubType.Guild then
+		if (communitiesFrame:GetDisplayMode() ~= COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST and (IsGuildLeader() or C_GuildInfo.IsGuildOfficer())) then 
+			C_ClubFinder.RequestApplicantList(Enum.ClubFinderRequestType.Guild); 
+			if (not self.newApplicantListRequest) then 
+				self:SetApplicantRefreshTicker(Enum.ClubFinderRequestType.Guild);
+			end	
+		elseif communitiesFrame:GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST and not IsGuildLeader() and not C_GuildInfo.IsGuildOfficer() then 
+			communitiesFrame.GuildMemberListDropDownMenu:ResetDisplayMode();
+			self:CancelRefreshTicker();
+		end
+	end
+end 
+
+function ClubFinderApplicantListMixin:CommunitiesMemberUpdate()
+	local communitiesFrame = self:GetParent();
+
+	local clubId = communitiesFrame:GetSelectedClubId();
+	if (not clubId) then 
+		return;
+	end
+
+	local clubInfo = C_Club.GetClubInfo(clubId);
+
+
+	if clubInfo and clubInfo.clubType == Enum.ClubType.Character then
+		local selectedClubId = clubInfo.clubId;
+		local myMemberInfo = C_Club.GetMemberInfoForSelf(selectedClubId);
+		local hasFinderPermissions = myMemberInfo.role and myMemberInfo.role == Enum.ClubRoleIdentifier.Owner or myMemberInfo.role == Enum.ClubRoleIdentifier.Leader;
+		if ( communitiesFrame:GetDisplayMode() ~= COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST and hasFinderPermissions) then 
+			C_ClubFinder.RequestApplicantList(Enum.ClubFinderRequestType.Community); 
+			if (not self.newApplicantListRequest) then 
+				self:SetApplicantRefreshTicker(Enum.ClubFinderRequestType.Community);
+			end
+		elseif communitiesFrame:GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST and not hasFinderPermissions then --When we were demoted and we are viewing the applicant list. 
+			communitiesFrame.CommunityMemberListDropDownMenu:ResetDisplayMode();
+			self:CancelRefreshTicker();
+		end	
+	end 
+end 
+
+function ClubFinderApplicantListMixin:SetApplicantRefreshTicker(clubType) 
+	if (self.newApplicantListRequest) then 
+		self.newApplicantListRequest:Cancel();
+	end
+
+	self.newApplicantListRequest = C_Timer.NewTicker(4, function() 
+		C_ClubFinder.RequestApplicantList(clubType); 
+	end);
+end 
+
+function ClubFinderApplicantListMixin:CancelRefreshTicker() 
+	if (self.newApplicantListRequest) then 
+		self.newApplicantListRequest:Cancel();
+	end
+end 
+
 function ClubFinderApplicantListMixin:BuildList()
 	local communityFrame = self:GetParent();
 	local clubId = communityFrame:GetSelectedClubId();
@@ -383,11 +443,45 @@ function ClubFinderApplicantListMixin:BuildList()
 		return; 
 	end 
 
+	local pendingList =  C_ClubFinder.ReturnPendingClubApplicantList(clubId);
+	local applicantList = C_ClubFinder.ReturnClubApplicantList(clubId);
+
 	if (self.isPendingList) then 
-		self.ApplicantInfoList = C_ClubFinder.ReturnPendingClubApplicantList(clubId);
+		self.ApplicantInfoList = pendingList;
 	else 
-		self.ApplicantInfoList = C_ClubFinder.ReturnClubApplicantList(clubId);
+		self.ApplicantInfoList = applicantList;
 	end 
+
+
+	if(clubInfo.clubType == Enum.ClubType.Guild) then 
+		local guildMemberDropdown = communityFrame.GuildMemberListDropDownMenu; 
+		guildMemberDropdown.hasPendingApplicants = false;
+		guildMemberDropdown.hasApplicants = false; 
+		guildMemberDropdown.shouldResetDropdown = false;
+
+		if(pendingList and #pendingList > 0) then 
+			guildMemberDropdown.hasPendingApplicants = true; 
+		end 
+		if(applicantList and #applicantList > 0) then 
+			guildMemberDropdown.hasApplicants = true; 
+		else 
+			guildMemberDropdown.shouldResetDropdown = true; 
+		end 
+
+		guildMemberDropdown:UpdateDropdown();
+	elseif(clubInfo.clubType == Enum.ClubType.Character) then 
+		local communityMemberDropdown = communityFrame.CommunityMemberListDropDownMenu; 
+		if(pendingList and #pendingList > 0) then 
+			communityMemberDropdown.hasPendingApplicants = true; 
+		end 
+		if(applicantList and #applicantList > 0) then 
+			communityMemberDropdown.hasApplicants = true; 
+		else 
+			communityMemberDropdown.shouldResetDropdown = true; 
+		end 
+		communityMemberDropdown:UpdateDropdown();
+	end 
+
 	if (not self.ApplicantInfoList or #self.ApplicantInfoList == 0 and communityFrame:GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST) then 
 		communityFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
 	else 

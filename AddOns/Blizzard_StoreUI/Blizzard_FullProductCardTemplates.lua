@@ -94,16 +94,7 @@ function FullStoreCardMixin:GetCurrencyFormat(currencyInfo)
 	return currencyInfo.formatLong;
 end
 
-function FullStoreCardMixin:SetupBuyButton(info, entryInfo)
-	local text = BLIZZARD_STORE_BUY;
-	if (info.browseBuyButtonText) then
-		text = info.browseBuyButtonText;
-	end
-	self.BuyButton:SetText(text);
-	self.BuyButton:SetEnabled(self:ShouldEnableBuyButton(entryInfo));
-end
-
-function FullStoreCardMixin:SetupBannerText(discounted, discountPercentage, entryInfo)
+function FullStoreCardMixin:UpdateBannerText(discounted, discountPercentage, entryInfo)
 	if entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_NEW then
 		self.SplashBannerText:SetText(BLIZZARD_STORE_SPLASH_BANNER_NEW);
 	elseif entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_DISCOUNT then
@@ -330,19 +321,6 @@ function FullStoreCardMixin:Layout()
 	self.CurrentMarketPrice:SetPoint("TOPLEFT", self.Description, "BOTTOMLEFT", 0, -28);
 	self.CurrentMarketPrice:SetTextColor(0.733, 0.588, 0.31);
 
-	self.CurrentPrice:ClearAllPoints();
-	self.CurrentPrice:SetFontObject("GameFontNormalLarge2");
-	self.CurrentPrice:SetTextColor(1.0, 0.82, 0);
-
-	self.NormalPrice:ClearAllPoints();
-	self.NormalPrice:SetFontObject("GameFontNormalMed3");
-	self.NormalPrice:SetTextColor(0.8, 0.66, 0);
-
-	self.SalePrice:ClearAllPoints();
-	self.SalePrice:SetFontObject("GameFontNormalLarge2");
-	self.SalePrice:SetPoint("BOTTOMLEFT", self.NormalPrice, "BOTTOMRIGHT", 4, -1);
-	self.SalePrice:SetTextColor(0.1, 1.0, 0.1);
-
 	self.SplashBanner:ClearAllPoints();
 	self.SplashBanner:SetSize(374, 77);
 	self.SplashBanner:SetPoint("TOP", 3, 2);
@@ -379,7 +357,7 @@ function FullStoreCardMixin:Layout()
 	self.InvisibleMouseOverFrame:SetPoint("TOPLEFT", 86, -96);
 
 	self.BuyButton:ClearAllPoints();
-	self.BuyButton:SetSize(140, 30);
+	self.BuyButton:SetSize(210, 35);
 	self.BuyButton:SetPoint("BOTTOM", 0, 20);
 	
 	self.Magnifier:ClearAllPoints();
@@ -414,7 +392,7 @@ end
 
 --------------------------------------------------
 -- HORIZONTAL FULL STORE CARD MIXIN
-HorizontalFullStoreCardMixin = CreateFromMixins(FullStoreCardMixin);
+HorizontalFullStoreCardMixin = CreateFromMixins(FullStoreCardMixin, ProductCardBuyButtonMixin);
 
 function HorizontalFullStoreCardMixin:SetStyle(overrideBackground)
 	FullStoreCardMixin.SetStyle(self, overrideBackground);
@@ -433,7 +411,7 @@ function HorizontalFullStoreCardMixin:SetStyle(overrideBackground)
 	end
 	self.ProductName:SetWidth(535);
 	self.ProductName:SetMaxLines(1);
-	self.ProductName:SetPoint("CENTER", 0, -32);
+	self.ProductName:SetPoint("CENTER", 0, -52);
 	self.ProductName:SetJustifyH("CENTER");
 	self.ProductName:SetFontObjectsToTry("Game30Font", "GameFontNormalHuge2", "GameFontNormalLarge2");
 	self.ProductName:SetShadowOffset(1, -1);
@@ -445,7 +423,7 @@ function HorizontalFullStoreCardMixin:SetStyle(overrideBackground)
 	local totalWidth = normalWidth + self.SalePrice:GetStringWidth();
 	self.NormalPrice:SetPoint("TOP", self.ProductName, "BOTTOM", (normalWidth - totalWidth) / 2, -9);
 
-	self.Description:SetPoint("TOP", self.CurrentPrice, "BOTTOM", 0, -12);
+	self.Description:SetPoint("TOP", self.ProductName, "BOTTOM", 0, -10);
 	self.Description:SetFontObject("GameFontNormalMed1");
 	self.Description:SetWidth(490);
 	self.Description:SetJustifyH("CENTER");
@@ -453,6 +431,7 @@ function HorizontalFullStoreCardMixin:SetStyle(overrideBackground)
 	self.SalePrice:SetFontObject("GameFontNormalLarge2");
 
 	self.BuyButton:ClearAllPoints();
+	self.BuyButton:SetSize(210, 35);
 	self.BuyButton:SetPoint("BOTTOM", 0, 33);
 
 	self.Magnifier:ClearAllPoints();
@@ -465,7 +444,7 @@ end
 
 --------------------------------------------------
 -- VERTICAL FULL STORE CARD MIXIN
-VerticalFullStoreCardMixin = CreateFromMixins(FullStoreCardMixin);
+VerticalFullStoreCardMixin = CreateFromMixins(FullStoreCardMixin, ProductCardBuyButtonMixin);
 
 function VerticalFullStoreCardMixin:SetStyle(overrideBackground)
 	FullStoreCardMixin.SetStyle(self, overrideBackground);
@@ -500,6 +479,7 @@ function VerticalFullStoreCardMixin:SetStyle(overrideBackground)
 	self.SalePrice:SetFontObject("GameFontNormalLarge2");
 
 	self.BuyButton:ClearAllPoints();
+	self.BuyButton:SetSize(210, 35);
 	self.BuyButton:SetPoint("TOPLEFT", self.CurrentPrice, "BOTTOMLEFT", 0, -20);
 
 	self.Magnifier:ClearAllPoints();

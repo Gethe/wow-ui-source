@@ -40,24 +40,6 @@ local System =
 			},
 		},
 		{
-			Name = "GlobalMouseDown",
-			Type = "Event",
-			LiteralName = "GLOBAL_MOUSE_DOWN",
-			Payload =
-			{
-				{ Name = "button", Type = "string", Nilable = false },
-			},
-		},
-		{
-			Name = "GlobalMouseUp",
-			Type = "Event",
-			LiteralName = "GLOBAL_MOUSE_UP",
-			Payload =
-			{
-				{ Name = "button", Type = "string", Nilable = false },
-			},
-		},
-		{
 			Name = "InitialHotfixesApplied",
 			Type = "Event",
 			LiteralName = "INITIAL_HOTFIXES_APPLIED",

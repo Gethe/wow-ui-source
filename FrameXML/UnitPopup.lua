@@ -194,6 +194,7 @@ UnitPopupButtons = {
 	["COMMUNITIES_LEAVE"] = { text = function(dropdownMenu)
 			return dropdownMenu.clubInfo.clubType == Enum.ClubType.Character and COMMUNITIES_LIST_DROP_DOWN_LEAVE_CHARACTER_COMMUNITY or COMMUNITIES_LIST_DROP_DOWN_LEAVE_COMMUNITY;
 		end },
+	["GUILDS_LEAVE"] = { text = GUILD_LEAVE },
 	["COMMUNITIES_BATTLETAG_FRIEND"] = { text = COMMUNITY_MEMBER_LIST_DROP_DOWN_BATTLETAG_FRIEND },
 	["COMMUNITIES_KICK"] = { text = COMMUNITY_MEMBER_LIST_DROP_DOWN_REMOVE },
 	["COMMUNITIES_MEMBER_NOTE"] = { text = COMMUNITY_MEMBER_LIST_DROP_DOWN_SET_NOTE },
@@ -206,9 +207,12 @@ UnitPopupButtons = {
 			return dropdownMenu.clubInfo.favoriteTimeStamp and COMMUNITIES_LIST_DROP_DOWN_UNFAVORITE or COMMUNITIES_LIST_DROP_DOWN_FAVORITE;
 		end },
 	["COMMUNITIES_SETTINGS"] = { text = COMMUNITIES_LIST_DROP_DOWN_COMMUNITIES_SETTINGS, },
+	["GUILDS_SETTINGS"] = { text = GUILD_CONTROL_BUTTON_TEXT, },
+	["GUILDS_RECRUITMENT_SETTINGS"] = { text = GUILD_RECRUITMENT, },
 	["COMMUNITIES_NOTIFICATION_SETTINGS"] = { text = COMMUNITIES_LIST_DROP_DOWN_COMMUNITIES_NOTIFICATION_SETTINGS, },
 	["COMMUNITIES_CLEAR_UNREAD_NOTIFICATIONS"] = { text = COMMUNITIES_LIST_DROP_DOWN_CLEAR_UNREAD_NOTIFICATIONS, },
 	["COMMUNITIES_INVITE"] = { text = COMMUNITIES_LIST_DROP_DOWN_INVITE, },
+	["GUILDS_INVITE"] = { text = COMMUNITIES_LIST_DROP_DOWN_INVITE, },
 
 	-- Community message line
 	["DELETE_COMMUNITIES_MESSAGE"] = { text = COMMUNITY_MESSAGE_DROP_DOWN_DELETE, },
@@ -251,6 +255,7 @@ UnitPopupMenus = {
 	["COMMUNITIES_GUILD_MEMBER"] = { "TARGET", "ADD_FRIEND_MENU", "SUBSECTION_SEPARATOR", "VOICE_CHAT_MICROPHONE_VOLUME", "VOICE_CHAT_SPEAKER_VOLUME", "VOICE_CHAT_USER_VOLUME", "SUBSECTION_SEPARATOR", "INTERACT_SUBSECTION_TITLE", "INVITE", "SUGGEST_INVITE", "REQUEST_INVITE", "WHISPER", "IGNORE", "GUILD_PROMOTE", "OTHER_SUBSECTION_TITLE", "GUILD_LEAVE", "REPORT_PLAYER", "COPY_CHARACTER_NAME", "CANCEL" },
 	["COMMUNITIES_MEMBER"] = { "COMMUNITIES_BATTLETAG_FRIEND", "SUBSECTION_SEPARATOR", "VOICE_CHAT_MICROPHONE_VOLUME", "VOICE_CHAT_SPEAKER_VOLUME", "VOICE_CHAT_USER_VOLUME", "SUBSECTION_SEPARATOR", "COMMUNITIES_LEAVE", "COMMUNITIES_KICK", "COMMUNITIES_MEMBER_NOTE", "COMMUNITIES_ROLE", "OTHER_SUBSECTION_TITLE", "REPORT_PLAYER"  },
 	["COMMUNITIES_COMMUNITY"] = { "COMMUNITIES_CLEAR_UNREAD_NOTIFICATIONS", "COMMUNITIES_INVITE", "COMMUNITIES_SETTINGS", "COMMUNITIES_NOTIFICATION_SETTINGS", "COMMUNITIES_FAVORITE", "COMMUNITIES_LEAVE" },
+	["GUILDS_GUILD"] = { "COMMUNITIES_CLEAR_UNREAD_NOTIFICATIONS", "GUILDS_INVITE", "GUILDS_SETTINGS", "GUILDS_RECRUITMENT_SETTINGS", "COMMUNITIES_NOTIFICATION_SETTINGS", "GUILDS_LEAVE" },
 	["RAF_RECRUIT"] = { "ADD_FRIEND", "ADD_FRIEND_MENU", "INTERACT_SUBSECTION_TITLE", "RAF_SUMMON", "INVITE", "SUGGEST_INVITE", "REQUEST_INVITE", "WHISPER", "OTHER_SUBSECTION_TITLE", "RAF_REMOVE_RECRUIT", "CANCEL" },
 
 	-- Second level menus
@@ -308,6 +313,8 @@ local function UnitPopup_GetGUID(menu)
 		return UnitGUID(menu.unit);
 	elseif type(menu.userData) == "table" and menu.userData.guid then
 		return menu.userData.guid;
+	elseif menu.accountInfo and menu.accountInfo.gameAccountInfo.playerGuid then 
+		return menu.accountInfo.gameAccountInfo.playerGuid;
 	end
 end
 
@@ -831,8 +838,8 @@ end
 local function UnitPopup_IsSameServer(playerLocation, dropdownMenu)
 	if playerLocation then
 		return C_PlayerInfo.UnitIsSameServer(playerLocation);
-	elseif dropdownMenu.accountInfo and dropdownMenu.accountInfo.realmName then
-		return dropdownMenu.accountInfo.realmName == GetRealmName();
+	elseif dropdownMenu.accountInfo and dropdownMenu.accountInfo.gameAccountInfo.realmName then
+		return dropdownMenu.accountInfo.gameAccountInfo.realmName == GetRealmName();
 	end
 end
 
@@ -860,7 +867,7 @@ local function UnitPopup_IsPlayerOffline(menu)
 			return true;
 		end
 	elseif menu.accountInfo then
-		return not menu.accountInfo.isOnline;
+		return not menu.accountInfo.gameAccountInfo.isOnline;
 	end
 
 	return false;
@@ -899,8 +906,8 @@ local function UnitPopup_GetIsLocalPlayer(menu)
 end
 
 local function UnitPopup_IsInGroupWithPlayer(dropdownMenu)
-	if dropdownMenu.accountInfo and dropdownMenu.accountInfo.characterName then
-		return	UnitInParty(dropdownMenu.accountInfo.characterName) or UnitInRaid(dropdownMenu.accountInfo.characterName);
+	if dropdownMenu.accountInfo and dropdownMenu.accountInfo.gameAccountInfo.characterName then
+		return	UnitInParty(dropdownMenu.accountInfo.gameAccountInfo.characterName) or UnitInRaid(dropdownMenu.accountInfo.gameAccountInfo.characterName);
 	elseif dropdownMenu.guid then
 		return IsGUIDInGroup(dropdownMenu.guid);
 	end
@@ -982,15 +989,15 @@ function UnitPopup_HideButtons ()
 				shown = false;
 			end
 		elseif ( value == "BN_INVITE" or value == "BN_SUGGEST_INVITE" or value == "BN_REQUEST_INVITE" ) then
-			if not dropdownMenu.accountInfo or not dropdownMenu.accountInfo.playerGuid then
+			if not dropdownMenu.accountInfo or not dropdownMenu.accountInfo.gameAccountInfo.playerGuid then
 				shown = false;
 			else
-				local inviteType = GetDisplayedInviteType(dropdownMenu.accountInfo.playerGuid);
+				local inviteType = GetDisplayedInviteType(dropdownMenu.accountInfo.gameAccountInfo.playerGuid);
 				if "BN_"..inviteType ~= value then
 					shown = false;
 				elseif not dropdownMenu.bnetIDAccount or not BNFeaturesEnabledAndConnected() then
 					shown = false;
-				elseif dropdownMenu.accountInfo.isWowMobile then
+				elseif dropdownMenu.accountInfo.gameAccountInfo.isWowMobile then
 					shown = false;
 				end
 			end
@@ -1110,15 +1117,15 @@ function UnitPopup_HideButtons ()
 				shown = false;
 			end
 		elseif ( value == "QUEST_SESSION_START" ) then
-			if ( not CanStartQuestSession() ) then
+			if ( not C_QuestSession.CanStart() ) then
 				shown = false;
 			end
 		elseif ( value == "QUEST_SESSION_JOIN" ) then
-			if ( not CanJoinQuestSession() ) then
+			if ( not C_QuestSession.CanJoin() ) then
 				shown = false;
 			end
 		elseif ( value == "QUEST_SESSION_DROP" ) then
-			if ( not CanDropQuestSession() ) then
+			if ( not C_QuestSession.CanDrop() ) then
 				shown = false;
 			end
 		elseif ( value == "LEAVE" ) then
@@ -1370,6 +1377,10 @@ function UnitPopup_HideButtons ()
 			if dropdownMenu.clubInfo == nil or dropdownMenu.clubMemberInfo == nil or not dropdownMenu.clubMemberInfo.isSelf then
 				shown = false;
 			end
+		elseif value == "GUILDS_LEAVE" then
+			if dropdownMenu.clubInfo == nil or dropdownMenu.clubMemberInfo == nil or not dropdownMenu.clubMemberInfo.isSelf or IsGuildLeader() then
+				shown = false;
+			end
 		elseif value == "COMMUNITIES_BATTLETAG_FRIEND" then
 			if not haveBattleTag
 				or not UnitPopup_CanAddBNetFriend(dropdownMenu, isLocalPlayer, haveBattleTag, isPlayer)
@@ -1432,6 +1443,10 @@ function UnitPopup_HideButtons ()
 			else
 				shown = false;
 			end
+		elseif value == "GUILDS_INVITE" then
+			if not CanGuildInvite() then
+				shown = false;
+			end
 		elseif value == "COMMUNITIES_SETTINGS" then
 			if dropdownMenu.clubInfo then
 				local privileges = C_Club.GetClubPrivileges(dropdownMenu.clubInfo.clubId);
@@ -1440,6 +1455,14 @@ function UnitPopup_HideButtons ()
 					shown = false;
 				end
 			else
+				shown = false;
+			end
+		elseif value == "GUILDS_SETTINGS" then
+			if not IsGuildLeader() then 
+				shown = false;
+			end
+		elseif value == "GUILDS_RECRUITMENT_SETTINGS" then
+			if not IsGuildLeader() and not C_GuildInfo.IsGuildOfficer() then 
 				shown = false;
 			end
 		elseif commandToRoleId[value] ~= nil then
@@ -1522,15 +1545,15 @@ function UnitPopup_OnUpdate (elapsed)
 							enable = false;
 						end
 					elseif ( value == "QUEST_SESSION_START" ) then
-						if ( not CanStartQuestSession() ) then
+						if ( not C_QuestSession.CanStart() ) then
 							enable = false;
 						end
 					elseif ( value == "QUEST_SESSION_JOIN" ) then
-						if ( not CanJoinQuestSession() ) then
+						if ( not C_QuestSession.CanJoin() ) then
 							shown = false;
 						end
 					elseif ( value == "QUEST_SESSION_DROP" ) then
-						if ( not CanDropQuestSession() ) then
+						if ( not C_QuestSession.CanDrop() ) then
 							shown = false;
 						end
 					elseif ( value == "INSTANCE_LEAVE" ) then
@@ -1557,7 +1580,7 @@ function UnitPopup_OnUpdate (elapsed)
 						if ( not currentDropDown.bnetIDAccount) then
 							enable = false;
 						else
-							if not currentDropDown.accountInfo or (currentDropDown.accountInfo.clientProgram ~= BNET_CLIENT_WOW) or (currentDropDown.accountInfo.wowProjectID ~= WOW_PROJECT_ID) then
+							if not currentDropDown.accountInfo or (currentDropDown.accountInfo.gameAccountInfo.clientProgram ~= BNET_CLIENT_WOW) or (currentDropDown.accountInfo.gameAccountInfo.wowProjectID ~= WOW_PROJECT_ID) then
 								enable = false;
 							end
 						end
@@ -1670,7 +1693,7 @@ function UnitPopup_OnUpdate (elapsed)
 							if not isSameServer or C_FriendList.GetFriendInfo(currentDropDown.clubMemberInfo.name) then
 								enable = false;
 							end
-						elseif not isSameServer or not currentDropDown.accountInfo or not currentDropDown.accountInfo.characterName or C_FriendList.GetFriendInfo(currentDropDown.accountInfo.characterName) then
+						elseif not isSameServer or not currentDropDown.accountInfo or not currentDropDown.accountInfo.gameAccountInfo.characterName or C_FriendList.GetFriendInfo(currentDropDown.accountInfo.gameAccountInfo.characterName) then
 							enable = false;
 						end
 					end
@@ -1713,8 +1736,8 @@ function UnitPopup_OnClick (self)
 	local clubInfo = dropdownFrame.clubInfo;
 	local clubMemberInfo = dropdownFrame.clubMemberInfo;
 
-	if dropdownFrame.isRafRecruit and dropdownFrame.accountInfo.characterName and dropdownFrame.accountInfo.realmName then
-		fullname = dropdownFrame.accountInfo.characterName.."-"..dropdownFrame.accountInfo.realmName;
+	if dropdownFrame.isRafRecruit and dropdownFrame.accountInfo.gameAccountInfo.characterName and dropdownFrame.accountInfo.gameAccountInfo.realmName then
+		fullname = dropdownFrame.accountInfo.gameAccountInfo.characterName.."-"..dropdownFrame.accountInfo.gameAccountInfo.realmName;
 	elseif ( server and ((not unit and GetNormalizedRealmName() ~= server) or (unit and UnitRealmRelationship(unit) ~= LE_REALM_RELATION_SAME)) ) then
 		fullname = name.."-"..server;
 	end
@@ -1808,8 +1831,8 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "BN_INVITE" or button == "BN_SUGGEST_INVITE" or button == "BN_REQUEST_INVITE" ) then
 		FriendsFrame_BattlenetInvite(nil, dropdownFrame.bnetIDAccount);
 	elseif ( button == "BN_TARGET" ) then
-		if dropdownFrame.accountInfo and dropdownFrame.accountInfo.characterName then
-			TargetUnit(dropdownFrame.accountInfo.characterName);
+		if dropdownFrame.accountInfo and dropdownFrame.accountInfo.gameAccountInfo.characterName then
+			TargetUnit(dropdownFrame.accountInfo.gameAccountInfo.characterName);
 		end
 	elseif ( button == "PROMOTE" or button == "PROMOTE_GUIDE" ) then
 		PromoteToLeader(unit, 1);
@@ -1994,6 +2017,9 @@ function UnitPopup_OnClick (self)
 		else
 			StaticPopup_Show("CONFIRM_LEAVE_COMMUNITY", nil, nil, clubInfo);
 		end
+	elseif ( button == "GUILDS_LEAVE" ) then
+		local guildName = GetGuildInfo("player");
+		StaticPopup_Show("CONFIRM_GUILD_LEAVE", guildName);
 	elseif ( button == "COMMUNITIES_BATTLETAG_FRIEND" ) then
 		C_Club.SendBattleTagFriendRequest(clubInfo.clubId, clubMemberInfo.memberId);
 	elseif ( button == "COMMUNITIES_KICK" ) then
@@ -2002,7 +2028,7 @@ function UnitPopup_OnClick (self)
 		StaticPopup_Show("SET_COMMUNITY_MEMBER_NOTE", clubMemberInfo.name, nil, { clubId = clubInfo.clubId, memberId = clubMemberInfo.memberId });
 	elseif ( button == "COMMUNITIES_FAVORITE" ) then
 		CommunitiesFrame.CommunitiesList:SetFavorite(clubInfo.clubId, clubInfo.favoriteTimeStamp == nil);
-	elseif ( button == "COMMUNITIES_INVITE" ) then
+	elseif ( button == "COMMUNITIES_INVITE" or button == "GUILDS_INVITE") then
 		local streams = C_Club.GetStreams(clubInfo.clubId);
 		local defaultStreamId = #streams > 0 and streams[1] or nil;
 		for i, stream in ipairs(streams) do
@@ -2017,6 +2043,18 @@ function UnitPopup_OnClick (self)
 		end
 	elseif ( button == "COMMUNITIES_SETTINGS" ) then
 		OpenCommunitiesSettingsDialog(clubInfo.clubId);
+	elseif (button == "GUILDS_SETTINGS") then 
+		if ( not GuildControlUI ) then
+			UIParentLoadAddOn("Blizzard_GuildControlUI");
+		end
+
+		local wasShown = GuildControlUI:IsShown();
+		if not wasShown then
+			ShowUIPanel(GuildControlUI);
+		end
+	elseif (button == "GUILDS_RECRUITMENT_SETTINGS") then 
+		CommunitiesFrame.RecruitmentDialog.clubId = clubInfo.clubId;
+		CommunitiesFrame.RecruitmentDialog:Show();
 	elseif ( button == "COMMUNITIES_NOTIFICATION_SETTINGS" ) then
 		CommunitiesFrame:ShowNotificationSettingsDialog(clubInfo.clubId);
 	elseif ( button == "COMMUNITIES_CLEAR_UNREAD_NOTIFICATIONS" ) then

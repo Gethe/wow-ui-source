@@ -3,20 +3,47 @@
 	<Script file="RecruitAFriendFrame.lua"/>
 
 	<Frame name="RecruitAFriendRewardsFrame" parent="UIParent" hidden="true" enableMouse="true" frameStrata="DIALOG" mixin="RecruitAFriendRewardsFrameMixin">
-		<Size x="500" y="570"/>
+		<Size x="390" y="478"/>
 		<Anchors>
 			<Anchor point="TOP"/>
 		</Anchors>
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="RecruitAFriend_RewardPane_Parchment" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Bracket_TopLeft" atlas="RecruitAFriend_RewardPane_CornerBracket_LeftTop" useAtlasSize="true">
+					<Anchors>
+						<Anchor relativeKey="$parent.Background" point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Bracket_TopRight" atlas="RecruitAFriend_RewardPane_CornerBracket_RightTop" useAtlasSize="true">
+					<Anchors>
+						<Anchor relativeKey="$parent.Background" point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Bracket_BottomRight" atlas="RecruitAFriend_RewardPane_CornerBracket_RightBottom" useAtlasSize="true">
+					<Anchors>
+						<Anchor relativeKey="$parent.Background" point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Bracket_BottomLeft" atlas="RecruitAFriend_RewardPane_CornerBracket_LeftBottom" useAtlasSize="true">
+					<Anchors>
+						<Anchor relativeKey="$parent.Background" point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="SystemFont_Shadow_Large" text="RAF_REWARDS">
 					<Size x="400"/>
 					<Anchors>
 						<Anchor point="TOP" y="-40"/>
 					</Anchors>
-					<Color r="1.0" g="0.82" b="0" />
+					<Color color="NORMAL_FONT_COLOR" />
 				</FontString>
-				<FontString parentKey="Description" inherits="FriendsFont_Normal" text="RAF_REWARDS_DESC">
+				<FontString parentKey="Description" inherits="FriendsFont_11" text="RAF_REWARDS_DESC">
 					<Size x="400"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-10"/>
@@ -25,7 +52,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="Border" inherits="DialogBorderTranslucentTemplate"/>
+			<Frame parentKey="Border" inherits="DialogBorderNoCenterTemplate"/>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-5" y="-5"/>
@@ -45,18 +72,19 @@
 	</Frame>
 
 	<Button name="RecruitAFriendRewardButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true" mixin="RecruitAFriendRewardButtonMixin">
-		<Size x="42" y="42"/>
+		<Size x="36" y="36"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Icon">
-					<Size x="42" y="42"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
+				<Texture parentKey="Icon" setAllPoints="true" />
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="IconOverlay" setAllPoints="true">
+					<Color color="SEPIA_COLOR" a="0.4" />
 				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnLoad method="OnLoad" />
 			<OnEnter method="OnEnter" />
 			<OnLeave method="OnLeave" />
 			<OnClick method="OnClick" />
@@ -64,25 +92,20 @@
 	</Button>
 
 	<Frame name="RecruitAFriendRewardTemplate" virtual="true" mixin="RecruitAFriendRewardMixin">
-		<Size x="42" y="42"/>
+		<Size x="36" y="36"/>
 		<Frames>
 			<Button parentKey="Button" inherits="RecruitAFriendRewardButtonTemplate" mixin="RecruitAFriendRewardButtonWithCheckMixin">
 				<Anchors>
 					<Anchor point="LEFT"/>
 				</Anchors>
 				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame">
-							<Size x="42" y="42"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="1">
-						<Texture parentKey="CheckMark" atlas="worldquest-tracker-checkmark" useAtlasSize="true">
+						<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="3">
+						<Texture parentKey="CheckMark" atlas="RecruitAFriend_RewardPane_Checkmark" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+								<Anchor point="BOTTOMLEFT" />
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -119,7 +142,7 @@
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-30"/>
 					</Anchors>
-					<Color r="1.0" g="0.82" b="0" />
+					<Color color="NORMAL_FONT_COLOR" />
 				</FontString>
 				<FontString parentKey="FactionAndRealm" inherits="FriendsFont_Normal">
 					<Size x="450"/>
@@ -132,7 +155,7 @@
 					<Anchors>
 						<Anchor point="BOTTOM" y="55"/>
 					</Anchors>
-					<Color r="0.5" g="0.5" b="0.5" />
+					<Color color="GRAY_FONT_COLOR" />
 				</FontString>
 				<FontString parentKey="LinkUses" inherits="FriendsFont_Normal">
 					<Size x="400"/>
@@ -185,15 +208,17 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 
 	<FontString name="RecruitTextTemplate" inherits="FriendsFont_Normal" justifyH="LEFT" virtual="true">
-		<Color r="1.0" g="0.82" b="0" />
+		<Color color="NORMAL_FONT_COLOR" />
 	</FontString>
 
 	<Button name="RecruitListButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true" mixin="RecruitListButtonMixin">
-		<Size x="298" y="45"/>
+		<Size x="298" y="34"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background">
@@ -201,18 +226,18 @@
 						<Anchor point="TOPLEFT" x="0" y="-1"/>
 						<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
 					</Anchors>
-					<Color r=".196" g=".388" b=".8" a="0.2"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
+				<Texture parentKey="DividerTexture" file="Interface\FriendsFrame\UI-FriendsFrame-OnlineDivider" setAllPoints="true" hidden="true"/>
 				<FontString parentKey="Name" inherits="RecruitTextTemplate">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="5" y="-8"/>
+						<Anchor point="TOPLEFT" x="5" y="-4"/>
 					</Anchors>
 					</FontString>
-				<FontString parentKey="SubStatus" inherits="RecruitTextTemplate">
+				<FontString parentKey="InfoText" inherits="RecruitTextTemplate">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="5" y="8"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-3"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -234,34 +259,61 @@
 					<Anchor point="TOPRIGHT" x="-7" y="-83"/>
 				</Anchors>
 				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="RecruitAFriend_ClaimPane_Parchment" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Bracket_TopLeft" atlas="RecruitAFriend_ClaimPane_CornerBracket_LeftTop" useAtlasSize="true">
+							<Anchors>
+								<Anchor relativeKey="$parent.Background" point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Bracket_TopRight" atlas="RecruitAFriend_ClaimPane_CornerBracket_RightTop" useAtlasSize="true">
+							<Anchors>
+								<Anchor relativeKey="$parent.Background" point="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Bracket_BottomRight" atlas="RecruitAFriend_ClaimPane_CornerBracket_RightBottom" useAtlasSize="true">
+							<Anchors>
+								<Anchor relativeKey="$parent.Background" point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Bracket_BottomLeft" atlas="RecruitAFriend_ClaimPane_CornerBracket_LeftBottom" useAtlasSize="true">
+							<Anchors>
+								<Anchor relativeKey="$parent.Background" point="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 					<Layer level="ARTWORK">
 						<FontString parentKey="MonthCount" inherits="FriendsFont_Large" justifyH="LEFT">
 							<Size x="230"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="90" y="-15"/>
 							</Anchors>
+							<Color color="NORMAL_FONT_COLOR" />
 						</FontString>
 						<FontString parentKey="EarnInfo" inherits="FriendsFont_Normal" justifyH="LEFT">
 							<Size x="230"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.MonthCount" relativePoint="BOTTOMLEFT" y="-2"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.MonthCount" relativePoint="BOTTOMLEFT" y="-4"/>
 							</Anchors>
-							<Color r="1.0" g="0.82" b="0" />
 						</FontString>
 						<FontString parentKey="NextRewardName" inherits="FriendsFont_Normal" justifyH="LEFT">
 							<Size x="230"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.EarnInfo" relativePoint="BOTTOMLEFT" y="-3"/>
 							</Anchors>
-							<Color r="0.78431" g="0.27059" b="0.98039"/>
+							<Color color="EPIC_PURPLE_COLOR"/>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
 					<Button parentKey="NextRewardButton" inherits="RecruitAFriendRewardButtonTemplate" mixin="RecruitAFriendRewardButtonWithFanfareMixin">
-						<Size x="50" y="50"/>
+						<Size x="47" y="47"/>
 						<Anchors>
-							<Anchor point="LEFT" x="17"/>
+							<Anchor point="CENTER" relativePoint="LEFT" x="46" />
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -279,23 +331,23 @@
 							<Layer level="ARTWORK">
 								<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 									<Anchors>
-										<Anchor point="TOPLEFT" x="3" y="-3"/>
-										<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+										<Anchor point="TOPLEFT" x="1" y="-1"/>
+										<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
 									</Anchors>
 									<MaskedTextures>
 										<MaskedTexture childKey="Icon"/>
+										<MaskedTexture childKey="IconOverlay"/>
 									</MaskedTextures>
 								</MaskTexture>
 							</Layer>
-							<Layer level="OVERLAY">
-								<Texture parentKey="IconBorder" atlas="Artifacts-PerkRing-MainProc">
-									<Size x="80" y="80"/>
+							<Layer level="OVERLAY" textureSubLevel="3">
+								<Texture parentKey="IconBorder" atlas="RecruitAFriend_ClaimPane_SepiaRing" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="CENTER"/>
 									</Anchors>
 								</Texture>
 							</Layer>
-							<Layer level="OVERLAY" textureSubLevel="1">
+							<Layer level="OVERLAY" textureSubLevel="4">
 								<Texture parentKey="ClaimFlash" atlas="azsharawards-fullglow" useAtlasSize="true" ignoreParentAlpha="true" alphaMode="ADD" alpha="0">
 									<Anchors>
 										<Anchor point="CENTER"/>
@@ -343,7 +395,7 @@
 					<Button parentKey="ClaimOrViewRewardButton" inherits="FriendsFrameButtonTemplate" text="RAF_VIEW_ALL_REWARDS" mixin="RecruitAFriendClaimOrViewRewardButtonMixin">
 						<Size x="165" y="21"/>
 						<Anchors>
-							<Anchor point="BOTTOM" y="10"/>
+							<Anchor point="BOTTOM" x="7" y="10"/>
 						</Anchors>
 						 <Scripts>
 							 <OnClick method="OnClick" />
@@ -363,7 +415,7 @@
 							<Anchors>
 								<Anchor point="CENTER" x="-10"/>
 							</Anchors>
-							<Color r="1.0" g="0.82" b="0" />
+							<Color color="NORMAL_FONT_COLOR" />
 						</FontString>
 					</Layer>
 				</Layers>
@@ -394,6 +446,7 @@
 									<Anchors>
 										<Anchor point="RIGHT" x="-5"/>
 									</Anchors>
+									<Color color="WHITE_FONT_COLOR" />
 								</FontString>
 							</Layer>
 						</Layers>

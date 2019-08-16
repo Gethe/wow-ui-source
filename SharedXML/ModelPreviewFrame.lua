@@ -53,6 +53,7 @@ function ModelPreviewFrame_ShowModelInternal(displayID, modelSceneID, allowZoom,
 	display.displayID = displayID;
 	display.modelSceneID = modelSceneID;
 	display.allowZoom = allowZoom;
+	display.ModelScene:ClearScene();
 	display.ModelScene:SetFromModelSceneID(modelSceneID, forceUpdate);
 
 	if displayID and displayID > 0 then

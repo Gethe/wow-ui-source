@@ -56,32 +56,77 @@ end
 
 -- Converting BNet friend API over to returning a single table that contains all info needed instead of multiple calls which return a million values
 do
-	-- Use C_BattleNet.GetAccountInfoByFriendIndex instead.
-	BNGetFriendInfo = function(friendIndex)
-		local accountInfo = C_BattleNet.GetAccountInfoByFriendIndex(friendIndex);
+	local function getDeprecatedAccountInfo(accountInfo)
 		if accountInfo then
-			local wowProjectID = accountInfo.wowProjectID or 0;
-			local clientProgram = accountInfo.clientProgram ~= "" and accountInfo.clientProgram or nil;
+			local wowProjectID = accountInfo.gameAccountInfo.wowProjectID or 0;
+			local clientProgram = accountInfo.gameAccountInfo.clientProgram ~= "" and accountInfo.gameAccountInfo.clientProgram or nil;
 
 			return	accountInfo.bnetAccountID, accountInfo.accountName, accountInfo.battleTag, accountInfo.isBattleTagFriend,
-					accountInfo.characterName, accountInfo.gameAccountID, clientProgram,
-					accountInfo.isOnline, accountInfo.lastOnlineTime, accountInfo.isAFK, accountInfo.isDND, accountInfo.customMessage, accountInfo.note, true,
-					accountInfo.customMessageTime, wowProjectID, accountInfo.isRecruitAFriend, accountInfo.canSummon, accountInfo.isFavorite, accountInfo.isWowMobile;
+					accountInfo.gameAccountInfo.characterName, accountInfo.gameAccountInfo.gameAccountID, clientProgram,
+					accountInfo.gameAccountInfo.isOnline, accountInfo.lastOnlineTime, accountInfo.isAFK, accountInfo.isDND, accountInfo.customMessage, accountInfo.note, accountInfo.isFriend,
+					accountInfo.customMessageTime, wowProjectID, accountInfo.rafLinkType == Enum.RafLinkType.Recruit, accountInfo.gameAccountInfo.canSummon, accountInfo.isFavorite, accountInfo.gameAccountInfo.isWowMobile;
 		end
+	end
+
+	-- Use C_BattleNet.GetFriendAccountInfo instead.
+	BNGetFriendInfo = function(friendIndex)
+		local accountInfo = C_BattleNet.GetFriendAccountInfo(friendIndex);
+		return getDeprecatedAccountInfo(accountInfo);
 	end
 
 	-- Use C_BattleNet.GetAccountInfoByID instead.
 	BNGetFriendInfoByID = function(id)
 		local accountInfo = C_BattleNet.GetAccountInfoByID(id);
-		if accountInfo then
-			local wowProjectID = accountInfo.wowProjectID or 0;
-			local clientProgram = accountInfo.clientProgram ~= "" and accountInfo.clientProgram or nil;
+		return getDeprecatedAccountInfo(accountInfo);
+	end
 
-			return	accountInfo.bnetAccountID, accountInfo.accountName, accountInfo.battleTag, accountInfo.isBattleTagFriend,
-					accountInfo.characterName, accountInfo.gameAccountID, clientProgram,
-					accountInfo.isOnline, accountInfo.lastOnlineTime, accountInfo.isAFK, accountInfo.isDND, accountInfo.customMessage, accountInfo.note, true,
-					accountInfo.customMessageTime, wowProjectID, accountInfo.isRecruitAFriend, accountInfo.canSummon, accountInfo.isFavorite, accountInfo.isWowMobile;
+	local function getDeprecatedGameAccountInfo(gameAccountInfo, accountInfo)
+		if gameAccountInfo and accountInfo then
+			local wowProjectID = gameAccountInfo.wowProjectID or 0;
+			local characterName = gameAccountInfo.characterName or "";
+			local realmName = gameAccountInfo.realmName or "";
+			local realmID = gameAccountInfo.realmID or 0;
+			local factionName = gameAccountInfo.factionName or "";
+			local raceName = gameAccountInfo.raceName or "";
+			local className = gameAccountInfo.className or "";
+			local areaName = gameAccountInfo.areaName or "";
+			local characterLevel = gameAccountInfo.characterLevel or "";
+			local richPresence = gameAccountInfo.richPresence or "";
+			local gameAccountID = gameAccountInfo.gameAccountID or 0;
+			local playerGuid = gameAccountInfo.playerGuid or 0;
+
+			return	gameAccountInfo.hasFocus, characterName, gameAccountInfo.clientProgram,
+					realmName, realmID, factionName, raceName, className, "", areaName, characterLevel, 
+					richPresence, accountInfo.customMessage, accountInfo.customMessageTime, 
+					gameAccountInfo.isOnline, gameAccountID, accountInfo.bnetAccountID, gameAccountInfo.isGameAFK, gameAccountInfo.isGameBusy,
+					playerGuid, wowProjectID, gameAccountInfo.isWowMobile;
 		end
+	end
+
+	-- Use C_BattleNet.GetFriendGameAccountInfo (and GetFriendAccountInfo if you need the customMessage or bnetAccountID) instead.
+	BNGetFriendGameAccountInfo = function(friendIndex, accountIndex)
+		local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(friendIndex, accountIndex);
+		local accountInfo = C_BattleNet.GetFriendAccountInfo(friendIndex);
+		return getDeprecatedGameAccountInfo(gameAccountInfo, accountInfo);
+	end
+
+		-- Use C_BattleNet.GetGameAccountInfoByID (and GetAccountInfoByID if you need the customMessage or bnetAccountID) instead.
+	BNGetGameAccountInfo = function(id, accountIndex)
+		local gameAccountInfo = C_BattleNet.GetGameAccountInfoByID(id, accountIndex);
+		local accountInfo = C_BattleNet.GetAccountInfoByID(id);
+		return getDeprecatedGameAccountInfo(gameAccountInfo, accountInfo);
+	end
+
+	-- Use C_BattleNet.GetGameAccountInfoByGUID (and GetAccountInfoByGUID if you need the customMessage or bnetAccountID) instead.
+	BNGetGameAccountInfoByGUID = function(guid)
+		local gameAccountInfo = C_BattleNet.GetGameAccountInfoByGUID(guid);
+		local accountInfo = C_BattleNet.GetAccountInfoByGUID(guid);
+		return getDeprecatedGameAccountInfo(gameAccountInfo, accountInfo);
+	end
+
+	-- Use C_BattleNet.GetFriendNumGameAccounts instead.
+	BNGetNumFriendGameAccounts = function(friendIndex)
+		return C_BattleNet.GetFriendNumGameAccounts(friendIndex);
 	end
 end
 

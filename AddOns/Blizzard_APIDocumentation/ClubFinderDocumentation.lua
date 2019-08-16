@@ -129,7 +129,7 @@ local ClubFinder =
 
 			Returns =
 			{
-				{ Name = "clubInfo", Type = "table", InnerType = "RecruitingClubInfo", Nilable = false },
+				{ Name = "clubInfo", Type = "RecruitingClubInfo", Nilable = false },
 			},
 		},
 		{
@@ -143,7 +143,7 @@ local ClubFinder =
 
 			Returns =
 			{
-				{ Name = "clubInfo", Type = "table", InnerType = "RecruitingClubInfo", Nilable = false },
+				{ Name = "clubInfo", Type = "RecruitingClubInfo", Nilable = false },
 			},
 		},
 		{
@@ -227,6 +227,18 @@ local ClubFinder =
 			Returns =
 			{
 				{ Name = "succesful", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ReportPosting",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "reportType", Type = "ClubFinderPostingReportType", Nilable = false },
+				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
+				{ Name = "playerGUID", Type = "string", Nilable = false },
+				{ Name = "complaintNote", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -394,6 +406,7 @@ local ClubFinder =
 			LiteralName = "CLUB_FINDER_APPLICATIONS_UPDATED",
 			Payload =
 			{
+				{ Name = "type", Type = "ClubFinderRequestType", Nilable = false },
 				{ Name = "clubFinderGUIDs", Type = "table", InnerType = "string", Nilable = false },
 			},
 		},
@@ -506,16 +519,18 @@ local ClubFinder =
 			},
 		},
 		{
-			Name = "ClubFinderReportType",
+			Name = "ClubFinderPostingReportType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 4,
 			Fields =
 			{
-				{ Name = "Any", Type = "ClubFinderReportType", EnumValue = 0 },
-				{ Name = "InapropriateName", Type = "ClubFinderReportType", EnumValue = 1 },
-				{ Name = "InapropriateComment", Type = "ClubFinderReportType", EnumValue = 2 },
+				{ Name = "PostersName", Type = "ClubFinderPostingReportType", EnumValue = 0 },
+				{ Name = "ClubName", Type = "ClubFinderPostingReportType", EnumValue = 1 },
+				{ Name = "PostingDescription", Type = "ClubFinderPostingReportType", EnumValue = 2 },
+				{ Name = "ApplicantsName", Type = "ClubFinderPostingReportType", EnumValue = 3 },
+				{ Name = "JoinNote", Type = "ClubFinderPostingReportType", EnumValue = 4 },
 			},
 		},
 		{
@@ -596,6 +611,8 @@ local ClubFinder =
 				{ Name = "minILvl", Type = "number", Nilable = false },
 				{ Name = "cached", Type = "number", Nilable = false },
 				{ Name = "cacheRequested", Type = "number", Nilable = false },
+				{ Name = "lastPosterGUID", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "string", Nilable = false },
 			},
 		},
 		{

@@ -33,7 +33,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Text" inherits="GameFontHighlightSmall" text="Invite">
+						<FontString parentKey="Text" inherits="GameFontHighlightSmall" text="INVITE">
 						</FontString>
 					</Layer>
 				</Layers>
@@ -173,7 +173,6 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnEvent method="OnEvent"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 		</Scripts>

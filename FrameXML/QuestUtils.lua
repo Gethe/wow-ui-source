@@ -262,13 +262,14 @@ local function ShouldShowWarModeBonus(questID, currencyID, firstInstance)
 	return QuestUtils_IsQuestWorldQuest(questID) and C_QuestLog.QuestHasWarModeBonus(questID) and not C_CurrencyInfo.GetFactionGrantedByCurrency(currencyID);
 end
 
-function QuestUtils_GetReplayQuestDecoration()
-	return CreateAtlasMarkup("QuestSharing-QuestLog-Replay", 16, 19);
+function QuestUtils_GetReplayQuestDecoration(questID, useLargeIcon)
+	local embeddedIcon = useLargeIcon and CreateAtlasMarkup("QuestSharing-ReplayIcon", 18, 16) or CreateAtlasMarkup("QuestSharing-QuestLog-Replay", 19, 16);
+	return ("|HquestReplay:%d|h%s|h"):format(questID, embeddedIcon);
 end
 
-function QuestUtils_DecorateQuestText(questID, text)
+function QuestUtils_DecorateQuestText(questID, text, useLargeIcon)
 	if C_QuestLog.IsQuestReplayable(questID) then
-		return QuestUtils_GetReplayQuestDecoration() .. text;
+		return QuestUtils_GetReplayQuestDecoration(questID, useLargeIcon) .. text;
 	end
 
 	return text;

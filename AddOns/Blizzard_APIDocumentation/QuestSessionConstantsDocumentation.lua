@@ -3,11 +3,25 @@ local QuestSessionConstants =
 	Tables =
 	{
 		{
+			Name = "QuestSessionCommand",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "None", Type = "QuestSessionCommand", EnumValue = 0 },
+				{ Name = "Start", Type = "QuestSessionCommand", EnumValue = 1 },
+				{ Name = "Join", Type = "QuestSessionCommand", EnumValue = 2 },
+				{ Name = "Drop", Type = "QuestSessionCommand", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "QuestSessionResult",
 			Type = "Enumeration",
-			NumValues = 26,
+			NumValues = 27,
 			MinValue = 0,
-			MaxValue = 25,
+			MaxValue = 26,
 			Fields =
 			{
 				{ Name = "Ok", Type = "QuestSessionResult", EnumValue = 0 },
@@ -35,7 +49,8 @@ local QuestSessionConstants =
 				{ Name = "Busy", Type = "QuestSessionResult", EnumValue = 22 },
 				{ Name = "JoinRejected", Type = "QuestSessionResult", EnumValue = 23 },
 				{ Name = "Logout", Type = "QuestSessionResult", EnumValue = 24 },
-				{ Name = "Unknown", Type = "QuestSessionResult", EnumValue = 25 },
+				{ Name = "Empty", Type = "QuestSessionResult", EnumValue = 25 },
+				{ Name = "Unknown", Type = "QuestSessionResult", EnumValue = 26 },
 			},
 		},
 	},

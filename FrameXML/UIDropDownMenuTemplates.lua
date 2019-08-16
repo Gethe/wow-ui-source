@@ -32,3 +32,11 @@ end
 function UIDropDownCustomMenuEntryMixin:GetContextData()
 	return self.contextData;
 end
+
+function UIDropDownCustomMenuEntryMixin:OnEnter()
+	UIDropDownMenu_StopCounting(self:GetOwningDropdown());
+end
+
+function UIDropDownCustomMenuEntryMixin:OnLeave()
+	UIDropDownMenu_StartCounting(self:GetOwningDropdown());
+end

@@ -263,6 +263,7 @@ local RecruitAFriend =
 			{
 				{ Name = "recruitmentCode", Type = "string", Nilable = false },
 				{ Name = "recruitmentURL", Type = "string", Nilable = false },
+				{ Name = "expireTime", Type = "number", Nilable = false },
 				{ Name = "remainingTimeSeconds", Type = "number", Nilable = false },
 				{ Name = "totalUses", Type = "number", Nilable = false },
 				{ Name = "remainingUses", Type = "number", Nilable = false },

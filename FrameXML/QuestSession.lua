@@ -1,15 +1,3 @@
-function CanStartQuestSession()
-	return IsInGroup(LE_PARTY_CATEGORY_HOME) and not IsInRaid() and not C_QuestSession.Exists();
-end
-
-function CanJoinQuestSession()
-	return C_QuestSession.Exists() and not C_QuestSession.HasJoined();
-end
-
-function CanDropQuestSession()
-	return C_QuestSession.HasJoined();
-end
-
 QuestSessionMemberMixin = {};
 
 function QuestSessionMemberMixin:SetPortrait(unit)
@@ -50,10 +38,6 @@ function QuestSessionDialogMixin:OnHide()
 	self:ResetPlayerContainer();
 end
 
-function QuestSessionDialogMixin:ShowDialog()
-	StaticPopupSpecial_Show(self);
-end
-
 function QuestSessionDialogMixin:Confirm()
 	assert(false); -- implement this in derived class
 end
@@ -83,7 +67,7 @@ function QuestSessionDialogMixin:AddUnit(unit, previousFrame)
 end
 
 function QuestSessionDialogMixin:GetMemberFrame(guid)
-	return self.memberFrames[guid];
+	return self.memberFrames and self.memberFrames[guid];
 end
 
 function QuestSessionDialogMixin:SetMemberResponse(guid, response)
@@ -180,13 +164,21 @@ function QuestSessionDialogMixin:AddPlayers(playerGUIDs)
 end
 
 function QuestSessionDialogMixin:StartHideDialog(delay)
-	C_Timer.After(delay or 2, function()
-		StaticPopupSpecial_Hide(self);
-	end);
+	if self:IsVisible() then
+		C_Timer.After(delay or 2, function()
+			self:HideImmediate();
+		end);
+	end
 end
 
 function QuestSessionDialogMixin:HideImmediate()
 	StaticPopupSpecial_Hide(self);
+	QuestSessionManager:NotifyDialogHide(self);
+end
+
+function QuestSessionDialogMixin:ShowDialog()
+	StaticPopupSpecial_Show(self);
+	QuestSessionManager:NotifyDialogShow(self);
 end
 
 function QuestSessionDialogMixin:SetButtonsEnabled(enabled)
@@ -315,8 +307,8 @@ function QuestSessionCheckStartDialogMixin:Setup()
 end
 
 function QuestSessionCheckStartDialogMixin:Confirm()
-	self:HideImmediate();
 	C_QuestSession.RequestSessionStart();
+	self:HideImmediate();
 end
 
 function QuestSessionCheckStartDialogMixin:Cancel()
@@ -332,8 +324,8 @@ function QuestSessionCheckJoinDialogMixin:Setup()
 end
 
 function QuestSessionCheckJoinDialogMixin:Confirm()
-	self:HideImmediate();
 	C_QuestSession.RequestSessionJoin();
+	self:HideImmediate();
 end
 
 function QuestSessionCheckJoinDialogMixin:Cancel()
@@ -412,6 +404,7 @@ function QuestSessionManagerMixin:OnLoad()
 	self:RegisterEvent("QUEST_SESSION_MEMBER_CONFIRM");
 	self:RegisterEvent("QUEST_SESSION_JOIN_REQUEST");
 	self:RegisterEvent("QUEST_SESSION_NOTIFICATION");
+	self:RegisterEvent("QUEST_SESSION_ENABLED_STATE_CHANGED");
 
 	self:CheckShowSessionStartPrompt();
 	self:CheckShowSessionJoinRequestPrompt();
@@ -424,6 +417,8 @@ function QuestSessionManagerMixin:OnEvent(event, ...)
 		self:CheckShowSessionJoinRequestPrompt();
 	elseif event == "QUEST_SESSION_NOTIFICATION" then
 		self:OnQuestSessionNotification(...);
+	elseif event == "QUEST_SESSION_ENABLED_STATE_CHANGED" then
+		self:OnEnabledStateChanged(...);
 	end
 end
 
@@ -451,12 +446,44 @@ function QuestSessionManagerMixin:OnQuestSessionNotification(result, guid)
 		-- TODO: Play error sound?
 		self:DismissDialogs();
 	end
+
+	self:NotifyUpdate();
+end
+
+function QuestSessionManagerMixin:OnEnabledStateChanged(enabled)
+	if not enabled then
+		self:DismissDialogs();
+	end
+
+	self:NotifyUpdate();
 end
 
 function QuestSessionManagerMixin:DismissDialogs()
 	for index, frame in ipairs(self.SessionManagementDialogs) do
 		frame:HideImmediate();
 	end
+end
+
+function QuestSessionManagerMixin:NotifyDialogShow(dialog)
+	self:NotifyUpdate();
+end
+
+function QuestSessionManagerMixin:NotifyDialogHide(dialog)
+	self:NotifyUpdate();
+end
+
+function QuestSessionManagerMixin:NotifyUpdate()
+	EventRegistry:TriggerEvent("QuestSessionManager.Update");
+end
+
+function QuestSessionManagerMixin:IsSessionManagementEnabled()
+	for index, frame in ipairs(self.SessionManagementDialogs) do
+		if frame:IsVisible() then
+			return false;
+		end
+	end
+
+	return C_QuestSession.GetPendingCommand() == Enum.QuestSessionCommand.None;
 end
 
 function QuestSessionManagerMixin:StartSession()
@@ -471,4 +498,14 @@ end
 
 function QuestSessionManagerMixin:DropSession()
 	C_QuestSession.RequestSessionDrop();
+end
+
+function QuestSessionManagerMixin:GetSessionCommand()
+	-- Prefer pending over available
+	local command = C_QuestSession.GetPendingCommand();
+	if command == Enum.QuestSessionCommand.None then
+		return C_QuestSession.GetAvailableSessionCommand();
+	end
+
+	return command;
 end

@@ -251,10 +251,7 @@ function StoreCardMixin:ShouldEnableBuyButton(entryInfo)
 	return buyableHere and not alreadyOwned;
 end
 
-function StoreCardMixin:SetupBuyButton(info, entryInfo)
-end
-
-function StoreCardMixin:SetupBannerText(discounted, discountPercentage, entryInfo)
+function StoreCardMixin:UpdateBannerText(discounted, discountPercentage, entryInfo)
 end
 
 function StoreCardMixin:SetCardTexture(entryInfo)
@@ -264,7 +261,30 @@ function StoreCardMixin:SetCardTexture(entryInfo)
 	end
 end
 
-function StoreCardMixin:UpdatePricing(entryInfo, discounted, currencyFormat)
+function StoreCardMixin:UpdateDiscount(currencyInfo, entryInfo, currencyFormat)
+	local discounted, discountPercentage = StoreFrame_GetDiscountInformation(entryInfo.sharedData);
+	if entryInfo.alreadyOwned then
+		self.Checkmark:Show();
+	elseif discountPercentage and entryInfo.productID ~= SEE_YOU_LATER_BUNDLE_PRODUCT_ID then
+		self:SetDiscountText(discountPercentage);
+		if StoreFrame_HasPriceData(entryInfo.productID) then
+			local stringWidth = self.DiscountText:GetStringWidth();
+			self.DiscountLeft:SetPoint("RIGHT", self.DiscountRight, "LEFT", -stringWidth, 0);
+			self.DiscountMiddle:Show();
+			self.DiscountLeft:Show();
+			self.DiscountRight:Show();
+			self.DiscountText:Show();
+		end
+	end
+	self:UpdateBannerText(discounted, discountPercentage, entryInfo);
+end
+
+function StoreCardMixin:UpdatePricing(currencyInfo, entryInfo, currencyFormat)
+	local discounted, discountPercentage = StoreFrame_GetDiscountInformation(entryInfo.sharedData);
+
+	self.CurrentPrice:SetText(StoreFrame_GetProductPriceText(entryInfo, currencyFormat));
+	self.NormalPrice:SetText(currencyFormat(entryInfo.sharedData.normalDollars, entryInfo.sharedData.normalCents));
+
 	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.HiddenPrice) == Enum.BattlepayDisplayFlag.HiddenPrice then
 		self.NormalPrice:Hide();
 		self.SalePrice:Hide();
@@ -278,6 +298,9 @@ function StoreCardMixin:UpdatePricing(entryInfo, discounted, currencyFormat)
 		self.Strikethrough:Hide();
 		self.CurrentPrice:Show();
 	end
+end
+
+function StoreCardMixin:UpdateBuyButton(currencyInfo, entryInfo, currencyFormat)
 end
 
 function StoreCardMixin:ShowDiscount(discountText)
@@ -400,27 +423,9 @@ function StoreCardMixin:UpdateCard(entryID, forceModelUpdate)
 	self.Checkmark:Hide();
 
 	local currencyInfo = StoreFrame_CurrencyInfo();
-
 	if not currencyInfo then
 		self:Hide();
 		return;
-	end
-
-	local currencyFormat = self:GetCurrencyFormat(currencyInfo);
-	local discounted, discountPercentage = StoreFrame_GetDiscountInformation(entryInfo.sharedData);
-	
-	if entryInfo.alreadyOwned then
-		self.Checkmark:Show();
-	elseif discountPercentage and entryInfo.productID ~= SEE_YOU_LATER_BUNDLE_PRODUCT_ID then
-		self:SetDiscountText(discountPercentage);
-		if StoreFrame_HasPriceData(entryInfo.productID) then
-			local stringWidth = self.DiscountText:GetStringWidth();
-			self.DiscountLeft:SetPoint("RIGHT", self.DiscountRight, "LEFT", -stringWidth, 0);
-			self.DiscountMiddle:Show();
-			self.DiscountLeft:Show();
-			self.DiscountRight:Show();
-			self.DiscountText:Show();
-		end
 	end
 
 	if entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.Boost then
@@ -431,12 +436,12 @@ function StoreCardMixin:UpdateCard(entryID, forceModelUpdate)
 		self.boostType = nil;
 	end
 
-	self:SetupBuyButton(currencyInfo, entryInfo);
-	self.CurrentPrice:SetText(StoreFrame_GetProductPriceText(entryInfo, currencyFormat));
-	self:SetupBannerText(discounted, discountPercentage, entryInfo);
-	self.NormalPrice:SetText(currencyFormat(entryInfo.sharedData.normalDollars, entryInfo.sharedData.normalCents));
-	self.ProductName:SetText(entryInfo.sharedData.name);
+	local currencyFormat = self:GetCurrencyFormat(currencyInfo);
+	self:UpdateDiscount(currencyInfo, entryInfo, currencyFormat);
+	self:UpdatePricing(currencyInfo, entryInfo, currencyFormat);
+	self:UpdateBuyButton(currencyInfo, entryInfo, currencyFormat);
 
+	self.ProductName:SetText(entryInfo.sharedData.name);
 	if entryInfo.sharedData.overrideTextColor then
 		self.ProductName:SetTextColor(entryInfo.sharedData.overrideTextColor.r, entryInfo.sharedData.overrideTextColor.g, entryInfo.sharedData.overrideTextColor.b);
 	else
@@ -444,11 +449,7 @@ function StoreCardMixin:UpdateCard(entryID, forceModelUpdate)
 	end
 
 	self:SetCardTexture(entryInfo);
-
-	self:UpdatePricing(entryInfo, discounted, currencyFormat);
-
 	self:SetStyle(entryInfo.sharedData.overrideBackground);
-
 	self:SetupWoWToken(entryInfo);
 	self:SetupDescription(entryInfo);
 	self.Magnifier:Hide();

@@ -107,8 +107,6 @@ function RecruitAFriendFrameMixin:UpdateRAFSystemInfo(rafSystemInfo)
 	end
 end
 
-local RECRUIT_HEIGHT = 45;
-
 local function SortRecruits(a, b)
 	if a.isOnline ~= b.isOnline then
 		return a.isOnline;
@@ -129,13 +127,16 @@ local function ProcessAndSortRecruits(recruits)
 	-- First, sort recruits that share a bnetAccountID by wowAccountGUID (so they are in a consistent order)
 	table.sort(recruits, SortRecruitsByWoWAccount);
 
+	local haveOnlineFriends = false;
+	local haveOfflineFriends = false;
+
 	-- Get account info for all recruits
 	for _, recruitInfo in ipairs(recruits) do
 		local accountInfo = C_BattleNet.GetAccountInfoByID(recruitInfo.bnetAccountID, recruitInfo.wowAccountGUID);
 
 		if accountInfo then
-			recruitInfo.isOnline = accountInfo.isOnline;
-			recruitInfo.characterName = accountInfo.characterName;
+			recruitInfo.isOnline = accountInfo.gameAccountInfo.isOnline;
+			recruitInfo.characterName = accountInfo.gameAccountInfo.characterName;
 			recruitInfo.nameText, recruitInfo.nameColor = FriendsFrame_GetBNetAccountNameAndStatus(accountInfo);
 			recruitInfo.plainName = BNet_GetBNetAccountName(accountInfo);
 		else
@@ -156,6 +157,12 @@ local function ProcessAndSortRecruits(recruits)
 
 		-- Set an index so we can append it to the name if needed
 		recruitInfo.recruitIndex = seenAccounts[recruitInfo.bnetAccountID];
+
+		if recruitInfo.isOnline then
+			haveOnlineFriends = true;
+		else
+			haveOfflineFriends = true;
+		end
 	end
 
 	-- Now that we have seen all recruits, loop through again and append the recruitIndex to any recruits that share a bnetAccountID and are not online
@@ -167,7 +174,12 @@ local function ProcessAndSortRecruits(recruits)
 
 	-- And then sort them by online status and name
 	table.sort(recruits, SortRecruits);
+
+	return haveOnlineFriends and haveOfflineFriends;
 end
+
+local RECRUIT_HEIGHT = 34;
+local DIVIDER_HEIGHT = 16;
 
 function RecruitAFriendFrameMixin:UpdateRecruitList(recruits)
 	local offset = HybridScrollFrame_GetOffset(self.recruitScrollFrame);
@@ -175,24 +187,34 @@ function RecruitAFriendFrameMixin:UpdateRecruitList(recruits)
 	local numButtons = #buttons;
 	local usedHeight = 0;
 
-	ProcessAndSortRecruits(recruits);
+	local needDivider = ProcessAndSortRecruits(recruits);
 
 	local numRecruits = #recruits;
 
 	self.RecruitList.NoRecruitsDesc:SetShown(numRecruits == 0);
-
-	local totalHeight = numRecruits * RECRUIT_HEIGHT;
-
 	self.RecruitList.Header.Count:SetText(RAF_RECRUITED_FRIENDS_COUNT:format(numRecruits, maxRecruits));
 
+	local numEntries = numRecruits;
+	local totalHeight = numRecruits * RECRUIT_HEIGHT;
+	if needDivider then
+		numEntries = numEntries + 1;
+		totalHeight = totalHeight + DIVIDER_HEIGHT;
+	end
+
+	local recruitIndex = offset + 1;
 	for i = 1, numButtons do
 		local button = buttons[i];
 		local index = offset + i;
-		if index <= numRecruits then
-			button.index = index;
-			usedHeight = usedHeight + RECRUIT_HEIGHT;
-			button:SetupRecruit(recruits[index]);
-			button:Show();
+		if index <= numEntries then
+			if needDivider and not recruits[recruitIndex].isOnline then
+				button:SetupDivider();
+				needDivider = false;
+			else
+				button:SetupRecruit(recruits[recruitIndex]);
+				recruitIndex = recruitIndex + 1;
+			end
+
+			usedHeight = usedHeight + button:GetHeight();
 		else
 			button.recruitInfo = nil;
 			button:Hide();
@@ -233,17 +255,14 @@ function RecruitAFriendFrameMixin:UpdateNextReward(nextReward)
 		self.pendingNextReward = nil;
 	end
 
+	self.RewardClaiming.ClaimOrViewRewardButton:Update(nextReward);
+
 	if not nextReward then
 		self.RewardClaiming.EarnInfo:Hide();
 		self.RewardClaiming.NextRewardButton:Hide();
 		self.RewardClaiming.NextRewardName:Hide();
-
-		local noUnclaimedReward = false;
-		self.RewardClaiming.ClaimOrViewRewardButton:Update(noUnclaimedReward);
 		return;
 	end
-
-	self.RewardClaiming.ClaimOrViewRewardButton:Update(nextReward.canClaim);
 
 	if nextReward.canClaim then
 		self.RewardClaiming.EarnInfo:SetText(RAF_YOU_HAVE_EARNED);
@@ -330,17 +349,19 @@ end
 RecruitListButtonMixin = {};
 
 function RecruitListButtonMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if self.recruitInfo then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
-	GameTooltip_SetTitle(GameTooltip, self.recruitInfo.nameText, self.recruitInfo.nameColor);
+		GameTooltip_SetTitle(GameTooltip, self.recruitInfo.nameText, self.recruitInfo.nameColor);
 
-	local wrap = true;
-	GameTooltip_AddNormalLine(GameTooltip, RAF_RECRUIT_TOOLTIP_DESC:format(maxRecruitMonths), wrap);
-	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		local wrap = true;
+		GameTooltip_AddNormalLine(GameTooltip, RAF_RECRUIT_TOOLTIP_DESC:format(maxRecruitMonths), wrap);
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
 
-	local usedMonths = math.max(maxRecruitMonths - self.recruitInfo.monthsRemaining, 0);
-	GameTooltip_AddColoredLine(GameTooltip, RAF_RECRUIT_TOOLTIP_MONTH_COUNT:format(usedMonths, maxRecruitMonths), HIGHLIGHT_FONT_COLOR, wrap);
-	GameTooltip:Show();
+		local usedMonths = math.max(maxRecruitMonths - self.recruitInfo.monthsRemaining, 0);
+		GameTooltip_AddColoredLine(GameTooltip, RAF_RECRUIT_TOOLTIP_MONTH_COUNT:format(usedMonths, maxRecruitMonths), HIGHLIGHT_FONT_COLOR, wrap);
+		GameTooltip:Show();
+	end
 end
 
 function RecruitListButtonMixin:OnLeave()
@@ -348,26 +369,56 @@ function RecruitListButtonMixin:OnLeave()
 end
 
 function RecruitListButtonMixin:OnClick(button)
-	if button == "RightButton" then
+	if self.recruitInfo and button == "RightButton" then
 		RecruitAFriendFrame:ShowRecruitDropDown(self);
 	end
 end
 
+function RecruitListButtonMixin:MakeDivider(isDivider)
+	self.DividerTexture:SetShown(isDivider);
+	self.Background:SetShown(not isDivider);
+	self.Name:SetShown(not isDivider);
+	self.InfoText:SetShown(not isDivider);
+
+	if isDivider then
+		self:SetHeight(DIVIDER_HEIGHT);
+		self:Disable();
+	else
+		self:SetHeight(RECRUIT_HEIGHT);
+		self:Enable();
+	end
+end
+
+function RecruitListButtonMixin:SetupDivider()
+	self:MakeDivider(true);
+	self.recruitInfo = nil;
+	self:Show();
+end
+
 function RecruitListButtonMixin:SetupRecruit(recruitInfo)
+	self:MakeDivider(false);
+
 	self.recruitInfo = recruitInfo;
 
 	self.Name:SetText(recruitInfo.nameText);
 	self.Name:SetTextColor(recruitInfo.nameColor:GetRGB());
 
-	if recruitInfo.subStatus == Enum.RafRecruitSubStatus.Active then
-		self.SubStatus:SetText(RAF_ACTIVE_RECRUIT);
-		self.SubStatus:SetTextColor(GREEN_FONT_COLOR:GetRGB());
-	elseif recruitInfo.subStatus == Enum.RafRecruitSubStatus.Trial then
-		self.SubStatus:SetText(RAF_TRIAL_RECRUIT);
-		self.SubStatus:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+	if recruitInfo.isOnline then
+		self.Background:SetColorTexture(FRIENDS_BNET_BACKGROUND_COLOR:GetRGBA());
+		if recruitInfo.subStatus == Enum.RafRecruitSubStatus.Active then
+			self.InfoText:SetText(RAF_ACTIVE_RECRUIT);
+			self.InfoText:SetTextColor(GREEN_FONT_COLOR:GetRGB());
+		elseif recruitInfo.subStatus == Enum.RafRecruitSubStatus.Trial then
+			self.InfoText:SetText(RAF_TRIAL_RECRUIT);
+			self.InfoText:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+		else
+			self.InfoText:SetText(RAF_INACTIVE_RECRUIT);
+			self.InfoText:SetTextColor(GRAY_FONT_COLOR:GetRGB());
+		end
 	else
-		self.SubStatus:SetText(RAF_INACTIVE_RECRUIT);
-		self.SubStatus:SetTextColor(GRAY_FONT_COLOR:GetRGB());
+		self.Background:SetColorTexture(FRIENDS_OFFLINE_BACKGROUND_COLOR:GetRGBA());
+		self.InfoText:SetTextColor(GRAY_FONT_COLOR:GetRGB());
+		self.InfoText:SetText(FriendsFrame_GetLastOnlineText(recruitInfo.accountInfo));
 	end
 
 	local mouseOnMe = (GameTooltip:GetOwner() == self);
@@ -407,7 +458,7 @@ function RecruitAFriendDropDownMixin:Init()
 	self.wowAccountGUID = recruitInfo.wowAccountGUID;
 
 	if accountInfo then
-		self.guid = accountInfo.playerGuid;
+		self.guid = accountInfo.gameAccountInfo.playerGuid;
 	end
 
 	UnitPopup_ShowMenu(self, "RAF_RECRUIT", nil, recruitInfo.plainName);
@@ -421,7 +472,9 @@ function RecruitAFriendClaimOrViewRewardButtonMixin:OnClick()
 			return;
 		end
 
-		if C_RecruitAFriend.ClaimNextReward() then
+		if self.nextReward.rewardType == Enum.RafRewardType.GameTime then
+			WowTokenRedemptionFrame_ShowDialog("RAF_GAME_TIME_REDEEM_CONFIRMATION_SUB");
+		elseif C_RecruitAFriend.ClaimNextReward() then
 			RecruitAFriendFrame.RewardClaiming.NextRewardButton:PlayClaimRewardFanfare();
 		end
 	else
@@ -434,10 +487,11 @@ function RecruitAFriendClaimOrViewRewardButtonMixin:OnClick()
 	end
 end
 
-function RecruitAFriendClaimOrViewRewardButtonMixin:Update(haveUnclaimedReward)
-	self.haveUnclaimedReward = haveUnclaimedReward;
+function RecruitAFriendClaimOrViewRewardButtonMixin:Update(nextReward)
+	self.nextReward = nextReward;
+	self.haveUnclaimedReward = nextReward and nextReward.canClaim;
 
-	if haveUnclaimedReward then
+	if self.haveUnclaimedReward then
 		self:SetText(CLAIM_REWARD);
 		StaticPopupSpecial_Hide(RecruitAFriendRewardsFrame);
 	else
@@ -452,11 +506,13 @@ function RecruitAFriendRewardsFrameMixin:OnLoad()
 end
 
 function RecruitAFriendRewardsFrameMixin:OnShow()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 	HideUIPanel(DressUpFrame);
 	SetUpSideDressUpFrame(self, 500, 682, "LEFT", "RIGHT", -5, 0);
 end
 
 function RecruitAFriendRewardsFrameMixin:OnHide()
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 	CloseSideDressUpFrame(self);
 end
 
@@ -471,13 +527,13 @@ function RecruitAFriendRewardsFrameMixin:UpdateRewards(rewards)
 
 		local rewardFrame = self.rewardPool:Acquire();
 		if index == 1 then
-			rewardFrame:SetPoint("TOPLEFT", self, "TOPLEFT", 90, -110);
+			rewardFrame:SetPoint("TOPLEFT", self, "TOPLEFT", 80, -110);
 		elseif index == 7 then
-			rewardFrame:SetPoint("TOPLEFT", self, "TOPLEFT", 285, -110);
+			rewardFrame:SetPoint("TOPLEFT", self, "TOPLEFT", 220, -110);
 		elseif index == 13 then
-			rewardFrame:SetPoint("BOTTOM", self, "BOTTOM", 0, 40);
+			rewardFrame:SetPoint("BOTTOM", self, "BOTTOM", 0, 55);
 		else
-			rewardFrame:SetPoint("TOPLEFT", lastRewardFrame, "BOTTOMLEFT", 0, -15);
+			rewardFrame:SetPoint("TOPLEFT", lastRewardFrame, "BOTTOMLEFT", 0, -9);
 		end
 
 		local tooltipRightAligned = (index >= 7 and index <= 12);
@@ -511,13 +567,22 @@ end
 
 RecruitAFriendRewardButtonMixin = {};
 
+function RecruitAFriendRewardButtonMixin:OnLoad()
+	self.tooltipXOffset = 5;
+end
+
 function RecruitAFriendRewardButtonMixin:Setup(rewardInfo, tooltipRightAligned)
 	self.rewardInfo = rewardInfo;
 	self.tooltipRightAligned = tooltipRightAligned;
 
 	self.Icon:SetTexture(rewardInfo.iconID);
-	self.Icon:SetDesaturated(not rewardInfo.claimed and not rewardInfo.canClaim);
-	self.IconBorder:SetDesaturated(not rewardInfo.claimed and not rewardInfo.canClaim);
+	if not rewardInfo.claimed and not rewardInfo.canClaim then
+		self.Icon:SetDesaturated(true);
+		self.IconOverlay:SetShown(true);
+	else
+		self.Icon:SetDesaturated(false);
+		self.IconOverlay:SetShown(false);
+	end
 
 	self:SetClaimed(rewardInfo.claimed);
 	self:SetCanClaim(rewardInfo.canClaim);
@@ -567,10 +632,10 @@ function RecruitAFriendRewardButtonMixin:SetTooltipOwner()
 	local anchorPoint, xOffset;
 	if self.tooltipRightAligned then
 		anchorPoint = "ANCHOR_RIGHT";
-		xOffset = 5;
+		xOffset = self.tooltipXOffset;
 	else
 		anchorPoint = "ANCHOR_LEFT";
-		xOffset = -5;
+		xOffset = -self.tooltipXOffset;
 	end
 	GameTooltip:SetOwner(self, anchorPoint, xOffset, -self:GetHeight());
 end
@@ -598,7 +663,7 @@ function RecruitAFriendRewardButtonMixin:OnEnter()
 				local itemName = self.item:GetItemName();
 				local itemQuality = self.item:GetItemQuality();
 				if itemName and itemQuality then
-					GameTooltip_SetTitle(GameTooltip, itemName, BAG_ITEM_QUALITY_COLOR_OBJECTS[itemQuality]);
+					GameTooltip_SetTitle(GameTooltip, itemName, BAG_ITEM_QUALITY_COLORS[itemQuality]);
 					GameTooltip_AddColoredLine(GameTooltip, APPEARANCE_LABEL, HIGHLIGHT_FONT_COLOR, wrap);
 					GameTooltip:Show();
 				end
@@ -645,12 +710,35 @@ function RecruitAFriendRewardButtonWithCheckMixin:SetClaimed(claimed)
 	self.CheckMark:SetShown(claimed);
 end
 
+function RecruitAFriendRewardButtonWithCheckMixin:Setup(rewardInfo, tooltipRightAligned)
+	RecruitAFriendRewardButtonMixin.Setup(self, rewardInfo, tooltipRightAligned);
+
+	if not rewardInfo.claimed and not rewardInfo.canClaim then
+		self.IconBorder:SetDesaturated(true);
+		self.IconBorder:SetVertexColor(WHITE_FONT_COLOR:GetRGBA());
+	else
+		self.IconBorder:SetDesaturated(false);
+		self.IconBorder:SetVertexColor(EPIC_PURPLE_COLOR:GetRGBA());
+	end
+end
+
 local RAF_FANFARE_MODEL_SCENE = 253;
 
 RecruitAFriendRewardButtonWithFanfareMixin = CreateFromMixins(RecruitAFriendRewardButtonMixin);
 
 function RecruitAFriendRewardButtonWithFanfareMixin:OnLoad()
+	self.tooltipXOffset = 10;
 	self.ModelScene:EnableMouse(false);
+end
+
+function RecruitAFriendRewardButtonWithFanfareMixin:Setup(rewardInfo, tooltipRightAligned)
+	RecruitAFriendRewardButtonMixin.Setup(self, rewardInfo, tooltipRightAligned);
+
+	if not rewardInfo.claimed and not rewardInfo.canClaim then
+		self.IconBorder:SetAtlas("RecruitAFriend_ClaimPane_SepiaRing", true);
+	else
+		self.IconBorder:SetAtlas("RecruitAFriend_ClaimPane_GoldRing", true);
+	end
 end
 
 function RecruitAFriendRewardButtonWithFanfareMixin:OnClick()
@@ -709,6 +797,11 @@ function RecruitAFriendRewardButtonWithFanfareMixin:UpdateFanfareModelScene(canC
 	end
 end
 
+-- Global function for call from token claim dialog
+function RecruitAFriend_PlayClaimRewardFanfare()
+	RecruitAFriendFrame.RewardClaiming.NextRewardButton:PlayClaimRewardFanfare();
+end
+
 function RecruitAFriendRewardButtonWithFanfareMixin:PlayClaimRewardFanfare()
 	self.waitingForFlash = true;
 	C_Timer.After(0.8, function()
@@ -743,12 +836,21 @@ function RecruitAFriendRecruitmentFrameMixin:OnLoad()
 	self.EditBox:Disable();
 end
 
+function RecruitAFriendRecruitmentFrameMixin:OnShow()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+end
+
+function RecruitAFriendRecruitmentFrameMixin:OnHide()
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+end
+
 local PLAYER_REALM_NAME = GetRealmName();
 local _, PLAYER_FACTION_NAME = UnitFactionGroup("player");
 
 function RecruitAFriendRecruitmentFrameMixin:UpdateRecruitmentInfo(recruitmentInfo)
 	if recruitmentInfo then
-		recruitmentInfo.remainingTimeDays = math.ceil(recruitmentInfo.remainingTimeSeconds / SECONDS_PER_DAY);
+		local expireDate = date("*t", recruitmentInfo.expireTime);
+		recruitmentInfo.expireDateString = FormatShortDate(expireDate.day, expireDate.month, expireDate.year)
 
 		self.Description:SetText(RAF_RECRUITMENT_DESC:format(recruitmentInfo.totalUses, daysInCycle));
 
@@ -762,6 +864,7 @@ function RecruitAFriendRecruitmentFrameMixin:UpdateRecruitmentInfo(recruitmentIn
 
 		self.EditBox.Instructions:Hide();
 		self.EditBox:SetText(recruitmentInfo.recruitmentURL);
+		self.EditBox:SetCursorPosition(0);
 
 		local timesUsed = recruitmentInfo.totalUses - recruitmentInfo.remainingUses;
 		self.LinkUses:SetText(RAF_LINK_REMAINING_USES:format(timesUsed, recruitmentInfo.totalUses));
@@ -769,10 +872,10 @@ function RecruitAFriendRecruitmentFrameMixin:UpdateRecruitmentInfo(recruitmentIn
 
 		if recruitmentInfo.remainingUses > 0 then
 			self.LinkUses:SetTextColor(WHITE_FONT_COLOR:GetRGB());
-			self.LinkExpires:SetText(RAF_ACTIVE_LINK_DAYS_LEFT:format(recruitmentInfo.remainingTimeDays));
+			self.LinkExpires:SetText(RAF_ACTIVE_LINK_EXPIRE_DATE:format(recruitmentInfo.expireDateString));
 		else
 			self.LinkUses:SetTextColor(RED_FONT_COLOR:GetRGB());
-			self.LinkExpires:SetText(RAF_EXPENDED_LINK_DAYS_LEFT:format(recruitmentInfo.remainingTimeDays));
+			self.LinkExpires:SetText(RAF_EXPENDED_LINK_EXPIRE_DATE:format(recruitmentInfo.expireDateString));
 		end
 		self.LinkExpires:Show();
 	else
@@ -801,13 +904,14 @@ function RecruitAFriendGenerateOrCopyLinkButtonMixin:OnClick()
 			self:Disable();
 		end
 	end
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function RecruitAFriendGenerateOrCopyLinkButtonMixin:OnEnter()
 	if not self:IsEnabled() and not self.waitingForRecruitmentInfo then
 		local wrap = true;
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_SetTitle(GameTooltip, RAF_COPY_LINK_EXPENDED_TOOLTIP:format(self.recruitmentInfo.remainingTimeDays), RED_FONT_COLOR, wrap);
+		GameTooltip_SetTitle(GameTooltip, RAF_EXPENDED_LINK_EXPIRE_DATE:format(self.recruitmentInfo.expireDateString), RED_FONT_COLOR, wrap);
 	end
 end
 

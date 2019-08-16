@@ -283,19 +283,6 @@
 					<OnShow function="QuestFrameGreetingPanel_OnShow"/>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="Indicators" inherits="QuestIndicatorsTemplate">
-				<KeyValues>
-					<KeyValue key="inset" value="QuestSharing-QuestPane-ModifiersBG" type="string"/>
-					<KeyValue key="indicatorOffBonus" value="QuestSharing-QuestPane-ModifiersLootIconOff" type="string"/>
-					<KeyValue key="indicatorOffReplay" value="QuestSharing-QuestPane-ModifiersReplayIconOff" type="string"/>
-					<KeyValue key="initialOffsetX" value="17" type="number"/>
-					<KeyValue key="initialOffsetY" value="-1" type="number"/>
-				</KeyValues>
-
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="0" y="-22"/>
-				</Anchors>
-			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="QuestFrame_OnLoad"/>

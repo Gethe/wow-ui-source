@@ -63,6 +63,7 @@ ObjectAPI\Spell.lua
 ObjectAPI\PlayerLocation.lua
 
 ## add new modules below here
+GlobalCallbackRegistry.lua
 WorldFrame.xml
 UIParent.xml
 QuestUtils.lua
@@ -180,7 +181,6 @@ SpellBookFrame.xml
 CharacterFrame.xml
 PaperDollFrame.xml
 ReputationFrame.xml
-QuestIndicators.xml
 QuestFrame.xml
 QuestPOI.xml
 QuestInfo.xml

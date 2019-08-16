@@ -43,8 +43,8 @@ end
 function BNet_GetBNetIDAccountFromCharacterName(name)
 	local _, numBNetOnline = BNGetNumFriends();
 	for i = 1, numBNetOnline do
-		local accountInfo = C_BattleNet.GetAccountInfoByFriendIndex(i);
-		if accountInfo and accountInfo.characterName and (strcmputf8i(name, accountInfo.characterName) == 0) then
+		local accountInfo = C_BattleNet.GetFriendAccountInfo(i);
+		if accountInfo and accountInfo.gameAccountInfo.characterName and (strcmputf8i(name, accountInfo.gameAccountInfo.characterName) == 0) then
 			return accountInfo.bnetAccountID;
 		end
 	end
@@ -250,7 +250,7 @@ function BNToastMixin:ShowToast()
 			return;
 		end
 
-		local characterName = BNet_GetValidatedCharacterNameWithClientEmbeddedTexture(accountInfo.characterName, accountInfo.battleTag, accountInfo.clientProgram, 14, 14, 0, -1);
+		local characterName = BNet_GetValidatedCharacterNameWithClientEmbeddedTexture(accountInfo.gameAccountInfo.characterName, accountInfo.battleTag, accountInfo.gameAccountInfo.clientProgram, 14, 14, 0, -1);
 		middleLine:SetFormattedText(characterName);
 		middleLine:SetTextColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);
 		middleLine:Show();

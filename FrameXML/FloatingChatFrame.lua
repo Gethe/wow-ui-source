@@ -27,6 +27,14 @@ CHAT_FRAME_MIN_WIDTH = 296;
 
 CURRENT_CHAT_FRAME_ID = nil;
 
+CHAT_FRAME_DEFAULT_FONT_SIZE = 14;
+do
+	local fontInfo = GetFontInfo("ChatFontNormal");
+	if fontInfo then
+		CHAT_FRAME_DEFAULT_FONT_SIZE = fontInfo.height;
+	end
+end
+
 CHAT_FRAME_TEXTURES = {
 	"Background",
 	"TopLeftTexture",
@@ -156,7 +164,11 @@ function FCF_GetChatWindowInfo(id)
 			--This is a temporary chat window. Pass this to whatever handles those options.
 		end
 	else
-		return GetChatWindowInfo(id);
+		local name, size, r, g, b, a, isShown, isLocked, isDocked, isUninteractable = GetChatWindowInfo(id);
+		if size == 0 then
+			size = CHAT_FRAME_DEFAULT_FONT_SIZE;
+		end
+		return name, size, r, g, b, a, isShown, isLocked, isDocked, isUninteractable;
 	end
 end
 
@@ -1733,13 +1745,16 @@ end
 
 -- Reset the chat windows to default
 function FCF_ResetChatWindows()
+	-- resets to hard coded defaults
+	ResetChatWindows();
+
 	ChatFrame1:ClearAllPoints();
 	--ChatFrame1 is a managed frame so UIParent_ManageFramePositions() will reposition it.
 	ChatFrame1:SetWidth(430);
 	ChatFrame1:SetHeight(120);
 	ChatFrame1.isInitialized = 0;
 	FCF_SetButtonSide(ChatFrame1, "left")
-	FCF_SetChatWindowFontSize(nil, ChatFrame1, 14);
+	FCF_SetChatWindowFontSize(nil, ChatFrame1, CHAT_FRAME_DEFAULT_FONT_SIZE);
 	FCF_SetWindowName(ChatFrame1, GENERAL);
 	FCF_SetWindowColor(ChatFrame1, DEFAULT_CHATFRAME_COLOR.r, DEFAULT_CHATFRAME_COLOR.g, DEFAULT_CHATFRAME_COLOR.b);
 	FCF_SetWindowAlpha(ChatFrame1, DEFAULT_CHATFRAME_ALPHA);
@@ -1750,7 +1765,7 @@ function FCF_ResetChatWindows()
 	SELECTED_CHAT_FRAME = ChatFrame1;
 	DEFAULT_CHAT_FRAME.chatframe = DEFAULT_CHAT_FRAME;
 
-	FCF_SetChatWindowFontSize(nil, ChatFrame2, 14);
+	FCF_SetChatWindowFontSize(nil, ChatFrame2, CHAT_FRAME_DEFAULT_FONT_SIZE);
 	FCF_SetWindowName(ChatFrame2, COMBAT_LOG);
 	FCF_SetWindowColor(ChatFrame2, DEFAULT_CHATFRAME_COLOR.r, DEFAULT_CHATFRAME_COLOR.g, DEFAULT_CHATFRAME_COLOR.b);
 	FCF_SetWindowAlpha(ChatFrame2, DEFAULT_CHATFRAME_ALPHA);
@@ -1770,7 +1785,7 @@ function FCF_ResetChatWindows()
 			ChatFrame_RemoveAllMessageGroups(chatFrame);
 			ChatFrame_RemoveAllChannels(chatFrame);
 			ChatFrame_ReceiveAllPrivateMessages(chatFrame);
-			FCF_SetChatWindowFontSize(nil, chatFrame, 14);
+			FCF_SetChatWindowFontSize(nil, chatFrame, CHAT_FRAME_DEFAULT_FONT_SIZE);
 			FCF_SetWindowColor(chatFrame, DEFAULT_CHATFRAME_COLOR.r, DEFAULT_CHATFRAME_COLOR.g, DEFAULT_CHATFRAME_COLOR.b);
 			FCF_SetWindowAlpha(chatFrame, DEFAULT_CHATFRAME_ALPHA);
 		end
@@ -1779,8 +1794,6 @@ function FCF_ResetChatWindows()
 	FCF_DockFrame(ChatFrame1, 1, true);
 	FCF_DockFrame(ChatFrame2, 2);
 
-	-- resets to hard coded defaults
-	ResetChatWindows();
 	UIParent_ManageFramePositions();
 	FCFDock_SelectWindow(GENERAL_CHAT_DOCK, ChatFrame1);
 end

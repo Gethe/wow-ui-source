@@ -351,19 +351,18 @@
 					<Anchor point="BOTTOMRIGHT" x="-9" y="29"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="GuildFinderFrame" inherits="ClubFinderGuildAndCommunityFrameTemplate">
+			<Frame parentKey="GuildFinderFrame" name="ClubFinderGuildFinderFrame" inherits="ClubFinderGuildAndCommunityFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="24" y="-60"/>
 					<Anchor point="BOTTOMRIGHT" x="-9" y="29"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad> 
-						self.shouldShowGuildFinderOnly = true; 
 						ClubFinderGuildAndCommunityMixin.OnLoad(self); 
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="CommunityAndGuildFinderFrame" inherits="ClubFinderGuildAndCommunityFrameTemplate">
+			<Frame parentKey="CommunityFinderFrame" name="ClubFinderCommunityAndGuildFinderFrame" inherits="ClubFinderGuildAndCommunityFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="24" y="-60"/>
 					<Anchor point="BOTTOMRIGHT" x="-9" y="29"/>

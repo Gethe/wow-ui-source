@@ -2544,7 +2544,7 @@ StaticPopupDialogs["ADD_GUILDMEMBER"] = {
 StaticPopupDialogs["ADD_GUILDMEMBER_WITH_FINDER_LINK"] = Mixin({
 	extraButton = CLUB_FINDER_LINK_POST_IN_CHAT,
 	OnExtraButton = function(self, data)
-		local clubInfo = ClubFinderGetCurrentClubListingInfo();
+		local clubInfo = ClubFinderGetCurrentClubListingInfo(data.clubId);
 		if (clubInfo) then 
 			local link = GetClubFinderLink(clubInfo.clubFinderGUID, clubInfo.name);
 			if not ChatEdit_InsertLink(link) then

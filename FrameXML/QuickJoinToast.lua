@@ -36,6 +36,9 @@ end
 
 function QuickJoinToastMixin:OnShow()
 	self:RegisterEvent("PVP_BRAWL_INFO_UPDATED");
+	if RecruitAFriendFrame then
+		RecruitAFriendFrame:UpdateRAFTutorialTips();
+	end
 end
 
 function QuickJoinToastMixin:OnHide()
@@ -604,7 +607,7 @@ function QuickJoinToast_GetPriorityFromPlayers(players)
 	local priority = 0;
 	for i=1, #players do
 		local player = players[i].guid;
-		if ( BNGetGameAccountInfoByGUID(player) or C_FriendList.IsFriend(player) ) then
+		if ( C_BattleNet.GetGameAccountInfoByGUID(player) or C_FriendList.IsFriend(player) ) then
 			priority = priority + QUICK_JOIN_CONFIG.PLAYER_FRIEND_VALUE;
 		end
 		if ( IsGuildMember(player) ) then

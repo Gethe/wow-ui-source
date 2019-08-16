@@ -61,7 +61,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="PlayerReportFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="PlayerReportFrameMixin">
+	<Frame name="PlayerReportFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="PlayerReportFrameBaseMixin" virtual="true">
 		<Size x="344" y="224"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -186,9 +186,9 @@
 									<OnTextChanged>
 										ScrollingEdit_OnTextChanged(self, self:GetParent());
 										if ( self:GetText() ~= "" ) then
-											self.Fill:Hide();
+										self.Fill:Hide();
 										else
-											self.Fill:Show();
+										self.Fill:Show();
 										end
 									</OnTextChanged>
 									<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
@@ -232,6 +232,13 @@
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ClubFinderReportFrame" enableMouse="true" inherits="PlayerReportFrameTemplate" mixin="ClubFinderReportFrameMixin"/>
+
+	<Frame name="PlayerReportFrame" inherits="PlayerReportFrameTemplate" mixin="PlayerReportFrameMixin">
+		<Scripts>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>

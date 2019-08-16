@@ -219,7 +219,7 @@ end
 
 --------------------------------------------------
 -- MEDIUM STORE CARD WITH A BUY BUTTON MIXIN 
-MediumStoreCardWithBuyButtonMixin = CreateFromMixins(MediumStoreCardMixin);
+MediumStoreCardWithBuyButtonMixin = CreateFromMixins(MediumStoreCardMixin, ProductCardBuyButtonMixin);
 
 function MediumStoreCardWithBuyButtonMixin:Layout()
 	self:SetSize(277, 224);
@@ -227,17 +227,23 @@ function MediumStoreCardWithBuyButtonMixin:Layout()
 	self.Card:SetAtlas("store-card-quarter", true);
 	self.Card:SetTexCoord(0, 1, 0, 1);
 
-	self.SelectedTexture:Hide();
-	self.SplashBanner:Hide();
-	self.SplashBannerText:Hide();
-	self.NormalPrice:Hide();
-	self.SalePrice:Hide();
-	self.Strikethrough:Hide();
-	self.CurrentPrice:Hide();
-
 	self.BuyButton:ClearAllPoints();
 	self.BuyButton:SetSize(146, 35);
 	self.BuyButton:SetPoint("BOTTOM", 0, 10);
+
+	self.SelectedTexture:Hide();
+	self.SplashBanner:Hide();
+	self.SplashBannerText:Hide();
+
+	self.CurrentPrice:ClearAllPoints();
+	self.CurrentPrice:SetPoint("TOPLEFT", 0, 0);
+	
+	self.NormalPrice:ClearAllPoints();
+	self.NormalPrice:SetPoint("TOP", self.CurrentPrice, "BOTTOM", 0, 0);
+
+	self.SalePrice:ClearAllPoints();
+	self.SalePrice:SetPoint("TOP", self.NormalPrice, "BOTTOM", 0, 0);
+	self.SalePrice:SetTextColor(0.1, 1, 0.1);
 
 	self.ProductName:ClearAllPoints();
 	self.ProductName:SetSize(250, 50);
@@ -259,40 +265,24 @@ function MediumStoreCardWithBuyButtonMixin:Layout()
 	self.Magnifier:SetPoint("TOPLEFT", self, "TOPLEFT", 8, -8);
 end
 
-function MediumStoreCardWithBuyButtonMixin:UpdatePricing(entryInfo, discounted, currencyFormat)
-	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.HiddenPrice) == Enum.BattlepayDisplayFlag.HiddenPrice then
-		self.NormalPrice:Hide();
-		self.SalePrice:Hide();
-		self.Strikethrough:Hide();
-		self.CurrentPrice:Hide();
-	elseif discounted then
-		self:ShowDiscount(StoreFrame_GetProductPriceText(entryInfo, currencyFormat));	
-	else
-		self.NormalPrice:Hide();
-		self.SalePrice:Hide();
-		self.Strikethrough:Hide();
-		self.CurrentPrice:Hide();
-	end
-end
-
-function MediumStoreCardWithBuyButtonMixin:ShowDiscount(discountText)
-	self.SalePrice:SetText(discountText);
-	self.NormalPrice:SetTextColor(0.8, 0.66, 0);
-
-	self.CurrentPrice:Hide();
-	self.NormalPrice:Hide();
-	self.SalePrice:Hide();
-	self.Strikethrough:Hide();
-end
-
-function MediumStoreCardWithBuyButtonMixin:SetupBuyButton(info, entryInfo)
-	local text = info.browseBuyButtonText or BLIZZARD_STORE_BUY;
-	self.BuyButton:SetText(text);
-	self.BuyButton:SetEnabled(self:ShouldEnableBuyButton(entryInfo));
-end
-
 function MediumStoreCardWithBuyButtonMixin:UpdateState()
 	-- we override the StoreCardMixin:UpdateState here to prevent "selected" functionality in LargeCards
+end
+
+function MediumStoreCardWithBuyButtonMixin:ShowTooltip()
+	if self.productTooltipTitle then
+		StoreTooltip:ClearAllPoints();
+		if self.anchorRight then
+			StoreTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", -7, -6);
+		else
+			StoreTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT", 7, -6);
+		end
+		
+		local entryInfo = self:GetEntryInfo();
+		local description = self:AppendBundleInformationToTooltipDescription(entryInfo, self.productTooltipDescription);
+		description = strtrim(description, "\n\r"); -- Ensure we don't end the description with a new line.		
+		StoreTooltip_Show(self.productTooltipTitle, description);
+	end
 end
 
 function MediumStoreCardWithBuyButtonMixin:OnEnter()

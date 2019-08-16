@@ -114,7 +114,7 @@ function VerticalLargeStoreCardMixin:SetupBuyButton(info, entryInfo)
 	self.BuyButton:SetEnabled(self:ShouldEnableBuyButton(entryInfo));
 end
 
-function VerticalLargeStoreCardMixin:SetupBannerText(discounted, discountPercentage, entryInfo)
+function VerticalLargeStoreCardMixin:UpdateBannerText(discounted, discountPercentage, entryInfo)
 	-- empty override
 end
 
@@ -256,7 +256,7 @@ end
 
 --------------------------------------------------
 -- VERTICAL LARGE STORE CARD WITH A BUY BUTTON MIXIN 
-VerticalLargeStoreCardWithBuyButtonMixin = CreateFromMixins(VerticalLargeStoreCardMixin);
+VerticalLargeStoreCardWithBuyButtonMixin = CreateFromMixins(VerticalLargeStoreCardMixin, ProductCardBuyButtonMixin);
 
 function VerticalLargeStoreCardWithBuyButtonMixin:OnLoad()
 	VerticalLargeStoreCardMixin.OnLoad(self);
@@ -264,7 +264,7 @@ function VerticalLargeStoreCardWithBuyButtonMixin:OnLoad()
 	self.SplashBannerText:SetShadowColor(0, 0, 0, 0);
 end
 
-function VerticalLargeStoreCardWithBuyButtonMixin:SetupBannerText(discounted, discountPercentage, entryInfo)
+function VerticalLargeStoreCardWithBuyButtonMixin:UpdateBannerText(discounted, discountPercentage, entryInfo)
 	if entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_NEW then
 		self.SplashBannerText:SetText(BLIZZARD_STORE_SPLASH_BANNER_NEW);
 	elseif entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_DISCOUNT then
@@ -291,7 +291,7 @@ function VerticalLargeStoreCardWithBuyButtonMixin:Layout()
 	self.Description:SetPoint("TOP", self.CurrentPrice, "BOTTOM", 0, -12);
 
 	self.BuyButton:ClearAllPoints();
-	self.BuyButton:SetSize(140, 30);
+	self.BuyButton:SetSize(146, 35);
 	self.BuyButton:SetPoint("BOTTOM", 0, 20);
 end
 
@@ -320,7 +320,7 @@ end
 
 --------------------------------------------------
 -- HORIZONTAL LARGE STORE CARD WITH A BUY BUTTON MIXIN 
-HorizontalLargeStoreCardWithBuyButtonMixin = CreateFromMixins(VerticalLargeStoreCardWithBuyButtonMixin);
+HorizontalLargeStoreCardWithBuyButtonMixin = CreateFromMixins(VerticalLargeStoreCardWithBuyButtonMixin, ProductCardBuyButtonMixin);
 
 function HorizontalLargeStoreCardWithBuyButtonMixin:Layout()
 	HorizontalLargeStoreCardMixin.Layout(self);
@@ -331,10 +331,12 @@ function HorizontalLargeStoreCardWithBuyButtonMixin:Layout()
 
 	self.SplashBanner:Hide();
 	self.SplashBannerText:Hide();
+
 	self.NormalPrice:Hide();
 	self.SalePrice:Hide();
-	self.Strikethrough:Hide();
 	self.CurrentPrice:Hide();
+	self.Strikethrough:Hide();
+
 	self.Description:Hide();
 
 	self.BuyButton:ClearAllPoints();
@@ -351,7 +353,6 @@ function HorizontalLargeStoreCardWithBuyButtonMixin:Layout()
 	self.ProductName:SetShadowColor(0, 0, 0, 0);
 	self.ProductName:SetShadowOffset(1, -1);
 
-
 	self.ModelScene:ClearAllPoints();
 	self.ModelScene:SetPoint("TOPLEFT", 8, -8);
 	self.ModelScene:SetPoint("BOTTOMRIGHT", -8, 8);
@@ -360,32 +361,6 @@ function HorizontalLargeStoreCardWithBuyButtonMixin:Layout()
 	self.Magnifier:ClearAllPoints();
 	self.Magnifier:SetSize(31, 35);
 	self.Magnifier:SetPoint("TOPLEFT", self, "TOPLEFT", 8, -8);
-end
-
-function HorizontalLargeStoreCardWithBuyButtonMixin:UpdatePricing(entryInfo, discounted, currencyFormat)
-	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.HiddenPrice) == Enum.BattlepayDisplayFlag.HiddenPrice then
-		self.NormalPrice:Hide();
-		self.SalePrice:Hide();
-		self.Strikethrough:Hide();
-		self.CurrentPrice:Hide();
-	elseif discounted then
-		self:ShowDiscount(StoreFrame_GetProductPriceText(entryInfo, currencyFormat));	
-	else
-		self.NormalPrice:Hide();
-		self.SalePrice:Hide();
-		self.Strikethrough:Hide();
-		self.CurrentPrice:Hide();
-	end
-end
-
-function HorizontalLargeStoreCardWithBuyButtonMixin:ShowDiscount(discountText)
-	self.SalePrice:SetText(discountText);
-	self.NormalPrice:SetTextColor(0.8, 0.66, 0);
-
-	self.CurrentPrice:Hide();
-	self.NormalPrice:Hide();
-	self.SalePrice:Hide();
-	self.Strikethrough:Hide();
 end
 
 function HorizontalLargeStoreCardWithBuyButtonMixin:OnEnter()

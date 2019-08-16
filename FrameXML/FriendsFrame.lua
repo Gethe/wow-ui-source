@@ -69,13 +69,6 @@ local playerRealmID = GetRealmID();
 local playerRealmName = GetRealmName();
 local playerFactionGroup = UnitFactionGroup("player");
 
-local ONE_MINUTE = 60;
-local ONE_HOUR = 60 * ONE_MINUTE;
-local ONE_DAY = 24 * ONE_HOUR;
-local ONE_MONTH = 30 * ONE_DAY;
-local ONE_YEAR = 12 * ONE_MONTH;
--- local ONE_MILLENIUM = 1000 * ONE_YEAR; 	for the future
-
 WHOFRAME_DROPDOWN_LIST = {
 	{name = ZONE, sortType = "zone"},
 	{name = GUILD, sortType = "guild"},
@@ -121,13 +114,13 @@ function FriendsFrame_ShouldShowSummonButton(self)
 		return true, CanSummonFriend(info.guid);
 	elseif ( self:GetParent().buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
 		--Get the information by BNet friends list index.
-		local accountInfo = C_BattleNet.GetAccountInfoByFriendIndex(id);
+		local accountInfo = C_BattleNet.GetFriendAccountInfo(id);
 
 		local restriction = FriendsFrame_GetInviteRestriction(id);
 		if restriction ~= INVITE_RESTRICTION_NONE or accountInfo.rafLinkType == Enum.RafLinkType.None then
 			return false, false;
 		else
-			return true, accountInfo.canSummon;
+			return true, accountInfo.gameAccountInfo.canSummon;
 		end
 	else
 		return false, false;
@@ -1008,7 +1001,7 @@ function FriendsFrameSendMessageButton_OnClick(self)
 		name = C_FriendList.GetFriendInfoByIndex(FriendsFrame.selectedFriend).name;
 		ChatFrame_SendTell(name);
 	elseif ( FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_BNET ) then
-		local accountInfo = C_BattleNet.GetAccountInfoByFriendIndex(FriendsFrame.selectedFriend);
+		local accountInfo = C_BattleNet.GetFriendAccountInfo(FriendsFrame.selectedFriend);
 		if accountInfo then
 			ChatFrame_SendBNetTell(accountInfo.accountName);
 		end
@@ -1197,18 +1190,18 @@ function FriendsFrame_GetLastOnline(timeDifference, isAbsolute)
 	end
 	local year, month, day, hour, minute;
 
-	if ( timeDifference < ONE_MINUTE ) then
+	if ( timeDifference < SECONDS_PER_MIN ) then
 		return LASTONLINE_SECS;
-	elseif ( timeDifference >= ONE_MINUTE and timeDifference < ONE_HOUR ) then
-		return format(LASTONLINE_MINUTES, floor(timeDifference / ONE_MINUTE));
-	elseif ( timeDifference >= ONE_HOUR and timeDifference < ONE_DAY ) then
-		return format(LASTONLINE_HOURS, floor(timeDifference / ONE_HOUR));
-	elseif ( timeDifference >= ONE_DAY and timeDifference < ONE_MONTH ) then
-		return format(LASTONLINE_DAYS, floor(timeDifference / ONE_DAY));
-	elseif ( timeDifference >= ONE_MONTH and timeDifference < ONE_YEAR ) then
-		return format(LASTONLINE_MONTHS, floor(timeDifference / ONE_MONTH));
+	elseif ( timeDifference >= SECONDS_PER_MIN and timeDifference < SECONDS_PER_HOUR ) then
+		return format(LASTONLINE_MINUTES, floor(timeDifference / SECONDS_PER_MIN));
+	elseif ( timeDifference >= SECONDS_PER_HOUR and timeDifference < SECONDS_PER_DAY ) then
+		return format(LASTONLINE_HOURS, floor(timeDifference / SECONDS_PER_HOUR));
+	elseif ( timeDifference >= SECONDS_PER_DAY and timeDifference < SECONDS_PER_MONTH ) then
+		return format(LASTONLINE_DAYS, floor(timeDifference / SECONDS_PER_DAY));
+	elseif ( timeDifference >= SECONDS_PER_MONTH and timeDifference < SECONDS_PER_YEAR ) then
+		return format(LASTONLINE_MONTHS, floor(timeDifference / SECONDS_PER_MONTH));
 	else
-		return format(LASTONLINE_YEARS, floor(timeDifference / ONE_YEAR));
+		return format(LASTONLINE_YEARS, floor(timeDifference / SECONDS_PER_YEAR));
 	end
 end
 
@@ -1290,23 +1283,23 @@ function FriendsFrame_GetBNetAccountNameAndStatus(accountInfo, noCharacterName)
 	nameText = BNet_GetBNetAccountName(accountInfo);
 
 	if not noCharacterName then
-		local characterName = BNet_GetValidatedCharacterName(accountInfo.characterName, nil, accountInfo.clientProgram);
+		local characterName = BNet_GetValidatedCharacterName(accountInfo.gameAccountInfo.characterName, nil, accountInfo.gameAccountInfo.clientProgram);
 		if characterName ~= "" then
-			if accountInfo.clientProgram == BNET_CLIENT_WOW and CanCooperateWithGameAccount(accountInfo) then
+			if accountInfo.gameAccountInfo.clientProgram == BNET_CLIENT_WOW and CanCooperateWithGameAccount(accountInfo) then
 				nameText = nameText.." "..FRIENDS_WOW_NAME_COLOR_CODE.."("..characterName..")"..FONT_COLOR_CODE_CLOSE;
 			else
 				if ENABLE_COLORBLIND_MODE == "1" then
-					characterName = accountInfo.characterName..CANNOT_COOPERATE_LABEL;
+					characterName = accountInfo.gameAccountInfo.characterName..CANNOT_COOPERATE_LABEL;
 				end
 				nameText = nameText.." "..FRIENDS_OTHER_NAME_COLOR_CODE.."("..characterName..")"..FONT_COLOR_CODE_CLOSE;
 			end
 		end
 	end
 
-	if accountInfo.isOnline then
-		if accountInfo.isAFK or accountInfo.isGameAFK then
+	if accountInfo.gameAccountInfo.isOnline then
+		if accountInfo.isAFK or accountInfo.gameAccountInfo.isGameAFK then
 			statusTexture = FRIENDS_TEXTURE_AFK;
-		elseif accountInfo.isDND or accountInfo.isGameBusy then
+		elseif accountInfo.isDND or accountInfo.gameAccountInfo.isGameBusy then
 			statusTexture = FRIENDS_TEXTURE_DND;
 		else
 			statusTexture = FRIENDS_TEXTURE_ONLINE;
@@ -1320,6 +1313,14 @@ function FriendsFrame_GetBNetAccountNameAndStatus(accountInfo, noCharacterName)
 	return nameText, nameColor, statusTexture;
 end
 
+function FriendsFrame_GetLastOnlineText(accountInfo)
+	if not accountInfo or (accountInfo.lastOnlineTime == 0) or HasTimePassed(accountInfo.lastOnlineTime, SECONDS_PER_YEAR) then
+		return FRIENDS_LIST_OFFLINE;
+	else
+		return string.format(BNET_LAST_ONLINE_TIME, FriendsFrame_GetLastOnline(accountInfo.lastOnlineTime));
+	end
+end
+
 local function ShowRichPresenceOnly(client, wowProjectID, faction, realmID)
 	if (client ~= BNET_CLIENT_WOW) or (wowProjectID ~= WOW_PROJECT_ID) then
 		-- If they are not in wow or in a different version of wow, always show rich presence only
@@ -1331,6 +1332,24 @@ local function ShowRichPresenceOnly(client, wowProjectID, faction, realmID)
 		-- Otherwise show more detailed info about them
 		return false;
 	end;
+end
+
+local function GetOnlineInfoText(client, isMobile, rafLinkType, locationText)
+	if not locationText or locationText == "" then
+		return UNKNOWN;
+	end
+	if isMobile then
+		return LOCATION_MOBILE_APP;
+	end
+	if (client == BNET_CLIENT_WOW) and (rafLinkType ~= Enum.RafLinkType.None) and not isMobile then
+		if rafLinkType == Enum.RafLinkType.Recruit then
+			return RAF_RECRUIT_FRIEND:format(locationText);
+		else
+			return RAF_RECRUITER_FRIEND:format(locationText);
+		end
+	end
+
+	return locationText;
 end
 
 function FriendsFrame_UpdateFriendButton(button)
@@ -1353,42 +1372,38 @@ function FriendsFrame_UpdateFriendButton(button)
 			end
 			nameText = info.name..", "..format(FRIENDS_LEVEL_TEMPLATE, info.level, info.className);
 			nameColor = FRIENDS_WOW_NAME_COLOR;
+			infoText = GetOnlineInfoText(BNET_CLIENT_WOW, info.mobile, info.rafLinkType, info.area);
 		else
 			button.background:SetColorTexture(FRIENDS_OFFLINE_BACKGROUND_COLOR.r, FRIENDS_OFFLINE_BACKGROUND_COLOR.g, FRIENDS_OFFLINE_BACKGROUND_COLOR.b, FRIENDS_OFFLINE_BACKGROUND_COLOR.a);
 			button.status:SetTexture(FRIENDS_TEXTURE_OFFLINE);
 			nameText = info.name;
 			nameColor = FRIENDS_GRAY_COLOR;
+			infoText = FRIENDS_LIST_OFFLINE;
 		end
-		button:SetRAFStatus(info.rafLinkType, info.connected);
-		infoText = info.mobile and LOCATION_MOBILE_APP or info.area;
 		button.gameIcon:Hide();
 		button.summonButton:ClearAllPoints();
 		button.summonButton:SetPoint("TOPRIGHT", button, "TOPRIGHT", 1, -1);
 		FriendsFrame_SummonButton_Update(button.summonButton);
 	elseif button.buttonType == FRIENDS_BUTTON_TYPE_BNET then
-		local accountInfo = C_BattleNet.GetAccountInfoByFriendIndex(FriendListEntries[index].id);
+		local accountInfo = C_BattleNet.GetFriendAccountInfo(FriendListEntries[index].id);
 		if accountInfo then
 			nameText, nameColor, statusTexture = FriendsFrame_GetBNetAccountNameAndStatus(accountInfo);
 			isFavoriteFriend = accountInfo.isFavorite;
 
 			button.status:SetTexture(statusTexture);
 
-			if accountInfo.isOnline then
+			if accountInfo.gameAccountInfo.isOnline then
 				button.background:SetColorTexture(FRIENDS_BNET_BACKGROUND_COLOR.r, FRIENDS_BNET_BACKGROUND_COLOR.g, FRIENDS_BNET_BACKGROUND_COLOR.b, FRIENDS_BNET_BACKGROUND_COLOR.a);
 
-				if ShowRichPresenceOnly(accountInfo.clientProgram, accountInfo.wowProjectID, accountInfo.factionName, accountInfo.realmID) then
-					infoText = accountInfo.richPresence;
+				if ShowRichPresenceOnly(accountInfo.gameAccountInfo.clientProgram, accountInfo.gameAccountInfo.wowProjectID, accountInfo.gameAccountInfo.factionName, accountInfo.gameAccountInfo.realmID) then
+					infoText = GetOnlineInfoText(accountInfo.gameAccountInfo.clientProgram, accountInfo.gameAccountInfo.isWowMobile, accountInfo.rafLinkType, accountInfo.gameAccountInfo.richPresence);
 				else
-					if not accountInfo.areaName or accountInfo.areaName == "" then
-						infoText = UNKNOWN;
-					else
-						infoText = accountInfo.isWowMobile and LOCATION_MOBILE_APP or accountInfo.areaName;
-					end
+					infoText = GetOnlineInfoText(accountInfo.gameAccountInfo.clientProgram, accountInfo.gameAccountInfo.isWowMobile, accountInfo.rafLinkType, accountInfo.gameAccountInfo.areaName);
 				end
 
-				button.gameIcon:SetTexture(BNet_GetClientTexture(accountInfo.clientProgram));
+				button.gameIcon:SetTexture(BNet_GetClientTexture(accountInfo.gameAccountInfo.clientProgram));
 
-				local fadeIcon = (accountInfo.clientProgram == BNET_CLIENT_WOW) and (accountInfo.wowProjectID ~= WOW_PROJECT_ID);
+				local fadeIcon = (accountInfo.gameAccountInfo.clientProgram == BNET_CLIENT_WOW) and (accountInfo.gameAccountInfo.wowProjectID ~= WOW_PROJECT_ID);
 				if fadeIcon then
 					button.gameIcon:SetAlpha(0.6);
 				else
@@ -1411,13 +1426,8 @@ function FriendsFrame_UpdateFriendButton(button)
 			else
 				button.background:SetColorTexture(FRIENDS_OFFLINE_BACKGROUND_COLOR.r, FRIENDS_OFFLINE_BACKGROUND_COLOR.g, FRIENDS_OFFLINE_BACKGROUND_COLOR.b, FRIENDS_OFFLINE_BACKGROUND_COLOR.a);
 				button.gameIcon:Hide();
-				if accountInfo.lastOnlineTime == 0 or HasTimePassed(accountInfo.lastOnlineTime, ONE_YEAR) then
-					infoText = FRIENDS_LIST_OFFLINE;
-				else
-					infoText = string.format(BNET_LAST_ONLINE_TIME, FriendsFrame_GetLastOnline(accountInfo.lastOnlineTime));
-				end
+				infoText = FriendsFrame_GetLastOnlineText(accountInfo);
 			end
-			button:SetRAFStatus(accountInfo.rafLinkType, accountInfo.isOnline);
 			button.summonButton:ClearAllPoints();
 			button.summonButton:SetPoint("CENTER", button.gameIcon, "CENTER", 1, 0);
 			FriendsFrame_SummonButton_Update(button.summonButton);
@@ -1853,23 +1863,6 @@ function FriendsListButtonMixin:OnLoad()
 	self.highlight:SetVertexColor(0.243, 0.570, 1);
 end
 
-function FriendsListButtonMixin:SetRAFStatus(rafLinkType, online)
-	local showRAFOverlay = (online and rafLinkType ~= Enum.RafLinkType.None);
-	self.Gradient:SetShown(showRAFOverlay);
-	self.Filigree:SetShown(showRAFOverlay);
-	self.StatusLine:SetShown(showRAFOverlay);
-	if showRAFOverlay then
-		if rafLinkType == Enum.RafLinkType.Recruit then
-			self.StatusLine:SetColorTexture(FRIENDS_BNET_NAME_COLOR:GetRGBA());
-		else
-			self.StatusLine:SetColorTexture(NORMAL_FONT_COLOR:GetRGBA());
-		end
-		self.info:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
-	else
-		self.info:SetTextColor(FRIENDS_GRAY_COLOR:GetRGB());
-	end
-end
-
 function FriendsListButtonMixin:OnEnter()
 	if ( self.buttonType == FRIENDS_BUTTON_TYPE_DIVIDER ) then
 		return;
@@ -1884,34 +1877,34 @@ function FriendsListButtonMixin:OnEnter()
 	tooltip.maxWidth = 0;
 
 	if self.buttonType == FRIENDS_BUTTON_TYPE_BNET then
-		local accountInfo = C_BattleNet.GetAccountInfoByFriendIndex(self.id);
+		local accountInfo = C_BattleNet.GetFriendAccountInfo(self.id);
 		if accountInfo then
 			local noCharacterName = true;
 			local nameText, nameColor = FriendsFrame_GetBNetAccountNameAndStatus(accountInfo, noCharacterName);
 
-			isOnline = accountInfo.isOnline;
+			isOnline = accountInfo.gameAccountInfo.isOnline;
 			battleTag = accountInfo.battleTag;
 
 			anchor = FriendsFrameTooltip_SetLine(FriendsTooltipHeader, nil, nameText);
 			FriendsTooltipHeader:SetTextColor(nameColor:GetRGB());
 
-			if accountInfo.gameAccountID then
-				if ShowRichPresenceOnly(accountInfo.clientProgram, accountInfo.wowProjectID, accountInfo.factionName, accountInfo.realmID) then
-					local characterName = BNet_GetValidatedCharacterName(accountInfo.characterName, accountInfo.battleTag, accountInfo.clientProgram);
+			if accountInfo.gameAccountInfo.gameAccountID then
+				if ShowRichPresenceOnly(accountInfo.gameAccountInfo.clientProgram, accountInfo.gameAccountInfo.wowProjectID, accountInfo.gameAccountInfo.factionName, accountInfo.gameAccountInfo.realmID) then
+					local characterName = BNet_GetValidatedCharacterName(accountInfo.gameAccountInfo.characterName, accountInfo.battleTag, accountInfo.gameAccountInfo.clientProgram);
 					FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Name, nil, characterName);
-					anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, accountInfo.richPresence, -4);
+					anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, accountInfo.gameAccountInfo.richPresence, -4);
 				else
-					local raceName = accountInfo.raceName or UNKNOWN;
-					local className = accountInfo.className or UNKNOWN;
+					local raceName = accountInfo.gameAccountInfo.raceName or UNKNOWN;
+					local className = accountInfo.gameAccountInfo.className or UNKNOWN;
 					if CanCooperateWithGameAccount(accountInfo) then
-						text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, accountInfo.characterName, accountInfo.characterLevel, raceName, className);
+						text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, accountInfo.gameAccountInfo.characterName, accountInfo.gameAccountInfo.characterLevel, raceName, className);
 					else
-						text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, accountInfo.characterName..CANNOT_COOPERATE_LABEL, accountInfo.characterLevel, raceName, className);
+						text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, accountInfo.gameAccountInfo.characterName..CANNOT_COOPERATE_LABEL, accountInfo.gameAccountInfo.characterLevel, raceName, className);
 					end
 					FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Name, nil, text);
-					local areaName = accountInfo.areaName or UNKNOWN;
-					local realmName = accountInfo.realmName or UNKNOWN;
-					anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, string.format(FRIENDS_TOOLTIP_WOW_INFO_TEMPLATE, accountInfo.isWowMobile and LOCATION_MOBILE_APP or areaName, realmName), -4);
+					local areaName = accountInfo.gameAccountInfo.areaName or UNKNOWN;
+					local realmName = accountInfo.gameAccountInfo.realmName or UNKNOWN;
+					anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, string.format(FRIENDS_TOOLTIP_WOW_INFO_TEMPLATE, accountInfo.gameAccountInfo.isWowMobile and LOCATION_MOBILE_APP or areaName, realmName), -4);
 				end
 			else
 				FriendsTooltipGameAccount1Info:Hide();
@@ -1929,7 +1922,7 @@ function FriendsListButtonMixin:OnEnter()
 			-- broadcast
 			if accountInfo.customMessage ~= "" then
 				FriendsTooltipBroadcastIcon:Show();
-				if not HasTimePassed(accountInfo.customMessageTime, ONE_YEAR) then
+				if not HasTimePassed(accountInfo.customMessageTime, SECONDS_PER_YEAR) then
 					accountInfo.customMessage = accountInfo.customMessage.."|n"..FRIENDS_BROADCAST_TIME_COLOR_CODE..string.format(BNET_BROADCAST_SENT_TIME, FriendsFrame_GetLastOnline(accountInfo.customMessageTime)..FONT_COLOR_CODE_CLOSE);
 				end
 				anchor = FriendsFrameTooltip_SetLine(FriendsTooltipBroadcastText, anchor, accountInfo.customMessage, -8);
@@ -1940,15 +1933,11 @@ function FriendsListButtonMixin:OnEnter()
 				FriendsTooltip.hasBroadcast = nil;
 			end
 
-			if accountInfo.isOnline then
+			if accountInfo.gameAccountInfo.isOnline then
 				FriendsTooltipLastOnline:Hide();
-				numGameAccounts = BNGetNumFriendGameAccounts(self.id);
+				numGameAccounts = C_BattleNet.GetFriendNumGameAccounts(self.id);
 			else
-				if (accountInfo.lastOnlineTime == 0) or HasTimePassed(accountInfo.lastOnlineTime, ONE_YEAR) then
-					text = FRIENDS_LIST_OFFLINE;
-				else
-					text = string.format(BNET_LAST_ONLINE_TIME, FriendsFrame_GetLastOnline(accountInfo.lastOnlineTime));
-				end
+				text = FriendsFrame_GetLastOnlineText(accountInfo);
 				anchor = FriendsFrameTooltip_SetLine(FriendsTooltipLastOnline, anchor, text, -4);
 			end
 		end
@@ -1983,10 +1972,16 @@ function FriendsListButtonMixin:OnEnter()
 	if numGameAccounts > 1 then
 		local headerSet = false;
 		for i = 1, numGameAccounts do
-			local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, zoneName, level, gameText, _, _, _, _, _, _, _, _, wowProjectID = BNGetFriendGameAccountInfo(self.id, i);
+			local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(self.id, i);
+
 			-- the focused game account is already at the top of the tooltip
-			if ( not hasFocus and client ~= BNET_CLIENT_APP and client ~= BNET_CLIENT_CLNT ) then
-				if ( not headerSet ) then
+			if not gameAccountInfo.hasFocus and (gameAccountInfo.clientProgram ~= BNET_CLIENT_APP) and (gameAccountInfo.clientProgram ~= BNET_CLIENT_CLNT) then
+				local areaName = gameAccountInfo.areaName or UNKNOWN;
+				local raceName = gameAccountInfo.raceName or UNKNOWN;
+				local className = gameAccountInfo.className or UNKNOWN;
+				local gameText = gameAccountInfo.richPresence or "";
+
+				if not headerSet then
 					FriendsFrameTooltip_SetLine(FriendsTooltipOtherGameAccounts, anchor, nil, -8);
 					headerSet = true;
 				end
@@ -1996,17 +1991,18 @@ function FriendsListButtonMixin:OnEnter()
 				end
 				characterNameString = _G["FriendsTooltipGameAccount"..gameAccountIndex.."Name"];
 				gameAccountInfoString = _G["FriendsTooltipGameAccount"..gameAccountIndex.."Info"];
-				text = BNet_GetClientEmbeddedTexture(client, 18).." ";
-				if ( client == BNET_CLIENT_WOW and wowProjectID == WOW_PROJECT_ID ) then
-					if ( realmName == playerRealmName and faction == playerFactionGroup ) then
-						text = text..string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, characterName, level, race, class);
+				text = BNet_GetClientEmbeddedTexture(gameAccountInfo.clientProgram, 18).." ";
+				if (gameAccountInfo.clientProgram == BNET_CLIENT_WOW) and (gameAccountInfo.wowProjectID == WOW_PROJECT_ID) then
+					if (gameAccountInfo.realmName == playerRealmName) and (gameAccountInfo.factionName == playerFactionGroup) then
+						text = text..string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, gameAccountInfo.characterName, gameAccountInfo.characterLevel, raceName, className);
 					else
-						text = text..string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, characterName..CANNOT_COOPERATE_LABEL, level, race, class);
+						text = text..string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, gameAccountInfo.characterName..CANNOT_COOPERATE_LABEL, gameAccountInfo.characterLevel, raceName, className);
 					end
-					gameText = zoneName;
+					gameText = areaName;
 				else
-					if isOnline then
-						characterName = BNet_GetValidatedCharacterName(characterName, battleTag, client);
+					local characterName = "";
+					if gameAccountInfo.isOnline then
+						characterName = BNet_GetValidatedCharacterName(gameAccountInfo.characterName, battleTag, gameAccountInfo.clientProgram);
 					end
 					text = text..characterName;
 				end
@@ -2051,7 +2047,7 @@ function FriendsListButtonMixin:OnClick(button)
 		FriendsList_Update();
 		-- if friends of friends frame is being shown, switch list if new selection is another battlenet friend
 		if ( FriendsFriendsFrame:IsShown() and self.buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
-			local accountInfo = C_BattleNet.GetAccountInfoByFriendIndex(self.id);
+			local accountInfo = C_BattleNet.GetFriendAccountInfo(self.id);
 			if accountInfo and (accountInfo.bnetAccountID ~= FriendsFriendsFrame.bnetIDAccount) then
 				FriendsFriendsFrame_Show(accountInfo.bnetAccountID);
 			end
@@ -2060,9 +2056,9 @@ function FriendsListButtonMixin:OnClick(button)
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		if ( self.buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
 			-- bnet friend
-			local accountInfo = C_BattleNet.GetAccountInfoByFriendIndex(self.id);
+			local accountInfo = C_BattleNet.GetFriendAccountInfo(self.id);
 			if accountInfo then
-				FriendsFrame_ShowBNDropdown(accountInfo.accountName, accountInfo.isOnline, nil, nil, nil, 1, accountInfo.bnetAccountID, nil, nil, nil, nil, accountInfo.isWowMobile);
+				FriendsFrame_ShowBNDropdown(accountInfo.accountName, accountInfo.gameAccountInfo.isOnline, nil, nil, nil, 1, accountInfo.bnetAccountID, nil, nil, nil, nil, accountInfo.gameAccountInfo.isWowMobile);
 			end
 		else
 			-- wow friend
@@ -2236,18 +2232,18 @@ function FriendsFrame_BattlenetInvite(button, bnetIDAccount)
 		index = button.id;
 	end
 	if ( index ) then
-		local numGameAccounts = BNGetNumFriendGameAccounts(index);
-		if ( numGameAccounts > 1 ) then
+		local numGameAccounts = C_BattleNet.GetFriendNumGameAccounts(index);
+		if numGameAccounts > 1 then
 			-- see if there is exactly one game account we could invite
 			local numValidGameAccounts = 0;
 			local lastGameAccountID;
 			local lastGameAccountGUID;
 			for i = 1, numGameAccounts do
-				local _, _, client, _, realmID, faction, race, class, _, _, level, _, _, _, _, bnetIDGameAccount, _, _, _, guid = BNGetFriendGameAccountInfo(index, i);
-				if ( client == BNET_CLIENT_WOW and faction == playerFactionGroup and realmID ~= 0 ) then
+				local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(index, i);
+				if gameAccountInfo.playerGuid and (clientProgram.factionName == playerFactionGroup) and (gameAccountInfo.realmID ~= 0) then
 					numValidGameAccounts = numValidGameAccounts + 1;
-					lastGameAccountID = bnetIDGameAccount;
-					lastGameAccountGUID = guid;
+					lastGameAccountID = gameAccountInfo.gameAccountID;
+					lastGameAccountGUID = gameAccountInfo.playerGuid;
 				end
 			end
 			if ( numValidGameAccounts == 1 ) then
@@ -2280,9 +2276,9 @@ function FriendsFrame_BattlenetInvite(button, bnetIDAccount)
 				ToggleDropDownMenu(1, nil, dropDown, "cursor", 1, -1);
 			end
 		else
-			local accountInfo = C_BattleNet.GetAccountInfoByFriendIndex(index);
-			if accountInfo and accountInfo.playerGuid and accountInfo.gameAccountID then
-				FriendsFrame_InviteOrRequestToJoin(accountInfo.playerGuid, accountInfo.gameAccountID);
+			local accountInfo = C_BattleNet.GetFriendAccountInfo(index);
+			if accountInfo and accountInfo.gameAccountInfo.playerGuid then
+				FriendsFrame_InviteOrRequestToJoin(accountInfo.gameAccountInfo.playerGuid, accountInfo.gameAccountInfo.gameAccountID);
 			end
 		end
 	end
@@ -2292,7 +2288,7 @@ function CanCooperateWithGameAccount(accountInfo)
 	if not accountInfo then
 		return false;
 	end
-	return accountInfo.realmID and accountInfo.realmID > 0 and accountInfo.factionName == playerFactionGroup;
+	return accountInfo.gameAccountInfo.realmID and accountInfo.gameAccountInfo.realmID > 0 and accountInfo.gameAccountInfo.factionName == playerFactionGroup;
 end
 
 --
@@ -2313,11 +2309,11 @@ end
 
 --Note that a single friend can have multiple GUIDs (if they're dual-boxing). This just gets one if there is one.
 function FriendsFrame_GetPlayerGUIDFromIndex(index)
-	local numGameAccounts = BNGetNumFriendGameAccounts(index);
+	local numGameAccounts = C_BattleNet.GetFriendNumGameAccounts(index);
 	for i = 1, numGameAccounts do
-		local guid = select(20, BNGetFriendGameAccountInfo(index, i));
-		if ( guid ) then
-			return guid;
+		local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(index, i);
+		if gameAccountInfo.playerGuid then
+			return gameAccountInfo.playerGuid;
 		end
 	end
 
@@ -2326,25 +2322,25 @@ end
 
 function FriendsFrame_GetInviteRestriction(index)
 	local restriction = INVITE_RESTRICTION_NO_GAME_ACCOUNTS;
-	local numGameAccounts = BNGetNumFriendGameAccounts(index);
+	local numGameAccounts = C_BattleNet.GetFriendNumGameAccounts(index);
 	for i = 1, numGameAccounts do
-		local hasFocus, characterName, client, realmName, realmID, faction, _, _, _, _, _, _, _, _, _, _, _, _, _, _, wowProjectID, mobile = BNGetFriendGameAccountInfo(index, i);
-		if ( client == BNET_CLIENT_WOW ) then
-			if ( wowProjectID ~= WOW_PROJECT_ID ) then
-				if (wowProjectID == WOW_PROJECT_CLASSIC) then
+		local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(index, i);
+		if gameAccountInfo.clientProgram == BNET_CLIENT_WOW then
+			if gameAccountInfo.wowProjectID ~= WOW_PROJECT_ID then
+				if gameAccountInfo.wowProjectID == WOW_PROJECT_CLASSIC then
 					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_CLASSIC, restriction);
-				elseif(wowProjectID == WOW_PROJECT_MAINLINE) then
+				elseif gameAccountInfo.wowProjectID == WOW_PROJECT_MAINLINE then
 					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_MAINLINE, restriction);
 				else
 					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_ID, restriction);
 				end
-			elseif ( faction ~= playerFactionGroup ) then
+			elseif gameAccountInfo.factionName ~= playerFactionGroup then
 				restriction = max(INVITE_RESTRICTION_FACTION, restriction);
-			elseif ( realmID == 0 ) then
+			elseif gameAccountInfo.realmID == 0 then
 				restriction = max(INVITE_RESTRICTION_INFO, restriction);
-			elseif (wowProjectID == WOW_PROJECT_CLASSIC) and (realmID ~= playerRealmID) then
+			elseif (gameAccountInfo.wowProjectID == WOW_PROJECT_CLASSIC) and (gameAccountInfo.realmID ~= playerRealmID) then
 				restriction = max(INVITE_RESTRICTION_REALM, restriction);
-			elseif ( mobile ) then
+			elseif gameAccountInfo.isWowMobile then
 				restriction = INVITE_RESTRICTION_MOBILE;
 			else
 				-- there is at lease 1 game account that can be invited
@@ -2435,35 +2431,35 @@ function TravelPassDropDown_Initialize(self)
 	info.func = TravelPassDropDown_OnClick;
 
 	local numGameAccounts, restriction;
-	if ( self.index ) then
-		numGameAccounts = BNGetNumFriendGameAccounts(self.index);
+	if self.index then
+		numGameAccounts = C_BattleNet.GetFriendNumGameAccounts(self.index);
 	else
 		numGameAccounts = 0;
 	end
 	for i = 1, numGameAccounts do
 		restriction = INVITE_RESTRICTION_NONE;
-		local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, _, level, _, _, _, _, bnetIDGameAccount, _, _, _, wowProjectID = BNGetFriendGameAccountInfo(self.index, i);
-		if ( client == BNET_CLIENT_WOW ) then
-			if ( faction ~= playerFactionGroup ) then
+		local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(self.index, i);
+		if gameAccountInfo.clientProgram == BNET_CLIENT_WOW then
+			if gameAccountInfo.factionName ~= playerFactionGroup then
 				restriction = INVITE_RESTRICTION_FACTION;
-			elseif(wowProjectID ~= WOW_PROJECT_ID) then
+			elseif gameAccountInfo.wowProjectID ~= WOW_PROJECT_ID then
 				restriction = INVITE_RESTRICTION_WOW_PROJECT_ID;
-			elseif ( realmID == 0 ) then
+			elseif gameAccountInfo.realmID == 0 then
 				restriction = INVITE_RESTRICTION_INFO;
-			elseif (wowProjectID == WOW_PROJECT_CLASSIC) and (realmID ~= playerRealmID) then
+			elseif (gameAccountInfo.wowProjectID == WOW_PROJECT_CLASSIC) and (gameAccountInfo.realmID ~= playerRealmID) then
 				restriction = INVITE_RESTRICTION_REALM;
 			end
-			if ( restriction == INVITE_RESTRICTION_NONE ) then
-				info.text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, characterName, level, race, class);
+			if restriction == INVITE_RESTRICTION_NONE then
+				info.text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, gameAccountInfo.characterName, gameAccountInfo.characterLevel, gameAccountInfo.raceName or UNKNOWN, gameAccountInfo.className or UNKNOWN);
 			else
-				info.text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, characterName..CANNOT_COOPERATE_LABEL, level, race, class);
+				info.text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, gameAccountInfo.characterName..CANNOT_COOPERATE_LABEL, gameAccountInfo.characterLevel, gameAccountInfo.raceName or UNKNOWN, gameAccountInfo.className or UNKNOWN);
 			end
 		else
 			restriction = INVITE_RESTRICTION_CLIENT;
-			info.text = BNet_GetClientEmbeddedTexture(client, 18)..characterName;
+			info.text = BNet_GetClientEmbeddedTexture(gameAccountInfo.clientProgram, 18);
 		end
 		if ( restriction == INVITE_RESTRICTION_NONE ) then
-			info.arg1 = bnetIDGameAccount;
+			info.arg1 = gameAccountInfo.gameAccountID;
 			info.disabled = nil;
 		else
 			info.arg1 = nil;
@@ -2473,9 +2469,11 @@ function TravelPassDropDown_Initialize(self)
 	end
 end
 
-function TravelPassDropDown_OnClick(button, bnetIDGameAccount)
-	local guid = select(20, BNGetGameAccountInfo(bnetIDGameAccount));
-	FriendsFrame_InviteOrRequestToJoin(guid, bnetIDGameAccount);
+function TravelPassDropDown_OnClick(button, gameAccountID)
+	local gameAccountInfo = C_BattleNet.GetGameAccountInfoByID(gameAccountID);
+	if gameAccountInfo.playerGuid then
+		FriendsFrame_InviteOrRequestToJoin(gameAccountInfo.playerGuid, gameAccountID);
+	end
 end
 
 function BattleTagInviteFrame_Show(name)

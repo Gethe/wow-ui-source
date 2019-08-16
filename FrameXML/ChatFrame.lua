@@ -3479,8 +3479,8 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				message = format(globalstring, arg2);
 			elseif ( arg1 == "FRIEND_ONLINE" or arg1 == "FRIEND_OFFLINE") then
 				local accountInfo = C_BattleNet.GetAccountInfoByID(arg13);
-				if accountInfo and accountInfo.clientProgram ~= "" then
-					local characterName = BNet_GetValidatedCharacterNameWithClientEmbeddedTexture(accountInfo.characterName, accountInfo.battleTag, accountInfo.clientProgram, 14);
+				if accountInfo and accountInfo.gameAccountInfo.clientProgram ~= "" then
+					local characterName = BNet_GetValidatedCharacterNameWithClientEmbeddedTexture(accountInfo.gameAccountInfo.characterName, accountInfo.battleTag, accountInfo.gameAccountInfo.clientProgram, 14);
 					local linkDisplayText = ("[%s] (%s)"):format(arg2, characterName);
 					local playerLink = GetBNPlayerLink(arg2, linkDisplayText, arg13, arg11, Chat_GetChatCategory(type), 0);
 					message = format(globalstring, playerLink);
