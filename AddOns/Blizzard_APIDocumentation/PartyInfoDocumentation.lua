@@ -7,6 +7,39 @@ local PartyInfo =
 	Functions =
 	{
 		{
+			Name = "AllowedToDoPartyConversion",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "toRaid", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "allowed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ConfirmConvertToRaid",
+			Type = "Function",
+			Documentation = { "Immediately convert to raid with no regard for potentially destructive actions" },
+		},
+		{
+			Name = "ConfirmLeaveParty",
+			Type = "Function",
+			Documentation = { "Immediately leave the party with no regard for potentially destructive actions" },
+		},
+		{
+			Name = "ConvertToParty",
+			Type = "Function",
+		},
+		{
+			Name = "ConvertToRaid",
+			Type = "Function",
+			Documentation = { "Usually this will convert to raid immediately. In some cases (e.g. PartySync) the user will be prompted to confirm converting to raid, because it's potentially destructive" },
+		},
+		{
 			Name = "GetActiveCategories",
 			Type = "Function",
 
@@ -47,10 +80,20 @@ local PartyInfo =
 				{ Name = "outClubId", Type = "string", Nilable = false },
 			},
 		},
+		{
+			Name = "LeaveParty",
+			Type = "Function",
+			Documentation = { "Usually this will leave the party immediately. In some cases (e.g. PartySync) the user will be prompted to confirm leaving the party, because it's potentially destructive" },
+		},
 	},
 
 	Events =
 	{
+		{
+			Name = "ConvertToRaidConfirmation",
+			Type = "Event",
+			LiteralName = "CONVERT_TO_RAID_CONFIRMATION",
+		},
 		{
 			Name = "EnteredDifferentInstanceFromParty",
 			Type = "Event",
@@ -110,6 +153,11 @@ local PartyInfo =
 			Name = "InstanceGroupSizeChanged",
 			Type = "Event",
 			LiteralName = "INSTANCE_GROUP_SIZE_CHANGED",
+		},
+		{
+			Name = "LeavePartyConfirmation",
+			Type = "Event",
+			LiteralName = "LEAVE_PARTY_CONFIRMATION",
 		},
 		{
 			Name = "PartyInviteCancel",

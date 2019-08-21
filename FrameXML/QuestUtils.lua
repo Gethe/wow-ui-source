@@ -351,7 +351,7 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 			end
 			if text then
 				local color = ITEM_QUALITY_COLORS[quality];
-				GameTooltip:AddLine(text, color.r, color.g, color.b);
+				tooltip:AddLine(text, color.r, color.g, color.b);
 			end
 		end
 	end

@@ -314,6 +314,7 @@
 				<xs:element name="OnMinMaxChanged" type="ScriptType"/>
 				<xs:element name="OnUpdateModel" type="ScriptType"/>
 				<xs:element name="OnModelLoaded" type="ScriptType"/>
+				<xs:element name="OnAnimStarted" type="ScriptType"/>
 				<xs:element name="OnAnimFinished" type="ScriptType"/>
 				<xs:element name="OnEnterPressed" type="ScriptType"/>
 				<xs:element name="OnEscapePressed" type="ScriptType"/>

@@ -38,7 +38,6 @@ Import("SecureMixin");
 Import("CreateFromSecureMixins");
 Import("IsTrialAccount");
 Import("IsVeteranTrialAccount");
-Import("BLIZZARD_STORE_BUY");
 
 local BATTLEPAY_SPLASH_BANNER_TEXT_FEATURED = 0;
 local BATTLEPAY_SPLASH_BANNER_TEXT_DISCOUNT = 1;
@@ -108,18 +107,17 @@ function VerticalLargeStoreCardMixin:GetCurrencyFormat(currencyInfo)
 	return currencyInfo.formatLong;
 end
 
-function VerticalLargeStoreCardMixin:SetupBuyButton(info, entryInfo)
-	local text = info.browseBuyButtonText or BLIZZARD_STORE_BUY;
-	self.BuyButton:SetText(text);
-	self.BuyButton:SetEnabled(self:ShouldEnableBuyButton(entryInfo));
-end
-
 function VerticalLargeStoreCardMixin:UpdateBannerText(discounted, discountPercentage, entryInfo)
 	-- empty override
 end
 
 function VerticalLargeStoreCardMixin:UpdateState()
 	-- we override the StoreCardMixin:UpdateState here to prevent "selected" functionality in LargeCards
+end
+
+function VerticalLargeStoreCardMixin:SetDisabledOverlayShown(showDisabledOverlay)
+	--disabled overlay is currently only used by small cards
+	self.DisabledOverlay:SetShown(false);
 end
 
 function VerticalLargeStoreCardMixin:ShouldShowIcon(entryInfo)
@@ -160,7 +158,9 @@ function VerticalLargeStoreCardMixin:SetupDescription(entryInfo)
 end
 
 function VerticalLargeStoreCardMixin:Layout()
-	self:SetSize(286, 471);
+	local width, height = StoreFrame_GetCellPixelSize("VerticalLargeStoreCardTemplate");
+	self:SetSize(width, height);
+
 	self.Card:ClearAllPoints();
 	self.Card:SetTexture("Interface\\Store\\Store-Main");
 	self.Card:SetTexCoord(0.00097656, 0.56347656, 0.00097656, 0.46093750);	
@@ -198,7 +198,7 @@ function VerticalLargeStoreCardMixin:Layout()
 	self.ProductName:SetJustifyH("CENTER");
 	self.ProductName:SetJustifyV("BOTTOM");
 	self.ProductName:SetTextColor(1, 1, 1);
-	self.ProductName:SetShadowColor(0, 0, 0, 0);
+	self.ProductName:SetShadowColor(0, 0, 0, 1);
 	self.ProductName:SetShadowOffset(1, -1);
 	
 	self.SelectedTexture:Hide();
@@ -261,7 +261,7 @@ VerticalLargeStoreCardWithBuyButtonMixin = CreateFromMixins(VerticalLargeStoreCa
 function VerticalLargeStoreCardWithBuyButtonMixin:OnLoad()
 	VerticalLargeStoreCardMixin.OnLoad(self);
 
-	self.SplashBannerText:SetShadowColor(0, 0, 0, 0);
+	self.SplashBannerText:SetShadowColor(0, 0, 0, 1);
 end
 
 function VerticalLargeStoreCardWithBuyButtonMixin:UpdateBannerText(discounted, discountPercentage, entryInfo)
@@ -278,8 +278,15 @@ function VerticalLargeStoreCardWithBuyButtonMixin:UpdateBannerText(discounted, d
 	end	
 end
 
+function VerticalLargeStoreCardWithBuyButtonMixin:SetupDescription(entryInfo)
+	-- empty override
+end
+
 function VerticalLargeStoreCardWithBuyButtonMixin:Layout()
 	VerticalLargeStoreCardMixin.Layout(self);
+
+	local width, height = StoreFrame_GetCellPixelSize("VerticalLargeStoreCardWithBuyButtonTemplate");
+	self:SetSize(width, height);
 
 	self.SplashBanner:Hide();
 	self.SplashBannerText:Hide();
@@ -293,6 +300,13 @@ function VerticalLargeStoreCardWithBuyButtonMixin:Layout()
 	self.BuyButton:ClearAllPoints();
 	self.BuyButton:SetSize(146, 35);
 	self.BuyButton:SetPoint("BOTTOM", 0, 20);
+
+	self.PurchasedText:SetText(BLIZZARD_STORE_PURCHASED);
+	self.PurchasedText:ClearAllPoints();
+	self.PurchasedText:SetPoint("BOTTOM", 0, 20);
+	self.PurchasedText:Hide();
+
+	self.PurchasedMark:Hide();
 end
 
 --------------------------------------------------
@@ -312,36 +326,19 @@ function HorizontalLargeStoreCardMixin:GetCurrencyFormat(currencyInfo)
 end
 
 function HorizontalLargeStoreCardMixin:Layout()
-	self:SetSize(576, 224);
+	local width, height = StoreFrame_GetCellPixelSize("HorizontalLargeStoreCardTemplate");
+	self:SetSize(width, height);
+
+	self.Checkmark:ClearAllPoints();
+	self.Checkmark:SetSize(27, 27);
+	self.Checkmark:SetPoint("TOPRIGHT", -8, -8);		
 	
-	self.Card:ClearAllPoints();	
-	self.Card:SetAllPoints(self);
-end
-
---------------------------------------------------
--- HORIZONTAL LARGE STORE CARD WITH A BUY BUTTON MIXIN 
-HorizontalLargeStoreCardWithBuyButtonMixin = CreateFromMixins(VerticalLargeStoreCardWithBuyButtonMixin, ProductCardBuyButtonMixin);
-
-function HorizontalLargeStoreCardWithBuyButtonMixin:Layout()
-	HorizontalLargeStoreCardMixin.Layout(self);
-	self:SetSize(566, 225);
-
-	self.Card:SetAtlas("store-card-horizontalfull", true);
-	self.Card:SetTexCoord(0, 1, 0, 1);
-
-	self.SplashBanner:Hide();
-	self.SplashBannerText:Hide();
-
 	self.NormalPrice:Hide();
 	self.SalePrice:Hide();
 	self.CurrentPrice:Hide();
 	self.Strikethrough:Hide();
 
 	self.Description:Hide();
-
-	self.BuyButton:ClearAllPoints();
-	self.BuyButton:SetSize(210, 35);
-	self.BuyButton:SetPoint("BOTTOMRIGHT", -30, 10);
 
 	self.ProductName:ClearAllPoints();
 	self.ProductName:SetSize(150, 70);
@@ -350,7 +347,7 @@ function HorizontalLargeStoreCardWithBuyButtonMixin:Layout()
 	self.ProductName:SetJustifyH("CENTER");
 	self.ProductName:SetJustifyV("BOTTOM");
 	self.ProductName:SetTextColor(1, 1, 1);
-	self.ProductName:SetShadowColor(0, 0, 0, 0);
+	self.ProductName:SetShadowColor(0, 0, 0, 1);
 	self.ProductName:SetShadowOffset(1, -1);
 
 	self.ModelScene:ClearAllPoints();
@@ -361,6 +358,37 @@ function HorizontalLargeStoreCardWithBuyButtonMixin:Layout()
 	self.Magnifier:ClearAllPoints();
 	self.Magnifier:SetSize(31, 35);
 	self.Magnifier:SetPoint("TOPLEFT", self, "TOPLEFT", 8, -8);
+
+	self.Card:ClearAllPoints();	
+	self.Card:SetAllPoints(self);
+end
+
+--------------------------------------------------
+-- HORIZONTAL LARGE STORE CARD WITH A BUY BUTTON MIXIN 
+HorizontalLargeStoreCardWithBuyButtonMixin = CreateFromMixins(VerticalLargeStoreCardWithBuyButtonMixin, ProductCardBuyButtonMixin);
+
+function HorizontalLargeStoreCardWithBuyButtonMixin:Layout()
+	HorizontalLargeStoreCardMixin.Layout(self);
+
+	local width, height = StoreFrame_GetCellPixelSize("HorizontalLargeStoreCardWithBuyButtonTemplate");
+	self:SetSize(width, height);
+
+	self.Card:SetAtlas("store-card-horizontalfull", true);
+	self.Card:SetTexCoord(0, 1, 0, 1);
+
+	self.PurchasedText:SetText(BLIZZARD_STORE_PURCHASED);
+	self.PurchasedText:ClearAllPoints();
+	self.PurchasedText:SetPoint("BOTTOMRIGHT", -30, 10);
+	self.PurchasedText:Hide();
+
+	self.PurchasedMark:Hide();
+
+	self.SplashBanner:Hide();
+	self.SplashBannerText:Hide();
+
+	self.BuyButton:ClearAllPoints();
+	self.BuyButton:SetSize(210, 35);
+	self.BuyButton:SetPoint("BOTTOMRIGHT", -30, 10);
 end
 
 function HorizontalLargeStoreCardWithBuyButtonMixin:OnEnter()
@@ -390,4 +418,8 @@ function HorizontalLargeStoreCardWithBuyButtonMixin:OnEnter()
 		self.HighlightTexture:Hide();
 	end
 	self:UpdateMagnifier();
+end
+
+function HorizontalLargeStoreCardWithBuyButtonMixin:SetupDescription(entryInfo)
+	-- empty override
 end

@@ -217,6 +217,69 @@
 		<Color color="NORMAL_FONT_COLOR" />
 	</FontString>
 
+	<Button name="RecruitActivityButtonTemplate" registerForClicks="LeftButtonUp" virtual="true" mixin="RecruitActivityButtonMixin">
+		<Size x="35" y="34"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="ClaimGlow" atlas="services-ring-large-glow" alpha="0" ignoreParentAlpha="true" useAtlasSize="true" scale="0.2">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ClaimGlowSpin" atlas="services-ring-large-glowspin" alpha="0" ignoreParentAlpha="true" alphaMode="ADD" useAtlasSize="true" scale="0.3">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Model parentKey="Model" hidden="true" mixin="RecruitActivityButtonModelMixin">
+				<Size x="240" y="240"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnModelLoaded method="OnModelLoaded"/>
+					<OnAnimStarted method="OnAnimStarted"/>
+					<OnAnimFinished method="OnAnimFinished"/>
+				</Scripts>
+			</Model>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="ClaimGlowSpinAnim" looping="REPEAT">
+				<Rotation childKey="ClaimGlowSpin" degrees="-360" x="2" y="-4" duration="15"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="ClaimGlowInAnim" setToFinalAlpha="true">
+				<Alpha childKey="ClaimGlow" fromAlpha="0" toAlpha="0.8" duration="0.4"/>
+				<Alpha childKey="ClaimGlowSpin" fromAlpha="0" toAlpha="0.3" duration="0.4"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="ClaimGlowOutAnim" setToFinalAlpha="true">
+				<Alpha childKey="ClaimGlow" fromAlpha="0.8" toAlpha="0" duration="0.4"/>
+				<Alpha childKey="ClaimGlowSpin" fromAlpha="0.3" toAlpha="0" duration="0.4"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="ModelFadeOutAnim" setToFinalAlpha="true">
+				<Alpha childKey="Model" fromAlpha="1" toAlpha="0.25" duration="0.1"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave" />
+			<OnClick method="OnClick" />
+		</Scripts>
+	</Button>
+
 	<Button name="RecruitListButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true" mixin="RecruitListButtonMixin">
 		<Size x="298" y="34"/>
 		<Layers>
@@ -242,6 +305,23 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Button parentKey="Activity3" parentArray="Activities" id="3" inherits="RecruitActivityButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Activity2" parentArray="Activities" id="2" inherits="RecruitActivityButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Activity3" relativePoint="LEFT"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Activity1" parentArray="Activities" id="1" inherits="RecruitActivityButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Activity2" relativePoint="LEFT"/>
+				</Anchors>
+			</Button>
+		</Frames>
 		<Scripts>
 			<OnEnter method="OnEnter" />
 			<OnLeave method="OnLeave" />

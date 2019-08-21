@@ -38,24 +38,16 @@ function SuppressedMountEquipmentButtonMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
-AlertMountEquipmentFeatureMixin = {};
+AlertMountEquipmentFeatureMixin = CreateFromMixins(NewFeatureLabelMixin);
+
 function AlertMountEquipmentFeatureMixin:ClearAlert()
+	NewFeatureLabelMixin.ClearAlert(self);
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_MOUNT_EQUIPMENT_SLOT_FRAME, true);
 	CollectionsMicroButton_SetAlertShown(false);
-
-	self:SetShown(false);
 end
 
 function AlertMountEquipmentFeatureMixin:ValidateIsShown()
 	self:SetShown(not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_MOUNT_EQUIPMENT_SLOT_FRAME));
-end
-
-function AlertMountEquipmentFeatureMixin:OnShow()
-	self.Fade:Play();
-end
-
-function AlertMountEquipmentFeatureMixin:OnHide()
-	self.Fade:Stop();
 end
 
 MountEquipmentButtonMixin = {};

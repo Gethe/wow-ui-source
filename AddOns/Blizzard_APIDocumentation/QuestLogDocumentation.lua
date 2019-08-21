@@ -373,6 +373,7 @@ local QuestLog =
 			Payload =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "wasReplayQuest", Type = "bool", Nilable = false },
 			},
 		},
 		{

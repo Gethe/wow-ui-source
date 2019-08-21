@@ -297,24 +297,19 @@
 		<Size x="50" y="12"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentCount" inherits="GameFontHighlightSmall" justifyH="RIGHT" parentKey="count">
-					<Size x="42" y="10"/>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="0" y="0"/>
-						</Anchor>
-					</Anchors>
-				</FontString>
 				<Texture name="$parentIcon" parentKey="icon">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
+					<Size x="12" y="12"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentCount" relativePoint="RIGHT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="RIGHT" x="4" y="1"/>
 					</Anchors>
 				</Texture>
+				<FontString name="$parentCount" inherits="GameFontHighlightSmall" justifyH="RIGHT" parentKey="count">
+					<Size y="10"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.icon" relativePoint="LEFT"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>

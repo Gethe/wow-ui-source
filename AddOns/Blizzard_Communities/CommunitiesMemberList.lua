@@ -1561,9 +1561,7 @@ function GuildMemberListDropDownMenu_Initialize(self)
 		end
 	end
 
-	if (canGuildInvite) then 
-		self.NotificationOverlay:SetShown(self.hasApplicants);
-	end
+	self.NotificationOverlay:SetShown(self.hasApplicants and canGuildInvite);
 	UIDropDownMenu_SetSelectedValue(self, memberList:GetGuildColumnIndex());
 end
 

@@ -3,23 +3,33 @@
 	<Script file="QuestSession.lua"/>
 
 	<Frame name="QuestSessionMemberTemplate" mixin="QuestSessionMemberMixin" virtual="true">
-		<Size x="65" y="65"/>
+		<Size x="135" y="80"/>
 		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Portrait">
+			<Layer level="OVERLAY">
+				<Texture parentkey="PortraitRing" atlas="QuestSharing-Dialog-Portrait" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="5" y="-5"/>
-						<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
+						<Anchor point="TOP"/>
 					</Anchors>
 				</Texture>
+				<FontString parentKey="Name" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</FontString>
 			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentkey="Border" atlas="QuestSharing-Dialog-Portrait" setAllPoints="true">
-				</Texture>
+			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="StatusIcon">
 					<Size x="30" y="30"/>
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.PortraitRing"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Portrait">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.PortraitRing" x="5" y="-5"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PortraitRing" x="-5" y="5"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -31,6 +41,15 @@
 			Expects:
 			<KeyValue key="isConfirm" value="true" type="boolean"/> for buttons that will be confirm/advance/ok/accept...
 		-->
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Button name="QuestSessionDialogMinimizeButtonTemplate" inherits="UIPanelHideButtonNoScripts" mixin="QuestSessionDialogMinimizeButtonMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+		</KeyValues>
 		<Scripts>
 			<OnClick method="OnClick"/>
 		</Scripts>
@@ -57,10 +76,29 @@
 		</Frames>
 	</Frame>
 
+	<Frame name="QuestSessionDialogTitleTemplate" inherits="ResizeLayoutFrame" mixin="QuestSessionDialogTitleMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="GameFontHighlightLeft">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="QuestSessionDialogBodyTemplate" inherits="QuestSessionDialogTitleTemplate" mixin="QuestSessionDialogBodyMixin" virtual="true"/>
+
 	<Frame name="QuestSessionDialogTemplate" parentArray="SessionManagementDialogs" toplevel="true" enableMouse="true" inherits="ResizeLayoutFrame" mixin="QuestSessionDialogMixin" hidden="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="heightPadding" value="0" type="number"/>
-			<KeyValue key="widthPadding" value="30" type="number"/>
+			<KeyValue key="minimumWidth" value="500" type="number"/>
 
 			<!--
 				Also Expects:
@@ -68,6 +106,7 @@
 				<KeyValue key="cancelText" value="variable" type="global"/> for the cancel button text
 			-->
 		</KeyValues>
+
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture parentKey="BG">
@@ -88,11 +127,6 @@
 						<Anchor point="TOP"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Title" inherits="GameFontHighlight" text="QUEST_SESSION_START_SESSION">
-					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.InvisibleRule" relativePoint="BOTTOM" x="0" y="-20"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -101,9 +135,14 @@
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 				</KeyValues>
 			</Frame>
+			<Frame parentKey="Title" inherits="QuestSessionDialogTitleTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.InvisibleRule" relativePoint="BOTTOM" x="0" y="-7"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="PlayerContainer" inherits="ResizeLayoutFrame" hidden="true">
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-15"/>
+					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="0"/>
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -119,15 +158,14 @@
 						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="0"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Body" inherits="GameFontHighlight" justifyH="LEFT" text="QUEST_SESSION_UNIFIED_QUERY">
-					<Size x="350" y="0"/>
-					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Divider" relativePoint="BOTTOM" x="0" y="-15"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Body" inherits="QuestSessionDialogBodyTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Divider" relativePoint="BOTTOM" x="0" y="-15"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="ButtonContainer" inherits="QuestSessionDialogButtonContainerTemplate">
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.Body" relativePoint="BOTTOM" y="-15"/>
@@ -136,8 +174,17 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnHide method="OnHide"/>
 		</Scripts>
+	</Frame>
+
+	<Frame name="QuestSessionDialogMinimizeTemplate" inherits="QuestSessionDialogTemplate" virtual="true">
+		<Frames>
+			<Button parentKey="MinimizeButton" inherits="QuestSessionDialogMinimizeButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-10" y="-10"/>
+				</Anchors>
+			</Button>
+		</Frames>
 	</Frame>
 
 	<Frame name="QuestSessionManager" mixin="QuestSessionManagerMixin" parent="UIParent">
@@ -149,7 +196,7 @@
 				</KeyValues>
 			</Frame>
 
-			<Frame parentKey="StartDialog" inherits="QuestSessionDialogTemplate" mixin="QuestSessionStartDialogMixin">
+			<Frame parentKey="StartDialog" inherits="QuestSessionDialogMinimizeTemplate" mixin="QuestSessionStartDialogMixin">
 				<KeyValues>
 					<KeyValue key="confirmText" value="QUEST_SESSION_I_AM_READY" type="global"/>
 					<KeyValue key="cancelText" value="QUEST_SESSION_I_AM_NOT_READY" type="global"/>
@@ -160,22 +207,25 @@
 				</Scripts>
 			</Frame>
 
-			<Frame parentKey="CheckJoinDialog" inherits="QuestSessionDialogTemplate" mixin="QuestSessionCheckJoinDialogMixin">
+			<Frame parentKey="CheckStopDialog" inherits="QuestSessionDialogTemplate" mixin="QuestSessionCheckStopDialogMixin">
 				<KeyValues>
-					<KeyValue key="confirmText" value="QUEST_SESSION_CHECK_JOIN_SESSION_BUTTON" type="global"/>
+					<KeyValue key="confirmText" value="QUEST_SESSION_CHECK_STOP_DIALOG_CONFIRM" type="global"/>
 					<KeyValue key="cancelText" value="CANCEL" type="global"/>
 				</KeyValues>
 			</Frame>
 
-			<Frame parentKey="JoinDialog" inherits="QuestSessionDialogTemplate" mixin="QuestSessionJoinVoteDialogMixin">
+			<Frame parentKey="CheckLeavePartyDialog" inherits="QuestSessionDialogTemplate" mixin="QuestSessionCheckLeavePartyDialogMixin">
 				<KeyValues>
-					<KeyValue key="confirmText" value="ACCEPT" type="global"/>
-					<KeyValue key="cancelText" value="DECLINE" type="global"/>
-					<KeyValue key="showDivider" value="true" type="boolean"/>
+					<KeyValue key="confirmText" value="QUEST_SESSION_CHECK_LEAVE_PARTY_CONFIRM" type="global"/>
+					<KeyValue key="cancelText" value="CANCEL" type="global"/>
 				</KeyValues>
-				<Scripts>
-					<OnEvent method="OnEvent"/>
-				</Scripts>
+			</Frame>
+
+			<Frame parentKey="CheckConvertToRaidDialog" inherits="QuestSessionDialogTemplate" mixin="QuestSessionCheckConvertToRaidDialogMixin">
+				<KeyValues>
+					<KeyValue key="confirmText" value="QUEST_SESSION_CHECK_CONVERT_TO_RAID_CONFIRM" type="global"/>
+					<KeyValue key="cancelText" value="CANCEL" type="global"/>
+				</KeyValues>
 			</Frame>
 		</Frames>
 		<Scripts>

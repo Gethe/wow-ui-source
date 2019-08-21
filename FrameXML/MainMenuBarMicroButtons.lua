@@ -1065,7 +1065,7 @@ function QuestLogMicroButtonMixin:EvaluateAlertVisibility()
 end
 
 function ShouldShowQuestSessionAlert()
-	return IsInGroup(LE_PARTY_CATEGORY_HOME) and not IsInRaid() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_QUEST_SESSION);
+	return C_QuestSession.CanStart() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_QUEST_SESSION);
 end
 
 function QuestLogMicroButtonMixin:UpdatePulsing()

@@ -135,17 +135,27 @@
 	</Texture>
 
 	<Button name="UIPanelCloseButtonNoScripts" virtual="true">
-		<Size>
-			<AbsDimension x="32" y="32"/>
-		</Size>
+		<Size x="32" y="32"/>
 		<DisabledTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Disabled"/>
 		<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
 		<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
 		<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 	</Button>
+	<Button name="UIPanelHideButtonNoScripts" virtual="true">
+		<Size x="32" y="32"/>
+		<DisabledTexture file="Interface\Buttons\UI-PANEL-HIDEBUTTON-DISABLED"/>
+		<NormalTexture file="Interface\Buttons\UI-PANEL-HIDEBUTTON-UP"/>
+		<PushedTexture file="Interface\Buttons\UI-PANEL-HIDEBUTTON-DOWN"/>
+		<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+	</Button>
 	<Button name="UIPanelCloseButton" inherits="UIPanelCloseButtonNoScripts" virtual="true">
 		<Scripts>
 			<OnClick function="UIPanelCloseButton_OnClick"/>
+		</Scripts>
+	</Button>
+	<Button name="UIStaticPopupSpecialCloseButton" inherits="UIPanelCloseButtonNoScripts" virtual="true">
+		<Scripts>
+			<OnClick function="UIPanelStaticPopupSpecialCloseButton_OnClick"/>
 		</Scripts>
 	</Button>
 	<Frame name="ShadowOverlayTemplate" virtual="true">

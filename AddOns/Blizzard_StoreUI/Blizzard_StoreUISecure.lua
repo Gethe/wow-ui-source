@@ -93,6 +93,7 @@ Import("IsVeteranTrialAccount");
 --GlobalStrings
 Import("BLIZZARD_STORE");
 Import("BLIZZARD_STORE_ON_SALE");
+Import("BLIZZARD_STORE_PURCHASED");
 Import("BLIZZARD_STORE_BUY");
 Import("BLIZZARD_STORE_BUY_EUR");
 Import("BLIZZARD_STORE_PLUS_TAX");
@@ -1510,7 +1511,7 @@ local productCardTemplateData = {
 	HorizontalLargeStoreCardWithBuyButtonTemplate = {
 		cellGridSize = {width = 4, height = 1},
 		cellPixelSize = {width = 566, height = 225},
-		padding = {15 , 6 , 12 , 0}, --left, right, top, bottom
+		padding = {15 , 6 , 12 , 17}, --left, right, top, bottom
 		poolSize = 2,
 		buyButton = true,
 	},
@@ -1536,6 +1537,13 @@ local productCardTemplateData = {
 		buyButton = true,
 	}
 };
+
+function StoreFrame_GetCellPixelSize(cardTemplate)
+	local pixelSize = productCardTemplateData[cardTemplate].cellPixelSize;
+	local width = pixelSize.width;
+	local height = pixelSize.height;
+	return width, height;
+end
 
 --Code
 local function getIndex(tbl, value) --testing post-commit-hook
@@ -1608,6 +1616,41 @@ function StoreFrame_GetProductCardTemplate(cardType, flags)
 	end
 end
 
+function StoreFrame_IsCompletelyOwned(entryInfo)
+	return entryInfo.sharedData.eligibility == Enum.PurchaseEligibility.Owned;
+end
+
+function StoreFrame_IsPartiallyOwned(entryInfo)
+	return entryInfo.sharedData.eligibility == Enum.PurchaseEligibility.PartiallyOwned;
+end
+
+function StoreFrame_FilterEntries(entries)
+	local filteredEntries = {};
+	for entryIndex = 1, #entries do
+		local entryID = entries[entryIndex];
+
+		local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
+		local sharedData = entryInfo.sharedData;
+
+		local completelyOwned = StoreFrame_IsCompletelyOwned(entryInfo);
+		local partiallyOwned = StoreFrame_IsPartiallyOwned(entryInfo);
+		local hideWhenOwned = bit.band(sharedData.flags, Enum.BattlepayDisplayFlag.HideWhenOwned) ~= 0;
+
+		local expansionTooHigh = (sharedData.eligibility == Enum.PurchaseEligibility.ExpansionTooHigh);
+		local expansionTooLow = (sharedData.eligibility == Enum.PurchaseEligibility.ExpansionTooLow);
+		local missingRequirement = (sharedData.eligibility == Enum.PurchaseEligibility.MissingRequiredDeliverable);
+
+		if completelyOwned or partiallyOwned then
+			if not hideWhenOwned then
+				table.insert(filteredEntries, entryID);
+			end
+		elseif not expansionTooLow and not expansionTooHigh and not missingRequirement then
+			table.insert(filteredEntries, entryID);
+		end
+	end
+	return filteredEntries;
+end
+
 function StoreFrame_SetCategory(forceModelUpdate)
 	if not StoreFrame_CurrencyInfo() then
 		return;
@@ -1621,7 +1664,8 @@ function StoreFrame_SetCategory(forceModelUpdate)
 	if #entries == 0 then
 		return;
 	end
-		
+	entries = StoreFrame_FilterEntries(entries);
+
 	StoreFrame_SetCategoryProductCards(forceModelUpdate, entries);
 end
 
@@ -1688,7 +1732,7 @@ function StoreFrame_SetCategoryProductCards(forceModelUpdate, entries)
 
 		local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
 		local template = StoreFrame_GetProductCardTemplate(entryInfo.sharedData.cardType, entryInfo.sharedData.flags);
-		
+
 		-- if any of these product cards have their own buy button, we turn off the global buy button
 		if productCardTemplateData[template].buyButton then
 			showGlobalBuyButton = false;
@@ -1721,13 +1765,12 @@ function StoreFrame_SetCategoryProductCards(forceModelUpdate, entries)
 			self.NextPageButton:Hide();
 			self.PrevPageButton:Hide();
 		end
-		self.BuyButton:SetShown(showGlobalBuyButton);
 	else
 		self.PageText:Hide();
 		self.NextPageButton:Hide();
 		self.PrevPageButton:Hide();
-		self.BuyButton:Hide();
 	end
+	self.BuyButton:SetShown(showGlobalBuyButton);
 	StoreFrame_UpdateBuyButton();
 end
 
@@ -1909,10 +1952,17 @@ function StoreFrame_SelectBoostForPurchase(boostType)
 end
 
 function StoreFrame_DoesProductGroupHavePurchasableItems(groupID)
-	local products = C_StoreSecure.GetProducts(groupID);
-	for _, entryID in ipairs(products) do
+	local entries = C_StoreSecure.GetProducts(groupID);
+	entries = StoreFrame_FilterEntries(entries);
+
+	for _, entryID in ipairs(entries) do
 		local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
-		if not entryInfo.alreadyOwned then
+
+		local completelyOwned = StoreFrame_IsCompletelyOwned(entryInfo);
+		local partiallyOwned = StoreFrame_IsPartiallyOwned(entryInfo);
+
+		local alreadyOwned = completelyOwned or PartiallyOwned;
+		if not alreadyOwned then
 			return true;
 		end
 	end
@@ -2327,7 +2377,8 @@ function StoreFrame_UpdateBuyButton()
 	end
 
 	local entryInfo = C_StoreSecure.GetEntryInfo(selectedEntryID);
-	if entryInfo and entryInfo.alreadyOwned then
+	local completelyOwned = StoreFrame_IsCompletelyOwned(entryInfo);
+	if completelyOwned then
 		self.BuyButton:Disable();
 		self.BuyButton.PulseAnim:Stop();
 		return;
@@ -2685,7 +2736,8 @@ end
 
 function StoreFrame_BeginPurchase(entryID)
 	local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
-	if entryInfo.alreadyOwned then
+	local completelyOwned = StoreFrame_IsCompletelyOwned(entryInfo);
+	if completelyOwned then
 		StoreFrame_OnError(StoreFrame, Enum.StoreError.AlreadyOwned, false, "FakeOwned");
 	elseif C_StoreSecure.PurchaseProduct(entryInfo.productID) then
 		if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService) then
@@ -3626,7 +3678,6 @@ function StoreSplashSingleProductCard_OnClick(self)
 end
 
 function StoreProductCard_ShowModel(self, entryInfo, showShadows, forceModelUpdate)
-	local owned = entryInfo.alreadyOwned;
 	local cards = entryInfo.sharedData.cards;
 	local modelSceneID = entryInfo.sharedData.modelSceneID or cards[1].modelSceneID; -- Shared data can specify a scene to override, otherwise use the scene for the model on the card
 
@@ -3654,10 +3705,6 @@ function StoreProductCard_ShowModel(self, entryInfo, showShadows, forceModelUpda
 		else
 			SetupPlayerForModelScene(self.ModelScene, card.itemModifiedAppearanceIDs);
 		end
-	end
-
-	if self.Checkmark then
-		self.Checkmark:SetShown(entryInfo.alreadyOwned);
 	end
 
 	-- HACK: This should be driven by the data returned from GetModelSceneCameraInfo, not the model count.

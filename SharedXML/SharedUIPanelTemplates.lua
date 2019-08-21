@@ -133,6 +133,10 @@ function UIPanelCloseButton_OnClick(self)
 	end
 end
 
+function UIPanelStaticPopupSpecialCloseButton_OnClick(self)
+	StaticPopupSpecial_Hide(self:GetParent());
+end
+
 function UIPanelCloseButton_SetBorderAtlas(self, atlas, xOffset, yOffset, textureKit)
 	local border = self.Border or self:CreateTexture(nil, "OVERLAY", nil, 7);
 	self.Border = border;

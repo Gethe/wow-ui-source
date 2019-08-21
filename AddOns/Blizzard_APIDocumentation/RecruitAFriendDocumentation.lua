@@ -43,6 +43,21 @@ local RecruitAFriend =
 			},
 		},
 		{
+			Name = "GetRecruitActivityRequirementsText",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "activityID", Type = "number", Nilable = false },
+				{ Name = "acceptanceID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "requirementsText", Type = "table", InnerType = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRecruitInfo",
 			Type = "Function",
 
@@ -178,6 +193,19 @@ local RecruitAFriend =
 			},
 		},
 		{
+			Name = "RafRecruitActivityState",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Incomplete", Type = "RafRecruitActivityState", EnumValue = 0 },
+				{ Name = "Complete", Type = "RafRecruitActivityState", EnumValue = 1 },
+				{ Name = "RewardClaimed", Type = "RafRecruitActivityState", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "RafPetInfo",
 			Type = "Structure",
 			Fields =
@@ -268,7 +296,17 @@ local RecruitAFriend =
 				{ Name = "totalUses", Type = "number", Nilable = false },
 				{ Name = "remainingUses", Type = "number", Nilable = false },
 				{ Name = "sourceRealm", Type = "string", Nilable = false },
-				{ Name = "sourceFaction", Type = "number", Nilable = false },
+				{ Name = "sourceFaction", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "RafRecruitActivity",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "activityID", Type = "number", Nilable = false },
+				{ Name = "rewardQuestID", Type = "number", Nilable = false },
+				{ Name = "state", Type = "RafRecruitActivityState", Nilable = false },
 			},
 		},
 		{
@@ -281,6 +319,8 @@ local RecruitAFriend =
 				{ Name = "battleTag", Type = "string", Nilable = false },
 				{ Name = "monthsRemaining", Type = "number", Nilable = false },
 				{ Name = "subStatus", Type = "RafRecruitSubStatus", Nilable = false },
+				{ Name = "acceptanceID", Type = "string", Nilable = false },
+				{ Name = "activities", Type = "table", InnerType = "RafRecruitActivity", Nilable = false },
 			},
 		},
 		{

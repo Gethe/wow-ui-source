@@ -1209,6 +1209,7 @@ do
 					end
 				end
 				if not doneWithDispelDebuffs then
+					local debuffType = select(4, ...);
 					if ( dispellableDebuffTypes[debuffType] and not frame["hasDispel"..debuffType] ) then
 						frame["hasDispel"..debuffType] = true;
 						numUsedDispelDebuffs = numUsedDispelDebuffs + 1;

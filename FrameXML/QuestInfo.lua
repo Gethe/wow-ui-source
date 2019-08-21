@@ -105,6 +105,7 @@ function QuestInfo_Display(template, parentFrame, acceptButton, material, mapVie
 		QuestInfoRewardsFrame.ItemChooseText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		QuestInfoRewardsFrame.ItemReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		QuestInfoRewardsFrame.PlayerTitleText:SetTextColor(textColor[1], textColor[2], textColor[3]);
+		QuestInfoRewardsFrame.QuestSessionBonusReward:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		QuestInfoRewardsFrame.XPFrame.ReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 
 		QuestInfoRewardsFrame.spellHeaderPool.textR, QuestInfoRewardsFrame.spellHeaderPool.textG, QuestInfoRewardsFrame.spellHeaderPool.textB = textColor[1], textColor[2], textColor[3];
@@ -1062,7 +1063,11 @@ QUEST_TEMPLATE_MAP_REWARDS = { questLog = true, chooseItems = nil, contentWidth 
 
 function QuestInfoRewardItemCodeTemplate_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	if ( QuestInfoFrame.questLog ) then
+
+	if (self.objectType == "questSessionBonusReward") then
+		GameTooltip:SetItemByID(self:GetID());
+		GameTooltip_ShowCompareItem(GameTooltip);
+	elseif ( QuestInfoFrame.questLog ) then
 		if (self.objectType == "item") then
 			GameTooltip:SetQuestLogItem(self.type, self:GetID());
 			GameTooltip_ShowCompareItem(GameTooltip);
@@ -1075,11 +1080,9 @@ function QuestInfoRewardItemCodeTemplate_OnEnter(self)
 			GameTooltip_ShowCompareItem(GameTooltip);
 		elseif (self.objectType == "currency") then
 			GameTooltip:SetQuestCurrency(self.type, self:GetID());
-		elseif (self.objectType == "questSessionBonusReward") then
-			GameTooltip:SetItemByID(self:GetID());
-			GameTooltip_ShowCompareItem(GameTooltip);
 		end
 	end
+
 	CursorUpdate(self);
 	self.UpdateTooltip = QuestInfoRewardItemCodeTemplate_OnEnter;
 end

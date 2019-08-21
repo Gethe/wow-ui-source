@@ -2545,11 +2545,11 @@ StaticPopupDialogs["ADD_GUILDMEMBER_WITH_FINDER_LINK"] = Mixin({
 	extraButton = CLUB_FINDER_LINK_POST_IN_CHAT,
 	OnExtraButton = function(self, data)
 		local clubInfo = ClubFinderGetCurrentClubListingInfo(data.clubId);
-		if (clubInfo) then 
+		if (clubInfo) then
 			local link = GetClubFinderLink(clubInfo.clubFinderGUID, clubInfo.name);
 			if not ChatEdit_InsertLink(link) then
 				ChatFrame_OpenChat(link);
-			end 
+			end
 		end
 	end,
 }, StaticPopupDialogs["ADD_GUILDMEMBER"]);
@@ -2589,7 +2589,7 @@ StaticPopupDialogs["CONVERT_TO_RAID"] = {
 	button1 = CONVERT,
 	button2 = CANCEL,
 	OnAccept = function(self, data)
-		ConvertToRaid();
+		C_PartyInfo.ConfirmConvertToRaid();
 		InviteUnit(data);
 	end,
 	timeout = 0,
@@ -2602,7 +2602,7 @@ StaticPopupDialogs["LFG_LIST_AUTO_ACCEPT_CONVERT_TO_RAID"] = {
 	button1 = CONVERT,
 	button2 = CANCEL,
 	OnAccept = function(self, data)
-		ConvertToRaid();
+		C_PartyInfo.ConfirmConvertToRaid();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -5097,12 +5097,21 @@ end
 function StaticPopup_SetUpPosition(dialog)
 	if ( not tContains(StaticPopup_DisplayedFrames, dialog) ) then
 		StaticPopup_SetUpAnchor(dialog, #StaticPopup_DisplayedFrames + 1);
-		tinsert(StaticPopup_DisplayedFrames, dialog);
+		table.insert(StaticPopup_DisplayedFrames, dialog);
+	end
+end
+
+function StaticPopup_UpdatePositions()
+	local dialogs = StaticPopup_DisplayedFrames;
+	StaticPopup_DisplayedFrames = {};
+	for index, dialog in ipairs(dialogs) do
+		StaticPopup_SetUpPosition(dialog);
 	end
 end
 
 function StaticPopup_SetUpAnchor(dialog, idx)
 	local lastFrame = StaticPopup_DisplayedFrames[idx - 1];
+	dialog:ClearAllPoints();
 	if ( lastFrame ) then
 		dialog:SetPoint("TOP", lastFrame, "BOTTOM", 0, 0);
 	else
@@ -5111,11 +5120,12 @@ function StaticPopup_SetUpAnchor(dialog, idx)
 end
 
 function StaticPopup_CollapseTable()
-	local displayedFrames = StaticPopup_DisplayedFrames;
-	local index = #displayedFrames;
-	while ( ( index >= 1 ) and ( not displayedFrames[index]:IsShown() ) ) do
-		tremove(displayedFrames, index);
-		index = index - 1;
+	local dialogs = StaticPopup_DisplayedFrames;
+	StaticPopup_DisplayedFrames = {};
+	for index, dialog in ipairs(dialogs) do
+		if dialog:IsVisible() then
+			table.insert(StaticPopup_DisplayedFrames, dialog);
+		end
 	end
 end
 
@@ -5130,6 +5140,7 @@ end
 function StaticPopupSpecial_Hide(frame)
 	frame:Hide();
 	StaticPopup_CollapseTable();
+	StaticPopup_UpdatePositions();
 end
 
 function StaticPopupSpecial_Toggle(frame)

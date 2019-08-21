@@ -4,6 +4,7 @@ local BN_TOAST_TYPE_BROADCAST = 3;
 local BN_TOAST_TYPE_PENDING_INVITES = 4;
 local BN_TOAST_TYPE_NEW_INVITE = 5;
 local BN_TOAST_TYPE_CLUB_INVITATION = 6;
+local BN_TOAST_TYPE_CLUB_FINDER_INVITATION = 7; 
 
 BNET_CLIENT_WOW = "WoW";
 BNET_CLIENT_SC2 = "S2";
@@ -68,6 +69,7 @@ function BNToastMixin:OnLoad()
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("BN_DISCONNECTED");
 	self:RegisterEvent("BN_BLOCK_FAILED_TOO_MANY");
+	self:RegisterEvent("CLUB_FINDER_APPLICATIONS_UPDATED");
 
 	local alertSystem = ChatAlertFrame:AddAutoAnchoredSubSystem(self);
 	ChatAlertFrame:SetSubSystemAnchorPriority(alertSystem, 1);
@@ -96,6 +98,16 @@ function BNToastMixin:OnEvent(event, ...)
 		self:AddToast(BN_TOAST_TYPE_CLUB_INVITATION, ...);
 	elseif ( event == "BN_FRIEND_INVITE_LIST_INITIALIZED" ) then
 		self:AddToast(BN_TOAST_TYPE_PENDING_INVITES, ...);
+	elseif (event == "CLUB_FINDER_APPLICATIONS_UPDATED") then 
+		local _, clubFinderGUIDS = ...;
+		for _, clubFinderGUID in ipairs(clubFinderGUIDS) do 
+			if (not C_ClubFinder.DoesPlayerBelongToClubFromClubGUID(clubFinderGUID)) then 
+				local recruitingClubInfo = C_ClubFinder.GetRecruitingClubInfoFromFinderGUID(clubFinderGUID); 
+				if(recruitingClubInfo.clubStatus and recruitingClubInfo.clubStatus == Enum.PlayerClubRequestStatus.Approved) then 
+					self:AddToast(BN_TOAST_TYPE_CLUB_FINDER_INVITATION, recruitingClubInfo);
+				end
+			end
+		end
 	elseif( event == "VARIABLES_LOADED" ) then
 		self:OnVariablesLoaded();
 	end
@@ -301,6 +313,14 @@ function BNToastMixin:ShowToast()
 		else
 			clubName = NORMAL_FONT_COLOR:WrapTextInColorCode(toastData.club.name);
 		end
+		doubleLine:SetText(BN_TOAST_NEW_CLUB_INVITATION:format(clubName));
+		doubleLine:SetMaxLines(2);
+	elseif (toastType == BN_TOAST_TYPE_CLUB_FINDER_INVITATION) then 
+		self.IconTexture:SetTexCoord(0.5, 0.75, 0, 0.5);
+		doubleLine:Show();
+
+		local clubName = "";
+		clubName = NORMAL_FONT_COLOR:WrapTextInColorCode(toastData.name);
 		doubleLine:SetText(BN_TOAST_NEW_CLUB_INVITATION:format(clubName));
 		doubleLine:SetMaxLines(2);
 	end

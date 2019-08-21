@@ -4536,7 +4536,7 @@ function CalendarCreateEventRaidInviteButton_OnEvent(self, event, ...)
 			if ( IsInGroup(LE_PARTY_CATEGORY_HOME) and not IsInRaid(LE_PARTY_CATEGORY_HOME) and self.inviteLostMembers ) then
 				-- in case we weren't able to convert to a raid when the player clicked the raid invite button
 				-- (which means the player was not in a party), we want to convert to a raid now since he has a party
-				ConvertToRaid();
+				C_PartyInfo.ConvertToRaid();
 			end
 		end
 	end
@@ -4552,7 +4552,7 @@ function CalendarCreateEventRaidInviteButton_OnClick(self)
 			self.inviteLostMembers = true;
 			if ( realNumGroupMembers > 0 ) then
 				--...and I'm already in a party, then I need to form a raid first to fit everyone
-				ConvertToRaid();
+				C_PartyInfo.ConvertToRaid();
 				return;
 			end
 		end
@@ -5421,7 +5421,7 @@ function CalendarClassTotalsButton_OnEvent(self, event, ...)
 		if ( CalendarEventGetNumInvites() > MAX_PARTY_MEMBERS + 1 and GetRealNumPartyMembers() >= 1 and GetRealNumRaidMembers() == 0 ) then
 			-- we don't have a good way of knowing in advance whether or not we need a raid to accomodate all our invites
 			-- so we're going to create a raid as soon as possible
-			ConvertToRaid();
+			C_PartyInfo.ConvertToRaid();
 		end
 		CalendarClassTotalsButton_Update();
 	end

@@ -293,6 +293,20 @@ local ClubFinder =
 			},
 		},
 		{
+			Name = "RequestPostingInformationFromClubId",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RequestSubscribedClubPostingIDs",
 			Type = "Function",
 		},
@@ -459,6 +473,16 @@ local ClubFinder =
 			LiteralName = "CLUB_FINDER_RECRUIT_LIST_CHANGED",
 		},
 		{
+			Name = "ClubFinderRecruitmentPostReturned",
+			Type = "Event",
+			LiteralName = "CLUB_FINDER_RECRUITMENT_POST_RETURNED",
+			Documentation = { "Signals when our recruitment post we just requested is returned back to us" },
+			Payload =
+			{
+				{ Name = "type", Type = "ClubFinderRequestType", Nilable = false },
+			},
+		},
+		{
 			Name = "ClubFinderRecruitsUpdated",
 			Type = "Event",
 			LiteralName = "CLUB_FINDER_RECRUITS_UPDATED",
@@ -578,6 +602,7 @@ local ClubFinder =
 				{ Name = "ilvl", Type = "number", Nilable = false },
 				{ Name = "specIds", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "requestStatus", Type = "PlayerClubRequestStatus", Nilable = false },
+				{ Name = "lookupSuccess", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -613,6 +638,7 @@ local ClubFinder =
 				{ Name = "cacheRequested", Type = "number", Nilable = false },
 				{ Name = "lastPosterGUID", Type = "string", Nilable = false },
 				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "lastUpdatedTime", Type = "number", Nilable = false },
 			},
 		},
 		{

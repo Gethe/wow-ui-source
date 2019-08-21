@@ -71,6 +71,8 @@ function RecruitAFriendFrameMixin:UpdateRAFTutorialTips()
 				cvarBitfield = "closedInfoFrames",
 				bitfieldFlag = LE_FRAME_TUTORIAL_RAF_INTRO,
 				targetPoint = HelpTip.Point.RightEdgeCenter,
+				autoEdgeFlipping = true,
+				useParentStrata = true,
 			};
 			HelpTip:Show(QuickJoinToastButton, introHelpTipInfo);
 		elseif self:ShowRewardTutorial() then
@@ -78,6 +80,8 @@ function RecruitAFriendFrameMixin:UpdateRAFTutorialTips()
 				text = RAF_REWARD_TUTORIAL_TEXT,
 				buttonStyle = HelpTip.ButtonStyle.Close,
 				targetPoint = HelpTip.Point.RightEdgeCenter,
+				autoEdgeFlipping = true,
+				useParentStrata = true,
 			};
 			HelpTip:Show(QuickJoinToastButton, rewardHelpTipInfo);
 			self.shownRewardTutorial = true;
@@ -346,6 +350,152 @@ function RecruitAFriendFrameMixin:OnDropDownClosed()
 	self.selectedRecruit = nil;
 end
 
+RecruitActivityButtonMixin = {};
+
+function RecruitActivityButtonMixin:OnLoad()
+	self.ClaimGlowSpinAnim:Play(); -- Just leave this playing
+end
+
+function RecruitActivityButtonMixin:OnEnter()
+	self:GetParent():EnableDrawLayer("HIGHLIGHT");
+
+	EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+	local wrap = true;
+
+	if not HaveQuestRewardData(self.activityInfo.rewardQuestID) then
+		GameTooltip_SetTitle(EmbeddedItemTooltip, RETRIEVING_DATA, RED_FONT_COLOR);
+		self.UpdateTooltip = self.OnEnter;
+	else
+		local questName = C_QuestLog.GetQuestInfo(self.activityInfo.rewardQuestID);
+		GameTooltip_SetTitle(EmbeddedItemTooltip, questName, nil, wrap);
+
+		EmbeddedItemTooltip:SetMinimumWidth(300);
+		GameTooltip_AddNormalLine(EmbeddedItemTooltip, RAF_RECRUIT_ACTIVITY_DESCRIPTION:format(self.recruitInfo.nameText), true);
+	
+		local reqTextLines = C_RecruitAFriend.GetRecruitActivityRequirementsText(self.activityInfo.activityID, self.recruitInfo.acceptanceID);
+		for i = 1, #reqTextLines do
+			local reqText = reqTextLines[i];
+			GameTooltip_AddColoredLine(EmbeddedItemTooltip, reqText, HIGHLIGHT_FONT_COLOR, wrap);
+		end
+
+		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
+
+		if self.activityInfo.state == Enum.RafRecruitActivityState.Incomplete then
+			GameTooltip_AddNormalLine(EmbeddedItemTooltip, QUEST_REWARDS, wrap);
+		else
+			GameTooltip_AddNormalLine(EmbeddedItemTooltip, YOU_EARNED_LABEL, wrap);
+		end
+
+		GameTooltip_AddQuestRewardsToTooltip(EmbeddedItemTooltip, self.activityInfo.rewardQuestID, TOOLTIP_QUEST_REWARDS_STYLE_NONE);
+
+		if self.activityInfo.state == Enum.RafRecruitActivityState.Complete then
+			GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
+			GameTooltip_AddInstructionLine(EmbeddedItemTooltip, CLICK_CHEST_TO_CLAIM_REWARD, wrap);
+		end
+
+		self.UpdateTooltip = nil;
+	end
+
+	EmbeddedItemTooltip:Show();
+end
+
+function RecruitActivityButtonMixin:OnLeave()
+	self:GetParent():DisableDrawLayer("HIGHLIGHT");
+	EmbeddedItemTooltip:Hide();
+	self.UpdateTooltip = nil;
+end
+
+function RecruitActivityButtonMixin:OnClick()
+	if self.activityInfo.state == Enum.RafRecruitActivityState.Complete then
+		-- TODO: Claim reward
+		self.ModelFadeOutAnim:Stop();
+		self.Model:SetAlpha(1);
+		self.Model:Hide();
+		self.Model:Show();
+
+		PlaySound(SOUNDKIT.RAF_RECRUIT_REWARD_CLAIM);
+
+		C_Timer.After(0.3, function()
+			self.activityInfo.state = Enum.RafRecruitActivityState.RewardClaimed;
+			self:Refresh();
+		end)
+	end
+end
+
+function RecruitActivityButtonMixin:Setup(activityInfo, recruitInfo)
+	self.activityInfo = activityInfo;
+	self.recruitInfo = recruitInfo;
+
+	if not activityInfo then
+		self:Hide();
+		return;
+	end
+
+	local canClaim = false;
+	local useAtlasSize = true;
+	if activityInfo.state == Enum.RafRecruitActivityState.Incomplete then
+		self.Icon:SetAtlas("RecruitAFriend_RecruitedFriends_ActiveChest", useAtlasSize);
+	elseif activityInfo.state == Enum.RafRecruitActivityState.Complete then
+		self.Icon:SetAtlas("RecruitAFriend_RecruitedFriends_OpenChest", useAtlasSize);
+		canClaim = true;
+	else
+		self.Icon:SetAtlas("RecruitAFriend_RecruitedFriends_ClaimedChest", useAtlasSize);
+	end
+
+	if self.lastCanClaim == nil then
+		if canClaim then
+			self.ClaimGlow:SetAlpha(0.8);
+			self.ClaimGlowSpin:SetAlpha(0.3);
+		end
+	else
+		if canClaim ~= self.lastCanClaim then
+			if canClaim then
+				self.ClaimGlowOutAnim:Stop();
+				self.ClaimGlowInAnim:Play();
+			else
+				self.ClaimGlowInAnim:Stop();
+				self.ClaimGlowOutAnim:Play();
+			end
+		end
+	end
+
+	self.lastCanClaim = canClaim;
+end
+
+function RecruitActivityButtonMixin:Refresh()
+	self:Setup(self.activityInfo, self.recruitInfo);
+end
+
+RecruitActivityButtonModelMixin = {};
+
+function RecruitActivityButtonModelMixin:OnLoad()
+	self.parentButton = self:GetParent();
+	self:SetParent(RecruitAFriendFrame);
+	self:SetFrameLevel(self.parentButton:GetFrameLevel() + 1);
+end
+
+function RecruitActivityButtonModelMixin:OnShow()
+	self:SetModel(1601381);			--7FX_ARGUS_LIGHTFORGED_SIEGEWEAPON_IMPACT_HOLY.m2
+end
+
+function RecruitActivityButtonModelMixin:OnHide()
+	self:ClearModel();
+end
+
+function RecruitActivityButtonModelMixin:OnModelLoaded()
+	self:MakeCurrentCameraCustom();
+	self:SetCameraPosition(0, 0, -25);
+end
+
+function RecruitActivityButtonModelMixin:OnAnimStarted()
+	self.parentButton.ModelFadeOutAnim:Play();
+end
+
+function RecruitActivityButtonModelMixin:OnAnimFinished()
+	self:Hide();
+end
+
 RecruitListButtonMixin = {};
 
 function RecruitListButtonMixin:OnEnter()
@@ -380,6 +530,10 @@ function RecruitListButtonMixin:MakeDivider(isDivider)
 	self.Name:SetShown(not isDivider);
 	self.InfoText:SetShown(not isDivider);
 
+	for i = 1, #self.Activities do
+		self.Activities[i]:SetShown(not isDivider);
+	end
+
 	if isDivider then
 		self:SetHeight(DIVIDER_HEIGHT);
 		self:Disable();
@@ -393,6 +547,13 @@ function RecruitListButtonMixin:SetupDivider()
 	self:MakeDivider(true);
 	self.recruitInfo = nil;
 	self:Show();
+end
+
+function RecruitListButtonMixin:UpdateActivities(recruitInfo)
+	for i = 1, #self.Activities do
+		local activityInfo = recruitInfo.activities[i];
+		self.Activities[i]:Setup(activityInfo, recruitInfo);
+	end
 end
 
 function RecruitListButtonMixin:SetupRecruit(recruitInfo)
@@ -425,6 +586,8 @@ function RecruitListButtonMixin:SetupRecruit(recruitInfo)
 	if mouseOnMe then
 		self:OnEnter();
 	end
+
+	self:UpdateActivities(recruitInfo);
 
 	self:Show();
 end
@@ -854,9 +1017,8 @@ function RecruitAFriendRecruitmentFrameMixin:UpdateRecruitmentInfo(recruitmentIn
 
 		self.Description:SetText(RAF_RECRUITMENT_DESC:format(recruitmentInfo.totalUses, daysInCycle));
 
-		local factionName = PLAYER_FACTION_GROUP[recruitmentInfo.sourceFaction];
-		if factionName then
-			self.FactionAndRealm:SetText(RAF_RECRUITS_FACTION_AND_REALM:format(factionName, recruitmentInfo.sourceRealm));
+		if recruitmentInfo.sourceFaction ~= "" then
+			self.FactionAndRealm:SetText(RAF_RECRUITS_FACTION_AND_REALM:format(recruitmentInfo.sourceFaction, recruitmentInfo.sourceRealm));
 			self.FactionAndRealm:Show();
 		else
 			self.FactionAndRealm:Hide();

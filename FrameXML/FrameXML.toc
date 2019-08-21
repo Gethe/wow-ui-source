@@ -27,6 +27,7 @@
 ..\SharedXML\CustomBindingButtonMixin.lua
 ..\SharedXML\PixelUtil.lua
 ..\SharedXML\TableBuilder.lua
+..\SharedXML\NewFeatureLabel.xml
 MixinUtil.lua
 
 ## intrinsics

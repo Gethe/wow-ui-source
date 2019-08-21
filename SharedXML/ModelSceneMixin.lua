@@ -443,3 +443,15 @@ function ModelSceneMixin:ShowAndAnimateActors(actorSettings, onFinishedCallback)
 		C_Timer.After(totalTime, onFinishedCallback);
 	end
 end
+
+PanningModelSceneMixin = CreateFromMixins(ModelSceneMixin);
+
+function PanningModelSceneMixin:TransitionToModelSceneID(modelSceneID, cameraTransitionType, cameraModificationType, forceEvenIfSame)
+	ModelSceneMixin.TransitionToModelSceneID(self, modelSceneID, cameraTransitionType, cameraModificationType, forceEvenIfSame);
+
+	local camera = self:GetActiveCamera();
+	if camera then
+		camera:SetRightMouseButtonXMode(ORBIT_CAMERA_MOUSE_MODE_TARGET_HORIZONTAL);
+		camera:SetRightMouseButtonYMode(ORBIT_CAMERA_MOUSE_MODE_TARGET_VERTICAL);
+	end
+end

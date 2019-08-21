@@ -1,7 +1,7 @@
 
 function OpenCommunitiesSettingsDialog(clubId)
 	CommunitiesSettingsDialog:SetClubId(clubId);
-	CommunitiesSettingsDialog:Show();
+	CommunitiesSettingsDialog:UpdatedPostingInformationInit();
 end
 
 function CloseCommunitiesSettingsDialog()
@@ -9,6 +9,27 @@ function CloseCommunitiesSettingsDialog()
 end
 
 CommunitiesSettingsDialogMixin = {}
+
+function CommunitiesSettingsDialogMixin:UpdatedPostingInformationInit()
+	self:RegisterEvent("CLUB_FINDER_RECRUITMENT_POST_RETURNED"); 
+	if (self.clubId and self:GetClubType() == Enum.ClubType.Character) then 
+		if(C_ClubFinder.RequestPostingInformationFromClubId(self.clubId)) then 
+			self.waitingForResponseToShow = true;
+		else 
+			self:OnUpdatedPostingInformationRecieved();
+		end 
+	else 
+		self:OnUpdatedPostingInformationRecieved();
+	end
+end 
+
+function CommunitiesSettingsDialogMixin:OnUpdatedPostingInformationRecieved() 
+	self:UnregisterEvent("CLUB_FINDER_RECRUITMENT_POST_RETURNED"); 
+	self.waitingForResponseToShow = false; 
+	if(not self:IsShown()) then 
+		self:Show();
+	end
+end 
 
 function CommunitiesSettingsDialogMixin:OnLoad()
 	self.LookingForDropdown:Initialize(); 
@@ -43,11 +64,16 @@ end
 
 function CommunitiesSettingsDialogMixin:OnHide() 
 	self:UnregisterEvent("CLUB_FINDER_POST_UPDATED");
+	self:UnregisterEvent("CLUB_FINDER_RECRUITMENT_POST_RETURNED"); 
 end
 
 function CommunitiesSettingsDialogMixin:OnEvent(event, ...)
 	if (event == "CLUB_FINDER_POST_UPDATED") then 
 		self:Hide(); 
+	elseif (event == "CLUB_FINDER_RECRUITMENT_POST_RETURNED") then 
+		if(self.waitingForResponseToShow) then 
+			self:OnUpdatedPostingInformationRecieved();
+		end
 	end		
 end
 
@@ -116,7 +142,7 @@ function CommunitiesSettingsDialogMixin:UpdateCreateButton()
 	end
 end
 
-function CommunitiesSettingsDialogMixin:PostClub()
+function CommunitiesSettingsDialogMixin:PostClub(newName)
 	local clubInfo = C_Club.GetClubInfo(self.clubId);
 	local specsInList = self.LookingForDropdown:GetSpecsList(); 
 	local shouldHideNow = true; 
@@ -130,7 +156,7 @@ function CommunitiesSettingsDialogMixin:PostClub()
 	local description = self.Description.EditBox:GetText(); 
 
 	if(clubInfo) then 
-		local postClubSuccessful = C_ClubFinder.PostClub(clubInfo.clubId, minItemLevel, clubInfo.name, description, specsInList, Enum.ClubFinderRequestType.Community);
+		local postClubSuccessful = C_ClubFinder.PostClub(clubInfo.clubId, minItemLevel, newName, description, specsInList, Enum.ClubFinderRequestType.Community);
 		if (self.ShouldListClub.Button:GetChecked() and postClubSuccessful) then
 			shouldHideNow = false;
 		end
@@ -183,7 +209,9 @@ function CommunitiesSettingsDialogMixin:UpdateSettingsInfoFromClubInfo()
 	if(clubInfo) then
 		local clubPostingInfo = C_ClubFinder.GetRecruitingClubInfoFromClubID(clubInfo.clubId);
 		if (clubPostingInfo) then
-			self.Description.EditBox:SetText(clubPostingInfo.comment);
+			if(clubPostingInfo.comment ~= "") then 
+				self.Description.EditBox:SetText(clubPostingInfo.comment);
+			end
 			self.LookingForDropdown:SetCheckedList(clubPostingInfo.recruitingSpecIds);
 			self.LookingForDropdown:UpdateDropdownText();
 
@@ -267,14 +295,14 @@ local function CommunitiesAvatarPickerDialog_OnOkay(self)
 	local communitiesAvatarPickerDialog = self:GetParent();
 	communitiesAvatarPickerDialog:Hide();
 	CommunitiesSettingsDialog:SetAvatarId(communitiesAvatarPickerDialog:GetAvatarId());
-	CommunitiesSettingsDialog:Show();
+	CommunitiesSettingsDialog:UpdatedPostingInformationInit();
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 end
 
 local function CommunitiesAvatarPickerDialog_OnCancel(self)
 	local communitiesAvatarPickerDialog = self:GetParent();
 	communitiesAvatarPickerDialog:Hide();
-	CommunitiesSettingsDialog:Show();
+	CommunitiesSettingsDialog:UpdatedPostingInformationInit();
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 end
 
@@ -313,8 +341,12 @@ end
 function CommunitiesSettingsDialogAcceptButton_OnClick(self)
 	local communitiesSettingsDialog = self:GetParent();
 	C_Club.EditClub(communitiesSettingsDialog:GetClubId(), communitiesSettingsDialog:GetName(), communitiesSettingsDialog:GetShortName(), communitiesSettingsDialog:GetDescription(), communitiesSettingsDialog:GetAvatarId(), communitiesSettingsDialog:GetMessageOfTheDay());
-	local shouldHideNow = communitiesSettingsDialog:PostClub(); 
-	communitiesSettingsDialog:SetShown(not shouldHideNow);
+	local shouldHideNow = communitiesSettingsDialog:PostClub(communitiesSettingsDialog:GetName()); 
+
+	if (shouldHideNow) then 
+		communitiesSettingsDialog:Hide();
+	end
+
 	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 end
 

@@ -753,6 +753,12 @@ function GetClassColorObj(classFilename)
 	return RAID_CLASS_COLORS[classFilename];
 end
 
+function GetClassColoredTextForUnit(unit, text)
+	local classFilename = select(2, UnitClass(unit));
+	local color = GetClassColorObj(classFilename);
+	return color:WrapTextInColorCode(text);
+end
+
 function GetFactionColor(factionGroupTag)
 	return PLAYER_FACTION_COLORS[PLAYER_FACTION_GROUP[factionGroupTag]];
 end

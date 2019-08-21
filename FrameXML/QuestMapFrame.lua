@@ -80,12 +80,6 @@ function QuestMapFrame_OnLoad(self)
 	self:RegisterEvent("AJ_QUEST_LOG_OPEN");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("CVAR_UPDATE");
-	self:RegisterEvent("GROUP_FORMED");
-	self:RegisterEvent("GROUP_LEFT");
-	self:RegisterEvent("QUEST_SESSION_JOINED");
-	self:RegisterEvent("QUEST_SESSION_LEFT");
-	self:RegisterEvent("QUEST_SESSION_CREATED");
-	self:RegisterEvent("QUEST_SESSION_DESTROYED");
 
 	self:InitLayoutIndexManager();
 
@@ -94,17 +88,6 @@ function QuestMapFrame_OnLoad(self)
 	QuestMapQuestOptionsDropDown.questID = 0;		-- for QuestMapQuestOptionsDropDown_Initialize
 	UIDropDownMenu_Initialize(QuestMapQuestOptionsDropDown, QuestMapQuestOptionsDropDown_Initialize, "MENU");
 end
-
-local questSessionManagementEvents =
-{
-	["GROUP_FORMED"] = true,
-	["GROUP_LEFT"] = true,
-	["GROUP_ROSTER_UPDATE"] = true,
-	["QUEST_SESSION_JOINED"] = true,
-	["QUEST_SESSION_LEFT"] = true,
-	["QUEST_SESSION_CREATED"] = true,
-	["QUEST_SESSION_DESTROYED"] = true,
-};
 
 local function QuestMapFrame_DoFullUpdate()
 	if (not IsTutorialFlagged(55) and TUTORIAL_QUEST_TO_WATCH) then
@@ -210,10 +193,6 @@ function QuestMapFrame_OnEvent(self, event, ...)
 			QuestMapFrame_UpdateAll();
 		end
 	end
-
-	if questSessionManagementEvents[event] then
-		QuesetMapFrame_UpdateQuestSessionState(self);
-	end
 end
 
 function QuestMapFrame_OnHide(self)
@@ -223,79 +202,95 @@ end
 local sessionCommandToCommandName =
 {
 	[Enum.QuestSessionCommand.Start] = QUEST_SESSION_START_SESSION,
-	[Enum.QuestSessionCommand.Join] = QUEST_SESSION_JOIN_SESSION,
-	[Enum.QuestSessionCommand.Drop] = QUEST_SESSION_DROP_SESSION,
+	[Enum.QuestSessionCommand.SessionActiveNoCommand] = QUEST_SESSION_SESSION_ACTIVE,
+	[Enum.QuestSessionCommand.Stop] = QUEST_SESSION_SESSION_ACTIVE,
 }
 
-local sessionCommandToTooltip =
+local sessionCommandToHelpText =
 {
-	[Enum.QuestSessionCommand.Start] = QUEST_SESSION_START_SESSION_TOOLTIP,
-	[Enum.QuestSessionCommand.Join] = QUEST_SESSION_JOIN_SESSION_TOOLTIP,
-	[Enum.QuestSessionCommand.Drop] = QUEST_SESSION_DROP_SESSION_TOOLTIP,
+	[Enum.QuestSessionCommand.Start] = QUEST_SESSION_HELP_TEXT_START,
+	[Enum.QuestSessionCommand.SessionActiveNoCommand] = QUEST_SESSION_HELP_TEXT_SESSION_ACTIVE,
+	[Enum.QuestSessionCommand.Stop] = QUEST_SESSION_HELP_TEXT_SESSION_ACTIVE,
+}
+
+local sessionCommandToTooltipTitle =
+{
+	[Enum.QuestSessionCommand.Start] = QUEST_SESSION_START_SESSION,
+	[Enum.QuestSessionCommand.Stop] = QUEST_SESSION_STOP_SESSION,
+}
+
+local sessionCommandToTooltipBody =
+{
+	[Enum.QuestSessionCommand.Start] = QUEST_SESSION_TOOLTIP_START_SESSION,
+	[Enum.QuestSessionCommand.Stop] = QUEST_SESSION_TOOLTIP_STOP_SESSION,
+}
+
+local sessionCommandToButtonAtlases =
+{
+	[Enum.QuestSessionCommand.Start] = { normal = "QuestSharing-QuestLog-Button" , pushed = "QuestSharing-QuestLog-ButtonPressed", disabled = "QuestSharing-QuestLog-Button", },
+	[Enum.QuestSessionCommand.Stop] = { normal = "QuestSharing-QuestLog-ButtonStop" , pushed = "QuestSharing-QuestLog-ButtonPressedStop", disabled = "QuestSharing-QuestLog-ButtonStop", },
 }
 
 QuestSessionManagementMixin = {};
 
 function QuestSessionManagementMixin:OnLoad()
-	EventRegistry:RegisterCallback("QuestSessionManager.Update", function() QuesetMapFrame_UpdateQuestSessionState(QuestMapFrame) end);
-end
-
-function QuestSessionManagementMixin:OnShow()
-	self:RegisterEvent("GROUP_FORMED");
-	self:EvaluateAlertVisibility();
+	EventRegistry:RegisterCallback("QuestSessionManager.Update", function() QuestMapFrame_UpdateQuestSessionState(QuestMapFrame) end);
 end
 
 function QuestSessionManagementMixin:OnHide()
-	self:UnregisterEvent("GROUP_FORMED");
 	UpdateMicroButtons();
-end
-
-function QuestSessionManagementMixin:OnEvent()
-	self:EvaluateAlertVisibility();
 end
 
 function QuestSessionManagementMixin:OnClick(button, down)
 	if button == "LeftButton" then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-
-		local command = C_QuestSession.GetAvailableSessionCommand();
-		if command == Enum.QuestSessionCommand.Start then
-			QuestSessionManager:StartSession();
-		elseif command == Enum.QuestSessionCommand.Join then
-			QuestSessionManager:JoinSession();
-		elseif command == Enum.QuestSessionCommand.Drop then
-			QuestSessionManager:DropSession();
-		end
+		QuestSessionManager:ExecuteSessionCommand();
 
 		HelpTip:Acknowledge(self.ExecuteSessionCommand, QUEST_SESSION_WORLD_MAP_TUTORIAL_TEXT);
 	end
 end
 
-function QuestSessionManagementMixin:UpdateVisibility(command)
-	local shouldShow = command ~= nil and command ~= Enum.QuestSessionCommand.None and not self.suppressed;
+function QuestSessionManagementMixin:UpdateVisibility()
+	local shouldShow = QuestSessionManager:ShouldSessionManagementUIBeVisible() and not self.suppressed;
 	self:SetShown(shouldShow);
 
-	if command then
-		self.CommandText:SetText(sessionCommandToCommandName[command]);
-		self.HelpText:SetText(self:GetHelpText(command));
+	if shouldShow then
+		self:EvaluateAlertVisibility();
 
-		self.ExecuteSessionCommand:SetEnabled(QuestSessionManager:IsSessionManagementEnabled());
+		local command = QuestSessionManager:GetSessionCommand();
+		if command then
+			self.CommandText:SetText(sessionCommandToCommandName[command]);
+			self.HelpText:SetText(sessionCommandToHelpText[command]);
+
+			local onlyShowSessionActive = command == Enum.QuestSessionCommand.SessionActiveNoCommand;
+			self.ExecuteSessionCommand:SetShown(not onlyShowSessionActive);
+			self.SessionActiveFrame:SetShown(onlyShowSessionActive);
+			self.ExecuteSessionCommand:SetEnabled(QuestSessionManager:IsSessionManagementEnabled());
+			self:UpdateExecuteCommandAtlases(command);
+		end
 	end
+end
 
-	return command;
+function QuestSessionManagementMixin:UpdateExecuteCommandAtlases(command)
+	local atlases = sessionCommandToButtonAtlases[command];
+	if atlases then
+		self.ExecuteSessionCommand:SetNormalAtlas(atlases.normal);
+		self.ExecuteSessionCommand:SetPushedAtlas(atlases.pushed);
+		self.ExecuteSessionCommand:SetDisabledAtlas(atlases.disabled);
+	end
 end
 
 function QuestSessionManagementMixin:SetSuppressed(suppressed)
 	if self.suppressed ~= suppressed then
 		self.suppressed = suppressed;
-		self:UpdateVisibility(QuestSessionManager:GetSessionCommand());
+		self:UpdateVisibility();
 	end
 end
 
 function QuestSessionManagementMixin:ShowTooltip()
 	local command = QuestSessionManager:GetSessionCommand();
-	local title = sessionCommandToCommandName[command];
-	local text = sessionCommandToTooltip[command];
+	local title = sessionCommandToTooltipTitle[command];
+	local text = sessionCommandToTooltipBody[command];
 
 	if title and text then
 		GameTooltip:SetOwner(self.ExecuteSessionCommand, "ANCHOR_RIGHT");
@@ -337,33 +332,22 @@ function QuestSessionManagementMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
-function QuestSessionManagementMixin:GetHelpText(command)
-	if command == Enum.QuestSessionCommand.Start then
-		return QUEST_SESSION_MANAGEMENT_START;
-	elseif command == Enum.QuestSessionCommand.Join then
-		return QUEST_SESSION_MANAGEMENT_JOIN_REQUEST;
-	elseif command == Enum.QuestSessionCommand.Drop then
-		return QUEST_SESSION_MANAGEMENT_DROP;
-	end
-end
-
 function QuestSessionManagementExecute_OnClick(self, button, down)
 	self:GetParent():OnClick(button, down);
 end
 
-function QuestSessionManagementExecute_OnEnter(self)
+function QuestSessionManagement_OnEnter(self)
 	self:GetParent():OnEnter();
 end
 
-function QuestSessionManagementExecute_OnLeave(self)
+function QuestSessionManagement_OnLeave(self)
 	self:GetParent():OnLeave();
 end
 
-function QuesetMapFrame_UpdateQuestSessionState(self)
-	local command = QuestSessionManager:GetSessionCommand();
-	self.QuestSessionManagement:UpdateVisibility(command);
+function QuestMapFrame_UpdateQuestSessionState(self)
+	self.QuestSessionManagement:UpdateVisibility();
 	self.QuestSessionManagement:UpdateTooltip();
-	if command ~= Enum.QuestSessionCommand.None then
+	if self.QuestSessionManagement:IsShown() then
 		self.QuestsFrame:SetPoint("BOTTOMRIGHT", self.QuestSessionManagement, "TOPRIGHT", -27, 1);
 	else
 		self.QuestsFrame:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -27, 0);
@@ -371,7 +355,7 @@ function QuesetMapFrame_UpdateQuestSessionState(self)
 end
 
 function QuestMapFrame_OnShow(self)
-	QuesetMapFrame_UpdateQuestSessionState(self);
+	QuestMapFrame_UpdateQuestSessionState(self);
 end
 
 -- opening/closing the quest frame is different from showing/hiding because of fullscreen map mode
@@ -478,6 +462,18 @@ function QuestMapFrame_ToggleShowDestination()
 	QuestMapFrame_ShowQuestDetails(QuestMapFrame.DetailsFrame.questID);
 end
 
+function QuestMapFrame_AdjustPathButtons()
+	if QuestMapDetailsScrollFrame:GetVerticalScrollRange() > 0 then
+		QuestMapFrame.DetailsFrame.DestinationMapButton:SetPoint("TOPRIGHT", -2, -4);
+		QuestMapFrame.DetailsFrame.WaypointMapButton:SetPoint("TOPRIGHT", -2, -4);
+		QuestInfo_AdjustTitleWidth(-19);
+	else
+		QuestMapFrame.DetailsFrame.DestinationMapButton:SetPoint("TOPRIGHT", 14, -4);
+		QuestMapFrame.DetailsFrame.WaypointMapButton:SetPoint("TOPRIGHT", 14, -4);
+		QuestInfo_AdjustTitleWidth(-2);
+	end
+end
+
 function QuestDetailsFrame_OnShow(self)
 	QuestMapFrame.QuestSessionManagement:SetSuppressed(true);
 end
@@ -539,6 +535,7 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	end
 
 	QuestMapFrame_UpdateQuestDetailsButtons();
+	QuestMapFrame_AdjustPathButtons();
 
 	if ( IsQuestComplete(questID) and GetQuestLogIsAutoComplete(questLogIndex) ) then
 		QuestMapFrame.DetailsFrame.CompleteQuestFrame:Show();
@@ -612,7 +609,7 @@ function QuestMapFrame_ReturnFromQuestDetails()
 		QuestMapFrame:GetParent():SetMapID(QuestMapFrame.DetailsFrame.returnMapID);
 	end
 	QuestMapFrame_CloseQuestDetails();
-	QuesetMapFrame_UpdateQuestSessionState(QuestMapFrame);
+	QuestMapFrame_UpdateQuestSessionState(QuestMapFrame);
 end
 
 function QuestMapFrame_OpenToQuestDetails(questID)

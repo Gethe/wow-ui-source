@@ -678,6 +678,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
+			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
@@ -962,7 +963,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Button name="ClubFinderCommunitiesCardTemplate" mixin="ClubFinderCommunitiesCardMixin" virtual="true">
+	<Button name="ClubFinderCommunitiesCardTemplate" motionScriptsWhileDisabled="true" mixin="ClubFinderCommunitiesCardMixin" virtual="true">
 		<Size x="570" y="71"/>
 		<Anchors>
 			<Anchor point="CENTER" x="20" y="-20"/>
@@ -1038,7 +1039,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="RequestJoin">
+			<Frame parentKey="RequestJoin">
 				<Size x="60" y="60"/>
 				<Anchors>
 					<Anchor point="RIGHT"/> 
@@ -1053,14 +1054,16 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="AddTexture" atlas="communities-icon-addgroupplus">
+							<Size x="40" y="40"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 				</Layers>
-				<NormalTexture parentKey="AddTexture" atlas="communities-icon-addgroupplus">
-					<Size x="40" y="40"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</NormalTexture>
-			</Button>
+			</Frame>
 			<Frame parentKey="RightClickDropdown" inherits="UIDropDownMenuTemplate" hidden="true"/>
 		</Frames>
 		<Scripts>
@@ -1098,6 +1101,17 @@
 
 	<Frame name="ClubFinderOptionsTemplate" mixin="ClubFinderOptionsMixin" virtual="true">
 	<Frames>
+		<Frame parentKey="PendingTextFrame" hidden="true">
+			<Size x="300" y="80"/>
+			<Anchors>
+				<Anchor point="TOPLEFT" x="15" y="40"/>
+			</Anchors>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString parentKey="Text" justifyH="LEFT" inherits="GameFontNormalLarge" text="CLUB_FINDER_PENDING_CLUBS_LIST"/>
+				</Layer>
+			</Layers>
+		</Frame>
 		<Frame parentKey="ClubFocusDropdown" hidden="true" name="ClubFinderFocusDropdown" inherits="ClubFinderFocusDropdownTemplate">
 			<Anchors>
 				<Anchor point="TOPLEFT" x="-1" y="18"/>
@@ -1233,6 +1247,7 @@
 	</Frames>
 	<Scripts>
 		<OnLoad method="OnLoad"/>
+		<OnShow method="OnShow"/>
 	</Scripts>
 	</Frame>
 	<Frame name="ClubFinderGuildAndCommunityFrameTemplate" hidden="false" mixin="ClubFinderGuildAndCommunityMixin" virtual="true">
@@ -1305,7 +1320,7 @@
 					<KeyValue key="tooltip" value="SEARCH" type="global"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="10" y="-10"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="9" y="47"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>

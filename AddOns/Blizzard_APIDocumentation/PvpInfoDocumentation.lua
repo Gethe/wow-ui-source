@@ -416,6 +416,24 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetSpecialEventDetails",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "info", Type = "SpecialEventDetails", Nilable = true },
+			},
+		},
+		{
+			Name = "GetSpecialEventInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "info", Type = "RandomBGInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTeamInfo",
 			Type = "Function",
 
@@ -1057,6 +1075,17 @@ local PvpInfo =
 				{ Name = "talentSpec", Type = "string", Nilable = false },
 				{ Name = "honorLevel", Type = "number", Nilable = false },
 				{ Name = "stats", Type = "table", InnerType = "PVPStatInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "SpecialEventDetails",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "achievementID", Type = "number", Nilable = false },
+				{ Name = "isActive", Type = "bool", Nilable = false },
 			},
 		},
 		{

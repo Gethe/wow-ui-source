@@ -72,7 +72,17 @@ function SmallStoreCardMixin:ShowDiscount(discountText)
 	end
 end
 
+function SmallStoreCardMixin:SetDisabledOverlayShown(showDisabledOverlay)
+	self.DisabledOverlay:SetShown(showDisabledOverlay);
+end
+
 function SmallStoreCardMixin:Layout()	
+	local width, height = StoreFrame_GetCellPixelSize("SmallStoreCardTemplate");
+	self:SetSize(width, height);
+
+	self.DisabledOverlay:ClearAllPoints();
+	self.DisabledOverlay:SetAllPoints(self);
+
 	self.Card:ClearAllPoints();
 	self.Card:SetPoint("CENTER");
 	
@@ -184,6 +194,11 @@ function MediumStoreCardMixin:ShowIcon(displayData)
 	end
 end
 
+function MediumStoreCardMixin:SetDisabledOverlayShown(showDisabledOverlay)
+	--disabled overlay is currently only used by small cards
+	self.DisabledOverlay:SetShown(false);
+end
+
 function MediumStoreCardMixin:ShouldAddDiscountInformationToTooltip(entryInfo)
 	if not StoreFrame_HasPriceData(entryInfo.productID) then
 		return false;
@@ -199,7 +214,9 @@ end
 function MediumStoreCardMixin:Layout()
 	SmallStoreCardMixin.Layout(self);
 
-	self:SetWidth(146 * 2);
+	local width, height = StoreFrame_GetCellPixelSize("MediumStoreCardTemplate");
+	self:SetSize(width, height);
+
 	self.Card:SetAtlas("shop-card-bundle", true);
 	self.Card:SetTexCoord(0, 1, 0, 1);
 
@@ -222,14 +239,24 @@ end
 MediumStoreCardWithBuyButtonMixin = CreateFromMixins(MediumStoreCardMixin, ProductCardBuyButtonMixin);
 
 function MediumStoreCardWithBuyButtonMixin:Layout()
-	self:SetSize(277, 224);
-	
+	MediumStoreCardMixin.Layout(self);
+
+	local width, height = StoreFrame_GetCellPixelSize("MediumStoreCardWithBuyButtonTemplate");
+	self:SetSize(width, height);
+
 	self.Card:SetAtlas("store-card-quarter", true);
 	self.Card:SetTexCoord(0, 1, 0, 1);
 
 	self.BuyButton:ClearAllPoints();
 	self.BuyButton:SetSize(146, 35);
 	self.BuyButton:SetPoint("BOTTOM", 0, 10);
+
+	self.PurchasedText:SetText(BLIZZARD_STORE_PURCHASED);
+	self.PurchasedText:ClearAllPoints();
+	self.PurchasedText:SetPoint("BOTTOM", 0, 20);
+	self.PurchasedText:Hide();
+
+	self.PurchasedMark:Hide();
 
 	self.SelectedTexture:Hide();
 	self.SplashBanner:Hide();
@@ -252,7 +279,7 @@ function MediumStoreCardWithBuyButtonMixin:Layout()
 	self.ProductName:SetJustifyH("CENTER");
 	self.ProductName:SetJustifyV("BOTTOM");
 	self.ProductName:SetTextColor(1, 1, 1);
-	self.ProductName:SetShadowColor(0, 0, 0, 0);
+	self.ProductName:SetShadowColor(0, 0, 0, 1);
 	self.ProductName:SetShadowOffset(1, -1);
 
 	self.ModelScene:ClearAllPoints();

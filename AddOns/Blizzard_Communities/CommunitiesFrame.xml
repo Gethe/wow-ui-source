@@ -106,6 +106,23 @@
 		</Layers>
 	</Frame>
 
+	<Frame name="ClubFinderPostingExpirationTemplate" virtual="true">
+		<Size x="400" y="30"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="ExpirationTimeText" inherits="GameFontNormal" hidden="true"/>
+				<FontString parentKey="DaysUntilExpire" inherits="GameFontHighlight" hidden="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.ExpirationTimeText" relativePoint="RIGHT" x="55"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ExpiredText" inherits="GameFontNormal" hidden="true">
+					<Color r="1.0" g="0.1" b="0.1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
 	<Frame name="GuildDetailsFrameTemplate" virtual="true">
 		<Frames>
 			<Frame parentKey="Info" name="$parentInfo" inherits="CommunitiesGuildInfoFrameTemplate">
@@ -211,7 +228,12 @@
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 						local recruitmentDialog = self:GetParent():GetParent().RecruitmentDialog;
-						recruitmentDialog:SetShown(not recruitmentDialog:IsShown());
+						if (not recruitmentDialog:IsShown()) then
+							recruitmentDialog:UpdatedPostingInformationInit();
+						else
+							recruitmentDialog:OnUpdatedPostingInformationRecieved();
+							recruitmentDialog:Hide();
+						end
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -295,6 +317,21 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ChatTab" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 				</Anchors>
+				<Frames>
+					<Frame parentKey="NotificationOverlay" setAllPoints="true" hidden="true">
+						<Size x="14" y="14"/>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="UnreadNotificationIcon" atlas="communities-icon-notification">
+									<Size x="14" y="14"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
 			</CheckButton>
 			<CheckButton parentKey="GuildBenefitsTab" hidden="true" inherits="CommunitiesGuildBenefitsTabTemplate">
 				<Anchors>
@@ -349,6 +386,11 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="24" y="-60"/>
 					<Anchor point="BOTTOMRIGHT" x="-9" y="29"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="PostingExpirationText" hidden="true" inherits="ClubFinderPostingExpirationTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="-60"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="GuildFinderFrame" name="ClubFinderGuildFinderFrame" inherits="ClubFinderGuildAndCommunityFrameTemplate">

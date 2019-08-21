@@ -96,8 +96,8 @@ do
 			local playerGuid = gameAccountInfo.playerGuid or 0;
 
 			return	gameAccountInfo.hasFocus, characterName, gameAccountInfo.clientProgram,
-					realmName, realmID, factionName, raceName, className, "", areaName, characterLevel, 
-					richPresence, accountInfo.customMessage, accountInfo.customMessageTime, 
+					realmName, realmID, factionName, raceName, className, "", areaName, characterLevel,
+					richPresence, accountInfo.customMessage, accountInfo.customMessageTime,
 					gameAccountInfo.isOnline, gameAccountID, accountInfo.bnetAccountID, gameAccountInfo.isGameAFK, gameAccountInfo.isGameBusy,
 					playerGuid, wowProjectID, gameAccountInfo.isWowMobile;
 		end
@@ -357,4 +357,11 @@ do
 		end
 		return texture, count, debuffType, duration, expirationTime, timeMod;
 	end
+end
+
+-- Party changes
+do
+	LeaveParty = C_PartyInfo.LeaveParty;
+	ConvertToRaid = C_PartyInfo.ConvertToRaid;
+	ConvertToParty = C_PartyInfo.ConvertToParty;
 end

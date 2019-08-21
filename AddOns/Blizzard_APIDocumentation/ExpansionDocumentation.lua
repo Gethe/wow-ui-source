@@ -92,10 +92,12 @@ local Expansion =
 		{
 			Name = "GetMaxLevelForExpansionLevel",
 			Type = "Function",
+			Documentation = { "Maps an expansion level to a maximum character level for that expansion, optionally takes a useModernLevelMapping instead of legacy level mapping. Legacy treats the maxes as the original caps for those expansions." },
 
 			Arguments =
 			{
 				{ Name = "expansionLevel", Type = "number", Nilable = false },
+				{ Name = "useModernLevelMapping", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =

@@ -201,7 +201,7 @@
 					<Anchor point="BOTTOMRIGHT" x="-7" y="5"/>
 				</Anchors>
 				<Scripts>
-					<OnClick function="ConvertToRaid"/>
+					<OnClick function="RaidFrame_ConvertToRaid"/>
 				</Scripts>
 				<NormalFont style="GameFontNormalSmall"/>
 				<HighlightFont style="GameFontHighlightSmall"/>

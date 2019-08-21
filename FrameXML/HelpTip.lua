@@ -4,14 +4,17 @@
 		textColor = HIGHLIGHT_FONT_COLOR,
 		textJustifyH = "LEFT",
 		buttonStyle = HelpTip.ButtonStyle.None	-- button to close the helptip, or no button at all
-		targetPoint = HelpTip.Point.BottomEdgeCenter,	-- where at the parent the helptip should point
-		alignment = HelpTip.Alignment.Center,	-- alignment of the helptip relative to the parent (basically where the arrow is located)
+		targetPoint = HelpTip.Point.BottomEdgeCenter,	-- where at the parent/relativeRegion the helptip should point
+		alignment = HelpTip.Alignment.Center,	-- alignment of the helptip relative to the parent/relativeRegion (basically where the arrow is located)
 		hideArrow = false,						-- whether to hide the arrow
 		offsetX = 0,
 		offsetY	= 0,
 		cvar, cvarValue,						-- cvar to set when closed by user or from HelpTip:Acknowledge()
 		cvarBitfield, bitfieldFlag,				-- cvarbitfield to set when closed by user or from HelpTip:Acknowledge()
 		onHideCallback, callbackArg,			-- callback whenever the helptip is closed:  onHideCallback(acknowledged, callbackArg)
+		checkCVars = false,						-- on: helptip will only be shown if the cvar or cvarBitfield is not set
+		autoEdgeFlipping = false,				-- on: will flip helptip to opposite edge based on relative region's center vs helptip's center during OnUpdate
+		useParentStrata	= false,				-- whether to use parent framestrata
 	}
 ]]--
 
@@ -23,15 +26,15 @@ HelpTip.Point = {
 	TopEdgeLeft = 1,
 	TopEdgeCenter = 2,
 	TopEdgeRight = 3,
-	RightEdgeTop = 4,
-	RightEdgeCenter = 5,
-	RightEdgeBottom = 6,
-	BottomEdgeRight = 7,
-	BottomEdgeCenter = 8,
-	BottomEdgeLeft = 9,
-	LeftEdgeBottom = 10,
+	BottomEdgeLeft = 4,	
+	BottomEdgeCenter = 5,
+	BottomEdgeRight = 6,
+	RightEdgeTop = 7,
+	RightEdgeCenter = 8,
+	RightEdgeBottom = 9,
+	LeftEdgeTop = 10,
 	LeftEdgeCenter = 11,
-	LeftEdgeTop = 12,
+	LeftEdgeBottom = 12,
 };
 
 HelpTip.Alignment = {
@@ -60,22 +63,22 @@ HelpTip.ArrowRotation = {
 
 -- data
 
-HelpTip.Anchors = {
-	[HelpTip.Point.TopEdgeLeft]		= { arrowRotation = HelpTip.ArrowRotation.Down,	 relativeAnchor = "TOPLEFT" },
-	[HelpTip.Point.TopEdgeCenter]	= { arrowRotation = HelpTip.ArrowRotation.Down,  relativeAnchor = "TOP" },
-	[HelpTip.Point.TopEdgeRight]	= { arrowRotation = HelpTip.ArrowRotation.Down,  relativeAnchor = "TOPRIGHT" },
+HelpTip.PointInfo = {
+	[HelpTip.Point.TopEdgeLeft]		= { arrowRotation = HelpTip.ArrowRotation.Down,	 relativeAnchor = "TOPLEFT",	oppositePoint = HelpTip.Point.BottomEdgeLeft },
+	[HelpTip.Point.TopEdgeCenter]	= { arrowRotation = HelpTip.ArrowRotation.Down,  relativeAnchor = "TOP",		oppositePoint = HelpTip.Point.BottomEdgeCenter },
+	[HelpTip.Point.TopEdgeRight]	= { arrowRotation = HelpTip.ArrowRotation.Down,  relativeAnchor = "TOPRIGHT",	oppositePoint = HelpTip.Point.BottomEdgeRight },
 
-	[HelpTip.Point.RightEdgeTop]	= { arrowRotation = HelpTip.ArrowRotation.Left,  relativeAnchor = "TOPRIGHT" },
-	[HelpTip.Point.RightEdgeCenter] = { arrowRotation = HelpTip.ArrowRotation.Left,  relativeAnchor = "RIGHT" },
-	[HelpTip.Point.RightEdgeBottom] = { arrowRotation = HelpTip.ArrowRotation.Left,  relativeAnchor = "BOTTOMRIGHT" },
+	[HelpTip.Point.RightEdgeTop]	= { arrowRotation = HelpTip.ArrowRotation.Left,  relativeAnchor = "TOPRIGHT",	oppositePoint = HelpTip.Point.LeftEdgeTop },
+	[HelpTip.Point.RightEdgeCenter] = { arrowRotation = HelpTip.ArrowRotation.Left,  relativeAnchor = "RIGHT",		oppositePoint = HelpTip.Point.LeftEdgeCenter },
+	[HelpTip.Point.RightEdgeBottom] = { arrowRotation = HelpTip.ArrowRotation.Left,  relativeAnchor = "BOTTOMRIGHT",oppositePoint = HelpTip.Point.LeftEdgeBottom },
 
-	[HelpTip.Point.BottomEdgeRight] = { arrowRotation = HelpTip.ArrowRotation.Up,	 relativeAnchor = "BOTTOMRIGHT" },
-	[HelpTip.Point.BottomEdgeCenter]= { arrowRotation = HelpTip.ArrowRotation.Up,	 relativeAnchor = "BOTTOM" },
-	[HelpTip.Point.BottomEdgeLeft]	= { arrowRotation = HelpTip.ArrowRotation.Up,	 relativeAnchor = "BOTTOMLEFT" },
+	[HelpTip.Point.BottomEdgeRight] = { arrowRotation = HelpTip.ArrowRotation.Up,	 relativeAnchor = "BOTTOMRIGHT",oppositePoint = HelpTip.Point.TopEdgeRight },
+	[HelpTip.Point.BottomEdgeCenter]= { arrowRotation = HelpTip.ArrowRotation.Up,	 relativeAnchor = "BOTTOM",		oppositePoint = HelpTip.Point.TopEdgeCenter },
+	[HelpTip.Point.BottomEdgeLeft]	= { arrowRotation = HelpTip.ArrowRotation.Up,	 relativeAnchor = "BOTTOMLEFT",	oppositePoint = HelpTip.Point.TopEdgeLeft },
 
-	[HelpTip.Point.LeftEdgeBottom]	= { arrowRotation = HelpTip.ArrowRotation.Right, relativeAnchor = "BOTTOMLEFT" },
-	[HelpTip.Point.LeftEdgeCenter]	= { arrowRotation = HelpTip.ArrowRotation.Right, relativeAnchor = "LEFT" },
-	[HelpTip.Point.LeftEdgeTop]		= { arrowRotation = HelpTip.ArrowRotation.Right, relativeAnchor = "TOPLEFT" },
+	[HelpTip.Point.LeftEdgeBottom]	= { arrowRotation = HelpTip.ArrowRotation.Right, relativeAnchor = "BOTTOMLEFT",	oppositePoint = HelpTip.Point.RightEdgeBottom },
+	[HelpTip.Point.LeftEdgeCenter]	= { arrowRotation = HelpTip.ArrowRotation.Right, relativeAnchor = "LEFT",		oppositePoint = HelpTip.Point.RightEdgeCenter },
+	[HelpTip.Point.LeftEdgeTop]		= { arrowRotation = HelpTip.ArrowRotation.Right, relativeAnchor = "TOPLEFT",	oppositePoint = HelpTip.Point.RightEdgeTop },
 };
 
 HelpTip.ArrowOffsets = {
@@ -112,6 +115,7 @@ HelpTip.defaultTextWidth = 196;
 do
 	local function HelpTipReset(framePool, frame)
 		frame:ClearAllPoints();
+		frame:Hide();
 		frame:Reset();
 	end
 
@@ -120,6 +124,11 @@ end
 
 function HelpTip:Show(parent, info, relativeRegion)
 	assert(info and info.text, "Invalid helptip info");
+	assert((info.bitfieldFlag ~= nil and info.cvarBitfield ~= nil) or (info.bitfieldFlag == nil and info.cvarBitfield == nil));
+
+	if not self:CanShow(info) then
+		return false;
+	end
 
 	if self:IsShowing(parent, info.text) then
 		return true;
@@ -129,6 +138,22 @@ function HelpTip:Show(parent, info, relativeRegion)
 	frame:Init(parent, info, relativeRegion or parent);
 	frame:Show();
 
+	return true;
+end
+
+function HelpTip:CanShow(info)
+	if info.checkCVars then
+		if info.cvar then
+			if GetCVar(info.cvar) ~= info.cvarValue then
+				return false;
+			end
+		end
+		if info.cvarBitfield then
+			if GetCVarBitfield(info.cvarBitfield, info.bitfieldFlag) then
+				return false;
+			end
+		end
+	end
 	return true;
 end
 
@@ -180,6 +205,10 @@ function HelpTip:Release(helpTip)
 	self.framePool:Release(helpTip);
 end
 
+function HelpTip:IsPointVertical(point)
+	return point <= HelpTip.Point.BottomEdgeRight;
+end
+
 HelpTipTemplateMixin = { };
 
 local function TransformOffsetsForRotation(offsets, rotationInfo)
@@ -208,18 +237,48 @@ function HelpTipTemplateMixin:OnHide()
 	HelpTip:Release(self);
 end
 
-function HelpTipTemplateMixin:Init(parent, info, relativeRegion)
-	self:SetParent(parent);
-	self:SetFrameStrata("DIALOG");
-	self.info = info;
-	self:SetUp(relativeRegion);
+function HelpTipTemplateMixin:OnUpdate()
+	local rx, ry = self.relativeRegion:GetCenter();
+	local ux, uy = UIParent:GetCenter();
+	local targetPoint = self.info.targetPoint;
 
-	assert((info.bitfieldFlag ~= nil and info.cvarBitfield ~= nil) or (info.bitfieldFlag == nil and info.cvarBitfield == nil));
+	local useMin;
+	if HelpTip:IsPointVertical(targetPoint) then
+		useMin = ry <= uy;
+	else
+		useMin = rx <= ux;
+	end
+	if useMin then
+		targetPoint = min(self.flippedTargetPoint, targetPoint);
+	else
+		targetPoint = max(self.flippedTargetPoint, targetPoint);
+	end
+	self:AnchorAndRotate(targetPoint);
 end
 
-function HelpTipTemplateMixin:GetAnchorInfo()
-	local targetPoint = self.info.targetPoint or HelpTip.Point.BottomEdgeCenter;
-	return HelpTip.Anchors[targetPoint];
+function HelpTipTemplateMixin:Init(parent, info, relativeRegion)
+	self:SetParent(parent);
+	if info.useParentStrata then
+		self:SetFrameLevel(10000);
+	else
+		self:SetFrameStrata("DIALOG");
+	end
+	self.info = info;
+	self.relativeRegion = relativeRegion;
+
+	if info.autoEdgeFlipping then
+		local targetPoint = self:GetTargetPoint();
+		local pointInfo = HelpTip.PointInfo[targetPoint];
+		self.flippedTargetPoint = pointInfo.oppositePoint;
+		self:SetScript("OnUpdate", function() self:OnUpdate(); end);
+	end
+
+	self:AnchorAndRotate();
+	self:Layout();
+end
+
+function HelpTipTemplateMixin:GetTargetPoint()
+	return self.info.targetPoint or HelpTip.Point.BottomEdgeCenter;
 end
 
 function HelpTipTemplateMixin:GetAlignment()
@@ -231,32 +290,54 @@ function HelpTipTemplateMixin:GetButtonInfo()
 	return HelpTip.Buttons[buttonStyle];
 end
 
-function HelpTipTemplateMixin:SetUp(relativeRegion)
-	local anchorInfo = self:GetAnchorInfo();
-	local buttonInfo = self:GetButtonInfo();
+function HelpTipTemplateMixin:AnchorAndRotate(overrideTargetPoint)
+	local baseTargetPoint = self:GetTargetPoint();
+	local targetPoint = overrideTargetPoint or baseTargetPoint;
+	if targetPoint == self.appliedTargetPoint then
+		return;
+	end
+
+	local pointInfo = HelpTip.PointInfo[targetPoint];
 	local alignment = self:GetAlignment();
-	local rotationInfo = HelpTip.Rotations[anchorInfo.arrowRotation];
+	local rotationInfo = HelpTip.Rotations[pointInfo.arrowRotation];
+
+	-- anchor
+	local arrowAnchor = rotationInfo.anchors[alignment];
+	local offsetX, offsetY = TransformOffsetsForRotation(HelpTip.DistanceOffsets[alignment], rotationInfo);
+	local baseOffsetX = self.info.offsetX or 0;
+	local baseOffsetY = self.info.offsetY or 0;
+	if overrideTargetPoint and overrideTargetPoint ~= baseTargetPoint then
+		if HelpTip:IsPointVertical(targetPoint) then
+			baseOffsetY = -baseOffsetY;
+		else
+			baseOffsetX = -baseOffsetX;
+		end
+	end
+	offsetX = offsetX + baseOffsetX;
+	offsetY = offsetY + baseOffsetY;
+	self:ClearAllPoints();
+	self:SetPoint(arrowAnchor, self.relativeRegion, pointInfo.relativeAnchor, offsetX, offsetY);
+	-- arrow
+	if self.info.hideArrow then
+		self.Arrow:Hide();
+	else
+		self.Arrow:Show();
+		self:RotateArrow(pointInfo.arrowRotation);
+		self:AnchorArrow(rotationInfo, alignment);
+	end
+	self.appliedTargetPoint = targetPoint;
+end
+
+function HelpTipTemplateMixin:Layout()
+	local targetPoint = self:GetTargetPoint();
+	local pointInfo = HelpTip.PointInfo[targetPoint];
+	local buttonInfo = self:GetButtonInfo();
 
 	-- starting defaults
 	local textOffsetX = 15;
 	local textOffsetY = 0;
 	local textWidth = HelpTip.defaultTextWidth;
 	local height = HelpTip.verticalPadding;
-	-- anchor the helpTip
-	local arrowAnchor = rotationInfo.anchors[alignment];
-	local offsetX, offsetY = TransformOffsetsForRotation(HelpTip.DistanceOffsets[alignment], rotationInfo);
-	offsetX = offsetX + (self.info.offsetX or 0);
-	offsetY = offsetY + (self.info.offsetY or 0);
-	self:ClearAllPoints();
-	self:SetPoint(arrowAnchor, relativeRegion, anchorInfo.relativeAnchor, offsetX, offsetY);
-	-- arrow
-	if self.info.hideArrow then
-		self.Arrow:Hide();
-	else
-		self.Arrow:Show();
-		self:RotateArrow(anchorInfo.arrowRotation);
-		self:AnchorArrow(rotationInfo, alignment);
-	end
 	-- button
 	textWidth = textWidth + buttonInfo.textWidthAdj;
 	textOffsetY = buttonInfo.heightAdj / 2;
@@ -269,7 +350,7 @@ function HelpTipTemplateMixin:SetUp(relativeRegion)
 	self.Text:SetWidth(textWidth);
 	self.Text:SetPoint("LEFT", textOffsetX, textOffsetY);
 	height = height + self.Text:GetHeight();
-	if anchorInfo.arrowRotation == HelpTip.ArrowRotation.Left or anchorInfo.arrowRotation == HelpTip.ArrowRotation.Right then
+	if pointInfo.arrowRotation == HelpTip.ArrowRotation.Left or pointInfo.arrowRotation == HelpTip.ArrowRotation.Right then
 		height = max(height, HelpTip.minimumHeight);
 	end
 	self:SetHeight(height);
@@ -322,9 +403,14 @@ end
 
 function HelpTipTemplateMixin:Reset()
 	self.info = nil;
+	self.relativeRegion = nil;
 	self.acknowledged = false;
 	self.CloseButton:Hide();
 	self.OkayButton:Hide();
+	-- flippity flip settings
+	self.appliedTargetPoint = nil;
+	self.flippedTargetPoint = nil;
+	self:SetScript("OnUpdate", nil);
 end
 
 function HelpTipTemplateMixin:Matches(parent, text)

@@ -7,25 +7,16 @@ local QuestSession =
 	Functions =
 	{
 		{
-			Name = "CanDrop",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "allowed", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "CanJoin",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "allowed", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "CanStart",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "allowed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanStop",
 			Type = "Function",
 
 			Returns =
@@ -70,15 +61,6 @@ local QuestSession =
 			},
 		},
 		{
-			Name = "GetSessionJoinRequestDetails",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "details", Type = "QuestSessionJoinRequestDetails", Nilable = true },
-			},
-		},
-		{
 			Name = "GetSuperTrackedQuest",
 			Type = "Function",
 
@@ -106,15 +88,11 @@ local QuestSession =
 			},
 		},
 		{
-			Name = "RequestSessionDrop",
-			Type = "Function",
-		},
-		{
-			Name = "RequestSessionJoin",
-			Type = "Function",
-		},
-		{
 			Name = "RequestSessionStart",
+			Type = "Function",
+		},
+		{
+			Name = "RequestSessionStop",
 			Type = "Function",
 		},
 		{
@@ -124,16 +102,6 @@ local QuestSession =
 			Arguments =
 			{
 				{ Name = "beginSession", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "SendSessionJoinRequestResponse",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "requesterGUID", Type = "string", Nilable = false },
-				{ Name = "accept", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -170,11 +138,6 @@ local QuestSession =
 			},
 		},
 		{
-			Name = "QuestSessionJoinRequest",
-			Type = "Event",
-			LiteralName = "QUEST_SESSION_JOIN_REQUEST",
-		},
-		{
 			Name = "QuestSessionJoined",
 			Type = "Event",
 			LiteralName = "QUEST_SESSION_JOINED",
@@ -188,16 +151,6 @@ local QuestSession =
 			Name = "QuestSessionMemberConfirm",
 			Type = "Event",
 			LiteralName = "QUEST_SESSION_MEMBER_CONFIRM",
-		},
-		{
-			Name = "QuestSessionMemberJoinResponse",
-			Type = "Event",
-			LiteralName = "QUEST_SESSION_MEMBER_JOIN_RESPONSE",
-			Payload =
-			{
-				{ Name = "guid", Type = "string", Nilable = false },
-				{ Name = "response", Type = "bool", Nilable = false },
-			},
 		},
 		{
 			Name = "QuestSessionMemberStartResponse",
@@ -230,15 +183,6 @@ local QuestSession =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "guid", Type = "string", Nilable = false },
-			},
-		},
-		{
-			Name = "QuestSessionJoinRequestDetails",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "requesterDetails", Type = "QuestSessionPlayerDetails", Nilable = false },
-				{ Name = "joinedMembers", Type = "table", InnerType = "string", Nilable = false },
 			},
 		},
 	},

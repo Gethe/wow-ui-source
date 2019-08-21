@@ -497,9 +497,9 @@ function OrbitCameraMixin:GetDeltaModifierForCameraMode(mode)
 	elseif mode == ORBIT_CAMERA_MOUSE_MODE_ZOOM then
 		return .1;
 	elseif mode == ORBIT_CAMERA_MOUSE_MODE_TARGET_HORIZONTAL then
-		return .05;
+		return .0065;
 	elseif mode == ORBIT_CAMERA_MOUSE_MODE_TARGET_VERTICAL then
-		return .05;
+		return .0065;
 	end
 	return 0.0;
 end

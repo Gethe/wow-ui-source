@@ -52,6 +52,7 @@ function CommunitiesFrameMixin:OnLoad()
 	self:SetTitle(COMMUNITIES_FRAME_TITLE);
 
 	UIDropDownMenu_Initialize(self.StreamDropDownMenu, CommunitiesStreamDropDownMenu_Initialize);
+	C_ClubFinder.RequestApplicantList(Enum.ClubFinderRequestType.All);
 
 	self.selectedStreamForClub = {};
 	self.privilegesForClub = {};
@@ -87,7 +88,7 @@ function CommunitiesFrameMixin:OnShow()
 		self.CommunitiesList:ScrollToClub(self:GetSelectedClubId());
 	end
 
-	C_ClubFinder.RequestSubscribedClubPostingIDs()
+	C_ClubFinder.RequestSubscribedClubPostingIDs();
 end
 
 function CommunitiesFrameMixin:OnEvent(event, ...)
@@ -191,7 +192,14 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 			UIErrorsFrame:AddExternalErrorMessage(ERR_GUILD_NAME_INVALID);
 		end
 	elseif event == "CLUB_FINDER_RECRUITS_UPDATED" then 
-		self.ApplicantList:BuildList(); 
+		local clubId = self:GetSelectedClubId();
+		if (clubId) then 
+			self.ApplicantList:BuildList(); 
+			local applicantList = C_ClubFinder.ReturnClubApplicantList(clubId);
+			if (self.RosterTab:IsShown()) then 
+				self.RosterTab.NotificationOverlay:SetShown(applicantList and #applicantList > 0);
+			end
+		end
 	elseif event == "GUILD_ROSTER_UPDATE" then 
 		local canRequestGuildRosterUpdate = ...;
 		if canRequestGuildRosterUpdate then
@@ -438,6 +446,7 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 			clubInfo = C_Club.GetClubInfo(clubId);
 			if clubInfo then
 				isGuildCommunitySelected = clubInfo.clubType == Enum.ClubType.Guild;
+				self.PostingExpirationText:SetShown(self:SetClubFinderPostingExpirationText(clubId, isGuildCommunitySelected)); 
 			end
 		end
 		if isGuildCommunitySelected then
@@ -450,6 +459,8 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 				self.CommunityMemberListDropDownMenu:SetShown(not isGuildCommunitySelected and privileges.canSendInvitation and clubInfo.clubType == Enum.ClubType.Character);
 			end
 		end
+	else 
+		self.PostingExpirationText:SetShown(false); 
 	end
 
 	if (displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_FINDER or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER) then 
@@ -482,6 +493,60 @@ function CommunitiesFrameMixin:SetGuildNameAlertBannerMode(bannerMode)
 	self.GuildNameAlertFrame.topAnchored = bannerMode;
 	self:ValidateDisplayMode();
 end
+
+function CommunitiesFrameMixin:SetClubFinderPostingExpirationText(clubId, isGuildCommunitySelected)
+	local expirationTime = ClubFinderGetClubPostingExpirationTime(clubId);
+
+	if(isGuildCommunitySelected) then 
+		if(not IsGuildLeader() and not C_GuildInfo.IsGuildOfficer()) then 
+			return false; 
+		end 
+	else 
+		local myMemberInfo = C_Club.GetMemberInfoForSelf(clubId);
+
+		if(not myMemberInfo or not myMemberInfo.role) then 
+			return false; 
+		end 
+
+		if (myMemberInfo.role ~= Enum.ClubRoleIdentifier.Owner and myMemberInfo.role ~= Enum.ClubRoleIdentifier.Leader) then 
+			return false; 
+		end 
+	end
+
+	if (expirationTime) then 
+		if (expirationTime > 0) then
+			if (isGuildCommunitySelected) then 
+				self.PostingExpirationText.ExpirationTimeText:SetText(GUILD_FINDER_POSTING_GOING_TO_EXPIRE);
+			else 
+				self.PostingExpirationText.ExpirationTimeText:SetText(COMMUNITY_FINDER_POSTING_EXPIRE_SOON);
+			end 
+			self.PostingExpirationText.DaysUntilExpire:SetText(CLUB_FINDER_DAYS_UNTIL_EXPIRE:format(expirationTime));
+
+			if (expirationTime > 5) then 
+				self.PostingExpirationText.DaysUntilExpire:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+			elseif(expirationTime <= 5 and expirationTime > 0) then 
+				self.PostingExpirationText.DaysUntilExpire:SetTextColor(RED_FONT_COLOR:GetRGB());
+			end
+
+			self.PostingExpirationText.ExpirationTimeText:Show(); 
+			self.PostingExpirationText.DaysUntilExpire:Show();
+			self.PostingExpirationText.ExpiredText:Hide();
+		else
+			self.PostingExpirationText:Show(); 
+			if (isGuildCommunitySelected) then 
+				self.PostingExpirationText.ExpiredText:SetText(GUILD_FINDER_POSTING_EXPIRED);
+			else 
+				self.PostingExpirationText.ExpiredText:SetText(COMMUNITY_FINDER_POSTING_EXPIRED);
+			end 
+
+			self.PostingExpirationText.ExpirationTimeText:Hide(); 
+			self.PostingExpirationText.DaysUntilExpire:Hide();
+			self.PostingExpirationText.ExpiredText:Show();
+		end
+		return true;
+	end
+	return false;
+end 
 
 function CommunitiesFrameMixin:ValidateDisplayMode()
 	local clubId = self:GetSelectedClubId();
@@ -609,6 +674,8 @@ function CommunitiesFrameMixin:UpdateCommunitiesTabs()
 			if clubInfo then
 				self.GuildBenefitsTab:SetShown(clubInfo.clubType == Enum.ClubType.Guild);
 				self.GuildInfoTab:SetShown(clubInfo.clubType == Enum.ClubType.Guild);
+				local applicantList = C_ClubFinder.ReturnClubApplicantList(clubId);
+				self.RosterTab.NotificationOverlay:SetShown(applicantList and #applicantList > 0)
 			end
 		end
 
@@ -682,19 +749,37 @@ function CommunitiesFrameMixin:OnClubSelected(clubId)
 			end
 
 			self:ValidateDisplayMode();	
-
+			local displayMode = self:GetDisplayMode();
 			if clubInfo.clubType == Enum.ClubType.Guild then
 				C_GuildInfo.GuildRoster();
 				if (C_GuildInfo.IsGuildOfficer() or IsGuildLeader()) then 
+					if (displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST) then 
+						self.PostingExpirationText:SetShown(self:SetClubFinderPostingExpirationText(clubId, isGuildCommunitySelected));
+					else 
+						self.PostingExpirationText:SetShown(false);
+					end 
 					C_ClubFinder.RequestApplicantList(Enum.ClubFinderRequestType.Guild); 
 					self.ApplicantList:SetApplicantRefreshTicker(Enum.ClubFinderRequestType.Guild);
+				else 
+					self.ApplicantList:CancelRefreshTicker(); 
+					self.PostingExpirationText:SetShown(false);
 				end 
 			elseif(clubInfo.clubType == Enum.ClubType.Character) then
 				local myMemberInfo = C_Club.GetMemberInfoForSelf(clubId);
 				if (myMemberInfo and myMemberInfo.role and (myMemberInfo.role == Enum.ClubRoleIdentifier.Owner or myMemberInfo.role == Enum.ClubRoleIdentifier.Leader)) then 
+					if (displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.APPLICANT_LIST) then 
+						self.PostingExpirationText:SetShown(self:SetClubFinderPostingExpirationText(clubId, isGuildCommunitySelected));
+					else 
+						self.PostingExpirationText:SetShown(false);
+					end 
 					C_ClubFinder.RequestApplicantList(Enum.ClubFinderRequestType.Community);
 					self.ApplicantList:SetApplicantRefreshTicker(Enum.ClubFinderRequestType.Community);
+				else 
+					self.ApplicantList:CancelRefreshTicker(); 
+					self.PostingExpirationText:SetShown(false);
 				end
+			else
+				self.ApplicantList:CancelRefreshTicker(); 
 			end
 		else
 			SetPortraitToTexture(self.PortraitOverlay.Portrait, "Interface\\Icons\\Achievement_General_StayClassy");
@@ -710,6 +795,8 @@ function CommunitiesFrameMixin:OnClubSelected(clubId)
 				end
 			end
 		end
+	else 
+		self.ApplicantList:CancelRefreshTicker(); 
 	end
 
 	self:UpdatePortrait();
@@ -860,10 +947,6 @@ function CommunitiesFrameMixin:OnHide()
 	if(self.CommunityFinderFrame:IsShown()) then 
 		self.CommunityFinderFrame:Hide(); 
 	end 
-
-	if(self.GuildFinderFrame:IsShown()) then 
-		self.GuildFinderFrame:Hide();
-	end
 
 	if self.RecruitmentDialog:IsShown() then
 		HideUIPanel(self.RecruitmentDialog);

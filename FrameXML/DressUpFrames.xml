@@ -37,7 +37,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ModelScene parentKey="ModelScene" inherits="ModelSceneMixinTemplate">
+			<ModelScene parentKey="ModelScene" inherits="PanningModelSceneMixinTemplate">
 				<Size x="172" y="400"/>
 				<KeyValues>
 					<KeyValue key="normalIntensity" value="0.75" type="number"/>
@@ -123,7 +123,7 @@
 					<OnClick method="OnClick"/>
 				</Scripts>
 			</Button>
-			<ModelScene parentKey="ModelScene" inherits="ModelSceneMixinTemplate">
+			<ModelScene parentKey="ModelScene" inherits="PanningModelSceneMixinTemplate">
 				<KeyValues>
 					<KeyValue key="normalIntensity" value="0.75" type="number"/>
 					<KeyValue key="highlightIntensity" value="1.2" type="number"/>

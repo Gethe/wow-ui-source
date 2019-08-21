@@ -350,11 +350,11 @@ function CommentatorUnitFrameMixin:SetFlagInfo(hasFlag)
 		UIFrameFlash(self.FlagIconHighlight, 0.5, 0.5, -1);
 		
 		if self.teamIndex == 1 then
-			self.FlagIcon:SetAtlas("tournamentarena-flag-large-blue");
-			self.FlagIconHighlight:SetAtlas("tournamentarena-flag-large-blue-flash");
+			self.FlagIcon:SetAtlas("tournamentarena-flag-large-blue", true);
+			self.FlagIconHighlight:SetAtlas("tournamentarena-flag-large-blue-flash", true);
 		else
-			self.FlagIcon:SetAtlas("tournamentarena-flag-large-red");
-			self.FlagIconHighlight:SetAtlas("tournamentarena-flag-large-red-flash");
+			self.FlagIcon:SetAtlas("tournamentarena-flag-large-red", true);
+			self.FlagIconHighlight:SetAtlas("tournamentarena-flag-large-red-flash", true);
 		end
 	else
 		UIFrameFlashStop(self.FlagIconHighlight);

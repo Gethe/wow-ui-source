@@ -291,7 +291,7 @@ function CommunitiesListMixin:Update()
 				button:Show(); 
 				usedHeight = usedHeight + height; 
 				shouldAddJoinCommunityEntry = false;
-			elseif isInGuild then 
+			elseif isInGuild and not shownGuildFinderButton then 
 				button:SetGuildFinder();
 				button:Show();
 				shownGuildFinderButton = true;

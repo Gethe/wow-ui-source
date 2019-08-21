@@ -39,7 +39,7 @@
 				local top = floor((index-1)/4) * 0.25;
 				local bottom = top + 0.25;
 				tex:SetTexCoord(left, right, top, bottom);
-				
+
 				tex:ClearAllPoints();
 				tex:SetSize(self:GetSize());
 				tex:SetPoint("CENTER", self, "CENTER", 0, 0);
@@ -207,12 +207,12 @@
 							</OnLoad>
 							<OnMouseDown>
 								--SetCursor("UI-Cursor-Move");
-								
+
 								CompactRaidFrameManager_ResizeFrame_OnDragStart(self:GetParent():GetParent());
 							</OnMouseDown>
 							<OnMouseUp>
 								--SetCursor(nil);
-								
+
 								CompactRaidFrameManager_ResizeFrame_OnDragStop(self:GetParent():GetParent());
 							</OnMouseUp>
 							<OnEnter>
@@ -236,12 +236,12 @@
 						<Scripts>
 							<OnMouseDown>
 								--SetCursor("UI-Cursor-Size");	--Hide the cursor
-								
+
 								CompactRaidFrameManager_ResizeFrame_OnResizeStart(self:GetParent():GetParent());
 							</OnMouseDown>
 							<OnMouseUp>
 								--SetCursor(nil); --Show the cursor again
-								
+
 								CompactRaidFrameManager_ResizeFrame_OnResizeStop(self:GetParent():GetParent());
 							</OnMouseUp>
 							<OnEnter>
@@ -452,7 +452,7 @@
 						<Scripts>
 							<OnClick>
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								ConvertToRaid();
+								C_PartyInfo.ConvertToRaid();
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -594,7 +594,7 @@
 							</OnEvent>
 							<OnClick>
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								SetEveryoneIsAssistant(self:GetChecked());	
+								SetEveryoneIsAssistant(self:GetChecked());
 							</OnClick>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");

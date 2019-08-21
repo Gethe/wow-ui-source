@@ -9,6 +9,7 @@ local function Import(name)
 end
 
 Import("IsOnGlueScreen");
+Import("BLIZZARD_STORE_PURCHASED");
 
 if ( tbl.IsOnGlueScreen() ) then
 	tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
@@ -35,15 +36,29 @@ function ProductCardBuyButtonMixin:UpdateBuyButton(currencyInfo, entryInfo, curr
 	local currentPrice = StoreFrame_GetProductPriceText(entryInfo, currencyFormat);
 	self.NormalPrice:SetText(currencyFormat(entryInfo.sharedData.normalDollars, entryInfo.sharedData.normalCents));
 
+	local completelyOwned = StoreFrame_IsCompletelyOwned(entryInfo);
+
 	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.HiddenPrice) == Enum.BattlepayDisplayFlag.HiddenPrice then
 		local text = info.browseBuyButtonText or BLIZZARD_STORE_BUY;
+		self.BuyButton:Show();
 		self.BuyButton:SetText(text);
+
 		self.BuyButton.RightText:Hide();
 		self.BuyButton.LeftText:Hide();
 		self.BuyButton.Strikethrough:Hide();
+		self.PurchasedText:Hide();
+		self.PurchasedMark:Hide();
+	elseif completelyOwned then
+		self.BuyButton:Hide();
+		self.BuyButton.RightText:Hide();
+		self.BuyButton.LeftText:Hide();
+		self.BuyButton.Strikethrough:Hide();
+		self.PurchasedText:Show();
+		self.PurchasedMark:Show();
 	elseif discounted then
-		self.BuyButton:SetText("");
+		self.BuyButton:Show();
 
+		self.BuyButton:SetText("");
 		self.BuyButton.RightText:SetText(currentPrice);
 		self.BuyButton.RightText:SetTextColor(0.1, 1, 0.1);
 		self.BuyButton.RightText:Show();
@@ -57,11 +72,18 @@ function ProductCardBuyButtonMixin:UpdateBuyButton(currencyInfo, entryInfo, curr
 		self.BuyButton.Strikethrough:SetPoint("LEFT", self.BuyButton.LeftText, "LEFT", 0, 0);
 		self.BuyButton.Strikethrough:SetPoint("RIGHT", self.BuyButton.LeftText, "RIGHT", 0, 0);
 		self.BuyButton.Strikethrough:Show();
+
+		self.PurchasedText:Hide();
+		self.PurchasedMark:Hide();
 	else
+		self.BuyButton:Show();
 		self.BuyButton:SetText(currentPrice);
+
 		self.NormalPrice:Hide();
 		self.SalePrice:Hide();
 		self.BuyButton.Strikethrough:Hide();
+		self.PurchasedText:Hide();
+		self.PurchasedMark:Hide();
 	end
 
 	self.BuyButton:SetEnabled(self:ShouldEnableBuyButton(entryInfo));

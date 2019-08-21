@@ -67,7 +67,7 @@ StaticPopupDialogs["LFG_LIST_INVITING_CONVERT_TO_RAID"] = {
 	text = LFG_LIST_CONVERT_TO_RAID_WARNING,
 	button1 = INVITE,
 	button2 = CANCEL,
-	OnAccept = function(self, applicantID) ConvertToRaid(); C_LFGList.InviteApplicant(applicantID) end,
+	OnAccept = function(self, applicantID) C_PartyInfo.ConfirmConvertToRaid(); C_LFGList.InviteApplicant(applicantID) end,
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = 1,
@@ -78,7 +78,7 @@ local function ResolveCategoryFilters(categoryID, filters)
 	if categoryID == GROUP_FINDER_CATEGORY_ID_DUNGEONS then
 		return bit.band(bit.bnot(LE_LFG_LIST_FILTER_NOT_RECOMMENDED), bit.bor(filters, LE_LFG_LIST_FILTER_RECOMMENDED));
 	end
-	
+
 	return filters;
 end
 
@@ -333,7 +333,7 @@ function LFGListFrame_CheckPendingQuestIDSearch(self)
 	local questID = LFGListFrame_GetPendingQuestIDSearch(self);
 	if questID and not C_LFGList.HasActiveEntryInfo() then
 		LFGListFrame_SetPendingQuestIDSearch(self, nil);
-		
+
 		if issecure() then
 			LFGListFrame_BeginFindQuestGroup(self, questID);
 		else
@@ -1737,7 +1737,7 @@ end
 function LFGListSearchPanel_DoSearch(self)
 	local searchText = self.SearchBox:GetText();
 	local languages = C_LFGList.GetLanguageSearchFilter();
-	
+
 	local filters = ResolveCategoryFilters(self.categoryID, self.filters);
 	C_LFGList.Search(self.categoryID, filters, self.preferredFilters, languages);
 	self.searching = true;
@@ -1825,7 +1825,7 @@ function LFGListSearchPanel_UpdateResults(self)
 		if ( totalHeight < self.ScrollFrame:GetHeight() ) then
 			self.ScrollFrame.NoResultsFound:SetPoint("TOP", self.ScrollFrame, "TOP", 0, -totalHeight - 27);
 		end
-		if(self.totalResults == 0) then 
+		if(self.totalResults == 0) then
 			self.ScrollFrame.NoResultsFound:Show();
 			self.ScrollFrame.StartGroupButton:SetShown(not self.searchFailed);
 			self.ScrollFrame.StartGroupButton:ClearAllPoints();
@@ -1836,7 +1836,7 @@ function LFGListSearchPanel_UpdateResults(self)
 			self.ScrollFrame.StartGroupButton:SetShown(not self.searchFailed);
 			self.ScrollFrame.StartGroupButton:ClearAllPoints();
 			self.ScrollFrame.StartGroupButton:SetPoint("TOP", self.ScrollFrame, "TOP", 0, -totalHeight - 15);
-		else 
+		else
 			self.ScrollFrame.NoResultsFound:Hide();
 		end
 
@@ -2765,7 +2765,7 @@ function LFGListUtil_GetDecoratedCategoryName(categoryName, filter, useColors)
 		colorStart = "|cffffffff";
 		colorEnd = "|r";
 	end
-	
+
 	local extraName = "";
 	if ( filter == LE_LFG_LIST_FILTER_NOT_RECOMMENDED ) then
 		extraName = LFG_LIST_LEGACY;

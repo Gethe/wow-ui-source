@@ -4481,7 +4481,7 @@ function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
 		end
 		return debuffTotal >= numDebuffs;
 	end);
-	
+
 	for i=debuffTotal+1,numDebuffs do
 		local debuffName = frameNameWithSuffix..i;
 		_G[debuffName]:Hide();
@@ -4872,24 +4872,24 @@ function SetDoubleGuildTabardTextures(unit, leftEmblemTexture, rightEmblemTextur
 end
 
 function SetLargeTabardTexturesFromColorRGB(unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
-	local newTabardData = { }; 
-	if (tabardData) then 
+	local newTabardData = { };
+	if (tabardData) then
 		local rgbFormatMultiplier = 255;
-		newTabardData[1] = tabardData.backgroundColor.r * rgbFormatMultiplier; 
-		newTabardData[2] = tabardData.backgroundColor.g * rgbFormatMultiplier; 
-		newTabardData[3] = tabardData.backgroundColor.b * rgbFormatMultiplier; 
-		newTabardData[4] = tabardData.borderColor.r * rgbFormatMultiplier; 
-		newTabardData[5] = tabardData.borderColor.g * rgbFormatMultiplier; 
-		newTabardData[6] = tabardData.borderColor.b * rgbFormatMultiplier; 
+		newTabardData[1] = tabardData.backgroundColor.r * rgbFormatMultiplier;
+		newTabardData[2] = tabardData.backgroundColor.g * rgbFormatMultiplier;
+		newTabardData[3] = tabardData.backgroundColor.b * rgbFormatMultiplier;
+		newTabardData[4] = tabardData.borderColor.r * rgbFormatMultiplier;
+		newTabardData[5] = tabardData.borderColor.g * rgbFormatMultiplier;
+		newTabardData[6] = tabardData.borderColor.b * rgbFormatMultiplier;
 		newTabardData[7] = tabardData.emblemColor.r * rgbFormatMultiplier;
 		newTabardData[8] = tabardData.emblemColor.g * rgbFormatMultiplier;
 		newTabardData[9] = tabardData.emblemColor.b * rgbFormatMultiplier;
-		newTabardData[10] = tabardData.emblemFileID; 
+		newTabardData[10] = tabardData.emblemFileID;
 		newTabardData[11] = tabardData.emblemStyle;
 	end
 
 	SetLargeGuildTabardTextures(unit, emblemTexture, backgroundTexture, borderTexture, newTabardData);
-end 
+end
 
 function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
 	local bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFileID, emblemIndex;
@@ -5032,7 +5032,7 @@ function LeaveInstanceParty()
 			end
 		end
 	end
-	LeaveParty();
+	C_PartyInfo.LeaveParty();
 end
 
 function ConfirmOrLeaveLFGParty()

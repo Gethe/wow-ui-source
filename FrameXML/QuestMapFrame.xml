@@ -33,6 +33,12 @@
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				QuestMapFrame_ToggleShowDestination();
 			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip_AddColoredLine(GameTooltip, self.tooltipText, HIGHLIGHT_FONT_COLOR);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 
@@ -316,7 +322,7 @@
 		<Frames>
 			<Frame name="QuestMapQuestOptionsDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
 			<ScrollFrame parentKey="QuestsFrame" name="QuestScrollFrame" inherits="UIPanelScrollFrameCodeTemplate">
-				<!-- NOTE: See QuesetMapFrame_UpdateQuestSessionState for anchor updates, these are default -->
+				<!-- NOTE: See QuestMapFrame_UpdateQuestSessionState for anchor updates, these are default -->
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT"/>
@@ -569,21 +575,40 @@
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<Frames>
-					<Button parentKey="ExecuteSessionCommand">
+					<Button parentKey="ExecuteSessionCommand" hidden="true">
 						<Size x="44" y="44"/>
 						<Anchors>
 							<Anchor point="LEFT" x="14"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="QuestSessionManagementExecute_OnClick"/>
-							<OnEnter function="QuestSessionManagementExecute_OnEnter"/>
-							<OnLeave function="QuestSessionManagementExecute_OnLeave"/>
+							<OnEnter function="QuestSessionManagement_OnEnter"/>
+							<OnLeave function="QuestSessionManagement_OnLeave"/>
 						</Scripts>
 						<NormalTexture atlas="QuestSharing-QuestLog-Button" useAtlasSize="true"/>
 						<DisabledTexture atlas="QuestSharing-QuestLog-Button" useAtlasSize="true" desaturated="true"/>
 						<PushedTexture atlas="QuestSharing-QuestLog-ButtonPressed" useAtlasSize="true"/>
 					 	<HighlightTexture atlas="QuestSharing-QuestLog-ButtonHighlight" alphaMode="ADD"/>
 					</Button>
+					<Frame parentKey="SessionActiveFrame" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ExecuteSessionCommand"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExecuteSessionCommand"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Icon" atlas="QuestSharing-QuestLog-Active" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter function="QuestSessionManagement_OnEnter"/>
+							<OnLeave function="QuestSessionManagement_OnLeave"/>
+						</Scripts>
+					</Frame>
 				</Frames>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -593,21 +618,20 @@
 								<Anchor point="BOTTOMLEFT" relativeKey="$parent.ExecuteSessionCommand" relativePoint="RIGHT" x="10" y="2"/>
 								<Anchor point="RIGHT" x="-10" y="0"/>
 							</Anchors>
+							<Color color="WHITE_FONT_COLOR"/>
 						</FontString>
 						<FontString parentKey="HelpText" inherits="GameFontNormalSmallLeft" maxLines="1">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.ExecuteSessionCommand" relativePoint="RIGHT" x="10" y="-2"/>
 								<Anchor point="RIGHT" x="-10" y="0"/>
 							</Anchors>
-							<Color r="1" g="1" b="1"/>
+							<Color color="NORMAL_FONT_COLOR"/>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
-					<OnShow method="OnShow"/>
 					<OnHide method="OnHide"/>
-					<OnEvent method="OnEvent"/>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="DetailsFrame" hidden="true">
@@ -662,6 +686,9 @@
 						</Scripts>
 					</Button>
 					<Button parentKey="DestinationMapButton" inherits="QuestLogPathButtonTemplate">
+						<KeyValues>
+							<KeyValue key="tooltipText" value="QUEST_WAYPOINT_FINAL" type="global"/>
+						</KeyValues>
 						<Scripts>
 							<OnLoad>
 								self.Icon:SetAtlas("questlog-waypoint-finaldestination-questionmark");
@@ -671,6 +698,9 @@
 						</Scripts>
 					</Button>
 					<Button parentKey="WaypointMapButton" inherits="QuestLogPathButtonTemplate">
+						<KeyValues>
+							<KeyValue key="tooltipText" value="QUEST_WAYPOINT_ROUTE" type="global"/>
+						</KeyValues>
 						<Scripts>
 							<OnLoad>
 								self.Icon:SetAtlas("poi-traveldirections-arrow", false);
@@ -735,15 +765,7 @@
 							</OnLoad>
 							<OnScrollRangeChanged>
 								ScrollFrame_OnScrollRangeChanged(self, xrange, yrange);
-								if yrange > 0 then
-									self:GetParent().DestinationMapButton:SetPoint("TOPRIGHT", -2, -4);
-									self:GetParent().WaypointMapButton:SetPoint("TOPRIGHT", -2, -4);
-									QuestInfo_AdjustTitleWidth(-19);
-								else
-									self:GetParent().DestinationMapButton:SetPoint("TOPRIGHT", 14, -4);
-									self:GetParent().WaypointMapButton:SetPoint("TOPRIGHT", 14, -4);
-									QuestInfo_AdjustTitleWidth(-2);
-								end
+								QuestMapFrame_AdjustPathButtons();
 							</OnScrollRangeChanged>
 						</Scripts>
 					</ScrollFrame>

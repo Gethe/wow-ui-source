@@ -19,19 +19,19 @@
 
 	[4] = {
 		title = CLUB_FINDER_SPEC,
-		width = 65,
+		width = 85,
 		attribute = "spec",
 	},
 
 	[5] = {
 		title = ITEM_LEVEL_ABBR,
-		width = 40,
+		width = 45,
 		attribute = "ilvl",
 	},
 
 	[6] = {
 		title = COMMUNITIES_ROSTER_COLUMN_TITLE_NOTE,
-		width = 315,
+		width = 290,
 		attribute = "memberNote",
 	},
 };
@@ -56,6 +56,19 @@ end
 
 function ClubFinderApplicantEntryMixin:GetClubGUID()
 	return self.Info.clubFinderGUID;
+end
+
+function ClubFinderApplicantEntryMixin:GetServerName()
+	local normalizedRealmName = select(7, GetPlayerInfoByGUID(self.Info.playerGUID));
+	return normalizedRealmName;
+end
+
+function ClubFinderApplicantEntryMixin:GetFullName()
+	local serverName = self:GetServerName();
+	if (serverName ~= "") then
+		serverName = "-"..serverName
+	end
+	return self:GetApplicantName()..serverName;
 end
 
 function ClubFinderApplicantEntryMixin:OnMouseDown(button)
@@ -87,6 +100,7 @@ function ClubFinderApplicantEntryMixin:UpdateMemberInfo(info)
 
 	self.RoleIcon1:Hide();
 	self.RoleIcon2:Hide();
+	self.RoleIcon3:Hide(); 
 
 	for _, specID in ipairs(info.specIds) do 
 		local role = GetSpecializationRoleByID(specID);
@@ -101,13 +115,19 @@ function ClubFinderApplicantEntryMixin:UpdateMemberInfo(info)
 	if(not isHealer and not isDps and not isTank) then 
 		self.RoleIcon2:Hide();
 		self.RoleIcon1:Hide();
+		self.RoleIcon3:Hide();
 		self.AllSpec:SetText(NONE);
 		self.AllSpec:Show();
 	elseif (isHealer and isTank and isDps) then 
-		self.RoleIcon2:Hide();
-		self.RoleIcon1:Hide();
-		self.AllSpec:SetText(ALL);
-		self.AllSpec:Show();
+		self.RoleIcon1:SetTexCoord(GetTexCoordsForRoleSmallCircle("TANK"));
+		self.RoleIcon2:SetTexCoord(GetTexCoordsForRoleSmallCircle("HEALER"));
+		self.RoleIcon3:SetTexCoord(GetTexCoordsForRoleSmallCircle("DAMAGER"));
+
+		self.RoleIcon2:Show();
+		self.RoleIcon1:Show();
+		self.RoleIcon3:Show(); 
+
+		self.AllSpec:Hide();
 	else 
 		self.AllSpec:Hide();
 
@@ -241,6 +261,7 @@ function ApplicantRightClickOptionsMenuInitialize(self, level)
 		info.isTitle = false; 
 		info.notCheckable = true; 
 		info.disabled = nil;
+		info.func = function () ChatFrame_SendTell(self:GetParent():GetFullName()); end
 		UIDropDownMenu_AddButton(info, level);
 
 		info.text = CLUB_FINDER_REPORT_FOR; 
@@ -471,6 +492,10 @@ function ClubFinderApplicantListMixin:BuildList()
 		guildMemberDropdown:UpdateDropdown();
 	elseif(clubInfo.clubType == Enum.ClubType.Character) then 
 		local communityMemberDropdown = communityFrame.CommunityMemberListDropDownMenu; 
+		communityMemberDropdown.hasPendingApplicants = false;
+		communityMemberDropdown.hasApplicants = false; 
+		communityMemberDropdown.shouldResetDropdown = false;
+
 		if(pendingList and #pendingList > 0) then 
 			communityMemberDropdown.hasPendingApplicants = true; 
 		end 

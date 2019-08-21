@@ -216,24 +216,18 @@ UnitPopupButtons = {
 
 	-- Community message line
 	["DELETE_COMMUNITIES_MESSAGE"] = { text = COMMUNITY_MESSAGE_DROP_DOWN_DELETE, },
-
-	-- Party Options
-	["PARTY_SUBSECTION_TITLE"] = makeUnitPopupSubsectionTitle(UNIT_FRAME_DROPDOWN_SUBSECTION_TITLE_PARTY),
-	["QUEST_SESSION_START"] = { text = QUEST_SESSION_START_SESSION, },
-	["QUEST_SESSION_JOIN"] = { text = QUEST_SESSION_JOIN_SESSION, },
-	["QUEST_SESSION_DROP"] = { text = QUEST_SESSION_DROP_SESSION, },
 };
 
 -- First level menus
 UnitPopupMenus = {
-	["SELF"] = { "RAID_TARGET_ICON", "SET_FOCUS", "PVP_FLAG", "LOOT_SUBSECTION_TITLE", "SELECT_LOOT_SPECIALIZATION", "PARTY_SUBSECTION_TITLE", "QUEST_SESSION_START", "QUEST_SESSION_JOIN", "QUEST_SESSION_DROP", "INSTANCE_SUBSECTION_TITLE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "RESET_INSTANCES", "RESET_CHALLENGE_MODE", "GARRISON_VISIT", "OTHER_SUBSECTION_TITLE", "VOICE_CHAT", "SELECT_ROLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "INSTANCE_LEAVE", "LEAVE", "CANCEL" },
+	["SELF"] = { "RAID_TARGET_ICON", "SET_FOCUS", "PVP_FLAG", "LOOT_SUBSECTION_TITLE", "SELECT_LOOT_SPECIALIZATION", "INSTANCE_SUBSECTION_TITLE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "RESET_INSTANCES", "RESET_CHALLENGE_MODE", "GARRISON_VISIT", "OTHER_SUBSECTION_TITLE", "VOICE_CHAT", "SELECT_ROLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "INSTANCE_LEAVE", "LEAVE", "CANCEL" },
 	["PET"] = { "RAID_TARGET_ICON", "SET_FOCUS", "INTERACT_SUBSECTION_TITLE", "PET_RENAME", "PET_DISMISS", "PET_ABANDON", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" },
 	["OTHERPET"] = { "RAID_TARGET_ICON", "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME",  "REPORT_PET", "CANCEL" },
 	["BATTLEPET"] = { "PET_SHOW_IN_JOURNAL", "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" },
 	["OTHERBATTLEPET"] = { "PET_SHOW_IN_JOURNAL", "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_BATTLE_PET", "CANCEL" },
 	["PARTY"] = { "RAID_TARGET_ICON", "SET_FOCUS", "ADD_FRIEND", "ADD_FRIEND_MENU", "INTERACT_SUBSECTION_TITLE", "RAF_SUMMON", "PROMOTE", "PROMOTE_GUIDE", "WHISPER", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "OTHER_SUBSECTION_TITLE", "VOICE_CHAT", "SELECT_ROLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "COPY_CHARACTER_NAME", "PVP_REPORT_AFK", "VOTE_TO_KICK", "UNINVITE", "CANCEL" },
 	["PLAYER"] = { "RAID_TARGET_ICON", "SET_FOCUS", "ADD_FRIEND", "ADD_FRIEND_MENU", "INTERACT_SUBSECTION_TITLE", "RAF_SUMMON", "INVITE", "SUGGEST_INVITE", "REQUEST_INVITE", "WHISPER", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "OTHER_SUBSECTION_TITLE", "VOICE_CHAT", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "COPY_CHARACTER_NAME", "CANCEL" },
-	["ENEMY_PLAYER"] = {"MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL"},
+	["ENEMY_PLAYER"] = { "SET_FOCUS", "INTERACT_SUBSECTION_TITLE", "INSPECT", "ACHIEVEMENTS", "DUEL", "PET_BATTLE_PVP_DUEL", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "COPY_CHARACTER_NAME", "CANCEL" },
 	["RAID_PLAYER"] = { "RAID_TARGET_ICON", "SET_FOCUS", "ADD_FRIEND", "ADD_FRIEND_MENU", "INTERACT_SUBSECTION_TITLE", "RAF_SUMMON", "RAID_LEADER", "RAID_PROMOTE", "RAID_DEMOTE", "WHISPER", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "OTHER_SUBSECTION_TITLE", "VOICE_CHAT", "SELECT_ROLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "COPY_CHARACTER_NAME", "PVP_REPORT_AFK", "VOTE_TO_KICK", "RAID_REMOVE", "CANCEL" },
 	["RAID"] = { "SET_FOCUS", "INTERACT_SUBSECTION_TITLE", "RAID_LEADER",  "RAID_PROMOTE", "RAID_DEMOTE", "RAID_MAINTANK", "RAID_MAINASSIST", "OTHER_SUBSECTION_TITLE", "VOICE_CHAT", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "COPY_CHARACTER_NAME", "PVP_REPORT_AFK", "VOTE_TO_KICK", "RAID_REMOVE", "CANCEL" },
 	["FRIEND"] = { "POP_OUT_CHAT", "TARGET", "SET_NOTE", "INTERACT_SUBSECTION_TITLE", "RAF_SUMMON", "INVITE", "SUGGEST_INVITE", "REQUEST_INVITE", "WHISPER", "OTHER_SUBSECTION_TITLE", "DELETE_COMMUNITIES_MESSAGE", "IGNORE", "REMOVE_FRIEND", "REPORT_PLAYER", "COPY_CHARACTER_NAME", "PVP_REPORT_AFK", "CANCEL" },
@@ -313,7 +307,7 @@ local function UnitPopup_GetGUID(menu)
 		return UnitGUID(menu.unit);
 	elseif type(menu.userData) == "table" and menu.userData.guid then
 		return menu.userData.guid;
-	elseif menu.accountInfo and menu.accountInfo.gameAccountInfo.playerGuid then 
+	elseif menu.accountInfo and menu.accountInfo.gameAccountInfo.playerGuid then
 		return menu.accountInfo.gameAccountInfo.playerGuid;
 	end
 end
@@ -1116,18 +1110,6 @@ function UnitPopup_HideButtons ()
 			if ( not inParty or not isPlayer or (instanceType == "pvp") or (instanceType == "arena") or (not HasLFGRestrictions()) or IsInActiveWorldPVP() ) then
 				shown = false;
 			end
-		elseif ( value == "QUEST_SESSION_START" ) then
-			if ( not C_QuestSession.CanStart() ) then
-				shown = false;
-			end
-		elseif ( value == "QUEST_SESSION_JOIN" ) then
-			if ( not C_QuestSession.CanJoin() ) then
-				shown = false;
-			end
-		elseif ( value == "QUEST_SESSION_DROP" ) then
-			if ( not C_QuestSession.CanDrop() ) then
-				shown = false;
-			end
 		elseif ( value == "LEAVE" ) then
 			if ( not inParty or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) or (instanceType == "pvp") or (instanceType == "arena") ) then
 				shown = false;
@@ -1458,11 +1440,11 @@ function UnitPopup_HideButtons ()
 				shown = false;
 			end
 		elseif value == "GUILDS_SETTINGS" then
-			if not IsGuildLeader() then 
+			if not IsGuildLeader() then
 				shown = false;
 			end
 		elseif value == "GUILDS_RECRUITMENT_SETTINGS" then
-			if not IsGuildLeader() and not C_GuildInfo.IsGuildOfficer() then 
+			if not IsGuildLeader() and not C_GuildInfo.IsGuildOfficer() then
 				shown = false;
 			end
 		elseif commandToRoleId[value] ~= nil then
@@ -1543,18 +1525,6 @@ function UnitPopup_OnUpdate (elapsed)
 					elseif ( value == "LEAVE" ) then
 						if ( not inParty ) then
 							enable = false;
-						end
-					elseif ( value == "QUEST_SESSION_START" ) then
-						if ( not C_QuestSession.CanStart() ) then
-							enable = false;
-						end
-					elseif ( value == "QUEST_SESSION_JOIN" ) then
-						if ( not C_QuestSession.CanJoin() ) then
-							shown = false;
-						end
-					elseif ( value == "QUEST_SESSION_DROP" ) then
-						if ( not C_QuestSession.CanDrop() ) then
-							shown = false;
 						end
 					elseif ( value == "INSTANCE_LEAVE" ) then
 						if ( not inParty ) then
@@ -1843,13 +1813,7 @@ function UnitPopup_OnClick (self)
 		local guildName = GetGuildInfo("player");
 		StaticPopup_Show("CONFIRM_GUILD_LEAVE", guildName);
 	elseif ( button == "LEAVE" ) then
-		LeaveParty();
-	elseif ( button == "QUEST_SESSION_START" ) then
-		QuestSessionManager:StartSession();
-	elseif ( button == "QUEST_SESSION_JOIN" ) then
-		QuestSessionManager:JoinSession();
-	elseif ( button == "QUEST_SESSION_DROP" ) then
-		QuestSessionManager:DropSession();
+		C_PartyInfo.LeaveParty();
 	elseif ( button == "INSTANCE_LEAVE" ) then
 		ConfirmOrLeaveLFGParty();
 	elseif ( button == "PET_DISMISS" ) then
@@ -1887,9 +1851,9 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "PVP_DISABLE" ) then
 		SetPVP(nil);
 	elseif ( button == "CONVERT_TO_RAID" ) then
-		ConvertToRaid();
+		C_PartyInfo.ConvertToRaid();
 	elseif ( button == "CONVERT_TO_PARTY" ) then
-		ConvertToParty();
+		C_PartyInfo.ConvertToParty();
 	elseif ( button == "RESET_INSTANCES" ) then
 		StaticPopup_Show("CONFIRM_RESET_INSTANCES");
 	elseif ( button == "RESET_CHALLENGE_MODE" ) then
@@ -2043,7 +2007,7 @@ function UnitPopup_OnClick (self)
 		end
 	elseif ( button == "COMMUNITIES_SETTINGS" ) then
 		OpenCommunitiesSettingsDialog(clubInfo.clubId);
-	elseif (button == "GUILDS_SETTINGS") then 
+	elseif (button == "GUILDS_SETTINGS") then
 		if ( not GuildControlUI ) then
 			UIParentLoadAddOn("Blizzard_GuildControlUI");
 		end
@@ -2052,9 +2016,9 @@ function UnitPopup_OnClick (self)
 		if not wasShown then
 			ShowUIPanel(GuildControlUI);
 		end
-	elseif (button == "GUILDS_RECRUITMENT_SETTINGS") then 
+	elseif (button == "GUILDS_RECRUITMENT_SETTINGS") then
 		CommunitiesFrame.RecruitmentDialog.clubId = clubInfo.clubId;
-		CommunitiesFrame.RecruitmentDialog:Show();
+		CommunitiesFrame.RecruitmentDialog:UpdatedPostingInformationInit();
 	elseif ( button == "COMMUNITIES_NOTIFICATION_SETTINGS" ) then
 		CommunitiesFrame:ShowNotificationSettingsDialog(clubInfo.clubId);
 	elseif ( button == "COMMUNITIES_CLEAR_UNREAD_NOTIFICATIONS" ) then

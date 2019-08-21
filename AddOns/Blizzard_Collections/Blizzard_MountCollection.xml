@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_MountCollection.lua"/>
 
-	<Frame name="AlertMountEquipmentFeatureTemplate" mixin="AlertMountEquipmentFeatureMixin" virtual="true">
+	<Frame name="AlertMountEquipmentFeatureTemplate" inherits="NewFeatureLabelTemplate" mixin="AlertMountEquipmentFeatureMixin" virtual="true">
 		<Size x="1" y="1"/>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="1">
