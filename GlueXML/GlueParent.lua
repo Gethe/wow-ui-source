@@ -232,19 +232,20 @@ function GlueParent_UpdateDialogs()
 		GlueDialog_Show("CANCEL", GAME_SERVER_LOGIN);
 	elseif ( wowConnectionState == LE_WOW_CONNECTION_STATE_IN_QUEUE ) then
 		local waitPosition, waitMinutes, hasFCM = C_Login.GetWaitQueueInfo();
-		--[[
-		if ( hasFCM ) then
-			GlueDialog_Show("QUEUED_WITH_FCM", _G["QUEUE_FCM"]);
-		else
-		--]]
+
+		local queueString;
 		if ( waitMinutes == 0 ) then
-			local queueString = string.format(_G["QUEUE_TIME_LEFT_UNKNOWN"], waitPosition);
-			GlueDialog_Show("QUEUED_NORMAL", queueString);
-		elseif (waitMinutes == 1) then
-			local queueString = string.format(_G["QUEUE_TIME_LEFT_SECONDS"], waitPosition);
-			GlueDialog_Show("QUEUED_NORMAL", queueString);
+			queueString = string.format(_G["QUEUE_TIME_LEFT_UNKNOWN"], waitPosition);
+		elseif ( waitMinutes == 1 ) then
+			queueString = string.format(_G["QUEUE_TIME_LEFT_SECONDS"], waitPosition);
 		else
-			local queueString = string.format(_G["QUEUE_TIME_LEFT"], waitPosition, waitMinutes);
+			queueString = string.format(_G["QUEUE_TIME_LEFT"], waitPosition, waitMinutes);
+		end
+
+		if ( hasFCM ) then
+			queueString = queueString .. "\n\n" .. _G["QUEUE_FCM"];
+			GlueDialog_Show("QUEUED_WITH_FCM", queueString);
+		else
 			GlueDialog_Show("QUEUED_NORMAL", queueString);
 		end
 	else
