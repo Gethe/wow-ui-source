@@ -13,6 +13,9 @@ Import("IsOnGlueScreen");
 if ( tbl.IsOnGlueScreen() ) then
 	tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
 	Import("C_StoreGlue");
+	Import("C_Login");
+	Import("GlueParent_UpdateDialogs");
+	Import("LE_WOW_CONNECTION_STATE_NONE");
 end
 
 setfenv(1, tbl);
@@ -85,6 +88,7 @@ Import("ShrinkUntilTruncateFontStringMixin");
 Import("IsTrialAccount");
 Import("IsVeteranTrialAccount");
 Import("PortraitFrameTemplateMixin");
+Import("SecondsToTime");
 
 --GlobalStrings
 Import("BLIZZARD_STORE");
@@ -288,6 +292,8 @@ Import("VAS_QUEUE_FOUR_DAY");
 Import("VAS_QUEUE_FIVE_DAY");
 Import("VAS_QUEUE_SIX_DAY");
 Import("VAS_QUEUE_SEVEN_DAY");
+Import("VAS_PROCESSING_ESTIMATED_TIME");
+Import("VAS_SERVICE_PROCESSING");
 Import("BLIZZARD_STORE_VAS_SELECT_ACCOUNT");
 Import("BLIZZARD_STORE_VAS_DIFFERENT_BNET");
 Import("BLIZZARD_STORE_VAS_TRANSFER_REALM");
@@ -1925,6 +1931,7 @@ function StoreFrame_OnLoad(self)
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 	self:RegisterEvent("SIMPLE_CHECKOUT_CLOSED");
 	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
+	self:RegisterEvent("LOGIN_STATE_CHANGED");
 
 	-- We have to call this from CharacterSelect on the glue screen because the addon engine will load
 	-- the store addon more than once if we try to make it ondemand, forcing us to load it before we
@@ -1935,7 +1942,8 @@ function StoreFrame_OnLoad(self)
 
 	self.TitleText:SetText(BLIZZARD_STORE);
 
-	SetPortraitToTexture(self.portrait, "Interface\\Icons\\WoW_Store");
+	--SetPortraitToTexture(self.portrait, "Interface\\Icons\\WoW_Store");
+	SetPortraitToTexture(self.portrait, "Interface\\Icons\\Inv_Misc_Note_02");
 	StoreFrame_UpdateBuyButton();
 
 	if ( IsOnGlueScreen() ) then
@@ -2105,6 +2113,13 @@ function StoreFrame_OnEvent(self, event, ...)
 			self:Hide();
 			_G.GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
 		end
+	elseif (event == "LOGIN_STATE_CHANGED") then
+		if (IsOnGlueScreen()) then
+			local auroraState, connectedToWoW, wowConnectionState, hasRealmList, waitingForRealmList = C_Login.GetState();
+			if ( wowConnectionState == LE_WOW_CONNECTION_STATE_NONE ) then
+				self:Hide();
+			end
+		end
 	end
 end
 
@@ -2138,6 +2153,8 @@ function StoreFrame_OnHide(self)
 	Outbound.HidePreviewFrame();
 	if ( not IsOnGlueScreen() ) then
 		Outbound.UpdateMicroButtons();
+	else
+		GlueParent_UpdateDialogs();
 	end
 
 	StoreVASValidationFrame:Hide();
@@ -2956,6 +2973,7 @@ function StoreVASValidationFrame_OnLoad(self)
 	self:RegisterEvent("STORE_VAS_PURCHASE_COMPLETE");
 	self:RegisterEvent("VAS_TRANSFER_VALIDATION_UPDATE");
 	self:RegisterEvent("VAS_QUEUE_STATUS_UPDATE");
+	self:RegisterEvent("VAS_CHARACTER_QUEUE_STATUS_UPDATE");
 	self:RegisterEvent("STORE_OPEN_SIMPLE_CHECKOUT");
 end
 
@@ -3025,6 +3043,8 @@ function StoreVASValidationFrame_SetVASStart(self)
 	self.CharacterSelectionFrame.SelectedCharacterName:Hide();
 	self.CharacterSelectionFrame.SelectedCharacterDescription:Hide();
 	self.CharacterSelectionFrame.ValidationDescription:Hide();
+	self.CharacterSelectionFrame.TransferStatus:Hide();
+	self.CharacterSelectionFrame.TransferStatusEstimatedTime:Hide();
 	self.CharacterSelectionFrame.ChangeIconFrame:Hide();
 	self.CharacterSelectionFrame:Show();
 
@@ -3174,6 +3194,31 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 		local currencyInfo = currencyInfo();
 		local vasDisclaimerData = currencyInfo.vasDisclaimerData;
 		self.Disclaimer:SetText(HTML_START_CENTERED..string.format(vasDisclaimerData[VASServiceType].disclaimer, _G["VAS_QUEUE_"..VasQueueStatusToString[queueTime]])..HTML_END);
+
+		-- More visible alert for Classic FCM.
+		if (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
+
+			local stringColor;
+			if (queueTime > Enum.VasQueueStatus.UnderAnHour) then
+				stringColor = "|cffff1919";
+			else
+				stringColor = "|cff000000";
+			end
+
+			local timeString = _G["VAS_QUEUE_"..VasQueueStatusToString[queueTime]];
+			if (stringColor) then
+				timeString = stringColor .. timeString .. "|r";
+			end
+
+			if (timeString) then
+				self.EstimatedTime:SetText(VAS_PROCESSING_ESTIMATED_TIME:format(timeString));
+				self.EstimatedTime:Show();
+			end
+		end
+	elseif ( event == "VAS_CHARACTER_QUEUE_STATUS_UPDATE" ) then
+		local guid, minutes = ...;
+		self.CharacterSelectionFrame.TransferStatusEstimatedTime:SetText(VAS_PROCESSING_ESTIMATED_TIME:format("|cff000000"..SecondsToTime(minutes*60, true, false, 2, true).."|r"));
+		self.CharacterSelectionFrame.TransferStatusEstimatedTime:Show();
 	elseif ( event == "STORE_OPEN_SIMPLE_CHECKOUT" ) then
 		self:Hide();
 	end
@@ -3236,8 +3281,9 @@ function StoreVASValidationFrame_OnVasProductComplete(self)
 	end
 	local productInfo = C_StoreSecure.GetProductInfo(productID);
 	if (IsOnGlueScreen()) then
-		self:GetParent():Hide();
-		_G.StoreFrame_ShowGlueDialog(string.format(_G.BLIZZARD_STORE_VAS_PRODUCT_READY, productInfo.sharedData.name), guid, realmName, shouldHandle);
+		-- For Classic, we don't like how this is behaving with FCM. Disabling entirely for now.
+		--[[self:GetParent():Hide();
+		_G.StoreFrame_ShowGlueDialog(string.format(_G.BLIZZARD_STORE_VAS_PRODUCT_READY, productInfo.sharedData.name), guid, realmName, shouldHandle);]]
 	else
 		self:GetParent():Hide();
 
@@ -4146,6 +4192,8 @@ function VASCharacterSelectionRealmSelector_Callback(value)
 	frame.TransferBattlenetAccountEditbox:SetText("");
 	frame.TransferBnetWoWAccountDropDown:Hide();
 	frame.ValidationDescription:Hide();
+	frame.TransferStatus:Hide();
+	frame.TransferStatusEstimatedTime:Hide();
 	frame.NewCharacterName:SetText("");
 	frame.ContinueButton:Disable();
 	frame.NewCharacterName:Hide();
@@ -4250,6 +4298,10 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 	frame.ValidationDescription:SetTextColor(0, 0, 0);
 	frame.ValidationDescription:Hide();
 
+	-- Classic processing status text.
+	frame.TransferStatus:Hide();
+	frame.TransferStatusEstimatedTime:Hide();
+
 	StoreVASValidationState_Unlock();
 
 	local bottomWidget = frame.SelectedCharacterFrame;
@@ -4262,6 +4314,9 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 		frame.ValidationDescription:ClearAllPoints();
 		frame.ValidationDescription:SetPoint("TOPLEFT", bottomWidget, "BOTTOMLEFT", -5, -6);
 	elseif (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
+		local guid = character.guid;
+		local productID, vasServiceState, vasServiceErrors = C_StoreGlue.GetVASPurchaseStateInfo(guid);
+
 		frame.TransferRealmCheckbox:Show();
 		frame.TransferRealmCheckbox.Label:ApplyFontObjects();
 		if (VASServiceCanChangeAccount) then
@@ -4312,6 +4367,18 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 		end
 
 		StoreVASValidationFrame_SyncFontHeights(frame.TransferRealmCheckbox.Label, frame.TransferAccountCheckbox.Label, frame.TransferFactionCheckbox.Label);
+
+		-- For Classic, show queue progress.
+		if (vasServiceState == Enum.VasPurchaseProgress.WaitingOnQueue) then
+			frame.TransferRealmCheckbox:Hide();
+			frame.TransferAccountCheckbox:Hide();
+
+			local productInfo = C_StoreSecure.GetProductInfo(productID);
+			frame.TransferStatus:SetText(VAS_SERVICE_PROCESSING:format(productInfo.sharedData.name));
+			frame.TransferStatus:Show();
+			C_StoreGlue.RequestCharacterQueueTime(guid);
+		end
+
 		frame.ContinueButton:Disable();
 	else
 		if (VASServiceType == Enum.VasServiceType.RaceChange or VASServiceType == Enum.VasServiceType.FactionChange) then
@@ -4370,9 +4437,6 @@ function VASRealmList_BuildAutoCompleteList()
 end
 
 function VASRealmList_GetAutoCompleteEntries(text, cursorPosition)
-	if (text == "") then
-		return {};
-	end
 	local entries = {};
 	local str = string.lower(string.sub(text, 1, cursorPosition));
 	for i, v in ipairs(RealmAutoCompleteList) do

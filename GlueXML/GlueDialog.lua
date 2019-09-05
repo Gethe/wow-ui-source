@@ -221,13 +221,15 @@ GlueDialogTypes["QUEUED_NORMAL"] = {
 
 GlueDialogTypes["QUEUED_WITH_FCM"] = {
 	text = "",
-	button1 = CHANGE_REALM,
-	button2 = QUEUE_FCM_BUTTON,
+	button1 = QUEUE_FCM_BUTTON,
+	button2 = CHANGE_REALM,
+	darken = true,
 	OnAccept = function()
-		C_RealmList.RequestChangeRealmList();
+		C_StoreSecure.GetPurchaseList();
+		ToggleStoreUI();
 	end,
 	OnCancel = function()
-		LaunchURL(QUEUE_FCM_URL)
+		C_RealmList.RequestChangeRealmList();
 	end,
 }
 
@@ -365,7 +367,28 @@ function GlueDialog_Show(which, text, data)
 	else
 		GlueDialogBackground:SetPoint("CENTER");
 	end
-	
+
+	-- Dialog background
+	if (dialogInfo.darken) then
+		GlueDialogBackground:SetBackdrop({
+			bgFile = "Interface/DialogFrame/UI-DialogBox-Background-Dark",
+			edgeFile = "Interface/DialogFrame/UI-DialogBox-Border",
+			tile = true,
+			tileSize = 32,
+			edgeSize = 32,
+			insets = { left = 11, right = 12, top = 12, bottom = 11 },
+		});
+	else
+		GlueDialogBackground:SetBackdrop({
+			bgFile = "Interface/DialogFrame/UI-DialogBox-Background",
+			edgeFile = "Interface/DialogFrame/UI-DialogBox-Border",
+			tile = true,
+			tileSize = 32,
+			edgeSize = 32,
+			insets = { left = 11, right = 12, top = 12, bottom = 11 },
+		});
+	end
+
 	GlueDialog.data = data;
 	local glueText;
 	if ( dialogInfo.html ) then
