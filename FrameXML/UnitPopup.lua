@@ -677,10 +677,10 @@ local function UnitPopup_TryCreatePlayerLocation(menu, guid)
 		return PlayerLocation:CreateFromCommunityInvitation(menu.communityClubID, guid);
 	elseif C_ChatInfo.IsValidChatLine(menu.lineID) then
 		return PlayerLocation:CreateFromChatLineID(menu.lineID);
-	elseif menu.unit then
-		return PlayerLocation:CreateFromUnit(menu.unit);
 	elseif guid then
 		return PlayerLocation:CreateFromGUID(guid);
+	elseif menu.unit then
+		return PlayerLocation:CreateFromUnit(menu.unit);
 	end
 
 	return nil;
@@ -1004,7 +1004,7 @@ function UnitPopup_HideButtons ()
 			if not playerLocation:IsChatLineID() and not playerLocation:IsCommunityInvitation() then
 				shown = false;
 			end
-		elseif ( value == "REPORT_CHEATING" or value == "REPORT_BATTLE_PET" or value == "REPORT_PET" ) then
+		elseif ( value == "REPORT_CHEATING" ) then
 			if dropdownMenu.bnetIDAccount or not playerLocation or playerLocation:IsBattleNetGUID() then
 				shown = false;
 			end
