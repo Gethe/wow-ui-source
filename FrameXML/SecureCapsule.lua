@@ -146,6 +146,8 @@ retain("FrameUtil");
 retain("strlenutf8");
 retain("UnitRace");
 retain("UnitSex");
+retain("GetURLIndexAndLoadURL");
+retain("GetUnscaledFrameRect");
 
 --For auth challenge
 take("C_AuthChallenge");

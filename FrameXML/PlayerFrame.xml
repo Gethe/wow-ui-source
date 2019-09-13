@@ -190,6 +190,17 @@
 							</Layer>
 						</Layers>
 					</Frame>
+					<Frame name="QuestSessionSync" frameStrata="HIGH">
+						<Size x="30" y="30"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="71" y="-58"/>
+						</Anchors>
+						<Layers>
+							<Layer>
+								<Texture parentKey="Icon" atlas="QuestSharing-DialogIcon" hidden="true" setAllPoints="true"/>
+							</Layer>
+						</Layers>
+					</Frame>
 					<Frame name="PlayerFrameReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
 						<Size x="40" y="40"/>
 						<Anchors>

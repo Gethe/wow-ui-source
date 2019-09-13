@@ -571,7 +571,11 @@ function MountJournal_UpdateMountDisplay(forceSceneChange)
 					mountActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_ANIM);
 					mountActor:SetAnimation(0);
 				end
-				MountJournal.MountDisplay.ModelScene:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview);
+				local showPlayer = GetCVarBool("mountJournalShowPlayer");
+				if not disablePlayerMountPreview and not showPlayer then
+					disablePlayerMountPreview = true;
+				end
+				MountJournal.MountDisplay.ModelScene:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview, spellVisualKitID);
 			end
 		end
 
@@ -897,3 +901,21 @@ function MountJournal_HideMountDropdown()
 		HideDropDownMenu(1);
 	end
 end
+
+
+PlayerPreviewToggle = {}
+function PlayerPreviewToggle:OnShow()
+	local showPlayer = GetCVarBool("mountJournalShowPlayer");	
+	self:SetChecked(showPlayer);
+end
+
+function PlayerPreviewToggle:OnClick()
+	if self:GetChecked() then
+		SetCVar("mountJournalShowPlayer", 1);
+	else
+		SetCVar("mountJournalShowPlayer", 0);
+	end
+	MountJournal_UpdateMountDisplay(true);
+end
+
+

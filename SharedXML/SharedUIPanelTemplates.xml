@@ -143,10 +143,10 @@
 	</Button>
 	<Button name="UIPanelHideButtonNoScripts" virtual="true">
 		<Size x="32" y="32"/>
-		<DisabledTexture file="Interface\Buttons\UI-PANEL-HIDEBUTTON-DISABLED"/>
-		<NormalTexture file="Interface\Buttons\UI-PANEL-HIDEBUTTON-UP"/>
-		<PushedTexture file="Interface\Buttons\UI-PANEL-HIDEBUTTON-DOWN"/>
-		<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+		<DisabledTexture atlas="UI-Panel-HideButton-Disabled" useAtlasSize="true" />
+		<NormalTexture atlas="UI-Panel-HideButton-Up"  useAtlasSize="true" />
+		<PushedTexture atlas="UI-Panel-HideButton-Down" useAtlasSize="true" />
+		<HighlightTexture atlas="UI-Panel-MinimizeButton-Highlight" alphaMode="ADD" useAtlasSize="true" />
 	</Button>
 	<Button name="UIPanelCloseButton" inherits="UIPanelCloseButtonNoScripts" virtual="true">
 		<Scripts>
@@ -1792,6 +1792,20 @@
 		<Scripts>
 			<OnEnter function="TruncatedTooltipScript_OnEnter"/>
 			<OnLeave function="TruncatedTooltipScript_OnLeave"/>
+		</Scripts>
+	</Frame>
+
+<!--
+*******************************************************************************
+	TruncatedTooltipFontStringWrapperTemplate
+	This frame template will automatically add a tooltip to the frame if the contained FontString is truncated
+	Note that you MUST have a child FontString with ParentKey "Text"
+*******************************************************************************
+-->
+	<Frame name="TruncatedTooltipFontStringWrapperTemplate" inherits="ResizeLayoutFrame" virtual="true" mixin="TruncatedTooltipFontStringWrapperMixin">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
 

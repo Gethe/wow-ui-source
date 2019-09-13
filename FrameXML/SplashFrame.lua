@@ -1,5 +1,5 @@
-BASE_SPLASH_SCREEN_VERSION = 16;
-NEWEST_SPLASH_SCREEN_VERSION = 17;
+BASE_SPLASH_SCREEN_VERSION = 17;
+NEWEST_SPLASH_SCREEN_VERSION = 18;
 SEASON_SPLASH_SCREEN_VERSION = 3;
 PREVIOUS_SEASON_SPLASH_VERSION = 2;
 
@@ -13,82 +13,21 @@ local FACTION_OVERRIDES = {
 }
 
 SPLASH_SCREENS = {
-	["8_2_LEVEL"] = {
-		id = NEWEST_SPLASH_SCREEN_VERSION, -- 8.2 Live
+	["8_2_5_LEVEL"] = {
+		id = NEWEST_SPLASH_SCREEN_VERSION, -- 8.2.5 Live
 		expansion = LE_EXPANSION_BATTLE_FOR_AZEROTH,
 		header = SPLASH_BASE_HEADER,
-		label = SPLASH_BATTLEFORAZEROTH_8_2_0_LABEL,
-		leftTex = "splash-820-topleft",
-		rightTex = "splash-820-right",
-		bottomTex = "splash-820-botleft",
-		feature1Title = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE1_TITLE,
-		feature1Desc = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE1_DESC,
-		feature2Title = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE2_TITLE,
-		feature2Desc = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE2_DESC,
-		rightTitle = SPLASH_BATTLEFORAZEROTH_8_2_0_RIGHT_TITLE,
-		rightDescSubText = SPLASH_BATTLEFORAZEROTH_8_2_0_RIGHT_DESC,
-		rightTitleMaxLines = 2,
+		label = SPLASH_BATTLEFORAZEROTH_8_2_5_LABEL,
+		leftTex = "splash-825-topleft",
+		rightTex = "splash-825-right",
+		bottomTex = "splash-825-botleft",
+		feature1Title = SPLASH_BATTLEFORAZEROTH_8_2_5_FEATURE1_TITLE,
+		feature1Desc = SPLASH_BATTLEFORAZEROTH_8_2_5_FEATURE1_DESC,
+		feature2Title = SPLASH_BATTLEFORAZEROTH_8_2_5_FEATURE2_TITLE,
+		feature2Desc = SPLASH_BATTLEFORAZEROTH_8_2_5_FEATURE2_DESC,
+		rightTitle = SPLASH_BATTLEFORAZEROTH_8_2_5_RIGHT_TITLE,
+		rightDescSubText = SPLASH_BATTLEFORAZEROTH_8_2_5_RIGHT_DESC,
 		cVar="splashScreenNormal",
-		hideStartButton = false,
-		minQuestLevel = 120,
-		minDisplayLevel = 120,
-
-		features = {
-			[1] = { EnterFunc = function() end,
-					LeaveFunc = function() end,
-					},
-			[2] = { EnterFunc = function() end,
-					LeaveFunc = function() end,
-					},
-		},
-	},
-
-	["8_2_ALTERNATE_LEVEL"] = {
-		id = NEWEST_SPLASH_SCREEN_VERSION, -- 8.2 Live
-		expansion = LE_EXPANSION_BATTLE_FOR_AZEROTH,
-		header = SPLASH_BASE_HEADER,
-		label = SPLASH_BATTLEFORAZEROTH_8_2_0_LABEL,
-		leftTex = "splash-820-topleft",
-		rightTex = "splash-820-right",
-		bottomTex = "splash-820-botleft",
-		feature1Title = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE1_TITLE,
-		feature1Desc = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE1_DESC,
-		feature2Title = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE2_TITLE,
-		feature2Desc = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE2_DESC,
-		rightTitle = SPLASH_BATTLEFORAZEROTH_8_2_0_RIGHT_TITLE,
-		rightDescSubText = SPLASH_BATTLEFORAZEROTH_8_2_0_RIGHT_DESC_ALT,
-		rightTitleMaxLines = 2,
-		cVar="splashScreenNormal",
-		hideStartButton = true,
-		minQuestLevel = 120,
-		minDisplayLevel = 120,
-
-		features = {
-			[1] = { EnterFunc = function() end,
-					LeaveFunc = function() end,
-					},
-			[2] = { EnterFunc = function() end,
-					LeaveFunc = function() end,
-					},
-		},
-	},
-
-	["8_2_NEW_SEASON"] = {
-		id = SEASON_SPLASH_SCREEN_VERSION, -- 8.2 New season rollout
-		expansion = LE_EXPANSION_BATTLE_FOR_AZEROTH,
-		header = SPLASH_BASE_HEADER,
-		label = SPLASH_BATTLEFORAZEROTH_8_2_0_2_LABEL,
-		leftTex = "splash-8202-topleft",
-		rightTex = "splash-8202-right",
-		bottomTex = "splash-8202-botleft",
-		feature1Title = SPLASH_BATTLEFORAZEROTH_8_2_0_2_FEATURE1_TITLE,
-		feature1Desc = SPLASH_BATTLEFORAZEROTH_8_2_0_2_FEATURE1_DESC,
-		feature2Title = SPLASH_BATTLEFORAZEROTH_8_2_0_2_FEATURE2_TITLE,
-		feature2Desc = SPLASH_BATTLEFORAZEROTH_8_2_0_2_FEATURE2_DESC,
-		rightTitle = SPLASH_BATTLEFORAZEROTH_8_2_0_2_RIGHT_TITLE,
-		rightDescSubText = SPLASH_BATTLEFORAZEROTH_8_2_0_2_RIGHT_DESC,
-		rightTitleMaxLines = 2,
-		cVar="splashScreenSeason",
 		hideStartButton = true,
 		minQuestLevel = 120,
 		minDisplayLevel = 120,
@@ -105,20 +44,12 @@ SPLASH_SCREENS = {
 };
 
 BASE_SPLASH_TAG = nil;
-CURRENT_SPLASH_TAG = nil;
-SEASON_SPLASH_TAG = "8_2_NEW_SEASON"; -- This will be nil in patches that don't have a season change
+CURRENT_SPLASH_TAG = "8_2_5_LEVEL";
+SEASON_SPLASH_TAG = nil; -- This will be nil in patches that don't have a season change
 
 -- For the case where we want to skip showing the first screen.
 local function UpdateOtherSplashScreenCvar(tag)
 	SetCVar(SPLASH_SCREENS[tag].cVar, SPLASH_SCREENS[tag].id);
-end
-
-local function SetSplashTagBasedOnPlayerCondition()
-	if (ShouldShowSpecialSplashScreen()) then
-		CURRENT_SPLASH_TAG = "8_2_ALTERNATE_LEVEL";
-	else
-		CURRENT_SPLASH_TAG = "8_2_LEVEL"
-	end
 end
 
 local function GetSplashFrameTag(forceShow)
@@ -243,7 +174,6 @@ function SplashFrame_OnEvent(self, event)
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
 		self:RegisterEvent("CHALLENGE_MODE_MAPS_UPDATE");
 		self.playerEntered = true;
-		SetSplashTagBasedOnPlayerCondition();
 		ApplyFactionOverrides();
 		C_MythicPlus.RequestMapInfo();
 	elseif( event == "VARIABLES_LOADED" ) then

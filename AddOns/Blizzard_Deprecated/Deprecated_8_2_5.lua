@@ -364,4 +364,34 @@ do
 	LeaveParty = C_PartyInfo.LeaveParty;
 	ConvertToRaid = C_PartyInfo.ConvertToRaid;
 	ConvertToParty = C_PartyInfo.ConvertToParty;
+	CanGroupInvite = C_PartyInfo.CanInvite;
+	InviteToGroup = C_PartyInfo.InviteUnit;
+	InviteUnit = C_PartyInfo.InviteUnit;
+
+	function RealPartyIsFull()
+		if ( (GetNumSubgroupMembers(LE_PARTY_CATEGORY_HOME) < MAX_PARTY_MEMBERS) or (IsInRaid(LE_PARTY_CATEGORY_HOME) and (GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) < MAX_RAID_MEMBERS)) ) then
+			return false;
+		else
+			return true;
+		end
+	end
+end
+
+-- PVP Scoreboard changes
+-- Use GetMatchPVPStatIDs replaced with GetMatchPVPStatColumns. These are being ordered
+-- for backward compatibility.
+do
+	C_PvP.GetMatchPVPStatIDs = function()
+		local statColumns = C_PvP.GetMatchPVPStatColumns();
+		table.sort(statColumns, function(lhs,rhs)
+			return lhs.orderIndex < rhs.orderIndex;
+		end);
+		
+		local pvpStatIDs = {};
+		for index = 1, #statColumns do
+			tinsert(pvpStatIDs, statColumns[index].pvpStatID)
+		end
+		
+		return pvpStatIDs;
+	end
 end

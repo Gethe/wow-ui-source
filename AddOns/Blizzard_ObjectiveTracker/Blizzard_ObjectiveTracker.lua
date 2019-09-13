@@ -343,13 +343,14 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddObjective(block, objectiveKey, text
 end
 
 function DEFAULT_OBJECTIVE_TRACKER_MODULE:SetStringText(fontString, text, useFullHeight, colorStyle, useHighlight)
-	fontString:SetHeight(0);
-	fontString:SetText(text);
-	local stringHeight = fontString:GetHeight();
-	if ( stringHeight > OBJECTIVE_TRACKER_DOUBLE_LINE_HEIGHT and not useFullHeight ) then
-		fontString:SetHeight(OBJECTIVE_TRACKER_DOUBLE_LINE_HEIGHT);
-		stringHeight = OBJECTIVE_TRACKER_DOUBLE_LINE_HEIGHT;
+	if useFullHeight then
+		fontString:SetMaxLines(0);
+	else
+		fontString:SetMaxLines(2);
 	end
+	fontString:SetText(text);
+
+	local stringHeight = fontString:GetHeight();
 	colorStyle = colorStyle or OBJECTIVE_TRACKER_COLOR["Normal"];
 	if ( useHighlight and colorStyle.reverse ) then
 		colorStyle = colorStyle.reverse;

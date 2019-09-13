@@ -1063,6 +1063,8 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 			return;
 		end
 
+		listFrame.onShow = dropDownFrame.listFrameOnShow;
+
 		-- Check to see if the dropdownlist is off the screen, if it is anchor it to the top of the dropdown button
 		listFrame:Show();
 		-- Hack since GetCenter() is returning coords relative to 1024x768
@@ -1152,6 +1154,13 @@ function CloseDropDownMenus(level)
 	end
 	for i=level, UIDROPDOWNMENU_MAXLEVELS do
 		_G["DropDownList"..i]:Hide();
+	end
+end
+
+function UIDropDownMenu_OnShow(self)
+	if ( self.onShow ) then
+		self.onShow();
+		self.onShow = nil;
 	end
 end
 

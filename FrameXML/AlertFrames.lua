@@ -427,7 +427,8 @@ function AlertFrameMixin:OnLoad()
 	self:RegisterEvent("SHOW_PVP_FACTION_LOOT_TOAST");
 	self:RegisterEvent("SHOW_RATED_PVP_REWARD_TOAST");
 	self:RegisterEvent("PET_BATTLE_CLOSE");
-	self:RegisterEvent("STORE_PRODUCT_DELIVERED");
+	self:RegisterEvent("ENTITLEMENT_DELIVERED");
+	self:RegisterEvent("RAF_ENTITLEMENT_DELIVERED");
 	self:RegisterEvent("GARRISON_BUILDING_ACTIVATABLE");
     self:RegisterEvent("GARRISON_TALENT_COMPLETE");
 	self:RegisterEvent("GARRISON_MISSION_FINISHED");
@@ -441,6 +442,19 @@ function AlertFrameMixin:OnLoad()
 	self:RegisterEvent("NEW_PET_ADDED");
 	self:RegisterEvent("NEW_MOUNT_ADDED");
 	self:RegisterEvent("NEW_TOY_ADDED");
+end
+
+function CreateContinuableContainerForLFGRewards()
+	local continuableContainer = ContinuableContainer:Create();
+	local rewardCount = select(10, GetLFGCompletionReward());
+	for i = 1, rewardCount or 0 do
+		local _, _, _, _, _, _, id, objectType = GetLFGCompletionRewardItem(i);
+		if objectType == "item" then
+			local item = Item:CreateFromItemID(id);
+			continuableContainer:AddContinuable(item);
+		end
+	end
+	return continuableContainer;
 end
 
 function AlertFrameMixin:OnEvent(event, ...)
@@ -471,12 +485,22 @@ function AlertFrameMixin:OnEvent(event, ...)
 			local scenarioType = select(10, C_Scenario.GetInfo());
 			if scenarioType ~= LE_SCENARIO_TYPE_LEGION_INVASION then
 				if (not self:ShouldSupressDungeonOrScenarioAlert()) then 
-					ScenarioAlertSystem:AddAlert(self:BuildScenarioRewardData());
+					local continuableContainer = CreateContinuableContainerForLFGRewards();
+					if continuableContainer then
+						continuableContainer:ContinueOnLoad(function()
+							ScenarioAlertSystem:AddAlert(self:BuildScenarioRewardData());
+						end);
+					end
 				end
 			end
 		else
 			if (not self:ShouldSupressDungeonOrScenarioAlert()) then 
-				DungeonCompletionAlertSystem:AddAlert(self:BuildLFGRewardData());
+				local continuableContainer = CreateContinuableContainerForLFGRewards();
+				if continuableContainer then
+					continuableContainer:ContinueOnLoad(function()
+						DungeonCompletionAlertSystem:AddAlert(self:BuildLFGRewardData());
+					end);
+				end
 			end
 		end
 	elseif ( event == "SCENARIO_COMPLETED" ) then
@@ -527,8 +551,10 @@ function AlertFrameMixin:OnEvent(event, ...)
 		LootUpgradeAlertSystem:AddAlert(itemLink, quantity, specID, baseQuality, nil, nil, lessAwesome);
 	elseif ( event == "PET_BATTLE_CLOSE" ) then
 		AchievementAlertSystem:CheckQueuedAlerts();
-	elseif ( event == "STORE_PRODUCT_DELIVERED" ) then
-		StorePurchaseAlertSystem:AddAlert(...);
+	elseif ( event == "ENTITLEMENT_DELIVERED" ) then
+		EntitlementDeliveredAlertSystem:AddAlert(...);
+	elseif ( event == "RAF_ENTITLEMENT_DELIVERED" ) then
+		RafRewardDeliveredAlertSystem:AddAlert(...);
 	elseif ( event == "GARRISON_BUILDING_ACTIVATABLE" ) then
 		local buildingName, garrisonType = ...;
 		if ( garrisonType == C_Garrison.GetLandingPageGarrisonType() ) then

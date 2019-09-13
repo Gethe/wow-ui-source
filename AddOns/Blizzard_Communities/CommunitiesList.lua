@@ -6,12 +6,14 @@ local COMMUNITIES_LIST_EVENTS = {
 	"CLUB_INVITATION_REMOVED_FOR_SELF",
 	"CLUB_FINDER_PLAYER_PENDING_LIST_RECIEVED",
 	"GUILD_ROSTER_UPDATE",
-	"CLUB_FINDER_RECRUITS_UPDATED",
+	"CLUB_FINDER_APPLICANT_INVITE_RECIEVED",
 };
 	
 local COMMUNITIES_LIST_INITLAL_TOP_BORDER_OFFSET = -28;
 local COMMUNITIES_LIST_INITLAL_BOTTOM_BORDER_OFFSET = 40;
 local COMMUNITIES_LIST_GUILD_FINDER_OFFSET = 28;
+
+local NEW_COMMUNITY_FLASH_DURATION = 6.0;
 
 CommunitiesListMixin = {};
 
@@ -40,7 +42,7 @@ function CommunitiesListMixin:OnEvent(event, ...)
 		tDeleteItem(self.declinedInvitationIds, invitationId);
 		self:UpdateInvitations();
 		self:Update();
-	elseif event == "CLUB_FINDER_PLAYER_PENDING_LIST_RECIEVED" or "CLUB_FINDER_RECRUITS_UPDATED" then
+	elseif event == "CLUB_FINDER_PLAYER_PENDING_LIST_RECIEVED" or event == "CLUB_FINDER_APPLICANT_INVITE_RECIEVED" then
 		self:UpdateFinderInvitations(); 
 		self:Update(); 
 	elseif event == "GUILD_ROSTER_UPDATE" then 
@@ -203,26 +205,26 @@ function CommunitiesListMixin:Update()
 	local isInGuild = IsInGuild();
 	local invitations = self:GetInvitations();
 	local clubFinderInvitations = self:GetClubFinderInvitations(); 
+	local clubFinderEnabled = C_ClubFinder.IsEnabled();
 	local numFinderInvitations = 0; 
-
-	if	(clubFinderInvitations) then 
+	
+	if	(clubFinderInvitations and clubFinderEnabled) then 
 		numFinderInvitations = #clubFinderInvitations
 	end 
 
 	local tickets = self:GetTickets();
 	local totalNumClubs = numFinderInvitations + #invitations + #tickets + #clubs;
-	
-	if not isInGuild then
+
+	if not isInGuild and clubFinderEnabled then
 		totalNumClubs = totalNumClubs + 1;
 	end
 
 	local height = buttons[1]:GetHeight();
-	
 	-- TODO:: Determine if this player is at the maximum number of allowed clubs or not.
 	-- We probably need to change the create flow as well, since it's possible you are
 	-- allowed to create more bnet groups, but not more wow communities or vice versa.
 	local shouldAddJoinCommunityEntry = C_Club.ShouldAllowClubType(Enum.ClubType.Character) or C_Club.ShouldAllowClubType(Enum.ClubType.BattleNet); 
-	local shouldFindCommunityEntry = C_Club.ShouldAllowClubType(Enum.ClubType.Character); 
+	local shouldFindCommunityEntry = clubFinderEnabled;
 	
 	-- We need 1 for the blank entry at the top of the list.
 	local clubsHeight = height * (totalNumClubs + 1);
@@ -260,14 +262,14 @@ function CommunitiesListMixin:Update()
 				clubInfo = clubFinderInvitations[displayIndex];
 			else
 				displayIndex = displayIndex - #tickets - #invitations - numFinderInvitations;
-				if not isInGuild then
+				if not isInGuild and clubFinderEnabled then
 					displayIndex = displayIndex - 1;
 				end
 				if displayIndex > 0 and displayIndex <= #clubs then
 					clubInfo = clubs[displayIndex];
 				end
 			end
-			if (not isInGuild and displayIndex == 0) then
+			if (not isInGuild and displayIndex == 0 and clubFinderEnabled) then
 				button:SetGuildFinder();
 				local communitiesFrame = self:GetCommunitiesFrame();
 				communitiesFrame.GuildFinderFrame.isGuildType = true;
@@ -291,7 +293,7 @@ function CommunitiesListMixin:Update()
 				button:Show(); 
 				usedHeight = usedHeight + height; 
 				shouldAddJoinCommunityEntry = false;
-			elseif isInGuild and not shownGuildFinderButton then 
+			elseif isInGuild and not shownGuildFinderButton  and clubFinderEnabled then 
 				button:SetGuildFinder();
 				button:Show();
 				shownGuildFinderButton = true;
@@ -304,7 +306,7 @@ function CommunitiesListMixin:Update()
 	end
 	local totalHeight = clubsHeight + COMMUNITIES_LIST_INITLAL_TOP_BORDER_OFFSET + COMMUNITIES_LIST_INITLAL_BOTTOM_BORDER_OFFSET;
 
-	if (isInGuild) then 
+	if (isInGuild and clubFinderEnabled) then 
 		totalHeight = totalHeight + COMMUNITIES_LIST_GUILD_FINDER_OFFSET;
 	end 
 
@@ -353,16 +355,24 @@ function CommunitiesListMixin:OnLoad()
 end
 
 function CommunitiesListMixin:RegisterEventCallbacks()
+	local communitiesFrame = self:GetCommunitiesFrame();
+
 	local function CommunityInviteDeclinedCallback(event, invitationId, clubId)
 		self.declinedInvitationIds[#self.declinedInvitationIds + 1] = invitationId;
-		self:GetCommunitiesFrame():UpdateClubSelection();
+		communitiesFrame:UpdateClubSelection();
 		self:UpdateInvitations();
 		self:Update();
 	end
 	
 	self.inviteDeclinedCallback = CommunityInviteDeclinedCallback;
-	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.InviteDeclined, self.inviteDeclinedCallback);
+	communitiesFrame:RegisterCallback(CommunitiesFrameMixin.Event.InviteDeclined, self.inviteDeclinedCallback);
 
+	local function CommunitiesFrameDisplayModeChangedCallback()
+		self:Update();
+	end
+
+	self.displayModeChangedCallback = CommunitiesFrameDisplayModeChangedCallback;
+	communitiesFrame:RegisterCallback(CommunitiesFrameMixin.Event.DisplayModeChanged, self.displayModeChangedCallback);
 end
 
 function CommunitiesListMixin:OnShow()
@@ -373,13 +383,12 @@ function CommunitiesListMixin:OnShow()
 	self:UpdateInvitations();
 	self:Update();
 	
-	if not self.hasRegisteredEventCallbacks then
-		self:RegisterEventCallbacks();
-	end
+	self:RegisterEventCallbacks();
 end
 
 function CommunitiesListMixin:OnHide()
 	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.InviteDeclined, self.inviteDeclinedCallback);
+	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.InviteDeclined, self.displayModeChangedCallback);
 	FrameUtil.UnregisterFrameForEvents(self, COMMUNITIES_LIST_EVENTS);
 end
 
@@ -471,6 +480,33 @@ function CommunitiesListMixin:PredictFavorites(clubs)
 	self.pendingFavorites = remainingPredictions;
 end
 
+function CommunitiesListMixin:IsFinderVisible()
+	local buttons = self.ListScrollFrame.buttons;
+	local numVisibleButtons = #buttons - 1;
+	for i = 1, numVisibleButtons do
+		local button = buttons[i];
+		if button.Name:GetText() == COMMUNITY_FINDER_FIND_COMMUNITY then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+function CommunitiesListMixin:OnNewCommunityFlashStarted()
+	if not self.newCommunityFlashTime then
+		self.newCommunityFlashTime = GetTime();
+	end
+end
+
+function CommunitiesListMixin:ShouldShowNewCommunityFlash(clubId)
+	if self.newCommunityFlashTime and (GetTime() - self.newCommunityFlashTime) > NEW_COMMUNITY_FLASH_DURATION then
+		return false;
+	end
+
+	return clubId == GuildMicroButton:GetNewClubId();
+end
+
 local COMMUNITIES_LIST_ENTRY_EVENTS = {
 	"STREAM_VIEW_MARKER_UPDATED",
 	"PLAYER_GUILD_UPDATE",
@@ -479,6 +515,8 @@ local COMMUNITIES_LIST_ENTRY_EVENTS = {
 CommunitiesListEntryMixin = {};
 
 function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket, isInviteFromFinder)
+	self:SetEntryEnabled(true);
+
 	if isInvitation then
 		self.overrideOnClick = function(self, button)
 			if button == "LeftButton" then
@@ -490,6 +528,16 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket,
 		end;
 	else
 		self.overrideOnClick = nil;
+	end
+
+	local communitiesList = self:GetCommunitiesList();
+	local shouldShowFlash = clubInfo and communitiesList:ShouldShowNewCommunityFlash(clubInfo.clubId);
+	local isFlashing = UIFrameIsFlashing(self.NewCommunityFlash);
+	if shouldShowFlash and not isFlashing then
+		UIFrameFlash(self.NewCommunityFlash, 1.0, 1.0, NEW_COMMUNITY_FLASH_DURATION, false, 0, 0);
+		communitiesList:OnNewCommunityFlashStarted();
+	elseif not shouldShowFlash and isFlashing then
+		UIFrameFlashStop(self.NewCommunityFlash);
 	end
 
 	if clubInfo then
@@ -603,20 +651,47 @@ function CommunitiesListEntryMixin:UpdateUnreadNotification()
 	self.UnreadNotificationIcon:SetShown(isNewInvitation or hasUnread);
 end
 
+function CommunitiesListEntryMixin:CheckForDisabledReason(clubType)
+	local disabledReason = C_ClubFinder.GetClubFinderDisableReason();
+	local disabled = disabledReason or not C_Club.ShouldAllowClubType(clubType);
+	self:SetEntryEnabled(not disabled);
+
+	if disabled then
+		if disabledReason == Enum.ClubFinderDisableReason.Muted then
+			self:SetDisabledTooltip(COMMUNITY_FEATURE_UNAVAILABLE_MUTED);
+		elseif disabledReason == Enum.ClubFinderDisableReason.Silenced then
+			self:SetDisabledTooltip(COMMUNITY_FEATURE_UNAVAILABLE_SILENCED);
+		else
+			self:SetDisabledTooltip(COMMUNITY_TYPE_UNAVAILABLE);
+		end
+	else
+		self:SetDisabledTooltip(nil);
+	end
+
+	return disabled;
+end
+
 function CommunitiesListEntryMixin:SetFindCommunity()
+	local disabled = self:CheckForDisabledReason(Enum.ClubType.Character);
+
 	self.overrideOnClick = function()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		local communitiesFrame = self:GetCommunitiesFrame();
 		communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_FINDER);
 
 		communitiesFrame.CommunityFinderFrame.isGuildType = false;
+		communitiesFrame.CommunityFinderFrame.selectedTab = 1; 
 		communitiesFrame.CommunityFinderFrame:UpdateType(); 
 		communitiesFrame:SelectClub(nil);
 	end;
 	
 	self.clubId = nil;
 	self.Name:SetText(COMMUNITY_FINDER_FIND_COMMUNITY);
-	self.Name:SetTextColor(GREEN_FONT_COLOR:GetRGB());
+
+	if not disabled then
+		self.Name:SetTextColor(GREEN_FONT_COLOR:GetRGB());
+	end
+
 	self.Name:SetPoint("LEFT", self.Icon, "RIGHT", 13, 0);
 	self.Selection:SetShown(self:GetCommunitiesFrame():GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_FINDER);
 
@@ -637,9 +712,13 @@ function CommunitiesListEntryMixin:SetFindCommunity()
 	self.Icon:SetAtlas("communities-icon-searchmagnifyingglass");
 	self.Icon:SetSize(30, 30);
 	self.Icon:SetPoint("TOPLEFT", 17, -18);
+
+	UIFrameFlashStop(self.NewCommunityFlash);
 end
 
 function CommunitiesListEntryMixin:SetAddCommunity()
+	self:SetEntryEnabled(true);
+
 	self.overrideOnClick = function()
 		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 		if not AddCommunitiesFlow_IsShown() then
@@ -673,9 +752,13 @@ function CommunitiesListEntryMixin:SetAddCommunity()
 	self.Icon:SetPoint("TOPLEFT", 17, -18);
 	
 	self:SetFocused(true);
+
+	UIFrameFlashStop(self.NewCommunityFlash);
 end
 
 function CommunitiesListEntryMixin:SetGuildFinder()
+	local disabled = self:CheckForDisabledReason(Enum.ClubType.Character);
+
 	self.overrideOnClick = function ()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
@@ -683,6 +766,7 @@ function CommunitiesListEntryMixin:SetGuildFinder()
 		communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER);
 
 		communitiesFrame.GuildFinderFrame.isGuildType = true;
+		communitiesFrame.GuildFinderFrame.selectedTab = 1;
 		communitiesFrame.GuildFinderFrame:UpdateType(); 
 
 		communitiesFrame:SelectClub(nil);
@@ -691,7 +775,11 @@ function CommunitiesListEntryMixin:SetGuildFinder()
 	
 	self.clubId = nil;
 	self.Name:SetText(COMMUNITIES_GUILD_FINDER);
-	self.Name:SetTextColor(GREEN_FONT_COLOR:GetRGB());
+
+	if not disabled then
+		self.Name:SetTextColor(GREEN_FONT_COLOR:GetRGB());
+	end
+
 	self.Name:SetPoint("LEFT", self.Icon, "RIGHT", 10, 0);
 	self.Selection:SetShown(self:GetCommunitiesFrame():GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER);
 
@@ -719,6 +807,8 @@ function CommunitiesListEntryMixin:SetGuildFinder()
 	else
 		self.Icon:SetTexture("Interface\\FriendsFrame\\PlusManz-Horde");
 	end
+
+	UIFrameFlashStop(self.NewCommunityFlash);
 end
 
 function CommunitiesListEntryMixin:SetFocused(isFocused)
@@ -747,6 +837,20 @@ function CommunitiesListEntryMixin:GetCommunitiesFrame()
 	return self:GetCommunitiesList():GetCommunitiesFrame();
 end
 
+function CommunitiesListEntryMixin:SetEntryEnabled(enabled)
+	local desaturated = not enabled;
+	self.Background:SetDesaturated(desaturated);
+	self.Icon:SetDesaturated(desaturated);
+	self.GuildTabardBorder:SetDesaturated(desaturated);
+	self.GuildTabardBackground:SetDesaturated(desaturated);
+	self.Name:SetFontObject(GameFontDisable);
+	self:SetEnabled(enabled);
+end
+
+function CommunitiesListEntryMixin:SetDisabledTooltip(disabledTooltip)
+	self.disabledTooltip = disabledTooltip;
+end
+
 function CommunitiesListEntryMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, COMMUNITIES_LIST_ENTRY_EVENTS);
 end
@@ -767,9 +871,11 @@ function CommunitiesListEntryMixin:OnEvent(event, ...)
 end
 
 function CommunitiesListEntryMixin:OnEnter()
-	if self.Name:IsTruncated() then
+	if not self:IsEnabled() and self.disabledTooltip then
+		GameTooltip_ShowDisabledTooltip(GameTooltip, self, self.disabledTooltip);
+	elseif self.Name:IsTruncated() then
 		GameTooltip:SetOwner(self);
-		GameTooltip:AddLine(self.Name:GetText());
+		GameTooltip_SetTitle(GameTooltip, self.Name:GetText());
 		GameTooltip:Show();
 	end
 end

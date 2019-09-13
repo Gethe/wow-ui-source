@@ -76,6 +76,9 @@ function SmallStoreCardMixin:SetDisabledOverlayShown(showDisabledOverlay)
 	self.DisabledOverlay:SetShown(showDisabledOverlay);
 end
 
+function SmallStoreCardMixin:SetDefaultCardTexture()
+end
+
 function SmallStoreCardMixin:Layout()	
 	local width, height = StoreFrame_GetCellPixelSize("SmallStoreCardTemplate");
 	self:SetSize(width, height);
@@ -190,7 +193,7 @@ function MediumStoreCardMixin:ShowIcon(displayData)
 	
 	if displayData.overrideTexture then
 		self.Icon:ClearAllPoints();
-		self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT");	
+		self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT");
 	end
 end
 
@@ -211,14 +214,22 @@ function MediumStoreCardMixin:ShouldAddDiscountInformationToTooltip(entryInfo)
 	return true; -- For now, all bundles are medium and there are no other medium cards.
 end
 
+function MediumStoreCardMixin:ShouldModelShowShadows()
+	return false;
+end
+
+function MediumStoreCardMixin:SetDefaultCardTexture()
+	self.Card:SetAtlas("shop-card-bundle", true);
+	self.Card:SetTexCoord(0, 1, 0, 1);
+end
+
 function MediumStoreCardMixin:Layout()
 	SmallStoreCardMixin.Layout(self);
 
 	local width, height = StoreFrame_GetCellPixelSize("MediumStoreCardTemplate");
 	self:SetSize(width, height);
 
-	self.Card:SetAtlas("shop-card-bundle", true);
-	self.Card:SetTexCoord(0, 1, 0, 1);
+	self:SetDefaultCardTexture();
 
 	self.HighlightTexture:SetAtlas("shop-card-bundle-hover", true);
 	self.HighlightTexture:SetTexCoord(0, 1, 0, 1);
@@ -228,7 +239,7 @@ function MediumStoreCardMixin:Layout()
 
 	self.ProductName:SetWidth(146 * 2 - 30);
 	self.ProductName:ClearAllPoints();
-	self.ProductName:SetPoint("BOTTOM", 0, 33);
+	self.ProductName:SetPoint("BOTTOM", 0, 38);
 
 	self.CurrentPrice:ClearAllPoints();
 	self.CurrentPrice:SetPoint("BOTTOM", 0, 23);
@@ -238,22 +249,37 @@ end
 -- MEDIUM STORE CARD WITH A BUY BUTTON MIXIN 
 MediumStoreCardWithBuyButtonMixin = CreateFromMixins(MediumStoreCardMixin, ProductCardBuyButtonMixin);
 
+function MediumStoreCardWithBuyButtonMixin:SetDefaultCardTexture()
+	self.Card:SetAtlas("shop-card-quarter", true);
+	self.Card:SetTexCoord(0, 1, 0, 1);
+end
+
+function MediumStoreCardWithBuyButtonMixin:ShowIcon(displayData)
+	StoreCardMixin.ShowIcon(self, displayData)
+	
+	if displayData.overrideTexture then
+		self.Icon:ClearAllPoints();
+		self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT");
+		self.Card:Hide();
+	else
+		self.Card:Show();
+	end
+end
+
 function MediumStoreCardWithBuyButtonMixin:Layout()
 	MediumStoreCardMixin.Layout(self);
 
 	local width, height = StoreFrame_GetCellPixelSize("MediumStoreCardWithBuyButtonTemplate");
 	self:SetSize(width, height);
 
-	self.Card:SetAtlas("store-card-quarter", true);
-	self.Card:SetTexCoord(0, 1, 0, 1);
+	self:SetDefaultCardTexture();
 
 	self.BuyButton:ClearAllPoints();
-	self.BuyButton:SetSize(146, 35);
-	self.BuyButton:SetPoint("BOTTOM", 0, 10);
+	self.BuyButton:SetPoint("BOTTOM", 0, 7);
 
 	self.PurchasedText:SetText(BLIZZARD_STORE_PURCHASED);
 	self.PurchasedText:ClearAllPoints();
-	self.PurchasedText:SetPoint("BOTTOM", 0, 20);
+	self.PurchasedText:SetPoint("BOTTOM", 11 , 16);
 	self.PurchasedText:Hide();
 
 	self.PurchasedMark:Hide();
@@ -274,17 +300,17 @@ function MediumStoreCardWithBuyButtonMixin:Layout()
 
 	self.ProductName:ClearAllPoints();
 	self.ProductName:SetSize(250, 50);
-	self.ProductName:SetPoint("BOTTOM", self.BuyButton, "CENTER", 0, 30);
+	self.ProductName:SetPoint("BOTTOM", self.BuyButton, "CENTER", 0, 3);
 	self.ProductName:SetFontObject("GameFontNormalMed2");
 	self.ProductName:SetJustifyH("CENTER");
-	self.ProductName:SetJustifyV("BOTTOM");
+	self.ProductName:SetJustifyV("TOP");
 	self.ProductName:SetTextColor(1, 1, 1);
 	self.ProductName:SetShadowColor(0, 0, 0, 1);
 	self.ProductName:SetShadowOffset(1, -1);
 
 	self.ModelScene:ClearAllPoints();
-	self.ModelScene:SetPoint("TOPLEFT", 8, -8);
-	self.ModelScene:SetPoint("BOTTOMRIGHT", -8, 8);
+	self.ModelScene:SetPoint("TOPLEFT", 2, -2);
+	self.ModelScene:SetPoint("BOTTOMRIGHT", -2, 2);
 	self.ModelScene:SetViewInsets(0, 0, 0, 0);
 	
 	self.Magnifier:ClearAllPoints();
@@ -300,9 +326,9 @@ function MediumStoreCardWithBuyButtonMixin:ShowTooltip()
 	if self.productTooltipTitle then
 		StoreTooltip:ClearAllPoints();
 		if self.anchorRight then
-			StoreTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", -7, -6);
+			StoreTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", 0, 0);
 		else
-			StoreTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT", 7, -6);
+			StoreTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT", 0, 0);
 		end
 		
 		local entryInfo = self:GetEntryInfo();
@@ -310,6 +336,10 @@ function MediumStoreCardWithBuyButtonMixin:ShowTooltip()
 		description = strtrim(description, "\n\r"); -- Ensure we don't end the description with a new line.		
 		StoreTooltip_Show(self.productTooltipTitle, description);
 	end
+end
+
+function MediumStoreCardWithBuyButtonMixin:ShouldModelShowShadows()
+	return false;
 end
 
 function MediumStoreCardWithBuyButtonMixin:OnEnter()

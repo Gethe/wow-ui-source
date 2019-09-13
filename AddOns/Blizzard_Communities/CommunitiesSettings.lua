@@ -49,7 +49,7 @@ function CommunitiesSettingsDialogMixin:OnShow()
 		self.DialogLabel:SetText(COMMUNITIES_SETTINGS_CHARACTER_LABEL);
 	end
 
-	self:HideOrShowCommunityFinderOptions(clubType == Enum.ClubType.Character);
+	self:HideOrShowCommunityFinderOptions(clubType == Enum.ClubType.Character and C_ClubFinder.IsEnabled());
 
 	if (clubType == Enum.ClubType.Character) then 
 		self:UpdateSettingsInfoFromClubInfo(); 
@@ -194,7 +194,7 @@ function CommunitiesSettingsDialogMixin:ResetClubFinderSettings()
 	self.ShouldListClub.Button:SetChecked(false);
 
 	self.ClubFocusDropdown:Initialize(); 
-	C_ClubFinder.SetRecruitmentSettings(Enum.ClubFinderSettingFlags.Dungeons, true); --Initialize to this being on as default. 
+	C_ClubFinder.SetRecruitmentSettings(Enum.ClubFinderSettingFlags.Social, true); --Initialize to this being on as default. 
 	UIDropDownMenu_Initialize(self.ClubFocusDropdown, ClubFocusClubDropdownInitialize);
 	self.ClubFocusDropdown:UpdateDropdownText(); 
 
@@ -371,7 +371,9 @@ function CommunitiesSettingsButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 
 	if (not CommunitiesSettingsDialog:IsShown()) then 
-		OpenCommunitiesSettingsDialog(self:GetParent():GetParent():GetSelectedClubId());
+		local communitiesFrame = self:GetParent():GetParent();
+		OpenCommunitiesSettingsDialog(communitiesFrame:GetSelectedClubId());
+		HelpTip:Acknowledge(communitiesFrame, CLUB_FINDER_TUTORIAL_POSTING);
 	else 
 		CloseCommunitiesSettingsDialog();
 	end

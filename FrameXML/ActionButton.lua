@@ -389,8 +389,12 @@ function ActionButton_Update(self)
 		
 		ActionButton_ClearFlash(self);
 		self:SetChecked(false);
-	end
 
+		if self.LevelLinkLockIcon then
+			self.LevelLinkLockIcon:SetShown(false);
+		end
+	end
+	
 	-- Add a green border if button is an equipped item
 	local border = self.Border;
 	if border then
@@ -523,6 +527,15 @@ function ActionButton_UpdateUsable(self)
 	else
 		icon:SetVertexColor(0.4, 0.4, 0.4);
 		normalTexture:SetVertexColor(1.0, 1.0, 1.0);
+	end
+
+	local isLevelLinkLocked = C_LevelLink.IsActionLocked(self.action);
+	if not icon:IsDesaturated() then
+		icon:SetDesaturated(isLevelLinkLocked);
+	end
+
+	if self.LevelLinkLockIcon then
+		self.LevelLinkLockIcon:SetShown(isLevelLinkLocked);
 	end
 end
 

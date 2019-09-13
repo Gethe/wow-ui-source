@@ -429,7 +429,7 @@ function QUEST_TRACKER_MODULE:Update()
 			local questID, title, questLogIndex, numObjectives, requiredMoney, isComplete, startEvent, isAutoComplete, failureTime, timeElapsed, questType, isTask, isBounty, isStory, isOnMap, hasLocalPOI, isHidden, isWarCampaign, hasOverrideSort = unpack(questWatchInfoTable);
 			-- check filters
 			local showQuest = true;
-			if ( isTask or ( isBounty and not IsQuestComplete(questID) ) ) then
+			if isTask or (isBounty and not IsQuestComplete(questID)) or C_QuestLog.IsQuestDisabledForSession(questID) then
 				showQuest = false;
 			end
 

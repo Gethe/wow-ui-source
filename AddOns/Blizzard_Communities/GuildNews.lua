@@ -64,12 +64,12 @@ function CommunitiesGuildNews_Update(self)
 	local numButtons = #buttons;
 	for i = 1, numButtons do
 		button = buttons[i];
+		button.newsInfo = nil;
 		button.icon:Hide();
 		button.dash:Hide();
 		button.header:Hide();
 		button:Show();
 		button:Enable();
-		button.newsInfo = nil;
 		index = offset + i;
 		if( index == haveMOTD ) then
 			GuildNewsButton_SetMOTD(button, motd);

@@ -10,26 +10,37 @@
 	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
 
 			<Button name="CustomBuyButtonTemplate" inherits="StoreButtonTemplate" mixin="StoreBuyButtonMixin" virtual="true">
-				<Layers>
-					<Layer level="LOW">
-						<Texture parentKey="Strikethrough" >
-							<Size x="1" y="1"/>
-							<Color r="0.50" g="0.50" b="0.50"/>
-						</Texture>
-					</Layer>
-					<Layer level="BACKGROUND">
-						<FontString parentKey="LeftText" inherits="GameFontNormalMed2" justifyH="CENTER">
-							<Anchors>
-								<Anchor point="RIGHT" relativePoint="CENTER" x="-10" y="0" />
-							</Anchors>
-						</FontString>
-						<FontString parentKey="RightText" inherits="GameFontNormalMed2" justifyH="CENTER">
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.LeftText" relativePoint="RIGHT" x="20" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
+				<Frames>
+					<Frame parentKey="Discount" inherits="ResizeLayoutFrame" virtual="true">
+						<Anchors>
+							<Anchor point="CENTER" />
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString parentKey="LeftText" inherits="GameFontNormalMed2" justifyH="CENTER">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="LEFT" x="0" y="0" />
+									</Anchors>
+								</FontString>
+								<FontString parentKey="RightText" inherits="GameFontNormalMed2" justifyH="CENTER">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.LeftText" relativePoint="RIGHT" x="7" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="Strikethrough" texelSnappingBias="0.0" snapToPixelGrid="false" >
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.LeftText" relativePoint="LEFT"/>
+										<Anchor point="RIGHT" relativeKey="$parent.LeftText" relativePoint="RIGHT"/>
+									</Anchors>
+									<Size x="1" y="1"/>
+									<Color color="GRAY_FONT_COLOR"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
 				<Scripts>
 					<OnMouseUp method="OnMouseUp" />
 					<OnMouseDown method="OnMouseDown" />

@@ -154,7 +154,7 @@
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
-	<Button name="GuildMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+	<Button name="GuildMicroButton" inherits="MainMenuBarMicroButton" mixin="GuildMicroButtonMixin" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="QuestLogMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
@@ -196,30 +196,9 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				LoadMicroButtonTextures(self, "Socials");
-				self.tooltipText = MicroButtonTooltipText(LOOKINGFORGUILD, "TOGGLEGUILDTAB");
-				self.newbieText = NEWBIE_TOOLTIP_LOOKINGFORGUILDTAB;
-				self:RegisterEvent("UPDATE_BINDINGS");
-				self:RegisterEvent("PLAYER_GUILD_UPDATE");
-				self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
-				self:RegisterEvent("STREAM_VIEW_MARKER_UPDATED");
-				self:RegisterEvent("INITIAL_CLUBS_LOADED");
-				self:RegisterEvent("CLUB_INVITATION_ADDED_FOR_SELF");
-				self:RegisterEvent("CLUB_INVITATION_REMOVED_FOR_SELF");
-				self:RegisterEvent("BN_DISCONNECTED");
-				self:RegisterEvent("BN_CONNECTED");
-				GuildMicroButton_UpdateTabard(true);
-				if ( IsCommunitiesUIDisabledByTrialAccount() ) then
-					self:Disable();
-					self.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
-				end
-				if (IsKioskModeEnabled()) then
-					self:Disable();
-				end
-			</OnLoad>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
 			<OnShow function="MicroButton_KioskModeDisable"/>
-			<OnEvent function="GuildMicroButton_OnEvent"/>
 			<OnClick function="ToggleGuildFrame"/>
 		</Scripts>
 	</Button>
@@ -524,12 +503,12 @@
 			<Anchor point="BOTTOM" relativeTo="StoreMicroButton" relativePoint="TOP" x="0" y="-8"/>
 		</Anchors>
 	</Frame>
-	<Frame name="QuestLogMicroButtonAlert" inherits="MicroButtonAlertTemplate">
+	<Frame name="GuildMicroButtonAlert" inherits="MicroButtonAlertTemplate">
 		<KeyValues>
-			<KeyValue key="MicroButton" value="QuestLogMicroButton" type="global"/>
+			<KeyValue key="MicroButton" value="GuildMicroButton" type="global"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="QuestLogMicroButton" relativePoint="TOP" x="0" y="-8"/>
+			<Anchor point="BOTTOM" relativeTo="GuildMicroButton" relativePoint="TOP" x="0" y="-8"/>
 		</Anchors>
 	</Frame>
 </Ui>

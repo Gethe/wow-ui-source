@@ -110,13 +110,13 @@
 		<Size x="400" y="30"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="ExpirationTimeText" inherits="GameFontNormal" hidden="true"/>
+				<FontString parentKey="ExpirationTimeText" justifyH="LEFT" inherits="GameFontNormal" hidden="true"/>
 				<FontString parentKey="DaysUntilExpire" inherits="GameFontHighlight" hidden="true">
 					<Anchors>
 						<Anchor point="RIGHT" relativeKey="$parent.ExpirationTimeText" relativePoint="RIGHT" x="55"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="ExpiredText" inherits="GameFontNormal" hidden="true">
+				<FontString parentKey="ExpiredText" justifyH="LEFT" inherits="GameFontNormal" hidden="true">
 					<Color r="1.0" g="0.1" b="0.1"/>
 				</FontString>
 			</Layer>
@@ -204,11 +204,21 @@
 
 	<Frame name="CommunitiesControlFrameTemplate" mixin="CommunitiesControlFrameMixin" virtual="true">
 		<Frames>
-			<Button parentKey="CommunitiesSettingsButton" inherits="CommunitiesSettingsButtonTemplate">
+			<Button parentKey="CommunitiesSettingsButton" motionScriptsWhileDisabled="true" inherits="CommunitiesSettingsButtonTemplate">
 				<Size x="165" y="20"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
+				<Scripts>
+					<OnEnter>
+						if self.disabledTooltip then
+							GameTooltip_ShowDisabledTooltip(GameTooltip, self, self.disabledTooltip);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide(); 
+					</OnLeave>
+				</Scripts>
 			</Button>
 			<Button parentKey="GuildControlButton" inherits="UIPanelButtonTemplate, CommunitiesSubPanelButtonScriptTemplate" text="GUILD_CONTROL_BUTTON_TEXT">
 				<Size x="130" y="20"/>
@@ -219,7 +229,7 @@
 					<KeyValue key="frame" value="GuildControlUI" type="Global"/>
 				</KeyValues>
 			</Button>
-			<Button parentKey="GuildRecruitmentButton" inherits="UIPanelButtonTemplate" text="GUILD_RECRUITMENT">
+			<Button parentKey="GuildRecruitmentButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="GUILD_RECRUITMENT">
 				<Size x="130" y="20"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.GuildControlButton" relativePoint="LEFT" x="-2" y="0"/>
@@ -227,7 +237,9 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-						local recruitmentDialog = self:GetParent():GetParent().RecruitmentDialog;
+						local communitiesFrame = self:GetParent():GetParent();
+						HelpTip:Acknowledge(communitiesFrame, CLUB_FINDER_TUTORIAL_POSTING);
+						local recruitmentDialog = communitiesFrame.RecruitmentDialog;
 						if (not recruitmentDialog:IsShown()) then
 							recruitmentDialog:UpdatedPostingInformationInit();
 						else
@@ -235,6 +247,12 @@
 							recruitmentDialog:Hide();
 						end
 					</OnClick>
+					<OnEnter>
+						if self.disabledTooltip then
+							GameTooltip_ShowDisabledTooltip(GameTooltip, self, self.disabledTooltip);
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 		</Frames>
@@ -277,9 +295,9 @@
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="2">
 						<Texture parentKey="TabardEmblem" file="Interface\GuildFrame\GuildEmblemsLG_01" hidden="true">
-							<Size x="64" y="64"/>
+							<Size x="56" y="64"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="-8" y="9"/>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPLEFT" x="24" y="-24"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -390,7 +408,7 @@
 			</Frame>
 			<Frame parentKey="PostingExpirationText" hidden="true" inherits="ClubFinderPostingExpirationTemplate">
 				<Anchors>
-					<Anchor point="BOTTOM" x="-60"/>
+					<Anchor point="BOTTOM" x="-18"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="GuildFinderFrame" name="ClubFinderGuildFinderFrame" inherits="ClubFinderGuildAndCommunityFrameTemplate">
@@ -473,13 +491,13 @@
 			</Frame>
 			<Frame parentKey="RecruitmentDialog" hidden="true" inherits="ClubsRecruitmentDialogTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="UIParent" x="65" y="-105"/>
+					<Anchor point="TOP" relativeTo="UIParent" x="0" y="-80"/>
 				</Anchors>
 			</Frame>
 			<Button parentKey="AddToChatButton" inherits="AddToChatButtonTemplate">
 				<Size x="22" y="22"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.ChatEditBox" relativePoint="BOTTOMRIGHT" x="4" y="5"/>
+					<Anchor point="RIGHT" relativeKey="$parent.StreamDropDownMenu" relativePoint="RIGHT" x="220" y="3"/>
 				</Anchors>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>

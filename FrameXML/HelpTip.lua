@@ -160,7 +160,7 @@ end
 function HelpTip:HideAll(parent)
 	for frame in self.framePool:EnumerateActive() do
 		if frame:Matches(parent) then
-			frame:Hide();
+			frame:Close();
 		end
 	end
 end
@@ -168,7 +168,7 @@ end
 function HelpTip:Hide(parent, text)
 	for frame in self.framePool:EnumerateActive() do
 		if frame:Matches(parent, text) then
-			frame:Hide();
+			frame:Close();
 			break;
 		end
 	end
@@ -235,6 +235,12 @@ function HelpTipTemplateMixin:OnHide()
 		info.onHideCallback(self.acknowledged, info.callbackArg);
 	end
 	HelpTip:Release(self);
+end
+
+-- this exists because OnHide can be deferred
+function HelpTipTemplateMixin:Close()
+	self.closed = true;
+	self:Hide();
 end
 
 function HelpTipTemplateMixin:OnUpdate()
@@ -398,12 +404,13 @@ function HelpTipTemplateMixin:Acknowledge()
 		SetCVarBitfield(info.cvarBitfield, info.bitfieldFlag, true);
 	end
 	self.acknowledged = true;
-	self:Hide();
+	self:Close();
 end
 
 function HelpTipTemplateMixin:Reset()
 	self.info = nil;
 	self.relativeRegion = nil;
+	self.closed = false;
 	self.acknowledged = false;
 	self.CloseButton:Hide();
 	self.OkayButton:Hide();
@@ -414,6 +421,9 @@ function HelpTipTemplateMixin:Reset()
 end
 
 function HelpTipTemplateMixin:Matches(parent, text)
+	if self.closed then
+		return false;
+	end
 	local textMatched = not text or self.info.text == text;
 	return textMatched and self:GetParent() == parent;
 end

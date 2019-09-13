@@ -502,6 +502,9 @@ function HonorFrame_OnEvent(self, event, ...)
 		HonorFrameBonusFrame_Update();
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		HonorFrame_UpdateQueueButtons();
+		if ( self:IsShown() ) then
+			RequestPVPRewards();
+		end
 	elseif ( event == "PVP_REWARDS_UPDATE" or event == "PVP_WORLDSTATE_UPDATE" ) then
 		if ( self:IsShown() ) then
 			RequestRandomBattlegroundInstanceInfo();

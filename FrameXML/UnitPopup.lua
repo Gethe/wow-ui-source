@@ -324,6 +324,14 @@ local function UnitPopup_GetBNetAccountInfo(menu)
 	end
 end
 
+local function UnitPopup_GetIsMobile(menu)
+	if menu.isMobile ~= nil then
+		return menu.isMobile;
+	elseif menu.accountInfo and menu.accountInfo.gameAccountInfo then
+		return menu.accountInfo.gameAccountInfo.isWowMobile;
+	end
+end
+
 function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	g_mostRecentPopupMenu = nil;
 
@@ -344,6 +352,7 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	dropdownMenu.userData = userData;
 	dropdownMenu.server = server;
 	dropdownMenu.accountInfo = UnitPopup_GetBNetAccountInfo(dropdownMenu);
+	dropdownMenu.isMobile = UnitPopup_GetIsMobile(dropdownMenu);
 
 	-- Determine which buttons should be shown or hidden
 	UnitPopup_HideButtons();
@@ -861,7 +870,9 @@ local function UnitPopup_IsPlayerOffline(menu)
 			return true;
 		end
 	elseif menu.accountInfo then
-		return not menu.accountInfo.gameAccountInfo.isOnline;
+		if not menu.accountInfo.gameAccountInfo.isOnline then
+			return true;
+		end
 	end
 
 	return false;
@@ -991,7 +1002,7 @@ function UnitPopup_HideButtons ()
 					shown = false;
 				elseif not dropdownMenu.bnetIDAccount or not BNFeaturesEnabledAndConnected() then
 					shown = false;
-				elseif dropdownMenu.accountInfo.gameAccountInfo.isWowMobile then
+				elseif dropdownMenu.isMobile then
 					shown = false;
 				end
 			end
@@ -1253,7 +1264,7 @@ function UnitPopup_HideButtons ()
 				end
 			end
 		elseif ( value == "RAF_SUMMON" ) then
-			if not guid or not IsRecruitAFriendLinked(guid) then
+			if not guid or dropdownMenu.isMobile or not IsRecruitAFriendLinked(guid) then
 				shown = false;
 			end
 		elseif value == "RAF_REMOVE_RECRUIT" then
@@ -1352,7 +1363,7 @@ function UnitPopup_HideButtons ()
 		elseif value == "VOICE_CHAT_USER_VOLUME" then
 			if not C_VoiceChat.CanPlayerUseVoiceChat() then
 				return false;
-			elseif isLocalPlayer or (isValidPlayerLocation and not C_VoiceChat.IsPlayerUsingVoice(playerLocation)) then
+			elseif isLocalPlayer or not isValidPlayerLocation or not C_VoiceChat.IsPlayerUsingVoice(playerLocation) then
 				shown = false;
 			end
 		elseif value == "COMMUNITIES_LEAVE" then
@@ -1444,7 +1455,7 @@ function UnitPopup_HideButtons ()
 				shown = false;
 			end
 		elseif value == "GUILDS_RECRUITMENT_SETTINGS" then
-			if not IsGuildLeader() and not C_GuildInfo.IsGuildOfficer() then
+			if not IsGuildLeader() and not C_GuildInfo.IsGuildOfficer() and not C_ClubFinder.IsEnabled() then
 				shown = false;
 			end
 		elseif commandToRoleId[value] ~= nil then
@@ -1666,6 +1677,10 @@ function UnitPopup_OnUpdate (elapsed)
 						elseif not isSameServer or not currentDropDown.accountInfo or not currentDropDown.accountInfo.gameAccountInfo.characterName or C_FriendList.GetFriendInfo(currentDropDown.accountInfo.gameAccountInfo.characterName) then
 							enable = false;
 						end
+					elseif ( value == "RAF_SUMMON" ) then
+						if not guid then
+							enable = false;
+						end
 					end
 
 					local diff = (level > 1) and 0 or 1;
@@ -1691,6 +1706,28 @@ function UnitPopup_OnUpdate (elapsed)
 						UIDropDownMenu_DisableButton(level, tempCount);
 					end
 				end
+			end
+		end
+	end
+end
+
+local function TryBNInvite(menu)
+	local gameAccountInfo = menu.accountInfo and menu.accountInfo.gameAccountInfo;
+	if gameAccountInfo and gameAccountInfo.playerGuid and gameAccountInfo.gameAccountID then
+		FriendsFrame_InviteOrRequestToJoin(gameAccountInfo.playerGuid, gameAccountInfo.gameAccountID);
+		return true;
+	end
+end
+
+local function TryInvite(menu, inviteType, fullname)
+	if inviteType == "SUGGEST_INVITE" and C_PartyInfo.IsPartyFull() and not UnitIsGroupLeader("player") then
+		ChatFrame_DisplaySystemMessageInPrimary(ERR_GROUP_FULL);
+	else
+		if not TryBNInvite(menu) then
+			if inviteType == "INVITE" or inviteType == "SUGGEST_INVITE" then
+				C_PartyInfo.InviteUnit(fullname);
+			elseif inviteType == "REQUEST_INVITE" then
+				RequestInviteFromUnit(fullname);
 			end
 		end
 	end
@@ -1758,10 +1795,8 @@ function UnitPopup_OnClick (self)
 		StartDuel(unit, true);
 	elseif ( button == "PET_BATTLE_PVP_DUEL" ) then
 		C_PetBattles.StartPVPDuel(unit, true);
-	elseif ( button == "INVITE" or button == "SUGGEST_INVITE" ) then
-		InviteToGroup(fullname);
-	elseif ( button == "REQUEST_INVITE" ) then
-		RequestInviteFromUnit(fullname);
+	elseif ( button == "INVITE" or button == "REQUEST_INVITE" or button == "SUGGEST_INVITE" ) then
+		TryInvite(dropdownFrame, button, fullname);
 	elseif ( button == "UNINVITE" or button == "VOTE_TO_KICK" ) then
 		UninviteUnit(fullname, nil, 1);
 	elseif ( button == "REMOVE_FRIEND" ) then
@@ -1799,7 +1834,7 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "BN_VIEW_FRIENDS" ) then
 		FriendsFriendsFrame_Show(dropdownFrame.bnetIDAccount);
 	elseif ( button == "BN_INVITE" or button == "BN_SUGGEST_INVITE" or button == "BN_REQUEST_INVITE" ) then
-		FriendsFrame_BattlenetInvite(nil, dropdownFrame.bnetIDAccount);
+		TryBNInvite(dropdownFrame);
 	elseif ( button == "BN_TARGET" ) then
 		if dropdownFrame.accountInfo and dropdownFrame.accountInfo.gameAccountInfo.characterName then
 			TargetUnit(dropdownFrame.accountInfo.gameAccountInfo.characterName);
@@ -2018,6 +2053,7 @@ function UnitPopup_OnClick (self)
 		end
 	elseif (button == "GUILDS_RECRUITMENT_SETTINGS") then
 		CommunitiesFrame.RecruitmentDialog.clubId = clubInfo.clubId;
+		CommunitiesFrame.RecruitmentDialog.clubName = clubInfo.name;
 		CommunitiesFrame.RecruitmentDialog:UpdatedPostingInformationInit();
 	elseif ( button == "COMMUNITIES_NOTIFICATION_SETTINGS" ) then
 		CommunitiesFrame:ShowNotificationSettingsDialog(clubInfo.clubId);

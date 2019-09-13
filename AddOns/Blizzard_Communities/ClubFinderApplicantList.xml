@@ -26,7 +26,7 @@
 				</Scripts>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
-			<Button parentKey="InviteButton" mixin="ClubFinderApplicantInviteButtonMixin" inherits="UIMenuButtonStretchTemplate">
+			<Button parentKey="InviteButton" motionScriptsWhileDisabled="true" mixin="ClubFinderApplicantInviteButtonMixin" inherits="UIMenuButtonStretchTemplate">
 				<Size x="70" y="22"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.CancelInvitationButton" relativePoint="LEFT" x="-70"/>
@@ -111,6 +111,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 			<OnMouseDown method="OnMouseDown"/>
@@ -123,19 +124,6 @@
 
 	<Frame name="ClubFinderApplicantListFrameTemplate" mixin="ClubFinderApplicantListMixin" virtual="true">
 		<Frames>
-			<CheckButton parentKey="ShowOfflineButton" inherits="UICheckButtonTemplate">
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="26"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.text:SetText(COMMUNITIES_MEMBER_LIST_SHOW_OFFLINE);
-					</OnLoad>
-					<OnClick>
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-					</OnClick>
-				</Scripts>
-			</CheckButton>
 			<Frame parentKey="ColumnDisplay" useParentLevel="true" inherits="ColumnDisplayTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-3" y="60"/>

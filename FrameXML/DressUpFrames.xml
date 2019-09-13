@@ -2,17 +2,17 @@
 ..\FrameXML\UI.xsd">
 	<Script file="DressUpFrames.lua"/>
 
-	<Frame name="SideDressUpFrame" mixin="SideDressUpModelFrameFrameMixin" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+	<Frame name="SideDressUpFrame" mixin="SideDressUpModelFrameFrameMixin" parent="UIParent" enableMouse="true" hidden="true">
 		<Size x="187" y="389"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentTop" file="Interface\AuctionFrame\AuctionHouseDressUpFrame-Top">
+				<Texture name="$parentTop" file="Interface\AuctionFrame\AuctionHouseDressUpFrame-Top" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\AuctionFrame\AuctionHouseDressUpFrame-Bottom">
+				<Texture file="Interface\AuctionFrame\AuctionHouseDressUpFrame-Bottom" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentTop" relativePoint="BOTTOMLEFT"/>
@@ -58,17 +58,13 @@
 					<OnClick method="OnClick" />
 				</Scripts>
 			</Button>
-			<Button name="$parentCloseButton" mixin="DressUpModelFrameCloseButtonMixin" inherits="UIPanelCloseButton">
+			<Button name="$parentCloseButton" frameLevel="4" mixin="DressUpModelFrameCloseButtonMixin" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="CENTER" relativeTo="SideDressUpFrame" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-15" y="-16"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="CENTER" relativeTo="SideDressUpFrame" relativePoint="TOPRIGHT" x="-15" y="-16"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture file="Interface\AuctionFrame\AuctionHouseDressUpFrame-Corner">
+						<Texture file="Interface\AuctionFrame\AuctionHouseDressUpFrame-Corner" texelSnappingBias="0.0" snapToPixelGrid="false">
 							<Size x="32" y="32"/>
 							<Anchors>
 								<Anchor point="TOPRIGHT" relativeTo="SideDressUpFrame" x="-5" y="-5"/>

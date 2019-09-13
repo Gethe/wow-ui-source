@@ -5,6 +5,26 @@ function ModelPreviewFrame_OnLoad(self)
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 end
 
+function ModelPreviewFrame_OnShow(self)
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+
+	local camera = self.Display.ModelScene:GetActiveCamera();
+	if camera then
+		camera:SetRightMouseButtonXMode(ORBIT_CAMERA_MOUSE_PAN_HORIZONTAL, true);
+		camera:SetRightMouseButtonYMode(ORBIT_CAMERA_MOUSE_PAN_VERTICAL, true);
+	end
+end
+
+function ModelPreviewFrame_OnHide(self)
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+
+	local camera = self.Display.ModelScene:GetActiveCamera();
+	if camera then
+		camera:SetRightMouseButtonXMode(ORBIT_CAMERA_MOUSE_MODE_NOTHING);
+		camera:SetRightMouseButtonYMode(ORBIT_CAMERA_MOUSE_MODE_NOTHING);
+	end
+end
+
 function ModelPreviewFrame_SetStyle(self, style)
 	self.style = style;
 	if style == "carousel" then

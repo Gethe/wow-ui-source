@@ -255,10 +255,16 @@ end
 function StoreCardMixin:UpdateBannerText(discounted, discountPercentage, entryInfo)
 end
 
+function StoreCardMixin:SetDefaultCardTexture()
+	--override this in other product cards
+end
+
 function StoreCardMixin:SetCardTexture(entryInfo)
 	if entryInfo.sharedData.overrideBackground then
 		self.Card:SetAtlas(entryInfo.sharedData.overrideBackground, true);
 		self.Card:SetTexCoord(0, 1, 0, 1);
+	else
+		self:SetDefaultCardTexture();
 	end
 end
 
@@ -316,14 +322,20 @@ function StoreCardMixin:UpdateModel(entryInfo, forceModelUpdate)
 end
 
 function StoreCardMixin:SetCardOwned(owned)
-	self.Card:SetDesaturated(owned);
-	self.Icon:SetDesaturated(owned);
 
 	if owned then
-		self.ModelScene:SetDesaturation(1);
+		self.ModelScene:SetDesaturation(0.8);
+		self.Card:SetDesaturation(0.8);
+		self.Card:SetAlpha(0.5);
+		self.Icon:SetDesaturation(0.8);
+		self.Icon:SetAlpha(0.5);
 		self.ProductName:SetAlpha(0.5);
 	else
 		self.ModelScene:SetDesaturation(0);
+		self.Card:SetDesaturation(0);
+		self.Card:SetAlpha(1);
+		self.Icon:SetDesaturation(0);
+		self.Icon:SetAlpha(1);
 		self.ProductName:SetAlpha(1);
 	end
 end
@@ -434,6 +446,8 @@ function StoreCardMixin:HideIcon()
 	self.GlowSpin.SpinAnim:Stop();
 	self.GlowPulse:Hide();
 	self.GlowPulse.PulseAnim:Stop();
+
+	self.Card:Show();
 end
 
 function StoreCardMixin:UpdateCard(entryID, forceModelUpdate)

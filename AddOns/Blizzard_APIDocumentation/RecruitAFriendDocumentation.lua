@@ -7,6 +7,21 @@ local RecruitAFriend =
 	Functions =
 	{
 		{
+			Name = "ClaimActivityReward",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "activityID", Type = "number", Nilable = false },
+				{ Name = "acceptanceID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ClaimNextReward",
 			Type = "Function",
 
@@ -113,15 +128,6 @@ local RecruitAFriend =
 	Events =
 	{
 		{
-			Name = "PartyRecruitAFriendUpdated",
-			Type = "Event",
-			LiteralName = "PARTY_RECRUIT_A_FRIEND_UPDATED",
-			Payload =
-			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
-			},
-		},
-		{
 			Name = "RafInfoUpdated",
 			Type = "Event",
 			LiteralName = "RAF_INFO_UPDATED",
@@ -171,11 +177,11 @@ local RecruitAFriend =
 			{
 				{ Name = "Pet", Type = "RafRewardType", EnumValue = 0 },
 				{ Name = "Mount", Type = "RafRewardType", EnumValue = 1 },
-				{ Name = "Item", Type = "RafRewardType", EnumValue = 2 },
-				{ Name = "Appearance", Type = "RafRewardType", EnumValue = 3 },
-				{ Name = "Title", Type = "RafRewardType", EnumValue = 4 },
-				{ Name = "GameTime", Type = "RafRewardType", EnumValue = 5 },
-				{ Name = "AppearanceSet", Type = "RafRewardType", EnumValue = 6 },
+				{ Name = "Appearance", Type = "RafRewardType", EnumValue = 2 },
+				{ Name = "Title", Type = "RafRewardType", EnumValue = 3 },
+				{ Name = "GameTime", Type = "RafRewardType", EnumValue = 4 },
+				{ Name = "AppearanceSet", Type = "RafRewardType", EnumValue = 5 },
+				{ Name = "Illusion", Type = "RafRewardType", EnumValue = 6 },
 				{ Name = "Invalid", Type = "RafRewardType", EnumValue = 7 },
 			},
 		},
@@ -227,19 +233,10 @@ local RecruitAFriend =
 			},
 		},
 		{
-			Name = "RafItemInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "itemID", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "RafAppearanceInfo",
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "appearanceID", Type = "number", Nilable = false },
 			},
 		},
@@ -262,18 +259,27 @@ local RecruitAFriend =
 			},
 		},
 		{
+			Name = "RafIllusionInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "spellItemEnchantmentID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "RafReward",
 			Type = "Structure",
 			Fields =
 			{
 				{ Name = "rewardID", Type = "number", Nilable = false },
+				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "rewardType", Type = "RafRewardType", Nilable = false },
 				{ Name = "petInfo", Type = "RafPetInfo", Nilable = true },
 				{ Name = "mountInfo", Type = "RafMountInfo", Nilable = true },
-				{ Name = "itemInfo", Type = "RafItemInfo", Nilable = true },
 				{ Name = "appearanceInfo", Type = "RafAppearanceInfo", Nilable = true },
 				{ Name = "titleInfo", Type = "RafTitleInfo", Nilable = true },
 				{ Name = "appearanceSetInfo", Type = "RafAppearanceSetInfo", Nilable = true },
+				{ Name = "illusionInfo", Type = "RafIllusionInfo", Nilable = true },
 				{ Name = "canClaim", Type = "bool", Nilable = false },
 				{ Name = "claimed", Type = "bool", Nilable = false },
 				{ Name = "repeatable", Type = "bool", Nilable = false },

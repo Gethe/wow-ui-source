@@ -1184,7 +1184,7 @@
 						</Layers>
 						<Scripts>
 							<OnClick>
-								StaticPopup_Show("BUYOUT_AUCTION");
+								ShowAuctionBuyoutsStaticPopup();
 								self:Disable();
 							</OnClick>
 						</Scripts>
@@ -1598,7 +1598,7 @@
 						</Layers>
 						<Scripts>
 							<OnClick>
-								StaticPopup_Show("BUYOUT_AUCTION");
+								ShowAuctionBuyoutsStaticPopup();
 								self:Disable();
 							</OnClick>
 						</Scripts>
@@ -2306,8 +2306,7 @@
 			<OnShow function="AuctionFrame_OnShow"/>
 			<OnHide>
 				PlaySound(SOUNDKIT.AUCTION_WINDOW_CLOSE);
-				StaticPopup_Hide("BUYOUT_AUCTION");
-				StaticPopup_Hide("CANCEL_AUCTION");
+				CloseAuctionStaticPopups();
 				WowTokenGameTimeTutorial:Hide();
 				CloseSideDressUpFrame(self);
 				SetAuctionsTabShowing(false);

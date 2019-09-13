@@ -218,8 +218,20 @@ function PVPCellStatMixin:Init(dataProviderKey, useAlternateColor)
 	self.useAlternateColor = useAlternateColor;
 end
 
+local function GetPVPStatData(rowData, pvpStatID)
+	local stats = rowData.stats;
+	for statsIndex = 1, #stats do
+		local stat = stats[statsIndex];
+		if stat.pvpStatID == pvpStatID then
+			return stat;
+		end
+	end
+
+	return nil;
+end
+
 function PVPCellStatMixin:Populate(rowData, dataIndex)
-	local entry = TableBuilderDataProviderUtil.TraverseToValue(rowData, self.dataProviderKey);
+	local entry = GetPVPStatData(rowData, self.dataProviderKey);
 	if entry then
 		local value = entry.pvpStatValue;
 		if value then
@@ -319,27 +331,18 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 	column:ConstrainToHeader(textPadding);
 	column:ConstructCells("FRAME", "PVPCellStringTemplate", "healingDone", useAlternateColor, isAbbreviated, hasTooltip);
 
-	local statColumns = {};
-	for pvpStatIndex, pvpStatID in ipairs(C_PvP.GetMatchPVPStatIDs()) do
-		local statColumn = C_PvP.GetMatchPVPStatColumn(pvpStatID);
-		if statColumn then
-			statColumn.sortType = "stat"..pvpStatIndex;
-			statColumn.statPath = "stats."..pvpStatIndex;
-			tinsert(statColumns, statColumn)
-		end
-	end
+	local statColumns = C_PvP.GetMatchPVPStatColumns();
+	table.sort(statColumns, function(lhs,rhs)
+		return lhs.orderIndex < rhs.orderIndex;
+	end);
 
-	table.sort(statColumns, function(a, b)
-		return a.orderIndex < b.orderIndex end
-	);
-
-	for i, statColumn in ipairs(statColumns) do
-		local name = statColumn.name;
-		if strlen(name) > 0 then
-		column = tableBuilder:AddColumn();
-		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", statColumn.name, "CENTER", statColumn.sortType, statColumn.tooltip);
-		column:ConstrainToHeader(textPadding);
-		column:ConstructCells("FRAME", "PVPCellStatTemplate", statColumn.statPath, useAlternateColor);
+	for columnIndex, statColumn in ipairs(statColumns) do
+		if strlen(statColumn.name) > 0 then
+			column = tableBuilder:AddColumn();
+			local sortType = "stat"..columnIndex;
+			column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", statColumn.name, "CENTER", sortType, statColumn.tooltip);
+			column:ConstrainToHeader(textPadding);
+			column:ConstructCells("FRAME", "PVPCellStatTemplate", statColumn.pvpStatID, useAlternateColor);
 		end
 	end
 	

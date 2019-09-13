@@ -14,7 +14,7 @@
 			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture atlas="MapCornerShadow-Right" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="4" y="4"/>
+						<Anchor point="TOPRIGHT" x="4" y="1"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="1" bottom="0"/>
 				</Texture>

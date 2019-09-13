@@ -262,14 +262,35 @@ local function ShouldShowWarModeBonus(questID, currencyID, firstInstance)
 	return QuestUtils_IsQuestWorldQuest(questID) and C_QuestLog.QuestHasWarModeBonus(questID) and not C_CurrencyInfo.GetFactionGrantedByCurrency(currencyID);
 end
 
-function QuestUtils_GetReplayQuestDecoration(questID, useLargeIcon)
-	local embeddedIcon = useLargeIcon and CreateAtlasMarkup("QuestSharing-ReplayIcon", 18, 16) or CreateAtlasMarkup("QuestSharing-QuestLog-Replay", 19, 16);
-	return ("|HquestReplay:%d|h%s|h"):format(questID, embeddedIcon);
+function QuestUtils_GetQuestDecorationLink(linkType, questID, icon, width, height)
+	return ("|H%s:%d|h%s|h"):format(linkType, questID, CreateAtlasMarkup(icon, width, height));
 end
 
-function QuestUtils_DecorateQuestText(questID, text, useLargeIcon)
-	if C_QuestLog.IsQuestReplayable(questID) then
+function QuestUtils_GetReplayQuestDecoration(questID, useLargeIcon)
+	local linkType = "questReplay";
+
+	if useLargeIcon then
+		return QuestUtils_GetQuestDecorationLink(linkType, questID, "QuestSharing-ReplayIcon", 18, 16);
+	else
+		return QuestUtils_GetQuestDecorationLink(linkType, questID, "QuestSharing-QuestLog-Replay", 19, 16);
+	end
+end
+
+function QuestUtils_GetDisabledQuestDecoration(questID, useLargeIcon)
+	local linkType = "questDisabled";
+	if useLargeIcon then
+		return QuestUtils_GetQuestDecorationLink(linkType, questID, "QuestSharing-QuestDetails-Padlock", 10, 10);
+	else
+		return QuestUtils_GetQuestDecorationLink(linkType, questID, "QuestSharing-QuestDetails-Padlock", 20, 20);
+	end
+end
+
+-- TODO: Replace booleans with flags?
+function QuestUtils_DecorateQuestText(questID, text, useLargeIcon, ignoreReplayable, ignoreDisabled)
+	if not ignoreReplayable and C_QuestLog.IsQuestReplayable(questID) then
 		return QuestUtils_GetReplayQuestDecoration(questID, useLargeIcon) .. text;
+	elseif not ignoreDisabled and C_QuestLog.IsQuestDisabledForSession(questID) then
+		return QuestUtils_GetDisabledQuestDecoration(questID, useLargeIcon) .. text;
 	end
 
 	return text;
@@ -514,30 +535,4 @@ end
 function QuestUtils_ShouldDisplayExpirationWarning(questID)
 	local displayExpiration = select(7, GetQuestTagInfo(questID));
 	return displayExpiration;
-end
-
-function QuestUtils_DoesQuestSessionQuestQualifyForBonusRewardBox(questID)
-	-- You must be in a quest session to get bonus loot
-	if not C_QuestSession.HasJoined() then
-		return false;
-	end
-
-	-- The quest must not be trivial (this checks the player's effective level);
-	if C_QuestLog.IsQuestTrivial(questID) then
-		return false;
-	end;
-
-	-- One of the following conditions needs to be true in order to receive bonus loot:
-	-- Either:
-	-- 1. You must be replaying a quest that you haven't recently replayed, or
-	if C_QuestLog.IsQuestReplayable(questID) and C_QuestLog.IsQuestReplayedRecently(questID) then
-		return false;
-	end
-
-	-- or, 2. You must be playing content that is lower than the player's expansion level (expansion level is relative to the player's actual level)
-	if GetQuestExpansion(questID) >= GetExpansionForLevel(UnitLevel("player")) then
-		return false;
-	end
-
-	return true;
 end

@@ -876,9 +876,6 @@
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Selected" atlas="pvptalents-list-background-selected"  hidden="true" alphaMode="ADD" setAllPoints="true"/>
-				<Texture parentKey="SelectedOtherOverlay" setAllPoints="true" hidden="true">
-					<Color r="0" b="0" g="0" a="0.6"/>
-				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="SelectedOtherCheck" atlas="pvptalents-list-checkmark" useAtlasSize="true" hidden="true">

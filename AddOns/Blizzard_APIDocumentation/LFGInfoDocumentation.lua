@@ -21,6 +21,16 @@ local LFGInfo =
 			},
 		},
 		{
+			Name = "GetRoleCheckDifficultyDetails",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "maxLevel", Type = "number", Nilable = true },
+				{ Name = "isLevelReduced", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HideNameFromUI",
 			Type = "Function",
 

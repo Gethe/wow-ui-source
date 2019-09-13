@@ -629,7 +629,7 @@
 								<Scripts>
 									<OnClick>
 										PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-										InviteToGroup(LFRBrowseFrame.selectedName);
+										C_PartyInfo.InviteUnit(LFRBrowseFrame.selectedName);
 									</OnClick>
 								</Scripts>
 							</Button>

@@ -96,6 +96,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "GetQuestDifficultyLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "level", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetQuestInfo",
 			Type = "Function",
 
@@ -248,6 +262,20 @@ local QuestLog =
 			Returns =
 			{
 				{ Name = "isTrivial", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "QuestHasQuestSessionBonus",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasBonus", Type = "bool", Nilable = false },
 			},
 		},
 		{

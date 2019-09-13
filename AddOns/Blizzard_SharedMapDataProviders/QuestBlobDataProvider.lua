@@ -185,6 +185,11 @@ function QuestBlobPinMixin:UpdateTooltip()
 		self:OnMouseLeave();
 		return;
 	end
+	
+	local gameTooltipOwner = GameTooltip:GetOwner();
+	if gameTooltipOwner and gameTooltipOwner ~= self then
+		return;
+	end
 
 	local title, _, _, _, _, _, _, questID = GetQuestLogTitle(questLogIndex);
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT", 5, 2);

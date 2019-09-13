@@ -19,9 +19,9 @@ local QuestSessionConstants =
 		{
 			Name = "QuestSessionResult",
 			Type = "Enumeration",
-			NumValues = 28,
+			NumValues = 31,
 			MinValue = 0,
-			MaxValue = 27,
+			MaxValue = 30,
 			Fields =
 			{
 				{ Name = "Ok", Type = "QuestSessionResult", EnumValue = 0 },
@@ -51,7 +51,10 @@ local QuestSessionConstants =
 				{ Name = "Logout", Type = "QuestSessionResult", EnumValue = 24 },
 				{ Name = "Empty", Type = "QuestSessionResult", EnumValue = 25 },
 				{ Name = "QuestNotCompleted", Type = "QuestSessionResult", EnumValue = 26 },
-				{ Name = "Unknown", Type = "QuestSessionResult", EnumValue = 27 },
+				{ Name = "Resync", Type = "QuestSessionResult", EnumValue = 27 },
+				{ Name = "Restricted", Type = "QuestSessionResult", EnumValue = 28 },
+				{ Name = "InPetBattle", Type = "QuestSessionResult", EnumValue = 29 },
+				{ Name = "Unknown", Type = "QuestSessionResult", EnumValue = 30 },
 			},
 		},
 	},

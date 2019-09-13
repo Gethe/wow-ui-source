@@ -213,6 +213,14 @@ local sessionCommandToHelpText =
 	[Enum.QuestSessionCommand.Stop] = QUEST_SESSION_HELP_TEXT_SESSION_ACTIVE,
 }
 
+local function GetQuestSessionHelpText(command)
+	if command == Enum.QuestSessionCommand.Start and C_QuestSession.Exists() then
+		return QUEST_SESSION_HELP_TEXT_WAITING;
+	end
+
+	return sessionCommandToHelpText[command];
+end
+
 local sessionCommandToTooltipTitle =
 {
 	[Enum.QuestSessionCommand.Start] = QUEST_SESSION_START_SESSION,
@@ -260,7 +268,7 @@ function QuestSessionManagementMixin:UpdateVisibility()
 		local command = QuestSessionManager:GetSessionCommand();
 		if command then
 			self.CommandText:SetText(sessionCommandToCommandName[command]);
-			self.HelpText:SetText(sessionCommandToHelpText[command]);
+			self.HelpText:SetText(GetQuestSessionHelpText(command));
 
 			local onlyShowSessionActive = command == Enum.QuestSessionCommand.SessionActiveNoCommand;
 			self.ExecuteSessionCommand:SetShown(not onlyShowSessionActive);
@@ -309,6 +317,10 @@ function QuestSessionManagementMixin:UpdateTooltip()
 	end
 end
 
+function ShouldShowQuestSessionAlert()
+	return C_QuestSession.CanStart() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_QUEST_SESSION);
+end
+
 function QuestSessionManagementMixin:EvaluateAlertVisibility()
 	if ShouldShowQuestSessionAlert() then
 		local helpTipInfo = {
@@ -348,8 +360,10 @@ function QuestMapFrame_UpdateQuestSessionState(self)
 	self.QuestSessionManagement:UpdateVisibility();
 	self.QuestSessionManagement:UpdateTooltip();
 	if self.QuestSessionManagement:IsShown() then
-		self.QuestsFrame:SetPoint("BOTTOMRIGHT", self.QuestSessionManagement, "TOPRIGHT", -27, 1);
+		self.QuestsFrame.DetailFrame.BottomDetail:SetAtlas("QuestSharing-QuestLog-BottomDetail");
+		self.QuestsFrame:SetPoint("BOTTOMRIGHT", self.QuestSessionManagement, "TOPRIGHT", -27, 0);
 	else
+		self.QuestsFrame.DetailFrame.BottomDetail:SetAtlas("QuestLog_BottomDetail");
 		self.QuestsFrame:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -27, 0);
 	end
 end
@@ -493,9 +507,9 @@ function QuestMapFrame_ShowQuestDetails(questID)
 
 	local mapFrame = QuestMapFrame:GetParent();
 	local questPortrait, questPortraitText, questPortraitName, questPortraitMount = GetQuestLogPortraitGiver();
-	if (questPortrait and questPortrait ~= 0 and QuestLogShouldShowPortrait() and (UIParent:GetRight() - mapFrame:GetRight() > QuestNPCModel:GetWidth() + 6)) then
+	if (questPortrait and questPortrait ~= 0 and QuestLogShouldShowPortrait() and (UIParent:GetRight() - mapFrame:GetRight() > QuestModelScene:GetWidth() + 6)) then
 		QuestFrame_ShowQuestPortrait(mapFrame, questPortrait, questPortraitMount, questPortraitText, questPortraitName, -2, -43);
-		QuestNPCModel:SetFrameLevel(mapFrame:GetFrameLevel() + 2);
+		QuestModelScene:SetFrameLevel(mapFrame:GetFrameLevel() + 2);
 	else
 		QuestFrame_HideQuestPortrait();
 	end
@@ -537,7 +551,7 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	QuestMapFrame_UpdateQuestDetailsButtons();
 	QuestMapFrame_AdjustPathButtons();
 
-	if ( IsQuestComplete(questID) and GetQuestLogIsAutoComplete(questLogIndex) ) then
+	if not C_QuestLog.IsQuestDisabledForSession(questID) and IsQuestComplete(questID) and GetQuestLogIsAutoComplete(questLogIndex) then
 		QuestMapFrame.DetailsFrame.CompleteQuestFrame:Show();
 		QuestMapFrame.DetailsFrame.RewardsFrame:SetPoint("BOTTOMLEFT", 0, 44);
 	else
@@ -747,8 +761,10 @@ function QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, titl
 	if ( displayQuestID ) then
 		title = questID.." - "..title;
 	end
+
+	local questLevel = C_QuestLog.GetQuestDifficultyLevel(questID);
 	if ( ENABLE_COLORBLIND_MODE == "1" ) then
-		title = "["..level.."] " .. title;
+		title = "["..questLevel.."] " .. title;
 	end
 
 	-- If not a header see if any nearby group mates are on this quest
@@ -763,9 +779,12 @@ function QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, titl
 		title = "["..partyMembersOnQuest.."] "..title;
 	end
 
-	button.Text:SetText(QuestUtils_DecorateQuestText(questID, title));
+	local ignoreReplayable = false;
+	local ignoreDisabled = true;
+	local useLargeIcon = false;
+	button.Text:SetText(QuestUtils_DecorateQuestText(questID, title, useLargeIcon, ignoreReplayable, ignoreDisabled));
 
-	local difficultyColor = GetQuestDifficultyColor(level, isScaling, questID);
+	local difficultyColor = GetQuestDifficultyColor(questLevel, isScaling, questID);
 	button.Text:SetTextColor( difficultyColor.r, difficultyColor.g, difficultyColor.b );
 
 	if ( IsQuestHardWatched(questLogIndex) ) then
@@ -801,16 +820,12 @@ function QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, titl
 		tagID = questTagID;
 	end
 
-	if ( tagID ) then
-		local tagCoords = QUEST_TAG_TCOORDS[tagID];
-		if( tagCoords ) then
-			button.TagTexture:SetTexCoord( unpack(tagCoords) );
-			button.TagTexture:Show();
-		else
-			button.TagTexture:Hide();
-		end
-	else
-		button.TagTexture:Hide();
+	local tagCoords = tagID and QUEST_TAG_TCOORDS[tagID];
+	button.TagTexture:SetShown(tagCoords ~= nil);
+
+	if tagCoords then
+		button.TagTexture:SetTexCoord(unpack(tagCoords));
+		button.TagTexture:SetDesaturated(C_QuestLog.IsQuestDisabledForSession(questID));
 	end
 
 	-- POI/objectives
@@ -1129,11 +1144,13 @@ end
 function QuestMapLogTitleButton_OnEnter(self)
 	-- do block highlight
 	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling = GetQuestLogTitle(self.questLogIndex);
+	local questLevel = C_QuestLog.GetQuestDifficultyLevel(questID);
+
 	local difficultyHighlightColor;
 	if isHeader then
 		difficultyHighlightColor = QuestDifficultyHighlightColors["header"];
 	else
-		difficultyHighlightColor = select(2, GetQuestDifficultyColor(level, isScaling, questID));
+		difficultyHighlightColor = select(2, GetQuestDifficultyColor(questLevel, isScaling, questID));
 	end
 
 	self.Text:SetTextColor(difficultyHighlightColor.r, difficultyHighlightColor.g, difficultyHighlightColor.b);
@@ -1161,6 +1178,8 @@ function QuestMapLogTitleButton_OnEnter(self)
 
 	if C_QuestLog.IsQuestReplayable(questID) then
 		GameTooltip_AddInstructionLine(GameTooltip, QuestUtils_GetReplayQuestDecoration(questID)..QUEST_SESSION_QUEST_TOOLTIP_IS_REPLAY, false);
+	elseif C_QuestLog.IsQuestDisabledForSession(questID) then
+		GameTooltip_AddColoredLine(GameTooltip, QuestUtils_GetDisabledQuestDecoration(questID)..QUEST_SESSION_ON_HOLD_TOOLTIP_TITLE, DISABLED_FONT_COLOR, false);
 	end
 
 	-- quest tag
@@ -1264,7 +1283,9 @@ end
 function QuestMapLogTitleButton_OnLeave(self)
 	-- remove block highlight
 	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling = GetQuestLogTitle(self.questLogIndex);
-	local difficultyColor = isHeader and QuestDifficultyColors["header"] or GetQuestDifficultyColor(level, isScaling, questID);
+
+	local questLevel = C_QuestLog.GetQuestDifficultyLevel(questID);
+	local difficultyColor = isHeader and QuestDifficultyColors["header"] or GetQuestDifficultyColor(questLevel, isScaling, questID);
 	self.Text:SetTextColor( difficultyColor.r, difficultyColor.g, difficultyColor.b );
 
 	local isDisabledQuest = C_QuestLog.IsQuestDisabledForSession(questID);
@@ -1286,16 +1307,17 @@ function QuestMapLogTitleButton_OnClick(self, button)
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
-	if ( IsShiftKeyDown() ) then
+	local isDisabledQuest = C_QuestLog.IsQuestDisabledForSession(self.questID);
+	if not isDisabledQuest and IsShiftKeyDown() then
 		QuestMapQuestOptions_TrackQuest(self.questID);
 	else
-		if ( button == "RightButton" ) then
+		if not isDisabledQuest and button == "RightButton" then
 			if ( self.questID ~= QuestMapQuestOptionsDropDown.questID ) then
 				CloseDropDownMenus();
 			end
 			QuestMapQuestOptionsDropDown.questID = self.questID;
 			ToggleDropDownMenu(1, nil, QuestMapQuestOptionsDropDown, "cursor", 6, -6);
-		else
+		elseif button == "LeftButton" then
 			QuestMapFrame_ShowQuestDetails(self.questID);
 		end
 	end

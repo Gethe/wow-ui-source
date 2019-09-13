@@ -201,6 +201,15 @@ function GameTooltip_AddColoredLine(tooltip, text, color, wrap, leftOffset)
 	tooltip:AddLine(text, r, g, b, wrap, leftOffset);
 end
 
+function GameTooltip_ShowDisabledTooltip(tooltip, owner, text)
+	GameTooltip:SetOwner(owner);
+
+	local wrap = true;
+	GameTooltip_SetTitle(GameTooltip, text, RED_FONT_COLOR, wrap);
+
+	GameTooltip:Show();
+end
+
 function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 	style = style or TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT;
 

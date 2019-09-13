@@ -58,6 +58,11 @@
 						<Anchor point="RIGHT" x="1" y="0"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="Glow3" hidden="true" ignoreParentAlpha="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 				<Texture parentKey="LeftArrow" atlas="worldstate-capturebar-arrow" useAtlasSize="true" ignoreParentAlpha="true" alphaMode="ADD" alpha="0">
 					<Anchors>
 						<Anchor point="RIGHT" relativeKey="$parent.Spark" relativePoint="LEFT" x="1" y="0"/>
@@ -85,6 +90,8 @@
 				<Alpha childKey="Glow1" fromAlpha="1" toAlpha="0.25" order="1" duration=".4"/>
 				<Alpha childKey="Glow2" fromAlpha="0.25" toAlpha="1" order="0" duration=".4"/>
 				<Alpha childKey="Glow2" fromAlpha="1" toAlpha="0.25" order="1" duration=".4"/>
+				<Alpha childKey="Glow3" fromAlpha="0.25" toAlpha="1" order="0" duration=".4"/>
+				<Alpha childKey="Glow3" fromAlpha="1" toAlpha="0.25" order="1" duration=".4"/>
 			</AnimationGroup>
 		</Animations>
 	</Frame>

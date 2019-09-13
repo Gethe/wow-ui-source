@@ -5,18 +5,34 @@ function DestinyFrame_OnEvent(self, event)
 	self:Show();
 end
 
+local destinyHordeHelpTipInfo = {
+	text = RECRUIT_A_FRIEND_FACTION_PANDAREN_HORDE,
+	buttonStyle = HelpTip.ButtonStyle.None,
+	targetPoint = HelpTip.Point.RightEdgeCenter,
+	useParentStrata = true,
+	offsetX = -15,
+};
+
+local destinyAllianceHelpTipInfo = {
+	text = RECRUIT_A_FRIEND_FACTION_PANDAREN_ALLIANCE,
+	buttonStyle = HelpTip.ButtonStyle.None,
+	targetPoint = HelpTip.Point.LeftEdgeCenter,
+	useParentStrata = true,
+	offsetX = 15,
+};
+
 function DestinyFrame_UpdateRecruitInfo(self)
 	local active, faction = C_RecruitAFriend.GetRecruitInfo();
 	if active then
 		if PLAYER_FACTION_GROUP[faction] == "Horde" then
-			self.RecruitAFriendSuggestionHorde:ShowHelpBox(RECRUIT_A_FRIEND_FACTION_PANDAREN_HORDE);
-			self.RecruitAFriendSuggestionAlliance:Hide();
+			HelpTip:Show(DestinyHordeButton, destinyHordeHelpTipInfo);
+			HelpTip:HideAll(DestinyAllianceButton);
 		else
-			self.RecruitAFriendSuggestionAlliance:ShowHelpBox(RECRUIT_A_FRIEND_FACTION_PANDAREN_ALLIANCE);
-			self.RecruitAFriendSuggestionHorde:Hide();
+			HelpTip:Show(DestinyAllianceButton, destinyAllianceHelpTipInfo);
+			HelpTip:HideAll(DestinyHordeButton);
 		end
 	else
-		self.RecruitAFriendSuggestionHorde:Hide();
-		self.RecruitAFriendSuggestionAlliance:Hide();
+		HelpTip:HideAll(DestinyAllianceButton);
+		HelpTip:HideAll(DestinyHordeButton);
 	end
 end

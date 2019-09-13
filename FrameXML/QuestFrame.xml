@@ -291,8 +291,18 @@
 			<OnHide function="QuestFrame_OnHide"/>
 		</Scripts>
 	</Frame>
-	<PlayerModel name="QuestNPCModel" mixin ="QuestNPCModelFrameMixin" enableMouse="true" hidden="true">
+	<ModelScene name="QuestModelScene" inherits="PanningModelSceneMixinTemplate">
 		<Size x="198" y="230"/>
+		<Frames>
+			<KeyValues>
+				<KeyValue key="normalIntensity" value="0.75" type="number"/>
+				<KeyValue key="highlightIntensity" value="1.2" type="number"/>
+			</KeyValues>
+			<Anchors>
+				<Anchor point="TOPLEFT" x="0" y="0"/>
+				<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+			</Anchors>
+		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="QuestNPCModelBg" inherits="QuestPortrait-MrBrownstone">
@@ -489,11 +499,11 @@
 						QuestNPCCornerBottomRight:SetPoint("BOTTOMRIGHT", self, 7, -6);
 					</OnShow>
 					<OnHide>
-						QuestNPCCornerBottomLeft:SetPoint("BOTTOMLEFT", QuestNPCModel, -6, -29);
-						QuestNPCCornerBottomRight:SetPoint("BOTTOMRIGHT", QuestNPCModel, 7, -29);
+						QuestNPCCornerBottomLeft:SetPoint("BOTTOMLEFT", QuestModelScene, -6, -29);
+						QuestNPCCornerBottomRight:SetPoint("BOTTOMRIGHT", QuestModelScene, 7, -29);
 					</OnHide>
 				</Scripts>
 			</Frame>
 		</Frames>
-	</PlayerModel>
+	</ModelScene>
 </Ui>

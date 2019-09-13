@@ -477,6 +477,26 @@
 						<Frames>
 							<Button parentKey="RotateLeftButton" inherits="RotateOrbitCameraLeftButtonTemplate" />
 							<Button parentKey="RotateRightButton" inherits="RotateOrbitCameraRightButtonTemplate" />
+							<CheckButton parentKey="TogglePlayer" mixin="PlayerPreviewToggle" inherits="UICheckButtonTemplate" >
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" >
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="TogglePlayerText" inherits="GameFontNormalSmall" text="MOUNT_JOURNAL_PLAYER">
+											<Anchors>
+												<Anchor point="RIGHT" relativeKey="$parent.TogglePlayer" relativePoint="LEFT" x="0" y="0"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnShow method="OnShow"/>
+									<OnClick method="OnClick"/>
+								</Scripts>
+							</CheckButton>
 						</Frames>
 						<Scripts>
 							<OnMouseUp inherit="append">

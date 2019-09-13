@@ -1777,7 +1777,7 @@ SlashCmdList["INVITE"] = function(msg)
 		ChatFrame_DisplayUsageError(ERR_NO_TARGET_OR_NAME);
 		return;
 	end
-	InviteToGroup(msg);
+	C_PartyInfo.InviteUnit(msg);
 end
 
 SlashCmdList["REQUEST_INVITE"] = function(msg)
@@ -2389,6 +2389,13 @@ if IsGMClient() then
 end
 
 SlashCmdList["TABLEINSPECT"] = function(msg)
+	if ( IsKioskModeEnabled() or ScriptsDisallowedForBeta() ) then
+		return;
+	end
+	if ( not AreDangerousScriptsAllowed() ) then
+		StaticPopup_Show("DANGEROUS_SCRIPTS_WARNING");
+		return;
+	end
 	forceinsecure();
 	UIParentLoadAddOn("Blizzard_DebugTools");
 
@@ -2909,7 +2916,7 @@ end
 function ChatFrame_RemoveCommunitiesChannel(chatFrame, clubId, streamId, omitMessage)
 	local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
 	local channelIndex = ChatFrame_RemoveChannel(chatFrame, channelName);
-	
+
 	if not omitMessage then
 		local r, g, b = Chat_GetCommunitiesChannelColor(clubId, streamId);
 		chatFrame:AddMessage(COMMUNITIES_CHANNEL_REMOVED_FROM_CHAT_WINDOW:format(channelIndex, ChatFrame_ResolveChannelName(channelName)), r, g, b);
@@ -4641,7 +4648,7 @@ function ChatEdit_OnTextChanged(self, userInput)
 	self.ignoreTextChange = nil;
 	local regex = "^((/[^%s]+)%s+(.+))"
 	local full, command, target = strmatch(self:GetText(), regex);
-	if ( not target or (strsub(target, 1, 1) == "|") ) then
+	if ( not target or (strsub(target, 1, 1) == "|") or self.disallowAutoComplete) then
 		AutoComplete_HideIfAttachedTo(self);
 		return;
 	end
@@ -4662,8 +4669,8 @@ function escapePatternSymbols(text)
 end
 
 function ChatEdit_OnChar(self)
-	local regex = "^((/[^%s]+)%s+(.+))$"
-	local text, command, target = strmatch(self:GetText(), regex);
+	local regex = "^((/[^%s]+)(%s+)(.+))$"
+	local text, command, whitespace, target = strmatch(self:GetText(), regex);
 	if (command) then
 		self.command = command
 	else
@@ -4677,17 +4684,14 @@ function ChatEdit_OnChar(self)
 			local name = Ambiguate(nameToShow.name, "all");
 			--We're going to be setting the text programatically which will clear the userInput flag on the editBox.
 			--So we want to manually update the dropdown before we change the text.
-			AutoComplete_Update(self, target, utf8Position - strlenutf8(command) - 1);
-			target = escapePatternSymbols(target)
-			local highlightRegex = "^"..target.."(.*)";
-			local nameEnding = name:match(highlightRegex)
-			if (not nameEnding) then
-				return;
+			AutoComplete_Update(self, target, utf8Position - strlenutf8(command) - strlen(whitespace));
+			if strsub(name, 1, 1) ~= "|" then
+				target = escapePatternSymbols(target);
+
+				local newTarget = name;
+				self:SetText(string.format("%s%s%s", command, whitespace, newTarget));
+				self:HighlightText(strlen(text), strlen(command) + strlen(whitespace) + strlen(newTarget));
 			end
-			local newText = text..nameEnding;
-			self:SetText(newText);
-			self:HighlightText(strlen(text), strlen(newText));
-			self:SetCursorPosition(strlen(text));
 		end
 	end
 end
@@ -4800,6 +4804,7 @@ function ChatEdit_ParseText(editBox, send, parseIfNoSpaces)
 
 	if ( command ~= text ) then
 		msg = strsub(text, strlen(command) + 2);
+		msg = strmatch(msg, "^%s*(.*)$") or msg;
 	end
 
 	command = strupper(command);

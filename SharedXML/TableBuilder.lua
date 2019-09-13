@@ -374,34 +374,6 @@ function TableBuilderMixin:ArrangeCells()
 	end
 end
 
-TableBuilderDataProviderUtil = {};
--- Returns a value from a hierarchy of potentially nested objects, for example, if a.b.v == 3,
--- a key of "b.v" wil return 3. Key delimeter is expected to be ".".
-function TableBuilderDataProviderUtil.TraverseToValue(dataRoot, key)
-	local data = dataRoot;
-	local tokens = {};
-	for token in string.gmatch(key, '([^.]+)') do
-		tinsert(tokens, token);
-	end
-
-	local ConvertKey = function(k)
-		local asNumber = tonumber(k);
-		return asNumber and asNumber or k;
-	end
-
-	local tokenCount = #tokens;
-	if tokenCount > 1 then
-		local maxToken = tokenCount - 1;
-		for index = 1, maxToken do
-			local k = ConvertKey(tokens[index]);
-			data = data[k];
-		end
-	end
-
-	local k = ConvertKey(tokens[#tokens]);
-	return data[k];
-end
-
 function CreateTableBuilder(rows)
 	return CreateAndInitFromMixin(TableBuilderMixin, rows);
 end

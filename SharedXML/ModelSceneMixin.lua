@@ -151,7 +151,7 @@ function ModelSceneMixin:GetActorByTag(tag)
 	return self.tagToActor[tag];
 end
 
-function ModelSceneMixin:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview)
+function ModelSceneMixin:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview, spellVisualKitID)
 	local playerActor = self:GetPlayerActor("player-rider");
 	if (playerActor) then
 		if disablePlayerMountPreview or isSelfMount then
@@ -178,11 +178,12 @@ function ModelSceneMixin:GetPlayerActor(overrideActorName)
 	else
 
 		if IsOnGlueScreen() then
-			local _, _, raceFilename, _, _, _, _, _, genderEnum = GetCharacterInfo(GetCharacterSelection());
+			local _, raceName, raceFilename, _, _, _, _, _, genderEnum = GetCharacterInfo(GetCharacterSelection());
 			playerRaceName = raceFilename;
 			playerGender = genderEnum;
 		else
-			playerRaceName = UnitRace("player");
+			local _, raceFilename = UnitRace("player");
+			playerRaceName = raceFilename;
 			playerGender = UnitSex("player");
 		end
 
@@ -451,7 +452,7 @@ function PanningModelSceneMixin:TransitionToModelSceneID(modelSceneID, cameraTra
 
 	local camera = self:GetActiveCamera();
 	if camera then
-		camera:SetRightMouseButtonXMode(ORBIT_CAMERA_MOUSE_MODE_TARGET_HORIZONTAL);
-		camera:SetRightMouseButtonYMode(ORBIT_CAMERA_MOUSE_MODE_TARGET_VERTICAL);
+		camera:SetRightMouseButtonXMode(ORBIT_CAMERA_MOUSE_PAN_HORIZONTAL, true);
+		camera:SetRightMouseButtonYMode(ORBIT_CAMERA_MOUSE_PAN_VERTICAL, true);
 	end
 end

@@ -1462,6 +1462,7 @@ end
 
 function PvpTalentFrameMixin:OnEvent(event, ...)
 	if event == "PLAYER_PVP_TALENT_UPDATE" then
+		self:ClearPendingRemoval();
 		self:Update();
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self:Update();
@@ -1501,10 +1502,6 @@ function PvpTalentFrameMixin:OnHide()
 	self:UnselectSlot();
 end
 
-function PvpTalentFrameMixin:UpdateSlot(slot)
-	slot:Update();
-end
-
 function PvpTalentFrameMixin:UpdateModelScene(scene, sceneID, fileID, forceUpdate)
 	if (not scene) then
 		return;
@@ -1515,6 +1512,14 @@ function PvpTalentFrameMixin:UpdateModelScene(scene, sceneID, fileID, forceUpdat
 	local effect = scene:GetActorByTag("effect");
 	if (effect) then
 		effect:SetModelByFileID(fileID);
+	end
+end
+
+function PvpTalentFrameMixin:ClearPendingRemoval()
+	for slotIndex = 1, #self.Slots do
+		local slot = self.Slots[slotIndex];
+		slot:SetPendingTalentRemoval(false);
+		slot:Update();
 	end
 end
 
@@ -1534,7 +1539,7 @@ function PvpTalentFrameMixin:Update()
 	end
 
 	for _, slot in pairs(self.Slots) do
-		self:UpdateSlot(slot);
+		slot:Update();
 	end
 
 	self.TalentList:Update();
@@ -1599,6 +1604,14 @@ function PvpTalentFrameMixin:SelectTalentForSlot(talentID, slotIndex)
 		return;
 	end
 
+	for existingSlotIndex = 1, #self.Slots do
+		local existingSlot = self.Slots[existingSlotIndex];
+		if existingSlot:GetSelectedTalent() == talentID then
+			existingSlot:SetPendingTalentRemoval(true);
+			break;
+		end
+	end
+
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	slot:SetSelectedTalent(talentID);
 	self:UnselectSlot();
@@ -1620,8 +1633,6 @@ function PvpTalentButtonMixin:Update(selectedHere, selectedOther)
 		self.Name:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 		self.Icon:SetDesaturated(true);
 		self.Selected:Hide();
-		self.SelectedOtherCheck:Hide();
-		self.SelectedOtherOverlay:Hide();
 		self.disallowNormalClicks = true;
 	else
 		if (C_SpecializationInfo.IsPvpTalentLocked(self.talentID)) then
@@ -1631,10 +1642,11 @@ function PvpTalentButtonMixin:Update(selectedHere, selectedOther)
 		self.Name:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 		self.Icon:SetDesaturated(false);
 		self.Selected:SetShown(selectedHere);
-		self.SelectedOtherCheck:SetShown(selectedOther);
-		self.SelectedOtherOverlay:SetShown(selectedOther);
-		self.disallowNormalClicks = selectedOther; 
+		self.disallowNormalClicks = false; 
 	end
+
+	self.SelectedOtherCheck:SetShown(selectedOther);
+	self.SelectedOtherCheck:SetDesaturated(not unlocked);
 
 	self.Name:SetText(name);
 	self.Icon:SetTexture(icon);

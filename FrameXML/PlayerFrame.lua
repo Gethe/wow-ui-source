@@ -40,6 +40,8 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("HONOR_LEVEL_UPDATE");
+	self:RegisterEvent("QUEST_SESSION_JOINED");
+	self:RegisterEvent("QUEST_SESSION_LEFT");
 	self:RegisterUnitEvent("UNIT_COMBAT", "player", "vehicle");
 	self:RegisterUnitEvent("UNIT_MAXPOWER", "player", "vehicle");
 
@@ -223,6 +225,8 @@ function PlayerFrame_OnEvent(self, event, ...)
 			PlayerPVPTimerText:Hide();
 			PlayerPVPTimerText.timeLeft = nil;
 		end
+
+		QuestSessionSync.Icon:SetShown(C_QuestSession.HasJoined());
 	elseif ( event == "PLAYER_ENTER_COMBAT" ) then
 		self.inCombat = 1;
 		PlayerFrame_UpdateStatus();
@@ -296,6 +300,10 @@ function PlayerFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "HONOR_LEVEL_UPDATE" ) then
 		PlayerFrame_UpdatePvPStatus();
+	elseif ( event == "QUEST_SESSION_JOINED" ) then
+		QuestSessionSync.Icon:Show();
+	elseif ( event == "QUEST_SESSION_LEFT" ) then
+		QuestSessionSync.Icon:Hide();
 	end
 end
 

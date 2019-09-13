@@ -89,6 +89,7 @@ Import("SecureMixin");
 Import("CreateFromSecureMixins");
 Import("IsTrialAccount");
 Import("IsVeteranTrialAccount");
+Import("GetURLIndexAndLoadURL");
 
 --GlobalStrings
 Import("BLIZZARD_STORE");
@@ -550,13 +551,6 @@ local function GetFactionName(faction, returnOpposite)
 		return FACTION_HORDE;
 	elseif (faction == 1) then
 		return FACTION_ALLIANCE;
-	end
-end
-
-function GetURLIndexAndLoadURL(self, link)
-	local linkType, index = string.split(":", link);
-	if ( linkType == "urlIndex" ) then
-		LoadURLIndex(tonumber(index));
 	end
 end
 
@@ -1511,7 +1505,7 @@ local productCardTemplateData = {
 	HorizontalLargeStoreCardWithBuyButtonTemplate = {
 		cellGridSize = {width = 4, height = 1},
 		cellPixelSize = {width = 566, height = 225},
-		padding = {15 , 6 , 12 , 17}, --left, right, top, bottom
+		padding = {15 , 6 , 15 , 14}, --left, right, top, bottom
 		poolSize = 2,
 		buyButton = true,
 	},
@@ -1716,11 +1710,6 @@ function StoreFrame_SetCategoryProductCards(forceModelUpdate, entries)
 	end
 
 	local self = StoreFrame;
-	if not entries then
-		local id = StoreFrame_GetSelectedCategoryID();
-		entries = C_StoreSecure.GetProducts(id);
-	end
-
 	StoreFrame_CheckAndUpdateEntryID(false);
 
 	local pageInfo = StoreFrame_GetPageInfo(entries);
@@ -4427,8 +4416,9 @@ function StoreGetAutoCompleteEntries(self, text, cursorPosition)
 	end
 	local entries = {};
 	local str = string.lower(string.sub(text, 1, cursorPosition));
+	local scrubbedString = string.gsub(str, "[%(%)%.%%%+%-%*%?%[%^%$]+", "");
 	for _, info in ipairs(autoCompleteList) do
-		if (string.find(string.lower(info.value), str)) then
+		if (string.find(string.lower(info.value), scrubbedString)) then
 			table.insert(entries, info);
 		end
 	end

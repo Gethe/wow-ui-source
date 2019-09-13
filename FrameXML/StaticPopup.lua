@@ -2529,8 +2529,13 @@ StaticPopupDialogs["ADD_GUILDMEMBER"] = {
 	end,
 	EditBoxOnEnterPressed = function(self)
 		local parent = self:GetParent();
-		GuildInvite(parent.editBox:GetText());
-		parent:Hide();
+		local invitee = parent.editBox:GetText();
+		if invitee == "" then
+			ChatFrame_OpenChat("");
+		else
+			GuildInvite(invitee);
+			parent:Hide();
+		end
 	end,
 	EditBoxOnEscapePressed = function(self)
 		self:GetParent():Hide();
@@ -2545,52 +2550,21 @@ StaticPopupDialogs["ADD_GUILDMEMBER_WITH_FINDER_LINK"] = Mixin({
 	extraButton = CLUB_FINDER_LINK_POST_IN_CHAT,
 	OnExtraButton = function(self, data)
 		local clubInfo = ClubFinderGetCurrentClubListingInfo(data.clubId);
-		if (clubInfo) then
+		if (clubInfo) then 
 			local link = GetClubFinderLink(clubInfo.clubFinderGUID, clubInfo.name);
 			if not ChatEdit_InsertLink(link) then
 				ChatFrame_OpenChat(link);
-			end
+			end 
 		end
 	end,
 }, StaticPopupDialogs["ADD_GUILDMEMBER"]);
 
-StaticPopupDialogs["ADD_RAIDMEMBER"] = {
-	text = ADD_RAIDMEMBER_LABEL,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	hasEditBox = 1,
-	autoCompleteSource = GetAutoCompleteResults,
-	autoCompleteArgs = { AUTOCOMPLETE_LIST.INVITE.include, AUTOCOMPLETE_LIST.INVITE.exclude },
-	maxLetters = 77,
-	OnAccept = function(self)
-		InviteToGroup(self.editBox:GetText());
-	end,
-	OnShow = function(self)
-		self.editBox:SetFocus();
-	end,
-	OnHide = function(self)
-		ChatEdit_FocusActiveWindow();
-		self.editBox:SetText("");
-	end,
-	EditBoxOnEnterPressed = function(self)
-		local parent = self:GetParent();
-		InviteToGroup(parent.editBox:GetText());
-		parent:Hide();
-	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
-	timeout = 0,
-	exclusive = 1,
-	hideOnEscape = 1
-};
 StaticPopupDialogs["CONVERT_TO_RAID"] = {
 	text = CONVERT_TO_RAID_LABEL,
 	button1 = CONVERT,
 	button2 = CANCEL,
 	OnAccept = function(self, data)
-		C_PartyInfo.ConfirmConvertToRaid();
-		InviteUnit(data);
+		C_PartyInfo.ConfirmInviteUnit(data);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -4139,6 +4113,15 @@ local function InviteToClub(clubId, text)
 	end
 end
 
+StaticPopupDialogs["CLUB_FINDER_ENABLED_DISABLED"] = {
+	text = CLUB_FINDER_ENABLE_DISABLE_MESSAGE,
+	button1 = OKAY,
+	whileDead = 1,
+	showAlert = 1,
+	hideOnEscape = 1,
+}
+
+
 StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"] = {
 	text = INVITE_COMMUNITY_MEMBER_POPUP_INVITE_TEXT,
 	subText = INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_BTAG,
@@ -4484,6 +4467,10 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		local separateThousands = true;
 		local goldDisplay = GetMoneyString(data.respecCost, separateThousands);
 		text:SetFormattedText(info.text, goldDisplay, text_arg1, CONFIRM_AZERITE_EMPOWERED_RESPEC_STRING);
+	elseif  ( which == "BUYOUT_AUCTION_EXPENSIVE" ) then
+		local separateThousands = true;
+		local goldDisplay = GetMoneyString(text_arg1, separateThousands);
+		text:SetFormattedText(info.text, goldDisplay, BUYOUT_AUCTION_CONFIRMATION_STRING);
 	else
 		text:SetFormattedText(info.text, text_arg1, text_arg2);
 		text.text_arg1 = text_arg1;
@@ -5097,21 +5084,12 @@ end
 function StaticPopup_SetUpPosition(dialog)
 	if ( not tContains(StaticPopup_DisplayedFrames, dialog) ) then
 		StaticPopup_SetUpAnchor(dialog, #StaticPopup_DisplayedFrames + 1);
-		table.insert(StaticPopup_DisplayedFrames, dialog);
-	end
-end
-
-function StaticPopup_UpdatePositions()
-	local dialogs = StaticPopup_DisplayedFrames;
-	StaticPopup_DisplayedFrames = {};
-	for index, dialog in ipairs(dialogs) do
-		StaticPopup_SetUpPosition(dialog);
+		tinsert(StaticPopup_DisplayedFrames, dialog);
 	end
 end
 
 function StaticPopup_SetUpAnchor(dialog, idx)
 	local lastFrame = StaticPopup_DisplayedFrames[idx - 1];
-	dialog:ClearAllPoints();
 	if ( lastFrame ) then
 		dialog:SetPoint("TOP", lastFrame, "BOTTOM", 0, 0);
 	else
@@ -5120,12 +5098,11 @@ function StaticPopup_SetUpAnchor(dialog, idx)
 end
 
 function StaticPopup_CollapseTable()
-	local dialogs = StaticPopup_DisplayedFrames;
-	StaticPopup_DisplayedFrames = {};
-	for index, dialog in ipairs(dialogs) do
-		if dialog:IsVisible() then
-			table.insert(StaticPopup_DisplayedFrames, dialog);
-		end
+	local displayedFrames = StaticPopup_DisplayedFrames;
+	local index = #displayedFrames;
+	while ( ( index >= 1 ) and ( not displayedFrames[index]:IsShown() ) ) do
+		tremove(displayedFrames, index);
+		index = index - 1;
 	end
 end
 
@@ -5140,7 +5117,6 @@ end
 function StaticPopupSpecial_Hide(frame)
 	frame:Hide();
 	StaticPopup_CollapseTable();
-	StaticPopup_UpdatePositions();
 end
 
 function StaticPopupSpecial_Toggle(frame)

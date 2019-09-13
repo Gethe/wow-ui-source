@@ -13,7 +13,7 @@
 			</OnLoad>
 		</Scripts>
 	</Button>
-	<Button name="DropDownList2" toplevel="true" frameStrata="FULLSCREEN_DIALOG" inherits="UIDropDownListTemplate" hidden="true" id="2">
+	<Button name="DropDownList2" toplevel="true" frameStrata="FULLSCREEN_DIALOG" inherits="UIDropDownListTemplate" clampedToScreen="true" hidden="true" id="2">
 		<Size>
 			<AbsDimension x="180" y="10"/>
 		</Size>

@@ -103,7 +103,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						InviteToGroup(self:GetParent().Name:GetText());
+						C_PartyInfo.InviteUnit(self:GetParent().Name:GetText());
 					</OnClick>
 				</Scripts>
 				<NormalFont style="GameFontNormalSmall"/>

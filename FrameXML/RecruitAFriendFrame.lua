@@ -10,7 +10,11 @@ function RecruitAFriendFrameMixin:OnLoad()
 	self:RegisterEvent("BN_FRIEND_INFO_CHANGED");
 	self:RegisterEvent("VARIABLES_LOADED");
 
+	self.RecruitList.NoRecruitsDesc:SetText(RAF_NO_RECRUITS_DESC);
 	self.recruitScrollFrame = self.RecruitList.ScrollFrame;
+	
+	self.RewardClaiming.MonthCount.Text:SetFontObjectsToTry(FriendsFont_Large, FriendsFont_Normal, FriendsFont_Small);
+	self.RewardClaiming.NextRewardName.Text:SetFontObjectsToTry(FriendsFont_Normal, FriendsFont_Small);
 
 	local function UpdateRecruitList()
 		if self.rafInfo then
@@ -30,8 +34,8 @@ end
 
 function RecruitAFriendFrameMixin:OnHide()
 	CloseDropDownMenus();
+	RecruitAFriendRewardsFrame:Hide();
 	StaticPopupSpecial_Hide(RecruitAFriendRecruitmentFrame);
-	StaticPopupSpecial_Hide(RecruitAFriendRewardsFrame);
 end
 
 function RecruitAFriendFrameMixin:OnEvent(event, ...)
@@ -57,6 +61,10 @@ function RecruitAFriendFrameMixin:OnEvent(event, ...)
 	end
 end
 
+function RecruitAFriendFrameMixin:ShowSplashScreen()
+	self.SplashFrame:Show();
+end
+
 function RecruitAFriendFrameMixin:SetRAFSystemEnabled(rafEnabled)
 	self.rafEnabled = rafEnabled;
 	self:UpdateRAFTutorialTips();
@@ -64,18 +72,18 @@ end
 
 function RecruitAFriendFrameMixin:UpdateRAFTutorialTips()
 	if self.varsLoaded and self.rafEnabled then
-		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_RAF_INTRO) then
+		if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCCOUNT_RAF_INTRO) then
 			local introHelpTipInfo = {
 				text = RAF_INTRO_TUTORIAL_TEXT,
 				buttonStyle = HelpTip.ButtonStyle.Close,
-				cvarBitfield = "closedInfoFrames",
-				bitfieldFlag = LE_FRAME_TUTORIAL_RAF_INTRO,
+				cvarBitfield = "closedInfoFramesAccountWide",
+				bitfieldFlag = LE_FRAME_TUTORIAL_ACCCOUNT_RAF_INTRO,
 				targetPoint = HelpTip.Point.RightEdgeCenter,
 				autoEdgeFlipping = true,
 				useParentStrata = true,
 			};
 			HelpTip:Show(QuickJoinToastButton, introHelpTipInfo);
-		elseif self:ShowRewardTutorial() then
+		elseif self:ShouldShowRewardTutorial() then
 			local rewardHelpTipInfo = {
 				text = RAF_REWARD_TUTORIAL_TEXT,
 				buttonStyle = HelpTip.ButtonStyle.Close,
@@ -138,7 +146,7 @@ local function ProcessAndSortRecruits(recruits)
 	for _, recruitInfo in ipairs(recruits) do
 		local accountInfo = C_BattleNet.GetAccountInfoByID(recruitInfo.bnetAccountID, recruitInfo.wowAccountGUID);
 
-		if accountInfo then
+		if accountInfo and accountInfo.gameAccountInfo and not accountInfo.gameAccountInfo.isWowMobile then
 			recruitInfo.isOnline = accountInfo.gameAccountInfo.isOnline;
 			recruitInfo.characterName = accountInfo.gameAccountInfo.characterName;
 			recruitInfo.nameText, recruitInfo.nameColor = FriendsFrame_GetBNetAccountNameAndStatus(accountInfo);
@@ -228,13 +236,19 @@ function RecruitAFriendFrameMixin:UpdateRecruitList(recruits)
 	HybridScrollFrame_Update(self.recruitScrollFrame, totalHeight, usedHeight);
 end
 
-function RecruitAFriendFrameMixin:SetNextRewardName(rewardName, count)
+function RecruitAFriendFrameMixin:SetNextRewardName(rewardName, count, rewardType)
 	if count > 1 then
 		self.RewardClaiming.NextRewardName:SetText(RAF_REWARD_NAME_MULTIPLE:format(rewardName, count));
 	else
 		self.RewardClaiming.NextRewardName:SetText(rewardName);
 	end
 	self.RewardClaiming.NextRewardName:Show();
+
+	if rewardType == Enum.RafRewardType.GameTime then
+		self.RewardClaiming.NextRewardName:SetTextColor(HEIRLOOM_BLUE_COLOR:GetRGBA());
+	else
+		self.RewardClaiming.NextRewardName:SetTextColor(EPIC_PURPLE_COLOR:GetRGBA());
+	end
 end
 
 function RecruitAFriendFrameMixin:OnUnwrapFlashBegun()
@@ -271,41 +285,34 @@ function RecruitAFriendFrameMixin:UpdateNextReward(nextReward)
 	if nextReward.canClaim then
 		self.RewardClaiming.EarnInfo:SetText(RAF_YOU_HAVE_EARNED);
 	elseif nextReward.monthCost > 1 then
-		self.RewardClaiming.EarnInfo:SetText(RAF_NEXT_REWARD_AFTER:format(nextReward.availableInMonths));
+		self.RewardClaiming.EarnInfo:SetText(RAF_NEXT_REWARD_AFTER:format(nextReward.monthCost - nextReward.availableInMonths, nextReward.monthCost));
 	elseif nextReward.monthsRequired == 0 then
 		self.RewardClaiming.EarnInfo:SetText(RAF_FIRST_REWARD);
 	else
 		self.RewardClaiming.EarnInfo:SetText(RAF_NEXT_REWARD);
 	end
 
+	local rightAlignedTooltip = true;
+	self.RewardClaiming.NextRewardButton:Setup(nextReward, rightAlignedTooltip);
+
 	if nextReward.petInfo then
-		self:SetNextRewardName(nextReward.petInfo.speciesName, nextReward.repeatableClaimCount);
+		self:SetNextRewardName(nextReward.petInfo.speciesName, nextReward.repeatableClaimCount, nextReward.rewardType);
 	elseif nextReward.mountInfo then
 		local name = C_MountJournal.GetMountInfoByID(nextReward.mountInfo.mountID);
-		self:SetNextRewardName(name, nextReward.repeatableClaimCount);
-	elseif nextReward.itemInfo then
-		local item = Item:CreateFromItemID(nextReward.itemInfo.itemID);
-		item:ContinueOnItemLoad(function()
-			self:SetNextRewardName(item:GetItemName(), nextReward.repeatableClaimCount);
-		end);
-	elseif nextReward.appearanceInfo then
-		local item = Item:CreateFromItemID(nextReward.appearanceInfo.itemID);
-		item:ContinueOnItemLoad(function()
-			self:SetNextRewardName(item:GetItemName(), nextReward.repeatableClaimCount);
+		self:SetNextRewardName(name, nextReward.repeatableClaimCount, nextReward.rewardType);
+	elseif nextReward.appearanceInfo or nextReward.appearanceSetInfo or nextReward.illusionInfo then
+		self.RewardClaiming.NextRewardButton.item:ContinueOnItemLoad(function()
+			self:SetNextRewardName(self.RewardClaiming.NextRewardButton.item:GetItemName(), nextReward.repeatableClaimCount, nextReward.rewardType);
 		end);
 	elseif nextReward.titleInfo then
 		local titleName = GetTitleNameFromTitleID(nextReward.titleInfo.titleID);
 		if titleName then
-			self:SetNextRewardName(RAF_REWARD_TITLE:format(titleName), nextReward.repeatableClaimCount);
+			self:SetNextRewardName(RAF_REWARD_TITLE:format(titleName), nextReward.repeatableClaimCount, nextReward.rewardType);
 		end
-	elseif nextReward.appearanceSetInfo then
-		self:SetNextRewardName(nextReward.appearanceSetInfo.setName, nextReward.repeatableClaimCount);
 	else
-		self:SetNextRewardName(RAF_BENEFIT4, nextReward.repeatableClaimCount);
+		self:SetNextRewardName(RAF_BENEFIT4, nextReward.repeatableClaimCount, nextReward.rewardType);
 	end
 
-	local rightAlignedTooltip = true;
-	self.RewardClaiming.NextRewardButton:Setup(nextReward, rightAlignedTooltip);
 	self.RewardClaiming.EarnInfo:Show();
 end
 
@@ -319,7 +326,11 @@ function RecruitAFriendFrameMixin:UpdateRAFInfo(rafInfo)
 
 		self:UpdateRecruitList(rafInfo.recruits);
 
-		self.RewardClaiming.MonthCount:SetText(RAF_MONTHS_EARNED:format(rafInfo.lifetimeMonths));
+		if (#rafInfo.recruits == 0) and (rafInfo.lifetimeMonths == 0) then
+			self.RewardClaiming.MonthCount:SetText(RAF_FIRST_MONTH);
+		else
+			self.RewardClaiming.MonthCount:SetText(RAF_MONTHS_EARNED:format(rafInfo.lifetimeMonths));
+		end
 		self:UpdateNextReward(rafInfo.nextReward);
 
 		RecruitAFriendRewardsFrame:UpdateRewards(rafInfo.rewards);
@@ -331,8 +342,21 @@ function RecruitAFriendFrameMixin:UpdateRAFInfo(rafInfo)
 	self:UpdateRAFTutorialTips();
 end
 
-function RecruitAFriendFrameMixin:ShowRewardTutorial()
-	return not self:IsShown() and not self.shownRewardTutorial and self.rafInfo and self.rafInfo.nextReward and self.rafInfo.nextReward.canClaim;
+function RecruitAFriendFrameMixin:HasActivityRewardToClaim()
+	if self.rafInfo then
+		for _, recruitInfo in ipairs(self.rafInfo.recruits) do
+			for _, activityInfo in ipairs(recruitInfo.activities) do
+				if activityInfo.state == Enum.RafRecruitActivityState.Complete then
+					return true;
+				end
+			end
+		end
+	end
+end
+
+function RecruitAFriendFrameMixin:ShouldShowRewardTutorial()
+	local hasRafRewardToClaim = self.rafInfo and self.rafInfo.nextReward and self.rafInfo.nextReward.canClaim;
+	return not self:IsShown() and not self.shownRewardTutorial and (hasRafRewardToClaim or self:HasActivityRewardToClaim());
 end
 
 function RecruitAFriendFrameMixin:ShowRecruitDropDown(recruitButton)
@@ -356,6 +380,17 @@ function RecruitActivityButtonMixin:OnLoad()
 	self.ClaimGlowSpinAnim:Play(); -- Just leave this playing
 end
 
+function RecruitActivityButtonMixin:OnHide()
+	self.Model:Hide();
+end
+
+function RecruitActivityButtonMixin:UpdateQuestName()
+	if not self.questName and self.activityInfo then
+		-- If we don't have the name now, get it. If it's not in the quest cache this will request it
+		self.questName = C_QuestLog.GetQuestInfo(self.activityInfo.rewardQuestID);
+	end
+end
+
 function RecruitActivityButtonMixin:OnEnter()
 	self:GetParent():EnableDrawLayer("HIGHLIGHT");
 
@@ -363,12 +398,13 @@ function RecruitActivityButtonMixin:OnEnter()
 
 	local wrap = true;
 
-	if not HaveQuestRewardData(self.activityInfo.rewardQuestID) then
+	self:UpdateQuestName();
+
+	if not self.questName then
 		GameTooltip_SetTitle(EmbeddedItemTooltip, RETRIEVING_DATA, RED_FONT_COLOR);
 		self.UpdateTooltip = self.OnEnter;
 	else
-		local questName = C_QuestLog.GetQuestInfo(self.activityInfo.rewardQuestID);
-		GameTooltip_SetTitle(EmbeddedItemTooltip, questName, nil, wrap);
+		GameTooltip_SetTitle(EmbeddedItemTooltip, self.questName, nil, wrap);
 
 		EmbeddedItemTooltip:SetMinimumWidth(300);
 		GameTooltip_AddNormalLine(EmbeddedItemTooltip, RAF_RECRUIT_ACTIVITY_DESCRIPTION:format(self.recruitInfo.nameText), true);
@@ -406,20 +442,26 @@ function RecruitActivityButtonMixin:OnLeave()
 	self.UpdateTooltip = nil;
 end
 
+function RecruitActivityButtonMixin:PlayClaimRewardFanfare()
+	self.ModelFadeOutAnim:Stop();
+	self.Model:SetAlpha(1);
+
+	-- Intentionaly hiding here before showing because we rely on the OnShow to set the model and kick off the animation, etc.
+	self.Model:Hide();
+	self.Model:Show();	-- This sets the model, which in turn starts the exploding animation, etc.
+end
+
 function RecruitActivityButtonMixin:OnClick()
 	if self.activityInfo.state == Enum.RafRecruitActivityState.Complete then
-		-- TODO: Claim reward
-		self.ModelFadeOutAnim:Stop();
-		self.Model:SetAlpha(1);
-		self.Model:Hide();
-		self.Model:Show();
+		if C_RecruitAFriend.ClaimActivityReward(self.activityInfo.activityID, self.recruitInfo.acceptanceID) then
+			self:PlayClaimRewardFanfare();
+			PlaySound(SOUNDKIT.RAF_RECRUIT_REWARD_CLAIM);
 
-		PlaySound(SOUNDKIT.RAF_RECRUIT_REWARD_CLAIM);
-
-		C_Timer.After(0.3, function()
-			self.activityInfo.state = Enum.RafRecruitActivityState.RewardClaimed;
-			self:Refresh();
-		end)
+			C_Timer.After(0.3, function()
+				self.activityInfo.state = Enum.RafRecruitActivityState.RewardClaimed;
+				self:Refresh();
+			end)
+		end
 	end
 end
 
@@ -431,6 +473,8 @@ function RecruitActivityButtonMixin:Setup(activityInfo, recruitInfo)
 		self:Hide();
 		return;
 	end
+
+	self:UpdateQuestName();
 
 	local canClaim = false;
 	local useAtlasSize = true;
@@ -489,11 +533,11 @@ function RecruitActivityButtonModelMixin:OnModelLoaded()
 end
 
 function RecruitActivityButtonModelMixin:OnAnimStarted()
-	self.parentButton.ModelFadeOutAnim:Play();
+	self.parentButton.ModelFadeOutAnim:Play();	-- Start a slight alpha fade so the explosion isn't as extreme
 end
 
 function RecruitActivityButtonModelMixin:OnAnimFinished()
-	self:Hide();
+	self:Hide();	-- Only play the animation once
 end
 
 RecruitListButtonMixin = {};
@@ -579,7 +623,12 @@ function RecruitListButtonMixin:SetupRecruit(recruitInfo)
 	else
 		self.Background:SetColorTexture(FRIENDS_OFFLINE_BACKGROUND_COLOR:GetRGBA());
 		self.InfoText:SetTextColor(GRAY_FONT_COLOR:GetRGB());
-		self.InfoText:SetText(FriendsFrame_GetLastOnlineText(recruitInfo.accountInfo));
+
+		if recruitInfo.subStatus == Enum.RafRecruitSubStatus.Inactive then
+			self.InfoText:SetText(RAF_INACTIVE_RECRUIT);
+		else
+			self.InfoText:SetText(FriendsFrame_GetLastOnlineText(recruitInfo.accountInfo));
+		end
 	end
 
 	local mouseOnMe = (GameTooltip:GetOwner() == self);
@@ -596,7 +645,6 @@ RecruitAFriendDropDownMixin = {};
 
 function RecruitAFriendDropDownMixin:OnLoad()
 	self.isSelf = false;
-	self.isMobile = false;
 	self.isRafRecruit = true;
 
 	UIDropDownMenu_Initialize(self, self.Init, "MENU");
@@ -636,16 +684,17 @@ function RecruitAFriendClaimOrViewRewardButtonMixin:OnClick()
 		end
 
 		if self.nextReward.rewardType == Enum.RafRewardType.GameTime then
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 			WowTokenRedemptionFrame_ShowDialog("RAF_GAME_TIME_REDEEM_CONFIRMATION_SUB");
 		elseif C_RecruitAFriend.ClaimNextReward() then
 			RecruitAFriendFrame.RewardClaiming.NextRewardButton:PlayClaimRewardFanfare();
 		end
 	else
 		if RecruitAFriendRewardsFrame:IsShown() then
-			StaticPopupSpecial_Hide(RecruitAFriendRewardsFrame);
+			RecruitAFriendRewardsFrame:Hide();
 		else
+			RecruitAFriendRewardsFrame:Show();
 			StaticPopupSpecial_Hide(RecruitAFriendRecruitmentFrame);
-			StaticPopupSpecial_Show(RecruitAFriendRewardsFrame);
 		end
 	end
 end
@@ -656,7 +705,7 @@ function RecruitAFriendClaimOrViewRewardButtonMixin:Update(nextReward)
 
 	if self.haveUnclaimedReward then
 		self:SetText(CLAIM_REWARD);
-		StaticPopupSpecial_Hide(RecruitAFriendRewardsFrame);
+		RecruitAFriendRewardsFrame:Hide();
 	else
 		self:SetText(RAF_VIEW_ALL_REWARDS);
 	end
@@ -671,7 +720,7 @@ end
 function RecruitAFriendRewardsFrameMixin:OnShow()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 	HideUIPanel(DressUpFrame);
-	SetUpSideDressUpFrame(self, 500, 682, "LEFT", "RIGHT", -5, 0);
+	SetUpSideDressUpFrame(self, 500, 682, "TOPLEFT", "TOPRIGHT", -5, -44);
 end
 
 function RecruitAFriendRewardsFrameMixin:OnHide()
@@ -754,19 +803,17 @@ function RecruitAFriendRewardButtonMixin:Setup(rewardInfo, tooltipRightAligned)
 	self.item = nil;
 	self.titleName = nil;
 
+	if self.rewardInfo.itemID > 0 then
+		self.item = Item:CreateFromItemID(self.rewardInfo.itemID);
+	end
+
 	if self.rewardInfo.petInfo then
 		self.dressupReward = self.rewardInfo.petInfo.displayID > 0;
 	elseif self.rewardInfo.mountInfo then
 		self.dressupReward = self.rewardInfo.mountInfo.mountID > 0;
-	elseif self.rewardInfo.itemInfo then
-		self.item = Item:CreateFromItemID(self.rewardInfo.itemInfo.itemID);
-		self.dressupReward = IsDressableItem(self.rewardInfo.itemInfo.itemID);
-	elseif self.rewardInfo.appearanceInfo then
-		self.item = Item:CreateFromItemID(self.rewardInfo.appearanceInfo.itemID);
-		self.dressupReward = IsDressableItem(self.rewardInfo.appearanceInfo.appearanceID);
 	elseif self.rewardInfo.titleInfo then
 		self.titleName = GetTitleNameFromTitleID(self.rewardInfo.titleInfo.titleID);
-	elseif self.rewardInfo.appearanceSetInfo then
+	elseif self.rewardInfo.appearanceInfo or self.rewardInfo.appearanceSetInfo or self.rewardInfo.illusionInfo then
 		self.dressupReward = true;
 	end
 
@@ -779,14 +826,21 @@ function RecruitAFriendRewardButtonMixin:OnClick()
 			DressUpBattlePet(self.rewardInfo.petInfo.creatureID, self.rewardInfo.petInfo.displayID, self.rewardInfo.petInfo.speciesID);
 		elseif self.rewardInfo.mountInfo then
 			DressUpMount(self.rewardInfo.mountInfo.mountID);
-		elseif self.rewardInfo.itemInfo then
-			self.item:ContinueOnItemLoad(function()
-				DressUpItemLink(self.item:GetItemLink());
-			end);
 		elseif self.rewardInfo.appearanceInfo then
-			DressUpItemLink(self.rewardInfo.appearanceInfo.appearanceID);
+			DressUpVisual(self.rewardInfo.appearanceInfo.appearanceID);
 		elseif self.rewardInfo.appearanceSetInfo then
 			DressUpTransmogSet(self.rewardInfo.appearanceSetInfo.appearanceIDs)
+		elseif self.rewardInfo.illusionInfo then
+			local weaponSlot, weaponSourceID = TransmogUtil.GetBestWeaponInfoForIllusionDressup();
+			DressUpVisual(weaponSourceID, weaponSlot, self.rewardInfo.illusionInfo.spellItemEnchantmentID);
+		end
+	elseif IsModifiedClick("CHATLINK") then
+		local itemID = self.rewardInfo.itemID;
+		if itemID then
+			local name, link = GetItemInfo(itemID);
+			if not ChatEdit_InsertLink(link) then
+				ChatFrame_OpenChat(link);
+			end
 		end
 	end
 end
@@ -806,39 +860,7 @@ end
 function RecruitAFriendRewardButtonMixin:OnEnter()
 	self:SetTooltipOwner();
 
-	local wrap = true;
-
-	if self.rewardInfo.petInfo then
-		GameTooltip_SetTitle(GameTooltip, self.rewardInfo.petInfo.speciesName);
-		GameTooltip_AddColoredLine(GameTooltip, TOOLTIP_BATTLE_PET, HIGHLIGHT_FONT_COLOR, wrap);
-		GameTooltip_AddNormalLine(GameTooltip, self.rewardInfo.petInfo.description, wrap);
-		GameTooltip:Show();
-	elseif self.rewardInfo.mountInfo then
-		GameTooltip:SetSpellByID(self.rewardInfo.mountInfo.spellID);
-	elseif self.rewardInfo.itemInfo then
-		GameTooltip:SetItemByID(self.rewardInfo.itemInfo.itemID);
-	elseif self.rewardInfo.appearanceInfo then
-		self.item:ContinueOnItemLoad(function()
-			local mouseStillOnMe = (GameTooltip:GetOwner() == self);
-			local idsMatch = self.rewardInfo.appearanceInfo and (self.rewardInfo.appearanceInfo.itemID == self.item.itemID);
-
-			if mouseStillOnMe and idsMatch then
-				local itemName = self.item:GetItemName();
-				local itemQuality = self.item:GetItemQuality();
-				if itemName and itemQuality then
-					GameTooltip_SetTitle(GameTooltip, itemName, BAG_ITEM_QUALITY_COLORS[itemQuality]);
-					GameTooltip_AddColoredLine(GameTooltip, APPEARANCE_LABEL, HIGHLIGHT_FONT_COLOR, wrap);
-					GameTooltip:Show();
-				end
-			end
-		end);
-	elseif self.titleName then
-		GameTooltip_SetTitle(GameTooltip, RAF_REWARD_TITLE:format(self.titleName));
-	elseif self.rewardInfo.appearanceSetInfo then
-		GameTooltip_SetTitle(GameTooltip, RAF_REWARD_APPEARANCE_SET:format(self.rewardInfo.appearanceSetInfo.setName), nil, wrap);
-	elseif self.rewardInfo.rewardType == Enum.RafRewardType.GameTime then
-		GameTooltip_SetTitle(GameTooltip, RAF_BENEFIT4);
-	end
+	GameTooltip:SetItemByID(self.rewardInfo.itemID);
 
 	if self.dressupReward then
 		self.UpdateTooltip = function() self:OnEnter(); end;
@@ -881,7 +903,11 @@ function RecruitAFriendRewardButtonWithCheckMixin:Setup(rewardInfo, tooltipRight
 		self.IconBorder:SetVertexColor(WHITE_FONT_COLOR:GetRGBA());
 	else
 		self.IconBorder:SetDesaturated(false);
-		self.IconBorder:SetVertexColor(EPIC_PURPLE_COLOR:GetRGBA());
+		if rewardInfo.rewardType == Enum.RafRewardType.GameTime then
+			self.IconBorder:SetVertexColor(HEIRLOOM_BLUE_COLOR:GetRGBA());
+		else
+			self.IconBorder:SetVertexColor(EPIC_PURPLE_COLOR:GetRGBA());
+		end
 	end
 end
 
@@ -907,7 +933,7 @@ end
 function RecruitAFriendRewardButtonWithFanfareMixin:OnClick()
 	if IsModifiedClick("DRESSUP") and self.dressupReward then
 		if RecruitAFriendRewardsFrame:IsShown() then
-			StaticPopupSpecial_Hide(RecruitAFriendRewardsFrame);
+			RecruitAFriendRewardsFrame:Hide();
 		end
 		RecruitAFriendRewardButtonMixin.OnClick(self);
 	end
@@ -988,7 +1014,7 @@ function RecruitAFriendRecruitmentButtonMixin:OnClick()
 		StaticPopupSpecial_Hide(RecruitAFriendRecruitmentFrame);
 	else
 		C_RecruitAFriend.RequestUpdatedRecruitmentInfo();
-		StaticPopupSpecial_Hide(RecruitAFriendRewardsFrame);
+		RecruitAFriendRewardsFrame:Hide();
 		StaticPopupSpecial_Show(RecruitAFriendRecruitmentFrame);
 	end
 end
@@ -1092,21 +1118,4 @@ function RecruitAFriendGenerateOrCopyLinkButtonMixin:Update(recruitmentInfo)
 		self:SetText(RAF_GENERATE_LINK);
 		self:SetEnabled(not self.waitingForRecruitmentInfo);
 	end
-end
-
-RecruitHelpBoxMixin = {};
-
-function RecruitHelpBoxMixin:OnShow()
-	local height = self.Text:GetHeight() + 30;
-	if self.OkayButton:IsShown() then
-		height = height + 40;
-	end
-	height = max(height, 55);
-	self:SetHeight(height);
-end
-
-function RecruitHelpBoxMixin:ShowHelpBox(text, showOKButton)
-	self.Text:SetText(text);
-	self.OkayButton:SetShown(showOKButton);
-	self:Show();
 end

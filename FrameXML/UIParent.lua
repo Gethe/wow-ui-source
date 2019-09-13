@@ -394,6 +394,7 @@ function UIParent_OnLoad(self)
 
 	-- Invite confirmations
 	self:RegisterEvent("GROUP_INVITE_CONFIRMATION");
+	self:RegisterEvent("INVITE_TO_PARTY_CONFIRMATION");
 
 	-- Event(s) for the ArtifactUI
 	self:RegisterEvent("ARTIFACT_ENDGAME_REFUND");
@@ -1269,7 +1270,7 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "PARTY_INVITE_REQUEST" ) then
 		FlashClientIcon();
 
-		local name, tank, healer, damage, isXRealm, allowMultipleRoles, inviterGuid = ...;
+		local name, tank, healer, damage, isXRealm, allowMultipleRoles, inviterGuid, isQuestSessionActive = ...;
 
 		-- Color the name by our relationship
 		local modifiedName, color, selfRelationship = SocialQueueUtil_GetRelationshipInfo(inviterGuid);
@@ -1280,7 +1281,7 @@ function UIParent_OnEvent(self, event, ...)
 		-- if there's a role, it's an LFG invite
 		if ( tank or healer or damage ) then
 			StaticPopupSpecial_Show(LFGInvitePopup);
-			LFGInvitePopup_Update(name, tank, healer, damage, allowMultipleRoles);
+			LFGInvitePopup_Update(name, tank, healer, damage, allowMultipleRoles, isQuestSessionActive);
 		else
 			local text = isXRealm and INVITATION_XREALM or INVITATION;
 			text = string.format(text, name);
@@ -1288,7 +1289,12 @@ function UIParent_OnEvent(self, event, ...)
 			if ( WillAcceptInviteRemoveQueues() ) then
 				text = text.."\n\n"..ACCEPTING_INVITE_WILL_REMOVE_QUEUE;
 			end
-			StaticPopup_Show("PARTY_INVITE", text);
+
+			if isQuestSessionActive then
+				QuestSessionManager:ShowGroupInviteReceivedConfirmation(name, text);
+			else
+				StaticPopup_Show("PARTY_INVITE", text);
+			end
 		end
 	elseif ( event == "PARTY_INVITE_CANCEL" ) then
 		StaticPopup_Hide("PARTY_INVITE");
@@ -2079,6 +2085,8 @@ function UIParent_OnEvent(self, event, ...)
 		UpdateUIParentRelativeToDebugMenu();
 	elseif ( event == "GROUP_INVITE_CONFIRMATION" ) then
 		UpdateInviteConfirmationDialogs();
+	elseif ( event == "INVITE_TO_PARTY_CONFIRMATION" ) then
+		OnInviteToPartyConfirmation(...);
 	elseif ( event == "CONTRIBUTION_COLLECTOR_OPEN" ) then
 		UIParentLoadAddOn("Blizzard_Contribution");
 		ContributionCollectionUI_Show();
@@ -4210,34 +4218,16 @@ end
 
 -- Game Logic --
 
-function RealPartyIsFull()
-	if ( (GetNumSubgroupMembers(LE_PARTY_CATEGORY_HOME) < MAX_PARTY_MEMBERS) or (IsInRaid(LE_PARTY_CATEGORY_HOME) and (GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) < MAX_RAID_MEMBERS)) ) then
-		return false;
-	else
-		return true;
-	end
-end
-
-function CanGroupInvite()
-	if ( IsInGroup() ) then
-		if ( not HasLFGRestrictions() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) ) then
-			return true;
-		else
-			return false;
-		end
-	else
-		return true;
-	end
-end
-
-function InviteToGroup(name)
-	if ( not IsInRaid() and GetNumGroupMembers() > MAX_PARTY_MEMBERS and CanGroupInvite() ) then
+function OnInviteToPartyConfirmation(name, willConvertToRaid, questSessionActive)
+	if questSessionActive then
+		QuestSessionManager:OnInviteToPartyConfirmation(name, willConvertToRaid);
+	elseif willConvertToRaid then
 		local dialog = StaticPopup_Show("CONVERT_TO_RAID");
 		if ( dialog ) then
 			dialog.data = name;
 		end
 	else
-		InviteUnit(name);
+		C_PartyInfo.ConfirmInviteUnit(name);
 	end
 end
 
@@ -4249,108 +4239,174 @@ function GetSocialColoredName(displayName, guid)
 	return displayName;
 end
 
+local function AllowAutoAcceptInviteConfirmation(isQuickJoin, isSelfRelationship)
+	return isQuickJoin and isSelfRelationship and GetCVarBool("autoAcceptQuickJoinRequests") and not C_QuestSession.Exists();
+end
+
+local function ShouldAutoAcceptInviteConfirmation(invite)
+	local confirmationType, name, guid, rolesInvalid, willConvertToRaid = GetInviteConfirmationInfo(invite);
+	local _, _, _, isQuickJoin, clubID = C_PartyInfo.GetInviteReferralInfo(invite);
+	local _, _, selfRelationship = SocialQueueUtil_GetRelationshipInfo(guid, name, clubID);
+	return AllowAutoAcceptInviteConfirmation(isQuickJoin, selfRelationship);
+end
+
 function UpdateInviteConfirmationDialogs()
-	if ( StaticPopup_FindVisible("GROUP_INVITE_CONFIRMATION") ) then
-		return;
+	local invite = GetNextPendingInviteConfirmation();
+	if invite then
+		HandlePendingInviteConfirmation(invite);
 	end
+end
 
-	local firstInvite = GetNextPendingInviteConfirmation();
-	if ( not firstInvite ) then
-		return;
+function HandlePendingInviteConfirmation(invite)
+	if C_QuestSession.HasJoined() then
+		HandlePendingInviteConfirmation_QuestSession(invite);
+	else
+		HandlePendingInviteConfirmation_StaticPopup(invite);
 	end
+end
 
-	local confirmationType, name, guid, rolesInvalid, willConvertToRaid = GetInviteConfirmationInfo(firstInvite);
-	local text = "";
-	if ( confirmationType == LE_INVITE_CONFIRMATION_REQUEST ) then
-		local suggesterGuid, suggesterName, relationship, isQuickJoin, clubId = C_PartyInfo.GetInviteReferralInfo(firstInvite);
-
-		--If we ourselves have a relationship with this player, we'll just act as if they asked through us.
-		local _, color, selfRelationship, playerLink = SocialQueueUtil_GetRelationshipInfo(guid, name, clubId);
-		local safeLink = playerLink and "["..playerLink.."]" or name;
-
-		if ( isQuickJoin and selfRelationship and GetCVarBool("autoAcceptQuickJoinRequests") ) then
-			RespondToInviteConfirmation(firstInvite, true);
-			return;
-		end
-
-		if ( selfRelationship ) then
-			local clubLink = clubId and GetCommunityLink(clubId) or nil;
-			if ( clubLink and selfRelationship == "club" ) then
-				if ( isQuickJoin ) then
-					text = text..INVITE_CONFIRMATION_REQUEST_FROM_COMMUNITY_QUICKJOIN:format(color..safeLink..FONT_COLOR_CODE_CLOSE, clubLink);
-				else
-					text = text..INVITE_CONFIRMATION_REQUEST_FROM_COMMUNITY:format(color..name..FONT_COLOR_CODE_CLOSE, clubLink);
-				end
-			elseif ( isQuickJoin ) then
-				text = text..INVITE_CONFIRMATION_REQUEST_QUICKJOIN:format(color..safeLink..FONT_COLOR_CODE_CLOSE);
-			else
-				text = text..INVITE_CONFIRMATION_REQUEST:format(color..name..FONT_COLOR_CODE_CLOSE);
-			end
-		elseif ( suggesterGuid ) then
-			suggesterName = GetSocialColoredName(suggesterName, suggesterGuid);
-
-			if ( relationship == Enum.PartyRequestJoinRelation.Friend ) then
-				if ( isQuickJoin ) then
-					text = text..INVITE_CONFIRMATION_REQUEST_FRIEND_QUICKJOIN:format(suggesterName, color..safeLink..FONT_COLOR_CODE_CLOSE);
-				else
-					text = text..INVITE_CONFIRMATION_REQUEST_FRIEND:format(suggesterName, name);
-				end
-			elseif ( relationship == Enum.PartyRequestJoinRelation.Guild ) then
-				if ( isQuickJoin ) then
-					text = text..string.format(INVITE_CONFIRMATION_REQUEST_GUILD_QUICKJOIN, suggesterName, color..safeLink..FONT_COLOR_CODE_CLOSE);
-				else
-					text = text..string.format(INVITE_CONFIRMATION_REQUEST_GUILD, suggesterName, name);
-				end
-			elseif ( relationship == Enum.PartyRequestJoinRelation.Club ) then
-				if ( isQuickJoin ) then
-					text = text..INVITE_CONFIRMATION_REQUEST_COMMUNITY_QUICKJOIN:format(suggesterName, color..safeLink..FONT_COLOR_CODE_CLOSE);
-				else
-					text = text..INVITE_CONFIRMATION_REQUEST_COMMUNITY:format(suggesterName, name);
-				end
-			else
-				if ( isQuickJoin ) then
-					text = text..string.format(INVITE_CONFIRMATION_REQUEST, color..safeLink..FONT_COLOR_CODE_CLOSE);
-				else
-					text = text..string.format(INVITE_CONFIRMATION_REQUEST, name);
-				end
-			end
+function HandlePendingInviteConfirmation_StaticPopup(invite)
+	if not StaticPopup_FindVisible("GROUP_INVITE_CONFIRMATION") then
+		if ShouldAutoAcceptInviteConfirmation(invite) then
+			RespondToInviteConfirmation(invite, true);
 		else
-			if ( isQuickJoin ) then
-				text = text..string.format(INVITE_CONFIRMATION_REQUEST_QUICKJOIN, color..safeLink..FONT_COLOR_CODE_CLOSE);
-			else
-				text = text..string.format(INVITE_CONFIRMATION_REQUEST, name);
-			end
+			local text = CreatePendingInviteConfirmationText(invite);
+			StaticPopup_Show("GROUP_INVITE_CONFIRMATION", text, nil, invite);
 		end
-	elseif ( confirmationType == LE_INVITE_CONFIRMATION_SUGGEST ) then
-		local suggesterGuid, suggesterName, relationship, isQuickJoin = C_PartyInfo.GetInviteReferralInfo(firstInvite);
-		suggesterName = GetSocialColoredName(suggesterName, suggesterGuid);
-		name = GetSocialColoredName(name, guid);
+	end
+end
 
-		-- Only using a single string here, if somebody is suggesting a person to join the group, QuickJoin text doesn't apply.
-		text = text..string.format(INVITE_CONFIRMATION_SUGGEST, suggesterName, name);
+function HandlePendingInviteConfirmation_QuestSession(invite)
+	-- Chances are that we never want to auto-accept in a quest session,
+	-- so always show the dialog.
+	local text = CreatePendingInviteConfirmationText(invite);
+	QuestSessionManager:ShowGroupInviteConfirmation(invite, text);
+end
+
+function CreatePendingInviteConfirmationText(invite)
+	local confirmationType, name, guid, rolesInvalid, willConvertToRaid = GetInviteConfirmationInfo(invite);
+
+	if confirmationType == LE_INVITE_CONFIRMATION_REQUEST then
+		return CreatePendingInviteConfirmationText_Request(invite, name, guid, rolesInvalid, willConvertToRaid);
+	elseif confirmationType == LE_INVITE_CONFIRMATION_SUGGEST then
+		return CreatePendingInviteConfirmationText_Suggest(invite, name, guid, rolesInvalid, willConvertToRaid);
+	else
+		return CreatePendingInviteConfirmationText_AppendWarnings("", invite, name, guid, rolesInvalid, willConvertToRaid);
+	end
+end
+
+function CreatePendingInviteConfirmationText_Request(invite, name, guid, rolesInvalid, willConvertToRaid)
+	local coloredName, coloredSuggesterName = CreatePendingInviteConfirmationNames(invite, name, guid, rolesInvalid, willConvertToRaid);
+
+	local suggesterGuid, _, relationship, isQuickJoin, clubId = C_PartyInfo.GetInviteReferralInfo(invite);
+
+	--If we ourselves have a relationship with this player, we'll just act as if they asked through us.
+	local _, _, selfRelationship = SocialQueueUtil_GetRelationshipInfo(guid, name, clubId);
+
+	local text;
+
+	if selfRelationship then
+		local clubLink = clubId and GetCommunityLink(clubId) or nil;
+		if ( clubLink and selfRelationship == "club" ) then
+			if isQuickJoin then
+				text = INVITE_CONFIRMATION_REQUEST_FROM_COMMUNITY_QUICKJOIN:format(coloredName, clubLink);
+			else
+				text = INVITE_CONFIRMATION_REQUEST_FROM_COMMUNITY:format(coloredName, clubLink);
+			end
+		elseif isQuickJoin then
+			text = INVITE_CONFIRMATION_REQUEST_QUICKJOIN:format(coloredName);
+		else
+			text = INVITE_CONFIRMATION_REQUEST:format(coloredName);
+		end
+	elseif suggesterGuid then
+		if relationship == Enum.PartyRequestJoinRelation.Friend then
+			text = (isQuickJoin and INVITE_CONFIRMATION_REQUEST_FRIEND_QUICKJOIN or INVITE_CONFIRMATION_REQUEST_FRIEND):format(coloredSuggesterName, coloredName);
+		elseif relationship == Enum.PartyRequestJoinRelation.Guild then
+			text = (isQuickJoin and INVITE_CONFIRMATION_REQUEST_GUILD_QUICKJOIN or INVITE_CONFIRMATION_REQUEST_GUILD):format(coloredSuggesterName, coloredName);
+		elseif relationship == Enum.PartyRequestJoinRelation.Club then
+			text = (isQuickJoin and INVITE_CONFIRMATION_REQUEST_COMMUNITY_QUICKJOIN or INVITE_CONFIRMATION_REQUEST_COMMUNITY):format(coloredSuggesterName, coloredName);
+		else
+			text = INVITE_CONFIRMATION_REQUEST:format(coloredName);
+		end
+	else
+		text = (isQuickJoin and INVITE_CONFIRMATION_REQUEST_QUICKJOIN or INVITE_CONFIRMATION_REQUEST):format(coloredName);
 	end
 
-	local invalidQueues = C_PartyInfo.GetInviteConfirmationInvalidQueues(firstInvite);
-	if ( invalidQueues and #invalidQueues > 0 ) then
-		if ( text ~= "" ) then
-			text = text.."\n\n"
+	return CreatePendingInviteConfirmationText_AppendWarnings(text, invite, name, guid, rolesInvalid, willConvertToRaid);
+end
+
+function CreatePendingInviteConfirmationNames(invite, name, guid, rolesInvalid, willConvertToRaid)
+	local suggesterGuid, suggesterName, relationship, isQuickJoin, clubId = C_PartyInfo.GetInviteReferralInfo(invite);
+
+	--If we ourselves have a relationship with this player, we'll just act as if they asked through us.
+	local _, color, selfRelationship, playerLink = SocialQueueUtil_GetRelationshipInfo(guid, name, clubId);
+
+	name = (playerLink and isQuickJoin) and ("["..playerLink.."]") or name;
+
+	if selfRelationship or isQuickJoin then
+		name = color .. name .. FONT_COLOR_CODE_CLOSE;
+	end
+
+	if selfRelationship then
+		return name;
+	elseif suggesterGuid then
+		suggesterName = GetSocialColoredName(suggesterName, suggesterGuid);
+
+		if relationship == Enum.PartyRequestJoinRelation.Friend or relationship == Enum.PartyRequestJoinRelation.Guild or relationship == Enum.PartyRequestJoinRelation.Club then
+			return name, suggesterName;
+		else
+			return name;
+		end
+	else
+		return name;
+	end
+end
+
+function CreatePendingInviteConfirmationText_Suggest(invite, name, guid, rolesInvalid, willConvertToRaid)
+	local suggesterGuid, suggesterName, relationship, isQuickJoin = C_PartyInfo.GetInviteReferralInfo(invite);
+	suggesterName = GetSocialColoredName(suggesterName, suggesterGuid);
+	name = GetSocialColoredName(name, guid);
+
+	-- Only using a single string here, if somebody is suggesting a person to join the group, QuickJoin text doesn't apply.
+	local text = INVITE_CONFIRMATION_SUGGEST:format(suggesterName, name);
+
+	return CreatePendingInviteConfirmationText_AppendWarnings(text, invite, name, guid, rolesInvalid, willConvertToRaid)
+end
+
+function CreatePendingInviteConfirmationText_AppendWarnings(text, invite, name, guid, rolesInvalid, willConvertToRaid)
+	local warnings = CreatePendingInviteConfirmationText_GetWarnings(invite, name, guid, rolesInvalid, willConvertToRaid);
+	if warnings ~= "" then
+		if text ~= "" then
+			return text.."\n\n"..warnings;
+		else
+			return warnings;
+		end
+	end
+
+	return text;
+end
+
+function CreatePendingInviteConfirmationText_GetWarnings(invite, name, guid, rolesInvalid, willConvertToRaid)
+	local warnings = {};
+	local invalidQueues = C_PartyInfo.GetInviteConfirmationInvalidQueues(invite);
+	if invalidQueues and #invalidQueues > 0 then
+		if rolesInvalid then
+			table.insert(warnings, INSTANCE_UNAVAILABLE_OTHER_NO_VALID_ROLES:format(name));
 		end
 
-		if ( rolesInvalid ) then
-			text = text..string.format(INSTANCE_UNAVAILABLE_OTHER_NO_VALID_ROLES, name).."\n";
-		end
-		text = text..string.format(INVITE_CONFIRMATION_QUEUE_WARNING, name);
+		table.insert(warnings, INVITE_CONFIRMATION_QUEUE_WARNING:format(name));
+
 		for i=1, #invalidQueues do
 			local queueName = SocialQueueUtil_GetQueueName(invalidQueues[i]);
-			text = text.."\n"..NORMAL_FONT_COLOR_CODE..queueName..FONT_COLOR_CODE_CLOSE;
+			table.insert(warnings, NORMAL_FONT_COLOR:WrapTextInColorCode(queueName));
 		end
 	end
 
-	if ( willConvertToRaid ) then
-		text = text.."\n\n"..RED_FONT_COLOR_CODE..LFG_LIST_CONVERT_TO_RAID_WARNING..FONT_COLOR_CODE_CLOSE;
+	if willConvertToRaid then
+		table.insert(warnings, RED_FONT_COLOR:WrapTextInColorCode(LFG_LIST_CONVERT_TO_RAID_WARNING));
 	end
 
-	StaticPopup_Show("GROUP_INVITE_CONFIRMATION", text, nil, firstInvite);
+	return table.concat(warnings, "\n");
 end
 
 function UnitHasMana(unit)
@@ -4848,7 +4904,8 @@ function SetLargeGuildTabardTextures(unit, emblemTexture, backgroundTexture, bor
 		offset = 0;
 		emblemTexture:SetTexture("Interface\\GuildFrame\\GuildEmblemsLG_01");
 	end
-	SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture, backgroundTexture, borderTexture, tabardData);
+	local hasEmblem = SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture, backgroundTexture, borderTexture, tabardData);
+	emblemTexture:SetWidth(hasEmblem and (emblemTexture:GetHeight() * (7 / 8)) or emblemTexture:GetHeight());
 end
 
 function SetSmallGuildTabardTextures(unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
@@ -4926,6 +4983,8 @@ function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture
 			emblemTexture:SetTexture(emblemFileID);
 			emblemTexture:SetVertexColor(emblemR / 255, emblemG / 255, emblemB / 255);
 		end
+
+		return true;
 	else
 		-- tabard lacks design
 		if ( backgroundTexture ) then
@@ -4947,6 +5006,8 @@ function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture
 				emblemTexture:SetTexture("");
 			end
 		end
+
+		return false;
 	end
 end
 
@@ -5032,7 +5093,7 @@ function LeaveInstanceParty()
 			end
 		end
 	end
-	C_PartyInfo.LeaveParty();
+	C_PartyInfo.LeaveParty(LE_PARTY_CATEGORY_INSTANCE);
 end
 
 function ConfirmOrLeaveLFGParty()

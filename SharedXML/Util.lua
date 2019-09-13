@@ -1549,3 +1549,10 @@ function GetGroupMemberCountsForDisplay()
 	data.NOROLE = 0;
 	return data;
 end
+
+function GetURLIndexAndLoadURL(self, link)
+	local linkType, index = string.split(":", link);
+	if ( linkType == "urlIndex" ) then
+		LoadURLIndex(tonumber(index));
+	end
+end

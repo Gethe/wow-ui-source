@@ -541,9 +541,9 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="EmblemIcon">
-					<Size x="35" y="35"/>
+					<Size x="31" y="35"/>
 					<Anchors>
-						<Anchor point="LEFT" x="15" y="0"/>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="32" y="0"/>
 					</Anchors>
 				</Texture>
 				<FontString inherits="GameFontNormal" text="GUILD_CHALLENGE_LABEL">
@@ -1294,7 +1294,7 @@
 		</Scripts>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="StorePurchaseAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="FULLSCREEN_DIALOG" frameLevel="63" inherits="AlertFrameTemplate" virtual="true">
+	<ContainedAlertFrame name="EntitlementDeliveredAlertFrameBaseTemplate" parent="UIParent" hidden="true" frameStrata="FULLSCREEN_DIALOG" frameLevel="63" inherits="AlertFrameTemplate" virtual="true">
 		<Size x="294" y="84"/>
 		<Animations>
 			<AnimationGroup parentKey="animIn">
@@ -1312,31 +1312,6 @@
 			</AnimationGroup>
 		</Animations>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<!--inherits="store-toast"-->
-				<Texture parentKey="Background" file="Interface\Store\Store-Main">
-					<TexCoords left="0.50878906" right="0.79589844" top="0.54199219" bottom="0.62402344"/>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Icon">
-					<Size x="44" y="44"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="21" y="0"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="BLIZZARD_STORE_PURCHASE_COMPLETE" justifyV="MIDDLE">
-					<Size x="200" y="24"/>
-					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="30" y="-15"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="Description" inherits="GameFontHighlight" text="BLIZZARD_STORE_PURCHASE_COMPLETE_DESC">
-					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="30" y="23"/>
-					</Anchors>
-				</FontString>
-			</Layer>
 			<Layer level="OVERLAY">
 				<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="glow">
 					<Size x="375" y="175"/>
@@ -1378,8 +1353,75 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick function="StorePurchaseAlertFrame_OnClick"/>
+			<OnClick function="EntitlementDelivered_OnClick"/>
 		</Scripts>
+	</ContainedAlertFrame>
+
+	<ContainedAlertFrame name="EntitlementDeliveredAlertFrameTemplate" inherits="EntitlementDeliveredAlertFrameBaseTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<!--inherits="store-toast"-->
+				<Texture parentKey="Background" file="Interface\Store\Store-Main">
+					<TexCoords left="0.50878906" right="0.79589844" top="0.54199219" bottom="0.62402344"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="44" y="44"/>
+					<Anchors>
+						<Anchor point="LEFT" x="21"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="BLIZZARD_STORE_PURCHASE_COMPLETE" justifyV="MIDDLE">
+					<Size x="200" y="24"/>
+					<Anchors>
+						<Anchor point="TOP" x="30" y="-15"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" inherits="GameFontHighlight" text="BLIZZARD_STORE_PURCHASE_COMPLETE_DESC">
+					<Anchors>
+						<Anchor point="BOTTOM" x="30" y="23"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</ContainedAlertFrame>
+
+	<ContainedAlertFrame name="RafRewardDeliveredAlertFrameTemplate" inherits="EntitlementDeliveredAlertFrameBaseTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="StandardBackground" atlas="RecruitAFriend_Toast_Standard" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="FancyBackground" atlas="RecruitAFriend_Toast_Fancy" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="44" y="44"/>
+					<Anchors>
+						<Anchor point="LEFT" x="35" y="-3"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Description" inherits="GameFontNormal" text="YOU_EARNED_LABEL" justifyH="LEFT">
+					<Size x="170" y="12"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="30" y="52"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Title" inherits="GameFontNormalLarge" justifyV="MIDDLE" justifyH="LEFT">
+					<Size x="170" y="38"/>
+					<Anchors>
+						<Anchor point="TOP" x="30" y="-34"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 	</ContainedAlertFrame>
 
 	<ContainedAlertFrame name="GarrisonBuildingAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate" virtual="true">

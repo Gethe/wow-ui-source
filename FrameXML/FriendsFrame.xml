@@ -5,9 +5,9 @@
 	<Button name="FriendsTabTemplate" inherits="TabButtonTemplate" mixin="FriendsTabMixin" virtual="true">
 		<Size x="280" y="32"/>
 		<Frames>
-			<Frame parentKey="New" inherits="NewCallout">
+			<Frame parentKey="New" inherits="NewCallout" frameLevel="20">
 				<Anchors>
-					<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" x="-6"/>
+					<Anchor point="RIGHT" relativePoint="BOTTOMRIGHT" x="28"/>
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -53,7 +53,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Frame name="FriendsFrameFriendDividerTemplate" virtual="true" enableMouse="true">
 		<Size x="298" y="16"/>
 		<Layers>
@@ -62,7 +62,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Frame name="FriendsFrameFriendInviteTemplate" virtual="true">
 		<Size x="298" y="34"/>
 		<Layers>
@@ -221,7 +221,7 @@
 						GameTooltip:Hide();
 					</OnLeave>
 					<OnClick>
-						FriendsFrame_BattlenetInvite(self:GetParent());
+						FriendsFrame_BattlenetInviteByIndex(self:GetParent().id);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -285,7 +285,7 @@
 			</Anchors>
 		</HighlightTexture>
 	</Button>
-	
+
 	<Button name="IgnoreListButtonTemplate" virtual="true" mixin="IgnoreListButtonMixin">
 		<Size x="298" y="16"/>
 		<Layers>
@@ -303,7 +303,7 @@
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
 	</Button>
-	
+
 	<Button name="FriendsFriendsButtonTemplate" virtual="true" mixin="FriendsFriendsButtonMixin">
 		<Size x="248" y="16"/>
 		<Layers>
@@ -321,7 +321,7 @@
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
 	</Button>
-	
+
 	<Button name="WhoListButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true" mixin="WhoListButtonMixin">
 		<Size x="298" y="16"/>
 		<Layers>
@@ -364,7 +364,7 @@
 			</Anchors>
 		</HighlightTexture>
 	</Button>
-	
+
 	<Button name="WhoFrameColumnHeaderTemplate" virtual="true">
 		<Size x="10" y="24"/>
 		<Layers>
@@ -418,7 +418,7 @@
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="FriendsFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="-1">
@@ -1021,7 +1021,7 @@
 						<Size x="120" y="22"/>
 						<Scripts>
 							<OnClick>
-								InviteToGroup(WhoFrame.selectedName);
+								C_PartyInfo.InviteUnit(WhoFrame.selectedName);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -1518,6 +1518,7 @@
 						<Scripts>
 							<OnLoad>
 								AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, AUTOCOMPLETE_LIST.ADDFRIEND.include, AUTOCOMPLETE_LIST.ADDFRIEND.exclude);
+								self.addHighlightedText = true;
 							</OnLoad>
 							<OnEnterPressed>
 								if ( not AutoCompleteEditBox_OnEnterPressed(self) and AddFriendEntryFrameAcceptButton:IsEnabled() ) then
@@ -1568,7 +1569,7 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="FriendsFriendsFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="FriendsFriendsFrameMixin">
 		<Size x="314" y="345"/>
 		<Anchors>

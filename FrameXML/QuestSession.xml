@@ -17,11 +17,21 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
+			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture parentKey="StatusIcon">
 					<Size x="30" y="30"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.PortraitRing"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="ShadowIcon" atlas="QuestSharing-DialogIconShadow" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.StatusIcon"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -181,7 +191,7 @@
 		<Frames>
 			<Button parentKey="MinimizeButton" inherits="QuestSessionDialogMinimizeButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-10" y="-10"/>
+					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
 				</Anchors>
 			</Button>
 		</Frames>
@@ -224,6 +234,55 @@
 			<Frame parentKey="CheckConvertToRaidDialog" inherits="QuestSessionDialogTemplate" mixin="QuestSessionCheckConvertToRaidDialogMixin">
 				<KeyValues>
 					<KeyValue key="confirmText" value="QUEST_SESSION_CHECK_CONVERT_TO_RAID_CONFIRM" type="global"/>
+					<KeyValue key="cancelText" value="CANCEL" type="global"/>
+				</KeyValues>
+			</Frame>
+
+			<!-- The party leader sees this and needs to approve the request they just received -->
+			<Frame parentKey="ConfirmJoinGroupRequestDialog" inherits="QuestSessionDialogTemplate" mixin="ConfirmJoinGroupRequestDialogMixin">
+				<KeyValues>
+					<KeyValue key="confirmText" value="ACCEPT" type="global"/>
+					<KeyValue key="cancelText" value="CANCEL" type="global"/>
+				</KeyValues>
+			</Frame>
+
+			<!-- The party leader sees this and needs to approve the invite they're about to send -->
+			<Frame parentKey="ConfirmInviteToGroupDialog" inherits="QuestSessionDialogTemplate" mixin="ConfirmInviteToGroupDialogMixin">
+				<KeyValues>
+					<KeyValue key="confirmText" value="QUEST_SESSION_CHECK_DIRECT_GROUP_INVITE_CONFIRM_BUTTON" type="global"/>
+					<KeyValue key="cancelText" value="CANCEL" type="global"/>
+				</KeyValues>
+			</Frame>
+
+			<!-- The invitee sees this and needs to acknowledge the fact that they're joining a party with an active quest session -->
+			<Frame parentKey="ConfirmInviteToGroupReceivedDialog" inherits="QuestSessionDialogTemplate" mixin="ConfirmInviteToGroupReceivedDialogMixin">
+				<KeyValues>
+					<KeyValue key="minimumWidth" value="0" type="number"/> <!-- override the base version -->
+					<KeyValue key="widthPadding" value="60" type="number"/> <!-- always ensure the edges have sufficient padding -->
+					<KeyValue key="confirmText" value="ACCEPT" type="global"/>
+					<KeyValue key="cancelText" value="DECLINE" type="global"/>
+				</KeyValues>
+				<Scripts>
+					<OnUpdate method="OnUpdate" inherit="append"/>
+				</Scripts>
+			</Frame>
+
+			<!-- The invitee sees this and needs to acknowledge the fact that they're joining a party with an active quest session -->
+			<Frame parentKey="ConfirmBNJoinGroupRequestDialog" inherits="QuestSessionDialogTemplate" mixin="ConfirmBNJoinGroupRequestDialogMixin">
+				<KeyValues>
+					<KeyValue key="minimumWidth" value="0" type="number"/> <!-- override the base version -->
+					<KeyValue key="widthPadding" value="60" type="number"/> <!-- always ensure the edges have sufficient padding -->
+					<KeyValue key="confirmText" value="ACCEPT" type="global"/>
+					<KeyValue key="cancelText" value="CANCEL" type="global"/>
+				</KeyValues>
+			</Frame>
+
+			<!-- The sender of the invite sees this and needs to confirm that they want to invite the person into an active quest session -->
+			<Frame parentKey="ConfirmInviteTravelPassConfirmationDialog" inherits="QuestSessionDialogTemplate" mixin="ConfirmInviteTravelPassConfirmationDialogMixin">
+				<KeyValues>
+					<KeyValue key="minimumWidth" value="0" type="number"/> <!-- override the base version -->
+					<KeyValue key="widthPadding" value="60" type="number"/> <!-- always ensure the edges have sufficient padding -->
+					<KeyValue key="confirmText" value="ACCEPT" type="global"/>
 					<KeyValue key="cancelText" value="CANCEL" type="global"/>
 				</KeyValues>
 			</Frame>

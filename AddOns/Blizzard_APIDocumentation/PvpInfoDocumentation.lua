@@ -217,12 +217,12 @@ local PvpInfo =
 			},
 		},
 		{
-			Name = "GetMatchPVPStatIDs",
+			Name = "GetMatchPVPStatColumns",
 			Type = "Function",
 
 			Returns =
 			{
-				{ Name = "pvpStatIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "columns", Type = "table", InnerType = "MatchPVPStatColumn", Nilable = false },
 			},
 		},
 		{
@@ -791,6 +791,11 @@ local PvpInfo =
 			LiteralName = "PVP_ROLE_UPDATE",
 		},
 		{
+			Name = "PvpSpecialEventInfoUpdated",
+			Type = "Event",
+			LiteralName = "PVP_SPECIAL_EVENT_INFO_UPDATED",
+		},
+		{
 			Name = "PvpTypesEnabled",
 			Type = "Event",
 			LiteralName = "PVP_TYPES_ENABLED",
@@ -1046,6 +1051,7 @@ local PvpInfo =
 			{
 				{ Name = "pvpStatID", Type = "number", Nilable = false },
 				{ Name = "pvpStatValue", Type = "number", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },
 				{ Name = "iconName", Type = "string", Nilable = false },
@@ -1083,7 +1089,8 @@ local PvpInfo =
 			Fields =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "shortDescription", Type = "string", Nilable = false },
+				{ Name = "longDescription", Type = "string", Nilable = false },
 				{ Name = "achievementID", Type = "number", Nilable = false },
 				{ Name = "isActive", Type = "bool", Nilable = false },
 			},

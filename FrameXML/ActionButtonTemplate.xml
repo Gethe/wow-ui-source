@@ -82,6 +82,11 @@
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="LevelLinkLockIcon" atlas="QuestSharing-Padlock" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Animations>

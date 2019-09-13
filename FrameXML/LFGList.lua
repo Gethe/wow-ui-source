@@ -82,6 +82,16 @@ local function ResolveCategoryFilters(categoryID, filters)
 	return filters;
 end
 
+local function GetStartGroupRestriction()
+	if ( C_SocialRestrictions.IsSilenced() ) then
+		return "SILENCED", RED_FONT_COLOR:WrapTextInColorCode(ERR_ACCOUNT_SILENCED);
+	elseif ( C_SocialRestrictions.IsSquelched() ) then
+		return "SQUELCHED", RED_FONT_COLOR:WrapTextInColorCode(ERR_USER_SQUELCHED);
+	end
+
+	return nil, nil;
+end
+
 -------------------------------------------------------
 ----------Base Frame
 -------------------------------------------------------
@@ -534,6 +544,12 @@ function LFGListCategorySelection_UpdateNavButtons(self)
 	if ( messageStart ) then
 		startEnabled = false;
 		self.StartGroupButton.tooltip = messageStart;
+	end
+
+	local startError, errorText = GetStartGroupRestriction();
+	if ( startError ~= nil ) then
+		startEnabled = false;
+		self.StartGroupButton.tooltip = errorText;
 	end
 
 	self.FindGroupButton:SetEnabled(findEnabled);
@@ -1891,9 +1907,13 @@ function LFGListSearchPanel_UpdateButtonStatus(self)
 		self.ScrollFrame.StartGroupButton.tooltip = LFG_LIST_NOT_LEADER;
 	else
 		local messageStart = LFGListUtil_GetActiveQueueMessage(false);
+		local startError, errorText = GetStartGroupRestriction();
 		if ( messageStart ) then
 			self.ScrollFrame.StartGroupButton:Disable();
 			self.ScrollFrame.StartGroupButton.tooltip = messageStart;
+		elseif ( startError ~= nil ) then
+			self.ScrollFrame.StartGroupButton:Disable();
+			self.ScrollFrame.StartGroupButton.tooltip = errorText;
 		else
 			self.ScrollFrame.StartGroupButton:Enable();
 			self.ScrollFrame.StartGroupButton.tooltip = nil;

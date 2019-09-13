@@ -99,11 +99,13 @@ function HybridScrollFrame_Update (self, totalHeight, displayedHeight)
 	if ( range > 0 and self.scrollBar ) then
 		local minVal, maxVal = self.scrollBar:GetMinMaxValues();
 		if ( math.floor(self.scrollBar:GetValue()) >= math.floor(maxVal) ) then
-			self.scrollBar:SetMinMaxValues(0, range)
-			if ( math.floor(self.scrollBar:GetValue()) ~= math.floor(range) ) then
-				self.scrollBar:SetValue(range);
-			else
-				HybridScrollFrame_SetOffset(self, range); -- If we've scrolled to the bottom, we need to recalculate the offset.
+			self.scrollBar:SetMinMaxValues(0, range);
+			if ( range < maxVal ) then
+				if ( math.floor(self.scrollBar:GetValue()) ~= math.floor(range) ) then
+					self.scrollBar:SetValue(range);
+				else
+					HybridScrollFrame_SetOffset(self, range); -- If we've scrolled to the bottom, we need to recalculate the offset.
+				end
 			end
 		else
 			self.scrollBar:SetMinMaxValues(0, range)

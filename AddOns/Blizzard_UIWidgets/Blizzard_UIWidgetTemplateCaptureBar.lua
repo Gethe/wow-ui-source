@@ -16,6 +16,7 @@ local textureKitRegionInfo = {
 	["NeutralBar"] = {formatString = "%s-neutralfill-%s"},
 	["Glow1"] = {formatString = "%s-leftglow-%s", useAtlasSize = true, setVisibility = true},
 	["Glow2"] = {formatString = "%s-rightglow-%s", useAtlasSize = true, setVisibility = true},
+	["Glow3"] = {formatString = "%s-neutralglow-%s", useAtlasSize = true, setVisibility = true},
 	["Spark"] = {formatString = "%s-spark-%s", useAtlasSize = true},
 }
 
@@ -68,8 +69,9 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo, widgetContainer)
 
 	SetupTextureKitsFromRegionInfo(textureKits, self, textureKitRegionInfo);
 
-	local hasLeftGlow = self.Glow1:IsShown();
-	local hasRightGlow = self.Glow2:IsShown();
+	local hasLeftGlowTexture = self.Glow1:IsShown();
+	local hasRightGlowTexture = self.Glow2:IsShown();
+	local hasNeutralGlowTexture = self.Glow3:IsShown();
 
 	if frameTextureKit == "boss" then
 		self.Glow1:ClearAllPoints();
@@ -132,14 +134,21 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo, widgetContainer)
 	end
 
 	if inLeftZone then
-		self.Glow1:SetShown(hasLeftGlow);
+		self.Glow1:SetShown(hasLeftGlowTexture);
 		self.Glow2:Hide();
+		self.Glow3:Hide();
 	elseif inRightZone then
 		self.Glow1:Hide();
-		self.Glow2:SetShown(hasRightGlow);
+		self.Glow2:SetShown(hasRightGlowTexture);
+		self.Glow3:Hide();
+	elseif inNeutralZone then
+		self.Glow1:Hide();
+		self.Glow2:Hide();
+		self.Glow3:SetShown(hasNeutralGlowTexture);
 	else
 		self.Glow1:Hide();
 		self.Glow2:Hide();
+		self.Glow3:Hide();
 	end
 
 	if widgetInfo.glowAnimType == Enum.CaptureBarWidgetGlowAnimType.Pulse then
@@ -148,6 +157,7 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo, widgetContainer)
 		self.GlowPulseAnim:Stop();
 		self.Glow1:SetAlpha(1);
 		self.Glow2:SetAlpha(1);
+		self.Glow3:SetAlpha(1);
 	end
 
 	self.NeutralBar:SetPoint("CENTER", self, "LEFT", neutralZonePosition, 0); 
@@ -174,5 +184,6 @@ function UIWidgetTemplateCaptureBarMixin:AnimOut()
 	self.GlowPulseAnim:Stop();
 	self.Glow1:Hide();
 	self.Glow2:Hide();
+	self.Glow3:Hide();
 	UIWidgetBaseTemplateMixin.AnimOut(self);
 end

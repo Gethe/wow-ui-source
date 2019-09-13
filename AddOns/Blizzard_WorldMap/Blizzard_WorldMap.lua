@@ -1,5 +1,7 @@
 WorldMapMixin = {};
 
+local TITLE_CANVAS_SPACER_FRAME_HEIGHT = 67;
+
 function WorldMapMixin:SetupTitle()
 	self.BorderFrame:SetTitle(MAP_AND_QUEST_LOG);
 	self.BorderFrame.Bg:SetParent(self);
@@ -98,6 +100,8 @@ function WorldMapMixin:OnLoad()
 	self:RegisterEvent("UI_SCALE_CHANGED");
 
 	self:AttachQuestLog();
+
+	self:UpdateSpacerFrameAnchoring();
 end
 
 function WorldMapMixin:OnEvent(event, ...)
@@ -144,6 +148,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(SelectableGraveyardDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(AreaPOIDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(MapIndicatorQuestDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(QuestSessionDataProviderMixin));
 
 	if IsGMClient() then
 		self:AddDataProvider(CreateFromMixins(WorldMap_DebugDataProviderMixin));
@@ -303,7 +308,7 @@ function WorldMapMixin:UpdateMaximizedSize()
 	local SCREEN_BORDER_PIXELS = 30;
 	parentWidth = parentWidth - SCREEN_BORDER_PIXELS;
 
-	local spacerFrameHeight = self.TitleCanvasSpacerFrame:GetHeight();
+	local spacerFrameHeight = TITLE_CANVAS_SPACER_FRAME_HEIGHT;
 	local unclampedWidth = ((parentHeight - spacerFrameHeight) * self.minimizedWidth) / (self.minimizedHeight - spacerFrameHeight);
 	local clampedWidth = math.min(parentWidth, unclampedWidth);
 
@@ -320,9 +325,9 @@ end
 
 function WorldMapMixin:UpdateSpacerFrameAnchoring()
 	if self.QuestLog and self.QuestLog:IsShown() then
-		self.TitleCanvasSpacerFrame:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -3 - self.questLogWidth, -67);
+		self.TitleCanvasSpacerFrame:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -3 - self.questLogWidth, -TITLE_CANVAS_SPACER_FRAME_HEIGHT);
 	else
-		self.TitleCanvasSpacerFrame:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -3, -67);
+		self.TitleCanvasSpacerFrame:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -3, -TITLE_CANVAS_SPACER_FRAME_HEIGHT);
 	end
 	self:OnFrameSizeChanged();
 end

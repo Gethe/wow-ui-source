@@ -96,6 +96,10 @@ function CollectionsJournal_UpdateSelectedTab(self)
 	end
 end
 
+function CollectionsJournal_HideTabHelpTips()
+	HelpTip:HideAll(CollectionsJournal);
+end
+
 function CollectionsJournal_OnShow(self)
 	HideUIPanel(WardrobeFrame);
 	CollectionsMicroButtonAlert:Hide();

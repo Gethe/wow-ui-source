@@ -262,7 +262,6 @@ function FriendsFrame_OnLoad(self)
 	self:RegisterEvent("BN_INFO_CHANGED");
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
 	self:RegisterEvent("BATTLETAG_INVITE_SHOW");
-	self:RegisterEvent("PARTY_RECRUIT_A_FRIEND_UPDATED");
 	self:RegisterEvent("SOCIAL_QUEUE_UPDATE");
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	self:RegisterEvent("GROUP_JOINED");
@@ -311,6 +310,7 @@ function FriendsFrame_OnShow()
 	if IsRAFHelpTipShowing() then
 		PanelTemplates_SetTab(FriendsTabHeader, 3);
 		if IsIntroRAFHelpTipShowing() then
+			RecruitAFriendFrame:ShowSplashScreen();
 			FriendsTabHeader.Tab3.New:Show();
 			HelpTip:Acknowledge(QuickJoinToastButton, RAF_INTRO_TUTORIAL_TEXT);
 		else
@@ -332,6 +332,12 @@ function FriendsFrame_Update()
 		ButtonFrameTemplate_ShowButtonBar(FriendsFrame);
 		FriendsFrameInset:SetPoint("TOPLEFT", 4, -83);
 		FriendsFrameIcon:SetTexture("Interface\\FriendsFrame\\Battlenet-Portrait");
+
+		for i, Tab in ipairs(FriendsTabHeader.Tabs) do
+			if i ~= selectedHeaderTab then
+				Tab.New:Hide();
+			end
+		end
 
 		if selectedHeaderTab == FRIEND_HEADER_TAB_FRIENDS then
 			C_FriendList.ShowFriends();
@@ -441,7 +447,6 @@ function FriendsFrameTabMixin:OnClick()
 end
 
 function FriendsListFrame_OnShow(self)
-	ProductChoiceFrame_OnFriendsListShown();
 end
 
 function FriendsListFrame_OnHide(self)
@@ -555,7 +560,7 @@ function FriendsList_Update(forceUpdate)
 
 	local addButtonIndex = 0;
 	local totalButtonHeight = 0;
-	
+
 	local function AddButtonInfo(buttonType, id)
 		addButtonIndex = addButtonIndex + 1;
 		if ( not FriendListEntries[addButtonIndex] ) then
@@ -590,7 +595,7 @@ function FriendsList_Update(forceUpdate)
 	if (numBNetFavorite > 0) then
 		AddButtonInfo(FRIENDS_BUTTON_TYPE_DIVIDER, nil);
 	end
-	
+
 	-- online Battlenet friends
 	for i = 1, numBNetOnline - numBNetFavoriteOnline do
 		bnetFriendIndex = bnetFriendIndex + 1;
@@ -633,7 +638,7 @@ function FriendsList_Update(forceUpdate)
 			FriendsFrame_SelectFriend(FriendListEntries[1].buttonType, 1);
 			selectedFriend = 1;
 		end
-		-- check if friend is online		
+		-- check if friend is online
 		FriendsFrameSendMessageButton:SetEnabled(FriendsList_CanWhisperFriend(FriendsFrame.selectedFriendType, selectedFriend));
 	else
 		FriendsFrameSendMessageButton:Disable();
@@ -835,7 +840,7 @@ function WhoList_Update()
 	else
 		WhoFrameGroupInviteButton:Enable();
 		WhoFrameAddFriendButton:Enable();
-		
+
 		local selectedWhoInfo = C_FriendList.GetWhoInfo(WhoFrame.selectedWho);
 		if selectedWhoInfo then
 			WhoFrame.selectedName = selectedWhoInfo.fullName;
@@ -883,13 +888,6 @@ function FriendsFrame_OnEvent(self, event, ...)
 				if ( button.summonButton:IsShown() ) then
 					FriendsFrame_SummonButton_Update(button.summonButton);
 				end
-			end
-		end
-	elseif ( event == "PARTY_RECRUIT_A_FRIEND_UPDATED" ) then
-		if ( self:IsShown() ) then
-			local buttons = FriendsListFrameScrollFrame.buttons;
-			for _, button in pairs(buttons) do
-				FriendsFrame_SummonButton_Update(button.summonButton);
 			end
 		end
 	elseif ( event == "FRIENDLIST_UPDATE" or event == "GROUP_ROSTER_UPDATE" ) then
@@ -1066,7 +1064,7 @@ end
 
 function FriendsFrame_GroupInvite()
 	local name = C_FriendList.GetFriendInfoByIndex(FriendsFrame.selectedFriend).name;
-	InviteToGroup(name);
+	C_PartyInfo.InviteUnit(name);
 	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
 
@@ -2077,7 +2075,7 @@ function FriendsFriendsFrameMixin:OnLoad()
 	self.hideOnEscape = true;
 	self.exclusive = true;
 	UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 120);
-	
+
 	FriendsFriendsScrollFrame.update = function() self:Update() end;
 	HybridScrollFrame_CreateButtons(FriendsFriendsScrollFrame, "FriendsFriendsButtonTemplate");
 end
@@ -2217,69 +2215,67 @@ end
 function FriendsFrame_InviteOrRequestToJoin(guid, gameAccountID)
 	local inviteType = GetDisplayedInviteType(guid);
 	if ( inviteType == "INVITE" or inviteType == "SUGGEST_INVITE" ) then
+		if inviteType == "SUGGEST_INVITE" and C_PartyInfo.IsPartyFull() then
+			ChatFrame_DisplaySystemMessageInPrimary(ERR_GROUP_FULL);
+			return;
+		end
+
 		BNInviteFriend(gameAccountID);
 	elseif ( inviteType == "REQUEST_INVITE" ) then
 		BNRequestInviteFriend(gameAccountID);
 	end
 end
 
-function FriendsFrame_BattlenetInvite(button, bnetIDAccount)
-	-- no button means click from UnitPopup dropdown, find the friend index by bnetIDAccount
-	local index;
-	if ( not button ) then
-		index = BNGetFriendIndex(bnetIDAccount);
-	else
-		index = button.id;
-	end
-	if ( index ) then
-		local numGameAccounts = C_BattleNet.GetFriendNumGameAccounts(index);
-		if numGameAccounts > 1 then
-			-- see if there is exactly one game account we could invite
-			local numValidGameAccounts = 0;
-			local lastGameAccountID;
-			local lastGameAccountGUID;
-			for i = 1, numGameAccounts do
-				local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(index, i);
-				if gameAccountInfo.playerGuid and (clientProgram.factionName == playerFactionGroup) and (gameAccountInfo.realmID ~= 0) then
-					numValidGameAccounts = numValidGameAccounts + 1;
-					lastGameAccountID = gameAccountInfo.gameAccountID;
-					lastGameAccountGUID = gameAccountInfo.playerGuid;
+function FriendsFrame_BattlenetInviteByIndex(friendIndex)
+	local numGameAccounts = C_BattleNet.GetFriendNumGameAccounts(friendIndex);
+	if numGameAccounts > 1 then
+		-- see if there is exactly one game account we could invite
+		local numValidGameAccounts = 0;
+		local lastGameAccountID;
+		local lastGameAccountGUID;
+		for i = 1, numGameAccounts do
+			local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(friendIndex, i);
+			if gameAccountInfo.playerGuid and (gameAccountInfo.factionName == playerFactionGroup) and (gameAccountInfo.realmID ~= 0) then
+				numValidGameAccounts = numValidGameAccounts + 1;
+				lastGameAccountID = gameAccountInfo.gameAccountID;
+				lastGameAccountGUID = gameAccountInfo.playerGuid;
+			end
+		end
+
+		if ( numValidGameAccounts == 1 ) then
+			FriendsFrame_InviteOrRequestToJoin(lastGameAccountGUID, lastGameAccountID);
+			return;
+		end
+
+		-- if no button, now find the physical friend button to anchor the dropdown
+		-- it might not exist if the list was scrolled
+		if ( not button ) then
+			local buttons = FriendsListFrameScrollFrame.buttons;
+			for i = 1, #buttons do
+				if ( buttons[i].id == friendIndex and buttons[i].buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
+					button = buttons[i];
+					break;
 				end
 			end
-			if ( numValidGameAccounts == 1 ) then
-				FriendsFrame_InviteOrRequestToJoin(lastGameAccountGUID, lastGameAccountID);
-				return;
-			end
+		end
 
-			-- if no button, now find the physical friend button to anchor the dropdown
-			-- it might not exist if the list was scrolled
-			if ( not button ) then
-				local buttons = FriendsListFrameScrollFrame.buttons;
-				for i = 1, #buttons do
-					if ( buttons[i].id == index and buttons[i].buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
-						button = buttons[i];
-						break;
-					end
-				end
-			end
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		local dropDown = TravelPassDropDown;
+		if ( dropDown.index ~= friendIndex ) then
+			CloseDropDownMenus();
+		end
 
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-			local dropDown = TravelPassDropDown;
-			if ( dropDown.index ~= index ) then
-				CloseDropDownMenus();
-			end
-			dropDown.index = index;
-			-- show dropdown at the button if one was passed in or we found it
-			if ( button ) then
-				ToggleDropDownMenu(1, nil, dropDown, button.travelPassButton, 20, 34);
-			else
-				ToggleDropDownMenu(1, nil, dropDown, "cursor", 1, -1);
-			end
+		dropDown.index = friendIndex;
+		-- show dropdown at the button if one was passed in or we found it
+		if ( button ) then
+			ToggleDropDownMenu(1, nil, dropDown, button.travelPassButton, 20, 34);
 		else
-			local accountInfo = C_BattleNet.GetFriendAccountInfo(index);
-			if accountInfo and accountInfo.gameAccountInfo.playerGuid then
-				FriendsFrame_InviteOrRequestToJoin(accountInfo.gameAccountInfo.playerGuid, accountInfo.gameAccountInfo.gameAccountID);
-			end
+			ToggleDropDownMenu(1, nil, dropDown, "cursor", 1, -1);
+		end
+	else
+		local accountInfo = C_BattleNet.GetFriendAccountInfo(friendIndex);
+		if accountInfo and accountInfo.gameAccountInfo.playerGuid then
+			FriendsFrame_InviteOrRequestToJoin(accountInfo.gameAccountInfo.playerGuid, accountInfo.gameAccountInfo.gameAccountID);
 		end
 	end
 end

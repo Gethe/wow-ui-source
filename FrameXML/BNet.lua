@@ -69,7 +69,7 @@ function BNToastMixin:OnLoad()
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("BN_DISCONNECTED");
 	self:RegisterEvent("BN_BLOCK_FAILED_TOO_MANY");
-	self:RegisterEvent("CLUB_FINDER_APPLICATIONS_UPDATED");
+	self:RegisterEvent("CLUB_FINDER_APPLICANT_INVITE_RECIEVED");
 
 	local alertSystem = ChatAlertFrame:AddAutoAnchoredSubSystem(self);
 	ChatAlertFrame:SetSubSystemAnchorPriority(alertSystem, 1);
@@ -98,12 +98,13 @@ function BNToastMixin:OnEvent(event, ...)
 		self:AddToast(BN_TOAST_TYPE_CLUB_INVITATION, ...);
 	elseif ( event == "BN_FRIEND_INVITE_LIST_INITIALIZED" ) then
 		self:AddToast(BN_TOAST_TYPE_PENDING_INVITES, ...);
-	elseif (event == "CLUB_FINDER_APPLICATIONS_UPDATED") then 
-		local _, clubFinderGUIDS = ...;
+	elseif (event == "CLUB_FINDER_APPLICANT_INVITE_RECIEVED") then 
+		local clubFinderGUIDS = ...;
 		for _, clubFinderGUID in ipairs(clubFinderGUIDS) do 
 			if (not C_ClubFinder.DoesPlayerBelongToClubFromClubGUID(clubFinderGUID)) then 
-				local recruitingClubInfo = C_ClubFinder.GetRecruitingClubInfoFromFinderGUID(clubFinderGUID); 
-				if(recruitingClubInfo.clubStatus and recruitingClubInfo.clubStatus == Enum.PlayerClubRequestStatus.Approved) then 
+				local recruitingClubInfo = C_ClubFinder.GetRecruitingClubInfoFromFinderGUID(clubFinderGUID);
+				local clubStatus = C_ClubFinder.GetPlayerClubApplicationStatus(recruitingClubInfo.clubFinderGUID);
+				if(clubStatus and clubStatus == Enum.PlayerClubRequestStatus.Approved) then 
 					self:AddToast(BN_TOAST_TYPE_CLUB_FINDER_INVITATION, recruitingClubInfo);
 				end
 			end

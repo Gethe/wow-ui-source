@@ -105,6 +105,7 @@ end
 QuestSessionDialogMinimizeButtonMixin = {};
 
 function QuestSessionDialogMinimizeButtonMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	self:GetParent():Minimize();
 end
 
@@ -119,8 +120,10 @@ function QuestSessionDialogMixin:OnLoad()
 end
 
 function QuestSessionDialogMixin:GetSessionCommand()
+	-- Since there is no command for leaving a session, return whatever
+	-- the current system command is; this is the most common case.
 	-- Can override in derived mixin
-	return Enum.QuestSessionCommand.None;
+	return QuestSessionManager:GetSystemSessionCommand();
 end
 
 function QuestSessionDialogMixin:Confirm()
@@ -169,15 +172,35 @@ function QuestSessionDialogMixin:SetMemberResponse(guid, response)
 	end
 
 	-- Did everybody respond?
-	for k, v in pairs(self.trackedResponses) do
-		if v == HAS_NOT_RESPONSED then
-			-- Nope, bail.
-			return;
-		end
+	local votesForCount, votesAgainstCount, votesRemainingCount = self:GetResponseCounts();
+	if votesRemainingCount > 0 then
+		return;
 	end
 
 	-- Yep, begin the dialog hide process...
+	if votesAgainstCount > 0 then
+		PlaySound(SOUNDKIT.QUEST_SESSION_DECLINE);
+	end
+
 	self:StartHideDialog();
+end
+
+function QuestSessionDialogMixin:GetResponseCounts()
+	local votesForCount = 0;
+	local votesAgainstCount = 0;
+	local votesRemainingCount = 0;
+
+	for trackedGuid, trackedResponse in pairs(self.trackedResponses) do
+		if trackedResponse == HAS_NOT_RESPONSED then
+			votesRemainingCount = votesRemainingCount + 1;
+		elseif trackedResponse then
+			votesForCount = votesForCount + 1;
+		else
+			votesAgainstCount = votesAgainstCount + 1;
+		end
+	end
+
+	return votesForCount, votesAgainstCount, votesRemainingCount;
 end
 
 function QuestSessionDialogMixin:HasTrackedResponse(guid)
@@ -213,7 +236,7 @@ function QuestSessionDialogMixin:ResetPlayerContainer()
 end
 
 function QuestSessionDialogMixin:CheckAddUnit(unit, previousFrame, excludeUnit)
-	if unit ~= excludeUnit and UnitExists(unit) then
+	if unit ~= excludeUnit and UnitExists(unit) and UnitIsConnected(unit) and UnitInParty(unit, LE_PARTY_CATEGORY_HOME) then
 		return self:AddUnit(unit, previousFrame);
 	end
 
@@ -239,8 +262,15 @@ function QuestSessionDialogMixin:StartHideDialog(delay)
 	end
 end
 
+local function PlayDialogSound(sound)
+	if sound and sound ~= 0 then
+		PlaySound(sound);
+	end
+end
+
 function QuestSessionDialogMixin:HideImmediate()
 	self:ResetPlayerContainer();
+	self:PlayHideSound();
 	StaticPopupSpecial_Hide(self);
 	QuestSessionManager:NotifyDialogHide(self);
 end
@@ -251,8 +281,41 @@ function QuestSessionDialogMixin:Minimize()
 end
 
 function QuestSessionDialogMixin:ShowDialog()
+	self:PlayShowSound();
 	StaticPopupSpecial_Show(self);
 	QuestSessionManager:NotifyDialogShow(self);
+end
+
+function QuestSessionDialogMixin:SetShowSound(sound)
+	self.showSound = sound;
+end
+
+function QuestSessionDialogMixin:GetShowSound()
+	return self.showSound or SOUNDKIT.IG_MAINMENU_OPEN;
+end
+
+function QuestSessionDialogMixin:ClearShowSound()
+	self.showSound = 0;
+end
+
+function QuestSessionDialogMixin:PlayShowSound()
+	PlayDialogSound(self:GetShowSound());
+end
+
+function QuestSessionDialogMixin:SetHideSound(sound)
+	self.hideSound = sound;
+end
+
+function QuestSessionDialogMixin:GetHideSound()
+	return self.hideSound or SOUNDKIT.IG_MAINMENU_CLOSE;
+end
+
+function QuestSessionDialogMixin:ClearHideSound()
+	self.hideSound = 0;
+end
+
+function QuestSessionDialogMixin:PlayHideSound()
+	PlayDialogSound(self:GetHideSound());
 end
 
 function QuestSessionDialogMixin:SetButtonsEnabled(enabled)
@@ -271,6 +334,8 @@ QuestSessionStartDialogMixin = {};
 
 function QuestSessionStartDialogMixin:OnLoad()
 	QuestSessionDialogMixin.OnLoad(self);
+	self:SetShowSound(SOUNDKIT.QUEST_SESSION_READY_CHECK);
+	self:ClearHideSound();
 
 	self:RegisterEvent("QUEST_SESSION_MEMBER_START_RESPONSE");
 	self:RegisterEvent("QUEST_SESSION_JOINED");
@@ -301,7 +366,6 @@ function QuestSessionStartDialogMixin:CheckShow()
 		self:AddParty(GetMemberUnit(details.guid));
 		self:CheckButtonEnabledState();
 		self:ShowDialog();
-		PlaySound(SOUNDKIT.QUEST_SESSION_READY_CHECK);
 	end
 end
 
@@ -310,12 +374,17 @@ function QuestSessionStartDialogMixin:GetSessionCommand()
 end
 
 function QuestSessionStartDialogMixin:Confirm()
-	PlaySound(SOUNDKIT.UI_WORLDQUEST_START);
 	self:SendSessionResponse(true);
+
+	-- Check whether or not to play the individual confirm sound.  The last person to confirm will not play a sound because the fanfare will
+	-- play instead.
+	local _, _, votesRemainingCount = self:GetResponseCounts();
+	if votesRemainingCount > 1 then
+		PlaySound(SOUNDKIT.QUEST_SESSION_INDIVIDUAL_ACCEPT);
+	end
 end
 
 function QuestSessionStartDialogMixin:Cancel()
-	PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST);
 	self:SendSessionResponse(false);
 end
 
@@ -350,6 +419,7 @@ end
 QuestSessionCheckStartDialogMixin = {};
 
 function QuestSessionCheckStartDialogMixin:Setup()
+	FlashClientIcon(); -- This dialog will time out, let the user know about it.
 	self.Title:SetText("QuestSharing-DialogIcon", QUEST_SESSION_CHECK_START_SESSION_TITLE);
 	self.Body:SetText(QuestSessionManager:GetStartSessionBodyText());
 	self.Divider:Show();
@@ -389,12 +459,6 @@ function QuestSessionCheckLeavePartyDialogMixin:Setup()
 	self.Divider:Show();
 end
 
-function QuestSessionCheckLeavePartyDialogMixin:GetSessionCommand()
-	-- Since there is no command for leaving a session, return whatever
-	-- the current system command is.
-	return QuestSessionManager:GetSystemSessionCommand();
-end
-
 function QuestSessionCheckLeavePartyDialogMixin:Confirm()
 	C_PartyInfo.ConfirmLeaveParty();
 	self:HideImmediate();
@@ -408,14 +472,159 @@ function QuestSessionCheckConvertToRaidDialogMixin:Setup()
 	self.Divider:Show();
 end
 
-function QuestSessionCheckConvertToRaidDialogMixin:GetSessionCommand()
-	-- Since there is no command for leaving a session, return whatever
-	-- the current system command is.
-	return QuestSessionManager:GetSystemSessionCommand();
-end
-
 function QuestSessionCheckConvertToRaidDialogMixin:Confirm()
 	C_PartyInfo.ConfirmConvertToRaid();
+	self:HideImmediate();
+end
+
+ConfirmJoinGroupRequestDialogMixin = {};
+
+function ConfirmJoinGroupRequestDialogMixin:GetTitle(confirmationType, willConvertToRaid)
+	local title = QUEST_SESSION_CHECK_INVITE_TITLE;
+	if confirmationType == LE_INVITE_CONFIRMATION_REQUEST then
+		title = QUEST_SESSION_CHECK_GROUP_INVITE_CONFIRMATION_TITLE_REQUEST;
+	elseif confirmationType == LE_INVITE_CONFIRMATION_SUGGEST then
+		title = QUEST_SESSION_CHECK_GROUP_INVITE_CONFIRMATION_TITLE_REFERRAL;
+	end
+
+	local atlas = "QuestSharing-DialogIcon";
+	if willConvertToRaid then
+		atlas = "QuestSharing-Stop-DialogIcon";
+	end
+
+	return atlas, title;
+end
+
+function ConfirmJoinGroupRequestDialogMixin:GetBody(confirmationBaseText, willConvertToRaid)
+	local body = QUEST_SESSION_CHECK_GROUP_INVITE_CONFIRMATION_BODY;
+	if willConvertToRaid then
+		body = QUEST_SESSION_CHECK_GROUP_INVITE_CONFIRMATION_CONVERT_TO_RAID_BODY;
+	end
+
+	return confirmationBaseText .. "\n\n" .. body;
+end
+
+function ConfirmJoinGroupRequestDialogMixin:Setup(invite, confirmationBaseText)
+	local confirmationType, name, guid, rolesInvalid, willConvertToRaid = GetInviteConfirmationInfo(invite);
+
+	self.inviteConfirmation = invite;
+	self.Title:SetText(self:GetTitle(confirmationType, willConvertToRaid));
+	self.Body:SetWarningText(self:GetBody(confirmationBaseText, willConvertToRaid));
+	self.Divider:Show();
+	self:SetShowSound(SOUNDKIT.IG_PLAYER_INVITE);
+end
+
+function ConfirmJoinGroupRequestDialogMixin:Confirm()
+	RespondToInviteConfirmation(self.inviteConfirmation, true);
+	self:HideImmediate();
+end
+
+function ConfirmJoinGroupRequestDialogMixin:Cancel()
+	RespondToInviteConfirmation(self.inviteConfirmation, false);
+	self:HideImmediate();
+end
+
+ConfirmInviteToGroupDialogMixin = {};
+
+function ConfirmInviteToGroupDialogMixin:GetTitle(willConvertToRaid)
+	local atlas = "QuestSharing-DialogIcon";
+	if willConvertToRaid then
+		atlas = "QuestSharing-Stop-DialogIcon";
+	end
+
+	return atlas, QUEST_SESSION_CHECK_GROUP_INVITE_CONFIRMATION_TITLE;
+end
+
+function ConfirmInviteToGroupDialogMixin:GetBody(name, willConvertToRaid)
+	if willConvertToRaid then
+		return QUEST_SESSION_CHECK_DIRECT_RAID_INVITE_CONFIRMATION_BODY:format(name);
+	else
+		return QUEST_SESSION_CHECK_DIRECT_GROUP_INVITE_CONFIRMATION_BODY:format(name);
+	end
+end
+
+function ConfirmInviteToGroupDialogMixin:Setup(name, willConvertToRaid)
+	self.inviteName = name;
+	self.Title:SetText(self:GetTitle(willConvertToRaid));
+	self.Body:SetWarningText(self:GetBody(name, willConvertToRaid));
+	self.Divider:Show();
+	self:SetShowSound(SOUNDKIT.IG_PLAYER_INVITE);
+end
+
+function ConfirmInviteToGroupDialogMixin:Confirm()
+	C_PartyInfo.ConfirmInviteUnit(self.inviteName);
+	self:HideImmediate();
+end
+
+function ConfirmInviteToGroupDialogMixin:Cancel()
+	self:HideImmediate();
+end
+
+ConfirmInviteToGroupReceivedDialogMixin = {};
+
+function ConfirmInviteToGroupReceivedDialogMixin:OnUpdate()
+	if self.timeout then
+		if GetTime() >= self.timeout then
+			self:HideImmediate();
+			self.timeout = nil;
+		end
+	end
+end
+
+function ConfirmInviteToGroupReceivedDialogMixin:Setup(name, text)
+	self.timeout = GetTime() + STATICPOPUP_TIMEOUT;
+	self.Title:SetText("QuestSharing-DialogIcon", QUEST_SESSION_INVITE_RECEIVED_TITLE);
+	self.Body:SetText(text);
+	self.Divider:Show();
+	self:SetShowSound(SOUNDKIT.IG_PLAYER_INVITE);
+end
+
+function ConfirmInviteToGroupReceivedDialogMixin:Confirm()
+	AcceptGroup();
+	self:HideImmediate();
+end
+
+function ConfirmInviteToGroupReceivedDialogMixin:Cancel()
+	DeclineGroup();
+	self:HideImmediate();
+end
+
+ConfirmBNJoinGroupRequestDialogMixin = {};
+
+function ConfirmBNJoinGroupRequestDialogMixin:Setup(...)
+	self.confirmationArgs = { ..., n = select("#", ...), };
+	self.Title:SetText("QuestSharing-DialogIcon", QUEST_SESSION_CHECK_REQUEST_TO_JOIN_TITLE);
+	self.Body:SetWarningText(QUEST_SESSION_CHECK_REQUEST_TO_JOIN_BODY_UNRESTRICTED);
+	self.Divider:Show();
+	self:SetShowSound(SOUNDKIT.IG_PLAYER_INVITE);
+end
+
+function ConfirmBNJoinGroupRequestDialogMixin:Confirm()
+	ConfirmBNRequestInviteFriend(unpack(self.confirmationArgs));
+	self:HideImmediate();
+end
+
+function ConfirmBNJoinGroupRequestDialogMixin:Cancel()
+	self:HideImmediate();
+end
+
+ConfirmInviteTravelPassConfirmationDialogMixin = {};
+
+function ConfirmInviteTravelPassConfirmationDialogMixin:Setup(target, guid)
+	self.target = target;
+	self.guid = guid;
+	self.Title:SetText("QuestSharing-DialogIcon", QUEST_SESSION_CHECK_GROUP_INVITE_CONFIRMATION_TITLE);
+	self.Body:SetWarningText(QUEST_SESSION_CHECK_DIRECT_GROUP_INVITE_CONFIRMATION_BODY:format(target));
+	self.Divider:Show();
+	self:SetShowSound(SOUNDKIT.IG_PLAYER_INVITE);
+end
+
+function ConfirmInviteTravelPassConfirmationDialogMixin:Confirm()
+	C_PartyInfo.ConfirmInviteTravelPass(self.target, self.guid);
+	self:HideImmediate();
+end
+
+function ConfirmInviteTravelPassConfirmationDialogMixin:Cancel()
 	self:HideImmediate();
 end
 
@@ -463,7 +672,7 @@ AddNotification(Enum.QuestSessionResult.Timeout, ERR_QUEST_SESSION_RESULT_TIMEOU
 AddNotification(Enum.QuestSessionResult.Disabled, ERR_QUEST_SESSION_RESULT_DISABLED);
 AddNotification(Enum.QuestSessionResult.Started, ERR_QUEST_SESSION_RESULT_STARTED, SOUNDKIT.QUEST_SESSION_ACTIVATE);
 AddNotification(Enum.QuestSessionResult.Stopped, ERR_QUEST_SESSION_RESULT_STOPPED, SOUNDKIT.QUEST_SESSION_DEACTIVATE);
-AddNotification(Enum.QuestSessionResult.Left, ERR_QUEST_SESSION_RESULT_LEFT);
+AddNotification(Enum.QuestSessionResult.Left, ERR_QUEST_SESSION_RESULT_LEFT, SOUNDKIT.QUEST_SESSION_DEACTIVATE);
 AddNotification(Enum.QuestSessionResult.OwnerLeft, ERR_QUEST_SESSION_RESULT_STOPPED);
 AddNotification(Enum.QuestSessionResult.PartyDestroyed, ERR_QUEST_SESSION_RESULT_STOPPED, SOUNDKIT.QUEST_SESSION_DEACTIVATE);
 AddNotification(Enum.QuestSessionResult.ReadyCheckFailed, ERR_QUEST_SESSION_RESULT_READY_CHECK_FAILED);
@@ -474,6 +683,10 @@ AddNotification(Enum.QuestSessionResult.AlreadyJoined, ERR_QUEST_SESSION_RESULT_
 AddNotification(Enum.QuestSessionResult.NotMember, ERR_QUEST_SESSION_RESULT_NOT_MEMBER);
 AddNotification(Enum.QuestSessionResult.Busy, ERR_QUEST_SESSION_RESULT_BUSY);
 AddNotification(Enum.QuestSessionResult.JoinRejected, ERR_QUEST_SESSION_RESULT_JOIN_REJECTED);
+AddNotification(Enum.QuestSessionResult.Resync, CreateAtlasMarkup("QuestSharing-QuestLog-Replay") .. ERR_QUEST_SESSION_RESULT_RESYNC, SOUNDKIT.QUEST_SESSION_RESYNC);
+AddNotification(Enum.QuestSessionResult.QuestNotCompleted, ERR_QUEST_SESSION_RESULT_QUEST_NOT_COMPLETED);
+AddNotification(Enum.QuestSessionResult.Restricted, ERR_QUEST_SESSION_RESULT_RESTRICTED);
+AddNotification(Enum.QuestSessionResult.InPetBattle, ERR_QUEST_SESSION_RESULT_IN_PET_BATTLE);
 AddNotification(Enum.QuestSessionResult.Unknown, ERR_QUEST_SESSION_RESULT_UNKNOWN);
 
 QuestSessionManagerMixin = {};
@@ -501,6 +714,9 @@ function QuestSessionManagerMixin:OnLoad()
 	self:RegisterEvent("QUEST_SESSION_ENABLED_STATE_CHANGED");
 	self:RegisterEvent("LEAVE_PARTY_CONFIRMATION");
 	self:RegisterEvent("CONVERT_TO_RAID_CONFIRMATION");
+	self:RegisterEvent("QUEST_REMOVED");
+	self:RegisterEvent("BNET_REQUEST_INVITE_CONFIRMATION");
+	self:RegisterEvent("INVITE_TRAVEL_PASS_CONFIRMATION");
 
 	FrameUtil.RegisterFrameForEvents(self, questSessionUpdateEvents);
 	questSessionUpdateEvents = tInvert(questSessionUpdateEvents);
@@ -521,6 +737,12 @@ function QuestSessionManagerMixin:OnEvent(event, ...)
 		self:ShowCheckDialog(self.CheckLeavePartyDialog);
 	elseif event == "CONVERT_TO_RAID_CONFIRMATION" then
 		self:ShowCheckDialog(self.CheckConvertToRaidDialog);
+	elseif event == "QUEST_REMOVED" then
+		self:OnQuestRemoved(...);
+	elseif event == "BNET_REQUEST_INVITE_CONFIRMATION" then
+		self:CheckShowRequestInviteConfirmation(...);
+	elseif event == "INVITE_TRAVEL_PASS_CONFIRMATION" then
+		self:CheckShowInviteTravelPassConfirmation(...);
 	end
 
 	if questSessionUpdateEvents[event] then
@@ -528,8 +750,44 @@ function QuestSessionManagerMixin:OnEvent(event, ...)
 	end
 end
 
+function QuestSessionManagerMixin:OnQuestRemoved(questID, wasReplayQuest)
+	if wasReplayQuest then
+		QuestEventListener:AddCallback(questID, function()
+			ChatFrame_DisplaySystemMessageInPrimary(QUEST_SESSION_REPLAY_QUEST_REMOVED:format(QuestUtils_GetQuestName(questID)));
+		end);
+	end
+end
+
 function QuestSessionManagerMixin:CheckShowSessionStartPrompt()
 	self.StartDialog:CheckShow();
+end
+
+function QuestSessionManagerMixin:CheckShowRequestInviteConfirmation(gameAccountID, questSessionActive, tank, healer, dps)
+	if questSessionActive then
+		self:ShowCheckDialog(self.ConfirmBNJoinGroupRequestDialog, gameAccountID, tank, healer, dps);
+	else
+		ConfirmBNRequestInviteFriend(gameAccountID, tank, healer, dps);
+	end
+end
+
+function QuestSessionManagerMixin:CheckShowInviteTravelPassConfirmation(target, guid, willConvertToRaid, questSessionActive)
+	if questSessionActive then
+		self:ShowCheckDialog(self.ConfirmInviteTravelPassConfirmationDialog, target, guid);
+	else
+		ConfirmInviteTravelPass(target, guid);
+	end
+end
+
+function QuestSessionManagerMixin:ShowGroupInviteConfirmation(invite, text)
+	self:ShowCheckDialog(self.ConfirmJoinGroupRequestDialog, invite, text);
+end
+
+function QuestSessionManagerMixin:ShowGroupInviteReceivedConfirmation(name, text)
+	self:ShowCheckDialog(self.ConfirmInviteToGroupReceivedDialog, name, text);
+end
+
+function QuestSessionManagerMixin:OnInviteToPartyConfirmation(name, willConvertToRaid)
+	self:ShowCheckDialog(self.ConfirmInviteToGroupDialog, name, willConvertToRaid);
 end
 
 function QuestSessionManagerMixin:IsTimeout(resultCode)
@@ -600,6 +858,7 @@ end
 
 function QuestSessionManagerMixin:NotifyDialogShow(dialog)
 	self:NotifyUpdate();
+	self:CheckMutuallyExclusiveDialogs(dialog);
 end
 
 function QuestSessionManagerMixin:NotifyDialogHide(dialog)
@@ -617,6 +876,12 @@ function QuestSessionManagerMixin:NotifyUpdate()
 	EventRegistry:TriggerEvent("QuestSessionManager.Update");
 end
 
+function QuestSessionManagerMixin:CheckMutuallyExclusiveDialogs(shownDialog)
+	if shownDialog == self.StartDialog and self.CheckStartDialog:IsShown() then
+		self.CheckStartDialog:HideImmediate();
+	end
+end
+
 function QuestSessionManagerMixin:IsSessionManagementEnabled()
 	return not self:GetActiveDialog() and self:GetSessionCommand() ~= Enum.QuestSessionCommand.None;
 end
@@ -629,8 +894,8 @@ function QuestSessionManagerMixin:StopSession()
 	self:ShowCheckDialog(self.CheckStopDialog);
 end
 
-function QuestSessionManagerMixin:ShowCheckDialog(dialog)
-	dialog:Setup();
+function QuestSessionManagerMixin:ShowCheckDialog(dialog, ...)
+	dialog:Setup(...);
 	dialog:ShowDialog();
 end
 

@@ -400,7 +400,7 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentEmblem" file="Interface\GuildFrame\GuildEmblemsLG_01" parentKey="emblem">
-					<Size x="60" y="60"/>
+					<Size x="52" y="60"/>
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="14"/>
 					</Anchors>

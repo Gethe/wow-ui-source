@@ -88,14 +88,14 @@
 							<Anchors>
 								<Anchor point="LEFT" x="0" y="0"/>
 							</Anchors>
-							<TexCoords left="0.17578125" right="0.47265625" top="0.29687500" bottom="0.54687500"/>	
+							<TexCoords left="0.17578125" right="0.47265625" top="0.29687500" bottom="0.54687500"/>
 						</Texture>
 						<Texture name="$parentRight" file="Interface\Buttons\CollapsibleHeader" parentKey="rightEdge">
 							<Size x="76" y="16"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" x="147" y="0"/>
 							</Anchors>
-							<TexCoords left="0.17578125" right="0.47265625" top="0.01562500" bottom="0.26562500"/>	
+							<TexCoords left="0.17578125" right="0.47265625" top="0.01562500" bottom="0.26562500"/>
 						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND">
@@ -105,7 +105,7 @@
 								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" x="-20" y="0"/>
 								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" x="20" y="0"/>
 							</Anchors>
-							<TexCoords left="0.48046875" right="0.98046875" top="0.01562500" bottom="0.26562500"/>	
+							<TexCoords left="0.48046875" right="0.98046875" top="0.01562500" bottom="0.26562500"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
@@ -124,7 +124,7 @@
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentLeft" x="26" y="0"/>
 							</Anchors>
-							<TexCoords left="0.08" right="0.92" top="0.08" bottom="0.92"/>							
+							<TexCoords left="0.08" right="0.92" top="0.08" bottom="0.92"/>
 						</Texture>
 						<FontString name="$parentName" inherits="GameFontNormalSmall" parentKey="name">
 							<Anchors>
@@ -588,7 +588,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						InviteToGroup(GuildFrame.selectedName);
+						C_PartyInfo.InviteUnit(GuildFrame.selectedName);
 					</OnClick>
 				</Scripts>
 				<NormalFont style="GameFontNormalSmall"/>
@@ -652,7 +652,7 @@
 					</OnLoad>
 					<OnMouseUp>
 						StaticPopup_Show("SET_GUILDPLAYERNOTE");
-					</OnMouseUp> 
+					</OnMouseUp>
 				</Scripts>
 			</Frame>
 			<Frame name="GuildMemberOfficerNoteBackground">

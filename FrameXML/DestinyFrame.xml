@@ -65,16 +65,6 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame parentKey="RecruitAFriendSuggestionAlliance" frameStrata="FULLSCREEN" inherits="RecruitHelpBoxTemplate_Right">
-				<Anchors>
-					<Anchor point="RIGHT" relativeTo="DestinyAllianceButton" relativePoint="LEFT" x="-10"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="RecruitAFriendSuggestionHorde" frameStrata="FULLSCREEN" inherits="RecruitHelpBoxTemplate_Left">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="DestinyHordeButton" relativePoint="RIGHT" x="10"/>
-				</Anchors>
-			</Frame>
 	</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">

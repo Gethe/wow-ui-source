@@ -7,7 +7,6 @@
 			<Frame parentKey="TitleCanvasSpacerFrame">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="2" y="0"/>
-					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-3" y="-67"/>
 				</Anchors>
 			</Frame>
 			<ScrollFrame parentKey="ScrollContainer" inherits="MapCanvasFrameScrollContainerTemplate">

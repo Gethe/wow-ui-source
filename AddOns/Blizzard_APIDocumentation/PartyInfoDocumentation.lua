@@ -21,14 +21,48 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "CanInvite",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "allowedToInvite", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ConfirmConvertToRaid",
 			Type = "Function",
 			Documentation = { "Immediately convert to raid with no regard for potentially destructive actions" },
 		},
 		{
+			Name = "ConfirmInviteTravelPass",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "targetName", Type = "string", Nilable = false },
+				{ Name = "targetGUID", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ConfirmInviteUnit",
+			Type = "Function",
+			Documentation = { "Immediately invites the named unit to a party, with no regard for potentially destructive actions" },
+
+			Arguments =
+			{
+				{ Name = "targetName", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "ConfirmLeaveParty",
 			Type = "Function",
 			Documentation = { "Immediately leave the party with no regard for potentially destructive actions" },
+
+			Arguments =
+			{
+				{ Name = "category", Type = "number", Nilable = true },
+			},
 		},
 		{
 			Name = "ConvertToParty",
@@ -81,14 +115,56 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "InviteUnit",
+			Type = "Function",
+			Documentation = { "Attempt to invite the named unit to a party, requires confirmation in some cases (e.g. the party will convert to a raid, or if there is a party sync in progress)" },
+
+			Arguments =
+			{
+				{ Name = "targetName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "IsPartyFull",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "category", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "isFull", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "LeaveParty",
 			Type = "Function",
 			Documentation = { "Usually this will leave the party immediately. In some cases (e.g. PartySync) the user will be prompted to confirm leaving the party, because it's potentially destructive" },
+
+			Arguments =
+			{
+				{ Name = "category", Type = "number", Nilable = true },
+			},
 		},
 	},
 
 	Events =
 	{
+		{
+			Name = "BnetRequestInviteConfirmation",
+			Type = "Event",
+			LiteralName = "BNET_REQUEST_INVITE_CONFIRMATION",
+			Payload =
+			{
+				{ Name = "gameAccountID", Type = "number", Nilable = false },
+				{ Name = "questSessionActive", Type = "bool", Nilable = false },
+				{ Name = "tank", Type = "bool", Nilable = false },
+				{ Name = "healer", Type = "bool", Nilable = false },
+				{ Name = "dps", Type = "bool", Nilable = false },
+			},
+		},
 		{
 			Name = "ConvertToRaidConfirmation",
 			Type = "Event",
@@ -155,6 +231,29 @@ local PartyInfo =
 			LiteralName = "INSTANCE_GROUP_SIZE_CHANGED",
 		},
 		{
+			Name = "InviteToPartyConfirmation",
+			Type = "Event",
+			LiteralName = "INVITE_TO_PARTY_CONFIRMATION",
+			Payload =
+			{
+				{ Name = "targetName", Type = "string", Nilable = false },
+				{ Name = "willConvertToRaid", Type = "bool", Nilable = false },
+				{ Name = "questSessionActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "InviteTravelPassConfirmation",
+			Type = "Event",
+			LiteralName = "INVITE_TRAVEL_PASS_CONFIRMATION",
+			Payload =
+			{
+				{ Name = "targetName", Type = "string", Nilable = false },
+				{ Name = "targetGUID", Type = "string", Nilable = false },
+				{ Name = "willConvertToRaid", Type = "bool", Nilable = false },
+				{ Name = "questSessionActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "LeavePartyConfirmation",
 			Type = "Event",
 			LiteralName = "LEAVE_PARTY_CONFIRMATION",
@@ -177,6 +276,7 @@ local PartyInfo =
 				{ Name = "isNativeRealm", Type = "bool", Nilable = false },
 				{ Name = "allowMultipleRoles", Type = "bool", Nilable = false },
 				{ Name = "inviterGUID", Type = "string", Nilable = false },
+				{ Name = "questSessionActive", Type = "bool", Nilable = false },
 			},
 		},
 		{

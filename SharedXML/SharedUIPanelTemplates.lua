@@ -833,8 +833,7 @@ function MaximizeMinimizeButtonFrameMixin:Maximize()
 		SetCVar(self.cvar, 0);
 	end
 
-	self.MaximizeButton:Hide();
-	self.MinimizeButton:Show();
+	self:SetMinimizedLook();
 end
 
 function MaximizeMinimizeButtonFrameMixin:SetOnMinimizedCallback(minimizedCallback)
@@ -850,6 +849,15 @@ function MaximizeMinimizeButtonFrameMixin:Minimize()
 		SetCVar(self.cvar, 1);
 	end
 
+	self:SetMaximizedLook();
+end
+
+function MaximizeMinimizeButtonFrameMixin:SetMinimizedLook()
+	self.MaximizeButton:Hide();
+	self.MinimizeButton:Show();
+end
+
+function MaximizeMinimizeButtonFrameMixin:SetMaximizedLook()
 	self.MaximizeButton:Show();
 	self.MinimizeButton:Hide();
 end
@@ -890,6 +898,34 @@ function TruncatedTooltipScript_OnEnter(self)
 end
 
 function TruncatedTooltipScript_OnLeave(self)
+	local tooltip = GetAppropriateTooltip();
+	if tooltip:GetOwner() == self then
+		tooltip:Hide();
+	end
+end
+
+-- Add more methods as needed to pass functionality through to the FontString (like SetText and SetTextColor below)
+TruncatedTooltipFontStringWrapperMixin = {}
+
+function TruncatedTooltipFontStringWrapperMixin:SetText(...)
+	self.Text:SetText(...);
+	self:MarkDirty();
+end
+
+function TruncatedTooltipFontStringWrapperMixin:SetTextColor(...)
+	self.Text:SetTextColor(...);
+end
+
+function TruncatedTooltipFontStringWrapperMixin:OnEnter()
+	if self.Text:IsTruncated() then
+		local tooltip = GetAppropriateTooltip();
+		tooltip:SetOwner(self, "ANCHOR_RIGHT");
+		tooltip:SetText(self.Text:GetText());
+		tooltip:Show();
+	end
+end
+
+function TruncatedTooltipFontStringWrapperMixin:OnLeave()
 	local tooltip = GetAppropriateTooltip();
 	if tooltip:GetOwner() == self then
 		tooltip:Hide();

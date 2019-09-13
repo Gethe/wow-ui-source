@@ -726,7 +726,7 @@ function QuestInfo_ShowRewards()
 	end
 
 	-- Setup mandatory rewards
-	local hasChanceForQuestSessionBonusReward = QuestUtils_DoesQuestSessionQuestQualifyForBonusRewardBox(questID);
+	local hasChanceForQuestSessionBonusReward = C_QuestLog.QuestHasQuestSessionBonus(questID);
 	if ( numQuestRewards > 0 or numQuestCurrencies > 0 or money > 0 or xp > 0 or honor > 0 or hasChanceForQuestSessionBonusReward ) then
 		-- receive text, will either say "You will receive" or "You will also receive"
 		local questItemReceiveText = rewardsFrame.ItemReceiveText;
@@ -981,10 +981,19 @@ end
 
 function QuestInfo_OnHyperlinkEnter(self, link, text, region, left, bottom, width, height)
 	local linkType, linkData = ExtractLinkData(link);
+	local title, body;
 	if linkType == "questReplay" then
+		title = QUEST_SESSION_REPLAY_TOOLTIP_TITLE_ENABLED;
+		body = QUEST_SESSION_REPLAY_TOOLTIP_BODY_ENABLED;
+	elseif linkType == "questDisabled" then
+		title = QUEST_SESSION_ON_HOLD_TOOLTIP_TITLE;
+		body = QUEST_SESSION_ON_HOLD_TOOLTIP_TEXT;
+	end
+
+	if title and body then
 		GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
-		GameTooltip_SetTitle(GameTooltip, QUEST_SESSION_REPLAY_TOOLTIP_TITLE_ENABLED);
-		GameTooltip_AddNormalLine(GameTooltip, QUEST_SESSION_REPLAY_TOOLTIP_BODY_ENABLED);
+		GameTooltip_SetTitle(GameTooltip, title);
+		GameTooltip_AddNormalLine(GameTooltip, body);
 		GameTooltip:Show();
 	end
 end

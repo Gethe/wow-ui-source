@@ -10,6 +10,7 @@ end
 
 Import("IsOnGlueScreen");
 Import("BLIZZARD_STORE_PURCHASED");
+Import("GetUnscaledFrameRect");
 
 if ( tbl.IsOnGlueScreen() ) then
 	tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
@@ -28,7 +29,7 @@ function ProductCardBuyButtonMixin:UpdatePricing(currencyInfo, entryInfo, curren
 	self.SalePrice:Hide();
 	self.CurrentPrice:Hide();
 	self.Strikethrough:Hide();
-	self.BuyButton.Strikethrough:Hide();
+	self.BuyButton.Discount:Hide();
 end
 
 function ProductCardBuyButtonMixin:UpdateBuyButton(currencyInfo, entryInfo, currencyFormat)
@@ -37,42 +38,35 @@ function ProductCardBuyButtonMixin:UpdateBuyButton(currencyInfo, entryInfo, curr
 	self.NormalPrice:SetText(currencyFormat(entryInfo.sharedData.normalDollars, entryInfo.sharedData.normalCents));
 
 	local completelyOwned = StoreFrame_IsCompletelyOwned(entryInfo);
-
+	
+	self:SetOriginalSize();
 	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.HiddenPrice) == Enum.BattlepayDisplayFlag.HiddenPrice then
-		local text = info.browseBuyButtonText or BLIZZARD_STORE_BUY;
+		local text = entryInfo.browseBuyButtonText or BLIZZARD_STORE_BUY;
 		self.BuyButton:Show();
 		self.BuyButton:SetText(text);
 
-		self.BuyButton.RightText:Hide();
-		self.BuyButton.LeftText:Hide();
-		self.BuyButton.Strikethrough:Hide();
+		self.BuyButton.Discount:Hide();
 		self.PurchasedText:Hide();
 		self.PurchasedMark:Hide();
 	elseif completelyOwned then
 		self.BuyButton:Hide();
-		self.BuyButton.RightText:Hide();
-		self.BuyButton.LeftText:Hide();
-		self.BuyButton.Strikethrough:Hide();
+		self.BuyButton.Discount:Hide();
 		self.PurchasedText:Show();
 		self.PurchasedMark:Show();
 	elseif discounted then
 		self.BuyButton:Show();
+		local DiscountContainer = self.BuyButton.Discount;
 
 		self.BuyButton:SetText("");
-		self.BuyButton.RightText:SetText(currentPrice);
-		self.BuyButton.RightText:SetTextColor(0.1, 1, 0.1);
-		self.BuyButton.RightText:Show();
+		DiscountContainer.RightText:SetText(currentPrice);
+		DiscountContainer.RightText:SetTextColor(0.1, 1, 0.1);
 
 		local normalPrice = currencyFormat(entryInfo.sharedData.normalDollars, entryInfo.sharedData.normalCents);
-		self.BuyButton.LeftText:SetText(normalPrice);
-		self.BuyButton.LeftText:SetTextColor(0.5, 0.5, 0.5);
-		self.BuyButton.LeftText:Show();
+		DiscountContainer.LeftText:SetText(normalPrice);
+		DiscountContainer.LeftText:SetTextColor(0.5, 0.5, 0.5);
 
-		self.BuyButton.Strikethrough:ClearAllPoints();
-		self.BuyButton.Strikethrough:SetPoint("LEFT", self.BuyButton.LeftText, "LEFT", 0, 0);
-		self.BuyButton.Strikethrough:SetPoint("RIGHT", self.BuyButton.LeftText, "RIGHT", 0, 0);
-		self.BuyButton.Strikethrough:Show();
-
+		self:SetDiscountedSize();
+		DiscountContainer:Show();
 		self.PurchasedText:Hide();
 		self.PurchasedMark:Hide();
 	else
@@ -81,7 +75,7 @@ function ProductCardBuyButtonMixin:UpdateBuyButton(currencyInfo, entryInfo, curr
 
 		self.NormalPrice:Hide();
 		self.SalePrice:Hide();
-		self.BuyButton.Strikethrough:Hide();
+		self.BuyButton.Discount.Strikethrough:Hide();
 		self.PurchasedText:Hide();
 		self.PurchasedMark:Hide();
 	end
@@ -89,16 +83,48 @@ function ProductCardBuyButtonMixin:UpdateBuyButton(currencyInfo, entryInfo, curr
 	self.BuyButton:SetEnabled(self:ShouldEnableBuyButton(entryInfo));
 end
 
+function ProductCardBuyButtonMixin:SetOriginalSize()
+	self.BuyButton:SetSize(self:GetMinSize(), 35);
+end
+
+function ProductCardBuyButtonMixin:GetMinSize()
+	return 146;
+end
+
+local WIDTH_PADDING = 50;
+local GAP_BETWEEN = 7;
+function ProductCardBuyButtonMixin:SetDiscountedSize()
+	local DiscountContainer = self.BuyButton.Discount;
+	local buttonSize = DiscountContainer.LeftText:GetStringWidth() + GAP_BETWEEN + DiscountContainer.RightText:GetStringWidth() + WIDTH_PADDING;
+
+	if buttonSize < self:GetMinSize() then
+		buttonSize = self:GetMinSize();
+	end
+	self.BuyButton:SetSize(buttonSize, 35);
+end
+
+--------------------------------------------------
+-- LARGE PRODUCT CARD BUY BUTTON MIXIN
+LargeProductCardBuyButtonMixin = CreateFromMixins(ProductCardBuyButtonMixin);
+function LargeProductCardBuyButtonMixin:SetOriginalSize()
+	self.BuyButton:SetSize(self:GetMinSize(), 35);
+end
+
+function LargeProductCardBuyButtonMixin:GetMinSize()
+	return 210;
+end
+
+
 --------------------------------------------------
 -- STORE BUY BUTTON MIXIN
 StoreBuyButtonMixin = CreateFromMixins(StoreButtonMixin);
 
 function StoreBuyButtonMixin:OnMouseDown()
 	StoreButtonMixin.OnMouseDown(self);
-	self.LeftText:SetPoint("LEFT", 11, -1);
+	self.Discount:SetPoint("CENTER", 1, -1);
 end
 
 function StoreBuyButtonMixin:OnMouseUp()
 	StoreButtonMixin.OnMouseUp(self);
-	self.LeftText:SetPoint("LEFT", 10, -1);
+	self.Discount:SetPoint("CENTER", 0, 0);
 end

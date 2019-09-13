@@ -183,6 +183,7 @@ GlueDialogTypes["REALM_IS_FULL"] = {
 		C_RealmList.ConnectToRealm(RealmList.selectedRealm);
 	end,
 	OnCancel = function()
+		C_RealmList.ClearRealmList();
 		CharacterSelect_ChangeRealm();
 	end,
 }

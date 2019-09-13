@@ -246,6 +246,13 @@ function MiniMapTracking_Update()
 	UIDropDownMenu_RefreshAll(MiniMapTrackingDropDown);
 end
 
+function MiniMapTracking_OnClick()
+	MiniMapTrackingDropDown.point = "TOPRIGHT";
+	MiniMapTrackingDropDown.relativePoint = "BOTTOMLEFT";
+	ToggleDropDownMenu(1, nil, MiniMapTrackingDropDown, "MiniMapTracking", 8, 5);
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end
+
 function MiniMapTrackingDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, MiniMapTrackingDropDown_Initialize, "MENU");
 	self.noResize = true;

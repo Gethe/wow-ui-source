@@ -3,15 +3,28 @@ local LOAD_PAGES_IN_ADVANCE = 1;
 local REQUEST_TO_JOIN_HEIGHT = 420; 
 local REQUEST_TO_JOIN_TEXT_HEIGHT = 14; 
 local MAX_DESCRIPTION_HEIGHT = 150; 
-local REQUEST_TO_JOIN_OFFSET = 50;
 
 local LAYOUT_TYPE_REGULAR_SEARCH = 1; 
 local LAYOUT_TYPE_PENDING_LIST = 2; 
 
 local POSTING_EXPIRATION_DAYS = 30; 
+local APPLICATION_EXPIRATION_DAYS = 7; 
 local CLUB_FINDER_WIDE_DROPDOWN_WIDTH = 180;
 local CLUB_FINDER_WIDE_DROPDOWN_MENU_WIDTH = CLUB_FINDER_WIDE_DROPDOWN_WIDTH + 10;
 
+local function ClubFinderGetTotalNumSpecializations()
+	local numClasses = GetNumClasses();
+	local count = 0; 
+	for i = 1, numClasses do
+		local _, _, classID = GetClassInfo(i);
+		for i = 1, GetNumSpecializationsForClassID(classID) do
+			count = count + 1
+		end
+	end
+	return count;
+end 
+
+local CLUB_FINDER_MAX_NUM_SPECIALIZATIONS = ClubFinderGetTotalNumSpecializations();
 
 local CLUB_FINDER_FRAME_EVENTS = {
 	"CLUB_FINDER_CLUB_LIST_RETURNED",
@@ -82,8 +95,8 @@ function ClubsRecruitmentDialogMixin:ResetClubFinderSettings()
 	self.ShouldListClub.Button:SetChecked(false);
 	self.RecruitmentMessageFrame.RecruitmentMessageInput.EditBox:SetText(""); 
 
+	C_ClubFinder.SetRecruitmentSettings(Enum.ClubFinderSettingFlags.Social, true);
 	self.ClubFocusDropdown:Initialize(); 
-	C_ClubFinder.SetRecruitmentSettings(Enum.ClubFinderSettingFlags.Dungeons, true);
 	UIDropDownMenu_Initialize(self.ClubFocusDropdown, ClubFocusClubDropdownInitialize);
 	self.ClubFocusDropdown:UpdateDropdownText(); 
 
@@ -142,7 +155,9 @@ function ClubsRecruitmentDialogMixin:UpdateSettingsInfoFromClubInfo()
 			local shouldList = self.ClubFocusDropdown:GetRecruitmentSettingByValue(Enum.ClubFinderSettingFlags.EnableListing);
 			self.ShouldListClub.Button:SetChecked(shouldList);	
 			self:SetDisabledStateOnCommunityFinderOptions(not self.ShouldListClub.Button:GetChecked());
-		end
+		else
+			self:SetDisabledStateOnCommunityFinderOptions(true);
+		end 
 	end
 end
 
@@ -156,6 +171,9 @@ end
 function ClubsRecruitmentDialogMixin:OnHide() 
 	self:UnregisterEvent("CLUB_FINDER_POST_UPDATED");
 	self.clubId = nil;
+
+	-- Check the communities frame for any other tutorials we should show.
+	self:GetParent():CheckForTutorials();
 end
 
 function ClubsRecruitmentDialogMixin:OnEvent(event, ...)
@@ -172,6 +190,7 @@ function ClubsRecruitmentDialogMixin:PostClub()
 	local communityFrame = self:GetParent();
 	local clubInfo; 
 	local clubId; 
+
 	if (self.clubId) then
 		clubInfo = ClubFinderGetCurrentClubListingInfo(self.clubId); 
 		clubId = self.clubId; 
@@ -188,10 +207,12 @@ function ClubsRecruitmentDialogMixin:PostClub()
 	C_ClubFinder.SetRecruitmentSettings(Enum.ClubFinderSettingFlags.MaxLevelOnly, self.MaxLevelOnly.Button:GetChecked()); 
 	C_ClubFinder.SetRecruitmentSettings(Enum.ClubFinderSettingFlags.EnableListing, self.ShouldListClub.Button:GetChecked());
 
-
-	if(clubInfo) then 
+	if (clubInfo) then 
 		local autoAcceptApplicants = false; -- Guild finder should never have the ability to auto-accept. 
 		C_ClubFinder.PostClub(clubId, minItemLevel, clubInfo.name, description, specsInList, Enum.ClubFinderRequestType.Guild);
+	elseif (self.clubName) then 
+		local autoAcceptApplicants = false; -- Guild finder should never have the ability to auto-accept. 
+		C_ClubFinder.PostClub(clubId, minItemLevel, self.clubName, description, specsInList, Enum.ClubFinderRequestType.Guild);
 	end
 end 
 
@@ -203,12 +224,13 @@ end
 
 function ClubFinderRequestToJoinMixin:OnHide()
 	self.SpecsPool:ReleaseAll();
+	self.MessageFrame.MessageScroll.EditBox:SetText("");
 end
 
 function ClubFinderRequestToJoinMixin:ApplyButtonOnEnter() 
 	GameTooltip:SetOwner(self.Apply, "ANCHOR_LEFT", 0, -65);
 	if (not self.Apply:IsEnabled()) then 
-		GameTooltip_AddColoredLine(GameTooltip, CLUB_FINDER_ONE_SPEC_REQUIRED, RED_FONT_COLOR, true);
+		GameTooltip_AddColoredLine(GameTooltip, CLUB_FINDER_ONE_SPEC_REQUIRED, RED_FONT_COLOR);
 		GameTooltip:Show();
 	end 
 end 
@@ -235,14 +257,7 @@ function ClubFinderRequestToJoinMixin:ApplyToClub()
 		requestType = Enum.ClubFinderRequestType.Community; 
 	end
 
-	C_ClubFinder.PlayerRequestPendingClubsList(requestType);
-
-	if (self.card.RequestJoin) then -- If we are requesting from finder. 
-		self.card.RequestJoin:Hide(); 
-		self.card.RequestStatus:SetTextColor(GREEN_FONT_COLOR:GetRGB());
-		self.card.RequestStatus:SetText(CLUB_FINDER_PENDING);
-		self.card.RequestStatus:Show();
-	else -- If we are requesting from a link. 
+	if (self.isLinkedPosting) then -- If we are requesting from finder. 
 		self:GetCommunitiesFrame():SelectClub(nil);
 		self:GetCommunitiesFrame():UpdateClubSelection();
 	end
@@ -289,20 +304,30 @@ function ClubFinderRequestToJoinMixin:Initialize()
 	local numLines = self.ClubDescription:GetNumLines(); 
 	local usedHeight = (numLines * REQUEST_TO_JOIN_TEXT_HEIGHT);
 	local extraHeight = (MAX_DESCRIPTION_HEIGHT - usedHeight); 
+	local specIds = ClubFinderGetPlayerSpecIds();
 	self.ClubDescription:SetHeight(usedHeight);
 
 	if (self.SpecsPool) then 
 		self.SpecsPool:ReleaseAll();
 	end
 
-	if (not self:DoesPlayerMatchRecruitingSpecs()) then 
-		extraFrameHeight = 80; 
+	local isRecruitingAllSpecs = #self.info.recruitingSpecIds == 0 or #self.info.recruitingSpecIds == CLUB_FINDER_MAX_NUM_SPECIALIZATIONS;
+	if (not isRecruitingAllSpecs and not self:DoesPlayerMatchRecruitingSpecs()) then 
 		self.SpecsPool = CreateFramePool("FRAME", self, "ClubFinderLittleSpecializationCheckBoxTemplate");
 		self.noMatchingSpecs = true;
+		if (#specIds < 4) then 
+			extraFrameHeight = 65;
+		else
+			extraFrameHeight = 70; --Base offset; 
+		end 
 	else 
 		self.SpecsPool = CreateFramePool("FRAME", self, "ClubFinderBigSpecializationCheckBoxTemplate");
 		self.noMatchingSpecs = false;
-		extraFrameHeight = 70; --Base offset; 
+		if (#specIds < 4) then 
+			extraFrameHeight = 40;
+		else
+			extraFrameHeight = 60; --Base offset; 
+		end 
 	end 
 		
 	self:SetHeight((REQUEST_TO_JOIN_HEIGHT + extraFrameHeight) - (extraHeight));
@@ -319,13 +344,12 @@ function ClubFinderRequestToJoinMixin:Initialize()
 	self.ErrorDescription:ClearAllPoints();
 	self.ErrorDescription:SetPoint("BOTTOM", self.MessageFrame, "BOTTOM", 0, -30);
 
-	local specIds = ClubFinderGetPlayerSpecIds();
 	local matchingSpecNames = { }; 
 
 	for i, specId in ipairs(specIds) do 
 		local specButton = self.SpecsPool:Acquire(); 
 
-		if (self.noMatchingSpecs) then 
+		if (self.noMatchingSpecs and not isRecruitingAllSpecs) then 
 			if (i == 1) then 
 				specButton:ClearAllPoints();
 				specButton:SetPoint("BOTTOMLEFT", self.ErrorDescription, "BOTTOMLEFT", 10, -35); 
@@ -355,9 +379,9 @@ function ClubFinderRequestToJoinMixin:Initialize()
 		self.lastSpecButton = specButton; 
 	end
 
-	self.RecruitingSpecDescriptions:SetShown(#matchingSpecNames > 0); 
-	self.ClubDescription2:SetShown(#matchingSpecNames == 0);
-	self.ErrorDescription:SetShown(#matchingSpecNames == 0);
+	self.RecruitingSpecDescriptions:SetShown(#matchingSpecNames > 0 or isRecruitingAllSpecs); 
+	self.ClubDescription2:SetShown(#matchingSpecNames == 0 and not isRecruitingAllSpecs);
+	self.ErrorDescription:SetShown(#matchingSpecNames == 0 and not isRecruitingAllSpecs);
 
 	if(self.lastSpecButton) then 
 		self.ClubDescription2:SetPoint("BOTTOM", self.lastSpecButton, "BOTTOM", 0, -30);
@@ -365,7 +389,13 @@ function ClubFinderRequestToJoinMixin:Initialize()
 
 	local classDisplayName = UnitClass("player");
 
-	if (#matchingSpecNames == 1) then 
+	if(isRecruitingAllSpecs) then 
+		if(self.info.isGuild) then 
+			self.RecruitingSpecDescriptions:SetText(CLUB_FINDER_GUILD_LOOKING_ALL_SPECS); 
+		else 
+			self.RecruitingSpecDescriptions:SetText(CLUB_FINDER_COMMUNITY_LOOKING_ALL_SPECS);
+		end 
+	elseif (#matchingSpecNames == 1) then 
 		self.RecruitingSpecDescriptions:SetText(CLUB_FINDER_RECRUITING_ONE_SPEC:format(matchingSpecNames[1], classDisplayName));
 	elseif (#matchingSpecNames == 2) then 
 		self.RecruitingSpecDescriptions:SetText(CLUB_FINDER_RECRUITING_TWO_SPECS:format(matchingSpecNames[1], matchingSpecNames[2], classDisplayName));
@@ -383,10 +413,16 @@ function SettingsDropdownMixin:Initialize()
 	self.selectedValue = nil;
 end 
 
-function SettingsDropdownMixin:UpdateDropdownText(text, evalValue, value, isPlayerFocusDropdown)
-	if (isPlayerFocusDropdown and C_ClubFinder.GetPlayerSettingsFocusFlagsSelectedCount() > 1) then 
-		UIDropDownMenu_SetText(self, CLUB_FINDER_MULTIPLE_CHECKED); 
-		self.selectedValue = value;
+function SettingsDropdownMixin:UpdateDropdownText(text, evalValue, value, allowMultipleSelection)
+	if (allowMultipleSelection) then 
+		local selectedCount = C_ClubFinder.GetPlayerSettingsFocusFlagsSelectedCount();
+		if selectedCount > 1 then
+			UIDropDownMenu_SetText(self, CLUB_FINDER_MULTIPLE_CHECKED); 
+		elseif selectedCount == 0 then
+			UIDropDownMenu_SetText(self, CLUB_FINDER_ANY_FLAG);
+		else
+			UIDropDownMenu_Refresh(self);
+		end
 	elseif (evalValue and value ~= self.selectedValue) then 
 		UIDropDownMenu_SetText(self, text); 
 		self.selectedValue = value;
@@ -398,25 +434,26 @@ function SettingsDropdownMixin:UpdateDropdownText(text, evalValue, value, isPlay
 	end
 end
 
-function SettingsDropdownMixin:SetDropdownInfoForPreferences(info, value, isPlayerApplicant, text, isPlayerFocusDropdown)
-	if(isPlayerApplicant) then 
-		self:UpdateDropdownText(text, self:GetPlayerSettingsByValue(value), value, isPlayerFocusDropdown);
+function SettingsDropdownMixin:SetDropdownInfoForPreferences(info, value, text, allowMultipleSelection, isRadioStyle)
+	if(self.isPlayerApplicant) then 
+		self:UpdateDropdownText(text, self:GetPlayerSettingsByValue(value), value, allowMultipleSelection);
 
 		info.checked = function() return self:GetPlayerSettingsByValue(value) end;  
 		info.func = function() 
 			local playerValue = self:GetPlayerSettingsByValue(value);
-			C_ClubFinder.SetPlayerApplicantSettings(value, not playerValue); 
-			self:UpdateDropdownText(text, not playerValue, value, isPlayerFocusDropdown);
+			local newValue = isRadioStyle and true or (not playerValue);
+			C_ClubFinder.SetPlayerApplicantSettings(value, newValue);
+			self:UpdateDropdownText(text, newValue, value, allowMultipleSelection);
 		end;
-	else 
-
+	else
 		self:UpdateDropdownText(text, self:GetRecruitmentSettingByValue(value), value); 
 
 		info.checked = function() return self:GetRecruitmentSettingByValue(value) end; 
 		info.func = function()
 			local recruitmentValue = self:GetRecruitmentSettingByValue(value);
-			C_ClubFinder.SetRecruitmentSettings(value, not recruitmentValue, value);	
-			self:UpdateDropdownText(text, not recruitmentValue, value);
+			local newValue = isRadioStyle and true or (not recruitmentValue);
+			C_ClubFinder.SetRecruitmentSettings(value, newValue, value);
+			self:UpdateDropdownText(text, newValue, value);
 		end;
 	end 
 end
@@ -447,35 +484,39 @@ end
 ClubFocusDropdownMixin = CreateFromMixins(SettingsDropdownMixin);
 function ClubFocusClubDropdownInitialize(self)
 	local info = UIDropDownMenu_CreateInfo();
+	local isRadioStyle = false;
+	local allowMultipleSelection = false;
 
 	if(self.isPlayerApplicant) then 
 		info.isNotRadio = true;
 		info.keepShownOnClick = true;
+		allowMultipleSelection = true;
 	else 
 		info.keepShownOnClick = false; 
+		isRadioStyle = true;
 	end
 
 	info.minWidth = CLUB_FINDER_WIDE_DROPDOWN_MENU_WIDTH;
 
+	info.text = CLUB_FINDER_FOCUS_SOCIAL_LEVELING;
+	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Social, CLUB_FINDER_FOCUS_SOCIAL_LEVELING, allowMultipleSelection, isRadioStyle);
+	UIDropDownMenu_AddButton(info, level); 
+
 	info.text = GUILD_INTEREST_DUNGEON;
-	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Dungeons, self.isPlayerApplicant, GUILD_INTEREST_DUNGEON, self.isPlayerApplicant)
+	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Dungeons, GUILD_INTEREST_DUNGEON, allowMultipleSelection, isRadioStyle);
 	UIDropDownMenu_AddButton(info, level);
 
 	info.text = GUILD_INTEREST_RAID;
-	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Raids, self.isPlayerApplicant, GUILD_INTEREST_RAID, self.isPlayerApplicant)
+	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Raids, GUILD_INTEREST_RAID, allowMultipleSelection, isRadioStyle);
 	UIDropDownMenu_AddButton(info, level);
 
 	info.text = CLUB_FINDER_FOCUS_PVP;
-	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Pvp, self.isPlayerApplicant, PVP_ENABLED, self.isPlayerApplicant)
+	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Pvp, PVP_ENABLED, allowMultipleSelection, isRadioStyle);
 	UIDropDownMenu_AddButton(info, level);
 
 	info.text = GUILD_INTEREST_RP;
-	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Rp, self.isPlayerApplicant, GUILD_INTEREST_RP, self.isPlayerApplicant)
+	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Rp, GUILD_INTEREST_RP, allowMultipleSelection, isRadioStyle);
 	UIDropDownMenu_AddButton(info, level);
-
-	info.text = CLUB_FINDER_FOCUS_SOCIAL_LEVELING;
-	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Social, self.isPlayerApplicant, CLUB_FINDER_FOCUS_SOCIAL_LEVELING, self.isPlayerApplicant)
-	UIDropDownMenu_AddButton(info, level); 
 end
 
 LookingForDropdownMixin = { }; 
@@ -553,7 +594,7 @@ function LookingForDropdownMixin:UpdateDropdownText(textToUpdateTo)
 		UIDropDownMenu_SetText(self, CLUB_FINDER_MULTIPLE_ROLES);
 	 elseif(self.checkedCount == 1) then 
 		local specID, specInfo = next(self.checkedList);
-		UIDropDownMenu_SetText(self, CLUB_FINDER_LOOKING_FOR_CLASS_SPEC:format(specInfo.specName, specInfo.className)); 
+		UIDropDownMenu_SetText(self, TALENT_SPEC_AND_CLASS:format(specInfo.specName, specInfo.className)); 
 	elseif(self.checkedCount == 0) then 
 		UIDropDownMenu_SetText(self, CLUB_FINDER_ANY_FLAG); 
 	end
@@ -564,11 +605,21 @@ function LookingForDropdownMixin:AddButtons(info, roleToMatch, level)
 	local sex = UnitSex("player");
 
 	info.text = CHECK_ALL;
-	info.func = function() self:CheckOrUncheckAll(info, roleToMatch, true); UIDropDownMenu_Refresh(self, 1, 2); self:UpdateDropdownText(); end; 
+	info.func = function() 
+		self:CheckOrUncheckAll(info, roleToMatch, true); 
+		self:Refresh();
+		self:UpdateDropdownText(); 
+	end; 
+	info.notCheckable = true;
 	UIDropDownMenu_AddButton(info, level);
 
 	info.text = UNCHECK_ALL; 
-	info.func = function() self:CheckOrUncheckAll(info, roleToMatch, false); UIDropDownMenu_Refresh(self, 1, 2); self:UpdateDropdownText(); end; 
+	info.func = function() 
+		self:CheckOrUncheckAll(info, roleToMatch, false); 
+		self:Refresh();
+		self:UpdateDropdownText(); 
+	end; 
+	info.notCheckable = true;
 	UIDropDownMenu_AddButton(info, level);
 
 	for i = 1, numClasses do
@@ -577,11 +628,20 @@ function LookingForDropdownMixin:AddButtons(info, roleToMatch, level)
 			local specID, specName, _, _, role = GetSpecializationInfoForClassID(classID, i, sex);
 			if(role == roleToMatch) then 
 				info.hasArrow = false;
-				info.text = CLUB_FINDER_LOOKING_FOR_CLASS_SPEC:format(specName, className);
+				info.notCheckable = false;
+
+				info.text = TALENT_SPEC_AND_CLASS:format(specName, className);
 				local r, g, b = GetClassColor(classTag);
 				info.colorCode = string.format("|cFF%02x%02x%02x", r*255, g*255, b*255);
-				info.checked = function() return self:IsSpecInList(specID) end; 
-				info.func = function() self:ModifyTrackedSpecList(specName, className, specID, not self:IsSpecInList(specID)); UIDropDownMenu_Refresh(self, 1, 2); self:UpdateDropdownText(CLUB_FINDER_LOOKING_FOR_CLASS_SPEC:format(specName, className)); end;
+				info.checked = function() 
+					return self:IsSpecInList(specID) 
+				end; 
+				info.func = function() 
+					self:ModifyTrackedSpecList(specName, className, specID, not self:IsSpecInList(specID)); 
+					self:Refresh();
+					self:UpdateDropdownText(TALENT_SPEC_AND_CLASS:format(specName, className)); 
+				end;
+				info.isNotRadio = true;
 				UIDropDownMenu_AddButton(info, level);
 			end
 		end
@@ -590,20 +650,36 @@ end
 
 function LookingForDropdownMixin:SetSpecialDropdownInfo(info, value, isPlayerApplicant)
 	if(isPlayerApplicant) then 
-		info.checked =  function() return self:GetPlayerSettingsByValue(value); end;  
+		info.checked =  function() 
+			return self:GetPlayerSettingsByValue(value); 
+		end;
 		info.func = function() 
 			local playerValue = self:GetPlayerSettingsByValue(value);
 			C_ClubFinder.SetPlayerApplicantSettings(value, not playerValue); 
-			UIDropDownMenu_Refresh(self, 1, 2); 
+			self:Refresh();
 		end
 	else 
-		info.checked = function() return self:GetRecruitmentSettingByValue(value) end; 
+		info.checked = function() 
+			return self:GetRecruitmentSettingByValue(value) 
+		end;
 		info.func = function()
 			local recruitmentValue = self:GetRecruitmentSettingByValue(value);
 			C_ClubFinder.SetRecruitmentSettings(value, not recruitmentValue); 
-			UIDropDownMenu_Refresh(self, 1, 2); 
+			self:Refresh();
 		end
 	end
+end
+
+function LookingForDropdownMixin:Refresh()
+	UIDropDownMenu_Refresh(self, 1, 2); 
+	UIDropDownMenu_Refresh(self, 1, 1); 
+end
+
+local function LookingForClubDropdownFunc(self, role)
+	local isEverySpecChecked = self:IsEverySpecCheckedForRole(role); 
+	self:CheckOrUncheckAll(info, role, not isEverySpecChecked); 
+	self:Refresh();
+	self:UpdateDropdownText(); 
 end
 
 function LookingForClubDropdownInitialize(self, level)
@@ -626,25 +702,37 @@ function LookingForClubDropdownInitialize(self, level)
 	if(level == 1) then 
 		info.text = CLUB_FINDER_TANK;
 		info.value = 1; 
-		info.checked = self:IsEverySpecCheckedForRole("TANK");  
-		info.func =  function() local isEverySpecChecked = self:IsEverySpecCheckedForRole("TANK"); self:CheckOrUncheckAll(info, "TANK", not isEverySpecChecked); UIDropDownMenu_Refresh(self, 1, 2); self:UpdateDropdownText(); end;
+		info.checked = function()
+			return self:IsEverySpecCheckedForRole("TANK");
+		end;
+		info.func = function()
+			LookingForClubDropdownFunc(self, "TANK");
+		end;
 		info.isNotRadio = true;
 		info.hasArrow = true;
 		UIDropDownMenu_AddButton(info, level);
 
 		info.text = CLUB_FINDER_HEALER;
 		info.value = 2;
-		info.checked = 	self:IsEverySpecCheckedForRole("HEALER");  
+		info.checked = 	function()
+			return self:IsEverySpecCheckedForRole("HEALER"); 
+		end;
+		info.func = function() 
+			LookingForClubDropdownFunc(self, "HEALER");
+		end;
 		info.isNotRadio = true;
-		info.func = function() local isEverySpecChecked = self:IsEverySpecCheckedForRole("HEALER"); self:CheckOrUncheckAll(info, "HEALER", not isEverySpecChecked); UIDropDownMenu_Refresh(self, 1, 2); self:UpdateDropdownText(); end;
 		info.hasArrow = true;
 		UIDropDownMenu_AddButton(info, level);
 
 		info.text = CLUB_FINDER_DAMAGE;
 		info.value = 3; 
-		info.checked = 	self:IsEverySpecCheckedForRole("DAMAGER"); 
+		info.checked = 	function() 
+			return self:IsEverySpecCheckedForRole("DAMAGER"); 
+		end;
+		info.func = function()
+			LookingForClubDropdownFunc(self, "DAMAGER");
+		end;
 		info.isNotRadio = true;
-		info.func = function() local isEverySpecChecked = self:IsEverySpecCheckedForRole("DAMAGER"); self:CheckOrUncheckAll(info, "DAMAGER", not isEverySpecChecked); UIDropDownMenu_Refresh(self, 1, 2); self:UpdateDropdownText(); end;
 		info.hasArrow = true;
 		UIDropDownMenu_AddButton(info, level);
 	end 
@@ -652,23 +740,44 @@ end
 
 ClubSortByDropdownMixin = CreateFromMixins(SettingsDropdownMixin); 
 
+local ClubSortByFlags = {
+	[Enum.ClubFinderSettingFlags.SortRelevance] = CLUB_FINDER_SORT_BY_RELEVANCE,
+	[Enum.ClubFinderSettingFlags.SortMemberCount] = CLUB_FINDER_SORT_BY_MOST_MEMBERS,
+	[Enum.ClubFinderSettingFlags.SortNewest] = CLUB_FINDER_SORT_BY_NEWEST,
+};
+
 function ClubSortByDropdownInitialize(self)
+	local hasAnySet = false;
+	for sortByFlag, text in pairs(ClubSortByFlags) do
+		if self.isPlayerApplicant then
+			hasAnySet = self:GetPlayerSettingsByValue(sortByFlag);
+		else
+			hasAnySet = self:GetRecruitmentSettingByValue(sortByFlag);
+		end
+
+		if hasAnySet then
+			break;
+		end
+	end
+
+	if not hasAnySet then
+		if self.isPlayerApplicant then
+			C_ClubFinder.SetPlayerApplicantSettings(Enum.ClubFinderSettingFlags.SortRelevance, true);
+		else
+			C_ClubFinder.SetRecruitmentSettings(Enum.ClubFinderSettingFlags.SortRelevance, true);
+		end
+	end
+
+	local allowMultipleSelection = false;
+	local isRadioStyle = true;
+
 	local info = UIDropDownMenu_CreateInfo();
-
-	info.text = CLUB_FINDER_SORT_BY_RELEVANCE;
-	local dropdownText = info.text; 
-	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.SortRelevance, self.isPlayerApplicant, dropdownText)
-	UIDropDownMenu_AddButton(info, level);
-
-	info.text = CLUB_FINDER_SORT_BY_MOST_MEMBERS;
-	local dropdownText = info.text; 
-	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.SortMemberCount, self.isPlayerApplicant, dropdownText)
-	UIDropDownMenu_AddButton(info, level);
-
-	info.text = CLUB_FINDER_SORT_BY_NEWEST;
-	local dropdownText = info.text; 
-	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.SortNewest, self.isPlayerApplicant, dropdownText)
-	UIDropDownMenu_AddButton(info, level);
+	for sortByFlag, text in pairs(ClubSortByFlags) do
+		info.text = text;
+		local dropdownText = info.text; 
+		self:SetDropdownInfoForPreferences(info, sortByFlag, dropdownText, allowMultipleSelection, isRadioStyle);
+		UIDropDownMenu_AddButton(info, level);
+	end
 end
 
 ClubSizeDropdownMixin = CreateFromMixins(SettingsDropdownMixin); 
@@ -678,17 +787,17 @@ function ClubSizeDropdownInitialize(self)
 
 	info.text = SMALL;
 	local dropdownText = info.text; 
-	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Small, self.isPlayerApplicant, dropdownText)
+	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Small, dropdownText)
 	UIDropDownMenu_AddButton(info, level);
 
 	info.text = CLUB_FINDER_MEDIUM;
 	local dropdownText = info.text; 
-	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Medium, self.isPlayerApplicant, dropdownText)
+	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Medium, dropdownText)
 	UIDropDownMenu_AddButton(info, level);
 
 	info.text = LARGE;
 	local dropdownText = info.text; 
-	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Large, self.isPlayerApplicant, dropdownText)
+	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Large, dropdownText)
 	UIDropDownMenu_AddButton(info, level);
 end
 
@@ -701,6 +810,26 @@ end
 
 function ClubFinderOptionsMixin:OnShow()
 	self:RefreshRoleButtons();
+	self:CheckDisabled();
+end
+
+function ClubFinderOptionsMixin:CheckDisabled()
+	local disabledReason = C_ClubFinder.GetClubFinderDisableReason();
+	local enabled = disabledReason == nil;
+	if enabled then
+		UIDropDownMenu_EnableDropDown(self.ClubFocusDropdown);
+		UIDropDownMenu_EnableDropDown(self.ClubSizeDropdown);
+		UIDropDownMenu_EnableDropDown(self.SortByDropdown);
+	else
+		UIDropDownMenu_DisableDropDown(self.ClubFocusDropdown);
+		UIDropDownMenu_DisableDropDown(self.ClubSizeDropdown);
+		UIDropDownMenu_DisableDropDown(self.SortByDropdown);
+	end
+	self.TankRoleFrame:SetEnabled(enabled);
+	self.HealerRoleFrame:SetEnabled(enabled);
+	self.DpsRoleFrame:SetEnabled(enabled);
+	self.SearchBox:SetEnabled(enabled);
+	self.Search:SetEnabled(enabled and self.Search:ShouldBeEnabled());
 end
 
 function ClubFinderOptionsMixin:SetType(isGuildType)
@@ -791,7 +920,7 @@ function ClubFinderOptionsMixin:SetEnabledRoles()
 end 
 
 function ClubFinderOptionsMixin:SetupGuildFinderOptions()
-	self.ClubSizeDropdown.isPlayerApplicant = true; 
+	self.ClubSizeDropdown.isPlayerApplicant = true;
 	self.ClubSizeDropdown:Initialize(); 
 	UIDropDownMenu_SetWidth(self.ClubSizeDropdown, 80);
 	UIDropDownMenu_Initialize(self.ClubSizeDropdown, ClubSizeDropdownInitialize); 
@@ -818,9 +947,7 @@ function ClubFinderOptionsMixin:SetupGuildFinderOptions()
 end 
 
 function ClubFinderOptionsMixin:SetupCommunityFinderOptions()
-	self.ClubFocusDropdown.isPlayerApplicant = true;
 	self.SortByDropdown.isPlayerApplicant = true; 
-
 	UIDropDownMenu_SetWidth(self.SortByDropdown, 80);
 	UIDropDownMenu_Initialize(self.SortByDropdown, ClubSortByDropdownInitialize); 
 
@@ -846,6 +973,64 @@ function ClubFinderOptionsMixin:SetupCommunityFinderOptions()
 
 	self.ClubSizeDropdown:Hide(); 
 end 
+
+ClubFinderSearchButtonMixin = { };
+
+function ClubFinderSearchButtonMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	self:GetParent():OnSearchButtonClick();
+end
+
+function ClubFinderSearchButtonMixin:ShouldBeEnabled()
+	local searchTextLen = strlenutf8(self:GetParent().SearchBox:GetText());
+	return searchTextLen == 0 or searchTextLen >= 3;
+end
+
+function ClubFinderSearchButtonMixin:OnEnter()
+	self.mouseInButton = true;
+	self:UpdateTooltip();
+end
+
+function ClubFinderSearchButtonMixin:OnLeave()
+	self.mouseInButton = nil;
+	self:UpdateTooltip();
+end
+
+function ClubFinderSearchButtonMixin:UpdateEnabledState()
+	self:SetEnabled(self:ShouldBeEnabled());
+	self:UpdateTooltip();
+end
+
+function ClubFinderSearchButtonMixin:UpdateTooltip()
+	if self.mouseInButton and not self:IsEnabled() then
+		self:ShowTooltip();
+	else
+		self:HideTooltip();
+	end
+end
+
+function ClubFinderSearchButtonMixin:ShowTooltip()
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+	GameTooltip_AddColoredLine(GameTooltip, CLUB_FINDER_SEARCH_ERROR, RED_FONT_COLOR);
+	GameTooltip:Show();
+end
+
+function ClubFinderSearchButtonMixin:HideTooltip()
+	GameTooltip:Hide();
+end
+
+ClubFinderSearchEditBoxMixin = { };
+
+function ClubFinderSearchEditBoxMixin:OnEnterPressed()
+	if (self:GetParent().Search:ShouldBeEnabled()) then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		self:GetParent():OnSearchButtonClick();
+	end
+end
+
+function ClubFinderSearchEditBoxMixin:OnTextChanged()
+	self:GetParent().Search:UpdateEnabledState();
+end
 
 function CardRightClickOptionsMenuInitialize(self, level)
 	local info = UIDropDownMenu_CreateInfo();
@@ -874,21 +1059,42 @@ function CardRightClickOptionsMenuInitialize(self, level)
 		UIDropDownMenu_AddButton(info, level);
 
 		local cardStatus =  self:GetParent():GetCardStatus();
-		local shouldHaveRightClickApplyOptions = (not C_ClubFinder.DoesPlayerBelongToClubFromClubGUID(self:GetParent():GetClubGUID()) and cardStatus == Enum.PlayerClubRequestStatus.AutoApproved or 
-		cardStatus == Enum.PlayerClubRequestStatus.Declined or cardStatus == Enum.PlayerClubRequestStatus.Approved or cardStatus == Enum.PlayerClubRequestStatus.Canceled or cardStatus == Enum.PlayerClubRequestStatus.Joined or
-		cardStatus == Enum.PlayerClubRequestStatus.JoinedAnother);
+		local requestToJoinOption = not (C_ClubFinder.DoesPlayerBelongToClubFromClubGUID(self:GetParent():GetClubGUID()) 
+		or (cardStatus == Enum.PlayerClubRequestStatus.None) or (cardStatus == Enum.PlayerClubRequestStatus.Pending) or (cardStatus ==  Enum.PlayerClubRequestStatus.Declined) or (cardStatus ==  Enum.PlayerClubRequestStatus.Accepted) or (cardStatus ==  Enum.PlayerClubRequestStatus.AutoApproved));
 
-		if(shouldHaveRightClickApplyOptions) then 
+		local requestToJoinReRequest = (not C_ClubFinder.DoesPlayerBelongToClubFromClubGUID(self:GetParent():GetClubGUID()) and cardStatus ==  Enum.PlayerClubRequestStatus.Declined);
+
+		local cancelOption = not ( C_ClubFinder.DoesPlayerBelongToClubFromClubGUID(self:GetParent():GetClubGUID())
+			or (cardStatus == Enum.PlayerClubRequestStatus.None)
+			or (cardStatus == Enum.PlayerClubRequestStatus.Declined)
+			or (cardStatus == Enum.PlayerClubRequestStatus.Joined)
+			or (cardStatus == Enum.PlayerClubRequestStatus.JoinedAnother)
+			or (cardStatus == Enum.PlayerClubRequestStatus.Canceled)
+			or (cardStatus == Enum.PlayerClubRequestStatus.Accepted)
+			or (cardStatus == Enum.PlayerClubRequestStatus.AutoApproved)
+			);
+		
+		if(requestToJoinReRequest) then 
+			info.colorCode = RED_FONT_COLOR; 
+			info.text = CLUB_FINDER_REAPPLY:format(ClubFinderGetClubApplicationExpirationTime(self:GetParent().cardInfo.lastUpdatedTime));
+			info.isTitle = false; 
+			info.notCheckable = true; 
+			info.disabled = true;
+			info.func = nil;
+			UIDropDownMenu_AddButton(info, level);
+		end
+
+		if(requestToJoinOption) then 
 			info.colorCode = HIGHLIGHT_FONT_COLOR_CODE; 
 			info.text = CLUB_FINDER_REQUEST_TO_JOIN;
 			info.isTitle = false; 
 			info.notCheckable = true; 
 			info.disabled = nil;
-			info.func = function() self:GetParent():RequestToJoinClub(); end
+			info.func = function() self:GetParent():RequestToJoinClub(); end;
 			UIDropDownMenu_AddButton(info, level);
 		end
 
-		 if(cardStatus == Enum.PlayerClubRequestStatus.Pending) then 
+		if(cancelOption) then 
 			info.colorCode = HIGHLIGHT_FONT_COLOR_CODE; 
 			info.text = CLUB_FINDER_CANCEL_APPLICATION;
 			info.isTitle = false; 
@@ -904,6 +1110,7 @@ function CardRightClickOptionsMenuInitialize(self, level)
 		info.colorCode = HIGHLIGHT_FONT_COLOR_CODE; 
 		info.notCheckable = true; 
 		info.hasArrow = true
+		info.func = nil;
 		info.value = 1; 
 		UIDropDownMenu_AddButton(info, level);
 	end
@@ -923,13 +1130,7 @@ function ClubFinderCardMixin:OnLoad()
 end
 
 function ClubFinderCardMixin:OnMouseDown(button) 
-	if (IsModifiedClick("CHATLINK")) then 
-		local link = GetClubFinderLink(self.cardInfo.clubFinderGUID, self.cardInfo.name);
-		if not ChatEdit_InsertLink(link) then
-			ChatFrame_OpenChat(link);
-		end
-	end
-	if ( button == "RightButton" ) then
+	if ( button == "RightButton" and not C_ClubFinder.DoesPlayerBelongToClubFromClubGUID(self.cardInfo.clubFinderGUID)) then
 		ToggleDropDownMenu(1, nil, self.RightClickDropdown, self, 100, 0);
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end
@@ -956,14 +1157,15 @@ function ClubFinderCardMixin:GetClubGUID()
 end
 
 function ClubFinderCardMixin:GetCardStatus()
-	return self.cardInfo.clubStatus;
+	return C_ClubFinder.GetPlayerClubApplicationStatus(self.cardInfo.clubFinderGUID);
 end 
+
 ClubFinderGuildCardMixin = CreateFromMixins(ClubFinderCardMixin);
 
 
 function ClubFinderGuildCardMixin:RequestToJoinClub()
 	self:GetParent():GetParent().RequestToJoinFrame.card = self;
-
+	self:GetParent():GetParent().RequestToJoinFrame.isLinkedPosting = false; 
 	self:GetParent():GetParent().RequestToJoinFrame:Initialize(); 
 end 
 
@@ -978,6 +1180,7 @@ function ClubFinderGuildCardMixin:SetDisabledState(shouldDisable)
 	else 
 		fontColor = HIGHLIGHT_FONT_COLOR; 
 		self.Description:SetTextColor(NORMAL_FONT_COLOR:GetRGB()); 
+		SetLargeTabardTexturesFromColorRGB("player", self.GuildBannerEmblemLogo, self.GuildBannerBackground, self.GuildBannerBorder, self.cardInfo.tabardInfo);
 	end 
 
 	self.CardBackground:SetDesaturated(shouldDisable);	
@@ -989,9 +1192,7 @@ end
 
 function ClubFinderGetFocusStringFromFlags(recruitmentFlags)
 	local focusFlag = C_ClubFinder.GetFocusIndexFromFlag(recruitmentFlags)
-	if (focusFlag == Enum.ClubFinderSettingFlags.None) then 
-		return CLUB_FINDER_ANY_FLAG;
-	elseif (focusFlag == Enum.ClubFinderSettingFlags.Dungeons) then 
+	if (focusFlag == Enum.ClubFinderSettingFlags.Dungeons) then 
 		return GUILD_INTEREST_DUNGEON;
 	elseif (focusFlag == Enum.ClubFinderSettingFlags.Raids) then 
 		return GUILD_INTEREST_RAID;
@@ -1002,12 +1203,13 @@ function ClubFinderGetFocusStringFromFlags(recruitmentFlags)
 	elseif (focusFlag == Enum.ClubFinderSettingFlags.Social) then 
 		return CLUB_FINDER_FOCUS_SOCIAL_LEVELING;
 	else 
-		return CLUB_FINDER_ANY_FLAG; 
+		return nil; 
 	end
 end 
 
 function ClubFinderGuildCardMixin:UpdateCard()
 	local info = self.cardInfo;
+	local clubStatus = C_ClubFinder.GetPlayerClubApplicationStatus(info.clubFinderGUID);
 
 	self:CreateRecruitingSpecsMap();
 
@@ -1016,7 +1218,12 @@ function ClubFinderGuildCardMixin:UpdateCard()
 	self.MemberCount:SetText(info.numActiveMembers); 
 	self.RightClickDropdown.isGuildCard = true; 
 	local focusString = ClubFinderGetFocusStringFromFlags(info.recruitmentFlags);
-	self.Focus:SetText(focusString);
+	if (focusString) then 
+		self.Focus:SetText(CLUB_FINDER_FOCUS_STRING:format(focusString));
+		self.Focus:Show();
+	else 
+		self.Focus:Hide();
+	end
 	SetLargeTabardTexturesFromColorRGB("player", self.GuildBannerEmblemLogo, self.GuildBannerBackground, self.GuildBannerBorder, info.tabardInfo); 
 
 	if(C_ClubFinder.DoesPlayerBelongToClubFromClubGUID(info.clubFinderGUID)) then
@@ -1025,30 +1232,30 @@ function ClubFinderGuildCardMixin:UpdateCard()
 		self.RequestStatus:SetText(CLUB_FINDER_ALREADY_IN_THAT_CLUB);
 		self.RequestStatus:SetTextColor(RED_FONT_COLOR:GetRGB());
 		self:SetDisabledState(true); 
-	elseif (info.clubStatus) then 
+	elseif (clubStatus) then 
 		self.RequestJoin:Hide(); 
 		self.RequestStatus:Show(); 
-		if(info.clubStatus == Enum.PlayerClubRequestStatus.None) then 
+		if(clubStatus == Enum.PlayerClubRequestStatus.None) then 
 			self.RequestJoin:Show(); 
 			self.RequestStatus:Hide(); 
 			self:SetDisabledState(false); 
-		elseif (info.clubStatus == Enum.PlayerClubRequestStatus.Pending) then 
+		elseif (clubStatus == Enum.PlayerClubRequestStatus.Pending) then 
 			self.RequestStatus:SetTextColor(GREEN_FONT_COLOR:GetRGB());
 			self.RequestStatus:SetText(CLUB_FINDER_PENDING);
 			self:SetDisabledState(false); 
-		elseif (info.clubStatus == Enum.PlayerClubRequestStatus.Approved or info.clubStatus == Enum.PlayerClubRequestStatus.AutoApproved) then 
+		elseif (clubStatus == Enum.PlayerClubRequestStatus.Approved or clubStatus == Enum.PlayerClubRequestStatus.AutoApproved) then 
 			self.RequestStatus:SetText(CLUB_FINDER_ACCEPTED);
 			self.RequestStatus:SetTextColor(GREEN_FONT_COLOR:GetRGB());
 			self:SetDisabledState(false); 
-		elseif (info.clubStatus == Enum.PlayerClubRequestStatus.Declined) then 
+		elseif (clubStatus == Enum.PlayerClubRequestStatus.Declined) then 
 			self.RequestStatus:SetText(CLUB_FINDER_DECLINED);
 			self.RequestStatus:SetTextColor(RED_FONT_COLOR:GetRGB());
 			self:SetDisabledState(true); 
-		elseif (info.clubStatus == Enum.PlayerClubRequestStatus.Canceled) then 
+		elseif (clubStatus == Enum.PlayerClubRequestStatus.Canceled) then 
 			self.RequestStatus:SetText(CLUB_FINDER_CANCELED);
 			self.RequestStatus:SetTextColor(RED_FONT_COLOR:GetRGB());
 			self:SetDisabledState(true); 
-		elseif (info.clubStatus == Enum.PlayerClubRequestStatus.Joined) then 
+		elseif (clubStatus == Enum.PlayerClubRequestStatus.Joined) then 
 			self.RequestStatus:SetText(CLUB_FINDER_JOINED);
 			self.RequestStatus:SetTextColor(GREEN_FONT_COLOR:GetRGB());
 		end			
@@ -1067,28 +1274,13 @@ function ClubFinderGuildCardMixin:OnEnter()
 	GameTooltip_AddNormalLine(GameTooltip, CLUB_FINDER_LEADER:format(info.guildLeader));
 
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-	GameTooltip_AddNormalLine(GameTooltip, CLUB_FINDER_LOOKING_FOR);
+	
+	CommunitiesUtil.AddLookingForLines(GameTooltip, info.recruitingSpecIds, self.recruitingSpecIds, self.playerSpecs);
 
-	local classDisplayName, classTag = UnitClass("player");
-	local color = CreateColor(GetClassColor(classTag));
-	for _, playerSpecID in ipairs(self.playerSpecs) do 
-		if (self.recruitingSpecIds[playerSpecID]) then
-			local _, name, _, _, role = GetSpecializationInfoForSpecID(playerSpecID);
-			local texture;
-			if (role == "TANK") then
-				texture = CreateAtlasMarkup("roleicon-tiny-tank");
-			elseif (role == "DAMAGER") then
-				texture = CreateAtlasMarkup("roleicon-tiny-dps");
-			elseif (role == "HEALER") then
-				texture = CreateAtlasMarkup("roleicon-tiny-healer");
-			end
-			GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_LEADER_BOARD_NAME_ICON:format(texture, name.. " " ..classDisplayName), color);
-		end
+	if (info.comment ~= "") then
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddColoredLine(GameTooltip, CLUB_FINDER_CLUB_DESCRIPTION:format(info.comment), GRAY_FONT_COLOR);
 	end
-	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-	GameTooltip_AddColoredLine(GameTooltip, CLUB_FINDER_CLUB_DESCRIPTION:format(info.comment), GRAY_FONT_COLOR, true);
-	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-	GameTooltip_AddColoredLine(GameTooltip, CLUB_FINDER_SHIFT_CLICK_LINK, GREEN_FONT_COLOR);
 	GameTooltip:Show();
 end 
 
@@ -1101,6 +1293,7 @@ end
 function ClubFinderCommunitiesCardMixin:RequestToJoinClub()	
 	local parentFrame = self:GetGuildAndCommunityFrame();
 	parentFrame.RequestToJoinFrame.card = self;
+	parentFrame.RequestToJoinFrame.isLinkedPosting = false; 
 	parentFrame.RequestToJoinFrame:Initialize(); 
 end 
 
@@ -1117,11 +1310,14 @@ function ClubFinderCommunitiesCardMixin:SetDisabledState(shouldDisable)
 	self.LogoBorder:SetDesaturated(shouldDisable); 
 	self.MemberIcon:SetDesaturated(shouldDisable); 
 	self.CommunityLogo:SetDesaturated(shouldDisable); 
-	self.allowClicks = not shouldDisable; 
+end 
+
+function ClubFinderCommunitiesCardMixin:AllowOrDiallowClicks(shouldAllow) 
+	self.allowClicks = shouldAllow; 
 end 
 
 function ClubFinderCommunitiesCardMixin:OnClick()
-	if(self.allowClicks and not IsModifiedClick("CHATLINK")) then 
+	if(self.allowPendingClicks and self.allowClicks and not IsModifiedClick("CHATLINK")) then 
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 		self:RequestToJoinClub();
 	end 
@@ -1129,6 +1325,7 @@ end
 
 function ClubFinderCommunitiesCardMixin:UpdateCard()
 	local info = self.cardInfo;
+	local clubStatus = C_ClubFinder.GetPlayerClubApplicationStatus(info.clubFinderGUID);
 	self:CreateRecruitingSpecsMap();
 
 	self.Name:SetText(info.name);
@@ -1137,11 +1334,17 @@ function ClubFinderCommunitiesCardMixin:UpdateCard()
 	self.RightClickDropdown.isGuildCard = false; 
 
 	local focusString = ClubFinderGetFocusStringFromFlags(info.recruitmentFlags);
-	self.Focus:SetText(focusString);
-
+	if (focusString) then 
+		self.Focus:SetText(CLUB_FINDER_FOCUS_STRING:format(focusString));
+		self.Focus:Show();
+	else 
+		self.Focus:Hide();
+	end
 	if (info.emblemInfo > 0) then 
 		C_Club.SetAvatarTexture(self.CommunityLogo, info.emblemInfo, Enum.ClubType.Character);
 	end
+
+	self:AllowOrDiallowClicks(false);
 
 	if(C_ClubFinder.DoesPlayerBelongToClubFromClubGUID(info.clubFinderGUID)) then
 		self.RequestJoin:Hide(); 
@@ -1149,31 +1352,31 @@ function ClubFinderCommunitiesCardMixin:UpdateCard()
 		self.RequestStatus:SetText(CLUB_FINDER_ALREADY_IN_THAT_CLUB);
 		self.RequestStatus:SetTextColor(RED_FONT_COLOR:GetRGB());
 		self:SetDisabledState(true); 
-	elseif (info.clubStatus) then 
+	elseif (clubStatus) then 
 		self.RequestJoin:Hide(); 
 		self.RequestStatus:Show(); 
-
-		if (info.clubStatus == Enum.PlayerClubRequestStatus.None) then 
+		if (clubStatus == Enum.PlayerClubRequestStatus.None) then 
 			self.RequestJoin:Show(); 
 			self.RequestStatus:Hide(); 
 			self:SetDisabledState(false);
-		elseif (info.clubStatus == Enum.PlayerClubRequestStatus.Pending) then 
+			self:AllowOrDiallowClicks(true);
+		elseif (clubStatus == Enum.PlayerClubRequestStatus.Pending) then 
 			self.RequestStatus:SetTextColor(GREEN_FONT_COLOR:GetRGB());
 			self.RequestStatus:SetText(CLUB_FINDER_PENDING);
 			self:SetDisabledState(false); 
-		elseif (info.clubStatus == Enum.PlayerClubRequestStatus.Approved or info.clubStatus == Enum.PlayerClubRequestStatus.AutoApproved) then 
+		elseif (clubStatus == Enum.PlayerClubRequestStatus.Approved or clubStatus == Enum.PlayerClubRequestStatus.AutoApproved) then 
 			self.RequestStatus:SetText(CLUB_FINDER_ACCEPTED);
 			self.RequestStatus:SetTextColor(GREEN_FONT_COLOR:GetRGB());
 			self:SetDisabledState(false); 
-		elseif (info.clubStatus == Enum.PlayerClubRequestStatus.Declined) then 
+		elseif (clubStatus == Enum.PlayerClubRequestStatus.Declined) then 
 			self.RequestStatus:SetText(CLUB_FINDER_DECLINED);
 			self.RequestStatus:SetTextColor(RED_FONT_COLOR:GetRGB());
 			self:SetDisabledState(true);  
-		elseif (info.clubStatus == Enum.PlayerClubRequestStatus.Joined) then 
+		elseif (clubStatus == Enum.PlayerClubRequestStatus.Joined) then 
 			self.RequestStatus:SetText(CLUB_FINDER_Joined);
 			self.RequestStatus:SetTextColor(GREEN_FONT_COLOR:GetRGB());
 			self:SetDisabledState(false); 
-		elseif (info.clubStatus == Enum.PlayerClubRequestStatus.Canceled) then 
+		elseif (clubStatus == Enum.PlayerClubRequestStatus.Canceled) then 
 			self.RequestStatus:SetText(CLUB_FINDER_CANCELED);
 			self.RequestStatus:SetTextColor(RED_FONT_COLOR:GetRGB());
 			self:SetDisabledState(true); 
@@ -1182,6 +1385,7 @@ function ClubFinderCommunitiesCardMixin:UpdateCard()
 		self.RequestJoin:Show(); 
 		self.RequestStatus:Hide(); 
 		self:SetDisabledState(false); 
+		self:AllowOrDiallowClicks(true);
 	end 
 end 
 
@@ -1197,27 +1401,13 @@ function ClubFinderCommunitiesCardMixin:OnEnter()
 	end 
 
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-	GameTooltip_AddNormalLine(GameTooltip, CLUB_FINDER_LOOKING_FOR);
-	local classDisplayName, classTag = UnitClass("player");
-	local color = CreateColor(GetClassColor(classTag));
-	for _, playerSpecID in ipairs(self.playerSpecs) do 
-		if (self.recruitingSpecIds [playerSpecID]) then
-			local _, name, _, _, role = GetSpecializationInfoForSpecID(playerSpecID);
-			local texture;
-			if (role == "TANK") then
-				texture = CreateAtlasMarkup("roleicon-tiny-tank");
-			elseif (role == "DAMAGER") then
-				texture = CreateAtlasMarkup("roleicon-tiny-dps");
-			elseif (role == "HEALER") then
-				texture = CreateAtlasMarkup("roleicon-tiny-healer");
-			end
-			GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_LEADER_BOARD_NAME_ICON:format(texture, name.. " " ..classDisplayName), color);
-		end
+
+	CommunitiesUtil.AddLookingForLines(GameTooltip, info.recruitingSpecIds, self.recruitingSpecIds, self.playerSpecs);
+
+	if (info.comment ~= "") then
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddColoredLine(GameTooltip, CLUB_FINDER_CLUB_DESCRIPTION:format(info.comment), GRAY_FONT_COLOR);
 	end
-	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-	GameTooltip_AddColoredLine(GameTooltip, CLUB_FINDER_CLUB_DESCRIPTION:format(info.comment), GRAY_FONT_COLOR, true);
-	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-	GameTooltip_AddColoredLine(GameTooltip, CLUB_FINDER_SHIFT_CLICK_LINK, GREEN_FONT_COLOR);
 	GameTooltip:Show();
 end 
 
@@ -1242,6 +1432,11 @@ end
 
 ClubFinderCommunitiesCardsBaseMixin = { }; 
 
+function ClubFinderCommunitiesCardsBaseMixin:ClearCardList()
+	self.CardList = { };
+	self.totalListSize = 0;
+end 
+
 function ClubFinderCommunitiesCardsBaseMixin:OnLoad()
 	self.CardList = { };
 	self.ListScrollFrame.update = function() self:RefreshLayout() end;
@@ -1253,16 +1448,29 @@ function ClubFinderCommunitiesCardsBaseMixin:UpateCardsAlreadyInList(clubFinderG
 		return; 
 	end 
 
-	for i = 1, #self.CardList do 
-		for _, finderGUID in pairs(clubFinderGUIDS) do 
-			if(self.CardList[i].clubFinderGUID == finderGUID) then 
-				local recruitingClubInfo = C_ClubFinder.GetRecruitingClubInfoFromFinderGUID(finderGUID)
-				if (recruitingClubInfo) then
-					self.CardList[i].clubStatus = recruitingClubInfo.clubStatus; 
+	local scrollFrame = self.ListScrollFrame;
+	if (not self:IsShown()) then 
+		return;
+	end 
+
+	local offset = HybridScrollFrame_GetOffset(scrollFrame);
+	HybridScrollFrame_SetDoNotHideScrollBar(scrollFrame, true);
+
+	local index; 
+	if (scrollFrame.buttons) then 
+		numCardsTotal = #self.CardList;
+		for i = 1, #scrollFrame.buttons do 
+			index = offset + i;
+			for _, finderGUID in pairs(clubFinderGUIDS) do 
+				local cardInfo = self.CardList[index]; 
+				local currentCard = scrollFrame.buttons[i];
+				if(cardInfo and finderGUID == cardInfo.clubFinderGUID) then 
+					currentCard.cardInfo.clubStatus =  C_ClubFinder.GetPlayerClubApplicationStatus(cardInfo.clubFinderGUID);
+					currentCard:UpdateCard();  
 				end 
 			end
 		end
-	end
+	end 
 end 
 
 function ClubFinderCommunitiesCardsBaseMixin:OnShow()
@@ -1302,6 +1510,10 @@ function ClubFinderCommunitiesCardsBaseMixin:RefreshLayout()
 				currentCard.cardInfo = cardInfo;
 				currentCard:UpdateCard(); 
 				currentCard:Show();  
+				if (currentCard:IsMouseOver()) then 
+					currentCard:OnEnter(); 
+				end 
+				currentCard.allowPendingClicks = not self.isPendingCardList; 
 				showingCards = showingCards + 1; 
 				self.showingCards = true; 
 			else 
@@ -1335,16 +1547,24 @@ function ClubFinderCommunitiesCardsMixin:BuildCardList()
 	self.pagingEnabled = true; 
 	self.CardList = C_ClubFinder.ReturnMatchingCommunityList(); 
 	self.totalListSize = C_ClubFinder.GetTotalMatchingCommunityListSize();
+	self.isPendingCardList = false; 
 	self:GetParent().InsetFrame.GuildDescription:SetText(CLUB_FINDER_SEARCH_NOTHING_FOUND); 	
 end 
 
 ClubFinderPendingCommunitiesCardsMixin = CreateFromMixins(ClubFinderCommunitiesCardsBaseMixin);
 function ClubFinderPendingCommunitiesCardsMixin:BuildCardList()
 	self.pagingEnabled = false; 
+	self.isPendingCardList = true; 
 	self.CardList = C_ClubFinder.PlayerReturnPendingCommunitiesList(); 
 end 
 
 ClubFinderGuildCardsBaseMixin = { }; 
+
+function ClubFinderGuildCardsBaseMixin:ClearCardList()
+	self.CardList = { };
+	self.numPages = 0;
+	self.pageNumber = 1;
+end 
 
 function ClubFinderGuildCardsBaseMixin:OnLoad()
 	self.CardList = { }; 
@@ -1361,38 +1581,33 @@ function ClubFinderGuildCardsBaseMixin:OnHide()
 	self.pageNumber = 1;
 end 
 
+function ClubFinderGuildCardsBaseMixin:OnMouseWheel(delta)
+	local nextPageValue = self.pageNumber + 1; 
+	local previousPageValue = self.pageNumber - 1; 
+	if ( delta < 0 and previousPageValue > 0) then
+		self:PagePrevious();
+	elseif(delta > 0 and nextPageValue <= self.numPages) then
+		self:PageNext();
+	end
+end 
+
 function ClubFinderGuildCardsBaseMixin:PageNext()
 	self.pageNumber = self.pageNumber + 1; 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	CloseDropDownMenus();
 	self:RefreshLayout(self.pageNumber);
 end 
 
 function ClubFinderGuildCardsBaseMixin:PagePrevious()
 	self.pageNumber = self.pageNumber - 1; 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	CloseDropDownMenus();
 	self:RefreshLayout(self.pageNumber);
 end
 
 function ClubFinderGuildCardsBaseMixin:HideCardList()
 	for i = 1, #self.Cards do 
 		self.Cards[i]:Hide(); 
-	end
-end 
-
-function ClubFinderGuildCardsBaseMixin:UpateCardsAlreadyInList(clubFinderGUIDS)
-	if(not clubFinderGUIDS or #clubFinderGUIDS == 0) then 
-		return; 
-	end 
-
-	for i = 1, #self.CardList do 
-		for _, finderGUID in pairs(clubFinderGUIDS) do 
-			if(self.CardList[i].clubFinderGUID == finderGUID) then 
-				local recruitingClubInfo = C_ClubFinder.GetRecruitingClubInfoFromFinderGUID(finderGUID)
-				if (recruitingClubInfo) then
-					self.CardList[i].clubStatus = recruitingClubInfo.clubStatus; 
-				end 
-			end
-		end
 	end
 end 
 
@@ -1412,16 +1627,18 @@ function ClubFinderGuildCardsBaseMixin:RefreshLayout(cardPage)
 	self.SearchingSpinner:Hide(); 
 	local playerSpecs = ClubFinderGetPlayerSpecIds(); 
 	self.showingCards = false;
-	local numCardsTotal = 0;
+	local numCardsTotal = #self.CardList;
 	for i = 1, #self.Cards do 
 		local cardIndex = (cardPage - 1) * GUILD_CARDS_PER_PAGE + i; 
 		local cardInfo = self.CardList[cardIndex]; 
-		numCardsTotal = #self.CardList; 
 		if(cardInfo) then 
 			self.Cards[i].playerSpecs = playerSpecs; 
 			self.Cards[i].cardInfo = cardInfo;
 			self.Cards[i]:UpdateCard(); 
 			self.Cards[i]:Show();  
+			if (self.Cards[i]:IsMouseOver()) then 
+				self.Cards[i]:OnEnter(); 
+			end 
 			self.showingCards = true; 
 		else 
 			self.Cards[i]:Hide(); 
@@ -1439,8 +1656,11 @@ function ClubFinderGuildCardsBaseMixin:RefreshLayout(cardPage)
 			self.NextPage:Show(); 
 		end
 	else 
-		if (self.requestedPage) then 
+		if (self.requestedPage and not self.newRequest) then 
 			self.SearchingSpinner:Show();
+			self:GetParent().InsetFrame.GuildDescription:Hide();
+			self.PreviousPage:SetEnabled(false); 
+			self.NextPage:SetEnabled(false); 
 		else
 			self.PreviousPage:Hide(); 
 			self.NextPage:Hide(); 
@@ -1453,15 +1673,14 @@ function ClubFinderGuildCardsBaseMixin:RefreshLayout(cardPage)
 		self.PreviousPage:SetEnabled(true); 
 	end 
 	local shouldShowNextPage = cardPage < self.numPages;
-	local shouldRequestNextPage = (self.pagingEnabled and (cardPage + LOAD_PAGES_IN_ADVANCE) > self.numPages) and self.numPages > 0; 
+	local numLoadedPages = math.ceil(numCardsTotal / GUILD_CARDS_PER_PAGE); 
+	local shouldRequestNextPage = (self.pagingEnabled and (cardPage + LOAD_PAGES_IN_ADVANCE == numLoadedPages) and ( cardPage + LOAD_PAGES_IN_ADVANCE < self.numPages));
 
 	if (shouldRequestNextPage and self.showingCards) then 
 		local startingIndex = cardPage * GUILD_CARDS_PER_PAGE;
 		local pageSize = LOAD_PAGES_IN_ADVANCE * GUILD_CARDS_PER_PAGE;
-		C_ClubFinder.RequestNextGuildPage(startingIndex, pageSize);
+		C_ClubFinder.RequestNextGuildPage(startingIndex, 6);
 		self.requestedPage = true; 
-	else 
-		self.requestedPage = false;
 	end 
 
 	if(shouldShowNextPage) then
@@ -1508,8 +1727,7 @@ function ClubFinderGuildAndCommunityMixin:OnLoad()
 	self:RegisterEvent("CLUB_FINDER_LINKED_CLUB_RETURNED");
 	self:RegisterEvent("CLUB_FINDER_POST_UPDATED");
 	self:RegisterEvent("CLUB_FINDER_APPLICATIONS_UPDATED");
-	self.InsetFrame.GuildDescription:Show(); 
-
+	self.InsetFrame.GuildDescription:Show();
 	self.ClubFinderPendingTab.tooltip = CLUB_FINDER_PENDING_REQUESTS:format(0);
 end 
 
@@ -1522,12 +1740,35 @@ end
 
 function ClubFinderGuildAndCommunityMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, CLUB_FINDER_FRAME_EVENTS);
+	self.selectedTab = LAYOUT_TYPE_REGULAR_SEARCH; 
 	C_ClubFinder.PlayerRequestPendingClubsList(Enum.ClubFinderRequestType.All); -- Player's applications to a guild or community
 	self.OptionsList:Show(); 
 end 
 
 function ClubFinderGuildAndCommunityMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, CLUB_FINDER_FRAME_EVENTS);
+end 
+
+function ClubFinderGuildAndCommunityMixin:UpdatePendingTab()
+	if (self.isGuildType) then 
+		self.ClubFinderPendingTab.tooltip = CLUB_FINDER_PENDING_REQUESTS:format(#self.PendingGuildCards.CardList);
+		if (#self.PendingGuildCards.CardList > 0) then 
+			self.ClubFinderPendingTab:Enable();
+			self.ClubFinderPendingTab.Icon:SetDesaturated(false);
+		else 
+			self.ClubFinderPendingTab:Disable();
+			self.ClubFinderPendingTab.Icon:SetDesaturated(true);
+		end
+	else 
+		self.ClubFinderPendingTab.tooltip = CLUB_FINDER_PENDING_REQUESTS:format(#self.PendingCommunityCards.CardList);
+		if (#self.PendingCommunityCards.CardList > 0) then 
+			self.ClubFinderPendingTab:Enable();
+			self.ClubFinderPendingTab.Icon:SetDesaturated(false);
+		else 
+			self.ClubFinderPendingTab:Disable();
+			self.ClubFinderPendingTab.Icon:SetDesaturated(true);
+		end
+	end
 end 
 
 function ClubFinderGuildAndCommunityMixin:OnEvent(event, ...)
@@ -1543,7 +1784,6 @@ function ClubFinderGuildAndCommunityMixin:OnEvent(event, ...)
 					self.GuildCards.pageNumber = 1; 
 					self.GuildCards.newRequest = false; 
 				end 
-
 				self.GuildCards:RefreshLayout(self.GuildCards.pageNumber); 
 			end 
 		end
@@ -1560,32 +1800,15 @@ function ClubFinderGuildAndCommunityMixin:OnEvent(event, ...)
 		local buildCommunity = (requestType == Enum.ClubFinderRequestType.Community) or (requestType == Enum.ClubFinderRequestType.All); 
 		if (buildGuild) then
 			self.PendingGuildCards:BuildCardList();
-			self.PendingGuildCards:RefreshLayout(); 
+			self.GuildCards:RefreshLayout(self.GuildCards.pageNumber);
+			self.PendingGuildCards:RefreshLayout(self.PendingGuildCards.pageNumber); 
 		end
 		if (buildCommunity) then
 			self.PendingCommunityCards:BuildCardList();
 			self.PendingCommunityCards:RefreshLayout(); 
+			self.CommunityCards:RefreshLayout();
 		end
-
-		if (self.isGuildType) then 
-			self.ClubFinderPendingTab.tooltip = CLUB_FINDER_PENDING_REQUESTS:format(#self.PendingGuildCards.CardList);
-			if (#self.PendingGuildCards.CardList > 0) then 
-				self.ClubFinderPendingTab:Enable();
-				self.ClubFinderPendingTab.Icon:SetDesaturated(false);
-			else 
-				self.ClubFinderPendingTab:Disable();
-				self.ClubFinderPendingTab.Icon:SetDesaturated(true);
-			end
-		else 
-			self.ClubFinderPendingTab.tooltip = CLUB_FINDER_PENDING_REQUESTS:format(#self.PendingCommunityCards.CardList);
-			if (#self.PendingCommunityCards.CardList > 0) then 
-				self.ClubFinderPendingTab:Enable();
-				self.ClubFinderPendingTab.Icon:SetDesaturated(false);
-			else 
-				self.ClubFinderPendingTab:Disable();
-				self.ClubFinderPendingTab.Icon:SetDesaturated(true);
-			end
-		end
+		self:UpdatePendingTab();
 	elseif (event == "CLUB_FINDER_LINKED_CLUB_RETURNED") then 
 		local clubInfo = ...; 
 		local communitiesFrame = self:GetParent();
@@ -1595,14 +1818,24 @@ function ClubFinderGuildAndCommunityMixin:OnEvent(event, ...)
 		local updateGuild = (requestType == Enum.ClubFinderRequestType.Guild) or (requestType == Enum.ClubFinderRequestType.All); 
 		local updateCommunity = (requestType == Enum.ClubFinderRequestType.Community) or (requestType == Enum.ClubFinderRequestType.All); 
 		if (updateGuild) then
-			self.GuildCards:UpateCardsAlreadyInList(finderGuids);
+			self.PendingGuildCards:BuildCardList(); 
 			self.GuildCards:RefreshLayout(self.GuildCards.pageNumber);
+			self.PendingGuildCards:RefreshLayout(self.PendingGuildCards.pageNumber);
 		end
 		if (updateCommunity) then
+			self.PendingCommunityCards:BuildCardList(); 
 			self.CommunityCards:UpateCardsAlreadyInList(finderGuids);
-			self.CommunityCards:RefreshLayout();
+			self.PendingCommunityCards:UpateCardsAlreadyInList(finderGuids);
 		end
+		self:UpdatePendingTab();
 	end 
+end 
+
+function ClubFinderGuildAndCommunityMixin:ClearAllCardLists()
+	self.PendingGuildCards:ClearCardList();
+	self.GuildCards:ClearCardList();
+	self.PendingCommunityCards:ClearCardList();
+	self.CommunityCards:ClearCardList();
 end 
 
 function ClubFinderGuildAndCommunityMixin:UpdateType()
@@ -1634,12 +1867,11 @@ function ClubFinderGuildAndCommunityMixin:UpdateType()
 		end
 	end
 	 self.ClubFinderSearchTab:SetChecked(true);
-	self:GetDisplayModeBasedOnSelectedTab(LAYOUT_TYPE_REGULAR_SEARCH);
+	self:GetDisplayModeBasedOnSelectedTab();
 end 
 
-function ClubFinderGuildAndCommunityMixin:GetDisplayModeBasedOnSelectedTab(selectedTab)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	local tabSelection = selectedTab;
+function ClubFinderGuildAndCommunityMixin:GetDisplayModeBasedOnSelectedTab()
+	local tabSelection = self.selectedTab;
 
 	local isSearchTabSelected = tabSelection == LAYOUT_TYPE_REGULAR_SEARCH;
 
@@ -1662,6 +1894,29 @@ end
 
 ClubFinderInvitationsFrameMixin = { }; 
 
+function ClubFinderInvitationsFrameMixin:OnShow()
+	self:RegisterEvent("PLAYER_GUILD_UPDATE");
+end 
+
+function ClubFinderInvitationsFrameMixin:OnHide()
+	self:UnregisterEvent("PLAYER_GUILD_UPDATE");
+end 
+
+function ClubFinderInvitationsFrameMixin:OnEvent(event, ...)
+	if event == "PLAYER_GUILD_UPDATE" then
+		if(not self.clubInfo) then 
+			return;
+		end
+		if(not self.isLinkInvitation) then 
+			if (isGuild and (IsGuildLeader() or IsInGuild())) then 
+				self.AcceptButton:SetEnabled(false);
+			else 
+				self.AcceptButton:SetEnabled(true);
+			end 
+		end
+	end
+end 
+
 function ClubFinderInvitationsFrameMixin:DisplayInvitation(clubInfo, isLinkInvitation) 
 	self.clubInfo = clubInfo; 
 	if(not clubInfo) then 
@@ -1669,6 +1924,7 @@ function ClubFinderInvitationsFrameMixin:DisplayInvitation(clubInfo, isLinkInvit
 	end
 
 	local isGuild = clubInfo.isGuild; 
+	self.isLinkInvitation = isLinkInvitation;
 
 	if (isGuild) then 
 		SetLargeTabardTexturesFromColorRGB("player", self.GuildBannerEmblemLogo, self.GuildBannerBackground, self.GuildBannerBorder, clubInfo.tabardInfo);
@@ -1702,7 +1958,9 @@ function ClubFinderInvitationsFrameMixin:DisplayInvitation(clubInfo, isLinkInvit
 	self.AcceptButton:SetShown(not isLinkInvitation);
 
 	if(isLinkInvitation) then
-		self.ApplyButton:SetEnabled(not C_ClubFinder.DoesPlayerBelongToClubFromClubGUID(clubInfo.clubFinderGUID));	
+		local doesPlayerBelongToClub = C_ClubFinder.DoesPlayerBelongToClubFromClubGUID(clubInfo.clubFinderGUID);
+		local hasPlayerAlreadyAppliedToClub = C_ClubFinder.HasAlreadyAppliedToLinkedPosting(clubInfo.clubFinderGUID);
+		self.ApplyButton:SetEnabled(not doesPlayerBelongToClub and not hasPlayerAlreadyAppliedToClub);	
 	else 
 		if (isGuild and (IsGuildLeader() or IsInGuild())) then 
 			self.AcceptButton:SetEnabled(false);
@@ -1719,6 +1977,7 @@ function ClubFinderInvitationsFrameMixin:ApplyToLinkedClub()
 	self.recruitingSpecIds = ClubFinderCreateRecruitingSpecsMap(self.clubInfo.recruitingSpecIds); 
 	self.RequestToJoinFrame.card = self; 
 	self.RequestToJoinFrame.card.cardInfo = self.clubInfo;
+	self.RequestToJoinFrame.isLinkedPosting = true; 
 	self.RequestToJoinFrame:Initialize(); 
 end 
 
@@ -1740,9 +1999,18 @@ end
 
 function ClubFinderInvitationsFrameMixin:OnApplyButtonEnter()
 	GameTooltip:SetOwner(self.ApplyButton, "ANCHOR_LEFT", 0, -65);
+
+	local doesPlayerBelongToClub = C_ClubFinder.DoesPlayerBelongToClubFromClubGUID(self.clubInfo.clubFinderGUID);
+	local hasPlayerAlreadyAppliedToClub = C_ClubFinder.HasAlreadyAppliedToLinkedPosting(self.clubInfo.clubFinderGUID);
+
 	if (not self.ApplyButton:IsEnabled() and self.ApplyButton:IsShown()) then 
-		GameTooltip_AddColoredLine(GameTooltip, CLUB_FINDER_ALREADY_IN_THAT_CLUB, RED_FONT_COLOR, true);
-		GameTooltip:Show();
+		if (doesPlayerBelongToClub) then 
+			GameTooltip_AddColoredLine(GameTooltip, CLUB_FINDER_ALREADY_IN_THAT_CLUB, RED_FONT_COLOR, true);
+			GameTooltip:Show();
+		elseif (hasPlayerAlreadyAppliedToClub) then 
+			GameTooltip_AddColoredLine(GameTooltip, CLUB_FINDER_ALREADY_APPLIED_ERROR, RED_FONT_COLOR, true);
+			GameTooltip:Show();
+		end
 	end 
 end 
 
@@ -1808,13 +2076,35 @@ end
 ClubFinderTabMixin = { }; 
 
 function ClubFinderTabMixin:SetTab()
+	local parent = self:GetParent();
+
 	if (self == self:GetParent().ClubFinderSearchTab) then 
-		self:GetParent():GetDisplayModeBasedOnSelectedTab(LAYOUT_TYPE_REGULAR_SEARCH);
+		parent.selectedTab = LAYOUT_TYPE_REGULAR_SEARCH;
+		self:GetParent():GetDisplayModeBasedOnSelectedTab();
 	else 
-		self:GetParent():GetDisplayModeBasedOnSelectedTab(LAYOUT_TYPE_PENDING_LIST);
+		parent.selectedTab = LAYOUT_TYPE_PENDING_LIST;
+		self:GetParent():GetDisplayModeBasedOnSelectedTab();
 	end 
 
 end 
+
+ClubFinderRoleCheckBoxMixin = { };
+
+function ClubFinderRoleCheckBoxMixin:OnEnter()
+	local clubFinderFrame = self:GetParent():GetParent():GetParent(); 
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 5);
+	if (clubFinderFrame.isGuildType) then 
+		GameTooltip_AddNormalLine(GameTooltip, CLUB_FINDER_ROLE_TOOLTIP:format(CLUB_FINDER_GUILDS));
+	else 
+		GameTooltip_AddNormalLine(GameTooltip, CLUB_FINDER_ROLE_TOOLTIP:format(CLUB_FINDER_COMMUNITIES));
+	end 
+	GameTooltip:Show()
+end 
+
+function ClubFinderRoleCheckBoxMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
 
 ClubFinderRoleMixin = { }; 
 
@@ -1831,6 +2121,11 @@ end
 
 function ClubFinderRoleMixin:OnLeave()
 	GameTooltip:Hide();
+end 
+
+function ClubFinderRoleMixin:SetEnabled(enabled)
+	self.CheckBox:SetEnabled(enabled);
+	self.Icon:SetDesaturated(not enabled);
 end 
 
 function ClubFinderGetPlayerSettingsByValue(value)
@@ -1875,7 +2170,8 @@ function ClubFinderGetCurrentClubListingInfo(clubId)
 end
 
 function ClubFinderDoesSelectedClubHaveActiveListing(clubId) 
-	if (ClubFinderGetCurrentClubListingInfo(clubId)) then 
+	local currentInfo = ClubFinderGetCurrentClubListingInfo(clubId)
+	if (currentInfo and C_ClubFinder.IsListingEnabledFromFlags(currentInfo.recruitmentFlags)) then 
 		return true; 
 	else 
 		return false; 
@@ -1884,9 +2180,14 @@ end
 
 function ClubFinderGetClubPostingExpirationTime(clubId) 
 	local clubPostingInfo = ClubFinderGetCurrentClubListingInfo(clubId);
-	if (clubPostingInfo) then 
+	if (clubPostingInfo and C_ClubFinder.IsListingEnabledFromFlags(clubPostingInfo.recruitmentFlags)) then 
 		local unixTime = C_DateAndTime.GetServerTimeLocal() - clubPostingInfo.lastUpdatedTime;
 		return POSTING_EXPIRATION_DAYS - math.ceil(unixTime / SECONDS_PER_DAY);
 	end
 	return nil;
+end 
+
+function ClubFinderGetClubApplicationExpirationTime(time) 
+	local unixTime = C_DateAndTime.GetServerTimeLocal() - time;
+	return APPLICATION_EXPIRATION_DAYS - math.ceil(unixTime / SECONDS_PER_DAY);
 end 

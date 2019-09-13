@@ -5,7 +5,7 @@
 	<Frame name="RecruitAFriendRewardsFrame" parent="UIParent" hidden="true" enableMouse="true" frameStrata="DIALOG" mixin="RecruitAFriendRewardsFrameMixin">
 		<Size x="390" y="478"/>
 		<Anchors>
-			<Anchor point="TOP"/>
+			<Anchor point="TOP" y="-135"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -37,14 +37,14 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="SystemFont_Shadow_Large" text="RAF_REWARDS">
-					<Size x="400"/>
+					<Size x="350"/>
 					<Anchors>
 						<Anchor point="TOP" y="-40"/>
 					</Anchors>
 					<Color color="NORMAL_FONT_COLOR" />
 				</FontString>
 				<FontString parentKey="Description" inherits="FriendsFont_11" text="RAF_REWARDS_DESC">
-					<Size x="400"/>
+					<Size x="350"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-10"/>
 					</Anchors>
@@ -59,7 +59,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						StaticPopupSpecial_Hide(RecruitAFriendRewardsFrame);
+						RecruitAFriendRewardsFrame:Hide();
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -217,6 +217,10 @@
 		<Color color="NORMAL_FONT_COLOR" />
 	</FontString>
 
+	<FontString name="RecruitSmallTextTemplate" inherits="FriendsFont_Small" justifyH="LEFT" virtual="true">
+		<Color color="NORMAL_FONT_COLOR" />
+	</FontString>
+
 	<Button name="RecruitActivityButtonTemplate" registerForClicks="LeftButtonUp" virtual="true" mixin="RecruitActivityButtonMixin">
 		<Size x="35" y="34"/>
 		<Layers>
@@ -274,6 +278,7 @@
 		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad" />
+			<OnHide method="OnHide" />
 			<OnEnter method="OnEnter" />
 			<OnLeave method="OnLeave" />
 			<OnClick method="OnClick" />
@@ -294,11 +299,13 @@
 			<Layer level="ARTWORK">
 				<Texture parentKey="DividerTexture" file="Interface\FriendsFrame\UI-FriendsFrame-OnlineDivider" setAllPoints="true" hidden="true"/>
 				<FontString parentKey="Name" inherits="RecruitTextTemplate">
+					<Size x="190" y="12"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="5" y="-4"/>
 					</Anchors>
 					</FontString>
-				<FontString parentKey="InfoText" inherits="RecruitTextTemplate">
+				<FontString parentKey="InfoText" inherits="RecruitSmallTextTemplate">
+					<Size x="190" y="10"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-3"/>
 					</Anchors>
@@ -306,19 +313,19 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="Activity3" parentArray="Activities" id="3" inherits="RecruitActivityButtonTemplate">
+			<Button parentArray="Activities" inherits="RecruitActivityButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" x="-70"/>
+				</Anchors>
+			</Button>
+			<Button parentArray="Activities" inherits="RecruitActivityButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" x="-35"/>
+				</Anchors>
+			</Button>
+			<Button parentArray="Activities" inherits="RecruitActivityButtonTemplate">
 				<Anchors>
 					<Anchor point="RIGHT"/>
-				</Anchors>
-			</Button>
-			<Button parentKey="Activity2" parentArray="Activities" id="2" inherits="RecruitActivityButtonTemplate">
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.Activity3" relativePoint="LEFT"/>
-				</Anchors>
-			</Button>
-			<Button parentKey="Activity1" parentArray="Activities" id="1" inherits="RecruitActivityButtonTemplate">
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.Activity2" relativePoint="LEFT"/>
 				</Anchors>
 			</Button>
 		</Frames>
@@ -367,31 +374,42 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="MonthCount" inherits="FriendsFont_Large" justifyH="LEFT">
-							<Size x="230"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="90" y="-15"/>
-							</Anchors>
-							<Color color="NORMAL_FONT_COLOR" />
-						</FontString>
 						<FontString parentKey="EarnInfo" inherits="FriendsFont_Normal" justifyH="LEFT">
-							<Size x="230"/>
+							<Size x="230" y="12"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.MonthCount" relativePoint="BOTTOMLEFT" y="-4"/>
+								<Anchor point="TOPLEFT" x="90" y="-33"/>
 							</Anchors>
-						</FontString>
-						<FontString parentKey="NextRewardName" inherits="FriendsFont_Normal" justifyH="LEFT">
-							<Size x="230"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.EarnInfo" relativePoint="BOTTOMLEFT" y="-3"/>
-							</Anchors>
-							<Color color="EPIC_PURPLE_COLOR"/>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="MonthCount" inherits="TruncatedTooltipFontStringWrapperTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="90" y="-15"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Text" inherits="FriendsFont_Large" justifyH="LEFT" mixin="ShrinkUntilTruncateFontStringMixin">
+									<Size x="230" y="14"/>
+									<Color color="NORMAL_FONT_COLOR" />
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="NextRewardName" inherits="TruncatedTooltipFontStringWrapperTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="90" y="-48"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Text" inherits="FriendsFont_Normal" justifyH="LEFT" mixin="ShrinkUntilTruncateFontStringMixin">
+									<Size x="230" y="12"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
 					<Button parentKey="NextRewardButton" inherits="RecruitAFriendRewardButtonTemplate" mixin="RecruitAFriendRewardButtonWithFanfareMixin">
-						<Size x="47" y="47"/>
+						<Size x="49" y="49"/>
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="LEFT" x="46" />
 						</Anchors>
@@ -409,11 +427,7 @@
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
-								<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="1" y="-1"/>
-										<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
-									</Anchors>
+								<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" setAllPoints="true">
 									<MaskedTextures>
 										<MaskedTexture childKey="Icon"/>
 										<MaskedTexture childKey="IconOverlay"/>
@@ -488,19 +502,17 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.RewardClaiming" relativePoint="BOTTOMLEFT"/>
 					<Anchor point="BOTTOMRIGHT" x="-6" y="26"/>
 				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<FontString parentKey="NoRecruitsDesc" inherits="FriendsFont_Large" text="RAF_NO_RECRUITS_DESC">
-							<Size x="283"/>
-							<Anchors>
-								<Anchor point="CENTER" x="-10"/>
-							</Anchors>
-							<Color color="NORMAL_FONT_COLOR" />
-						</FontString>
-					</Layer>
-				</Layers>
 				<Frames>
-					<Frame parentKey="Inset" inherits="InsetFrameTemplate" frameStrata="MEDIUM" setAllPoints="true" />
+					<SimpleHTML parentKey="NoRecruitsDesc" resizeToFitContents="true">
+						<Size x="300"/>
+						<Anchors>
+							<Anchor point="CENTER" x="-10"/>
+						</Anchors>
+						<Scripts>
+							<OnHyperlinkClick function="GetURLIndexAndLoadURL" />
+						</Scripts>
+						<FontString inherits="FriendsFont_Large" justifyH="CENTER" />
+					</SimpleHTML>
 					<Frame parentKey="Header">
 						<Size x="320" y="20"/>
 						<Anchors>
@@ -508,12 +520,11 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture parentKey="Background">
+								<Texture parentKey="Background" atlas="RecruitAFriend_Frame_StoneDivider">
+									<Size x="338" y="20"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="0" y="-1"/>
-										<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
+										<Anchor point="TOP"/>
 									</Anchors>
-									<Color r=".196" g=".388" b=".8" a="0.050"/>
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
@@ -556,78 +567,110 @@
 					<OnHide method="OnHide"/>
 				</Scripts>
 			</Frame>
+			<Frame parentKey="SplashFrame" hidden="true" frameLevel="10">
+				<Anchors>
+					<Anchor point="CENTER" y="-41"/>
+				</Anchors>
+				<Size x="335" y="335"/>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="RecruitAFriend_Splash_Parchment" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Picture" atlas="RecruitAFriend_Splash_Picture" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" y="40"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="PictureFrame" atlas="RecruitAFriend_Splash_PictureFrame" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Picture"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Title" inherits="SystemFont_Shadow_Large" text="RAF_SPLASH_SCREEN_TITLE">
+							<Size x="300"/>
+							<Anchors>
+								<Anchor point="TOP" y="-13"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Description" inherits="SystemFont_Med2" text="RAF_SPLASH_SCREEN_DESCRIPTION" spacing="3">
+							<Size x="300"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.PictureFrame" relativePoint="BOTTOM" y="-26"/>
+							</Anchors>
+							<Color color="WARBOARD_OPTION_TEXT_COLOR" />
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Bracket_TopLeft" atlas="RecruitAFriend_ClaimPane_CornerBracket_LeftTop" useAtlasSize="true">
+							<Anchors>
+								<Anchor relativeKey="$parent.Background" point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Bracket_TopRight" atlas="RecruitAFriend_ClaimPane_CornerBracket_RightTop" useAtlasSize="true">
+							<Anchors>
+								<Anchor relativeKey="$parent.Background" point="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Bracket_BottomRight" atlas="RecruitAFriend_ClaimPane_CornerBracket_RightBottom" useAtlasSize="true">
+							<Anchors>
+								<Anchor relativeKey="$parent.Background" point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Bracket_BottomLeft" atlas="RecruitAFriend_ClaimPane_CornerBracket_LeftBottom" useAtlasSize="true">
+							<Anchors>
+								<Anchor relativeKey="$parent.Background" point="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="PictureFrame_Bracket_TopLeft" atlas="RecruitAFriend_Splash_CornerBracket_LeftTop" useAtlasSize="true">
+							<Anchors>
+								<Anchor  point="CENTER" relativeKey="$parent.PictureFrame" relativePoint="TOPLEFT" x="5" y="-8"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="PictureFrame_Bracket_TopRight" atlas="RecruitAFriend_Splash_CornerBracket_RightTop" useAtlasSize="true">
+							<Anchors>
+								<Anchor  point="CENTER" relativeKey="$parent.PictureFrame" relativePoint="TOPRIGHT" x="-5" y="-8"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="PictureFrame_Bracket_BottomRight" atlas="RecruitAFriend_Splash_CornerBracket_RightBottom" useAtlasSize="true">
+							<Anchors>
+								<Anchor  point="CENTER" relativeKey="$parent.PictureFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="PictureFrame_Bracket_BottomLeft" atlas="RecruitAFriend_Splash_CornerBracket_LeftBottom" useAtlasSize="true">
+							<Anchors>
+								<Anchor  point="CENTER" relativeKey="$parent.PictureFrame" relativePoint="BOTTOMLEFT" x="6" y="4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="OKButton" inherits="FriendsFrameButtonTemplate" text="OKAY">
+						<Anchors>
+							<Anchor point="BOTTOM" y="20"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+								self:GetParent():Hide();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnEnter>
+					</OnEnter>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" />
 			<OnEvent method="OnEvent" />
 			<OnHide method="OnHide" />
 		</Scripts>
-	</Frame>
-
-	<Frame name="RecruitHelpBoxTemplate" inherits="GlowBoxTemplate" frameStrata="HIGH" hidden="true" virtual="true" mixin="RecruitHelpBoxMixin">
-		<Size x="220" y="100"/>
-		<Layers>
-			<Layer level="OVERLAY">
-				<FontString parentKey="Text" inherits="GameFontHighlightLeft" spacing="4">
-					<Size x="200" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="15" y="-15"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button parentKey="OkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
-				<Size x="150" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="15"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						self:GetParent():Hide();
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnShow method="OnShow"/>
-		</Scripts>
-	</Frame>
-
-	<Frame name="RecruitHelpBoxTemplate_Left" inherits="RecruitHelpBoxTemplate" virtual="true">
-		<Frames>
-			<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
-				<Anchors>
-					<Anchor point="RIGHT" relativePoint="LEFT" x="20"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.Arrow:SetRotation(-math.pi / 2);
-						self.Glow:SetRotation(-math.pi / 2);
-						self.Glow:ClearAllPoints();
-						self.Glow:SetPoint("CENTER", self.Arrow, "CENTER", -5, 0);
-					</OnLoad>
-				</Scripts>
-			</Frame>
-		</Frames>
-	</Frame>
-
-	<Frame name="RecruitHelpBoxTemplate_Right" inherits="RecruitHelpBoxTemplate" virtual="true">
-		<Frames>
-			<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT" x="-20"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.Arrow:SetRotation(math.pi / 2);
-						self.Glow:SetRotation(math.pi / 2);
-						self.Glow:ClearAllPoints();
-						self.Glow:SetPoint("CENTER", self.Arrow, "CENTER", 5, 0);
-					</OnLoad>
-				</Scripts>
-			</Frame>
-		</Frames>
 	</Frame>
 </Ui>

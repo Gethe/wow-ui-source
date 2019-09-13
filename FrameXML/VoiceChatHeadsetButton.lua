@@ -122,7 +122,8 @@ function VoiceChatHeadsetButtonMixin:OnClick()
 	elseif self:IsCommunityChannel() then
 		ChannelFrame:TryJoinCommunityStreamChannel(self.clubId, self.streamId);
 	else
-		ChannelFrame:TryJoinVoiceChannelByType(self:GetChannelType());
+		local activate = true;
+		ChannelFrame:TryJoinVoiceChannelByType(self:GetChannelType(), activate);
 	end
 
 	if self.onClickFn then

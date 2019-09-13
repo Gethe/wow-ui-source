@@ -471,7 +471,11 @@
 					</Frame>
 				</ScrollChild>
 				<Frames>
-					<Frame parentKey="DetailFrame" setAllPoints="true">
+					<Frame parentKey="DetailFrame">
+						<Anchors>
+							<Anchor point="TOPLEFT" />
+							<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
+						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK" textureSubLevel="2">
 								<Texture parentKey="BottomDetail" atlas="QuestLog_BottomDetail" useAtlasSize="true">
