@@ -231,15 +231,26 @@ function GlueParent_UpdateDialogs()
 	elseif ( wowConnectionState == LE_WOW_CONNECTION_STATE_CONNECTING ) then
 		GlueDialog_Show("CANCEL", GAME_SERVER_LOGIN);
 	elseif ( wowConnectionState == LE_WOW_CONNECTION_STATE_IN_QUEUE ) then
+		local serverName, pvp, rp, down = GetServerName();
 		local waitPosition, waitMinutes, hasFCM = C_Login.GetWaitQueueInfo();
 
 		local queueString;
-		if ( waitMinutes == 0 ) then
-			queueString = string.format(_G["QUEUE_TIME_LEFT_UNKNOWN"], waitPosition);
-		elseif ( waitMinutes == 1 ) then
-			queueString = string.format(_G["QUEUE_TIME_LEFT_SECONDS"], waitPosition);
+		if (serverName) then
+			if ( waitMinutes == 0 ) then
+				queueString = string.format(_G["QUEUE_NAME_TIME_LEFT_UNKNOWN"], serverName, waitPosition);
+			elseif ( waitMinutes == 1 ) then
+				queueString = string.format(_G["QUEUE_NAME_TIME_LEFT_SECONDS"], serverName, waitPosition);
+			else
+				queueString = string.format(_G["QUEUE_NAME_TIME_LEFT"], serverName, waitPosition, waitMinutes);
+			end
 		else
-			queueString = string.format(_G["QUEUE_TIME_LEFT"], waitPosition, waitMinutes);
+			if ( waitMinutes == 0 ) then
+				queueString = string.format(_G["QUEUE_TIME_LEFT_UNKNOWN"], waitPosition);
+			elseif ( waitMinutes == 1 ) then
+				queueString = string.format(_G["QUEUE_TIME_LEFT_SECONDS"], waitPosition);
+			else
+				queueString = string.format(_G["QUEUE_TIME_LEFT"], waitPosition, waitMinutes);
+			end
 		end
 
 		if ( hasFCM ) then

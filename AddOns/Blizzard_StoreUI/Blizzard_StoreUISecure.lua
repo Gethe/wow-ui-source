@@ -297,6 +297,7 @@ Import("VAS_SERVICE_PROCESSING");
 Import("BLIZZARD_STORE_VAS_SELECT_ACCOUNT");
 Import("BLIZZARD_STORE_VAS_DIFFERENT_BNET");
 Import("BLIZZARD_STORE_VAS_TRANSFER_REALM");
+Import("BLIZZARD_STORE_VAS_TRANSFER_REALM_CATEGORY_WARNING");
 Import("BLIZZARD_STORE_VAS_REALM_NAME");
 Import("BLIZZARD_STORE_VAS_TRANSFER_ACCOUNT");
 Import("BLIZZARD_STORE_VAS_TRANSFER_FACTION_BUNDLE");
@@ -2695,7 +2696,7 @@ local RealmAutoCompleteList;
 local IsVasBnetTransferValidated = false;
 local RealmAutoCompleteIndexByKey = {};
 local RealmList = {};
-local RealmRpPvpMap = {};
+local RealmInfoMap = {};
 
 ------------------------------------------
 function StoreConfirmationFrame_OnLoad(self)
@@ -4181,6 +4182,7 @@ function VASCharacterSelectionRealmSelector_Callback(value)
 	frame.SelectedCharacterFrame:Hide();
 	frame.TransferRealmCheckbox:Hide();
 	frame.TransferRealmCheckbox:SetChecked(false);
+	frame.TransferRealmCheckbox.Warning:SetText("");
 	frame.TransferRealmEditbox:Hide();
 	frame.TransferRealmEditbox:SetText("");
 	frame.TransferAccountCheckbox:Hide();
@@ -4329,6 +4331,8 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 			frame.TransferFactionCheckbox:SetPoint("TOPLEFT", frame.TransferRealmCheckbox, "BOTTOMLEFT", 0, -4);
 		end
 		frame.TransferRealmCheckbox:SetChecked(false);
+		frame.TransferRealmCheckbox.Warning:Hide();
+		frame.TransferRealmCheckbox.Warning:SetText("");
 		frame.TransferRealmEditbox:SetText("");
 		frame.TransferRealmEditbox:Hide();
 		frame.TransferBattlenetAccountEditbox:Hide();
@@ -4427,7 +4431,9 @@ function VASRealmList_BuildAutoCompleteList()
 			local pvp = realms[i].pvp;
 			local rp = realms[i].rp;
 			local name = realms[i].realmName;
-			RealmRpPvpMap[name] = { rp=rp, pvp=pvp };
+			local categoryID = realms[i].categoryID;
+			local category = realms[i].category;
+			RealmInfoMap[name] = { rp=rp, pvp=pvp, categoryID=categoryID, category=category };
 			infoTable[#infoTable + 1] = name;
 			DestinationRealmMapping[name] = realms[i].virtualRealmAddress;
 		end
@@ -4461,6 +4467,19 @@ function VASCharacterSelectionTransferRealmEditBoxAutoCompleteButton_OnClick(sel
 
 	frame.TransferRealmEditbox:SetText(self.info);
 	frame.TransferRealmAutoCompleteBox:Hide();
+
+	-- Show an informative realm category warning if the realm we're transferring to is in a different tab than our currently connected realm.
+	-- A better way to do this would be to get the realm category of the source realm we're transferring from, but that's actually a fair bit more work.
+	-- Just using our current realm connection should be adequate for the vast majority of cases.
+	if (RealmInfoMap[self.info] and RealmInfoMap[self.info].categoryID and RealmInfoMap[self.info].category) then
+		if (RealmInfoMap[self.info].categoryID ~= C_StoreSecure.GetCurrentRealmCategory()) then
+			frame.TransferRealmCheckbox.Warning:SetTextColor(0, 0, 0);
+			frame.TransferRealmCheckbox.Warning:SetText(BLIZZARD_STORE_VAS_TRANSFER_REALM_CATEGORY_WARNING:format("|cffA01919"..RealmInfoMap[self.info].category.."|r"));
+			frame.TransferRealmCheckbox.Warning:Show();
+		else
+			frame.TransferRealmCheckbox.Warning:Hide();
+		end
+	end
 end
 
 function VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(self, text, cursorPosition)
@@ -4497,7 +4516,7 @@ function VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(self, text
 		local entryIndex = i + VAS_AUTO_COMPLETE_OFFSET - buttonOffset;
 		button:SetScript("OnClick", VASCharacterSelectionTransferRealmEditBoxAutoCompleteButton_OnClick);
 		button.info = VAS_AUTO_COMPLETE_ENTRIES[entryIndex];
-		local rpPvpInfo = RealmRpPvpMap[VAS_AUTO_COMPLETE_ENTRIES[entryIndex]];
+		local rpPvpInfo = RealmInfoMap[VAS_AUTO_COMPLETE_ENTRIES[entryIndex]];
 		local tag = _G.VAS_PVE_PARENTHESES;
 		if (rpPvpInfo.pvp and rpPvpInfo.rp) then
 			tag = _G.VAS_RPPVP_PARENTHESES;
@@ -4624,8 +4643,10 @@ function TransferRealmCheckbox_OnClick(self)
 		SelectedDestinationRealm = nil;
 		self:GetParent().TransferRealmEditbox:SetText("");
 		self:GetParent().TransferRealmAutoCompleteBox:Hide();
+		self:GetParent().TransferRealmCheckbox.Warning:SetText("");
 	end
 	self:GetParent().TransferRealmEditbox:SetShown(self:GetChecked());
+	self:GetParent().TransferRealmCheckbox.Warning:SetShown(self:GetChecked());
 	VASCharacterSelectionTransferGatherAndValidateData();
 end
 

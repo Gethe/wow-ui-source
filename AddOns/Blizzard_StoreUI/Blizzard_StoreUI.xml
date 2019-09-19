@@ -2615,6 +2615,12 @@
 											<Anchor point="LEFT" relativePoint="RIGHT" x="4" y="0"/>
 										</Anchors>
 									</FontString>
+									<FontString parentKey="Warning" inherits="GameTooltipHeaderText" hidden="true">
+										<Size x="300" y="0"/>
+										<Anchors>
+											<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="4" y="-8"/>
+										</Anchors>
+									</FontString>
 								</Layer>
 							</Layers>
 							<Scripts>
