@@ -200,8 +200,8 @@ function ActionBarButtonEventsFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
 	self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
 	self:RegisterEvent("PET_BAR_UPDATE");
-	self:RegisterEvent("UNIT_FLAGS");
-	self:RegisterEvent("UNIT_AURA");
+	self:RegisterUnitEvent("UNIT_FLAGS", "pet");
+	self:RegisterUnitEvent("UNIT_AURA", "pet");
 	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED");
 end
 
@@ -752,7 +752,7 @@ function ActionButton_OnEvent(self, event, ...)
 		ActionButton_UpdateHotkeys(self, self.buttonType);
 	elseif ( event == "PLAYER_TARGET_CHANGED" ) then	-- All event handlers below this line are only set when the button has an action
 		self.rangeTimer = -1;
-	elseif ( (((event == "UNIT_FLAGS") or (event == "UNIT_AURA")) and arg1 == "pet") or (event == "PET_BAR_UPDATE") ) then
+	elseif ( event == "UNIT_FLAGS" or event == "UNIT_AURA" or event == "PET_BAR_UPDATE" ) then
 		-- Pet actions can also change the state of action buttons.
 		ActionButton_UpdateState(self);
 		ActionButton_UpdateFlash(self);

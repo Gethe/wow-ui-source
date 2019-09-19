@@ -267,6 +267,16 @@
 				</Scripts>
 			</Frame>
 
+			<!-- The invitee sees this and needs to acknowledge the fact that they're requesting to join a party with an active quest session -->
+			<Frame parentKey="ConfirmRequestToJoinGroupDialog" inherits="QuestSessionDialogTemplate" mixin="ConfirmRequestToJoinGroupDialogMixin">
+				<KeyValues>
+					<KeyValue key="minimumWidth" value="0" type="number"/> <!-- override the base version -->
+					<KeyValue key="widthPadding" value="60" type="number"/> <!-- always ensure the edges have sufficient padding -->
+					<KeyValue key="confirmText" value="ACCEPT" type="global"/>
+					<KeyValue key="cancelText" value="DECLINE" type="global"/>
+				</KeyValues>
+			</Frame>
+
 			<!-- The invitee sees this and needs to acknowledge the fact that they're joining a party with an active quest session -->
 			<Frame parentKey="ConfirmBNJoinGroupRequestDialog" inherits="QuestSessionDialogTemplate" mixin="ConfirmBNJoinGroupRequestDialogMixin">
 				<KeyValues>

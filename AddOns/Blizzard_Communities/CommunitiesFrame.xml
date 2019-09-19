@@ -121,6 +121,40 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Button parentKey="InfoButton" hidden="true">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.ExpiredText" relativePoint="RIGHT" x="27" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="I" file="Interface\common\help-i">
+							<Size x="28" y="28"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, ANCHOR_RIGHT, 270);
+						GameTooltip_AddColoredLine(GameTooltip, CLUB_FINDER_GUILD_POSTING_ALERT_REMOVED_DESC, HIGHLIGHT_FONT_COLOR); 
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide(); 
+					</OnLeave>
+				</Scripts>
+				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight">
+					<Size x="24" y="24"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-1" y="1"/>
+					</Anchors>
+				</HighlightTexture>
+			</Button>
+		</Frames>
 	</Frame>
 
 	<Frame name="GuildDetailsFrameTemplate" virtual="true">
@@ -476,7 +510,11 @@
 				</Anchors>
 			</Frame>
 			<Button parentKey="GuildNameAlertFrame" inherits="CommunitiesGuildNameChangeAlertFrameTemplate" frameLevel="2"/>
-			<Frame parentKey="GuildNameChangeFrame" inherits="CommunitiesGuildNameChangeFrameTemplate" frameLevel="1"/>
+			<Frame parentKey="GuildNameChangeFrame" inherits="GuildNameChangeFrameTemplate" frameLevel="1"/>
+			<Frame parentKey="CommunityNameChangeFrame" inherits="CommunityNameChangeFrameTemplate" frameLevel="1"/>
+			<Frame parentKey="GuildPostingChangeFrame" inherits="GuildPostingChangeFrameTemplate" frameLevel="1"/>
+			<Frame parentKey="CommunityPostingChangeFrame" inherits="CommunityPostingChangeFrameTemplate" frameLevel="1"/>
+			
 			<Frame parentKey="EditStreamDialog" frameStrata="DIALOG" inherits="CommunitiesEditStreamDialogTemplate" hidden="true">
 				<Size x="320" y="260"/>
 				<Anchors>
@@ -489,7 +527,7 @@
 					<Anchor point="TOP" relativeTo="UIParent" x="0" y="-142"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="RecruitmentDialog" hidden="true" inherits="ClubsRecruitmentDialogTemplate">
+			<Frame parentKey="RecruitmentDialog" hidden="true" frameLevel="3" inherits="ClubsRecruitmentDialogTemplate">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="UIParent" x="0" y="-80"/>
 				</Anchors>
@@ -501,11 +539,21 @@
 				</Anchors>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
-			<Button parentKey="InviteButton" inherits="CommunitiesInviteButtonTemplate">
+			<Button parentKey="InviteButton" inherits="CommunitiesInviteButtonTemplate" motionScriptsWhileDisabled="true">
 				<Size x="130" y="20"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
 				</Anchors>
+				<Scripts>
+					<OnEnter>
+						if self.disabledTooltip then
+							GameTooltip_ShowDisabledTooltip(GameTooltip, self, self.disabledTooltip);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
 			</Button>
 			<Frame parentKey="CommunitiesControlFrame" inherits="CommunitiesControlFrameTemplate">
 				<Size x="500" y="20"/>

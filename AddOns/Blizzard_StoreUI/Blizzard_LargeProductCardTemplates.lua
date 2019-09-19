@@ -405,6 +405,10 @@ function HorizontalLargeStoreCardWithBuyButtonMixin:Layout()
 
 	self.PurchasedMark:Hide();
 
+	self.DisclaimerText:ClearAllPoints();
+	self.DisclaimerText:SetWidth(300);
+	self.DisclaimerText:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 15, 15);
+
 	self.SplashBanner:Hide();
 	self.SplashBannerText:Hide();
 
@@ -414,6 +418,15 @@ end
 
 function HorizontalLargeStoreCardWithBuyButtonMixin:ShouldModelShowShadows()
 	return false;
+end
+
+function HorizontalLargeStoreCardWithBuyButtonMixin:SetDisclaimerText(entryInfo)
+	if entryInfo.sharedData.disclaimer then
+		self.DisclaimerText:SetText(entryInfo.sharedData.disclaimer);
+		self.DisclaimerText:Show();
+	else
+		self.DisclaimerText:Hide();
+	end
 end
 
 function HorizontalLargeStoreCardWithBuyButtonMixin:OnEnter()

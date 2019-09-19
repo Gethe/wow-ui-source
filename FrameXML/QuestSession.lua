@@ -608,6 +608,35 @@ function ConfirmBNJoinGroupRequestDialogMixin:Cancel()
 	self:HideImmediate();
 end
 
+ConfirmRequestToJoinGroupDialogMixin = {};
+
+function ConfirmRequestToJoinGroupDialogMixin:Setup(target, targetLevelLink, tank, healer, dps)
+	self.target = target;
+	self.tank = tank;
+	self.healer = healer;
+	self.dps = dps;
+
+	self.Title:SetText("QuestSharing-DialogIcon", QUEST_SESSION_CHECK_REQUEST_TO_JOIN_TITLE);
+
+	if targetLevelLink == 0 or targetLevelLink >= UnitLevel("player") then
+		self.Body:SetWarningText(QUEST_SESSION_CHECK_REQUEST_TO_JOIN_BODY_LEVEL_UNRESTRICTED);
+	else
+		self.Body:SetWarningText(QUEST_SESSION_CHECK_REQUEST_TO_JOIN_BODY_LEVEL_RESTRICTED:format(targetLevelLink));
+	end
+
+	self.Divider:Show();
+	self:SetShowSound(SOUNDKIT.IG_PLAYER_INVITE);
+end
+
+function ConfirmRequestToJoinGroupDialogMixin:Confirm()
+	C_PartyInfo.ConfirmRequestInviteFromUnit(self.target, self.tank, self.healer, self.dps);
+	self:HideImmediate();
+end
+
+function ConfirmRequestToJoinGroupDialogMixin:Cancel()
+	self:HideImmediate();
+end
+
 ConfirmInviteTravelPassConfirmationDialogMixin = {};
 
 function ConfirmInviteTravelPassConfirmationDialogMixin:Setup(target, guid)
@@ -687,6 +716,7 @@ AddNotification(Enum.QuestSessionResult.Resync, CreateAtlasMarkup("QuestSharing-
 AddNotification(Enum.QuestSessionResult.QuestNotCompleted, ERR_QUEST_SESSION_RESULT_QUEST_NOT_COMPLETED);
 AddNotification(Enum.QuestSessionResult.Restricted, ERR_QUEST_SESSION_RESULT_RESTRICTED);
 AddNotification(Enum.QuestSessionResult.InPetBattle, ERR_QUEST_SESSION_RESULT_IN_PET_BATTLE);
+AddNotification(Enum.QuestSessionResult.InvalidPublicParty, ERR_QUEST_SESSION_RESULT_UNKNOWN);
 AddNotification(Enum.QuestSessionResult.Unknown, ERR_QUEST_SESSION_RESULT_UNKNOWN);
 
 QuestSessionManagerMixin = {};
@@ -716,6 +746,7 @@ function QuestSessionManagerMixin:OnLoad()
 	self:RegisterEvent("CONVERT_TO_RAID_CONFIRMATION");
 	self:RegisterEvent("QUEST_REMOVED");
 	self:RegisterEvent("BNET_REQUEST_INVITE_CONFIRMATION");
+	self:RegisterEvent("REQUEST_INVITE_CONFIRMATION");
 	self:RegisterEvent("INVITE_TRAVEL_PASS_CONFIRMATION");
 
 	FrameUtil.RegisterFrameForEvents(self, questSessionUpdateEvents);
@@ -740,6 +771,8 @@ function QuestSessionManagerMixin:OnEvent(event, ...)
 	elseif event == "QUEST_REMOVED" then
 		self:OnQuestRemoved(...);
 	elseif event == "BNET_REQUEST_INVITE_CONFIRMATION" then
+		self:CheckShowBNetRequestInviteConfirmation(...);
+	elseif event == "REQUEST_INVITE_CONFIRMATION" then
 		self:CheckShowRequestInviteConfirmation(...);
 	elseif event == "INVITE_TRAVEL_PASS_CONFIRMATION" then
 		self:CheckShowInviteTravelPassConfirmation(...);
@@ -762,11 +795,19 @@ function QuestSessionManagerMixin:CheckShowSessionStartPrompt()
 	self.StartDialog:CheckShow();
 end
 
-function QuestSessionManagerMixin:CheckShowRequestInviteConfirmation(gameAccountID, questSessionActive, tank, healer, dps)
+function QuestSessionManagerMixin:CheckShowBNetRequestInviteConfirmation(gameAccountID, questSessionActive, tank, healer, dps)
 	if questSessionActive then
 		self:ShowCheckDialog(self.ConfirmBNJoinGroupRequestDialog, gameAccountID, tank, healer, dps);
 	else
 		ConfirmBNRequestInviteFriend(gameAccountID, tank, healer, dps);
+	end
+end
+
+function QuestSessionManagerMixin:CheckShowRequestInviteConfirmation(target, targetLevelLink, questSessionActive, tank, healer, dps)
+	if questSessionActive then
+		self:ShowCheckDialog(self.ConfirmRequestToJoinGroupDialog, target, targetLevelLink, tank, healer, dps);
+	else
+		C_PartyInfo.ConfirmRequestInviteFromUnit(target, tank, healer, dps);
 	end
 end
 
@@ -939,12 +980,7 @@ function QuestSessionManagerMixin:ShouldSessionManagementUIBeVisible()
 end
 
 function QuestSessionManagerMixin:GetProposedPlayerLevel()
-	local minLevel = math.huge;
-	for index, unit in ipairs(unitTagOrdering) do
-		if UnitExists(unit) then
-			minLevel = math.min(minLevel, UnitLevel(unit));
-		end
-	end
+	local minLevel = PartyUtil.GetMinLevel();
 
 	local useModernExpansionLevels = true;
 	local proposedSessionLevel = GetMaxLevelForExpansionLevel(GetExpansionForLevel(minLevel), useModernExpansionLevels);

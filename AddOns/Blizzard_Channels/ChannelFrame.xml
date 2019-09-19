@@ -48,7 +48,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<ScrollFrame parentKey="ChannelList" inherits="ChannelListTemplate">
+			<ScrollFrame parentKey="ChannelList" inherits="ChannelListTemplate" enableMouseMotion="true">
 				<Size x="178" y="0"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="7" y="-67" />
@@ -62,7 +62,7 @@
 				</Anchors>
 			</Frame>
 
-			<Frame parentKey="ChannelRoster" inherits="ChannelRosterTemplate">
+			<Frame parentKey="ChannelRoster" inherits="ChannelRosterTemplate" enableMouseMotion="true">
 				<Size x="1" y="0" />
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-26" y="-64" />

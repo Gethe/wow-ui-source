@@ -40,8 +40,6 @@ local TANK_SORT_VALUE = 4;
 local HEALER_SORT_VALUE = 2; 
 local DPS_SORT_VALUE = 1; 
 
-local CLUB_FINDER_MAX_MEMBER_COUNT = 1000; 
-
 ClubFinderApplicantEntryMixin = { };
 
 function ClubFinderApplicantEntryMixin:OnLoad()
@@ -189,7 +187,7 @@ function ClubFinderApplicantEntryMixin:UpdateMemberInfo(info)
 		end
 	end 
 	self.CancelInvitationButton:SetShown(not isPendingList); 
-	self.InviteButton:SetShown(not isPendingList); 
+	self.InviteButton:SetShown(not isPendingList);
 	self.RequestStatus:SetShown(isPendingList); 
 
 	if (self.InviteButton:IsShown() and self:GetParent():GetParent():GetParent().clubSizeMaxHit) then 
@@ -474,11 +472,8 @@ function ClubFinderApplicantListMixin:BuildList()
 		return; 
 	end 
 
-	if (clubInfo.memberCount) then 
-		self.clubSizeMaxHit = clubInfo.memberCount >= CLUB_FINDER_MAX_MEMBER_COUNT;
-	else 
-		self.clubSizeMaxHit = true; --Worst case we want to not allow them to invite, cause something might be broken. 
-	end
+	-- Worst case we want to not allow them to invite, cause something might be broken.
+	self.clubSizeMaxHit = not clubInfo.memberCount or clubInfo.memberCount >= C_Club.GetClubCapacity();
 
 	local pendingList =  C_ClubFinder.ReturnPendingClubApplicantList(clubId);
 	local applicantList = C_ClubFinder.ReturnClubApplicantList(clubId);

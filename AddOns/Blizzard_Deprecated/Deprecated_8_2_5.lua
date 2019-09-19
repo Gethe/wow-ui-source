@@ -367,6 +367,7 @@ do
 	CanGroupInvite = C_PartyInfo.CanInvite;
 	InviteToGroup = C_PartyInfo.InviteUnit;
 	InviteUnit = C_PartyInfo.InviteUnit;
+	RequestInviteFromUnit = C_PartyInfo.RequestInviteFromUnit;
 
 	function RealPartyIsFull()
 		if ( (GetNumSubgroupMembers(LE_PARTY_CATEGORY_HOME) < MAX_PARTY_MEMBERS) or (IsInRaid(LE_PARTY_CATEGORY_HOME) and (GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) < MAX_RAID_MEMBERS)) ) then
@@ -386,12 +387,12 @@ do
 		table.sort(statColumns, function(lhs,rhs)
 			return lhs.orderIndex < rhs.orderIndex;
 		end);
-		
+
 		local pvpStatIDs = {};
 		for index = 1, #statColumns do
 			tinsert(pvpStatIDs, statColumns[index].pvpStatID)
 		end
-		
+
 		return pvpStatIDs;
 	end
 end

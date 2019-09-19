@@ -32,7 +32,7 @@ local PartyInfo =
 		{
 			Name = "ConfirmConvertToRaid",
 			Type = "Function",
-			Documentation = { "Immediately convert to raid with no regard for potentially destructive actions" },
+			Documentation = { "Immediately convert to raid with no regard for potentially destructive actions." },
 		},
 		{
 			Name = "ConfirmInviteTravelPass",
@@ -47,7 +47,7 @@ local PartyInfo =
 		{
 			Name = "ConfirmInviteUnit",
 			Type = "Function",
-			Documentation = { "Immediately invites the named unit to a party, with no regard for potentially destructive actions" },
+			Documentation = { "Immediately invites the named unit to a party, with no regard for potentially destructive actions." },
 
 			Arguments =
 			{
@@ -65,13 +65,26 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "ConfirmRequestInviteFromUnit",
+			Type = "Function",
+			Documentation = { "Immediately request an invite into the target party, this is the confirmation function to call after RequestInviteFromUnit, or if you would like to skip the confirmation process." },
+
+			Arguments =
+			{
+				{ Name = "targetName", Type = "string", Nilable = false },
+				{ Name = "tank", Type = "bool", Nilable = true },
+				{ Name = "healer", Type = "bool", Nilable = true },
+				{ Name = "dps", Type = "bool", Nilable = true },
+			},
+		},
+		{
 			Name = "ConvertToParty",
 			Type = "Function",
 		},
 		{
 			Name = "ConvertToRaid",
 			Type = "Function",
-			Documentation = { "Usually this will convert to raid immediately. In some cases (e.g. PartySync) the user will be prompted to confirm converting to raid, because it's potentially destructive" },
+			Documentation = { "Usually this will convert to raid immediately. In some cases (e.g. PartySync) the user will be prompted to confirm converting to raid, because it's potentially destructive." },
 		},
 		{
 			Name = "GetActiveCategories",
@@ -117,7 +130,7 @@ local PartyInfo =
 		{
 			Name = "InviteUnit",
 			Type = "Function",
-			Documentation = { "Attempt to invite the named unit to a party, requires confirmation in some cases (e.g. the party will convert to a raid, or if there is a party sync in progress)" },
+			Documentation = { "Attempt to invite the named unit to a party, requires confirmation in some cases (e.g. the party will convert to a raid, or if there is a party sync in progress)." },
 
 			Arguments =
 			{
@@ -146,6 +159,19 @@ local PartyInfo =
 			Arguments =
 			{
 				{ Name = "category", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "RequestInviteFromUnit",
+			Type = "Function",
+			Documentation = { "Attempt to request an invite into the target party, requires confirmation in some cases (e.g. there is a party sync in progress)." },
+
+			Arguments =
+			{
+				{ Name = "targetName", Type = "string", Nilable = false },
+				{ Name = "tank", Type = "bool", Nilable = true },
+				{ Name = "healer", Type = "bool", Nilable = true },
+				{ Name = "dps", Type = "bool", Nilable = true },
 			},
 		},
 	},
@@ -354,6 +380,20 @@ local PartyInfo =
 			Payload =
 			{
 				{ Name = "preempted", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RequestInviteConfirmation",
+			Type = "Event",
+			LiteralName = "REQUEST_INVITE_CONFIRMATION",
+			Payload =
+			{
+				{ Name = "targetName", Type = "string", Nilable = false },
+				{ Name = "partyLevelLink", Type = "number", Nilable = false },
+				{ Name = "questSessionActive", Type = "bool", Nilable = false },
+				{ Name = "tank", Type = "bool", Nilable = true },
+				{ Name = "healer", Type = "bool", Nilable = true },
+				{ Name = "dps", Type = "bool", Nilable = true },
 			},
 		},
 		{

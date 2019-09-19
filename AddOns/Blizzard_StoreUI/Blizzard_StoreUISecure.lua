@@ -1512,7 +1512,7 @@ local productCardTemplateData = {
 	VerticalLargeStoreCardWithBuyButtonTemplate = {
 		cellGridSize = {width = 2, height = 2},
 		cellPixelSize = {width = 286, height = 471},
-		padding = {6 , 6 , 6 , 6}, --left, right, top, bottom
+		padding = {10 , -6 , 10 , 0}, --left, right, top, bottom
 		poolSize = 2,
 		buyButton = true,
 	},

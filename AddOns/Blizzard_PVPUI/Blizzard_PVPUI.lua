@@ -596,7 +596,14 @@ function HonorFrame_UpdateQueueButtons()
 	end
 
 	if isBrawl and not canQueue then
-		disabledReason = INSTANCE_UNAVAILABLE_SELF_LEVEL_TOO_LOW;
+		if IsInGroup(LE_PARTY_CATEGORY_HOME) then
+			local brawlInfo = C_PvP.GetAvailableBrawlInfo();
+			if brawlInfo then
+				disabledReason = QUEUE_UNAVAILABLE_PARTY_MIN_LEVEL:format(GetEffectivePlayerMaxLevel());
+			end
+		else
+			disabledReason = INSTANCE_UNAVAILABLE_SELF_LEVEL_TOO_LOW;
+		end
 	end
 
 	if ( canQueue ) then
@@ -910,8 +917,7 @@ function HonorFrameBonusFrame_Update()
 		-- brawls
 		local button = buttons[4];
 		local brawlInfo = C_PvP.GetAvailableBrawlInfo();
-		local isMaxLevel = IsPlayerAtEffectiveMaxLevel();
-		button.canQueue = brawlInfo and brawlInfo.canQueue and isMaxLevel;
+		button.canQueue = brawlInfo and brawlInfo.canQueue and PartyUtil.GetMinLevel() == GetEffectivePlayerMaxLevel();
 		button.isBrawl = true;
 
 		if (brawlInfo and brawlInfo.canQueue) then

@@ -49,7 +49,10 @@ function CommunitiesSettingsDialogMixin:OnShow()
 		self.DialogLabel:SetText(COMMUNITIES_SETTINGS_CHARACTER_LABEL);
 	end
 
-	self:HideOrShowCommunityFinderOptions(clubType == Enum.ClubType.Character and C_ClubFinder.IsEnabled());
+	local myMemberInfo = C_Club.GetMemberInfoForSelf(self:GetClubId());
+	local isProperRecruitingRole =  myMemberInfo and  myMemberInfo.role and (myMemberInfo.role == Enum.ClubRoleIdentifier.Owner or myMemberInfo.role == Enum.ClubRoleIdentifier.Leader);
+	local shouldShowFinderOptions = C_ClubFinder.IsEnabled() and clubType == Enum.ClubType.Character and isProperRecruitingRole and C_ClubFinder.GetClubFinderDisableReason() == nil;  
+	self:HideOrShowCommunityFinderOptions(shouldShowFinderOptions);
 
 	if (clubType == Enum.ClubType.Character) then 
 		self:UpdateSettingsInfoFromClubInfo(); 

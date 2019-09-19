@@ -269,6 +269,15 @@ local Club =
 			},
 		},
 		{
+			Name = "GetClubCapacity",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "capacity", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetClubInfo",
 			Type = "Function",
 

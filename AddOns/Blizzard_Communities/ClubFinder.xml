@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="ClubFinder.lua"/>
-		
+
 	<ScrollFrame name="ClubFinderEditBoxScrollFrameTemplate" inherits="InputScrollFrameTemplate" virtual="true">
 		<Size x="328" y="70"/>
 		<Anchors>
@@ -14,7 +14,7 @@
 			<KeyValue key="cursorOffset" value="0" type="number"/>
 		</KeyValues>
 	</ScrollFrame>
-	
+
 	<Frame name="ClubsFinderJoinClubWarningTemplate" enableMouse="true" frameStrata="DIALOG" mixin="ClubsFinderJoinClubWarningMixin" virtual="true">
 		<Size x="400" y="100"/>
 		<Layers>
@@ -56,7 +56,7 @@
 			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="ClubFinderInvitationsFrameTemplate" mixin="ClubFinderInvitationsFrameMixin" hidden="true" virtual="true">
 		<Frames>
 			<Frame parentKey="WarningDialog" inherits="ClubsFinderJoinClubWarningTemplate" hidden="true">
@@ -489,7 +489,7 @@
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="ClubFinderBigSpecializationCheckBoxTemplate" virtual="true">
 		<Size x="200" y="40"/>
 		<Frames>
@@ -545,7 +545,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Frame name="ClubFinderRequestToJoinTemplate" enableMouse="true" frameStrata="DIALOG" mixin="ClubFinderRequestToJoinMixin" virtual="true">
 		<Size x="400" y="420"/>
 		<Layers>
@@ -687,7 +687,7 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="ClubPendingRecruitListFrameTemplate" mixin="ClubPendingRecruitListMixin" virtual="true">
 		<Frames>
 			<Frame parentKey="ColumnDisplay" useParentLevel="true" inherits="ColumnDisplayTemplate" hidden="true">
@@ -762,12 +762,12 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	
+
 	<Frame name="ClubFinderGuildCardTemplate" mixin="ClubFinderGuildCardMixin" virtual="true">
 		<Size x="178" y="264"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="CardBackground" atlas="guildfinder-card" useAtlasSize="true"/> 
+				<Texture parentKey="CardBackground" atlas="guildfinder-card" useAtlasSize="true"/>
 			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="GuildBannerBackground" atlas="guildfinder-card-guildbanner-background">
@@ -817,6 +817,12 @@
 						<Anchor point="RIGHT" relativeKey="$parent.MemberCount" relativePoint="RIGHT" x="25" y="0"/>
 					</Anchors>
 				</Texture>
+				<FontString parentKey="ReportedDescription" hidden="true" justifyH="TOP" inherits="GameFontHighlight" text="CLUB_FINDER_THANK_YOU_REPORTED">
+					<Size x="155" y="40"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.GuildBannerBorder" relativePoint="BOTTOM" x="0" y="-32"/>
+					</Anchors>
+				</FontString>
 				<FontString parentKey="Description" justifyH="CENTER" inherits="GameFontNormal">
 					<Size x="155" y="95"/>
 					<Anchors>
@@ -860,7 +866,7 @@
 			<OnMouseDown method="OnMouseDown"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="ClubFinderFocusDropdownTemplate" inherits="UIDropDownMenuTemplate" mixin="ClubFocusDropdownMixin" virtual="true">
 		<Size x="100" y="15"/>
 		<Layers>
@@ -874,7 +880,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<CheckButton name="ClubFinderCheckboxTemplate" mixin="ClubFinderCheckboxMixin" virtual="true">
 		<Scripts>
 			<OnClick method="OnClick"/>
@@ -967,7 +973,7 @@
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Button name="ClubFinderCommunitiesCardTemplate" motionScriptsWhileDisabled="true" mixin="ClubFinderCommunitiesCardMixin" virtual="true">
 		<Size x="570" y="71"/>
 		<Anchors>
@@ -998,6 +1004,12 @@
 					<Size x="400" y="0"/>
 					<Anchors>
 						<Anchor point="CENTER" x="-4"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ReportedDescription" hidden="true" justifyH="LEFT" justifyV="TOP" text="CLUB_FINDER_THANK_YOU_REPORTED" inherits="GameFontHighlight">
+					<Size x="400" y="20"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="MemberCount" inherits="GameFontNormal">
@@ -1047,7 +1059,7 @@
 			<Frame parentKey="RequestJoin">
 				<Size x="60" y="60"/>
 				<Anchors>
-					<Anchor point="RIGHT"/> 
+					<Anchor point="RIGHT"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -1084,7 +1096,7 @@
 			</Anchors>
 		</HighlightTexture>
 	</Button>
-	
+
 	<Frame name="ClubFinderCommunitiesCardFrameTemplate" virtual="true">
 		<Frames>
 			<ScrollFrame parentKey="ListScrollFrame" inherits="HybridScrollFrameTemplate">
@@ -1101,7 +1113,7 @@
 					</Slider>
 				</Frames>
 			</ScrollFrame>
-		</Frames> 
+		</Frames>
 	</Frame>
 
 	<Frame name="ClubFinderOptionsTemplate" mixin="ClubFinderOptionsMixin" virtual="true">
@@ -1164,7 +1176,7 @@
 				</Layer>
 			</Layers>
 			<Frames>
-				<CheckButton parentKey="CheckBox" mixin="ClubFinderRoleCheckBoxMixin" inherits="ClubFinderCheckboxTemplate">
+				<CheckButton parentKey="CheckBox" mixin="ClubFinderRoleCheckBoxMixin" motionScriptsWhileDisabled="true" inherits="ClubFinderCheckboxTemplate">
 					<Size x="23" y="23"/>
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="-12" y="-8"/>
@@ -1190,7 +1202,7 @@
 				</Layer>
 			</Layers>
 			<Frames>
-				<CheckButton parentKey="CheckBox" mixin="ClubFinderRoleCheckBoxMixin" inherits="ClubFinderCheckboxTemplate">
+				<CheckButton parentKey="CheckBox" mixin="ClubFinderRoleCheckBoxMixin" motionScriptsWhileDisabled="true" inherits="ClubFinderCheckboxTemplate">
 					<Size x="23" y="23"/>
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="-12" y="-8"/>
@@ -1216,7 +1228,7 @@
 				</Layer>
 			</Layers>
 			<Frames>
-				<CheckButton parentKey="CheckBox" mixin="ClubFinderRoleCheckBoxMixin" inherits="ClubFinderCheckboxTemplate">
+				<CheckButton parentKey="CheckBox" mixin="ClubFinderRoleCheckBoxMixin" motionScriptsWhileDisabled="true" inherits="ClubFinderCheckboxTemplate">
 					<Size x="23" y="23"/>
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="-12" y="-8"/>
@@ -1299,7 +1311,7 @@
 					<OnShow method="OnShow"/>
 				</Scripts>
 			</Frame>
-			
+
 			<Frame parentKey="RequestToJoinFrame" inherits="ClubFinderRequestToJoinTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="UIParent" x="0" y="-80"/>
@@ -1342,6 +1354,34 @@
 						end
 					</OnShow>
 				</Scripts>
+			</Frame>
+			<Frame parentKey="DisabledFrame" inherits="InsetFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="20"/>
+					<Anchor point="BOTTOMRIGHT" x="4" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="communities-widebackground" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" inherits="Game30Font" text="GUILD">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-55"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Description" text="COMMUNITIES_GUILD_FINDER_DESCRIPTION" inherits="GameFontNormalMed1">
+							<Size x="500" y="500"/>
+							<Anchors>
+								<Anchor point="CENTER" y="30"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 			</Frame>
 			<CheckButton parentKey="ClubFinderSearchTab" mixin="ClubFinderTabMixin" hidden="false" inherits="CommunitiesFrameTabTemplate">
 				<KeyValues>

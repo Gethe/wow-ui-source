@@ -203,6 +203,9 @@
 					<FontString parentKey="PurchasedText" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="TOP">
 						<Color r="0.1" g="1" b="0.1" />
 					</FontString>
+					<FontString parentKey="DisclaimerText" inherits="GameFontNormalTiny2" justifyH="LEFT" hidden="true">
+						<Color r="1" g="1" b="1" />
+					</FontString>
 					<Texture parentKey="PurchasedMark" atlas="shop-icon-purchasedcheckmark" useAtlasSize="true" >
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.PurchasedText" relativePoint="LEFT" x="-5" y="0" />

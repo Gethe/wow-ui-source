@@ -361,6 +361,9 @@ end
 function StoreCardMixin:SetupDescription(entryInfo)
 end
 
+function StoreCardMixin:SetDisclaimerText(entryInfo)
+end
+
 function StoreCardMixin:ShouldModelShowShadows()
 	return true;
 end
@@ -496,6 +499,7 @@ function StoreCardMixin:UpdateCard(entryID, forceModelUpdate)
 	self:SetStyle(entryInfo.sharedData.overrideBackground);
 	self:SetupWoWToken(entryInfo);
 	self:SetupDescription(entryInfo);
+	self:SetDisclaimerText(entryInfo);
 	
 	self:UpdateModel(entryInfo, forceModelUpdate);
 

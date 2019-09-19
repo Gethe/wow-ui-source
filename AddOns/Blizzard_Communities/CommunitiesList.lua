@@ -199,7 +199,6 @@ function CommunitiesListMixin:Update()
 	local buttons = scrollFrame.buttons;
 	
 	local selectedClubId = self:GetCommunitiesFrame():GetSelectedClubId();
-		
 	local clubs = self:GetCommunitiesList();
 	self:ValidateTickets();
 	local isInGuild = IsInGuild();
@@ -274,13 +273,11 @@ function CommunitiesListMixin:Update()
 				local communitiesFrame = self:GetCommunitiesFrame();
 				communitiesFrame.GuildFinderFrame.isGuildType = true;
 				communitiesFrame.GuildFinderFrame:UpdateType(); 
-				button:SetFocused(self:GetCommunitiesFrame():GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER);
 				button:Show();
 				shownGuildFinderButton = true;
 				usedHeight = usedHeight + height;
 			elseif clubInfo then
 				button:SetClubInfo(clubInfo, isInvitation, isTicket, isClubFinderInvitation);
-				button:SetFocused(isInvitation or clubInfo.clubId == selectedClubId);
 				button:Show();
 				usedHeight = usedHeight + height;
 			elseif shouldFindCommunityEntry then
@@ -424,7 +421,7 @@ function CommunitiesListMixin:ScrollToClub(clubId)
 			local buttons = self.ListScrollFrame.buttons;
 			local buttonHeight = buttons[1]:GetHeight();
 			
-			local height = math.max(0, math.floor(buttonHeight * (clubIndex - (#buttons)/2)));
+			local height = math.max(0, math.floor(buttonHeight * (clubIndex - (#buttons)/2.5)));
 			HybridScrollFrame_SetOffset(self.ListScrollFrame, height);
 			self.ListScrollFrame.ScrollBar:SetValue(height);
 		end
@@ -514,6 +511,18 @@ local COMMUNITIES_LIST_ENTRY_EVENTS = {
 
 CommunitiesListEntryMixin = {};
 
+local function GetFontColor(isBattleNet, isGuild, isInvitation)
+	if isBattleNet then
+		return BATTLENET_FONT_COLOR;
+	elseif isGuild then
+		return GREEN_FONT_COLOR;
+	elseif isInvitation then
+		return HIGHLIGHT_FONT_COLOR;
+	end
+
+	return NORMAL_FONT_COLOR;
+end
+
 function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket, isInviteFromFinder)
 	self:SetEntryEnabled(true);
 
@@ -543,8 +552,6 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket,
 	if clubInfo then
 		if(isInviteFromFinder) then 
 			self.Name:SetText(COMMUNITIES_LIST_INVITATION_DISPLAY:format(clubInfo.name));		
-			local fontColor = HIGHLIGHT_FONT_COLOR;
-			local isGuild = clubInfo.isGuild;
 			self.clubInfo = clubInfo;
 			self.overrideOnClick = function(self, button)
 				if button == "LeftButton" then
@@ -556,7 +563,7 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket,
 				end
 			end;
 
-			if isGuild then
+			if clubInfo.isGuild then
 				self.Background:SetAtlas("communities-nav-button-green-normal");
 				self.Background:SetTexCoord(0, 1, 0, 1);
 				self.Selection:SetAtlas("communities-nav-button-green-pressed");
@@ -568,7 +575,8 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket,
 				self.Selection:SetTexCoord(0.00390625, 0.87890625, 0.59179688, 0.66992188);
 			end
 		
-			self.Name:SetTextColor(fontColor:GetRGB());
+			local isBattleNet = false;
+			self.Name:SetTextColor(GetFontColor(isBattleNet, clubInfo.isGuild, isInvitation):GetRGB());
 			self.Name:SetPoint("LEFT", self.Icon, "RIGHT", 11, 0);
 			self.isInvitation = isInvitation;
 			self.isTicket = isTicket;
@@ -593,16 +601,7 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket,
 			self.Name:SetText(clubInfo.name);
 		end
 		
-		local fontColor = NORMAL_FONT_COLOR;
 		local isGuild = clubInfo.clubType == Enum.ClubType.Guild;
-		if clubInfo.clubType == Enum.ClubType.BattleNet then
-			fontColor = BATTLENET_FONT_COLOR;
-		elseif isGuild then
-			fontColor = GREEN_FONT_COLOR;
-		elseif isInvitation then
-			fontColor = HIGHLIGHT_FONT_COLOR;
-		end
-		
 		if isGuild then
 			self.Background:SetAtlas("communities-nav-button-green-normal");
 			self.Background:SetTexCoord(0, 1, 0, 1);
@@ -615,7 +614,8 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket,
 			self.Selection:SetTexCoord(0.00390625, 0.87890625, 0.59179688, 0.66992188);
 		end
 		
-		self.Name:SetTextColor(fontColor:GetRGB());
+		local isBattleNet = clubInfo.clubType == Enum.ClubType.BattleNet;
+		self.Name:SetTextColor(GetFontColor(isBattleNet, isGuild, isInvitation):GetRGB());
 		self.Name:SetPoint("LEFT", self.Icon, "RIGHT", 11, 0);
 		self.clubId = clubInfo.clubId;
 		self.isInvitation = isInvitation;
@@ -632,7 +632,7 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket,
 		self.Icon:SetPoint("TOPLEFT", 11, -15);
 		self.CircleMask:SetShown(not isInvitation and not isGuild);
 		self.IconRing:SetShown(not isInvitation and not isGuild and not isTicket);
-		self.IconRing:SetAtlas(clubInfo.clubType == Enum.ClubType.BattleNet and "communities-ring-blue" or "communities-ring-gold");
+		self.IconRing:SetAtlas(isBattleNet and "communities-ring-blue" or "communities-ring-gold");
 		C_Club.SetAvatarTexture(self.Icon, clubInfo.avatarId, clubInfo.clubType);
 		self:UpdateUnreadNotification();
 	else
@@ -750,8 +750,6 @@ function CommunitiesListEntryMixin:SetAddCommunity()
 	self.Icon:SetAtlas("communities-icon-addgroupplus");
 	self.Icon:SetSize(30, 30);
 	self.Icon:SetPoint("TOPLEFT", 17, -18);
-	
-	self:SetFocused(true);
 
 	UIFrameFlashStop(self.NewCommunityFlash);
 end
@@ -809,12 +807,6 @@ function CommunitiesListEntryMixin:SetGuildFinder()
 	end
 
 	UIFrameFlashStop(self.NewCommunityFlash);
-end
-
-function CommunitiesListEntryMixin:SetFocused(isFocused)
-	local a = isFocused and 1.0 or 0.4;
-	local r, g, b = self.Name:GetTextColor();
-	self.Name:SetTextColor(r, g, b, a);
 end
 
 function CommunitiesListEntryMixin:GetClubId()

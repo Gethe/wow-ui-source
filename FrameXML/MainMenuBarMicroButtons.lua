@@ -380,7 +380,7 @@ function GuildMicroButtonMixin:UpdateNotificationIcon(self)
 end
 
 function GuildMicroButtonMixin:ShouldShowAlert()
-	return (not CommunitiesFrame or not CommunitiesFrame:IsShown()) and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CLUB_FINDER_NEW_FEATURE);
+	return C_ClubFinder.IsEnabled() and (not CommunitiesFrame or not CommunitiesFrame:IsShown()) and not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCCOUNT_CLUB_FINDER_NEW_FEATURE);
 end
 
 function GuildMicroButtonMixin:UpdateTabard(forceUpdate)

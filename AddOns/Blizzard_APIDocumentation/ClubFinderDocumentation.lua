@@ -506,6 +506,17 @@ local ClubFinder =
 			},
 		},
 		{
+			Name = "ClubFinderClubReported",
+			Type = "Event",
+			LiteralName = "CLUB_FINDER_CLUB_REPORTED",
+			Documentation = { "Sends an update to the UI about a reported guild or community." },
+			Payload =
+			{
+				{ Name = "type", Type = "ClubFinderRequestType", Nilable = false },
+				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "ClubFinderCommunityOfflineJoin",
 			Type = "Event",
 			LiteralName = "CLUB_FINDER_COMMUNITY_OFFLINE_JOIN",
@@ -739,6 +750,7 @@ local ClubFinder =
 				{ Name = "lastPosterGUID", Type = "string", Nilable = false },
 				{ Name = "clubId", Type = "string", Nilable = false },
 				{ Name = "lastUpdatedTime", Type = "number", Nilable = false },
+				{ Name = "clubForceRemoved", Type = "bool", Nilable = false },
 			},
 		},
 		{

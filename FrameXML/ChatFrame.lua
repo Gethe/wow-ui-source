@@ -1792,7 +1792,7 @@ SlashCmdList["REQUEST_INVITE"] = function(msg)
 		ChatFrame_DisplayUsageError(ERR_NO_TARGET_OR_NAME);
 		return;
 	end
-	RequestInviteFromUnit(msg);
+	C_PartyInfo.RequestInviteFromUnit(msg);
 end
 
 SlashCmdList["UNINVITE"] = function(msg)
@@ -3140,9 +3140,9 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		end
 		return true;
 	elseif (event == "UNIT_LEVEL" ) then
-		local arg1 = ...;
-		if (arg1 == "pet" and UnitName("pet") ~= UNKNOWNOBJECT) then
-			LevelUpDisplay_ChatPrint(self, UnitLevel("pet"), LEVEL_UP_TYPE_PET);
+		local unit = ...;
+		if LevelUpDisplay_ShouldDisplayPetLevelUpdate(LevelUpDisplay, unit) then
+			LevelUpDisplay_ChatPrint(self, UnitLevel(unit), LEVEL_UP_TYPE_PET);
 		end
 	elseif ( event == "CHARACTER_UPGRADE_SPELL_TIER_SET" ) then
 		local tierIndex = ...;

@@ -1455,7 +1455,7 @@ function UnitPopup_HideButtons ()
 				shown = false;
 			end
 		elseif value == "GUILDS_RECRUITMENT_SETTINGS" then
-			if not IsGuildLeader() and not C_GuildInfo.IsGuildOfficer() and not C_ClubFinder.IsEnabled() then
+			if not C_ClubFinder.IsEnabled() or C_ClubFinder.GetClubFinderDisableReason() ~= nil or (not IsGuildLeader() and not C_GuildInfo.IsGuildOfficer())  then
 				shown = false;
 			end
 		elseif commandToRoleId[value] ~= nil then
@@ -1727,7 +1727,7 @@ local function TryInvite(menu, inviteType, fullname)
 			if inviteType == "INVITE" or inviteType == "SUGGEST_INVITE" then
 				C_PartyInfo.InviteUnit(fullname);
 			elseif inviteType == "REQUEST_INVITE" then
-				RequestInviteFromUnit(fullname);
+				C_PartyInfo.RequestInviteFromUnit(fullname);
 			end
 		end
 	end

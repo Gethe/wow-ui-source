@@ -71,8 +71,17 @@ function RecruitAFriendFrameMixin:SetRAFSystemEnabled(rafEnabled)
 end
 
 function RecruitAFriendFrameMixin:UpdateRAFTutorialTips()
+	local showIntroTutorial = false;
+	local showRewardTutorial = false;
+
 	if self.varsLoaded and self.rafEnabled then
-		if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCCOUNT_RAF_INTRO) then
+		showIntroTutorial = self.rafRecruitingEnabled and not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCCOUNT_RAF_INTRO);
+		if not showIntroTutorial then
+			showRewardTutorial = self:ShouldShowRewardTutorial();
+		end
+	end
+
+	if showIntroTutorial then
 			local introHelpTipInfo = {
 				text = RAF_INTRO_TUTORIAL_TEXT,
 				buttonStyle = HelpTip.ButtonStyle.Close,
@@ -83,17 +92,22 @@ function RecruitAFriendFrameMixin:UpdateRAFTutorialTips()
 				useParentStrata = true,
 			};
 			HelpTip:Show(QuickJoinToastButton, introHelpTipInfo);
-		elseif self:ShouldShowRewardTutorial() then
-			local rewardHelpTipInfo = {
-				text = RAF_REWARD_TUTORIAL_TEXT,
-				buttonStyle = HelpTip.ButtonStyle.Close,
-				targetPoint = HelpTip.Point.RightEdgeCenter,
-				autoEdgeFlipping = true,
-				useParentStrata = true,
-			};
-			HelpTip:Show(QuickJoinToastButton, rewardHelpTipInfo);
-			self.shownRewardTutorial = true;
-		end
+	else
+		HelpTip:Hide(QuickJoinToastButton, RAF_INTRO_TUTORIAL_TEXT);
+	end
+
+	if showRewardTutorial then
+		local rewardHelpTipInfo = {
+			text = RAF_REWARD_TUTORIAL_TEXT,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			autoEdgeFlipping = true,
+			useParentStrata = true,
+		};
+		HelpTip:Show(QuickJoinToastButton, rewardHelpTipInfo);
+		self.shownRewardTutorial = true;
+	else
+		HelpTip:Hide(QuickJoinToastButton, RAF_REWARD_TUTORIAL_TEXT);
 	end
 end
 
@@ -103,6 +117,9 @@ function RecruitAFriendFrameMixin:SetRAFRecruitingEnabled(rafRecruitingEnabled)
 	if not rafRecruitingEnabled then
 		StaticPopupSpecial_Hide(RecruitAFriendRecruitmentFrame);
 	end
+
+	self.rafRecruitingEnabled = rafRecruitingEnabled;
+	self:UpdateRAFTutorialTips();
 end
 
 local maxRecruits = 0;
@@ -399,6 +416,7 @@ function RecruitActivityButtonMixin:OnEnter()
 	local wrap = true;
 
 	self:UpdateQuestName();
+	self:UpdateIcon();
 
 	if not self.questName then
 		GameTooltip_SetTitle(EmbeddedItemTooltip, RETRIEVING_DATA, RED_FONT_COLOR);
@@ -440,6 +458,7 @@ function RecruitActivityButtonMixin:OnLeave()
 	self:GetParent():DisableDrawLayer("HIGHLIGHT");
 	EmbeddedItemTooltip:Hide();
 	self.UpdateTooltip = nil;
+	self:UpdateIcon();
 end
 
 function RecruitActivityButtonMixin:PlayClaimRewardFanfare()
@@ -465,6 +484,25 @@ function RecruitActivityButtonMixin:OnClick()
 	end
 end
 
+function RecruitActivityButtonMixin:UpdateIcon()
+	local useAtlasSize = true;
+	if self:IsMouseOver() then
+		if self.activityInfo.state == Enum.RafRecruitActivityState.RewardClaimed then
+			self.Icon:SetAtlas("RecruitAFriend_RecruitedFriends_CursorOverChecked", useAtlasSize);
+		else
+			self.Icon:SetAtlas("RecruitAFriend_RecruitedFriends_CursorOver", useAtlasSize);
+		end
+	else
+		if self.activityInfo.state == Enum.RafRecruitActivityState.Incomplete then
+			self.Icon:SetAtlas("RecruitAFriend_RecruitedFriends_ActiveChest", useAtlasSize);
+		elseif self.activityInfo.state == Enum.RafRecruitActivityState.Complete then
+			self.Icon:SetAtlas("RecruitAFriend_RecruitedFriends_OpenChest", useAtlasSize);
+		else
+			self.Icon:SetAtlas("RecruitAFriend_RecruitedFriends_ClaimedChest", useAtlasSize);
+		end
+	end
+end
+
 function RecruitActivityButtonMixin:Setup(activityInfo, recruitInfo)
 	self.activityInfo = activityInfo;
 	self.recruitInfo = recruitInfo;
@@ -475,18 +513,9 @@ function RecruitActivityButtonMixin:Setup(activityInfo, recruitInfo)
 	end
 
 	self:UpdateQuestName();
+	self:UpdateIcon();
 
-	local canClaim = false;
-	local useAtlasSize = true;
-	if activityInfo.state == Enum.RafRecruitActivityState.Incomplete then
-		self.Icon:SetAtlas("RecruitAFriend_RecruitedFriends_ActiveChest", useAtlasSize);
-	elseif activityInfo.state == Enum.RafRecruitActivityState.Complete then
-		self.Icon:SetAtlas("RecruitAFriend_RecruitedFriends_OpenChest", useAtlasSize);
-		canClaim = true;
-	else
-		self.Icon:SetAtlas("RecruitAFriend_RecruitedFriends_ClaimedChest", useAtlasSize);
-	end
-
+	local canClaim = (activityInfo.state == Enum.RafRecruitActivityState.Complete);
 	if self.lastCanClaim == nil then
 		if canClaim then
 			self.ClaimGlow:SetAlpha(0.8);

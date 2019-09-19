@@ -67,6 +67,7 @@ ObjectAPI\PlayerLocation.lua
 GlobalCallbackRegistry.lua
 WorldFrame.xml
 UIParent.xml
+PartyUtil.lua
 QuestUtils.lua
 AchievementUtil.lua
 MapUtil.lua
