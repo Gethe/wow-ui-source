@@ -1901,7 +1901,7 @@ function FriendsListButtonMixin:OnEnter()
 					end
 					FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Name, nil, text);
 					local areaName = accountInfo.gameAccountInfo.areaName or UNKNOWN;
-					local realmName = accountInfo.gameAccountInfo.realmName or UNKNOWN;
+					local realmName = accountInfo.gameAccountInfo.realmDisplayName or UNKNOWN;
 					anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, string.format(FRIENDS_TOOLTIP_WOW_INFO_TEMPLATE, accountInfo.gameAccountInfo.isWowMobile and LOCATION_MOBILE_APP or areaName, realmName), -4);
 				end
 			else

@@ -46,6 +46,7 @@ function DressUpVisual(...)
 	if ( result ~= Enum.ItemTryOnReason.Success ) then
 		UIErrorsFrame:AddExternalErrorMessage(ERR_NOT_EQUIPPABLE);
 	end
+	DressUpFrame_OnDressModel(frame);
 	return true;
 end
 

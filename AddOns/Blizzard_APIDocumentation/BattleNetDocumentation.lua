@@ -128,6 +128,7 @@ local BattleNet =
 				{ Name = "wowProjectID", Type = "number", Nilable = true },
 				{ Name = "characterName", Type = "string", Nilable = true },
 				{ Name = "realmName", Type = "string", Nilable = true },
+				{ Name = "realmDisplayName", Type = "string", Nilable = true },
 				{ Name = "realmID", Type = "number", Nilable = true },
 				{ Name = "factionName", Type = "string", Nilable = true },
 				{ Name = "raceName", Type = "string", Nilable = true },
