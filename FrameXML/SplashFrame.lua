@@ -1,7 +1,7 @@
-BASE_SPLASH_SCREEN_VERSION = 16;
-NEWEST_SPLASH_SCREEN_VERSION = 17;
-SEASON_SPLASH_SCREEN_VERSION = 3; 
-PREVIOUS_SEASON_SPLASH_VERSION = 2; 
+BASE_SPLASH_SCREEN_VERSION = 17;
+NEWEST_SPLASH_SCREEN_VERSION = 18;
+SEASON_SPLASH_SCREEN_VERSION = 3;
+PREVIOUS_SEASON_SPLASH_VERSION = 2;
 
 local FACTION_OVERRIDES = {
 	["Alliance"] = {
@@ -13,82 +13,21 @@ local FACTION_OVERRIDES = {
 }
 
 SPLASH_SCREENS = {
-	["8_2_LEVEL"] = {	
-		id = NEWEST_SPLASH_SCREEN_VERSION, -- 8.2 Live
+	["8_2_5_LEVEL"] = {
+		id = NEWEST_SPLASH_SCREEN_VERSION, -- 8.2.5 Live
 		expansion = LE_EXPANSION_BATTLE_FOR_AZEROTH,
 		header = SPLASH_BASE_HEADER,
-		label = SPLASH_BATTLEFORAZEROTH_8_2_0_LABEL, 
-		leftTex = "splash-820-topleft",
-		rightTex = "splash-820-right",
-		bottomTex = "splash-820-botleft",
-		feature1Title = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE1_TITLE,
-		feature1Desc = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE1_DESC,
-		feature2Title = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE2_TITLE,
-		feature2Desc = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE2_DESC,
-		rightTitle = SPLASH_BATTLEFORAZEROTH_8_2_0_RIGHT_TITLE,
-		rightDescSubText = SPLASH_BATTLEFORAZEROTH_8_2_0_RIGHT_DESC,
-		rightTitleMaxLines = 2,
+		label = SPLASH_BATTLEFORAZEROTH_8_2_5_LABEL,
+		leftTex = "splash-825-topleft",
+		rightTex = "splash-825-right",
+		bottomTex = "splash-825-botleft",
+		feature1Title = SPLASH_BATTLEFORAZEROTH_8_2_5_FEATURE1_TITLE,
+		feature1Desc = SPLASH_BATTLEFORAZEROTH_8_2_5_FEATURE1_DESC,
+		feature2Title = SPLASH_BATTLEFORAZEROTH_8_2_5_FEATURE2_TITLE,
+		feature2Desc = SPLASH_BATTLEFORAZEROTH_8_2_5_FEATURE2_DESC,
+		rightTitle = SPLASH_BATTLEFORAZEROTH_8_2_5_RIGHT_TITLE,
+		rightDescSubText = SPLASH_BATTLEFORAZEROTH_8_2_5_RIGHT_DESC,
 		cVar="splashScreenNormal",
-		hideStartButton = false,
-		minQuestLevel = 120,
-		minDisplayLevel = 120,
-
-		features = {
-			[1] = { EnterFunc = function() end,
-					LeaveFunc = function() end,
-					},
-			[2] = { EnterFunc = function() end,
-					LeaveFunc = function() end,
-					},
-		},
-	},
-
-	["8_2_ALTERNATE_LEVEL"] = {	
-		id = NEWEST_SPLASH_SCREEN_VERSION, -- 8.2 Live
-		expansion = LE_EXPANSION_BATTLE_FOR_AZEROTH,
-		header = SPLASH_BASE_HEADER,
-		label = SPLASH_BATTLEFORAZEROTH_8_2_0_LABEL, 
-		leftTex = "splash-820-topleft",
-		rightTex = "splash-820-right",
-		bottomTex = "splash-820-botleft",
-		feature1Title = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE1_TITLE,
-		feature1Desc = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE1_DESC,
-		feature2Title = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE2_TITLE,
-		feature2Desc = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE2_DESC,
-		rightTitle = SPLASH_BATTLEFORAZEROTH_8_2_0_RIGHT_TITLE,
-		rightDescSubText = SPLASH_BATTLEFORAZEROTH_8_2_0_RIGHT_DESC_ALT,
-		rightTitleMaxLines = 2,
-		cVar="splashScreenNormal",
-		hideStartButton = true,
-		minQuestLevel = 120,
-		minDisplayLevel = 120,
-
-		features = {
-			[1] = { EnterFunc = function() end,
-					LeaveFunc = function() end,
-					},
-			[2] = { EnterFunc = function() end,
-					LeaveFunc = function() end,
-					},
-		},
-	},
-
-	["8_2_NEW_SEASON"] = {	
-		id = SEASON_SPLASH_SCREEN_VERSION, -- 8.2 New season rollout
-		expansion = LE_EXPANSION_BATTLE_FOR_AZEROTH,
-		header = SPLASH_BASE_HEADER,
-		label = SPLASH_BATTLEFORAZEROTH_8_2_0_2_LABEL, 
-		leftTex = "splash-8202-topleft",
-		rightTex = "splash-8202-right",
-		bottomTex = "splash-8202-botleft",
-		feature1Title = SPLASH_BATTLEFORAZEROTH_8_2_0_2_FEATURE1_TITLE,
-		feature1Desc = SPLASH_BATTLEFORAZEROTH_8_2_0_2_FEATURE1_DESC,
-		feature2Title = SPLASH_BATTLEFORAZEROTH_8_2_0_2_FEATURE2_TITLE,
-		feature2Desc = SPLASH_BATTLEFORAZEROTH_8_2_0_2_FEATURE2_DESC,
-		rightTitle = SPLASH_BATTLEFORAZEROTH_8_2_0_2_RIGHT_TITLE,
-		rightDescSubText = SPLASH_BATTLEFORAZEROTH_8_2_0_2_RIGHT_DESC,
-		rightTitleMaxLines = 2,
-		cVar="splashScreenSeason",
 		hideStartButton = true,
 		minQuestLevel = 120,
 		minDisplayLevel = 120,
@@ -105,21 +44,13 @@ SPLASH_SCREENS = {
 };
 
 BASE_SPLASH_TAG = nil;
-CURRENT_SPLASH_TAG = nil;
-SEASON_SPLASH_TAG = "8_2_NEW_SEASON"; -- This will be nil in patches that don't have a season change
+CURRENT_SPLASH_TAG = "8_2_5_LEVEL";
+SEASON_SPLASH_TAG = nil; -- This will be nil in patches that don't have a season change
 
--- For the case where we want to skip showing the first screen. 
+-- For the case where we want to skip showing the first screen.
 local function UpdateOtherSplashScreenCvar(tag)
 	SetCVar(SPLASH_SCREENS[tag].cVar, SPLASH_SCREENS[tag].id);
 end
-
-local function SetSplashTagBasedOnPlayerCondition()
-	if (ShouldShowSpecialSplashScreen()) then 
-		CURRENT_SPLASH_TAG = "8_2_ALTERNATE_LEVEL";
-	else 
-		CURRENT_SPLASH_TAG = "8_2_LEVEL"
-	end 
-end 
 
 local function GetSplashFrameTag(forceShow)
 	local passesExpansionCheck = not SPLASH_SCREENS[CURRENT_SPLASH_TAG].expansion or GetExpansionLevel() >= SPLASH_SCREENS[CURRENT_SPLASH_TAG].expansion;
@@ -127,26 +58,26 @@ local function GetSplashFrameTag(forceShow)
 	if passesExpansionCheck and (not SPLASH_SCREENS[CURRENT_SPLASH_TAG].minDisplayLevel or UnitLevel("player") >= SPLASH_SCREENS[CURRENT_SPLASH_TAG].minDisplayLevel) then
 		local lastScreenID = tonumber(GetCVar(SPLASH_SCREENS[CURRENT_SPLASH_TAG].cVar)) or 0;
 
-		if SEASON_SPLASH_TAG == nil then 
+		if SEASON_SPLASH_TAG == nil then
 			if (forceShow) then
-				lastScreenID = lastScreenID - 1; 
+				lastScreenID = lastScreenID - 1;
 			end
 
-			if lastScreenID < SPLASH_SCREENS[CURRENT_SPLASH_TAG].id then 
+			if lastScreenID < SPLASH_SCREENS[CURRENT_SPLASH_TAG].id then
 				return CURRENT_SPLASH_TAG;
 			end
-		else 
+		else
 			local seasonScreenID = tonumber(GetCVar(SPLASH_SCREENS[SEASON_SPLASH_TAG].cVar)) or 0;
 			if (forceShow) then
-				lastScreenID = lastScreenID - 1; 
-				seasonScreenID = seasonScreenID - 1; 
+				lastScreenID = lastScreenID - 1;
+				seasonScreenID = seasonScreenID - 1;
 			end
 
-			--The case where a player has never viewed a what's new for seasons. 
-			if seasonScreenID < PREVIOUS_SEASON_SPLASH_VERSION then 
+			--The case where a player has never viewed a what's new for seasons.
+			if seasonScreenID < PREVIOUS_SEASON_SPLASH_VERSION then
 				SetCVar(SPLASH_SCREENS[SEASON_SPLASH_TAG].cVar, PREVIOUS_SEASON_SPLASH_VERSION);
 				seasonScreenID = PREVIOUS_SEASON_SPLASH_VERSION;
-			end 
+			end
 
 			if seasonScreenID < C_MythicPlus.GetCurrentSeason() then
 				UpdateOtherSplashScreenCvar(CURRENT_SPLASH_TAG);
@@ -156,7 +87,7 @@ local function GetSplashFrameTag(forceShow)
 			end
 		end
 	else
-		return BASE_SPLASH_TAG; -- Kept this for when we have an expansion. Won't be used until then though. 
+		return BASE_SPLASH_TAG; -- Kept this for when we have an expansion. Won't be used until then though.
 	end
 end
 
@@ -172,7 +103,7 @@ local function ShouldShowStartButton( questID, tag )
 	if (SPLASH_SCREENS[tag].hideStartButton) then
 		return false;
 	end
-	return questID and not IsQuestFlaggedCompleted(questID) and (not SPLASH_SCREENS[tag].minQuestLevel or UnitLevel("player") >= SPLASH_SCREENS[tag].minQuestLevel);
+	return questID and not C_QuestLog.IsQuestFlaggedCompleted(questID) and (not SPLASH_SCREENS[tag].minQuestLevel or UnitLevel("player") >= SPLASH_SCREENS[tag].minQuestLevel);
 end
 
 local function ShouldEnableStartButton( questID )
@@ -193,7 +124,7 @@ end
 
 local function CheckSplashScreenShow()
 	if SplashFrameCanBeShown() and not IsCharacterNewlyBoosted() then
-		local shouldForceCurrent = false; 
+		local shouldForceCurrent = false;
 		local tag = GetSplashFrameTag(shouldForceCurrent);
 		if tag then
 			-- check if they've seen this screen already
@@ -223,8 +154,8 @@ local function ApplyFactionOverrides()
 end
 
 function SplashFrame_ShowCurrent()
-	local shouldForceCurrent = true; 
-	tag = GetSplashFrameTag(shouldForceCurrent); 
+	local shouldForceCurrent = true;
+	tag = GetSplashFrameTag(shouldForceCurrent);
 	SplashFrame_Open(tag, shouldForceCurrent);
 end
 
@@ -234,7 +165,7 @@ function SplashFrame_OnEvent(self, event)
 	end
 
 	if( event == "QUEST_LOG_UPDATE" ) then
-		local shouldForceCurrent = true; 
+		local shouldForceCurrent = true;
 		local tag = GetSplashFrameTag(shouldForceCurrent);
 		if( self:IsShown() and tag )then
 			SplashFrame_SetStartButtonDisplay( ShouldShowStartButton(SPLASH_SCREENS[tag].questID, tag) );
@@ -243,7 +174,6 @@ function SplashFrame_OnEvent(self, event)
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
 		self:RegisterEvent("CHALLENGE_MODE_MAPS_UPDATE");
 		self.playerEntered = true;
-		SetSplashTagBasedOnPlayerCondition();
 		ApplyFactionOverrides();
 		C_MythicPlus.RequestMapInfo();
 	elseif( event == "VARIABLES_LOADED" ) then
@@ -257,12 +187,12 @@ function SplashFrame_OnEvent(self, event)
 		end
 	end
 
-	if( event == "CHALLENGE_MODE_MAPS_UPDATE" ) then 
-		if (self.playerEntered) then 
+	if( event == "CHALLENGE_MODE_MAPS_UPDATE" ) then
+		if (self.playerEntered) then
 			self:UnregisterEvent("CHALLENGE_MODE_MAPS_UPDATE");
-			CheckSplashScreenShow(); 
-		end 
-	end 
+			CheckSplashScreenShow();
+		end
+	end
 end
 
 function SplashFrame_Display(tag, showStartButton)
@@ -321,7 +251,7 @@ function SplashFrame_SetStartButtonDisplay( showStartButton )
 	frame.RightDescription:SetText(SPLASH_SCREENS[tag].rightDesc);
 	if ( showStartButton ) then
 		frame.StartButton:Show();
-		
+
 		frame.RightDescriptionSubtext:ClearAllPoints();
 		frame.RightDescriptionSubtext:SetPoint("TOP", frame.StartButton, "TOP", 0, 50);
 		frame.RightDescriptionSubtext:SetWidth(300);
@@ -354,7 +284,7 @@ function SplashFrame_SetStartButtonDisplay( showStartButton )
 
 		local rightDescSubText = SPLASH_SCREENS[tag].rightDescSubText;
 		local rightDescSubTextPredicate = SPLASH_SCREENS[tag].rightDescSubTextPredicate;
-		if rightDescSubText and rightDescSubText ~= "" and (not rightDescSubTextPredicate or rightDescSubTextPredicate()) then 
+		if rightDescSubText and rightDescSubText ~= "" and (not rightDescSubTextPredicate or rightDescSubTextPredicate()) then
 			frame.RightDescriptionSubtext:SetText(rightDescSubText);
 			frame.RightDescriptionSubtext:ClearAllPoints();
 			frame.RightDescriptionSubtext:SetPoint("BOTTOM", frame.RightTitle, "BOTTOM", 0, -50);
@@ -409,7 +339,7 @@ function SplashFrame_Close()
 	if( tag ) then
 		local questID = SPLASH_SCREENS[tag].questID;
 		local showQuestDialog = questID and ( (frame.StartButton:IsShown() and frame.StartButton:IsEnabled()) or
-		(SPLASH_SCREENS[tag].hideStartButton and SplashFrame.firstTimeViewed and not IsQuestFlaggedCompleted(questID) and
+		(SPLASH_SCREENS[tag].hideStartButton and SplashFrame.firstTimeViewed and not C_QuestLog.IsQuestFlaggedCompleted(questID) and
 			UnitLevel("player") >= (SPLASH_SCREENS[tag].minDisplayLevel)
 			and ShouldEnableStartButton(questID)) );
 		HideUIPanel(frame);

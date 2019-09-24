@@ -108,11 +108,10 @@ function RaidFrame_Update()
 	-- If not in a raid hide all the UI and just display raid explanation text
 	if ( not IsInRaid() ) then
 		RaidFrameConvertToRaidButton:Show();
-		if ( UnitExists("party1") and UnitIsGroupLeader("player") and UnitLevel("player") >= 10 and not HasLFGRestrictions() ) then
-			RaidFrameConvertToRaidButton:Enable();
-		else
-			RaidFrameConvertToRaidButton:Disable();
-		end
+		local convertToRaid = true;
+		local canConvertToRaid = C_PartyInfo.AllowedToDoPartyConversion(convertToRaid);
+		RaidFrameConvertToRaidButton:SetEnabled(canConvertToRaid);
+
 		RaidFrameNotInRaid:Show();
 		ButtonFrameTemplate_ShowButtonBar(FriendsFrame);
 	else
@@ -124,6 +123,10 @@ function RaidFrame_Update()
 	if ( RaidGroupFrame_Update ) then
 		RaidGroupFrame_Update();
 	end
+end
+
+function RaidFrame_ConvertToRaid()
+	C_PartyInfo.ConvertToRaid();
 end
 
 -- Function for raid options

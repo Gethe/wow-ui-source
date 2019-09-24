@@ -183,7 +183,8 @@
 							<OnMouseDown function="VehicleAimUpStart"/>
 							<OnMouseUp function="VehicleAimUpStop"/>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(self, AIM_UP, 1.0, 1.0, 1.0, nil);
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip_SetTitle(GameTooltip, AIM_UP);
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
@@ -206,7 +207,8 @@
 							<OnMouseDown function="VehicleAimDownStart"/>
 							<OnMouseUp function="VehicleAimDownStop"/>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(self, AIM_DOWN, 1.0, 1.0, 1.0, nil);
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip_SetTitle(GameTooltip, AIM_DOWN);
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
@@ -269,7 +271,8 @@
 						<Scripts>
 							<OnClick function="OverrideActionBar_Leave"/>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(self, LEAVE_VEHICLE, 1.0, 1.0, 1.0, nil);
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip_SetTitle(GameTooltip, LEAVE_VEHICLE);
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
@@ -386,9 +389,6 @@
 								label = label.." "..RED_FONT_COLOR_CODE..CAP_REACHED_TRIAL.."|r";
 							end
 						end
-						
-						GameTooltip_AddNewbieTip(self, label, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_XPBAR, 1);
-						GameTooltip.canAddRestStateLine = 1;
 					</OnEnter>
 					<OnLeave>
 						HideTextStatusBarText(self);

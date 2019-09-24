@@ -189,7 +189,7 @@ CHARCREATE_CLASS_INFO = {
 }
 
 MODEL_CAMERA_CONFIG = {
-	[0] = {
+	[0] = {		-- male
 		["Draenei"] = { tx = 0.191, ty = -0.015, tz = 2.302, cz = 2.160, distance = 1.116, light =  0.80 },
 		["NightElf"] = { tx = 0.095, ty = -0.008, tz = 2.240, cz = 2.045, distance = 0.830, light =  0.85 },
 		["Scourge"] = { tx = 0.094, ty = -0.172, tz = 1.675, cz = 1.478, distance = 0.726, light =  0.80 },
@@ -210,7 +210,7 @@ MODEL_CAMERA_CONFIG = {
 		["BloodElf6"] = { tx = -0.1, ty = 0, tz = 1.6, cz = 1.792, distance = 1.65, light =  0.80 },
 		["BloodElf7"] = { tx = 0.009, ty = -0.120, tz = 1.914, cz = 1.712, distance = 1.127, light =  0.80 },
         ["BloodElf9"] = { tx = -0.1, ty = 0, tz = 1.6, cz = 1.792, distance = 1.65, light =  0.80 },
-		["Nightborne"] = { tx = 0.095, ty = -0.008, tz = 2.240, cz = 2.045, distance = 0.830, light =  0.85 },
+		["Nightborne"] = { tx = -0.0074, ty = 0.0137, tz = 2.2738, cz = 2.2099, distance = 0.7865, light =  0.85 },
 		["HighmountainTauren"] = { tx = 1.674, ty = 0.226, tz = 2.177, cz = 2.153, distance = 0.316, light =  0.80 },
 		["VoidElf"] = { tx = 0.009, ty = -0.120, tz = 1.914, cz = 1.712, distance = 0.727, light =  0.80 },
 		["LightforgedDraenei"] = { tx = 0.191, ty = -0.015, tz = 2.302, cz = 2.160, distance = 1.116, light =  0.80 },
@@ -223,7 +223,7 @@ MODEL_CAMERA_CONFIG = {
 		["ZandalariTroll"] = { tx = -0.01642, ty = -0.082216, tz = 2.5657, cz = 2.418, distance = 1.2, light =  0.85 },
 		["KulTiran"] = { tx = 0.05591, ty = -0.04111, tz = 2.3603, cz = 2.23827, distance = 1.2, light =  0.75 },
 	},
-	[1] = {
+	[1] = {		-- female
 		["Draenei"] = { tx = 0.155, ty = 0.009, tz = 2.177, cz = 1.971, distance = 0.734, light =  0.75 },
 		["NightElf"] = { tx = 0.071, ty = 0.034, tz = 2.068, cz = 2.055, distance = 0.682, light =  0.85 },
 		["Scourge"] = { tx = 0.198, ty = 0.001, tz = 1.669, cz = 1.509, distance = 0.563, light =  0.75 },
@@ -244,7 +244,7 @@ MODEL_CAMERA_CONFIG = {
 		["BloodElf6"] = { tx = 0, ty = 0, tz = 1.55, cz = 1.792, distance = 1.2, light =  0.80 },
 		["BloodElf7"] = { tx = -0.072, ty = 0.009, tz = 1.789, cz = 1.792, distance = 1.117, light =  0.80 },
         ["BloodElf9"] = { tx = 0, ty = 0, tz = 1.55, cz = 1.792, distance = 1.2, light =  0.80 },
-		["Nightborne"] = { tx = 0.071, ty = 0.034, tz = 2.068, cz = 2.055, distance = 0.682, light =  0.85 },
+		["Nightborne"] = { tx = 0.0378, ty = -0.0686, tz = 2.1001, cz = 2.077, distance = 0.705, light =  0.85 },
 		["HighmountainTauren"] = { tx = 0.517, ty = 0.021, tz = 2.393, cz = 2.333, distance = 0.730, light =  0.75 },
 		["VoidElf"] = { tx = -0.072, ty = 0.009, tz = 1.789, cz = 1.792, distance = 0.717, light =  0.80 },
 		["LightforgedDraenei"] = { tx = 0.155, ty = 0.009, tz = 2.177, cz = 1.971, distance = 0.734, light =  0.75 },

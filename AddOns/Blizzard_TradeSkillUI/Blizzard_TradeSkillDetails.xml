@@ -109,10 +109,6 @@
 					<OnClick>
 						self:GetParent():ViewGuildCrafters();
 					</OnClick>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, GUILD_TRADE_SKILL_VIEW_CRAFTERS, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_VIEWGUILD, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 

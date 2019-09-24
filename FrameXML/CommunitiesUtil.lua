@@ -243,7 +243,11 @@ function CommunitiesUtil.OpenInviteDialog(clubId, streamId)
 	
 	local privileges = C_Club.GetClubPrivileges(clubId);
 	if clubInfo.clubType == Enum.ClubType.Guild then
-		StaticPopup_Show("ADD_GUILDMEMBER");
+		if(ClubFinderDoesSelectedClubHaveActiveListing(clubId) and C_ClubFinder.IsEnabled()) then 
+			StaticPopup_Show("ADD_GUILDMEMBER_WITH_FINDER_LINK", nil, nil, {clubId = clubId});
+		else 
+			StaticPopup_Show("ADD_GUILDMEMBER");
+		end 
 	elseif privileges.canCreateTicket then
 		StaticPopup_Show("INVITE_COMMUNITY_MEMBER_WITH_INVITE_LINK", nil, nil, { clubId = clubId, streamId = streamId, });
 	else
@@ -311,3 +315,41 @@ function CommunitiesUtil.FindGuildStreamByType(clubStreamType)
 	return communityID, streamID;
 end
 
+function CommunitiesUtil.GetRoleSpecClassLine(classID, specID)
+	local className, classTag = GetClassInfo(classID);
+	local color = CreateColor(GetClassColor(classTag));
+
+	local _, specName, _, _, role = GetSpecializationInfoForSpecID(specID);
+	local texture;
+	if (role == "TANK") then
+		texture = CreateAtlasMarkup("roleicon-tiny-tank");
+	elseif (role == "DAMAGER") then
+		texture = CreateAtlasMarkup("roleicon-tiny-dps");
+	elseif (role == "HEALER") then
+		texture = CreateAtlasMarkup("roleicon-tiny-healer");
+	end
+
+	return color:WrapTextInColorCode(CLUB_FINDER_LOOKING_FOR_CLASS_SPEC_WITH_ROLE:format(texture, specName, className));
+end
+
+function CommunitiesUtil.AddLookingForLines(tooltip, recruitingSpecIds, recruitingSpecIdMap, playerSpecs)
+	GameTooltip_AddNormalLine(GameTooltip, CLUB_FINDER_LOOKING_FOR);
+	
+	local isRecruitingAllSpecs = #recruitingSpecIds == 0 or #recruitingSpecIds == CLUB_FINDER_MAX_NUM_SPECIALIZATIONS;
+	if (isRecruitingAllSpecs) then 
+		GameTooltip_AddColoredLine(GameTooltip, CLUB_FINDER_RECRUITING_ALL_SPECS, HIGHLIGHT_FONT_COLOR);
+	else
+		local isRecruitingPlayerSpec = false;
+		local classDisplayName, classTag, classID = UnitClass("player");
+		for _, playerSpecID in ipairs(playerSpecs) do 
+			if (recruitingSpecIdMap[playerSpecID]) then
+				GameTooltip_AddNormalLine(GameTooltip, CommunitiesUtil.GetRoleSpecClassLine(classID, playerSpecID));
+				isRecruitingPlayerSpec = true;
+			end
+		end
+
+		if (not isRecruitingPlayerSpec) then 
+			GameTooltip_AddColoredLine(GameTooltip, CLUB_FINDER_APPLICANT_LIST_NO_MATCHING_SPECS, RED_FONT_COLOR); 
+		end
+	end
+end

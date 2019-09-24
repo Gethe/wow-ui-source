@@ -135,17 +135,27 @@
 	</Texture>
 
 	<Button name="UIPanelCloseButtonNoScripts" virtual="true">
-		<Size>
-			<AbsDimension x="32" y="32"/>
-		</Size>
+		<Size x="32" y="32"/>
 		<DisabledTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Disabled"/>
 		<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
 		<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
 		<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 	</Button>
+	<Button name="UIPanelHideButtonNoScripts" virtual="true">
+		<Size x="32" y="32"/>
+		<DisabledTexture atlas="UI-Panel-HideButton-Disabled" useAtlasSize="true" />
+		<NormalTexture atlas="UI-Panel-HideButton-Up"  useAtlasSize="true" />
+		<PushedTexture atlas="UI-Panel-HideButton-Down" useAtlasSize="true" />
+		<HighlightTexture atlas="UI-Panel-MinimizeButton-Highlight" alphaMode="ADD" useAtlasSize="true" />
+	</Button>
 	<Button name="UIPanelCloseButton" inherits="UIPanelCloseButtonNoScripts" virtual="true">
 		<Scripts>
 			<OnClick function="UIPanelCloseButton_OnClick"/>
+		</Scripts>
+	</Button>
+	<Button name="UIStaticPopupSpecialCloseButton" inherits="UIPanelCloseButtonNoScripts" virtual="true">
+		<Scripts>
+			<OnClick function="UIPanelStaticPopupSpecialCloseButton_OnClick"/>
 		</Scripts>
 	</Button>
 	<Frame name="ShadowOverlayTemplate" virtual="true">
@@ -277,7 +287,8 @@
 			</OnEnable>
 			<OnEnter>
 				if(self.tooltipText ~= nil) then
-					GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip_SetTitle(GameTooltip, self.tooltipText);
 				end
 			</OnEnter>
 			<OnLeave>
@@ -302,7 +313,8 @@
 		<Scripts>
 			<OnEnter>
 				if(self.tooltipText ~= nil) then
-					GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip_SetTitle(GameTooltip, self.tooltipText);
 				end
 			</OnEnter>
 			<OnLeave>
@@ -911,7 +923,8 @@
 			</OnEnable>
 			<OnEnter>
 				if(self.tooltipText ~= nil) then
-					GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip_SetTitle(GameTooltip, self.tooltipText);
 				end
 			</OnEnter>
 			<OnLeave>
@@ -1779,6 +1792,20 @@
 		<Scripts>
 			<OnEnter function="TruncatedTooltipScript_OnEnter"/>
 			<OnLeave function="TruncatedTooltipScript_OnLeave"/>
+		</Scripts>
+	</Frame>
+
+<!--
+*******************************************************************************
+	TruncatedTooltipFontStringWrapperTemplate
+	This frame template will automatically add a tooltip to the frame if the contained FontString is truncated
+	Note that you MUST have a child FontString with ParentKey "Text"
+*******************************************************************************
+-->
+	<Frame name="TruncatedTooltipFontStringWrapperTemplate" inherits="ResizeLayoutFrame" virtual="true" mixin="TruncatedTooltipFontStringWrapperMixin">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
 

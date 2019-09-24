@@ -44,7 +44,8 @@ end
 
 function MicroButton_OnEnter(self)
 	if ( self:IsEnabled() or self.minLevel or self.disabledTooltip or self.factionGroup) then
-		GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, self.tooltipText);
 		if ( not self:IsEnabled() ) then
 			if ( self.factionGroup == "Neutral" ) then
 				GameTooltip:AddLine(FEATURE_NOT_AVAILBLE_PANDAREN, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
@@ -143,7 +144,7 @@ function UpdateMicroButtons()
 		MainMenuMicroButton_SetNormal();
 	end
 
-	GuildMicroButton_UpdateTabard();
+	GuildMicroButton:UpdateTabard();
 	if ( IsCommunitiesUIDisabledByTrialAccount() or factionGroup == "Neutral" or IsKioskModeEnabled() ) then
 		GuildMicroButton:Disable();
 		if (IsKioskModeEnabled()) then
@@ -179,7 +180,7 @@ function UpdateMicroButtons()
 		end
 	end
 
-	GuildMicroButton_UpdateNotificationIcon(GuildMicroButton);
+	GuildMicroButton:UpdateNotificationIcon(GuildMicroButton);
 
 	if ( PVEFrame and PVEFrame:IsShown() ) then
 		LFDMicroButton:SetButtonState("PUSHED", true);
@@ -279,12 +280,41 @@ function AchievementMicroButton_OnEvent(self, event, ...)
 	end
 end
 
-function GuildMicroButton_OnEvent(self, event, ...)
+GuildMicroButtonMixin = {};
+
+function GuildMicroButtonMixin:OnLoad() 
+	LoadMicroButtonTextures(self, "Socials");
+	self.tooltipText = MicroButtonTooltipText(LOOKINGFORGUILD, "TOGGLEGUILDTAB");
+	self.newbieText = NEWBIE_TOOLTIP_LOOKINGFORGUILDTAB;
+	self:RegisterEvent("UPDATE_BINDINGS");
+	self:RegisterEvent("PLAYER_GUILD_UPDATE");
+	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
+	self:RegisterEvent("STREAM_VIEW_MARKER_UPDATED");
+	self:RegisterEvent("INITIAL_CLUBS_LOADED");
+	self:RegisterEvent("CLUB_INVITATION_ADDED_FOR_SELF");
+	self:RegisterEvent("CLUB_INVITATION_REMOVED_FOR_SELF");
+	self:RegisterEvent("BN_DISCONNECTED");
+	self:RegisterEvent("BN_CONNECTED");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("CLUB_FINDER_COMMUNITY_OFFLINE_JOIN");
+	self:UpdateTabard(true);
+	if ( IsCommunitiesUIDisabledByTrialAccount() ) then
+		self:Disable();
+		self.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
+	end
+	if (IsKioskModeEnabled()) then
+		self:Disable();
+	end
+end 
+
+function GuildMicroButtonMixin:OnEvent(event, ...)
 	if (IsKioskModeEnabled()) then
 		return;
 	end
-
-	if ( event == "UPDATE_BINDINGS" ) then
+	if (event == "PLAYER_ENTERING_WORLD") then 
+		self:EvaluateAlertVisibility(); 
+		C_ClubFinder.PlayerRequestPendingClubsList(Enum.ClubFinderRequestType.All);
+	elseif ( event == "UPDATE_BINDINGS" ) then
 		if ( CommunitiesFrame_IsEnabled() ) then
 			GuildMicroButton.tooltipText = MicroButtonTooltipText(GUILD_AND_COMMUNITIES, "TOGGLEGUILDTAB");
 		elseif ( IsInGuild() ) then
@@ -298,7 +328,7 @@ function GuildMicroButton_OnEvent(self, event, ...)
 	elseif ( event == "BN_DISCONNECTED" or event == "BN_CONNECTED" ) then
 		UpdateMicroButtons();
 	elseif ( event == "INITIAL_CLUBS_LOADED" ) then
-		GuildMicroButton_UpdateNotificationIcon(GuildMicroButton);
+		self:UpdateNotificationIcon(GuildMicroButton);
 		previouslyDisplayedInvitations = DISPLAYED_COMMUNITIES_INVITATIONS;
 		DISPLAYED_COMMUNITIES_INVITATIONS = {};
 		local invitations = C_Club.GetInvitationsForSelf();
@@ -308,35 +338,52 @@ function GuildMicroButton_OnEvent(self, event, ...)
 		end
 		UpdateMicroButtons();
 	elseif ( event == "STREAM_VIEW_MARKER_UPDATED" or event == "CLUB_INVITATION_ADDED_FOR_SELF" or event == "CLUB_INVITATION_REMOVED_FOR_SELF" ) then
-		GuildMicroButton_UpdateNotificationIcon(GuildMicroButton);
+		self:UpdateNotificationIcon(GuildMicroButton);
+	elseif ( event == "CLUB_FINDER_COMMUNITY_OFFLINE_JOIN" ) then
+		local newClubId = ...;
+		self:SetNewClubId(newClubId);
+		self.showOfflineJoinAlert = true;
+		self:EvaluateAlertVisibility(); 
 	end
 end
 
-function MarkCommunitiesInvitiationDisplayed(clubId)
+function GuildMicroButtonMixin:EvaluateAlertVisibility() 
+	if (self.showOfflineJoinAlert) then
+		MainMenuMicroButton_ShowAlert(GuildMicroButtonAlert, CLUB_FINDER_NEW_COMMUNITY_JOINED);
+		self.showOfflineJoinAlert = false;
+	elseif (self:ShouldShowAlert()) then 
+		MainMenuMicroButton_ShowAlert(GuildMicroButtonAlert, CLUB_FINDER_NEW_FEATURE_TUTORIAL);
+	end
+end 
+function GuildMicroButtonMixin:MarkCommunitiesInvitiationDisplayed(clubId)
 	DISPLAYED_COMMUNITIES_INVITATIONS[clubId] = true;
-	GuildMicroButton_UpdateNotificationIcon(GuildMicroButton);
+	self:UpdateNotificationIcon(GuildMicroButton);
 end
 
-local function HasUnseenInvitations()
+function GuildMicroButtonMixin:HasUnseenInvitations()
 	local invitations = C_Club.GetInvitationsForSelf();
 	for i, invitation in ipairs(invitations) do
 		if not DISPLAYED_COMMUNITIES_INVITATIONS[invitation.club.clubId] then
 			return true;
 		end
 	end
-	
+
 	return false;
 end
 
-function GuildMicroButton_UpdateNotificationIcon(self)
+function GuildMicroButtonMixin:UpdateNotificationIcon(self)
 	if CommunitiesFrame_IsEnabled() and self:IsEnabled() then
-		self.NotificationOverlay:SetShown(HasUnseenInvitations() or CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages());
+		self.NotificationOverlay:SetShown(self:HasUnseenInvitations() or CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages());
 	else
 		self.NotificationOverlay:SetShown(false);
 	end
 end
 
-function GuildMicroButton_UpdateTabard(forceUpdate)
+function GuildMicroButtonMixin:ShouldShowAlert()
+	return C_ClubFinder.IsEnabled() and (not CommunitiesFrame or not CommunitiesFrame:IsShown()) and not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCCOUNT_CLUB_FINDER_NEW_FEATURE);
+end
+
+function GuildMicroButtonMixin:UpdateTabard(forceUpdate)
 	local tabard = GuildMicroButtonTabard;
 	if ( not tabard.needsUpdate and not forceUpdate ) then
 		return;
@@ -362,6 +409,14 @@ function GuildMicroButton_UpdateTabard(forceUpdate)
 		end
 	end
 	tabard.needsUpdate = nil;
+end
+
+function GuildMicroButtonMixin:SetNewClubId(newClubId)
+	self.newClubId = newClubId;
+end
+
+function GuildMicroButtonMixin:GetNewClubId()
+	return self.newClubId;
 end
 
 CharacterMicroButtonMixin = {};
@@ -404,7 +459,8 @@ end
 
 function CharacterMicroButton_OnEnter(self)
 	self.tooltipText = MicroButtonTooltipText(CHARACTER_BUTTON, "TOGGLECHARACTER0");
-	GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHARACTER);
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, self.tooltipText);
 end
 
 function CharacterMicroButton_OnEvent(self, event, ...)
@@ -511,7 +567,6 @@ function CharacterMicroButtonMixin:EvaluateAlertVisibility()
 	end
 end
 
-
 function CharacterMicroButton_UpdatePulsing(self)
 	if IsPlayerInWorld() and AzeriteUtil.DoEquippedItemsHaveUnselectedPowers() then
 		MicroButtonPulse(self);
@@ -548,6 +603,7 @@ MAIN_MENU_MICRO_ALERT_PRIORITY = {
 	"TalentMicroButtonAlert",
 	"CharacterMicroButtonAlert",
 	"EJMicroButtonAlert",
+	"GuildMicroButtonAlert",
 };
 
 function MainMenuMicroButton_AddExternalAlert(externalAlert)
@@ -823,7 +879,7 @@ do
 			self:EvaluateAlertVisibility();
 		end
 	end
-	
+
 	function CollectionsMicroButton_SetAlert(tabIndex)
 		CollectionsMicroButton_SetAlertShown(true);
 		SafeSetCollectionJournalTab(tabIndex);
@@ -839,7 +895,8 @@ do
 
 	function CollectionsMicroButton_OnEnter(self)
 		self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS");
-		GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_MOUNTS_AND_PETS);
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, self.tooltipText);
 	end
 
 	function CollectionsMicroButton_OnClick(self)
@@ -1022,6 +1079,28 @@ function StoreMicroButtonMixin:EvaluateAlertVisibility(level)
 			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRIAL_BANKED_XP, true);
 		end
 	end
+end
+
+QuestLogMicroButtonMixin = {};
+
+function QuestLogMicroButtonMixin:OnLoad()
+	LoadMicroButtonTextures(self, "Quest");
+	self:UpdateTooltipText();
+end
+
+function QuestLogMicroButtonMixin:OnEvent(event, ...)
+	if event == "UPDATE_BINDINGS" then
+		self:UpdateTooltipText();
+	end
+end
+
+function QuestLogMicroButtonMixin:UpdateTooltipText()
+	self.tooltipText = MicroButtonTooltipText(QUESTLOG_BUTTON, "TOGGLEQUESTLOG");
+	self.newbieText = NEWBIE_TOOLTIP_QUESTLOG;
+end
+
+function QuestLogMicroButtonMixin:OnClick()
+	ToggleQuestLog();
 end
 
 --Micro Button alerts

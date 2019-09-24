@@ -455,7 +455,7 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 		end
 	end
 
-	if ( HaveQuestData(questID) and GetQuestLogRewardXP(questID) == 0 and GetNumQuestLogRewardCurrencies(questID) == 0
+	if ( HaveQuestRewardData(questID) and GetQuestLogRewardXP(questID) == 0 and GetNumQuestLogRewardCurrencies(questID) == 0
 								and GetNumQuestLogRewards(questID) == 0 and GetQuestLogRewardMoney(questID) == 0 and GetQuestLogRewardArtifactXP(questID) == 0 ) then
 		GameTooltip:Hide();
 		return;
@@ -465,7 +465,7 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 	GameTooltip:SetPoint("TOPRIGHT", block, "TOPLEFT", 0, 0);
 	GameTooltip:SetOwner(block, "ANCHOR_PRESERVE");
 
-	if ( not HaveQuestData(questID) ) then
+	if ( not HaveQuestRewardData(questID) ) then
 		GameTooltip:AddLine(RETRIEVING_DATA, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 	else
 		local isWorldQuest = block.module.ShowWorldQuests;

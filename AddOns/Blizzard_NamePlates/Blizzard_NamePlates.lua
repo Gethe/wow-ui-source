@@ -409,9 +409,9 @@ end
 
 function NamePlateBaseMixin:ApplyOffsets()
 	if self.driverFrame:IsUsingLargerNamePlateStyle() then
-		self.UnitFrame.BuffFrame:SetBaseYOffset(20);
+		self.UnitFrame.BuffFrame:SetBaseYOffset(-5);
 	else
-		self.UnitFrame.BuffFrame:SetBaseYOffset(0);
+		self.UnitFrame.BuffFrame:SetBaseYOffset(-5);
 	end
 
 	local targetMode = GetCVarBool("nameplateResourceOnTarget");
@@ -506,13 +506,6 @@ end
 function NameplateBuffContainerMixin:UpdateAnchor()
 	local isTarget = self:GetParent().unit and UnitIsUnit(self:GetParent().unit, "target");
 	local targetYOffset = self:GetBaseYOffset() + (isTarget and self:GetTargetYOffset() or 0.0);
-	self:ClearAllPoints();
-	local parent = self:GetParent();
-	local healthBar = parent and parent.healthBar;
-	if healthBar then
-		self:SetPoint("LEFT", healthBar, "LEFT", -1, 0);
-	end
-
 	if (self:GetParent().unit and ShouldShowName(self:GetParent())) then
 		self:SetPoint("BOTTOM", self:GetParent(), "TOP", 0, targetYOffset);
 	else
@@ -537,6 +530,8 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter, showAll)
 		for i = 1, BUFF_MAX_DISPLAY do
 			if (self.buffList[i]) then
 				self.buffList[i]:Hide();
+			else
+				break;
 			end
 		end
 
@@ -554,9 +549,9 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter, showAll)
 	else
 		-- Some buffs may be filtered out, use this to create the buff frames.
 		local buffIndex = 1;
-
-		for i = 1, BUFF_MAX_DISPLAY do
-			local name, texture, count, debuffType, duration, expirationTime, caster, _, nameplateShowPersonal, spellId, _, _, _, nameplateShowAll = UnitAura(unit, i, filter);
+		local index = 1;
+		AuraUtil.ForEachAura(unit, filter, BUFF_MAX_DISPLAY, function(...)
+			local name, texture, count, debuffType, duration, expirationTime, caster, _, nameplateShowPersonal, spellId, _, _, _, nameplateShowAll = ...;
 
 			if (self:ShouldShowBuff(name, caster, nameplateShowPersonal, nameplateShowAll or showAll, duration)) then
 				if (not self.buffList[buffIndex]) then
@@ -565,7 +560,7 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter, showAll)
 					self.buffList[buffIndex].layoutIndex = buffIndex;
 				end
 				local buff = self.buffList[buffIndex];
-				buff:SetID(i);
+				buff:SetID(index);
 				buff.Icon:SetTexture(texture);
 				if (count > 1) then
 					buff.CountFrame.Count:SetText(count);
@@ -579,11 +574,15 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter, showAll)
 				buff:Show();
 				buffIndex = buffIndex + 1;
 			end
-		end
+			index = index + 1;
+			return buffIndex > BUFF_MAX_DISPLAY;
+		end);
 
 		for i = buffIndex, BUFF_MAX_DISPLAY do
 			if (self.buffList[i]) then
 				self.buffList[i]:Hide();
+			else
+				break;
 			end
 		end
 	end
@@ -626,23 +625,19 @@ function NamePlateBorderTemplateMixin:UpdateSizes()
 	local upwardExtendHeightMinPixels = self.upwardExtendHeightMinPixels or minPixels;
 
 	PixelUtil.SetWidth(self.Left, borderSize, minPixels);
-	self.Left:ClearAllPoints();
 	PixelUtil.SetPoint(self.Left, "TOPRIGHT", self, "TOPLEFT", 0, upwardExtendHeightPixels, 0, upwardExtendHeightMinPixels);
 	PixelUtil.SetPoint(self.Left, "BOTTOMRIGHT", self, "BOTTOMLEFT", 0, -borderSize, 0, minPixels);
 
 	PixelUtil.SetWidth(self.Right, borderSize, minPixels);
-	self.Right:ClearAllPoints();
 	PixelUtil.SetPoint(self.Right, "TOPLEFT", self, "TOPRIGHT", 0, upwardExtendHeightPixels, 0, upwardExtendHeightMinPixels);
 	PixelUtil.SetPoint(self.Right, "BOTTOMLEFT", self, "BOTTOMRIGHT", 0, -borderSize, 0, minPixels);
 
 	PixelUtil.SetHeight(self.Bottom, borderSize, minPixels);
-	self.Bottom:ClearAllPoints();
 	PixelUtil.SetPoint(self.Bottom, "TOPLEFT", self, "BOTTOMLEFT", 0, 0);
 	PixelUtil.SetPoint(self.Bottom, "TOPRIGHT", self, "BOTTOMRIGHT", 0, 0);
 
 	if self.Top then
 		PixelUtil.SetHeight(self.Top, borderSize, minPixels);
-		self.Top:ClearAllPoints();
 		PixelUtil.SetPoint(self.Top, "BOTTOMLEFT", self, "TOPLEFT", 0, 0);
 		PixelUtil.SetPoint(self.Top, "BOTTOMRIGHT", self, "TOPRIGHT", 0, 0);
 	end

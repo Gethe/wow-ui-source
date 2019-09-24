@@ -80,6 +80,15 @@ local GuildInfo =
 			Type = "Function",
 		},
 		{
+			Name = "IsGuildOfficer",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isOfficer", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsGuildRankAssignmentAllowed",
 			Type = "Function",
 

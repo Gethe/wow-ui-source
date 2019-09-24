@@ -445,28 +445,12 @@ function UnitFrameUtil_UpdateManaFillBar(frame, previousTexture, bar, amount, ba
 end
 
 function UnitFrame_OnEnter (self)
-	-- If showing newbie tips then only show the explanation
-	if ( SHOW_NEWBIE_TIPS == "1" ) then
-		if ( self == PlayerFrame ) then
-			GameTooltip_SetDefaultAnchor(GameTooltip, self);
-			GameTooltip_AddNewbieTip(self, PARTY_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_PARTYOPTIONS);
-			return;
-		elseif ( self == TargetFrame and UnitPlayerControlled("target") and not UnitIsUnit("target", "player") and not UnitIsUnit("target", "pet") ) then
-			GameTooltip_SetDefaultAnchor(GameTooltip, self);
-			GameTooltip_AddNewbieTip(self, PLAYER_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_PLAYEROPTIONS);
-			return;
-		end
-	end
 	UnitFrame_UpdateTooltip(self);
 end
 
 function UnitFrame_OnLeave (self)
 	self.UpdateTooltip = nil;
-	if ( SHOW_NEWBIE_TIPS == "1" ) then
-		GameTooltip:Hide();
-	else
-		GameTooltip:FadeOut();
-	end
+	GameTooltip:FadeOut();
 end
 
 function UnitFrame_UpdateTooltip (self)

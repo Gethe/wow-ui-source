@@ -108,6 +108,7 @@ function QuestLogOwnerMixin:SetDisplayState(displayState)
 			if not self:IsMaximized() then
 				self:SetQuestLogPanelShown(false);
 				self:Maximize();
+				self.BorderFrame.MaximizeMinimizeFrame:SetMinimizedLook();
 				hasSynchronizedDisplayState = true;
 			end
 		elseif displayState == DISPLAY_STATE_OPEN_MINIMIZED_NO_LOG then
@@ -119,6 +120,7 @@ function QuestLogOwnerMixin:SetDisplayState(displayState)
 		elseif displayState == DISPLAY_STATE_OPEN_MINIMIZED_WITH_LOG then
 			if self:IsMaximized() then
 				self:Minimize();
+				self.BorderFrame.MaximizeMinimizeFrame:SetMaximizedLook();
 				hasSynchronizedDisplayState = true;
 			end
 			self:SetQuestLogPanelShown(true);

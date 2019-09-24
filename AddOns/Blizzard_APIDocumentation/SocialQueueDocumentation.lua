@@ -62,6 +62,7 @@ local SocialQueue =
 				{ Name = "needHealer", Type = "bool", Nilable = false },
 				{ Name = "needDamage", Type = "bool", Nilable = false },
 				{ Name = "isSoloQueueParty", Type = "bool", Nilable = false },
+				{ Name = "questSessionActive", Type = "bool", Nilable = false },
 				{ Name = "leaderGUID", Type = "string", Nilable = false },
 			},
 		},

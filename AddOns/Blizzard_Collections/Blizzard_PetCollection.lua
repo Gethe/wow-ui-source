@@ -1852,8 +1852,7 @@ function PetJournal_ToggleTutorial()
 	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
 		HelpPlate_Show( helpPlate, PetJournal, PetJournal.MainHelpButton );
 		SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true );
-		CollectionsJournal.HeirloomTabHelpBox:Hide();
-		CollectionsJournal.WardrobeTabHelpBox:Hide();
+		CollectionsJournal_HideTabHelpTips();
 	else
 		HelpPlate_Hide(true);
 	end

@@ -456,13 +456,16 @@ local function AudioOptionsPanelVoiceChatSlider_BaseOnLoad(self, cvar, getCurren
 	self.defaultValue = defaultValue;
 
 	self.GetCurrentValue = function(self)
-		return getCurrentFn();
+		local value = getCurrentFn();
+		if value ~= nil then
+			return self.isValueInverted and (max - value) or value;
+		end
 	end
 
 	self.RefreshValue = function(self)
-		local current = getCurrentFn();
-		if current ~= nil then
-			self:SetValue(current);
+		local value = self:GetCurrentValue();
+		if value ~= nil then
+			self:SetValue(value);
 		end
 	end
 

@@ -219,6 +219,8 @@
 				if ( self:GetID() > 1 ) then
 					self.parent = _G["DropDownList"..(self:GetID() - 1)];
 				end
+
+				UIDropDownMenu_OnShow(self);
 			</OnShow>
 			<OnHide>
 				UIDropDownMenu_OnHide(self);
@@ -316,7 +318,8 @@
 						end
 					</OnLeave>
 					<OnClick>
-						ToggleDropDownMenu(nil, nil, self:GetParent());
+						local parent = self:GetParent();
+						ToggleDropDownMenu(nil, nil, parent);
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>

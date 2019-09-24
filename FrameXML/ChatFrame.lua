@@ -1777,7 +1777,7 @@ SlashCmdList["INVITE"] = function(msg)
 		ChatFrame_DisplayUsageError(ERR_NO_TARGET_OR_NAME);
 		return;
 	end
-	InviteToGroup(msg);
+	C_PartyInfo.InviteUnit(msg);
 end
 
 SlashCmdList["REQUEST_INVITE"] = function(msg)
@@ -1792,7 +1792,7 @@ SlashCmdList["REQUEST_INVITE"] = function(msg)
 		ChatFrame_DisplayUsageError(ERR_NO_TARGET_OR_NAME);
 		return;
 	end
-	RequestInviteFromUnit(msg);
+	C_PartyInfo.RequestInviteFromUnit(msg);
 end
 
 SlashCmdList["UNINVITE"] = function(msg)
@@ -2389,6 +2389,13 @@ if IsGMClient() then
 end
 
 SlashCmdList["TABLEINSPECT"] = function(msg)
+	if ( IsKioskModeEnabled() or ScriptsDisallowedForBeta() ) then
+		return;
+	end
+	if ( not AreDangerousScriptsAllowed() ) then
+		StaticPopup_Show("DANGEROUS_SCRIPTS_WARNING");
+		return;
+	end
 	forceinsecure();
 	UIParentLoadAddOn("Blizzard_DebugTools");
 
@@ -2909,7 +2916,7 @@ end
 function ChatFrame_RemoveCommunitiesChannel(chatFrame, clubId, streamId, omitMessage)
 	local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
 	local channelIndex = ChatFrame_RemoveChannel(chatFrame, channelName);
-	
+
 	if not omitMessage then
 		local r, g, b = Chat_GetCommunitiesChannelColor(clubId, streamId);
 		chatFrame:AddMessage(COMMUNITIES_CHANNEL_REMOVED_FROM_CHAT_WINDOW:format(channelIndex, ChatFrame_ResolveChannelName(channelName)), r, g, b);
@@ -3133,9 +3140,9 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		end
 		return true;
 	elseif (event == "UNIT_LEVEL" ) then
-		local arg1 = ...;
-		if (arg1 == "pet" and UnitName("pet") ~= UNKNOWNOBJECT) then
-			LevelUpDisplay_ChatPrint(self, UnitLevel("pet"), LEVEL_UP_TYPE_PET);
+		local unit = ...;
+		if LevelUpDisplay_ShouldDisplayPetLevelUpdate(LevelUpDisplay, unit) then
+			LevelUpDisplay_ChatPrint(self, UnitLevel(unit), LEVEL_UP_TYPE_PET);
 		end
 	elseif ( event == "CHARACTER_UPGRADE_SPELL_TIER_SET" ) then
 		local tierIndex = ...;
@@ -3478,12 +3485,10 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			elseif ( arg1 == "FRIEND_REMOVED" or arg1 == "BATTLETAG_FRIEND_REMOVED" ) then
 				message = format(globalstring, arg2);
 			elseif ( arg1 == "FRIEND_ONLINE" or arg1 == "FRIEND_OFFLINE") then
-				local _, accountName, battleTag, _, characterName, _, client = BNGetFriendInfoByID(arg13);
-				if (client and client ~= "") then
-					local _, _, battleTag = BNGetFriendInfoByID(arg13);
-					characterName = BNet_GetValidatedCharacterName(characterName, battleTag, client) or "";
-					local characterNameText = BNet_GetClientEmbeddedTexture(client, 14)..characterName;
-					local linkDisplayText = ("[%s] (%s)"):format(arg2, characterNameText);
+				local accountInfo = C_BattleNet.GetAccountInfoByID(arg13);
+				if accountInfo and accountInfo.gameAccountInfo.clientProgram ~= "" then
+					local characterName = BNet_GetValidatedCharacterNameWithClientEmbeddedTexture(accountInfo.gameAccountInfo.characterName, accountInfo.battleTag, accountInfo.gameAccountInfo.clientProgram, 14);
+					local linkDisplayText = ("[%s] (%s)"):format(arg2, characterName);
 					local playerLink = GetBNPlayerLink(arg2, linkDisplayText, arg13, arg11, Chat_GetChatCategory(type), 0);
 					message = format(globalstring, playerLink);
 				else
@@ -4643,7 +4648,7 @@ function ChatEdit_OnTextChanged(self, userInput)
 	self.ignoreTextChange = nil;
 	local regex = "^((/[^%s]+)%s+(.+))"
 	local full, command, target = strmatch(self:GetText(), regex);
-	if ( not target or (strsub(target, 1, 1) == "|") ) then
+	if ( not target or (strsub(target, 1, 1) == "|") or self.disallowAutoComplete) then
 		AutoComplete_HideIfAttachedTo(self);
 		return;
 	end
@@ -4664,8 +4669,8 @@ function escapePatternSymbols(text)
 end
 
 function ChatEdit_OnChar(self)
-	local regex = "^((/[^%s]+)%s+(.+))$"
-	local text, command, target = strmatch(self:GetText(), regex);
+	local regex = "^((/[^%s]+)(%s+)(.+))$"
+	local text, command, whitespace, target = strmatch(self:GetText(), regex);
 	if (command) then
 		self.command = command
 	else
@@ -4679,17 +4684,14 @@ function ChatEdit_OnChar(self)
 			local name = Ambiguate(nameToShow.name, "all");
 			--We're going to be setting the text programatically which will clear the userInput flag on the editBox.
 			--So we want to manually update the dropdown before we change the text.
-			AutoComplete_Update(self, target, utf8Position - strlenutf8(command) - 1);
-			target = escapePatternSymbols(target)
-			local highlightRegex = "^"..target.."(.*)";
-			local nameEnding = name:match(highlightRegex)
-			if (not nameEnding) then
-				return;
+			AutoComplete_Update(self, target, utf8Position - strlenutf8(command) - strlen(whitespace));
+			if strsub(name, 1, 1) ~= "|" then
+				target = escapePatternSymbols(target);
+
+				local newTarget = name;
+				self:SetText(string.format("%s%s%s", command, whitespace, newTarget));
+				self:HighlightText(strlen(text), strlen(command) + strlen(whitespace) + strlen(newTarget));
 			end
-			local newText = text..nameEnding;
-			self:SetText(newText);
-			self:HighlightText(strlen(text), strlen(newText));
-			self:SetCursorPosition(strlen(text));
 		end
 	end
 end
@@ -4802,6 +4804,7 @@ function ChatEdit_ParseText(editBox, send, parseIfNoSpaces)
 
 	if ( command ~= text ) then
 		msg = strsub(text, strlen(command) + 2);
+		msg = strmatch(msg, "^%s*(.*)$") or msg;
 	end
 
 	command = strupper(command);

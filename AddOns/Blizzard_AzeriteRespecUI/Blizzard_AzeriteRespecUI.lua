@@ -32,7 +32,15 @@ end
 function AzeriteRespecMixin:OnShow()
 	PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_REFORGE_ETHEREALWINDOW_OPEN)
 	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_RESPEC) then
-		self.HelpBox:Show();
+		local helpTipInfo = {
+			text = AZERITE_RESPEC_TUTORIAL_TEXT,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_AZERITE_RESPEC,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			offsetX = -10,
+		};
+		HelpTip:Show(self, helpTipInfo, self.ItemSlot);
 	end
 	self:UpdateMoney();
 end
@@ -101,7 +109,7 @@ function AzeriteRespecMixin:SetRespecItem(itemLocation)
 	self.respecItemLocation = itemLocation;
 	if (itemLocation) then
 		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_RESPEC) then
-			self.HelpBox:Hide();
+			HelpTip:Hide(self, AZERITE_RESPEC_TUTORIAL_TEXT);
 			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_RESPEC, true);
 		end
 

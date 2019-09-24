@@ -90,7 +90,7 @@ do
 				info.connected,
 				chatFlag,
 				info.notes,
-				info.referAFriend,
+				info.rafLinkType ~= Enum.RafLinkType.None,
 				info.guid;
 		end
 	end

@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	
+
 	<Button name="AchievementSearchPreviewButton" parentArray="searchPreview" virtual="true">
 		<Size x="206" y="27"/>
 		<Layers>
@@ -52,7 +52,7 @@
 			<OnClick function="AchievementSearchPreviewButton_OnClick"/>
 		</Scripts>
 	</Button>
-	
+
 	<Button name="AchievementFullSearchResultsButton" virtual="true">
 		<Size x="575" y="49"/>
 		<Layers>
@@ -104,7 +104,7 @@
 			<OnClick function="AcheivementFullSearchResultsButton_OnClick"/>
 		</Scripts>
 	</Button>
-	
+
 	<StatusBar name="AchievementFrameSummaryCategoryTemplate" drawLayer="BORDER" virtual="true">
 		<Size x="234" y="21"/>
 		<Layers>
@@ -207,7 +207,7 @@
 			<OnEvent>
 				AchievementFrameSummaryCategory_OnEvent(self, event, ...);
 			</OnEvent>
-		</Scripts>		
+		</Scripts>
 		<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
 		<BarColor r="0" g="1" b="0"/>
 	</StatusBar>
@@ -221,10 +221,10 @@
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT"/>
 					</Anchors>
-					<Color r=".6" g=".6" b=".6" a="1"/>
+					<Color color="LIGHTGRAY_FONT_COLOR" a="1"/>
 				</FontString>
 			</Layer>
-		</Layers>		
+		</Layers>
 		<HitRectInsets>
 			<AbsInset left="0" right="-100" top="0" bottom="0"/>
 		</HitRectInsets>
@@ -259,7 +259,7 @@
 		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
 	 	<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
 		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>		
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
 
 	<Button name="AchievementFrameTabButtonTemplate" virtual="true">
@@ -400,7 +400,7 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentEmblem" file="Interface\GuildFrame\GuildEmblemsLG_01" parentKey="emblem">
-					<Size x="60" y="60"/>
+					<Size x="52" y="60"/>
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="14"/>
 					</Anchors>
@@ -530,11 +530,11 @@
 			<Anchors>
 				<Anchor point="TOPLEFT"/>
 				<Anchor point="BOTTOMRIGHT" x="0" y="2"/>
-			</Anchors>						
+			</Anchors>
 			<Color r="1" g="1" b="1" a=".15"/>
 		</HighlightTexture>
 	</Button>
-	
+
 	<StatusBar name="AchievementProgressBarTemplate" virtual="true">
 		<Size x="212" y="14"/>
 		<Anchors>
@@ -556,7 +556,7 @@
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
-				</FontString>			
+				</FontString>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentBorderLeft" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
@@ -646,7 +646,7 @@
 		<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
 		<BarColor r="0" g="1" b="0"/>
 	</StatusBar>
-	
+
 	<Button name="AchievementCategoryTemplate" virtual="true">
 		<Size x="158" y="24"/>
 		<Layers>
@@ -665,7 +665,7 @@
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="16" y="4"/>
 						<Anchor point="TOPRIGHT" x="-8" y="-4"/>
-					</Anchors>					
+					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -729,7 +729,7 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="AchievementCriteriaTemplate" virtual="true">
 		<Size x="350" y="15"/>
 		<Layers>
@@ -757,7 +757,7 @@
 				end
 			</OnMouseUp>
 		</Scripts>
-	</Frame>	
+	</Frame>
 
 	<Button name="AchievementTemplate" virtual="true">
 		<Size x="434" y="142"/>
@@ -765,7 +765,7 @@
 			<EdgeSize>
 				<AbsValue val="16"/>
 			</EdgeSize>
-		</Backdrop>		
+		</Backdrop>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-Parchment-Horizontal" parentKey="background">
@@ -773,8 +773,8 @@
 						<Anchor point="TOPLEFT" x="3" y="-3"/>
 						<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
 					</Anchors>
-				</Texture>						
-			</Layer>			
+				</Texture>
+			</Layer>
 			<Layer level="BORDER">
 				<Texture name="$parentBottomLeftTsunami" file="Interface\AchievementFrame\UI-Achievement-Tsunami-Corners">
 					<Size x="32" y="32"/>
@@ -783,7 +783,7 @@
 					</Anchors>
 					<Color r="1" g="1" b="1" a=".2"/>
 					<TexCoords left="0" right=".5" top="0" bottom="1"/>
-				</Texture>				
+				</Texture>
 				<Texture name="$parentBottomRightTsunami" file="Interface\AchievementFrame\UI-Achievement-Tsunami-Corners">
 					<Size x="32" y="32"/>
 					<Anchors>
@@ -807,7 +807,7 @@
 					</Anchors>
 					<Color r="1" g="1" b="1" a=".1"/>
 					<TexCoords left=".5" right="0" top="1" bottom="0"/>
-				</Texture>							
+				</Texture>
 				<Texture name="$parentBottomTsunami1" file="Interface\AchievementFrame\UI-Achievement-Borders">
 					<Size x="370" y="16"/>
 					<Anchors>
@@ -868,7 +868,7 @@
 					</Anchors>
 					<TexCoords left="0.75195313" right="0.85742188" top="0.36328125" bottom="0.46679688"/>
 				</Texture>
-			</Layer>	
+			</Layer>
 			<Layer level="OVERLAY">
 				<FontString name="$parentLabel" inherits="GameFontHighlightMedium" text="For the Alliance!" parentKey="label">
 					<Size x="320" y="20"/>
@@ -877,13 +877,13 @@
 					</Anchors>
 				</FontString>
 				<FontString name="$parentReward" inherits="GameFontNormalSmall" hidden="true" parentKey="reward">
-					<Size x="400" y="20"/>			
+					<Size x="400" y="20"/>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentRewardBackground" relativePoint="TOP" x="0" y="1"/>
-					</Anchors>							
+					</Anchors>
 				</FontString>
 				<FontString name="$parentDescription" inherits="AchievementDescriptionFont" parentKey="description">
-					<Size x="0" y="0"/>		
+					<Size x="0" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-30"/>
 					</Anchors>
@@ -907,7 +907,7 @@
 						<Anchor point="TOPLEFT" x="72" y="-9"/>
 					</Anchors>
 					<TexCoords left="0" right=".5" top="0" bottom=".25"/>
-				</Texture>				
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -946,7 +946,7 @@
 								<Anchor point="BOTTOMLEFT" x="-1" y="-2"/>
 							</Anchors>
 							<TexCoords left="0.06640625" right="0" top="0.65625" bottom="0.4375"/>
-						</Texture>		
+						</Texture>
 						<Texture name="$parentTopRight" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar-Highlight" alphaMode="ADD">
 							<Size x="16" y="16"/>
 							<Anchors>
@@ -960,7 +960,7 @@
 								<Anchor point="BOTTOMRIGHT" x="1" y="-2"/>
 							</Anchors>
 							<TexCoords left="0" right="0.06640625" top="0.65625" bottom="0.4375"/>
-						</Texture>			
+						</Texture>
 						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar-Highlight" alphaMode="ADD">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="TOPRIGHT"/>
@@ -974,7 +974,7 @@
 								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT"/>
 							</Anchors>
 							<TexCoords left="0" right="0.015" top="0.65625" bottom="0.4375"/>
-						</Texture>			
+						</Texture>
 						<Texture name="$parentLeft" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar-Highlight" alphaMode="ADD">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT"/>
@@ -1032,7 +1032,7 @@
 							</Anchors>
 						</FontString>
 					</Layer>
-				</Layers>				
+				</Layers>
 				<Scripts>
 					<OnLoad>
 						AchievementShield_OnLoad(self);
@@ -1067,7 +1067,7 @@
 			<EdgeSize>
 				<AbsValue val="16"/>
 			</EdgeSize>
-		</Backdrop>				
+		</Backdrop>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-Parchment-Horizontal" parentKey="background">
@@ -1076,7 +1076,7 @@
 						<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="0" bottom="0.25"/>
-				</Texture>						
+				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentTitleBackground" file="Interface\AchievementFrame\UI-Achievement-Borders" parentKey="titleBar">
@@ -1095,8 +1095,8 @@
 						<Anchor point="BOTTOMRIGHT" x="0" y="4"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="0.00390625" bottom="0.25390625"/>
-				</Texture>			
-			</Layer>	
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY">
 				<FontString name="$parentLabel" inherits="GameFontHighlightMedium" text="For the Alliance!" parentKey="label">
 					<Anchors>
@@ -1117,7 +1117,7 @@
 					<Size x="380" y="13"/>
 				</FontString>
 			</Layer>
-		</Layers>		
+		</Layers>
 		<Scripts>
 			<OnLoad>
 				AchievementComparisonPlayerButton_OnLoad(self);
@@ -1129,7 +1129,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" x="3" y="-3"/>
 				</Anchors>
-				<Layers>			
+				<Layers>
 					<Layer level="BORDER">
 						<Texture name="$parentBling" file="Interface\AchievementFrame\UI-Achievement-Bling" hidden="true" parentKey="bling">
 							<Anchors>
@@ -1160,7 +1160,7 @@
 					<OnLoad>
 						AchievementIcon_OnLoad(self);
 					</OnLoad>
-				</Scripts>				
+				</Scripts>
 			</Frame>
 			<Frame name="$parentShield" parentKey="shield">
 				<Size x="48" y="48"/>
@@ -1185,14 +1185,14 @@
 							<Size x="40" y="26"/>
 						</FontString>
 					</Layer>
-				</Layers>				
+				</Layers>
 				<Scripts>
 					<OnLoad>
 						AchievementShield_OnLoad(self);
 					</OnLoad>
 				</Scripts>
 			</Frame>
-		</Frames>		
+		</Frames>
 	</Frame>
 	<Frame name="SummaryAchievementTemplate" inherits="ComparisonPlayerTemplate" virtual="true">
 		<Size x="100" y="48"/>
@@ -1213,7 +1213,7 @@
 								<Anchor point="BOTTOMLEFT" x="-1" y="-2"/>
 							</Anchors>
 							<TexCoords left="0.06640625" right="0" top="0.65625" bottom="0.4375"/>
-						</Texture>		
+						</Texture>
 						<Texture name="$parentTopRight" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar-Highlight" alphaMode="ADD">
 							<Size x="16" y="16"/>
 							<Anchors>
@@ -1227,7 +1227,7 @@
 								<Anchor point="BOTTOMRIGHT" x="1" y="-2"/>
 							</Anchors>
 							<TexCoords left="0" right="0.06640625" top="0.65625" bottom="0.4375"/>
-						</Texture>			
+						</Texture>
 						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar-Highlight" alphaMode="ADD">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="TOPRIGHT"/>
@@ -1241,7 +1241,7 @@
 								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT"/>
 							</Anchors>
 							<TexCoords left="0" right="0.015" top="0.65625" bottom="0.4375"/>
-						</Texture>			
+						</Texture>
 						<Texture name="$parentLeft" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar-Highlight" alphaMode="ADD">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT"/>
@@ -1296,7 +1296,7 @@
 					<EdgeSize>
 						<AbsValue val="16"/>
 					</EdgeSize>
-				</Backdrop>		
+				</Backdrop>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-Parchment-Horizontal" parentKey="background">
@@ -1305,7 +1305,7 @@
 								<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
 							</Anchors>
 							<TexCoords left=".2" right=".75" top="0" bottom="1"/>
-						</Texture>						
+						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture name="$parentTitleBackground" file="Interface\AchievementFrame\UI-Achievement-Borders" parentKey="titleBar">
@@ -1324,8 +1324,8 @@
 								<Anchor point="BOTTOMRIGHT" x="0" y="4"/>
 							</Anchors>
 							<TexCoords left="0.2" right="0.86" top="0.00390625" bottom="0.25390625"/>
-						</Texture>			
-					</Layer>	
+						</Texture>
+					</Layer>
 					<Layer level="OVERLAY">
 						<FontString name="$parentStatus" inherits="AchievementDateFont" text="Incomplete" parentKey="status">
 							<Anchors>
@@ -1340,7 +1340,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" x="3" y="-3"/>
 						</Anchors>
-						<Layers>			
+						<Layers>
 							<Layer level="BORDER">
 								<Texture name="$parentBling" file="Interface\AchievementFrame\UI-Achievement-Bling" hidden="true" parentKey="bling">
 									<Anchors>
@@ -1369,7 +1369,7 @@
 						</Layers>
 						<Scripts>
 							<OnLoad function="AchievementIcon_OnLoad"/>
-						</Scripts>				
+						</Scripts>
 					</Frame>
 					<Frame name="$parentShield" parentKey="shield">
 						<Size x="40" y="36"/>
@@ -1394,12 +1394,12 @@
 									<Size x="40" y="14"/>
 								</FontString>
 							</Layer>
-						</Layers>				
+						</Layers>
 						<Scripts>
 							<OnLoad function="AchievementShield_OnLoad"/>
 						</Scripts>
 					</Frame>
-				</Frames>					
+				</Frames>
 				<Scripts>
 					<OnLoad>
 						AchievementComparisonFriendButton_OnLoad(self);
@@ -1408,7 +1408,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	
+
 	<Button name="StatTemplate" virtual="true" hidden="true">
 		<Size x="511" y="24"/>
 		<Layers>
@@ -1472,7 +1472,7 @@
 		</HighlightTexture>
 	</Button>
 
-	<Frame name="ComparisonStatTemplate" virtual="true">		
+	<Frame name="ComparisonStatTemplate" virtual="true">
 		<Size x="511" y="24"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -1546,7 +1546,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentMouseover" enableMouse="true" hidden="true" parentKey="mouseover"> 
+			<Frame name="$parentMouseover" enableMouse="true" hidden="true" parentKey="mouseover">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentComparisonValue"/>
 					<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
@@ -1571,7 +1571,7 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	
+
 	<Button name="SummaryStatTemplate" inherits="StatTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
@@ -1584,7 +1584,7 @@
 
 	<Frame name="AchievementFrame" toplevel="true" parent="UIParent" frameStrata="MEDIUM" hidden="true" enableMouse="true">
 		<Size x="768" y="500"/>
-		<Anchors>	
+		<Anchors>
 			<Anchor point="TOPLEFT" x="0" y="-104"/>
 		</Anchors>
 		<Backdrop edgeFile="Interface\AchievementFrame\UI-Achievement-WoodBorder" tile="true">
@@ -1597,7 +1597,7 @@
 			<BackgroundInsets>
 				<AbsInset left="5" right="5" top="5" bottom="5"/>
 			</BackgroundInsets>
-		</Backdrop>		
+		</Backdrop>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackground" file="Interface\TutorialFrame\TutorialFrameBackground">
@@ -1687,14 +1687,14 @@
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="9" y="8"/>
 					</Anchors>
-					<TexCoords left="1" right="0" top="0" bottom="1"/>				
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
 				</Texture>
 				<Texture name="$parentMetalBorderBottomRight" file="Interface\AchievementFrame\UI-Achievement-MetalBorder-Joint">
 					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-8" y="8"/>
 					</Anchors>
-					<TexCoords left="0" right="1" top="0" bottom="1"/>				
+					<TexCoords left="0" right="1" top="0" bottom="1"/>
 				</Texture>
 				<Texture name="$parentWoodBorderTopLeft" file="Interface\AchievementFrame\UI-Achievement-WoodBorder-Corner">
 					<Size x="64" y="64"/>
@@ -1709,21 +1709,21 @@
 						<Anchor point="TOPRIGHT" x="-4" y="-2"/>
 					</Anchors>
 					<TexCoords left="1" right="0" top="0" bottom="1"/>
-				</Texture>		
+				</Texture>
 				<Texture name="$parentWoodBorderBottomLeft" file="Interface\AchievementFrame\UI-Achievement-WoodBorder-Corner">
 					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="4" y="3"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="1" bottom="0"/>
-				</Texture>		
+				</Texture>
 				<Texture name="$parentWoodBorderBottomRight" file="Interface\AchievementFrame\UI-Achievement-WoodBorder-Corner">
 					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-4" y="3"/>
 					</Anchors>
 					<TexCoords left="1" right="0" top="1" bottom="0"/>
-				</Texture>						
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -1748,7 +1748,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.419921875" top="0.4140625" bottom="0.8046875"/>
 						</Texture>
-					</Layer>				
+					</Layer>
 					<Layer level="BORDER">
 						<Texture name="$parentPointBorder" file="Interface\AchievementFrame\UI-Achievement-Header">
 							<Size x="133" y="39"/>
@@ -1789,7 +1789,7 @@
 								<Anchor point="LEFT" relativeTo="$parentPoints" relativePoint="RIGHT" x="3" y="-1"/>
 							</Anchors>
 							<TexCoords left="0" right="0.625" top="0" bottom="0.625"/>
-						</Texture> 	
+						</Texture>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -1809,7 +1809,7 @@
 					<BackgroundInsets>
 						<AbsInset left="5" right="5" top="5" bottom="5"/>
 					</BackgroundInsets>
-				</Backdrop>		
+				</Backdrop>
 				<Scripts>
 					<OnLoad function="AchievementFrameCategories_OnLoad"/>
 					<OnShow function="AchievementFrameCategories_OnShow"/>
@@ -1904,12 +1904,12 @@
 							<BackgroundInsets>
 								<AbsInset left="5" right="5" top="5" bottom="5"/>
 							</BackgroundInsets>
-						</Backdrop>	
+						</Backdrop>
 						<Scripts>
 							<OnLoad function="AchievementFrameAchievementsBackdrop_OnLoad"/>
 						</Scripts>
 					</Frame>
-				</Frames>				
+				</Frames>
 			</Frame>
 			<Frame name="$parentStats" hidden="true">
 				<Size x="506" y="440"/>
@@ -1968,12 +1968,12 @@
 							<BackgroundInsets>
 								<AbsInset left="5" right="5" top="5" bottom="5"/>
 							</BackgroundInsets>
-						</Backdrop>	
+						</Backdrop>
 						<Scripts>
 							<OnLoad function="AchievementFrameAchievementsBackdrop_OnLoad"/>
 						</Scripts>
 					</Frame>
-				</Frames>				
+				</Frames>
 			</Frame>
 			<Frame name="$parentSummary" hidden="true">
 				<Size x="529" y="461"/>
@@ -2004,7 +2004,7 @@
 							<BackgroundInsets>
 								<AbsInset left="5" right="5" top="5" bottom="5"/>
 							</BackgroundInsets>
-						</Backdrop>	
+						</Backdrop>
 						<Scripts>
 							<OnLoad function="AchievementFrameAchievementsBackdrop_OnLoad"/>
 						</Scripts>
@@ -2056,7 +2056,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentAchievements" relativePoint="BOTTOMLEFT" x="0" y="6"/>
 							<Anchor point="TOPRIGHT" relativeTo="$parentAchievements" relativePoint="BOTTOMRIGHT" x="0" y="6"/>
-						</Anchors>								
+						</Anchors>
 						<Frames>
 							<Frame name="$parentHeader">
 								<Size x="0" y="20"/>
@@ -2132,67 +2132,67 @@
 								</Layers>
 								<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
 								<BarColor r="0" g="1" b="0"/>
-							</StatusBar>							
-							<StatusBar name="$parentCategory1" inherits="AchievementFrameSummaryCategoryTemplate">	
+							</StatusBar>
+							<StatusBar name="$parentCategory1" inherits="AchievementFrameSummaryCategoryTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentStatusBar" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
 								</Anchors>
 							</StatusBar>
-							<StatusBar name="$parentCategory2" inherits="AchievementFrameSummaryCategoryTemplate">	
+							<StatusBar name="$parentCategory2" inherits="AchievementFrameSummaryCategoryTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory1" relativePoint="TOPRIGHT" x="20" y="0"/>
 								</Anchors>
 							</StatusBar>
-							<StatusBar name="$parentCategory3" inherits="AchievementFrameSummaryCategoryTemplate">	
+							<StatusBar name="$parentCategory3" inherits="AchievementFrameSummaryCategoryTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory1" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
-								</Anchors>							
+								</Anchors>
 							</StatusBar>
-							<StatusBar name="$parentCategory4" inherits="AchievementFrameSummaryCategoryTemplate">	
+							<StatusBar name="$parentCategory4" inherits="AchievementFrameSummaryCategoryTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory3" relativePoint="TOPRIGHT" x="20" y="0"/>
-								</Anchors>						
+								</Anchors>
 							</StatusBar>
-							<StatusBar name="$parentCategory5" inherits="AchievementFrameSummaryCategoryTemplate">	
+							<StatusBar name="$parentCategory5" inherits="AchievementFrameSummaryCategoryTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory3" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
-								</Anchors>						
+								</Anchors>
 							</StatusBar>
-							<StatusBar name="$parentCategory6" inherits="AchievementFrameSummaryCategoryTemplate">	
+							<StatusBar name="$parentCategory6" inherits="AchievementFrameSummaryCategoryTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory5" relativePoint="TOPRIGHT" x="20" y="0"/>
 								</Anchors>
 							</StatusBar>
-							<StatusBar name="$parentCategory7" inherits="AchievementFrameSummaryCategoryTemplate">	
+							<StatusBar name="$parentCategory7" inherits="AchievementFrameSummaryCategoryTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory5" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
-								</Anchors>							
+								</Anchors>
 							</StatusBar>
-							<StatusBar name="$parentCategory8" inherits="AchievementFrameSummaryCategoryTemplate">	
+							<StatusBar name="$parentCategory8" inherits="AchievementFrameSummaryCategoryTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory7" relativePoint="TOPRIGHT" x="20" y="0"/>
-								</Anchors>							
+								</Anchors>
 							</StatusBar>
-							<StatusBar name="$parentCategory9" inherits="AchievementFrameSummaryCategoryTemplate">	
+							<StatusBar name="$parentCategory9" inherits="AchievementFrameSummaryCategoryTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory7" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
-								</Anchors>							
+								</Anchors>
 							</StatusBar>
-							<StatusBar name="$parentCategory10" inherits="AchievementFrameSummaryCategoryTemplate">	
+							<StatusBar name="$parentCategory10" inherits="AchievementFrameSummaryCategoryTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory9" relativePoint="TOPRIGHT" x="20" y="0"/>
-								</Anchors>							
+								</Anchors>
 							</StatusBar>
-							<StatusBar name="$parentCategory11" inherits="AchievementFrameSummaryCategoryTemplate">	
+							<StatusBar name="$parentCategory11" inherits="AchievementFrameSummaryCategoryTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory9" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
-								</Anchors>							
+								</Anchors>
 							</StatusBar>
-							<StatusBar name="$parentCategory12" inherits="AchievementFrameSummaryCategoryTemplate">	
+							<StatusBar name="$parentCategory12" inherits="AchievementFrameSummaryCategoryTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory11" relativePoint="TOPRIGHT" x="20" y="0"/>
-								</Anchors>							
-							</StatusBar>	
+								</Anchors>
+							</StatusBar>
 						</Frames>
 					</Frame>
 				</Frames>
@@ -2262,7 +2262,7 @@
 										<Anchor point="LEFT" relativeTo="$parentPoints" relativePoint="RIGHT" x="2" y="-2"/>
 									</Anchors>
 									<TexCoords left="0" right="0.625" top="0" bottom="0.625"/>
-								</Texture> 	
+								</Texture>
 							</Layer>
 						</Layers>
 						<Scripts>
@@ -2288,7 +2288,7 @@
 									<EdgeSize>
 										<AbsValue val="16"/>
 									</EdgeSize>
-								</Backdrop>				
+								</Backdrop>
 								<Layers>
 									<Layer level="BACKGROUND">
 										<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-Parchment-Horizontal">
@@ -2297,9 +2297,9 @@
 												<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
 											</Anchors>
 											<TexCoords left="0" right="1" top="0" bottom="0.25"/>
-										</Texture>						
+										</Texture>
 									</Layer>
-								</Layers>								
+								</Layers>
 								<Frames>
 									<StatusBar name="$parentStatusBar" inherits="AchievementHeaderStatusBarTemplate" parentKey="statusBar">
 										<Size x="0" y="21"/>
@@ -2307,7 +2307,7 @@
 											<Anchor point="TOPLEFT" x="19" y="-17"/>
 											<Anchor point="TOPRIGHT" x="-19" y="-17"/>
 										</Anchors>
-									</StatusBar>								
+									</StatusBar>
 								</Frames>
 								<Scripts>
 									<OnLoad>
@@ -2324,7 +2324,7 @@
 									<EdgeSize>
 										<AbsValue val="16"/>
 									</EdgeSize>
-								</Backdrop>		
+								</Backdrop>
 								<Layers>
 									<Layer level="BACKGROUND">
 										<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-Parchment-Horizontal">
@@ -2333,7 +2333,7 @@
 												<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
 											</Anchors>
 											<TexCoords left=".2" right=".75" top="0" bottom="1"/>
-										</Texture>						
+										</Texture>
 									</Layer>
 								</Layers>
 								<Frames>
@@ -2408,7 +2408,7 @@
 							<BackgroundInsets>
 								<AbsInset left="5" right="5" top="5" bottom="5"/>
 							</BackgroundInsets>
-						</Backdrop>	
+						</Backdrop>
 						<Scripts>
 							<OnLoad function="AchievementFrameAchievementsBackdrop_OnLoad"/>
 						</Scripts>
@@ -2449,7 +2449,7 @@
 					<OnShow function="AchievementFrameComparison_OnShow"/>
 					<OnHide function="AchievementFrameComparison_OnHide"/>
 				</Scripts>
-			</Frame>			
+			</Frame>
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="AchievementFrame" relativePoint="TOPRIGHT" x="3" y="4"/>
@@ -2482,7 +2482,7 @@
 						AchievementFrameTab_OnClick(self:GetID());
 						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 					</OnClick>
-				</Scripts>				
+				</Scripts>
 			</Button>
 			<Button name="$parentTab3" inherits="AchievementFrameTabButtonTemplate" id="3" text="STATISTICS">
 				<Anchors>
@@ -2503,13 +2503,13 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" text="Text">
-							<Size x="0" y="32"/>								
+							<Size x="0" y="32"/>
 							<Anchors>
 								<Anchor point="LEFT" x="0" y="4"/>
 							</Anchors>
 						</FontString>
 					</Layer>
-				</Layers>	
+				</Layers>
 				<Frames>
 					<Button name="$parentButton">
 						<Size x="24" y="24"/>
@@ -2661,7 +2661,7 @@
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
-						</FontString>			
+						</FontString>
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture parentKey="borderLeft" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
@@ -2920,5 +2920,5 @@
 			<OnHide function="AchievementFrame_OnHide"/>
 		</Scripts>
 	</Frame>
-		
+
 </Ui>

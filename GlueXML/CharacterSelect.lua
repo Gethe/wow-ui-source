@@ -775,7 +775,8 @@ function UpdateCharacterList(skipSelect)
     local areCharServicesShown = CharSelectServicesFlowFrame:IsShown();
 
     for i=1, characterLimit, 1 do
-        local name, race, _, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked, isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, _, lastLoginBuild, _, isExpansionTrialCharacter = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
+		local characterIndex = i + CHARACTER_LIST_OFFSET;
+	    local name, race, _, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked, isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, _, lastLoginBuild, _, isExpansionTrialCharacter, faction = GetCharacterInfo(GetCharIDFromIndex(characterIndex));
         local productID, vasServiceState, vasServiceErrors, productInfo;
         if (guid) then
             productID, vasServiceState, vasServiceErrors = C_StoreGlue.GetVASPurchaseStateInfo(guid);
@@ -817,7 +818,7 @@ function UpdateCharacterList(skipSelect)
 			-- If we're not showing the build, don't bother doing nice formatting.
 			if (showlastLoginBuild) then
 				local currentVersion = select(6, GetBuildInfo());
-
+				
 				-- Set the Color based on the build being old / new
 				if (lastLoginBuild < currentVersion) then
 					button.buttonText.LastVersion:SetTextColor(YELLOW_FONT_COLOR:GetRGBA()) -- Earlier Build
@@ -826,7 +827,7 @@ function UpdateCharacterList(skipSelect)
 				else
 					button.buttonText.LastVersion:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGBA()) -- Current Build
 				end
-
+				
 				button.buttonText.LastVersion:SetText(GenerateBuildString(lastLoginBuild));
 			end
 
@@ -892,10 +893,12 @@ function UpdateCharacterList(skipSelect)
                         infoText:SetText(CHARACTER_SELECT_INFO_TRIAL_BOOST_PLAYABLE);
                     end
                 else
+					local color = CreateColor(GetClassColor(classFileName));
+					local coloredClassName = color:WrapTextInColorCode(class);
                     if( ghost ) then
-                        infoText:SetFormattedText(CHARACTER_SELECT_INFO_GHOST, level, class);
+                        infoText:SetFormattedText(CHARACTER_SELECT_INFO_GHOST, level, coloredClassName);
                     else
-                        infoText:SetFormattedText(CHARACTER_SELECT_INFO, level, class);
+                        infoText:SetFormattedText(CHARACTER_SELECT_INFO, level, coloredClassName);
                     end
 
                     locationText:SetText(zone);
@@ -904,6 +907,16 @@ function UpdateCharacterList(skipSelect)
                         CharacterSelect_SetupPadlockForCharacterButton(button, guid);
                     end
                 end
+
+				local factionEmblem = button.FactionEmblem;
+				local isIconAssigned = faction ~= "Neutral";
+				if isIconAssigned then
+					local offsetX = -46 + (factionEmblem[factionGroup] or 0);
+					local offsetY = -6;
+					factionEmblem:SetPoint("TOPRIGHT", offsetX, offsetY)
+					factionEmblem:SetAtlas(string.format("CharacterSelection_%s_Icon", faction), true);
+				end
+				factionEmblem:SetShown(isIconAssigned);
             end
         end
         button:Show();

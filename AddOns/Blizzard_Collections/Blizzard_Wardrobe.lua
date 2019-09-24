@@ -4,7 +4,6 @@
 -- 15th return of GetItemInfo is expansionID
 -- new events: TRANSMOG_COLLECTION_SOURCE_ADDED and TRANSMOG_COLLECTION_SOURCE_REMOVED, parameter is sourceID, can be cross-class (wand unlocked from ensemble while on warrior)
 
-local REMOVE_TRANSMOG_ID = 0;
 TRANSMOG_SHAPESHIFT_MIN_ZOOM = -0.3;
 
 local EXCLUSION_CATEGORY_OFFHAND	= 1;
@@ -450,7 +449,7 @@ function WardrobeOutfitMixin:GetSlotSourceID(slot, transmogType)
 		return NO_TRANSMOG_SOURCE_ID;
 	end
 
-	local _, _, sourceID = WardrobeCollectionFrame_GetInfoForEquippedSlot(slot, transmogType);
+	local _, _, sourceID = TransmogUtil.GetInfoForEquippedSlot(slot, transmogType);
 	return sourceID;
 end
 
@@ -602,7 +601,7 @@ function WardrobeTransmogButton_Select(button, fromOnClick)
 			WardrobeCollectionFrame_ClickTab(WardrobeCollectionFrame.ItemsTab);
 		end
 		if ( WardrobeCollectionFrame.activeFrame == WardrobeCollectionFrame.ItemsCollectionFrame ) then
-			local _, _, selectedSourceID = WardrobeCollectionFrame_GetInfoForEquippedSlot(button.slot, button.transmogType);
+			local _, _, selectedSourceID = TransmogUtil.GetInfoForEquippedSlot(button.slot, button.transmogType);
 			local forceGo = (button.transmogType == LE_TRANSMOG_TYPE_ILLUSION);
 			local FOR_TRANSMOG = true;
 			WardrobeCollectionFrame.ItemsCollectionFrame:GoToSourceID(selectedSourceID, button.slot, button.transmogType, forceGo, FOR_TRANSMOG);
@@ -1084,6 +1083,9 @@ function WardrobeCollectionFrame_OnHide(self)
 	self:UnregisterEvent("TRANSMOG_COLLECTION_CAMERA_UPDATE");
 	C_TransmogCollection.EndSearch();
 	self.jumpToVisualID = nil;
+	for i, frame in ipairs(WardrobeCollectionFrame.ContentFrames) do
+		frame:Hide();
+	end
 end
 
 function WardrobeCollectionFrame_UpdateTabButtons()
@@ -1485,39 +1487,22 @@ function WardrobeItemsCollectionMixin:SortVisuals()
 end
 
 function WardrobeItemsCollectionMixin:GetActiveSlotInfo()
-	return WardrobeCollectionFrame_GetInfoForEquippedSlot(self.activeSlot, self.transmogType);
-end
-
-function WardrobeCollectionFrame_GetInfoForEquippedSlot(slot, transmogType)
-	local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, pendingSourceID, pendingVisualID, hasPendingUndo = C_Transmog.GetSlotVisualInfo(GetInventorySlotInfo(slot), transmogType);
-	if ( appliedSourceID == NO_TRANSMOG_SOURCE_ID ) then
-		appliedSourceID = baseSourceID;
-		appliedVisualID = baseVisualID;
-	end
-	local selectedSourceID, selectedVisualID;
-	if ( pendingSourceID ~= REMOVE_TRANSMOG_ID ) then
-		selectedSourceID = pendingSourceID;
-		selectedVisualID = pendingVisualID;
-	elseif ( hasPendingUndo ) then
-		selectedSourceID = baseSourceID;
-		selectedVisualID = baseVisualID;
-	else
-		selectedSourceID = appliedSourceID;
-		selectedVisualID = appliedVisualID;
-	end
-	return appliedSourceID, appliedVisualID, selectedSourceID, selectedVisualID;
+	return TransmogUtil.GetInfoForEquippedSlot(self.activeSlot, self.transmogType);
 end
 
 function WardrobeCollectionFrame_GetWeaponInfoForEnchant(slot)
 	if ( not WardrobeFrame_IsAtTransmogrifier() and DressUpFrame:IsShown() ) then
-		local appearanceSourceID = DressUpModel:GetSlotTransmogSources(GetInventorySlotInfo(slot));
-		if ( WardrobeCollectionFrame_CanEnchantSource(appearanceSourceID) ) then
-			local _, appearanceVisualID = C_TransmogCollection.GetAppearanceSourceInfo(appearanceSourceID);
-			return appearanceSourceID, appearanceVisualID;
+		local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
+		if playerActor then
+			local appearanceSourceID = playerActor:GetSlotTransmogSources(GetInventorySlotInfo(slot));
+			if ( WardrobeCollectionFrame_CanEnchantSource(appearanceSourceID) ) then
+				local _, appearanceVisualID = C_TransmogCollection.GetAppearanceSourceInfo(appearanceSourceID);
+				return appearanceSourceID, appearanceVisualID;
+			end
 		end
 	end
 
-	local appliedSourceID, appliedVisualID, selectedSourceID, selectedVisualID = WardrobeCollectionFrame_GetInfoForEquippedSlot(slot, LE_TRANSMOG_TYPE_APPEARANCE);
+	local appliedSourceID, appliedVisualID, selectedSourceID, selectedVisualID = TransmogUtil.GetInfoForEquippedSlot(slot, LE_TRANSMOG_TYPE_APPEARANCE);
 	if ( WardrobeCollectionFrame_CanEnchantSource(selectedSourceID) ) then
 		return selectedSourceID, selectedVisualID;
 	else
@@ -2612,7 +2597,7 @@ function WardrobeItemsCollectionMixin:OnSearchUpdate(category)
 		self.resetPageOnSearchUpdated = nil;
 		self:ResetPage();
 	elseif ( WardrobeFrame_IsAtTransmogrifier() and WardrobeCollectionFrameSearchBox:GetText() == "" ) then
-		local _, _, selectedSourceID = WardrobeCollectionFrame_GetInfoForEquippedSlot(self.activeSlot, self.transmogType);
+		local _, _, selectedSourceID = TransmogUtil.GetInfoForEquippedSlot(self.activeSlot, self.transmogType);
 		local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(selectedSourceID);
 		if ( categoryID == self:GetActiveCategory() ) then
 			WardrobeCollectionFrame.ItemsCollectionFrame:GoToSourceID(selectedSourceID, self.activeSlot, self.transmogType, true);
@@ -4022,7 +4007,7 @@ function WardrobeSetsTransmogMixin:GetFirstMatchingSetID(sourceIndex)
 	local transmogSourceIDs = { };
 	for _, button in ipairs(WardrobeTransmogFrame.Model.SlotButtons) do
 		local slotID = GetInventorySlotInfo(button.slot);
-		local sourceID = select(sourceIndex, WardrobeCollectionFrame_GetInfoForEquippedSlot(button.slot, LE_TRANSMOG_TYPE_APPEARANCE));
+		local sourceID = select(sourceIndex, TransmogUtil.GetInfoForEquippedSlot(button.slot, LE_TRANSMOG_TYPE_APPEARANCE));
 		if ( sourceID ~= NO_TRANSMOG_SOURCE_ID ) then
 			transmogSourceIDs[slotID] = sourceID;
 		end

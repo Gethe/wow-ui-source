@@ -89,10 +89,12 @@ Import("SecureMixin");
 Import("CreateFromSecureMixins");
 Import("IsTrialAccount");
 Import("IsVeteranTrialAccount");
+Import("GetURLIndexAndLoadURL");
 
 --GlobalStrings
 Import("BLIZZARD_STORE");
 Import("BLIZZARD_STORE_ON_SALE");
+Import("BLIZZARD_STORE_PURCHASED");
 Import("BLIZZARD_STORE_BUY");
 Import("BLIZZARD_STORE_BUY_EUR");
 Import("BLIZZARD_STORE_PLUS_TAX");
@@ -549,13 +551,6 @@ local function GetFactionName(faction, returnOpposite)
 		return FACTION_HORDE;
 	elseif (faction == 1) then
 		return FACTION_ALLIANCE;
-	end
-end
-
-function GetURLIndexAndLoadURL(self, link)
-	local linkType, index = string.split(":", link);
-	if ( linkType == "urlIndex" ) then
-		LoadURLIndex(tonumber(index));
 	end
 end
 
@@ -1473,30 +1468,76 @@ local factionColors = {
 --template list from Blizzard_ProductCardTemplates.xml
 local productCardTemplateData = {
 	SmallStoreCardTemplate = {
-		numRows = 2,
-		numColumns = 4,
+		cellGridSize = {width = 1, height = 1},
+		cellPixelSize = {width = 146, height = 209},
+		padding = {6 , -6 , 6 , 0}, --left, right, top, bottom
+		poolSize = 8,
+		buyButton = false,
 	},
 	MediumStoreCardTemplate = {
-		numRows = 2,
-		numColumns = 2,
+		cellGridSize = {width = 2, height = 1},
+		cellPixelSize = {width = 146 * 2, height = 209},
+		padding = {6 , -6 , 6 , 0}, --left, right, top, bottom
+		poolSize = 4,
+		buyButton = false,
 	},
 	HorizontalLargeStoreCardTemplate = {
-		numRows = 2,
-		numColumns = 1,
+		cellGridSize = {width = 4, height = 1},
+		cellPixelSize = {width = 576, height = 209},
+		padding = {6 , 0 , 6 , 0}, --left, right, top, bottom
+		poolSize = 2,
+		buyButton = false,
 	},
 	VerticalLargeStoreCardTemplate = {
-		numRows = 1,
-		numColumns = 2,
+		cellGridSize = {width = 2, height = 2},
+		cellPixelSize = {width = 286, height = 209 * 2},
+		padding = {6 , 0 , 6 , 0}, --left, right, top, bottom
+		poolSize = 2,
+		buyButton = false,
 	},
-	HorizontalFullStoreCardTemplate = {
-		numRows = 1,
-		numColumns = 1,
+	MediumStoreCardWithBuyButtonTemplate = {
+		cellGridSize = {width = 2, height = 1},
+		cellPixelSize = {width = 277, height = 224},
+		padding = {15 , -3 , 15 , 15}, --left, right, top, bottom
+		poolSize = 4,
+		buyButton = true,
+	},
+	HorizontalLargeStoreCardWithBuyButtonTemplate = {
+		cellGridSize = {width = 4, height = 1},
+		cellPixelSize = {width = 566, height = 225},
+		padding = {15 , 6 , 15 , 14}, --left, right, top, bottom
+		poolSize = 2,
+		buyButton = true,
+	},
+	VerticalLargeStoreCardWithBuyButtonTemplate = {
+		cellGridSize = {width = 2, height = 2},
+		cellPixelSize = {width = 286, height = 471},
+		padding = {10 , -6 , 10 , 0}, --left, right, top, bottom
+		poolSize = 2,
+		buyButton = true,
+	},
+	HorizontalFullStoreCardWithBuyButtonTemplate = {
+		cellGridSize = {width = 4, height = 2},
+		cellPixelSize = {width = 576, height = 471},
+		padding = {12 , 0 , 9 , 0}, --left, right, top, bottom
+		poolSize = 1,
+		buyButton = true,
 	},	
-	VerticalFullStoreCardTemplate = {
-		numRows = 1,
-		numColumns = 1,
+	VerticalFullStoreCardWithBuyButtonTemplate = {
+		cellGridSize = {width = 4, height = 2},
+		cellPixelSize = {width = 576, height = 471},
+		padding = {12 , 0 , 9 , 0}, --left, right, top, bottom
+		poolSize = 1,
+		buyButton = true,
 	}
 };
+
+function StoreFrame_GetCellPixelSize(cardTemplate)
+	local pixelSize = productCardTemplateData[cardTemplate].cellPixelSize;
+	local width = pixelSize.width;
+	local height = pixelSize.height;
+	return width, height;
+end
 
 --Code
 local function getIndex(tbl, value) --testing post-commit-hook
@@ -1545,138 +1586,318 @@ function StoreFrame_CheckAndUpdateEntryID(isSplash)
 	end
 end
 
-function StoreFrame_DetermineSplashTypeAndDisplayedEntries(products)
-	local entries = {};
-	local template;
-	for i, entryID in ipairs(products) do
-		local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
-		if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.UseDualPaneLayoutForSplash) == Enum.BattlepayDisplayFlag.UseDualPaneLayoutForSplash then
-			if template == nil or template == "VerticalLargeStoreCardTemplate" then
-				local entryIndex = #entries + 1;
-				entries[entryIndex] = entryID;
-				if entryIndex == 1 then
-					template = "VerticalLargeStoreCardTemplate";
-				elseif entryIndex >= 2 then
-					break;
-				end
-			end
-		elseif template == nil then
-			entries[1] = entryID;
-			if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.UseHorizontalLayoutForFullCard) == Enum.BattlepayDisplayFlag.UseHorizontalLayoutForFullCard then
-				template = "HorizontalFullStoreCardTemplate";
-			else
-				template = "VerticalFullStoreCardTemplate";
-			end
-			break;
+function StoreFrame_GetProductCardTemplate(cardType, flags)	
+	if cardType == Enum.BattlepayCardType.SmallCard then
+		return "SmallStoreCardTemplate"
+	elseif cardType == Enum.BattlepayCardType.MediumCard then
+		return "MediumStoreCardTemplate"
+	elseif cardType == Enum.BattlepayCardType.LargeHorizontalCard then
+		return "HorizontalLargeStoreCardTemplate"
+	elseif cardType == Enum.BattlepayCardType.LargeVeritcalCard then
+		return "VerticalLargeStoreCardTemplate"
+	elseif cardType == Enum.BattlepayCardType.MediumCardWithBuyButton then
+		return "MediumStoreCardWithBuyButtonTemplate"
+	elseif cardType == Enum.BattlepayCardType.LargeHorizontalCardWithBuyButton then
+		return "HorizontalLargeStoreCardWithBuyButtonTemplate"
+	elseif cardType == Enum.BattlepayCardType.LargeVeritcalCardWithBuyButton then
+		return "VerticalLargeStoreCardWithBuyButtonTemplate"
+	elseif cardType == Enum.BattlepayCardType.FullCardWithBuyButton then
+		if bit.band(flags, Enum.BattlepayDisplayFlag.UseHorizontalLayoutForFullCard) == Enum.BattlepayDisplayFlag.UseHorizontalLayoutForFullCard then
+			return "HorizontalFullStoreCardWithBuyButtonTemplate";
+		else
+			return "VerticalFullStoreCardWithBuyButtonTemplate";
 		end
 	end
-	
-	return template, entries;
 end
 
+function StoreFrame_IsCompletelyOwned(entryInfo)
+	return entryInfo.sharedData.eligibility == Enum.PurchaseEligibility.Owned;
+end
 
-function StoreFrame_SetCategoryProductCards(forceModelUpdate, template, products)
-	local id = StoreFrame_GetSelectedCategoryID();
-	products = products or C_StoreSecure.GetProducts(id);
-	local self = StoreFrame;
-	local pageNum = selectedPageNum;
+function StoreFrame_IsPartiallyOwned(entryInfo)
+	return entryInfo.sharedData.eligibility == Enum.PurchaseEligibility.PartiallyOwned;
+end
 
-	local numRows = productCardTemplateData[template].numRows;
-	local numColumns = productCardTemplateData[template].numColumns;
+function StoreFrame_FilterEntries(entries)
+	local filteredEntries = {};
+	for entryIndex = 1, #entries do
+		local entryID = entries[entryIndex];
 
+		local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
+		local sharedData = entryInfo.sharedData;
+
+		local completelyOwned = StoreFrame_IsCompletelyOwned(entryInfo);
+		local partiallyOwned = StoreFrame_IsPartiallyOwned(entryInfo);
+		local hideWhenOwned = bit.band(sharedData.flags, Enum.BattlepayDisplayFlag.HideWhenOwned) ~= 0;
+
+		local expansionTooHigh = (sharedData.eligibility == Enum.PurchaseEligibility.ExpansionTooHigh);
+		local expansionTooLow = (sharedData.eligibility == Enum.PurchaseEligibility.ExpansionTooLow);
+		local missingRequirement = (sharedData.eligibility == Enum.PurchaseEligibility.MissingRequiredDeliverable);
+
+		if completelyOwned or partiallyOwned then
+			if not hideWhenOwned then
+				table.insert(filteredEntries, entryID);
+			end
+		elseif not expansionTooLow and not expansionTooHigh and not missingRequirement then
+			table.insert(filteredEntries, entryID);
+		end
+	end
+	return filteredEntries;
+end
+
+function StoreFrame_SetCategory(forceModelUpdate)
 	if not StoreFrame_CurrencyInfo() then
 		return;
 	end
 
-	StoreFrame_CheckAndUpdateEntryID(false);
-
-	local numTotal = #products;
-
+	local self = StoreFrame;
 	self.productCardPoolCollection:ReleaseAll();
+	self.Notice:Hide();
 
-	local numCardsPerPage = numRows * numColumns;
-	local firstCard = nil;
-	local previousCard = nil;
-	for row = 1, numRows do
-		for col = 1, numColumns do
-			local entryID = products[col + (row - 1) * numColumns + numCardsPerPage * (pageNum - 1)];
-			if not entryID then
-				break;
+	local entries = C_StoreSecure.GetProducts(StoreFrame_GetSelectedCategoryID());
+	if #entries == 0 then
+		return;
+	end
+	entries = StoreFrame_FilterEntries(entries);
+
+	StoreFrame_SetCategoryProductCards(forceModelUpdate, entries);
+end
+
+-- builds a table of pages: 
+-- the table contains each page, and a starting entry index
+function StoreFrame_GetPageInfo(entries)
+	local self = StoreFrame;
+	if not entries then
+		local id = StoreFrame_GetSelectedCategoryID();
+		entries = C_StoreSecure.GetProducts(id);
+	end
+
+	self.layoutGrid:Reset();
+	local currentPage = 0;
+	local pageInfo = {};
+	local nextPage = true;
+
+	for entryIndex = 1, #entries do
+		local entryID = entries[entryIndex];
+
+		local cardPlaced = false;
+		while not cardPlaced do
+			if nextPage then
+				currentPage = currentPage + 1;
+				pageInfo[currentPage] = entryIndex;
+				nextPage = false;
 			end
 
-			local card = self.productCardPoolCollection:Acquire(template);
+			local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
+			local template = StoreFrame_GetProductCardTemplate(entryInfo.sharedData.cardType, entryInfo.sharedData.flags);
+			local createCard = false;
+			cardPlaced = StoreFrame_LayoutCard(template, createCard);
 
-			-- move to func
-			if row == 1 and col == 1 then
-				card:SetPoint("TOPLEFT", self.RightInset, "TOPLEFT", 6, -6);
-				firstCard = card;
-			elseif col == 1 then
-				card:SetPoint("TOP", firstCard, "BOTTOM", 0, 0);
-				firstCard = card; -- reset firstCard to the first card of THIS row
-			else
-				card:SetPoint("TOPLEFT", previousCard, "TOPRIGHT", 0, 0);
+			if not cardPlaced then
+				self.layoutGrid:Reset();
+				nextPage = true;
 			end
-
-			card:UpdateCard(entryID, forceModelUpdate);
-			card:Show();
-			previousCard = card;
 		end
 	end
 
-	if ( #products > numCardsPerPage ) then
-		-- 10, 10/8 = 1, 2 remain
-		local numPages = math.ceil(#products / numCardsPerPage);
-		self.PageText:SetText(string.format(BLIZZARD_STORE_PAGE_NUMBER, pageNum, numPages));
-		self.PageText:Show();
-		self.NextPageButton:Show();
-		self.PrevPageButton:Show();
-		self.PrevPageButton:SetEnabled(pageNum ~= 1);
-		self.NextPageButton:SetEnabled(pageNum ~= numPages);
+	self.layoutGrid:Reset();
+	return pageInfo;
+end
+
+function StoreFrame_SetCategoryProductCards(forceModelUpdate, entries)
+	if not StoreFrame_CurrencyInfo() then
+		return;
+	end
+
+	local self = StoreFrame;
+	StoreFrame_CheckAndUpdateEntryID(false);
+
+	local pageInfo = StoreFrame_GetPageInfo(entries);
+	local startIndex = pageInfo[selectedPageNum];
+	local showGlobalBuyButton = true;
+
+	for index = startIndex, #entries do
+		local entryID = entries[index];
+
+		local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
+		local template = StoreFrame_GetProductCardTemplate(entryInfo.sharedData.cardType, entryInfo.sharedData.flags);
+
+		-- if any of these product cards have their own buy button, we turn off the global buy button
+		if productCardTemplateData[template].buyButton then
+			showGlobalBuyButton = false;
+		end
+
+		local createCard = true;
+		local _, card = StoreFrame_LayoutCard(template, createCard);
+
+		if card then
+			card:UpdateCard(entryID, forceModelUpdate);
+			card:Show();
+		else
+			break;
+		end
+	end
+
+	-- set up the buy buttons and paging buttons
+	if #entries > 1 then
+		local numPages = #pageInfo;
+		self.PageText:SetText(string.format(BLIZZARD_STORE_PAGE_NUMBER, selectedPageNum, numPages));
+
+		if numPages > 1 then
+			self.PageText:Show();
+			self.NextPageButton:Show();
+			self.PrevPageButton:Show();
+			self.PrevPageButton:SetEnabled(selectedPageNum ~= 1);
+			self.NextPageButton:SetEnabled(selectedPageNum ~= numPages);
+		else
+			self.PageText:Hide();
+			self.NextPageButton:Hide();
+			self.PrevPageButton:Hide();
+		end
 	else
 		self.PageText:Hide();
 		self.NextPageButton:Hide();
 		self.PrevPageButton:Hide();
 	end
-
+	self.BuyButton:SetShown(showGlobalBuyButton);
 	StoreFrame_UpdateBuyButton();
 end
 
-function StoreFrame_SetCategory(forceModelUpdate)
+local InitialXOffset = 0;
+local InitialYOffset = 0;
+StoreLayoutGridMixin = {};
+function StoreLayoutGridMixin:Init(numRows, numCols)
+	self.numRows = numRows;
+	self.numCols = numCols;
+	self.xOffset = InitialXOffset;
+	self.yOffset = InitialYOffset;
+
+	self:Reset(numRows, numCols);
+end
+
+function StoreLayoutGridMixin:Reset()
+	self.grid = {};
+	for row = 1, self.numRows do
+		local gridRow = {};
+		self.grid[row] = gridRow;
+	end
+	self.currentRow = 1;
+	self.currentCol = 1;
+	self.xOffset = InitialXOffset;
+	self.yOffset = InitialYOffset;
+end
+
+function StoreLayoutGridMixin:IsGridFull()
+	return (not self.currentRow) or (not self.currentCol);
+end
+
+function StoreLayoutGridMixin:FindNextEmptyIndex()
+	if self:IsGridFull() then
+		return nil, nil;
+	end
+
+	for row = self.currentRow, self.numRows do
+		local gridRow = self.grid[row];
+		for col = self.currentCol, self.numCols do
+			if not gridRow[col] then
+				return row, col;
+			end
+		end
+		self.currentCol = 1;
+	end
+end
+
+-- is there space at the given index for the dimensions (w x h) given?
+function StoreLayoutGridMixin:SpaceAtIndex(cardTemplate, row, col)
+	local width = productCardTemplateData[cardTemplate].cellGridSize.width;
+	local height = productCardTemplateData[cardTemplate].cellGridSize.height;
+	local willFit = true;
+
+	if (row + height - 1) > self.numRows then
+		return false;
+	end
+
+	if (col + width - 1) > self.numCols then
+		return false
+	end
+
+	return true;
+end
+
+-- fill the space (w x h) at the given index
+function StoreLayoutGridMixin:FillSpaceAtIndex(cardTemplate, row, col)
+	local width = productCardTemplateData[cardTemplate].cellGridSize.width;
+	local height = productCardTemplateData[cardTemplate].cellGridSize.height;
+
+	for i = 1, height do
+		local gridRow = self.grid[row + i - 1];
+		for j = 1, width do
+			gridRow[col + j - 1] = cardTemplate;
+		end
+	end
+	self.currentRow = row;
+	self.currentCol = col;
+	self.currentRow, self.currentCol = self:FindNextEmptyIndex();
+end
+
+function StoreLayoutGridMixin:AdjustYOffsetForNewRow(row, col)
+	local templateAbove = self.grid[row][col]; -- grab the template 'above' this cell
+	local cellPixelHeight = productCardTemplateData[templateAbove].cellPixelSize.height; -- and get the height of this template
+	local _, _, _, bottomPadding = unpack(productCardTemplateData[templateAbove].padding); -- and get the bottom padding
+	self.yOffset = self.yOffset + (-cellPixelHeight) + (-bottomPadding); -- now adjust our Y offset with this data
+end
+
+-- the store lays out cards by cells now:
+-- [1] [2] [3] [4]
+-- [5] [6] [7] [8]
+-- the smallest card, is (1x1), which is 1 cell, and the largest card is (4x2), which is all 8 cells
+function StoreFrame_LayoutCard(cardTemplate, createCard)
 	local self = StoreFrame;
-	local productGroupInfo = C_StoreSecure.GetProductGroupInfo(StoreFrame_GetSelectedCategoryID());
 
-	if productGroupInfo and productGroupInfo.displayType == Enum.BattlepayGroupDisplayType.Splash then
-		local id = StoreFrame_GetSelectedCategoryID();		
-		if StoreFrame_CurrencyInfo() then
-			self.productCardPoolCollection:ReleaseAll();
-			self.Notice:Hide();
+	local card;
+	local spaceAvailable = false;
+	local row, col = self.layoutGrid:FindNextEmptyIndex();
+	while not spaceAvailable and row and col do
+		spaceAvailable = self.layoutGrid:SpaceAtIndex(cardTemplate, row, col);
+		if spaceAvailable then
+			self.layoutGrid:FillSpaceAtIndex(cardTemplate, row, col);
 
-			local products = C_StoreSecure.GetProducts(id);
-
-			if #products == 0 then
-				return;
+			local leftPadding, _, topPadding, _ = unpack(productCardTemplateData[cardTemplate].padding);
+			if createCard then
+				card = self.productCardPoolCollection:Acquire(cardTemplate);
+			end
+			if card then
+				self.layoutGrid.xOffset = self.layoutGrid.xOffset + leftPadding;
+				card:SetPoint("TOPLEFT", self.RightInset, "TOPLEFT", self.layoutGrid.xOffset, self.layoutGrid.yOffset + (-topPadding));
 			end
 
-			local template, entries = StoreFrame_DetermineSplashTypeAndDisplayedEntries(products);
-
-			StoreFrame_CheckAndUpdateEntryID(true);
-
-			StoreFrame_SetCategoryProductCards(forceModelUpdate, template, entries);
-
-			self.PageText:Hide();
-			self.NextPageButton:Hide();
-			self.PrevPageButton:Hide();
-			self.BuyButton:Hide();
-		end
-	else
-		if productGroupInfo and productGroupInfo.displayType == Enum.BattlepayGroupDisplayType.DoubleWide then
-			StoreFrame_SetCategoryProductCards(forceModelUpdate, "MediumStoreCardTemplate");
+			-- we've placed a card, now adjust offsets so they're ready for the next card
+			local nextRow, nextCol = self.layoutGrid:FindNextEmptyIndex();
+			if nextRow then
+				if nextRow > row then
+					-- card was placed on a new row
+					self.layoutGrid.xOffset = InitialXOffset; -- reset X offset
+					self.layoutGrid:AdjustYOffsetForNewRow(row, nextCol);--calculate new Y offset
+				else
+					local cellPixelWidth = productCardTemplateData[cardTemplate].cellPixelSize.width; -- grab this template's width
+					local _, rightPadding = unpack(productCardTemplateData[cardTemplate].padding); -- and get the right padding
+					self.layoutGrid.xOffset = self.layoutGrid.xOffset + cellPixelWidth + rightPadding; -- adjust our X offset with this data, Y offset is unchanged
+				end
+			end
 		else
-			StoreFrame_SetCategoryProductCards(forceModelUpdate, "SmallStoreCardTemplate");
+			row = row + 1; -- card will not fit on this row
+			if row > self.layoutGrid.numRows then
+				-- card will not fit on this page, we're done.
+				return spaceAvailable, card;
+			end
+			col = 1;
+
+			-- we need to move the offsets and take another pass to fit this card
+			self.layoutGrid.xOffset = InitialXOffset;-- reset X offset
+			self.layoutGrid:AdjustYOffsetForNewRow(row - 1, col);--calculate new Y offset
 		end
-		self.BuyButton:Show();
 	end
-	StoreFrame_CheckMarketPriceUpdates();
+	return spaceAvailable, card;
 end
 
 function StoreFrame_FindPageForBoost(boostType)
@@ -1720,10 +1941,17 @@ function StoreFrame_SelectBoostForPurchase(boostType)
 end
 
 function StoreFrame_DoesProductGroupHavePurchasableItems(groupID)
-	local products = C_StoreSecure.GetProducts(groupID);
-	for _, entryID in ipairs(products) do
+	local entries = C_StoreSecure.GetProducts(groupID);
+	entries = StoreFrame_FilterEntries(entries);
+
+	for _, entryID in ipairs(entries) do
 		local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
-		if not entryInfo.alreadyOwned then
+
+		local completelyOwned = StoreFrame_IsCompletelyOwned(entryInfo);
+		local partiallyOwned = StoreFrame_IsPartiallyOwned(entryInfo);
+
+		local alreadyOwned = completelyOwned or PartiallyOwned;
+		if not alreadyOwned then
 			return true;
 		end
 	end
@@ -1787,7 +2015,7 @@ function StoreFrame_UpdateCategories(self)
 			frame = CreateForbiddenFrame("Button", nil, self, "StoreCategoryTemplate");
 
 			--[[
-							WARNING: ScopeModifiers don't work for templates!
+				WARNING: ScopeModifiers don't work for templates!
 				These functions will fail to load properly if this template is instantiated outside
 				of the initial LoadAddon call because we'll have lost the scoped modifiers and the
 				reference to the addon environment if we instantiate them later.
@@ -1835,6 +2063,9 @@ function StoreFrame_OnLoad(self)
 	self:RegisterEvent("SIMPLE_CHECKOUT_CLOSED");
 	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
 	self:RegisterEvent("DYNAMIC_BUNDLE_PRICE_UPDATED");
+
+	self.layoutGrid = CreateFromMixins(StoreLayoutGridMixin);
+	self.layoutGrid:Init(2, 4);
 
 	-- We have to call this from CharacterSelect on the glue screen because the addon engine will load
 	-- the store addon more than once if we try to make it ondemand, forcing us to load it before we
@@ -1886,7 +2117,7 @@ function StoreFrame_OnLoad(self)
 	local forbidden = true;
 	local preallocate = true;
 	for template, info in pairs(productCardTemplateData) do
-		self.productCardPoolCollection:CreatePool("Button", self, template, nil, forbidden, info.numRows * info.numColumns, preallocate);
+		self.productCardPoolCollection:CreatePool("Button", self, template, nil, forbidden, info.poolSize, preallocate);
 	end
 
 	StoreFrame.Notice.Description:SetSpacing(5);
@@ -1942,7 +2173,6 @@ function StoreFrame_OnEvent(self, event, ...)
 		end
 		
 		if StoreFrame_GetSelectedCategoryID() then
-			--FIXME - Not the right place to put this check, but I want to stop the error
 			StoreFrame_SetCategory();
 		end
 		if (UnrevokeWaitingForProducts) then
@@ -2136,7 +2366,8 @@ function StoreFrame_UpdateBuyButton()
 	end
 
 	local entryInfo = C_StoreSecure.GetEntryInfo(selectedEntryID);
-	if entryInfo and entryInfo.alreadyOwned then
+	local completelyOwned = StoreFrame_IsCompletelyOwned(entryInfo);
+	if completelyOwned then
 		self.BuyButton:Disable();
 		self.BuyButton.PulseAnim:Stop();
 		return;
@@ -2494,7 +2725,8 @@ end
 
 function StoreFrame_BeginPurchase(entryID)
 	local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
-	if entryInfo.alreadyOwned then
+	local completelyOwned = StoreFrame_IsCompletelyOwned(entryInfo);
+	if completelyOwned then
 		StoreFrame_OnError(StoreFrame, Enum.StoreError.AlreadyOwned, false, "FakeOwned");
 	elseif C_StoreSecure.PurchaseProduct(entryInfo.productID) then
 		if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService) then
@@ -2522,11 +2754,6 @@ function StoreFrame_HasFreeBagSlots()
 		end
 	end
 	return false;
-end
-
-function StoreFrame_ShowPreview(name, modelID, modelSceneID)
-	Outbound.ShowPreview(name, modelID, modelSceneID);
-	StoreProductCard_UpdateAllStates();
 end
 
 function StoreFrame_ShowPreviews(displayInfoEntries)
@@ -2797,7 +3024,7 @@ function StoreConfirmationFrame_Update(self)
 
 	local baseProductInfo = GetBaseProductInfo(productID)
 	if baseProductInfo then
-		name = baseProductInfo.sharedData.name;
+		name = baseProductInfo.sharedData.name or name;
 		finalIcon = baseProductInfo.sharedData.texture;
 	end
 
@@ -3420,7 +3647,7 @@ function StoreProductCard_CheckShowStorePreviewOnClick(self)
 	if ( showPreview ) then
 		local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());
 		if ( entryInfo.displayID ) then
-			StoreFrame_ShowPreview(entryInfo.name, entryInfo.displayID, entryInfo.modelSceneID);
+			StoreFrame_ShowPreviews(entryInfo.sharedData.cards);
 		end
 	end
 
@@ -3440,7 +3667,6 @@ function StoreSplashSingleProductCard_OnClick(self)
 end
 
 function StoreProductCard_ShowModel(self, entryInfo, showShadows, forceModelUpdate)
-	local owned = entryInfo.alreadyOwned;
 	local cards = entryInfo.sharedData.cards;
 	local modelSceneID = entryInfo.sharedData.modelSceneID or cards[1].modelSceneID; -- Shared data can specify a scene to override, otherwise use the scene for the model on the card
 
@@ -3448,6 +3674,7 @@ function StoreProductCard_ShowModel(self, entryInfo, showShadows, forceModelUpda
 	if self.Shadows then
 		self.Shadows:SetShown(showShadows);
 	end
+	self.ModelScene:ClearScene();
 	self.ModelScene:SetFromModelSceneID(modelSceneID, forceModelUpdate);
 
 	local hasMultipleModels = #cards > 1;
@@ -3461,15 +3688,12 @@ function StoreProductCard_ShowModel(self, entryInfo, showShadows, forceModelUpda
 			actorTag = baseActorTag;
 		end
 
-		local actor = self.ModelScene:GetActorByTag(actorTag);
-		if actor then
-			actor:SetModelByCreatureDisplayID(card.creatureDisplayInfoID);
-			actor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+		if card.creatureDisplayInfoID and card.creatureDisplayInfoID > 0 then
+			local actor = self.ModelScene:GetActorByTag(actorTag);
+			SetupItemPreviewActor(actor, card.creatureDisplayInfoID);
+		else
+			SetupPlayerForModelScene(self.ModelScene, card.itemModifiedAppearanceIDs);
 		end
-	end
-
-	if self.Checkmark then
-		self.Checkmark:SetShown(entryInfo.alreadyOwned);
 	end
 
 	-- HACK: This should be driven by the data returned from GetModelSceneCameraInfo, not the model count.
@@ -4080,7 +4304,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 		frame.ValidationDescription:ClearAllPoints();
 		frame.ValidationDescription:SetPoint("TOPLEFT", frame.TransferFactionCheckbox, "BOTTOMLEFT", 8, -8);
 	elseif (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
-		if (C_StoreSecure.GetCurrencyID() ~= CURRENCY_KRW) then
+		if (StoreVASValidationFrame.productInfo.sharedData.canChangeAccount) then
 			frame.TransferAccountCheckbox:Show();
 			frame.TransferAccountCheckbox.Label:ApplyFontObjects();
 			frame.TransferFactionCheckbox:ClearAllPoints();
@@ -4192,8 +4416,9 @@ function StoreGetAutoCompleteEntries(self, text, cursorPosition)
 	end
 	local entries = {};
 	local str = string.lower(string.sub(text, 1, cursorPosition));
+	local scrubbedString = string.gsub(str, "[%(%)%.%%%+%-%*%?%[%^%$]+", "");
 	for _, info in ipairs(autoCompleteList) do
-		if (string.find(string.lower(info.value), str)) then
+		if (string.find(string.lower(info.value), scrubbedString)) then
 			table.insert(entries, info);
 		end
 	end

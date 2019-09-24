@@ -573,53 +573,63 @@
 		<Anchors>
 			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-24"/>
 		</Anchors>
-		<Layers>
-			<Layer level="BORDER">
-				<Texture name="CalendarViewEventIcon">
-					<Size x="60" y="60"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="16" y="-26"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND">
-				<FontString name="CalendarViewEventTitle" inherits="GameFontNormal" justifyH="LEFT">
-					<Size x="220" y="12"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="CalendarViewEventIcon" relativePoint="TOPRIGHT" x="2" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString name="CalendarViewEventCommunityName" inherits="GameFontNormalSmall" justifyH="LEFT">
-					<Size x="220" y="12"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="CalendarViewEventTitle" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="CalendarViewEventTypeName" inherits="GameFontNormalSmall" justifyH="LEFT">
-					<Size x="220" y="12"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="CalendarViewEventCommunityName" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="CalendarViewEventCreatorName" inherits="GameFontNormalSmall" justifyH="LEFT">
-					<Size x="220" y="12"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="CalendarViewEventTypeName" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="CalendarViewEventDateLabel" inherits="GameFontHighlightSmall">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="CalendarViewEventCreatorName" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="CalendarViewEventTimeLabel" inherits="GameFontHighlightSmall">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="CalendarViewEventDateLabel" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 		<Frames>
+			<Button parentKey="HeaderFrame">
+				<Size x="320" y="100"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture name="CalendarViewEventIcon">
+							<Size x="60" y="60"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="16" y="-26"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<FontString name="CalendarViewEventTitle" inherits="GameFontNormal" justifyH="LEFT">
+							<Size x="220" y="12"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="CalendarViewEventIcon" relativePoint="TOPRIGHT" x="2" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString name="CalendarViewEventCommunityName" inherits="GameFontNormalSmall" justifyH="LEFT">
+							<Size x="220" y="12"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="CalendarViewEventTitle" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="CalendarViewEventTypeName" inherits="GameFontNormalSmall" justifyH="LEFT">
+							<Size x="220" y="12"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="CalendarViewEventCommunityName" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="CalendarViewEventCreatorName" inherits="GameFontNormalSmall" justifyH="LEFT">
+							<Size x="220" y="12"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="CalendarViewEventTypeName" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="CalendarViewEventDateLabel" inherits="GameFontHighlightSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="CalendarViewEventCreatorName" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="CalendarViewEventTimeLabel" inherits="GameFontHighlightSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="CalendarViewEventDateLabel" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter function="CalendarViewEventFrameHeaderFrame_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
 			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
 			<Frame name="CalendarViewEventTitleFrame" inherits="CalendarTitleFrameTemplate">
 				<Scripts>
@@ -986,7 +996,6 @@
 								GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 								GameTooltip:SetText(CALENDAR_TOOLTIP_AUTOAPPROVE, nil, nil, nil, nil, true);
 								GameTooltip:Show();
-								--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_AUTOAPPROVE, 1);
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
@@ -1003,7 +1012,6 @@
 								GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 								GameTooltip:SetText(CALENDAR_TOOLTIP_LOCKEVENT, nil, nil, nil, nil, true);
 								GameTooltip:Show();
-								--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_LOCKEVENT, 1);
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
@@ -1020,6 +1028,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
+								self.addHighlightedText = true;
 								self:SetText(CALENDAR_PLAYER_NAME);
 							</OnLoad>
 							<OnTabPressed>
@@ -1086,7 +1095,6 @@
 						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 						GameTooltip:SetText(CALENDAR_TOOLTIP_MASSINVITE, nil, nil, nil, nil, true);
 						GameTooltip:Show();
-						--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_MASSINVITE, 1);
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>

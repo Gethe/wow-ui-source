@@ -3013,7 +3013,6 @@ function PaperDollItemsMixin:OnHelpTipManuallyClosed(closeFlag)
 end
 
 function PaperDollItemsMixin:EvaluateHelpTip()
-	local helpTipBox = self.HelpTipBox;
 	local bestHelpTipButton, helpTipText;
 	local helpCloseFlag = 0;
 	if not bestHelpTipButton and self:ShouldShowAzeriteEssenceUnlockHelpTip() then
@@ -3033,10 +3032,11 @@ function PaperDollItemsMixin:EvaluateHelpTip()
 	end
 	if not bestHelpTipButton and self:ShouldShowAzeriteEssenceSwapHelpTip() then
 		bestHelpTipButton = self:FindActiveAzeriteItemButton();
-		helpTipText = CHARACTER_SHEET_MICRO_BUTTON_AZERITE_ESSENCE_CHANGE_ESSENCES;
-		helpCloseFlag = self.helpFlags.AzeriteEssenceSwapTipClosed;
-
-		AzeriteEssenceUtil.SetEssenceSwapTutorialSeen();
+		if bestHelpTipButton then
+			helpTipText = CHARACTER_SHEET_MICRO_BUTTON_AZERITE_ESSENCE_CHANGE_ESSENCES;
+			helpCloseFlag = self.helpFlags.AzeriteEssenceSwapTipClosed;
+			AzeriteEssenceUtil.SetEssenceSwapTutorialSeen();
+		end
 	end	
 	if not bestHelpTipButton and self:ShouldShowAzeriteEmpoweredItemHelpTip() then
 		bestHelpTipButton = self:FindBestAzeriteEmpoweredItemUIHelpTipButton();
@@ -3044,38 +3044,26 @@ function PaperDollItemsMixin:EvaluateHelpTip()
 		helpCloseFlag = self.helpFlags.AzeriteEmpoweredItemTipClosed;
 	end
 
+	HelpTip:HideAll(self);
 	if bestHelpTipButton then
-		helpTipBox.Arrow:ClearAllPoints();
-		helpTipBox:ClearAllPoints();
-		helpTipBox.Arrow.Glow:ClearAllPoints();
-		helpTipBox:ClearAllPoints();
-
+		local helpTipInfo = {
+			onHideCallback = function(acknowledged, closeFlag)
+				if acknowledged then
+					PaperDollItemsFrame:OnHelpTipManuallyClosed(closeFlag);
+				end
+			end,
+			callbackArg = helpCloseFlag;
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			text = helpTipText
+		};
 		if bestHelpTipButton.IsLeftSide then
-			helpTipBox.Arrow.Arrow:SetRotation(-math.pi / 2);
-			helpTipBox.Arrow.Glow:SetRotation(-math.pi / 2);
-
-			helpTipBox.Arrow:SetPoint("RIGHT", helpTipBox, "LEFT", 17, 0);
-			helpTipBox.Arrow.Glow:SetPoint("CENTER", helpTipBox.Arrow.Arrow, "CENTER", -3, 0);
-			helpTipBox.CloseButton:SetPoint("TOPRIGHT", helpTipBox, "TOPRIGHT", 6, 6);
-			helpTipBox:SetPoint("LEFT", bestHelpTipButton, "RIGHT", 30, 0);
+			helpTipInfo.targetPoint = HelpTip.Point.RightEdgeCenter;
+			helpTipInfo.offsetX = 10;
 		else
-			helpTipBox.Arrow.Arrow:SetRotation(math.pi / 2);
-			helpTipBox.Arrow.Glow:SetRotation(math.pi / 2);
-
-			helpTipBox.Arrow:SetPoint("LEFT", helpTipBox, "RIGHT", -17, 0);
-			helpTipBox.Arrow.Glow:SetPoint("CENTER", helpTipBox.Arrow.Arrow, "CENTER", 4, 0);
-			helpTipBox.CloseButton:SetPoint("TOPRIGHT", helpTipBox, "TOPRIGHT", 4, 6);
-			helpTipBox:SetPoint("RIGHT", bestHelpTipButton, "LEFT", -30, 0);
+			helpTipInfo.targetPoint = HelpTip.Point.LeftEdgeCenter;
+			helpTipInfo.offsetX = -10;
 		end
-
-		helpTipBox:Show();
-		helpTipBox.Text:SetText(helpTipText);
-		helpTipBox:SetHeight(helpTipBox.Text:GetHeight() + 34);
-		helpTipBox.closeFlag = helpCloseFlag;
-		return true;
-	else
-		helpTipBox:Hide();
-		return false;
+		HelpTip:Show(self, helpTipInfo, bestHelpTipButton);
 	end
 end
 

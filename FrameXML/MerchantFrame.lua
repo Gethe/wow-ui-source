@@ -838,14 +838,14 @@ function MerchantFrame_UpdateCurrencies()
 		MerchantFrame:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 		MerchantExtraCurrencyInset:Show();
 		MerchantExtraCurrencyBg:Show();
-		local numCurrencies = #currencies;
-		if ( numCurrencies > 3 ) then
+		MerchantFrame.numCurrencies = #currencies;
+		if ( MerchantFrame.numCurrencies > 3 ) then
 			MerchantMoneyFrame:Hide();
 		else
 			MerchantMoneyFrame:SetPoint("BOTTOMRIGHT", -169, 8);
 			MerchantMoneyFrame:Show();
 		end
-		for index = 1, numCurrencies do
+		for index = 1, MerchantFrame.numCurrencies do
 			local tokenButton = _G["MerchantToken"..index];
 			-- if this button doesn't exist yet, create it and anchor it
 			if ( not tokenButton ) then
@@ -863,14 +863,10 @@ function MerchantFrame_UpdateCurrencies()
 
 			local name, count, icon = GetCurrencyInfo(currencies[index]);
 			if ( name and name ~= "" ) then
-				if ( count <= 99999 ) then
-					tokenButton.count:SetText(count);
-				else
-					tokenButton.count:SetText("*");
-				end
 				tokenButton.icon:SetTexture(icon);
 				tokenButton.currencyID = currencies[index];
 				tokenButton:Show();
+				MerchantFrame_UpdateCurrencyButton(tokenButton);
 			else
 				tokenButton.currencyID = nil;
 				tokenButton:Hide();
@@ -898,20 +894,29 @@ function MerchantFrame_UpdateCurrencyAmounts()
 	for i = 1, MAX_MERCHANT_CURRENCIES do
 		local tokenButton = _G["MerchantToken"..i];
 		if ( tokenButton ) then
-			if ( tokenButton.currencyID ) then
-				local name, count = GetCurrencyInfo(tokenButton.currencyID);
-				if ( count <= 99999 ) then
-					tokenButton.count:SetText(count);
-				else
-					tokenButton.count:SetText("*");
-				end
-			end
+			MerchantFrame_UpdateCurrencyButton(tokenButton);
 		else
 			return;
 		end
 	end
 end
 
+function MerchantFrame_UpdateCurrencyButton(tokenButton)
+	if ( tokenButton.currencyID ) then
+		local name, count = GetCurrencyInfo(tokenButton.currencyID);
+		local displayCount = count;
+		local displayWidth = 50;
+		if ( count > 99999 ) then
+			if MerchantFrame.numCurrencies == 1 then
+				displayWidth = 100;
+			else
+				displayCount = "*"
+			end
+		end
+		tokenButton.count:SetText(displayCount);
+		tokenButton:SetWidth(displayWidth);
+	end
+end
 
 function MerchantFrame_SetFilter(self, classIndex)
 	SetMerchantFilter(classIndex);

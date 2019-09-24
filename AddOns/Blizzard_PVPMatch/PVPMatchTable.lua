@@ -131,17 +131,13 @@ function PVPHeaderStringMixin:Init(textID, textAlignment, sortType, tooltipText)
 end
 
 local function FormatCellColor(frame, rowData, useAlternateColor)
-	local faction = rowData.faction;
-	local guid = rowData.guid;
-	local GetCellColor = function(useAlternateColor)
-		if IsPlayerGuid(guid) then
-			return WHITE_FONT_COLOR;
-		else
-			return PVPMatchUtil.GetCellColor(faction, useAlternateColor);
-		end
-	end;
+	local color;
+	if IsPlayerGuid(rowData.guid) then
+		color = WHITE_FONT_COLOR;
+	else
+		color = PVPMatchUtil.GetCellColor(rowData.faction, useAlternateColor);
+	end
 
-	local color = GetCellColor(useAlternateColor);
 	frame:SetVertexColor(color:GetRGB());
 end
 
@@ -222,22 +218,42 @@ function PVPCellStatMixin:Init(dataProviderKey, useAlternateColor)
 	self.useAlternateColor = useAlternateColor;
 end
 
-function PVPCellStatMixin:Populate(rowData, dataIndex)
-	local value = TableBuilderDataProviderUtil.TraverseToValue(rowData, self.dataProviderKey);
-	if value then
-		local iconName = value.iconName;
-		local amount = value.pvpStatValue;
-		local text = self.text;
-		if not iconName or iconName == "" then
-			text:SetText(amount);
-		else
-			local markup = CreateAtlasMarkup(iconName,16,16,0,-2);
-			local count = FLAG_COUNT_TEMPLATE:format(amount);
-			local string = markup..count;
-			text:SetText(string);
+local function GetPVPStatData(rowData, pvpStatID)
+	local stats = rowData.stats;
+	for statsIndex = 1, #stats do
+		local stat = stats[statsIndex];
+		if stat.pvpStatID == pvpStatID then
+			return stat;
 		end
+	end
 
-		FormatCellColor(text, rowData, self.useAlternateColor);
+	return nil;
+end
+
+function PVPCellStatMixin:Populate(rowData, dataIndex)
+	local entry = GetPVPStatData(rowData, self.dataProviderKey);
+	if entry then
+		local value = entry.pvpStatValue;
+		if value then
+			local text = self.text;
+			local iconName = entry.iconName;
+			if iconName and iconName ~= "" then
+				if value > 0 then
+					local markup = CreateAtlasMarkup(iconName,16,16,0,-2);
+					local markupCount = FLAG_COUNT_TEMPLATE:format(value);
+					local string = markup..markupCount;
+					text:SetText(string);
+				else
+					text:SetText("");
+				end
+			else
+				text:SetText(value);
+			end
+
+			FormatCellColor(text, rowData, self.useAlternateColor);
+		else
+			text:SetText("");
+		end
 	end
 end
 
@@ -315,25 +331,18 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 	column:ConstrainToHeader(textPadding);
 	column:ConstructCells("FRAME", "PVPCellStringTemplate", "healingDone", useAlternateColor, isAbbreviated, hasTooltip);
 
-	local statColumns = {};
-	for pvpStatIndex, pvpStatID in ipairs(C_PvP.GetMatchPVPStatIDs()) do
-		local statColumn = C_PvP.GetMatchPVPStatColumn(pvpStatID);
-		statColumn.sortType = "stat"..pvpStatIndex;
-		statColumn.statPath = "stats."..pvpStatIndex;
-		tinsert(statColumns, statColumn)
-	end
+	local statColumns = C_PvP.GetMatchPVPStatColumns();
+	table.sort(statColumns, function(lhs,rhs)
+		return lhs.orderIndex < rhs.orderIndex;
+	end);
 
-	table.sort(statColumns, function(a, b)
-		return a.orderIndex < b.orderIndex end
-	);
-
-	for i, statColumn in ipairs(statColumns) do
-		local name = statColumn.name;
-		if strlen(name) > 0 then
-		column = tableBuilder:AddColumn();
-		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", statColumn.name, "CENTER", statColumn.sortType, statColumn.tooltip);
-		column:ConstrainToHeader(textPadding);
-		column:ConstructCells("FRAME", "PVPCellStatTemplate", statColumn.statPath, useAlternateColor);
+	for columnIndex, statColumn in ipairs(statColumns) do
+		if strlen(statColumn.name) > 0 then
+			column = tableBuilder:AddColumn();
+			local sortType = "stat"..columnIndex;
+			column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", statColumn.name, "CENTER", sortType, statColumn.tooltip);
+			column:ConstrainToHeader(textPadding);
+			column:ConstructCells("FRAME", "PVPCellStatTemplate", statColumn.pvpStatID, useAlternateColor);
 		end
 	end
 	

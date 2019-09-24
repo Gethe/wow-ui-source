@@ -22,5 +22,5 @@ function AdventureMap_IsPositionBlockedByZoneChoice(mapID, normalizedX, normaliz
 end
 
 function AdventureMap_IsQuestValid(questID, normalizedX, normalizedY)
-	return questID and not IsQuestFlaggedCompleted(questID) and normalizedX and normalizedY and GetQuestLogIndexByID(questID) == 0;
+	return questID and not C_QuestLog.IsQuestFlaggedCompleted(questID) and normalizedX and normalizedY and GetQuestLogIndexByID(questID) == 0;
 end

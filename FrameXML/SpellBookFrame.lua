@@ -680,6 +680,8 @@ function SpellButton_UpdateButton(self)
 	local slot, slotType, slotID = SpellBook_GetSpellBookSlot(self);
 	local name = self:GetName();
 	local iconTexture = _G[name.."IconTexture"];
+	local levelLinkLockTexture = _G[name.."LevelLinkLockTexture"];
+	local levelLinkLockBg = _G[name.."LevelLinkLockBg"];
 	local spellString = _G[name.."SpellName"];
 	local subSpellString = _G[name.."SubSpellName"];
 	local cooldown = _G[name.."Cooldown"];
@@ -700,6 +702,8 @@ function SpellButton_UpdateButton(self)
 	-- If no spell, hide everything and return, or kiosk mode and future spell
 	if ( not texture or (strlen(texture) == 0) or (slotType == "FUTURESPELL" and IsKioskModeEnabled())) then
 		iconTexture:Hide();
+		levelLinkLockTexture:Hide();
+		levelLinkLockBg:Hide();
 		spellString:Hide();
 		subSpellString:Hide();
 		cooldown:Hide();
@@ -800,13 +804,16 @@ function SpellButton_UpdateButton(self)
 	spellString:Show();
 	subSpellString:Show();
 
-	if (not (slotType == "FUTURESPELL")) then
+	local iconTextureAlpha;
+	local iconTextureDesaturated;
+	local isDisabled = spellID and C_SpellBook.IsSpellDisabled(spellID);
+	if (not (slotType == "FUTURESPELL") and not isDisabled) then
 		slotFrame:Show();
 		self.UnlearnedFrame:Hide();
 		self.TrainFrame:Hide();
 		self.IconTextureBg:Hide();
-		iconTexture:SetAlpha(1);
-		iconTexture:SetDesaturated(false);
+		iconTextureAlpha = 1;
+		iconTextureDesaturated = false;
 		self.RequiredLevelString:Hide();
 		self.SeeTrainerString:Hide();
 		self.TrainTextBackground:Hide();
@@ -857,7 +864,7 @@ function SpellButton_UpdateButton(self)
 
 		if ( slotType == "SPELL" and isOffSpec ) then
 			local level = GetSpellLevelLearned(slotID);
-			if ( level and level > UnitLevel("player") ) then
+			if ( level and level > 0 and level > UnitLevel("player") ) then
 				self.RequiredLevelString:Show();
 				self.RequiredLevelString:SetFormattedText(SPELLBOOK_AVAILABLE_AT, level);
 				self.RequiredLevelString:SetTextColor(0.25, 0.12, 0);
@@ -873,8 +880,8 @@ function SpellButton_UpdateButton(self)
 		end
 		self.GlyphIcon:Hide();
 		self.IconTextureBg:Show();
-		iconTexture:SetAlpha(0.5);
-		iconTexture:SetDesaturated(true);
+		iconTextureAlpha = .5;
+		iconTextureDesaturated = true;
 		if (IsCharacterNewlyBoosted()) then
 			self.SeeTrainerString:Hide();
 			self.UnlearnedFrame:Show();
@@ -888,11 +895,16 @@ function SpellButton_UpdateButton(self)
 			self.SpellSubName:SetTextColor(0.25, 0.12, 0);
 			self.SpellName:SetShadowOffset(0, 0);
 			self.SpellName:SetPoint("LEFT", self, "RIGHT", 8, 6);
-		elseif (level and level > UnitLevel("player")) then
+		elseif (level and level > UnitLevel("player") or isDisabled) then
 			self.SeeTrainerString:Hide();
-			self.RequiredLevelString:Show();
-			self.RequiredLevelString:SetFormattedText(SPELLBOOK_AVAILABLE_AT, level);
-			self.RequiredLevelString:SetTextColor(0.25, 0.12, 0);
+
+			local displayedLevel = isDisabled and GetSpellLevelLearned(slot, SpellBookFrame.bookType) or level;
+			if displayedLevel > 0 then
+				self.RequiredLevelString:SetFormattedText(SPELLBOOK_AVAILABLE_AT, displayedLevel);
+				self.RequiredLevelString:SetTextColor(0.25, 0.12, 0);
+				self.RequiredLevelString:Show();
+			end
+
 			self.UnlearnedFrame:Show();
 			self.TrainFrame:Hide();
 			self.TrainTextBackground:Hide();
@@ -913,6 +925,17 @@ function SpellButton_UpdateButton(self)
 			self.SpellName:SetPoint("LEFT", self, "RIGHT", 24, 8);
 			self.SpellSubName:SetTextColor(0, 0, 0);
 		end
+	end
+
+	local isLevelLinkLocked = spellID and C_LevelLink.IsSpellLocked(spellID) or false;
+	levelLinkLockTexture:SetShown(isLevelLinkLocked);
+	levelLinkLockBg:SetShown(isLevelLinkLocked);
+	if isLevelLinkLocked then
+		iconTexture:SetAlpha(1.0);
+		iconTexture:SetDesaturated(true);
+	else
+		iconTexture:SetAlpha(iconTextureAlpha);
+		iconTexture:SetDesaturated(iconTextureDesaturated);
 	end
 
 	if ( isPassive ) then

@@ -269,6 +269,15 @@ local Club =
 			},
 		},
 		{
+			Name = "GetClubCapacity",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "capacity", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetClubInfo",
 			Type = "Function",
 
@@ -1219,7 +1228,7 @@ local Club =
 			Name = "ClubRoleIdentifier",
 			Type = "Enumeration",
 			NumValues = 4,
-			MinValue = 0,
+			MinValue = 1,
 			MaxValue = 4,
 			Fields =
 			{
@@ -1432,9 +1441,9 @@ local Club =
 		{
 			Name = "ValidateNameResult",
 			Type = "Enumeration",
-			NumValues = 17,
+			NumValues = 18,
 			MinValue = 0,
-			MaxValue = 16,
+			MaxValue = 17,
 			Fields =
 			{
 				{ Name = "NameSuccess", Type = "ValidateNameResult", EnumValue = 0 },
@@ -1454,6 +1463,7 @@ local Club =
 				{ Name = "NameRussianConsecutiveSilentCharacters", Type = "ValidateNameResult", EnumValue = 14 },
 				{ Name = "NameRussianSilentCharacterAtBeginningOrEnd", Type = "ValidateNameResult", EnumValue = 15 },
 				{ Name = "NameDeclensionDoesntMatchBaseName", Type = "ValidateNameResult", EnumValue = 16 },
+				{ Name = "NameSpacesDisallowed", Type = "ValidateNameResult", EnumValue = 17 },
 			},
 		},
 		{

@@ -172,51 +172,6 @@
 					</OnLeave>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="KnowledgeLevelHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
-				<Size x="220" y="100"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.ForgeLevelFrame" relativePoint="RIGHT" x="-8" y="14"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="ARTIFACT_TUTORIAL_KNOWLEDGE">
-							<Size x="188" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="16" y="-20"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="6" y="6"/>
-						</Anchors>
-						<Scripts>
-							<OnClick inherit="append">
-								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_KNOWLEDGE, true);
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="-17" y="-9"/>
-						</Anchors>
-					</Frame>
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						self.Text:SetSpacing(4);
-						SetClampedTextureRotation(self.Arrow.Arrow, 90);
-						SetClampedTextureRotation(self.Arrow.Glow, 90);
-						self.Arrow.Glow:ClearAllPoints();
-						self.Arrow.Glow:SetPoint("CENTER", self.Arrow.Arrow, "CENTER", -3, 0);
-					</OnLoad>
-					<OnShow>
-						self:SetHeight(self.Text:GetHeight() + 42);
-					</OnShow>
-				</Scripts>
-			</Frame>
 			<Button parentKey="PerksTabButton" name="$parentTab1" inherits="ArtifactFrameTabButtonTemplate" id="1" text="ARTIFACTS_PERK_TAB">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="11" y="-7" />
@@ -227,44 +182,6 @@
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-15" y="0" />
 				</Anchors>
 			</Button>
-			<Frame parentKey="AppearanceTabHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
-				<Size x="220" y="100"/>
-				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.AppearancesTabButton" relativePoint="TOP" x="0" y="14"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="ARTIFACT_TUTORIAL_CUSTOMIZE_APPEARANCE">
-							<Size x="188" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="16" y="-24"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="6" y="6"/>
-						</Anchors>
-						<Scripts>
-							<OnClick inherit="append">
-								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_APPEARANCE_TAB, true);
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
-						<Anchors>
-							<Anchor point="TOP" relativePoint="BOTTOM" y="4"/>
-						</Anchors>
-					</Frame>
-				</Frames>
-				<Scripts>
-					<OnShow>
-						self:SetHeight(self.Text:GetHeight()+42);
-					</OnShow>
-				</Scripts>
-			</Frame>
 
 			<Frame parentKey="PerksTab" setAllPoints="true" hidden="true" inherits="ArtifactPerksTabTemplate" />
 			<Frame parentKey="AppearancesTab" setAllPoints="true" hidden="true" inherits="ArtifactAppearancesTabTemplate" />

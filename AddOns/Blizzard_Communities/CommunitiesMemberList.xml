@@ -245,10 +245,8 @@
 				<Layers>
 					<Layer level="BORDER">
 						<Texture parentKey="Watermark" alphaMode="ADD" alpha="0.10">
+							<Size x="128" y="128"/>
 							<Anchors>
-								<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="44" y="131"/>
-								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-84" y="131"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="44" y="3"/>
 								<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-84" y="3"/>
 							</Anchors>
 						</Texture>
@@ -337,7 +335,7 @@
 					</Slider>
 				</Frames>
 			</ScrollFrame>
-			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate">
+			<Frame parentKey="DropDown" hidden="true" inherits="UIDropDownMenuTemplate">
 				<Scripts>
 					<OnLoad function="CommunitiesMemberListDropDown_OnLoad"/>
 					<OnHide function="CommunitiesMemberListDropDown_OnHide"/>
@@ -365,12 +363,41 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="GuildMemberListDropDownMenuTemplate" inherits="UIDropDownMenuTemplate" mixin="GuildMemberListDropDownMenuMixin" virtual="true">
+	<Frame name="CommunitiesFrameMemberListDropDownMenuTemplate" inherits="UIDropDownMenuTemplate" mixin="CommunitiesFrameMemberListDropDownMenuMixin" virtual="true">
 		<Size x="40" y="28"/>
+		<Frames>
+			<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="UnreadNotificationIcon" atlas="communities-icon-notification">
+							<Size x="11" y="11"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="-19" y="-4"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Flash" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight-yellow" setAllPoints="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="6" y="1"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-22" y="3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnUpdate>
+						self.Flash:SetAlpha(abs(mod(GetTime(), 2) - 1));
+					</OnUpdate>
+				</Scripts>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
+	
+	<Frame name="GuildMemberListDropDownMenuTemplate" inherits="CommunitiesFrameMemberListDropDownMenuTemplate" mixin="GuildMemberListDropDownMenuMixin" virtual="true"/>
+
+	<Frame name="CommunityMemberListDropDownMenuTemplate" inherits="CommunitiesFrameMemberListDropDownMenuTemplate" mixin="CommunityMemberListDropDownMenuMixin" virtual="true"/>
 </Ui>

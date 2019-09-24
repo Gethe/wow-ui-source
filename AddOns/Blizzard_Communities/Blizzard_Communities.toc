@@ -1,5 +1,6 @@
 ## Title: Blizzard_Communities
 ## RequiredDep: Blizzard_GuildRecruitmentUI, Blizzard_GuildControlUI
+## SavedVariablesPerCharacter: g_clubIdToSeenApplicants
 ## LoadOnDemand: 1
 
 ..\..\SharedXML\SecureUIPanelTemplates.lua
@@ -15,6 +16,8 @@ CommunitiesAddDialogInsecure.xml
 CommunitiesAddDialog.xml
 CommunitiesAddDialogOutbound.lua
 CommunitiesTabs.xml
+ClubFinderApplicantList.xml
+ClubFinder.xml
 CommunitiesSettings.xml
 CommunitiesTicketManagerDialog.xml
 CommunitiesErrors.lua

@@ -27,6 +27,7 @@
 ..\SharedXML\CustomBindingButtonMixin.lua
 ..\SharedXML\PixelUtil.lua
 ..\SharedXML\TableBuilder.lua
+..\SharedXML\NewFeatureLabel.xml
 MixinUtil.lua
 
 ## intrinsics
@@ -57,13 +58,16 @@ QuestLogOwnerMixin.lua
 
 ObjectAPI\ContinuableContainer.lua
 ObjectAPI\ItemLocation.lua
+ObjectAPI\AsyncCallbackSystem.lua
 ObjectAPI\Item.lua
 ObjectAPI\Spell.lua
 ObjectAPI\PlayerLocation.lua
 
 ## add new modules below here
+GlobalCallbackRegistry.lua
 WorldFrame.xml
 UIParent.xml
+PartyUtil.lua
 QuestUtils.lua
 AchievementUtil.lua
 MapUtil.lua
@@ -74,7 +78,9 @@ AuraUtil.lua
 CalendarUtil.lua
 CommunitiesUtil.lua
 ItemUtil.lua
+TransmogUtil.lua
 ItemDisplay.xml
+HelpTip.xml
 CurrencyContainer.lua
 ## IME.xml needs to be loaded after UIParent.xml
 ..\SharedXML\IME.xml
@@ -112,8 +118,8 @@ WardrobeOutfits.xml
 DressUpFrames.xml
 ItemButtonTemplate.xml
 NavigationBar.xml
-..\SharedXML\HybridScrollFrame.lua
 ..\SharedXML\HybridScrollFrame.xml
+..\SharedXML\ScrollList.xml
 GameMenuFrame.xml
 CharacterFrameTemplates.xml
 TextStatusBar.lua
@@ -188,7 +194,6 @@ LootFrame.xml
 ItemTextFrame.xml
 TaxiFrame.xml
 BankFrame.xml
-ScrollOfResurrection.xml
 RoleSelectionTemplate.xml
 ItemRef.xml
 SocialQueue.xml
@@ -276,6 +281,7 @@ SplashFrame.xml
 QuestChoiceFrameMixin.lua
 AzeriteEmpoweredItemDataSource.lua
 GuildUtil.lua
+QuestSession.xml
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

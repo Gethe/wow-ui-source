@@ -1,6 +1,6 @@
 
-local LEFT_ALIGNMENT = "left";
-local RIGHT_ALIGNMENT = "right";
+local LEFT_ALIGNMENT = "LEFT";
+local RIGHT_ALIGNMENT = "RIGHT";
 
 local IS_CAMERA_TARGET = true;
 local IS_COMPACT = true;
@@ -18,9 +18,11 @@ function CommentatorUnitFrameMixin:Initialize(align)
 	self.compact = false;
 	self.canBeVisible = false;
 
-	self.offensiveCooldownPool = CreateCommentatorCooldownPool(self, self:GetTeamAndPlayer());
-	self.defensiveCooldownPool = CreateCommentatorCooldownPool(self, self:GetTeamAndPlayer());
-	
+	local teamIndex, playerIndex = self:GetTeamAndPlayer();
+	self.offensiveCooldownPool = CreateCommentatorSpellPool(self.OffensiveCooldownContainer, teamIndex, playerIndex, "CommentatorCooldownFrameTemplate");
+	self.defensiveCooldownPool = CreateCommentatorSpellPool(self.DefensiveCooldownContainer, teamIndex, playerIndex, "CommentatorCooldownFrameTemplate");
+	self.debuffPool = CreateCommentatorSpellPool(self.DebuffContainer, teamIndex, playerIndex, "CommentatorDebuffFrameTemplate");
+
 	self:EvaluateRelayout();
 
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
@@ -34,12 +36,12 @@ function CommentatorUnitFrameMixin:OnEvent(event, ...)
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 		self:OnCombatEvent(CombatLogGetCurrentEventInfo());
 	elseif event == "COMMENTATOR_PLAYER_UPDATE" then
-		self:FullCooldownRefresh();
+		self:ReinitializeSpells();
 	elseif ( event == "ARENA_COOLDOWNS_UPDATE" ) then
 		local token = ...;
 		if token == self.token then
 			self:UpdateCrowdControlRemover();
-			self:FullCooldownRefresh();
+			self:ReinitializeSpells();
 		end
 	elseif ( event == "ARENA_CROWD_CONTROL_SPELL_UPDATE" ) then
 		local token, spellID = ...;
@@ -140,37 +142,50 @@ function CommentatorUnitFrameMixin:AreUpdatesAllowed()
 	return GetBattlefieldWinner() == nil;
 end
 
-local COOLDOWN_REFRESH_TIME = 1.0;
 function CommentatorUnitFrameMixin:OnUpdate(elapsed)
 	if self.isLayoutDirty then
 		self.isLayoutDirty = false;
 		self:ApplyLayout(self.layout);
 	end
 	
-	if self.needsCooldownData then
-		self.timeSinceLastFullCooldownRefresh = self.timeSinceLastFullCooldownRefresh + elapsed;
-		if self.timeSinceLastFullCooldownRefresh > COOLDOWN_REFRESH_TIME then
-			self:FullCooldownRefresh();
+	if self.reinitSpellsSecondsElapsed then
+		self.reinitSpellsSecondsElapsed = self.reinitSpellsSecondsElapsed + elapsed;
+		if self.reinitSpellsSecondsElapsed > 1.0 then
+			self:ReinitializeSpells();
 		end
 	end
 
-	if not self:AreUpdatesAllowed() then return end
-
-	local maxHealth = UnitHealthMax(self.token);
-	self:SetMaxHP(maxHealth);
-	local health = UnitHealth(self.token);
-	self:SetHP(health);
-	self:SetAbsorb(health, UnitGetTotalAbsorbs(self.token) or 0, maxHealth);
+	if not self:AreUpdatesAllowed() then 
+		return;
+	end
 
 	self:SetFlagInfo(C_Commentator.GetPlayerFlagInfo(self.teamIndex, self.playerIndex));
 
-	self:SetMaxPower(UnitPowerMax(self.token))
-	self:SetPower(UnitPower(self.token));
+	-- Suspending some updates on the nameplate once the unit becomes invalid.
+	if UnitExists(self.token) then
+		local maxHealth = UnitHealthMax(self.token);
+		self:SetMaxHP(maxHealth);
+		local health = UnitHealth(self.token);
+		self:SetHP(health);
+		self:SetAbsorb(health, UnitGetTotalAbsorbs(self.token) or 0, maxHealth);
 
-	self:SetPowerType(select(2, UnitPowerType(self.token)));
+		local isDeadOrGhost = UnitIsDeadOrGhost(self.token);
+		local maxPowerIfDeadOrGhost = isDeadOrGhost and 0;
+		self:SetMaxPower(maxPowerIfDeadOrGhost or UnitPowerMax(self.token))
+		self:SetPower(maxPowerIfDeadOrGhost or UnitPower(self.token));
 
-	self:SetLifeState(UnitIsFeignDeath(self.token), UnitIsDeadOrGhost(self.token));
-	self:UpdateCameraWeight(not UnitIsFeignDeath(self.token) and UnitIsDeadOrGhost(self.token));
+		self:SetPowerType(select(2, UnitPowerType(self.token)));
+
+		local isFeignDeath = UnitIsFeignDeath(self.token);
+		self:SetLifeState(isFeignDeath, isDeadOrGhost);
+
+		local asDead = not isFeignDeath and isDeadOrGhost;
+		self:UpdateCameraWeight(asDead);
+	else
+		self:SetAbsorb(0, 0, 0);
+		self:SetMaxPower(0)
+		self:SetPower(0);
+	end
 
 	self:UpdateOnFireEffectAuras();
 	self:UpdateOnFireEffectVisuals(elapsed);
@@ -219,7 +234,8 @@ function CommentatorUnitFrameMixin:SetTeamAndPlayer(teamIndex, playerIndex)
 	
 	self.offensiveCooldownPool:SetTeamAndPlayer(teamIndex, playerIndex);
 	self.defensiveCooldownPool:SetTeamAndPlayer(teamIndex, playerIndex);
-	
+	self.debuffPool:SetTeamAndPlayer(teamIndex, playerIndex);
+
 	if token then
 		self.token = token;
 		self.tokenChanging = true;
@@ -247,7 +263,7 @@ function CommentatorUnitFrameMixin:SetTeamAndPlayer(teamIndex, playerIndex)
 		self.playerIndex = playerIndex;
 		self.teamIndex = teamIndex;
 		self.specID = specID;
-		self:FullCooldownRefresh();
+		self:ReinitializeSpells();
 		self:RegisterEvent("COMMENTATOR_PLAYER_UPDATE");
 	else
 		self.token = nil;
@@ -278,6 +294,7 @@ function CommentatorUnitFrameMixin:OnLayoutApplied()
 	self.PowerBar:SetShown(self.PowerBar.enabled);
 	self.OffensiveCooldownContainer:SetShown(self.OffensiveCooldownContainer.enabled);
 	self.DefensiveCooldownContainer:SetShown(self.DefensiveCooldownContainer.enabled);
+	self.DefensiveCooldownContainer:SetShown(self.DebuffContainer.enabled);
 end
 
 function CommentatorUnitFrameMixin:Invalidate()
@@ -333,11 +350,11 @@ function CommentatorUnitFrameMixin:SetFlagInfo(hasFlag)
 		UIFrameFlash(self.FlagIconHighlight, 0.5, 0.5, -1);
 		
 		if self.teamIndex == 1 then
-			self.FlagIcon:SetAtlas("tournamentarena-flag-large-blue");
-			self.FlagIconHighlight:SetAtlas("tournamentarena-flag-large-blue-flash");
+			self.FlagIcon:SetAtlas("tournamentarena-flag-large-blue", true);
+			self.FlagIconHighlight:SetAtlas("tournamentarena-flag-large-blue-flash", true);
 		else
-			self.FlagIcon:SetAtlas("tournamentarena-flag-large-red");
-			self.FlagIconHighlight:SetAtlas("tournamentarena-flag-large-red-flash");
+			self.FlagIcon:SetAtlas("tournamentarena-flag-large-red", true);
+			self.FlagIconHighlight:SetAtlas("tournamentarena-flag-large-red-flash", true);
 		end
 	else
 		UIFrameFlashStop(self.FlagIconHighlight);
@@ -419,12 +436,13 @@ function CommentatorUnitFrameMixin:OnCombatEvent(timestamp, event, hideCaster, s
 	if isSource then
 		if event == "SPELL_AURA_APPLIED" or event == "SPELL_AURA_REMOVED" then
 			local spellID = ...;
-			if C_Commentator.IsTrackedOffensiveCooldown(self.teamIndex, self.playerIndex, spellID) then
-				self.offensiveCooldownPool:SetCooldownIsActive(spellID, event == "SPELL_AURA_APPLIED");
-			end
-			
-			if C_Commentator.IsTrackedDefensiveCooldown(self.teamIndex, self.playerIndex, spellID) then
-				self.defensiveCooldownPool:SetCooldownIsActive(spellID, event == "SPELL_AURA_APPLIED");
+			local trackedSpellID = C_Commentator.GetTrackedSpellID(spellID);
+			if C_Commentator.IsTrackedSpell(self.teamIndex, self.playerIndex, trackedSpellID, Enum.TrackedSpellCategory.Offensive) then
+				self.offensiveCooldownPool:SetSpellActive(trackedSpellID, event == "SPELL_AURA_APPLIED");
+			elseif C_Commentator.IsTrackedSpell(self.teamIndex, self.playerIndex, trackedSpellID, Enum.TrackedSpellCategory.Defensive) then
+				self.defensiveCooldownPool:SetSpellActive(trackedSpellID, event == "SPELL_AURA_APPLIED");
+			elseif C_Commentator.IsTrackedSpell(self.teamIndex, self.playerIndex, trackedSpellID, Enum.TrackedSpellCategory.Debuff) then
+				self.debuffPool:SetSpellActive(trackedSpellID, event == "SPELL_AURA_APPLIED");
 			end
 		end
 	end
@@ -432,7 +450,8 @@ function CommentatorUnitFrameMixin:OnCombatEvent(timestamp, event, hideCaster, s
 	if isDest then
 		if event == "SPELL_AURA_APPLIED" or event == "SPELL_AURA_REMOVED" then
 			local spellID = ...;
-			if C_Commentator.IsTrackedOffensiveAura(spellID) or C_Commentator.IsTrackedDefensiveAura(spellID) then
+			local trackedSpellID = C_Commentator.GetTrackedSpellID(spellID);
+			if C_Commentator.IsTrackedOffensiveAura(trackedSpellID) or C_Commentator.IsTrackedDefensiveAura(trackedSpellID) then
 				self.onFireEffectAurasDirty = true;
 			end
 		end
@@ -526,32 +545,40 @@ function CommentatorUnitFrameMixin:UpdateCrowdControlAurasText()
 	end
 end
 
-BLIZZARD_COMMENTATOR_MAX_NUM_OFFENSIVE_COOLDOWNS = BLIZZARD_COMMENTATOR_MAX_NUM_OFFENSIVE_COOLDOWNS or 5;
-BLIZZARD_COMMENTATOR_MAX_NUM_DEFENSIVE_COOLDOWNS = BLIZZARD_COMMENTATOR_MAX_NUM_DEFENSIVE_COOLDOWNS or 5;	
-function CommentatorUnitFrameMixin:FullCooldownRefresh()
-	local PADDING = 11;
-	self.needsCooldownData = false;
-	self.timeSinceLastFullCooldownRefresh = 0;
+function CommentatorUnitFrameMixin:ReinitializeSpells()
+	self.reinitSpellsSecondsElapsed = nil;
 	
-	local offensiveCooldowns = C_Commentator.GetTrackedOffensiveCooldowns(self.teamIndex, self.playerIndex);
-	if offensiveCooldowns then
-		while #offensiveCooldowns > BLIZZARD_COMMENTATOR_MAX_NUM_OFFENSIVE_COOLDOWNS do
-			offensiveCooldowns[#offensiveCooldowns] = nil;
+	local poolCollections = 
+	{
+		{
+			spells = C_Commentator.GetTrackedSpells(self.teamIndex, self.playerIndex, Enum.TrackedSpellCategory.Offensive),
+			maxSpells = COMMENTATOR_MAX_OFFENSIVE_SPELLS,
+			pool = self.offensiveCooldownPool, 
+			container = self.OffensiveCooldownContainer
+		},
+		{
+			spells = C_Commentator.GetTrackedSpells(self.teamIndex, self.playerIndex, Enum.TrackedSpellCategory.Defensive),
+			maxSpells = COMMENTATOR_MAX_DEFENSIVE_SPELLS, 
+			pool = self.defensiveCooldownPool,
+			container = self.DefensiveCooldownContainer
+		},
+		{
+			spells = C_Commentator.GetTrackedSpells(self.teamIndex, self.playerIndex, Enum.TrackedSpellCategory.Debuff),
+			maxSpells = COMMENTATOR_MAX_DEBUFF_SPELLS,
+			pool = self.debuffPool,
+			container = self.DebuffContainer
+		},
+	};
+
+	local padding = 11;
+	for i, poolCollection in ipairs(poolCollections) do
+		local spells = poolCollection.spells;
+		if spells and #spells > 0 then
+			poolCollection.pool:ConstructFrames(spells, poolCollection.maxSpells, poolCollection.container, self.align, padding);
+		else
+			self.reinitSpellsSecondsElapsed = 0;
 		end
-		
-		self.offensiveCooldownPool:SetCooldowns(offensiveCooldowns, self.OffensiveCooldownContainer, "LEFT", PADDING);	
-	else
-		self.needsCooldownData = true;
 	end
-	
-	local defensiveCooldowns = C_Commentator.GetTrackedDefensiveCooldowns(self.teamIndex, self.playerIndex);
-	if defensiveCooldowns then
-		while #defensiveCooldowns > BLIZZARD_COMMENTATOR_MAX_NUM_DEFENSIVE_COOLDOWNS do
-			defensiveCooldowns[#defensiveCooldowns] = nil;
-		end
-		
-		self.defensiveCooldownPool:SetCooldowns(defensiveCooldowns, self.DefensiveCooldownContainer, "LEFT", PADDING);
-	else
-		self.needsCooldownData = true;
-	end
+
+	self:ApplyLayout(self.layout);
 end

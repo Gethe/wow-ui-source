@@ -1,7 +1,26 @@
-PlayerReportFrameMixin = {};
+PlayerReportFrameBaseMixin = {}; 
+
+function PlayerReportFrameBaseMixin:OnShow()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+end
+
+function PlayerReportFrameBaseMixin:OnHide()
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+	self.CommentBox:SetText("");
+end
+
+function PlayerReportFrameBaseMixin:CancelReport()
+	StaticPopupSpecial_Hide(self);
+end
+
+function PlayerReportFrameBaseMixin:OnLoad()
+	self.CommentBox = self.Comment.ScrollFrame.CommentBox;
+end
+
+PlayerReportFrameMixin = CreateFromMixins(PlayerReportFrameBaseMixin);
 
 function PlayerReportFrameMixin:OnLoad()
-	self.CommentBox = self.Comment.ScrollFrame.CommentBox;
+	PlayerReportFrameBaseMixin.OnLoad(self);
 	self.exclusive = true;
 	self.hideOnEscape = true;
 	self:RegisterEvent("OPEN_REPORT_PLAYER");
@@ -12,15 +31,6 @@ function PlayerReportFrameMixin:OnEvent(event, ...)
 		local reportToken, reportType, playerName = ...;
 		self:ShowReportDialog(reportToken, reportType, playerName);
 	end
-end
-
-function PlayerReportFrameMixin:OnShow()
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-end
-
-function PlayerReportFrameMixin:OnHide()
-	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
-	self.CommentBox:SetText("");
 end
 
 function PlayerReportFrameMixin:ShowReportDialog(reportToken, reportType, playerName)
@@ -63,6 +73,44 @@ function PlayerReportFrameMixin:ConfirmReport()
 	StaticPopupSpecial_Hide(self);
 end
 
-function PlayerReportFrameMixin:CancelReport()
+ClubFinderReportFrameMixin = CreateFromMixins(PlayerReportFrameBaseMixin);
+
+function ClubFinderReportFrameMixin:ShowReportDialog(reportType, clubGUID, playerGUID, reportInfo)
+	if ( self:IsShown() ) then
+		StaticPopupSpecial_Hide(self);
+	end
+
+	CloseDropDownMenus();
+
+	if (reportType == Enum.ClubFinderPostingReportType.PostersName) then
+		self.Title:SetText(CLUB_FINDER_REPORT:format(CLUB_FINDER_REPORT_REASON_POSTERS_NAME));
+		self.Name:SetText(reportInfo.guildLeader);
+	elseif (reportType == Enum.ClubFinderPostingReportType.ClubName) then 
+		if (reportInfo.isGuild) then
+			self.Title:SetText(CLUB_FINDER_REPORT:format(CLUB_FINDER_REPORT_REASON_GUILD_NAME));
+		else 
+			self.Title:SetText(CLUB_FINDER_REPORT:format(CLUB_FINDER_REPORT_REASON_COMMUNITY_NAME));
+		end
+		self.Name:SetText(reportInfo.name);
+	elseif (reportType == Enum.ClubFinderPostingReportType.PostingDescription) then 
+		self.Title:SetText(CLUB_FINDER_REPORT:format(CLUB_FINDER_REPORT_REASON_POSTING_DESCRIPTION));
+		self.Name:SetText(reportInfo.comment);
+	elseif (reportType == Enum.ClubFinderPostingReportType.ApplicantsName) then 
+		self.Title:SetText(CLUB_FINDER_REPORT:format(CLUB_FINDER_REPORT_REASON_APPLICANT_NAME));
+		self.Name:SetText(reportInfo.name);
+	elseif (reportType == Enum.ClubFinderPostingReportType.JoinNote) then 
+		self.Title:SetText(CLUB_FINDER_REPORT:format(CLUB_FINDER_REPORT_REASON_APPLICANT_NOTE));
+		self.Name:SetText(reportInfo.message);
+	end
+
+	self.clubGUID = clubGUID; 
+	self.reportType = reportType; 
+	self.playerGUID = playerGUID;
+	StaticPopupSpecial_Show(self);
+end
+
+function ClubFinderReportFrameMixin:ConfirmReport()
+	local comments = self.CommentBox:GetText();
+	C_ClubFinder.ReportPosting(self.reportType, self.clubGUID, self.playerGUID, comments);
 	StaticPopupSpecial_Hide(self);
 end

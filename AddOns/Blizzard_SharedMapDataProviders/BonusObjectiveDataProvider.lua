@@ -4,6 +4,15 @@ function BonusObjectiveDataProviderMixin:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate("BonusObjectivePinTemplate");
 end
 
+function BonusObjectiveDataProviderMixin:CancelCallbacks()
+	if self.cancelCallbacks then
+		for i, callback in ipairs(self.cancelCallbacks) do
+			callback();
+		end
+		self.cancelCallbacks = nil;
+	end
+end
+
 function BonusObjectiveDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 
@@ -16,12 +25,23 @@ function BonusObjectiveDataProviderMixin:RefreshAllData(fromOnShow)
 	local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapID);
 
 	if taskInfo and #taskInfo > 0 then
+		self:CancelCallbacks();
+		self.cancelCallbacks = {};
+
 		for i, info in ipairs(taskInfo) do
-			if MapUtil.ShouldShowTask(mapID, info) and not QuestUtils_IsQuestWorldQuest(info.questId) then
-				self:GetMap():AcquirePin("BonusObjectivePinTemplate", info);
-			end
+			local callback = QuestEventListener:AddCancelableCallback(info.questId, function()
+				if MapUtil.ShouldShowTask(mapID, info) and not QuestUtils_IsQuestWorldQuest(info.questId) then
+					self:GetMap():AcquirePin("BonusObjectivePinTemplate", info);
+				end
+			end);
+			tinsert(self.cancelCallbacks, callback);
 		end
 	end
+end
+
+function BonusObjectiveDataProviderMixin:OnHide()
+	MapCanvasDataProviderMixin.OnHide(self);
+	self:CancelCallbacks();
 end
 
 --[[ Bonus Objective Pin ]]--

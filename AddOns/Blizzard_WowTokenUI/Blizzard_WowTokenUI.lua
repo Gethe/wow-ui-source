@@ -15,6 +15,7 @@ Import("C_WowTokenSecure");
 Import("C_WowTokenPublic");
 Import("C_Timer");
 Import("C_StoreSecure");
+Import("C_RecruitAFriend");
 
 Import("math");
 Import("string");
@@ -490,6 +491,8 @@ function WowTokenRedemptionFrame_OnAttributeChanged(self, name, value)
 		end
 	elseif ( name == "getbalancestring" ) then
 		self:SetAttribute("balancestring", GetBalanceString());
+	elseif ( name == "showdialog" ) then
+		WowTokenDialog_SetDialog(WowTokenDialog, value);
 	end
 end
 
@@ -784,6 +787,30 @@ dialogs = {
 		title = TOKEN_TRANSACTION_IN_PROGRESS,
 		spinner = true,
 		noButtons = true,
+		point = { "CENTER", UIParent, "CENTER", 0, 240 },
+	};
+	["RAF_GAME_TIME_REDEEM_CONFIRMATION_SUB"] = {
+		completionIcon = false,
+		cautionIcon = true,
+		title = TOKEN_CONFIRMATION_TITLE,
+		description = TOKEN_CONFIRM_GAME_TIME_DESCRIPTION,
+		confirmationDesc = GetGameTimeRedemptionString,
+		confDescIsFunction = true,
+		button1 = ACCEPT,
+		button1OnClick = function(self)
+			self:Hide();
+			if C_RecruitAFriend.ClaimNextReward() then
+				Outbound.RecruitAFriendPlayClaimRewardFanfare();
+			end
+			PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+		end,
+		button2 = CANCEL,
+		button2OnClick = function(self)
+			self:Hide();
+			PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+		end,
+		onHide = function(self)
+		end,
 		point = { "CENTER", UIParent, "CENTER", 0, 240 },
 	};
 };

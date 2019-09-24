@@ -39,7 +39,6 @@ Import("SecureMixin");
 Import("CreateFromSecureMixins");
 Import("IsTrialAccount");
 Import("IsVeteranTrialAccount");
-Import("BLIZZARD_STORE_BUY");
 
 local BATTLEPAY_SPLASH_BANNER_TEXT_FEATURED = 0;
 local BATTLEPAY_SPLASH_BANNER_TEXT_DISCOUNT = 1;
@@ -94,16 +93,7 @@ function FullStoreCardMixin:GetCurrencyFormat(currencyInfo)
 	return currencyInfo.formatLong;
 end
 
-function FullStoreCardMixin:SetupBuyButton(info, entryInfo)
-	local text = BLIZZARD_STORE_BUY;
-	if (info.browseBuyButtonText) then
-		text = info.browseBuyButtonText;
-	end
-	self.BuyButton:SetText(text);
-	self.BuyButton:SetEnabled(self:ShouldEnableBuyButton(entryInfo));
-end
-
-function FullStoreCardMixin:SetupBannerText(discounted, discountPercentage, entryInfo)
+function FullStoreCardMixin:UpdateBannerText(discounted, discountPercentage, entryInfo)
 	if entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_NEW then
 		self.SplashBannerText:SetText(BLIZZARD_STORE_SPLASH_BANNER_NEW);
 	elseif entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_DISCOUNT then
@@ -190,15 +180,12 @@ function FullStoreCardMixin:InitMagnifier()
 	self.Magnifier:SetShown(self:ShouldShowMagnifyingGlass());
 end
 
-function FullStoreCardMixin:SetCardTexture(entryInfo)
-	if entryInfo.sharedData.overrideBackground then
-		self.Card:SetAtlas(entryInfo.sharedData.overrideBackground, true);
-		self.Card:SetTexCoord(0, 1, 0, 1);
-	else
-		self.Card:SetSize(576, 471);
-		self.Card:SetTexture("Interface\\Store\\Store-Main");
-		self.Card:SetTexCoord(0.00097656, 0.56347656, 0.00097656, 0.46093750);
-	end
+function FullStoreCardMixin:SetDefaultCardTexture()
+	self.Card:SetPoint("TOPLEFT");
+	self.Card:SetPoint("BOTTOMRIGHT");
+	self.Card:SetSize(576, 471);
+	self.Card:SetTexture("Interface\\Store\\Store-Main");
+	self.Card:SetTexCoord(0.00097656, 0.56347656, 0.00097656, 0.46093750);
 end
 
 function FullStoreCardMixin:GetTooltipOffsets()	
@@ -290,8 +277,6 @@ function FullStoreCardMixin:ShowIcon(displayData)
 end
 
 function FullStoreCardMixin:Layout()
-	self:SetSize(576, 471);
-	
 	self.Shadows:ClearAllPoints();
 	self.Shadows:SetTexture("Interface\\Store\\Store-Main");
 	self.Shadows:SetTexCoord(0.84375000, 0.97851563, 0.29980469, 0.37011719);
@@ -315,7 +300,7 @@ function FullStoreCardMixin:Layout()
 	self.ProductName:SetFontObject("GameFontNormalWTF2");
 	self.ProductName:SetJustifyV("TOP");
 	self.ProductName:SetShadowOffset(1, -1);
-	self.ProductName:SetShadowColor(0, 0, 0, 0);
+	self.ProductName:SetShadowColor(0, 0, 0, 1);
 
 	self.Description:ClearAllPoints();
 	self.Description:SetFontObject("GameFontNormalLarge");
@@ -329,19 +314,6 @@ function FullStoreCardMixin:Layout()
 	self.CurrentMarketPrice:SetJustifyH("LEFT");
 	self.CurrentMarketPrice:SetPoint("TOPLEFT", self.Description, "BOTTOMLEFT", 0, -28);
 	self.CurrentMarketPrice:SetTextColor(0.733, 0.588, 0.31);
-
-	self.CurrentPrice:ClearAllPoints();
-	self.CurrentPrice:SetFontObject("GameFontNormalLarge2");
-	self.CurrentPrice:SetTextColor(1.0, 0.82, 0);
-
-	self.NormalPrice:ClearAllPoints();
-	self.NormalPrice:SetFontObject("GameFontNormalMed3");
-	self.NormalPrice:SetTextColor(0.8, 0.66, 0);
-
-	self.SalePrice:ClearAllPoints();
-	self.SalePrice:SetFontObject("GameFontNormalLarge2");
-	self.SalePrice:SetPoint("BOTTOMLEFT", self.NormalPrice, "BOTTOMRIGHT", 4, -1);
-	self.SalePrice:SetTextColor(0.1, 1.0, 0.1);
 
 	self.SplashBanner:ClearAllPoints();
 	self.SplashBanner:SetSize(374, 77);
@@ -369,26 +341,18 @@ function FullStoreCardMixin:Layout()
 	self.BannerFadeIn:SetSize(374, 77);
 	self.BannerFadeIn:SetPoint("TOP", 3, 2);
 
-	self.ModelScene:ClearAllPoints();
-	self.ModelScene:SetPoint("TOPLEFT", 8, -8);
-	self.ModelScene:SetPoint("BOTTOMRIGHT", -8, 8);
-	self.ModelScene:SetViewInsets(20, 400, 136, 180);
-
 	self.InvisibleMouseOverFrame:ClearAllPoints();
 	self.InvisibleMouseOverFrame:SetSize(68, 68);
 	self.InvisibleMouseOverFrame:SetPoint("TOPLEFT", 86, -96);
 
-	self.BuyButton:ClearAllPoints();
-	self.BuyButton:SetSize(140, 30);
-	self.BuyButton:SetPoint("BOTTOM", 0, 20);
-	
 	self.Magnifier:ClearAllPoints();
 	self.Magnifier:SetSize(31, 35);
-	self.Magnifier:SetPoint("LEFT", self.Shadows, "BOTTOMRIGHT", -40, 20);
-	
-	self.Checkmark:ClearAllPoints();
+	self.Magnifier:SetPoint("TOPLEFT", self.Card, "TOPLEFT", 8, -8);
+
 	self.Checkmark:SetSize(27, 27);
-	self.Checkmark:SetPoint("BOTTOM", self.Magnifier, "TOP", 5, 2);	
+	self.Checkmark:ClearAllPoints();
+	self.Checkmark:SetPoint("LEFT", self.Magnifier, "RIGHT", 9, 0);
+	self.Checkmark:Hide();
 end
 
 function FullStoreCardMixin:SetStyle(overrideBackground)
@@ -404,24 +368,32 @@ function FullStoreCardMixin:SetStyle(overrideBackground)
 		self.Card:SetAtlas(overrideBackground, true);
 		self.Card:SetTexCoord(0, 1, 0, 1);
 	else
-		self.Card:SetPoint("TOPLEFT");
-		self.Card:SetPoint("BOTTOMRIGHT");
-		self.Card:SetTexture("Interface\\Store\\Store-Main");
-		self.Card:SetTexCoord(0.00097656, 0.56347656, 0.00097656, 0.46093750);
+		self:SetDefaultCardTexture();
 	end
 end
 
 
 --------------------------------------------------
 -- HORIZONTAL FULL STORE CARD MIXIN
-HorizontalFullStoreCardMixin = CreateFromMixins(FullStoreCardMixin);
+HorizontalFullStoreCardMixin = CreateFromMixins(FullStoreCardMixin, ProductCardBuyButtonMixin);
+
+function HorizontalFullStoreCardMixin:Layout()
+	FullStoreCardMixin.Layout(self);
+
+	local width, height = StoreFrame_GetCellPixelSize("HorizontalFullStoreCardWithBuyButtonTemplate");
+	self:SetSize(width, height);
+end
 
 function HorizontalFullStoreCardMixin:SetStyle(overrideBackground)
 	FullStoreCardMixin.SetStyle(self, overrideBackground);
-	
+
+	self.ModelScene:ClearAllPoints();
+	self.ModelScene:SetPoint("TOPLEFT", 4, -4);
+	self.ModelScene:SetPoint("BOTTOMRIGHT", -4, 4);
+	self.ModelScene:SetViewInsets(0, 0, 0, 0);
+
 	self.SplashBanner:Hide();
 	self.SplashBannerText:Hide();
-	self.ModelScene:SetViewInsets(20, 20, 20, 200);
 
 	self.ProductName:ClearAllPoints();
 	self.CurrentPrice:ClearAllPoints();
@@ -433,7 +405,7 @@ function HorizontalFullStoreCardMixin:SetStyle(overrideBackground)
 	end
 	self.ProductName:SetWidth(535);
 	self.ProductName:SetMaxLines(1);
-	self.ProductName:SetPoint("CENTER", 0, -32);
+	self.ProductName:SetPoint("CENTER", 0, -63);
 	self.ProductName:SetJustifyH("CENTER");
 	self.ProductName:SetFontObjectsToTry("Game30Font", "GameFontNormalHuge2", "GameFontNormalLarge2");
 	self.ProductName:SetShadowOffset(1, -1);
@@ -445,34 +417,40 @@ function HorizontalFullStoreCardMixin:SetStyle(overrideBackground)
 	local totalWidth = normalWidth + self.SalePrice:GetStringWidth();
 	self.NormalPrice:SetPoint("TOP", self.ProductName, "BOTTOM", (normalWidth - totalWidth) / 2, -9);
 
-	self.Description:SetPoint("TOP", self.CurrentPrice, "BOTTOM", 0, -12);
+	self.Description:SetPoint("TOP", self.ProductName, "BOTTOM", 0, -10);
 	self.Description:SetFontObject("GameFontNormalMed1");
 	self.Description:SetWidth(490);
 	self.Description:SetJustifyH("CENTER");
 
 	self.SalePrice:SetFontObject("GameFontNormalLarge2");
 
+	self.PurchasedText:SetText(BLIZZARD_STORE_PURCHASED);
+	self.PurchasedText:ClearAllPoints();
+	self.PurchasedText:SetPoint("BOTTOM", 0, 33);
+	self.PurchasedText:Hide();
+
+	self.PurchasedMark:Hide();
+
 	self.BuyButton:ClearAllPoints();
 	self.BuyButton:SetPoint("BOTTOM", 0, 33);
-
-	self.Magnifier:ClearAllPoints();
-	self.Magnifier:SetPoint("TOPLEFT", self.Card, "TOPLEFT", 8, -8);
-
-	self.Checkmark:ClearAllPoints();
-	self.Checkmark:SetPoint("LEFT", self.Magnifier, "RIGHT", 9, 0);
-	self.Checkmark:Hide();
 end
 
 --------------------------------------------------
 -- VERTICAL FULL STORE CARD MIXIN
-VerticalFullStoreCardMixin = CreateFromMixins(FullStoreCardMixin);
+VerticalFullStoreCardMixin = CreateFromMixins(FullStoreCardMixin, ProductCardBuyButtonMixin);
+
+function VerticalFullStoreCardMixin:Layout()
+	FullStoreCardMixin.Layout(self);
+
+	local width, height = StoreFrame_GetCellPixelSize("VerticalFullStoreCardWithBuyButtonTemplate");
+	self:SetSize(width, height);
+end
 
 function VerticalFullStoreCardMixin:SetStyle(overrideBackground)
 	FullStoreCardMixin.SetStyle(self, overrideBackground);
-	
+
 	self.SplashBanner:Show();
 	self.SplashBannerText:Show();
-	self.ModelScene:SetViewInsets(20, 400, 136, 180);
 
 	self.ProductName:ClearAllPoints();
 	self.CurrentPrice:ClearAllPoints();
@@ -499,12 +477,19 @@ function VerticalFullStoreCardMixin:SetStyle(overrideBackground)
 
 	self.SalePrice:SetFontObject("GameFontNormalLarge2");
 
+	self.ModelScene:ClearAllPoints();
+	self.ModelScene:SetPoint("TOPLEFT", 6, -6);
+	self.ModelScene:SetPoint("BOTTOM", -6, 6);
+	self.ModelScene:SetPoint("RIGHT", self.Description, "LEFT", 0, 8);
+	self.ModelScene:SetViewInsets(0, 0, 0, 0);
+
+	self.PurchasedText:SetText(BLIZZARD_STORE_PURCHASED);
+	self.PurchasedText:ClearAllPoints();
+	self.PurchasedText:SetPoint("TOPLEFT", self.CurrentPrice, "BOTTOMLEFT", 0, -20);
+	self.PurchasedText:Hide();
+
+	self.PurchasedMark:Hide();
+
 	self.BuyButton:ClearAllPoints();
 	self.BuyButton:SetPoint("TOPLEFT", self.CurrentPrice, "BOTTOMLEFT", 0, -20);
-
-	self.Magnifier:ClearAllPoints();
-	self.Magnifier:SetPoint("LEFT", self.Shadows, "BOTTOMRIGHT", -40, 20);
-
-	self.Checkmark:ClearAllPoints();
-	self.Checkmark:SetPoint("BOTTOM", self.Magnifier, "TOP", 5, 2);
 end

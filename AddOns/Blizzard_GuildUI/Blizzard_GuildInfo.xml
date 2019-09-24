@@ -611,10 +611,6 @@
 							StaticPopup_Show("ADD_GUILDMEMBER");
 						end
 					</OnClick>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, ADDMEMBER, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ADDMEMBER, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 			<Button name="GuildControlButton" inherits="MagicButtonTemplate" text="GUILDCONTROL">
@@ -634,10 +630,6 @@
 							ShowUIPanel(GuildControlUI);
 						end
 					</OnClick>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, GUILDCONTROL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDCONTROL, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 			<Button name="GuildViewLogButton" inherits="MagicButtonTemplate" text="GUILD_VIEW_LOG">

@@ -2,7 +2,10 @@
 ..\FrameXML\UI.xsd">
   <Script file="Blizzard_PVPUI.lua"/>
   
-	<Frame name="SeasonRewardFrameTemplate" mixin="PVPUISeasonRewardFrameMixin" virtual="true">
+	<Frame name="SeasonRewardFrameTemplate" mixin="PVPAchievementRewardMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="useAchievementDescription" value="false" type="boolean"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="CheckMark" atlas="pvpqueue-conquestbar-checkmark" useAtlasSize="true" hidden="true">
@@ -339,6 +342,15 @@
 						<Anchor point="CENTER" relativeKey="$parent.Border"/>
 					</Anchors>
 				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="34" y="34"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -373,9 +385,22 @@
 				</Scripts>
 			</Frame>
 		</Frames>
+	</Frame>
+
+	<Frame name="PVPStandardRewardTemplate" inherits="PVPRewardTemplate" virtual="true">
 		<Scripts>
-			<OnEnter function="PVPRewardTemplate_OnEnter"/>
+			<OnEnter function="PVPStandardRewardTemplate_OnEnter"/>
 			<OnLeave function="PVPRewardTemplate_OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="PVPAchievementRewardTemplate" mixin="PVPAchievementRewardMixin" inherits="PVPRewardTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="useAchievementDescription" value="true" type="boolean"/>
+		</KeyValues>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
 
@@ -560,15 +585,15 @@
 		</Scripts>
 	</Button>
 
-	<Button name="PVPCasualActivityButtonTemplate" virtual="true">
-		<Size x="365" y="68"/>
+	<Button name="PVPCasualActivityButton" mixin="PVPCasualActivityButtonMixin" virtual="true">
+		<Size x="365"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="SelectedTexture" atlas="pvpqueue-button-casual-selected" setAllPoints="true" alphaMode="ADD" hidden="true"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="Anchor">
-					<Size x="365" y="68"/>
+					<Size x="365"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
@@ -591,41 +616,44 @@
 		<NormalTexture parentKey="NormalTexture" atlas="pvpqueue-button-casual-up"/>
 		<PushedTexture atlas="pvpqueue-button-casual-down"/>
 		<HighlightTexture parentKey="HighlightTexture" atlas="pvpqueue-button-casual-highlight" alphaMode="ADD"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnLeave method="OnLeave"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Button>
+	<Button name="PVPCasualStandardButtonTemplate" inherits="PVPCasualActivityButton" virtual="true">
 		<Frames>
-			<Frame parentKey="Reward" inherits="PVPRewardTemplate" hidden="true">
+			<Frame parentKey="Reward" inherits="PVPStandardRewardTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.Anchor" x="-16" y="-2"/>
+					<Anchor point="RIGHT" relativeKey="$parent.Anchor" x="-16" y="-1"/>
 				</Anchors>
-				<Scripts>
-					<OnShow>
-						local parent = self:GetParent();
-						parent.Title:SetPoint("RIGHT", parent.Anchor, "RIGHT", -60, -1);
-					</OnShow>
-					<OnHide>
-						local parent = self:GetParent();
-						parent.Title:SetPoint("RIGHT", parent.Anchor, "RIGHT", -20, -1);
-					</OnHide>
-				</Scripts>
+			</Frame>
+		</Frames>
+	</Button>
+	<Button name="PVPCasualSpecialEventButtonTemplate" mixin="PVPSpecialEventButtonMixin" inherits="PVPCasualActivityButton" virtual="true">
+		<Frames>
+			<Frame parentKey="Reward" inherits="PVPAchievementRewardTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Anchor" x="-16" y="-1"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="NewAlert" inherits="NewFeatureLabelTemplate" mixin="PVPSpecialEventLabelMixin">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPLEFT" x="3" y="-3"/>
+				</Anchors>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnClick>
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-				HonorFrameBonusFrame_SelectButton(self);
-			</OnClick>
-			<OnEnter function="PVPCasualActivityButton_OnEnter"/>
-			<OnMouseDown>
-				if ( self:IsEnabled() ) then
-					self.Anchor:SetPoint("TOPLEFT", -1, -1);
-				end
-			</OnMouseDown>
-			<OnMouseUp>
-				self.Anchor:SetPoint("TOPLEFT", 0, 0);
-			</OnMouseUp>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
 		</Scripts>
 	</Button>
-
+	
 	<Button name="PVPRatedActivityButtonTemplate" virtual="true">
 		<Size x="365" y="91"/>
 		<Layers>
@@ -667,7 +695,7 @@
 		<PushedTexture atlas="pvpqueue-button-down"/>
 		<HighlightTexture parentKey="HighlightTexture" atlas="pvpqueue-button-highlight" alphaMode="ADD"/>
 		<Frames>
-			<Frame parentKey="Reward" inherits="PVPRewardTemplate" hidden="true">
+			<Frame parentKey="Reward" inherits="PVPStandardRewardTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.Anchor" x="-16" y="-2"/>
 				</Anchors>
@@ -1059,7 +1087,7 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<Button parentKey="RandomBGButton" inherits="PVPCasualActivityButtonTemplate">
+									<Button parentKey="RandomBGButton" inherits="PVPCasualStandardButtonTemplate">
 										<Anchors>
 											<Anchor point="TOP" relativeKey="$parent.Inset" y="-9"/>
 										</Anchors>
@@ -1067,7 +1095,7 @@
 											<KeyValue key="tooltipTableKey" value="RandomBG" type="string"/>
 										</KeyValues>
 									</Button>
-									<Button parentKey="RandomEpicBGButton" inherits="PVPCasualActivityButtonTemplate">
+									<Button parentKey="RandomEpicBGButton" inherits="PVPCasualStandardButtonTemplate">
 										<Anchors>
 											<Anchor point="TOP" relativeKey="$parent.RandomBGButton" relativePoint="BOTTOM" x="0" y="-1"/>
 										</Anchors>
@@ -1075,7 +1103,7 @@
 											<KeyValue key="tooltipTableKey" value="EpicBattleground" type="string"/>
 										</KeyValues>
 									</Button>
-									<Button parentKey="Arena1Button" inherits="PVPCasualActivityButtonTemplate">
+									<Button parentKey="Arena1Button" inherits="PVPCasualStandardButtonTemplate">
 										<Anchors>
 											<Anchor point="TOP" relativeKey="$parent.RandomEpicBGButton" relativePoint="BOTTOM" x="0" y="-1"/>
 										</Anchors>
@@ -1085,7 +1113,7 @@
 											<KeyValue key="tooltipTableKey" value="Skirmish" type="string"/>
 										</KeyValues>
 									</Button>
-									<Button parentKey="BrawlButton" inherits="PVPCasualActivityButtonTemplate">
+									<Button parentKey="BrawlButton" inherits="PVPCasualStandardButtonTemplate">
 										<Anchors>
 											<Anchor point="TOP" relativeKey="$parent.Arena1Button" relativePoint="BOTTOM" x="0" y="-1"/>
 										</Anchors>
@@ -1101,6 +1129,14 @@
 												end
 											</OnClick>
 										</Scripts>
+									</Button>
+									<Button parentKey="SpecialEventButton" inherits="PVPCasualSpecialEventButtonTemplate">
+										<Anchors>
+											<Anchor point="TOP" relativeKey="$parent.BrawlButton" relativePoint="BOTTOM" x="0" y="-1"/>
+										</Anchors>
+										<KeyValues>
+											<KeyValue key="tooltipTableKey" value="SpecialEvent" type="string"/>
+										</KeyValues>
 									</Button>
 									<Frame parentKey="BrawlHelpBox" inherits="GlowBoxTemplate" hidden="false" frameStrata="DIALOG">
 										<Size x="230" y="65"/>

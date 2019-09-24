@@ -45,17 +45,11 @@ end
 function LFDFrame_OnEvent(self, event, ...)
 	if ( event == "LFG_ROLE_CHECK_SHOW" ) then
 		local requeue = ...;
-		if( requeue ) then
-			LFDRoleCheckPopup.Text:SetText(REQUEUE_CONFIRM_YOUR_ROLE);
-		else
-			LFDRoleCheckPopup.Text:SetText(CONFIRM_YOUR_ROLE);
-		end
-		local height = LFDRoleCheckPopup.Text:GetHeight();
-		LFDRoleCheckPopup:SetHeight(168+height);
+		LFDRoleCheckPopup.Text:SetText(requeue and REQUEUE_CONFIRM_YOUR_ROLE or CONFIRM_YOUR_ROLE);
+		LFDRoleCheckPopup_Update();
+
 		StaticPopupSpecial_Show(LFDRoleCheckPopup);
 		LFDQueueFrameSpecificList_Update();
-
-		LFDRoleCheckPopup_UpdateAcceptButton();
 	elseif ( event == "LFG_ROLE_CHECK_HIDE" ) then
 		StaticPopupSpecial_Hide(LFDRoleCheckPopup);
 		LFDQueueFrameSpecificList_Update();
@@ -91,6 +85,7 @@ function LFDFrame_OnEvent(self, event, ...)
 		if ( not LFDQueueFrame.type or (type(LFDQueueFrame.type) == "number" and not IsLFGDungeonJoinable(LFDQueueFrame.type)) ) then
 			local bestChoice = GetRandomDungeonBestChoice();
 			if ( bestChoice ) then
+				UIDropDownMenu_Initialize(LFDQueueFrameTypeDropDown, LFDQueueFrameTypeDropDown_Initialize);
 				LFDQueueFrame_SetType(bestChoice);
 			end
 		end
@@ -380,9 +375,9 @@ function LFDQueueFrameTypeDropDown_Initialize()
 
 	for i=1, GetNumRandomDungeons() do
 		local id, name = GetLFGRandomDungeonInfo(i);
-		if ( LFG_IsRandomDungeonDisplayable(id) ) then
-			local isAvailable = IsLFGDungeonJoinable(id);
-			if ( isAvailable ) then
+		local isAvailableForAll, isAvailableForPlayer = IsLFGDungeonJoinable(id);
+		if ( isAvailableForPlayer ) then
+			if ( isAvailableForAll ) then
 				info.text = name;
 				info.value = id;
 				info.isTitle = nil;
@@ -750,8 +745,38 @@ function LFDRoleCheckPopup_Update()
 		LFDRoleCheckPopupDescriptionText:SetFormattedText(QUEUED_FOR, displayName);
 	end
 
-	LFDRoleCheckPopupDescription:SetWidth(LFDRoleCheckPopupDescriptionText:GetWidth()+10);
-	LFDRoleCheckPopupDescription:SetHeight(LFDRoleCheckPopupDescriptionText:GetHeight());
+	local descSubTextWidth = 0;
+	local descSubTextHeight = 0;
+	local maxLevel, isLevelReduced = C_LFGInfo.GetRoleCheckDifficultyDetails();
+	if isLevelReduced then
+		local canDisplayLevel = maxLevel and maxLevel < UnitEffectiveLevel("player");
+		if canDisplayLevel then
+			local formattedString = string.format(bgQueue and LFG_PVP_LEVEL_REDUCED or LFG_LEVEL_REDUCED, maxLevel);
+			LFDRoleCheckPopupDescription.SubText:SetText(formattedString);
+		else
+			LFDRoleCheckPopupDescription.SubText:SetText(LFG_LEVEL_REDUCED_GENERIC);
+		end
+		descSubTextWidth = LFDRoleCheckPopupDescription.SubText:GetWidth();
+		descSubTextHeight = LFDRoleCheckPopupDescription.SubText:GetHeight();
+	end
+	LFDRoleCheckPopupDescription.SubText:SetShown(isLevelReduced);
+
+	local descTextWidth = LFDRoleCheckPopupDescriptionText:GetWidth();
+	local maxTextWidth = math.max(descSubTextWidth, descTextWidth) + 10;
+	LFDRoleCheckPopupDescription:SetWidth(maxTextWidth);
+
+	local descTextHeight = LFDRoleCheckPopupDescriptionText:GetHeight();
+	local totalDescriptionTextHeight = descSubTextHeight + descTextHeight;
+	LFDRoleCheckPopupDescription:SetHeight(totalDescriptionTextHeight);
+	
+	local descriptionTextMargin = isLevelReduced and 35 or 46;
+	local descriptionOffsetY = LFDRoleCheckPopupDescription:GetHeight() + descriptionTextMargin;
+	LFDRoleCheckPopupDescription:SetPoint("CENTER", LFDRoleCheckPopup, "BOTTOM", 0, descriptionOffsetY);
+	
+	local headerTextHeight = LFDRoleCheckPopup.Text:GetHeight();
+	local roleHeight = LFDRoleCheckPopupRoleButtonTank:GetHeight();
+	local popupHeight = headerTextHeight + roleHeight + totalDescriptionTextHeight + 85;
+	LFDRoleCheckPopup:SetHeight(popupHeight);
 
 	LFGRoleCheckPopup_UpdateRoleButton(LFDRoleCheckPopupRoleButtonTank);
 	LFGRoleCheckPopup_UpdateRoleButton(LFDRoleCheckPopupRoleButtonHealer);

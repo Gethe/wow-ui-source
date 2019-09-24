@@ -98,19 +98,26 @@
 		<Cooldown parentKey="CooldownFrame" inherits="CooldownFrameTemplate" frameStrata="HIGH" />
 
 		<Frame parentKey="DefensiveCooldownContainer">
-			<Size x="160" y="36"/>
+			<Size x="1" y="36"/>
 			<Anchors>
 				<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-5" />
 			</Anchors>
 		</Frame>
-		
+
+		<Frame parentKey="DebuffContainer">
+			<Size x="1" y="36"/>
+			<Anchors>
+				<Anchor point="LEFT" relativeKey="$parent.DefensiveCooldownContainer" relativePoint="RIGHT" x="5" y="0" />
+			</Anchors>
+		</Frame>
+
 		<Frame parentKey="OffensiveCooldownContainer">
-			<Size x="160" y="36"/>
+			<Size x="1" y="36"/>
 			<Anchors>
 				<Anchor point="TOP" relativeKey="$parent.DefensiveCooldownContainer" relativePoint="BOTTOM" x="0" y="-5" />
 			</Anchors>
 		</Frame>
-			
+
 		<Model parentKey="OffensiveCooldownModel" frameStrata="BACKGROUND" drawLayer="BACKGROUND">
 			<Size x="356" y="356" />
 			<Scripts>

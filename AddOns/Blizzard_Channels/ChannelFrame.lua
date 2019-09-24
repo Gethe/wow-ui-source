@@ -54,8 +54,6 @@ do
 
 		local notificationSubSystem = ChatAlertFrame:AddAutoAnchoredSubSystem(VoiceChatChannelActivatedNotification);
 		ChatAlertFrame:SetSubSystemAnchorPriority(notificationSubSystem, 11);
-
-		self:CheckDiscoverChannels();
 	end
 end
 
@@ -418,8 +416,6 @@ function ChannelFrameMixin:OnVoiceChatError(platformCode, statusCode)
 end
 
 function ChannelFrameMixin:OnVoiceChatConnectionSuccess()
-	self:CheckDiscoverChannels();
-
 	if self.lastError then
 		ChatFrame_DisplayUsageError(VOICE_CHAT_SERVICE_CONNECTION_RESTORED);
 		self.lastError = nil;
@@ -537,7 +533,6 @@ function ChannelFrameMixin:OnCountUpdate(id, count)
 end
 
 function ChannelFrameMixin:OnGroupFormed(partyCategory, partyGUID)
-	self:TryJoinVoiceChannelByType(GetChannelTypeFromPartyCategory(partyCategory));
 end
 
 function ChannelFrameMixin:OnGroupLeft(partyCategory, partyGUID)

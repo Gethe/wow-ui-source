@@ -583,7 +583,8 @@ local function SetCharacterButtonEnabled(button, enabled)
 		button.buttonText.Info:SetTextColor(0.25, 0.25, 0.25);
 		button.buttonText.Location:SetTextColor(0.25, 0.25, 0.25);
 	end
-
+	button.FactionEmblem:SetDesaturated(not enabled);
+	button.buttonText.Info:SetFixedColor(not enabled);
 	button:SetEnabled(enabled);
 end
 

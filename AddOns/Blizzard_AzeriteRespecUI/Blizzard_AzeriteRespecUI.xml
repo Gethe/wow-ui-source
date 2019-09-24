@@ -117,53 +117,6 @@
 				</Layers>
 			</Frame>
 
-			<Frame parentKey="HelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
-				<Size x="220" y="100"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.ItemSlot" relativePoint="RIGHT" x="15" y="0" />
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="AZERITE_RESPEC_TUTORIAL_TEXT">
-							<Size x="188" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="16" y="-24"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="6" y="6"/>
-						</Anchors>
-						<Scripts>
-							<OnClick inherit="append">
-								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_RESPEC, true);
-								self:GetParent():Hide();
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
-						<Anchors>
-							<Anchor point="LEFT" relativePoint="LEFT" x="-20" y="15"/>
-						</Anchors>
-						<Scripts>
-							<OnShow>
-								SetClampedTextureRotation(self.Arrow, 90);
-								SetClampedTextureRotation(self.Glow, 90);
-								self.Glow:ClearAllPoints();
-								self.Glow:SetPoint("LEFT", self, "LEFT", -10, -15);
-							</OnShow>
-						</Scripts>
-					</Frame>
-				</Frames>
-				<Scripts>
-					<OnShow>
-						self:SetHeight(self.Text:GetHeight()+42);
-					</OnShow>
-				</Scripts>
-			</Frame>
 		</Frames>
 
 		<Scripts>

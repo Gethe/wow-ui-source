@@ -262,6 +262,40 @@ local function ShouldShowWarModeBonus(questID, currencyID, firstInstance)
 	return QuestUtils_IsQuestWorldQuest(questID) and C_QuestLog.QuestHasWarModeBonus(questID) and not C_CurrencyInfo.GetFactionGrantedByCurrency(currencyID);
 end
 
+function QuestUtils_GetQuestDecorationLink(linkType, questID, icon, width, height)
+	return ("|H%s:%d|h%s|h"):format(linkType, questID, CreateAtlasMarkup(icon, width, height));
+end
+
+function QuestUtils_GetReplayQuestDecoration(questID, useLargeIcon)
+	local linkType = "questReplay";
+
+	if useLargeIcon then
+		return QuestUtils_GetQuestDecorationLink(linkType, questID, "QuestSharing-ReplayIcon", 18, 16);
+	else
+		return QuestUtils_GetQuestDecorationLink(linkType, questID, "QuestSharing-QuestLog-Replay", 19, 16);
+	end
+end
+
+function QuestUtils_GetDisabledQuestDecoration(questID, useLargeIcon)
+	local linkType = "questDisabled";
+	if useLargeIcon then
+		return QuestUtils_GetQuestDecorationLink(linkType, questID, "QuestSharing-QuestDetails-Padlock", 10, 10);
+	else
+		return QuestUtils_GetQuestDecorationLink(linkType, questID, "QuestSharing-QuestDetails-Padlock", 20, 20);
+	end
+end
+
+-- TODO: Replace booleans with flags?
+function QuestUtils_DecorateQuestText(questID, text, useLargeIcon, ignoreReplayable, ignoreDisabled)
+	if not ignoreReplayable and C_QuestLog.IsQuestReplayable(questID) then
+		return QuestUtils_GetReplayQuestDecoration(questID, useLargeIcon) .. text;
+	elseif not ignoreDisabled and C_QuestLog.IsQuestDisabledForSession(questID) then
+		return QuestUtils_GetDisabledQuestDecoration(questID, useLargeIcon) .. text;
+	end
+
+	return text;
+end
+
 function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 	local hasAnySingleLineRewards = false;
 	local isWarModeDesired = C_PvP.IsWarModeDesired();
@@ -306,13 +340,13 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 		end
 		hasAnySingleLineRewards = true;
 	end
-	
+
 	-- items
 	local showRetrievingData = false;
-	local numQuestRewards = GetNumQuestLogRewards(questID);	
+	local numQuestRewards = GetNumQuestLogRewards(questID);
 	local numCurrencyRewards = GetNumQuestLogRewardCurrencies(questID);
 	if numQuestRewards > 0 and (not style.prioritizeCurrencyOverItem or numCurrencyRewards == 0) then
-		if style.fullItemDescription then 
+		if style.fullItemDescription then
 			-- we want to do a full item description
 			local itemIndex, rewardType = QuestUtils_GetBestQualityItemRewardIndex(questID);  -- Only support one item reward currently
 			if not EmbeddedItemTooltip_SetItemByQuestReward(tooltip.ItemTooltip, itemIndex, questID, rewardType) then
@@ -338,7 +372,7 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 			end
 			if text then
 				local color = ITEM_QUALITY_COLORS[quality];
-				GameTooltip:AddLine(text, color.r, color.g, color.b);
+				tooltip:AddLine(text, color.r, color.g, color.b);
 			end
 		end
 	end

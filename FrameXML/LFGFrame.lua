@@ -707,16 +707,16 @@ function LFGDungeonReadyPopup_Update()
 
 	local leaveText = LEAVE_QUEUE;
 	if ( subtypeID == LFG_SUBTYPEID_RAID or subtypeID == LFG_SUBTYPEID_FLEXRAID ) then
-		LFGDungeonReadyDialog.enterButton:SetText(ENTER_RAID);
+		LFGDungeonReadyDialog.enterButton:SetText(ENTER_LFG);
 	elseif ( subtypeID == LFG_SUBTYPEID_SCENARIO ) then
 		if ( numMembers > 1 ) then
-			LFGDungeonReadyDialog.enterButton:SetText(ENTER_SCENARIO);
+			LFGDungeonReadyDialog.enterButton:SetText(ENTER_LFG);
 		else
 			LFGDungeonReadyDialog.enterButton:SetText(ACCEPT);
 			leaveText = CANCEL;
 		end
 	else
-		LFGDungeonReadyDialog.enterButton:SetText(ENTER_DUNGEON);
+		LFGDungeonReadyDialog.enterButton:SetText(ENTER_LFG);
 	end
 	LFGDungeonReadyDialog.leaveButton:SetText(leaveText);
 
@@ -1640,7 +1640,21 @@ function LFGInvitePopupDecline_OnClick()
 	StaticPopupSpecial_Hide(LFGInvitePopup);
 end
 
-function LFGInvitePopup_Update(inviter, roleTankAvailable, roleHealerAvailable, roleDamagerAvailable, allowMultipleRoles)
+local function GetWarningText(isQuestSessionActive)
+	local warningText = {};
+
+	if WillAcceptInviteRemoveQueues() then
+		table.insert(warningText, ACCEPTING_INVITE_WILL_REMOVE_QUEUE);
+	end
+
+	if isQuestSessionActive then
+		table.insert(warningText, QUEST_SESSION_LFG_WARNING_INVITED_TO_PARTY_WITH_ACTIVE_SYNC);
+	end
+
+	return #warningText and table.concat(warningText, "\n\n") or nil;
+end
+
+function LFGInvitePopup_Update(inviter, roleTankAvailable, roleHealerAvailable, roleDamagerAvailable, allowMultipleRoles, isQuestSessionActive)
 	local self = LFGInvitePopup;
 	local canBeTank, canBeHealer, canBeDamager = C_LFGList.GetAvailableRoles();
 	local tankButton = LFGInvitePopupRoleButtonTank;
@@ -1648,7 +1662,10 @@ function LFGInvitePopup_Update(inviter, roleTankAvailable, roleHealerAvailable, 
 	local damagerButton = LFGInvitePopupRoleButtonDPS;
 	local availableRolesField = 0;	--Seems to be a ghetto bit-field
 	self.timeOut = STATICPOPUP_TIMEOUT;
-	LFGInvitePopupText:SetFormattedText(INVITATION, inviter);
+
+	local titleMarkup = isQuestSessionActive and CreateAtlasMarkup("QuestSharing-QuestLog-Replay", 19, 16) or "";
+	LFGInvitePopupText:SetFormattedText(titleMarkup .. INVITATION, inviter);
+
 	-- tank
 	if ( not canBeTank ) then
 		LFG_PermanentlyDisableRoleButton(tankButton);
@@ -1694,7 +1711,9 @@ function LFGInvitePopup_Update(inviter, roleTankAvailable, roleHealerAvailable, 
 	healerButton.checkButton:SetChecked(availableRolesField == 4);
 	damagerButton.checkButton:SetChecked(availableRolesField == 8);
 
-	if ( WillAcceptInviteRemoveQueues() ) then
+	local warningText = GetWarningText(isQuestSessionActive);
+	if warningText then
+		self.QueueWarningText:SetText(warningText);
 		self.QueueWarningText:Show();
 		self:SetHeight(LFG_INVITE_POPUP_DEFAULT_HEIGHT + self.QueueWarningText:GetHeight() + 8);
 	end

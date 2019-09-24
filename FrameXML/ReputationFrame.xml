@@ -410,24 +410,12 @@
 					<Anchor point="TOPLEFT" relativeTo="ReputationFrameFactionLabel"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="ReputationFrameFactionLabel"/>
 				</Anchors>
-				<Scripts>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, FACTION, 1.0, 1.0, 1.0, REPUTATION_FACTION_DESCRIPTION, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
 			</Frame>
 			<Frame name="StandingMouseOver">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="ReputationFrameStandingLabel"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="ReputationFrameStandingLabel"/>
 				</Anchors>
-				<Scripts>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, STANDING, 1.0, 1.0, 1.0, REPUTATION_STANDING_DESCRIPTION, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
 			</Frame>
 			<Frame name="ReputationDetailFrame" enableMouse="true" hidden="true">
 				<Size x="212" y="203"/>

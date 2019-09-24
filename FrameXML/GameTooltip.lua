@@ -68,7 +68,7 @@ TOOLTIP_QUEST_REWARDS_PRIORITIZE_CURRENCY_OVER_ITEM = {
 	postHeaderBlankLineCount = 0,
 	wrapHeaderText = true,
 	prioritizeCurrencyOverItem = true,
-	atLeastShowAzerite = true, 
+	atLeastShowAzerite = true,
 	fullItemDescription = true,
 }
 
@@ -195,12 +195,24 @@ end
 
 function GameTooltip_AddColoredLine(tooltip, text, color, wrap, leftOffset)
 	local r, g, b = color:GetRGB();
+	if wrap == nil then
+		wrap = true
+	end
 	tooltip:AddLine(text, r, g, b, wrap, leftOffset);
+end
+
+function GameTooltip_ShowDisabledTooltip(tooltip, owner, text)
+	GameTooltip:SetOwner(owner);
+
+	local wrap = true;
+	GameTooltip_SetTitle(GameTooltip, text, RED_FONT_COLOR, wrap);
+
+	GameTooltip:Show();
 end
 
 function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 	style = style or TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT;
-	
+
 	if ( GetQuestLogRewardXP(questID) > 0 or GetNumQuestLogRewardCurrencies(questID) > 0 or GetNumQuestLogRewards(questID) > 0 or
 		GetQuestLogRewardMoney(questID) > 0 or GetQuestLogRewardArtifactXP(questID) > 0 or GetQuestLogRewardHonor(questID) > 0 or
 		GetNumQuestLogRewardSpells(questID) > 0) then
@@ -215,7 +227,7 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 		GameTooltip_AddBlankLinesToTooltip(tooltip, style.postHeaderBlankLineCount);
 
 		local hasAnySingleLineRewards, showRetrievingData = QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style);
-		
+
 		if hasAnySingleLineRewards and tooltip.ItemTooltip and tooltip.ItemTooltip:IsShown() then
 			GameTooltip_AddBlankLinesToTooltip(tooltip, 1);
 			if showRetrievingData then
@@ -458,7 +470,7 @@ function GameTooltip_OnHide(self)
 		end
 	end
 	self.comparing = false;
-	
+
 	ShoppingTooltip1:Hide();
 	ShoppingTooltip2:Hide();
 	if (BattlePetTooltip) then
@@ -504,24 +516,6 @@ function GameTooltip_OnUpdate(self, elapsed)
 		owner:UpdateTooltip();
 	elseif self.UpdateTooltip then
 		self:UpdateTooltip();
-	end
-end
-
-function GameTooltip_AddNewbieTip(frame, normalText, r, g, b, newbieText, noNormalText)
-	if ( SHOW_NEWBIE_TIPS == "1" ) then
-		GameTooltip_SetDefaultAnchor(GameTooltip, frame);
-		if ( normalText ) then
-			GameTooltip_SetTitle(GameTooltip, normalText, CreateColor(r, g, b, 1));
-			GameTooltip_AddNormalLine(GameTooltip, newbieText, true);
-		else
-			GameTooltip_SetTitle(GameTooltip, newbieText, CreateColor(r, g, b, 1), true);
-		end
-		GameTooltip:Show();
-	else
-		if ( not noNormalText ) then
-			GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
-			GameTooltip:SetText(normalText, r, g, b);
-		end
 	end
 end
 
@@ -595,7 +589,7 @@ function GameTooltip_AnchorComparisonTooltips(self, anchorFrame, shoppingTooltip
 	local sideAnchorFrame = anchorFrame;
 	if anchorFrame.IsEmbedded then
 		sideAnchorFrame = anchorFrame:GetParent():GetParent();
-	end	
+	end
 
 	local leftPos = sideAnchorFrame:GetLeft();
 	local rightPos = sideAnchorFrame:GetRight();
@@ -614,7 +608,7 @@ function GameTooltip_AnchorComparisonTooltips(self, anchorFrame, shoppingTooltip
 
 	-- sometimes the sideAnchorFrame is an actual tooltip, and sometimes it's a script region, so make sure we're getting the actual anchor type
 	local anchorType = sideAnchorFrame.GetAnchorType and sideAnchorFrame:GetAnchorType() or self:GetAnchorType();
-	
+
 	local totalWidth = 0;
 	if ( primaryItemShown  ) then
 		totalWidth = totalWidth + shoppingTooltip1:GetWidth();
@@ -953,6 +947,7 @@ function EmbeddedItemTooltip_SetItemByID(self, id)
 	self.itemTextureSet = (itemTexture ~= nil);
 	self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 0, 10);
 	EmbeddedItemTooltip_UpdateSize(self);
+	self:GetParent().recalculatePadding = true;
 end
 
 function EmbeddedItemTooltip_SetItemByQuestReward(self, questLogIndex, questID, rewardType)
@@ -1027,11 +1022,11 @@ function EmbeddedItemTooltip_SetCurrencyByID(self, currencyID, quantity)
 		self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 0, 10);
 
 		local displayQuantity;
-		name, texture, displayQuantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, quantity, name, texture, quality);		
+		name, texture, displayQuantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, quantity, name, texture, quality);
 		self.Tooltip:SetCurrencyByID(currencyID, quantity);
 		SetItemButtonQuality(self, quality, currencyID);
 		self.Icon:SetTexture(texture);
-		SetItemButtonCount(self, displayQuantity); 
+		SetItemButtonCount(self, displayQuantity);
 
 		self:Show();
 		EmbeddedItemTooltip_UpdateSize(self);

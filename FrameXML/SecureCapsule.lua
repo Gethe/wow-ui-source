@@ -144,6 +144,10 @@ retain("C_Club");
 retain("UnitFactionGroup");
 retain("FrameUtil");
 retain("strlenutf8");
+retain("UnitRace");
+retain("UnitSex");
+retain("GetURLIndexAndLoadURL");
+retain("GetUnscaledFrameRect");
 
 --For auth challenge
 take("C_AuthChallenge");
@@ -165,6 +169,7 @@ retain("HTML_START");
 retain("HTML_START_CENTERED");
 retain("HTML_END");
 take("BLIZZARD_STORE_ON_SALE");
+take("BLIZZARD_STORE_PURCHASED");
 take("BLIZZARD_STORE_BUY");
 take("BLIZZARD_STORE_BUY_EUR");
 take("BLIZZARD_STORE_PLUS_TAX");
@@ -531,12 +536,14 @@ takeenum("StoreError");
 takeenum("VasError");
 takeenum("BattlepayBoostProduct");
 takeenum("BattlepayDisplayFlag");
+takeenum("PurchaseEligibility");
 takeenum("BattlepayProductDecorator");
 takeenum("VasServiceType");
 takeenum("VasPurchaseState");
 takeenum("BattlepaySpecialProducts");
 takeenum("BattlepayProductGroupFlag");
 takeenum("BattlepayGroupDisplayType");
+takeenum("BattlepayCardType");
 retainenum("ModelSceneSetting");
 retainenum("ClubType");
 retainenum("ClubFieldType");
@@ -576,6 +583,8 @@ take("CreateFromSecureMixins");
 
 retain("GetFinalNameFromTextureKit")
 retain("C_Texture");
+
+retain("C_RecruitAFriend");
 
 -- retain shared constants
 retain("WOW_GAMES_CATEGORY_ID");

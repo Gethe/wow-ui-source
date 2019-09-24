@@ -80,6 +80,7 @@ KnowledgeBaseDocumentation.lua
 LFGInfoDocumentation.lua
 LFGListInfoDocumentation.lua
 LFGuildInfoDocumentation.lua
+LevelLinkDocumentation.lua
 LoadingScreenDocumentation.lua
 LootDocumentation.lua
 LootJournalDocumentation.lua
@@ -103,6 +104,7 @@ QuestChoiceDocumentation.lua
 QuestLineInfoDocumentation.lua
 QuestLogDocumentation.lua
 QuestOfferDocumentation.lua
+QuestSessionDocumentation.lua
 QuestTaskInfoDocumentation.lua
 RaidLocksDocumentation.lua
 RecruitAFriendDocumentation.lua
@@ -117,6 +119,7 @@ SecureTransferDocumentation.lua
 SkillInfoDocumentation.lua
 SocialInfoDocumentation.lua
 SocialQueueDocumentation.lua
+SocialRestrictionsDocumentation.lua
 SoundDocumentation.lua
 SpecializationInfoDocumentation.lua
 SpellDocumentation.lua
@@ -150,6 +153,7 @@ VoiceChatDocumentation.lua
 VoidStorageInfoDocumentation.lua
 WarCampaignDocumentation.lua
 WorldStateInfoDocumentation.lua
+WowEntitlementInfoDocumentation.lua
 WowTokenUIDocumentation.lua
 ZoneAbilityDocumentation.lua
 # End documentation files here

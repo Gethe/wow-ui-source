@@ -876,9 +876,6 @@
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Selected" atlas="pvptalents-list-background-selected"  hidden="true" alphaMode="ADD" setAllPoints="true"/>
-				<Texture parentKey="SelectedOtherOverlay" setAllPoints="true" hidden="true">
-					<Color r="0" b="0" g="0" a="0.6"/>
-				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="SelectedOtherCheck" atlas="pvptalents-list-checkmark" useAtlasSize="true" hidden="true">
@@ -1169,108 +1166,13 @@
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>
-					<Frame parentKey="WarmodeTutorialBox" inherits="GlowBoxTemplate" hidden="true" frameStrata="DIALOG">
-						<Size x="220" y="100"/>
-						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.InvisibleWarmodeButton" x="100" y="0"/>
-						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<FontString parentKey="Text" inherits="GameFontHighlight" justifyV="TOP" justifyH="LEFT" text="WAR_MODE_TUTORIAL">
-									<Size x="188" y="0"/>
-									<Anchors>
-										<Anchor point="LEFT" x="10" y="0"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-								<Anchors>
-									<Anchor point="TOPRIGHT" x="6" y="6"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										self:GetParent():Hide();
-										SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_WARMODE_UNLOCK, true);
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
-								<Anchors>
-									<Anchor point="LEFT" x="-20" y="17"/>
-								</Anchors>
-							</Frame>
-						</Frames>
-						<Scripts>
-							<OnLoad>
-								SetClampedTextureRotation(self.Arrow.Arrow, 90);
-								SetClampedTextureRotation(self.Arrow.Glow, 90);
-								self.Arrow.Glow:ClearAllPoints();
-								self.Arrow.Glow:SetPoint("CENTER", self.Arrow.Arrow, -3, 0);
-							</OnLoad>
-							<OnShow>
-								self:SetHeight(self.Text:GetHeight() + 20);
-								self:SetWidth(self.Text:GetWidth() + 20);
-							</OnShow>
-						</Scripts>
-					</Frame>
 					<Button parentKey="TrinketSlot" parentArray="Slots" inherits="PvpTalentTrinketSlotTemplate">
 						<Anchors>
 							<Anchor point="TOP" x="-.5" y="-15"/>
 						</Anchors>
-						<Frames>
-							<Frame parentKey="HelpBox" inherits="GlowBoxTemplate" hidden="true" frameStrata="DIALOG">
-								<Size x="220" y="100"/>
-								<Anchors>
-									<Anchor point="LEFT" x="80" y="0"/>
-								</Anchors>
-								<Layers>
-									<Layer level="OVERLAY">
-										<FontString parentKey="Text" inherits="GameFontHighlight" justifyV="TOP" justifyH="LEFT" text="PVP_TALENT_FIRST_TALENT">
-											<Size x="188" y="0"/>
-											<Anchors>
-												<Anchor point="LEFT" x="10" y="0"/>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-								<Frames>
-									<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-										<Anchors>
-											<Anchor point="TOPRIGHT" x="6" y="6"/>
-										</Anchors>
-										<Scripts>
-											<OnClick>
-												self:GetParent():Hide();
-												SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_TALENTS_FIRST_UNLOCK, true);
-											</OnClick>
-										</Scripts>
-									</Button>
-									<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
-										<Anchors>
-											<Anchor point="LEFT" x="-20" y="17"/>
-										</Anchors>
-									</Frame>
-								</Frames>
-								<Scripts>
-									<OnLoad>
-										SetClampedTextureRotation(self.Arrow.Arrow, 90);
-										SetClampedTextureRotation(self.Arrow.Glow, 90);
-										self.Arrow.Glow:ClearAllPoints();
-										self.Arrow.Glow:SetPoint("CENTER", self.Arrow.Arrow, -3, 0);
-									</OnLoad>
-									<OnShow>
-										self:SetHeight(self.Text:GetHeight() + 20);
-										self:SetWidth(self.Text:GetWidth() + 20);
-									</OnShow>
-								</Scripts>
-							</Frame>
-						</Frames>
 						<Scripts>
 							<OnClick inherit="prepend">
-								self.HelpBox:Hide();
-								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_TALENTS_FIRST_UNLOCK, true);
+								HelpTip:Acknowledge(self, PVP_TALENT_FIRST_TALENT);
 							</OnClick>
 						</Scripts>
 					</Button>

@@ -250,7 +250,7 @@ function PartyPoseMixin:SetModelScene(sceneID, partyCategory, forceUpdate)
 	self.ModelScene.shadowPool:ReleaseAll();
 	self.ModelScene.partyCategory = partyCategory;
 
-	local playerActor = self.ModelScene:GetActorByTag("player");
+	local playerActor = self.ModelScene:GetPlayerActor();
 	if (playerActor) then
 		if (playerActor:SetModelByUnit("player")) then
 			self:SetupShadow(playerActor);

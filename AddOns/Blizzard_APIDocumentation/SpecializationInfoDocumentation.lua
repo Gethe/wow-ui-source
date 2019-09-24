@@ -206,6 +206,7 @@ local SpecializationInfo =
 			Fields =
 			{
 				{ Name = "enabled", Type = "bool", Nilable = false },
+				{ Name = "level", Type = "number", Nilable = false },
 				{ Name = "selectedTalentID", Type = "number", Nilable = true },
 				{ Name = "availableTalentIDs", Type = "table", InnerType = "number", Nilable = false },
 			},

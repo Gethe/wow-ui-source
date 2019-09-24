@@ -1462,6 +1462,7 @@ end
 
 function PvpTalentFrameMixin:OnEvent(event, ...)
 	if event == "PLAYER_PVP_TALENT_UPDATE" then
+		self:ClearPendingRemoval();
 		self:Update();
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self:Update();
@@ -1480,7 +1481,15 @@ end
 function PvpTalentFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, PvpTalentFrameEvents);
 	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_TALENTS_FIRST_UNLOCK)) then
-		self.TrinketSlot.HelpBox:Show();
+		local helpTipInfo = {
+			text = PVP_TALENT_FIRST_TALENT,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_PVP_TALENTS_FIRST_UNLOCK,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			offsetX = -2,
+		};
+		HelpTip:Show(self.TrinketSlot, helpTipInfo);
 	end
 	self:Update();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
@@ -1493,10 +1502,6 @@ function PvpTalentFrameMixin:OnHide()
 	self:UnselectSlot();
 end
 
-function PvpTalentFrameMixin:UpdateSlot(slot)
-	slot:Update();
-end
-
 function PvpTalentFrameMixin:UpdateModelScene(scene, sceneID, fileID, forceUpdate)
 	if (not scene) then
 		return;
@@ -1507,6 +1512,14 @@ function PvpTalentFrameMixin:UpdateModelScene(scene, sceneID, fileID, forceUpdat
 	local effect = scene:GetActorByTag("effect");
 	if (effect) then
 		effect:SetModelByFileID(fileID);
+	end
+end
+
+function PvpTalentFrameMixin:ClearPendingRemoval()
+	for slotIndex = 1, #self.Slots do
+		local slot = self.Slots[slotIndex];
+		slot:SetPendingTalentRemoval(false);
+		slot:Update();
 	end
 end
 
@@ -1526,7 +1539,7 @@ function PvpTalentFrameMixin:Update()
 	end
 
 	for _, slot in pairs(self.Slots) do
-		self:UpdateSlot(slot);
+		slot:Update();
 	end
 
 	self.TalentList:Update();
@@ -1591,6 +1604,14 @@ function PvpTalentFrameMixin:SelectTalentForSlot(talentID, slotIndex)
 		return;
 	end
 
+	for existingSlotIndex = 1, #self.Slots do
+		local existingSlot = self.Slots[existingSlotIndex];
+		if existingSlot:GetSelectedTalent() == talentID then
+			existingSlot:SetPendingTalentRemoval(true);
+			break;
+		end
+	end
+
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	slot:SetSelectedTalent(talentID);
 	self:UnselectSlot();
@@ -1612,8 +1633,6 @@ function PvpTalentButtonMixin:Update(selectedHere, selectedOther)
 		self.Name:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 		self.Icon:SetDesaturated(true);
 		self.Selected:Hide();
-		self.SelectedOtherCheck:Hide();
-		self.SelectedOtherOverlay:Hide();
 		self.disallowNormalClicks = true;
 	else
 		if (C_SpecializationInfo.IsPvpTalentLocked(self.talentID)) then
@@ -1623,10 +1642,11 @@ function PvpTalentButtonMixin:Update(selectedHere, selectedOther)
 		self.Name:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 		self.Icon:SetDesaturated(false);
 		self.Selected:SetShown(selectedHere);
-		self.SelectedOtherCheck:SetShown(selectedOther);
-		self.SelectedOtherOverlay:SetShown(selectedOther);
-		self.disallowNormalClicks = selectedOther; 
+		self.disallowNormalClicks = false; 
 	end
+
+	self.SelectedOtherCheck:SetShown(selectedOther);
+	self.SelectedOtherCheck:SetDesaturated(not unlocked);
 
 	self.Name:SetText(name);
 	self.Icon:SetTexture(icon);
@@ -1680,7 +1700,16 @@ function PvpTalentWarmodeButtonMixin:OnShow()
 	self:RegisterEvent("ZONE_CHANGED");
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_WARMODE_UNLOCK)) then
-		self:GetParent().WarmodeTutorialBox:Show();
+		local helpTipInfo = {
+			text = WAR_MODE_TUTORIAL,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_PVP_WARMODE_UNLOCK,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			offsetX = -4,
+		};
+		local parent = self:GetParent();
+		HelpTip:Show(parent, helpTipInfo, parent.InvisibleWarmodeButton);
 	end
 	self:Update();
 end
@@ -1753,10 +1782,7 @@ function PvpTalentWarmodeButtonMixin:OnClick()
 
 		self:Update();
 
-		if (self:GetParent().WarmodeTutorialBox:IsVisible()) then
-			self:GetParent().WarmodeTutorialBox:Hide();
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_WARMODE_UNLOCK, true);
-		end
+		HelpTip:Acknowledge(self:GetParent(), WAR_MODE_TUTORIAL);
 	end
 end
 

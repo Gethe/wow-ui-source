@@ -1098,7 +1098,7 @@ function AchievementButton_Collapse (self)
 end
 
 function AchievementButton_Expand (self, height)
-	if ( not self.collapsed ) then
+	if ( not self.collapsed and self:GetHeight() == height ) then
 		return;
 	end
 

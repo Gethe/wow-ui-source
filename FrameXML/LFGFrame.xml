@@ -433,7 +433,7 @@
 						<PushedTexture file="Interface\Buttons\UI-Panel-HideButton-Down"/>
 						<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 					</Button>
-					<Button name="$parentEnterDungeonButton" inherits="UIPanelButtonTemplate" text="ENTER_DUNGEON" parentKey="enterButton">
+					<Button name="$parentEnterDungeonButton" inherits="UIPanelButtonTemplate" text="ENTER_LFG" parentKey="enterButton">
 						<Size x="115" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-7" y="25"/>
@@ -508,27 +508,27 @@
 							<Anchor point="BOTTOM" relativeTo="$parentRoleIcon" relativePoint="TOP" x="0" y="10"/>
 						</Anchors>
 						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture file="Interface\LFGFrame\UI-LFG-SEPARATOR" parentKey="underline">
-									<Size x="170" y="40"/>
-									<Anchors>
-										<Anchor point="TOP" x="0" y="0"/>
-									</Anchors>
-									<TexCoords left="0" right="0.6640625" top="0" bottom="0.3125"/>
-								</Texture>
-							</Layer>
 							<Layer level="ARTWORK">
-								<FontString name="$parentName" inherits="GameFontNormalLarge" justifyH="CENTER" parentKey="name">
-									<Size x="300" y="20"/>
+								<FontString name="$parentName" inherits="GameFontNormalLarge" justifyH="CENTER" parentKey="name" maxLines="2">
+									<Size x="284" y="0"/>
 									<Anchors>
 										<Anchor point="TOP" x="0" y="-13"/>
 									</Anchors>
 								</FontString>
 								<FontString name="$parentStatusText" inherits="GameFontNormal" justifyH="CENTER" parentKey="statusText">
 									<Anchors>
-										<Anchor point="BOTTOM"/>
+										<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.name" x="0" y="-12"/>
 									</Anchors>
 								</FontString>
+							</Layer>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\LFGFrame\UI-LFG-SEPARATOR" parentKey="underline">
+									<Size x="170" y="40"/>
+									<Anchors>
+										<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.name" x="0" y="25"/>
+									</Anchors>
+									<TexCoords left="0" right="0.6640625" top="0" bottom="0.3125"/>
+								</Texture>
 							</Layer>
 						</Layers>
 						<Scripts>

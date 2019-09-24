@@ -120,7 +120,7 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:IsQuestCompleteOrActive(questID)
-	return IsQuestFlaggedCompleted(questID) or (GetQuestLogIndexByID(questID) > 0);
+	return C_QuestLog.IsQuestFlaggedCompleted(questID) or (GetQuestLogIndexByID(questID) > 0);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -2534,11 +2534,19 @@ local Class_Taxi = class("Taxi", Class_TutorialBase);
 
 function Class_Taxi:OnBegin()
 	Dispatcher:RegisterEvent("TAXIMAP_OPENED", self);
+	Dispatcher:RegisterEvent("TAXIMAP_CLOSED", self);
 end
 
-function Class_Taxi:TAXIMAP_OPENED()
-	self:ShowPointerTutorial(formatStr(NPE_TAXICALLOUT), "LEFT", TaxiRouteMap, -10, 0);
-	Dispatcher:RegisterScript(TaxiFrame, "OnHide", function() self:Complete() end);
+function Class_Taxi:TAXIMAP_OPENED(uiMapSystem)
+	local frame = FlightMapFrame.ScrollContainer;
+	if uiMapSystem == Enum.UIMapSystem.Taxi then
+		frame = TaxiRouteMap;
+	end
+	self:ShowPointerTutorial(formatStr(NPE_TAXICALLOUT), "LEFT", frame, -10, 0);
+end
+
+function Class_Taxi:TAXIMAP_CLOSED()
+	self:Complete();
 end
 
 -- ------------------------------------------------------------------------------------------------------------

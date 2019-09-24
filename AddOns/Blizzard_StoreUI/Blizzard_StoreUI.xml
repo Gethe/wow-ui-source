@@ -4,75 +4,48 @@
 	<Script file="Blizzard_StoreUIInbound.lua" />
 	<Script file="Blizzard_StoreUIOutbound.lua" />
 	<Script file="Blizzard_StoreUISecure.lua" />
+	
 	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
-		<Button name="StoreButtonTemplate" virtual="true">
-			<Size x="40" y="22" />
+		
+		<Button name="StoreButtonTemplate" mixin="StoreButtonMixin" virtual="true">
+			<Size x="146" y="35" />
 			<Layers>
 				<Layer level="BACKGROUND">
-					<Texture parentKey="Left" file="Interface\Buttons\UI-Panel-Button-Up">
-						<Size x="12" y="22" />
+					<Texture parentKey="Left" atlas="shop-button-large-up-left">
+						<Size x="20" y="35" />
 						<Anchors>
 							<Anchor point="TOPLEFT" />
 							<Anchor point="BOTTOMLEFT" />
 						</Anchors>
-						<TexCoords left="0" right="0.09375" top="0" bottom="0.6875" />
 					</Texture>
-					<Texture parentKey="Right" file="Interface\Buttons\UI-Panel-Button-Up">
-						<Size x="12" y="22" />
+					<Texture parentKey="Right" atlas="shop-button-large-up-right">
+						<Size x="20" y="35" />
 						<Anchors>
 							<Anchor point="TOPRIGHT" />
 							<Anchor point="BOTTOMRIGHT" />
 						</Anchors>
-						<TexCoords left="0.53125" right="0.625" top="0" bottom="0.6875" />
 					</Texture>
-					<Texture parentKey="Middle" file="Interface\Buttons\UI-Panel-Button-Up">
-						<Size x="12" y="22" />
+					<Texture parentKey="Middle" atlas="shop-button-large-up-middle">
+						<Size x="106" y="35" />
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT" />
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT" />
 						</Anchors>
-						<TexCoords left="0.09375" right="0.53125" top="0" bottom="0.6875" />
 					</Texture>
 				</Layer>
 			</Layers>
 			<Scripts>
-				<OnLoad>
-					if ( not self:IsEnabled() ) then
-						self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-						self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-						self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-					end
-				</OnLoad>
-				<OnMouseDown>
-					if ( self:IsEnabled() ) then
-						self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-						self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-						self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-					end
-				</OnMouseDown>
-				<OnMouseUp>
-					if ( self:IsEnabled() ) then
-						self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-						self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-						self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-					end
-				</OnMouseUp>
-				<OnShow function="StoreButton_OnShow" />
-				<OnDisable>
-					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-				</OnDisable>
-				<OnEnable>
-					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-				</OnEnable>
+				<OnLoad method="OnLoad" />
+				<OnShow method="OnShow" />
+				<OnMouseUp method="OnMouseUp" />
+				<OnMouseDown method="OnMouseDown" />
+				<OnDisable method="OnDisable" />
+				<OnEnable method="OnEnable" />
 			</Scripts>
 			<ButtonText parentKey="Text" />
-			<NormalFont style="GameFontNormalLarge" />
-			<HighlightFont style="GameFontHighlightLarge" />
-			<DisabledFont style="GameFontDisableLarge" />
+			<NormalFont style="GameFontNormalMed2" />
+			<HighlightFont style="GameFontHighlightMed2" />
+			<DisabledFont style="GameFontDisableMed2" />
 			<HighlightTexture inherits="UIPanelButtonHighlightTexture" />
 		</Button>
 		<Button name="StoreButtonSmallTemplate" virtual="true">
@@ -871,7 +844,7 @@
 			</Layers>
 			<Frames>
 				<Frame parentKey="Border" inherits="SecureDialogBorderTemplate"/>
-				<Button parentKey="Button1" inherits="StoreButtonTemplate" text="OKAY" id="1">
+				<Button parentKey="Button1" inherits="StoreButtonSmallTemplate" text="OKAY" id="1">
 					<Size x="120" y="22"/>
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="22"/>
@@ -964,7 +937,7 @@
 						</OnShow>
 					</Scripts>
 				</Frame>
-				<Frame parentKey="Notice" enableMouse="false" hidden="true">
+				<Frame parentKey="Notice" frameLevel="1001" enableMouse="false" hidden="true">
 					<Size x="320" y="210" />
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="20" />
@@ -1011,7 +984,6 @@
 					<Scripts>
 						<OnShow>
 							StoreFrame_UpdateCoverState();
-							self:SetFrameLevel(self:GetParent():GetFrameLevel()+4);
 						</OnShow>
 						<OnHide function="StoreFrame_UpdateCoverState" />
 					</Scripts>
@@ -1039,7 +1011,7 @@
 					</Layers>
 					<Frames>
 						<Frame parentKey="Border" inherits="SecureDialogBorderOpaqueTemplate"/>
-						<Button parentKey="OkayButton" inherits="StoreButtonTemplate">
+						<Button parentKey="OkayButton" inherits="StoreButtonSmallTemplate">
 							<Size x="120" y="22" />
 							<Anchors>
 								<Anchor point="BOTTOM" x="0" y="20" />
@@ -1097,7 +1069,7 @@
 					</Layers>
 					<Frames>
 						<Frame parentKey="Border" inherits="SecureDialogBorderOpaqueTemplate"/>
-						<Button parentKey="AcceptButton" inherits="StoreButtonTemplate">
+						<Button parentKey="AcceptButton" inherits="StoreButtonSmallTemplate">
 							<Size x="120" y="22" />
 							<Anchors>
 								<Anchor point="BOTTOM" relativeKey="$parent.RightInset" relativePoint="BOTTOM" x="0" y="20" />
@@ -1106,7 +1078,7 @@
 								<OnClick function="StoreFrameErrorAcceptButton_OnClick" />
 							</Scripts>
 						</Button>
-						<Button parentKey="WebsiteButton" inherits="StoreButtonTemplate">
+						<Button parentKey="WebsiteButton" inherits="StoreButtonSmallTemplate">
 							<Size x="120" y="22" />
 							<Scripts>
 								<OnClick function="StoreFrameErrorWebsiteButton_OnClick" />
@@ -1132,7 +1104,7 @@
 					<Layers>
 						<Layer level="OVERLAY" textureSubLevel="1">
 							<Texture parentKey="Flash" file="Interface\Buttons\UI-Panel-Button-Glow" alphaMode="ADD" alpha="0">
-								<Size x="165" y="41"/>
+								<Size x="171" y="46"/>
 								<Anchors>
 									<Anchor point="CENTER"/>
 								</Anchors>
@@ -1615,7 +1587,7 @@
 								</OnLoad>
 							</Scripts>
 						</Frame>
-						<Button parentKey="ContinueButton" inherits="StoreButtonTemplate" enableMouse="true">
+						<Button parentKey="ContinueButton" inherits="StoreButtonSmallTemplate" enableMouse="true">
 							<Size x="120" y="30" />
 							<Anchors>
 								<Anchor point="BOTTOM" x="0" y="26" />

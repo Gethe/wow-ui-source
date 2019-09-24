@@ -12,15 +12,6 @@
 			<OnClick>
 				Blizzard_CombatLog_QuickButton_OnClick(self:GetID());
 			</OnClick>
-			<OnEnter>
-				if (self.tooltip) then
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip_AddNewbieTip(self, self.tooltip, 1.0, 1.0, 1.0, nil, 1);
-				end
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
 		</Scripts>
 		<NormalFont style="GameFontDisable"/>
 		<HighlightFont style="GameFontHighlight"/>
@@ -87,7 +78,7 @@
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip_AddNewbieTip(self, ADDITIONAL_FILTERS, 1.0, 1.0, 1.0);
+						GameTooltip_SetTitle(GameTooltip, ADDITIONAL_FILTERS);
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>

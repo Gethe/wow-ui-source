@@ -923,7 +923,7 @@ local function _CalendarFrame_InviteToRaid(maxInviteCount)
 			 inviteInfo.inviteStatus == CALENDAR_INVITESTATUS_CONFIRMED or
 			 inviteInfo.inviteStatus == CALENDAR_INVITESTATUS_SIGNEDUP or
 			 inviteInfo.inviteStatus == CALENDAR_INVITESTATUS_TENTATIVE)  ) then
-			InviteToGroup(inviteInfo.name);
+			C_PartyInfo.InviteUnit(inviteInfo.name);
 			inviteCount = inviteCount + 1;
 		end
 		i = i + 1;
@@ -1869,6 +1869,7 @@ function CalendarFilterDropDown_Initialize(self)
 	info.keepShownOnClick = 1;
 	for index, value in next, CALENDAR_FILTER_CVARS do
 		info.text = value.text;
+		info.isNotRadio = true;
 		info.func = CalendarFilterDropDown_OnClick;
 		if ( GetCVarBool(value.cvar) ) then
 			info.checked = 1;
@@ -3172,7 +3173,6 @@ function CalendarViewEventAcceptButton_OnEnter(self)
 		GameTooltip:SetText(CALENDAR_TOOLTIP_AVAILABLEBUTTON, nil, nil, nil, nil, true);
 	end
 	GameTooltip:Show();
-	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_AVAILABLEBUTTON, 1);
 end
 
 function CalendarViewEventAcceptButton_OnClick(self)
@@ -3187,7 +3187,6 @@ function CalendarViewEventTentativeButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	GameTooltip:SetText(CALENDAR_TOOLTIP_TENTATIVEBUTTON, nil, nil, nil, nil, true);
 	GameTooltip:Show();
-	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_TENTATIVEBUTTON, 1);
 end
 
 function CalendarViewEventTentativeButton_OnClick(self)
@@ -3198,7 +3197,6 @@ function CalendarViewEventDeclineButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	GameTooltip:SetText(CALENDAR_TOOLTIP_DECLINEBUTTON, nil, nil, nil, nil, true);
 	GameTooltip:Show();
-	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_DECLINEBUTTON, 1);
 end
 
 function CalendarViewEventDeclineButton_OnClick(self)
@@ -3213,11 +3211,47 @@ function CalendarViewEventRemoveButton_OnEnter(self)
 		GameTooltip:SetText(CALENDAR_TOOLTIP_REMOVEBUTTON, nil, nil, nil, nil, true);
 	end
 	GameTooltip:Show();
-	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_REMOVEBUTTON, 1);
 end
 
 function CalendarViewEventRemoveButton_OnClick(self)
 	C_Calendar.RemoveEvent();
+end
+
+function CalendarViewEventFrameHeaderFrame_OnEnter(self)
+	local textElements = {
+		CalendarViewEventTitle,
+		CalendarViewEventCommunityName,
+		CalendarViewEventTypeName,
+		CalendarViewEventCreatorName,
+		CalendarViewEventDateLabel,
+		CalendarViewEventTimeLabel,
+	};
+
+	local showTooltip = false;
+	for i = 1, #textElements do
+		local textElement = textElements[i];
+		if textElement:IsTruncated() then
+			showTooltip = true;
+			break;
+		end
+	end
+
+	if showTooltip then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+		for i = 1, #textElements do
+			local textElement = textElements[i];
+			if textElement == CalendarViewEventTitle then
+				GameTooltip_SetTitle(GameTooltip, textElement:GetText(), NORMAL_FONT_COLOR);
+			elseif textElement == CalendarViewEventDateLabel or textElement == CalendarViewEventTimeLabel then
+				GameTooltip_AddColoredLine(GameTooltip, textElement:GetText(), HIGHLIGHT_FONT_COLOR);
+			else
+				GameTooltip_AddNormalLine(GameTooltip, textElement:GetText());
+			end
+		end
+
+		GameTooltip:Show();
+	end
 end
 
 function CalendarViewEventRSVP_Update(month, day, year, pendingInvite, inviteStatus, inviteType, calendarType)
@@ -4411,7 +4445,7 @@ function CalendarInviteContextMenu_ClearModerator()
 end
 
 function CalendarInviteContextMenu_InviteToGroup(self)
-	InviteToGroup(self.value);
+	C_PartyInfo.InviteUnit(self.value);
 end
 
 function CalendarInviteStatusContextMenu_OnLoad(self)
@@ -4540,7 +4574,7 @@ function CalendarCreateEventRaidInviteButton_OnEvent(self, event, ...)
 			if ( IsInGroup(LE_PARTY_CATEGORY_HOME) and not IsInRaid(LE_PARTY_CATEGORY_HOME) and self.inviteLostMembers ) then
 				-- in case we weren't able to convert to a raid when the player clicked the raid invite button
 				-- (which means the player was not in a party), we want to convert to a raid now since he has a party
-				ConvertToRaid();
+				C_PartyInfo.ConvertToRaid();
 			end
 		end
 	end
@@ -4556,7 +4590,7 @@ function CalendarCreateEventRaidInviteButton_OnClick(self)
 			self.inviteLostMembers = true;
 			if ( realNumGroupMembers > 0 ) then
 				--...and I'm already in a party, then I need to form a raid first to fit everyone
-				ConvertToRaid();
+				C_PartyInfo.ConvertToRaid();
 				return;
 			end
 		end
@@ -4576,7 +4610,6 @@ function CalendarCreateEventRaidInviteButton_OnEnter(self)
 		GameTooltip:SetText(CALENDAR_TOOLTIP_INVITEMEMBERS_BUTTON_PARTY, nil, nil, nil, nil, true);
 	end
 	GameTooltip:Show();
-	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_INVITETORAID_BUTTON, 1);
 end
 
 function CalendarCreateEventRaidInviteButton_Update()
@@ -5416,103 +5449,6 @@ function CalendarClassButton_OnEnter(self)
 	GameTooltip:SetText(classData.name, nil, nil, nil, nil, true);
 	GameTooltip:Show();
 end
---[[
-function CalendarClassTotalsButton_OnLoad(self)
-	self:RegisterEvent("GROUP_ROSTER_UPDATE");
-end
-
-function CalendarClassTotalsButton_OnEvent(self, event, ...)
-	if ( self:IsShown() and event == "GROUP_ROSTER_UPDATE" ) then
-		if ( CalendarEventGetNumInvites() > MAX_PARTY_MEMBERS + 1 and GetRealNumPartyMembers() >= 1 and GetRealNumRaidMembers() == 0 ) then
-			-- we don't have a good way of knowing in advance whether or not we need a raid to accomodate all our invites
-			-- so we're going to create a raid as soon as possible
-			ConvertToRaid();
-		end
-		CalendarClassTotalsButton_Update();
-	end
-end
-
-function CalendarClassTotalsButton_Update()
-	if ( CalendarFrame_GetModal() ) then
-		CalendarClassTotalsButton:Disable();
-		CalendarInviteToGroupDropDown:Hide();
-		CalendarClassTotalsButton:SetDisabledFontObject(GameFontDisableSmall);
-		CalendarClassTotalsButtonOnEnterDummy:Hide();
-	else
-		if ( CalendarClassButtonContainer:GetParent() == CalendarCreateEventFrame and
-			 CalendarCreateEventFrame.mode == "edit" and
-			 GetRealNumPartyMembers() == 0 and GetRealNumRaidMembers() == 0 ) then
-			CalendarClassTotalsButton:Enable();
-			CalendarClassTotalsButtonOnEnterDummy:Hide();
-		else
-			CalendarClassTotalsButton:Disable();
-			CalendarInviteToGroupDropDown:Hide();
-			CalendarClassTotalsButtonOnEnterDummy:Show();
-		end
-		CalendarClassTotalsButton:SetDisabledFontObject(GameFontGreenSmall);
-	end
-end
-
-function CalendarClassTotalsButton_OnClick(self)
-	ToggleDropDownMenu(1, nil, CalendarInviteToGroupDropDown, self, 0, 0);
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-end
-
-function CalendarClassTotalsButtonOnEnterDummy_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	GameTooltip:SetText(CALENDAR_TOOLTIP_INVITE_TOTALS, nil, nil, nil, nil, true);
-	GameTooltip:Show();
-end
-
-function CalendarClassTotalsButton_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	if ( CalendarEventGetNumInvites() > MAX_PARTY_MEMBERS + 1 ) then
-		GameTooltip:SetText(CALENDAR_TOOLTIP_INVITEMEMBERS_BUTTON_RAID, nil, nil, nil, nil, true);
-	else
-		GameTooltip:SetText(CALENDAR_TOOLTIP_INVITEMEMBERS_BUTTON_PARTY, nil, nil, nil, nil, true);
-	end
-	GameTooltip:Show();
-end
-
-function CalendarInviteToGroupDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(CalendarInviteToGroupDropDown, CalendarInviteToGroupDropDown_Initialize, "MENU");
-	UIDropDownMenu_SetWidth(CalendarInviteToGroupDropDown, 100);
-end
-
-function CalendarInviteToGroupDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-
-	info.text = CALENDAR_INVITE_CONFIRMED;
-	info.func = CalendarInviteToGroupDropDown_Confirmed_OnClick;
-	UIDropDownMenu_AddButton(info);
-
-	info.text = CALENDAR_INVITE_ALL;
-	info.func = CalendarInviteToGroupDropDown_All_OnClick;
-	UIDropDownMenu_AddButton(info);
-end
-
-function CalendarInviteToGroupDropDown_Confirmed_OnClick(self)
-	local name, level, className, classFilename, inviteStatus, modStatus;
-	local inviteCount = min(MAX_RAID_MEMBERS - GetRealNumRaidMembers(), CalendarEventGetNumInvites());
-	for i = 1, inviteCount do
-		name, level, className, classFilename, inviteStatus, modStatus = CalendarEventGetInvite(i);
-		if ( not UnitInParty(name) and not UnitInRaid(name) and
-			 (inviteStatus == CALENDAR_INVITESTATUS_ACCEPTED or inviteStatus == CALENDAR_INVITESTATUS_CONFIRMED) ) then
-			InviteToGroup(name);
-		end
-	end
-end
-
-function CalendarInviteToGroupDropDown_All_OnClick(self)
-	local inviteCount = min(MAX_RAID_MEMBERS - GetRealNumRaidMembers(), CalendarEventGetNumInvites());
-	for i = 1, inviteCount do
-		local name = CalendarEventGetInvite(i);
-		if ( not UnitInParty(name) and not UnitInRaid(name) ) then
-			InviteToGroup(name);
-		end
-	end
-end
---]]
 
 function CalendarClassTotalsButton_Update()
 	if ( CalendarFrame_GetModal() ) then

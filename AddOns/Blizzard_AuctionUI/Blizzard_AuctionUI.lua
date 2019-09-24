@@ -57,6 +57,52 @@ StaticPopupDialogs["BUYOUT_AUCTION"] = {
 	exclusive = 1,
 	hideOnEscape = 1
 };
+
+StaticPopupDialogs["BUYOUT_AUCTION_EXPENSIVE"] = {
+	text = BUYOUT_AUCTION_CONFIRMATION_EXPENSIVE,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	
+	OnAccept = function(self)
+		PlaceAuctionBid(AuctionFrame.type, GetSelectedAuctionItem(AuctionFrame.type), AuctionFrame.buyoutPrice);
+	end,
+	OnShow = function(self, data)
+		self.button1:Disable();
+		self.button2:Enable();
+		self.editBox:SetFocus();
+	end,
+	OnHide = function(self)
+		self.editBox:SetText("");
+	end,
+	OnCancel = function(self)
+		BrowseBuyoutButton:Enable();
+	end,
+
+	EditBoxOnEnterPressed = function(self)
+		if ( self:GetParent().button1:IsEnabled() ) then
+			self:GetParent().button1:Click();
+		end
+	end,
+	EditBoxOnTextChanged = function (self)
+		local parent = self:GetParent();
+		if ( strupper(parent.editBox:GetText()) ==  BUYOUT_AUCTION_CONFIRMATION_STRING ) then
+			parent.button1:Enable();
+		else
+			parent.button1:Disable();
+		end
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide();
+	end,
+
+	timeout = 0,
+	exclusive = 1,
+	showAlert = 1,
+	hideOnEscape = 1,
+	hasEditBox = 1,
+	maxLetters = 32,
+};
+
 StaticPopupDialogs["BID_AUCTION"] = {
 	text = BID_AUCTION_CONFIRMATION,
 	button1 = ACCEPT,
@@ -2002,9 +2048,21 @@ function SortButton_UpdateArrow(button, type, sort)
 	end
 end
 
+-- Funciton to determine which buyout popup dialog to show
+local SHOW_EXPENSIVE_WARNING_THRESHOLD = 50000 * COPPER_PER_SILVER * SILVER_PER_GOLD;
+function ShowAuctionBuyoutsStaticPopup()
+	-- buyouts over 50,000 gold should give the player an additional warning.
+	if (AuctionFrame.buyoutPrice > SHOW_EXPENSIVE_WARNING_THRESHOLD) then
+		StaticPopup_Show("BUYOUT_AUCTION_EXPENSIVE", AuctionFrame.buyoutPrice);
+	else
+		StaticPopup_Show("BUYOUT_AUCTION");
+	end
+end
+
 -- Function to close popups if another auction item is selected
 function CloseAuctionStaticPopups()
 	StaticPopup_Hide("BUYOUT_AUCTION");
+	StaticPopup_Hide("BUYOUT_AUCTION_EXPENSIVE");
 	StaticPopup_Hide("BID_AUCTION");
 	StaticPopup_Hide("CANCEL_AUCTION");
 end

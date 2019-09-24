@@ -28,6 +28,7 @@ end
 
 function AdventureMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(AdventureMap_QuestChoiceDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(QuestSessionDataProviderMixin));
 end
 
 function AdventureMapMixin:ClearAreaTableIDAvailableForInsets()

@@ -200,8 +200,8 @@ function ActionBarButtonEventsFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
 	self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
 	self:RegisterEvent("PET_BAR_UPDATE");
-	self:RegisterEvent("UNIT_FLAGS");
-	self:RegisterEvent("UNIT_AURA");
+	self:RegisterUnitEvent("UNIT_FLAGS", "pet");
+	self:RegisterUnitEvent("UNIT_AURA", "pet");
 	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED");
 end
 
@@ -389,8 +389,12 @@ function ActionButton_Update(self)
 		
 		ActionButton_ClearFlash(self);
 		self:SetChecked(false);
-	end
 
+		if self.LevelLinkLockIcon then
+			self.LevelLinkLockIcon:SetShown(false);
+		end
+	end
+	
 	-- Add a green border if button is an equipped item
 	local border = self.Border;
 	if border then
@@ -523,6 +527,15 @@ function ActionButton_UpdateUsable(self)
 	else
 		icon:SetVertexColor(0.4, 0.4, 0.4);
 		normalTexture:SetVertexColor(1.0, 1.0, 1.0);
+	end
+
+	local isLevelLinkLocked = C_LevelLink.IsActionLocked(self.action);
+	if not icon:IsDesaturated() then
+		icon:SetDesaturated(isLevelLinkLocked);
+	end
+
+	if self.LevelLinkLockIcon then
+		self.LevelLinkLockIcon:SetShown(isLevelLinkLocked);
 	end
 end
 
@@ -739,7 +752,7 @@ function ActionButton_OnEvent(self, event, ...)
 		ActionButton_UpdateHotkeys(self, self.buttonType);
 	elseif ( event == "PLAYER_TARGET_CHANGED" ) then	-- All event handlers below this line are only set when the button has an action
 		self.rangeTimer = -1;
-	elseif ( (((event == "UNIT_FLAGS") or (event == "UNIT_AURA")) and arg1 == "pet") or (event == "PET_BAR_UPDATE") ) then
+	elseif ( event == "UNIT_FLAGS" or event == "UNIT_AURA" or event == "PET_BAR_UPDATE" ) then
 		-- Pet actions can also change the state of action buttons.
 		ActionButton_UpdateState(self);
 		ActionButton_UpdateFlash(self);

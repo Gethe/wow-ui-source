@@ -118,22 +118,25 @@ end
 CommentatorCooldownPlayerMixin = {};
 
 function CommentatorCooldownPlayerMixin:OnLoad()
-	self.offensiveCooldownPool = CreateCommentatorCooldownPool(self, self:GetTeamAndPlayer());
-	self.defensiveCooldownPool = CreateCommentatorCooldownPool(self, self:GetTeamAndPlayer());
+	local teamIndex, playerIndex = self:GetTeamAndPlayer();
+	self.offensiveCooldownPool = CreateCommentatorSpellPool(self.Container, teamIndex, playerIndex, "CommentatorCooldownFrameTemplate");
+	self.defensiveCooldownPool = CreateCommentatorSpellPool(self.Container, teamIndex, playerIndex, "CommentatorCooldownFrameTemplate");
 end
 
 function CommentatorCooldownPlayerMixin:SetTeamAndPlayer(teamIndex, playerIndex)
 	self.teamIndex = teamIndex;
 	self.playerIndex = playerIndex;
 
-	local unitToken, playerName, faction, specID = C_Commentator.GetPlayerInfo(self.teamIndex, self.playerIndex);
+	local unitToken, playerName, faction, specID = C_Commentator.GetPlayerInfo(teamIndex, playerIndex);
 	self:SetPlayerName(playerName);
 	self:SetClass(select(2, UnitClass(unitToken)));
 	self:SetRole(GetSpecializationRoleByID(specID));
 
 	self.offensiveCooldownPool:SetTeamAndPlayer(teamIndex, playerIndex);
 	self.defensiveCooldownPool:SetTeamAndPlayer(teamIndex, playerIndex);
-	self:UpdateCooldowns(C_Commentator.GetTrackedOffensiveCooldowns(self.teamIndex, self.playerIndex), C_Commentator.GetTrackedDefensiveCooldowns(self.teamIndex, self.playerIndex));
+	local offensiveSpells = C_Commentator.GetTrackedSpells(teamIndex, playerIndex, Enum.TrackedSpellCategory.Offensive);
+	local defensiveSpells = C_Commentator.GetTrackedSpells(teamIndex, playerIndex, Enum.TrackedSpellCategory.Defensive);
+	self:UpdateSpells(offensiveSpells, defensiveSpells);
 end
 
 function CommentatorCooldownPlayerMixin:GetTeamAndPlayer()
@@ -179,126 +182,179 @@ function CommentatorCooldownPlayerMixin:GetRole()
 	return self.role;
 end
 
-local MAX_NUM_COOLDOWNS = 10;
-function CommentatorCooldownPlayerMixin:UpdateCooldowns(offensiveCooldowns, defensiveCooldowns)
-	while #offensiveCooldowns + #defensiveCooldowns > MAX_NUM_COOLDOWNS do
-		if #offensiveCooldowns > #defensiveCooldowns then
-			offensiveCooldowns[#offensiveCooldowns] = nil;
+function CommentatorCooldownPlayerMixin:UpdateSpells(offensiveSpells, defensiveSpells)
+	local MAX_TRACKED_SPELLS = 10;
+	while #offensiveSpells + #defensiveSpells > MAX_TRACKED_SPELLS do
+		if #offensiveSpells > #defensiveSpells then
+			offensiveSpells[#offensiveSpells] = nil;
 		else
-			defensiveCooldowns[#defensiveCooldowns] = nil;
+			defensiveSpells[#defensiveSpells] = nil;
 		end
 	end
 
 	local PADDING = 5;
-	self.offensiveCooldownPool:SetCooldowns(offensiveCooldowns, self.Container, "LEFT", PADDING);
-	self.defensiveCooldownPool:SetCooldowns(defensiveCooldowns, self.Container, "RIGHT", PADDING);
+	self.offensiveCooldownPool:ConstructFrames(offensiveSpells, COMMENTATOR_MAX_OFFENSIVE_SPELLS, self.Container, "LEFT", PADDING);
+	self.defensiveCooldownPool:ConstructFrames(defensiveSpells, COMMENTATOR_MAX_DEFENSIVE_SPELLS, self.Container, "RIGHT", PADDING);
 end
 
-CommentatorCooldownPoolMixin = {};
+CommentatorSpellPoolMixin = {};
 
-function CreateCommentatorCooldownPool(parent, teamIndex, playerIndex)
-	local commentatorCooldownPool = CreateFromMixins(CommentatorCooldownPoolMixin);
-	commentatorCooldownPool.cooldownPool = CreateFramePool("FRAME", parent, "CommentatorCooldownTemplate");
-	commentatorCooldownPool.activeCooldowns = {};
-	commentatorCooldownPool:SetTeamAndPlayer(teamIndex, playerIndex);
-	return commentatorCooldownPool;
+function CreateCommentatorSpellPool(parent, teamIndex, playerIndex, frameTemplate)
+	return CreateAndInitFromMixin(CommentatorSpellPoolMixin, parent, teamIndex, playerIndex, frameTemplate);
 end
 
-function CommentatorCooldownPoolMixin:SetTeamAndPlayer(teamIndex, playerIndex)
-	wipe(self.activeCooldowns);
+function CommentatorSpellPoolMixin:Init(parent, teamIndex, playerIndex, frameTemplate)
+	self.activeSpells = {};
+	self.teamIndex = teamIndex;
+	self.playerIndex = playerIndex;
+	self.framePool = CreateFramePool("FRAME", parent, frameTemplate);
+end
+
+function CommentatorSpellPoolMixin:SetTeamAndPlayer(teamIndex, playerIndex)
+	wipe(self.activeSpells);
 	self.teamIndex = teamIndex;
 	self.playerIndex = playerIndex;
 end
 
-function CommentatorCooldownPoolMixin:GetTeamAndPlayer()
+function CommentatorSpellPoolMixin:GetTeamAndPlayer()
 	return self.teamIndex, self.playerIndex;
 end
 
-function CommentatorCooldownPoolMixin:SetCooldownIsActive(spellID, isActive)
-	self.activeCooldowns[spellID] = isActive;
-	for cooldownFrame in self.cooldownPool:EnumerateActive() do
-		if cooldownFrame:GetSpellID() == spellID then
-			cooldownFrame:SetActive(isActive);
+function CommentatorSpellPoolMixin:SetSpellActive(trackedSpellID, isActive)
+	self.activeSpells[trackedSpellID] = isActive;
+	for spellFrame in self.framePool:EnumerateActive() do
+		if spellFrame:GetSpellID() == trackedSpellID then
+			spellFrame:SetSpellActive(isActive);
+			self:UpdateAlignment();
+			break;
 		end
 	end
 end
 
-function CommentatorCooldownPoolMixin:IsCooldownActive(spellID)
-	return self.activeCooldowns[spellID];
+function CommentatorSpellPoolMixin:IsSpellActive(trackedSpellID)
+	return self.activeSpells[trackedSpellID] == true;
 end
 
-function CommentatorCooldownPoolMixin:SetCooldowns(cooldownSpellIDs, anchor, point, padding)
-	self.cooldownPool:ReleaseAll();
-	for i, cooldownSpellID in ipairs(cooldownSpellIDs) do
-		local cooldownFrame = self.cooldownPool:Acquire();
-		cooldownFrame:Initialize(self);
-		cooldownFrame:SetSpellID(cooldownSpellID);
-		
-		cooldownFrame:ClearAllPoints();
-		local offset = (i - 1) * (cooldownFrame:GetWidth() + padding);
-		if point == "RIGHT" then
-			offset = -offset;
-		end
-		cooldownFrame:SetPoint(point, anchor, point, offset, 5);
-		
-		cooldownFrame:Show();
+function CommentatorSpellPoolMixin:ConstructFrames(spells, maxSpells, container, point, padding)
+	self.framePool:ReleaseAll();
+
+	-- Reserve enough frames for every spell so the order of frames returned by
+	-- EnumerateActive remains the same below, and in UpdateAlignment().
+	local frameCount = math.min(#spells, maxSpells);
+	for index = 1, frameCount do
+		self.framePool:Acquire();
 	end
+
+	local direction = point == "LEFT" and 1 or -1;
+	local spellIndex = 1;
+	for frame in self.framePool:EnumerateActive() do
+		frame:Initialize(self, spells[spellIndex]);
+		frame.aligner = function(alignIndex)
+			frame:ClearAllPoints();
+			local extents = frame:GetWidth() + padding;
+			local offset = alignIndex * extents;
+			frame:SetPoint(point, container, point, offset * direction, 5);
+			return extents;
+		end;
+		frame:SetShown(true);
+		spellIndex = spellIndex + 1;
+	end
+
+	self:UpdateAlignment();
 end
  
-CommentatorCooldownFrameMixin = {};
-
-function CommentatorCooldownFrameMixin:Initialize(info)
-	self.info = info;
+function CommentatorSpellPoolMixin:UpdateAlignment()
+	local alignIndex = 0;
+	local totalWidth = 0;
+	for frame in self.framePool:EnumerateActive() do
+		local extents = frame.aligner(alignIndex);
+		totalWidth = totalWidth + extents;
+		alignIndex = alignIndex + 1;
+	end
+	self.framePool.parent:SetWidth(totalWidth);
 end
 
-function CommentatorCooldownFrameMixin:SetSpellID(spellID)
-	self.spellID = spellID;
-	self:Update();
-end
+CommentatorSpellFrameMixin = {};
 
-function CommentatorCooldownFrameMixin:GetSpellID()
+function CommentatorSpellFrameMixin:GetSpellID()
 	return self.spellID;
 end
 
-function CommentatorCooldownFrameMixin:IsActive()
-	return self.active;
+function CommentatorSpellFrameMixin:GetIndirectSpellID()
+	return self.indirectSpellID;
 end
 
-function CommentatorCooldownFrameMixin:SetActive(active)
-	self.active = active;
-	self.ActiveGlow:SetShown(active);
-	self.Ants:SetShown(active);
+function CommentatorSpellFrameMixin:IsSpellActive()
+	return self.isSpellActive;
+end
+
+function CommentatorSpellFrameMixin:Initialize(pool, spellID)
+	self.pool = pool;
+	self.spellID = spellID;
+	self.indirectSpellID = C_Commentator.GetIndirectSpellID(spellID);
+
+	self:Update();
+end
+
+-- derive
+function CommentatorSpellFrameMixin:Update()
+	local icon = select(3, GetSpellInfo(self.spellID));
+	self.Icon:SetTexture(icon);
 	
+	self:SetSpellActive(self.pool:IsSpellActive(self.spellID));
+end
+
+-- derive
+function CommentatorSpellFrameMixin:SetSpellActive(isSpellActive)
+	self.isSpellActive = isSpellActive;
 	self:UpdateCooldownSwipe();
 end
 
-function CommentatorCooldownFrameMixin:Update()	
-	local teamIndex, playerIndex = self.info:GetTeamAndPlayer();
-	local charges, maxCharges, chargeStart, chargeDuration = C_Commentator.GetPlayerSpellCharges(teamIndex, playerIndex, self.spellID);
-	if charges and maxCharges and maxCharges > 1 then
-		self.ChargesText:SetText(charges);
-	else
-		self.ChargesText:SetText("");
-	end
-	
-	local spellName, _, spellIcon = GetSpellInfo(self.spellID);
-	self.Icon:SetTexture(spellIcon);
-	
-	self:SetActive(self.info:IsCooldownActive(self.spellID));
-	self:UpdateCooldownSwipe();
+-- derive
+function CommentatorSpellFrameMixin:UpdateCooldownSwipe()
+end
+
+CommentatorCooldownFrameMixin = CreateFromMixins(CommentatorSpellFrameMixin);
+
+function CommentatorCooldownFrameMixin:SetSpellActive(isSpellActive)
+	CommentatorSpellFrameMixin.SetSpellActive(self, isSpellActive);
+
+	self.ActiveGlow:SetShown(isSpellActive);
+	self.Ants:SetShown(isSpellActive);
+end
+
+function CommentatorCooldownFrameMixin:Update()
+	CommentatorSpellFrameMixin.Update(self);
+
+	local teamIndex, playerIndex = self.pool:GetTeamAndPlayer();
+	local charges, maxCharges, chargeStart, chargeDuration = C_Commentator.GetPlayerSpellCharges(teamIndex, playerIndex, self:GetSpellID());
+	local displayCharges = charges and maxCharges and maxCharges > 1;
+	self.ChargesText:SetText(displayCharges and charges or "");
 end
 
 function CommentatorCooldownFrameMixin:UpdateCooldownSwipe()
-	if self:IsActive() then
+	CommentatorSpellFrameMixin.UpdateCooldownSwipe(self);
+
+	if self:IsSpellActive() then
 		CooldownFrame_Clear(self.Cooldown);
 	else
-		local teamIndex, playerIndex = self.info:GetTeamAndPlayer();
-		local charges, maxCharges, chargeStart, chargeDuration = C_Commentator.GetPlayerSpellCharges(teamIndex, playerIndex, self.spellID);
+		local teamIndex, playerIndex = self.pool:GetTeamAndPlayer();
+		local charges, maxCharges, chargeStart, chargeDuration = C_Commentator.GetPlayerSpellCharges(teamIndex, playerIndex, self:GetSpellID());
 		if charges and maxCharges and maxCharges > 1 and charges < maxCharges then
 			self.Charges:SetCooldown(chargeStart, chargeDuration);
 		end
 		
-		local start, duration, enable = C_Commentator.GetPlayerCooldownInfo(teamIndex, playerIndex, self.spellID);
+		local start, duration, enable = C_Commentator.GetPlayerCooldownInfo(teamIndex, playerIndex, self:GetSpellID());
 		CooldownFrame_Set(self.Cooldown, start, duration, enable);
 	end
+end
+
+CommentatorDebuffFrameMixin = CreateFromMixins(CommentatorSpellFrameMixin);
+
+function CommentatorDebuffFrameMixin:UpdateCooldownSwipe()
+	CommentatorSpellFrameMixin.UpdateCooldownSwipe(self);
+
+	local teamIndex, playerIndex = self.pool:GetTeamAndPlayer();
+	local start, duration, enable = C_Commentator.GetPlayerAuraInfo(teamIndex, playerIndex, self:GetIndirectSpellID());
+	CooldownFrame_Set(self.Cooldown, start, duration, enable);
 end

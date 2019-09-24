@@ -91,10 +91,6 @@
 							StaticPopup_Show("REMOVE_GUILDMEMBER", nil, nil, data);
 						end
 					</OnClick>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, REMOVE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDREMOVE, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<NormalFont style="GameFontNormalSmall"/>
 				<HighlightFont style="GameFontHighlightSmall"/>
@@ -107,12 +103,8 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						InviteToGroup(self:GetParent().Name:GetText());
+						C_PartyInfo.InviteUnit(self:GetParent().Name:GetText());
 					</OnClick>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, GROUP_INVITE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GROUPINVITE, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<NormalFont style="GameFontNormalSmall"/>
 				<HighlightFont style="GameFontHighlightSmall"/>

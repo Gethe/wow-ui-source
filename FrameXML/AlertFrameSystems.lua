@@ -4,7 +4,8 @@ function AlertFrameSystems_Register()
 	ScenarioAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("ScenarioAlertFrameTemplate", ScenarioAlertFrame_SetUp);
 	InvasionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("ScenarioLegionInvasionAlertFrameTemplate", ScenarioLegionInvasionAlertFrame_SetUp, ScenarioLegionInvasionAlertFrame_Coalesce);
 	DigsiteCompleteAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("DigsiteCompleteToastFrameTemplate", DigsiteCompleteToastFrame_SetUp);
-	StorePurchaseAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("StorePurchaseAlertFrameTemplate", StorePurchaseAlertFrame_SetUp);
+	EntitlementDeliveredAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("EntitlementDeliveredAlertFrameTemplate", EntitlementDeliveredAlertFrame_SetUp);
+	RafRewardDeliveredAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("RafRewardDeliveredAlertFrameTemplate", RafRewardDeliveredAlertFrame_SetUp);
 	GarrisonBuildingAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("GarrisonBuildingAlertFrameTemplate", GarrisonBuildingAlertFrame_SetUp);
 	GarrisonMissionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("GarrisonStandardMissionAlertFrameTemplate", GarrisonMissionAlertFrame_SetUp);
 	GarrisonShipMissionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("GarrisonShipMissionAlertFrameTemplate", GarrisonMissionAlertFrame_SetUp);
@@ -646,15 +647,14 @@ function DigsiteCompleteToastFrame_SetUp(frame, raceName, raceTexture)
 	PlaySound(SOUNDKIT.UI_DIG_SITE_COMPLETION_TOAST);
 end
 
--- [[ StorePurchaseAlertFrame ]] --
-function StorePurchaseAlertFrame_SetUp(frame, type, icon, name, payloadID, payloadGUID)
+-- [[ EntitlementDeliveredAlertFrame ]] --
+function EntitlementDeliveredAlertFrame_SetUp(frame, type, icon, name, payloadID, showFancyToast)
 	frame.Icon:SetTexture(icon);
 	frame.Title:SetFontObject(GameFontNormalLarge);
 	frame.Title:SetText(name);
 
 	frame.type = type;
 	frame.payloadID = payloadID;
-	frame.payloadGUID = payloadGUID;
 
 	if ( frame.Title:IsTruncated() ) then
 		frame.Title:SetFontObject(GameFontNormal);
@@ -662,23 +662,44 @@ function StorePurchaseAlertFrame_SetUp(frame, type, icon, name, payloadID, paylo
 	PlaySound(SOUNDKIT.UI_IG_STORE_PURCHASE_DELIVERED_TOAST_01);
 end
 
-function StorePurchaseAlertFrame_OnClick(self, button, down)
+-- [[ RafRewardDeliveredAlertFrame ]] --
+function RafRewardDeliveredAlertFrame_SetUp(frame, type, icon, name, payloadID, showFancyToast)
+	EntitlementDeliveredAlertFrame_SetUp(frame, type, icon, name, payloadID, showFancyToast);
+
+	if showFancyToast then
+		frame.StandardBackground:SetShown(false);
+		frame.FancyBackground:SetShown(true);
+		frame.Icon:SetPoint("LEFT", frame, "LEFT", 34, -5);
+	else
+		frame.StandardBackground:SetShown(true);
+		frame.FancyBackground:SetShown(false);
+		frame.Icon:SetPoint("LEFT", frame, "LEFT", 35, -3);
+	end
+
+	if type == Enum.WoWEntitlementType.GameTime then
+		frame.Title:SetTextColor(HEIRLOOM_BLUE_COLOR:GetRGBA());
+	else
+		frame.Title:SetTextColor(EPIC_PURPLE_COLOR:GetRGBA());
+	end
+end
+
+function EntitlementDelivered_OnClick(self, button, down)
 	if( AlertFrame_OnClick(self, button, down) ) then
 		return;
 	end
 
-	if (self.type == Enum.StoreDeliveryType.Item) then
+	if (self.type == Enum.WoWEntitlementType.Item) then
 		local slot = SearchBagsForItem(self.payloadID);
 		if (slot >= 0) then
 			OpenBag(slot);
 		end
-	elseif (self.type == Enum.StoreDeliveryType.Mount) then
+	elseif (self.type == Enum.WoWEntitlementType.Mount) then
 		ToggleCollectionsJournal(1);
-	elseif (self.type == Enum.StoreDeliveryType.Battlepet) then
+	elseif (self.type == Enum.WoWEntitlementType.Battlepet) then
 		ToggleCollectionsJournal(2);
-	elseif (self.type == Enum.StoreDeliveryType.Toy) then
+	elseif (self.type == Enum.WoWEntitlementType.Toy) then
 		ToggleToyCollection(self.payloadID);
-	elseif (self.type == Enum.StoreDeliveryType.Collection) then
+	elseif (self.type == Enum.WoWEntitlementType.Appearance or self.type == Enum.WoWEntitlementType.AppearanceSet or self.type == Enum.WoWEntitlementType.Illusion) then
 		ToggleCollectionsJournal(5);
 	end
 end
@@ -709,24 +730,30 @@ end
 -- [[ GarrisonRandomMissionAlertFrame ]] --
 function GarrisonRandomMissionAlertFrame_SetUp(frame, missionInfo)
 	frame.Level:SetText(missionInfo.level);
+	
+	local followerOptions = GarrisonFollowerOptions[missionInfo.followerTypeID];
+	local showItemLevel = followerOptions.showILevelOnMission and missionInfo.iLevel ~= 0;
+	if showItemLevel then
 	frame.ItemLevel:SetText("(" .. missionInfo.iLevel .. ")");
-	if (missionInfo.iLevel ~= 0 and missionInfo.isRare) then
-		frame.Level:SetPoint("TOP", "$parent", "TOP", -115, -14);
-		frame.ItemLevel:SetPoint("TOP", "$parent", "TOP", -115, -37);
-		frame.Rare:SetPoint("TOP", "$parent", "TOP", -115, -48);
-	elseif (missionInfo.isRare) then
-		frame.Level:SetPoint("TOP", "$parent", "TOP", -115, -19);
-		frame.Rare:SetPoint("TOP", "$parent", "TOP", -115, -45);
-	elseif (missionInfo.iLevel ~= 0) then
-		frame.Level:SetPoint("TOP", "$parent", "TOP", -115, -19);
-		frame.ItemLevel:SetPoint("TOP", "$parent", "TOP", -115, -45);
-	else
-		frame.Level:SetPoint("TOP", "$parent", "TOP", -115, -28);
 	end
 
-	frame.ItemLevel:SetShown(missionInfo.iLevel ~= 0);
+	if (showItemLevel and missionInfo.isRare) then
+		frame.Level:SetPoint("TOP", -115, -14);
+		frame.ItemLevel:SetPoint("TOP", -115, -37);
+		frame.Rare:SetPoint("TOP", -115, -48);
+	elseif (missionInfo.isRare) then
+		frame.Level:SetPoint("TOP", -115, -19);
+		frame.Rare:SetPoint("TOP", -115, -45);
+	elseif (showItemLevel) then
+		frame.Level:SetPoint("TOP", -115, -19);
+		frame.ItemLevel:SetPoint("TOP", -115, -45);
+	else
+		frame.Level:SetPoint("TOP", -115, -28);
+	end
+
+	frame.ItemLevel:SetShown(showItemLevel);
 	frame.Rare:SetShown(missionInfo.isRare);
-	frame.garrisonType = GarrisonFollowerOptions[missionInfo.followerTypeID].garrisonType;
+	frame.garrisonType = followerOptions.garrisonType;
 	PlaySound(SOUNDKIT.UI_GARRISON_TOAST_MISSION_COMPLETE);
 end
 

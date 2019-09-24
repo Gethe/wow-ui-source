@@ -2,24 +2,16 @@ local NUM_ITEMS_PER_ROW = 5;
 local NUM_ITEMS_PER_PAGE = 10;
 
 function ProductChoiceFrame_OnLoad(self)
-	self:RegisterEvent("PLAYER_LOGIN");
-	self:RegisterEvent("PRODUCT_CHOICE_UPDATE");
 	self:RegisterEvent("PRODUCT_ASSIGN_TO_TARGET_FAILED");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 	ButtonFrameTemplate_HidePortrait(self);
 
 	self.TitleText:SetText(RECRUIT_A_FRIEND_REWARDS);
 	self.selectedPageNum = 1;
-
-	ProductChoiceFrame_ShowAlerts(self);
 end
 
 function ProductChoiceFrame_OnEvent(self, event, ...)
-	if ( event == "PRODUCT_CHOICE_UPDATE" ) then
-		ProductChoiceFrame_ShowAlerts(self);
-	elseif ( event == "PLAYER_LOGIN" ) then
-		ProductChoiceFrame_ShowAlerts(self);
-	elseif ( event == "PRODUCT_ASSIGN_TO_TARGET_FAILED" ) then
+	if ( event == "PRODUCT_ASSIGN_TO_TARGET_FAILED" ) then
 		StaticPopup_Show("PRODUCT_ASSIGN_TO_TARGET_FAILED");
 	elseif ( event == "UI_MODEL_SCENE_INFO_UPDATED" ) then
 		if ( ProductChoiceFrame.Inset.NoTakeBacksies.Dialog.ItemPreview:IsVisible() ) then
@@ -34,9 +26,6 @@ end
 
 function ProductChoiceFrame_OnShow(self)
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-	if ( self.secondAlertFrame ) then
-		self.secondAlertFrame:Hide();
-	end
 end
 
 function ProductChoiceFrame_OnMouseWheel(self, value)
@@ -48,37 +37,6 @@ function ProductChoiceFrame_OnMouseWheel(self, value)
 		if ( self.Inset.NextPageButton:IsShown() and self.Inset.NextPageButton:IsEnabled() ) then
 			ProductChoiceFrame_PageClick(self.Inset.NextPageButton, true);
 		end	
-	end
-end
-
-function ProductChoiceFrame_OnFriendsListShown()
-	if ( ProductChoiceFrame.mainAlertFrame ) then
-		ProductChoiceFrame.mainAlertFrame:Hide();
-	end
-end
-
-function ProductChoiceFrame_ShowAlerts(self, forceShowMain, forceShowSecond)
-	if ( #C_ProductChoice.GetChoices() > 0 ) then
-		--Create the frames if they don't already exist.
-		--If we created them, we haven't displayed them yet and so should show them.
-		if ( not self.mainAlertFrame ) then
-			forceShowMain = true;
-			self.mainAlertFrame = CreateFrame("FRAME", nil, QuickJoinToastButton, "RecruitInfoDialogTemplate");
-		end
-		if ( not self.secondAlertFrame ) then
-			forceShowSecond = true;
-			self.secondAlertFrame = CreateFrame("FRAME", nil, FriendsTabHeaderRecruitAFriendButton, "RecruitInfoDialogTemplate");
-		end
-
-		--Show the alerts we want to show
-		if ( forceShowMain ) then
-			self.mainAlertFrame:SetPoint("LEFT", QuickJoinToastButton, "RIGHT", 15, 0);
-			RecruitAFriend_ShowInfoDialog(self.mainAlertFrame, RAF_PRODUCT_CHOICE_EARNED, true);
-		end
-		if ( forceShowSecond ) then
-			self.secondAlertFrame:SetPoint("LEFT", FriendsTabHeaderRecruitAFriendButton, "RIGHT", 25, 0);
-			RecruitAFriend_ShowInfoDialog(self.secondAlertFrame, RAF_PRODUCT_CHOICE_CLAIM, false);
-		end
 	end
 end
 
@@ -210,12 +168,7 @@ end
 function ProductChoiceFrame_ClaimItem()
 	local frame = ProductChoiceFrame.Inset.NoTakeBacksies;
 
-	local hasMore = #C_ProductChoice.GetChoices() > 1;
-	if ( C_ProductChoice.MakeSelection(frame.choiceID, frame.data.id) ) then
-		if ( hasMore ) then
-			ProductChoiceFrame_ShowAlerts(ProductChoiceFrame, false, true);
-		end
-	else
+	if not C_ProductChoice.MakeSelection(frame.choiceID, frame.data.id) then
 		StaticPopup_Show("PRODUCT_ASSIGN_TO_TARGET_FAILED");
 	end
 	ProductChoiceFrame.data = nil;

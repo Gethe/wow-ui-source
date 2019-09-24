@@ -50,6 +50,17 @@ local function UpdateMainMenuBar(rightBarShowing)
 	StatusTrackingBarManager:UpdateBarsShown();
 end
 
+function MultiActionBar_OnLoad(self)
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:RegisterEvent("UI_SCALE_CHANGED");
+end
+
+function MultiActionBar_OnEvent(self, event, ...)
+	if IsPlayerInWorld() then
+		MultiActionBar_Update();
+	end
+end
+
 function MultiActionBar_Update ()
 	local showLeft = false;
 	local showRight = false;

@@ -225,6 +225,14 @@ function FramePoolCollectionMixin:OnLoad()
 	self.pools = {};
 end
 
+function FramePoolCollectionMixin:GetNumActive()
+	local numTotalActive = 0;
+	for _, pool in pairs(self.pools) do
+		numTotalActive = numTotalActive + pool:GetNumActive();
+	end
+	return numTotalActive;
+end
+
 function FramePoolCollectionMixin:GetOrCreatePool(frameType, parent, template, resetterFunc, forbidden)
 	local pool = self:GetPool(template);
 	if not pool then

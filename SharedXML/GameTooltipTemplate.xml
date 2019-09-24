@@ -18,7 +18,11 @@
 			</Layer>
 		</Layers>
 	</GameTooltip>
-	
+
+	<Texture name="TooltipTextureTemplate" hidden="true" virtual="true">
+		<Size x="12" y="12"/>
+	</Texture>
+
 	<GameTooltip name="GameTooltipTemplate" clampedToScreen="true" inherits="GameTooltipCommonTemplate" virtual="true">
 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<EdgeSize>
@@ -45,56 +49,36 @@
 						<Anchor point="RIGHT" relativeTo="$parentTextLeft2" relativePoint="LEFT" x="40" y="0"/>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentTexture1" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
-				</Texture>
-				<Texture name="$parentTexture2" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
-				</Texture>
-				<Texture name="$parentTexture3" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
-				</Texture>
-				<Texture name="$parentTexture4" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
-				</Texture>
-				<Texture name="$parentTexture5" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
-				</Texture>
-				<Texture name="$parentTexture6" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
-				</Texture>
-				<Texture name="$parentTexture7" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
-				</Texture>
-				<Texture name="$parentTexture8" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
-				</Texture>
-				<Texture name="$parentTexture9" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
-				</Texture>
-				<Texture name="$parentTexture10" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
-				</Texture>
+				<Texture name="$parentTexture1" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture2" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture3" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture4" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture5" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture6" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture7" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture8" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture9" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture10" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture11" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture12" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture13" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture14" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture15" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture16" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture17" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture18" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture19" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture20" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture21" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture22" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture23" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture24" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture25" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture26" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture27" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture28" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture29" inherits="TooltipTextureTemplate"/>
+				<Texture name="$parentTexture30" inherits="TooltipTextureTemplate"/>
 			</Layer>
 		</Layers>
 		<Frames>

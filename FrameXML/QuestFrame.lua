@@ -4,6 +4,8 @@ QUEST_DESCRIPTION_GRADIENT_LENGTH = 30;
 QUEST_DESCRIPTION_GRADIENT_CPS = 70;
 QUESTINFO_FADE_IN = 0.5;
 
+local QUEST_FRAME_MODEL_SCENE_ID = 309;
+
 function QuestFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_GREETING");
 	self:RegisterEvent("QUEST_DETAIL");
@@ -445,10 +447,12 @@ function QuestFrame_UpdatePortraitText(text)
 end
 
 function QuestFrame_ShowQuestPortrait(parentFrame, portraitDisplayID, mountPortraitDisplayID, text, name, x, y)
-	QuestNPCModel:SetParent(parentFrame);
-	QuestNPCModel:ClearAllPoints();
-	QuestNPCModel:SetPoint("TOPLEFT", parentFrame, "TOPRIGHT", x, y);
-	QuestNPCModel:Show();
+	QuestModelScene:SetParent(parentFrame);
+	QuestModelScene:ClearAllPoints();
+	QuestModelScene:SetPoint("TOPLEFT", parentFrame, "TOPRIGHT", x, y);
+	QuestModelScene:ClearScene();
+	QuestModelScene:TransitionToModelSceneID(QUEST_FRAME_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
+	QuestModelScene:Show();
 	QuestFrame_UpdatePortraitText(text);
 
 	if (name and name ~= "") then
@@ -463,17 +467,39 @@ function QuestFrame_ShowQuestPortrait(parentFrame, portraitDisplayID, mountPortr
 	end
 
 	if (portraitDisplayID == -1) then
-		QuestNPCModel:SetUnit("player");
+		local actor = QuestModelScene:GetPlayerActor("player");
+		local sheathWeapons = false;
+		actor:SetModelByUnit("player", sheathWeapons);
 	else
-		QuestNPCModel:SetDisplayInfo(portraitDisplayID, mountPortraitDisplayID);
+		local mount, rider;
+		local mountTag = "mount";
+		local riderTag = "rider";
+
+		if mountPortraitDisplayID > 0 then
+			mount = QuestModelScene:GetActorByTag(mountTag);
+			mount:SetModelByCreatureDisplayID(mountPortraitDisplayID);
+		else
+			-- these is no mount, so use the mount actor as the main actor for the rider
+			riderTag = mountTag;
+		end
+		
+		if portraitDisplayID > 0 then
+			rider = QuestModelScene:GetActorByTag(riderTag);
+			rider:SetModelByCreatureDisplayID(portraitDisplayID);
+		end
+		if mount and rider then
+			local defaultMountAnimation = 91;
+			local spellVisualKitID = 0;
+			mount:AttachToMount(rider, defaultMountAnimation, spellVisualKitID);
+		end
 	end
 end
 
 function QuestFrame_HideQuestPortrait(optPortraitOwnerCheckFrame)
-	optPortraitOwnerCheckFrame = optPortraitOwnerCheckFrame or QuestNPCModel:GetParent();
-	if optPortraitOwnerCheckFrame == QuestNPCModel:GetParent() then
-		QuestNPCModel:Hide();
-		QuestNPCModel:SetParent(nil);
+	optPortraitOwnerCheckFrame = optPortraitOwnerCheckFrame or QuestModelScene:GetParent();
+	if optPortraitOwnerCheckFrame == QuestModelScene:GetParent() then
+		QuestModelScene:Hide();
+		QuestModelScene:SetParent(nil);
 	end
 end
 

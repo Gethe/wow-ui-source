@@ -9,9 +9,23 @@ UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.Tex
 
 UIWidgetTemplateTextWithStateMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
+local textFontSizes =
+{
+	[Enum.UIWidgetTextSizeType.Small]	= "GameTooltipText",
+	[Enum.UIWidgetTextSizeType.Medium]	= "Game16Font",
+	[Enum.UIWidgetTextSizeType.Large]	= "Game24Font",
+	[Enum.UIWidgetTextSizeType.Huge]	= "Game27Font",
+}
+
+local function GetTextSizeFont(textSizeType)
+	return textFontSizes[textSizeType] and textFontSizes[textSizeType] or textFontSizes[Enum.UIWidgetTextSizeType.Small];
+end
+
 function UIWidgetTemplateTextWithStateMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 	self:SetTooltip(widgetInfo.tooltip);
+
+	self.Text:SetFontObject(GetTextSizeFont(widgetInfo.textSizeType));
 
 	self.Text:SetText(widgetInfo.text);
 	self.Text:SetEnabledState(widgetInfo.enabledState);

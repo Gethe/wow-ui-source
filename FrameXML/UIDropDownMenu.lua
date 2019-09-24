@@ -183,8 +183,6 @@ function UIDropDownMenuButtonInvisibleButton_OnEnter(self)
 				GameTooltip_AddColoredLine(GameTooltip, parent.tooltipWarning, RED_FONT_COLOR, true);
 			end
 			GameTooltip:Show();
-		else
-			GameTooltip_AddNewbieTip(parent, parent.tooltipTitle, 1.0, 1.0, 1.0, parent.tooltipText, 1);
 		end
 	end
 end
@@ -214,8 +212,6 @@ function UIDropDownMenuButton_OnEnter(self)
 				GameTooltip_AddNormalLine(GameTooltip, self.tooltipText, true);
 			end
 			GameTooltip:Show();
-		else
-			GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
 		end
 	end
 
@@ -1067,6 +1063,8 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 			return;
 		end
 
+		listFrame.onShow = dropDownFrame.listFrameOnShow;
+
 		-- Check to see if the dropdownlist is off the screen, if it is anchor it to the top of the dropdown button
 		listFrame:Show();
 		-- Hack since GetCenter() is returning coords relative to 1024x768
@@ -1156,6 +1154,13 @@ function CloseDropDownMenus(level)
 	end
 	for i=level, UIDROPDOWNMENU_MAXLEVELS do
 		_G["DropDownList"..i]:Hide();
+	end
+end
+
+function UIDropDownMenu_OnShow(self)
+	if ( self.onShow ) then
+		self.onShow();
+		self.onShow = nil;
 	end
 end
 

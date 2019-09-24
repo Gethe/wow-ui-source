@@ -2,7 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="CommunitiesList.lua"/>
 
-	<Button name="CommunitiesListEntryTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true" mixin="CommunitiesListEntryMixin">
+	<Button name="CommunitiesListEntryTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true" motionScriptsWhileDisabled="true" mixin="CommunitiesListEntryMixin">
 		<Size x="178" y="68"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -60,9 +60,9 @@
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="1">
 				<Texture parentKey="GuildTabardEmblem" file="Interface\GuildFrame\GuildEmblemsLG_01">
-					<Size x="42" y="42"/>
+					<Size x="36" y="42"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="11" y="-10"/>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPLEFT" x="32" y="-31"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -97,6 +97,16 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" x="5" y="-9"/>
 					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="15">
+				<Texture parentKey="NewCommunityFlash" file="Interface\Common\bluemenu-main" alphaMode="ADD" hidden="true">
+					<Size x="0" y="80"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.00390625" right="0.87890625" top="0.59179688" bottom="0.66992188"/>
 				</Texture>
 			</Layer>
 		</Layers>

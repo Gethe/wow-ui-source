@@ -367,6 +367,15 @@ local Calendar =
 			},
 		},
 		{
+			Name = "EventRemoveInviteByGuid",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "guid", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "EventSelectInvite",
 			Type = "Function",
 
@@ -917,22 +926,6 @@ local Calendar =
 	Tables =
 	{
 		{
-			Name = "CalendarEventType",
-			Type = "Enumeration",
-			NumValues = 6,
-			MinValue = 0,
-			MaxValue = 5,
-			Fields =
-			{
-				{ Name = "Raid", Type = "CalendarEventType", EnumValue = 0 },
-				{ Name = "Dungeon", Type = "CalendarEventType", EnumValue = 1 },
-				{ Name = "Pvp", Type = "CalendarEventType", EnumValue = 2 },
-				{ Name = "Meeting", Type = "CalendarEventType", EnumValue = 3 },
-				{ Name = "Other", Type = "CalendarEventType", EnumValue = 4 },
-				{ Name = "HeroicDeprecated", Type = "CalendarEventType", EnumValue = 5 },
-			},
-		},
-		{
 			Name = "CalendarDayEvent",
 			Type = "Structure",
 			Fields =
@@ -944,7 +937,7 @@ local Calendar =
 				{ Name = "endTime", Type = "CalendarTime", Nilable = false },
 				{ Name = "calendarType", Type = "string", Nilable = false },
 				{ Name = "sequenceType", Type = "string", Nilable = false },
-				{ Name = "eventType", Type = "number", Nilable = false },
+				{ Name = "eventType", Type = "CalendarEventType", Nilable = false },
 				{ Name = "iconTexture", Type = "number", Nilable = true },
 				{ Name = "modStatus", Type = "string", Nilable = false },
 				{ Name = "inviteStatus", Type = "number", Nilable = false },
@@ -1007,6 +1000,8 @@ local Calendar =
 				{ Name = "inviteIsMine", Type = "bool", Nilable = false },
 				{ Name = "type", Type = "number", Nilable = false },
 				{ Name = "notes", Type = "string", Nilable = false },
+				{ Name = "classID", Type = "number", Nilable = true },
+				{ Name = "guid", Type = "string", Nilable = false },
 			},
 		},
 		{

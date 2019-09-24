@@ -256,6 +256,7 @@ function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("GARRISON_BUILDING_ACTIVATED");
 	self:RegisterEvent("CHARACTER_UPGRADE_SPELL_TIER_SET");
 	self:RegisterEvent("QUEST_TURNED_IN");
+	self:RegisterEvent("UNIT_PET");
 	self.currSpell = 0;
 
 	self.PlayBanner = function(self, data)
@@ -273,6 +274,8 @@ function LevelUpDisplay_OnLoad(self)
 		self.type = data.type;
 		LevelUpDisplay_StartDisplay(self, data.unlockList);
 	end
+
+	LevelUpDisplay_UpdateCurrentPetLevel(self);
 end
 
 function LevelUpDisplay_OnEvent(self, event, ...)
@@ -283,12 +286,15 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 		self.type = LEVEL_UP_TYPE_CHARACTER;
 		LevelUpDisplay_Show(self);
 		LevelUpDisplaySide:Hide();
+	elseif event == "UNIT_PET" and arg1 == "player" then
+		LevelUpDisplay_UpdateCurrentPetLevel(self);
 	elseif event == "UNIT_LEVEL" and arg1 == "pet" then
-		if (UnitName("pet") ~= UNKNOWNOBJECT) then
-			self.level = UnitLevel("pet");
+		if LevelUpDisplay_ShouldDisplayPetLevelUpdate(self, arg1) then
+			self.level = UnitLevel(arg1);
 			self.type = LEVEL_UP_TYPE_PET;
 			LevelUpDisplay_Show(self);
 			LevelUpDisplaySide:Hide();
+			LevelUpDisplay_MarkPetLevelDirty(self);
 		end
 	elseif ( event == "PET_BATTLE_FINAL_ROUND" ) then
 		self.type = TOAST_PET_BATTLE_WINNER;
@@ -348,6 +354,27 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 			LevelUpDisplay_Show(self);
 		end
 	end
+end
+
+function LevelUpDisplay_UpdateCurrentPetLevel(self)
+	if UnitExists("pet") then
+		self.petLevel = UnitLevel("pet");
+	else
+		self.petLevel = nil;
+	end
+end
+
+function LevelUpDisplay_MarkPetLevelDirty(self)
+	C_Timer.After(1, function() LevelUpDisplay_UpdateCurrentPetLevel(self); end);
+end
+
+function LevelUpDisplay_ShouldDisplayPetLevelUpdate(self, unit)
+	if unit ==  "pet" and UnitName(unit) ~= UNKNOWNOBJECT then
+		-- This is used from multiple frames, don't update the cached level
+		return self.petLevel ~= UnitLevel(unit);
+	end
+
+	return false;
 end
 
 function LevelUpDisplay_StopAllAnims(self)

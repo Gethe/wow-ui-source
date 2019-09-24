@@ -19,19 +19,19 @@
 
 	[4] = {
 		title = CLUB_FINDER_SPEC,
-		width = 65,
+		width = 85,
 		attribute = "spec",
 	},
 
 	[5] = {
 		title = ITEM_LEVEL_ABBR,
-		width = 40,
+		width = 45,
 		attribute = "ilvl",
 	},
 
 	[6] = {
 		title = COMMUNITIES_ROSTER_COLUMN_TITLE_NOTE,
-		width = 315,
+		width = 290,
 		attribute = "memberNote",
 	},
 };
@@ -42,9 +42,38 @@ local DPS_SORT_VALUE = 1;
 
 ClubFinderApplicantEntryMixin = { };
 
+function ClubFinderApplicantEntryMixin:OnLoad()
+	UIDropDownMenu_Initialize(self.RightClickDropdown, ApplicantRightClickOptionsMenuInitialize, "MENU");
+end 
+
 function ClubFinderApplicantEntryMixin:GetApplicantName()
 	return self.Info.name;
 end 
+
+function ClubFinderApplicantEntryMixin:GetApplicantStatus()
+	return self.Info.requestStatus;
+end
+
+function ClubFinderApplicantEntryMixin:GetPlayerGUID()
+	return self.Info.playerGUID;
+end 
+
+function ClubFinderApplicantEntryMixin:GetClubGUID()
+	return self.Info.clubFinderGUID;
+end
+
+function ClubFinderApplicantEntryMixin:GetServerName()
+	local normalizedRealmName = select(7, GetPlayerInfoByGUID(self.Info.playerGUID));
+	return normalizedRealmName;
+end
+
+function ClubFinderApplicantEntryMixin:GetFullName()
+	local serverName = self:GetServerName();
+	if (serverName ~= "") then
+		serverName = "-"..serverName
+	end
+	return self:GetApplicantName()..serverName;
+end
 
 function ClubFinderApplicantEntryMixin:OnMouseDown(button)
 	if ( button == "RightButton" ) then
@@ -75,6 +104,7 @@ function ClubFinderApplicantEntryMixin:UpdateMemberInfo(info)
 
 	self.RoleIcon1:Hide();
 	self.RoleIcon2:Hide();
+	self.RoleIcon3:Hide(); 
 
 	for _, specID in ipairs(info.specIds) do 
 		local role = GetSpecializationRoleByID(specID);
@@ -86,12 +116,22 @@ function ClubFinderApplicantEntryMixin:UpdateMemberInfo(info)
 			isTank = true; 
 		end
 	end 
-
-	if (isHealer and isTank and isDps) then 
+	if(not isHealer and not isDps and not isTank) then 
 		self.RoleIcon2:Hide();
 		self.RoleIcon1:Hide();
-		self.AllSpec:SetText("All");
+		self.RoleIcon3:Hide();
+		self.AllSpec:SetText(NONE);
 		self.AllSpec:Show();
+	elseif (isHealer and isTank and isDps) then 
+		self.RoleIcon1:SetTexCoord(GetTexCoordsForRoleSmallCircle("TANK"));
+		self.RoleIcon2:SetTexCoord(GetTexCoordsForRoleSmallCircle("HEALER"));
+		self.RoleIcon3:SetTexCoord(GetTexCoordsForRoleSmallCircle("DAMAGER"));
+
+		self.RoleIcon2:Show();
+		self.RoleIcon1:Show();
+		self.RoleIcon3:Show(); 
+
+		self.AllSpec:Hide();
 	else 
 		self.AllSpec:Hide();
 
@@ -147,35 +187,42 @@ function ClubFinderApplicantEntryMixin:UpdateMemberInfo(info)
 		end
 	end 
 	self.CancelInvitationButton:SetShown(not isPendingList); 
-	self.InviteButton:SetShown(not isPendingList); 
+	self.InviteButton:SetShown(not isPendingList);
 	self.RequestStatus:SetShown(isPendingList); 
 
-	UIDropDownMenu_Initialize(self.RightClickDropdown, ApplicantRightClickOptionsMenuInitialize, "MENU");
+	if (self.InviteButton:IsShown() and self:GetParent():GetParent():GetParent().clubSizeMaxHit) then 
+		self.InviteButton:Disable(); 
+		self.InviteButton.Text:SetFontObject(GameFontDisableSmall);
+	else 
+		self.InviteButton:Enable(); 
+		self.InviteButton.Text:SetFontObject(GameFontHighlightSmall);
+	end 
+
 end 
 
 function ClubFinderApplicantEntryMixin:OnEnter()
+	if (not self.ClassName) then
+		return; 
+	end 
+
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip_AddColoredLine(GameTooltip, self.Info.name, self.ClassColor);
 	GameTooltip_AddColoredLine(GameTooltip, UNIT_TYPE_LEVEL_TEMPLATE:format(self.Info.level, self.ClassName), HIGHLIGHT_FONT_COLOR);
 	GameTooltip_AddNormalLine(GameTooltip, LFG_LIST_ITEM_LEVEL_CURRENT:format(self.Info.ilvl));
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	GameTooltip_AddNormalLine(GameTooltip, CLUB_FINDER_SPECIALIZATIONS);
-	local className, classTag = GetClassInfo(self.Info.classID);
-	local color = CreateColor(GetClassColor(classTag));
-	for _, specID in ipairs(self.Info.specIds) do 
-		local _, name, _, _, role = GetSpecializationInfoForSpecID(specID);
-		local texture;
-		if (role == "TANK") then
-			texture = CreateAtlasMarkup("roleicon-tiny-tank");
-		elseif (role == "DAMAGER") then
-			texture = CreateAtlasMarkup("roleicon-tiny-dps");
-		elseif (role == "HEALER") then
-			texture = CreateAtlasMarkup("roleicon-tiny-healer");
+
+	if(#self.Info.specIds == 0) then 
+		GameTooltip_AddColoredLine(GameTooltip, CLUB_FINDER_APPLICANT_LIST_NO_MATCHING_SPECS, RED_FONT_COLOR);
+	else 
+		for _, specID in ipairs(self.Info.specIds) do 
+			GameTooltip_AddNormalLine(GameTooltip, CommunitiesUtil.GetRoleSpecClassLine(self.Info.classID, specID));
 		end
-		GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_LEADER_BOARD_NAME_ICON:format(texture, name.. " " ..className), color);
 	end
-	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-	GameTooltip_AddColoredLine(GameTooltip, self.Info.message, HIGHLIGHT_FONT_COLOR, true);
+	if(self.Info.message ~= "") then 
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddColoredLine(GameTooltip,	CLUB_FINDER_CLUB_DESCRIPTION:format(self.Info.message), GRAY_FONT_COLOR, true);
+	end 
 	GameTooltip:Show();
 
 end
@@ -188,17 +235,15 @@ function ApplicantRightClickOptionsMenuInitialize(self, level)
 	local info = UIDropDownMenu_CreateInfo();
 
 	if UIDROPDOWNMENU_MENU_VALUE == 1 then
-		info.text = CLUB_FINDER_REPORT_SPAM; 
-		info.notCheckable = true; 
-		UIDropDownMenu_AddButton(info, level); 
+		info.text = CLUB_FINDER_REPORT_NAME;
+		info.notCheckable = true;
+		info.func = function()  ClubFinderReportFrame:ShowReportDialog(Enum.ClubFinderPostingReportType.ApplicantsName, self:GetParent():GetClubGUID(), self:GetParent():GetPlayerGUID(), self:GetParent().Info); end
+		UIDropDownMenu_AddButton(info, level);
 
-		info.text = CLUB_FINDER_REPORT_NAME; 
-		info.notCheckable = true; 
-		UIDropDownMenu_AddButton(info, level); 
-
-		info.text = CLUB_FINDER_REPORT_DESCRIPTION; 
-		info.notCheckable = true; 
-		UIDropDownMenu_AddButton(info, level); 
+		info.text = CLUB_FINDER_REPORT_JOIN_NOTE;
+		info.notCheckable = true;
+		info.func = function() ClubFinderReportFrame:ShowReportDialog(Enum.ClubFinderPostingReportType.JoinNote, self:GetParent():GetClubGUID(), self:GetParent():GetPlayerGUID(), self:GetParent().Info); end
+		UIDropDownMenu_AddButton(info, level);
 	end
 	
 	if (level == 1) then 
@@ -206,12 +251,23 @@ function ApplicantRightClickOptionsMenuInitialize(self, level)
 		info.isTitle = true; 
 		info.notCheckable = true; 
 		UIDropDownMenu_AddButton(info, level);
+	
+		if(self:GetParent():GetApplicantStatus() == Enum.PlayerClubRequestStatus.Declined) then 
+			info.text = CLUB_FINDER_INVITE_APPLICANT_REDO; 
+			info.colorCode = GREEN_FONT_COLOR_CODE; 
+			info.isTitle = false; 
+			info.notCheckable = true; 
+			info.disabled = nil; 
+			info.func = function() ClubFinderCancelOrAcceptApplicant(self, true, true); end
+			UIDropDownMenu_AddButton(info, level);
+		end	
 
 		info.text = WHISPER;
 		info.colorCode = HIGHLIGHT_FONT_COLOR_CODE; 
 		info.isTitle = false; 
 		info.notCheckable = true; 
 		info.disabled = nil;
+		info.func = function () ChatFrame_SendTell(self:GetParent():GetFullName()); end
 		UIDropDownMenu_AddButton(info, level);
 
 		info.text = CLUB_FINDER_REPORT_FOR; 
@@ -228,30 +284,20 @@ end
 ClubFinderApplicantListMixin = { };
 
 function ClubFinderApplicantListMixin:OnLoad()
-	self:RegisterEvent("CLUB_FINDER_RECRUITS_UPDATED");
-	C_ClubFinder.RequestApplicantList(Enum.ClubFinderRequestType.All);
 	self.ColumnDisplay:LayoutColumns(APPLICANT_COLUMN_INFO);
-	self.ColumnDisplay.Background:Hide();
-	self.ColumnDisplay.TopTileStreaks:Hide();
 	self.ColumnDisplay:Show();
 
 	HybridScrollFrame_CreateButtons(self.ListScrollFrame, "ClubFinderApplicantEntryTemplate", 0, 0);
+	HybridScrollFrame_SetDoNotHideScrollBar(self.ListScrollFrame, true);
 	self.ListScrollFrame.update = function() self:RefreshLayout() end;
 end
 
 function ClubFinderApplicantListMixin:OnShow()
-	CommunitiesFrameInset:Hide(); 
 	self:ResetColumnSort();
-	self:BuildList();
+	CommunitiesFrameInset:Show(); 
 end 
 
 function ClubFinderApplicantListMixin:OnHide()
-	CommunitiesFrameInset:Show(); 
-end 
-function ClubFinderApplicantListMixin:OnEvent(event, ...)
-	if (event == "CLUB_FINDER_RECRUITS_UPDATED") then 
-		self:BuildList();
-	end
 end 
 
 function ClubFinderApplicantListMixin:ResetColumnSort()
@@ -347,39 +393,144 @@ function ClubFinderApplicantListMixin:SortByColumnIndex(columnIndex)
 	self:RefreshLayout();
 end
 
+function ClubFinderApplicantListMixin:GuildMemberUpdate()
+	local communitiesFrame = self:GetParent();
+	local clubId = communitiesFrame:GetSelectedClubId();
+	if (not clubId) then 
+		return;
+	end
+
+	local clubInfo = C_Club.GetClubInfo(clubId);
+
+	if clubInfo and clubInfo.clubType == Enum.ClubType.Guild then
+		if (not communitiesFrame:IsShowingApplicantList() and (IsGuildLeader() or C_GuildInfo.IsGuildOfficer())) then 
+			C_ClubFinder.RequestApplicantList(Enum.ClubFinderRequestType.Guild); 
+			if (not self.newApplicantListRequest) then 
+				self:SetApplicantRefreshTicker(Enum.ClubFinderRequestType.Guild);
+			end	
+		elseif not IsGuildLeader() and not C_GuildInfo.IsGuildOfficer() then 
+			communitiesFrame.GuildMemberListDropDownMenu:ResetDisplayMode();
+			self:CancelRefreshTicker();
+		end
+	end
+end 
+
+function ClubFinderApplicantListMixin:CommunitiesMemberUpdate()
+	local communitiesFrame = self:GetParent();
+
+	local clubId = communitiesFrame:GetSelectedClubId();
+	if (not clubId) then 
+		return;
+	end
+
+	local clubInfo = C_Club.GetClubInfo(clubId);
+
+
+	if clubInfo and clubInfo.clubType == Enum.ClubType.Character then
+		local selectedClubId = clubInfo.clubId;
+		local myMemberInfo = C_Club.GetMemberInfoForSelf(selectedClubId);
+		local hasFinderPermissions = myMemberInfo.role and myMemberInfo.role == Enum.ClubRoleIdentifier.Owner or myMemberInfo.role == Enum.ClubRoleIdentifier.Leader;
+		if ( not communitiesFrame:IsShowingApplicantList() and hasFinderPermissions) then 
+			C_ClubFinder.RequestApplicantList(Enum.ClubFinderRequestType.Community); 
+			if (not self.newApplicantListRequest) then 
+				self:SetApplicantRefreshTicker(Enum.ClubFinderRequestType.Community);
+			end
+		elseif communitiesFrame:IsShowingApplicantList() and not hasFinderPermissions then --When we were demoted and we are viewing the applicant list. 
+			communitiesFrame.CommunityMemberListDropDownMenu:ResetDisplayMode();
+			self:CancelRefreshTicker();
+		end	
+	end 
+end 
+
+function ClubFinderApplicantListMixin:SetApplicantRefreshTicker(clubType) 
+	if (self.newApplicantListRequest) then 
+		self.newApplicantListRequest:Cancel();
+	end
+
+	self.newApplicantListRequest = C_Timer.NewTicker(20, function() 
+		C_ClubFinder.RequestApplicantList(clubType); 
+	end);
+end 
+
+function ClubFinderApplicantListMixin:CancelRefreshTicker() 
+	if (self.newApplicantListRequest) then 
+		self.newApplicantListRequest:Cancel();
+	end
+end 
+
 function ClubFinderApplicantListMixin:BuildList()
 	local communityFrame = self:GetParent();
 	local clubId = communityFrame:GetSelectedClubId();
 	if (not clubId) then 
 		return;
 	end
+	local isAppliantListDisplayMode = communityFrame:IsShowingApplicantList();
 
 	local clubInfo = C_Club.GetClubInfo(clubId);
+
 	if (not clubInfo) then 
 		return; 
 	end 
 
+	-- Worst case we want to not allow them to invite, cause something might be broken.
+	self.clubSizeMaxHit = not clubInfo.memberCount or clubInfo.memberCount >= C_Club.GetClubCapacity();
+
+	local pendingList =  C_ClubFinder.ReturnPendingClubApplicantList(clubId);
+	local applicantList = C_ClubFinder.ReturnClubApplicantList(clubId);
+
 	if (self.isPendingList) then 
-		if (clubInfo.clubType == Enum.ClubType.Guild) then
-			self.ApplicantInfoList = C_ClubFinder.ReturnPendingGuildApplicantList();
-		elseif (clubInfo.clubType == Enum.ClubType.Character) then 
-			self.ApplicantInfoList = C_ClubFinder.ReturnPendingCommunityApplicantList(communityFrame:GetSelectedClubId());
-		end
+		self.ApplicantInfoList = pendingList;
 	else 
-		if (clubInfo.clubType == Enum.ClubType.Guild) then
-			self.ApplicantInfoList = C_ClubFinder.ReturnGuildApplicantList();
-		elseif (clubInfo.clubType == Enum.ClubType.Character) then 
-			self.ApplicantInfoList = C_ClubFinder.ReturnCommunityApplicantList(communityFrame:GetSelectedClubId());
-		end
+		self.ApplicantInfoList = applicantList;
 	end 
-	self:RefreshLayout();
+
+
+	if(clubInfo.clubType == Enum.ClubType.Guild) then 
+		local guildMemberDropdown = communityFrame.GuildMemberListDropDownMenu; 
+		guildMemberDropdown.hasPendingApplicants = false;
+		guildMemberDropdown.hasApplicants = false; 
+		guildMemberDropdown.shouldResetDropdown = false;
+
+		if(pendingList and #pendingList > 0) then 
+			guildMemberDropdown.hasPendingApplicants = true; 
+		end 
+		if(applicantList and #applicantList > 0) then 
+			guildMemberDropdown.hasApplicants = true; 
+		else 
+			guildMemberDropdown.shouldResetDropdown = true; 
+			if(isAppliantListDisplayMode and not self.isPendingList) then 
+				guildMemberDropdown:ResetDisplayMode();
+			end 
+		end 
+	elseif(clubInfo.clubType == Enum.ClubType.Character) then 
+		local communityMemberDropdown = communityFrame.CommunityMemberListDropDownMenu; 
+		communityMemberDropdown.hasPendingApplicants = false;
+		communityMemberDropdown.hasApplicants = false; 
+		communityMemberDropdown.shouldResetDropdown = false;
+
+		if(pendingList and #pendingList > 0) then 
+			communityMemberDropdown.hasPendingApplicants = true; 
+		end 
+		if(applicantList and #applicantList > 0) then 
+			communityMemberDropdown.hasApplicants = true; 
+		else 
+			communityMemberDropdown.shouldResetDropdown = true; 
+			if(isAppliantListDisplayMode and not self.isPendingList) then 
+				communityMemberDropdown:ResetDisplayMode();
+			end 
+		end 
+	end 
+
+	if (not self.ApplicantInfoList or #self.ApplicantInfoList == 0 and isAppliantListDisplayMode) then 
+		communityFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
+	else 
+		self:RefreshLayout();
+	end
 end 
 
 function ClubFinderApplicantListMixin:RefreshLayout()
 	local scrollFrame = self.ListScrollFrame;
 	if (not self.ApplicantInfoList or #self.ApplicantInfoList == 0) then 
-		scrollFrame.scrollBar:Hide();
-		scrollFrame:Hide();
 		return; 
 	end 
 
@@ -396,6 +547,11 @@ function ClubFinderApplicantListMixin:RefreshLayout()
 		if (applicantInfo) then 
 			scrollFrame.buttons[i]:UpdateMemberInfo(applicantInfo); 
 			scrollFrame.buttons[i]:Show(); 
+			if (scrollFrame.buttons[i]:IsVisible() and scrollFrame.buttons[i]:IsMouseOver()) then 
+				scrollFrame.buttons[i]:OnEnter(); 
+			else 
+				scrollFrame.buttons[i]:OnLeave();
+			end 
 			showingCards = showingCards + 1;
 		else 
 			scrollFrame.buttons[i]:Hide();
@@ -410,8 +566,12 @@ end
 
 ClubFinderApplicantInviteButtonMixin = { }; 
 function ClubFinderApplicantInviteButtonMixin:OnEnter()
-	GameTooltip:SetOwner(self);
-	GameTooltip:SetText(INVITE);
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+	if (self:IsEnabled()) then 
+		GameTooltip:SetText(INVITE);
+	else 
+		GameTooltip_AddColoredLine(GameTooltip, CLUB_FINDER_MAX_MEMBER_COUNT_HIT, RED_FONT_COLOR, true);
+	end
 	GameTooltip:Show();
 end 
 
@@ -419,7 +579,7 @@ function ClubFinderApplicantInviteButtonMixin:OnLeave()
 	GameTooltip:Hide(); 
 end 
 
-local function ClubFinderCancelOrAcceptApplicant(self, shouldInvite)
+function ClubFinderCancelOrAcceptApplicant(self, shouldInvite, forceAccept)
 	local communityFrame = self:GetParent():GetParent():GetParent():GetParent():GetParent();
 	local clubId = communityFrame:GetSelectedClubId();
 	if (clubId) then 
@@ -434,8 +594,7 @@ local function ClubFinderCancelOrAcceptApplicant(self, shouldInvite)
 			end
 
 			if(applicantType) then 
-				C_ClubFinder.RespondToApplicant(self:GetParent().Info.clubFinderGUID, self:GetParent().Info.playerGUID, shouldInvite, applicantType);
-				C_ClubFinder.RequestApplicantList(applicantType);
+				C_ClubFinder.RespondToApplicant(self:GetParent().Info.clubFinderGUID, self:GetParent().Info.playerGUID, shouldInvite, applicantType, self:GetParent().Info.name, forceAccept);
 			end
 		end
 	end
@@ -443,7 +602,7 @@ local function ClubFinderCancelOrAcceptApplicant(self, shouldInvite)
 end 
 
 function ClubFinderApplicantInviteButtonMixin:OnClick() 
-	ClubFinderCancelOrAcceptApplicant(self, true);
+	ClubFinderCancelOrAcceptApplicant(self, true, false);
 end 
 
 ClubFinderApplicantCancelButtonMixin = { }; 
@@ -458,5 +617,5 @@ function ClubFinderApplicantCancelButtonMixin:OnLeave()
 end 
 
 function ClubFinderApplicantCancelButtonMixin:OnClick() 
-	ClubFinderCancelOrAcceptApplicant(self, false);
+	ClubFinderCancelOrAcceptApplicant(self, false, false);
 end 

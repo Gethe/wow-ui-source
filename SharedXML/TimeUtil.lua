@@ -1,6 +1,8 @@
 SECONDS_PER_MIN = 60;
-SECONDS_PER_HOUR = 3600;
-SECONDS_PER_DAY = 86400;
+SECONDS_PER_HOUR = 60 * SECONDS_PER_MIN;
+SECONDS_PER_DAY = 24 * SECONDS_PER_HOUR;
+SECONDS_PER_MONTH = 30 * SECONDS_PER_DAY;
+SECONDS_PER_YEAR = 12 * SECONDS_PER_MONTH;
 
 function SecondsToMinutes(seconds)
 	return seconds / SECONDS_PER_MIN;
@@ -8,6 +10,10 @@ end
 
 function MinutesToSeconds(minutes)
 	return minutes * SECONDS_PER_MIN;
+end
+
+function HasTimePassed(testTime, amountOfTime)
+	return ((time() - testTime) >= amountOfTime);
 end
 
 SecondsFormatter = {};

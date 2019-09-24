@@ -90,6 +90,22 @@ function QUEST_TRACKER_MODULE:OnBlockHeaderClick(block, mouseButton)
 	end
 end
 
+function QUEST_TRACKER_MODULE:OnBlockHeaderEnter(block)
+	DEFAULT_OBJECTIVE_TRACKER_MODULE:OnBlockHeaderEnter(block)
+
+	if IsInGroup() then
+		GameTooltip:ClearAllPoints();
+		GameTooltip:SetPoint("TOPRIGHT", block, "TOPLEFT", 0, 0);
+		GameTooltip:SetOwner(block, "ANCHOR_PRESERVE");
+		GameTooltip:SetQuestPartyProgress(block.id);
+	end
+end
+
+function QUEST_TRACKER_MODULE:OnBlockHeaderLeave(block)
+	DEFAULT_OBJECTIVE_TRACKER_MODULE:OnBlockHeaderLeave(block)
+	GameTooltip:Hide();
+end
+
 local LINE_TYPE_ANIM = { template = "QuestObjectiveAnimLineTemplate", freeLines = { } };
 
 -- *****************************************************************************************************
@@ -413,10 +429,10 @@ function QUEST_TRACKER_MODULE:Update()
 			local questID, title, questLogIndex, numObjectives, requiredMoney, isComplete, startEvent, isAutoComplete, failureTime, timeElapsed, questType, isTask, isBounty, isStory, isOnMap, hasLocalPOI, isHidden, isWarCampaign, hasOverrideSort = unpack(questWatchInfoTable);
 			-- check filters
 			local showQuest = true;
-			if ( isTask or ( isBounty and not IsQuestComplete(questID) ) ) then
+			if isTask or (isBounty and not IsQuestComplete(questID)) or C_QuestLog.IsQuestDisabledForSession(questID) then
 				showQuest = false;
 			end
-				
+
 			if ( showQuest ) then
 				local shouldShowWaypoint = (questID == GetSuperTrackedQuestID()) or (questID == QuestMapFrame_GetFocusedQuestID());
 				local isSequenced = IsQuestSequenced(questID);
@@ -481,7 +497,7 @@ function QUEST_TRACKER_MODULE:Update()
 						local text = GetMoneyString(playerMoney).." / "..GetMoneyString(requiredMoney);
 						QUEST_TRACKER_MODULE:AddObjective(block, "Money", text);
 					end
-					
+
 					-- timer bar
 					if ( failureTime and block.currentLine ) then
 						local currentLine = block.currentLine;

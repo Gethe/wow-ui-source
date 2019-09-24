@@ -224,6 +224,10 @@ function ExtractHyperlinkString(linkString)
 	return preString ~= nil, preString, hyperlinkString, postString;
 end
 
+function ExtractLinkData(link)
+	return string.match(link, "(.-):(.*)");
+end
+
 function ExtractQuestRewardID(linkString)
 	return linkString:match("^questreward:(%d+)$");
 end
@@ -298,13 +302,6 @@ function FormatLargeNumber(amount)
 	--Add everything before the first comma
 	newDisplay = amount:sub(1, (strlen % 3 == 0) and 3 or (strlen % 3))..newDisplay;
 	return newDisplay;
-end
-
-
-function CreateAndInitFromMixin(mixin, ...)
-	local object = CreateFromMixins(mixin);
-	object:Init(...);
-	return object;
 end
 
 COPPER_PER_SILVER = 100;
@@ -732,7 +729,7 @@ end
 RAID_CLASS_COLORS = {};
 do
 	local classes = {"HUNTER", "WARLOCK", "PRIEST", "PALADIN", "MAGE", "ROGUE", "DRUID", "SHAMAN", "WARRIOR", "DEATHKNIGHT", "MONK", "DEMONHUNTER"};
-	
+
 	for i, className in ipairs(classes) do
 		RAID_CLASS_COLORS[className] = C_ClassColor.GetClassColor(className);
 	end
@@ -754,6 +751,12 @@ end
 function GetClassColorObj(classFilename)
 	-- TODO: Remove this, convert everything that's using GetClassColor to use the object instead, then begin using that again
 	return RAID_CLASS_COLORS[classFilename];
+end
+
+function GetClassColoredTextForUnit(unit, text)
+	local classFilename = select(2, UnitClass(unit));
+	local color = GetClassColorObj(classFilename);
+	return color:WrapTextInColorCode(text);
 end
 
 function GetFactionColor(factionGroupTag)
@@ -911,7 +914,7 @@ function CreateTextureMarkup(file, fileWidth, fileHeight, width, height, left, r
 	);
 end
 
-function CreateAtlasMarkup(atlasName, height, width, offsetX, offsetY)
+function CreateAtlasMarkup(atlasName, width, height, offsetX, offsetY)
 	return ("|A:%s:%d:%d:%d:%d|a"):format(
 		  atlasName
 		, height or 0
@@ -1545,4 +1548,11 @@ function GetGroupMemberCountsForDisplay()
 	data.DAMAGER = data.DAMAGER + data.NOROLE; --People without a role count as damage
 	data.NOROLE = 0;
 	return data;
+end
+
+function GetURLIndexAndLoadURL(self, link)
+	local linkType, index = string.split(":", link);
+	if ( linkType == "urlIndex" ) then
+		LoadURLIndex(tonumber(index));
+	end
 end

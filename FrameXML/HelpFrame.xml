@@ -1786,7 +1786,7 @@
 	</Frame>
 
 	<Frame name="BrowserSettingsTooltip" inherits="TooltipBorderedFrameTemplate" parent="UIParent" frameStrata="FULLSCREEN_DIALOG" hidden="true" >
-		<Size x="250" y="100"/>
+		<Size x="250" y="70"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="GameFontHighlight" text="BROWSER_SETTINGS_TOOLTIP">
@@ -1797,34 +1797,10 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="CacheButton" inherits="UIPanelButtonTemplate" text="BROWSER_CLEAR_CACHE">
-				<Size x="150" y="22"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-10"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						local browser = BrowserSettingsTooltip.browser
-						if (browser) then
-							browser:ClearCache();
-						end
-					</OnClick>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
-						GameTooltip:SetText(BROWSER_CLEAR_CACHE_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-						self:GetParent().isCounting = nil;
-					</OnEnter>
-					<OnLeave>
-						self:GetParent().isCounting = true;
-						GameTooltip_Hide()
-					</OnLeave>
-				</Scripts>
-			</Button>
 			<Button parentKey="CookiesButton" inherits="UIPanelButtonTemplate" text="BROWSER_DELETE_COOKIES">
 				<Size x="150" y="22"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.CacheButton" relativePoint="BOTTOMLEFT" y="-10"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-10"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

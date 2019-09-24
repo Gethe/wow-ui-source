@@ -720,7 +720,7 @@
 		</Scripts>
 	</Frame>
     
-    <Frame name="ChallengesDungeonIconFrameTemplate" parentArray="DungeonIcons" frameStrata="HIGH" mixin="ChallengesDungeonIconMixin" virtual="true">
+    <Frame name="ChallengesDungeonIconFrameTemplate" parentArray="DungeonIcons" frameStrata="MEDIUM" mixin="ChallengesDungeonIconMixin" virtual="true">
         <Size x="52" y="52"/>
         <Layers>
             <Layer level="BORDER">

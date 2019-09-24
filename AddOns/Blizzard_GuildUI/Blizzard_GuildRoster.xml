@@ -88,14 +88,14 @@
 							<Anchors>
 								<Anchor point="LEFT" x="0" y="0"/>
 							</Anchors>
-							<TexCoords left="0.17578125" right="0.47265625" top="0.29687500" bottom="0.54687500"/>	
+							<TexCoords left="0.17578125" right="0.47265625" top="0.29687500" bottom="0.54687500"/>
 						</Texture>
 						<Texture name="$parentRight" file="Interface\Buttons\CollapsibleHeader" parentKey="rightEdge">
 							<Size x="76" y="16"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" x="147" y="0"/>
 							</Anchors>
-							<TexCoords left="0.17578125" right="0.47265625" top="0.01562500" bottom="0.26562500"/>	
+							<TexCoords left="0.17578125" right="0.47265625" top="0.01562500" bottom="0.26562500"/>
 						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND">
@@ -105,7 +105,7 @@
 								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" x="-20" y="0"/>
 								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" x="20" y="0"/>
 							</Anchors>
-							<TexCoords left="0.48046875" right="0.98046875" top="0.01562500" bottom="0.26562500"/>	
+							<TexCoords left="0.48046875" right="0.98046875" top="0.01562500" bottom="0.26562500"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
@@ -124,7 +124,7 @@
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentLeft" x="26" y="0"/>
 							</Anchors>
-							<TexCoords left="0.08" right="0.92" top="0.08" bottom="0.92"/>							
+							<TexCoords left="0.08" right="0.92" top="0.08" bottom="0.92"/>
 						</Texture>
 						<FontString name="$parentName" inherits="GameFontNormalSmall" parentKey="name">
 							<Anchors>
@@ -175,14 +175,6 @@
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnClick function="GuildRosterButton_OnClick"/>
-			<OnEnter>
-				if ( self.online ) then
-					GameTooltip_AddNewbieTip(self, GUILD_MEMBER_OPTIONS, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILD_MEMBER_OPTIONS, 1);
-				end
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
 		</Scripts>
 		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD" setAllPoints="true"/>
 	</Button>
@@ -578,10 +570,6 @@
 					<OnClick>
 						StaticPopup_Show("REMOVE_GUILDMEMBER");
 					</OnClick>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, REMOVE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDREMOVE, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<NormalFont style="GameFontNormalSmall"/>
 				<HighlightFont style="GameFontHighlightSmall"/>
@@ -600,12 +588,8 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						InviteToGroup(GuildFrame.selectedName);
+						C_PartyInfo.InviteUnit(GuildFrame.selectedName);
 					</OnClick>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, GROUP_INVITE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GROUPINVITE, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<NormalFont style="GameFontNormalSmall"/>
 				<HighlightFont style="GameFontHighlightSmall"/>
@@ -668,7 +652,7 @@
 					</OnLoad>
 					<OnMouseUp>
 						StaticPopup_Show("SET_GUILDPLAYERNOTE");
-					</OnMouseUp> 
+					</OnMouseUp>
 				</Scripts>
 			</Frame>
 			<Frame name="GuildMemberOfficerNoteBackground">

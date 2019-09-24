@@ -108,6 +108,7 @@ end
 
 function StoreCardMixin:InitMagnifier()
 	-- override this in your mixin to determine how the magnifier is initialized, if needed
+	self.Magnifier:Hide();
 end
 
 function StoreCardMixin:UpdateMagnifier()
@@ -246,22 +247,102 @@ function StoreCardMixin:SetDiscountText(discountPercentage)
 end
 
 function StoreCardMixin:ShouldEnableBuyButton(entryInfo)
-	local alreadyOwned = entryInfo.alreadyOwned;
+	local owned = StoreFrame_IsCompletelyOwned(entryInfo) or StoreFrame_IsPartiallyOwned(entryInfo);
 	local buyableHere = entryInfo.sharedData.buyableHere;
-	return buyableHere and not alreadyOwned;
+	return buyableHere and not owned;
 end
 
-function StoreCardMixin:SetupBuyButton(info, entryInfo)
+function StoreCardMixin:UpdateBannerText(discounted, discountPercentage, entryInfo)
 end
 
-function StoreCardMixin:SetupBannerText(discounted, discountPercentage, entryInfo)
+function StoreCardMixin:SetDefaultCardTexture()
+	--override this in other product cards
 end
 
 function StoreCardMixin:SetCardTexture(entryInfo)
 	if entryInfo.sharedData.overrideBackground then
 		self.Card:SetAtlas(entryInfo.sharedData.overrideBackground, true);
 		self.Card:SetTexCoord(0, 1, 0, 1);
+	else
+		self:SetDefaultCardTexture();
 	end
+end
+
+function StoreCardMixin:UpdateDiscount(currencyInfo, entryInfo, currencyFormat)
+	local discounted, discountPercentage = StoreFrame_GetDiscountInformation(entryInfo.sharedData);
+
+	local completelyOwned = StoreFrame_IsCompletelyOwned(entryInfo);
+	if completelyOwned then
+		self.Checkmark:Show();
+	elseif discountPercentage and entryInfo.productID ~= SEE_YOU_LATER_BUNDLE_PRODUCT_ID then
+		self:SetDiscountText(discountPercentage);
+		if StoreFrame_HasPriceData(entryInfo.productID) then
+			local stringWidth = self.DiscountText:GetStringWidth();
+			self.DiscountLeft:SetPoint("RIGHT", self.DiscountRight, "LEFT", -stringWidth, 0);
+			self.DiscountMiddle:Show();
+			self.DiscountLeft:Show();
+			self.DiscountRight:Show();
+			self.DiscountText:Show();
+		end
+	end
+	self:UpdateBannerText(discounted, discountPercentage, entryInfo);
+end
+
+function StoreCardMixin:UpdatePricing(currencyInfo, entryInfo, currencyFormat)
+	local discounted, discountPercentage = StoreFrame_GetDiscountInformation(entryInfo.sharedData);
+
+	self.CurrentPrice:SetText(StoreFrame_GetProductPriceText(entryInfo, currencyFormat));
+	self.NormalPrice:SetText(currencyFormat(entryInfo.sharedData.normalDollars, entryInfo.sharedData.normalCents));
+
+	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.HiddenPrice) == Enum.BattlepayDisplayFlag.HiddenPrice then
+		self.NormalPrice:Hide();
+		self.SalePrice:Hide();
+		self.Strikethrough:Hide();
+		self.CurrentPrice:Hide();
+	elseif discounted then
+		self:ShowDiscount(StoreFrame_GetProductPriceText(entryInfo, currencyFormat));	
+	else
+		self.NormalPrice:Hide();
+		self.SalePrice:Hide();
+		self.Strikethrough:Hide();
+		self.CurrentPrice:Show();
+	end
+end
+
+function StoreCardMixin:UpdateBuyButton(currencyInfo, entryInfo, currencyFormat)
+end
+
+function StoreCardMixin:UpdateModel(entryInfo, forceModelUpdate)
+	if self:ShouldShowModel(entryInfo) then
+		local showShadows = self:ShouldModelShowShadows();
+		StoreProductCard_ShowModel(self, entryInfo, showShadows, forceModelUpdate);
+	else
+		StoreProductCard_HideModel(self);
+	end
+end
+
+function StoreCardMixin:SetCardOwned(owned)
+
+	if owned then
+		self.ModelScene:SetDesaturation(0.8);
+		self.Card:SetDesaturation(0.8);
+		self.Card:SetAlpha(0.5);
+		self.Icon:SetDesaturation(0.8);
+		self.Icon:SetAlpha(0.5);
+		self.ProductName:SetAlpha(0.5);
+	else
+		self.ModelScene:SetDesaturation(0);
+		self.Card:SetDesaturation(0);
+		self.Card:SetAlpha(1);
+		self.Icon:SetDesaturation(0);
+		self.Icon:SetAlpha(1);
+		self.ProductName:SetAlpha(1);
+	end
+end
+
+function StoreCardMixin:SetDisabledOverlayShown(showDisabledOverlay)
+	--disabled overlay is currently only used by small cards
+	self.DisabledOverlay:SetShown(false);
 end
 
 function StoreCardMixin:ShowDiscount(discountText)
@@ -278,6 +359,9 @@ function StoreCardMixin:SetupWoWToken(entryInfo)
 end
 
 function StoreCardMixin:SetupDescription(entryInfo)
+end
+
+function StoreCardMixin:SetDisclaimerText(entryInfo)
 end
 
 function StoreCardMixin:ShouldModelShowShadows()
@@ -365,6 +449,8 @@ function StoreCardMixin:HideIcon()
 	self.GlowSpin.SpinAnim:Stop();
 	self.GlowPulse:Hide();
 	self.GlowPulse.PulseAnim:Stop();
+
+	self.Card:Show();
 end
 
 function StoreCardMixin:UpdateCard(entryID, forceModelUpdate)
@@ -384,27 +470,9 @@ function StoreCardMixin:UpdateCard(entryID, forceModelUpdate)
 	self.Checkmark:Hide();
 
 	local currencyInfo = StoreFrame_CurrencyInfo();
-
 	if not currencyInfo then
 		self:Hide();
 		return;
-	end
-
-	local currencyFormat = self:GetCurrencyFormat(currencyInfo);
-	local discounted, discountPercentage = StoreFrame_GetDiscountInformation(entryInfo.sharedData);
-	
-	if entryInfo.alreadyOwned then
-		self.Checkmark:Show();
-	elseif discountPercentage and entryInfo.productID ~= SEE_YOU_LATER_BUNDLE_PRODUCT_ID then
-		self:SetDiscountText(discountPercentage);
-		if StoreFrame_HasPriceData(entryInfo.productID) then
-			local stringWidth = self.DiscountText:GetStringWidth();
-			self.DiscountLeft:SetPoint("RIGHT", self.DiscountRight, "LEFT", -stringWidth, 0);
-			self.DiscountMiddle:Show();
-			self.DiscountLeft:Show();
-			self.DiscountRight:Show();
-			self.DiscountText:Show();
-		end
 	end
 
 	if entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.Boost then
@@ -415,12 +483,12 @@ function StoreCardMixin:UpdateCard(entryID, forceModelUpdate)
 		self.boostType = nil;
 	end
 
-	self:SetupBuyButton(currencyInfo, entryInfo);
-	self.CurrentPrice:SetText(StoreFrame_GetProductPriceText(entryInfo, currencyFormat));
-	self:SetupBannerText(discounted, discountPercentage, entryInfo);
-	self.NormalPrice:SetText(currencyFormat(entryInfo.sharedData.normalDollars, entryInfo.sharedData.normalCents));
-	self.ProductName:SetText(entryInfo.sharedData.name);
+	local currencyFormat = self:GetCurrencyFormat(currencyInfo);
+	self:UpdateDiscount(currencyInfo, entryInfo, currencyFormat);
+	self:UpdatePricing(currencyInfo, entryInfo, currencyFormat);
+	self:UpdateBuyButton(currencyInfo, entryInfo, currencyFormat);
 
+	self.ProductName:SetText(entryInfo.sharedData.name);
 	if entryInfo.sharedData.overrideTextColor then
 		self.ProductName:SetTextColor(entryInfo.sharedData.overrideTextColor.r, entryInfo.sharedData.overrideTextColor.g, entryInfo.sharedData.overrideTextColor.b);
 	else
@@ -428,33 +496,12 @@ function StoreCardMixin:UpdateCard(entryID, forceModelUpdate)
 	end
 
 	self:SetCardTexture(entryInfo);
-
-	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.HiddenPrice) == Enum.BattlepayDisplayFlag.HiddenPrice then
-		self.NormalPrice:Hide();
-		self.SalePrice:Hide();
-		self.Strikethrough:Hide();
-		self.CurrentPrice:Hide();
-	elseif discounted then		
-		self:ShowDiscount(StoreFrame_GetProductPriceText(entryInfo, currencyFormat));	
-	else
-		self.NormalPrice:Hide();
-		self.SalePrice:Hide();
-		self.Strikethrough:Hide();
-		self.CurrentPrice:Show();
-	end
-
 	self:SetStyle(entryInfo.sharedData.overrideBackground);
-
 	self:SetupWoWToken(entryInfo);
 	self:SetupDescription(entryInfo);
-	self.Magnifier:Hide();
+	self:SetDisclaimerText(entryInfo);
 	
-	if self:ShouldShowModel(entryInfo) then
-		local showShadows = self:ShouldModelShowShadows();
-		StoreProductCard_ShowModel(self, entryInfo, showShadows, forceModelUpdate);
-	else
-		StoreProductCard_HideModel(self);
-	end	
+	self:UpdateModel(entryInfo, forceModelUpdate);
 
 	if self:ShouldShowIcon(entryInfo) then
 		self:ShowIcon(entryInfo.sharedData);
@@ -471,13 +518,15 @@ function StoreCardMixin:UpdateCard(entryID, forceModelUpdate)
 		self.BannerFadeIn:Show();
 	end
 
-	if entryInfo.alreadyOwned and StoreFrame_DoesProductGroupShowOwnedAsDisabled(StoreFrame_GetSelectedCategoryID()) then
+	local completelyOwned = StoreFrame_IsCompletelyOwned(entryInfo);
+	if completelyOwned and StoreFrame_DoesProductGroupShowOwnedAsDisabled(StoreFrame_GetSelectedCategoryID()) then
 		self:Disable();
-		self.Card:SetDesaturated(true);
+		self:SetCardOwned(true);
 		self.Checkmark:Hide();
 	else
 		self:Enable();
-		self.Card:SetDesaturated(false);
+		self:SetCardOwned(false);
+		self.Checkmark:SetShown(completelyOwned);
 	end
 
 	local restrictedInGame = entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not IsOnGlueScreen();
@@ -491,7 +540,7 @@ function StoreCardMixin:UpdateCard(entryID, forceModelUpdate)
 	end
 
 	local disabledOverlayShouldBeShown = disabled or restrictedInGame;
-	self.DisabledOverlay:SetShown(disabledOverlayShouldBeShown);
+	self:SetDisabledOverlayShown(disabledOverlayShouldBeShown);
 end
 --------------------------------------------------
 

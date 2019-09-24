@@ -1097,9 +1097,6 @@ function ContainerFrameItemButton_OnLoad(self)
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:RegisterForDrag("LeftButton");
 
-	self.SplitStack = function(button, split)
-		SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
-	end
 	self.UpdateTooltip = ContainerFrameItemButton_OnEnter;
 	self.timeSinceUpgradeCheck = 0;
 end
@@ -1326,6 +1323,10 @@ function ContainerFrameItemButton_OnClick(self, button)
 	end
 end
 
+local function SplitStack(button, split)
+	SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
+end
+
 function ContainerFrameItemButton_OnModifiedClick(self, button)
 	if ( IsModifiedClick("EXPANDITEM") ) then
 		local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
@@ -1353,9 +1354,7 @@ function ContainerFrameItemButton_OnModifiedClick(self, button)
 	if ( not CursorHasItem() and IsModifiedClick("SPLITSTACK") ) then
 		local texture, itemCount, locked = GetContainerItemInfo(self:GetParent():GetID(), self:GetID());
 		if ( not locked and itemCount and itemCount > 1) then
-			self.SplitStack = function(button, split)
-				SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
-			end
+			self.SplitStack = SplitStack;
 			StackSplitFrame:OpenStackSplitFrame(itemCount, self, "BOTTOMRIGHT", "TOPRIGHT");
 		end
 	end

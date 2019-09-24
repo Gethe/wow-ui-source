@@ -17,9 +17,9 @@
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="TabardEmblem" file="Interface\GuildFrame\GuildEmblemsLG_01">
-					<Size x="64" y="64"/>
+					<Size x="56" y="64"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-8" y="9"/>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPLEFT" x="24" y="-24"/>
 					</Anchors>
 				</Texture>
 			</Layer>

@@ -11,7 +11,7 @@ end
 function SetItemRef(link, text, button, chatFrame)
 
 	-- Going forward, use linkType and linkData instead of strsub and strsplit everywhere
-	local linkType, linkData = string.match(link, '(.-):(.*)');
+	local linkType, linkData = ExtractLinkData(link);
 
 	if ( strsub(link, 1, 6) == "player" ) then
 		local namelink, isGMLink, isCommunityLink;
@@ -53,12 +53,6 @@ function SetItemRef(link, text, button, chatFrame)
 					_G[staticPopup.."EditBox"]:SetText(name);
 					return;
 				end
-				staticPopup = StaticPopup_Visible("ADD_RAIDMEMBER");
-				if ( staticPopup ) then
-					-- If add ignore dialog is up then enter the name into the editbox
-					_G[staticPopup.."EditBox"]:SetText(name);
-					return;
-				end
 				staticPopup = StaticPopup_Visible("CHANNEL_INVITE");
 				if ( staticPopup ) then
 					_G[staticPopup.."EditBox"]:SetText(name);
@@ -94,43 +88,7 @@ function SetItemRef(link, text, button, chatFrame)
 		end
 		if ( name and (strlen(name) > 0) ) then
 			if ( IsModifiedClick("CHATLINK") ) then
-				--[[
-				disable SHIFT-CLICK for battlenet friends, so we don't put an encoded bnetIDAccount in chat
-
-				local staticPopup;
-				staticPopup = StaticPopup_Visible("ADD_IGNORE");
-				if ( staticPopup ) then
-					-- If add ignore dialog is up then enter the name into the editbox
-					_G[staticPopup.."EditBox"]:SetText(name);
-					return;
-				end
-				staticPopup = StaticPopup_Visible("ADD_FRIEND");
-				if ( staticPopup ) then
-					-- If add ignore dialog is up then enter the name into the editbox
-					_G[staticPopup.."EditBox"]:SetText(name);
-					return;
-				end
-				staticPopup = StaticPopup_Visible("ADD_GUILDMEMBER");
-				if ( staticPopup ) then
-					-- If add ignore dialog is up then enter the name into the editbox
-					_G[staticPopup.."EditBox"]:SetText(name);
-					return;
-				end
-				staticPopup = StaticPopup_Visible("ADD_RAIDMEMBER");
-				if ( staticPopup ) then
-					-- If add ignore dialog is up then enter the name into the editbox
-					_G[staticPopup.."EditBox"]:SetText(name);
-					return;
-				end
-				staticPopup = StaticPopup_Visible("CHANNEL_INVITE");
-				if ( staticPopup ) then
-					_G[staticPopup.."EditBox"]:SetText(name);
-					return;
-				end
-				if ( ChatEdit_GetActiveWindow() ) then
-					ChatEdit_InsertLink(name);
-				end
-				]]
+				-- Disable SHIFT-CLICK for battlenet friends, so we don't put an encoded bnetIDAccount in chat
 			elseif ( button == "RightButton" ) then
 				if ( isCommunityLink or not BNIsSelf(bnetIDAccount) ) then
 					FriendsFrame_ShowBNDropdown(name, 1, nil, chatType, chatFrame, nil, bnetIDAccount, communityClubID, communityStreamID, communityEpoch, communityPosition);
@@ -378,6 +336,16 @@ function SetItemRef(link, text, button, chatFrame)
 		if ChatEdit_InsertLink(link) then
 			return;
 		end
+	elseif ( strsub(link, 1, 10) == "clubFinder" ) then
+		if ( IsModifiedClick("CHATLINK") and button == "LeftButton" ) then
+			if ChatEdit_InsertLink(text) then
+				return;
+			end
+		end
+		Communities_LoadUI();
+		local _, clubFinderId = strsplit(":", link);
+		CommunitiesFrame:ClubFinderHyperLinkClicked(clubFinderId);
+		return;
 	end
 
 	if ( IsModifiedClick() ) then
@@ -496,6 +464,21 @@ function GetClubTicketLink(ticketId, clubName, clubType)
 	else
 		return NORMAL_FONT_COLOR:WrapTextInColorCode(link);
 	end
+end
+
+function GetClubFinderLink(clubFinderId, clubName)
+	local clubType = C_ClubFinder.GetClubTypeFromFinderGUID(clubFinderId);
+	local fontColor = NORMAL_FONT_COLOR;
+	local linkGlobalString;
+	if(clubType == Enum.ClubFinderRequestType.Guild) then
+		linkGlobalString = CLUB_FINDER_LINK_GUILD;
+	elseif(clubType == Enum.ClubFinderRequestType.Community) then
+		linkGlobalString = CLUB_FINDER_LINK_COMMUNITY;
+		fontColor = BATTLENET_FONT_COLOR;
+	else
+		linkGlobalString = ""
+	end
+	return fontColor:WrapTextInColorCode(FormatLink("clubFinder", linkGlobalString:format(clubName), clubFinderId));
 end
 
 function GetCalendarEventLink(monthOffset, monthDay, index)

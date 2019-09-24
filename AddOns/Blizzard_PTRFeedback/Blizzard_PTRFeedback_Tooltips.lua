@@ -126,12 +126,14 @@ function PTR_IssueReporter.SetupCurrencyTooltips()
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupAzeriteTooltips()
-    hooksecurefunc(GameTooltip, "SetAzeriteEssence", function(self, azeriteID, rank)
-        if (azeriteID) and (C_AzeriteEssence) and (C_AzeriteEssence.GetEssenceInfo) then
-            local azeriteData = C_AzeriteEssence.GetEssenceInfo(azeriteID)
-            PTR_IssueReporter.HookIntoTooltip(self, PTR_IssueReporter.TooltipTypes.azerite, azeriteID, azeriteData.name)
-        end
-    end)
+    if (SetAzeriteEssence) then
+        hooksecurefunc(GameTooltip, "SetAzeriteEssence", function(self, azeriteID, rank)
+            if (azeriteID) and (C_AzeriteEssence) and (C_AzeriteEssence.GetEssenceInfo) then
+                local azeriteData = C_AzeriteEssence.GetEssenceInfo(azeriteID)
+                PTR_IssueReporter.HookIntoTooltip(self, PTR_IssueReporter.TooltipTypes.azerite, azeriteID, azeriteData.name)
+            end
+        end)
+    end
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.InitializePTRTooltips()

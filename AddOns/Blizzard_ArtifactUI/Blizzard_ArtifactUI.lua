@@ -78,7 +78,7 @@ function ArtifactUIMixin:OnShow()
 	self:SetupPerArtifactData();
 	self:RefreshKnowledgeRanks();
 	self.PerksTab:OnUIOpened();
-	
+
 	self:RegisterEvent("ARTIFACT_XP_UPDATE");
 	self:RegisterEvent("ARTIFACT_RELIC_INFO_RECEIVED");
 	self:RegisterEvent("UI_SCALE_CHANGED");
@@ -166,10 +166,18 @@ function ArtifactUIMixin:EvaulateForgeState()
 
 	if isAtForge and not self.AppearancesTab:IsShown() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_APPEARANCE_TAB) and C_ArtifactUI.GetTotalPurchasedRanks() > 0 then
 		if GetNumUnlockedAppearances() > 1 then
-			self.AppearanceTabHelpBox:Show();
+			local helpTipInfo = {
+				text = ARTIFACT_TUTORIAL_CUSTOMIZE_APPEARANCE,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = LE_FRAME_TUTORIAL_ARTIFACT_APPEARANCE_TAB,
+				targetPoint = HelpTip.Point.TopEdgeCenter,
+				offsetY = -7,
+			};
+			HelpTip:Show(self, helpTipInfo, self.AppearancesTabButton);
 		end
 	else
-		self.AppearanceTabHelpBox:Hide();
+		HelpTip:Hide(self, ARTIFACT_TUTORIAL_CUSTOMIZE_APPEARANCE);
 	end
 
 	ArtifactFrameUnderlay:SetShown(isAtForge);
@@ -188,7 +196,7 @@ function ArtifactUIMixin:SetTab(id)
 	UpdateUIPanelPositions(self);
 
 	if id == TAB_APPEARANCE then
-		self.AppearanceTabHelpBox:Hide();
+		HelpTip:Hide(self, ARTIFACT_TUTORIAL_CUSTOMIZE_APPEARANCE);
 		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_APPEARANCE_TAB, true)
 	end
 
@@ -234,7 +242,6 @@ function ArtifactUIMixin:RefreshKnowledgeRanks()
 		self.ForgeBadgeFrame.ForgeLevelBackgroundBlack:Hide();
 		self.ForgeLevelFrame:Hide();
 	end
-	self.KnowledgeLevelHelpBox:Hide();
 end
 
 function ArtifactUIMixin:OnKnowledgeEnter(knowledgeFrame)

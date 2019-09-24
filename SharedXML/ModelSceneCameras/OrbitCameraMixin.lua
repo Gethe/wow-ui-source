@@ -62,6 +62,9 @@ local function TryCreateZoomSpline(x, y, z, existingSpline)
 end
 
 function OrbitCameraMixin:ApplyFromModelSceneCameraInfo(modelSceneCameraInfo, transitionType, modificationType) -- override
+	self.panningXOffset = 0;
+	self.panningYOffset = 0;
+
 	local transitionalCameraInfo = self:CalculateTransitionalValues(self.modelSceneCameraInfo, modelSceneCameraInfo, modificationType);
 
 	self.modelSceneCameraInfo = modelSceneCameraInfo;
@@ -82,6 +85,7 @@ function OrbitCameraMixin:ApplyFromModelSceneCameraInfo(modelSceneCameraInfo, tr
 	if transitionType == CAMERA_TRANSITION_TYPE_IMMEDIATE then
 		self:SnapAllInterpolatedValues();
 	end
+	self:UpdateCameraOrientationAndPosition();
 
 	self:SaveInitialTransform(transitionalCameraInfo);
 end
@@ -363,6 +367,8 @@ ORBIT_CAMERA_MOUSE_MODE_ROLL_ROTATION = 3;
 ORBIT_CAMERA_MOUSE_MODE_TARGET_HORIZONTAL = 4;
 ORBIT_CAMERA_MOUSE_MODE_TARGET_VERTICAL = 5;
 ORBIT_CAMERA_MOUSE_MODE_ZOOM = 6;
+ORBIT_CAMERA_MOUSE_PAN_HORIZONTAL = 7;
+ORBIT_CAMERA_MOUSE_PAN_VERTICAL = 8;
 
 function OrbitCameraMixin:SetLeftMouseButtonXMode(mouseMode, snap)
 	self.buttonModes.leftX = mouseMode;
@@ -432,7 +438,6 @@ function OrbitCameraMixin:HandleMouseMovement(mode, delta, snapToValue)
 		end
 	elseif mode == ORBIT_CAMERA_MOUSE_MODE_TARGET_HORIZONTAL then
 		local rightX, rightY, rightZ = Vector3D_ScaleBy(delta, self:GetRightVector());
-
 		self:SetTarget(Vector3D_Add(rightX, rightY, rightZ, self:GetTarget()));
 
 		if snapToValue then
@@ -440,12 +445,15 @@ function OrbitCameraMixin:HandleMouseMovement(mode, delta, snapToValue)
 		end
 	elseif mode == ORBIT_CAMERA_MOUSE_MODE_TARGET_VERTICAL then
 		local upX, upY, upZ = Vector3D_ScaleBy(delta, self:GetUpVector());
-
 		self:SetTarget(Vector3D_Add(upX, upY, upZ, self:GetTarget()));
 
 		if snapToValue then
 			self:SnapToTargetInterpolationTarget();
 		end
+	elseif mode == ORBIT_CAMERA_MOUSE_PAN_HORIZONTAL then
+		self.panningXOffset = self.panningXOffset + delta;
+	elseif mode == ORBIT_CAMERA_MOUSE_PAN_VERTICAL then
+		self.panningYOffset = self.panningYOffset + delta;
 	end
 end
 
@@ -500,6 +508,10 @@ function OrbitCameraMixin:GetDeltaModifierForCameraMode(mode)
 		return .05;
 	elseif mode == ORBIT_CAMERA_MOUSE_MODE_TARGET_VERTICAL then
 		return .05;
+	elseif mode == ORBIT_CAMERA_MOUSE_PAN_HORIZONTAL then
+		return .0065;
+	elseif mode == ORBIT_CAMERA_MOUSE_PAN_VERTICAL then
+		return .0065;
 	end
 	return 0.0;
 end
@@ -551,6 +563,13 @@ function OrbitCameraMixin:UpdateCameraOrientationAndPosition()
 	local axisAngleX, axisAngleY, axisAngleZ = Vector3D_CalculateNormalFromYawPitch(yaw, pitch);
 
 	local targetX, targetY, targetZ = self:GetInterpolatedTarget();
+
+	local rightX, rightY, rightZ = Vector3D_ScaleBy(self.panningXOffset, self:GetRightVector());
+	local upX, upY, upZ = Vector3D_ScaleBy(self.panningYOffset, self:GetUpVector());
+
+	targetX, targetY, targetZ = Vector3D_Add(targetX, targetY, targetZ, rightX, rightY, rightZ);
+	targetX, targetY, targetZ = Vector3D_Add(targetX, targetY, targetZ, upX, upY, upZ);
+
 	local zoomDistance = self:GetInterpolatedZoomDistance();
 
 	self:SetPosition(self:CalculatePositionByDistanceFromTarget(targetX, targetY, targetZ, zoomDistance, axisAngleX, axisAngleY, axisAngleZ));

@@ -2,660 +2,675 @@
 ..\FrameXML\UI.xsd">
 	<Script file="RecruitAFriendFrame.lua"/>
 
-	<Frame name="RecruitInfoDialogTemplate" frameStrata="HIGH" hidden="true" virtual="true">
-		<Size x="220" y="100"/>
+	<Frame name="RecruitAFriendRewardsFrame" parent="UIParent" hidden="true" enableMouse="true" frameStrata="DIALOG" mixin="RecruitAFriendRewardsFrameMixin">
+		<Size x="390" y="478"/>
+		<Anchors>
+			<Anchor point="TOP" y="-135"/>
+		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentBg" parentKey="BG">
+				<Texture parentKey="Background" atlas="RecruitAFriend_RewardPane_Parchment" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="1" y="-1"/>
-						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
-					<Color r="1" g="1" b="1"/>
-					<Gradient orientation="VERTICAL">
-						<MinColor r="0.23" g="0.19" b="0"/>
-						<MaxColor r="0" g="0" b="0"/>
-					</Gradient>
 				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture name="$parentGlowTopLeft" file="Interface\Common\HelpBox" parentKey="GlowTopLeft" alphaMode="ADD">
-					<Size x="11" y="11"/>	
+				<Texture parentKey="Bracket_TopLeft" atlas="RecruitAFriend_RewardPane_CornerBracket_LeftTop" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-6" y="6"/>
+						<Anchor relativeKey="$parent.Background" point="TOPLEFT"/>
 					</Anchors>
-					<TexCoords left="0.10937500" right="0.19531250" top="0.00781250" bottom="0.09375000"/>	
 				</Texture>
-				<Texture name="$parentGlowTopRight" file="Interface\Common\HelpBox" parentKey="GlowTopRight" alphaMode="ADD">
-					<Size x="11" y="11"/>	
+				<Texture parentKey="Bracket_TopRight" atlas="RecruitAFriend_RewardPane_CornerBracket_RightTop" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="6" y="6"/>
+						<Anchor relativeKey="$parent.Background" point="TOPRIGHT"/>
 					</Anchors>
-					<TexCoords left="0.10937500" right="0.19531250" top="0.00781250" bottom="0.09375000"/>	
 				</Texture>
-				
-				<Texture name="$parentGlowBottomLeft" file="Interface\Common\HelpBox" parentKey="GlowBottomLeft" alphaMode="ADD">
-					<Size x="11" y="11"/>	
+				<Texture parentKey="Bracket_BottomRight" atlas="RecruitAFriend_RewardPane_CornerBracket_RightBottom" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-6" y="-6"/>
+						<Anchor relativeKey="$parent.Background" point="BOTTOMRIGHT"/>
 					</Anchors>
-					<TexCoords left="0.10937500" right="0.19531250" top="0.00781250" bottom="0.09375000"/>	
 				</Texture>
-				
-				<Texture name="$parentGlowBottomRight" file="Interface\Common\HelpBox" parentKey="GlowBottomRight" alphaMode="ADD">
-					<Size x="11" y="11"/>	
+				<Texture parentKey="Bracket_BottomLeft" atlas="RecruitAFriend_RewardPane_CornerBracket_LeftBottom" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+						<Anchor relativeKey="$parent.Background" point="BOTTOMLEFT"/>
 					</Anchors>
-					<TexCoords left="0.10937500" right="0.19531250" top="0.00781250" bottom="0.09375000"/>	
-				</Texture>
-
-				<Texture name="$parentGlowTop" file="Interface\Common\HelpBox"  parentKey="GlowTop" alphaMode="ADD">
-					<Size x="32" y="11"/>	
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentGlowTopLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="TOPRIGHT" relativeTo="$parentGlowTopRight" relativePoint="TOPLEFT"/>
-					</Anchors>
-					<TexCoords left="0.00781250" right="0.09375000" top="0.00781250" bottom="0.09375000"/>	
-				</Texture>
-				<Texture name="$parentGlowBottom" file="Interface\Common\HelpBox" parentKey="GlowBottom" alphaMode="ADD">
-					<Size x="32" y="11"/>	
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-					<TexCoords left="0.00781250" right="0.09375000" top="0.09375000" bottom="0.00781250"/>	
-				</Texture>
-				<Texture name="$parentGlowLeft" file="Interface\Common\HelpBox" parentKey="GlowLeft" alphaMode="ADD">
-					<Size x="11" y="32"/>	
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentGlowTopLeft" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="TOPLEFT"/>
-					</Anchors>
-					<TexCoords left="0.21093750" right="0.29687500" top="0.00781250" bottom="0.09375000"/>	
-				</Texture>
-				<Texture name="$parentGlowRight" file="Interface\Common\HelpBox" parentKey="GlowRight" alphaMode="ADD">
-					<Size x="11" y="32"/>	
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentGlowTopRight" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="TOPRIGHT"/>
-					</Anchors>
-					<TexCoords left="0.29687500" right="0.21093750" top="0.00781250" bottom="0.09375000"/>	
-				</Texture>	
-			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="-2">
-				<Texture name="$parentShadowTopLeft" file="Interface\Common\HelpBox" parentKey="ShadowTopLeft" >
-					<Size x="25" y="25"/>	
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-16" y="16"/>
-					</Anchors>
-					<TexCoords left="0.00781250" right="0.20312500" top="0.46093750" bottom="0.65625000"/>	
-				</Texture>
-				<Texture name="$parentShadowTopRight" file="Interface\Common\HelpBox" parentKey="ShadowTopRight" >
-					<Size x="25" y="25"/>	
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="16" y="16"/>
-					</Anchors>
-					<TexCoords left="0.00781250" right="0.20312500" top="0.46093750" bottom="0.65625000"/>	
-				</Texture>
-				
-				<Texture name="$parentShadowBottomLeft" file="Interface\Common\HelpBox" parentKey="ShadowBottomLeft" >
-					<Size x="25" y="25"/>	
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-16" y="-16"/>
-					</Anchors>
-					<TexCoords left="0.00781250" right="0.20312500" top="0.46093750" bottom="0.65625000"/>	
-				</Texture>
-				
-				<Texture name="$parentShadowBottomRight" file="Interface\Common\HelpBox" parentKey="ShadowBottomRight" >
-					<Size x="25" y="25"/>	
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="16" y="-16"/>
-					</Anchors>
-					<TexCoords left="0.00781250" right="0.20312500" top="0.46093750" bottom="0.65625000"/>	
-				</Texture>
-
-				<Texture name="$parentShadowTop" file="Interface\Common\HelpBox" parentKey="ShadowTop" >
-					<Size x="32" y="25"/>	
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentShadowTopLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="TOPRIGHT" relativeTo="$parentShadowTopRight" relativePoint="TOPLEFT"/>
-					</Anchors>
-					<TexCoords left="0.00781250" right="0.13281250" top="0.25000000" bottom="0.44531250"/>	
-				</Texture>
-				<Texture name="$parentShadowBottom" file="Interface\Common\HelpBox" parentKey="ShadowBottom" >
-					<Size x="32" y="25"/>	
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentShadowBottomLeft" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentShadowBottomRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-					<TexCoords left="0.00781250" right="0.13281250" top="0.44531250" bottom="0.25000000"/>	
-				</Texture>
-				<Texture name="$parentShadowLeft" file="Interface\Common\HelpBox" parentKey="ShadowLeft" >
-					<Size x="25" y="32"/>	
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentShadowTopLeft" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentShadowBottomLeft" relativePoint="TOPLEFT"/>
-					</Anchors>
-					<TexCoords left="0.00781250" right="0.20312500" top="0.10937500" bottom="0.23437500"/>	
-				</Texture>
-				<Texture name="$parentShadowRight" file="Interface\Common\HelpBox" parentKey="ShadowRight" >
-					<Size x="25" y="32"/>	
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentShadowTopRight" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentShadowBottomRight" relativePoint="TOPRIGHT"/>
-					</Anchors>
-					<TexCoords left="0.20312500" right="0.00781250" top="0.10937500" bottom="0.23437500"/>	
-				</Texture>	
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString parentKey="Text" inherits="GameFontHighlightLeft">
-					<Size x="200" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="15" y="-15"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="-3">
-				<Texture parentKey="ArrowShadow" file="Interface\Common\HelpBox" hidden="false">
-					<Size x="86" y="35"/>	
-					<Anchors>
-						<Anchor point="RIGHT" relativePoint="LEFT" x="3" y="0"/>
-					</Anchors>
-					<TexCoords left="0.21875000" right="0.89062500" top="0.52343750" bottom="0.79687500"/>	
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Arrow" file="Interface\Common\HelpBox" hidden="false">
-					<Size x="53" y="21"/>	
+				<FontString parentKey="Title" inherits="SystemFont_Shadow_Large" text="RAF_REWARDS">
+					<Size x="350"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativePoint="LEFT" x="3" y="0"/>
+						<Anchor point="TOP" y="-40"/>
 					</Anchors>
-					<TexCoords left="0.21875000" right="0.63281250" top="0.10937500" bottom="0.27343750"/>	
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="ArrowGlow" file="Interface\Common\HelpBox" hidden="false" alphaMode="ADD" alpha="0.5">
-					<Size x="65" y="28"/>
+					<Color color="NORMAL_FONT_COLOR" />
+				</FontString>
+				<FontString parentKey="Description" inherits="FriendsFont_11" text="RAF_REWARDS_DESC">
+					<Size x="350"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativePoint="LEFT" x="3" y="0"/>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-10"/>
 					</Anchors>
-					<TexCoords left="0.21875000" right="0.72656250" top="0.28906250" bottom="0.50781250"/>	
-				</Texture>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="OkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
-				<Size x="150" y="22"/>
+			<Frame parentKey="Border" inherits="DialogBorderNoCenterTemplate"/>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="15"/>
+					<Anchor point="TOPRIGHT" x="-5" y="-5"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						self:GetParent():Hide();
+						RecruitAFriendRewardsFrame:Hide();
 					</OnClick>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self.Text:SetSpacing(4);
-				SetClampedTextureRotation(self.GlowTopRight, 90);
-				SetClampedTextureRotation(self.GlowBottomRight, 180);
-				SetClampedTextureRotation(self.GlowBottomLeft, 270);
-				SetClampedTextureRotation(self.ShadowTopRight, 90);
-				SetClampedTextureRotation(self.ShadowBottomRight, 180);
-				SetClampedTextureRotation(self.ShadowBottomLeft, 270);
-
-				SetClampedTextureRotation(self.ArrowShadow, 90);
-				SetClampedTextureRotation(self.Arrow, 90);
-				SetClampedTextureRotation(self.ArrowGlow, 90);
-			</OnLoad>
-			<OnShow>
-				local height = self.Text:GetHeight()+30;
-				if ( self.OkayButton:IsShown() ) then
-					height = height + 40;
-				end
-				height = max(height, 55);
-				self:SetHeight(height);
-			</OnShow>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
-	<Frame name="RecruitAFriendFrame" parent="UIParent" hidden="true" enableMouse="true" frameStrata="DIALOG">
-		<Size x="485" y="366"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
+
+	<Button name="RecruitAFriendRewardButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true" mixin="RecruitAFriendRewardButtonMixin">
+		<Size x="36" y="36"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString inherits="GameFontNormalHuge" text="RECRUIT_A_FRIEND">
+				<Texture parentKey="Icon" setAllPoints="true" />
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="IconOverlay" setAllPoints="true">
+					<Color color="SEPIA_COLOR" a="0.4" />
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave" />
+			<OnClick method="OnClick" />
+		</Scripts>
+	</Button>
+
+	<Frame name="RecruitAFriendRewardTemplate" virtual="true" mixin="RecruitAFriendRewardMixin">
+		<Size x="36" y="36"/>
+		<Frames>
+			<Button parentKey="Button" inherits="RecruitAFriendRewardButtonTemplate" mixin="RecruitAFriendRewardButtonWithCheckMixin">
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="3">
+						<Texture parentKey="CheckMark" atlas="RecruitAFriend_RewardPane_Checkmark" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Months" inherits="FriendsFont_Normal" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOP" x="0" y="-23"/>
+						<Anchor point="LEFT" relativeKey="$parent.Button" relativePoint="RIGHT" x="7"/>
 					</Anchors>
 				</FontString>
-				<FontString inherits="GameFontNormal" text="RAF_DESCRIPTION" justifyV="MIDDLE">
-					<Size x="400" y="40"/>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="RecruitAFriendRecruitmentFrame" parent="UIParent" hidden="true" enableMouse="true" frameStrata="DIALOG" mixin="RecruitAFriendRecruitmentFrameMixin">
+		<Size x="600" y="275"/>
+		<Anchors>
+			<Anchor point="TOP"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="SystemFont_Shadow_Large" text="RAF_RECRUITMENT">
+					<Size x="400"/>
 					<Anchors>
-						<Anchor point="TOP" x="0" y="-51"/>
-					</Anchors>
-					<Color r="0.8" g="0.8" b="0.8"/>
-				</FontString>
-				<FontString parentKey="EmailLabel" inherits="GameFontNormal" text="RAF_ENTER_EMAIL">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="24" y="-99"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="NoteLabel" inherits="GameFontNormal" text="RAF_ENTER_NOTE">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="24" y="-156"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="BenefitsLabel" inherits="GameFontNormalLarge" text="RAF_BENEFITS">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="277" y="-107"/>
+						<Anchor point="TOP" y="-40"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Benefit1" inherits="GameFontHighlight" justifyH="LEFT" text="RAF_BENEFIT1">
-					<Size x="176" y="0"/>
+				<FontString parentKey="Description" inherits="FriendsFont_Large">
+					<Size x="450"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.BenefitsLabel" relativePoint="BOTTOMLEFT" x="12" y="-4"/>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-30"/>
 					</Anchors>
-					<Color r="0.8" g="0.8" b="0.8"/>
+					<Color color="NORMAL_FONT_COLOR" />
 				</FontString>
-				<Texture file="Interface\Scenarios\ScenarioIcon-Combat">
-					<Size x="16" y="16"/>
+				<FontString parentKey="FactionAndRealm" inherits="FriendsFont_Normal">
+					<Size x="450"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.Benefit1" relativePoint="TOPLEFT" x="0" y="0"/>
+						<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" y="-20"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="LinkExpires" inherits="FriendsFont_Normal">
+					<Size x="400"/>
+					<Anchors>
+						<Anchor point="BOTTOM" y="55"/>
+					</Anchors>
+					<Color color="GRAY_FONT_COLOR" />
+				</FontString>
+				<FontString parentKey="LinkUses" inherits="FriendsFont_Normal">
+					<Size x="400"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.LinkExpires" relativePoint="BOTTOM" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTranslucentTemplate"/>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-5" y="-5"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopupSpecial_Hide(RecruitAFriendRecruitmentFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="GenerateOrCopyLinkButton" inherits="FriendsFrameButtonTemplate" motionScriptsWhileDisabled="true" mixin="RecruitAFriendGenerateOrCopyLinkButtonMixin">
+				<Size x="165" y="21"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-20" y="80"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick" />
+					<OnEnter method="OnEnter" />
+					<OnLeave method="OnLeave" />
+				</Scripts>
+			</Button>
+			<EditBox parentKey="EditBox" inherits="InputBoxTemplate" virtual="true">
+				<Size x="370" y="32"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.GenerateOrCopyLinkButton" relativePoint="LEFT" x="-10" y="1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Instructions" justifyH="LEFT" justifyV="MIDDLE" inherits="GameFontDisableSmall2" setAllPoints="true" text="RAF_NO_ACTIVE_LINK" />
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnTextChanged function="InputBoxInstructions_OnTextChanged"/>
+					<OnDisable function="InputBoxInstructions_OnDisable"/>
+					<OnEnable function="InputBoxInstructions_OnEnable"/>
+				</Scripts>
+				<FontString inherits="GameFontHighlightSmall"/>
+			</EditBox>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<FontString name="RecruitTextTemplate" inherits="FriendsFont_Normal" justifyH="LEFT" virtual="true">
+		<Color color="NORMAL_FONT_COLOR" />
+	</FontString>
+
+	<FontString name="RecruitSmallTextTemplate" inherits="FriendsFont_Small" justifyH="LEFT" virtual="true">
+		<Color color="NORMAL_FONT_COLOR" />
+	</FontString>
+
+	<Button name="RecruitActivityButtonTemplate" registerForClicks="LeftButtonUp" virtual="true" mixin="RecruitActivityButtonMixin">
+		<Size x="35" y="34"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="ClaimGlow" atlas="services-ring-large-glow" alpha="0" ignoreParentAlpha="true" useAtlasSize="true" scale="0.2">
+					<Anchors>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Benefit2" inherits="GameFontHighlight" justifyH="LEFT" text="RAF_BENEFIT2">
-					<Size x="176" y="0"/>
+				<Texture parentKey="ClaimGlowSpin" atlas="services-ring-large-glowspin" alpha="0" ignoreParentAlpha="true" alphaMode="ADD" useAtlasSize="true" scale="0.3">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Benefit1" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-					</Anchors>
-					<Color r="0.8" g="0.8" b="0.8"/>
-				</FontString>
-				<Texture file="Interface\Scenarios\ScenarioIcon-Combat">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.Benefit2" relativePoint="TOPLEFT" x="0" y="0"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Benefit3" inherits="GameFontHighlight" justifyH="LEFT" text="RAF_BENEFIT3">
-					<Size x="176" y="0"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Benefit2" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-					</Anchors>
-					<Color r="0.8" g="0.8" b="0.8"/>
-				</FontString>
-				<Texture file="Interface\Scenarios\ScenarioIcon-Combat">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.Benefit3" relativePoint="TOPLEFT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="Benefit4" inherits="GameFontHighlight" justifyH="LEFT" text="RAF_BENEFIT4">
-					<Size x="176" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Benefit3" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-					</Anchors>
-					<Color r="0.8" g="0.8" b="0.8"/>
-				</FontString>
-				<Texture file="Interface\Scenarios\ScenarioIcon-Combat">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.Benefit4" relativePoint="TOPLEFT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="Benefit5" inherits="GameFontHighlight" justifyH="LEFT" text="RAF_BENEFIT5">
-					<Size x="176" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Benefit4" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-					</Anchors>
-					<Color r="0.8" g="0.8" b="0.8"/>
-				</FontString>
-				<Texture file="Interface\Scenarios\ScenarioIcon-Combat">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.Benefit5" relativePoint="TOPLEFT" x="0" y="0"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="CharacterInfo" inherits="ThinBorderTemplate">
-				<Size x="400" y="50"/>
+			<Model parentKey="Model" hidden="true" mixin="RecruitActivityButtonModelMixin">
+				<Size x="240" y="240"/>
 				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="29"/>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnModelLoaded method="OnModelLoaded"/>
+					<OnAnimStarted method="OnAnimStarted"/>
+					<OnAnimFinished method="OnAnimFinished"/>
+				</Scripts>
+			</Model>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="ClaimGlowSpinAnim" looping="REPEAT">
+				<Rotation childKey="ClaimGlowSpin" degrees="-360" x="2" y="-4" duration="15"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="ClaimGlowInAnim" setToFinalAlpha="true">
+				<Alpha childKey="ClaimGlow" fromAlpha="0" toAlpha="0.8" duration="0.4"/>
+				<Alpha childKey="ClaimGlowSpin" fromAlpha="0" toAlpha="0.3" duration="0.4"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="ClaimGlowOutAnim" setToFinalAlpha="true">
+				<Alpha childKey="ClaimGlow" fromAlpha="0.8" toAlpha="0" duration="0.4"/>
+				<Alpha childKey="ClaimGlowSpin" fromAlpha="0.3" toAlpha="0" duration="0.4"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="ModelFadeOutAnim" setToFinalAlpha="true">
+				<Alpha childKey="Model" fromAlpha="1" toAlpha="0.25" duration="0.1"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnHide method="OnHide" />
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave" />
+			<OnClick method="OnClick" />
+		</Scripts>
+	</Button>
+
+	<Button name="RecruitListButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true" mixin="RecruitListButtonMixin">
+		<Size x="298" y="34"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="DividerTexture" file="Interface\FriendsFrame\UI-FriendsFrame-OnlineDivider" setAllPoints="true" hidden="true"/>
+				<FontString parentKey="Name" inherits="RecruitTextTemplate">
+					<Size x="190" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="5" y="-4"/>
+					</Anchors>
+					</FontString>
+				<FontString parentKey="InfoText" inherits="RecruitSmallTextTemplate">
+					<Size x="190" y="10"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-3"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentArray="Activities" inherits="RecruitActivityButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" x="-70"/>
+				</Anchors>
+			</Button>
+			<Button parentArray="Activities" inherits="RecruitActivityButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" x="-35"/>
+				</Anchors>
+			</Button>
+			<Button parentArray="Activities" inherits="RecruitActivityButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave" />
+			<OnClick method="OnClick" />
+		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" />
+	</Button>
+
+	<Frame name="RecruitAFriendFrame" parent="FriendsFrame" hidden="true" setAllPoints="true" mixin="RecruitAFriendFrameMixin">
+		<Frames>
+			<Frame parentKey="RewardClaiming" useParentLevel="true">
+				<Size y="100"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-83"/>
+					<Anchor point="TOPRIGHT" x="-7" y="-83"/>
 				</Anchors>
 				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Text" inherits="GameFontNormal" justifyV="MIDDLE" setAllPoints="true">
-							<Color r="0.8" g="0.8" b="0.8"/>
-						</FontString>
-					</Layer>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentBg" parentKey="BG">
+						<Texture parentKey="Background" atlas="RecruitAFriend_ClaimPane_Parchment" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="1" y="-1"/>
-								<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+								<Anchor point="CENTER"/>
 							</Anchors>
-							<Color r="1" g="1" b="1"/>
-							<Gradient orientation="VERTICAL">
-								<MinColor r="0.23" g="0.19" b="0"/>
-								<MaxColor r="0" g="0" b="0"/>
-							</Gradient>
+						</Texture>
+						<Texture parentKey="Bracket_TopLeft" atlas="RecruitAFriend_ClaimPane_CornerBracket_LeftTop" useAtlasSize="true">
+							<Anchors>
+								<Anchor relativeKey="$parent.Background" point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Bracket_TopRight" atlas="RecruitAFriend_ClaimPane_CornerBracket_RightTop" useAtlasSize="true">
+							<Anchors>
+								<Anchor relativeKey="$parent.Background" point="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Bracket_BottomRight" atlas="RecruitAFriend_ClaimPane_CornerBracket_RightBottom" useAtlasSize="true">
+							<Anchors>
+								<Anchor relativeKey="$parent.Background" point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Bracket_BottomLeft" atlas="RecruitAFriend_ClaimPane_CornerBracket_LeftBottom" useAtlasSize="true">
+							<Anchors>
+								<Anchor relativeKey="$parent.Background" point="BOTTOMLEFT"/>
+							</Anchors>
 						</Texture>
 					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="EarnInfo" inherits="FriendsFont_Normal" justifyH="LEFT">
+							<Size x="230" y="12"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="90" y="-33"/>
+							</Anchors>
+						</FontString>
+					</Layer>
 				</Layers>
+				<Frames>
+					<Frame parentKey="MonthCount" inherits="TruncatedTooltipFontStringWrapperTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="90" y="-15"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Text" inherits="FriendsFont_Large" justifyH="LEFT" mixin="ShrinkUntilTruncateFontStringMixin">
+									<Size x="230" y="14"/>
+									<Color color="NORMAL_FONT_COLOR" />
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="NextRewardName" inherits="TruncatedTooltipFontStringWrapperTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="90" y="-48"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Text" inherits="FriendsFont_Normal" justifyH="LEFT" mixin="ShrinkUntilTruncateFontStringMixin">
+									<Size x="230" y="12"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Button parentKey="NextRewardButton" inherits="RecruitAFriendRewardButtonTemplate" mixin="RecruitAFriendRewardButtonWithFanfareMixin">
+						<Size x="49" y="49"/>
+						<Anchors>
+							<Anchor point="CENTER" relativePoint="LEFT" x="46" />
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="ClaimGlow" atlas="services-ring-large-glow" alpha="0" ignoreParentAlpha="true" useAtlasSize="true" scale="0.4">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="ClaimGlowSpin" atlas="services-ring-large-glowspin" alpha="0" ignoreParentAlpha="true" alphaMode="ADD" useAtlasSize="true" scale="0.5">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" setAllPoints="true">
+									<MaskedTextures>
+										<MaskedTexture childKey="Icon"/>
+										<MaskedTexture childKey="IconOverlay"/>
+									</MaskedTextures>
+								</MaskTexture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="3">
+								<Texture parentKey="IconBorder" atlas="RecruitAFriend_ClaimPane_SepiaRing" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="4">
+								<Texture parentKey="ClaimFlash" atlas="azsharawards-fullglow" useAtlasSize="true" ignoreParentAlpha="true" alphaMode="ADD" alpha="0">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="ClaimFlashStar" atlas="azsharawards-starglow" useAtlasSize="true" ignoreParentAlpha="true" alphaMode="ADD" alpha="0">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<ModelScene parentKey="ModelScene" inherits="NonInteractableWrappedModelSceneTemplate" frameStrata="HIGH" hidden="true">
+								<Size x="125" y="125"/>
+								<Anchors>
+									<Anchor point="CENTER" relativePoint="BOTTOMRIGHT"/>
+								</Anchors>
+							</ModelScene>
+						</Frames>
+						<Animations>
+							<AnimationGroup parentKey="ClaimGlowSpinAnim" looping="REPEAT">
+								<Rotation childKey="ClaimGlowSpin" degrees="-360" x="2" y="-4" duration="15"/>
+							</AnimationGroup>
+							<AnimationGroup parentKey="ClaimGlowInAnim" setToFinalAlpha="true">
+								<Alpha childKey="ClaimGlow" fromAlpha="0" toAlpha="0.8" duration=".4"/>
+								<Alpha childKey="ClaimGlowSpin" fromAlpha="0" toAlpha="0.3" duration=".4"/>
+							</AnimationGroup>
+							<AnimationGroup parentKey="ClaimGlowOutAnim" setToFinalAlpha="true">
+								<Alpha childKey="ClaimGlow" fromAlpha="0.8" toAlpha="0" duration=".4"/>
+								<Alpha childKey="ClaimGlowSpin" fromAlpha="0.3" toAlpha="0" duration=".4"/>
+							</AnimationGroup>
+							<AnimationGroup parentKey="ClaimFlashAnim" setToFinalAlpha="true">
+								<Alpha childKey="ClaimFlash" fromAlpha="0" toAlpha="1" order="0" duration=".4"/>
+								<Alpha childKey="ClaimFlash" fromAlpha="1" toAlpha="0" order="1" duration=".4"/>
+								<Alpha childKey="ClaimFlashStar" fromAlpha="0" toAlpha="1" order="0" duration=".4"/>
+								<Alpha childKey="ClaimFlashStar" fromAlpha="1" toAlpha="0" order="1" duration=".4"/>
+							</AnimationGroup>
+						</Animations>
+						<Scripts>
+							<OnLoad method="OnLoad" />
+						</Scripts>
+					</Button>
+					<Frame parentKey="Inset" inherits="InsetFrameTemplate" frameStrata="MEDIUM" setAllPoints="true" />
+					<Button parentKey="ClaimOrViewRewardButton" inherits="FriendsFrameButtonTemplate" text="RAF_VIEW_ALL_REWARDS" mixin="RecruitAFriendClaimOrViewRewardButtonMixin">
+						<Size x="165" y="21"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="7" y="10"/>
+						</Anchors>
+						 <Scripts>
+							 <OnClick method="OnClick" />
+						 </Scripts>
+					 </Button>
+				</Frames>
+			</Frame>
+			<Frame parentKey="RecruitList" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RewardClaiming" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="BOTTOMRIGHT" x="-6" y="26"/>
+				</Anchors>
+				<Frames>
+					<SimpleHTML parentKey="NoRecruitsDesc" resizeToFitContents="true">
+						<Size x="300"/>
+						<Anchors>
+							<Anchor point="CENTER" x="-10"/>
+						</Anchors>
+						<Scripts>
+							<OnHyperlinkClick function="GetURLIndexAndLoadURL" />
+						</Scripts>
+						<FontString inherits="FriendsFont_Large" justifyH="CENTER" />
+					</SimpleHTML>
+					<Frame parentKey="Header">
+						<Size x="320" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="3"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Background" atlas="RecruitAFriend_Frame_StoneDivider">
+									<Size x="338" y="20"/>
+									<Anchors>
+										<Anchor point="TOP"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString parentKey="RecruitedFriends" inherits="RecruitTextTemplate" text="RAF_RECRUITED_FRIENDS">
+									<Anchors>
+										<Anchor point="LEFT" x="5"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Count" inherits="RecruitTextTemplate" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="RIGHT" x="-5"/>
+									</Anchors>
+									<Color color="WHITE_FONT_COLOR" />
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="ScrollFrameInset" inherits="InsetFrameTemplate" frameStrata="MEDIUM">
+						<Anchors>
+							<Anchor point="TOPLEFT" y="-20"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Frame>
+					<ScrollFrame parentKey="ScrollFrame" inherits="FriendsFrameScrollFrame">
+						<Size x="303" y="188"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" y="-3"/>
+						</Anchors>
+					</ScrollFrame>
+				</Frames>
+			</Frame>
+			 <Button parentKey="RecruitmentButton" inherits="FriendsFrameButtonTemplate_BottomLeft" text="RAF_RECRUITMENT" mixin="RecruitAFriendRecruitmentButtonMixin">
+				 <Scripts>
+					 <OnClick method="OnClick" />
+				 </Scripts>
+			 </Button>
+			<Frame parentKey="DropDown" hidden="true" inherits="UIDropDownMenuTemplate" mixin="RecruitAFriendDropDownMixin">
 				<Scripts>
-					<OnLoad>
-						for i=1, #self.Textures do
-							self.Textures[i]:SetVertexColor( 1, 0.82, 0 );
-						end
-					</OnLoad>
+					<OnLoad method="OnLoad"/>
+					<OnHide method="OnHide"/>
 				</Scripts>
 			</Frame>
-			<Button parentKey="MoreDetails" text="RAF_MORE_DETAILS">
-				<Size x="176" y="30"/>
+			<Frame parentKey="SplashFrame" hidden="true" frameLevel="10">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Benefit5" relativePoint="BOTTOMLEFT" x="-12" y="-27"/>
-				</Anchors>					
-				<Scripts>
-					<OnClick>
-						StaticPopup_Show("CONFIRM_LAUNCH_URL", nil, nil, {index = 12});
-					</OnClick>
-				</Scripts>
-				<ButtonText parentKey="Text" inherits="GameFontNormalLeft" setAllPoints="true">
-					<Color r="0.345" g="0.667" b="0.867"/>
-				</ButtonText>
-			</Button>
-			<EditBox name="RecruitAFriendNameEditBox" autoFocus="false" letters="255">
-				<Size x="210" y="20"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.EmailLabel" relativePoint="BOTTOMLEFT" x="5" y="-6"/>
+					<Anchor point="CENTER" y="-41"/>
 				</Anchors>
+				<Size x="335" y="335"/>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
-							<Size x="8" y="20"/>
+						<Texture parentKey="Background" atlas="RecruitAFriend_Splash_Parchment" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="-5" y="0"/>
+								<Anchor point="CENTER"/>
 							</Anchors>
-							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
-						</Texture>
-						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
-							<Size x="8" y="20"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="0" y="0"/>
-							</Anchors>
-							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
-						</Texture>
-						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
-							<Size x="0" y="20"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
-								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
-							</Anchors>
-							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
 						</Texture>
 					</Layer>
-					<Layer level="BORDER">
-						<FontString parentKey="Fill" inherits="FriendsFont_Small" justifyH="LEFT" justifyV="MIDDLE" text="ENTER_EMAIL">
+					<Layer level="ARTWORK">
+						<Texture parentKey="Picture" atlas="RecruitAFriend_Splash_Picture" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="LEFT" x="3" y="0"/>
+								<Anchor point="CENTER" y="40"/>
 							</Anchors>
-							<Color r="0.35" g="0.35" b="0.35"/>
+						</Texture>
+						<Texture parentKey="PictureFrame" atlas="RecruitAFriend_Splash_PictureFrame" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Picture"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Title" inherits="SystemFont_Shadow_Large" text="RAF_SPLASH_SCREEN_TITLE">
+							<Size x="300"/>
+							<Anchors>
+								<Anchor point="TOP" y="-13"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Description" inherits="SystemFont_Med2" text="RAF_SPLASH_SCREEN_DESCRIPTION" spacing="3">
+							<Size x="300"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.PictureFrame" relativePoint="BOTTOM" y="-26"/>
+							</Anchors>
+							<Color color="WARBOARD_OPTION_TEXT_COLOR" />
 						</FontString>
 					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnterPressed>
-						RecruitAFriendNoteEditBox:SetFocus();
-					</OnEnterPressed>
-					<OnTabPressed>
-						RecruitAFriendNoteEditBox:SetFocus();
-					</OnTabPressed>
-					<OnEscapePressed>
-						self:ClearFocus();
-					</OnEscapePressed>
-					<OnTextChanged function="RecruitAFriend_OnEmailTextChanged"/>
-				</Scripts>
-				<FontString inherits="FriendsFont_Small">
-					<Color r="1" g="1" b="1" />
-				</FontString>
-			</EditBox>
-			<Frame name="RecruitAFriendNoteFrame" parentKey="NoteFrame">
-				<Size x="215" y="60"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.NoteLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentTopLeft" file="Interface\Common\Common-Input-Border-TL">
-							<Size x="8" y="8"/>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Bracket_TopLeft" atlas="RecruitAFriend_ClaimPane_CornerBracket_LeftTop" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor relativeKey="$parent.Background" point="TOPLEFT"/>
 							</Anchors>
 						</Texture>
-						<Texture name="$parentTopRight" file="Interface\Common\Common-Input-Border-TR">
-							<Size x="8" y="8"/>
+						<Texture parentKey="Bracket_TopRight" atlas="RecruitAFriend_ClaimPane_CornerBracket_RightTop" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPRIGHT" x="0" y="0"/>
+								<Anchor relativeKey="$parent.Background" point="TOPRIGHT"/>
 							</Anchors>
 						</Texture>
-						<Texture name="$parentTop" file="Interface\Common\Common-Input-Border-T">
+						<Texture parentKey="Bracket_BottomRight" atlas="RecruitAFriend_ClaimPane_CornerBracket_RightBottom" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="TOPRIGHT"/>
-								<Anchor point="BOTTOMRIGHT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
+								<Anchor relativeKey="$parent.Background" point="BOTTOMRIGHT"/>
 							</Anchors>
 						</Texture>
-						<Texture name="$parentBottomLeft" file="Interface\Common\Common-Input-Border-BL">
-							<Size x="8" y="8"/>
+						<Texture parentKey="Bracket_BottomLeft" atlas="RecruitAFriend_ClaimPane_CornerBracket_LeftBottom" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+								<Anchor relativeKey="$parent.Background" point="BOTTOMLEFT"/>
 							</Anchors>
 						</Texture>
-						<Texture name="$parentBottomRight" file="Interface\Common\Common-Input-Border-BR">
-							<Size x="8" y="8"/>
+						<Texture parentKey="PictureFrame_Bracket_TopLeft" atlas="RecruitAFriend_Splash_CornerBracket_LeftTop" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+								<Anchor  point="CENTER" relativeKey="$parent.PictureFrame" relativePoint="TOPLEFT" x="5" y="-8"/>
 							</Anchors>
 						</Texture>
-						<Texture name="$parentBottom" file="Interface\Common\Common-Input-Border-B">
+						<Texture parentKey="PictureFrame_Bracket_TopRight" atlas="RecruitAFriend_Splash_CornerBracket_RightTop" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
-								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT"/>
+								<Anchor  point="CENTER" relativeKey="$parent.PictureFrame" relativePoint="TOPRIGHT" x="-5" y="-8"/>
 							</Anchors>
 						</Texture>
-						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border-L">
+						<Texture parentKey="PictureFrame_Bracket_BottomRight" atlas="RecruitAFriend_Splash_CornerBracket_RightBottom" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT"/>
-								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+								<Anchor  point="CENTER" relativeKey="$parent.PictureFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
 							</Anchors>
 						</Texture>
-						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border-R">
+						<Texture parentKey="PictureFrame_Bracket_BottomLeft" atlas="RecruitAFriend_Splash_CornerBracket_LeftBottom" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
-								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="TOPRIGHT"/>
-							</Anchors>
-						</Texture>
-						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border-M">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
-								<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+								<Anchor  point="CENTER" relativeKey="$parent.PictureFrame" relativePoint="BOTTOMLEFT" x="6" y="4"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 				</Layers>
 				<Frames>
-					<ScrollFrame name="$parentScrollFrame" inherits="UIPanelScrollFrameTemplate">
+					<Button parentKey="OKButton" inherits="FriendsFrameButtonTemplate" text="OKAY">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="6" y="-6"/>
-							<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="0" y="6"/>
+							<Anchor point="BOTTOM" y="20"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-								local scrollBar = _G[self:GetName().."ScrollBar"];
-								scrollBar:ClearAllPoints();
-								scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -18, -10);
-								scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -18, 8);
-								-- reposition the up and down buttons
-								_G[self:GetName().."ScrollBarScrollDownButton"]:SetPoint("TOP", scrollBar, "BOTTOM", 0, 4);
-								_G[self:GetName().."ScrollBarScrollUpButton"]:SetPoint("BOTTOM", scrollBar, "TOP", 0, -4);
-								-- make the scroll bar hideable and force it to start off hidden so positioning calculations can be done
-								-- as soon as it needs to be shown
-								self.scrollBarHideable = 1;
-								scrollBar:Hide();
-							</OnLoad>
-							<OnMouseDown>
-								RecruitAFriendNoteEditBox:SetFocus();
-							</OnMouseDown>
+							<OnClick>
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+								self:GetParent():Hide();
+							</OnClick>
 						</Scripts>
-						<ScrollChild>
-							<EditBox name="RecruitAFriendNoteEditBox" multiLine="true" letters="127" countInvisibleLetters="true" autoFocus="false">
-								<Size x="188" y="1"/>
-								<Layers>
-									<Layer level="BORDER">
-										<FontString name="$parentFill" parentKey="Fill" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="MIDDLE" text="RAF_ENTER_NOTE_PROMPT">
-											<Anchors>
-												<Anchor point="LEFT" x="3" y="0"/>
-											</Anchors>
-											<Color r="0.35" g="0.35" b="0.35"/>
-										</FontString>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnLoad>
-										self.cursorOffset = 0;
-									</OnLoad>
-									<OnTabPressed>
-										RecruitAFriendNameEditBox:SetFocus()
-									</OnTabPressed>
-									<OnTextChanged function="RecruitAFriend_OnNoteChanged"/>
-									<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
-									<OnUpdate>
-										ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
-									</OnUpdate>
-									<OnEscapePressed>
-										self:ClearFocus();
-									</OnEscapePressed>
-								</Scripts>
-								<FontString inherits="FriendsFont_Small"/>
-							</EditBox>
-						</ScrollChild>
-					</ScrollFrame>
+					</Button>
 				</Frames>
-			</Frame>		
-			<Button name="$parentSendButton" parentKey="SendButton" inherits="UIPanelButtonTemplate" text="RAF_SEND_INVITATION">
-				<Size x="219" y="22"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.NoteFrame" relativePoint="BOTTOMLEFT" x="-2" y="-15"/>
-				</Anchors>
 				<Scripts>
-					<OnClick>
-						RecruitAFriend_Send()
-					</OnClick>
+					<OnEnter>
+					</OnEnter>
 				</Scripts>
-			</Button>
-			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						StaticPopupSpecial_Hide(RecruitAFriendFrame);
-					</OnClick>
-				</Scripts>
-			</Button>
+			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="RecruitAFriend_OnLoad"/>
-			<OnEvent function="RecruitAFriend_OnEvent"/>
-			<OnShow function="RecruitAFriend_OnShow"/>
-			<OnHide>
-				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
-			</OnHide>
-		</Scripts>
-	</Frame>
-	<Frame name="RecruitAFriendSentFrame" parent="UIParent" hidden="true" enableMouse="true" frameStrata="DIALOG">
-		<Size x="385" y="256"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Title" inherits="GameFontNormalHuge" text="RECRUIT_A_FRIEND">
-					<Anchors>
-						<Anchor point="TOP" x="0" y="-23"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="Description" inherits="GameFontHighlight" text="RAF_INVITATION_SENT" justifyH="CENTER" justifyV="MIDDLE">
-					<Size x="300" y="200"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="0" y="15"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						StaticPopupSpecial_Hide(RecruitAFriendSentFrame);
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button parentKey="MoreDetails" text="RAF_FAQ">
-				<Size x="176" y="30"/>
-				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="10"/>
-				</Anchors>
-				<ButtonText parentKey="Text" inherits="GameFontNormal" justifyH="CENTER" justifyV="MIDDLE" setAllPoints="true">
-					<Color r="0.345" g="0.667" b="0.867"/>
-				</ButtonText>
-				<Scripts>
-					<OnClick>
-						StaticPopup_Show("CONFIRM_LAUNCH_URL", nil, nil, {index = 12});
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button parentKey="OKButton" inherits="UIPanelButtonTemplate" text="OKAY">
-				<Size x="170" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.MoreDetails" relativePoint="TOP" x="0" y="10"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						StaticPopupSpecial_Hide(RecruitAFriendSentFrame);
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnHide>
-				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
-			</OnHide>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent" />
+			<OnHide method="OnHide" />
 		</Scripts>
 	</Frame>
 </Ui>

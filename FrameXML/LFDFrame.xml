@@ -106,17 +106,22 @@
 				</Scripts>
 			</Button>
 			<Frame name="$parentDescription">
-				<Size x="1" y="16"/>
-				<Anchors>
-					<Anchor point="CENTER" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="57"/>
-				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString name="$parentText" justifyH="CENTER" inherits="GameFontHighlight">
-							<Size x="280" y="25"/>
+						<FontString name="$parentText" justifyH="CENTER" wordWrap="true" inherits="GameFontHighlight">
+							<Size x="280" y="0"/>
 							<Anchors>
-								<Anchor point="CENTER"/>
+								<Anchor point="TOP"/>
 							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="SubText" justifyH="CENTER" wordWrap="true" inherits="Game11Font">
+							<Size x="260" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentText" relativePoint="BOTTOM" y="-4"/>
+							</Anchors>
+							<Color color="GREEN_FONT_COLOR"/>
 						</FontString>
 					</Layer>
 				</Layers>

@@ -38,24 +38,16 @@ function SuppressedMountEquipmentButtonMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
-AlertMountEquipmentFeatureMixin = {};
+AlertMountEquipmentFeatureMixin = CreateFromMixins(NewFeatureLabelMixin);
+
 function AlertMountEquipmentFeatureMixin:ClearAlert()
+	NewFeatureLabelMixin.ClearAlert(self);
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_MOUNT_EQUIPMENT_SLOT_FRAME, true);
 	CollectionsMicroButton_SetAlertShown(false);
-
-	self:SetShown(false);
 end
 
 function AlertMountEquipmentFeatureMixin:ValidateIsShown()
 	self:SetShown(not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_MOUNT_EQUIPMENT_SLOT_FRAME));
-end
-
-function AlertMountEquipmentFeatureMixin:OnShow()
-	self.Fade:Play();
-end
-
-function AlertMountEquipmentFeatureMixin:OnHide()
-	self.Fade:Stop();
 end
 
 MountEquipmentButtonMixin = {};
@@ -71,6 +63,16 @@ end
 function MountEquipmentButtonMixin:OnClick()
 	if not IsModifiedClick() then
 		self:ApplyEquipmentAtCursor();
+	else
+		if IsModifiedClick("CHATLINK") then
+			local itemID = C_MountJournal.GetAppliedMountEquipmentID();
+			local item = itemID and Item:CreateFromItemID(itemID);
+			if item then
+				item:ContinueOnItemLoad(function()
+					ChatEdit_InsertLink(item:GetItemLink())
+				end);
+			end
+		end
 	end
 end
 
@@ -526,7 +528,7 @@ function MountJournal_UpdateMountDisplay(forceSceneChange)
 		local creatureName, spellID, icon, active, isUsable, sourceType = C_MountJournal.GetMountInfoByID(MountJournal.selectedMountID);
 		local needsFanfare = C_MountJournal.NeedsFanfare(MountJournal.selectedMountID);
 		if ( MountJournal.MountDisplay.lastDisplayed ~= spellID or forceSceneChange ) then
-			local creatureDisplayID, descriptionText, sourceText, isSelfMount, _, modelSceneID = C_MountJournal.GetMountInfoExtraByID(MountJournal.selectedMountID);
+			local creatureDisplayID, descriptionText, sourceText, isSelfMount, _, modelSceneID, animID, spellVisualKitID, disablePlayerMountPreview = C_MountJournal.GetMountInfoExtraByID(MountJournal.selectedMountID);
 			if not creatureDisplayID then
 				creatureDisplayID = MountJournalMountButton_ChooseFallbackMountToDisplay(MountJournal.selectedMountID);
 			end
@@ -569,6 +571,11 @@ function MountJournal_UpdateMountDisplay(forceSceneChange)
 					mountActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_ANIM);
 					mountActor:SetAnimation(0);
 				end
+				local showPlayer = GetCVarBool("mountJournalShowPlayer");
+				if not disablePlayerMountPreview and not showPlayer then
+					disablePlayerMountPreview = true;
+				end
+				MountJournal.MountDisplay.ModelScene:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview, spellVisualKitID);
 			end
 		end
 
@@ -894,3 +901,21 @@ function MountJournal_HideMountDropdown()
 		HideDropDownMenu(1);
 	end
 end
+
+
+PlayerPreviewToggle = {}
+function PlayerPreviewToggle:OnShow()
+	local showPlayer = GetCVarBool("mountJournalShowPlayer");	
+	self:SetChecked(showPlayer);
+end
+
+function PlayerPreviewToggle:OnClick()
+	if self:GetChecked() then
+		SetCVar("mountJournalShowPlayer", 1);
+	else
+		SetCVar("mountJournalShowPlayer", 0);
+	end
+	MountJournal_UpdateMountDisplay(true);
+end
+
+

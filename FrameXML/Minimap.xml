@@ -227,7 +227,8 @@
 										self:RegisterEvent("UPDATE_BINDINGS");
 									</OnLoad>
 									<OnEnter>
-										GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+										GameTooltip_SetTitle(GameTooltip, self.tooltipText);
 									</OnEnter>
 									<OnLeave function="GameTooltip_Hide"/>
 									<OnEvent>
@@ -330,10 +331,7 @@
 												MiniMapTracking_Update();
 											</OnLoad>
 											<OnEvent function="MiniMapTracking_Update"/>
-											<OnClick>
-												ToggleDropDownMenu(1, nil, MiniMapTrackingDropDown, "MiniMapTracking", 0, -5);
-												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-											</OnClick>
+											<OnClick function="MiniMapTracking_OnClick"/>
 											<OnMouseDown>
 												MiniMapTrackingIcon:SetPoint("TOPLEFT", MiniMapTracking, "TOPLEFT", 8, -8);
 												MiniMapTrackingIconOverlay:Show();

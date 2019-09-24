@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_MountCollection.lua"/>
 
-	<Frame name="AlertMountEquipmentFeatureTemplate" mixin="AlertMountEquipmentFeatureMixin" virtual="true">
+	<Frame name="AlertMountEquipmentFeatureTemplate" inherits="NewFeatureLabelTemplate" mixin="AlertMountEquipmentFeatureMixin" virtual="true">
 		<Size x="1" y="1"/>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="1">
@@ -469,20 +469,34 @@
 							</Layer>
 						</Layers>
 					</Button>
-					<ModelScene parentKey="ModelScene" useParentLevel="true" inherits="ModelSceneMixinTemplate" mixin="CollectionsWrappedModelSceneMixin">
-						<KeyValues>
-							<KeyValue key="normalIntensity" value="0.75" type="number"/>
-							<KeyValue key="highlightIntensity" value="1.2" type="number"/>
-						</KeyValues>
-
+					<ModelScene parentKey="ModelScene" useParentLevel="true" inherits="WrappedAndUnwrappedModelScene">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="0" y="0"/>
-							<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
 						</Anchors>
-
 						<Frames>
 							<Button parentKey="RotateLeftButton" inherits="RotateOrbitCameraLeftButtonTemplate" />
 							<Button parentKey="RotateRightButton" inherits="RotateOrbitCameraRightButtonTemplate" />
+							<CheckButton parentKey="TogglePlayer" mixin="PlayerPreviewToggle" inherits="UICheckButtonTemplate" >
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" >
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="TogglePlayerText" inherits="GameFontNormalSmall" text="MOUNT_JOURNAL_PLAYER">
+											<Anchors>
+												<Anchor point="RIGHT" relativeKey="$parent.TogglePlayer" relativePoint="LEFT" x="0" y="0"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnShow method="OnShow"/>
+									<OnClick method="OnClick"/>
+								</Scripts>
+							</CheckButton>
 						</Frames>
 						<Scripts>
 							<OnMouseUp inherit="append">
@@ -490,16 +504,7 @@
 									MountJournalMountButton_UseMount(MountJournal.selectedMountID);
 								end
 							</OnMouseUp>
-							<OnEnter method="OnMouseEnter" />
-							<OnLeave method="OnMouseLeave" />
-							<OnShow method="OnShow" />
 						</Scripts>
-						<Animations>
-							<AnimationGroup parentKey="UnwrapAnim" setToFinalAlpha="true">
-								<Alpha parentKey="WrappedAnim" startDelay="1.2" fromAlpha="1" toAlpha="0" duration=".3" order="1"/>
-								<Alpha parentKey="UnwrappedAnim" startDelay="1.2" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
-							</AnimationGroup>
-						</Animations>
 					</ModelScene>
 				</Frames>
 			</Frame>

@@ -4,7 +4,7 @@
 --
 
 Constant = {
-	Currency = 
+	Currency =
 	{
 		Honor = 1585,
 		Conquest = 1602,
@@ -70,6 +70,12 @@ DEFAULT_CHAT_CHANNEL_COLOR	= CreateColor(1.0, 0.753, 0.753);
 DIM_GREEN_FONT_COLOR		= CreateColor(0.251, 0.753, 0.251); -- Used for officer chat in guilds.
 BLACK_FONT_COLOR			= CreateColor(0.0, 0.0, 0.0);
 LINK_FONT_COLOR				= CreateColor(102.0 / 255.0, 187.0 / 255.0, 255.0 / 255.0); -- Light blue that we use for system links. E.g. calendar events and nydus links in the shop.
+SEPIA_COLOR					= CreateColor(0.565, 0.377, 0.157);
+
+QUEST_OBJECTIVE_FONT_COLOR = CreateColor(0.8, 0.8, 0.8);
+QUEST_OBJECTIVE_HIGHLIGHT_FONT_COLOR = HIGHLIGHT_FONT_COLOR;
+QUEST_OBJECTIVE_DISABLED_FONT_COLOR	= DISABLED_FONT_COLOR;
+QUEST_OBJECTIVE_DISABLED_HIGHLIGHT_FONT_COLOR = LIGHTGRAY_FONT_COLOR;
 
 AREA_NAME_FONT_COLOR = CreateColor(1.0, 0.9294, 0.7607);
 AREA_DESCRIPTION_FONT_COLOR = HIGHLIGHT_FONT_COLOR;
@@ -274,15 +280,23 @@ NUM_EVALUATION_TREE_FLAGS				= 2;
 ITEM_UNIQUE_EQUIPPED = -1;
 MAX_NUM_SOCKETS = 3;
 
+COMMON_GRAY_COLOR		= CreateColor(0.65882,	0.65882,	0.65882);
+UNCOMMON_GREEN_COLOR	= CreateColor(0.08235,	0.70196,	0.0);
+RARE_BLUE_COLOR			= CreateColor(0.0,		0.56863,	0.94902);
+EPIC_PURPLE_COLOR		= CreateColor(0.78431,	0.27059,	0.98039);
+LEGENDARY_ORANGE_COLOR	= CreateColor(1.0,		0.50196,	0.0);
+ARTIFACT_GOLD_COLOR		= CreateColor(0.90196,	0.8,		0.50196);
+HEIRLOOM_BLUE_COLOR		= CreateColor(0.0,		0.8,		1);
+
 BAG_ITEM_QUALITY_COLORS = {
-	[LE_ITEM_QUALITY_COMMON] = {r=0.65882,g=0.65882,b=0.65882},
-	[LE_ITEM_QUALITY_UNCOMMON] = {r=0.08235, g=0.70196, b=0},
-	[LE_ITEM_QUALITY_RARE] = {r=0, g=0.56863, b=0.94902},
-	[LE_ITEM_QUALITY_EPIC] = {r=0.78431, g=0.27059, b=0.98039},
-	[LE_ITEM_QUALITY_LEGENDARY] = {r=1, g=0.50196, b=0},
-	[LE_ITEM_QUALITY_ARTIFACT] = {r=0.90196, g=0.8, b=0.50196},
-	[LE_ITEM_QUALITY_HEIRLOOM] = {r=0, g=0.8, b=1},
-	[LE_ITEM_QUALITY_WOW_TOKEN] = {r=0, g=0.8, b=1},
+	[LE_ITEM_QUALITY_COMMON] = COMMON_GRAY_COLOR,
+	[LE_ITEM_QUALITY_UNCOMMON] = UNCOMMON_GREEN_COLOR,
+	[LE_ITEM_QUALITY_RARE] = RARE_BLUE_COLOR,
+	[LE_ITEM_QUALITY_EPIC] = EPIC_PURPLE_COLOR,
+	[LE_ITEM_QUALITY_LEGENDARY] = LEGENDARY_ORANGE_COLOR,
+	[LE_ITEM_QUALITY_ARTIFACT] = ARTIFACT_GOLD_COLOR,
+	[LE_ITEM_QUALITY_HEIRLOOM] = HEIRLOOM_BLUE_COLOR,
+	[LE_ITEM_QUALITY_WOW_TOKEN] = HEIRLOOM_BLUE_COLOR,
 }
 
 NEW_ITEM_ATLAS_BY_QUALITY = {
@@ -545,6 +559,7 @@ QuestDifficultyColors = {
 	["standard"]		= { r = 0.25, g = 0.75, b = 0.25, font = "QuestDifficulty_Standard" };
 	["trivial"]			= { r = 0.50, g = 0.50, b = 0.50, font = "QuestDifficulty_Trivial" };
 	["header"]			= { r = 0.70, g = 0.70, b = 0.70, font = "QuestDifficulty_Header" };
+	["disabled"]		= { r = 0.498, g = 0.498, b = 0.498, font = "QuestDifficulty_Impossible" };
 };
 
 QuestDifficultyHighlightColors = {
@@ -554,6 +569,7 @@ QuestDifficultyHighlightColors = {
 	["standard"]		= { r = 0.43, g = 0.93, b = 0.43, font = "QuestDifficulty_Standard" };
 	["trivial"]			= { r = 0.70, g = 0.70, b = 0.70,  font = "QuestDifficulty_Trivial" };
 	["header"]			= { r = 1.00, g = 1.00, b = 1.00, font = "QuestDifficulty_Header" };
+	["disabled"]		= { r = 0.60, g = 0.60, b = 0.60, font = "QuestDifficulty_Impossible" };
 };
 
 --
@@ -932,6 +948,7 @@ FIRST_TRANSMOG_COLLECTION_WEAPON_TYPE = LE_TRANSMOG_COLLECTION_TYPE_FEET + 1;
 LAST_TRANSMOG_COLLECTION_WEAPON_TYPE = NUM_LE_TRANSMOG_COLLECTION_TYPES;
 NO_TRANSMOG_SOURCE_ID = 0;
 NO_TRANSMOG_VISUAL_ID = 0;
+REMOVE_TRANSMOG_ID = 0;
 
 -- ITEMSUBCLASSTYPES
 ITEMSUBCLASSTYPES = {

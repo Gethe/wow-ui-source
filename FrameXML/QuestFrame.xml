@@ -4,36 +4,36 @@
 	<Include file="QuestFrameTemplates.xml"/>
 
 	<Texture name="QuestPortrait-MrBrownstone" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
-		<Size x="197" y="230"/>	
-		<TexCoords left="0.00390625" right="0.77343750" top="0.00195313" bottom="0.45117188"/>	
+		<Size x="197" y="230"/>
+		<TexCoords left="0.00390625" right="0.77343750" top="0.00195313" bottom="0.45117188"/>
 	</Texture>
 	<Texture name="QuestPortrait-Corner_UL" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
-		<Size x="37" y="37"/>	
-		<TexCoords left="0.78125000" right="0.92578125" top="0.00195313" bottom="0.07421875"/>	
+		<Size x="37" y="37"/>
+		<TexCoords left="0.78125000" right="0.92578125" top="0.00195313" bottom="0.07421875"/>
 	</Texture>
 	<Texture name="QuestPortrait-Corner_UR" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
-		<Size x="37" y="37"/>	
-		<TexCoords left="0.78125000" right="0.92578125" top="0.07812500" bottom="0.15039063"/>	
+		<Size x="37" y="37"/>
+		<TexCoords left="0.78125000" right="0.92578125" top="0.07812500" bottom="0.15039063"/>
 	</Texture>
 	<Texture name="QuestPortrait-Corner_BL" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
-		<Size x="37" y="37"/>	
-		<TexCoords left="0.78125000" right="0.92578125" top="0.15429688" bottom="0.22656250"/>	
+		<Size x="37" y="37"/>
+		<TexCoords left="0.78125000" right="0.92578125" top="0.15429688" bottom="0.22656250"/>
 	</Texture>
 	<Texture name="QuestPortrait-Corner_BR" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
-		<Size x="37" y="37"/>	
-		<TexCoords left="0.78125000" right="0.92578125" top="0.23046875" bottom="0.30273438"/>	
+		<Size x="37" y="37"/>
+		<TexCoords left="0.78125000" right="0.92578125" top="0.23046875" bottom="0.30273438"/>
 	</Texture>
 	<Texture name="QuestPortrait-Nameplate" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
-		<Size x="199" y="44"/>	
-		<TexCoords left="0.00390625" right="0.78125000" top="0.45507813" bottom="0.54101563"/>	
+		<Size x="199" y="44"/>
+		<TexCoords left="0.00390625" right="0.78125000" top="0.45507813" bottom="0.54101563"/>
 	</Texture>
 	<Texture name="QuestPortrait-Divider_noname" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
-		<Size x="199" y="44"/>	
-		<TexCoords left="0.00390625" right="0.78125000" top="0.54492188" bottom="0.63085938"/>	
+		<Size x="199" y="44"/>
+		<TexCoords left="0.00390625" right="0.78125000" top="0.54492188" bottom="0.63085938"/>
 	</Texture>
 	<Texture name="QuestPortrait-StoneSwirls-Top" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
-		<Size x="195" y="18"/>	
-		<TexCoords left="0.00390625" right="0.76562500" top="0.63476563" bottom="0.66992188"/>	
+		<Size x="195" y="18"/>
+		<TexCoords left="0.00390625" right="0.76562500" top="0.63476563" bottom="0.66992188"/>
 	</Texture>
 
 	<Frame name="QuestFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
@@ -217,7 +217,7 @@
 							<OnClick function="QuestDetailAcceptButton_OnClick"/>
 						</Scripts>
 					</Button>
-					<ScrollFrame name="QuestDetailScrollFrame" inherits="QuestScrollFrameTemplate">
+					<ScrollFrame name="QuestDetailScrollFrame" parentKey="ScrollFrame" inherits="QuestScrollFrameTemplate">
 						<ScrollChild>
 							<Frame name="QuestDetailScrollChildFrame">
 								<Size x="300" y="403"/>
@@ -291,8 +291,18 @@
 			<OnHide function="QuestFrame_OnHide"/>
 		</Scripts>
 	</Frame>
-	<PlayerModel name="QuestNPCModel" mixin ="QuestNPCModelFrameMixin" enableMouse="true" hidden="true">
+	<ModelScene name="QuestModelScene" inherits="PanningModelSceneMixinTemplate">
 		<Size x="198" y="230"/>
+		<Frames>
+			<KeyValues>
+				<KeyValue key="normalIntensity" value="0.75" type="number"/>
+				<KeyValue key="highlightIntensity" value="1.2" type="number"/>
+			</KeyValues>
+			<Anchors>
+				<Anchor point="TOPLEFT" x="0" y="0"/>
+				<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+			</Anchors>
+		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="QuestNPCModelBg" inherits="QuestPortrait-MrBrownstone">
@@ -345,7 +355,7 @@
 						<Anchor point="TOPRIGHT" x="3"/>
 						<Anchor point="BOTTOMRIGHT" relativeTo="QuestNPCModelBotRightCorner" relativePoint="TOPRIGHT" x="1"/>
 					</Anchors>
-				</Texture>	
+				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture name="QuestNPCModelNameplate" inherits="QuestPortrait-Nameplate">
@@ -414,8 +424,8 @@
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="QuestNPCModelTextFrameBg" inherits="QuestPortrait-MrBrownstone">
-							<Size x="197" y="64"/>	
-							<TexCoords left="0.00390625" right="0.77343750" top="0.00195313" bottom="0.126953125"/>	
+							<Size x="197" y="64"/>
+							<TexCoords left="0.00390625" right="0.77343750" top="0.00195313" bottom="0.126953125"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
@@ -446,7 +456,7 @@
 								<Anchor point="TOPRIGHT" x="3"/>
 								<Anchor point="BOTTOMRIGHT" relativeTo="QuestNPCModelTextBotRightCorner" relativePoint="TOPRIGHT" x="1"/>
 							</Anchors>
-						</Texture>	
+						</Texture>
 					</Layer>
 				</Layers>
 				<Frames>
@@ -489,11 +499,11 @@
 						QuestNPCCornerBottomRight:SetPoint("BOTTOMRIGHT", self, 7, -6);
 					</OnShow>
 					<OnHide>
-						QuestNPCCornerBottomLeft:SetPoint("BOTTOMLEFT", QuestNPCModel, -6, -29);
-						QuestNPCCornerBottomRight:SetPoint("BOTTOMRIGHT", QuestNPCModel, 7, -29);
+						QuestNPCCornerBottomLeft:SetPoint("BOTTOMLEFT", QuestModelScene, -6, -29);
+						QuestNPCCornerBottomRight:SetPoint("BOTTOMRIGHT", QuestModelScene, 7, -29);
 					</OnHide>
 				</Scripts>
 			</Frame>
 		</Frames>
-	</PlayerModel>
+	</ModelScene>
 </Ui>

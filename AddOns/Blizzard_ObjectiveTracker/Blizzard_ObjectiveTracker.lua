@@ -343,13 +343,14 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddObjective(block, objectiveKey, text
 end
 
 function DEFAULT_OBJECTIVE_TRACKER_MODULE:SetStringText(fontString, text, useFullHeight, colorStyle, useHighlight)
-	fontString:SetHeight(0);
-	fontString:SetText(text);
-	local stringHeight = fontString:GetHeight();
-	if ( stringHeight > OBJECTIVE_TRACKER_DOUBLE_LINE_HEIGHT and not useFullHeight ) then
-		fontString:SetHeight(OBJECTIVE_TRACKER_DOUBLE_LINE_HEIGHT);
-		stringHeight = OBJECTIVE_TRACKER_DOUBLE_LINE_HEIGHT;
+	if useFullHeight then
+		fontString:SetMaxLines(0);
+	else
+		fontString:SetMaxLines(2);
 	end
+	fontString:SetText(text);
+
+	local stringHeight = fontString:GetHeight();
 	colorStyle = colorStyle or OBJECTIVE_TRACKER_COLOR["Normal"];
 	if ( useHighlight and colorStyle.reverse ) then
 		colorStyle = colorStyle.reverse;
@@ -671,7 +672,7 @@ function ObjectiveTracker_Initialize(self)
 	local function OnFocusedQuestChanged(event, ...)
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST);
 	end
-	
+
 	WorldMapFrame:RegisterCallback("SetFocusedQuestID", OnFocusedQuestChanged);
 	WorldMapFrame:RegisterCallback("ClearFocusedQuestID", OnFocusedQuestChanged);
 
@@ -694,7 +695,7 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 				end
 			else
 				if ( AUTO_QUEST_WATCH == "1" and GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
-					AddQuestWatch(questLogIndex);
+					AddQuestWatchForQuestID(questID);
 					QuestSuperTracking_OnQuestTracked(questID);
 				end
 			end
@@ -730,9 +731,7 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 	elseif ( event == "SCENARIO_BONUS_VISIBILITY_UPDATE") then
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE);
 	elseif ( event == "SUPER_TRACKED_QUEST_CHANGED" ) then
-		local questID = ...;
-		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED, questID);
-		QuestPOI_SelectButtonByQuestID(self.BlocksFrame, questID);
+		ObjectiveTracker_UpdateSuperTrackedQuest(self);
 	elseif ( event == "ZONE_CHANGED" ) then
 		local lastMapID = C_Map.GetBestMapForUnit("player");
 		if ( lastMapID ~= self.lastMapID ) then
@@ -1047,6 +1046,12 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:StaticReanchor()
 	self:EndLayout(true);
 end
 
+function ObjectiveTracker_UpdateSuperTrackedQuest(self)
+	local questID = GetSuperTrackedQuestID();
+	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED, questID);
+	QuestPOI_SelectButtonByQuestID(self.BlocksFrame, questID);
+end
+
 function ObjectiveTracker_Update(reason, id)
 	local tracker = ObjectiveTrackerFrame;
 	if tracker.isUpdating then
@@ -1171,3 +1176,27 @@ function ObjectiveTracker_ReorderModules()
 	end
 end
 
+QuestHeaderMixin = {};
+
+function QuestHeaderMixin:OnShow()
+	self:RegisterEvent("QUEST_SESSION_JOINED");
+	self:RegisterEvent("QUEST_SESSION_LEFT");
+	self:UpdateHeader();
+end
+
+function QuestHeaderMixin:OnHide()
+	self:UnregisterEvent("QUEST_SESSION_JOINED");
+	self:UnregisterEvent("QUEST_SESSION_LEFT");
+end
+
+function QuestHeaderMixin:OnEvent()
+	self:UpdateHeader();
+end
+
+function QuestHeaderMixin:UpdateHeader()
+	if C_QuestSession.HasJoined() then
+		self.Text:SetText(TRACKER_HEADER_PARTY_QUESTS);
+	else
+		self.Text:SetText(TRACKER_HEADER_QUESTS);
+	end
+end
