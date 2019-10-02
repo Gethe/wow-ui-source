@@ -37,7 +37,7 @@
 			<Anchor point="TOPLEFT" x="8" y="-87"/>
 		</Anchors>
 		<Frames>
-			<Slider inherits="FriendsFrameSlider"/>
+			<Slider parentKey="Slider" inherits="FriendsFrameSlider"/>
 		</Frames>
 	</ScrollFrame>
 
@@ -1068,7 +1068,7 @@
 						<FontString inherits="ChatFontNormal"/>
 					</EditBox>
 					<ScrollFrame name="WhoListScrollFrame"  inherits="FriendsFrameScrollFrame">
-						<Size x="302" y="288"/>
+						<Size x="302" y="272"/>
 					</ScrollFrame>
 				</Frames>
 				<Scripts>
