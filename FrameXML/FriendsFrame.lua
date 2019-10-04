@@ -281,6 +281,7 @@ function FriendsFrame_OnLoad(self)
 	IgnoreListFrameScrollFrame.update = IgnoreList_Update;
 	HybridScrollFrame_CreateButtons(IgnoreListFrameScrollFrame, "IgnoreListButtonTemplate");
 
+	WhoListScrollFrame.Slider:SetPoint("BOTTOMLEFT", WhoListScrollFrame, "BOTTOMRIGHT", 0, -1);
 	WhoListScrollFrame.update = WhoList_Update;
 	HybridScrollFrame_CreateButtons(WhoListScrollFrame, "WhoListButtonTemplate");
 
@@ -763,7 +764,9 @@ function IgnoreList_Update()
 			button:UnlockHighlight();
 		end
 	end
-	HybridScrollFrame_Update(scrollFrame, usedHeight, scrollFrame:GetHeight());
+
+	local totalHeight = totalNumEntries * FRIENDS_FRAME_IGNORE_HEIGHT;
+	HybridScrollFrame_Update(scrollFrame, totalHeight, usedHeight);
 end
 
 function IgnoreList_SetHeader(header, parent)
@@ -832,7 +835,9 @@ function WhoList_Update()
 			button:UnlockHighlight();
 		end
 	end
-	HybridScrollFrame_Update(scrollFrame, usedHeight, scrollFrame:GetHeight());
+
+	local totalHeight = numWhos * FRIENDS_FRAME_WHO_HEIGHT;
+	HybridScrollFrame_Update(scrollFrame, totalHeight, usedHeight);
 
 	if not WhoFrame.selectedWho then
 		WhoFrameGroupInviteButton:Disable();
@@ -2185,7 +2190,9 @@ function FriendsFriendsFrameMixin:Update()
 		end
 
 	end
-	HybridScrollFrame_Update(scrollFrame, usedHeight, scrollFrame:GetHeight());
+
+	local totalHeight = numFriendsFriends * FRIENDS_FRAME_FRIENDS_FRIENDS_HEIGHT;
+	HybridScrollFrame_Update(scrollFrame, totalHeight, usedHeight);
 
 	if haveSelection then
 		self.SendRequestButton:Enable();
