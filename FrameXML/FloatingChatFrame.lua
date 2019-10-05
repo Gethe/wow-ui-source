@@ -28,12 +28,6 @@ CHAT_FRAME_MIN_WIDTH = 296;
 CURRENT_CHAT_FRAME_ID = nil;
 
 CHAT_FRAME_DEFAULT_FONT_SIZE = 14;
-do
-	local fontInfo = GetFontInfo("ChatFontNormal");
-	if fontInfo then
-		CHAT_FRAME_DEFAULT_FONT_SIZE = fontInfo.height;
-	end
-end
 
 CHAT_FRAME_TEXTURES = {
 	"Background",
@@ -1745,9 +1739,6 @@ end
 
 -- Reset the chat windows to default
 function FCF_ResetChatWindows()
-	-- resets to hard coded defaults
-	ResetChatWindows();
-
 	ChatFrame1:ClearAllPoints();
 	--ChatFrame1 is a managed frame so UIParent_ManageFramePositions() will reposition it.
 	ChatFrame1:SetWidth(430);
@@ -1793,6 +1784,9 @@ function FCF_ResetChatWindows()
 	ChatFrame1.init = 0;
 	FCF_DockFrame(ChatFrame1, 1, true);
 	FCF_DockFrame(ChatFrame2, 2);
+
+	-- resets to hard coded defaults
+	ResetChatWindows(CHAT_FRAME_DEFAULT_FONT_SIZE);
 
 	UIParent_ManageFramePositions();
 	FCFDock_SelectWindow(GENERAL_CHAT_DOCK, ChatFrame1);

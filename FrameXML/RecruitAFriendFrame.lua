@@ -290,7 +290,7 @@ function RecruitAFriendFrameMixin:UpdateNextReward(nextReward)
 		self.pendingNextReward = nil;
 	end
 
-	self.RewardClaiming.ClaimOrViewRewardButton:Update(nextReward);
+	self.RewardClaiming.ClaimOrViewRewardButton:Update(nextReward, self.claimInProgress);
 
 	if not nextReward then
 		self.RewardClaiming.EarnInfo:Hide();
@@ -348,6 +348,8 @@ function RecruitAFriendFrameMixin:UpdateRAFInfo(rafInfo)
 		else
 			self.RewardClaiming.MonthCount:SetText(RAF_MONTHS_EARNED:format(rafInfo.lifetimeMonths));
 		end
+
+		self.claimInProgress = rafInfo.claimInProgress;
 		self:UpdateNextReward(rafInfo.nextReward);
 
 		RecruitAFriendRewardsFrame:UpdateRewards(rafInfo.rewards);
@@ -728,15 +730,37 @@ function RecruitAFriendClaimOrViewRewardButtonMixin:OnClick()
 	end
 end
 
-function RecruitAFriendClaimOrViewRewardButtonMixin:Update(nextReward)
+function RecruitAFriendClaimOrViewRewardButtonMixin:OnEnter()
+	if not self:IsEnabled() then
+		local wrap = true;
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, BLIZZARD_STORE_PROCESSING, RED_FONT_COLOR, wrap);
+		self.disabledTooltipShowing = true;
+	end
+end
+
+function RecruitAFriendClaimOrViewRewardButtonMixin:OnLeave()
+	GameTooltip_Hide();
+	self.disabledTooltipShowing = false;
+end
+
+function RecruitAFriendClaimOrViewRewardButtonMixin:Update(nextReward, claimInProgress)
 	self.nextReward = nextReward;
 	self.haveUnclaimedReward = nextReward and nextReward.canClaim;
 
 	if self.haveUnclaimedReward then
+		self:SetEnabled(not claimInProgress);
 		self:SetText(CLAIM_REWARD);
 		RecruitAFriendRewardsFrame:Hide();
 	else
+		self:SetEnabled(true);
 		self:SetText(RAF_VIEW_ALL_REWARDS);
+	end
+
+	if self:IsMouseOver() and not self:IsEnabled() and not self.disabledTooltipShowing then
+		self:OnEnter();
+	elseif self:IsEnabled() and self.disabledTooltipShowing then
+		self:OnLeave();
 	end
 end
 
