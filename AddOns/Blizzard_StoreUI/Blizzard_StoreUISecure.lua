@@ -1659,8 +1659,9 @@ function StoreFrame_SetCategory(forceModelUpdate)
 		return;
 	end
 	entries = StoreFrame_FilterEntries(entries);
-
-	StoreFrame_SetCategoryProductCards(forceModelUpdate, entries);
+	if entries then
+		StoreFrame_SetCategoryProductCards(forceModelUpdate, entries);
+	end
 end
 
 -- builds a table of pages: 

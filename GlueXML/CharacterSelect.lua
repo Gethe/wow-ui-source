@@ -911,7 +911,7 @@ function UpdateCharacterList(skipSelect)
 				local factionEmblem = button.FactionEmblem;
 				local isIconAssigned = faction ~= "Neutral";
 				if isIconAssigned then
-					local offsetX = -46 + (factionEmblem[factionGroup] or 0);
+					local offsetX = -46 + (factionEmblem[faction] or 0);
 					local offsetY = -6;
 					factionEmblem:SetPoint("TOPRIGHT", offsetX, offsetY)
 					factionEmblem:SetAtlas(string.format("CharacterSelection_%s_Icon", faction), true);

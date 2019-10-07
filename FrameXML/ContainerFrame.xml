@@ -305,7 +305,7 @@
 			<ItemButton name="$parentItem35" inherits="ContainerFrameItemButtonTemplate"/>
 			<ItemButton name="$parentItem36" inherits="ContainerFrameItemButtonTemplate"/>
 
-			<Button name="$parentPortraitButton" parentKey="PortraitButton">
+			<DropDownToggleButton name="$parentPortraitButton" mixin="ContainerFramePortraitButtonMixin" parentKey="PortraitButton">
 				<Size x="40" y="40"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="7" y="-5"/>
@@ -321,15 +321,11 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnter function="ContainerFramePortraitButton_OnEnter" />
-					<OnLeave function="ContainerFramePortraitButton_OnLeave" />
-					<OnClick>
-						local parent = self:GetParent();
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						ToggleDropDownMenu(1, nil, parent.FilterDropDown, self, 0, 0);
-					</OnClick>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnEnter method="OnEnter" />
+					<OnLeave method="OnLeave" />
 				</Scripts>
-			</Button>
+			</DropDownToggleButton>
 			<Button parentKey="FilterIcon" hidden="true">
 				<Size x="28" y="28"/>
 				<Anchors>

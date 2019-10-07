@@ -347,7 +347,8 @@ function CommunitiesAddToChatMixin:GetStreamId()
 	return self.streamId;
 end
 
-function CommunitiesAddToChatMixin:OnClick()
+function CommunitiesAddToChatMixin:OnMouseDown(button)
+	UIMenuButtonStretchMixin.OnMouseDown(self, button);
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	local clubId = self:GetParent():GetSelectedClubId();
 	local streamId = self:GetParent():GetSelectedStreamId();

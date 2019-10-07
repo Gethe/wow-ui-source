@@ -111,19 +111,11 @@ function LFDFrame_OnEvent(self, event, ...)
 			end
 		end
 		PVEFrame_ShowFrame("GroupFinderFrame", LFDParentFrame);
-	elseif ( event == "PLAYER_AVG_ITEM_LEVEL_UPDATE" ) then
-		RequestLFDPlayerLockInfo();
-		RequestLFDPartyLockInfo();
 	end
 end
 
 function LFDFrame_OnShow(self)
-	self:RegisterEvent("PLAYER_AVG_ITEM_LEVEL_UPDATE");
 	LFGBackfillCover_Update(LFDQueueFrame.PartyBackfill, true);
-end
-
-function LFDFrame_OnHide(self)
-	self:UnregisterEvent("PLAYER_AVG_ITEM_LEVEL_UPDATE");
 end
 
 function LFDFrame_DisplayDungeonByID(dungeonID)
@@ -768,11 +760,11 @@ function LFDRoleCheckPopup_Update()
 	local descTextHeight = LFDRoleCheckPopupDescriptionText:GetHeight();
 	local totalDescriptionTextHeight = descSubTextHeight + descTextHeight;
 	LFDRoleCheckPopupDescription:SetHeight(totalDescriptionTextHeight);
-	
+
 	local descriptionTextMargin = isLevelReduced and 35 or 46;
 	local descriptionOffsetY = LFDRoleCheckPopupDescription:GetHeight() + descriptionTextMargin;
 	LFDRoleCheckPopupDescription:SetPoint("CENTER", LFDRoleCheckPopup, "BOTTOM", 0, descriptionOffsetY);
-	
+
 	local headerTextHeight = LFDRoleCheckPopup.Text:GetHeight();
 	local roleHeight = LFDRoleCheckPopupRoleButtonTank:GetHeight();
 	local popupHeight = headerTextHeight + roleHeight + totalDescriptionTextHeight + 85;

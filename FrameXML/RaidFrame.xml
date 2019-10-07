@@ -129,12 +129,13 @@
 			<OnShow>
 				UpdateMicroButtons();
 				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-				RequestLFDPlayerLockInfo(); --This info coming back might affect the tab state.
-				RequestLFDPartyLockInfo();
+				QueueUpdater:RequestInfo();
+				QueueUpdater:AddRef();
 				RaidFinderFrame_UpdateTab();
 			</OnShow>
 			<OnHide>
 				UpdateMicroButtons();
+				QueueUpdater:RemoveRef();
 				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 			</OnHide>
 		</Scripts>

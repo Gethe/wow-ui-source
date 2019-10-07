@@ -32,6 +32,7 @@ MixinUtil.lua
 
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
+..\SharedXML\DropDownToggleButton.xml
 
 ..\SharedXML\ModelSceneTemplates.xml
 ..\SharedXML\ModelSceneMixin.xml
@@ -223,6 +224,7 @@ PetStable.xml
 VehicleSeatIndicator.xml
 DurabilityFrame.xml
 BattlegroundChatFilters.xml
+QueueUpdater.lua
 PVEFrame.xml
 LFGFrame.xml
 LFDFrame.xml

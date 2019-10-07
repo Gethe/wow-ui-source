@@ -72,16 +72,14 @@
 					<OnEnter>
 						CloseDropDownMenus(self:GetParent():GetParent():GetID() + 1);
 						_G[self:GetName().."SwatchBg"]:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-						GlueDropDownMenu_StopCounting(self:GetParent():GetParent());
 					</OnEnter>
 					<OnLeave>
 						_G[self:GetName().."SwatchBg"]:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-						GlueDropDownMenu_StartCounting(self:GetParent():GetParent());
 					</OnLeave>
 				</Scripts>
 				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
 			</Button>
-			<Button name="$parentExpandArrow" hidden="true">
+			<DropDownToggleButton name="$parentExpandArrow" hidden="true">
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>
@@ -93,19 +91,15 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
+					<OnMouseDown>
 						ToggleDropDownMenu(self, self:GetParent():GetParent():GetID() + 1, self:GetParent().value);
-					</OnClick>
+					</OnMouseDown>
 					<OnEnter>
 						ToggleDropDownMenu(self, self:GetParent():GetParent():GetID() + 1, self:GetParent().value);
-						GlueDropDownMenu_StopCounting(self:GetParent():GetParent());
 					</OnEnter>
-					<OnLeave>
-						GlueDropDownMenu_StartCounting(self:GetParent():GetParent());
-					</OnLeave>
 				</Scripts>
 				<NormalTexture file="Interface\ChatFrame\ChatFrameExpandArrow"/>
-			</Button>
+			</DropDownToggleButton>
 			<Button name="$parentInvisibleButton" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
@@ -118,12 +112,8 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						GlueDropDownMenu_StopCounting(self:GetParent():GetParent());
 						CloseDropDownMenus(self:GetParent():GetParent():GetID() + 1);
 					</OnEnter>
-					<OnLeave>
-						GlueDropDownMenu_StartCounting(self:GetParent():GetParent());
-					</OnLeave>
 				</Scripts>
 			</Button>
 		</Frames>
@@ -138,7 +128,6 @@
 					CloseDropDownMenus(self:GetParent():GetID() + 1);
 				end
 				_G[self:GetName().."Highlight"]:Show();
-				GlueDropDownMenu_StopCounting(self:GetParent());
 				if ( self.tooltipTitle ) then
 					GlueTooltip:SetOwner(self, "ANCHOR_RIGHT");
 					GlueTooltip:AddLine(self.tooltipTitle, 1.0, 1.0, 1.0);
@@ -148,7 +137,6 @@
 			</OnEnter>
 			<OnLeave>
 				_G[self:GetName().."Highlight"]:Hide();
-				GlueDropDownMenu_StartCounting(self:GetParent());
 				GlueTooltip:Hide();
 			</OnLeave>
 		</Scripts>
@@ -187,15 +175,6 @@
 			<OnClick>
 				self:Hide();
 			</OnClick>
-			<OnEnter>
-				GlueDropDownMenu_StopCounting(self);
-			</OnEnter>
-			<OnLeave>
-				GlueDropDownMenu_StartCounting(self);
-			</OnLeave>
-			<OnUpdate>
-				GlueDropDownMenu_OnUpdate(self, elapsed);
-			</OnUpdate>
 			<OnShow>
 				for i=1, self.maxButtons do
 					if (not self.noResize) then
@@ -276,7 +255,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentButton" motionScriptsWhileDisabled="true" >
+			<DropDownToggleButton name="$parentButton" motionScriptsWhileDisabled="true" >
 				<Size>
 					<AbsDimension x="24" y="24"/>
 				</Size>
@@ -302,10 +281,10 @@
 							myscript(parent);
 						end
 					</OnLeave>
-					<OnClick>
+					<OnMouseDown>
 						ToggleDropDownMenu(self);
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-					</OnClick>
+					</OnMouseDown>
 				</Scripts>
 				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
 					<Size>
@@ -339,7 +318,7 @@
 						<Anchor point="RIGHT"/>
 					</Anchors>
 				</HighlightTexture>
-			</Button>
+			</DropDownToggleButton>
 		</Frames>
 		<Scripts>
 			<OnHide>

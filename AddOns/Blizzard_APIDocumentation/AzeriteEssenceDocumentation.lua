@@ -288,14 +288,15 @@ local AzeriteEssence =
 		{
 			Name = "AzeriteEssence",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "MainSlot", Type = "AzeriteEssence", EnumValue = 0 },
 				{ Name = "PassiveOneSlot", Type = "AzeriteEssence", EnumValue = 1 },
 				{ Name = "PassiveTwoSlot", Type = "AzeriteEssence", EnumValue = 2 },
+				{ Name = "PassiveThreeSlot", Type = "AzeriteEssence", EnumValue = 3 },
 			},
 		},
 		{

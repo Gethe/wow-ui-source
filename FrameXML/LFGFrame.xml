@@ -572,12 +572,11 @@
 			</OnEvent>
 			<OnShow>
 				LFGDungeonReadyPopup_Update();
-
-				--Request new lock info (which comes with which rewards we're getting) in case the rewards changed.
-				RequestLFDPlayerLockInfo();
-				RequestLFDPartyLockInfo();
+				QueueUpdater:RequestInfo();
+				QueueUpdater:AddRef();
 			</OnShow>
 			<OnHide>
+				QueueUpdater:RemoveRef();
 				self.closeIn = nil;
 				self:SetScript("OnUpdate", nil);
 			</OnHide>

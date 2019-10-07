@@ -1,6 +1,10 @@
 
 ScrollListLineMixin = {};
 
+function ScrollListLineMixin:InitLine(...)
+	-- Override in your mixin.
+end
+
 function ScrollListLineMixin:UpdateDisplay()
 	-- Override in your mixin.
 end
@@ -44,12 +48,13 @@ end
 ScrollListMixin = {};
 
 -- The lineTemplate should only be set once. Any subsequent attempts will fail.
-function ScrollListMixin:SetLineTemplate(lineTemplate)
+function ScrollListMixin:SetLineTemplate(lineTemplate, ...)
 	if self.lineTemplate ~= nil then
 		return;
 	end
 
 	self.lineTemplate = lineTemplate;
+	self.lineTemplateInitArgs = {...};
 end
 
 function ScrollListMixin:SetGetNumResultsFunction(getNumResultsFunction)
@@ -80,6 +85,10 @@ function ScrollListMixin:Init()
 	end;
 
 	HybridScrollFrame_CreateButtons(self.ScrollFrame, self.lineTemplate, 0, 0);
+	for i, button in ipairs(self.ScrollFrame.buttons) do
+		button:InitLine(unpack(self.lineTemplateInitArgs));
+	end
+
 	HybridScrollFrame_SetDoNotHideScrollBar(self.ScrollFrame, true);
 
 	self.isInitialized = true;
@@ -96,8 +105,8 @@ function ScrollListMixin:UpdatedSelectedHighlight()
 		local buttons = HybridScrollFrame_GetButtons(self.ScrollFrame);
 		if buttonOffset < #buttons then
 			local button = buttons[buttonOffset];
-			self.SelectedHighlight:SetPoint("TOPLEFT", button, "TOPLEFT");
-			self.SelectedHighlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT");
+			self.SelectedHighlight:SetPoint("TOPLEFT", button, "TOPLEFT", 4, 0);
+			self.SelectedHighlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, 0);
 			self.SelectedHighlight:Show();
 		end
 	end

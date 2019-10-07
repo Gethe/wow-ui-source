@@ -97,6 +97,41 @@ local EJ_TIER_DATA =
 	[8] = { backgroundAtlas = "UI-EJ-BattleforAzeroth", r = 0.8, g = 0.4, b = 0.0 },
 }
 
+EJButtonMixin = {}
+
+function EJButtonMixin:OnLoad()
+	local l, t, _, b, r = self.UpLeft:GetTexCoord();
+	self.UpLeft:SetTexCoord(l, l + (r-l)/2, t, b);
+	l, t, _, b, r = self.UpRight:GetTexCoord();
+	self.UpRight:SetTexCoord(l + (r-l)/2, r, t, b);
+
+	l, t, _, b, r = self.DownLeft:GetTexCoord();
+	self.DownLeft:SetTexCoord(l, l + (r-l)/2, t, b);
+	l, t, _, b, r = self.DownRight:GetTexCoord();
+	self.DownRight:SetTexCoord(l + (r-l)/2, r, t, b);
+
+	l, t, _, b, r = self.HighLeft:GetTexCoord();
+	self.HighLeft:SetTexCoord(l, l + (r-l)/2, t, b);
+	l, t, _, b, r = self.HighRight:GetTexCoord();
+	self.HighRight:SetTexCoord(l + (r-l)/2, r, t, b);
+end
+
+function EJButtonMixin:OnMouseDown(button)
+	self.UpLeft:Hide();
+	self.UpRight:Hide();
+
+	self.DownLeft:Show();
+	self.DownRight:Show();
+end
+
+function EJButtonMixin:OnMouseUp(button)
+	self.UpLeft:Show();
+	self.UpRight:Show();
+
+	self.DownLeft:Hide();
+	self.DownRight:Hide();
+end
+
 function GetEJTierData(tier)
 	return EJ_TIER_DATA[tier] or EJ_TIER_DATA[1];
 end

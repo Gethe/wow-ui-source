@@ -1,4 +1,4 @@
-PVPRowMixin = CreateFromMixins(TableBuilderElementMixin);
+PVPRowMixin = CreateFromMixins(TableBuilderRowMixin);
 
 function PVPRowMixin:Init(useAlternateColor)
 	self.useAlternateColor = useAlternateColor;
@@ -53,7 +53,7 @@ function PVPHeaderIconMixin:Init(textureFileID, sortType)
 	self:SetSize(icon:GetSize());
 end
 
-PVPCellClassMixin = CreateFromMixins(TableBuilderElementMixin);
+PVPCellClassMixin = CreateFromMixins(TableBuilderCellMixin);
 
 function PVPCellClassMixin:Populate(rowData, dataIndex)
 	local classToken = rowData.classToken;
@@ -82,7 +82,7 @@ function PVPCellClassMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
-PVPCellHonorLevelMixin = CreateFromMixins(TableBuilderElementMixin);
+PVPCellHonorLevelMixin = CreateFromMixins(TableBuilderCellMixin);
 
 function PVPCellHonorLevelMixin:Populate(rowData, dataIndex)
 	local honorLevel = rowData.honorLevel;
@@ -141,7 +141,7 @@ local function FormatCellColor(frame, rowData, useAlternateColor)
 	frame:SetVertexColor(color:GetRGB());
 end
 
-PVPCellStringMixin = CreateFromMixins(TableBuilderElementMixin);
+PVPCellStringMixin = CreateFromMixins(TableBuilderCellMixin);
 
 function PVPCellStringMixin:Init(dataProviderKey, useAlternateColor, isAbbreviated, hasTooltip)
 	self.dataProviderKey = dataProviderKey;
@@ -181,7 +181,7 @@ function PVPCellStringMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
-PVPCellNameMixin = CreateFromMixins(TableBuilderElementMixin);
+PVPCellNameMixin = CreateFromMixins(TableBuilderCellMixin);
 
 function PVPCellNameMixin:Init(useAlternateColor)
 	self.useAlternateColor = useAlternateColor;
@@ -211,7 +211,7 @@ function PVPCellNameMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
-PVPCellStatMixin = CreateFromMixins(TableBuilderElementMixin);
+PVPCellStatMixin = CreateFromMixins(TableBuilderCellMixin);
 
 function PVPCellStatMixin:Init(dataProviderKey, useAlternateColor)
 	self.dataProviderKey = dataProviderKey;
@@ -257,7 +257,7 @@ function PVPCellStatMixin:Populate(rowData, dataIndex)
 	end
 end
 
-PVPNewRatingMixin = CreateFromMixins(TableBuilderElementMixin);
+PVPNewRatingMixin = CreateFromMixins(TableBuilderCellMixin);
 
 function PVPNewRatingMixin:Init(useAlternateColor)
 	self.useAlternateColor = useAlternateColor;

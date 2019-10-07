@@ -22,7 +22,7 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-                <Texture parentKey="DoneCheckmark" hidden="false" alpha="0" alphaMode="BLEND" atlas="orderhalltalents-done-checkmark" useAtlasSize="true">
+        <Texture parentKey="DoneCheckmark" hidden="false" alpha="0" alphaMode="BLEND" atlas="orderhalltalents-done-checkmark" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
@@ -47,13 +47,20 @@
 				</Texture>
 				<Texture parentKey="Highlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" hidden="true"/>
 			</Layer>
-            <Layer level="OVERLAY" textureSubLevel="1">
+      <Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="DoneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="orderhalltalents-done-glow" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.DoneCheckmark" x="0" y="-3"/>
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="TalentRank" inherits="GameFontNormalSmall" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>				
 		</Layers>
 		<Frames>
 			<Cooldown parentKey="Cooldown" reverse="true" hideCountdownNumbers="true">

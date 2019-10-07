@@ -237,6 +237,20 @@ local LFGListInfo =
 	Tables =
 	{
 		{
+			Name = "LfgApplicantData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "applicantID", Type = "number", Nilable = false },
+				{ Name = "applicationStatus", Type = "string", Nilable = false },
+				{ Name = "pendingApplicationStatus", Type = "string", Nilable = true },
+				{ Name = "numMembers", Type = "number", Nilable = false },
+				{ Name = "isNew", Type = "bool", Nilable = false },
+				{ Name = "comment", Type = "string", Nilable = false },
+				{ Name = "displayOrderID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "LfgEntryData",
 			Type = "Structure",
 			Fields =
@@ -251,20 +265,6 @@ local LFGListInfo =
 				{ Name = "autoAccept", Type = "bool", Nilable = false },
 				{ Name = "privateGroup", Type = "bool", Nilable = false },
 				{ Name = "questID", Type = "number", Nilable = true },
-			},
-		},
-		{
-			Name = "LfgApplicantData",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "applicantID", Type = "number", Nilable = false },
-				{ Name = "applicationStatus", Type = "string", Nilable = false },
-				{ Name = "pendingApplicationStatus", Type = "string", Nilable = true },
-				{ Name = "numMembers", Type = "number", Nilable = false },
-				{ Name = "isNew", Type = "bool", Nilable = false },
-				{ Name = "comment", Type = "string", Nilable = false },
-				{ Name = "displayOrderID", Type = "number", Nilable = false },
 			},
 		},
 		{

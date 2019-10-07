@@ -168,6 +168,32 @@ local RecruitAFriend =
 	Tables =
 	{
 		{
+			Name = "RafRecruitActivityState",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Incomplete", Type = "RafRecruitActivityState", EnumValue = 0 },
+				{ Name = "Complete", Type = "RafRecruitActivityState", EnumValue = 1 },
+				{ Name = "RewardClaimed", Type = "RafRecruitActivityState", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "RafRecruitSubStatus",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Trial", Type = "RafRecruitSubStatus", EnumValue = 0 },
+				{ Name = "Active", Type = "RafRecruitSubStatus", EnumValue = 1 },
+				{ Name = "Inactive", Type = "RafRecruitSubStatus", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "RafRewardType",
 			Type = "Enumeration",
 			NumValues = 8,
@@ -186,66 +212,11 @@ local RecruitAFriend =
 			},
 		},
 		{
-			Name = "RafRecruitSubStatus",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 0,
-			MaxValue = 2,
-			Fields =
-			{
-				{ Name = "Trial", Type = "RafRecruitSubStatus", EnumValue = 0 },
-				{ Name = "Active", Type = "RafRecruitSubStatus", EnumValue = 1 },
-				{ Name = "Inactive", Type = "RafRecruitSubStatus", EnumValue = 2 },
-			},
-		},
-		{
-			Name = "RafRecruitActivityState",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 0,
-			MaxValue = 2,
-			Fields =
-			{
-				{ Name = "Incomplete", Type = "RafRecruitActivityState", EnumValue = 0 },
-				{ Name = "Complete", Type = "RafRecruitActivityState", EnumValue = 1 },
-				{ Name = "RewardClaimed", Type = "RafRecruitActivityState", EnumValue = 2 },
-			},
-		},
-		{
-			Name = "RafPetInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "creatureID", Type = "number", Nilable = false },
-				{ Name = "speciesID", Type = "number", Nilable = false },
-				{ Name = "displayID", Type = "number", Nilable = false },
-				{ Name = "speciesName", Type = "string", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
-			},
-		},
-		{
-			Name = "RafMountInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "mountID", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "RafAppearanceInfo",
 			Type = "Structure",
 			Fields =
 			{
 				{ Name = "appearanceID", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "RafTitleInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "titleID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -264,6 +235,81 @@ local RecruitAFriend =
 			Fields =
 			{
 				{ Name = "spellItemEnchantmentID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "RafInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "lifetimeMonths", Type = "number", Nilable = false },
+				{ Name = "spentMonths", Type = "number", Nilable = false },
+				{ Name = "availableMonths", Type = "number", Nilable = false },
+				{ Name = "claimInProgress", Type = "bool", Nilable = false },
+				{ Name = "rewards", Type = "table", InnerType = "RafReward", Nilable = false },
+				{ Name = "nextReward", Type = "RafReward", Nilable = true },
+				{ Name = "recruitmentInfo", Type = "RafRecruitmentinfo", Nilable = true },
+				{ Name = "recruits", Type = "table", InnerType = "RafRecruit", Nilable = false },
+			},
+		},
+		{
+			Name = "RafMountInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "mountID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "RafPetInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "creatureID", Type = "number", Nilable = false },
+				{ Name = "speciesID", Type = "number", Nilable = false },
+				{ Name = "displayID", Type = "number", Nilable = false },
+				{ Name = "speciesName", Type = "string", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "RafRecruit",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "bnetAccountID", Type = "number", Nilable = false },
+				{ Name = "wowAccountGUID", Type = "string", Nilable = false },
+				{ Name = "battleTag", Type = "string", Nilable = false },
+				{ Name = "monthsRemaining", Type = "number", Nilable = false },
+				{ Name = "subStatus", Type = "RafRecruitSubStatus", Nilable = false },
+				{ Name = "acceptanceID", Type = "string", Nilable = false },
+				{ Name = "activities", Type = "table", InnerType = "RafRecruitActivity", Nilable = false },
+			},
+		},
+		{
+			Name = "RafRecruitActivity",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "activityID", Type = "number", Nilable = false },
+				{ Name = "rewardQuestID", Type = "number", Nilable = false },
+				{ Name = "state", Type = "RafRecruitActivityState", Nilable = false },
+			},
+		},
+		{
+			Name = "RafRecruitmentinfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "recruitmentCode", Type = "string", Nilable = false },
+				{ Name = "recruitmentURL", Type = "string", Nilable = false },
+				{ Name = "expireTime", Type = "number", Nilable = false },
+				{ Name = "remainingTimeSeconds", Type = "number", Nilable = false },
+				{ Name = "totalUses", Type = "number", Nilable = false },
+				{ Name = "remainingUses", Type = "number", Nilable = false },
+				{ Name = "sourceRealm", Type = "string", Nilable = false },
+				{ Name = "sourceFaction", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -291,60 +337,6 @@ local RecruitAFriend =
 			},
 		},
 		{
-			Name = "RafRecruitmentinfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "recruitmentCode", Type = "string", Nilable = false },
-				{ Name = "recruitmentURL", Type = "string", Nilable = false },
-				{ Name = "expireTime", Type = "number", Nilable = false },
-				{ Name = "remainingTimeSeconds", Type = "number", Nilable = false },
-				{ Name = "totalUses", Type = "number", Nilable = false },
-				{ Name = "remainingUses", Type = "number", Nilable = false },
-				{ Name = "sourceRealm", Type = "string", Nilable = false },
-				{ Name = "sourceFaction", Type = "string", Nilable = false },
-			},
-		},
-		{
-			Name = "RafRecruitActivity",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "activityID", Type = "number", Nilable = false },
-				{ Name = "rewardQuestID", Type = "number", Nilable = false },
-				{ Name = "state", Type = "RafRecruitActivityState", Nilable = false },
-			},
-		},
-		{
-			Name = "RafRecruit",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "bnetAccountID", Type = "number", Nilable = false },
-				{ Name = "wowAccountGUID", Type = "string", Nilable = false },
-				{ Name = "battleTag", Type = "string", Nilable = false },
-				{ Name = "monthsRemaining", Type = "number", Nilable = false },
-				{ Name = "subStatus", Type = "RafRecruitSubStatus", Nilable = false },
-				{ Name = "acceptanceID", Type = "string", Nilable = false },
-				{ Name = "activities", Type = "table", InnerType = "RafRecruitActivity", Nilable = false },
-			},
-		},
-		{
-			Name = "RafInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "lifetimeMonths", Type = "number", Nilable = false },
-				{ Name = "spentMonths", Type = "number", Nilable = false },
-				{ Name = "availableMonths", Type = "number", Nilable = false },
-				{ Name = "claimInProgress", Type = "bool", Nilable = false },
-				{ Name = "rewards", Type = "table", InnerType = "RafReward", Nilable = false },
-				{ Name = "nextReward", Type = "RafReward", Nilable = true },
-				{ Name = "recruitmentInfo", Type = "RafRecruitmentinfo", Nilable = true },
-				{ Name = "recruits", Type = "table", InnerType = "RafRecruit", Nilable = false },
-			},
-		},
-		{
 			Name = "RafSystemInfo",
 			Type = "Structure",
 			Fields =
@@ -353,6 +345,14 @@ local RecruitAFriend =
 				{ Name = "maxRecruitMonths", Type = "number", Nilable = false },
 				{ Name = "maxRecruitmentUses", Type = "number", Nilable = false },
 				{ Name = "daysInCycle", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "RafTitleInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "titleID", Type = "number", Nilable = false },
 			},
 		},
 	},

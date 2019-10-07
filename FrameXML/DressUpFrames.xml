@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="DressUpFrames.lua"/>
 
-	<Frame name="SideDressUpFrame" mixin="SideDressUpModelFrameFrameMixin" parent="UIParent" enableMouse="true" hidden="true">
+	<Frame name="SideDressUpFrame" flattenRenderLayers="true" mixin="SideDressUpModelFrameFrameMixin" parent="UIParent" enableMouse="true" hidden="true">
 		<Size x="187" y="389"/>
 		<Layers>
 			<Layer level="BACKGROUND">

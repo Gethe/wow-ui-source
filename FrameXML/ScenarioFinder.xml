@@ -454,9 +454,12 @@
 				<Scripts>
 					<OnShow>
 						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-						RequestLFDPlayerLockInfo();
-						RequestLFDPartyLockInfo();
+						QueueUpdater:RequestInfo();
+						QueueUpdater:AddRef();
 					</OnShow>
+					<OnHide>
+						QueueUpdater:RemoveRef();
+					</OnHide>
 				</Scripts>
 			</Frame>
 		</Frames>

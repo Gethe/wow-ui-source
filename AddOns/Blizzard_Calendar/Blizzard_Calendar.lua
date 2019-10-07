@@ -1852,7 +1852,7 @@ function CalendarNextMonthButton_OnClick()
 	CalendarFrame_OffsetMonth(1);
 end
 
-function CalendarFilterButton_OnClick(self)
+function CalendarFilterButton_OnMouseDown(self)
 	ToggleDropDownMenu(1, nil, CalendarFilterDropDown, self, 0, 0);
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end

@@ -17,6 +17,7 @@
 ..\SharedXML\FontableFrameMixin.lua
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
+..\SharedXML\DropDownToggleButton.xml
 Constants.lua
 GlueFonts.xml
 GlueFontStyles.xml

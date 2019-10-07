@@ -24,7 +24,7 @@ StaticPopupDialogs["ORDER_HALL_TALENT_RESEARCH"] = {
 	button2 = CANCEL,
 	OnAccept = function(self)
 		PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_SELECT);
-		C_Garrison.ResearchTalent(self.data.id);
+		C_Garrison.ResearchTalent(self.data.id, self.data.rank);
 		if (not self.data.hasTime) then
 			self.data.button:GetParent():SetResearchingTalentID(self.data.id);
 		end
@@ -118,6 +118,7 @@ do
 			self.Currency:SetPoint("TOPRIGHT", self, "TOPRIGHT", -12, -29);
 			self.Currency.Icon:SetSize(27, 26);
 			self.Background:SetPoint("TOPLEFT", self.Bg, "TOPLEFT", 4, -40);
+			self.Background:SetPoint("BOTTOMRIGHT", self.Bg, "BOTTOMRIGHT", 0, 0);
 
 			NineSliceUtil.ApplyLayoutByName(self.NineSlice, "PortraitFrameTemplate");
 		end
@@ -146,10 +147,20 @@ function OrderHallTalentFrameMixin:OnLoad()
 	self.researchingTalentID = 0;
 end
 
-function OrderHallTalentFrameMixin:SetGarrisonType(garrType)
+function OrderHallTalentFrameMixin:SetGarrisonType(garrType, garrTalentTreeID)
 	self.garrisonType = garrType;
-	local primaryCurrency, _ = C_Garrison.GetCurrencyTypes(garrType);
-	self.currency = primaryCurrency;
+	self.garrTalentTreeID = garrTalentTreeID;
+
+	-- Setup Currencies
+	local garrTypeCurrency, _ = C_Garrison.GetCurrencyTypes(garrType);
+	local garrTalentTreeCurrency = C_Garrison.GetGarrisonTalentTreeCurrencyTypes(garrTalentTreeID);
+
+	-- It's possible for the Garrison Talent Tree to specify a currency different from the Garrison Type. (Chromie/MOTHER Research Archive, etc)
+	if (garrTalentTreeCurrency) then
+		self.currency = garrTalentTreeCurrency;
+	else 
+		self.currency = garrTypeCurrency;
+	end
 end
 
 function OrderHallTalentFrameMixin:OnShow()
@@ -233,7 +244,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	self:ReleaseAllPools();
 
 	self:RefreshCurrency();
-	local garrTalentTreeID = C_Garrison.GetCurrentGarrTalentTreeID();
+	local garrTalentTreeID = self.garrTalentTreeID;
 	if (garrTalentTreeID == nil or garrTalentTreeID == 0) then
 		local playerClass = select(3, UnitClass("player"));
 		local treeIDs = C_Garrison.GetTalentTreeIDsByClassID(self.garrisonType, playerClass);
@@ -241,7 +252,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			garrTalentTreeID = treeIDs[1];
 		end
 	end
-	local uiTextureKit, classAgnostic, tree, titleText, isThemed = C_Garrison.GetTalentTreeInfoForID(garrTalentTreeID);
+	local uiTextureKit, classAgnostic, tree, titleText, isThemed, treeType = C_Garrison.GetTalentTreeInfoForID(garrTalentTreeID);
 	if not tree then
 		self.refreshing = false;
 		return;
@@ -297,8 +308,11 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		self.CurrencyHitTest:Show();
 	end
 
+	local defaultFrameWidth = 336;
+
 	local borderX = 168;
 	local borderY = -86;
+
 	local buttonSizeX = 39;
 	local buttonSizeY = 39;
 	local buttonSpacingX = 59;
@@ -312,6 +326,9 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	local researchingTalentID = self:GetResearchingTalentID();
 	local researchingTalentTier = 0;
 
+	local maxUIColumnIndex = 0;
+	local numUIColumns = 0;
+
 	-- count how many talents are in each tier
 	local tierCount = {};
 	local tierCanBeResearchedCount = {};
@@ -321,19 +338,49 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		if (talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE) then
 			tierCanBeResearchedCount[talent.tier + 1] = tierCanBeResearchedCount[talent.tier + 1] + 1;
 		end
-		talent.hasInstantResearch = talent.researchDuration == 0;
+		talent.hasInstantResearch = (talent.researchDuration == 0);
+
 		if (talent.id == researchingTalentID and talent.hasInstantResearch) then
 			if (not talent.selected) then
 				talent.selected = true;
 			end
 			researchingTalentTier = talent.tier;
 		end
+
+		-- Track the largest active UI column.
+		if talent.uiOrder > maxUIColumnIndex then
+			maxUIColumnIndex = talent.uiOrder;
+		end
+	end
+
+	numUIColumns = maxUIColumnIndex + 1;
+
+	-- Update frame width for classic trees
+	local frameWidth = defaultFrameWidth;
+	if(treeType == Enum.GarrTalentTreeType.Classic and numUIColumns > 2) then
+
+		buttonSpacingX = 30;
+		local frameWidthBufferX = 30;
+		
+		-- take the larger of the two sizes.
+		frameWidth = ((buttonSizeX + buttonSpacingX) * numUIColumns) + frameWidthBufferX;
+		framewidth = math.max(defaultFrameWidth, frameWidth);
+
+		borderX = frameWidth / 2;
+	end
+
+	-- Run through the tiers and determine the widest tier
+	local researchMaxTierWidth = 0;
+	for index = 1, #tierCount do
+		if(tierCount[index] > researchMaxTierWidth) then
+			researchMaxTierWidth = tierCount[index];
+		end
 	end
 
 	-- position arrows and choice backgrounds
 	for index = 1, #tierCount do
 		local tier = index - 1;
-		if (tierCount[index] == 2) then
+		if (treeType == Enum.GarrTalentTreeType.Tiers and tierCount[index] == 2) then
 			local choiceBackground = self.choiceTexturePool:Acquire();
 			if (tierCanBeResearchedCount[index] == 2) then
 				choiceBackground:SetAtlas("orderhalltalents-choice-background-on", true);
@@ -369,11 +416,19 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		self["Tick"..index]:Hide();
 		changecount = changecount + 1;
 	end
+
 	local distance = change * changecount;
+	local displayWidth = frameWidth;
 	local displayHeight = height - distance;
+	
+	self:SetWidth(displayWidth);
 	self:SetHeight(displayHeight);
+	
+	self.Background:SetWidth(frameWidth);
 	self.Background:SetHeight(bgheight - distance);
+
 	self.Inset:ClearAllPoints();
+	self.Inset:SetWidth(displayWidth);
 	self.Inset:SetHeight(insetheight - distance);
 	self.Inset:SetPoint("CENTER", self.Background, 0, 0);
 
@@ -383,7 +438,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	for talentIndex, talent in ipairs(tree) do
 		local currentTierCount = tierCount[talent.tier + 1];
 		local currentTierCanBeResearchedCount = tierCanBeResearchedCount[talent.tier + 1];
-		local tierWidth = (currentTierCount * (buttonSizeX + buttonSpacingX)) - buttonSpacingX;
+		local tierWidth = (numUIColumns * (buttonSizeX + buttonSpacingX)) - buttonSpacingX;
 		local talentFrame = self.buttonPool:Acquire();
 		talentFrame.Icon:SetTexture(talent.icon);
 		local xOffset = borderX - (tierWidth / 2) + (buttonSizeX + buttonSpacingX) * talent.uiOrder;
@@ -407,7 +462,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			selectionAvailableInstantResearch = false;
 		end
 
-		-- Show as selected: You have researched this talent.
+		-- Show as selected: You have fully researched this talent.
 		if (talent.selected and selectionAvailableInstantResearch) then
 			if (talent.selected and talent.researched and talent.id == researchingTalentID) then
 				self:ClearResearchingTalentID();
@@ -415,7 +470,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			talentFrame.Border:SetAtlas("orderhalltalents-spellborder-yellow");
 		else
 			local isAvailable = talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE;
-
+			
 			-- We check for LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ALREADY_HAVE to avoid a bug with
 			-- the Chromie UI (talents would flash grey when you switched to another talent in the same row).
 			local canDisplayAsAvailable = talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ANOTHER_IS_RESEARCHING or talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ALREADY_HAVE;
@@ -423,8 +478,11 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 
 			-- Show as available: this is a new tier which you don't have any talents from or and old tier that you could change.
 			-- Note: For instant talents, to support the Chromie UI, we display as available even when another talent is researching (Jeff wants it this way).
-			if (isAvailable or shouldDisplayAsAvailable) then
-				if ( currentTierCanBeResearchedCount < currentTierCount) then
+			if (isAvailable) then
+				talentFrame.Border:SetAtlas("orderhalltalents-spellborder-green");
+
+			elseif (shouldDisplayAsAvailable) then
+				if ( currentTierCanBeResearchedCount > currentTierCount) then
 					talentFrame.AlphaIconOverlay:Show();
 					talentFrame.AlphaIconOverlay:SetAlpha(0.5);
 					talentFrame.Border:Hide();
@@ -438,6 +496,15 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 				talentFrame.Icon:SetDesaturated(true);
 			end
 		end
+
+		-- Show the current talent rank if the talent had multiple ranks
+		if talent.talentMaxRank > 1 then
+			talentFrame.TalentRank:SetFormattedText(GENERIC_FRACTION_STRING, talent.talentRank, talent.talentMaxRank);
+			talentFrame.TalentRank:Show()
+		else
+			talentFrame.TalentRank:Hide()
+		end
+
 		talentFrame:SetPoint("TOPLEFT", xOffset, yOffset);
 		talentFrame:Show();
 
@@ -476,8 +543,17 @@ function GarrisonTalentButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
 	local talent = self.talent;
-	GameTooltip:AddLine(talent.name, 1, 1, 1);
-	GameTooltip:AddLine(talent.description, nil, nil, nil, true);
+
+	-- Multi-Rank Talents
+	if talent.talentMaxRank > 1 then
+		local talentRank = math.max(0, talent.talentRank);
+
+		GameTooltip:AddDoubleLine(talent.name, "[PH]Rank "..talentRank, 1, 1, 1);
+		GameTooltip:AddLine(talent.description, nil, nil, nil, true);
+	else 
+		GameTooltip:AddLine(talent.name, 1, 1, 1);
+		GameTooltip:AddLine(talent.description, nil, nil, nil, true);
+	end
 
 	if talent.isBeingResearched and not talent.hasInstantResearch then
 		GameTooltip:AddLine(" ");
@@ -491,8 +567,7 @@ function GarrisonTalentButtonMixin:OnEnter()
 
 		if ((talent.researchCost and talent.researchCost > 0 and talent.researchCurrency) or (talent.researchGoldCost and talent.researchGoldCost > 0)) then
 			local str = NORMAL_FONT_COLOR_CODE..COSTS_LABEL..FONT_COLOR_CODE_CLOSE;
-
-			if (talent.researchCost and talent.researchCurrency) then
+			if (talent.researchCost > 0 and talent.researchCurrency) then
 				local _, _, currencyTexture = GetCurrencyInfo(talent.researchCurrency);
 				str = str.." "..BreakUpLargeNumbers(talent.researchCost).."|T"..currencyTexture..":0:0:2:0|t";
 			end
@@ -535,6 +610,7 @@ function GarrisonTalentButtonMixin:OnClick()
 
 		local hasCost = self.talent.researchCost and self.talent.researchCost > 0;
 		local hasTime = self.talent.researchDuration and self.talent.researchDuration > 0;
+
 		if (hasCost or hasTime) then
 			local str;
 			if (hasCost and hasTime) then
@@ -544,10 +620,10 @@ function GarrisonTalentButtonMixin:OnClick()
 			elseif (hasTime) then
 				str = string.format(ORDER_HALL_RESEARCH_CONFIRMATION_NO_COST, self.talent.name, SecondsToTime(self.talent.researchDuration, false, true));
 			end
-			StaticPopup_Show("ORDER_HALL_TALENT_RESEARCH", str, nil, { id = self.talent.id, hasTime = hasTime, button = self });
+			StaticPopup_Show("ORDER_HALL_TALENT_RESEARCH", str, nil, { id = self.talent.id, rank = self.talent.talentRank + 1,  hasTime = hasTime,  button = self });
 		else
 			PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_SELECT);
-			C_Garrison.ResearchTalent(self.talent.id);
+			C_Garrison.ResearchTalent(self.talent.id, self.talent.talentRank + 1);
 			self:GetParent():SetResearchingTalentID(self.talent.id);
 		end
 	end

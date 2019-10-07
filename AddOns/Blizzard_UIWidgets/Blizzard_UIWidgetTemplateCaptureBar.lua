@@ -52,7 +52,8 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo, widgetContainer)
 		self.RightBar:Hide();
 	end
 	
-	local position = LEFT_BAR_OFFSET + FULL_BAR_SIZE * (1 - barPercent);
+	local positionPercentage = (widgetInfo.fillDirectionType == Enum.CaptureBarWidgetFillDirectionType.RightToLeft) and (1 - barPercent) or barPercent;
+	local position = LEFT_BAR_OFFSET + FULL_BAR_SIZE * positionPercentage;
 	if ( not self.oldValue ) then
 		self.oldValue = position;
 	end

@@ -64,38 +64,6 @@ function GlueDropDownMenu_Initialize(frame, initFunction, displayMode, level)
 
 end
 
--- If dropdown is visible then see if its timer has expired, if so hide the frame
-function GlueDropDownMenu_OnUpdate(self, elapsed)
-	if ( not self.showTimer or not self.isCounting ) then
-		return;
-	elseif ( self.showTimer < 0 ) then
-		self:Hide();
-		self.showTimer = nil;
-		self.isCounting = nil;
-	else
-		self.showTimer = self.showTimer - elapsed;
-	end
-end
-
--- Start the countdown on a frame
-function GlueDropDownMenu_StartCounting(frame)
-	if ( frame.parent ) then
-		GlueDropDownMenu_StartCounting(frame.parent);
-	else
-		frame.showTimer = GLUEDROPDOWNMENU_SHOW_TIME;
-		frame.isCounting = 1;
-	end
-end
-
--- Stop the countdown on a frame
-function GlueDropDownMenu_StopCounting(frame)
-	if ( frame.parent ) then
-		GlueDropDownMenu_StopCounting(frame.parent);
-	else
-		frame.isCounting = nil;
-	end
-end
-
 --[[
 List of button attributes
 ======================================================
@@ -578,6 +546,26 @@ end
 function HideDropDownMenu(level)
 	local listFrame = _G["DropDownList"..level];
 	listFrame:Hide();
+end
+
+
+local function  GlueDropDownMenu_ContainsMouse()
+	for i = 1, GLUEDROPDOWNMENU_MAXLEVELS do
+		local dropdown = _G["DropDownList"..i];
+		if dropdown:IsShown() and dropdown:IsMouseOver() then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+function GlueDropDownMenu_HandleGlobalMouseEvent(button, event)
+	if event == "GLOBAL_MOUSE_DOWN" and (button == "LeftButton" or button == "RightButton") then
+		if not GlueDropDownMenu_ContainsMouse() then
+			CloseDropDownMenus();
+		end
+	end
 end
 
 function ToggleDropDownMenu(self, level, value, dropDownFrame, anchorName, xOffset, yOffset)

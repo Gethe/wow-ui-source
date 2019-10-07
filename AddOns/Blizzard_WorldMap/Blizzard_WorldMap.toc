@@ -5,7 +5,7 @@
 
 MapTexturePreloader.lua
 WM_WorldQuestDataProvider.xml
-WM_InvasionDataProvider.xml
+WM_EventOverlayDataProvider.xml
 WM_DebugDataProvider.xml
 Blizzard_WorldMapTemplates.xml
 Blizzard_WorldMap.xml

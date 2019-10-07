@@ -1225,34 +1225,6 @@ local Club =
 	Tables =
 	{
 		{
-			Name = "ClubRoleIdentifier",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 1,
-			MaxValue = 4,
-			Fields =
-			{
-				{ Name = "Owner", Type = "ClubRoleIdentifier", EnumValue = 1 },
-				{ Name = "Leader", Type = "ClubRoleIdentifier", EnumValue = 2 },
-				{ Name = "Moderator", Type = "ClubRoleIdentifier", EnumValue = 3 },
-				{ Name = "Member", Type = "ClubRoleIdentifier", EnumValue = 4 },
-			},
-		},
-		{
-			Name = "ClubType",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 0,
-			MaxValue = 3,
-			Fields =
-			{
-				{ Name = "BattleNet", Type = "ClubType", EnumValue = 0 },
-				{ Name = "Character", Type = "ClubType", EnumValue = 1 },
-				{ Name = "Guild", Type = "ClubType", EnumValue = 2 },
-				{ Name = "Other", Type = "ClubType", EnumValue = 3 },
-			},
-		},
-		{
 			Name = "ClubActionType",
 			Type = "Enumeration",
 			NumValues = 27,
@@ -1357,6 +1329,19 @@ local Club =
 			},
 		},
 		{
+			Name = "ClubInvitationCandidateStatus",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Available", Type = "ClubInvitationCandidateStatus", EnumValue = 0 },
+				{ Name = "InvitePending", Type = "ClubInvitationCandidateStatus", EnumValue = 1 },
+				{ Name = "AlreadyMember", Type = "ClubInvitationCandidateStatus", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "ClubMemberPresence",
 			Type = "Enumeration",
 			NumValues = 6,
@@ -1370,19 +1355,6 @@ local Club =
 				{ Name = "Offline", Type = "ClubMemberPresence", EnumValue = 3 },
 				{ Name = "Away", Type = "ClubMemberPresence", EnumValue = 4 },
 				{ Name = "Busy", Type = "ClubMemberPresence", EnumValue = 5 },
-			},
-		},
-		{
-			Name = "ClubInvitationCandidateStatus",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 0,
-			MaxValue = 2,
-			Fields =
-			{
-				{ Name = "Available", Type = "ClubInvitationCandidateStatus", EnumValue = 0 },
-				{ Name = "InvitePending", Type = "ClubInvitationCandidateStatus", EnumValue = 1 },
-				{ Name = "AlreadyMember", Type = "ClubInvitationCandidateStatus", EnumValue = 2 },
 			},
 		},
 		{
@@ -1412,6 +1384,33 @@ local Club =
 			},
 		},
 		{
+			Name = "ClubRoleIdentifier",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 1,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "Owner", Type = "ClubRoleIdentifier", EnumValue = 1 },
+				{ Name = "Leader", Type = "ClubRoleIdentifier", EnumValue = 2 },
+				{ Name = "Moderator", Type = "ClubRoleIdentifier", EnumValue = 3 },
+				{ Name = "Member", Type = "ClubRoleIdentifier", EnumValue = 4 },
+			},
+		},
+		{
+			Name = "ClubStreamNotificationFilter",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "None", Type = "ClubStreamNotificationFilter", EnumValue = 0 },
+				{ Name = "Mention", Type = "ClubStreamNotificationFilter", EnumValue = 1 },
+				{ Name = "All", Type = "ClubStreamNotificationFilter", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "ClubStreamType",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -1426,16 +1425,17 @@ local Club =
 			},
 		},
 		{
-			Name = "ClubStreamNotificationFilter",
+			Name = "ClubType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
-				{ Name = "None", Type = "ClubStreamNotificationFilter", EnumValue = 0 },
-				{ Name = "Mention", Type = "ClubStreamNotificationFilter", EnumValue = 1 },
-				{ Name = "All", Type = "ClubStreamNotificationFilter", EnumValue = 2 },
+				{ Name = "BattleNet", Type = "ClubType", EnumValue = 0 },
+				{ Name = "Character", Type = "ClubType", EnumValue = 1 },
+				{ Name = "Guild", Type = "ClubType", EnumValue = 2 },
+				{ Name = "Other", Type = "ClubType", EnumValue = 3 },
 			},
 		},
 		{
@@ -1485,6 +1485,35 @@ local Club =
 			},
 		},
 		{
+			Name = "ClubInvitationCandidateInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "priority", Type = "number", Nilable = false },
+				{ Name = "status", Type = "ClubInvitationCandidateStatus", Nilable = false },
+			},
+		},
+		{
+			Name = "ClubInvitationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "invitationId", Type = "string", Nilable = false },
+				{ Name = "isMyInvitation", Type = "bool", Nilable = false },
+				{ Name = "invitee", Type = "ClubMemberInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "ClubLimits",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "maximumNumberOfStreams", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "ClubMemberInfo",
 			Type = "Structure",
 			Fields =
@@ -1520,61 +1549,12 @@ local Club =
 			},
 		},
 		{
-			Name = "ClubSelfInvitationInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "invitationId", Type = "string", Nilable = false },
-				{ Name = "club", Type = "ClubInfo", Nilable = false },
-				{ Name = "inviter", Type = "ClubMemberInfo", Nilable = false },
-				{ Name = "leaders", Type = "table", InnerType = "ClubMemberInfo", Nilable = false },
-			},
-		},
-		{
-			Name = "ClubInvitationCandidateInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "memberId", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "priority", Type = "number", Nilable = false },
-				{ Name = "status", Type = "ClubInvitationCandidateStatus", Nilable = false },
-			},
-		},
-		{
-			Name = "ClubInvitationInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "invitationId", Type = "string", Nilable = false },
-				{ Name = "isMyInvitation", Type = "bool", Nilable = false },
-				{ Name = "invitee", Type = "ClubMemberInfo", Nilable = false },
-			},
-		},
-		{
-			Name = "ClubLimits",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "maximumNumberOfStreams", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "ClubMessageIdentifier",
 			Type = "Structure",
 			Fields =
 			{
 				{ Name = "epoch", Type = "number", Nilable = false, Documentation = { "number of microseconds since the UNIX epoch." } },
 				{ Name = "position", Type = "number", Nilable = false, Documentation = { "sort order for messages at the same time" } },
-			},
-		},
-		{
-			Name = "ClubMessageRange",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "oldestMessageId", Type = "ClubMessageIdentifier", Nilable = false },
-				{ Name = "newestMessageId", Type = "ClubMessageIdentifier", Nilable = false },
 			},
 		},
 		{
@@ -1588,6 +1568,15 @@ local Club =
 				{ Name = "destroyer", Type = "ClubMemberInfo", Nilable = true, Documentation = { "May be nil even if the message has been destroyed" } },
 				{ Name = "destroyed", Type = "bool", Nilable = false },
 				{ Name = "edited", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ClubMessageRange",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "oldestMessageId", Type = "ClubMessageIdentifier", Nilable = false },
+				{ Name = "newestMessageId", Type = "ClubMessageIdentifier", Nilable = false },
 			},
 		},
 		{
@@ -1637,6 +1626,17 @@ local Club =
 				{ Name = "canEditOwnMessage", Type = "bool", Nilable = false },
 				{ Name = "canPinMessage", Type = "bool", Nilable = false },
 				{ Name = "kickableRoleIds", Type = "table", InnerType = "number", Nilable = false, Documentation = { "Roles that can be kicked and banned" } },
+			},
+		},
+		{
+			Name = "ClubSelfInvitationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "invitationId", Type = "string", Nilable = false },
+				{ Name = "club", Type = "ClubInfo", Nilable = false },
+				{ Name = "inviter", Type = "ClubMemberInfo", Nilable = false },
+				{ Name = "leaders", Type = "table", InnerType = "ClubMemberInfo", Nilable = false },
 			},
 		},
 		{

@@ -1151,6 +1151,15 @@
 										<Anchors>
 											<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceSalePrice" relativePoint="BOTTOMRIGHT" x="16" y="-4"/>
 										</Anchors>
+										<Layers>
+											<Layer level="BACKGROUND">
+												<FontString parentKey="Count" inherits="InvoiceTextFontNormal">
+													<Anchors>
+														<Anchor point="RIGHT" relativeKey="$parent" relativePoint="LEFT" x="-5" y="0"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
 										<Scripts>
 											<OnLoad>
 												SmallMoneyFrame_OnLoad(self);

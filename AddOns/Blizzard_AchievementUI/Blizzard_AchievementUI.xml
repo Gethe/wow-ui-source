@@ -2511,16 +2511,16 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentButton">
+					<DropDownToggleButton name="$parentButton">
 						<Size x="24" y="24"/>
 						<Anchors>
 							<Anchor point="TOPRIGHT"/>
 						</Anchors>
 						<Scripts>
-							<OnClick>
+							<OnMouseDown>
 								ToggleDropDownMenu(nil, nil, self:GetParent());
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-							</OnClick>
+							</OnMouseDown>
 						</Scripts>
 						<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
 							<Size x="24" y="24"/>
@@ -2546,7 +2546,7 @@
 								<Anchor point="RIGHT"/>
 							</Anchors>
 						</HighlightTexture>
-					</Button>
+					</DropDownToggleButton>
 					<Frame name="$parentMouseOver" enableMouse="true">
 						<Size x="125" y="32"/>
 						<Anchors>

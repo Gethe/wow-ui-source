@@ -595,24 +595,6 @@ local ClubFinder =
 	Tables =
 	{
 		{
-			Name = "PlayerClubRequestStatus",
-			Type = "Enumeration",
-			NumValues = 8,
-			MinValue = 0,
-			MaxValue = 7,
-			Fields =
-			{
-				{ Name = "None", Type = "PlayerClubRequestStatus", EnumValue = 0 },
-				{ Name = "Pending", Type = "PlayerClubRequestStatus", EnumValue = 1 },
-				{ Name = "AutoApproved", Type = "PlayerClubRequestStatus", EnumValue = 2 },
-				{ Name = "Declined", Type = "PlayerClubRequestStatus", EnumValue = 3 },
-				{ Name = "Approved", Type = "PlayerClubRequestStatus", EnumValue = 4 },
-				{ Name = "Joined", Type = "PlayerClubRequestStatus", EnumValue = 5 },
-				{ Name = "JoinedAnother", Type = "PlayerClubRequestStatus", EnumValue = 6 },
-				{ Name = "Canceled", Type = "PlayerClubRequestStatus", EnumValue = 7 },
-			},
-		},
-		{
 			Name = "ClubFinderApplicationUpdateType",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -624,20 +606,6 @@ local ClubFinder =
 				{ Name = "AcceptInvite", Type = "ClubFinderApplicationUpdateType", EnumValue = 1 },
 				{ Name = "DeclineInvite", Type = "ClubFinderApplicationUpdateType", EnumValue = 2 },
 				{ Name = "Cancel", Type = "ClubFinderApplicationUpdateType", EnumValue = 3 },
-			},
-		},
-		{
-			Name = "ClubFinderRequestType",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 0,
-			MaxValue = 3,
-			Fields =
-			{
-				{ Name = "None", Type = "ClubFinderRequestType", EnumValue = 0 },
-				{ Name = "Guild", Type = "ClubFinderRequestType", EnumValue = 1 },
-				{ Name = "Community", Type = "ClubFinderRequestType", EnumValue = 2 },
-				{ Name = "All", Type = "ClubFinderRequestType", EnumValue = 3 },
 			},
 		},
 		{
@@ -665,6 +633,20 @@ local ClubFinder =
 				{ Name = "PostingDescription", Type = "ClubFinderPostingReportType", EnumValue = 2 },
 				{ Name = "ApplicantsName", Type = "ClubFinderPostingReportType", EnumValue = 3 },
 				{ Name = "JoinNote", Type = "ClubFinderPostingReportType", EnumValue = 4 },
+			},
+		},
+		{
+			Name = "ClubFinderRequestType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "None", Type = "ClubFinderRequestType", EnumValue = 0 },
+				{ Name = "Guild", Type = "ClubFinderRequestType", EnumValue = 1 },
+				{ Name = "Community", Type = "ClubFinderRequestType", EnumValue = 2 },
+				{ Name = "All", Type = "ClubFinderRequestType", EnumValue = 3 },
 			},
 		},
 		{
@@ -699,6 +681,24 @@ local ClubFinder =
 			},
 		},
 		{
+			Name = "PlayerClubRequestStatus",
+			Type = "Enumeration",
+			NumValues = 8,
+			MinValue = 0,
+			MaxValue = 7,
+			Fields =
+			{
+				{ Name = "None", Type = "PlayerClubRequestStatus", EnumValue = 0 },
+				{ Name = "Pending", Type = "PlayerClubRequestStatus", EnumValue = 1 },
+				{ Name = "AutoApproved", Type = "PlayerClubRequestStatus", EnumValue = 2 },
+				{ Name = "Declined", Type = "PlayerClubRequestStatus", EnumValue = 3 },
+				{ Name = "Approved", Type = "PlayerClubRequestStatus", EnumValue = 4 },
+				{ Name = "Joined", Type = "PlayerClubRequestStatus", EnumValue = 5 },
+				{ Name = "JoinedAnother", Type = "PlayerClubRequestStatus", EnumValue = 6 },
+				{ Name = "Canceled", Type = "PlayerClubRequestStatus", EnumValue = 7 },
+			},
+		},
+		{
 			Name = "ClubFinderApplicantInfo",
 			Type = "Structure",
 			Fields =
@@ -730,30 +730,6 @@ local ClubFinder =
 			},
 		},
 		{
-			Name = "RecruitingClubInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
-				{ Name = "numActiveMembers", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "comment", Type = "string", Nilable = false },
-				{ Name = "guildLeader", Type = "string", Nilable = false },
-				{ Name = "isGuild", Type = "bool", Nilable = false },
-				{ Name = "emblemInfo", Type = "number", Nilable = false },
-				{ Name = "tabardInfo", Type = "ClubFinderGuildTabardInfo", Nilable = true },
-				{ Name = "recruitingSpecIds", Type = "table", InnerType = "number", Nilable = false },
-				{ Name = "recruitmentFlags", Type = "number", Nilable = false },
-				{ Name = "minILvl", Type = "number", Nilable = false },
-				{ Name = "cached", Type = "number", Nilable = false },
-				{ Name = "cacheRequested", Type = "number", Nilable = false },
-				{ Name = "lastPosterGUID", Type = "string", Nilable = false },
-				{ Name = "clubId", Type = "string", Nilable = false },
-				{ Name = "lastUpdatedTime", Type = "number", Nilable = false },
-				{ Name = "clubForceRemoved", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "ClubSettingsInfo",
 			Type = "Structure",
 			Fields =
@@ -775,6 +751,30 @@ local ClubFinder =
 				{ Name = "sortMembers", Type = "bool", Nilable = false },
 				{ Name = "sortNewest", Type = "bool", Nilable = false },
 				{ Name = "autoAccept", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RecruitingClubInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
+				{ Name = "numActiveMembers", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "comment", Type = "string", Nilable = false },
+				{ Name = "guildLeader", Type = "string", Nilable = false },
+				{ Name = "isGuild", Type = "bool", Nilable = false },
+				{ Name = "emblemInfo", Type = "number", Nilable = false },
+				{ Name = "tabardInfo", Type = "ClubFinderGuildTabardInfo", Nilable = true },
+				{ Name = "recruitingSpecIds", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "recruitmentFlags", Type = "number", Nilable = false },
+				{ Name = "minILvl", Type = "number", Nilable = false },
+				{ Name = "cached", Type = "number", Nilable = false },
+				{ Name = "cacheRequested", Type = "number", Nilable = false },
+				{ Name = "lastPosterGUID", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "lastUpdatedTime", Type = "number", Nilable = false },
+				{ Name = "clubForceRemoved", Type = "bool", Nilable = false },
 			},
 		},
 	},

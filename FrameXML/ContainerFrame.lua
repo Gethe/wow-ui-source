@@ -1287,6 +1287,10 @@ function ContainerFrameItemButton_OnClick(self, button)
 			local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
 			AzeriteRespecFrame:SetRespecItem(itemLocation);
 			return;
+		elseif AuctionHouseFrame and AuctionHouseFrame:IsShown() and AuctionHouseFrame:IsListingAuctions() then
+			local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
+			AuctionHouseFrame:SetPostItem(itemLocation);
+			return;
 		elseif ( not BankFrame:IsShown() and (not GuildBankFrame or not GuildBankFrame:IsShown()) and not MailFrame:IsShown() and (not VoidStorageFrame or not VoidStorageFrame:IsShown()) and
 					(not AuctionFrame or not AuctionFrame:IsShown()) and not TradeFrame:IsShown() and (not ItemUpgradeFrame or not ItemUpgradeFrame:IsShown()) and
 					(not ObliterumForgeFrame or not ObliterumForgeFrame:IsShown()) and (not ChallengesKeystoneFrame or not ChallengesKeystoneFrame:IsShown()) ) then
@@ -1464,7 +1468,14 @@ function ContainerFrameItemButtonMixin:GetItemContextMatchResult()
 	return ItemButtonUtil.GetItemContextMatchResultForItem(ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID()));
 end
 
-function ContainerFramePortraitButton_OnEnter(self)
+ContainerFramePortraitButtonMixin = {};
+
+function ContainerFramePortraitButtonMixin:OnMouseDown()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	ToggleDropDownMenu(1, nil, self:GetParent().FilterDropDown, self, 0, 0);
+end
+
+function ContainerFramePortraitButtonMixin:OnEnter()
 	self.Highlight:Show();
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	local waitingOnData = false;
@@ -1514,7 +1525,7 @@ function ContainerFramePortraitButton_OnEnter(self)
 	GameTooltip:Show();
 end
 
-function ContainerFramePortraitButton_OnLeave(self)
+function ContainerFramePortraitButtonMixin:OnLeave()
 	self.Highlight:Hide();
 	GameTooltip_Hide();
 end

@@ -14,7 +14,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Texture parentKey="left" name="$parentLeft" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -27,7 +27,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Texture parentKey="right" name="$parentRight" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -45,8 +45,8 @@
 								<AbsDimension x="10" y="20"/>
 							</Size>
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
-								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+								<Anchor point="LEFT" relativeKey="$parent.left" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeKey="$parent.right" relativePoint="LEFT"/>
 							</Anchors>
 							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
 						</Texture>
@@ -83,11 +83,11 @@
 						if ( IsShiftKeyDown() and self:GetParent().previousFocus ) then
 							self:GetParent().previousFocus:SetFocus();
 						else
-							_G[self:GetParent():GetName().."Silver"]:SetFocus();
+							self:GetParent().silver:SetFocus();
 						end
 					</OnTabPressed>
 					<OnEnterPressed>
-						_G[self:GetParent():GetName().."Silver"]:SetFocus();
+						self:GetParent().silver:SetFocus();
 					</OnEnterPressed>
 					<OnEscapePressed>
 						EditBox_ClearFocus(self);
@@ -109,7 +109,7 @@
 					<AbsDimension x="48" y="20"/>
 				</Size>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentGold" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeKey="$parent.gold" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="10" y="0"/>
 						</Offset>
@@ -117,7 +117,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Texture parentKey="left" name="$parentLeft" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -130,7 +130,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Texture parentKey="right" name="$parentRight" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -148,8 +148,8 @@
 								<AbsDimension x="10" y="20"/>
 							</Size>
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
-								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+								<Anchor point="LEFT" relativeKey="$parent.left" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeKey="$parent.right" relativePoint="LEFT"/>
 							</Anchors>
 							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
 						</Texture>
@@ -180,14 +180,18 @@
 				</Layers>
 				<Scripts>
 					<OnTabPressed>
-						if ( IsShiftKeyDown() ) then
-							_G[self:GetParent():GetName().."Gold"]:SetFocus();
+						if ( IsShiftKeyDown() or not self:GetParent().copper:IsShown() ) then
+							self:GetParent().gold:SetFocus();
 						else
-							_G[self:GetParent():GetName().."Copper"]:SetFocus();
+							self:GetParent().copper:SetFocus();
 						end
 					</OnTabPressed>
 					<OnEnterPressed>
-						_G[self:GetParent():GetName().."Copper"]:SetFocus();
+						if ( not self:GetParent().copper:IsShown() ) then
+							self:GetParent().gold:SetFocus();
+						else
+							self:GetParent().copper:SetFocus();
+						end
 					</OnEnterPressed>
 					<OnEscapePressed>
 						EditBox_ClearFocus(self);
@@ -209,7 +213,7 @@
 					<AbsDimension x="48" y="20"/>
 				</Size>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentSilver" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeKey="$parent.silver" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="0" y="0"/>
 						</Offset>
@@ -217,7 +221,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Texture parentKey="left" name="$parentLeft" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -230,7 +234,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Texture parentKey="right" name="$parentRight" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -248,8 +252,8 @@
 								<AbsDimension x="10" y="20"/>
 							</Size>
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
-								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+								<Anchor point="LEFT" relativeKey="$parent.left" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeKey="$parent.right" relativePoint="LEFT"/>
 							</Anchors>
 							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
 						</Texture>
@@ -281,7 +285,7 @@
 				<Scripts>
 					<OnTabPressed>
 						if ( IsShiftKeyDown() ) then
-							_G[self:GetParent():GetName().."Silver"]:SetFocus();
+							self:GetParent().silver:SetFocus();
 						else
 							if ( self:GetParent().nextFocus ) then
 								self:GetParent().nextFocus:SetFocus();
@@ -351,5 +355,67 @@
 				</FontString>
 			</Layer>
 		</Layers>
+	</Frame>
+
+	<EditBox name="LargeMoneyInputBoxTemplate" mixin="LargeMoneyInputBoxMixin" inherits="LargeInputBoxTemplate" numeric="true" autoFocus="false" virtual="true">
+		<!-- iconAtlas: The atlas to use for the money icon.
+		<KeyValues>
+			<KeyValue key="iconAtlas" value="auctionhouse-icon-coin-gold" type="string"/>
+		</KeyValues>
+		-->
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size  x="12" y="14"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="-10" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnTextChanged method="OnTextChanged"/>
+		</Scripts>
+	</EditBox>
+
+	<Frame name="LargeMoneyInputFrameTemplate" mixin="LargeMoneyInputFrameMixin" virtual="true">
+		<!-- hideCopper: Hide the copper display for this input frame.
+		<KeyValues>
+			<KeyValue key="hideCopper" value="true" type="boolean"/>
+		</KeyValues>
+		-->
+		<Frames>
+			<EditBox parentKey="CopperBox" letters="2" inherits="LargeMoneyInputBoxTemplate">
+				<KeyValues>
+					<KeyValue key="iconAtlas" value="auctionhouse-icon-coin-copper" type="string"/>
+				</KeyValues>
+				<Size x="50" y="33"/>
+				<Anchors>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+			</EditBox>
+			<EditBox parentKey="SilverBox" letters="2" inherits="LargeMoneyInputBoxTemplate">
+				<KeyValues>
+					<KeyValue key="iconAtlas" value="auctionhouse-icon-coin-silver" type="string"/>
+				</KeyValues>
+				<Size x="50" y="33"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.CopperBox" relativePoint="LEFT" x="-6" y="0"/>
+				</Anchors>
+			</EditBox>
+			<EditBox parentKey="GoldBox" letters="7" inherits="LargeMoneyInputBoxTemplate">
+				<KeyValues>
+					<KeyValue key="iconAtlas" value="auctionhouse-icon-coin-gold" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT" relativeKey="$parent.SilverBox" relativePoint="LEFT" x="-6" y="0"/>
+				</Anchors>
+			</EditBox>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 </Ui>

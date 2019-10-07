@@ -322,13 +322,13 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="CalendarFilterButton">
+					<DropDownToggleButton name="CalendarFilterButton">
 						<Size x="20" y="20"/>
 						<Anchors>
 							<Anchor point="RIGHT"/>
 						</Anchors>
 						<Scripts>
-							<OnClick function="CalendarFilterButton_OnClick"/>
+							<OnMouseDown function="CalendarFilterButton_OnMouseDown"/>
 						</Scripts>
 						<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
 							<Size x="20" y="20"/>
@@ -354,7 +354,7 @@
 								<Anchor point="RIGHT" x="3" y="0"/>
 							</Anchors>
 						</HighlightTexture>
-					</Button>
+					</DropDownToggleButton>
 				</Frames>
 			</Frame>
 			<Frame name="CalendarFilterDropDown" inherits="UIDropDownMenuTemplate" hidden="true">

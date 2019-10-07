@@ -47,7 +47,7 @@ function QuestLogMixin:UpdatePOIs()
 	if self:SyncQuestSystemWithCurrentMap() then
 		QuestMapUpdateAllQuests();
 		QuestPOIUpdateIcons();
-		QuestObjectiveTracker_UpdatePOIs();
+		ObjectiveTracker_UpdatePOIs();
 	end
 end
 

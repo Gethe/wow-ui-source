@@ -956,6 +956,8 @@ function WorldQuestCompleteAlertFrame_SetUp(frame, questData)
 
 	frame.QuestTexture:SetTexture(questData.icon);
 
+	frame.ToastText:SetText(questData.displayAsObjective and TOAST_OBJECTIVE_COMPLETE or WORLD_QUEST_COMPLETE);
+
 	ResetRewardFrames(frame);
 
 	if questData.money > 0 then

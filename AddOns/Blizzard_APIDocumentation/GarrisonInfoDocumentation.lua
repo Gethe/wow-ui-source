@@ -39,6 +39,34 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "GetGarrisonTalentTreeCurrencyTypes",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "garrTalentTreeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "garrTalentTreeCurrencyType", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetGarrisonTalentTreeType",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "garrTalentTreeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "garrTalentTreeType", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTalentTreeIDsByClassID",
 			Type = "Function",
 
@@ -477,6 +505,7 @@ local GarrisonInfo =
 			Payload =
 			{
 				{ Name = "garrisonTypeID", Type = "number", Nilable = false },
+				{ Name = "garrisonTalentTreeID", Type = "number", Nilable = false },
 			},
 		},
 		{

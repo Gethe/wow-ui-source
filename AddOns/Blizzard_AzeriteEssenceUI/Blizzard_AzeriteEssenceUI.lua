@@ -70,15 +70,19 @@ local AZERITE_ESSENCE_FRAME_EVENTS = {
 
 local MILESTONE_LOCATIONS = {
 	[1] = { left = 237, top = -235 },
-	[2] = { left = 100, top = -203 },
-	[3] = { left = 117, top = -310 },
-	[4] = { left = 242, top = -376 },
-	[5] = { left = 362, top = -301 },
-	[6] = { left = 356, top = -160 },	
-	[7] = { left = 232, top = -94 },
+	[2] = { left = 100, top = -280 },
+	[3] = { left = 140, top = -350 },
+	[4] = { left = 235, top = -380 },
+	[5] = { left = 320, top = -355 },
+	[6] = { left = 370, top = -280 },	
+	[7] = { left = 370, top = -185 },
+	[8] = { left = 320, top = -115 },
+	[9] = { left = 240, top = -94 },
+	[10] = { left = 150, top = -115 },
+	[11] = { left = 100, top = -185 },
 };
 
-local LOCKED_RUNE_ATLASES = { "heartofazeroth-slot-minor-unlearned-bottomleft", "heartofazeroth-slot-minor-unlearned-topright" };
+local LOCKED_RUNE_ATLASES = { "heartofazeroth-slot-minor-unlearned-bottomleft", "heartofazeroth-slot-minor-unlearned-topright", "heartofazeroth-slot-minor-unlearned-3" };
 
 function AzeriteEssenceUIMixin:OnLoad()
 	CallbackRegistryBaseMixin.OnLoad(self);

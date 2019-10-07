@@ -97,6 +97,12 @@ RACE_ICON_TCOORDS = {
 
 	["KULTIRAN_MALE"]		= {0, 0.125, 0, 0.25},
 	["KULTIRAN_FEMALE"]		= {0, 0.125, 0.5, 0.75},
+	
+	["VULPERA_MALE"]		= {0.629, 0.750, 0.25, 0.5},
+	["VULPERA_FEMALE"]	= {0.629, 0.750, 0.75, 1.0},
+
+	["MECHAGNOME_MALE"]		= {0.25, 0.375, 0, 0.25},
+	["MECHAGNOME_FEMALE"]	= {0.25, 0.375, 0.5, 0.75},	
 };
 
 CHARCREATE_CLASS_TOOLTIP = {};
@@ -222,6 +228,8 @@ MODEL_CAMERA_CONFIG = {
 		["MagharOrc"] = { tx = -0.0322, ty = -0.0771, tz = 2.114, cz = 2.030, distance = 1.200, light =  0.75 },
 		["ZandalariTroll"] = { tx = -0.01642, ty = -0.082216, tz = 2.5657, cz = 2.418, distance = 1.2, light =  0.85 },
 		["KulTiran"] = { tx = 0.05591, ty = -0.04111, tz = 2.3603, cz = 2.23827, distance = 1.2, light =  0.75 },
+		["Vulpera"] = { tx = 0.127, ty = -0.022, tz = 1.104, cz = 1.009, distance = 0.830, light =  0.80 },
+		["Mechagnome"] = { tx = -0.069, ty = -0.007, tz = 0.986, cz = 0.895, distance = 1.086, light =  0.85 },
 	},
 	[1] = {		-- female
 		["Draenei"] = { tx = 0.155, ty = 0.009, tz = 2.177, cz = 1.971, distance = 0.734, light =  0.75 },
@@ -256,6 +264,8 @@ MODEL_CAMERA_CONFIG = {
 		["MagharOrc"] = { tx = -0.069, ty = -0.007, tz = 1.863, cz = 1.718, distance = 0.585, light =  0.75 },
 		["ZandalariTroll"] = { tx = 0.09207, ty = -0.061662, tz = 2.52246, cz = 2.418, distance = 0.9324, light =  0.75 },
 		["KulTiran"] = { tx = -0.069, ty = -0.006851, tz = 2.230568, cz = 2.12476, distance = 1.14324, light =  0.75 },
+		["Vulpera"] = { tx = -0.076, ty = 0.006, tz = 1.191, cz = 1.137, distance = 0.970, light =  0.80 },
+		["Mechagnome"] = { tx = -0.080, ty = 0.007, tz = 0.946, cz = 0.855, distance = 0.932, light =  0.85 },
 	}
 };
 
@@ -2153,6 +2163,9 @@ function CharCreateRaceButton_OnEnter(self)
 				for i, requirement in ipairs(requirements) do
 					CharacterCreateTooltip:AddLine(string.format(DASH_WITH_TEXT, requirement), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true, INDENTED_WORD_WRAP);
 				end
+				local _, internalFaction = C_CharacterCreation.GetFactionForRace(self.raceID);
+				local embassy = internalFaction == "Horde" and CHAR_CREATE_HORDE_EMBASSY or CHAR_CREATE_ALLIANCE_EMBASSY;
+				CharacterCreateTooltip:AddLine(string.format(DASH_WITH_TEXT, embassy), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true, INDENTED_WORD_WRAP);
 			end
 		end	
 	end

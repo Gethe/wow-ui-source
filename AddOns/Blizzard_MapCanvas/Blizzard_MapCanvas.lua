@@ -43,7 +43,10 @@ function MapCanvasMixin:OnFrameSizeChanged()
 end
 
 function MapCanvasMixin:GetMapID()
-	return self.mapID;
+	-- normally the mapID is set in OnShow, however if the player has never opened the quest log or the map, and then
+	-- hides the UI, and while the UI is hidden opens the quest log, mapID will be nil and we get a lua error.
+	-- under these very rare circumstances, dig out the diplayable mapID.
+	return self.mapID or MapUtil.GetDisplayableMapForPlayer();
 end
 
 function MapCanvasMixin:SetMapInsetPool(mapInsetPool)

@@ -228,10 +228,27 @@ function UIWidgetBaseSpellTemplateMixin:Setup(spellInfo, enabledState, width)
 	local iconSize = GetIconSize(spellInfo.iconSizeType);
 	self.Icon:SetSize(iconSize, iconSize);
 
+	local iconWidth = self.Icon:GetWidth() + 5;
+	local textWidth = 0;
+	if width > iconWidth then
+		textWidth = width - iconWidth;
+	end
+
+	self.Text:SetWidth(textWidth);
+	self.Text:SetHeight(0);
+
 	if spellInfo.text ~= "" then
 		self.Text:SetText(spellInfo.text);
 	else
 		self.Text:SetText(name);
+	end
+
+	if textWidth == 0 then
+		textWidth = self.Text:GetWidth();
+	end
+
+	if self.Text:GetHeight() < self.Icon:GetHeight() then
+		self.Text:SetHeight(self.Icon:GetHeight());
 	end
 
 	if spellInfo.stackDisplay > 0 then
@@ -244,21 +261,14 @@ function UIWidgetBaseSpellTemplateMixin:Setup(spellInfo, enabledState, width)
 	self.Border:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Buff);
 	self.DebuffBorder:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Debuff);
 
-	local iconWidth = self.Icon:GetWidth() + 5;
-	local textWidth;
-	if width > 0 then
-		textWidth = width - iconWidth;
-	else
-		textWidth = self.Text:GetStringWidth();
-	end
+	local widgetHeight = math.max(self.Icon:GetHeight(), self.Text:GetHeight());
 
-	self.Text:SetWidth(textWidth);
 	self:SetEnabledState(enabledState);
 	self.spellID = spellInfo.spellID;
 	self:SetTooltip(spellInfo.tooltip);
 
-	self:SetWidth(iconWidth + textWidth);
-	self:SetHeight(self.Icon:GetHeight());
+	self:SetWidth(math.max(iconWidth + textWidth, 1));
+	self:SetHeight(math.max(widgetHeight, 1));
 end
 
 function UIWidgetBaseSpellTemplateMixin:OnEnter()

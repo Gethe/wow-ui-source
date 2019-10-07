@@ -6,6 +6,15 @@ local WowTokenUI =
 
 	Functions =
 	{
+		{
+			Name = "StartTokenSell",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "tokenGUID", Type = "string", Nilable = false },
+			},
+		},
 	},
 
 	Events =

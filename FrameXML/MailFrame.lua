@@ -511,10 +511,15 @@ function OpenMail_Update()
 	-- Is an invoice
 	if ( isInvoice ) then
 		local invoiceType, itemName, playerName, bid, buyout, deposit, consignment, moneyDelay, etaHour, etaMin, count, commerceAuction = GetInboxInvoiceInfo(InboxFrame.openMailID);
-		if ( playerName ) then
+		if ( invoiceType ) then
+			if ( not playerName ) then
+				playerName = (invoiceType == "buyer") and AUCTION_HOUSE_MAIL_MULTIPLE_SELLERS or AUCTION_HOUSE_MAIL_MULTIPLE_BUYERS;
+			end
+
 			-- Setup based on whether player is the buyer or the seller
 			local buyMode;
-			if ( count and count > 1 ) then
+			local multipleSale = count and count > 1;
+			if ( multipleSale ) then
 				itemName = format(AUCTION_MAIL_ITEM_STACK, itemName, count);
 			end
 			OpenMailInvoicePurchaser:SetShown(not commerceAuction);
@@ -553,9 +558,15 @@ function OpenMail_Update()
 				else
 					OpenMailInvoiceBuyMode:SetText("("..HIGH_BIDDER..")");
 				end
+
+				OpenMailSalePriceMoneyFrame.Count:SetShown(multipleSale);
+				if ( multipleSale ) then
+					OpenMailSalePriceMoneyFrame.Count:SetText(AUCTION_HOUSE_MAIL_FORMAT_COUNT:format(count));
+				end
+
 				-- Position buy line
 				OpenMailArithmeticLine:SetPoint("TOP", "OpenMailInvoiceHouseCut", "BOTTOMRIGHT", -114, -9);
-				MoneyFrame_Update("OpenMailSalePriceMoneyFrame", bid);
+				MoneyFrame_Update("OpenMailSalePriceMoneyFrame", multipleSale and (bid / count) or bid);
 				MoneyFrame_Update("OpenMailDepositMoneyFrame", deposit);
 				MoneyFrame_Update("OpenMailHouseCutMoneyFrame", consignment);
 				SetMoneyFrameColor("OpenMailHouseCutMoneyFrame", "red");

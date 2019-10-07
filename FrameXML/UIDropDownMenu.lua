@@ -134,39 +134,9 @@ function UIDropDownMenu_OnUpdate(self, elapsed)
 		UIDropDownMenu_RefreshDropDownSize(self);
 		self.shouldRefresh = false;
 	end
-
-	if ( not self.showTimer or not self.isCounting ) then
-		return;
-	elseif ( self.showTimer < 0 ) then
-		self:Hide();
-		self.showTimer = nil;
-		self.isCounting = nil;
-	else
-		self.showTimer = self.showTimer - elapsed;
-	end
-end
-
--- Start the countdown on a frame
-function UIDropDownMenu_StartCounting(frame)
-	if ( frame.parent ) then
-		UIDropDownMenu_StartCounting(frame.parent);
-	else
-		frame.showTimer = UIDROPDOWNMENU_SHOW_TIME;
-		frame.isCounting = 1;
-	end
-end
-
--- Stop the countdown on a frame
-function UIDropDownMenu_StopCounting(frame)
-	if ( frame.parent ) then
-		UIDropDownMenu_StopCounting(frame.parent);
-	else
-		frame.isCounting = nil;
-	end
 end
 
 function UIDropDownMenuButtonInvisibleButton_OnEnter(self)
-	UIDropDownMenu_StopCounting(self:GetParent():GetParent());
 	CloseDropDownMenus(self:GetParent():GetParent():GetID() + 1);
 	local parent = self:GetParent();
 	if ( parent.tooltipTitle and parent.tooltipWhileDisabled) then
@@ -188,7 +158,6 @@ function UIDropDownMenuButtonInvisibleButton_OnEnter(self)
 end
 
 function UIDropDownMenuButtonInvisibleButton_OnLeave(self)
-	UIDropDownMenu_StartCounting(self:GetParent():GetParent());
 	GameTooltip:Hide();
 end
 
@@ -203,7 +172,6 @@ function UIDropDownMenuButton_OnEnter(self)
 		CloseDropDownMenus(self:GetParent():GetID() + 1);
 	end
 	self.Highlight:Show();
-	UIDropDownMenu_StopCounting(self:GetParent());
 	if ( self.tooltipTitle and not self.noTooltipWhileEnabled ) then
 		if ( self.tooltipOnButton ) then
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -223,7 +191,6 @@ end
 
 function UIDropDownMenuButton_OnLeave(self)
 	self.Highlight:Hide();
-	UIDropDownMenu_StartCounting(self:GetParent());
 	GameTooltip:Hide();
 
 	if ( self.mouseOverIcon ~= nil ) then
@@ -335,6 +302,18 @@ function UIDropDownMenu_AddSeparator(level)
 	};
 
 	UIDropDownMenu_AddButton(separatorInfo, level);
+end
+
+function UIDropDownMenu_AddSpace(level)
+	local spaceInfo = {
+		hasArrow = false,
+		dist = 0,
+		isTitle = true,
+		isUninteractable = true,
+		notCheckable = true,
+	};
+
+	UIDropDownMenu_AddButton(spaceInfo, level);
 end
 
 function UIDropDownMenu_AddButton(info, level)
@@ -1140,11 +1119,6 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 			listFrame.parentID = anchorFrame:GetID();
 			listFrame:SetPoint(point, anchorFrame, relativePoint, xOffset, yOffset);
 		end
-
-		if ( autoHideDelay and tonumber(autoHideDelay)) then
-			listFrame.showTimer = autoHideDelay;
-			listFrame.isCounting = 1;
-		end
 	end
 end
 
@@ -1157,10 +1131,43 @@ function CloseDropDownMenus(level)
 	end
 end
 
+local function UIDropDownMenu_ContainsMouse()
+	for i = 1, UIDROPDOWNMENU_MAXLEVELS do
+		local dropdown = _G["DropDownList"..i];
+		if dropdown:IsShown() and dropdown:IsMouseOver() then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+function UIDropDownMenu_HandleGlobalMouseEvent(button, event)
+	if event == "GLOBAL_MOUSE_DOWN" and (button == "LeftButton" or button == "RightButton") then
+		if not UIDropDownMenu_ContainsMouse() then
+			CloseDropDownMenus();
+		end
+	end
+end
+
 function UIDropDownMenu_OnShow(self)
 	if ( self.onShow ) then
 		self.onShow();
 		self.onShow = nil;
+	end
+
+	for i=1, UIDROPDOWNMENU_MAXBUTTONS do
+		if (not self.noResize) then
+			_G[self:GetName().."Button"..i]:SetWidth(self.maxWidth);
+		end
+	end
+
+	if (not self.noResize) then
+		self:SetWidth(self.maxWidth+25);
+	end
+
+	if ( self:GetID() > 1 ) then
+		self.parent = _G["DropDownList"..(self:GetID() - 1)];
 	end
 end
 

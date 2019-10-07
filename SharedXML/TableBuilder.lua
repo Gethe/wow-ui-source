@@ -16,6 +16,42 @@ end
 function TableBuilderElementMixin:Populate(rowData, dataIndex)
 end
 
+TableBuilderCellMixin = CreateFromMixins(TableBuilderElementMixin);
+
+--Derive
+function TableBuilderCellMixin:OnLineEnter()
+end
+
+--Derive
+function TableBuilderCellMixin:OnLineLeave()
+end
+
+
+TableBuilderRowMixin = CreateFromMixins(TableBuilderElementMixin);
+
+--Derive
+function TableBuilderRowMixin:OnLineEnter()
+end
+
+--Derive
+function TableBuilderRowMixin:OnLineLeave()
+end
+
+
+function TableBuilderRowMixin:OnEnter()
+	self:OnLineEnter();
+	for i, cell in ipairs(self.cells) do
+		cell:OnLineEnter();
+	end
+end
+
+function TableBuilderRowMixin:OnLeave()
+	self:OnLineLeave();
+	for i, cell in ipairs(self.cells) do
+		cell:OnLineLeave();
+	end
+end
+
 -- Defines an entire column within the table builder, by default a column's sizing constraints are set to fill.
 TableBuilderColumnMixin = {};
 function TableBuilderColumnMixin:Init(table)
@@ -69,6 +105,15 @@ function TableBuilderColumnMixin:SetPadding(padding)
 	self.padding = padding;
 end
 
+function TableBuilderColumnMixin:GetCellPadding()
+	return self.leftCellPadding or 0, self.rightCellPadding or 0;
+end
+
+function TableBuilderColumnMixin:SetCellPadding(leftCellPadding, rightCellPadding)
+	self.leftCellPadding = leftCellPadding;
+	self.rightCellPadding = rightCellPadding;
+end
+
 function TableBuilderColumnMixin:GetHeaderFrame()
 	return self.headerFrame;
 end
@@ -115,13 +160,32 @@ function TableBuilderColumnMixin:GetCalculatedWidth()
 	return self.calculatedWidth;
 end
 
+function TableBuilderColumnMixin:GetCellWidth()
+	local leftCellPadding, rightCellPadding = self:GetCellPadding();
+	return (self.calculatedWidth - leftCellPadding) - rightCellPadding;
+end
+
+function TableBuilderColumnMixin:GetFullWidth()
+	return self:GetCalculatedWidth() + self:GetPadding();
+end
+
+function TableBuilderColumnMixin:SetDisplayUnderPreviousHeader(displayUnderPreviousHeader)
+	self.displayUnderPreviousHeader = displayUnderPreviousHeader;
+end
+
+function TableBuilderColumnMixin:GetDisplayUnderPreviousHeader()
+	return self.displayUnderPreviousHeader;
+end
+
 -- Constructs a table of frames within an existing set of row frames. These row frames could originate from
 -- a hybrid scroll frame or statically fixed set. To populate the table, assign a data provider (CAPI or lua function)
 -- that can retrieve an object by index (number).
 TableBuilderMixin = {};
 function TableBuilderMixin:Init(rows)
 	self.columns = {};
-	self.tableMargins = 0;
+	self.leftMargin = 0;
+	self.rightMargin = 0;
+	self.columnHeaderOverlap = 0;
 	self.tableWidth = 0;
 	self.headerPoolCollection = CreateFramePoolCollection();
 	self:SetRows(rows);
@@ -141,8 +205,15 @@ function TableBuilderMixin:GetDataProviderData(dataIndex)
 end
 
 -- Controls the margins of the left-most and right-most columns within the table.
-function TableBuilderMixin:SetTableMargins(tableMargins)
-	self.tableMargins = tableMargins;
+function TableBuilderMixin:SetTableMargins(leftMargin, rightMargin)
+	rightMargin = rightMargin or leftMargin; -- Use leftMargin as the default for both.
+	self.leftMargin = leftMargin;
+	self.rightMargin = rightMargin;
+end
+
+-- Column headers overlap to make a consistent display.
+function TableBuilderMixin:SetColumnHeaderOverlap(columnHeaderOverlap)
+	self.columnHeaderOverlap = columnHeaderOverlap;
 end
 
 -- Can be used to set the table width, particularly if no header frames are involved.
@@ -155,7 +226,11 @@ function TableBuilderMixin:GetTableWidth()
 end
 
 function TableBuilderMixin:GetTableMargins()
-	return self.tableMargins;
+	return self.leftMargin, self.rightMargin;
+end
+
+function TableBuilderMixin:GetColumnHeaderOverlap()
+	return self.columnHeaderOverlap;
 end
 
 function TableBuilderMixin:GetColumns()
@@ -206,8 +281,10 @@ function TableBuilderMixin:GetRows()
 end
 
 function TableBuilderMixin:ConstructHeader(templateType, template)
+	local headerContainer = self:GetHeaderContainer();
+	assert(headerContainer ~= nil, "A header container must be set with TableBuilderMixin:SetHeaderContainer before adding column headers.")
 	local headerPoolCollection = self:GetHeaderPoolCollection();
-	local pool = headerPoolCollection:GetOrCreatePool(templateType, self:GetHeaderContainer(), template);
+	local pool = headerPoolCollection:GetOrCreatePool(templateType, headerContainer, template);
 	return pool:Acquire(template);
 end
 
@@ -250,8 +327,8 @@ function TableBuilderMixin:Populate(offset, count)
 		if row then
 			-- Data is assigned to the rows and elements so they can
 			-- access it later in tooltips.
+			row.rowData = rowData;
 			if row.Populate then
-				row.rowData = rowData;
 				row:Populate(rowData, dataIndex);
 			end
 
@@ -300,8 +377,8 @@ function TableBuilderMixin:CalculateColumnSpacing()
 	end
 
 	local tableWidth = self:GetTableWidth();
-	local tableMargins = self:GetTableMargins();
-	local fillWidthTotal = tableWidth - paddingTotal - (tableMargins*2) - fixedWidthTotal;
+	local leftMargin, rightMargin = self:GetTableMargins();
+	local fillWidthTotal = tableWidth - paddingTotal - (leftMargin + rightMargin) - fixedWidthTotal;
 	for k, column in pairs(columns) do
 		if fillCoefficientTotal > 0 and column:GetWidthConstraints() == ColumnWidthConstraints.Fill then
 			local fillRatio = column:GetFillCoefficient() / fillCoefficientTotal;
@@ -321,33 +398,69 @@ function TableBuilderMixin:ArrangeHorizontally(frame, relativeTo, width, pointTo
 end
 
 function TableBuilderMixin:ArrangeHeaders()
-	-- No use case for a mixed presence of headers, yet.
+	local headerOverlap = self:GetColumnHeaderOverlap();
+	local leftMargin, rightMargin = self:GetTableMargins();
 	local columns = self:GetColumns();
-	for k, column in pairs(columns) do
-		if not column:GetHeaderFrame() then
-			return;
+
+	-- Any trailing columns without headers should add to the width of the last column with a header.
+	local numColumns = #columns;
+	local lastActiveHeaderIndex = numColumns;
+	local trailingWidth = 0;
+	for i, column in ipairs(columns) do
+		if column:GetHeaderFrame() then
+			trailingWidth = 0;
+			lastActiveHeaderIndex = i;
+		else
+			trailingWidth = trailingWidth + column:GetFullWidth();
 		end
 	end
 
-	local column = columns[1];
-	local frame = column:GetHeaderFrame();
-	local parent = frame:GetParent();
-	self:ArrangeHorizontally(frame, parent, column:GetCalculatedWidth(), "TOPLEFT", "TOPLEFT", "BOTTOMLEFT", "BOTTOMLEFT", self:GetTableMargins());
+	local previousHeader = nil;
+	local accumulatedWidth = 0;
+	local columnIndex = 1;
 
-	local previousColumn = column;
-	for columnIndex = 2, #columns do
-		column = columns[columnIndex];
-		frame = column:GetHeaderFrame();
-		parent = previousColumn:GetHeaderFrame();
-		
-		self:ArrangeHorizontally(frame, parent, column:GetCalculatedWidth(), "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT", column:GetPadding());
-		previousColumn = column;
+	while columnIndex <= numColumns do
+		local column = columns[columnIndex];
+		accumulatedWidth = accumulatedWidth + column:GetCalculatedWidth();
+
+		local isLastIndex = columnIndex == lastActiveHeaderIndex;
+		local header = column:GetHeaderFrame();
+		if header then
+			if isLastIndex then
+				accumulatedWidth = accumulatedWidth + trailingWidth;
+			else
+				for j = columnIndex + 1, #columns do
+					local nextColumn = columns[j];
+					if nextColumn:GetDisplayUnderPreviousHeader() then
+						columnIndex = columnIndex + 1;
+						accumulatedWidth = accumulatedWidth + nextColumn:GetFullWidth();
+					else
+						break;
+					end
+				end
+			end
+
+			if previousHeader == nil then
+				self:ArrangeHorizontally(header, header:GetParent(), accumulatedWidth, "TOPLEFT", "TOPLEFT", "BOTTOMLEFT", "BOTTOMLEFT", leftMargin);
+			else
+				self:ArrangeHorizontally(header, previousHeader, accumulatedWidth + headerOverlap, "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT", column:GetPadding() - headerOverlap);
+			end
+
+			accumulatedWidth = 0;
+			previousHeader = header;
+		end
+
+		if isLastIndex then
+			break;
+		end
+
+		columnIndex = columnIndex + 1;
 	end
 end
 
 function TableBuilderMixin:ArrangeCells()
 	local columns = self:GetColumns();
-	local tableMargins = self:GetTableMargins();
+	local leftMargin, rightMargin = self:GetTableMargins();
 	for rowIndex, row in ipairs(self:GetRows()) do
 		local cells = {};
 		local height = row:GetHeight();
@@ -356,24 +469,31 @@ function TableBuilderMixin:ArrangeCells()
 		local cell = column:GetCellByRowIndex(rowIndex);
 		tinsert(cells, cell);
 		cell:SetHeight(height);
+		local leftCellPadding, rightCellPadding = column:GetCellPadding();
 		
-		self:ArrangeHorizontally(cell, row, column:GetCalculatedWidth(), "TOPLEFT", "TOPLEFT", "BOTTOMLEFT", "BOTTOMLEFT", tableMargins);
+		self:ArrangeHorizontally(cell, row, column:GetCellWidth(), "TOPLEFT", "TOPLEFT", "BOTTOMLEFT", "BOTTOMLEFT", leftMargin + leftCellPadding);
 		
 		local previousCell = cell;
+		local previousRightCellPadding = rightCellPadding;
 		for columnIndex = 2, #columns do
 			column = columns[columnIndex];
 			cell = column:GetCellByRowIndex(rowIndex);
 			tinsert(cells, cell);
 			cell:SetHeight(height);
+			leftCellPadding, rightCellPadding = column:GetCellPadding();
 
-			self:ArrangeHorizontally(cell, previousCell, column:GetCalculatedWidth(), "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT", column:GetPadding());
+			self:ArrangeHorizontally(cell, previousCell, column:GetCellWidth(), "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT", column:GetPadding() + leftCellPadding + previousRightCellPadding);
 			previousCell = cell;
+			previousRightCellPadding = rightCellPadding;
 		end
 
 		row.cells = cells;
 	end
 end
 
-function CreateTableBuilder(rows)
-	return CreateAndInitFromMixin(TableBuilderMixin, rows);
+-- ... are additional mixins
+function CreateTableBuilder(rows, ...)
+	local tableBuilder = CreateAndInitFromMixin(TableBuilderMixin, rows);
+	Mixin(tableBuilder, ...);
+	return tableBuilder;
 end

@@ -120,7 +120,7 @@ function QuestBlobPinMixin:OnUpdate()
 end
 
 function QuestBlobPinMixin:TryDrawQuest(questID)
-	if questID and questID > 0 and (self.dataProvider:IsShowingWorldQuests() or not QuestUtils_IsQuestWorldQuest(questID)) and not QuestUtils_IsQuestBonusObjective(questID) then
+	if questID and questID > 0 and (self.dataProvider:IsShowingWorldQuests() or not QuestUtils_IsQuestWorldQuest(questID)) and (C_QuestLog.IsThreatQuest(questID) or not QuestUtils_IsQuestBonusObjective(questID)) then
 		self:DrawBlob(questID, true);
 	end
 end
@@ -191,12 +191,22 @@ function QuestBlobPinMixin:UpdateTooltip()
 		return;
 	end
 
-	local title, _, _, _, _, _, _, questID = GetQuestLogTitle(questLogIndex);
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT", 5, 2);
+
+	local title, _, _, _, _, _, _, questID = GetQuestLogTitle(questLogIndex);
+	local numObjectives = GetNumQuestLeaderBoards(questLogIndex);
+	self.questID = questID;
+	self.numObjectives = numObjectives;
+
+	if C_QuestLog.IsThreatQuest(questID) then
+		local skipSetOwner = true;
+		TaskPOI_OnEnter(self, skipSetOwner);
+		return;
+	end
+
 	GameTooltip:SetText(title);
 	QuestUtils_AddQuestTypeToTooltip(GameTooltip, questID, NORMAL_FONT_COLOR);
 
-	local numObjectives = GetNumQuestLeaderBoards(questLogIndex);
 	for i = 1, numObjectives do
 		local text, objectiveType, finished;
 

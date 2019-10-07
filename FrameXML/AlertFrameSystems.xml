@@ -2253,7 +2253,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString inherits="GameFontWhiteTiny" text="WORLD_QUEST_COMPLETE">
+				<FontString parentKey="ToastText" inherits="GameFontWhiteTiny" text="WORLD_QUEST_COMPLETE">
 					<Size x="200" y="12"/>
 					<Anchors>
 						<Anchor point="TOP" x="25" y="-29"/>

@@ -272,15 +272,7 @@ local function EnumQuestWatchData(func)
 	end
 end
 
-function QuestObjectiveTracker_UpdatePOIs()
-	QuestPOI_ResetUsage(ObjectiveTrackerFrame.BlocksFrame);
-
-	local showPOIs = GetCVarBool("questPOI");
-	if ( not showPOIs ) then
-		QuestPOI_HideUnusedButtons(ObjectiveTrackerFrame.BlocksFrame);
-		return;
-	end
-
+function QUEST_TRACKER_MODULE:UpdatePOIs()
 	local playerMoney = GetMoney();
 	local numPOINumeric = 0;
 
@@ -315,9 +307,6 @@ function QuestObjectiveTracker_UpdatePOIs()
 			return false;
 		end
 	);
-
-	QuestPOI_SelectButtonByQuestID(ObjectiveTrackerFrame.BlocksFrame, GetSuperTrackedQuestID());
-	QuestPOI_HideUnusedButtons(ObjectiveTrackerFrame.BlocksFrame);
 end
 
 function QuestObjectiveTracker_DoQuestObjectives(block, numObjectives, questCompleted, questSequenced, existingBlock)
@@ -409,20 +398,15 @@ function QUEST_TRACKER_MODULE:Update()
 	QUEST_TRACKER_MODULE:BeginLayout();
 	QUEST_TRACKER_MODULE.lastBlock = nil;
 
-	local numPOINumeric = 0;
-	QuestPOI_ResetUsage(ObjectiveTrackerFrame.BlocksFrame);
-
 	local _, instanceType = IsInInstance();
 	if ( instanceType == "arena" ) then
 		-- no quests in arena
-		QuestPOI_HideUnusedButtons(ObjectiveTrackerFrame.BlocksFrame);
 		QUEST_TRACKER_MODULE:EndLayout();
 		return;
 	end
 
 	local playerMoney = GetMoney();
 	local watchMoney = false;
-	local showPOIs = GetCVarBool("questPOI");
 
 	EnumQuestWatchData(
 		function(questWatchInfoTable)
@@ -522,24 +506,6 @@ function QUEST_TRACKER_MODULE:Update()
 					block.questCompleted = isComplete;
 					block:Show();
 					QUEST_TRACKER_MODULE:FreeUnusedLines(block);
-					-- quest POI icon
-					if ( showPOIs ) then
-						local poiButton;
-						if ( hasLocalPOI or (shouldShowWaypoint and C_QuestLog.GetNextWaypoint(questID) ~= nil) ) then
-							if ( isComplete ) then
-								poiButton = QuestPOI_GetButton(ObjectiveTrackerFrame.BlocksFrame, questID, "normal", nil);
-							else
-								numPOINumeric = numPOINumeric + 1;
-								poiButton = QuestPOI_GetButton(ObjectiveTrackerFrame.BlocksFrame, questID, "numeric", numPOINumeric);
-							end
-						elseif ( isComplete ) then
-							poiButton = QuestPOI_GetButton(ObjectiveTrackerFrame.BlocksFrame, questID, "remote", nil);
-						end
-						if ( poiButton ) then
-							poiButton:SetParent(block);
-							poiButton:SetPoint("TOPRIGHT", block.HeaderText, "TOPLEFT", -6, 2);
-						end
-					end
 				else
 					block.used = false;
 					return true;
@@ -551,7 +517,5 @@ function QUEST_TRACKER_MODULE:Update()
 
 	ObjectiveTracker_WatchMoney(watchMoney, OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST);
 	QuestSuperTracking_CheckSelection();
-	QuestPOI_SelectButtonByQuestID(ObjectiveTrackerFrame.BlocksFrame, GetSuperTrackedQuestID());
-	QuestPOI_HideUnusedButtons(ObjectiveTrackerFrame.BlocksFrame);
 	QUEST_TRACKER_MODULE:EndLayout();
 end

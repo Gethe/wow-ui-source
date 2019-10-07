@@ -299,7 +299,7 @@
 											<OnLoad function="MiniMapTrackingDropDown_OnLoad"/>
 										</Scripts>
 									</Frame>
-									<Button name="$parentButton">
+									<DropDownToggleButton name="$parentButton">
 										<Size x="32" y="32"/>
 										<Anchors>
 											<Anchor point="TOPLEFT"/>
@@ -331,27 +331,13 @@
 												MiniMapTracking_Update();
 											</OnLoad>
 											<OnEvent function="MiniMapTracking_Update"/>
-											<OnClick function="MiniMapTracking_OnClick"/>
-											<OnMouseDown>
-												MiniMapTrackingIcon:SetPoint("TOPLEFT", MiniMapTracking, "TOPLEFT", 8, -8);
-												MiniMapTrackingIconOverlay:Show();
-											</OnMouseDown>
-											<OnMouseUp>
-												MiniMapTrackingIcon:SetPoint("TOPLEFT", MiniMapTracking, "TOPLEFT", 6, -6);
-												MiniMapTrackingIconOverlay:Hide();
-											</OnMouseUp>
-											<OnEnter>
-												GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-												GameTooltip:SetText(TRACKING, 1, 1, 1);
-												GameTooltip:AddLine(MINIMAP_TRACKING_TOOLTIP_NONE, nil, nil, nil, true);
-												GameTooltip:Show();
-											</OnEnter>
-											<OnLeave>
-												GameTooltip:Hide();
-											</OnLeave>
+											<OnMouseDown function="MiniMapTracking_OnMouseDown"/>
+											<OnMouseUp function="MiniMapTracking_OnMouseUp"/>
+											<OnEnter function="MiniMapTracking_OnEnter"/>
+											<OnLeave function="MiniMapTracking_OnLeave"/>
 										</Scripts>
 										<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
-									</Button>
+									</DropDownToggleButton>
 								</Frames>
 							</Frame>
 							<Button name="MinimapZoomIn">

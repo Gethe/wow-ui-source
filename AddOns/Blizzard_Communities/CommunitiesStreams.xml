@@ -291,7 +291,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Button name="AddToChatButtonTemplate" inherits="UIMenuButtonStretchTemplate" mixin="CommunitiesAddToChatMixin" virtual="true">
+	<DropDownToggleButton name="AddToChatButtonTemplate" inherits="UIMenuButtonStretchTemplate" mixin="CommunitiesAddToChatMixin" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture file="Interface\Buttons\SquareButtonTextures" parentKey="icon">
@@ -320,9 +320,9 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnClick method="OnClick"/>
+			<OnMouseDown method="OnMouseDown"/>
 		</Scripts>
-	</Button>
+	</DropDownToggleButton>
 		
 	<Frame name="StreamDropDownMenuTemplate" inherits="UIDropDownMenuTemplate" mixin="CommunitiesStreamDropDownMixin" virtual="true">
 		<Size x="40" y="28"/>

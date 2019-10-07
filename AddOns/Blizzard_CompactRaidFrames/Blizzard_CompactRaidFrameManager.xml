@@ -542,7 +542,7 @@
 									</OnClick>
 								</Scripts>
 							</Button>
-							<Button name="$parentRaidWorldMarkerButton" inherits="UIMenuButtonStretchTemplate">
+							<DropDownToggleButton name="$parentRaidWorldMarkerButton" inherits="UIMenuButtonStretchTemplate">
 								<Size x="40" y="20"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentInitiateReadyCheck" relativePoint="TOPRIGHT" x="0" y="0"/>
@@ -557,10 +557,11 @@
 									</Frame>
 								</Frames>
 								<Scripts>
-									<OnClick>
+									<OnMouseDown>
+										UIMenuButtonStretchMixin.OnMouseDown(self, button);
 										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 										ToggleDropDownMenu(1, nil, self.dropDown, self:GetName(), 0, 0);
-									</OnClick>
+									</OnMouseDown>
 								</Scripts>
 								<NormalTexture parentKey="Icon" file="Interface\RaidFrame\Raid-WorldPing">
 									<Size x="14" y ="14"/>
@@ -568,7 +569,7 @@
 										<Anchor point="CENTER" x="0" y="-1"/>
 									</Anchors>
 								</NormalTexture>
-							</Button>
+							</DropDownToggleButton>
 						</Frames>
 					</Frame>
 					<CheckButton name="$parentEveryoneIsAssistButton" parentKey="everyoneIsAssistButton" hidden="true" inherits="UICheckButtonTemplate">

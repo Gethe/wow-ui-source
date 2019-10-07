@@ -246,7 +246,7 @@ function CommunitiesUtil.OpenInviteDialog(clubId, streamId)
 		if(ClubFinderDoesSelectedClubHaveActiveListing(clubId) and C_ClubFinder.IsEnabled()) then 
 			StaticPopup_Show("ADD_GUILDMEMBER_WITH_FINDER_LINK", nil, nil, {clubId = clubId});
 		else 
-			StaticPopup_Show("ADD_GUILDMEMBER");
+			StaticPopup_Show("ADD_GUILDMEMBER", nil, nil, {clubId = clubId});
 		end 
 	elseif privileges.canCreateTicket then
 		StaticPopup_Show("INVITE_COMMUNITY_MEMBER_WITH_INVITE_LINK", nil, nil, { clubId = clubId, streamId = streamId, });

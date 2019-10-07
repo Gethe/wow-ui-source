@@ -24,6 +24,7 @@ PET_BATTLE_WEATHER_TEXTURES = {
 	--[63] = "Interface\\PetBattles\\Weather-Windy",
 
 	[235] = "Interface\\PetBattles\\Weather-Rain",
+	[2350] = "Interface\\PetBattles\\Weather-ToxicFumes",
 };
 
 StaticPopupDialogs["PET_BATTLE_FORFEIT"] = {

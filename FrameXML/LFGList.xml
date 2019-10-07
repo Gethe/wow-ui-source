@@ -125,7 +125,7 @@
 		<NormalFont style="GameFontNormal"/>
 		<HighlightFont style="GameFontHighlight"/>
 	</Button>
-	<Button name="LFGListApplicantMemberTemplate" virtual="true">
+	<DropDownToggleButton name="LFGListApplicantMemberTemplate" virtual="true">
 		<Size x="190" y="20"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -217,14 +217,14 @@
 			<OnLoad>
 				self:RegisterForClicks("RightButtonUp");
 			</OnLoad>
-			<OnClick>
+			<OnMouseDown>
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				EasyMenu(LFGListUtil_GetApplicantMemberMenu(self:GetParent().applicantID, self.memberIdx), LFGListFrameDropDown, self, 60, -5, "MENU");
-			</OnClick>
+			</OnMouseDown>
 			<OnEnter function="LFGListApplicantMember_OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
-	</Button>
+	</DropDownToggleButton>
 	<Button name="LFGListApplicantTemplate" virtual="true">
 		<Size x="309" y="20"/>
 		<Layers>
@@ -987,7 +987,7 @@
 							</OnEditFocusLost>
 						</Scripts>
 					</EditBox>
-					<Button parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
+					<DropDownToggleButton parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
 						<Size x="93" y="22"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="2" y="0"/>
@@ -1003,12 +1003,13 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnClick>
+							<OnMouseDown>
+								UIMenuButtonStretchMixin.OnMouseDown(self, button);
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								ToggleDropDownMenu(1, nil, LFGListLanguageFilterDropDownFrame, self, 0, -2, "MENU");
-							</OnClick>
+							</OnMouseDown>
 						</Scripts>
-					</Button>
+					</DropDownToggleButton>
 					<Frame name="LFGListLanguageFilterDropDownFrame" inherits="UIDropDownMenuTemplate">
 						<Scripts>
 							<OnLoad>

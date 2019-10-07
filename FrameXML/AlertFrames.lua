@@ -691,6 +691,7 @@ function AlertFrameMixin:BuildQuestData(questID)
 		taskName = taskName,
 		money = GetQuestLogRewardMoney(questID),
 		xp = GetQuestLogRewardXP(questID),
+		displayAsObjective = select(5, GetTaskInfo(questID)),
 	};
 
 	local currencyRewardCount = GetNumQuestLogRewardCurrencies(questID);

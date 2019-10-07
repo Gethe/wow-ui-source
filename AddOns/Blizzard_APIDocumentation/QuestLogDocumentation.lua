@@ -7,6 +7,15 @@ local QuestLog =
 	Functions =
 	{
 		{
+			Name = "GetActiveThreatMaps",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "uiMapIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMapForQuestPOIs",
 			Type = "Function",
 
@@ -167,6 +176,15 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "HasActiveThreats",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasActiveThreats", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsLegendaryQuest",
 			Type = "Function",
 
@@ -262,6 +280,20 @@ local QuestLog =
 			Returns =
 			{
 				{ Name = "isTrivial", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsThreatQuest",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isThreat", Type = "bool", Nilable = false },
 			},
 		},
 		{

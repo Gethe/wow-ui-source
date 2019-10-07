@@ -4,11 +4,43 @@
 
 	<EditBox name="InputBoxScriptTemplate" enableMouse="true" virtual="true">
 		<Scripts>
+			<OnTabPressed function="EditBox_OnTabPressed"/>
 			<OnEscapePressed function="EditBox_ClearFocus"/>
 			<OnEditFocusLost function="EditBox_ClearHighlight"/>
 			<OnEditFocusGained function="EditBox_HighlightText"/>
 		</Scripts>
 	</EditBox>
+	
+	<EditBox name="LargeInputBoxTemplate" inherits="InputBoxScriptTemplate" virtual="true">
+		<Size x="110" y="33"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Left" atlas="auctionhouse-ui-inputfield-left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right" atlas="auctionhouse-ui-inputfield-right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Middle" atlas="auctionhouse-ui-inputfield-middle">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<FontString inherits="NumberFont_Normal_Med">
+			<Anchors>
+				<Anchor point="LEFT" x="6" y="0"/>
+			</Anchors>
+		</FontString>
+		<TextInsets left="10" right="10" bottom="5" top="0"/>
+	</EditBox>
+
 	<EditBox name="InputBoxTemplate" inherits="InputBoxScriptTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">

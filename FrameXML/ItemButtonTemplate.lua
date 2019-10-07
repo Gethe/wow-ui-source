@@ -24,6 +24,10 @@ function SetItemButtonCount(button, count, abbreviate)
 	end
 end
 
+function GetItemButtonCount(button)
+	return button.count;
+end
+
 function SetItemButtonStock(button, numInStock)
 	if ( not button ) then
 		return;
@@ -53,6 +57,7 @@ function SetItemButtonTexture(button, texture)
 	else
 		icon:Hide();
 	end
+
 	icon:SetTexture(texture);
 end
 
@@ -103,6 +108,34 @@ function SetItemButtonSlotVertexColor(button, r, g, b)
 end
 
 function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
+	if button.useCircularIconBorder then
+		button.IconBorder:Show();
+
+		if quality == LE_ITEM_QUALITY_POOR then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-gray");
+		elseif quality == LE_ITEM_QUALITY_COMMON then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-white");
+		elseif quality == LE_ITEM_QUALITY_UNCOMMON then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-green");
+		elseif quality == LE_ITEM_QUALITY_RARE then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-blue");
+		elseif quality == LE_ITEM_QUALITY_EPIC then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-purple");
+		elseif quality == LE_ITEM_QUALITY_LEGENDARY then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-orange");
+		elseif quality == LE_ITEM_QUALITY_ARTIFACT then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-artifact");
+		elseif quality == LE_ITEM_QUALITY_HEIRLOOM then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-account");
+		elseif quality == LE_ITEM_QUALITY_WOW_TOKEN then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-account");
+		else
+			button.IconBorder:Hide();
+		end
+		
+		return;
+	end
+
 	if itemIDOrLink then
 		if IsArtifactRelicItem(itemIDOrLink) then
 			button.IconBorder:SetTexture([[Interface\Artifacts\RelicIconFrame]]);

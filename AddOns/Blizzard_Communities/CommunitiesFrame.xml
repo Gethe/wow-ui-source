@@ -532,13 +532,13 @@
 					<Anchor point="TOP" relativeTo="UIParent" x="0" y="-80"/>
 				</Anchors>
 			</Frame>
-			<Button parentKey="AddToChatButton" inherits="AddToChatButtonTemplate">
+			<DropDownToggleButton parentKey="AddToChatButton" inherits="AddToChatButtonTemplate">
 				<Size x="22" y="22"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.StreamDropDownMenu" relativePoint="RIGHT" x="220" y="3"/>
 				</Anchors>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-			</Button>
+			</DropDownToggleButton>
 			<Button parentKey="InviteButton" inherits="CommunitiesInviteButtonTemplate" motionScriptsWhileDisabled="true">
 				<Size x="130" y="20"/>
 				<Anchors>

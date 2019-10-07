@@ -1566,6 +1566,12 @@ SecureCmdList["PET_DEFENSIVE"] = function(msg)
 	end
 end
 
+SecureCmdList["PET_DEFENSIVEASSIST"] = function(msg)
+	if ( SecureCmdOptionParse(msg) ) then
+		PetDefensiveAssistMode();
+	end
+end
+
 SecureCmdList["PET_AGGRESSIVE"] = function(msg)
 	if ( SecureCmdOptionParse(msg) ) then
 		PetAggressiveMode();
@@ -4256,7 +4262,7 @@ function ChatEdit_InsertLink(text)
 		activeWindow:Insert(text);
 		return true;
 	end
-	if ( BrowseName and BrowseName:IsVisible() ) then
+	if ( AuctionHouseFrame and AuctionHouseFrame:IsVisible() ) then
 		local item;
 		if ( strfind(text, "battlepet:") ) then
 			local petName = strmatch(text, "%[(.+)%]");
@@ -4265,8 +4271,9 @@ function ChatEdit_InsertLink(text)
 			item = GetItemInfo(text);
 		end
 		if ( item ) then
-			BrowseName:SetText(item);
-			return true;
+			if ( AuctionHouseFrame:SetSearchText(item) ) then
+				return true;
+			end
 		end
 	end
 	if ( MacroFrameText and MacroFrameText:HasFocus() ) then

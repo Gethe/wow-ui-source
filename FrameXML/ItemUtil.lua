@@ -97,3 +97,10 @@ function ItemUtil.GetItemDetails(itemLink, quantity, isCurrency, lootSource)
 		return itemName, itemTexture, quantity, itemRarity, itemLink;
 	end
 end
+
+function ItemUtil.PickupBagItem(itemLocation)
+	local bag, slot = itemLocation:GetBagAndSlot();
+	if bag and slot then
+		PickupContainerItem(bag, slot);
+	end
+end

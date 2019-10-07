@@ -26,6 +26,12 @@ if tbl then
 end
 ----------------
 
+function EditBox_OnTabPressed(self)
+	if ( self.nextEditBox ) then
+		self.nextEditBox:SetFocus();
+	end
+end
+
 function EditBox_ClearFocus(self)
 	self:ClearFocus();
 end
@@ -351,11 +357,7 @@ function InputScrollFrame_OnMouseDown(self)
 	self.EditBox:SetFocus();
 end
 
-function InputScrollFrame_OnTabPressed(self)
-	if ( self.nextEditBox ) then
-		self.nextEditBox:SetFocus();
-	end
-end
+InputScrollFrame_OnTabPressed = EditBox_OnTabPressed;
 
 function InputScrollFrame_OnTextChanged(self)
 	local scrollFrame = self:GetParent();

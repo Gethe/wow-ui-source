@@ -137,6 +137,15 @@ local QuestTaskInfo =
 			},
 		},
 		{
+			Name = "GetThreatQuests",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "quests", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "IsActive",
 			Type = "Function",
 

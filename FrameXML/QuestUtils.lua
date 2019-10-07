@@ -87,6 +87,8 @@ function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskill
 		else -- "Horde" or "Neutral"
 			iconAtlas = "worldquest-icon-horde";
 		end
+	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_THREAT ) then
+		iconAtlas = "worldquest-icon-nzoth";
 	else
 		return "worldquest-questmarker-questbang", 6, 15;
 	end

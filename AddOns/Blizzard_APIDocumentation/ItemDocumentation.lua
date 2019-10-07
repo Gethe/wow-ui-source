@@ -231,6 +231,20 @@ local Item =
 			},
 		},
 		{
+			Name = "GetStackCount",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "stackCount", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "IsBound",
 			Type = "Function",
 

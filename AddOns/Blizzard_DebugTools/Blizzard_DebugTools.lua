@@ -290,7 +290,9 @@ function EventTraceFrame_StopEventCapture ()
 end
 
 function EventTraceFrame_HandleSlashCmd (msg)
+	local originalMsg = msg;
 	msg = strlower(msg);
+
 	if ( msg == "start" ) then
 		EventTraceFrame_StartEventCapture();
 	elseif ( msg == "stop" ) then
@@ -300,6 +302,8 @@ function EventTraceFrame_HandleSlashCmd (msg)
 			_EventTraceFrame.eventsToCapture = tonumber(msg);
 			EventTraceFrame_StartEventCapture();
 		end
+	elseif ( msg:find("mark", 1, true) ) then
+		EventTraceFrame_AddMark(originalMsg:sub(5));
 	elseif ( msg == "" ) then
 		if ( not _EventTraceFrame:IsShown() ) then
 			_EventTraceFrame:Show();
@@ -314,6 +318,14 @@ end
 
 function EventTraceFrame_AddMessage(fmt, ...)
 	EventTraceFrame_OnEvent(_EventTraceFrame, fmt:format(...));
+end
+
+function EventTraceFrame_AddMark(customMark)
+	if customMark and customMark ~= '' then
+		EventTraceFrame_AddMessage("|cff00ff00--- %s ---|r", tostring(customMark));
+	else
+		EventTraceFrame_AddMessage("|cff00ff00--- Mark ---|r");
+	end
 end
 
 function EventTraceFrame_OnMouseWheel (self, delta)

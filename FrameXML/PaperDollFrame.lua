@@ -1983,7 +1983,9 @@ function GearSetEditButton_OnLoad(self)
 	UIDropDownMenu_SetInitializeFunction(self.Dropdown, GearSetEditButtonDropDown_Initialize);
 end
 
-function GearSetEditButton_OnClick(self, button)
+function GearSetEditButton_OnMouseDown(self, button)
+	self.texture:SetPoint("TOPLEFT", 1, -1);
+
 	GearSetButton_OnClick(self:GetParent(), button);
 
 	if ( self.Dropdown.gearSetButton ~= self:GetParent() ) then

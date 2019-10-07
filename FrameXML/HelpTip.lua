@@ -50,6 +50,7 @@ HelpTip.ButtonStyle = {
 	None = 1,
 	Close = 2,
 	Okay = 3,
+	GotIt = 4,
 };
 
 -- internal use enums
@@ -105,7 +106,8 @@ HelpTip.Rotations = {
 HelpTip.Buttons = {
 	[HelpTip.ButtonStyle.None]	= { textWidthAdj = 0,	heightAdj = 0,	parentKey = nil },
 	[HelpTip.ButtonStyle.Close]	= { textWidthAdj = -6,	heightAdj = 0,	parentKey = "CloseButton" },
-	[HelpTip.ButtonStyle.Okay]	= { textWidthAdj = 0,	heightAdj = 30,	parentKey = "OkayButton" },
+	[HelpTip.ButtonStyle.Okay]	= { textWidthAdj = 0,	heightAdj = 30,	parentKey = "OkayButton", text = OKAY },
+	[HelpTip.ButtonStyle.GotIt]	= { textWidthAdj = 0,	heightAdj = 30,	parentKey = "OkayButton", text = HELP_TIP_BUTTON_GOT_IT },
 };
 
 HelpTip.verticalPadding	 = 29;
@@ -350,6 +352,10 @@ function HelpTipTemplateMixin:Layout()
 	height = height + buttonInfo.heightAdj;
 	if buttonInfo.parentKey then
 		self[buttonInfo.parentKey]:Show();
+
+		if buttonInfo.text then
+			self[buttonInfo.parentKey]:SetText(buttonInfo.text);
+		end
 	end
 	-- set height based on the text
 	self:ApplyText();

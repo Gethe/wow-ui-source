@@ -556,9 +556,12 @@
 				<Scripts>
 					<OnShow>
 						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-						RequestLFDPlayerLockInfo();
-						RequestLFDPartyLockInfo();
+						QueueUpdater:RequestInfo();
+						QueueUpdater:AddRef();
 					</OnShow>
+					<OnHide>
+						QueueUpdater:RemoveRef();
+					</OnHide>
 				</Scripts>
 			</Frame>
 		</Frames>
@@ -566,7 +569,6 @@
 			<OnLoad function="LFDFrame_OnLoad"/>
 			<OnEvent function="LFDFrame_OnEvent"/>
 			<OnShow function="LFDFrame_OnShow"/>
-			<OnHide function="LFDFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

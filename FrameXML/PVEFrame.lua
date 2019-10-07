@@ -226,7 +226,9 @@ function GroupFinderFrame_OnLoad(self)
 end
 
 function GroupFinderFrame_EvaluateButtonVisibility(self, level)
-	if ( level > SCENARIOS_HIDE_ABOVE_LEVEL ) then
+	-- To support Level Sync, scenarios and LFD use the lowest level in the party to determine visibility.
+	local partyMinLevel = C_PartyInfo.GetMinLevel(PARTY_CATEGORY_HOME);
+	if ( partyMinLevel > SCENARIOS_HIDE_ABOVE_LEVEL ) then
 		self.groupButton2:Hide()
 
 		if ( GroupFinderFrame_GetSelectedIndex(self) == self.groupButton2:GetID() ) then
@@ -235,7 +237,7 @@ function GroupFinderFrame_EvaluateButtonVisibility(self, level)
 			GroupFinderFrame_ShowGroupFrame(nil)
 		end
 	else
-		if ( level < SCENARIOS_SHOW_LEVEL ) then
+		if ( partyMinLevel < SCENARIOS_SHOW_LEVEL ) then
 			GroupFinderFrameButton_SetEnabled(self.groupButton2, false);
 			self.groupButton2.tooltip = self.groupButton2.tooltip or format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SCENARIOS_SHOW_LEVEL);
 		else
@@ -246,7 +248,7 @@ function GroupFinderFrame_EvaluateButtonVisibility(self, level)
 		self.groupButton2:Show()
 	end
 
-	if ( level < SHOW_LFD_LEVEL ) then
+	if ( partyMinLevel < SHOW_LFD_LEVEL ) then
 		GroupFinderFrameButton_SetEnabled(self.groupButton1, false);
 		self.groupButton1.tooltip = self.groupButton1.tooltip or format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL);
 	else
@@ -254,6 +256,7 @@ function GroupFinderFrame_EvaluateButtonVisibility(self, level)
 		GroupFinderFrameButton_SetEnabled(self.groupButton1, true);
 	end
 
+	-- Raids don't support LevelSync; we use the player's actual level.
 	if ( level < RAID_FINDER_SHOW_LEVEL ) then
 		GroupFinderFrameButton_SetEnabled(self.groupButton3, false);
 		self.groupButton3.tooltip = self.groupButton3.tooltip or format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, RAID_FINDER_SHOW_LEVEL);
@@ -311,6 +314,7 @@ end
 function GroupFinderFrame_OnShow(self)
 	PVEFrame:SetPortraitToAsset("Interface\\LFGFrame\\UI-LFG-PORTRAIT");
 	PVEFrame.TitleText:SetText(GROUP_FINDER);
+	GroupFinderFrame_EvaluateButtonVisibility(self, UnitLevel("player"));
 end
 
 function GroupFinderFrame_ShowGroupFrame(frame)

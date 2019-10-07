@@ -4,6 +4,48 @@
 -- to that button and assumes responsibility for all relevant dropdown menu operations.
 -- The hidden button will request a size that it should become from the custom frame.
 
+DropDownMenuButtonMixin = {}
+
+function DropDownMenuButtonMixin:OnEnter(...)
+	ExecuteFrameScript(self:GetParent(), "OnEnter", ...);
+end
+
+function DropDownMenuButtonMixin:OnLeave(...)
+	ExecuteFrameScript(self:GetParent(), "OnLeave", ...);
+end
+
+function DropDownMenuButtonMixin:OnMouseDown(button)
+	ToggleDropDownMenu(nil, nil, self:GetParent());
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end
+
+LargeDropDownMenuButtonMixin = CreateFromMixins(DropDownMenuButtonMixin);
+
+function LargeDropDownMenuButtonMixin:OnMouseDown(button)
+	local parent = self:GetParent();
+	ToggleDropDownMenu(nil, nil, parent, parent, -8, 8);
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end
+
+DropDownExpandArrowMixin = {};
+
+function DropDownExpandArrowMixin:OnEnter()
+	local level =  self:GetParent():GetParent():GetID() + 1;
+
+	CloseDropDownMenus(level);
+
+	if self:IsEnabled() then
+		local listFrame = _G["DropDownList"..level];
+		if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint()) ~= self ) then
+			ToggleDropDownMenu(level, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self);
+		end
+	end
+end
+
+function DropDownExpandArrowMixin:OnMouseDown(button)
+	ToggleDropDownMenu(self:GetParent():GetParent():GetID() + 1, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self);
+end
+
 UIDropDownCustomMenuEntryMixin = {};
 
 function UIDropDownCustomMenuEntryMixin:GetPreferredEntryWidth()
@@ -31,12 +73,4 @@ end
 
 function UIDropDownCustomMenuEntryMixin:GetContextData()
 	return self.contextData;
-end
-
-function UIDropDownCustomMenuEntryMixin:OnEnter()
-	UIDropDownMenu_StopCounting(self:GetOwningDropdown());
-end
-
-function UIDropDownCustomMenuEntryMixin:OnLeave()
-	UIDropDownMenu_StartCounting(self:GetOwningDropdown());
 end

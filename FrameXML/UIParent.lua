@@ -421,6 +421,10 @@ function UIParent_OnLoad(self)
 
 	-- Events for Reporting SYSTEM
 	self:RegisterEvent("REPORT_PLAYER_RESULT");
+
+	-- Events for Global Mouse Down
+	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
+	self:RegisterEvent("GLOBAL_MOUSE_UP");
 end
 
 function UIParent_OnShow(self)
@@ -475,8 +479,8 @@ function AlliedRaces_LoadUI()
 	UIParentLoadAddOn("Blizzard_AlliedRacesUI");
 end
 
-function AuctionFrame_LoadUI()
-	UIParentLoadAddOn("Blizzard_AuctionUI");
+function AuctionHouseFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_AuctionHouseUI");
 end
 
 function BattlefieldMap_LoadUI()
@@ -1102,6 +1106,11 @@ local function PlayBattlefieldBanner(self)
 	end
 end
 
+local function IsGlobalMouseEventHandled(buttonID, event)
+	local frame = GetMouseFocus();
+	return frame and frame.HandlesGlobalMouseEvent and frame:HandlesGlobalMouseEvent(buttonID, event);
+end
+
 -- UIParent_OnEvent --
 function UIParent_OnEvent(self, event, ...)
 	local arg1, arg2, arg3, arg4, arg5, arg6 = ...;
@@ -1686,13 +1695,11 @@ function UIParent_OnEvent(self, event, ...)
 
 	--Events for handling Auction UI
 	elseif ( event == "AUCTION_HOUSE_SHOW" ) then
-		AuctionFrame_LoadUI();
-		if ( AuctionFrame_Show ) then
-			AuctionFrame_Show();
-		end
+		AuctionHouseFrame_LoadUI();
+		ShowUIPanel(AuctionHouseFrame);
 	elseif ( event == "AUCTION_HOUSE_CLOSED" ) then
-		if ( AuctionFrame_Hide ) then
-			AuctionFrame_Hide();
+		if ( AuctionHouseFrame ) then
+			HideUIPanel(AuctionHouseFrame);
 		end
 	elseif ( event == "AUCTION_HOUSE_DISABLED" ) then
 		StaticPopup_Show("AUCTION_HOUSE_DISABLED");
@@ -2126,6 +2133,11 @@ function UIParent_OnEvent(self, event, ...)
 			UIErrorsFrame:AddExternalErrorMessage(GERR_REPORT_SUBMISSION_FAILED);
 			DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED);
 		end
+	elseif (event == "GLOBAL_MOUSE_DOWN" or event == "GLOBAL_MOUSE_UP") then
+		local buttonID = ...;
+		if not IsGlobalMouseEventHandled(buttonID, event) then
+			UIDropDownMenu_HandleGlobalMouseEvent(buttonID, event);
+		end
 	end
 end
 
@@ -2209,10 +2221,11 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["MultiBarBottomRight"] = {baseY = 2, watchBar = 1, maxLevel = 1, anchorTo = "ActionButton12", point = "TOPLEFT", rpoint = "TOPRIGHT", xOffset = 45};
 	["GroupLootContainer"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1};
 	["TutorialFrameAlertButton"] = {baseY = true, yOffset = -10, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, watchBar = 1};
-	["FramerateLabel"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, anchorTo="WorldFrame" };
-	["ArcheologyDigsiteProgressBar"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, castingBar = 1};
-	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, talkingHeadFrame = 1, classResourceOverlayFrame = 1, classResourceOverlayOffset = 1};
-	["ClassResourceOverlayParentFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1 };
+	["FramerateLabel"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, playerPowerBarAlt = 1, powerBarWidgets = 1, extraActionBarFrame = 1, anchorTo="WorldFrame" };
+	["ArcheologyDigsiteProgressBar"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, powerBarWidgets = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, castingBar = 1};
+	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, powerBarWidgets = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, talkingHeadFrame = 1, classResourceOverlayFrame = 1, classResourceOverlayOffset = 1};
+	["UIWidgetPowerBarContainerFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, talkingHeadFrame = 1, classResourceOverlayFrame = 1, classResourceOverlayOffset = 1};
+	["ClassResourceOverlayParentFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, powerBarWidgets = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1 };
 	["PlayerPowerBarAlt"] = UIPARENT_ALTERNATE_FRAME_POSITIONS["PlayerPowerBarAlt_Bottom"];
 	["ExtraActionBarFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1};
 	["ZoneAbilityFrame"] = {baseY = true, yOffset = 100, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, extraActionBarFrame = 1};
@@ -2221,8 +2234,8 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["StanceBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["PossessBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["MultiCastActionBarFrame"] = {baseY = 8, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
-	["AuctionProgressFrame"] = {baseY = true, yOffset = 18, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1};
-	["TalkingHeadFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, classResourceOverlayFrame = 1};
+	["AuctionHouseMultisellProgressFrame"] = {baseY = true, yOffset = 18, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1};
+	["TalkingHeadFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, powerBarWidgets = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, classResourceOverlayFrame = 1};
 
 	-- Vars
 	-- These indexes require global variables of the same name to be declared. For example, if I have an index ["FOO"] then I need to make sure the global variable
@@ -2912,6 +2925,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 				tinsert(yOffsetFrames, "playerPowerBarAlt");
 			end
 		end
+		if UIWidgetPowerBarContainerFrame and UIWidgetPowerBarContainerFrame:GetNumWidgetsShowing() > 0 then
+			tinsert(yOffsetFrames, "powerBarWidgets");
+		end
 		if (ExtraActionBarFrame and ExtraActionBarFrame:IsShown() ) then
 			tinsert(yOffsetFrames, "extraActionBarFrame");
 		end
@@ -2940,6 +2956,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	for index, value in pairs(UIPARENT_MANAGED_FRAME_POSITIONS) do
 		if ( value.playerPowerBarAlt and PlayerPowerBarAlt and not PlayerPowerBarAlt:IsUserPlaced()) then
 			value.playerPowerBarAlt = PlayerPowerBarAlt:GetHeight() + 10;
+		end
+		if ( value.powerBarWidgets and UIWidgetPowerBarContainerFrame ) then
+			value.powerBarWidgets = UIWidgetPowerBarContainerFrame:GetHeight() + 10;
 		end
 		if ( value.extraActionBarFrame and ExtraActionBarFrame ) then
 			value.extraActionBarFrame = ExtraActionBarFrame:GetHeight() + 10;

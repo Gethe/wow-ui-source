@@ -123,7 +123,7 @@ end
 function WorldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(MapExplorationDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(MapHighlightDataProviderMixin));
-	self:AddDataProvider(CreateFromMixins(WorldMap_InvasionDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(WorldMap_EventOverlayDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(StorylineQuestDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(BattlefieldFlagDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(BonusObjectiveDataProviderMixin));
@@ -170,6 +170,7 @@ function WorldMapMixin:AddStandardDataProviders()
 
 	local pinFrameLevelsManager = self:GetPinFrameLevelsManager();
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_MAP_EXPLORATION");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_EVENT_OVERLAY");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_GARRISON_PLOT");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_FOG_OF_WAR");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_QUEST_BLOB");
@@ -206,10 +207,11 @@ end
 
 function WorldMapMixin:AddOverlayFrames()
 	self:AddOverlayFrame("WorldMapFloorNavigationFrameTemplate", "FRAME", "TOPLEFT", self:GetCanvasContainer(), "TOPLEFT", -15, 2);
-	self:AddOverlayFrame("WorldMapTrackingOptionsButtonTemplate", "BUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", -4, -2);
+	self:AddOverlayFrame("WorldMapTrackingOptionsButtonTemplate", "DROPDOWNTOGGLEBUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", -4, -2);
 	self:AddOverlayFrame("WorldMapBountyBoardTemplate", "FRAME", nil, self:GetCanvasContainer());
 	self:AddOverlayFrame("WorldMapActionButtonTemplate", "FRAME", nil, self:GetCanvasContainer());
 	self:AddOverlayFrame("WorldMapZoneTimerTemplate", "FRAME", "BOTTOM", self:GetCanvasContainer(), "BOTTOM", 0, 20);
+	self:AddOverlayFrame("WorldMapThreatFrameTemplate", "FRAME", "BOTTOMLEFT", self:GetCanvasContainer(), "BOTTOMLEFT", 0, 0);
 
 	self.NavBar = self:AddOverlayFrame("WorldMapNavBarTemplate", "FRAME");
 	self.NavBar:SetPoint("TOPLEFT", self.TitleCanvasSpacerFrame, "TOPLEFT", 64, -25);
