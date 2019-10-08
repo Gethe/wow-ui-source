@@ -1674,7 +1674,7 @@ function FriendsFrameTooltip_Show(self)
 		anchor = FriendsFrameTooltip_SetLine(FriendsTooltipHeader, nil, nameText);
 		-- game account 1
 		if ( bnetIDGameAccount ) then
-			local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, zoneName, level, gameText, _, _, _, _, _, _, _, _, wowProjectID = BNGetGameAccountInfo(bnetIDGameAccount);
+			local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, zoneName, level, gameText, _, _, _, _, _, _, _, _, wowProjectID, realmDisplayName = BNGetGameAccountInfo(bnetIDGameAccount);
 			level = level or "";
 			race = race or "";
 			class = class or "";
@@ -1692,7 +1692,7 @@ function FriendsFrameTooltip_Show(self)
 					text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, characterName..CANNOT_COOPERATE_LABEL, level, race, class);
 				end
 				FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Name, nil, text);
-				anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, string.format(FRIENDS_TOOLTIP_WOW_INFO_TEMPLATE, zoneName, realmName), -4);
+				anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, string.format(FRIENDS_TOOLTIP_WOW_INFO_TEMPLATE, zoneName, realmDisplayName), -4);
 			end
 		else
 			FriendsTooltipGameAccount1Info:Hide();
