@@ -333,8 +333,11 @@ function BrowseButton_OnClick(button)
 	assert(button);
 	
 	if ( GetCVarBool("auctionDisplayOnCharacter") ) then
-		if ( not DressUpItemLink(GetAuctionItemLink("list", button:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame))) ) then
-			DressUpBattlePet(GetAuctionItemBattlePetInfo("list", button:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+		local itemLink = GetAuctionItemLink("list", button:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame));
+		if ( not DressUpItemLink(itemLink) ) then
+			if ( not DressUpBattlePetLink(itemLink) ) then
+				DressUpMountLink(itemLink);
+			end
 		end
 	end
 	SetSelectedAuctionItem("list", button:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame));

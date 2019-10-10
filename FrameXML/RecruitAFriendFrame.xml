@@ -486,13 +486,15 @@
 						</Scripts>
 					</Button>
 					<Frame parentKey="Inset" inherits="InsetFrameTemplate" frameStrata="MEDIUM" setAllPoints="true" />
-					<Button parentKey="ClaimOrViewRewardButton" inherits="FriendsFrameButtonTemplate" text="RAF_VIEW_ALL_REWARDS" mixin="RecruitAFriendClaimOrViewRewardButtonMixin">
+					<Button parentKey="ClaimOrViewRewardButton" inherits="FriendsFrameButtonTemplate" text="RAF_VIEW_ALL_REWARDS" motionScriptsWhileDisabled="true" mixin="RecruitAFriendClaimOrViewRewardButtonMixin">
 						<Size x="165" y="21"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="7" y="10"/>
 						</Anchors>
 						 <Scripts>
 							 <OnClick method="OnClick" />
+							 <OnEnter method="OnEnter" />
+							 <OnLeave method="OnLeave" />
 						 </Scripts>
 					 </Button>
 				</Frames>

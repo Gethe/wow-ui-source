@@ -1551,8 +1551,21 @@ function PVPUIHonorInsetMixin:DisplayRatedPanel()
 			showSeasonReward = false;
 		else
 			local seasonAchievements = SEASON_REWARD_ACHIEVEMENTS[seasonID];
-			local seasonAchivementID = seasonAchievements and seasonAchievements[UnitFactionGroup("player")];
-			panel.SeasonRewardFrame:Init(seasonAchivementID, PVP_SEASON_REWARD);
+			local achievementID = seasonAchievements and seasonAchievements[UnitFactionGroup("player")];
+			if achievementID then
+				local id, name, points, completed = GetAchievementInfo(achievementID);
+				local supercedingAchievements = C_AchievementInfo.GetSupercedingAchievements(achievementID);
+				while completed and supercedingAchievements[1] do
+					achievementID = supercedingAchievements[1];
+					id, name, points, completed = GetAchievementInfo(achievementID);
+					supercedingAchievements = C_AchievementInfo.GetSupercedingAchievements(achievementID);
+				end
+			end
+
+			showSeasonReward = achievementID ~= nil;
+			if showSeasonReward then
+				panel.SeasonRewardFrame:Init(achievementID, PVP_SEASON_REWARD);
+			end
 		end
 	end
 	panel.SeasonRewardFrame:SetShown(showSeasonReward);
@@ -1690,19 +1703,6 @@ end
 
 function PVPAchievementRewardMixin:GetHeaderString()
 	return self.headerString;
-end
-
-function PVPAchievementRewardMixin.GetBestAchievementID(achievementID)
-	if achievementID then
-		local id, name, points, completed = GetAchievementInfo(achievementID);
-		local supercedingAchievements = C_AchievementInfo.GetSupercedingAchievements(achievementID);
-		while completed and supercedingAchievements[1] do
-			achievementID = supercedingAchievements[1];
-			id, name, points, completed = GetAchievementInfo(achievementID);
-			supercedingAchievements = C_AchievementInfo.GetSupercedingAchievements(achievementID);
-		end
-	end
-	return achievementID;
 end
 
 function PVPAchievementRewardMixin:OnShow()
