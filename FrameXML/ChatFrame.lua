@@ -1713,6 +1713,51 @@ SecureCmdList["QUIT"] = function(msg)
 	Quit();
 end
 
+SecureCmdList["GUILD_UNINVITE"] = function(msg)
+	if(msg == "") then
+		msg = UnitName("target");
+	end
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
+	GuildUninvite(msg);
+end
+
+SecureCmdList["GUILD_PROMOTE"] = function(msg)
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
+	GuildPromote(msg);
+end
+
+SecureCmdList["GUILD_DEMOTE"] = function(msg)
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
+	GuildDemote(msg);
+end
+
+SecureCmdList["GUILD_LEADER"] = function(msg)
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
+	GuildSetLeader(msg);
+end
+
+SecureCmdList["GUILD_LEAVE"] = function(msg)
+	GuildLeave();
+end
+
+SecureCmdList["GUILD_DISBAND"] = function(msg)
+	if ( IsGuildLeader() ) then
+		StaticPopup_Show("CONFIRM_GUILD_DISBAND");
+	end
+end
+
 function AddSecureCmd(cmd, cmdString)
 	if not issecure() then
 		error("Cannot call AddSecureCmd from insecure code");
@@ -2038,53 +2083,8 @@ SlashCmdList["GUILD_INVITE"] = function(msg)
 	GuildInvite(msg);
 end
 
-SlashCmdList["GUILD_UNINVITE"] = function(msg)
-	if(msg == "") then
-		msg = UnitName("target");
-	end
-	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
-		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
-		return;
-	end
-	GuildUninvite(msg);
-end
-
-SlashCmdList["GUILD_PROMOTE"] = function(msg)
-	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
-		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
-		return;
-	end
-	GuildPromote(msg);
-end
-
-SlashCmdList["GUILD_DEMOTE"] = function(msg)
-	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
-		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
-		return;
-	end
-	GuildDemote(msg);
-end
-
-SlashCmdList["GUILD_LEADER"] = function(msg)
-	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
-		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
-		return;
-	end
-	GuildSetLeader(msg);
-end
-
 SlashCmdList["GUILD_MOTD"] = function(msg)
 	GuildSetMOTD(msg)
-end
-
-SlashCmdList["GUILD_LEAVE"] = function(msg)
-	GuildLeave();
-end
-
-SlashCmdList["GUILD_DISBAND"] = function(msg)
-	if ( IsGuildLeader() ) then
-		StaticPopup_Show("CONFIRM_GUILD_DISBAND");
-	end
 end
 
 SlashCmdList["GUILD_INFO"] = function(msg)

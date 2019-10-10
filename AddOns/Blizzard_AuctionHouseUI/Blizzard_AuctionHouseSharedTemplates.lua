@@ -44,6 +44,35 @@ function AuctionHouseItemDisplayMixin:OnEvent(event, ...)
 	end
 end
 
+function AuctionHouseItemDisplayMixin:OnEnter()
+	if self:IsPet() then
+		local itemLocation = self:GetItemLocation();
+		if itemLocation then
+			local bagID, slotIndex = itemLocation:GetBagAndSlot();
+			if bagID and slotIndex then
+				GameTooltip:SetOwner(self.ItemButton, "ANCHOR_RIGHT");
+				local hasCooldown, repairCost, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetBagItem(bagID, slotIndex);
+				if speciesID and speciesID > 0 then
+					BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
+				end
+			end
+		end
+	else
+		BattlePetTooltip:Hide();
+
+		local itemLink = self:GetItemLink();
+		if itemLink then
+			GameTooltip:SetOwner(self.ItemButton, "ANCHOR_RIGHT");
+			GameTooltip:SetHyperlink(itemLink);
+		end
+	end
+end
+
+function AuctionHouseItemDisplayMixin:OnLeave()
+	GameTooltip:Hide();
+	BattlePetTooltip:Hide();
+end
+
 function AuctionHouseItemDisplayMixin:OnClick(button)
 	local itemKey = self:GetItemKey();
 	if itemKey and self.auctionHouseFrame and button == "RightButton" then
@@ -246,38 +275,36 @@ end
 
 AuctionHouseItemDisplayItemButtonMixin = {};
 
-function AuctionHouseItemDisplayItemButtonMixin:OnEnter()
-	local itemDisplay = self:GetParent();
-	if itemDisplay:IsPet() then
-		local itemLocation = itemDisplay:GetItemLocation();
-		if itemLocation then
-			local bagID, slotIndex = itemLocation:GetBagAndSlot();
-			if bagID and slotIndex then
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				local hasCooldown, repairCost, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetBagItem(bagID, slotIndex);
-				if speciesID and speciesID > 0 then
-					BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-				end
-			end
-		end
-	else
-		BattlePetTooltip:Hide();
+function AuctionHouseItemDisplayItemButtonMixin:OnLoad()
+	self:SetHighlightTexture(nil);
+end
 
-		local itemLink = self:GetParent():GetItemLink();
-		if itemLink then
-			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-			GameTooltip:SetHyperlink(itemLink);
-		end
-	end
+function AuctionHouseItemDisplayItemButtonMixin:OnClick(...)
+	self:GetParent():OnClick(...);
+end
+
+function AuctionHouseItemDisplayItemButtonMixin:OnEnter()
+	self:GetParent():OnEnter();
 end
 
 function AuctionHouseItemDisplayItemButtonMixin:OnLeave()
-	GameTooltip:Hide();
-	BattlePetTooltip:Hide();
+	self:GetParent():OnLeave();
 end
 
 
 AuctionHouseInteractableItemDisplayItemButtonMixin = CreateFromMixins(AuctionHouseItemDisplayItemButtonMixin);
+
+function AuctionHouseInteractableItemDisplayItemButtonMixin:OnLoad()
+	-- Intentional override.
+end
+
+function AuctionHouseInteractableItemDisplayItemButtonMixin:OnEnter()
+	self:GetParent():OnEnter();
+end
+
+function AuctionHouseInteractableItemDisplayItemButtonMixin:OnLeave()
+	self:GetParent():OnLeave();
+end
 
 function AuctionHouseInteractableItemDisplayItemButtonMixin:Init()
 	self:RegisterForDrag("LeftButton");
@@ -330,7 +357,6 @@ local InteractableItemButtonScripts = {
 function AuctionHouseInteractableItemDisplayMixin:OnLoad()
 	AuctionHouseItemDisplayMixin.OnLoad(self);
 
-	Mixin(self.ItemButton, AuctionHouseInteractableItemDisplayItemButtonMixin);
 	self.ItemButton:Init();
 	for i, scriptName in ipairs(InteractableItemButtonScripts) do
 		self.ItemButton:SetScript(scriptName, self.ItemButton[scriptName]);
@@ -338,6 +364,8 @@ function AuctionHouseInteractableItemDisplayMixin:OnLoad()
 end
 
 function AuctionHouseInteractableItemDisplayMixin:OnEnter()
+	AuctionHouseItemDisplayMixin.OnEnter(self);
+
 	local item = C_Cursor.GetCursorItem();
 	if item then
 		self:SetHighlightLocked(true);
@@ -345,6 +373,8 @@ function AuctionHouseInteractableItemDisplayMixin:OnEnter()
 end
 
 function AuctionHouseInteractableItemDisplayMixin:OnLeave()
+	AuctionHouseItemDisplayMixin.OnLeave(self);
+
 	self:SetHighlightLocked(false);
 end
 
@@ -360,9 +390,12 @@ function AuctionHouseInteractableItemDisplayMixin:OnClick(button)
 end
 
 function AuctionHouseInteractableItemDisplayMixin:OnReceiveDrag()
-	self:OnClick();
-end
+	self:OnClick("LeftButton");
 
+	if self:GetItemLocation() or self:GetItemLink() then
+		self:OnEnter();
+	end
+end
 
 function AuctionHouseInteractableItemDisplayMixin:SetOnItemChangedCallback(callback)
 	self.onItemChangedCallback = callback;

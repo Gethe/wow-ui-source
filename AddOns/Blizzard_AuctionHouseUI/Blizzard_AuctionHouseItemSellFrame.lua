@@ -69,9 +69,9 @@ function AuctionHouseItemSellFrameMixin:OnEvent(event, ...)
 
 	if event == "ITEM_SEARCH_RESULTS_UPDATED" then
 		self:UpdatePriceSelection();
-		self:GetItemSellList():RefreshScrollFrame();
+		self:GetItemSellList():DirtyScrollFrame();
 	elseif event == "ITEM_SEARCH_RESULTS_ADDED" then
-		self:GetItemSellList():RefreshScrollFrame();
+		self:GetItemSellList():DirtyScrollFrame();
 	elseif event == "AUCTION_MULTISELL_START" then
 		local itemLocation = self:GetItem();
 		local itemTexture = itemLocation and C_Item.GetItemIcon(itemLocation);
@@ -97,7 +97,9 @@ function AuctionHouseItemSellFrameMixin:SetMultiSell(inProgress)
 	AuctionHouseMultisellProgressFrame:SetShown(inProgress);
 	self.DisabledOverlay:SetShown(inProgress);
 	if not inProgress then
-		self:SetItem(nil);
+		local fromItemDisplay = nil;
+		local refreshListWithPreviousItem = true;
+		self:SetItem(nil, fromItemDisplay, refreshListWithPreviousItem);
 	end
 end
 
@@ -136,17 +138,7 @@ function AuctionHouseItemSellFrameMixin:InitializeItemSellList()
 		return selectedRowData and currentRowData.auctionID == selectedRowData.auctionID;
 	end);
 
-	local function ItemSellFrameListLineOnEnterCallback(line, rowData)
-		GameTooltip:SetOwner(line, "ANCHOR_RIGHT");
-
-		local hideVendorPrice = true;
-		GameTooltip:SetHyperlink(rowData.itemLink, nil, nil, nil, hideVendorPrice);
-		AuctionHouseUtil.AddAuctionHouseTooltipInfo(GameTooltip, rowData.owners, rowData.timeLeft);
-		
-		GameTooltip:Show();
-	end
-
-	itemSellList:SetLineOnEnterCallback(ItemSellFrameListLineOnEnterCallback);
+	itemSellList:SetLineOnEnterCallback(AuctionHouseUtil.SetAuctionHouseTooltip);
 	itemSellList:SetLineOnLeaveCallback(GameTooltip_Hide);
 
 	local isEquipment = false;
@@ -200,7 +192,7 @@ function AuctionHouseItemSellFrameMixin:SetSecondaryPriceInputEnabled(enabled)
 	self.PriceInput:SetSubtext(enabled and AUCTION_HOUSE_BUYOUT_OPTIONAL_LABEL or nil);
 	self.PriceInput.PerItemPostfix:SetShown(not enabled);
 	self.SecondaryPriceInput:SetShown(enabled);
-	self.QuantityInput:SetNextEditBox(enabled and self.SecondaryPriceInput.MoneyInputFrame.GoldBox or self.PriceInput.MoneyInputFrame.GoldBox);
+	self:UpdateFocusTabbing();
 	self:MarkDirty();
 end
 
@@ -255,7 +247,7 @@ function AuctionHouseItemSellFrameMixin:SetItem(itemLocation, fromItemDisplay, r
 	end
 
 	self:UpdatePriceSelection();
-	itemSellList:RefreshScrollFrame();
+	itemSellList:DirtyScrollFrame();
 end
 
 function AuctionHouseItemSellFrameMixin:UpdatePostState()
@@ -268,6 +260,16 @@ function AuctionHouseItemSellFrameMixin:UpdatePostState()
 	else
 		self.PriceInput:SetLabelColor(NORMAL_FONT_COLOR);
 		self.PriceInput:SetErrorShown(false);
+	end
+end
+
+function AuctionHouseItemSellFrameMixin:UpdateFocusTabbing()
+	if self.SecondaryPriceInput:IsShown() then
+		self.QuantityInput:SetNextEditBox(self.SecondaryPriceInput.MoneyInputFrame.GoldBox);
+		self.PriceInput:SetNextEditBox(self.QuantityInput:IsShown() and self.QuantityInput.InputBox or self.SecondaryPriceInput.MoneyInputFrame.GoldBox);
+	else
+		self.QuantityInput:SetNextEditBox(self.PriceInput.MoneyInputFrame.GoldBox);
+		self.PriceInput:SetNextEditBox(self.QuantityInput:IsShown() and self.QuantityInput.InputBox or nil);
 	end
 end
 

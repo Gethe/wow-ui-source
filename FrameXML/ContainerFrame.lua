@@ -1283,43 +1283,43 @@ function ContainerFrameItemButton_OnClick(self, button)
 				-- a confirmation dialog has been shown
 				return;
 			end
-		elseif AzeriteRespecFrame and AzeriteRespecFrame:IsShown() then
+		else
 			local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
-			AzeriteRespecFrame:SetRespecItem(itemLocation);
-			return;
-		elseif AuctionHouseFrame and AuctionHouseFrame:IsShown() and AuctionHouseFrame:IsListingAuctions() then
-			local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
-			AuctionHouseFrame:SetPostItem(itemLocation);
-			return;
-		elseif ( not BankFrame:IsShown() and (not GuildBankFrame or not GuildBankFrame:IsShown()) and not MailFrame:IsShown() and (not VoidStorageFrame or not VoidStorageFrame:IsShown()) and
-					(not AuctionFrame or not AuctionFrame:IsShown()) and not TradeFrame:IsShown() and (not ItemUpgradeFrame or not ItemUpgradeFrame:IsShown()) and
-					(not ObliterumForgeFrame or not ObliterumForgeFrame:IsShown()) and (not ChallengesKeystoneFrame or not ChallengesKeystoneFrame:IsShown()) ) then
-			local itemID = select(10, GetContainerItemInfo(self:GetParent():GetID(), self:GetID()));
-			if itemID then
-				if IsArtifactRelicItem(itemID) then
-					if C_ArtifactUI.CanApplyArtifactRelic(itemID, false) then
-						SocketContainerItem(self:GetParent():GetID(), self:GetID());
-					elseif C_ArtifactUI.GetEquippedArtifactInfo() then
-						UIErrorsFrame:AddMessage(ERR_ARTIFACT_RELIC_DOES_NOT_MATCH_ARTIFACT, RED_FONT_COLOR:GetRGBA());
-					end
-				else
-					local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
-					if itemLocation:IsValid() and C_MountJournal.IsItemMountEquipment(itemLocation) then
-						CollectionsJournal_LoadUI();
+			if AzeriteRespecFrame and AzeriteRespecFrame:IsShown() then
+				AzeriteRespecFrame:SetRespecItem(itemLocation);
+				return;
+			elseif AuctionHouseFrame and AuctionHouseFrame:IsShown() and (AuctionHouseFrame:IsListingAuctions() or C_AuctionHouse.IsSellItemValid(itemLocation, --[[ displayError = ]] false)) then
+				AuctionHouseFrame:SetPostItem(itemLocation);
+				return;
+			elseif ( not BankFrame:IsShown() and (not GuildBankFrame or not GuildBankFrame:IsShown()) and not MailFrame:IsShown() and (not VoidStorageFrame or not VoidStorageFrame:IsShown()) and
+						(not AuctionFrame or not AuctionFrame:IsShown()) and not TradeFrame:IsShown() and (not ItemUpgradeFrame or not ItemUpgradeFrame:IsShown()) and
+						(not ObliterumForgeFrame or not ObliterumForgeFrame:IsShown()) and (not ChallengesKeystoneFrame or not ChallengesKeystoneFrame:IsShown()) ) then
+				local itemID = select(10, GetContainerItemInfo(self:GetParent():GetID(), self:GetID()));
+				if itemID then
+					if IsArtifactRelicItem(itemID) then
+						if C_ArtifactUI.CanApplyArtifactRelic(itemID, false) then
+							SocketContainerItem(self:GetParent():GetID(), self:GetID());
+						elseif C_ArtifactUI.GetEquippedArtifactInfo() then
+							UIErrorsFrame:AddMessage(ERR_ARTIFACT_RELIC_DOES_NOT_MATCH_ARTIFACT, RED_FONT_COLOR:GetRGBA());
+						end
+					else
+						if itemLocation:IsValid() and C_MountJournal.IsItemMountEquipment(itemLocation) then
+							CollectionsJournal_LoadUI();
 
-						if CollectionsJournal:IsShown() then
-							local tab = CollectionsJournal_GetTab(CollectionsJournal);
-							if tab == COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS then
-								MountJournal_ApplyEquipmentFromContainerClick(MountJournal, itemLocation);
+							if CollectionsJournal:IsShown() then
+								local tab = CollectionsJournal_GetTab(CollectionsJournal);
+								if tab == COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS then
+									MountJournal_ApplyEquipmentFromContainerClick(MountJournal, itemLocation);
+								else
+									CollectionsJournal_SetTab(CollectionsJournal, COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
+								end
 							else
+								ShowUIPanel(CollectionsJournal);
 								CollectionsJournal_SetTab(CollectionsJournal, COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
 							end
-						else
-							ShowUIPanel(CollectionsJournal);
-							CollectionsJournal_SetTab(CollectionsJournal, COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
 						end
-					end
-				end 
+					end 
+				end
 			end
 		end
 		UseContainerItem(self:GetParent():GetID(), self:GetID(), nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));

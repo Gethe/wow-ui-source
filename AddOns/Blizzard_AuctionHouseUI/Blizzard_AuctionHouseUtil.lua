@@ -110,7 +110,7 @@ function AuctionHouseBuySystemMixin:PlaceBid()
 	local bidAmount = self.BidFrame:GetPrice();
 	if bidAmount < self.minBid then
 		UIErrorsFrame:AddExternalErrorMessage(AUCTION_HOUSE_BID_AMOUNT_IS_TOO_LOW);
-	elseif bidAmount >= self:GetBuyoutAmount() then
+	elseif self:GetBuyoutAmount() ~= 0 and bidAmount >= self:GetBuyoutAmount() then
 		self:BuyoutItem();
 	else
 		self:GetAuctionHouseFrame():StartItemBid(self.auctionID, bidAmount);
@@ -424,3 +424,17 @@ function AuctionHouseUtil.ConvertItemSellItemKey(itemKey)
 	return itemKey;
 end
 
+function AuctionHouseUtil.SetAuctionHouseTooltip(owner, rowData)
+	GameTooltip:SetOwner(owner, "ANCHOR_RIGHT");
+
+	if rowData.itemLink then
+		local hideVendorPrice = true;
+		GameTooltip:SetHyperlink(rowData.itemLink, nil, nil, nil, hideVendorPrice);
+	else
+		GameTooltip:SetItemKey(rowData.itemKey.itemID, rowData.itemKey.itemLevel, rowData.itemKey.itemSuffix);
+	end
+
+	AuctionHouseUtil.AddAuctionHouseTooltipInfo(GameTooltip, rowData.owners, rowData.timeLeft);
+	
+	GameTooltip:Show();
+end

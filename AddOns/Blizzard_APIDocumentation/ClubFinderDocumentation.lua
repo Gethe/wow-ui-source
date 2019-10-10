@@ -718,18 +718,6 @@ local ClubFinder =
 			},
 		},
 		{
-			Name = "ClubFinderGuildTabardInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "backgroundColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
-				{ Name = "borderColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
-				{ Name = "emblemColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
-				{ Name = "emblemFileID", Type = "number", Nilable = false },
-				{ Name = "emblemStyle", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "ClubSettingsInfo",
 			Type = "Structure",
 			Fields =
@@ -765,7 +753,7 @@ local ClubFinder =
 				{ Name = "guildLeader", Type = "string", Nilable = false },
 				{ Name = "isGuild", Type = "bool", Nilable = false },
 				{ Name = "emblemInfo", Type = "number", Nilable = false },
-				{ Name = "tabardInfo", Type = "ClubFinderGuildTabardInfo", Nilable = true },
+				{ Name = "tabardInfo", Type = "GuildTabardInfo", Nilable = true },
 				{ Name = "recruitingSpecIds", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "recruitmentFlags", Type = "number", Nilable = false },
 				{ Name = "minILvl", Type = "number", Nilable = false },

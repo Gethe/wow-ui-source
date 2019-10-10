@@ -47,6 +47,8 @@
 			<OnLoad method="OnLoad"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
@@ -55,6 +57,8 @@
 		<Frames>
 			<Button parentKey="ItemButton" mixin="AuctionHouseItemDisplayItemButtonMixin" inherits="CircularGiantItemButtonTemplate">
 				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnClick method="OnClick"/>
 					<OnEnter method="OnEnter"/>
 					<OnLeave method="OnLeave"/>
 				</Scripts>
@@ -82,7 +86,7 @@
 			<KeyValue key="itemButtonYOffset" value="0" type="number"/>
 		</KeyValues>
 		<Frames>
-			<Button parentKey="ItemButton" mixin="AuctionHouseItemDisplayItemButtonMixin" inherits="GiantItemButtonTemplate">
+			<Button parentKey="ItemButton" mixin="AuctionHouseInteractableItemDisplayItemButtonMixin" inherits="GiantItemButtonTemplate">
 				<Anchors>
 					<Anchor point="LEFT" x="12" y="0"/>
 				</Anchors>

@@ -1842,8 +1842,8 @@
 							</OnShow>
 						</Scripts>
 					</Frame>
-          
-					<DressUpModel parentKey="Model" mixin="DressUpModelFrameMixin" enableMouse="true" modelScale="2.0" inherits="ModelWithControlsTemplate">
+
+					<ModelScene parentKey="ModelScene" inherits="PanningModelSceneMixinTemplate">
 						<Size x="294" y="488"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="2" y="-4"/>
@@ -1854,12 +1854,13 @@
 										<Color r="1" g="0" b="0" a="0"/>
 									</Texture>
 								</Layer>
-							</Layers>				
-						<Scripts>
-							<OnLoad method="OnLoad" />
-							<OnHide method="OnHide" />
-						</Scripts>
+							</Layers>
 						<Frames>
+							<Frame parentKey="ControlFrame" inherits="ModelSceneControlFrameTemplate" >
+								<Anchors>
+									<Anchor point="TOP" x="0" y="-10"/>
+								</Anchors>
+							</Frame>
 							<Button parentKey="ClearAllPendingButton" inherits="UIMenuButtonStretchTemplate" hidden="true">
 								<Size x="26" y="26"/>
 								<Anchors>
@@ -2008,8 +2009,8 @@
 								</Anchors>
 							</Button>
 						</Frames>
-					</DressUpModel>
-          
+					</ModelScene>
+
 					<Frame parentKey="MoneyFrame" name="WardrobeTransmogMoneyFrame" inherits="SmallMoneyFrameTemplate">
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.MoneyRight" x="6" y="0"/>
@@ -2020,7 +2021,7 @@
 								MoneyFrame_SetType(self, "STATIC");
 							</OnLoad>
 						</Scripts>
-					</Frame>					
+					</Frame>
 					<Button parentKey="ApplyButton" inherits="UIPanelButtonTemplate" text="APPLY">
 						<Size x="112" y="22"/>
 						<Anchors>
@@ -2061,8 +2062,6 @@
 								ToggleDropDownMenu(1, nil, self:GetParent().SpecDropDown, self, 0, 0);
 								self:GetParent().SpecHelpBox:Hide();
 								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SPECS_BUTTON, true);
-							</OnMouseDown>
-							<OnMouseDown>
 								self.Icon:SetPoint("CENTER", -1, -1);
 							</OnMouseDown>
 							<OnMouseUp>

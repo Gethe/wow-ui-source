@@ -271,7 +271,7 @@ function LookingForGuild_Update()
 			button.comment:SetText(comment);
 			button.fullComment:SetText(comment);
 			-- tabard
-			local tabardInfo = { GetRecruitingGuildTabardInfo(index) };
+			local tabardInfo = { C_LFGuildInfo.GetRecruitingGuildTabardInfo(index) };
 			SetLargeGuildTabardTextures(nil, button.emblem, button.tabard, button.border, tabardInfo);
 			-- selection
 			local buttonHeight = GUILD_BUTTON_HEIGHT;

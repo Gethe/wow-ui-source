@@ -41,14 +41,14 @@ function AuctionHouseCommoditiesListMixin:OnEvent(event, ...)
 	if event == "COMMODITY_SEARCH_RESULTS_UPDATED" then
 		self:Reset();
 	elseif event == "COMMODITY_SEARCH_RESULTS_ADDED" then
-		self:RefreshScrollFrame();
+		self:DirtyScrollFrame();
 	end
 end
 
 function AuctionHouseCommoditiesListMixin:SetItemID(itemID)
 	self.itemID = itemID;
 	self:UpdateDataProvider();
-	self:RefreshScrollFrame();
+	self:DirtyScrollFrame();
 end
 
 function AuctionHouseCommoditiesListMixin:UpdateDataProvider()
@@ -178,7 +178,7 @@ end
 function AuctionHouseCommoditiesBuyListMixin:SetQuantitySelected(quantity)
 	self.quantitySelected = quantity;
 	self:UpdateDynamicCallbacks();
-	self:RefreshScrollFrame();
+	self:DirtyScrollFrame();
 end
 
 function AuctionHouseCommoditiesBuyListMixin:OnShow()

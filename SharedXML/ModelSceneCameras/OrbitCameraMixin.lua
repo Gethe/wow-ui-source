@@ -638,11 +638,18 @@ function OrbitCameraMixin:CalculateTransitionalValues(fromModelSceneCameraInfo, 
 		};
 	end
 
-
 	-- Nothing to transition from, just go directly to the values
 	return toModelSceneCameraInfo;
 end
 
 function OrbitCameraMixin:OnMouseWheel(delta) -- override
 	self:HandleMouseMovement(self.buttonModes.wheel, delta * self:GetDeltaModifierForCameraMode(self.buttonModes.wheel), not self.buttonModes.wheelInterpolate);
+end
+
+function OrbitCameraMixin:AdjustYaw(deltaX, deltaY, rotationScalar)
+	local xRotation = rotationScalar or self:GetDeltaModifierForCameraMode(self.buttonModes.leftX);
+	self:HandleMouseMovement(self.buttonModes.leftX, deltaX * xRotation, not self.buttonModes.leftXinterpolate);
+
+	local yRotatation  = rotationScalar or self:GetDeltaModifierForCameraMode(self.buttonModes.leftY);
+	self:HandleMouseMovement(self.buttonModes.leftY, -deltaY * yRotatation, not self.buttonModes.leftYinterpolate);
 end

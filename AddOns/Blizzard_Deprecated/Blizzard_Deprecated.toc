@@ -8,3 +8,4 @@ Deprecated_8_1_0.lua
 Deprecated_8_1_5.lua
 Deprecated_8_2_0.lua
 Deprecated_8_2_5.lua
+Deprecated_8_3_0.lua

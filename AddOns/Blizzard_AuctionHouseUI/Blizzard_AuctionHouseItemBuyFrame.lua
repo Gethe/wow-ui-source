@@ -8,6 +8,8 @@ local AUCTION_HOUSE_ITEM_BUY_FRAME_EVENTS = {
 	"ITEM_SEARCH_RESULTS_UPDATED",
 	"ITEM_SEARCH_RESULTS_ADDED",
 	"BIDS_UPDATED",
+	"AUCTION_CANCELED",
+	"AUCTION_HOUSE_BROWSE_RESULTS_UPDATED",
 };
 
 function AuctionHouseItemBuyFrameMixin:OnLoad()
@@ -25,20 +27,17 @@ function AuctionHouseItemBuyFrameMixin:OnLoad()
 	end);
 
 	self.ItemList:SetHighlightCallback(function(currentRowData, selectedRowData)
-		return selectedRowData and currentRowData.auctionID == selectedRowData.auctionID;
+		if self.selectedAuctionCanceled then
+			if selectedRowData.buyoutAmount == currentRowData.buyoutAmount then
+				self.ItemList:SetSelectedEntry(currentRowData);
+				return true;
+			end
+		else
+			return selectedRowData and (currentRowData.auctionID == selectedRowData.auctionID);
+		end
 	end);
 
-	local function ItemBuyFrameListLineOnEnterCallback(line, rowData)
-		GameTooltip:SetOwner(line, "ANCHOR_RIGHT");
-
-		local hideVendorPrice = true;
-		GameTooltip:SetHyperlink(rowData.itemLink, nil, nil, nil, hideVendorPrice);
-		AuctionHouseUtil.AddAuctionHouseTooltipInfo(GameTooltip, rowData.owners, rowData.timeLeft);
-
-		GameTooltip:Show();
-	end
-
-	self.ItemList:SetLineOnEnterCallback(ItemBuyFrameListLineOnEnterCallback);
+	self.ItemList:SetLineOnEnterCallback(AuctionHouseUtil.SetAuctionHouseTooltip);
 	self.ItemList:SetLineOnLeaveCallback(GameTooltip_Hide);
 
 	self.ItemList:SetTableBuilderLayout(AuctionHouseTableBuilder.GetItemBuyListLayout(self, self.ItemList));
@@ -67,11 +66,19 @@ end
 
 function AuctionHouseItemBuyFrameMixin:OnEvent(event, ...)
 	if event == "ITEM_SEARCH_RESULTS_UPDATED" then
-		self.ItemList:Reset();
+		self.ItemList:DirtyScrollFrame();
 	elseif event == "ITEM_SEARCH_RESULTS_ADDED" then
-		self.ItemList:RefreshScrollFrame();
+		self.ItemList:DirtyScrollFrame();
 	elseif event == "BIDS_UPDATED" then
-		self.ItemList:RefreshScrollFrame();
+		self.ItemList:DirtyScrollFrame();
+	elseif event == "AUCTION_CANCELED" then
+		local auctionID = ...;
+		local selectedRowData = self.ItemList:GetSelectedEntry();
+		if selectedRowData and selectedRowData.auctionID == auctionID then
+			self.selectedAuctionCanceled = true;
+		end
+	elseif event == "AUCTION_HOUSE_BROWSE_RESULTS_UPDATED" then
+		self.ItemList:UpdateRefreshFrame();
 	end
 end
 
@@ -110,7 +117,7 @@ function AuctionHouseItemBuyFrameMixin:SetItemKey(itemKey)
 end
 
 function AuctionHouseItemBuyFrameMixin:OnAuctionSelected(auctionData)
-	self.selectedAuctionData = auctionData;
+	self.selectedAuctionCanceled = false;
 
 	if auctionData == nil then
 		self:ResetPrice();

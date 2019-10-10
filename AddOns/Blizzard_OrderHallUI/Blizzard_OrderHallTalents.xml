@@ -98,6 +98,15 @@
 		</Scripts>
 	</Button>
 
+	<Frame name="GarrisonTalentPrerequisiteArrowTemplate" virtual="true">
+		<Size x="31" y="23"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Arrow" atlas="MOTHER-talenttree-arrow-enabled" useAtlasSize="true"/>
+			</Layer>
+		</Layers>
+	</Frame>
+
 	<Texture name="GarrisonTalentChoiceTemplate" virtual="true" atlas="orderhalltalents-choice-background" useAtlasSize="true"/>
 	<Texture name="GarrisonTalentArrowTemplate" virtual="true" atlas="orderhalltalents-choice-arrow-large" useAtlasSize="true" alphaMode="ADD">
 		<Animations>
@@ -121,14 +130,6 @@
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Background">
-					<Size x="322" y="498"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Bg" x="4" y="-40"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="CurrencyBG">
 					<Anchors>
@@ -228,7 +229,10 @@
 				</Scripts>
 			</Frame>
 			<Frame parentKey="Inset" inherits="InsetFrameTemplate" useParentLevel="true">
-				<Size x="328" y="504"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-58"/>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="6"/>
+				</Anchors>
 			</Frame>
 			<Button parentKey="BackButton" inherits="UIPanelButtonTemplate" text="BACK">
 				<Size x="86" y="22"/>
@@ -243,5 +247,15 @@
 				</Scripts>
 			</Button>
 		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Inset"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 	</Frame>
 </Ui>

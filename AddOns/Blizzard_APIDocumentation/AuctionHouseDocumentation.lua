@@ -406,6 +406,15 @@ local AuctionHouse =
 			},
 		},
 		{
+			Name = "GetNumReplicateItems",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numReplicateItems", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetOwnedAuctionInfo",
 			Type = "Function",
 
@@ -440,6 +449,80 @@ local AuctionHouse =
 			Returns =
 			{
 				{ Name = "quoteDurationSeconds", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetReplicateItemBattlePetInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "creatureID", Type = "number", Nilable = false },
+				{ Name = "displayID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetReplicateItemInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = true },
+				{ Name = "texture", Type = "number", Nilable = true },
+				{ Name = "count", Type = "number", Nilable = false },
+				{ Name = "qualityID", Type = "number", Nilable = false },
+				{ Name = "usable", Type = "bool", Nilable = true },
+				{ Name = "level", Type = "number", Nilable = false },
+				{ Name = "levelType", Type = "string", Nilable = true },
+				{ Name = "minBid", Type = "number", Nilable = false },
+				{ Name = "minIncrement", Type = "number", Nilable = false },
+				{ Name = "buyoutPrice", Type = "number", Nilable = false },
+				{ Name = "bidAmount", Type = "number", Nilable = false },
+				{ Name = "highBidder", Type = "string", Nilable = true },
+				{ Name = "bidderFullName", Type = "string", Nilable = true },
+				{ Name = "owner", Type = "string", Nilable = true },
+				{ Name = "ownerFullName", Type = "string", Nilable = true },
+				{ Name = "saleStatus", Type = "number", Nilable = false },
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "hasAllInfo", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "GetReplicateItemLink",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemLink", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetReplicateItemTimeLeft",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "timeLeft", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -639,6 +722,10 @@ local AuctionHouse =
 			},
 		},
 		{
+			Name = "ReplicateItems",
+			Type = "Function",
+		},
+		{
 			Name = "RequestMoreBrowseResults",
 			Type = "Function",
 		},
@@ -676,6 +763,16 @@ local AuctionHouse =
 
 			Arguments =
 			{
+				{ Name = "sorts", Type = "table", InnerType = "AuctionHouseSortType", Nilable = false },
+			},
+		},
+		{
+			Name = "SearchForItemKeys",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemKeys", Type = "table", InnerType = "ItemKey", Nilable = false },
 				{ Name = "sorts", Type = "table", InnerType = "AuctionHouseSortType", Nilable = false },
 			},
 		},
@@ -735,14 +832,13 @@ local AuctionHouse =
 	Events =
 	{
 		{
-			Name = "AuctionBidderListUpdate",
-			Type = "Event",
-			LiteralName = "AUCTION_BIDDER_LIST_UPDATE",
-		},
-		{
 			Name = "AuctionCanceled",
 			Type = "Event",
 			LiteralName = "AUCTION_CANCELED",
+			Payload =
+			{
+				{ Name = "auctionID", Type = "number", Nilable = false },
+			},
 		},
 		{
 			Name = "AuctionHouseBrowseResultsAdded",
@@ -784,11 +880,6 @@ local AuctionHouse =
 			LiteralName = "AUCTION_HOUSE_SHOW",
 		},
 		{
-			Name = "AuctionItemListUpdate",
-			Type = "Event",
-			LiteralName = "AUCTION_ITEM_LIST_UPDATE",
-		},
-		{
 			Name = "AuctionMultisellFailure",
 			Type = "Event",
 			LiteralName = "AUCTION_MULTISELL_FAILURE",
@@ -811,11 +902,6 @@ local AuctionHouse =
 				{ Name = "createdCount", Type = "number", Nilable = false },
 				{ Name = "totalToCreate", Type = "number", Nilable = false },
 			},
-		},
-		{
-			Name = "AuctionOwnedListUpdate",
-			Type = "Event",
-			LiteralName = "AUCTION_OWNED_LIST_UPDATE",
 		},
 		{
 			Name = "BidAdded",
@@ -930,11 +1016,6 @@ local AuctionHouse =
 			},
 		},
 		{
-			Name = "NewAuctionUpdate",
-			Type = "Event",
-			LiteralName = "NEW_AUCTION_UPDATE",
-		},
-		{
 			Name = "OwnedAuctionAdded",
 			Type = "Event",
 			LiteralName = "OWNED_AUCTION_ADDED",
@@ -956,6 +1037,11 @@ local AuctionHouse =
 			Name = "OwnedAuctionsUpdated",
 			Type = "Event",
 			LiteralName = "OWNED_AUCTIONS_UPDATED",
+		},
+		{
+			Name = "ReplicateItemListUpdate",
+			Type = "Event",
+			LiteralName = "REPLICATE_ITEM_LIST_UPDATE",
 		},
 	},
 
@@ -1047,7 +1133,7 @@ local AuctionHouse =
 			{
 				{ Name = "auctionID", Type = "number", Nilable = false },
 				{ Name = "itemKey", Type = "ItemKey", Nilable = false },
-				{ Name = "itemLink", Type = "string", Nilable = false },
+				{ Name = "itemLink", Type = "string", Nilable = true },
 				{ Name = "timeLeft", Type = "AuctionHouseTimeLeftBand", Nilable = false },
 				{ Name = "bidAmount", Type = "number", Nilable = true },
 				{ Name = "buyoutAmount", Type = "number", Nilable = true },
@@ -1114,7 +1200,7 @@ local AuctionHouse =
 				{ Name = "timeLeft", Type = "AuctionHouseTimeLeftBand", Nilable = false },
 				{ Name = "auctionID", Type = "number", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
-				{ Name = "itemLink", Type = "string", Nilable = false },
+				{ Name = "itemLink", Type = "string", Nilable = true },
 				{ Name = "containsOwnerItem", Type = "bool", Nilable = false },
 				{ Name = "containsSocketedItem", Type = "bool", Nilable = false },
 				{ Name = "bidder", Type = "string", Nilable = true },
@@ -1131,7 +1217,7 @@ local AuctionHouse =
 			{
 				{ Name = "auctionID", Type = "number", Nilable = false },
 				{ Name = "itemKey", Type = "ItemKey", Nilable = false },
-				{ Name = "itemLink", Type = "string", Nilable = false },
+				{ Name = "itemLink", Type = "string", Nilable = true },
 				{ Name = "status", Type = "AuctionStatus", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
 				{ Name = "timeLeftSeconds", Type = "number", Nilable = false },

@@ -293,8 +293,7 @@ function AuctionHouseSellFrameMixin:OnLoad()
 		self:UpdatePostState();
 	end);
 
-	self.QuantityInput:SetNextEditBox(self.PriceInput.MoneyInputFrame.GoldBox);
-	self.PriceInput:SetNextEditBox(self.QuantityInput.InputBox);
+	self:UpdateFocusTabbing();
 end
 
 function AuctionHouseSellFrameMixin:OnShow()
@@ -347,6 +346,11 @@ function AuctionHouseSellFrameMixin:UpdatePostState()
 	end
 end
 
+function AuctionHouseSellFrameMixin:UpdateFocusTabbing()
+	self.QuantityInput:SetNextEditBox(self.PriceInput.MoneyInputFrame.GoldBox);
+	self.PriceInput:SetNextEditBox(self.QuantityInput:IsShown() and self.QuantityInput.InputBox or nil);
+end
+
 function AuctionHouseSellFrameMixin:OnDurationUpdated()
 	self:UpdatePostState();
 end
@@ -390,6 +394,8 @@ function AuctionHouseSellFrameMixin:SetItem(itemLocation, fromItemDisplay)
 	local showQuantity = self:GetMaxQuantity() > 1;
 	self.QuantityInput:SetShown(showQuantity);
 	self:MarkDirty();
+
+	self:UpdateFocusTabbing();
 
 	return true;
 end

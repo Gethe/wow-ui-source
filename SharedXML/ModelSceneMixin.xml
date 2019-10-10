@@ -11,6 +11,8 @@
 		</ModelScene>
 		<ModelScene name="ModelSceneMixinTemplate" inherits="NonInteractableModelSceneMixinTemplate" virtual="true">
 			<Scripts>
+				<OnEnter method="OnEnter"/>
+				<OnLeave method="OnLeave"/>
 				<OnMouseUp method="OnMouseUp"/>
 				<OnMouseDown method="OnMouseDown"/>
 				<OnMouseWheel method="OnMouseWheel" />
@@ -22,6 +24,5 @@
 				<KeyValue key="reversedLighting" value="true" type="boolean"/>
 			</KeyValues>
 		</ModelScene>
-
 	</ScopedModifier>
 </Ui>

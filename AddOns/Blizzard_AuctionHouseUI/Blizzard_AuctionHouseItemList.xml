@@ -112,6 +112,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

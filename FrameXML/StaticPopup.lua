@@ -4248,8 +4248,8 @@ StaticPopupDialogs["CONFIRM_RAF_REMOVE_RECRUIT"] = {
 	text = RAF_REMOVE_RECRUIT_CONFIRM,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(self)
-		C_RecruitAFriend.RemoveRAFRecruit(self:GetParent().data);
+	OnAccept = function(self, data)
+		C_RecruitAFriend.RemoveRAFRecruit(data);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -4267,9 +4267,9 @@ StaticPopupDialogs["CONFIRM_RAF_REMOVE_RECRUIT"] = {
 		ChatEdit_FocusActiveWindow();
 		self.editBox:SetText("");
 	end,
-	EditBoxOnEnterPressed = function(self)
+	EditBoxOnEnterPressed = function(self, data)
 		if ( self:GetParent().button1:IsEnabled() ) then
-			C_RecruitAFriend.RemoveRAFRecruit(self:GetParent().data);
+			C_RecruitAFriend.RemoveRAFRecruit(data);
 			self:GetParent():Hide();
 		end
 	end,

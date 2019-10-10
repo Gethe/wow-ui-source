@@ -187,9 +187,9 @@ function AuctionHouseAuctionsFrameMixin:RefreshSeachResults()
 	if itemKey then
 		self:GetAuctionHouseFrame():QueryItem(self:GetSearchContext(), itemKey);
 		if displayMode == AuctionsFrameDisplayMode.Item then
-			self.ItemList:RefreshScrollFrame();
+			self.ItemList:DirtyScrollFrame();
 		elseif displayMode == AuctionsFrameDisplayMode.Commodity then
-			self.CommoditiesList:RefreshScrollFrame();
+			self.CommoditiesList:DirtyScrollFrame();
 		end
 	end
 end
@@ -215,18 +215,18 @@ function AuctionHouseAuctionsFrameMixin:OnEvent(event, ...)
 
 		self.SummaryList:RefreshScrollFrame();
 	elseif event == "ITEM_SEARCH_RESULTS_UPDATED" then
-		self.ItemList:RefreshScrollFrame();
+		self.ItemList:DirtyScrollFrame();
 	elseif event == "ITEM_SEARCH_RESULTS_ADDED" then
-		self.ItemList:RefreshScrollFrame();
+		self.ItemList:DirtyScrollFrame();
 	elseif event == "BIDS_UPDATED" then
-		self.BidsList:RefreshScrollFrame();
+		self.BidsList:DirtyScrollFrame();
 
 		if self:IsDisplayingBids() then
 			self.SummaryList:RefreshScrollFrame();
 		end
 
 	elseif event == "BID_ADDED" then
-		self.BidsList:RefreshScrollFrame();
+		self.BidsList:DirtyScrollFrame();
 
 		if self:IsDisplayingBids() then
 			self.SummaryList:RefreshScrollFrame();
@@ -267,7 +267,7 @@ function AuctionHouseAuctionsFrameMixin:InitializeAllAuctionsList()
 	
 	local function AllAuctionsRefreshResults()
 		self:GetAuctionHouseFrame():QueryAll(AuctionHouseSearchContext.AllAuctions);
-		self.AllAuctionsList:RefreshScrollFrame();
+		self.AllAuctionsList:DirtyScrollFrame();
 	end
 
 	local AllAuctionsGetTotalQuantity = nil;
@@ -295,7 +295,7 @@ function AuctionHouseAuctionsFrameMixin:InitializeBidsList()
 	
 	local function BidsListRefreshResults()
 		self:GetAuctionHouseFrame():QueryAll(AuctionHouseSearchContext.AllBids);
-		self.BidsList:RefreshScrollFrame();
+		self.BidsList:DirtyScrollFrame();
 	end
 
 	local BidsListGetTotalQuantity = nil;
@@ -314,17 +314,7 @@ function AuctionHouseAuctionsFrameMixin:InitializeItemList()
 		return selectedRowData and currentRowData.auctionID == selectedRowData.auctionID;
 	end);
 
-	local function ItemSellFrameListLineOnEnterCallback(line, rowData)
-		GameTooltip:SetOwner(line, "ANCHOR_RIGHT");
-
-		local hideVendorPrice = true;
-		GameTooltip:SetHyperlink(rowData.itemLink, nil, nil, nil, hideVendorPrice);
-		AuctionHouseUtil.AddAuctionHouseTooltipInfo(GameTooltip, rowData.owners, rowData.timeLeft);
-		
-		GameTooltip:Show();
-	end
-
-	self.ItemList:SetLineOnEnterCallback(ItemSellFrameListLineOnEnterCallback);
+	self.ItemList:SetLineOnEnterCallback(AuctionHouseUtil.SetAuctionHouseTooltip);
 	self.ItemList:SetLineOnLeaveCallback(GameTooltip_Hide);
 
 	local function AuctionsItemListSearchStarted()

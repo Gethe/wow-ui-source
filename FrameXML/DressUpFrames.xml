@@ -128,6 +128,13 @@
 					<Anchor point="TOPLEFT" x="7" y="-63"/>
 					<Anchor point="BOTTOMRIGHT" x="-9" y="28"/>
 				</Anchors>
+				<Frames>
+					<Frame parentKey="ControlFrame" inherits="ModelSceneControlFrameTemplate" >
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-10"/>
+						</Anchors>
+					</Frame>
+				</Frames>
 			</ModelScene>
 			<Button parentKey="ResetButton" mixin="DressUpModelFrameResetButtonMixin" name="DressUpFrameResetButton" inherits="UIPanelButtonTemplate" text="RESET">
 				<Size x="80" y="22"/>

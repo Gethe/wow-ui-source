@@ -182,7 +182,7 @@ end
 
 function AuctionHouseItemListMixin:SetSelectedEntry(rowData)
 	self.selectedRowData = rowData;
-	self:RefreshScrollFrame();
+	self:DirtyScrollFrame();
 
 	if self.selectionCallback then
 		self.selectionCallback(rowData);
@@ -202,9 +202,18 @@ function AuctionHouseItemListMixin:OnShow()
 	self.dotCount = 0;
 end
 
+function AuctionHouseItemListMixin:OnUpdate()
+	if self.scrollFrameDirty then
+		self:RefreshScrollFrame();
+	end
+end
+
 function AuctionHouseItemListMixin:Reset()
-	HybridScrollFrame_SetOffset(self.ScrollFrame, 0);
-	self:RefreshScrollFrame();
+	if self:GetScrollOffset() == 0 then
+		self:RefreshScrollFrame();
+	else
+		HybridScrollFrame_SetOffset(self.ScrollFrame, 0);
+	end
 end
 
 function AuctionHouseItemListMixin:SetState(state)
@@ -220,27 +229,13 @@ function AuctionHouseItemListMixin:SetState(state)
 	if state == ItemListState.NoSearch then
 		local searchResultsText = self.searchStartedFunc and select(2, self.searchStartedFunc());
 		self.ResultsText:SetText(searchResultsText or "");
-		
-		if self.RefreshFrame:IsShown() then
-			self.RefreshFrame:Deactivate();
-		end
 	elseif state == ItemListState.NoResults then
 		self.ResultsText:SetText(BROWSE_NO_RESULTS);
-
-		if self.RefreshFrame:IsShown() then
-			self.RefreshFrame:SetQuantity(0);
-		end
 	elseif state == ItemListState.ResultsPending then
 		self.LoadingSpinner:Show();
-
-		if self.RefreshFrame:IsShown() then
-			self.RefreshFrame:Deactivate();
-		end
-	else -- state == ItemListState.ShowResults
-		if self.RefreshFrame:IsShown() then
-			self.RefreshFrame:SetQuantity(self.totalQuantityFunc and self.totalQuantityFunc() or 0);
-		end
 	end
+
+	self:UpdateRefreshFrame();
 
 	if state ~= ItemListState.ShowResults then
 		local buttons = HybridScrollFrame_GetButtons(self.ScrollFrame);
@@ -258,7 +253,29 @@ function AuctionHouseItemListMixin:GetScrollOffset()
 	return HybridScrollFrame_GetOffset(self.ScrollFrame);
 end
 
+function AuctionHouseItemListMixin:UpdateRefreshFrame()
+	if not self.RefreshFrame:IsShown() then
+		return;
+	end
+
+	if state == ItemListState.NoSearch then
+		self.RefreshFrame:Deactivate();
+	elseif state == ItemListState.NoResults then
+		self.RefreshFrame:SetQuantity(0);
+	elseif state == ItemListState.ResultsPending then
+		self.RefreshFrame:Deactivate();
+	else -- state == ItemListState.ShowResults
+		self.RefreshFrame:SetQuantity(self.totalQuantityFunc and self.totalQuantityFunc() or 0);
+	end
+end
+
+function AuctionHouseItemListMixin:DirtyScrollFrame()
+	self.scrollFrameDirty = true;
+end
+
 function AuctionHouseItemListMixin:RefreshScrollFrame()
+	self.scrollFrameDirty = false;
+
 	if not self.isInitialized or not self:IsShown() then
 		return;
 	end

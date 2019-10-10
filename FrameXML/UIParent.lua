@@ -2138,6 +2138,14 @@ function UIParent_OnEvent(self, event, ...)
 		if not IsGlobalMouseEventHandled(buttonID, event) then
 			UIDropDownMenu_HandleGlobalMouseEvent(buttonID, event);
 		end
+
+		if event == "GLOBAL_MOUSE_DOWN" then
+			local mouseFocus = GetMouseFocus();
+			local keyBoardFocus = GetCurrentKeyBoardFocus();
+			if keyBoardFocus and keyBoardFocus ~= mouseFocus and keyBoardFocus.ClearFocus then
+				keyBoardFocus:ClearFocus();
+			end
+		end
 	end
 end
 
@@ -4947,74 +4955,47 @@ function SetDoubleGuildTabardTextures(unit, leftEmblemTexture, rightEmblemTextur
 	end
 end
 
-function SetLargeTabardTexturesFromColorRGB(unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
-	local newTabardData = { };
-	if (tabardData) then
-		local rgbFormatMultiplier = 255;
-		newTabardData[1] = tabardData.backgroundColor.r * rgbFormatMultiplier;
-		newTabardData[2] = tabardData.backgroundColor.g * rgbFormatMultiplier;
-		newTabardData[3] = tabardData.backgroundColor.b * rgbFormatMultiplier;
-		newTabardData[4] = tabardData.borderColor.r * rgbFormatMultiplier;
-		newTabardData[5] = tabardData.borderColor.g * rgbFormatMultiplier;
-		newTabardData[6] = tabardData.borderColor.b * rgbFormatMultiplier;
-		newTabardData[7] = tabardData.emblemColor.r * rgbFormatMultiplier;
-		newTabardData[8] = tabardData.emblemColor.g * rgbFormatMultiplier;
-		newTabardData[9] = tabardData.emblemColor.b * rgbFormatMultiplier;
-		newTabardData[10] = tabardData.emblemFileID;
-		newTabardData[11] = tabardData.emblemStyle;
-	end
-
-	SetLargeGuildTabardTextures(unit, emblemTexture, backgroundTexture, borderTexture, newTabardData);
-end
-
 function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
-	local bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFileID, emblemIndex;
-	if ( tabardData )  then
-		bkgR = tabardData[1];
-		bkgG = tabardData[2];
-		bkgB = tabardData[3];
-		borderR = tabardData[4];
-		borderG = tabardData[5];
-		borderB = tabardData[6];
-		emblemR = tabardData[7];
-		emblemG = tabardData[8];
-		emblemB = tabardData[9];
-		emblemFileID = tabardData[10];
-		emblemIndex = tabardData[11];
-	else
-		bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFileID, emblemIndex = GetGuildLogoInfo(unit);
+	local backgroundColor, borderColor, emblemColor, emblemFileID, emblemIndex;
+	tabardData = tabardData or C_GuildInfo.GetGuildTabardInfo(unit);
+	if(tabardData) then 
+		backgroundColor = tabardData.backgroundColor; 
+		borderColor = tabardData.borderColor;
+		emblemColor = tabardData.emblemColor;
+		emblemFileID = tabardData.emblemFileID;
+		emblemIndex = tabardData.emblemStyle;
 	end
-	if ( emblemFileID ) then
-		if ( backgroundTexture ) then
-			backgroundTexture:SetVertexColor(bkgR / 255, bkgG / 255, bkgB / 255);
+	if (emblemFileID) then
+		if (backgroundTexture) then
+			backgroundTexture:SetVertexColor(backgroundColor:GetRGB());
 		end
-		if ( borderTexture ) then
-			borderTexture:SetVertexColor(borderR / 255, borderG / 255, borderB / 255);
+		if (borderTexture) then
+			borderTexture:SetVertexColor(borderColor:GetRGB());
 		end
-		if ( emblemSize ) then
-			if ( emblemIndex) then
+		if (emblemSize) then
+			if (emblemIndex) then
 				local xCoord = mod(emblemIndex, columns) * emblemSize;
 				local yCoord = floor(emblemIndex / columns) * emblemSize;
 				emblemTexture:SetTexCoord(xCoord + offset, xCoord + emblemSize - offset, yCoord + offset, yCoord + emblemSize - offset);
 			end
-			emblemTexture:SetVertexColor(emblemR / 255, emblemG / 255, emblemB / 255);
-		elseif ( emblemTexture ) then
+			emblemTexture:SetVertexColor(emblemColor:GetRGB());
+		elseif (emblemTexture) then
 			emblemTexture:SetTexture(emblemFileID);
-			emblemTexture:SetVertexColor(emblemR / 255, emblemG / 255, emblemB / 255);
+			emblemTexture:SetVertexColor(emblemColor:GetRGB());
 		end
 
 		return true;
 	else
 		-- tabard lacks design
-		if ( backgroundTexture ) then
+		if (backgroundTexture) then
 			backgroundTexture:SetVertexColor(0.2245, 0.2088, 0.1794);
 		end
-		if ( borderTexture ) then
+		if (borderTexture) then
 			borderTexture:SetVertexColor(0.2, 0.2, 0.2);
 		end
-		if ( emblemTexture ) then
-			if ( emblemSize ) then
-				if ( emblemSize == 18 / 256 ) then
+		if (emblemTexture) then
+			if (emblemSize) then
+				if (emblemSize == 18 / 256) then
 					emblemTexture:SetTexture("Interface\\GuildFrame\\GuildLogo-NoLogoSm");
 				else
 					emblemTexture:SetTexture("Interface\\GuildFrame\\GuildLogo-NoLogo");
@@ -5028,7 +5009,7 @@ function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture
 
 		return false;
 	end
-end
+end 
 
 function GetDisplayedAllyFrames()
 	local useCompact = GetCVarBool("useCompactPartyFrames")

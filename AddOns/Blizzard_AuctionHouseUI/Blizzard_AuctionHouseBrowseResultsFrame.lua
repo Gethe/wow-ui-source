@@ -4,6 +4,8 @@ local BROWSE_SCROLL_OFFSET_REFRESH_THRESHOLD = 30;
 
 AuctionHouseBrowseResultsFrameMixin = CreateFromMixins(AuctionHouseSortOrderSystemMixin);
 
+-- These events are registered in OnLoad, as the browse results can be updated
+-- when the player retrieves specific item and commodity results.
 local AUCTION_HOUSE_BROWSE_RESULTS_FRAME_EVENTS = {
 	"AUCTION_HOUSE_BROWSE_RESULTS_UPDATED",
 	"AUCTION_HOUSE_BROWSE_RESULTS_ADDED",
@@ -16,6 +18,8 @@ function AuctionHouseBrowseResultsFrameMixin:SetupTableBuilder(extraInfoColumn)
 end
 
 function AuctionHouseBrowseResultsFrameMixin:OnLoad()
+	FrameUtil.RegisterFrameForEvents(self, AUCTION_HOUSE_BROWSE_RESULTS_FRAME_EVENTS);
+	
 	AuctionHouseSortOrderSystemMixin.OnLoad(self);
 
 	local scrollFrame = self.ItemList.ScrollFrame;
@@ -62,7 +66,7 @@ function AuctionHouseBrowseResultsFrameMixin:OnLoad()
 	self.browseSearchStartedCallback = function ()
 		self.searchStarted = true;
 		self.browseResults = {};
-		self.ItemList:RefreshScrollFrame();
+		self.ItemList:DirtyScrollFrame();
 	end;
 
 	-- If the player has favorites, an automatic search will be started immediately. This is required because
@@ -72,8 +76,6 @@ function AuctionHouseBrowseResultsFrameMixin:OnLoad()
 end
 
 function AuctionHouseBrowseResultsFrameMixin:OnShow()
-	FrameUtil.RegisterFrameForEvents(self, AUCTION_HOUSE_BROWSE_RESULTS_FRAME_EVENTS);
-
 	self.ItemList:RefreshScrollFrame();
 
 	self:GetAuctionHouseFrame():RegisterCallback(AuctionHouseFrameMixin.Event.CategorySelected, self.categorySelectedCallback);
@@ -81,8 +83,6 @@ function AuctionHouseBrowseResultsFrameMixin:OnShow()
 end
 
 function AuctionHouseBrowseResultsFrameMixin:OnHide()
-	FrameUtil.UnregisterFrameForEvents(self, AUCTION_HOUSE_BROWSE_RESULTS_FRAME_EVENTS);
-
 	self:GetAuctionHouseFrame():UnregisterCallback(AuctionHouseFrameMixin.Event.CategorySelected, self.categorySelectedCallback);
 	self:GetAuctionHouseFrame():UnregisterCallback(AuctionHouseFrameMixin.Event.BrowseSearchStarted, self.browseSearchStartedCallback);
 end
@@ -138,7 +138,7 @@ function AuctionHouseBrowseResultsFrameMixin:UpdateBrowseResults(addedBrowseResu
 	end
 
 	if addedBrowseResults then
-		self.ItemList:RefreshScrollFrame();
+		self.ItemList:DirtyScrollFrame();
 	else
 		self.ItemList:Reset();
 	end

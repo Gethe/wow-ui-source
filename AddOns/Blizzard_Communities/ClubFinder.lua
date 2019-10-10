@@ -1185,7 +1185,7 @@ function ClubFinderGuildCardMixin:SetDisabledState(shouldDisable)
 	else
 		fontColor = HIGHLIGHT_FONT_COLOR;
 		self.Description:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
-		SetLargeTabardTexturesFromColorRGB("player", self.GuildBannerEmblemLogo, self.GuildBannerBackground, self.GuildBannerBorder, self.cardInfo.tabardInfo);
+		SetLargeGuildTabardTextures(nil, self.GuildBannerEmblemLogo, self.GuildBannerBackground, self.GuildBannerBorder, self.cardInfo.tabardInfo);
 	end
 
 	self.CardBackground:SetDesaturated(shouldDisable);
@@ -1224,7 +1224,7 @@ function ClubFinderGuildCardMixin:SetReportedCardState(isReported)
 	self:SetDisabledState(isReported)
 	if(isReported) then
 		self.RequestStatus:SetText(CLUB_FINDER_REPORTED);
-		SetLargeTabardTexturesFromColorRGB("player", self.GuildBannerEmblemLogo, self.GuildBannerBackground, self.GuildBannerBorder, nil);
+		SetLargeGuildTabardTextures(nil, self.GuildBannerEmblemLogo, self.GuildBannerBackground, self.GuildBannerBorder, nil);
 		self.RequestStatus:SetTextColor(RED_FONT_COLOR:GetRGB());
 	end
 end
@@ -1252,7 +1252,7 @@ function ClubFinderGuildCardMixin:UpdateCard()
 	else
 		self.Focus:Hide();
 	end
-	SetLargeTabardTexturesFromColorRGB("player", self.GuildBannerEmblemLogo, self.GuildBannerBackground, self.GuildBannerBorder, info.tabardInfo);
+	SetLargeGuildTabardTextures(nil, self.GuildBannerEmblemLogo, self.GuildBannerBackground, self.GuildBannerBorder, info.tabardInfo);
 
 	if(C_ClubFinder.DoesPlayerBelongToClubFromClubGUID(info.clubFinderGUID)) then
 		self.RequestJoin:Hide();
@@ -2028,7 +2028,7 @@ function ClubFinderInvitationsFrameMixin:DisplayInvitation(clubInfo, isLinkInvit
 	self.isLinkInvitation = isLinkInvitation;
 
 	if (isGuild) then
-		SetLargeTabardTexturesFromColorRGB("player", self.GuildBannerEmblemLogo, self.GuildBannerBackground, self.GuildBannerBorder, clubInfo.tabardInfo);
+		SetLargeGuildTabardTextures(nil, self.GuildBannerEmblemLogo, self.GuildBannerBackground, self.GuildBannerBorder, clubInfo.tabardInfo);
 	end
 
 	if(clubInfo.emblemInfo > 0 and not isGuild) then

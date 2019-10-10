@@ -18,11 +18,6 @@ GLUE_SECONDARY_SCREENS = {
 
 ACCOUNT_SUSPENDED_ERROR_CODE = 53;
 
-IsKioskModeEnabled = function()
-	return false;
-	--return Kiosk.IsEnabled();
-end
-
 local function OnDisplaySizeChanged(self)
 	local width = GetScreenWidth();
 	local height = GetScreenHeight();

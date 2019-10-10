@@ -279,9 +279,9 @@ end
 
 function LargeMoneyInputFrameMixin:SetNextEditBox(nextEditBox)
 	if self.hideCopper then
-		self.SilverBox.nextEditBox = nextEditBox;
+		self.SilverBox.nextEditBox = nextEditBox or self.GoldBox;
 	else
-		self.CopperBox.nextEditBox = nextEditBox;
+		self.CopperBox.nextEditBox = nextEditBox or self.GoldBox;
 	end
 end
 

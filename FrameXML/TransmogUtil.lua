@@ -1,7 +1,7 @@
 TransmogUtil = {};
 
 function TransmogUtil.GetInfoForEquippedSlot(slot, transmogType)
-	local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, pendingSourceID, pendingVisualID, hasPendingUndo = C_Transmog.GetSlotVisualInfo(GetInventorySlotInfo(slot), transmogType);
+	local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, pendingSourceID, pendingVisualID, hasPendingUndo, _, itemSubclass = C_Transmog.GetSlotVisualInfo(GetInventorySlotInfo(slot), transmogType);
 	if ( appliedSourceID == NO_TRANSMOG_SOURCE_ID ) then
 		appliedSourceID = baseSourceID;
 		appliedVisualID = baseVisualID;
@@ -17,7 +17,7 @@ function TransmogUtil.GetInfoForEquippedSlot(slot, transmogType)
 		selectedSourceID = appliedSourceID;
 		selectedVisualID = appliedVisualID;
 	end
-	return appliedSourceID, appliedVisualID, selectedSourceID, selectedVisualID;
+	return appliedSourceID, appliedVisualID, selectedSourceID, selectedVisualID, itemSubclass;
 end
 
 function TransmogUtil.CanEnchantSource(sourceID)

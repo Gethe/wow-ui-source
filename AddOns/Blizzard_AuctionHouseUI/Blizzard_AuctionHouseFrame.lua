@@ -283,6 +283,11 @@ function AuctionHouseFrameMixin:OnLoad()
 	self.tabsForDisplayMode = {};
 	for i, tab in ipairs(self.Tabs) do
 		self.tabsForDisplayMode[tab.displayMode] = i;
+
+		if tab == self.SellTab then
+			self.tabsForDisplayMode[AuctionHouseFrameDisplayMode.CommoditiesSell] = i;
+			self.tabsForDisplayMode[AuctionHouseFrameDisplayMode.WoWTokenSell] = i;
+		end
 	end
 end
 
@@ -462,7 +467,7 @@ function AuctionHouseFrameMixin:IsListingAuctions()
 end
 
 function AuctionHouseFrameMixin:SetPostItem(itemLocation)
-	if not itemLocation:IsValid() then
+	if not itemLocation:IsValid() or not C_AuctionHouse.IsSellItemValid(itemLocation) then
 		return;
 	end
 
