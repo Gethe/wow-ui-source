@@ -38,32 +38,33 @@ local CHOICE_BACKGROUND_OFFSET_Y = 10;
 local BACKGROUND_WITH_INSET_OFFSET_Y = 0;
 local BACKGROUND_NO_INSET_OFFSET_Y = 44;
 
+local BORDER_ATLAS_NONE = nil;
+local BORDER_ATLAS_UNAVAILABLE = "orderhalltalents-spellborder";
+local BORDER_ATLAS_AVAILABLE = "orderhalltalents-spellborder-green";
+local BORDER_ATLAS_SELECTED = "orderhalltalents-spellborder-yellow";
+
 local TalentTreeLayoutOptions = { };
+
 TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Tiers] = {
-	buttonSizeX = 39,
-	buttonSizeY = 39,
-	buttonSpacingX = 59,
-	buttonSpacingY = 19,
-	
+	buttonInfo = {
+		[Enum.GarrTalentType.Standard] = { size = 39, spacingX = 59, spacingY = 19 },
+	},	
 	spacingTop = 86,
 	spacingBottom = 33,
 	spacingHorizontal = 0,
 	minimumWidth = 336,
-
 	canHaveBackButton = true,
 };
 
 TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Classic] = {
-	buttonSizeX = 39,
-	buttonSizeY = 39,
-	buttonSpacingX = 21,
-	buttonSpacingY = 37,
-	
-	spacingTop = 86,
-	spacingBottom = 33,
-	spacingHorizontal = 100,
+	buttonInfo = {
+		[Enum.GarrTalentType.Standard] = { size = 39, spacingX = 21, spacingY = 37 },
+		[Enum.GarrTalentType.Major] = { size = 46, spacingX = 21, spacingY = 37 },
+	},
+	spacingTop = 110,
+	spacingBottom = 36,
+	spacingHorizontal = 144,
 	minimumWidth = 336,
-
 	canHaveBackButton = false,
 };
 
@@ -365,7 +366,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	local researchingTalentTier = 0;
 
 	local currentTier = nil;
-	local currentTierTotalTalentCount, currentTierBaseTalentCount, currentTierDependentTalentCount, currentTierResearchableTalentCount, currentTierTalentIndex, currentTierHeight;
+	local currentTierTotalTalentCount, currentTierBaseTalentCount, currentTierDependentTalentCount, currentTierResearchableTalentCount, currentTierTalentIndex, currentTierWidth, currentTierHeight;
 	local contentOffsetY = layoutOptions.spacingTop;
 	local maxContentWidth = 0;
 	
@@ -374,6 +375,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		currentTierDependentTalentCount = 0;
 		currentTierResearchableTalentCount = 0;
 		currentTierTalentIndex = 0;
+		currentTierWidth = 0;
 		currentTierHeight = 0;
 		
 		for i = startingIndex, #tree do
@@ -397,25 +399,30 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 				researchingTalentTier = talent.tier;
 			end
 		end
+		currentTierBaseTalentCount = currentTierTotalTalentCount - currentTierDependentTalentCount;
 	end
 
 	-- position talent buttons
 	for talentIndex, talent in ipairs(tree) do
+		local buttonInfo = layoutOptions.buttonInfo[talent.type];
+
 		if talent.tier ~= currentTier then
-			-- increment height used
+			maxContentWidth = math.max(maxContentWidth, currentTierWidth or 0);
 			if currentTier then
-				contentOffsetY = contentOffsetY + currentTierHeight + layoutOptions.buttonSpacingY;
+				contentOffsetY = contentOffsetY + (currentTierHeight or 0) + buttonInfo.spacingY;
 			end
 			currentTier = talent.tier;
-		
 			EvaluateCurrentTier(talentIndex);
-			currentTierBaseTalentCount = currentTierTotalTalentCount - currentTierDependentTalentCount;
-			maxContentWidth = math.max(maxContentWidth, currentTierTotalTalentCount * layoutOptions.buttonSizeX + (currentTierTotalTalentCount - 1) * layoutOptions.buttonSpacingX);
 		end
 		currentTierTalentIndex = currentTierTalentIndex + 1;
-		currentTierHeight = math.max(currentTierHeight, layoutOptions.buttonSizeY);
+		currentTierWidth = currentTierWidth + buttonInfo.size;
+		currentTierHeight = math.max(currentTierHeight, buttonInfo.size);
+		if currentTierTalentIndex > 1 then
+			currentTierWidth = currentTierWidth + buttonInfo.spacingX;	-- need a solve if a row has mixed talent types
+		end
 
 		local talentFrame = self.buttonPool:Acquire();
+		talentFrame:SetSize(buttonInfo.size, buttonInfo.size);
 		talentFrame.Icon:SetTexture(talent.icon);
 
 		talentFrame.talent = talent;
@@ -436,12 +443,13 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			selectionAvailableInstantResearch = false;
 		end
 
+		local borderAtlas = BORDER_ATLAS_NONE;
 		-- Show as selected: You have fully researched this talent.
 		if (talent.selected and selectionAvailableInstantResearch) then
 			if (talent.selected and talent.researched and talent.id == researchingTalentID) then
 				self:ClearResearchingTalentID();
 			end
-			talentFrame.Border:SetAtlas("orderhalltalents-spellborder-yellow");
+			borderAtlas = BORDER_ATLAS_SELECTED;
 		else
 			local isAvailable = talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE;
 
@@ -452,23 +460,24 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			-- Show as available: this is a new tier which you don't have any talents from or and old tier that you could change.
 			-- Note: For instant talents, to support the Chromie UI, we display as available even when another talent is researching (Jeff wants it this way).
 			if (isAvailable) then
-				talentFrame.Border:SetAtlas("orderhalltalents-spellborder-green");
+				borderAtlas = BORDER_ATLAS_AVAILABLE;
 
 			elseif (shouldDisplayAsAvailable) then
 				if ( currentTierResearchableTalentCount < currentTierTotalTalentCount) then
 					talentFrame.AlphaIconOverlay:Show();
 					talentFrame.AlphaIconOverlay:SetAlpha(0.5);
-					talentFrame.Border:Hide();
 				else
-					talentFrame.Border:SetAtlas("orderhalltalents-spellborder-green");
+					borderAtlas = BORDER_ATLAS_AVAILABLE;
 				end
 
 			-- Show as unavailable: You have not unlocked this tier yet or you have unlocked it but another research is already in progress.
 			else
-				talentFrame.Border:SetAtlas("orderhalltalents-spellborder");
+				borderAtlas = BORDER_ATLAS_UNAVAILABLE;
 				talentFrame.Icon:SetDesaturated(true);
 			end
 		end
+		talentFrame:SetBorder(borderAtlas);
+		talentFrame.MajorGlow:SetShown(borderAtlas == BORDER_ATLAS_AVAILABLE and talent.type == Enum.GarrTalentType.Major);
 
 		-- Show the current talent rank if the talent had multiple ranks
 		if talent.talentMaxRank > 1 then
@@ -482,9 +491,9 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			local prereqTalentButton = self:FindTalentButton(talent.prerequisiteTalentID);
 			if prereqTalentButton then
 				if prereqTalentButton.talent.uiOrder < talent.uiOrder then
-					talentFrame:SetPoint("LEFT", prereqTalentButton, "RIGHT", layoutOptions.buttonSpacingX, 0);
+					talentFrame:SetPoint("LEFT", prereqTalentButton, "RIGHT", buttonInfo.spacingX, 0);
 				else
-					talentFrame:SetPoint("RIGHT", prereqTalentButton, "LEFT", -layoutOptions.buttonSpacingX, 0);
+					talentFrame:SetPoint("RIGHT", prereqTalentButton, "LEFT", -buttonInfo.spacingX, 0);
 				end
 				self:AddPrerequisiteArrow(talentFrame, prereqTalentButton);
 			end
@@ -495,7 +504,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 				middleTalentIndex = middleTalentIndex + 0.5;
 			end
 			local offsetX = currentTierTalentIndex - middleTalentIndex;
-			offsetX = offsetX * (layoutOptions.buttonSizeX + layoutOptions.buttonSpacingX);
+			offsetX = offsetX * (buttonInfo.size + buttonInfo.spacingX);
 			talentFrame:SetPoint("TOP", offsetX, -contentOffsetY);
 		end
 
@@ -588,6 +597,19 @@ end
 
 GarrisonTalentButtonMixin = { }
 
+function GarrisonTalentButtonMixin:SetBorder(borderAtlas)
+	if borderAtlas then
+		if self.talent.type == Enum.GarrTalentType.Major then
+			borderAtlas = borderAtlas.."-large";
+		end
+		local useAtlasSize = true;
+		self.Border:SetAtlas(borderAtlas, useAtlasSize);
+		self.Border:Show();
+	else
+		self.Border:Hide();
+	end
+end
+
 function GarrisonTalentButtonMixin:OnEnter()
 	local researchingTalentID = self:GetParent():GetResearchingTalentID();
 
@@ -599,7 +621,8 @@ function GarrisonTalentButtonMixin:OnEnter()
 	if talent.talentMaxRank > 1 then
 		local talentRank = math.max(0, talent.talentRank);
 
-		GameTooltip:AddDoubleLine(talent.name, "[PH]Rank "..talentRank, 1, 1, 1);
+		GameTooltip:AddLine(talent.name, 1, 1, 1);
+		GameTooltip_AddColoredLine(GameTooltip, TOOLTIP_TALENT_RANK:format(talentRank, talent.talentMaxRank), HIGHLIGHT_FONT_COLOR);
 		GameTooltip:AddLine(talent.description, nil, nil, nil, true);
 	else 
 		GameTooltip:AddLine(talent.name, 1, 1, 1);

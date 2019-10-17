@@ -68,6 +68,39 @@ function AuctionHouseTableCellItemKeyMixin:UpdateDisplay(itemKey, itemKeyInfo)
 end
 
 
+AuctionHouseTableCellTextTooltipMixin = CreateFromMixins(AuctionHouseTableCellMixin);
+
+function AuctionHouseTableCellTextTooltipMixin:UpdateText(newText)
+	self.Text:SetText(newText);
+	self:UpdateHitRect();
+end
+
+function AuctionHouseTableCellTextTooltipMixin:UpdateHitRect()
+	local hitRectInset = self:GetWidth() - self.Text:GetStringWidth();
+	if self.Text:GetJustifyH() == "LEFT" then
+		self:SetHitRectInsets(0, hitRectInset, 0, 0);
+	else
+		self:SetHitRectInsets(hitRectInset, 0, 0, 0);
+	end
+end
+
+function AuctionHouseTableCellTextTooltipMixin:OnEnter()
+	ExecuteFrameScript(self:GetParent(), "OnEnter");
+	
+	self:ShowTooltip(GameTooltip);
+end
+
+function AuctionHouseTableCellTextTooltipMixin:OnLeave()
+	ExecuteFrameScript(self:GetParent(), "OnLeave");
+
+	GameTooltip_Hide();
+end
+
+function AuctionHouseTableCellItemKeyMixin:ShowTooltip(tooltip)
+	-- Implement in your derived mixin.
+end
+
+
 AuctionHouseTablePriceDisplayMixin = CreateFromMixins(AuctionHouseTableCellMixin);
 
 function AuctionHouseTablePriceDisplayMixin:Init(owner)
@@ -288,7 +321,7 @@ function AuctionHouseTableSocketDisplayMixin:Populate(rowData, dataIndex)
 end
 
 
-AuctionHouseTableCellOwnersMixin = CreateFromMixins(AuctionHouseTableCellMixin);
+AuctionHouseTableCellOwnersMixin = CreateFromMixins(AuctionHouseTableCellTextTooltipMixin);
 
 function AuctionHouseTableCellOwnersMixin:Init(owner)
 	AuctionHouseTableCellMixin.Init(self, owner);
@@ -297,11 +330,20 @@ function AuctionHouseTableCellOwnersMixin:Init(owner)
 end
 
 function AuctionHouseTableCellOwnersMixin:Populate(rowData, dataIndex)
-	self.Text:SetText(AuctionHouseUtil.GetSellersString(rowData));
+	self:UpdateText(AuctionHouseUtil.GetSellersString(rowData));
+end
+
+function AuctionHouseTableCellOwnersMixin:ShowTooltip(tooltip)
+	local owners = self.rowData.owners;
+	if #owners > 1 then
+		tooltip:SetOwner(self:GetParent(), "ANCHOR_RIGHT");
+		AuctionHouseUtil.AddSellersToTooltip(tooltip, owners);
+		tooltip:Show();
+	end
 end
 
 
-AuctionHouseTableCellTimeLeftMixin = CreateFromMixins(AuctionHouseTableCellMixin);
+AuctionHouseTableCellTimeLeftMixin = CreateFromMixins(AuctionHouseTableCellTextTooltipMixin);
 
 function AuctionHouseTableCellTimeLeftMixin:Init(owner)
 	AuctionHouseTableCellMixin.Init(self, owner);
@@ -314,7 +356,20 @@ function AuctionHouseTableCellTimeLeftMixin:Populate(rowData, dataIndex)
 	self.Text:SetShown(hasExplicitTimeLeft);
 
 	if hasExplicitTimeLeft then
-		self.Text:SetText(AuctionHouseUtil.FormatTimeLeft(rowData.timeLeftSeconds, rowData.status));
+		self:UpdateText(AuctionHouseUtil.FormatTimeLeft(rowData.timeLeftSeconds, rowData.status));
+	end
+end
+
+function AuctionHouseTableCellTimeLeftMixin:ShowTooltip(tooltip)
+	local timeLeftSeconds = self.rowData.timeLeftSeconds;
+	local hasExplicitTimeLeft = timeLeftSeconds ~= nil;
+	if hasExplicitTimeLeft then
+		tooltip:SetOwner(self:GetParent(), "ANCHOR_RIGHT");
+
+		local wrap = true;
+		GameTooltip_AddNormalLine(tooltip, AuctionHouseUtil.FormatTimeLeftTooltip(timeLeftSeconds, self.rowData.status), wrap);
+
+		tooltip:Show();
 	end
 end
 

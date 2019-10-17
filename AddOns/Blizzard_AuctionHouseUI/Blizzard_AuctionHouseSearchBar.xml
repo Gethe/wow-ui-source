@@ -17,11 +17,17 @@
 		</Scripts>
 	</Button>
 
+	<EditBox name="AuctionHouseLevelRangeEditBoxTemplate" mixin="AuctionHouseLevelRangeEditBoxMixin" inherits="InputBoxTemplate" letters="3" numeric="true" autoFocus="false" virtual="true">
+		<Size x="28" y="16"/>
+		<Scripts>
+			<OnTextChanged method="OnTextChanged"/>
+		</Scripts>
+	</EditBox>
+
 	<Frame name="AuctionHouseLevelRangeFrameTemplate" mixin="AuctionHouseLevelRangeFrameMixin" inherits="UIDropDownCustomMenuEntryTemplate" virtual="true">
 		<Size x="80" y="22"/>
 		<Frames>
-			<EditBox parentKey="MinLevel" letters="3" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
-				<Size x="28" y="16"/>
+			<EditBox parentKey="MinLevel" inherits="AuctionHouseLevelRangeEditBoxTemplate">
 				<Anchors>
 					<Anchor point="LEFT" x="8" y="0"/>
 				</Anchors>
@@ -35,8 +41,7 @@
 					</Layer>
 				</Layers>
 			</EditBox>
-			<EditBox parentKey="MaxLevel" letters="3" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
-				<Size x="28" y="16"/>
+			<EditBox parentKey="MaxLevel" inherits="AuctionHouseLevelRangeEditBoxTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.MinLevel" relativePoint="RIGHT" x="10" y="0"/>
 				</Anchors>
@@ -44,10 +49,11 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 
-	<Button name="AuctionHouseFilterButtonTemplate" mixin="AuctionHouseFilterButtonMixin" inherits="UIMenuButtonStretchTemplate" registerForClicks="LeftButtonDown" text="FILTER" virtual="true">
+	<DropDownToggleButton name="AuctionHouseFilterButtonTemplate" mixin="AuctionHouseFilterButtonMixin" inherits="UIMenuButtonStretchTemplate" registerForClicks="LeftButtonDown" text="FILTER" virtual="true">
 		<Size x="93" y="22"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -79,7 +85,7 @@
 			<OnClick method="OnClick"/>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
-	</Button>
+	</DropDownToggleButton>
 
 	<Frame name="AuctionHouseFilterDropDownMenuTemplate" mixin="AuctionHouseFilterDropDownMenuMixin" inherits="UIDropDownMenuTemplate" virtual="true">
 		<Size x="100" y="0"/>
@@ -113,14 +119,15 @@
 					<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="0" y="0"/>
 				</Anchors>
 			</Button>
-			<Button parentKey="FilterButton" inherits="AuctionHouseFilterButtonTemplate">
+			<DropDownToggleButton parentKey="FilterButton" inherits="AuctionHouseFilterButtonTemplate">
 				<Size x="93" y="22"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.SearchButton" relativePoint="LEFT" x="-10" y="0"/>
 				</Anchors>
-			</Button>
+			</DropDownToggleButton>
 		</Frames>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>

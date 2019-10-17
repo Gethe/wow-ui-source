@@ -157,14 +157,17 @@ end
 function AuctionHouseFilterButtonMixin:ToggleFilter(filter)
 	self.filters[filter] = not self.filters[filter];
 
-	local areFiltersDefault = tCompare(self.filters, DEFAULT_FILTERS);
-	self.ClearFiltersButton:SetShown(not areFiltersDefault);
+	self:GetParent():OnFilterToggled();
 end
 
 function AuctionHouseFilterButtonMixin:Reset()
 	self.filters = CopyTable(DEFAULT_FILTERS);
 	self.LevelRangeFrame:Reset();
 	self.ClearFiltersButton:Hide();
+end
+
+function AuctionHouseFilterButtonMixin:GetFilters()
+	return self.filters;
 end
 
 function AuctionHouseFilterButtonMixin:CalculateFiltersArray()
@@ -182,11 +185,41 @@ function AuctionHouseFilterButtonMixin:GetLevelRange()
 end
 
 
+AuctionHouseLevelRangeEditBoxMixin = {};
+
+function AuctionHouseLevelRangeEditBoxMixin:OnTextChanged()
+	self:GetParent():OnLevelRangeChanged();
+end
+
+
 AuctionHouseLevelRangeFrameMixin = {};
 
 function AuctionHouseLevelRangeFrameMixin:OnLoad()
 	self.MinLevel.nextEditBox = self.MaxLevel;
 	self.MaxLevel.nextEditBox = self.MinLevel;
+end
+
+function AuctionHouseLevelRangeFrameMixin:OnHide()
+	self:FixLevelRange();
+end
+
+function AuctionHouseLevelRangeFrameMixin:SetLevelRangeChangedCallback(levelRangeChangedCallback)
+	self.levelRangeChangedCallback = levelRangeChangedCallback;
+end
+
+function AuctionHouseLevelRangeFrameMixin:OnLevelRangeChanged()
+	if self.levelRangeChangedCallback then
+		self.levelRangeChangedCallback();
+	end
+end
+
+function AuctionHouseLevelRangeFrameMixin:FixLevelRange()
+	local minLevel = self.MinLevel:GetNumber();
+	local maxLevel = self.MaxLevel:GetNumber();
+
+	if maxLevel ~= 0 and minLevel > maxLevel then
+		self.MinLevel:SetNumber(maxLevel);
+	end
 end
 
 function AuctionHouseLevelRangeFrameMixin:Reset()
@@ -224,9 +257,31 @@ end
 
 AuctionHouseSearchBarMixin = CreateFromMixins(AuctionHouseSystemMixin);
 
+function AuctionHouseSearchBarMixin:OnLoad()
+	local function LevelRangeChangedCallback()
+		self:OnLevelRangeChanged();
+	end
+
+	self.FilterButton.LevelRangeFrame:SetLevelRangeChangedCallback(LevelRangeChangedCallback)
+end
+
 function AuctionHouseSearchBarMixin:OnShow()
 	self.SearchBox:Reset();
 	self.FilterButton:Reset();
+end
+
+function AuctionHouseSearchBarMixin:OnFilterToggled()
+	self:UpdateClearFiltersButton();
+end
+
+function AuctionHouseSearchBarMixin:OnLevelRangeChanged()
+	self:UpdateClearFiltersButton();
+end
+
+function AuctionHouseSearchBarMixin:UpdateClearFiltersButton()
+	local areFiltersDefault = tCompare(self.FilterButton:GetFilters(), DEFAULT_FILTERS);
+	local minLevel, maxLevel = self.FilterButton:GetLevelRange();
+	self.FilterButton.ClearFiltersButton:SetShown(not areFiltersDefault or minLevel ~= 0 or maxLevel ~= 0);
 end
 
 function AuctionHouseSearchBarMixin:SetSearchText(searchText)

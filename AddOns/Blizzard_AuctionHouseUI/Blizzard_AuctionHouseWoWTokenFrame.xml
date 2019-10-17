@@ -4,7 +4,7 @@
 
 	<Slider name="DummyScrollBarTemplate" inherits="HybridScrollBarTemplate" virtual="true">
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="0" y="-16"/>
+			<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="0" y="-17"/>
 			<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-1" y="14"/>
 		</Anchors>
 		<Layers>
@@ -34,10 +34,7 @@
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.BuyoutLabel" relativePoint="BOTTOM" x="0" y="-8"/>
 					</Anchors>
-					<Shadow>
-						<Offset>
-							<AbsDimension x="1" y="-1"/>
-						</Offset>
+					<Shadow x="1" y="-1">
 						<Color r="0" g="0" b="0"/>
 					</Shadow>
 				</FontString>
@@ -265,63 +262,24 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button parentKey="Token">
-				<Size x="254" y="61"/>
+			<Button parentKey="TokenDisplay" inherits="AuctionHouseItemDisplayTemplate">
 				<Anchors>
 					<Anchor point="TOP" x="0" y="-63"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="ItemBorder" atlas="token-itemslot" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="2" y="-2"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER">
-						<Texture parentKey="Icon">
-							<Size x="54" y="54"/>	
-							<Anchors>
-								<Anchor point="TOPLEFT" x="3" y="-3"/>
-							</Anchors>
-						</Texture>
-						<FontString inherits="GameFontHighlightLarge" justifyH="LEFT" parentKey="Name">
-							<Size x="172" y="46"/>
-							<Anchors>
-								<Anchor point="LEFT" x="73" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
 					<Layer level="ARTWORK">
-						<FontString inherits="NumberFontNormal" justifyH="RIGHT" parentKey="Count">
+						<Texture atlas="auctionhouse-itemheaderframe" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-1" y="1"/>
+								<Anchor point="CENTER"/>
 							</Anchors>
-						</FontString>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame">
-							<Size x="54" y="54"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="3" y="-3"/>
-							</Anchors>
-							<Color r="0" g="0.8" b="1"/>
 						</Texture>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_LEFT",5,-5);
-						GameTooltip:SetItemByID(122284);
-						GameTooltip:Show();
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
 			</Button>
 			<Button parentKey="Buyout" inherits="UIPanelButtonTemplate" text="BUYOUT" motionScriptsWhileDisabled="true">
 				<Size x="194" y="22"/>
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Token" relativePoint="BOTTOM" x="0" y="-110"/>
+					<Anchor point="TOP" relativeKey="$parent.TokenDisplay" relativePoint="BOTTOM" x="0" y="-110"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="BrowseWowTokenResultsBuyout_OnClick"/>
@@ -331,8 +289,9 @@
 			</Button>
 			<Frame parentKey="InvisiblePriceFrame" enableMouse="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.BuyoutPrice" relativePoint="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BuyoutPrice" relativePoint="BOTTOMRIGHT"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BuyoutLabel" relativePoint="TOPLEFT" x="-20" y="10"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.BuyoutLabel" relativePoint="TOPRIGHT" x="20" y="10"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.BuyoutPrice" relativePoint="BOTTOM" x="0" y="-10"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
@@ -358,7 +317,7 @@
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="BuyoutPriceLabel" inherits="Number13FontYellow" text="TOKEN_CURRENT_MARKET_PRICE" justifyH="CENTER">
+				<FontString parentKey="BuyoutPriceLabel" inherits="GameFontNormal" text="TOKEN_CURRENT_MARKET_PRICE" justifyH="CENTER">
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-110"/>
 					</Anchors>
@@ -368,24 +327,50 @@
 						<Anchor point="TOP" relativeKey="$parent.BuyoutPriceLabel" relativePoint="BOTTOM" x="0" y="-6"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="EstimatedTime" inherits="Number13FontYellow" text="ESTIMATED_TIME_TO_SELL" justifyH="CENTER">
+				<FontString parentKey="EstimatedTime" inherits="GameFontNormal" text="ESTIMATED_TIME_TO_SELL" justifyH="CENTER">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.MarketPrice" relativePoint="BOTTOM" x="0" y="-30"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="TimeToSell" inherits="Number13FontWhite" justifyH="CENTER">
+				<FontString parentKey="TimeToSell" inherits="GameFontHighlight" justifyH="CENTER">
 					<Size x="160" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.EstimatedTime" relativePoint="BOTTOM" x="0" y="-6"/>
 					</Anchors>
 				</FontString>
+				<Texture parentKey="CreateAuctionTabLeft" atlas="auctionhouse-selltab-left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="42" y="-3"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="CreateAuctionLabel" inherits="GameFontNormalSmall" justifyH="LEFT" text="CREATE_AUCTION">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.CreateAuctionTabLeft" relativePoint="RIGHT" x="12"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="CreateAuctionTabMiddle" atlas="auctionhouse-selltab-middle">
+					<Size y="23"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CreateAuctionTabLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="RIGHT" relativeKey="$parent.CreateAuctionLabel" relativePoint="RIGHT" x="12" y="0"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="CreateAuctionTabRight" atlas="auctionhouse-selltab-right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CreateAuctionTabMiddle" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.CreateAuctionTabMiddle" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Button parentKey="ItemDisplay" inherits="AuctionHouseInteractableItemDisplayTemplate" mixin="AuctionHouseSellFrameItemDisplayMixin" frameLevel="350">
 				<Size x="342" y="72"/>
 				<Anchors>
-					<Anchor point="TOP" x="0" y="-10"/>
+					<Anchor point="TOP" x="0" y="-12"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -403,7 +388,8 @@
 			<Frame parentKey="InvisiblePriceFrame" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.BuyoutPriceLabel" relativePoint="TOPLEFT" x="-20" y="10"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TimeToSell" relativePoint="BOTTOMRIGHT" x="20" y="-10"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.BuyoutPriceLabel" relativePoint="TOPRIGHT" x="20" y="10"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.MarketPrice" relativePoint="BOTTOM" x="0" y="-10"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
@@ -431,13 +417,18 @@
 				</KeyValues>
 				<Size x="405" y="0"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="2" y="-19"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="2" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="1" y="-19"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="1" y="0"/>
 				</Anchors>
 				<Frames>
 					<Slider parentKey="DummyScrollBar" inherits="DummyScrollBarTemplate"/>
 				</Frames>
 			</Frame>
+			<Button parentKey="DummyRefreshButton" inherits="RefreshButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.DummyItemList" relativePoint="TOPRIGHT" x="17" y="55"/>
+				</Anchors>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

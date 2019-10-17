@@ -275,8 +275,6 @@ function AuctionHouseFrameMixin:OnLoad()
 	end
 
 	self:RegisterEvent("ADDON_LOADED");
-
-	self.CloseButton:SetFrameLevel(1500);
 	
 	PanelTemplates_SetNumTabs(self, #self.Tabs);
 
@@ -344,7 +342,10 @@ function AuctionHouseFrameMixin:OnHide()
 
 	self.BrowseResultsFrame:Reset();
 
-	self:ClearPostItem();
+	self.WoWTokenSellFrame:SetItem(nil);
+	self.CommoditiesSellFrame:SetItem(nil);
+	self.CommoditiesSellList:SetItemID(nil);
+	self.ItemSellFrame:SetItem(nil);
 
 	CloseAuctionHouse();
 

@@ -9,7 +9,7 @@
 		</Anchors>
 		<Frames>
 			<!-- Base Frame -->
-			<Frame name="MerchantMoneyInset" inherits="InsetFrameTemplate" useParentLevel="true">
+			<Frame parentKey="MoneyFrameInset" inherits="InsetFrameTemplate" useParentLevel="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="2" y="27"/>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="167" y="3"/>

@@ -47,11 +47,13 @@ SecondsFormatterMixin = {}
 -- defaultAbbreviation: the default abbreviation for the format. Can be overrridden in SecondsFormatterMixin:Format()
 -- approximationSeconds: threshold for representing the seconds as an approximation (ex. "< 2 hours").
 -- roundUpLastUnit: determines if the last unit in the output format string is ceiled (floored by default).
-function SecondsFormatterMixin:Init(approximationSeconds, defaultAbbreviation, roundUpLastUnit)
+-- convertToLower: converts the format string to lowercase.
+function SecondsFormatterMixin:Init(approximationSeconds, defaultAbbreviation, roundUpLastUnit, convertToLower)
 	self.approximationSeconds = approximationSeconds or 0;
 	self.defaultAbbreviation = defaultAbbreviation or SecondsFormatter.Abbreviation.None;
 	self.roundUpLastUnit = roundUpLastUnit or false;
 	self.stripIntervalWhitespace = false;
+	self.convertToLower = convertToLower or false;
 end
 
 function SecondsFormatterMixin:SetStripIntervalWhitespace(strip)
@@ -103,14 +105,17 @@ function SecondsFormatterMixin:GetMinInterval(seconds)
 	assert(false, "Implement GetMinInterval() in derived object.");
 end
 
-function SecondsFormatterMixin:GetFormatString(interval, abbreviation)
+function SecondsFormatterMixin:GetFormatString(interval, abbreviation, convertToLower)
 	local intervalDescription = self:GetIntervalDescription(interval);
 	local formatString = intervalDescription.formatString[abbreviation];
+	if convertToLower then
+		formatString = formatString:lower();
+	end
 	local strip = self:GetStripIntervalWhitespace();
 	return strip and formatString:gsub(" ", "") or formatString;
 end
 
-function SecondsFormatterMixin:FormatZero(abbreviation)
+function SecondsFormatterMixin:FormatZero(abbreviation, toLower)
 	local minInterval = self:GetMinInterval(seconds);
 	local formatString = self:GetFormatString(minInterval, abbreviation);
 	return formatString:format(0);
@@ -145,7 +150,7 @@ function SecondsFormatterMixin:Format(seconds, abbreviation)
 			end
 		end
 
-		local formatString = self:GetFormatString(interval, abbreviation);
+		local formatString = self:GetFormatString(interval, abbreviation, self.convertToLower);
 		local unit = formatString:format(math.ceil(seconds / self:GetIntervalSeconds(interval)));
 		return string.format(LESS_THAN_OPERAND, unit);
 	end
@@ -153,6 +158,7 @@ function SecondsFormatterMixin:Format(seconds, abbreviation)
 	local output = "";
 	local appendedCount = 0;
 	local desiredCount = self:GetDesiredUnitCount(seconds);
+	local convertToLower = self.convertToLower;
 
 	local currentInterval = maxInterval;
 	while ((appendedCount < desiredCount) and (currentInterval >= minInterval)) do
@@ -164,7 +170,7 @@ function SecondsFormatterMixin:Format(seconds, abbreviation)
 				output = output..TIME_UNIT_DELIMITER;
 			end
 
-			local formatString = self:GetFormatString(currentInterval, abbreviation);
+			local formatString = self:GetFormatString(currentInterval, abbreviation, convertToLower);
 			local quotient = seconds / intervalSeconds;
 			if (quotient > 0) then
 				if (self:CanRoundUpLastUnit() and ((minInterval == currentInterval) or (appendedCount == desiredCount))) then

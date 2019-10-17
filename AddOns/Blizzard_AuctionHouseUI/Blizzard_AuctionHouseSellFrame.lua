@@ -280,6 +280,10 @@ function AuctionHouseSellFrameMixin:OnLoad()
 		return itemLocation == nil or C_AuctionHouse.IsSellItemValid(itemLocation);
 	end);
 
+	self.ItemDisplay.ItemButton.Highlight:ClearAllPoints();
+	self.ItemDisplay.ItemButton.Highlight:SetPoint("TOPLEFT", self.ItemDisplay.ItemButton, "TOPLEFT");
+	self.ItemDisplay.ItemButton.Highlight:SetPoint("BOTTOMRIGHT", self.ItemDisplay.ItemButton, "BOTTOMRIGHT");
+
 	self.QuantityInput:SetInputChangedCallback(function()
 		local maxQuantity = self:GetMaxQuantity();
 		if self.QuantityInput:GetQuantity() > maxQuantity then
@@ -336,11 +340,8 @@ function AuctionHouseSellFrameMixin:UpdatePostState()
 
 	local price = self.PriceInput:GetAmount();
 	local searchResultPrice = self:GetSearchResultPrice();
-	if not self.helpTipShown and searchResultPrice and price == (searchResultPrice - COPPER_PER_SILVER) then
+	if searchResultPrice and price == (searchResultPrice - COPPER_PER_SILVER) then
 		self:ShowHelpTip();
-
-		-- TEMP: For Jeff's demo, always show the undercut message.
-		-- self.helpTipShown = true;
 	else
 		self:HideHelpTip();
 	end

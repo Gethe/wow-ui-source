@@ -202,6 +202,7 @@ function AuctionHouseAuctionsFrameMixin:OnEvent(event, ...)
 	if event == "OWNED_AUCTIONS_UPDATED" then
 		self.AllAuctionsList:Reset();
 		self.SummaryList:RefreshScrollFrame();
+		self:ValidateDisplayMode();
 	elseif event == "OWNED_AUCTION_ADDED" then
 		local ownedAuctionID = ...;
 
@@ -223,6 +224,7 @@ function AuctionHouseAuctionsFrameMixin:OnEvent(event, ...)
 
 		if self:IsDisplayingBids() then
 			self.SummaryList:RefreshScrollFrame();
+			self:ValidateDisplayMode();
 		end
 
 	elseif event == "BID_ADDED" then
@@ -252,6 +254,9 @@ function AuctionHouseAuctionsFrameMixin:InitializeAllAuctionsList()
 		self:OnAllAuctionsSearchResultSelected(searchResult);
 	end);
 
+	self.AllAuctionsList:SetLineOnEnterCallback(AuctionHouseUtil.LineOnEnterCallback);
+	self.AllAuctionsList:SetLineOnLeaveCallback(GameTooltip_Hide);
+
 	self.AllAuctionsList:SetHighlightCallback(function(currentRowData, selectedRowData)
 		return selectedRowData and currentRowData.auctionID == selectedRowData.auctionID;
 	end);
@@ -279,6 +284,9 @@ function AuctionHouseAuctionsFrameMixin:InitializeBidsList()
 	self.BidsList:SetSelectionCallback(function(searchResult)
 		self:OnBidsListSearchResultSelected(searchResult);
 	end);
+
+	self.BidsList:SetLineOnEnterCallback(AuctionHouseUtil.LineOnEnterCallback);
+	self.BidsList:SetLineOnLeaveCallback(GameTooltip_Hide);
 
 	self.BidsList:SetHighlightCallback(function(currentRowData, selectedRowData)
 		return selectedRowData and currentRowData.auctionID == selectedRowData.auctionID;
@@ -390,6 +398,23 @@ function AuctionHouseAuctionsFrameMixin:SetDisplayMode(displayMode)
 	self.CommoditiesList:SetSelectedEntry(nil);
 
 	self.ItemDisplay:SetShown(not isAllAuctions and not isBidsList);
+end
+
+function AuctionHouseAuctionsFrameMixin:ValidateDisplayMode()
+	local displayMode = self.displayMode;
+
+	if displayMode == AuctionsFrameDisplayMode.Item or displayMode == AuctionsFrameDisplayMode.Commodity then
+		local itemKey = self:GetItemKey();
+		if self:IsDisplayingBids() then
+			if not AuctionHouseUtil.HasBidType(itemKey) then
+				self.SummaryList:SetSelectedListIndex(1);
+			end
+		else
+			if not AuctionHouseUtil.HasOwnedAuctionType(itemKey) then
+				self.SummaryList:SetSelectedListIndex(1);
+			end
+		end
+	end
 end
 
 function AuctionHouseAuctionsFrameMixin:GetDisplayMode()

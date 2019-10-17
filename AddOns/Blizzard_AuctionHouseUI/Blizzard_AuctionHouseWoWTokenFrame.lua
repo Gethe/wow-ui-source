@@ -23,6 +23,9 @@ function BrowseWowTokenResults_OnLoad(self)
 	self:RegisterEvent("TOKEN_STATUS_CHANGED");
 	self:RegisterEvent("TOKEN_BUY_RESULT");
 	self:RegisterEvent("PLAYER_MONEY");
+
+	self.TokenDisplay:SetItem(WOW_TOKEN_ITEM_ID);
+	self.TokenDisplay.NineSlice:Hide();
 end
 
 function BrowseWowTokenResults_OnShow(self)
@@ -84,12 +87,6 @@ function BrowseWowTokenResults_OnEvent(self, event, ...)
 		end
 	elseif ( event == "PLAYER_MONEY" ) then
 		BrowseWowTokenResults_Update(self);
-	elseif ( event == "GET_ITEM_INFO_RECEIVED" ) then
-		local itemID = ...;
-		if (itemID == WOW_TOKEN_ITEM_ID) then
-			BrowseWowTokenResults_Update(self);
-			self:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
-		end
 	end
 end
 
@@ -115,32 +112,24 @@ function BrowseWowTokenResults_Update(self)
 		marketPrice = C_WowTokenPublic.GetCurrentMarketPrice();
 	end
 
-	local itemName, _, itemQuality, _, _, _, _, _, _, itemTexture = GetItemInfo(WOW_TOKEN_ITEM_ID);
-	if (itemName) then
-		self.Token.Icon:SetTexture(itemTexture)
-		self.Token.Name:SetText(itemName);
-		self.Token.Name:SetTextColor(ITEM_QUALITY_COLORS[itemQuality].r, ITEM_QUALITY_COLORS[itemQuality].g, ITEM_QUALITY_COLORS[itemQuality].b);
-		if (self.disabled) then
-			self.BuyoutPrice:SetText(TOKEN_AUCTIONS_UNAVAILABLE);
-			self.Buyout:SetEnabled(false);
-		elseif (not marketPrice) then
-			self.BuyoutPrice:SetText(TOKEN_MARKET_PRICE_NOT_AVAILABLE);
-			self.Buyout:SetEnabled(false);
-		elseif (self.noneForSale) then
-			self.BuyoutPrice:SetText(GetFormattedWoWTokenPrice(marketPrice));
-			self.Buyout:SetEnabled(false);
-		else
-			self.BuyoutPrice:SetText(GetFormattedWoWTokenPrice(marketPrice));
-			if (GetMoney() < marketPrice) then
-				self.Buyout:SetEnabled(false);
-				self.Buyout.tooltip = ERR_NOT_ENOUGH_GOLD;
-			else
-				self.Buyout:SetEnabled(true);
-				self.Buyout.tooltip = nil;
-			end
-		end
+	if (self.disabled) then
+		self.BuyoutPrice:SetText(TOKEN_AUCTIONS_UNAVAILABLE);
+		self.Buyout:SetEnabled(false);
+	elseif (not marketPrice) then
+		self.BuyoutPrice:SetText(TOKEN_MARKET_PRICE_NOT_AVAILABLE);
+		self.Buyout:SetEnabled(false);
+	elseif (self.noneForSale) then
+		self.BuyoutPrice:SetText(GetFormattedWoWTokenPrice(marketPrice));
+		self.Buyout:SetEnabled(false);
 	else
-		self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
+		self.BuyoutPrice:SetText(GetFormattedWoWTokenPrice(marketPrice));
+		if (GetMoney() < marketPrice) then
+			self.Buyout:SetEnabled(false);
+			self.Buyout.tooltip = ERR_NOT_ENOUGH_GOLD;
+		else
+			self.Buyout:SetEnabled(true);
+			self.Buyout.tooltip = nil;
+		end
 	end
 end
 
@@ -175,6 +164,8 @@ function WoWTokenSellFrameMixin:OnLoad()
 	self:RegisterEvent("TOKEN_STATUS_CHANGED");
 	self:RegisterEvent("TOKEN_SELL_RESULT");
 	self:RegisterEvent("TOKEN_AUCTION_SOLD");
+
+	self.DummyRefreshButton:SetEnabledState(false);
 end
 
 function WoWTokenSellFrameMixin:OnEvent(event, ...)
@@ -200,9 +191,6 @@ function WoWTokenSellFrameMixin:OnEvent(event, ...)
 		end
 	elseif (event == "TOKEN_AUCTION_SOLD") then
 		C_WowTokenPublic.UpdateListedAuctionableTokens();
-	elseif (event == "GET_ITEM_INFO_RECEIVED") then
-		self:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
-		AuctionFrameAuctions_Update();
 	end
 end
 

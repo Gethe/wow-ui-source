@@ -2,7 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_AuctionHouseCategoriesList.lua"/>
 	
-	<Button name="AuctionCategoryButtonTemplate" parentArray="FilterButtons" virtual="true">
+	<Button name="AuctionCategoryButtonTemplate" parentArray="FilterButtons" inherits="TruncatedTooltipScriptTemplate" virtual="true">
 		<Size x="132" y="21"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -39,11 +39,11 @@
 			<OnLeave function="AuctionFrameFilter_OnLeave"/>
 			<OnClick function="AuctionFrameFilter_OnClick"/>
 		</Scripts>
-		<ButtonText parentKey="NormalText" justifyH="LEFT">
+		<ButtonText parentKey="Text" justifyH="LEFT">
 			<Size x="0" y="8"/>
 			<Anchors>
 				<Anchor point="LEFT" x="4" y="0"/>
-				<Anchor point="RIGHT"/>
+				<Anchor point="RIGHT" x="-4" y="0"/>
 			</Anchors>
 			<Shadow>
 				<Offset>

@@ -5,10 +5,15 @@
 	<Button name="GarrisonTalentButtonTemplate" virtual="true" mixin="GarrisonTalentButtonMixin">
 		<Size x="39" y="39"/>
 		<Layers>
-			<Layer level="ARTWORK" textureSubLevel="0">
-				<Texture parentKey="Icon" >
-					<Size x="39" y="39"/>
+			<Layer level="BORDER">
+				<Texture parentKey="MajorGlow" atlas="orderhalltalents-done-glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture parentKey="Icon" setAllPoints="true"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="AlphaIconOverlay">
@@ -17,9 +22,9 @@
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture parentKey="CooldownTimerBackground" atlas="orderhalltalents-timer-bg" textureSubLevel="2">
-					<Size x="37" y="37"/>
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
 					</Anchors>
 				</Texture>
         <Texture parentKey="DoneCheckmark" hidden="false" alpha="0" alphaMode="BLEND" atlas="orderhalltalents-done-checkmark" useAtlasSize="true">
@@ -34,10 +39,9 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="Border" atlas="orderhalltalents-spellborder-yellow">
-					<Size x="50" y="50"/>
+				<Texture parentKey="Border" atlas="orderhalltalents-spellborder-yellow" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOP" x="0" y="5"/>
+						<Anchor point="CENTER" x="0" y="-1"/>
 					</Anchors>
 				</Texture>
                 <Texture parentKey="DoneCheckmark2" hidden="false" alpha="0" alphaMode="ADD" atlas="orderhalltalents-done-checkmark" useAtlasSize="true">
@@ -64,9 +68,9 @@
 		</Layers>
 		<Frames>
 			<Cooldown parentKey="Cooldown" reverse="true" hideCountdownNumbers="true">
-				<Size x="37" y="37"/>
 				<Anchors>
-					<Anchor point="CENTER"/>
+					<Anchor point="TOPLEFT" x="1" y="-1"/>
+					<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
 				</Anchors>
 				<SwipeTexture file="Interface\Garrison\orderhalltalents-timer-fill"/>
 			</Cooldown>
@@ -102,7 +106,7 @@
 		<Size x="31" y="23"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Arrow" atlas="MOTHER-talenttree-arrow-enabled" useAtlasSize="true"/>
+				<Texture parentKey="Arrow" atlas="orderhalltalents-prerequisite-arrow" useAtlasSize="true"/>
 			</Layer>
 		</Layers>
 	</Frame>

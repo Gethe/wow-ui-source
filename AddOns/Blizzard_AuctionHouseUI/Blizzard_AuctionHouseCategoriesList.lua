@@ -92,7 +92,7 @@ function AuctionFrameFilters_AddSubSubCategories(categoriesList, subSubCategorie
 end
 
 function FilterButton_SetUp(button, info)
-	local normalText = button.NormalText;
+	local normalText = button.Text;
 	local normalTexture = button.NormalTexture;
 	local line = button.Lines;
 
@@ -161,10 +161,14 @@ function FilterButton_SetUp(button, info)
 end
 
 function AuctionFrameFilter_OnEnter(self)
+	TruncatedTooltipScript_OnEnter(self);
+
 	self.HighlightTexture:Show();
 end
 
 function AuctionFrameFilter_OnLeave(self)
+	TruncatedTooltipScript_OnLeave(self);
+
 	self.HighlightTexture:Hide();
 end
 

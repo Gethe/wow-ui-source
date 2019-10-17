@@ -27,6 +27,13 @@
 		</Layers>
 	</Frame>
 
+	<Frame name="AuctionHouseTableCellTextTooltipTemplate" mixin="AuctionHouseTableCellTextTooltipMixin" inherits="AuctionHouseTableCellTextTemplate" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
 	<Frame name="AuctionHouseTableMoneyDisplayTemplate" mixin="AuctionHouseTablePriceDisplayMixin" virtual="true">
 		<Size x="0" y="16"/>
 		<Frames>
@@ -92,9 +99,9 @@
 	
 	<Frame name="AuctionHouseTableCellSocketDisplayTemplate" mixin="AuctionHouseTableSocketDisplayMixin" inherits="AuctionHouseTableImageTemplate" virtual="true"/>
 
-	<Frame name="AuctionHouseTableCellOwnersTemplate" mixin="AuctionHouseTableCellOwnersMixin" inherits="AuctionHouseTableCellTextTemplate" virtual="true"/>
+	<Frame name="AuctionHouseTableCellOwnersTemplate" mixin="AuctionHouseTableCellOwnersMixin" inherits="AuctionHouseTableCellTextTooltipTemplate" virtual="true"/>
 
-	<Frame name="AuctionHouseTableCellTimeLeftTemplate" mixin="AuctionHouseTableCellTimeLeftMixin" inherits="AuctionHouseTableCellTextTemplate" virtual="true"/>
+	<Frame name="AuctionHouseTableCellTimeLeftTemplate" mixin="AuctionHouseTableCellTimeLeftMixin" inherits="AuctionHouseTableCellTextTooltipTemplate" virtual="true"/>
 
 	<Frame name="AuctionHouseTableCellTimeLeftBandTemplate" mixin="AuctionHouseTableCellTimeLeftBandMixin" inherits="AuctionHouseTableCellTextTemplate" virtual="true"/>
 

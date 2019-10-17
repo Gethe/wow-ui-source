@@ -1013,6 +1013,7 @@ local AuctionHouse =
 			Payload =
 			{
 				{ Name = "itemKey", Type = "ItemKey", Nilable = false },
+				{ Name = "newAuctionID", Type = "number", Nilable = true },
 			},
 		},
 		{

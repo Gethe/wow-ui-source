@@ -13,6 +13,7 @@ ZONE_SPELL_ABILITY_TEXTURES_BASE = {
 	[164222] = "Interface\\ExtraButton\\GarrZoneAbility-Stables",
 	[160240] = "Interface\\ExtraButton\\GarrZoneAbility-Workshop",
 	[160241] = "Interface\\ExtraButton\\GarrZoneAbility-Workshop",
+	[307870] = "Interface\\ExtraButton\\Championlight",
 };
 
 ZONE_SPELL_ABILITY_TEXTURES_BASE_FALLBACK = "Interface\\ExtraButton\\GarrZoneAbility-Armory";

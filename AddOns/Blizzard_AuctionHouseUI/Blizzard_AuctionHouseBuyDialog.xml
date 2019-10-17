@@ -49,14 +49,14 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="AuctionHouseBuyDialogTemplate" mixin="AuctionHouseBuyDialogMixin" frameLevel="500" virtual="true">
+	<Frame name="AuctionHouseBuyDialogTemplate" mixin="AuctionHouseBuyDialogMixin" frameLevel="1000" virtual="true">
 		<Size x="420" y="0"/>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate" useParentLevel="true"/>
 
 			<Button parentKey="DialogOverlay" useParentLevel="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.$parent" relativePoint="TOPLEFT"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.$parent" relativePoint="TOPLEFT" x="0" y="-22"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>
 			</Button>

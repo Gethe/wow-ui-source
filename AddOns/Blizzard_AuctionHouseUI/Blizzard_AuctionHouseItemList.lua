@@ -249,6 +249,37 @@ function AuctionHouseItemListMixin:SetState(state)
 	end
 end
 
+function AuctionHouseItemListMixin:SetSelectedEntryByCondition(condition, scrollTo)
+	if not self.getNumEntries then
+		return;
+	end
+
+	local numEntries = self.getNumEntries();
+	for i = 1, numEntries do
+		local rowData = self.getEntry(i);
+		if condition(rowData) then
+			self:SetSelectedEntry(rowData);
+			self:ScrollToEntryIndex(i);
+			return;
+		end
+	end
+
+	self:SetSelectedEntry(nil);
+	self:RefreshScrollFrame();
+end
+
+function AuctionHouseItemListMixin:ScrollToEntryIndex(entryIndex)
+	local buttons = HybridScrollFrame_GetButtons(self.ScrollFrame);
+	local buttonHeight = buttons[1]:GetHeight();
+	local currentScrollOffset = self:GetScrollOffset();
+	local newScrollOffset = entryIndex - 1;
+	if newScrollOffset < currentScrollOffset or newScrollOffset > (currentScrollOffset + #buttons) then
+		self.ScrollFrame.scrollBar:SetValue(newScrollOffset * buttonHeight);
+	else
+		self:RefreshScrollFrame();
+	end
+end
+
 function AuctionHouseItemListMixin:GetScrollOffset()
 	return HybridScrollFrame_GetOffset(self.ScrollFrame);
 end

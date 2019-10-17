@@ -8,7 +8,6 @@ local AUCTION_HOUSE_ITEM_BUY_FRAME_EVENTS = {
 	"ITEM_SEARCH_RESULTS_UPDATED",
 	"ITEM_SEARCH_RESULTS_ADDED",
 	"BIDS_UPDATED",
-	"AUCTION_CANCELED",
 	"AUCTION_HOUSE_BROWSE_RESULTS_UPDATED",
 };
 
@@ -27,14 +26,7 @@ function AuctionHouseItemBuyFrameMixin:OnLoad()
 	end);
 
 	self.ItemList:SetHighlightCallback(function(currentRowData, selectedRowData)
-		if self.selectedAuctionCanceled then
-			if selectedRowData.buyoutAmount == currentRowData.buyoutAmount then
-				self.ItemList:SetSelectedEntry(currentRowData);
-				return true;
-			end
-		else
-			return selectedRowData and (currentRowData.auctionID == selectedRowData.auctionID);
-		end
+		return selectedRowData and (currentRowData.auctionID == selectedRowData.auctionID);
 	end);
 
 	self.ItemList:SetLineOnEnterCallback(AuctionHouseUtil.SetAuctionHouseTooltip);
@@ -66,17 +58,22 @@ end
 
 function AuctionHouseItemBuyFrameMixin:OnEvent(event, ...)
 	if event == "ITEM_SEARCH_RESULTS_UPDATED" then
-		self.ItemList:DirtyScrollFrame();
+		local itemKey, auctionID = ...;
+
+		if auctionID then
+			local function FindSelectedAuctionInfo(rowData)
+				return rowData.auctionID == auctionID;
+			end
+
+			local scrollTo = true;
+			self.ItemList:SetSelectedEntryByCondition(FindSelectedAuctionInfo, scrollTo);
+		else
+			self.ItemList:DirtyScrollFrame();
+		end
 	elseif event == "ITEM_SEARCH_RESULTS_ADDED" then
 		self.ItemList:DirtyScrollFrame();
 	elseif event == "BIDS_UPDATED" then
 		self.ItemList:DirtyScrollFrame();
-	elseif event == "AUCTION_CANCELED" then
-		local auctionID = ...;
-		local selectedRowData = self.ItemList:GetSelectedEntry();
-		if selectedRowData and selectedRowData.auctionID == auctionID then
-			self.selectedAuctionCanceled = true;
-		end
 	elseif event == "AUCTION_HOUSE_BROWSE_RESULTS_UPDATED" then
 		self.ItemList:UpdateRefreshFrame();
 	end
@@ -117,8 +114,6 @@ function AuctionHouseItemBuyFrameMixin:SetItemKey(itemKey)
 end
 
 function AuctionHouseItemBuyFrameMixin:OnAuctionSelected(auctionData)
-	self.selectedAuctionCanceled = false;
-
 	if auctionData == nil then
 		self:ResetPrice();
 	else

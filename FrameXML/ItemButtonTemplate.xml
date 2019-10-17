@@ -183,7 +183,7 @@
 				<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
 			</Anchors>
 		</PushedTexture>
-		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
+		<HighlightTexture parentKey="Highlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
 			<Anchors>
 				<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
 				<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>

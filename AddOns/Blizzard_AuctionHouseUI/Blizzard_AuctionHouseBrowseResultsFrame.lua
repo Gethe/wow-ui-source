@@ -30,13 +30,7 @@ function AuctionHouseBrowseResultsFrameMixin:OnLoad()
 		self:OnBrowseResultSelected(browseResult);
 	end);
 
-	self.ItemList:SetLineOnEnterCallback(function(line, rowData)
-		if rowData.itemKey then
-			GameTooltip:SetOwner(line, "ANCHOR_RIGHT");
-			GameTooltip:SetItemKey(rowData.itemKey.itemID, rowData.itemKey.itemLevel, rowData.itemKey.itemSuffix);
-			GameTooltip:Show();
-		end
-	end);
+	self.ItemList:SetLineOnEnterCallback(AuctionHouseUtil.LineOnEnterCallback);
 
 	self.ItemList:SetLineOnLeaveCallback(GameTooltip_Hide);
 

@@ -688,13 +688,13 @@ function CreateColor(r, g, b, a)
 	return color;
 end
 
-local function ExtractHexByte(str, index)
-	return tonumber(str:sub(index, index + 1), 16);
+local function ExtractColorValueFromHex(str, index)
+	return tonumber(str:sub(index, index + 1), 16) / 255;
 end
 
 function CreateColorFromHexString(hexColor)
 	if #hexColor == 8 then
-		local a, r, g, b = ExtractHexByte(hexColor, 1), ExtractHexByte(hexColor, 3), ExtractHexByte(hexColor, 5), ExtractHexByte(hexColor, 7);
+		local a, r, g, b = ExtractColorValueFromHex(hexColor, 1), ExtractColorValueFromHex(hexColor, 3), ExtractColorValueFromHex(hexColor, 5), ExtractColorValueFromHex(hexColor, 7);
 		return CreateColor(r, g, b, a);
 	else
 		GMError("CreateColorFromHexString input must be hexadecimal digits in this format: AARRGGBB.");
@@ -1483,8 +1483,7 @@ function CallMethodOnNearestAncestor(self, methodName, ...)
 	end
 
 	if ancestor then
-		ancestor[methodName](ancestor, ...);
-		return true;
+		return true, ancestor[methodName](ancestor, ...);
 	end
 
 	return false;

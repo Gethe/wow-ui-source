@@ -15,6 +15,19 @@ function AuctionHouseBuyoutModeCheckButtonMixin:OnShow()
 	self:UpdateState();
 end
 
+function AuctionHouseBuyoutModeCheckButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+	local wrap = true;
+	GameTooltip_AddNormalLine(GameTooltip, AUCTION_HOUSE_BUYOUT_MODE_TOOLTIP, wrap);
+
+	GameTooltip:Show();
+end
+
+function AuctionHouseBuyoutModeCheckButtonMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
 function AuctionHouseBuyoutModeCheckButtonMixin:OnClick()
 	self:UpdateState();
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
@@ -192,6 +205,12 @@ function AuctionHouseItemSellFrameMixin:SetSecondaryPriceInputEnabled(enabled)
 	self.PriceInput:SetSubtext(enabled and AUCTION_HOUSE_BUYOUT_OPTIONAL_LABEL or nil);
 	self.PriceInput.PerItemPostfix:SetShown(not enabled);
 	self.SecondaryPriceInput:SetShown(enabled);
+
+	if not enabled then
+		self.SecondaryPriceInput:SetAmount(0);
+	end
+
+	self:UpdatePostState();
 	self:UpdateFocusTabbing();
 	self:MarkDirty();
 end
