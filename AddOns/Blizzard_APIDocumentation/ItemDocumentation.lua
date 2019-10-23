@@ -259,6 +259,48 @@ local Item =
 			},
 		},
 		{
+			Name = "IsItemCorrupted",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCorrupted", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsItemCorruptionRelated",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCorruptionRelated", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsItemCorruptionResistant",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCorruptionResistant", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsItemDataCached",
 			Type = "Function",
 

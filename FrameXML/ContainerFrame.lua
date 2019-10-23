@@ -527,7 +527,7 @@ function ContainerFrame_Update(self)
 	local id = self:GetID();
 	local name = self:GetName();
 	local itemButton;
-	local texture, itemCount, locked, quality, readable, _, isFiltered, noValue, itemID;
+	local texture, itemCount, locked, quality, readable, itemLink, isFiltered, noValue, itemID, _;
 	local isQuestItem, questId, isActive, questTexture;
 	local battlepayItemTexture, newItemTexture, flash, newItemAnim;
 	local tooltipOwner = GameTooltip:GetOwner();
@@ -575,11 +575,11 @@ function ContainerFrame_Update(self)
 	for i=1, self.size, 1 do
 		itemButton = _G[name.."Item"..i];
 		
-		texture, itemCount, locked, quality, readable, _, _, isFiltered, noValue, itemID = GetContainerItemInfo(id, itemButton:GetID());
+		texture, itemCount, locked, quality, readable, _, itemLink, isFiltered, noValue, itemID = GetContainerItemInfo(id, itemButton:GetID());
 		isQuestItem, questId, isActive = GetContainerItemQuestInfo(id, itemButton:GetID());
 		
 		SetItemButtonTexture(itemButton, texture);
-		SetItemButtonQuality(itemButton, quality, itemID);
+		SetItemButtonQuality(itemButton, quality, itemLink);
 		SetItemButtonCount(itemButton, itemCount);
 		SetItemButtonDesaturated(itemButton, locked);
 		

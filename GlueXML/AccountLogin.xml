@@ -33,38 +33,6 @@
 			</Anchors>
 		</PushedTexture>
 	</Button>
-	<Frame name="CachedLoginFrameTemplate" virtual="true" parentArray="Frames" hidden="true">
-		<Size x="235" y="45"/>
-		<Frames>
-			<Button parentKey="LoginButton" inherits="GlueButtonTemplateBlue, TruncatedButtonTemplate">
-				<Size x="220" y="45"/>
-				<Anchors>
-					<Anchor point="LEFT"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad function="CachedLoginButton_OnLoad"/>
-					<OnClick function="CachedLoginButton_OnClick"/>
-					<OnUpdate>
-						self:SetEnabled(C_Login.IsLoginReady());
-					</OnUpdate>
-				</Scripts>
-				<HitRectInsets>
-					<AbsInset left="20" right="20" top="10" bottom="10"/>
-				</HitRectInsets>
-			</Button>
-			<Button parentKey="DeleteButton" inherits="GlueCloseButton">
-				<Anchors>
-					<Anchor point="RIGHT" x="0" y="2"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="CachedLoginDeleteButton_OnClick"/>
-					<OnUpdate>
-						self:SetEnabled(C_Login.IsLoginReady());
-					</OnUpdate>
-				</Scripts>
-			</Button>
-		</Frames>
-	</Frame>
 
 	<Button name="KoreanRatings" toplevel="true" setAllPoints="true" parent="GlueParent" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Anchors>
@@ -280,12 +248,6 @@
 							<AbsInset left="12" right="5" bottom="5"/>
 						</TextInsets>
 					</EditBox>
-					<Frame parentKey="CachedLoginFrameContainer" parentArray="NormalLoginRegions">
-						<Size x="230" y="45"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="AccountLogin" x="-5" y="5"/>
-						</Anchors>
-					</Frame>
 					<Button parentKey="LoginButton" parentArray="NormalLoginRegions" inherits="GlueButtonTemplateBlue" text="LOGIN">
 						<Size x="220" y="45"/>
 						<Anchors>

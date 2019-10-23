@@ -221,19 +221,25 @@ end
 
 function AuctionHouseTableCellFavoriteButtonMixin:SetFavoriteState(isFavorite)
 	self.isFavorite = isFavorite;
-	self.NormalTexture:SetAtlas(isFavorite and "auctionhouse-icon-favorite" or nil);
+
+	local defaultTexture = self.textureLocked and "auctionhouse-icon-favorite-off" or nil;
+	self.NormalTexture:SetAtlas(isFavorite and "auctionhouse-icon-favorite" or defaultTexture);
 	self.HighlightTexture:SetAtlas(isFavorite and "auctionhouse-icon-favorite" or "auctionhouse-icon-favorite-off");
 	self.HighlightTexture:SetBlendMode(isFavorite and "ADD" or "ADD");
 	self.HighlightTexture:SetAlpha(isFavorite and 0.2 or 0.4);
 end
 
 function AuctionHouseTableCellFavoriteButtonMixin:LockTexture()
+	self.textureLocked = true;
+
 	if not self:IsFavorite() then
 		self.NormalTexture:SetAtlas("auctionhouse-icon-favorite-off");
 	end
 end
 
 function AuctionHouseTableCellFavoriteButtonMixin:UnlockTexture()
+	self.textureLocked = false;
+
 	if not self:IsFavorite() then
 		self.NormalTexture:SetAtlas(nil);
 	end
@@ -628,23 +634,23 @@ end
 
 AuctionHouseTableHeaderStringMixin = CreateFromMixins(TableBuilderElementMixin);
 
+function AuctionHouseTableHeaderStringMixin:OnClick()
+	self.owner:SetSortOrder(self.sortOrder);
+	self:UpdateArrow();
+end
+
 function AuctionHouseTableHeaderStringMixin:Init(owner, headerText, sortOrder)
 	self:SetText(headerText);
 
-	if owner.RegisterHeader and sortOrder ~= nil then
-		self.owner = owner;
+	local interactiveHeader = owner.RegisterHeader and sortOrder ~= nil;
+	self:SetEnabled(interactiveHeader);
+	self.owner = owner;
+	self.sortOrder = sortOrder;
+
+	if interactiveHeader then
 		owner:RegisterHeader(self);
-
-		self.sortOrder = sortOrder;
-
-		self:SetScript("OnClick", function(...)
-			self.owner:SetSortOrder(self.sortOrder);
-			self:UpdateArrow();
-		end);
-
 		self:UpdateArrow();
 	else
-		self:SetEnabled(false);
 		self.Arrow:Hide();
 	end
 end

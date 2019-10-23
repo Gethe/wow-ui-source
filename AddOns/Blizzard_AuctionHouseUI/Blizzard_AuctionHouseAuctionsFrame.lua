@@ -250,12 +250,9 @@ function AuctionHouseAuctionsFrameMixin:InitializeSummaryList()
 end
 
 function AuctionHouseAuctionsFrameMixin:InitializeAllAuctionsList()
-	self.AllAuctionsList:SetSelectionCallback(function(searchResult)
-		self:OnAllAuctionsSearchResultSelected(searchResult);
-	end);
-
+	self.AllAuctionsList:SetSelectionCallback(AuctionHouseUtil.GenerateRowSelectedCallbackWithInspect(self, self.OnAllAuctionsSearchResultSelected));
 	self.AllAuctionsList:SetLineOnEnterCallback(AuctionHouseUtil.LineOnEnterCallback);
-	self.AllAuctionsList:SetLineOnLeaveCallback(GameTooltip_Hide);
+	self.AllAuctionsList:SetLineOnLeaveCallback(AuctionHouseUtil.LineOnLeaveCallback);
 
 	self.AllAuctionsList:SetHighlightCallback(function(currentRowData, selectedRowData)
 		return selectedRowData and currentRowData.auctionID == selectedRowData.auctionID;
@@ -281,12 +278,9 @@ function AuctionHouseAuctionsFrameMixin:InitializeAllAuctionsList()
 end
 
 function AuctionHouseAuctionsFrameMixin:InitializeBidsList()
-	self.BidsList:SetSelectionCallback(function(searchResult)
-		self:OnBidsListSearchResultSelected(searchResult);
-	end);
-
+	self.BidsList:SetSelectionCallback(AuctionHouseUtil.GenerateRowSelectedCallbackWithInspect(self, self.OnBidsListSearchResultSelected)); 
 	self.BidsList:SetLineOnEnterCallback(AuctionHouseUtil.LineOnEnterCallback);
-	self.BidsList:SetLineOnLeaveCallback(GameTooltip_Hide);
+	self.BidsList:SetLineOnLeaveCallback(AuctionHouseUtil.LineOnLeaveCallback);
 
 	self.BidsList:SetHighlightCallback(function(currentRowData, selectedRowData)
 		return selectedRowData and currentRowData.auctionID == selectedRowData.auctionID;
@@ -314,16 +308,14 @@ end
 function AuctionHouseAuctionsFrameMixin:InitializeItemList()
 	self.ItemList:SetTableBuilderLayout(AuctionHouseTableBuilder.GetAuctionsItemListLayout(self, self.ItemList));
 
-	self.ItemList:SetSelectionCallback(function(searchResult)
-		self:OnItemSearchResultSelected(searchResult);
-	end);
 
 	self.ItemList:SetHighlightCallback(function(currentRowData, selectedRowData)
 		return selectedRowData and currentRowData.auctionID == selectedRowData.auctionID;
 	end);
 
-	self.ItemList:SetLineOnEnterCallback(AuctionHouseUtil.SetAuctionHouseTooltip);
-	self.ItemList:SetLineOnLeaveCallback(GameTooltip_Hide);
+	self.ItemList:SetSelectionCallback(AuctionHouseUtil.GenerateRowSelectedCallbackWithInspect(self, self.OnItemSearchResultSelected));
+	self.ItemList:SetLineOnEnterCallback(AuctionHouseUtil.LineOnEnterCallback);
+	self.ItemList:SetLineOnLeaveCallback(AuctionHouseUtil.LineOnLeaveCallback);
 
 	local function AuctionsItemListSearchStarted()
 		return self.itemKey ~= nil;
@@ -366,6 +358,7 @@ function AuctionHouseAuctionsFrameMixin:InitializeCommoditiesList()
 
 	self.CommoditiesList:SetSelectionCallback(function(commoditySearchResult)
 		self:OnCommoditySearchResultSelected(commoditySearchResult);
+		return true;
 	end);
 end
 

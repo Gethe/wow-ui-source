@@ -827,6 +827,28 @@ function ToggleGuildFrame()
 	end
 end
 
+local function ToggleClubFinderBasedOnType(isGuildType)
+	ToggleCommunitiesFrame();
+	local communitiesFrame = CommunitiesFrame;
+
+	if( not communitiesFrame:IsShown()) then 
+		return;
+	end 
+
+	if (isGuildType) then 
+		communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER);
+	else 
+		communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_FINDER);
+	end
+
+	communitiesFrame.GuildFinderFrame.isGuildType = isGuildType;
+	communitiesFrame.GuildFinderFrame.selectedTab = 1;
+	communitiesFrame.GuildFinderFrame:UpdateType(); 
+
+	communitiesFrame:SelectClub(nil);
+	communitiesFrame.Inset:Hide();
+end 
+
 function ToggleGuildFinder()
 	if (IsKioskModeEnabled()) then
 		return;
@@ -837,10 +859,20 @@ function ToggleGuildFinder()
 		return;
 	end
 
-	LookingForGuildFrame_LoadUI();
-	if ( LookingForGuildFrame_Toggle ) then
-		LookingForGuildFrame_Toggle();
+	ToggleClubFinderBasedOnType(true);
+end
+
+function ToggleCommunityFinder()
+	if (IsKioskModeEnabled()) then
+		return;
 	end
+
+	local factionGroup = UnitFactionGroup("player");
+	if (factionGroup == "Neutral") then
+		return;
+	end
+
+	ToggleClubFinderBasedOnType(false);
 end
 
 function ToggleLFDParentFrame()
@@ -2135,11 +2167,14 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif (event == "GLOBAL_MOUSE_DOWN" or event == "GLOBAL_MOUSE_UP") then
 		local buttonID = ...;
+
+		-- Close dropdown(s).
 		if not IsGlobalMouseEventHandled(buttonID, event) then
 			UIDropDownMenu_HandleGlobalMouseEvent(buttonID, event);
 		end
 
-		if event == "GLOBAL_MOUSE_DOWN" then
+		-- Clear keyboard focus.
+		if event == "GLOBAL_MOUSE_DOWN" and buttonID == "LeftButton" and not IsModifierKeyDown() then
 			local mouseFocus = GetMouseFocus();
 			local keyBoardFocus = GetCurrentKeyBoardFocus();
 			if keyBoardFocus and keyBoardFocus ~= mouseFocus and keyBoardFocus.ClearFocus then

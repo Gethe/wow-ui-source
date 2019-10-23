@@ -190,6 +190,14 @@ function WorldQuestDataProviderMixin:DoesWorldQuestInfoPassFilters(info)
 	return WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeRequirements);
 end
 
+function WorldQuestDataProviderMixin:ShouldOverrideShowQuest(mapID, questId)
+	local mapInfo = C_Map.GetMapInfo(mapID);
+	if questId == GetSuperTrackedQuestID() and mapInfo.mapType == Enum.UIMapType.Continent then 
+		return true;
+	end
+	return false; 
+end 
+
 function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	local pinsToRemove = {};
 	for questId in pairs(self.activePins) do
@@ -207,7 +215,7 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 
 	if taskInfo then
 		for i, info in ipairs(taskInfo) do
-			if self:ShouldShowQuest(info) and HaveQuestData(info.questId) then
+			if self:ShouldOverrideShowQuest(mapID, info.questId) or self:ShouldShowQuest(info) and HaveQuestData(info.questId) then
 				if QuestUtils_IsQuestWorldQuest(info.questId) then
 					if self:DoesWorldQuestInfoPassFilters(info) then
 						pinsToRemove[info.questId] = nil;

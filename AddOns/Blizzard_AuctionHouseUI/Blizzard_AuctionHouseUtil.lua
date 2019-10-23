@@ -289,21 +289,18 @@ function AuctionHouseUtil.GetTooltipTimeLeftBandText(timeLeftBand)
 end
 
 function AuctionHouseUtil.AddSellersToTooltip(tooltip, sellers)
+	local sellersString = sellers[1] == "player" and GREEN_FONT_COLOR:WrapTextInColorCode(AUCTION_HOUSE_SELLER_YOU) or sellers[1];
 	local numSellers = #sellers;
 	if numSellers > 1 then
-		local otherSellers = "";
+		sellersString = sellersString..HIGHLIGHT_FONT_COLOR_CODE;
 		for i = 2, numSellers do
-			otherSellers = otherSellers..PLAYER_LIST_DELIMITER..sellers[i];
+			sellersString = sellersString..PLAYER_LIST_DELIMITER..sellers[i];
 		end
-
-		local sellersString = sellers[1] == "player" and GREEN_FONT_COLOR:WrapTextInColorCode(AUCTION_HOUSE_SELLER_YOU) or sellers[1];
-		if otherSellers ~= "" then
-			sellersString = sellersString..WHITE_FONT_COLOR:WrapTextInColorCode(otherSellers);
-		end
+		sellersString = sellersString..FONT_COLOR_CODE_CLOSE;
 
 		tooltip:AddLine(AUCTION_HOUSE_TOOLTIP_MULTIPLE_SELLERS_FORMAT:format(sellersString));
 	elseif numSellers > 0 then
-		tooltip:AddLine(AUCTION_HOUSE_TOOLTIP_SELLER_FORMAT:format(sellers[1]));
+		tooltip:AddLine(AUCTION_HOUSE_TOOLTIP_SELLER_FORMAT:format(sellersString));
 	end
 end
 
@@ -473,12 +470,55 @@ function AuctionHouseUtil.SetAuctionHouseTooltip(owner, rowData)
 	GameTooltip:Show();
 end
 
+function AuctionHouseUtil.LineOnUpdate(line)
+	if IsModifiedClick("DRESSUP") then
+		ShowInspectCursor();
+	else
+		ResetCursor();
+	end
+end
+
 function AuctionHouseUtil.LineOnEnterCallback(line, rowData)
-	if rowData.itemKey then
+	line:SetScript("OnUpdate", AuctionHouseUtil.LineOnUpdate);
+
+	if rowData.itemLink then
+		GameTooltip:SetOwner(line, "ANCHOR_RIGHT");
+
+		if not BattlePetToolTip_ShowLink(rowData.itemLink) then
+			GameTooltip:SetHyperlink(rowData.itemLink);
+		end
+
+		GameTooltip:Show();
+	elseif rowData.itemKey then
 		GameTooltip:SetOwner(line, "ANCHOR_RIGHT");
 		GameTooltip:SetItemKey(rowData.itemKey.itemID, rowData.itemKey.itemLevel, rowData.itemKey.itemSuffix);
 		GameTooltip:Show();
+
+		if IsModifiedClick("DRESSUP") then
+			ShowInspectCursor();
+		end
 	end
+end
+
+function AuctionHouseUtil.LineOnLeaveCallback(line, rowData)
+	line:SetScript("OnUpdate", nil);
+
+	ResetCursor();
+	GameTooltip_Hide();
+end
+
+function AuctionHouseUtil.GenerateRowSelectedCallbackWithInspect(self, selectionCallback)
+	local function RowSelectedCallback(rowData)
+		if rowData and IsModifiedClick("DRESSUP") then
+			DressUpLink(rowData.itemLink);
+			return false;
+		end
+
+		selectionCallback(self, rowData);
+		return true;
+	end
+
+	return RowSelectedCallback;
 end
 
 function AuctionHouseUtil.HasBidType(itemKey)

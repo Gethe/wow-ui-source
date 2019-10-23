@@ -1,3 +1,7 @@
+function DressUpLink(link)
+	return link and (DressUpItemLink(link) or DressUpBattlePetLink(link) or DressUpMountLink(link));
+end
+
 function DressUpItemLink(link)
 	if( link ) then 
 		if ( IsDressableItem(link) ) then
@@ -205,6 +209,17 @@ function DressUpFrame_Show(frame)
 	if ( not frame:IsShown() or frame.mode ~= "player") then
 		frame.mode = "player";
 		frame.ResetButton:Show();
+
+		-- If there's not enough space as-is, try minimizing.
+		if not CanShowRightUIPanel(frame) and not frame.MaximizeMinimizeFrame:IsMinimized() then
+			local isAutomaticAction = true;
+			frame.MaximizeMinimizeFrame:Minimize(isAutomaticAction);
+
+			-- Restore the frame to its original state if we still can't fit.
+			if not CanShowRightUIPanel(frame) then
+				frame.MaximizeMinimizeFrame:Maximize(isAutomaticAction);
+			end
+		end
 
 		ShowUIPanel(frame);
 

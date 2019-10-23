@@ -28,11 +28,11 @@ function AuctionHouseBrowseResultsFrameMixin:OnLoad()
 
 	self.ItemList:SetSelectionCallback(function(browseResult)
 		self:OnBrowseResultSelected(browseResult);
+		return false; -- browse lines are never selected.
 	end);
 
 	self.ItemList:SetLineOnEnterCallback(AuctionHouseUtil.LineOnEnterCallback);
-
-	self.ItemList:SetLineOnLeaveCallback(GameTooltip_Hide);
+	self.ItemList:SetLineOnLeaveCallback(AuctionHouseUtil.LineOnLeaveCallback);
 
 	local extraInfoColumn = nil;
 	self:SetupTableBuilder(extraInfoColumn);
@@ -152,5 +152,15 @@ function AuctionHouseBrowseResultsFrameMixin:GetSortOrderState(sortOrder)
 end
 
 function AuctionHouseBrowseResultsFrameMixin:OnBrowseResultSelected(browseResult)
-	self:GetAuctionHouseFrame():SelectBrowseResult(browseResult);
+	if IsModifiedClick("DRESSUP") then
+		if browseResult.appearanceLink then
+			local _, _, hyperlinkString = ExtractHyperlinkString(browseResult.appearanceLink);
+			DressUpTransmogLink(hyperlinkString);
+		else
+			local _, itemLink = GetItemInfo(browseResult.itemKey.itemID);
+			DressUpLink(itemLink);
+		end
+	else
+		self:GetAuctionHouseFrame():SelectBrowseResult(browseResult);
+	end
 end

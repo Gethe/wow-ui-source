@@ -181,12 +181,14 @@ function AuctionHouseItemListMixin:OnLeaveListLine(line, rowData)
 end
 
 function AuctionHouseItemListMixin:SetSelectedEntry(rowData)
+	if self.selectionCallback then
+		if not self.selectionCallback(rowData) then
+			return;
+		end
+	end
+
 	self.selectedRowData = rowData;
 	self:DirtyScrollFrame();
-
-	if self.selectionCallback then
-		self.selectionCallback(rowData);
-	end
 end
 
 function AuctionHouseItemListMixin:GetSelectedEntry()

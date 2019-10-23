@@ -132,6 +132,7 @@ function AuctionHouseCommoditiesBuyFrameMixin:OnLoad()
 
 	self.ItemList:SetSelectionCallback(function(auctionData)
 		self:OnAuctionSelected(auctionData);
+		return true;
 	end);
 end
 
@@ -142,6 +143,7 @@ end
 function AuctionHouseCommoditiesBuyFrameMixin:OnAuctionSelected(searchResultInfo)
 	local totalQuantity = AuctionHouseUtil.AggregateCommoditySearchResultsByMaxPrice(self:GetItemID(), searchResultInfo.unitPrice);
 	self:GetAuctionHouseFrame():TriggerEvent(AuctionHouseFrameMixin.Event.CommoditiesQuantitySelectionChanged, totalQuantity);
+	return true;
 end
 
 function AuctionHouseCommoditiesBuyFrameMixin:SetItemIDAndPrice(itemID, price)

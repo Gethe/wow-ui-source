@@ -196,9 +196,18 @@ end
 function GameTooltip_AddColoredLine(tooltip, text, color, wrap, leftOffset)
 	local r, g, b = color:GetRGB();
 	if wrap == nil then
-		wrap = true
+		wrap = true;
 	end
 	tooltip:AddLine(text, r, g, b, wrap, leftOffset);
+end
+
+function GameTooltip_AddColoredDoubleLine(tooltip, leftText, rightText, leftColor, rightColor, wrap)
+	local leftR, leftG, leftB = leftColor:GetRGB();
+	local rightR, rightG, rightB = rightColor:GetRGB();
+	if wrap == nil then
+		wrap = true;
+	end
+	tooltip:AddDoubleLine(leftText, rightText, leftR, leftG, leftB, rightR, rightG, rightB, wrap);
 end
 
 function GameTooltip_ShowDisabledTooltip(tooltip, owner, text)
@@ -426,6 +435,25 @@ GAME_TOOLTIP_BACKDROP_STYLE_AZERITE_ITEM = {
 	padding = { left = 3, right = 3, top = 3, bottom = 3 },
 };
 
+TOOLTIP_CORRUPTED_BACKGROUND_COLOR = CreateColor(1, 1, 1);
+GAME_TOOLTIP_BACKDROP_STYLE_CORRUPTED_ITEM = {
+	bgFile = "Interface/Tooltips/UI-Tooltip-Background-Corrupted",
+	edgeFile = "Interface/Tooltips/UI-Tooltip-Border-Corrupted",
+	tile = true,
+	tileEdge = false,
+	tileSize = 16,
+	edgeSize = 19,
+	insets = { left = 4, right = 4, top = 4, bottom = 4 },
+
+	backdropBorderColor = TOOLTIP_DEFAULT_COLOR,
+	backdropColor = TOOLTIP_CORRUPTED_BACKGROUND_COLOR,
+
+	overlayAtlasTop = "Nzoth-tooltip-topper";
+	overlayAtlasTopScale = .75,
+
+	padding = { left = 3, right = 3, top = 3, bottom = 3 },
+};
+
 function GameTooltip_SetBackdropStyle(self, style)
 	self:SetBackdrop(style);
 	self:SetBackdropBorderColor((style.backdropBorderColor or TOOLTIP_DEFAULT_COLOR):GetRGB());
@@ -539,12 +567,17 @@ function GameTooltip_OnTooltipSetUnit(self)
 end
 
 function GameTooltip_UpdateStyle(self)
+	local backdropStyle = GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT;
 	local _, itemLink = self:GetItem();
-	if itemLink and (C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemLink) or C_AzeriteItem.IsAzeriteItemByID(itemLink)) then
-		GameTooltip_SetBackdropStyle(self, GAME_TOOLTIP_BACKDROP_STYLE_AZERITE_ITEM);
-	else
-		GameTooltip_SetBackdropStyle(self, GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT);
+	if itemLink then
+		if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemLink) or C_AzeriteItem.IsAzeriteItemByID(itemLink) then
+			backdropStyle = GAME_TOOLTIP_BACKDROP_STYLE_AZERITE_ITEM;
+		elseif IsCorruptedItem(itemLink) then
+			backdropStyle = GAME_TOOLTIP_BACKDROP_STYLE_CORRUPTED_ITEM;
+		end
 	end
+
+	GameTooltip_SetBackdropStyle(self, backdropStyle);
 end
 
 function GameTooltip_OnTooltipSetItem(self)

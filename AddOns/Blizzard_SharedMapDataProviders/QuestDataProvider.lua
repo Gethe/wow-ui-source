@@ -122,6 +122,10 @@ function QuestDataProviderMixin:ShouldShowQuest(questID, mapType, doesMapShowTas
 	if isMapIndicatorQuest or not HaveQuestData(questID) then 
 		return false; 
 	end
+	if mapType == Enum.UIMapType.Continent and questID == GetSuperTrackedQuestID() then 
+		return true;
+	end
+
 	return MapUtil.ShouldMapTypeShowQuests(mapType);
 end
 

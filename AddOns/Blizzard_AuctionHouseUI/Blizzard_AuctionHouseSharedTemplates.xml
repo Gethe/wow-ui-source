@@ -33,7 +33,7 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="AuctionHouseItemDisplayBaseTemplate" mixin="AuctionHouseItemDisplayMixin" inherits="AuctionHouseBackgroundTemplate" useParentLevel="false" registerForClicks="RightButtonUp" virtual="true">
+	<Button name="AuctionHouseItemDisplayBaseTemplate" mixin="AuctionHouseItemDisplayMixin" inherits="AuctionHouseBackgroundTemplate" useParentLevel="false" registerForClicks="RightButtonUp, LeftButtonUp" virtual="true">
 		<KeyValues>
 			<!--
 			itemButtonXOffset: X Offset for the item button relative to the background's left.

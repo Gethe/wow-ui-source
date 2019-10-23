@@ -1147,6 +1147,7 @@ local AuctionHouse =
 			Fields =
 			{
 				{ Name = "itemKey", Type = "ItemKey", Nilable = false },
+				{ Name = "appearanceLink", Type = "string", Nilable = true },
 				{ Name = "totalQuantity", Type = "number", Nilable = false },
 				{ Name = "minPrice", Type = "number", Nilable = false },
 				{ Name = "containsOwnerItem", Type = "bool", Nilable = false },

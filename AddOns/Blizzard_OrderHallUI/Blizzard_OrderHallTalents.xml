@@ -57,13 +57,6 @@
 						<Anchor point="CENTER" relativeKey="$parent.DoneCheckmark" x="0" y="-3"/>
 					</Anchors>
 				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString parentKey="TalentRank" inherits="GameFontNormalSmall" hidden="true">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-				</FontString>
 			</Layer>				
 		</Layers>
 		<Frames>

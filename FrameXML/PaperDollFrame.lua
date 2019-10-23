@@ -16,8 +16,8 @@ CR_HIT_SPELL = 8;
 CR_CRIT_MELEE = 9;
 CR_CRIT_RANGED = 10;
 CR_CRIT_SPELL = 11;
-CR_UNUSED_2 = 12;
-CR_UNUSED_3 = 13;
+CR_CORRUPTION = 12;
+CR_CORRUPTION_RESISTANCE = 13;
 CR_SPEED = 14;
 COMBAT_RATING_RESILIENCE_CRIT_TAKEN = 15;
 COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN = 16;
@@ -1462,6 +1462,14 @@ function PaperDollFrame_IgnoreSlot(slot)
 	C_EquipmentSet.IgnoreSlotForSave(slot);
 	itemSlotButtons[slot].ignored = true;
 	PaperDollItemSlotButton_Update(itemSlotButtons[slot]);
+end
+
+function PaperDollFrame_UpdateCorruptedItemGlows(glow)
+	for _, button in next, itemSlotButtons do
+		if button.HasPaperDollAzeriteItemOverlay then
+			button:UpdateCorruptedGlow(ItemLocation:CreateFromEquipmentSlot(button:GetID()), glow);
+		end
+	end
 end
 
 function PaperDollItemSlotButton_OnLoad(self)

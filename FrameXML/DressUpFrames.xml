@@ -102,7 +102,7 @@
 					<Anchor point="TOP" x="-23" y="-28"/>
 				</Anchors>
 			</Frame>
-			<Frame name="MaximizeMinimizeFrame" mixin="DressUpModelFrameMaximizeMinimizeMixin" inherits="MaximizeMinimizeButtonFrameTemplate">
+			<Frame parentKey="MaximizeMinimizeFrame" mixin="DressUpModelFrameMaximizeMinimizeMixin" inherits="MaximizeMinimizeButtonFrameTemplate">
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="10" y="0"/>
 				</Anchors>

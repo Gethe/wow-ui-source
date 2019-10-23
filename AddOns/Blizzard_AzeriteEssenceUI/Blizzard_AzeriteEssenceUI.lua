@@ -109,6 +109,8 @@ function AzeriteEssenceUIMixin:SetupMilestones()
 		local template;
 		if milestoneInfo.slot == Enum.AzeriteEssence.MainSlot then
 			template = "AzeriteMilestoneMajorSlotTemplate";
+		elseif milestoneInfo.rank then
+			template = "AzeriteMilestoneRankedTemplate";
 		elseif milestoneInfo.slot then
 			template = "AzeriteMilestoneMinorSlotTemplate";
 		else
@@ -915,12 +917,33 @@ function AzeriteMilestoneBaseMixin:OnHide()
 	self:UnregisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 end
 
-function AzeriteMilestoneBaseMixin:OnMouseUp()
-	-- override this
+function AzeriteMilestoneBaseMixin:OnMouseUp(mouseButton)
+	if mouseButton == "LeftButton" then
+		if self.canUnlock and C_AzeriteEssence.IsAtForge() then
+			C_AzeriteEssence.UnlockMilestone(self.milestoneID);
+		end
+	end
 end
 
 function AzeriteMilestoneBaseMixin:OnEnter()
-	-- override this
+	local spellID = C_AzeriteEssence.GetMilestoneSpell(self.milestoneID);
+	if not spellID then
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	local spell = Spell:CreateFromSpellID(spellID);
+	spell:ContinueWithCancelOnSpellLoad(function()
+		if GameTooltip:GetOwner() == self then
+			local wrapText = true;
+			GameTooltip_SetTitle(GameTooltip, spell:GetSpellName());
+			GameTooltip_AddColoredLine(GameTooltip, spell:GetSpellDescription(), NORMAL_FONT_COLOR, wrapText);
+			if not self.unlocked then
+				self:AddStateToTooltip(AZERITE_ESSENCE_LOCKED_MILESTONE_LEVEL, AZERITE_ESSENCE_UNLOCK_MILESTONE);
+			end
+			GameTooltip:Show();
+		end
+	end);
 end
 
 function AzeriteMilestoneBaseMixin:OnLeave()
@@ -931,6 +954,15 @@ function AzeriteMilestoneBaseMixin:OnLeave()
 		end
 	end
 	GameTooltip:Hide();
+end
+
+function AzeriteMilestoneBaseMixin:ShowStateFrame(stateFrame)
+	if not self.StateFrames then
+		return;
+	end
+	for i, frame in ipairs(self.StateFrames) do
+		frame:SetShown(frame == stateFrame);
+	end
 end
 
 function AzeriteMilestoneBaseMixin:CheckAndSetUpUnlockEffect()
@@ -1011,6 +1043,7 @@ function AzeriteMilestoneBaseMixin:UpdateMilestoneInfo()
 	self.unlocked = milestoneInfo.unlocked;
 	self.canUnlock = milestoneInfo.canUnlock;
 	self.requiredLevel = milestoneInfo.requiredLevel;
+	self.rank = milestoneInfo.rank;
 end
 
 function AzeriteMilestoneBaseMixin:AddStateToTooltip(requiredLevelString, returnToForgeString)
@@ -1047,15 +1080,6 @@ function AzeriteMilestoneSlotMixin:OnDragStart()
 	local spellID = C_AzeriteEssence.GetMilestoneSpell(self.milestoneID);
 	if spellID then
 		PickupSpell(spellID);
-	end
-end
-
-function AzeriteMilestoneSlotMixin:ShowStateFrame(stateFrame)
-	if not self.StateFrames then
-		return;
-	end
-	for i, frame in ipairs(self.StateFrames) do
-		frame:SetShown(frame == stateFrame);
 	end
 end
 
@@ -1239,31 +1263,32 @@ function AzeriteMilestoneStaminaMixin:Refresh()
 	end
 end
 
-function AzeriteMilestoneStaminaMixin:OnEnter()
-	local spellID = C_AzeriteEssence.GetMilestoneSpell(self.milestoneID);
-	if not spellID then
-		return;
-	end
+AzeriteMilestoneRankedMixin = CreateFromMixins(AzeriteMilestoneBaseMixin);
 
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	local spell = Spell:CreateFromSpellID(spellID);
-	spell:ContinueWithCancelOnSpellLoad(function()
-		if GameTooltip:GetOwner() == self then
-			local wrapText = true;
-			GameTooltip_SetTitle(GameTooltip, spell:GetSpellName());
-			GameTooltip_AddColoredLine(GameTooltip, spell:GetSpellDescription(), NORMAL_FONT_COLOR, wrapText);
-			if not self.unlocked then
-				self:AddStateToTooltip(AZERITE_ESSENCE_LOCKED_MILESTONE_LEVEL, AZERITE_ESSENCE_UNLOCK_MILESTONE);
+function AzeriteMilestoneRankedMixin:Refresh()
+	self:UpdateMilestoneInfo();
+
+	if not self.unlocked and not self.canUnlock then
+		self:ShowStateFrame(self.LockedState);
+		self.LockedState.UnlockLevelText:SetText(self.requiredLevel);
+	else
+		self:ShowStateFrame(self.AvailableState);
+		self.AvailableState.RankText:SetText(self.rank);
+		local spellName, spellTexture = AzeriteEssenceUtil.GetMilestoneSpellInfo(self.milestoneID);
+		self.AvailableState.Icon:SetTexture(spellTexture);
+
+		if self:ShouldShowUnlockState() then
+			self:CheckAndSetUpUnlockEffect();
+			if C_AzeriteEssence.IsAtForge() then
+				self.AvailableState.GlowAnim:Stop();
+				self.AvailableState.ForgeGlowAnim:Play();
+			else
+				self.AvailableState.ForgeGlowAnim:Stop();
+				self.AvailableState.GlowAnim:Play();
 			end
-			GameTooltip:Show();
-		end
-	end);
-end
-
-function AzeriteMilestoneStaminaMixin:OnMouseUp(mouseButton)
-	if mouseButton == "LeftButton" then
-		if self.canUnlock and C_AzeriteEssence.IsAtForge() then
-			C_AzeriteEssence.UnlockMilestone(self.milestoneID);
+		else
+			self.AvailableState.GlowAnim:Stop();
+			self.AvailableState.ForgeGlowAnim:Stop();
 		end
 	end
 end

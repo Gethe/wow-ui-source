@@ -17,6 +17,7 @@ function AuctionHouseCommoditiesSellFrameMixin:Init()
 	local commoditiesSellList = self:GetCommoditiesSellList();
 	commoditiesSellList:SetSelectionCallback(function(commoditySearchResult)
 		self:OnAuctionSelected(commoditySearchResult);
+		return true;
 	end);
 
 	commoditiesSellList:RefreshScrollFrame();

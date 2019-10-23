@@ -21,16 +21,14 @@ function AuctionHouseItemBuyFrameMixin:OnLoad()
 	
 	self:ResetPrice();
 
-	self.ItemList:SetSelectionCallback(function(auctionData)
-		self:OnAuctionSelected(auctionData);
-	end);
+	self.ItemList:SetSelectionCallback(AuctionHouseUtil.GenerateRowSelectedCallbackWithInspect(self, self.OnAuctionSelected));
 
 	self.ItemList:SetHighlightCallback(function(currentRowData, selectedRowData)
 		return selectedRowData and (currentRowData.auctionID == selectedRowData.auctionID);
 	end);
 
-	self.ItemList:SetLineOnEnterCallback(AuctionHouseUtil.SetAuctionHouseTooltip);
-	self.ItemList:SetLineOnLeaveCallback(GameTooltip_Hide);
+	self.ItemList:SetLineOnEnterCallback(AuctionHouseUtil.LineOnEnterCallback);
+	self.ItemList:SetLineOnLeaveCallback(AuctionHouseUtil.LineOnLeaveCallback);
 
 	self.ItemList:SetTableBuilderLayout(AuctionHouseTableBuilder.GetItemBuyListLayout(self, self.ItemList));
 

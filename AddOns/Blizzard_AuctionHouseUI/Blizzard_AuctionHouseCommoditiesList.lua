@@ -104,6 +104,7 @@ function AuctionHouseCommoditiesBuyListMixin:OnLoad()
 
 	self:SetSelectionCallback(function(auctionData)
 		self:OnAuctionSelected(auctionData);
+		return true;
 	end);
 
 	self:SetTableBuilderLayout(AuctionHouseTableBuilder.GetCommoditiesBuyListLayout(self));

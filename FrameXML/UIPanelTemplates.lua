@@ -368,3 +368,24 @@ function UIExpandingButtonMixin:OnClick(button, down)
 	self.currentlyExpanded = not self.currentlyExpanded;
 	self:Update();
 end
+
+TalentRankDisplayMixin = { };
+
+function TalentRankDisplayMixin:SetValues(currentRank, maxRank, isDisabled)
+	self.Text:SetFormattedText(GENERIC_FRACTION_STRING, currentRank, maxRank);
+	local atlas, textColor;
+	if isDisabled then
+		atlas = "orderhalltalents-rankborder";
+		textColor = DISABLED_FONT_COLOR;
+	elseif currentRank < maxRank then
+		atlas = "orderhalltalents-rankborder-green";
+		textColor = GREEN_FONT_COLOR;
+	else
+		atlas = "orderhalltalents-rankborder-yellow";
+		textColor = YELLOW_FONT_COLOR;
+	end
+
+	local useAtlasSize = true;
+	self.Background:SetAtlas(atlas, true);
+	self.Text:SetTextColor(textColor:GetRGB());
+end

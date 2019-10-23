@@ -143,16 +143,14 @@ function AuctionHouseItemSellFrameMixin:InitializeItemSellList()
 
 	local itemSellList = self:GetItemSellList();
 
-	itemSellList:SetSelectionCallback(function(searchResult)
-		self:OnSearchResultSelected(searchResult);
-	end);
+	itemSellList:SetSelectionCallback(AuctionHouseUtil.GenerateRowSelectedCallbackWithInspect(self, self.OnSearchResultSelected));
 
 	itemSellList:SetHighlightCallback(function(currentRowData, selectedRowData)
 		return selectedRowData and currentRowData.auctionID == selectedRowData.auctionID;
 	end);
 
-	itemSellList:SetLineOnEnterCallback(AuctionHouseUtil.SetAuctionHouseTooltip);
-	itemSellList:SetLineOnLeaveCallback(GameTooltip_Hide);
+	itemSellList:SetLineOnEnterCallback(AuctionHouseUtil.LineOnEnterCallback);
+	itemSellList:SetLineOnLeaveCallback(AuctionHouseUtil.LineOnLeaveCallback);
 
 	local isEquipment = false;
 	local isPet = false;

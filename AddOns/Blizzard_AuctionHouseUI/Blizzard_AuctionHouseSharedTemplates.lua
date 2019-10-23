@@ -44,7 +44,22 @@ function AuctionHouseItemDisplayMixin:OnEvent(event, ...)
 	end
 end
 
+-- Set and cleared dynamically in OnEnter and OnLeave
+function AuctionHouseItemDisplayMixin:OnUpdate()
+	if IsModifiedClick("DRESSUP") then
+		ShowInspectCursor();
+	else
+		ResetCursor();
+	end
+end
+
 function AuctionHouseItemDisplayMixin:OnEnter()
+	self:SetScript("OnUpdate", AuctionHouseItemDisplayMixin.OnUpdate);
+
+	if IsModifiedClick("DRESSUP") then
+		ShowInspectCursor();
+	end
+
 	if self:IsPet() then
 		local itemLocation = self:GetItemLocation();
 		if itemLocation then
@@ -60,24 +75,39 @@ function AuctionHouseItemDisplayMixin:OnEnter()
 	else
 		BattlePetTooltip:Hide();
 
-		local itemLink = self:GetItemLink();
-		if itemLink then
+		local itemKey = self:GetItemKey();
+		if itemKey then
 			GameTooltip:SetOwner(self.ItemButton, "ANCHOR_RIGHT");
-			GameTooltip:SetHyperlink(itemLink);
+			GameTooltip:SetItemKey(itemKey.itemID, itemKey.itemLevel, itemKey.itemSuffix);
+			GameTooltip:Show();
+		else
+			local itemLink = self:GetItemLink();
+			if itemLink then
+				GameTooltip:SetOwner(self.ItemButton, "ANCHOR_RIGHT");
+				GameTooltip:SetHyperlink(itemLink);
+				GameTooltip:Show();
+			end
 		end
 	end
 end
 
 function AuctionHouseItemDisplayMixin:OnLeave()
+	self:SetScript("OnUpdate", nil);
+
+	ResetCursor();
 	GameTooltip:Hide();
 	BattlePetTooltip:Hide();
 end
 
 function AuctionHouseItemDisplayMixin:OnClick(button)
 	local itemKey = self:GetItemKey();
-	if itemKey and self.auctionHouseFrame and button == "RightButton" then
-		local favoriteDropDown = self.auctionHouseFrame:GetFavoriteDropDown();
-		AuctionHouseFavoriteDropDownCallback(favoriteDropDown, itemKey, C_AuctionHouse.IsFavoriteItem(itemKey));
+	if itemKey and self.auctionHouseFrame then
+		if button == "RightButton" then
+			local favoriteDropDown = self.auctionHouseFrame:GetFavoriteDropDown();
+			AuctionHouseFavoriteDropDownCallback(favoriteDropDown, itemKey, C_AuctionHouse.IsFavoriteItem(itemKey));
+		elseif button == "LeftButton" and IsModifiedClick("DRESSUP") then
+			DressUpLink(self:GetItemLink());
+		end
 	end
 end
 
@@ -325,11 +355,11 @@ function AuctionHouseInteractableItemDisplayItemButtonMixin:SwitchItemWithCursor
 	itemDisplay:SwitchItemWithCursor();
 end
 
-function AuctionHouseInteractableItemDisplayItemButtonMixin:OnClick(button)
+function AuctionHouseInteractableItemDisplayItemButtonMixin:OnClick(button, ...)
 	if button == "RightButton" then
-		self:GetParent():SetItemLocation(nil);
+		self:SetItemLocation(nil);
 	else
-		self:SwitchItemWithCursor();
+		self:GetParent():OnClick(button, ...);
 	end
 end
 
@@ -378,14 +408,16 @@ function AuctionHouseInteractableItemDisplayMixin:OnLeave()
 	self:SetHighlightLocked(false);
 end
 
-function AuctionHouseInteractableItemDisplayMixin:OnClick(button)
-	if button == "LeftButton" then
-		local item = C_Cursor.GetCursorItem();
-		if item then
-			self:SwitchItemWithCursor();
+function AuctionHouseInteractableItemDisplayMixin:OnClick(button, ...)
+	AuctionHouseItemDisplayMixin.OnClick(self, button, ...);
+
+	if button == "LeftButton" and not IsModifiedClick("DRESSUP") then
+		self:SwitchItemWithCursor();
+		if self:GetItemLocation() or self:GetItemLink() then
+			self:OnEnter();
+		else
+			self:OnLeave();
 		end
-	else
-		AuctionHouseItemDisplayMixin.OnClick(self, button);
 	end
 end
 

@@ -3756,7 +3756,9 @@ function ChatFrame_OpenChat(text, chatFrame, desiredCursorPosition)
 	if chatFrame == nil and CHAT_FOCUS_OVERRIDE ~= nil then
 		if CHAT_FOCUS_OVERRIDE.supportsSlashCommands or not text or strsub(text, 0, 1) ~= "/" then
 		    CHAT_FOCUS_OVERRIDE:SetFocus();
-			CHAT_FOCUS_OVERRIDE:SetText(text);
+			if text then
+				CHAT_FOCUS_OVERRIDE:SetText(text);
+			end
 		    return;
 		end
 	end
@@ -3764,9 +3766,12 @@ function ChatFrame_OpenChat(text, chatFrame, desiredCursorPosition)
 	local editBox = ChatEdit_ChooseBoxForSend(chatFrame);
 
 	ChatEdit_ActivateChat(editBox);
-	editBox.setText = 1;
 	editBox.desiredCursorPosition = desiredCursorPosition;
-	editBox.text = text;
+
+	if text then
+		editBox.text = text;
+		editBox.setText = 1;
+	end
 
 	if ( editBox:GetAttribute("chatType") == editBox:GetAttribute("stickyType") ) then
 		if ( (editBox:GetAttribute("stickyType") == "PARTY") and (not IsInGroup(LE_PARTY_CATEGORY_HOME)) or
@@ -4127,7 +4132,10 @@ end
 
 function ChatEdit_OnEditFocusLost(self)
 	AutoCompleteEditBox_OnEditFocusLost(self);
-	ChatEdit_DeactivateChat(self);
+	
+	if self:GetText() == "" then
+		ChatEdit_DeactivateChat(self);
+	end
 end
 
 function ChatEdit_ActivateChat(editBox)
@@ -4257,25 +4265,6 @@ function ChatEdit_InsertLink(text)
 		return false;
 	end
 
-	local activeWindow = ChatEdit_GetActiveWindow();
-	if ( activeWindow ) then
-		activeWindow:Insert(text);
-		return true;
-	end
-	if ( AuctionHouseFrame and AuctionHouseFrame:IsVisible() ) then
-		local item;
-		if ( strfind(text, "battlepet:") ) then
-			local petName = strmatch(text, "%[(.+)%]");
-			item = petName;
-		elseif ( strfind(text, "item:", 1, true) ) then
-			item = GetItemInfo(text);
-		end
-		if ( item ) then
-			if ( AuctionHouseFrame:SetSearchText(item) ) then
-				return true;
-			end
-		end
-	end
 	if ( MacroFrameText and MacroFrameText:HasFocus() ) then
 		local item;
 		if ( strfind(text, "item:", 1, true) ) then
@@ -4311,6 +4300,28 @@ function ChatEdit_InsertLink(text)
 		CommunitiesFrame.ChatEditBox:Insert(text);
 		return true;
 	end
+
+	local activeWindow = ChatEdit_GetActiveWindow();
+	if ( activeWindow ) then
+		activeWindow:Insert(text);
+		activeWindow:SetFocus();
+		return true;
+	end
+	if ( AuctionHouseFrame and AuctionHouseFrame:IsVisible() ) then
+		local item;
+		if ( strfind(text, "battlepet:") ) then
+			local petName = strmatch(text, "%[(.+)%]");
+			item = petName;
+		elseif ( strfind(text, "item:", 1, true) ) then
+			item = GetItemInfo(text);
+		end
+		if ( item ) then
+			if ( AuctionHouseFrame:SetSearchText(item) ) then
+				return true;
+			end
+		end
+	end
+
 	return false;
 end
 

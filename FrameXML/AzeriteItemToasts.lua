@@ -69,8 +69,9 @@ function AzeriteItemLevelUpToastMixin:PlayBanner(data)
 	self.UnlockItemsFrame:SetAlpha(0);
 
 	self.itemFramePool:ReleaseAll();
-	self.UnlockItemsFrame.EssenceSlotFrame:Hide();
-	self.UnlockItemsFrame.EssenceStaminaFrame:Hide();
+	for i, frame in ipairs(self.UnlockItemsFrame.Frames) do
+		frame:Hide();
+	end
 
 	self:SetupModelScene();
 
@@ -115,12 +116,22 @@ function AzeriteItemLevelUpToastMixin:SetUpAzeriteMilestoneUnlocks(powerLevel)
 	local height = 0;
 	local subText;
 
-	local hasMilestone, isSlot = AzeriteEssenceUtil.HasMilestoneAtPowerLevel(powerLevel);
-	if hasMilestone then
-		if isSlot then
+	local milestoneInfo = AzeriteEssenceUtil.GetMilestoneAtPowerLevel(powerLevel);
+	if milestoneInfo then
+		if milestoneInfo.slot then
 			self.UnlockItemsFrame.EssenceSlotFrame:Show();
 			subText = NEW_AZERITE_ESSENCE_SLOT_UNLOCKED;
 			height = 86;
+		elseif milestoneInfo.rank then
+			self.UnlockItemsFrame.EssenceRankedFrame:Show();
+			local spellName, spellTexture = AzeriteEssenceUtil.GetMilestoneSpellInfo(milestoneInfo.ID);
+			self.UnlockItemsFrame.EssenceRankedFrame.Icon:SetTexture(spellTexture);
+			if milestoneInfo.requiredLevel == powerLevel then
+				subText = NEW_AZERITE_ESSENCE_RANKED_UNLOCKED:format(spellName);
+			else
+				subText = NEW_AZERITE_ESSENCE_RANKED_RANK:format(spellName, milestoneInfo.rank);
+			end
+			height = 112;
 		else
 			self.UnlockItemsFrame.EssenceStaminaFrame:Show();
 			subText = NEW_AZERITE_ESSENCE_MILESTONE_UNLOCKED;

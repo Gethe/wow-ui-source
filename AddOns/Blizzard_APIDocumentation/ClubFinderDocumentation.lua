@@ -142,6 +142,20 @@ local ClubFinder =
 			},
 		},
 		{
+			Name = "GetPostingIDFromClubFinderGUID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "postingID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetRecruitingClubInfoFromClubID",
 			Type = "Function",
 

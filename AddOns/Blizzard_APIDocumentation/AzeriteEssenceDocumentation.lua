@@ -321,6 +321,7 @@ local AzeriteEssence =
 				{ Name = "requiredLevel", Type = "number", Nilable = false },
 				{ Name = "canUnlock", Type = "bool", Nilable = false },
 				{ Name = "unlocked", Type = "bool", Nilable = false },
+				{ Name = "rank", Type = "number", Nilable = true },
 				{ Name = "slot", Type = "AzeriteEssence", Nilable = true },
 			},
 		},

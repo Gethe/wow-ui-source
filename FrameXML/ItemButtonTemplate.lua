@@ -143,11 +143,15 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
 			button.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
 		end
 		
-		if not suppressOverlays and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemIDOrLink) then
-			button.IconOverlay:SetAtlas([[AzeriteIconFrame]]);
-			button.IconOverlay:Show();
-		else
-			button.IconOverlay:Hide();
+		button.IconOverlay:Hide();
+		if not suppressOverlays then
+			if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemIDOrLink) then
+				button.IconOverlay:SetAtlas("AzeriteIconFrame");
+				button.IconOverlay:Show();
+			elseif IsCorruptedItem(itemIDOrLink) then
+				button.IconOverlay:SetAtlas("Nzoth-inventory-icon");
+				button.IconOverlay:Show();
+			end
 		end
 	else
 		button.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);

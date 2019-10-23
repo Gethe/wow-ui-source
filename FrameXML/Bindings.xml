@@ -107,7 +107,7 @@
 	</Binding>
 	<!-- Chat frame bindings header="CHAT" -->
 	<Binding name="OPENCHAT" category="BINDING_HEADER_CHAT">
-		ChatFrame_OpenChat("");
+		ChatFrame_OpenChat(nil);
 	</Binding>
 	<Binding name="OPENCHATSLASH" category="BINDING_HEADER_CHAT">
 		ChatFrame_OpenChat("/");

@@ -197,3 +197,41 @@ function CharacterFrame_TabBoundsCheck(self)
 		end
 	end
 end
+
+function CharacterFrameCorruption_OnLoad(self)
+	CharacterFrameCorruption_UpdateVisibility(self);
+	self:RegisterEvent("COMBAT_RATING_UPDATE");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+end
+
+function CharacterFrameCorruption_UpdateVisibility(self)
+	self:SetShown(GetCorruption() > 0);
+end
+
+function CharacterFrameCorruption_OnEnter(self)
+	self.Eye:SetAtlas("Nzoth-charactersheet-icon-glow", true);
+	GameTooltip_SetBackdropStyle(GameTooltip, GAME_TOOLTIP_BACKDROP_STYLE_CORRUPTED_ITEM);
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetMinimumWidth(250);
+
+	local corruption = GetCorruption();
+	local corruptionResistance = GetCorruptionResistance();
+	local totalCorruption = math.max(corruption - corruptionResistance, 0);
+
+	local noWrap = false;
+	GameTooltip_AddColoredLine(GameTooltip, CORRUPTION_TOOLTIP_TITLE, HIGHLIGHT_FONT_COLOR);
+	GameTooltip_AddColoredLine(GameTooltip, CORRUPTION_DESCRIPTION, NORMAL_FONT_COLOR);
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddColoredDoubleLine(GameTooltip, CORRUPTION_TOOLTIP_LINE, corruption, HIGHLIGHT_FONT_COLOR, HIGHLIGHT_FONT_COLOR, noWrap);
+	GameTooltip_AddColoredDoubleLine(GameTooltip, CORRUPTION_RESISTANCE_TOOLTIP_LINE, corruptionResistance, HIGHLIGHT_FONT_COLOR, HIGHLIGHT_FONT_COLOR, noWrap);
+	GameTooltip_AddColoredDoubleLine(GameTooltip, TOTAL_CORRUPTION_TOOLTIP_LINE, totalCorruption, RED_FONT_COLOR, RED_FONT_COLOR, noWrap);
+
+	GameTooltip:Show();
+	PaperDollFrame_UpdateCorruptedItemGlows(true);
+end
+
+function CharacterFrameCorruption_OnLeave(self)
+	self.Eye:SetAtlas("Nzoth-charactersheet-icon", true);
+	GameTooltip_Hide();
+	PaperDollFrame_UpdateCorruptedItemGlows(false);
+end

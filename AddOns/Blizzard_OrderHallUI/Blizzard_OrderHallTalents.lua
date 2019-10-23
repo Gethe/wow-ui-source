@@ -173,16 +173,27 @@ end
 
 function OrderHallTalentFrameMixin:OnLoad()
 	self.buttonPool = CreateFramePool("BUTTON", self, "GarrisonTalentButtonTemplate", OnTalentButtonReleased);
-	self.prerequisiteArrowPool = CreateFramePool("FRAME", self, "GarrisonTalentPrerequisiteArrowTemplate");
+	self.prerequisiteArrowPool = CreateFramePool("FRAME", self, "GarrisonTalentPrerequisiteArrowTemplate");	
+	self.talentRankPool = CreateFramePool("FRAME", self, "TalentRankDisplayTemplate");
 	self.choiceTexturePool = CreateTexturePool(self, "BACKGROUND", 1, "GarrisonTalentChoiceTemplate");
 	self.arrowTexturePool = CreateTexturePool(self, "BACKGROUND", 2, "GarrisonTalentArrowTemplate");
 	self.researchingTalentID = 0;
 end
 
-function OrderHallTalentFrameMixin:SetGarrisonType(garrType)
+function OrderHallTalentFrameMixin:SetGarrisonType(garrType, garrTalentTreeID)
 	self.garrisonType = garrType;
-	local primaryCurrency, _ = C_Garrison.GetCurrencyTypes(garrType);
-	self.currency = primaryCurrency;
+	self.garrTalentTreeID = garrTalentTreeID;
+
+	-- Setup Currencies
+	local garrTypeCurrency, _ = C_Garrison.GetCurrencyTypes(garrType);
+	local garrTalentTreeCurrency = C_Garrison.GetGarrisonTalentTreeCurrencyTypes(garrTalentTreeID);
+
+	-- It's possible for the Garrison Talent Tree to specify a currency different from the Garrison Type. (Chromie/MOTHER Research Archive, etc)
+	if (garrTalentTreeCurrency) then
+		self.currency = garrTalentTreeCurrency;
+	else 
+		self.currency = garrTypeCurrency;
+	end
 end
 
 function OrderHallTalentFrameMixin:OnShow()
@@ -235,6 +246,7 @@ end
 
 function OrderHallTalentFrameMixin:ReleaseAllPools()
 	self.buttonPool:ReleaseAll();
+	self.talentRankPool:ReleaseAll();
 	self.choiceTexturePool:ReleaseAll();
 	self.arrowTexturePool:ReleaseAll();
 	self.prerequisiteArrowPool:ReleaseAll();
@@ -437,18 +449,18 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 				talentFrame.timer = C_Timer.NewTicker(1, function() talentFrame:Refresh(); end);
 			end
 		end
-
 		local selectionAvailableInstantResearch = true;
 		if (researchingTalentID ~= 0 and researchingTalentTier == talent.tier and researchingTalentID ~= talent.id) then
 			selectionAvailableInstantResearch = false;
 		end
 
 		local borderAtlas = BORDER_ATLAS_NONE;
-		-- Show as selected: You have fully researched this talent.
-		if (talent.selected and selectionAvailableInstantResearch) then
+		if (talentTreeType == Enum.GarrTalentTreeType.Tiers and talent.selected and selectionAvailableInstantResearch) then
 			if (talent.selected and talent.researched and talent.id == researchingTalentID) then
 				self:ClearResearchingTalentID();
 			end
+			borderAtlas = BORDER_ATLAS_SELECTED;
+		elseif (talentTreeType == Enum.GarrTalentTreeType.Classic and talent.researched) then
 			borderAtlas = BORDER_ATLAS_SELECTED;
 		else
 			local isAvailable = talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE;
@@ -463,7 +475,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 				borderAtlas = BORDER_ATLAS_AVAILABLE;
 
 			elseif (shouldDisplayAsAvailable) then
-				if ( currentTierResearchableTalentCount < currentTierTotalTalentCount) then
+				if ( currentTierResearchableTalentCount < currentTierTotalTalentCount and talentTreeType == Enum.GarrTalentTreeType.Tiers ) then
 					talentFrame.AlphaIconOverlay:Show();
 					talentFrame.AlphaIconOverlay:SetAlpha(0.5);
 				else
@@ -481,10 +493,12 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 
 		-- Show the current talent rank if the talent had multiple ranks
 		if talent.talentMaxRank > 1 then
-			talentFrame.TalentRank:SetFormattedText(GENERIC_FRACTION_STRING, talent.talentRank, talent.talentMaxRank);
-			talentFrame.TalentRank:Show()
-		else
-			talentFrame.TalentRank:Hide()
+			local talentRankFrame = self.talentRankPool:Acquire();
+			talentRankFrame:SetPoint("BOTTOMRIGHT", talentFrame, 15, -12);
+			talentRankFrame:SetFrameLevel(10);
+			local isDisabled = (borderAtlas == BORDER_ATLAS_UNAVAILABLE);
+			talentRankFrame:SetValues(talent.talentRank, talent.talentMaxRank, isDisabled);
+			talentRankFrame:Show();
 		end
 
 		if talent.prerequisiteTalentID then
@@ -566,7 +580,7 @@ function OrderHallTalentFrameMixin:AddPrerequisiteArrow(talentButton, prerequisi
 		arrowFrame:SetPoint("RIGHT", prerequisiteTalentButton, "LEFT", -1, 0);
 		arrowFrame.Arrow:SetTexCoord(0, 1, 0, 1);
 	end
-	if talentButton.talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE then
+	if talentButton.talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE or talentButton.talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ALREADY_HAVE then
 		arrowFrame.Arrow:SetDesaturated(false);
 		arrowFrame.Arrow:SetVertexColor(1, 1, 1);
 	else
@@ -615,7 +629,9 @@ function GarrisonTalentButtonMixin:OnEnter()
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
-	local talent = self.talent;
+	local talent			= self.talent;
+	local garrTalentTreeID	= C_Garrison.GetCurrentGarrTalentTreeID();
+	local talentTreeType	= C_Garrison.GetGarrisonTalentTreeType(garrTalentTreeID);
 
 	-- Multi-Rank Talents
 	if talent.talentMaxRank > 1 then
@@ -632,7 +648,7 @@ function GarrisonTalentButtonMixin:OnEnter()
 	if talent.isBeingResearched and not talent.hasInstantResearch then
 		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..TIME_REMAINING..FONT_COLOR_CODE_CLOSE.." "..SecondsToTime(talent.researchTimeRemaining), 1, 1, 1);
-	elseif not talent.selected then
+	elseif (talentTreeType == Enum.GarrTalentTreeType.Tiers and not talent.selected) or (talentTreeType == Enum.GarrTalentTreeType.Classic and not talent.researched) then
 		GameTooltip:AddLine(" ");
 
 		if (talent.researchDuration and talent.researchDuration > 0) then

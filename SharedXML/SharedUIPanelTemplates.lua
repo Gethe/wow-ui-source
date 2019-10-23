@@ -806,7 +806,9 @@ end
 MaximizeMinimizeButtonFrameMixin = {};
 
 function MaximizeMinimizeButtonFrameMixin:OnShow()
-	if self.cvar then
+	if self.isAutomaticAction then
+		self.isAutomaticAction = false;
+	elseif self.cvar then
 		local minimized = GetCVarBool(self.cvar);
 		if minimized then
 			self:Minimize();
@@ -814,6 +816,10 @@ function MaximizeMinimizeButtonFrameMixin:OnShow()
 			self:Maximize();
 		end
 	end
+end
+
+function MaximizeMinimizeButtonFrameMixin:IsMinimized()
+	return self.isMinimized;
 end
 
 function MaximizeMinimizeButtonFrameMixin:SetMinimizedCVar(cvar)
@@ -824,14 +830,17 @@ function MaximizeMinimizeButtonFrameMixin:SetOnMaximizedCallback(maximizedCallba
 	self.maximizedCallback = maximizedCallback;
 end
 
-function MaximizeMinimizeButtonFrameMixin:Maximize()
+function MaximizeMinimizeButtonFrameMixin:Maximize(isAutomaticAction)
 	if self.maximizedCallback then
 		self.maximizedCallback(self);
 	end
 
-	if self.cvar then
+	if not isAutomaticAction and self.cvar then
 		SetCVar(self.cvar, 0);
 	end
+
+	self.isMinimized = false;
+	self.isAutomaticAction = isAutomaticAction;
 
 	self:SetMinimizedLook();
 end
@@ -840,14 +849,17 @@ function MaximizeMinimizeButtonFrameMixin:SetOnMinimizedCallback(minimizedCallba
 	self.minimizedCallback = minimizedCallback;
 end
 
-function MaximizeMinimizeButtonFrameMixin:Minimize()
+function MaximizeMinimizeButtonFrameMixin:Minimize(isAutomaticAction)
 	if self.minimizedCallback then
 		self:minimizedCallback();
 	end
 
-	if self.cvar then
+	if not isAutomaticAction and self.cvar then
 		SetCVar(self.cvar, 1);
 	end
+
+	self.isMinimized = true;
+	self.isAutomaticAction = isAutomaticAction;
 
 	self:SetMaximizedLook();
 end
