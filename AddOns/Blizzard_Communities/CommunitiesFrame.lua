@@ -1225,7 +1225,7 @@ function CommunitiesFrameMixin:UpdateCommunitiesButtons()
 			elseif(not isButtonEnabled) then
 				inviteButton.disabledTooltip = ERR_CLUB_FINDER_ERROR_TYPE_NO_INVITE_PERMISSIONS;
 			end
-		elseif clubInfo and clubInfo.clubType == Enum.ClubType.Character then
+		elseif clubInfo and (clubInfo.clubType == Enum.ClubType.Character or clubInfo.clubType == Enum.ClubType.BattleNet) then
 			local privileges = self:GetPrivilegesForClub(clubId);
 			inviteButton:SetEnabled(not isClubAtCapacity and privileges.canSendInvitation);
 			local isButtonEnabled = inviteButton:IsEnabled();
