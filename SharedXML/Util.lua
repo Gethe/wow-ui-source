@@ -1489,6 +1489,19 @@ function CallMethodOnNearestAncestor(self, methodName, ...)
 	return false;
 end
 
+function DoesAncestryInclude(ancestry, frame)
+	if ancestry then
+		local currentFrame = frame;
+		while currentFrame do
+			if currentFrame == ancestry then
+				return true;
+			end
+			currentFrame = currentFrame:GetParent();
+		end
+	end
+	return false;
+end
+
 function GetClampedCurrentExpansionLevel()
 	return math.min(GetClientDisplayExpansionLevel(), math.max(GetAccountExpansionLevel(), GetExpansionLevel()));
 end

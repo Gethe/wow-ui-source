@@ -293,7 +293,7 @@
 							<Frame parentKey="Corruption" frameStrata="HIGH">
 								<Size x="61" y="106"/>
 								<Anchors>
-									<Anchor point="RIGHT" x="28" y="-8"/>
+									<Anchor point="RIGHT" x="29" y="-8"/>
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">

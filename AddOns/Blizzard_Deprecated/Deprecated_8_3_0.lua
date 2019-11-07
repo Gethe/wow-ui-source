@@ -17,3 +17,31 @@ do
 	-- GetAuctionItemBattlePetInfo(type, index) 	-> C_AuctionHouse.GetReplicateItemBattlePetInfo(index)
 	-- GetAuctionItemTimeLeft(type, index) 			-> C_AuctionHouse.GetReplicateItemTimeLeft(index)
 end
+
+-- unit alternate power
+do
+	GetAlternatePowerInfoByID = function(barID)
+		local barInfo = GetUnitPowerBarInfoByID(barID);
+		if barInfo then
+			local name, tooltip, cost = GetUnitPowerBarStringsByID(barID);
+			return barInfo.barType,barInfo.minPower, barInfo.startInset, barInfo.endInset, barInfo.smooth, barInfo.hideFromOthers, barInfo.showOnRaid, barInfo.opaqueSpark, barInfo.opaqueFlash,
+					barInfo.anchorTop, name, tooltip, cost, barInfo.ID, barInfo.forcePercentage, barInfo.sparkUnderFrame;
+		end
+	end
+
+	UnitAlternatePowerInfo = function(unit)
+		local barID = UnitPowerBarID(unit);
+		return GetAlternatePowerInfoByID(barID);
+	end
+
+	UnitAlternatePowerTextureInfo = function(unit, textureIndex, timerIndex)
+		return GetUnitPowerBarTextureInfo(unit, textureIndex + 1, timerIndex);
+	end
+
+	UnitAlternatePowerCounterInfo = function(unit)
+		local barInfo = GetUnitPowerBarInfo(unit);
+		if barInfo then
+			return barInfo.fractionalCounter, barInfo.animateNumbers;
+		end
+	end
+end

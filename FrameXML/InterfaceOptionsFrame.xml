@@ -21,23 +21,14 @@
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Size x="300" y="68"/>
-					<Anchors>
-						<Anchor point="TOP" x="0" y="12"/>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentHeaderText" inherits="GameFontNormal" text="UIOPTIONS_MENU">
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentHeader" x="0" y="-14"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="headerTextPadding" value="100" type="number"/>
+					<KeyValue key="textString" value="UIOPTIONS_MENU" type="global"/>
+				</KeyValues>
+			</Frame>
 			<Button name="$parentCancel" inherits="UIPanelButtonTemplate" text="CANCEL">
 				<Size x="96" y="22"/>
 				<Anchors>

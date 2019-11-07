@@ -167,7 +167,7 @@
 					<Anchor point="LEFT"/>
 				</Anchors>
 			</Frame>
-			<Button parentKey="BidButton" mixin="AuctionHouseBidButtonMixin" inherits="UIPanelButtonTemplate" text="AUCTION_HOUSE_BID_BUTTON">
+			<Button parentKey="BidButton" mixin="AuctionHouseBidButtonMixin" inherits="UIPanelButtonTemplate, ButtonWithDisableTooltipTemplate" text="AUCTION_HOUSE_BID_BUTTON">
 				<Size x="110" y="22"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.BidAmount" relativePoint="RIGHT" x="0" y="0"/>
@@ -185,7 +185,7 @@
 	<Frame name="AuctionHouseBuyoutFrameTemplate" mixin="AuctionHouseBuyoutFrameMixin" virtual="true">
 		<Size x="110" y="22"/>
 		<Frames>
-			<Button parentKey="BuyoutButton" mixin="AuctionHouseBuyoutButtonMixin" inherits="UIPanelButtonTemplate" text="AUCTION_HOUSE_BUYOUT_BUTTON">
+			<Button parentKey="BuyoutButton" mixin="AuctionHouseBuyoutButtonMixin" inherits="UIPanelButtonTemplate, ButtonWithDisableTooltipTemplate" text="AUCTION_HOUSE_BUYOUT_BUTTON">
 				<Size x="110" y="22"/>
 				<Anchors>
 					<Anchor point="RIGHT"/>

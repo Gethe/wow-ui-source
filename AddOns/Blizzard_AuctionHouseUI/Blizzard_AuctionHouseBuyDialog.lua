@@ -143,7 +143,7 @@ function AuctionHouseBuyDialogMixin:OnEvent(event, ...)
 	elseif event == "COMMODITY_PRICE_UNAVAILABLE" then
 		self:SetState(BuyState.PriceUnavailable);
 	elseif event == "COMMODITY_PURCHASE_SUCCEEDED" then
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		PlaySound(SOUNDKIT.LOOT_WINDOW_COIN_SOUND);
 		self:Hide();
 	elseif event == "COMMODITY_PURCHASE_FAILED" then
 		self:SetState(BuyState.PriceUnavailable);
@@ -196,7 +196,6 @@ function AuctionHouseBuyDialogMixin:SetState(buyState)
 	self.PriceFrame:SetShown(itemDisplayShown);
 	self.BuyNowButton:SetShown(buyNowShown);
 	self.CancelButton:SetShown(buyNowShown);
-	self.BuyNowButton:SetEnabled(buyNowEnabled);
 	self.CancelButton:SetEnabled(buyNowEnabled);
 	self.OkayButton:SetShown(okayShown);
 	self.Notification:SetShown(notificationText ~= nil);
@@ -204,6 +203,14 @@ function AuctionHouseBuyDialogMixin:SetState(buyState)
 	self.Notification:ClearAllPoints();
 	self.Notification:SetPoint(unpack(notificationAnchor));
 	self:SetHeight(dialogHeight);
+
+	if not buyNowEnabled then
+		self.BuyNowButton:SetDisableTooltip("");
+	elseif self.PriceFrame:GetAmount() > GetMoney() then
+		self.BuyNowButton:SetDisableTooltip(AUCTION_HOUSE_TOOLTIP_TITLE_NOT_ENOUGH_MONEY);
+	else
+		self.BuyNowButton:SetDisableTooltip(nil);
+	end
 
 	local quoteTimeoutActive = buyState == BuyState.PriceConfirmed or buyState == BuyState.PriceUpdated;
 	self:SetScript("OnUpdate", quoteTimeoutActive and AuctionHouseBuyDialogMixin.OnUpdate or nil);

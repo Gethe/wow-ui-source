@@ -54,7 +54,7 @@
 				</KeyValues>
 			</Frame>
 
-			<Button name="BuyButton" mixin="AuctionHouseCommoditiesBuyButtonMixin" inherits="UIPanelButtonTemplate" text="AUCTION_HOUSE_BUY_BUTTON">
+			<Button parentKey="BuyButton" mixin="AuctionHouseCommoditiesBuyButtonMixin" inherits="UIPanelButtonTemplate, ButtonWithDisableTooltipTemplate" text="AUCTION_HOUSE_BUY_BUTTON">
 				<KeyValues>
 					<KeyValue key="layoutIndex" value="50" type="number"/>
 					<KeyValue key="leftPadding" value="110" type="number"/>

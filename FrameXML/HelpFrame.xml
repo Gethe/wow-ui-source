@@ -598,20 +598,10 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentHeader" inherits="TranslucentFrameTemplate" parentKey="header">
-				<Size x="180" y="45"/>
-				<Anchors>
-					<Anchor point="CENTER" relativePoint="TOP" x="0" y="-8"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString inherits="GameFontNormal" text="HELP_FRAME_TITLE">
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="textString" value="HELP_FRAME_TITLE" type="global"/>
+				</KeyValues>
 			</Frame>
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>

@@ -352,10 +352,10 @@
 						local target = self:GetParent().PortraitButton;
 						target:GetScript("OnLeave")(target);
 					</OnLeave>
-					<OnClick>
+					<OnMouseDown>
 						local target = self:GetParent().PortraitButton;
-						target:GetScript("OnClick")(target);
-					</OnClick>
+						target:GetScript("OnMouseDown")(target);
+					</OnMouseDown>
 				</Scripts>
 			</Button>
 			<Button name="$parentAddSlotsButton" hidden="true">

@@ -205,7 +205,7 @@ function AuctionHouseItemSellFrameMixin:SetSecondaryPriceInputEnabled(enabled)
 	self.SecondaryPriceInput:SetShown(enabled);
 
 	if not enabled then
-		self.SecondaryPriceInput:SetAmount(0);
+		self.SecondaryPriceInput:Clear();
 	end
 
 	self:UpdatePostState();

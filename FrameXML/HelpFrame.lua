@@ -152,10 +152,6 @@ function HelpFrame_OnLoad(self)
 
 	self.leftInset.Bg:SetTexture("Interface\\HelpFrame\\Tileable-Parchment", true, true);
 
-	self.header.Bg:SetTexture("Interface\\FrameGeneral\\UI-Background-Rock", true, true);
-	self.header.Bg:SetHorizTile(true);
-	self.header.Bg:SetVertTile(true);
-
 	self.Bg:SetTexture("Interface\\FrameGeneral\\UI-Background-Rock", true, true);
 	self.Bg:SetHorizTile(true);
 	self.Bg:SetVertTile(true);

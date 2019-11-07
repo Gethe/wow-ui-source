@@ -93,16 +93,12 @@ function SecondsFormatterMixin:CanRoundUpLastUnit()
 	return self.roundUpLastUnit;
 end
 
---Derive
--- Returns the desired number of units to append to the format string.
 function SecondsFormatterMixin:GetDesiredUnitCount(seconds)
-	assert(false, "Implement GetDesiredUnitCount() in derived object.")
+	return 2;
 end
 
---Derive
--- Returns the smallest interval to be displayed in the format string.
 function SecondsFormatterMixin:GetMinInterval(seconds)
-	assert(false, "Implement GetMinInterval() in derived object.");
+	return SecondsFormatter.Interval.Seconds;
 end
 
 function SecondsFormatterMixin:GetFormatString(interval, abbreviation, convertToLower)

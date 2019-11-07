@@ -87,7 +87,7 @@
 				</KeyValues>
 			</Frame>
 
-			<Button parentKey="BuyNowButton" mixin="AuctionHouseBuyDialogBuyNowButtonMixin" inherits="AuctionHouseDialogButtonTemplate" text="AUCTION_HOUSE_DIALOG_BUY_NOW" hidden="true">
+			<Button parentKey="BuyNowButton" mixin="AuctionHouseBuyDialogBuyNowButtonMixin" inherits="AuctionHouseDialogButtonTemplate, ButtonWithDisableTooltipTemplate" text="AUCTION_HOUSE_DIALOG_BUY_NOW" hidden="true">
 				<Anchors>
 					<Anchor point="CENTER" x="-64" y="0"/>
 				</Anchors>

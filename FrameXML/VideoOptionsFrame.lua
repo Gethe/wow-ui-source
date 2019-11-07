@@ -16,8 +16,7 @@ end
 
 function VideoOptionsFrame_OnLoad (self)
 	OptionsFrame_OnLoad(self);
-
-	_G[self:GetName().."HeaderText"]:SetText(SYSTEMOPTIONS_MENU);
+	self.Header:Setup(SYSTEMOPTIONS_MENU);
 end
 
 function VideoOptionsFrame_OnHide (self)

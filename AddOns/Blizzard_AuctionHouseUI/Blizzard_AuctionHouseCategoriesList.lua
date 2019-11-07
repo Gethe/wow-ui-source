@@ -208,7 +208,6 @@ end
 AuctionHouseCategoriesListMixin = CreateFromMixins(AuctionHouseSystemMixin);
 
 function AuctionHouseCategoriesListMixin:OnShow()
-	self:SetSelectedCategory(nil, nil, nil);
 	AuctionFrameFilters_Update(self);
 end
 

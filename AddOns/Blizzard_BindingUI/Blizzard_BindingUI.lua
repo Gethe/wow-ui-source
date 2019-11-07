@@ -454,11 +454,10 @@ end
 
 function KeyBindingFrame_UpdateHeaderText()
 	if ( KeyBindingFrame.characterSpecificButton:GetChecked() ) then
-		KeyBindingFrame.header.text:SetFormattedText(CHARACTER_KEY_BINDINGS, UnitName("player"));
+		KeyBindingFrame.Header:Setup(CHARACTER_KEY_BINDINGS:format(UnitName("player")));
 	else
-		KeyBindingFrame.header.text:SetText(KEY_BINDINGS);
+		KeyBindingFrame.Header:Setup(KEY_BINDINGS);
 	end
-	KeyBindingFrame.header:SetWidth(KeyBindingFrame.header.text:GetWidth() + 80);
 end
 
 function KeyBindingFrame_ChangeBindingProfile()

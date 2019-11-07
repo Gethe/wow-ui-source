@@ -52,6 +52,8 @@ end
 
 function AuctionHouseItemBuyFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, AUCTION_HOUSE_ITEM_BUY_FRAME_EVENTS);
+
+	self.ItemList:SetSelectedEntry(nil);
 end
 
 function AuctionHouseItemBuyFrameMixin:OnEvent(event, ...)
@@ -115,7 +117,7 @@ function AuctionHouseItemBuyFrameMixin:OnAuctionSelected(auctionData)
 	if auctionData == nil then
 		self:ResetPrice();
 	else
-		self:SetAuction(auctionData.auctionID, auctionData.minBid, auctionData.buyoutAmount);
+		self:SetAuction(auctionData.auctionID, auctionData.minBid, auctionData.buyoutAmount, AuctionHouseUtil.IsOwnedAuction(auctionData));
 	end
 end
 

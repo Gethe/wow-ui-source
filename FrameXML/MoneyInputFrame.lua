@@ -248,6 +248,10 @@ function LargeMoneyInputBoxMixin:OnLoad()
 	end
 end
 
+function LargeMoneyInputBoxMixin:Clear()
+	self:SetText("");
+end
+
 function LargeMoneyInputBoxMixin:SetAmount(amount)
 	self:SetNumber(amount);
 end
@@ -283,6 +287,12 @@ function LargeMoneyInputFrameMixin:SetNextEditBox(nextEditBox)
 	else
 		self.CopperBox.nextEditBox = nextEditBox or self.GoldBox;
 	end
+end
+
+function LargeMoneyInputFrameMixin:Clear()
+	self.CopperBox:Clear();
+	self.SilverBox:Clear();
+	self.GoldBox:Clear();
 end
 
 function LargeMoneyInputFrameMixin:SetAmount(amount)

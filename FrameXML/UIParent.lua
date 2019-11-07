@@ -127,11 +127,10 @@ UIChildWindows = {
 };
 
 function UpdateUIParentRelativeToDebugMenu()
-	if (DebugMenu and DebugMenu.IsVisible()) then
-		UIParent:SetPoint("TOPLEFT", 0, -DebugMenu.GetMenuHeight());
-	else
-		UIParent:SetPoint("TOPLEFT", 0, 0);
-	end
+	local debugMenuOffset = DebugMenu and DebugMenu.IsVisible() and -DebugMenu.GetMenuHeight() or 0;
+	local revealTimeTrackOffset = C_Reveal:IsCapturing() and -C_Reveal:GetTimeTrackHeight() or 0;
+	local topOffset = debugMenuOffset + revealTimeTrackOffset;
+	UIParent:SetPoint("TOPLEFT", 0, topOffset);
 end
 
 UISpecialFrames = {
@@ -359,6 +358,9 @@ function UIParent_OnLoad(self)
 	-- debug menu
 	self:RegisterEvent("DEBUG_MENU_TOGGLED");
 
+	-- Reveal
+	self:RegisterEvent("REVEAL_CAPTURE_TOGGLED");
+
 	-- Garrison
 	self:RegisterEvent("GARRISON_ARCHITECT_OPENED");
 	self:RegisterEvent("GARRISON_ARCHITECT_CLOSED");
@@ -425,6 +427,9 @@ function UIParent_OnLoad(self)
 	-- Events for Global Mouse Down
 	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
 	self:RegisterEvent("GLOBAL_MOUSE_UP");
+
+	-- Event(s) for Item Interaction
+    self:RegisterEvent("ITEM_INTERACTION_OPEN");
 end
 
 function UIParent_OnShow(self)
@@ -457,6 +462,10 @@ function UIParentLoadAddOn(name)
 		end
 	end
 	return loaded;
+end
+
+function ItemInteraction_LoadUI()
+	UIParentLoadAddOn("Blizzard_ItemInteractionUI");
 end
 
 function IslandsQueue_LoadUI()
@@ -1138,9 +1147,8 @@ local function PlayBattlefieldBanner(self)
 	end
 end
 
-local function IsGlobalMouseEventHandled(buttonID, event)
-	local frame = GetMouseFocus();
-	return frame and frame.HandlesGlobalMouseEvent and frame:HandlesGlobalMouseEvent(buttonID, event);
+local function HandlesGlobalMouseEvent(focus, buttonID, event)
+	return focus and focus.HandlesGlobalMouseEvent and focus:HandlesGlobalMouseEvent(buttonID, event);
 end
 
 -- UIParent_OnEvent --
@@ -2122,6 +2130,8 @@ function UIParent_OnEvent(self, event, ...)
 		BoostTutorial_AttemptLoad();
 	elseif (event == "DEBUG_MENU_TOGGLED") then
 		UpdateUIParentRelativeToDebugMenu();
+	elseif (event == "REVEAL_CAPTURE_TOGGLED") then
+		UpdateUIParentRelativeToDebugMenu();
 	elseif ( event == "GROUP_INVITE_CONFIRMATION" ) then
 		UpdateInviteConfirmationDialogs();
 	elseif ( event == "INVITE_TO_PARTY_CONFIRMATION" ) then
@@ -2155,6 +2165,9 @@ function UIParent_OnEvent(self, event, ...)
 	elseif (event == "ISLANDS_QUEUE_OPEN") then
 		IslandsQueue_LoadUI();
 		ShowUIPanel(IslandsQueueFrame);
+	elseif (event == "ITEM_INTERACTION_OPEN") then
+		ItemInteraction_LoadUI();
+		ShowUIPanel(ItemInteractionFrame);
 	-- Events for Reporting system
 	elseif (event == "REPORT_PLAYER_RESULT") then
 		local success = ...;
@@ -2169,17 +2182,20 @@ function UIParent_OnEvent(self, event, ...)
 		local buttonID = ...;
 
 		-- Close dropdown(s).
-		if not IsGlobalMouseEventHandled(buttonID, event) then
+		local mouseFocus = GetMouseFocus();
+		if not HandlesGlobalMouseEvent(mouseFocus, buttonID, event) then
 			UIDropDownMenu_HandleGlobalMouseEvent(buttonID, event);
 		end
 
 		-- Clear keyboard focus.
 		if event == "GLOBAL_MOUSE_DOWN" and buttonID == "LeftButton" and not IsModifierKeyDown() then
-			local mouseFocus = GetMouseFocus();
 			local keyBoardFocus = GetCurrentKeyBoardFocus();
-			if keyBoardFocus and keyBoardFocus ~= mouseFocus and keyBoardFocus.ClearFocus then
-				keyBoardFocus:ClearFocus();
-			end
+			if keyBoardFocus then
+				local hasStickyFocus = keyBoardFocus.HasStickyFocus and keyBoardFocus:HasStickyFocus();
+				if keyBoardFocus.ClearFocus and not hasStickyFocus and keyBoardFocus ~= mouseFocus then
+					keyBoardFocus:ClearFocus();
+				end
+ 			end
 		end
 	end
 end
@@ -2917,7 +2933,8 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	local hasBottomLeft, hasBottomRight, hasPetBar;
 
 	if ( not PlayerPowerBarAlt:IsUserPlaced() ) then
-		if ( PlayerPowerBarAlt:IsShown() and select(10, UnitAlternatePowerInfo(PlayerPowerBarAlt.unit)) ) then
+		local barInfo = GetUnitPowerBarInfo(PlayerPowerBarAlt.unit);
+		if ( PlayerPowerBarAlt:IsShown() and barInfo and barInfo.anchorTop ) then
 			PlayerPowerBarAlt:ClearAllPoints();
 			UIPARENT_MANAGED_FRAME_POSITIONS["PlayerPowerBarAlt"] = UIPARENT_ALTERNATE_FRAME_POSITIONS["PlayerPowerBarAlt_Top"];
 		else
@@ -2963,8 +2980,8 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			tinsert(yOffsetFrames, "tutorialAlert");
 		end
 		if ( PlayerPowerBarAlt:IsShown() and not PlayerPowerBarAlt:IsUserPlaced() ) then
-			local anchorTop = select(10, UnitAlternatePowerInfo(PlayerPowerBarAlt.unit));
-			if ( not anchorTop ) then
+			local barInfo = GetUnitPowerBarInfo(PlayerPowerBarAlt.unit);
+			if ( not barInfo or not barInfo.anchorTop ) then
 				tinsert(yOffsetFrames, "playerPowerBarAlt");
 			end
 		end

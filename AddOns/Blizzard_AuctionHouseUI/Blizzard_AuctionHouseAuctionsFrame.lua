@@ -136,8 +136,6 @@ AuctionHouseAuctionsFrameMixin = CreateFromMixins(AuctionHouseBuySystemMixin, Au
 
 local AUCTIONS_FRAME_EVENTS = {
 	"OWNED_AUCTIONS_UPDATED",
-	"OWNED_AUCTION_ADDED",
-	"OWNED_AUCTION_EXPIRED",
 	"ITEM_SEARCH_RESULTS_UPDATED",
 	"ITEM_SEARCH_RESULTS_ADDED",
 	"BIDS_UPDATED",
@@ -203,18 +201,6 @@ function AuctionHouseAuctionsFrameMixin:OnEvent(event, ...)
 		self.AllAuctionsList:Reset();
 		self.SummaryList:RefreshScrollFrame();
 		self:ValidateDisplayMode();
-	elseif event == "OWNED_AUCTION_ADDED" then
-		local ownedAuctionID = ...;
-
-		-- TODO:: Support updating the AllAuctions list
-
-		self.SummaryList:RefreshScrollFrame();
-	elseif event == "OWNED_AUCTION_EXPIRED" then
-		local ownedAuctionID = ...;
-		
-		-- TODO:: Support updating the AllAuctions list
-
-		self.SummaryList:RefreshScrollFrame();
 	elseif event == "ITEM_SEARCH_RESULTS_UPDATED" then
 		self.ItemList:DirtyScrollFrame();
 	elseif event == "ITEM_SEARCH_RESULTS_ADDED" then
@@ -477,41 +463,41 @@ function AuctionHouseAuctionsFrameMixin:SelectItemKey(itemKey)
 	self:SetDisplayMode(newDisplayMode);
 end
 
-function AuctionHouseAuctionsFrameMixin:SelectAuction(auctionID)
-	self.selectedAuctionID = auctionID;
-	self.CancelAuctionButton:SetEnabled(auctionID ~= nil);
+function AuctionHouseAuctionsFrameMixin:SelectAuction(searchResult)
+	self.selectedAuctionID = searchResult and searchResult.auctionID or nil;
+	self.CancelAuctionButton:SetEnabled(self.selectedAuctionID ~= nil and searchResult.status ~= Enum.AuctionStatus.Sold);
 end
 
 function AuctionHouseAuctionsFrameMixin:OnAllAuctionsSearchResultSelected(ownedAuctionInfo)
-	self:SelectAuction(ownedAuctionInfo and ownedAuctionInfo.auctionID or nil);
+	self:SelectAuction(ownedAuctionInfo);
 end
 
 function AuctionHouseAuctionsFrameMixin:OnBidsListSearchResultSelected(bidInfo)
 	if bidInfo then
-		self:SetAuction(bidInfo.auctionID, bidInfo.minBid, bidInfo.buyoutAmount);
+		local isOwnerItem = false;
+		self:SetAuction(bidInfo.auctionID, bidInfo.minBid, bidInfo.buyoutAmount, isOwnerItem);
 	else
-		self:SetAuction(nil, nil, nil);
+		self:SetAuction(nil);
 	end
 end
 
 function AuctionHouseAuctionsFrameMixin:OnItemSearchResultSelected(itemSearchResultInfo)
 	if itemSearchResultInfo then
-		local auctionID = itemSearchResultInfo.auctionID;
 		if itemSearchResultInfo.containsOwnerItem then
-			self:SelectAuction(auctionID);
-			self:SetAuction(nil, nil, nil);
+			self:SelectAuction(itemSearchResultInfo);
+			self:SetAuction(nil);
 		else
-			self:SetAuction(auctionID, itemSearchResultInfo.minBid, itemSearchResultInfo.buyoutAmount);
+			self:SetAuction(itemSearchResultInfo.auctionID, itemSearchResultInfo.minBid, itemSearchResultInfo.buyoutAmount, AuctionHouseUtil.IsOwnedAuction(itemSearchResultInfo));
 		end
 	else
 		self:SelectAuction(nil);
-		self:SetAuction(nil, nil, nil);
+		self:SetAuction(nil);
 	end
 end
 
 function AuctionHouseAuctionsFrameMixin:OnCommoditySearchResultSelected(commoditySearchResultInfo)
 	if commoditySearchResultInfo and commoditySearchResultInfo.containsOwnerItem then
-		self:SelectAuction(commoditySearchResultInfo.auctionID);
+		self:SelectAuction(commoditySearchResultInfo);
 	else
 		self:SelectAuction(nil);
 	end

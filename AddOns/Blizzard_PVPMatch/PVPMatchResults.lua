@@ -12,11 +12,9 @@ local ACTIVE_EVENTS = {
 local LeaveMatchFormatter = CreateFromMixins(SecondsFormatterMixin);
 LeaveMatchFormatter:Init(0, SecondsFormatter.Abbreviation.OneLetter, true);
 LeaveMatchFormatter:SetStripIntervalWhitespace(true);
+
 function LeaveMatchFormatter:GetDesiredUnitCount(seconds)
 	return 1;
-end
-function LeaveMatchFormatter:GetMinInterval(seconds)
-	return SecondsFormatter.Interval.Seconds;
 end
 
 PVPMatchResultsMixin = {};

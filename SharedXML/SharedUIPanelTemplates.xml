@@ -487,6 +487,57 @@
 
 <!--
 *******************************************************************************
+	Dialog Header Template
+
+	Header used for dialogs
+*******************************************************************************
+-->
+	<Frame name="DialogHeaderTemplate" mixin="DialogHeaderMixin" virtual="true">
+		<Size x="200" y="39"/>
+		<KeyValues>
+			<!-- Override this to change how much padding is on the left & right of the text. Padding is applied evenly on the left and right (headerTextPadding / 2) on each side -->
+			<KeyValue key="headerTextPadding" value="64" type="number"/>
+
+			<!--Optional: Add this to inheriting frames in order to auotmatically set the text when the header loads-->
+			<!--<KeyValue key="textString" value="MAINMENU_BUTTON" type="global"/>-->
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOP" y="11" />
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="LeftBG" atlas="UI-Frame-DiamondMetal-Header-CornerLeft" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="32" y="39"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightBG" atlas="UI-Frame-DiamondMetal-Header-CornerRight" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="32" y="39"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CenterBG" atlas="_UI-Frame-DiamondMetal-Header-Tile" horizTile="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LeftBG" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightBG" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP" y="-13"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+<!--
+*******************************************************************************
    Simple Panel templates
 	Barebones panel templates that can have space for a button bar at the bottom
 	and an inset for content, the inset defaults to being vertically centered

@@ -72,6 +72,7 @@ InvasionInfoDocumentation.lua
 IslandsInfoDocumentation.lua
 IslandsQueueUIDocumentation.lua
 ItemDocumentation.lua
+ItemInteractionUIDocumentation.lua
 ItemSocketInfoDocumentation.lua
 ItemTextDocumentation.lua
 ItemUpgradeDocumentation.lua

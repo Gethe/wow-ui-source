@@ -218,21 +218,8 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnLoad>
-						ButtonFrameTemplate_HidePortrait(self);
-						ButtonFrameTemplate_HideAttic(self);
-						ButtonFrameTemplate_HideButtonBar(self);
-						self.TitleText:SetText(TUTORIAL_TOKEN_ABOUT_TOKENS);
-					</OnLoad>
-					<OnShow>
-						local balanceEnabled = select(3, C_WowTokenPublic.GetCommerceSystemStatus());
-						self.LeftDisplay.Tutorial3:SetIndentedWordWrap(true);
-						if (balanceEnabled) then
-							self.LeftDisplay.Tutorial3:SetText(TUTORIAL_TOKEN_GAME_TIME_STEP_2_BALANCE:format(WowTokenRedemptionFrame_GetBalanceString()));
-						else
-							self.LeftDisplay.Tutorial3:SetText(TUTORIAL_TOKEN_GAME_TIME_STEP_2);
-						end
-					</OnShow>
+					<OnLoad function="WoWTokenGameTimeTutorial_OnLoad"/>
+					<OnShow function="WoWTokenGameTimeTutorial_OnShow"/>
 				</Scripts>
 			</Frame>
 			<Button parentKey="HelpButton" inherits="MainHelpPlateButton">
@@ -295,7 +282,7 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT",-20,-10);
 						GameTooltip:SetText(TOKEN_BUYOUT_PRICE_UPDATES, nil, nil, nil, nil, true);
 						GameTooltip:Show();
 					</OnEnter>
@@ -308,6 +295,7 @@
 			<OnLoad function="BrowseWowTokenResults_OnLoad"/>
 			<OnEvent function="BrowseWowTokenResults_OnEvent"/>
 			<OnShow function="BrowseWowTokenResults_OnShow"/>
+			<OnHide function="BrowseWowTokenResults_OnHide"/>
 		</Scripts>
 	</Frame>
 
@@ -322,7 +310,7 @@
 						<Anchor point="TOP" x="0" y="-110"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="MarketPrice" inherits="Number13FontWhite" justifyH="CENTER">
+				<FontString parentKey="MarketPrice" inherits="Number14FontWhite" justifyH="CENTER">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.BuyoutPriceLabel" relativePoint="BOTTOM" x="0" y="-6"/>
 					</Anchors>
@@ -393,7 +381,7 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, -50);
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -20, -10);
 						GameTooltip:SetText(TOKEN_CREATE_AUCTION_LOCKED_PRICE, nil, nil, nil, nil, true);
 						GameTooltip:Show();
 					</OnEnter>
@@ -432,6 +420,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>

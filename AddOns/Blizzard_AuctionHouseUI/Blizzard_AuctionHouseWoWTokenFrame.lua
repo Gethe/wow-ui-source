@@ -29,8 +29,14 @@ function BrowseWowTokenResults_OnLoad(self)
 end
 
 function BrowseWowTokenResults_OnShow(self)
+	self.disabled = not C_WowTokenPublic.GetCommerceSystemStatus();
+
 	AuctionWowToken_UpdateMarketPrice();
 	BrowseWowTokenResults_Update(self);
+end
+
+function BrowseWowTokenResults_OnHide(self)
+	self.GameTimeTutorial:Hide();
 end
 
 function BrowseWowTokenResults_OnUpdate(self, elapsed)
@@ -62,6 +68,7 @@ function BrowseWowTokenResults_OnEvent(self, event, ...)
 	elseif (event == "TOKEN_STATUS_CHANGED") then
 		self.disabled = not C_WowTokenPublic.GetCommerceSystemStatus();
 		AuctionWowToken_UpdateMarketPrice();
+		BrowseWowTokenResults_Update(self);
 	elseif (event == "TOKEN_BUY_RESULT") then
 		local result = ...;
 		if (result == LE_TOKEN_RESULT_ERROR_DISABLED) then
@@ -114,15 +121,23 @@ function BrowseWowTokenResults_Update(self)
 
 	if (self.disabled) then
 		self.BuyoutPrice:SetText(TOKEN_AUCTIONS_UNAVAILABLE);
+		self.BuyoutPrice:SetFontObject(GameFontRed);
+		self.InvisiblePriceFrame:Hide();
 		self.Buyout:SetEnabled(false);
 	elseif (not marketPrice) then
 		self.BuyoutPrice:SetText(TOKEN_MARKET_PRICE_NOT_AVAILABLE);
+		self.BuyoutPrice:SetFontObject(GameFontRed);
+		self.InvisiblePriceFrame:Hide();
 		self.Buyout:SetEnabled(false);
 	elseif (self.noneForSale) then
 		self.BuyoutPrice:SetText(GetFormattedWoWTokenPrice(marketPrice));
+		self.BuyoutPrice:SetFontObject(Number14FontWhite);
+		self.InvisiblePriceFrame:Show();
 		self.Buyout:SetEnabled(false);
 	else
 		self.BuyoutPrice:SetText(GetFormattedWoWTokenPrice(marketPrice));
+		self.BuyoutPrice:SetFontObject(Number14FontWhite);
+		self.InvisiblePriceFrame:Show();
 		if (GetMoney() < marketPrice) then
 			self.Buyout:SetEnabled(false);
 			self.Buyout.tooltip = ERR_NOT_ENOUGH_GOLD;
@@ -168,6 +183,11 @@ function WoWTokenSellFrameMixin:OnLoad()
 	self.DummyRefreshButton:SetEnabledState(false);
 end
 
+function WoWTokenSellFrameMixin:OnShow()
+	self.disabled = not C_WowTokenPublic.GetCommerceSystemStatus();
+	self:Refresh();
+end
+
 function WoWTokenSellFrameMixin:OnEvent(event, ...)
 	if (event == "TOKEN_MARKET_PRICE_UPDATED") then
 		local result = ...;
@@ -177,6 +197,8 @@ function WoWTokenSellFrameMixin:OnEvent(event, ...)
 		self:Refresh();
 	elseif (event == "TOKEN_STATUS_CHANGED") then
 		AuctionWowToken_UpdateMarketPrice();
+		self.disabled = not C_WowTokenPublic.GetCommerceSystemStatus();
+		self:Refresh();
 	elseif (event == "TOKEN_SELL_RESULT") then
 		local result = ...;
 		if (result == LE_TOKEN_RESULT_ERROR_DISABLED) then
@@ -199,6 +221,10 @@ function WoWTokenSellFrameMixin:SetItem(itemLocation)
 	self.ItemDisplay:SetItemLocation(itemLocation, skipCallback);
 end
 
+function WoWTokenSellFrameMixin:GetItem()
+	return self.ItemDisplay:GetItemLocation();
+end
+
 function WoWTokenSellFrameMixin:GetSellToken(itemLocation)
 	return C_Item.GetItemGUID(self.ItemDisplay:GetItemLocation());
 end
@@ -208,7 +234,12 @@ function WoWTokenSellFrameMixin:Refresh()
 	if (WowToken_IsWowTokenAuctionDialogShown()) then
 		price = C_WowTokenPublic.GetGuaranteedPrice();
 	end
-	if (price) then
+
+	local enabled = price and not self.disabled;
+	self.InvisiblePriceFrame:SetShown(enabled);
+	self.PostButton:SetEnabled(enabled);
+	self.MarketPrice:SetFontObject(enabled and Number14FontWhite or GameFontRed);
+	if (enabled) then
 		self.MarketPrice:SetText(GetMoneyString(price, true));
 		local timeToSellString = _G[("AUCTION_TIME_LEFT%d_DETAIL"):format(duration)];
 		self.TimeToSell:SetText(timeToSellString);
@@ -278,6 +309,23 @@ function AuctionWowToken_CancelUpdateTicker()
 	end
 end
 
+function WoWTokenGameTimeTutorial_OnLoad(self)
+	ButtonFrameTemplate_HidePortrait(self);
+	ButtonFrameTemplate_HideAttic(self);
+	ButtonFrameTemplate_HideButtonBar(self);
+	self.TitleText:SetText(TUTORIAL_TOKEN_ABOUT_TOKENS);
+end
+
+function WoWTokenGameTimeTutorial_OnShow(self)
+	local balanceEnabled = select(3, C_WowTokenPublic.GetCommerceSystemStatus());
+	self.LeftDisplay.Tutorial3:SetIndentedWordWrap(true);
+	if (balanceEnabled) then
+		self.LeftDisplay.Tutorial3:SetText(TUTORIAL_TOKEN_GAME_TIME_STEP_2_BALANCE:format(WowTokenRedemptionFrame_GetBalanceString()));
+	else
+		self.LeftDisplay.Tutorial3:SetText(TUTORIAL_TOKEN_GAME_TIME_STEP_2);
+	end
+end
+
 function WowTokenGameTimeTutorialStoreButton_OnEvent(self, event)
 	if event == "TRIAL_STATUS_UPDATE" then
 		WowTokenGameTimeTutorialStoreButton_UpdateState(self);
@@ -302,3 +350,4 @@ function WowTokenGameTimeTutorialStoreButton_OnLoad(self)
 	WowTokenGameTimeTutorialStoreButton_UpdateState(self);
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 end
+

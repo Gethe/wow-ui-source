@@ -101,20 +101,31 @@ function ZoneAbilityFrame_Update(self)
 	self.SpellButton.Icon:SetTexture(tex);
 
 	local charges, maxCharges, chargeStart, chargeDuration = GetSpellCharges(self.spellID);
+	local start, duration, enable = GetSpellCooldown(self.spellID);
+	local usesCount = GetSpellCount(self.spellID);
 
-	local usesCharges = false;
+	local showSpellCount = false;
+	local spellCount = 0;
+
+	-- Show Spell Charges, then Spell Uses, then Nothing
 	if (maxCharges and maxCharges > 1) then
-		self.SpellButton.Count:SetText(charges);
-		usesCharges = true;
+		showSpellCount = true;
+		spellCount = charges;
+
+		if (charges < maxCharges) then
+			StartChargeCooldown(self.SpellButton, chargeStart, chargeDuration, enable);
+		end
+	elseif (usesCount > 0) then
+		showSpellCount = true;
+		spellCount = usesCount;
+	end
+
+	if showSpellCount then
+		self.SpellButton.Count:SetText(spellCount);
 	else
 		self.SpellButton.Count:SetText("");
 	end
 
-	local start, duration, enable = GetSpellCooldown(self.spellID);
-	
-	if (usesCharges and charges < maxCharges) then
-		StartChargeCooldown(self.SpellButton, chargeStart, chargeDuration, enable);
-	end
 	if (start) then
 		CooldownFrame_Set(self.SpellButton.Cooldown, start, duration, enable);
 	end

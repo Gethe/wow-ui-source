@@ -2256,6 +2256,10 @@ end
 
 function EncounterJournalSearchBox_OnLoad(self)
 	SearchBoxTemplate_OnLoad(self);
+	self.HasStickyFocus = function()
+		local ancestry = EncounterJournal.searchBox;
+		return DoesAncestryInclude(ancestry, GetMouseFocus());
+	end
 	self.selectedIndex = 1;
 end
 

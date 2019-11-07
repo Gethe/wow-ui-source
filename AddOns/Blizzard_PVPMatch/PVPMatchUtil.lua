@@ -16,14 +16,6 @@ PVPMatchUtil = {
 PVPMatchUtil.MatchTimeFormatter = CreateFromMixins(SecondsFormatterMixin);
 PVPMatchUtil.MatchTimeFormatter:Init(0, SecondsFormatter.Abbreviation.Truncate, true);
 
-function PVPMatchUtil.MatchTimeFormatter:GetDesiredUnitCount(seconds)
-	return 2;
-end
-
-function PVPMatchUtil.MatchTimeFormatter:GetMinInterval(seconds)
-	return SecondsFormatter.Interval.Seconds;
-end
-
 function PVPMatchUtil.IsActiveMatchComplete()
 	return C_PvP.GetActiveMatchState() == Enum.PvpMatchState.Complete;
 end

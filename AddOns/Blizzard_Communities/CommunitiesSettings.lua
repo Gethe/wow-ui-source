@@ -49,9 +49,11 @@ function CommunitiesSettingsDialogMixin:OnShow()
 		self.DialogLabel:SetText(COMMUNITIES_SETTINGS_CHARACTER_LABEL);
 	end
 
-	local myMemberInfo = C_Club.GetMemberInfoForSelf(self:GetClubId());
+	local clubId = self:GetClubId()
+	local myMemberInfo = C_Club.GetMemberInfoForSelf(clubId);
 	local isProperRecruitingRole =  myMemberInfo and  myMemberInfo.role and (myMemberInfo.role == Enum.ClubRoleIdentifier.Owner or myMemberInfo.role == Enum.ClubRoleIdentifier.Leader);
-	local shouldShowFinderOptions = C_ClubFinder.IsEnabled() and clubType == Enum.ClubType.Character and isProperRecruitingRole and C_ClubFinder.GetClubFinderDisableReason() == nil;  
+	local isPostingBanned = C_ClubFinder.IsPostingBanned(clubId); 
+	local shouldShowFinderOptions = C_ClubFinder.IsEnabled() and clubType == Enum.ClubType.Character and isProperRecruitingRole and C_ClubFinder.GetClubFinderDisableReason() == nil and not isPostingBanned;  
 	self:HideOrShowCommunityFinderOptions(shouldShowFinderOptions);
 
 	if (clubType == Enum.ClubType.Character) then 
@@ -162,6 +164,8 @@ function CommunitiesSettingsDialogMixin:PostClub(newName)
 		local postClubSuccessful = C_ClubFinder.PostClub(clubInfo.clubId, minItemLevel, newName, description, specsInList, Enum.ClubFinderRequestType.Community);
 		if (self.ShouldListClub.Button:GetChecked() and postClubSuccessful) then
 			shouldHideNow = false;
+		elseif(not postClubSuccessful) then 
+			shouldHideNow = false;
 		end
 	end
 	return shouldHideNow; 
@@ -242,7 +246,15 @@ function CommunitiesSettingsDialogMixin:UpdateSettingsInfoFromClubInfo()
 			self.AutoAcceptApplications.Button:SetChecked(autoAccept);
 
 			local enableListing = CommunitiesSettingsGetRecruitmentSettingByValue(Enum.ClubFinderSettingFlags.EnableListing);
-			self.ShouldListClub.Button:SetChecked(enableListing);
+			-- Special case, where a posting could be banned, we don't want to allow the player to post again.
+			if (C_ClubFinder.IsPostingBanned(clubInfo.clubId)) then
+				self.ShouldListClub.Button:SetEnabled(false);
+				self.ShouldListClub.Label:SetTextColor(LIGHTGRAY_FONT_COLOR:GetRGB());
+				self:ResetClubFinderSettings();
+			else
+				self.ShouldListClub.Button:SetChecked(enableListing);
+				self.ShouldListClub.Button:SetEnabled(true);
+			end
 		end
 	end
 end
@@ -274,9 +286,15 @@ function CommunitiesSettingsDialogMixin:SetDisabledStateOnCommunityFinderOptions
 end 
 
 function CommunitiesSettingsDialogMixin:HideOrShowCommunityFinderOptions(shouldShow)
+	local clubId = self:GetClubId();
+	local isPostingBanned = C_ClubFinder.IsPostingBanned(clubId); 
+	shouldShow = shouldShow and not isPostingBanned;
+
 	if(shouldShow) then 
 		self:SetHeight(680); 
-	else 
+	elseif (isPostingBanned) then
+		self:SetHeight(500); 
+	else
 		self:SetHeight(480); 
 	end 
 
@@ -291,7 +309,9 @@ function CommunitiesSettingsDialogMixin:HideOrShowCommunityFinderOptions(shouldS
 	self.MinIlvlOnly.EditBox:SetShown(shouldShow);
 	self.LookingForDropdown.Label:SetShown(shouldShow);
 	self.ClubFocusDropdown.Label:SetShown(shouldShow);
-	self.ShouldListClub:SetShown(shouldShow)
+	self.ShouldListClub:SetShown(shouldShow);
+	self.ClubFinderPostingBannedError:SetText(CLUB_FINDER_BANNED_POSTING_WARNING:format(CLUB_FINDER_COMMUNITY_TYPE));
+	self.ClubFinderPostingBannedError:SetShown(isPostingBanned);
 end 
 
 local function CommunitiesAvatarPickerDialog_OnOkay(self)

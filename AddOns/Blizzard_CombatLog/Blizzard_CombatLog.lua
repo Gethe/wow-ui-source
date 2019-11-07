@@ -1823,8 +1823,8 @@ local function CombatLog_String_PowerType(powerType, amount, alternatePowerType)
 	end
 
 	if ( powerType == alternatePowerEnumValue and alternatePowerType ) then
-		local costName = select(13, GetAlternatePowerInfoByID(alternatePowerType));
-		return costName; --costName could be nil if we didn't get the alternatePowerType for some reason (e.g. target out of AOI)
+		local name, tooltip, cost = GetUnitPowerBarStringsByID(alternatePowerType);
+		return cost; --cost could be nil if we didn't get the alternatePowerType for some reason (e.g. target out of AOI)
 	end
 
 	-- Previous behavior was returning nil if powerType didn't match one of the explicitly checked types

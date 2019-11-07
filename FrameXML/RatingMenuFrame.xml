@@ -7,17 +7,6 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="RatingMenuFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Size x="256" y="64"/>
-					<Anchors>
-						<Anchor point="TOP" x="0" y="12"/>
-					</Anchors>
-				</Texture>
-				<FontString inherits="GameFontNormal" text="RATINGS_MENU">
-					<Anchors>
-						<Anchor point="TOP" relativeTo="RatingMenuFrameHeader" x="0" y="-14"/>
-					</Anchors>
-				</FontString>
 				<Texture name="RatingMenuAge">
 					<Size x="80" y="80"/>
 					<Anchors>
@@ -62,6 +51,12 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="headerTextPadding" value="100" type="number"/>
+					<KeyValue key="textString" value="RATINGS_MENU" type="global"/>
+				</KeyValues>
+			</Frame>
 			<Button name="RatingMenuButtonOkay" inherits="OptionsButtonTemplate" text="OKAY">
 				<Size x="100" y="21"/>
 				<Anchors>

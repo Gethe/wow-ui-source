@@ -303,74 +303,10 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="GMSurveyHeader">
-				<Size>
-					<AbsDimension x="336" y="41"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOP">
-						<Offset>
-							<AbsDimension x="-12" y="12"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="GMSurveyHeaderLeft" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size>
-								<AbsDimension x="32" y="41"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0.22265625" right="0.34375" top="0" bottom="0.640625"/>
-						</Texture>
-						<Texture name="GMSurveyHeaderRight" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size>
-								<AbsDimension x="32" y="41"/>
-							</Size>
-							<Anchors>
-								<Anchor point="RIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0.65234375" right="0.77734375" top="0" bottom="0.640625"/>
-						</Texture>
-						<Texture name="GMSurveyHeaderCenter" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size>
-								<AbsDimension x="10" y="41"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="GMSurveyHeaderLeft" relativePoint="RIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-								<Anchor point="RIGHT" relativeTo="GMSurveyHeaderRight" relativePoint="LEFT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0.34375" right="0.65234375" top="0" bottom="0.640625"/>
-						</Texture>
-						<FontString name="GMSurveyHeaderText" inherits="GameFontNormal" text="GMSURVEY_TITLE">
-							<Anchors>
-								<Anchor point="TOP" relativeTo="GMSurveyHeader">
-									<Offset>
-										<AbsDimension x="0" y="-14"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="textString" value="GMSURVEY_TITLE" type="global"/>
+				</KeyValues>
 			</Frame>
 			<ScrollFrame name="GMSurveyScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Anchors>
@@ -838,9 +774,6 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				GMSurveyHeader:SetWidth(GMSurveyHeaderText:GetWidth() + 100);
-			</OnLoad>
 			<OnShow>
 				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 				GMSurveyFrame_Update();

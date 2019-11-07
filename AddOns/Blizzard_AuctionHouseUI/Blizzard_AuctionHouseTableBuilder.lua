@@ -22,6 +22,11 @@ end
 
 AuctionHouseTableCellItemKeyMixin = CreateFromMixins(AuctionHouseTableCellMixin);
 
+function AuctionHouseTableCellItemKeyMixin:Init(owner, restrictQualityToFilter)
+	AuctionHouseTableCellMixin.Init(owner, restrictQualityToFilter)
+	self.restrictQualityToFilter = restrictQualityToFilter;
+end
+
 function AuctionHouseTableCellItemKeyMixin:OnEvent(event, ...)
 	if event == "ITEM_KEY_ITEM_INFO_RECEIVED" then
 		local itemID = ...;
@@ -43,7 +48,7 @@ end
 
 function AuctionHouseTableCellItemKeyMixin:TryUpdateDisplay()
 	local itemKey = self.rowData.itemKey;
-	local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(itemKey);
+	local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(itemKey, self.restrictQualityToFilter);
 	if not itemKeyInfo then
 		self.pendingItemID = itemKey.itemID;
 		self:RegisterEvent("ITEM_KEY_ITEM_INFO_RECEIVED");
@@ -314,16 +319,28 @@ function AuctionHouseTableCellOwnedCheckmarkMixin:Populate(rowData, dataIndex)
 end
 
 
-AuctionHouseTableSocketDisplayMixin = CreateFromMixins(AuctionHouseTableCellMixin);
+AuctionHouseTableExtraInfoMixin = CreateFromMixins(AuctionHouseTableCellMixin);
 
-function AuctionHouseTableSocketDisplayMixin:Init()
+function AuctionHouseTableExtraInfoMixin:Init()
 	AuctionHouseTableCellMixin.Init(self, owner);
 
 	self.Icon:SetAtlas("auctionhouse-icon-socket", true);
+	self.Text:SetFontObject(Number13FontWhite);
 end
 
-function AuctionHouseTableSocketDisplayMixin:Populate(rowData, dataIndex)
-	self:SetShown(rowData.containsSocketedItem);
+function AuctionHouseTableExtraInfoMixin:Populate(rowData, dataIndex)
+	self.Icon:SetShown(rowData.containsSocketedItem);
+
+	self.Text:Hide();
+	if not rowData.containsSocketedItem and rowData.itemLink then
+		local linkType, linkOptions, name = LinkUtil.ExtractLink(rowData.itemLink);
+		if linkType == "battlepet" then
+			local speciesID, level, breedQuality = strsplit(":", linkOptions);
+			local qualityColor = BAG_ITEM_QUALITY_COLORS[tonumber(breedQuality)];
+			self.Text:SetText(qualityColor:WrapTextInColorCode(level));
+			self.Text:Show();
+		end
+	end
 end
 
 
@@ -403,6 +420,8 @@ AuctionHouseTableCellAuctionsBidMixin = CreateFromMixins(AuctionHouseTableCellAu
 function AuctionHouseTableCellAuctionsBidMixin:Init(...)
 	AuctionHouseTableCellAuctionsPriceMixin.Init(self, ...);
 	AuctionHouseTableCellBidMixin.Init(self, ...);
+
+	self.Text:SetFontObject("Number14FontGray");
 end
 
 function AuctionHouseTableCellAuctionsBidMixin:Populate(rowData, dataIndex)
@@ -462,7 +481,7 @@ function AuctionHouseTableCellAllAuctionsBuyoutMixin:UpdateWidth(rowData, dataIn
 end
 
 function AuctionHouseTableCellAllAuctionsBuyoutMixin:ShouldShowHighlighted()
-	return true;
+	return self.rowData.status ~= Enum.AuctionStatus.Sold;
 end
 
 
@@ -478,7 +497,7 @@ AuctionHouseTableCellAuctionsItemLevelMixin = CreateFromMixins(AuctionHouseTable
 
 function AuctionHouseTableCellAuctionsItemLevelMixin:Init(...)
 	AuctionHouseTableCellMixin.Init(self, ...);
-	self.Text:SetJustifyH("RIGHT");
+	self.Text:SetJustifyH("LEFT");
 end
 
 function AuctionHouseTableCellAuctionsItemLevelMixin:Populate(rowData, dataIndex)
@@ -528,8 +547,13 @@ end
 
 function AuctionHouseTableCellItemDisplayMixin:UpdateDisplay(itemKey, itemKeyInfo)
 	self.Text:SetText(AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo));
+	
 	self.Icon:SetTexture(itemKeyInfo.iconFileID);
 	self.Icon:Show();
+
+	local noneAvailable = self.rowData.totalQuantity == 0;
+	self.Text:SetAlpha(noneAvailable and 0.5 or 1.0);
+	self.Icon:SetAlpha(noneAvailable and 0.5 or 1.0);
 end
 
 
@@ -538,12 +562,25 @@ AuctionHouseTableCellAuctionsItemDisplayMixin = CreateFromMixins(AuctionHouseTab
 function AuctionHouseTableCellAuctionsItemDisplayMixin:Init(...)
 	AuctionHouseTableCellAuctionsMixin.Init(self, ...);
 	AuctionHouseTableCellItemDisplayMixin.Init(self, ...);
+
+	self.Prefix:SetText(AUCTION_HOUSE_AUCTION_SOLD_PREFIX);
 end
 
 function AuctionHouseTableCellAuctionsItemDisplayMixin:UpdateDisplay(itemKey, itemKeyInfo)
 	AuctionHouseTableCellItemDisplayMixin.UpdateDisplay(self, itemKey, itemKeyInfo);
 	if not self:IsDisplayingBids() then
 		self.Text:SetText(AuctionHouseUtil.GetDisplayTextFromOwnedAuctionData(self.rowData, itemKeyInfo));
+	end
+
+	local sold = self.rowData.status == Enum.AuctionStatus.Sold;
+	self.Prefix:SetShown(sold);
+	self.Icon:ClearAllPoints();
+	self.Icon:SetAlpha(sold and 0.5 or 1.0);
+	self.IconBorder:SetAlpha(sold and 0.5 or 1.0);
+	if sold then
+		self.Icon:SetPoint("LEFT", self.Prefix, "RIGHT");
+	else
+		self.Icon:SetPoint("LEFT");
 	end
 end
 
@@ -558,9 +595,16 @@ function AuctionHouseTableCellMinPriceMixin:Init(rowData, dataIndex)
 
 	self.MoneyDisplay:ClearAllPoints();
 	self.MoneyDisplay:SetPoint("RIGHT", self.Checkmark, "LEFT", -6, 0);
+
+	self.Text:SetText(AUCTION_HOUSE_NONE_AVAILABLE);
+	self.Text:SetFontObject(Number14FontGray);
+	self.Text:SetJustifyH("RIGHT");
 end
 
 function AuctionHouseTableCellMinPriceMixin:Populate(rowData, dataIndex)
+	local noneAvailable = self.rowData.totalQuantity == 0;
+	self.Text:SetShown(noneAvailable);
+	self.MoneyDisplay:SetShown(not noneAvailable);
 	self.MoneyDisplay:SetAmount(rowData.minPrice);
 	self.Checkmark:SetShown(rowData.containsOwnerItem);
 end
@@ -569,6 +613,8 @@ end
 AuctionHouseTableCellQuantityMixin = CreateFromMixins(AuctionHouseTableCellMixin);
 
 function AuctionHouseTableCellQuantityMixin:Populate(rowData, dataIndex)
+	local noneAvailable = self.rowData.totalQuantity == 0;
+	self.Text:SetFontObject(noneAvailable and Number14FontGray or Number14FontWhite);
 	self.Text:SetText(rowData.totalQuantity);
 end
 
@@ -761,7 +807,7 @@ function AuctionHouseTableBuilder.GetAuctionsItemListLayout(owner, itemList)
 		tableBuilder:AddFixedWidthColumn(owner, BUYOUT_DISPLAY_PADDING, PRICE_DISPLAY_WITH_CHECKMARK_WIDTH, STANDARD_PADDING, 0, Enum.AuctionHouseSortOrder.Buyout, "AuctionHouseTableCellItemBuyoutTemplate");
 
 		tableBuilder:AddFillColumn(owner, 1.0, 40, STANDARD_PADDING, 0, nil, "AuctionHouseTableCellItemQuantityLeftTemplate");
-		tableBuilder:AddFixedWidthColumn(owner, 0, 14, 0, 0, nil, "AuctionHouseTableCellSocketDisplayTemplate");
+		tableBuilder:AddFixedWidthColumn(owner, 0, 24, 0, 0, nil, "AuctionHouseTableCellExtraInfoTemplate");
 		tableBuilder:AddFixedWidthColumn(owner, 0, 90, STANDARD_PADDING, 0, nil, "AuctionHouseTableCellAuctionsOwnersTemplate");
 		tableBuilder:AddFixedWidthColumn(owner, 0, 60, 0, 10, nil, "AuctionHouseTableCellTimeLeftTemplate");
 	end
@@ -792,16 +838,17 @@ function AuctionHouseTableBuilder.GetBrowseListLayout(owner, itemList, extraInfo
 
 		tableBuilder:AddFixedWidthColumn(owner, PRICE_DISPLAY_PADDING, 146, 0, 14, Enum.AuctionHouseSortOrder.Price, "AuctionHouseTableCellMinPriceTemplate");
 
-		local nameColumn = tableBuilder:AddFillColumn(owner, 0, 1.0, STANDARD_PADDING, 0, Enum.AuctionHouseSortOrder.Name, "AuctionHouseTableCellItemDisplayTemplate");
+		local restrictQualityToFilter = true;
+		local nameColumn = tableBuilder:AddFillColumn(owner, 0, 1.0, STANDARD_PADDING, 0, Enum.AuctionHouseSortOrder.Name, "AuctionHouseTableCellItemDisplayTemplate", restrictQualityToFilter);
 		nameColumn:GetHeaderFrame():SetText(AUCTION_HOUSE_BROWSE_HEADER_NAME);
 
 		if extraInfoColumnText then
-			local extraInfoColumn = tableBuilder:AddFixedWidthColumn(owner, 0, 100, 0, 0, Enum.AuctionHouseSortOrder.Level, "AuctionHouseTableCellLevelTemplate");
+			local extraInfoColumn = tableBuilder:AddFixedWidthColumn(owner, 0, 55, STANDARD_PADDING, 0, Enum.AuctionHouseSortOrder.Level, "AuctionHouseTableCellLevelTemplate");
 			extraInfoColumn:GetHeaderFrame():SetText(extraInfoColumnText);
 		end
 
 		local quantityHeaderText = AuctionHouseUtil.GetHeaderNameFromSortOrder(Enum.AuctionHouseSortOrder.Quantity);
-		tableBuilder:AddUnsortableFixedWidthColumn(owner, 0, 100, STANDARD_PADDING, 0, quantityHeaderText, "AuctionHouseTableCellQuantityTemplate");
+		tableBuilder:AddUnsortableFixedWidthColumn(owner, 0, 83, STANDARD_PADDING, 0, quantityHeaderText, "AuctionHouseTableCellQuantityTemplate");
 		tableBuilder:AddFixedWidthColumn(owner, 0, 29, STANDARD_PADDING, 5, nil, "AuctionHouseTableCellFavoriteTemplate");
 	end
 
@@ -846,7 +893,7 @@ function AuctionHouseTableBuilder.GetItemBuyListLayout(owner, itemList)
 		tableBuilder:AddFixedWidthColumn(owner, BUYOUT_DISPLAY_PADDING, PRICE_DISPLAY_WITH_CHECKMARK_WIDTH, STANDARD_PADDING, 0, Enum.AuctionHouseSortOrder.Buyout, "AuctionHouseTableCellBuyoutTemplate");
 
 		tableBuilder:AddFillColumn(owner, 0, 1.0, STANDARD_PADDING, 0, nil, "AuctionHouseTableCellItemQuantityLeftTemplate");
-		tableBuilder:AddFixedWidthColumn(owner, 0, 14, 0, 0, nil, "AuctionHouseTableCellSocketDisplayTemplate");
+		tableBuilder:AddFixedWidthColumn(owner, 0, 24, 0, 0, nil, "AuctionHouseTableCellExtraInfoTemplate");
 		tableBuilder:AddFixedWidthColumn(owner, 0, 100, STANDARD_PADDING, STANDARD_PADDING, nil, "AuctionHouseTableCellOwnersTemplate");
 	end
 
@@ -865,10 +912,10 @@ function AuctionHouseTableBuilder.GetItemSellListLayout(owner, itemList, isEquip
 		emptyColumn:SetDisplayUnderPreviousHeader(true);
 
 		if isEquipment then
-			local socketColumn = tableBuilder:AddFixedWidthColumn(owner, 0, 24, 0, STANDARD_PADDING, nil, "AuctionHouseTableCellSocketDisplayTemplate");
+			local socketColumn = tableBuilder:AddFixedWidthColumn(owner, 0, 24, 0, STANDARD_PADDING, nil, "AuctionHouseTableCellExtraInfoTemplate");
 			socketColumn:SetDisplayUnderPreviousHeader(true);
 
-			local itemLevelColumn = tableBuilder:AddFixedWidthColumn(owner, 0, 50, 0, STANDARD_PADDING, Enum.AuctionHouseSortOrder.Level, "AuctionHouseTableCellAuctionsItemLevelTemplate");
+			local itemLevelColumn = tableBuilder:AddFixedWidthColumn(owner, 0, 50, STANDARD_PADDING, 0, Enum.AuctionHouseSortOrder.Level, "AuctionHouseTableCellAuctionsItemLevelTemplate");
 			itemLevelColumn:GetHeaderFrame():SetText(ITEM_LEVEL_ABBR);
 		elseif isPet then
 			tableBuilder:AddFixedWidthColumn(owner, 0, 90, 0, STANDARD_PADDING, nil, "AuctionHouseTableCellOwnersTemplate");

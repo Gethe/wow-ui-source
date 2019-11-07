@@ -2,7 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="CommunitiesSettings.lua"/>
 	
-	<Frame name="CommunitiesSettingsDialog" frameStrata="DIALOG" parent="UIParent" enableMouse="true" mixin="CommunitiesSettingsDialogMixin" topLevel="true" clampedToScreen="true" hidden="true">
+	<Frame name="CommunitiesSettingsDialog" frameStrata="HIGH" parent="UIParent" enableMouse="true" mixin="CommunitiesSettingsDialogMixin" topLevel="true" clampedToScreen="true" hidden="true">
 		<Size x="432" y="680"/>
 		<Anchors>
 			<Anchor point="TOP" relativeTo="UIParent" x="0" y="-80"/>
@@ -37,6 +37,12 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.DescriptionLabel" relativePoint="BOTTOMLEFT" x="0" y="-76"/>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.DescriptionLabel" relativePoint="BOTTOMRIGHT" x="0" y="-76"/>
 					</Anchors>
+				</FontString>
+				<FontString parentKey="ClubFinderPostingBannedError" inherits="GameFontNormal" hidden="true" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="65"/>
+					</Anchors>
+					<Color color="RED_FONT_COLOR"/>
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
@@ -131,7 +137,7 @@
 					<Anchor point="BOTTOM" relativeKey="$parent.ChangeAvatarButton" relativePoint="BOTTOM" x="-135" y="-80"/>
 				</Anchors>
 				<Frames>
-					<CheckButton parentKey="Button" inherits="ClubFinderCheckboxTemplate">
+					<CheckButton parentKey="Button" motionScriptsWhileDisabled="true" inherits="ClubFinderCheckboxTemplate">
 						<Size x="32" y="32"/>
 						<Anchors>
 							<Anchor point="LEFT"/>

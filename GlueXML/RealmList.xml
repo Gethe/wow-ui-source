@@ -227,21 +227,16 @@
 									</Anchors>
 								</Texture>
 							</Layer>
-							<Layer level="ARTWORK">
-								<Texture name="RealmListHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
-									<Size x="256" y="64"/>
-									<Anchors>
-										<Anchor point="TOP" x="-12" y="12"/>
-									</Anchors>
-								</Texture>
-								<FontString inherits="GlueFontNormalSmall" text="SERVER_SELECTION">
-									<Anchors>
-										<Anchor point="TOP" relativeTo="RealmListHeader" x="0" y="-14"/>
-									</Anchors>
-								</FontString>
-							</Layer>
 						</Layers>
 						<Frames>
+							<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+								<KeyValues>
+									<KeyValue key="textString" value="SERVER_SELECTION" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOP" x="-12" y="11"/>
+								</Anchors>
+							</Frame>
 							<Button name="RealmNameSort" inherits="RealmSortButtonTemplate" text="REALM_NAME">
 								<Size x="223" y="19"/>
 								<Anchors>

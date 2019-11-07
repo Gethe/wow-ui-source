@@ -886,3 +886,26 @@ function DebugIdentifierFrame_OnLoad(self)
 	local debugHighlightColor = DebugHighlightColors[math.min(debugIdentifierLevel, #DebugHighlightColors)];
 	self.DebugHighlight:SetColorTexture(debugHighlightColor:GetRGBA());
 end
+
+-- for checking that deprecated functions returns the same info as the original version
+function CompareFunctionReturns(func1, func2, ...)
+	local ret1 = { func1(...) };
+	local ret2 = { func2(...) };
+	local size = max(#ret1, #ret2);
+	local allPassed = true;
+	for i = 1, size do
+		if ret1[i] == ret2[i] then
+			print("["..i.."] pass");
+		else
+			print("["..i.."] "..RED_FONT_COLOR_CODE.."fail");
+			print(ret1[i]);
+			print(ret2[i]);
+			allPassed = false;
+		end
+	end
+	if allPassed then
+		print("=== PASS ===");
+	else
+		print("=== " ..RED_FONT_COLOR_CODE.."FAIL"..FONT_COLOR_CODE_CLOSE.." ===");
+	end
+end

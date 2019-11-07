@@ -227,6 +227,7 @@ local AuctionHouse =
 			Arguments =
 			{
 				{ Name = "itemKey", Type = "ItemKey", Nilable = false },
+				{ Name = "restrictQualityToFilter", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =
@@ -1017,24 +1018,6 @@ local AuctionHouse =
 			},
 		},
 		{
-			Name = "OwnedAuctionAdded",
-			Type = "Event",
-			LiteralName = "OWNED_AUCTION_ADDED",
-			Payload =
-			{
-				{ Name = "ownedAuctionID", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "OwnedAuctionExpired",
-			Type = "Event",
-			LiteralName = "OWNED_AUCTION_EXPIRED",
-			Payload =
-			{
-				{ Name = "ownedAuctionID", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "OwnedAuctionsUpdated",
 			Type = "Event",
 			LiteralName = "OWNED_AUCTIONS_UPDATED",
@@ -1166,6 +1149,7 @@ local AuctionHouse =
 				{ Name = "timeLeftSeconds", Type = "number", Nilable = true },
 				{ Name = "numOwnerItems", Type = "number", Nilable = false },
 				{ Name = "containsOwnerItem", Type = "bool", Nilable = false },
+				{ Name = "containsAccountItem", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1185,6 +1169,7 @@ local AuctionHouse =
 			Fields =
 			{
 				{ Name = "itemName", Type = "string", Nilable = false },
+				{ Name = "battlePetLink", Type = "string", Nilable = true },
 				{ Name = "quality", Type = "number", Nilable = false },
 				{ Name = "iconFileID", Type = "number", Nilable = false },
 				{ Name = "isPet", Type = "bool", Nilable = false },
@@ -1204,6 +1189,7 @@ local AuctionHouse =
 				{ Name = "quantity", Type = "number", Nilable = false },
 				{ Name = "itemLink", Type = "string", Nilable = true },
 				{ Name = "containsOwnerItem", Type = "bool", Nilable = false },
+				{ Name = "containsAccountItem", Type = "bool", Nilable = false },
 				{ Name = "containsSocketedItem", Type = "bool", Nilable = false },
 				{ Name = "bidder", Type = "string", Nilable = true },
 				{ Name = "minBid", Type = "number", Nilable = true },

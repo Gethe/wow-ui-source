@@ -129,18 +129,18 @@ function AuctionHouseBuySystemMixin:SetAuctionID(auctionID)
 	self.auctionID = auctionID;
 end
 
-function AuctionHouseBuySystemMixin:SetPrice(minBid, buyoutPrice)
+function AuctionHouseBuySystemMixin:SetPrice(minBid, buyoutPrice, isOwnerItem)
 	minBid = minBid or 0;
 	buyoutPrice = buyoutPrice or 0;
 
 	self.minBid = minBid;
-	self.BidFrame:SetPrice(minBid);
-	self.BuyoutFrame:SetPrice(buyoutPrice);
+	self.BidFrame:SetPrice(minBid, isOwnerItem);
+	self.BuyoutFrame:SetPrice(buyoutPrice, isOwnerItem);
 end
 
-function AuctionHouseBuySystemMixin:SetAuction(auctionID, minBid, buyoutPrice)
+function AuctionHouseBuySystemMixin:SetAuction(auctionID, minBid, buyoutPrice, isOwnerItem)
 	self:SetAuctionID(auctionID);
-	self:SetPrice(minBid, buyoutPrice);
+	self:SetPrice(minBid, buyoutPrice, isOwnerItem);
 end
 
 function AuctionHouseBuySystemMixin:ResetPrice()
@@ -212,7 +212,9 @@ function AuctionHouseUtil.AggregateSearchResultsByQuantity(itemID, quantity)
 	local remainingQuantity = quantity;
 	local totalQuantity = 0;
 	local totalPrice = 0;
+	local numResultsAggregated = 0;
 	for searchResultIndex = 1, C_AuctionHouse.GetNumCommoditySearchResults(itemID) do
+		numResultsAggregated = numResultsAggregated + 1;
 		local searchResult = C_AuctionHouse.GetCommoditySearchResultInfo(itemID, searchResultIndex);
 		if searchResult then
 			local quantityAvailable = searchResult.quantity - searchResult.numOwnerItems;
@@ -226,7 +228,7 @@ function AuctionHouseUtil.AggregateSearchResultsByQuantity(itemID, quantity)
 		end
 	end
 
-	return totalQuantity, totalPrice;
+	return totalQuantity, totalPrice, numResultsAggregated;
 end
 
 function AuctionHouseUtil.AggregateCommoditySearchResultsByMaxPrice(itemID, maxPrice)
@@ -247,19 +249,6 @@ function AuctionHouseUtil.AggregateCommoditySearchResultsByMaxPrice(itemID, maxP
 end
 
 function AuctionHouseUtil.GetTimeLeftBandText(timeLeftBand)
---[[	if timeLeftBand == Enum.AuctionHouseTimeLeftBand.Short then
-		return RED_FONT_COLOR:WrapTextInColorCode(AUCTION_HOUSE_TOOLTIP_TIME_LEFT_SHORT);
-	elseif timeLeftBand == Enum.AuctionHouseTimeLeftBand.Medium then
-		return GRAY_FONT_COLOR:WrapTextInColorCode(AUCTION_HOUSE_TOOLTIP_TIME_LEFT_MEDIUM);
-	elseif timeLeftBand == Enum.AuctionHouseTimeLeftBand.Long then
-		return GRAY_FONT_COLOR:WrapTextInColorCode(AUCTION_HOUSE_TOOLTIP_TIME_LEFT_LONG);
-	elseif timeLeftBand == Enum.AuctionHouseTimeLeftBand.VeryLong then
-		return GRAY_FONT_COLOR:WrapTextInColorCode(AUCTION_HOUSE_TOOLTIP_TIME_LEFT_VERY_LONG);
-	end
-
-	return "";
-]]
-
 	if timeLeftBand == Enum.AuctionHouseTimeLeftBand.Short then
 		return RED_FONT_COLOR:WrapTextInColorCode(TIME_LEFT_SHORT);
 	elseif timeLeftBand == Enum.AuctionHouseTimeLeftBand.Medium then
@@ -271,7 +260,6 @@ function AuctionHouseUtil.GetTimeLeftBandText(timeLeftBand)
 	end
 
 	return "";
-
 end
 
 function AuctionHouseUtil.GetTooltipTimeLeftBandText(timeLeftBand)
@@ -334,7 +322,6 @@ function AuctionHouseUtil.GetDisplayTextFromOwnedAuctionData(ownedAuctionData, i
 
 	if ownedAuctionData.status == Enum.AuctionStatus.Sold then
 		itemColor = GRAY_FONT_COLOR;
-		itemDisplayText = AUCTION_HOUSE_ITEM_SOLD_FORMAT:format(itemDisplayText);
 	end
 	
 	return itemColor:WrapTextInColorCode(itemDisplayText);
@@ -353,14 +340,6 @@ end
 
 AuctionHouseUtil.TimeLeftTooltipFormatter = CreateFromMixins(SecondsFormatterMixin);
 AuctionHouseUtil.TimeLeftTooltipFormatter:Init(0, SecondsFormatter.Abbreviation.Truncate, true);
-
-function AuctionHouseUtil.TimeLeftTooltipFormatter:GetDesiredUnitCount(seconds)
-	return 2;
-end
-
-function AuctionHouseUtil.TimeLeftTooltipFormatter:GetMinInterval(seconds)
-	return SecondsFormatter.Interval.Seconds;
-end
 
 function AuctionHouseUtil.FormatTimeLeftTooltip(timeLeftSeconds, status)
 	local sold = status == Enum.AuctionStatus.Sold;
@@ -490,14 +469,25 @@ function AuctionHouseUtil.LineOnEnterCallback(line, rowData)
 
 		GameTooltip:Show();
 	elseif rowData.itemKey then
-		GameTooltip:SetOwner(line, "ANCHOR_RIGHT");
-		GameTooltip:SetItemKey(rowData.itemKey.itemID, rowData.itemKey.itemLevel, rowData.itemKey.itemSuffix);
-		GameTooltip:Show();
+		local restrictQualityToFilter = true;
+		local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(rowData.itemKey, restrictQualityToFilter);
+		if itemKeyInfo and itemKeyInfo.battlePetLink then
+			GameTooltip:SetOwner(line, "ANCHOR_RIGHT");
+			BattlePetToolTip_ShowLink(itemKeyInfo.battlePetLink);
+		else
+			GameTooltip:SetOwner(line, "ANCHOR_RIGHT");
+			GameTooltip:SetItemKey(rowData.itemKey.itemID, rowData.itemKey.itemLevel, rowData.itemKey.itemSuffix);
+			GameTooltip:Show();
+		end
 
 		if IsModifiedClick("DRESSUP") then
 			ShowInspectCursor();
 		end
 	end
+
+	line.UpdateTooltip = function(self)
+		AuctionHouseUtil.LineOnEnterCallback(self, rowData);
+	end;
 end
 
 function AuctionHouseUtil.LineOnLeaveCallback(line, rowData)
@@ -543,3 +533,7 @@ function AuctionHouseUtil.HasOwnedAuctionType(itemKey)
 	return false;
 end
 
+function AuctionHouseUtil.IsOwnedAuction(rowData)
+	return (#rowData.owners == 1 and (rowData.containsOwnerItem or rowData.containsAccountItem)) or
+			(#rowData.owners == 2 and (rowData.containsOwnerItem and rowData.containsAccountItem));
+end

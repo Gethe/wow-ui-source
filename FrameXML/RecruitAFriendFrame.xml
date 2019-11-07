@@ -150,17 +150,17 @@
 						<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" y="-20"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="LinkExpires" inherits="FriendsFont_Normal">
+				<FontString parentKey="InfoText1" inherits="FriendsFont_Normal">
 					<Size x="400"/>
 					<Anchors>
 						<Anchor point="BOTTOM" y="55"/>
 					</Anchors>
 					<Color color="GRAY_FONT_COLOR" />
 				</FontString>
-				<FontString parentKey="LinkUses" inherits="FriendsFont_Normal">
+				<FontString parentKey="InfoText2" inherits="FriendsFont_Normal">
 					<Size x="400"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.LinkExpires" relativePoint="BOTTOM" y="-10"/>
+						<Anchor point="TOP" relativeKey="$parent.InfoText1" relativePoint="BOTTOM" y="-10"/>
 					</Anchors>
 				</FontString>
 			</Layer>

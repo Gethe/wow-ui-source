@@ -224,8 +224,6 @@ local AUCTION_HOUSE_FRAME_EVENTS = {
 	"BIDS_UPDATED",
 	"BID_ADDED",
 	"OWNED_AUCTIONS_UPDATED",
-	"OWNED_AUCTION_ADDED",
-	"OWNED_AUCTION_EXPIRED",
 };
 
 local function AuctionHouseFrame_GenerateMaxWidthFunction(self, cacheName, maxPriceFunction, key)
@@ -321,8 +319,7 @@ function AuctionHouseFrameMixin:OnEvent(event, ...)
 		-- We need to query bids to properly show outbid indicators.
 		self:QueryAll(AuctionHouseSearchContext.AllBids);
 	elseif event == "ITEM_SEARCH_RESULTS_ADDED" or event == "ITEM_SEARCH_RESULTS_UPDATED" or
-			event == "OWNED_AUCTIONS_UPDATED" or event == "OWNED_AUCTION_ADDED" or event == "OWNED_AUCTION_EXPIRED" or
-			event == "BIDS_UPDATED" or event == "BID_ADDED" then
+			event == "OWNED_AUCTIONS_UPDATED" or event == "BIDS_UPDATED" or event == "BID_ADDED" then
 		-- Clear the cached values.
 		self:ClearMaxWidthCaches();
 
@@ -419,6 +416,20 @@ AuctionHouseFramePopups = {
 };
 
 function AuctionHouseFrameMixin:SetDisplayMode(displayMode)
+	-- If we have an active post item, show that display.
+	if displayMode == AuctionHouseFrameDisplayMode.ItemSell or
+		displayMode == AuctionHouseFrameDisplayMode.CommoditiesSell or
+		displayMode == AuctionHouseFrameDisplayMode.WoWTokenSell then
+
+		if self.ItemSellFrame:GetItem() then
+			displayMode = AuctionHouseFrameDisplayMode.ItemSell;
+		elseif self.CommoditiesSellFrame:GetItem() then
+			displayMode = AuctionHouseFrameDisplayMode.CommoditiesSell;
+		elseif self.WoWTokenSellFrame:GetItem() then
+			displayMode = AuctionHouseFrameDisplayMode.WoWTokenSell;
+		end
+	end
+
 	if self.displayMode == displayMode then
 		return;
 	end

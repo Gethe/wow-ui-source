@@ -6,6 +6,105 @@ local Unit =
 	Functions =
 	{
 		{
+			Name = "GetUnitPowerBarInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "UnitPowerBarInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUnitPowerBarInfoByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "barID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "UnitPowerBarInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUnitPowerBarStrings",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = true },
+				{ Name = "tooltip", Type = "string", Nilable = true },
+				{ Name = "cost", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetUnitPowerBarStringsByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "barID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = true },
+				{ Name = "tooltip", Type = "string", Nilable = true },
+				{ Name = "cost", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetUnitPowerBarTextureInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "textureIndex", Type = "number", Nilable = false },
+				{ Name = "timerIndex", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "texture", Type = "number", Nilable = false },
+				{ Name = "colorR", Type = "number", Nilable = false },
+				{ Name = "colorG", Type = "number", Nilable = false },
+				{ Name = "colorB", Type = "number", Nilable = false },
+				{ Name = "colorA", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUnitPowerBarTextureInfoByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "barID", Type = "number", Nilable = false },
+				{ Name = "textureIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "texture", Type = "number", Nilable = false },
+				{ Name = "colorR", Type = "number", Nilable = false },
+				{ Name = "colorG", Type = "number", Nilable = false },
+				{ Name = "colorB", Type = "number", Nilable = false },
+				{ Name = "colorA", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "PlayerVehicleHasComboPoints",
 			Type = "Function",
 
@@ -165,6 +264,20 @@ local Unit =
 			Returns =
 			{
 				{ Name = "power", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitPowerBarID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "barID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1275,6 +1388,29 @@ local Unit =
 				{ Name = "OrbCarrierGreen", Type = "PvpUnitClassification", EnumValue = 8 },
 				{ Name = "OrbCarrierOrange", Type = "PvpUnitClassification", EnumValue = 9 },
 				{ Name = "OrbCarrierPurple", Type = "PvpUnitClassification", EnumValue = 10 },
+			},
+		},
+		{
+			Name = "UnitPowerBarInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "ID", Type = "number", Nilable = false },
+				{ Name = "barType", Type = "number", Nilable = false },
+				{ Name = "minPower", Type = "number", Nilable = false },
+				{ Name = "startInset", Type = "number", Nilable = false },
+				{ Name = "endInset", Type = "number", Nilable = false },
+				{ Name = "smooth", Type = "bool", Nilable = false },
+				{ Name = "hideFromOthers", Type = "bool", Nilable = false },
+				{ Name = "showOnRaid", Type = "bool", Nilable = false },
+				{ Name = "opaqueSpark", Type = "bool", Nilable = false },
+				{ Name = "opaqueFlash", Type = "bool", Nilable = false },
+				{ Name = "anchorTop", Type = "bool", Nilable = false },
+				{ Name = "forcePercentage", Type = "bool", Nilable = false },
+				{ Name = "sparkUnderFrame", Type = "bool", Nilable = false },
+				{ Name = "flashAtMinPower", Type = "bool", Nilable = false },
+				{ Name = "fractionalCounter", Type = "bool", Nilable = false },
+				{ Name = "animateNumbers", Type = "bool", Nilable = false },
 			},
 		},
 	},

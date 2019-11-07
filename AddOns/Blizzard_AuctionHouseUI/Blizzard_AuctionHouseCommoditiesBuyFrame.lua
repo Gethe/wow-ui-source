@@ -53,13 +53,22 @@ function AuctionHouseCommoditiesBuyDisplayMixin:SetItemIDAndPrice(itemID, minPri
 	if itemID then
 		self.ItemDisplay:SetItem(itemID);
 		self:SetQuantitySelected(1);
-		self.UnitPrice:SetAmount(minPrice);
-		self.TotalPrice:SetAmount(minPrice);
+		self:SetPrice(minPrice, minPrice);
 	else
 		self.ItemDisplay:SetItem(nil);
 		self:SetQuantitySelected(0);
-		self.UnitPrice:SetAmount(0);
-		self.TotalPrice:SetAmount(0);
+		self:SetPrice(0, 0);
+	end
+end
+
+function AuctionHouseCommoditiesBuyDisplayMixin:SetPrice(unitPrice, totalPrice)
+	self.UnitPrice:SetAmount(unitPrice);
+	self.TotalPrice:SetAmount(totalPrice);
+
+	if totalPrice > GetMoney() then
+		self.BuyButton:SetDisableTooltip(AUCTION_HOUSE_TOOLTIP_TITLE_NOT_ENOUGH_MONEY);
+	else
+		self.BuyButton:SetDisableTooltip(nil);
 	end
 end
 
@@ -90,8 +99,7 @@ function AuctionHouseCommoditiesBuyDisplayMixin:SetQuantitySelected(quantity)
 		totalQuantity, totalPrice = AuctionHouseUtil.AggregateSearchResultsByQuantity(self:GetItemID(), quantity);
 		if totalQuantity == 0 then
 			self.QuantityInput:SetQuantity(0);
-			self.UnitPrice:SetAmount(0);
-			self.TotalPrice:SetAmount(0);
+			self:SetPrice(0, 0);
 			return;
 		end
 	end
@@ -99,8 +107,7 @@ function AuctionHouseCommoditiesBuyDisplayMixin:SetQuantitySelected(quantity)
 	self.QuantityInput:SetQuantity(totalQuantity);
 
 	local unitPrice = math.ceil(totalPrice / totalQuantity);
-	self.UnitPrice:SetAmount(unitPrice);
-	self.TotalPrice:SetAmount(totalPrice);
+	self:SetPrice(unitPrice, totalPrice);
 end
 
 function AuctionHouseCommoditiesBuyDisplayMixin:GetQuantitySelected()

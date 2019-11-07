@@ -97,7 +97,7 @@
 
 	<Frame name="AuctionHouseTableCellOwnedCheckmarkTemplate" mixin="AuctionHouseTableCellOwnedCheckmarkMixin" inherits="AuctionHouseTableImageTemplate" virtual="true"/>
 	
-	<Frame name="AuctionHouseTableCellSocketDisplayTemplate" mixin="AuctionHouseTableSocketDisplayMixin" inherits="AuctionHouseTableImageTemplate" virtual="true"/>
+	<Frame name="AuctionHouseTableCellExtraInfoTemplate" mixin="AuctionHouseTableExtraInfoMixin" inherits="AuctionHouseTableCellTextTemplate, AuctionHouseTableImageTemplate" virtual="true"/>
 
 	<Frame name="AuctionHouseTableCellOwnersTemplate" mixin="AuctionHouseTableCellOwnersMixin" inherits="AuctionHouseTableCellTextTooltipTemplate" virtual="true"/>
 
@@ -155,9 +155,19 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="AuctionHouseTableCellAuctionsItemDisplayTemplate" inherits="AuctionHouseTableCellItemDisplayTemplate" mixin="AuctionHouseTableCellAuctionsItemDisplayMixin" virtual="true"/>
+	<Frame name="AuctionHouseTableCellAuctionsItemDisplayTemplate" inherits="AuctionHouseTableCellItemDisplayTemplate" mixin="AuctionHouseTableCellAuctionsItemDisplayMixin" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString parentKey="Prefix" inherits="Number14FontWhite" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
 
-	<Frame name="AuctionHouseTableCellMinPriceTemplate" mixin="AuctionHouseTableCellMinPriceMixin" inherits="AuctionHouseTableMoneyDisplayCheckmarkTemplate" virtual="true"/>
+	<Frame name="AuctionHouseTableCellMinPriceTemplate" mixin="AuctionHouseTableCellMinPriceMixin" inherits="AuctionHouseTableCellTextTemplate, AuctionHouseTableMoneyDisplayCheckmarkTemplate" virtual="true"/>
 
 	<Frame name="AuctionHouseTableCellQuantityTemplate" mixin="AuctionHouseTableCellQuantityMixin" inherits="AuctionHouseTableCellTextTemplate" virtual="true"/>
 

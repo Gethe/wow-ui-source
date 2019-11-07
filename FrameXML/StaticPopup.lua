@@ -1345,10 +1345,14 @@ StaticPopupDialogs["DEATH"] = {
 			self.button1:SetEnabled(false);
 			self.button1:SetText(DEATH_RELEASE);
 		else
-			local hasNoReleaseAura, noReleaseDuration = HasNoReleaseAura();
+			local hasNoReleaseAura, noReleaseDuration, hasUntilCancelledDuration = HasNoReleaseAura();
 			self.button1:SetEnabled(not hasNoReleaseAura);
 			if ( hasNoReleaseAura ) then
-				self.button1:SetText(math.floor(noReleaseDuration));
+				if hasUntilCancelledDuration then
+					self.button1:SetText(DEATH_RELEASE);
+				else
+					self.button1:SetText(math.floor(noReleaseDuration));
+				end
 			else
 				self.button1:SetText(DEATH_RELEASE);
 			end
@@ -4817,6 +4821,9 @@ function StaticPopup_Hide(which, data)
 	end
 end
 
+local SpellConfirmationFormatter = CreateFromMixins(SecondsFormatterMixin);
+SpellConfirmationFormatter:Init(0, SecondsFormatter.Abbreviation.None, true, true);
+
 function StaticPopup_OnUpdate(dialog, elapsed)
 	if ( dialog.timeleft > 0 ) then
 		local which = dialog.which;
@@ -4867,13 +4874,8 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 					text:SetFormattedText(StaticPopupDialogs[which].text, text.text_arg1, ceil(timeleft / 60), MINUTES);
 				end
 			elseif ( which == "SPELL_CONFIRMATION_PROMPT") then
-				local time = "";
-				if ( timeleft < 60 ) then
-					text:SetFormattedText(ERR_SPELL_FAILED_S, timeleft, SECONDS);
-				else
-					text:SetFormattedText(ERR_SPELL_FAILED_S, ceil(timeleft / 60), MINUTES);
-				end
-				text:SetText(StaticPopupDialogs[which].text .. " " ..TIME_REMAINING .. text:GetText());
+				local time = SpellConfirmationFormatter:Format(timeleft);
+				text:SetText(StaticPopupDialogs[which].text .. " " ..TIME_REMAINING .. " " .. time);
 			else
 				if ( timeleft < 60 ) then
 					text:SetFormattedText(StaticPopupDialogs[which].text, timeleft, SECONDS);

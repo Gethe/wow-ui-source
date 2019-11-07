@@ -271,6 +271,10 @@ function AuctionHouseItemListMixin:SetSelectedEntryByCondition(condition, scroll
 end
 
 function AuctionHouseItemListMixin:ScrollToEntryIndex(entryIndex)
+	if not self.isInitialized then
+		return;
+	end
+
 	local buttons = HybridScrollFrame_GetButtons(self.ScrollFrame);
 	local buttonHeight = buttons[1]:GetHeight();
 	local currentScrollOffset = self:GetScrollOffset();
@@ -282,8 +286,27 @@ function AuctionHouseItemListMixin:ScrollToEntryIndex(entryIndex)
 	end
 end
 
+function AuctionHouseItemListMixin:SetScrollOffset(scrollOffset)
+	if not self.isInitialized then
+		return;
+	end
+
+	local buttons = HybridScrollFrame_GetButtons(self.ScrollFrame);
+	local buttonHeight = buttons[1]:GetHeight();
+	if scrollOffset ~= self:GetScrollOffset() then
+		self.ScrollFrame.scrollBar:SetValue(scrollOffset * buttonHeight);
+	else
+		self:RefreshScrollFrame();
+	end
+end
+
 function AuctionHouseItemListMixin:GetScrollOffset()
 	return HybridScrollFrame_GetOffset(self.ScrollFrame);
+end
+
+function AuctionHouseItemListMixin:GetNumButtons()
+	local buttons = HybridScrollFrame_GetButtons(self.ScrollFrame);
+	return buttons and #buttons or 0;
 end
 
 function AuctionHouseItemListMixin:UpdateRefreshFrame()

@@ -37,6 +37,7 @@ local REVEAL_MODEL_SCENE_ACTOR_SETTINGS = {
 local MAJOR_BLUE_GEM_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(287, 165995);		-- 	BlueGlow_High.m2
 local MAJOR_PURPLE_GEM_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(288, 166008);	-- 	PurpleGlow_High.m2
 local MINOR_PURPLE_GEM_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(289, 166008);	-- 	PurpleGlow_High.m2
+local RANKED_MILESTONE_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(316, 1983524);	-- 	8FX_Azerite_Generic_PrecastHand.m2
 
 local LEARN_SHAKE_DELAY = 0.869;
 local LEARN_SHAKE = { { x = 0, y = -20}, { x = 0, y = 20}, { x = 0, y = -20}, { x = 0, y = 20}, { x = -9, y = -8}, { x = 8, y = 8}, { x = -3, y = -8}, { x = 9, y = 8}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, };
@@ -902,9 +903,9 @@ function AzeriteMilestoneBaseMixin:OnEvent(event, ...)
 	if event == "UI_MODEL_SCENE_INFO_UPDATED" then
 		self.EffectsModelScene.primaryEffect = nil;
 		self.EffectsModelScene.secondaryEffect = nil;
-		if self.slot then
+		if self.slot or self.rank then
 			local forceUpdate = true;
-			self:UpdateGemModelScenes(forceUpdate);
+			self:UpdateModelScenes(forceUpdate);
 		end
 	end
 end
@@ -1083,7 +1084,7 @@ function AzeriteMilestoneSlotMixin:OnDragStart()
 	end
 end
 
-function AzeriteMilestoneSlotMixin:UpdateGemModelScenes(forceUpdate)
+function AzeriteMilestoneSlotMixin:UpdateModelScenes(forceUpdate)
 	if not self.unlocked then
 		return;
 	end
@@ -1159,7 +1160,7 @@ function AzeriteMilestoneSlotMixin:Refresh()
 		end
 	end
 
-	self:UpdateGemModelScenes();
+	self:UpdateModelScenes();
 end
 
 function AzeriteMilestoneSlotMixin:OnMouseUp(button)
@@ -1268,6 +1269,10 @@ AzeriteMilestoneRankedMixin = CreateFromMixins(AzeriteMilestoneBaseMixin);
 function AzeriteMilestoneRankedMixin:Refresh()
 	self:UpdateMilestoneInfo();
 
+	if not self.unlocked and self.canUnlock then
+		self.needsUnlock = true;
+	end
+
 	if not self.unlocked and not self.canUnlock then
 		self:ShowStateFrame(self.LockedState);
 		self.LockedState.UnlockLevelText:SetText(self.requiredLevel);
@@ -1291,6 +1296,44 @@ function AzeriteMilestoneRankedMixin:Refresh()
 			self.AvailableState.ForgeGlowAnim:Stop();
 		end
 	end
+
+	self:UpdateModelScenes();
+end
+
+function AzeriteMilestoneRankedMixin:UpdateModelScenes(forceUpdate)
+	if not self.needsUnlock and self.unlocked then
+		local scene = self.EffectsModelScene;
+		if not scene.activeEffect or forceUpdate then
+			scene:SetFrameLevel(self.AvailableState:GetFrameLevel() - 1);
+			scene.activeEffect = StaticModelInfo.SetupModelScene(scene, RANKED_MILESTONE_MODEL_SCENE_INFO, forceUpdate);
+		end
+	end
+end
+
+function AzeriteMilestoneRankedMixin:CheckAndSetUpUnlockEffect()
+	local scene = self.EffectsModelScene;
+	if not scene.unlockEffect then
+		local forceUpdate = true;
+		local stopAnim = true;
+		self.EffectsModelScene:SetFrameLevel(self.AvailableState:GetFrameLevel() + 1);
+		scene.unlockEffect = StaticModelInfo.SetupModelScene(scene, REVEAL_SLOT_MODEL_SCENE_INFO, forceUpdate, stopAnim);
+	end
+end
+
+function AzeriteMilestoneRankedMixin:OnUnlocked()
+	self:CheckAndSetUpUnlockEffect();
+
+	local scene = self.EffectsModelScene;
+	if scene.unlockEffect then
+		local onUnlockDoneFunc = function()
+			self.needsUnlock = false;
+			self:Refresh();
+		end;
+		scene:ShowAndAnimateActors(REVEAL_MODEL_SCENE_ACTOR_SETTINGS, onUnlockDoneFunc);
+		ShakeFrame(self:GetParent():GetParent(), REVEAL_SHAKE, REVEAL_SHAKE_DURATION, REVEAL_SHAKE_FREQUENCY);
+	end
+
+	PlaySound(SOUNDKIT.UI_82_HEARTOFAZEROTH_UNLOCKSTAMINANODE);
 end
 
 AzeriteEssenceLearnAnimFrameMixin = { };

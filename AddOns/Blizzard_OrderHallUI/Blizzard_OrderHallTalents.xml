@@ -135,6 +135,11 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
+				<FontString parentKey="SingleCost" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP" y="-67"/>
+					</Anchors>
+				</FontString>
 				<FontString parentKey="Tick1" inherits="OrderHallTalentFrameTick" text="I">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="24" y="-99"/>

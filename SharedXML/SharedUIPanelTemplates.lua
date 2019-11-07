@@ -1157,3 +1157,16 @@ function UIMenuButtonStretchMixin:OnLeave()
 		GameTooltip:Hide();
 	end
 end
+
+DialogHeaderMixin = {};
+
+function DialogHeaderMixin:OnLoad()
+	if self.textString then
+		self:Setup(self.textString);
+	end
+end
+
+function DialogHeaderMixin:Setup(text)
+	self.Text:SetText(text);
+	self:SetWidth(self.Text:GetWidth() + self.headerTextPadding);
+end

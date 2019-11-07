@@ -184,6 +184,20 @@ local ClubFinder =
 			},
 		},
 		{
+			Name = "GetStatusOfPostingFromClubId",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "postingID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "postingFlags", Type = "table", InnerType = "ClubFinderClubPostingStatusFlags", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTotalMatchingCommunityListSize",
 			Type = "Function",
 
@@ -216,6 +230,20 @@ local ClubFinder =
 			},
 		},
 		{
+			Name = "HasPostingBeenDelisted",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "postingID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "postingDelisted", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsEnabled",
 			Type = "Function",
 
@@ -236,6 +264,20 @@ local ClubFinder =
 			Returns =
 			{
 				{ Name = "isListed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsPostingBanned",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "postingID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "postingBanned", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -620,6 +662,25 @@ local ClubFinder =
 				{ Name = "AcceptInvite", Type = "ClubFinderApplicationUpdateType", EnumValue = 1 },
 				{ Name = "DeclineInvite", Type = "ClubFinderApplicationUpdateType", EnumValue = 2 },
 				{ Name = "Cancel", Type = "ClubFinderApplicationUpdateType", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "ClubFinderClubPostingStatusFlags",
+			Type = "Enumeration",
+			NumValues = 9,
+			MinValue = 0,
+			MaxValue = 8,
+			Fields =
+			{
+				{ Name = "None", Type = "ClubFinderClubPostingStatusFlags", EnumValue = 0 },
+				{ Name = "NeedsCacheUpdate", Type = "ClubFinderClubPostingStatusFlags", EnumValue = 1 },
+				{ Name = "ForceDescriptionChange", Type = "ClubFinderClubPostingStatusFlags", EnumValue = 2 },
+				{ Name = "ForceNameChange", Type = "ClubFinderClubPostingStatusFlags", EnumValue = 3 },
+				{ Name = "UnderReview", Type = "ClubFinderClubPostingStatusFlags", EnumValue = 4 },
+				{ Name = "Banned", Type = "ClubFinderClubPostingStatusFlags", EnumValue = 5 },
+				{ Name = "FakePost", Type = "ClubFinderClubPostingStatusFlags", EnumValue = 6 },
+				{ Name = "PendingDelete", Type = "ClubFinderClubPostingStatusFlags", EnumValue = 7 },
+				{ Name = "PostDelisted", Type = "ClubFinderClubPostingStatusFlags", EnumValue = 8 },
 			},
 		},
 		{

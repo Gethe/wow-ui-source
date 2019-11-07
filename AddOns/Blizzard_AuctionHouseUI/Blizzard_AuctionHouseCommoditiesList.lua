@@ -1,5 +1,6 @@
 
 local COMMODITIES_LIST_SCROLL_OFFSET_REFRESH_THRESHOLD = 30;
+local MINIMUM_UNSELECTED_ENTRIES = 6;
 
 
 AuctionHouseCommoditiesListMixin = CreateFromMixins(AuctionHouseItemListMixin, AuctionHouseSystemMixin);
@@ -155,7 +156,7 @@ function AuctionHouseCommoditiesBuyListMixin:UpdateListHighlightCallback()
 	else
 		self:SetHighlightCallback(function(currentRowData, selectedRowData)
 			local shouldHighlight = quantityToHighlight > 0 and (currentRowData.quantity > currentRowData.numOwnerItems);
-			local highlightAlpha = (currentRowData.containsOwnerItem or (quantityToHighlight < currentRowData.quantity)) and 0.5 or 1.0;
+			local highlightAlpha = (currentRowData.containsOwnerItem or currentRowData.containsAccountItem or (quantityToHighlight < currentRowData.quantity)) and 0.5 or 1.0;
 			quantityToHighlight = math.max(quantityToHighlight - (currentRowData.quantity - currentRowData.numOwnerItems), 0);
 			return shouldHighlight, highlightAlpha;
 		end);
@@ -178,6 +179,21 @@ end
 
 function AuctionHouseCommoditiesBuyListMixin:SetQuantitySelected(quantity)
 	self.quantitySelected = quantity;
+
+	local _, _, searchResultIndex = AuctionHouseUtil.AggregateSearchResultsByQuantity(self.itemID, quantity);
+	local scrollOffset = self:GetScrollOffset();
+	local numButtons = self:GetNumButtons();
+	if searchResultIndex + MINIMUM_UNSELECTED_ENTRIES > scrollOffset then
+		-- Scroll down if necessary.
+		self:SetScrollOffset((searchResultIndex + MINIMUM_UNSELECTED_ENTRIES) - numButtons);
+	elseif (searchResultIndex - MINIMUM_UNSELECTED_ENTRIES) < numButtons then
+		-- Always prefer to be at the top of the list, if there's still enough unselected results shown.
+		self:SetScrollOffset(0);
+	elseif (searchResultIndex - MINIMUM_UNSELECTED_ENTRIES) < scrollOffset then
+		-- Scroll up if necessary.
+		self:SetScrollOffset(math.max(0, searchResultIndex - MINIMUM_UNSELECTED_ENTRIES));
+	end
+
 	self:UpdateDynamicCallbacks();
 	self:DirtyScrollFrame();
 end
@@ -227,9 +243,9 @@ function AuctionHouseCommoditiesBuyListMixin:GetAuctionHouseFrame() -- Overrides
 end
 
 function AuctionHouseCommoditiesBuyListMixin:RefreshScrollFrame()
-	AuctionHouseCommoditiesListMixin.RefreshScrollFrame(self);
-
 	self:UpdateDynamicCallbacks();
+
+	AuctionHouseCommoditiesListMixin.RefreshScrollFrame(self);
 end
 
 

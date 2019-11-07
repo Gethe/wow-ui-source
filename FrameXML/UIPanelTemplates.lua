@@ -389,3 +389,26 @@ function TalentRankDisplayMixin:SetValues(currentRank, maxRank, isDisabled)
 	self.Background:SetAtlas(atlas, true);
 	self.Text:SetTextColor(textColor:GetRGB());
 end
+
+ButtonWithDisableMixin = {};
+
+function ButtonWithDisableMixin:SetDisableTooltip(tooltipTitle, tooltipText)
+	self.disableTooltipTitle = tooltipTitle;
+	self.disableTooltipText = tooltipText;
+	self:SetEnabled(tooltipTitle == nil);
+end
+
+function ButtonWithDisableMixin:OnEnter()
+	if self.disableTooltipTitle and not self:IsEnabled() then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+		local wrap = true;
+		GameTooltip_SetTitle(GameTooltip, self.disableTooltipTitle, RED_FONT_COLOR, wrap);
+
+		if self.disableTooltipText then
+			GameTooltip_AddNormalLine(GameTooltip, self.disableTooltipText, wrap);
+		end
+
+		GameTooltip:Show();
+	end
+end

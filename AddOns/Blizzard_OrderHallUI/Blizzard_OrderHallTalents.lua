@@ -23,7 +23,7 @@ StaticPopupDialogs["ORDER_HALL_TALENT_RESEARCH"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_SELECT);
+		PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_SELECT, nil, SOUNDKIT_ALLOW_DUPLICATES);
 		C_Garrison.ResearchTalent(self.data.id, self.data.rank);
 		if (not self.data.hasTime) then
 			self.data.button:GetParent():SetResearchingTalentID(self.data.id);
@@ -54,6 +54,7 @@ TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Tiers] = {
 	spacingHorizontal = 0,
 	minimumWidth = 336,
 	canHaveBackButton = true,
+	singleCost = false,
 };
 
 TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Classic] = {
@@ -66,6 +67,7 @@ TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Classic] = {
 	spacingHorizontal = 144,
 	minimumWidth = 336,
 	canHaveBackButton = false,
+	singleCost = true,
 };
 
 OrderHallTalentFrameMixin = { }
@@ -313,6 +315,20 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	local talentTreeType = C_Garrison.GetGarrisonTalentTreeType(garrTalentTreeID);
 	local layoutOptions = TalentTreeLayoutOptions[talentTreeType];
 
+	local showSingleCost = false;
+	if layoutOptions.singleCost then
+		self.SingleCost:Show();
+		if tree[1].researchCurrency > 0 then
+			local currencyName, currencyAmount, currencyTexture = GetCurrencyInfo(tree[1].researchCurrency);
+			self.SingleCost:SetFormattedText(RESEARCH_CURRENCY_COST, tree[1].researchCost, currencyTexture);
+			showSingleCost = true;
+		elseif tree[1].researchGoldCost > 0 then
+			self.SingleCost:SetFormattedText(RESEARCH_COST, tree[1].researchGoldCost);
+			showSingleCost = true;
+		end
+	end
+	self.SingleCost:SetShown(showSingleCost);
+
 	self:SetUseThemedTextures(isThemed);
 
 	if (isThemed) then
@@ -454,11 +470,13 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			selectionAvailableInstantResearch = false;
 		end
 
+		-- Clear "Research Talent" status if the talent is not isBeingResearched
+		if (talent.id == researchingTalentID and not talent.isBeingResearched) then
+			self:ClearResearchingTalentID();
+		end
+
 		local borderAtlas = BORDER_ATLAS_NONE;
 		if (talentTreeType == Enum.GarrTalentTreeType.Tiers and talent.selected and selectionAvailableInstantResearch) then
-			if (talent.selected and talent.researched and talent.id == researchingTalentID) then
-				self:ClearResearchingTalentID();
-			end
 			borderAtlas = BORDER_ATLAS_SELECTED;
 		elseif (talentTreeType == Enum.GarrTalentTreeType.Classic and talent.researched) then
 			borderAtlas = BORDER_ATLAS_SELECTED;
@@ -640,6 +658,13 @@ function GarrisonTalentButtonMixin:OnEnter()
 		GameTooltip:AddLine(talent.name, 1, 1, 1);
 		GameTooltip_AddColoredLine(GameTooltip, TOOLTIP_TALENT_RANK:format(talentRank, talent.talentMaxRank), HIGHLIGHT_FONT_COLOR);
 		GameTooltip:AddLine(talent.description, nil, nil, nil, true);
+
+		-- Next Rank (show research description)
+		if talent.talentRank > 0 and talent.talentRank < talent.talentMaxRank then
+			GameTooltip:AddLine(" ");
+			GameTooltip_AddColoredLine(GameTooltip, TOOLTIP_TALENT_NEXT_RANK, HIGHLIGHT_FONT_COLOR);
+			GameTooltip:AddLine(talent.researchDescription, nil, nil, nil, true);
+		end
 	else 
 		GameTooltip:AddLine(talent.name, 1, 1, 1);
 		GameTooltip:AddLine(talent.description, nil, nil, nil, true);
@@ -714,7 +739,7 @@ function GarrisonTalentButtonMixin:OnClick()
 			end
 			StaticPopup_Show("ORDER_HALL_TALENT_RESEARCH", str, nil, { id = self.talent.id, rank = self.talent.talentRank + 1,  hasTime = hasTime,  button = self });
 		else
-			PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_SELECT);
+			PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_SELECT, nil, SOUNDKIT_ALLOW_DUPLICATES);
 			C_Garrison.ResearchTalent(self.talent.id, self.talent.talentRank + 1);
 			self:GetParent():SetResearchingTalentID(self.talent.id);
 		end

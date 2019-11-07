@@ -89,6 +89,10 @@ function AuctionHouseAlignedPriceInputFrameMixin:SetNextEditBox(nextEditBox)
 	self.MoneyInputFrame:SetNextEditBox(nextEditBox);
 end
 
+function AuctionHouseAlignedPriceInputFrameMixin:Clear()
+	self.MoneyInputFrame:Clear();
+end
+
 function AuctionHouseAlignedPriceInputFrameMixin:SetAmount(amount)
 	self.MoneyInputFrame:SetAmount(amount);
 end
@@ -362,10 +366,6 @@ function AuctionHouseSellFrameMixin:SetToMaxQuantity()
 end
 
 function AuctionHouseSellFrameMixin:GetMaxQuantity()
-	if self.ItemDisplay:IsPet() then
-		return 1;
-	end
-	
 	local itemLocation = self.ItemDisplay:GetItemLocation();
 	return itemLocation and C_AuctionHouse.GetAvailablePostCount(itemLocation) or 1;
 end
@@ -477,7 +477,9 @@ function AuctionHouseSellFrameMixin:CanPostItem()
 end
 
 function AuctionHouseSellFrameMixin:UpdateDeposit()
-	self.Deposit:SetAmount(self:GetDepositAmount());
+	local depositCost = self:GetDepositAmount();
+	depositCost = math.ceil(depositCost / COPPER_PER_SILVER) * COPPER_PER_SILVER;
+	self.Deposit:SetAmount(depositCost);
 end
 
 function AuctionHouseSellFrameMixin:ShowHelpTip()

@@ -15,6 +15,8 @@ SEND_MAIL_TAB_LIST[3] = "SendMailBodyEditBox";
 SEND_MAIL_TAB_LIST[4] = "SendMailMoneyGold";
 SEND_MAIL_TAB_LIST[5] = "SendMailMoneyCopper";
 
+local MAX_INBOX_SIZE = 100;
+
 function MailFrame_OnLoad(self)
 	-- Init pagenum
 	InboxFrame.pageNum = 1;
@@ -63,11 +65,12 @@ function MailFrame_OnEvent(self, event, ...)
 		OpenAllBags(self);
 		SendMailFrame_Update();
 		MailFrameTab_OnClick(nil, 1);
-		CheckInbox();
+		MailFrame_RefreshInbox(self);
 		DoEmote("READ", nil, true);
 	elseif ( event == "MAIL_INBOX_UPDATE" ) then
 		InboxFrame_Update();
 		OpenMail_Update();
+		self.inboxBeingChecked = false;
 	elseif ( event == "MAIL_SEND_INFO_UPDATE" ) then
 		SendMailFrame_Update();
 	elseif ( event == "MAIL_SEND_SUCCESS" ) then
@@ -150,8 +153,31 @@ end
 
 -- Inbox functions
 
+function MailFrame_RefreshInbox(self)
+	if self.refreshQueued or self.inboxBeingChecked then
+		return;
+	end
+
+	local canCheck, timeUntilAvailable = C_Mail.CanCheckInbox();
+	if canCheck then
+		CheckInbox();
+		self.inboxBeingChecked = true;
+	else
+		self.refreshQueued = true;
+		C_Timer.After(timeUntilAvailable, function()
+			self.refreshQueued = false;
+			MailFrame_RefreshInbox(self);
+		end);
+	end
+end
+
 function InboxFrame_Update()
 	local numItems, totalItems = GetInboxNumItems();
+
+	if numItems ~= totalItems and numItems < MAX_INBOX_SIZE then
+		MailFrame_RefreshInbox(MailFrame)
+	end
+
 	local index = ((InboxFrame.pageNum - 1) * INBOXITEMS_TO_DISPLAY) + 1;
 	local packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead, x, y, z, isGM, firstItemQuantity, firstItemLink;
 	local icon, button, expireTime, senderText, subjectText, buttonIcon;

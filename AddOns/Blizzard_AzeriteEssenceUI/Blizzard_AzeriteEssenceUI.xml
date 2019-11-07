@@ -142,6 +142,12 @@
 	<Frame name="AzeriteMilestoneRankedTemplate" parentArray="Slots" inherits="AzeriteMilestoneBaseTemplate" mixin="AzeriteMilestoneRankedMixin" virtual="true">
 		<Size x="66" y="66"/>
 		<Frames>
+			<ModelScene parentKey="EffectsModelScene" drawLayer="OVERLAY" inherits="NonInteractableModelSceneMixinTemplate">
+				<Size x="800" y="800"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</ModelScene>
 			<Frame parentKey="AvailableState" parentArray="StateFrames" setAllPoints="true">
 				<Layers>
 					<Layer level="BACKGROUND">

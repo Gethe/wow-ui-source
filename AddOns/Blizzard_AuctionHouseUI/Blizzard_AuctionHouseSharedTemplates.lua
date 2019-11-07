@@ -61,14 +61,25 @@ function AuctionHouseItemDisplayMixin:OnEnter()
 	end
 
 	if self:IsPet() then
-		local itemLocation = self:GetItemLocation();
-		if itemLocation then
-			local bagID, slotIndex = itemLocation:GetBagAndSlot();
-			if bagID and slotIndex then
+		if self.itemKey then
+			local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(self.itemKey);
+			if itemKeyInfo and itemKeyInfo.battlePetLink then
 				GameTooltip:SetOwner(self.ItemButton, "ANCHOR_RIGHT");
-				local hasCooldown, repairCost, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetBagItem(bagID, slotIndex);
-				if speciesID and speciesID > 0 then
-					BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
+				BattlePetToolTip_ShowLink(itemKeyInfo.battlePetLink);
+			else
+				BattlePetTooltip:Hide();
+				GameTooltip:Hide();
+			end
+		else
+			local itemLocation = self:GetItemLocation();
+			if itemLocation then
+				local bagID, slotIndex = itemLocation:GetBagAndSlot();
+				if bagID and slotIndex then
+					GameTooltip:SetOwner(self.ItemButton, "ANCHOR_RIGHT");
+					local hasCooldown, repairCost, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetBagItem(bagID, slotIndex);
+					if speciesID and speciesID > 0 then
+						BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
+					end
 				end
 			end
 		end
@@ -88,6 +99,8 @@ function AuctionHouseItemDisplayMixin:OnEnter()
 				GameTooltip:Show();
 			end
 		end
+
+		self.ItemButton.UpdateTooltip = self.ItemButton:GetScript("OnEnter");
 	end
 end
 
@@ -160,6 +173,8 @@ function AuctionHouseItemDisplayMixin:SetItemKey(itemKey)
 	local successful = self:SetItemInternal(itemKey.itemID);
 	if successful then
 		self.Name:SetText(AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo));
+		SetItemButtonTexture(self.ItemButton, itemKeyInfo.iconFileID);
+		SetItemButtonQuality(self.ItemButton, itemKeyInfo.quality);
 	end
 
 	return successful;
@@ -229,6 +244,11 @@ function AuctionHouseItemDisplayMixin:SetItemInternal(item)
 end
 
 function AuctionHouseItemDisplayMixin:IsPet()
+	if self.itemKey then
+		local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(self.itemKey);
+		return itemKeyInfo and itemKeyInfo.isPet;
+	end
+
 	local itemLink = self:GetItemLink();
 	if itemLink == nil then
 		return false;
@@ -592,12 +612,22 @@ function AuctionHouseBidFrameMixin:OnLoad()
 	MoneyInputFrame_SetCopperShown(self.BidAmount, false);
 end
 
-function AuctionHouseBidFrameMixin:SetPrice(minBid)
+function AuctionHouseBidFrameMixin:SetPrice(minBid, isOwnerItem)
 	MoneyInputFrame_SetCopper(self.BidAmount, minBid);
 
-	local shouldEnable = minBid ~= 0;
-	MoneyInputFrame_SetEnabled(self.BidAmount, shouldEnable);
-	self.BidButton:SetEnabled(shouldEnable);
+	if minBid == 0 then
+		MoneyInputFrame_SetEnabled(self.BidAmount, false);
+		self.BidButton:SetDisableTooltip("");
+	elseif minBid > GetMoney() then
+		MoneyInputFrame_SetEnabled(self.BidAmount, false);
+		self.BidButton:SetDisableTooltip(AUCTION_HOUSE_TOOLTIP_TITLE_NOT_ENOUGH_MONEY);
+	elseif isOwnerItem then
+		MoneyInputFrame_SetEnabled(self.BidAmount, false);
+		self.BidButton:SetDisableTooltip(AUCTION_HOUSE_TOOLTIP_TITLE_OWN_AUCTION);
+	else
+		MoneyInputFrame_SetEnabled(self.BidAmount, true);
+		self.BidButton:SetDisableTooltip(nil);
+	end	
 end
 
 function AuctionHouseBidFrameMixin:GetPrice()
@@ -617,8 +647,16 @@ function AuctionHouseBuyoutFrameMixin:SetBuyoutCallback(buyoutCallback)
 	self.buyoutCallback = buyoutCallback;
 end
 
-function AuctionHouseBuyoutFrameMixin:SetPrice(price)
+function AuctionHouseBuyoutFrameMixin:SetPrice(price, isOwnerItem)
 	self.price = price;
+
+	if isOwnerItem then
+		self.BuyoutButton:SetDisableTooltip(AUCTION_HOUSE_TOOLTIP_TITLE_OWN_AUCTION);
+	elseif price > GetMoney() then
+		self.BuyoutButton:SetDisableTooltip(AUCTION_HOUSE_TOOLTIP_TITLE_NOT_ENOUGH_MONEY);
+	else
+		self.BuyoutButton:SetDisableTooltip(nil);
+	end
 end
 
 function AuctionHouseBuyoutFrameMixin:GetPrice()

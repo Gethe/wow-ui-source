@@ -430,7 +430,9 @@ GAME_TOOLTIP_BACKDROP_STYLE_AZERITE_ITEM = {
 
 	overlayAtlasTop = "AzeriteTooltip-Topper";
 	overlayAtlasTopScale = .75,
+	overlayAtlasTopYOffset = 1;
 	overlayAtlasBottom = "AzeriteTooltip-Bottom";
+	overlayAtlasBottomYOffset = 2;
 
 	padding = { left = 3, right = 3, top = 3, bottom = 3 },
 };
@@ -450,6 +452,7 @@ GAME_TOOLTIP_BACKDROP_STYLE_CORRUPTED_ITEM = {
 
 	overlayAtlasTop = "Nzoth-tooltip-topper";
 	overlayAtlasTopScale = .75,
+	overlayAtlasTopYOffset = -2;
 
 	padding = { left = 3, right = 3, top = 3, bottom = 3 },
 };
@@ -463,6 +466,7 @@ function GameTooltip_SetBackdropStyle(self, style)
 		if style.overlayAtlasTop then
 			self.TopOverlay:SetAtlas(style.overlayAtlasTop, true);
 			self.TopOverlay:SetScale(style.overlayAtlasTopScale or 1.0);
+			self.TopOverlay:SetPoint("CENTER", self, "TOP", style.overlayAtlasTopXOffset or 0, style.overlayAtlasTopYOffset or 0);
 			self.TopOverlay:Show();
 		else
 			self.TopOverlay:Hide();
@@ -473,6 +477,7 @@ function GameTooltip_SetBackdropStyle(self, style)
 		if style.overlayAtlasBottom then
 			self.BottomOverlay:SetAtlas(style.overlayAtlasBottom, true);
 			self.BottomOverlay:SetScale(style.overlayAtlasBottomScale or 1.0);
+			self.BottomOverlay:SetPoint("CENTER", self, "BOTTOM", style.overlayAtlasBottomXOffset or 0, style.overlayAtlasBottomYOffset or 0);
 			self.BottomOverlay:Show();
 		else
 			self.BottomOverlay:Hide();

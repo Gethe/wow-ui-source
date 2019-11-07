@@ -5,14 +5,14 @@
 			<Layer level="OVERLAY">
 				<Texture parentKey="TopOverlay" hidden="true">
 					<Anchors>
-						<Anchor point="CENTER" relativePoint="TOP" x="0" y="1" />
+						<Anchor point="CENTER" relativePoint="TOP" x="0" y="0" />
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="BottomOverlay" hidden="true">
 					<Anchors>
-						<Anchor point="CENTER" relativePoint="BOTTOM" x="0" y="2" />
+						<Anchor point="CENTER" relativePoint="BOTTOM" x="0" y="0" />
 					</Anchors>
 				</Texture>
 			</Layer>
