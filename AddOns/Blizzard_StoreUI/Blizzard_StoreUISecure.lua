@@ -201,6 +201,7 @@ Import("BLIZZARD_STORE_VAS_ERROR_LAST_RENAME_TOO_RECENT");
 Import("BLIZZARD_STORE_VAS_ERROR_CUSTOMIZE_ALREADY_REQUESTED");
 Import("BLIZZARD_STORE_VAS_ERROR_LAST_CUSTOMIZE_TOO_SOON");
 Import("BLIZZARD_STORE_VAS_ERROR_FACTION_CHANGE_TOO_SOON");
+Import("BLIZZARD_STORE_VAS_ERROR_ALLIANCE_NOT_ELIGIBLE");
 Import("BLIZZARD_STORE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE");
 Import("BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_MAP_ID");
 Import("BLIZZARD_STORE_VAS_ERROR_BATTLEPAY_DELIVERY_PENDING");
@@ -254,6 +255,7 @@ Import("STORE_CATEGORY_TRIAL_DISABLED_TOOLTIP");
 Import("STORE_CATEGORY_VETERAN_DISABLED_TOOLTIP");
 Import("TOOLTIP_DEFAULT_COLOR");
 Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
+Import("CHAR_CREATE_PVP_TEAMS_VIOLATION");
 Import("CHARACTER_UPGRADE_LOG_OUT_NOW");
 Import("CHARACTER_UPGRADE_POPUP_LATER");
 Import("CHARACTER_UPGRADE_READY");
@@ -298,6 +300,7 @@ Import("BLIZZARD_STORE_VAS_SELECT_ACCOUNT");
 Import("BLIZZARD_STORE_VAS_DIFFERENT_BNET");
 Import("BLIZZARD_STORE_VAS_TRANSFER_REALM");
 Import("BLIZZARD_STORE_VAS_TRANSFER_REALM_CATEGORY_WARNING");
+Import("BLIZZARD_STORE_VAS_TRANSFER_INELIGIBLE_FACTION_WARNING");
 Import("BLIZZARD_STORE_VAS_REALM_NAME");
 Import("BLIZZARD_STORE_VAS_TRANSFER_ACCOUNT");
 Import("BLIZZARD_STORE_VAS_TRANSFER_FACTION_BUNDLE");
@@ -1137,6 +1140,9 @@ local vasErrorData = {
 	[Enum.VasError.MaxCharactersOnServer] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_MAX_CHARACTERS_ON_SERVER,
 	},
+	[Enum.VasError.NoMixedAlliance] = {
+		msg = CHAR_CREATE_PVP_TEAMS_VIOLATION,
+	},
 	[Enum.VasError.DuplicateCharacterName] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_DUPLICATE_CHARACTER_NAME,
 	},
@@ -1148,6 +1154,9 @@ local vasErrorData = {
 	},
 	[Enum.VasError.CharacterTransferTooSoon] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_FACTION_CHANGE_TOO_SOON,
+	},
+	[Enum.VasError.AllianceNotEligible] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_ALLIANCE_NOT_ELIGIBLE,
 	},
 	[Enum.VasError.TooMuchMoneyForLevel] = {
 		msg = function(character)
@@ -3282,9 +3291,8 @@ function StoreVASValidationFrame_OnVasProductComplete(self)
 	end
 	local productInfo = C_StoreSecure.GetProductInfo(productID);
 	if (IsOnGlueScreen()) then
-		-- For Classic, we don't like how this is behaving with FCM. Disabling entirely for now.
-		--[[self:GetParent():Hide();
-		_G.StoreFrame_ShowGlueDialog(string.format(_G.BLIZZARD_STORE_VAS_PRODUCT_READY, productInfo.sharedData.name), guid, realmName, shouldHandle);]]
+		self:GetParent():Hide();
+		_G.StoreFrame_ShowGlueDialog(string.format(_G.BLIZZARD_STORE_VAS_PRODUCT_READY, productInfo.sharedData.name), guid, realmName, shouldHandle);
 	else
 		self:GetParent():Hide();
 
@@ -4433,7 +4441,8 @@ function VASRealmList_BuildAutoCompleteList()
 			local name = realms[i].realmName;
 			local categoryID = realms[i].categoryID;
 			local category = realms[i].category;
-			RealmInfoMap[name] = { rp=rp, pvp=pvp, categoryID=categoryID, category=category };
+			local factionRestriction = realms[i].factionRestriction;
+			RealmInfoMap[name] = { rp=rp, pvp=pvp, categoryID=categoryID, category=category, factionRestriction=factionRestriction };
 			infoTable[#infoTable + 1] = name;
 			DestinationRealmMapping[name] = realms[i].virtualRealmAddress;
 		end
@@ -4468,17 +4477,25 @@ function VASCharacterSelectionTransferRealmEditBoxAutoCompleteButton_OnClick(sel
 	frame.TransferRealmEditbox:SetText(self.info);
 	frame.TransferRealmAutoCompleteBox:Hide();
 
-	-- Show an informative realm category warning if the realm we're transferring to is in a different tab than our currently connected realm.
-	-- A better way to do this would be to get the realm category of the source realm we're transferring from, but that's actually a fair bit more work.
-	-- Just using our current realm connection should be adequate for the vast majority of cases.
-	if (RealmInfoMap[self.info] and RealmInfoMap[self.info].categoryID and RealmInfoMap[self.info].category) then
-		if (RealmInfoMap[self.info].categoryID ~= C_StoreSecure.GetCurrentRealmCategory()) then
-			frame.TransferRealmCheckbox.Warning:SetTextColor(0, 0, 0);
-			frame.TransferRealmCheckbox.Warning:SetText(BLIZZARD_STORE_VAS_TRANSFER_REALM_CATEGORY_WARNING:format("|cffA01919"..RealmInfoMap[self.info].category.."|r"));
-			frame.TransferRealmCheckbox.Warning:Show();
-		else
-			frame.TransferRealmCheckbox.Warning:Hide();
-		end
+	local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
+	local character = characters[SelectedCharacter];
+
+	local realmInfo = RealmInfoMap[self.info];
+
+	if (character and realmInfo and realmInfo.factionRestriction >= 0 and realmInfo.factionRestriction ~= character.faction) then
+		frame.TransferRealmCheckbox.Warning:SetTextColor(_G.RED_FONT_COLOR:GetRGB());
+		frame.TransferRealmCheckbox.Warning:SetText(BLIZZARD_STORE_VAS_TRANSFER_INELIGIBLE_FACTION_WARNING);
+		frame.TransferRealmCheckbox.Warning:Show();
+	elseif (realmInfo and realmInfo.categoryID and realmInfo.category and
+			realmInfo.categoryID ~= C_StoreSecure.GetCurrentRealmCategory()) then
+		-- Show an informative realm category warning if the realm we're transferring to is in a different tab than our currently connected realm.
+		-- A better way to do this would be to get the realm category of the source realm we're transferring from, but that's actually a fair bit more work.
+		-- Just using our current realm connection should be adequate for the vast majority of cases.
+		frame.TransferRealmCheckbox.Warning:SetTextColor(0, 0, 0);
+		frame.TransferRealmCheckbox.Warning:SetText(BLIZZARD_STORE_VAS_TRANSFER_REALM_CATEGORY_WARNING:format("|cffA01919"..RealmInfoMap[self.info].category.."|r"));
+		frame.TransferRealmCheckbox.Warning:Show();
+	else
+		frame.TransferRealmCheckbox.Warning:Hide();
 	end
 end
 
@@ -4506,6 +4523,9 @@ function VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(self, text
 		shownButtons = 1;
 	end
 
+	local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
+	local character = characters[SelectedCharacter];
+
 	local hasMore = (#VAS_AUTO_COMPLETE_ENTRIES - VAS_AUTO_COMPLETE_OFFSET) > VAS_AUTO_COMPLETE_MAX_ENTRIES;
 	for i = 1 + buttonOffset, math.min(VAS_AUTO_COMPLETE_MAX_ENTRIES, (#VAS_AUTO_COMPLETE_ENTRIES - VAS_AUTO_COMPLETE_OFFSET)) + buttonOffset do
 		local button = box.Buttons[i];
@@ -4525,8 +4545,14 @@ function VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(self, text
 		elseif (rpPvpInfo.rp) then
 			tag = _G.VAS_RP_PARENTHESES;
 		end
-		button:SetNormalFontObject("GameFontWhiteTiny2");
-		button:SetHighlightFontObject("GameFontWhiteTiny2");
+		if (character and rpPvpInfo.factionRestriction >= 0 and rpPvpInfo.factionRestriction ~= character.faction) then
+			-- This source-destination pair doesn't allow our current faction. Gray it out.
+			button:SetNormalFontObject("GameFontDisableTiny2");
+			button:SetHighlightFontObject("GameFontDisableTiny2");
+		else
+			button:SetNormalFontObject("GameFontWhiteTiny2");
+			button:SetHighlightFontObject("GameFontWhiteTiny2");
+		end
 		button.Text:SetText(VAS_AUTO_COMPLETE_ENTRIES[entryIndex] .. " " .. tag);
 		button:Show();
 		if (i - buttonOffset == VAS_AUTO_COMPLETE_SELECTION) then
@@ -4963,6 +4989,16 @@ function VASCharacterSelectionTransferGatherAndValidateData()
 
 	if (noCheck) then
 		return;
+	end
+
+	-- If the realm transfer has a faction restriction, validate it.
+	SelectedDestinationRealm = frame.TransferRealmEditbox:GetText();
+	if (SelectedDestinationRealm) then
+		local realmInfo = RealmInfoMap[SelectedDestinationRealm];
+		if (character and realmInfo and realmInfo.factionRestriction >= 0 and realmInfo.factionRestriction ~= character.faction) then
+			-- Error message is shown in VASCharacterSelectionTransferRealmEditBoxAutoCompleteButton_OnClick.
+			return;
+		end
 	end
 
 	button:Enable();

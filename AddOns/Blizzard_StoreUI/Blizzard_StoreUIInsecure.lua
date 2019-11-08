@@ -36,7 +36,8 @@ if (InGlue()) then
 		button1 = OKAY,
 		escapeHides = true,
 		OnAccept = function()
-			local data = GlueDialog.data;
+			-- For Classic, we don't like how this is behaving with FCM. Disabling for now.
+			--[[local data = GlueDialog.data;
 
 			if (not data.shouldHandle) then
 				VASCharacterGUID = nil;
@@ -51,7 +52,7 @@ if (InGlue()) then
 				UpdateCharacterList(true);
 			end
 
-			VASCharacterGUID = data.guid;
+			VASCharacterGUID = data.guid;]]
 		end
 	}
 
