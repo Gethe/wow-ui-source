@@ -276,11 +276,6 @@
 						<Anchor point="CENTER" relativeTo="GuildBankTabLimitBackground" x="0" y="1"/>
 					</Anchors>
 				</FontString>
-				<FontString name="GuildBankCashFlowLabel" inherits="GameFontNormalSmall" text="GUILDBANK_CASHFLOW">
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="GuildBankTabLimitBackground" x="4" y="1"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString name="GuildBankErrorMessage" inherits="GameFontNormal" text="NO_GUILDBANK_TABS">
@@ -596,16 +591,6 @@
 				<Scripts>
 					<OnLoad>
 						SmallMoneyFrame_OnLoad(self, "GUILDBANK");
-					</OnLoad>
-				</Scripts>
-			</Frame>
-			<Frame name="GuildBankCashFlowMoneyFrame" inherits="SmallMoneyFrameTemplate">
-				<Anchors>
-					<Anchor point="RIGHT" relativeTo="GuildBankTabLimitBackground" x="10" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						SmallMoneyFrame_OnLoad(self, "GUILDBANKCASHFLOW");
 					</OnLoad>
 				</Scripts>
 			</Frame>

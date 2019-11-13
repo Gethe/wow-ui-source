@@ -139,6 +139,7 @@
 			<Frame parentKey="CommoditiesList" inherits="AuctionHouseCommoditiesListTemplate" hidden="true">
 				<KeyValues>
 					<KeyValue key="backgroundAtlas" value="auctionhouse-background-auctions" type="string"/>
+					<KeyValue key="searchContext" value="AuctionHouseSearchContext.AuctionsCommodities" type="global"/>
 					<KeyValue key="refreshFrameXOffset" value="-4" type="number"/>
 					<KeyValue key="refreshFrameYOffset" value="133" type="number"/>
 				</KeyValues>

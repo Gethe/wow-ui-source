@@ -45,6 +45,10 @@ end
 
 function AuctionHouseAlignedQuantityInputBoxMixin:SetNextEditBox(nextEditBox)
 	self.nextEditBox = nextEditBox;
+
+	if nextEditBox then
+		nextEditBox.previousEditBox = self;
+	end
 end
 
 

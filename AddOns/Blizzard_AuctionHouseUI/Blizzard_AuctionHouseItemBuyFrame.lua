@@ -39,7 +39,7 @@ function AuctionHouseItemBuyFrameMixin:OnLoad()
 
 	local function ItemBuyListRefreshResults()
 		if self.itemKey ~= nil then
-			C_AuctionHouse.RefreshItemSearchResults(self.itemKey);
+			self:GetAuctionHouseFrame():RefreshSearchResults(AuctionHouseSearchContext.BuyItems, self.itemKey);
 		end
 	end
 
@@ -54,6 +54,7 @@ function AuctionHouseItemBuyFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, AUCTION_HOUSE_ITEM_BUY_FRAME_EVENTS);
 
 	self.ItemList:SetSelectedEntry(nil);
+	self:SetAuction(nil);
 end
 
 function AuctionHouseItemBuyFrameMixin:OnEvent(event, ...)

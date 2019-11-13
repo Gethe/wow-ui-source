@@ -674,6 +674,29 @@ function CommunitiesFrameMixin:SetClubFinderPostingExpirationText(clubId, isGuil
 		else
 			self.PostingExpirationText.ExpiredText:SetText(CLUB_FINDER_COMMUNITY_POSTING_REMOVED_TEXT_SRRS);
 		end
+		local clubInfo = C_Club.GetClubInfo(clubId);
+		local isGuildType = clubInfo and clubInfo.clubType == Enum.ClubType.Guild; 
+		local isCommunityType = clubInfo and clubInfo.clubType == Enum.ClubType.Character;
+
+		local isPostingBanned = C_ClubFinder.IsPostingBanned(clubId);
+		local hasForceDescriptionChange = clubInfo and self:ClubFinderPostingHasActiveFlag(clubId, Enum.ClubFinderClubPostingStatusFlags.ForceDescriptionChange);
+		local hasForceNameChange = clubInfo and ((clubInfo.clubType == Enum.ClubType.Guild and self:GetNeedsGuildNameChange()) or self:ClubFinderPostingHasActiveFlag(clubId, Enum.ClubFinderClubPostingStatusFlags.ForceNameChange));
+
+		if (isPostingBanned) then 
+			if (isGuildType) then
+				self.PostingExpirationText.InfoButton.tooltipText = CLUB_FINDER_BANNED_POSTING_WARNING:format(CLUB_FINDER_TYPE_GUILD);
+			elseif(isCommunityType) then
+				self.PostingExpirationText.InfoButton.tooltipText = CLUB_FINDER_BANNED_POSTING_WARNING:format(CLUB_FINDER_COMMUNITY_TYPE);
+			end
+		elseif(hasForceNameChange) then 
+			if (isGuildType) then
+				self.PostingExpirationText.InfoButton.tooltipText = ERR_CLUB_FINDER_ERROR_TYPE_FLAGGED_RENAME:format(CLUB_FINDER_TYPE_GUILD);
+			elseif(isCommunityType) then
+				self.PostingExpirationText.InfoButton.tooltipText = ERR_CLUB_FINDER_ERROR_TYPE_FLAGGED_RENAME:format(CLUB_FINDER_COMMUNITY_TYPE);
+			end
+		elseif (hasForceDescriptionChange) then 
+			self.PostingExpirationText.InfoButton.tooltipText = CLUB_FINDER_GUILD_POSTING_ALERT_REMOVED_DESC; 
+		end
 		self.PostingExpirationText.ExpiredText:Show();
 		self.PostingExpirationText.InfoButton:Show();
 	elseif (expirationTime) then
@@ -711,7 +734,8 @@ function CommunitiesFrameMixin:ResetAllReportAlerts()
 	self.CommunityPostingChangeFrame:Hide();
 	self.GuildNameAlertFrame:Hide();
 end
-local function ClubFinderPostingHasActiveFlag(clubId, flag)
+
+function CommunitiesFrameMixin:ClubFinderPostingHasActiveFlag(clubId, flag)
 	local postingStatusFlags = C_ClubFinder.GetStatusOfPostingFromClubId(clubId);
 	for _, statusFlag in ipairs(postingStatusFlags) do
 		if (flag == statusFlag) then
@@ -735,11 +759,11 @@ function CommunitiesFrameMixin:DisplayReportedAlerts(clubId)
 	local hasCommunityFinderPermissions = myMemberInfo and myMemberInfo.role and (myMemberInfo.role == Enum.ClubRoleIdentifier.Owner or myMemberInfo.role == Enum.ClubRoleIdentifier.Leader);
 	local finderEnabled = C_ClubFinder.IsEnabled();
 	local isPostingBanned = C_ClubFinder.IsPostingBanned(clubId);
-	local hasForceDescriptionChange = ClubFinderPostingHasActiveFlag(clubId, Enum.ClubFinderClubPostingStatusFlags.ForceDescriptionChange);
-	local hasForceNameChange = ClubFinderPostingHasActiveFlag(clubId, Enum.ClubFinderClubPostingStatusFlags.ForceNameChange);
+	local hasForceDescriptionChange = self:ClubFinderPostingHasActiveFlag(clubId, Enum.ClubFinderClubPostingStatusFlags.ForceDescriptionChange);
+	local hasForceNameChange = self:ClubFinderPostingHasActiveFlag(clubId, Enum.ClubFinderClubPostingStatusFlags.ForceNameChange);
 
 	local needsGuildNameChange = clubInfo.clubType == Enum.ClubType.Guild and (self:GetNeedsGuildNameChange() or hasForceNameChange) and (IsGuildLeader() or C_GuildInfo.IsGuildOfficer());
-	local needsGuildPostingMessageChange = finderEnabled and clubInfo.clubType == Enum.ClubType.Guild and recruitingClubInfo and recruitingClubInfo.clubForceRemoved and (IsGuildLeader() or C_GuildInfo.IsGuildOfficer()) and hasForceDescriptionChange and not isPostingBanned;
+	local needsGuildPostingMessageChange = finderEnabled and clubInfo.clubType == Enum.ClubType.Guild and recruitingClubInfo and (IsGuildLeader() or C_GuildInfo.IsGuildOfficer()) and hasForceDescriptionChange and not isPostingBanned;
 	local needsCommunityPostingMessageChange = finderEnabled and clubInfo.clubType == Enum.ClubType.Character and recruitingClubInfo and hasCommunityFinderPermissions and hasForceDescriptionChange and not isPostingBanned;
 	local needsCommunityNameChange = finderEnabled and clubInfo.clubType == Enum.ClubType.Character and recruitingClubInfo and hasCommunityFinderPermissions and hasForceNameChange and not isPostingBanned; 
 	local displayMode = self:GetDisplayMode();

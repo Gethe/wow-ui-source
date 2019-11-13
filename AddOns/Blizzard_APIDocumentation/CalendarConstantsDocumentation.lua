@@ -166,6 +166,19 @@ local CalendarConstants =
 			},
 		},
 		{
+			Name = "CalendarHolidayFilterType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Weekly", Type = "CalendarHolidayFilterType", EnumValue = 0 },
+				{ Name = "Darkmoon", Type = "CalendarHolidayFilterType", EnumValue = 1 },
+				{ Name = "Battleground", Type = "CalendarHolidayFilterType", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "CalendarInviteBits",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -272,6 +285,20 @@ local CalendarConstants =
 				{ Name = "Signup", Type = "CalendarWebActionType", EnumValue = 4 },
 				{ Name = "Tentative", Type = "CalendarWebActionType", EnumValue = 5 },
 				{ Name = "TentativeSignup", Type = "CalendarWebActionType", EnumValue = 6 },
+			},
+		},
+		{
+			Name = "HolidayFlags",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 1,
+			MaxValue = 8,
+			Fields =
+			{
+				{ Name = "IsRegionwide", Type = "HolidayFlags", EnumValue = 1 },
+				{ Name = "DontShowInCalendar", Type = "HolidayFlags", EnumValue = 2 },
+				{ Name = "DontDisplayEnd", Type = "HolidayFlags", EnumValue = 4 },
+				{ Name = "DontDisplayBanner", Type = "HolidayFlags", EnumValue = 8 },
 			},
 		},
 	},

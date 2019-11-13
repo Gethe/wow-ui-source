@@ -70,17 +70,17 @@ local AZERITE_ESSENCE_FRAME_EVENTS = {
 };
 
 local MILESTONE_LOCATIONS = {
-	[1] = { left = 237, top = -235 },
-	[2] = { left = 100, top = -280 },
-	[3] = { left = 140, top = -350 },
-	[4] = { left = 235, top = -380 },
-	[5] = { left = 320, top = -355 },
-	[6] = { left = 370, top = -280 },	
-	[7] = { left = 370, top = -185 },
-	[8] = { left = 320, top = -115 },
-	[9] = { left = 240, top = -94 },
-	[10] = { left = 150, top = -115 },
-	[11] = { left = 100, top = -185 },
+	[1] = { left = 238, top = -235 },
+	[2] = { left = 110, top = -292 },
+	[3] = { left = 155, top = -349 },
+	[4] = { left = 237, top = -375 },
+	[5] = { left = 321, top = -349 },
+	[6] = { left = 372, top = -277 },	
+	[7] = { left = 372, top = -191 },
+	[8] = { left = 322, top = -121 },
+	[9] = { left = 238, top = -92 },
+	[10] = { left = 156, top = -121 },
+	[11] = { left = 103, top = -191 },
 };
 
 local LOCKED_RUNE_ATLASES = { "heartofazeroth-slot-minor-unlearned-bottomleft", "heartofazeroth-slot-minor-unlearned-topright", "heartofazeroth-slot-minor-unlearned-3" };

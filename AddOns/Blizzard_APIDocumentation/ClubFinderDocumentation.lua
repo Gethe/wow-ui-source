@@ -837,7 +837,6 @@ local ClubFinder =
 				{ Name = "lastPosterGUID", Type = "string", Nilable = false },
 				{ Name = "clubId", Type = "string", Nilable = false },
 				{ Name = "lastUpdatedTime", Type = "number", Nilable = false },
-				{ Name = "clubForceRemoved", Type = "bool", Nilable = false },
 			},
 		},
 	},

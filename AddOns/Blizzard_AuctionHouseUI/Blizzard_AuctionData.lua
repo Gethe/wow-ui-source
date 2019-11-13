@@ -133,15 +133,15 @@ function AuctionCategoryMixin:AddFilter(classID, subClassID, inventoryType)
 end
 
 do
-	local function GenerateSubClassesHelper(self, classID, ...)
-		for i = 1, select("#", ...) do
-			local subClassID = select(i, ...);
+	local function GenerateSubClassesHelper(self, classID, subClasses)
+		for i = 1, #subClasses do
+			local subClassID = subClasses[i];
 			self:CreateSubCategoryAndFilter(classID, subClassID);
 		end
 	end
 
 	function AuctionCategoryMixin:GenerateSubCategoriesAndFiltersFromSubClass(classID)
-		GenerateSubClassesHelper(self, classID, GetAuctionItemSubClasses(classID));
+		GenerateSubClassesHelper(self, classID, C_AuctionHouse.GetAuctionItemSubClasses(classID));
 	end
 end
 

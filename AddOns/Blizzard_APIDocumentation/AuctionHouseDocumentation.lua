@@ -66,6 +66,14 @@ local AuctionHouse =
 			Type = "Function",
 		},
 		{
+			Name = "CancelSell",
+			Type = "Function",
+		},
+		{
+			Name = "CloseAuctionHouse",
+			Type = "Function",
+		},
+		{
 			Name = "ConfirmCommoditiesPurchase",
 			Type = "Function",
 
@@ -73,6 +81,20 @@ local AuctionHouse =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAuctionItemSubClasses",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "classID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "subClasses", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{
@@ -725,6 +747,7 @@ local AuctionHouse =
 		{
 			Name = "ReplicateItems",
 			Type = "Function",
+			Documentation = { "This function should be used in place of an 'allItem' QueryAuctionItems call to query the entire auction house." },
 		},
 		{
 			Name = "RequestMoreBrowseResults",
@@ -789,6 +812,7 @@ local AuctionHouse =
 		{
 			Name = "SendSearchQuery",
 			Type = "Function",
+			Documentation = { "Search queries are restricted to 100 calls per minute. These should not be used to query the entire auction house. See ReplicateItems" },
 
 			Arguments =
 			{
@@ -800,6 +824,7 @@ local AuctionHouse =
 		{
 			Name = "SendSellSearchQuery",
 			Type = "Function",
+			Documentation = { "Search queries are restricted to 100 calls per minute. These should not be used to query the entire auction house. See ReplicateItems" },
 
 			Arguments =
 			{
@@ -1158,8 +1183,8 @@ local AuctionHouse =
 			Fields =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
-				{ Name = "itemLevel", Type = "number", Nilable = false },
-				{ Name = "itemSuffix", Type = "number", Nilable = false },
+				{ Name = "itemLevel", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "itemSuffix", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "battlePetSpeciesID", Type = "number", Nilable = false, Default = 0 },
 			},
 		},

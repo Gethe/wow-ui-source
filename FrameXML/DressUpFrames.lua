@@ -62,8 +62,7 @@ end
 
 function DressUpBattlePetLink(link)
 	if( link ) then 
-		
-		local _, _, _, linkType, linkID, _, _, _, _, _, battlePetID = strsplit(":|H", link);
+		local _, _, _, linkType, linkID, _, _, _, _, _, battlePetID, battlePetDisplayID = strsplit(":|H", link);
 		if ( linkType == "item") then
 			local _, _, _, creatureID, _, _, _, _, _, _, _, displayID, speciesID = C_PetJournal.GetPetInfoByItemID(tonumber(linkID));
 			if (creatureID and displayID) then
@@ -76,6 +75,7 @@ function DressUpBattlePetLink(link)
 			else
 				speciesID = tonumber(linkID);
 				local _, _, _, creatureID, _, _, _, _, _, _, _, displayID = C_PetJournal.GetPetInfoBySpeciesID(speciesID);
+				displayID = (battlePetDisplayID and battlePetDisplayID ~= "0") and battlePetDisplayID or displayID;
 				return DressUpBattlePet(creatureID, displayID, speciesID);
 			end
 		end

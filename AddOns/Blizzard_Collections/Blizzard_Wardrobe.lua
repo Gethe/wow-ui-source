@@ -83,7 +83,7 @@ function WardrobeTransmogFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "UNIT_MODEL_CHANGED" ) then
 		local unit = ...;
-		if ( unit == "player" and WardrobeTransmogFrame.ModelScene:CanSetUnit("player") ) then
+		if ( unit == "player" and IsUnitModelReadyForUI("player") ) then
 			local hasAlternateForm, inAlternateForm = HasAlternateForm();
 			if ( self.inAlternateForm ~= inAlternateForm ) then
 				self.inAlternateForm = inAlternateForm;
@@ -107,6 +107,7 @@ function WardrobeTransmogFrame_OnShow(self)
 	end
 	local FORCE_RESET_MODEL = true;
 	local RESET_SETTINGS = true;
+	WardrobeTransmogFrame.ModelScene:TransitionToModelSceneID(290, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
 	WardrobeTransmogFrame_EvaluateModel(FORCE_RESET_MODEL, RESET_SETTINGS);
 end
 
@@ -128,8 +129,6 @@ function WardrobeTransmogFrame_OnUpdate(self)
 end
 
 function WardrobeTransmogFrame_EvaluateModel(forceResetModel, resetSettings)
-	WardrobeTransmogFrame.ModelScene:TransitionToModelSceneID(290, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
-	
 	local creatureDisplayID;
 	local slotButton = WardrobeTransmogFrame.selectedSlotButton;
 	if slotButton and (slotButton.slot == "MAINHANDSLOT" or slotButton.slot == "SECONDARYHANDSLOT") then
@@ -1171,7 +1170,7 @@ function WardrobeItemsCollectionMixin:ChangeModelsSlot(oldSlot, newSlot)
 		end
 	end
 
-	if ( reloadModel and not self.Models[1]:CanSetUnit("player") ) then
+	if ( reloadModel and not IsUnitModelReadyForUI("player") ) then
 		WardrobeCollectionFrame.updateOnModelChanged = true;
 		for i = 1, #self.Models do
 			self.Models[i]:ClearModel();
@@ -1221,7 +1220,7 @@ function WardrobeItemsCollectionMixin:RefreshCameras()
 end
 
 function WardrobeItemsCollectionMixin:OnUnitModelChangedEvent()
-	if ( self.Models[1]:CanSetUnit("player") ) then
+	if ( IsUnitModelReadyForUI("player") ) then
 		self:ChangeModelsSlot(nil, self:GetActiveSlot());
 		self:UpdateItems();
 		return true;
@@ -3370,7 +3369,7 @@ function WardrobeSetsCollectionMixin:OnSearchUpdate()
 end
 
 function WardrobeSetsCollectionMixin:OnUnitModelChangedEvent()
-	if ( self.Model:CanSetUnit("player") ) then
+	if ( IsUnitModelReadyForUI("player") ) then
 		self.Model:RefreshUnit();
 		-- clearing cameraID so it resets zoom/pan
 		self.Model.cameraID = nil;
@@ -4050,7 +4049,7 @@ function WardrobeSetsTransmogMixin:GetFirstMatchingSetID(sourceIndex)
 end
 
 function WardrobeSetsTransmogMixin:OnUnitModelChangedEvent()
-	if ( self.Models[1]:CanSetUnit("player") ) then
+	if ( IsUnitModelReadyForUI("player") ) then
 		for i, model in ipairs(self.Models) do
 			model:RefreshUnit();
 			model.setID = nil;

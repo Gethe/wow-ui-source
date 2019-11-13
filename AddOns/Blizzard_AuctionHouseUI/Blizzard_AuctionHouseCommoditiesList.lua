@@ -19,7 +19,7 @@ function AuctionHouseCommoditiesListMixin:OnLoad()
 
 	local function CommoditiesListRefreshResults()
 		if self.itemID then
-			C_AuctionHouse.RefreshCommoditySearchResults(self.itemID);
+			self:GetAuctionHouseFrame():RefreshSearchResults(self.searchContext, AuctionHouseUtil.GetCommoditiesItemKey(self.itemID));
 		end
 	end
 

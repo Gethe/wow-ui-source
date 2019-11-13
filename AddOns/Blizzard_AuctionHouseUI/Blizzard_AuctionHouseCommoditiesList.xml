@@ -4,6 +4,11 @@
 
 	<Frame name="AuctionHouseCommoditiesListTemplate" mixin="AuctionHouseCommoditiesListMixin" inherits="AuctionHouseItemListTemplate" virtual="true">
 		<KeyValues>
+			<!--
+			searchContext: What search context should be used for this list when refreshing search results.
+			<KeyValue key="searchContext" value="AuctionHouseSearchContext.BuyCommodities" type="global"/>
+			-->
+
 			<KeyValue key="refreshFrameXOffset" value="-4" type="number"/>
 			<KeyValue key="refreshFrameYOffset" value="30" type="number"/>
 		</KeyValues>
@@ -20,12 +25,14 @@
 		<KeyValues>
 			<KeyValue key="backgroundAtlas" value="auctionhouse-background-buy-commodities-market" type="string"/>
 			<KeyValue key="backgroundYOffset" value="0" type="number"/>
+			<KeyValue key="searchContext" value="AuctionHouseSearchContext.BuyCommodities" type="global"/>
 		</KeyValues>
 	</Frame>
 
 	<Frame name="AuctionHouseCommoditiesSellListTemplate" mixin="AuctionHouseCommoditiesSellListMixin" inherits="AuctionHouseCommoditiesListTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="backgroundAtlas" value="auctionhouse-background-sell-right" type="string"/>
+			<KeyValue key="searchContext" value="AuctionHouseSearchContext.SellCommodities" type="global"/>
 			<KeyValue key="refreshFrameXOffset" value="-8" type="number"/>
 			<KeyValue key="refreshFrameYOffset" value="30" type="number"/>
 		</KeyValues>

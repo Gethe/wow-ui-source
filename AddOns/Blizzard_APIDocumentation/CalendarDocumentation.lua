@@ -738,6 +738,15 @@ local Calendar =
 			},
 		},
 		{
+			Name = "IsEventOpen",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isOpen", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "MassInviteCommunity",
 			Type = "Function",
 

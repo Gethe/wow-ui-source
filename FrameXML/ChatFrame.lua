@@ -301,7 +301,7 @@ CHAT_CATEGORY_LIST = {
 	RAID = { "RAID_LEADER", "RAID_WARNING" },
 	GUILD = { "GUILD_ACHIEVEMENT", "GUILD_ITEM_LOOTED" },
 	WHISPER = { "WHISPER_INFORM", "AFK", "DND" },
-	CHANNEL = { "CHANNEL_JOIN", "CHANNEL_LEAVE", "CHANNEL_NOTICE", "CHANNEL_USER" },
+	CHANNEL = { "CHANNEL_JOIN", "CHANNEL_LEAVE", "CHANNEL_NOTICE", "CHANNEL_USER", "CHANNEL_NOTICE_USER" },
 	INSTANCE_CHAT = { "INSTANCE_CHAT_LEADER" },
 	BN_WHISPER = { "BN_WHISPER_INFORM" },
 };
@@ -3453,7 +3453,10 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				-- TWO users in this notice (E.G. x kicked y)
 				self:AddMessage(format(globalstring, arg8, arg4, arg2, arg5), info.r, info.g, info.b, info.id);
 			elseif ( arg1 == "INVITE" ) then
-				self:AddMessage(format(globalstring, arg4, arg2), info.r, info.g, info.b, info.id);
+				local playerLink = GetPlayerLink(arg2, ("[%s]"):format(arg2), arg11);
+				local accessID = ChatHistory_GetAccessID(chatGroup, chatTarget);
+				local typeID = ChatHistory_GetAccessID(infoType, chatTarget, arg12);
+				self:AddMessage(format(globalstring, arg4, playerLink), info.r, info.g, info.b, info.id, accessID, typeID);
 			else
 				self:AddMessage(format(globalstring, arg8, arg4, arg2), info.r, info.g, info.b, info.id);
 			end
@@ -4774,8 +4777,7 @@ local function processChatType(editBox, msg, index, send)
 end
 
 function ChatEdit_HandleChatType(editBox, msg, command, send)
-	local channel = strmatch(command, "/([0-9]+)");
-
+	local channel = strmatch(command, "/([0-9]+)$");
 	if( channel ) then
 		local chanNum = tonumber(channel);
 		if ( chanNum > 0 and chanNum <= MAX_WOW_CHAT_CHANNELS ) then

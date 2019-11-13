@@ -537,3 +537,7 @@ function AuctionHouseUtil.IsOwnedAuction(rowData)
 	return (#rowData.owners == 1 and (rowData.containsOwnerItem or rowData.containsAccountItem)) or
 			(#rowData.owners == 2 and (rowData.containsOwnerItem and rowData.containsAccountItem));
 end
+
+function AuctionHouseUtil.GetCommoditiesItemKey(commoditiesID)
+	return { itemID = commoditiesID };
+end

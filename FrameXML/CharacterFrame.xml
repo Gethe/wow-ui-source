@@ -306,7 +306,7 @@
 								</Layers>
 								<Scripts>
 									<OnLoad function="CharacterFrameCorruption_OnLoad"/>
-									<OnEvent function="CharacterFrameCorruption_UpdateVisibility"/>
+									<OnEvent function="CharacterFrameCorruption_OnEvent"/>
 									<OnEnter function="CharacterFrameCorruption_OnEnter"/>
 									<OnLeave function="CharacterFrameCorruption_OnLeave"/>
 								</Scripts>

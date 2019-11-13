@@ -1,7 +1,7 @@
 
 local MaxNumActiveBidsTracked = 100;
 
-UIPanelWindows["AuctionHouseFrame"] = { area = "doublewide", pushable = 0, xoffset = 20, yoffset = -0, showFailedFunc = CloseAuctionHouse, };
+UIPanelWindows["AuctionHouseFrame"] = { area = "doublewide", pushable = 0, xoffset = 20, yoffset = -0, showFailedFunc = C_AuctionHouse.CloseAuctionHouse, };
 
 StaticPopupDialogs["BUYOUT_AUCTION"] = {
 	text = BUYOUT_AUCTION_CONFIRMATION,
@@ -344,7 +344,7 @@ function AuctionHouseFrameMixin:OnHide()
 	self.CommoditiesSellList:SetItemID(nil);
 	self.ItemSellFrame:SetItem(nil);
 
-	CloseAuctionHouse();
+	C_AuctionHouse.CloseAuctionHouse();
 
 	PlaySound(SOUNDKIT.AUCTION_WINDOW_CLOSE);
 end
@@ -566,8 +566,6 @@ function AuctionHouseFrameMixin:SelectBrowseResult(browseResult)
 		self.ItemBuyFrame:SetItemKey(itemKey);
 		self:SetDisplayMode(AuctionHouseFrameDisplayMode.ItemBuy);
 	end
-
-	self:RefreshSearchResults(searchContext, itemKey);
 end
 
 function AuctionHouseFrameMixin:GetSortOrderState(searchContext, sortOrder)

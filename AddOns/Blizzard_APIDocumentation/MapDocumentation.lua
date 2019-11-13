@@ -385,6 +385,20 @@ local Map =
 			LiteralName = "NEW_WMO_CHUNK",
 		},
 		{
+			Name = "WorldMapClose",
+			Type = "Event",
+			LiteralName = "WORLD_MAP_CLOSE",
+		},
+		{
+			Name = "WorldMapOpen",
+			Type = "Event",
+			LiteralName = "WORLD_MAP_OPEN",
+			Payload =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "ZoneChanged",
 			Type = "Event",
 			LiteralName = "ZONE_CHANGED",

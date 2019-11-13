@@ -107,7 +107,7 @@ function AuctionHouseBuyDialogMixin:OnHide()
 
 	C_AuctionHouse.CancelCommoditiesPurchase();
 
-	C_AuctionHouse.RefreshCommoditySearchResults(self.itemID);
+	self:GetParent():GetAuctionHouseFrame():RefreshSearchResults(AuctionHouseSearchContext.BuyCommodities, AuctionHouseUtil.GetCommoditiesItemKey(self.itemID));
 end
 
 function AuctionHouseBuyDialogMixin:OnUpdate()

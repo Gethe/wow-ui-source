@@ -75,7 +75,7 @@
 				<HitRectInsets left="9" right="7" top="-7" bottom="10"/>
 				<Scripts>
 					<OnClick>
-						CancelSell();
+						C_AuctionHouse.CancelSell();
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\CancelButton-Up"/>

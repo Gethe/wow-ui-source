@@ -469,6 +469,7 @@ function RaidGroupFrame_Update()
 
 				-- Anchor button to slot
 				if ( MOVING_RAID_MEMBER ~= button  ) then
+					button:ClearAllPoints();
 					button:SetPoint("TOPLEFT", button.slot, "TOPLEFT", 0, 0);
 				end
 
@@ -584,8 +585,6 @@ function RaidGroupButton_OnDragStart(raidButton)
 	local cursorX, cursorY = GetCursorPosition();
 	local uiScale = UIParent:GetScale();
 	raidButton:StartMoving();
-	raidButton:ClearAllPoints();
-	raidButton:SetPoint("CENTER", UIPARENT, "BOTTOMLEFT", cursorX / uiScale, cursorY / uiScale);
 	MOVING_RAID_MEMBER = raidButton;
 end
 
@@ -595,6 +594,9 @@ function RaidGroupButton_OnDragStop(raidButton)
 	end
 
 	raidButton:StopMovingOrSizing();
+	raidButton:ClearAllPoints();
+	raidButton:SetPoint("TOPLEFT", raidButton.slot, "TOPLEFT", 0, 0);
+
 	MOVING_RAID_MEMBER = nil;
 	if ( TARGET_RAID_SLOT and TARGET_RAID_SLOT:GetParent():GetID() ~= raidButton.subgroup ) then
 		if (TARGET_RAID_SLOT.button) then
@@ -611,8 +613,6 @@ function RaidGroupButton_OnDragStop(raidButton)
 		if ( TARGET_RAID_SLOT ) then
 			TARGET_RAID_SLOT:UnlockHighlight();
 		end
-		raidButton:ClearAllPoints();
-		raidButton:SetPoint("TOPLEFT", raidButton.slot, "TOPLEFT", 0, 0);
 	end
 end
 

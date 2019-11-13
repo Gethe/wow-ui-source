@@ -59,8 +59,6 @@ function AuctionHouseItemSellFrameMixin:OnLoad()
 	self.SecondaryPriceInput:SetOnValueChangedCallback(function()
 		self:UpdatePostState();
 	end);
-
-	self.SecondaryPriceInput:SetNextEditBox(self.PriceInput.MoneyInputFrame.GoldBox);
 end
 
 function AuctionHouseItemSellFrameMixin:OnShow()
@@ -181,7 +179,7 @@ function AuctionHouseItemSellFrameMixin:InitializeItemSellList()
 
 	local function ItemSellListRefreshResults()
 		if self.listDisplayedItemKey ~= nil then
-			C_AuctionHouse.RefreshItemSearchResults(self.listDisplayedItemKey);
+			self:GetAuctionHouseFrame():RefreshSearchResults(self:GetSearchContext(), self.listDisplayedItemKey);
 		end
 	end
 
@@ -283,6 +281,7 @@ end
 function AuctionHouseItemSellFrameMixin:UpdateFocusTabbing()
 	if self.SecondaryPriceInput:IsShown() then
 		self.QuantityInput:SetNextEditBox(self.SecondaryPriceInput.MoneyInputFrame.GoldBox);
+		self.SecondaryPriceInput:SetNextEditBox(self.PriceInput.MoneyInputFrame.GoldBox);
 		self.PriceInput:SetNextEditBox(self.QuantityInput:IsShown() and self.QuantityInput.InputBox or self.SecondaryPriceInput.MoneyInputFrame.GoldBox);
 	else
 		self.QuantityInput:SetNextEditBox(self.PriceInput.MoneyInputFrame.GoldBox);

@@ -328,7 +328,7 @@ function AuctionHouseAuctionsFrameMixin:InitializeItemList()
 
 	local function AuctionsItemListRefreshResults()
 		if self.itemKey ~= nil then
-			C_AuctionHouse.RefreshItemSearchResults(self.itemKey);
+			self:GetAuctionHouseFrame():RefreshSearchResults(self:GetSearchContext(), self.itemKey);
 		end
 	end
 
@@ -346,6 +346,12 @@ function AuctionHouseAuctionsFrameMixin:InitializeCommoditiesList()
 		self:OnCommoditySearchResultSelected(commoditySearchResult);
 		return true;
 	end);
+
+	local function AuctionsCommoditiesList_GetAuctionHouseFrame(commoditiesList)
+		return commoditiesList:GetParent():GetAuctionHouseFrame();
+	end
+
+	self.CommoditiesList.GetAuctionHouseFrame = AuctionsCommoditiesList_GetAuctionHouseFrame;
 end
 
 function AuctionHouseAuctionsFrameMixin:SetItemKey(itemKey)

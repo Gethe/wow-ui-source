@@ -157,8 +157,13 @@ function AuctionHouseBrowseResultsFrameMixin:OnBrowseResultSelected(browseResult
 			local _, _, hyperlinkString = ExtractHyperlinkString(browseResult.appearanceLink);
 			DressUpTransmogLink(hyperlinkString);
 		else
-			local _, itemLink = GetItemInfo(browseResult.itemKey.itemID);
-			DressUpLink(itemLink);
+			local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(browseResult.itemKey);
+			if itemKeyInfo and itemKeyInfo.battlePetLink then
+				DressUpBattlePetLink(itemKeyInfo.battlePetLink);
+			else
+				local _, itemLink = GetItemInfo(browseResult.itemKey.itemID);
+				DressUpLink(itemLink);
+			end
 		end
 	else
 		self:GetAuctionHouseFrame():SelectBrowseResult(browseResult);

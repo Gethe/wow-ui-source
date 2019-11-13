@@ -128,7 +128,7 @@ UIChildWindows = {
 
 function UpdateUIParentRelativeToDebugMenu()
 	local debugMenuOffset = DebugMenu and DebugMenu.IsVisible() and -DebugMenu.GetMenuHeight() or 0;
-	local revealTimeTrackOffset = C_Reveal:IsCapturing() and -C_Reveal:GetTimeTrackHeight() or 0;
+	local revealTimeTrackOffset = C_Reveal and C_Reveal:IsCapturing() and -C_Reveal:GetTimeTrackHeight() or 0;
 	local topOffset = debugMenuOffset + revealTimeTrackOffset;
 	UIParent:SetPoint("TOPLEFT", 0, topOffset);
 end

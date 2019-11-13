@@ -16,6 +16,10 @@ do
 	-- GetAuctionItemLink(type, index) 				-> C_AuctionHouse.GetReplicateItemLink(index)
 	-- GetAuctionItemBattlePetInfo(type, index) 	-> C_AuctionHouse.GetReplicateItemBattlePetInfo(index)
 	-- GetAuctionItemTimeLeft(type, index) 			-> C_AuctionHouse.GetReplicateItemTimeLeft(index)
+	--
+	-- Important note: For querying the entire auction house, these APIs should be used instead of the other new C_AuctionHouse APIs,
+	-- as those are throttled to smaller limits and will not allow an entire AH dump.
+	--
 end
 
 -- unit alternate power

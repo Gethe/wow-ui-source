@@ -273,10 +273,13 @@ function LargeMoneyInputFrameMixin:OnLoad()
 		self.SilverBox:SetPoint("RIGHT", self.CopperBox, "RIGHT");
 	
 		self.GoldBox.nextEditBox = self.SilverBox;
+		self.SilverBox.previousEditBox = self.GoldBox;
 		self.SilverBox.nextEditBox = self.nextEditBox;
 	else
 		self.GoldBox.nextEditBox = self.SilverBox;
+		self.SilverBox.previousEditBox = self.GoldBox;
 		self.SilverBox.nextEditBox = self.CopperBox;
+		self.CopperBox.previousEditBox = self.GoldBox;
 		self.CopperBox.nextEditBox = self.nextEditBox;
 	end
 end
@@ -284,8 +287,16 @@ end
 function LargeMoneyInputFrameMixin:SetNextEditBox(nextEditBox)
 	if self.hideCopper then
 		self.SilverBox.nextEditBox = nextEditBox or self.GoldBox;
+
+		if nextEditBox then
+			nextEditBox.previousEditBox = self.SilverBox;
+		end
 	else
 		self.CopperBox.nextEditBox = nextEditBox or self.GoldBox;
+
+		if nextEditBox then
+			nextEditBox.previousEditBox = self.CopperBox;
+		end
 	end
 end
 

@@ -82,6 +82,7 @@ end
 -- refreshResultsFunc: Function to call when the fresh button is pressed to refresh results.
 function AuctionHouseItemListMixin:SetRefreshFrameFunctions(totalQuantityFunc, refreshResultsFunc)
 	self.totalQuantityFunc = totalQuantityFunc;
+	self.refreshResultsFunc = refreshResultsFunc;
 	self.RefreshFrame:SetRefreshCallback(refreshResultsFunc);
 end
 
@@ -200,8 +201,9 @@ function AuctionHouseItemListMixin:OnShow()
 	self:UpdateTableBuilderLayout();
 	self:RefreshScrollFrame();
 
-	self.updateTime = 0;
-	self.dotCount = 0;
+	if self.refreshResultsFunc then
+		self.refreshResultsFunc();
+	end
 end
 
 function AuctionHouseItemListMixin:OnUpdate()

@@ -1139,6 +1139,15 @@ local CommentatorFrame =
 			LiteralName = "COMMENTATOR_ENTER_WORLD",
 		},
 		{
+			Name = "CommentatorImmediateFovUpdate",
+			Type = "Event",
+			LiteralName = "COMMENTATOR_IMMEDIATE_FOV_UPDATE",
+			Payload =
+			{
+				{ Name = "fov", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "CommentatorMapUpdate",
 			Type = "Event",
 			LiteralName = "COMMENTATOR_MAP_UPDATE",

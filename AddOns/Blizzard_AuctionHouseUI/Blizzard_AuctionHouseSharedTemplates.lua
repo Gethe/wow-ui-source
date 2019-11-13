@@ -119,7 +119,12 @@ function AuctionHouseItemDisplayMixin:OnClick(button)
 			local favoriteDropDown = self.auctionHouseFrame:GetFavoriteDropDown();
 			AuctionHouseFavoriteDropDownCallback(favoriteDropDown, itemKey, C_AuctionHouse.IsFavoriteItem(itemKey));
 		elseif button == "LeftButton" and IsModifiedClick("DRESSUP") then
-			DressUpLink(self:GetItemLink());
+			local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(itemKey);
+			if itemKeyInfo and itemKeyInfo.battlePetLink then
+				DressUpBattlePetLink(itemKeyInfo.battlePetLink);
+			else
+				DressUpLink(self:GetItemLink());
+			end
 		end
 	end
 end
