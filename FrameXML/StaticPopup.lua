@@ -2509,6 +2509,15 @@ StaticPopupDialogs["ADD_IGNORE"] = {
 	whileDead = 1,
 	hideOnEscape = 1
 };
+
+local function ClubInviteDisabledOnEnter(self) 
+	if(not self:IsEnabled()) then 
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+		GameTooltip_AddColoredLine(GameTooltip, CLUB_FINDER_MAX_MEMBER_COUNT_HIT, RED_FONT_COLOR, true);
+		GameTooltip:Show();
+	end
+end 
+
 StaticPopupDialogs["ADD_GUILDMEMBER"] = {
 	text = ADD_GUILDMEMBER_LABEL,
 	button1 = ACCEPT,
@@ -2520,12 +2529,43 @@ StaticPopupDialogs["ADD_GUILDMEMBER"] = {
 	OnAccept = function(self)
 		GuildInvite(self.editBox:GetText());
 	end,
-	OnShow = function(self)
+	OnShow = function(self, data)
 		self.editBox:SetFocus();
+
+		self.button1:SetMotionScriptsWhileDisabled(true);
+		self.button1:SetScript("OnEnter", function(self)
+			ClubInviteDisabledOnEnter(self);
+		end );
+		self.button1:SetScript("OnLeave", GameTooltip_Hide);
+		if (self.extraButton) then 
+			self.extraButton:SetMotionScriptsWhileDisabled(true);
+			self.extraButton:SetScript("OnEnter", function(self)
+				ClubInviteDisabledOnEnter(self);
+			end );
+			self.extraButton:SetScript("OnLeave", GameTooltip_Hide);
+		end
+		local clubInfo = C_Club.GetClubInfo(data.clubId);
+		if(clubInfo and clubInfo.memberCount and clubInfo.memberCount >= C_Club.GetClubCapacity()) then
+			self.button1:Disable();
+			if (self.extraButton) then 
+				self.extraButton:Disable();
+			end
+		else 
+			self.button1:Enable(); 
+			if (self.extraButton) then 
+				self.extraButton:Enable();
+			end
+		end
 	end,
 	OnHide = function(self)
 		ChatEdit_FocusActiveWindow();
 		self.editBox:SetText("");
+		self.button1:SetScript("OnEnter", nil );
+		self.button1:SetScript("OnLeave", nil);
+		if (self.extraButton) then 
+			self.extraButton:SetScript("OnEnter", nil );
+			self.extraButton:SetScript("OnLeave", nil);
+		end
 	end,
 	EditBoxOnEnterPressed = function(self)
 		local parent = self:GetParent();
@@ -4121,7 +4161,6 @@ StaticPopupDialogs["CLUB_FINDER_ENABLED_DISABLED"] = {
 	hideOnEscape = 1,
 }
 
-
 StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"] = {
 	text = INVITE_COMMUNITY_MEMBER_POPUP_INVITE_TEXT,
 	subText = INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_BTAG,
@@ -4153,10 +4192,40 @@ StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"] = {
 			self.SubText:SetText(INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_CHARACTER);
 			self.editBox.Instructions:SetText("");
 		end
+		self.button1:SetMotionScriptsWhileDisabled(true);
+		self.button1:SetScript("OnEnter", function(self)
+			ClubInviteDisabledOnEnter(self);
+		end );
+		self.button1:SetScript("OnLeave", GameTooltip_Hide);
+		if (self.extraButton) then 
+			self.extraButton:SetMotionScriptsWhileDisabled(true);
+			self.extraButton:SetScript("OnEnter", function(self)
+				ClubInviteDisabledOnEnter(self);
+			end );
+			self.extraButton:SetScript("OnLeave", GameTooltip_Hide);
+		end
+
+		if(clubInfo and clubInfo.memberCount and clubInfo.memberCount >= C_Club.GetClubCapacity()) then
+			self.button1:Disable();
+			if (self.extraButton) then 
+				self.extraButton:Disable();
+			end
+		else 
+			self.button1:Enable(); 
+			if (self.extraButton) then 
+				self.extraButton:Enable();
+			end
+		end
 	end,
 	OnHide = function(self)
 		ChatEdit_FocusActiveWindow();
 		self.editBox:SetText("");
+		self.button1:SetScript("OnEnter", nil );
+		self.button1:SetScript("OnLeave", nil);
+		if (self.extraButton) then 
+			self.extraButton:SetScript("OnEnter", nil );
+			self.extraButton:SetScript("OnLeave", nil);
+		end
 	end,
 	EditBoxOnEnterPressed = function(self)
 		self:GetParent().button1:Click();
@@ -4169,6 +4238,7 @@ StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"] = {
 
 StaticPopupDialogs["INVITE_COMMUNITY_MEMBER_WITH_INVITE_LINK"] = Mixin({
 	extraButton = INVITE_COMMUNITY_MEMBER_POPUP_OPEN_INVITE_MANAGER,
+
 	OnExtraButton = function(self, data)
 		CommunitiesTicketManagerDialog_Open(data.clubId, data.streamId);
 	end,

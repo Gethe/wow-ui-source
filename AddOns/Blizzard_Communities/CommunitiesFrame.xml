@@ -139,9 +139,11 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(self, ANCHOR_RIGHT, 270);
-						GameTooltip_AddColoredLine(GameTooltip, CLUB_FINDER_GUILD_POSTING_ALERT_REMOVED_DESC, HIGHLIGHT_FONT_COLOR); 
-						GameTooltip:Show();
+						if (self.tooltipText) then 
+							GameTooltip:SetOwner(self, ANCHOR_RIGHT, 270);
+							GameTooltip_AddColoredLine(GameTooltip, self.tooltipText, HIGHLIGHT_FONT_COLOR);
+							GameTooltip:Show();
+						end
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide(); 

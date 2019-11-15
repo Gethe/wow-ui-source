@@ -1455,9 +1455,14 @@ function UnitPopup_HideButtons ()
 				shown = false;
 			end
 		elseif value == "GUILDS_RECRUITMENT_SETTINGS" then
-			if not C_ClubFinder.IsEnabled() or C_ClubFinder.GetClubFinderDisableReason() ~= nil or (not IsGuildLeader() and not C_GuildInfo.IsGuildOfficer())  then
+			if dropdownMenu.clubInfo then
+				local isPostingBanned = C_ClubFinder.IsPostingBanned(dropdownMenu.clubInfo.clubId);
+				if not C_ClubFinder.IsEnabled() or C_ClubFinder.GetClubFinderDisableReason() ~= nil or (not IsGuildLeader() and not C_GuildInfo.IsGuildOfficer()) or isPostingBanned then
+					shown = false;
+				end
+			else 
 				shown = false;
-			end
+			end 
 		elseif commandToRoleId[value] ~= nil then
 			if not dropdownMenu.clubAssignableRoles or not tContains(dropdownMenu.clubAssignableRoles, commandToRoleId[value]) then
 				shown = false;

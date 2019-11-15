@@ -823,6 +823,28 @@ function ToggleGuildFrame()
 	end
 end
 
+local function ToggleClubFinderBasedOnType(isGuildType)
+	ToggleCommunitiesFrame();
+	local communitiesFrame = CommunitiesFrame;
+
+	if( not communitiesFrame:IsShown()) then 
+		return;
+	end 
+
+	if (isGuildType) then 
+		communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER);
+	else 
+		communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_FINDER);
+	end
+
+	communitiesFrame.GuildFinderFrame.isGuildType = isGuildType;
+	communitiesFrame.GuildFinderFrame.selectedTab = 1;
+	communitiesFrame.GuildFinderFrame:UpdateType(); 
+
+	communitiesFrame:SelectClub(nil);
+	communitiesFrame.Inset:Hide();
+end 
+
 function ToggleGuildFinder()
 	if (IsKioskModeEnabled()) then
 		return;
@@ -833,10 +855,20 @@ function ToggleGuildFinder()
 		return;
 	end
 
-	LookingForGuildFrame_LoadUI();
-	if ( LookingForGuildFrame_Toggle ) then
-		LookingForGuildFrame_Toggle();
+	ToggleClubFinderBasedOnType(true);
+end
+
+function ToggleCommunityFinder()
+	if (IsKioskModeEnabled()) then
+		return;
 	end
+
+	local factionGroup = UnitFactionGroup("player");
+	if (factionGroup == "Neutral") then
+		return;
+	end
+
+	ToggleClubFinderBasedOnType(false);
 end
 
 function ToggleLFDParentFrame()
