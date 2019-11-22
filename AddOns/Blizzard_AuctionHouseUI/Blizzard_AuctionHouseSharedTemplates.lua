@@ -570,7 +570,12 @@ local function AuctionHouseFavoriteDropDown_Initialize(self)
 	local info = UIDropDownMenu_CreateInfo();
 	info.notCheckable = 1;
 	info.text = isFavorite and AUCTION_HOUSE_DROPDOWN_REMOVE_FAVORITE or AUCTION_HOUSE_DROPDOWN_SET_FAVORITE;
-	info.func = function() C_AuctionHouse.SetFavoriteItem(itemKey, not isFavorite); end;
+	info.disabled = not C_AuctionHouse.CanSetFavorite();
+	info.func = function()
+		if C_AuctionHouse.CanSetFavorite() then
+			C_AuctionHouse.SetFavoriteItem(itemKey, not isFavorite);
+		end
+	end;
 	UIDropDownMenu_AddButton(info);
 end
 

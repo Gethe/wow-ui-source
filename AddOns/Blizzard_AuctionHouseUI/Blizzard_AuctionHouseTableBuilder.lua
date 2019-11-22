@@ -189,7 +189,9 @@ function AuctionHouseTableCellFavoriteMixin:OnEvent()
 end
 
 function AuctionHouseTableCellFavoriteMixin:OnLineEnter()
-	self.FavoriteButton:LockTexture();
+	if C_AuctionHouse.CanSetFavorite() then
+		self.FavoriteButton:LockTexture();
+	end
 end
 
 function AuctionHouseTableCellFavoriteMixin:OnLineLeave()
@@ -200,6 +202,10 @@ end
 AuctionHouseTableCellFavoriteButtonMixin = CreateFromMixins(AuctionHouseTableCellMixin);
 
 function AuctionHouseTableCellFavoriteButtonMixin:OnClick()
+	if not C_AuctionHouse.CanSetFavorite() then
+		return;
+	end
+	
 	local setToFavorite = not C_AuctionHouse.IsFavoriteItem(self.itemKey);
 	
 	C_AuctionHouse.SetFavoriteItem(self.itemKey, setToFavorite);
@@ -208,6 +214,8 @@ function AuctionHouseTableCellFavoriteButtonMixin:OnClick()
 end
 
 function AuctionHouseTableCellFavoriteButtonMixin:OnEnter()
+	self.HighlightTexture:SetAlpha(C_AuctionHouse.CanSetFavorite() and 1.0 or 0);
+
 	local row = self:GetParent():GetParent();
 	ExecuteFrameScript(row, "OnEnter");
 end

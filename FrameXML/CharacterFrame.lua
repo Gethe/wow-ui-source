@@ -271,6 +271,7 @@ function CharacterFrameCorruption_OnEnter(self)
 
 	GameTooltip:Show();
 	PaperDollFrame_UpdateCorruptedItemGlows(true);
+	PlaySound(SOUNDKIT.NZOTH_EYE_SQUISH);
 end
 
 function CharacterFrameCorruption_OnLeave(self)

@@ -1307,7 +1307,9 @@ function InterfaceOptionsLargerNamePlate_OnLoad(self)
 		if self.value then
 			return self.value;
 		end
-		if math.abs(tonumber(GetCVar("NamePlateHorizontalScale")) - self.normalHorizontalScale) < .001 and math.abs(tonumber(GetCVar("NamePlateVerticalScale")) - self.normalVerticalScale) < .001 then
+		if math.abs(tonumber(GetCVar("NamePlateHorizontalScale")) - self.normalHorizontalScale) < .001 and
+			math.abs(tonumber(GetCVar("NamePlateVerticalScale")) - self.normalVerticalScale) < .001 and
+			math.abs(tonumber(GetCVar("NamePlateClassificationScale")) - self.normalClassificationScale) < .001 then
 			return "0";
 		end
 		return "1";
@@ -1317,9 +1319,11 @@ function InterfaceOptionsLargerNamePlate_OnLoad(self)
 		if value == "1" then
 			SetCVar("NamePlateHorizontalScale", self.largeHorizontalScale);
 			SetCVar("NamePlateVerticalScale", self.largeVerticalScale);
+			SetCVar("NamePlateClassificationScale", self.largeClassificationScale);
 		else
 			SetCVar("NamePlateHorizontalScale", self.normalHorizontalScale);
 			SetCVar("NamePlateVerticalScale", self.normalVerticalScale);
+			SetCVar("NamePlateClassificationScale", self.normalClassificationScale);
 		end
 		NamePlateDriverFrame:UpdateNamePlateOptions();
 	end

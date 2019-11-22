@@ -699,7 +699,13 @@ function GarrisonTalentButtonMixin:OnEnter()
 			if (talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_PLAYER_CONDITION and talent.playerConditionReason) then
 				GameTooltip:AddLine(talent.playerConditionReason, 1, 0, 0);
 			elseif (talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_REQUIRES_PREREQUISITE_TALENT) then
-				GameTooltip:AddLine("[PH] Requires previous talent", 1, 0, 0);
+				local prereqTalentButton = self:GetParent():FindTalentButton(talent.prerequisiteTalentID);
+				local preReqTalent = prereqTalentButton and prereqTalentButton.talent;
+				if (preReqTalent) then
+					GameTooltip:AddLine(TOOLTIP_TALENT_PREREQ:format(preReqTalent.talentMaxRank, preReqTalent.name), 1, 0, 0);
+				else
+					GameTooltip:AddLine(ORDER_HALL_TALENT_UNAVAILABLE_REQUIRES_PREREQUISITE_TALENT, 1, 0, 0);
+				end
 			elseif (TalentUnavailableReasons[talent.talentAvailability]) then
 				GameTooltip:AddLine(TalentUnavailableReasons[talent.talentAvailability], 1, 0, 0);
 			end

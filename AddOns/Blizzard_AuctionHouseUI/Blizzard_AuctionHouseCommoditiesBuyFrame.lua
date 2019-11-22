@@ -106,7 +106,7 @@ function AuctionHouseCommoditiesBuyDisplayMixin:SetQuantitySelected(quantity)
 
 	self.QuantityInput:SetQuantity(totalQuantity);
 
-	local unitPrice = math.ceil(totalPrice / totalQuantity);
+	local unitPrice = AuctionHouseUtil.SanitizeAuctionHousePrice(totalPrice / totalQuantity);
 	self:SetPrice(unitPrice, totalPrice);
 end
 
@@ -122,7 +122,8 @@ function AuctionHouseCommoditiesBuyDisplayMixin:StartCommoditiesPurchase()
 
 	local quantity = self:GetQuantitySelected();
 	local unitPrice = self.UnitPrice:GetAmount();
-	self:GetAuctionHouseFrame():StartCommoditiesPurchase(itemID, quantity, unitPrice);
+	local totalPrice = self.TotalPrice:GetAmount();
+	self:GetAuctionHouseFrame():StartCommoditiesPurchase(itemID, quantity, unitPrice, totalPrice);
 end
 
 function AuctionHouseCommoditiesBuyDisplayMixin:GetAuctionHouseFrame()

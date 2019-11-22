@@ -1916,11 +1916,13 @@
 	<Button name="SquareIconButtonTemplate" mixin="SquareIconButtonMixin" virtual="true">
 		<Size x="32" y="32"/>
 		<!--
-		icon: texture file or atlas to be displayed on the button.
+		icon: texture file to be displayed on the button.
+		iconAtlas: atlas to be displayed on the button.
 		tooltipText: displayed on the right of the button by default.
 		onClickHandler: forwards the standard OnClick arguments.
 		<KeyValues>
 			<KeyValue key="icon" value="Interface\Buttons\UI-RefreshButton" type="string"/>
+			<KeyValue key="iconAtlas" value="UI-RefreshButton" type="string"/>
 			<KeyValue key="tooltipText" value="REFRESH_BUTTON_TOOLTIP" type="string"/>
 			<KeyValue key="onClickHandler" value="RefreshButton_OnClick" type="global"/>
 		</KeyValues>
@@ -1951,7 +1953,7 @@
 
 	<Button name="RefreshButtonTemplate" inherits="SquareIconButtonTemplate" virtual="true">
 		<KeyValues>
-			<KeyValue key="icon" value="Interface\Buttons\UI-RefreshButton" type="string"/>
+			<KeyValue key="iconAtlas" value="UI-RefreshButton" type="string"/>
 		</KeyValues>
 	</Button>
 </Ui>

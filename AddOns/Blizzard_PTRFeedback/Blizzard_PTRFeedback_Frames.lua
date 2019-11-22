@@ -690,7 +690,7 @@ PTR_IssueReporter.MissingBindTooltipString = "|c0042b1feThe 'Open Bug Report' ke
 PTR_IssueReporter.CurrentTooltipSurvey = {}
 PTR_IssueReporter.TooltipFrames = {}
 ----------------------------------------------------------------------------------------------------
-function PTR_IssueReporter.SetCurrentTooltipReport(tooltipFrame, tooltipType, tooltipID, tooltipName)
+function PTR_IssueReporter.SetCurrentTooltipReport(tooltipFrame, tooltipType, tooltipID, tooltipName, tooltipAdditional)
     if (PTR_IssueReporter.Data.RegisteredSurveys.Tooltip[tooltipType]) then
         local currentTooltipSurvey = {
             Frame = tooltipFrame,
@@ -698,6 +698,7 @@ function PTR_IssueReporter.SetCurrentTooltipReport(tooltipFrame, tooltipType, to
             DataPackage = {
                 ID = tooltipID,
                 Name = tooltipName,
+                Additional = tooltipAdditional
             },            
         }
         PTR_IssueReporter.CurrentTooltipSurvey = currentTooltipSurvey
@@ -719,7 +720,7 @@ function PTR_IssueReporter.TooltipHidden(tooltip)
     end
 end
 ----------------------------------------------------------------------------------------------------
-function PTR_IssueReporter.HookIntoTooltip(tooltip, tooltipType, tooltipID, tooltipName, noExtraLine, clearAllLines)    
+function PTR_IssueReporter.HookIntoTooltip(tooltip, tooltipType, tooltipID, tooltipName, noExtraLine, clearAllLines, tooltipAdditional)    
     if (tooltipType) then        
         local tooltipText
 
@@ -748,8 +749,8 @@ function PTR_IssueReporter.HookIntoTooltip(tooltip, tooltipType, tooltipID, tool
         
         -- Make sure we only display the tooltip text on one tooltip at a time and that the tooltip is registered to a report
         if (tooltip == ItemRefTooltip) or not (ItemRefTooltip:IsShown()) then 
-            if not (found) then               
-                local tooltipSet = PTR_IssueReporter.SetCurrentTooltipReport(tooltip, tooltipType, tooltipID, tooltipName)
+            if not (found) then          
+                local tooltipSet = PTR_IssueReporter.SetCurrentTooltipReport(tooltip, tooltipType, tooltipID, tooltipName, tooltipAdditional)
                 if (tooltipSet) then
                     if (clearAllLines) and (tooltip.ClearLines) then
                         tooltip:ClearLines()

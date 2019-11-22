@@ -1338,7 +1338,7 @@ local function ShowRichPresenceOnly(client, wowProjectID, faction, realmID)
 end
 
 local function GetOnlineInfoText(client, isMobile, rafLinkType, locationText)
-	if not locationText or locationText == "" then
+	if not locationText then
 		return UNKNOWN;
 	end
 	if isMobile then

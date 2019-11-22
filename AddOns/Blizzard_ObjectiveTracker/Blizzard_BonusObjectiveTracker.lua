@@ -74,6 +74,11 @@ function BonusObjectiveTrackerModuleMixin:OnFreeLine(line)
 		line.CheckFlash:Hide();
 		line.finished = nil;
 	end
+	if line.state == "FADING" then
+		line.FadeOutAnim:Stop();
+		line.state = nil;
+		line.block = nil;
+	end
 end
 
 -- *****************************************************************************************************
@@ -552,6 +557,14 @@ local function InternalGetQuestObjectiveInfo(questID, objectiveIndex)
 	end
 end
 
+local function InternalIsQuestComplete(questID)
+	if ( COMPLETED_BONUS_DATA[questID] ) then
+		return true;
+	else
+		return IsQuestComplete(questID);
+	end
+end
+
 -- *****************************************************************************************************
 -- ***** UPDATE FUNCTIONS
 -- *****************************************************************************************************
@@ -763,31 +776,31 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 			block.TrackedQuest:Hide();
 		end
 
-		local taskFinished = true;
+		local showAsCompleted = block.isThreatQuest and InternalIsQuestComplete(questID);
 		local hasAddedTimeLeft = false;
 		for objectiveIndex = 1, numObjectives do
 			local text, objectiveType, finished = InternalGetQuestObjectiveInfo(questID, objectiveIndex);
 			if ( text ) then
 				if ( finished ) then
 					local existingLine = block.lines[objectiveIndex];
-					module:AddObjective(block, objectiveIndex, text, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
-
-					local line = block.currentLine;
-					line.Icon:SetAtlas("Tracker-Check", true);
-					if ( existingLine and not line.finished ) then
-						line.Glow.Anim:Play();
-						line.Sheen.Anim:Play();
-						if ( existingTask ) then
-							line.CheckFlash:Show();
-							line.CheckFlash.Anim:Play();
+					if not showAsCompleted or existingLine then
+						module:AddObjective(block, objectiveIndex, text, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
+						local line = block.currentLine;
+						line.Icon:SetAtlas("Tracker-Check", true);
+						if ( existingLine and not line.finished ) then
+							line.Glow.Anim:Play();
+							line.Sheen.Anim:Play();
+							if ( existingTask ) then
+								line.CheckFlash:Show();
+								line.CheckFlash.Anim:Play();
+							end
 						end
+						line.finished = true;
+						line.Icon:ClearAllPoints();
+						line.Icon:SetPoint("TOPLEFT", line, "TOPLEFT", 10, 0);
+						line.Icon:Show();
 					end
-					line.finished = true;
-					line.Icon:ClearAllPoints();
-					line.Icon:SetPoint("TOPLEFT", line, "TOPLEFT", 10, 0);
-					line.Icon:Show();
 				else
-					taskFinished = false;
 					module:AddObjective(block, objectiveIndex, text, nil, nil, OBJECTIVE_DASH_STYLE_SHOW);
 					block.currentLine.Icon:Hide();
 				end
@@ -816,6 +829,9 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 				end
 			end
 		end
+		if showAsCompleted then
+			module:AddObjective(block, "QuestComplete", QUEST_WATCH_QUEST_READY, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
+		end
 		if ( module.ShowWorldQuests and not hasAddedTimeLeft ) then
 			-- No progress bar, try adding it at the end
 			TryAddingExpirationWarningLine(module, block, questID);
@@ -828,6 +844,16 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 			return false;
 		end
 
+		if ( showAsCompleted ) then
+			for _, line in pairs(block.lines) do
+				if ( line.finished and line.state ~= "FADING" ) then
+					line.FadeOutAnim:Play();
+					line.state = "FADING";
+					line.block = block;
+				end
+			end
+		end
+	
 		block.posIndex = posIndex;
 		block:Show();
 		module:FreeUnusedLines(block);
@@ -1015,6 +1041,18 @@ function BonusObjectiveTracker_SetBlockState(block, state, force)
 			block.state = "FINISHED";
 		end
 	end
+end
+
+function BonusObjectiveTracker_FinishFadeOutAnim(line)
+	local block = line.block;
+	BONUS_OBJECTIVE_TRACKER_MODULE:FreeLine(block, line);
+	for _, otherLine in pairs(block.lines) do
+		if ( otherLine.state == "FADING" ) then
+			-- some other line is still fading
+			return;
+		end
+	end
+	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE);
 end
 
 -- *****************************************************************************************************

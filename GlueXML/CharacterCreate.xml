@@ -1136,7 +1136,7 @@
 			<AbsInset left="0" right="0" top="0" bottom="-20"/>
 		</HitRectInsets>
 		<Scripts>
-			<OnClick function="CharacterUpgradeSelectFactionRadioButton_OnClick"/>
+			<OnClick function="CharacterCreateSelectFactionRadioButton_OnClick"/>
 		</Scripts>
 	</CheckButton>
 
@@ -1908,7 +1908,7 @@
 								</Layers>
 							</Frame>
 
-							<Frame name="CharCreateSelectFactionFrame" hidden="true">
+							<Frame name="CharCreateSelectFactionFrame" hidden="true" frameLevel="2">
 								<Size x="240" y="174"/>
 								<Anchors>
 									<Anchor point="TOP" relativeTo="CharCreateSelectSpecFrame" relativePoint="BOTTOM" x="0" y="23" />
@@ -1928,25 +1928,34 @@
 									<Layer level="ARTWORK">
 										<FontString parentKey="Title" inherits="FactionName_Shadow_Huge" text="CLASS_TRIAL_SELECT_FACTION_TITLE">
 											<Anchors>
-												<Anchor point="TOPLEFT" x="0" y="-16.0" />
-												<Anchor point="TOPRIGHT" x="0" y="-16.0" />
+												<Anchor point="TOP" y="-35" />
 											</Anchors>
-											<Color r="1.0" g="0.82" b="0.0"/>
+											<Color color="NORMAL_FONT_COLOR"/>
 										</FontString>
 									</Layer>
 								</Layers>
 								<Frames>
-									<CheckButton parentArray="FactionButtons" inherits="CharacterCreateSelectFactionRadioButtonTemplate" id="1">
+									<CheckButton parentArray="FactionButtons" inherits="CharacterCreateSelectFactionRadioButtonTemplate">
+										<KeyValues>
+											<KeyValue key="factionID" value="0" type="number"/>
+										</KeyValues>
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOM" x="22.0" y="-20.0" />
+											<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOM" x="22" y="-10" />
 										</Anchors>
 									</CheckButton>
-									<CheckButton parentArray="FactionButtons" inherits="CharacterCreateSelectFactionRadioButtonTemplate" id="2">
+									<CheckButton parentArray="FactionButtons" inherits="CharacterCreateSelectFactionRadioButtonTemplate">
+										<KeyValues>
+											<KeyValue key="factionID" value="1" type="number"/>
+										</KeyValues>
 										<Anchors>
-											<Anchor point="TOPRIGHT" relativeKey="$parent.Title" relativePoint="BOTTOM" x="-22.0" y="-20.0" />
+											<Anchor point="TOPRIGHT" relativeKey="$parent.Title" relativePoint="BOTTOM" x="-22" y="-10" />
 										</Anchors>
 									</CheckButton>
 								</Frames>
+								<Scripts>
+									<OnLoad function="CharCreateSelectFactionFrame_OnLoad"/>
+									<OnHide function="CharCreateSelectFactionFrame_ClearChecked"/>
+								</Scripts>
 							</Frame>
 
 							<CheckButton name="CharacterCreateAlternateFormTop" hidden="true">
@@ -2235,89 +2244,4 @@
 			<OnUpdate function="CharacterCreate_UpdateModel"/>
 		</Scripts>
 	</ModelFFX>
-
-	<Frame name="CharacterTemplateConfirmDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
-		<Frames>
-			<Frame name="$parentContents">
-				<Size x="512" y="120"/>
-				<Anchors>
-					<Anchor point="CENTER" x="0" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
-							<Size x="48" y="48"/>
-							<Anchors>
-								<Anchor point="LEFT" x="24" y="16"/>
-							</Anchors>
-						</Texture>
-						<FontString inherits="GlueFontNormalLarge" text="TEMPLATE_CHARACTER_CHOOSE_FACTION">
-							<Size>
-								<AbsDimension x="400" y="0"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOP" x="0" y="-26"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-					<Button name="$parentButton2" inherits="GlueDialogButtonTemplate" text="HORDE">
-						<Size x="150" y="40"/>
-						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="12"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								CharacterTemplateConfirmDialog:Hide();
-								C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText(), "Horde");
-							</OnClick>
-							<OnUpdate>
-								GlueParent_DeathKnightButtonSwap(self);
-							</OnUpdate>
-						</Scripts>
-					</Button>
-					<Button name="$parentButton1" inherits="GlueDialogButtonTemplate" text="ALLIANCE">
-						<Size x="150" y="40"/>
-						<Anchors>
-							<Anchor point="RIGHT" relativeTo="$parentButton2" relativePoint="LEFT" x="-6" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								CharacterTemplateConfirmDialog:Hide();
-								C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText(), "Alliance");
-							</OnClick>
-							<OnUpdate>
-								GlueParent_DeathKnightButtonSwap(self);
-							</OnUpdate>
-						</Scripts>
-					</Button>
-					<Button name="$parentButton3" inherits="GlueDialogButtonTemplate" text="CANCEL">
-						<Size x="150" y="40"/>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentButton2" relativePoint="RIGHT" x="6" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								CharacterTemplateConfirmDialog:Hide();
-								PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT);
-							</OnClick>
-							<OnUpdate>
-								GlueParent_DeathKnightButtonSwap(self);
-							</OnUpdate>
-						</Scripts>
-					</Button>
-				</Frames>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnChar>
-				-- block keys
-			</OnChar>
-			<OnKeyDown>
-				-- block keys
-			</OnKeyDown>
-		</Scripts>
-	</Frame>
 </Ui>

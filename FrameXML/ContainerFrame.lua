@@ -1,30 +1,38 @@
 NUM_CONTAINER_FRAMES = 13;
-NUM_BAG_FRAMES = 4;
-MAX_CONTAINER_ITEMS = 36;
-NUM_CONTAINER_COLUMNS = 4;
-ROWS_IN_BG_TEXTURE = 6;
-MAX_BG_TEXTURES = 2;
-BG_TEXTURE_HEIGHT = 512;
-CONTAINER_WIDTH = 192;
-CONTAINER_SPACING = 0;
-VISIBLE_CONTAINER_SPACING = 3;
 CONTAINER_OFFSET_Y = 70;
 CONTAINER_OFFSET_X = -4;
-MINIMUM_CONTAINER_OFFSET_X = 10;
-CONTAINER_SCALE = 0.75;
-BACKPACK_MONEY_OFFSET_DEFAULT = -231;
-BACKPACK_MONEY_HEIGHT_OFFSET_PER_EXTRA_ROW = 41;
-BACKPACK_BASE_HEIGHT = 255;
-BACKPACK_HEIGHT_OFFSET_PER_EXTRA_ROW = 43;
-BACKPACK_DEFAULT_TOPHEIGHT = 255;
-BACKPACK_EXTENDED_TOPHEIGHT = 226;
-BACKPACK_BASE_SIZE = 16;
-FIRST_BACKPACK_BUTTON_OFFSET_BASE = -225;
-FIRST_BACKPACK_BUTTON_OFFSET_PER_EXTRA_ROW = 41;
-FRAME_THAT_OPENED_BAGS = nil;
-CONTAINER_BOTTOM_TEXTURE_DEFAULT_HEIGHT = 10;
-CONTAINER_BOTTOM_TEXTURE_DEFAULT_TOP_COORD = 0.330078125;
-CONTAINER_BOTTOM_TEXTURE_DEFAULT_BOTTOM_COORD = 0.349609375;
+BACKPACK_HEIGHT = 256;
+
+local NUM_BAG_FRAMES = 4;
+local MAX_CONTAINER_ITEMS = 36;
+local NUM_CONTAINER_COLUMNS = 4;
+local ROWS_IN_BG_TEXTURE = 5;
+local MAX_MIDDLE_TEXTURES = 2;
+local BG_TEXTURE_MIDDLE_START = 215;
+local BG_TEXTURE_TOP_PLUS_TWO_START = 97;
+local BG_TEXTURE_TOP_PLUS_TWO_END = 163;
+local BG_TEXTURE_TOP_START = 2;
+local BG_TEXTURE_TOP_END = 89;
+local BG_TEXTURE_TOP_ONE_ROW_END = 86;
+local BG_TEXTURE_HEIGHT = 512;
+local CONTAINER_WIDTH = 192;
+local CONTAINER_SPACING = 0;
+local VISIBLE_CONTAINER_SPACING = 3;
+local MINIMUM_CONTAINER_OFFSET_X = 10;
+local CONTAINER_SCALE = 0.75;
+local BACKPACK_MONEY_OFFSET_DEFAULT = -231;
+local BACKPACK_BASE_HEIGHT = 256;
+local BACKPACK_DEFAULT_TOPHEIGHT = 256;
+local BACKPACK_EXTENDED_TOPHEIGHT = 226;
+local BACKPACK_BASE_SIZE = 16;
+local ROW_HEIGHT = 41;
+local FIRST_BACKPACK_BUTTON_OFFSET_BASE = -225;
+local FRAME_THAT_OPENED_BAGS = nil;
+local CONTAINER_BOTTOM_TEXTURE_DEFAULT_START = 169;
+local CONTAINER_BOTTOM_TEXTURE_DEFAULT_END = 179;
+local CONTAINER_BOTTOM_TEXTURE_DEFAULT_HEIGHT = CONTAINER_BOTTOM_TEXTURE_DEFAULT_END - CONTAINER_BOTTOM_TEXTURE_DEFAULT_START;
+local CONTAINER_BOTTOM_TEXTURE_DEFAULT_ROW_END = 172;
+local CONTAINER_BOTTOM_TEXTURE_DEFAULT_ROW_HEIGHT = CONTAINER_BOTTOM_TEXTURE_DEFAULT_ROW_END - CONTAINER_BOTTOM_TEXTURE_DEFAULT_START;
 
 function ContainerFrame_OnLoad(self)
 	self:RegisterEvent("BAG_OPEN");
@@ -768,7 +776,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			extraRows = math.ceil((size - BACKPACK_BASE_SIZE) / columns);
 			bgTextureTop:SetHeight(BACKPACK_EXTENDED_TOPHEIGHT);
 			bgTextureTop:SetTexCoord(0, 1, 0, BACKPACK_EXTENDED_TOPHEIGHT / BACKPACK_DEFAULT_TOPHEIGHT);
-			backpackFirstButtonOffset = backpackFirstButtonOffset - (FIRST_BACKPACK_BUTTON_OFFSET_PER_EXTRA_ROW * extraRows);	
+			backpackFirstButtonOffset = backpackFirstButtonOffset - (ROW_HEIGHT * extraRows);	
 		else
 			bgTextureTop:SetHeight(BACKPACK_DEFAULT_TOPHEIGHT);
 			bgTextureTop:SetTexCoord(0, 1, 0, 1);
@@ -777,11 +785,11 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 		bgTextureBottom:Hide();
 
 		_G[name.."MoneyFrame"]:Show();
-		_G[name.."MoneyFrame"]:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -2, BACKPACK_MONEY_OFFSET_DEFAULT - (BACKPACK_MONEY_HEIGHT_OFFSET_PER_EXTRA_ROW * extraRows));
-		_G[name.."AddSlotsButton"]:SetShown(not secured and not extended);
+		_G[name.."MoneyFrame"]:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -2, BACKPACK_MONEY_OFFSET_DEFAULT - (ROW_HEIGHT * extraRows));
+		_G[name.."AddSlotsButton"]:SetShown(not secured and not ContainerFrame1.forceExtended);
 
 		-- Hide unused textures
-		for i=1, MAX_BG_TEXTURES do
+		for i=1, MAX_MIDDLE_TEXTURES do
 			_G[name.."BackgroundMiddle"..i]:SetTexture("Interface\\ContainerFrame\\UI-Bag-Components");
 			_G[name.."BackgroundMiddle"..i]:Hide();
 		end
@@ -793,44 +801,37 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 		end
 
 		if (extended) then
-			local rowHeight = 41;
-			-- Subtract four, since the top part of the backpack texture contains four rows already
 			local remainingRows = extraRows;
 
 			-- Calculate the number of background textures we're going to need
 			bgTextureCount = ceil(remainingRows/ROWS_IN_BG_TEXTURE);
 			
 			-- Try to cycle all the middle bg textures
-			local firstRowPixelOffset = 9;
-			local firstRowTexCoordOffset = 0.353515625;
 			for i=1, bgTextureCount do
 				bgTextureMiddle = _G[name.."BackgroundMiddle"..i];
 				if ( remainingRows > ROWS_IN_BG_TEXTURE ) then
 					-- If more rows left to draw than can fit in a texture then draw the max possible
-					height = ( ROWS_IN_BG_TEXTURE*rowHeight ) - firstRowPixelOffset
-					bgTextureMiddle:SetHeight(ROWS_IN_BG_TEXTURE*rowHeight);
-					bgTextureMiddle:SetTexCoord(0, 1, firstRowTexCoordOffset, ( height/BG_TEXTURE_HEIGHT + firstRowTexCoordOffset) );
-					bgTextureMiddle:Show();
+					height = ROWS_IN_BG_TEXTURE * ROW_HEIGHT;
 					remainingRows = remainingRows - ROWS_IN_BG_TEXTURE;
-					middleBgHeight = middleBgHeight + ROWS_IN_BG_TEXTURE+rowHeight;
 				else
-					-- If not its a huge bag
-					bgTextureMiddle:Show();
-					height = remainingRows*rowHeight-firstRowPixelOffset;
-					bgTextureMiddle:SetHeight(remainingRows*rowHeight);
-					bgTextureMiddle:SetTexCoord(0, 1, firstRowTexCoordOffset, ( height/BG_TEXTURE_HEIGHT + firstRowTexCoordOffset) );
-					middleBgHeight = middleBgHeight + remainingRows*rowHeight;
+					height = remainingRows * ROW_HEIGHT;
 				end
-				if (extended and ContainerFrame1.forceExtended) then
+
+				middleBgHeight = middleBgHeight + height;
+				bgTextureMiddle:SetHeight(height);
+				bgTextureMiddle:SetTexCoord(0, 1, BG_TEXTURE_MIDDLE_START / BG_TEXTURE_HEIGHT, ((BG_TEXTURE_MIDDLE_START + height) / BG_TEXTURE_HEIGHT) );
+				bgTextureMiddle:Show();
+
+				if ContainerFrame1.forceExtended then
 					if (not frame.extendedOverlay) then
 						frame.extendedOverlay = frame:CreateTexture(nil, "OVERLAY", 1);
 						frame.extendedOverlay:SetColorTexture(0.603, 0.875, 1);
 						frame.extendedOverlay:SetAlpha(1);
 						frame.extendedOverlay:SetBlendMode("MOD");
 					end
-					frame.extendedOverlay:SetWidth(CONTAINER_WIDTH-20);
-					frame.extendedOverlay:SetHeight(bgTextureMiddle:GetHeight()+2);
-					frame.extendedOverlay:SetPoint("CENTER", bgTextureMiddle, "CENTER", 34, -2);
+					frame.extendedOverlay:SetWidth(CONTAINER_WIDTH - 20);
+					frame.extendedOverlay:SetHeight(ROW_HEIGHT + 2);
+					frame.extendedOverlay:SetPoint("BOTTOMRIGHT", bgTextureMiddle, "BOTTOMRIGHT", -8, -2);
 					frame.extendedOverlay:Show();
 				end
 			end
@@ -848,7 +849,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 		ManageBackpackTokenFrame(frame);
 	else
 		bgTextureBottom:SetHeight(CONTAINER_BOTTOM_TEXTURE_DEFAULT_HEIGHT);
-		bgTextureBottom:SetTexCoord(0, 1, CONTAINER_BOTTOM_TEXTURE_DEFAULT_TOP_COORD, CONTAINER_BOTTOM_TEXTURE_DEFAULT_BOTTOM_COORD);
+		bgTextureBottom:SetTexCoord(0, 1, CONTAINER_BOTTOM_TEXTURE_DEFAULT_START / BG_TEXTURE_HEIGHT, CONTAINER_BOTTOM_TEXTURE_DEFAULT_END / BG_TEXTURE_HEIGHT);
 		if (size == 1) then
 			-- Halloween gag gift
 			bgTexture1Slot:Show();
@@ -873,7 +874,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			
 			-- Set textures
 			bgTextureTop:SetTexture("Interface\\ContainerFrame\\UI-Bag-Components"..bagTextureSuffix);
-			for i=1, MAX_BG_TEXTURES do
+			for i=1, MAX_MIDDLE_TEXTURES do
 				_G[name.."BackgroundMiddle"..i]:SetTexture("Interface\\ContainerFrame\\UI-Bag-Components"..bagTextureSuffix);
 				_G[name.."BackgroundMiddle"..i]:Hide();
 			end
@@ -883,7 +884,6 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			_G[name.."AddSlotsButton"]:Hide();
 						
 			local bgTextureCount, height;
-			local rowHeight = 41;
 			-- Subtract one, since the top texture contains one row already
 			local remainingRows = rows-1;
 
@@ -895,16 +895,16 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 
 			-- Bag background display stuff
 			if ( isPlusTwoBag ) then
-				bgTextureTop:SetTexCoord(0, 1, 0.189453125, 0.330078125);
-				bgTextureTop:SetHeight(72);
+				bgTextureTop:SetTexCoord(0, 1, BG_TEXTURE_TOP_PLUS_TWO_START / BG_TEXTURE_HEIGHT, BG_TEXTURE_TOP_PLUS_TWO_END / BG_TEXTURE_HEIGHT);
+				bgTextureTop:SetHeight(BG_TEXTURE_TOP_PLUS_TWO_END - BG_TEXTURE_TOP_PLUS_TWO_START);
 			else
 				if ( rows == 1 ) then
 					-- If only one row chop off the bottom of the texture
-					bgTextureTop:SetTexCoord(0, 1, 0.00390625, 0.16796875);
-					bgTextureTop:SetHeight(86);
+					bgTextureTop:SetTexCoord(0, 1, BG_TEXTURE_TOP_START / BG_TEXTURE_HEIGHT, BG_TEXTURE_TOP_ONE_ROW_END / BG_TEXTURE_HEIGHT);
+					bgTextureTop:SetHeight(BG_TEXTURE_TOP_ONE_ROW_END - BG_TEXTURE_TOP_START);
 				else
-					bgTextureTop:SetTexCoord(0, 1, 0.00390625, 0.18359375);
-					bgTextureTop:SetHeight(94);
+					bgTextureTop:SetTexCoord(0, 1, BG_TEXTURE_TOP_START / BG_TEXTURE_HEIGHT, BG_TEXTURE_TOP_END / BG_TEXTURE_HEIGHT);
+					bgTextureTop:SetHeight(BG_TEXTURE_TOP_END - BG_TEXTURE_TOP_START);
 				end
 			end
 			-- Calculate the number of background textures we're going to need
@@ -916,31 +916,32 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 				bgTextureBottom:SetPoint("TOP", bgTextureMiddle:GetName(), "TOP", 0, 0);
 				bgTextureBottom:Show();
 				-- Hide middle bg textures
-				for i=1, MAX_BG_TEXTURES do
+				for i=1, MAX_MIDDLE_TEXTURES do
 					_G[name.."BackgroundMiddle"..i]:Hide();
 				end
 			else
 				-- Try to cycle all the middle bg textures
-				local firstRowPixelOffset = 9;
-				local firstRowTexCoordOffset = 0.353515625;
 				for i=1, bgTextureCount do
 					bgTextureMiddle = _G[name.."BackgroundMiddle"..i];
 					if ( remainingRows > ROWS_IN_BG_TEXTURE ) then
 						-- If more rows left to draw than can fit in a texture then draw the max possible
-						height = ( ROWS_IN_BG_TEXTURE*rowHeight ) + firstRowTexCoordOffset;
-						bgTextureMiddle:SetHeight(height);
-						bgTextureMiddle:SetTexCoord(0, 1, firstRowTexCoordOffset, ( height/BG_TEXTURE_HEIGHT + firstRowTexCoordOffset) );
-						bgTextureMiddle:Show();
+						height = ROWS_IN_BG_TEXTURE * ROW_HEIGHT;
 						remainingRows = remainingRows - ROWS_IN_BG_TEXTURE;
-						middleBgHeight = middleBgHeight + height;
 					else
-						-- If not its a huge bag
-						bgTextureMiddle:Show();
-						height = remainingRows*rowHeight-firstRowPixelOffset;
-						bgTextureMiddle:SetHeight(height);
-						bgTextureMiddle:SetTexCoord(0, 1, firstRowTexCoordOffset, ( height/BG_TEXTURE_HEIGHT + firstRowTexCoordOffset) );
-						middleBgHeight = middleBgHeight + height;
+						height = remainingRows * ROW_HEIGHT;
+						remainingRows = 0;
 					end
+
+					if remainingRows == 0 or i == bgTextureCount then
+						-- For non-backpack bags, the bottom texture has to contain a small slice of the bottom row of items.
+						-- So if this middle texture is the bottom one, subtract out that slice from the middle texture's height
+						height = height - CONTAINER_BOTTOM_TEXTURE_DEFAULT_ROW_HEIGHT;
+					end
+
+					middleBgHeight = middleBgHeight + height;
+					bgTextureMiddle:SetHeight(height);
+					bgTextureMiddle:SetTexCoord(0, 1, BG_TEXTURE_MIDDLE_START / BG_TEXTURE_HEIGHT, ((BG_TEXTURE_MIDDLE_START + height) / BG_TEXTURE_HEIGHT) );
+					bgTextureMiddle:Show();
 				end
 				-- Position bottom texture
 				bgTextureBottom:SetPoint("TOP", bgTextureMiddle:GetName(), "BOTTOM", 0, 0);
@@ -1000,6 +1001,8 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			itemButton:Show();
 		end
 		if (id == 0 and secured and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BAG_SLOTS_AUTHENTICATOR)) then
+			itemButton = _G[name.."Item"..4];
+			frame.ExtraBagSlotsHelpBox:SetPoint("RIGHT", itemButton, "LEFT", -18, 0);
 			frame.ExtraBagSlotsHelpBox:Show();
 			ContainerFrame1.isHelpBoxShown = true;
 			ContainerFrame1.helpBoxFrame = frame.ExtraBagSlotsHelpBox;

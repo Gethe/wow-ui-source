@@ -91,6 +91,9 @@ function OverrideActionBar_OnEvent(self, event, ...)
 	elseif ( event == "UNIT_EXITED_VEHICLE") then
 		self.HasExit = nil;
 		self.HasPitch = nil;
+		if GetOverrideBarSkin() then
+			OverrideActionBar_CalcSize();
+		end
 	end
 end
 

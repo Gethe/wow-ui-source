@@ -991,7 +991,7 @@ function SetCharacterRace(id)
 	end
 	
 	-- Cache current selected faction information in the case where user is applying a trial boost
-	CharacterCreate.selectedFactionID = FACTION_IDS[faction];
+	CharacterCreate.selectedFactionID = PLAYER_FACTION_GROUP[faction];
 
 	-- Set background
 	SetBackgroundModel(CharacterCreate, C_CharacterCreation.GetCreateBackgroundModel(faction));
@@ -1176,12 +1176,11 @@ function CharacterCreate_Finish()
 			KioskModeSplash_SetAutoEnterWorld(true);
 		end
 
-		-- if using templates, pandaren must pick a faction
-		local _, faction = C_CharacterCreation.GetFactionForRace(CharacterCreate.selectedRace);
-		if ( ( C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate() ) and ( faction ~= "Alliance" and faction ~= "Horde" ) ) then
-			CharacterTemplateConfirmDialog:Show();
-		else
+		if CharacterUpgrade_IsCreatedCharacterTrialBoost() then
+			-- For trial boosts we need to pass up nil for the faction here. We send the faction up separately when the boost is applied
 			C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText());
+		else
+			C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText(), CharacterCreate_GetSelectedFactionName());
 		end
 	end
 end
@@ -1257,7 +1256,6 @@ function CharacterCreate_Forward()
 		CharCreateMoreInfoButton:Hide();
 		CharCreateCustomizationFrame:Show();
 		CharCreatePreviewFrame:Show();
-		CharacterTemplateConfirmDialog:Hide();
 		
 		CharacterCreate_UpdateRacesToggleButton();
 		CharacterCreate_UpdateClassTrialCustomizationFrames();
@@ -2432,9 +2430,12 @@ function CharacterCreate_UpdateClassTrialCustomizationFrames()
 	local isTrialBoost = CharacterUpgrade_IsCreatedCharacterTrialBoost();
 	local isCustomization = CharacterCreateFrame.state == "CUSTOMIZATION";
 	local showTrialFrames = isTrialBoost and isCustomization and IsBoostAllowed(classInfo, raceData);
-
 	local showSpecializations = showTrialFrames;
-	local showFactions = showTrialFrames and C_CharacterCreation.IsNeutralRace(CharacterCreate.selectedRace);
+
+	local isNeutralRace = C_CharacterCreation.IsNeutralRace(CharacterCreate.selectedRace);
+	local showEarlyFaction = classInfo.earlyFactionChoice;
+	local usingCharacterTemplate = C_CharacterCreation.IsUsingCharacterTemplate();
+	local showFactions = isNeutralRace and (showTrialFrames or showEarlyFaction or usingCharacterTemplate);
 
 	if showSpecializations then
 		local gender = C_CharacterCreation.GetSelectedSex();
@@ -2454,7 +2455,13 @@ function CharacterCreate_UpdateClassTrialCustomizationFrames()
 	end
 
 	if showFactions then
-		CharacterServices_UpdateFactionButtons(CharCreateSelectFactionFrame, CharCreateSelectFactionFrame);
+		if showSpecializations then
+			CharCreateSelectFactionFrame:SetPoint("TOP", CharCreateSelectSpecFrame, "BOTTOM", 0, 23);
+			CharCreateSelectFactionFrame.Title:SetPoint("TOP", CharCreateSelectFactionFrame, "TOP", 0, -16);
+		else
+			CharCreateSelectFactionFrame:SetPoint("TOP", CharCreateCustomizationFrame.BannerBottom, "BOTTOM", 0, 40);
+			CharCreateSelectFactionFrame.Title:SetPoint("TOP", CharCreateSelectFactionFrame, "TOP", 0, -35);
+		end
 	end
 
 	CharCreateSelectSpecFrame:SetShown(showSpecializations);
@@ -2582,9 +2589,8 @@ function CharacterCreate_UpdateOkayButton()
 			finalizeRequirements:SetRequirementComplete(FINALIZE_REQ_ALLIED_RACE_ACHIEVEMENT, hasAchievement);
 			finalizeRequirements:SetRequirementComplete(FINALIZE_REQ_HAS_NAME, true);
 		else
-			local isTrialBoost = CharacterUpgrade_IsCreatedCharacterTrialBoost();
-			finalizeRequirements:SetRequirementComplete(FINALIZE_REQ_HAS_SPEC, not isTrialBoost or CharCreateSelectSpecFrame.selected ~= nil);
-			finalizeRequirements:SetRequirementComplete(FINALIZE_REQ_HAS_FACTION, not isTrialBoost or CharacterCreate_GetSelectedFaction() ~= nil);
+			finalizeRequirements:SetRequirementComplete(FINALIZE_REQ_HAS_SPEC, not CharCreateSelectSpecFrame:IsShown() or CharCreateSelectSpecFrame.selected ~= nil);
+			finalizeRequirements:SetRequirementComplete(FINALIZE_REQ_HAS_FACTION, not CharCreateSelectFactionFrame:IsShown() or CharacterCreate_GetSelectedFaction() ~= nil);
 		end
 		finalizeRequirements:UpdateInstructions();
 	else
@@ -2597,8 +2603,38 @@ function CharacterCreate_IsTrialBoostAllowedForClass(classInfo, raceData)
 	return IsBoostAllowed(classInfo, raceData);
 end
 
+function CharCreateSelectFactionFrame_OnLoad(self)
+	for _, button in ipairs(self.FactionButtons) do
+		button.FactionIcon:SetTexture(FACTION_LOGO_TEXTURES[button.factionID]);
+		button.FactionName:SetText(FACTION_LABELS[button.factionID]);
+	end
+end
+
+function CharCreateSelectFactionFrame_ClearChecked()
+	for _, button in ipairs(CharCreateSelectFactionFrame.FactionButtons) do
+		button:SetChecked(false);
+	end
+
+	CharCreateSelectFactionFrame.selectedFactionID = nil;
+	CharCreateSelectFactionFrame.selectedFactionName = nil;
+end
+
+function CharacterCreateSelectFactionRadioButton_OnClick(self)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+
+	CharCreateSelectFactionFrame_ClearChecked();
+	self:SetChecked(true);
+	CharCreateSelectFactionFrame.selectedFactionID = self.factionID;
+	CharCreateSelectFactionFrame.selectedFactionName = PLAYER_FACTION_GROUP[self.factionID];
+	CharacterCreate_UpdateOkayButton();
+end
+
 function CharacterCreate_GetSelectedFaction()
-	return CharacterCreate.selectedFactionID or CharCreateSelectFactionFrame.selected;
+	return CharacterCreate.selectedFactionID or CharCreateSelectFactionFrame.selectedFactionID;
+end
+
+function CharacterCreate_GetSelectedFactionName()
+	return CharCreateSelectFactionFrame.selectedFactionName;
 end
 
 local isAlliedRacePreview;

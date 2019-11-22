@@ -1038,6 +1038,8 @@ SquareIconButtonMixin = {};
 function SquareIconButtonMixin:OnLoad()
 	if self.icon then
 		self:SetIcon(self.icon);
+	elseif self.iconAtlas then
+		self:SetAtlas(self.iconAtlas);
 	end
 end
 

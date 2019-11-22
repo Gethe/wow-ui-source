@@ -684,10 +684,10 @@ function AuctionHouseFrameMixin:RefreshSearchResults(searchContext, itemKey)
 	end
 end
 
-function AuctionHouseFrameMixin:StartCommoditiesPurchase(itemID, quantity, unitPrice)
-	self.BuyDialog:SetItemID(itemID, quantity, unitPrice);
+function AuctionHouseFrameMixin:StartCommoditiesPurchase(itemID, quantity, unitPrice, totalPrice)
+	self.BuyDialog:SetItemID(itemID, quantity, unitPrice, totalPrice);
 	self.BuyDialog:Show();
-	C_AuctionHouse.StartCommoditiesPurchase(itemID, quantity, unitPrice)
+	C_AuctionHouse.StartCommoditiesPurchase(itemID, quantity, unitPrice);
 end
 
 function AuctionHouseFrameMixin:StartItemBid(auctionID, bid)

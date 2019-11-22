@@ -7,6 +7,10 @@ local Map =
 	Functions =
 	{
 		{
+			Name = "CloseWorldMapInteraction",
+			Type = "Function",
+		},
+		{
 			Name = "GetAreaInfo",
 			Type = "Function",
 

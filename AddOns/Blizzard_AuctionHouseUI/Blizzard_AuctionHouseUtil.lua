@@ -433,18 +433,37 @@ function AuctionHouseUtil.ConvertItemSellItemKey(itemKey)
 end
 
 function AuctionHouseUtil.SetAuctionHouseTooltip(owner, rowData)
-	GameTooltip:SetOwner(owner, "ANCHOR_RIGHT");
-
 	if rowData.itemLink then
-		local hideVendorPrice = true;
-		GameTooltip:SetHyperlink(rowData.itemLink, nil, nil, nil, hideVendorPrice);
-	else
-		GameTooltip:SetItemKey(rowData.itemKey.itemID, rowData.itemKey.itemLevel, rowData.itemKey.itemSuffix);
+		if not BattlePetToolTip_ShowLink(rowData.itemLink) then
+			GameTooltip:SetOwner(owner, "ANCHOR_RIGHT");
+			GameTooltip:SetHyperlink(rowData.itemLink);
+			GameTooltip:Show();
+		else
+			GameTooltip:SetOwner(owner, "ANCHOR_RIGHT");
+
+			local hideVendorPrice = true;
+			GameTooltip:SetHyperlink(rowData.itemLink, nil, nil, nil, hideVendorPrice);
+			GameTooltip:Show();
+		end
+
+		GameTooltip:Show();
+	elseif rowData.itemKey then
+		local restrictQualityToFilter = true;
+		local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(rowData.itemKey, restrictQualityToFilter);
+		if itemKeyInfo and itemKeyInfo.battlePetLink then
+			BattlePetToolTip_ShowLink(itemKeyInfo.battlePetLink);
+		else
+			GameTooltip:SetOwner(owner, "ANCHOR_RIGHT");
+			GameTooltip:SetItemKey(rowData.itemKey.itemID, rowData.itemKey.itemLevel, rowData.itemKey.itemSuffix);
+			GameTooltip:Show();
+		end
 	end
 
-	local methodFound, auctionHouseFrame = CallMethodOnNearestAncestor(owner, "GetAuctionHouseFrame");
-	local bidStatus = auctionHouseFrame and auctionHouseFrame:GetBidStatus(rowData) or nil;
-	AuctionHouseUtil.AddAuctionHouseTooltipInfo(GameTooltip, rowData.owners, rowData.timeLeft, bidStatus);
+	if rowData.owners then
+		local methodFound, auctionHouseFrame = CallMethodOnNearestAncestor(owner, "GetAuctionHouseFrame");
+		local bidStatus = auctionHouseFrame and auctionHouseFrame:GetBidStatus(rowData) or nil;
+		AuctionHouseUtil.AddAuctionHouseTooltipInfo(GameTooltip, rowData.owners, rowData.timeLeft, bidStatus);
+	end
 	
 	GameTooltip:Show();
 end
@@ -460,29 +479,10 @@ end
 function AuctionHouseUtil.LineOnEnterCallback(line, rowData)
 	line:SetScript("OnUpdate", AuctionHouseUtil.LineOnUpdate);
 
-	if rowData.itemLink then
-		GameTooltip:SetOwner(line, "ANCHOR_RIGHT");
+	AuctionHouseUtil.SetAuctionHouseTooltip(line, rowData);
 
-		if not BattlePetToolTip_ShowLink(rowData.itemLink) then
-			GameTooltip:SetHyperlink(rowData.itemLink);
-		end
-
-		GameTooltip:Show();
-	elseif rowData.itemKey then
-		local restrictQualityToFilter = true;
-		local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(rowData.itemKey, restrictQualityToFilter);
-		if itemKeyInfo and itemKeyInfo.battlePetLink then
-			GameTooltip:SetOwner(line, "ANCHOR_RIGHT");
-			BattlePetToolTip_ShowLink(itemKeyInfo.battlePetLink);
-		else
-			GameTooltip:SetOwner(line, "ANCHOR_RIGHT");
-			GameTooltip:SetItemKey(rowData.itemKey.itemID, rowData.itemKey.itemLevel, rowData.itemKey.itemSuffix);
-			GameTooltip:Show();
-		end
-
-		if IsModifiedClick("DRESSUP") then
-			ShowInspectCursor();
-		end
+	if IsModifiedClick("DRESSUP") then
+		ShowInspectCursor();
 	end
 
 	line.UpdateTooltip = function(self)
@@ -538,6 +538,6 @@ function AuctionHouseUtil.IsOwnedAuction(rowData)
 			(#rowData.owners == 2 and (rowData.containsOwnerItem and rowData.containsAccountItem));
 end
 
-function AuctionHouseUtil.GetCommoditiesItemKey(commoditiesID)
-	return { itemID = commoditiesID };
+function AuctionHouseUtil.SanitizeAuctionHousePrice(rawPrice)
+	return math.ceil(rawPrice / COPPER_PER_SILVER) * COPPER_PER_SILVER;
 end

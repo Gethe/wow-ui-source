@@ -161,7 +161,6 @@ function CharacterSelect_OnShow(self)
     SetInCharacterSelect(true);
     CHARACTER_LIST_OFFSET = 0;
     CharacterSelect_ResetVeteranStatus();
-    CharacterTemplateConfirmDialog:Hide();
 
     if ( #translationTable == 0 ) then
         for i = 1, GetNumCharacters() do
@@ -777,7 +776,7 @@ function UpdateCharacterList(skipSelect)
     for i=1, characterLimit, 1 do
 		local characterIndex = i + CHARACTER_LIST_OFFSET;
 	    local name, race, _, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked, isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, _, lastLoginBuild, _, isExpansionTrialCharacter, faction = GetCharacterInfo(GetCharIDFromIndex(characterIndex));
-        local productID, vasServiceState, vasServiceErrors, productInfo;
+		local productID, vasServiceState, vasServiceErrors, productInfo;
         if (guid) then
             productID, vasServiceState, vasServiceErrors = C_StoreGlue.GetVASPurchaseStateInfo(guid);
         end

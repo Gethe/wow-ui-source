@@ -159,7 +159,7 @@
 					</Anchors>
 					<KeyValues>
 						<KeyValue key="rotateDirection" value="left" type="string"/>
-						<KeyValue key="rotationIncrement" value="0.09" type="number"/>
+						<KeyValue key="rotationIncrement" value="0.05" type="number"/>
 					</KeyValues>
 				</Button>
 				<Button name="$parentRotateRightButton" mixin="ModelScenelRotateButtonMixin" inherits="ModelControlButtonTemplate" parentKey="rotateRightButton">
@@ -168,7 +168,7 @@
 					</Anchors>
 					<KeyValues>
 						<KeyValue key="rotateDirection" value="right" type="string"/>
-						<KeyValue key="rotationIncrement" value="0.09" type="number"/>
+						<KeyValue key="rotationIncrement" value="0.05" type="number"/>
 					</KeyValues>
 				</Button>
 				<Button name="$parentRotateResetButton" mixin="ModelSceneResetButtonMixin" inherits="ModelControlButtonTemplate">

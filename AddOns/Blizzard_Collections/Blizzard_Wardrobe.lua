@@ -144,10 +144,27 @@ function WardrobeTransmogFrame_EvaluateModel(forceResetModel, resetSettings)
 	end
 
 	if forceResetModel or WardrobeTransmogFrame.ModelScene.creatureDisplayID ~= creatureDisplayID then
+		if WardrobeTransmogFrame.ModelScene.previousActor then
+			WardrobeTransmogFrame.ModelScene.previousActor:ClearModel();
+			WardrobeTransmogFrame.ModelScene.previousActor = nil;
+		end
+
 		if creatureDisplayID then
-			local actor = WardrobeTransmogFrame.ModelScene:GetPlayerActor();
+			local _, class = UnitClass("player");
+			local overrideActorTag;
+			if class == "DRUID" then
+				local form = GetShapeshiftFormID();
+				if form == BEAR_FORM then
+					overrideActorTag = "druid-bear-form";
+				elseif form == CAT_FORM then
+					overrideActorTag = "druid-cat-form";
+				end
+			end
+			-- nil is a valid argument to this function
+			local actor = WardrobeTransmogFrame.ModelScene:GetPlayerActor(overrideActorTag);
 			if actor then
 				actor:SetModelByCreatureDisplayID(creatureDisplayID);
+				WardrobeTransmogFrame.ModelScene.previousActor = actor;
 			end
 		else
 			local actor = WardrobeTransmogFrame.ModelScene:GetPlayerActor();
@@ -155,6 +172,7 @@ function WardrobeTransmogFrame_EvaluateModel(forceResetModel, resetSettings)
 				local sheatheWeapons = false;
 				local autoDress = true;
 				actor:SetModelByUnit("player", sheatheWeapons, autoDress);
+				WardrobeTransmogFrame.ModelScene.previousActor = actor;
 			end
 		end
 		WardrobeTransmogFrame.ModelScene.creatureDisplayID = creatureDisplayID;
@@ -198,7 +216,7 @@ function WardrobeTransmogFrame_UpdateSlotButton(slotButton)
 			slotButton.NoItemTexture:Hide();
 		else
 			local tag = TRANSMOG_INVALID_CODES[cannotTransmogrifyReason];
-			if ( tag  == "NO_ITEM" ) then
+			if ( tag  == "NO_ITEM" or tag == "INVALID_SLOT_FOR_RACE") then
 				slotButton.Icon:SetTexture(defaultTexture);
 			else
 				slotButton.Icon:SetTexture(texture);
@@ -214,6 +232,7 @@ function WardrobeTransmogFrame_UpdateSlotButton(slotButton)
 				-- clear anything in the enchant slot, otherwise cost and Apply button state will still reflect anything pending
 				C_Transmog.ClearPending(slotButton.slotID, slotButton.transmogType);
 			end
+			C_Transmog.SetPending(slotButton.slotID, slotButton.transmogType, 0);
 			isTransmogrified = false;	-- handle legacy, this weapon could have had an illusion applied previously
 			canTransmogrify = false;
 			slotButton.invalidWeapon = true;

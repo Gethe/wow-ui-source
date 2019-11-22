@@ -62,27 +62,6 @@ local UPGRADE_BONUS_LEVEL = 60;
 
 CURRENCY_KRW = 3;
 
-local factionLogoTextures = {
-	[1]	= "Interface\\Icons\\Inv_Misc_Tournaments_banner_Orc",
-	[2]	= "Interface\\Icons\\Achievement_PVP_A_A",
-};
-
-local factionLabels = {
-	[1] = FACTION_HORDE,
-	[2] = FACTION_ALLIANCE,
-};
-
--- TODO: Expose enum to Lua?
-FACTION_IDS = {
-	["Horde"] = 1,
-	["Alliance"] = 2,
-};
-
-local factionColors = {
-	[FACTION_IDS["Horde"]] = "ffe50d12",
-	[FACTION_IDS["Alliance"]] = "ff4a54e8"
-};
-
 local stepTextures = {
 	[1] = { 0.16601563, 0.23535156, 0.00097656, 0.07812500 },
 	[2] = { 0.23730469, 0.30664063, 0.00097656, 0.07812500 },
@@ -402,7 +381,7 @@ function CharacterUpgradeFlow:Finish(controller)
 		
 		if (not results.faction) then
 			-- Non neutral character, convert faction group to id.
-			results.faction = FACTION_IDS[C_CharacterServices.GetFactionGroupByIndex(results.charid)];
+			results.faction = PLAYER_FACTION_GROUP[C_CharacterServices.GetFactionGroupByIndex(results.charid)];
 		end
 		local guid = select(15, GetCharacterInfo(results.charid));
 		if (guid ~= results.playerguid) then
@@ -1330,31 +1309,12 @@ function CharacterUpgradeSelectSpecRadioButton_OnClick(self, button, down)
 	end
 end
 
-function CharacterServices_UpdateFactionButtons(parentFrame, owner)
-	for i = 1, 2 do
-		if (not parentFrame.FactionButtons[i]) then
-			local frame = CreateFrame("CheckButton", nil, parentFrame, "CharacterUpgradeSelectFactionRadioButtonTemplate");
-			frame:SetPoint("TOP", parentFrame.FactionButtons[i - 1], "BOTTOM", 0, -35);
-			frame:SetID(i);
-			parentFrame.FactionButtons[i] = frame;
-		end
-		local button = parentFrame.FactionButtons[i];
-		button.owner = owner;
-		button.FactionIcon:SetTexture(factionLogoTextures[i]);
-		button.FactionName:SetText(factionLabels[i]);
-		button:SetChecked(false);
-		button:Show();
-	end
-end
-
 function CharacterUpgradeFactionSelectBlock:Initialize(results)
 	self.selected = nil;
-	CharacterUpgradeFactionSelectBlock.factionButtonClickedCallback = CharacterServicesMaster_Update;
-	CharacterServices_UpdateFactionButtons(self.frame.ControlsFrame, CharacterUpgradeFactionSelectBlock);
 end
 
-function CharacterUpgradeFactionSelectBlock:IsFinished()
-	return self.selected ~= nil;
+function CharacterUpgradeFactionSelectBlock:IsFinished(wasFromRewind)
+	return not wasFromRewind and self.selected ~= nil;
 end
 
 function CharacterUpgradeFactionSelectBlock:GetResult()
@@ -1362,7 +1322,7 @@ function CharacterUpgradeFactionSelectBlock:GetResult()
 end
 
 function CharacterUpgradeFactionSelectBlock:FormatResult()
-	return SELECT_FACTION_RESULTS_FORMAT:format(factionColors[self.selected], factionLabels[self.selected]);
+	return SELECT_FACTION_RESULTS_FORMAT:format(PLAYER_FACTION_COLORS_HEX[self.selected], FACTION_LABELS[self.selected]);
 end
 
 function CharacterUpgradeFactionSelectBlock:SkipIf(results)
@@ -1373,30 +1333,28 @@ function CharacterUpgradeFactionSelectBlock:OnSkip()
 	self.selected = nil;
 end
 
-function CharacterUpgradeSelectFactionRadioButton_OnClick(self, button, down)
+function CharacterUpgradeSelectFactionFrame_OnLoad(self)
+	for _, button in ipairs(self.ControlsFrame.FactionButtons) do
+		button.FactionIcon:SetTexture(FACTION_LOGO_TEXTURES[button.factionID]);
+		button.FactionName:SetText(FACTION_LABELS[button.factionID]);
+	end
+end
+
+function CharacterUpgradeSelectFactionFrame_ClearChecked()
+	for _, button in ipairs(CharacterUpgradeSelectFactionFrame.ControlsFrame.FactionButtons) do
+		button:SetChecked(false);
+	end
+
+	CharacterUpgradeFactionSelectBlock.selected = nil;
+end
+
+function CharacterUpgradeSelectFactionRadioButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
-	local owner = self.owner;
-
-	if owner then
-		if owner.selected == self:GetID() then
-			self:SetChecked(true);
-			return;
-		else
-			owner.selected = self:GetID();
-			self:SetChecked(true);
-		end
-
-		if owner.factionButtonClickedCallback then
-			owner.factionButtonClickedCallback();
-		end
-	end
-
-	for _, button in ipairs(self:GetParent().FactionButtons) do
-		if button:GetID() ~= self:GetID() then
-			button:SetChecked(false);
-		end
-	end
+	CharacterUpgradeSelectFactionFrame_ClearChecked();
+	self:SetChecked(true);
+	CharacterUpgradeFactionSelectBlock.selected = self.factionID;
+	CharacterServicesMaster_Update();
 end
 
 function CharacterUpgradeEndStep:Initialize(results)

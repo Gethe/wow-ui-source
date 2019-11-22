@@ -682,7 +682,7 @@ function AlertFrameMixin:BuildScenarioRewardData()
 end
 
 function AlertFrameMixin:BuildQuestData(questID)
-	local taskName = C_TaskQuest.GetQuestInfoByQuestID(questID);
+	local taskName, factionID, capped, displayAsObjective = C_TaskQuest.GetQuestInfoByQuestID(questID);
 
 	local questData =
 	{
@@ -691,7 +691,7 @@ function AlertFrameMixin:BuildQuestData(questID)
 		taskName = taskName,
 		money = GetQuestLogRewardMoney(questID),
 		xp = GetQuestLogRewardXP(questID),
-		displayAsObjective = select(5, GetTaskInfo(questID)),
+		displayAsObjective = displayAsObjective,
 	};
 
 	local currencyRewardCount = GetNumQuestLogRewardCurrencies(questID);

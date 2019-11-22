@@ -1650,6 +1650,9 @@
 
               <KeyValue key="normalVerticalScale" value="1.0" type="number"/>
               <KeyValue key="largeVerticalScale" value="2.7" type="number"/>
+
+              <KeyValue key="normalClassificationScale" value="1.0" type="number"/>
+              <KeyValue key="largeClassificationScale" value="1.25" type="number"/>
             </KeyValues>
             <Anchors>
               <Anchor point="TOPLEFT" relativeTo="$parentPersonalResourceOnEnemy" relativePoint="BOTTOMLEFT" x="-10" y="-12"/>

@@ -67,7 +67,7 @@ local GuildInfo =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "string", Nilable = true },
 			},
 
 			Returns =

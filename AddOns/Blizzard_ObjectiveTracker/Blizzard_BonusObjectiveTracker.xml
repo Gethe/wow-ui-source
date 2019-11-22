@@ -22,6 +22,17 @@
 				self.Glow:SetPoint("LEFT", self.Dash, -2, 0);
 			</OnLoad>
 		</Scripts>
+		<Animations>
+			<AnimationGroup parentKey="FadeOutAnim">
+				<Alpha startDelay="1" fromAlpha="1" toAlpha="0" duration="0.1" order="1"/>
+				<Scripts>
+					<OnFinished>
+						local line = self:GetParent();
+						BonusObjectiveTracker_FinishFadeOutAnim(line);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
 	</Frame>
 
 	<ScrollFrame name="BonusObjectiveTrackerBlockTemplate" hidden="true" virtual="true" alpha="0">

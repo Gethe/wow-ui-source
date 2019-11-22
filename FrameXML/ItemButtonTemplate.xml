@@ -243,6 +243,9 @@
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>
 	<Button name="LargeItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
+		<KeyValues>
+			<KeyValue key="largeItemButton" value="true" type="boolean"/>
+		</KeyValues>
 		<Size x="147" y="41" />
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -277,6 +280,9 @@
 		</Layers>
 	</Button>
 	<Button name="SmallItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
+		<KeyValues>
+			<KeyValue key="smallItemButton" value="true" type="boolean"/>
+		</KeyValues>
 		<Size x="134" y="30"/>
 		<Layers>
 			<Layer level="BACKGROUND">

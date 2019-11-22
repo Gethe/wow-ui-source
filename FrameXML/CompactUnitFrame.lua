@@ -2011,6 +2011,8 @@ function DefaultCompactNamePlateFrameSetupInternal(frame, setupOptions, frameOpt
 	frame.totalAbsorbOverlay:SetAllPoints(frame.totalAbsorb);
 
 	frame.classificationIndicator = frame.ClassificationFrame.classificationIndicator;
+	frame.ClassificationFrame.maxScale = setupOptions.maxClassificationScale or frameOptions.maxClassificationScale;
+	frame.ClassificationFrame:SetScale(setupOptions.classificationScale or frameOptions.classificationScale or 1.0);
 
 	frame.LoseAggroAnim:Stop();
 

@@ -19,7 +19,7 @@ function AuctionHouseCommoditiesListMixin:OnLoad()
 
 	local function CommoditiesListRefreshResults()
 		if self.itemID then
-			self:GetAuctionHouseFrame():RefreshSearchResults(self.searchContext, AuctionHouseUtil.GetCommoditiesItemKey(self.itemID));
+			self:GetAuctionHouseFrame():RefreshSearchResults(self.searchContext, C_AuctionHouse.MakeItemKey(self.itemID));
 		end
 	end
 
@@ -77,11 +77,13 @@ end
 function AuctionHouseCommoditiesListMixin:RefreshScrollFrame()
 	AuctionHouseItemListMixin.RefreshScrollFrame(self);
 
-	if not self.isInitialized then
+	if not self.isInitialized or not self.itemID then
 		return;
 	end
 
-	if not self.itemID or C_AuctionHouse.HasFullCommoditySearchResults(self.itemID) then
+	self:GetAuctionHouseFrame():TriggerEvent(AuctionHouseFrameMixin.Event.CommoditiesQuantitySelectionChanged, self.quantitySelected);
+
+	if C_AuctionHouse.HasFullCommoditySearchResults(self.itemID) then
 		return;
 	end
 
@@ -178,6 +180,10 @@ function AuctionHouseCommoditiesBuyListMixin:UpdateGetEntryInfoCallback()
 end
 
 function AuctionHouseCommoditiesBuyListMixin:SetQuantitySelected(quantity)
+	if quantity == self.quantitySelected then
+		return;
+	end
+
 	self.quantitySelected = quantity;
 
 	local _, _, searchResultIndex = AuctionHouseUtil.AggregateSearchResultsByQuantity(self.itemID, quantity);

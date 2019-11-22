@@ -445,6 +445,11 @@ function CommunitiesFrameMixin:UpdateSelectedClubInfo(clubId)
 end
 
 function CommunitiesFrameMixin:ClubFinderHyperLinkClicked(clubFinderId)
+	if IsCommunitiesUIDisabledByTrialAccount() then
+		UIErrorsFrame:AddMessage(ERR_RESTRICTED_ACCOUNT_TRIAL, RED_FONT_COLOR:GetRGBA());
+		return;
+	end
+
 	if not C_ClubFinder.IsEnabled() then
 		return;
 	end
@@ -681,7 +686,6 @@ function CommunitiesFrameMixin:SetClubFinderPostingExpirationText(clubId, isGuil
 		local isPostingBanned = C_ClubFinder.IsPostingBanned(clubId);
 		local hasForceDescriptionChange = clubInfo and self:ClubFinderPostingHasActiveFlag(clubId, Enum.ClubFinderClubPostingStatusFlags.ForceDescriptionChange);
 		local hasForceNameChange = clubInfo and ((clubInfo.clubType == Enum.ClubType.Guild and self:GetNeedsGuildNameChange()) or self:ClubFinderPostingHasActiveFlag(clubId, Enum.ClubFinderClubPostingStatusFlags.ForceNameChange));
-
 		if (isPostingBanned) then 
 			if (isGuildType) then
 				self.PostingExpirationText.InfoButton.tooltipText = CLUB_FINDER_BANNED_POSTING_WARNING:format(CLUB_FINDER_TYPE_GUILD);
@@ -698,7 +702,7 @@ function CommunitiesFrameMixin:SetClubFinderPostingExpirationText(clubId, isGuil
 			self.PostingExpirationText.InfoButton.tooltipText = CLUB_FINDER_GUILD_POSTING_ALERT_REMOVED_DESC; 
 		end
 		self.PostingExpirationText.ExpiredText:Show();
-		self.PostingExpirationText.InfoButton:Show();
+		self.PostingExpirationText.InfoButton:SetShown(hasForceNameChange or isPostingBanned or hasForceDescriptionChange);
 	elseif (expirationTime) then
 		if (expirationTime > 0) then
 			if (isGuildCommunitySelected) then
@@ -761,9 +765,11 @@ function CommunitiesFrameMixin:DisplayReportedAlerts(clubId)
 	local isPostingBanned = C_ClubFinder.IsPostingBanned(clubId);
 	local hasForceDescriptionChange = self:ClubFinderPostingHasActiveFlag(clubId, Enum.ClubFinderClubPostingStatusFlags.ForceDescriptionChange);
 	local hasForceNameChange = self:ClubFinderPostingHasActiveFlag(clubId, Enum.ClubFinderClubPostingStatusFlags.ForceNameChange);
+	local isGuildOfficer = C_GuildInfo.IsGuildOfficer();
+	local isGuildLeader = IsGuildLeader();
 
-	local needsGuildNameChange = clubInfo.clubType == Enum.ClubType.Guild and (self:GetNeedsGuildNameChange() or hasForceNameChange) and (IsGuildLeader() or C_GuildInfo.IsGuildOfficer());
-	local needsGuildPostingMessageChange = finderEnabled and clubInfo.clubType == Enum.ClubType.Guild and recruitingClubInfo and (IsGuildLeader() or C_GuildInfo.IsGuildOfficer()) and hasForceDescriptionChange and not isPostingBanned;
+	local needsGuildNameChange = clubInfo.clubType == Enum.ClubType.Guild and (self:GetNeedsGuildNameChange() or hasForceNameChange) and (isGuildLeader or isGuildOfficer);
+	local needsGuildPostingMessageChange = finderEnabled and clubInfo.clubType == Enum.ClubType.Guild and recruitingClubInfo and (isGuildLeader or isGuildOfficer) and hasForceDescriptionChange and not isPostingBanned;
 	local needsCommunityPostingMessageChange = finderEnabled and clubInfo.clubType == Enum.ClubType.Character and recruitingClubInfo and hasCommunityFinderPermissions and hasForceDescriptionChange and not isPostingBanned;
 	local needsCommunityNameChange = finderEnabled and clubInfo.clubType == Enum.ClubType.Character and recruitingClubInfo and hasCommunityFinderPermissions and hasForceNameChange and not isPostingBanned; 
 	local displayMode = self:GetDisplayMode();
@@ -773,7 +779,7 @@ function CommunitiesFrameMixin:DisplayReportedAlerts(clubId)
 	end
 
 	if self.GuildNameAlertFrame.topAnchored == nil then
-		self.GuildNameAlertFrame.topAnchored = not IsGuildLeader();
+		self.GuildNameAlertFrame.topAnchored = not isGuildLeader;
 	end
 
 	local ReportedDisplayFrame = nil;
@@ -781,6 +787,15 @@ function CommunitiesFrameMixin:DisplayReportedAlerts(clubId)
 	--We only want to show one alert at a time. Once the other alert is cleared, it will show the next in the case of numerous.
 	if needsGuildNameChange then
 		ReportedDisplayFrame = self.GuildNameChangeFrame;
+		if(not isGuildLeader) then 
+			ReportedDisplayFrame.GMText:SetText(GUILD_NAME_ALERT_MEMBER_HELP); 
+		else 
+			ReportedDisplayFrame.GMText:SetText(GUILD_NAME_ALERT_GM_HELP); 
+		end
+
+		ReportedDisplayFrame.EditBox:SetShown(isGuildLeader);
+		ReportedDisplayFrame.Button:SetShown(isGuildLeader);
+		ReportedDisplayFrame.RenameText:SetShown(isGuildLeader);
 		self.GuildNameAlertFrame.Alert:SetText(GUILD_NAME_ALERT);
 		self.GuildNameAlertFrame:SetShown(true);
 	elseif needsCommunityNameChange then

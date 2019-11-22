@@ -53,6 +53,15 @@ local AuctionHouse =
 			},
 		},
 		{
+			Name = "CanSetFavorite",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canSetFavorite", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CancelAuction",
 			Type = "Function",
 

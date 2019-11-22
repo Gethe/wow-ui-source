@@ -1,5 +1,6 @@
 
 local REMAINING_QUOTE_DURATION_THRESHOLD = 10; -- seconds
+local MAXIMUM_PREVIEW_PRICE_DIFFERENTIAL = 1.05;
 
 
 AuctionHouseBuyDialogNotificationFrameMixin = {};
@@ -81,7 +82,7 @@ function AuctionHouseBuyDialogOkayButtonMixin:OnClick()
 end
 
 
-AuctionHouseBuyDialogMixin = {};
+AuctionHouseBuyDialogMixin = CreateFromMixins(AuctionHouseSystemMixin);
 
 local AUCTION_HOUSE_BUY_DIALOG_EVENTS = {
 	"COMMODITY_PRICE_UPDATED",
@@ -107,7 +108,7 @@ function AuctionHouseBuyDialogMixin:OnHide()
 
 	C_AuctionHouse.CancelCommoditiesPurchase();
 
-	self:GetParent():GetAuctionHouseFrame():RefreshSearchResults(AuctionHouseSearchContext.BuyCommodities, AuctionHouseUtil.GetCommoditiesItemKey(self.itemID));
+	self:GetAuctionHouseFrame():RefreshSearchResults(AuctionHouseSearchContext.BuyCommodities, C_AuctionHouse.MakeItemKey(self.itemID));
 end
 
 function AuctionHouseBuyDialogMixin:OnUpdate()
@@ -131,11 +132,16 @@ end
 function AuctionHouseBuyDialogMixin:OnEvent(event, ...)
 	if event == "COMMODITY_PRICE_UPDATED" then
 		local updatedUnitPrice, updatedTotalPrice = ...;
-		local currentUnitPrice = self.unitPricePreview;
+		local currentTotalPrice = self.PriceFrame:GetAmount();
+		local currentUnitPrice = currentTotalPrice / self.quantity;
 
-		if updatedUnitPrice > currentUnitPrice then
-			local currentTotalPrice = self.unitPricePreview * self.quantity;
-			self.Notification:SetPriceIncreases(updatedUnitPrice - currentUnitPrice, updatedTotalPrice - currentTotalPrice);
+		if updatedUnitPrice > (currentUnitPrice * MAXIMUM_PREVIEW_PRICE_DIFFERENTIAL) then
+			self:SetState(BuyState.PriceUnavailable);
+		elseif updatedUnitPrice > currentUnitPrice then
+			local totalPriceIncrease = updatedTotalPrice - currentTotalPrice;
+			local unitPriceIncrease = math.ceil(totalPriceIncrease / self.quantity); -- Using math.ceil directly because we want to show copper. 
+			self.Notification:SetPriceIncreases(unitPriceIncrease, totalPriceIncrease);
+			self.PriceFrame:SetAmount(updatedTotalPrice);
 			self:SetState(BuyState.PriceUpdated);
 		else
 			self:SetState(BuyState.PriceConfirmed);
@@ -216,10 +222,10 @@ function AuctionHouseBuyDialogMixin:SetState(buyState)
 	self:SetScript("OnUpdate", quoteTimeoutActive and AuctionHouseBuyDialogMixin.OnUpdate or nil);
 end
 
-function AuctionHouseBuyDialogMixin:SetItemID(itemID, quantity, unitPricePreview)
+function AuctionHouseBuyDialogMixin:SetItemID(itemID, quantity, unitPricePreview, totalPricePreview)
 	self.itemID = itemID;
 	self.quantity = quantity;
-	self.unitPricePreview = unitPricePreview;
+	self.unitPricePreview = AuctionHouseUtil.SanitizeAuctionHousePrice(unitPricePreview);
 
 	local itemName = C_Item.GetItemNameByID(itemID);
 	local itemQuality = C_Item.GetItemQualityByID(itemID);
@@ -229,7 +235,7 @@ function AuctionHouseBuyDialogMixin:SetItemID(itemID, quantity, unitPricePreview
 		self.ItemDisplay.ItemText:SetText(AUCTION_HOUSE_DIALOG_ITEM_FORMAT:format(itemDisplayText, quantity));
 	end
 
-	self.PriceFrame:SetAmount(quantity * unitPricePreview);
+	self.PriceFrame:SetAmount(totalPricePreview);
 
 	self:SetState(BuyState.WaitingForQuote);
 end

@@ -37,6 +37,7 @@
 		<Scripts>
 			<OnClick>
 				self:GetParent().GuildNameAlertFrame.topAnchored = false;
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				self:GetParent():ValidateDisplayMode();
 			</OnClick>
 		</Scripts>
@@ -92,6 +93,7 @@
 				<Scripts>
 					<OnClick>
 						self:GetParent():GetParent():SetGuildNameAlertBannerMode(true);
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -137,6 +139,7 @@
 						else
 							self:GetParent():GetParent():SetGuildNameAlertBannerMode(true);
 						end
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -159,6 +162,7 @@
 					<OnClick>
 						local communitiesFrame = self:GetParent():GetParent();
 						OpenCommunitiesSettingsDialog(communitiesFrame:GetSelectedClubId());
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -187,6 +191,7 @@
 							recruitmentDialog:OnUpdatedPostingInformationRecieved();
 							recruitmentDialog:Hide();
 						end
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -210,6 +215,7 @@
 					<OnClick>
 						local communitiesFrame = self:GetParent():GetParent();
 						OpenCommunitiesSettingsDialog(communitiesFrame:GetSelectedClubId());
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 					</OnClick>
 				</Scripts>
 			</Button>

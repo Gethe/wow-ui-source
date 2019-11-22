@@ -361,7 +361,7 @@
 			<Button name="$parentAddSlotsButton" hidden="true">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parent" relativePoint="TOPLEFT" x="17" y="-224"/>
+					<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="17" y="7"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -404,11 +404,8 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame name="$parentExtraBagSlotsHelpBox" parentKey="ExtraBagSlotsHelpBox" inherits="GlowBoxTemplate" enableMouse="true" frameStrata="DIALOG">
+			<Frame name="$parentExtraBagSlotsHelpBox" parentKey="ExtraBagSlotsHelpBox" inherits="GlowBoxTemplate" enableMouse="true" frameStrata="DIALOG" hidden="true">
 				<Size x="220" y="100"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPLEFT" x="-2" y="-206"/>
-				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="Arrow" inherits="HelpPlateArrowDOWN">
