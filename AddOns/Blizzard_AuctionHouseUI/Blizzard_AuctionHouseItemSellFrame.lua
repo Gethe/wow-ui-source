@@ -269,7 +269,7 @@ function AuctionHouseItemSellFrameMixin:UpdatePostState()
 	AuctionHouseSellFrameMixin.UpdatePostState(self);
 
 	local bidPrice, buyoutPrice = self:GetPrice();
-	if bidPrice and buyoutPrice and buyoutPrice < bidPrice then
+	if bidPrice and buyoutPrice and buyoutPrice <= bidPrice then
 		self.PriceInput:SetLabelColor(RED_FONT_COLOR);
 		self.PriceInput:SetErrorShown(true);
 	else
@@ -327,7 +327,7 @@ function AuctionHouseItemSellFrameMixin:CanPostItem()
 		return false, AUCTION_HOUSE_SELL_FRAME_ERROR_PRICE;
 	end
 
-	if bidPrice and buyoutPrice and buyoutPrice < bidPrice then
+	if bidPrice and buyoutPrice and buyoutPrice <= bidPrice then
 		return false, AUCTION_HOUSE_SELL_FRAME_ERROR_BUYOUT;
 	end
 

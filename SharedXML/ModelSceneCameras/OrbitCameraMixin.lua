@@ -509,9 +509,9 @@ function OrbitCameraMixin:GetDeltaModifierForCameraMode(mode)
 	elseif mode == ORBIT_CAMERA_MOUSE_MODE_TARGET_VERTICAL then
 		return .05;
 	elseif mode == ORBIT_CAMERA_MOUSE_PAN_HORIZONTAL then
-		return .0065;
+		return 0.93;
 	elseif mode == ORBIT_CAMERA_MOUSE_PAN_VERTICAL then
-		return .0065;
+		return 0.93;
 	end
 	return 0.0;
 end
@@ -564,13 +564,25 @@ function OrbitCameraMixin:UpdateCameraOrientationAndPosition()
 
 	local targetX, targetY, targetZ = self:GetInterpolatedTarget();
 
-	local rightX, rightY, rightZ = Vector3D_ScaleBy(self.panningXOffset, self:GetRightVector());
-	local upX, upY, upZ = Vector3D_ScaleBy(self.panningYOffset, self:GetUpVector());
+	local zoomDistance = self:GetInterpolatedZoomDistance();
+
+	-- Panning start --
+	-- We want the model to move 1-to-1 with the mouse.
+	-- Panning formula: dx / hypotenuse * (zoomDistance - 1 / zoomDistance^3)
+	-- It was experimentally determined that adding the additional fudge factor 1/z^3 resulted in better tracking.
+
+	local width = self:GetOwningScene():GetWidth();
+	local height = self:GetOwningScene():GetHeight();
+	local scaleFactor = math.sqrt(width * width + height * height);
+	local zoomFactor = zoomDistance - (1 / (zoomDistance * zoomDistance * zoomDistance));
+
+	local rightX, rightY, rightZ = Vector3D_ScaleBy((self.panningXOffset / scaleFactor) * zoomFactor, self:GetRightVector());
+	local upX, upY, upZ = Vector3D_ScaleBy((self.panningYOffset / scaleFactor) * zoomFactor, self:GetUpVector());
+
+	-- Panning end --
 
 	targetX, targetY, targetZ = Vector3D_Add(targetX, targetY, targetZ, rightX, rightY, rightZ);
 	targetX, targetY, targetZ = Vector3D_Add(targetX, targetY, targetZ, upX, upY, upZ);
-
-	local zoomDistance = self:GetInterpolatedZoomDistance();
 
 	self:SetPosition(self:CalculatePositionByDistanceFromTarget(targetX, targetY, targetZ, zoomDistance, axisAngleX, axisAngleY, axisAngleZ));
 	self:GetOwningScene():SetCameraOrientationByYawPitchRoll(yaw, pitch, roll);

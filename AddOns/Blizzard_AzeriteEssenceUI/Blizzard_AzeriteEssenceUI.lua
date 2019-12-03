@@ -71,15 +71,15 @@ local AZERITE_ESSENCE_FRAME_EVENTS = {
 
 local MILESTONE_LOCATIONS = {
 	[1] = { left = 238, top = -235 },
-	[2] = { left = 110, top = -292 },
+	[2] = { left = 101, top = -270 },
 	[3] = { left = 155, top = -349 },
-	[4] = { left = 237, top = -375 },
-	[5] = { left = 321, top = -349 },
-	[6] = { left = 372, top = -277 },	
-	[7] = { left = 372, top = -191 },
-	[8] = { left = 322, top = -121 },
-	[9] = { left = 238, top = -92 },
-	[10] = { left = 156, top = -121 },
+	[4] = { left = 247, top = -375 },
+	[5] = { left = 336, top = -337 },
+	[6] = { left = 377, top = -250 },	
+	[7] = { left = 356, top = -156 },
+	[8] = { left = 278, top = -99 },
+	[9] = { left = 179, top = -106 },
+	[10] = { left = 111, top = -174 },
 	[11] = { left = 103, top = -191 },
 };
 

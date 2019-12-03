@@ -1,6 +1,6 @@
 local GUILD_CARDS_PER_PAGE = 3;
 local LOAD_PAGES_IN_ADVANCE = 1;
-local REQUEST_GUILD_CARDS_NUM = 21; 
+local REQUEST_GUILD_CARDS_NUM = 21;
 local REQUEST_TO_JOIN_HEIGHT = 420;
 local REQUEST_TO_JOIN_TEXT_HEIGHT = 14;
 local MAX_DESCRIPTION_HEIGHT = 150;
@@ -335,7 +335,7 @@ function ClubFinderRequestToJoinMixin:Initialize()
 	self:SetHeight((REQUEST_TO_JOIN_HEIGHT + extraFrameHeight) - (extraHeight));
 
 	self.ClubDescription:ClearAllPoints();
-	self.ClubDescription:SetPoint("BOTTOM", self.ClubName, "BOTTOM", 0, -usedHeight);
+	self.ClubDescription:SetPoint("BOTTOM", self.ClubName, "BOTTOM", 0, -(usedHeight + 2));
 
 	self.MessageFrame:ClearAllPoints();
 	self.MessageFrame:SetPoint("BOTTOM", self.ClubDescription, "BOTTOM", 0, -85);
@@ -1741,11 +1741,11 @@ function ClubFinderGuildCardsBaseMixin:RefreshLayout(cardPage)
 		end
 	else
 		if (self.requestedPage and not self.newRequest) then
-			self:SetSearchingState(); 
-		else 
+			self:SetSearchingState();
+		else
 			self.PreviousPage:Hide();
 			self.NextPage:Hide();
-		end 
+		end
 	end
 
 	if(cardPage <= 1) then

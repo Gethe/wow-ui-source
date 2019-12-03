@@ -189,9 +189,7 @@ function AuctionHouseTableCellFavoriteMixin:OnEvent()
 end
 
 function AuctionHouseTableCellFavoriteMixin:OnLineEnter()
-	if C_AuctionHouse.CanSetFavorite() then
-		self.FavoriteButton:LockTexture();
-	end
+	self.FavoriteButton:LockTexture();
 end
 
 function AuctionHouseTableCellFavoriteMixin:OnLineLeave()
@@ -214,13 +212,22 @@ function AuctionHouseTableCellFavoriteButtonMixin:OnClick()
 end
 
 function AuctionHouseTableCellFavoriteButtonMixin:OnEnter()
-	self.HighlightTexture:SetAlpha(C_AuctionHouse.CanSetFavorite() and 1.0 or 0);
+	if not C_AuctionHouse.CanSetFavorite() then
+		self:LockTexture();
 
-	local row = self:GetParent():GetParent();
-	ExecuteFrameScript(row, "OnEnter");
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_AddErrorLine(GameTooltip, AUCTION_HOUSE_FAVORITES_MAXED_TOOLTIP);
+		GameTooltip:Show();
+	else
+		local row = self:GetParent():GetParent();
+		ExecuteFrameScript(row, "OnEnter");
+	end
 end
 
 function AuctionHouseTableCellFavoriteButtonMixin:OnLeave()
+	GameTooltip_Hide();
+	self:UnlockTexture();
+
 	local row = self:GetParent():GetParent();
 	ExecuteFrameScript(row, "OnLeave");
 end
@@ -238,7 +245,6 @@ function AuctionHouseTableCellFavoriteButtonMixin:SetFavoriteState(isFavorite)
 	local defaultTexture = self.textureLocked and "auctionhouse-icon-favorite-off" or nil;
 	self.NormalTexture:SetAtlas(isFavorite and "auctionhouse-icon-favorite" or defaultTexture);
 	self.HighlightTexture:SetAtlas(isFavorite and "auctionhouse-icon-favorite" or "auctionhouse-icon-favorite-off");
-	self.HighlightTexture:SetBlendMode(isFavorite and "ADD" or "ADD");
 	self.HighlightTexture:SetAlpha(isFavorite and 0.2 or 0.4);
 end
 
@@ -560,7 +566,6 @@ function AuctionHouseTableCellItemDisplayMixin:UpdateDisplay(itemKey, itemKeyInf
 	self.Icon:Show();
 
 	local noneAvailable = self.rowData.totalQuantity == 0;
-	self.Text:SetAlpha(noneAvailable and 0.5 or 1.0);
 	self.Icon:SetAlpha(noneAvailable and 0.5 or 1.0);
 end
 
@@ -902,7 +907,7 @@ function AuctionHouseTableBuilder.GetItemBuyListLayout(owner, itemList)
 
 		tableBuilder:AddFillColumn(owner, 0, 1.0, STANDARD_PADDING, 0, nil, "AuctionHouseTableCellItemQuantityLeftTemplate");
 		tableBuilder:AddFixedWidthColumn(owner, 0, 24, 0, 0, nil, "AuctionHouseTableCellExtraInfoTemplate");
-		tableBuilder:AddFixedWidthColumn(owner, 0, 100, STANDARD_PADDING, STANDARD_PADDING, nil, "AuctionHouseTableCellOwnersTemplate");
+		tableBuilder:AddFixedWidthColumn(owner, 0, 100, STANDARD_PADDING, STANDARD_PADDING, nil, "AuctionHouseTableCellTimeLeftBandTemplate");
 	end
 
 	return LayoutItemBuyListTableBuilder;

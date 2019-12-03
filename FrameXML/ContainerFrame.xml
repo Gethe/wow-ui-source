@@ -326,7 +326,7 @@
 					<OnLeave method="OnLeave" />
 				</Scripts>
 			</DropDownToggleButton>
-			<Button parentKey="FilterIcon" hidden="true">
+			<Button parentKey="FilterIcon" mixin="DropDownToggleButtonMixin" hidden="true">
 				<Size x="28" y="28"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.Portrait" relativePoint="BOTTOMRIGHT" x="-9" y="14"/>
@@ -471,7 +471,7 @@
 					<OnLoad function="ContainerFrameFilterDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
-			<Button parentKey="ClickableTitleFrame">
+			<Button parentKey="ClickableTitleFrame" mixin="DropDownToggleButtonMixin">
 				<Size x="118" y="16"/>
 				<Anchors>
 					<Anchor point="TOP" x="8" y="-8"/>
@@ -485,10 +485,10 @@
 						local target = self:GetParent().PortraitButton;
 						target:GetScript("OnLeave")(target);
 					</OnLeave>
-					<OnClick>
+					<OnMouseDown>
 						local target = self:GetParent().PortraitButton;
-						target:GetScript("OnClick")(target);
-					</OnClick>
+						target:GetScript("OnMouseDown")(target);
+					</OnMouseDown>
 				</Scripts>
 			</Button>
 		</Frames>	

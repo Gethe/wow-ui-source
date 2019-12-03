@@ -245,7 +245,7 @@ function CharacterFrameCorruption_OnEnter(self)
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	GameTooltip_AddColoredDoubleLine(GameTooltip, CORRUPTION_TOOLTIP_LINE, corruption, HIGHLIGHT_FONT_COLOR, HIGHLIGHT_FONT_COLOR, noWrap);
 	GameTooltip_AddColoredDoubleLine(GameTooltip, CORRUPTION_RESISTANCE_TOOLTIP_LINE, corruptionResistance, HIGHLIGHT_FONT_COLOR, HIGHLIGHT_FONT_COLOR, noWrap);
-	GameTooltip_AddColoredDoubleLine(GameTooltip, TOTAL_CORRUPTION_TOOLTIP_LINE, totalCorruption, RED_FONT_COLOR, RED_FONT_COLOR, noWrap);
+	GameTooltip_AddColoredDoubleLine(GameTooltip, TOTAL_CORRUPTION_TOOLTIP_LINE, totalCorruption, CORRUPTION_COLOR, CORRUPTION_COLOR, noWrap);
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 
 	local corruptionEffects = GetNegativeCorruptionEffectInfo();
@@ -262,7 +262,7 @@ function CharacterFrameCorruption_OnEnter(self)
 		local lastEffect = (corruptionInfo.minCorruption > totalCorruption);
 
 		GameTooltip_AddColoredLine(GameTooltip, CORRUPTION_EFFECT_HEADER:format(corruptionInfo.name, corruptionInfo.minCorruption), lastEffect and GRAY_FONT_COLOR or HIGHLIGHT_FONT_COLOR, noWrap);
-		GameTooltip_AddColoredLine(GameTooltip, corruptionInfo.description, lastEffect and GRAY_FONT_COLOR or RED_FONT_COLOR, wrap, descriptionXOffset);
+		GameTooltip_AddColoredLine(GameTooltip, corruptionInfo.description, lastEffect and GRAY_FONT_COLOR or CORRUPTION_COLOR, wrap, descriptionXOffset);
 
 		if lastEffect then
 			break;

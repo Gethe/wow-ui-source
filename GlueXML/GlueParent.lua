@@ -477,6 +477,8 @@ local glueScreenTags =
 		["MAGHARORC"] = true,
 		["ZANDALARITROLL"] = true,
 		["KULTIRAN"] = true,
+		["MECHAGNOME"] = true,
+		["VULPERA"] = true,
 	},
 };
 

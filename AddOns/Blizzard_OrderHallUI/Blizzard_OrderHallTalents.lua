@@ -18,22 +18,6 @@ local function OnTalentButtonReleased(pool, button)
 	button:OnReleased()
 end
 
-StaticPopupDialogs["ORDER_HALL_TALENT_RESEARCH"] = {
-	text = "%s";
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function(self)
-		PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_SELECT, nil, SOUNDKIT_ALLOW_DUPLICATES);
-		C_Garrison.ResearchTalent(self.data.id, self.data.rank);
-		if (not self.data.hasTime) then
-			self.data.button:GetParent():SetResearchingTalentID(self.data.id);
-		end
-	end,
-	timeout = 0,
-	exclusive = 1,
-	hideOnEscape = 1
-};
-
 local CHOICE_BACKGROUND_OFFSET_Y = 10;
 local BACKGROUND_WITH_INSET_OFFSET_Y = 0;
 local BACKGROUND_NO_INSET_OFFSET_Y = 44;
@@ -55,6 +39,8 @@ TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Tiers] = {
 	minimumWidth = 336,
 	canHaveBackButton = true,
 	singleCost = false,
+	researchSoundStandard = SOUNDKIT.UI_ORDERHALL_TALENT_SELECT,
+	researchSoundMajor = SOUNDKIT.UI_ORDERHALL_TALENT_SELECT,
 };
 
 TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Classic] = {
@@ -68,6 +54,41 @@ TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Classic] = {
 	minimumWidth = 336,
 	canHaveBackButton = false,
 	singleCost = true,
+	researchSoundStandard = SOUNDKIT.UI_ORDERHALL_TITAN_MINOR_TALENT_SELECT,
+	researchSoundMajor = SOUNDKIT.UI_ORDERHALL_TITAN_MAJOR_TALENT_SELECT,
+};
+
+local function GetResearchSoundForTalentType(talentType)
+	local garrTalentTreeID = C_Garrison.GetCurrentGarrTalentTreeID();
+	if garrTalentTreeID then
+		local talentTreeType = C_Garrison.GetGarrisonTalentTreeType(garrTalentTreeID);
+		local layoutOptions = TalentTreeLayoutOptions[talentTreeType];
+		if layoutOptions then
+			if talentType == Enum.GarrTalentType.Major then
+				return layoutOptions.researchSoundMajor;
+			else
+				return layoutOptions.researchSoundStandard;
+			end
+		end
+	end
+	return SOUNDKIT.UI_ORDERHALL_TALENT_SELECT;
+end
+
+StaticPopupDialogs["ORDER_HALL_TALENT_RESEARCH"] = {
+	text = "%s";
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		local soundKitID = GetResearchSoundForTalentType(self.data.talentType);
+		PlaySound(soundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		C_Garrison.ResearchTalent(self.data.id, self.data.rank);
+		if (not self.data.hasTime) then
+			self.data.button:GetParent():SetResearchingTalentID(self.data.id);
+		end
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
 };
 
 OrderHallTalentFrameMixin = { }
@@ -489,10 +510,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			local shouldDisplayAsAvailable = canDisplayAsAvailable and talent.hasInstantResearch;
 			-- Show as available: this is a new tier which you don't have any talents from or and old tier that you could change.
 			-- Note: For instant talents, to support the Chromie UI, we display as available even when another talent is researching (Jeff wants it this way).
-			if (isAvailable) then
-				borderAtlas = BORDER_ATLAS_AVAILABLE;
-
-			elseif (shouldDisplayAsAvailable) then
+			if (isAvailable or shouldDisplayAsAvailable) then
 				if ( currentTierResearchableTalentCount < currentTierTotalTalentCount and talentTreeType == Enum.GarrTalentTreeType.Tiers ) then
 					talentFrame.AlphaIconOverlay:Show();
 					talentFrame.AlphaIconOverlay:SetAlpha(0.5);
@@ -743,9 +761,10 @@ function GarrisonTalentButtonMixin:OnClick()
 			elseif (hasTime) then
 				str = string.format(ORDER_HALL_RESEARCH_CONFIRMATION_NO_COST, self.talent.name, SecondsToTime(self.talent.researchDuration, false, true));
 			end
-			StaticPopup_Show("ORDER_HALL_TALENT_RESEARCH", str, nil, { id = self.talent.id, rank = self.talent.talentRank + 1,  hasTime = hasTime,  button = self });
+			StaticPopup_Show("ORDER_HALL_TALENT_RESEARCH", str, nil, { id = self.talent.id, rank = self.talent.talentRank + 1,  hasTime = hasTime,  button = self, talentType = self.talent.type });
 		else
-			PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_SELECT, nil, SOUNDKIT_ALLOW_DUPLICATES);
+			local soundKitID = GetResearchSoundForTalentType(self.talent.type);
+			PlaySound(soundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES);
 			C_Garrison.ResearchTalent(self.talent.id, self.talent.talentRank + 1);
 			self:GetParent():SetResearchingTalentID(self.talent.id);
 		end

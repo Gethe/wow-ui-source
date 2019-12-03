@@ -292,6 +292,7 @@
 						<Frames>
 							<Frame parentKey="Corruption" frameStrata="HIGH">
 								<Size x="61" y="106"/>
+								<HitRectInsets left="12" right="12" top="30" bottom="45"/>
 								<Anchors>
 									<Anchor point="RIGHT" x="29" y="-8"/>
 								</Anchors>

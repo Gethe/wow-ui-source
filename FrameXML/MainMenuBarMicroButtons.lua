@@ -349,10 +349,10 @@ end
 
 function GuildMicroButtonMixin:EvaluateAlertVisibility() 
 	if (self.showOfflineJoinAlert) then
-		MainMenuMicroButton_ShowAlert(GuildMicroButtonAlert, CLUB_FINDER_NEW_COMMUNITY_JOINED);
+		MainMenuMicroButton_ShowAlert(GuildMicroButtonAlert, CLUB_FINDER_NEW_COMMUNITY_JOINED, LE_FRAME_TUTORIAL_ACCOUNT_CLUB_FINDER_NEW_COMMUNITY_JOINED);
 		self.showOfflineJoinAlert = false;
 	elseif (self:ShouldShowAlert()) then 
-		MainMenuMicroButton_ShowAlert(GuildMicroButtonAlert, CLUB_FINDER_NEW_FEATURE_TUTORIAL);
+		MainMenuMicroButton_ShowAlert(GuildMicroButtonAlert, CLUB_FINDER_NEW_FEATURE_TUTORIAL, LE_FRAME_TUTORIAL_ACCCOUNT_CLUB_FINDER_NEW_FEATURE);
 	end
 end 
 function GuildMicroButtonMixin:MarkCommunitiesInvitiationDisplayed(clubId)

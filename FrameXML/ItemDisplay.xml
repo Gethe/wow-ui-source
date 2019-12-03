@@ -63,6 +63,13 @@
 						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 					</Anchors>
 				</Texture>
+				<FontString parentKey="Count" inherits="NumberFontNormalLarge" justifyH="RIGHT" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon">
+							<Offset x="-4" y="6"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="3">
 				<Texture parentKey="SpecIcon">

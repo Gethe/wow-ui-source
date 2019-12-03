@@ -216,7 +216,7 @@ function WardrobeTransmogFrame_UpdateSlotButton(slotButton)
 			slotButton.NoItemTexture:Hide();
 		else
 			local tag = TRANSMOG_INVALID_CODES[cannotTransmogrifyReason];
-			if ( tag  == "NO_ITEM" or tag == "INVALID_SLOT_FOR_RACE") then
+			if ( tag  == "NO_ITEM" or tag == "SLOT_FOR_RACE") then
 				slotButton.Icon:SetTexture(defaultTexture);
 			else
 				slotButton.Icon:SetTexture(texture);
@@ -335,12 +335,6 @@ function WardrobeTransmogFrame_UpdateWeaponModel(slot)
 		-- check existing equipped on model. we don't want to update it if the same because the hand will open/close.
 		local existingAppearanceSourceID, existingIllustionSourceID = actor:GetSlotTransmogSources(slotID);
 		if ( existingAppearanceSourceID ~= appearanceSourceID or existingIllustionSourceID ~= illusionSourceID ) then
-			-- don't specify a slot when applying or removing ranged weapons because of bows
-			local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(appearanceSourceID);
-			local existingCategoryID = C_TransmogCollection.GetAppearanceSourceInfo(existingAppearanceSourceID);
-			if ( WardrobeUtils_IsCategoryRanged(categoryID) or WardrobeUtils_IsCategoryRanged(existingCategoryID) ) then
-				slot = nil;
-			end
 			if slot and ( WardrobeTransmogFrame.ModelScene.creatureDisplayID == nil ) then
 				actor:TryOn(appearanceSourceID, slot, illusionSourceID);
 			end
@@ -742,6 +736,10 @@ local SET_MODEL_PAN_AND_ZOOM_LIMITS = {
 	["KulTiran3"] = { maxZoom =  2.22368383407593, panMaxLeft = -0.43183308839798, panMaxRight = 0.445900857448578, panMaxTop = -0.303212702274323, panMaxBottom = -2.49550628662109 },
 	["ZandalariTroll2"] = { maxZoom =  2.1710512638092, panMaxLeft = -0.487841755151749, panMaxRight = 0.561356604099274, panMaxTop = -0.385127544403076, panMaxBottom = -2.78562784194946 },
 	["ZandalariTroll3"] = { maxZoom =  3.32894563674927, panMaxLeft = -0.376705944538116, panMaxRight = 0.488780438899994, panMaxTop = -0.20890490710735, panMaxBottom = -2.67064166069031 },
+	["Mechagnome3"] = { maxZoom = 2.9605259895325, panMaxLeft = -0.29900181293488, panMaxRight = 0.35779395699501, panMaxTop = -0.076380833983421, panMaxBottom = -0.99909907579422 },
+	["Mechagnome2"] = { maxZoom = 2.8552639484406, panMaxLeft = -0.2777853012085, panMaxRight = 0.29651582241058, panMaxTop = -0.095201380550861, panMaxBottom = -1.0263166427612 },
+	["Vulpera2"] = { maxZoom = 2.4605259895325, panMaxLeft = -0.31328883767128, panMaxRight = 0.39014467597008, panMaxTop = -0.089733943343162, panMaxBottom = -1.3402827978134 },
+	["Vulpera3"] = { maxZoom = 2.9605259895325, panMaxLeft = -0.26144406199455, panMaxRight = 0.30945864319801, panMaxTop = -0.07625275105238, panMaxBottom = -1.2928194999695 },
 };
 
 function WardrobeCollectionFrame_SetContainer(parent)

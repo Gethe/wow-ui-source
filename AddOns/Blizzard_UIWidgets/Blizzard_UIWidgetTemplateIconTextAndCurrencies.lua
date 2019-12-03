@@ -36,7 +36,7 @@ function UIWidgetTemplateIconTextAndCurrenciesMixin:Setup(widgetInfo, widgetCont
 		local currencyFrame = self.currencyPool:Acquire();
 		currencyFrame:Show();
 
-		currencyFrame:Setup(currencyInfo, enabledState);
+		currencyFrame:Setup(widgetContainer, currencyInfo, enabledState);
 
 		if previousCurrencyFrame then
 			currencyFrame:SetPoint("TOPLEFT", previousCurrencyFrame, "TOPRIGHT", 10, 0);

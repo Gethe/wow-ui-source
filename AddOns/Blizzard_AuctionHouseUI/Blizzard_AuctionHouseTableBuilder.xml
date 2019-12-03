@@ -81,7 +81,7 @@
 					<OnLeave method="OnLeave"/>
 				</Scripts>
 				<NormalTexture parentKey="NormalTexture" atlas="auctionhouse-icon-favorite"/>
-				<HighlightTexture parentKey="HighlightTexture" atlas="auctionhouse-icon-favorite-off"/>
+				<HighlightTexture parentKey="HighlightTexture" atlas="auctionhouse-icon-favorite-off" alphaMode="ADD"/>
 			</Button>
 		</Frames>
 		<Scripts>

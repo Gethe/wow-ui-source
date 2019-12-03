@@ -68,7 +68,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<FontString parentKey="ItemText" inherits="Number13FontWhite" justifyH="CENTER">
+						<FontString parentKey="ItemText" inherits="Number15FontWhite" justifyH="CENTER">
 							<Anchors>
 								<Anchor point="TOP"/>
 							</Anchors>

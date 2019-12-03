@@ -1,3 +1,10 @@
+function GetFormattedItemQuantity(quantity, maxQuantity)
+	if quantity > (maxQuantity or 9999) then
+		return "*";
+	end;
+
+	return quantity;
+end
 
 function SetItemButtonCount(button, count, abbreviate)
 	if ( not button ) then
@@ -13,9 +20,10 @@ function SetItemButtonCount(button, count, abbreviate)
 	if ( count > 1 or (button.isBag and count > 0) ) then
 		if ( abbreviate ) then
 			count = AbbreviateNumbers(count);
-		elseif ( count > (button.maxDisplayCount or 9999) ) then
-			count = "*";
+		else
+			count = GetFormattedItemQuantity(count, button.maxDisplayCount);
 		end
+
 		countString:SetText(count);
 		countString:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 		countString:Show();

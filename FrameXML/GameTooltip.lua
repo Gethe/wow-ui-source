@@ -391,7 +391,6 @@ end
 function GameTooltip_ClearInsertedFrames(self)
 	if ( self.insertedFrames ) then
 		for i = 1, #self.insertedFrames do
-			self.insertedFrames[i]:SetParent(nil);
 			self.insertedFrames[i]:Hide();
 		end
 	end
@@ -849,7 +848,6 @@ function GameTooltip_AddProgressBar(self, min, max, value, text)
 	progressBar.Bar:SetMinMaxValues(min, max);
 	progressBar.Bar:SetValue(value);
 	progressBar:SetAlpha(1);
-	progressBar:Show();
 	GameTooltip_InsertFrame(self, progressBar);
 end
 
@@ -899,6 +897,7 @@ function GameTooltip_AddWidgetSet(self, widgetSetID)
 	if not self.widgetContainer then
 		self.widgetContainer = CreateFrame("FRAME", nil, self, "UIWidgetContainerTemplate");
 		self.widgetContainer.showAndHideOnWidgetSetRegistration = false;
+		self.widgetContainer.disableWidgetTooltips = true;
 		self.widgetContainer:Hide();
 	end
 

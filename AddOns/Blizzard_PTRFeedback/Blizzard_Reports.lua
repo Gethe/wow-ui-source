@@ -225,7 +225,7 @@ function PTR_IssueReporter.CreateReports()
             local bonusIDs = {}
             local results = ""
             local numberOfBonusIDs = elements[14]
-            if numberOfBonusIDs > 0 then
+            if (numberOfBonusIDs) and (tonumber(numberOfBonusIDs)) and (tonumber(numberOfBonusIDs) > 0) then
                 for i=15, 15 + numberOfBonusIDs do
                     table.insert(bonusIDs,elements[i])
                 end

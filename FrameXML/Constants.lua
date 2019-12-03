@@ -71,6 +71,7 @@ DIM_GREEN_FONT_COLOR		= CreateColor(0.251, 0.753, 0.251); -- Used for officer ch
 BLACK_FONT_COLOR			= CreateColor(0.0, 0.0, 0.0);
 LINK_FONT_COLOR				= CreateColor(102.0 / 255.0, 187.0 / 255.0, 255.0 / 255.0); -- Light blue that we use for system links. E.g. calendar events and nydus links in the shop.
 SEPIA_COLOR					= CreateColor(0.565, 0.377, 0.157);
+CORRUPTION_COLOR			= CreateColor(0.584, 0.428, 0.82);
 
 QUEST_OBJECTIVE_FONT_COLOR = CreateColor(0.8, 0.8, 0.8);
 QUEST_OBJECTIVE_HIGHLIGHT_FONT_COLOR = HIGHLIGHT_FONT_COLOR;
@@ -921,7 +922,7 @@ TRANSMOG_INVALID_CODES = {
 	"",		-- invalid source
 	"",		-- invalid source quality
 	"CANNOT_USE",
-	"INVALID_SLOT_FOR_RACE",
+	"SLOT_FOR_RACE",
 }
 
 TRANSMOG_SOURCE_BOSS_DROP = 1;

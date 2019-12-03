@@ -745,10 +745,6 @@ local PvpInfo =
 			Name = "PostMatchItemRewardUpdate",
 			Type = "Event",
 			LiteralName = "POST_MATCH_ITEM_REWARD_UPDATE",
-			Payload =
-			{
-				{ Name = "reward", Type = "PVPPostMatchItemReward", Nilable = false },
-			},
 		},
 		{
 			Name = "PvpBrawlInfoUpdated",

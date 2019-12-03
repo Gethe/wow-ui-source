@@ -162,10 +162,10 @@ function AuctionHouseBuyDialogMixin:SetState(buyState)
 	local buyNowEnabled = false;
 	local okayShown = false;
 	local notificationText = nil;
-	local notificationFontObject = Number13FontYellow;
+	local notificationFontObject = GameFontNormal;
 	local showNotificationIcon = false;
 	local notificationAnchor = { "CENTER" };
-	local dialogHeight = 95;
+	local dialogHeight = 100;
 	if buyState == BuyState.WaitingForQuote then
 		itemDisplayShown = true;
 		buyNowShown = true;
@@ -183,9 +183,9 @@ function AuctionHouseBuyDialogMixin:SetState(buyState)
 		notificationAnchor = { "BOTTOM", self.OkayButton, "TOP", 0, 13 };
 	elseif buyState == BuyState.PriceUnavailable then
 		okayShown = true;
-		dialogHeight = 80;
+		dialogHeight = 85;
 		notificationText = AUCTION_HOUSE_DIALOG_PRICE_UNAVAILABLE;
-		notificationFontObject = Number13FontWhite;
+		notificationFontObject = GameFontNormal;
 
 		local topOffset = 20;
 		local bottomOffset = self.OkayButton:GetTop() - self:GetBottom();

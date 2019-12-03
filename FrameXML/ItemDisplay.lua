@@ -16,7 +16,8 @@ function LootItemExtendedMixin:Init(itemLink, originalQuantity, specID, isCurren
 	self:SetIconDrawLayer(iconDrawLayer or "BORDER");
 	self:SetIconBorderShown(isIconBorderShown or false);
 	self:SetIconBorderDropShadowShown(isIconBorderDropShadowShown or false);
-	
+	self:SetIconQuantity(quantity or 1);
+
 	local showAzeriteBorder = isIconBorderShown and not isCurrency and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemLink);
 	self:SetIconOverlayAtlas(showAzeriteBorder and "LootToast-Azerite-Border" or nil);
 
@@ -38,6 +39,14 @@ function LootItemExtendedMixin:Init(itemLink, originalQuantity, specID, isCurren
 	self.GlowSmokeBurst:SetAlpha(0);
 end
 
+function LootItemExtendedMixin:SetIconQuantity(quantity)
+	local canDisplayCount = quantity > 1;
+	if canDisplayCount then
+		local quantityString = GetFormattedItemQuantity(quantity);
+		self.Count:SetText(quantityString);
+	end
+	self.Count:SetShown(canDisplayCount);
+end
 function LootItemExtendedMixin:SetIconDrawLayer(drawLayer)
 	self.Icon:SetDrawLayer(drawLayer);
 end

@@ -217,7 +217,12 @@ function PVPMatchResultsMixin:BeginShow()
 	ShowUIPanel(self);
 end
 function PVPMatchResultsMixin:DisplayRewards()
-	if self.hasDisplayedRewards or not self.haveConquestData or not self.hasRewardTimerElapsed then
+	if self.hasDisplayedRewards or not self.hasRewardTimerElapsed then
+		return;
+	end
+
+	local conquestQuestID = select(3, PVPGetConquestLevelInfo());
+	if conquestQuestID ~= 0 and not self.haveConquestData then
 		return;
 	end
 	self.hasDisplayedRewards = true;
