@@ -1950,7 +1950,7 @@ function StoreFrame_DoesProductGroupHavePurchasableItems(groupID)
 		local completelyOwned = StoreFrame_IsCompletelyOwned(entryInfo);
 		local partiallyOwned = StoreFrame_IsPartiallyOwned(entryInfo);
 
-		local alreadyOwned = completelyOwned or PartiallyOwned;
+		local alreadyOwned = completelyOwned or partiallyOwned;
 		if not alreadyOwned then
 			return true;
 		end

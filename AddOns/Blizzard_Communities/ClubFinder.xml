@@ -559,7 +559,7 @@
 				<FontString parentKey="ClubName" inherits="GameFontGreen">
 					<Size x="300" y="0"/>
 						<Anchors>
-							<Anchor point="BOTTOM" relativeKey="$parent.DialogLabel" relativePoint="BOTTOM" x="0" y="-15" />
+							<Anchor point="TOP" relativeKey="$parent.DialogLabel" relativePoint="BOTTOM" x="0" y="-6" />
 						</Anchors>
 				</FontString>
 				<FontString parentKey="ClubDescription" wordwrap="true" inherits="GameFontNormal">
