@@ -67,6 +67,10 @@ function NavBar_Initialize(self, template, homeData, homeButton, overflowButton)
 	homeButton.listFunc = homeData.listFunc;
 	homeButton.data = homeData;
 	homeButton:Show();
+
+	if Kiosk.IsEnabled() then
+		self.KioskOverlay:Show();
+	end
 end
 
 

@@ -1171,12 +1171,11 @@ function HelpBrowser_ToggleTooltip(button, browser)
 	if (not hasResized) then
 		local tooltip = BrowserSettingsTooltip;
 		local maxWidth = tooltip.Title:GetWidth()
-		local buttonWidth = max(tooltip.CacheButton:GetTextWidth(), tooltip.CookiesButton:GetTextWidth());
+		local buttonWidth = tooltip.CookiesButton:GetTextWidth();
 		buttonWidth = buttonWidth + 20; --add button padding
 		buttonWidth = max(buttonWidth, BROWSER_TOOLTIP_BUTTON_WIDTH);
 		maxWidth = max(buttonWidth, maxWidth);
 		maxWidth = maxWidth + 20; --add tooltip padding
-		tooltip.CacheButton:SetWidth(buttonWidth);
 		tooltip.CookiesButton:SetWidth(buttonWidth);
 		tooltip:SetWidth(maxWidth);
 		hasResized = true;

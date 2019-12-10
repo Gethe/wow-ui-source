@@ -52,7 +52,7 @@ function CommunitiesFrameMixin:OnLoad()
 end
 
 function CommunitiesFrameMixin:OnShow()
-	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 	
 	-- Don't allow ChannelFrame and CommunitiesFrame to show at the same time, because they share one presence subscription
 	if ChannelFrame and ChannelFrame:IsShown() then
@@ -567,7 +567,9 @@ function CommunitiesFrameMixin:UpdateStreamDropDown()
 end
 
 function CommunitiesFrameMixin:OnHide()
-	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+	if (not FRIENDS_COMMUNITY_SWAP_IN_PROGRESS) then
+		PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+	end
 	
 	self:CloseActiveDialogs();
 	C_Club.ClearClubPresenceSubscription();
@@ -653,6 +655,13 @@ function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 	self:SetOnMinimizedCallback(OnMinimize);
 	
 	self:SetMinimizedCVar("miniCommunitiesFrame");
+end
+
+function CommunitiesFrameToggleToFriends(selectedTab)
+	FRIENDS_COMMUNITY_SWAP_IN_PROGRESS = true;
+	ToggleCommunitiesFrame();
+	ToggleFriendsFrame(selectedTab, true);
+	FRIENDS_COMMUNITY_SWAP_IN_PROGRESS = false;
 end
 
 CommunitiesControlFrameMixin = {};

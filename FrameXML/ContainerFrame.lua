@@ -119,6 +119,10 @@ function ToggleBag(id)
 		end
 		if ( not containerShowing ) then
 			ContainerFrame_GenerateFrame(ContainerFrame_GetOpenFrame(), size, id);
+			-- Stop keyring button pulse
+			if (id == KEYRING_CONTAINER) then 
+				SetButtonPulse(KeyRingButton, 0, 1);
+			end
 		end
 	end
 end
@@ -169,8 +173,9 @@ function ContainerFrame_OnHide(self)
 			bagButton:SetChecked(false);
 		else
 			-- If its a bank bag then update its highlight
-			
-			UpdateBagButtonHighlight(self:GetID() - NUM_BAG_SLOTS); 
+			if ( self:GetID() > NUM_BAG_SLOTS ) then
+				UpdateBagButtonHighlight(self:GetID() - NUM_BAG_SLOTS);
+			end
 		end
 	end
 	ContainerFrame1.bagsShown = ContainerFrame1.bagsShown - 1;
@@ -220,10 +225,14 @@ function ContainerFrame_OnShow(self)
 	--self.FilterIcon:Hide();
 	if ( self:GetID() == 0 ) then
 		local shouldShow = true;
-		for i = BACKPACK_CONTAINER + 1, NUM_BAG_SLOTS, 1 do
-			if ( not GetInventoryItemID("player", ContainerIDToInventoryID(i)) ) then
-				shouldShow = false;
-				break;
+		if (FRAME_THAT_OPENED_BAGS ~= nil or Kiosk.IsEnabled()) then
+			shouldShow = false;
+		else
+			for i = BACKPACK_CONTAINER + 1, NUM_BAG_SLOTS, 1 do
+				if ( not GetInventoryItemID("player", ContainerIDToInventoryID(i)) ) then
+					shouldShow = false;
+					break;
+				end
 			end
 		end
 		if ( shouldShow and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CLEAN_UP_BAGS) ) then
@@ -380,10 +389,14 @@ end
 
 function CheckBagSettingsTutorial()
 	local shouldShow = true;
-	for i = BACKPACK_CONTAINER + 1, NUM_BAG_SLOTS, 1 do
-		if ( not GetInventoryItemID("player", ContainerIDToInventoryID(i)) ) then
-			shouldShow = false;
-			break;
+	if (FRAME_THAT_OPENED_BAGS ~= nil or Kiosk.IsEnabled()) then
+		shouldShow = false;
+	else
+		for i = BACKPACK_CONTAINER + 1, NUM_BAG_SLOTS, 1 do
+			if ( not GetInventoryItemID("player", ContainerIDToInventoryID(i)) ) then
+				shouldShow = false;
+				break;
+			end
 		end
 	end
 	if (shouldShow and GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CLEAN_UP_BAGS) and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BAG_SETTINGS)) then
@@ -480,7 +493,7 @@ function ContainerFrame_Update(frame)
 --[[
 	frame.FilterIcon:Hide();
 --]]
-	if ( id ~= 0 and not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(id)) ) then
+	if ( id ~= 0 and id ~= KEYRING_CONTAINER and not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(id)) ) then
 		for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
 			local active = false;
 			if ( id > NUM_BAG_SLOTS ) then
@@ -1365,7 +1378,6 @@ function ContainerFrameItemButton_OnLeave(self)
 end
 
 function ContainerFramePortraitButton_OnEnter(self)
-	self.Highlight:Show();
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	local waitingOnData = false;
 	if ( self:GetID() == 0 ) then
@@ -1373,22 +1385,25 @@ function ContainerFramePortraitButton_OnEnter(self)
 		if (GetBindingKey("TOGGLEBACKPACK")) then
 			GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey("TOGGLEBACKPACK")..")"..FONT_COLOR_CODE_CLOSE)
 		end
-	else
-		local parent = self:GetParent();
-		local id = parent:GetID();
-		local link = GetInventoryItemLink("player", ContainerIDToInventoryID(id));
-		local name, _, quality = GetItemInfo(link);
-		if name and quality then
-			local r, g, b = GetItemQualityColor(quality);
-			GameTooltip:SetText(name, r, g, b);
-		else
-			GameTooltip:SetText(RETRIEVING_ITEM_INFO, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-			waitingOnData = true;
+	elseif ( self:GetID() == KEYRING_CONTAINER ) then
+		GameTooltip:SetText(KEYRING, 1.0, 1.0, 1.0);
+		local binding = GetBindingKey("TOGGLEBAG"..(self:GetID()));
+		if ( binding ) then
+			GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..binding..")"..FONT_COLOR_CODE_CLOSE);
 		end
-
+	elseif ( GameTooltip:SetInventoryItem("player", ContainerIDToInventoryID(self:GetID())) ) then
+		local bagID = ContainerIDToInventoryID(self:GetID());
 		local binding = GetBindingKey("TOGGLEBAG"..(4 - self:GetID() + 1));
 		if ( binding ) then
 			GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..binding..")"..FONT_COLOR_CODE_CLOSE);
+		end
+		if (not IsInventoryItemProfessionBag("player", bagID)) then
+			for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
+				if ( GetBagSlotFlag(bagID, i) ) then
+					GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[i]));
+					break;
+				end
+			end
 		end
 	end
 	
@@ -1397,7 +1412,6 @@ function ContainerFramePortraitButton_OnEnter(self)
 end
 
 function ContainerFramePortraitButton_OnLeave(self)
-	self.Highlight:Hide();
 	GameTooltip_Hide();
 end
 

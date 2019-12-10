@@ -60,6 +60,9 @@ function TutorialFrame_Update(currentTutorial)
 end
 
 function TutorialFrame_NewTutorial(tutorialID)
+	if Kiosk.IsEnabled() then
+		return;
+	end
 	-- Get tutorial button
 	local button = TutorialFrame_GetAlertButton();
 	-- Not enough tutorial buttons, not sure how to handle this right now

@@ -297,7 +297,7 @@
 				</Layers>
 				<Scripts>
 					<OnVerticalScroll>
-						FauxScrollFrame_OnVerticalScroll(BATTLEFIELD_ZONES_HEIGHT, BattlefieldFrame_Update)
+						FauxScrollFrame_OnVerticalScroll(self, offset, BATTLEFIELD_ZONES_HEIGHT, BattlefieldFrame_Update)
 					</OnVerticalScroll>
 				</Scripts>
 			</ScrollFrame>

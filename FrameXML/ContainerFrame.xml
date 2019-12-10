@@ -308,16 +308,6 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" x="7" y="-5"/>
 				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Highlight" atlas="bags-roundhighlight" alphaMode="ADD" hidden="true">
-							<Size x="36" y="36"/>
-							<Anchors>
-								<Anchor point="CENTER" x="-3" y="3"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Scripts>
 					<OnEnter function="ContainerFramePortraitButton_OnEnter" />
 					<OnLeave function="ContainerFramePortraitButton_OnLeave" />

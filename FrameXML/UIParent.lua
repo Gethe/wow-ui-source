@@ -522,7 +522,7 @@ function IsCommunitiesUIDisabledByTrialAccount()
 end
 
 function ToggleGuildFrame()
-	if (IsKioskModeEnabled()) then
+	if (Kiosk.IsEnabled()) then
 		return;
 	end
 
@@ -552,7 +552,7 @@ function ToggleGuildFrame()
 end
 
 function ToggleHelpFrame()
-	if (IsKioskModeEnabled()) then
+	if (Kiosk.IsEnabled()) then
 		return;
 	end
 
@@ -569,7 +569,7 @@ function ToggleHelpFrame()
 end
 
 function ToggleRaidFrame()
-	if (IsKioskModeEnabled()) then
+	if (Kiosk.IsEnabled()) then
 		return;
 	end
 
@@ -595,7 +595,7 @@ function CommunitiesFrame_IsEnabled()
 end
 
 function ToggleStoreUI()
-	--[[if (IsKioskModeEnabled()) then
+	--[[if (Kiosk.IsEnabled()) then
 		return;
 	end
 
@@ -610,7 +610,7 @@ function ToggleStoreUI()
 end
 
 function SetStoreUIShown(shown)
-	--[[if (IsKioskModeEnabled()) then
+	--[[if (Kiosk.IsEnabled()) then
 		return;
 	end
 
@@ -803,17 +803,9 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "DELETE_ITEM_CONFIRM" ) then
 		-- Check quality, ignore heirlooms
 		if ( arg2 >= LE_ITEM_QUALITY_RARE and arg2 ~= LE_ITEM_QUALITY_HEIRLOOM ) then
-			if (arg4 == 1) then -- quest item?
-				StaticPopup_Show("DELETE_GOOD_QUEST_ITEM", arg1);
-			else
-				StaticPopup_Show("DELETE_GOOD_ITEM", arg1);
-			end
+			StaticPopup_Show("DELETE_GOOD_ITEM", arg1);
 		else
-			if (arg4 == 1) then -- quest item?
-				StaticPopup_Show("DELETE_QUEST_ITEM", arg1);
-			else
-				StaticPopup_Show("DELETE_ITEM", arg1);
-			end
+			StaticPopup_Show("DELETE_ITEM", arg1);
 		end
 	elseif ( event == "QUEST_ACCEPT_CONFIRM" ) then
 		local numEntries, numQuests = GetNumQuestLogEntries();
@@ -861,6 +853,19 @@ function UIParent_OnEvent(self, event, ...)
 		if ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
 			StaticPopup_Show("DEATH");
 		end
+		
+		local alreadyShowingSummonPopup = StaticPopup_Visible("CONFIRM_SUMMON_STARTING_AREA") or StaticPopup_Visible("CONFIRM_SUMMON_SCENARIO") or StaticPopup_Visible("CONFIRM_SUMMON")
+		if ( not alreadyShowingSummonPopup and C_SummonInfo.GetSummonConfirmTimeLeft() > 0 ) then
+			local summonReason = C_SummonInfo.GetSummonReason();
+			local isSkippingStartingArea = C_SummonInfo.IsSummonSkippingStartExperience();
+			if ( isSkippingStartingArea ) then -- check if skiping start experience
+				StaticPopup_Show("CONFIRM_SUMMON_STARTING_AREA");
+			elseif (summonType == LE_SUMMON_REASON_SCENARIO) then
+				StaticPopup_Show("CONFIRM_SUMMON_SCENARIO");
+			else
+				StaticPopup_Show("CONFIRM_SUMMON");
+			end
+		end
 
 		UpdateUIParentRelativeToDebugMenu();
 
@@ -892,6 +897,10 @@ function UIParent_OnEvent(self, event, ...)
 		end
 
 		self.battlefieldBannerShown = nil;
+
+		if Kiosk.IsEnabled() then
+			LoadAddOn("Blizzard_Kiosk");
+		end
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "PVP_BRAWL_INFO_UPDATED" ) then
 		PlayBattlefieldBanner(self);
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
@@ -4403,8 +4412,8 @@ function WillAcceptInviteRemoveQueues()
 
 	--PvP
 	for i=1, GetMaxBattlefieldID() do
-		local status, mapName, teamSize, registeredMatch, suspend = GetBattlefieldStatus(i);
-		if ( status == "queued" or status == "confirmed" ) then
+		local status, mapName, instanceID,_,_,_,_,_,_,asGroup = GetBattlefieldStatus(i);
+		if ( ( status == "queued" or status == "confirmed" ) and asGroup ) then
 			return true;
 		end
 	end

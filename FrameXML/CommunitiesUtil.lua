@@ -1,4 +1,3 @@
-
 CommunitiesUtil = {};
 
 function CommunitiesUtil.GetMemberRGB(memberInfo)
@@ -11,7 +10,7 @@ function CommunitiesUtil.GetMemberRGB(memberInfo)
 		end
 	end
 	--]]
-	
+
 	return BATTLENET_FONT_COLOR:GetRGB();
 end
 
@@ -87,7 +86,7 @@ local function GenerateCompareMemberLambda(clubId)
 				end
 			end
 		end
-		
+
 		return CompareBNetMembers;
 	else
 		return CompareMembers;
@@ -118,7 +117,7 @@ end
 
 function CommunitiesUtil.GetMemberInfoLookup(memberInfoArray)
 	local memberInfoLookup = {};
-	
+
 	for _, memberInfo in ipairs(memberInfoArray) do
 		memberInfoLookup[memberInfo.memberId] = memberInfo;
 	end
@@ -193,7 +192,7 @@ function CommunitiesUtil.DoesCommunityHaveUnreadMessages(clubId)
 	return CommunitiesUtil.DoesCommunityHaveOtherUnreadMessages(clubId, nil);
 end
 
-function CommunitiesUtil.DoesCommunityHaveOtherUnreadMessages(clubId, ignoreStreamId)	
+function CommunitiesUtil.DoesCommunityHaveOtherUnreadMessages(clubId, ignoreStreamId)
 	local streamToNotificationSetting = CommunitiesUtil.GetStreamNotificationSettingsLookup(clubId);
 	for i, stream in ipairs(C_Club.GetStreams(clubId)) do
 		-- TODO:: Support mention-based notifications once we have support for mentions.
@@ -211,7 +210,7 @@ function CommunitiesUtil.GetStreamNotificationSettingsLookup(clubId)
 	for i, streamNotificationSetting in ipairs(streamNotificationSettings) do
 		streamToNotificationSetting[streamNotificationSetting.streamId] = streamNotificationSetting.filter;
 	end
-	
+
 	return streamToNotificationSetting;
 end
 
@@ -235,7 +234,7 @@ function CommunitiesUtil.OpenInviteDialog(clubId, streamId)
 	if not clubInfo then
 		return;
 	end
-	
+
 	local privileges = C_Club.GetClubPrivileges(clubId);
 	if privileges.canCreateTicket then
 		StaticPopup_Show("INVITE_COMMUNITY_MEMBER_WITH_INVITE_LINK", nil, nil, { clubId = clubId, streamId = streamId, });
@@ -250,4 +249,64 @@ end
 
 function CommunitiesUtil.HasCommunityInvite()
 	return next(C_Club.GetInvitationsForSelf()) ~= nil;
+end
+
+function CommunitiesUtil.FindCommunityAndStreamByName(communityName, streamName)
+	local communityID, streamID;
+	if communityName then
+		communityName = string.lower(communityName);
+		local clubs = C_Club.GetSubscribedClubs();
+		if clubs then
+			for _, club in ipairs(clubs) do
+				if string.lower(club.name) == communityName then
+					communityID = club.clubId;
+					break;
+				end
+			end
+
+			if communityID then
+				local streams = C_Club.GetStreams(communityID);
+				if streams then
+					if streamName then
+						streamName = string.lower(streamName);
+						for _, stream in ipairs(streams) do
+							if streamName == string.lower(stream.name) then
+								streamID = stream.streamId;
+								break;
+							end
+						end
+					else
+						for _, stream in ipairs(streams) do
+							if stream.streamType == Enum.ClubStreamType.General then
+								streamID = stream.streamId;
+								break;
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+	return communityID, streamID;
+end
+
+function CommunitiesUtil.FindGuildStreamByType(clubStreamType)
+	if clubStreamType ~= Enum.ClubStreamType.Guild and clubStreamType ~= Enum.ClubStreamType.Officer then
+		return;
+	end
+
+	local communityID, streamID;
+	communityID = C_Club.GetGuildClubId();
+	if communityID then
+		local streams = C_Club.GetStreams(communityID);
+		if streams then
+			for _, stream in ipairs(streams) do
+				if stream.streamType == clubStreamType then
+					streamID = stream.streamId;
+					break;
+				end
+			end
+		end
+	end
+	return communityID, streamID;
 end

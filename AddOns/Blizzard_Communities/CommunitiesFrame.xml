@@ -27,8 +27,7 @@
 	<Button name="CommunitiesFrameFriendTabTemplate" inherits="FriendsFrameTabTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
-				ToggleCommunitiesFrame();
-				ToggleFriendsFrame(self:GetID(), true);
+				CommunitiesFrameToggleToFriends(self:GetID());
 			</OnClick>
 		</Scripts>
 	</Button>

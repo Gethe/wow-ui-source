@@ -801,7 +801,7 @@ function InterfaceOptionsSocialPanel_OnEvent(self, event, ...)
 
 	if ( event == "TWITTER_STATUS_UPDATE" ) then
 		local enabled, linked, screenName = ...;
-		if (enabled and not IsKioskModeEnabled()) then
+		if (enabled and not Kiosk.IsEnabled()) then
 			self.EnableTwitter:Show();
 			self.TwitterLoginButton:Show();
 			TwitterData["linked"] = linked;
@@ -1271,6 +1271,7 @@ end
 NamePanelOptions = {
 	UnitNameOwn = { text = "UNIT_NAME_OWN" },
 	UnitNameNPC = { text = "UNIT_NAME_NPC" },
+	UnitNamePlayerGuild = { text = "UNIT_NAME_GUILD" },
 	UnitNamePlayerPVPTitle = { text = "UNIT_NAME_PLAYER_TITLE" },
 	UnitNameNonCombatCreatureName = { text = "UNIT_NAME_NONCOMBAT_CREATURE" },
 

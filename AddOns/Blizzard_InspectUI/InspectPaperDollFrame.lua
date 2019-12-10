@@ -117,14 +117,6 @@ end
 
 function InspectPaperDollItemSlotButton_OnClick(self, button)
 	local itemLink = GetInventoryItemLink(InspectFrame.unit, self:GetID());
-	if itemLink and IsModifiedClick("EXPANDITEM") then
-		local _, _, classID = UnitClass(InspectFrame.unit); 
-		if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemLink) then
-			local azeritePowerIDs = C_PaperDollInfo.GetInspectAzeriteItemEmpoweredChoices(InspectFrame.unit, self:GetID());
-			OpenAzeriteEmpoweredItemUIFromLink(itemLink, classID, azeritePowerIDs);
-			return;
-		end
-	end
 
 	HandleModifiedItemClick(GetInventoryItemLink(InspectFrame.unit, self:GetID()));
 end

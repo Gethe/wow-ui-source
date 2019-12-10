@@ -475,7 +475,7 @@ function SpellButton_UpdateButton(self)
 	end
 
 	-- If no spell, hide everything and return, or kiosk mode and future spell
-	if ( not texture or (strlen(texture) == 0) or (slotType == "FUTURESPELL" and IsKioskModeEnabled())) then
+	if ( not texture or (strlen(texture) == 0) or (slotType == "FUTURESPELL" and Kiosk.IsEnabled())) then
 		iconTexture:Hide();
 		spellString:Hide();
 		subSpellString:Hide();

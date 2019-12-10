@@ -59,6 +59,7 @@ FRIEND_HEADER_TAB_FRIENDS = 1;
 FRIEND_HEADER_TAB_IGNORE = 2;
 
 COMMUNITY_FRAME_HAS_BEEN_SHOWN = false; -- Flag for whether the Community Frame has been shown this session.
+FRIENDS_COMMUNITY_SWAP_IN_PROGRESS = false; -- Flag that should be set when we're toggling between the Friends / Community frames (and unset afterwards).
 local OPENED_FROM_COMMUNITY_FRAME = false; -- Flag for whether the Community Frame toggled to us.
 
 local INVITE_RESTRICTION_NO_GAME_ACCOUNTS = 0;
@@ -380,14 +381,15 @@ function FriendsFrame_Update()
 		FriendsFrame_ShowSubFrame("RaidFrame");
 	elseif ( selectedTab == FRIEND_TAB_BLIZZARDGROUPS ) then
 		-- Hide the current frame and swap to the Communities Frame.
-		ToggleFriendsFrame(selectedTab);
-		ToggleCommunitiesFrame();
+		FriendsFrame_ToggleToCommunities(selectedTab);
 	end
 end
 
 function FriendsFrame_OnHide()
 	UpdateMicroButtons();
-	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+	if (not FRIENDS_COMMUNITY_SWAP_IN_PROGRESS) then
+		PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+	end
 	RaidInfoFrame:Hide();
 	for index, value in pairs(FRIENDSFRAME_SUBFRAMES) do
 		if ( value == "RaidFrame" ) then
@@ -556,25 +558,25 @@ function FriendsList_Update(forceUpdate)
 			end
 		end
 	end
-	-- online Battlenet friends
-	for i = 1, numBNetOnline do
-		AddButtonInfo(FRIENDS_BUTTON_TYPE_BNET, i);
-	end
 	-- online WoW friends
 	for i = 1, numWoWOnline do
 		AddButtonInfo(FRIENDS_BUTTON_TYPE_WOW, i);
+	end
+	-- online Battlenet friends
+	for i = 1, numBNetOnline do
+		AddButtonInfo(FRIENDS_BUTTON_TYPE_BNET, i);
 	end
 	-- divider between online and offline friends
 	if ( (numBNetOnline > 0 or numWoWOnline > 0) and (numBNetOffline > 0 or numWoWOffline > 0) ) then
 		AddButtonInfo(FRIENDS_BUTTON_TYPE_DIVIDER, nil);
 	end
-	-- offline Battlenet friends
-	for i = 1, numBNetOffline do
-		AddButtonInfo(FRIENDS_BUTTON_TYPE_BNET, i + numBNetOnline);
-	end
 	-- offline WoW friends
 	for i = 1, numWoWOffline do
 		AddButtonInfo(FRIENDS_BUTTON_TYPE_WOW, i + numWoWOnline);
+	end
+	-- offline Battlenet friends
+	for i = 1, numBNetOffline do
+		AddButtonInfo(FRIENDS_BUTTON_TYPE_BNET, i + numBNetOnline);
 	end
 
 	FriendsFrameFriendsScrollFrame.totalFriendListEntriesHeight = totalButtonHeight;
@@ -1095,7 +1097,7 @@ function FriendsFrame_GroupInvite()
 end
 
 function ToggleFriendsFrame(tab, fromCommunityFrame)
-	if (IsKioskModeEnabled()) then
+	if (Kiosk.IsEnabled()) then
 		return;
 	end
 
@@ -1161,7 +1163,7 @@ function ShowWhoPanel()
 end
 
 function ToggleFriendsSubPanel(panelIndex)
-	if (IsKioskModeEnabled()) then
+	if (Kiosk.IsEnabled()) then
 		return;
 	end
 
@@ -2997,4 +2999,11 @@ end
 
 function BlizzardGroups_ShouldShowTab()
 	return COMMUNITY_FRAME_HAS_BEEN_SHOWN or CommunitiesUtil.IsInCommunity() or CommunitiesUtil.HasCommunityInvite() or GetCVarBool("alwaysShowBlizzardGroupsTab");
+end
+
+function FriendsFrame_ToggleToCommunities(selectedTab)
+	FRIENDS_COMMUNITY_SWAP_IN_PROGRESS = true;
+	ToggleFriendsFrame(selectedTab);
+	ToggleCommunitiesFrame();
+	FRIENDS_COMMUNITY_SWAP_IN_PROGRESS = false;
 end

@@ -3395,6 +3395,12 @@ function Blizzard_CombatLog_QuickButtonFrame_OnLoad(self)
 		COMBATLOG:UnregisterEvent("COMBAT_LOG_EVENT");
 		return hide and hide(self)
 	end)
+
+	-- Disable Combat Log Hyperlinks
+	COMBATLOG:SetScript("OnHyperlinkClick", function(self)
+		return;
+	end)
+
 	if ( COMBATLOG:IsShown() ) then
 		COMBATLOG:RegisterEvent("COMBAT_LOG_EVENT");
 	end
@@ -3462,7 +3468,7 @@ end
 local oldSetItemRef = SetItemRef;
 function SetItemRef(link, text, button, chatFrame)
 
-	--[[if ( strsub(link, 1, 4) == "unit") then
+	if ( strsub(link, 1, 4) == "unit") then
 		local _, guid, name = strsplit(":", link);
 
 		if ( IsModifiedClick("CHATLINK") ) then
@@ -3517,7 +3523,7 @@ function SetItemRef(link, text, button, chatFrame)
 			ChatEdit_InsertLink (link);
 			return;
 		end
-	end]]
+	end
 	oldSetItemRef(link, text, button, chatFrame);
 end
 

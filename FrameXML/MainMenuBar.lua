@@ -69,7 +69,10 @@ function MainMenuBar_OnLoad(self)
 	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
 	self:RegisterEvent("UNIT_LEVEL");
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
-	
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("BAG_UPDATE");
+
 	MainMenuBar.state = "player";
 	MainMenuBarPageNumber:SetText(GetActionBarPage());
 end
@@ -86,6 +89,16 @@ function MainMenuBar_OnEvent(self, event, ...)
 		end
 	elseif ( event == "TRIAL_STATUS_UPDATE" ) then
 		UpdateMicroButtons();
+	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "VARIABLES_LOADED" or event == "BAG_UPDATE" ) then
+		if( HasKey() ) then
+			if(not GetCVarBool("showKeyring")) then
+				-- Show Tutorial and flash keyring
+				TriggerTutorial(50); --TUTORIAL_KEYRING
+				SetButtonPulse(KeyRingButton, 60, 1);
+				SetCVar("showKeyring", 1);
+			end
+		end
+		MainMenuBar_UpdateKeyRing();
 	end
 end
 
@@ -608,5 +621,16 @@ function HideWatchBarText(bar, unlock)
 		bar.cvarLocked = nil;
 		bar.OverlayFrame.Text:Hide();
 		bar.textLocked = nil;
+	end
+end
+
+function MainMenuBar_UpdateKeyRing()
+	if ( GetCVarBool("showKeyring") ) then
+		MainMenuBarTexture3:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-KeyRing");
+		MainMenuBarTexture3:SetTexCoord(0, 1, 0.1640625, 0.5);
+		MainMenuBarTexture2:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-KeyRing");
+		MainMenuBarTexture2:SetTexCoord(0, 1, 0.6640625, 1);
+		MainMenuBarPerformanceBarFrame:SetPoint("BOTTOMRIGHT", MainMenuBar, "BOTTOMRIGHT", -235, -10);
+		KeyRingButton:Show();
 	end
 end

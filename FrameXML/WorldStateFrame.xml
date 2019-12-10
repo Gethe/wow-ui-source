@@ -685,7 +685,7 @@ name="$parentName"  parentKey="name">
 			</Frame>
 			<ScrollFrame name="WorldStateScoreScrollFrame" inherits="FauxScrollFrameTemplate">
 				<Size>
-					<AbsDimension x="300" y="300"/>
+					<AbsDimension x="296" y="361"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-148" y="-76"/>
@@ -735,7 +735,7 @@ name="$parentName"  parentKey="name">
 				</Layers>
 				<Scripts>
 					<OnVerticalScroll>
-						FauxScrollFrame_OnVerticalScroll(self, offset, SCORE_BUTTON_HEIGHT, WorldStateScoreFrame_Update);
+						WorldStateScoreFrame_OnVerticalScroll(self, offset);
 					</OnVerticalScroll>
 				</Scripts>
 			</ScrollFrame>

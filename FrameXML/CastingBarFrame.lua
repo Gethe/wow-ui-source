@@ -1,6 +1,7 @@
 CASTING_BAR_ALPHA_STEP = 0.05;
 CASTING_BAR_FLASH_STEP = 0.2;
 CASTING_BAR_HOLD_TIME = 1;
+CASTING_BAR_PLACEHOLDER_FILE_ID = 136235;
 
 function CastingBarFrame_OnLoad(self, unit, showTradeSkills, showShield)
 	CastingBarFrame_SetStartCastColor(self, 1.0, 0.7, 0.0);
@@ -168,7 +169,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			self.Text:SetText(text);
 		end
 		if ( self.Icon ) then
-			self.Icon:SetTexture(texture);
+			CastingBarFrame_SetIcon(self, texture);
 			if ( self.iconWhenNoninterruptible ) then
 				self.Icon:SetShown(not notInterruptible);
 			end
@@ -292,7 +293,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			self.Text:SetText(text);
 		end
 		if ( self.Icon ) then
-			self.Icon:SetTexture(texture);
+			CastingBarFrame_SetIcon(self, texture);
 		end
 		if ( self.Spark ) then
 			self.Spark:Hide();
@@ -518,5 +519,14 @@ function CastingBarFrame_SetLook(self, look)
 		self.Flash:SetHeight(49);
 		self.Flash:SetPoint("TOPLEFT", -23, 20);
 		self.Flash:SetPoint("TOPRIGHT", 23, 20);
+	end
+end
+
+function CastingBarFrame_SetIcon(self, icon)
+	if (self.Icon) then
+		if (icon == CASTING_BAR_PLACEHOLDER_FILE_ID) then
+			icon = 0;
+		end
+		self.Icon:SetTexture(icon);
 	end
 end

@@ -39,7 +39,7 @@
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						self:SetEnabled(not IsKioskModeEnabled());
+						self:SetEnabled(not Kiosk.IsEnabled());
 					</OnShow>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
@@ -80,7 +80,7 @@
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						self:SetEnabled(not IsKioskModeEnabled());
+						self:SetEnabled(not Kiosk.IsEnabled());
 					</OnShow>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
@@ -141,7 +141,7 @@
 						end
 					</OnLoad>
 					<OnShow>
-						self:SetEnabled(not IsKioskModeEnabled() and not ScriptsDisallowedForBeta());
+						self:SetEnabled(not Kiosk.IsEnabled() and not ScriptsDisallowedForBeta());
 					</OnShow>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
@@ -182,7 +182,7 @@
 						end
 					</OnLoad>
 					<OnShow>
-						if ( not StaticPopup_Visible("CAMP") and not StaticPopup_Visible("QUIT") ) then
+						if ( not StaticPopup_Visible("CAMP") and not StaticPopup_Visible("QUIT") and not Kiosk.IsEnabled() ) then
 							self:Enable();
 						else
 							self:Disable();
@@ -201,7 +201,7 @@
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						if ( not StaticPopup_Visible("CAMP") and not StaticPopup_Visible("QUIT") and not IsKioskModeEnabled() ) then
+						if ( not StaticPopup_Visible("CAMP") and not StaticPopup_Visible("QUIT") and not Kiosk.IsEnabled() ) then
 							self:Enable();
 						else
 							self:Disable();

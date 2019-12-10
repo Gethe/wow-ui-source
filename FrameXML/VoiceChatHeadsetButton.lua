@@ -48,32 +48,44 @@ function VoiceChatHeadsetButtonMixin:OnEvent(event, ...)
 	end
 end
 
-function VoiceChatHeadsetButtonMixin:VoiceChannelMatches(voiceChannelID, channelType, clubId, streamId)
-	return (voiceChannelID == self:GetVoiceChannelID()) or (channelType == self.channelType and clubId == self.clubId and streamId == self.streamId);
+function VoiceChatHeadsetButtonMixin:VoiceChannelIDMatches(voiceChannelID)
+	return voiceChannelID == self:GetVoiceChannelID();
+end
+
+function VoiceChatHeadsetButtonMixin:VoiceChannelInfoMatches(channelType, clubId, streamId)
+	if channelType ~= self:GetChannelType() then
+		return false;
+	end
+
+	if clubId and streamId then
+		return clubId == self:GetClubID() and streamId == self:GetStreamID();
+	end
+
+	return true;
 end
 
 function VoiceChatHeadsetButtonMixin:OnVoiceChannelJoined(statusCode, voiceChannelID, channelType, clubId, streamId)
 	if statusCode == Enum.VoiceChatStatusCode.Success then
-		if self:VoiceChannelMatches(voiceChannelID, channelType, clubId, streamId) then
+		if self:VoiceChannelIDMatches(voiceChannelID) or self:VoiceChannelInfoMatches(channelType, clubId, streamId) then
 			self:SetVoiceChannel(C_VoiceChat.GetChannel(voiceChannelID));
 		end
 	end
 end
 
 function VoiceChatHeadsetButtonMixin:OnVoiceChannelRemoved(voiceChannelID)
-	if self:VoiceChannelMatches(voiceChannelID) then
+	if self:VoiceChannelIDMatches(voiceChannelID) then
 		self:ClearVoiceChannel();
 	end
 end
 
 function VoiceChatHeadsetButtonMixin:OnVoiceChannelActivated(voiceChannelID)
-	if voiceChannelID == self:GetVoiceChannelID() then
+	if self:VoiceChannelIDMatches(voiceChannelID) then
 		self:SetVoiceActive(true);
 	end
 end
 
 function VoiceChatHeadsetButtonMixin:OnVoiceChannelDeactivated(voiceChannelID)
-	if voiceChannelID == self:GetVoiceChannelID() then
+	if self:VoiceChannelIDMatches(voiceChannelID) then
 		self:SetVoiceActive(false);
 	end
 end
@@ -83,11 +95,12 @@ function VoiceChatHeadsetButtonMixin:ClearPendingState()
 end
 
 function VoiceChatHeadsetButtonMixin:OnVoiceChatPendingChannelJoinState(channelType, clubId, streamId, pendingState)
-	-- pass in false for the voiceChannelID so it never matches with voice chat channels that are not created yet.
-	-- A channelType of None indicates login failed, so clear all pending states in that case
-	if self:VoiceChannelMatches(false, channelType, clubId, streamId) or (channelType == Enum.ChatChannelType.None)  then
-		self:GetParent():SetPendingState(pendingState);
-	end
+	if self:VoiceChannelInfoMatches(channelType, clubId, streamId) then
+ 		self:GetParent():SetPendingState(pendingState);
+	elseif channelType == Enum.ChatChannelType.None then
+		-- A channelType of None indicates login failed, so clear all pending states in that case
+		self:GetParent():SetPendingState(false);
+ 	end
 end
 
 function VoiceChatHeadsetButtonMixin:OnVoiceChatError(platformCode, statusCode)
@@ -97,7 +110,7 @@ function VoiceChatHeadsetButtonMixin:OnVoiceChatError(platformCode, statusCode)
 	end
 end
 
-function VoiceChatHeadsetButtonMixin:ToggleActivateChannel()
+function VoiceChatHeadsetButtonMixin:OnClick()
 	local voiceChannel = self:GetVoiceChannel();
 	if voiceChannel then
 		local isActive = C_VoiceChat.GetActiveChannelID() == voiceChannel.channelID;
@@ -107,8 +120,10 @@ function VoiceChatHeadsetButtonMixin:ToggleActivateChannel()
 			C_VoiceChat.ActivateChannel(voiceChannel.channelID);
 		end
 	elseif self:IsCommunityChannel() then
-		self:GetParent():SetPendingState(true);
 		ChannelFrame:TryJoinCommunityStreamChannel(self.clubId, self.streamId);
+	else
+		local activate = true;
+		ChannelFrame:TryJoinVoiceChannelByType(self:GetChannelType(), activate);
 	end
 
 	if self.onClickFn then
@@ -151,7 +166,20 @@ function VoiceChatHeadsetButtonMixin:SetChannelType(channelType)
 
 	if channelType ~= Enum.ChatChannelType.Communities then
 		self:SetVoiceChannel(C_VoiceChat.GetChannelForChannelType(channelType));
+		self:GetParent():SetPendingState(C_VoiceChat.IsChannelJoinPending(channelType));
 	end
+end
+
+function VoiceChatHeadsetButtonMixin:GetChannelType()
+	return self.channelType;
+end
+
+function VoiceChatHeadsetButtonMixin:GetClubID()
+	return self.clubId;
+end
+
+function VoiceChatHeadsetButtonMixin:GetStreamID()
+	return self.streamId;
 end
 
 function VoiceChatHeadsetButtonMixin:SetCommunityInfo(clubId, streamInfo)
@@ -160,6 +188,7 @@ function VoiceChatHeadsetButtonMixin:SetCommunityInfo(clubId, streamInfo)
 	self:SetChannelName(streamInfo.name);
 	self:SetChannelType(Enum.ChatChannelType.Communities);
 	self:SetVoiceChannel(C_VoiceChat.GetChannelForCommunityStream(clubId, streamInfo.streamId));
+	self:GetParent():SetPendingState(C_VoiceChat.IsChannelJoinPending(Enum.ChatChannelType.Communities, self.clubId, self.streamId));
 end
 
 function VoiceChatHeadsetButtonMixin:IsCommunityChannel()
@@ -201,8 +230,21 @@ function VoiceChatHeadsetButtonMixin:ShowTooltip()
 	tooltip:Show();
 end
 
-function VoiceChatHeadsetButtonMixin:Update()
+function VoiceChatHeadsetButtonMixin:ShouldEnable()
 	if self:GetVoiceChannel() or (self:IsCommunityChannel() and C_VoiceChat.CanPlayerUseVoiceChat()) then
+		return true;
+	end
+
+	local channelType = self:GetChannelType();
+	if channelType then
+		return C_ChatInfo.IsPartyChannelType(channelType);
+	end
+
+	return false;
+end
+
+function VoiceChatHeadsetButtonMixin:Update()
+	if self:ShouldEnable() then
 		self:SetShown(true);
 
 		local isActive = self:IsVoiceActive();

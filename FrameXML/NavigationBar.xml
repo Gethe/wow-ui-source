@@ -344,6 +344,15 @@
 					</Anchors>
 				</ButtonText>
 			</Button>
+			<Frame parentKey="KioskOverlay" setAllPoints="true" enableMouse="true" frameLevel="100" hidden="true">
+				<Layers>
+					<Layer>
+						<Texture setAllPoints="true">
+							<Color a=".5"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
 	</Frame>
 </Ui>

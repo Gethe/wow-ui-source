@@ -1,0 +1,5 @@
+## Title: Blizzard_Kiosk
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+
+Blizzard_Kiosk.xml

@@ -63,6 +63,23 @@ function BackpackButton_OnModifiedClick(self)
 	BackpackButton_UpdateChecked(self);
 end
 
+function PutKeyInKeyRing()
+	local texture;
+	local emptyKeyRingSlot;
+	for i=1, GetContainerNumSlots(KEYRING_CONTAINER) do
+		texture = GetContainerItemInfo(KEYRING_CONTAINER, i);
+		if ( not texture ) then
+			emptyKeyRingSlot = i;
+			break;
+		end
+	end
+	if ( emptyKeyRingSlot ) then
+		PickupContainerItem(KEYRING_CONTAINER, emptyKeyRingSlot);
+	else
+		UIErrorsFrame:AddMessage(NO_EMPTY_KEYRING_SLOTS, 1.0, 0.1, 0.1, 1.0);
+	end
+end
+
 function ItemAnim_OnLoad(self)
 	self:RegisterEvent("ITEM_PUSH");
 end

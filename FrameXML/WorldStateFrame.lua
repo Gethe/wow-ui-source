@@ -5,7 +5,7 @@ local SCOREFRAME_COLUMN_SPACING = 77;
 local SCOREFRAME_BUTTON_TEXT_OFFSET = -31;
 local SCOREFRAME_BASE_WIDTH = 530;
 
-SCORE_BUTTON_HEIGHT = 16;
+local SCORE_BUTTON_HEIGHT = 15;
 
 function WorldStateScoreFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -21,8 +21,8 @@ function WorldStateScoreFrame_OnLoad(self)
 	local prevRowFrame = WorldStateScoreButton1;
 	for i=2,MAX_SCORE_BUTTONS do
 		local rowFrame = CreateFrame("FRAME", "WorldStateScoreButton"..i, WorldStateScoreFrame, "WorldStateScoreTemplate");
-		rowFrame:SetPoint("TOPLEFT",  prevRowFrame, "BOTTOMLEFT", 0, 0);
-		rowFrame:SetPoint("TOPRIGHT",  prevRowFrame, "BOTTOMRIGHT", 0, 0);
+		rowFrame:SetPoint("TOPLEFT",  prevRowFrame, "BOTTOMLEFT", 0, 1);
+		rowFrame:SetPoint("TOPRIGHT",  prevRowFrame, "BOTTOMRIGHT", 0, 1);
 		prevRowFrame = rowFrame;
 	end
 	
@@ -149,9 +149,9 @@ function WorldStateScoreFrame_Update()
 			columnTextButton = _G["WorldStateScoreButton1Column"..i.."Text"];
 
 			if ( icon ~= "" ) then
-				columnTextButton:SetPoint("CENTER", "WorldStateScoreColumn"..i, "CENTER", 6, -33);
+				columnTextButton:SetPoint("CENTER", "WorldStateScoreColumn"..i, "CENTER", 6, -31);
 			else
-				columnTextButton:SetPoint("CENTER", "WorldStateScoreColumn"..i, "CENTER", -1, -33);
+				columnTextButton:SetPoint("CENTER", "WorldStateScoreColumn"..i, "CENTER", -1, -31);
 			end
 
 			
@@ -359,6 +359,10 @@ end
 
 function WorldStateScoreFrame_OnHide(self)
 	CloseDropDownMenus();
+end
+
+function WorldStateScoreFrame_OnVerticalScroll(self, offset)
+	FauxScrollFrame_OnVerticalScroll(self, offset, SCORE_BUTTON_HEIGHT, WorldStateScoreFrame_Update);
 end
 
 function WorldStateScoreFrameTab_OnClick(tab)

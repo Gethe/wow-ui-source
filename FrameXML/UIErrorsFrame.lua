@@ -148,9 +148,17 @@ function UIErrorsMixin:TryDisplayMessage(messageType, message, r, g, b)
 	end
 end
 
-function UIErrorsMixin:AddExternalErrorMessage(message)
+local function AddExternalMessage(self, message, color)
 	if not self:TryFlashingExistingMessage(LE_GAME_ERR_SYSTEM, message) then
-		local r, g, b = RED_FONT_COLOR:GetRGB();
+		local r, g, b = color:GetRGB();
 		self:AddMessage(message, r, g, b, 1.0, LE_GAME_ERR_SYSTEM);
 	end
+end
+
+function UIErrorsMixin:AddExternalErrorMessage(message)
+	AddExternalMessage(self, message, RED_FONT_COLOR);
+end
+
+function UIErrorsMixin:AddExternalWarningMessage(message)
+	AddExternalMessage(self, message, YELLOW_FONT_COLOR);
 end

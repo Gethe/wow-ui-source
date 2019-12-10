@@ -361,10 +361,10 @@ end
 
 function MiniMapBattlefieldDropDown_Initialize()
 	local info;
-	local status, mapName, instanceID;
+	local status, mapName, instanceID, asGroup;
 	local numQueued = 0;
 	for i=1, MAX_BATTLEFIELD_QUEUES do
-		status, mapName, instanceID = GetBattlefieldStatus(i);
+		status, mapName, instanceID,_,_,_,_,_,_,asGroup = GetBattlefieldStatus(i);
 		if ( status == "queued" or status == "confirm" ) then
 			numQueued = numQueued+1;
 			-- Add a spacer if there were dropdown items before this
@@ -382,17 +382,19 @@ function MiniMapBattlefieldDropDown_Initialize()
 			info.notCheckable = 1;
 			UIDropDownMenu_AddButton(info);
 			if ( status == "queued" ) then
-				info = {};
+				-- TODO: Fix me. :)
+				--[[info = {};
 				info.text = CHANGE_INSTANCE;
 				info.func = ShowBattlefieldList;
 				info.arg1 = i;
 				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
+				UIDropDownMenu_AddButton(info);]]
 				info = {};
 				info.text = LEAVE_QUEUE;
 				info.func = wrapFunc(AcceptBattlefieldPort);
 				info.arg1 = i;
 				info.arg2 = nil;
+				info.disabled = asGroup and not UnitIsGroupLeader("player");
 				info.notCheckable = 1;
 				UIDropDownMenu_AddButton(info);
 			elseif ( status == "confirm" ) then

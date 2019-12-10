@@ -1855,9 +1855,25 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentTitles" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentGuildNames" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMyName" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "UnitNamePlayerGuild";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentTitles" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentGuildNames" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-8"/>
 						</Offset>
@@ -1873,7 +1889,7 @@
 			</CheckButton>
 			<CheckButton name="$parentNonCombatCreature" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTitles" relativePoint="TOPLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentGuildNames" relativePoint="TOPLEFT">
 						<Offset>
 							<AbsDimension x="286" y="0"/>
 						</Offset>
@@ -2604,7 +2620,7 @@
 						end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						self:RegisterEvent("VARIABLES_LOADED");
-						if (IsKioskModeEnabled()) then
+						if (Kiosk.IsEnabled()) then
 							self:RegisterEvent("PLAYER_ENTERING_WORLD");
 						end
 					</OnLoad>

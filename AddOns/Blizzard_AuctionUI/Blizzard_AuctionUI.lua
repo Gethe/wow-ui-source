@@ -157,7 +157,7 @@ function AuctionFrame_OnLoad (self)
 end
 
 function AuctionFrame_Show()
-	if (IsKioskModeEnabled()) then
+	if (Kiosk.IsEnabled()) then
 		UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
 		CloseAuctionHouse();
 		HideUIPanel(AuctionFrame);

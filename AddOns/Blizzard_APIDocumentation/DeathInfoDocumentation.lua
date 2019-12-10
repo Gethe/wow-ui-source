@@ -107,6 +107,11 @@ local DeathInfo =
 			LiteralName = "CORPSE_OUT_OF_RANGE",
 		},
 		{
+			Name = "CorpsePositionUpdate",
+			Type = "Event",
+			LiteralName = "CORPSE_POSITION_UPDATE",
+		},
+		{
 			Name = "PlayerAlive",
 			Type = "Event",
 			LiteralName = "PLAYER_ALIVE",

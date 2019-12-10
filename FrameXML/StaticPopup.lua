@@ -3278,14 +3278,14 @@ StaticPopupDialogs["CONFIRM_SUMMON"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnShow = function(self)
-		self.timeleft = GetSummonConfirmTimeLeft();
+		self.timeleft = C_SummonInfo.GetSummonConfirmTimeLeft();
 		SetupLockOnDeclineButtonAndEscape(self);
 	end,
 	OnAccept = function(self)
-		ConfirmSummon();
+		C_SummonInfo.ConfirmSummon();
 	end,
 	OnCancel = function()
-		CancelSummon();
+		C_SummonInfo.CancelSummon();
 	end,
 	OnUpdate = function(self, elapsed)
 		if ( UnitAffectingCombat("player") or (not PlayerCanTeleport()) ) then
@@ -3304,13 +3304,13 @@ StaticPopupDialogs["CONFIRM_SUMMON_SCENARIO"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnShow = function(self)
-		self.timeleft = GetSummonConfirmTimeLeft();
+		self.timeleft = C_SummonInfo.GetSummonConfirmTimeLeft();
 	end,
 	OnAccept = function(self)
-		ConfirmSummon();
+		C_SummonInfo.ConfirmSummon();
 	end,
 	OnCancel = function()
-		CancelSummon();
+		C_SummonInfo.CancelSummon();
 	end,
 	OnUpdate = function(self, elapsed)
 		if ( UnitAffectingCombat("player") or (not PlayerCanTeleport()) ) then
@@ -3331,13 +3331,13 @@ StaticPopupDialogs["CONFIRM_SUMMON_STARTING_AREA"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnShow = function(self)
-		self.timeleft = GetSummonConfirmTimeLeft();
+		self.timeleft = C_SummonInfo.GetSummonConfirmTimeLeft();
 	end,
 	OnAccept = function(self)
-		ConfirmSummon();
+		C_SummonInfo.ConfirmSummon();
 	end,
 	OnCancel = function()
-		CancelSummon();
+		C_SummonInfo.CancelSummon();
 	end,
 	OnUpdate = function(self, elapsed)
 		if ( UnitAffectingCombat("player") or (not PlayerCanTeleport()) ) then
@@ -4784,9 +4784,9 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 				end
 			elseif ( which == "CONFIRM_SUMMON" or which == "CONFIRM_SUMMON_SCENARIO" or which == "CONFIRM_SUMMON_STARTING_AREA" ) then
 				if ( timeleft < 60 ) then
-					text:SetFormattedText(StaticPopupDialogs[which].text, GetSummonConfirmSummoner(), GetSummonConfirmAreaName(), timeleft, SECONDS);
+					text:SetFormattedText(StaticPopupDialogs[which].text, C_SummonInfo.GetSummonConfirmSummoner() or "", C_SummonInfo.GetSummonConfirmAreaName(), timeleft, SECONDS);
 				else
-					text:SetFormattedText(StaticPopupDialogs[which].text, GetSummonConfirmSummoner(), GetSummonConfirmAreaName(), ceil(timeleft / 60), MINUTES);
+					text:SetFormattedText(StaticPopupDialogs[which].text, C_SummonInfo.GetSummonConfirmSummoner() or "", C_SummonInfo.GetSummonConfirmAreaName(), ceil(timeleft / 60), MINUTES);
 				end
 			elseif ( which == "BFMGR_INVITED_TO_ENTER") then
 				if ( timeleft < 60 ) then

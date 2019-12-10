@@ -65,11 +65,11 @@ function RealmList_Update()
 			if ( populationState == "OFFLINE" ) then
 				button.Load:SetText(REALM_DOWN);
 				button.Load:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-			elseif ( populationState == "LOCKED" ) then
-				button.Load:SetText(REALM_LOCKED);
-				button.Load:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 			elseif ( versionMismatch ) then --not a population state
 				button.Load:SetText(ADDON_INCOMPATIBLE);
+				button.Load:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+			elseif ( populationState == "LOCKED" ) then
+				button.Load:SetText(REALM_LOCKED);
 				button.Load:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 			elseif ( populationState == "LOW" ) then
 				button.Load:SetText(LOAD_LOW);

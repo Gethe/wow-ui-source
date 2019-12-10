@@ -424,7 +424,7 @@ function AlertFrameMixin:OnEvent(event, ...)
 	AlertContainerMixin.OnEvent(self, event, ...);
 
 	if ( event == "ACHIEVEMENT_EARNED" ) then
-		if (IsKioskModeEnabled()) then
+		if (Kiosk.IsEnabled()) then
 			return;
 		end
 
@@ -434,7 +434,7 @@ function AlertFrameMixin:OnEvent(event, ...)
 
 		AchievementAlertSystem:AddAlert(...);
 	elseif ( event == "CRITERIA_EARNED" ) then
-		if (IsKioskModeEnabled()) then
+		if (Kiosk.IsEnabled()) then
 			return;
 		end
 

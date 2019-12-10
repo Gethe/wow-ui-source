@@ -332,13 +332,17 @@
 								MiniMapBattlefieldFrame.timeInQueue = 0;
 							</OnLoad>
 							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-								GameTooltip:SetText(self.tooltip);
+								if (self.tooltip) then
+									GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+									GameTooltip:SetText(self.tooltip);
+								end
 							</OnEnter>
 							<OnUpdate>
 								if ( GameTooltip:IsOwned(self) ) then
 									BattlefieldFrame_UpdateStatus(1);
-									GameTooltip:SetText(self.tooltip);
+									if (self.tooltip) then
+										GameTooltip:SetText(self.tooltip);
+									end
 								end
 							</OnUpdate>
 							<OnLeave>

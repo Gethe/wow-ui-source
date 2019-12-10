@@ -206,7 +206,7 @@ function CraftFrame_Update()
 					craftButtonSubText:SetText("");
 				end
 				if ( trainingPointCost > 0 ) then
-					craftButtonCost:SetText(format(PARENS_TEMPLATE --[[TRAINER_LIST_TP]], trainingPointCost));
+					craftButtonCost:SetText(format(TRAINER_LIST_TP, trainingPointCost));
 				else
 					craftButtonCost:SetText("");
 				end

@@ -20,6 +20,9 @@ function SetItemRef(link, text, button, chatFrame)
 		end
 		if ( name and (strlen(name) > 0) ) then
 			if ( IsModifiedClick("CHATLINK") ) then
+				-- Remove unnecessary server suffixes.
+				name = Ambiguate(name, "none");
+
 				local staticPopup;
 				staticPopup = StaticPopup_Visible("ADD_IGNORE");
 				if ( staticPopup ) then

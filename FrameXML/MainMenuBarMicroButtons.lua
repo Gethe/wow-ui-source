@@ -67,7 +67,7 @@ function MoveMicroButtons(anchor, anchorTo, relAnchor, x, y, isStacked)
 end
 
 function SetKioskTooltip(frame)
-	if (IsKioskModeEnabled()) then
+	if (Kiosk.IsEnabled()) then
 		frame.minLevel = nil;
 		frame.disabledTooltip = ERR_SYSTEM_DISABLED;
 	end
@@ -139,6 +139,15 @@ function UpdateMicroButtons()
 	else
 		HelpMicroButton:SetButtonState("NORMAL");
 	end
+
+	-- Keyring microbutton
+	if (KeyRingButton) then
+		if ( IsBagOpen(KEYRING_CONTAINER) ) then
+			KeyRingButton:SetButtonState("PUSHED", 1);
+		else
+			KeyRingButton:SetButtonState("NORMAL");
+		end
+	end
 end
 
 function MicroButtonPulse(self, duration)
@@ -156,7 +165,7 @@ function MicroButtonPulseStop(self)
 end
 
 function MicroButton_KioskModeDisable(self)
-	if (IsKioskModeEnabled()) then
+	if (Kiosk.IsEnabled()) then
 		self:Disable();
 	end
 end

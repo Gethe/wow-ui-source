@@ -62,6 +62,9 @@ function GlueParent_OnLoad(self)
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("LUA_WARNING");
 	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
+	self:RegisterEvent("KIOSK_SESSION_SHUTDOWN");
+	self:RegisterEvent("KIOSK_SESSION_EXPIRED");
+	self:RegisterEvent("KIOSK_SESSION_EXPIRATION_CHANGED");
 
 	OnDisplaySizeChanged(self);
 end
@@ -91,6 +94,10 @@ function GlueParent_OnEvent(self, event, ...)
 		if not StoreFrame_IsShown() then
 			GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
 		end
+	elseif (event == "KIOSK_SESSION_SHUTDOWN" or event == "KIOSK_SESSION_EXPIRED") then
+		GlueParent_SetScreen("kioskmodesplash");
+	elseif (event == "KIOSK_SESSION_EXPIRATION_CHANGED") then
+		GlueDialog_Show("OKAY", KIOSK_SESSION_TIMER_CHANGED);
 	end
 end
 
@@ -675,7 +682,7 @@ function HideUIPanel(self)
 end
 
 function IsKioskGlueEnabled()
-	return IsKioskModeEnabled() and not IsCompetitiveModeEnabled();
+	return Kiosk.IsEnabled() and not IsCompetitiveModeEnabled();
 end
 
 function GetDisplayedExpansionLogo(expansionLevel)

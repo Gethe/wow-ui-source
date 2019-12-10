@@ -78,7 +78,7 @@ function CharacterCreate_OnLoad(self)
 	CharacterCreateNameEdit:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6]);
 end
 
-function CharacterCreate_OnShow()
+function CharacterCreate_OnShow(self)
 	InitializeCharacterScreenData();
 	SetInCharacterCreate(true);
 
@@ -102,6 +102,15 @@ function CharacterCreate_OnShow()
 	end
 
 	SetClassicLogo(CharacterCreateLogo);
+
+	if( IsKioskGlueEnabled() ) then
+		local templateIndex = Kiosk.GetCharacterTemplateSetIndex();
+		if (templateIndex) then
+			C_CharacterCreation.SetCharacterTemplate(templateIndex);
+		else
+			C_CharacterCreation.ClearCharacterTemplate();
+		end
+	end
 end
 
 function CharacterCreate_OnHide()
@@ -401,10 +410,10 @@ end
 function CharacterCreate_Okay()
 	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CREATE_CHAR);
 
-	if( IsKioskModeEnabled() ) then
-		KioskModeSplash_SetAutoEnterWorld(true);
+	if( Kiosk.IsEnabled() ) then
+		KioskModeSplash:SetAutoEnterWorld(true);
 	else
-		KioskModeSplash_SetAutoEnterWorld(false)
+		KioskModeSplash:SetAutoEnterWorld(false)
 	end
 
 	C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText());

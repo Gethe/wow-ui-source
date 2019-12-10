@@ -260,6 +260,7 @@ function InboxFrame_Update()
 			_G["MailItem"..i.."Sender"]:SetText("");
 			_G["MailItem"..i.."Subject"]:SetText("");
 			_G["MailItem"..i.."ExpireTime"]:Hide();
+			MoneyInputFrame_ResetMoney(SendMailMoney);
 		end
 		index = index + 1;
 	end

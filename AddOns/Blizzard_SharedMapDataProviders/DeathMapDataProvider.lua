@@ -1,5 +1,19 @@
 DeathMapDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
+function DeathMapDataProviderMixin:OnShow() 
+	self:RegisterEvent("CORPSE_POSITION_UPDATE");
+end
+
+function DeathMapDataProviderMixin:OnHide()
+	self:UnregisterEvent("CORPSE_POSITION_UPDATE");
+end
+
+function DeathMapDataProviderMixin:OnEvent(event, ...)
+	if event == "CORPSE_POSITION_UPDATE" then
+		self:RefreshAllData();
+	end
+end
+
 function DeathMapDataProviderMixin:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate("CorpsePinTemplate");
 	self:GetMap():RemoveAllPinsByTemplate("DeathReleasePinTemplate");

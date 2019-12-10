@@ -1597,6 +1597,58 @@ SecureCmdList["LOGOUT"] = function(msg)
 	Logout();
 end
 
+SecureCmdList["GUILD_UNINVITE"] = function(msg)
+	if(msg == "") then
+		msg = UnitName("target");
+	end
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
+	GuildUninvite(msg);
+end
+
+SecureCmdList["GUILD_PROMOTE"] = function(msg)
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
+	GuildPromote(msg);
+end
+
+SecureCmdList["GUILD_DEMOTE"] = function(msg)
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
+	GuildDemote(msg);
+end
+
+SecureCmdList["GUILD_LEADER"] = function(msg)
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
+	GuildSetLeader(msg);
+end
+
+SecureCmdList["GUILD_LEAVE"] = function(msg)
+	GuildLeave();
+end
+
+SecureCmdList["GUILD_DISBAND"] = function(msg)
+	if ( IsGuildLeader() ) then
+		StaticPopup_Show("CONFIRM_GUILD_DISBAND");
+	end
+end
+
+SecureCmdList["QUIT"] = function(msg)
+	if (Kiosk.IsEnabled()) then
+		return;
+	end
+	Quit();
+end
+
 -- Pre-populate the secure command hash table
 for index, value in pairs(SecureCmdList) do
 	local i = 1;
@@ -1705,13 +1757,6 @@ end
 
 SlashCmdList["INSPECT"] = function(msg)
 	InspectUnit("target");
-end
-
-SlashCmdList["QUIT"] = function(msg)
-	if (IsKioskModeEnabled()) then
-		return;
-	end
-	Quit();
 end
 
 SlashCmdList["JOIN"] = 	function(msg)
@@ -1898,53 +1943,8 @@ SlashCmdList["GUILD_INVITE"] = function(msg)
 	GuildInvite(msg);
 end
 
-SlashCmdList["GUILD_UNINVITE"] = function(msg)
-	if(msg == "") then
-		msg = UnitName("target");
-	end
-	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
-		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
-		return;
-	end
-	GuildUninvite(msg);
-end
-
-SlashCmdList["GUILD_PROMOTE"] = function(msg)
-	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
-		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
-		return;
-	end
-	GuildPromote(msg);
-end
-
-SlashCmdList["GUILD_DEMOTE"] = function(msg)
-	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
-		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
-		return;
-	end
-	GuildDemote(msg);
-end
-
-SlashCmdList["GUILD_LEADER"] = function(msg)
-	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
-		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
-		return;
-	end
-	GuildSetLeader(msg);
-end
-
 SlashCmdList["GUILD_MOTD"] = function(msg)
 	GuildSetMOTD(msg)
-end
-
-SlashCmdList["GUILD_LEAVE"] = function(msg)
-	GuildLeave();
-end
-
-SlashCmdList["GUILD_DISBAND"] = function(msg)
-	if ( IsGuildLeader() ) then
-		StaticPopup_Show("CONFIRM_GUILD_DISBAND");
-	end
 end
 
 SlashCmdList["GUILD_INFO"] = function(msg)
@@ -1970,7 +1970,7 @@ SlashCmdList["CHAT_DND"] = function(msg)
 end
 
 SlashCmdList["WHO"] = function(msg)
-	if (IsKioskModeEnabled()) then
+	if (Kiosk.IsEnabled()) then
 		return;
 	end
 	if ( msg == "" ) then
@@ -2225,6 +2225,13 @@ if IsGMClient() then
 end
 
 SlashCmdList["TABLEINSPECT"] = function(msg)
+	if ( Kiosk.IsEnabled() or ScriptsDisallowedForBeta() ) then
+		return;
+	end
+	if ( not AreDangerousScriptsAllowed() ) then
+		StaticPopup_Show("DANGEROUS_SCRIPTS_WARNING");
+		return;
+	end
 	forceinsecure();
 	UIParentLoadAddOn("Blizzard_DebugTools");
 
@@ -2248,7 +2255,7 @@ end
 
 
 SlashCmdList["DUMP"] = function(msg)
-	if (not IsKioskModeEnabled() and not ScriptsDisallowedForBeta()) then
+	if (not Kiosk.IsEnabled() and not ScriptsDisallowedForBeta()) then
 		if ( not AreDangerousScriptsAllowed() ) then
 			StaticPopup_Show("DANGEROUS_SCRIPTS_WARNING");
 			return;
@@ -2363,6 +2370,54 @@ SlashCmdList["RESET_COMMENTATOR_SETTINGS"] = function(msg)
 	end
 
 	PvPCommentator:SetDefaultCommentatorSettings();
+end
+
+SlashCmdList["VOICECHAT"] = function(msg)
+	if msg == "" then
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(VOICE_COMMAND_SYNTAX, info.r, info.g, info.b, info.id);
+		return;
+	end
+	local name = msg;
+	local lowerName = string.lower(name);
+
+	if lowerName == string.lower(VOICE_LEAVE_COMMAND) then
+		local channelID = C_VoiceChat.GetActiveChannelID();
+		if channelID then
+			C_VoiceChat.DeactivateChannel(channelID);
+		end
+		return;
+	end
+
+	local channelType;
+	local communityID;
+	local streamID;
+	if lowerName == string.lower(PARTY) then
+		channelType = Enum.ChatChannelType.Private_Party;
+	elseif lowerName == string.lower(INSTANCE) then
+		channelType = Enum.ChatChannelType.Public_Party;
+	elseif lowerName == string.lower(GUILD) then
+		communityID, streamID = CommunitiesUtil.FindGuildStreamByType(Enum.ClubStreamType.Guild);
+	elseif lowerName == string.lower(OFFICER) then
+		communityID, streamID = CommunitiesUtil.FindGuildStreamByType(Enum.ClubStreamType.Officer);
+	else
+		local communityName, streamName = string.split(":", name);
+		communityID, streamID = CommunitiesUtil.FindCommunityAndStreamByName(communityName, streamName);
+	end
+
+	if channelType then
+		if channelType ~= C_VoiceChat.GetActiveChannelType() then
+			local activate = true;
+			ChannelFrame:TryJoinVoiceChannelByType(channelType, activate);
+		end
+	elseif communityID and streamID then
+		local activeChannelID = C_VoiceChat.GetActiveChannelID();
+		local communityStreamChannel = C_VoiceChat.GetChannelForCommunityStream(communityID, streamID);
+		local communityStreamChannelID = communityStreamChannel and communityStreamChannel.channelID;
+		if not activeChannelID or activeChannelID ~= communityStreamChannelID then
+			ChannelFrame:TryJoinCommunityStreamChannel(communityID, streamID);
+		end
+	end
 end
 
 function ChatFrame_SetupListProxyTable(list)
@@ -4178,7 +4233,9 @@ function ChatEdit_UpdateHeader(editBox)
 		ChatEdit_UpdateHeader(editBox);
 		return;
 	elseif ( type == "WHISPER" ) then
-		header:SetFormattedText(CHAT_WHISPER_SEND, editBox:GetAttribute("tellTarget"));
+		local tellTarget = editBox:GetAttribute("tellTarget");
+		tellTarget = Ambiguate(tellTarget, "none")
+		header:SetFormattedText(CHAT_WHISPER_SEND, tellTarget);
 	elseif ( type == "BN_WHISPER" ) then
 		local name = editBox:GetAttribute("tellTarget");
 		header:SetFormattedText(CHAT_BN_WHISPER_SEND, name);
@@ -4759,7 +4816,7 @@ function ChatMenu_OnLoad(self)
 	UIMenu_AddButton(self, SAY_MESSAGE, SLASH_SAY1, ChatMenu_Say);
 	UIMenu_AddButton(self, PARTY_MESSAGE, SLASH_PARTY1, ChatMenu_Party);
 	UIMenu_AddButton(self, RAID_MESSAGE, SLASH_RAID1, ChatMenu_Raid);
-	UIMenu_AddButton(self, INSTANCE_CHAT_MESSAGE, SLASH_INSTANCE_CHAT1, ChatMenu_InstanceChat);
+	UIMenu_AddButton(self, INSTANCE_CHAT_MESSAGE, SLASH_INSTANCE_CHAT3, ChatMenu_InstanceChat);
 	UIMenu_AddButton(self, GUILD_MESSAGE, SLASH_GUILD1, ChatMenu_Guild);
 	UIMenu_AddButton(self, YELL_MESSAGE, SLASH_YELL1, ChatMenu_Yell);
 	UIMenu_AddButton(self, WHISPER_MESSAGE, SLASH_SMART_WHISPER1, ChatMenu_Whisper);

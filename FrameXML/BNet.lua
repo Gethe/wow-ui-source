@@ -16,6 +16,8 @@ BNET_CLIENT_CLNT = "CLNT";
 BNET_CLIENT_SC = "S1";
 BNET_CLIENT_DESTINY2 = "DST2";
 BNET_CLIENT_COD = "VIPR";
+BNET_CLIENT_COD_MW = "ODIN";
+BNET_CLIENT_WC3 = "W3";
 
 WOW_PROJECT_MAINLINE = 1;
 WOW_PROJECT_CLASSIC = 2;
@@ -378,6 +380,10 @@ function BNet_GetClientEmbeddedTexture(client, width, height, xOffset, yOffset)
 		textureString = "Interface\\ChatFrame\\UI-ChatIcon-Destiny2";
 	elseif ( client == BNET_CLIENT_COD ) then
 		textureString = "Interface\\ChatFrame\\UI-ChatIcon-CallOfDutyBlackOps4";
+	elseif ( client == BNET_CLIENT_COD_MW ) then
+		textureString = "Interface\\ChatFrame\\UI-ChatIcon-CallOfDutyMWicon";
+	elseif ( client == BNET_CLIENT_WC3 ) then
+		textureString = "Interface\\ChatFrame\\UI-ChatIcon-Warcraft3Reforged";
 	else
 		textureString = "Interface\\ChatFrame\\UI-ChatIcon-Battlenet";
 	end
@@ -403,6 +409,10 @@ function BNet_GetClientTexture(client)
 		return "Interface\\FriendsFrame\\Battlenet-Destiny2icon";
 	elseif ( client == BNET_CLIENT_COD ) then
 		return "Interface\\FriendsFrame\\Battlenet-CallOfDutyBlackOps4icon";
+	elseif ( client == BNET_CLIENT_COD_MW ) then
+		return "Interface\\FriendsFrame\\Battlenet-CallOfDutyMWicon";
+	elseif ( client == BNET_CLIENT_WC3 ) then
+		return "Interface\\FriendsFrame\\Battlenet-Warcraft3Reforged";
 	else
 		return "Interface\\FriendsFrame\\Battlenet-Battleneticon";
 	end

@@ -177,4 +177,83 @@
 			</Anchor>
 		</Anchors>
 	</CheckButton>
+	<CheckButton name="KeyRingButton" parent="MainMenuBarArtFrame" hidden="true">
+		<Size x="18" y="39"/>
+		<Anchors>
+			<Anchor point="RIGHT" relativeTo="CharacterBag3Slot" relativePoint="LEFT">
+				<Offset>
+					<AbsDimension x="-5" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Animations>
+			<AnimationGroup parentKey="flyin">
+				<Scale childKey="animIcon" fromScaleX="0.256944" fromScaleY="0.118590" toScaleX="2.055556" toScaleY="0.948718" duration="1" order="1"/>
+				<Alpha childKey="animIcon" fromAlpha="0" toAlpha="1" duration="1" order="1"/>
+				<Path childKey="animIcon" curve="SMOOTH" duration="1" order="1">
+					<ControlPoints>
+						<ControlPoint offsetX="-15" offsetY="30"/>
+						<ControlPoint offsetX="-75" offsetY="60"/>
+					</ControlPoints>
+				</Path>
+				<Scripts>
+					<OnPlay>
+						local iconFrame = self:GetParent();
+						self.strata = iconFrame:GetFrameStrata();
+						iconFrame:SetFrameStrata("HIGH");
+						iconFrame.animIcon:Show();
+					</OnPlay>
+					<OnFinished>
+						local iconFrame = self:GetParent();
+						iconFrame:SetFrameStrata(self.strata);
+						iconFrame.animIcon:Hide();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+			<Layers>
+				<Layer level="OVERLAY">
+					<Texture  parentKey="animIcon" setAllPoints="true"/>
+				</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				ItemAnim_OnLoad(self)
+				self:SetID(KEYRING_CONTAINER);
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnClick>
+				if (CursorHasItem()) then
+					PutKeyInKeyRing();
+				else
+					ToggleBag(KEYRING_CONTAINER);
+				end
+			</OnClick>
+			<OnReceiveDrag>
+				if (CursorHasItem()) then
+					PutKeyInKeyRing();
+				end
+			</OnReceiveDrag>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(KEYRING, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				GameTooltip:AddLine();
+			</OnEnter>
+			<OnEvent>
+				ItemAnim_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-Button-KeyRing">
+			<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Buttons\UI-Button-KeyRing-Highlight" alphaMode="ADD">
+			<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
+		</HighlightTexture>
+		<PushedTexture file="Interface\Buttons\UI-Button-KeyRing-Down">
+			<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
+		</PushedTexture>
+	</CheckButton>
 </Ui>

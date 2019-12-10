@@ -309,6 +309,22 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "IsChannelJoinPending",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelType", Type = "ChatChannelType", Nilable = false },
+				{ Name = "clubId", Type = "string", Nilable = true },
+				{ Name = "streamId", Type = "string", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "isPending", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsDeafened",
 			Type = "Function",
 
@@ -493,6 +509,7 @@ local VoiceChat =
 			Arguments =
 			{
 				{ Name = "channelType", Type = "ChatChannelType", Nilable = false },
+				{ Name = "autoActivate", Type = "bool", Nilable = true },
 			},
 		},
 		{
@@ -943,8 +960,8 @@ local VoiceChat =
 			Payload =
 			{
 				{ Name = "channelType", Type = "ChatChannelType", Nilable = false },
-				{ Name = "clubId", Type = "string", Nilable = false },
-				{ Name = "streamId", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "string", Nilable = true },
+				{ Name = "streamId", Type = "string", Nilable = true },
 				{ Name = "pendingJoin", Type = "bool", Nilable = false },
 			},
 		},

@@ -1819,7 +1819,7 @@
 						</OnShow>
 					</Scripts>
 				</Frame>
-				<Frame parentKey="Notice" enableMouse="false" hidden="true">
+				<Frame parentKey="Notice" frameLevel="1001" enableMouse="false" hidden="true">
 					<Size x="320" y="210" />
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="20" />
@@ -1871,7 +1871,6 @@
 					<Scripts>
 						<OnShow>
 							StoreFrame_UpdateCoverState();
-							self:SetFrameLevel(self:GetParent():GetFrameLevel()+4);
 						</OnShow>
 						<OnHide function="StoreFrame_UpdateCoverState" />
 					</Scripts>

@@ -54,6 +54,7 @@ RealmList.xml
 CharacterServicesPatchwerk.xml
 CharacterSelect.xml
 AccountReactivate.xml
+KioskModeSplash.xml
 CharacterServices.xml
 CharacterCreate.xml
 PromotionFrame.xml
@@ -68,7 +69,6 @@ AudioOptionsPanels.xml
 MovieFrame.xml
 CinematicsFrame.xml
 CreditsFrame.xml
-KioskModeSplash.xml
 GlueMenuFrame.xml
 
 ## Should only load internally

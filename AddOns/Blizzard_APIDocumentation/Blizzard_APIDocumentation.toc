@@ -74,6 +74,7 @@ SpellDocumentation.lua
 SpellBookDocumentation.lua
 StableInfoDocumentation.lua
 StorePublicUIDocumentation.lua
+SummonInfoDocumentation.lua
 SystemDocumentation.lua
 TaxiMapDocumentation.lua
 TradeInfoDocumentation.lua
