@@ -212,20 +212,13 @@ function AuctionHouseItemSellFrameMixin:SetSecondaryPriceInputEnabled(enabled)
 end
 
 function AuctionHouseItemSellFrameMixin:SetItem(itemLocation, fromItemDisplay, refreshListWithPreviousItem)
-	local previousItemLocation = self:GetItem();
-	
 	AuctionHouseSellFrameMixin.SetItem(self, itemLocation, fromItemDisplay);
 
-	if self.SecondaryPriceInput:IsShown() then
-		self.SecondaryPriceInput:SetAmount(self:GetDefaultPrice());
-	end
+	self.SecondaryPriceInput:SetAmount(0);
 
 	local itemKey = itemLocation and C_AuctionHouse.GetItemKeyFromItem(itemLocation) or nil;
-	if refreshListWithPreviousItem then
-		local previousItemKey = previousItemLocation and C_AuctionHouse.GetItemKeyFromItem(previousItemLocation) or nil;
-		if previousItemKey then
-			itemKey = previousItemKey;
-		end
+	if refreshListWithPreviousItem and self.previousItemKey then
+		itemKey = self.previousItemKey;
 	end
 
 	local newItemKey = AuctionHouseUtil.ConvertItemSellItemKey(itemKey);
@@ -263,6 +256,8 @@ function AuctionHouseItemSellFrameMixin:SetItem(itemLocation, fromItemDisplay, r
 
 	self:UpdatePriceSelection();
 	itemSellList:DirtyScrollFrame();
+
+	self.previousItemKey = itemKey;
 end
 
 function AuctionHouseItemSellFrameMixin:UpdatePostState()

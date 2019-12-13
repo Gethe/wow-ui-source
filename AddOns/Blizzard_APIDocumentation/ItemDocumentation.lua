@@ -352,6 +352,15 @@ local Item =
 			},
 		},
 		{
+			Name = "LockItemByGUID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemGUID", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "RequestLoadItemData",
 			Type = "Function",
 
@@ -376,6 +385,15 @@ local Item =
 			Arguments =
 			{
 				{ Name = "itemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+		},
+		{
+			Name = "UnlockItemByGUID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemGUID", Type = "string", Nilable = false },
 			},
 		},
 	},

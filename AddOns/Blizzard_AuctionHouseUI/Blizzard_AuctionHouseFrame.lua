@@ -657,8 +657,14 @@ function AuctionHouseFrameMixin:SendBrowseQueryInternal(browseSearchContext, sea
 
 	self.activeSearches[browseSearchContext] = { browseSearchContext, searchString, minLevel, maxLevel, filtersArray };
 
-	local filterData = self:GetCategoriesList():GetCategoryFilterData();
-	
+	local filterData = nil;
+	local categoriesList = self:GetCategoriesList();
+	if categoriesList:IsWoWTokenCategorySelected() then
+		categoriesList:SetSelectedCategory(nil);
+	else
+		filterData = categoriesList:GetCategoryFilterData();
+	end
+
 	local query = {};
 	query.searchString = searchString;
 	query.minLevel = minLevel;

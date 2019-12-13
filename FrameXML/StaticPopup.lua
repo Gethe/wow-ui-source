@@ -2469,7 +2469,7 @@ StaticPopupDialogs["CONFIRM_DESTROY_COMMUNITY"] = {
 	end,
 	EditBoxOnTextChanged = function (self)
 		local parent = self:GetParent();
-		if ( strupper(parent.editBox:GetText()) ==  DELETE_ITEM_CONFIRM_STRING ) then
+		if ( strupper(parent.editBox:GetText()) == COMMUNITIES_DELETE_CONFIRM_STRING ) then
 			parent.button1:Enable();
 		else
 			parent.button1:Disable();

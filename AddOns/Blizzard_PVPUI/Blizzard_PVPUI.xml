@@ -1666,7 +1666,7 @@
 							<Anchor point="CENTER" relativeKey="$parent.ConquestFrame" x="108"/>
 						</Anchors>
 						<Frames>
-							<Frame name="SeasonRewardFrame" inherits="SeasonRewardFrameTemplate">
+							<Frame parentKey="SeasonRewardFrame" inherits="SeasonRewardFrameTemplate">
 								<Size x="80" y="80"/>
 								<Anchors>
 									<Anchor point="CENTER" y="-60"/>

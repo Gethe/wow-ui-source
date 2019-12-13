@@ -722,28 +722,6 @@
 							<Anchor point="LEFT" relativeKey="$parent.Tab2" relativePoint="RIGHT"/>
 						</Anchors>
 					</Button>
-					<Button parentKey="OldRAFRewardsButton" motionScriptsWhileDisabled="true"  hidden="true">
-						<Size x="26" y="26"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="-8" y="-55"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentIcon" parentKey="Icon" file="Interface\Icons\achievement_guildperk_mobilebanking"/>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad function="OldRAFRewardsButton_OnLoad" />
-							<OnEvent function="OldRAFRewardsButton_Update" />
-							<OnClick function="OldRAFRewardsButton_OnClick" />
-							<OnEnter function="OldRAFRewardsButton_OnEnter" />
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
-						</Scripts>
-						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square" parentKey="highlight"/>
-					</Button>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad" />

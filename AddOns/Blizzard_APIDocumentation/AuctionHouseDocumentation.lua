@@ -53,15 +53,6 @@ local AuctionHouse =
 			},
 		},
 		{
-			Name = "CanSetFavorite",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "canSetFavorite", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "CancelAuction",
 			Type = "Function",
 
@@ -90,6 +81,15 @@ local AuctionHouse =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "FavoritesAreAvailable",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "favoritesAreAvailable", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -619,6 +619,15 @@ local AuctionHouse =
 			Returns =
 			{
 				{ Name = "hasFullOwnedAuctionResults", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasMaxFavorites",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasMaxFavorites", Type = "bool", Nilable = false },
 			},
 		},
 		{

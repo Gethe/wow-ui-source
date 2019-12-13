@@ -10,11 +10,19 @@
 
 	<Button name="AuctionHouseAuctionsSummaryLineTemplate" mixin="AuctionHouseAuctionsSummaryLineMixin" inherits="ScrollListLineTextTemplate, TruncatedTooltipScriptTemplate" virtual="true">
 		<Layers>
-			<Layer level="ARTWORK">
+			<Layer level="BORDER">
 				<Texture parentKey="Icon">
 					<Size x="14" y="14"/>
 					<Anchors>
 						<Anchor point="LEFT" x="4" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="IconBorder" atlas="auctionhouse-itemicon-small-border" useAtlasSize="false">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 					</Anchors>
 				</Texture>
 			</Layer>

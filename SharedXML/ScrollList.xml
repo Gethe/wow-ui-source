@@ -34,13 +34,6 @@
 
 
 	<Frame name="ScrollListTemplate" mixin="ScrollListMixin" virtual="true">
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="SelectedHighlight" hidden="true">
-					<Color r="1" g="0.8" b="0.2" a="0.2"/>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
 			<ScrollFrame parentKey="ScrollFrame" inherits="HybridScrollFrameTemplate">
 				<Anchors>
@@ -48,6 +41,15 @@
 					<Anchor point="BOTTOMRIGHT" x="-28" y="3"/>
 				</Anchors>
 				<Frames>
+					<Frame parentKey="ArtOverlay" setAllPoints="true" clipChildren="true">
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="SelectedHighlight" hidden="true">
+									<Color r="1" g="0.8" b="0.2" a="0.2"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
 					<Slider parentKey="scrollBar" inherits="HybridScrollBarTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="4" y="-10"/>

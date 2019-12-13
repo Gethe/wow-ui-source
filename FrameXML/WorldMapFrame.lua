@@ -151,6 +151,9 @@ function TaskPOI_OnEnter(self, skipSetOwner)
 		end
 
 		WorldMap_AddQuestTimeToTooltip(self.questID);
+	elseif ( self.isThreat ) then
+		GameTooltip_SetTitle(GameTooltip, title);
+		WorldMap_AddQuestTimeToTooltip(self.questID);
 	else
 		GameTooltip:SetText(title);
 	end

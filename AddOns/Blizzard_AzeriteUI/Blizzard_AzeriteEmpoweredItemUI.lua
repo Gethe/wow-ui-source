@@ -208,9 +208,9 @@ function AzeriteEmpoweredItemUIMixin:Clear()
 	StaticPopup_Hide("CONFIRM_AZERITE_EMPOWERED_BIND");
 	StaticPopup_Hide("CONFIRM_AZERITE_EMPOWERED_SELECT_POWER");
 
-	local azeriteEmpoweredItem = self.azeriteItemDataSource:GetItem();
-	if azeriteEmpoweredItem then
-		azeriteEmpoweredItem:UnlockItem();
+	if self.oldItemGUID then
+		C_Item.UnlockItemByGUID(self.oldItemGUID);
+		self.oldItemGUID = nil;
 	end
 
 	if self.itemDataLoadedCancelFunc then
@@ -272,7 +272,7 @@ function AzeriteEmpoweredItemUIMixin:OnItemSet()
 		self.BorderFrame.TitleText:SetText(azeriteEmpoweredItem:GetItemName());
 	end);
 
-	self.oldItem = azeriteEmpoweredItem;
+	self.oldItemGUID = azeriteEmpoweredItem:GetItemGUID();
 
 	FrameUtil.RegisterFrameForEvents(self, AZERITE_EMPOWERED_FRAME_EVENTS);
 	self:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", "player");

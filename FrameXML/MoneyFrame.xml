@@ -404,7 +404,7 @@
 						<Anchor point="RIGHT"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Text" inherits="NumberFont_Normal_Med" justifyH="RIGHT">
+				<FontString parentKey="Text" inherits="PriceFont" justifyH="RIGHT">
 					<Anchors>
 						<Anchor point="RIGHT" x="-13" y="0"/>
 					</Anchors>

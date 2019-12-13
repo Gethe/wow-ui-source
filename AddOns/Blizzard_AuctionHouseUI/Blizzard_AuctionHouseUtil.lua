@@ -189,6 +189,8 @@ function AuctionHouseUtil.ConvertCategoryToSearchContext(selectedCategoryIndex)
 	elseif categoryName == AUCTION_CATEGORY_MISCELLANEOUS then
 		return AuctionHouseSearchContext.BrowseMiscellaneous;
 	end
+
+	return AuctionHouseSearchContext.BrowseAll;
 end
 
 function AuctionHouseUtil.AggregateSearchResults(itemID, numSearchResults)
@@ -370,16 +372,16 @@ end
 
 function AuctionHouseUtil.SetBidsFrameBidTextColor(moneyFrame, bidStatus)
 	if bidStatus == AuctionHouseBidStatus.PlayerBid then
-		moneyFrame:SetFontObject(Number14FontGreen);
+		moneyFrame:SetFontObject(PriceFontGreen);
 	elseif bidStatus == AuctionHouseBidStatus.PlayerOutbid then
-		moneyFrame:SetFontObject(Number14FontRed);
+		moneyFrame:SetFontObject(PriceFontRed);
 	else
-		moneyFrame:SetFontObject(Number14FontGray);
+		moneyFrame:SetFontObject(PriceFontGray);
 	end
 end
 
 function AuctionHouseUtil.SetOwnedAuctionBidTextColor(moneyFrame, ownedAuctionInfo)
-	moneyFrame:SetFontObject(ownedAuctionInfo.bidder and Number14FontGreen or Number14FontGray);
+	moneyFrame:SetFontObject(ownedAuctionInfo.bidder and PriceFontGreen or PriceFontGray);
 end
 
 function AuctionHouseUtil.ConvertBidStatusToText(bidStatus)
@@ -432,40 +434,67 @@ function AuctionHouseUtil.ConvertItemSellItemKey(itemKey)
 	return itemKey;
 end
 
-function AuctionHouseUtil.SetAuctionHouseTooltip(owner, rowData)
+local AuctionHouseTooltipType = {
+	PetLink = 1;
+	ItemLink = 2;
+	ItemKey = 3;
+};
+
+local function GetAuctionHouseTooltipType(rowData)
 	if rowData.itemLink then
-		if not BattlePetToolTip_ShowLink(rowData.itemLink) then
-			GameTooltip:SetOwner(owner, "ANCHOR_RIGHT");
-			GameTooltip:SetHyperlink(rowData.itemLink);
-			GameTooltip:Show();
-		else
-			GameTooltip:SetOwner(owner, "ANCHOR_RIGHT");
-
-			local hideVendorPrice = true;
-			GameTooltip:SetHyperlink(rowData.itemLink, nil, nil, nil, hideVendorPrice);
-			GameTooltip:Show();
+		local linkType = LinkUtil.ExtractLink(rowData.itemLink);
+		if linkType == "battlepet" then
+			return AuctionHouseTooltipType.PetLink, rowData.itemLink;
+		elseif linkType == "item" then
+			return AuctionHouseTooltipType.ItemLink, rowData.itemLink;
 		end
-
-		GameTooltip:Show();
 	elseif rowData.itemKey then
 		local restrictQualityToFilter = true;
 		local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(rowData.itemKey, restrictQualityToFilter);
 		if itemKeyInfo and itemKeyInfo.battlePetLink then
-			BattlePetToolTip_ShowLink(itemKeyInfo.battlePetLink);
-		else
-			GameTooltip:SetOwner(owner, "ANCHOR_RIGHT");
-			GameTooltip:SetItemKey(rowData.itemKey.itemID, rowData.itemKey.itemLevel, rowData.itemKey.itemSuffix);
-			GameTooltip:Show();
+			return AuctionHouseTooltipType.PetLink, itemKeyInfo.battlePetLink;
+		end
+
+		return AuctionHouseTooltipType.ItemKey, rowData.itemKey;
+	end
+
+	return nil;
+end
+
+function AuctionHouseUtil.SetAuctionHouseTooltip(owner, rowData)
+	GameTooltip_Hide();
+
+	local tooltip = nil;
+
+	local tooltipType, data = GetAuctionHouseTooltipType(rowData);
+	if not tooltipType then
+		return;
+	end
+
+	GameTooltip:SetOwner(owner, "ANCHOR_RIGHT");
+	
+	if tooltipType == AuctionHouseTooltipType.PetLink then
+		BattlePetToolTip_ShowLink(data);
+		tooltip = BattlePetTooltip;
+	else
+		tooltip = GameTooltip;
+		if tooltipType == AuctionHouseTooltipType.ItemLink then
+			local hideVendorPrice = true;
+			GameTooltip:SetHyperlink(rowData.itemLink, nil, nil, nil, hideVendorPrice);
+		elseif tooltipType == AuctionHouseTooltipType.ItemKey then
+			GameTooltip:SetItemKey(data.itemID, data.itemLevel, data.itemSuffix);
 		end
 	end
 
 	if rowData.owners then
 		local methodFound, auctionHouseFrame = CallMethodOnNearestAncestor(owner, "GetAuctionHouseFrame");
 		local bidStatus = auctionHouseFrame and auctionHouseFrame:GetBidStatus(rowData) or nil;
-		AuctionHouseUtil.AddAuctionHouseTooltipInfo(GameTooltip, rowData.owners, rowData.timeLeft, bidStatus);
+		AuctionHouseUtil.AddAuctionHouseTooltipInfo(tooltip, rowData.owners, rowData.timeLeft, bidStatus);
 	end
-	
-	GameTooltip:Show();
+
+	if tooltip == GameTooltip then
+		GameTooltip:Show();
+	end
 end
 
 function AuctionHouseUtil.LineOnUpdate(line)
@@ -497,10 +526,22 @@ function AuctionHouseUtil.LineOnLeaveCallback(line, rowData)
 	GameTooltip_Hide();
 end
 
+function AuctionHouseUtil.GetItemLinkFromRowData(rowData)
+	if rowData.itemLink then
+		return rowData.itemLink;
+	else
+		local itemLink = select(2, GetItemInfo(rowData.itemKey.itemID));
+		return itemLink;
+	end
+end
+
 function AuctionHouseUtil.GenerateRowSelectedCallbackWithInspect(self, selectionCallback)
 	local function RowSelectedCallback(rowData)
 		if rowData and IsModifiedClick("DRESSUP") then
 			DressUpLink(rowData.itemLink);
+			return false;
+		elseif rowData and IsModifiedClick("CHATLINK") then
+			ChatEdit_InsertLink(AuctionHouseUtil.GetItemLinkFromRowData(rowData));
 			return false;
 		end
 
@@ -511,11 +552,15 @@ function AuctionHouseUtil.GenerateRowSelectedCallbackWithInspect(self, selection
 	return RowSelectedCallback;
 end
 
+function AuctionHouseUtil.CompareItemKeys(lhsItemKey, rhsItemKey)
+	return tCompare(lhsItemKey, rhsItemKey);
+end
+
 function AuctionHouseUtil.HasBidType(itemKey)
 	for i = 1, C_AuctionHouse.GetNumBidTypes() do
 		local bidItemKey = C_AuctionHouse.GetBidType(i);
-		if bidItemKey == itemKey then
-			return true;
+		if AuctionHouseUtil.CompareItemKeys(bidItemKey, itemKey) then
+			return true, i;
 		end
 	end
 
@@ -525,8 +570,8 @@ end
 function AuctionHouseUtil.HasOwnedAuctionType(itemKey)
 	for i = 1, C_AuctionHouse.GetNumOwnedAuctionTypes() do
 		local ownedAuctionItemKey = C_AuctionHouse.GetOwnedAuctionType(i);
-		if ownedAuctionItemKey == itemKey then
-			return true;
+		if AuctionHouseUtil.CompareItemKeys(ownedAuctionItemKey, itemKey) then
+			return true, i;
 		end
 	end
 

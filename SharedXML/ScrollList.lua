@@ -70,6 +70,10 @@ function ScrollListMixin:SetRefreshCallback(refreshCallback)
 	self.refreshCallback = refreshCallback;
 end
 
+function ScrollListMixin:GetSelectedHighlight()
+	return self.ScrollFrame.ArtOverlay.SelectedHighlight;
+end
+
 function ScrollListMixin:OnShow()
 	self:Init();
 	self:RefreshScrollFrame();
@@ -97,22 +101,27 @@ function ScrollListMixin:Init()
 end
 
 function ScrollListMixin:UpdatedSelectedHighlight()
-	self.SelectedHighlight:ClearAllPoints();
-	self.SelectedHighlight:Hide();
+	local selectedHighlight = self:GetSelectedHighlight();
+	selectedHighlight:ClearAllPoints();
+	selectedHighlight:Hide();
 
 	if self.isInitialized and self.selectedListIndex ~= nil then
 		local buttonOffset = self.selectedListIndex - self:GetScrollOffset();
 		local buttons = HybridScrollFrame_GetButtons(self.ScrollFrame);
-		if buttonOffset < #buttons then
+		if buttonOffset >= 1 and buttonOffset < #buttons then
 			local button = buttons[buttonOffset];
-			self.SelectedHighlight:SetPoint("TOPLEFT", button, "TOPLEFT", 4, 0);
-			self.SelectedHighlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, 0);
-			self.SelectedHighlight:Show();
+			selectedHighlight:SetPoint("TOPLEFT", button, "TOPLEFT", 4, 0);
+			selectedHighlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, 0);
+			selectedHighlight:Show();
 		end
 	end
 end
 
 function ScrollListMixin:SetSelectedListIndex(listIndex)
+	if self.selectedListIndex == listIndex then
+		return;
+	end
+	
 	self.selectedListIndex = listIndex;
 
 	self:UpdatedSelectedHighlight();
@@ -130,8 +139,7 @@ end
 
 function ScrollListMixin:Reset()
 	if self.isInitialized then
-		HybridScrollFrame_SetOffset(self.ScrollFrame, 0);
-		self:RefreshScrollFrame();
+		self.ScrollFrame.scrollBar:SetValue(0);
 	end
 end
 
@@ -184,6 +192,8 @@ function ScrollListMixin:RefreshScrollFrame()
 	local displayedHeight = numDisplayed * buttonHeight;
 	local totalHeight = numResults * buttonHeight;
 	HybridScrollFrame_Update(self.ScrollFrame, totalHeight, displayedHeight);
+
+	self:UpdatedSelectedHighlight();
 
 	if self.refreshCallback ~= nil then
 		self.refreshCallback(lastDisplayedOffset);

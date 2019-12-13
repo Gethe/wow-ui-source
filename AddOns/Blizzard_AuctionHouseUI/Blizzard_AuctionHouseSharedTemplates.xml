@@ -118,6 +118,7 @@
 
 	<EditBox name="AuctionHouseQuantityInputEditBoxTemplate" letters="8" numeric="true" autoFocus="false" mixin="AuctionHouseQuantityInputBoxMixin" inherits="LargeInputBoxTemplate" virtual="true">
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnTextChanged method="OnTextChanged"/>
 			<OnEnterPressed function="EditBox_ClearFocus"/>
 		</Scripts>

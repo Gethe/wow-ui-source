@@ -243,6 +243,8 @@ end
 LargeMoneyInputBoxMixin = {};
 
 function LargeMoneyInputBoxMixin:OnLoad()
+	self:SetFontObject("PriceFont");
+	
 	if self.iconAtlas then
 		self.Icon:SetAtlas(self.iconAtlas);
 	end

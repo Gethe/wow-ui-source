@@ -105,6 +105,11 @@ local WowTokenUI =
 			LiteralName = "TOKEN_SELL_CONFIRM_REQUIRED",
 		},
 		{
+			Name = "TokenSellConfirmed",
+			Type = "Event",
+			LiteralName = "TOKEN_SELL_CONFIRMED",
+		},
+		{
 			Name = "TokenSellResult",
 			Type = "Event",
 			LiteralName = "TOKEN_SELL_RESULT",

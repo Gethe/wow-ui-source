@@ -137,7 +137,7 @@
 						</AnimationGroup>
 					</Animations>
 				</Frame>
-				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ReversedLightingModelSceneMixinTemplate" />
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="NoCameraControlModelSceneMixinTemplate" />
 				<Button parentKey="Magnifier" mixin="DefaultStoreCardMagnifierMixin" enableMouse="true" hidden="true">
 					<NormalTexture inherits="store-icon-magnifyingglass" />
 					<HighlightTexture inherits="store-icon-magnifyingglass" alphaMode="ADD" />

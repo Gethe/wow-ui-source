@@ -639,7 +639,7 @@ function MoneyDenominationDisplayMixin:GetFontObject()
 end
 
 function MoneyDenominationDisplayMixin:SetFontAndIconDisabled(disabled)
-	self:SetFontObject(disabled and Number14FontGray or Number14FontWhite);
+	self:SetFontObject(disabled and PriceFontGray or PriceFontWhite);
 	self.Icon:SetAlpha(disabled and 0.5 or 1);
 end
 

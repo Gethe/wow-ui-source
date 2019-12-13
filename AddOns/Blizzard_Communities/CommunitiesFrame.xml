@@ -288,6 +288,10 @@
 							GameTooltip_ShowDisabledTooltip(GameTooltip, self, self.disabledTooltip);
 						end
 					</OnEnter>
+					<OnShow>
+						local communitiesFrame = self:GetParent():GetParent();
+						communitiesFrame:CheckForTutorials();
+					</OnShow>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>

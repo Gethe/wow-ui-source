@@ -216,7 +216,7 @@ function AuctionHouseItemListMixin:Reset()
 	if self:GetScrollOffset() == 0 then
 		self:RefreshScrollFrame();
 	else
-		HybridScrollFrame_SetOffset(self.ScrollFrame, 0);
+		self.ScrollFrame.scrollBar:SetValue(0);
 	end
 end
 

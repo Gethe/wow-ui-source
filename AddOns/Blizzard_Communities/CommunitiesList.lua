@@ -661,6 +661,8 @@ function CommunitiesListEntryMixin:CheckForDisabledReason(clubType)
 			self:SetDisabledTooltip(COMMUNITY_FEATURE_UNAVAILABLE_MUTED);
 		elseif disabledReason == Enum.ClubFinderDisableReason.Silenced then
 			self:SetDisabledTooltip(COMMUNITY_FEATURE_UNAVAILABLE_SILENCED);
+		elseif disabledReason == Enum.ClubFinderDisableReason.VeteranTrial then 
+			self:SetDisabledTooltip(CLUB_FINDER_DISABLE_REASON_VETERAN_TRIAL);
 		else
 			self:SetDisabledTooltip(COMMUNITY_TYPE_UNAVAILABLE);
 		end

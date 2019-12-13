@@ -395,7 +395,10 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						C_WowTokenUI.StartTokenSell(self:GetParent():GetSellToken());
+						local sellToken = self:GetParent():GetSellToken();
+						if sellToken then
+							C_WowTokenUI.StartTokenSell(sellToken);
+						end
 					</OnClick>
 				</Scripts>
 			</Button>

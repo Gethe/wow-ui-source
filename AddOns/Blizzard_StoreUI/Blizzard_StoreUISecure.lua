@@ -1716,6 +1716,10 @@ function StoreFrame_SetCategoryProductCards(forceModelUpdate, entries)
 		return;
 	end
 
+	if not entries then
+		return;
+	end
+
 	local self = StoreFrame;
 	StoreFrame_CheckAndUpdateEntryID(false);
 

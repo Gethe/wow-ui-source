@@ -43,23 +43,26 @@ function AzeriteEssenceUtil.GetMilestoneSpellInfo(milestoneID)
 	return spellName, spellTexture;
 end
 
-function AzeriteEssenceUtil.HasAnyEmptySlots()
+function AzeriteEssenceUtil.ShouldShowEmptySlotHelptip()
 	if not C_AzeriteEssence.CanOpenUI() then
 		return false;
 	end
 
+	local numValidSlots = 0;
+	local numEmptySlots = 0;
 	local milestones = C_AzeriteEssence.GetMilestones();
 	if milestones then
 		for i, milestoneInfo in ipairs(milestones) do
 			if milestoneInfo.slot and milestoneInfo.unlocked then
+				numValidSlots = numValidSlots + 1;
 				local essenceID = C_AzeriteEssence.GetMilestoneEssence(milestoneInfo.ID);
 				if not essenceID then
-					return true;
+					numEmptySlots = numEmptySlots + 1;
 				end
 			end
 		end
 	end
-	return false;
+	return numEmptySlots > 0 and C_AzeriteEssence.GetNumUnlockedEssences() >= numValidSlots;
 end
 
 local ESSENCE_SWAP_TUTORIAL_STATE_NOT_SEEN = 0;

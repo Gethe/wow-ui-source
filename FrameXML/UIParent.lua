@@ -801,7 +801,7 @@ function ToggleCalendar()
 end
 
 function IsCommunitiesUIDisabledByTrialAccount()
-	return IsTrialAccount() or (not C_Club.IsEnabled() and IsVeteranTrialAccount() and not IsInGuild());
+	return IsTrialAccount();
 end
 
 function ToggleGuildFrame()
@@ -5134,15 +5134,11 @@ end
 
 function LeaveInstanceParty()
 	if ( IsInLFDBattlefield() ) then
-		local mapID = select(8, GetInstanceInfo());
-		local queuedList = GetLFGQueuedList(LE_LFG_CATEGORY_BATTLEFIELD);
-		for queueID in pairs(queuedList) do
-			local queueMapID = select(16, GetLFGInfoServer(LE_LFG_CATEGORY_BATTLEFIELD, queueID));
-			-- teleport out if maps match (99% of the time, it works every time)
-			if mapID == queueMapID then
-				LFGTeleport(true);
-				return;
-			end
+		local currentMapID, _, lfgID = select(8, GetInstanceInfo());
+		local _, typeID, subtypeID, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, lfgMapID = GetLFGDungeonInfo(lfgID);
+		if currentMapID == lfgMapID and subtypeID == LE_LFG_CATEGORY_BATTLEFIELD then
+			LFGTeleport(true);
+			return;
 		end
 	end
 	C_PartyInfo.LeaveParty(LE_PARTY_CATEGORY_INSTANCE);

@@ -131,12 +131,12 @@ function BrowseWowTokenResults_Update(self)
 		self.Buyout:SetEnabled(false);
 	elseif (self.noneForSale) then
 		self.BuyoutPrice:SetText(GetFormattedWoWTokenPrice(marketPrice));
-		self.BuyoutPrice:SetFontObject(Number14FontWhite);
+		self.BuyoutPrice:SetFontObject(PriceFontWhite);
 		self.InvisiblePriceFrame:Show();
 		self.Buyout:SetEnabled(false);
 	else
 		self.BuyoutPrice:SetText(GetFormattedWoWTokenPrice(marketPrice));
-		self.BuyoutPrice:SetFontObject(Number14FontWhite);
+		self.BuyoutPrice:SetFontObject(PriceFontWhite);
 		self.InvisiblePriceFrame:Show();
 		if (GetMoney() < marketPrice) then
 			self.Buyout:SetEnabled(false);
@@ -179,6 +179,7 @@ function WoWTokenSellFrameMixin:OnLoad()
 	self:RegisterEvent("TOKEN_STATUS_CHANGED");
 	self:RegisterEvent("TOKEN_SELL_RESULT");
 	self:RegisterEvent("TOKEN_AUCTION_SOLD");
+	self:RegisterEvent("TOKEN_SELL_CONFIRMED");
 
 	self.DummyRefreshButton:SetEnabledState(false);
 end
@@ -213,12 +214,17 @@ function WoWTokenSellFrameMixin:OnEvent(event, ...)
 		end
 	elseif (event == "TOKEN_AUCTION_SOLD") then
 		C_WowTokenPublic.UpdateListedAuctionableTokens();
+	elseif (event == "TOKEN_SELL_CONFIRMED") then
+		self:SetItem(nil);
 	end
 end
 
 function WoWTokenSellFrameMixin:SetItem(itemLocation)
 	local skipCallback = true;
 	self.ItemDisplay:SetItemLocation(itemLocation, skipCallback);
+
+	local itemIsValid = itemLocation and C_Item.DoesItemExist(itemLocation);
+	self.PostButton:SetEnabled(itemIsValid);
 end
 
 function WoWTokenSellFrameMixin:GetItem()
@@ -226,7 +232,9 @@ function WoWTokenSellFrameMixin:GetItem()
 end
 
 function WoWTokenSellFrameMixin:GetSellToken(itemLocation)
-	return C_Item.GetItemGUID(self.ItemDisplay:GetItemLocation());
+	local itemLocation = self.ItemDisplay:GetItemLocation();
+	local itemIsValid = itemLocation and C_Item.DoesItemExist(itemLocation);
+	return itemIsValid and C_Item.GetItemGUID(itemLocation) or nil;
 end
 
 function WoWTokenSellFrameMixin:Refresh()
@@ -238,7 +246,7 @@ function WoWTokenSellFrameMixin:Refresh()
 	local enabled = price and not self.disabled;
 	self.InvisiblePriceFrame:SetShown(enabled);
 	self.PostButton:SetEnabled(enabled);
-	self.MarketPrice:SetFontObject(enabled and Number14FontWhite or GameFontRed);
+	self.MarketPrice:SetFontObject(enabled and PriceFontWhite or GameFontRed);
 	if (enabled) then
 		self.MarketPrice:SetText(GetMoneyString(price, true));
 		local timeToSellString = _G[("AUCTION_TIME_LEFT%d_DETAIL"):format(duration)];

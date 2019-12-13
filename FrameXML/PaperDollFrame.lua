@@ -3034,7 +3034,7 @@ function PaperDollItemsMixin:EvaluateHelpTip()
 		end
 	end
 	if not bestHelpTipButton and self:ShouldShowAzeriteEssenceSlotHelpTip() then
-		if AzeriteEssenceUtil.HasAnyEmptySlots() then
+		if AzeriteEssenceUtil.ShouldShowEmptySlotHelptip() then
 			bestHelpTipButton = self:FindActiveAzeriteItemButton();
 			helpTipText = AZERITE_ESSENCE_HELPTIP_AVAILABLE_SLOT;
 			helpCloseFlag = self.helpFlags.AzeriteEssenceSlotTipClosed;

@@ -14,6 +14,7 @@ end
 
 function MultisellProgressFrameMixin:Start(itemTexture, total)
 	self:SetAlpha(1);
+	self:SetScript("OnUpdate", nil);
 	self.ProgressBar:SetMinMaxValues(0, total);
 	self.ProgressBar:SetValue(0.01);
 	self.ProgressBar.Text:SetFormattedText(AUCTION_CREATING, 0, total);
@@ -24,6 +25,6 @@ function MultisellProgressFrameMixin:Refresh(currentCount, totalCount)
 	self.ProgressBar:SetValue(currentCount);
 	self.ProgressBar.Text:SetFormattedText(AUCTION_CREATING, currentCount, totalCount);
 	if currentCount == totalCount then
-		self:SetScript("OnUpdate", MultisellProgressFrame_OnUpdate)
+		self:SetScript("OnUpdate", MultisellProgressFrame_OnUpdate);
 	end
 end

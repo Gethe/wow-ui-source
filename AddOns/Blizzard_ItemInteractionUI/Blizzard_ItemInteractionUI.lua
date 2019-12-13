@@ -37,11 +37,6 @@ function ItemInteractionMixin:CostsCurrency()
 end 
 
 --------------- Base Frame Functions -----------------------
-function ItemInteractionMixin:OnLoad()
-	FrameUtil.RegisterFrameForEvents(self, ITEM_INTERACTION_FRAME_EVENTS);
-	FrameUtil.RegisterFrameForUnitEvents(self, ITEM_INTERACTION_UNIT_EVENTS, "player");
-end
-
 function ItemInteractionMixin:OnEvent(event, ...)
 	if(event == "PLAYER_MONEY") or (event == "ITEM_INTERACTION_ITEM_SELECTION_UPDATED") then
 		self:UpdateMoney();
@@ -75,6 +70,9 @@ function ItemInteractionMixin:OnEvent(event, ...)
 end
 
 function ItemInteractionMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, ITEM_INTERACTION_FRAME_EVENTS);
+	FrameUtil.RegisterFrameForUnitEvents(self, ITEM_INTERACTION_UNIT_EVENTS, "player");
+
 	local frameInfo = C_ItemInteraction.GetItemInteractionInfo();
 	self:LoadInteractionFrameData(frameInfo);
 
@@ -97,6 +95,7 @@ function ItemInteractionMixin:OnShow()
 	OpenAllBags(self);
 
 	C_ItemInteraction.InitializeFrame();
+	C_ItemInteraction.ClearPendingItem();
 	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 end
 
@@ -107,6 +106,7 @@ function ItemInteractionMixin:OnHide()
 
 	CloseAllBags(self);
 	C_ItemInteraction.ClearPendingItem();
+	C_ItemInteraction.Reset(); 
 
 	-- Greys out the items in your bag that don't match. If you need  to add a new item interaction frame
 	-- Add a new type to ItemUtil.lua ItemButtonUtil.ItemContextEnum
@@ -122,6 +122,7 @@ function ItemInteractionMixin:LoadInteractionFrameData(frameData)
 	self.cost = frameData.cost; 
 	self.frameType = frameData.frameType; 
 	self.currencyTypeId = frameData.currencyTypeId; 
+	self.dropInSlotSoundKitId = frameData.dropInSlotSoundKitId or  SOUNDKIT.PUT_DOWN_SMALL_CHAIN;
 
 	local frameTextureKitRegions = {
 		[self.Background] = "%s-background",
@@ -226,6 +227,8 @@ function ItemInteractionMixin:SetInteractionItem(itemLocation)
 			SetCVarBitfield("closedInfoFrames", self.tutorialBitFlag, true);
 		end
 	end
+
+	PlaySound(self.dropInSlotSoundKitId);
 	self.ItemSlot:RefreshIcon();
 	self.ItemSlot:RefreshTooltip();
 	self:UpdateActionButtonState();

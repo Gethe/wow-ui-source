@@ -517,9 +517,9 @@ function AlertFrameMixin:OnEvent(event, ...)
 		local itemLink, quantity, rollType, roll, isUpgraded = ...;
 		LootAlertSystem:AddAlert(itemLink, quantity, rollType, roll, nil, nil, nil, nil, nil, isUpgraded);
 	elseif ( event == "SHOW_LOOT_TOAST" ) then
-		local typeIdentifier, itemLink, quantity, specID, sex, isPersonal, lootSource, lessAwesome, isUpgraded = ...;
+		local typeIdentifier, itemLink, quantity, specID, sex, isPersonal, lootSource, lessAwesome, isUpgraded, isCorrupted = ...;
 		if ( typeIdentifier == "item" ) then
-			LootAlertSystem:AddAlert(itemLink, quantity, nil, nil, specID, nil, nil, nil, lessAwesome, isUpgraded);
+			LootAlertSystem:AddAlert(itemLink, quantity, nil, nil, specID, nil, nil, nil, lessAwesome, isUpgraded, isCorrupted);
 		elseif ( typeIdentifier == "money" ) then
 			MoneyWonAlertSystem:AddAlert(quantity);
 		elseif ( isPersonal and (typeIdentifier == "currency") ) then

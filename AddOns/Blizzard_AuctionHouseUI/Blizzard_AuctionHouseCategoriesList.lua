@@ -211,6 +211,11 @@ function AuctionHouseCategoriesListMixin:OnShow()
 	AuctionFrameFilters_Update(self);
 end
 
+function AuctionHouseCategoriesListMixin:IsWoWTokenCategorySelected()
+	local categoryInfo = AuctionHouseCategory_FindDeepest(self.selectedCategoryIndex, self.selectedSubCategoryIndex, self.selectedSubSubCategoryIndex);
+	return categoryInfo and categoryInfo:HasFlag("WOW_TOKEN_FLAG");
+end
+
 function AuctionHouseCategoriesListMixin:SetSelectedCategory(selectedCategoryIndex, selectedSubCategoryIndex, selectedSubSubCategoryIndex)
 	self.selectedCategoryIndex = selectedCategoryIndex;
 	self.selectedSubCategoryIndex = selectedSubCategoryIndex;
@@ -218,13 +223,14 @@ function AuctionHouseCategoriesListMixin:SetSelectedCategory(selectedCategoryInd
 
 	self:GetAuctionHouseFrame():TriggerEvent(AuctionHouseFrameMixin.Event.CategorySelected, selectedCategoryIndex, selectedSubCategoryIndex, selectedSubSubCategoryIndex);
 	
-	local categoryInfo = AuctionHouseCategory_FindDeepest(selectedCategoryIndex, selectedSubCategoryIndex, selectedSubSubCategoryIndex);
 	local displayMode = self:GetAuctionHouseFrame():GetDisplayMode();
-	if categoryInfo and categoryInfo:HasFlag("WOW_TOKEN_FLAG") and displayMode ~= AuctionHouseFrameDisplayMode.WoWTokenBuy then
+	if self:IsWoWTokenCategorySelected() and displayMode ~= AuctionHouseFrameDisplayMode.WoWTokenBuy then
 		self:GetAuctionHouseFrame():SetDisplayMode(AuctionHouseFrameDisplayMode.WoWTokenBuy);
 	elseif displayMode ~= AuctionHouseFrameDisplayMode.Buy and displayMode ~= AuctionHouseFrameDisplayMode.ItemBuy and displayMode ~= AuctionHouseFrameDisplayMode.CommoditiesBuy then
 		self:GetAuctionHouseFrame():SetDisplayMode(AuctionHouseFrameDisplayMode.Buy);
 	end
+
+	AuctionFrameFilters_Update(self);
 end
 
 function AuctionHouseCategoriesListMixin:GetSelectedCategory()

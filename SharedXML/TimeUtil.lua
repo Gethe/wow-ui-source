@@ -1,3 +1,7 @@
+
+-- Set to false in some locale specific files.
+TIME_UTIL_WHITE_SPACE_STRIPPABLE = true;
+
 SECONDS_PER_MIN = 60;
 SECONDS_PER_HOUR = 60 * SECONDS_PER_MIN;
 SECONDS_PER_DAY = 24 * SECONDS_PER_HOUR;
@@ -107,7 +111,7 @@ function SecondsFormatterMixin:GetFormatString(interval, abbreviation, convertTo
 	if convertToLower then
 		formatString = formatString:lower();
 	end
-	local strip = self:GetStripIntervalWhitespace();
+	local strip = TIME_UTIL_WHITE_SPACE_STRIPPABLE and self:GetStripIntervalWhitespace();
 	return strip and formatString:gsub(" ", "") or formatString;
 end
 

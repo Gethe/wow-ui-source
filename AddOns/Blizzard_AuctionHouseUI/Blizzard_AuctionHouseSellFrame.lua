@@ -142,6 +142,8 @@ AuctionHouseDurationDropDownMixin = {};
 
 function AuctionHouseDurationDropDownMixin:OnLoad()
 	UIDropDownMenu_SetWidth(self, 80, 40);
+
+	self.Text:SetFontObject(Number12Font);
 end
 
 function AuctionHouseDurationDropDownMixin:OnShow()
@@ -165,7 +167,7 @@ function AuctionHouseDurationDropDownMixin:Initialize()
 
 	for i, durationText in ipairs(AUCTION_DURATIONS) do
 		local info = UIDropDownMenu_CreateInfo();
-		info.fontObject = NumberFont_Small;
+		info.fontObject = Number12Font;
 		info.text = durationText;
 		info.minWidth = 108;
 		info.value = i;

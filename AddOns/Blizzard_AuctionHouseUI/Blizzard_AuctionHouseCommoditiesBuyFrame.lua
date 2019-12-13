@@ -49,6 +49,16 @@ function AuctionHouseCommoditiesBuyDisplayMixin:OnShow()
 	self:GetAuctionHouseFrame():RegisterCallback(AuctionHouseFrameMixin.Event.CommoditiesQuantitySelectionChanged, self.quantitySelectionChangedCallback);
 end
 
+function AuctionHouseCommoditiesBuyDisplayMixin:UpdateBuyButton()
+	if self.TotalPrice:GetAmount() > GetMoney() then
+		self.BuyButton:SetDisableTooltip(AUCTION_HOUSE_TOOLTIP_TITLE_NOT_ENOUGH_MONEY);
+	elseif self.QuantityInput:GetQuantity() <= 0 then
+		self.BuyButton:SetDisableTooltip(AUCTION_HOUSE_TOOLTIP_TITLE_NONE_AVAILABLE);
+	else
+		self.BuyButton:SetDisableTooltip(nil);
+	end
+end
+
 function AuctionHouseCommoditiesBuyDisplayMixin:SetItemIDAndPrice(itemID, minPrice)
 	if itemID then
 		self.ItemDisplay:SetItem(itemID);
@@ -65,11 +75,7 @@ function AuctionHouseCommoditiesBuyDisplayMixin:SetPrice(unitPrice, totalPrice)
 	self.UnitPrice:SetAmount(unitPrice);
 	self.TotalPrice:SetAmount(totalPrice);
 
-	if totalPrice > GetMoney() then
-		self.BuyButton:SetDisableTooltip(AUCTION_HOUSE_TOOLTIP_TITLE_NOT_ENOUGH_MONEY);
-	else
-		self.BuyButton:SetDisableTooltip(nil);
-	end
+	self:UpdateBuyButton();
 end
 
 function AuctionHouseCommoditiesBuyDisplayMixin:GetItemID()

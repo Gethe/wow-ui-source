@@ -491,8 +491,8 @@ function ModelSceneMixin:ShowAndAnimateActors(actorSettings, onFinishedCallback)
 	end
 end
 
-PanningModelSceneMixin = CreateFromMixins(ModelSceneMixin);
 
+PanningModelSceneMixin = CreateFromMixins(ModelSceneMixin);
 function PanningModelSceneMixin:TransitionToModelSceneID(modelSceneID, cameraTransitionType, cameraModificationType, forceEvenIfSame)
 	ModelSceneMixin.TransitionToModelSceneID(self, modelSceneID, cameraTransitionType, cameraModificationType, forceEvenIfSame);
 
@@ -501,4 +501,19 @@ function PanningModelSceneMixin:TransitionToModelSceneID(modelSceneID, cameraTra
 		camera:SetRightMouseButtonXMode(ORBIT_CAMERA_MOUSE_PAN_HORIZONTAL, true);
 		camera:SetRightMouseButtonYMode(ORBIT_CAMERA_MOUSE_PAN_VERTICAL, true);
 	end
+end
+
+
+NoCameraControlModelSceneMixin = CreateFromMixins(ModelSceneMixin);
+function NoCameraControlModelSceneMixin:OnMouseDown(button)
+	self.isLeftButtonDown = false;
+	self.isRightButtonDown = false;
+end
+
+function NoCameraControlModelSceneMixin:OnMouseUp(button)
+	self.isLeftButtonDown = false;
+	self.isRightButtonDown = false;
+end
+
+function NoCameraControlModelSceneMixin:OnMouseWheel(delta)	
 end

@@ -830,7 +830,12 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 			end
 		end
 		if showAsCompleted then
-			module:AddObjective(block, "QuestComplete", QUEST_WATCH_QUEST_READY, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
+			local completionText;
+			if block.isThreatQuest then
+				local questLogIndex = GetQuestLogIndexByID(questID);
+				completionText = GetQuestLogCompletionText(questLogIndex);
+			end
+			module:AddObjective(block, "QuestComplete", completionText or QUEST_WATCH_QUEST_READY, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
 		end
 		if ( module.ShowWorldQuests and not hasAddedTimeLeft ) then
 			-- No progress bar, try adding it at the end

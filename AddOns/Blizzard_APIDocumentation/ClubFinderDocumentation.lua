@@ -686,13 +686,14 @@ local ClubFinder =
 		{
 			Name = "ClubFinderDisableReason",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "Muted", Type = "ClubFinderDisableReason", EnumValue = 0 },
 				{ Name = "Silenced", Type = "ClubFinderDisableReason", EnumValue = 1 },
+				{ Name = "VeteranTrial", Type = "ClubFinderDisableReason", EnumValue = 2 },
 			},
 		},
 		{

@@ -273,7 +273,6 @@ BattlePetTooltip.xml
 StaticPopupSpecial.xml
 LossOfControlFrame.xml
 PVPHelper.xml
-ProductChoice.xml
 ZoneAbility.xml
 ArtifactToasts.xml
 AzeriteItemToasts.xml

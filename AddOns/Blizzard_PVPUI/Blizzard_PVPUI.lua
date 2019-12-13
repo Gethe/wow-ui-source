@@ -1534,37 +1534,50 @@ local SEASON_REWARD_ACHIEVEMENTS = {
 		[PLAYER_FACTION_GROUP[0]] = 13636,
 		[PLAYER_FACTION_GROUP[1]] = 13637,
 	},
+	[BFA_START_SEASON + 3] = {
+		[PLAYER_FACTION_GROUP[0]] = 13944,
+		[PLAYER_FACTION_GROUP[1]] = 13943,
+	},
 };
+
+local function GetPVPSeasonAchievementID(seasonID)
+	local achievements = SEASON_REWARD_ACHIEVEMENTS[seasonID];
+	local achievementID = achievements and achievements[UnitFactionGroup("player")];
+	if achievementID then
+		while true do
+			local completed = select(4, GetAchievementInfo(achievementID));
+			if not completed then
+				break;
+			end
+
+			local supercedingAchievements = C_AchievementInfo.GetSupercedingAchievements(achievementID);
+			if not supercedingAchievements[1] then
+				break;
+			end
+
+			achievementID = supercedingAchievements[1];
+		end
+	end
+
+	return achievementID;
+end
 
 function PVPUIHonorInsetMixin:DisplayRatedPanel()
 	local panel = self.RatedPanel;
 	panel:Show();
 	self.CasualPanel:Hide();
 
+	local showSeasonReward = false;
 	local seasonState = ConquestFrame.seasonState;
-	local showSeasonReward = seasonState ~= SEASON_STATE_PRESEASON;
-	if showSeasonReward then
+	if seasonState ~= SEASON_STATE_PRESEASON then
 		local seasonID = GetCurrentArenaSeason();
 		if seasonID == NO_ARENA_SEASON then
 			seasonID = GetPreviousArenaSeason();
 		end
-		if seasonID and seasonID < BFA_START_SEASON then
-			showSeasonReward = false;
-		else
-			local seasonAchievements = SEASON_REWARD_ACHIEVEMENTS[seasonID];
-			local achievementID = seasonAchievements and seasonAchievements[UnitFactionGroup("player")];
-			if achievementID then
-				local id, name, points, completed = GetAchievementInfo(achievementID);
-				local supercedingAchievements = C_AchievementInfo.GetSupercedingAchievements(achievementID);
-				while completed and supercedingAchievements[1] do
-					achievementID = supercedingAchievements[1];
-					id, name, points, completed = GetAchievementInfo(achievementID);
-					supercedingAchievements = C_AchievementInfo.GetSupercedingAchievements(achievementID);
-				end
-			end
-
-			showSeasonReward = achievementID ~= nil;
-			if showSeasonReward then
+		if seasonID and seasonID >= BFA_START_SEASON then
+			local achievementID = GetPVPSeasonAchievementID(seasonID);
+			if achievementID ~= nil then
+				showSeasonReward = true;
 				panel.SeasonRewardFrame:Init(achievementID, PVP_SEASON_REWARD);
 			end
 		end
@@ -1850,9 +1863,16 @@ end
 NewPvpSeasonMixin = { };
 
 function NewPvpSeasonMixin:OnShow()
-	local currentSeasonNumber = GetCurrentArenaSeason() - BFA_START_SEASON + 1;
-	self.SeasonDescription:SetText(BFA_SEASON_NUMBER:format(currentSeasonNumber));
+	local currentSeason = GetCurrentArenaSeason();
+	self.SeasonDescription:SetText(BFA_SEASON_NUMBER:format(currentSeason - BFA_START_SEASON + 1));
 	self.SeasonDescription2:SetText(BFA_PVP_SEASON_DESCRIPTION_TWO);
+
+	local achievementID = GetPVPSeasonAchievementID(currentSeason);
+	local showSeasonReward = achievementID ~= nil;
+	if showSeasonReward then
+		self.SeasonRewardFrame:Init(achievementID, PVP_SEASON_REWARD);
+	end
+	self.SeasonRewardFrame:SetShown(showSeasonReward);
 end
 
 PVPWeeklyChestMixin = { };

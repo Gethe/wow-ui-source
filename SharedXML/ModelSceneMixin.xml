@@ -24,5 +24,6 @@
 				<KeyValue key="reversedLighting" value="true" type="boolean"/>
 			</KeyValues>
 		</ModelScene>
+		<ModelScene name="NoCameraControlModelSceneMixinTemplate" inherits="ReversedLightingModelSceneMixinTemplate" mixin="NoCameraControlModelSceneMixin" virtual="true" />
 	</ScopedModifier>
 </Ui>

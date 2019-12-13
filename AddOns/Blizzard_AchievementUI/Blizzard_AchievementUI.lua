@@ -3819,7 +3819,7 @@ function AchievementFrameSearchBox_OnEnterPressed(self)
 			searchPreviewContainer.showAllSearchResults:Click();
 		end
 	else
-		local preview = AchievementFrame.searchPreview[self.selectedIndex];
+		local preview = searchPreviewContainer.searchPreviews[self.selectedIndex];
 		if ( preview:IsShown() ) then
 			preview:Click();
 		end

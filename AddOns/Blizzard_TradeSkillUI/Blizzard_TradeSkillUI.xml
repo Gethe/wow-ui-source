@@ -207,7 +207,7 @@
 				</Scripts>
 			</Frame>
 
-			<Button parentKey="LinkToButton">
+			<Button parentKey="LinkToButton" mixin="DropDownToggleButtonMixin">
 				<Size x="30" y="30"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.FilterButton" relativePoint="TOPRIGHT" x="3" y="1"/>

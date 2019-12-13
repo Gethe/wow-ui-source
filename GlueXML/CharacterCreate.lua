@@ -12,6 +12,7 @@ WORGEN_RACE_ID = 22;
 PANDAREN_RACE_ID = 24;
 PANDAREN_ALLIANCE_RACE_ID = 25;
 PANDAREN_HORDE_RACE_ID = 26;
+DEATH_KNIGHT_CLASS_ID = 6;
 DEMON_HUNTER_CLASS_ID = 12;
 
 PAID_CHARACTER_CUSTOMIZATION = 1;
@@ -230,6 +231,8 @@ MODEL_CAMERA_CONFIG = {
 		["KulTiran"] = { tx = 0.05591, ty = -0.04111, tz = 2.3603, cz = 2.23827, distance = 1.2, light =  0.75 },
 		["Vulpera"] = { tx = 0.127, ty = -0.022, tz = 1.104, cz = 1.009, distance = 0.830, light =  0.80 },
 		["Mechagnome"] = { tx = -0.069, ty = -0.007, tz = 0.986, cz = 0.895, distance = 1.086, light =  0.85 },
+		["Mechagnome7"] = { tx = -0.04314, ty = 0.00792, tz = 0.5338, cz = 0.830, distance = 1.56872, light =  0.85 },
+		["Mechagnome8"] = { tx = -0.04314, ty = 0.00792, tz = 0.1965, cz = 0.4694, distance = 1.2808, light =  0.85 },
 	},
 	[1] = {		-- female
 		["Draenei"] = { tx = 0.155, ty = 0.009, tz = 2.177, cz = 1.971, distance = 0.734, light =  0.75 },
@@ -266,6 +269,8 @@ MODEL_CAMERA_CONFIG = {
 		["KulTiran"] = { tx = -0.069, ty = -0.006851, tz = 2.230568, cz = 2.12476, distance = 1.14324, light =  0.75 },
 		["Vulpera"] = { tx = -0.076, ty = 0.006, tz = 1.191, cz = 1.137, distance = 0.970, light =  0.80 },
 		["Mechagnome"] = { tx = -0.080, ty = 0.007, tz = 0.946, cz = 0.855, distance = 0.932, light =  0.85 },
+		["Mechagnome7"] = { tx = -0.113856, ty = 0.003045, tz = 0.48384, cz = 0.55899, distance = 1.3528, light =  0.85 },
+		["Mechagnome8"] = { tx = -0.04314, ty = 0.007917, tz = 0.14654, cz = 0.4694, distance = 1.034, light =  0.85 },
 	}
 };
 
@@ -1103,7 +1108,10 @@ function SetCharacterClass(id)
 		scrollFrame.AbilityText:Hide();
 	end
 
-	scrollFrame.bulletText:SetText(CHARCREATE_CLASS_INFO[classInfo.fileName].bulletText);
+	-- Format the starting level for this race/class combo in
+	local finalBulletText = CHARCREATE_CLASS_INFO[classInfo.fileName].bulletText:format(CharacterCreate_GetStartingLevel());
+	scrollFrame.bulletText:SetText(finalBulletText);
+
 	scrollFrame.infoText:SetText(CHARCREATE_CLASS_INFO[classInfo.fileName].description);
 	scrollFrame.infoText.layoutIndex = layoutIndexCount;
 
@@ -2289,6 +2297,14 @@ function CharacterCreate_GetStartingLevel(forTrialBoost)
 	else
 		local classInfo = C_CharacterCreation.GetSelectedClass();
 		local raceData = C_CharacterCreation.GetRaceDataByID(C_CharacterCreation.GetSelectedRace());
+		
+		-- TODO_ADC: REMOVE THIS HACK IN 9.0
+		if classInfo.classID == DEATH_KNIGHT_CLASS_ID then
+			if raceData.isAlliedRace or raceData.raceID == PANDAREN_RACE_ID then
+				return 58;
+			end
+		end
+
 		return max(classInfo.startingLevel, raceData.startingLevel);
 	end
 end

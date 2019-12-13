@@ -27,9 +27,9 @@ local CalendarConstants =
 		{
 			Name = "CalendarErrorType",
 			Type = "Enumeration",
-			NumValues = 47,
+			NumValues = 51,
 			MinValue = 0,
-			MaxValue = 46,
+			MaxValue = 50,
 			Fields =
 			{
 				{ Name = "CalendarErrorSuccess", Type = "CalendarErrorType", EnumValue = 0 },
@@ -79,6 +79,10 @@ local CalendarConstants =
 				{ Name = "CalendarErrorInvalidDescription", Type = "CalendarErrorType", EnumValue = 44 },
 				{ Name = "CalendarErrorInvalidClub", Type = "CalendarErrorType", EnumValue = 45 },
 				{ Name = "CalendarErrorCreatorNotFound", Type = "CalendarErrorType", EnumValue = 46 },
+				{ Name = "CalendarErrorEventThrottled", Type = "CalendarErrorType", EnumValue = 47 },
+				{ Name = "CalendarErrorInviteThrottled", Type = "CalendarErrorType", EnumValue = 48 },
+				{ Name = "CalendarErrorInternal", Type = "CalendarErrorType", EnumValue = 49 },
+				{ Name = "CalendarErrorComplaintAdded", Type = "CalendarErrorType", EnumValue = 50 },
 			},
 		},
 		{
@@ -156,13 +160,13 @@ local CalendarConstants =
 			Type = "Enumeration",
 			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "Get", Type = "CalendarGetEventType", EnumValue = 0 },
 				{ Name = "Add", Type = "CalendarGetEventType", EnumValue = 1 },
 				{ Name = "Copy", Type = "CalendarGetEventType", EnumValue = 2 },
-				{ Name = "DefaultCalendarGetEventType", Type = "CalendarGetEventType", EnumValue = 3 },
+				{ Name = "DefaultCalendarGetEventType", Type = "CalendarGetEventType", EnumValue = 0 },
 			},
 		},
 		{

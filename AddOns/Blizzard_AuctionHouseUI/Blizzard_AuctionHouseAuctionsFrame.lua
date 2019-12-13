@@ -17,9 +17,11 @@ function AuctionHouseAuctionsSummaryListMixin:OnLoad()
 	AuctionHouseBackgroundMixin.OnLoad(self);
 
 	self.InsetFrame:Hide();
-	self.SelectedHighlight:SetAtlas("auctionhouse-ui-row-select", true);
-	self.SelectedHighlight:SetBlendMode("ADD");
-	self.SelectedHighlight:SetAlpha(0.8);
+
+	local selectedHighlight = self:GetSelectedHighlight();
+	selectedHighlight:SetAtlas("auctionhouse-ui-row-select", true);
+	selectedHighlight:SetBlendMode("ADD");
+	selectedHighlight:SetAlpha(0.8);
 end
 
 
@@ -50,8 +52,13 @@ function AuctionHouseAuctionsSummaryLineMixin:OnHide()
 	self:UnregisterEvent("ITEM_KEY_ITEM_INFO_RECEIVED");
 end
 
+function AuctionHouseAuctionsSummaryLineMixin:SetIconShown(shown)
+	self.Icon:SetShown(shown);
+	self.IconBorder:SetShown(shown);
+end
+
 function AuctionHouseAuctionsSummaryLineMixin:UpdateDisplay()
-	self.Icon:Hide();
+	self:SetIconShown(false);
 
 	local listIndex = self:GetListIndex();
 	local isDisplayingBids = self.auctionsFrame:IsDisplayingBids();
@@ -71,7 +78,7 @@ function AuctionHouseAuctionsSummaryLineMixin:UpdateDisplay()
 			return;
 		end
 
-		self.Icon:Show();
+		self:SetIconShown(true);
 		self.Icon:SetTexture(itemKeyInfo.iconFileID);
 		self.Text:SetText(AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo));
 	end
@@ -174,22 +181,14 @@ function AuctionHouseAuctionsFrameMixin:OnShow()
 end
 
 function AuctionHouseAuctionsFrameMixin:RefreshSeachResults()
-	if self:IsDisplayingBids() then
+	local displayMode = self:GetDisplayMode();
+	if self:IsDisplayingBids() and displayMode ~= AuctionsFrameDisplayMode.AllBids then
 		self:GetAuctionHouseFrame():QueryAll(AuctionHouseSearchContext.AllBids);
-	else
+	elseif displayMode ~= AuctionsFrameDisplayMode.AllAuctions then
 		self:GetAuctionHouseFrame():QueryAll(AuctionHouseSearchContext.AllAuctions);
 	end
 
-	local displayMode = self:GetDisplayMode();
-	local itemKey = self:GetItemKey();
-	if itemKey then
-		self:GetAuctionHouseFrame():QueryItem(self:GetSearchContext(), itemKey);
-		if displayMode == AuctionsFrameDisplayMode.Item then
-			self.ItemList:DirtyScrollFrame();
-		elseif displayMode == AuctionsFrameDisplayMode.Commodity then
-			self.CommoditiesList:DirtyScrollFrame();
-		end
-	end
+	self:UpdateCancelAuctionButton();
 end
 
 function AuctionHouseAuctionsFrameMixin:OnHide()
@@ -198,6 +197,7 @@ end
 
 function AuctionHouseAuctionsFrameMixin:OnEvent(event, ...)
 	if event == "OWNED_AUCTIONS_UPDATED" then
+		self.AllAuctionsList:SetSelectedEntry(nil);
 		self.AllAuctionsList:Reset();
 		self.SummaryList:RefreshScrollFrame();
 		self:ValidateDisplayMode();
@@ -391,13 +391,11 @@ function AuctionHouseAuctionsFrameMixin:ValidateDisplayMode()
 	if displayMode == AuctionsFrameDisplayMode.Item or displayMode == AuctionsFrameDisplayMode.Commodity then
 		local itemKey = self:GetItemKey();
 		if self:IsDisplayingBids() then
-			if not AuctionHouseUtil.HasBidType(itemKey) then
-				self.SummaryList:SetSelectedListIndex(1);
-			end
+			local hasType, typeIndex = AuctionHouseUtil.HasBidType(itemKey);
+			self.SummaryList:SetSelectedListIndex(hasType and (typeIndex + 1) or 1);
 		else
-			if not AuctionHouseUtil.HasOwnedAuctionType(itemKey) then
-				self.SummaryList:SetSelectedListIndex(1);
-			end
+			local hasType, typeIndex = AuctionHouseUtil.HasOwnedAuctionType(itemKey);
+			self.SummaryList:SetSelectedListIndex(hasType and (typeIndex + 1) or 1);
 		end
 	end
 end
@@ -471,7 +469,11 @@ end
 
 function AuctionHouseAuctionsFrameMixin:SelectAuction(searchResult)
 	self.selectedAuctionID = searchResult and searchResult.auctionID or nil;
-	self.CancelAuctionButton:SetEnabled(self.selectedAuctionID ~= nil and searchResult.status ~= Enum.AuctionStatus.Sold);
+	self:UpdateCancelAuctionButton(searchResult);
+end
+
+function AuctionHouseAuctionsFrameMixin:UpdateCancelAuctionButton(searchResult)
+	self.CancelAuctionButton:SetEnabled(self.selectedAuctionID ~= nil and (searchResult and searchResult.status ~= Enum.AuctionStatus.Sold));
 end
 
 function AuctionHouseAuctionsFrameMixin:OnAllAuctionsSearchResultSelected(ownedAuctionInfo)

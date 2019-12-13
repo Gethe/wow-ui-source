@@ -22,6 +22,12 @@ function VehicleDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 	
 	local mapID = self:GetMap():GetMapID();
+	-- no vehicles above zone maps
+	local mapInfo = C_Map.GetMapInfo(mapID);
+	if not mapInfo or mapInfo.mapType < Enum.UIMapType.Zone then
+		return;
+	end
+
 	local numVehicles = GetNumBattlefieldVehicles();
 	for i = 1, numVehicles do
 		local vehicleX, vehicleY, unitName, isOccupied, vehicleType, orientation, isPlayer, isAlive = GetBattlefieldVehicleInfo(i, mapID);

@@ -124,6 +124,10 @@ function AuctionCategoryMixin:AddBulkInventoryTypeCategories(classID, subClassID
 end
 
 function AuctionCategoryMixin:AddFilter(classID, subClassID, inventoryType)
+	if not classID and not subClassID and not inventoryType then
+		return;
+	end
+
 	self.filters = self.filters or {};
 	self.filters[#self.filters + 1] = { classID = classID, subClassID = subClassID, inventoryType = inventoryType, };
 
