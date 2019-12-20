@@ -497,7 +497,9 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		end
 
 		local borderAtlas = BORDER_ATLAS_NONE;
-		if (talentTreeType == Enum.GarrTalentTreeType.Tiers and talent.selected and selectionAvailableInstantResearch) then
+		if (talent.isBeingResearched) then
+			borderAtlas = BORDER_ATLAS_SELECTED;
+		elseif (talentTreeType == Enum.GarrTalentTreeType.Tiers and talent.selected and selectionAvailableInstantResearch) then
 			borderAtlas = BORDER_ATLAS_SELECTED;
 		elseif (talentTreeType == Enum.GarrTalentTreeType.Classic and talent.researched) then
 			borderAtlas = BORDER_ATLAS_SELECTED;

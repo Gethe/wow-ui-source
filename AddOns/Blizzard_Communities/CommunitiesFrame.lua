@@ -901,6 +901,7 @@ function CommunitiesFrameMixin:ValidateDisplayMode()
 			self.ChatTab.tooltip2 = nil;
 		end
 		self:UpdateMaximizeMinimizeButton();
+		self:CheckForTutorials();
 	end
 end
 
@@ -1000,7 +1001,7 @@ function CommunitiesFrameMixin:CheckForTutorials()
 		return;
 	end
 
-	if self.CommunitiesControlFrame.CommunitiesSettingsButton:IsShown() or self.CommunitiesControlFrame.GuildRecruitmentButton:IsShown() then
+	if (displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT) and (self.CommunitiesControlFrame.CommunitiesSettingsButton:IsShown() or self.CommunitiesControlFrame.GuildRecruitmentButton:IsShown()) then
 		local isGuildSelected = self:IsGuildSelected();
 		local flag = isGuildSelected and LE_FRAME_TUTORIAL_CLUB_FINDER_NEW_GUILD_LEADER or LE_FRAME_TUTORIAL_CLUB_FINDER_NEW_COMMUNITY_LEADER;
 		if not GetCVarBitfield("closedInfoFrames", flag) then

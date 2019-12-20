@@ -51,15 +51,16 @@ function ZoneAbilityFrame_OnEvent(self, event, ...)
 	self.SpellButton.baseSpellID = self.baseSpellID;
 	self.SpellButton.spellID = self.spellID;
 	local lastState = self.buffSeen;
-	self.buffSeen = (self.spellID ~= 0);
+	self.buffSeen = false;
 
-	if (self.buffSeen) then
+	if (self.spellID ~= 0) then
 		if (not HasZoneAbilitySpellOnBar(self)) then
 			if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY) and type == Enum.ZoneAbilityType.Garrison ) then
 				ZoneAbilityButtonAlert:SetHeight(ZoneAbilityButtonAlert.Text:GetHeight()+42);
 				ZoneAbilityButtonAlert:Show();
 				SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY, true );
 			end
+			self.buffSeen = true;
 			self:Show();
 		else
 			ZoneAbilityButtonAlert:Hide();

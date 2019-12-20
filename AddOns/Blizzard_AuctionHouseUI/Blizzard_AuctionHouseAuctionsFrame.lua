@@ -342,10 +342,7 @@ function AuctionHouseAuctionsFrameMixin:InitializeCommoditiesList()
 		return selectedRowData and currentRowData.auctionID == selectedRowData.auctionID;
 	end);
 
-	self.CommoditiesList:SetSelectionCallback(function(commoditySearchResult)
-		self:OnCommoditySearchResultSelected(commoditySearchResult);
-		return true;
-	end);
+	self.CommoditiesList:SetSelectionCallback(AuctionHouseUtil.GenerateRowSelectedCallbackWithLink(self, self.OnCommoditySearchResultSelected));
 
 	local function AuctionsCommoditiesList_GetAuctionHouseFrame(commoditiesList)
 		return commoditiesList:GetParent():GetAuctionHouseFrame();
@@ -473,7 +470,7 @@ function AuctionHouseAuctionsFrameMixin:SelectAuction(searchResult)
 end
 
 function AuctionHouseAuctionsFrameMixin:UpdateCancelAuctionButton(searchResult)
-	self.CancelAuctionButton:SetEnabled(self.selectedAuctionID ~= nil and (searchResult and searchResult.status ~= Enum.AuctionStatus.Sold));
+	self.CancelAuctionButton:SetEnabled(self.selectedAuctionID ~= nil and (self.selectedAuctionID > 0) and (searchResult and searchResult.status ~= Enum.AuctionStatus.Sold));
 end
 
 function AuctionHouseAuctionsFrameMixin:OnAllAuctionsSearchResultSelected(ownedAuctionInfo)

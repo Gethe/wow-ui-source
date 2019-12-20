@@ -555,8 +555,8 @@ end
 
 function LookingForDropdownMixin:SetCheckedList(specIds)
 	for _, specId in ipairs(specIds) do
-		local id, name, description, texture, role, class = GetSpecializationInfoByID(specId);
-		self:ModifyTrackedSpecList(name, class, specId, true);
+		local id, name, description, texture, role, class, classDisplayName = GetSpecializationInfoByID(specId);
+		self:ModifyTrackedSpecList(name, classDisplayName, specId, true);
 	end
 end
 

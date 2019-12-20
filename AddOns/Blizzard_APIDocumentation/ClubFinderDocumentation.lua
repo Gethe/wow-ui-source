@@ -442,6 +442,7 @@ local ClubFinder =
 				{ Name = "requestType", Type = "ClubFinderRequestType", Nilable = false },
 				{ Name = "playerName", Type = "string", Nilable = false },
 				{ Name = "forceAccept", Type = "bool", Nilable = false },
+				{ Name = "reported", Type = "bool", Nilable = true },
 			},
 		},
 		{

@@ -1,4 +1,8 @@
 
+local AUCTIONABLE_TOKEN_ITEM_ID = 122270;
+
+local WOW_TOKEN_TIME_LEFT_TOOLTIP_FORMAT = WHITE_FONT_COLOR:WrapTextInColorCode(ESTIMATED_TIME_TO_SELL_LABEL).."%s";
+
 local RED_TEXT_MINUTES_THRESHOLD = 60;
 
 AuctionHouseSearchContext = tInvert({
@@ -264,15 +268,19 @@ function AuctionHouseUtil.GetTimeLeftBandText(timeLeftBand)
 	return "";
 end
 
-function AuctionHouseUtil.GetTooltipTimeLeftBandText(timeLeftBand)
+function AuctionHouseUtil.GetTooltipTimeLeftBandText(rowData)
+	local isToken = AuctionHouseUtil.RowDataIsWoWToken(rowData);
+	local timeLeftFormat = isToken and WOW_TOKEN_TIME_LEFT_TOOLTIP_FORMAT or "%s";
+
+	local timeLeftBand = rowData.timeLeft;
 	if timeLeftBand == Enum.AuctionHouseTimeLeftBand.Short then
-		return AUCTION_HOUSE_TOOLTIP_TIME_LEFT_SHORT;
+		return timeLeftFormat:format(AUCTION_HOUSE_TOOLTIP_TIME_LEFT_SHORT);
 	elseif timeLeftBand == Enum.AuctionHouseTimeLeftBand.Medium then
-		return AUCTION_HOUSE_TOOLTIP_TIME_LEFT_MEDIUM;
+		return timeLeftFormat:format(AUCTION_HOUSE_TOOLTIP_TIME_LEFT_MEDIUM);
 	elseif timeLeftBand == Enum.AuctionHouseTimeLeftBand.Long then
-		return AUCTION_HOUSE_TOOLTIP_TIME_LEFT_LONG;
+		return timeLeftFormat:format(AUCTION_HOUSE_TOOLTIP_TIME_LEFT_LONG);
 	elseif timeLeftBand == Enum.AuctionHouseTimeLeftBand.VeryLong then
-		return AUCTION_HOUSE_TOOLTIP_TIME_LEFT_VERY_LONG;
+		return timeLeftFormat:format(AUCTION_HOUSE_TOOLTIP_TIME_LEFT_VERY_LONG);
 	end
 
 	return "";
@@ -294,20 +302,21 @@ function AuctionHouseUtil.AddSellersToTooltip(tooltip, sellers)
 	end
 end
 
-function AuctionHouseUtil.AddAuctionHouseTooltipInfo(tooltip, sellers, timeLeft, bidStatus)
+function AuctionHouseUtil.AddAuctionHouseTooltipInfo(tooltip, rowData, bidStatus)
 	GameTooltip_AddBlankLineToTooltip(tooltip);
 
-	AuctionHouseUtil.AddSellersToTooltip(tooltip, sellers);
+	AuctionHouseUtil.AddSellersToTooltip(tooltip, rowData.owners);
 
-	tooltip:AddLine(AUCTION_HOUSE_TOOLTIP_DURATION_FORMAT:format(AuctionHouseUtil.GetTooltipTimeLeftBandText(timeLeft)));
+	tooltip:AddLine(AUCTION_HOUSE_TOOLTIP_DURATION_FORMAT:format(AuctionHouseUtil.GetTooltipTimeLeftBandText(rowData)));
 
 	if bidStatus and (bidStatus == AuctionHouseBidStatus.PlayerBid or bidStatus == AuctionHouseBidStatus.PlayerOutbid) then
 		tooltip:AddLine(AuctionHouseUtil.GetBidTextFromStatus(bidStatus));
 	end
 end
 
-function AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo)
-	local itemDisplayText = itemKeyInfo.isEquipment and AUCTION_HOUSE_EQUIPMENT_RESULT_FORMAT:format(itemKeyInfo.itemName, itemKey.itemLevel) or itemKeyInfo.itemName;
+function AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo, hideItemLevel)
+	local useEquipmentFormat = itemKeyInfo.isEquipment and not hideItemLevel;
+	local itemDisplayText = useEquipmentFormat and AUCTION_HOUSE_EQUIPMENT_RESULT_FORMAT:format(itemKeyInfo.itemName, itemKey.itemLevel) or itemKeyInfo.itemName;
 	local itemQualityColor = ITEM_QUALITY_COLORS[itemKeyInfo.quality];
 	return itemQualityColor.color:WrapTextInColorCode(itemDisplayText);
 end
@@ -343,10 +352,10 @@ end
 AuctionHouseUtil.TimeLeftTooltipFormatter = CreateFromMixins(SecondsFormatterMixin);
 AuctionHouseUtil.TimeLeftTooltipFormatter:Init(0, SecondsFormatter.Abbreviation.Truncate, true);
 
-function AuctionHouseUtil.FormatTimeLeftTooltip(timeLeftSeconds, status)
-	local sold = status == Enum.AuctionStatus.Sold;
+function AuctionHouseUtil.FormatTimeLeftTooltip(timeLeftSeconds, rowData)
+	local useNormalFontColor = (rowData.status == Enum.AuctionStatus.Sold) or AuctionHouseUtil.RowDataIsWoWToken(rowData);
 	local timeLeftMinutes = math.ceil(timeLeftSeconds / 60);
-	local color = (timeLeftMinutes >= RED_TEXT_MINUTES_THRESHOLD or sold) and WHITE_FONT_COLOR or RED_FONT_COLOR;
+	local color = (useNormalFontColor or timeLeftMinutes >= RED_TEXT_MINUTES_THRESHOLD) and WHITE_FONT_COLOR or RED_FONT_COLOR;
 	local text = color:WrapTextInColorCode(AuctionHouseUtil.TimeLeftTooltipFormatter:Format(timeLeftSeconds));
 	return sold and AUCTION_HOUSE_TIME_LEFT_FORMAT_SOLD:format(text) or AUCTION_HOUSE_TIME_LEFT_FORMAT_ACTIVE:format(text);
 end
@@ -363,9 +372,10 @@ function AuctionHouseUtil.TimeLeftFormatter:GetMinInterval(seconds)
 	return SecondsFormatter.Interval.Minutes;
 end
 
-function AuctionHouseUtil.FormatTimeLeft(timeLeftSeconds, status)
+function AuctionHouseUtil.FormatTimeLeft(timeLeftSeconds, rowData)
+	local useNormalFontColor = (rowData.status == Enum.AuctionStatus.Sold) or AuctionHouseUtil.RowDataIsWoWToken(rowData);
 	local timeLeftMinutes = math.ceil(timeLeftSeconds / 60);
-	local color = (timeLeftMinutes >= RED_TEXT_MINUTES_THRESHOLD or status == Enum.AuctionStatus.Sold) and GRAY_FONT_COLOR or RED_FONT_COLOR;
+	local color = (useNormalFontColor or timeLeftMinutes >= RED_TEXT_MINUTES_THRESHOLD) and GRAY_FONT_COLOR or RED_FONT_COLOR;
 	local text = AuctionHouseUtil.TimeLeftFormatter:Format(timeLeftSeconds);
 	return color:WrapTextInColorCode(text);
 end
@@ -489,7 +499,7 @@ function AuctionHouseUtil.SetAuctionHouseTooltip(owner, rowData)
 	if rowData.owners then
 		local methodFound, auctionHouseFrame = CallMethodOnNearestAncestor(owner, "GetAuctionHouseFrame");
 		local bidStatus = auctionHouseFrame and auctionHouseFrame:GetBidStatus(rowData) or nil;
-		AuctionHouseUtil.AddAuctionHouseTooltipInfo(tooltip, rowData.owners, rowData.timeLeft, bidStatus);
+		AuctionHouseUtil.AddAuctionHouseTooltipInfo(tooltip, rowData, bidStatus);
 	end
 
 	if tooltip == GameTooltip then
@@ -530,7 +540,8 @@ function AuctionHouseUtil.GetItemLinkFromRowData(rowData)
 	if rowData.itemLink then
 		return rowData.itemLink;
 	else
-		local itemLink = select(2, GetItemInfo(rowData.itemKey.itemID));
+		local itemID = rowData.itemID or rowData.itemKey.itemID;
+		local itemLink = select(2, GetItemInfo(itemID));
 		return itemLink;
 	end
 end
@@ -541,6 +552,20 @@ function AuctionHouseUtil.GenerateRowSelectedCallbackWithInspect(self, selection
 			DressUpLink(rowData.itemLink);
 			return false;
 		elseif rowData and IsModifiedClick("CHATLINK") then
+			ChatEdit_InsertLink(AuctionHouseUtil.GetItemLinkFromRowData(rowData));
+			return false;
+		end
+
+		selectionCallback(self, rowData);
+		return true;
+	end
+
+	return RowSelectedCallback;
+end
+
+function AuctionHouseUtil.GenerateRowSelectedCallbackWithLink(self, selectionCallback)
+	local function RowSelectedCallback(rowData)
+		if rowData and IsModifiedClick("CHATLINK") then
 			ChatEdit_InsertLink(AuctionHouseUtil.GetItemLinkFromRowData(rowData));
 			return false;
 		end
@@ -585,4 +610,8 @@ end
 
 function AuctionHouseUtil.SanitizeAuctionHousePrice(rawPrice)
 	return math.ceil(rawPrice / COPPER_PER_SILVER) * COPPER_PER_SILVER;
+end
+
+function AuctionHouseUtil.RowDataIsWoWToken(rowData)
+	return (rowData.itemID == AUCTIONABLE_TOKEN_ITEM_ID) or (rowData.itemKey and rowData.itemKey.itemID == AUCTIONABLE_TOKEN_ITEM_ID);
 end

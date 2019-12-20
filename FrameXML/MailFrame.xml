@@ -1052,11 +1052,6 @@
 												<Anchor point="TOPLEFT" relativeTo="OpenMailInvoiceItemLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 											</Anchors>
 										</FontString>
-										<FontString name="OpenMailInvoiceBuyMode" inherits="InvoiceTextFontSmall">
-											<Anchors>
-												<Anchor point="LEFT" relativeTo="OpenMailInvoicePurchaser" relativePoint="RIGHT" x="5" y="0"/>
-											</Anchors>
-										</FontString>
 										<FontString name="OpenMailInvoiceSalePrice" inherits="InvoiceTextFontNormal" text="SALE_PRICE_COLON">
 											<Anchors>
 												<Anchor point="TOPRIGHT" x="-27" y="-77"/>

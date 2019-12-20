@@ -144,10 +144,7 @@ function AuctionHouseCommoditiesBuyFrameMixin:OnLoad()
 	
 	self:SetSearchContext(AuctionHouseSearchContext.BuyCommodities);
 
-	self.ItemList:SetSelectionCallback(function(auctionData)
-		self:OnAuctionSelected(auctionData);
-		return true;
-	end);
+	self.ItemList:SetSelectionCallback(AuctionHouseUtil.GenerateRowSelectedCallbackWithLink(self, self.OnAuctionSelected));
 end
 
 function AuctionHouseCommoditiesBuyFrameMixin:GetItemID()

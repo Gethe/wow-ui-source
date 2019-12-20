@@ -1,18 +1,20 @@
 
 function CinematicFrame_OnDisplaySizeChanged(self)
 	if (self:IsShown()) then
-	  local width = CinematicFrame:GetWidth();
-	  local height = CinematicFrame:GetHeight();
+		local width = CinematicFrame:GetWidth();
+		local height = CinematicFrame:GetHeight();
 
-	  local desiredHeight = width / 2;
-	  if ( desiredHeight > height ) then
-		  desiredHeight = height;
-	  end
+		local viewableHeight = width * 9 / 16;
+		local worldFrameHeight = WorldFrame:GetHeight();
+		local halfDiff = math.max(math.floor((worldFrameHeight - viewableHeight) / 2), 0);
 
-	  local blackBarHeight = ( height - desiredHeight ) / 2;
+		WorldFrame:ClearAllPoints();
+		WorldFrame:SetPoint("TOPLEFT", nil, "TOPLEFT", 0, -halfDiff);
+		WorldFrame:SetPoint("BOTTOMRIGHT", nil, "BOTTOMRIGHT", 0, halfDiff);
 
-	  UpperBlackBar:SetHeight( blackBarHeight );
-	  LowerBlackBar:SetHeight( blackBarHeight );
+		local blackBarHeight = math.max(halfDiff, 40);
+		UpperBlackBar:SetHeight( blackBarHeight );
+		LowerBlackBar:SetHeight( blackBarHeight );
 	end
 end
 
@@ -33,6 +35,10 @@ end
 
 function CinematicFrame_OnShow(self)
 	CinematicFrame_OnDisplaySizeChanged(self)
+end
+
+function CinematicFrame_OnHide(self)
+	WorldFrame:SetAllPoints(nil);
 end
 
 function CinematicFrame_OnEvent(self, event, ...)

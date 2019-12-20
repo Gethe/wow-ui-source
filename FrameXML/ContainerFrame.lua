@@ -1288,11 +1288,15 @@ function ContainerFrameItemButton_OnClick(self, button)
 			end
 		else
 			local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
-			if AzeriteRespecFrame and AzeriteRespecFrame:IsShown() then
-				AzeriteRespecFrame:SetRespecItem(itemLocation);
-				return;
-			elseif AuctionHouseFrame and AuctionHouseFrame:IsShown() and (AuctionHouseFrame:IsListingAuctions() or C_AuctionHouse.IsSellItemValid(itemLocation, --[[ displayError = ]] false)) then
+			local itemIsValidAuctionItem = (itemLocation:IsValid() and C_AuctionHouse.IsSellItemValid(itemLocation, --[[ displayError = ]] false));
+
+			-- Don't send invalid items to auction house unless it's on the listing page (it will show an error for this case).
+			local shouldAuctionReceiveEvent = AuctionHouseFrame and AuctionHouseFrame:IsShown() and (AuctionHouseFrame:IsListingAuctions() or itemIsValidAuctionItem);
+			if shouldAuctionReceiveEvent then
 				AuctionHouseFrame:SetPostItem(itemLocation);
+				return;
+			elseif AzeriteRespecFrame and AzeriteRespecFrame:IsShown() then
+				AzeriteRespecFrame:SetRespecItem(itemLocation);
 				return;
 			elseif ( not BankFrame:IsShown() and (not GuildBankFrame or not GuildBankFrame:IsShown()) and not MailFrame:IsShown() and (not VoidStorageFrame or not VoidStorageFrame:IsShown()) and
 						(not AuctionFrame or not AuctionFrame:IsShown()) and not TradeFrame:IsShown() and (not ItemUpgradeFrame or not ItemUpgradeFrame:IsShown()) and

@@ -558,6 +558,21 @@ local AuctionHouse =
 			},
 		},
 		{
+			Name = "GetTimeLeftBandInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "timeLeftBand", Type = "AuctionHouseTimeLeftBand", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "timeLeftMinSeconds", Type = "number", Nilable = false },
+				{ Name = "timeLeftMaxSeconds", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "HasFavorites",
 			Type = "Function",
 
@@ -1251,7 +1266,8 @@ local AuctionHouse =
 				{ Name = "itemLink", Type = "string", Nilable = true },
 				{ Name = "status", Type = "AuctionStatus", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
-				{ Name = "timeLeftSeconds", Type = "number", Nilable = false },
+				{ Name = "timeLeftSeconds", Type = "number", Nilable = true },
+				{ Name = "timeLeft", Type = "AuctionHouseTimeLeftBand", Nilable = true },
 				{ Name = "bidAmount", Type = "number", Nilable = true },
 				{ Name = "buyoutAmount", Type = "number", Nilable = true },
 				{ Name = "bidder", Type = "string", Nilable = true },

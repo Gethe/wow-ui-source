@@ -1044,6 +1044,7 @@ function WardrobeItemsCollectionMixin:OnShow()
 	WardrobeCollectionFrame.progressBar:SetShown(not WardrobeUtils_IsCategoryLegionArtifact(self:GetActiveCategory()));
 
 	if ( needsUpdate ) then
+		WardrobeCollectionFrame_UpdateUsableAppearances();
 		self:RefreshVisualsList();
 		self:UpdateItems();
 		self:UpdateWeaponDropDown();
@@ -1088,8 +1089,6 @@ function WardrobeCollectionFrame_OnShow(self)
 
 	local hasAlternateForm, inAlternateForm = HasAlternateForm();
 	self.inAlternateForm = inAlternateForm;
-
-	WardrobeCollectionFrame_UpdateUsableAppearances();
 
 	if ( WardrobeFrame_IsAtTransmogrifier() ) then
 		WardrobeCollectionFrame_SetTab(self.selectedTransmogTab);

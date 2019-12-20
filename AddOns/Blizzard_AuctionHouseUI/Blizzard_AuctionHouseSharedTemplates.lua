@@ -35,7 +35,13 @@ end
 
 function AuctionHouseItemDisplayMixin:OnEvent(event, ...)
 	if event == "GET_ITEM_INFO_RECEIVED" then
-		self:SetItem(self.pendingItem);
+		if self.pendingInfo.itemKey then
+			self:SetItemKey(self.pendingInfo.itemKey);
+		elseif self.pendingInfo.itemLocation then
+			self:SetItemLocation(self.pendingInfo.itemLocation);
+		else
+			self:SetItemInternal(self.pendingInfo.item);
+		end
 	elseif event == "ITEM_KEY_ITEM_INFO_RECEIVED" then
 		local itemID = ...;
 		if self.pendingItemKey and self.pendingItemKey.itemID == itemID then
@@ -86,17 +92,24 @@ function AuctionHouseItemDisplayMixin:OnEnter()
 	else
 		BattlePetTooltip:Hide();
 
-		local itemKey = self:GetItemKey();
-		if itemKey then
+		local itemLocation = self:GetItemLocation();
+		if itemLocation then
 			GameTooltip:SetOwner(self.ItemButton, "ANCHOR_RIGHT");
-			GameTooltip:SetItemKey(itemKey.itemID, itemKey.itemLevel, itemKey.itemSuffix);
+			GameTooltip:SetHyperlink(C_Item.GetItemLink(itemLocation));
 			GameTooltip:Show();
 		else
-			local itemLink = self:GetItemLink();
-			if itemLink then
+			local itemKey = self:GetItemKey();
+			if itemKey then
 				GameTooltip:SetOwner(self.ItemButton, "ANCHOR_RIGHT");
-				GameTooltip:SetHyperlink(itemLink);
+				GameTooltip:SetItemKey(itemKey.itemID, itemKey.itemLevel, itemKey.itemSuffix);
 				GameTooltip:Show();
+			else
+				local itemLink = self:GetItemLink();
+				if itemLink then
+					GameTooltip:SetOwner(self.ItemButton, "ANCHOR_RIGHT");
+					GameTooltip:SetHyperlink(itemLink);
+					GameTooltip:Show();
+				end
 			end
 		end
 
@@ -227,7 +240,7 @@ function AuctionHouseItemDisplayMixin:SetItemInternal(item)
 
 	self.itemLink = itemLink;
 	if self.itemLink == nil then
-		self.pendingItem = item;
+		self.pendingInfo = {item = self.item, itemKey = self.itemKey, itemLocation = self.itemLocation};
 		self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
 		self:Reset();
 		return true;

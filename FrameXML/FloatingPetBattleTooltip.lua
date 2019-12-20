@@ -130,7 +130,7 @@ function BattlePetTooltipTemplate_AddTextLine(self, text, color)
 	if not anchor then
 		if self.JournalClick and self.JournalClick:IsShown() then
 			anchor = self.JournalClick;
-		elseif self.Owned:IsShown() then
+		elseif self.Owned:IsShown() and self.Owned:GetText() ~= nil then
 			anchor = self.Owned;
 		else
 			anchor = self.SpeedTexture;

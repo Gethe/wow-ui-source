@@ -345,13 +345,28 @@ function WorldMapThreatFrameMixin:OnEvent(event)
 	end
 end
 
+local function DoActiveThreatMapsMatchBountySet(mapBountySetID)
+	local threatMaps = C_QuestLog.GetActiveThreatMaps();
+	if threatMaps then
+		for i, mapID in ipairs(threatMaps) do
+			local bounties, displayLocation, lockedQuestID, bountySetID = GetQuestBountyInfoForMapID(mapID);
+			if bountySetID == mapBountySetID then
+				return true;
+			end
+		end
+	end
+	return false;
+end
+
 function WorldMapThreatFrameMixin:Refresh()
 	local show = false;
 	if C_QuestLog.HasActiveThreats() then
 		local mapID = self:GetParent():GetMapID();
 		if mapID then
 			local bounties, displayLocation, lockedQuestID, bountySetID = GetQuestBountyInfoForMapID(mapID);
-			show = displayLocation and true or false;
+			if displayLocation then
+				show = DoActiveThreatMapsMatchBountySet(bountySetID);
+			end
 		end
 	end
 

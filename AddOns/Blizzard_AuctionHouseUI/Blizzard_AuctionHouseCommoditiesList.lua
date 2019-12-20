@@ -105,11 +105,6 @@ AuctionHouseCommoditiesBuyListMixin = CreateFromMixins(AuctionHouseCommoditiesLi
 function AuctionHouseCommoditiesBuyListMixin:OnLoad()
 	AuctionHouseCommoditiesListMixin.OnLoad(self);
 
-	self:SetSelectionCallback(function(auctionData)
-		self:OnAuctionSelected(auctionData);
-		return true;
-	end);
-
 	self:SetTableBuilderLayout(AuctionHouseTableBuilder.GetCommoditiesBuyListLayout(self));
 
 	local function QuantitySelectionChangedCallback(event, quantity)

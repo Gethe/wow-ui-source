@@ -266,6 +266,7 @@ function FriendsFrame_OnLoad(self)
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	self:RegisterEvent("GROUP_JOINED");
 	self:RegisterEvent("GROUP_LEFT");
+	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 	self.selectedFriend = 1;
 
 	-- friends list
@@ -955,6 +956,8 @@ function FriendsFrame_OnEvent(self, event, ...)
 				C_GuildInfo.GuildRoster();
 			end
 		end
+	elseif ( event == "PLAYER_GUILD_UPDATE") then 
+		C_GuildInfo.GuildRoster();
 	end
 end
 

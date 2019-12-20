@@ -389,27 +389,55 @@ function AuctionHouseTableCellTimeLeftMixin:Init(owner)
 end
 
 function AuctionHouseTableCellTimeLeftMixin:Populate(rowData, dataIndex)
-	local hasExplicitTimeLeft = rowData.timeLeftSeconds ~= nil;
+	local timeLeftSeconds = self:GetTimeLeftSeconds();
+	local hasExplicitTimeLeft = timeLeftSeconds ~= nil;
 	self.Text:SetShown(hasExplicitTimeLeft);
 
 	if hasExplicitTimeLeft then
-		self:UpdateText(AuctionHouseUtil.FormatTimeLeft(rowData.timeLeftSeconds, rowData.status));
+		self:UpdateText(AuctionHouseUtil.FormatTimeLeft(timeLeftSeconds, rowData));
 	end
 end
 
-function AuctionHouseTableCellTimeLeftMixin:ShowTooltip(tooltip)
+function AuctionHouseTableCellTimeLeftMixin:GetTimeLeftSeconds()
+	if not self.rowData then
+		return nil;
+	end
+
+	if self.rowData.timeLeftSeconds then
+		return self.rowData.timeLeftSeconds;
+	elseif self.rowData.timeLeft then
+		local timeLeftMin, timeLeftMax = C_AuctionHouse.GetTimeLeftBandInfo(self.rowData.timeLeft);
+		return timeLeftMax;
+	end
+
+	return nil;
+end
+
+function AuctionHouseTableCellTimeLeftMixin:GetTooltipText()
 	local timeLeftSeconds = self.rowData.timeLeftSeconds;
-	local hasExplicitTimeLeft = timeLeftSeconds ~= nil;
-	if hasExplicitTimeLeft then
+	if timeLeftSeconds ~= nil then
+		return AuctionHouseUtil.FormatTimeLeftTooltip(timeLeftSeconds, self.rowData);
+	else
+		local timeLeft = self.rowData.timeLeft;
+		if timeLeft ~= nil then
+			return AuctionHouseUtil.GetTooltipTimeLeftBandText(self.rowData);
+		end
+	end
+
+	return nil;
+end
+
+function AuctionHouseTableCellTimeLeftMixin:ShowTooltip(tooltip)
+	local tooltipText = self:GetTooltipText();
+	if tooltipText then
 		local owner = self:GetParent();
+		owner.UpdateTooltip = nil;
 		tooltip:SetOwner(owner, "ANCHOR_RIGHT");
 
 		local wrap = true;
-		GameTooltip_AddNormalLine(tooltip, AuctionHouseUtil.FormatTimeLeftTooltip(timeLeftSeconds, self.rowData.status), wrap);
+		GameTooltip_AddNormalLine(tooltip, tooltipText, wrap);
 
 		tooltip:Show();
-
-		owner.UpdateTooltip = nil;
 	end
 end
 
@@ -557,13 +585,19 @@ end
 
 AuctionHouseTableCellItemDisplayMixin = CreateFromMixins(AuctionHouseTableCellItemKeyMixin);
 
+function AuctionHouseTableCellItemDisplayMixin:Init(owner, restrictQualityToFilter, hideItemLevel)
+	AuctionHouseTableCellItemKeyMixin.Init(self, owner, restrictQualityToFilter);
+
+	self.hideItemLevel = hideItemLevel;
+end
+
 function AuctionHouseTableCellItemDisplayMixin:ClearDisplay()
 	self.Text:SetText("");
 	self.Icon:Hide();
 end
 
 function AuctionHouseTableCellItemDisplayMixin:UpdateDisplay(itemKey, itemKeyInfo)
-	self.Text:SetText(AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo));
+	self.Text:SetText(AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo, self.hideItemLevel));
 	
 	self.Icon:SetTexture(itemKeyInfo.iconFileID);
 	self.Icon:Show();
@@ -855,7 +889,8 @@ function AuctionHouseTableBuilder.GetBrowseListLayout(owner, itemList, extraInfo
 		tableBuilder:AddFixedWidthColumn(owner, PRICE_DISPLAY_PADDING, 146, 0, 14, Enum.AuctionHouseSortOrder.Price, "AuctionHouseTableCellMinPriceTemplate");
 
 		local restrictQualityToFilter = true;
-		local nameColumn = tableBuilder:AddFillColumn(owner, 0, 1.0, STANDARD_PADDING, 0, Enum.AuctionHouseSortOrder.Name, "AuctionHouseTableCellItemDisplayTemplate", restrictQualityToFilter);
+		local hideItemLevel = extraInfoColumnText ~= nil;
+		local nameColumn = tableBuilder:AddFillColumn(owner, 0, 1.0, STANDARD_PADDING, 0, Enum.AuctionHouseSortOrder.Name, "AuctionHouseTableCellItemDisplayTemplate", restrictQualityToFilter, hideItemLevel);
 		nameColumn:GetHeaderFrame():SetText(AUCTION_HOUSE_BROWSE_HEADER_NAME);
 
 		if extraInfoColumnText then

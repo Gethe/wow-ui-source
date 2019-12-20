@@ -60,6 +60,12 @@ StaticPopupDialogs["CANCEL_AUCTION"] = {
 	hideOnEscape = 1
 };
 
+AUCTION_HOUSE_STATIC_POPUPS = {
+	"BUYOUT_AUCTION",
+	"BID_AUCTION",
+	"CANCEL_AUCTION",
+};
+
 
 local AuctionHouseSortVersion = 1;
 local MaxNumAuctionHouseSortTypes = 2;
@@ -283,6 +289,8 @@ function AuctionHouseFrameMixin:OnLoad()
 		if tab == self.SellTab then
 			self.tabsForDisplayMode[AuctionHouseFrameDisplayMode.CommoditiesSell] = i;
 			self.tabsForDisplayMode[AuctionHouseFrameDisplayMode.WoWTokenSell] = i;
+		elseif tab == self.BuyTab then
+			self.tabsForDisplayMode[AuctionHouseFrameDisplayMode.WoWTokenBuy] = i;
 		end
 	end
 end
@@ -339,14 +347,21 @@ function AuctionHouseFrameMixin:OnHide()
 
 	self.BrowseResultsFrame:Reset();
 
-	self.WoWTokenSellFrame:SetItem(nil);
-	self.CommoditiesSellFrame:SetItem(nil);
-	self.CommoditiesSellList:SetItemID(nil);
-	self.ItemSellFrame:SetItem(nil);
+	self:ClearPostItem();
 
 	C_AuctionHouse.CloseAuctionHouse();
 
+	self:CloseStaticPopups();
+
 	PlaySound(SOUNDKIT.AUCTION_WINDOW_CLOSE);
+end
+
+function AuctionHouseFrameMixin:CloseStaticPopups()
+	for i, popup in ipairs(AUCTION_HOUSE_STATIC_POPUPS) do
+		if StaticPopup_Visible(popup) then
+			StaticPopup_Hide(popup);
+		end
+	end
 end
 
 function AuctionHouseFrameMixin:ClearMaxWidthCaches()
@@ -428,6 +443,10 @@ function AuctionHouseFrameMixin:SetDisplayMode(displayMode)
 		elseif self.WoWTokenSellFrame:GetItem() then
 			displayMode = AuctionHouseFrameDisplayMode.WoWTokenSell;
 		end
+	elseif displayMode == AuctionHouseFrameDisplayMode.Buy then
+		if self:GetCategoriesList():IsWoWTokenCategorySelected() then
+			displayMode = AuctionHouseFrameDisplayMode.WoWTokenBuy;
+		end
 	end
 
 	if self.displayMode == displayMode then
@@ -483,7 +502,6 @@ function AuctionHouseFrameMixin:SetPostItem(itemLocation)
 		return;
 	end
 
-	local displayMode = self:GetDisplayMode();
 	local itemCommodityStatus = C_AuctionHouse.GetItemCommodityStatus(itemLocation);
 	if itemCommodityStatus == Enum.ItemCommodityStatus.Unknown then
 		return; -- No item data, bail out.
@@ -505,15 +523,10 @@ function AuctionHouseFrameMixin:SetPostItem(itemLocation)
 end
 
 function AuctionHouseFrameMixin:ClearPostItem()
-	local displayMode = self:GetDisplayMode();
-	if displayMode == AuctionHouseFrameDisplayMode.WoWTokenSell then
-		self.WoWTokenSellFrame:SetItem(nil);
-	elseif displayMode == AuctionHouseFrameDisplayMode.CommoditiesSell then
-		self.CommoditiesSellFrame:SetItem(nil);
-		self.CommoditiesSellList:SetItemID(nil);
-	elseif displayMode == AuctionHouseFrameDisplayMode.ItemSell then
-		self.ItemSellFrame:SetItem(nil);
-	end
+	self.WoWTokenSellFrame:SetItem(nil);
+	self.CommoditiesSellFrame:SetItem(nil);
+	self.CommoditiesSellList:SetItemID(nil);
+	self.ItemSellFrame:SetItem(nil);
 end
 
 function AuctionHouseFrameMixin:UpdateTitle()
@@ -550,9 +563,13 @@ function AuctionHouseFrameMixin:GetFavoriteDropDown()
 end
 
 function AuctionHouseFrameMixin:GetBrowseSearchContext()
-	local selectedCategoryIndex = self:GetCategoriesList():GetSelectedCategory();
-	local browseSearchContext = AuctionHouseUtil.ConvertCategoryToSearchContext(selectedCategoryIndex);
-	return browseSearchContext;
+	if self.isDisplayingFavorites then
+		return AuctionHouseSearchContext.AllFavorites;
+	else
+		local selectedCategoryIndex = self:GetCategoriesList():GetSelectedCategory();
+		local browseSearchContext = AuctionHouseUtil.ConvertCategoryToSearchContext(selectedCategoryIndex);
+		return browseSearchContext;
+	end
 end
 
 function AuctionHouseFrameMixin:SelectBrowseResult(browseResult)
@@ -611,6 +628,8 @@ function AuctionHouseFrameMixin:QueryItem(searchContext, itemKey, byItemID)
 
 	self.activeSearches[searchContext] = { searchContext, itemKey, byItemID };
 
+	self.isDisplayingFavorites = false;
+
 	local sorts = GetSortTypes(searchContext);
 	local separateOwnerItems = searchContext == AuctionHouseSearchContext.AuctionsItems or searchContext == AuctionHouseSearchContext.AuctionsCommodities;
 	if byItemID then
@@ -628,6 +647,8 @@ function AuctionHouseFrameMixin:QueryAll(searchContext)
 	self.activeSearches[searchContext] = { searchContext };
 
 	local sorts = GetSortTypes(searchContext);
+
+	self.isDisplayingFavorites = searchContext == AuctionHouseSearchContext.AllFavorites;
 
 	if searchContext == AuctionHouseSearchContext.AllFavorites then
 		C_AuctionHouse.SearchForFavorites(sorts);

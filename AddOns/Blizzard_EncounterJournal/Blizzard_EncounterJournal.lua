@@ -1797,7 +1797,7 @@ function EncounterJournal_SetLootButton(item)
 		end
 
 		local itemName, _, quality = GetItemInfo(link);
-		SetItemButtonQuality(item, quality, itemID);
+		SetItemButtonQuality(item, quality, link);
 	else
 		item.name:SetText(RETRIEVING_ITEM_INFO);
 		item.icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark");

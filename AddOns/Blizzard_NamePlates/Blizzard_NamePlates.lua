@@ -414,9 +414,9 @@ end
 
 function NamePlateBaseMixin:ApplyOffsets()
 	if self.driverFrame:IsUsingLargerNamePlateStyle() then
-		self.UnitFrame.BuffFrame:SetBaseYOffset(-5);
+		self.UnitFrame.BuffFrame:SetBaseYOffset(-3);
 	else
-		self.UnitFrame.BuffFrame:SetBaseYOffset(-5);
+		self.UnitFrame.BuffFrame:SetBaseYOffset(-3);
 	end
 
 	local targetMode = GetCVarBool("nameplateResourceOnTarget");

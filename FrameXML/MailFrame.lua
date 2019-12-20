@@ -538,29 +538,20 @@ function OpenMail_Update()
 	if ( isInvoice ) then
 		local invoiceType, itemName, playerName, bid, buyout, deposit, consignment, moneyDelay, etaHour, etaMin, count, commerceAuction = GetInboxInvoiceInfo(InboxFrame.openMailID);
 		if ( invoiceType ) then
-			if ( not playerName ) then
+			if ( playerName == nil ) then
 				playerName = (invoiceType == "buyer") and AUCTION_HOUSE_MAIL_MULTIPLE_SELLERS or AUCTION_HOUSE_MAIL_MULTIPLE_BUYERS;
 			end
 
 			-- Setup based on whether player is the buyer or the seller
-			local buyMode;
 			local multipleSale = count and count > 1;
 			if ( multipleSale ) then
 				itemName = format(AUCTION_MAIL_ITEM_STACK, itemName, count);
 			end
 			OpenMailInvoicePurchaser:SetShown(not commerceAuction);
-			OpenMailInvoiceBuyMode:SetShown(not commerceAuction);
 			if ( invoiceType == "buyer" ) then
-				if ( bid == buyout ) then
-					buyMode = "("..BUYOUT..")";
-				else
-					buyMode = "("..HIGH_BIDDER..")";
-				end
-				OpenMailInvoiceItemLabel:SetText(ITEM_PURCHASED_COLON.." "..itemName.."  "..buyMode);
+				OpenMailInvoiceItemLabel:SetText(ITEM_PURCHASED_COLON.." "..itemName);
 				OpenMailInvoicePurchaser:SetText(SOLD_BY_COLON.." "..playerName);
 				OpenMailInvoiceAmountReceived:SetText(AMOUNT_PAID_COLON);
-				-- Clear buymode
-				OpenMailInvoiceBuyMode:SetText("");
 				-- Update purchase price
 				MoneyFrame_Update("OpenMailTransactionAmountMoneyFrame", bid);	
 				-- Position buy line
@@ -579,11 +570,6 @@ function OpenMail_Update()
 				OpenMailInvoicePurchaser:SetText(PURCHASED_BY_COLON.." "..playerName);
 				OpenMailInvoiceAmountReceived:SetText(AMOUNT_RECEIVED_COLON);
 				-- Determine if auction was bought out or bid on
-				if ( bid == buyout ) then
-					OpenMailInvoiceBuyMode:SetText("("..BUYOUT..")");
-				else
-					OpenMailInvoiceBuyMode:SetText("("..HIGH_BIDDER..")");
-				end
 
 				OpenMailSalePriceMoneyFrame.Count:SetShown(multipleSale);
 				if ( multipleSale ) then
@@ -608,16 +594,9 @@ function OpenMail_Update()
 				OpenMailInvoiceNotYetSent:Hide();
 				OpenMailInvoiceMoneyDelay:Hide();
 			elseif (invoiceType == "seller_temp_invoice") then 
-				if ( bid == buyout ) then
-					buyMode = "("..BUYOUT..")";
-				else
-					buyMode = "("..HIGH_BIDDER..")";
-				end
-				OpenMailInvoiceItemLabel:SetText(ITEM_SOLD_COLON.." "..itemName.."  "..buyMode);
+				OpenMailInvoiceItemLabel:SetText(ITEM_SOLD_COLON.." "..itemName);
 				OpenMailInvoicePurchaser:SetText(PURCHASED_BY_COLON.." "..playerName);
 				OpenMailInvoiceAmountReceived:SetText(AUCTION_INVOICE_PENDING_FUNDS_COLON);
-				-- Clear buymode
-				OpenMailInvoiceBuyMode:SetText("");
 				-- Update purchase price
 				MoneyFrame_Update("OpenMailTransactionAmountMoneyFrame", bid+deposit-consignment);	
 				-- Position buy line
