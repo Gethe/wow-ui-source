@@ -142,6 +142,11 @@ function ToySpellButton_OnEnter(self)
 		self.UpdateTooltip = nil;
 	end
 
+	local hasFanfare = ToyBox.fanfareToys[self.itemID] ~= nil;
+	local isNew = ToyBox.newToys[self.itemID] ~= nil;
+	if( isNew and not hasFanfare ) then
+		ToyBox.newToys[self.itemID] = nil;
+	end
 	ToySpellButton_UpdateButton(self);
 end
 

@@ -9,6 +9,7 @@ AuctionHouseBrowseResultsFrameMixin = CreateFromMixins(AuctionHouseSortOrderSyst
 local AUCTION_HOUSE_BROWSE_RESULTS_FRAME_EVENTS = {
 	"AUCTION_HOUSE_BROWSE_RESULTS_UPDATED",
 	"AUCTION_HOUSE_BROWSE_RESULTS_ADDED",
+	"AUCTION_HOUSE_BROWSE_FAILURE",
 };
 
 function AuctionHouseBrowseResultsFrameMixin:SetupTableBuilder(extraInfoColumn)
@@ -87,6 +88,8 @@ function AuctionHouseBrowseResultsFrameMixin:OnEvent(event, ...)
 	elseif event == "AUCTION_HOUSE_BROWSE_RESULTS_ADDED" then
 		local addedBrowseResults = ...;
 		self:UpdateBrowseResults(addedBrowseResults);
+	elseif event == "AUCTION_HOUSE_BROWSE_FAILURE" then
+		self.ItemList:SetCustomError(RED_FONT_COLOR:WrapTextInColorCode(ERR_AUCTION_DATABASE_ERROR));
 	end
 end
 

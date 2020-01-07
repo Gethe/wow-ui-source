@@ -2845,7 +2845,7 @@ end
 function LFGListUtil_FilterSearchResults(results, filteredIDs)
 	for i, id in ipairs(filteredIDs) do
 		for j = #results, 1, -1 do
-			if ( results[i] == id ) then
+			if ( results[j] == id ) then
 				tremove(results, j);
 				break;
 			end

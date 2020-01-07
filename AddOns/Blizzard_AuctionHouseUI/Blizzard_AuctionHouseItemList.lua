@@ -122,6 +122,12 @@ function AuctionHouseItemListMixin:SetLineTemplate(lineTemplate, ...)
 	self.initArgs = { ... };
 end
 
+function AuctionHouseItemListMixin:SetCustomError(errorText)
+	self:SetState(ItemListState.NoResults);
+	self.ResultsText:Show();
+	self.ResultsText:SetText(errorText);
+end
+
 function AuctionHouseItemListMixin:Init()
 	if self.isInitialized then
 		return;

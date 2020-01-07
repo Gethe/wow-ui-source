@@ -609,8 +609,10 @@
 				<Scripts>
 					<OnMouseDown>
 						UIMenuButtonStretchMixin.OnMouseDown(self, button);
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						ToggleDropDownMenu(1, nil, WardrobeFilterDropDown, self, 74, 15);
+						if self:IsEnabled() then
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+							ToggleDropDownMenu(1, nil, WardrobeFilterDropDown, self, 74, 15);
+						end
 					</OnMouseDown>
 					<OnEnable>
 						self.Icon:SetDesaturated(false);

@@ -1735,8 +1735,13 @@ function UIParent_OnEvent(self, event, ...)
 
 	--Events for handling Auction UI
 	elseif ( event == "AUCTION_HOUSE_SHOW" ) then
-		AuctionHouseFrame_LoadUI();
-		ShowUIPanel(AuctionHouseFrame);
+		if ( GameLimitedMode_IsActive() ) then
+			UIErrorsFrame:AddExternalErrorMessage(ERR_FEATURE_RESTRICTED_TRIAL);
+			C_AuctionHouse.CloseAuctionHouse();
+		else
+			AuctionHouseFrame_LoadUI();
+			ShowUIPanel(AuctionHouseFrame);
+		end
 	elseif ( event == "AUCTION_HOUSE_CLOSED" ) then
 		if ( AuctionHouseFrame ) then
 			HideUIPanel(AuctionHouseFrame);
