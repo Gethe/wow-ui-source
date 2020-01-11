@@ -26,6 +26,16 @@ local AuctionHouse =
 			LiteralName = "AUCTION_HOUSE_DISABLED",
 		},
 		{
+			Name = "AuctionHousePostError",
+			Type = "Event",
+			LiteralName = "AUCTION_HOUSE_POST_ERROR",
+		},
+		{
+			Name = "AuctionHousePostWarning",
+			Type = "Event",
+			LiteralName = "AUCTION_HOUSE_POST_WARNING",
+		},
+		{
 			Name = "AuctionHouseScriptDeprecated",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_SCRIPT_DEPRECATED",

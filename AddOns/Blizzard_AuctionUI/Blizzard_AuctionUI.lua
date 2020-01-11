@@ -10,6 +10,34 @@ local PRICE_TYPE_STACK = 2;
 
 UIPanelWindows["AuctionFrame"] = { area = "doublewide", pushable = 0, width = 840 };
 
+StaticPopupDialogs["AUCTION_HOUSE_POST_WARNING"] = {
+	text = NORMAL_FONT_COLOR:WrapTextInColorCode(CONFIRM_AUCTION_POSTING_TEXT),
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function (self) 
+		ConfirmAuctionPosting();
+	end,
+	OnCancel = function (self)
+		self:Hide();
+	end,
+	showAlert = true,
+	hideOnEscape = 1,
+	timeout = 0,
+	whileDead = 1,
+}
+
+StaticPopupDialogs["AUCTION_HOUSE_POST_ERROR"] = {
+	text = NORMAL_FONT_COLOR:WrapTextInColorCode(AUCTION_POSTING_ERROR_TEXT),
+	button1 = OKAY,
+	OnAccept = function (self) 
+		self:Hide();
+	end,
+	showAlert = true,
+	hideOnEscape = 1,
+	timeout = 0,
+	whileDead = 1,
+}
+
 local function GetPrices()
 	local startPrice = MoneyInputFrame_GetCopper(StartPrice);
 	local buyoutPrice = MoneyInputFrame_GetCopper(BuyoutPrice);
@@ -2068,6 +2096,20 @@ function CloseAuctionStaticPopups()
 	StaticPopup_Hide("BUYOUT_AUCTION_EXPENSIVE");
 	StaticPopup_Hide("BID_AUCTION");
 	StaticPopup_Hide("CANCEL_AUCTION");
+	StaticPopup_Hide("AUCTION_HOUSE_POST_WARNING");
+	StaticPopup_Hide("AUCTION_HOUSE_POST_ERROR");
+end
+
+local pendingAuctionPostPayload;
+function ConfirmAuctionPosting()
+	if pendingAuctionPostPayload ~= nil then
+		ConfirmPostAuction(unpack(pendingAuctionPostPayload));
+	end
+end
+
+local function StartAuction(startPrice, buyoutPrice, duration, stackSize, numStacks)
+	pendingAuctionPostPayload = {startPrice, buyoutPrice, duration, stackSize, numStacks};
+	PostAuction(startPrice, buyoutPrice, duration, stackSize, numStacks);
 end
 
 function AuctionsCreateAuctionButton_OnClick()
@@ -2086,7 +2128,7 @@ function AuctionsCreateAuctionButton_OnClick()
 			buyoutPrice = buyoutPrice * AuctionsStackSizeEntry:GetNumber();
 		end
 		local startPrice, buyoutPrice = GetPrices();
-		PostAuction(startPrice, buyoutPrice, AuctionFrameAuctions.duration, AuctionsStackSizeEntry:GetNumber(), AuctionsNumStacksEntry:GetNumber());
+		StartAuction(startPrice, buyoutPrice, AuctionFrameAuctions.duration, AuctionsStackSizeEntry:GetNumber(), AuctionsNumStacksEntry:GetNumber());
 	end
 end
 

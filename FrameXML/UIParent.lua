@@ -264,6 +264,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
 	self:RegisterEvent("AUCTION_HOUSE_CLOSED");
 	self:RegisterEvent("AUCTION_HOUSE_DISABLED");
+	self:RegisterEvent("AUCTION_HOUSE_POST_WARNING");
+	self:RegisterEvent("AUCTION_HOUSE_POST_ERROR");
 
 	-- Events for trainer UI handling
 	self:RegisterEvent("TRAINER_SHOW");
@@ -1728,6 +1730,10 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif ( event == "AUCTION_HOUSE_DISABLED" ) then
 		StaticPopup_Show("AUCTION_HOUSE_DISABLED");
+	elseif ( event == "AUCTION_HOUSE_POST_WARNING" ) then
+		StaticPopup_Show("AUCTION_HOUSE_POST_WARNING");
+	elseif ( event == "AUCTION_HOUSE_POST_ERROR" ) then
+		StaticPopup_Show("AUCTION_HOUSE_POST_ERROR");
 
 	-- Events for trainer UI handling
 	elseif ( event == "TRAINER_SHOW" ) then
