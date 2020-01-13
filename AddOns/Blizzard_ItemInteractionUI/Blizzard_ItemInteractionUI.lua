@@ -66,6 +66,8 @@ function ItemInteractionMixin:OnEvent(event, ...)
 		if self.castLineID and self.castLineID == lineID then
 			C_ItemInteraction.ClearPendingItem();
 		end
+	elseif event == "ITEM_INTERACTION_CLOSE" then 
+		HideUIPanel(self);
 	end
 end
 

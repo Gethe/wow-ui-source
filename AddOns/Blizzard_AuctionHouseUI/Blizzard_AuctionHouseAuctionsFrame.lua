@@ -177,14 +177,20 @@ end
 
 function AuctionHouseAuctionsFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, AUCTIONS_FRAME_EVENTS);
-	self:RefreshSeachResults();
+
+	-- AllBids and AllAuctions will update the entire list. Other views require
+	-- and explicit update.
+	local displayMode = self:GetDisplayMode();
+	if displayMode ~= AuctionsFrameDisplayMode.AllBids and displayMode ~= AuctionsFrameDisplayMode.AllAuctions then
+		self:RefreshSeachResults();
+	end
 end
 
 function AuctionHouseAuctionsFrameMixin:RefreshSeachResults()
 	local displayMode = self:GetDisplayMode();
-	if self:IsDisplayingBids() and displayMode ~= AuctionsFrameDisplayMode.AllBids then
+	if self:IsDisplayingBids() then
 		self:GetAuctionHouseFrame():QueryAll(AuctionHouseSearchContext.AllBids);
-	elseif displayMode ~= AuctionsFrameDisplayMode.AllAuctions then
+	else
 		self:GetAuctionHouseFrame():QueryAll(AuctionHouseSearchContext.AllAuctions);
 	end
 

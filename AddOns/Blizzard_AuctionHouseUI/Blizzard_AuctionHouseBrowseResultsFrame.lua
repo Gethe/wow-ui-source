@@ -12,8 +12,8 @@ local AUCTION_HOUSE_BROWSE_RESULTS_FRAME_EVENTS = {
 	"AUCTION_HOUSE_BROWSE_FAILURE",
 };
 
-function AuctionHouseBrowseResultsFrameMixin:SetupTableBuilder(extraInfoColumn)
-	self.ItemList:SetTableBuilderLayout(AuctionHouseTableBuilder.GetBrowseListLayout(self, self.ItemList, extraInfoColumn));
+function AuctionHouseBrowseResultsFrameMixin:SetupTableBuilder(extraColumnInfo, sortable, ...)
+	self.ItemList:SetTableBuilderLayout(AuctionHouseTableBuilder.GetBrowseListLayout(self, self.ItemList, extraColumnInfo, sortable, ...));
 
 	self.tableBuilderLayoutDirty = false;
 end
@@ -102,7 +102,8 @@ end
 
 function AuctionHouseBrowseResultsFrameMixin:OnCategorySelected(selectedCategoryIndex, selectedSubCategoryIndex, selectedSubSubCategoryIndex)
 	local extraColumnInfo = AuctionFrame_GetDetailColumnStringUnsafe(selectedCategoryIndex, selectedSubCategoryIndex);
-	self.pendingExtraColumnInfo = extraColumnInfo;
+	local sortable = not AuctionFrame_DoesCategoryHaveFlag("UNSORTABLE", selectedCategoryIndex);
+	self.pendingExtraColumnInfo = { extraColumnInfo, sortable, };
 	self.tableBuilderLayoutDirty = true;
 end
 
@@ -110,7 +111,12 @@ function AuctionHouseBrowseResultsFrameMixin:UpdateBrowseResults(addedBrowseResu
 	self.searchStarted = true;
 
 	if self.tableBuilderLayoutDirty then
-		self:SetupTableBuilder(self.pendingExtraColumnInfo);
+		if self.pendingExtraColumnInfo then
+			self:SetupTableBuilder(unpack(self.pendingExtraColumnInfo));
+		else
+			self:SetupTableBuilder(nil);
+		end
+
 		self.pendingExtraColumnInfo = nil;
 	end
 	

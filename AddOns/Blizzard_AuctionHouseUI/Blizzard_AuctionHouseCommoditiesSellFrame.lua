@@ -132,6 +132,11 @@ function AuctionHouseCommoditiesSellFrameMixin:SetItem(itemLocation, fromItemDis
 
 	if itemLocation then
 		self.QuantityInput:SetQuantity(C_Item.GetStackCount(itemLocation));
+
+		-- Hack fix for a spacing problem: Without this line, the edit box would be scrolled to
+		-- the left and the text would not be visible. This seems to be a problem with setting
+		-- the text on the edit box and showing it in the same frame.
+		self.QuantityInput.InputBox:SetCursorPosition(0);
 	end
 
 	self:GetCommoditiesSellList():SetItemID(itemKey and itemKey.itemID or nil);

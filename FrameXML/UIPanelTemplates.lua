@@ -371,13 +371,13 @@ end
 
 TalentRankDisplayMixin = { };
 
-function TalentRankDisplayMixin:SetValues(currentRank, maxRank, isDisabled)
+function TalentRankDisplayMixin:SetValues(currentRank, maxRank, isDisabled, isAvailable)
 	self.Text:SetFormattedText(GENERIC_FRACTION_STRING, currentRank, maxRank);
 	local atlas, textColor;
 	if isDisabled then
 		atlas = "orderhalltalents-rankborder";
 		textColor = DISABLED_FONT_COLOR;
-	elseif currentRank < maxRank then
+	elseif isAvailable and currentRank < maxRank then
 		atlas = "orderhalltalents-rankborder-green";
 		textColor = GREEN_FONT_COLOR;
 	else

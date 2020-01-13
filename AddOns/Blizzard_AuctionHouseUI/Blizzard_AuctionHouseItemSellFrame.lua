@@ -119,7 +119,7 @@ function AuctionHouseItemSellFrameMixin:UpdatePriceSelection()
 
 	if self.listDisplayedItemKey then
 		local defaultPrice = self:GetDefaultPrice();
-		local defaultBid = not self.SecondaryPriceInput:IsShown() or self.SecondaryPriceInput:GetAmount() == defaultPrice;
+		local defaultBid = not self.SecondaryPriceInput:IsShown() or self.SecondaryPriceInput:GetAmount() == 0;
 		local defaultBuyout = self.PriceInput:GetAmount() == defaultPrice;
 
 		-- If the user hasn't entered a price, update to the lowest price available.
@@ -201,10 +201,7 @@ function AuctionHouseItemSellFrameMixin:SetSecondaryPriceInputEnabled(enabled)
 	self.PriceInput:SetSubtext(enabled and AUCTION_HOUSE_BUYOUT_OPTIONAL_LABEL or nil);
 	self.PriceInput.PerItemPostfix:SetShown(not enabled);
 	self.SecondaryPriceInput:SetShown(enabled);
-
-	if not enabled then
-		self.SecondaryPriceInput:Clear();
-	end
+	self.SecondaryPriceInput:Clear();
 
 	self:UpdatePostState();
 	self:UpdateFocusTabbing();
@@ -214,7 +211,7 @@ end
 function AuctionHouseItemSellFrameMixin:SetItem(itemLocation, fromItemDisplay, refreshListWithPreviousItem)
 	AuctionHouseSellFrameMixin.SetItem(self, itemLocation, fromItemDisplay);
 
-	self.SecondaryPriceInput:SetAmount(0);
+	self.SecondaryPriceInput:Clear();
 
 	local itemKey = itemLocation and C_AuctionHouse.GetItemKeyFromItem(itemLocation) or nil;
 	if refreshListWithPreviousItem and self.previousItemKey then

@@ -283,12 +283,14 @@ end
 do -- Gems
 	local gemsCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_GEMS);
 	gemsCategory:SetDetailColumnString(ITEM_LEVEL_ABBR);
+	gemsCategory:SetFlag("UNSORTABLE");
 	gemsCategory:GenerateSubCategoriesAndFiltersFromSubClass(LE_ITEM_CLASS_GEM);
 end
 
 do -- Item Enhancement
 	local itemEnhancementCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_ITEM_ENHANCEMENT);
 	itemEnhancementCategory:SetDetailColumnString(ITEM_LEVEL_ABBR);
+	itemEnhancementCategory:SetFlag("UNSORTABLE");
 	itemEnhancementCategory:GenerateSubCategoriesAndFiltersFromSubClass(LE_ITEM_CLASS_ITEM_ENHANCEMENT);
 end
 

@@ -98,7 +98,11 @@ function AuctionHouseAlignedPriceInputFrameMixin:Clear()
 end
 
 function AuctionHouseAlignedPriceInputFrameMixin:SetAmount(amount)
-	self.MoneyInputFrame:SetAmount(amount);
+	if amount == 0 then
+		self.MoneyInputFrame:Clear();
+	else
+		self.MoneyInputFrame:SetAmount(amount);
+	end
 end
 
 function AuctionHouseAlignedPriceInputFrameMixin:GetAmount()

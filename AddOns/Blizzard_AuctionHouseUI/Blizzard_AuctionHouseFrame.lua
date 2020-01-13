@@ -566,10 +566,14 @@ function AuctionHouseFrameMixin:GetBrowseSearchContext()
 	if self.isDisplayingFavorites then
 		return AuctionHouseSearchContext.AllFavorites;
 	else
-		local selectedCategoryIndex = self:GetCategoriesList():GetSelectedCategory();
-		local browseSearchContext = AuctionHouseUtil.ConvertCategoryToSearchContext(selectedCategoryIndex);
-		return browseSearchContext;
+		return self:GetCategorySearchContext();
 	end
+end
+
+function AuctionHouseFrameMixin:GetCategorySearchContext()
+	local selectedCategoryIndex = self:GetCategoriesList():GetSelectedCategory();
+	local browseSearchContext = AuctionHouseUtil.ConvertCategoryToSearchContext(selectedCategoryIndex);
+	return browseSearchContext;
 end
 
 function AuctionHouseFrameMixin:SelectBrowseResult(browseResult)
@@ -666,7 +670,7 @@ function AuctionHouseFrameMixin:SendBrowseQuery(searchString, minLevel, maxLevel
 		return;
 	end
 
-	local browseSearchContext = self:GetBrowseSearchContext();
+	local browseSearchContext = self:GetCategorySearchContext();
 	self:SendBrowseQueryInternal(browseSearchContext, searchString, minLevel, maxLevel, filtersArray);
 	self:TriggerEvent(AuctionHouseFrameMixin.Event.BrowseSearchStarted);
 end
@@ -677,6 +681,8 @@ function AuctionHouseFrameMixin:SendBrowseQueryInternal(browseSearchContext, sea
 	end
 
 	self.activeSearches[browseSearchContext] = { browseSearchContext, searchString, minLevel, maxLevel, filtersArray };
+
+	self.isDisplayingFavorites = browseSearchContext == AuctionHouseSearchContext.AllFavorites;
 
 	local filterData = nil;
 	local categoriesList = self:GetCategoriesList();

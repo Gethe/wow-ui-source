@@ -340,6 +340,12 @@ function WardrobeTransmogFrame_UpdateWeaponModel(slot)
 		local existingAppearanceSourceID, existingIllustionSourceID = actor:GetSlotTransmogSources(slotID);
 		if ( existingAppearanceSourceID ~= appearanceSourceID or existingIllustionSourceID ~= illusionSourceID ) then
 			if slot and ( WardrobeTransmogFrame.ModelScene.creatureDisplayID == nil ) then
+				-- don't specify a slot when applying or removing ranged weapons because of bows
+				local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(appearanceSourceID);
+				local existingCategoryID = C_TransmogCollection.GetAppearanceSourceInfo(existingAppearanceSourceID);
+				if ( WardrobeUtils_IsCategoryRanged(categoryID) or WardrobeUtils_IsCategoryRanged(existingCategoryID) ) then
+					slot = nil;
+				end
 				actor:TryOn(appearanceSourceID, slot, illusionSourceID);
 			end
 		end

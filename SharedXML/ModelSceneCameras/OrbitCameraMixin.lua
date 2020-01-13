@@ -574,7 +574,13 @@ function OrbitCameraMixin:UpdateCameraOrientationAndPosition()
 	local width = self:GetOwningScene():GetWidth();
 	local height = self:GetOwningScene():GetHeight();
 	local scaleFactor = math.sqrt(width * width + height * height);
-	local zoomFactor = zoomDistance - (1 / (zoomDistance * zoomDistance * zoomDistance));
+	local zoomFactor = 1;
+	if zoomDistance > 1 then
+		zoomFactor = zoomDistance - (1 / (zoomDistance * zoomDistance * zoomDistance));
+		if zoomFactor < 1 then
+			zoomFactor = 1;
+		end
+	end
 
 	local rightX, rightY, rightZ = Vector3D_ScaleBy((self.panningXOffset / scaleFactor) * zoomFactor, self:GetRightVector());
 	local upX, upY, upZ = Vector3D_ScaleBy((self.panningYOffset / scaleFactor) * zoomFactor, self:GetUpVector());

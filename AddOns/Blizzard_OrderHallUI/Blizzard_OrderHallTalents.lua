@@ -496,6 +496,9 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			self:ClearResearchingTalentID();
 		end
 
+		local isAvailable = talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE;
+		local isZeroRank = talent.talentRank == 0;
+
 		local borderAtlas = BORDER_ATLAS_NONE;
 		if (talent.isBeingResearched) then
 			borderAtlas = BORDER_ATLAS_SELECTED;
@@ -504,8 +507,6 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		elseif (talentTreeType == Enum.GarrTalentTreeType.Classic and talent.researched) then
 			borderAtlas = BORDER_ATLAS_SELECTED;
 		else
-			local isAvailable = talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE;
-
 			-- We check for LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ALREADY_HAVE to avoid a bug with
 			-- the Chromie UI (talents would flash grey when you switched to another talent in the same row).
 			local canDisplayAsAvailable = talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ANOTHER_IS_RESEARCHING or talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ALREADY_HAVE;
@@ -523,7 +524,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			-- Show as unavailable: You have not unlocked this tier yet or you have unlocked it but another research is already in progress.
 			else
 				borderAtlas = BORDER_ATLAS_UNAVAILABLE;
-				talentFrame.Icon:SetDesaturated(true);
+				talentFrame.Icon:SetDesaturated(isZeroRank);
 			end
 		end
 		talentFrame:SetBorder(borderAtlas);
@@ -534,8 +535,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			local talentRankFrame = self.talentRankPool:Acquire();
 			talentRankFrame:SetPoint("BOTTOMRIGHT", talentFrame, 15, -12);
 			talentRankFrame:SetFrameLevel(10);
-			local isDisabled = (borderAtlas == BORDER_ATLAS_UNAVAILABLE);
-			talentRankFrame:SetValues(talent.talentRank, talent.talentMaxRank, isDisabled);
+			talentRankFrame:SetValues(talent.talentRank, talent.talentMaxRank, isZeroRank, isAvailable);
 			talentRankFrame:Show();
 		end
 
