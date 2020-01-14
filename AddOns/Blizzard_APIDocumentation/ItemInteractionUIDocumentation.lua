@@ -11,6 +11,10 @@ local ItemInteractionUI =
 			Type = "Function",
 		},
 		{
+			Name = "CloseUI",
+			Type = "Function",
+		},
+		{
 			Name = "GetItemInteractionInfo",
 			Type = "Function",
 

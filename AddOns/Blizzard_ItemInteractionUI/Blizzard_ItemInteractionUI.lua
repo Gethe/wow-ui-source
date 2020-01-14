@@ -107,8 +107,7 @@ function ItemInteractionMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, ITEM_INTERACTION_UNIT_EVENTS);
 
 	CloseAllBags(self);
-	C_ItemInteraction.ClearPendingItem();
-	C_ItemInteraction.Reset(); 
+	C_ItemInteraction.CloseUI();
 
 	-- Greys out the items in your bag that don't match. If you need  to add a new item interaction frame
 	-- Add a new type to ItemUtil.lua ItemButtonUtil.ItemContextEnum
