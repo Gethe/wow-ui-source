@@ -576,6 +576,7 @@ function CommentatorUnitFrameMixin:ReinitializeSpells()
 		if spells and #spells > 0 then
 			poolCollection.pool:ConstructFrames(spells, poolCollection.maxSpells, poolCollection.container, self.align, padding);
 		else
+			poolCollection.pool:Release();
 			self.reinitSpellsSecondsElapsed = 0;
 		end
 	end

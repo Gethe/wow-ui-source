@@ -142,20 +142,19 @@ function ToySpellButton_OnEnter(self)
 		self.UpdateTooltip = nil;
 	end
 
-	if(ToyBox.newToys[self.itemID] ~= nil) then
+	local hasFanfare = ToyBox.fanfareToys[self.itemID] ~= nil;
+	local isNew = ToyBox.newToys[self.itemID] ~= nil;
+	if( isNew and not hasFanfare ) then
 		ToyBox.newToys[self.itemID] = nil;
-		ToySpellButton_UpdateButton(self);
 	end
+	ToySpellButton_UpdateButton(self);
 end
 
 function ToySpellButton_OnClick(self, button)
-	if ( button ~= "LeftButton" ) then
-		if (PlayerHasToy(self.itemID)) then
-			ToyBox_ShowToyDropdown(self.itemID, self, 0, 0);
-		end
-	else
+	if ( button == "LeftButton" ) then
 		if ( ToyBox.fanfareToys[self.itemID] ~= nil ) then
 			ToyBox.fanfareToys[self.itemID] = false;
+			ToyBox.newToys[self.itemID] = nil;
 
 			if ( self.modelScene ) then
 				local function OnFinishedCallback()
@@ -168,6 +167,10 @@ function ToySpellButton_OnClick(self, button)
 			end
 		else
 			UseToy(self.itemID);
+		end
+	elseif ( button == "RightButton" ) then
+		if (PlayerHasToy(self.itemID)) then
+			ToyBox_ShowToyDropdown(self.itemID, self, 0, 0);
 		end
 	end
 end
@@ -227,6 +230,7 @@ function ToySpellButton_UpdateButton(self)
 
 	if ToyBox.fanfareToys[itemID] == nil and hasFanfare then
 		ToyBox.fanfareToys[itemID] = true;
+		ToyBox.newToys[self.itemID] = true;-- if it has fanfare, we also want to treat it as new
 	end
 
 	if string.len(toyName) == 0 then

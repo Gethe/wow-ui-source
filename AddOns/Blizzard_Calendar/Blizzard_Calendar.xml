@@ -322,13 +322,13 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="CalendarFilterButton">
+					<DropDownToggleButton name="CalendarFilterButton">
 						<Size x="20" y="20"/>
 						<Anchors>
 							<Anchor point="RIGHT"/>
 						</Anchors>
 						<Scripts>
-							<OnClick function="CalendarFilterButton_OnClick"/>
+							<OnMouseDown function="CalendarFilterButton_OnMouseDown"/>
 						</Scripts>
 						<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
 							<Size x="20" y="20"/>
@@ -354,7 +354,7 @@
 								<Anchor point="RIGHT" x="3" y="0"/>
 							</Anchors>
 						</HighlightTexture>
-					</Button>
+					</DropDownToggleButton>
 				</Frames>
 			</Frame>
 			<Frame name="CalendarFilterDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
@@ -459,13 +459,7 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
-			<Frame name="CalendarViewHolidayTitleFrame" inherits="CalendarTitleFrameTemplate">
-				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 6);
-					</OnLoad>
-				</Scripts>
-			</Frame>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate"/>
 			<ScrollFrame name="CalendarViewHolidayScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size x="270" y="278"/>
 				<Anchors>
@@ -517,13 +511,7 @@
 		</Anchors>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
-			<Frame name="CalendarViewRaidTitleFrame" inherits="CalendarTitleFrameTemplate">
-				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 6);
-					</OnLoad>
-				</Scripts>
-			</Frame>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate"/>
 			<ScrollFrame name="CalendarViewRaidScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size x="270" y="108"/>
 				<Anchors>
@@ -631,13 +619,7 @@
 				</Scripts>
 			</Button>
 			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
-			<Frame name="CalendarViewEventTitleFrame" inherits="CalendarTitleFrameTemplate">
-				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 6);
-					</OnLoad>
-				</Scripts>
-			</Frame>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate"/>
 			<Frame name="CalendarViewEventDescriptionContainer">
 				<Size x="287" y="65"/>
 				<Anchors>
@@ -846,13 +828,7 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
-			<Frame name="CalendarCreateEventTitleFrame" inherits="CalendarTitleFrameTemplate">
-				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 6);
-					</OnLoad>
-				</Scripts>
-			</Frame>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate"/>
 			<EditBox name="CalendarCreateEventTitleEdit" letters="31" inherits="InputBoxTemplate" autoFocus="false">
 				<Size x="120" y="20"/>
 				<Anchors>
@@ -1226,13 +1202,10 @@
 					<Anchor point="TOP" x="0" y="-30"/>
 				</Anchors>
 			</Frame>
-			<Frame name="CalendarMassInviteTitleFrame" inherits="CalendarTitleFrameTemplate">
-				<Scripts>
-					<OnLoad>
-						CalendarTitleFrame_SetText(self, CALENDAR_MASS_INVITE);
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 6);
-					</OnLoad>
-				</Scripts>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="textString" value="CALENDAR_MASS_INVITE" type="global"/>
+				</KeyValues>
 			</Frame>
 			<EditBox name="CalendarMassInviteMinLevelEdit" numeric="true" letters="3" inherits="InputBoxTemplate" autoFocus="false">
 				<Size x="25" y="20"/>
@@ -1314,12 +1287,10 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
-			<Frame name="CalendarEventPickerTitleFrame" inherits="CalendarTitleFrameTemplate">
-				<Scripts>
-					<OnLoad>
-						CalendarTitleFrame_SetText(self, CALENDAR_EVENT_PICKER_TITLE);
-					</OnLoad>
-				</Scripts>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="textString" value="CALENDAR_EVENT_PICKER_TITLE" type="global"/>
+				</KeyValues>
 			</Frame>
 			<ScrollFrame name="CalendarEventPickerScrollFrame" inherits="HybridScrollFrameTemplate">
 				<Size x="239" y="165"/>
@@ -1385,7 +1356,7 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
-			<Frame name="CalendarTexturePickerTitleFrame" inherits="CalendarTitleFrameTemplate"/>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate"/>
 			<ScrollFrame name="CalendarTexturePickerScrollFrame" inherits="HybridScrollFrameTemplate">
 				<Size x="239" y="225"/>
 				<Anchors>

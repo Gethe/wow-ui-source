@@ -145,6 +145,7 @@ local CommentatorFrame =
 				{ Name = "zPos", Type = "number", Nilable = false },
 				{ Name = "yaw", Type = "number", Nilable = false },
 				{ Name = "pitch", Type = "number", Nilable = false },
+				{ Name = "roll", Type = "number", Nilable = false },
 				{ Name = "fov", Type = "number", Nilable = false },
 			},
 		},
@@ -829,6 +830,7 @@ local CommentatorFrame =
 				{ Name = "zPos", Type = "number", Nilable = false },
 				{ Name = "yaw", Type = "number", Nilable = false },
 				{ Name = "pitch", Type = "number", Nilable = false },
+				{ Name = "roll", Type = "number", Nilable = false },
 				{ Name = "fov", Type = "number", Nilable = false },
 			},
 		},
@@ -1137,6 +1139,15 @@ local CommentatorFrame =
 			Name = "CommentatorEnterWorld",
 			Type = "Event",
 			LiteralName = "COMMENTATOR_ENTER_WORLD",
+		},
+		{
+			Name = "CommentatorImmediateFovUpdate",
+			Type = "Event",
+			LiteralName = "COMMENTATOR_IMMEDIATE_FOV_UPDATE",
+			Payload =
+			{
+				{ Name = "fov", Type = "number", Nilable = false },
+			},
 		},
 		{
 			Name = "CommentatorMapUpdate",

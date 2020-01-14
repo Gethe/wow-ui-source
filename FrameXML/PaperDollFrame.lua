@@ -16,8 +16,8 @@ CR_HIT_SPELL = 8;
 CR_CRIT_MELEE = 9;
 CR_CRIT_RANGED = 10;
 CR_CRIT_SPELL = 11;
-CR_UNUSED_2 = 12;
-CR_UNUSED_3 = 13;
+CR_CORRUPTION = 12;
+CR_CORRUPTION_RESISTANCE = 13;
 CR_SPEED = 14;
 COMBAT_RATING_RESILIENCE_CRIT_TAKEN = 15;
 COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN = 16;
@@ -1464,6 +1464,14 @@ function PaperDollFrame_IgnoreSlot(slot)
 	PaperDollItemSlotButton_Update(itemSlotButtons[slot]);
 end
 
+function PaperDollFrame_UpdateCorruptedItemGlows(glow)
+	for _, button in next, itemSlotButtons do
+		if button.HasPaperDollAzeriteItemOverlay then
+			button:UpdateCorruptedGlow(ItemLocation:CreateFromEquipmentSlot(button:GetID()), glow);
+		end
+	end
+end
+
 function PaperDollItemSlotButton_OnLoad(self)
 	self:RegisterForDrag("LeftButton");
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -1983,7 +1991,9 @@ function GearSetEditButton_OnLoad(self)
 	UIDropDownMenu_SetInitializeFunction(self.Dropdown, GearSetEditButtonDropDown_Initialize);
 end
 
-function GearSetEditButton_OnClick(self, button)
+function GearSetEditButton_OnMouseDown(self, button)
+	self.texture:SetPoint("TOPLEFT", 1, -1);
+
 	GearSetButton_OnClick(self:GetParent(), button);
 
 	if ( self.Dropdown.gearSetButton ~= self:GetParent() ) then
@@ -3024,7 +3034,7 @@ function PaperDollItemsMixin:EvaluateHelpTip()
 		end
 	end
 	if not bestHelpTipButton and self:ShouldShowAzeriteEssenceSlotHelpTip() then
-		if AzeriteEssenceUtil.HasAnyEmptySlots() then
+		if AzeriteEssenceUtil.ShouldShowEmptySlotHelptip() then
 			bestHelpTipButton = self:FindActiveAzeriteItemButton();
 			helpTipText = AZERITE_ESSENCE_HELPTIP_AVAILABLE_SLOT;
 			helpCloseFlag = self.helpFlags.AzeriteEssenceSlotTipClosed;

@@ -121,28 +121,10 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="BG" inherits="DialogBorderTemplate"/>
-			<Frame parentKey="header" inherits="TranslucentFrameTemplate">
-				<Size x="310" y="45"/>
-				<Anchors>
-					<Anchor point="CENTER" relativePoint="TOP" x="0" y="-8"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentRockBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
-							<Anchors>
-								<Anchor point="TOPLEFT"  x="10" y="-10"/>
-								<Anchor point="BOTTOMRIGHT"  x="-10" y="10"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<FontString parentKey="text" inherits="GameFontNormal" text="KEY_BINDINGS">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="textString" value="KEY_BINDINGS" type="global"/>
+				</KeyValues>
 			</Frame>
 			<CheckButton parentKey="characterSpecificButton" inherits="UICheckButtonTemplate">
 				<Size x="20" y="20"/>

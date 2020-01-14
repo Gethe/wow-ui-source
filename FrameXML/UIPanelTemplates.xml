@@ -2396,4 +2396,31 @@
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
+
+	<Frame name="TalentRankDisplayTemplate" virtual="true" mixin="TalentRankDisplayMixin">
+		<Size x="33" y="22"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="CENTER" x="1" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="ButtonWithDisableTooltipTemplate" mixin="ButtonWithDisableMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Button>
 </Ui>

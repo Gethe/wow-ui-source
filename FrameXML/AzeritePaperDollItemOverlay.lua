@@ -1,5 +1,9 @@
 AzeritePaperDollItemOverlayMixin = {};
 
+function AzeritePaperDollItemOverlayMixin:UpdateCorruptedGlow(itemLocation, glow)
+	self.CorruptedHighlightTexture:SetShown(glow and itemLocation:IsValid() and C_Item.IsItemCorruptionRelated(itemLocation));
+end
+
 function AzeritePaperDollItemOverlayMixin:SetAzeriteItem(itemLocation)
 	if not itemLocation or not itemLocation:HasAnyLocation() then
 		self:ResetAzeriteItem();

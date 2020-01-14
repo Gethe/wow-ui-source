@@ -1112,6 +1112,8 @@ function ObjectiveTracker_Update(reason, id)
 	end
 	ObjectiveTracker_ReorderModules();
 
+	ObjectiveTracker_UpdatePOIs();
+
 	-- hide unused headers
 	for i = 1, #tracker.MODULES do
 		ObjectiveTracker_CheckAndHideHeader(tracker.MODULES[i].Header);
@@ -1174,6 +1176,30 @@ function ObjectiveTracker_ReorderModules()
 			anchorBlock = modulesUIOrder[i].lastBlock;
 		end
 	end
+end
+
+function ObjectiveTracker_UpdatePOIs()
+	if not ObjectiveTrackerFrame.MODULES then
+		return;
+	end
+
+	local blocksFrame = ObjectiveTrackerFrame.BlocksFrame;
+	QuestPOI_ResetUsage(blocksFrame);
+
+	local showPOIs = GetCVarBool("questPOI");
+	if ( not showPOIs ) then
+		QuestPOI_HideUnusedButtons(blocksFrame);
+		return;
+	end
+
+	for i, module in ipairs(ObjectiveTrackerFrame.MODULES) do
+		if module.UpdatePOIs then
+			module:UpdatePOIs();
+		end
+	end
+
+	QuestPOI_SelectButtonByQuestID(blocksFrame, GetSuperTrackedQuestID());
+	QuestPOI_HideUnusedButtons(blocksFrame);
 end
 
 QuestHeaderMixin = {};

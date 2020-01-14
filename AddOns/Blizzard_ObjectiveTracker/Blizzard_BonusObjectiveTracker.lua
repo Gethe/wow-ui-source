@@ -65,6 +65,7 @@ function BonusObjectiveTrackerModuleMixin:OnFreeBlock(block)
 	block.state = nil;
 	block.finished = nil;
 	block.posIndex = nil;
+	block.isThreatQuest = nil;
 end
 
 function BonusObjectiveTrackerModuleMixin:OnFreeLine(line)
@@ -72,6 +73,11 @@ function BonusObjectiveTrackerModuleMixin:OnFreeLine(line)
 		line.CheckFlash.Anim:Stop();
 		line.CheckFlash:Hide();
 		line.finished = nil;
+	end
+	if line.state == "FADING" then
+		line.FadeOutAnim:Stop();
+		line.state = nil;
+		line.block = nil;
 	end
 end
 
@@ -93,6 +99,7 @@ function BonusObjectiveTracker_OnHeaderLoad(self)
 	else
 		module.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE;
 		module.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_QUEST + OBJECTIVE_TRACKER_UPDATE_TASK_ADDED + OBJECTIVE_TRACKER_UPDATE_SCENARIO + OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE + OBJECTIVE_TRACKER_UPDATE_SCENARIO_BONUS_DELAYED;
+		module.UpdatePOIs = BonusObjectiveTracker_UpdatePOIs;
 	end
 
 	self.module = module;
@@ -142,6 +149,20 @@ function BonusObjectiveTracker_OnBlockLeave(block)
 	block.module.tooltipBlock = nil;
 end
 
+function BonusObjectiveTracker_UpdatePOIs(self)
+	for questID, block in pairs(self.usedBlocks) do
+		if block.isThreatQuest then
+			local poiButton = QuestPOI_GetButton(ObjectiveTrackerFrame.BlocksFrame, questID, "threat", nil);
+			if poiButton then
+				local topLine = block.lines[0] or block.lines[1];
+				poiButton:SetPoint("TOPRIGHT", topLine, "TOPLEFT", 18, 0);
+				poiButton:SetFrameLevel(block:GetFrameLevel() + 1);
+				poiButton.pingWorldMap = true;
+			end
+		end
+	end
+end
+
 local lastTrackedQuestID = nil;
 function BonusObjectiveTracker_TrackWorldQuest(questID, hardWatch)
 	if AddWorldQuestWatch(questID, hardWatch) then
@@ -172,22 +193,24 @@ function BonusObjectiveTracker_UntrackWorldQuest(questID)
 end
 
 function BonusObjectiveTracker_OnBlockClick(self, button)
-	if self.module.ShowWorldQuests then
+	local questID = self.TrackedQuest and self.TrackedQuest.questID or self.id;
+	local isThreatQuest = C_QuestLog.IsThreatQuest(questID);
+	if self.module.ShowWorldQuests or isThreatQuest then
 		if button == "LeftButton" then
-			if ( not ChatEdit_TryInsertQuestLinkForQuestID(self.TrackedQuest.questID) ) then
+			if ( not ChatEdit_TryInsertQuestLinkForQuestID(questID) ) then
 				if IsShiftKeyDown() then
-					if IsWorldQuestWatched(self.TrackedQuest.questID) then
-						BonusObjectiveTracker_UntrackWorldQuest(self.TrackedQuest.questID);
+					if IsWorldQuestWatched(questID) and not isThreatQuest then
+						BonusObjectiveTracker_UntrackWorldQuest(questID);
 					end
 				else
-					local mapID = C_TaskQuest.GetQuestZoneID(self.TrackedQuest.questID);
+					local mapID = C_TaskQuest.GetQuestZoneID(questID);
 					if mapID then
 						OpenQuestLog(mapID);
-						WorldMapPing_StartPingQuest(self.TrackedQuest.questID);
+						WorldMapPing_StartPingQuest(questID);
 					end
 				end
 			end
-		elseif button == "RightButton" then
+		elseif button == "RightButton" and not isThreatQuest then
 			ObjectiveTracker_ToggleDropDown(self, BonusObjectiveTracker_OnOpenDropDown);
 		end
 	end
@@ -534,6 +557,14 @@ local function InternalGetQuestObjectiveInfo(questID, objectiveIndex)
 	end
 end
 
+local function InternalIsQuestComplete(questID)
+	if ( COMPLETED_BONUS_DATA[questID] ) then
+		return true;
+	else
+		return IsQuestComplete(questID);
+	end
+end
+
 -- *****************************************************************************************************
 -- ***** UPDATE FUNCTIONS
 -- *****************************************************************************************************
@@ -739,58 +770,72 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 			block.TrackedQuest:Show();
 
 			block.TrackedQuest.questID = questID;
+		elseif C_QuestLog.IsThreatQuest(questID) then
+			block.isThreatQuest = true;
 		else
 			block.TrackedQuest:Hide();
 		end
 
-		local taskFinished = true;
+		local showAsCompleted = block.isThreatQuest and InternalIsQuestComplete(questID);
 		local hasAddedTimeLeft = false;
 		for objectiveIndex = 1, numObjectives do
 			local text, objectiveType, finished = InternalGetQuestObjectiveInfo(questID, objectiveIndex);
 			if ( text ) then
 				if ( finished ) then
 					local existingLine = block.lines[objectiveIndex];
-					module:AddObjective(block, objectiveIndex, text, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
-
-					local line = block.currentLine;
-					line.Icon:SetAtlas("Tracker-Check", true);
-					if ( existingLine and not line.finished ) then
-						line.Glow.Anim:Play();
-						line.Sheen.Anim:Play();
-						if ( existingTask ) then
-							line.CheckFlash:Show();
-							line.CheckFlash.Anim:Play();
+					if not showAsCompleted or existingLine then
+						module:AddObjective(block, objectiveIndex, text, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
+						local line = block.currentLine;
+						line.Icon:SetAtlas("Tracker-Check", true);
+						if ( existingLine and not line.finished ) then
+							line.Glow.Anim:Play();
+							line.Sheen.Anim:Play();
+							if ( existingTask ) then
+								line.CheckFlash:Show();
+								line.CheckFlash.Anim:Play();
+							end
 						end
+						line.finished = true;
+						line.Icon:ClearAllPoints();
+						line.Icon:SetPoint("TOPLEFT", line, "TOPLEFT", 10, 0);
+						line.Icon:Show();
 					end
-					line.finished = true;
-					line.Icon:ClearAllPoints();
-					line.Icon:SetPoint("TOPLEFT", line, "TOPLEFT", 10, 0);
-					line.Icon:Show();
 				else
-					taskFinished = false;
 					module:AddObjective(block, objectiveIndex, text, nil, nil, OBJECTIVE_DASH_STYLE_SHOW);
 					block.currentLine.Icon:Hide();
 				end
 			end
-			if ( objectiveType == "progressbar" ) then
-				if ( module.ShowWorldQuests and not hasAddedTimeLeft ) then
-					-- Add time left (if any) right before the progress bar
-					TryAddingExpirationWarningLine(module, block, questID);
-					hasAddedTimeLeft = true;
-				end
+			if ( objectiveType == "progressbar") then
+				if not finished then
+					if ( module.ShowWorldQuests and not hasAddedTimeLeft ) then
+						-- Add time left (if any) right before the progress bar
+						TryAddingExpirationWarningLine(module, block, questID);
+						hasAddedTimeLeft = true;
+					end
 
-				local progressBar = module:AddProgressBar(block, block.currentLine, questID, finished);
-				if ( playEnterAnim and (OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_TASK_ADDED or OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_WORLD_QUEST_ADDED) ) then
-					progressBar.Bar.AnimIn:Play();
-				elseif not progressBar.Bar.AnimIn:IsPlaying() then
-					-- Bug ID: 495448, setToFinal doesn't always work properly with sibling animations, hackily fix up the state here
-					progressBar.Bar.BarGlow:SetAlpha(0);
-					progressBar.Bar.Starburst:SetAlpha(0);
-					progressBar.Bar.BarFrame2:SetAlpha(0);
-					progressBar.Bar.BarFrame3:SetAlpha(0);
-					progressBar.Bar.Sheen:SetAlpha(0);
+					local progressBar = module:AddProgressBar(block, block.currentLine, questID, finished);
+					if ( playEnterAnim and (OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_TASK_ADDED or OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_WORLD_QUEST_ADDED) ) then
+						progressBar.Bar.AnimIn:Play();
+					elseif not progressBar.Bar.AnimIn:IsPlaying() then
+						-- Bug ID: 495448, setToFinal doesn't always work properly with sibling animations, hackily fix up the state here
+						progressBar.Bar.BarGlow:SetAlpha(0);
+						progressBar.Bar.Starburst:SetAlpha(0);
+						progressBar.Bar.BarFrame2:SetAlpha(0);
+						progressBar.Bar.BarFrame3:SetAlpha(0);
+						progressBar.Bar.Sheen:SetAlpha(0);
+					end
+				else
+					module:FreeProgressBar(block, block.currentLine);
 				end
 			end
+		end
+		if showAsCompleted then
+			local completionText;
+			if block.isThreatQuest then
+				local questLogIndex = GetQuestLogIndexByID(questID);
+				completionText = GetQuestLogCompletionText(questLogIndex);
+			end
+			module:AddObjective(block, "QuestComplete", completionText or QUEST_WATCH_QUEST_READY, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
 		end
 		if ( module.ShowWorldQuests and not hasAddedTimeLeft ) then
 			-- No progress bar, try adding it at the end
@@ -804,6 +849,16 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 			return false;
 		end
 
+		if ( showAsCompleted ) then
+			for _, line in pairs(block.lines) do
+				if ( line.finished and line.state ~= "FADING" ) then
+					line.FadeOutAnim:Play();
+					line.state = "FADING";
+					line.block = block;
+				end
+			end
+		end
+	
 		block.posIndex = posIndex;
 		block:Show();
 		module:FreeUnusedLines(block);
@@ -991,6 +1046,18 @@ function BonusObjectiveTracker_SetBlockState(block, state, force)
 			block.state = "FINISHED";
 		end
 	end
+end
+
+function BonusObjectiveTracker_FinishFadeOutAnim(line)
+	local block = line.block;
+	BONUS_OBJECTIVE_TRACKER_MODULE:FreeLine(block, line);
+	for _, otherLine in pairs(block.lines) do
+		if ( otherLine.state == "FADING" ) then
+			-- some other line is still fading
+			return;
+		end
+	end
+	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE);
 end
 
 -- *****************************************************************************************************

@@ -555,8 +555,8 @@ end
 
 function LookingForDropdownMixin:SetCheckedList(specIds)
 	for _, specId in ipairs(specIds) do
-		local id, name, description, texture, role, class = GetSpecializationInfoByID(specId);
-		self:ModifyTrackedSpecList(name, class, specId, true);
+		local id, name, description, texture, role, class, classDisplayName = GetSpecializationInfoByID(specId);
+		self:ModifyTrackedSpecList(name, classDisplayName, specId, true);
 	end
 end
 
@@ -1039,6 +1039,11 @@ function ClubFinderSearchEditBoxMixin:OnTextChanged()
 end
 
 function CardRightClickOptionsMenuInitialize(self, level)
+
+	if(self:GetParent():IsReported()) then 
+		return; 
+	end
+
 	local info = UIDropDownMenu_CreateInfo();
 
 	if UIDROPDOWNMENU_MENU_VALUE == 1 then
@@ -1162,12 +1167,15 @@ function ClubFinderCardMixin:GetClubGUID()
 	return self.cardInfo.clubFinderGUID;
 end
 
+function ClubFinderCardMixin:IsReported() 
+	return self.isReported;
+end 
+
 function ClubFinderCardMixin:GetCardStatus()
 	return C_ClubFinder.GetPlayerClubApplicationStatus(self.cardInfo.clubFinderGUID);
 end
 
 ClubFinderGuildCardMixin = CreateFromMixins(ClubFinderCardMixin);
-
 
 function ClubFinderGuildCardMixin:RequestToJoinClub()
 	self:GetParent():GetParent().RequestToJoinFrame.card = self;
@@ -1186,7 +1194,7 @@ function ClubFinderGuildCardMixin:SetDisabledState(shouldDisable)
 	else
 		fontColor = HIGHLIGHT_FONT_COLOR;
 		self.Description:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
-		SetLargeTabardTexturesFromColorRGB("player", self.GuildBannerEmblemLogo, self.GuildBannerBackground, self.GuildBannerBorder, self.cardInfo.tabardInfo);
+		SetLargeGuildTabardTextures(nil, self.GuildBannerEmblemLogo, self.GuildBannerBackground, self.GuildBannerBorder, self.cardInfo.tabardInfo);
 	end
 
 	self.CardBackground:SetDesaturated(shouldDisable);
@@ -1225,9 +1233,10 @@ function ClubFinderGuildCardMixin:SetReportedCardState(isReported)
 	self:SetDisabledState(isReported)
 	if(isReported) then
 		self.RequestStatus:SetText(CLUB_FINDER_REPORTED);
-		SetLargeTabardTexturesFromColorRGB("player", self.GuildBannerEmblemLogo, self.GuildBannerBackground, self.GuildBannerBorder, nil);
+		SetLargeGuildTabardTextures(nil, self.GuildBannerEmblemLogo, self.GuildBannerBackground, self.GuildBannerBorder, nil);
 		self.RequestStatus:SetTextColor(RED_FONT_COLOR:GetRGB());
 	end
+	self.isReported = isReported; 
 end
 
 function ClubFinderGuildCardMixin:UpdateCard()
@@ -1253,7 +1262,7 @@ function ClubFinderGuildCardMixin:UpdateCard()
 	else
 		self.Focus:Hide();
 	end
-	SetLargeTabardTexturesFromColorRGB("player", self.GuildBannerEmblemLogo, self.GuildBannerBackground, self.GuildBannerBorder, info.tabardInfo);
+	SetLargeGuildTabardTextures(nil, self.GuildBannerEmblemLogo, self.GuildBannerBackground, self.GuildBannerBorder, info.tabardInfo);
 
 	if(C_ClubFinder.DoesPlayerBelongToClubFromClubGUID(info.clubFinderGUID)) then
 		self.RequestJoin:Hide();
@@ -1273,7 +1282,7 @@ function ClubFinderGuildCardMixin:UpdateCard()
 			self.RequestStatus:SetText(CLUB_FINDER_PENDING);
 			self:SetDisabledState(false);
 		elseif (clubStatus == Enum.PlayerClubRequestStatus.Approved or clubStatus == Enum.PlayerClubRequestStatus.AutoApproved) then
-			self.RequestStatus:SetText(CLUB_FINDER_ACCEPTED);
+			self.RequestStatus:SetText(CLUB_FINDER_INVITED);
 			self.RequestStatus:SetTextColor(GREEN_FONT_COLOR:GetRGB());
 			self:SetDisabledState(false);
 		elseif (clubStatus == Enum.PlayerClubRequestStatus.Declined) then
@@ -1333,6 +1342,7 @@ function ClubFinderCommunitiesCardMixin:SetReportedCardState(isReported)
 		self.RequestStatus:SetTextColor(RED_FONT_COLOR:GetRGB());
 		self.RequestStatus:SetText(CLUB_FINDER_REPORTED);
 	end
+	self.isReported = isReported;
 end
 
 function ClubFinderCommunitiesCardMixin:GetGuildAndCommunityFrame()
@@ -1422,7 +1432,7 @@ function ClubFinderCommunitiesCardMixin:UpdateCard()
 			self.RequestStatus:SetText(CLUB_FINDER_PENDING);
 			self:SetDisabledState(false);
 		elseif (clubStatus == Enum.PlayerClubRequestStatus.Approved or clubStatus == Enum.PlayerClubRequestStatus.AutoApproved) then
-			self.RequestStatus:SetText(CLUB_FINDER_ACCEPTED);
+			self.RequestStatus:SetText(CLUB_FINDER_INVITED);
 			self.RequestStatus:SetTextColor(GREEN_FONT_COLOR:GetRGB());
 			self:SetDisabledState(false);
 		elseif (clubStatus == Enum.PlayerClubRequestStatus.Declined) then
@@ -2033,7 +2043,7 @@ function ClubFinderInvitationsFrameMixin:DisplayInvitation(clubInfo, isLinkInvit
 	self.isLinkInvitation = isLinkInvitation;
 
 	if (isGuild) then
-		SetLargeTabardTexturesFromColorRGB("player", self.GuildBannerEmblemLogo, self.GuildBannerBackground, self.GuildBannerBorder, clubInfo.tabardInfo);
+		SetLargeGuildTabardTextures(nil, self.GuildBannerEmblemLogo, self.GuildBannerBackground, self.GuildBannerBorder, clubInfo.tabardInfo);
 	end
 
 	if(clubInfo.emblemInfo > 0 and not isGuild) then

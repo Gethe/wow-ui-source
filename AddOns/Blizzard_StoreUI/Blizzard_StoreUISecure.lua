@@ -191,6 +191,8 @@ Import("BLIZZARD_STORE_ERROR_MESSAGE_PARENTAL_CONTROLS");
 Import("BLIZZARD_STORE_ERROR_TITLE_PURCHASE_DENIED");
 Import("BLIZZARD_STORE_ERROR_MESSAGE_PURCHASE_DENIED");
 Import("BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED");
+Import("BLIZZARD_STORE_ERROR_TITLE_CLIENT_RESTRICTED");
+Import("BLIZZARD_STORE_ERROR_CLIENT_RESTRICTED");
 Import("BLIZZARD_STORE_ERROR_MESSAGE_CONSUMABLE_TOKEN_OWNED");
 Import("BLIZZARD_STORE_ERROR_ITEM_UNAVAILABLE");
 Import("BLIZZARD_STORE_ERROR_YOU_OWN_TOO_MANY_OF_THIS");
@@ -1315,6 +1317,10 @@ local errorData = {
 		title = BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED,
 		msg = BLIZZARD_STORE_ERROR_ITEM_UNAVAILABLE,
 	},
+	[Enum.StoreError.ClientRestricted] = {
+		title = BLIZZARD_STORE_ERROR_TITLE_CLIENT_RESTRICTED,
+		msg = BLIZZARD_STORE_ERROR_CLIENT_RESTRICTED,
+	},
 };
 
 --VAS Error message data
@@ -1659,8 +1665,9 @@ function StoreFrame_SetCategory(forceModelUpdate)
 		return;
 	end
 	entries = StoreFrame_FilterEntries(entries);
-
-	StoreFrame_SetCategoryProductCards(forceModelUpdate, entries);
+	if entries then
+		StoreFrame_SetCategoryProductCards(forceModelUpdate, entries);
+	end
 end
 
 -- builds a table of pages: 
@@ -1706,6 +1713,10 @@ end
 
 function StoreFrame_SetCategoryProductCards(forceModelUpdate, entries)
 	if not StoreFrame_CurrencyInfo() then
+		return;
+	end
+
+	if not entries then
 		return;
 	end
 
@@ -1824,6 +1835,16 @@ function StoreLayoutGridMixin:SpaceAtIndex(cardTemplate, row, col)
 	return true;
 end
 
+function StoreLayoutGridMixin:GetNextSpaceOnRow(row)
+	local gridRow = self.grid[row];
+	for col = 1, self.numCols do
+		if not gridRow[col] then
+			return col;
+		end
+	end
+	return 1;
+end
+
 -- fill the space (w x h) at the given index
 function StoreLayoutGridMixin:FillSpaceAtIndex(cardTemplate, row, col)
 	local width = productCardTemplateData[cardTemplate].cellGridSize.width;
@@ -1842,9 +1863,13 @@ end
 
 function StoreLayoutGridMixin:AdjustYOffsetForNewRow(row, col)
 	local templateAbove = self.grid[row][col]; -- grab the template 'above' this cell
-	local cellPixelHeight = productCardTemplateData[templateAbove].cellPixelSize.height; -- and get the height of this template
-	local _, _, _, bottomPadding = unpack(productCardTemplateData[templateAbove].padding); -- and get the bottom padding
-	self.yOffset = self.yOffset + (-cellPixelHeight) + (-bottomPadding); -- now adjust our Y offset with this data
+	if templateAbove then
+		local cellPixelHeight = productCardTemplateData[templateAbove].cellPixelSize.height; -- and get the height of this template
+		local _, _, _, bottomPadding = unpack(productCardTemplateData[templateAbove].padding); -- and get the bottom padding
+		self.yOffset = self.yOffset + (-cellPixelHeight) + (-bottomPadding); -- now adjust our Y offset with this data
+	else
+		self.yOffset = InitialYOffset;
+	end
 end
 
 -- the store lays out cards by cells now:
@@ -1876,7 +1901,11 @@ function StoreFrame_LayoutCard(cardTemplate, createCard)
 			if nextRow then
 				if nextRow > row then
 					-- card was placed on a new row
-					self.layoutGrid.xOffset = InitialXOffset; -- reset X offset
+					if nextCol == 1 then
+						self.layoutGrid.xOffset = InitialXOffset; -- reset X offset
+					else
+						self.layoutGrid.xOffset = self.layoutGrid.xOffset - leftPadding; -- adjust our X offset with this data, Y offset is unchanged
+					end
 					self.layoutGrid:AdjustYOffsetForNewRow(row, nextCol);--calculate new Y offset
 				else
 					local cellPixelWidth = productCardTemplateData[cardTemplate].cellPixelSize.width; -- grab this template's width
@@ -1890,7 +1919,7 @@ function StoreFrame_LayoutCard(cardTemplate, createCard)
 				-- card will not fit on this page, we're done.
 				return spaceAvailable, card;
 			end
-			col = 1;
+			col = self.layoutGrid:GetNextSpaceOnRow(row);
 
 			-- we need to move the offsets and take another pass to fit this card
 			self.layoutGrid.xOffset = InitialXOffset;-- reset X offset

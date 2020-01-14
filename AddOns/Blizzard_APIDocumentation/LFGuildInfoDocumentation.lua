@@ -6,6 +6,20 @@ local LFGuildInfo =
 
 	Functions =
 	{
+		{
+			Name = "GetRecruitingGuildTabardInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "tabardInfo", Type = "GuildTabardInfo", Nilable = true },
+			},
+		},
 	},
 
 	Events =

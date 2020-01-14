@@ -440,30 +440,13 @@
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="ChatConfigFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Size x="256" y="64"/>
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset x="0" y="12"/>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<FontString name="ChatConfigFrameHeaderText" inherits="GameFontNormal">
-					<Size>
-						<AbsDimension x="185" y="12"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="ChatConfigFrameHeader">
-							<Offset x="0" y="-14"/>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="headerTextPadding" value="100" type="number"/>
+				</KeyValues>
+			</Frame>
 			<Frame name="ChatConfigCategoryFrame" inherits="ChatConfigBoxTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">

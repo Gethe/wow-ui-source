@@ -1,0 +1,118 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_AuctionHouseItemList.lua"/>
+	
+	<Button name="AuctionHouseItemListLineTemplate" mixin="AuctionHouseItemListLineMixin" virtual="true">
+		<Size x="0" y="20"/>
+		<Anchors>
+			<Anchor point="LEFT"/>
+			<Anchor point="RIGHT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedHighlight" atlas="auctionhouse-ui-row-select" alphaMode="ADD" hidden="true"/>
+
+				<!-- Using a normal texture for highlight to control the behavior. -->
+				<Texture parentKey="HighlightTexture" atlas="auctionhouse-ui-row-highlight" alphaMode="ADD" setAllPoints="true" hidden="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<NormalTexture parentKey="NormalTexture" atlas="auctionhouse-rowstripe-1" setAllPoints="true"/>
+	</Button>
+
+	<Button name="AuctionHouseFavoritableLineTemplate" mixin="AuctionHouseFavoritableLineMixin" inherits="AuctionHouseItemListLineTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true"/>
+
+	<Frame name="AuctionHouseItemListHeadersTemplate" virtual="true">
+		<Size x="0" y="19"/>
+	</Frame>
+
+	<Frame name="AuctionHouseItemListTemplate" mixin="AuctionHouseItemListMixin" inherits="AuctionHouseBackgroundTemplate" virtual="true">
+		<KeyValues>
+			<!--
+			hideStripes: Hides the normal texture that usually alternates each line, making all lines invisible.
+			hideRefreshFrame: Hide the refresh frame.
+			refreshFrameXOffset: The x offset (from the topright of the item list) for the refresh frame.
+			refreshFrameYOffset: The y offset (from the topright of the item list) for the refresh frame.
+			<KeyValue key="hideStripes" value="true" type="boolean"/>
+			<KeyValue key="hideRefreshFrame" value="false" type="boolean"/>
+			<KeyValue key="refreshFrameXOffset" value="0" type="number"/>
+			<KeyValue key="refreshFrameYOffset" value="0" type="number"/>
+			-->
+
+			<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
+			<KeyValue key="backgroundYOffset" value="-19" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="RefreshFrame" inherits="AuctionHouseRefreshFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="HeaderContainer" inherits="AuctionHouseItemListHeadersTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-1"/>
+					<Anchor point="TOPRIGHT" x="-26" y="-1"/>
+				</Anchors>
+			</Frame>
+			<ScrollFrame parentKey="ScrollFrame" inherits="HybridScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.HeaderContainer" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+					<Anchor point="RIGHT" relativeKey="$parent.HeaderContainer" relativePoint="RIGHT"/>
+					<Anchor point="BOTTOM" x="0" y="3"/>
+				</Anchors>
+				<Frames>
+					<Slider parentKey="scrollBar" inherits="HybridScrollBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="4" y="-10"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="4" y="11"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
+							</Layer>
+						</Layers>
+					</Slider>
+				</Frames>
+			</ScrollFrame>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="ResultsText" inherits="GameFontNormal" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.ScrollFrame" relativePoint="TOP" x="0" y="-45"/>
+						<Anchor point="LEFT" x="45"/>
+						<Anchor point="RIGHT" x="-67"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+					<Shadow>
+						<Offset>
+							<AbsDimension x="1" y="-1"/>
+						</Offset>
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+				</FontString>
+				<Texture parentKey="LoadingSpinner" atlas="auctionhouse-ui-loadingspinner" hidden="true">
+					<Size x="146" y="146"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-12" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="SpinnerAnim" looping="REPEAT">
+				<Rotation childKey="LoadingSpinner" order="1" duration="1" degrees="-360"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

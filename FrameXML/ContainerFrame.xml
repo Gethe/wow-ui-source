@@ -305,7 +305,7 @@
 			<ItemButton name="$parentItem35" inherits="ContainerFrameItemButtonTemplate"/>
 			<ItemButton name="$parentItem36" inherits="ContainerFrameItemButtonTemplate"/>
 
-			<Button name="$parentPortraitButton" parentKey="PortraitButton">
+			<DropDownToggleButton name="$parentPortraitButton" mixin="ContainerFramePortraitButtonMixin" parentKey="PortraitButton">
 				<Size x="40" y="40"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="7" y="-5"/>
@@ -321,16 +321,12 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnter function="ContainerFramePortraitButton_OnEnter" />
-					<OnLeave function="ContainerFramePortraitButton_OnLeave" />
-					<OnClick>
-						local parent = self:GetParent();
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						ToggleDropDownMenu(1, nil, parent.FilterDropDown, self, 0, 0);
-					</OnClick>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnEnter method="OnEnter" />
+					<OnLeave method="OnLeave" />
 				</Scripts>
-			</Button>
-			<Button parentKey="FilterIcon" hidden="true">
+			</DropDownToggleButton>
+			<Button parentKey="FilterIcon" mixin="DropDownToggleButtonMixin" hidden="true">
 				<Size x="28" y="28"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.Portrait" relativePoint="BOTTOMRIGHT" x="-9" y="14"/>
@@ -356,16 +352,16 @@
 						local target = self:GetParent().PortraitButton;
 						target:GetScript("OnLeave")(target);
 					</OnLeave>
-					<OnClick>
+					<OnMouseDown>
 						local target = self:GetParent().PortraitButton;
-						target:GetScript("OnClick")(target);
-					</OnClick>
+						target:GetScript("OnMouseDown")(target);
+					</OnMouseDown>
 				</Scripts>
 			</Button>
 			<Button name="$parentAddSlotsButton" hidden="true">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parent" relativePoint="TOPLEFT" x="17" y="-224"/>
+					<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="17" y="7"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -408,11 +404,8 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame name="$parentExtraBagSlotsHelpBox" parentKey="ExtraBagSlotsHelpBox" inherits="GlowBoxTemplate" enableMouse="true" frameStrata="DIALOG">
+			<Frame name="$parentExtraBagSlotsHelpBox" parentKey="ExtraBagSlotsHelpBox" inherits="GlowBoxTemplate" enableMouse="true" frameStrata="DIALOG" hidden="true">
 				<Size x="220" y="100"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPLEFT" x="-2" y="-206"/>
-				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="Arrow" inherits="HelpPlateArrowDOWN">
@@ -478,7 +471,7 @@
 					<OnLoad function="ContainerFrameFilterDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
-			<Button parentKey="ClickableTitleFrame">
+			<Button parentKey="ClickableTitleFrame" mixin="DropDownToggleButtonMixin">
 				<Size x="118" y="16"/>
 				<Anchors>
 					<Anchor point="TOP" x="8" y="-8"/>
@@ -492,10 +485,10 @@
 						local target = self:GetParent().PortraitButton;
 						target:GetScript("OnLeave")(target);
 					</OnLeave>
-					<OnClick>
+					<OnMouseDown>
 						local target = self:GetParent().PortraitButton;
-						target:GetScript("OnClick")(target);
-					</OnClick>
+						target:GetScript("OnMouseDown")(target);
+					</OnMouseDown>
 				</Scripts>
 			</Button>
 		</Frames>	

@@ -45,6 +45,10 @@ local ModelSettings = {
 	["KulTiranFemale"] = { panMaxLeft = -0.6, panMaxRight = 0.7, panMaxTop = 1.5, panMaxBottom = -0.6, panValue = 38 },
 	["ZandalariTrollMale"] = { panMaxLeft = -0.5, panMaxRight = 0.6, panMaxTop = 1.3, panMaxBottom = -0.4, panValue = 27 },
 	["ZandalariTrollFemale"] = { panMaxLeft = -0.4, panMaxRight = 0.5, panMaxTop = 1.5, panMaxBottom = -0.4, panValue = 31 },
+	["VulperaMale"] = { panMaxLeft = -0.3, panMaxRight = 0.4, panMaxTop = 0.7, panMaxBottom = -0.2, panValue = 43 },
+	["VulperaFemale"] = { panMaxLeft = -0.3, panMaxRight = 0.3, panMaxTop = 0.7, panMaxBottom = -0.3, panValue = 43 },
+	["MechagnomeMale"] = { panMaxLeft = -0.3, panMaxRight = 0.3, panMaxTop = 0.5, panMaxBottom = -0.2, panValue = 52 },
+	["MechagnomeFemale"] = { panMaxLeft = -0.3, panMaxRight = 0.3, panMaxTop = 0.5, panMaxBottom = -0.2, panValue = 60 },
 }
 
 local playerRaceSex;

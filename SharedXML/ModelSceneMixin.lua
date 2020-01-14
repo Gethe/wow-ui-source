@@ -84,6 +84,13 @@ function ModelSceneMixin:SetFromModelSceneID(modelSceneID, forceEvenIfSame)
 	C_ModelInfo.AddActiveModelScene(self, self.modelSceneID);
 end
 
+function ModelSceneMixin:Reset()
+	if self.modelSceneID then
+		self:SetLightDirection(self.lightDirX, self.lightDirY, self.lightDirZ);
+		self:TransitionToModelSceneID(self.modelSceneID, self.cameraTransitionType, self.cameraModificationType, self.forceEvenIfSame);
+	end
+end
+
 -- Adjusts this scene to mirror a model scene from static data but with transition effects
 -- Only actors/cameras with script tags will be transitioned
 function ModelSceneMixin:TransitionToModelSceneID(modelSceneID, cameraTransitionType, cameraModificationType, forceEvenIfSame)
@@ -94,6 +101,9 @@ function ModelSceneMixin:TransitionToModelSceneID(modelSceneID, cameraTransition
 
 	if self.modelSceneID ~= modelSceneID or forceEvenIfSame then
 		self.modelSceneID = modelSceneID;
+		self.cameraTransitionType = cameraTransitionType;
+		self.cameraModificationType = cameraModificationType;
+		self.forceEvenIfSame = forceEvenIfSame;
 
 		local actorsToRelease = {};
 		for actor in self:EnumerateActiveActors() do
@@ -130,6 +140,8 @@ function ModelSceneMixin:TransitionToModelSceneID(modelSceneID, cameraTransition
 		if needsNewCamera then
 			self:SetActiveCamera(self.cameras[1]);
 		end
+		-- HACK: This should come from game data, instead we're caching them incase we Reset()
+		self.lightDirX, self.lightDirY, self.lightDirZ = self:GetLightDirection();
 	end
 
 	C_ModelInfo.AddActiveModelScene(self, self.modelSceneID);
@@ -296,6 +308,14 @@ end
 -- "private" functions
 function ModelSceneMixin:OnUpdate(elapsed)
 	if self.activeCamera then
+		local yawDirection = self.yawDirection;
+		local increment = self.increment;
+		if yawDirection == "left" then
+			self.activeCamera:AdjustYaw(-1, -1, increment);
+		elseif yawDirection == "right" then
+			self.activeCamera:AdjustYaw(1, 1, increment);
+		end
+
 		self.activeCamera:OnUpdate(elapsed);
 	end
 end
@@ -303,6 +323,20 @@ end
 function ModelSceneMixin:SynchronizeActiveCamera()
 	if self.activeCamera then
 		self.activeCamera:SynchronizeCamera();
+	end
+end
+
+function ModelSceneMixin:OnEnter(button)
+	if self.ControlFrame then
+		self.ControlFrame:Show();
+	end
+end
+
+function ModelSceneMixin:OnLeave(button)
+	if self.ControlFrame then
+		if not self.ControlFrame:IsMouseOver()then
+			self.ControlFrame:Hide();
+		end
 	end
 end
 
@@ -334,6 +368,18 @@ function ModelSceneMixin:OnMouseWheel(delta)
 	if self.activeCamera then
 		self.activeCamera:OnMouseWheel(delta);
 	end
+end
+
+function ModelSceneMixin:AdjustCameraYaw(direction, increment)
+	if self.activeCamera then
+		self.yawDirection = direction;
+		self.increment = increment;
+	end
+end
+
+function ModelSceneMixin:StopCameraYaw()
+	self.yawDirection = nil;
+	self.increment = nil;
 end
 
 function ModelSceneMixin:InitializeActor(actor, actorInfo)
@@ -445,8 +491,8 @@ function ModelSceneMixin:ShowAndAnimateActors(actorSettings, onFinishedCallback)
 	end
 end
 
-PanningModelSceneMixin = CreateFromMixins(ModelSceneMixin);
 
+PanningModelSceneMixin = CreateFromMixins(ModelSceneMixin);
 function PanningModelSceneMixin:TransitionToModelSceneID(modelSceneID, cameraTransitionType, cameraModificationType, forceEvenIfSame)
 	ModelSceneMixin.TransitionToModelSceneID(self, modelSceneID, cameraTransitionType, cameraModificationType, forceEvenIfSame);
 
@@ -455,4 +501,19 @@ function PanningModelSceneMixin:TransitionToModelSceneID(modelSceneID, cameraTra
 		camera:SetRightMouseButtonXMode(ORBIT_CAMERA_MOUSE_PAN_HORIZONTAL, true);
 		camera:SetRightMouseButtonYMode(ORBIT_CAMERA_MOUSE_PAN_VERTICAL, true);
 	end
+end
+
+
+NoCameraControlModelSceneMixin = CreateFromMixins(ModelSceneMixin);
+function NoCameraControlModelSceneMixin:OnMouseDown(button)
+	self.isLeftButtonDown = false;
+	self.isRightButtonDown = false;
+end
+
+function NoCameraControlModelSceneMixin:OnMouseUp(button)
+	self.isLeftButtonDown = false;
+	self.isRightButtonDown = false;
+end
+
+function NoCameraControlModelSceneMixin:OnMouseWheel(delta)	
 end

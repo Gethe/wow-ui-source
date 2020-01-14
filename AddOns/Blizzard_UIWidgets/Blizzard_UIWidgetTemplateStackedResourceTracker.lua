@@ -28,7 +28,7 @@ function UIWidgetTemplateStackedResourceTrackerMixin:Setup(widgetInfo, widgetCon
 		local resourceFrame = self.resourcePool:Acquire();
 		resourceFrame:Show();
 
-		resourceFrame:Setup(resourceInfo);
+		resourceFrame:Setup(widgetContainer, resourceInfo);
 
 		if previousResourceFrame then
 			resourceFrame:SetPoint("TOPLEFT", previousResourceFrame, "BOTTOMLEFT", 0, -6);

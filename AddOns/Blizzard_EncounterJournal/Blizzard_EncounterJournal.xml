@@ -326,7 +326,7 @@
 		<TexCoords left="0.359375" right="0.99609375" top="0.8525390625" bottom="0.880859375"/>
 	</Texture>
 
-	<Button name="EJButtonTemplate" virtual="true">
+	<Button name="EJButtonTemplate" mixin="EJButtonMixin" virtual="true">
 		<Size x="75" y="26"/>
 		<HitRectInsets>
 			<AbsInset left="-13" right="-13" top="0" bottom="0"/>
@@ -386,36 +386,9 @@
 			<Color r="0.973" g="0.902" b="0.581"/>
 		</ButtonText>
 		<Scripts>
-			<OnLoad>
-				local l, t, _, b, r = self.UpLeft:GetTexCoord();
-				self.UpLeft:SetTexCoord(l, l + (r-l)/2, t, b);
-				l, t, _, b, r = self.UpRight:GetTexCoord();
-				self.UpRight:SetTexCoord(l + (r-l)/2, r, t, b);
-
-				l, t, _, b, r = self.DownLeft:GetTexCoord();
-				self.DownLeft:SetTexCoord(l, l + (r-l)/2, t, b);
-				l, t, _, b, r = self.DownRight:GetTexCoord();
-				self.DownRight:SetTexCoord(l + (r-l)/2, r, t, b);
-
-				l, t, _, b, r = self.HighLeft:GetTexCoord();
-				self.HighLeft:SetTexCoord(l, l + (r-l)/2, t, b);
-				l, t, _, b, r = self.HighRight:GetTexCoord();
-				self.HighRight:SetTexCoord(l + (r-l)/2, r, t, b);
-			</OnLoad>
-			<OnMouseDown>
-				self.UpLeft:Hide();
-				self.UpRight:Hide();
-
-				self.DownLeft:Show();
-				self.DownRight:Show();
-			</OnMouseDown>
-			<OnMouseUp>
-				self.UpLeft:Show();
-				self.UpRight:Show();
-
-				self.DownLeft:Hide();
-				self.DownRight:Hide();
-			</OnMouseUp>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>
 	</Button>
 
@@ -2350,18 +2323,19 @@
 									</Frame>
 								</ScrollChild>
 							</ScrollFrame>
-							<Button name="$parentDifficulty" parentKey="difficulty" inherits="EJButtonTemplate" frameLevel="10">
+							<DropDownToggleButton name="$parentDifficulty" parentKey="difficulty" inherits="EJButtonTemplate" frameLevel="10">
 								<Size x="75" y="26"/>
 								<Anchors>
 									<Anchor point="TOPRIGHT" x="-19" y="-13"/>
 								</Anchors>
 								<Scripts>
-									<OnClick>
+									<OnMouseDown>
+										EJButtonMixin.OnMouseDown(self, button);
 										ToggleDropDownMenu(1, nil, self:GetParent().difficultyDD, self, 5, 0);
 										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-									</OnClick>
+									</OnMouseDown>
 								</Scripts>
-							</Button>
+							</DropDownToggleButton>
 							<Frame name="$parentDifficultyDD" parentKey="difficultyDD" inherits="UIDropDownMenuTemplate" clampedToScreen="true" hidden="true">
 								<Scripts>
 									<OnLoad>
@@ -2596,31 +2570,33 @@
 											</Button>
 										</Frames>
 									</Frame>
-									<Button name="$parentFilterToggle" parentKey="filter" text="GEAR_FILTER" inherits="EJButtonTemplate">
+									<DropDownToggleButton name="$parentFilterToggle" parentKey="filter" text="GEAR_FILTER" inherits="EJButtonTemplate">
 										<Scripts>
-											<OnClick>
+											<OnMouseDown>
+												EJButtonMixin.OnMouseDown(self, button);
 												ToggleDropDownMenu(1, nil, self:GetParent().lootFilter, self, 5, 0);
 												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
-											</OnClick>
+											</OnMouseDown>
 											<OnLoad inherit="prepend">
 												self:SetPoint("TOPLEFT", self:GetParent():GetParent(), "TOPRIGHT", -340, -13);
 											</OnLoad>
 										</Scripts>
-									</Button>
-									<Button name="$parentSlotFilterToggle" parentKey="slotFilter" text="ALL_INVENTORY_SLOTS" inherits="EJButtonTemplate">
+									</DropDownToggleButton>
+									<DropDownToggleButton name="$parentSlotFilterToggle" parentKey="slotFilter" text="ALL_INVENTORY_SLOTS" inherits="EJButtonTemplate">
 										<Anchors>
 											<Anchor point="LEFT" relativeKey="$parent.filter" relativePoint="RIGHT" x="10" y="0"/>
 										</Anchors>
 										<Scripts>
-											<OnClick>
+											<OnMouseDown>
+												EJButtonMixin.OnMouseDown(self, button);
 												ToggleDropDownMenu(1, nil, self:GetParent().lootSlotFilter, self, 5, 0);
 												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
-											</OnClick>
+											</OnMouseDown>
 											<OnLoad inherit="prepend">
 												self:SetPoint("TOPLEFT", self:GetParent():GetParent(), "TOPRIGHT", -230, -13);
 											</OnLoad>
 										</Scripts>
-									</Button>
+									</DropDownToggleButton>
 									<Frame name="$parentLootFilter" inherits="UIDropDownMenuTemplate" parentKey="lootFilter" hidden="true"/>
 									<Frame name="$parentLootSlotFilter" inherits="UIDropDownMenuTemplate" parentKey="lootSlotFilter" hidden="true"/>
 

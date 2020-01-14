@@ -1116,7 +1116,7 @@ function PetJournalPetCard_OnClick(self, button)
 		end
 	elseif button == "RightButton" then
 		if ( PetJournalPetCard.petID ) then
-			PetJournal_ShowPetDropdown(PetJournalPetCard.petIndex, self, 0, 0);
+			PetJournal_ShowPetDropdown(PetJournalPetCard.petIndex, self, 0, 0, PetJournalPetCard.petID);
 		end
 	else
 		PetJournalDragButton_OnDragStart(self);

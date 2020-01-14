@@ -290,7 +290,9 @@ function EventTraceFrame_StopEventCapture ()
 end
 
 function EventTraceFrame_HandleSlashCmd (msg)
+	local originalMsg = msg;
 	msg = strlower(msg);
+
 	if ( msg == "start" ) then
 		EventTraceFrame_StartEventCapture();
 	elseif ( msg == "stop" ) then
@@ -300,6 +302,8 @@ function EventTraceFrame_HandleSlashCmd (msg)
 			_EventTraceFrame.eventsToCapture = tonumber(msg);
 			EventTraceFrame_StartEventCapture();
 		end
+	elseif ( msg:find("mark", 1, true) ) then
+		EventTraceFrame_AddMark(originalMsg:sub(5));
 	elseif ( msg == "" ) then
 		if ( not _EventTraceFrame:IsShown() ) then
 			_EventTraceFrame:Show();
@@ -314,6 +318,14 @@ end
 
 function EventTraceFrame_AddMessage(fmt, ...)
 	EventTraceFrame_OnEvent(_EventTraceFrame, fmt:format(...));
+end
+
+function EventTraceFrame_AddMark(customMark)
+	if customMark and customMark ~= '' then
+		EventTraceFrame_AddMessage("|cff00ff00--- %s ---|r", tostring(customMark));
+	else
+		EventTraceFrame_AddMessage("|cff00ff00--- Mark ---|r");
+	end
 end
 
 function EventTraceFrame_OnMouseWheel (self, delta)
@@ -873,4 +885,27 @@ function DebugIdentifierFrame_OnLoad(self)
 	local debugIdentifierLevel = GetDebugIdentifierLevel(self);
 	local debugHighlightColor = DebugHighlightColors[math.min(debugIdentifierLevel, #DebugHighlightColors)];
 	self.DebugHighlight:SetColorTexture(debugHighlightColor:GetRGBA());
+end
+
+-- for checking that deprecated functions returns the same info as the original version
+function CompareFunctionReturns(func1, func2, ...)
+	local ret1 = { func1(...) };
+	local ret2 = { func2(...) };
+	local size = max(#ret1, #ret2);
+	local allPassed = true;
+	for i = 1, size do
+		if ret1[i] == ret2[i] then
+			print("["..i.."] pass");
+		else
+			print("["..i.."] "..RED_FONT_COLOR_CODE.."fail");
+			print(ret1[i]);
+			print(ret2[i]);
+			allPassed = false;
+		end
+	end
+	if allPassed then
+		print("=== PASS ===");
+	else
+		print("=== " ..RED_FONT_COLOR_CODE.."FAIL"..FONT_COLOR_CODE_CLOSE.." ===");
+	end
 end

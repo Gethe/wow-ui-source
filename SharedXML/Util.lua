@@ -167,6 +167,36 @@ function tContains(tbl, item)
 	return tIndexOf(tbl, item) ~= nil;
 end
 
+-- This is a deep compare on the values of the table (based on depth) but not a deep comparison
+-- of the keys, as this would be an expensive check and won't be necessary in most cases.
+function tCompare(lhsTable, rhsTable, depth)
+	depth = depth or 1;
+	for key, value in pairs(lhsTable) do
+		if type(value) == "table" then
+			local rhsValue = rhsTable[key];
+			if type(rhsValue) ~= "table" then
+				return false;
+			end
+			if depth > 1 then
+				if not tCompare(value, rhsValue, depth - 1) then
+					return false;
+				end
+			end
+		elseif value ~= rhsTable[key] then
+			return false;
+		end
+	end
+
+	-- Check for any keys that are in rhsTable and not lhsTable.
+	for key, value in pairs(rhsTable) do
+		if lhsTable[key] == nil then
+			return false;
+		end
+	end
+
+	return true;
+end
+
 function tInvert(tbl)
 	local inverted = {};
 	for k, v in pairs(tbl) do
@@ -195,6 +225,12 @@ function tFilter(tbl, pred, isIndexTable)
 	end
 
 	return out;
+end
+
+function tAppendAll(table, addedArray)
+	for i, element in ipairs(addedArray) do
+		tinsert(table, element);
+	end
 end
 
 function CopyTable(settings)
@@ -652,13 +688,13 @@ function CreateColor(r, g, b, a)
 	return color;
 end
 
-local function ExtractHexByte(str, index)
-	return tonumber(str:sub(index, index + 1), 16);
+local function ExtractColorValueFromHex(str, index)
+	return tonumber(str:sub(index, index + 1), 16) / 255;
 end
 
 function CreateColorFromHexString(hexColor)
 	if #hexColor == 8 then
-		local a, r, g, b = ExtractHexByte(hexColor, 1), ExtractHexByte(hexColor, 3), ExtractHexByte(hexColor, 5), ExtractHexByte(hexColor, 7);
+		local a, r, g, b = ExtractColorValueFromHex(hexColor, 1), ExtractColorValueFromHex(hexColor, 3), ExtractColorValueFromHex(hexColor, 5), ExtractColorValueFromHex(hexColor, 7);
 		return CreateColor(r, g, b, a);
 	else
 		GMError("CreateColorFromHexString input must be hexadecimal digits in this format: AARRGGBB.");
@@ -1447,10 +1483,22 @@ function CallMethodOnNearestAncestor(self, methodName, ...)
 	end
 
 	if ancestor then
-		ancestor[methodName](ancestor, ...);
-		return true;
+		return true, ancestor[methodName](ancestor, ...);
 	end
 
+	return false;
+end
+
+function DoesAncestryInclude(ancestry, frame)
+	if ancestry then
+		local currentFrame = frame;
+		while currentFrame do
+			if currentFrame == ancestry then
+				return true;
+			end
+			currentFrame = currentFrame:GetParent();
+		end
+	end
 	return false;
 end
 

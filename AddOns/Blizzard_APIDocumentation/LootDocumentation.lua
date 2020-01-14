@@ -57,6 +57,7 @@ local Loot =
 				{ Name = "personalLootToast", Type = "bool", Nilable = false },
 				{ Name = "currencyID", Type = "number", Nilable = true },
 				{ Name = "isSecondaryResult", Type = "bool", Nilable = false },
+				{ Name = "corrupted", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -207,6 +208,7 @@ local Loot =
 			Payload =
 			{
 				{ Name = "autoLoot", Type = "bool", Nilable = false },
+				{ Name = "isFromItem", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -303,6 +305,7 @@ local Loot =
 				{ Name = "toastMethod", Type = "number", Nilable = false },
 				{ Name = "lessAwesome", Type = "bool", Nilable = false },
 				{ Name = "upgraded", Type = "bool", Nilable = false },
+				{ Name = "corrupted", Type = "bool", Nilable = false },
 			},
 		},
 		{

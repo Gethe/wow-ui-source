@@ -127,11 +127,10 @@ UIChildWindows = {
 };
 
 function UpdateUIParentRelativeToDebugMenu()
-	if (DebugMenu and DebugMenu.IsVisible()) then
-		UIParent:SetPoint("TOPLEFT", 0, -DebugMenu.GetMenuHeight());
-	else
-		UIParent:SetPoint("TOPLEFT", 0, 0);
-	end
+	local debugMenuOffset = DebugMenu and DebugMenu.IsVisible() and -DebugMenu.GetMenuHeight() or 0;
+	local revealTimeTrackOffset = C_Reveal and C_Reveal:IsCapturing() and -C_Reveal:GetTimeTrackHeight() or 0;
+	local topOffset = debugMenuOffset + revealTimeTrackOffset;
+	UIParent:SetPoint("TOPLEFT", 0, topOffset);
 end
 
 UISpecialFrames = {
@@ -264,8 +263,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
 	self:RegisterEvent("AUCTION_HOUSE_CLOSED");
 	self:RegisterEvent("AUCTION_HOUSE_DISABLED");
-	self:RegisterEvent("AUCTION_HOUSE_POST_WARNING");
-	self:RegisterEvent("AUCTION_HOUSE_POST_ERROR");
 
 	-- Events for trainer UI handling
 	self:RegisterEvent("TRAINER_SHOW");
@@ -361,6 +358,9 @@ function UIParent_OnLoad(self)
 	-- debug menu
 	self:RegisterEvent("DEBUG_MENU_TOGGLED");
 
+	-- Reveal
+	self:RegisterEvent("REVEAL_CAPTURE_TOGGLED");
+
 	-- Garrison
 	self:RegisterEvent("GARRISON_ARCHITECT_OPENED");
 	self:RegisterEvent("GARRISON_ARCHITECT_CLOSED");
@@ -423,6 +423,13 @@ function UIParent_OnLoad(self)
 
 	-- Events for Reporting SYSTEM
 	self:RegisterEvent("REPORT_PLAYER_RESULT");
+
+	-- Events for Global Mouse Down
+	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
+	self:RegisterEvent("GLOBAL_MOUSE_UP");
+
+	-- Event(s) for Item Interaction
+    self:RegisterEvent("ITEM_INTERACTION_OPEN");
 end
 
 function UIParent_OnShow(self)
@@ -457,6 +464,10 @@ function UIParentLoadAddOn(name)
 	return loaded;
 end
 
+function ItemInteraction_LoadUI()
+	UIParentLoadAddOn("Blizzard_ItemInteractionUI");
+end
+
 function IslandsQueue_LoadUI()
 	UIParentLoadAddOn("Blizzard_IslandsQueueUI");
 end
@@ -477,8 +488,8 @@ function AlliedRaces_LoadUI()
 	UIParentLoadAddOn("Blizzard_AlliedRacesUI");
 end
 
-function AuctionFrame_LoadUI()
-	UIParentLoadAddOn("Blizzard_AuctionUI");
+function AuctionHouseFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_AuctionHouseUI");
 end
 
 function BattlefieldMap_LoadUI()
@@ -790,7 +801,7 @@ function ToggleCalendar()
 end
 
 function IsCommunitiesUIDisabledByTrialAccount()
-	return IsTrialAccount() or (not C_Club.IsEnabled() and IsVeteranTrialAccount() and not IsInGuild());
+	return IsTrialAccount();
 end
 
 function ToggleGuildFrame()
@@ -1134,6 +1145,10 @@ local function PlayBattlefieldBanner(self)
 			self.battlefieldBannerShown = true;
 		end
 	end
+end
+
+local function HandlesGlobalMouseEvent(focus, buttonID, event)
+	return focus and focus.HandlesGlobalMouseEvent and focus:HandlesGlobalMouseEvent(buttonID, event);
 end
 
 -- UIParent_OnEvent --
@@ -1720,20 +1735,19 @@ function UIParent_OnEvent(self, event, ...)
 
 	--Events for handling Auction UI
 	elseif ( event == "AUCTION_HOUSE_SHOW" ) then
-		AuctionFrame_LoadUI();
-		if ( AuctionFrame_Show ) then
-			AuctionFrame_Show();
+		if ( GameLimitedMode_IsActive() ) then
+			UIErrorsFrame:AddExternalErrorMessage(ERR_FEATURE_RESTRICTED_TRIAL);
+			C_AuctionHouse.CloseAuctionHouse();
+		else
+			AuctionHouseFrame_LoadUI();
+			ShowUIPanel(AuctionHouseFrame);
 		end
 	elseif ( event == "AUCTION_HOUSE_CLOSED" ) then
-		if ( AuctionFrame_Hide ) then
-			AuctionFrame_Hide();
+		if ( AuctionHouseFrame ) then
+			HideUIPanel(AuctionHouseFrame);
 		end
 	elseif ( event == "AUCTION_HOUSE_DISABLED" ) then
 		StaticPopup_Show("AUCTION_HOUSE_DISABLED");
-	elseif ( event == "AUCTION_HOUSE_POST_WARNING" ) then
-		StaticPopup_Show("AUCTION_HOUSE_POST_WARNING");
-	elseif ( event == "AUCTION_HOUSE_POST_ERROR" ) then
-		StaticPopup_Show("AUCTION_HOUSE_POST_ERROR");
 
 	-- Events for trainer UI handling
 	elseif ( event == "TRAINER_SHOW" ) then
@@ -2121,6 +2135,8 @@ function UIParent_OnEvent(self, event, ...)
 		BoostTutorial_AttemptLoad();
 	elseif (event == "DEBUG_MENU_TOGGLED") then
 		UpdateUIParentRelativeToDebugMenu();
+	elseif (event == "REVEAL_CAPTURE_TOGGLED") then
+		UpdateUIParentRelativeToDebugMenu();
 	elseif ( event == "GROUP_INVITE_CONFIRMATION" ) then
 		UpdateInviteConfirmationDialogs();
 	elseif ( event == "INVITE_TO_PARTY_CONFIRMATION" ) then
@@ -2154,6 +2170,9 @@ function UIParent_OnEvent(self, event, ...)
 	elseif (event == "ISLANDS_QUEUE_OPEN") then
 		IslandsQueue_LoadUI();
 		ShowUIPanel(IslandsQueueFrame);
+	elseif (event == "ITEM_INTERACTION_OPEN") then
+		ItemInteraction_LoadUI();
+		ShowUIPanel(ItemInteractionFrame);
 	-- Events for Reporting system
 	elseif (event == "REPORT_PLAYER_RESULT") then
 		local success = ...;
@@ -2163,6 +2182,25 @@ function UIParent_OnEvent(self, event, ...)
 		else
 			UIErrorsFrame:AddExternalErrorMessage(GERR_REPORT_SUBMISSION_FAILED);
 			DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED);
+		end
+	elseif (event == "GLOBAL_MOUSE_DOWN" or event == "GLOBAL_MOUSE_UP") then
+		local buttonID = ...;
+
+		-- Close dropdown(s).
+		local mouseFocus = GetMouseFocus();
+		if not HandlesGlobalMouseEvent(mouseFocus, buttonID, event) then
+			UIDropDownMenu_HandleGlobalMouseEvent(buttonID, event);
+		end
+
+		-- Clear keyboard focus.
+		if event == "GLOBAL_MOUSE_DOWN" and buttonID == "LeftButton" and not IsModifierKeyDown() then
+			local keyBoardFocus = GetCurrentKeyBoardFocus();
+			if keyBoardFocus then
+				local hasStickyFocus = keyBoardFocus.HasStickyFocus and keyBoardFocus:HasStickyFocus();
+				if keyBoardFocus.ClearFocus and not hasStickyFocus and keyBoardFocus ~= mouseFocus then
+					keyBoardFocus:ClearFocus();
+				end
+ 			end
 		end
 	end
 end
@@ -2247,10 +2285,11 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["MultiBarBottomRight"] = {baseY = 2, watchBar = 1, maxLevel = 1, anchorTo = "ActionButton12", point = "TOPLEFT", rpoint = "TOPRIGHT", xOffset = 45};
 	["GroupLootContainer"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1};
 	["TutorialFrameAlertButton"] = {baseY = true, yOffset = -10, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, watchBar = 1};
-	["FramerateLabel"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, anchorTo="WorldFrame" };
-	["ArcheologyDigsiteProgressBar"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, castingBar = 1};
-	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, talkingHeadFrame = 1, classResourceOverlayFrame = 1, classResourceOverlayOffset = 1};
-	["ClassResourceOverlayParentFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1 };
+	["FramerateLabel"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, playerPowerBarAlt = 1, powerBarWidgets = 1, extraActionBarFrame = 1, anchorTo="WorldFrame" };
+	["ArcheologyDigsiteProgressBar"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, powerBarWidgets = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, castingBar = 1};
+	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, powerBarWidgets = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, talkingHeadFrame = 1, classResourceOverlayFrame = 1, classResourceOverlayOffset = 1};
+	["UIWidgetPowerBarContainerFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, talkingHeadFrame = 1, classResourceOverlayFrame = 1, classResourceOverlayOffset = 1};
+	["ClassResourceOverlayParentFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, powerBarWidgets = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1 };
 	["PlayerPowerBarAlt"] = UIPARENT_ALTERNATE_FRAME_POSITIONS["PlayerPowerBarAlt_Bottom"];
 	["ExtraActionBarFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1};
 	["ZoneAbilityFrame"] = {baseY = true, yOffset = 100, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, extraActionBarFrame = 1};
@@ -2259,8 +2298,8 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["StanceBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["PossessBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["MultiCastActionBarFrame"] = {baseY = 8, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
-	["AuctionProgressFrame"] = {baseY = true, yOffset = 18, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1};
-	["TalkingHeadFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, classResourceOverlayFrame = 1};
+	["AuctionHouseMultisellProgressFrame"] = {baseY = true, yOffset = 18, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1};
+	["TalkingHeadFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, powerBarWidgets = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, classResourceOverlayFrame = 1};
 
 	-- Vars
 	-- These indexes require global variables of the same name to be declared. For example, if I have an index ["FOO"] then I need to make sure the global variable
@@ -2899,7 +2938,8 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	local hasBottomLeft, hasBottomRight, hasPetBar;
 
 	if ( not PlayerPowerBarAlt:IsUserPlaced() ) then
-		if ( PlayerPowerBarAlt:IsShown() and select(10, UnitAlternatePowerInfo(PlayerPowerBarAlt.unit)) ) then
+		local barInfo = GetUnitPowerBarInfo(PlayerPowerBarAlt.unit);
+		if ( PlayerPowerBarAlt:IsShown() and barInfo and barInfo.anchorTop ) then
 			PlayerPowerBarAlt:ClearAllPoints();
 			UIPARENT_MANAGED_FRAME_POSITIONS["PlayerPowerBarAlt"] = UIPARENT_ALTERNATE_FRAME_POSITIONS["PlayerPowerBarAlt_Top"];
 		else
@@ -2945,10 +2985,13 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			tinsert(yOffsetFrames, "tutorialAlert");
 		end
 		if ( PlayerPowerBarAlt:IsShown() and not PlayerPowerBarAlt:IsUserPlaced() ) then
-			local anchorTop = select(10, UnitAlternatePowerInfo(PlayerPowerBarAlt.unit));
-			if ( not anchorTop ) then
+			local barInfo = GetUnitPowerBarInfo(PlayerPowerBarAlt.unit);
+			if ( not barInfo or not barInfo.anchorTop ) then
 				tinsert(yOffsetFrames, "playerPowerBarAlt");
 			end
+		end
+		if UIWidgetPowerBarContainerFrame and UIWidgetPowerBarContainerFrame:GetNumWidgetsShowing() > 0 then
+			tinsert(yOffsetFrames, "powerBarWidgets");
 		end
 		if (ExtraActionBarFrame and ExtraActionBarFrame:IsShown() ) then
 			tinsert(yOffsetFrames, "extraActionBarFrame");
@@ -2978,6 +3021,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	for index, value in pairs(UIPARENT_MANAGED_FRAME_POSITIONS) do
 		if ( value.playerPowerBarAlt and PlayerPowerBarAlt and not PlayerPowerBarAlt:IsUserPlaced()) then
 			value.playerPowerBarAlt = PlayerPowerBarAlt:GetHeight() + 10;
+		end
+		if ( value.powerBarWidgets and UIWidgetPowerBarContainerFrame ) then
+			value.powerBarWidgets = UIWidgetPowerBarContainerFrame:GetHeight() + 10;
 		end
 		if ( value.extraActionBarFrame and ExtraActionBarFrame ) then
 			value.extraActionBarFrame = ExtraActionBarFrame:GetHeight() + 10;
@@ -4966,74 +5012,47 @@ function SetDoubleGuildTabardTextures(unit, leftEmblemTexture, rightEmblemTextur
 	end
 end
 
-function SetLargeTabardTexturesFromColorRGB(unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
-	local newTabardData = { };
-	if (tabardData) then
-		local rgbFormatMultiplier = 255;
-		newTabardData[1] = tabardData.backgroundColor.r * rgbFormatMultiplier;
-		newTabardData[2] = tabardData.backgroundColor.g * rgbFormatMultiplier;
-		newTabardData[3] = tabardData.backgroundColor.b * rgbFormatMultiplier;
-		newTabardData[4] = tabardData.borderColor.r * rgbFormatMultiplier;
-		newTabardData[5] = tabardData.borderColor.g * rgbFormatMultiplier;
-		newTabardData[6] = tabardData.borderColor.b * rgbFormatMultiplier;
-		newTabardData[7] = tabardData.emblemColor.r * rgbFormatMultiplier;
-		newTabardData[8] = tabardData.emblemColor.g * rgbFormatMultiplier;
-		newTabardData[9] = tabardData.emblemColor.b * rgbFormatMultiplier;
-		newTabardData[10] = tabardData.emblemFileID;
-		newTabardData[11] = tabardData.emblemStyle;
-	end
-
-	SetLargeGuildTabardTextures(unit, emblemTexture, backgroundTexture, borderTexture, newTabardData);
-end
-
 function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
-	local bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFileID, emblemIndex;
-	if ( tabardData )  then
-		bkgR = tabardData[1];
-		bkgG = tabardData[2];
-		bkgB = tabardData[3];
-		borderR = tabardData[4];
-		borderG = tabardData[5];
-		borderB = tabardData[6];
-		emblemR = tabardData[7];
-		emblemG = tabardData[8];
-		emblemB = tabardData[9];
-		emblemFileID = tabardData[10];
-		emblemIndex = tabardData[11];
-	else
-		bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFileID, emblemIndex = GetGuildLogoInfo(unit);
+	local backgroundColor, borderColor, emblemColor, emblemFileID, emblemIndex;
+	tabardData = tabardData or C_GuildInfo.GetGuildTabardInfo(unit);
+	if(tabardData) then 
+		backgroundColor = tabardData.backgroundColor; 
+		borderColor = tabardData.borderColor;
+		emblemColor = tabardData.emblemColor;
+		emblemFileID = tabardData.emblemFileID;
+		emblemIndex = tabardData.emblemStyle;
 	end
-	if ( emblemFileID ) then
-		if ( backgroundTexture ) then
-			backgroundTexture:SetVertexColor(bkgR / 255, bkgG / 255, bkgB / 255);
+	if (emblemFileID) then
+		if (backgroundTexture) then
+			backgroundTexture:SetVertexColor(backgroundColor:GetRGB());
 		end
-		if ( borderTexture ) then
-			borderTexture:SetVertexColor(borderR / 255, borderG / 255, borderB / 255);
+		if (borderTexture) then
+			borderTexture:SetVertexColor(borderColor:GetRGB());
 		end
-		if ( emblemSize ) then
-			if ( emblemIndex) then
+		if (emblemSize) then
+			if (emblemIndex) then
 				local xCoord = mod(emblemIndex, columns) * emblemSize;
 				local yCoord = floor(emblemIndex / columns) * emblemSize;
 				emblemTexture:SetTexCoord(xCoord + offset, xCoord + emblemSize - offset, yCoord + offset, yCoord + emblemSize - offset);
 			end
-			emblemTexture:SetVertexColor(emblemR / 255, emblemG / 255, emblemB / 255);
-		elseif ( emblemTexture ) then
+			emblemTexture:SetVertexColor(emblemColor:GetRGB());
+		elseif (emblemTexture) then
 			emblemTexture:SetTexture(emblemFileID);
-			emblemTexture:SetVertexColor(emblemR / 255, emblemG / 255, emblemB / 255);
+			emblemTexture:SetVertexColor(emblemColor:GetRGB());
 		end
 
 		return true;
 	else
 		-- tabard lacks design
-		if ( backgroundTexture ) then
+		if (backgroundTexture) then
 			backgroundTexture:SetVertexColor(0.2245, 0.2088, 0.1794);
 		end
-		if ( borderTexture ) then
+		if (borderTexture) then
 			borderTexture:SetVertexColor(0.2, 0.2, 0.2);
 		end
-		if ( emblemTexture ) then
-			if ( emblemSize ) then
-				if ( emblemSize == 18 / 256 ) then
+		if (emblemTexture) then
+			if (emblemSize) then
+				if (emblemSize == 18 / 256) then
 					emblemTexture:SetTexture("Interface\\GuildFrame\\GuildLogo-NoLogoSm");
 				else
 					emblemTexture:SetTexture("Interface\\GuildFrame\\GuildLogo-NoLogo");
@@ -5047,7 +5066,7 @@ function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture
 
 		return false;
 	end
-end
+end 
 
 function GetDisplayedAllyFrames()
 	local useCompact = GetCVarBool("useCompactPartyFrames")

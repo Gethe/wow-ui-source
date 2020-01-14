@@ -78,7 +78,7 @@ function GuildNewsButton_SetNews( button, news_id )
 			-- Bug 356148: For NEWS_ITEM types, data2 has the item upgrade ID
 			button.data2 = newsInfo.data[2];
 			if newsInfo.whatText then
-				if newsInfo.newsType == NEWS_ITEM_LOOTED or newsInfo.newsType == NEWS_ITEM_CRAFTED or newsInfo.newsType == NEWS_ITEM_PURCHASED then
+				if newsInfo.newsType == NEWS_ITEM_LOOTED or newsInfo.newsType == NEWS_ITEM_CRAFTED or newsInfo.newsType == NEWS_ITEM_PURCHASED or newsInfo.newsType == NEWS_LEGENDARY_LOOTED then
 					-- item link is already filled out from GetGuildNewsInfo
 					text2 = newsInfo.whatText;
 				elseif newsInfo.newsType == NEWS_PLAYER_ACHIEVEMENT then

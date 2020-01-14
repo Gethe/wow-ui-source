@@ -7,6 +7,10 @@ local Map =
 	Functions =
 	{
 		{
+			Name = "CloseWorldMapInteraction",
+			Type = "Function",
+		},
+		{
 			Name = "GetAreaInfo",
 			Type = "Function",
 
@@ -385,6 +389,20 @@ local Map =
 			LiteralName = "NEW_WMO_CHUNK",
 		},
 		{
+			Name = "WorldMapClose",
+			Type = "Event",
+			LiteralName = "WORLD_MAP_CLOSE",
+		},
+		{
+			Name = "WorldMapOpen",
+			Type = "Event",
+			LiteralName = "WORLD_MAP_OPEN",
+			Payload =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "ZoneChanged",
 			Type = "Event",
 			LiteralName = "ZONE_CHANGED",
@@ -419,6 +437,19 @@ local Map =
 			},
 		},
 		{
+			Name = "UIMapSystem",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "World", Type = "UIMapSystem", EnumValue = 0 },
+				{ Name = "Taxi", Type = "UIMapSystem", EnumValue = 1 },
+				{ Name = "Adventure", Type = "UIMapSystem", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "UIMapType",
 			Type = "Enumeration",
 			NumValues = 7,
@@ -436,33 +467,6 @@ local Map =
 			},
 		},
 		{
-			Name = "UIMapSystem",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 0,
-			MaxValue = 2,
-			Fields =
-			{
-				{ Name = "World", Type = "UIMapSystem", EnumValue = 0 },
-				{ Name = "Taxi", Type = "UIMapSystem", EnumValue = 1 },
-				{ Name = "Adventure", Type = "UIMapSystem", EnumValue = 2 },
-			},
-		},
-		{
-			Name = "UiMapLayerInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "layerWidth", Type = "number", Nilable = false },
-				{ Name = "layerHeight", Type = "number", Nilable = false },
-				{ Name = "tileWidth", Type = "number", Nilable = false },
-				{ Name = "tileHeight", Type = "number", Nilable = false },
-				{ Name = "minScale", Type = "number", Nilable = false },
-				{ Name = "maxScale", Type = "number", Nilable = false },
-				{ Name = "additionalZoomSteps", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "MapBannerInfo",
 			Type = "Structure",
 			Fields =
@@ -471,6 +475,18 @@ local Map =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "atlasName", Type = "string", Nilable = false },
 				{ Name = "uiTextureKit", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "MapLinkInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "areaPoiID", Type = "number", Nilable = false },
+				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "atlasName", Type = "string", Nilable = false },
+				{ Name = "linkedUiMapID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -495,15 +511,17 @@ local Map =
 			},
 		},
 		{
-			Name = "MapLinkInfo",
+			Name = "UiMapLayerInfo",
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "areaPoiID", Type = "number", Nilable = false },
-				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "atlasName", Type = "string", Nilable = false },
-				{ Name = "linkedUiMapID", Type = "number", Nilable = false },
+				{ Name = "layerWidth", Type = "number", Nilable = false },
+				{ Name = "layerHeight", Type = "number", Nilable = false },
+				{ Name = "tileWidth", Type = "number", Nilable = false },
+				{ Name = "tileHeight", Type = "number", Nilable = false },
+				{ Name = "minScale", Type = "number", Nilable = false },
+				{ Name = "maxScale", Type = "number", Nilable = false },
+				{ Name = "additionalZoomSteps", Type = "number", Nilable = false },
 			},
 		},
 	},

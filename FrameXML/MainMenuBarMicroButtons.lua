@@ -349,8 +349,7 @@ end
 
 function GuildMicroButtonMixin:EvaluateAlertVisibility() 
 	if (self.showOfflineJoinAlert) then
-		MainMenuMicroButton_ShowAlert(GuildMicroButtonAlert, CLUB_FINDER_NEW_COMMUNITY_JOINED, LE_FRAME_TUTORIAL_ACCOUNT_CLUB_FINDER_NEW_COMMUNITY_JOINED);
-		self.showOfflineJoinAlert = false;
+		MainMenuMicroButton_ShowAlert(GuildMicroButtonAlert, CLUB_FINDER_NEW_COMMUNITY_JOINED);
 	elseif (self:ShouldShowAlert()) then 
 		MainMenuMicroButton_ShowAlert(GuildMicroButtonAlert, CLUB_FINDER_NEW_FEATURE_TUTORIAL, LE_FRAME_TUTORIAL_ACCCOUNT_CLUB_FINDER_NEW_FEATURE);
 	end
@@ -380,7 +379,8 @@ function GuildMicroButtonMixin:UpdateNotificationIcon(self)
 end
 
 function GuildMicroButtonMixin:ShouldShowAlert()
-	return C_ClubFinder.IsEnabled() and (not CommunitiesFrame or not CommunitiesFrame:IsShown()) and not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCCOUNT_CLUB_FINDER_NEW_FEATURE);
+	return C_ClubFinder.IsEnabled() and (not CommunitiesFrame or not CommunitiesFrame:IsShown()) and 
+	not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCCOUNT_CLUB_FINDER_NEW_FEATURE) and not IsTrialAccount() and not IsVeteranTrialAccount();
 end
 
 function GuildMicroButtonMixin:UpdateTabard(forceUpdate)
@@ -524,7 +524,7 @@ function CharacterMicroButtonMixin:ShouldShowAzeriteEssenceSlotAlert()
 		return false;
 	end
 
-	if IsPlayerInWorld() and AzeriteEssenceUtil.HasAnyEmptySlots() then
+	if IsPlayerInWorld() and AzeriteEssenceUtil.ShouldShowEmptySlotHelptip() then
 		return true;
 	end
 
@@ -696,6 +696,10 @@ function MainMenuMicroButton_ShowAlert(alert, text, tutorialIndex)
 	alert.tutorialIndex = tutorialIndex;
 	MainMenuMicroButton_PositionAlert(alert);
 	alert:Show();
+
+	if (text == CLUB_FINDER_NEW_COMMUNITY_JOINED) then 
+		alert.showOfflineJoinAlert = false;
+	end
 
 	g_visibleMicroButtonAlerts[alert] = true;
 

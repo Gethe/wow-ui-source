@@ -1,0 +1,26 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_AuctionHouseBrowseResultsFrame.lua"/>
+
+	<Frame name="AuctionHouseBrowseResultsFrameTemplate" mixin="AuctionHouseBrowseResultsFrameMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="ItemList" inherits="AuctionHouseItemListTemplate">
+				<KeyValues>
+					<KeyValue key="hideStripes" value="true" type="boolean"/>
+					<KeyValue key="hideRefreshFrame" value="true" type="boolean"/>
+					<KeyValue key="backgroundAtlas" value="auctionhouse-background-index" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" y="-1"/>
+					<Anchor point="BOTTOMRIGHT" x="18" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

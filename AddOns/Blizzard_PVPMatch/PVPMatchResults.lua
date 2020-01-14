@@ -12,11 +12,9 @@ local ACTIVE_EVENTS = {
 local LeaveMatchFormatter = CreateFromMixins(SecondsFormatterMixin);
 LeaveMatchFormatter:Init(0, SecondsFormatter.Abbreviation.OneLetter, true);
 LeaveMatchFormatter:SetStripIntervalWhitespace(true);
+
 function LeaveMatchFormatter:GetDesiredUnitCount(seconds)
 	return 1;
-end
-function LeaveMatchFormatter:GetMinInterval(seconds)
-	return SecondsFormatter.Interval.Seconds;
 end
 
 PVPMatchResultsMixin = {};
@@ -219,7 +217,12 @@ function PVPMatchResultsMixin:BeginShow()
 	ShowUIPanel(self);
 end
 function PVPMatchResultsMixin:DisplayRewards()
-	if self.hasDisplayedRewards or not self.haveConquestData or not self.hasRewardTimerElapsed then
+	if self.hasDisplayedRewards or not self.hasRewardTimerElapsed then
+		return;
+	end
+
+	local conquestQuestID = select(3, PVPGetConquestLevelInfo());
+	if conquestQuestID ~= 0 and not self.haveConquestData then
 		return;
 	end
 	self.hasDisplayedRewards = true;

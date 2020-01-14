@@ -139,6 +139,98 @@
 		</Frames>
 	</Frame>
 
+	<Frame name="AzeriteMilestoneRankedTemplate" parentArray="Slots" inherits="AzeriteMilestoneBaseTemplate" mixin="AzeriteMilestoneRankedMixin" virtual="true">
+		<Size x="66" y="66"/>
+		<Frames>
+			<ModelScene parentKey="EffectsModelScene" drawLayer="OVERLAY" inherits="NonInteractableModelSceneMixinTemplate">
+				<Size x="800" y="800"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</ModelScene>
+			<Frame parentKey="AvailableState" parentArray="StateFrames" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Icon">
+							<Size x="54" y="54"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="DiamondMask" file="Interface\Common\common-mask-diamond" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Icon"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Border" atlas="heartofazeroth-infinite">
+							<Size x="72" y="72"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="RankBorder" atlas="heartofazeroth-infinite-numberbox" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOM" y="-6"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="3">
+						<FontString parentKey="RankText" inherits="ChatFontNormal">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.RankBorder" x="1" y="-1"/>
+							</Anchors>
+							<Color color="GREEN_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Glow" atlas="heartofazeroth-node-glow" alphaMode="ADD" alpha="0">
+							<Size x="98" y="94"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="GlowAnim" setToFinalAlpha="true" looping="REPEAT">
+						<Alpha childKey="Glow" smoothing="IN_OUT" duration="0.8" order="1" fromAlpha="0.2" toAlpha="1"/>
+						<Alpha childKey="Glow" smoothing="IN_OUT" duration="0.8" order="2" fromAlpha="1" toAlpha="0.2"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="ForgeGlowAnim" setToFinalAlpha="true" looping="REPEAT">
+						<Alpha childKey="Glow" smoothing="IN_OUT" duration="0.6" order="1" fromAlpha="0.2" toAlpha="1"/>
+						<Alpha childKey="Glow" smoothing="IN_OUT" duration="0.6" order="2" fromAlpha="1" toAlpha="0.2"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="LockedState" parentArray="StateFrames" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="UnlockLevelText" inherits="Game16Font" outline="NORMAL">
+							<Anchors>
+								<Anchor point="CENTER" x="-1"/>
+							</Anchors>
+							<Color r="0.2" g="0.1647" b="0"/>
+						</FontString>
+						<Texture parentKey="Rune" alphaMode="ADD" atlas="heartofazeroth-infinite-unlearned">
+							<Size x="100" y="100"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+
 	<Frame name="AzeriteMilestoneMajorSlotTemplate" parentArray="Slots" inherits="AzeriteMilestoneBaseTemplate" mixin="AzeriteMilestoneSlotMixin" virtual="true">
 		<Size x="110" y="82"/>
 		<KeyValues>

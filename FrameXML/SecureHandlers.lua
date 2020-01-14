@@ -616,7 +616,7 @@ local function API_OnAttributeChanged(self, name, value)
 			return;
 		end
 		if (CheckForbidden(value)) then
-			MakeForbbiden(frame);
+			MakeForbidden(frame);
 			error("Cannot use SecureHandlers API on forbidden frames");
 			return;
 		end
@@ -662,7 +662,7 @@ function SecureHandlerWrapScript(frame, script, header, preBody, postBody)
 		return;
 	end
 	if (header and CheckForbidden(header)) then
-		MakeForbbiden(frame);
+		MakeForbidden(frame);
 		error("Cannot use SecureHandlers API on forbidden frames");
 		return;
 	end

@@ -340,7 +340,7 @@
 					<OnHide function="MountJournal_ClearSearch"/>
 				</Scripts>
 			</EditBox>
-			<Button name="$parentFilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
+			<DropDownToggleButton name="$parentFilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
 				<Size x="93" y="22"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.LeftInset" x="-5" y="-9"/>
@@ -356,12 +356,13 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnClick>
+					<OnMouseDown>
+						UIMenuButtonStretchMixin.OnMouseDown(self, button);
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						ToggleDropDownMenu(1, nil, MountJournalFilterDropDown, "MountJournalFilterButton", 74, 15);
-					</OnClick>
+					</OnMouseDown>
 				</Scripts>
-			</Button>
+			</DropDownToggleButton>
 			<Frame name="$parentFilterDropDown" inherits="UIDropDownMenuTemplate">
 				<Scripts>
 					<OnLoad function="MountJournalFilterDropDown_OnLoad"/>

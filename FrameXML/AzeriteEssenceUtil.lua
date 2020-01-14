@@ -17,40 +17,52 @@ function AzeriteEssenceUtil.HasAnyUnlockableMilestones()
 	return false, nil;
 end
 
-function AzeriteEssenceUtil.HasMilestoneAtPowerLevel(powerLevel)
+function AzeriteEssenceUtil.GetMilestoneAtPowerLevel(powerLevel)
 	if not C_AzeriteEssence.CanOpenUI() then
-		return false, nil;
+		return nil;
 	end
 
 	local milestones = C_AzeriteEssence.GetMilestones();
 	if milestones then
 		for i, milestoneInfo in ipairs(milestones) do
 			if milestoneInfo.requiredLevel == powerLevel then
-				local milestoneIsSlot = milestoneInfo.slot and true or false;
-				return true, milestoneIsSlot;
+				return milestoneInfo;
+			end
+			-- only supporting 1 ranked milestone
+			if milestoneInfo.requiredLevel < powerLevel and milestoneInfo.rank then
+				return milestoneInfo;
 			end
 		end
 	end
-	return false, nil;
+	return nil;
 end
 
-function AzeriteEssenceUtil.HasAnyEmptySlots()
+function AzeriteEssenceUtil.GetMilestoneSpellInfo(milestoneID)
+	local spellID = C_AzeriteEssence.GetMilestoneSpell(milestoneID);
+	local spellName, _, spellTexture = GetSpellInfo(spellID);
+	return spellName, spellTexture;
+end
+
+function AzeriteEssenceUtil.ShouldShowEmptySlotHelptip()
 	if not C_AzeriteEssence.CanOpenUI() then
 		return false;
 	end
 
+	local numValidSlots = 0;
+	local numEmptySlots = 0;
 	local milestones = C_AzeriteEssence.GetMilestones();
 	if milestones then
 		for i, milestoneInfo in ipairs(milestones) do
 			if milestoneInfo.slot and milestoneInfo.unlocked then
+				numValidSlots = numValidSlots + 1;
 				local essenceID = C_AzeriteEssence.GetMilestoneEssence(milestoneInfo.ID);
 				if not essenceID then
-					return true;
+					numEmptySlots = numEmptySlots + 1;
 				end
 			end
 		end
 	end
-	return false;
+	return numEmptySlots > 0 and C_AzeriteEssence.GetNumUnlockedEssences() >= numValidSlots;
 end
 
 local ESSENCE_SWAP_TUTORIAL_STATE_NOT_SEEN = 0;

@@ -197,3 +197,86 @@ function CharacterFrame_TabBoundsCheck(self)
 		end
 	end
 end
+
+function CharacterFrameCorruption_OnLoad(self)
+	self:RegisterEvent("COMBAT_RATING_UPDATE");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("SPELL_TEXT_UPDATE");
+end
+
+function CharacterFrameCorruption_OnEvent(self, event, ...)
+	if event == "PLAYER_ENTERING_WORLD" then
+		GetNegativeCorruptionEffectInfo();		-- Request corruption info to get the spell info down to the client
+		CharacterFrameCorruption_UpdateVisibility(self);
+	elseif event == "COMBAT_RATING_UPDATE" then
+		CharacterFrameCorruption_UpdateVisibility(self);
+	elseif event == "SPELL_TEXT_UPDATE" then
+		if self.tooltipShowing then
+			CharacterFrameCorruption_OnEnter(self);
+		end
+	end
+end
+
+function CharacterFrameCorruption_UpdateVisibility(self)
+	self:SetShown(GetCorruption() > 0);
+end
+
+local function SortCorruptionEffects(a, b)
+	return a.minCorruption < b.minCorruption;
+end
+
+function CharacterFrameCorruption_OnEnter(self)
+	self.tooltipShowing = true;
+	self.Eye:SetAtlas("Nzoth-charactersheet-icon-glow", true);
+	GameTooltip_SetBackdropStyle(GameTooltip, GAME_TOOLTIP_BACKDROP_STYLE_CORRUPTED_ITEM);
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetMinimumWidth(250);
+
+	local corruption = GetCorruption();
+	local corruptionResistance = GetCorruptionResistance();
+	local totalCorruption = math.max(corruption - corruptionResistance, 0);
+
+	local noWrap = false;
+	local wrap = true;
+	local descriptionXOffset = 10;
+
+	GameTooltip_AddColoredLine(GameTooltip, CORRUPTION_TOOLTIP_TITLE, HIGHLIGHT_FONT_COLOR);
+	GameTooltip_AddColoredLine(GameTooltip, CORRUPTION_DESCRIPTION, NORMAL_FONT_COLOR);
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddColoredDoubleLine(GameTooltip, CORRUPTION_TOOLTIP_LINE, corruption, HIGHLIGHT_FONT_COLOR, HIGHLIGHT_FONT_COLOR, noWrap);
+	GameTooltip_AddColoredDoubleLine(GameTooltip, CORRUPTION_RESISTANCE_TOOLTIP_LINE, corruptionResistance, HIGHLIGHT_FONT_COLOR, HIGHLIGHT_FONT_COLOR, noWrap);
+	GameTooltip_AddColoredDoubleLine(GameTooltip, TOTAL_CORRUPTION_TOOLTIP_LINE, totalCorruption, CORRUPTION_COLOR, CORRUPTION_COLOR, noWrap);
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+
+	local corruptionEffects = GetNegativeCorruptionEffectInfo();
+	table.sort(corruptionEffects, SortCorruptionEffects);
+
+	for i = 1, #corruptionEffects do
+		local corruptionInfo = corruptionEffects[i];
+
+		if i > 1 then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		end
+
+		-- We only show 1 effect above the player's current corruption.
+		local lastEffect = (corruptionInfo.minCorruption > totalCorruption);
+
+		GameTooltip_AddColoredLine(GameTooltip, CORRUPTION_EFFECT_HEADER:format(corruptionInfo.name, corruptionInfo.minCorruption), lastEffect and GRAY_FONT_COLOR or HIGHLIGHT_FONT_COLOR, noWrap);
+		GameTooltip_AddColoredLine(GameTooltip, corruptionInfo.description, lastEffect and GRAY_FONT_COLOR or CORRUPTION_COLOR, wrap, descriptionXOffset);
+
+		if lastEffect then
+			break;
+		end
+	end
+
+	GameTooltip:Show();
+	PaperDollFrame_UpdateCorruptedItemGlows(true);
+	PlaySound(SOUNDKIT.NZOTH_EYE_SQUISH);
+end
+
+function CharacterFrameCorruption_OnLeave(self)
+	self.tooltipShowing = false;
+	self.Eye:SetAtlas("Nzoth-charactersheet-icon", true);
+	GameTooltip_Hide();
+	PaperDollFrame_UpdateCorruptedItemGlows(false);
+end

@@ -301,7 +301,7 @@ CHAT_CATEGORY_LIST = {
 	RAID = { "RAID_LEADER", "RAID_WARNING" },
 	GUILD = { "GUILD_ACHIEVEMENT", "GUILD_ITEM_LOOTED" },
 	WHISPER = { "WHISPER_INFORM", "AFK", "DND" },
-	CHANNEL = { "CHANNEL_JOIN", "CHANNEL_LEAVE", "CHANNEL_NOTICE", "CHANNEL_USER" },
+	CHANNEL = { "CHANNEL_JOIN", "CHANNEL_LEAVE", "CHANNEL_NOTICE", "CHANNEL_USER", "CHANNEL_NOTICE_USER" },
 	INSTANCE_CHAT = { "INSTANCE_CHAT_LEADER" },
 	BN_WHISPER = { "BN_WHISPER_INFORM" },
 };
@@ -1566,6 +1566,12 @@ SecureCmdList["PET_DEFENSIVE"] = function(msg)
 	end
 end
 
+SecureCmdList["PET_DEFENSIVEASSIST"] = function(msg)
+	if ( SecureCmdOptionParse(msg) ) then
+		PetDefensiveAssistMode();
+	end
+end
+
 SecureCmdList["PET_AGGRESSIVE"] = function(msg)
 	if ( SecureCmdOptionParse(msg) ) then
 		PetAggressiveMode();
@@ -1705,6 +1711,51 @@ SecureCmdList["QUIT"] = function(msg)
 		return;
 	end
 	Quit();
+end
+
+SecureCmdList["GUILD_UNINVITE"] = function(msg)
+	if(msg == "") then
+		msg = UnitName("target");
+	end
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
+	GuildUninvite(msg);
+end
+
+SecureCmdList["GUILD_PROMOTE"] = function(msg)
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
+	GuildPromote(msg);
+end
+
+SecureCmdList["GUILD_DEMOTE"] = function(msg)
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
+	GuildDemote(msg);
+end
+
+SecureCmdList["GUILD_LEADER"] = function(msg)
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
+	GuildSetLeader(msg);
+end
+
+SecureCmdList["GUILD_LEAVE"] = function(msg)
+	GuildLeave();
+end
+
+SecureCmdList["GUILD_DISBAND"] = function(msg)
+	if ( IsGuildLeader() ) then
+		StaticPopup_Show("CONFIRM_GUILD_DISBAND");
+	end
 end
 
 function AddSecureCmd(cmd, cmdString)
@@ -2032,53 +2083,8 @@ SlashCmdList["GUILD_INVITE"] = function(msg)
 	GuildInvite(msg);
 end
 
-SlashCmdList["GUILD_UNINVITE"] = function(msg)
-	if(msg == "") then
-		msg = UnitName("target");
-	end
-	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
-		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
-		return;
-	end
-	GuildUninvite(msg);
-end
-
-SlashCmdList["GUILD_PROMOTE"] = function(msg)
-	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
-		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
-		return;
-	end
-	GuildPromote(msg);
-end
-
-SlashCmdList["GUILD_DEMOTE"] = function(msg)
-	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
-		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
-		return;
-	end
-	GuildDemote(msg);
-end
-
-SlashCmdList["GUILD_LEADER"] = function(msg)
-	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
-		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
-		return;
-	end
-	GuildSetLeader(msg);
-end
-
 SlashCmdList["GUILD_MOTD"] = function(msg)
 	GuildSetMOTD(msg)
-end
-
-SlashCmdList["GUILD_LEAVE"] = function(msg)
-	GuildLeave();
-end
-
-SlashCmdList["GUILD_DISBAND"] = function(msg)
-	if ( IsGuildLeader() ) then
-		StaticPopup_Show("CONFIRM_GUILD_DISBAND");
-	end
 end
 
 SlashCmdList["GUILD_INFO"] = function(msg)
@@ -3447,7 +3453,10 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				-- TWO users in this notice (E.G. x kicked y)
 				self:AddMessage(format(globalstring, arg8, arg4, arg2, arg5), info.r, info.g, info.b, info.id);
 			elseif ( arg1 == "INVITE" ) then
-				self:AddMessage(format(globalstring, arg4, arg2), info.r, info.g, info.b, info.id);
+				local playerLink = GetPlayerLink(arg2, ("[%s]"):format(arg2), arg11);
+				local accessID = ChatHistory_GetAccessID(chatGroup, chatTarget);
+				local typeID = ChatHistory_GetAccessID(infoType, chatTarget, arg12);
+				self:AddMessage(format(globalstring, arg4, playerLink), info.r, info.g, info.b, info.id, accessID, typeID);
 			else
 				self:AddMessage(format(globalstring, arg8, arg4, arg2), info.r, info.g, info.b, info.id);
 			end
@@ -3750,7 +3759,9 @@ function ChatFrame_OpenChat(text, chatFrame, desiredCursorPosition)
 	if chatFrame == nil and CHAT_FOCUS_OVERRIDE ~= nil then
 		if CHAT_FOCUS_OVERRIDE.supportsSlashCommands or not text or strsub(text, 0, 1) ~= "/" then
 		    CHAT_FOCUS_OVERRIDE:SetFocus();
-			CHAT_FOCUS_OVERRIDE:SetText(text);
+			if text then
+				CHAT_FOCUS_OVERRIDE:SetText(text);
+			end
 		    return;
 		end
 	end
@@ -3758,9 +3769,12 @@ function ChatFrame_OpenChat(text, chatFrame, desiredCursorPosition)
 	local editBox = ChatEdit_ChooseBoxForSend(chatFrame);
 
 	ChatEdit_ActivateChat(editBox);
-	editBox.setText = 1;
 	editBox.desiredCursorPosition = desiredCursorPosition;
-	editBox.text = text;
+
+	if text then
+		editBox.text = text;
+		editBox.setText = 1;
+	end
 
 	if ( editBox:GetAttribute("chatType") == editBox:GetAttribute("stickyType") ) then
 		if ( (editBox:GetAttribute("stickyType") == "PARTY") and (not IsInGroup(LE_PARTY_CATEGORY_HOME)) or
@@ -4121,7 +4135,10 @@ end
 
 function ChatEdit_OnEditFocusLost(self)
 	AutoCompleteEditBox_OnEditFocusLost(self);
-	ChatEdit_DeactivateChat(self);
+	
+	if self:GetText() == "" then
+		ChatEdit_DeactivateChat(self);
+	end
 end
 
 function ChatEdit_ActivateChat(editBox)
@@ -4251,24 +4268,6 @@ function ChatEdit_InsertLink(text)
 		return false;
 	end
 
-	local activeWindow = ChatEdit_GetActiveWindow();
-	if ( activeWindow ) then
-		activeWindow:Insert(text);
-		return true;
-	end
-	if ( BrowseName and BrowseName:IsVisible() ) then
-		local item;
-		if ( strfind(text, "battlepet:") ) then
-			local petName = strmatch(text, "%[(.+)%]");
-			item = petName;
-		elseif ( strfind(text, "item:", 1, true) ) then
-			item = GetItemInfo(text);
-		end
-		if ( item ) then
-			BrowseName:SetText(item);
-			return true;
-		end
-	end
 	if ( MacroFrameText and MacroFrameText:HasFocus() ) then
 		local item;
 		if ( strfind(text, "item:", 1, true) ) then
@@ -4304,6 +4303,28 @@ function ChatEdit_InsertLink(text)
 		CommunitiesFrame.ChatEditBox:Insert(text);
 		return true;
 	end
+
+	local activeWindow = ChatEdit_GetActiveWindow();
+	if ( activeWindow ) then
+		activeWindow:Insert(text);
+		activeWindow:SetFocus();
+		return true;
+	end
+	if ( AuctionHouseFrame and AuctionHouseFrame:IsVisible() ) then
+		local item;
+		if ( strfind(text, "battlepet:") ) then
+			local petName = strmatch(text, "%[(.+)%]");
+			item = petName;
+		elseif ( strfind(text, "item:", 1, true) ) then
+			item = GetItemInfo(text);
+		end
+		if ( item ) then
+			if ( AuctionHouseFrame:SetSearchText(item) ) then
+				return true;
+			end
+		end
+	end
+
 	return false;
 end
 
@@ -4756,8 +4777,7 @@ local function processChatType(editBox, msg, index, send)
 end
 
 function ChatEdit_HandleChatType(editBox, msg, command, send)
-	local channel = strmatch(command, "/([0-9]+)");
-
+	local channel = strmatch(command, "/([0-9]+)$");
 	if( channel ) then
 		local chanNum = tonumber(channel);
 		if ( chanNum > 0 and chanNum <= MAX_WOW_CHAT_CHANNELS ) then

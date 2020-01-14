@@ -86,7 +86,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="DeclineButton" inherits="UIMenuButtonStretchTemplate" motionScriptsWhileDisabled="true">
+			<DropDownToggleButton parentKey="DeclineButton" inherits="UIMenuButtonStretchTemplate" motionScriptsWhileDisabled="true">
 				<Size x="24" y="22"/>
 				<Anchors>
 					<Anchor point="RIGHT" x="-7" y="1"/>
@@ -101,15 +101,16 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnClick>
+					<OnMouseDown>
+						UIMenuButtonStretchMixin.OnMouseDown(self, button);
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						FriendsListPendingInviteDropDown.inviteID = self:GetParent().inviteID;
 						FriendsListPendingInviteDropDown.inviteIndex = self:GetParent().inviteIndex;
 						ToggleDropDownMenu(1, nil, FriendsListPendingInviteDropDown, self, -6, -3);
-					</OnClick>
+					</OnMouseDown>
 				</Scripts>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-			</Button>
+			</DropDownToggleButton>
 			<Button parentKey="AcceptButton" inherits="UIMenuButtonStretchTemplate" text="ACCEPT">
 				<Size x="0" y="22"/>
 				<Anchors>
@@ -720,28 +721,6 @@
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.Tab2" relativePoint="RIGHT"/>
 						</Anchors>
-					</Button>
-					<Button parentKey="OldRAFRewardsButton" motionScriptsWhileDisabled="true"  hidden="true">
-						<Size x="26" y="26"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="-8" y="-55"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentIcon" parentKey="Icon" file="Interface\Icons\achievement_guildperk_mobilebanking"/>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad function="OldRAFRewardsButton_OnLoad" />
-							<OnEvent function="OldRAFRewardsButton_Update" />
-							<OnClick function="OldRAFRewardsButton_OnClick" />
-							<OnEnter function="OldRAFRewardsButton_OnEnter" />
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
-						</Scripts>
-						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square" parentKey="highlight"/>
 					</Button>
 				</Frames>
 				<Scripts>

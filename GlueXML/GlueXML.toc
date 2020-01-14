@@ -17,6 +17,7 @@
 ..\SharedXML\FontableFrameMixin.lua
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
+..\SharedXML\DropDownToggleButton.xml
 Constants.lua
 GlueFonts.xml
 GlueFontStyles.xml
@@ -26,6 +27,7 @@ GlueLocalization.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\SharedBasicControls.xml
 ..\SharedXML\KeyCommand.lua
+..\SharedXML\GlobalCallbackRegistry.lua
 GlueTemplates.xml
 ## add new files after here
 GlueButtons.xml

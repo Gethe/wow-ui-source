@@ -5,10 +5,15 @@
 	<Button name="GarrisonTalentButtonTemplate" virtual="true" mixin="GarrisonTalentButtonMixin">
 		<Size x="39" y="39"/>
 		<Layers>
-			<Layer level="ARTWORK" textureSubLevel="0">
-				<Texture parentKey="Icon" >
-					<Size x="39" y="39"/>
+			<Layer level="BORDER">
+				<Texture parentKey="MajorGlow" atlas="orderhalltalents-done-glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture parentKey="Icon" setAllPoints="true"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="AlphaIconOverlay">
@@ -17,12 +22,12 @@
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture parentKey="CooldownTimerBackground" atlas="orderhalltalents-timer-bg" textureSubLevel="2">
-					<Size x="37" y="37"/>
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
 					</Anchors>
 				</Texture>
-                <Texture parentKey="DoneCheckmark" hidden="false" alpha="0" alphaMode="BLEND" atlas="orderhalltalents-done-checkmark" useAtlasSize="true">
+        <Texture parentKey="DoneCheckmark" hidden="false" alpha="0" alphaMode="BLEND" atlas="orderhalltalents-done-checkmark" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
@@ -34,10 +39,9 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="Border" atlas="orderhalltalents-spellborder-yellow">
-					<Size x="50" y="50"/>
+				<Texture parentKey="Border" atlas="orderhalltalents-spellborder-yellow" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOP" x="0" y="5"/>
+						<Anchor point="CENTER" x="0" y="-1"/>
 					</Anchors>
 				</Texture>
                 <Texture parentKey="DoneCheckmark2" hidden="false" alpha="0" alphaMode="ADD" atlas="orderhalltalents-done-checkmark" useAtlasSize="true">
@@ -47,19 +51,19 @@
 				</Texture>
 				<Texture parentKey="Highlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" hidden="true"/>
 			</Layer>
-            <Layer level="OVERLAY" textureSubLevel="1">
+      <Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="DoneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="orderhalltalents-done-glow" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.DoneCheckmark" x="0" y="-3"/>
 					</Anchors>
 				</Texture>
-			</Layer>
+			</Layer>				
 		</Layers>
 		<Frames>
 			<Cooldown parentKey="Cooldown" reverse="true" hideCountdownNumbers="true">
-				<Size x="37" y="37"/>
 				<Anchors>
-					<Anchor point="CENTER"/>
+					<Anchor point="TOPLEFT" x="1" y="-1"/>
+					<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
 				</Anchors>
 				<SwipeTexture file="Interface\Garrison\orderhalltalents-timer-fill"/>
 			</Cooldown>
@@ -91,6 +95,15 @@
 		</Scripts>
 	</Button>
 
+	<Frame name="GarrisonTalentPrerequisiteArrowTemplate" virtual="true">
+		<Size x="31" y="23"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Arrow" atlas="orderhalltalents-prerequisite-arrow" useAtlasSize="true"/>
+			</Layer>
+		</Layers>
+	</Frame>
+
 	<Texture name="GarrisonTalentChoiceTemplate" virtual="true" atlas="orderhalltalents-choice-background" useAtlasSize="true"/>
 	<Texture name="GarrisonTalentArrowTemplate" virtual="true" atlas="orderhalltalents-choice-arrow-large" useAtlasSize="true" alphaMode="ADD">
 		<Animations>
@@ -114,14 +127,6 @@
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Background">
-					<Size x="322" y="498"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Bg" x="4" y="-40"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="CurrencyBG">
 					<Anchors>
@@ -130,6 +135,11 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
+				<FontString parentKey="SingleCost" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP" y="-67"/>
+					</Anchors>
+				</FontString>
 				<FontString parentKey="Tick1" inherits="OrderHallTalentFrameTick" text="I">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="24" y="-99"/>
@@ -221,7 +231,10 @@
 				</Scripts>
 			</Frame>
 			<Frame parentKey="Inset" inherits="InsetFrameTemplate" useParentLevel="true">
-				<Size x="328" y="504"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-58"/>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="6"/>
+				</Anchors>
 			</Frame>
 			<Button parentKey="BackButton" inherits="UIPanelButtonTemplate" text="BACK">
 				<Size x="86" y="22"/>
@@ -236,5 +249,15 @@
 				</Scripts>
 			</Button>
 		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Inset"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 	</Frame>
 </Ui>

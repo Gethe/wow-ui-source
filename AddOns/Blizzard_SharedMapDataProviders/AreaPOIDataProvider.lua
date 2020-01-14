@@ -65,7 +65,7 @@ function AreaPOIPinMixin:TryShowTooltip()
 	local hasTooltip = hasDescription or isTimed or hasWidgetSet;
 
 	if hasTooltip then
-		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip_SetTitle(GameTooltip, self.name, HIGHLIGHT_FONT_COLOR);
 
 		if hasDescription then

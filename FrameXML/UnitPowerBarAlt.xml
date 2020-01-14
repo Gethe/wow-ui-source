@@ -4,10 +4,10 @@
 	<Frame name="UnitPowerBarAltTexturableTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="background" setAllPoints="true"/>
+				<Texture parentKey="background" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false"/>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="$parentFill" parentKey="fill" setAllPoints="true"/>
+				<Texture name="$parentFill" parentKey="fill" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false"/>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="frame" setAllPoints="true"/>

@@ -55,7 +55,7 @@ end
 
 function LootFrame_OnEvent(self, event, ...)
 	if ( event == "LOOT_OPENED" ) then
-		local autoLoot = ...;
+		local autoLoot, isFromItem = ...;
 		if( autoLoot ) then
 			LootFrame_InitAutoLootTable( self );
 			LootFrame:SetScript("OnUpdate", LootFrame_OnUpdate);
@@ -69,6 +69,10 @@ function LootFrame_OnEvent(self, event, ...)
 		LootFrame_Show(self);
 		if ( not self:IsShown()) then
 			CloseLoot(not autoLoot);	-- The parameter tells code that we were unable to open the UI
+		else
+			if ( isFromItem ) then
+				PlaySound(SOUNDKIT.UI_CONTAINER_ITEM_OPEN);
+			end
 		end
 	elseif( event == "LOOT_READY" ) then
 		LootFrame_InitAutoLootTable( self );
@@ -704,7 +708,7 @@ function BonusRollFrame_OnEvent(self, event, ...)
 		self.RollingFrame.LootSpinnerFinal:Hide();
 		self.StartRollAnim:Play();
 	elseif ( event == "BONUS_ROLL_RESULT" ) then
-		local rewardType, rewardLink, rewardQuantity, rewardSpecID,_,_, currencyID, isSecondaryResult = ...;
+		local rewardType, rewardLink, rewardQuantity, rewardSpecID,_,_, currencyID, isSecondaryResult, isCorrupted = ...;
 		self.state = "slowing";
 		self.rewardType = rewardType;
 		self.rewardLink = rewardLink;
@@ -712,6 +716,7 @@ function BonusRollFrame_OnEvent(self, event, ...)
 		self.rewardSpecID = rewardSpecID;
 		self.currencyID = currencyID; 
 		self.isSecondaryResult = isSecondaryResult;
+		self.isCorrupted = isCorrupted;
 		self.StartRollAnim:Finish();
 	elseif ( event == "PLAYER_LOOT_SPEC_UPDATED" ) then
 		local specID = GetLootSpecialization();
@@ -883,19 +888,22 @@ function BonusRollFrame_OnHide(self)
 end
 
 function BonusRollFrame_FinishedFading(self)
+	local rollType, roll, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded, wonRoll, showRatedBG;
 	if ( self.rewardType == "item" or self.rewardType == "artifact_power" ) then
-		local wonRoll = self.rewardType == "item";
+		wonRoll = self.rewardType == "item";
 		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollLootWonFrame);
-		LootWonAlertFrame_SetUp(BonusRollLootWonFrame, self.rewardLink, self.rewardQuantity, nil, nil, self.rewardSpecID, nil, nil, nil, nil, nil, wonRoll, nil, self.isSecondaryResult);
+		LootWonAlertFrame_SetUp(BonusRollLootWonFrame, self.rewardLink, self.rewardQuantity, rollType, roll, self.rewardSpecID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded, self.isCorrupted, wonRoll, showRatedBG, self.isSecondaryResult);
 		AlertFrame:AddAlertFrame(BonusRollLootWonFrame);
 	elseif ( self.rewardType == "money" ) then
 		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollMoneyWonFrame);
 		MoneyWonAlertFrame_SetUp(BonusRollMoneyWonFrame, self.rewardQuantity);
 		LootMoneyNotify(self.rewardQuantity, true);
 		AlertFrame:AddAlertFrame(BonusRollMoneyWonFrame);
-	elseif ( self.rewardType == "currency" ) then 
+	elseif ( self.rewardType == "currency" ) then
+		isCurrency = true;
+		wonRoll = true;
 		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollLootWonFrame);
-		LootWonAlertFrame_SetUp(BonusRollLootWonFrame, self.rewardLink, self.rewardQuantity, nil, nil, self.rewardSpecID, true, nil, nil, nil, nil, true, nil, self.isSecondaryResult);
+		LootWonAlertFrame_SetUp(BonusRollLootWonFrame, self.rewardLink, self.rewardQuantity, rollType, roll, self.rewardSpecID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded, self.isCorrupted, wonRoll, showRatedBG, self.isSecondaryResult);
 		AlertFrame:AddAlertFrame(BonusRollLootWonFrame);
 	else
 		GroupLootContainer_RemoveFrame(GroupLootContainer, self);

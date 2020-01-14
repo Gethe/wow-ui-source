@@ -61,9 +61,7 @@
 			</EditBox>
 			<Button name="PetRenamePopupAcceptButton" inherits="PetPopupButtonTemplate">
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM">
-						<Offset x="-5" y="15"/>
-					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-5" y="15"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="PetPopup_Confirm"/>
@@ -74,8 +72,7 @@
 			</Button>
 			<Button name="PetRenamePopupCancelButton" inherits="PetPopupButtonTemplate">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM">
-						<Offset x="5" y="15"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="5" y="15"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="PetPopup_Cancel"/>

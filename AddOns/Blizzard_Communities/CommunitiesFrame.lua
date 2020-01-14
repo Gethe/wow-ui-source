@@ -224,6 +224,7 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 			self:SetPrivilegesForClub(clubId, nil);
 		end
 		self:UpdateCommunitiesButtons();
+		self:ValidateDisplayMode();
 		self.ApplicantList:CommunitiesMemberUpdate();
 	elseif event == "STREAM_VIEW_MARKER_UPDATED" then
 		if self.StreamDropDownMenu:IsShown() then
@@ -540,6 +541,18 @@ COMMUNITIES_FRAME_DISPLAY_MODES = {
 	},
 };
 
+function CommunitiesFrameMixin:HasCommunityFinderPermissions(clubId, clubInfo)
+	local privileges = C_Club.GetClubPrivileges(clubId);
+	local myMemberInfo = C_Club.GetMemberInfoForSelf(clubId);
+
+	if (not privileges or not myMemberInfo or not clubInfo) then
+		return false; 
+	end 
+
+	local hasCommunityFinderPermissions = myMemberInfo.role and (myMemberInfo.role == Enum.ClubRoleIdentifier.Owner or myMemberInfo.role == Enum.ClubRoleIdentifier.Leader);
+	return C_ClubFinder.IsEnabled() and hasCommunityFinderPermissions and privileges.canSendInvitation and clubInfo.clubType == Enum.ClubType.Character;
+end 
+
 function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 	if self.displayMode == displayMode then
 		return;
@@ -583,12 +596,7 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 			C_GuildInfo.GuildRoster();
 		end
 		self.GuildMemberListDropDownMenu:SetShown(isGuildCommunitySelected);
-		if (clubId) then
-			local privileges = C_Club.GetClubPrivileges(clubId);
-			if (clubInfo) then
-				self.CommunityMemberListDropDownMenu:SetShown(C_ClubFinder.IsEnabled() and not isGuildCommunitySelected and privileges.canSendInvitation and clubInfo.clubType == Enum.ClubType.Character);
-			end
-		end
+		self.CommunityMemberListDropDownMenu:SetShown(self:HasCommunityFinderPermissions(clubId, clubInfo));
 	end
 
 	if (displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT and C_ClubFinder.IsEnabled()) then
@@ -686,7 +694,6 @@ function CommunitiesFrameMixin:SetClubFinderPostingExpirationText(clubId, isGuil
 		local isPostingBanned = C_ClubFinder.IsPostingBanned(clubId);
 		local hasForceDescriptionChange = clubInfo and self:ClubFinderPostingHasActiveFlag(clubId, Enum.ClubFinderClubPostingStatusFlags.ForceDescriptionChange);
 		local hasForceNameChange = clubInfo and ((clubInfo.clubType == Enum.ClubType.Guild and self:GetNeedsGuildNameChange()) or self:ClubFinderPostingHasActiveFlag(clubId, Enum.ClubFinderClubPostingStatusFlags.ForceNameChange));
-
 		if (isPostingBanned) then 
 			if (isGuildType) then
 				self.PostingExpirationText.InfoButton.tooltipText = CLUB_FINDER_BANNED_POSTING_WARNING:format(CLUB_FINDER_TYPE_GUILD);
@@ -760,8 +767,7 @@ function CommunitiesFrameMixin:DisplayReportedAlerts(clubId)
 		return;
 	end
 
-	local myMemberInfo = C_Club.GetMemberInfoForSelf(clubId);
-	local hasCommunityFinderPermissions = myMemberInfo and myMemberInfo.role and (myMemberInfo.role == Enum.ClubRoleIdentifier.Owner or myMemberInfo.role == Enum.ClubRoleIdentifier.Leader);
+	local hasCommunityFinderPermissions = self:HasCommunityFinderPermissions(clubId, clubInfo);
 	local finderEnabled = C_ClubFinder.IsEnabled();
 	local isPostingBanned = C_ClubFinder.IsPostingBanned(clubId);
 	local hasForceDescriptionChange = self:ClubFinderPostingHasActiveFlag(clubId, Enum.ClubFinderClubPostingStatusFlags.ForceDescriptionChange);
@@ -883,9 +889,8 @@ function CommunitiesFrameMixin:ValidateDisplayMode()
 
 		local shouldShowGuildMemberList = isRosterOrApplicantList and isGuildCommunitySelected;
 		self.GuildMemberListDropDownMenu:SetShown(shouldShowGuildMemberList);
-
-		local privileges = C_Club.GetClubPrivileges(clubId);
-		local shouldShowCommunityMemberList = isRosterOrApplicantList and not isGuildCommunitySelected and privileges.canSendInvitation and clubInfo.clubType == Enum.ClubType.Character and C_ClubFinder.IsEnabled();
+	
+		local shouldShowCommunityMemberList = isRosterOrApplicantList and self:HasCommunityFinderPermissions(clubId, clubInfo);
 		self.CommunityMemberListDropDownMenu:SetShown(shouldShowCommunityMemberList);
 		self:DisplayReportedAlerts(clubId);
 		self.ChatTab:SetEnabled(not self.chatDisabled);
@@ -896,6 +901,7 @@ function CommunitiesFrameMixin:ValidateDisplayMode()
 			self.ChatTab.tooltip2 = nil;
 		end
 		self:UpdateMaximizeMinimizeButton();
+		self:CheckForTutorials();
 	end
 end
 
@@ -995,7 +1001,7 @@ function CommunitiesFrameMixin:CheckForTutorials()
 		return;
 	end
 
-	if self.CommunitiesControlFrame.CommunitiesSettingsButton:IsShown() or self.CommunitiesControlFrame.GuildRecruitmentButton:IsShown() then
+	if (displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT) and (self.CommunitiesControlFrame.CommunitiesSettingsButton:IsShown() or self.CommunitiesControlFrame.GuildRecruitmentButton:IsShown()) then
 		local isGuildSelected = self:IsGuildSelected();
 		local flag = isGuildSelected and LE_FRAME_TUTORIAL_CLUB_FINDER_NEW_GUILD_LEADER or LE_FRAME_TUTORIAL_CLUB_FINDER_NEW_COMMUNITY_LEADER;
 		if not GetCVarBitfield("closedInfoFrames", flag) then
@@ -1022,6 +1028,7 @@ function CommunitiesFrameMixin:ShowClubFinderTutorial()
 		bitfieldFlag = LE_FRAME_TUTORIAL_ACCCOUNT_CLUB_FINDER_NEW_FEATURE,
 		targetPoint = HelpTip.Point.BottomEdgeCenter,
 		alignment = HelpTip.Alignment.Left,
+		onHideCallback = function(acknowledged, closeFlag) self:CheckForTutorials(); end;
 		offsetX = -4,
 	};
 
@@ -1570,6 +1577,8 @@ function CommunitiesControlFrameMixin:Update()
 						self.GuildRecruitmentButton.disabledTooltip = COMMUNITY_FEATURE_UNAVAILABLE_MUTED;
 					elseif disabledReason == Enum.ClubFinderDisableReason.Silenced then
 						self.GuildRecruitmentButton.disabledTooltip = COMMUNITY_FEATURE_UNAVAILABLE_SILENCED;
+					elseif disableReason == Enum.ClubFinderDisableReason.VeteranTrial then 
+						self.GuildRecruitmentButton.disabledTooltip = CLUB_FINDER_DISABLE_REASON_VETERAN_TRIAL;
 					elseif (C_ClubFinder.IsEnabled() and not canViewClubFinderSettings) then
 						self.GuildRecruitmentButton.disabledTooltip = CLUB_FINDER_NO_RECRUITING_PERMISSIONS;
 					elseif (isPostingBanned) then 

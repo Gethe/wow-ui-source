@@ -72,6 +72,7 @@ function OverrideActionBar_OnLoad(self)
 	self:RegisterEvent("VEHICLE_ANGLE_UPDATE");
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
 	self:RegisterEvent("UNIT_ENTERING_VEHICLE");
+	self:RegisterEvent("UNIT_EXITED_VEHICLE");
 end
 
 
@@ -87,6 +88,12 @@ function OverrideActionBar_OnEvent(self, event, ...)
 		OverrideActionBar_UpdateSkin();
 	elseif ( event == "UNIT_ENTERING_VEHICLE" ) then
 		self.HasExit, self.HasPitch = select(6, ...);
+	elseif ( event == "UNIT_EXITED_VEHICLE") then
+		self.HasExit = nil;
+		self.HasPitch = nil;
+		if GetOverrideBarSkin() then
+			OverrideActionBar_CalcSize();
+		end
 	end
 end
 

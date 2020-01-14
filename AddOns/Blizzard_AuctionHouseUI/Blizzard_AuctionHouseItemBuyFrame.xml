@@ -1,0 +1,60 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_AuctionHouseItemBuyFrame.lua"/>
+	
+	<Frame name="AuctionHouseItemBuyFrameTemplate" mixin="AuctionHouseItemBuyFrameMixin" virtual="true">
+		<Size x="600" y="440"/>
+		<Frames>
+			<Button parentKey="BackButton" mixin="AuctionHouseCommoditiesBackButtonMixin" inherits="UIPanelButtonTemplate" text="AUCTION_HOUSE_BACK_BUTTON">
+				<Size x="110" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="11" y="-9"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="ItemDisplay" inherits="AuctionHouseItemDisplayTemplate">
+				<Size x="622" y="86"/>
+				<KeyValues>
+					<KeyValue key="backgroundAtlas" value="auctionhouse-background-buy-noncommodities-header" type="string"/>
+					<KeyValue key="itemButtonXOffset" value="22" type="number"/>
+					<KeyValue key="itemButtonYOffset" value="-2" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.BackButton" relativePoint="BOTTOM" x="0" y="-10"/>
+					<Anchor point="LEFT"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="BuyoutFrame" inherits="AuctionHouseBuyoutFrameTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="BidFrame" inherits="AuctionHouseBidFrameTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.BuyoutFrame" relativePoint="LEFT" x="-60" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ItemList" inherits="AuctionHouseItemListTemplate">
+				<KeyValues>
+					<KeyValue key="backgroundAtlas" value="auctionhouse-background-buy-noncommodities-market" type="string"/>
+					<KeyValue key="refreshFrameXOffset" value="-4" type="number"/>
+					<KeyValue key="refreshFrameYOffset" value="132" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.ItemDisplay" relativePoint="BOTTOM" x="0" y="-14"/>
+					<Anchor point="LEFT"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.BuyoutFrame" relativePoint="TOP"/>
+					<Anchor point="RIGHT" relativeKey="$parent.BuyoutFrame" relativePoint="RIGHT" x="-4"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

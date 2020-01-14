@@ -103,7 +103,7 @@
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Note" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
-					<Size x="190" y="0"/>
+					<Size x="180" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.ItemLevel" relativePoint="LEFT" x="40" y="0"/>
 					</Anchors>

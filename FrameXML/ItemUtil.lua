@@ -3,6 +3,7 @@ ItemButtonUtil = {};
 
 ItemButtonUtil.ItemContextEnum = {
 	Scrapping = 1,
+	CleanseCorruption = 2, 
 };
 
 ItemButtonUtil.ItemContextMatchResult = {
@@ -35,6 +36,8 @@ end
 function ItemButtonUtil.GetItemContext()
 	if ScrappingMachineFrame and ScrappingMachineFrame:IsShown() then
 		return ItemButtonUtil.ItemContextEnum.Scrapping;
+	elseif ItemInteractionFrame and ItemInteractionFrame:IsShown() and ItemInteractionFrame:GetFrameType() == Enum.ItemInteractionFrameType.CleanseCorruption then
+		return ItemButtonUtil.ItemContextEnum.CleanseCorruption;
 	end
 	
 	return nil;
@@ -54,6 +57,8 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 		-- Ideally we'd only have 1 context active at a time, perhaps with a priority system.
 		if itemContext == ItemButtonUtil.ItemContextEnum.Scrapping then
 			return C_Item.CanScrapItem(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+		elseif itemContext == ItemButtonUtil.ItemContextEnum.CleanseCorruption then 
+			return C_Item.IsItemCorrupted(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		else
 			return ItemButtonUtil.ItemContextMatchResult.DoesNotApply;
 		end
@@ -95,5 +100,12 @@ function ItemUtil.GetItemDetails(itemLink, quantity, isCurrency, lootSource)
 	else
 		itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
 		return itemName, itemTexture, quantity, itemRarity, itemLink;
+	end
+end
+
+function ItemUtil.PickupBagItem(itemLocation)
+	local bag, slot = itemLocation:GetBagAndSlot();
+	if bag and slot then
+		PickupContainerItem(bag, slot);
 	end
 end

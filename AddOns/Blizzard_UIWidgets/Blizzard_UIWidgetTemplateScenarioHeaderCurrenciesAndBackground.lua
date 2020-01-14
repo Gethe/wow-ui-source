@@ -28,7 +28,7 @@ function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:Setup(widget
 		currencyFrame:Show();
 
 		local enabledState = currencyInfo.isCurrencyMaxed and Enum.WidgetEnabledState.Red or Enum.WidgetEnabledState.Enabled;
-		currencyFrame:Setup(currencyInfo, enabledState);
+		currencyFrame:Setup(widgetContainer, currencyInfo, enabledState);
 		currencyFrame.Text:SetPoint("LEFT", currencyFrame.Icon, "RIGHT", 8, 0);
 
 		if previousCurrencyFrame then

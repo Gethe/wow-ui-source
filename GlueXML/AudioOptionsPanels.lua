@@ -294,7 +294,7 @@ function AudioOptionsSoundPanelSoundCacheSizeDropDown_OnLoad (self)
 		end
 end
 
-local soundCacheSizeValues = { 16777216, 67108864 }; --value in bytes, displayed in MB
+local soundCacheSizeValues = { 67108864, 134217728 }; --value in bytes, displayed in MB
 local soundCacheSizeText = { "SOUND_CACHE_SIZE_SMALL", "SOUND_CACHE_SIZE_LARGE" };
 function AudioOptionsSoundPanelSoundCacheSizeDropDown_Initialize(self)
 	local selectedValue = GlueDropDownMenu_GetSelectedValue(self);

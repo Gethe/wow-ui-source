@@ -6,9 +6,5 @@ UI.xsd">
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="80"/>
 		</Anchors>
-		<Scripts>
-			<OnLoad>
-			</OnLoad>
-		</Scripts>
 	</Frame>
 </Ui>

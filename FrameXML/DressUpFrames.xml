@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="DressUpFrames.lua"/>
 
-	<Frame name="SideDressUpFrame" mixin="SideDressUpModelFrameFrameMixin" parent="UIParent" enableMouse="true" hidden="true">
+	<Frame name="SideDressUpFrame" flattenRenderLayers="true" mixin="SideDressUpModelFrameFrameMixin" parent="UIParent" enableMouse="true" hidden="true">
 		<Size x="187" y="389"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -102,7 +102,7 @@
 					<Anchor point="TOP" x="-23" y="-28"/>
 				</Anchors>
 			</Frame>
-			<Frame name="MaximizeMinimizeFrame" mixin="DressUpModelFrameMaximizeMinimizeMixin" inherits="MaximizeMinimizeButtonFrameTemplate">
+			<Frame parentKey="MaximizeMinimizeFrame" mixin="DressUpModelFrameMaximizeMinimizeMixin" inherits="MaximizeMinimizeButtonFrameTemplate">
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="10" y="0"/>
 				</Anchors>
@@ -128,6 +128,13 @@
 					<Anchor point="TOPLEFT" x="7" y="-63"/>
 					<Anchor point="BOTTOMRIGHT" x="-9" y="28"/>
 				</Anchors>
+				<Frames>
+					<Frame parentKey="ControlFrame" inherits="ModelSceneControlFrameTemplate" >
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-10"/>
+						</Anchors>
+					</Frame>
+				</Frames>
 			</ModelScene>
 			<Button parentKey="ResetButton" mixin="DressUpModelFrameResetButtonMixin" name="DressUpFrameResetButton" inherits="UIPanelButtonTemplate" text="RESET">
 				<Size x="80" y="22"/>

@@ -45,6 +45,20 @@ local AzeriteItem =
 			},
 		},
 		{
+			Name = "GetUnlimitedPowerLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "azeriteItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "powerLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "HasActiveAzeriteItem",
 			Type = "Function",
 

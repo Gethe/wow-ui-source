@@ -72,6 +72,7 @@ InvasionInfoDocumentation.lua
 IslandsInfoDocumentation.lua
 IslandsQueueUIDocumentation.lua
 ItemDocumentation.lua
+ItemInteractionUIDocumentation.lua
 ItemSocketInfoDocumentation.lua
 ItemTextDocumentation.lua
 ItemUpgradeDocumentation.lua
@@ -156,4 +157,27 @@ WorldStateInfoDocumentation.lua
 WowEntitlementInfoDocumentation.lua
 WowTokenUIDocumentation.lua
 ZoneAbilityDocumentation.lua
+ActionDocumentation.lua
+AppearanceSourceDocumentation.lua
+AuctionHouseEnumsDocumentation.lua
+BaseDocumentation.lua
+CalendarConstantsDocumentation.lua
+ChatDocumentation.lua
+ClubSharedDocumentation.lua
+ColorDocumentation.lua
+GarrisonConstantsDocumentation.lua
+GarrisonSharedDocumentation.lua
+GuildInfoSharedDocumentation.lua
+ItemLocationSharedDocumentation.lua
+ItemSharedDocumentation.lua
+ModelSceneDocumentation.lua
+NamePlateDocumentation.lua
+PlayerDocumentation.lua
+QuestSessionConstantsDocumentation.lua
+QueueSpecificDocumentation.lua
+RecruitAFriendSharedDocumentation.lua
+TextureSharedDocumentation.lua
+TimeDocumentation.lua
+UnitSharedDocumentation.lua
+VectorSharedDocumentation.lua
 # End documentation files here

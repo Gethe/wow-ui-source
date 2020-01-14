@@ -6,7 +6,6 @@ local ISLANDS_QUEUE_RIGHT_CARD_ROTATION = math.rad(-1.15);
 local ISLAND_QUEUE_DIFFICULTY_EVENTS = {
 	"GROUP_ROSTER_UPDATE",
 	"LFG_UPDATE_RANDOM_INFO",
-	"PLAYER_AVG_ITEM_LEVEL_UPDATE",
 };
 
 IslandsQueueWeeklyQuestMixin = { };
@@ -213,8 +212,8 @@ function IslandsQueueFrameDifficultyMixin:UpdateQueueText()
 end
 
 function IslandsQueueFrameDifficultyMixin:OnShow()
-	RequestLFDPlayerLockInfo();
-	RequestLFDPartyLockInfo();
+	QueueUpdater:RequestInfo();
+	QueueUpdater:AddRef();
 
 	FrameUtil.RegisterFrameForEvents(self, ISLAND_QUEUE_DIFFICULTY_EVENTS);
 
@@ -230,6 +229,7 @@ function IslandsQueueFrameDifficultyMixin:OnShow()
 end
 
 function IslandsQueueFrameDifficultyMixin:OnHide()
+	QueueUpdater:RemoveRef();
 	FrameUtil.UnregisterFrameForEvents(self, ISLAND_QUEUE_DIFFICULTY_EVENTS);
 end
 
@@ -241,9 +241,6 @@ function IslandsQueueFrameDifficultyMixin:OnEvent(event, ...)
 	if (event == "GROUP_ROSTER_UPDATE" or event == "LFG_UPDATE_RANDOM_INFO") then
 		self:RefreshDifficultyButtons();
 		self:UpdateQueueText();
-	elseif (event == "PLAYER_AVG_ITEM_LEVEL_UPDATE") then
-		RequestLFDPlayerLockInfo();
-		RequestLFDPartyLockInfo();
 	end
 end
 

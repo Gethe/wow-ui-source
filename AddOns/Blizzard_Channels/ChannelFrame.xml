@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="ChannelFrame.lua"/>
 
-	<Frame name="ChannelFrame" toplevel="true" parent="UIParent" hidden="true" mixin="ChannelFrameMixin" inherits="ButtonFrameTemplate">
+	<Frame name="ChannelFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" mixin="ChannelFrameMixin" inherits="ButtonFrameTemplate">
 		<Size x="402" y="423"/>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>

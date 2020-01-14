@@ -23,6 +23,10 @@ local textureKitRegionInfo = {
 local LEFT_BAR_OFFSET = 25;
 local FULL_BAR_SIZE = 124;
 
+local function ConvertToBarPercentage(percent, widgetInfo)
+	return (widgetInfo.fillDirectionType == Enum.CaptureBarWidgetFillDirectionType.RightToLeft) and (1 - percent) or percent;
+end
+
 function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 	self:SetTooltip(widgetInfo.tooltip);
@@ -31,28 +35,30 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo, widgetContainer)
 
 	local neutralZoneSizePercent = ClampedPercentageBetween(widgetInfo.neutralZoneSize, widgetInfo.barMinValue, widgetInfo.barMaxValue);
 	local neutralZoneCenterPercent = ClampedPercentageBetween(widgetInfo.neutralZoneCenter, widgetInfo.barMinValue, widgetInfo.barMaxValue);
-	local neutralZonePosition = LEFT_BAR_OFFSET + FULL_BAR_SIZE * (1 - neutralZoneCenterPercent);
+	local neutralZoneCenterPercentage = ConvertToBarPercentage(neutralZoneCenterPercent, widgetInfo);
+	local neutralZonePosition = LEFT_BAR_OFFSET + FULL_BAR_SIZE * neutralZoneCenterPercentage;
 
 	local halfNeutralPercent = neutralZoneSizePercent / 2;
 
-	local leftZoneSizePercent = (1 - neutralZoneCenterPercent) - halfNeutralPercent;
-	local rightZoneSizePercent = neutralZoneCenterPercent - halfNeutralPercent;
+	local leftZoneSizePercentage = neutralZoneCenterPercentage - halfNeutralPercent;
+	local rightZoneSizePercentage = (1 - neutralZoneCenterPercentage) - halfNeutralPercent;
 
-	if leftZoneSizePercent > 0 then
-		self.LeftBar:SetWidth(FULL_BAR_SIZE * leftZoneSizePercent);
+	if leftZoneSizePercentage > 0 then
+		self.LeftBar:SetWidth(FULL_BAR_SIZE * leftZoneSizePercentage);
 		self.LeftBar:Show();
 	else
 		self.LeftBar:Hide();
 	end
 
-	if rightZoneSizePercent > 0 then
-		self.RightBar:SetWidth(FULL_BAR_SIZE * rightZoneSizePercent);
+	if rightZoneSizePercentage > 0 then
+		self.RightBar:SetWidth(FULL_BAR_SIZE * rightZoneSizePercentage);
 		self.RightBar:Show();
 	else
 		self.RightBar:Hide();
 	end
 	
-	local position = LEFT_BAR_OFFSET + FULL_BAR_SIZE * (1 - barPercent);
+	local positionPercentage = ConvertToBarPercentage(barPercent, widgetInfo);
+	local position = LEFT_BAR_OFFSET + FULL_BAR_SIZE * positionPercentage;
 	if ( not self.oldValue ) then
 		self.oldValue = position;
 	end
@@ -106,8 +112,8 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo, widgetContainer)
 
 	-- Figure out if the ticker is in neutral territory or on a faction's side
 	-- Favor the neutral zone (if on either line we are in the neutral zone)
-	local inLeftZone = barPercent > (neutralZoneCenterPercent + halfNeutralPercent);
-	local inRightZone = barPercent < (neutralZoneCenterPercent - halfNeutralPercent);
+	local inLeftZone = positionPercentage < (neutralZoneCenterPercentage - halfNeutralPercent);
+	local inRightZone = positionPercentage > (neutralZoneCenterPercentage + halfNeutralPercent);
 	local inNeutralZone = not inLeftZone and not inRightZone;
 
 	if inNeutralZone and neutralZoneSizePercent == 0 then
@@ -115,16 +121,16 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo, widgetContainer)
 		-- Use the direction of movement to try to figure out which zone to go into
 		if movedLeft then
 			-- If we just moved left, favor the left zone
-			inLeftZone = barPercent >= neutralZoneCenterPercent;
+			inLeftZone = positionPercentage >= neutralZoneCenterPercentage;
 			inRightZone = not inLeftZone;
 		elseif movedRight then
 			-- If we just moved right, favor the right zone
-			inRightZone = barPercent <= neutralZoneCenterPercent;
+			inRightZone = positionPercentage <= neutralZoneCenterPercentage;
 			inLeftZone = not inRightZone;
 		else
 			-- Otherwise just pick the bigger zone
-			if leftZoneSizePercent ~= rightZoneSizePercent then
-				inLeftZone = leftZoneSizePercent > rightZoneSizePercent;
+			if leftZoneSizePercentage ~= rightZoneSizePercentage then
+				inLeftZone = leftZoneSizePercentage > rightZoneSizePercentage;
 				inRightZone = not inLeftZone;
 			else
 				-- If they are both the same size then just pick the left side (shrug)

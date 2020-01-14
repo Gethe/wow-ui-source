@@ -274,7 +274,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentEditButton" parentKey="EditButton" hidden="true">
+			<DropDownToggleButton name="$parentEditButton" parentKey="EditButton" hidden="true">
 				<Size x="16" y="16"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="$parentDeleteButton" relativePoint="LEFT" x="-1"/>
@@ -295,15 +295,12 @@
 						self.texture:SetAlpha(0.5);
 						GameTooltip_Hide();
 					</OnLeave>
-					<OnMouseDown>
-						self.texture:SetPoint("TOPLEFT", 1, -1);
-					</OnMouseDown>
+					<OnMouseDown function="GearSetEditButton_OnMouseDown"/>
 					<OnMouseUp>
 						self.texture:SetPoint("TOPLEFT", 0, 0);
 					</OnMouseUp>
-					<OnClick function="GearSetEditButton_OnClick"/>
 				</Scripts>
-			</Button>
+			</DropDownToggleButton>
 		</Frames>
 		<Scripts>
 			<OnLoad>

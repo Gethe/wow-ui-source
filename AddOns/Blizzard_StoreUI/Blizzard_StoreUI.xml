@@ -526,16 +526,11 @@
 						</Anchors>
 					</HighlightTexture>
 				</Button>
-				<Button parentKey="List" inherits="StoreDropDownListTemplate" hidden="true">
+				<Button parentKey="List" frameLevel="1500" inherits="StoreDropDownListTemplate" hidden="true">
 					<Size x="266" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="8" y="-8"/>
 					</Anchors>
-					<Scripts>
-						<OnShow>
-							self:SetFrameLevel(self:GetParent():GetFrameLevel()+6);
-						</OnShow>
-					</Scripts>
 				</Button>
 			</Frames>
 			<Scripts>

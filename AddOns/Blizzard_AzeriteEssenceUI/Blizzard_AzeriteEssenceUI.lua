@@ -37,6 +37,7 @@ local REVEAL_MODEL_SCENE_ACTOR_SETTINGS = {
 local MAJOR_BLUE_GEM_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(287, 165995);		-- 	BlueGlow_High.m2
 local MAJOR_PURPLE_GEM_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(288, 166008);	-- 	PurpleGlow_High.m2
 local MINOR_PURPLE_GEM_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(289, 166008);	-- 	PurpleGlow_High.m2
+local RANKED_MILESTONE_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(316, 1983524);	-- 	8FX_Azerite_Generic_PrecastHand.m2
 
 local LEARN_SHAKE_DELAY = 0.869;
 local LEARN_SHAKE = { { x = 0, y = -20}, { x = 0, y = 20}, { x = 0, y = -20}, { x = 0, y = 20}, { x = -9, y = -8}, { x = 8, y = 8}, { x = -3, y = -8}, { x = 9, y = 8}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, };
@@ -69,16 +70,20 @@ local AZERITE_ESSENCE_FRAME_EVENTS = {
 };
 
 local MILESTONE_LOCATIONS = {
-	[1] = { left = 237, top = -235 },
-	[2] = { left = 100, top = -203 },
-	[3] = { left = 117, top = -310 },
-	[4] = { left = 242, top = -376 },
-	[5] = { left = 362, top = -301 },
-	[6] = { left = 356, top = -160 },	
-	[7] = { left = 232, top = -94 },
+	[1] = { left = 238, top = -235 },
+	[2] = { left = 101, top = -270 },
+	[3] = { left = 155, top = -349 },
+	[4] = { left = 247, top = -375 },
+	[5] = { left = 336, top = -337 },
+	[6] = { left = 377, top = -250 },	
+	[7] = { left = 356, top = -156 },
+	[8] = { left = 278, top = -99 },
+	[9] = { left = 179, top = -106 },
+	[10] = { left = 111, top = -174 },
+	[11] = { left = 103, top = -191 },
 };
 
-local LOCKED_RUNE_ATLASES = { "heartofazeroth-slot-minor-unlearned-bottomleft", "heartofazeroth-slot-minor-unlearned-topright" };
+local LOCKED_RUNE_ATLASES = { "heartofazeroth-slot-minor-unlearned-bottomleft", "heartofazeroth-slot-minor-unlearned-topright", "heartofazeroth-slot-minor-unlearned-3" };
 
 function AzeriteEssenceUIMixin:OnLoad()
 	CallbackRegistryBaseMixin.OnLoad(self);
@@ -105,6 +110,8 @@ function AzeriteEssenceUIMixin:SetupMilestones()
 		local template;
 		if milestoneInfo.slot == Enum.AzeriteEssence.MainSlot then
 			template = "AzeriteMilestoneMajorSlotTemplate";
+		elseif milestoneInfo.rank then
+			template = "AzeriteMilestoneRankedTemplate";
 		elseif milestoneInfo.slot then
 			template = "AzeriteMilestoneMinorSlotTemplate";
 		else
@@ -896,9 +903,9 @@ function AzeriteMilestoneBaseMixin:OnEvent(event, ...)
 	if event == "UI_MODEL_SCENE_INFO_UPDATED" then
 		self.EffectsModelScene.primaryEffect = nil;
 		self.EffectsModelScene.secondaryEffect = nil;
-		if self.slot then
+		if self.slot or self.rank then
 			local forceUpdate = true;
-			self:UpdateGemModelScenes(forceUpdate);
+			self:UpdateModelScenes(forceUpdate);
 		end
 	end
 end
@@ -911,12 +918,33 @@ function AzeriteMilestoneBaseMixin:OnHide()
 	self:UnregisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 end
 
-function AzeriteMilestoneBaseMixin:OnMouseUp()
-	-- override this
+function AzeriteMilestoneBaseMixin:OnMouseUp(mouseButton)
+	if mouseButton == "LeftButton" then
+		if self.canUnlock and C_AzeriteEssence.IsAtForge() then
+			C_AzeriteEssence.UnlockMilestone(self.milestoneID);
+		end
+	end
 end
 
 function AzeriteMilestoneBaseMixin:OnEnter()
-	-- override this
+	local spellID = C_AzeriteEssence.GetMilestoneSpell(self.milestoneID);
+	if not spellID then
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	local spell = Spell:CreateFromSpellID(spellID);
+	spell:ContinueWithCancelOnSpellLoad(function()
+		if GameTooltip:GetOwner() == self then
+			local wrapText = true;
+			GameTooltip_SetTitle(GameTooltip, spell:GetSpellName());
+			GameTooltip_AddColoredLine(GameTooltip, spell:GetSpellDescription(), NORMAL_FONT_COLOR, wrapText);
+			if not self.unlocked then
+				self:AddStateToTooltip(AZERITE_ESSENCE_LOCKED_MILESTONE_LEVEL, AZERITE_ESSENCE_UNLOCK_MILESTONE);
+			end
+			GameTooltip:Show();
+		end
+	end);
 end
 
 function AzeriteMilestoneBaseMixin:OnLeave()
@@ -927,6 +955,15 @@ function AzeriteMilestoneBaseMixin:OnLeave()
 		end
 	end
 	GameTooltip:Hide();
+end
+
+function AzeriteMilestoneBaseMixin:ShowStateFrame(stateFrame)
+	if not self.StateFrames then
+		return;
+	end
+	for i, frame in ipairs(self.StateFrames) do
+		frame:SetShown(frame == stateFrame);
+	end
 end
 
 function AzeriteMilestoneBaseMixin:CheckAndSetUpUnlockEffect()
@@ -1007,6 +1044,7 @@ function AzeriteMilestoneBaseMixin:UpdateMilestoneInfo()
 	self.unlocked = milestoneInfo.unlocked;
 	self.canUnlock = milestoneInfo.canUnlock;
 	self.requiredLevel = milestoneInfo.requiredLevel;
+	self.rank = milestoneInfo.rank;
 end
 
 function AzeriteMilestoneBaseMixin:AddStateToTooltip(requiredLevelString, returnToForgeString)
@@ -1046,16 +1084,7 @@ function AzeriteMilestoneSlotMixin:OnDragStart()
 	end
 end
 
-function AzeriteMilestoneSlotMixin:ShowStateFrame(stateFrame)
-	if not self.StateFrames then
-		return;
-	end
-	for i, frame in ipairs(self.StateFrames) do
-		frame:SetShown(frame == stateFrame);
-	end
-end
-
-function AzeriteMilestoneSlotMixin:UpdateGemModelScenes(forceUpdate)
+function AzeriteMilestoneSlotMixin:UpdateModelScenes(forceUpdate)
 	if not self.unlocked then
 		return;
 	end
@@ -1131,7 +1160,7 @@ function AzeriteMilestoneSlotMixin:Refresh()
 		end
 	end
 
-	self:UpdateGemModelScenes();
+	self:UpdateModelScenes();
 end
 
 function AzeriteMilestoneSlotMixin:OnMouseUp(button)
@@ -1235,33 +1264,76 @@ function AzeriteMilestoneStaminaMixin:Refresh()
 	end
 end
 
-function AzeriteMilestoneStaminaMixin:OnEnter()
-	local spellID = C_AzeriteEssence.GetMilestoneSpell(self.milestoneID);
-	if not spellID then
-		return;
+AzeriteMilestoneRankedMixin = CreateFromMixins(AzeriteMilestoneBaseMixin);
+
+function AzeriteMilestoneRankedMixin:Refresh()
+	self:UpdateMilestoneInfo();
+
+	if not self.unlocked and self.canUnlock then
+		self.needsUnlock = true;
 	end
 
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	local spell = Spell:CreateFromSpellID(spellID);
-	spell:ContinueWithCancelOnSpellLoad(function()
-		if GameTooltip:GetOwner() == self then
-			local wrapText = true;
-			GameTooltip_SetTitle(GameTooltip, spell:GetSpellName());
-			GameTooltip_AddColoredLine(GameTooltip, spell:GetSpellDescription(), NORMAL_FONT_COLOR, wrapText);
-			if not self.unlocked then
-				self:AddStateToTooltip(AZERITE_ESSENCE_LOCKED_MILESTONE_LEVEL, AZERITE_ESSENCE_UNLOCK_MILESTONE);
+	if not self.unlocked and not self.canUnlock then
+		self:ShowStateFrame(self.LockedState);
+		self.LockedState.UnlockLevelText:SetText(self.requiredLevel);
+	else
+		self:ShowStateFrame(self.AvailableState);
+		self.AvailableState.RankText:SetText(self.rank);
+		local spellName, spellTexture = AzeriteEssenceUtil.GetMilestoneSpellInfo(self.milestoneID);
+		self.AvailableState.Icon:SetTexture(spellTexture);
+
+		if self:ShouldShowUnlockState() then
+			self:CheckAndSetUpUnlockEffect();
+			if C_AzeriteEssence.IsAtForge() then
+				self.AvailableState.GlowAnim:Stop();
+				self.AvailableState.ForgeGlowAnim:Play();
+			else
+				self.AvailableState.ForgeGlowAnim:Stop();
+				self.AvailableState.GlowAnim:Play();
 			end
-			GameTooltip:Show();
+		else
+			self.AvailableState.GlowAnim:Stop();
+			self.AvailableState.ForgeGlowAnim:Stop();
 		end
-	end);
+	end
+
+	self:UpdateModelScenes();
 end
 
-function AzeriteMilestoneStaminaMixin:OnMouseUp(mouseButton)
-	if mouseButton == "LeftButton" then
-		if self.canUnlock and C_AzeriteEssence.IsAtForge() then
-			C_AzeriteEssence.UnlockMilestone(self.milestoneID);
+function AzeriteMilestoneRankedMixin:UpdateModelScenes(forceUpdate)
+	if not self.needsUnlock and self.unlocked then
+		local scene = self.EffectsModelScene;
+		if not scene.activeEffect or forceUpdate then
+			scene:SetFrameLevel(self.AvailableState:GetFrameLevel() - 1);
+			scene.activeEffect = StaticModelInfo.SetupModelScene(scene, RANKED_MILESTONE_MODEL_SCENE_INFO, forceUpdate);
 		end
 	end
+end
+
+function AzeriteMilestoneRankedMixin:CheckAndSetUpUnlockEffect()
+	local scene = self.EffectsModelScene;
+	if not scene.unlockEffect then
+		local forceUpdate = true;
+		local stopAnim = true;
+		self.EffectsModelScene:SetFrameLevel(self.AvailableState:GetFrameLevel() + 1);
+		scene.unlockEffect = StaticModelInfo.SetupModelScene(scene, REVEAL_SLOT_MODEL_SCENE_INFO, forceUpdate, stopAnim);
+	end
+end
+
+function AzeriteMilestoneRankedMixin:OnUnlocked()
+	self:CheckAndSetUpUnlockEffect();
+
+	local scene = self.EffectsModelScene;
+	if scene.unlockEffect then
+		local onUnlockDoneFunc = function()
+			self.needsUnlock = false;
+			self:Refresh();
+		end;
+		scene:ShowAndAnimateActors(REVEAL_MODEL_SCENE_ACTOR_SETTINGS, onUnlockDoneFunc);
+		ShakeFrame(self:GetParent():GetParent(), REVEAL_SHAKE, REVEAL_SHAKE_DURATION, REVEAL_SHAKE_FREQUENCY);
+	end
+
+	PlaySound(SOUNDKIT.UI_82_HEARTOFAZEROTH_UNLOCKSTAMINANODE);
 end
 
 AzeriteEssenceLearnAnimFrameMixin = { };

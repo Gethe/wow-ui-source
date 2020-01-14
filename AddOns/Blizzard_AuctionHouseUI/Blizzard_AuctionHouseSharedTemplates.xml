@@ -1,0 +1,200 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_AuctionHouseSharedTemplates.lua"/>
+
+	<Frame name="AuctionHouseBackgroundTemplate" mixin="AuctionHouseBackgroundMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
+
+			<!--
+			backgroundAtlas: atlas to be set in OnLoad.
+			backgroundXOffset: X offset for the background image and nine slice.
+			backgroundYOffset: Y offset for the background image and nine slice.
+
+			<KeyValue key="backgroundAtlas" value="auctionhouse-background-sell-left" type="string"/>
+			<KeyValue key="backgroundXOffset" value="0" type="string"/>
+			<KeyValue key="backgroundYOffset" value="0" type="string"/>
+			-->
+		</KeyValues>
+		<Layers>
+			<Layer>
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="AuctionHouseItemDisplayBaseTemplate" mixin="AuctionHouseItemDisplayMixin" inherits="AuctionHouseBackgroundTemplate" useParentLevel="false" registerForClicks="RightButtonUp, LeftButtonUp" virtual="true">
+		<KeyValues>
+			<!--
+			itemButtonXOffset: X Offset for the item button relative to the background's left.
+			itemButtonYOffset: Y Offset for the item button relative to the background's left.
+			-->
+			<KeyValue key="itemButtonXOffset" value="8" type="number"/>
+			<KeyValue key="itemButtonYOffset" value="0" type="number"/>
+		</KeyValues>
+		<Size x="340" y="70"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Button name="AuctionHouseItemDisplayTemplate" inherits="AuctionHouseItemDisplayBaseTemplate" virtual="true">
+		<Frames>
+			<Button parentKey="ItemButton" mixin="AuctionHouseItemDisplayItemButtonMixin" inherits="CircularGiantItemButtonTemplate">
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="SystemFont_Shadow_Large2" justifyH="LEFT">
+					<Size x="0" y="64"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ItemButton" relativePoint="RIGHT" x="11" y="1"/>
+						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-12" y="1"/>
+					</Anchors>
+					<Shadow x="1" y="-1">
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<Button name="AuctionHouseInteractableItemDisplayTemplate" mixin="AuctionHouseInteractableItemDisplayMixin" inherits="AuctionHouseItemDisplayBaseTemplate" registerForClicks="LeftButtonUp, RightButtonUp" enableMouse="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="itemButtonXOffset" value="10" type="number"/>
+			<KeyValue key="itemButtonYOffset" value="0" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Button parentKey="ItemButton" mixin="AuctionHouseInteractableItemDisplayItemButtonMixin" inherits="GiantItemButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" x="12" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="SystemFont_Shadow_Large" justifyH="LEFT">
+					<Size x="0" y="64"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ItemButton" relativePoint="RIGHT" x="12" y="0"/>
+						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-12" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+			<OnReceiveDrag method="OnReceiveDrag"/>
+		</Scripts>
+	</Button>
+
+	<EditBox name="AuctionHouseQuantityInputEditBoxTemplate" letters="8" numeric="true" autoFocus="false" mixin="AuctionHouseQuantityInputBoxMixin" inherits="LargeInputBoxTemplate" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnTextChanged method="OnTextChanged"/>
+			<OnEnterPressed function="EditBox_ClearFocus"/>
+		</Scripts>
+	</EditBox>
+
+	<Frame name="FavoriteDropDownTemplate" inherits="UIDropDownMenuTemplate" mixin="AuctionHouseFavoriteDropDownMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AuctionHouseRefreshFrameTemplate" mixin="AuctionHouseRefreshFrameMixin" virtual="true">
+		<Size x="200" y="20"/>
+		<Frames>
+			<Button parentKey="RefreshButton" mixin="AuctionHouseRefreshButtonMixin" inherits="RefreshButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="TotalQuantity" justifyH="RIGHT" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.RefreshButton" relativePoint="LEFT" x="-3" y="0"/>
+						<Anchor point="LEFT"/>
+						<Anchor point="TOP"/>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+					<Shadow>
+						<Offset>
+							<AbsDimension x="1" y="-1"/>
+						</Offset>
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="AuctionHouseBidFrameTemplate" mixin="AuctionHouseBidFrameMixin" virtual="true">
+		<Size x="240" y="22"/>
+		<Frames>
+			<Frame parentKey="BidAmount" inherits="MoneyInputFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="BidButton" mixin="AuctionHouseBidButtonMixin" inherits="UIPanelButtonTemplate, ButtonWithDisableTooltipTemplate" text="AUCTION_HOUSE_BID_BUTTON">
+				<Size x="110" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.BidAmount" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AuctionHouseBuyoutFrameTemplate" mixin="AuctionHouseBuyoutFrameMixin" virtual="true">
+		<Size x="110" y="22"/>
+		<Frames>
+			<Button parentKey="BuyoutButton" mixin="AuctionHouseBuyoutButtonMixin" inherits="UIPanelButtonTemplate, ButtonWithDisableTooltipTemplate" text="AUCTION_HOUSE_BUYOUT_BUTTON">
+				<Size x="110" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>

@@ -126,7 +126,7 @@
 				</Scripts>
 			</EditBox>
 
-			<Button name="$parentFilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
+			<DropDownToggleButton name="$parentFilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
 				<Size x="93" y="22"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-12" y="-34"/>
@@ -142,12 +142,13 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnClick>
+					<OnMouseDown>
+						UIMenuButtonStretchMixin.OnMouseDown(self, button);
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						ToggleDropDownMenu(1, nil, self:GetParent().filterDropDown, self:GetName(), 74, 15);
-					</OnClick>
+					</OnMouseDown>
 				</Scripts>
-			</Button>
+			</DropDownToggleButton>
 			<Frame name="$parentFilterDropDown" parentKey="filterDropDown" inherits="UIDropDownMenuTemplate">
 				<Scripts>
 					<OnLoad function="HeirloomsJournalCollectedFilterDropDown_OnLoad"/>

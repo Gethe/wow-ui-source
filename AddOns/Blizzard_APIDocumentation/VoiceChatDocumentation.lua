@@ -1065,19 +1065,6 @@ local VoiceChat =
 			},
 		},
 		{
-			Name = "VoiceChatMember",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "energy", Type = "number", Nilable = false },
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "isActive", Type = "bool", Nilable = false },
-				{ Name = "isSpeaking", Type = "bool", Nilable = false },
-				{ Name = "isMutedForAll", Type = "bool", Nilable = false },
-				{ Name = "isSilenced", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "VoiceChatChannel",
 			Type = "Structure",
 			Fields =
@@ -1093,6 +1080,19 @@ local VoiceChat =
 				{ Name = "isTransmitting", Type = "bool", Nilable = false },
 				{ Name = "isLocalProcess", Type = "bool", Nilable = false },
 				{ Name = "members", Type = "table", InnerType = "VoiceChatMember", Nilable = false },
+			},
+		},
+		{
+			Name = "VoiceChatMember",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "energy", Type = "number", Nilable = false },
+				{ Name = "memberID", Type = "number", Nilable = false },
+				{ Name = "isActive", Type = "bool", Nilable = false },
+				{ Name = "isSpeaking", Type = "bool", Nilable = false },
+				{ Name = "isMutedForAll", Type = "bool", Nilable = false },
+				{ Name = "isSilenced", Type = "bool", Nilable = false },
 			},
 		},
 		{

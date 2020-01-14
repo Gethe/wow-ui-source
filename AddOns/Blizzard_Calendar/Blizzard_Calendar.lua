@@ -576,6 +576,7 @@ do
 end
 
 local CALENDAR_FILTER_CVARS = {
+	{text = CALENDAR_FILTER_HOLIDAYS,			cvar = "calendarShowHolidays"		},
 	{text = CALENDAR_FILTER_DARKMOON,			cvar = "calendarShowDarkmoon"		},
 	{text = CALENDAR_FILTER_RAID_LOCKOUTS,		cvar = "calendarShowLockouts"		},
 	{text = CALENDAR_FILTER_WEEKLY_HOLIDAYS,	cvar = "calendarShowWeeklyHolidays"	},
@@ -1852,7 +1853,7 @@ function CalendarNextMonthButton_OnClick()
 	CalendarFrame_OffsetMonth(1);
 end
 
-function CalendarFilterButton_OnClick(self)
+function CalendarFilterButton_OnMouseDown(self)
 	ToggleDropDownMenu(1, nil, CalendarFilterDropDown, self, 0, 0);
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
@@ -2721,7 +2722,7 @@ function CalendarViewHolidayFrame_Update()
 	if(indexInfo) then
 		local holidayInfo = C_Calendar.GetHolidayInfo(indexInfo.offsetMonths, indexInfo.monthDay, indexInfo.eventIndex);
 		if (holidayInfo) then
-			CalendarTitleFrame_SetText(CalendarViewHolidayTitleFrame, holidayInfo.name);
+			CalendarViewHolidayFrame.Header:Setup(holidayInfo.name);
 			local description = holidayInfo.description;
 			if (holidayInfo.startTime and holidayInfo.endTime) then
 				description = format(CALENDAR_HOLIDAYFRAME_BEGINSENDS, description, FormatShortDate(holidayInfo.startTime.monthDay, holidayInfo.startTime.month), GameTime_GetFormattedTime(holidayInfo.startTime.hour, holidayInfo.startTime.minute, true), FormatShortDate(holidayInfo.endTime.monthDay, holidayInfo.endTime.month), GameTime_GetFormattedTime(holidayInfo.endTime.hour, holidayInfo.endTime.minute, true));
@@ -2758,7 +2759,7 @@ function CalendarViewRaidFrame_Update()
 	local raidInfo = indexInfo and C_Calendar.GetRaidInfo(indexInfo.offsetMonths, indexInfo.monthDay, indexInfo.eventIndex);
 	if raidInfo and raidInfo.calendarType == "RAID_LOCKOUT" then
 		local name = GetDungeonNameWithDifficulty(raidInfo.name, raidInfo.difficultyName);
-		CalendarTitleFrame_SetText(CalendarViewRaidTitleFrame, name);
+		CalendarViewRaidFrame.Header:Setup(name);
 		CalendarViewRaidDescription:SetFormattedText(CALENDAR_RAID_LOCKOUT_DESCRIPTION, name, GameTime_GetFormattedTime(raidInfo.time.hour, raidInfo.time.minute, true));
 	end
 end
@@ -3123,18 +3124,18 @@ function CalendarViewEventFrame_Update()
 		CalendarViewEventDescription:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	end
 	if ( eventInfo.calendarType == "GUILD_ANNOUNCEMENT" ) then
-		CalendarTitleFrame_SetText(CalendarViewEventTitleFrame, CALENDAR_VIEW_ANNOUNCEMENT);
+		CalendarViewEventFrame.Header:Setup(CALENDAR_VIEW_ANNOUNCEMENT);
 		-- guild wide events don't have invite lists, auto approval, or event locks
 		CalendarViewEventInviteListSection:Hide();
 		CalendarViewEventFrame:SetHeight(CalendarViewEventFrame.defaultHeight - CalendarViewEventInviteListSection:GetHeight());
 		CalendarClassButtonContainer_Hide();
 	else
 		if ( eventInfo.calendarType == "GUILD_EVENT" ) then
-			CalendarTitleFrame_SetText(CalendarViewEventTitleFrame, CALENDAR_VIEW_GUILD_EVENT);
+			CalendarViewEventFrame.Header:Setup(CALENDAR_VIEW_GUILD_EVENT);
 		elseif ( eventInfo.calendarType == "COMMUNITY_EVENT" ) then
-			CalendarTitleFrame_SetText(CalendarViewEventTitleFrame, CALENDAR_VIEW_COMMUNITY_EVENT);
+			CalendarViewEventFrame.Header:Setup(CALENDAR_VIEW_COMMUNITY_EVENT);
 		else
-			CalendarTitleFrame_SetText(CalendarViewEventTitleFrame, CALENDAR_VIEW_EVENT);
+			CalendarViewEventFrame.Header:Setup(CALENDAR_VIEW_EVENT);
 		end
 		CalendarViewEventInviteListSection:Show();
 		CalendarViewEventFrame:SetHeight(CalendarViewEventFrame.defaultHeight);
@@ -3667,7 +3668,7 @@ function CalendarCreateEventFrame_Update()
 		CalendarCreateEventCommunityDropDown:SetShown(calendarType == "COMMUNITY_EVENT");
 
 		if ( calendarType == "GUILD_ANNOUNCEMENT" ) then
-			CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_CREATE_ANNOUNCEMENT);
+			CalendarCreateEventFrame.Header:Setup(CALENDAR_CREATE_ANNOUNCEMENT);
 			-- guild wide events don't have invites
 			CalendarCreateEventInviteListSection:Hide();
 			CalendarCreateEventMassInviteButton:Hide();
@@ -3675,7 +3676,7 @@ function CalendarCreateEventFrame_Update()
 			CalendarClassButtonContainer_Hide();
 		else
 			if ( calendarType == "GUILD_EVENT" ) then
-				CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_CREATE_GUILD_EVENT);
+				CalendarCreateEventFrame.Header:Setup(CALENDAR_CREATE_GUILD_EVENT);
 				CalendarCreateEventMassInviteButton:Hide();
 			elseif ( calendarType == "COMMUNITY_EVENT" ) then
 				-- reset the community selected
@@ -3691,10 +3692,10 @@ function CalendarCreateEventFrame_Update()
 					UIDropDownMenu_SetText(CalendarCreateEventCommunityDropDown, CALENDER_INVITE_SELECT_COMMUNITY);
 				end
 
-				CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_CREATE_COMMUNITY_EVENT);
+				CalendarCreateEventFrame.Header:Setup(CALENDAR_CREATE_COMMUNITY_EVENT);
 				CalendarCreateEventMassInviteButton:Hide();
 			else
-				CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_CREATE_EVENT);
+				CalendarCreateEventFrame.Header:Setup(CALENDAR_CREATE_EVENT);
 				-- update mass invite button
 				CalendarCreateEventMassInviteButton_Update();
 				CalendarCreateEventMassInviteButton:Show();
@@ -3777,7 +3778,7 @@ function CalendarCreateEventFrame_Update()
 		CalendarCreateEventCommunityDropDown:SetShown(false);
 
 		if ( eventInfo.calendarType == "GUILD_ANNOUNCEMENT" ) then
-			CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_EDIT_ANNOUNCEMENT);
+			CalendarCreateEventFrame.Header:Setup(CALENDAR_EDIT_ANNOUNCEMENT);
 			-- guild wide events don't have invites
 			CalendarCreateEventInviteListSection:Hide();
 			CalendarCreateEventRaidInviteButton:Hide();
@@ -3785,11 +3786,11 @@ function CalendarCreateEventFrame_Update()
 			CalendarClassButtonContainer_Hide();
 		else
 			if ( eventInfo.calendarType == "GUILD_EVENT" ) then
-				CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_EDIT_GUILD_EVENT);
+				CalendarCreateEventFrame.Header:Setup(CALENDAR_EDIT_GUILD_EVENT);
 			elseif ( eventInfo.calendarType == "COMMUNITY_EVENT" ) then
-				CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_EDIT_COMMUNITY_EVENT);
+				CalendarCreateEventFrame.Header:Setup(CALENDAR_EDIT_COMMUNITY_EVENT);
 			else
-				CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_EDIT_EVENT);
+				CalendarCreateEventFrame.Header:Setup(CALENDAR_EDIT_EVENT);
 			end
 			-- update auto approve
 			CalendarCreateEventAutoApproveCheck:SetChecked(eventInfo.isAutoApprove);
@@ -5176,9 +5177,9 @@ end
 
 function CalendarTexturePickerTitleFrame_Update()
 	if ( CalendarTexturePickerFrame.eventType == CALENDAR_EVENTTYPE_RAID ) then
-		CalendarTitleFrame_SetText(CalendarTexturePickerTitleFrame, CALENDAR_TEXTURE_PICKER_TITLE_RAID);
+		CalendarTexturePickerFrame.Header:Setup(CALENDAR_TEXTURE_PICKER_TITLE_RAID);
 	else
-		CalendarTitleFrame_SetText(CalendarTexturePickerTitleFrame, CALENDAR_TEXTURE_PICKER_TITLE_DUNGEON);
+		CalendarTexturePickerFrame.Header:Setup(CALENDAR_TEXTURE_PICKER_TITLE_DUNGEON);
 	end
 end
 

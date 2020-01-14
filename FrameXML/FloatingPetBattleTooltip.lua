@@ -97,6 +97,10 @@ end
 function BattlePetTooltip_OnLoad(self)
 	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
 	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+
+	local subLayer = 0;
+	self.linePool = CreateFontStringPool(self, "ARTWORK", subLayer, "GameTooltipText");
+	self.AddLine = BattlePetTooltipTemplate_AddTextLine;
 end
 
 function BattlePetTooltipTemplate_SetBattlePet(tooltipFrame, data)
@@ -114,6 +118,35 @@ function BattlePetTooltipTemplate_SetBattlePet(tooltipFrame, data)
 	tooltipFrame.Power:SetText(data.power);
 	tooltipFrame.Speed:SetText(data.speed);
 	tooltipFrame.PetTypeTexture:SetTexture("Interface\\PetBattles\\PetIcon-"..PET_TYPE_SUFFIX[data.petType]);
+
+	tooltipFrame.linePool:ReleaseAll();
+	tooltipFrame.textLineAnchor = nil;
+end
+
+function BattlePetTooltipTemplate_AddTextLine(self, text, color)
+	color = color or NORMAL_FONT_COLOR;
+	
+	local anchor = self.textLineAnchor;
+	if not anchor then
+		if self.JournalClick and self.JournalClick:IsShown() then
+			anchor = self.JournalClick;
+		elseif self.Owned:IsShown() and self.Owned:GetText() ~= nil then
+			anchor = self.Owned;
+		else
+			anchor = self.SpeedTexture;
+		end
+	end
+
+	local line = self.linePool:Acquire();
+	line:SetText(text);
+	line:SetTextColor(color:GetRGB());
+	line:SetPoint("TOP", anchor, "BOTTOM", 0, -2);
+	line:SetPoint("LEFT", self.Name, "LEFT");
+	line:Show();
+
+	self.textLineAnchor = line;
+
+	self:SetHeight(self:GetHeight() + 14);
 end
 
 function BattlePetTooltipJournalClick_OnClick(self)

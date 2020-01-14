@@ -236,7 +236,7 @@ function CommentatorSpellPoolMixin:IsSpellActive(trackedSpellID)
 end
 
 function CommentatorSpellPoolMixin:ConstructFrames(spells, maxSpells, container, point, padding)
-	self.framePool:ReleaseAll();
+	self:Release();
 
 	-- Reserve enough frames for every spell so the order of frames returned by
 	-- EnumerateActive remains the same below, and in UpdateAlignment().
@@ -263,6 +263,10 @@ function CommentatorSpellPoolMixin:ConstructFrames(spells, maxSpells, container,
 	self:UpdateAlignment();
 end
  
+function CommentatorSpellPoolMixin:Release()
+	self.framePool:ReleaseAll();
+end
+
 function CommentatorSpellPoolMixin:UpdateAlignment()
 	local alignIndex = 0;
 	local totalWidth = 0;

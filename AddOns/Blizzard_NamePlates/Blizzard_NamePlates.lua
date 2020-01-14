@@ -351,6 +351,11 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	C_NamePlate.SetNamePlateEnemySize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight * Lerp(1.0, 1.25, zeroBasedScale));
 	C_NamePlate.SetNamePlateSelfSize(self.baseNamePlateWidth * horizontalScale * Lerp(1.1, 1.0, clampedZeroBasedScale), self.baseNamePlateHeight);
 
+	local classificationScale = tonumber(GetCVar("NamePlateClassificationScale"));
+	local maxClassificationScale = tonumber(GetCVar("NamePlateMaximumClassificationScale"));
+	DefaultCompactNamePlateFrameSetUpOptions.classificationScale = classificationScale;
+	DefaultCompactNamePlateFrameSetUpOptions.maxClassificationScale = maxClassificationScale;
+
 	-- Clear the inset table, just update it from scratch since this will iterate all nameplates
 	-- As each nameplate updates, it will handle updating preferred insets during its setup
 	self.preferredInsets = {};
@@ -409,9 +414,9 @@ end
 
 function NamePlateBaseMixin:ApplyOffsets()
 	if self.driverFrame:IsUsingLargerNamePlateStyle() then
-		self.UnitFrame.BuffFrame:SetBaseYOffset(-5);
+		self.UnitFrame.BuffFrame:SetBaseYOffset(-3);
 	else
-		self.UnitFrame.BuffFrame:SetBaseYOffset(-5);
+		self.UnitFrame.BuffFrame:SetBaseYOffset(-3);
 	end
 
 	local targetMode = GetCVarBool("nameplateResourceOnTarget");
@@ -463,6 +468,17 @@ function NamePlateBaseMixin:OnSizeChanged()
 		end
 
 		self.driverFrame:OnNamePlateResized(self);
+	end
+end
+
+NamePlateClassificationFrameMixin = {};
+
+function NamePlateClassificationFrameMixin:OnSizeChanged()
+	self.classificationIndicator:SetScale(1.0);
+
+	local effectiveScale = self:GetEffectiveScale();
+	if self.maxScale and effectiveScale > self.maxScale then
+		self.classificationIndicator:SetScale(self.maxScale / effectiveScale);
 	end
 end
 

@@ -246,11 +246,29 @@ function MiniMapTracking_Update()
 	UIDropDownMenu_RefreshAll(MiniMapTrackingDropDown);
 end
 
-function MiniMapTracking_OnClick()
+function MiniMapTracking_OnMouseDown(self)
+	MiniMapTrackingIcon:SetPoint("TOPLEFT", MiniMapTracking, "TOPLEFT", 8, -8);
+	MiniMapTrackingIconOverlay:Show();
 	MiniMapTrackingDropDown.point = "TOPRIGHT";
 	MiniMapTrackingDropDown.relativePoint = "BOTTOMLEFT";
 	ToggleDropDownMenu(1, nil, MiniMapTrackingDropDown, "MiniMapTracking", 8, 5);
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end
+
+function MiniMapTracking_OnMouseUp(self)
+	MiniMapTrackingIcon:SetPoint("TOPLEFT", MiniMapTracking, "TOPLEFT", 6, -6);
+	MiniMapTrackingIconOverlay:Hide();
+end
+
+function MiniMapTracking_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+	GameTooltip:SetText(TRACKING, 1, 1, 1);
+	GameTooltip:AddLine(MINIMAP_TRACKING_TOOLTIP_NONE, nil, nil, nil, true);
+	GameTooltip:Show();
+end
+
+function MiniMapTracking_OnLeave(self)
+	GameTooltip:Hide();
 end
 
 function MiniMapTrackingDropDown_OnLoad(self)

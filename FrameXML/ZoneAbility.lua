@@ -13,6 +13,7 @@ ZONE_SPELL_ABILITY_TEXTURES_BASE = {
 	[164222] = "Interface\\ExtraButton\\GarrZoneAbility-Stables",
 	[160240] = "Interface\\ExtraButton\\GarrZoneAbility-Workshop",
 	[160241] = "Interface\\ExtraButton\\GarrZoneAbility-Workshop",
+	[307870] = "Interface\\ExtraButton\\Championlight",
 };
 
 ZONE_SPELL_ABILITY_TEXTURES_BASE_FALLBACK = "Interface\\ExtraButton\\GarrZoneAbility-Armory";
@@ -50,15 +51,16 @@ function ZoneAbilityFrame_OnEvent(self, event, ...)
 	self.SpellButton.baseSpellID = self.baseSpellID;
 	self.SpellButton.spellID = self.spellID;
 	local lastState = self.buffSeen;
-	self.buffSeen = (self.spellID ~= 0);
+	self.buffSeen = false;
 
-	if (self.buffSeen) then
+	if (self.spellID ~= 0) then
 		if (not HasZoneAbilitySpellOnBar(self)) then
 			if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY) and type == Enum.ZoneAbilityType.Garrison ) then
 				ZoneAbilityButtonAlert:SetHeight(ZoneAbilityButtonAlert.Text:GetHeight()+42);
 				ZoneAbilityButtonAlert:Show();
 				SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY, true );
 			end
+			self.buffSeen = true;
 			self:Show();
 		else
 			ZoneAbilityButtonAlert:Hide();
@@ -100,20 +102,31 @@ function ZoneAbilityFrame_Update(self)
 	self.SpellButton.Icon:SetTexture(tex);
 
 	local charges, maxCharges, chargeStart, chargeDuration = GetSpellCharges(self.spellID);
+	local start, duration, enable = GetSpellCooldown(self.spellID);
+	local usesCount = GetSpellCount(self.spellID);
 
-	local usesCharges = false;
+	local showSpellCount = false;
+	local spellCount = 0;
+
+	-- Show Spell Charges, then Spell Uses, then Nothing
 	if (maxCharges and maxCharges > 1) then
-		self.SpellButton.Count:SetText(charges);
-		usesCharges = true;
+		showSpellCount = true;
+		spellCount = charges;
+
+		if (charges < maxCharges) then
+			StartChargeCooldown(self.SpellButton, chargeStart, chargeDuration, enable);
+		end
+	elseif (usesCount > 0) then
+		showSpellCount = true;
+		spellCount = usesCount;
+	end
+
+	if showSpellCount then
+		self.SpellButton.Count:SetText(spellCount);
 	else
 		self.SpellButton.Count:SetText("");
 	end
 
-	local start, duration, enable = GetSpellCooldown(self.spellID);
-	
-	if (usesCharges and charges < maxCharges) then
-		StartChargeCooldown(self.SpellButton, chargeStart, chargeDuration, enable);
-	end
 	if (start) then
 		CooldownFrame_Set(self.SpellButton.Cooldown, start, duration, enable);
 	end

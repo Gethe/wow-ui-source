@@ -219,6 +219,10 @@
 						if ( canRepair and (repairAllCost > 0) ) then
 							GameTooltip:SetText(REPAIR_ALL_ITEMS);
 							SetTooltipMoney(GameTooltip, repairAllCost);
+							local personalMoney = GetMoney();
+							if(repairAllCost > personalMoney) then
+								GameTooltip:AddLine(GUILDBANK_REPAIR_INSUFFICIENT_FUNDS, RED_FONT_COLOR:GetRGB());
+							end
 						end
 						GameTooltip:Show();
 					</OnEnter>
@@ -297,19 +301,34 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						local repairAllCost, canRepair = GetRepairAllCost();
 						if ( canRepair and (repairAllCost > 0) ) then
-							GameTooltip:SetText(REPAIR_ALL_ITEMS);
-							SetTooltipMoney(GameTooltip, repairAllCost);
-							local amount = GetGuildBankWithdrawMoney();
-							local guildBankMoney = GetGuildBankMoney();
-							if ( amount == -1 ) then
-								-- Guild leader shows full guild bank amount
-								amount = guildBankMoney;
+						GameTooltip:SetText(REPAIR_ALL_ITEMS);
+						SetTooltipMoney(GameTooltip, repairAllCost);
+						local amount = GetGuildBankWithdrawMoney();
+						local guildBankMoney = GetGuildBankMoney();
+						if ( amount == -1 ) then
+							-- Guild leader shows full guild bank amount
+							amount = guildBankMoney;
+						else
+							amount = min(amount, guildBankMoney);
+						end
+						GameTooltip:AddLine(GUILDBANK_REPAIR, nil, nil, nil, true);
+						SetTooltipMoney(GameTooltip, amount, "GUILD_REPAIR");
+
+						if ( ( repairAllCost > amount ) ) then
+							-- The repair cost is greater than the guild funds available, so personal funds will be required.
+							local personalAmount = repairAllCost - amount;
+							local personalMoney = GetMoney();
+							if ( personalMoney >= personalAmount ) then
+								-- The player has enough money to make up the difference.
+								GameTooltip:AddLine(GUILDBANK_REPAIR_PERSONAL, nil, nil, nil, true);
+								SetTooltipMoney(GameTooltip, personalAmount);
 							else
-								amount = min(amount, guildBankMoney);
+								-- The player doesn't have enough to repair all.
+								GameTooltip:AddLine(GUILDBANK_REPAIR_INSUFFICIENT_FUNDS, RED_FONT_COLOR:GetRGB());
 							end
-							GameTooltip:AddLine(GUILDBANK_REPAIR, nil, nil, nil, true);
-							SetTooltipMoney(GameTooltip, amount, "GUILD_REPAIR");
-							GameTooltip:Show();
+						end
+
+						GameTooltip:Show();
 						end
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>

@@ -1972,8 +1972,7 @@ function ChatConfigCategoryFrame_Refresh(preserveCategorySelection)
 			ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton1);
 		end
 	end
-	ChatConfigFrameHeaderText:SetText(currentChatFrame ~= nil and CHATCONFIG_HEADER:format(currentChatFrame.name) or "");
-	ChatConfigFrameHeader:SetWidth(ChatConfigFrameHeaderText:GetWidth()+200);
+	ChatConfigFrame.Header:Setup(currentChatFrame ~= nil and CHATCONFIG_HEADER:format(currentChatFrame.name) or "");
 	ChatConfigCategory_UpdateEnabled();
 end
 

@@ -19,25 +19,41 @@
 		<HighlightTexture parentKey="HighlightTexture" file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD" setAllPoints="true"/>
 	</Button>
 
-	<Frame name="ScrollListTemplate" mixin="ScrollListMixin" virtual="true">
+	<Button name="ScrollListLineTextTemplate" inherits="ScrollListLineTemplate" virtual="true">
 		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="SelectedHighlight" hidden="true">
-					<Color r="1" g="0.8" b="0.2" a="0.2"/>
-				</Texture>
+			<Layer level="BACKGROUND">
+				<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT" maxLines="1">
+					<Anchors>
+						<Anchor point="LEFT" x="4" y="0"/>
+						<Anchor point="RIGHT" x="-4" y="0"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
+	</Button>
+
+
+	<Frame name="ScrollListTemplate" mixin="ScrollListMixin" virtual="true">
 		<Frames>
 			<ScrollFrame parentKey="ScrollFrame" inherits="HybridScrollFrameTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="0" y="-4"/>
-					<Anchor point="BOTTOMRIGHT" x="-22" y="3"/>
+					<Anchor point="TOPLEFT" x="4" y="-7"/>
+					<Anchor point="BOTTOMRIGHT" x="-28" y="3"/>
 				</Anchors>
 				<Frames>
+					<Frame parentKey="ArtOverlay" setAllPoints="true" clipChildren="true">
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="SelectedHighlight" hidden="true">
+									<Color r="1" g="0.8" b="0.2" a="0.2"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
 					<Slider parentKey="scrollBar" inherits="HybridScrollBarTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-12"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="11"/>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="4" y="-10"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="4" y="12"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -50,7 +66,7 @@
 			<Frame parentKey="InsetFrame" inherits="InsetFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT" x="-22" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollFrame" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>
 			</Frame>
 		</Frames>

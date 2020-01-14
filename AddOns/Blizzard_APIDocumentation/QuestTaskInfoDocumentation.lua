@@ -48,6 +48,7 @@ local QuestTaskInfo =
 				{ Name = "questTitle", Type = "string", Nilable = false },
 				{ Name = "factionID", Type = "number", Nilable = true },
 				{ Name = "capped", Type = "bool", Nilable = true },
+				{ Name = "displayAsObjective", Type = "bool", Nilable = true },
 			},
 		},
 		{
@@ -134,6 +135,15 @@ local QuestTaskInfo =
 			Returns =
 			{
 				{ Name = "taskPOIs", Type = "table", InnerType = "TaskPOIData", Nilable = false },
+			},
+		},
+		{
+			Name = "GetThreatQuests",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "quests", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{

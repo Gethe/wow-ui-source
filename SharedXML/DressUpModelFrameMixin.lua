@@ -31,8 +31,7 @@ function DressUpModelFrameResetButtonMixin:OnLoad()
 end
 
 function DressUpModelFrameResetButtonMixin:OnClick()
-	
-	self.modelScene:TransitionToModelSceneID(290, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
+	self.modelScene:Reset();
 
 	local playerActor = self.modelScene:GetPlayerActor();
 

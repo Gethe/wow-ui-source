@@ -1,12 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Include file="UIDropDownMenuTemplates.lua"/>
-	<Frame name="UIDropDownCustomMenuEntryTemplate" enableMouse="true" hidden="true" mixin="UIDropDownCustomMenuEntryMixin" virtual="true">
-		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
-	</Frame>
+	<Frame name="UIDropDownCustomMenuEntryTemplate" enableMouse="true" hidden="true" mixin="UIDropDownCustomMenuEntryMixin" virtual="true"/>
 
 	<Button name="UIDropDownMenuButtonTemplate" virtual="true">
 		<Size x="100" y="16"/>
@@ -82,16 +77,14 @@
 					<OnEnter>
 						CloseDropDownMenus(self:GetParent():GetParent():GetID() + 1);
 						_G[self:GetName().."SwatchBg"]:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-						UIDropDownMenu_StopCounting(self:GetParent():GetParent());
 					</OnEnter>
 					<OnLeave>
 						_G[self:GetName().."SwatchBg"]:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-						UIDropDownMenu_StartCounting(self:GetParent():GetParent());
 					</OnLeave>
 				</Scripts>
 				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
 			</Button>
-			<Button name="$parentExpandArrow" hidden="true" motionScriptsWhileDisabled="true">
+			<DropDownToggleButton name="$parentExpandArrow" mixin="DropDownExpandArrowMixin" hidden="true" motionScriptsWhileDisabled="true">
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>
@@ -103,29 +96,11 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						ToggleDropDownMenu(self:GetParent():GetParent():GetID() + 1, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self);
-					</OnClick>
-					<OnEnter>
-						local level =  self:GetParent():GetParent():GetID() + 1;
-
-						CloseDropDownMenus(level);
-
-						if self:IsEnabled() then
-							local listFrame = _G["DropDownList"..level];
-							if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint()) ~= self ) then
-								ToggleDropDownMenu(level, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self);
-							end
-						end
-
-						UIDropDownMenu_StopCounting(self:GetParent():GetParent());
-					</OnEnter>
-					<OnLeave>
-						UIDropDownMenu_StartCounting(self:GetParent():GetParent());
-					</OnLeave>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnEnter method="OnEnter"/>
 				</Scripts>
 				<NormalTexture file="Interface\ChatFrame\ChatFrameExpandArrow"/>
-			</Button>
+			</DropDownToggleButton>
 			<Button name="$parentInvisibleButton" hidden="true" parentKey="invisibleButton">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
@@ -197,29 +172,10 @@
 			<OnClick>
 				self:Hide();
 			</OnClick>
-			<OnEnter>
-				UIDropDownMenu_StopCounting(self, motion);
-			</OnEnter>
-			<OnLeave>
-				UIDropDownMenu_StartCounting(self, motion);
-			</OnLeave>
 			<OnUpdate>
 				UIDropDownMenu_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnShow>
-				for i=1, UIDROPDOWNMENU_MAXBUTTONS do
-					if (not self.noResize) then
-						_G[self:GetName().."Button"..i]:SetWidth(self.maxWidth);
-					end
-				end
-				if (not self.noResize) then
-					self:SetWidth(self.maxWidth+25);
-				end
-				self.showTimer = nil;
-				if ( self:GetID() > 1 ) then
-					self.parent = _G["DropDownList"..(self:GetID() - 1)];
-				end
-
 				UIDropDownMenu_OnShow(self);
 			</OnShow>
 			<OnHide>
@@ -227,6 +183,15 @@
 			</OnHide>
 		</Scripts>
 	</Button>
+
+	<DropDownToggleButton name="UIDropDownMenuButtonScriptTemplate" mixin="DropDownMenuButtonMixin" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseDown method="OnMouseDown"/>
+		</Scripts>
+	</DropDownToggleButton>
+
 	<Frame name="UIDropDownMenuTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="40" y="32"/>
@@ -291,7 +256,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="Button" name="$parentButton" motionScriptsWhileDisabled="true" >
+			<DropDownToggleButton parentKey="Button" name="$parentButton" inherits="UIDropDownMenuButtonScriptTemplate" motionScriptsWhileDisabled="true" >
 				<Size>
 					<AbsDimension x="24" y="24"/>
 				</Size>
@@ -302,27 +267,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnEnter>
-						local parent = self:GetParent();
-						local myscript = parent:GetScript("OnEnter");
-						if(myscript ~= nil) then
-							myscript(parent);
-						end
-					</OnEnter>
-					<OnLeave>
-						local parent = self:GetParent();
-						local myscript = parent:GetScript("OnLeave");
-						if(myscript ~= nil) then
-							myscript(parent);
-						end
-					</OnLeave>
-					<OnClick>
-						local parent = self:GetParent();
-						ToggleDropDownMenu(nil, nil, parent);
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-					</OnClick>
-				</Scripts>
 				<NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
 					<Size>
 						<AbsDimension x="24" y="24"/>
@@ -355,8 +299,79 @@
 						<Anchor point="RIGHT"/>
 					</Anchors>
 				</HighlightTexture>
-			</Button>
+			</DropDownToggleButton>
 		</Frames>
+		<Scripts>
+			<OnHide>
+				CloseDropDownMenus();
+			</OnHide>
+		</Scripts>
+	</Frame>
+
+	<Frame name="LargeUIDropDownMenuTemplate" virtual="true">
+		<Frames>
+			<DropDownToggleButton parentKey="Button" mixin="LargeDropDownMenuButtonMixin" inherits="UIDropDownMenuButtonScriptTemplate" motionScriptsWhileDisabled="true">
+				<Size x="27" y="26"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-3" y="2"/>
+				</Anchors>
+				<NormalTexture parentKey="NormalTexture" atlas="auctionhouse-ui-dropdown-arrow-up" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</NormalTexture>
+				<PushedTexture parentKey="PushedTexture" atlas="auctionhouse-ui-dropdown-arrow-down" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</PushedTexture>
+				<DisabledTexture parentKey="DisabledTexture" atlas="auctionhouse-ui-dropdown-arrow-disabled" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</DisabledTexture>
+				<HighlightTexture parentKey="HighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
+					<Size x="33" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.NormalTexture" relativePoint="CENTER"/>
+					</Anchors>
+				</HighlightTexture>
+			</DropDownToggleButton>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Left" atlas="auctionhouse-ui-dropdown-left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right" atlas="auctionhouse-ui-dropdown-right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Middle" atlas="auctionhouse-ui-dropdown-middle">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="NumberFont_Small" wordwrap="false" justifyH="RIGHT">
+					<Size x="0" y="10"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Button" relativePoint="LEFT" x="-4" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" x="30" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnHide>
 				CloseDropDownMenus();

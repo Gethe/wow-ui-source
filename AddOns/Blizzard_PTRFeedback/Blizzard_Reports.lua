@@ -204,6 +204,41 @@ function PTR_IssueReporter.CreateReports()
         return select(10, GetItemInfo(value))
     end    
     
+    local GetBonusListFromID = function(value)
+        --[[
+        Format of item string:
+        item:itemID:enchantID:gemID1:gemID2:gemID3:gemID4:suffixID:uniqueID:linkLevel:specializationID:upgradeTypeID:instanceDifficultyID:numBonusIDs[:bonusID1:bonusID2:...][:upgradeValue1:upgradeValue2:...]:relic1NumBonusIDs[:relic1BonusID1:relic1BonusID2:...]:relic2NumBonusIDs[:relic2BonusID1:relic2BonusID2:...]:relic3NumBonusIDs[:relic3BonusID1:relic3BonusID2:...]
+        Note that the 14th entry is the number of bonus Ids
+        ]]--
+        local itemString = string.match(value.Additional, "item[%-?%d:]+")
+        local elements = {}
+        local i = 1
+        local from, to = string.find(itemString, ":", i)
+        while from do
+            table.insert(elements, string.sub(itemString, i, from-1))
+            i = to + 1
+            from, to = string.find(itemString, ":", i)
+        end
+        table.insert(elements, string.sub(itemString, i))
+        
+        if table.getn(elements) > 14 then
+            local bonusIDs = {}
+            local results = ""
+            local numberOfBonusIDs = elements[14]
+            if (numberOfBonusIDs) and (tonumber(numberOfBonusIDs)) and (tonumber(numberOfBonusIDs) > 0) then
+                for i=15, 15 + numberOfBonusIDs do
+                    table.insert(bonusIDs,elements[i])
+                end
+                for i,v in ipairs(bonusIDs) do
+                    results = results .. ":" .. v
+                end
+            end
+            return results
+        end
+        
+        return ""
+    end
+
     local itemReport = PTR_IssueReporter.CreateSurvey(9, "Bug Report: %s")
     itemReport:PopulateDynamicTitleToken(1, "Name")
     itemReport:AttachIconViewer("ID", GetIconFromItemID)
@@ -211,7 +246,8 @@ function PTR_IssueReporter.CreateReports()
     
     itemReport:AddDataCollection(baseCollectors + 1, collector.FromDataPackage, "ID")
     itemReport:AddDataCollection(baseCollectors + 2, collector.OpenEndedQuestion, "What was the issue with this item?")
-
+    itemReport:AddDataCollection(baseCollectors + 3, collector.RunFunction, GetBonusListFromID)
+    
     itemReport:RegisterPopEvent(event.Tooltip, tooltips.item)
     
     --------------------------------- Achievement Reporting ---------------------------------------------

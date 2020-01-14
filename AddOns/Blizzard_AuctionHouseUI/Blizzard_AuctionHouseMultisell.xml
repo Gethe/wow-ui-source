@@ -1,0 +1,92 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_AuctionHouseMultisell.lua"/>
+
+	<Frame name="AuctionHouseMultisellProgressFrame" mixin="MultisellProgressFrameMixin" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Size x="300" y="64"/>
+		<Anchors>
+			<Anchor point="BOTTOM" x="0" y="73"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Fill" file="Interface\AuctionFrame\UI-AuctionPost-Background">							
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="12" y="-8"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-12" y="8"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0.25" bottom="0.75" />
+					<Color r="0.55" g="0.55" b="0.55" />
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Left" file="Interface\AuctionFrame\UI-AuctionPost-Endcaps">
+					<Size x="32" y="64"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.5" right="1" top="0" bottom="1" />
+					<Color r="0.75" g="0.75" b="0.75" />
+				</Texture>
+				<Texture parentKey="Right" file="Interface\AuctionFrame\UI-AuctionPost-Endcaps">
+					<Size x="32" y="64"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.5" top="0" bottom="1" />
+					<Color r="0.75" g="0.75" b="0.75" />
+				</Texture>
+				<Texture parentKey="Middle" file="Interface\AuctionFrame\UI-AuctionPost-Middle">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT" />
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT" />
+					</Anchors>
+					<Color r="0.75" g="0.75" b="0.75" />
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar parentKey="ProgressBar" inherits="CastingBarFrameTemplate">
+				<Size x="195" y="13"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent" x="3" y="-3"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.Spark:Hide();
+						self.Flash:Hide();
+						self.Icon:Show();
+						self.Icon:SetWidth(24);
+						self.Icon:SetHeight(24);
+						self.Icon:SetPoint("RIGHT", self, "LEFT", -10, 2);
+					</OnLoad>
+
+					<!-- Override the scripts from the template, as this behavior is not desired. -->
+					<OnEvent></OnEvent>
+					<OnShow></OnShow>
+					<OnUpdate></OnUpdate>
+					<!-- Override the scripts from the template, as this behavior is not desired. -->
+				</Scripts>
+			</StatusBar>
+			<Button parentKey="CancelButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ProgressBar" relativePoint="RIGHT" x="2" y="1"/>
+				</Anchors>
+				<HitRectInsets left="9" right="7" top="-7" bottom="10"/>
+				<Scripts>
+					<OnClick>
+						C_AuctionHouse.CancelSell();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\CancelButton-Up"/>
+				<PushedTexture file="Interface\Buttons\CancelButton-Down"/>
+				<HighlightTexture file="Interface\Buttons\CancelButton-Highlight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				UIParent_ManageFramePositions();
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

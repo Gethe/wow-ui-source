@@ -77,7 +77,7 @@
 		<Size x="256" y="28"/>
 	</Texture>
 	<Texture name="_UI-Frame-TopTileStreaks" atlas="_UI-Frame-TopTileStreaks" virtual="true" horizTile="true" >
-		<Size x="256" y="37"/>
+		<Size x="256" y="43"/>
 	</Texture>
 
 	<!--
@@ -487,6 +487,57 @@
 
 <!--
 *******************************************************************************
+	Dialog Header Template
+
+	Header used for dialogs
+*******************************************************************************
+-->
+	<Frame name="DialogHeaderTemplate" mixin="DialogHeaderMixin" virtual="true">
+		<Size x="200" y="39"/>
+		<KeyValues>
+			<!-- Override this to change how much padding is on the left & right of the text. Padding is applied evenly on the left and right (headerTextPadding / 2) on each side -->
+			<KeyValue key="headerTextPadding" value="64" type="number"/>
+
+			<!--Optional: Add this to inheriting frames in order to auotmatically set the text when the header loads-->
+			<!--<KeyValue key="textString" value="MAINMENU_BUTTON" type="global"/>-->
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOP" y="11" />
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="LeftBG" atlas="UI-Frame-DiamondMetal-Header-CornerLeft" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="32" y="39"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightBG" atlas="UI-Frame-DiamondMetal-Header-CornerRight" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="32" y="39"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CenterBG" atlas="_UI-Frame-DiamondMetal-Header-Tile" horizTile="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LeftBG" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightBG" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP" y="-13"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+<!--
+*******************************************************************************
    Simple Panel templates
 	Barebones panel templates that can have space for a button bar at the bottom
 	and an inset for content, the inset defaults to being vertically centered
@@ -783,7 +834,7 @@
 	<Texture name="UIPanelButtonDisabledDownTexture" file="Interface\Buttons\UI-Panel-Button-Disabled-Down" virtual="true">
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 	</Texture>
-	<Button name="UIMenuButtonStretchTemplate" virtual="true">
+	<Button name="UIMenuButtonStretchTemplate" mixin="UIMenuButtonStretchMixin" virtual="true">
 		<Size x="40" y="26"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -858,80 +909,12 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnMouseDown>
-				if ( self:IsEnabled() ) then
-					self.TopLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-					self.TopRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-					self.BottomLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-					self.BottomRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-					self.TopMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-					self.MiddleLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-					self.MiddleRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-					self.BottomMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-					self.MiddleMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-					if ( self.Icon ) then
-						if ( not self.Icon.oldPoint ) then
-							local point, relativeTo, relativePoint, x, y = self.Icon:GetPoint(1);
-							self.Icon.oldPoint = point;
-							self.Icon.oldX = x;
-							self.Icon.oldY = y;
-						end
-						self.Icon:SetPoint(self.Icon.oldPoint, self.Icon.oldX + 1, self.Icon.oldY - 1);
-					end
-				end
-			</OnMouseDown>
-			<OnMouseUp>
-				if ( self:IsEnabled() ) then
-					self.TopLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.TopRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.BottomLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.BottomRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.TopMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.MiddleLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.MiddleRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.BottomMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.MiddleMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					if ( self.Icon ) then
-						self.Icon:SetPoint(self.Icon.oldPoint, self.Icon.oldX, self.Icon.oldY);
-					end
-				end
-			</OnMouseUp>
-			<OnShow>
-				if ( self:IsEnabled() ) then
-					-- we need to reset our textures just in case we were hidden before a mouse up fired
-					self.TopLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.TopRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.BottomLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.BottomRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.TopMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.MiddleLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.MiddleRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.BottomMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.MiddleMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-				end
-			</OnShow>
-			<OnEnable>
-				self.TopLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-				self.TopRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-				self.BottomLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-				self.BottomRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-				self.TopMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-				self.MiddleLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-				self.MiddleRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-				self.BottomMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-				self.MiddleMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-			</OnEnable>
-			<OnEnter>
-				if(self.tooltipText ~= nil) then
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip_SetTitle(GameTooltip, self.tooltipText);
-				end
-			</OnEnter>
-			<OnLeave>
-				if(self.tooltipText ~= nil) then
-					GameTooltip:Hide();
-				end
-			</OnLeave>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnShow method="OnShow"/>
+			<OnEnable method="OnEnable"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 		<ButtonText parentKey="Text" name="$parentText">
 			<Anchors>
@@ -1547,10 +1530,10 @@
 	<EditBox name="SearchBoxTemplate" inherits="InputBoxInstructionsTemplate" autoFocus="false" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="$parentSearchIcon" file="Interface\Common\UI-Searchbox-Icon" parentKey="searchIcon">
-					<Size x="14" y="14"/>
+				<Texture name="$parentSearchIcon" atlas="common-search-magnifyingglass" useAtlasSize="false" parentKey="searchIcon">
+					<Size x="10" y="10"/>
 					<Anchors>
-						<Anchor point="LEFT" x="0" y="-2"/>
+						<Anchor point="LEFT" x="1" y="-1"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -1563,12 +1546,12 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture file="Interface\FriendsFrame\ClearBroadcastIcon" alpha="0.5" parentKey="texture">
+						<Texture atlas="common-search-clearbutton" useAtlasSize="false" alpha="0.5" parentKey="texture">
 							<Size>
-								<AbsDimension x="17" y="17"/>
+								<AbsDimension x="10" y="10"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="TOPLEFT" x="3" y="-3"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -1582,11 +1565,11 @@
 					</OnLeave>
 					<OnMouseDown>
 						if self:IsEnabled() then
-							self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 1, -1);
+							self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 4, -4);
 						end
 					</OnMouseDown>
 					<OnMouseUp>
-						self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+						self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 3, -3);
 					</OnMouseUp>
 					<OnClick function="SearchBoxTemplateClearButton_OnClick"/>
 				</Scripts>
@@ -1840,7 +1823,49 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="ColumnDisplayButtonTemplate" virtual="true">
+	<Button name="ColumnDisplayButtonShortTemplate" virtual="true">
+		<Size x="10" y="19"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Left" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="5" y="19"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.078125" top="0" bottom="0.59375"/>
+				</Texture>
+				<Texture parentKey="Right" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="4" y="19"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.59375"/>
+				</Texture>
+				<Texture parentKey="Middle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="0" y="19"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.59375"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<ButtonText parentKey="Text">
+			<Anchors>
+				<Anchor point="LEFT" x="8" y="0"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontHighlightSmall"/>
+		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="0" y="0"/>
+				<Anchor point="BOTTOMRIGHT" x="4" y="-2"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+
+	<Button name="ColumnDisplayButtonNoScriptsTemplate" virtual="true">
 		<Size x="10" y="24"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -1868,9 +1893,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnClick function="ColumnDisplayButton_OnClick"/>
-		</Scripts>
 		<ButtonText>
 			<Anchors>
 				<Anchor point="LEFT" x="8" y="0"/>
@@ -1883,5 +1905,55 @@
 				<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" x="0" y="-7"/>
 			</Anchors>
 		</HighlightTexture>
+	</Button>
+
+	<Button name="ColumnDisplayButtonTemplate" inherits="ColumnDisplayButtonNoScriptsTemplate" virtual="true">
+		<Scripts>
+			<OnClick function="ColumnDisplayButton_OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Button name="SquareIconButtonTemplate" mixin="SquareIconButtonMixin" virtual="true">
+		<Size x="32" y="32"/>
+		<!--
+		icon: texture file to be displayed on the button.
+		iconAtlas: atlas to be displayed on the button.
+		tooltipText: displayed on the right of the button by default.
+		onClickHandler: forwards the standard OnClick arguments.
+		<KeyValues>
+			<KeyValue key="icon" value="Interface\Buttons\UI-RefreshButton" type="string"/>
+			<KeyValue key="iconAtlas" value="UI-RefreshButton" type="string"/>
+			<KeyValue key="tooltipText" value="REFRESH_BUTTON_TOOLTIP" type="string"/>
+			<KeyValue key="onClickHandler" value="RefreshButton_OnClick" type="global"/>
+		</KeyValues>
+		-->
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-1" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-SquareButton-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-SquareButton-Down"/>
+		<DisabledTexture file="Interface\Buttons\UI-SquareButton-Disabled"/>
+		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+	</Button>
+
+	<Button name="RefreshButtonTemplate" inherits="SquareIconButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="iconAtlas" value="UI-RefreshButton" type="string"/>
+		</KeyValues>
 	</Button>
 </Ui>

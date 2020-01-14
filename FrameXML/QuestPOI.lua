@@ -62,6 +62,8 @@ function QuestPOI_GetButton(parent, questID, style, index)
 
 		if ( poiButton.style ~= style ) then
 			-- default style is "normal"
+			poiButton.Icon.offsetX = -1;
+			poiButton.Icon.offsetY = 0;
 			if ( style == "normal" ) then
 				poiButton.FullHighlightTexture:Show();
 				poiButton.IconHighlightTexture:Hide();
@@ -107,7 +109,16 @@ function QuestPOI_GetButton(parent, questID, style, index)
 				poiButton.Icon:SetAtlas("QuestSharing-QuestLog-Padlock", true);
 				poiButton.NormalTexture:SetAlpha(0);
 				poiButton.PushedTexture:SetAlpha(0);
+			elseif ( style == "threat" ) then
+				poiButton.FullHighlightTexture:Show();
+				poiButton.IconHighlightTexture:Hide();
+				poiButton.Icon:SetTexCoord(0, 1, 0, 1);
+				poiButton.Icon:SetAtlas("worldquest-icon-nzoth", true);
+				poiButton.NormalTexture:SetAlpha(1);
+				poiButton.PushedTexture:SetAlpha(1);
+				poiButton.Icon.offsetX = 0;
 			end
+			poiButton.Icon:SetPoint("CENTER", poiButton.Icon.offsetX, poiButton.Icon.offsetY);
 		end
 	end
 
@@ -116,6 +127,7 @@ function QuestPOI_GetButton(parent, questID, style, index)
 	poiButton.style = style;
 	poiButton.used = true;
 	poiButton.poiParent = parent;
+	poiButton.pingWorldMap = false;
 	poiButton:Show();
 
 	return poiButton;
@@ -194,6 +206,9 @@ function QuestPOI_ClearSelection(parent)
 			poiButton.Icon:SetSize(32, 32);
 			poiButton.NormalTexture:SetAlpha(0);
 			poiButton.PushedTexture:SetAlpha(0);
+		elseif ( style == "threat" ) then
+			poiButton.NormalTexture:SetTexCoord(0.875, 1, 0.875, 1);
+			poiButton.PushedTexture:SetTexCoord(0.750, 0.875, 0.875, 1);
 		end
 		poiButton.Glow:Hide();
 		poiButton.selected = nil;
@@ -229,7 +244,7 @@ function QuestPOIButton_OnMouseDown(self)
 		if ( self.style == "numeric" ) then
 			self.Number:SetPoint("CENTER", 1, -1);
 		else
-			self.Icon:SetPoint("CENTER", 0, -1);
+			self.Icon:SetPoint("CENTER", self.Icon.offsetX + 1, self.Icon.offsetY - 1);
 		end
 	end
 end
@@ -239,7 +254,7 @@ function QuestPOIButton_OnMouseUp(self)
 		if ( self.style == "numeric" ) then
 			self.Number:SetPoint("CENTER", 0, 0);
 		else
-			self.Icon:SetPoint("CENTER", -1, 0);
+			self.Icon:SetPoint("CENTER", self.Icon.offsetX, self.Icon.offsetY);
 		end
 	end
 end
@@ -263,6 +278,9 @@ function QuestPOIButton_OnClick(self)
 	end
 
 	SetSuperTrackedQuestID(questID);
+	if self.pingWorldMap then
+		WorldMapPing_StartPingQuest(questID);
+	end
 end
 
 function QuestPOIButton_OnEnter(self)

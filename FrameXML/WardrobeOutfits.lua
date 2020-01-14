@@ -4,7 +4,7 @@ WardrobeOutfitDropDownMixin = { };
 
 function WardrobeOutfitDropDownMixin:OnLoad()
 	local button = _G[self:GetName().."Button"];
-	button:SetScript("OnClick", function(self)
+	button:SetScript("OnMouseDown", function(self)
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						WardrobeOutfitFrame:Toggle(self:GetParent());
 						end

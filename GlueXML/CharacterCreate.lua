@@ -12,6 +12,7 @@ WORGEN_RACE_ID = 22;
 PANDAREN_RACE_ID = 24;
 PANDAREN_ALLIANCE_RACE_ID = 25;
 PANDAREN_HORDE_RACE_ID = 26;
+DEATH_KNIGHT_CLASS_ID = 6;
 DEMON_HUNTER_CLASS_ID = 12;
 
 PAID_CHARACTER_CUSTOMIZATION = 1;
@@ -97,6 +98,12 @@ RACE_ICON_TCOORDS = {
 
 	["KULTIRAN_MALE"]		= {0, 0.125, 0, 0.25},
 	["KULTIRAN_FEMALE"]		= {0, 0.125, 0.5, 0.75},
+	
+	["VULPERA_MALE"]		= {0.629, 0.750, 0.25, 0.5},
+	["VULPERA_FEMALE"]	= {0.629, 0.750, 0.75, 1.0},
+
+	["MECHAGNOME_MALE"]		= {0.25, 0.375, 0, 0.25},
+	["MECHAGNOME_FEMALE"]	= {0.25, 0.375, 0.5, 0.75},	
 };
 
 CHARCREATE_CLASS_TOOLTIP = {};
@@ -222,6 +229,10 @@ MODEL_CAMERA_CONFIG = {
 		["MagharOrc"] = { tx = -0.0322, ty = -0.0771, tz = 2.114, cz = 2.030, distance = 1.200, light =  0.75 },
 		["ZandalariTroll"] = { tx = -0.01642, ty = -0.082216, tz = 2.5657, cz = 2.418, distance = 1.2, light =  0.85 },
 		["KulTiran"] = { tx = 0.05591, ty = -0.04111, tz = 2.3603, cz = 2.23827, distance = 1.2, light =  0.75 },
+		["Vulpera"] = { tx = 0.127, ty = -0.022, tz = 1.104, cz = 1.009, distance = 0.830, light =  0.80 },
+		["Mechagnome"] = { tx = -0.069, ty = -0.007, tz = 0.986, cz = 0.895, distance = 1.086, light =  0.85 },
+		["Mechagnome7"] = { tx = -0.04314, ty = 0.00792, tz = 0.5338, cz = 0.830, distance = 1.56872, light =  0.85 },
+		["Mechagnome8"] = { tx = -0.04314, ty = 0.00792, tz = 0.1965, cz = 0.4694, distance = 1.2808, light =  0.85 },
 	},
 	[1] = {		-- female
 		["Draenei"] = { tx = 0.155, ty = 0.009, tz = 2.177, cz = 1.971, distance = 0.734, light =  0.75 },
@@ -256,6 +267,10 @@ MODEL_CAMERA_CONFIG = {
 		["MagharOrc"] = { tx = -0.069, ty = -0.007, tz = 1.863, cz = 1.718, distance = 0.585, light =  0.75 },
 		["ZandalariTroll"] = { tx = 0.09207, ty = -0.061662, tz = 2.52246, cz = 2.418, distance = 0.9324, light =  0.75 },
 		["KulTiran"] = { tx = -0.069, ty = -0.006851, tz = 2.230568, cz = 2.12476, distance = 1.14324, light =  0.75 },
+		["Vulpera"] = { tx = -0.076, ty = 0.006, tz = 1.191, cz = 1.137, distance = 0.970, light =  0.80 },
+		["Mechagnome"] = { tx = -0.080, ty = 0.007, tz = 0.946, cz = 0.855, distance = 0.932, light =  0.85 },
+		["Mechagnome7"] = { tx = -0.113856, ty = 0.003045, tz = 0.48384, cz = 0.55899, distance = 1.3528, light =  0.85 },
+		["Mechagnome8"] = { tx = -0.04314, ty = 0.007917, tz = 0.14654, cz = 0.4694, distance = 1.034, light =  0.85 },
 	}
 };
 
@@ -981,7 +996,7 @@ function SetCharacterRace(id)
 	end
 	
 	-- Cache current selected faction information in the case where user is applying a trial boost
-	CharacterCreate.selectedFactionID = FACTION_IDS[faction];
+	CharacterCreate.selectedFactionID = PLAYER_FACTION_GROUP[faction];
 
 	-- Set background
 	SetBackgroundModel(CharacterCreate, C_CharacterCreation.GetCreateBackgroundModel(faction));
@@ -1093,7 +1108,10 @@ function SetCharacterClass(id)
 		scrollFrame.AbilityText:Hide();
 	end
 
-	scrollFrame.bulletText:SetText(CHARCREATE_CLASS_INFO[classInfo.fileName].bulletText);
+	-- Format the starting level for this race/class combo in
+	local finalBulletText = CHARCREATE_CLASS_INFO[classInfo.fileName].bulletText:format(CharacterCreate_GetStartingLevel());
+	scrollFrame.bulletText:SetText(finalBulletText);
+
 	scrollFrame.infoText:SetText(CHARCREATE_CLASS_INFO[classInfo.fileName].description);
 	scrollFrame.infoText.layoutIndex = layoutIndexCount;
 
@@ -1166,12 +1184,11 @@ function CharacterCreate_Finish()
 			KioskModeSplash_SetAutoEnterWorld(true);
 		end
 
-		-- if using templates, pandaren must pick a faction
-		local _, faction = C_CharacterCreation.GetFactionForRace(CharacterCreate.selectedRace);
-		if ( ( C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate() ) and ( faction ~= "Alliance" and faction ~= "Horde" ) ) then
-			CharacterTemplateConfirmDialog:Show();
-		else
+		if CharacterUpgrade_IsCreatedCharacterTrialBoost() then
+			-- For trial boosts we need to pass up nil for the faction here. We send the faction up separately when the boost is applied
 			C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText());
+		else
+			C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText(), CharacterCreate_GetSelectedFactionName());
 		end
 	end
 end
@@ -1247,7 +1264,6 @@ function CharacterCreate_Forward()
 		CharCreateMoreInfoButton:Hide();
 		CharCreateCustomizationFrame:Show();
 		CharCreatePreviewFrame:Show();
-		CharacterTemplateConfirmDialog:Hide();
 		
 		CharacterCreate_UpdateRacesToggleButton();
 		CharacterCreate_UpdateClassTrialCustomizationFrames();
@@ -2153,6 +2169,9 @@ function CharCreateRaceButton_OnEnter(self)
 				for i, requirement in ipairs(requirements) do
 					CharacterCreateTooltip:AddLine(string.format(DASH_WITH_TEXT, requirement), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true, INDENTED_WORD_WRAP);
 				end
+				local _, internalFaction = C_CharacterCreation.GetFactionForRace(self.raceID);
+				local embassy = internalFaction == "Horde" and CHAR_CREATE_HORDE_EMBASSY or CHAR_CREATE_ALLIANCE_EMBASSY;
+				CharacterCreateTooltip:AddLine(string.format(DASH_WITH_TEXT, embassy), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true, INDENTED_WORD_WRAP);
 			end
 		end	
 	end
@@ -2278,6 +2297,14 @@ function CharacterCreate_GetStartingLevel(forTrialBoost)
 	else
 		local classInfo = C_CharacterCreation.GetSelectedClass();
 		local raceData = C_CharacterCreation.GetRaceDataByID(C_CharacterCreation.GetSelectedRace());
+		
+		-- TODO_ADC: REMOVE THIS HACK IN 9.0
+		if classInfo.classID == DEATH_KNIGHT_CLASS_ID then
+			if raceData.isAlliedRace or raceData.raceID == PANDAREN_RACE_ID then
+				return 58;
+			end
+		end
+
 		return max(classInfo.startingLevel, raceData.startingLevel);
 	end
 end
@@ -2419,9 +2446,12 @@ function CharacterCreate_UpdateClassTrialCustomizationFrames()
 	local isTrialBoost = CharacterUpgrade_IsCreatedCharacterTrialBoost();
 	local isCustomization = CharacterCreateFrame.state == "CUSTOMIZATION";
 	local showTrialFrames = isTrialBoost and isCustomization and IsBoostAllowed(classInfo, raceData);
-
 	local showSpecializations = showTrialFrames;
-	local showFactions = showTrialFrames and C_CharacterCreation.IsNeutralRace(CharacterCreate.selectedRace);
+
+	local isNeutralRace = C_CharacterCreation.IsNeutralRace(CharacterCreate.selectedRace);
+	local showEarlyFaction = classInfo.earlyFactionChoice;
+	local usingCharacterTemplate = C_CharacterCreation.IsUsingCharacterTemplate();
+	local showFactions = isNeutralRace and (showTrialFrames or showEarlyFaction or usingCharacterTemplate);
 
 	if showSpecializations then
 		local gender = C_CharacterCreation.GetSelectedSex();
@@ -2441,7 +2471,13 @@ function CharacterCreate_UpdateClassTrialCustomizationFrames()
 	end
 
 	if showFactions then
-		CharacterServices_UpdateFactionButtons(CharCreateSelectFactionFrame, CharCreateSelectFactionFrame);
+		if showSpecializations then
+			CharCreateSelectFactionFrame:SetPoint("TOP", CharCreateSelectSpecFrame, "BOTTOM", 0, 23);
+			CharCreateSelectFactionFrame.Title:SetPoint("TOP", CharCreateSelectFactionFrame, "TOP", 0, -16);
+		else
+			CharCreateSelectFactionFrame:SetPoint("TOP", CharCreateCustomizationFrame.BannerBottom, "BOTTOM", 0, 40);
+			CharCreateSelectFactionFrame.Title:SetPoint("TOP", CharCreateSelectFactionFrame, "TOP", 0, -35);
+		end
 	end
 
 	CharCreateSelectSpecFrame:SetShown(showSpecializations);
@@ -2569,9 +2605,8 @@ function CharacterCreate_UpdateOkayButton()
 			finalizeRequirements:SetRequirementComplete(FINALIZE_REQ_ALLIED_RACE_ACHIEVEMENT, hasAchievement);
 			finalizeRequirements:SetRequirementComplete(FINALIZE_REQ_HAS_NAME, true);
 		else
-			local isTrialBoost = CharacterUpgrade_IsCreatedCharacterTrialBoost();
-			finalizeRequirements:SetRequirementComplete(FINALIZE_REQ_HAS_SPEC, not isTrialBoost or CharCreateSelectSpecFrame.selected ~= nil);
-			finalizeRequirements:SetRequirementComplete(FINALIZE_REQ_HAS_FACTION, not isTrialBoost or CharacterCreate_GetSelectedFaction() ~= nil);
+			finalizeRequirements:SetRequirementComplete(FINALIZE_REQ_HAS_SPEC, not CharCreateSelectSpecFrame:IsShown() or CharCreateSelectSpecFrame.selected ~= nil);
+			finalizeRequirements:SetRequirementComplete(FINALIZE_REQ_HAS_FACTION, not CharCreateSelectFactionFrame:IsShown() or CharacterCreate_GetSelectedFaction() ~= nil);
 		end
 		finalizeRequirements:UpdateInstructions();
 	else
@@ -2584,8 +2619,38 @@ function CharacterCreate_IsTrialBoostAllowedForClass(classInfo, raceData)
 	return IsBoostAllowed(classInfo, raceData);
 end
 
+function CharCreateSelectFactionFrame_OnLoad(self)
+	for _, button in ipairs(self.FactionButtons) do
+		button.FactionIcon:SetTexture(FACTION_LOGO_TEXTURES[button.factionID]);
+		button.FactionName:SetText(FACTION_LABELS[button.factionID]);
+	end
+end
+
+function CharCreateSelectFactionFrame_ClearChecked()
+	for _, button in ipairs(CharCreateSelectFactionFrame.FactionButtons) do
+		button:SetChecked(false);
+	end
+
+	CharCreateSelectFactionFrame.selectedFactionID = nil;
+	CharCreateSelectFactionFrame.selectedFactionName = nil;
+end
+
+function CharacterCreateSelectFactionRadioButton_OnClick(self)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+
+	CharCreateSelectFactionFrame_ClearChecked();
+	self:SetChecked(true);
+	CharCreateSelectFactionFrame.selectedFactionID = self.factionID;
+	CharCreateSelectFactionFrame.selectedFactionName = PLAYER_FACTION_GROUP[self.factionID];
+	CharacterCreate_UpdateOkayButton();
+end
+
 function CharacterCreate_GetSelectedFaction()
-	return CharacterCreate.selectedFactionID or CharCreateSelectFactionFrame.selected;
+	return CharacterCreate.selectedFactionID or CharCreateSelectFactionFrame.selectedFactionID;
+end
+
+function CharacterCreate_GetSelectedFactionName()
+	return CharCreateSelectFactionFrame.selectedFactionName;
 end
 
 local isAlliedRacePreview;

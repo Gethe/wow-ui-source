@@ -28,10 +28,12 @@
 ..\SharedXML\PixelUtil.lua
 ..\SharedXML\TableBuilder.lua
 ..\SharedXML\NewFeatureLabel.xml
+..\SharedXML\GlobalCallbackRegistry.lua
 MixinUtil.lua
 
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
+..\SharedXML\DropDownToggleButton.xml
 
 ..\SharedXML\ModelSceneTemplates.xml
 ..\SharedXML\ModelSceneMixin.xml
@@ -64,7 +66,6 @@ ObjectAPI\Spell.lua
 ObjectAPI\PlayerLocation.lua
 
 ## add new modules below here
-GlobalCallbackRegistry.lua
 WorldFrame.xml
 UIParent.xml
 PartyUtil.lua
@@ -223,6 +224,7 @@ PetStable.xml
 VehicleSeatIndicator.xml
 DurabilityFrame.xml
 BattlegroundChatFilters.xml
+QueueUpdater.lua
 PVEFrame.xml
 LFGFrame.xml
 LFDFrame.xml
@@ -271,7 +273,6 @@ BattlePetTooltip.xml
 StaticPopupSpecial.xml
 LossOfControlFrame.xml
 PVPHelper.xml
-ProductChoice.xml
 ZoneAbility.xml
 ArtifactToasts.xml
 AzeriteItemToasts.xml

@@ -72,8 +72,11 @@
 				playerActor:SetSheathed(not playerActor:GetSheathed());
 			end
 		end
-		if ( WardrobeTransmogFrame and WardrobeTransmogFrame.Model:IsShown() ) then
-			WardrobeTransmogFrame.Model:SetSheathed(not WardrobeTransmogFrame.Model:GetSheathed());
+		if ( WardrobeTransmogFrame and WardrobeTransmogFrame.ModelScene:IsShown() ) then
+			local playerActor = WardrobeTransmogFrame.ModelScene:GetPlayerActor();
+			if playerActor then
+				playerActor:SetSheathed(not playerActor:GetSheathed());
+			end
 		end
 	</Binding>
 	<Binding name="TOGGLEAUTORUN" category="BINDING_HEADER_MOVEMENT">
@@ -107,7 +110,7 @@
 	</Binding>
 	<!-- Chat frame bindings header="CHAT" -->
 	<Binding name="OPENCHAT" category="BINDING_HEADER_CHAT">
-		ChatFrame_OpenChat("");
+		ChatFrame_OpenChat(nil);
 	</Binding>
 	<Binding name="OPENCHATSLASH" category="BINDING_HEADER_CHAT">
 		ChatFrame_OpenChat("/");

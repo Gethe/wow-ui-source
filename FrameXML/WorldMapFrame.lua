@@ -122,8 +122,10 @@ function WorldMap_AddQuestTimeToTooltip(questID)
 	end
 end
 
-function TaskPOI_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+function TaskPOI_OnEnter(self, skipSetOwner)
+	if not skipSetOwner then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	end
 
 	if ( not HaveQuestData(self.questID) ) then
 		GameTooltip:SetText(RETRIEVING_DATA, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
@@ -149,6 +151,9 @@ function TaskPOI_OnEnter(self)
 		end
 
 		WorldMap_AddQuestTimeToTooltip(self.questID);
+	elseif ( self.isThreat ) then
+		GameTooltip_SetTitle(GameTooltip, title);
+		WorldMap_AddQuestTimeToTooltip(self.questID);
 	else
 		GameTooltip:SetText(title);
 	end
@@ -173,17 +178,21 @@ function TaskPOI_OnEnter(self)
 
 		for objectiveIndex = 1, self.numObjectives do
 			local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(self.questID, objectiveIndex, false);
-			if(self.shouldShowObjectivesAsStatusBar) then 
-				local percent = math.floor((numFulfilled/numRequired) * 100);
-				GameTooltip_ShowProgressBar(GameTooltip, 0, numRequired, numFulfilled, PERCENTAGE_STRING:format(percent));
-			elseif ( objectiveText and #objectiveText > 0 ) then
-				local color = finished and GRAY_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
-				GameTooltip:AddLine(QUEST_DASH .. objectiveText, color.r, color.g, color.b, true);
+			local showObjective = not (finished and self.isThreat);
+			if showObjective then
+				if(self.shouldShowObjectivesAsStatusBar) then 
+					local percent = math.floor((numFulfilled/numRequired) * 100);
+					GameTooltip_ShowProgressBar(GameTooltip, 0, numRequired, numFulfilled, PERCENTAGE_STRING:format(percent));
+				elseif ( objectiveText and #objectiveText > 0 ) then
+					local color = finished and GRAY_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
+					GameTooltip:AddLine(QUEST_DASH .. objectiveText, color.r, color.g, color.b, true);
+				end
 			end
 		end
 		local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(self.questID, 1, false);
 		local percent = C_TaskQuest.GetQuestProgressBarInfo(self.questID);
-		if ( percent ) then
+		local showObjective = not (finished and self.isThreat);
+		if ( percent  and showObjective ) then
 			GameTooltip_ShowProgressBar(GameTooltip, 0, 100, percent, PERCENTAGE_STRING:format(percent));
 		end
 

@@ -7,6 +7,13 @@
 			<KeyValue key="HasPaperDollAzeriteItemOverlay" value="true"/>
 		</KeyValues>
 		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="CorruptedHighlightTexture" atlas="Nzoth-charactersheet-item-glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="BORDER" textureSubLevel="-1">
 				<Texture parentKey="AzeriteTexture">
 					<Anchors>

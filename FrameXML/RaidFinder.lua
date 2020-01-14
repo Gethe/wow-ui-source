@@ -31,12 +31,16 @@ function RaidFinderFrame_OnEvent(self, event, ...)
 end
 
 function RaidFinderFrame_OnShow(self)
-	RequestLFDPlayerLockInfo();
-	RequestLFDPartyLockInfo();
+	QueueUpdater:RequestInfo();
+	QueueUpdater:AddRef();
 	RaidFinderFrameFindRaidButton_Update();
 	LFGBackfillCover_Update(RaidFinderQueueFrame.PartyBackfill, true);
 	RaidFinderFrame_UpdateAvailability();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+end
+
+function RaidFinderFrame_OnHide(self)
+	QueueUpdater:RemoveRef();
 end
 
 -- unused now, might need this logic for Group Finder
@@ -201,7 +205,7 @@ function RaidFinderQueueFrameSelectionDropDown_Initialize(self)
 		end
 		tinsert(sortedDungeons, t);
 	end
-	
+
 	-- If we ever change this logic, we also need to change the logic in RaidFinderFrame_UpdateAvailability
 	for i=1, GetNumRFDungeons() do
 		local dungeonInfo = { GetRFDungeonInfo(i) };
@@ -303,7 +307,7 @@ function RaidFinderQueueFrame_UpdateRoles()
 	LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonTank, nil);
 	LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonHealer, nil);
 	LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonDPS, nil);
-	
+
 	if ( type(dungeonID) == "number" ) then
 		if ( not IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
 			for i=1, LFG_ROLE_NUM_SHORTAGE_TYPES do
@@ -321,7 +325,7 @@ function RaidFinderQueueFrame_UpdateRoles()
 				end
 			end
 		end
-		
+
 		local tankLocked, healerLocked, dpsLocked = GetLFDRoleRestrictions(dungeonID);
 		RaidFinder_UpdateRoleButton(RaidFinderQueueFrameRoleButtonTank, tankLocked);
 		RaidFinder_UpdateRoleButton(RaidFinderQueueFrameRoleButtonHealer, healerLocked);
@@ -333,7 +337,7 @@ function RaidFinder_UpdateRoleButton( button, locked )
 	if( button.permDisabled )then
 		return;
 	end
-	
+
 	if( locked ) then
 		button.lockedIndicator:Show();
 		button.checkButton:Hide();
@@ -372,7 +376,7 @@ function RaidFinderFrameFindRaidButton_Update()
 			RaidFinderFrameFindRaidButton:SetText(FIND_A_GROUP);
 		end
 	end
-	
+
 	--Disable the button if we're not in a state where we can make a change
 	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "listed"  ) then --During the proposal, they must use the proposal buttons to leave the queue.
 		if ( (mode == "queued" or mode == "rolecheck" or mode == "suspended")	--The players can dequeue even if one of the two cover panels is up.
@@ -435,7 +439,7 @@ end
 --Cooldown panel
 function RaidFinderQueueFrameCooldownFrame_OnLoad(self)
 	self:SetFrameLevel(RaidFinderQueueFrame:GetFrameLevel() + 9);	--This value also needs to be set when SetParent is called in LFDQueueFrameRandomCooldownFrame_Update.
-	
+
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");	--For logging in/reloading ui
 	self:RegisterEvent("UNIT_AURA");	--The cooldown is still technically a debuff
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
@@ -460,9 +464,9 @@ end
 function RaidFinderQueueFrameCooldownFrame_Update()
 	local cooldownFrame = RaidFinderQueueFrameCooldownFrame;
 	local shouldShow = false;
-	
+
 	local cooldownExpiration = GetLFGDeserterExpiration();
-	
+
 	cooldownFrame.myExpirationTime = cooldownExpiration;
 
 	local tokenPrefix;
@@ -474,7 +478,7 @@ function RaidFinderQueueFrameCooldownFrame_Update()
 		tokenPrefix = "party";
 		numMembers = GetNumSubgroupMembers();
 	end
-	
+
 	local numCooldowns = 0;
 	for i = 1, numMembers do
 		if ( UnitHasLFGDeserter(tokenPrefix..i) and not UnitIsUnit(tokenPrefix..i, "player") ) then
@@ -488,7 +492,7 @@ function RaidFinderQueueFrameCooldownFrame_Update()
 				local classColor = classFilename and RAID_CLASS_COLORS[classFilename] or NORMAL_FONT_COLOR;
 				nameLabel:SetFormattedText("|cff%.2x%.2x%.2x%s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, UnitName(tokenPrefix..i));
 			end
-		
+
 			shouldShow = true;
 		end
 	end
@@ -496,7 +500,7 @@ function RaidFinderQueueFrameCooldownFrame_Update()
 		local nameLabel = _G["RaidFinderQueueFrameCooldownFrameName"..i];
 		nameLabel:Hide();
 	end
-	
+
 	local anchorSide = "LEFT";	--Used to center text when we have 4 or fewer players.
 	local anchorOffset = 25;
 	if ( numCooldowns == 0 ) then
@@ -537,7 +541,7 @@ function RaidFinderQueueFrameCooldownFrame_Update()
 		cooldownFrame.description:SetText(RF_DESERTER_YOU);
 		cooldownFrame.time:SetText(SecondsToTime(ceil(cooldownExpiration - GetTime())));
 		cooldownFrame.time:Show();
-		
+
 		cooldownFrame:SetScript("OnUpdate", RaidFinderQueueFrameCooldownFrame_OnUpdate);
 
 		if ( numCooldowns > 0 ) then
@@ -550,12 +554,12 @@ function RaidFinderQueueFrameCooldownFrame_Update()
 	else
 		cooldownFrame.description:SetText(RF_DESERTER_OTHER);
 		cooldownFrame.time:Hide();
-		
+
 		cooldownFrame:SetScript("OnUpdate", nil);
 		cooldownFrame.secondaryDescription:Hide();
 		RaidFinderQueueFrameCooldownFrameName1:SetPoint("TOP"..anchorSide, cooldownFrame.description, "BOTTOM"..anchorSide, anchorOffset, -20);
 	end
-	
+
 	if ( shouldShow and not RaidFinderQueueFramePartyBackfill:IsShown() ) then
 		cooldownFrame:Show();
 	else

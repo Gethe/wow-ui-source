@@ -461,8 +461,8 @@ function CompactUnitFrame_UpdateHealth(frame)
 end
 
 local function CompactUnitFrame_GetDisplayedPowerID(frame)
-	local barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, anchorTop, powerName, powerTooltip = UnitAlternatePowerInfo(frame.displayedUnit);
-	if ( showOnRaid and (UnitInParty(frame.unit) or UnitInRaid(frame.unit)) ) then
+	local barInfo = GetUnitPowerBarInfo(frame.displayedUnit);
+	if ( barInfo and barInfo.showOnRaid and (UnitInParty(frame.unit) or UnitInRaid(frame.unit)) ) then
 		return ALTERNATE_POWER_INDEX;
 	else
 		return (UnitPowerType(frame.displayedUnit));
@@ -492,8 +492,8 @@ function CompactUnitFrame_UpdatePowerColor(frame)
 		r, g, b = 0.5, 0.5, 0.5;
 	else
 		--Set it to the proper power type color.
-		local barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, anchorTop, powerName, powerTooltip = UnitAlternatePowerInfo(frame.unit);
-		if ( showOnRaid ) then
+		local barInfo = GetUnitPowerBarInfo(frame.unit);
+		if ( barInfo and barInfo.showOnRaid ) then
 			r, g, b = 0.7, 0.7, 0.6;
 		else
 			local powerType, powerToken, altR, altG, altB = UnitPowerType(frame.displayedUnit);
@@ -2011,6 +2011,8 @@ function DefaultCompactNamePlateFrameSetupInternal(frame, setupOptions, frameOpt
 	frame.totalAbsorbOverlay:SetAllPoints(frame.totalAbsorb);
 
 	frame.classificationIndicator = frame.ClassificationFrame.classificationIndicator;
+	frame.ClassificationFrame.maxScale = setupOptions.maxClassificationScale or frameOptions.maxClassificationScale;
+	frame.ClassificationFrame:SetScale(setupOptions.classificationScale or frameOptions.classificationScale or 1.0);
 
 	frame.LoseAggroAnim:Stop();
 

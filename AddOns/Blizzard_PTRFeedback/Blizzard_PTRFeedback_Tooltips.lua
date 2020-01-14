@@ -55,7 +55,7 @@ function PTR_IssueReporter.SetupItemTooltips()
                 end
             end
             if (id) then
-                PTR_IssueReporter.HookIntoTooltip(self, PTR_IssueReporter.TooltipTypes.item, id, name)
+                PTR_IssueReporter.HookIntoTooltip(self, PTR_IssueReporter.TooltipTypes.item, id, name, nil, nil, link)
             end
         end
     end

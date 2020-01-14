@@ -1,3 +1,10 @@
+function GetFormattedItemQuantity(quantity, maxQuantity)
+	if quantity > (maxQuantity or 9999) then
+		return "*";
+	end;
+
+	return quantity;
+end
 
 function SetItemButtonCount(button, count, abbreviate)
 	if ( not button ) then
@@ -13,15 +20,20 @@ function SetItemButtonCount(button, count, abbreviate)
 	if ( count > 1 or (button.isBag and count > 0) ) then
 		if ( abbreviate ) then
 			count = AbbreviateNumbers(count);
-		elseif ( count > (button.maxDisplayCount or 9999) ) then
-			count = "*";
+		else
+			count = GetFormattedItemQuantity(count, button.maxDisplayCount);
 		end
+
 		countString:SetText(count);
 		countString:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 		countString:Show();
 	else
 		countString:Hide();
 	end
+end
+
+function GetItemButtonCount(button)
+	return button.count;
 end
 
 function SetItemButtonStock(button, numInStock)
@@ -53,6 +65,7 @@ function SetItemButtonTexture(button, texture)
 	else
 		icon:Hide();
 	end
+
 	icon:SetTexture(texture);
 end
 
@@ -103,6 +116,34 @@ function SetItemButtonSlotVertexColor(button, r, g, b)
 end
 
 function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
+	if button.useCircularIconBorder then
+		button.IconBorder:Show();
+
+		if quality == LE_ITEM_QUALITY_POOR then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-gray");
+		elseif quality == LE_ITEM_QUALITY_COMMON then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-white");
+		elseif quality == LE_ITEM_QUALITY_UNCOMMON then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-green");
+		elseif quality == LE_ITEM_QUALITY_RARE then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-blue");
+		elseif quality == LE_ITEM_QUALITY_EPIC then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-purple");
+		elseif quality == LE_ITEM_QUALITY_LEGENDARY then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-orange");
+		elseif quality == LE_ITEM_QUALITY_ARTIFACT then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-artifact");
+		elseif quality == LE_ITEM_QUALITY_HEIRLOOM then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-account");
+		elseif quality == LE_ITEM_QUALITY_WOW_TOKEN then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-account");
+		else
+			button.IconBorder:Hide();
+		end
+		
+		return;
+	end
+
 	if itemIDOrLink then
 		if IsArtifactRelicItem(itemIDOrLink) then
 			button.IconBorder:SetTexture([[Interface\Artifacts\RelicIconFrame]]);
@@ -110,11 +151,15 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
 			button.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
 		end
 		
-		if not suppressOverlays and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemIDOrLink) then
-			button.IconOverlay:SetAtlas([[AzeriteIconFrame]]);
-			button.IconOverlay:Show();
-		else
-			button.IconOverlay:Hide();
+		button.IconOverlay:Hide();
+		if not suppressOverlays then
+			if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemIDOrLink) then
+				button.IconOverlay:SetAtlas("AzeriteIconFrame");
+				button.IconOverlay:Show();
+			elseif IsCorruptedItem(itemIDOrLink) then
+				button.IconOverlay:SetAtlas("Nzoth-inventory-icon");
+				button.IconOverlay:Show();
+			end
 		end
 	else
 		button.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);

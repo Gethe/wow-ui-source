@@ -32,7 +32,7 @@ local allScenarios = GetScenariosChoiceOrder();
 function ScenarioFinderFrame_UpdateAvailability()
 	local available = false;
 	local nextLevel = nil;
-	local level = UnitLevel("player");
+	local level = C_PartyInfo.GetMinLevel();
 
 	--We have to look through both random scenarios and specific scenarios.
 	for i=1, GetNumRandomScenarios() do
@@ -273,9 +273,9 @@ function ScenarioQueueFrameTypeDropDown_Initialize()
 
 	for i=1, GetNumRandomScenarios() do
 		local id, name = GetRandomScenarioInfo(i);
-		if ( LFG_IsRandomDungeonDisplayable(id) ) then
-			local isAvailable = IsLFGDungeonJoinable(id);
-			if ( isAvailable ) then
+		local isAvailableForAll, isAvailableForPlayer = IsLFGDungeonJoinable(id);
+		if ( isAvailableForPlayer ) then
+			if ( isAvailableForAll ) then
 				info.text = name;
 				info.value = id;
 				info.isTitle = nil;

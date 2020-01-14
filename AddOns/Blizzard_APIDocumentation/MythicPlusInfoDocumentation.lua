@@ -192,12 +192,15 @@ local MythicPlusInfo =
 	Tables =
 	{
 		{
-			Name = "MythicPlusKeystoneAffix",
+			Name = "MapSeasonBestInfo",
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "id", Type = "number", Nilable = false },
-				{ Name = "seasonID", Type = "number", Nilable = false },
+				{ Name = "durationSec", Type = "number", Nilable = false },
+				{ Name = "level", Type = "number", Nilable = false },
+				{ Name = "completionDate", Type = "MythicPlusDate", Nilable = false },
+				{ Name = "affixIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "members", Type = "table", InnerType = "MythicPlusMember", Nilable = false },
 			},
 		},
 		{
@@ -213,6 +216,15 @@ local MythicPlusInfo =
 			},
 		},
 		{
+			Name = "MythicPlusKeystoneAffix",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "seasonID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "MythicPlusMember",
 			Type = "Structure",
 			Fields =
@@ -220,18 +232,6 @@ local MythicPlusInfo =
 				{ Name = "name", Type = "string", Nilable = true },
 				{ Name = "specID", Type = "number", Nilable = false },
 				{ Name = "classID", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "MapSeasonBestInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "durationSec", Type = "number", Nilable = false },
-				{ Name = "level", Type = "number", Nilable = false },
-				{ Name = "completionDate", Type = "MythicPlusDate", Nilable = false },
-				{ Name = "affixIDs", Type = "table", InnerType = "number", Nilable = false },
-				{ Name = "members", Type = "table", InnerType = "MythicPlusMember", Nilable = false },
 			},
 		},
 	},

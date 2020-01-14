@@ -26,7 +26,7 @@ function UIWidgetTemplateTextureAndTextRowMixin:Setup(widgetInfo, widgetContaine
 	for index, entryInfo in ipairs(widgetInfo.entries) do
 		local entryFrame = self.entryPool:Acquire();
 		entryFrame:Show();
-		entryFrame:Setup(entryInfo.text, entryInfo.tooltip, widgetInfo.frameTextureKitID, widgetInfo.textureKitID, widgetInfo.textSizeType, index);
+		entryFrame:Setup(widgetContainer, entryInfo.text, entryInfo.tooltip, widgetInfo.frameTextureKitID, widgetInfo.textureKitID, widgetInfo.textSizeType, index);
 	end
 
 	self:MarkDirty(); -- Layout visible entries horizontally

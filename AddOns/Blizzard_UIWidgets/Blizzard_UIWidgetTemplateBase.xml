@@ -83,7 +83,7 @@
 				<Texture parentKey="Icon">
 					<Size x="36" y="36"/>
 					<Anchors>
-						<Anchor point="LEFT"/>
+						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="StackCount" inherits="NumberFontNormal">
@@ -100,9 +100,9 @@
 						<MaskedTexture childKey="Icon"/>
 					</MaskedTextures>
 				</MaskTexture>
-				<FontString parentKey="Text" inherits="GameFontNormal_NoShadow" justifyH="LEFT" parentArray="ColoredStrings">
+				<FontString parentKey="Text" inherits="GameFontNormal_NoShadow" justifyH="LEFT" justifyV="MIDDLE" parentArray="ColoredStrings">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5" />
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="5" />
 					</Anchors>
 				</FontString>
 			</Layer>

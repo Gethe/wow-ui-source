@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 
-	<Button name="AchievementSearchPreviewButton" parentArray="searchPreview" virtual="true">
+	<Button name="AchievementSearchPreviewButton" parentArray="searchPreviews" virtual="true">
 		<Size x="206" y="27"/>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="3">
@@ -2511,16 +2511,16 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentButton">
+					<DropDownToggleButton name="$parentButton">
 						<Size x="24" y="24"/>
 						<Anchors>
 							<Anchor point="TOPRIGHT"/>
 						</Anchors>
 						<Scripts>
-							<OnClick>
+							<OnMouseDown>
 								ToggleDropDownMenu(nil, nil, self:GetParent());
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-							</OnClick>
+							</OnMouseDown>
 						</Scripts>
 						<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
 							<Size x="24" y="24"/>
@@ -2546,7 +2546,7 @@
 								<Anchor point="RIGHT"/>
 							</Anchors>
 						</HighlightTexture>
-					</Button>
+					</DropDownToggleButton>
 					<Frame name="$parentMouseOver" enableMouse="true">
 						<Size x="125" y="32"/>
 						<Anchors>
@@ -2573,6 +2573,7 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentHeaderRightDDLInset" relativePoint="TOPLEFT" x="12" y="2"/>
 				</Anchors>
 				<Scripts>
+					<OnLoad function="AchievementFrameSearchBox_OnLoad"/>
 					<OnShow function="AchievementFrameSearchBox_OnShow"/>
 					<OnEnterPressed function="AchievementFrameSearchBox_OnEnterPressed"/>
 					<OnTextChanged function="AchievementFrameSearchBox_OnTextChanged"/>
@@ -2634,6 +2635,77 @@
 						</Texture>
 					</Layer>
 				</Layers>
+				<Frames>
+					<Button inherits="AchievementSearchPreviewButton" parentKey="searchPreview1" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+					<Button inherits="AchievementSearchPreviewButton" parentKey="searchPreview2" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.searchPreview1" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button inherits="AchievementSearchPreviewButton" parentKey="searchPreview3" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.searchPreview2" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button inherits="AchievementSearchPreviewButton" parentKey="searchPreview4" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.searchPreview3" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button inherits="AchievementSearchPreviewButton" parentKey="searchPreview5" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.searchPreview4" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="showAllSearchResults" hidden="true">
+						<Size x="275" y="24"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.searchPreview1" x="0" y="0"/>
+							<Anchor point="RIGHT" relativeKey="$parent.searchPreview1" x="0" y="0"/>
+							<Anchor point="TOP" relativeKey="$parent.searchPreview5" relativePoint="BOTTOM" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY" textureSubLevel="2">
+								<Texture parentKey="selectedTexture" atlas="search-highlight">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+										<Anchor point="BOTTOMRIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString parentKey="text" inherits="GameFontNormal" justifyH="LEFT" text="SHOW_ALL_RESULTS">
+									<Size x="0" y="0"/>
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<NormalTexture atlas="_search-rowbg">
+						</NormalTexture>
+						<PushedTexture atlas="_search-rowbg">
+						</PushedTexture>
+						<!-- This is highlighted by hand so that we can use arrow keys to move the highlight.
+						<HighlightTexture atlas="search-highlight">
+						</HighlightTexture>
+						-->
+						<Scripts>
+							<OnShow>
+								self:SetFrameLevel(self:GetParent():GetFrameLevel() + 10);
+							</OnShow>
+							<OnClick>
+								AchievementFrame_ShowFullSearch();
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+							</OnClick>
+							<OnEnter function="AchievementFrameShowAllSearchResults_OnEnter"/>
+						</Scripts>
+					</Button>
+				</Frames>
 				<Scripts>
 					<OnShow>
 						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 11);
@@ -2706,75 +2778,6 @@
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
-			<Button inherits="AchievementSearchPreviewButton" parentKey="searchPreview1" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.searchPreviewContainer" relativePoint="TOPLEFT" x="0" y="0"/>
-				</Anchors>
-			</Button>
-			<Button inherits="AchievementSearchPreviewButton" parentKey="searchPreview2" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.searchPreview1" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Button>
-			<Button inherits="AchievementSearchPreviewButton" parentKey="searchPreview3" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.searchPreview2" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Button>
-			<Button inherits="AchievementSearchPreviewButton" parentKey="searchPreview4" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.searchPreview3" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Button>
-			<Button inherits="AchievementSearchPreviewButton" parentKey="searchPreview5" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.searchPreview4" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Button>
-			<Button parentKey="showAllSearchResults" hidden="true">
-				<Size x="275" y="24"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.searchPreview1" x="0" y="0"/>
-					<Anchor point="RIGHT" relativeKey="$parent.searchPreview1" x="0" y="0"/>
-					<Anchor point="TOP" relativeKey="$parent.searchPreview5" relativePoint="BOTTOM" x="0" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY" textureSubLevel="2">
-						<Texture parentKey="selectedTexture" atlas="search-highlight">
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-								<Anchor point="BOTTOMRIGHT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<FontString parentKey="text" inherits="GameFontNormal" justifyH="LEFT" text="SHOW_ALL_RESULTS">
-							<Size x="0" y="0"/>
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<NormalTexture atlas="_search-rowbg">
-				</NormalTexture>
-				<PushedTexture atlas="_search-rowbg">
-				</PushedTexture>
-				<!-- This is highlighted by hand so that we can use arrow keys to move the highlight.
-				<HighlightTexture atlas="search-highlight">
-				</HighlightTexture>
-				-->
-				<Scripts>
-					<OnShow>
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 10);
-					</OnShow>
-					<OnClick>
-						AchievementFrame_ShowFullSearch();
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-					</OnClick>
-					<OnEnter function="AchievementFrameShowAllSearchResults_OnEnter"/>
-				</Scripts>
-			</Button>
 			<Frame parentKey="searchResults" hidden="true">
 				<Size x="600" y="382"/>
 				<Anchors>

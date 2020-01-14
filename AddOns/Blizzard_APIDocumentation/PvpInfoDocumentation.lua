@@ -745,10 +745,6 @@ local PvpInfo =
 			Name = "PostMatchItemRewardUpdate",
 			Type = "Event",
 			LiteralName = "POST_MATCH_ITEM_REWARD_UPDATE",
-			Payload =
-			{
-				{ Name = "reward", Type = "PVPPostMatchItemReward", Nilable = false },
-			},
 		},
 		{
 			Name = "PvpBrawlInfoUpdated",
@@ -932,6 +928,28 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "HonorRewardInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "honorLevelName", Type = "string", Nilable = false },
+				{ Name = "badgeFileDataID", Type = "number", Nilable = false },
+				{ Name = "achievementRewardedID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "MatchPVPStatColumn",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "pvpStatID", Type = "number", Nilable = false },
+				{ Name = "columnHeaderID", Type = "number", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "PvpBrawlInfo",
 			Type = "Structure",
 			Fields =
@@ -957,25 +975,17 @@ local PvpInfo =
 			},
 		},
 		{
-			Name = "HonorRewardInfo",
+			Name = "PvpTierInfo",
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "honorLevelName", Type = "string", Nilable = false },
-				{ Name = "badgeFileDataID", Type = "number", Nilable = false },
-				{ Name = "achievementRewardedID", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "MatchPVPStatColumn",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "pvpStatID", Type = "number", Nilable = false },
-				{ Name = "columnHeaderID", Type = "number", Nilable = false },
-				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "tooltip", Type = "string", Nilable = false },
+				{ Name = "descendRating", Type = "number", Nilable = false },
+				{ Name = "ascendRating", Type = "number", Nilable = false },
+				{ Name = "descendTier", Type = "number", Nilable = false },
+				{ Name = "ascendTier", Type = "number", Nilable = false },
+				{ Name = "pvpTierEnum", Type = "number", Nilable = false },
+				{ Name = "tierIconID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1019,45 +1029,6 @@ local PvpInfo =
 			},
 		},
 		{
-			Name = "PvpTierInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "descendRating", Type = "number", Nilable = false },
-				{ Name = "ascendRating", Type = "number", Nilable = false },
-				{ Name = "descendTier", Type = "number", Nilable = false },
-				{ Name = "ascendTier", Type = "number", Nilable = false },
-				{ Name = "pvpTierEnum", Type = "number", Nilable = false },
-				{ Name = "tierIconID", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "RandomBGInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "canQueue", Type = "bool", Nilable = false },
-				{ Name = "bgID", Type = "number", Nilable = false },
-				{ Name = "hasRandomWinToday", Type = "bool", Nilable = false },
-				{ Name = "minLevel", Type = "number", Nilable = false },
-				{ Name = "maxLevel", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "PVPStatInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "pvpStatID", Type = "number", Nilable = false },
-				{ Name = "pvpStatValue", Type = "number", Nilable = false },
-				{ Name = "orderIndex", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "tooltip", Type = "string", Nilable = false },
-				{ Name = "iconName", Type = "string", Nilable = false },
-			},
-		},
-		{
 			Name = "PVPScoreInfo",
 			Type = "Structure",
 			Fields =
@@ -1084,15 +1055,16 @@ local PvpInfo =
 			},
 		},
 		{
-			Name = "SpecialEventDetails",
+			Name = "PVPStatInfo",
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "pvpStatID", Type = "number", Nilable = false },
+				{ Name = "pvpStatValue", Type = "number", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "shortDescription", Type = "string", Nilable = false },
-				{ Name = "longDescription", Type = "string", Nilable = false },
-				{ Name = "achievementID", Type = "number", Nilable = false },
-				{ Name = "isActive", Type = "bool", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+				{ Name = "iconName", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -1105,6 +1077,30 @@ local PvpInfo =
 				{ Name = "rating", Type = "number", Nilable = false },
 				{ Name = "ratingNew", Type = "number", Nilable = false },
 				{ Name = "ratingMMR", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "RandomBGInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "canQueue", Type = "bool", Nilable = false },
+				{ Name = "bgID", Type = "number", Nilable = false },
+				{ Name = "hasRandomWinToday", Type = "bool", Nilable = false },
+				{ Name = "minLevel", Type = "number", Nilable = false },
+				{ Name = "maxLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SpecialEventDetails",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "shortDescription", Type = "string", Nilable = false },
+				{ Name = "longDescription", Type = "string", Nilable = false },
+				{ Name = "achievementID", Type = "number", Nilable = false },
+				{ Name = "isActive", Type = "bool", Nilable = false },
 			},
 		},
 	},

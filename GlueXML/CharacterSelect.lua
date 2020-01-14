@@ -49,7 +49,7 @@ function GenerateBuildString(buildNumber)
 end
 
 function CharacterSelectLockedButtonMixin:OnEnter()
-	local requiresPurchase = IsExpansionTrialCharacter(self.guid) and CanUpgradeExpansion() or not C_CharacterServices.HasRequiredBoostForUnrevoke();
+	local requiresPurchase = (self.characterSelectButton.isLockedByExpansion or IsExpansionTrialCharacter(self.guid)) and CanUpgradeExpansion() or not C_CharacterServices.HasRequiredBoostForUnrevoke();
 
     local tooltipFooter;
     if requiresPurchase then
@@ -71,7 +71,7 @@ function CharacterSelectLockedButtonMixin:OnLeave()
 end
 
 function CharacterSelectLockedButtonMixin:OnClick()
-	if IsExpansionTrialCharacter(self.guid) and CanUpgradeExpansion() then
+	if (self.characterSelectButton.isLockedByExpansion or IsExpansionTrialCharacter(self.guid)) and CanUpgradeExpansion() then
 		ToggleStoreUI();
 		StoreFrame_SetGamesCategory();
 		return;
@@ -161,7 +161,6 @@ function CharacterSelect_OnShow(self)
     SetInCharacterSelect(true);
     CHARACTER_LIST_OFFSET = 0;
     CharacterSelect_ResetVeteranStatus();
-    CharacterTemplateConfirmDialog:Hide();
 
     if ( #translationTable == 0 ) then
         for i = 1, GetNumCharacters() do
@@ -656,7 +655,7 @@ function CharacterSelect_SetupPadlockForCharacterButton(button, guid)
 
     padlock.guid = guid;
 
-    local isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, _, _, _, isExpansionTrialCharacter = select(22, GetCharacterInfoByGUID(guid));
+    local isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, _, _, _, isExpansionTrialCharacter, _, lockedByExpansion = select(22, GetCharacterInfoByGUID(guid));
 	if isExpansionTrialCharacter then
 		if IsExpansionTrial() or CanUpgradeExpansion() then
 			-- Player has to upgrade to unlock this character
@@ -673,7 +672,10 @@ function CharacterSelect_SetupPadlockForCharacterButton(button, guid)
     elseif revokedCharacterUpgrade then
         padlock.tooltipTitle = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_TITLE;
         padlock.tooltipText = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_TEXT;
-    else
+    elseif lockedByExpansion then
+        padlock.tooltipTitle = CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_LOCKED_TOOLTIP_TITLE;
+        padlock.tooltipText = CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_BUY_EXPANSION;
+   else
         GMError("Invalid lock type");
     end
 	
@@ -776,8 +778,8 @@ function UpdateCharacterList(skipSelect)
 
     for i=1, characterLimit, 1 do
 		local characterIndex = i + CHARACTER_LIST_OFFSET;
-	    local name, race, _, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked, isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, _, lastLoginBuild, _, isExpansionTrialCharacter, faction = GetCharacterInfo(GetCharIDFromIndex(characterIndex));
-        local productID, vasServiceState, vasServiceErrors, productInfo;
+	    local name, race, _, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked, isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, _, lastLoginBuild, _, isExpansionTrialCharacter, faction, lockedByExpansion = GetCharacterInfo(GetCharIDFromIndex(characterIndex));
+		local productID, vasServiceState, vasServiceErrors, productInfo;
         if (guid) then
             productID, vasServiceState, vasServiceErrors = C_StoreGlue.GetVASPurchaseStateInfo(guid);
         end
@@ -787,6 +789,7 @@ function UpdateCharacterList(skipSelect)
 
         local button = _G["CharSelectCharacterButton"..i];
         button.isVeteranLocked = false;
+        button.isLockedByExpansion = lockedByExpansion;
 
         if (button.padlock) then
             CharacterSelect.characterPadlockPool:Release(button.padlock);
@@ -901,9 +904,13 @@ function UpdateCharacterList(skipSelect)
                         infoText:SetFormattedText(CHARACTER_SELECT_INFO, level, coloredClassName);
                     end
 
-                    locationText:SetText(zone);
+					if lockedByExpansion then
+						locationText:SetText(CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_BUY_EXPANSION);
+					else
+						locationText:SetText(zone);
+					end
 
-                    if revokedCharacterUpgrade then
+                    if lockedByExpansion or revokedCharacterUpgrade then
                         CharacterSelect_SetupPadlockForCharacterButton(button, guid);
                     end
                 end
@@ -911,7 +918,7 @@ function UpdateCharacterList(skipSelect)
 				local factionEmblem = button.FactionEmblem;
 				local isIconAssigned = faction ~= "Neutral";
 				if isIconAssigned then
-					local offsetX = -46 + (factionEmblem[factionGroup] or 0);
+					local offsetX = -46 + (factionEmblem[faction] or 0);
 					local offsetY = -6;
 					factionEmblem:SetPoint("TOPRIGHT", offsetX, offsetY)
 					factionEmblem:SetAtlas(string.format("CharacterSelection_%s_Icon", faction), true);

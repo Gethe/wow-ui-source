@@ -517,9 +517,9 @@ function AlertFrameMixin:OnEvent(event, ...)
 		local itemLink, quantity, rollType, roll, isUpgraded = ...;
 		LootAlertSystem:AddAlert(itemLink, quantity, rollType, roll, nil, nil, nil, nil, nil, isUpgraded);
 	elseif ( event == "SHOW_LOOT_TOAST" ) then
-		local typeIdentifier, itemLink, quantity, specID, sex, isPersonal, lootSource, lessAwesome, isUpgraded = ...;
+		local typeIdentifier, itemLink, quantity, specID, sex, isPersonal, lootSource, lessAwesome, isUpgraded, isCorrupted = ...;
 		if ( typeIdentifier == "item" ) then
-			LootAlertSystem:AddAlert(itemLink, quantity, nil, nil, specID, nil, nil, nil, lessAwesome, isUpgraded);
+			LootAlertSystem:AddAlert(itemLink, quantity, nil, nil, specID, nil, nil, nil, lessAwesome, isUpgraded, isCorrupted);
 		elseif ( typeIdentifier == "money" ) then
 			MoneyWonAlertSystem:AddAlert(quantity);
 		elseif ( isPersonal and (typeIdentifier == "currency") ) then
@@ -682,7 +682,7 @@ function AlertFrameMixin:BuildScenarioRewardData()
 end
 
 function AlertFrameMixin:BuildQuestData(questID)
-	local taskName = C_TaskQuest.GetQuestInfoByQuestID(questID);
+	local taskName, factionID, capped, displayAsObjective = C_TaskQuest.GetQuestInfoByQuestID(questID);
 
 	local questData =
 	{
@@ -691,6 +691,7 @@ function AlertFrameMixin:BuildQuestData(questID)
 		taskName = taskName,
 		money = GetQuestLogRewardMoney(questID),
 		xp = GetQuestLogRewardXP(questID),
+		displayAsObjective = displayAsObjective,
 	};
 
 	local currencyRewardCount = GetNumQuestLogRewardCurrencies(questID);

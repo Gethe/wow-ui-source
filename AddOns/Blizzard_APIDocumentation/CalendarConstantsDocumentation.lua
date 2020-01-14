@@ -27,9 +27,9 @@ local CalendarConstants =
 		{
 			Name = "CalendarErrorType",
 			Type = "Enumeration",
-			NumValues = 47,
+			NumValues = 51,
 			MinValue = 0,
-			MaxValue = 46,
+			MaxValue = 50,
 			Fields =
 			{
 				{ Name = "CalendarErrorSuccess", Type = "CalendarErrorType", EnumValue = 0 },
@@ -79,6 +79,10 @@ local CalendarConstants =
 				{ Name = "CalendarErrorInvalidDescription", Type = "CalendarErrorType", EnumValue = 44 },
 				{ Name = "CalendarErrorInvalidClub", Type = "CalendarErrorType", EnumValue = 45 },
 				{ Name = "CalendarErrorCreatorNotFound", Type = "CalendarErrorType", EnumValue = 46 },
+				{ Name = "CalendarErrorEventThrottled", Type = "CalendarErrorType", EnumValue = 47 },
+				{ Name = "CalendarErrorInviteThrottled", Type = "CalendarErrorType", EnumValue = 48 },
+				{ Name = "CalendarErrorInternal", Type = "CalendarErrorType", EnumValue = 49 },
+				{ Name = "CalendarErrorComplaintAdded", Type = "CalendarErrorType", EnumValue = 50 },
 			},
 		},
 		{
@@ -121,6 +125,22 @@ local CalendarConstants =
 			},
 		},
 		{
+			Name = "CalendarEventType",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 0,
+			MaxValue = 5,
+			Fields =
+			{
+				{ Name = "Raid", Type = "CalendarEventType", EnumValue = 0 },
+				{ Name = "Dungeon", Type = "CalendarEventType", EnumValue = 1 },
+				{ Name = "Pvp", Type = "CalendarEventType", EnumValue = 2 },
+				{ Name = "Meeting", Type = "CalendarEventType", EnumValue = 3 },
+				{ Name = "Other", Type = "CalendarEventType", EnumValue = 4 },
+				{ Name = "HeroicDeprecated", Type = "CalendarEventType", EnumValue = 5 },
+			},
+		},
+		{
 			Name = "CalendarFilterFlags",
 			Type = "Enumeration",
 			NumValues = 5,
@@ -140,13 +160,26 @@ local CalendarConstants =
 			Type = "Enumeration",
 			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "Get", Type = "CalendarGetEventType", EnumValue = 0 },
 				{ Name = "Add", Type = "CalendarGetEventType", EnumValue = 1 },
 				{ Name = "Copy", Type = "CalendarGetEventType", EnumValue = 2 },
-				{ Name = "DefaultCalendarGetEventType", Type = "CalendarGetEventType", EnumValue = 3 },
+				{ Name = "DefaultCalendarGetEventType", Type = "CalendarGetEventType", EnumValue = 0 },
+			},
+		},
+		{
+			Name = "CalendarHolidayFilterType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Weekly", Type = "CalendarHolidayFilterType", EnumValue = 0 },
+				{ Name = "Darkmoon", Type = "CalendarHolidayFilterType", EnumValue = 1 },
+				{ Name = "Battleground", Type = "CalendarHolidayFilterType", EnumValue = 2 },
 			},
 		},
 		{
@@ -259,19 +292,17 @@ local CalendarConstants =
 			},
 		},
 		{
-			Name = "CalendarEventType",
+			Name = "HolidayFlags",
 			Type = "Enumeration",
-			NumValues = 6,
-			MinValue = 0,
-			MaxValue = 5,
+			NumValues = 4,
+			MinValue = 1,
+			MaxValue = 8,
 			Fields =
 			{
-				{ Name = "Raid", Type = "CalendarEventType", EnumValue = 0 },
-				{ Name = "Dungeon", Type = "CalendarEventType", EnumValue = 1 },
-				{ Name = "Pvp", Type = "CalendarEventType", EnumValue = 2 },
-				{ Name = "Meeting", Type = "CalendarEventType", EnumValue = 3 },
-				{ Name = "Other", Type = "CalendarEventType", EnumValue = 4 },
-				{ Name = "HeroicDeprecated", Type = "CalendarEventType", EnumValue = 5 },
+				{ Name = "IsRegionwide", Type = "HolidayFlags", EnumValue = 1 },
+				{ Name = "DontShowInCalendar", Type = "HolidayFlags", EnumValue = 2 },
+				{ Name = "DontDisplayEnd", Type = "HolidayFlags", EnumValue = 4 },
+				{ Name = "DontDisplayBanner", Type = "HolidayFlags", EnumValue = 8 },
 			},
 		},
 	},

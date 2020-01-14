@@ -289,6 +289,30 @@
 								</FontString>
 							</Layer>
 						</Layers>
+						<Frames>
+							<Frame parentKey="Corruption" frameStrata="HIGH">
+								<Size x="61" y="106"/>
+								<HitRectInsets left="12" right="12" top="30" bottom="45"/>
+								<Anchors>
+									<Anchor point="RIGHT" x="29" y="-8"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture parentKey="Eye" atlas="Nzoth-charactersheet-icon" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="RIGHT"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnLoad function="CharacterFrameCorruption_OnLoad"/>
+									<OnEvent function="CharacterFrameCorruption_OnEvent"/>
+									<OnEnter function="CharacterFrameCorruption_OnEnter"/>
+									<OnLeave function="CharacterFrameCorruption_OnLeave"/>
+								</Scripts>
+							</Frame>
+						</Frames>
 						<Scripts>
 							<OnEnter>
 								if ( self.onEnterFunc ) then

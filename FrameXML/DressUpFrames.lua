@@ -1,3 +1,7 @@
+function DressUpLink(link)
+	return link and (DressUpItemLink(link) or DressUpBattlePetLink(link) or DressUpMountLink(link));
+end
+
 function DressUpItemLink(link)
 	if( link ) then 
 		if ( IsDressableItem(link) ) then
@@ -58,8 +62,7 @@ end
 
 function DressUpBattlePetLink(link)
 	if( link ) then 
-		
-		local _, _, _, linkType, linkID, _, _, _, _, _, battlePetID = strsplit(":|H", link);
+		local _, _, _, linkType, linkID, _, _, _, _, _, battlePetID, battlePetDisplayID = strsplit(":|H", link);
 		if ( linkType == "item") then
 			local _, _, _, creatureID, _, _, _, _, _, _, _, displayID, speciesID = C_PetJournal.GetPetInfoByItemID(tonumber(linkID));
 			if (creatureID and displayID) then
@@ -72,6 +75,7 @@ function DressUpBattlePetLink(link)
 			else
 				speciesID = tonumber(linkID);
 				local _, _, _, creatureID, _, _, _, _, _, _, _, displayID = C_PetJournal.GetPetInfoBySpeciesID(speciesID);
+				displayID = (battlePetDisplayID and battlePetDisplayID ~= "0") and battlePetDisplayID or displayID;
 				return DressUpBattlePet(creatureID, displayID, speciesID);
 			end
 		end
@@ -205,6 +209,17 @@ function DressUpFrame_Show(frame)
 	if ( not frame:IsShown() or frame.mode ~= "player") then
 		frame.mode = "player";
 		frame.ResetButton:Show();
+
+		-- If there's not enough space as-is, try minimizing.
+		if not CanShowRightUIPanel(frame) and not frame.MaximizeMinimizeFrame:IsMinimized() then
+			local isAutomaticAction = true;
+			frame.MaximizeMinimizeFrame:Minimize(isAutomaticAction);
+
+			-- Restore the frame to its original state if we still can't fit.
+			if not CanShowRightUIPanel(frame) then
+				frame.MaximizeMinimizeFrame:Maximize(isAutomaticAction);
+			end
+		end
 
 		ShowUIPanel(frame);
 

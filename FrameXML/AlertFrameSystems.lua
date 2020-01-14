@@ -457,18 +457,19 @@ LOOTUPGRADEFRAME_QUALITY_TEXTURES = {
 LOOTWONALERTFRAME_VALUES={
 	WonRoll = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=YOU_WON_LABEL, glowAtlas="loottoast-glow"},
 	Default = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=YOU_RECEIVED_LABEL, glowAtlas="loottoast-glow"},
-	Upgraded = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=ITEM_UPGRADED_LABEL, bgAtlas="LootToast-MoreAwesome", glowAtlas="loottoast-glow"},
-	LessAwesome = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=YOU_RECEIVED_LABEL, bgAtlas="LootToast-LessAwesome"},
+	Upgraded = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=ITEM_UPGRADED_LABEL, bgAtlas="LootToast-MoreAwesome", glowAtlas="loottoast-glow", soundKit=SOUNDKIT.UI_WARFORGED_ITEM_LOOT_TOAST},
+	LessAwesome = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=YOU_RECEIVED_LABEL, bgAtlas="LootToast-LessAwesome", soundKit=SOUNDKIT.UI_RAID_LOOT_TOAST_LESSER_ITEM_WON},
 	GarrisonCache = { bgOffsetX=-4, bgOffsetY=0, labelOffsetX=7, labelOffsetY=1, labelText=GARRISON_CACHE, glowAtlas="CacheToast-Glow", bgAtlas="CacheToast", noIconBorder=true, iconUnderBG=true},
 	Horde = { bgOffsetX=-1, bgOffsetY=-1, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="loottoast-bg-horde", glowAtlas="loottoast-glow"},
 	Alliance = { bgOffsetX=-1, bgOffsetY=-1, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="loottoast-bg-alliance", glowAtlas="loottoast-glow"},
 	RatedHorde = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="pvprated-loottoast-bg-horde", glowAtlas="loottoast-glow"},
 	RatedAlliance = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="pvprated-loottoast-bg-alliance", glowAtlas="loottoast-glow"},
-	Azerite = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=3, labelText=AZERITE_EMPOWERED_ITEM_LOOT_LABEL, bgAtlas="LootToast-Azerite", glowAtlas="loottoast-glow"},
+	Azerite = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=3, labelText=AZERITE_EMPOWERED_ITEM_LOOT_LABEL, bgAtlas="LootToast-Azerite", glowAtlas="loottoast-glow", soundKit=SOUNDKIT.UI_AZERITE_EMPOWERED_ITEM_LOOT_TOAST},
+	Corrupted = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=3, labelText=CORRUPTED_ITEM_LOOT_LABEL, bgAtlas="LootToast-Nzoth", glowAtlas="loottoast-glow", soundKit=SOUNDKIT.UI_CORRUPTED_ITEM_LOOT_TOAST},
 }
 
 -- NOTE - This may also be called for an externally created frame. (E.g. bonus roll has its own frame)
-function LootWonAlertFrame_SetUp(self, itemLink, originalQuantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded, wonRoll, showRatedBG, isSecondaryResult)
+function LootWonAlertFrame_SetUp(self, itemLink, originalQuantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded, isCorrupted, wonRoll, showRatedBG, isSecondaryResult)
 	local itemName, itemTexture, quantity, itemRarity, itemLink = ItemUtil.GetItemDetails(itemLink, originalQuantity, isCurrency, lootSource);
 
 	self.isCurrency = isCurrency;
@@ -496,6 +497,8 @@ function LootWonAlertFrame_SetUp(self, itemLink, originalQuantity, rollType, rol
 	else
 		if ( lootSource == LOOT_SOURCE_GARRISON_CACHE ) then
 			windowInfo = LOOTWONALERTFRAME_VALUES["GarrisonCache"];
+		elseif ( isCorrupted ) then
+			windowInfo = LOOTWONALERTFRAME_VALUES["Corrupted"];
 		elseif ( lessAwesome ) then
 			windowInfo = LOOTWONALERTFRAME_VALUES["LessAwesome"];
 		elseif ( isUpgraded ) then
@@ -551,15 +554,8 @@ function LootWonAlertFrame_SetUp(self, itemLink, originalQuantity, rollType, rol
 	end
 
 	self.hyperlink = itemLink;
-	if ( lessAwesome ) then
-		PlaySound(SOUNDKIT.UI_RAID_LOOT_TOAST_LESSER_ITEM_WON);
-	elseif ( isUpgraded ) then
-		PlaySound(SOUNDKIT.UI_WARFORGED_ITEM_LOOT_TOAST);
-	elseif ( isAzeriteEmpowered ) then
-		PlaySound(SOUNDKIT.UI_AZERITE_EMPOWERED_ITEM_LOOT_TOAST);
-	else
-		PlaySound(SOUNDKIT.UI_EPICLOOT_TOAST);
-	end
+	local soundKit = windowInfo.soundKit or SOUNDKIT.UI_EPICLOOT_TOAST;
+	PlaySound(soundKit);
 end
 
 function LootWonAlertFrame_OnClick(self, button, down)
@@ -955,6 +951,8 @@ function WorldQuestCompleteAlertFrame_SetUp(frame, questData)
 	frame.QuestName:SetText(questData.taskName);
 
 	frame.QuestTexture:SetTexture(questData.icon);
+
+	frame.ToastText:SetText(questData.displayAsObjective and TOAST_OBJECTIVE_COMPLETE or WORLD_QUEST_COMPLETE);
 
 	ResetRewardFrames(frame);
 

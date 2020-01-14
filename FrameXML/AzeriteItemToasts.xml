@@ -194,7 +194,7 @@
 					<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="TOP" x="0" y="-122" />
 				</Anchors>
 				<Frames>
-					<Frame parentKey="EssenceSlotFrame" hidden="true">
+					<Frame parentKey="EssenceSlotFrame" parentArray="Frames" hidden="true">
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="10" type="number"/>
 						</KeyValues>
@@ -208,7 +208,7 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<Frame parentKey="EssenceStaminaFrame" hidden="true">
+					<Frame parentKey="EssenceStaminaFrame" parentArray="Frames" hidden="true">
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="11" type="number"/>
 						</KeyValues>
@@ -216,6 +216,39 @@
 						<Layers>
 							<Layer level="ARTWORK">
 								<Texture parentKey="Icon" atlas="heartofazeroth-node-on" setAllPoints="true"/>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="EssenceRankedFrame" parentArray="Frames" hidden="true">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="12" type="number"/>
+						</KeyValues>
+						<Size x="72" y="72"/>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Icon">
+									<Size x="54" y="54"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+								<MaskTexture parentKey="DiamondMask" file="Interface\Common\common-mask-diamond" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
+									</Anchors>
+									<MaskedTextures>
+										<MaskedTexture childKey="Icon"/>
+									</MaskedTextures>
+								</MaskTexture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Border" atlas="heartofazeroth-infinite">
+									<Size x="72" y="72"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
 							</Layer>
 						</Layers>
 					</Frame>

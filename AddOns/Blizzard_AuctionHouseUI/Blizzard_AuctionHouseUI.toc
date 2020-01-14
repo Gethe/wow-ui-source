@@ -1,0 +1,26 @@
+## Interface: 0
+## Title: Blizzard Auction House UI
+## Secure: 1
+## LoadOnDemand: 1
+## SavedVariables: g_auctionHouseSortsBySearchContext
+## SavedVariablesPerCharacter: g_activeBidAuctionIDs
+Blizzard_AuctionData.lua
+Blizzard_AuctionHouseUtil.lua
+Blizzard_AuctionHouseTableBuilder.xml
+Blizzard_AuctionHouseSharedTemplates.xml
+Blizzard_AuctionHouseTab.xml
+Blizzard_AuctionHouseItemList.xml
+Blizzard_AuctionHouseCategoriesList.xml
+Blizzard_AuctionHouseSearchBar.xml
+Blizzard_AuctionHouseBrowseResultsFrame.xml
+Blizzard_AuctionHouseCommoditiesList.xml
+Blizzard_AuctionHouseItemBuyFrame.xml
+Blizzard_AuctionHouseSellFrame.xml
+Blizzard_AuctionHouseCommoditiesSellFrame.xml
+Blizzard_AuctionHouseCommoditiesBuyFrame.xml
+Blizzard_AuctionHouseItemSellFrame.xml
+Blizzard_AuctionHouseAuctionsFrame.xml
+Blizzard_AuctionHouseWoWTokenFrame.xml
+Blizzard_AuctionHouseBuyDialog.xml
+Blizzard_AuctionHouseMultisell.xml
+Blizzard_AuctionHouseFrame.xml

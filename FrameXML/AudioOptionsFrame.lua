@@ -38,7 +38,7 @@ function AudioOptionsFrame_OnLoad (self)
 end
 
 function AudioOptionsFrame_OnEvent (self, event, ...)
-	_G[self:GetName().."HeaderText"]:SetText(SOUND);
+	self.Header:Setup(SOUND);
 end
 
 function AudioOptionsFrame_OnHide (self)

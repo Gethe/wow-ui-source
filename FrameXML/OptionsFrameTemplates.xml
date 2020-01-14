@@ -247,33 +247,14 @@
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Size>
-						<AbsDimension x="300" y="68"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="12"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentHeaderText" inherits="GameFontNormal" text="OPTIONS">
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentHeader">
-							<Offset>
-								<AbsDimension x="0" y="-14"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="headerTextPadding" value="100" type="number"/>
+					<KeyValue key="textString" value="OPTIONS" type="global"/>
+				</KeyValues>
+			</Frame>
 			<Frame name="$parentCategoryFrame" inherits="OptionsFrameListTemplate">
 				<Size>
 					<AbsDimension x="175" y="429"/><!-- this may be overwritten for the VideoOptions frame, see VideoOptionsPanels.lua -->

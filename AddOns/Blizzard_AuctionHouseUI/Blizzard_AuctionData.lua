@@ -1,171 +1,16 @@
 NUM_BROWSE_TO_DISPLAY = 8;
 NUM_AUCTION_ITEMS_PER_PAGE = 50;
-NUM_FILTERS_TO_DISPLAY = 15;
+NUM_FILTERS_TO_DISPLAY = 20;
 BROWSE_FILTER_HEIGHT = 20;
 NUM_BIDS_TO_DISPLAY = 9;
 NUM_AUCTIONS_TO_DISPLAY = 9;
 AUCTIONS_BUTTON_HEIGHT = 37;
 CLASS_FILTERS = {};
-OPEN_FILTER_LIST = {};
 AUCTION_TIMER_UPDATE_DELAY = 0.3;
 MAXIMUM_BID_PRICE = 99999999999;
 AUCTION_CANCEL_COST =  5;	--5% of the current bid
 NUM_TOKEN_LOGS_TO_DISPLAY = 14;
 
-AuctionSort = { };
-
--- owner sorts
-AuctionSort["owner_status"] = {
-	{ column = "quantity",	reverse = true	},
-	{ column = "bid",		reverse = false	},
-	{ column = "name",		reverse = false	},
-	{ column = "level",		reverse = true	},
-	{ column = "quality",	reverse = false	},
-	{ column = "duration",	reverse = false	},
-	{ column = "status",	reverse = false	},
-};
-
-AuctionSort["owner_bid"] = {
-	{ column = "quantity",	reverse = true	},
-	{ column = "name",		reverse = false	},
-	{ column = "level",		reverse = true	},
-	{ column = "quality",	reverse = false	},
-	{ column = "duration",	reverse = false	},
-	{ column = "status",	reverse = false	},
-	{ column = "bid",		reverse = false	},
-};
-
-AuctionSort["owner_quality"] = {
-	{ column = "bid",		reverse = false	},
-	{ column = "quantity",	reverse = true	},
-	{ column = "minbidbuyout",	reverse = false	},
-	{ column = "name",		reverse = false	},
-	{ column = "level",		reverse = true	},
-	{ column = "quality",	reverse = false	},
-};
-
-AuctionSort["owner_duration"] = {
-	{ column = "quantity",	reverse = true	},
-	{ column = "bid",		reverse = false	},
-	{ column = "name",		reverse = false	},
-	{ column = "level",		reverse = true	},
-	{ column = "quality",	reverse = false	},
-	{ column = "status",	reverse = false	},
-	{ column = "duration",	reverse = false	},
-};
-
--- bidder sorts
-AuctionSort["bidder_quality"] = {
-	{ column =  "bid",		reverse = false	},
-	{ column =  "quantity",	reverse = true	},
-	{ column =  "minbidbuyout",	reverse = false	},
-	{ column =  "name",		reverse = false	},
-	{ column =  "level",	reverse = true	},
-	{ column =  "quality",	reverse = false	},
-};
-
-AuctionSort["bidder_level"] = {
-	{ column =  "minbidbuyout",	reverse = true	},
-	{ column =  "status",	reverse = true	},
-	{ column =  "bid",		reverse = true	},
-	{ column =  "duration",	reverse = true	},
-	{ column =  "quantity",	reverse = false	},
-	{ column =  "name",		reverse = true	},
-	{ column =  "quality",	reverse = true	},
-	{ column =  "level",	reverse = false	},
-};
-
-AuctionSort["bidder_buyout"] = {
-	{ column =  "quantity",	reverse = true	},
-	{ column =  "name",		reverse = false	},
-	{ column =  "level",	reverse = true	},
-	{ column =  "quality",	reverse = false	},
-	{ column =  "status",	reverse = false	},
-	{ column =  "bid",		reverse = false	},
-	{ column =  "duration",	reverse = false	},
-	{ column =  "buyout",	reverse = false	},
-};
- 
-AuctionSort["bidder_status"] = {
-	{ column =  "quantity",	reverse = true	},
-	{ column =  "name",		reverse = false	},
-	{ column =  "level",	reverse = true	},
-	{ column =  "quality",	reverse = false	},
-	{ column =  "minbidbuyout",	reverse = false	},
-	{ column =  "bid",		reverse = false	},
-	{ column =  "duration", reverse = false	},
-	{ column =  "status",	reverse = false	},
-};
-
-AuctionSort["bidder_bid"] = {
-	{ column =  "quantity",	reverse = true	},
-	{ column =  "name",		reverse = false	},
-	{ column =  "level",	reverse = true	},
-	{ column =  "quality",	reverse = false	},
-	{ column =  "minbidbuyout",	reverse = false	},
-	{ column =  "status",	reverse = false	},
-	{ column =  "duration",	reverse = false	},
-	{ column =  "bid",		reverse = false	},
-};
-
-AuctionSort["bidder_duration"] = {
-	{ column =  "quantity",	reverse = true	},
-	{ column =  "name",		reverse = false	},
-	{ column =  "level",	reverse = true	},
-	{ column =  "quality",	reverse = false	},
-	{ column =  "minbidbuyout",	reverse = false	},
-	{ column =  "status",	reverse = false	},
-	{ column =  "bid",		reverse = false	},
-	{ column =  "duration",	reverse = false	},
-};
-
--- list sorts
-AuctionSort["list_level"] = {
-	{ column = "duration",	reverse = true	},
-	{ column = "unitprice",		reverse = false },
-	{ column = "quantity",	reverse = false	},
-	{ column = "minbidbuyout",	reverse = true	},
-	{ column = "name",		reverse = true	},
-	{ column = "quality",	reverse = true	},
-	{ column = "level",		reverse = false	},
-};
-AuctionSort["list_duration"] = {
-	{ column = "unitprice",		reverse = false },
-	{ column = "quantity",	reverse = true	},
-	{ column = "minbidbuyout",	reverse = false	},
-	{ column = "name",		reverse = false	},
-	{ column = "level",		reverse = true	},
-	{ column = "quality",	reverse = false	},
-	{ column = "duration",	reverse = false	},
-};
-AuctionSort["list_seller"] = {
-	{ column = "duration",	reverse = false	},
-	{ column = "unitprice",		reverse = false },
-	{ column = "quantity",	reverse = true	},
-	{ column = "minbidbuyout",	reverse = false	},
-	{ column = "name",		reverse = false	},
-	{ column = "level",		reverse = true	},
-	{ column = "quality",	reverse = false	},
-	{ column = "seller",	reverse = false	},
-};
-AuctionSort["list_unitprice"] = {
-	{ column = "duration",	reverse = false	},
-	{ column = "quantity",	reverse = true	},
-	{ column = "name",		reverse = false	},
-	{ column = "level",		reverse = true	},
-	{ column = "quality",	reverse = false	},
-	{ column = "unitprice",	reverse = false	},
-};
-
-AuctionSort["list_quality"] = {
-	{ column = "duration",	reverse = false	},
-	{ column = "unitprice",		reverse = false },
-	{ column = "quantity",	reverse = true	},
-	{ column = "minbidbuyout",	reverse = false	},
-	{ column = "name",		reverse = false	},
-	{ column = "level",		reverse = true	},
-	{ column = "quality",	reverse = false	},
-};
 
 AuctionCategories = {};
 
@@ -185,6 +30,11 @@ end
 function AuctionFrame_GetDetailColumnString(categoryIndex, subCategoryIndex)
 	local categoryInfo = FindDeepestCategory(categoryIndex, subCategoryIndex);
 	return categoryInfo and categoryInfo:GetDetailColumnString() or REQ_LEVEL_ABBR;
+end
+
+function AuctionFrame_GetDetailColumnStringUnsafe(categoryIndex, subCategoryIndex)
+	local categoryInfo = FindDeepestCategory(categoryIndex, subCategoryIndex);
+	return categoryInfo and categoryInfo:GetDetailColumnStringUnsafe() or nil;
 end
 
 function AuctionFrame_DoesCategoryHaveFlag(flag, categoryIndex, subCategoryIndex, subSubCategoryIndex)
@@ -216,6 +66,16 @@ function AuctionCategoryMixin:GetDetailColumnString()
 		return self.parent:GetDetailColumnString();
 	end
 	return REQ_LEVEL_ABBR;
+end
+
+function AuctionCategoryMixin:GetDetailColumnStringUnsafe()
+	if self.detailColumnString then
+		return self.detailColumnString;
+	end
+	if self.parent then
+		return self.parent:GetDetailColumnStringUnsafe();
+	end
+	return nil;
 end
 
 function AuctionCategoryMixin:CreateSubCategory(classID, subClassID, inventoryType)
@@ -264,6 +124,10 @@ function AuctionCategoryMixin:AddBulkInventoryTypeCategories(classID, subClassID
 end
 
 function AuctionCategoryMixin:AddFilter(classID, subClassID, inventoryType)
+	if not classID and not subClassID and not inventoryType then
+		return;
+	end
+
 	self.filters = self.filters or {};
 	self.filters[#self.filters + 1] = { classID = classID, subClassID = subClassID, inventoryType = inventoryType, };
 
@@ -273,15 +137,15 @@ function AuctionCategoryMixin:AddFilter(classID, subClassID, inventoryType)
 end
 
 do
-	local function GenerateSubClassesHelper(self, classID, ...)
-		for i = 1, select("#", ...) do
-			local subClassID = select(i, ...);
+	local function GenerateSubClassesHelper(self, classID, subClasses)
+		for i = 1, #subClasses do
+			local subClassID = subClasses[i];
 			self:CreateSubCategoryAndFilter(classID, subClassID);
 		end
 	end
 
 	function AuctionCategoryMixin:GenerateSubCategoriesAndFiltersFromSubClass(classID)
-		GenerateSubClassesHelper(self, classID, GetAuctionItemSubClasses(classID));
+		GenerateSubClassesHelper(self, classID, C_AuctionHouse.GetAuctionItemSubClasses(classID));
 	end
 end
 
@@ -324,6 +188,7 @@ end
 
 do -- Weapons
 	local weaponsCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_WEAPONS);
+	weaponsCategory:SetDetailColumnString(ITEM_LEVEL_ABBR);
 
 	local oneHandedCategory = weaponsCategory:CreateNamedSubCategory(AUCTION_SUBCATEGORY_ONE_HANDED);
 	oneHandedCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_WEAPON, LE_ITEM_WEAPON_AXE1H);
@@ -369,6 +234,7 @@ do -- Armor
 	};
 
 	local armorCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_ARMOR);
+	armorCategory:SetDetailColumnString(ITEM_LEVEL_ABBR);
 
 	local plateCategory = armorCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_PLATE);
 	plateCategory:AddBulkInventoryTypeCategories(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_PLATE, ArmorInventoryTypes);
@@ -410,24 +276,27 @@ end
 
 do -- Containers
 	local containersCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_CONTAINERS);
-	containersCategory:SetDetailColumnString(SLOT_ABBR);
+	containersCategory:SetDetailColumnString(AUCTION_HOUSE_BROWSE_HEADER_CONTAINER_SLOTS);
 	containersCategory:GenerateSubCategoriesAndFiltersFromSubClass(LE_ITEM_CLASS_CONTAINER);
 end
 
 do -- Gems
 	local gemsCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_GEMS);
 	gemsCategory:SetDetailColumnString(ITEM_LEVEL_ABBR);
+	gemsCategory:SetFlag("UNSORTABLE");
 	gemsCategory:GenerateSubCategoriesAndFiltersFromSubClass(LE_ITEM_CLASS_GEM);
 end
 
 do -- Item Enhancement
 	local itemEnhancementCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_ITEM_ENHANCEMENT);
 	itemEnhancementCategory:SetDetailColumnString(ITEM_LEVEL_ABBR);
+	itemEnhancementCategory:SetFlag("UNSORTABLE");
 	itemEnhancementCategory:GenerateSubCategoriesAndFiltersFromSubClass(LE_ITEM_CLASS_ITEM_ENHANCEMENT);
 end
 
 do -- Consumables
 	local consumablesCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_CONSUMABLES);
+	consumablesCategory:SetDetailColumnString(AUCTION_HOUSE_BROWSE_HEADER_REQUIRED_LEVEL);
 	consumablesCategory:GenerateSubCategoriesAndFiltersFromSubClass(LE_ITEM_CLASS_CONSUMABLE);
 end
 
@@ -443,11 +312,12 @@ end
 
 do -- Recipes
 	local recipesCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_RECIPES);
+	recipesCategory:SetDetailColumnString(AUCTION_HOUSE_BROWSE_HEADER_RECIPE_SKILL);
+
 	recipesCategory:GenerateSubCategoriesAndFiltersFromSubClass(LE_ITEM_CLASS_RECIPE);
 
 	local bookCategory = recipesCategory:FindSubCategoryByName(GetItemSubClassInfo(LE_ITEM_CLASS_RECIPE, LE_ITEM_RECIPE_BOOK));
 	if bookCategory then
-		bookCategory:SetDetailColumnString(SKILL_ABBR);
 		bookCategory:SetSortIndex(100);
 	end
 
@@ -456,6 +326,8 @@ end
 
 do -- Battle Pets
 	local battlePetsCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_BATTLE_PETS);
+	battlePetsCategory:SetDetailColumnString(AUCTION_HOUSE_BROWSE_HEADER_PET_LEVEL);
+
 	battlePetsCategory:GenerateSubCategoriesAndFiltersFromSubClass(LE_ITEM_CLASS_BATTLEPET);
 	battlePetsCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_MISCELLANEOUS, LE_ITEM_MISCELLANEOUS_COMPANION_PET);
 end
@@ -479,4 +351,17 @@ do -- WoW Token
 	local wowTokenCategory = AuctionFrame_CreateCategory(TOKEN_FILTER_LABEL);
 	wowTokenCategory:AddFilter(ITEM_CLASS_WOW_TOKEN);
 	wowTokenCategory:SetFlag("WOW_TOKEN_FLAG");
+end
+
+function AuctionHouseCategory_FindDeepest(categoryIndex, ...)
+	local categoryInfo = AuctionCategories[categoryIndex];
+	for i = 1, select("#", ...) do
+		local subCategoryIndex = select(i, ...);
+		if categoryInfo and categoryInfo.subCategories and categoryInfo.subCategories[subCategoryIndex] then
+			categoryInfo = categoryInfo.subCategories[subCategoryIndex];
+		else
+			break;
+		end
+	end
+	return categoryInfo;
 end

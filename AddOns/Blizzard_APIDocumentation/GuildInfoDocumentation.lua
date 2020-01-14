@@ -62,6 +62,20 @@ local GuildInfo =
 			},
 		},
 		{
+			Name = "GetGuildTabardInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "tabardInfo", Type = "GuildTabardInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GuildControlGetRankFlags",
 			Type = "Function",
 
@@ -200,17 +214,7 @@ local GuildInfo =
 				{ Name = "guildAchievementPoints", Type = "number", Nilable = false },
 				{ Name = "oldGuildName", Type = "string", Nilable = false },
 				{ Name = "isNewGuild", Type = "bool", Nilable = true },
-				{ Name = "bkgColorR", Type = "number", Nilable = true },
-				{ Name = "bkgColorG", Type = "number", Nilable = true },
-				{ Name = "bkgColorB", Type = "number", Nilable = true },
-				{ Name = "borderColorR", Type = "number", Nilable = true },
-				{ Name = "borderColorG", Type = "number", Nilable = true },
-				{ Name = "borderColorB", Type = "number", Nilable = true },
-				{ Name = "emblemColorR", Type = "number", Nilable = true },
-				{ Name = "emblemColorG", Type = "number", Nilable = true },
-				{ Name = "emblemColorB", Type = "number", Nilable = true },
-				{ Name = "emblemFileID", Type = "number", Nilable = true },
-				{ Name = "emblemIndex", Type = "number", Nilable = true },
+				{ Name = "tabardInfo", Type = "GuildTabardInfo", Nilable = true },
 			},
 		},
 		{

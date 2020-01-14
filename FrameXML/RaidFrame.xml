@@ -129,12 +129,13 @@
 			<OnShow>
 				UpdateMicroButtons();
 				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-				RequestLFDPlayerLockInfo(); --This info coming back might affect the tab state.
-				RequestLFDPartyLockInfo();
+				QueueUpdater:RequestInfo();
+				QueueUpdater:AddRef();
 				RaidFinderFrame_UpdateTab();
 			</OnShow>
 			<OnHide>
 				UpdateMicroButtons();
+				QueueUpdater:RemoveRef();
 				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 			</OnHide>
 		</Scripts>
@@ -254,22 +255,15 @@
 								<Anchor point="TOPRIGHT" x="-6" y="-7"/>
 							</Anchors>
 						</Texture>
-						<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size x="256" y="64"/>
-							<Anchors>
-								<Anchor point="TOP" x="0" y="12"/>
-							</Anchors>
-						</Texture>
-						<FontString name="$parentHeaderText" inherits="GameFontNormal" text="RAID_INFORMATION">
-							<Size x="185" y="12"/>
-							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentHeader" x="0" y="-14"/>
-							</Anchors>
-						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
 					<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
+					<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+						<KeyValues>
+							<KeyValue key="textString" value="RAID_INFORMATION" type="global"/>
+						</KeyValues>
+					</Frame>
 					<Frame name="RaidInfoInstanceLabel" inherits="RaidInfoHeaderTemplate">
 						<Size x="173" y="22"/>
 						<Anchors>

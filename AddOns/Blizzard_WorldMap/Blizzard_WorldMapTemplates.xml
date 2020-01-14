@@ -8,7 +8,7 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="WorldMapTrackingOptionsButtonTemplate" frameStrata="HIGH" mixin="WorldMapTrackingOptionsButtonMixin" virtual="true">
+	<DropDownToggleButton name="WorldMapTrackingOptionsButtonTemplate" frameStrata="HIGH" mixin="WorldMapTrackingOptionsButtonMixin" virtual="true">
 		<Size x="32" y="32"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
@@ -60,11 +60,10 @@
 		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnClick method="OnClick"/>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>
-	</Button>
+	</DropDownToggleButton>
 
 	<Frame name="WorldMapNavBarButtonTemplate" inherits="NavButtonTemplate" mixin="WorldMapNavBarButtonMixin" virtual="true"/>
 
@@ -188,4 +187,68 @@
 			<OnUpdate method="OnUpdate" />
 		</Scripts>
 	</Frame>
+
+	<Frame name="WorldMapThreatFrameTemplate" frameStrata="HIGH" frameLevel="5" mixin="WorldMapThreatFrameMixin" virtual="true">
+		<Size x="300" y="300" />
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="bfa-threats-cornereye-background">
+					<Size x="121" y="110"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Eye" mixin="WorldMapThreatEyeMixin" enableMouse="true" frameLevel="10">
+				<Size x="46" y="47"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="11" y="7"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Eye" atlas="bfa-threats-cornereye">
+							<Size x="121" y="110"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="-11" y="-7"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="HIGHLIGHT">
+						<Texture parentKey="Highlight" atlas="bfa-threats-cornereye" alphaMode="ADD" alpha="0.4">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Eye"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Eye"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow method="OnShow"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnMouseDown method="OnMouseDown"/>
+				</Scripts>
+			</Frame>
+			<ModelScene parentKey="ModelSceneBottom" inherits="NonInteractableModelSceneMixinTemplate" frameLevel="9">
+				<Size x="300" y="300"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Eye"/>
+				</Anchors>
+			</ModelScene>
+			<ModelScene parentKey="ModelSceneTop" inherits="NonInteractableModelSceneMixinTemplate" frameLevel="11">
+				<Size x="300" y="300"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Eye"/>
+				</Anchors>
+			</ModelScene>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>	
 </Ui>

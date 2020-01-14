@@ -806,7 +806,9 @@ end
 MaximizeMinimizeButtonFrameMixin = {};
 
 function MaximizeMinimizeButtonFrameMixin:OnShow()
-	if self.cvar then
+	if self.isAutomaticAction then
+		self.isAutomaticAction = false;
+	elseif self.cvar then
 		local minimized = GetCVarBool(self.cvar);
 		if minimized then
 			self:Minimize();
@@ -814,6 +816,10 @@ function MaximizeMinimizeButtonFrameMixin:OnShow()
 			self:Maximize();
 		end
 	end
+end
+
+function MaximizeMinimizeButtonFrameMixin:IsMinimized()
+	return self.isMinimized;
 end
 
 function MaximizeMinimizeButtonFrameMixin:SetMinimizedCVar(cvar)
@@ -824,14 +830,17 @@ function MaximizeMinimizeButtonFrameMixin:SetOnMaximizedCallback(maximizedCallba
 	self.maximizedCallback = maximizedCallback;
 end
 
-function MaximizeMinimizeButtonFrameMixin:Maximize()
+function MaximizeMinimizeButtonFrameMixin:Maximize(isAutomaticAction)
 	if self.maximizedCallback then
 		self.maximizedCallback(self);
 	end
 
-	if self.cvar then
+	if not isAutomaticAction and self.cvar then
 		SetCVar(self.cvar, 0);
 	end
+
+	self.isMinimized = false;
+	self.isAutomaticAction = isAutomaticAction;
 
 	self:SetMinimizedLook();
 end
@@ -840,14 +849,17 @@ function MaximizeMinimizeButtonFrameMixin:SetOnMinimizedCallback(minimizedCallba
 	self.minimizedCallback = minimizedCallback;
 end
 
-function MaximizeMinimizeButtonFrameMixin:Minimize()
+function MaximizeMinimizeButtonFrameMixin:Minimize(isAutomaticAction)
 	if self.minimizedCallback then
 		self:minimizedCallback();
 	end
 
-	if self.cvar then
+	if not isAutomaticAction and self.cvar then
 		SetCVar(self.cvar, 1);
 	end
+
+	self.isMinimized = true;
+	self.isAutomaticAction = isAutomaticAction;
 
 	self:SetMaximizedLook();
 end
@@ -1019,4 +1031,144 @@ end
 
 function ColumnDisplayButton_OnClick(self)
 	self:GetParent():OnClick(self:GetID());
+end
+
+SquareIconButtonMixin = {};
+
+function SquareIconButtonMixin:OnLoad()
+	if self.icon then
+		self:SetIcon(self.icon);
+	elseif self.iconAtlas then
+		self:SetAtlas(self.iconAtlas);
+	end
+end
+
+function SquareIconButtonMixin:SetIcon(icon)
+	self.Icon:SetTexture(icon);
+end
+
+function SquareIconButtonMixin:SetAtlas(atlas)
+	self.Icon:SetAtlas(atlas);
+end
+
+function SquareIconButtonMixin:SetOnClickHandler(onClickHandler)
+	self.onClickHandler = onClickHandler;
+end
+
+function SquareIconButtonMixin:SetTooltipInfo(tooltipTitle, tooltipText)
+	self.tooltipTitle = tooltipTitle;
+	self.tooltipText = tooltipText;
+end
+
+function SquareIconButtonMixin:OnMouseDown()
+	if self:IsEnabled() then
+		self.Icon:SetPoint("CENTER", self, "CENTER", -2, -1);
+	end
+end
+
+function SquareIconButtonMixin:OnMouseUp()
+	self.Icon:SetPoint("CENTER", self, "CENTER", -1, 0);
+end
+
+function SquareIconButtonMixin:OnEnter()
+	if self.tooltipTitle then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -8, -8);
+		GameTooltip_SetTitle(GameTooltip, self.tooltipTitle);
+
+		if self.tooltipText then
+			local wrap = true;
+			GameTooltip_AddNormalLine(GameTooltip, self.tooltipText, wrap);
+		end
+
+		GameTooltip:Show();
+	end
+end
+
+function SquareIconButtonMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+function SquareIconButtonMixin:OnClick(...)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	if self.onClickHandler then
+		self.onClickHandler(self, ...);
+	end
+end
+
+function SquareIconButtonMixin:SetEnabledState(enabled)
+	self:SetEnabled(enabled);
+	self.Icon:SetDesaturated(not enabled);
+end
+
+UIMenuButtonStretchMixin = {}
+
+function UIMenuButtonStretchMixin:SetTextures(texture)
+	self.TopLeft:SetTexture(texture);
+	self.TopRight:SetTexture(texture);
+	self.BottomLeft:SetTexture(texture);
+	self.BottomRight:SetTexture(texture);
+	self.TopMiddle:SetTexture(texture);
+	self.MiddleLeft:SetTexture(texture);
+	self.MiddleRight:SetTexture(texture);
+	self.BottomMiddle:SetTexture(texture);
+	self.MiddleMiddle:SetTexture(texture);
+end
+
+function UIMenuButtonStretchMixin:OnMouseDown(button)	
+	if ( self:IsEnabled() ) then
+		self:SetTextures("Interface\\Buttons\\UI-Silver-Button-Down");
+		if ( self.Icon ) then
+			if ( not self.Icon.oldPoint ) then
+				local point, relativeTo, relativePoint, x, y = self.Icon:GetPoint(1);
+				self.Icon.oldPoint = point;
+				self.Icon.oldX = x;
+				self.Icon.oldY = y;
+			end
+			self.Icon:SetPoint(self.Icon.oldPoint, self.Icon.oldX + 1, self.Icon.oldY - 1);
+		end
+	end
+end
+
+function UIMenuButtonStretchMixin:OnMouseUp(button)
+	if ( self:IsEnabled() ) then
+		self:SetTextures("Interface\\Buttons\\UI-Silver-Button-Up");
+		if ( self.Icon ) then
+			self.Icon:SetPoint(self.Icon.oldPoint, self.Icon.oldX, self.Icon.oldY);
+		end
+	end
+end
+
+function UIMenuButtonStretchMixin:OnShow()
+	-- we need to reset our textures just in case we were hidden before a mouse up fired
+	self:SetTextures("Interface\\Buttons\\UI-Silver-Button-Up");
+end
+
+function UIMenuButtonStretchMixin:OnEnable()
+	self:SetTextures("Interface\\Buttons\\UI-Silver-Button-Up");
+end
+
+function UIMenuButtonStretchMixin:OnEnter()
+	if(self.tooltipText ~= nil) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, self.tooltipText);
+	end
+end
+
+function UIMenuButtonStretchMixin:OnLeave()
+	if(self.tooltipText ~= nil) then
+		GameTooltip:Hide();
+	end
+end
+
+DialogHeaderMixin = {};
+
+function DialogHeaderMixin:OnLoad()
+	if self.textString then
+		self:Setup(self.textString);
+	end
+end
+
+function DialogHeaderMixin:Setup(text)
+	self.Text:SetText(text);
+	self:SetWidth(self.Text:GetWidth() + self.headerTextPadding);
 end

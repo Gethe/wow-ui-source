@@ -1,0 +1,30 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_AuctionHouseTab.lua"/>
+
+	<Button name="AuctionHouseFrameTabTemplate" mixin="AuctionHouseFrameTabMixin" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Button>
+
+	<Button name="AuctionHouseFrameTopTabTemplate" mixin="AuctionHouseFrameTopTabMixin" inherits="TabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad inherit="prepend" method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Button name="AuctionHouseFrameDisplayModeTabTemplate" mixin="AuctionHouseFrameDisplayModeTabMixin" inherits="AuctionHouseFrameTabTemplate" virtual="true">
+		<!--
+		displayMode: The display mode to set on the auction house frame on click.
+		<KeyValues>
+			<KeyValue key="displayMode" value="AuctionHouseFrameDisplayMode.Sell" type="global"/>
+		</KeyValues>
+		-->
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+</Ui>

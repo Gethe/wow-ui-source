@@ -3653,13 +3653,15 @@ function AchievementFrame_FindDisplayedAchievement(baseAchievementID)
 end
 
 function AchievementFrame_HideSearchPreview()
-	AchievementFrame.searchPreviewContainer:Hide();
+	local searchPreviewContainer = AchievementFrame.searchPreviewContainer;
+	local searchPreviews = searchPreviewContainer.searchPreviews;
+	searchPreviewContainer:Hide();
 
 	for index = 1, ACHIEVEMENT_FRAME_NUM_SEARCH_PREVIEWS do
-		AchievementFrame.searchPreview[index]:Hide();
+		searchPreviews[index]:Hide();
 	end
 
-	AchievementFrame.showAllSearchResults:Hide();
+	searchPreviewContainer.showAllSearchResults:Hide();
 	AchievementFrame.searchProgressBar:Hide();
 end
 
@@ -3696,15 +3698,17 @@ function AchievementFrameSearchBox_OnUpdate (self, elapsed)
 		if ( AchievementFrame.searchProgressBar:GetScript("OnUpdate") == nil ) then
 			AchievementFrame.searchProgressBar:SetScript("OnUpdate", AchievementFrameSearchProgressBar_OnUpdate);
 
+			local searchPreviewContainer = AchievementFrame.searchPreviewContainer;
+			local searchPreviews = searchPreviewContainer.searchPreviews;
 			for index = 1, ACHIEVEMENT_FRAME_NUM_SEARCH_PREVIEWS do
-				AchievementFrame.searchPreview[index]:Hide();
+				searchPreviews[index]:Hide();
 			end
 
-			AchievementFrame.showAllSearchResults:Hide();
+			searchPreviewContainer.showAllSearchResults:Hide();
 
-			AchievementFrame.searchPreviewContainer.borderAnchor:SetPoint("BOTTOM", 0, -5);
-			AchievementFrame.searchPreviewContainer.background:Show();
-			AchievementFrame.searchPreviewContainer:Show();
+			searchPreviewContainer.borderAnchor:SetPoint("BOTTOM", 0, -5);
+			searchPreviewContainer.background:Show();
+			searchPreviewContainer:Show();
 
 			AchievementFrame.searchProgressBar:Show();
 			return;
@@ -3737,9 +3741,11 @@ function AchievementFrame_ShowSearchPreviewResults()
 		AchievementFrame_SetSearchPreviewSelection(1);
 	end
 
+	local searchPreviewContainer = AchievementFrame.searchPreviewContainer;
+	local searchPreviews = searchPreviewContainer.searchPreviews;
 	local lastButton;
 	for index = 1, ACHIEVEMENT_FRAME_NUM_SEARCH_PREVIEWS do
-		local searchPreview = AchievementFrame.searchPreview[index];
+		local searchPreview = searchPreviews[index];
 		if ( index <= numResults ) then
 			local achievementID = GetFilteredAchievementID(index);
 			local _, name, _, _, _, _, _, description, _, icon, _, _, _, _ = GetAchievementInfo(achievementID);
@@ -3755,19 +3761,19 @@ function AchievementFrame_ShowSearchPreviewResults()
 	end
 
 	if ( numResults > 5 ) then
-		AchievementFrame.showAllSearchResults:Show();
-		lastButton = AchievementFrame.showAllSearchResults;
-		AchievementFrame.showAllSearchResults.text:SetText(string.format(ENCOUNTER_JOURNAL_SHOW_SEARCH_RESULTS, numResults));
+		searchPreviewContainer.showAllSearchResults:Show();
+		lastButton = searchPreviewContainer.showAllSearchResults;
+		searchPreviewContainer.showAllSearchResults.text:SetText(string.format(ENCOUNTER_JOURNAL_SHOW_SEARCH_RESULTS, numResults));
 	else
-		AchievementFrame.showAllSearchResults:Hide();
+		searchPreviewContainer.showAllSearchResults:Hide();
 	end
 
 	if (lastButton) then
-		AchievementFrame.searchPreviewContainer.borderAnchor:SetPoint("BOTTOM", lastButton, "BOTTOM", 0, -5);
-		AchievementFrame.searchPreviewContainer.background:Hide();
-		AchievementFrame.searchPreviewContainer:Show();
+		searchPreviewContainer.borderAnchor:SetPoint("BOTTOM", lastButton, "BOTTOM", 0, -5);
+		searchPreviewContainer.background:Hide();
+		searchPreviewContainer:Show();
 	else
-		AchievementFrame.searchPreviewContainer:Hide();
+		searchPreviewContainer:Hide();
 	end
 end
 
@@ -3786,6 +3792,14 @@ function AchievementFrameSearchBox_OnTextChanged(self)
 	end
 end
 
+function AchievementFrameSearchBox_OnLoad(self)
+	SearchBoxTemplate_OnLoad(self);
+	self.HasStickyFocus = function()
+		local ancestry = self:GetParent().searchPreviewContainer;
+		return DoesAncestryInclude(ancestry, GetMouseFocus());
+	end
+end
+
 function AchievementFrameSearchBox_OnShow(self)
 	self:SetFrameLevel(self:GetParent():GetFrameLevel() + 7);
 	AchievementFrame_SetSearchPreviewSelection(1);
@@ -3799,12 +3813,13 @@ function AchievementFrameSearchBox_OnEnterPressed(self)
 		return;
 	end
 
+	local searchPreviewContainer = AchievementFrame.searchPreviewContainer;
 	if ( self.selectedIndex == ACHIEVEMENT_FRAME_SHOW_ALL_RESULTS_INDEX ) then
-		if ( AchievementFrame.showAllSearchResults:IsShown() ) then
-			AchievementFrame.showAllSearchResults:Click();
+		if ( searchPreviewContainer.showAllSearchResults:IsShown() ) then
+			searchPreviewContainer.showAllSearchResults:Click();
 		end
 	else
-		local preview = AchievementFrame.searchPreview[self.selectedIndex];
+		local preview = searchPreviewContainer.searchPreviews[self.selectedIndex];
 		if ( preview:IsShown() ) then
 			preview:Click();
 		end
@@ -3831,20 +3846,23 @@ function AchievementFrameSearchBox_OnKeyDown(self, key)
 end
 
 function AchievementFrame_SetSearchPreviewSelection(selectedIndex)
+	local searchPreviewContainer = AchievementFrame.searchPreviewContainer;
+	local searchPreviews = searchPreviewContainer.searchPreviews;
 	local numShown = 0;
 	for index = 1, ACHIEVEMENT_FRAME_NUM_SEARCH_PREVIEWS do
-		AchievementFrame.searchPreview[index].selectedTexture:Hide();
+		local searchPreview = searchPreviews[index];
+		searchPreview.selectedTexture:Hide();
 
-		if ( AchievementFrame.searchPreview[index]:IsShown() ) then
+		if ( searchPreview:IsShown() ) then
 			numShown = numShown + 1;
 		end
 	end
 
-	if ( AchievementFrame.showAllSearchResults:IsShown() ) then
+	if ( searchPreviewContainer.showAllSearchResults:IsShown() ) then
 		numShown = numShown + 1;
 	end
 
-	AchievementFrame.showAllSearchResults.selectedTexture:Hide();
+	searchPreviewContainer.showAllSearchResults.selectedTexture:Hide();
 	
 	if ( numShown <= 0 ) then
 		-- Default to the first entry.
@@ -3856,9 +3874,9 @@ function AchievementFrame_SetSearchPreviewSelection(selectedIndex)
 	AchievementFrame.searchBox.selectedIndex = selectedIndex;
 
 	if ( selectedIndex == ACHIEVEMENT_FRAME_SHOW_ALL_RESULTS_INDEX ) then
-		AchievementFrame.showAllSearchResults.selectedTexture:Show();
+		searchPreviewContainer.showAllSearchResults.selectedTexture:Show();
 	else
-		AchievementFrame.searchPreview[selectedIndex].selectedTexture:Show();
+		searchPreviewContainer.searchPreviews[selectedIndex].selectedTexture:Show();
 	end
 end
 
@@ -3943,9 +3961,12 @@ function AchievementSearchPreviewButton_OnShow(self)
 end
 
 function AchievementSearchPreviewButton_OnLoad(self)
+	local searchPreviewContainer = AchievementFrame.searchPreviewContainer;
+	local searchPreviews = searchPreviewContainer.searchPreviews;
 	for index = 1, ACHIEVEMENT_FRAME_NUM_SEARCH_PREVIEWS do
-		if ( AchievementFrame.searchPreview[index] == self ) then
+		if ( searchPreviews[index] == self ) then
 			self.previewIndex = index;
+			break;
 		end
 	end
 end

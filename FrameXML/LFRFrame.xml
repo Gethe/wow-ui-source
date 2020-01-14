@@ -427,9 +427,12 @@
 						</Frames>
 						<Scripts>
 							<OnShow>
-								RequestLFDPlayerLockInfo();
-								RequestLFDPartyLockInfo();
+								QueueUpdater:RequestInfo();
+								QueueUpdater:AddRef();
 							</OnShow>
+							<OnHide>
+								QueueUpdater:RemoveRef();
+							</OnHide>
 						</Scripts>
 					</Frame>
 					<Frame name="LFRBrowseFrame" useParentLevel="true" setAllPoints="true" hidden="true">

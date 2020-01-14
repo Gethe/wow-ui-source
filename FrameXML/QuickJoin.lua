@@ -231,7 +231,7 @@ function QuickJoinFrameDropDown_Initialize(dropdownFrame, level, menuList)
 	info.text = WHISPER;
 	info.notCheckable = 1;
 	info.func = function()
-		local link, text = SplitLink(memberInfo.playerLink);
+		local link, text = LinkUtil.SplitLink(memberInfo.playerLink);
 		SetItemRef(link, text, "LeftButton");
 	end
 	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);

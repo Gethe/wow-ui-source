@@ -116,6 +116,28 @@ local BattleNet =
 	Tables =
 	{
 		{
+			Name = "BNetAccountInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "bnetAccountID", Type = "number", Nilable = false },
+				{ Name = "accountName", Type = "string", Nilable = false },
+				{ Name = "battleTag", Type = "string", Nilable = false },
+				{ Name = "isFriend", Type = "bool", Nilable = false },
+				{ Name = "isBattleTagFriend", Type = "bool", Nilable = false },
+				{ Name = "lastOnlineTime", Type = "number", Nilable = false },
+				{ Name = "isAFK", Type = "bool", Nilable = false },
+				{ Name = "isDND", Type = "bool", Nilable = false },
+				{ Name = "isFavorite", Type = "bool", Nilable = false },
+				{ Name = "appearOffline", Type = "bool", Nilable = false },
+				{ Name = "customMessage", Type = "string", Nilable = false },
+				{ Name = "customMessageTime", Type = "number", Nilable = false },
+				{ Name = "note", Type = "string", Nilable = false },
+				{ Name = "rafLinkType", Type = "RafLinkType", Nilable = false },
+				{ Name = "gameAccountInfo", Type = "BNetGameAccountInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "BNetGameAccountInfo",
 			Type = "Structure",
 			Fields =
@@ -140,28 +162,6 @@ local BattleNet =
 				{ Name = "isWowMobile", Type = "bool", Nilable = false },
 				{ Name = "canSummon", Type = "bool", Nilable = false },
 				{ Name = "hasFocus", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "BNetAccountInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "bnetAccountID", Type = "number", Nilable = false },
-				{ Name = "accountName", Type = "string", Nilable = false },
-				{ Name = "battleTag", Type = "string", Nilable = false },
-				{ Name = "isFriend", Type = "bool", Nilable = false },
-				{ Name = "isBattleTagFriend", Type = "bool", Nilable = false },
-				{ Name = "lastOnlineTime", Type = "number", Nilable = false },
-				{ Name = "isAFK", Type = "bool", Nilable = false },
-				{ Name = "isDND", Type = "bool", Nilable = false },
-				{ Name = "isFavorite", Type = "bool", Nilable = false },
-				{ Name = "appearOffline", Type = "bool", Nilable = false },
-				{ Name = "customMessage", Type = "string", Nilable = false },
-				{ Name = "customMessageTime", Type = "number", Nilable = false },
-				{ Name = "note", Type = "string", Nilable = false },
-				{ Name = "rafLinkType", Type = "RafLinkType", Nilable = false },
-				{ Name = "gameAccountInfo", Type = "BNetGameAccountInfo", Nilable = false },
 			},
 		},
 	},

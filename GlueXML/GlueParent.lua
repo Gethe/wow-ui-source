@@ -58,8 +58,16 @@ function GlueParent_OnLoad(self)
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("LUA_WARNING");
 	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
+	-- Events for Global Mouse Down
+	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
+	self:RegisterEvent("GLOBAL_MOUSE_UP");
 
 	OnDisplaySizeChanged(self);
+end
+
+local function IsGlobalMouseEventHandled(buttonID, event)
+	local frame = GetMouseFocus();
+	return frame and frame.HandlesGlobalMouseEvent and frame:HandlesGlobalMouseEvent(buttonID, event);
 end
 
 function GlueParent_OnEvent(self, event, ...)
@@ -86,6 +94,11 @@ function GlueParent_OnEvent(self, event, ...)
 	elseif ( event == "SUBSCRIPTION_CHANGED_KICK_IMMINENT" ) then
 		if not StoreFrame_IsShown() then
 			GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
+		end
+	elseif (event == "GLOBAL_MOUSE_DOWN" or event == "GLOBAL_MOUSE_UP") then
+		local buttonID = ...;
+		if not IsGlobalMouseEventHandled(buttonID, event) then
+			GlueDropDownMenu_HandleGlobalMouseEvent(buttonID, event);
 		end
 	end
 end
@@ -464,6 +477,8 @@ local glueScreenTags =
 		["MAGHARORC"] = true,
 		["ZANDALARITROLL"] = true,
 		["KULTIRAN"] = true,
+		["MECHAGNOME"] = true,
+		["VULPERA"] = true,
 	},
 };
 
