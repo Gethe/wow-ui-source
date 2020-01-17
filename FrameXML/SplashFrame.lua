@@ -42,7 +42,7 @@ SPLASH_SCREENS = {
 		},
 	},
 	["8_3_NEW_SEASON"] = {
-		id = SEASON_SPLASH_SCREEN_VERSION, -- 8.3 New season rollout. 
+		id = SEASON_SPLASH_SCREEN_VERSION, -- 8.3 New season rollout.
 		expansion = LE_EXPANSION_BATTLE_FOR_AZEROTH,
 		header = SPLASH_NEW_HEADER_SEASON,
 		leftTex = "splash-8302-topleft",
@@ -150,17 +150,15 @@ local function ShouldEnableStartButton( questID )
 end
 
 local function CheckSplashScreenShow()
-	if SplashFrameCanBeShown() and not IsCharacterNewlyBoosted() then
-		local shouldForceCurrent = false;
-		local tag = GetSplashFrameTag(shouldForceCurrent);
-		if tag then
-			-- check if they've seen this screen already
-			local lastScreenID = tonumber(GetCVar(SPLASH_SCREENS[tag].cVar)) or 0;
-			if lastScreenID < SPLASH_SCREENS[tag].id then
-				SplashFrame_Open(tag, shouldForceCurrent);
-				SplashFrame.firstTimeViewed = true;
-				SetCVar(SPLASH_SCREENS[tag].cVar, SPLASH_SCREENS[tag].id); -- update cVar value
-			end
+	local shouldForceCurrent = false;
+	local tag = SplashFrame_GetShowTag(shouldForceCurrent);
+	if tag then
+		-- check if they've seen this screen already
+		local lastScreenID = tonumber(GetCVar(SPLASH_SCREENS[tag].cVar)) or 0;
+		if lastScreenID < SPLASH_SCREENS[tag].id then
+			SplashFrame_Open(tag, shouldForceCurrent);
+			SplashFrame.firstTimeViewed = true;
+			SetCVar(SPLASH_SCREENS[tag].cVar, SPLASH_SCREENS[tag].id); -- update cVar value
 		end
 	end
 
@@ -178,6 +176,14 @@ local function ApplyFactionOverrides()
 			SPLASH_SCREENS[CURRENT_SPLASH_TAG][k] = v;
 		end
 	end
+end
+
+function SplashFrame_GetShowTag(forceShow)
+	if SplashFrameCanBeShown() and not IsCharacterNewlyBoosted() then
+		return GetSplashFrameTag(forceShow);
+	end
+
+	return nil;
 end
 
 function SplashFrame_ShowCurrent()

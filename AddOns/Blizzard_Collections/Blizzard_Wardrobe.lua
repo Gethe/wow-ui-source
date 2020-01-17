@@ -228,15 +228,8 @@ function WardrobeTransmogFrame_UpdateSlotButton(slotButton)
 		local correspondingWeaponButton = WardrobeTransmogFrame_GetSlotButton(slotButton.slotID, LE_TRANSMOG_TYPE_APPEARANCE);
 		local sourceID = WardrobeTransmogFrame_GetDisplayedSource(correspondingWeaponButton);
 		if ( sourceID ~= NO_TRANSMOG_SOURCE_ID and not WardrobeCollectionFrame_CanEnchantSource(sourceID) ) then
-			local illusionSourceID = WardrobeTransmogFrame_GetDisplayedSource(slotButton);
-			if( illusionSourceID ~= REMOVE_TRANSMOG_ID ) then 
-				if ( hasPending or hasUndo ) then
-					-- clear anything in the enchant slot, otherwise cost and Apply button state will still reflect anything pending
-					C_Transmog.ClearPending(slotButton.slotID, slotButton.transmogType);
-				else
-					C_Transmog.SetPending(slotButton.slotID, slotButton.transmogType, REMOVE_TRANSMOG_ID);
-				end
-			end
+			-- clear anything in the enchant slot, otherwise cost and Apply button state will still reflect anything pending
+			C_Transmog.SetPending(slotButton.slotID, slotButton.transmogType, REMOVE_TRANSMOG_ID);
 			isTransmogrified = false;	-- handle legacy, this weapon could have had an illusion applied previously
 			canTransmogrify = false;
 			slotButton.invalidWeapon = true;

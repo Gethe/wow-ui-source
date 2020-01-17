@@ -12,7 +12,8 @@ function GameMenuFrame_UpdateVisibleButtons(self)
 	local buttonToReanchor = GameMenuButtonWhatsNew;
 	local reanchorYOffset = -1;
 
-	if (not SplashFrameCanBeShown() or IsCharacterNewlyBoosted()) then
+	local forceShowSplash = true; -- not actually true, if there's no tag, then this won't be shown.
+	if not SplashFrame_GetShowTag(forceShowSplash) then
 		GameMenuButtonWhatsNew:Hide();
 		height = height - 20;
 		buttonToReanchor = GameMenuButtonOptions;
