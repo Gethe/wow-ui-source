@@ -2193,14 +2193,17 @@ function UIParent_OnEvent(self, event, ...)
 		end
 
 		-- Clear keyboard focus.
-		if event == "GLOBAL_MOUSE_DOWN" and buttonID == "LeftButton" and not IsModifierKeyDown() then
-			local keyBoardFocus = GetCurrentKeyBoardFocus();
-			if keyBoardFocus then
-				local hasStickyFocus = keyBoardFocus.HasStickyFocus and keyBoardFocus:HasStickyFocus();
-				if keyBoardFocus.ClearFocus and not hasStickyFocus and keyBoardFocus ~= mouseFocus then
-					keyBoardFocus:ClearFocus();
-				end
- 			end
+		local autoCompleteShown = AutoCompleteBox and AutoCompleteBox:IsShown();
+		if not autoCompleteShown or not DoesAncestryInclude(AutoCompleteBox, mouseFocus) then
+			if event == "GLOBAL_MOUSE_DOWN" and buttonID == "LeftButton" and not IsModifierKeyDown() then
+				local keyBoardFocus = GetCurrentKeyBoardFocus();
+				if keyBoardFocus then
+					local hasStickyFocus = keyBoardFocus.HasStickyFocus and keyBoardFocus:HasStickyFocus();
+					if keyBoardFocus.ClearFocus and not hasStickyFocus and keyBoardFocus ~= mouseFocus then
+						keyBoardFocus:ClearFocus();
+					end
+ 				end
+			end
 		end
 	end
 end
