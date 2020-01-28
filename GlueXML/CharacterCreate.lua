@@ -1184,8 +1184,12 @@ function CharacterCreate_Finish()
 			KioskModeSplash_SetAutoEnterWorld(true);
 		end
 
-		if CharacterUpgrade_IsCreatedCharacterTrialBoost() then
+		local classInfo = C_CharacterCreation.GetSelectedClass();
+		local isPandaDK = (C_CharacterCreation.GetSelectedRace() == PANDAREN_RACE_ID ) and (classInfo.classID == DEATH_KNIGHT_CLASS_ID);
+
+		if CharacterUpgrade_IsCreatedCharacterTrialBoost() and not isPandaDK then
 			-- For trial boosts we need to pass up nil for the faction here. We send the faction up separately when the boost is applied
+			-- Pandaren Death Knights are the exception...they need to pass up a faction because there is no such thing as a neutral Panda DK
 			C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText());
 		else
 			C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText(), CharacterCreate_GetSelectedFactionName());
