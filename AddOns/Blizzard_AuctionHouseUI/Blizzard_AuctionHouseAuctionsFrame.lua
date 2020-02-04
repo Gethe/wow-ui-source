@@ -148,6 +148,7 @@ local AUCTIONS_FRAME_EVENTS = {
 	"BIDS_UPDATED",
 	"BID_ADDED",
 	"AUCTION_CANCELED",
+	"AUCTION_HOUSE_NEW_BID_RECEIVED",
 };
 
 local AuctionsFrameDisplayMode = {
@@ -226,6 +227,8 @@ function AuctionHouseAuctionsFrameMixin:OnEvent(event, ...)
 			self.SummaryList:RefreshScrollFrame();
 		end
 	elseif event == "AUCTION_CANCELED" then
+		self:RefreshSeachResults();
+	elseif event == "AUCTION_HOUSE_NEW_BID_RECEIVED" then
 		self:RefreshSeachResults();
 	end
 end

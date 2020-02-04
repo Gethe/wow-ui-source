@@ -407,6 +407,7 @@ function AutoCompleteEditBox_OnChar(self)
 end
 
 function AutoCompleteEditBox_OnEditFocusLost(self)
+	self:HighlightText(0, 0);
 	AutoComplete_HideIfAttachedTo(self);
 end
 

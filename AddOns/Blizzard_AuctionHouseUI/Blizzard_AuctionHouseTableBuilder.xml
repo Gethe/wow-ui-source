@@ -141,10 +141,10 @@
 				</Texture>
 
 				<FontString parentKey="Text" inherits="Number14FontWhite" justifyH="LEFT" maxLines="1">
+					<Size x="0" y="1"/>
 					<Anchors>
-						<Anchor point="TOP"/>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="4" y="-1"/>
-						<Anchor point="BOTTOMRIGHT"/>
+						<Anchor point="RIGHT" x="1"/>
 					</Anchors>
 				</FontString>
 			</Layer>

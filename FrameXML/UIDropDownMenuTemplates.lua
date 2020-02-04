@@ -15,16 +15,20 @@ function DropDownMenuButtonMixin:OnLeave(...)
 end
 
 function DropDownMenuButtonMixin:OnMouseDown(button)
-	ToggleDropDownMenu(nil, nil, self:GetParent());
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	if self:IsEnabled() then
+		ToggleDropDownMenu(nil, nil, self:GetParent());
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	end
 end
 
 LargeDropDownMenuButtonMixin = CreateFromMixins(DropDownMenuButtonMixin);
 
 function LargeDropDownMenuButtonMixin:OnMouseDown(button)
-	local parent = self:GetParent();
-	ToggleDropDownMenu(nil, nil, parent, parent, -8, 8);
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	if self:IsEnabled() then
+		local parent = self:GetParent();
+		ToggleDropDownMenu(nil, nil, parent, parent, -8, 8);
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	end
 end
 
 DropDownExpandArrowMixin = {};
@@ -43,7 +47,9 @@ function DropDownExpandArrowMixin:OnEnter()
 end
 
 function DropDownExpandArrowMixin:OnMouseDown(button)
-	ToggleDropDownMenu(self:GetParent():GetParent():GetID() + 1, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self);
+	if self:IsEnabled() then
+		ToggleDropDownMenu(self:GetParent():GetParent():GetID() + 1, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self);
+	end
 end
 
 UIDropDownCustomMenuEntryMixin = {};

@@ -43,17 +43,12 @@ function ZoneAbilityFrame_OnEvent(self, event, ...)
 		end
 	end
 
-	if (not self.spellID) then
-		self:Hide();
-		return;
-	end
-
 	self.SpellButton.baseSpellID = self.baseSpellID;
 	self.SpellButton.spellID = self.spellID;
 	local lastState = self.buffSeen;
 	self.buffSeen = false;
 
-	if (self.spellID ~= 0) then
+	if self.spellID and self.spellID ~= 0 then
 		if (not HasZoneAbilitySpellOnBar(self)) then
 			if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY) and type == Enum.ZoneAbilityType.Garrison ) then
 				ZoneAbilityButtonAlert:SetHeight(ZoneAbilityButtonAlert.Text:GetHeight()+42);
@@ -69,9 +64,6 @@ function ZoneAbilityFrame_OnEvent(self, event, ...)
 
 		ZoneAbilityFrame_Update(self);
 	else
-		if (not self.CurrentTexture) then
-			self.CurrentTexture = select(3, GetSpellInfo(self.spellID));
-		end
 		self:Hide();
 	end
 

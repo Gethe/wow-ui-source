@@ -929,6 +929,15 @@ local AuctionHouse =
 			LiteralName = "AUCTION_HOUSE_FAVORITES_UPDATED",
 		},
 		{
+			Name = "AuctionHouseNewBidReceived",
+			Type = "Event",
+			LiteralName = "AUCTION_HOUSE_NEW_BID_RECEIVED",
+			Payload =
+			{
+				{ Name = "auctionID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "AuctionHouseScriptDeprecated",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_SCRIPT_DEPRECATED",

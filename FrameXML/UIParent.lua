@@ -1151,6 +1151,15 @@ local function HandlesGlobalMouseEvent(focus, buttonID, event)
 	return focus and focus.HandlesGlobalMouseEvent and focus:HandlesGlobalMouseEvent(buttonID, event);
 end
 
+local function HasVisibleAutoCompleteBox(autoCompleteBoxList, mouseFocus)
+	for i, box in ipairs(autoCompleteBoxList) do
+		if box:IsShown() and DoesAncestryInclude(box, mouseFocus) then
+			return true;
+		end
+	end
+	return false;
+end
+
 -- UIParent_OnEvent --
 function UIParent_OnEvent(self, event, ...)
 	local arg1, arg2, arg3, arg4, arg5, arg6 = ...;
@@ -2193,14 +2202,21 @@ function UIParent_OnEvent(self, event, ...)
 		end
 
 		-- Clear keyboard focus.
-		if event == "GLOBAL_MOUSE_DOWN" and buttonID == "LeftButton" and not IsModifierKeyDown() then
-			local keyBoardFocus = GetCurrentKeyBoardFocus();
-			if keyBoardFocus then
-				local hasStickyFocus = keyBoardFocus.HasStickyFocus and keyBoardFocus:HasStickyFocus();
-				if keyBoardFocus.ClearFocus and not hasStickyFocus and keyBoardFocus ~= mouseFocus then
-					keyBoardFocus:ClearFocus();
-				end
- 			end
+		local autoCompleteBoxList = { AutoCompleteBox }
+		if LFGListFrame and LFGListFrame.SearchPanel and LFGListFrame.SearchPanel.AutoCompleteFrame then 
+			tinsert(autoCompleteBoxList, LFGListFrame.SearchPanel.AutoCompleteFrame);
+		end
+
+		if not HasVisibleAutoCompleteBox(autoCompleteBoxList, mouseFocus) then
+			if event == "GLOBAL_MOUSE_DOWN" and buttonID == "LeftButton" and not IsModifierKeyDown() then
+				local keyBoardFocus = GetCurrentKeyBoardFocus();
+				if keyBoardFocus then
+					local hasStickyFocus = keyBoardFocus.HasStickyFocus and keyBoardFocus:HasStickyFocus();
+					if keyBoardFocus.ClearFocus and not hasStickyFocus and keyBoardFocus ~= mouseFocus then
+						keyBoardFocus:ClearFocus();
+					end
+ 				end
+			end
 		end
 	end
 end
@@ -2274,7 +2290,7 @@ function UIParent_UpdateTopFramePositions()
 end
 
 UIPARENT_ALTERNATE_FRAME_POSITIONS = {
-	["PlayerPowerBarAlt_Bottom"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, reputation = 1, tutorialAlert = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1};
+	["PlayerPowerBarAlt_Bottom"] = {baseY = true, yOffset = 20, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, reputation = 1, tutorialAlert = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1};
 	["PlayerPowerBarAlt_Top"] = {baseY = -30, anchorTo = "UIParent", point = "TOP", rpoint = "TOP"};
 }
 
@@ -2288,11 +2304,11 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["FramerateLabel"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, playerPowerBarAlt = 1, powerBarWidgets = 1, extraActionBarFrame = 1, anchorTo="WorldFrame" };
 	["ArcheologyDigsiteProgressBar"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, powerBarWidgets = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, castingBar = 1};
 	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, powerBarWidgets = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, talkingHeadFrame = 1, classResourceOverlayFrame = 1, classResourceOverlayOffset = 1};
-	["UIWidgetPowerBarContainerFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, talkingHeadFrame = 1, classResourceOverlayFrame = 1, classResourceOverlayOffset = 1};
+	["UIWidgetPowerBarContainerFrame"] = {baseY = true, yOffset = 20, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, talkingHeadFrame = 1, classResourceOverlayFrame = 1, classResourceOverlayOffset = 1};
 	["ClassResourceOverlayParentFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, powerBarWidgets = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1 };
 	["PlayerPowerBarAlt"] = UIPARENT_ALTERNATE_FRAME_POSITIONS["PlayerPowerBarAlt_Bottom"];
 	["ExtraActionBarFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1};
-	["ZoneAbilityFrame"] = {baseY = true, yOffset = 100, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, extraActionBarFrame = 1};
+	["ZoneAbilityFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, extraActionBarFrame = 1};
 	["ChatFrame1"] = {baseY = true, yOffset = 40, bottomLeft = actionBarOffset-8, justBottomRightAndStance = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
 	["ChatFrame2"] = {baseY = true, yOffset = 40, bottomRight = actionBarOffset-8, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, rightLeft = -2*actionBarOffset, rightRight = -actionBarOffset, watchBar = 1, maxLevel = 1, point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT", xOffset = -32};
 	["StanceBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
@@ -3029,7 +3045,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			value.extraActionBarFrame = ExtraActionBarFrame:GetHeight() + 10;
 		end
 		if ( value.ZoneAbilityFrame and ZoneAbilityFrame ) then
-			value.ZoneAbilityFrame = ZoneAbilityFrame:GetHeight() + 90;
+			value.ZoneAbilityFrame = ZoneAbilityFrame:GetHeight() + 10;
 		end
 
 		if ( value.bonusActionBar and BonusActionBarFrame ) then

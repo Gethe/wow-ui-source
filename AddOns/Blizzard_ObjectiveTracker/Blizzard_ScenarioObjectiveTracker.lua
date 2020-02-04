@@ -858,6 +858,7 @@ function ScenarioStage_CustomizeBlock(stageBlock, scenarioType, widgetSetID, tex
 		stageBlock.Stage:SetHeight(34);
 		stageBlock.NormalBG:Hide();
 	else
+		stageBlock.NormalBG:Show();
 		ScenarioStageBlock.CompleteLabel:SetPoint("LEFT", stageBlock, "LEFT", 15, 3);
 
 		if textureKitID then
