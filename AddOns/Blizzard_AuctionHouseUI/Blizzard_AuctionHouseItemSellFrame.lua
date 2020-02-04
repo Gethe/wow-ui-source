@@ -303,6 +303,11 @@ function AuctionHouseItemSellFrameMixin:GetDepositAmount()
 	return deposit;
 end
 
+function AuctionHouseItemSellFrameMixin:GetTotalPrice()
+	local bidPrice, buyoutPrice = self:GetPrice();
+	return self:GetQuantity() * (buyoutPrice or bidPrice or 0);
+end
+
 function AuctionHouseItemSellFrameMixin:GetPrice()
 	local buyoutPrice = self.PriceInput:GetAmount();
 	local bidPrice = self.SecondaryPriceInput:IsShown() and self.SecondaryPriceInput:GetAmount() or nil;

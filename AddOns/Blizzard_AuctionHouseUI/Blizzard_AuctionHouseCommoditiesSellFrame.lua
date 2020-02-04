@@ -81,6 +81,10 @@ function AuctionHouseCommoditiesSellFrameMixin:GetDepositAmount()
 	return deposit;
 end
 
+function AuctionHouseCommoditiesSellFrameMixin:GetTotalPrice()
+	return self:GetQuantity() * self:GetUnitPrice();
+end
+
 function AuctionHouseCommoditiesSellFrameMixin:CanPostItem()
 	local canPostItem, reasonTooltip = AuctionHouseSellFrameMixin.CanPostItem(self);
 	if not canPostItem then
