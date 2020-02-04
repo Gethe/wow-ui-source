@@ -498,7 +498,7 @@ function AuctionHouseFrameMixin:IsListingAuctions()
 end
 
 function AuctionHouseFrameMixin:SetPostItem(itemLocation)
-	if not itemLocation:IsValid() or not C_AuctionHouse.IsSellItemValid(itemLocation) then
+	if not itemLocation:IsValid() or not C_AuctionHouse.IsSellItemValid(itemLocation) or AuctionHouseMultisellProgressFrame:IsShown() then
 		return;
 	end
 
