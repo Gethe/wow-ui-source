@@ -73,6 +73,12 @@ function AuctionHouseItemSellFrameMixin:OnHide()
 	AuctionHouseSellFrameMixin.OnHide(self);
 
 	FrameUtil.UnregisterFrameForEvents(self, AUCTION_HOUSE_ITEM_SELL_FRAME_EVENTS);
+
+	if AuctionHouseMultisellProgressFrame:IsShown() then
+		-- Clear out any active multisell.
+		C_AuctionHouse.CancelSell();
+		self:SetMultiSell(false);
+	end
 end
 
 function AuctionHouseItemSellFrameMixin:OnEvent(event, ...)
@@ -209,6 +215,10 @@ function AuctionHouseItemSellFrameMixin:SetSecondaryPriceInputEnabled(enabled)
 end
 
 function AuctionHouseItemSellFrameMixin:SetItem(itemLocation, fromItemDisplay, refreshListWithPreviousItem)
+	if self.DisabledOverlay:IsShown() then
+		return;
+	end
+
 	AuctionHouseSellFrameMixin.SetItem(self, itemLocation, fromItemDisplay);
 
 	self.SecondaryPriceInput:Clear();
@@ -291,6 +301,11 @@ function AuctionHouseItemSellFrameMixin:GetDepositAmount()
 	local quantity = self:GetQuantity();
 	local deposit = C_AuctionHouse.CalculateItemDeposit(item, duration, quantity);
 	return deposit;
+end
+
+function AuctionHouseItemSellFrameMixin:GetTotalPrice()
+	local bidPrice, buyoutPrice = self:GetPrice();
+	return self:GetQuantity() * (buyoutPrice or bidPrice or 0);
 end
 
 function AuctionHouseItemSellFrameMixin:GetPrice()

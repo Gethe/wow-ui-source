@@ -347,6 +347,7 @@ end
 
 function AuctionHouseSellFrameMixin:UpdatePostState()
 	self:UpdateDeposit();
+	self:UpdateTotalPrice();
 	self:UpdatePostButtonState();
 	
 	local quantity = self.QuantityInput:GetQuantity();
@@ -498,6 +499,10 @@ function AuctionHouseSellFrameMixin:UpdateDeposit()
 	self.Deposit:SetAmount(depositCost);
 end
 
+function AuctionHouseSellFrameMixin:UpdateTotalPrice()
+	self.TotalPrice:SetAmount(self:GetTotalPrice());
+end
+
 function AuctionHouseSellFrameMixin:ShowHelpTip()
 	local helpTipInfo = {
 		text = AUCTION_HOUSE_UNDERCUT_TUTORIAL,
@@ -516,6 +521,10 @@ function AuctionHouseSellFrameMixin:HideHelpTip()
 end
 
 function AuctionHouseSellFrameMixin:GetDepositAmount()
+	-- Implement in your derived mixin.
+end
+
+function AuctionHouseSellFrameMixin:GetTotalPrice()
 	-- Implement in your derived mixin.
 end
 

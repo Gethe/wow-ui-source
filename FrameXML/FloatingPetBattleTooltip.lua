@@ -123,8 +123,11 @@ function BattlePetTooltipTemplate_SetBattlePet(tooltipFrame, data)
 	tooltipFrame.textLineAnchor = nil;
 end
 
-function BattlePetTooltipTemplate_AddTextLine(self, text, color)
-	color = color or NORMAL_FONT_COLOR;
+-- [[ does not support wrapping ]]
+function BattlePetTooltipTemplate_AddTextLine(self, text, r, g, b)
+	if not r then
+		r, g, b = NORMAL_FONT_COLOR:GetRGB();
+	end
 	
 	local anchor = self.textLineAnchor;
 	if not anchor then
@@ -139,7 +142,7 @@ function BattlePetTooltipTemplate_AddTextLine(self, text, color)
 
 	local line = self.linePool:Acquire();
 	line:SetText(text);
-	line:SetTextColor(color:GetRGB());
+	line:SetTextColor(r, g, b);
 	line:SetPoint("TOP", anchor, "BOTTOM", 0, -2);
 	line:SetPoint("LEFT", self.Name, "LEFT");
 	line:Show();

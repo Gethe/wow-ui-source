@@ -182,7 +182,7 @@ function AuctionHouseAuctionsFrameMixin:OnShow()
 	-- AllBids and AllAuctions will update the entire list. Other views require
 	-- and explicit update.
 	local displayMode = self:GetDisplayMode();
-	if displayMode ~= AuctionsFrameDisplayMode.AllBids and displayMode ~= AuctionsFrameDisplayMode.AllAuctions then
+	if displayMode ~= AuctionsFrameDisplayMode.BidsList and displayMode ~= AuctionsFrameDisplayMode.AllAuctions then
 		self:RefreshSeachResults();
 	end
 end
@@ -539,7 +539,6 @@ function AuctionHouseAuctionsFrameMixin:SetTab(tabID)
 	self.BuyoutFrame:SetShown(isDisplayingBids);
 
 	if isDisplayingBids then
-		self:GetAuctionHouseFrame():QueryAll(AuctionHouseSearchContext.AllBids);
 		self:SetDisplayMode(AuctionsFrameDisplayMode.BidsList);
 
 		local function GetNumBidSummaryResults()
@@ -548,7 +547,6 @@ function AuctionHouseAuctionsFrameMixin:SetTab(tabID)
 
 		self.SummaryList:SetGetNumResultsFunction(GetNumBidSummaryResults);
 	else
-		self:GetAuctionHouseFrame():QueryAll(AuctionHouseSearchContext.AllAuctions);
 		self:SetDisplayMode(AuctionsFrameDisplayMode.AllAuctions);
 		
 		local function GetNumOwnedAuctionSummaryResults()

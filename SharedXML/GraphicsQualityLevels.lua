@@ -457,7 +457,7 @@ VideoData["Graphics_ParticleDensityDropDown"]={
 	graphicsCVar =	"graphicsParticleDensity",
 	data = {
 		[1] = {
-			text = VIDEO_OPTIONS_LOW,
+			text = IsMacClient() and VIDEO_OPTIONS_DISABLED or VIDEO_OPTIONS_LOW,
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_FAIR,
@@ -483,7 +483,7 @@ VideoData["RaidGraphics_ParticleDensityDropDown"]={
 	graphicsCVar =	"raidGraphicsParticleDensity",
 	data = {
 		[1] = {
-			text = VIDEO_OPTIONS_LOW,
+			text = IsMacClient() and VIDEO_OPTIONS_DISABLED or VIDEO_OPTIONS_LOW,
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_FAIR,

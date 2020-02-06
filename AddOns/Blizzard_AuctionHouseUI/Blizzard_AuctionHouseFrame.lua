@@ -67,7 +67,7 @@ AUCTION_HOUSE_STATIC_POPUPS = {
 };
 
 
-local AuctionHouseSortVersion = 1;
+local AuctionHouseSortVersion = 2;
 local MaxNumAuctionHouseSortTypes = 2;
 
 AuctionHouseSortOrderState = tInvert({
@@ -80,6 +80,16 @@ AuctionHouseSortOrderState = tInvert({
 
 
 local function InitAuctionHouseSortsBySearchContext()
+	-- [[ Transition between compatible sort versions. ]]
+	if g_auctionHouseSortsBySearchContext and g_auctionHouseSortsBySearchContext.auctionHouseSortVersion == 1 then
+		g_auctionHouseSortsBySearchContext[AuctionHouseSearchContext.AllAuctions][1] = { sortOrder = Enum.AuctionHouseSortOrder.Name, reverseSort = false };
+		g_auctionHouseSortsBySearchContext[AuctionHouseSearchContext.AllAuctions][2] = { sortOrder = Enum.AuctionHouseSortOrder.Price, reverseSort = false };
+		g_auctionHouseSortsBySearchContext[AuctionHouseSearchContext.AllBids][1] = { sortOrder = Enum.AuctionHouseSortOrder.Name, reverseSort = false };
+		g_auctionHouseSortsBySearchContext[AuctionHouseSearchContext.AllBids][2] = { sortOrder = Enum.AuctionHouseSortOrder.Price, reverseSort = false };
+	end
+
+
+	-- If the sort version couldn't be updated, do a clean reset.
 	if g_auctionHouseSortsBySearchContext == nil or g_auctionHouseSortsBySearchContext.auctionHouseSortVersion ~= AuctionHouseSortVersion then
 		g_auctionHouseSortsBySearchContext = { auctionHouseSortVersion = AuctionHouseSortVersion };
 
@@ -105,6 +115,9 @@ local function InitAuctionHouseSortsBySearchContext()
 			[AuctionHouseSearchContext.SellItems] = true,
 			[AuctionHouseSearchContext.AuctionsItems] = true,
 			[AuctionHouseSearchContext.BidItems] = true,
+		};
+
+		local ownedContexts = {
 			[AuctionHouseSearchContext.AllAuctions] = true,
 			[AuctionHouseSearchContext.AllBids] = true,
 		};
@@ -118,6 +131,9 @@ local function InitAuctionHouseSortsBySearchContext()
 			elseif itemContexts[searchContext] then
 				g_auctionHouseSortsBySearchContext[searchContext][1] = { sortOrder = Enum.AuctionHouseSortOrder.Buyout, reverseSort = false };
 				g_auctionHouseSortsBySearchContext[searchContext][2] = { sortOrder = Enum.AuctionHouseSortOrder.Bid, reverseSort = false };
+			elseif ownedContexts[searchContext] then
+				g_auctionHouseSortsBySearchContext[searchContext][1] = { sortOrder = Enum.AuctionHouseSortOrder.Name, reverseSort = false };
+				g_auctionHouseSortsBySearchContext[searchContext][2] = { sortOrder = Enum.AuctionHouseSortOrder.Price, reverseSort = false };
 			end
 		end
 		
@@ -498,7 +514,7 @@ function AuctionHouseFrameMixin:IsListingAuctions()
 end
 
 function AuctionHouseFrameMixin:SetPostItem(itemLocation)
-	if not itemLocation:IsValid() or not C_AuctionHouse.IsSellItemValid(itemLocation) then
+	if not itemLocation:IsValid() or not C_AuctionHouse.IsSellItemValid(itemLocation) or AuctionHouseMultisellProgressFrame:IsShown() then
 		return;
 	end
 
@@ -734,7 +750,8 @@ function AuctionHouseFrameMixin:StartItemBuyout(auctionID, buyout)
 end
 
 function AuctionHouseFrameMixin:SetSearchText(text)
-	if self.displayMode == AuctionHouseFrameDisplayMode.Buy then
+	if self.displayMode == AuctionHouseFrameDisplayMode.Buy or self.displayMode == AuctionHouseFrameDisplayMode.ItemBuy or
+		self.displayMode == AuctionHouseFrameDisplayMode.WoWTokenBuy or self.displayMode == AuctionHouseFrameDisplayMode.CommoditiesBuy then
 		self.SearchBar:SetSearchText(text);
 		return true;
 	end

@@ -296,9 +296,11 @@ function AuctionHouseUtil.AddSellersToTooltip(tooltip, sellers)
 		end
 		sellersString = sellersString..FONT_COLOR_CODE_CLOSE;
 
-		tooltip:AddLine(AUCTION_HOUSE_TOOLTIP_MULTIPLE_SELLERS_FORMAT:format(sellersString));
+		local wrap = true;
+		GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_TOOLTIP_MULTIPLE_SELLERS_FORMAT:format(sellersString), wrap);
 	elseif numSellers > 0 then
-		tooltip:AddLine(AUCTION_HOUSE_TOOLTIP_SELLER_FORMAT:format(sellersString));
+		local wrap = true;
+		GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_TOOLTIP_SELLER_FORMAT:format(sellersString), wrap);
 	end
 end
 
@@ -436,8 +438,9 @@ function AuctionHouseUtil.ConvertItemSellItemKey(itemKey)
 
 	local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(itemKey);
 	if itemKeyInfo and itemKeyInfo.isEquipment then
-		-- Item keys for equipment you're selling have no item level so you can compare to similar items that have a different item level.
+		-- Item keys for equipment you're selling have no item level or suffix so you can compare to similar items.
 		itemKey.itemLevel = 0;
+		itemKey.itemSuffix = 0;
 		return itemKey;
 	end
 

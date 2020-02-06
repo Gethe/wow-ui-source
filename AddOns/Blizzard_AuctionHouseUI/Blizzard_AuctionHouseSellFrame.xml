@@ -247,9 +247,15 @@
 					<KeyValue key="labelText" value="AUCTION_HOUSE_DEPOSIT_LABEL" type="global"/>
 				</KeyValues>
 			</Frame>
-			<Button parentKey="PostButton" motionScriptsWhileDisabled="true" mixin="AuctionHouseSellFramePostButtonMixin" inherits="UIPanelButtonTemplate" text="AUCTION_HOUSE_POST_BUTTON" frameLevel="350">
+			<Frame parentKey="TotalPrice" inherits="AuctionHouseAlignedPriceDisplayTemplate">
 				<KeyValues>
 					<KeyValue key="layoutIndex" value="60" type="number"/>
+					<KeyValue key="labelText" value="AUCTION_HOUSE_TOTAL_PRICE_LABEL" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Button parentKey="PostButton" motionScriptsWhileDisabled="true" mixin="AuctionHouseSellFramePostButtonMixin" inherits="UIPanelButtonTemplate" text="AUCTION_HOUSE_POST_BUTTON" frameLevel="350">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="70" type="number"/>
 					<KeyValue key="leftPadding" value="74" type="number"/>
 				</KeyValues>
 				<Size x="194" y="22"/>
