@@ -497,6 +497,7 @@ function QuestInfo_ShowRewards()
 	local totalHeight = 0;
 	local numSpellRewards = 0;
 	local rewardsFrame = QuestInfoFrame.rewardsFrame;
+	local hasWarModeBonus = false;
 
 	local spellGetter;
 	local questID;
@@ -515,6 +516,7 @@ function QuestInfo_ShowRewards()
 			ProcessQuestLogRewardFactions();
 			numSpellRewards = GetNumQuestLogRewardSpells();
 			spellGetter = GetQuestLogRewardSpell;
+			hasWarModeBonus = C_QuestLog.QuestHasWarModeBonus(questID)
 		end
 	else
 		questID = GetQuestID();
@@ -529,6 +531,7 @@ function QuestInfo_ShowRewards()
 		playerTitle = GetRewardTitle();
 		numSpellRewards = GetNumRewardSpells();
 		spellGetter = GetRewardSpell;
+		hasWarModeBonus = C_QuestLog.QuestCanHaveWarModeBonus(questID);
 	end
 
 	for rewardSpellIndex = 1, numSpellRewards do
@@ -882,7 +885,7 @@ function QuestInfo_ShowRewards()
 		end
 
 		-- warmode bonus
-		if C_QuestLog.QuestHasWarModeBonus(questID) and C_PvP.IsWarModeDesired() then
+		if hasWarModeBonus and C_PvP.IsWarModeDesired() then
 			rewardsFrame.WarModeBonusFrame.Count:SetFormattedText(PLUS_PERCENT_FORMAT, C_PvP.GetWarModeRewardBonus());
 			AddRewardElement(rewardsFrame.WarModeBonusFrame);
 		end
