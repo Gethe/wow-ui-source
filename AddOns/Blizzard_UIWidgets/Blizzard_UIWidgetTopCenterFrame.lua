@@ -46,3 +46,15 @@ function UIWidgetTopCenterContainerMixin:OnLoad()
 	local setID = C_UIWidgetManager.GetTopCenterWidgetSetID();
 	UIWidgetManager:RegisterWidgetSetContainer(setID, self, WidgetsLayout);
 end
+
+function UIWidgetTopCenterContainerMixin:SetSpectatorMode(spectatorMode, relativeFrame)
+	if (spectatorMode) then
+		if (relativeFrame) then
+			self:SetPoint("TOP", relativeFrame, "BOTTOM", 0, -5);
+		end
+		self:SetScale(1.5);
+	else
+		self:SetPoint("TOP", 0, -15);
+		self:SetScale(1.0);
+	end
+end

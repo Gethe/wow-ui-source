@@ -515,11 +515,14 @@ function AuctionFrameFilters_UpdateCategories(forceSelectionIntoView)
 	for categoryIndex, categoryInfo in ipairs(AuctionCategories) do
 		local selected = AuctionFrameBrowse.selectedCategoryIndex and AuctionFrameBrowse.selectedCategoryIndex == categoryIndex;
 		local isToken = categoryInfo:HasFlag("WOW_TOKEN_FLAG");
+		local tokenEnabled = C_WowTokenPublic.GetCommerceSystemStatus();
 
-		tinsert(OPEN_FILTER_LIST, { name = categoryInfo.name, type = "category", categoryIndex = categoryIndex, selected = selected, isToken = isToken, });
+		if (not isToken or tokenEnabled) then
+			tinsert(OPEN_FILTER_LIST, { name = categoryInfo.name, type = "category", categoryIndex = categoryIndex, selected = selected, isToken = isToken, });
 
-		if ( selected ) then
-			AuctionFrameFilters_AddSubCategories(categoryInfo.subCategories);
+			if ( selected ) then
+				AuctionFrameFilters_AddSubCategories(categoryInfo.subCategories);
+			end
 		end
 	end
 	
@@ -974,8 +977,8 @@ function BrowseWowTokenResults_Update()
 			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GAME_TIME_AUCTION_HOUSE, true);
 		end
 		BrowseWowTokenResults:Show();
-		BrowseBidButton:Hide();
-		BrowseBuyoutButton:Hide();
+		BrowseBidButton:Disable();
+		BrowseBuyoutButton:Disable();
 		BrowseBidPrice:Hide();
 		for i=1, NUM_BROWSE_TO_DISPLAY do
 			local button = _G["BrowseButton"..i];
@@ -1637,6 +1640,10 @@ function AuctionSellItemButton_OnEvent(self, event, ...)
 			PriceDropDown:Hide();
 			StartPrice:Hide();
 			BuyoutPrice:Hide();
+			AuctionsDurationText:Hide();
+			AuctionsShortAuctionButton:Hide();
+			AuctionsMediumAuctionButton:Hide();
+			AuctionsLongAuctionButton:Hide();
 			C_WowTokenPublic.UpdateTokenCount();
 			AuctionsWowTokenAuctionFrame_Update();
 			AuctionsWowTokenAuctionFrame:Show();
@@ -1649,6 +1656,10 @@ function AuctionSellItemButton_OnEvent(self, event, ...)
 		else
 			StartPrice:Show();
 			BuyoutPrice:Show();
+			AuctionsDurationText:Show();
+			AuctionsShortAuctionButton:Show();
+			AuctionsMediumAuctionButton:Show();
+			AuctionsLongAuctionButton:Show();
 			AuctionsWowTokenAuctionFrame:Hide();
 			AuctionsItemButton:SetNormalTexture(texture);
 			AuctionsItemButton.stackCount = stackCount;

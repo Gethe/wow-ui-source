@@ -1267,6 +1267,7 @@ StaticPopupDialogs["DEATH"] = {
 	button1 = DEATH_RELEASE,
 	button2 = USE_SOULSTONE,	-- rez option 1
 	button3 = USE_SOULSTONE,	-- rez option 2
+	selectCallbackByIndex = true,
 	OnShow = function(self)
 		self.timeleft = GetReleaseTimeRemaining();
 		self.resyncTime = 0; -- Timer so that we don't call GetReleaseTimeRemaining too frequently.
@@ -3123,7 +3124,6 @@ StaticPopupDialogs["GARRISON_BOOT"] = {
 	interruptCinematic = 1,
 	notClosableByLogout = 1
 };
---[[
 StaticPopupDialogs["INSTANCE_LOCK"] = {
 	-- we use a custom timer called lockTimeleft in here to avoid special casing the static popup code
 	-- if you use timeout or timeleft then you will go through the StaticPopup system's standard OnUpdate
@@ -3217,7 +3217,6 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 	notClosableByLogout = 1,
 	noCancelOnReuse = 1,
 };
-]]
 
 StaticPopupDialogs["CONFIRM_TALENT_WIPE"] = {
 	text = CONFIRM_TALENT_WIPE,
@@ -4974,7 +4973,7 @@ function StaticPopup_OnClick(dialog, index)
 		return nil;
 	end
 
-	if ( which == "DEATH" or which == "CLASS_TRIAL_CHOOSE_BOOST_TYPE" ) then
+	if info.selectCallbackByIndex then
 		local func;
 		if ( index == 1 ) then
 			func = info.OnAccept or info.OnButton1;

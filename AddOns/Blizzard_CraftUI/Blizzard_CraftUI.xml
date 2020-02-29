@@ -16,6 +16,10 @@
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnLoad>
+				self:SetFrameLevel(self:GetFrameLevel() + 1);
+				self.text:SetWidth(290);
+			</OnLoad>
 			<OnClick>
 				CraftButton_OnClick(self,button);
 			</OnClick>
@@ -408,6 +412,9 @@
 				</Anchors>
 			</Button>
 			<Button name="Craft8" inherits="CraftButtonTemplate">
+				<Size>
+					<AbsDimension x="296" y="16"/>
+				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="Craft7" relativePoint="BOTTOMLEFT">
 						<Offset>

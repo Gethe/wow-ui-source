@@ -14,6 +14,7 @@ function NamePlateDriverMixin:OnLoad()
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("RAID_TARGET_UPDATE");
 	self:RegisterEvent("UNIT_FACTION");
+	self:RegisterEvent("COMMENTATOR_PLAYER_UPDATE");
 
 	self:SetBaseNamePlateSize(128, 32);
 
@@ -60,6 +61,8 @@ function NamePlateDriverMixin:OnEvent(event, ...)
 		self:OnRaidTargetUpdate();
 	elseif ( event == "UNIT_FACTION" ) then
 		self:OnUnitFactionChanged(...);
+	elseif event == "COMMENTATOR_PLAYER_UPDATE" then
+		self:UpdateAllNames();
 	end
 end
 
@@ -178,6 +181,12 @@ function NamePlateDriverMixin:OnUnitFactionChanged(unit)
 	end
 end
 
+function NamePlateDriverMixin:UpdateAllNames()
+	for _, frame in pairs(C_NamePlate.GetNamePlates(issecure())) do
+		CompactUnitFrame_UpdateName(frame.UnitFrame);
+	end
+end
+
 function NamePlateDriverMixin:SetBaseNamePlateSize(width, height)
 	if self.baseNamePlateWidth ~= width or self.baseNamePlateHeight ~= height then
 		self.baseNamePlateWidth = width;
@@ -206,6 +215,10 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	local showOnlyNames = GetCVarBool("nameplateShowOnlyNames");
 	DefaultCompactNamePlateFriendlyFrameOptions.useClassColors = GetCVarBool("ShowClassColorInFriendlyNameplate");
 	DefaultCompactNamePlateFriendlyFrameOptions.hideHealthbar = showOnlyNames;
+
+	local colorNamePlateNameBySelection = GetCVarBool("ColorNameplateNameBySelection");
+	DefaultCompactNamePlateFriendlyFrameOptions.colorNameBySelection = colorNamePlateNameBySelection;
+	DefaultCompactNamePlateEnemyFrameOptions.colorNameBySelection = colorNamePlateNameBySelection;
 
 	local namePlateVerticalScale = tonumber(GetCVar("NamePlateVerticalScale"));
 	local zeroBasedScale = namePlateVerticalScale - 1.0;
@@ -252,7 +265,6 @@ function NamePlateBaseMixin:OnAdded(namePlateUnitToken, driverFrame)
 	self:ApplyOffsets();
 	
 	if C_Commentator.IsSpectating() then
-		self.UnitFrame.BuffFrame:SetActive(false);
 		if self.UnitFrame.CommentatorDisplayInfo then
 			self.UnitFrame.CommentatorDisplayInfo:Show();
 		else

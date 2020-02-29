@@ -1562,14 +1562,12 @@ function DefaultCompactNamePlateFrameSetupInternal(frame, setupOptions, frameOpt
 	frame:SetAllPoints(frame:GetParent());
 
 	if setupOptions.useFixedSizeFont then
-		frame.name:SetIgnoreParentScale(false);
 		if setupOptions.useLargeNameFont then
 			frame.name:SetFontObject(SystemFont_LargeNamePlateFixed);
 		else
 			frame.name:SetFontObject(SystemFont_NamePlateFixed);
 		end
 	else
-		frame.name:SetIgnoreParentScale(true);
 		if setupOptions.useLargeNameFont then
 			frame.name:SetFontObject(SystemFont_LargeNamePlate);
 		else

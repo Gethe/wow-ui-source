@@ -94,6 +94,18 @@ local PvpInfo =
 				{ Name = "battleFieldIndex", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "WargameRequested",
+			Type = "Event",
+			LiteralName = "WARGAME_REQUESTED",
+			Payload =
+			{
+				{ Name = "opposingPartyMemberName", Type = "string", Nilable = false },
+				{ Name = "battlegroundName", Type = "string", Nilable = false },
+				{ Name = "timeoutSeconds", Type = "number", Nilable = false },
+				{ Name = "tournamentRules", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Tables =

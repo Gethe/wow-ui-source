@@ -6,6 +6,7 @@
 SharedMapPoiTemplates.xml
 QuestDataProvider.xml
 GroupMembersDataProvider.xml
+SpectatorDataProvider.xml
 WorldQuestDataProvider.xml
 ZoneLabelDataProvider.xml
 ClickToZoomDataProvider.xml

@@ -249,9 +249,9 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("CONFIRM_LOOT_ROLL");
 	self:RegisterEvent("INSTANCE_BOOT_START");
 	self:RegisterEvent("INSTANCE_BOOT_STOP");
-	--self:RegisterEvent("INSTANCE_LOCK_START");
-	--self:RegisterEvent("INSTANCE_LOCK_STOP");
-	--self:RegisterEvent("INSTANCE_LOCK_WARNING");
+	self:RegisterEvent("INSTANCE_LOCK_START");
+	self:RegisterEvent("INSTANCE_LOCK_STOP");
+	self:RegisterEvent("INSTANCE_LOCK_WARNING");
 	self:RegisterEvent("CONFIRM_TALENT_WIPE");
 	self:RegisterEvent("CONFIRM_PET_UNLEARN");
 	self:RegisterEvent("CONFIRM_BINDER");
@@ -595,7 +595,7 @@ function CommunitiesFrame_IsEnabled()
 end
 
 function ToggleStoreUI()
-	--[[if (Kiosk.IsEnabled()) then
+	if (Kiosk.IsEnabled()) then
 		return;
 	end
 
@@ -606,11 +606,11 @@ function ToggleStoreUI()
 		--We weren't showing, now we are. We should hide all other panels.
 		securecall("CloseAllWindows");
 	end
-	StoreFrame_SetShown(not wasShown);]]
+	StoreFrame_SetShown(not wasShown);
 end
 
 function SetStoreUIShown(shown)
-	--[[if (Kiosk.IsEnabled()) then
+	if (Kiosk.IsEnabled()) then
 		return;
 	end
 
@@ -621,7 +621,7 @@ function SetStoreUIShown(shown)
 		--We weren't showing, now we are. We should hide all other panels.
 		securecall("CloseAllWindows");
 	end
-	StoreFrame_SetShown(shown);]]
+	StoreFrame_SetShown(shown);
 end
 
 function OpenDeathRecapUI(id)
@@ -1066,8 +1066,8 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("INSTANCE_LOCK", nil, nil, true);
 	elseif ( event == "INSTANCE_LOCK_STOP" ) then
 		StaticPopup_Hide("INSTANCE_LOCK");
-	--[[elseif ( event == "INSTANCE_LOCK_WARNING" ) then
-		StaticPopup_Show("INSTANCE_LOCK", nil, nil, false);]]
+	elseif ( event == "INSTANCE_LOCK_WARNING" ) then
+		StaticPopup_Show("INSTANCE_LOCK", nil, nil, false);
 	elseif ( event == "CONFIRM_TALENT_WIPE" ) then
 		HideUIPanel(GossipFrame);
 		StaticPopupDialogs["CONFIRM_TALENT_WIPE"].text = _G["CONFIRM_TALENT_WIPE_"..arg2];

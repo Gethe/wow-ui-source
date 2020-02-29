@@ -976,3 +976,6 @@ Enum.ChatChannelType = {
 	Public_Party = 3,
 	Communities = 4,
 };
+
+-- SPECTATOR MODE
+MAX_SPECTATED_PER_TEAM = 15;

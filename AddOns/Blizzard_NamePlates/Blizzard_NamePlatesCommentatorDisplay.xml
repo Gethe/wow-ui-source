@@ -11,9 +11,9 @@
 					<Anchor point="TOP" relativeKey="$parent.$parent.healthBar" relativePoint="BOTTOM" y="0"/>
 				</Anchors>
 				<Scripts>
-					<OnShow>
+					<!--<OnShow>
 						self:SetModel([[Spells\ograid_engine_flame.m2]]);
-					</OnShow>
+					</OnShow>-->
 					<OnModelLoaded>
 						self:MakeCurrentCameraCustom();
 						self:SetPosition(0, 0, 0);
@@ -33,9 +33,9 @@
 					<Anchor point="CENTER" y="330"/>
 				</Anchors>
 				<Scripts>
-					<OnShow>
+					<!--<OnShow>
 						self:SetModel([[Spells\SPELLREFLECTION_STATE_SHIELD.m2]]);
-					</OnShow>
+					</OnShow>-->
 					<OnModelLoaded>
 						self:MakeCurrentCameraCustom();
 						self:SetPosition(0, 0, 0);

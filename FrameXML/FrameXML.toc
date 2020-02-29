@@ -116,6 +116,7 @@ ZoneText.xml
 UnitFrame.xml
 Cooldown.xml
 ActionBarController.xml
+TutorialFrame.xml
 Minimap.xml
 GameTime.xml
 BuffFrame.xml
@@ -166,7 +167,6 @@ RaidWarning.xml
 CinematicFrame.xml
 ComboFrame.xml
 TabardFrame.xml
-TutorialFrame.xml
 GuildRegistrarFrame.xml
 PetitionFrame.xml
 HelpFrame.xml
@@ -189,6 +189,7 @@ StreamingFrame.xml
 RecruitAFriendFrame.xml
 LootHistory.xml
 StaticPopupSpecial.xml
+PVPHelper.xml
 ProductChoice.xml
 ..\SharedXML\ModelPreviewFrame.xml
 ClassTrainerFrameTemplates.xml

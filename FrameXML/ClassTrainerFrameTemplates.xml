@@ -11,6 +11,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
+				self.text:SetWidth(270);
 				self:SetFrameLevel(self:GetFrameLevel() + 1);
 			</OnLoad>
 			<OnClick>
@@ -59,7 +60,7 @@
 				</Anchor>
 			</Anchors>
 		</DisabledTexture>
-		<ButtonText name="$parentText">
+		<ButtonText name="$parentText" parentKey="text">
 			<Size>
 				<AbsDimension x="0" y="13"/>
 			</Size>

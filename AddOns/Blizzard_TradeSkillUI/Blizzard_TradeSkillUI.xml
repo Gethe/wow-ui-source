@@ -3,6 +3,10 @@
 	<Script file="Blizzard_TradeSkillUI.lua"/>
 	<Button name="TradeSkillSkillButtonTemplate" inherits="ClassTrainerSkillButtonTemplate" hidden="false" virtual="true">
 		<Scripts>
+			<OnLoad>
+				self:SetFrameLevel(self:GetFrameLevel() + 1);
+				self.text:SetWidth(290);
+			</OnLoad>
 			<OnClick>
 				TradeSkillSkillButton_OnClick(self,button);
 			</OnClick>

@@ -21,6 +21,15 @@ local StorePublicUI =
 			},
 		},
 		{
+			Name = "HasPurchaseableProducts",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasPurchaseableProducts", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsDisabledByParentalControls",
 			Type = "Function",
 

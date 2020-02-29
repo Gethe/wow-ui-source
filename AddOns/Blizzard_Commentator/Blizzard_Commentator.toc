@@ -9,9 +9,7 @@ UnitFrameLayoutData.lua
 
 TeamDisplay.xml
 
-CommentatorCooldownDisplay.lua
-CommentatorCooldownDisplay.xml
-
 FadeToBlack.xml
 CommentatorVictoryFanfare.xml
 PvPCommentator.xml
+CommentatorEventAlerts.xml

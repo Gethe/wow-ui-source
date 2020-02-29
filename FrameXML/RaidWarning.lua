@@ -30,7 +30,9 @@ function RaidNotice_AddMessage( noticeFrame, textString, colorInfo, displayTime 
 	else
 		if ( noticeFrame.slot2:IsShown() and FadingFrame_GetRemainingTime(noticeFrame.slot2) > FadingFrame_GetRemainingTime(noticeFrame.slot1)) then
 			noticeFrame.slot1_text = noticeFrame.slot2_text;
-			RaidNotice_SetSlot( noticeFrame.slot1, noticeFrame.slot1_text, colorInfo, noticeFrame.timings["RAID_NOTICE_MIN_HEIGHT"] );
+			local r2, g2, b2 = noticeFrame.slot2:GetTextColor();
+			local slot2Color = { r = r2, g = g2, b = b2 };
+			RaidNotice_SetSlot( noticeFrame.slot1, noticeFrame.slot1_text, slot2Color, noticeFrame.timings["RAID_NOTICE_MIN_HEIGHT"] );
 			noticeFrame.slot1.scrollTime = noticeFrame.slot2.scrollTime;
 			FadingFrame_CopyTimes(noticeFrame.slot2, noticeFrame.slot1);
 		end

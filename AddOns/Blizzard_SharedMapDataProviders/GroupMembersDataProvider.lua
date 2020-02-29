@@ -44,7 +44,7 @@ end
 
 function GroupMembersDataProviderMixin:ShouldShowUnit(unit)
 	local unitPinSizes = self:GetUnitPinSizesTable();
-	return unitPinSizes[unit] > 0;
+	return unitPinSizes[unit] and unitPinSizes[unit] > 0;
 end
 
 function GroupMembersDataProviderMixin:GetUnitPinSizesTable()
@@ -52,7 +52,7 @@ function GroupMembersDataProviderMixin:GetUnitPinSizesTable()
 		self.unitPinSizes = {
 			player = 16,
 			party = 16,
-			raid = 16;
+			raid = 16,
 		};
 	end
 	return self.unitPinSizes;
@@ -124,7 +124,7 @@ end
 
 function GroupMembersPinMixin:UpdateShownUnits()
 	for unit, size in self.dataProvider:EnumerateUnitPinSizes() do
-		self:SetShouldShowUnits(unit, size > 0);
+		self:SetShouldShowUnits(unit, size > 0 and not C_Commentator.IsSpectating());
 	end
 end
 

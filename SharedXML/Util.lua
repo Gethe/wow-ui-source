@@ -258,6 +258,12 @@ function CreateFromMixins(...)
 	return Mixin({}, ...)
 end
 
+function CreateAndInitFromMixin(mixin, ...)
+	local object = CreateFromMixins(mixin);
+	object:Init(...);
+	return object;
+end
+
 COPPER_PER_SILVER = 100;
 SILVER_PER_GOLD = 100;
 COPPER_PER_GOLD = COPPER_PER_SILVER * SILVER_PER_GOLD;
@@ -1383,4 +1389,10 @@ end
 
 function GetClampedCurrentExpansionLevel()
 	return math.min(GetClientDisplayExpansionLevel(), math.max(GetAccountExpansionLevel(), GetExpansionLevel()));
+end
+
+function tAppendAll(table, addedArray)
+	for i, element in ipairs(addedArray) do
+		tinsert(table, element);
+	end
 end

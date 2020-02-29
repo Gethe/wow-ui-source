@@ -449,8 +449,8 @@ do -- Miscellaneous
 	miscellaneousCategory:AddFilter(LE_ITEM_CLASS_MISCELLANEOUS);
 end
 
---[[do -- WoW Token
+do -- WoW Token
 	local wowTokenCategory = AuctionFrame_CreateCategory(TOKEN_FILTER_LABEL);
 	wowTokenCategory:AddFilter(ITEM_CLASS_WOW_TOKEN);
 	wowTokenCategory:SetFlag("WOW_TOKEN_FLAG");
-end]]
+end

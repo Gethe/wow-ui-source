@@ -640,6 +640,32 @@
 									</OnShow>
 								</Scripts>
 							</Frame>
+							<Button name="$parentTutorialButton" parentKey="HelpButton" inherits="MainHelpPlateButton">
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="10" y="10" />
+								</Anchors>
+								<HighlightTexture file="Interface\common\help-i" alphaMode="ADD" hidden="true">
+									<Size x="46" y="46"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+									<Color r="1" g="1" b="1" a=".2"/>
+								</HighlightTexture>
+								<Scripts>
+									<OnLoad>
+										self.Ring:Hide();
+									</OnLoad>
+									<OnEnter>
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT",-22,-22);
+										GameTooltip:SetText(TUTORIAL_TOKEN_ABOUT_TOKENS);
+										GameTooltip:Show();
+									</OnEnter>
+									<OnLeave function="GameTooltip_Hide"/>
+									<OnClick>
+										WowTokenGameTimeTutorial:SetShown(not WowTokenGameTimeTutorial:IsShown());
+									</OnClick>
+								</Scripts>
+							</Button>
 							<Button parentKey="Token" name="$parentToken">
 								<Size x="254" y="61"/>
 								<Anchors>
@@ -2140,15 +2166,15 @@
 						</Scripts>
 					</Frame>
 					<Frame name="AuctionsWowTokenAuctionFrame" hidden="true">
-						<Size x="192" y="140"/>
+						<Size x="167" y="120"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="18" y="94"/>
+							<Anchor point="BOTTOMLEFT" x="31" y="182"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
 								<FontString parentKey="BuyoutPriceLabel" inherits="GameFontNormalSmall" text="TOKEN_CURRENT_MARKET_PRICE" justifyH="LEFT">
 									<Anchors>
-										<Anchor point="TOPLEFT" x="6" y="-28"/>
+										<Anchor point="TOPLEFT" x="-3" y="-9"/>
 									</Anchors>
 								</FontString>
 								<FontString parentKey="MarketPrice" inherits="NumberFontNormal" justifyH="LEFT">
@@ -2158,7 +2184,7 @@
 								</FontString>
 								<FontString parentKey="EstimatedTime" inherits="GameFontNormalSmall" text="ESTIMATED_TIME_TO_SELL" justifyH="LEFT">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.BuyoutPriceLabel" relativePoint="BOTTOMLEFT" x="0" y="-38"/>
+										<Anchor point="TOPLEFT" relativeKey="$parent.BuyoutPriceLabel" relativePoint="BOTTOMLEFT" x="0" y="-42"/>
 									</Anchors>
 								</FontString>
 								<FontString parentKey="TimeToSell" inherits="GameFontHighlight" justifyH="LEFT">

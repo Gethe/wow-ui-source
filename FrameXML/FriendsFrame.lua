@@ -2871,7 +2871,7 @@ function GuildStatus_Update()
 			end
 		end
 		
-		GuildFrameGuildListToggleButton:SetText(PLAYER_STATUS);
+		-- GuildFrameGuildListToggleButton:SetText(PLAYER_STATUS);
 		-- If need scrollbar resize column headers
 		if ( showScrollBar ) then
 			WhoFrameColumn_SetWidth(GuildFrameColumnHeader2, 105);
@@ -2951,7 +2951,7 @@ function GuildStatus_Update()
 			end
 		end
 		
-		GuildFrameGuildListToggleButton:SetText(GUILD_STATUS);
+		-- GuildFrameGuildListToggleButton:SetText(GUILD_STATUS);
 		-- If need scrollbar resize columns
 		if ( showScrollBar ) then
 			WhoFrameColumn_SetWidth(GuildFrameGuildStatusColumnHeader3, 75);

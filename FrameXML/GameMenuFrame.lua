@@ -9,9 +9,8 @@ function GameMenuFrame_UpdateVisibleButtons(self)
 	local height = 272;
 	GameMenuButtonUIOptions:SetPoint("TOP", GameMenuButtonOptions, "BOTTOM", 0, -1);
 
-	-- Never show this button in the game world.
 	local storeIsRestricted = IsTrialAccount();
-	if ( false ) then --( C_StorePublic.IsEnabled() and not storeIsRestricted ) then
+	if ( C_StorePublic.IsEnabled() and C_StorePublic.HasPurchaseableProducts() and not storeIsRestricted ) then
 		height = height + 20;
 		GameMenuButtonStore:Show();
 	else

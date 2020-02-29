@@ -12,6 +12,10 @@ CraftTypeColor["used"]	= { r = 0.50, g = 0.50, b = 0.50,     font = "GameFontNor
 CraftTypeColor["header"]	= { r = 1.00, g = 0.82, b = 0,    font = "GameFontNormalLeft" };           
 CraftTypeColor["none"]		= { r = 0.25, g = 0.75, b = 0.25, font = "GameFontNormalLeftLightGreen" };       
 
+CRAFT_TEXT_WIDTH = 290;
+CRAFT_SUBTEXT_OFFSET = 10;
+CRAFT_COST_OFFSET = -15;
+
 function CraftFrame_OnShow(self)
 	ShowUIPanel(CraftFrame);
 	if ( not CraftFrame:IsVisible() ) then
@@ -174,6 +178,7 @@ function CraftFrame_Update()
 					craftButtonText:SetWidth(320);
 				end
 			end
+			craftButtonCost:SetPoint("RIGHT", CRAFT_COST_OFFSET, 0);
 			local color = CraftTypeColor[craftType];
 			
 			craftButton:SetNormalFontObject(color.font);
@@ -185,6 +190,7 @@ function CraftFrame_Update()
 			if ( craftType == "header" ) then
 				craftButton:SetText(craftName);
 				craftButtonSubText:SetText("");
+				craftButtonText:SetWidth(0);
 				if ( isExpanded ) then
 					craftButton:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up");
 				else
@@ -202,15 +208,20 @@ function CraftFrame_Update()
 				end
 				if ( craftSubSpellName and craftSubSpellName ~= "" ) then
 					craftButtonSubText:SetText(format(PARENS_TEMPLATE, craftSubSpellName));
+					craftButtonText:SetWidth(0);
 				else 
 					craftButtonSubText:SetText("");
+
+					-- A bit of a hack. If there's no subtext, we'll set a width to ensure that we don't overflow.
+					craftButtonText:SetWidth(CRAFT_TEXT_WIDTH);
 				end
 				if ( trainingPointCost > 0 ) then
 					craftButtonCost:SetText(format(TRAINER_LIST_TP, trainingPointCost));
 				else
 					craftButtonCost:SetText("");
 				end
-				craftButtonSubText:SetPoint("LEFT", "Craft"..i.."Text", "RIGHT", 10, 0);
+
+				craftButtonSubText:SetPoint("LEFT", "Craft"..i.."Text", "RIGHT", CRAFT_SUBTEXT_OFFSET, 0);
 				-- Place the highlight and lock the highlight state
 				if ( GetCraftSelectionIndex() == craftIndex ) then
 					CraftHighlightFrame:SetPoint("TOPLEFT", "Craft"..i, "TOPLEFT", 0, 0);

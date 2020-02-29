@@ -190,6 +190,10 @@ function BattlefieldMapMixin:OnEvent(event, ...)
 				BattlefieldMapOptions = defaultOptions;
 			end
 
+			if (C_Commentator.IsSpectating()) then
+				self:SetSpectatorMode(true);
+			end
+
 			BattlefieldMapTab:ClearAllPoints();
 			if ( BattlefieldMapOptions.position ) then
 				BattlefieldMapTab:SetPoint("CENTER", "UIParent", "BOTTOMLEFT", BattlefieldMapOptions.position.x, BattlefieldMapOptions.position.y);
@@ -237,6 +241,11 @@ function BattlefieldMapMixin:AddStandardDataProviders()
 	self.groupMembersDataProvider:SetUnitPinSize("raid", BATTLEFIELD_MAP_RAID_MEMBER_SIZE);
 	self:AddDataProvider(self.groupMembersDataProvider);
 
+	self.spectatorDataProvider = CreateFromMixins(SpectatorDataProviderMixin);
+	self.spectatorDataProvider:SetUnitPinSize("spectateda", BATTLEFIELD_MAP_PARTY_MEMBER_SIZE);
+	self.spectatorDataProvider:SetUnitPinSize("spectatedb", BATTLEFIELD_MAP_PARTY_MEMBER_SIZE);
+	self:AddDataProvider(self.spectatorDataProvider);
+
 	if IsGMClient() then
 		self:AddDataProvider(CreateFromMixins(WorldMap_DebugDataProviderMixin));
 	end
@@ -259,8 +268,8 @@ function BattlefieldMapMixin:AddStandardDataProviders()
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ENCOUNTER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SCENARIO");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VEHICLE_BELOW_GROUP_MEMBER");
-	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_BATTLEFIELD_FLAG");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_GROUP_MEMBER");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_BATTLEFIELD_FLAG");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VEHICLE_ABOVE_GROUP_MEMBER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_CORPSE");
 end
@@ -273,11 +282,17 @@ end
 
 function BattlefieldMapMixin:UpdateUnitsVisibility()
 	if BattlefieldMapOptions.showPlayers then
+		self.groupMembersDataProvider:SetUnitPinSize("player", BATTLEFIELD_MAP_PLAYER_SIZE);
 		self.groupMembersDataProvider:SetUnitPinSize("party", BATTLEFIELD_MAP_PARTY_MEMBER_SIZE);
 		self.groupMembersDataProvider:SetUnitPinSize("raid", BATTLEFIELD_MAP_RAID_MEMBER_SIZE);
+		self.spectatorDataProvider:SetUnitPinSize("spectateda", BATTLEFIELD_MAP_PARTY_MEMBER_SIZE);
+		self.spectatorDataProvider:SetUnitPinSize("spectatedb", BATTLEFIELD_MAP_PARTY_MEMBER_SIZE);
 	else
+		self.groupMembersDataProvider:SetUnitPinSize("player", 0);
 		self.groupMembersDataProvider:SetUnitPinSize("party", 0);
 		self.groupMembersDataProvider:SetUnitPinSize("raid", 0);
+		self.spectatorDataProvider:SetUnitPinSize("spectateda", 0);
+		self.spectatorDataProvider:SetUnitPinSize("spectatedb", 0);
 	end
 end
 
@@ -327,5 +342,25 @@ function BattlefieldMapMixin:OnUpdate(elapsed)
 			self.hasBeenFaded = nil;
 		end
 		self.hoverTime = 0;
+	end
+end
+
+function BattlefieldMapMixin:SetSpectatorMode(spectatorMode)
+	if (spectatorMode) then
+		BattlefieldMapFrame.BorderFrame.CloseButton:Hide();
+		BattlefieldMapFrame.BorderFrame.CloseButtonBorder:Hide();
+
+		if (BattlefieldMapOptions) then
+			BattlefieldMapOptions.showPlayers = false;
+		end
+		BattlefieldMapFrame:UpdateUnitsVisibility();
+	else
+		BattlefieldMapFrame.BorderFrame.CloseButton:Show();
+		BattlefieldMapFrame.BorderFrame.CloseButtonBorder:Show();
+
+		if (BattlefieldMapOptions) then
+			BattlefieldMapOptions.showPlayers = true;
+		end
+		BattlefieldMapFrame:UpdateUnitsVisibility();
 	end
 end

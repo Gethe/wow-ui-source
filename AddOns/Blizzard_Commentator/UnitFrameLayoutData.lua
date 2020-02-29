@@ -8,20 +8,10 @@ local UNIT_FRAME_COMPONENT_NAMES = {
 	"FlagIconHighlight",
 
 	"HealthBar",
-	"AbsorbBar",
 	"PowerBar",
 	"CastingBar",
 
-	"DefensiveCooldownContainer",
-	"OffensiveCooldownContainer",
-
-	"OffensiveCooldownModel",
-	"DefensiveCooldownModel",
-
 	"ClassIcon",
-	"RoleIcon",
-	"TrinketIcon",
-	"CooldownFrame",
 	"Name",
 	
 	"CCIcon",
@@ -85,10 +75,6 @@ local BASE_LAYOUT = {
 		},
 	},
 
-	AbsorbBar = {
-		setAllPoints = "HealthBar",
-	},
-
 	DeadText = {
 		justifyH = "CENTER",
 
@@ -125,15 +111,6 @@ local BASE_LAYOUT = {
 		},
 	},
 
-	TrinketIcon = {
-		width = 38,
-		height = 38,
-		points = {
-			CreatePoint("CENTER", "UnitFrame", "BOTTOMLEFT", 46, 26),
-		},
-		enabled = true,
-	},
-
 	FrameUnderlay = {
 		points = {
 			CreatePoint("TOPLEFT", "HealthBar", "TOPLEFT", 0, 0),
@@ -142,7 +119,8 @@ local BASE_LAYOUT = {
 	},
 
 	FlagIcon = {
-		--We need this to keep this even though it's blank.  mirrorFileV = nil 
+		width = 128,
+		height = 64,
 	},
 
 	FlagIconHighlight = {
@@ -204,26 +182,6 @@ local BASE_LAYOUT = {
 		},
 	},
 
-	OffensiveCooldownModel = {
-		points = {
-			CreatePoint("CENTER", "HealthBar", "CENTER", -20, 5),
-		},
-
-		keyValues = {
-			modelScale = .9;
-		},
-	},
-	
-	DefensiveCooldownModel = {
-		points = {
-			CreatePoint("CENTER", "UnitFrame", "CENTER", 20, -30),
-		},
-
-		keyValues = {
-			modelScale = .9;
-		},
-	},
-
 	CastingBar = {
 		width = 150,
 		height = 30,
@@ -233,36 +191,11 @@ local BASE_LAYOUT = {
 		},
 		enabled = true,
 	},
-
-	DefensiveCooldownContainer = {
-		width = 182,
-		height = 34,
-
-		points = {
-			CreatePoint("TOPLEFT", "UnitFrame", "BOTTOMLEFT", 25, -15),
-		},
-		enabled = true,
-	},
-
-	OffensiveCooldownContainer = {
-		width = 182,
-		height = 34,
-
-		points = {
-			CreatePoint("TOP", "DefensiveCooldownContainer", "BOTTOM", 0, -15),
-		},
-		enabled = true,
-	},
-
-	CooldownFrame = {
-		setAllPoints = "TrinketIcon",
-		enabled = true,
-	},
 }
 
 local POWER_LAYOUT = {
 	FrameTexture = {
-		atlas = "Unitframe",
+		atlas = "UnitFrame-NoTrinket",
 
 		width = 256,
 		height = 128,
@@ -314,10 +247,6 @@ local RIGHT_LAYOUT = {
 		mirrorPointsV = true,
 	},
 
-	TrinketIcon = {
-		mirrorPointsV = true,
-	},
-
 	HealthBar = {
 		mirrorPointsV = true,
 	},
@@ -334,24 +263,12 @@ local RIGHT_LAYOUT = {
 		mirrorFileV = true,
 	},
 
-	RoleIcon = {
-		mirrorPointsV = true,
-	},
-
 	CCIcon = {
 		mirrorPointsV = true,
 	},
 
 	CCOverlay = {
 		mirrorFileV = true,
-	},
-
-	OffensiveCooldownModel = {
-		mirrorPointsV = true,
-	},
-	
-	DefensiveCooldownModel = {
-		mirrorPointsV = true,
 	},
 
 	DeathOverlay = {
@@ -373,48 +290,112 @@ local RIGHT_LAYOUT = {
 			CreatePoint("RIGHT", "HealthBar", "LEFT", -13, -2),
 		},
 	},
+};
 
-	DefensiveCooldownContainer = {
+local COMPACT_LAYOUT = {
+	CastingBar = {
+		enabled = false,
+	},
+};
+
+local VERY_COMPACT_LAYOUT = {
+	UnitFrame = {
+		width = 158,
+		height = 86,
+	},
+	FrameTexture = {
+		atlas = "UnitFrame-NoMana",
+		width = 192,
+		height = 96,
+	},
+	ClassIcon = {
+		width = 39,
+		height = 39,
 		points = {
-			CreatePoint("TOPLEFT", "UnitFrame", "BOTTOMLEFT", 5, -15),
+			CreatePoint("CENTER", "UnitFrame", "TOPLEFT", 32, -31),
+		},
+	},
+	Name = {
+		points = {
+			CreatePoint("TOPLEFT", "UnitFrame", "TOPLEFT", 57, -20),
+			CreatePoint("BOTTOMRIGHT", "UnitFrame", "BOTTOMRIGHT", -4, 45),
+		},
+	},
+	FlagIcon = {
+		width = 96,
+		height = 48,
+	},
+	CCIcon = {
+		width = 47,
+		height = 47,
+		points = {
+			CreatePoint("LEFT", "UnitFrame", "RIGHT", 0, -2),
+		},
+	},
+	CCIconGlow = {
+		width = 96,
+		height = 96,
+		points = {
+			CreatePoint("TOPLEFT", "CCIcon", "TOPLEFT", -9, 9),
+		},
+	},
+	DeathIcon = {
+		mirrorFileV = true,
+		width = 48,
+		height = 96,
+
+		points = {
+			CreatePoint("RIGHT", "UnitFrame", "BOTTOMRIGHT", 14, 2),
 		},
 	},
 };
 
-local COMPACT_LAYOUT = {
-	TrinketIcon = {
-		enabled = false,
+local EXTREMELY_COMPACT_LAYOUT = {
+	UnitFrame = {
+		width = 147,
+		height = 80,
 	},
-	CooldownFrame = {
-		enabled = false,
-	},
-	DefensiveCooldownContainer = {
-		enabled = false,
-	},
-	OffensiveCooldownContainer = {
-		enabled = false,
-	},
-	CastingBar = {
-		enabled = false,
-	},
+	FrameTexture = {
+		atlas = "UnitFrame-NoMana",
 
-	OffensiveCooldownModel = {
+		width = 179,
+		height = 90,
 		points = {
-			CreatePoint("CENTER", "HealthBar", "CENTER", -20, 15),
-		},
-
-		keyValues = {
-			modelScale = .7;
+			CreatePoint("TOPLEFT", "UnitFrame", "TOPLEFT", 0, 0),
 		},
 	},
-	
-	DefensiveCooldownModel = {
+	ClassIcon = {
+		width = 36,
+		height = 36,
 		points = {
-			CreatePoint("CENTER", "UnitFrame", "CENTER", 20, -30),
+			CreatePoint("CENTER", "UnitFrame", "TOPLEFT", 29, -29),
 		},
+	},
+	FlagIcon = {
+		width = 89,
+		height = 44,
+	},
+	CCIcon = {
+		width = 44,
+		height = 44,
+		points = {
+			CreatePoint("LEFT", "UnitFrame", "RIGHT", 0, -2),
+		},
+	},
+	CCIconGlow = {
+		width = 89,
+		height = 89,
+		points = {
+			CreatePoint("TOPLEFT", "CCIcon", "TOPLEFT", -9, 8),
+		},
+	},
+	DeathIcon = {
+		mirrorFileV = true,
+		width = 44,
+		height = 89,
 
-		keyValues = {
-			modelScale = .7;
+		points = {
+			CreatePoint("RIGHT", "UnitFrame", "BOTTOMRIGHT", 14, 2),
 		},
 	},
 };
@@ -423,27 +404,70 @@ local COMPACT_POWER_LAYOUT = {
 	FrameTexture = {
 		atlas = "UnitFrame-NoTrinket",
 	},
-	OffensiveCooldownModel = {
-		points = {
-			CreatePoint("CENTER", "HealthBar", "CENTER", -20, 5),
-		},
-
-		keyValues = {
-			modelScale = .8;
-		},
-	},
-	
-	DefensiveCooldownModel = {
-		points = {
-			CreatePoint("CENTER", "UnitFrame", "CENTER", 20, -30),
-		},
-
-		keyValues = {
-			modelScale = .8;
-		},
-	},
 }
 
+local VERY_COMPACT_POWER_LAYOUT = {
+	FrameTexture = {
+		atlas = "UnitFrame-NoMana",
+		width = 192,
+		height = 96,
+	},
+	HealthBar = {
+		points = {
+			CreatePoint("TOPLEFT", "UnitFrame", "TOPLEFT", 53, -44),
+			CreatePoint("BOTTOMRIGHT", "UnitFrame", "BOTTOMRIGHT", -1, 24),
+		},
+	},
+	PowerBar = {
+		points = {
+			CreatePoint("TOPLEFT", "UnitFrame", "TOPLEFT", 53, -64),
+			CreatePoint("BOTTOMRIGHT", "UnitFrame", "BOTTOMRIGHT", -1, 13),
+		},
+	},
+	CCIcon = {
+		width = 47,
+		height = 47,
+		points = {
+			CreatePoint("LEFT", "UnitFrame", "RIGHT", 0, -2),
+		},
+	},
+	CCOverlay = {
+		atlas = "UnitFrame_CCOverlay-NoMana",
+		setAllPoints = "FrameTexture",
+	},
+	DeathOverlay = {
+		atlas = "UnitFrame_DeathOverlay-NoMana",
+		setAllPoints = "FrameTexture",
+	},
+};
+
+local EXTREMELY_COMPACT_POWER_LAYOUT = {
+	FrameTexture = {
+		atlas = "UnitFrame-NoMana",
+
+		width = 179,
+		height = 90,
+	},
+	HealthBar = {
+		points = {
+			CreatePoint("TOPLEFT", "UnitFrame", "TOPLEFT", 50, -41),
+			CreatePoint("BOTTOMRIGHT", "UnitFrame", "BOTTOMRIGHT", -1, 24),
+		},
+	},
+	PowerBar = {
+		points = {
+			CreatePoint("TOPLEFT", "UnitFrame", "TOPLEFT", 49, -58),
+			CreatePoint("BOTTOMRIGHT", "UnitFrame", "BOTTOMRIGHT", -1, 13),
+		},
+	},
+	CCIcon = {
+		width = 44,
+		height = 44,
+		points = {
+			CreatePoint("LEFT", "UnitFrame", "RIGHT", 0, -2),
+		},
+	},
+};
 
 local FOCUSED_LAYOUT = {
 	Name = {
@@ -470,7 +494,7 @@ local FOCUSED_LAYOUT = {
 	},
 
 	FrameTexture = {
-		atlas = "UnitFrame_CurrentPlayer",
+		atlas = "UnitFrame_CurrentPlayer-NoTrinket",
 
 		width = 512,
 		height = 256,
@@ -481,40 +505,6 @@ local FOCUSED_LAYOUT = {
 		height = 66,
 		points = {
 			CreatePoint("CENTER", "UnitFrame", "TOPLEFT", 49, -45),
-		},
-	},
-
-	TrinketIcon = {
-		width = 46,
-		height = 46,
-		points = {
-			CreatePoint("CENTER", "UnitFrame", "BOTTOMLEFT", 52, 10),
-		},
-	},
-
-	RoleIcon = {
-		points = {
-			CreatePoint("CENTER", "UnitFrame", "TOPLEFT", 83, -15),
-		},
-	},
-
-	OffensiveCooldownModel = {
-		points = {
-			CreatePoint("CENTER", "HealthBar", "CENTER", -20, 5),
-		},
-
-		keyValues = {
-			modelScale = 1.2;
-		},
-	},
-	
-	DefensiveCooldownModel = {
-		points = {
-			CreatePoint("CENTER", "UnitFrame", "CENTER", -20, -30),
-		},
-
-		keyValues = {
-			modelScale = 1.2;
 		},
 	},
 
@@ -546,12 +536,6 @@ local FOCUSED_LAYOUT = {
 			CreatePoint("LEFT", "HealthBar", "RIGHT", 54, -2),
 		},
 	},
-
-	DefensiveCooldownContainer = {
-		points = {
-			CreatePoint("TOPLEFT", "UnitFrame", "BOTTOMLEFT", 25, -35),
-		},
-	},
 };
 
 local FOCUSED_COMPACT_LAYOUT = {
@@ -579,26 +563,6 @@ local FOCUSED_COMPACT_LAYOUT = {
 	DeathOverlay = {
 		atlas = "UnitFrame_CurrentPlayer_DeathOverlay-NoMana",
 	},
-
-	OffensiveCooldownModel = {
-		points = {
-			CreatePoint("CENTER", "HealthBar", "CENTER", -20, 20),
-		},
-
-		keyValues = {
-			modelScale = .9;
-		},
-	},
-	
-	DefensiveCooldownModel = {
-		points = {
-			CreatePoint("CENTER", "UnitFrame", "CENTER", 20, -30),
-		},
-
-		keyValues = {
-			modelScale = .9;
-		},
-	},
 };
 
 local FOCUSED_COMPACT_POWER_LAYOUT = {
@@ -615,26 +579,6 @@ local FOCUSED_COMPACT_POWER_LAYOUT = {
 
 	DeathOverlay = {
 		atlas = "UnitFrame_CurrentPlayer_DeathOverlay",
-	},
-
-	OffensiveCooldownModel = {
-		points = {
-			CreatePoint("CENTER", "HealthBar", "CENTER", -20, 12),
-		},
-
-		keyValues = {
-			modelScale = .95;
-		},
-	},
-	
-	DefensiveCooldownModel = {
-		points = {
-			CreatePoint("CENTER", "UnitFrame", "CENTER", 20, -23),
-		},
-
-		keyValues = {
-			modelScale = .95;
-		},
 	},
 }
 
@@ -658,6 +602,18 @@ local LAYOUT_DATA = {
 
 	team_left_compact_power = CreateLayoutTableThatInheritsFrom(BASE_LAYOUT, COMPACT_LAYOUT, POWER_LAYOUT, COMPACT_POWER_LAYOUT),
 	team_right_compact_power = CreateLayoutTableThatInheritsFrom(BASE_LAYOUT, RIGHT_LAYOUT, COMPACT_LAYOUT, POWER_LAYOUT, COMPACT_POWER_LAYOUT),
+
+	team_left_veryCompact = CreateLayoutTableThatInheritsFrom(BASE_LAYOUT, COMPACT_LAYOUT, VERY_COMPACT_LAYOUT),
+	team_right_veryCompact = CreateLayoutTableThatInheritsFrom(BASE_LAYOUT, RIGHT_LAYOUT, COMPACT_LAYOUT, VERY_COMPACT_LAYOUT),
+
+	team_left_veryCompact_power = CreateLayoutTableThatInheritsFrom(BASE_LAYOUT, COMPACT_LAYOUT, VERY_COMPACT_LAYOUT, POWER_LAYOUT, COMPACT_POWER_LAYOUT, VERY_COMPACT_POWER_LAYOUT),
+	team_right_veryCompact_power = CreateLayoutTableThatInheritsFrom(BASE_LAYOUT, RIGHT_LAYOUT, COMPACT_LAYOUT, VERY_COMPACT_LAYOUT, POWER_LAYOUT, COMPACT_POWER_LAYOUT, VERY_COMPACT_POWER_LAYOUT),
+
+	team_left_extremelyCompact = CreateLayoutTableThatInheritsFrom(BASE_LAYOUT, COMPACT_LAYOUT, VERY_COMPACT_LAYOUT, EXTREMELY_COMPACT_LAYOUT),
+	team_right_extremelyCompact = CreateLayoutTableThatInheritsFrom(BASE_LAYOUT, RIGHT_LAYOUT, COMPACT_LAYOUT, VERY_COMPACT_LAYOUT, EXTREMELY_COMPACT_LAYOUT),
+
+	team_left_extremelyCompact_power = CreateLayoutTableThatInheritsFrom(BASE_LAYOUT, COMPACT_LAYOUT, VERY_COMPACT_LAYOUT, EXTREMELY_COMPACT_LAYOUT, POWER_LAYOUT, COMPACT_POWER_LAYOUT, VERY_COMPACT_POWER_LAYOUT, EXTREMELY_COMPACT_POWER_LAYOUT),
+	team_right_extremelyCompact_power = CreateLayoutTableThatInheritsFrom(BASE_LAYOUT, RIGHT_LAYOUT, COMPACT_LAYOUT, VERY_COMPACT_LAYOUT, EXTREMELY_COMPACT_LAYOUT, POWER_LAYOUT, COMPACT_POWER_LAYOUT, VERY_COMPACT_POWER_LAYOUT, EXTREMELY_COMPACT_POWER_LAYOUT),
 
 	team_left_focus = CreateLayoutTableThatInheritsFrom(BASE_LAYOUT, FOCUSED_LAYOUT),
 	team_right_focus = CreateLayoutTableThatInheritsFrom(BASE_LAYOUT, RIGHT_LAYOUT, FOCUSED_LAYOUT),

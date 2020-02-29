@@ -44,8 +44,6 @@
 		</Layer>
 
 		<Layer level="OVERLAY" textureSubLevel="1">
-			<Texture parentKey="TrinketIcon" />
-
 			<Texture parentKey="CCIcon" hidden="true" />
 			<FontString parentKey="CCText" inherits="CommentatorCCFont" justifyH="CENTER" justifyV="MIDDLE" hidden="true">
 				<Color r="0.0" g="1.0" b="0.0"/>
@@ -66,89 +64,8 @@
 		</Layer>
 	</Layers>
 	<Frames>
-		<StatusBar parentKey="HealthBar" inherits="CommentatorUnitFrameHealthStatusBar">
-			<Layers>
-				<Layer level="OVERLAY" textureSubLevel="1">
-					<Texture parentKey="OverAbsorb" file="Interface\RaidFrame\Shield-Overshield" alphaMode="ADD">
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-6" />
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-6" />
-						</Anchors>
-					</Texture>
-				</Layer>
-			</Layers>
-		</StatusBar>
+		<StatusBar parentKey="HealthBar" inherits="CommentatorUnitFrameHealthStatusBar" />
 		<StatusBar parentKey="PowerBar" inherits="CommentatorUnitFramePowerStatusBar" />
-		<StatusBar parentKey="AbsorbBar" inherits="CommentatorUnitFrameHealthStatusBar">
-			<BarTexture file="Interface\RaidFrame\Shield-Fill" />
-			<Layers>
-				<Layer level="BORDER" textureSubLevel="-1">
-					<Texture parentKey="Overlay" file="Interface\RaidFrame\Shield-Overlay" vertTile="true" horizTile="true"/>
-				</Layer>
-			</Layers>
-			<Scripts>
-				<OnLoad>
-					self:GetStatusBarTexture():SetDrawLayer("BORDER", -2);
-					self.Overlay:ClearAllPoints();
-					self.Overlay:SetAllPoints(self:GetStatusBarTexture());
-				</OnLoad>
-			</Scripts>
-		</StatusBar>
-
-		<Cooldown parentKey="CooldownFrame" inherits="CooldownFrameTemplate" frameStrata="HIGH" />
-
-		<Frame parentKey="DefensiveCooldownContainer">
-			<Size x="160" y="36"/>
-			<Anchors>
-				<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-5" />
-			</Anchors>
-		</Frame>
-		
-		<Frame parentKey="OffensiveCooldownContainer">
-			<Size x="160" y="36"/>
-			<Anchors>
-				<Anchor point="TOP" relativeKey="$parent.DefensiveCooldownContainer" relativePoint="BOTTOM" x="0" y="-5" />
-			</Anchors>
-		</Frame>
-			
-		<Model parentKey="OffensiveCooldownModel" frameStrata="BACKGROUND" drawLayer="BACKGROUND">
-			<Size x="356" y="356" />
-			<Scripts>
-				<OnShow>
-					self:SetModel([[Spells\ograid_engine_flame.m2]]);
-				</OnShow>
-				<OnModelLoaded>
-					self:MakeCurrentCameraCustom();
-					self:SetPosition(0, 0, 0);
-					self:SetFacing(0);
-					self:SetCameraTarget(0, 0, 0);
-
-					self:SetCameraPosition(0, 0, -20);
-					self:SetCameraFacing(math.pi / 2);
-				</OnModelLoaded>
-			</Scripts>
-		</Model>
-		
-		<Model parentKey="DefensiveCooldownModel" frameStrata="BACKGROUND" drawLayer="BACKGROUND">
-			<Size x="356" y="356" />
-			<Anchors>
-				<Anchor point="CENTER"/>
-			</Anchors>
-			<Scripts>
-				<OnShow>
-					self:SetModel([[Spells\SPELLREFLECTION_STATE_SHIELD.m2]]);
-				</OnShow>
-				<OnModelLoaded>
-					self:MakeCurrentCameraCustom();
-					self:SetPosition(0, 0, 0);
-					self:SetFacing(0);
-					self:SetCameraTarget(0, 0, 5);
-					self:SetModelScale(12);
-					self:SetCameraPosition(10, 0, 0);
-					self:SetCameraFacing(0);
-				</OnModelLoaded>
-			</Scripts>
-		</Model>
 
 		<StatusBar parentKey="CastingBar" minValue="0" maxValue="1" drawLayer="BORDER" useParentLevel="true" hidden="true">
 			<Layers>
@@ -203,7 +120,6 @@
 	</Frames>
 	<Scripts>
 		<OnUpdate method="OnUpdate"/>
-		<OnEvent method="OnEvent"/>
 		<OnSizeChanged method="OnSizeChanged"/>
 	</Scripts>
 </Frame>

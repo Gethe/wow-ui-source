@@ -8,6 +8,8 @@ TRAINER_FILTER_AVAILABLE = 1;
 TRAINER_FILTER_UNAVAILABLE = 1;
 TRAINER_FILTER_USED = 0;
 
+SKILL_TEXT_WIDTH = 270;
+
 StaticPopupDialogs["CONFIRM_PROFESSION"] = {
 	text = format(PROFESSION_CONFIRMATION1, "XXX"),
 	button1 = ACCEPT,
@@ -146,6 +148,7 @@ function ClassTrainerFrame_Update()
 			if ( serviceType == "header" ) then
 				local skillText = _G["ClassTrainerSkill"..i.."Text"];
 				skillText:SetText(serviceName);
+				skillText:SetWidth(0);
 				skillButton:SetNormalFontObject("GameFontNormal");
 
 				skillSubText:Hide();
@@ -164,8 +167,12 @@ function ClassTrainerFrame_Update()
 					skillSubText:SetText(format(PARENS_TEMPLATE, serviceSubText));
 					skillSubText:SetPoint("LEFT", "ClassTrainerSkill"..i.."Text", "RIGHT", 10, 0);
 					skillSubText:Show();
+					skillText:SetWidth(0);
 				else
 					skillSubText:Hide();
+
+					-- A bit of a hack. If there's no subtext, we'll set a width to ensure that we don't overflow.
+					skillText:SetWidth(SKILL_TEXT_WIDTH);
 				end
 				
 				-- Cost Stuff

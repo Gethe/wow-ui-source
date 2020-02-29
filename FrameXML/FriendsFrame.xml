@@ -2431,7 +2431,22 @@ TRAVEL PASS
               <OnClick>
                 GuildFrameGuildListToggleButton_OnClick();
                 PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+				if (FriendsFrame.playerStatusFrame) then
+                  GameTooltip:SetText(PLAYER_STATUS, 1.0,1.0,1.0 );
+				else
+                  GameTooltip:SetText(GUILD_STATUS, 1.0,1.0,1.0 );
+				end
               </OnClick>
+              <OnEnter>
+				if (FriendsFrame.playerStatusFrame) then
+                  GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+                  GameTooltip:SetText(PLAYER_STATUS, 1.0,1.0,1.0 );
+				else
+				  GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+                  GameTooltip:SetText(GUILD_STATUS, 1.0,1.0,1.0 );
+				end
+              </OnEnter>
+              <OnLeave function="GameTooltip_Hide"/>
             </Scripts>
             <NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
             <PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>

@@ -83,7 +83,7 @@
 		<Layers>
 			
 			<Layer level="ARTWORK">
-				<FontString parentKey="name" inherits="SystemFont_NamePlate" wordwrap="false" justifyH="CENTER" ignoreParentScale="true">
+				<FontString parentKey="name" inherits="SystemFont_NamePlate" wordwrap="false" justifyH="CENTER" ignoreParentScale="false">
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.healthBar.border" relativePoint="TOP" x="0" y="2" />
 					</Anchors>

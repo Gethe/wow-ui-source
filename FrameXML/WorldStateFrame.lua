@@ -136,7 +136,7 @@ function WorldStateScoreFrame_Update()
 	local text, icon, tooltip, columnButton;
 	local numStatColumns = GetNumBattlefieldStats();
 	local columnButton, columnButtonText, columnTextButton, columnIcon;
-	local lastStatsFrame = "WorldStateScoreFrameHealingDone";
+	local lastStatsFrame = "WorldStateScoreColumn1";
 	for i=1, MAX_NUM_STAT_COLUMNS do
 		if ( i <= numStatColumns ) then
 			text, icon, tooltip = GetBattlefieldStatInfo(i);

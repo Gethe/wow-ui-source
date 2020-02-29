@@ -3,10 +3,14 @@ local LEFT_ALIGNMENT = "left";
 local RIGHT_ALIGNMENT = "right";
 
 local IS_CAMERA_TARGET = true;
-local IS_COMPACT = true;
 local HAS_POWER = true;
 
 local MAX_AURA_INDEX_TO_CHECK = 40;
+
+COMMENTATOR_UNIT_FRAME_STANDARD = 0;
+COMMENTATOR_UNIT_FRAME_COMPACT = 1;
+COMMENTATOR_UNIT_FRAME_VERY_COMPACT = 2;
+COMMENTATOR_UNIT_FRAME_EXTREMELY_COMPACT = 3;
 
 CommentatorUnitFrameMixin = {};
 
@@ -15,38 +19,12 @@ function CommentatorUnitFrameMixin:Initialize(align)
 	
 	self.align = align or LEFT_ALIGNMENT;
 	self.isCameraTarget = false;
-	self.compact = false;
+	self.compactLevel = COMMENTATOR_UNIT_FRAME_STANDARD;
 	self.canBeVisible = false;
-
-	self.offensiveCooldownPool = CreateCommentatorCooldownPool(self, self:GetTeamAndPlayer());
-	self.defensiveCooldownPool = CreateCommentatorCooldownPool(self, self:GetTeamAndPlayer());
 	
 	self:EvaluateRelayout();
-
-	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
-	self:RegisterEvent("ARENA_COOLDOWNS_UPDATE");
-	self:RegisterEvent("ARENA_CROWD_CONTROL_SPELL_UPDATE");
 	
 	self.DeadText:SetFontObjectsToTry(CommentatorDeadFontDefault, CommentatorDeadFontMedium, CommentatorDeadFontSmall);
-end
-
-function CommentatorUnitFrameMixin:OnEvent(event, ...)	
-	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-		self:OnCombatEvent(CombatLogGetCurrentEventInfo());
-	elseif event == "COMMENTATOR_PLAYER_UPDATE" then
-		self:FullCooldownRefresh();
-	elseif ( event == "ARENA_COOLDOWNS_UPDATE" ) then
-		local token = ...;
-		if token == self.token then
-			self:UpdateCrowdControlRemover();
-			self:FullCooldownRefresh();
-		end
-	elseif ( event == "ARENA_CROWD_CONTROL_SPELL_UPDATE" ) then
-		local token, spellID = ...;
-		if token == self.token then
-			self:SetCrowdControlRemoverIcon(spellID);
-		end
-	end
 end
 
 function CommentatorUnitFrameMixin:OnSizeChanged()
@@ -56,54 +34,86 @@ end
 local LAYOUT_TABLE = {
 	[LEFT_ALIGNMENT] = {
 		[IS_CAMERA_TARGET] = {
-			[not IS_COMPACT] = {
+			[COMMENTATOR_UNIT_FRAME_STANDARD] = {
 				[HAS_POWER] = "team_left_power",
 				[not HAS_POWER] = "team_left",
 			},
-			[IS_COMPACT] = {
+			[COMMENTATOR_UNIT_FRAME_COMPACT] = {
 				[HAS_POWER] = "team_left_compact_power",
 				[not HAS_POWER] = "team_left_compact",
+			},
+			[COMMENTATOR_UNIT_FRAME_VERY_COMPACT] = {
+				[HAS_POWER] = "team_left_veryCompact_power",
+				[not HAS_POWER] = "team_left_veryCompact",
+			},
+			[COMMENTATOR_UNIT_FRAME_EXTREMELY_COMPACT] = {
+				[HAS_POWER] = "team_left_extremelyCompact_power",
+				[not HAS_POWER] = "team_left_extremelyCompact",
 			},
 		},
 		[not IS_CAMERA_TARGET] = {
-			[not IS_COMPACT] = {
+			[COMMENTATOR_UNIT_FRAME_STANDARD] = {
 				[HAS_POWER] = "team_left_power",
 				[not HAS_POWER] = "team_left",
 			},
-			[IS_COMPACT] = {
+			[COMMENTATOR_UNIT_FRAME_COMPACT] = {
 				[HAS_POWER] = "team_left_compact_power",
 				[not HAS_POWER] = "team_left_compact",
+			},
+			[COMMENTATOR_UNIT_FRAME_VERY_COMPACT] = {
+				[HAS_POWER] = "team_left_veryCompact_power",
+				[not HAS_POWER] = "team_left_veryCompact",
+			},
+			[COMMENTATOR_UNIT_FRAME_EXTREMELY_COMPACT] = {
+				[HAS_POWER] = "team_left_extremelyCompact_power",
+				[not HAS_POWER] = "team_left_extremelyCompact",
 			},
 		},
 	},
 
 	[RIGHT_ALIGNMENT] = {
 		[IS_CAMERA_TARGET] = {
-			[not IS_COMPACT] = {
+			[COMMENTATOR_UNIT_FRAME_STANDARD] = {
 				[HAS_POWER] = "team_right_power",
 				[not HAS_POWER] = "team_right",
 			},
-			[IS_COMPACT] = {
+			[COMMENTATOR_UNIT_FRAME_COMPACT] = {
 				[HAS_POWER] = "team_right_compact_power",
 				[not HAS_POWER] = "team_right_compact",
+			},
+			[COMMENTATOR_UNIT_FRAME_VERY_COMPACT] = {
+				[HAS_POWER] = "team_right_veryCompact_power",
+				[not HAS_POWER] = "team_right_veryCompact",
+			},
+			[COMMENTATOR_UNIT_FRAME_EXTREMELY_COMPACT] = {
+				[HAS_POWER] = "team_right_extremelyCompact_power",
+				[not HAS_POWER] = "team_right_extremelyCompact",
 			},
 		},
 		[not IS_CAMERA_TARGET] = {
-			[not IS_COMPACT] = {
+			[COMMENTATOR_UNIT_FRAME_STANDARD] = {
 				[HAS_POWER] = "team_right_power",
 				[not HAS_POWER] = "team_right",
 			},
-			[IS_COMPACT] = {
+			[COMMENTATOR_UNIT_FRAME_COMPACT] = {
 				[HAS_POWER] = "team_right_compact_power",
 				[not HAS_POWER] = "team_right_compact",
+			},
+			[COMMENTATOR_UNIT_FRAME_VERY_COMPACT] = {
+				[HAS_POWER] = "team_right_veryCompact_power",
+				[not HAS_POWER] = "team_right_veryCompact",
+			},
+			[COMMENTATOR_UNIT_FRAME_EXTREMELY_COMPACT] = {
+				[HAS_POWER] = "team_right_extremelyCompact_power",
+				[not HAS_POWER] = "team_right_extremelyCompact",
 			},
 		},
 	},
 };
 
 function CommentatorUnitFrameMixin:CalculateLayout()
-	local showPower = not self.compact or self.role == "HEALER";
-	return LAYOUT_TABLE[self.align][self.isCameraTarget][self.compact][showPower];
+	local showPower = true; --not self:IsCompact() or self.role == "HEALER";
+	return LAYOUT_TABLE[self.align][self.isCameraTarget][self.compactLevel][showPower];
 end
 
 function CommentatorUnitFrameMixin:EvaluateRelayout()
@@ -130,9 +140,21 @@ function CommentatorUnitFrameMixin:AlignRight()
 	self:EvaluateRelayout();
 end
 
-function CommentatorUnitFrameMixin:SetCompact(compact)
-	self.compact = not not compact;
+function CommentatorUnitFrameMixin:SetCompact(compactLevel)
+	self.compactLevel = compactLevel;
 	self:EvaluateRelayout();
+end
+
+function CommentatorUnitFrameMixin:IsCompact()
+	return self.compactLevel >= COMMENTATOR_UNIT_FRAME_COMPACT;
+end
+
+function CommentatorUnitFrameMixin:IsVeryCompact()
+	return self.compactLevel >= COMMENTATOR_UNIT_FRAME_VERY_COMPACT;
+end
+
+function CommentatorUnitFrameMixin:IsExtremelyCompact()
+	return self.compactLevel >= COMMENTATOR_UNIT_FRAME_EXTREMELY_COMPACT;
 end
 
 function CommentatorUnitFrameMixin:AreUpdatesAllowed()
@@ -140,18 +162,10 @@ function CommentatorUnitFrameMixin:AreUpdatesAllowed()
 	return GetBattlefieldWinner() == nil;
 end
 
-local COOLDOWN_REFRESH_TIME = 1.0;
 function CommentatorUnitFrameMixin:OnUpdate(elapsed)
 	if self.isLayoutDirty then
 		self.isLayoutDirty = false;
 		self:ApplyLayout(self.layout);
-	end
-	
-	if self.needsCooldownData then
-		self.timeSinceLastFullCooldownRefresh = self.timeSinceLastFullCooldownRefresh + elapsed;
-		if self.timeSinceLastFullCooldownRefresh > COOLDOWN_REFRESH_TIME then
-			self:FullCooldownRefresh();
-		end
 	end
 
 	if not self:AreUpdatesAllowed() then return end
@@ -160,7 +174,6 @@ function CommentatorUnitFrameMixin:OnUpdate(elapsed)
 	self:SetMaxHP(maxHealth);
 	local health = UnitHealth(self.token);
 	self:SetHP(health);
-	self:SetAbsorb(health, UnitGetTotalAbsorbs(self.token) or 0, maxHealth);
 
 	self:SetFlagInfo(C_Commentator.GetPlayerFlagInfo(self.teamIndex, self.playerIndex));
 
@@ -171,9 +184,6 @@ function CommentatorUnitFrameMixin:OnUpdate(elapsed)
 
 	self:SetLifeState(UnitIsFeignDeath(self.token), UnitIsDeadOrGhost(self.token));
 	self:UpdateCameraWeight(not UnitIsFeignDeath(self.token) and UnitIsDeadOrGhost(self.token));
-
-	self:UpdateOnFireEffectAuras();
-	self:UpdateOnFireEffectVisuals(elapsed);
 
 	self:UpdateCrowdControlAuras();
 	self:UpdateCrowdControlAurasText();
@@ -217,9 +227,6 @@ end
 function CommentatorUnitFrameMixin:SetTeamAndPlayer(teamIndex, playerIndex)
 	local token, playerName, faction, specID = C_Commentator.GetPlayerInfo(teamIndex, playerIndex);
 	
-	self.offensiveCooldownPool:SetTeamAndPlayer(teamIndex, playerIndex);
-	self.defensiveCooldownPool:SetTeamAndPlayer(teamIndex, playerIndex);
-	
 	if token then
 		self.token = token;
 		self.tokenChanging = true;
@@ -229,39 +236,16 @@ function CommentatorUnitFrameMixin:SetTeamAndPlayer(teamIndex, playerIndex)
 
 		self:SetClass(select(2, UnitClass(self.token)))
 
-		C_PvP.RequestCrowdControlSpell(self.token);
-
-		self.role = GetSpecializationRoleByID(specID);
-		if self.role == nil or self.role == "DAMAGER" then
-			self.RoleIcon:Hide();
-		else
-			self.RoleIcon:Show();
-			if self.role == "HEALER" then
-				self.RoleIcon:SetAtlas("HealerBadge");
-			elseif self.role == "TANK" then
-				self.RoleIcon:SetAtlas("TankBadge");
-			end
-		end
-
 		self.guid = UnitGUID(self.token);
 		self.playerIndex = playerIndex;
 		self.teamIndex = teamIndex;
 		self.specID = specID;
-		self:FullCooldownRefresh();
-		self:RegisterEvent("COMMENTATOR_PLAYER_UPDATE");
 	else
 		self.token = nil;
 		self.guid = nil;
 		self.playerIndex = nil;
 		self.teamIndex = nil;
-		self:UnregisterEvent("COMMENTATOR_PLAYER_UPDATE");
 	end
-
-	self.onFireEffectCurrentScale = 0;
-	self.onFireEffectTargetScale = 0;
-	self.OffensiveCooldownModel:SetModelScale(0);
-	
-	self.DefensiveCooldownModel:Hide();
 	
 	self.timeOfDeath = nil;
 	
@@ -274,16 +258,12 @@ function CommentatorUnitFrameMixin:GetTeamAndPlayer()
 end
 
 function CommentatorUnitFrameMixin:OnLayoutApplied()
-	self.TrinketIcon:SetShown(self.TrinketIcon.enabled);
 	self.PowerBar:SetShown(self.PowerBar.enabled);
-	self.OffensiveCooldownContainer:SetShown(self.OffensiveCooldownContainer.enabled);
-	self.DefensiveCooldownContainer:SetShown(self.DefensiveCooldownContainer.enabled);
 end
 
 function CommentatorUnitFrameMixin:Invalidate()
 	if self:IsValid() then
 		self.token = nil;
-		self:UnregisterEvent("COMMENTATOR_PLAYER_UPDATE");
 		self:UpdateVisibility();
 	end
 end
@@ -316,26 +296,18 @@ function CommentatorUnitFrameMixin:SetMaxHP(healthMax)
 	end
 end
 
-function CommentatorUnitFrameMixin:SetAbsorb(health, totalAbsorb, healthMax)
-	self.AbsorbBar:SetMinMaxSmoothedValue(0, healthMax);
-	self.AbsorbBar:SetSmoothedValue(health + totalAbsorb);
-	if self:ShouldResetAnimatedBars() then
-		self.AbsorbBar:ResetSmoothedValue();
-	end
-	
-	self.HealthBar.OverAbsorb:SetShown(totalAbsorb > 0 and health + totalAbsorb >= healthMax);
-end
-
 function CommentatorUnitFrameMixin:SetFlagInfo(hasFlag)
 	self.FlagIcon:SetShown(hasFlag);
 	self.FlagIconHighlight:SetShown(hasFlag);
 	if hasFlag then
 		UIFrameFlash(self.FlagIconHighlight, 0.5, 0.5, -1);
-		
-		if self.teamIndex == 1 then
+
+		if self.teamIndex == 2 then
+			-- TeamIndex 2 = Horde = Cap the Alliance Flag
 			self.FlagIcon:SetAtlas("tournamentarena-flag-large-blue");
 			self.FlagIconHighlight:SetAtlas("tournamentarena-flag-large-blue-flash");
 		else
+			-- TeamIndex 2 = Alliance = Cap the Horde Flag
 			self.FlagIcon:SetAtlas("tournamentarena-flag-large-red");
 			self.FlagIconHighlight:SetAtlas("tournamentarena-flag-large-red-flash");
 		end
@@ -356,7 +328,7 @@ function CommentatorUnitFrameMixin:UpdateFlagAnchors()
 			offsetXDirection = -1;
 		end
 		local offsetY = -2;
-		if self.compact then
+		if self:IsCompact() then
 			offsetY = -5;
 		end
 		if self.CCIcon:IsShown() then
@@ -409,63 +381,6 @@ function CommentatorUnitFrameMixin:GetRole()
 	return self.role;
 end
 
-function CommentatorUnitFrameMixin:OnCombatEvent(timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, ...)
-	if not self:IsValid() then return end
-
-	local guid = self:GetGUID();
-	local isSource = guid == sourceGUID;
-	local isDest = guid == destGUID;
-
-	if isSource then
-		if event == "SPELL_AURA_APPLIED" or event == "SPELL_AURA_REMOVED" then
-			local spellID = ...;
-			if C_Commentator.IsTrackedOffensiveCooldown(self.teamIndex, self.playerIndex, spellID) then
-				self.offensiveCooldownPool:SetCooldownIsActive(spellID, event == "SPELL_AURA_APPLIED");
-			end
-			
-			if C_Commentator.IsTrackedDefensiveCooldown(self.teamIndex, self.playerIndex, spellID) then
-				self.defensiveCooldownPool:SetCooldownIsActive(spellID, event == "SPELL_AURA_APPLIED");
-			end
-		end
-	end
-
-	if isDest then
-		if event == "SPELL_AURA_APPLIED" or event == "SPELL_AURA_REMOVED" then
-			local spellID = ...;
-			if C_Commentator.IsTrackedOffensiveAura(spellID) or C_Commentator.IsTrackedDefensiveAura(spellID) then
-				self.onFireEffectAurasDirty = true;
-			end
-		end
-	end
-end
-
-function CommentatorUnitFrameMixin:SetCrowdControlRemoverIcon(spellID)
-	if (spellID ~= self.TrinketIcon.spellID) then
-		local _, _, spellTexture = GetSpellInfo(spellID);
-		self.TrinketIcon.spellID = spellID;
-		self.TrinketIcon:SetTexture(spellTexture);
-	end
-end
-
-function CommentatorUnitFrameMixin:UpdateCrowdControlRemover()
-	if not self.token then
-		return
-	end
-	
-	local spellID, startTime, duration = C_PvP.GetArenaCrowdControlInfo(self.token);
-	if (spellID) then
-		self:SetCrowdControlRemoverIcon(spellID);
-		
-		if (startTime ~= 0 and duration ~= 0) then
-			self.CooldownFrame:SetCooldown(startTime/1000.0, duration/1000.0);
-		else
-			self.CooldownFrame:Clear();
-		end
-	else
-		C_PvP.RequestCrowdControlSpell(self.token);
-	end
-end
-
 function CommentatorUnitFrameMixin:UpdateCrowdControlAuras()
 	local spellID, expirationTime, duration = C_Commentator.GetPlayerCrowdControlInfo(self.teamIndex, self.playerIndex);
 	local icon = select(3, GetSpellInfo(spellID));
@@ -484,33 +399,6 @@ function CommentatorUnitFrameMixin:UpdateCrowdControlAuras()
 	self:UpdateFlagAnchors();
 end
 
-function CommentatorUnitFrameMixin:UpdateOnFireEffectAuras()
-	if not self.onFireEffectAurasDirty then return end
-	self.onFireEffectAurasDirty = false;
-
-	self:SetOnFireEffectShown(C_Commentator.HasTrackedAuras(self.token));
-end
-
-local SCALE_AMOUNT_PER_SEC = .05;
-function CommentatorUnitFrameMixin:UpdateOnFireEffectVisuals(elapsed)
-	self.onFireEffectCurrentScale = DeltaLerp(self.onFireEffectCurrentScale, self.onFireEffectTargetScale * self.OffensiveCooldownModel.modelScale, SCALE_AMOUNT_PER_SEC, elapsed);
-	if self.onFireEffectCurrentScale < .01 then
-		self.OffensiveCooldownModel:Hide();
-	else
-		self.OffensiveCooldownModel:SetModelScale(self.onFireEffectCurrentScale);
-		self.OffensiveCooldownModel:Show();
-	end
-end
-
-function CommentatorUnitFrameMixin:SetOnFireEffectShown(isOnFireEffectShown, defensiveFireEffectShown)
-	self.onFireEffectTargetScale = isOnFireEffectShown and 1.0 or 0.0;
-	if defensiveFireEffectShown then
-		self.DefensiveCooldownModel:Show();
-	else
-		self.DefensiveCooldownModel:Hide();
-	end
-end
-
 function CommentatorUnitFrameMixin:UpdateCrowdControlAurasText()
 	if self.ccExpirationTime then
 		local now = GetTime();
@@ -523,35 +411,5 @@ function CommentatorUnitFrameMixin:UpdateCrowdControlAurasText()
 		end
 	else
 		self.CCText:Hide();
-	end
-end
-
-BLIZZARD_COMMENTATOR_MAX_NUM_OFFENSIVE_COOLDOWNS = BLIZZARD_COMMENTATOR_MAX_NUM_OFFENSIVE_COOLDOWNS or 5;
-BLIZZARD_COMMENTATOR_MAX_NUM_DEFENSIVE_COOLDOWNS = BLIZZARD_COMMENTATOR_MAX_NUM_DEFENSIVE_COOLDOWNS or 5;	
-function CommentatorUnitFrameMixin:FullCooldownRefresh()
-	local PADDING = 11;
-	self.needsCooldownData = false;
-	self.timeSinceLastFullCooldownRefresh = 0;
-	
-	local offensiveCooldowns = C_Commentator.GetTrackedOffensiveCooldowns(self.teamIndex, self.playerIndex);
-	if offensiveCooldowns then
-		while #offensiveCooldowns > BLIZZARD_COMMENTATOR_MAX_NUM_OFFENSIVE_COOLDOWNS do
-			offensiveCooldowns[#offensiveCooldowns] = nil;
-		end
-		
-		self.offensiveCooldownPool:SetCooldowns(offensiveCooldowns, self.OffensiveCooldownContainer, "LEFT", PADDING);	
-	else
-		self.needsCooldownData = true;
-	end
-	
-	local defensiveCooldowns = C_Commentator.GetTrackedDefensiveCooldowns(self.teamIndex, self.playerIndex);
-	if defensiveCooldowns then
-		while #defensiveCooldowns > BLIZZARD_COMMENTATOR_MAX_NUM_DEFENSIVE_COOLDOWNS do
-			defensiveCooldowns[#defensiveCooldowns] = nil;
-		end
-		
-		self.defensiveCooldownPool:SetCooldowns(defensiveCooldowns, self.DefensiveCooldownContainer, "LEFT", PADDING);
-	else
-		self.needsCooldownData = true;
 	end
 end

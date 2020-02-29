@@ -246,6 +246,10 @@ function HybridScrollFrame_CreateButtons (self, buttonTemplate, initialOffsetX, 
 
 end
 
+function HybridScrollFrame_GetButtonIndex(self, button)
+	return tIndexOf(self.buttons, button);
+end
+
 function HybridScrollFrame_GetButtons (self)
 	return self.buttons;
 end

@@ -56,6 +56,21 @@ local EncounterInfo =
 			},
 		},
 		{
+			Name = "InstanceLockStart",
+			Type = "Event",
+			LiteralName = "INSTANCE_LOCK_START",
+		},
+		{
+			Name = "InstanceLockStop",
+			Type = "Event",
+			LiteralName = "INSTANCE_LOCK_STOP",
+		},
+		{
+			Name = "InstanceLockWarning",
+			Type = "Event",
+			LiteralName = "INSTANCE_LOCK_WARNING",
+		},
+		{
 			Name = "RaidTargetUpdate",
 			Type = "Event",
 			LiteralName = "RAID_TARGET_UPDATE",
