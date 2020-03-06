@@ -498,7 +498,6 @@ takeenum("BattlepayDisplayFlag");
 takeenum("BattlepayProductDecorator");
 takeenum("VasServiceType");
 takeenum("VasPurchaseState");
-takeenum("BattlepaySpecialProducts");
 takeenum("BattlepayProductGroupFlag");
 takeenum("BattlepayGroupDisplayType");
 retainenum("ModelSceneSetting");
