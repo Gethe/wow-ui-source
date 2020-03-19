@@ -34,11 +34,17 @@ end
 function CommunitiesSettingsDialogMixin:OnLoad()
 	self.LookingForDropdown:Initialize(); 
 	self.ClubFocusDropdown:Initialize(); 
+	self.LanguageDropdown:Initialize(); 
 	self.ClubFocusDropdown.Label:SetFontObject(GameFontNormal);
 	UIDropDownMenu_SetWidth(self.LookingForDropdown, 150);
-	UIDropDownMenu_SetWidth(self.ClubFocusDropdown, 140);
+	UIDropDownMenu_SetWidth(self.ClubFocusDropdown, 150);
+	UIDropDownMenu_SetWidth(self.LanguageDropdown, 150);
 	UIDropDownMenu_Initialize(self.LookingForDropdown, LookingForClubDropdownInitialize); 
 	UIDropDownMenu_Initialize(self.ClubFocusDropdown, ClubFocusClubDropdownInitialize); 
+	UIDropDownMenu_Initialize(self.LanguageDropdown, ClubFinderLanguageDropdownInitialize);
+	UIDropDownMenu_JustifyText(self.LookingForDropdown, "LEFT");
+	UIDropDownMenu_JustifyText(self.ClubFocusDropdown, "LEFT");
+	UIDropDownMenu_JustifyText(self.LanguageDropdown, "LEFT");
 end
 
 function CommunitiesSettingsDialogMixin:OnShow()
@@ -60,6 +66,9 @@ function CommunitiesSettingsDialogMixin:OnShow()
 		self:UpdateSettingsInfoFromClubInfo(); 
 	end
 	self:SetDisabledStateOnCommunityFinderOptions(not self.ShouldListClub.Button:GetChecked()); 
+
+	HelpTip:Acknowledge(CommunitiesFrame, CLUB_FINDER_TUTORIAL_POSTING);
+	HelpTip:Acknowledge(CommunitiesFrame, CLUB_FINDER_TUTORIAL_LANGUAGE_FILTER);
 
 	self:RegisterEvent("CLUB_FINDER_POST_UPDATED");
 	
@@ -141,7 +150,9 @@ function CommunitiesSettingsDialogMixin:UpdateCreateButton()
 	local nameIsValid = C_Club.ValidateText(self:GetClubType(), name, Enum.ClubFieldType.ClubName) == Enum.ValidateNameResult.NameSuccess;
 	local shortName = self.ShortNameEdit:GetText();
 	local shortNameIsValid = C_Club.ValidateText(self:GetClubType(), shortName, Enum.ClubFieldType.ClubShortName) == Enum.ValidateNameResult.NameSuccess;
-	self.Accept:SetEnabled(nameIsValid and shortNameIsValid);
+	local languageSelected = not self.LanguageDropdown.showAnyLanguage;
+	local shouldListChecked =  self.ShouldListClub.Button:GetChecked();
+	self.Accept:SetEnabled(nameIsValid and shortNameIsValid and (languageSelected or not shouldListChecked));
 	if self.Accept:IsMouseOver() then
 		CommunitiesSettingsDialogAcceptButton_OnEnter(self.Accept);
 	end
@@ -211,7 +222,30 @@ function CommunitiesSettingsDialogMixin:ResetClubFinderSettings()
 	self.LookingForDropdown:Initialize(); 
 	UIDropDownMenu_Initialize(self.LookingForDropdown, LookingForClubDropdownInitialize); 
 	self.LookingForDropdown:UpdateDropdownText();
+
+	UIDropDownMenu_Initialize(self.LanguageDropdown, ClubFinderLanguageDropdownInitialize);
+	self.LanguageDropdown:SetLanguageChecked(self.LanguageDropdown.initLocale, true);
 end 
+
+function CommunitiesSettingsDialogMixin:CheckLanguageDropdownTutorial()
+	local languageSelected = not self.LanguageDropdown.showAnyLanguage;
+	local shouldListChecked =  self.ShouldListClub.Button:GetChecked();
+	if languageSelected or not shouldListChecked then
+		HelpTip:HideAll(self.LanguageDropdown);
+	else
+		local helpTipInfo = {
+			text = CLUB_FINDER_TUTORIAL_LANGUAGE_SET,
+			buttonStyle = HelpTip.ButtonStyle.None,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			offsetX = -4,
+			useParentStrata = true,
+		};
+
+		HelpTip:Show(self.LanguageDropdown, helpTipInfo);
+	end
+
+	self:UpdateCreateButton()
+end
 
 function CommunitiesSettingsDialogMixin:UpdateSettingsInfoFromClubInfo()
 	local clubInfo = C_Club.GetClubInfo(self.clubId);
@@ -230,6 +264,13 @@ function CommunitiesSettingsDialogMixin:UpdateSettingsInfoFromClubInfo()
 			local index = C_ClubFinder.GetFocusIndexFromFlag(clubPostingInfo.recruitmentFlags);
 			C_ClubFinder.SetRecruitmentSettings(index, true);
 			UIDropDownMenu_Initialize(self.ClubFocusDropdown, ClubFocusClubDropdownInitialize)
+
+			UIDropDownMenu_Initialize(self.LanguageDropdown, ClubFinderLanguageDropdownInitialize);
+			if not clubPostingInfo.localeSet then
+				self.LanguageDropdown:SetShowAnyLanguage(true);
+			else
+				self.LanguageDropdown:SetLanguageChecked(clubPostingInfo.recruitmentLocale, true);
+			end
 
 			if (clubPostingInfo.minILvl > 0) then 
 				self.MinIlvlOnly.EditBox:SetText(clubPostingInfo.minILvl); 
@@ -272,20 +313,19 @@ function CommunitiesSettingsDialogMixin:SetDisabledStateOnCommunityFinderOptions
 		self.AutoAcceptApplications.Label:SetTextColor(fontColor:GetRGB());
 		self.MaxLevelOnly.Label:SetTextColor(fontColor:GetRGB());
 		self.MinIlvlOnly.Label:SetTextColor(fontColor:GetRGB());
-		self.LookingForDropdown.Label:SetTextColor(fontColor:GetRGB());
-		self.ClubFocusDropdown.Label:SetTextColor(fontColor:GetRGB());
 		UIDropDownMenu_DisableDropDown(self.ClubFocusDropdown); 
 		UIDropDownMenu_DisableDropDown(self.LookingForDropdown);
+		UIDropDownMenu_DisableDropDown(self.LanguageDropdown); 
 	else
 		local fontColor = HIGHLIGHT_FONT_COLOR;
 		self.AutoAcceptApplications.Label:SetTextColor(fontColor:GetRGB());
 		self.MaxLevelOnly.Label:SetTextColor(fontColor:GetRGB());
 		self.MinIlvlOnly.Label:SetTextColor(fontColor:GetRGB());
-		self.LookingForDropdown.Label:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
-		self.ClubFocusDropdown.Label:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
 		UIDropDownMenu_EnableDropDown(self.ClubFocusDropdown); 
 		UIDropDownMenu_EnableDropDown(self.LookingForDropdown);
+		UIDropDownMenu_EnableDropDown(self.LanguageDropdown);
 	end 
+	self:CheckLanguageDropdownTutorial();
 end 
 
 function CommunitiesSettingsDialogMixin:HideOrShowCommunityFinderOptions(shouldShow)
@@ -295,7 +335,7 @@ function CommunitiesSettingsDialogMixin:HideOrShowCommunityFinderOptions(shouldS
 	shouldShow = shouldShow and not isPostingBanned;
 
 	if(shouldShow) then 
-		self:SetHeight(680); 
+		self:SetHeight(740); 
 	elseif (isPostingBanned and isClubFinderEnabled) then
 		self:SetHeight(500); 
 	else
@@ -346,6 +386,7 @@ function CommunitiesSettingsDialogAcceptButton_OnEnter(self)
 	local nameErrorCode = C_Club.GetCommunityNameResultText(C_Club.ValidateText(communitiesSettingsDialog:GetClubType(), name, Enum.ClubFieldType.ClubName));
 	local shortName = communitiesSettingsDialog.ShortNameEdit:GetText();
 	local shortNameErrorCode = C_Club.GetCommunityNameResultText(C_Club.ValidateText(communitiesSettingsDialog:GetClubType(), shortName, Enum.ClubFieldType.ClubShortName));
+	local languageSelected = not communitiesSettingsDialog.LanguageDropdown.showAnyLanguage;
 	if nameErrorCode ~= nil and shortNameErrorCode ~= nil then
 		local nameError = RED_FONT_COLOR:WrapTextInColorCode(nameErrorCode);
 		local shortNameError = RED_FONT_COLOR:WrapTextInColorCode(shortNameErrorCode);
@@ -356,6 +397,8 @@ function CommunitiesSettingsDialogAcceptButton_OnEnter(self)
 	elseif shortNameErrorCode ~= nil then
 		local shortNameError = RED_FONT_COLOR:WrapTextInColorCode(shortNameErrorCode);
 		GameTooltip_SetBasicTooltip(GameTooltip, COMMUNITIES_CREATE_DIALOG_SHORT_NAME_ERROR:format( shortNameError), self:GetRight(), self:GetTop(), true);
+	elseif not languageSelected then
+		GameTooltip_SetBasicTooltip(GameTooltip, RED_FONT_COLOR:WrapTextInColorCode(LFG_LIST_SELECT_A_CATEGORY), self:GetRight(), self:GetTop(), true);
 	else
 		GameTooltip:Hide();
 	end

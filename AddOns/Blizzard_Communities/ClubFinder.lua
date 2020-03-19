@@ -72,21 +72,18 @@ function ClubsRecruitmentDialogMixin:SetDisabledStateOnCommunityFinderOptions(sh
 		local fontColor = LIGHTGRAY_FONT_COLOR;
 		self.MaxLevelOnly.Label:SetTextColor(fontColor:GetRGB());
 		self.MinIlvlOnly.Label:SetTextColor(fontColor:GetRGB());
-		self.LookingForDropdown.LookingForDropDownLabel:SetTextColor(fontColor:GetRGB());
-		self.ClubFocusDropdown.Label:SetTextColor(fontColor:GetRGB());
-		self.RecruitmentMessageFrame.Label:SetTextColor(fontColor:GetRGB());
 		UIDropDownMenu_DisableDropDown(self.ClubFocusDropdown);
 		UIDropDownMenu_DisableDropDown(self.LookingForDropdown);
+		UIDropDownMenu_DisableDropDown(self.LanguageDropdown); 
 	else
 		local fontColor = HIGHLIGHT_FONT_COLOR;
 		self.MaxLevelOnly.Label:SetTextColor(fontColor:GetRGB());
 		self.MinIlvlOnly.Label:SetTextColor(fontColor:GetRGB());
-		self.LookingForDropdown.LookingForDropDownLabel:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
-		self.ClubFocusDropdown.Label:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
-		self.RecruitmentMessageFrame.Label:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
 		UIDropDownMenu_EnableDropDown(self.ClubFocusDropdown);
 		UIDropDownMenu_EnableDropDown(self.LookingForDropdown);
+		UIDropDownMenu_EnableDropDown(self.LanguageDropdown);
 	end
+	self:CheckLanguageDropdownTutorial();
 end
 
 function ClubsRecruitmentDialogMixin:ResetClubFinderSettings()
@@ -105,15 +102,63 @@ function ClubsRecruitmentDialogMixin:ResetClubFinderSettings()
 	self.LookingForDropdown:Initialize();
 	UIDropDownMenu_Initialize(self.LookingForDropdown, LookingForClubDropdownInitialize);
 	self.LookingForDropdown:UpdateDropdownText();
+
+	UIDropDownMenu_Initialize(self.LanguageDropdown, ClubFinderLanguageDropdownInitialize);
+	self.LanguageDropdown:SetLanguageChecked(self.LanguageDropdown.initLocale, true);
 end
 
 function ClubsRecruitmentDialogMixin:OnLoad()
 	self.LookingForDropdown:Initialize();
 	self.ClubFocusDropdown:Initialize();
+	self.LanguageDropdown:Initialize(); 
 	self.clubId = nil;
-	UIDropDownMenu_SetWidth(self.LookingForDropdown, CLUB_FINDER_WIDE_DROPDOWN_WIDTH);
-	UIDropDownMenu_SetWidth(self.ClubFocusDropdown, CLUB_FINDER_WIDE_DROPDOWN_WIDTH);
+	UIDropDownMenu_SetWidth(self.LookingForDropdown, 150);
+	UIDropDownMenu_SetWidth(self.ClubFocusDropdown, 150);
+	UIDropDownMenu_SetWidth(self.LanguageDropdown, 150);
+	UIDropDownMenu_Initialize(self.ClubFocusDropdown, ClubFocusClubDropdownInitialize);
 	UIDropDownMenu_Initialize(self.LookingForDropdown, LookingForClubDropdownInitialize);
+	UIDropDownMenu_Initialize(self.LanguageDropdown, ClubFinderLanguageDropdownInitialize); 
+	UIDropDownMenu_JustifyText(self.ClubFocusDropdown, "LEFT");
+	UIDropDownMenu_JustifyText(self.LookingForDropdown, "LEFT");
+	UIDropDownMenu_JustifyText(self.LanguageDropdown, "LEFT");
+end
+
+function ClubsRecruitmentDialogMixin:CheckLanguageDropdownTutorial()
+	local languageSelected = not self.LanguageDropdown.showAnyLanguage;
+	local shouldListChecked =  self.ShouldListClub.Button:GetChecked();
+	if languageSelected or not shouldListChecked then
+		HelpTip:HideAll(self.LanguageDropdown);
+	else
+		local helpTipInfo = {
+			text = CLUB_FINDER_TUTORIAL_LANGUAGE_SET,
+			buttonStyle = HelpTip.ButtonStyle.None,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			offsetX = -4,
+			useParentStrata = true,
+		};
+		HelpTip:Show(self.LanguageDropdown, helpTipInfo);
+	end
+
+	self:UpdateCreateButton();
+end
+
+function ClubsRecruitmentDialogMixin:AcceptButtonOnEnter()
+	if self.Accept:IsEnabled() then
+		GameTooltip:Hide();
+	else
+		GameTooltip:SetOwner(self.Accept, "ANCHOR_RIGHT", 0, 0);
+		GameTooltip_AddErrorLine(GameTooltip, LFG_LIST_SELECT_A_CATEGORY);
+		GameTooltip:Show();
+	end
+end
+
+function ClubsRecruitmentDialogMixin:UpdateCreateButton()
+	local languageSelected = not self.LanguageDropdown.showAnyLanguage;
+	local shouldListChecked =  self.ShouldListClub.Button:GetChecked();
+	self.Accept:SetEnabled(languageSelected or not shouldListChecked);
+	if self.Accept:IsMouseOver() then
+		self:AcceptButtonOnEnter();
+	end
 end
 
 function ClubsRecruitmentDialogMixin:UpdateSettingsInfoFromClubInfo()
@@ -140,6 +185,13 @@ function ClubsRecruitmentDialogMixin:UpdateSettingsInfoFromClubInfo()
 			local index = C_ClubFinder.GetFocusIndexFromFlag(clubPostingInfo.recruitmentFlags);
 			C_ClubFinder.SetRecruitmentSettings(index, true);
 			UIDropDownMenu_Initialize(self.ClubFocusDropdown, ClubFocusClubDropdownInitialize);
+
+			UIDropDownMenu_Initialize(self.LanguageDropdown, ClubFinderLanguageDropdownInitialize);
+			if not clubPostingInfo.localeSet then
+				self.LanguageDropdown:SetShowAnyLanguage(true);
+			else
+				self.LanguageDropdown:SetLanguageChecked(clubPostingInfo.recruitmentLocale, true);
+			end
 
 			if (clubPostingInfo.minILvl > 0) then
 				self.MinIlvlOnly.EditBox:SetText(clubPostingInfo.minILvl);
@@ -168,6 +220,8 @@ function ClubsRecruitmentDialogMixin:OnShow()
 	self:RegisterEvent("CLUB_FINDER_POST_UPDATED");
 	self:UpdateSettingsInfoFromClubInfo();
 
+	HelpTip:Acknowledge(CommunitiesFrame, CLUB_FINDER_TUTORIAL_POSTING);
+	HelpTip:Acknowledge(CommunitiesFrame, CLUB_FINDER_TUTORIAL_LANGUAGE_FILTER);
 end
 
 function ClubsRecruitmentDialogMixin:OnHide()
@@ -740,6 +794,143 @@ function LookingForClubDropdownInitialize(self, level)
 	end
 end
 
+ClubFinderLanguageDropdownMixin = {};
+
+function ClubFinderLanguageDropdownMixin:Initialize(isPlayerApplicant)
+	self.isPlayerApplicant = isPlayerApplicant;
+	if isPlayerApplicant then
+		self.currentLanguages = CreateFromMixins(FlagsMixin);
+		self.currentLanguages:OnLoad();
+	else
+		self.currentLanguage = 0;
+	end
+end
+
+function ClubFinderLanguageDropdownMixin:SetLanguageChecked(language, checked)
+	if self.isPlayerApplicant then
+		self.currentLanguages:SetOrClear(language, checked);
+		C_ClubFinder.SetPlayerApplicantLocaleFlags(self.currentLanguages:GetFlags());
+	else
+		self:SetShowAnyLanguage(false);
+		self.currentLanguage = language;	-- Only 1 language allowed for postings
+		UIDropDownMenu_SetSelectedValue(self, language);
+		C_ClubFinder.SetRecruitmentLocale(language)
+	end
+end
+
+function ClubFinderLanguageDropdownMixin:SetLanguageFlags(languageFlags)
+	if self.isPlayerApplicant then
+		self.currentLanguages.flags = languageFlags;
+		C_ClubFinder.SetPlayerApplicantLocaleFlags(self.currentLanguages:GetFlags());
+	end
+end
+
+function ClubFinderLanguageDropdownMixin:IsLanguageChecked(language)
+	if self.showAnyLanguage then
+		return false;
+	elseif self.isPlayerApplicant then
+		return self.currentLanguages:IsSet(language);
+	else
+		return self.currentLanguage == language;
+	end
+end
+
+function ClubFinderLanguageDropdownMixin:GetCurrentLanguageValue()
+	if self.isPlayerApplicant then
+		return self.currentLanguages:GetFlags();
+	else
+		return self.currentLanguage;
+	end
+end
+
+function ClubFinderLanguageDropdownMixin:SetShowAnyLanguage(showAnyLanguage)
+	self.showAnyLanguage = showAnyLanguage;
+	if showAnyLanguage then
+		UIDropDownMenu_SetSelectedValue(self, nil);
+		UIDropDownMenu_SetText(self, CLUB_FINDER_ANY_FLAG);
+	else
+		UIDropDownMenu_SetText(self, "");
+	end
+	self:GetParent():CheckLanguageDropdownTutorial();
+end
+
+function ClubFinderLanguageDropdownMixin:ShouldShowAnyLanguage()
+	return self.showAnyLanguage;
+end
+
+function ClubFinderLanguageDropdownMixin:RefreshSelectedValue()
+	if not self:ShouldShowAnyLanguage() then
+		UIDropDownMenu_SetSelectedValue(self, self:GetCurrentLanguageValue());
+	end
+end
+
+function ClubFinderLanguageDropdownInitialize(self, level)
+	local info = UIDropDownMenu_CreateInfo();
+	info.keepShownOnClick = self.isPlayerApplicant;
+	info.isNotRadio = self.isPlayerApplicant;
+	info.ignoreAsMenuSelection = self.isPlayerApplicant;
+
+	local currentLocale = GetCVar("textLocale");
+	self.initLocale = nil;
+
+	local ignoreLocaleRestrictions = true;
+	local locales = GetAvailableLocaleInfo(ignoreLocaleRestrictions);
+	for _, localeInfo in pairs(locales) do
+		if LanguageRegions[localeInfo.localeName] then
+			InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeChoice(info, localeInfo.localeName);
+			if self.isPlayerApplicant then
+				info.value = bit.lshift(1, localeInfo.localeId);	-- Multiple can be selected, so convert this to a mask to we can use it in a bit flag
+			else
+				info.value = localeInfo.localeId;
+			end
+			info.func = function(button, _, _, checked)
+							return self:SetLanguageChecked(button.value, checked);
+						end;
+			info.checked =	function(button)
+								return self:IsLanguageChecked(button.value); 
+							end;
+			UIDropDownMenu_AddButton(info);
+
+			if not self.initLocale or (currentLocale == localeInfo.localeName) then
+				self.initLocale = info.value;
+			end
+		end
+	end
+
+	if not self.initLocale then
+		self.initLocale = 0;
+	end
+end
+
+ClubFinderFilterDropdownMixin = CreateFromMixins(SettingsDropdownMixin, ClubFinderLanguageDropdownMixin);
+
+function ClubFinderFilterDropdownMixin:Initialize()
+	SettingsDropdownMixin.Initialize(self);
+	local isPlayerApplicant = true;
+	ClubFinderLanguageDropdownMixin.Initialize(self, isPlayerApplicant)
+end
+
+function ClubFinderFilterDropdownInitialize(self, level)
+	-- Add the focus label
+	local info = UIDropDownMenu_CreateInfo();
+	info.text = CLUB_FINDER_FOCUS;
+	info.isTitle = true;
+	info.notCheckable = true;
+	UIDropDownMenu_AddButton(info);
+
+	-- And the focus options
+	ClubFocusClubDropdownInitialize(self);
+
+	-- Then the language label
+	info.text = LANGUAGE;
+	info.isTitle = true;
+	info.notCheckable = true;
+	UIDropDownMenu_AddButton(info);
+
+	-- And finally the language options
+	ClubFinderLanguageDropdownInitialize(self);
+end
+
 ClubSortByDropdownMixin = CreateFromMixins(SettingsDropdownMixin);
 
 local ClubSortByFlags = {
@@ -819,11 +1010,11 @@ function ClubFinderOptionsMixin:CheckDisabled()
 	local disabledReason = C_ClubFinder.GetClubFinderDisableReason();
 	local enabled = disabledReason == nil;
 	if enabled then
-		UIDropDownMenu_EnableDropDown(self.ClubFocusDropdown);
+		UIDropDownMenu_EnableDropDown(self.ClubFilterDropdown);
 		UIDropDownMenu_EnableDropDown(self.ClubSizeDropdown);
 		UIDropDownMenu_EnableDropDown(self.SortByDropdown);
 	else
-		UIDropDownMenu_DisableDropDown(self.ClubFocusDropdown);
+		UIDropDownMenu_DisableDropDown(self.ClubFilterDropdown);
 		UIDropDownMenu_DisableDropDown(self.ClubSizeDropdown);
 		UIDropDownMenu_DisableDropDown(self.SortByDropdown);
 	end
@@ -842,6 +1033,8 @@ function ClubFinderOptionsMixin:SetType(isGuildType)
 	else
 		self:SetupCommunityFinderOptions();
 	end
+
+	self.ClubFilterDropdown:SetLanguageFlags(C_ClubFinder.GetPlayerApplicantLocaleFlags());
 end
 
 function ClubFinderOptionsMixin:OnSearchButtonClick()
@@ -893,7 +1086,7 @@ function ClubFinderOptionsMixin:SetOptionsState(shouldHide)
 	self.TankRoleFrame:SetShown(not shouldHide);
 	self.HealerRoleFrame:SetShown(not shouldHide);
 	self.DpsRoleFrame:SetShown(not shouldHide);
-	self.ClubFocusDropdown:SetShown(not shouldHide);
+	self.ClubFilterDropdown:SetShown(not shouldHide);
 
 	if(self:GetParent().isGuildType) then
 		self.ClubSizeDropdown:SetShown(not shouldHide);
@@ -931,17 +1124,16 @@ function ClubFinderOptionsMixin:SetupGuildFinderOptions()
 	UIDropDownMenu_SetWidth(self.ClubSizeDropdown, 80);
 	UIDropDownMenu_Initialize(self.ClubSizeDropdown, ClubSizeDropdownInitialize);
 	self.ClubSizeDropdown:ClearAllPoints();
-	self.ClubSizeDropdown:SetPoint("RIGHT", self.ClubFocusDropdown, "RIGHT", 110, 0);
+	self.ClubSizeDropdown:SetPoint("RIGHT", self.ClubFilterDropdown, "RIGHT", 110, 0);
 	self.ClubSizeDropdown:Show();
 
-	self.ClubFocusDropdown.isPlayerApplicant = true;
-	self.ClubFocusDropdown:Initialize();
-	UIDropDownMenu_SetWidth(self.ClubFocusDropdown, CLUB_FINDER_WIDE_DROPDOWN_WIDTH);
-	UIDropDownMenu_JustifyText(self.ClubFocusDropdown, "LEFT");
-	UIDropDownMenu_Initialize(self.ClubFocusDropdown, ClubFocusClubDropdownInitialize);
-	self.ClubFocusDropdown:ClearAllPoints();
-	self.ClubFocusDropdown:SetPoint("TOPLEFT", -5, 18);
-	self.ClubFocusDropdown:Show();
+	self.ClubFilterDropdown:Initialize();
+	UIDropDownMenu_SetWidth(self.ClubFilterDropdown, CLUB_FINDER_WIDE_DROPDOWN_WIDTH);
+	UIDropDownMenu_JustifyText(self.ClubFilterDropdown, "LEFT");
+	UIDropDownMenu_Initialize(self.ClubFilterDropdown, ClubFinderFilterDropdownInitialize);
+	self.ClubFilterDropdown:ClearAllPoints();
+	self.ClubFilterDropdown:SetPoint("TOPLEFT", -5, 18);
+	self.ClubFilterDropdown:Show();
 
 	self.TankRoleFrame:ClearAllPoints();
 	self.TankRoleFrame:SetPoint("RIGHT", self.ClubSizeDropdown, "RIGHT", 40, 10);
@@ -958,18 +1150,17 @@ function ClubFinderOptionsMixin:SetupCommunityFinderOptions()
 	UIDropDownMenu_Initialize(self.SortByDropdown, ClubSortByDropdownInitialize);
 
 	self.SortByDropdown:ClearAllPoints();
-	self.SortByDropdown:SetPoint("RIGHT", self.ClubFocusDropdown, "RIGHT", 110, 0);
+	self.SortByDropdown:SetPoint("RIGHT", self.ClubFilterDropdown, "RIGHT", 110, 0);
 	self.SortByDropdown:Show();
 
-	self.ClubFocusDropdown.isPlayerApplicant = true;
-	self.ClubFocusDropdown:Initialize();
-	UIDropDownMenu_SetWidth(self.ClubFocusDropdown, CLUB_FINDER_WIDE_DROPDOWN_WIDTH);
-	UIDropDownMenu_JustifyText(self.ClubFocusDropdown, "LEFT");
-	UIDropDownMenu_Initialize(self.ClubFocusDropdown, ClubFocusClubDropdownInitialize);
+	self.ClubFilterDropdown:Initialize();
+	UIDropDownMenu_SetWidth(self.ClubFilterDropdown, CLUB_FINDER_WIDE_DROPDOWN_WIDTH);
+	UIDropDownMenu_JustifyText(self.ClubFilterDropdown, "LEFT");
+	UIDropDownMenu_Initialize(self.ClubFilterDropdown, ClubFinderFilterDropdownInitialize);
 
-	self.ClubFocusDropdown:ClearAllPoints();
-	self.ClubFocusDropdown:SetPoint("TOPLEFT", -5, 18);
-	self.ClubFocusDropdown:Show();
+	self.ClubFilterDropdown:ClearAllPoints();
+	self.ClubFilterDropdown:SetPoint("TOPLEFT", -5, 18);
+	self.ClubFilterDropdown:Show();
 
 	self.TankRoleFrame:ClearAllPoints();
 	self.TankRoleFrame:SetPoint("RIGHT", self.SortByDropdown, "RIGHT", 40, 10);
