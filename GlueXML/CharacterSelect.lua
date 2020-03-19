@@ -29,6 +29,14 @@ REALM_CHANGE_IS_AUTO = false;
 
 CharacterSelectLockedButtonMixin = {};
 
+local characterCopyRegions = {
+	[41] = NORTH_AMERICA,
+	[42] = KOREA,
+	[43] = EUROPE,
+	[44] = TAIWAN,
+	[45] = CHINA,
+};
+
 function GenerateBuildString(buildNumber)
 	if buildNumber == 0 then
 		return "No Login";
@@ -2789,10 +2797,8 @@ function CopyCharacterFrame_OnShow(self)
     self.CopyButton:SetEnabled(false);
 
     GlueDropDownMenu_SetWidth(self.RegionID, 80);
-    GlueDropDownMenu_SetSelectedValue(self.RegionID, 41);
     GlueDropDownMenu_Initialize(self.RegionID, CopyCharacterFrameRegionIDDropdown_Initialize);
     GlueDropDownMenu_SetAnchor(self.RegionID, 0, 0, "TOPLEFT", self.RegionID, "BOTTOMLEFT");
-    GlueDropDownMenu_Refresh(self.RegionID);
 
     ClearAccountCharacters();
     CopyCharacterFrame_Update(self.scrollFrame);
@@ -2814,32 +2820,30 @@ end
 function CopyCharacterFrameRegionIDDropdown_Initialize()
     local info = GlueDropDownMenu_CreateInfo();
     local selectedValue = GlueDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID);
+	local newSelectedValue = nil;
     info.func = CopyCharacterFrameRegionIDDropdown_OnClick;
 
-    info.text = NORTH_AMERICA;
-    info.value = 41;
-    info.checked = (info.value == selectedValue);
-    GlueDropDownMenu_AddButton(info);
 
-    info.text = KOREA;
-    info.value = 42;
-    info.checked = (info.value == selectedValue);
-    GlueDropDownMenu_AddButton(info);
+	local regions = C_CharacterServices.GetLiveRegionCharacterCopySourceRegions();
+	for i=1, #regions do
+		local regionID = regions[i];
+		local regionName = characterCopyRegions[regionID];
 
-    info.text = EUROPE;
-    info.value = 43;
-    info.checked = (info.value == selectedValue);
-    GlueDropDownMenu_AddButton(info);
+		if (regionName) then
+			info.text = regionName;
+			info.value = regionID;
+			info.checked = (info.value == selectedValue) or (selectedValue == nil and i == 1);
+			if (not newSelectedValue) then
+				newSelectedValue = info.value;
+			end
+			GlueDropDownMenu_AddButton(info);
+		end
+	end
 
-    info.text = TAIWAN;
-    info.value = 44;
-    info.checked = (info.value == selectedValue);
-    GlueDropDownMenu_AddButton(info);
-
---	info.text = "China";
---	info.value = 45;
---	info.checked = (info.value == selectedValue);
---	GlueDropDownMenu_AddButton(info);
+	if (selectedValue == nil and newSelectedValue ~= nil) then
+		GlueDropDownMenu_SetSelectedValue(CopyCharacterFrame.RegionID, newSelectedValue);
+		GlueDropDownMenu_Refresh(CopyCharacterFrame.RegionID);
+	end
 end
 
 function CopyCharacterFrameRegionIDDropdown_OnClick(button)
