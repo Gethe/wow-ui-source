@@ -243,7 +243,7 @@
 							<AbsInset left="12" right="5" bottom="5"/>
 						</TextInsets>
 					</EditBox>
-					<EditBox parentKey="PasswordEditBox" parentArray="NormalLoginRegions" letters="16" password="1">
+					<EditBox parentKey="PasswordEditBox" parentArray="NormalLoginRegions" letters="128" password="1">
 						<Size x="160" y="37"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="8" y="270"/>
