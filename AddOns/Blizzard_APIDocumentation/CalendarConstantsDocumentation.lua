@@ -292,6 +292,18 @@ local CalendarConstants =
 			},
 		},
 		{
+			Name = "HolidayCalendarFlags",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 1,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Alliance", Type = "HolidayCalendarFlags", EnumValue = 1 },
+				{ Name = "Horde", Type = "HolidayCalendarFlags", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "HolidayFlags",
 			Type = "Enumeration",
 			NumValues = 4,

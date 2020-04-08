@@ -1,38 +1,6 @@
 local REWARDS_SECTION_OFFSET = 5;		-- vertical distance between sections
 local REWARDS_ROW_OFFSET = 2;			-- vertical distance between rows within a section
 
-local SEAL_QUESTS = {
-	[40519] = { bgAtlas = "QuestBG-Alliance", text = "|cff042c54"..QUEST_KING_VARIAN_WRYNN.."|r", sealAtlas = "Quest-Alliance-WaxSeal"},
-	[43926] = { bgAtlas = "QuestBG-Horde", text = "|cff480404"..QUEST_WARCHIEF_VOLJIN.."|r", sealAtlas = "Quest-Horde-WaxSeal"},
-	[47221] = { bgAtlas = "QuestBG-TheHandofFate", },
-	[47835] = { bgAtlas = "QuestBG-TheHandofFate", },
-	[50476] = { bgAtlas = "QuestBG-Horde", sealAtlas = "Quest-Horde-WaxSeal" },
-	-- BfA start quests
-	[46727] = { bgAtlas = "QuestBG-Alliance", text = "|cff042c54"..QUEST_KING_ANDUIN_WRYNN.."|r", sealAtlas = "Quest-Alliance-WaxSeal" },
-	[50668] = { bgAtlas = "QuestBG-Horde", text = "|cff480404"..QUEST_WARCHIEF_SYLVANAS_WINDRUNNER.."|r", sealAtlas = "Quest-Horde-WaxSeal"},
-
-	[51795] = { bgAtlas = "QuestBG-Alliance" },
-	[52058] = { bgAtlas = "QuestBG-Alliance", text = "|cff042c54"..QUEST_KING_ANDUIN_WRYNN.."|r", sealAtlas = "Quest-Alliance-WaxSeal"},
-
-	[51796] = { bgAtlas = "QuestBG-Horde" },
-
-	[53372] = { bgAtlas = "QuestBG-Horde", text = "|cff480404"..QUEST_WARCHIEF_SYLVANAS_WINDRUNNER.."|r", sealAtlas = "Quest-Horde-WaxSeal"},
-	[53370] = { bgAtlas = "QuestBG-Alliance", text = "|cff042c54"..QUEST_KING_ANDUIN_WRYNN.."|r", sealAtlas = "Quest-Alliance-WaxSeal"},
-
-	[56030] = { bgAtlas = "QuestBG-Horde", text = "|cff480404"..QUEST_NATHANOS_BLIGHTCALLER.."|r", sealAtlas = "Quest-Horde-WaxSeal"},
-	[56031] = { bgAtlas = "QuestBG-Alliance", text = "|cff042c54"..QUEST_GENN_GREYMANE.."|r", sealAtlas = "Quest-Alliance-WaxSeal"},
-	-- BfA 8.3
-	[58582] = { bgAtlas = "QuestBG-Horde", sealAtlas = "Quest-Horde-WaxSeal" },
-	[58496] = { bgAtlas = "QuestBG-Alliance", sealAtlas = "Quest-Alliance-WaxSeal"},
-};
-
-local EXCEPTION_QUESTS = {
-	[53029] = true,
-	[53026] = true,
-	[51211] = true,
-	[52428] = true,
-};
-
 function QuestInfoTimerFrame_OnUpdate(self, elapsed)
 	if ( self.timeLeft ) then
 		self.timeLeft = max(self.timeLeft - elapsed, 0);
@@ -61,20 +29,14 @@ function QuestInfo_Display(template, parentFrame, acceptButton, material, mapVie
 		else
 			questID = GetQuestID();
 		end
-		local sealQuestInfo = SEAL_QUESTS[questID];
-		local sealMaterialBG = questFrame.SealMaterialBG;
-		sealMaterialBG:Hide();
-		QuestInfoSealFrame.sealInfo = nil;
-		if ( sealQuestInfo ) then
-			sealMaterialBG:SetAtlas(sealQuestInfo.bgAtlas);
-			sealMaterialBG:Show();
 
-			if sealQuestInfo.text or sealQuestInfo.sealAtlas then
-				QuestInfoSealFrame.sealInfo = sealQuestInfo;
-			end
-		elseif ( C_CampaignInfo.IsCampaignQuest(questID) and not EXCEPTION_QUESTS[questID] ) then
-			sealMaterialBG:SetAtlas( "QuestBG-"..UnitFactionGroup("player"));
-			sealMaterialBG:Show();
+		local theme = C_QuestLog.GetQuestDetailsTheme(questID);
+		QuestInfoSealFrame.theme = theme;
+
+		local hasValidBackground = theme and theme.background;
+		questFrame.SealMaterialBG:SetShown(hasValidBackground);
+		if hasValidBackground then
+			questFrame.SealMaterialBG:SetAtlas(theme.background);
 		end
 	end
 
@@ -144,8 +106,7 @@ end
 
 local function QuestInfo_GetQuestID()
 	if ( QuestInfoFrame.questLog ) then
-		local questID = select(8, GetQuestLogTitle(GetQuestLogSelection()));
-		return questID;
+		return C_QuestLog.GetSelectedQuest();
 	else
 		return GetQuestID();
 	end
@@ -159,7 +120,7 @@ end
 local function QuestInfo_GetTitle()
 	local useLargeIcon = true;
 	if ( QuestInfoFrame.questLog ) then
-		local title = GetQuestLogTitle(GetQuestLogSelection());
+		local title = C_QuestLog.GetTitleForQuestID(C_QuestLog.GetSelectedQuest());
 		return DecorateQuestTitle(title, useLargeIcon), true;
 	else
 		local title = GetTitleText();
@@ -184,8 +145,7 @@ function QuestInfo_ShowTitle()
 end
 
 function QuestInfo_ShowType()
-	local questID = select(8, GetQuestLogTitle(GetQuestLogSelection()));
-	local questTypeMarkup = QuestUtils_GetQuestTypeTextureMarkupString(questID);
+	local questTypeMarkup = QuestUtils_GetQuestTypeTextureMarkupString(C_QuestLog.GetSelectedQuest());
 	local showType = questTypeMarkup ~= nil;
 
 	QuestInfoQuestType:SetShown(showType);
@@ -341,7 +301,7 @@ function QuestInfo_ShowTimer()
 end
 
 function QuestInfo_ShowRequiredMoney()
-	local requiredMoney = GetQuestLogRequiredMoney();
+	local requiredMoney = C_QuestLog.GetRequiredMoney();
 	if ( requiredMoney > 0 ) then
 		MoneyFrame_Update("QuestInfoRequiredMoneyDisplay", requiredMoney);
 		if ( requiredMoney > GetMoney() ) then
@@ -363,9 +323,9 @@ end
 function QuestInfo_ShowGroupSize()
 	local groupNum;
 	if ( QuestInfoFrame.questLog ) then
-		groupNum = GetQuestLogGroupNum();
+		groupNum = C_QuestLog.GetSuggestedGroupSize(C_QuestLog.GetSelectedQuest());
 	else
-		groupNum = GetSuggestedGroupNum();
+		groupNum = GetSuggestedGroupSize();
 	end
 	if ( groupNum > 0 ) then
 		local suggestedGroupString = format(QUEST_SUGGESTED_GROUP_NUM, groupNum);
@@ -413,29 +373,25 @@ end
 
 function QuestInfo_ShowSeal(parentFrame)
 	local frame = QuestInfoSealFrame;
-	-- Temporary anchor to ensure :IsTruncated will work for the seal text.
-	frame:SetPoint("CENTER", parentFrame or UIParent);
-	if frame.sealInfo then
-		if frame.sealInfo.text then
-			frame.Text:SetText(frame.sealInfo.text);
-			frame.Text:Show();
-		else
-			frame.Text:Hide();
+	local theme = frame.theme;
+	local hasAnyPartOfTheSeal = theme and (theme.signature ~= "" or theme.seal);
+	frame:SetShown(hasAnyPartOfTheSeal);
+
+	if hasAnyPartOfTheSeal then
+		-- Temporary anchor to ensure :IsTruncated will work for the seal text.
+		frame:SetPoint("CENTER", parentFrame or UIParent);
+
+		frame.Text:SetText(theme.signature);
+		frame.Texture:SetShown(theme.seal ~= nil);
+		if theme.seal then
+			frame.Texture:SetAtlas(theme.seal, true);
+			frame.Texture:SetPoint("TOPLEFT", ACTIVE_TEMPLATE.sealXOffset, ACTIVE_TEMPLATE.sealYOffset);
 		end
 
-		if frame.sealInfo.sealAtlas then
-			frame.Texture:SetAtlas(frame.sealInfo.sealAtlas, true);
-			frame.Texture:SetPoint("TOPLEFT", ACTIVE_TEMPLATE.sealXOffset, ACTIVE_TEMPLATE.sealYOffset);
-			frame.Texture:Show();
-		else
-			frame.Texture:Hide();
-		end
-		frame:Show();
 		return frame;
-	else
-		frame:Hide();
-		return nil;
 	end
+
+	return nil;
 end
 
 function QuestInfo_GetRewardButton(rewardsFrame, index)
@@ -502,7 +458,7 @@ function QuestInfo_ShowRewards()
 	local spellGetter;
 	local questID;
 	if ( QuestInfoFrame.questLog ) then
-		questID = select(8, GetQuestLogTitle(GetQuestLogSelection()));
+		questID = C_QuestLog.GetSelectedQuest();
 		if C_QuestLog.ShouldShowQuestRewards(questID) then
 			numQuestRewards = GetNumQuestLogRewards();
 			numQuestChoices = GetNumQuestLogChoices();
@@ -1016,7 +972,7 @@ QUEST_TEMPLATE_LOG = { questLog = true, chooseItems = nil, contentWidth = 285,
 QUEST_TEMPLATE_REWARD = { questLog = nil, chooseItems = true, contentWidth = 285,
 	canHaveSealMaterial = true, sealXOffset = 160, sealYOffset = -6,
 	elements = {
-		QuestInfo_ShowTitle, 5, -10,
+		QuestInfo_ShowTitle, 10, -10,
 		QuestInfo_ShowRewardText, 0, -5,
 		QuestInfo_ShowRewards, 0, -10,
 		QuestInfo_ShowSpacer, 0, -10

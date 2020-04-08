@@ -532,9 +532,20 @@ end
 
 AuctionHouseTableCellAuctionsOwnersMixin = CreateFromMixins(AuctionHouseTableCellAuctionsTextMixin);
 
+function AuctionHouseTableCellAuctionsOwnersMixin:Init(owner, disableTooltip)
+	AuctionHouseTableCellAuctionsTextMixin.Init(self, owner);
+	self.disableTooltip = disableTooltip;
+end
+
 function AuctionHouseTableCellAuctionsOwnersMixin:Populate(rowData, dataIndex)
 	AuctionHouseTableCellOwnersMixin.Populate(self, rowData, dataIndex);
 	AuctionHouseTableCellAuctionsTextMixin.Populate(self, rowData, dataIndex);
+end
+
+function AuctionHouseTableCellAuctionsOwnersMixin:ShowTooltip(tooltip)
+	if not self.disableTooltip then
+		AuctionHouseTableCellOwnersMixin.ShowTooltip(self, tooltip);
+	end
 end
 
 
@@ -858,7 +869,10 @@ function AuctionHouseTableBuilder.GetAuctionsItemListLayout(owner, itemList)
 
 		tableBuilder:AddFillColumn(owner, 1.0, 40, STANDARD_PADDING, 0, nil, "AuctionHouseTableCellItemQuantityLeftTemplate");
 		tableBuilder:AddFixedWidthColumn(owner, 0, 24, 0, 0, nil, "AuctionHouseTableCellExtraInfoTemplate");
-		tableBuilder:AddFixedWidthColumn(owner, 0, 90, STANDARD_PADDING, 0, nil, "AuctionHouseTableCellAuctionsOwnersTemplate");
+
+		local disableTooltip = true;
+		tableBuilder:AddFixedWidthColumn(owner, 0, 90, STANDARD_PADDING, 0, nil, "AuctionHouseTableCellAuctionsOwnersTemplate", disableTooltip);
+		
 		tableBuilder:AddFixedWidthColumn(owner, 0, 60, 0, 10, nil, "AuctionHouseTableCellTimeLeftTemplate");
 	end
 
@@ -881,7 +895,7 @@ function AuctionHouseTableBuilder.GetCommoditiesAuctionsListLayout(owner, itemLi
 	return LayoutCommoditiesAuctionsListTableBuilder;
 end
 
-function AuctionHouseTableBuilder.GetBrowseListLayout(owner, itemList, extraInfoColumnText, sortable)
+function AuctionHouseTableBuilder.GetBrowseListLayout(owner, itemList, extraInfoColumnText)
 	local function LayoutBrowseListTableBuilder(tableBuilder)
 		tableBuilder:SetColumnHeaderOverlap(2);
 		tableBuilder:SetHeaderContainer(itemList:GetHeaderContainer());
@@ -894,12 +908,8 @@ function AuctionHouseTableBuilder.GetBrowseListLayout(owner, itemList, extraInfo
 		nameColumn:GetHeaderFrame():SetText(AUCTION_HOUSE_BROWSE_HEADER_NAME);
 
 		if extraInfoColumnText then
-			if sortable then
-				local extraInfoColumn = tableBuilder:AddFixedWidthColumn(owner, 0, 55, STANDARD_PADDING, 0, Enum.AuctionHouseSortOrder.Level, "AuctionHouseTableCellLevelTemplate");
-				extraInfoColumn:GetHeaderFrame():SetText(extraInfoColumnText);
-			else
-				tableBuilder:AddUnsortableFixedWidthColumn(owner, 0, 55, STANDARD_PADDING, 0, extraInfoColumnText, "AuctionHouseTableCellLevelTemplate");
-			end
+			local extraInfoColumn = tableBuilder:AddFixedWidthColumn(owner, 0, 55, STANDARD_PADDING, 0, Enum.AuctionHouseSortOrder.Level, "AuctionHouseTableCellLevelTemplate");
+			extraInfoColumn:GetHeaderFrame():SetText(extraInfoColumnText);
 		end
 
 		local quantityHeaderText = AuctionHouseUtil.GetHeaderNameFromSortOrder(Enum.AuctionHouseSortOrder.Quantity);

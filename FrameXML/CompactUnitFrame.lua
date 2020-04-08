@@ -60,6 +60,7 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_TARGET_CHANGED" ) then
 		CompactUnitFrame_UpdateSelectionHighlight(self);
 		CompactUnitFrame_UpdateName(self);
+		CompactUnitFrame_UpdateWidgetsOnlyMode(self);
 		CompactUnitFrame_UpdateHealthBorder(self);
 		CompactUnitFrame_UpdateWidgetSet(self);
 	elseif ( event == "PLAYER_REGEN_ENABLED" or event == "PLAYER_REGEN_DISABLED" ) then
@@ -81,7 +82,7 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 				CompactUnitFrame_UpdateMaxHealth(self);
 				CompactUnitFrame_UpdateHealth(self);
 				CompactUnitFrame_UpdateHealPrediction(self);
-			elseif ( event == "UNIT_HEALTH" or event == "UNIT_HEALTH_FREQUENT" ) then
+			elseif ( event == "UNIT_HEALTH" ) then
 				CompactUnitFrame_UpdateHealth(self);
 				CompactUnitFrame_UpdateStatusText(self);
 				CompactUnitFrame_UpdateHealPrediction(self);
@@ -239,7 +240,6 @@ function CompactUnitFrame_UpdateUnitEvents(frame)
 	end
 	frame:RegisterUnitEvent("UNIT_MAXHEALTH", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_HEALTH", unit, displayedUnit);
-	frame:RegisterUnitEvent("UNIT_HEALTH_FREQUENT", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_MAXPOWER", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_POWER_UPDATE", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_AURA", unit, displayedUnit);
@@ -305,6 +305,7 @@ function CompactUnitFrame_UpdateAll(frame)
 		CompactUnitFrame_UpdatePower(frame);
 		CompactUnitFrame_UpdatePowerColor(frame);
 		CompactUnitFrame_UpdateName(frame);
+		CompactUnitFrame_UpdateWidgetsOnlyMode(frame);
 		CompactUnitFrame_UpdateSelectionHighlight(frame);
 		CompactUnitFrame_UpdateAggroHighlight(frame);
 		CompactUnitFrame_UpdateAggroFlash(frame);
@@ -516,6 +517,9 @@ function CompactUnitFrame_UpdatePowerColor(frame)
 end
 
 function ShouldShowName(frame)
+	if UnitNameplateShowsWidgetsOnly(frame.unit) then
+		return false;
+	end
 	if ( frame.optionTable.displayName ) then
 		local failedRequirement = false;
 		if ( frame.optionTable.displayNameByPlayerNameRules ) then
@@ -536,6 +540,42 @@ function ShouldShowName(frame)
 	end
 
 	return false;
+end
+
+function CompactUnitFrame_UpdateWidgetsOnlyMode(frame)
+	local inWidgetsOnlyMode = UnitNameplateShowsWidgetsOnly(frame.unit);
+
+	frame.healthBar:SetShown(not inWidgetsOnlyMode and not frame.hideHealthbar);
+
+	if frame.castBar and not frame.optionTable.hideCastbar then
+		if inWidgetsOnlyMode then
+			CastingBarFrame_SetUnit(frame.castBar, nil, nil, nil);
+			frame.hideCastbar = true;
+		else
+			CastingBarFrame_SetUnit(frame.castBar, frame.unit, false, true);
+		end
+	end
+
+	if frame.BuffFrame then
+		frame.BuffFrame:SetShown(not inWidgetsOnlyMode);
+	end
+
+	if frame.ClassificationFrame then
+		frame.ClassificationFrame:SetShown(not inWidgetsOnlyMode);
+	end
+
+	if frame.RaidTargetFrame then
+		frame.RaidTargetFrame:SetShown(not inWidgetsOnlyMode);
+	end
+
+	if frame.WidgetContainer then
+		frame.WidgetContainer:ClearAllPoints();
+		if inWidgetsOnlyMode then
+			PixelUtil.SetPoint(frame.WidgetContainer, "BOTTOM", frame, "BOTTOM", 0, 0);
+		else
+			PixelUtil.SetPoint(frame.WidgetContainer, "TOP", frame.castBar, "BOTTOM", 0, 0);
+		end
+	end
 end
 
 function CompactUnitFrame_UpdateName(frame)
@@ -1060,7 +1100,7 @@ function CompactUnitFrame_UpdateWidgetSet(frame)
 	end
 
 	local widgetSetID = UnitWidgetSet(frame.unit);
-	frame.WidgetContainer:RegisterForWidgetSet(widgetSetID, WidgetsLayout);
+	frame.WidgetContainer:RegisterForWidgetSet(widgetSetID, WidgetsLayout, nil, frame.unit);
 end
 
 function CompactUnitFrame_ClearWidgetSet(frame)
@@ -1964,6 +2004,7 @@ function DefaultCompactNamePlateFrameSetupInternal(frame, setupOptions, frameOpt
 		end
 	end
 
+	frame.hideHealthbar = setupOptions.hideHealthbar;
 	frame.healthBar:SetShown(not setupOptions.hideHealthbar);
 
 	frame.selectionHighlight:SetParent(frame.healthBar);

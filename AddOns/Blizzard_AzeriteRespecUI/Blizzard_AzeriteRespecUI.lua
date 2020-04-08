@@ -112,7 +112,7 @@ function AzeriteRespecMixin:SetRespecItem(itemLocation)
 			HelpTip:Hide(self, AZERITE_RESPEC_TUTORIAL_TEXT);
 			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_RESPEC, true);
 		end
-		
+
 		local item = Item:CreateFromItemLocation(self.respecItemLocation);
 		item:LockItem();
 	end

@@ -434,7 +434,7 @@ function TutorialFrame_CheckNextPrevButtons()
 end
 
 function TutorialFrame_Update(currentTutorial)
-	if (IsKioskModeEnabled() and UnitLevel("player") >= MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT - 1]) then
+	if (Kiosk.IsEnabled() and UnitLevel("player") >= GetMaxLevelForExpansionLevel(LE_EXPANSION_LEVEL_PREVIOUS)) then
 		return;
 	end
 
@@ -897,6 +897,9 @@ function HelpPlateBox_OnLeave(self)
 end
 
 function HelpPlate_ShowTutorialPrompt( self, mainHelpButton )
+	if Kiosk.IsEnabled() then
+		return;
+	end
 	mainHelpButton.initialTutorial = true;
 	Main_HelpPlate_Button_ShowTooltip(mainHelpButton);
 	HelpPlateTooltip.LingerAndFade:Play();

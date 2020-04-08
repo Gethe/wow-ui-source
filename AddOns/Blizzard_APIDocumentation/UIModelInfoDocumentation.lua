@@ -147,9 +147,9 @@ local UIModelInfo =
 		{
 			Name = "ModelSceneType",
 			Type = "Enumeration",
-			NumValues = 18,
+			NumValues = 20,
 			MinValue = 0,
-			MaxValue = 17,
+			MaxValue = 19,
 			Fields =
 			{
 				{ Name = "MountJournal", Type = "ModelSceneType", EnumValue = 0 },
@@ -170,20 +170,8 @@ local UIModelInfo =
 				{ Name = "AzeriteRewardGlow", Type = "ModelSceneType", EnumValue = 15 },
 				{ Name = "HeartOfAzeroth", Type = "ModelSceneType", EnumValue = 16 },
 				{ Name = "WorldMapThreat", Type = "ModelSceneType", EnumValue = 17 },
-			},
-		},
-		{
-			Name = "UIModelSceneActorDisplayInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "animation", Type = "number", Nilable = false },
-				{ Name = "animationVariation", Type = "number", Nilable = false },
-				{ Name = "animSpeed", Type = "number", Nilable = false },
-				{ Name = "animationKitID", Type = "number", Nilable = true },
-				{ Name = "spellVisualKitID", Type = "number", Nilable = true },
-				{ Name = "alpha", Type = "number", Nilable = false },
-				{ Name = "scale", Type = "number", Nilable = false },
+				{ Name = "Soulbinds", Type = "ModelSceneType", EnumValue = 18 },
+				{ Name = "JailersTowerAnimaGlow", Type = "ModelSceneType", EnumValue = 19 },
 			},
 		},
 		{

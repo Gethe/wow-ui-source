@@ -1,0 +1,22 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ExtraAbilityContainer.lua"/>
+
+	<Frame name="ExtraAbilityContainerTemplate" mixin="ExtraAbilityContainerMixin" inherits="HorizontalLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="spacing" value="-30" type="number"/>
+			<KeyValue key="fixedHeight" value="120" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ExtraAbilityContainer" inherits="ExtraAbilityContainerTemplate" parent="UIParent" topLevel="true" hidden="true">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+	</Frame>
+</Ui>

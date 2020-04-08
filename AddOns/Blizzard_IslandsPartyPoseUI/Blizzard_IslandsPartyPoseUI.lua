@@ -63,7 +63,7 @@ do
 			Topper = "scoreboard-horde-header",
 			TitleBG = "scoreboard-header-horde",
 			nineSliceLayout = "PartyPoseKit",
-			nineSliceTextureKitName = "horde",
+			nineSliceTextureKit = "horde",
 			partyCategory = LE_PARTY_CATEGORY_INSTANCE,
 		},
 
@@ -75,7 +75,7 @@ do
 			Topper = "scoreboard-alliance-header",
 			TitleBG = "scoreboard-header-alliance",
 			nineSliceLayout = "PartyPoseKit",
-			nineSliceTextureKitName = "alliance",
+			nineSliceTextureKit = "alliance",
 			partyCategory = LE_PARTY_CATEGORY_INSTANCE,
 		},
 	};

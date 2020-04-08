@@ -23,17 +23,17 @@ end
 function AdventureMap_MissionDataProviderMixin:OnEvent(event, ...)
 	if event == "GARRISON_MISSION_NPC_OPENED" then
 		local followerType = ...;
-		if followerType == LE_FOLLOWER_TYPE_GARRISON_7_0 then
+		if followerType == Enum.GarrisonFollowerType.FollowerType_7_0 then
 			self:RefreshAllData();
 		end
 	elseif event == "GARRISON_MISSION_LIST_UPDATE" then
 		local followerType = ...;
-		if followerType == LE_FOLLOWER_TYPE_GARRISON_7_0 then
+		if followerType == Enum.GarrisonFollowerType.FollowerType_7_0 then
 			self:RefreshAllData();
 		end
 	elseif event == "GARRISON_MISSION_FINISHED" then
 		local followerType, missionID = ...;
-		if followerType == LE_FOLLOWER_TYPE_GARRISON_7_0 then
+		if followerType == Enum.GarrisonFollowerType.FollowerType_7_0 then
 			self:RefreshAllData();
 		end
 	elseif event == "GARRISON_MISSION_COMPLETE_RESPONSE" then
@@ -62,9 +62,9 @@ function AdventureMap_MissionDataProviderMixin:RefreshAllData(fromOnShow)
 	-- Don't remove rewards, they'll clean themselves up
 
 	local lastMissions = self.currentMissions;
-	self.currentMissions = C_Garrison.GetAvailableMissions(LE_FOLLOWER_TYPE_GARRISON_7_0);
+	self.currentMissions = C_Garrison.GetAvailableMissions(Enum.GarrisonFollowerType.FollowerType_7_0);
 	if self.currentMissions then
-		local inProgressMissions = C_Garrison.GetInProgressMissions(LE_FOLLOWER_TYPE_GARRISON_7_0);
+		local inProgressMissions = C_Garrison.GetInProgressMissions(Enum.GarrisonFollowerType.FollowerType_7_0);
 		for i, missionInfo in ipairs(inProgressMissions) do
 			self.currentMissions[#self.currentMissions + 1] = missionInfo;
 			missionInfo.isComplete = missionInfo.missionEndTime - GetServerTime() <= 0;
@@ -226,8 +226,8 @@ function AdventureMap_MissionPinMixin:SetupMission(missionInfo)
 		self:UpdateStatusLabel();
 	else
 		local atlas;
-		if (self.missionInfo.typePrefix) then
-			atlas = self.missionInfo.typePrefix .. "-Map";
+		if (self.missionInfo.typeTextureKit) then
+			atlas = self.missionInfo.typeTextureKit .. "-Map";
 		else
 			atlas = "AdventureMapIcon-MissionCombat";
 		end

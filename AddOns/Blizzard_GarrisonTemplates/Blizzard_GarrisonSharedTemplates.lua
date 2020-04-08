@@ -81,7 +81,7 @@ function GarrisonFollowerList:Initialize(followerType)
 	if (self.followerTab) then
 		self.followerTab.followerList = self;
 	end
-	self:Setup(self:GetParent(), followerType);
+	self:Setup(self:GetParent(), followerType, self.followerTemplate);
 end
 
 function GarrisonFollowerList:Setup(mainFrame, followerType, followerTemplate, initialOffsetX)
@@ -354,6 +354,13 @@ function GarrisonFollowerList:UpdateFollowers()
 		return;
 	end
 
+	--TODO: Tagify GetFollowers and condense this into it
+	for i = 1, #self.followers do
+		if (self.followers[i].garrFollowerID) then
+			self.followers[i].autoCombatSpells = C_Garrison.GetFollowerAutoCombatSpells(self.followers[i].garrFollowerID);
+		end
+	end
+
 	self.followersList = { };
 	self.followersLabels = { };
 
@@ -499,7 +506,9 @@ function GarrisonFollowerList:UpdateData()
 			button.Follower.id = follower.followerID;
 			button.Follower.info = follower;
 			button.Follower.Name:SetText(follower.name);
-			button.Follower.Class:SetAtlas(follower.classAtlas);
+			if ( button.Follower.Class) then
+				button.Follower.Class:SetAtlas(follower.classAtlas);
+			end
 			button.Follower.Status:SetText(follower.status);
 			if ( follower.status == GARRISON_FOLLOWER_INACTIVE ) then
 				button.Follower.Status:SetTextColor(1, 0.1, 0.1);
@@ -508,15 +517,21 @@ function GarrisonFollowerList:UpdateData()
 			end
 			button.Follower.PortraitFrame:SetupPortrait(follower);
 
-			local countersAreaWidth = GarrisonFollowerButton_UpdateCounters(self:GetParent(), button.Follower, follower, showCounters, followerFrame.lastUpdate);
+			local abilityGridAreaWidth = GarrisonFollowerButton_UpdateCounters(self:GetParent(), button.Follower, follower, showCounters, followerFrame.lastUpdate);
+			if not showCounters then 
+				--This should be used to replace counter width, as they're currently exclusive sets.
+				abilityGridAreaWidth = GarrisonFollowerButton_UpdateAutoSpells(self:GetParent(), button.Follower, follower);
+			end
 
 			if ( follower.isCollected ) then
 				-- have this follower
 				button.Follower.isCollected = true;
 				button.Follower.Name:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-				button.Follower.Class:SetDesaturated(false);
-				button.Follower.Class:SetAlpha(0.2);
-				if button.Follower.PortraitFrame.quality ~= LE_GARR_FOLLOWER_QUALITY_TITLE then
+				if( button.Follower.Class ) then
+					button.Follower.Class:SetDesaturated(false);
+					button.Follower.Class:SetAlpha(0.2);
+				end
+				if button.Follower.PortraitFrame.quality ~= Enum.GarrFollowerQuality.Title then
 					button.Follower.PortraitFrame.PortraitRingQuality:Show();
 				end
 				button.Follower.PortraitFrame.Portrait:SetDesaturated(false);
@@ -542,10 +557,12 @@ function GarrisonFollowerList:UpdateData()
 					button.Follower.PortraitFrame.PortraitRingCover:Hide();
 					button.Follower.BusyFrame:Hide();
 				end
-				if ( canExpand ) then
-					button.Follower.DownArrow:SetAlpha(1);
-				else
-					button.Follower.DownArrow:SetAlpha(0);
+				if( button.Follower.DownArrow ) then
+					if ( canExpand ) then
+						button.Follower.DownArrow:SetAlpha(1);
+					else
+						button.Follower.DownArrow:SetAlpha(0);
+					end
 				end
 				-- adjust text position if we have additional text to show below name
 				local nameOffsetY = 0;
@@ -582,13 +599,15 @@ function GarrisonFollowerList:UpdateData()
 					end
 				end
 				button.Follower.Name:SetPoint("LEFT", button.Follower.PortraitFrame, "LEFT", 66, nameOffsetY);
-				button.Follower.Status:SetPoint("RIGHT", -countersAreaWidth, 0);
+				button.Follower.Status:SetPoint("RIGHT", -abilityGridAreaWidth, 0);
 
-				if (follower.xp == 0 or follower.levelXP == 0) then
-					button.Follower.XPBar:Hide();
-				else
-					button.Follower.XPBar:Show();
-					button.Follower.XPBar:SetWidth((follower.xp/follower.levelXP) * GARRISON_FOLLOWER_LIST_BUTTON_FULL_XP_WIDTH);
+				if ( button.Follower.XPBar ) then
+					if (follower.xp == 0 or follower.levelXP == 0) then
+						button.Follower.XPBar:Hide();
+					else
+						button.Follower.XPBar:Show();
+						button.Follower.XPBar:SetWidth((follower.xp/follower.levelXP) * GARRISON_FOLLOWER_LIST_BUTTON_FULL_XP_WIDTH);
+					end
 				end
 			else
 				-- don't have this follower
@@ -596,14 +615,18 @@ function GarrisonFollowerList:UpdateData()
 				button.Follower.Name:SetTextColor(0.25, 0.25, 0.25);
 				button.Follower.ILevel:SetText(nil);
 				button.Follower.Status:SetPoint("TOPLEFT", button.Follower.ILevel, "TOPRIGHT", 0, 0);
-				button.Follower.Class:SetDesaturated(true);
-				button.Follower.Class:SetAlpha(0.1);
+				if( button.Follower.Class ) then
+					button.Follower.Class:SetDesaturated(true);
+					button.Follower.Class:SetAlpha(0.1);
+				end
 				button.Follower.PortraitFrame.PortraitRingQuality:Hide();
 				button.Follower.PortraitFrame.Portrait:SetDesaturated(true);
 				button.Follower.PortraitFrame.PortraitRingCover:Show();
 				button.Follower.PortraitFrame.PortraitRingCover:SetAlpha(0.6);
 				button.Follower.PortraitFrame:SetQuality(0);
-				button.Follower.XPBar:Hide();
+				if ( button.Follower.XPBar ) then
+					button.Follower.XPBar:Hide();
+				end
 				button.Follower.DownArrow:SetAlpha(0);
 				button.Follower.BusyFrame:Hide();
 			end
@@ -613,6 +636,7 @@ function GarrisonFollowerList:UpdateData()
 			else
 				self:CollapseButton(button.Follower);
 			end
+
 			button:SetHeight(button.Follower:GetHeight());
 			if ( button.Follower.id == followerFrame.selectedFollower ) then
 				button.Follower.Selection:Show();
@@ -678,7 +702,7 @@ function GarrisonFollowerButton_UpdateCounters(frame, button, follower, showCoun
 		--for followers you have, show counters if they are or could be on the mission
 		local counters = frame.followerCounters and frame.followerCounters[follower.followerID];
 		if ( counters ) then
-			if ( follower.followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
+			if ( follower.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2 ) then
 				table.sort(counters, function(left, right) return left.factor > right.factor; end);
 			end
 		end
@@ -763,7 +787,7 @@ function GarrisonFollowerButton_SetCounterButton(button, followerID, index, info
 			counter.Icon:SetTexture(info.icon);
 			counter.Border:Show();
 
-			if ( counter.info.factor <= GARRISON_HIGH_THREAT_VALUE and followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
+			if ( counter.info.factor <= GARRISON_HIGH_THREAT_VALUE and followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2 ) then
 				counter.Border:SetAtlas("GarrMission_WeakEncounterAbilityBorder");
 			else
 				counter.Border:SetAtlas("GarrMission_EncounterAbilityBorder");
@@ -774,6 +798,71 @@ function GarrisonFollowerButton_SetCounterButton(button, followerID, index, info
 		counter.AbilityFeedbackGlowAnim:Stop();
 	end
 	counter:Show();
+end
+
+function GarrisonFollowerButton_UpdateAutoSpells(frame, button, follower)
+	local numShown = 0;
+
+	if follower.autoCombatSpells then 
+		numShown = #follower.autoCombatSpells;
+	end
+
+	if numShown == 0 then 
+		return numShown;
+	end
+
+	if ( follower.isCollected and follower.status ~= GARRISON_FOLLOWER_INACTIVE ) then
+		GarrisonFollowerButton_AddAutoSpellButtons(button, follower);
+	end
+	local numPerRow, innerSpacing, outerSpacingX, outerSpacingY, scale = GetFollowerButtonCounterSpacings(follower.followerTypeID);
+	button.Counters[1]:ClearAllPoints();
+	
+	if ( numShown <= numPerRow ) then
+		local collapsedButtonHeight = 46;
+		button.Counters[1]:SetPoint("RIGHT", button.Counters[1]:GetParent(), "TOPRIGHT", -outerSpacingX, -collapsedButtonHeight/2);
+	else
+		button.Counters[1]:SetPoint("TOPRIGHT", -outerSpacingX, -outerSpacingY);
+	end
+	for i = numShown + 1, #button.Counters do
+		button.Counters[i].info = nil;
+		button.Counters[i]:Hide();
+	end
+
+	if (numShown == 1) then
+		return 2 * outerSpacingX + button.Counters[1]:GetWidth() * scale;
+	else
+		return 2 * outerSpacingX + innerSpacing + (2 * button.Counters[1]:GetWidth() * scale);
+	end
+end
+
+function GarrisonFollowerButton_AddAutoSpellButtons(button, follower)
+	for i = 1, math.min(3, #follower.autoCombatSpells) do	-- max of 3 abilities 
+		GarrisonFollowerButton_SetAutoSpellButton(button, follower.followerID, i, follower.autoCombatSpells[i], follower.followerTypeID);
+	end
+end
+
+function GarrisonFollowerButton_SetAutoSpellButton(button, followerID, index, info, followerTypeID)
+	local abilityFrame = button.Counters[index];
+	if ( not abilityFrame ) then
+		button.Counters[index] = CreateFrame("Frame", nil, button, "GarrisonMissionAbilityCounterTemplate");
+		abilityFrame = button.Counters[index];
+	end
+	local numPerRow, innerSpacing, outerSpacingX, outerSpacingY, scale = GetFollowerButtonCounterSpacings(followerTypeID);
+	if index > 1 then
+		if ((index - 1) % numPerRow ~= 0) then
+			abilityFrame:SetPoint("RIGHT", button.Counters[index-1], "LEFT", -innerSpacing, 0);
+		else
+			abilityFrame:SetPoint("TOP", button.Counters[index-numPerRow], "BOTTOM", 0, -innerSpacing);
+		end
+	end
+	abilityFrame:SetScale(scale);
+	abilityFrame.info = info;
+	abilityFrame.followerTypeID = followerTypeID;
+	abilityFrame.tooltip = nil;
+	abilityFrame.info.showCounters = false;
+	abilityFrame.Icon:SetTexture(info.icon);
+	abilityFrame.Border:Hide();
+	abilityFrame:Show();
 end
 
 function GarrisonFollowerList:ExpandButton(button, followerListFrame)
@@ -842,8 +931,12 @@ end
 
 function GarrisonFollowerList:CollapseButton(button)
 	self:CollapseButtonAbilities(button);
-	button.UpArrow:Hide();
-	button.DownArrow:Show();
+	if(button.UpArrow) then
+		button.UpArrow:Hide();
+	end
+	if  (button.DownArrow) then
+		button.DownArrow:Show();
+	end
 	button:SetHeight(FOLLOWER_BUTTON_HEIGHT);
 end
 
@@ -1392,18 +1485,18 @@ local function GarrisonFollower_GetUsageErrorCommon(followerInfo)
 end
 
 local failureCodeToReason = {
-	[LE_FOLLOWER_ABILITY_CAST_RESULT_INVALID_TARGET] = FOLLOWER_ABILITY_CAST_ERROR_INVALID_TARGET,
-	[LE_FOLLOWER_ABILITY_CAST_RESULT_REROLL_NOT_ALLOWED] = FOLLOWER_ABILITY_CAST_ERROR_REROLL_NOT_ALLOWED,
-	[LE_FOLLOWER_ABILITY_CAST_RESULT_SINGLE_MISSION_DURATION] = FOLLOWER_ABILITY_CAST_ERROR_SINGLE_MISSION_DURATION,
-	[LE_FOLLOWER_ABILITY_CAST_RESULT_MUST_TARGET_FOLLOWER] = FOLLOWER_ABILITY_CAST_ERROR_MUST_TARGET_FOLLOWER,
-	[LE_FOLLOWER_ABILITY_CAST_RESULT_MUST_TARGET_TRAIT] = FOLLOWER_ABILITY_CAST_ERROR_MUST_TARGET_TRAIT,
-	[LE_FOLLOWER_ABILITY_CAST_RESULT_INVALID_FOLLOWER_TYPE] = FOLLOWER_ABILITY_CAST_ERROR_INVALID_FOLLOWER_TYPE,
-	[LE_FOLLOWER_ABILITY_CAST_RESULT_MUST_BE_UNIQUE] = FOLLOWER_ABILITY_CAST_ERROR_MUST_BE_UNIQUE,
-	[LE_FOLLOWER_ABILITY_CAST_RESULT_CANNOT_TARGET_LIMITED_USE_FOLLOWER] = FOLLOWER_ABILITY_CAST_ERROR_CANNOT_TARGET_LIMITED_USE_FOLLOWER,
-	[LE_FOLLOWER_ABILITY_CAST_RESULT_MUST_TARGET_LIMITED_USE_FOLLOWER] = FOLLOWER_ABILITY_CAST_ERROR_MUST_TARGET_LIMITED_USE_FOLLOWER,
-	[LE_FOLLOWER_ABILITY_CAST_RESULT_ALREADY_AT_MAX_DURABILITY] = FOLLOWER_ABILITY_CAST_ERROR_ALREADY_AT_MAX_DURABILITY,
+	[Enum.FollowerAbilityCastResult.InvalidTarget] = FOLLOWER_ABILITY_CAST_ERROR_INVALID_TARGET,
+	[Enum.FollowerAbilityCastResult.RerollNotAllowed] = FOLLOWER_ABILITY_CAST_ERROR_REROLL_NOT_ALLOWED,
+	[Enum.FollowerAbilityCastResult.SingleMissionDuration] = FOLLOWER_ABILITY_CAST_ERROR_SINGLE_MISSION_DURATION,
+	[Enum.FollowerAbilityCastResult.MustTargetFollower] = FOLLOWER_ABILITY_CAST_ERROR_MUST_TARGET_FOLLOWER,
+	[Enum.FollowerAbilityCastResult.MustTargetTrait] = FOLLOWER_ABILITY_CAST_ERROR_MUST_TARGET_TRAIT,
+	[Enum.FollowerAbilityCastResult.InvalidFollowerType] = FOLLOWER_ABILITY_CAST_ERROR_INVALID_FOLLOWER_TYPE,
+	[Enum.FollowerAbilityCastResult.MustBeUnique] = FOLLOWER_ABILITY_CAST_ERROR_MUST_BE_UNIQUE,
+	[Enum.FollowerAbilityCastResult.CannotTargetLimitedUseFollower] = FOLLOWER_ABILITY_CAST_ERROR_CANNOT_TARGET_LIMITED_USE_FOLLOWER,
+	[Enum.FollowerAbilityCastResult.MustTargetLimitedUseFollower] = FOLLOWER_ABILITY_CAST_ERROR_MUST_TARGET_LIMITED_USE_FOLLOWER,
+	[Enum.FollowerAbilityCastResult.AlreadyAtMaxDurability] = FOLLOWER_ABILITY_CAST_ERROR_ALREADY_AT_MAX_DURABILITY,
 
-	[LE_FOLLOWER_ABILITY_CAST_RESULT_FAILURE] = "", -- This is a legitimate failure, but has no display error
+	[Enum.FollowerAbilityCastResult.Failure] = "", -- This is a legitimate failure, but has no display error
 };
 
 function GarrisonFollower_GetAbilityUsageResult(followerID, followerInfo, abilityID, predicate)
@@ -2267,7 +2360,7 @@ end
 
 function GarrisonThreatCountersFrame_OnLoad(self, followerType, tooltipString)
 	if (followerType == nil) then
-		followerType = LE_FOLLOWER_TYPE_GARRISON_6_0;
+		followerType = Enum.GarrisonFollowerType.FollowerType_6_0;
 	end
 	self.followerType = followerType;
 	if (tooltipString == nil) then
@@ -2276,7 +2369,7 @@ function GarrisonThreatCountersFrame_OnLoad(self, followerType, tooltipString)
 	self.tooltipString = tooltipString;
 	local mechanics = C_Garrison.GetAllEncounterThreats(followerType);
 	-- sort reverse alphabetical because we'll be anchoring buttons right to left
-	if ( followerType == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
+	if ( followerType == Enum.GarrisonFollowerType.FollowerType_6_2 ) then
 		-- sort high threats to the left, weather based threats to the right, other wise sort alphabetic
 		table.sort(mechanics, function(m1, m2)
 			local m1Weather = IsWeatherThreat(m1.id);
@@ -2301,7 +2394,7 @@ function GarrisonThreatCountersFrame_OnLoad(self, followerType, tooltipString)
 		frame.Icon:SetTexture(mechanics[i].icon);
 		frame.name = mechanics[i].name;
 		frame.id = mechanics[i].id;
-		if ( mechanics[i].factor and  mechanics[i].factor <= GARRISON_HIGH_THREAT_VALUE and followerType == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
+		if ( mechanics[i].factor and  mechanics[i].factor <= GARRISON_HIGH_THREAT_VALUE and followerType == Enum.GarrisonFollowerType.FollowerType_6_2 ) then
 			frame.Border:SetAtlas("GarrMission_WeakEncounterAbilityBorder");
 		else
 			frame.Border:SetAtlas("GarrMission_EncounterAbilityBorder");

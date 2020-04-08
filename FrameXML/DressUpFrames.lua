@@ -25,6 +25,11 @@ local function GetFrameAndSetBackground(raceFilename, classFilename)
 		if not raceFilename then
 			raceFilename = select(2, UnitRace("player"));
 		end
+	elseif( TransmogAndMountDressupFrame.parentFrame and TransmogAndMountDressupFrame.parentFrame:IsShown()) then 
+		frame = TransmogAndMountDressupFrame;
+		if not raceFilename then
+			raceFilename = select(2, UnitRace("player"));
+		end
 	else
 		frame = DressUpFrame;
 		if not classFilename then
@@ -208,7 +213,8 @@ end
 function DressUpFrame_Show(frame)
 	if ( not frame:IsShown() or frame.mode ~= "player") then
 		frame.mode = "player";
-		frame.ResetButton:Show();
+
+		frame.ResetButton:SetShown(frame ~= TransmogAndMountDressupFrame);
 
 		-- If there's not enough space as-is, try minimizing.
 		if not CanShowRightUIPanel(frame) and not frame.MaximizeMinimizeFrame:IsMinimized() then
@@ -315,4 +321,23 @@ function CloseSideDressUpFrame(parentFrame)
 	if ( SideDressUpFrame.parentFrame and SideDressUpFrame.parentFrame == parentFrame ) then
 		HideUIPanel(SideDressUpFrame);
 	end
+end
+
+function SetUpTransmogAndMountDressupFrame(parentFrame, transmogSetID, mountID,  width, height, point, relativePoint, offsetX, offsetY)
+	local self = TransmogAndMountDressupFrame;
+	if ( self.parentFrame ) then
+		if ( self.parentFrame == parentFrame ) then
+			return;
+		end
+		if ( self:IsShown() ) then
+			HideUIPanel(self);
+		end
+	end	
+	self.parentFrame = parentFrame;
+	TransmogAndMountDressupFrame.transmogSetID = transmogSetID;
+	TransmogAndMountDressupFrame.mountID = mountID; 
+	TransmogAndMountDressupFrame:SetSize(width, height); 
+	relativePoint = relativePoint or point;
+	self:SetParent(parentFrame);
+	self:SetPoint(point, parentFrame, relativePoint, offsetX, offsetY);
 end

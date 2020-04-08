@@ -1,0 +1,51 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_AdventuresBoard.lua"/>
+
+	<Frame name="AdventuresBoardTemplate" mixin="AdventuresBoardMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="enemyTemplate" type="string" value="GarrisonEncounterPortraitTemplate"/>
+			<KeyValue key="followerTemplate" type="string" value="GarrisonLargeFollowerXPFrameTemplate"/>
+		</KeyValues>
+		<Size x="556" y="385"/>
+		<Frames>
+			<Frame parentKey="EnemyContainer" inherits="ResizeLayoutFrame">
+				<Anchors>
+					<Anchor point="TOP"/>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Animations>
+					<AnimationGroup parentKey="FadeOut">
+						<Alpha fromAlpha="1" toAlpha="0" duration=".5" order="1"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():Hide();
+								self:GetParent():SetAlpha(1);
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="FollowerContainer" inherits="ResizeLayoutFrame" frameLevel="20">
+				<Anchors>
+					<Anchor point="BOTTOM"/>
+					<Anchor point="CENTER" x="8" y="0"/>
+				</Anchors>
+				<Animations>
+					<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
+						<Alpha fromAlpha="0" toAlpha="1" duration=".5" order="1"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AdventuresBoardCombatTemplate" mixin="AdventuresBoardCombatMixin" inherits="AdventuresBoardTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="TextContainer" frameLevel="1000" setAllPoints="true"/>
+		</Frames>
+	</Frame>
+</Ui>

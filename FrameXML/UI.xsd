@@ -298,11 +298,6 @@
 				<xs:element name="OnMouseDown" type="ScriptType"/>
 				<xs:element name="OnMouseUp" type="ScriptType"/>
 				<xs:element name="OnMouseWheel" type="ScriptType"/>
-				<xs:element name="OnJoystickStickMotion" type="ScriptType"/>
-				<xs:element name="OnJoystickAxisMotion" type="ScriptType"/>
-				<xs:element name="OnJoystickButtonDown" type="ScriptType"/>
-				<xs:element name="OnJoystickButtonUp" type="ScriptType"/>
-				<xs:element name="OnJoystickHatMotion" type="ScriptType"/>
 				<xs:element name="OnDragStart" type="ScriptType"/>
 				<xs:element name="OnDragStop" type="ScriptType"/>
 				<xs:element name="OnReceiveDrag" type="ScriptType"/>
@@ -333,6 +328,8 @@
 				<xs:element name="OnChar" type="ScriptType"/>
 				<xs:element name="OnKeyDown" type="ScriptType"/>
 				<xs:element name="OnKeyUp" type="ScriptType"/>
+				<xs:element name="OnGamePadDown" type="ScriptType"/>
+				<xs:element name="OnGamePadUp" type="ScriptType"/>
 				<xs:element name="OnColorSelect" type="ScriptType"/>
 				<xs:element name="OnHyperlinkEnter" type="ScriptType"/>
 				<xs:element name="OnHyperlinkLeave" type="ScriptType"/>

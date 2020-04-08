@@ -1,6 +1,9 @@
 function GameMenuFrame_OnShow(self)
 	UpdateMicroButtons();
 	Disable_BagButtons();
+	if (CanAutoSetGamePadCursorControl(true)) then
+		SetGamePadCursorControl(true);
+	end
 
 	GameMenuFrame_UpdateVisibleButtons(self);
 end
@@ -12,8 +15,7 @@ function GameMenuFrame_UpdateVisibleButtons(self)
 	local buttonToReanchor = GameMenuButtonWhatsNew;
 	local reanchorYOffset = -1;
 
-	local forceShowSplash = true; -- not actually true, if there's no tag, then this won't be shown.
-	if not SplashFrame_GetShowTag(forceShowSplash) then
+	if IsCharacterNewlyBoosted() or not C_SplashScreen.CanViewSplashScreen()  then
 		GameMenuButtonWhatsNew:Hide();
 		height = height - 20;
 		buttonToReanchor = GameMenuButtonOptions;
@@ -53,7 +55,7 @@ function GameMenuFrame_UpdateStoreButtonState(self)
 	if ( C_StorePublic.IsDisabledByParentalControls() ) then
 		self.disabledTooltip = BLIZZARD_STORE_ERROR_PARENTAL_CONTROLS;
 		self:Disable();
-	elseif ( IsKioskModeEnabled() ) then
+	elseif ( Kiosk.IsEnabled() ) then
 		self.disabledTooltip = nil;
 		self:Disable();
 	else

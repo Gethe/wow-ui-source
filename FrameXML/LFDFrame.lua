@@ -12,8 +12,6 @@ LFD_PROPOSAL_FAILED_CLOSE_TIME = 5;
 
 LFD_NUM_ROLES = 3;
 
-LFD_MAX_SHOWN_LEVEL_DIFF = 15;
-
 -------------------------------------
 -----------LFD Frame--------------
 -------------------------------------
@@ -624,7 +622,7 @@ function LFDQueueFrame_Update()
 
 	LFDDungeonList = GetLFDChoiceOrder(LFDDungeonList);
 
-	LFGQueueFrame_UpdateLFGDungeonList(LFDDungeonList, LFDHiddenByCollapseList, checkedList, LFD_CURRENT_FILTER, LFD_MAX_SHOWN_LEVEL_DIFF);
+	LFGQueueFrame_UpdateLFGDungeonList(LFDDungeonList, LFDHiddenByCollapseList, checkedList, LFD_CURRENT_FILTER);
 
 	LFDQueueFrameSpecificList_Update();
 end

@@ -12,7 +12,7 @@ function RecruitAFriendFrameMixin:OnLoad()
 
 	self.RecruitList.NoRecruitsDesc:SetText(RAF_NO_RECRUITS_DESC);
 	self.recruitScrollFrame = self.RecruitList.ScrollFrame;
-	
+
 	self.RewardClaiming.MonthCount.Text:SetFontObjectsToTry(FriendsFont_Large, FriendsFont_Normal, FriendsFont_Small);
 	self.RewardClaiming.NextRewardName.Text:SetFontObjectsToTry(FriendsFont_Normal, FriendsFont_Small);
 
@@ -413,7 +413,7 @@ end
 function RecruitActivityButtonMixin:UpdateQuestName()
 	if not self.questName and self.activityInfo then
 		-- If we don't have the name now, get it. If it's not in the quest cache this will request it
-		self.questName = C_QuestLog.GetQuestInfo(self.activityInfo.rewardQuestID);
+		self.questName = C_QuestLog.GetTitleForQuestID(self.activityInfo.rewardQuestID);
 	end
 end
 
@@ -435,7 +435,7 @@ function RecruitActivityButtonMixin:OnEnter()
 
 		EmbeddedItemTooltip:SetMinimumWidth(300);
 		GameTooltip_AddNormalLine(EmbeddedItemTooltip, RAF_RECRUIT_ACTIVITY_DESCRIPTION:format(self.recruitInfo.nameText), true);
-	
+
 		local reqTextLines = C_RecruitAFriend.GetRecruitActivityRequirementsText(self.activityInfo.activityID, self.recruitInfo.acceptanceID);
 		for i = 1, #reqTextLines do
 			local reqText = reqTextLines[i];
@@ -1032,7 +1032,7 @@ function RecruitAFriendRewardButtonWithFanfareMixin:SetCanClaim(canClaim)
 			end
 		end
 	end
-	
+
 	self.lastCanClaim = canClaim;
 end
 

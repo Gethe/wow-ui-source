@@ -348,16 +348,6 @@ function ActionButton_Update(self)
 	self.zoneAbilityDisabled = false;
 	icon:SetDesaturated(false);
 	local type, id = GetActionInfo(action);
-	if ((type == "spell" or type == "companion") and ZoneAbilityFrame and ZoneAbilityFrame.baseName and not HasZoneAbility()) then
-		local name = GetSpellInfo(ZoneAbilityFrame.baseName);
-		local abilityName = GetSpellInfo(id);
-		if (name == abilityName) then
-			texture = GetLastZoneAbilitySpellTexture();
-			self.zoneAbilityDisabled = true;
-			icon:SetDesaturated(true);
-		end
-	end
-
 	if ( HasAction(action) ) then
 		if ( not self.eventsRegistered ) then
 			ActionBarActionEventsFrame_RegisterFrame(self);

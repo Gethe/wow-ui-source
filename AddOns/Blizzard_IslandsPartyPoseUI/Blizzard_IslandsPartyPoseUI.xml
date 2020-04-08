@@ -4,15 +4,6 @@
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Layers>
-			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture parentKey="Topper">
-					<Anchors>
-						<Anchor point="BOTTOM" relativePoint="TOP"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
 			<Frame parentKey="OverlayElements" frameLevel="510" setAllPoints="true">
 				<Layers>

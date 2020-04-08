@@ -325,7 +325,7 @@ end
 
 function ReputationWatchBar_UpdateMaxLevel()
 	-- Initialize max player level
-	MAX_PLAYER_LEVEL = MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()];
+	MAX_PLAYER_LEVEL = GetMaxLevelForPlayerExpansion();
 end
 
 function ShowFriendshipReputationTooltip(friendshipID, parent, anchor)
@@ -365,7 +365,7 @@ function ReputationParagonFrame_SetupParagonTooltip(frame)
 		EmbeddedItemTooltip:SetText(factionStandingtext);
 		local description = PARAGON_REPUTATION_TOOLTIP_TEXT:format(factionName);
 		if ( hasRewardPending ) then
-			local questIndex = GetQuestLogIndexByID(rewardQuestID);
+			local questIndex = C_QuestLog.GetLogIndexForQuestID(rewardQuestID);
 			local text = GetQuestLogCompletionText(questIndex);
 			if ( text and text ~= "" ) then
 				description = text;

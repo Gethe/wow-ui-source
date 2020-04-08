@@ -1,0 +1,64 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_RuneforgeModifierSlot.lua"/>
+
+	<ItemButton name="RuneforgeModifierSlotTemplate" mixin="RuneforgeModifierSlotMixin" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</ItemButton>
+
+	<ItemButton name="RuneforgeModifierSelectionTemplate" mixin="RuneforgeModifierSelectionMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</ItemButton>
+
+	<Frame name="RuneforgeModifierSelectorFrameTemplate" mixin="RuneforgeModifierSelectorFrameMixin" inherits="ResizeLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="47" type="number"/>
+			<KeyValue key="heightPadding" value="5" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true">
+					<Color r="0" g="0" b="0" a="0.7"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="RuneforgeModifierFrameTemplate" mixin="RuneforgeModifierFrameMixin" virtual="true">
+		<Size x="47" y="89"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true">
+					<Color r="0" g="0" b="0" a="0.7"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ItemButton parentKey="FirstSlot" inherits="RuneforgeModifierSlotTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-5"/>
+				</Anchors>
+			</ItemButton>
+
+			<ItemButton parentKey="SecondSlot" inherits="RuneforgeModifierSlotTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.FirstSlot" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+				</Anchors>
+			</ItemButton>
+
+			<Frame parentKey="Selector" inherits="RuneforgeModifierSelectorFrameTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Button>
+</Ui>

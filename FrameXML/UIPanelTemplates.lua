@@ -285,7 +285,7 @@ function InlineHyperlinkFrame_OnClick(self, link, text, button)
 		local fixedLink;
 		local _, _, linkType, linkID = string.find(link, "([%a]+):([%d]+)");
 		if ( linkType == "currency" ) then
-			fixedLink = GetCurrencyLink(linkID);
+			fixedLink = C_CurrencyInfo.GetCurrencyLink(linkID);
 		end
 
 		if ( fixedLink ) then
@@ -298,17 +298,68 @@ end
 
 CurrencyTemplateMixin = {};
 
-function CurrencyTemplateMixin:SetCurrencyFromID(currencyID, amount, formatString, colorCode)
-	local _, _, currencyTexture = GetCurrencyInfo(currencyID);
-	local markup = CreateTextureMarkup(currencyTexture, 64, 64, 16, 16, 0, 1, 0, 1);
+function GetCurrencyString(currencyID, overrideAmount, colorCode)
 	colorCode = colorCode or HIGHLIGHT_FONT_COLOR_CODE;
 
-	local currencyString = ("%s%s %s|r"):format(colorCode, BreakUpLargeNumbers(amount), markup);
+	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
+	if currencyInfo then
+		local currencyTexture = currencyInfo.iconFileID;
+		local markup = CreateTextureMarkup(currencyTexture, 64, 64, 16, 16, 0, 1, 0, 1);
+		local amountString = BreakUpLargeNumbers(overrideAmount or currencyInfo.quantity);
+		return ("%s%s %s|r"):format(colorCode, amountString, markup);
+	end
 
+	return "";
+end
+
+function CurrencyTemplateMixin:SetCurrencyFromID(currencyID, amount, formatString, colorCode)
+	local currencyString = GetCurrencyString(currencyID, amount, colorCode);
 	if formatString then
 		self:SetText(formatString:format(currencyString));
 	else
 		self:SetText(currencyString);
+	end
+
+	-- without an override amount this currency is eligible for a refresh
+	if not amount then
+		self.currencyID = currencyID;
+		self.formatString = formatString;
+		self.colorCode = colorCode;
+	else
+		self.currencyID = nil;
+		self.formatString = nil;
+		self.colorCode = nil;
+	end
+end
+
+function CurrencyTemplateMixin:SetTooltipAnchor(tooltipAnchor)
+	self.tooltipAnchor = tooltipAnchor;
+end
+
+function CurrencyTemplateMixin:Refresh()
+	if self.currencyID then
+		local overrideAmount = nil;
+		self:SetCurrencyFromID(self.currencyID, overrideAmount, self.formatString, self.colorCode);
+	end
+end
+
+function CurrencyTemplateMixin:OnEnter()
+	if self.tooltipAnchor and self.currencyID then
+		self:SetScript("OnUpdate", self.OnUpdate);
+	end
+end
+
+function CurrencyTemplateMixin:OnLeave()
+	self:SetScript("OnUpdate", nil);
+	GameTooltip:Hide();
+end
+
+function CurrencyTemplateMixin:OnUpdate()
+	if self.Text:IsMouseOver() then
+		GameTooltip:SetOwner(self, self.tooltipAnchor);
+		GameTooltip:SetCurrencyByID(self.currencyID);
+	elseif GameTooltip:GetOwner() == self then
+		GameTooltip:Hide();
 	end
 end
 
@@ -410,5 +461,81 @@ function ButtonWithDisableMixin:OnEnter()
 		end
 
 		GameTooltip:Show();
+	end
+end
+
+CurrencyDisplayMixin = CreateFromMixins(CurrencyTemplateMixin);
+
+-- currencies: An array of currencyInfo
+-- currencyInfo: either a currencyID, or an array with { currencyID, overrideAmount, colorCode }
+function CurrencyDisplayMixin:SetCurrencies(currencies, formatString)
+	local text = nil;
+	for i, currency in ipairs(currencies) do
+		if text then
+			text = text.." ";
+		else
+			text = "";
+		end
+
+		if type(currency) == "table" then
+			text = text..GetCurrencyString(unpack(currency));
+		else
+			text = text..GetCurrencyString(currency);
+		end
+	end
+
+	if formatString then
+		self:SetText(formatString:format(text));
+	else
+		self:SetText(text);
+	end
+end
+
+function CurrencyDisplayMixin:SetText(text)
+	self.Text:SetText(text);
+end
+
+CurrencyDisplayGroupMixin = {};
+
+function CurrencyDisplayGroupMixin:OnLoad()
+	ResizeLayoutMixin.OnLoad(self);
+	self.currencyFramePool = CreateFramePool("FRAME", self, "CurrencyDisplayTemplate");
+end
+
+-- Defaults to a TOPRIGHT configuration.
+function CurrencyDisplayGroupMixin:SetCurrencies(currencies, initFunction, initialAnchor, gridLayout, tooltipAnchor)
+	self.currencyFramePool:ReleaseAll();
+
+	local function FactoryFunction(index)
+		local currencyFrame = self.currencyFramePool:Acquire();
+		local currencyInfo = currencies[index];
+
+		currencyFrame:SetTooltipAnchor(tooltipAnchor);
+
+		if type(currency) == "table" then
+			currencyFrame:SetCurrencyFromID(unpack(currencyInfo));
+		else
+			currencyFrame:SetCurrencyFromID(currencyInfo);
+		end
+
+		if initFunction then
+			initFunction(currencyFrame);
+		end
+
+		currencyFrame:Show();
+
+		return currencyFrame;
+	end
+
+	local initialAnchor = initialAnchor or AnchorUtil.CreateAnchor("TOPRIGHT", self, "TOPRIGHT");
+	local layout = gridLayout or AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopRightToBottomRight);
+	AnchorUtil.GridLayoutFactoryByCount(FactoryFunction, #currencies, initialAnchor, layout);
+
+	self:MarkDirty();
+end
+
+function CurrencyDisplayGroupMixin:Refresh()
+	for currencyFrame in self.currencyFramePool:EnumerateActive() do
+		currencyFrame:Refresh();
 	end
 end

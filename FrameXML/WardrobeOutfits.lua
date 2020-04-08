@@ -84,7 +84,7 @@ end
 local function IsSourceArtifact(sourceID)
 	local link = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
 	local _, _, quality = GetItemInfo(link);
-	return quality == LE_ITEM_QUALITY_ARTIFACT;
+	return quality == Enum.ItemQuality.Artifact;
 end
 
 function WardrobeOutfitDropDownMixin:IsOutfitDressed()

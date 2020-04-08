@@ -29,28 +29,28 @@ end
 local SLIDE_DATA = { startHeight = 0, endHeight = 68, duration = 0.4, onFinishFunc = AutoQuestPopupTracker_OnFinishSlide };
 
 function AUTO_QUEST_POPUP_TRACKER_MODULE:Update()
-	AUTO_QUEST_POPUP_TRACKER_MODULE:BeginLayout();
-	
+	self:BeginLayout();
+
 	if( SplashFrame:IsShown() ) then
-		AUTO_QUEST_POPUP_TRACKER_MODULE:EndLayout();
+		self:EndLayout();
 		return;
 	end
 
 	for i = 1, GetNumAutoQuestPopUps() do
 		local questID, popUpType = GetAutoQuestPopUp(i);
-		if ( not IsQuestBounty(questID) ) then
-			local questTitle = GetQuestLogTitle(GetQuestLogIndexByID(questID));
+		if ( not C_QuestLog.IsQuestBounty(questID) ) then
+			local questTitle = C_QuestLog.GetTitleForQuestID(questID);
 			if ( questTitle and questTitle ~= "" ) then
-				local block = AUTO_QUEST_POPUP_TRACKER_MODULE:GetBlock(questID);
+				local block = self:GetBlock(questID);
 				-- fixed height, just add the block right away
 				block.height = 68;
 				if ( ObjectiveTracker_AddBlock(block) ) then
 					if ( not block.init ) then
-						local blockContents = block.ScrollChild;			
+						local blockContents = block.ScrollChild;
 						if ( popUpType == "COMPLETE" ) then
 							blockContents.QuestionMark:Show();
 							blockContents.Exclamation:Hide();
-							if ( IsQuestTask(questID) ) then
+							if ( C_QuestLog.IsQuestTask(questID) ) then
 								blockContents.TopText:SetText(QUEST_WATCH_POPUP_CLICK_TO_COMPLETE_TASK);
 							else
 								blockContents.TopText:SetText(QUEST_WATCH_POPUP_CLICK_TO_COMPLETE);
@@ -93,12 +93,12 @@ function AUTO_QUEST_POPUP_TRACKER_MODULE:Update()
 					block:Show();
 				else
 					block.used = nil;
-					break;			
+					break;
 				end
 			end
 		end
 	end
-	AUTO_QUEST_POPUP_TRACKER_MODULE:EndLayout();
+	self:EndLayout();
 end
 
 function AutoQuestPopupTracker_AddPopUp(questID, popUpType, itemID)
@@ -122,9 +122,9 @@ end
 
 function AutoQuestPopUpTracker_OnMouseDown(block)
 	if ( block.popUpType == "OFFER" ) then
-		ShowQuestOffer(GetQuestLogIndexByID(block.id));
+		ShowQuestOffer(block.id);
 	else
-		ShowQuestComplete(GetQuestLogIndexByID(block.id));
+		ShowQuestComplete(block.id);
 	end
 	AutoQuestPopupTracker_RemovePopUp(block.id);
 end

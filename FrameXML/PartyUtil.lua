@@ -11,3 +11,10 @@ function PartyUtil.GetMinLevel()
 	end
 	return minLevel;
 end
+
+function GetGroupMemberCountsForDisplay()
+	local data = GetGroupMemberCounts();
+	data.DAMAGER = data.DAMAGER + data.NOROLE; --People without a role count as damage
+	data.NOROLE = 0;
+	return data;
+end

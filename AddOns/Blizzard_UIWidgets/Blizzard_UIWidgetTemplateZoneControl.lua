@@ -32,7 +32,7 @@ end
 function UIWidgetTemplateZoneControlMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 
-	SetupTextureKitOnFrameByID(widgetInfo.textureKitID, self.Background, "%s-lines", TextureKitConstants.SetVisiblity, TextureKitConstants.UseAtlasSize);
+	SetupTextureKitOnFrame(widgetInfo.textureKit, self.Background, "%s-lines", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 
 	self.entryPool:ReleaseAll();
 
@@ -40,7 +40,7 @@ function UIWidgetTemplateZoneControlMixin:Setup(widgetInfo, widgetContainer)
 		local entryFrame = self.entryPool:Acquire();
 		entryFrame:Show();
 		local lastVals = (self.lastVals[index] and (self.lastVals[index].state == zoneInfo.state)) and self.lastVals[index] or nil;
-		entryFrame:Setup(widgetContainer, index, widgetInfo.mode, widgetInfo.leadingEdgeType, widgetInfo.dangerFlashType, zoneInfo, lastVals, widgetInfo.textureKitID);
+		entryFrame:Setup(widgetContainer, index, widgetInfo.mode, widgetInfo.leadingEdgeType, widgetInfo.dangerFlashType, zoneInfo, lastVals, widgetInfo.textureKit);
 		self:SetZoneAnchors(entryFrame, index);
 		self.lastVals[index] = zoneInfo;
 	end

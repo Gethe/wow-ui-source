@@ -29,6 +29,10 @@ function TradeSkillDetailsMixin:OnEvent(event, ...)
 		if self:IsVisible() then
 			self:RefreshButtons();
 		end
+	elseif event == "GET_ITEM_INFO_RECEIVED" then
+		-- The refresh below will re-register as needed.
+		self:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
+		self:Refresh();
 	end
 end
 
@@ -49,7 +53,7 @@ function TradeSkillDetailsMixin:SetSelectedRecipeID(recipeID)
 		self:CancelSpellLoadCallback();
 		self.selectedRecipeID = recipeID;
 		self.craftable = false;
-		self.hasReagentDataByIndex = {};
+		self.optionalReagents = {};
 		self.createVerbOverride = nil;
 		self.GuildFrame:Clear();
 		self:RefreshButtons();
@@ -85,6 +89,37 @@ function TradeSkillDetailsMixin:CalculateContentHeight()
 	end
 
 	return height;
+end
+
+local function SetUpReagentButton(reagentButton, reagentName, reagentTexture, requiredReagentCount, playerReagentCount, isOptional, bonusText)
+	reagentName = reagentName or "";
+	reagentTexture = reagentTexture or "";
+
+	reagentButton.Icon:SetTexture(reagentTexture);
+
+	if isOptional then
+		reagentButton:SetReagentText(reagentName, bonusText);
+	else
+		reagentButton.Name:SetText(reagentName);
+	end
+
+	local craftable = true;
+	if playerReagentCount < requiredReagentCount then
+		reagentButton.Icon:SetVertexColor(0.5, 0.5, 0.5);
+		reagentButton.Name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		craftable = false;
+	else
+		reagentButton.Icon:SetVertexColor(1.0, 1.0, 1.0);
+		reagentButton.Name:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	end
+
+	if isOptional and requiredReagentCount == 1 then
+		reagentButton.Count:SetText(playerReagentCount);
+	else
+		SetItemButtonReagentCount(reagentButton, requiredReagentCount, playerReagentCount);
+	end
+
+	return craftable;
 end
 
 local SPACING_BETWEEN_LINES = 11;
@@ -235,35 +270,9 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 			reagentButton:Show();
 			self:AddContentWidget(reagentButton);
 
-			if not self.hasReagentDataByIndex[reagentIndex] then
-				if not reagentName or not reagentTexture then
-					reagentButton.Icon:SetTexture("");
-					reagentButton.Name:SetText("");
-				else
-					reagentButton.Icon:SetTexture(reagentTexture);
-					reagentButton.Name:SetText(reagentName);
-
-					self.hasReagentDataByIndex[reagentIndex] = true;
-				end
-			end
-
-
-			if playerReagentCount < reagentCount then
-				reagentButton.Icon:SetVertexColor(0.5, 0.5, 0.5);
-				reagentButton.Name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+			local hasReagentsToCraft = SetUpReagentButton(reagentButton, reagentName, reagentTexture, reagentCount, playerReagentCount);
+			if not hasReagentsToCraft then
 				craftable = false;
-			else
-				reagentButton.Icon:SetVertexColor(1.0, 1.0, 1.0);
-				reagentButton.Name:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-			end
-
-			local playerReagentCountAbbreviated = AbbreviateNumbers(playerReagentCount);
-			reagentButton.Count:SetFormattedText(TRADESKILL_REAGENT_COUNT, playerReagentCountAbbreviated, reagentCount);
-			--fix text overflow when the reagentButton count is too high
-			if math.floor(reagentButton.Count:GetStringWidth()) > math.floor(reagentButton.Icon:GetWidth() + .5) then 
-				--round count width down because the leftmost number can overflow slightly without looking bad
-				--round icon width because it should always be an int, but sometimes it's a slightly off float
-				reagentButton.Count:SetFormattedText("%s\n/%s", playerReagentCountAbbreviated, reagentCount);
 			end
 		end
 
@@ -271,6 +280,56 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 			local reagentButton = self.Contents.Reagents[reagentIndex];
 			reagentButton:Hide();
 		end
+
+
+		local optionalReagentSlots = C_TradeSkillUI.GetOptionalReagentInfo(self.selectedRecipeID);
+		local numOptionalReagentSlots = #optionalReagentSlots;
+		local hasOptionalReagentSlots = numOptionalReagentSlots > 0;
+		
+		self.Contents.OptionalReagentLabel:SetShown(hasOptionalReagentSlots);
+		self.Contents.OptionalReagentInfo:SetShown(hasOptionalReagentSlots);
+		if hasOptionalReagentSlots then
+			if numReagents > 0 then
+				self.Contents.OptionalReagentLabel:SetPoint("TOP", self.Contents.Reagents[numReagents], "BOTTOM", 0, -15)
+			else
+				self.Contents.OptionalReagentLabel:SetPoint("TOP", self.Contents.ReagentLabel, "TOP");
+			end
+
+			self:AddContentWidget(self.Contents.OptionalReagentLabel);
+		end
+
+		for optionalReagentIndex = 1, numOptionalReagentSlots do
+			local reagentName, bonusText, reagentTexture, reagentCount, playerReagentCount = self:GetOptionalReagent(optionalReagentIndex);
+			local reagentButton = self.Contents.OptionalReagents[optionalReagentIndex];
+
+			reagentButton:Show();
+			self:AddContentWidget(reagentButton);
+
+			local hasReagent = reagentName ~= nil;
+			if playerReagentCount == 0 then
+				self:SetOptionalReagent(optionalReagentIndex, nil);
+				hasReagent = false;
+			end
+
+			if hasReagent then
+				local isOptional = true;
+				local hasReagentsToCraft = SetUpReagentButton(reagentButton, reagentName, reagentTexture, reagentCount, playerReagentCount, isOptional, bonusText);
+				if not hasReagentsToCraft then
+					craftable = false;
+				end
+			else
+				reagentButton.Icon:SetAtlas("communities-icon-addgroupplus"); -- + texture
+				reagentButton.Icon:SetVertexColor(1.0, 1.0, 1.0);
+				reagentButton:SetReagentText(optionalReagentSlots[optionalReagentIndex].slotText or OPTIONAL_REAGENT_POSTFIX);
+				reagentButton.Count:SetText("");
+			end
+		end
+
+		for optionalReagentIndex = numOptionalReagentSlots + 1, #self.Contents.OptionalReagents do
+			local reagentButton = self.Contents.OptionalReagents[optionalReagentIndex];
+			reagentButton:Hide();
+		end
+
 
 		self.Contents.NextRankText:Hide();
 		local sourceText, sourceTextIsForNextRank;
@@ -294,14 +353,18 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 			if ( sourceTextIsForNextRank ) then
 				self:AddContentWidget(self.Contents.NextRankText);
 				self.Contents.NextRankText:Show();
-				if numReagents > 0 then
+				if hasOptionalReagentSlots then
+					self.Contents.NextRankText:SetPoint("TOP", self.Contents.OptionalReagents[numOptionalReagentSlots], "BOTTOM", 0, -15)
+				elseif numReagents > 0 then
 					self.Contents.NextRankText:SetPoint("TOP", self.Contents.Reagents[numReagents], "BOTTOM", 0, -15)
 				else
 					self.Contents.NextRankText:SetPoint("TOP", self.Contents.ReagentLabel, "TOP");
 				end
 				self.Contents.SourceText:SetPoint("TOP", self.Contents.NextRankText, "BOTTOM", 0, 0);
 			else
-				if numReagents > 0 then
+				if hasOptionalReagentSlots then
+					self.Contents.SourceText:SetPoint("TOP", self.Contents.OptionalReagents[numOptionalReagentSlots], "BOTTOM", 0, -15)
+				elseif numReagents > 0 then
 					self.Contents.SourceText:SetPoint("TOP", self.Contents.Reagents[numReagents], "BOTTOM", 0, -15);
 				else
 					self.Contents.SourceText:SetPoint("TOP", self.Contents.ReagentLabel, "TOP");
@@ -385,26 +448,26 @@ end
 
 function TradeSkillDetailsMixin:CreateAll()
 	local recipeInfo = C_TradeSkillUI.GetRecipeInfo(self.selectedRecipeID);
-	C_TradeSkillUI.CraftRecipe(self.selectedRecipeID, recipeInfo.numAvailable);
+	C_TradeSkillUI.CraftRecipe(self.selectedRecipeID, recipeInfo.numAvailable, self:GetOptionalReagentsArray());
 	self.CreateMultipleInputBox:ClearFocus();
 end
 
 function TradeSkillDetailsMixin:Create()
-	C_TradeSkillUI.CraftRecipe(self.selectedRecipeID, self.CreateMultipleInputBox:GetValue());
+	C_TradeSkillUI.CraftRecipe(self.selectedRecipeID, self.CreateMultipleInputBox:GetValue(), self:GetOptionalReagentsArray());
 	self.CreateMultipleInputBox:ClearFocus();
 end
 
 
 function TradeSkillDetailsMixin:SetPendingCreationAmount(amount)
 	if self.selectedRecipeID then
-		C_TradeSkillUI.SetRecipeRepeatCount(self.selectedRecipeID, amount);
+		C_TradeSkillUI.SetRecipeRepeatCount(self.selectedRecipeID, amount, self:GetOptionalReagentsArray());
 	end
 end
 
 function TradeSkillDetailsMixin:OnResultMouseEnter(resultButton)
 	if self.selectedRecipeID then
 		GameTooltip:SetOwner(resultButton, "ANCHOR_RIGHT");
-		GameTooltip:SetRecipeResultItem(self.selectedRecipeID);
+		GameTooltip:SetRecipeResultItem(self.selectedRecipeID, self:GetOptionalReagentsArray());
 		CursorUpdate(resultButton);
 	end
 	
@@ -426,6 +489,173 @@ function TradeSkillDetailsMixin:OnReagentClicked(reagentButton)
 	if not clickHandled then
 		TradeSkillFrame.SearchBox:SetText(reagentButton.Name:GetText());
 	end
+end
+
+function TradeSkillDetailsMixin:OnOptionalReagentMouseEnter(reagentButton)
+	GameTooltip:SetOwner(reagentButton, "ANCHOR_TOPLEFT");
+
+	local reagentName, bonusText, reagentTexture, reagentCount, playerReagentCount, itemID, tooltipText = self:GetOptionalReagent(reagentButton.optionalReagentIndex);
+	if reagentName then
+		GameTooltip_SetTitle(GameTooltip, reagentName);
+
+		local wrap = true;
+		GameTooltip_AddColoredLine(GameTooltip, tooltipText or bonusText, GREEN_FONT_COLOR, wrap);
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddInstructionLine(GameTooltip, OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_CHANGE, wrap);
+		GameTooltip_AddInstructionLine(GameTooltip, OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_REMOVE, wrap);
+	else
+		GameTooltip_SetTitle(GameTooltip, EMPTY_OPTIONAL_REAGENT_TOOLTIP_TITLE);
+		GameTooltip_AddInstructionLine(GameTooltip, OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_ADD, wrap);
+	end
+
+	GameTooltip:Show();
+
+	CursorUpdate(reagentButton);
+end
+
+function TradeSkillDetailsMixin:OnOptionalReagentClicked(reagentButton, button)
+	if button == "LeftButton" then
+		self:GetParent():OpenOptionalReagentSelection(self.selectedRecipeID, reagentButton.optionalReagentIndex);
+	elseif button == "RightButton" then
+		self:SetOptionalReagent(reagentButton.optionalReagentIndex, nil);
+		self:OnOptionalReagentMouseEnter(reagentButton);
+	end
+end
+
+function TradeSkillDetailsMixin:GetOptionalReagentsArray()
+	return self.optionalReagents;
+end
+
+function TradeSkillDetailsMixin:SetOptionalReagent(optionalReagentIndex, option)
+	local count = 1; -- Count is always 1 for optional profession reagents.
+
+	if option == nil then
+		for i = 1, #self.optionalReagents do
+			if self.optionalReagents[i].slot == optionalReagentIndex then
+				table.remove(self.optionalReagents, i);
+				break;
+			end
+		end
+	else
+		local currentSlotInfo = self:FindOptionalReagent(optionalReagentIndex);
+		local currentItemInfo, currentItemInfoArrayIndex = self:FindOptionalReagentByItemID(option.itemID);
+		if currentSlotInfo then
+			currentSlotInfo.itemID = option.itemID;
+			currentSlotInfo.count = count;
+
+			if currentItemInfo and currentItemInfo ~= currentSlotInfo then
+				table.remove(self.optionalReagents, currentItemInfoArrayIndex);
+			end
+		elseif currentItemInfo then
+			currentItemInfo.count = count;
+			currentItemInfo.slot = optionalReagentIndex;
+		else
+			table.insert(self.optionalReagents, { itemID = option.itemID, count = count, slot = optionalReagentIndex, });
+		end
+	end
+	
+	self:GetParent():TriggerEvent(TradeSkillUIMixin.Event.OptionalReagentUpdated, optionalReagentIndex);
+	self:Refresh();
+end
+
+function TradeSkillDetailsMixin:FindOptionalReagent(optionalReagentIndex)
+	local optionalReagentsArray = self:GetOptionalReagentsArray();
+	for i = 1, #optionalReagentsArray do
+		local info = optionalReagentsArray[i];
+		if info.slot == optionalReagentIndex then
+			return info, i;
+		end
+	end
+
+	return nil;
+end
+
+function TradeSkillDetailsMixin:FindOptionalReagentByItemID(itemID)
+	local optionalReagentsArray = self:GetOptionalReagentsArray();
+	for i = 1, #optionalReagentsArray do
+		local info = optionalReagentsArray[i];
+		if info.itemID == itemID then
+			return info, i;
+		end
+	end
+
+	return nil;
+end
+
+function TradeSkillDetailsMixin:HasOptionalReagent(itemID)
+	return self:FindOptionalReagentByItemID(itemID) ~= nil;
+end
+
+function TradeSkillDetailsMixin:GetOptionalReagent(optionalReagentIndex)
+	local info = self:FindOptionalReagent(optionalReagentIndex);
+	if not info then
+		return nil;
+	end
+
+	local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = GetItemInfo(info.itemID);
+	if itemName then
+		local itemCount = ItemUtil.GetOptionalReagentCount(info.itemID);
+		local bonusText = self:GetOptionalReagentBonusText(info.itemID, optionalReagentIndex);
+		local tooltipText = self:GetOptionalReagentTooltipText(info.itemID, optionalReagentIndex);
+		return itemName, bonusText, itemIcon, info.count, itemCount, info.itemID, tooltipText;
+	else
+		self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
+		return RETRIEVING_ITEM_INFO, nil, "Interface\\Icons\\INV_Misc_QuestionMark", 0, 0, info.itemID;
+	end
+end
+
+function TradeSkillDetailsMixin:GetOptionalReagentsPreview(itemID, slot)
+	local optionalReagents = self:GetOptionalReagentsArray();
+
+	-- Get the current state of the optional reagent list.
+	local info, optionalReagentIndex = self:FindOptionalReagentByItemID(itemID);
+	local currentSlotInfo = self:FindOptionalReagent(slot);
+
+	-- 1) If we're just moving this reagent to another empty slot or it is already in this slot, we can
+	-- use the active optional reagent list as a preview.
+	if info and (not currentSlotInfo or currentSlotInfo.itemID == itemID) then
+		return optionalReagents, optionalReagentIndex;
+	end
+
+	-- We need to modify the table to preview the potential state, so make a copy to avoid changing the underlying data.
+	optionalReagents = CopyTable(optionalReagents);
+
+	-- 2) The reagent is already slotted, but it's moving to a non-empty slot.
+	if info then
+		-- Remove the existing reagent in the slot.
+		for i, optionalReagent in ipairs(optionalReagents) do
+			if optionalReagent.slot == slot then
+				table.remove(optionalReagents, i);
+				break;
+			end
+		end
+
+		return optionalReagents, optionalReagentIndex;
+	end
+
+	-- 3) If this reagent isn't slotted, and there is an reagent in the slot, replace it.
+	for i, optionalReagent in ipairs(optionalReagents) do
+		if optionalReagent.slot == slot then
+			optionalReagent.itemID = itemID;
+			optionalReagent.count = 1;
+			optionalReagentIndex = i;
+			return optionalReagents, i;
+		end
+	end
+
+	-- 4) If this reagent isn't slotted, and there's not an item in the slot, fill the slot with the item.
+	table.insert(optionalReagents, { itemID = itemID, count = 1, slot = slot, });
+	return optionalReagents, #optionalReagents;
+end
+
+function TradeSkillDetailsMixin:GetOptionalReagentBonusText(itemID, slot)
+	local optionalReagents, optionalReagentIndex = self:GetOptionalReagentsPreview(itemID, slot);
+	return C_TradeSkillUI.GetOptionalReagentBonusText(self.selectedRecipeID, optionalReagentIndex, optionalReagents);
+end
+
+function TradeSkillDetailsMixin:GetOptionalReagentTooltipText(itemID, slot)
+	local optionalReagents, optionalReagentIndex = self:GetOptionalReagentsPreview(itemID, slot);
+	return C_TradeSkillUI.GetOptionalReagentTooltipText(self.selectedRecipeID, optionalReagentIndex, optionalReagents);
 end
 
 function TradeSkillDetailsMixin:OnStarsMouseEnter(starsFrame)

@@ -58,11 +58,8 @@
 	</CheckButton>
 	
 	
-	<Frame name="ExtraActionBarFrame" frameStrata="LOW" parent="MainMenuBar" enableMouse="true" toplevel="true" hidden="true">
-		<Size x="64" y="64"/>
-		<Anchors>
-			<Anchor point="BOTTOM" x="0" y="160"/>
-		</Anchors>
+	<Frame name="ExtraActionBarFrame" frameStrata="LOW" enableMouse="true" hidden="true">
+		<Size x="256" y="128"/>
 		<Animations>
 			<AnimationGroup parentKey="intro">
 				<Alpha fromAlpha="0" toAlpha="1" duration="0.3" order="1"/>

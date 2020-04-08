@@ -228,7 +228,7 @@ local function GetActiveBidList()
 end
 
 
-AuctionHouseFrameMixin = CreateFromMixins(CallbackRegistryBaseMixin);
+AuctionHouseFrameMixin = CreateFromMixins(CallbackRegistryMixin);
 
 AuctionHouseFrameMixin:GenerateCallbackEvents(
 {
@@ -282,7 +282,7 @@ local MaxWidthArguments = {
 };
 
 function AuctionHouseFrameMixin:OnLoad()
-	CallbackRegistryBaseMixin.OnLoad(self);
+	CallbackRegistryMixin.OnLoad(self);
 
 	self.activeSearches = {};
 

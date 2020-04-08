@@ -52,7 +52,7 @@ end
 function WorldMapBountyBoardMixin:IsWorldQuestCriteriaForSelectedBounty(questID)
 	if self.bounties and self.selectedBountyIndex then
 		local bounty = self.bounties[self.selectedBountyIndex];
-		if bounty and IsQuestCriteriaForBounty(questID, bounty.questID) then
+		if bounty and C_QuestLog.IsQuestCriteriaForBounty(questID, bounty.questID) then
 			return true;
 		end
 	end
@@ -86,7 +86,12 @@ function WorldMapBountyBoardMixin:Refresh()
 		return;
 	end
 
-	self.bounties, self.displayLocation, self.lockedQuestID, self.bountySetID = GetQuestBountyInfoForMapID(mapID, self.bounties);
+	self.displayLocation, self.lockedQuestID, self.bountySetID = C_QuestLog.GetBountySetInfoForMapID(mapID);
+	self.bounties = C_QuestLog.GetBountiesForMapID(mapID) or {};
+
+	if self.lockedQuestID and not C_QuestLog.IsOnQuest(self.lockedQuestID) then
+		self.lockedQuestID = nil;
+	end
 
 	if not self.displayLocation then
 		self:Clear();
@@ -162,7 +167,7 @@ function WorldMapBountyBoardMixin:RefreshBountyTabs()
 			tab:SetHighlightAtlas("worldquest-tracker-ring");
 			tab:GetHighlightTexture():SetAlpha(0.4);
 		end
-		if IsQuestComplete(bounty.questID) then
+		if C_QuestLog.IsComplete(bounty.questID) then
 			tab.CheckMark:Show();
 			if not self.firstCompletedTab then
 				self.firstCompletedTab = tab;
@@ -206,16 +211,13 @@ function WorldMapBountyBoardMixin:RefreshSelectedBounty()
 
 	if self.selectedBountyIndex then
 		local bountyData = self.bounties[self.selectedBountyIndex];
-		local questIndex = GetQuestLogIndexByID(bountyData.questID);
-		if questIndex > 0 then
-			local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory = GetQuestLogTitle(questIndex);
-			if title then
-				self.BountyName:SetText(title);
+		local title = QuestUtils_GetQuestName(bountyData.questID);
+		if title then
+			self.BountyName:SetText(title);
 
-				self:InvalidateMapCache();
-				self:RefreshSelectedBountyObjectives(bountyData);
-				return;
-			end
+			self:InvalidateMapCache();
+			self:RefreshSelectedBountyObjectives(bountyData);
+			return;
 		end
 	end
 
@@ -314,8 +316,8 @@ function WorldMapBountyBoardMixin:ShowBountyTooltip(bountyIndex)
 	local bountyData = self.bounties[bountyIndex];
 	self:SetTooltipOwner();
 
-	local questIndex = GetQuestLogIndexByID(bountyData.questID);
-	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isStory = GetQuestLogTitle(questIndex);
+	local questIndex = C_QuestLog.GetLogIndexForQuestID(bountyData.questID);
+	local title = C_QuestLog.GetTitleForLogIndex(questIndex);
 	if title then
 		GameTooltip:SetText(title, HIGHLIGHT_FONT_COLOR:GetRGB());
 		WorldMap_AddQuestTimeToTooltip(bountyData.questID);
@@ -328,7 +330,7 @@ function WorldMapBountyBoardMixin:ShowBountyTooltip(bountyIndex)
 		if bountyData.turninRequirementText then
 			GameTooltip:AddLine(bountyData.turninRequirementText, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 		end
-		
+
 		GameTooltip_AddQuestRewardsToTooltip(GameTooltip, bountyData.questID, TOOLTIP_QUEST_REWARDS_STYLE_EMISSARY_REWARD);
 		GameTooltip:Show();
 	else
@@ -348,8 +350,8 @@ function WorldMapBountyBoardMixin:SetTooltipOwner()
 end
 
 function WorldMapBountyBoardMixin:ShowLockedByQuestTooltip()
-	local questIndex = GetQuestLogIndexByID(self.lockedQuestID);
-	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isStory = GetQuestLogTitle(questIndex);
+	local questIndex = C_QuestLog.GetLogIndexForQuestID(self.lockedQuestID);
+	local title = C_QuestLog.GetTitleForLogIndex(questIndex);
 	if title then
 		self:SetTooltipOwner();
 
@@ -489,7 +491,8 @@ function WorldMapBountyBoardMixin:TryShowingIntroTutorial()
 
 			self.TutorialBox.Text:SetText(BOUNTY_TUTORIAL_INTRO);
 
-			if self:GetDisplayLocation() == LE_MAP_OVERLAY_DISPLAY_LOCATION_TOP_RIGHT or self:GetDisplayLocation() == LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_RIGHT then
+			local displayLocation = self:GetDisplayLocation();
+			if displayLocation == Enum.MapOverlayDisplayLocation.TopRight or displayLocation == Enum.MapOverlayDisplayLocation.BottomRight then
 				SetClampedTextureRotation(self.TutorialBox.Arrow.Arrow, 270);
 				SetClampedTextureRotation(self.TutorialBox.Arrow.Glow, 270);
 

@@ -312,15 +312,9 @@ function QuestFrameGreetingPanel_OnShow()
 				questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, title);
 				questTitleButton.Icon:SetVertexColor(1,1,1);
 			end
-			if ( isComplete ) then
-				if ( IsActiveQuestLegendary(i) ) then
-					questTitleButton.Icon:SetTexture("Interface\\GossipFrame\\ActiveLegendaryQuestIcon");
-				else
-					questTitleButton.Icon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon");
-				end
-			else
-				questTitleButton.Icon:SetTexture("Interface\\GossipFrame\\IncompleteQuestIcon");
-			end
+
+			local icon = QuestUtil.GetQuestIconActive(isComplete, IsActiveQuestLegendary(i), nil, nil, C_CampaignInfo.IsCampaignQuest(GetActiveQuestID(i)));
+			questTitleButton.Icon:SetTexture(icon);
 			questTitleButton:SetHeight(questTitleButton:GetTextHeight() + 2);
 			questTitleButton:SetID(i);
 			questTitleButton.isActive = 1;
@@ -349,16 +343,10 @@ function QuestFrameGreetingPanel_OnShow()
 		lastTitleButton = nil;
 		for i=(numActiveQuests + 1), (numActiveQuests + numAvailableQuests) do
 			local questTitleButton = QuestFrameGreetingPanel.titleButtonPool:Acquire();
-			local isTrivial, frequency, isRepeatable, isLegendary = GetAvailableQuestInfo(i - numActiveQuests);
-			if ( isLegendary ) then
-				questTitleButton.Icon:SetTexture("Interface\\GossipFrame\\AvailableLegendaryQuestIcon");
-			elseif ( frequency == LE_QUEST_FREQUENCY_DAILY or frequency == LE_QUEST_FREQUENCY_WEEKLY ) then
-				questTitleButton.Icon:SetTexture("Interface\\GossipFrame\\DailyQuestIcon");
-			elseif ( isRepeatable ) then
-				questTitleButton.Icon:SetTexture("Interface\\GossipFrame\\DailyActiveQuestIcon");
-			else
-				questTitleButton.Icon:SetTexture("Interface\\GossipFrame\\AvailableQuestIcon");
-			end
+			local isTrivial, frequency, isRepeatable, isLegendary, questID = GetAvailableQuestInfo(i - numActiveQuests);
+			local icon = QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, C_CampaignInfo.IsCampaignQuest(questID));
+			questTitleButton.Icon:SetTexture(icon);
+
 			if ( isTrivial ) then
 				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));
 				questTitleButton.Icon:SetVertexColor(0.5,0.5,0.5);
@@ -448,6 +436,7 @@ end
 
 function QuestFrame_ShowQuestPortrait(parentFrame, portraitDisplayID, mountPortraitDisplayID, text, name, x, y)
 	QuestModelScene:SetParent(parentFrame);
+	QuestModelScene:SetFrameLevel(600);
 	QuestModelScene:ClearAllPoints();
 	QuestModelScene:SetPoint("TOPLEFT", parentFrame, "TOPRIGHT", x, y);
 	QuestModelScene:ClearScene();
@@ -482,7 +471,7 @@ function QuestFrame_ShowQuestPortrait(parentFrame, portraitDisplayID, mountPortr
 			-- these is no mount, so use the mount actor as the main actor for the rider
 			riderTag = mountTag;
 		end
-		
+
 		if portraitDisplayID > 0 then
 			rider = QuestModelScene:GetActorByTag(riderTag);
 			rider:SetModelByCreatureDisplayID(portraitDisplayID);

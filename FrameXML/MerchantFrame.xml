@@ -519,11 +519,10 @@
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 			<Button name="MerchantFrameTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="MERCHANT">
-                <Anchors>
-                    <Anchor point="CENTER" relativePoint="BOTTOMLEFT" x="50" y="-15"/>
-
-                </Anchors>
-                <Scripts>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="BOTTOMLEFT" x="50" y="-15"/>
+				</Anchors>
+				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText("", 1.0,1.0,1.0 );
@@ -532,14 +531,15 @@
 					<OnClick>
 						PanelTemplates_SetTab(MerchantFrame, self:GetID());
 						MerchantFrame_Update();
+						EventRegistry:TriggerEvent("MerchantFrame.MerchantTabShow");
 					</OnClick>
-                </Scripts>
-            </Button>
-            <Button name="MerchantFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="BUYBACK">
-                <Anchors>
-                   <Anchor point="LEFT" relativeTo="MerchantFrameTab1" relativePoint="RIGHT" x="-16" y="0"/>
-                </Anchors>
-                <Scripts>
+				</Scripts>
+			</Button>
+			<Button name="MerchantFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="BUYBACK">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MerchantFrameTab1" relativePoint="RIGHT" x="-16" y="0"/>
+				</Anchors>
+				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText("", 1.0,1.0,1.0 );
@@ -548,9 +548,10 @@
 					<OnClick>
 						PanelTemplates_SetTab(MerchantFrame, self:GetID());
 						MerchantFrame_Update();
+						EventRegistry:TriggerEvent("MerchantFrame.BuyBackTabShow");
 					</OnClick>
-                </Scripts>
-            </Button>
+				</Scripts>
+			</Button>
 			<Frame name="$parentLootFilter" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="lootFilter">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="0" y="-28"/>

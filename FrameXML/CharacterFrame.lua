@@ -228,7 +228,7 @@ end
 function CharacterFrameCorruption_OnEnter(self)
 	self.tooltipShowing = true;
 	self.Eye:SetAtlas("Nzoth-charactersheet-icon-glow", true);
-	GameTooltip_SetBackdropStyle(GameTooltip, GAME_TOOLTIP_BACKDROP_STYLE_CORRUPTED_ITEM);
+	SharedTooltip_SetBackdropStyle(GameTooltip, GAME_TOOLTIP_BACKDROP_STYLE_CORRUPTED_ITEM);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetMinimumWidth(250);
 

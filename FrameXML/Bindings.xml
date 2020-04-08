@@ -1266,6 +1266,9 @@
 	<Binding name="FLIPCAMERAYAW" category="BINDING_HEADER_CAMERA">
 		FlipCameraYaw(180);
 	</Binding>
+	<Binding name="CENTERCAMERA" category="BINDING_HEADER_CAMERA">
+		CenterCamera();
+	</Binding>
 	<!--  header="RAID_TARGET" -->
 	<Binding name="RAIDTARGET8" category="BINDING_HEADER_RAID_TARGET">
 		SetRaidTargetIcon("target", 8);

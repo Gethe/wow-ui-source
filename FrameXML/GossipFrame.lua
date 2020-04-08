@@ -18,30 +18,14 @@ function GossipTitleButtonMixin:AddCallbackForQuest(questID, cb)
 end
 
 function GossipTitleButtonMixin:SetQuest(titleText, level, isTrivial, frequency, isRepeatable, isLegendary, isIgnored, questID)
-	if ( isLegendary ) then
-		self.Icon:SetTexture("Interface/GossipFrame/AvailableLegendaryQuestIcon");
-	elseif ( frequency == LE_QUEST_FREQUENCY_DAILY or frequency == LE_QUEST_FREQUENCY_WEEKLY ) then
-		self.Icon:SetTexture("Interface/GossipFrame/DailyQuestIcon");
-	elseif ( isRepeatable ) then
-		self.Icon:SetTexture("Interface/GossipFrame/DailyActiveQuestIcon");
-	else
-		self.Icon:SetTexture("Interface/GossipFrame/AvailableQuestIcon");
-	end
-
+	local icon = QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, C_CampaignInfo.IsCampaignQuest(questID));
+	self.Icon:SetTexture(icon);
 	self:UpdateTitleForQuest(questID, titleText, isIgnored, isTrivial);
 end
 
 function GossipTitleButtonMixin:SetActiveQuest(titleText, level, isTrivial, isComplete, isLegendary, isIgnored, questID)
-	if isComplete then
-		if isLegendary then
-			self.Icon:SetTexture("Interface/GossipFrame/ActiveLegendaryQuestIcon");
-		else
-			self.Icon:SetTexture("Interface/GossipFrame/ActiveQuestIcon");
-		end
-	else
-		self.Icon:SetTexture("Interface/GossipFrame/IncompleteQuestIcon");
-	end
-
+	local icon = QuestUtil.GetQuestIconActive(isComplete, isLegendary, nil, nil, C_CampaignInfo.IsCampaignQuest(questID));
+	self.Icon:SetTexture(icon);
 	self:UpdateTitleForQuest(questID, titleText, isIgnored, isTrivial);
 end
 

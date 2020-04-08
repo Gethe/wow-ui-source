@@ -184,6 +184,8 @@ function ScenarioBlocksFrame_OnLoad(self)
 	ScenarioChallengeModeBlock.height = ScenarioChallengeModeBlock:GetHeight();
 	ScenarioProvingGroundsBlock.module = SCENARIO_TRACKER_MODULE;
 	ScenarioProvingGroundsBlock.height = ScenarioProvingGroundsBlock:GetHeight();
+	self.MawBuffsBlock.module = SCENARIO_TRACKER_MODULE;
+	self.MawBuffsBlock.height = self.MawBuffsBlock:GetHeight();
 	ScenarioWidgetContainerBlock.module = SCENARIO_TRACKER_MODULE;
 	ScenarioWidgetContainerBlock:RegisterForWidgetSet(SCENARIO_TRACKER_WIDGET_SET, WidgetsLayout);
 
@@ -847,22 +849,28 @@ function ScenarioStage_UpdateOptionWidgetRegistration(stageBlock, widgetSetID)
 	stageBlock.WidgetContainer:RegisterForWidgetSet(widgetSetID);
 end
 
-function ScenarioStage_CustomizeBlock(stageBlock, scenarioType, widgetSetID, textureKitID)
+function ScenarioStage_CustomizeBlock(stageBlock, scenarioType, widgetSetID, textureKit)
 	ScenarioStage_UpdateOptionWidgetRegistration(stageBlock, widgetSetID);
 	stageBlock.RewardButton:Hide();
-
 	if widgetSetID then
 		stageBlock.CompleteLabel:SetPoint("LEFT", stageBlock, "LEFT", 15, 17);
 		stageBlock.Stage:SetPoint("TOPLEFT", stageBlock, "TOPLEFT", 15, -8);
-		stageBlock.Stage:SetTextColor(1, 0.914, 0.682);
-		stageBlock.Stage:SetHeight(34);
-		stageBlock.NormalBG:Hide();
+
+		if(IsInJailersTower()) then 
+			stageBlock.Stage:SetFontObjectsToTry(GameFontNormalLarge, GameFontNormalHuge);
+			stageBlock.Stage:SetTextColor(1, 1, 1);
+		else 
+			stageBlock.Stage:SetFontObjectsToTry(QuestTitleFont, Fancy16Font, SystemFont_Med1);
+			stageBlock.Stage:SetTextColor(1, 0.914, 0.682);
+			stageBlock.Stage:SetHeight(34);
+			stageBlock.NormalBG:Hide();
+		end
 	else
 		stageBlock.NormalBG:Show();
 		ScenarioStageBlock.CompleteLabel:SetPoint("LEFT", stageBlock, "LEFT", 15, 3);
+		stageBlock.Stage:SetFontObjectsToTry(QuestTitleFont, Fancy16Font, SystemFont_Med1);
 
-		if textureKitID then
-			local textureKit = GetUITextureKitInfo(textureKitID);
+		if textureKit then
 			stageBlock.Stage:SetTextColor(1, 0.914, 0.682);
 			stageBlock.NormalBG:SetAtlas(textureKit.."-TrackerHeader", true);
 		elseif (scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION) then
@@ -876,7 +884,7 @@ function ScenarioStage_CustomizeBlock(stageBlock, scenarioType, widgetSetID, tex
 end
 
 function SCENARIO_CONTENT_TRACKER_MODULE:Update()
-	local scenarioName, currentStage, numStages, flags, _, _, _, xp, money, scenarioType, _, textureKitID = C_Scenario.GetInfo();
+	local scenarioName, currentStage, numStages, flags, _, _, _, xp, money, scenarioType, _, textureKit = C_Scenario.GetInfo();
 	local rewardsFrame = ObjectiveTrackerScenarioRewardsFrame;
 	if ( numStages == 0 ) then
 		ScenarioBlocksFrame_Hide();
@@ -907,7 +915,12 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 	local inProvingGrounds = (scenarioType == LE_SCENARIO_TYPE_PROVING_GROUNDS);
 	local dungeonDisplay = (scenarioType == LE_SCENARIO_TYPE_USE_DUNGEON_DISPLAY);
 	local inWarfront = (scenarioType == LE_SCENARIO_TYPE_WARFRONT);
+	local isInJailersTower = IsInJailersTower(); 
 	local scenariocompleted = currentStage > numStages;
+
+	if (isInJailersTower) then 
+		stageName = JAILERS_TOWER_SCENARIO_FLOOR:format(GetJailersTowerLevel());
+	end 
 
 	if ( scenariocompleted ) then
 		ObjectiveTracker_AddBlock(stageBlock);
@@ -955,7 +968,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 				C_Timer.After(1, function() stageBlock.Stage:ApplyFontObjects(); end);
 				stageBlock.appliedAlready = true;
 			end
-			ScenarioStage_CustomizeBlock(stageBlock, scenarioType, widgetSetID, textureKitID);
+			ScenarioStage_CustomizeBlock(stageBlock, scenarioType, widgetSetID, textureKit);
 		end
 
 		local warfrontHelpBox = BlocksFrame.WarfrontHelpBox;
@@ -991,6 +1004,9 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 	end
 	ScenarioSpellButtons_UpdateCooldowns();
 
+	if IsInJailersTower() then
+		ObjectiveTracker_AddBlock(BlocksFrame.MawBuffsBlock);
+	end
 	ObjectiveTracker_AddBlock(ScenarioWidgetContainerBlock);
 
 	-- add the scenario block

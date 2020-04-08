@@ -692,7 +692,7 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 		end
 	end
 	
-	if ( not usingCurrency and maxQuality <= LE_ITEM_QUALITY_UNCOMMON and not itemButton.showNonrefundablePrompt) or (not itemsString and not itemButton.price) then
+	if ( not usingCurrency and maxQuality <= Enum.ItemQuality.Uncommon and not itemButton.showNonrefundablePrompt) or (not itemsString and not itemButton.price) then
 		BuyMerchantItem( itemButton:GetID(), numToPurchase );
 		return;
 	end
@@ -861,7 +861,10 @@ function MerchantFrame_UpdateCurrencies()
 				tokenButton:SetScript("OnEnter", MerchantFrame_ShowCurrencyTooltip);
 			end
 
-			local name, count, icon = GetCurrencyInfo(currencies[index]);
+			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencies[index]);
+			local name = currencyInfo.name;
+			local count = currencyInfo.quantity;
+			local icon = currencyInfo.iconFileID;
 			if ( name and name ~= "" ) then
 				tokenButton.icon:SetTexture(icon);
 				tokenButton.currencyID = currencies[index];
@@ -903,7 +906,7 @@ end
 
 function MerchantFrame_UpdateCurrencyButton(tokenButton)
 	if ( tokenButton.currencyID ) then
-		local name, count = GetCurrencyInfo(tokenButton.currencyID);
+		local count = C_CurrencyInfo.GetCurrencyInfo(tokenButton.currencyID).quantity;
 		local displayCount = count;
 		local displayWidth = 50;
 		if ( count > 99999 ) then

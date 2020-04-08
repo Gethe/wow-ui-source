@@ -2,7 +2,7 @@ ClassNameplateBarPaladin = {};
 
 function ClassNameplateBarPaladin:OnLoad()
 	self.class = "PALADIN";
-	self.spec = SPEC_PALADIN_RETRIBUTION;
+	--self.spec = SPEC_PALADIN_RETRIBUTION;
 	self.powerToken = "HOLY_POWER";
 
 	ClassNameplateBar.OnLoad(self);

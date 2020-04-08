@@ -1193,14 +1193,6 @@ function UnitPopup_HideButtons ()
 			if ( not inInstance or not C_ChallengeMode.IsChallengeModeActive() or ( inParty and not isLeader ) ) then
 				shown = false;
 			end
-		elseif ( value == "DUNGEON_DIFFICULTY" ) then
-			if ( UnitLevel("player") < 65 and GetDungeonDifficultyID() == UnitPopupButtons[value].defaultDifficultyID ) then
-				shown = false;
-			end
-		elseif ( value == "RAID_DIFFICULTY" ) then
-			if ( UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_WRATH_OF_THE_LICH_KING] and GetRaidDifficultyID() == UnitPopupButtons[value].defaultDifficultyID ) then
-				shown = false;
-			end
 		elseif ( value == "RAID_LEADER" ) then
 			if ( not isLeader or not isPlayer or UnitIsGroupLeader(dropdownMenu.unit)or not dropdownMenu.name ) then
 				shown = false;
@@ -1485,7 +1477,7 @@ local function UnitPopup_IsEnabled(dropdownFrame, unitPopupButton)
 		return false;
 	end
 
-	if unitPopupButton.disabledInKioskMode and IsKioskModeEnabled() then
+	if unitPopupButton.disabledInKioskMode and Kiosk.IsEnabled() then
 		return false;
 	end
 
@@ -1614,9 +1606,6 @@ function UnitPopup_OnUpdate (elapsed)
 						end
 						if (toggleDifficultyID) then
 							enable = CheckToggleDifficulty(toggleDifficultyID, UnitPopupButtons[value].difficultyID);
-						end
-						if (UnitPopupButtons[value].difficultyID == DIFFICULTY_PRIMARYRAID_MYTHIC and UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_MISTS_OF_PANDARIA]) then
-							enable = false;
 						end
 					elseif ( ( strsub(value, 1, 22) == "LEGACY_RAID_DIFFICULTY" ) and ( strlen(value) > 22 ) ) then
 						if ( ( inParty and not isLeader ) or inPublicParty or inInstance or GetRaidDifficultyID() == DIFFICULTY_PRIMARYRAID_MYTHIC ) then
@@ -2107,27 +2096,24 @@ function NormalizeLegacyDifficultyID(difficultyID)
 end
 
 function SetRaidDifficulties(primaryRaid, difficultyID)
-	local otherDifficulty = 0;
-	if (primaryRaid) then
+	if primaryRaid then
 		local toggleDifficultyID, force;
 		local _, instanceType, instanceDifficultyID, _, _, _, isDynamicInstance = GetInstanceInfo();
-		if ( isDynamicInstance and CanChangePlayerDifficulty() ) then
+		if isDynamicInstance and CanChangePlayerDifficulty() then
 			_, _, _, _, _, _, toggleDifficultyID = GetDifficultyInfo(instanceDifficultyID);
 		end
-		if (UnitLevel("player") >= MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_MISTS_OF_PANDARIA]) then
-			if (toggleDifficultyID ~= nil and IsLegacyDifficulty(toggleDifficultyID)) then
-				force = true;
-			end
-			SetRaidDifficultyID(difficultyID, force);
+		if toggleDifficultyID and IsLegacyDifficulty(toggleDifficultyID) then
+			force = true;
 		end
-		if (difficultyID == DIFFICULTY_PRIMARYRAID_MYTHIC) then
+		SetRaidDifficultyID(difficultyID, force);
+		if difficultyID == DIFFICULTY_PRIMARYRAID_MYTHIC then
 			return;
 		end
 		force = nil;
-		if (toggleDifficultyID ~= nil and not IsLegacyDifficulty(toggleDifficultyID)) then
+		if toggleDifficultyID and not IsLegacyDifficulty(toggleDifficultyID) then
 			force = true;
 		end
-		otherDifficulty = GetLegacyRaidDifficultyID();
+		local otherDifficulty = GetLegacyRaidDifficultyID();
 		local size = RAID_DIFFICULTY_SIZES[otherDifficulty];
 		local newDifficulty = RAID_DIFFICULTY_MAP[difficultyID][size];
 		SetLegacyRaidDifficultyID(newDifficulty, force);

@@ -147,7 +147,7 @@ end
 
 function QuestObjectiveFindGroup_OnClick(self)
 	local isFromGreenEyeButton = true;
-	--We only want green eye button groups to display the create a group button if there are already groups there. 
+	--We only want green eye button groups to display the create a group button if there are already groups there.
 	LFGListUtil_FindQuestGroup(self.questID, isFromGreenEyeButton);
 end
 
@@ -209,7 +209,11 @@ function QuestObjectiveReleaseBlockButton_FindGroup(block)
 end
 
 function QuestObjectiveSetupBlockButton_Item(block, questLogIndex, isQuestComplete)
-	local _, item, _, showItemWhenComplete = GetQuestLogSpecialItemInfo(questLogIndex);
+	local item, showItemWhenComplete, _;
+	if questLogIndex then
+		_, item, _, showItemWhenComplete = GetQuestLogSpecialItemInfo(questLogIndex);
+	end
+
 	local shouldShowItem = item and (not isQuestComplete or showItemWhenComplete);
 
 	if shouldShowItem then

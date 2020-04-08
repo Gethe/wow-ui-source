@@ -149,7 +149,7 @@ function BonusObjectiveTracker_OnBlockLeave(block)
 	block.module.tooltipBlock = nil;
 end
 
-function BonusObjectiveTracker_UpdatePOIs(self)
+function BonusObjectiveTracker_UpdatePOIs(self, numPOINumeric)
 	for questID, block in pairs(self.usedBlocks) do
 		if block.isThreatQuest then
 			local poiButton = QuestPOI_GetButton(ObjectiveTrackerFrame.BlocksFrame, questID, "threat", nil);
@@ -161,31 +161,33 @@ function BonusObjectiveTracker_UpdatePOIs(self)
 			end
 		end
 	end
+
+	return numPOINumeric;
 end
 
 local lastTrackedQuestID = nil;
-function BonusObjectiveTracker_TrackWorldQuest(questID, hardWatch)
-	if AddWorldQuestWatch(questID, hardWatch) then
+function BonusObjectiveTracker_TrackWorldQuest(questID, watchType)
+	if C_QuestLog.AddWorldQuestWatch(questID, watchType) then
 		if lastTrackedQuestID and lastTrackedQuestID ~= questID then
-			if not IsWorldQuestHardWatched(lastTrackedQuestID) and hardWatch then
-				AddWorldQuestWatch(lastTrackedQuestID, true); -- Promote to a hard watch
+			if C_QuestLog.GetQuestWatchType(lastTrackedQuestID) ~= Enum.QuestWatchType.Manual and watchType == Enum.QuestWatchType.Manual then
+				C_QuestLog.AddWorldQuestWatch(lastTrackedQuestID, Enum.QuestWatchType.Manual); -- Promote to manual watch
 			end
 		end
 		lastTrackedQuestID = questID;
 	end
 
-	if not hardWatch or GetSuperTrackedQuestID() == 0 then
-		SetSuperTrackedQuestID(questID);
+	if watchType == Enum.QuestWatchType.Automatic or C_SuperTrack.GetSuperTrackedQuestID() == 0 then
+		C_SuperTrack.SetSuperTrackedQuestID(questID);
 	end
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_QUEST);
 end
 
 function BonusObjectiveTracker_UntrackWorldQuest(questID)
-	if RemoveWorldQuestWatch(questID) then
+	if C_QuestLog.RemoveWorldQuestWatch(questID) then
 		if lastTrackedQuestID == questID then
 			lastTrackedQuestID = nil;
 		end
-		if questID == GetSuperTrackedQuestID() then
+		if questID == C_SuperTrack.GetSuperTrackedQuestID() then
 			QuestSuperTracking_ChooseClosestQuest();
 		end
 	end
@@ -199,7 +201,7 @@ function BonusObjectiveTracker_OnBlockClick(self, button)
 		if button == "LeftButton" then
 			if ( not ChatEdit_TryInsertQuestLinkForQuestID(questID) ) then
 				if IsShiftKeyDown() then
-					if IsWorldQuestWatched(questID) and not isThreatQuest then
+					if QuestUtils_IsQuestWatched(questID) and not isThreatQuest then
 						BonusObjectiveTracker_UntrackWorldQuest(questID);
 					end
 				else
@@ -219,7 +221,7 @@ end
 function BonusObjectiveTracker_OnOpenDropDown(self)
 	local block = self.activeFrame;
 	local questID = block.TrackedQuest.questID;
-	local addStopTracking = IsWorldQuestWatched(questID);
+	local addStopTracking = QuestUtils_IsQuestWatched(questID);
 
 	-- Ensure at least one option will appear before showing the dropdown.
 	if not addStopTracking then
@@ -234,7 +236,7 @@ function BonusObjectiveTracker_OnOpenDropDown(self)
 	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 
 	-- Add "stop tracking"
-	if IsWorldQuestWatched(questID) then
+	if QuestUtils_IsQuestWatched(questID) then
 		info = UIDropDownMenu_CreateInfo();
 		info.notCheckable = true;
 		info.text = OBJECTIVES_STOP_TRACKING;
@@ -561,7 +563,7 @@ local function InternalIsQuestComplete(questID)
 	if ( COMPLETED_BONUS_DATA[questID] ) then
 		return true;
 	else
-		return IsQuestComplete(questID);
+		return C_QuestLog.IsComplete(questID);
 	end
 end
 
@@ -735,7 +737,7 @@ end
 local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQuest)
 	local isInArea, isOnMap, numObjectives, taskName, displayAsObjective = InternalGetTaskInfo(questID);
 	local treatAsInArea = isTrackedWorldQuest or isInArea;
-	local isSuperTracked = questID == GetSuperTrackedQuestID();
+	local isSuperTracked = questID == C_SuperTrack.GetSuperTrackedQuestID();
 	local playEnterAnim = treatAsInArea and not isTrackedWorldQuest and questID == OBJECTIVE_TRACKER_UPDATE_ID and not isSuperTracked;
 	-- show task if we're in the area or on the same map and we were displaying it before
 	local existingTask = module:GetExistingBlock(questID);
@@ -746,8 +748,7 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 			module.headerText = TRACKER_HEADER_OBJECTIVE;
 		end
 
-		local questLogIndex = GetQuestLogIndexByID(questID);
-
+		local questLogIndex = C_QuestLog.GetLogIndexForQuestID(questID);
 		QuestObjective_SetupHeader(block, OBJECTIVE_TRACKER_LINE_WIDTH - OBJECTIVE_TRACKER_DASH_WIDTH - BONUS_OBJECTIVE_LINE_DASH_OFFSET);
 		QuestObjectiveSetupBlockButton_FindGroup(block, questID);
 		QuestObjectiveSetupBlockButton_Item(block, questLogIndex);
@@ -759,11 +760,9 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 		end
 
 		if ( QuestUtils_IsQuestWorldQuest(questID) ) then
-			local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(questID);
-			assert(worldQuestType);
-
+			local info = C_QuestLog.GetQuestTagInfo(questID);
 			local inProgress = questLogIndex ~= 0;
-			QuestUtil.SetupWorldQuestButton(block.TrackedQuest, worldQuestType, rarity, isElite, tradeskillLineIndex, inProgress, isSuperTracked, nil, nil, isTrackedWorldQuest);
+			QuestUtil.SetupWorldQuestButton(block.TrackedQuest, info, inProgress, isSuperTracked, nil, nil, isTrackedWorldQuest);
 
 			block.TrackedQuest:SetScale(.9);
 			block.TrackedQuest:SetPoint("TOPRIGHT", block.currentLine, "TOPLEFT", 18, 0);
@@ -858,7 +857,7 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 				end
 			end
 		end
-	
+
 		block.posIndex = posIndex;
 		block:Show();
 		module:FreeUnusedLines(block);
@@ -891,8 +890,8 @@ end
 
 function BonusObjectiveTracker_SortWorldQuests()
 	local sortedQuests = {};
-	for i = 1, GetNumWorldQuestWatches() do
-		tinsert(sortedQuests, GetWorldQuestWatchInfo(i));
+	for i = 1, C_QuestLog.GetNumWorldQuestWatches() do
+		tinsert(sortedQuests, C_QuestLog.GetQuestIDForWorldQuestWatchIndex(i));
 	end
 
 	table.sort(sortedQuests, SortWorldQuestsHelper);
@@ -926,8 +925,8 @@ local function UpdateQuestBonusObjectives(module)
 	local tasksTable = InternalGetTasksTable();
 	for i = 1, #tasksTable do
 		local questID = tasksTable[i];
-		if ( module.ShowWorldQuests == QuestUtils_IsQuestWorldQuest(questID) and not IsWorldQuestWatched(questID) ) then
-			if not AddBonusObjectiveQuest(module, questID, i + GetNumWorldQuestWatches()) then
+		if module.ShowWorldQuests == QuestUtils_IsQuestWorldQuest(questID) and not QuestUtils_IsQuestWatched(questID) then
+			if not AddBonusObjectiveQuest(module, questID, i + C_QuestLog.GetNumWorldQuestWatches()) then
 				break; -- No more room
 			end
 		end
@@ -975,7 +974,7 @@ function BonusObjectiveTrackerModuleMixin:Update()
 		self.Header.Text:SetText(self.headerText);
 		-- shadow anim
 		local shadowAnim = self.Header.ShadowAnim;
-		if ( self.Header.animating and not shadowAnim:IsPlaying() and GetNumWorldQuestWatches() == 0 ) then
+		if ( self.Header.animating and not shadowAnim:IsPlaying() and C_QuestLog.GetNumWorldQuestWatches() == 0 ) then
 			local distance = self.contentsAnimHeight - 8;
 			shadowAnim.TransAnim:SetOffset(0, -distance);
 			shadowAnim.TransAnim:SetDuration(distance * 0.33 / 50);
@@ -998,7 +997,7 @@ function BonusObjectiveTracker_SetBlockState(block, state, force)
 				line.Glow.Anim:Stop();
 				line.Sheen.Anim:Stop();
 			end
-			
+
 			-- animate out
 			block.AnimOut:Play();
 			block.state = "LEAVING";
@@ -1235,7 +1234,7 @@ end
 
 function ObjectiveTrackerBonusBannerFrame_PlayBanner(self, questID)
 	-- quest title
-	local questTitle = GetQuestLogTitle(GetQuestLogIndexByID(questID));
+	local questTitle = C_QuestLog.GetTitleForQuestID(questID);
 	if ( not questTitle ) then
 		return;
 	end

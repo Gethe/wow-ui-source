@@ -63,14 +63,14 @@ function WorldFrame_OnUpdate(self, elapsed)
 	if ( StopwatchTicker and not StopwatchTicker:IsVisible() and Stopwatch_IsPlaying() ) then
 		StopwatchTicker_OnUpdate(StopwatchTicker, elapsed);
 	end
-	
+
 	-- need to do some polling for a few tutorials
 	if ( not IsTutorialFlagged(4) and IsTutorialFlagged(10) and not IsTutorialFlagged(55) and TUTORIAL_QUEST_TO_WATCH ) then
 		TUTORIAL_TIMER_CLOSE_TO_QUEST = TUTORIAL_TIMER_CLOSE_TO_QUEST + elapsed;
-		local questIndex = GetQuestLogIndexByID(TUTORIAL_QUEST_TO_WATCH);
-		if ( (questIndex > 0) and (TUTORIAL_TIMER_CLOSE_TO_QUEST > 2)) then
+		local questIndex = C_QuestLog.GetLogIndexForQuestID(TUTORIAL_QUEST_TO_WATCH);
+		if questIndex and (TUTORIAL_TIMER_CLOSE_TO_QUEST > 2) then
 			TUTORIAL_TIMER_CLOSE_TO_QUEST = 0;
-			local distSq = GetDistanceSqToQuest(questIndex);
+			local distSq = C_QuestLog.GetDistanceSqToQuest(TUTORIAL_QUEST_TO_WATCH);
 			if (distSq and distSq > 0 and distSq < TUTORIAL_DISTANCE_TO_QUEST_KILL_SQ) then
 				TriggerTutorial(4);
 			end

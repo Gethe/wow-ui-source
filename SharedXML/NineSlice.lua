@@ -253,7 +253,7 @@ local layouts =
 		RightEdge = { atlas = "!AllianceFrameTile-Left", },
 	},
 
-	BFAMissionNeutral =
+	GenericMetal =
 	{
 		TopLeftCorner =	{ atlas = "UI-Frame-GenericMetal-Corner", x = -6, y = 6, mirrorLayout = true, },
 		TopRightCorner =	{ atlas = "UI-Frame-GenericMetal-Corner", x = 6, y = 6, mirrorLayout = true, },
@@ -276,11 +276,81 @@ local layouts =
 		LeftEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeLeft", },
 		RightEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeRight", },
 	},
+
+	WoodenNeutralFrameTemplate = 
+	{
+		mirrorLayout = true,
+		TopLeftCorner =	{ atlas = "UI-Frame-neutral-Corner", x = -6, y = 6, },
+		TopRightCorner =	{ atlas = "UI-Frame-neutral-Corner", x = 6, y = 6, },
+		BottomLeftCorner =	{ atlas = "UI-Frame-neutral-Corner", x = -6, y = -6, },
+		BottomRightCorner =	{ atlas = "UI-Frame-neutral-Corner", x = 6, y = -6, },
+		TopEdge = { atlas = "_UI-Frame-neutral-TileTop", },
+		BottomEdge = { atlas = "_UI-Frame-neutral-TileBottom", mirrorLayout = false, },
+		LeftEdge = { atlas = "!UI-Frame-neutral-TileLeft", },
+		RightEdge = { atlas = "!UI-Frame-neutral-TileRight", mirrorLayout = false, },
+	},
+
+
+	Runeforge =
+	{
+		TopLeftCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerTopLeft", },
+		TopRightCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerTopRight", },
+		BottomLeftCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerBottomLeft", },
+		BottomRightCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerBottomRight", },
+		TopEdge = { atlas = "_UI-Frame-DiamondMetal-EdgeTop", },
+		BottomEdge = { atlas = "_UI-Frame-DiamondMetal-EdgeBottom", },
+		LeftEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeLeft", },
+		RightEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeRight", },
+	},
+
+	Oribos =
+	{
+		TopLeftCorner =	{ atlas = "UI-Frame-Oribos-CornerTopLeft", },
+		TopRightCorner =	{ atlas = "UI-Frame-Oribos-CornerTopRight", },
+		BottomLeftCorner =	{ atlas = "UI-Frame-Oribos-CornerBottomLeft", },
+		BottomRightCorner =	{ atlas = "UI-Frame-Oribos-CornerBottomRight", },
+		TopEdge = { atlas = "_UI-Frame-Oribos-TileTop", },
+		BottomEdge = { atlas = "_UI-Frame-Oribos-TileBottom", },
+		LeftEdge = { atlas = "!UI-Frame-Oribos-TileLeft", },
+		RightEdge = { atlas = "!UI-Frame-Oribos-TileRight", },
+	},
 }
+
+local uniqueCornersLayout = 
+{
+	["TopRightCorner"] = { atlas = "UI-Frame-%s-CornerTopRight" },
+	["TopLeftCorner"] = { atlas = "UI-Frame-%s-CornerTopLeft" },
+	["BottomLeftCorner"] = { atlas = "UI-Frame-%s-CornerBottomLeft" },
+	["BottomRightCorner"] = { atlas = "UI-Frame-%s-CornerBottomRight" },
+	["TopEdge"] = { atlas = "_UI-Frame-%s-TileTop" },
+	["BottomEdge"] = { atlas = "_UI-Frame-%s-TileBottom" },
+	["LeftEdge"] = { atlas = "!UI-Frame-%s-TileLeft" },
+	["RightEdge"] = { atlas = "!UI-Frame-%s-TileRight" },
+};
+
+local identicalCornersLayout = 
+{
+	["TopRightCorner"] = { atlas = "UI-Frame-%s-Corner", mirrorLayout = true, },
+	["TopLeftCorner"] = { atlas = "UI-Frame-%s-Corner", mirrorLayout = true,},
+	["BottomLeftCorner"] = { atlas = "UI-Frame-%s-Corner", mirrorLayout = true, },
+	["BottomRightCorner"] = { atlas = "UI-Frame-%s-Corner",  mirrorLayout = true,},
+	["TopEdge"] = { atlas = "_UI-Frame-%s-TileTop" },
+	["BottomEdge"] = { atlas = "_UI-Frame-%s-TileBottom" },
+	["LeftEdge"] = { atlas = "!UI-Frame-%s-TileLeft" },
+	["RightEdge"] = { atlas = "!UI-Frame-%s-TileRight" },
+};
 
 --------------------------------------------------
 -- NINE SLICE UTILS
 NineSliceUtil = {};
+
+function NineSliceUtil.ApplyUniqueCornersLayout(self, textureKit)
+	NineSliceUtil.ApplyLayout(self, uniqueCornersLayout, textureKit);
+end
+
+function NineSliceUtil.ApplyIdenticalCornersLayout(self, textureKit)
+	NineSliceUtil.ApplyLayout(self, identicalCornersLayout, textureKit);
+end
 
 function NineSliceUtil.ApplyLayout(container, userLayout, textureKit)
 	for pieceIndex, setup in ipairs(nineSliceSetup) do

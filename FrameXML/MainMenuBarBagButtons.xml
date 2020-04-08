@@ -132,31 +132,4 @@
 			</Anchor>
 		</Anchors>
 	</ItemButton>
-
-    <Frame name="AzeriteInBagsHelpBox" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG" toplevel="true" clampedToScreen="true">
-        <Size x="220" y="100"/>
-        <Layers>
-            <Layer level="OVERLAY">
-                <FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="AZERITE_TUTORIAL_ITEM_IN_BAG">
-                    <Size x="188" y="0"/>
-                    <Anchors>
-                        <Anchor point="TOPLEFT" x="16" y="-24"/>
-                    </Anchors>
-                </FontString>
-            </Layer>
-        </Layers>
-        <Frames>
-            <Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-                <Anchors>
-                    <Anchor point="TOPRIGHT" x="6" y="6"/>
-                </Anchors>
-            </Button>
-            <Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate" clampedToScreen="true" />
-        </Frames>
-        <Scripts>
-            <OnLoad function="AzeriteInBagsHelpBox_OnLoad"/>
-            <OnShow function="AzeriteInBagsHelpBox_OnShow"/>
-            <OnHide function="AzeriteInBagsHelpBox_OnHide"/>
-        </Scripts>
-    </Frame>
 </Ui>

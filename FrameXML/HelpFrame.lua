@@ -396,7 +396,7 @@ end
 
 function HelpFrameReportBugSubmit_OnClick()
 	local bugText = HelpFrameReportBugEditBox:GetText();
-	GMSubmitBug(bugText);
+	C_UserFeedback.SubmitBug(bugText);
 	HelpFrameReportBugEditBox:SetText("");
 	HideUIPanel(HelpFrame);
 end
@@ -406,7 +406,7 @@ end
 --
 function HelpFrameSubmitSuggestionSubmit_OnClick()
 	local suggestionText = HelpFrameSubmitSuggestionEditBox:GetText();
-	GMSubmitSuggestion(suggestionText);
+	C_UserFeedback.SubmitSuggestion(suggestionText);
 	HelpFrameSubmitSuggestionEditBox:SetText("");
 	HideUIPanel(HelpFrame);
 end

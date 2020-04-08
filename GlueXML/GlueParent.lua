@@ -61,6 +61,9 @@ function GlueParent_OnLoad(self)
 	-- Events for Global Mouse Down
 	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
 	self:RegisterEvent("GLOBAL_MOUSE_UP");
+	self:RegisterEvent("KIOSK_SESSION_SHUTDOWN");
+	self:RegisterEvent("KIOSK_SESSION_EXPIRED");
+	self:RegisterEvent("KIOSK_SESSION_EXPIRATION_CHANGED");
 
 	OnDisplaySizeChanged(self);
 end
@@ -100,6 +103,10 @@ function GlueParent_OnEvent(self, event, ...)
 		if not IsGlobalMouseEventHandled(buttonID, event) then
 			GlueDropDownMenu_HandleGlobalMouseEvent(buttonID, event);
 		end
+	elseif (event == "KIOSK_SESSION_SHUTDOWN" or event == "KIOSK_SESSION_EXPIRED") then
+		GlueParent_SetScreen("kioskmodesplash");
+	elseif (event == "KIOSK_SESSION_EXPIRATION_CHANGED") then
+		GlueDialog_Show("OKAY", KIOSK_SESSION_TIMER_CHANGED);
 	end
 end
 
@@ -284,10 +291,10 @@ local function GlueParent_ChangeScreen(screenInfo, screenTable)
 	--Start music. Have to do this before showing screen in case its OnShow changes screen.
 	local displayedExpansionLevel = GetClientDisplayExpansionLevel();
 	if ( screenInfo.playMusic ) then
-		PlayGlueMusic(EXPANSION_GLUE_MUSIC[displayedExpansionLevel]);
+		PlayGlueMusic(SafeGetExpansionData(EXPANSION_GLUE_MUSIC, displayedExpansionLevel));
 	end
 	if ( screenInfo.playAmbience ) then
-		PlayGlueAmbience(EXPANSION_GLUE_AMBIENCE[displayedExpansionLevel], 4.0);
+		PlayGlueAmbience(SafeGetExpansionData(EXPANSION_GLUE_AMBIENCE, displayedExpansionLevel), 4.0);
 	end
 
 	--Actually show this screen
@@ -364,10 +371,10 @@ function GlueParent_CloseSecondaryScreen()
 		if ( primaryScreen and GLUE_SCREENS[primaryScreen] ) then
 			local displayedExpansionLevel = GetClientDisplayExpansionLevel();
 			if ( GLUE_SCREENS[primaryScreen].playMusic ) then
-				PlayGlueMusic(EXPANSION_GLUE_MUSIC[displayedExpansionLevel]);
+				PlayGlueMusic(SafeGetExpansionData(EXPANSION_GLUE_MUSIC, displayedExpansionLevel));
 			end
 			if ( GLUE_SCREENS[primaryScreen].playAmbience ) then
-				PlayGlueAmbience(EXPANSION_GLUE_AMBIENCE[displayedExpansionLevel], 4.0);
+				PlayGlueAmbience(SafeGetExpansionData(EXPANSION_GLUE_AMBIENCE, displayedExpansionLevel), 4.0);
 			end
 		end
 
@@ -398,13 +405,15 @@ end
 -- =============================================================
 
 function SetLoginScreenModel(model)
-
 	local expansionLevel = GetClientDisplayExpansionLevel();
-	local lowResBG = EXPANSION_LOW_RES_BG[expansionLevel];
-	local highResBG = EXPANSION_HIGH_RES_BG[expansionLevel];
-	local background = GetLoginScreenBackground(highResBG, lowResBG);
+	local lowResBG = SafeGetExpansionData(EXPANSION_LOW_RES_BG, expansionLevel);
+	local highResBG = SafeGetExpansionData(EXPANSION_HIGH_RES_BG, expansionLevel);
 
-	model:SetModel(background, true);
+	if lowResBG and highResBG then
+		local background = GetLoginScreenBackground(highResBG, lowResBG);
+		model:SetModel(background, true);
+	end
+
 	model:SetCamera(0);
 	model:SetSequence(0);
 end
@@ -554,65 +563,12 @@ local function PlayGlueAmbienceFromTag()
 	PlayGlueAmbience(GLUE_AMBIENCE_TRACKS[GetCurrentGlueTag()], 4.0);
 end
 
-function GlueParent_DeathKnightButtonSwapMultiTexture(self)
-	local textureBase;
-	local highlightBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Highlight";
+function ResetModel(model)
+	UpdateGlueTag();
+	PlayGlueAmbienceFromTag();
 
-	if ( not self:IsEnabled() ) then
-		textureBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Disabled";
-	elseif ( self.down ) then
-		textureBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Down";
-	else
-		textureBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Up";
-	end
-
-	local currentGlueTag = GetCurrentGlueTag();
-
-	if ( self.currentGlueTag ~= currentGlueTag or self.textureBase ~= textureBase ) then
-		self.currentGlueTag = currentGlueTag;
-		self.textureBase = textureBase;
-
-		if ( currentGlueTag == "DEATHKNIGHT" ) then
-			local suffix = self:IsEnabled() and "-Blue" or "";
-			local texture = textureBase..suffix;
-			local highlight = highlightBase..suffix;
-			self.Left:SetTexture(texture);
-			self.Middle:SetTexture(texture);
-			self.Right:SetTexture(texture);
-			self:SetHighlightTexture(highlight);
-		else
-			self.Left:SetTexture(textureBase);
-			self.Middle:SetTexture(textureBase);
-			self.Right:SetTexture(textureBase);
-			self:SetHighlightTexture(highlightBase);
-		end
-	end
-end
-
-function GlueParent_DeathKnightButtonSwapSingleTexture(self)
-	local currentTag = GetCurrentGlueTag();
-	if ( self.currentGlueTag ~= currentTag ) then
-		self.currentGlueTag = currentTag;
-
-		if (currentTag == "DEATHKNIGHT") then
-			-- Not currently needed, but could support other swaps here.
-			self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up-Blue");
-			self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down-Blue");
-			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight-Blue");
-		else
-			self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up");
-			self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down");
-			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight");
-		end
-	end
-end
-
-function GlueParent_DeathKnightButtonSwap(self)
-	if ( self.Left ) then
-		GlueParent_DeathKnightButtonSwapMultiTexture(self);
-	else
-		GlueParent_DeathKnightButtonSwapSingleTexture(self);
-	end
+	ResetLighting(model);
+	UpdateLighting(model);
 end
 
 -- Function to set the background model for character select and create screens
@@ -623,11 +579,7 @@ function SetBackgroundModel(model, path)
 		SetCharSelectBackground(path);
 	end
 
-	UpdateGlueTag();
-	PlayGlueAmbienceFromTag();
-
-	ResetLighting(model);
-	UpdateLighting(model);
+	ResetModel(model);
 end
 
 -- =============================================================
@@ -662,7 +614,7 @@ function HideUIPanel(self)
 end
 
 function IsKioskGlueEnabled()
-	return IsKioskModeEnabled() and not IsCompetitiveModeEnabled();
+	return Kiosk.IsEnabled() and not IsCompetitiveModeEnabled();
 end
 
 function GetDisplayedExpansionLogo(expansionLevel)
@@ -680,7 +632,7 @@ function GetDisplayedExpansionLogo(expansionLevel)
 			return expansionInfo.logo;
 		end
 	end
-	
+
 	return nil;
 end
 

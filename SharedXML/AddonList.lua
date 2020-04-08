@@ -129,11 +129,6 @@ if ( InGlue() ) then
 				AddonDialog_Show("ADDONS_OUT_OF_DATE");
 				HasShownAddonOutOfDateDialog = true;
 			end
-			if ( AddonList_HasNewVersion() ) then
-				CharacterSelectAddonsButtonGlow:Show();
-			else
-				CharacterSelectAddonsButtonGlow:Hide();
-			end
 			CharacterSelectAddonsButton:Show();
 		else
 			CharacterSelectAddonsButton:Hide();
@@ -264,6 +259,29 @@ function AddonList_SetStatus(self,lod,status,reload)
 		relstr:Hide()
 	end
 end 
+
+local function TriStateCheckbox_SetState(checked, checkButton)
+	local checkedTexture = _G[checkButton:GetName().."CheckedTexture"];
+	if ( not checkedTexture ) then
+		message("Can't find checked texture");
+	end
+	if ( not checked or checked == 0 ) then
+		-- nil or 0 means not checked
+		checkButton:SetChecked(false);
+		checkButton.state = 0;
+	elseif ( checked == 2 ) then
+		-- 2 is a normal
+		checkButton:SetChecked(true);
+		checkedTexture:SetVertexColor(1, 1, 1);
+		checkedTexture:SetDesaturated(false);
+		checkButton.state = 2;
+	else
+		-- 1 is a gray check
+		checkButton:SetChecked(true);
+		checkedTexture:SetDesaturated(true);
+		checkButton.state = 1;
+	end
+end
 
 function AddonList_Update()
 	local numEntrys = GetNumAddOns();
@@ -571,11 +589,7 @@ end
 
 function AddonTooltip_Update(owner)
 	local name, title, notes, _, _, security = GetAddOnInfo(owner:GetID());
-	if ( InGlue() ) then
-		AddonTooltip:Clear()
-	else
-		AddonTooltip:ClearLines();
-	end
+	AddonTooltip:ClearLines();
 	if ( security == "BANNED" ) then
 		AddonTooltip:SetText(ADDON_BANNED_TOOLTIP);
 	else

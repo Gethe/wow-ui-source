@@ -36,15 +36,6 @@
 	<Texture name="GluePanelButtonDisabledDownTexture" file="Interface\Buttons\UI-Panel-Button-Disabled-Down" virtual="true">
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 	</Texture>
-	<Button name="GluePanelButtonGrayTemplate" virtual="true">
-		<NormalFont style="GlueFontHighlight"/>
-		<HighlightFont style="GlueFontHighlight"/>
-		<DisabledFont style="GlueFontDisable"/>
-		<NormalTexture inherits="GluePanelButtonDisabledTexture"/>
-		<PushedTexture inherits="GluePanelButtonDisabledDownTexture"/>
-		<DisabledTexture inherits="GluePanelButtonDisabledTexture"/>
-		<HighlightTexture inherits="GluePanelButtonHighlightTexture"/>
-	</Button>
 	<CheckButton name="GlueCheckButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="32" y="32"/>

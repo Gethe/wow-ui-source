@@ -135,7 +135,9 @@ function ItemUpgradeFrame_Update()
 
 	-- update player's currency
 	if ( cost and cost > 0 ) then
-		local _, amount, currencyTexture = GetCurrencyInfo(currencyType);
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyType);
+		local amount = currencyInfo.quantity;
+		local currencyTexture = currencyInfo.iconFileID;
 		ItemUpgradeFrameMoneyFrame.Currency.currencyID = currencyType;
 		ItemUpgradeFrameMoneyFrame.Currency.icon:SetTexture(currencyTexture);
 		ItemUpgradeFrameMoneyFrame.Currency.count:SetText(cost);
@@ -156,7 +158,9 @@ function ItemUpgradeFrame_UpgradeClick(self)
 
 	local icon, name, quality, _, _, _, cost, currencyType = GetItemUpgradeItemInfo();
 	local r, g, b = GetItemQualityColor(quality);
-	local currencyName, _, currencyTexture = GetCurrencyInfo(currencyType);
+	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyType);
+	local currencyName = currencyInfo.name;
+	local currencyTexture = currencyInfo.iconFileID;
 	local itemsString = " |T"..currencyTexture..":0:0:0:-1|t "..format(CURRENCY_QUANTITY_TEMPLATE, cost, currencyName);
 	StaticPopup_Show("CONFIRM_UPGRADE_ITEM", itemsString, "", {["texture"] = icon, ["name"] = name,
 															["color"] = {r, g, b, 1}, ["link"] = C_ItemUpgrade.GetItemHyperlink()});

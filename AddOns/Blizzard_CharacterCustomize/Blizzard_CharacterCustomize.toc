@@ -1,0 +1,3 @@
+## Title: Blizzard_CharacterCustomize
+## Author: achurchill
+## Notes: This file is just here to update the manifest

@@ -10,7 +10,7 @@ VideoData["Graphics_Quality"]={
 				"Graphics_GroundClutterSlider",
 				"Graphics_ShadowsDropDown",
 				"Graphics_TextureResolutionDropDown",
-				"Graphics_FilteringDropDown",
+				"Graphics_SpellDensityDropDown",
 				"Graphics_LiquidDetailDropDown",
 				"Graphics_SunshaftsDropDown",
 				"Graphics_ProjectedTexturesDropDown",
@@ -121,7 +121,7 @@ VideoData["RaidGraphics_Quality"].childOptions = {
 				"RaidGraphics_GroundClutterSlider",
 				"RaidGraphics_ShadowsDropDown",
 				"RaidGraphics_TextureResolutionDropDown",
-				"RaidGraphics_FilteringDropDown",
+				"RaidGraphics_SpellDensityDropDown",
 				"RaidGraphics_LiquidDetailDropDown",
 				"RaidGraphics_SunshaftsDropDown",
 				"RaidGraphics_ProjectedTexturesDropDown",
@@ -189,6 +189,11 @@ VideoData["Display_DisplayModeDropDown"]={
 		end,
 	lookup = Graphics_TableLookupSafe,
 	windowUpdate = true,
+}
+-------------------------------------------------------------------------------------------------------
+VideoData["Display_UseUIScale"]={
+	name = USE_UISCALE;
+	tooltip = OPTION_TOOLTIP_USE_UISCALE,
 }
 -------------------------------------------------------------------------------------------------------
 VideoData["Display_PrimaryMonitorDropDown"]={
@@ -551,7 +556,6 @@ VideoData["RaidGraphics_SSAODropDown"]={
 		},
 		{
 			text = VIDEO_OPTIONS_ULTRA,
-			tooltip = VIDEO_OPTIONS_SSAO_ULTRA,
 		},
 	},
 
@@ -714,28 +718,34 @@ VideoData["RaidGraphics_ProjectedTexturesDropDown"]={
 }
 
 -------------------------------------------------------------------------------------------------------
-VideoData["Graphics_FilteringDropDown"]={
-	name = ANISOTROPIC;
-	description = OPTION_TOOLTIP_ANISOTROPIC,
-	graphicsCVar =	"graphicsTextureFiltering",
+VideoData["Graphics_SpellDensityDropDown"]={
+	name = SPELL_DENSITY;
+	description = OPTION_TOOLTIP_SPELL_DENSITY,
+	graphicsCVar =	"graphicsSpellDensity",
 	data = {
 		[1] = {
-			text = VIDEO_OPTIONS_BILINEAR,
+			text = VIDEO_OPTIONS_ONLY_ESSENTIAL,
+			tooltip = VIDEO_OPTIONS_SPELL_DENSITY_ONLY_ESSENTIAL,
 		},
 		[2] = {
-			text = VIDEO_OPTIONS_TRILINEAR,
+			text = VIDEO_OPTIONS_SOME,
+			tooltip = VIDEO_OPTIONS_SPELL_DENSITY_SOME,
 		},
 		[3] = {
-			text = VIDEO_OPTIONS_2XANISOTROPIC,
+			text = VIDEO_OPTIONS_HALF,
+			tooltip = VIDEO_OPTIONS_SPELL_DENSITY_HALF,
 		},
 		[4] = {
-			text = VIDEO_OPTIONS_4XANISOTROPIC,
+			text = VIDEO_OPTIONS_MOST,
+			tooltip = VIDEO_OPTIONS_SPELL_DENSITY_MOST,
 		},
 		[5] = {
-			text = VIDEO_OPTIONS_8XANISOTROPIC,
+			text = VIDEO_OPTIONS_DYNAMIC,
+			tooltip = VIDEO_OPTIONS_SPELL_DENSITY_DYNAMIC,
 		},
 		[6] = {
-			text = VIDEO_OPTIONS_16XANISOTROPIC,
+			text = VIDEO_OPTIONS_EVERYTHING,
+			tooltip = VIDEO_OPTIONS_SPELL_DENSITY_EVERYTHING,
 		},
 	},
 	dependent = {
@@ -743,28 +753,34 @@ VideoData["Graphics_FilteringDropDown"]={
 	},
 }
 
-VideoData["RaidGraphics_FilteringDropDown"]={
-	name = ANISOTROPIC;
-	description = OPTION_TOOLTIP_ANISOTROPIC,
-	graphicsCVar =	"raidGraphicsTextureFiltering",
+VideoData["RaidGraphics_SpellDensityDropDown"]={
+	name = SPELL_DENSITY;
+	description = OPTION_TOOLTIP_SPELL_DENSITY,
+	graphicsCVar =	"raidGraphicsSpellDensity",
 	data = {
 		[1] = {
-			text = VIDEO_OPTIONS_BILINEAR,
+			text = VIDEO_OPTIONS_ONLY_ESSENTIAL,
+			tooltip = VIDEO_OPTIONS_SPELL_DENSITY_ONLY_ESSENTIAL,
 		},
 		[2] = {
-			text = VIDEO_OPTIONS_TRILINEAR,
+			text = VIDEO_OPTIONS_SOME,
+			tooltip = VIDEO_OPTIONS_SPELL_DENSITY_SOME,
 		},
 		[3] = {
-			text = VIDEO_OPTIONS_2XANISOTROPIC,
+			text = VIDEO_OPTIONS_HALF,
+			tooltip = VIDEO_OPTIONS_SPELL_DENSITY_HALF,
 		},
 		[4] = {
-			text = VIDEO_OPTIONS_4XANISOTROPIC,
+			text = VIDEO_OPTIONS_MOST,
+			tooltip = VIDEO_OPTIONS_SPELL_DENSITY_MOST,
 		},
 		[5] = {
-			text = VIDEO_OPTIONS_8XANISOTROPIC,
+			text = VIDEO_OPTIONS_DYNAMIC,
+			tooltip = VIDEO_OPTIONS_SPELL_DENSITY_DYNAMIC,
 		},
 		[6] = {
-			text = VIDEO_OPTIONS_16XANISOTROPIC,
+			text = VIDEO_OPTIONS_EVERYTHING,
+			tooltip = VIDEO_OPTIONS_SPELL_DENSITY_EVERYTHING,
 		},
 	},
 	dependent = {
@@ -996,6 +1012,51 @@ VideoData["Advanced_BufferingDropDown"]={
 	restart = true;
 }
 
+-------------------------------------------------------------------------------------------------------
+VideoData["Advanced_FilteringDropDown"]={
+	name = ANISOTROPIC;
+	description = OPTION_TOOLTIP_ANISOTROPIC,
+
+	data = {
+		[1] = {
+			text = VIDEO_OPTIONS_BILINEAR,
+			cvars =	{
+				textureFilteringMode = 0,
+			},
+		},
+		[2] = {
+			text = VIDEO_OPTIONS_TRILINEAR,
+			cvars =	{
+				textureFilteringMode = 1,
+			},
+		},
+		[3] = {
+			text = VIDEO_OPTIONS_2XANISOTROPIC,
+			cvars =	{
+				textureFilteringMode = 2,
+			},
+		},
+		[4] = {
+			text = VIDEO_OPTIONS_4XANISOTROPIC,
+			cvars =	{
+				textureFilteringMode = 3,
+			},
+		},
+		[5] = {
+			text = VIDEO_OPTIONS_8XANISOTROPIC,
+			cvars =	{
+				textureFilteringMode = 4,
+			},
+		},
+		[6] = {
+			text = VIDEO_OPTIONS_16XANISOTROPIC,
+			cvars =	{
+				textureFilteringMode = 5,
+			},
+		},
+	},
+}
+
 VideoData["Advanced_MultisampleAntiAliasingDropDown"]={
 	name = MULTISAMPLE_ANTIALIASING;
 	description = OPTION_TOOLTIP_ADVANCED_MSAA,
@@ -1088,6 +1149,21 @@ VideoData["Advanced_MaxFPSBKSlider"]={
 			end
 		end,
 }
+VideoData["Advanced_TargetFPSSlider"]={
+	name = TARGETFPS;
+	tooltip = OPTION_TARGETFPS,
+	initialize =
+		function(self)
+			local value = self:GetCurrentValue();
+			if(value == 0) then
+				_G["Advanced_TargetFPSCheckBox"]:SetChecked(false);
+				VideoOptions_Disable(self);
+			else
+				_G["Advanced_TargetFPSCheckBox"]:SetChecked(true);
+				VideoOptions_Enable(self);
+			end
+		end,
+}
 
 VideoData["Advanced_ContrastSlider"]={
 	name = OPTION_CONTRAST;
@@ -1112,9 +1188,9 @@ VideoData["Advanced_MaxFPSBKCheckBox"]={
 	name = MAXFPSBK_CHECK;
 	tooltip = OPTION_MAXFPSBK_CHECK,
 }
-VideoData["Advanced_UseUIScale"]={
-	name = USE_UISCALE;
-	tooltip = OPTION_TOOLTIP_USE_UISCALE,
+VideoData["Advanced_TargetFPSCheckBox"]={
+	name = TARGETFPS_CHECK;
+	tooltip = OPTION_TARGETFPS_CHECK,
 }
 VideoData["Advanced_AdapterDropDown"]={
 	name = GRAPHICS_CARD,

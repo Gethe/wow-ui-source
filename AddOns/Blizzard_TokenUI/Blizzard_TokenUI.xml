@@ -106,7 +106,7 @@
 						GameTooltip:SetCurrencyToken(self:GetParent().index);
 					</OnEnter>
 					<OnClick>
-						HandleModifiedItemClick(GetCurrencyListLink(self:GetParent().index));
+						HandleModifiedItemClick(C_CurrencyInfo.GetCurrencyListLink(self:GetParent().index));
 					</OnClick>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -258,10 +258,10 @@
 								return;
 							end
 							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-							SetCurrencyBackpack(TokenFrame.selectedID, 1);
+							C_CurrencyInfo.SetCurrencyBackpack(TokenFrame.selectedID, 1);
 						else
 							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-							SetCurrencyBackpack(TokenFrame.selectedID, 0);
+							C_CurrencyInfo.SetCurrencyBackpack(TokenFrame.selectedID, 0);
 						end
 						TokenFrame_Update();
 						BackpackTokenFrame_Update();

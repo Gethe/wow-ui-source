@@ -25,7 +25,7 @@ RuneButtonMixin = {};
 
 function RuneButtonMixin:OnEnter()
 	if ( self.tooltipText ) then
-		GameTooltip_SetDefaultAnchor(GameTooltip, self);
+		GameTooltip:SetOwner(self:GetParent(), "ANCHOR_BOTTOMRIGHT");
 		GameTooltip:SetText(self.tooltipText, 1, 1, 1);
 		GameTooltip:AddLine(RUNES_TOOLTIP, nil, nil, nil, true);
 		GameTooltip:Show();

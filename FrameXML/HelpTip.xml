@@ -7,23 +7,10 @@
 			<Layer level="OVERLAY">
 				<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyH="LEFT" justifyV="TOP">
 					<Size x="196" y="0"/>
-					<Anchors>
-						<Anchor point="LEFT" x="15" y="0"/>
-					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" hidden="true">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="5" y="5"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						self:GetParent():Acknowledge();
-					</OnClick>
-				</Scripts>
-			</Button>
 			<Button parentKey="OkayButton" inherits="UIPanelButtonTemplate" text="OKAY" hidden="true">
 				<Size x="110" y="22"/>
 				<Anchors>
@@ -41,6 +28,16 @@
 					<Anchor point="TOPLEFT" x="-17" y="-9"/>
 				</Anchors>
 			</Frame>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" hidden="true" frameLevel="100">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="5" y="5"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Acknowledge();
+					</OnClick>
+				</Scripts>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

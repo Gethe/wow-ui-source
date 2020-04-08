@@ -11,88 +11,6 @@ Constant = {
 	}
 };
 
---
--- Expansion Info
---
-MAX_PLAYER_LEVEL_TABLE = {};
-MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_CLASSIC] = 60;
-MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_BURNING_CRUSADE] = 70;
-MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = 80;
-MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_CATACLYSM] = 85;
-MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_MISTS_OF_PANDARIA] = 90;
-MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_WARLORDS_OF_DRAENOR] = 100;
-MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEGION] = 110;
-MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_BATTLE_FOR_AZEROTH] = 120;
-MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_9_0] = 120;
-MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_10_0] = 120;
-MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_11_0] = 120;
-
-NPE_TUTORIAL_COMPLETE_LEVEL = 10;
-
---
--- Colors
---
-NORMAL_FONT_COLOR_CODE		= "|cffffd200";
-HIGHLIGHT_FONT_COLOR_CODE	= "|cffffffff";
-RED_FONT_COLOR_CODE			= "|cffff2020";
-GREEN_FONT_COLOR_CODE		= "|cff20ff20";
-GRAY_FONT_COLOR_CODE		= "|cff808080";
-YELLOW_FONT_COLOR_CODE		= "|cffffff00";
-LIGHTYELLOW_FONT_COLOR_CODE	= "|cffffff9a";
-ORANGE_FONT_COLOR_CODE		= "|cffff7f3f";
-ACHIEVEMENT_COLOR_CODE		= "|cffffff00";
-BATTLENET_FONT_COLOR_CODE	= "|cff82c5ff";
-DISABLED_FONT_COLOR_CODE	= "|cff7f7f7f";
-FONT_COLOR_CODE_CLOSE		= "|r";
-
-NORMAL_FONT_COLOR			= CreateColor(1.0, 0.82, 0.0);
-WHITE_FONT_COLOR			= CreateColor(1.0, 1.0, 1.0);
-HIGHLIGHT_FONT_COLOR		= CreateColor(1.0, 1.0, 1.0);
-RED_FONT_COLOR				= CreateColor(1.0, 0.1, 0.1);
-DIM_RED_FONT_COLOR			= CreateColor(0.8, 0.1, 0.1);
-DULL_RED_FONT_COLOR			= CreateColor(0.75, 0.15, 0.15);
-GREEN_FONT_COLOR			= CreateColor(0.1, 1.0, 0.1);
-GRAY_FONT_COLOR				= CreateColor(0.5, 0.5, 0.5);
-YELLOW_FONT_COLOR			= CreateColor(1.0, 1.0, 0.0);
-LIGHTYELLOW_FONT_COLOR		= CreateColor(1.0, 1.0, 0.6);
-ORANGE_FONT_COLOR			= CreateColor(1.0, 0.5, 0.25);
-PASSIVE_SPELL_FONT_COLOR	= CreateColor(0.77, 0.64, 0.0);
-BATTLENET_FONT_COLOR 		= CreateColor(0.510, 0.773, 1.0);
-TRANSMOGRIFY_FONT_COLOR		= CreateColor(1, 0.5, 1);
-DISABLED_FONT_COLOR			= CreateColor(0.498, 0.498, 0.498);
-LIGHTBLUE_FONT_COLOR		= CreateColor(0.53, 0.67, 1.0);
-LIGHTGRAY_FONT_COLOR		= CreateColor(0.6, 0.6, 0.6);
-PAPER_FRAME_EXPANDED_COLOR	= CreateColor(0.929, 0.788, 0.620);
-PAPER_FRAME_COLLAPSED_COLOR = CreateColor(0.827, 0.659, 0.463);
-ARTIFACT_BAR_COLOR 			= CreateColor(0.901, 0.8, 0.601);
-WARBOARD_OPTION_TEXT_COLOR	= CreateColor(0.28, 0.02, 0.02);
-DEFAULT_CHAT_CHANNEL_COLOR	= CreateColor(1.0, 0.753, 0.753);
-DIM_GREEN_FONT_COLOR		= CreateColor(0.251, 0.753, 0.251); -- Used for officer chat in guilds.
-BLACK_FONT_COLOR			= CreateColor(0.0, 0.0, 0.0);
-LINK_FONT_COLOR				= CreateColor(102.0 / 255.0, 187.0 / 255.0, 255.0 / 255.0); -- Light blue that we use for system links. E.g. calendar events and nydus links in the shop.
-SEPIA_COLOR					= CreateColor(0.565, 0.377, 0.157);
-CORRUPTION_COLOR			= CreateColor(0.584, 0.428, 0.82);
-
-QUEST_OBJECTIVE_FONT_COLOR = CreateColor(0.8, 0.8, 0.8);
-QUEST_OBJECTIVE_HIGHLIGHT_FONT_COLOR = HIGHLIGHT_FONT_COLOR;
-QUEST_OBJECTIVE_DISABLED_FONT_COLOR	= DISABLED_FONT_COLOR;
-QUEST_OBJECTIVE_DISABLED_HIGHLIGHT_FONT_COLOR = LIGHTGRAY_FONT_COLOR;
-
-AREA_NAME_FONT_COLOR = CreateColor(1.0, 0.9294, 0.7607);
-AREA_DESCRIPTION_FONT_COLOR = HIGHLIGHT_FONT_COLOR;
-INVASION_FONT_COLOR = CreateColor(0.78, 1, 0);
-INVASION_DESCRIPTION_FONT_COLOR = CreateColor(1, 0.973, 0.035);
-
-FACTION_BAR_COLORS = {
-	[1] = {r = 0.8, g = 0.3, b = 0.22},
-	[2] = {r = 0.8, g = 0.3, b = 0.22},
-	[3] = {r = 0.75, g = 0.27, b = 0},
-	[4] = {r = 0.9, g = 0.7, b = 0},
-	[5] = {r = 0, g = 0.6, b = 0.1},
-	[6] = {r = 0, g = 0.6, b = 0.1},
-	[7] = {r = 0, g = 0.6, b = 0.1},
-	[8] = {r = 0, g = 0.6, b = 0.1},
-};
 
 WORLD_QUEST_ICONS_BY_PROFESSION = {
 	[129] = "worldquest-icon-firstaid",
@@ -118,36 +36,6 @@ CHAT_FONT_HEIGHTS = {
 	[3] = 16,
 	[4] = 18
 };
-
-MATERIAL_TEXT_COLOR_TABLE = {
-	["Default"] = {0.18, 0.12, 0.06},
-	["Stone"] = {1.0, 1.0, 1.0},
-	["Parchment"] = {0.18, 0.12, 0.06},
-	["Marble"] = {0, 0, 0},
-	["Silver"] = {0.12, 0.12, 0.12},
-	["Bronze"] = {0.18, 0.12, 0.06},
-	["ParchmentLarge"] = {.141, 0, 0}
-};
-MATERIAL_TITLETEXT_COLOR_TABLE = {
-	["Default"] = {0, 0, 0},
-	["Stone"] = {0.93, 0.82, 0},
-	["Parchment"] = {0, 0, 0},
-	["Marble"] = {0.93, 0.82, 0},
-	["Silver"] = {0.93, 0.82, 0},
-	["Bronze"] = {0.93, 0.82, 0},
-	["ParchmentLarge"] = {.208, 0, 0}
-};
-
-FRIENDS_BNET_NAME_COLOR = CreateColor(0.510, 0.773, 1.0);
-FRIENDS_BNET_BACKGROUND_COLOR = CreateColor(0, 0.694, 0.941, 0.05);
-FRIENDS_WOW_NAME_COLOR = CreateColor(0.996, 0.882, 0.361);
-FRIENDS_WOW_BACKGROUND_COLOR = CreateColor(1.0, 0.824, 0.0, 0.05);
-FRIENDS_GRAY_COLOR = CreateColor(0.486, 0.518, 0.541);
-FRIENDS_OFFLINE_BACKGROUND_COLOR = CreateColor(0.588, 0.588, 0.588, 0.05);
-FRIENDS_BNET_NAME_COLOR_CODE = "|cff82c5ff";
-FRIENDS_BROADCAST_TIME_COLOR_CODE = "|cff4381a8"
-FRIENDS_WOW_NAME_COLOR_CODE = "|cfffde05c";
-FRIENDS_OTHER_NAME_COLOR_CODE = "|cff7b8489";
 
 HTML_START = "<html><body><p>";
 HTML_START_CENTERED = "<html><body><p align=\"center\">";
@@ -208,20 +96,6 @@ SCHOOL_STRINGS = {
 
 MAX_POWER_PER_EMBER = 10;
 
---
--- Talent
---
-SHOW_TALENT_LEVEL = 15;
-SHOW_PVP_TALENT_LEVEL = 20;
-SHOW_PVP_LEVEL = 10;
-SHOW_LFD_LEVEL = 15;
-SHOW_MASTERY_LEVEL = 78;
-CLASS_TALENT_LEVELS = {
-	["DEFAULT"]		= { 15, 30, 45, 60, 75, 90, 100 };
-	["DEATHKNIGHT"]	= { 56, 57, 58, 60, 75, 90, 100 };
-	["DEMONHUNTER"]	= { 99, 100, 102, 104, 106, 108, 110 };
-}
-
 SPECIALIZATION_TAB = 1;
 TALENTS_TAB = 2;
 NUM_TALENT_FRAME_TABS = 2;
@@ -229,7 +103,6 @@ NUM_TALENT_FRAME_TABS = 2;
 --
 -- Specs
 --
-SHOW_SPEC_LEVEL = 10
 SPEC_WARLOCK_AFFLICTION = 1;	--These are spec indices
 SPEC_WARLOCK_DEMONOLOGY = 2;
 SPEC_WARLOCK_DESTRUCTION = 3;
@@ -281,44 +154,36 @@ NUM_EVALUATION_TREE_FLAGS				= 2;
 ITEM_UNIQUE_EQUIPPED = -1;
 MAX_NUM_SOCKETS = 3;
 
-COMMON_GRAY_COLOR		= CreateColor(0.65882,	0.65882,	0.65882);
-UNCOMMON_GREEN_COLOR	= CreateColor(0.08235,	0.70196,	0.0);
-RARE_BLUE_COLOR			= CreateColor(0.0,		0.56863,	0.94902);
-EPIC_PURPLE_COLOR		= CreateColor(0.78431,	0.27059,	0.98039);
-LEGENDARY_ORANGE_COLOR	= CreateColor(1.0,		0.50196,	0.0);
-ARTIFACT_GOLD_COLOR		= CreateColor(0.90196,	0.8,		0.50196);
-HEIRLOOM_BLUE_COLOR		= CreateColor(0.0,		0.8,		1);
-
 BAG_ITEM_QUALITY_COLORS = {
-	[LE_ITEM_QUALITY_COMMON] = COMMON_GRAY_COLOR,
-	[LE_ITEM_QUALITY_UNCOMMON] = UNCOMMON_GREEN_COLOR,
-	[LE_ITEM_QUALITY_RARE] = RARE_BLUE_COLOR,
-	[LE_ITEM_QUALITY_EPIC] = EPIC_PURPLE_COLOR,
-	[LE_ITEM_QUALITY_LEGENDARY] = LEGENDARY_ORANGE_COLOR,
-	[LE_ITEM_QUALITY_ARTIFACT] = ARTIFACT_GOLD_COLOR,
-	[LE_ITEM_QUALITY_HEIRLOOM] = HEIRLOOM_BLUE_COLOR,
-	[LE_ITEM_QUALITY_WOW_TOKEN] = HEIRLOOM_BLUE_COLOR,
+	[Enum.ItemQuality.Common] = COMMON_GRAY_COLOR,
+	[Enum.ItemQuality.Uncommon] = UNCOMMON_GREEN_COLOR,
+	[Enum.ItemQuality.Rare] = RARE_BLUE_COLOR,
+	[Enum.ItemQuality.Epic] = EPIC_PURPLE_COLOR,
+	[Enum.ItemQuality.Legendary] = LEGENDARY_ORANGE_COLOR,
+	[Enum.ItemQuality.Artifact] = ARTIFACT_GOLD_COLOR,
+	[Enum.ItemQuality.Heirloom] = HEIRLOOM_BLUE_COLOR,
+	[Enum.ItemQuality.WoWToken] = HEIRLOOM_BLUE_COLOR,
 }
 
 NEW_ITEM_ATLAS_BY_QUALITY = {
-	[LE_ITEM_QUALITY_POOR] = "bags-glow-white",
-	[LE_ITEM_QUALITY_COMMON] = "bags-glow-white",
-	[LE_ITEM_QUALITY_UNCOMMON] = "bags-glow-green",
-	[LE_ITEM_QUALITY_RARE] = "bags-glow-blue",
-	[LE_ITEM_QUALITY_EPIC] = "bags-glow-purple",
-	[LE_ITEM_QUALITY_LEGENDARY] = "bags-glow-orange",
-	[LE_ITEM_QUALITY_ARTIFACT] = "bags-glow-artifact",
-	[LE_ITEM_QUALITY_HEIRLOOM] = "bags-glow-heirloom",
+	[Enum.ItemQuality.Poor] = "bags-glow-white",
+	[Enum.ItemQuality.Common] = "bags-glow-white",
+	[Enum.ItemQuality.Uncommon] = "bags-glow-green",
+	[Enum.ItemQuality.Rare] = "bags-glow-blue",
+	[Enum.ItemQuality.Epic] = "bags-glow-purple",
+	[Enum.ItemQuality.Legendary] = "bags-glow-orange",
+	[Enum.ItemQuality.Artifact] = "bags-glow-artifact",
+	[Enum.ItemQuality.Heirloom] = "bags-glow-heirloom",
 };
 
 -- Loot
 LOOT_BORDER_BY_QUALITY = {
-	[LE_ITEM_QUALITY_UNCOMMON] = "loottoast-itemborder-green",
-	[LE_ITEM_QUALITY_RARE] = "loottoast-itemborder-blue",
-	[LE_ITEM_QUALITY_EPIC] = "loottoast-itemborder-purple",
-	[LE_ITEM_QUALITY_LEGENDARY] = "loottoast-itemborder-orange",
-	[LE_ITEM_QUALITY_HEIRLOOM] = "loottoast-itemborder-heirloom",
-	[LE_ITEM_QUALITY_ARTIFACT] = "loottoast-itemborder-artifact",
+	[Enum.ItemQuality.Uncommon] = "loottoast-itemborder-green",
+	[Enum.ItemQuality.Rare] = "loottoast-itemborder-blue",
+	[Enum.ItemQuality.Epic] = "loottoast-itemborder-purple",
+	[Enum.ItemQuality.Legendary] = "loottoast-itemborder-orange",
+	[Enum.ItemQuality.Heirloom] = "loottoast-itemborder-heirloom",
+	[Enum.ItemQuality.Artifact] = "loottoast-itemborder-artifact",
 };
 
 LOOT_ROLL_TYPE_PASS = 0;
@@ -641,9 +506,6 @@ SHOW_SEARCH_BAR_NUM_FRIENDS = 12;
 -- Search box
 MIN_CHARACTER_SEARCH = 3;
 
--- faction
-PLAYER_FACTION_COLORS = { [0] = CreateColor(0.90, 0.05, 0.07), [1] = CreateColor(0.29, 0.33, 0.91) }
-
 -- Panel default size
 PANEL_DEFAULT_WIDTH = 338;
 PANEL_DEFAULT_HEIGHT = 424;
@@ -697,7 +559,6 @@ CONQUEST_CURRENCY = 390;
 HONOR_CURRENCY = 392;
 JUSTICE_CURRENCY = 395;
 VALOR_CURRENCY = 396;
-SHOW_CONQUEST_LEVEL = 70;
 
 -- Looking for Guild Parameters
 LFGUILD_PARAM_QUESTS 	= 1;
@@ -809,7 +670,6 @@ QUEST_TYPE_SCENARIO = 98;
 MAX_QUESTS = 25;
 MAX_OBJECTIVES = 20;
 MAX_QUESTLOG_QUESTS = 25;
-MAX_WATCHABLE_QUESTS = 25;
 
 WORLD_QUESTS_TIME_CRITICAL_MINUTES = 15;
 WORLD_QUESTS_TIME_LOW_MINUTES = 75;
@@ -885,8 +745,8 @@ QUEST_TAG_TCOORDS = {
 };
 
 WORLD_QUEST_TYPE_TCOORDS = {
-	[LE_QUEST_TAG_TYPE_DUNGEON] = { 0.421875, 0.5625, 0, 0.28125 },
-	[LE_QUEST_TAG_TYPE_RAID] = { 0.703125, 0.84375, 0, 0.28125 },
+	[Enum.QuestTagType.Dungeon] = { 0.421875, 0.5625, 0, 0.28125 },
+	[Enum.QuestTagType.Raid] = { 0.703125, 0.84375, 0, 0.28125 },
 };
 
 -- MATCH CONDITIONS
@@ -1051,3 +911,55 @@ CALENDAR_INVITESTATUS_INFO = {
 };
 
 TOOLTIP_INDENT_OFFSET = 10;
+
+-- GAMEPAD BUTTON NAMES
+KEY_PADDUP			= "GamePad D-Up";
+KEY_PADDDOWN		= "GamePad D-Down";
+KEY_PADDLEFT		= "GamePad D-Left";
+KEY_PADDRIGHT		= "GamePad D-Right";
+KEY_PADSTART		= "GamePad Start";
+KEY_PADBACK			= "GamePad Back";
+KEY_PADLTHUMB		= "GamePad L-Stick In";
+KEY_PADRTHUMB		= "GamePad R-Stick In";
+KEY_PADLSHOULDER	= "GamePad L-Bumper";
+KEY_PADRSHOULDER	= "GamePad R-Bumper";
+KEY_PADLTRIGGER		= "GamePad L-Trigger";
+KEY_PADRTRIGGER		= "GamePad R-Trigger";
+KEY_PADA			= "GamePad A";
+KEY_PADB			= "GamePad B";
+KEY_PADX			= "GamePad X";
+KEY_PADY			= "GamePad Y";
+KEY_PADLSTICKUP		= "GamePad L-Stick Up";
+KEY_PADLSTICKDOWN	= "GamePad L-Stick Down";
+KEY_PADLSTICKLEFT	= "GamePad L-Stick Left";
+KEY_PADLSTICKRIGHT	= "GamePad L-Stick Right";
+KEY_PADRSTICKUP		= "GamePad R-Stick Up";
+KEY_PADRSTICKDOWN	= "GamePad R-Stick Down";
+KEY_PADRSTICKLEFT	= "GamePad R-Stick Left";
+KEY_PADRSTICKRIGHT	= "GamePad R-Stick Right";
+
+-- GAMEPAD ABBREVIATED BUTTON NAMES
+KEY_ABBR_PADDUP			= "DU";
+KEY_ABBR_PADDDOWN		= "DD";
+KEY_ABBR_PADDLEFT		= "DL";
+KEY_ABBR_PADDRIGHT		= "DR";
+KEY_ABBR_PADSTART		= "St";
+KEY_ABBR_PADBACK		= "Bk";
+KEY_ABBR_PADLTHUMB		= "LS";
+KEY_ABBR_PADRTHUMB		= "RS";
+KEY_ABBR_PADLSHOULDER	= "LB";
+KEY_ABBR_PADRSHOULDER	= "RB";
+KEY_ABBR_PADLTRIGGER	= "LT";
+KEY_ABBR_PADRTRIGGER	= "RT";
+KEY_ABBR_PADA			= "A";
+KEY_ABBR_PADB			= "B";
+KEY_ABBR_PADX			= "X";
+KEY_ABBR_PADY			= "Y";
+KEY_ABBR_PADLSTICKUP	= "LU";
+KEY_ABBR_PADLSTICKDOWN	= "LD";
+KEY_ABBR_PADLSTICKLEFT	= "LL";
+KEY_ABBR_PADLSTICKRIGHT	= "LR";
+KEY_ABBR_PADRSTICKUP	= "RU";
+KEY_ABBR_PADRSTICKDOWN	= "RD";
+KEY_ABBR_PADRSTICKLEFT	= "RL";
+KEY_ABBR_PADRSTICKRIGHT	= "RR";

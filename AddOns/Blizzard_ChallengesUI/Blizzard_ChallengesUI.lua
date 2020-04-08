@@ -11,17 +11,17 @@ local COMMON_COMPLETION_LEVEL = 2;
 
 local function GetRunQualityBasedOnLevel(level)
 	if (level >= LEGENDARY_COMPLETION_LEVEL) then
-		return LE_ITEM_QUALITY_LEGENDARY; 
+		return Enum.ItemQuality.Legendary; 
 	elseif (level < LEGENDARY_COMPLETION_LEVEL and level >= EPIC_COMPLETION_LEVEL) then
-		return LE_ITEM_QUALITY_EPIC;
+		return Enum.ItemQuality.Epic;
 	elseif (level < EPIC_COMPLETION_LEVEL and level >= RARE_COMPLETION_LEVEL) then
-		return LE_ITEM_QUALITY_RARE;
+		return Enum.ItemQuality.Rare;
 	elseif (level < RARE_COMPLETION_LEVEL and level >= UNCOMMON_COMPLETION_LEVEL) then
-		return LE_ITEM_QUALITY_UNCOMMON;
+		return Enum.ItemQuality.Uncommon;
 	elseif (level < UNCOMMON_COMPLETION_LEVEL and level >= COMMON_COMPLETION_LEVEL) then
-		return LE_ITEM_QUALITY_COMMON;
+		return Enum.ItemQuality.Common;
 	else 
-		return LE_ITEM_QUALITY_POOR;
+		return Enum.ItemQuality.Poor;
 	end
 end 
 
@@ -165,7 +165,7 @@ function ChallengesFrame_Update(self)
 			else
 				level = 0; 
 			end
-			tinsert(sortedMaps, { id = self.maps[i], level = level, quality = LE_ITEM_QUALITY_POOR});
+			tinsert(sortedMaps, { id = self.maps[i], level = level, quality = Enum.ItemQuality.Poor});
         else
 			level = inTimeInfo.level; 
 			quality = GetRunQualityBasedOnLevel(level);
@@ -601,30 +601,32 @@ function ChallengesKeystoneFrameMixin:OnKeystoneSlotted()
 	self.Instructions:Hide();
 
 	local mapID, affixes, powerLevel, charged = C_ChallengeMode.GetSlottedKeystoneInfo();
-	local name, _, timeLimit = C_ChallengeMode.GetMapUIInfo(mapID);
+	if mapID ~= nil then
+		local name, _, timeLimit = C_ChallengeMode.GetMapUIInfo(mapID);
 
-    self.DungeonName:SetText(name);
-    self.DungeonName:Show();
-    self.TimeLimit:SetText(SecondsToTime(timeLimit, false, true));
-    self.TimeLimit:Show();
+		self.DungeonName:SetText(name);
+		self.DungeonName:Show();
+		self.TimeLimit:SetText(SecondsToTime(timeLimit, false, true));
+		self.TimeLimit:Show();
 
-	self.PowerLevel:SetText(CHALLENGE_MODE_POWER_LEVEL:format(powerLevel));
-	self.PowerLevel:Show();
+		self.PowerLevel:SetText(CHALLENGE_MODE_POWER_LEVEL:format(powerLevel));
+		self.PowerLevel:Show();
 
-	local dmgPct, healthPct = C_ChallengeMode.GetPowerLevelDamageHealthMod(powerLevel);
-	local highLevelKeyDamageHealthModifier = 0;
+		local dmgPct, healthPct = C_ChallengeMode.GetPowerLevelDamageHealthMod(powerLevel);
+		local highLevelKeyDamageHealthModifier = 0;
 
-	if (powerLevel >= 3) then
-		highLevelKeyDamageHealthModifier = 2;
-		self:CreateAndPositionAffixes(highLevelKeyDamageHealthModifier + #affixes);
-		self.Affixes[1]:SetUp({key = "dmg", pct = dmgPct});
-		self.Affixes[2]:SetUp({key = "health", pct = healthPct});
-	else
-		self:CreateAndPositionAffixes(highLevelKeyDamageHealthModifier + #affixes);
-	end
+		if (powerLevel >= 3) then
+			highLevelKeyDamageHealthModifier = 2;
+			self:CreateAndPositionAffixes(highLevelKeyDamageHealthModifier + #affixes);
+			self.Affixes[1]:SetUp({key = "dmg", pct = dmgPct});
+			self.Affixes[2]:SetUp({key = "health", pct = healthPct});
+		else
+			self:CreateAndPositionAffixes(highLevelKeyDamageHealthModifier + #affixes);
+		end
 
-	for i = 1, #affixes do
-		self.Affixes[i+highLevelKeyDamageHealthModifier]:SetUp(affixes[i]);
+		for i = 1, #affixes do
+			self.Affixes[i+highLevelKeyDamageHealthModifier]:SetUp(affixes[i]);
+		end
 	end
 end
 

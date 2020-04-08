@@ -1,11 +1,32 @@
-
 ## first
 ..\SharedXML\SharedConstants.lua
 
-##DebugHook.lua
+## add C namespace augmentations here
 ..\SharedXML\C_TimerAugment.lua
+
+##DebugHook.lua
+..\SharedXML\ErrorUtil.lua
 ..\SharedXML\Mixin.lua
-..\SharedXML\Util.lua
+..\SharedXML\TableUtil.lua
+..\SharedXML\FunctionUtil.lua
+..\SharedXML\MathUtil.lua
+..\SharedXML\Rectangle.lua
+..\SharedXML\TextureUtil.lua
+..\SharedXML\Flags.lua
+..\SharedXML\CallbackRegistry.lua
+..\SharedXML\CvarUtil.lua
+..\SharedXML\Color.lua
+..\SharedXML\ColorUtil.lua
+..\SharedXML\SharedColorConstants.lua
+..\SharedXML\LinkUtil.lua
+..\SharedXML\InterfaceUtil.lua
+..\SharedXML\UnitUtil.lua
+..\SharedXML\AccountUtil.lua
+..\SharedXML\FormattingUtil.lua
+..\SharedXML\TabGroup.lua
+..\SharedXML\SmoothStatusBar.lua
+..\SharedXML\PredictedSetting.lua
+..\SharedXML\LayoutIndexManager.lua
 ..\SharedXML\SecureUtil.lua
 ..\SharedXML\TimeUtil.lua
 ..\SharedXML\NineSlice.lua
@@ -15,6 +36,7 @@
 ..\SharedXML\Pools.lua
 ..\SharedXML\CircularBuffer.lua
 ..\SharedXML\FontableFrameMixin.lua
+..\SharedXML\PixelUtilSecure.lua
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
 ..\SharedXML\DropDownToggleButton.xml
@@ -44,7 +66,7 @@ GlueContextMenu.xml
 ..\SharedXML\ModelSceneActorMixin.xml
 ..\SharedXML\ManagedLayoutFrame.xml
 ..\SharedXML\BulletPoint.xml
-..\SharedXML\GameTooltipTemplate.xml
+..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\FrameStack.lua
 
 ##New stuff!!!
@@ -66,6 +88,7 @@ RealmList.xml
 CharacterServicesPatchwerk.xml
 CharacterSelect.xml
 AccountReactivate.xml
+KioskModeSplash.xml
 CharacterServices.xml
 CharacterCreate.xml
 PromotionFrame.xml
@@ -80,7 +103,6 @@ AudioOptionsPanels.xml
 MovieFrame.xml
 CinematicsFrame.xml
 CreditsFrame.xml
-KioskModeSplash.xml
 GlueMenuFrame.xml
 
 ## Should only load internally

@@ -16,8 +16,8 @@ function AlertFrameSystems_Register()
 	WorldQuestCompleteAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("WorldQuestCompleteAlertFrameTemplate", WorldQuestCompleteAlertFrame_SetUp, WorldQuestCompleteAlertFrame_Coalesce);
 	LegendaryItemAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("LegendaryItemAlertFrameTemplate", LegendaryItemAlertFrame_SetUp);
 	NewPetAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewPetAlertFrameTemplate", NewPetAlertFrame_SetUp);
-	NewMountAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewMountAlertFrameTemplate", NewMountAlertFrame_SetUp); 
-	NewToyAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewToyAlertFrameTemplate", NewToyAlertFrame_SetUp); 
+	NewMountAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewMountAlertFrameTemplate", NewMountAlertFrame_SetUp);
+	NewToyAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewToyAlertFrameTemplate", NewToyAlertFrame_SetUp);
 end
 
 -- [[ GuildChallengeAlertFrame ]] --
@@ -447,10 +447,10 @@ end
 
 -- [[ LootUpgradeFrameTemplate ]] --
 LOOTUPGRADEFRAME_QUALITY_TEXTURES = {
-	[LE_ITEM_QUALITY_UNCOMMON]	= {border = "loottoast-itemborder-green",	arrow = "loottoast-arrow-green"},
-	[LE_ITEM_QUALITY_RARE]		= {border = "loottoast-itemborder-blue",	arrow = "loottoast-arrow-blue"},
-	[LE_ITEM_QUALITY_EPIC]		= {border = "loottoast-itemborder-purple",	arrow = "loottoast-arrow-purple"},
-	[LE_ITEM_QUALITY_LEGENDARY]	= {border = "loottoast-itemborder-orange",	arrow = "loottoast-arrow-orange"},
+	[Enum.ItemQuality.Uncommon]	= {border = "loottoast-itemborder-green",	arrow = "loottoast-arrow-green"},
+	[Enum.ItemQuality.Rare]		= {border = "loottoast-itemborder-blue",	arrow = "loottoast-arrow-blue"},
+	[Enum.ItemQuality.Epic]		= {border = "loottoast-itemborder-purple",	arrow = "loottoast-arrow-purple"},
+	[Enum.ItemQuality.Legendary]	= {border = "loottoast-itemborder-orange",	arrow = "loottoast-arrow-orange"},
 }
 
 -- [[ LootWonAlertFrameTemplate ]] --
@@ -532,7 +532,7 @@ function LootWonAlertFrame_SetUp(self, itemLink, originalQuantity, rollType, rol
 	self.ItemName:SetText(itemName);
 	local color = ITEM_QUALITY_COLORS[itemRarity];
 	self.ItemName:SetVertexColor(color.r, color.g, color.b);
-	
+
 	local isIconBorderShown = not windowInfo.noIconBorder;
 	local isIconBorderDropShadowShown = false;
 	local iconDrawLayer = windowInfo.iconUnderBG and "BACKGROUND" or "BORDER";
@@ -590,8 +590,8 @@ function LootUpgradeFrame_SetUp(self, itemLink, quantity, specID, baseQuality)
 	self.TitleText:SetText(format(LOOTUPGRADEFRAME_TITLE, _G["ITEM_QUALITY"..itemRarity.."_DESC"]));
 	self.TitleText:SetTextColor(upgradeQualityColor.r, upgradeQualityColor.g, upgradeQualityColor.b);
 
-	local baseTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[baseQuality] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[LE_ITEM_QUALITY_UNCOMMON];
-	local upgradeTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[itemRarity] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[LE_ITEM_QUALITY_UNCOMMON];
+	local baseTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[baseQuality] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[Enum.ItemQuality.Uncommon];
+	local upgradeTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[itemRarity] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[Enum.ItemQuality.Uncommon];
 	self.BaseQualityBorder:SetAtlas(baseTexture.border, true);
 	self.UpgradeQualityBorder:SetAtlas(upgradeTexture.border, true);
 
@@ -712,10 +712,10 @@ function GarrisonMissionAlertFrame_SetUp(frame, missionInfo)
 	frame.Name:SetText(missionInfo.name);
 	frame.MissionType:SetAtlas(missionInfo.typeAtlas);
 	frame.garrisonType = GarrisonFollowerOptions[missionInfo.followerTypeID].garrisonType;
-	if (missionInfo.followerTypeID == LE_FOLLOWER_TYPE_GARRISON_7_0) then
+	if (missionInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0) then
 		frame.MissionType:SetSize(50, 50);
 		frame.MissionType:SetPoint("TOPLEFT", frame, "TOPLEFT", 21, -14);
-	elseif (missionInfo.followerTypeID == LE_FOLLOWER_TYPE_GARRISON_6_0) then
+	elseif (missionInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0) then
 		frame.MissionType:SetSize(64, 64);
 		frame.MissionType:SetPoint("TOPLEFT", frame, "TOPLEFT", 14, -8);
 	end
@@ -726,7 +726,7 @@ end
 -- [[ GarrisonRandomMissionAlertFrame ]] --
 function GarrisonRandomMissionAlertFrame_SetUp(frame, missionInfo)
 	frame.Level:SetText(missionInfo.level);
-	
+
 	local followerOptions = GarrisonFollowerOptions[missionInfo.followerTypeID];
 	local showItemLevel = followerOptions.showILevelOnMission and missionInfo.iLevel ~= 0;
 	if showItemLevel then
@@ -755,9 +755,9 @@ end
 
 -- [[ GarrisonFollowerAlertFrame ]] --
 GARRISON_FOLLOWER_QUALITY_TEXTURE_SUFFIXES = {
-	[LE_ITEM_QUALITY_UNCOMMON] = "Uncommon",
-	[LE_ITEM_QUALITY_EPIC] = "Epic",
-	[LE_ITEM_QUALITY_RARE] = "Rare",
+	[Enum.ItemQuality.Uncommon] = "Uncommon",
+	[Enum.ItemQuality.Epic] = "Epic",
+	[Enum.ItemQuality.Rare] = "Rare",
 }
 
 function GarrisonCommonFollowerAlertFrame_SetUp(frame, followerID, name, quality, isUpgraded)
@@ -773,7 +773,7 @@ function GarrisonCommonFollowerAlertFrame_SetUp(frame, followerID, name, quality
 
 	frame.Arrows.ArrowsAnim:Stop();
 	if ( isUpgraded ) then
-		local upgradeTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[quality] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[LE_ITEM_QUALITY_UNCOMMON];
+		local upgradeTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[quality] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[Enum.ItemQuality.Uncommon];
 		for i = 1, frame.Arrows.numArrows do
 			frame.Arrows["Arrow"..i]:SetAtlas(upgradeTexture.arrow, true);
 		end
@@ -810,10 +810,14 @@ function GarrisonFollowerAlertFrame_SetUp(frame, followerID, name, level, qualit
 	GarrisonCommonFollowerAlertFrame_SetUp(frame, followerID, name, quality, isUpgraded);
 end
 
-function GarrisonShipFollowerAlertFrame_SetUp(frame, followerID, name, class, texPrefix, level, quality, isUpgraded, followerInfo)
+function GarrisonShipFollowerAlertFrame_SetUp(frame, followerID, name, class, textureKit, level, quality, isUpgraded, followerInfo)
 	frame.followerInfo = followerInfo;
-	local mapAtlas = texPrefix .. "-List";
-	frame.Portrait:SetAtlas(mapAtlas, false);
+	if textureKit then
+		frame.Portrait:SetAtlas(textureKit.."-List", false);
+	else
+		frame.Portrait:SetAtlas(nil);
+	end
+
 	local color = ITEM_QUALITY_COLORS[quality];
 	frame.Name:SetTextColor(color.r, color.g, color.b);
 	if ( isUpgraded ) then
@@ -928,17 +932,18 @@ NewRecipeLearnedAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewRecipe
 
 -- [[WorldQuestCompleteAlertFrame ]] --
 function WorldQuestCompleteAlertFrame_GetIconForQuestID(questID)
-	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(questID);
+	local info = C_QuestLog.GetQuestTagInfo(questID);
 
-	if ( worldQuestType == LE_QUEST_TAG_TYPE_PVP ) then
-		return "Interface\\Icons\\achievement_arena_2v2_1";
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PET_BATTLE ) then
-		return "Interface\\Icons\\INV_Pet_BattlePetTraining";
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION ) then
-		local tradeskillLineID = select(7, GetProfessionInfo(tradeskillLineIndex));
-		return C_TradeSkillUI.GetTradeSkillTexture(tradeskillLineID);
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_DUNGEON or worldQuestType == LE_QUEST_TAG_TYPE_RAID ) then
-		return "Interface\\Icons\\INV_Misc_Bone_Skull_02";
+	if info then
+		if info.worldQuestType == Enum.QuestTagType.Pvp then
+			return "Interface\\Icons\\achievement_arena_2v2_1";
+		elseif info.worldQuestType == Enum.QuestTagType.PetBattle then
+			return "Interface\\Icons\\INV_Pet_BattlePetTraining";
+		elseif info.worldQuestType == Enum.QuestTagType.Profession then
+			return C_TradeSkillUI.GetTradeSkillTexture(info.tradeskillLineID);
+		elseif info.worldQuestType == Enum.QuestTagType.Dungeon or info.worldQuestType == Enum.QuestTagType.Raid then
+			return "Interface\\Icons\\INV_Misc_Bone_Skull_02";
+		end
 	end
 
 	return "Interface\\Icons\\Achievement_Quests_Completed_TwilightHighlands";
@@ -1031,7 +1036,7 @@ ItemAlertFrameMixin = {};
 
 function ItemAlertFrameMixin:SetUpDisplay(icon, itemQuality, name, label)
 	self.Icon:SetTexture(icon);
-	self.IconBorder:SetAtlas(LOOT_BORDER_BY_QUALITY[itemQuality] or LOOT_BORDER_BY_QUALITY[LE_ITEM_QUALITY_UNCOMMON]);
+	self.IconBorder:SetAtlas(LOOT_BORDER_BY_QUALITY[itemQuality] or LOOT_BORDER_BY_QUALITY[Enum.ItemQuality.Uncommon]);
 	self.Name:SetText(ITEM_QUALITY_COLORS[itemQuality].hex..name.."|r");
 	self.Label:SetText(label);
 end
@@ -1074,7 +1079,7 @@ function NewMountAlertFrameMixin:SetUp(mountID)
 	self.mountID = mountID;
 
 	local creatureName, spellID, icon, active, isUsable, sourceType = C_MountJournal.GetMountInfoByID(mountID);
-	local itemQuality = LE_ITEM_QUALITY_EPIC; -- Mounts don't have an inherent concept of quality so we always use epic (for now).
+	local itemQuality = Enum.ItemQuality.Epic; -- Mounts don't have an inherent concept of quality so we always use epic (for now).
 	self:SetUpDisplay(icon, itemQuality, creatureName, YOU_EARNED_LABEL);
 end
 

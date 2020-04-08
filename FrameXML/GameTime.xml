@@ -53,7 +53,7 @@
 		<Scripts>
 			<OnLoad function="GameTimeFrame_OnLoad"/>
 			<OnShow>
-				if (IsKioskModeEnabled()) then
+				if (Kiosk.IsEnabled()) then
 					self:Disable();
 				end
 			</OnShow>

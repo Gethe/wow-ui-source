@@ -45,6 +45,8 @@ function ActionBarController_OnLoad(self)
 	
 	-- hack to fix crasy animation on bars when action bar is also animating
 	StatusTrackingBarManager:SetBarAnimation(ActionBarBusy);
+
+	MainMenuMicroButton_Init();
 end
 
 

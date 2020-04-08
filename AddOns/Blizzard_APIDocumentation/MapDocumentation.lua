@@ -7,6 +7,10 @@ local Map =
 	Functions =
 	{
 		{
+			Name = "ClearUserWaypoint",
+			Type = "Function",
+		},
+		{
 			Name = "CloseWorldMapInteraction",
 			Type = "Function",
 		},
@@ -341,6 +345,52 @@ local Map =
 			},
 		},
 		{
+			Name = "GetUserWaypoint",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "point", Type = "table", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUserWaypointFromHyperlink",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "hyperlink", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "point", Type = "table", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUserWaypointHyperlink",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hyperlink", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUserWaypointPositionForMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "mapPosition", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+			},
+		},
+		{
 			Name = "GetWorldPosFromMapPos",
 			Type = "Function",
 
@@ -354,6 +404,15 @@ local Map =
 			{
 				{ Name = "continentID", Type = "number", Nilable = false },
 				{ Name = "worldPosition", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+			},
+		},
+		{
+			Name = "HasUserWaypoint",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasUserWaypoint", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -379,6 +438,15 @@ local Map =
 				{ Name = "uiMapID", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "SetUserWaypoint",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "point", Type = "table", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -387,6 +455,11 @@ local Map =
 			Name = "NewWmoChunk",
 			Type = "Event",
 			LiteralName = "NEW_WMO_CHUNK",
+		},
+		{
+			Name = "UserWaypointUpdated",
+			Type = "Event",
+			LiteralName = "USER_WAYPOINT_UPDATED",
 		},
 		{
 			Name = "WorldMapClose",

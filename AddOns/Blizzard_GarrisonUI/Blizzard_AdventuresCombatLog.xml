@@ -1,0 +1,59 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<Script file="Blizzard_AdventuresCombatLog.lua"/>
+
+	<Frame name="CombatLogTemplate" inherits="GarrisonMissionBaseFrameTemplate" mixin="AdventuresCombatLogMixin" virtual="true">
+		<Size x="320" y="540"/>
+		<Frames>
+			<ScrollingMessageFrame parentKey="CombatLogMessageFrame" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-6"/>
+					<Anchor point="BOTTOMRIGHT" x="-3" y="8"/>
+				</Anchors>
+				<Frames>
+					<Slider parentKey="ScrollBar" obeyStepOnDrag="true" valueStep="1" minValue="0" maxValue="1" inherits="HybridScrollBarBackgroundTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-12"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="12"/>
+						</Anchors>
+						<Frames>
+							<Button parentKey="ScrollUp" registerForClicks="LeftButtonDown" inherits="UIPanelScrollUpButtonTemplate">
+								<Anchors>
+									<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-2"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										self:GetParent():GetParent():ScrollByAmount(3);
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Button parentKey="ScrollDown" registerForClicks="LeftButtonDown" inherits="UIPanelScrollDownButtonTemplate">
+								<Anchors>
+									<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="2"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										self:GetParent():GetParent():ScrollByAmount(-3);
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnValueChanged function="ScrollingMessageFrameScrollBar_OnValueChanged"/>
+						</Scripts>
+					</Slider>
+				</Frames>
+				<Scripts>
+					<OnMouseWheel>
+						self:ScrollByAmount(delta * 3);
+					</OnMouseWheel>
+				</Scripts>
+			</ScrollingMessageFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

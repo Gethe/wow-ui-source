@@ -16,22 +16,25 @@ end
 
 function BonusObjectiveDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
-	self:RegisterEvent("SUPER_TRACKED_QUEST_CHANGED");
+	self:RegisterEvent("SUPER_TRACKING_CHANGED");
 
-	if not self.setFocusedQuestIDCallback then
-		self.setFocusedQuestIDCallback = function(event, ...) self.hidePins = true; self:RefreshAllData(...); end;
-	end
-	if not self.clearFocusedQuestIDCallback then
-		self.clearFocusedQuestIDCallback = function(event, ...) self.hidePins = false; self:RefreshAllData(...); end;
-	end
+	self:GetMap():RegisterCallback("SetFocusedQuestID", self.OnSetFocusedQuestID, self);
+	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.OnClearFocusedQuestID, self);
+end
 
-	self:GetMap():RegisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
-	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
+function BonusObjectiveDataProviderMixin:OnSetFocusedQuestID(...)
+	self.hidePins = true;
+	self:RefreshAllData(...);
+end
+
+function BonusObjectiveDataProviderMixin:OnClearFocusedQuestID(...)
+	self.hidePins = false;
+	self:RefreshAllData(...);
 end
 
 function BonusObjectiveDataProviderMixin:OnRemoved(mapCanvas)
-	self:GetMap():UnregisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
-	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
+	self:GetMap():UnregisterCallback("SetFocusedQuestID", self);
+	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self);
 
 	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 end
@@ -131,7 +134,7 @@ function ThreatObjectivePinMixin:OnAcquired(taskInfo)
 	self.numObjectives = taskInfo.numObjectives;
 	self.isThreat = true;
 
-	local isSuperTracked = (taskInfo.questId == GetSuperTrackedQuestID());
+	local isSuperTracked = (taskInfo.questId == C_SuperTrack.GetSuperTrackedQuestID());
 	if isSuperTracked then
 		self.Texture:SetTexCoord(0.500, 0.625, 0.375, 0.5);
 		self.PushedTexture:SetTexCoord(0.375, 0.500, 0.375, 0.5);
@@ -149,7 +152,7 @@ function ThreatObjectivePinMixin:OnMouseLeave()
 	TaskPOI_OnLeave(self);
 end
 
-function ThreatObjectivePinMixin:OnMouseDown()
+function ThreatObjectivePinMixin:OnMouseDownAction()
 	self.Texture:Hide();
 	self.PushedTexture:Show();
 	self.Icon:SetPoint("CENTER", 0, -1);
@@ -158,7 +161,7 @@ function ThreatObjectivePinMixin:OnMouseDown()
 	end
 end
 
-function ThreatObjectivePinMixin:OnMouseUp()
+function ThreatObjectivePinMixin:OnMouseUpAction()
 	self.Texture:Show();
 	self.PushedTexture:Hide();
 	self.Icon:SetPoint("CENTER", -1, 0);
@@ -167,6 +170,6 @@ function ThreatObjectivePinMixin:OnMouseUp()
 	end
 end
 
-function ThreatObjectivePinMixin:OnClick()
-	SetSuperTrackedQuestID(self.questID);
+function ThreatObjectivePinMixin:OnMouseClickAction()
+	C_SuperTrack.SetSuperTrackedQuestID(self.questID);
 end

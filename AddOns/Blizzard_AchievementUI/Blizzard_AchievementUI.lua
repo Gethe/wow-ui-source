@@ -786,7 +786,7 @@ function AchievementFrameAchievements_OnLoad (self)
 end
 
 function AchievementFrameAchievements_OnEvent (self, event, ...)
-	if (IsKioskModeEnabled()) then
+	if (Kiosk.IsEnabled()) then
 		return;
 	end
 	if ( event == "ADDON_LOADED" ) then

@@ -524,6 +524,16 @@
 			</Frame>
 		</ScrollChild>
 		<Frames>
+			<Frame parentKey="MawBuffsBlock">
+				<Size x="243" y="50"/>
+				<Frames>
+					<Button parentKey="Container" inherits="MawBuffsContainer">
+						<Anchors>
+							<Anchor point="TOPRIGHT"/>
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>
 			<Frame parentKey="WarfrontHelpBox" inherits="GlowBoxTemplate" hidden="true">
 				<Size x="220" y="65"/>
 				<Anchors>

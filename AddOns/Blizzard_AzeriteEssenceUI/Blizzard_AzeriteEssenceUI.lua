@@ -1,6 +1,6 @@
 UIPanelWindows["AzeriteEssenceUI"] = { area = "left", pushable = 1 };
 
-AzeriteEssenceUIMixin = CreateFromMixins(CallbackRegistryBaseMixin);
+AzeriteEssenceUIMixin = CreateFromMixins(CallbackRegistryMixin);
 
 AzeriteEssenceUIMixin:GenerateCallbackEvents(
 {
@@ -86,7 +86,7 @@ local MILESTONE_LOCATIONS = {
 local LOCKED_RUNE_ATLASES = { "heartofazeroth-slot-minor-unlearned-bottomleft", "heartofazeroth-slot-minor-unlearned-topright", "heartofazeroth-slot-minor-unlearned-3" };
 
 function AzeriteEssenceUIMixin:OnLoad()
-	CallbackRegistryBaseMixin.OnLoad(self);
+	CallbackRegistryMixin.OnLoad(self);
 
 	self.TopTileStreaks:Hide();	
 	self:SetupModelScene();
@@ -277,7 +277,7 @@ function AzeriteEssenceUIMixin:OnEssenceActivated(essenceID, slotFrame)
 		self.revealInProgress = true;
 		PlaySound(SOUNDKIT.UI_82_HEARTOFAZEROTH_SLOTFIRSTESSENCE);
 		slotFrame:PlayRevealEffect();
-		ShakeFrame(self:GetParent(), REVEAL_SHAKE, REVEAL_SHAKE_DURATION, REVEAL_SHAKE_FREQUENCY);
+		ScriptAnimationUtil.ShakeFrame(self:GetParent(), REVEAL_SHAKE, REVEAL_SHAKE_DURATION, REVEAL_SHAKE_FREQUENCY);
 		C_Timer.After(REVEAL_START_DELAY,
 			function()
 				self:PlayReveal();
@@ -454,7 +454,7 @@ function AzeriteEssenceUIMixin:PlayReveal()
 		for i, milestoneFrame in ipairs(self.Milestones) do
 			if previousFrame then
 				local delay = totalDistance * REVEAL_DELAY_SECS_PER_DISTANCE;
-				local distance = CalculateDistanceBetweenRegions(previousFrame, milestoneFrame);
+				local distance = RegionUtil.CalculateDistanceBetween(previousFrame, milestoneFrame);
 				milestoneFrame:BeginReveal(delay);
 				self:ApplyRevealSwirl(milestoneFrame, delay);
 				milestoneFrame.linkLine:BeginReveal(delay, distance);
@@ -1208,7 +1208,7 @@ function AzeriteMilestoneSlotMixin:OnEnter()
 	local essenceID = C_AzeriteEssence.GetMilestoneEssence(self.milestoneID);
 	if essenceID then
 		GameTooltip:SetAzeriteEssenceSlot(self.slot);
-		GameTooltip_SetBackdropStyle(GameTooltip, GAME_TOOLTIP_BACKDROP_STYLE_AZERITE_ITEM);
+		SharedTooltip_SetBackdropStyle(GameTooltip, GAME_TOOLTIP_BACKDROP_STYLE_AZERITE_ITEM);
 
 		if C_AzeriteEssence.HasPendingActivationEssence() then
 			local pendingEssenceID = C_AzeriteEssence.GetPendingActivationEssence();
@@ -1330,7 +1330,7 @@ function AzeriteMilestoneRankedMixin:OnUnlocked()
 			self:Refresh();
 		end;
 		scene:ShowAndAnimateActors(REVEAL_MODEL_SCENE_ACTOR_SETTINGS, onUnlockDoneFunc);
-		ShakeFrame(self:GetParent():GetParent(), REVEAL_SHAKE, REVEAL_SHAKE_DURATION, REVEAL_SHAKE_FREQUENCY);
+		ScriptAnimationUtil.ShakeFrame(self:GetParent():GetParent(), REVEAL_SHAKE, REVEAL_SHAKE_DURATION, REVEAL_SHAKE_FREQUENCY);
 	end
 
 	PlaySound(SOUNDKIT.UI_82_HEARTOFAZEROTH_UNLOCKSTAMINANODE);
@@ -1365,7 +1365,7 @@ function AzeriteEssenceLearnAnimFrameMixin:PlayAnim()
 
 	C_Timer.After(LEARN_SHAKE_DELAY,
 		function()
-			ShakeFrame(self:GetParent(), LEARN_SHAKE, LEARN_SHAKE_DURATION, LEARN_SHAKE_FREQUENCY);
+			ScriptAnimationUtil.ShakeFrame(self:GetParent(), LEARN_SHAKE, LEARN_SHAKE_DURATION, LEARN_SHAKE_FREQUENCY);
 		end
 	);
 end

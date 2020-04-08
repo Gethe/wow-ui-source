@@ -1,0 +1,51 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_CovenantSanctum.lua"/>
+	
+	<Button name="CovenantSanctumFrameTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" frameStrata="LOW" virtual="true">
+		<Scripts>
+			<OnClick>
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+				self:GetParent():SetTab(self:GetID());
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+	<Frame name="CovenantSanctumFrame" parent="UIParent" mixin="CovenantSanctumMixin" hidden="true" enableMouse="true">
+		<Size x="980" y="637"/>
+		<Anchors>
+			<Anchor point="CENTER" y="100"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Color r="1" g="1" b="0" a="0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" setAllPoints="true"/>
+			<Button parentKey="UpgradesTabButton" name="$parentTab1" inherits="CovenantSanctumFrameTabButtonTemplate" id="1" text="Upgrades">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="23" y="5" />
+				</Anchors>
+			</Button>
+			<Button parentKey="FoundationsTabButton" name="$parentTab2" inherits="CovenantSanctumFrameTabButtonTemplate" id="2" text="Foundations">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-15" y="0" />
+				</Anchors>
+			</Button>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton" frameLevel="510">
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,7 +1,11 @@
-MapCanvasMixin = CreateFromMixins(CallbackRegistryBaseMixin);
+MapCanvasMixin = CreateFromMixins(CallbackRegistryMixin);
+
+MapCanvasMixin.MouseAction = { Up = 1, Down = 2, Click = 3 };
 
 function MapCanvasMixin:OnLoad()
-	CallbackRegistryBaseMixin.OnLoad(self);
+	CallbackRegistryMixin.OnLoad(self);
+	self:SetUndefinedEventsAllowed(true);
+
 	self.detailLayerPool = CreateFramePool("FRAME", self:GetCanvas(), "MapCanvasDetailLayerTemplate");
 	self.dataProviders = {};
 	self.dataProviderEventsCount = {};
@@ -13,6 +17,8 @@ function MapCanvasMixin:OnLoad()
 	self.pinFrameLevelsManager = CreateFromMixins(MapCanvasPinFrameLevelsManagerMixin);
 	self.pinFrameLevelsManager:Initialize();
 	self.mouseClickHandlers = {};
+	self.globalPinMouseActionHandlers = {};
+	self.cursorHandlers = {};
 
 	self:EvaluateLockReasons();
 
@@ -21,9 +27,25 @@ end
 
 function MapCanvasMixin:OnUpdate()
 	self:UpdatePinNudging();
+	self:ProcessCursorHandlers();
 end
 
 function MapCanvasMixin:SetMapID(mapID)
+	if Kiosk.IsEnabled() and KioskFrame:HasWhitelistedMaps() then
+		local mapIDs = KioskFrame:GetWhitelistedMapIDs();
+		if not tContains(mapIDs, mapID) then
+			if not self.mapID then
+				-- Initialize to an allowed map and assert. Using whitelisted maps is only
+				-- suitable if we know exactly the maps the player should be in.
+				assert(false, "Map ID "..mapID.." is not amongst the whitelisted maps.");
+				mapID = mapIDs[1];
+			else
+				-- Not in our list, so don't change the map.
+				return;
+			end;
+		end
+	end
+
 	local mapArtID = C_Map.GetMapArtID(mapID) -- phased map art may be different for the same mapID
 	if self.mapID ~= mapID or self.mapArtID ~= mapArtID then
 		self.areDetailLayersDirty = true;
@@ -740,23 +762,22 @@ function MapCanvasMixin:NavigateToCursor()
 	end
 end
 
+local function PrioritySorter(left, right)
+	return left.priority > right.priority;
+end
+
 -- Add a function that will be checked when the canvas is clicked
 -- If the function returns true then handling will stop
 -- A priority can optionally be specified, higher priority values will be called first
-do
-	local function PrioritySorter(left, right)
-		return left.priority > right.priority;
-	end
-	function MapCanvasMixin:AddCanvasClickHandler(handler, priority)
-		table.insert(self.mouseClickHandlers, { handler = handler, priority = priority or 0 });
-		table.sort(self.mouseClickHandlers, PrioritySorter);
-	end
+function MapCanvasMixin:AddCanvasClickHandler(handler, priority)
+	table.insert(self.mouseClickHandlers, { handler = handler, priority = priority or 0 });
+	table.sort(self.mouseClickHandlers, PrioritySorter);
 end
 
 function MapCanvasMixin:RemoveCanvasClickHandler(handler, priority)
 	for i, handlerInfo in ipairs(self.mouseClickHandlers) do
 		if handlerInfo.handler == handler and (not priority or handlerInfo.priority == priority) then
-			table.remove(i);
+			table.remove(self.mouseClickHandlers, i);
 			break;
 		end
 	end
@@ -770,6 +791,68 @@ function MapCanvasMixin:ProcessCanvasClickHandlers(button, cursorX, cursorY)
 		end
 	end
 	return false;
+end
+
+-- Add a function that will be checked when any pin is clicked
+-- If the function returns true then handling will stop
+-- A priority can optionally be specified, higher priority values will be called first
+function MapCanvasMixin:AddGlobalPinMouseActionHandler(handler, priority)
+	table.insert(self.globalPinMouseActionHandlers, { handler = handler, priority = priority or 0 });
+	table.sort(self.globalPinMouseActionHandlers, PrioritySorter);
+end
+
+function MapCanvasMixin:RemoveGlobalPinMouseActionHandler(handler, priority)
+	for i, handlerInfo in ipairs(self.globalPinMouseActionHandlers) do
+		if handlerInfo.handler == handler and (not priority or handlerInfo.priority == priority) then
+			table.remove(self.globalPinMouseActionHandlers, i);
+			break;
+		end
+	end
+end
+
+function MapCanvasMixin:ProcessGlobalPinMouseActionHandlers(mouseAction, button)
+	for i, handlerInfo in ipairs(self.globalPinMouseActionHandlers) do
+		local success, stopChecking = xpcall(handlerInfo.handler, CallErrorHandler, self, mouseAction, button);
+		if success and stopChecking then
+			return true;
+		end
+	end
+	return false;
+end
+
+function MapCanvasMixin:AddCursorHandler(handler, priority)
+	table.insert(self.cursorHandlers, { handler = handler, priority = priority or 0 });
+	table.sort(self.cursorHandlers, PrioritySorter);
+end
+
+function MapCanvasMixin:RemoveCursorHandler(handler, priority)
+	for i, handlerInfo in ipairs(self.cursorHandlers) do
+		if handlerInfo.handler == handler and (not priority or handlerInfo.priority == priority) then
+			table.remove(self.cursorHandlers, i);
+			break;
+		end
+	end
+end
+
+function MapCanvasMixin:ProcessCursorHandlers()
+	local focus = GetMouseFocus();
+	if focus then
+		-- pins have a .owningMap, our pins should be pointing to us
+		if focus == self.ScrollContainer or focus.owningMap == self then
+			for i, handlerInfo in ipairs(self.cursorHandlers) do
+				local success, cursor = xpcall(handlerInfo.handler, CallErrorHandler, self);
+				if success and cursor then
+					self.lastCursor = cursor;
+					SetCursor(cursor);
+					return;
+				end
+			end
+		end
+	end
+	if self.lastCursor then
+		self.lastCursor = nil;
+		ResetCursor();
+	end
 end
 
 function MapCanvasMixin:GetGlobalPinScale()

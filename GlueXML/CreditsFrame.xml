@@ -6,8 +6,8 @@
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 	</Button>
 
-	<Button name="CreditsFrameSwitchButtonTemplate" inherits="GlueButtonSmallTemplateBlue" virtual="true">
-		<Size x="260" y="35"/>
+	<Button name="CreditsFrameSwitchButtonTemplate" inherits="GlueButtonSmallTemplate" virtual="true">
+		<Size x="260" y="28"/>
 		<Scripts>
 			<OnClick>
 				CreditsFrame_Switch(self, self:GetID());
@@ -334,12 +334,12 @@
 			</ScrollFrame>
 			<Button name="CreditsFrameSwitchButton1" inherits="CreditsFrameSwitchButtonTemplate">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="CreditsFrame" x="25" y="45"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="CreditsFrame" x="35" y="55"/>
 				</Anchors>
 			</Button>
 			<Button name="CreditsFrameSwitchButton2" inherits="CreditsFrameSwitchButtonTemplate">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="CreditsFrame" x="25" y="10"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="CreditsFrame" x="35" y="20"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentRewindButton" inherits="CreditsSpeedButtonTemplate">

@@ -44,25 +44,6 @@ local MythicPlusInfo =
 			},
 		},
 		{
-			Name = "GetLastWeeklyBestInformation",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "challengeMapId", Type = "number", Nilable = false },
-				{ Name = "level", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetOwnedKeystoneChallengeMapID",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "challengeMapID", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetOwnedKeystoneLevel",
 			Type = "Function",
 

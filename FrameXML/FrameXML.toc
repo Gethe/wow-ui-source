@@ -4,14 +4,37 @@
 ..\SharedXML\C_TimerAugment.lua
 
 ## add snippets independent of modules here
+..\SharedXML\ErrorUtil.lua
 ..\SharedXML\Mixin.lua
-..\SharedXML\Util.lua
+..\SharedXML\TableUtil.lua
+..\SharedXML\FunctionUtil.lua
+..\SharedXML\MathUtil.lua
+..\SharedXML\Rectangle.lua
+..\SharedXML\TextureUtil.lua
+..\SharedXML\Flags.lua
+..\SharedXML\CallbackRegistry.lua
+..\SharedXML\CvarUtil.lua
+..\SharedXML\Color.lua
+..\SharedXML\ColorUtil.lua
+..\SharedXML\SharedColorConstants.lua
+..\SharedXML\LinkUtil.lua
+..\SharedXML\InterfaceUtil.lua
+..\SharedXML\UnitUtil.lua
+..\SharedXML\AccountUtil.lua
+..\SharedXML\FormattingUtil.lua
+..\SharedXML\TabGroup.lua
+..\SharedXML\SmoothStatusBar.lua
+..\SharedXML\PredictedSetting.lua
+..\SharedXML\LayoutIndexManager.lua
 ..\SharedXML\SecureUtil.lua
 ..\SharedXML\TimeUtil.lua
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\EasingUtil.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
+..\SharedXML\RegionUtil.lua
+..\SharedXML\AnchorUtil.lua
+..\SharedXML\ScriptAnimationUtil.lua
 ..\SharedXML\Pools.lua
 ..\SharedXML\LoopingSoundEffect.lua
 ..\SharedXML\CircularBuffer.lua
@@ -29,15 +52,19 @@
 ..\SharedXML\TableBuilder.lua
 ..\SharedXML\NewFeatureLabel.xml
 ..\SharedXML\GlobalCallbackRegistry.lua
+..\SharedXML\SelectableButton.xml
+..\SharedXML\ButtonGroup.lua
 MixinUtil.lua
 
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
 ..\SharedXML\DropDownToggleButton.xml
 
+..\SharedXML\AnimationTemplates.xml
 ..\SharedXML\ModelSceneTemplates.xml
 ..\SharedXML\ModelSceneMixin.xml
 ..\SharedXML\ModelSceneActorMixin.xml
+..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\FrameStack.lua
 
 AnimatedStatusBar.xml
@@ -61,9 +88,14 @@ QuestLogOwnerMixin.lua
 ObjectAPI\ContinuableContainer.lua
 ObjectAPI\ItemLocation.lua
 ObjectAPI\AsyncCallbackSystem.lua
+ObjectAPI\ObjectCache.lua
 ObjectAPI\Item.lua
 ObjectAPI\Spell.lua
 ObjectAPI\PlayerLocation.lua
+ObjectAPI\CampaignChapter.lua
+ObjectAPI\Campaign.lua
+ObjectAPI\Quest.lua
+ObjectAPI\UiMapPoint.lua
 
 ## add new modules below here
 WorldFrame.xml
@@ -74,7 +106,6 @@ AchievementUtil.lua
 MapUtil.lua
 AzeriteUtil.lua
 AzeriteEssenceUtil.lua
-VehicleUtil.lua
 AuraUtil.lua
 CalendarUtil.lua
 CommunitiesUtil.lua
@@ -82,6 +113,7 @@ ItemUtil.lua
 TransmogUtil.lua
 ItemDisplay.xml
 HelpTip.xml
+ExtraAbilityContainer.xml
 CurrencyContainer.lua
 ## IME.xml needs to be loaded after UIParent.xml
 ..\SharedXML\IME.xml
@@ -106,7 +138,7 @@ UIPanelTemplates.xml
 SecureTemplates.xml
 SecureHandlerTemplates.xml
 SecureGroupHeaders.xml
-..\SharedXML\SharedAnimations.xml
+AzeriteAnimationTemplates.xml
 ..\SharedXML\StaticModelInfo.lua
 ..\SharedXML\ModelFrameTemplates.xml
 ..\SharedXML\ModelFrames.xml
@@ -208,7 +240,9 @@ MainMenuBarBagButtons.xml
 UnitPositionFrameTemplates.xml
 FogOfWarFrameTemplates.xml
 WorldMapFrame.xml
+CampaignUtil.lua
 WarCampaignTemplates.xml
+CampaignOverview.xml
 QuestMapFrame.xml
 RaidWarning.xml
 CinematicFrame.xml
@@ -279,7 +313,6 @@ AzeriteItemToasts.xml
 AzeriteIslandsToast.xml
 ..\SharedXML\ModelPreviewFrame.xml
 SplashFrame.xml
-QuestChoiceFrameMixin.lua
 AzeriteEmpoweredItemDataSource.lua
 GuildUtil.lua
 QuestSession.xml

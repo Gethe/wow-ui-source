@@ -132,6 +132,7 @@ function VignettePinMixin:OnAcquired(vignetteGUID, vignetteInfo)
 	self.hasTooltip = vignetteInfo.hasTooltip or vignetteInfo.type == Enum.VignetteType.PvpBounty;
 	self.isUnique = vignetteInfo.isUnique;
 	self.vignetteID = vignetteInfo.vignetteID;
+	self.widgetSetID = vignetteInfo.widgetSetID;
 
 	self:EnableMouse(self.hasTooltip);
 
@@ -210,7 +211,7 @@ end
 
 function VignettePinMixin:OnMouseEnter()
 	if self.hasTooltip then
-		WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		self.UpdateTooltip = self.OnMouseEnter;
 
 		local hasValidTooltip = false;
@@ -221,20 +222,22 @@ function VignettePinMixin:OnMouseEnter()
 			hasValidTooltip = self:DisplayPvpBountyTooltip();
 		end
 
-		if not hasValidTooltip then
-			GameTooltip_SetTitle(WorldMapTooltip, RETRIEVING_DATA);
+		if hasValidTooltip and self.widgetSetID then
+			GameTooltip_AddWidgetSet(GameTooltip, self.widgetSetID);
+		elseif not hasValidTooltip then
+			GameTooltip_SetTitle(GameTooltip, RETRIEVING_DATA);
 		end
 
-		WorldMapTooltip:Show();
+		GameTooltip:Show();
 	end
 end
 
 function VignettePinMixin:OnMouseLeave()
-	WorldMapTooltip:Hide();
+	GameTooltip:Hide();
 end
 
 function VignettePinMixin:DisplayNormalTooltip()
-	GameTooltip_SetTitle(WorldMapTooltip, self:GetVignetteName());
+	GameTooltip_SetTitle(GameTooltip, self:GetVignetteName());
 	return true;
 end
 
@@ -248,9 +251,9 @@ function VignettePinMixin:DisplayPvpBountyTooltip()
 		local classInfo = C_CreatureInfo.GetClassInfo(class);
 		local factionInfo = C_CreatureInfo.GetFactionInfo(race);
 
-		GameTooltip_SetTitle(WorldMapTooltip, name, GetClassColorObj(classInfo.classFile));
-		GameTooltip_AddColoredLine(WorldMapTooltip, factionInfo.name, GetFactionColor(factionInfo.groupTag));
-		GameTooltip_AddQuestRewardsToTooltip(WorldMapTooltip, self:GetRewardQuestID(), TOOLTIP_QUEST_REWARDS_STYLE_PVP_BOUNTY);
+		GameTooltip_SetTitle(GameTooltip, name, GetClassColorObj(classInfo.classFile));
+		GameTooltip_AddColoredLine(GameTooltip, factionInfo.name, GetFactionColor(factionInfo.groupTag));
+		GameTooltip_AddQuestRewardsToTooltip(GameTooltip, self:GetRewardQuestID(), TOOLTIP_QUEST_REWARDS_STYLE_PVP_BOUNTY);
 
 		return true;
 	end

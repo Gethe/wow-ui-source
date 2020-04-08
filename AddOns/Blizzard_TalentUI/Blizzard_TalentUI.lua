@@ -131,7 +131,7 @@ function PlayerTalentFrame_Toggle(suggestedTalentTab)
 			else
 				PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENTS_TAB]);
 			end
-			TalentMicroButtonAlert:Hide();
+			MainMenuMicroButton_HideAlert(TalentMicroButton);
 		end
 	else
 		PlayerTalentFrame_Close();
@@ -257,7 +257,7 @@ end
 function PlayerTalentFrame_OnShow(self)
 	-- Stop buttons from flashing after skill up
 	MicroButtonPulseStop(TalentMicroButton);
-	TalentMicroButtonAlert:Hide();
+	MainMenuMicroButton_HideAlert(TalentMicroButton);
 
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	UpdateMicroButtons();
@@ -720,11 +720,10 @@ function PlayerTalentFrame_UpdateTabs(playerLevel)
 	end
 
 	-- setup talents talents tab
-	local meetsTalentLevel = playerLevel >= SHOW_TALENT_LEVEL;
 	talentTabWidthCache[TALENTS_TAB] = 0;
 	tab = _G["PlayerTalentFrameTab"..TALENTS_TAB];
 	if ( tab ) then
-		if ( meetsTalentLevel ) then
+		if C_SpecializationInfo.CanPlayerUseTalentUI() then
 			tab:Show();
 			firstShownTab = firstShownTab or tab;
 			PanelTemplates_TabResize(tab, 0);
@@ -827,9 +826,11 @@ end
 function PlayerTalentTab_OnLoad(self)
 	PlayerTalentFrameTab_OnLoad(self);
 
-	self:RegisterEvent("PLAYER_LEVEL_UP");
-	if (UnitLevel("player") == SHOW_TALENT_LEVEL and (GetNumUnspentTalents() > 0) and (self:GetID() == TALENTS_TAB)) then
-		SetButtonPulse(self, 60, 0.75);
+	if self:GetID() == TALENTS_TAB then
+		self:RegisterEvent("PLAYER_LEVEL_CHANGED");
+		if C_SpecializationInfo.CanPlayerUseTalentUI() and (GetNumUnspentTalents() > 0) then
+			SetButtonPulse(self, 60, 0.75);
+		end
 	end
 end
 
@@ -839,7 +840,7 @@ function PlayerTalentTab_OnClick(self)
 end
 
 function PlayerTalentTab_OnEvent(self, event, ...)
-	if ( UnitLevel("player") == (SHOW_TALENT_LEVEL - 1) and PanelTemplates_GetSelectedTab(PlayerTalentFrame) ~= self:GetID() ) then
+	if C_SpecializationInfo.CanPlayerUseTalentUI() and (GetNumUnspentTalents() > 0) and (PanelTemplates_GetSelectedTab(PlayerTalentFrame) ~= self:GetID()) then
 		SetButtonPulse(self, 60, 0.75);
 	end
 end
@@ -1224,7 +1225,7 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 
 	-- disable Learn button
 	local disableLearnButton = not self.isPet and ( playerTalentSpec and shownSpec == playerTalentSpec );
-    if(disableLearnButton or UnitLevel("player") < SHOW_SPEC_LEVEL) then
+    if(disableLearnButton or not C_SpecializationInfo.CanPlayerUseTalentSpecUI()) then
 		self.learnButton:Disable();
 		self.learnButton.Flash:Hide();
 		self.learnButton.FlashAnim:Stop();
@@ -1326,19 +1327,13 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 end
 
 function PlayerTalentFrameTalents_OnLoad(self)
-	local _, class = UnitClass("player");
-	local talentLevels = CLASS_TALENT_LEVELS[class] or CLASS_TALENT_LEVELS["DEFAULT"];
-	for i=1, MAX_TALENT_TIERS do
-		self["tier"..i].level:SetText(talentLevels[i]);
-	end
-
 	-- Setup table to support immediate UI updates when picking talents
 	self.talentInfo = {};
 end
 
 function PlayerTalentFrameTalents_OnShow(self)
 	local playerLevel = UnitLevel("player");
-	if ( playerLevel >= SHOW_TALENT_LEVEL and AreTalentsLocked() ) then
+	if ( C_SpecializationInfo.CanPlayerUseTalentUI() and AreTalentsLocked() ) then
 		PlayerTalentFrameLockInfo:Show();
 		PlayerTalentFrameLockInfo.Title:SetText(TALENTS_FRAME_TALENT_LOCK_TITLE);
 		PlayerTalentFrameLockInfo.Text:SetText(TALENTS_FRAME_TALENT_LOCK_DESC)
@@ -1524,7 +1519,7 @@ function PvpTalentFrameMixin:ClearPendingRemoval()
 end
 
 function PvpTalentFrameMixin:Update()
-	if (not C_PvP.IsWarModeFeatureEnabled() or UnitLevel("player") < SHOW_PVP_TALENT_LEVEL) then
+	if (not C_PvP.IsWarModeFeatureEnabled() or not C_SpecializationInfo.CanPlayerUsePVPTalentUI()) then
 		self:Hide();
 		PlayerTalentFrameTalentsPvpTalentButton:Hide();
 		PlayerTalentFrame_SetExpanded(false);

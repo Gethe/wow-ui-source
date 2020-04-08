@@ -23,7 +23,7 @@ function UIWidgetContainerMixin:OnEvent(event, ...)
 		self:ProcessAllWidgets();
 	elseif event == "UPDATE_UI_WIDGET" then
 		local widgetInfo = ...;
-		if widgetInfo.widgetSetID == self.widgetSetID then
+		if (widgetInfo.widgetSetID == self.widgetSetID) and (not widgetInfo.unit or (widgetInfo.unit == self.attachedToUnit)) then
 			self:ProcessWidget(widgetInfo.widgetID, widgetInfo.widgetType);
 		end
 	end
@@ -67,7 +67,7 @@ end
 --
 -- Calling RegisterForWidgetSet on a container that is already registered to a different WidgetSet will cause the old WidgetSet to get unregistered and the new one to take its place
 -- Calling RegisterForWidgetSet with a nil widgetSetID is the same as just calling UnregisterForWidgetSet
-function UIWidgetContainerMixin:RegisterForWidgetSet(widgetSetID, widgetLayoutFunction, widgetInitFunction)
+function UIWidgetContainerMixin:RegisterForWidgetSet(widgetSetID, widgetLayoutFunction, widgetInitFunction, attachedToUnit)
 	if self.widgetSetID then
 		-- We are already registered to a WidgetSet
 		if self.widgetSetID == widgetSetID then
@@ -86,10 +86,15 @@ function UIWidgetContainerMixin:RegisterForWidgetSet(widgetSetID, widgetLayoutFu
 	self.widgetSetID = widgetSetID;
 	self.layoutFunc = widgetLayoutFunction or DefaultWidgetLayout;
 	self.initFunc = widgetInitFunction;
+	self.attachedToUnit = attachedToUnit;
 	self.widgetFrames = {};
 	self.timerWidgets = {};
 	self.numTimers = 0;
 	self.numWidgetsShowing = 0;
+
+	if self.attachedToUnit then
+		C_UIWidgetManager.RegisterUnitForWidgetUpdates(self.attachedToUnit);
+	end
 
 	self:ProcessAllWidgets();
 
@@ -121,6 +126,11 @@ function UIWidgetContainerMixin:UnregisterForWidgetSet()
 
 	if self.showAndHideOnWidgetSetRegistration then
 		self:Hide();
+	end
+
+	if self.attachedToUnit then
+		C_UIWidgetManager.UnregisterUnitForWidgetUpdates(self.attachedToUnit);
+		self.attachedToUnit = nil;
 	end
 
 	self:UnregisterEvent("UPDATE_ALL_UI_WIDGETS");
@@ -269,6 +279,11 @@ function UIWidgetContainerMixin:ProcessWidget(widgetID, widgetType)
 	if not widgetTypeInfo then
 		-- This WidgetType is not supported (nothing called RegisterWidgetVisTypeTemplate for it)
 		return;
+	end
+
+	if UIWidgetManager.processingUnit ~= self.attachedToUnit then
+		C_UIWidgetManager.SetProcessingUnit(self.attachedToUnit);
+		UIWidgetManager.processingUnit = self.attachedToUnit;
 	end
 
 	local widgetInfo = widgetTypeInfo.visInfoDataFunction(widgetID);

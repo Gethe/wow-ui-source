@@ -18,6 +18,7 @@ AddOnsDocumentation.lua
 AdventureJournalDocumentation.lua
 AdventureMapDocumentation.lua
 AlliedRacesFrameDocumentation.lua
+AnimaDiversionUIDocumentation.lua
 AreaPoiInfoDocumentation.lua
 ArtifactUIDocumentation.lua
 AuctionHouseDocumentation.lua
@@ -35,6 +36,7 @@ CalendarDocumentation.lua
 ChallengeModeInfoDocumentation.lua
 ChatBubblesDocumentation.lua
 ChatInfoDocumentation.lua
+ChromieTimeUIDocumentation.lua
 CinematicDocumentation.lua
 ClassColorDocumentation.lua
 ClassTrialDocumentation.lua
@@ -47,6 +49,8 @@ ConfigurationWarningsDocumentation.lua
 ConsoleDocumentation.lua
 ContainerDocumentation.lua
 ContributionCollectorDocumentation.lua
+CovenantPreviewDocumentation.lua
+CovenantSanctumDocumentation.lua
 CreatureInfoDocumentation.lua
 CurrencyInfoDocumentation.lua
 CursorDocumentation.lua
@@ -66,6 +70,7 @@ GossipInfoDocumentation.lua
 GuildBankDocumentation.lua
 GuildInfoDocumentation.lua
 HeirloomInfoDocumentation.lua
+InGameNavigationDocumentation.lua
 IncomingSummonDocumentation.lua
 InstanceEncounterDocumentation.lua
 InvasionInfoDocumentation.lua
@@ -81,10 +86,11 @@ KnowledgeBaseDocumentation.lua
 LFGInfoDocumentation.lua
 LFGListInfoDocumentation.lua
 LFGuildInfoDocumentation.lua
+LegendaryCraftingDocumentation.lua
 LevelLinkDocumentation.lua
 LoadingScreenDocumentation.lua
 LootDocumentation.lua
-LootJournalDocumentation.lua
+LoreTextDocumentation.lua
 LossOfControlDocumentation.lua
 MailInfoDocumentation.lua
 MapDocumentation.lua
@@ -99,9 +105,10 @@ PartyInfoDocumentation.lua
 PartyPoseUIDocumentation.lua
 PetInfoDocumentation.lua
 PetJournalInfoDocumentation.lua
+PlayerChoiceDocumentation.lua
+PlayerInfoDocumentation.lua
 PlayerLocationDocumentation.lua
 PvpInfoDocumentation.lua
-QuestChoiceDocumentation.lua
 QuestLineInfoDocumentation.lua
 QuestLogDocumentation.lua
 QuestOfferDocumentation.lua
@@ -126,9 +133,11 @@ SpecializationInfoDocumentation.lua
 SpellDocumentation.lua
 SpellActivationOverlayDocumentation.lua
 SpellBookDocumentation.lua
+SplashScreenDocumentation.lua
 StableInfoDocumentation.lua
 StorePublicUIDocumentation.lua
 SummonInfoDocumentation.lua
+SuperTrackManagerDocumentation.lua
 SystemDocumentation.lua
 TalkingHeadDocumentation.lua
 TaxiMapDocumentation.lua
@@ -147,6 +156,7 @@ UIManagerDocumentation.lua
 UIModelInfoDocumentation.lua
 UIWidgetManagerDocumentation.lua
 UnitDocumentation.lua
+UserFeedbackDocumentation.lua
 VehicleDocumentation.lua
 VideoDocumentation.lua
 VignetteInfoDocumentation.lua
@@ -168,16 +178,23 @@ ColorDocumentation.lua
 GarrisonConstantsDocumentation.lua
 GarrisonSharedDocumentation.lua
 GuildInfoSharedDocumentation.lua
+ItemConstantsDocumentation.lua
 ItemLocationSharedDocumentation.lua
 ItemSharedDocumentation.lua
+LegendaryCraftingTypesDocumentation.lua
 ModelSceneDocumentation.lua
 NamePlateDocumentation.lua
 PlayerDocumentation.lua
+QuestConstantsDocumentation.lua
 QuestSessionConstantsDocumentation.lua
 QueueSpecificDocumentation.lua
 RecruitAFriendSharedDocumentation.lua
+ScriptRegionSharedDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua
+TradeSkillUITypesDocumentation.lua
+UIWidgetManagerSharedDocumentation.lua
 UnitSharedDocumentation.lua
 VectorSharedDocumentation.lua
+VehicleConstantsDocumentation.lua
 # End documentation files here

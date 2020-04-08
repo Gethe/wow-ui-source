@@ -32,6 +32,18 @@
 		</Frames>
 	</Frame>
 
+	<Button name="ObjectiveTrackerMinimizeButtonTemplate" mixin="ObjectiveTrackerMinimizeButtonMixin" virtual="true">
+		<Size x="16" y="16"/>
+		<NormalTexture file="Interface\Buttons\UI-Panel-QuestHideButton">
+			<TexCoords left="0" right="0.5" top="0.5" bottom="1"/>
+		</NormalTexture>
+		<PushedTexture file="Interface\Buttons\UI-Panel-QuestHideButton">
+			<TexCoords left="0.5" right="1" top="0.5" bottom="1"/>
+		</PushedTexture>
+		<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD" />
+		<DisabledTexture file="Interface\Buttons\UI-Panel-QuestHideButton-disabled" />
+	</Button>
+
 	<Frame name="ObjectiveTrackerHeaderTemplate" virtual="true" hidden="true">
 		<Size x="235" y="25"/>
 		<Layers>
@@ -97,6 +109,16 @@
 				</Scripts>
 			</AnimationGroup>
 		</Animations>
+		<Frames>
+			<Button parentKey="MinimizeButton" inherits="ObjectiveTrackerMinimizeButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="ObjectiveTracker_MinimizeModuleButton_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
 		<Scripts>
 			<OnLoad>
         		self.height = OBJECTIVE_TRACKER_HEADER_HEIGHT;
@@ -333,6 +355,7 @@
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<Frames>
+					<Frame parentKey="CampaignQuestHeader" inherits="ObjectiveTrackerHeaderTemplate"/>
 					<Frame parentKey="QuestHeader" inherits="ObjectiveTrackerHeaderTemplate" mixin="QuestHeaderMixin">
 						<Scripts>
 							<OnShow method="OnShow"/>
@@ -346,34 +369,22 @@
 				</Frames>
 			</Frame>
 			<Frame parentKey="HeaderMenu">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT"/>
-				</Anchors>
+				<Size x="1" y="1"/>
 				<Frames>
-					<Button parentKey="MinimizeButton">
-						<Size x="16" y="16"/>
+					<Button parentKey="MinimizeButton" inherits="ObjectiveTrackerMinimizeButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="0" y="-4"/>
+							<Anchor point="RIGHT" x="0" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="ObjectiveTracker_MinimizeButton_OnClick"/>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-Panel-QuestHideButton">
-							<TexCoords left="0" right="0.5" top="0.5" bottom="1"/>
-						</NormalTexture>
-						<PushedTexture file="Interface\Buttons\UI-Panel-QuestHideButton">
-							<TexCoords left="0.5" right="1" top="0.5" bottom="1"/>
-						</PushedTexture>
-						<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD" />
-						<DisabledTexture file="Interface\Buttons\UI-Panel-QuestHideButton-disabled" />
 					</Button>
 				</Frames>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="Title" inherits="GameFontNormal" hidden="true" text="OBJECTIVES_TRACKER_LABEL">
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.MinimizeButton" relativePoint="LEFT" x="-3" y="1"/>
+								<Anchor point="RIGHT" relativeKey="$parent.MinimizeButton" relativePoint="LEFT" x="-3" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>

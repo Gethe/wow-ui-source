@@ -24,6 +24,30 @@
 		</Scripts>
 	</Button>
 
+	<Button name="TradeSkillOptionalReagentTemplate" parentArray="OptionalReagents" inherits="OptionalReagentButtonTemplate" hidden="true" virtual="true">
+		<Scripts>
+			<OnEnter>
+				self:GetParent():GetParent():OnOptionalReagentMouseEnter(self);
+			</OnEnter>
+			<OnLeave function="GameTooltip_HideResetCursor" />
+			<OnUpdate function="CursorOnUpdate" />
+			<OnClick>
+				self:GetParent():GetParent():OnOptionalReagentClicked(self, button);
+			</OnClick>
+			<OnLoad>
+				OptionalReagentButtonMixin.OnLoad(self);
+
+				-- Uses in Korean to fix Bug ID: 244689
+				if TRADESKILL_REAGENT_FONT then
+					self.Count:SetFontObject(TRADESKILL_REAGENT_FONT);
+				end
+				if TRADESKILL_FRAME_EXTEND_REAGENT_NAME_FIELD then
+					self.Name:SetWidth(100);
+				end
+			</OnLoad>
+		</Scripts>
+	</Button>
+
 	<Frame name="TradeSkillDetailsStarTemplate" parentArray="Stars" virtual="true">
 		<Size x="16" y="15"/>
 		<Layers>
@@ -276,6 +300,12 @@
 							</Anchors>
 						</FontString>
 
+						<FontString parentKey="OptionalReagentLabel" inherits="GameFontNormalSmall" text="SPELL_REAGENTS_OPTIONAL">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.ReagentLabel"/>
+							</Anchors>
+						</FontString>
+
 						<FontString parentKey="NextRankText" inherits="GameFontNormalSmall" justifyH="LEFT" text="TRADESKILL_NEXT_RANK_HEADER">
 							<Size x="290" y="0"/>
 							<Anchors>
@@ -292,6 +322,39 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Button parentKey="OptionalReagentInfo">
+						<Size x="16" y="16"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.OptionalReagentLabel" relativePoint="RIGHT" x="5" y="0"/>
+						</Anchors>
+						<NormalTexture parentKey="I" file="Interface\common\help-i">
+							<Size x="30" y="30"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</NormalTexture>
+						<HighlightTexture file="Interface\common\help-i" alphaMode="ADD" hidden="true">
+							<Size x="30" y="30"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a=".2"/>
+						</HighlightTexture>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+								local overrideColor = nil;
+								local wrap = true;
+								GameTooltip_SetTitle(GameTooltip, OPTIONAL_REAGENT_TUTORIAL_TOOLTIP_TITLE, overrideColor, wrap)
+								GameTooltip_AddNormalLine(GameTooltip, OPTIONAL_REAGENT_TUTORIAL_TOOLTIP_TEXT, wrap)
+
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Button>
+
 					<Button parentKey="ResultIcon" registerForClicks="LeftButtonUp,RightButtonUp">
 						<KeyValues>
 							<KeyValue key="hasItem" value="true" type="boolean"/>
@@ -434,6 +497,54 @@
 						</KeyValues>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.Reagent7" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="OptionalReagent1" inherits="TradeSkillOptionalReagentTemplate">
+						<KeyValues>
+							<KeyValue key="optionalReagentIndex" type="number" value="1"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.OptionalReagentLabel" relativePoint="BOTTOMLEFT" x="-5" y="-6"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="OptionalReagent2" inherits="TradeSkillOptionalReagentTemplate">
+						<KeyValues>
+							<KeyValue key="optionalReagentIndex" type="number" value="2"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.OptionalReagent1" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="OptionalReagent3" inherits="TradeSkillOptionalReagentTemplate">
+						<KeyValues>
+							<KeyValue key="optionalReagentIndex" type="number" value="3"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.OptionalReagent1" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="OptionalReagent4" inherits="TradeSkillOptionalReagentTemplate">
+						<KeyValues>
+							<KeyValue key="optionalReagentIndex" type="number" value="4"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.OptionalReagent3" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="OptionalReagent5" inherits="TradeSkillOptionalReagentTemplate">
+						<KeyValues>
+							<KeyValue key="optionalReagentIndex" type="number" value="5"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.OptionalReagent3" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="OptionalReagent6" inherits="TradeSkillOptionalReagentTemplate">
+						<KeyValues>
+							<KeyValue key="optionalReagentIndex" type="number" value="6"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.OptionalReagent5" relativePoint="RIGHT" x="0" y="0"/>
 						</Anchors>
 					</Button>
 				</Frames>

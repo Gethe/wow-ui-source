@@ -105,11 +105,11 @@ function GarrisonBuildingFrame_OnLoad(self)
 		BUILDING_TABS[tabInfo[tabInfoIndex].id] = tab;
 		tab.Text:SetText(tabInfo[tabInfoIndex].name);
 		
-		tab.buildings = C_Garrison.GetBuildingsForSize(LE_GARRISON_TYPE_6_0, tab.categoryID);
+		tab.buildings = C_Garrison.GetBuildingsForSize(Enum.GarrisonType.Type_6_0, tab.categoryID);
 	end
 	
 	--get buildings owned
-	local buildings = C_Garrison.GetBuildings(LE_GARRISON_TYPE_6_0);
+	local buildings = C_Garrison.GetBuildings(Enum.GarrisonType.Type_6_0);
 	--add instance IDs for owned buildings to the corresponding building buttons
 	for i = 1, #buildings do
 		local building = buildings[i];
@@ -123,13 +123,13 @@ function GarrisonBuildingFrame_OnLoad(self)
 		end
 	end
 	
-	C_Garrison.RequestGarrisonUpgradeable(LE_FOLLOWER_TYPE_GARRISON_6_0);
+	C_Garrison.RequestGarrisonUpgradeable(Enum.GarrisonFollowerType.FollowerType_6_0);
 	GarrisonBuildingFrame_UpdateGarrisonInfo(self);
 	GarrisonBuildingTab_Select(GarrisonBuildingFrame.BuildingList.Tab1);
 	
 	GarrisonBuildingFrame_UpdateCurrency();
 	
-	self.FollowerList:Initialize(LE_FOLLOWER_TYPE_GARRISON_6_0);
+	self.FollowerList:Initialize(Enum.GarrisonFollowerType.FollowerType_6_0);
 	self.FollowerList:SetSortFuncs(GarrisonFollowerList_DefaultSort, GarrisonFollowerList_InitializeDefaultSort);
 
 	local buttons = self.FollowerList.listScroll.buttons
@@ -159,12 +159,12 @@ function GarrisonBuildingFrame_OnShow(self)
 		GarrisonBuildingFrame_UpdateGarrisonInfo(self);
 	end
 
-	C_Garrison.RequestGarrisonUpgradeable(LE_FOLLOWER_TYPE_GARRISON_6_0);
+	C_Garrison.RequestGarrisonUpgradeable(Enum.GarrisonFollowerType.FollowerType_6_0);
 	GarrisonBuildingTab_Select(GarrisonBuildingFrame.BuildingList.Tab1);
 	GarrisonBuildingList_Show();
 	
 	-- Update building state for owned buildings. This is only really needed to refresh the cooldown timers.
-	local buildings = C_Garrison.GetBuildings(LE_GARRISON_TYPE_6_0);
+	local buildings = C_Garrison.GetBuildings(Enum.GarrisonType.Type_6_0);
 	for i = 1, #buildings do
 		GarrisonPlot_UpdateBuilding(buildings[i].plotID);
 	end
@@ -215,7 +215,7 @@ function GarrisonBuildingFrame_OnEvent(self, event, ...)
 	elseif (event == "GARRISON_BUILDING_PLACED") then
 		GarrisonBuildingFrame_UpdateGarrisonInfo(self);
 		local plotID, newPlacement = ...;
-		local id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, isPrebuilt = C_Garrison.GetOwnedBuildingInfoAbbrev(plotID);
+		local id, name, textureKit, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, isPrebuilt = C_Garrison.GetOwnedBuildingInfoAbbrev(plotID);
 		if (id) then
 			local Plot = self.plots[plotID];
 			if (not Plot) then
@@ -234,7 +234,7 @@ function GarrisonBuildingFrame_OnEvent(self, event, ...)
 				end
 				Plot.BuildingCreateFlareAnim:Play();
 			end
-			GarrisonPlot_SetBuilding(Plot, id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, isPrebuilt);
+			GarrisonPlot_SetBuilding(Plot, id, name, textureKit, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, isPrebuilt);
 			local buildingInfo = GarrisonBuildingFrame.selectedBuilding;
 			if (buildingInfo and id == buildingInfo.buildingID) then
 				GarrisonBuildingInfoBox_ShowBuilding(plotID, true);
@@ -260,7 +260,7 @@ function GarrisonBuildingFrame_OnEvent(self, event, ...)
 		for i=1, GARRISON_NUM_BUILDING_SIZES do
 			local tab = list["Tab"..i];
 			if (tab.categoryID == categoryID) then
-				tab.buildings = C_Garrison.GetBuildingsForSize(LE_GARRISON_TYPE_6_0, tab.categoryID);
+				tab.buildings = C_Garrison.GetBuildingsForSize(Enum.GarrisonType.Type_6_0, tab.categoryID);
 				if (self.selectedTab == tab) then
 					if (self.selectedBuilding) then
 						buildingID = self.selectedBuilding.buildingID;
@@ -291,7 +291,7 @@ function GarrisonBuildingFrame_OnEvent(self, event, ...)
 end
 
 function GarrisonBuildingFrame_UpdatePlots()
-	local plots = C_Garrison.GetPlots(LE_FOLLOWER_TYPE_GARRISON_6_0);
+	local plots = C_Garrison.GetPlots(Enum.GarrisonFollowerType.FollowerType_6_0);
 	local mapWidth = GarrisonBuildingFrame.MapFrame:GetWidth();
 	local mapHeight = GarrisonBuildingFrame.MapFrame:GetHeight();
 	for i = 1, #plots do
@@ -315,10 +315,10 @@ function GarrisonBuildingFrame_UpdatePlots()
 		Plot.PlotHighlight:SetAtlas("Garr_Plot_Glow_"..plot.size, true);
 		Plot.Lock:Hide();
 		Plot.locked = false;
-		local id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, isPrebuilt = C_Garrison.GetOwnedBuildingInfoAbbrev(plot.id);
+		local id, name, textureKit, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, isPrebuilt = C_Garrison.GetOwnedBuildingInfoAbbrev(plot.id);
 		Plot.isPrebuilt = isPrebuilt;
 		if (id) then
-			GarrisonPlot_SetBuilding(Plot, id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, isPrebuilt);
+			GarrisonPlot_SetBuilding(Plot, id, name, textureKit, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, isPrebuilt);
 		elseif (plot.buildingID) then
 			id, name = C_Garrison.GetBuildingInfo(plot.buildingID);
 			GarrisonPlot_SetBuilding(Plot, plot.buildingID, name, plot.building, plot.icon);
@@ -336,7 +336,7 @@ end
 
 function GarrisonBuildingFrame_UpdateBuildingList()
 	for id, tab in pairs(BUILDING_TABS) do
-		tab.buildings = C_Garrison.GetBuildingsForSize(LE_GARRISON_TYPE_6_0, id);
+		tab.buildings = C_Garrison.GetBuildingsForSize(Enum.GarrisonType.Type_6_0, id);
 	end
 	if (GarrisonBuildingFrame.selectedTab) then
 		GarrisonBuildingTab_Select(GarrisonBuildingFrame.selectedTab);
@@ -366,12 +366,12 @@ function GarrisonBuildingFrame_UpdateUpgradeButton()
 end
 
 function GarrisonBuildingFrame_UpdateGarrisonInfo(self)
-	local level, mapTexture, townHallX, townHallY = C_Garrison.GetGarrisonInfo(LE_GARRISON_TYPE_6_0);
+	local level, mapTextureKit, townHallX, townHallY = C_Garrison.GetGarrisonInfo(Enum.GarrisonType.Type_6_0);
 	if ( not level or not townHallX or not townHallY ) then
 		return;
 	end
 	self.level = level;
-	self.MapFrame.Map:SetAtlas(mapTexture);
+	self.MapFrame.Map:SetAtlas(mapTextureKit);
 	self.MapFrame.TownHall.Level:SetText(level);
 	self.MapFrame.TownHall.TownHallName:SetText(GarrisonTownHall_GetName());
 	GarrisonTownHall_UpdateNameBanner(self.MapFrame.TownHall);
@@ -391,7 +391,7 @@ end
 function GarrisonBuildingFrame_UpdateCurrency()
 	local materialsText = GarrisonBuildingFrame.BuildingList.MaterialFrame.Materials;
 	
-	local currencyName, amount, currencyTexture = GetCurrencyInfo(GARRISON_CURRENCY);
+	local amount = C_CurrencyInfo.GetCurrencyInfo(GARRISON_CURRENCY).quantity;
 	amount = BreakUpLargeNumbers(amount);
 	materialsText:SetText(amount);
 end
@@ -440,7 +440,7 @@ function GarrisonTownHall_Select()
 	infoBox.RankBadge:SetAtlas("Garr_LevelBadge_"..GarrisonBuildingFrame.level, true);
 	local factionGroup = UnitFactionGroup("player");
 	infoBox.Building:SetAtlas(format(FactionData[factionGroup].townHallInfo, GarrisonBuildingFrame.level), true);
-	local costMaterial, costGold = C_Garrison.GetGarrisonUpgradeCost(LE_FOLLOWER_TYPE_GARRISON_6_0);
+	local costMaterial, costGold = C_Garrison.GetGarrisonUpgradeCost(Enum.GarrisonFollowerType.FollowerType_6_0);
 	if (costMaterial and costMaterial > 0) then
 		infoBox.UpgradeCostBar.CostAmountMaterial:SetText(Garrison_GetMaterialCostString(costMaterial));
 		infoBox.UpgradeCostBar:Show();
@@ -458,10 +458,10 @@ function GarrisonTownHall_Select()
 end
 
 function GarrisonTownHall_StartUpgrade(self)
-	local costMaterial, costGold = C_Garrison.GetGarrisonUpgradeCost(LE_FOLLOWER_TYPE_GARRISON_6_0);
+	local costMaterial, costGold = C_Garrison.GetGarrisonUpgradeCost(Enum.GarrisonFollowerType.FollowerType_6_0);
 	
 	-- Error if not enough money
-	local _, currencyAmount = GetCurrencyInfo(GARRISON_CURRENCY);
+	local currencyAmount = C_CurrencyInfo.GetCurrencyInfo(GARRISON_CURRENCY).quantity;
 	if (currencyAmount < costMaterial) then
 		UIErrorsFrame:AddMessage(ERR_GARRISON_NOT_ENOUGH_CURRENCY, 1.0, 0.1, 0.1, 1.0);
 		PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_BUILDING_PLACEMENT_ERROR);
@@ -520,7 +520,7 @@ end
 function GarrisonTownHallBoxMouseOver_OnEnter(self, button)
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 15, 15);
 	GameTooltip:SetText(GarrisonTownHall_GetName(), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-	local garrisonLevel = C_Garrison.GetGarrisonInfo(LE_GARRISON_TYPE_6_0);
+	local garrisonLevel = C_Garrison.GetGarrisonInfo(Enum.GarrisonType.Type_6_0);
 	local color;
 	
 	GameTooltip:AddLine(" ");
@@ -592,11 +592,11 @@ function GarrisonBuildingInfoBox_ShowBuilding(ID, owned, showLock)
 	end
 	infoBox.ID = ID;
 	infoBox:Show()
-	local id, name, texPrefix, icon, description, rank, currencyID, currencyQty, goldQty, buildTime, needsPlan, isPrebuilt, possSpecs, upgrades, canUpgrade, isMaxLevel, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate, hasFollowerSlot;
+	local id, name, textureKit, icon, description, rank, currencyID, currencyQty, goldQty, buildTime, needsPlan, isPrebuilt, possSpecs, upgrades, canUpgrade, isMaxLevel, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate, hasFollowerSlot;
 	if (owned) then
-		id, name, texPrefix, icon, description, rank, currencyID, currencyQty, goldQty, buildTime, needsPlan, isPrebuilt, possSpecs, upgrades, canUpgrade, isMaxLevel, hasFollowerSlot, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate = C_Garrison.GetOwnedBuildingInfo(ID);
+		id, name, textureKit, icon, description, rank, currencyID, currencyQty, goldQty, buildTime, needsPlan, isPrebuilt, possSpecs, upgrades, canUpgrade, isMaxLevel, hasFollowerSlot, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate = C_Garrison.GetOwnedBuildingInfo(ID);
 	else
-		id, name, texPrefix, icon, description, rank, currencyID, currencyQty, goldQty, buildTime, needsPlan, isPrebuilt, possSpecs, upgrades, canUpgrade, isMaxLevel, hasFollowerSlot = C_Garrison.GetBuildingInfo(ID);
+		id, name, textureKit, icon, description, rank, currencyID, currencyQty, goldQty, buildTime, needsPlan, isPrebuilt, possSpecs, upgrades, canUpgrade, isMaxLevel, hasFollowerSlot = C_Garrison.GetBuildingInfo(ID);
 	end
 	-- currencyID, currencyQty, and goldQty from above are the cost of the building's current level, which we do not display. What we do display is the cost of the next level.
 	if ( id and owned ) then
@@ -649,8 +649,8 @@ function GarrisonBuildingInfoBox_ShowBuilding(ID, owned, showLock)
 	if (description and description ~= "") then
 		infoBox.Description:SetText(description);
 	end
-	if (texPrefix) then
-		infoBox.Building:SetAtlas(texPrefix.."_Info", true);
+	if (textureKit) then
+		infoBox.Building:SetAtlas(textureKit.."_Info", true);
 	end
 	infoBox.InfoBar:Hide();
 	infoBox.InfoText:Hide();
@@ -879,7 +879,7 @@ function GarrisonBuildingInfoBox_OnDragStart(self, button)
 		return;
 	end
 	
-	local id, name, texPrefix, icon, _, _, currencyID, currencyQty, goldQty, buildTime, needsPlan = C_Garrison.GetBuildingInfo(building.buildingID);
+	local id, name, textureKit, icon, _, _, currencyID, currencyQty, goldQty, buildTime, needsPlan = C_Garrison.GetBuildingInfo(building.buildingID);
 	
 	if (needsPlan) then
 		return;
@@ -888,8 +888,8 @@ function GarrisonBuildingInfoBox_OnDragStart(self, button)
 	if (icon) then
 		SetPortraitToTexture(GarrisonBuildingPlacer.Icon, icon);
 	end
-	if (texPrefix) then
-		GarrisonPlot_SetBuildingArt(GarrisonBuildingPlacer, texPrefix.."_Map");
+	if (textureKit) then
+		GarrisonPlot_SetBuildingArt(GarrisonBuildingPlacer, textureKit.."_Map");
 	end
 	GarrisonBuildingPlacer.info = building;
 	GarrisonBuildingPlacer.info.cost = currencyQty;
@@ -935,12 +935,12 @@ function GarrisonBuildingFrameLevelIcon_OnEnter(self, button)
 	
 	local building = GarrisonBuildingFrame.selectedBuilding;
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 15, 15);
-	local _, id, name, texPrefix, icon, rank, currencyID, cost, goldQty, buildTime, tooltip, needsPlan;
+	local _, id, name, textureKit, icon, rank, currencyID, cost, goldQty, buildTime, tooltip, needsPlan;
 	local locked = building.plotID and GarrisonBuildingFrame.plots[building.plotID] and GarrisonBuildingFrame.plots[building.plotID].locked;
 	
 	-- If we own the building, show upgrade info
 	if (building.plotID and not locked) then
-		id, name, texPrefix, icon, rank, currencyID, cost, goldQty, buildTime, tooltip = C_Garrison.GetBuildingUpgradeInfo(building.buildingID);
+		id, name, textureKit, icon, rank, currencyID, cost, goldQty, buildTime, tooltip = C_Garrison.GetBuildingUpgradeInfo(building.buildingID);
 		if (rank) then
 			_, _, _, _, _, needsPlan = C_Garrison.GetBuildingTooltip(id);
 			GameTooltip:SetText(format(GARRISON_BUILDING_LEVEL_UPGRADE, rank)); 
@@ -1012,7 +1012,7 @@ function GarrisonBuildingAddFollowerButton_OnLeave(self, button)
 end
 
 function GarrisonBuildingFollowerList_OnShow(self)
-	self.followers = C_Garrison.GetPossibleFollowersForBuilding(LE_FOLLOWER_TYPE_GARRISON_6_0, GarrisonBuildingFrame.selectedBuilding.plotID);
+	self.followers = C_Garrison.GetPossibleFollowersForBuilding(Enum.GarrisonFollowerType.FollowerType_6_0, GarrisonBuildingFrame.selectedBuilding.plotID);
 	self.followersList = { };
 	for i = 1, #self.followers do
 		tinsert(self.followersList, i);
@@ -1288,12 +1288,12 @@ function GarrisonBuildingListButton_OnDragStart(self, button)
 		return;
 	end
 	
-	local id, name, texPrefix, icon = C_Garrison.GetBuildingInfo(self.info.buildingID);
+	local id, name, textureKit, icon = C_Garrison.GetBuildingInfo(self.info.buildingID);
 	if (icon) then
 		SetPortraitToTexture(GarrisonBuildingPlacer.Icon, icon);
 	end
-	if (texPrefix) then
-		GarrisonPlot_SetBuildingArt(GarrisonBuildingPlacer, texPrefix.."_Map");
+	if (textureKit) then
+		GarrisonPlot_SetBuildingArt(GarrisonBuildingPlacer, textureKit.."_Map");
 	end
 	GarrisonBuildingPlacer.info = self.info;
 	GarrisonBuildingPlacer.fromExistingBuilding = (self.info.plotID ~= nil);
@@ -1361,15 +1361,15 @@ function GarrisonPlot_OnDragStart(self)
 		return;
 	end
 	
-	local id, name, texPrefix, icon = C_Garrison.GetBuildingInfo(self.buildingID);
+	local id, name, textureKit, icon = C_Garrison.GetBuildingInfo(self.buildingID);
 	GarrisonPlot_SetGreyedOut(self, true);
 	
 	if (icon) then
 		SetPortraitToTexture(GarrisonBuildingPlacer.Icon, icon);
 	end
 	
-	if (texPrefix) then
-		GarrisonPlot_SetBuildingArt(GarrisonBuildingPlacer, texPrefix.."_Map");
+	if (textureKit) then
+		GarrisonPlot_SetBuildingArt(GarrisonBuildingPlacer, textureKit.."_Map");
 	end
 	GarrisonBuildingPlacer.info = self;
 	GarrisonBuildingPlacer.fromExistingBuilding = true;
@@ -1444,8 +1444,8 @@ function GarrisonPlot_OnReceiveDrag(self)
 	confirmation:Show();
 	PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_UPGRADE);
 	
-	local id, name, texPrefix, icon = C_Garrison.GetBuildingInfo(GarrisonBuildingPlacer.info.buildingID)
-	GarrisonPlot_SetBuilding(self, id, name, texPrefix, icon);
+	local id, name, textureKit, icon = C_Garrison.GetBuildingInfo(GarrisonBuildingPlacer.info.buildingID)
+	GarrisonPlot_SetBuilding(self, id, name, textureKit, icon);
 	
 	GarrisonBuildingPlacer_Clear();
 end
@@ -1581,8 +1581,8 @@ end
 function GarrisonPlot_UpdateBuilding(plotID)
 	local plot = GarrisonBuildingFrame.plots[plotID];
 	if (plot) then
-		local id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, isPrebuilt = C_Garrison.GetOwnedBuildingInfoAbbrev(plotID);
-		GarrisonPlot_SetBuilding(plot, id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, isPrebuilt)
+		local id, name, textureKit, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, isPrebuilt = C_Garrison.GetOwnedBuildingInfoAbbrev(plotID);
+		GarrisonPlot_SetBuilding(plot, id, name, textureKit, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, isPrebuilt)
 	end
 end
 
@@ -1597,7 +1597,7 @@ function GarrisonPlot_SetBuildingArt(frame, texture)
 	end
 end
 		
-function GarrisonPlot_SetBuilding(self, id, tooltip, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, isPrebuilt)
+function GarrisonPlot_SetBuilding(self, id, tooltip, textureKit, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, isPrebuilt)
 	GarrisonPlot_ClearBuilding(self);
 	self.buildingID = id;
 	if (canActivate) then
@@ -1614,8 +1614,8 @@ function GarrisonPlot_SetBuilding(self, id, tooltip, texPrefix, icon, rank, isBu
 		self.IconRing:Show();
 		self.IconRing:SetDesaturated(self.greyedOut);
 	end
-	if (texPrefix) then
-		GarrisonPlot_SetBuildingArt(self, texPrefix.."_Map");
+	if (textureKit) then
+		GarrisonPlot_SetBuildingArt(self, textureKit.."_Map");
 		self.Building:Show();
 		self.Building:SetDesaturated(self.greyedOut);
 	end
@@ -1732,10 +1732,10 @@ function GarrisonBuildingFrame_StartUpgrade(self)
 		return;
 	end
 	
-	local id, name, texPrefix, icon, rank, currencyID, currencyQty, goldQty, buildTime = C_Garrison.GetBuildingUpgradeInfo(building.buildingID)
+	local id, name, textureKit, icon, rank, currencyID, currencyQty, goldQty, buildTime = C_Garrison.GetBuildingUpgradeInfo(building.buildingID)
 
 	-- Error if not enough money
-	local _, currencyAmount = GetCurrencyInfo(GARRISON_CURRENCY);
+	local currencyAmount = C_CurrencyInfo.GetCurrencyInfo(GARRISON_CURRENCY).quantity;
 	if (currencyAmount < currencyQty) then
 		UIErrorsFrame:AddMessage(ERR_GARRISON_NOT_ENOUGH_CURRENCY, 1.0, 0.1, 0.1, 1.0);
 		PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_BUILDING_PLACEMENT_ERROR);
@@ -1761,7 +1761,7 @@ function GarrisonBuildingFrame_StartUpgrade(self)
 	confirmation:Show();
 	PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_UPGRADE);
 	
-	GarrisonPlot_SetBuilding(Plot, id, name, texPrefix, icon);
+	GarrisonPlot_SetBuilding(Plot, id, name, textureKit, icon);
 end
 
 function GarrisonBuildingFrame_ConfirmUpgrade()
@@ -1776,7 +1776,7 @@ function GarrisonBuildingFrame_ConfirmUpgrade()
 end
 
 function GarrisonBuildingFrame_ConfirmUpgradeGarrison()
-	C_Garrison.UpgradeGarrison(LE_FOLLOWER_TYPE_GARRISON_6_0);
+	C_Garrison.UpgradeGarrison(Enum.GarrisonFollowerType.FollowerType_6_0);
 	GarrisonBuildingFrame_ClearConfirmation();
 end
 
@@ -1818,7 +1818,7 @@ function GarrisonBuildingSpec_OnClick(self, button)
 	if (not GarrisonBuildingFrame.SPEC_CHANGE_COST) then
 		GarrisonBuildingFrame.SPEC_CHANGE_CURRENCY, GarrisonBuildingFrame.SPEC_CHANGE_COST = C_Garrison.GetSpecChangeCost();
 	end
-	local _, _, currencyTexture = GetCurrencyInfo(GarrisonBuildingFrame.SPEC_CHANGE_CURRENCY);
+	local currencyTexture = C_CurrencyInfo.GetCurrencyInfo(GarrisonBuildingFrame.SPEC_CHANGE_CURRENCY).iconFileID;
 	confirmation.Time:SetText(GarrisonBuildingFrame.SPEC_CHANGE_COST.."  |T"..currencyTexture..":0:0:0:-1|t ");
 	confirmation:ClearAllPoints();
 	confirmation:SetPoint("BOTTOM", self, "TOP", 0, 0);
@@ -1876,7 +1876,7 @@ end
 
 function Garrison_GetMaterialCostString(materialCost)
 	if (materialCost) then
-		local _, _, currencyTexture = GetCurrencyInfo(GARRISON_CURRENCY);
+		local currencyTexture = C_CurrencyInfo.GetCurrencyInfo(GARRISON_CURRENCY).iconFileID;
 		return materialCost .. " |T" .. currencyTexture..":0:0:0:0|t";
 	else
 		return "";

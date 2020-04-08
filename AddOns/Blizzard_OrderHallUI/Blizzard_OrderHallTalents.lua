@@ -1,9 +1,9 @@
 
 local TalentUnavailableReasons = {};
-TalentUnavailableReasons[LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ANOTHER_IS_RESEARCHING] = ORDER_HALL_TALENT_UNAVAILABLE_ANOTHER_IS_RESEARCHING;
-TalentUnavailableReasons[LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_NOT_ENOUGH_RESOURCES] = ORDER_HALL_TALENT_UNAVAILABLE_NOT_ENOUGH_RESOURCES;
-TalentUnavailableReasons[LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_NOT_ENOUGH_GOLD] = ORDER_HALL_TALENT_UNAVAILABLE_NOT_ENOUGH_GOLD;
-TalentUnavailableReasons[LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_TIER_UNAVAILABLE] = ORDER_HALL_TALENT_UNAVAILABLE_TIER_UNAVAILABLE;
+TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableAnotherIsResearching] = ORDER_HALL_TALENT_UNAVAILABLE_ANOTHER_IS_RESEARCHING;
+TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableNotEnoughResources] = ORDER_HALL_TALENT_UNAVAILABLE_NOT_ENOUGH_RESOURCES;
+TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableNotEnoughGold] = ORDER_HALL_TALENT_UNAVAILABLE_NOT_ENOUGH_GOLD;
+TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableTierUnavailable] = ORDER_HALL_TALENT_UNAVAILABLE_TIER_UNAVAILABLE;
 
 function OrderHallTalentFrame_ToggleFrame()
 	if (not OrderHallTalentFrame:IsShown()) then
@@ -276,12 +276,12 @@ function OrderHallTalentFrameMixin:ReleaseAllPools()
 end
 
 function OrderHallTalentFrameMixin:RefreshCurrency()
-	local currencyName, amount, currencyTexture = GetCurrencyInfo(self.currency);
-	amount = BreakUpLargeNumbers(amount);
+	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.currency);
+	local amount = BreakUpLargeNumbers(currencyInfo.quantity);
 	self.Currency.Text:SetText(amount);
-	self.Currency.Icon:SetTexture(currencyTexture);
+	self.Currency.Icon:SetTexture(currencyInfo.iconFileID);
 	self.Currency:MarkDirty();
-	TalentUnavailableReasons[LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_NOT_ENOUGH_RESOURCES] = ORDER_HALL_TALENT_UNAVAILABLE_NOT_ENOUGH_RESOURCES_MULTI_RESOURCE:format(currencyName);
+	TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableNotEnoughResources] = ORDER_HALL_TALENT_UNAVAILABLE_NOT_ENOUGH_RESOURCES_MULTI_RESOURCE:format(currencyInfo.name);
 end
 
 local function SortTree(talentA, talentB)
@@ -325,26 +325,23 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		end
 	end
 
-	local uiTextureKit, classAgnostic, tree, titleText, isThemed = C_Garrison.GetTalentTreeInfoForID(garrTalentTreeID);
-	if not tree or #tree == 0 then
+	local treeInfo = C_Garrison.GetTalentTreeInfo(garrTalentTreeID);
+	local talents = treeInfo.talents;
+	if #talents == 0 then
 		self.refreshing = false;
 		return;
 	end
 
-	table.sort(tree, SortTree);
+	table.sort(talents, SortTree);
 
 	local talentTreeType = C_Garrison.GetGarrisonTalentTreeType(garrTalentTreeID);
 	local layoutOptions = TalentTreeLayoutOptions[talentTreeType];
 
 	local showSingleCost = false;
 	if layoutOptions.singleCost then
-		self.SingleCost:Show();
-		if tree[1].researchCurrency > 0 then
-			local currencyName, currencyAmount, currencyTexture = GetCurrencyInfo(tree[1].researchCurrency);
-			self.SingleCost:SetFormattedText(RESEARCH_CURRENCY_COST, tree[1].researchCost, currencyTexture);
-			showSingleCost = true;
-		elseif tree[1].researchGoldCost > 0 then
-			self.SingleCost:SetFormattedText(RESEARCH_COST, tree[1].researchGoldCost);
+		local costString = GetGarrisonTalentCostString(talents[1]);
+		if costString then
+			self.SingleCost:SetFormattedText(RESEARCH_COST, costString);
 			showSingleCost = true;
 		end
 	end
@@ -352,15 +349,18 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 
 	self:SetUseThemedTextures(isThemed);
 
+	local isClassAgnostic = treeInfo.isClassAgnostic;
+	local isThemed = treeInfo.isThemed;
+	local title = treeInfo.title;
 	if (isThemed) then
 		self.TitleText:Hide();
 		self.BackButton:Hide();
-	elseif (classAgnostic and not isThemed and layoutOptions.canHaveBackButton) then
+	elseif (isClassAgnostic and not isThemed and layoutOptions.canHaveBackButton) then
 		self.TitleText:SetText(UnitName("npc"));
 		self.TitleText:Show();
 		self.BackButton:Show();
-	elseif (titleText and titleText ~= "") then
-		self.TitleText:SetText(titleText);
+	elseif (title ~= "") then
+		self.TitleText:SetText(title);
 		self.TitleText:Show();
 		self.BackButton:Hide();
 	else
@@ -369,9 +369,10 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		self.BackButton:Hide();
 	end
 
-	if (uiTextureKit) then
-		self.Background:SetAtlas(uiTextureKit.."-background");
-		local atlas = uiTextureKit.."-logo";
+	local textureKit = treeInfo.textureKit;
+	if (textureKit) then
+		self.Background:SetAtlas(textureKit.."-background");
+		local atlas = textureKit.."-logo";
 		if (C_Texture.GetAtlasInfo(atlas)) then
 			self:SetPortraitAtlasRaw(atlas);
 		else
@@ -381,7 +382,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		local _, className, classID = UnitClass("player");
 
 		self.Background:SetAtlas("orderhalltalents-background-"..className);
-		if (not classAgnostic) then
+		if (not isClassAgnostic) then
 			self:SetPortraitToAsset("INTERFACE\\ICONS\\crest_"..className);
 		else
 			self:SetPortraitToUnit("npc");
@@ -404,9 +405,9 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	end
 
 	-- ticks: these are the roman numerals on the left side of each tier
-	local maxTierIndex = tree[#tree].tier + 1;
+	local maxTierIndex = talents[#talents].tier + 1;
 	for i = 1, #self.FrameTick do
-		local shown = not classAgnostic and i <= maxTierIndex;
+		local shown = not isClassAgnostic and i <= maxTierIndex;
 		self.FrameTick[i]:SetShown(shown);
 	end
 
@@ -427,8 +428,8 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		currentTierWidth = 0;
 		currentTierHeight = 0;
 		
-		for i = startingIndex, #tree do
-			local talent = tree[i];
+		for i = startingIndex, #talents do
+			local talent = talents[i];
 			if talent.tier ~= currentTier then
 				break;
 			end
@@ -437,7 +438,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 				currentTierDependentTalentCount = currentTierDependentTalentCount + 1;
 			end
 			-- research stuff
-			if talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE then
+			if talent.talentAvailability == Enum.GarrisonTalentAvailability.Available then
 				currentTierResearchableTalentCount = currentTierResearchableTalentCount + 1;
 			end
 			talent.hasInstantResearch = talent.researchDuration == 0;
@@ -452,7 +453,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	end
 
 	-- position talent buttons
-	for talentIndex, talent in ipairs(tree) do
+	for talentIndex, talent in ipairs(talents) do
 		local buttonInfo = layoutOptions.buttonInfo[talent.type];
 
 		if talent.tier ~= currentTier then
@@ -477,7 +478,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		talentFrame.talent = talent;
 
 		if (talent.isBeingResearched and not talent.hasInstantResearch) then
-			talentFrame.Cooldown:SetCooldownUNIX(talent.researchStartTime, talent.researchDuration);
+			talentFrame.Cooldown:SetCooldownUNIX(talent.startTime, talent.researchDuration);
 			talentFrame.Cooldown:Show();
 			talentFrame.AlphaIconOverlay:Show();
 			talentFrame.AlphaIconOverlay:SetAlpha(0.7);
@@ -496,7 +497,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			self:ClearResearchingTalentID();
 		end
 
-		local isAvailable = talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE;
+		local isAvailable = talent.talentAvailability == Enum.GarrisonTalentAvailability.Available;
 		local isZeroRank = talent.talentRank == 0;
 
 		local borderAtlas = BORDER_ATLAS_NONE;
@@ -507,9 +508,9 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		elseif (talentTreeType == Enum.GarrTalentTreeType.Classic and talent.researched) then
 			borderAtlas = BORDER_ATLAS_SELECTED;
 		else
-			-- We check for LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ALREADY_HAVE to avoid a bug with
+			-- We check for Enum.GarrisonTalentAvailability.UnavailableAlreadyHave to avoid a bug with
 			-- the Chromie UI (talents would flash grey when you switched to another talent in the same row).
-			local canDisplayAsAvailable = talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ANOTHER_IS_RESEARCHING or talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ALREADY_HAVE;
+			local canDisplayAsAvailable = talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableAnotherIsResearching or talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableAlreadyHave;
 			local shouldDisplayAsAvailable = canDisplayAsAvailable and talent.hasInstantResearch;
 			-- Show as available: this is a new tier which you don't have any talents from or and old tier that you could change.
 			-- Note: For instant talents, to support the Chromie UI, we display as available even when another talent is researching (Jeff wants it this way).
@@ -618,7 +619,7 @@ function OrderHallTalentFrameMixin:AddPrerequisiteArrow(talentButton, prerequisi
 		arrowFrame:SetPoint("RIGHT", prerequisiteTalentButton, "LEFT", -1, 0);
 		arrowFrame.Arrow:SetTexCoord(0, 1, 0, 1);
 	end
-	if talentButton.talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE or talentButton.talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ALREADY_HAVE then
+	if talentButton.talent.talentAvailability == Enum.GarrisonTalentAvailability.Available or talentButton.talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableAlreadyHave then
 		arrowFrame.Arrow:SetDesaturated(false);
 		arrowFrame.Arrow:SetVertexColor(1, 1, 1);
 	else
@@ -692,7 +693,7 @@ function GarrisonTalentButtonMixin:OnEnter()
 
 	if talent.isBeingResearched and not talent.hasInstantResearch then
 		GameTooltip:AddLine(" ");
-		GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..TIME_REMAINING..FONT_COLOR_CODE_CLOSE.." "..SecondsToTime(talent.researchTimeRemaining), 1, 1, 1);
+		GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..TIME_REMAINING..FONT_COLOR_CODE_CLOSE.." "..SecondsToTime(talent.timeRemaining), 1, 1, 1);
 	elseif (talentTreeType == Enum.GarrTalentTreeType.Tiers and not talent.selected) or (talentTreeType == Enum.GarrTalentTreeType.Classic and not talent.researched) then
 		GameTooltip:AddLine(" ");
 
@@ -700,31 +701,24 @@ function GarrisonTalentButtonMixin:OnEnter()
 			GameTooltip:AddLine(RESEARCH_TIME_LABEL.." "..HIGHLIGHT_FONT_COLOR_CODE..SecondsToTime(talent.researchDuration)..FONT_COLOR_CODE_CLOSE);
 		end
 
-		if ((talent.researchCost and talent.researchCost > 0 and talent.researchCurrency) or (talent.researchGoldCost and talent.researchGoldCost > 0)) then
-			local str = NORMAL_FONT_COLOR_CODE..COSTS_LABEL..FONT_COLOR_CODE_CLOSE;
-			if (talent.researchCost > 0 and talent.researchCurrency) then
-				local _, _, currencyTexture = GetCurrencyInfo(talent.researchCurrency);
-				str = str.." "..BreakUpLargeNumbers(talent.researchCost).."|T"..currencyTexture..":0:0:2:0|t";
-			end
-			if (talent.researchGoldCost ~= 0) then
-				str = str.." "..talent.researchGoldCost.."|TINTERFACE\\MONEYFRAME\\UI-MoneyIcons.blp:16:16:2:0:64:16:0:16:0:16|t";
-			end
-			GameTooltip:AddLine(str, 1, 1, 1);
+		local costString = GetGarrisonTalentCostString(talent);
+		if costString then
+			GameTooltip:AddLine(costString, 1, 1, 1);
 		end
 
-		if talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE or ((researchingTalentID and researchingTalentID ~= 0) and talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ANOTHER_IS_RESEARCHING) then
+		if talent.talentAvailability == Enum.GarrisonTalentAvailability.Available or ((researchingTalentID and researchingTalentID ~= 0) and talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableAnotherIsResearching) then
 			GameTooltip:AddLine(ORDER_HALL_TALENT_RESEARCH, 0, 1, 0);
 			self.Highlight:Show();
 		else
-			if (talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_PLAYER_CONDITION and talent.playerConditionReason) then
+			if (talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailablePlayerCondition and talent.playerConditionReason) then
 				GameTooltip:AddLine(talent.playerConditionReason, 1, 0, 0);
-			elseif (talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_REQUIRES_PREREQUISITE_TALENT) then
+			elseif (talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableRequiresPrerequisiteTalent) then
 				local prereqTalentButton = self:GetParent():FindTalentButton(talent.prerequisiteTalentID);
 				local preReqTalent = prereqTalentButton and prereqTalentButton.talent;
 				if (preReqTalent) then
 					GameTooltip:AddLine(TOOLTIP_TALENT_PREREQ:format(preReqTalent.talentMaxRank, preReqTalent.name), 1, 0, 0);
 				else
-					GameTooltip:AddLine(ORDER_HALL_TALENT_UNAVAILABLE_REQUIRES_PREREQUISITE_TALENT, 1, 0, 0);
+					GameTooltip:AddLine(Enum.GarrisonTalentAvailability.UnavailableRequiresPrerequisiteTalent, 1, 0, 0);
 				end
 			elseif (TalentUnavailableReasons[talent.talentAvailability]) then
 				GameTooltip:AddLine(TalentUnavailableReasons[talent.talentAvailability], 1, 0, 0);
@@ -748,8 +742,8 @@ function GarrisonTalentButtonMixin:OnClick()
 		UIErrorsFrame:AddMessage(ERR_CANT_DO_THAT_RIGHT_NOW, RED_FONT_COLOR:GetRGBA());
 		--return;
 	end
-	if (self.talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE) then
-		local _, _, currencyTexture = GetCurrencyInfo(self:GetParent().currency);
+	if (self.talent.talentAvailability == Enum.GarrisonTalentAvailability.Available) then
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(self:GetParent().currency);
 
 		local hasCost = self.talent.researchCost and self.talent.researchCost > 0;
 		local hasTime = self.talent.researchDuration and self.talent.researchDuration > 0;
@@ -757,9 +751,9 @@ function GarrisonTalentButtonMixin:OnClick()
 		if (hasCost or hasTime) then
 			local str;
 			if (hasCost and hasTime) then
-				str = string.format(ORDER_HALL_RESEARCH_CONFIRMATION, self.talent.name, BreakUpLargeNumbers(self.talent.researchCost), currencyTexture, SecondsToTime(self.talent.researchDuration, false, true));
+				str = string.format(ORDER_HALL_RESEARCH_CONFIRMATION, self.talent.name, BreakUpLargeNumbers(self.talent.researchCost), currencyInfo.iconFileID, SecondsToTime(self.talent.researchDuration, false, true));
 			elseif (hasCost) then
-				str = string.format(ORDER_HALL_RESEARCH_CONFIRMATION_NO_TIME, self.talent.name, BreakUpLargeNumbers(self.talent.researchCost), currencyTexture);
+				str = string.format(ORDER_HALL_RESEARCH_CONFIRMATION_NO_TIME, self.talent.name, BreakUpLargeNumbers(self.talent.researchCost), currencyInfo.iconFileID);
 			elseif (hasTime) then
 				str = string.format(ORDER_HALL_RESEARCH_CONFIRMATION_NO_COST, self.talent.name, SecondsToTime(self.talent.researchDuration, false, true));
 			end
@@ -791,7 +785,7 @@ end
 
 function GarrisonTalentButtonMixin:Refresh()
 	if (self.talent and self.talent.id) then
-	    self.talent = C_Garrison.GetTalent(self.talent.id);
+	    self.talent = C_Garrison.GetTalentInfo(self.talent.id);
 	    if (self.tooltip) then
 		    self:OnEnter();
 	    end

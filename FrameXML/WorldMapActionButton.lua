@@ -1,7 +1,7 @@
 WorldMapActionButtonMixin = {};
 
 function WorldMapActionButtonMixin:OnLoad()
-	self:GetParent():RegisterCallback("WorldQuestsUpdate", function(event, ...) self:OnWorldQuestsUpdate(...); end);
+	self:GetParent():RegisterCallback("WorldQuestsUpdate", self.OnWorldQuestsUpdate, self);
 end
 
 function WorldMapActionButtonMixin:OnEvent(event, ...)
@@ -37,11 +37,11 @@ end
 
 function WorldMapActionButtonMixin:GetDisplayLocation()
 	local mapID = self:GetParent():GetMapID();
-	local bounties, displayLocation, lockedQuestID = GetQuestBountyInfoForMapID(mapID);
-	if displayLocation and displayLocation == LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_RIGHT then
-		return LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_LEFT;
+	local displayLocation, lockedQuestID, bountySetID = C_QuestLog.GetBountySetInfoForMapID(mapID);
+	if displayLocation == Enum.MapOverlayDisplayLocation.BottomRight then
+		return Enum.MapOverlayDisplayLocation.BottomLeft;
 	else
-		return LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_RIGHT;
+		return Enum.MapOverlayDisplayLocation.BottomRight;
 	end
 end
 

@@ -8,7 +8,7 @@ function QueueUpdaterMixin:RequestInfo()
 end
 
 function QueueUpdaterMixin:CheckRequestInfo()
-	if self:HasRefCount() and UnitLevel("player") >= SHOW_LFD_LEVEL then
+	if self:HasRefCount() and C_LFGInfo.CanPlayerUseLFD() then
 		self:RequestInfo();
 	end
 end

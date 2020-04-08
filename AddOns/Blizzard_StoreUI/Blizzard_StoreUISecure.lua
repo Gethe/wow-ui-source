@@ -3357,13 +3357,13 @@ if (IsOnGlueScreen()) then
 		[Enum.VasQueueStatus.ThreeToSixHours] = "THREE_SIX_HOURS",
 		[Enum.VasQueueStatus.SixToTwelveHours] = "SIX_TWELVE_HOURS",
 		[Enum.VasQueueStatus.OverTwelveHours] = "TWELVE_HOURS",
-		[Enum.VasQueueStatus.Over1Days] = "ONE_DAY",
-		[Enum.VasQueueStatus.Over2Days] = "TWO_DAY",
-		[Enum.VasQueueStatus.Over3Days] = "THREE_DAY",
-		[Enum.VasQueueStatus.Over4Days] = "FOUR_DAY",
-		[Enum.VasQueueStatus.Over5Days] = "FIVE_DAY",
-		[Enum.VasQueueStatus.Over6Days] = "SIX_DAY",
-		[Enum.VasQueueStatus.Over7Days] = "SEVEN_DAY",
+		[Enum.VasQueueStatus.Over_1_Days] = "ONE_DAY",
+		[Enum.VasQueueStatus.Over_2_Days] = "TWO_DAY",
+		[Enum.VasQueueStatus.Over_3_Days] = "THREE_DAY",
+		[Enum.VasQueueStatus.Over_4_Days] = "FOUR_DAY",
+		[Enum.VasQueueStatus.Over_5_Days] = "FIVE_DAY",
+		[Enum.VasQueueStatus.Over_6_Days] = "SIX_DAY",
+		[Enum.VasQueueStatus.Over_7_Days] = "SEVEN_DAY",
 	}
 end
 
@@ -3391,7 +3391,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 		UpdateQueueStatusDisclaimer(self, Enum.VasQueueStatus.UnderAnHour);
 		C_StoreGlue.RequestCurrentVASTransferQueues();
 	elseif IsGuildVasServiceType(VASServiceType) then
-		UpdateQueueStatusDisclaimer(self, Enum.VasQueueStatus.Over1Days);
+		UpdateQueueStatusDisclaimer(self, Enum.VasQueueStatus.Over_1_Days);
 	else
 		UpdateQueueStatusDisclaimer(self, Enum.VasQueueStatus.UnderAnHour);
 	end

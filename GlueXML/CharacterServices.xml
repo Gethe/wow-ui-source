@@ -208,13 +208,11 @@
 					<Button parentKey="CreateCharacterButton" inherits="GlueButtonTemplate" text="CREATE_NEW_CHARACTER" hidden="true">
 						<Scripts>
 							<OnClick function="CharacterUpgradeCreateCharacter_OnClick"/>
-							<OnUpdate function="GlueParent_DeathKnightButtonSwap"/>
 						</Scripts>
 					</Button>
 					<Button parentKey="CreateCharacterClassTrialButton" inherits="GlueButtonTemplate" text="CHARACTER_UPGRADE_POPUP_TRY_NEW_CLASS" hidden="true">
 						<Scripts>
 							<OnClick function="CharacterUpgradeClassTrial_OnClick"/>
-							<OnUpdate function="GlueParent_DeathKnightButtonSwap"/>
 						</Scripts>
 					</Button>
 					<Frame parentKey="GlowBox">
@@ -369,7 +367,7 @@
 		</Layers>
 		<Frames>
 			<Button parentKey="CloseButton" inherits="GlueButtonSmallTemplate" text="CLOSE">
-				<Size x="140" y="34"/>
+				<Size x="140" y="28"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="-40"/>
 				</Anchors>

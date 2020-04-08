@@ -14,7 +14,7 @@ function ExtraActionBar_Update()
 		local texture = GetOverrideBarSkin() or DefaultExtraActionStyle;
 		bar.button.style:SetTexture(texture);
 		ActionButton_UpdateUsable(bar.button);
-		UIParent_ManageFramePositions();
+		ExtraAbilityContainer:AddFrame(bar, ExtraActionButtonPriority);
 		bar.outro:Stop();
 		bar.intro:Play();
 	elseif( bar:IsShown() ) then
@@ -24,7 +24,7 @@ function ExtraActionBar_Update()
 end
 
 function ExtraActionBar_OnHide (self)
-	UIParent_ManageFramePositions();
+	ExtraAbilityContainer:RemoveFrame(self);
 end
 
 

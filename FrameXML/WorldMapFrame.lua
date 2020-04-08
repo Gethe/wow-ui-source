@@ -1,7 +1,9 @@
 
 
 function WorldMap_IsWorldQuestEffectivelyTracked(questID)
-	return IsWorldQuestHardWatched(questID) or (IsWorldQuestWatched(questID) and GetSuperTrackedQuestID() == questID);
+	-- A world quest is effectively tracked if it's being manually watched or if it's automatically watched and it matches our super-tracked quest.
+	local watchType = C_QuestLog.GetQuestWatchType(questID);
+	return (watchType == Enum.QuestWatchType.Manual) or (watchType == Enum.QuestWatchType.Automatic and C_SuperTrack.GetSuperTrackedQuestID() == questID);
 end
 
 WORLD_QUEST_REWARD_TYPE_FLAG_GOLD = 0x0001;
@@ -22,7 +24,7 @@ function WorldMap_GetWorldQuestRewardType(questID)
 	end
 
 	local ORDER_RESOURCES_CURRENCY_ID = 1220;
-	local azeriteCurrencyID = C_CurrencyInfo.GetAzeriteCurrencyID(); 
+	local azeriteCurrencyID = C_CurrencyInfo.GetAzeriteCurrencyID();
 	local warResourcesCurrencyID = C_CurrencyInfo.GetWarResourcesCurrencyID();
 	local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
 	for i = 1, numQuestCurrencies do
@@ -59,11 +61,12 @@ function WorldMap_GetWorldQuestRewardType(questID)
 end
 
 function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters)
-	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(info.questId);
+	local tagInfo = C_QuestLog.GetQuestTagInfo(info.questId);
 
-	if ( not ignoreTypeFilters ) then
-		if ( worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION ) then
+	if ( not ignoreTypeFilters and tagInfo ) then
+		if ( tagInfo.worldQuestType == Enum.QuestTagType.Profession ) then
 			local prof1, prof2, arch, fish, cook, firstAid = GetProfessions();
+			local tradeskillLineIndex = tagInfo.tradeskillLineID and C_SpellBook.GetSkillLineIndexByID(tagInfo.tradeskillLineID);
 
 			if ( tradeskillLineIndex == prof1 or tradeskillLineIndex == prof2 ) then
 				if ( not GetCVarBool("primaryProfessionsFilter") ) then
@@ -76,7 +79,7 @@ function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters)
 					return false;
 				end
 			end
-		elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PET_BATTLE ) then
+		elseif ( tagInfo.worldQuestType == Enum.QuestTagType.PetBattle ) then
 			if ( not GetCVarBool("showTamers") ) then
 				return false;
 			end
@@ -135,17 +138,18 @@ function TaskPOI_OnEnter(self, skipSetOwner)
 
 	local title, factionID, capped = C_TaskQuest.GetQuestInfoByQuestID(self.questID);
 	if ( self.worldQuest ) then
-		local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(self.questID);
-		local color = WORLD_QUEST_QUALITY_COLORS[rarity];
+		local tagInfo = C_QuestLog.GetQuestTagInfo(self.questID);
+		local quality = tagInfo and tagInfo.quality or Enum.WorldQuestQuality.Common;
+		local color = WORLD_QUEST_QUALITY_COLORS[quality];
 		GameTooltip:SetText(title, color.r, color.g, color.b);
 		QuestUtils_AddQuestTypeToTooltip(GameTooltip, self.questID, NORMAL_FONT_COLOR);
-			
+
 		local factionName = factionID and GetFactionInfoByID(factionID);
 		if (factionName) then
 			local reputationYieldsRewards = (not capped) or C_Reputation.IsFactionParagon(factionID);
 			if (reputationYieldsRewards) then
 				GameTooltip:AddLine(factionName);
-			else 
+			else
 				GameTooltip:AddLine(factionName, GRAY_FONT_COLOR:GetRGB());
 			end
 		end
@@ -158,29 +162,29 @@ function TaskPOI_OnEnter(self, skipSetOwner)
 		GameTooltip:SetText(title);
 	end
 
-	if (self.isCombatAllyQuest) then	
+	if (self.isCombatAllyQuest) then
 		GameTooltip_AddColoredLine(GameTooltip, AVAILABLE_FOLLOWER_QUEST, HIGHLIGHT_FONT_COLOR, true);
 		GameTooltip_AddColoredLine(GameTooltip, GRANTS_FOLLOWER_XP, GREEN_FONT_COLOR, true);
-	elseif (self.isQuestStart) then	
+	elseif (self.isQuestStart) then
 		GameTooltip_AddColoredLine(GameTooltip, AVAILABLE_QUEST, HIGHLIGHT_FONT_COLOR, true);
 	else
-		local questDescription; 
-		local questCompleted = IsQuestComplete(self.questID);
+		local questDescription;
+		local questCompleted = C_QuestLog.IsComplete(self.questID);
 
-		if (questCompleted and self.shouldShowObjectivesAsStatusBar) then 
-			questDescription = QUEST_WATCH_QUEST_READY; 
+		if (questCompleted and self.shouldShowObjectivesAsStatusBar) then
+			questDescription = QUEST_WATCH_QUEST_READY;
 			GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
 		elseif (not questCompleted and self.shouldShowObjectivesAsStatusBar) then
-			local questLogIndex = GetQuestLogIndexByID(self.questID);
+			local questLogIndex = C_QuestLog.GetLogIndexForQuestID(self.questID);
 			questDescription = select(2, GetQuestLogQuestText(questLogIndex));
 			GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
-		end 
+		end
 
 		for objectiveIndex = 1, self.numObjectives do
 			local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(self.questID, objectiveIndex, false);
 			local showObjective = not (finished and self.isThreat);
 			if showObjective then
-				if(self.shouldShowObjectivesAsStatusBar) then 
+				if(self.shouldShowObjectivesAsStatusBar) then
 					local percent = math.floor((numFulfilled/numRequired) * 100);
 					GameTooltip_ShowProgressBar(GameTooltip, 0, numRequired, numFulfilled, PERCENTAGE_STRING:format(percent));
 				elseif ( objectiveText and #objectiveText > 0 ) then

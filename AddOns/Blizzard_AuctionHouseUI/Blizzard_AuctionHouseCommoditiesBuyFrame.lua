@@ -33,11 +33,6 @@ function AuctionHouseCommoditiesBuyDisplayMixin:OnLoad()
 
 	self.QuantityInput:SetInputChangedCallback(QuantityInputChanged);
 
-	local function CommoditiesQuantitySelectionChangedCallback(event, quantity)
-		local suppressEvent = true;
-		self:SetQuantitySelected(quantity, suppressEvent);
-	end
-
 	self.quantitySelectionChangedCallback = CommoditiesQuantitySelectionChangedCallback;
 end
 
@@ -46,7 +41,12 @@ function AuctionHouseCommoditiesBuyDisplayMixin:OnShow()
 	
 	self:Layout();
 
-	self:GetAuctionHouseFrame():RegisterCallback(AuctionHouseFrameMixin.Event.CommoditiesQuantitySelectionChanged, self.quantitySelectionChangedCallback);
+	self:GetAuctionHouseFrame():RegisterCallback(AuctionHouseFrameMixin.Event.CommoditiesQuantitySelectionChanged, self.OnQuantitySelectionChanged, self);
+end
+
+function AuctionHouseCommoditiesBuyDisplayMixin:OnQuantitySelectionChanged(quantity)
+	local suppressEvent = true;
+	self:SetQuantitySelected(quantity, suppressEvent);
 end
 
 function AuctionHouseCommoditiesBuyDisplayMixin:UpdateBuyButton()
@@ -85,7 +85,7 @@ end
 function AuctionHouseCommoditiesBuyDisplayMixin:OnHide()
 	self:RegisterEvent("COMMODITY_PURCHASE_SUCCEEDED");
 
-	self:GetAuctionHouseFrame():UnregisterCallback(AuctionHouseFrameMixin.Event.CommoditiesQuantitySelectionChanged, self.quantitySelectionChangedCallback);
+	self:GetAuctionHouseFrame():UnregisterCallback(AuctionHouseFrameMixin.Event.CommoditiesQuantitySelectionChanged, self);
 end
 
 function AuctionHouseCommoditiesBuyDisplayMixin:OnEvent(event)

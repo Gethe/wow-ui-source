@@ -108,7 +108,7 @@ local TaxiMap =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "atlasName", Type = "string", Nilable = false },
 				{ Name = "faction", Type = "FlightPathFaction", Nilable = false },
-				{ Name = "textureKitPrefix", Type = "string", Nilable = true },
+				{ Name = "textureKit", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -121,7 +121,7 @@ local TaxiMap =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "state", Type = "FlightPathState", Nilable = false },
 				{ Name = "slotIndex", Type = "number", Nilable = false },
-				{ Name = "textureKitPrefix", Type = "string", Nilable = true },
+				{ Name = "textureKit", Type = "string", Nilable = false },
 			},
 		},
 	},

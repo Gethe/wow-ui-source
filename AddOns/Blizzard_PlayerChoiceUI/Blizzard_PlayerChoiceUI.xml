@@ -1,0 +1,584 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_PlayerChoiceUI.lua"/>
+	<!-- Art pieces to hide border seams -->
+	<Texture name="PlayerChoiceLeftHide" file="Interface\QuestionFrame\Question-Main" virtual="true">
+		<Size x="86" y="39"/>
+		<TexCoords left="0.59765625" right="0.76562500" top="0.00195313" bottom="0.07812500"/>
+	</Texture>
+	<Texture name="PlayerChoiceRightHide" file="Interface\QuestionFrame\Question-Main" virtual="true">
+		<Size x="61" y="32"/>
+		<TexCoords left="0.76953125" right="0.88867188" top="0.00195313" bottom="0.06445313"/>
+	</Texture>
+	<Texture name="PlayerChoiceTopHide" file="Interface\QuestionFrame\Question-Main" virtual="true">
+		<Size x="33" y="66"/>
+		<TexCoords left="0.89257813" right="0.95703125" top="0.00195313" bottom="0.13085938"/>
+	</Texture>
+	<Texture name="PlayerChoiceBottomHide" file="Interface\QuestionFrame\Question-Main" virtual="true" >
+		<Size x="33" y="90"/>
+		<TexCoords left="0.82617188" right="0.89062500" top="0.30468750" bottom="0.48046875"/>
+	</Texture>
+	
+	<Button name="PlayerChoiceOptionBaseButtonTemplate" parentArray="Buttons" mixin="PlayerChoiceOptionButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="175" y="22"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Scripts>
+			<OnClick>
+				self:GetParent():GetParent():OnButtonClick(self); 
+			</OnClick>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+	
+	<Button name="PlayerChoiceOptionMagnifyingGlass" inherits="PlayerChoiceOptionBaseButtonTemplate" virtual="true">
+		<Size x="30" y="30"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="0" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlight" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture atlas="common-search-magnifyingglass" useAtlasSize="true"/>
+		<HighlightTexture atlas="common-search-magnifyingglass" alphaMode="ADD" useAtlasSize="true"/>
+	</Button>
+
+	<Button name="PlayerChoiceOptionButtonTemplate"  inherits="UIPanelButtonTemplate, PlayerChoiceOptionBaseButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="175" y="22"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+	</Button>
+	
+	<Button name="PlayerChoiceItemTemplate" mixin="PlayerChoiceItemButtonMixin" virtual="true">
+		<Size x="167" y="41"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontBlack" justifyH="LEFT">
+					<Size x="124" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString inherits="NumberFontNormal" justifyH="RIGHT" parentKey="Count">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-1" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconOverlay" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter" />
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnClick method="OnModifiedClick"/>
+		</Scripts>
+	</Button>
+	<Frame name="PlayerChoiceCurrencyTemplate" virtual="true">
+		<Size x="80" y="20"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Quantity" inherits="NumberFontNormalLarge" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="MouseOver">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Icon" />
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						local parent = self:GetParent()
+						if (parent.currencyID) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetCurrencyByID(parent.currencyID);
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+
+	</Frame>
+	<Frame name="PlayerChoiceReputationTemplate" virtual="true">
+		<Size x="200" y="15"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString inherits="QuestFont" justifyH="LEFT" parentKey="Faction">
+					<Anchors>
+						<Anchor point="LEFT" x="-10" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString inherits="NumberFontNormalLarge" justifyH="LEFT" parentKey="Amount">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Faction" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.Faction:SetHeight(self:GetHeight());
+			</OnLoad>
+			<OnEnter>
+				if (self.tooltip) then
+					GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+					GameTooltip:SetText(self.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				end
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide" />
+		</Scripts>
+	</Frame>
+	<Frame name="PlayerChoiceRewardsTemplate" inherits="ResizeLayoutFrame" mixin="PlayerChoiceRewardsMixin" virtual="true">
+		<Size x="210" y="10" />
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+	<Button name="PlayerChoiceOptionTemplate" inherits="ResizeLayoutFrame" mixin="PlayerChoiceOptionFrameMixin" virtual="true">
+		<Size x="370" y="332"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="Background" atlas="UI-Frame-Horde-CardParchment">
+					<Size x="254" y="439"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-8" y="38"/>
+						<Anchor point="BOTTOMRIGHT" x="8" y="-30"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BackgroundGlow" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Type">
+					<Size x="40" y="42"/>
+					<Anchors>
+						<Anchor point="TOP" x="5" y="-13"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+				</Texture>
+				<Texture parentKey="ArtworkBorder" atlas="UI-Frame-Horde-Portrait" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ArtworkBorder2" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.ArtworkBorder"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ArtworkBorderAdditionalGlow" alphaMode="ADD" atlas="UI-Frame-Horde-Portrait" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ArtworkBorderDisabled" atlas="UI-Frame-Horde-PortraitDisable" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.ArtworkBorder"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Artwork">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ArtworkBorder" x="10" y="-9"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ArtworkBorder" x="-10" y="9"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="8">
+				<MaskTexture parentKey="CircleMask" hidden="true" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Artwork" x="5" y="-6"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Artwork" x="-5" y="6"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Artwork"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<MaskTexture parentKey="TypeCircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Type" x="5" y="-6"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Type" x="-5" y="6"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Type"/>
+					</MaskedTextures>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="MouseOverOverride">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Background"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Scripts>
+					<OnEnter>
+						self:GetParent():OnEnterOverride(); 
+					</OnEnter>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="Header" useParentLevel="true" inherits="HorizontalLayoutFrame" hidden="true">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					<KeyValue key="fixedHeight" value="32" type="number"/>
+					<KeyValue key="spacing" value="5" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP" y="15"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Ribbon" atlas="UI-Frame-Horde-Ribbon" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon">
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+							</Anchors>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="1" type="number"/>
+							</KeyValues>
+						</Texture>
+						<FontString parentKey="Text" font="SystemFont_Large" justifyV="MIDDLE" maxLines="2">
+							<Size y="30"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+							</Anchors>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
+							</KeyValues>
+							<Color r="0" g="0" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="SubHeader" hidden="true">
+				<Size x="207" y="30"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.ArtworkBorder" relativePoint="BOTTOM" x="0" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="BG">
+							<Size x="207" y="30"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" font="Game16Font" justifyV="MIDDLE" maxLines="1">
+							<Size x="180" y="20"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.BG"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<SimpleHTML parentKey="OptionText" inherits="InlineHyperlinkFrameTemplate" resizeToFitContents="true">
+				<Size x="196" y="10"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.ArtworkBorder" relativePoint="BOTTOM" x="0" y="-12"/>
+				</Anchors>
+				<FontString inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP"/>
+			</SimpleHTML>
+			<Frame parentKey="Rewards" inherits="PlayerChoiceRewardsTemplate">
+				<Size x="210" y="1" />
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.OptionText" relativePoint="BOTTOM" y="-5"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="WidgetContainer" inherits="UIWidgetContainerTemplate" hidden="true">
+				<Size x="210" y="1" />
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.OptionText" relativePoint="BOTTOM" y="-5"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="OptionButtonsContainer" mixin="PlayerChoiceOptionButtonContainerMixin" inherits="ResizeLayoutFrame">
+				<Size x="210" y="22"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.WidgetContainer" relativePoint="BOTTOM" y="-5"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="RotateArtworkBorderAnimation" looping="REPEAT">
+				<Rotation childKey="ArtworkBorder" duration="30" order="1" degrees="360"/>
+				<Rotation childKey="ArtworkBorderAdditionalGlow" duration="30" order="1" degrees="-360"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="ArtworkBorderGlowAnimation" looping="REPEAT">
+				<Alpha childKey="ArtworkBorder" smoothing="OUT" duration="2" order="1" fromAlpha="0.70" toAlpha="1"/>
+				<Alpha childKey="ArtworkBorder" smoothing="OUT" startDelay="1" duration="2" order="2" fromAlpha="1" toAlpha="0.70"/>
+				<Alpha childKey="ArtworkBorderAdditionalGlow" smoothing="OUT" duration="1" order="1" fromAlpha="0.70" toAlpha="1"/>
+				<Alpha childKey="ArtworkBorderAdditionalGlow" smoothing="OUT" startDelay="1" duration="1" order="2" fromAlpha="1" toAlpha="0.70"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="BackgroundGlowAnimationIn">
+				<Alpha childKey="BackgroundGlow" fromAlpha="0" toAlpha="1" duration=".5" order="1">
+					<Scripts>
+						<OnFinished>
+							self:GetParent():GetParent().BackgroundGlowAnimation:Play();
+						</OnFinished>
+					</Scripts>
+				</Alpha>
+			</AnimationGroup>
+			<AnimationGroup parentKey="BackgroundGlowAnimationOut">
+				<Alpha childKey="BackgroundGlow" fromAlpha="1" toAlpha="0" duration=".5" order="1">
+					<Scripts>
+						<OnFinished>
+							self:GetParent():GetParent().BackgroundGlow:Hide();
+						</OnFinished>
+					</Scripts>
+				</Alpha>
+			</AnimationGroup>
+			<AnimationGroup parentKey="BackgroundGlowAnimation" looping="REPEAT">
+				<Alpha childKey="BackgroundGlow" smoothing="OUT" duration="2" order="1" fromAlpha="1" toAlpha="0.5"/>
+				<Alpha childKey="BackgroundGlow" smoothing="OUT" startDelay=".25" duration="2" order="2" fromAlpha="0.5" toAlpha="1"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="PlayerChoiceFrame" frameStrata="HIGH" hidden="true" enableMouse="true" parent="UIParent" toplevel="true" inherits="HorizontalLayoutFrame" mixin="PlayerChoiceFrameMixin">
+		<Size x="600" y="544"/>
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="284" type="number"/>
+			<KeyValue key="expand" value="true" type="boolean"/>
+			<KeyValue key="topPadding" value="150" type="number"/>
+			<KeyValue key="bottomPadding" value="65" type="number"/>
+			<KeyValue key="leftPadding" value="65" type="number"/>
+			<KeyValue key="rightPadding" value="65" type="number"/>
+			<KeyValue key="spacing" value="20" type="number"/>
+			<KeyValue key="fixedPaddingAndSpacing" value="true" type="boolean"/>
+		</KeyValues>
+		<Animations>
+			<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
+				<Alpha fromAlpha="0" toAlpha="1" duration=".8" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeOut" setToFinalAlpha="true">
+				<Alpha fromAlpha="1" toAlpha="0" duration=".5" order="1">
+					<Scripts>
+						<OnFinished>
+							self:GetParent():GetParent():OnFadeOutFinished();
+						</OnFinished>
+					</Scripts>
+				</Alpha>
+			</AnimationGroup>
+		</Animations>
+		<Frames>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" setAllPoints="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-6" y="6"/>
+					<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="BorderFrame" frameLevel="510">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-6" y="6"/>
+					<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Header" atlas="UI-Frame-Horde-Header" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-61"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Option1" parentArray="Options" inherits="PlayerChoiceOptionTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="1" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Option2" parentArray="Options" inherits="PlayerChoiceOptionTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Option3" parentArray="Options" inherits="PlayerChoiceOptionTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Option4" parentArray="Options" inherits="PlayerChoiceOptionTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="4" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Background" clipChildren="true" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" x="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="BackgroundTile" atlas="UI-Frame-Horde-BackgroundTile" horizTile="true" vertTile="true" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Title">
+				<Size x="500" y="85"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-33"/>
+					<Anchor point="LEFT" relativeKey="$parent.Option1" relativePoint="LEFT" x="-15" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Left" atlas="UI-Frame-Horde-TitleLeft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Right" atlas="UI-Frame-Horde-TitleRight" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="Middle" atlas="_UI-Frame-Horde-TitleMiddle" horizTile="true">
+							<Size x="0" y="85"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT" x="-60" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT" x="60" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="SystemFont_Large" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Middle"/>
+							</Anchors>
+							<Color r="1.0" g="1.0" b="1.0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="4">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="1" y="2" />
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+		</Scripts>
+	</Frame>
+	<Button name="PlayerChoiceToggleButton" parent="UIParent" mixin="PlayerChoiceToggleButtonMixin">
+		<Size x="465" y="149"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontNormal" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="CENTER" x="5" y="-3"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ModelScene parentKey="GlowySphereModelScene" inherits="NonInteractableModelSceneMixinTemplate" drawLayer="OVERLAY" enableMouse="false">
+				<Size x="120" y="120"/>
+				<Anchors>
+					<Anchor point="LEFT" x="70" y="3"/>
+				</Anchors>
+			</ModelScene>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+		<Animations>
+			<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
+				<Alpha fromAlpha="0" toAlpha="1" duration=".5" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeOutAndIn" setToFinalAlpha="true">
+				<Alpha fromAlpha="1" toAlpha="0" duration=".4" order="1"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration=".5" order="2"/>
+			</AnimationGroup>
+		</Animations>
+	</Button>
+</Ui>

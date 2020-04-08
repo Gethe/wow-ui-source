@@ -117,18 +117,21 @@ function ScrollListMixin:UpdatedSelectedHighlight()
 	end
 end
 
-function ScrollListMixin:SetSelectedListIndex(listIndex)
-	if self.selectedListIndex == listIndex then
-		return;
-	end
-	
+function ScrollListMixin:SetSelectedListIndex(listIndex, skipUpdates)
+	local sameIndex = selectedListIndex == listIndex;
 	self.selectedListIndex = listIndex;
 
-	self:UpdatedSelectedHighlight();
-
-	if self.selectionCallback then
-		self.selectionCallback(listIndex);
+	if not skipUpdates then
+		if self.selectionCallback then
+			self.selectionCallback(listIndex);
+		end
 	end
+
+	if sameIndex or skipUpdates then
+		return;
+	end
+
+	self:UpdatedSelectedHighlight();
 
 	self:RefreshScrollFrame();
 end

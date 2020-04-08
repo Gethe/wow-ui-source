@@ -50,6 +50,20 @@ local QuestLineInfo =
 			},
 		},
 		{
+			Name = "IsComplete",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questLineID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isComplete", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RequestQuestLinesForMap",
 			Type = "Function",
 

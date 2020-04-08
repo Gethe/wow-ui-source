@@ -15,17 +15,18 @@ function CreditsFrame_OnHide(self)
 end
 
 function CreditsFrame_Update(self)
-	PlayGlueMusic(GLUE_CREDITS_SOUND_KITS[CreditsFrame.creditsType]);
+	PlayGlueMusic(SafeGetExpansionData(GLUE_CREDITS_SOUND_KITS, CreditsFrame.creditsType));
 	local expansionInfo = GetExpansionDisplayInfo(CreditsFrame.creditsType);
 	if expansionInfo then
 		CreditsLogo:SetTexture(expansionInfo.logo);
 	end
-	
+
 	CreditsFrame_SetSpeed(CREDITS_SCROLL_RATE_PLAY);
 	CreditsScrollFrame:SetVerticalScroll(0);
 	CreditsScrollFrame.scroll = 0;
 	CreditsScrollFrame.scrollMax = CreditsScrollFrame:GetVerticalScrollRange() + 768;
-	self.artCount = #CREDITS_ART_INFO[CreditsFrame.creditsType];
+	local artInfo = SafeGetExpansionData(CREDITS_ART_INFO, CreditsFrame.creditsType);
+	self.artCount = #artInfo;
 	self.currentArt = 0;
 	self.fadingIn = nil;
 	self.fadingOut = nil;
@@ -77,7 +78,7 @@ local function IsValidTextureIndex(info, index)
 end
 
 local function CreateCreditsTextureTilePath(self, info, textureIndex)
-	local path = CREDITS_ART_INFO[self.creditsType].path;
+	local path = SafeGetExpansionData(CREDITS_ART_INFO, self.creditsType).path;
 	if path then
 		return string.format("Interface\\Glues\\Credits\\%s\\%s%d", path, info.file, textureIndex);
 	else
@@ -86,7 +87,7 @@ local function CreateCreditsTextureTilePath(self, info, textureIndex)
 end
 
 function CreditsFrame_SetArtTextures(self, textureName, index, alpha)
-	local info = CREDITS_ART_INFO[self.creditsType][index];
+	local info = SafeGetExpansionData(CREDITS_ART_INFO, self.creditsType)[index];
 	if ( not info ) then
 		return;
 	end
@@ -129,7 +130,7 @@ function CreditsFrame_CacheTextures(self, index)
 	self.cacheIndex = 1;
 	self.cacheElapsed = 0;
 
-	local info = CREDITS_ART_INFO[CreditsFrame.creditsType][index];
+	local info = SafeGetExpansionData(CREDITS_ART_INFO, self.creditsType)[index];
 	if ( not info ) then
 		return;
 	end
@@ -149,7 +150,7 @@ function CreditsFrame_UpdateCache(self)
 	self.cacheElapsed = self.cacheElapsed - CACHE_WAIT_TIME;
 	self.cacheIndex = self.cacheIndex + 1;
 
-	local info = CREDITS_ART_INFO[self.creditsType][self.cacheArt];
+	local info = SafeGetExpansionData(CREDITS_ART_INFO, self.creditsType)[self.cacheArt];
 	if ( not info ) then
 		return;
 	end
@@ -182,7 +183,7 @@ function CreditsFrame_UpdateArt(self, index, elapsed)
 		end
 
 		if ( self.fadingIn ) then
-			local maxAlpha = CREDITS_ART_INFO[self.creditsType][self.currentArt].maxAlpha;
+			local maxAlpha = SafeGetExpansionData(CREDITS_ART_INFO, self.creditsType)[self.currentArt].maxAlpha;
 			self.alphaIn = min(self.alphaIn + (CREDITS_FADE_RATE * elapsed), maxAlpha);
 			for i=1, NUM_CREDITS_ART_TEXTURES_HIGH, 1 do
 				for j=1, NUM_CREDITS_ART_TEXTURES_WIDE, 1 do
@@ -199,7 +200,7 @@ function CreditsFrame_UpdateArt(self, index, elapsed)
 
 	if ( self.currentArt > 0 ) then
 		self.fadingOut = 1;
-		self.alphaOut = CREDITS_ART_INFO[self.creditsType][self.currentArt].maxAlpha;
+		self.alphaOut = SafeGetExpansionData(CREDITS_ART_INFO, self.creditsType)[self.currentArt].maxAlpha;
 		CreditsFrame_SetArtTextures(self, "CreditsArtAlt", self.currentArt, self.alphaOut);
 	end
 

@@ -1707,7 +1707,7 @@ SecureCmdList["LOGOUT"] = function(msg)
 end
 
 SecureCmdList["QUIT"] = function(msg)
-	if (IsKioskModeEnabled()) then
+	if (Kiosk.IsEnabled()) then
 		return;
 	end
 	Quit();
@@ -2114,7 +2114,7 @@ SlashCmdList["CHAT_DND"] = function(msg)
 end
 
 SlashCmdList["WHO"] = function(msg)
-	if (IsKioskModeEnabled()) then
+	if (Kiosk.IsEnabled()) then
 		return;
 	end
 	if ( msg == "" ) then
@@ -2395,7 +2395,7 @@ if IsGMClient() then
 end
 
 SlashCmdList["TABLEINSPECT"] = function(msg)
-	if ( IsKioskModeEnabled() or ScriptsDisallowedForBeta() ) then
+	if ( Kiosk.IsEnabled() or ScriptsDisallowedForBeta() ) then
 		return;
 	end
 	if ( not AreDangerousScriptsAllowed() ) then
@@ -2425,7 +2425,7 @@ end
 
 
 SlashCmdList["DUMP"] = function(msg)
-	if (not IsKioskModeEnabled() and not ScriptsDisallowedForBeta()) then
+	if (not Kiosk.IsEnabled() and not ScriptsDisallowedForBeta()) then
 		if ( not AreDangerousScriptsAllowed() ) then
 			StaticPopup_Show("DANGEROUS_SCRIPTS_WARNING");
 			return;

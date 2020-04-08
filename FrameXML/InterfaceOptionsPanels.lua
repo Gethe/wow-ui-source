@@ -460,6 +460,7 @@ end
 DisplayPanelOptions = {
 	rotateMinimap = { text = "ROTATE_MINIMAP" },
 	hideAdventureJournalAlerts = { text = "HIDE_ADVENTURE_JOURNAL_ALERTS" };
+	showInGameNavigation = { text = "SHOW_IN_GAME_NAVIGATION" };
     showTutorials = { text = "SHOW_TUTORIALS" },
 }
 
@@ -810,7 +811,7 @@ function InterfaceOptionsSocialPanel_OnEvent(self, event, ...)
 
 	if ( event == "TWITTER_STATUS_UPDATE" ) then
 		local enabled, linked, screenName = ...;
-		if (enabled and not IsKioskModeEnabled()) then
+		if (enabled and not Kiosk.IsEnabled()) then
 			self.EnableTwitter:Show();
 			self.TwitterLoginButton:Show();
 			TwitterData["linked"] = linked;
@@ -1183,7 +1184,7 @@ function InterfaceOptions_UpdateMultiActionBars ()
 	SetActionBarToggles(not not SHOW_MULTI_ACTIONBAR_1, not not SHOW_MULTI_ACTIONBAR_2, not not SHOW_MULTI_ACTIONBAR_3, not not SHOW_MULTI_ACTIONBAR_4, not not ALWAYS_SHOW_MULTIBARS);
 	MultiActionBar_Update();
 	UIParent_ManageFramePositions();
-	StatusTrackingBarManager:UpdateBarTicks(); 
+	StatusTrackingBarManager:UpdateBarTicks();
 end
 
 function InterfaceOptionsActionBarsPanelPickupActionKeyDropDown_OnEvent (self, event, ...)

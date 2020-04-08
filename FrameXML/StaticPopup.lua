@@ -1275,6 +1275,7 @@ StaticPopupDialogs["DEATH"] = {
 	button2 = USE_SOULSTONE,	-- rez option 1
 	button3 = USE_SOULSTONE,	-- rez option 2
 	button4 = DEATH_RECAP,
+	selectCallbackByIndex = true,
 	OnShow = function(self)
 		self.timeleft = GetReleaseTimeRemaining();
 
@@ -1822,6 +1823,24 @@ StaticPopupDialogs["EQUIP_BIND"] = {
 	whileDead = 1,
 	hideOnEscape = 1
 };
+StaticPopupDialogs["EQUIP_BIND_REFUNDABLE"] = {
+	text = END_REFUND,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self, slot)
+		EquipPendingItem(slot);
+	end,
+	OnCancel = function(self, slot)
+		CancelPendingEquip(slot);
+	end,
+	OnHide = function(self, slot)
+		CancelPendingEquip(slot);
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1
+};
 StaticPopupDialogs["EQUIP_BIND_TRADEABLE"] = {
 	text = END_BOUND_TRADEABLE,
 	button1 = OKAY,
@@ -2177,7 +2196,7 @@ StaticPopupDialogs["ABANDON_QUEST"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
-		AbandonQuest();
+		C_QuestLog.AbandonQuest();
 		if ( QuestLogPopupDetailFrame:IsShown() ) then
 			HideUIPanel(QuestLogPopupDetailFrame);
 		end
@@ -2193,7 +2212,7 @@ StaticPopupDialogs["ABANDON_QUEST_WITH_ITEMS"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
-		AbandonQuest();
+		C_QuestLog.AbandonQuest();
 		if ( QuestLogPopupDetailFrame:IsShown() ) then
 			HideUIPanel(QuestLogPopupDetailFrame);
 		end
@@ -2514,13 +2533,13 @@ StaticPopupDialogs["ADD_IGNORE"] = {
 	hideOnEscape = 1
 };
 
-local function ClubInviteDisabledOnEnter(self) 
-	if(not self:IsEnabled()) then 
+local function ClubInviteDisabledOnEnter(self)
+	if(not self:IsEnabled()) then
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
 		GameTooltip_AddColoredLine(GameTooltip, CLUB_FINDER_MAX_MEMBER_COUNT_HIT, RED_FONT_COLOR, true);
 		GameTooltip:Show();
 	end
-end 
+end
 
 StaticPopupDialogs["ADD_GUILDMEMBER"] = {
 	text = ADD_GUILDMEMBER_LABEL,
@@ -2541,7 +2560,7 @@ StaticPopupDialogs["ADD_GUILDMEMBER"] = {
 			ClubInviteDisabledOnEnter(self);
 		end );
 		self.button1:SetScript("OnLeave", GameTooltip_Hide);
-		if (self.extraButton) then 
+		if (self.extraButton) then
 			self.extraButton:SetMotionScriptsWhileDisabled(true);
 			self.extraButton:SetScript("OnEnter", function(self)
 				ClubInviteDisabledOnEnter(self);
@@ -2551,12 +2570,12 @@ StaticPopupDialogs["ADD_GUILDMEMBER"] = {
 		local clubInfo = C_Club.GetClubInfo(data.clubId);
 		if(clubInfo and clubInfo.memberCount and clubInfo.memberCount >= C_Club.GetClubCapacity()) then
 			self.button1:Disable();
-			if (self.extraButton) then 
+			if (self.extraButton) then
 				self.extraButton:Disable();
 			end
-		else 
-			self.button1:Enable(); 
-			if (self.extraButton) then 
+		else
+			self.button1:Enable();
+			if (self.extraButton) then
 				self.extraButton:Enable();
 			end
 		end
@@ -2566,7 +2585,7 @@ StaticPopupDialogs["ADD_GUILDMEMBER"] = {
 		self.editBox:SetText("");
 		self.button1:SetScript("OnEnter", nil );
 		self.button1:SetScript("OnLeave", nil);
-		if (self.extraButton) then 
+		if (self.extraButton) then
 			self.extraButton:SetScript("OnEnter", nil );
 			self.extraButton:SetScript("OnLeave", nil);
 		end
@@ -2594,11 +2613,11 @@ StaticPopupDialogs["ADD_GUILDMEMBER_WITH_FINDER_LINK"] = Mixin({
 	extraButton = CLUB_FINDER_LINK_POST_IN_CHAT,
 	OnExtraButton = function(self, data)
 		local clubInfo = ClubFinderGetCurrentClubListingInfo(data.clubId);
-		if (clubInfo) then 
+		if (clubInfo) then
 			local link = GetClubFinderLink(clubInfo.clubFinderGUID, clubInfo.name);
 			if not ChatEdit_InsertLink(link) then
 				ChatFrame_OpenChat(link);
-			end 
+			end
 		end
 	end,
 }, StaticPopupDialogs["ADD_GUILDMEMBER"]);
@@ -3022,6 +3041,18 @@ StaticPopupDialogs["BIND_ENCHANT"] = {
 };
 StaticPopupDialogs["BIND_SOCKET"] = {
 	text = ACTION_WILL_BIND_ITEM,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		C_ItemSocketInfo.CompleteSocketing();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	showAlert = 1,
+	hideOnEscape = 1
+};
+StaticPopupDialogs["REFUNDABLE_SOCKET"] = {
+	text = END_REFUND,
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self)
@@ -4201,7 +4232,7 @@ StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"] = {
 			ClubInviteDisabledOnEnter(self);
 		end );
 		self.button1:SetScript("OnLeave", GameTooltip_Hide);
-		if (self.extraButton) then 
+		if (self.extraButton) then
 			self.extraButton:SetMotionScriptsWhileDisabled(true);
 			self.extraButton:SetScript("OnEnter", function(self)
 				ClubInviteDisabledOnEnter(self);
@@ -4211,12 +4242,12 @@ StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"] = {
 
 		if(clubInfo and clubInfo.memberCount and clubInfo.memberCount >= C_Club.GetClubCapacity()) then
 			self.button1:Disable();
-			if (self.extraButton) then 
+			if (self.extraButton) then
 				self.extraButton:Disable();
 			end
-		else 
-			self.button1:Enable(); 
-			if (self.extraButton) then 
+		else
+			self.button1:Enable();
+			if (self.extraButton) then
 				self.extraButton:Enable();
 			end
 		end
@@ -4226,7 +4257,7 @@ StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"] = {
 		self.editBox:SetText("");
 		self.button1:SetScript("OnEnter", nil );
 		self.button1:SetScript("OnLeave", nil);
-		if (self.extraButton) then 
+		if (self.extraButton) then
 			self.extraButton:SetScript("OnEnter", nil );
 			self.extraButton:SetScript("OnLeave", nil);
 		end
@@ -5048,7 +5079,7 @@ function StaticPopup_OnClick(dialog, index)
 		return nil;
 	end
 
-	if ( which == "DEATH" or which == "CLASS_TRIAL_CHOOSE_BOOST_TYPE" ) then
+	if info.selectCallbackByIndex then
 		local func;
 		if ( index == 1 ) then
 			func = info.OnAccept or info.OnButton1;

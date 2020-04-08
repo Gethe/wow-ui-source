@@ -1,0 +1,222 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_CovenantMissionTemplates.lua"/>
+
+	<Button name="CovenantFollowerButtonTemplate" virtual="true">
+		<Size x="260" y="56"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="12" y="-12"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" atlas="GarrMission_FollowerListButton" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Selected" atlas="GarrMission_FollowerListButton-Select" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="140" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.PortraitFrame" relativePoint="LEFT" x="66" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ILevel" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-4"/>
+					</Anchors>
+					<Color r="0.745" g="0.745" b="0.745" a="1"/>
+				</FontString>
+				<FontString parentKey="Status" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="0" y="14"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ILevel" relativePoint="TOPRIGHT" x="4" y="0"/>
+					</Anchors>
+					<Color r="0.698" g="0.941" b="1" a="1"/>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Selection" atlas="GarrMission_FollowerListButton-Select" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" x="14" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="PortraitFrame" inherits="GarrisonFollowerPortraitTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="2"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<HighlightTexture parentKey="Highlight" atlas="GarrMission_FollowerListButton-Highlight" useAtlasSize="true">
+			<Anchors>
+				<Anchor point="TOPRIGHT"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+
+	<Button name="CovenantMissionFollowerButtonTemplate" inherits="CovenantFollowerButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="AbilitiesBG" atlas="GarrMission_FollowerListButton" hidden="true">
+					<Size x="232" y="0"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.BG" relativePoint="BOTTOMRIGHT" y="5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="DurabilityFrame" inherits="GarrisonMissionFollowerDurabilityFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ILevel" relativePoint="TOPRIGHT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-8" y="-4"/>
+				</Anchors>
+			</Frame>
+			<Frame parentArray="Abilities" inherits="GarrisonFollowerListButtonAbilityTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesBG" x="2" y="-9"/>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						local followerList = self:GetParent():GetFollowerList();
+						self.followerTypeID = followerList.followerType;
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="BusyFrame" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="28" y="1"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Texture" setAllPoints="true">
+							<Color r="0" g="0.06" b="0.22" a="0.44"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterForDrag("LeftButton");
+				self.PortraitFrame:SetFrameLevel(self.BusyFrame:GetFrameLevel() + 1);
+			</OnLoad>
+			<OnClick>
+				GarrisonFollowerListButton_OnClick(self, button);
+			</OnClick>
+			<OnDragStart function="GarrisonFollowerListButton_OnDragStart"/>
+			<OnDragStop function="GarrisonFollowerListButton_OnDragStop"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="CovenantMissionFollowerOrCategoryListButtonTemplate" virtual="true">
+		<Size x="260" y="20"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Category" inherits="GameFontNormal" justifyH="LEFT" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="Follower" inherits="CovenantMissionFollowerButtonTemplate" mixin="GarrisonMissionFollowerOrCategoryListButtonMixin">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="CovenantMissionAutoSpellAbilityTemplate" inherits="GarrisonAbilityLargeCounterTemplate" virtual="true">
+		<Scripts>
+			<OnEnter function="CovenantMissionAutoSpellAbilityTemplate_OnEnter"/>
+			<OnLeave function="CovenantMissionAutoSpellAbilityTemplate_OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CovenantMissionPageFollowerTemplate" virtual="true">
+		<Size x="161" y="58"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="GarrMission_FollowerPartyBox_Sm" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" x="13"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="DurabilityBackground" atlas="legionmission-hearts-background" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="BOTTOM" x="10" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Name" inherits="GameFontNormal" hidden="true">
+					<Size x="140" y="0"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="4"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="PortraitFrame" inherits="GarrisonFollowerMissionPortraitTemplate">
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="3">
+						<Texture parentKey="Caution" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="1" y="14"/>
+							</Anchors>
+							<Size x="20" y="20"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentArray="Abilities" inherits="CovenantMissionAutoSpellAbilityTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" x="64" y="-1"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Durability" inherits="GarrisonMissionFollowerDurabilityFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.DurabilityBackground"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnDragStart function="GarrisonMissionPageFollowerFrame_OnDragStart"/>
+			<OnDragStop function="GarrisonMissionPageFollowerFrame_OnDragStop"/>
+			<OnReceiveDrag function="GarrisonMissionPageFollowerFrame_OnReceiveDrag"/>
+			<OnEnter function="GarrisonMissionPageFollowerFrame_OnEnter"/>
+			<OnLeave function="GarrisonMissionPageFollowerFrame_OnLeave"/>
+			<OnMouseUp function="GarrisonMissionPageFollowerFrame_OnMouseUp"/>
+		</Scripts>
+	</Frame>
+</Ui>

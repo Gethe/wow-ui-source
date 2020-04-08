@@ -514,7 +514,6 @@ function CharacterSelect_OnEvent(self, event, ...)
         CharSelectCharacterName:SetText(GetCharacterInfo(GetCharIDFromIndex(self.selectedIndex)));
         KioskMode_CheckAutoRealm();
         KioskMode_CheckEnterWorld();
-        KioskMode_CheckCompetitiveMode();
         CharacterServicesMaster_OnCharacterListUpdate();
     elseif ( event == "UPDATE_SELECTED_CHARACTER" ) then
         local charID = ...;
@@ -778,7 +777,7 @@ function UpdateCharacterList(skipSelect)
 
     for i=1, characterLimit, 1 do
 		local characterIndex = i + CHARACTER_LIST_OFFSET;
-	    local name, race, _, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked, isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, _, lastLoginBuild, _, isExpansionTrialCharacter, faction, lockedByExpansion = GetCharacterInfo(GetCharIDFromIndex(characterIndex));
+	    local name, race, _, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked, isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, _, lastLoginBuild, _, isExpansionTrialCharacter, faction, lockedByExpansion, mailSenders = GetCharacterInfo(GetCharIDFromIndex(characterIndex));
 		local productID, vasServiceState, vasServiceErrors, productInfo;
         if (guid) then
             productID, vasServiceState, vasServiceErrors = C_StoreGlue.GetVASPurchaseStateInfo(guid);
@@ -790,6 +789,7 @@ function UpdateCharacterList(skipSelect)
         local button = _G["CharSelectCharacterButton"..i];
         button.isVeteranLocked = false;
         button.isLockedByExpansion = lockedByExpansion;
+		button.MailIndicationButton:Hide();
 
         if (button.padlock) then
             CharacterSelect.characterPadlockPool:Release(button.padlock);
@@ -912,6 +912,9 @@ function UpdateCharacterList(skipSelect)
 
                     if lockedByExpansion or revokedCharacterUpgrade then
                         CharacterSelect_SetupPadlockForCharacterButton(button, guid);
+					else
+						button.MailIndicationButton:SetShown(#mailSenders >= 1);
+						button.MailIndicationButton:SetMailSenders(mailSenders);
                     end
                 end
 
@@ -1090,8 +1093,6 @@ function UpdateCharacterList(skipSelect)
     end
 
     if ( numChars > MAX_CHARACTERS_DISPLAYED ) then
-        CharSelectCreateCharacterButton:SetPoint("BOTTOM", -26, 15);
-        CharSelectBackToActiveButton:SetPoint("BOTTOM", -8, 15);
         CharacterSelectCharacterFrame:SetWidth(280);
         CharacterSelectCharacterFrame.scrollBar:Show();
         CharacterSelectCharacterFrame.scrollBar:SetMinMaxValues(0, numChars - MAX_CHARACTERS_DISPLAYED);
@@ -1099,8 +1100,6 @@ function UpdateCharacterList(skipSelect)
         CharacterSelectCharacterFrame.scrollBar:SetValue(CHARACTER_LIST_OFFSET);
         CharacterSelectCharacterFrame.scrollBar.blockUpdates = nil;
     else
-        CharSelectCreateCharacterButton:SetPoint("BOTTOM", -18, 15);
-        CharSelectBackToActiveButton:SetPoint("BOTTOM", 0, 15);
         CharacterSelectCharacterFrame.scrollBar.blockUpdates = true;	-- keep mousewheel from doing anything
         CharacterSelectCharacterFrame:SetWidth(260);
         CharacterSelectCharacterFrame.scrollBar:Hide();
@@ -1296,7 +1295,7 @@ function CharacterSelect_AllowedToEnterWorld()
         return false;
     elseif (CharSelectServicesFlowFrame:IsShown()) then
         return false;
-	elseif (IsKioskModeEnabled() and (CharacterSelect.hasPendingTrialBoost or KioskMode_IsWaitingOnTrial())) then
+	elseif (Kiosk.IsEnabled() and (CharacterSelect.hasPendingTrialBoost or KioskMode_IsWaitingOnTrial())) then
 		return false;
     end
 
@@ -1373,49 +1372,6 @@ function CharacterSelect_PaidServiceOnClick(self, button, down, service)
         GlueDialog_Show("UNDELETE_CONFIRM", UNDELETE_CONFIRMATION:format(timeStr));
     else
         GlueParent_SetScreen("charcreate");
-    end
-end
-
-function CharacterSelectGoldPanelButton_DeathKnightSwap(self)
-    local state;
-    if ( not self:IsEnabled() ) then
-        state = "disabled";
-    elseif ( self.down ) then
-        state = "down";
-    else
-        state = "up";
-    end
-
-    local deathKnightTag = "DEATHKNIGHT";
-    local currentGlueTag = GetCurrentGlueTag();
-
-    if ( self.currentGlueTag ~= currentGlueTag or self.state ~= state ) then
-        self.currentGlueTag = currentGlueTag;
-        self.state = state;
-
-        if ( currentGlueTag == deathKnightTag ) then
-            if (state == "disabled") then
-                local textureBase = "Interface\\Buttons\\UI-DialogBox-goldbutton-disabled";
-
-                self.Left:SetTexture(textureBase.."-left");
-                self.Middle:SetTexture(textureBase.."-middle");
-                self.Right:SetTexture(textureBase.."-right");
-            else
-                local textureBase = "UI-DialogBox-goldbutton-" .. state;
-
-                self.Left:SetAtlas(textureBase.."-left-blue");
-                self.Middle:SetAtlas(textureBase.."-middle-blue");
-                self.Right:SetAtlas(textureBase.."-right-blue");
-            end
-            self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight-Blue");
-        else
-            local textureBase = "Interface\\Buttons\\UI-DialogBox-goldbutton-" .. state;
-
-            self.Left:SetTexture(textureBase.."-left");
-            self.Middle:SetTexture(textureBase.."-middle");
-            self.Right:SetTexture(textureBase.."-right");
-            self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight");
-        end
     end
 end
 
@@ -1861,7 +1817,7 @@ function CharacterSelect_IsStoreAvailable()
 end
 
 function CharacterSelect_UpdateStoreButton()
-    if ( CharacterSelect_IsStoreAvailable() and not IsKioskModeEnabled()) then
+    if ( CharacterSelect_IsStoreAvailable() and not Kiosk.IsEnabled()) then
         StoreButton:Show();
     else
         StoreButton:Hide();
@@ -1906,6 +1862,7 @@ function CharacterSelect_UpdateButtonState()
     local undeleteEnabled, undeleteOnCooldown = GetCharacterUndeleteStatus();
     local redemptionInProgress = AccountReactivationInProgressDialog:IsShown() or GoldReactivateConfirmationDialog:IsShown() or TokenReactivateConfirmationDialog:IsShown();
     local inCompetitiveMode = IsCompetitiveModeEnabled();
+	local inKioskMode = Kiosk.IsEnabled();
 
     local boostInProgress = select(19,GetCharacterInfo(GetCharacterSelection()));
     CharSelectEnterWorldButton:SetEnabled(CharacterSelect_AllowedToEnterWorld());
@@ -1913,7 +1870,7 @@ function CharacterSelect_UpdateButtonState()
     CharacterSelectDeleteButton:SetEnabled(hasCharacters and servicesEnabled and not undeleting and not redemptionInProgress and not CharacterSelect_IsRetrievingCharacterList());
     CharSelectChangeRealmButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress);
     CharSelectUndeleteCharacterButton:SetEnabled(servicesEnabled and undeleteEnabled and not undeleteOnCooldown and not redemptionInProgress);
-    CharacterSelectAddonsButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not IsKioskModeEnabled());
+    CharacterSelectAddonsButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not inKioskMode);
     CopyCharacterButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress);
     ActivateFactionChange:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress);
     ActivateFactionChange.texture:SetDesaturated(not (servicesEnabled and not undeleting and not redemptionInProgress));
@@ -1928,7 +1885,7 @@ function CharacterSelect_UpdateButtonState()
         end
     end
 
-    CharSelectAccountUpgradeButton:SetEnabled(not redemptionInProgress and not undeleting and not inCompetitiveMode);
+    CharSelectAccountUpgradeButton:SetEnabled(not redemptionInProgress and not undeleting and not inCompetitiveMode and not inKioskMode);
 end
 
 function CharacterSelect_DeleteCharacter(charID)
@@ -1971,12 +1928,12 @@ function KioskMode_IsWaitingOnTrial()
 end
 
 function KioskMode_CheckEnterWorld()
-    if (not IsKioskModeEnabled()) then
+    if (not Kiosk.IsEnabled()) then
         return;
     end
 
 	if (not KioskMode_IsWaitingOnTrial()) then
-        if (KioskModeSplash_GetAutoEnterWorld()) then
+        if (KioskModeSplash:GetAutoEnterWorld()) then
             EnterWorld();
         else
 			if (not IsGMClient()) then
@@ -1985,23 +1942,6 @@ function KioskMode_CheckEnterWorld()
             if (IsKioskGlueEnabled()) then
                 GlueParent_SetScreen("kioskmodesplash");
             end
-        end
-    end
-end
-
-function KioskMode_CheckCompetitiveMode()
-    if (IsCompetitiveModeEnabled()) then
-        CharSelectAccountUpgradeButton:SetText(KIOSK_MODE_COMPETITIVE_MODE);
-        CharSelectAccountUpgradeButton:Show();
-        CharSelectAccountUpgradeButton:Disable();
-        CharSelectAccountUpgradeButtonExpandCollapseButton:Hide();
-        local featureTable = GetExpansionDisplayInfo(LE_EXPANSION_LEVEL_PREVIOUS);
-        if (featureTable) then
-            CharSelectAccountUpgradeMiniPanel.logo:SetTexture(featureTable.logo);
-			CharSelectAccountUpgradeMiniPanel.banner:SetAtlas(featureTable.banner, true);
-			CharSelectAccountUpgradeMiniPanel:Show();
-		else
-			CharSelectAccountUpgradeMiniPanel:Hide();
         end
     end
 end
@@ -2179,7 +2119,7 @@ function DisplayBattlepayTokenFreeFrame(freeFrame)
 		end
 
 		popupFrame.Description:SetText(popupData.description);
-		popupFrame:SetupTextureKit(popupData.textureKitPrefix, textureKitRegionInfo);
+		popupFrame:SetupTextureKit(popupData.textureKit, textureKitRegionInfo);
 		
 		local baseHeight;
 		if freeFrame.data.isExpansionTrial then
@@ -2298,7 +2238,7 @@ function CharacterServicesTokenBoost_OnClick(self)
         GlueDialog_Show("CHARACTER_BOOST_FEATURE_RESTRICTED", CHARACTER_BOOST_YOU_MUST_REACTIVATE);
     elseif IsTrialAccount() then
         GlueDialog_Show("CHARACTER_BOOST_FEATURE_RESTRICTED", CHARACTER_BOOST_YOU_MUST_UPGRADE);
-    elseif C_CharacterCreation.HasSufficientExperienceForAdvancedCreation() then
+    elseif not C_CharacterCreation.IsNewPlayerRestricted() then
         CharacterUpgradePopup_BeginCharacterUpgradeFlow(self.data);
     else
         GlueDialog_Show("CHARACTER_BOOST_NO_CHARACTERS_WARNING", nil, self.data);
@@ -3023,4 +2963,23 @@ function CharacterSelect_ShowBoostUnlockDialog(guid)
     end
 
     return false;
+end
+
+
+CharacterSelectMailIndicationButtonMixin = {};
+
+function CharacterSelectMailIndicationButtonMixin:OnEnter()
+	if #self.mailSenders >= 1 then
+		GlueTooltip:SetOwner(self, "ANCHOR_LEFT");
+		FormatUnreadMailTooltip(GlueTooltip, HAVE_MAIL_FROM, self.mailSenders);
+		GlueTooltip:Show();
+	end
+end
+
+function CharacterSelectMailIndicationButtonMixin:OnLeave()
+	GlueTooltip:Hide();
+end
+
+function CharacterSelectMailIndicationButtonMixin:SetMailSenders(mailSenders)
+	self.mailSenders = mailSenders;
 end

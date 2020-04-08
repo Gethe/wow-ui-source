@@ -13,4 +13,8 @@ Blizzard_GarrisonMonumentUI.xml
 Blizzard_GarrisonRecruiterUI.xml
 Blizzard_OrderHallMissionUI.xml
 Blizzard_BFAMissionUI.xml
+Blizzard_AdventuresCombatLog.xml
+Blizzard_AdventuresCompleteScreen.xml
+Blizzard_AdventuresBoard.xml
+Blizzard_CovenantMissionUI.xml
 Localization.lua

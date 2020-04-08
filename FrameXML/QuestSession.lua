@@ -981,9 +981,9 @@ end
 
 function QuestSessionManagerMixin:GetProposedPlayerLevel()
 	local minLevel = PartyUtil.GetMinLevel();
+	local expansionForLevel = GetExpansionForLevel(minLevel) or LE_EXPANSION_LEVEL_CURRENT;
 
-	local useModernExpansionLevels = true;
-	local proposedSessionLevel = GetMaxLevelForExpansionLevel(GetExpansionForLevel(minLevel), useModernExpansionLevels);
+	local proposedSessionLevel = GetMaxLevelForExpansionLevel(expansionForLevel);
 	return math.min(UnitLevel("player"), proposedSessionLevel);
 end
 

@@ -123,6 +123,10 @@ function ToggleBag(id)
 			end
 		end
 		if ( not containerShowing ) then
+			if ( CanAutoSetGamePadCursorControl(true) ) then
+				SetGamePadCursorControl(true);
+			end
+
 			ContainerFrame_GenerateFrame(ContainerFrame_GetOpenFrame(), size, id);
 		end
 	end
@@ -240,7 +244,7 @@ function ContainerFrame_OnShow(self)
 	self.FilterIcon:Hide();
 	if ( self:GetID() == 0 ) then
 		local shouldShow = true;
-		if (IsCharacterNewlyBoosted() or FRAME_THAT_OPENED_BAGS ~= nil or IsKioskModeEnabled()) then
+		if (IsCharacterNewlyBoosted() or FRAME_THAT_OPENED_BAGS ~= nil or Kiosk.IsEnabled()) then
 			shouldShow = false;
 		else
 			for i = BACKPACK_CONTAINER + 1, NUM_BAG_SLOTS, 1 do
@@ -295,7 +299,7 @@ function ContainerFrame_OnShow(self)
 		ManageBackpackTokenFrame();
 	end
 
-	AzeriteInBagsHelpBox:Hide();
+	HelpTip:Hide(MainMenuBarBackpackButton, AZERITE_TUTORIAL_ITEM_IN_BAG)
 end
 
 function OpenBag(id, force)
@@ -397,7 +401,7 @@ end
 
 function CheckBagSettingsTutorial()
 	local shouldShow = true;
-	if (IsCharacterNewlyBoosted() or FRAME_THAT_OPENED_BAGS ~= nil or IsKioskModeEnabled()) then
+	if (IsCharacterNewlyBoosted() or FRAME_THAT_OPENED_BAGS ~= nil or Kiosk.IsEnabled()) then
 		shouldShow = false;
 	else
 		for i = BACKPACK_CONTAINER + 1, NUM_BAG_SLOTS, 1 do
@@ -576,7 +580,7 @@ function ContainerFrame_Update(self)
 
 	ContainerFrame_CloseSpecializedTutorialForItem(self);
 
-	local shouldDoSpecializedTutorialChecks = not BagHelpBox:IsShown() and not IsKioskModeEnabled();
+	local shouldDoSpecializedTutorialChecks = not BagHelpBox:IsShown() and not Kiosk.IsEnabled();
 	local shouldDoRelicChecks = shouldDoSpecializedTutorialChecks and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH);
 	local shouldDoAzeriteChecks = shouldDoSpecializedTutorialChecks and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT);
 
@@ -642,7 +646,7 @@ function ContainerFrame_Update(self)
 		
 		local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetID(), itemButton:GetID());
 		if C_Item.DoesItemExist(itemLocation) then
-			local isJunk = quality == LE_ITEM_QUALITY_POOR and not noValue and MerchantFrame:IsShown();
+			local isJunk = quality == Enum.ItemQuality.Poor and not noValue and MerchantFrame:IsShown();
 			itemButton.JunkIcon:SetShown(isJunk);
 		end
 		
@@ -693,6 +697,25 @@ function ContainerFrame_UpdateAll()
 	if BankFrame:IsShown() then
 		BankFrame_UpdateItems(BankFrame);
 	end
+end
+
+function ContainerFrame_FindItemLocationUnderCursor()
+	local mouseFocus = GetMouseFocus();
+	if mouseFocus then
+		for containerIndex = 1, NUM_CONTAINER_FRAMES, 1 do
+			local container = _G["ContainerFrame"..containerIndex];
+			if container and container.size and container:IsShown() and container:IsMouseOver() then
+				local name = container:GetName().."Item";
+				for itemIndex = 1, container.size, 1 do
+					local item = _G[name..itemIndex];
+					if item and mouseFocus == item then
+						return ItemLocation:CreateFromBagAndSlot(container:GetID(), item:GetID())
+					end
+				end
+			end
+		end
+	end
+	return nil;
 end
 
 function ContainerFrame_UpdateSearchResults(frame)
@@ -1100,7 +1123,7 @@ function ContainerFrameItemButton_OnLoad(self)
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:RegisterForDrag("LeftButton");
 
-	self.UpdateTooltip = ContainerFrameItemButton_OnEnter;
+	self.UpdateTooltip = ContainerFrameItemButton_OnUpdate;
 	self.timeSinceUpgradeCheck = 0;
 end
 
@@ -1110,7 +1133,7 @@ function ContainerFrameItemButton_UpdateItemUpgradeIcon(self)
 	local itemIsUpgrade = IsContainerItemAnUpgrade(self:GetParent():GetID(), self:GetID());
 	if ( itemIsUpgrade == nil and not self.isExtended) then -- nil means not all the data was available to determine if this is an upgrade.
 		self.UpgradeIcon:SetShown(false);
-		self:SetScript("OnUpdate", ContainerFrameItemButton_OnUpdate);
+		self:SetScript("OnUpdate", ContainerFrameItemButton_TryUpdateItemUpgradeIcon);
 	elseif (not self.isExtended) then
 		self.UpgradeIcon:SetShown(itemIsUpgrade);
 		self:SetScript("OnUpdate", nil);
@@ -1118,7 +1141,7 @@ function ContainerFrameItemButton_UpdateItemUpgradeIcon(self)
 end
 
 local ITEM_UPGRADE_CHECK_TIME = 0.5;
-function ContainerFrameItemButton_OnUpdate(self, elapsed)
+function ContainerFrameItemButton_TryUpdateItemUpgradeIcon(self, elapsed)
 	self.timeSinceUpgradeCheck = self.timeSinceUpgradeCheck + elapsed;
 	if ( self.timeSinceUpgradeCheck >= ITEM_UPGRADE_CHECK_TIME ) then
 		ContainerFrameItemButton_UpdateItemUpgradeIcon(self);
@@ -1298,6 +1321,9 @@ function ContainerFrameItemButton_OnClick(self, button)
 			elseif AzeriteRespecFrame and AzeriteRespecFrame:IsShown() then
 				AzeriteRespecFrame:SetRespecItem(itemLocation);
 				return;
+			elseif RuneforgeFrame and RuneforgeFrame:IsShown() then
+				RuneforgeFrame:SetItem(itemLocation);
+				return;
 			elseif ( not BankFrame:IsShown() and (not GuildBankFrame or not GuildBankFrame:IsShown()) and not MailFrame:IsShown() and (not VoidStorageFrame or not VoidStorageFrame:IsShown()) and
 						(not AuctionFrame or not AuctionFrame:IsShown()) and not TradeFrame:IsShown() and (not ItemUpgradeFrame or not ItemUpgradeFrame:IsShown()) and
 						(not ObliterumForgeFrame or not ObliterumForgeFrame:IsShown()) and (not ChallengesKeystoneFrame or not ChallengesKeystoneFrame:IsShown()) ) then
@@ -1383,7 +1409,7 @@ function ContainerFrameItemButton_CalculateItemTooltipAnchors(self, mainTooltip)
 	end
 end
 
-function ContainerFrameItemButton_OnEnter(self)
+function ContainerFrameItemButton_OnUpdate(self)
 	GameTooltip:SetOwner(self, "ANCHOR_NONE");
 
 	-- Keyring specific code
@@ -1445,10 +1471,6 @@ function ContainerFrameItemButton_OnEnter(self)
 		ResetCursor();
 	end
 
-	if ArtifactFrame and self.hasItem then
-		ArtifactFrame:OnInventoryItemMouseEnter(self:GetParent():GetID(), self:GetID());
-	end
-
 	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_MOUNT_EQUIPMENT_SLOT_FRAME) then
 		local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
 		if itemLocation and itemLocation:IsValid() then
@@ -1460,12 +1482,28 @@ function ContainerFrameItemButton_OnEnter(self)
 	end
 end
 
+function ContainerFrameItemButton_OnEnter(self)
+	ContainerFrameItemButton_OnUpdate(self);
+	
+	if ArtifactFrame and self.hasItem then
+		ArtifactFrame:OnInventoryItemMouseEnter(self:GetParent():GetID(), self:GetID());
+	end
+
+	if SoulbindViewer and self.hasItem then
+		SoulbindViewer:OnInventoryItemEnter(self:GetParent():GetID(), self:GetID());
+	end
+end
+
 function ContainerFrameItemButton_OnLeave(self)
 	GameTooltip_Hide();
 	ResetCursor();
 
 	if ArtifactFrame then
 		ArtifactFrame:OnInventoryItemMouseLeave(self:GetParent():GetID(), self:GetID());
+	end
+
+	if SoulbindViewer and self.hasItem then
+		SoulbindViewer:OnInventoryItemLeave(self:GetParent():GetID(), self:GetID());
 	end
 end
 

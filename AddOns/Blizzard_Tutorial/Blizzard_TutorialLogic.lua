@@ -40,7 +40,7 @@ function TutorialHelper:FormatString(str)
 			local bindingString;
 
 			if (spellID) then
-				local btn = self:GetActionButtonBySpellID(tostring(spellID));
+				local btn = self:GetActionButtonBySpellID(tonumber(spellID));
 				if (btn) then
 					bindingString = GetBindingKey("ACTIONBUTTON" .. btn.action);
 				end
@@ -120,7 +120,7 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:IsQuestCompleteOrActive(questID)
-	return C_QuestLog.IsQuestFlaggedCompleted(questID) or (GetQuestLogIndexByID(questID) > 0);
+	return C_QuestLog.IsQuestFlaggedCompleted(questID) or C_QuestLog.GetLogIndexForQuestID(questID) ~= nil;
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -741,10 +741,11 @@ function Class_Intro_MapHighlights:OnBegin()
 	self.Prompt = NPE_MAPCALLOUTBASE;
 	local hasBlob = false;
 
-	for i = 1, GetNumQuestLogEntries() do
-		if (IsQuestWatched(i)) then
-			local questID = select(8, GetQuestLogTitle(i));
-			hasBlob = GetQuestPOIBlobCount(questID) > 0;
+	for i = 1, C_QuestLog.GetNumQuestLogEntries() do
+		local questID = C_QuestLog.GetQuestIDForLogIndex(i);
+		if QuestUtils_IsQuestWatched(questID) and GetQuestPOIBlobCount(questID) > 0 then
+			hasBlob = true;
+			break;
 		end
 	end
 
@@ -1973,11 +1974,8 @@ function Class_TurnInQuestWatcher:QUEST_COMPLETE()
 	local areAllItemsUsable = true;
 
 	-- Figure out if all the items are usable
-	local questID = GetQuestID(); -- the last ID that was brought up in a quest frame
-	local questLogIndex = GetQuestLogIndexByID(questID) -- find the index in the quest log
-	SelectQuestLogEntry(questLogIndex) -- select it behind the secenes for the next two function calls
-	local numChoices = GetNumQuestLogChoices()
-	for i = 1, numChoices do
+	C_QuestLog.SetSelectedQuest(GetQuestID());
+	for i = 1, GetNumQuestLogChoices() do
 		local isUsable = select(5, GetQuestLogChoiceInfo(i));
 		if (not isUsable) then
 			areAllItemsUsable = false;
@@ -2986,9 +2984,10 @@ function Tutorials:Quest_ObjectivesComplete(questData)
 	-- All active quests complete
 	local allQuestsReadyForTurnIn = true;
 
-	for i = 1, GetNumQuestLogEntries() do
-		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID = GetQuestLogTitle(i);
-		if ((not isHeader) and (GetQuestTagInfo(questID) ~= QUEST_TAG_ACCOUNT) and (not isComplete)) then
+	for i = 1, C_QuestLog.GetNumQuestLogEntries() do
+		local questID = C_QuestLog.GetQuestIDForLogIndex(i);
+		-- Only check valid non-account quests.
+		if questID and not C_QuestLog.IsAccountQuest(questID) and not C_QuestLog.ReadyForTurnIn(questID) then
 			allQuestsReadyForTurnIn = false;
 			break;
 		end

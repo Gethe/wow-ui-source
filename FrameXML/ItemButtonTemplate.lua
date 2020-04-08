@@ -119,23 +119,23 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
 	if button.useCircularIconBorder then
 		button.IconBorder:Show();
 
-		if quality == LE_ITEM_QUALITY_POOR then
+		if quality == Enum.ItemQuality.Poor then
 			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-gray");
-		elseif quality == LE_ITEM_QUALITY_COMMON then
+		elseif quality == Enum.ItemQuality.Standard then
 			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-white");
-		elseif quality == LE_ITEM_QUALITY_UNCOMMON then
+		elseif quality == Enum.ItemQuality.Good then
 			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-green");
-		elseif quality == LE_ITEM_QUALITY_RARE then
+		elseif quality == Enum.ItemQuality.Superior then
 			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-blue");
-		elseif quality == LE_ITEM_QUALITY_EPIC then
+		elseif quality == Enum.ItemQuality.Epic then
 			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-purple");
-		elseif quality == LE_ITEM_QUALITY_LEGENDARY then
+		elseif quality == Enum.ItemQuality.Legendary then
 			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-orange");
-		elseif quality == LE_ITEM_QUALITY_ARTIFACT then
+		elseif quality == Enum.ItemQuality.Artifact then
 			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-artifact");
-		elseif quality == LE_ITEM_QUALITY_HEIRLOOM then
+		elseif quality == Enum.ItemQuality.Heirloom then
 			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-account");
-		elseif quality == LE_ITEM_QUALITY_WOW_TOKEN then
+		elseif quality == Enum.ItemQuality.WoWToken then
 			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-account");
 		else
 			button.IconBorder:Hide();
@@ -167,7 +167,7 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
 	end
 
 	if quality then
-		if quality >= LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality] then
+		if quality >= Enum.ItemQuality.Common and BAG_ITEM_QUALITY_COLORS[quality] then
 			button.IconBorder:Show();
 			button.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
 		else
@@ -175,6 +175,17 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
 		end
 	else
 		button.IconBorder:Hide();
+	end
+end
+
+function SetItemButtonReagentCount(button, reagentCount, playerReagentCount)
+	local playerReagentCountAbbreviated = AbbreviateNumbers(playerReagentCount);
+	button.Count:SetFormattedText(TRADESKILL_REAGENT_COUNT, playerReagentCountAbbreviated, reagentCount);
+	--fix text overflow when the button count is too high
+	if math.floor(button.Count:GetStringWidth()) > math.floor(button.Icon:GetWidth() + .5) then 
+		--round count width down because the leftmost number can overflow slightly without looking bad
+		--round icon width because it should always be an int, but sometimes it's a slightly off float
+		button.Count:SetFormattedText("%s\n/%s", playerReagentCountAbbreviated, reagentCount);
 	end
 end
 
@@ -211,24 +222,8 @@ end
 
 ItemButtonMixin = {};
 
-function ItemButtonMixin:PostOnLoad()
-	self.itemContextChangedCallback = function()
-		self:UpdateItemContextMatching();
-	end
-end
-
-function ItemButtonMixin:RegisterCallback()
-	if not self.itemContextChangedCallbackIsSet then
-		ItemButtonUtil.RegisterCallback(ItemButtonUtil.Event.ItemContextChanged, self.itemContextChangedCallback);
-		self.itemContextChangedCallbackIsSet = true;
-	end
-end
-
-function ItemButtonMixin:UnregisterCallback()
-	if self.itemContextChangedCallbackIsSet then
-		ItemButtonUtil.UnregisterCallback(ItemButtonUtil.Event.ItemContextChanged, self.itemContextChangedCallback);
-		self.itemContextChangedCallbackIsSet = false;
-	end
+function ItemButtonMixin:OnItemContextChanged()
+	self:UpdateItemContextMatching();
 end
 
 function ItemButtonMixin:PostOnShow()
@@ -236,12 +231,26 @@ function ItemButtonMixin:PostOnShow()
 	
 	local hasFunctionSet = self.GetItemContextMatchResult ~= nil;
 	if hasFunctionSet then
-		self:RegisterCallback();
+		ItemButtonUtil.RegisterCallback(ItemButtonUtil.Event.ItemContextChanged, self.OnItemContextChanged, self);
 	end
 end
 
 function ItemButtonMixin:PostOnHide()
-	self:UnregisterCallback();
+	ItemButtonUtil.UnregisterCallback(ItemButtonUtil.Event.ItemContextChanged, self);
+end
+
+function ItemButtonMixin:PostOnEvent(event, ...)
+	if event == "GET_ITEM_INFO_RECEIVED" then
+		if not self.pendingInfo then
+			return;
+		end
+
+		if self.pendingInfo.itemLocation then
+			self:SetItemLocation(self.pendingInfo.itemLocation);
+		else
+			self:SetItemInternal(self.pendingInfo.item);
+		end
+	end
 end
 
 function ItemButtonMixin:SetMatchesSearch(matchesSearch)
@@ -268,4 +277,112 @@ function ItemButtonMixin:UpdateItemContextOverlay()
 	local matchesSearch = self.matchesSearch == nil or self.matchesSearch;
 	local matchesContext = self.itemContextMatchResult == ItemButtonUtil.ItemContextMatchResult.DoesNotApply or self.itemContextMatchResult == ItemButtonUtil.ItemContextMatchResult.Match;
 	self.ItemContextOverlay:SetShown(not matchesSearch or not matchesContext);
+end
+
+function ItemButtonMixin:Reset()
+	self:SetItemButtonCount(nil);
+	SetItemButtonTexture(self, nil);
+	SetItemButtonQuality(self, nil, nil);
+
+	self.itemLink = nil;
+	self:SetItemSource(nil);
+end
+
+function ItemButtonMixin:SetItemSource(itemLocation)
+	self.itemLocation = itemLocation;
+end
+
+function ItemButtonMixin:SetItemLocation(itemLocation)
+	self:SetItemSource(itemLocation);
+
+	if itemLocation == nil or not C_Item.DoesItemExist(itemLocation) then
+		self:SetItemInternal(nil);
+		return itemLocation == nil;
+	end
+
+	return self:SetItemInternal(C_Item.GetItemLink(itemLocation));
+end
+
+-- item must be an itemID, item link or an item name.
+function ItemButtonMixin:SetItem(item)
+	self:SetItemSource(nil);
+	return self:SetItemInternal(item);
+end
+
+function ItemButtonMixin:SetItemInternal(item)
+	self.item = item;
+
+	if not item then
+		self:Reset();
+		return true;
+	end
+
+	local itemLink, itemQuality, itemIcon = self:GetItemInfo();
+
+	self.itemLink = itemLink;
+	if self.itemLink == nil then
+		self.pendingInfo = { item = self.item, itemLocation = self.itemLocation };
+		self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
+		self:Reset();
+		return true;
+	end
+
+	self.pendingItem = nil;
+	self:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
+
+	SetItemButtonTexture(self, itemIcon);
+	SetItemButtonQuality(self, itemQuality, itemLink);
+	return true;
+end
+
+function ItemButtonMixin:GetItemInfo()
+	local itemLocation = self:GetItemLocation();
+	if itemLocation then
+		local itemLink = C_Item.GetItemLink(itemLocation);
+		local itemQuality = C_Item.GetItemQuality(itemLocation);
+		local itemIcon = C_Item.GetItemIcon(itemLocation);
+		return itemLink, itemQuality, itemIcon;
+	else
+		local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = GetItemInfo(self:GetItem());
+		return itemLink, itemQuality, itemIcon;
+	end
+end
+
+function ItemButtonMixin:GetItemID()
+	local itemLink = self:GetItemLink();
+	if not itemLink then
+		return nil;
+	end
+
+	-- Storing in a local for clarity, and to avoid additional returns.
+	local itemID = GetItemInfoInstant(itemLink);
+	return itemID;
+end
+
+function ItemButtonMixin:GetItem()
+	return self.item;
+end
+
+function ItemButtonMixin:GetItemLink()
+	return self.itemLink;
+end
+
+function ItemButtonMixin:GetItemLocation()
+	return self.itemLocation;
+end
+
+function ItemButtonMixin:SetItemButtonCount(count)
+	SetItemButtonCount(self, count);
+end
+
+function ItemButtonMixin:GetItemButtonCount()
+	return GetItemButtonCount(self);
+end
+
+function ItemButtonMixin:SetAlpha(alpha)
+	self.icon:SetAlpha(alpha);
+	self.IconBorder:SetAlpha(alpha);
+	self.IconOverlay:SetAlpha(alpha);
+	self.Stock:SetAlpha(alpha);
+	self.Count:SetAlpha(alpha);
 end

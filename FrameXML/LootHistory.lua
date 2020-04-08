@@ -191,7 +191,10 @@ function LootHistoryFrame_UpdateItemFrame(self, itemFrame)
 		itemFrame.ItemName:SetText(RETRIEVING_DATA);
 		itemFrame.ItemName:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 	elseif ( isCurrency ) then
-		local currencyName, _, currencyTexture, currencyQuality = GetCurrencyInfo(itemLink);
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfoFromLink(itemLink);
+		local currencyName = currencyInfo.name;
+		local currencyTexture = currencyInfo.iconFileID;
+		local currencyQuality = currencyInfo.quality;
 		itemFrame.Icon:SetTexture(currencyTexture);
 		local colorInfo = ITEM_QUALITY_COLORS[currencyQuality];
 		itemFrame.IconBorder:SetVertexColor(colorInfo.r, colorInfo.g, colorInfo.b);

@@ -63,8 +63,8 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo, widgetContainer)
 		self.oldValue = position;
 	end
 
-	local frameTextureKit = GetUITextureKitInfo(widgetInfo.frameTextureKitID);
-	local textureKit = GetUITextureKitInfo(widgetInfo.textureKitID);
+	local frameTextureKit = widgetInfo.frameTextureKit;
+	local textureKit = widgetInfo.textureKit;
 
 	local isFactionsTextureKit = (frameTextureKit == "factions");
 	if isFactionsTextureKit and IsInLFDBattlefield() then

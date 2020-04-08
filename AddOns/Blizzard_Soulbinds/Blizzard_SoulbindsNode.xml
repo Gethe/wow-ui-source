@@ -1,0 +1,214 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_SoulbindsNode.lua"/>
+
+	<Button name="SoulbindTreeNodeTemplate" mixin="SoulbindTreeNodeMixin" virtual="true">
+		<Size x="40" y="40"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="5">
+				<Texture parentKey="Arrow" atlas="Soulbinds_Tree_ActivateArrow" hidden="true">
+				<Size x="44" y="30"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP" y="-13"/>
+				</Anchors>
+			</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Button name="SoulbindTraitNodeTemplate" mixin="SoulbindTraitNodeMixin" inherits="SoulbindTreeNodeTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="Soulbinds_Tree_Conduit_Background">
+					<Size x="56" y="57"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="Icon">
+					<Size x="42" y="42"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="IconOverlay">
+					<Size x="42" y="42"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color color="BLACK_FONT_COLOR" a=".5"/>
+				</Texture>
+				<MaskTexture atlas="CircleMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+						<MaskedTexture childKey="IconOverlay"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Ring">
+					<Size x="56" y="57"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RingOverlay" atlas="Soulbinds_Tree_Ring_Glow" hidden="true">
+					<Size x="56" y="57"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Pulse" inherits="VisibleWhilePlayingAnimGroupTemplate" looping="REPEAT">
+							<Alpha parentKey="FadeIn" duration=".8" order="1" fromAlpha=".2" toAlpha="1"/>
+							<Alpha parentKey="FadeOut" duration=".8" order="2" fromAlpha="1" toAlpha=".2"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="MouseOverlay" atlas="Soulbinds_Tree_Ring" hidden="true" alphaMode="ADD">
+					<Size x="56" y="57"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<Texture name="ConduitInstallTemplate" atlas="Soulbinds_Tree_Conduit_Ring" alphaMode="ADD" hidden="true" virtual="true">
+		<Size x="56" y="57"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+	</Texture>
+	
+	<Button name="SoulbindConduitNodeTemplate" mixin="SoulbindConduitNodeMixin" inherits="SoulbindTreeNodeTemplate" registerForClicks="LeftButtonUp,RightButtonUp" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="Soulbinds_Tree_Conduit_Background">
+					<Size x="56" y="57"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Icon">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="IconOverlay">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color color="BLACK_FONT_COLOR" a=".5"/>
+				</Texture>
+				<MaskTexture atlas="CircleMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+						<MaskedTexture childKey="IconOverlay"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1" >
+				<Texture parentKey="Ring">
+					<Size x="56" y="57"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RingOverlay2" atlas="Soulbinds_Tree_Conduit_Ring" alphaMode="ADD" hidden="true">
+					<Size x="56" y="57"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Pulse" looping="REPEAT">
+							<Alpha parentKey="FadeIn" duration=".8" order="1" fromAlpha=".2" toAlpha="1"/>
+							<Alpha parentKey="FadeOut" duration=".8" order="2" fromAlpha="1" toAlpha=".2"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2" >
+				<Texture parentKey="RingOverlay" atlas="Soulbinds_Tree_Conduit_Ring_Glow" hidden="true">
+					<Size x="56" y="57"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Pulse" inherits="VisibleWhilePlayingAnimGroupTemplate" looping="REPEAT">
+							<Alpha parentKey="FadeIn" duration=".8" order="1" fromAlpha=".2" toAlpha="1"/>
+							<Alpha parentKey="FadeOut" duration=".8" order="2" fromAlpha="1" toAlpha=".2"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<Texture parentKey="MouseOverlay" atlas="Soulbinds_Tree_Conduit_Ring" hidden="true" alphaMode="ADD">
+					<Size x="56" y="57"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="EmblemBg">
+					<Size x="30" y="33"/>
+					<Anchors>
+						<Anchor point="BOTTOM" y="-16"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3" >
+				<Texture parentKey="Emblem">
+					<Size x="30" y="33"/>
+					<Anchors>
+						<Anchor point="BOTTOM" y="-16"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="4" >
+				<Texture parentKey="Ring2" parentArray="installAnimTextures" inherits="ConduitInstallTemplate"/>
+				<Texture parentKey="Ring3" parentArray="installAnimTextures" inherits="ConduitInstallTemplate"/>
+				<Texture parentKey="Ring4" parentArray="installAnimTextures" inherits="ConduitInstallTemplate"/>
+				<Texture parentKey="Ring5" parentArray="installAnimTextures" inherits="ConduitInstallTemplate"/>
+				<Texture parentKey="Ring6" parentArray="installAnimTextures" inherits="ConduitInstallTemplate"/>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="InstallAnim" setToFinalAlpha="true">
+				<Alpha childKey="Ring2" order="1" fromAlpha="0" toAlpha="1" duration="0.1"/>
+				<Alpha childKey="Ring2" order="1" fromAlpha="1" toAlpha="0" duration="1.5"/>
+				<Alpha childKey="Ring3" order="1" fromAlpha="0" toAlpha="1" duration="0.1"/>
+				<Alpha childKey="Ring3" order="1" fromAlpha="1" toAlpha="0" duration="1.5"/>
+				<Alpha childKey="Ring4" order="1" fromAlpha="0" toAlpha="1" duration="0.1"/>
+				<Alpha childKey="Ring4" order="1" fromAlpha="1" toAlpha="0" duration="1.5"/>
+				<Alpha childKey="Ring5" smoothing="OUT" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Ring5" startDelay="0.5" smoothing="NONE" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Ring6" smoothing="OUT" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="Ring6" smoothing="OUT" duration="0.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.4" toScaleY="1.4"/>
+				<Alpha childKey="Ring6" startDelay="0.25" smoothing="NONE" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnReceiveDrag method="OnReceiveDrag"/>
+		</Scripts>
+	</Button>
+</Ui>

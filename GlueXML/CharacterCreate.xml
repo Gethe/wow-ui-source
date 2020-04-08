@@ -332,8 +332,8 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="OkayButton" inherits="GlueButtonTemplateBlue" text="OKAY">
-				<Size x="150" y="42"/>
+			<Button parentKey="OkayButton" inherits="GlueButtonTemplate" text="OKAY">
+				<Size x="150" y="30"/>
 				<Anchors>
 					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="15"/>
 				</Anchors>
@@ -365,14 +365,6 @@
 				end
 				self:SetHeight(height);
 			</OnShow>
-		</Scripts>
-	</Frame>
-	<Frame name="CharacterCreateTooltip" frameStrata="TOOLTIP" hidden="true" parent="GlueParent" inherits="GlueTooltipTemplate">
-		<Scripts>
-			<OnLoad>
-				GlueTooltip_OnLoad(self);
-				self.defaultColor = HIGHLIGHT_FONT_COLOR;
-			</OnLoad>
 		</Scripts>
 	</Frame>
 	<CheckButton name="CharCreateIconButtonTemplate" virtual="true" motionScriptsWhileDisabled="true">
@@ -485,12 +477,12 @@
 		<Scripts>
 			<OnEnter>
 				if ( self.tooltip ) then
-					CharacterCreateTooltip:SetOwner(self, "ANCHOR_RIGHT", -3, -5);
-					CharacterCreateTooltip:SetText(self.tooltip);
+					GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -3, -5);
+					GlueTooltip:SetText(self.tooltip);
 				end
 			</OnEnter>
 			<OnLeave>
-				CharacterCreateTooltip:Hide();
+				GlueTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 	</CheckButton>
@@ -648,50 +640,8 @@
 			</Anchors>
 		</PushedTexture>
 	</CheckButton>
-	<Button name="CharCreateNavButtonTemplate" inherits="GlueButtonTemplate" virtual="true">
-		<Size x="124" y="62"/>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture name="$parentRightEdge" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk">
-					<Size x="16" y="48"/>
-					<Anchors>
-						<Anchor point="RIGHT" x="-4" y="3"/>
-					</Anchors>
-					<TexCoords left="0.95703125" right="0.98828125" top="0.00097656" bottom="0.04785156"/>
-				</Texture>
-				<Texture name="$parentLeftEdge" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk">
-					<Size x="16" y="48"/>
-					<Anchors>
-						<Anchor point="LEFT" x="4" y="3"/>
-					</Anchors>
-					<TexCoords left="0.95703125" right="0.98828125" top="0.08300781" bottom="0.12988281"/>
-				</Texture>
-				<Texture name="$parentTopEdge" file="Interface\Glues\CharacterCreate\ButtonFrame-Mid">
-					<Size x="0" y="32"/>
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentRightEdge" relativePoint="LEFT" x="0" y="16"/>
-						<Anchor point="LEFT" relativeTo="$parentLeftEdge" relativePoint="RIGHT" x="0" y="16"/>
-					</Anchors>
-					<TexCoords left="0" right="1" top="0" bottom="0.5"/>
-				</Texture>
-				<Texture name="$parentBottomEdge" file="Interface\Glues\CharacterCreate\ButtonFrame-Mid">
-					<Size x="0" y="32"/>
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentRightEdge" relativePoint="LEFT" x="0" y="-16"/>
-						<Anchor point="LEFT" relativeTo="$parentLeftEdge" relativePoint="RIGHT" x="0" y="-16"/>
-					</Anchors>
-					<TexCoords left="0" right="1" top="0.5" bottom="1"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnUpdate>
-				GlueParent_DeathKnightButtonSwap(self);
-			</OnUpdate>
-		</Scripts>
-	</Button>
-	<Button name="CharCreateChangeStyleButtonTemplate" inherits="CharCreateNavButtonTemplate" virtual="true">
-		<Size x="110" y="62"/>
+	<Button name="CharCreateChangeStyleButtonTemplate" inherits="GlueButtonTemplate" virtual="true">
+		<Size x="90" y="60"/>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk" parentKey="arrow">
@@ -1075,7 +1025,7 @@
 				end
 			</OnMouseUp>
 			<OnLeave>
-				CharacterCreateTooltip:Hide();
+				GlueTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 		<HighlightTexture file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Highlights" alphaMode="ADD">
@@ -1167,6 +1117,54 @@
 		</Scripts>
 	</Button>
 
+	<Button name="CharacterCreatePlayAnimKitButtonTemplate" inherits="GlueButtonTemplate" virtual="true">
+		<Size x="118" y="41" />
+		<KeyValues>
+			<KeyValue key="normalOffsetX" value="0" type="number"/>
+			<KeyValue key="normalOffsetY" value="-8" type="number"/>
+			<KeyValue key="pressedOffsetDelta" value="2" type="number"/>
+			<KeyValue key="offsetFrameKey" value="typeText" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="typeText" inherits="GlueFontNormal"/>
+				<FontString parentKey="levelText" inherits="GameFontWhiteTiny">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.typeText" relativePoint="BOTTOMLEFT" x="0" y="0" />
+						<Anchor point="TOPRIGHT" relativeKey="$parent.typeText" relativePoint="BOTTOMRIGHT" x="0" y="0" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick function="CharCreateSpellPreviewFrameButton_OnClick"/>
+			<!-- <OnDisable function="CharacterCreate_TypeButtonOnDisable"/> -->
+			<!-- <OnEnable function="CharacterCreate_TypeButtonOnEnable"/> -->
+			<OnUpdate>
+				<!--GlueParent_DeathKnightButtonSwap(self);-->
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+	<Frame name="CharCreateClassAbilityFrame" inherits="CharacterCreateInfoTemplate">
+		<!--<Anchors>
+			<Anchor point="BOTTOMRIGHT" relativeTo="CharCreateClassFrame" relativePoint="BOTTOMLEFT" x="-1" y="51"/>
+		</Anchors>-->
+		<Frames>
+			<Frame parentKey="Panel" useParentLevel="true" inherits="CharCreateResizablePanelTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMLEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="AbilityIcons" inherits="VerticalLayoutFrame">
+				<!--<Anchors>
+					<Anchor point="TOP" relativeTo="CharCreateClassLabel" relativePoint="BOTTOM" x="0" y="-8"/>
+				</Anchors>-->
+			</Frame>
+		</Frames>
+	</Frame>
+
 	<Frame name="CharCreatePreviewFrameTemplate" virtual="true">
 		<Size x="128" y="118"/>
 		<Layers>
@@ -1246,6 +1244,7 @@
 		<Scripts>
 			<OnEnter function="CharacterCreateSpellIcon_OnEnter"/>
 			<OnLeave function="CharacterCreateSpellIcon_OnLeave"/>
+			<OnClick function="CharCreateSpellPreviewFrameButton_OnClick"/>
 		</Scripts>
 	</Frame>
 
@@ -1256,7 +1255,7 @@
 					<Button name="CharacterCreateRotateLeft">
 						<Size x="50" y="50"/>
 						<Anchors>
-							<Anchor point="BOTTOM" x="-15" y="-1"/>
+							<Anchor point="BOTTOM" x="-15" y="3"/>
 						</Anchors>
 						<HitRectInsets>
 							<AbsInset left="13" right="13" top="10" bottom="13"/>
@@ -1313,16 +1312,17 @@
 							</Anchors>
 						</HighlightTexture>
 					</Button>
-					<Button name="CharCreateBackButton" inherits="CharCreateNavButtonTemplate" text="BACK">
+					<Button name="CharCreateBackButton" inherits="GlueButtonTemplate" text="BACK">
+						<Size x="150" y="50"/>
 						<Anchors>
-							<Anchor point="BOTTOM" x="-132" y="-6"/>
+							<Anchor point="BOTTOM" x="-150" y="5"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY" textureSubLevel="1">
-								<Texture name="$parentArrow" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk">
+								<Texture name="$parentArrow" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk" parentKey="Arrow" >
 									<Size x="33" y="44"/>
 									<Anchors>
-										<Anchor point="LEFT" x="-9" y="3"/>
+										<Anchor point="LEFT" x="-25" y="0"/>
 									</Anchors>
 									<TexCoords left="0.54492188" right="0.60937500" top="0.53710938" bottom="0.58007813"/>
 								</Texture>
@@ -1332,30 +1332,17 @@
 							<OnClick function="CharacterCreate_Back"/>
 						</Scripts>
 					</Button>
-					<Button name="CharCreateOkayButton" inherits="CharCreateNavButtonTemplate" motionScriptsWhileDisabled="true" text="CUSTOMIZE">
+					<Button name="CharCreateOkayButton" inherits="GlueButtonTemplate" motionScriptsWhileDisabled="true" text="CUSTOMIZE">
+						<Size x="150" y="50"/>
 						<Anchors>
-							<Anchor point="BOTTOM" x="137" y="-6"/>
+							<Anchor point="BOTTOM" x="150" y="5"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY" textureSubLevel="1">
-								<Texture name="$parentTopGlow" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk" parentKey="TopGlow">
-									<Size x="117" y="32"/>
-									<Anchors>
-										<Anchor point="TOP" x="0" y="18"/>
-									</Anchors>
-									<TexCoords left="0.18750000" right="0.41601563" top="0.89257813" bottom="0.92382813"/>
-								</Texture>
-								<Texture name="$parentBottomGlow" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk" parentKey="BottomGlow">
-									<Size x="117" y="32"/>
-									<Anchors>
-										<Anchor point="BOTTOM" x="0" y="-13"/>
-									</Anchors>
-									<TexCoords left="0.18750000" right="0.41601563" top="0.92382813" bottom="0.89257813"/>
-								</Texture>
 								<Texture name="$parentArrow" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk" parentKey="Arrow">
 									<Size x="33" y="44"/>
 									<Anchors>
-										<Anchor point="RIGHT" x="10" y="3"/>
+										<Anchor point="RIGHT" x="25" y="0"/>
 									</Anchors>
 									<TexCoords left="0.81250000" right="0.87695313" top="0.43359375" bottom="0.47656250"/>
 								</Texture>
@@ -1368,7 +1355,7 @@
 					<EditBox name="CharacterCreateNameEdit" letters="12" hidden="true">
 						<Size x="156" y="40"/>
 						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="64"/>
+							<Anchor point="BOTTOM" x="0" y="70"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BORDER">
@@ -1411,9 +1398,8 @@
 						</TextInsets>
 					</EditBox>
 					<Button name="CharacterCreateRandomName" inherits="GlueButtonSmallTemplate" text="RANDOMIZE" hidden="true">
-						<Size x="146" y="30"/>
 						<Anchors>
-							<Anchor point="TOP" relativeTo="CharacterCreateNameEdit" relativePoint="BOTTOM" x="0" y="6"/>
+							<Anchor point="TOP" relativeTo="CharacterCreateNameEdit" relativePoint="BOTTOM" x="0" y="3"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -1423,9 +1409,6 @@
 								CharacterCreate_GenerateRandomName(self);
 								CharCreate_EnableNextButton(false);
 							</OnClick>
-							<OnUpdate>
-								GlueParent_DeathKnightButtonSwap(self);
-							</OnUpdate>
 						</Scripts>
 					</Button>
 					<Frame name="CharCreateRaceFrame">
@@ -1435,14 +1418,14 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND" textureSubLevel="-1">
-								<Texture file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk">
+								<Texture parentKey="FilligreeLeft" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk">
 									<Size x="143" y="48"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" x="30" y="-83"/>
 									</Anchors>
 									<TexCoords left="0.42382813" right="0.703125" top="0.68847656" bottom="0.73535156"/>
 								</Texture>
-								<Texture file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk">
+								<Texture parentKey="FilligreeRight" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk">
 									<Size x="143" y="48"/>
 									<Anchors>
 										<Anchor point="TOPRIGHT" x="-30" y="-83"/>
@@ -1483,13 +1466,13 @@
 										</Texture>
 									</Layer>
 									<Layer level="BACKGROUND" textureSubLevel="-1">
-										<Texture atlas="UI-CharacterCreate-Metal-Small-Finery">
+										<Texture parentKey="FineryLeft" atlas="UI-CharacterCreate-Metal-Small-Finery">
 											<Size x="35" y="32"/>
 											<Anchors>
 												<Anchor point="TOPLEFT" x="30" y="-92"/>
 											</Anchors>
 										</Texture>
-										<Texture atlas="UI-CharacterCreate-Metal-Small-Finery">
+										<Texture parentKey="FineryRight" atlas="UI-CharacterCreate-Metal-Small-Finery">
 											<Size x="35" y="32"/>
 											<Anchors>
 												<Anchor point="TOPRIGHT" x="-30" y="-92"/>
@@ -1581,7 +1564,7 @@
 									</Layer>
 								</Layers>
 							</Frame>
-							<Frame inherits="CharCreateResizablePanelTemplate" setAllPoints="true">
+							<Frame parentKey="Background" inherits="CharCreateResizablePanelTemplate" setAllPoints="true">
 								<Scripts>
 									<OnLoad>
 										CharCreateRaceFrame.factionBg = self.factionBg;
@@ -1620,8 +1603,9 @@
 								<Scripts>
 									<OnEnter inherit="append">
 										GlueTooltip:SetOwner(self, "ANCHOR_BOTTOM", 0, -10);
-										GlueTooltip:SetText(CHARACTER_TYPE_FRAME_NEW_CHARACTER);
-										GlueTooltip:AddLine(CHARACTER_TYPE_FRAME_NEW_CHARACTER_TOOLTIP, 1, 1, 1, 1, true);
+										GameTooltip_SetTitle(GlueTooltip, CHARACTER_TYPE_FRAME_NEW_CHARACTER);
+										GameTooltip_AddHighlightLine(GlueTooltip, CHARACTER_TYPE_FRAME_NEW_CHARACTER_TOOLTIP);
+										GlueTooltip:Show();
 									</OnEnter>
 									<OnLeave inherit="append">
 										GlueTooltip:Hide();
@@ -1692,11 +1676,11 @@
 							<Anchor point="BOTTOMRIGHT" relativeTo="CharCreateClassFrame" relativePoint="BOTTOMLEFT" x="-1" y="51"/>
 						</Anchors>
 					</Frame>
-					<Button name="CharCreateAlliedRacesButton" inherits="CharCreateNavButtonTemplate" text="CHARACTER_CREATE_MORE_RACES" hidden="true">
-						<Size x="180" y="62"/>
+					<Button name="CharCreateAlliedRacesButton" inherits="GlueButtonTemplate" text="CHARACTER_CREATE_MORE_RACES" hidden="true">
+						<Size x="200" y="50"/>
 						<Anchors>
 							<Anchor point="CENTER" relativeTo="CharCreateRaceFrame" x="0" y="0"/>
-							<Anchor point="BOTTOM" x="0" y="-6"/>
+							<Anchor point="BOTTOM" x="0" y="5"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY" textureSubLevel="1">
@@ -1721,57 +1705,35 @@
 							<OnClick function="CharCreateAlliedRacesButton_OnClick"/>
 						</Scripts>
 					</Button>
-					<Button name="CharCreateCoreRacesButton" inherits="CharCreateNavButtonTemplate" text="CHARACTER_CREATE_CORE_RACES" hidden="true">
-						<Size x="180" y="62"/>
+					<Button name="CharCreateCoreRacesButton" inherits="GlueButtonTemplate" text="CHARACTER_CREATE_CORE_RACES" hidden="true">
+						<Size x="200" y="50"/>
 						<Anchors>
 							<Anchor point="CENTER" relativeTo="CharCreateRaceFrame" x="0" y="0"/>
-							<Anchor point="BOTTOM" x="0" y="-6"/>
+							<Anchor point="BOTTOM" x="0" y="5"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="CharCreateCoreRacesButton_OnClick"/>
 						</Scripts>
 					</Button>
-					<Button name="CharCreateMoreInfoButton" inherits="CharCreateNavButtonTemplate" text="CHAR_CREATE_MORE_INFO">
-						<Size x="180" y="62"/>
+					<Button name="CharCreateMoreInfoButton" inherits="GlueButtonTemplate" text="CHAR_CREATE_MORE_INFO">
+						<Size x="200" y="50"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" x="-146" y="-5"/>
+							<Anchor point="BOTTOMRIGHT" x="-146" y="5"/>
 						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY" textureSubLevel="1">
-								<Texture name="$parentTopGlow" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk" hidden="true">
-									<Size x="117" y="32"/>
-									<Anchors>
-										<Anchor point="TOP" x="0" y="18"/>
-									</Anchors>
-									<TexCoords left="0.18750000" right="0.41601563" top="0.89257813" bottom="0.92382813"/>
-								</Texture>
-								<Texture name="$parentBottomGlow" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk" hidden="true">
-									<Size x="117" y="32"/>
-									<Anchors>
-										<Anchor point="BOTTOM" x="0" y="-13"/>
-									</Anchors>
-									<TexCoords left="0.18750000" right="0.41601563" top="0.92382813" bottom="0.89257813"/>
-								</Texture>
-							</Layer>
-						</Layers>
 						<Scripts>
 							<OnLoad function="CharCreateMoreInfoButton_OnLoad"/>
 							<OnEnter function="CharCreateMoreInfoButton_OnEnter"/>
 							<OnLeave>
-								CharacterCreateTooltip:Hide();
+								GlueTooltip:Hide();
 							</OnLeave>
 							<OnClick>
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								if ( self.infoShown ) then
 									self.infoShown = nil;
-									CharCreateMoreInfoButtonTopGlow:Hide();
-									CharCreateMoreInfoButtonBottomGlow:Hide();
 									CharCreateRaceInfoFrame:Hide();
 									CharCreateClassInfoFrame:Hide();
 								else
 									self.infoShown = true;
-									CharCreateMoreInfoButtonTopGlow:Show();
-									CharCreateMoreInfoButtonBottomGlow:Show();
 									CharCreateRaceInfoFrame:Show();
 									CharCreateClassInfoFrame:Show();
 								end
@@ -1876,13 +1838,11 @@
 								</Anchors>
 							</CheckButton>
 							<Button name="CharCreateRandomizeButton" inherits="GlueButtonSmallTemplate" text="RANDOMIZE">
-								<Size x="146" y="34"/>
 								<Scripts>
 									<OnLoad>
 										self:SetWidth(self:GetTextWidth() + 50);
 									</OnLoad>
 									<OnClick function="CharacterCreate_Randomize"/>
-									<OnUpdate function="GlueParent_DeathKnightButtonSwap"/>
 								</Scripts>
 							</Button>
 
@@ -2141,7 +2101,7 @@
 									<KeyValue key="variationDirection" value="-1" type="number"/>
 								</KeyValues>
 								<Anchors>
-									<Anchor point="BOTTOM" relativeKey="$parent.scrollFrame" relativePoint="TOP" x="0" y="0"/>
+									<Anchor point="BOTTOM" relativeKey="$parent.scrollFrame" relativePoint="TOP" x="0" y="5"/>
 								</Anchors>
 							</Button>
 							<Button name="CharCreateStyleDownButton" inherits="CharCreateChangeStyleButtonTemplate" id="668">
@@ -2187,8 +2147,8 @@
 								end
 							</OnClick>
 							<OnEnter>
-								CharacterCreateTooltip:SetOwner(self, "ANCHOR_RIGHT", -3, -5);
-								CharacterCreateTooltip:SetText(MALE);
+								GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -3, -5);
+								GlueTooltip:SetText(MALE);
 							</OnEnter>
 						</Scripts>
 					</CheckButton>
@@ -2210,8 +2170,8 @@
 								end
 							</OnClick>
 							<OnEnter>
-								CharacterCreateTooltip:SetOwner(self, "ANCHOR_RIGHT", -3, -5);
-								CharacterCreateTooltip:SetText(FEMALE);
+								GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -3, -5);
+								GlueTooltip:SetText(FEMALE);
 							</OnEnter>
 						</Scripts>
 					</CheckButton>

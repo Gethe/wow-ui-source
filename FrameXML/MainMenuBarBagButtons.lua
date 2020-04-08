@@ -185,21 +185,29 @@ function MainMenuBarBackpackButton_OnEvent(self, event, ...)
 				return;
 			end
 
-			if AzeriteItemInBagHelpBox:IsShown() then
+			if HelpTip:IsShowing(self, AZERITE_TUTORIAL_ITEM_IN_BAG) then
 				return;
 			end
 
 			C_Timer.After(.5, function()
-				if AzeriteInBagsHelpBox:IsShown() then
+				if HelpTip:IsShowing(self, AZERITE_TUTORIAL_ITEM_IN_BAG) then
 					return;
 				end
 
 				for i, bagButton in ipairs(allBagButtons) do
 					local bagID = i - 1;
 					if AzeriteUtil.DoesBagContainAnyAzeriteEmpoweredItems(bagID) then
-						AzeriteInBagsHelpBox:SetPoint("BOTTOM", bagButton, "TOP", 0, 40);
-						AzeriteInBagsHelpBox.Arrow:SetPoint("BOTTOM", bagButton, "TOP", 0, 20);
-						AzeriteInBagsHelpBox:Show();
+						local helpTipInfo = {
+							text = AZERITE_TUTORIAL_ITEM_IN_BAG,
+							buttonStyle = HelpTip.ButtonStyle.Close,
+							cvarBitfield = "closedInfoFrames",
+							bitfieldFlag = LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_BAG,
+							targetPoint = HelpTip.Point.LeftEdgeCenter,
+							offsetX = 8,
+							onHideCallback = function() MainMenuMicroButton_SetAlertsEnabled(true, "backpack"); end,
+						};
+						MainMenuMicroButton_SetAlertsEnabled(false, "backpack");
+						HelpTip:Show(self, helpTipInfo, bagButton);
 						break;
 					end
 				end
@@ -245,20 +253,4 @@ function MainMenuBarBackpackButton_UpdateFreeSlots()
 	MainMenuBarBackpackButton.freeSlots = totalFree;
 	
 	MainMenuBarBackpackButtonCount:SetText(string.format(BACKPACK_FREESLOTS_FORMAT, totalFree));
-end
-
-function AzeriteInBagsHelpBox_OnLoad(self)
-	self.Text:SetSpacing(4);
-	self:SetClampRectInsets(-8, 8, 8, -8);
-	self.Arrow:SetClampRectInsets(-8, 8, 8, -8);
-end
-
-function AzeriteInBagsHelpBox_OnShow(self)
-	MainMenuMicroButton_AddExternalAlert(self);
-	self:SetHeight(self.Text:GetHeight() + 42);
-end
-
-function AzeriteInBagsHelpBox_OnHide(self)
-	MainMenuMicroButton_RemoveExternalAlert(self);
-	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_BAG, true);
 end

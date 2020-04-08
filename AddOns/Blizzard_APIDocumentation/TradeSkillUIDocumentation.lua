@@ -7,12 +7,78 @@ local TradeSkillUI =
 	Functions =
 	{
 		{
+			Name = "CraftRecipe",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "recipeSpellID", Type = "number", Nilable = false },
+				{ Name = "numCasts", Type = "number", Nilable = false, Default = 1 },
+				{ Name = "optionalReagents", Type = "table", InnerType = "OptionalReagentInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetAllProfessionTradeSkillLines",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "skillLineID", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOptionalReagentBonusText",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "recipeSpellID", Type = "number", Nilable = false },
+				{ Name = "optionalReagentIndex", Type = "number", Nilable = false },
+				{ Name = "optionalReagents", Type = "table", InnerType = "OptionalReagentInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "bonusText", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOptionalReagentInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "recipeSpellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "slots", Type = "table", InnerType = "OptionalReagentSlot", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOptionalReagentTooltipText",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "recipeSpellID", Type = "number", Nilable = false },
+				{ Name = "optionalReagentIndex", Type = "number", Nilable = false },
+				{ Name = "optionalReagents", Type = "table", InnerType = "OptionalReagentInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "tooltipText", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetRecipeRepeatCount",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "recastTimes", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -76,6 +142,17 @@ local TradeSkillUI =
 				{ Name = "effectivelyKnown", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "SetRecipeRepeatCount",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "recipeSpellID", Type = "number", Nilable = false },
+				{ Name = "numCasts", Type = "number", Nilable = false, Default = 1 },
+				{ Name = "optionalReagents", Type = "table", InnerType = "OptionalReagentInfo", Nilable = true },
+			},
+		},
 	},
 
 	Events =
@@ -135,6 +212,15 @@ local TradeSkillUI =
 			LiteralName = "TRADE_SKILL_NAME_UPDATE",
 		},
 		{
+			Name = "TradeSkillOptionalReagentTooltipUpdated",
+			Type = "Event",
+			LiteralName = "TRADE_SKILL_OPTIONAL_REAGENT_TOOLTIP_UPDATED",
+			Payload =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "TradeSkillShow",
 			Type = "Event",
 			LiteralName = "TRADE_SKILL_SHOW",
@@ -148,6 +234,15 @@ local TradeSkillUI =
 
 	Tables =
 	{
+		{
+			Name = "OptionalReagentSlot",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "slotText", Type = "string", Nilable = true },
+				{ Name = "options", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
 	},
 };
 

@@ -22,8 +22,8 @@ function PTR_IssueReporter.AttachStandaloneQuestion(frame, question, characterLi
         questionFrame:SetHeight(headerHeight)
         questionFrame.FrameType = "StandaloneQuestion"
         questionFrame.text = questionFrame:CreateFontString("CheckListText", "OVERLAY", PTR_IssueReporter.Assets.FontString)
-        questionFrame.text:SetWidth(questionFrame:GetWidth())
-        questionFrame.text:SetHeight(questionFrame:GetHeight())
+        --questionFrame.text:SetWidth(questionFrame:GetWidth())
+        --questionFrame.text:SetHeight(questionFrame:GetHeight())
         questionFrame.text:SetPoint("TOP", questionFrame, "TOP", 0, 0)        
         questionFrame.text:SetSize(questionFrame:GetWidth(), questionFrame:GetHeight())
         questionFrame.text:SetJustifyV("CENTER")
@@ -84,7 +84,7 @@ function PTR_IssueReporter.AttachStandaloneQuestion(frame, question, characterLi
     questionFrame:SetWidth(frame:GetWidth())
     
     if (question) and (string.len(question) > 0) then
-        questionFrame.text:SetText(question)
+        headerHeight = PTR_IssueReporter.SetupQuestionFrame(questionFrame, question)
     else
         questionFrame.text:SetText("")
         headerHeight = 0.1
@@ -124,8 +124,6 @@ function PTR_IssueReporter.AttachMultipleChoiceQuestion(frame, question, answers
         questionFrame.FrameType = "MultipleChoice"
         questionFrame.text = questionFrame:CreateFontString("CheckListText", "OVERLAY", PTR_IssueReporter.Assets.FontString)
         questionFrame.text:SetPoint("TOP", questionFrame, "TOP", 0, 0) 
-        questionFrame.text:SetWidth(questionFrame:GetWidth())
-        questionFrame.text:SetHeight(questionFrame:GetHeight())                
         questionFrame.text:SetSize(questionFrame:GetWidth(), questionFrame:GetHeight())
         questionFrame.text:SetJustifyV("CENTER")
         questionFrame.text:SetJustifyH("CENTER")
@@ -157,23 +155,27 @@ function PTR_IssueReporter.AttachMultipleChoiceQuestion(frame, question, answers
     questionFrame:SetParent(frame)
     questionFrame:SetPoint("TOP", frame, "TOP", 0, -frame.FrameHeight)
     questionFrame:SetWidth(frame:GetWidth())    
-    questionFrame.text:SetText(question)
+    
+    headerHeight = PTR_IssueReporter.SetupQuestionFrame(questionFrame, question)
     questionFrame:Show()
     
+    local numberOfCurrentCheckboxes = #answers
+    local questionFrameWidth = questionFrame.QuestionBackground:GetWidth()
+    local checkBoxMargin = questionFrameWidth/(numberOfCurrentCheckboxes)
+    
     for key, choice in pairs (answers) do
-        PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, choice, canSelectMultiple, displayVertically)
+        local height = PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, choice, canSelectMultiple, displayVertically, checkBoxMargin)
+        if (height > verticalCheckboxHeight) then
+            verticalCheckboxHeight = height
+        end
     end
     
-    local numberOfCurrentCheckboxes = #questionFrame.Checkboxes
-    
     for key, checkbox in pairs (questionFrame.Checkboxes) do
-        local questionFrameWidth = questionFrame.QuestionBackground:GetWidth()
-        
         if (displayVertically) then
             checkbox:SetPoint("TOP", questionFrame.QuestionBackground, "TOPLEFT", 20, -((key-1) * verticalCheckboxHeight))
         else
-            local checkBoxMargin = questionFrameWidth/(numberOfCurrentCheckboxes+1)
-            checkbox:SetPoint("TOP", questionFrame.QuestionBackground, "TOPLEFT", key * checkBoxMargin, 0)
+            
+            checkbox:SetPoint("TOP", questionFrame.QuestionBackground, "TOPLEFT", (key * checkBoxMargin)-(checkBoxMargin * 0.5), 0)
         end
         
         checkbox:Show()
@@ -192,6 +194,8 @@ function PTR_IssueReporter.AttachMultipleChoiceQuestion(frame, question, answers
     
     if (displayVertically) then
         editboxHeight = #questionFrame.Checkboxes * verticalCheckboxHeight
+    else
+        editboxHeight = verticalCheckboxHeight + 2
     end
     questionFrame.QuestionBackground:SetHeight(editboxHeight)
     
@@ -199,7 +203,75 @@ function PTR_IssueReporter.AttachMultipleChoiceQuestion(frame, question, answers
     table.insert(frame.FrameComponents, questionFrame) 
 end
 ----------------------------------------------------------------------------------------------------
-function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSelectMultiple, isVertical)
+function PTR_IssueReporter.AttachTextBlock(frame, question)
+
+    local questionFrame    
+    local editboxHeight = 50 -- 25 min number of characters on a line, 14 is line height, 15 is extra pad to allow for the character counter 
+    local headerHeight = 20
+    local verticalCheckboxHeight = 30
+    
+    if not (PTR_IssueReporter.Data.UnusedFrameComponents.TextBlock) then
+        PTR_IssueReporter.Data.UnusedFrameComponents.TextBlock = {}
+    end
+    
+    local numberOfUnusedFrames = #PTR_IssueReporter.Data.UnusedFrameComponents.TextBlock
+    
+    if  numberOfUnusedFrames > 0 then -- Check if there is a frame we should reuse
+        questionFrame = PTR_IssueReporter.Data.UnusedFrameComponents.TextBlock[numberOfUnusedFrames]
+        PTR_IssueReporter.Data.UnusedFrameComponents.TextBlock[numberOfUnusedFrames] = nil
+        numberOfUnusedFrames = #PTR_IssueReporter.Data.UnusedFrameComponents.TextBlock
+    else
+        questionFrame = CreateFrame("Frame", nil, frame)
+        questionFrame:SetHeight(headerHeight)
+        questionFrame.FrameType = "TextBlock"
+        questionFrame.text = questionFrame:CreateFontString("CheckListText", "OVERLAY", PTR_IssueReporter.Assets.FontString)
+        questionFrame.text:SetPoint("TOP", questionFrame, "TOP", 0, 0) 
+        questionFrame.text:SetSize(questionFrame:GetWidth(), questionFrame:GetHeight())
+        questionFrame.text:SetJustifyV("CENTER")
+        questionFrame.text:SetJustifyH("CENTER")
+
+        PTR_IssueReporter.AddBorder(questionFrame)
+        PTR_IssueReporter.AddBackground(questionFrame, PTR_IssueReporter.Assets.BackgroundTexture)
+        
+        questionFrame.QuestionBackground = CreateFrame("Frame", nil, questionFrame)  
+        questionFrame.QuestionBackground:SetPoint("TOP", questionFrame, "BOTTOM", 0, -PTR_IssueReporter.Data.FrameComponentMargin)        
+        questionFrame.QuestionBackground:SetWidth(frame:GetWidth())        
+        PTR_IssueReporter.AddBackground(questionFrame, PTR_IssueReporter.Assets.BackgroundTexture)
+    end
+    
+    questionFrame.Checkboxes = {}
+    questionFrame:SetParent(frame)
+    questionFrame:SetPoint("TOP", frame, "TOP", 0, -frame.FrameHeight)
+    questionFrame:SetWidth(frame:GetWidth())
+    headerHeight = PTR_IssueReporter.SetupQuestionFrame(questionFrame, question)
+    questionFrame:Show()
+    
+    frame.FrameHeight = frame.FrameHeight + headerHeight + (PTR_IssueReporter.Data.FrameComponentMargin*1)
+    table.insert(frame.FrameComponents, questionFrame) 
+end
+----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.SetupQuestionFrame(questionFrame, question)
+    local headerHeight = 20
+    local margin = 5
+    questionFrame.text:SetText(question)
+    questionFrame.text:SetWidth(questionFrame:GetWidth()-10)
+    questionFrame.text:SetHeight(0)
+    headerHeight = questionFrame.text:GetHeight() + margin
+    if (headerHeight < 20) then
+        headerHeight = 20
+    end
+    
+    questionFrame:SetHeight(headerHeight)
+    questionFrame.text:SetHeight(headerHeight)
+    
+    if (questionFrame.QuestionBackground) then
+        questionFrame.QuestionBackground:ClearAllPoints()
+        questionFrame.QuestionBackground:SetPoint("TOP", questionFrame, "BOTTOM", 0, -PTR_IssueReporter.Data.FrameComponentMargin)
+    end
+    return headerHeight
+end
+----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSelectMultiple, isVertical, checkBoxMargin)
     
     local newCheckBox
     
@@ -215,17 +287,22 @@ function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSe
         numberOfUnusedFrames = #PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox
     else
         newCheckBox = CreateFrame("CheckButton", nil, questionFrame.QuestionBackground, "UICheckButtonTemplate")
-        newCheckBox.text = newCheckBox:CreateFontString(nil, "OVERLAY", "GameTooltipText")        
-        newCheckBox.text:SetJustifyH("CENTER")
+        newCheckBox.text = newCheckBox:CreateFontString(nil, "OVERLAY", "GameTooltipText")    
+        newCheckBox.text:SetFont("Fonts\\FRIZQT__.TTF", 9)        
+        newCheckBox.text:SetJustifyH("CENTER")        
         newCheckBox.text:SetJustifyV("CENTER")
         newCheckBox.text:SetTextColor(1, 1, 1)
     end
     
     newCheckBox.text:ClearAllPoints()
+    
     if (isVertical) then        
         newCheckBox.text:SetPoint("LEFT", newCheckBox, "RIGHT", 0, 0)
+        newCheckBox.text:SetWidth(0)
     else
         newCheckBox.text:SetPoint("TOP", newCheckBox, "BOTTOM", 0, 0)
+
+        newCheckBox.text:SetWidth(checkBoxMargin)
     end
     
     newCheckBox:SetChecked(false)
@@ -234,6 +311,7 @@ function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSe
     newCheckBox:Show()
     
     table.insert(questionFrame.Checkboxes, newCheckBox)
+    return newCheckBox:GetHeight() + newCheckBox.text:GetHeight()
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.AttachModelViewer(surveyFrame, survey, dataPackage)
@@ -281,7 +359,10 @@ function PTR_IssueReporter.AttachModelViewer(surveyFrame, survey, dataPackage)
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.AttachIconViewer(surveyFrame, survey, dataPackage)
-    local dataPackageValue = dataPackage[survey.IconViewerData.key]
+    local dataPackageValue = ""
+    if (dataPackage) then
+        dataPackageValue = dataPackage[survey.IconViewerData.key]
+    end
     if (survey.IconViewerData.func) and (type(survey.IconViewerData.func) == "function") then
         dataPackageValue = survey.IconViewerData.func(dataPackageValue) or dataPackageValue
     end
@@ -353,7 +434,7 @@ function PTR_IssueReporter.CleanReportFrame(frame)
     frame.FrameHeight = 0
 end
 ----------------------------------------------------------------------------------------------------
-function PTR_IssueReporter.GetStandaloneSurveyFrame()
+function PTR_IssueReporter.GetStandaloneSurveyFrame(followUpSurvey)
     if not (PTR_IssueReporter.StandaloneSurvey) then        
         
         local surveyFrame = PTR_IssueReporter.CreateSurveyFrame()
@@ -370,16 +451,22 @@ function PTR_IssueReporter.GetStandaloneSurveyFrame()
         surveyFrame:SetPoint("TOP", titleBox, "BOTTOM", 0, -PTR_IssueReporter.Data.FrameComponentMargin)
         
         function titleBox:SetLabelText(text)
+            local maxWidth = 253
+            
             titleBox.text:SetText(text)
             titleBox.text:SetFont("Fonts\\FRIZQT__.TTF", 12)
             titleBox:SetSize(253, titleBox.text:GetHeight()*2)
             local currentFont = 12
             local currentWidth = titleBox.text:GetWidth()
-            while (currentWidth > 253) and (currentFont > 5) do
+            while (currentWidth > maxWidth) and (currentFont > 5) do
                 currentFont = currentFont - 1
                 titleBox.text:SetFont("Fonts\\FRIZQT__.TTF", currentFont)
                 titleBox.text:SetText(text)
                 currentWidth = titleBox.text:GetWidth()
+            end
+            if (currentWidth > maxWidth) then
+                titleBox:SetHeight(titleBox:GetHeight() * 1.8)
+                titleBox.text:SetHeight(titleBox:GetHeight())
             end
         end
         
@@ -420,8 +507,15 @@ function PTR_IssueReporter.GetStandaloneSurveyFrame()
             PTR_IssueReporter.CheckSurveyQueue()
         end)
         
+        titleBox.submitButton = submitButton
         titleBox:Hide()
         PTR_IssueReporter.StandaloneSurvey = titleBox
+    end
+    
+    if (followUpSurvey) and (PTR_IssueReporter.StandaloneSurvey.submitButton) then
+        PTR_IssueReporter.StandaloneSurvey.submitButton:SetText(PTR_IssueReporter.Data.NextText)
+    else
+        PTR_IssueReporter.StandaloneSurvey.submitButton:SetText(PTR_IssueReporter.Data.SubmitText)
     end
     
     return PTR_IssueReporter.StandaloneSurvey
@@ -452,13 +546,25 @@ function PTR_IssueReporter.CreateSurveyFrame()
                 end
             end
             
-            local surveyString = string.format(self.SurveyString, unpack(userData))    
-            GMSubmitBug(surveyString)
-            if (hideSentMessage) then
-                UIErrorsFrame:Clear() -- Only hide the send bug message if we think they didn't send any form data
+            local surveyString = string.format(self.SurveyString, unpack(userData))
+            
+            if (UIErrorsFrame) then
+                if (hideSentMessage) then
+                    UIErrorsFrame:Hide() -- Only hide the send bug message if we think they didn't send any form data
+                else
+                    UIErrorsFrame:Show()
+                end
             end
+
+            C_UserFeedback.SubmitBug(surveyString)            
             self:Hide()
             PTR_IssueReporter.CleanReportFrame(self)
+            
+            if (self.CurrentSurvey) and (self.CurrentSurvey.OnSubmitPoppedSurvey) then
+                local survey = self.CurrentSurvey.OnSubmitPoppedSurvey
+                self.OnSubmitPoppedSurvey = nil
+                PTR_IssueReporter.PopStandaloneSurvey(survey)
+            end
         end    
     end
 

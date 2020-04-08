@@ -440,6 +440,22 @@ function LevelUpDisplay_BuildCharacterList(self)
 		end
 	end
 
+	local levelUpBGs = C_PvP.GetLevelUpBattlegrounds(self.level);
+	local normalBGs = "";
+	local numNormalBGs = 0;
+	local epicBGs = "";
+	local numEpicBGs = 0;
+	for _, battlegroundInfo in ipairs(levelUpBGs) do
+		if battlegroundInfo.isEpic then
+			self.unlockList[#self.unlockList +1] = { entryType = "battleground", text = battlegroundInfo.name, subText = LEVEL_UP_EPIC_BATTLEGROUND, icon = battlegroundInfo.icon, subIcon = SUBICON_TEXCOOR_LOCK,
+																		link = LEVEL_UP_EPIC_BATTLEGROUND2.." "..LEVEL_UP_UNLOCKED_BG_LINK:format(battlegroundInfo.id, battlegroundInfo.name);
+																	};			
+		else
+			self.unlockList[#self.unlockList +1] = { entryType = "battleground", text = battlegroundInfo.name, subText = LEVEL_UP_BATTLEGROUND, icon = battlegroundInfo.icon, subIcon = SUBICON_TEXCOOR_LOCK,
+																		link = LEVEL_UP_BATTLEGROUND2.." "..LEVEL_UP_UNLOCKED_BG_LINK:format(battlegroundInfo.id, battlegroundInfo.name);
+																	};		
+		end
+	end
 
 	-- This loop is LEVEL_UP_CLASS_HACKS
 	local race, raceFile = UnitRace("player");
@@ -709,7 +725,10 @@ function LevelUpDisplay_AddBattlePetLootReward(self, typeIdentifier, itemLink, q
 			quality = rarity, --Item quality
 		};
 	elseif ( typeIdentifier == "currency" ) then
-		local name, quantity, icon, earnedThisWeek, weeklyMax, maxQuantity, discovered, rarity = GetCurrencyInfo(itemLink);
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfoFromLink(itemLink);
+		local name = currencyInfo.name;
+		local icon = currencyInfo.iconFileID;
+		local rarity = currencyInfo.quality;
 		info = {
 			entryType = "petbattleloot",
 			text = BATTLE_PET_LOOT_RECEIVED,
@@ -774,8 +793,8 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 			self.queuedItems = nil;
 		end
 		if ( self.type == LEVEL_UP_TYPE_SCENARIO ) then
-			local name, currentStage, numStages, flags, textureKitID, _;
-			name, currentStage, numStages, flags, _, _, _, _, _, scenarioType, _, textureKitID = C_Scenario.GetInfo();
+			local name, currentStage, numStages, flags, textureKit, _;
+			name, currentStage, numStages, flags, _, _, _, _, _, scenarioType, _, textureKit = C_Scenario.GetInfo();
 			if (not IsBoostTutorialScenario()) then
 				if ( currentStage > 0 and currentStage <= numStages ) then
 					local stageName, stageDescription = C_Scenario.GetStepInfo();
@@ -796,9 +815,9 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 						self.scenarioFrame.name:SetText(stageName);
 					end
 
-					if textureKitID then
+					if textureKit then
 						playAnim = self.scenarioFrame.TextureKitNewStage;
-						SetupTextureKits(textureKitID, self.scenarioFrame, textureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
+						SetupTextureKitOnRegions(textureKit, self.scenarioFrame, textureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
 					else
 						if scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION then
 							playAnim = self.scenarioFrame.LegionInvasionNewStage;
@@ -996,7 +1015,8 @@ function LevelUpDisplay_AnimStep(self, fast)
 			spellInfo.entryType == "spell" or
 			spellInfo.entryType == "dungeon" or
 			spellInfo.entryType == "heroicdungeon" or
-			spellInfo.entryType == "worldquest"
+			spellInfo.entryType == "worldquest" or
+			spellInfo.entryType == "battleground"
 			) then
 			self.spellFrame.name:SetText(spellInfo.text);
 			self.spellFrame.flavorText:SetText(spellInfo.subText);

@@ -3,8 +3,8 @@
 ---------------------------------------------------------------------------------
 
 -- These are follower options that depend on this AddOn being loaded, and so they can't be set in GarrisonBaseUtils.
-GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_7_0].missionFollowerSortFunc =  GarrisonFollowerList_PrioritizeSpecializationAbilityMissionSort;
-GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_7_0].missionFollowerInitSortFunc = GarrisonFollowerList_InitializePrioritizeSpecializationAbilityMissionSort;
+GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_7_0].missionFollowerSortFunc =  GarrisonFollowerList_PrioritizeSpecializationAbilityMissionSort;
+GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_7_0].missionFollowerInitSortFunc = GarrisonFollowerList_InitializePrioritizeSpecializationAbilityMissionSort;
 
 ---------------------------------------------------------------------------------
 -- Order Hall Mission Frame
@@ -28,7 +28,7 @@ end
 
 function OrderHallMission:UpdateTextures()
 	local primaryCurrency, _ = C_Garrison.GetCurrencyTypes(GarrisonFollowerOptions[self.followerTypeID].garrisonType);
-	local _, _, currencyTexture = GetCurrencyInfo(primaryCurrency);
+	local currencyTexture = C_CurrencyInfo.GetCurrencyInfo(primaryCurrency).iconFileID;
 
 	self.MissionTab.MissionPage.CostFrame.CostIcon:SetTexture(currencyTexture);
 	self.MissionTab.MissionPage.CostFrame.CostIcon:SetSize(18, 18);

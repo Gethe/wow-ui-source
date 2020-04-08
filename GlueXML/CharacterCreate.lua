@@ -108,12 +108,16 @@ RACE_ICON_TCOORDS = {
 
 CHARCREATE_CLASS_TOOLTIP = {};
 
+CHARCREATE_TARGET_INFO = {
+	DUMMY = {creatureDisplayInfoID = 70847}
+};
+
 CHARCREATE_CLASS_INFO = {
 	WARRIOR	= {
 		spells = {
-			{name = CLASS_WARRIOR_SPELLNAME1, desc = CLASS_WARRIOR_SPELLDESC1, texture = [[Interface\Icons\inv_sword_48]]}, -- Execute
-			{name = CLASS_WARRIOR_SPELLNAME2, desc = CLASS_WARRIOR_SPELLDESC2, texture = [[Interface\Icons\ability_warrior_charge]]}, -- Charge
-			{name = CLASS_WARRIOR_SPELLNAME3, desc = CLASS_WARRIOR_SPELLDESC3, texture = [[Interface\Icons\ability_warrior_shieldwall]]}, -- Sheild Wall
+			{name = CLASS_WARRIOR_SPELLNAME1, desc = CLASS_WARRIOR_SPELLDESC1, texture = [[Interface\Icons\inv_sword_48]], animkitID = 8453, spellVisualkitID = 62422}, -- Execute
+			{name = CLASS_WARRIOR_SPELLNAME2, desc = CLASS_WARRIOR_SPELLDESC2, texture = [[Interface\Icons\ability_warrior_charge]], animkitID = 14945}, -- Charge
+			{name = CLASS_WARRIOR_SPELLNAME3, desc = CLASS_WARRIOR_SPELLDESC3, texture = [[Interface\Icons\ability_warrior_shieldwall]], animkitID = 17150}, -- Sheild Wall
 		},
 	},
 	PALADIN = {
@@ -125,9 +129,9 @@ CHARCREATE_CLASS_INFO = {
 	},
 	HUNTER = {
 		spells = {
-			{name = CLASS_HUNTER_SPELLNAME1, desc = CLASS_HUNTER_SPELLDESC1, texture = [[Interface\Icons\inv_spear_07]]}, -- Aimed Shot
-			{name = CLASS_HUNTER_SPELLNAME2, desc = CLASS_HUNTER_SPELLDESC2, texture = [[Interface\Icons\ability_hunter_beastcall]]}, -- Call Pet
-			{name = CLASS_HUNTER_SPELLNAME3, desc = CLASS_HUNTER_SPELLDESC3, texture = [[Interface\Icons\spell_yorsahj_bloodboil_black]]}, -- Tar Trap
+			{name = CLASS_HUNTER_SPELLNAME1, desc = CLASS_HUNTER_SPELLDESC1, texture = [[Interface\Icons\inv_spear_07]], animkitID = 1811, petAnimkitID = 720}, -- Aimed Shot
+			{name = CLASS_HUNTER_SPELLNAME2, desc = CLASS_HUNTER_SPELLDESC2, texture = [[Interface\Icons\ability_hunter_beastcall]], animkitID = 15006, petAnimkitID = 806}, -- Call Pet
+			{name = CLASS_HUNTER_SPELLNAME3, desc = CLASS_HUNTER_SPELLDESC3, texture = [[Interface\Icons\spell_yorsahj_bloodboil_black]], animkitID = 8519, petAnimkitID = 1322}, -- Tar Trap
 		},
 	},
 	ROGUE = {
@@ -148,8 +152,12 @@ CHARCREATE_CLASS_INFO = {
 		spells = {
 			{name = CLASS_SHAMAN_SPELLNAME1, desc = CLASS_SHAMAN_SPELLDESC1, texture = [[Interface\Icons\spell_nature_healingwavegreater]]}, -- Chain Heal
 			{name = CLASS_SHAMAN_SPELLNAME2, desc = CLASS_SHAMAN_SPELLDESC2, texture = [[Interface\Icons\spell_fire_elemental_totem]]}, -- Fire Elemental
-			{name = CLASS_SHAMAN_SPELLNAME3, desc = CLASS_SHAMAN_SPELLDESC3, texture = [[Interface\Icons\spell_nature_lightning]]}, -- Lightning Bolt
+			{name = CLASS_SHAMAN_SPELLNAME3, desc = CLASS_SHAMAN_SPELLDESC3, texture = [[Interface\Icons\spell_nature_lightning]], spellVisualkitID = 89879, target = 1}, -- Lightning Bolt
 		},
+		targets = {
+			{info = CHARCREATE_TARGET_INFO.DUMMY, position = CreateVector3D(3.0, -5.0, 0.0) },
+			--{info = CHARCREATE_TARGET_INFO.DUMMY, position = CreateVector3D(3, 0.0, 0.0) },
+		}
 	},
 	MAGE = {
 		spells = {
@@ -160,10 +168,14 @@ CHARCREATE_CLASS_INFO = {
 	},
 	WARLOCK = {
 		spells = {
-			{name = CLASS_WARLOCK_SPELLNAME1, desc = CLASS_WARLOCK_SPELLDESC1, texture = [[Interface\Icons\spell_shadow_lifedrain02]]}, -- Drain Life
+			{name = CLASS_WARLOCK_SPELLNAME1, desc = CLASS_WARLOCK_SPELLDESC1, texture = [[Interface\Icons\spell_shadow_lifedrain02]], spellVisualkitID = 95345, target = 1, durationMS = 4000}, -- Drain Life
 			{name = CLASS_WARLOCK_SPELLNAME2, desc = CLASS_WARLOCK_SPELLDESC2, texture = [[Interface\Icons\spell_shadow_soulgem]]}, -- Soulstone
 			{name = CLASS_WARLOCK_SPELLNAME3, desc = CLASS_WARLOCK_SPELLDESC3, texture = [[Interface\Icons\spell_nature_removecurse]]}, -- Summon Demon
 		},
+		targets = {
+			{info = CHARCREATE_TARGET_INFO.DUMMY, position = CreateVector3D(3.0, -5.0, 0.0) },
+			--{info = CHARCREATE_TARGET_INFO.DUMMY, position = CreateVector3D(3, 0.0, 0.0) },
+		}
 	},
 	MONK = {
 		spells = {
@@ -317,11 +329,13 @@ function CharacterCreate_OnLoad(self)
 	CharacterCreate.selectedGender = 0;
 
 	self.newAlliedRaces = { };
+	currentTargets = { };
 
 	CharacterCreate.allianceFramePool = CreateFramePool("CHECKBUTTON", CharCreateRaceButtonsFrame.AllianceRaces, "CharCreateRaceButtonTemplate");
 	CharacterCreate.hordeFramePool = CreateFramePool("CHECKBUTTON", CharCreateRaceButtonsFrame.HordeRaces, "CharCreateRaceButtonTemplate");
 	CharacterCreate.neutralFramePool = CreateFramePool("CHECKBUTTON", CharCreateRaceButtonsFrame.NeutralRaces, "CharCreateRaceButtonTemplate");
 	CharacterCreate.classFramePool = CreateFramePool("CHECKBUTTON", CharCreateClassFrame.ClassIcons, "CharCreateClassButtonTemplate");
+	CharacterCreate.classAbilityFramePool = CreateFramePool("BUTTON", CharCreateClassAbilityFrame.AbilityIcons, "CharCreateClassAbilityButtonTemplate");
 
 	C_CharacterCreation.SetCurrentRaceMode(Enum.CharacterCreateRaceMode.Normal);
 
@@ -367,9 +381,9 @@ function CharacterCreate_OnLoad(self)
 	CharCreateClassInfoFrameScrollFrameScrollChild.Spells = {};
 end
 
-function CharacterCreate_OnShow()
+function CharacterCreate_OnShow(self)
 	InitializeCharacterScreenData();
-	SetInCharacterCreate(true);
+	C_CharacterCreation.SetInCharacterCreate(true);
 
 	CharacterCreate.allianceFramePool:ReleaseAll();
 	CharacterCreate.hordeFramePool:ReleaseAll();
@@ -430,21 +444,21 @@ function CharacterCreate_OnShow()
 	CharacterCreate_SelectCharacterType(C_CharacterCreation.GetCharacterCreateType());
 
 	if( IsKioskGlueEnabled() ) then
-		local kioskModeData = KioskModeSplash_GetModeData();
+		local kioskModeData = KioskModeSplash:GetModeData();
 		if (not kioskModeData) then
 			-- This shouldn't happen, why don't have we have mode data?
 			GlueParent_SetScreen("kioskmodesplash");
 			return;
 		end
 		local available = {};
-		local raceList = KioskModeSplash_GetRaceList(); 
+		local raceList = KioskModeSplash:GetRaceList(); 
 		for k, v in pairs(raceList) do
 			if (v) then
 				tinsert(available, k);
 			end
 		end
 
-		local rid = KioskModeSplash_GetIDForSelection("races", available[math.random(1, #available)]);
+		local rid = KioskModeSplash:GetIDForSelection("races", available[math.random(1, #available)]);
 
 		C_CharacterCreation.SetSelectedRace(rid);
 		SetCharacterRace(rid);
@@ -453,25 +467,27 @@ function CharacterCreate_OnShow()
 		local available = {};
 		for k, v in pairs(kioskModeData.classes) do
 			if (v) then
-				local id = KioskModeSplash_GetIDForSelection("classes", k);
+				local id = KioskModeSplash:GetIDForSelection("classes", k);
 				if (C_CharacterCreation.IsClassAllowedInKioskMode(id) and C_CharacterCreation.IsRaceClassValid(rid, id)) then
 					tinsert(available, k);
 				end
 			end
 		end
 
-		local cid = KioskModeSplash_GetIDForSelection("classes", available[math.random(1, #available)]);
+		local cid = KioskModeSplash:GetIDForSelection("classes", available[math.random(1, #available)]);
 		
 		KioskModeCheckHighLevel(cid);
 		C_CharacterCreation.SetSelectedClass(cid);
 		SetCharacterClass(cid);
-
+		SetCharacterRace(rid);
 		C_CharacterCreation.RandomizeCharCustomization(true);
-		KioskModeSplash_SetAutoEnterWorld(false);
+		KioskModeSplash:SetAutoEnterWorld(false);
+
+		CharCreate_RefreshBackButton();
 	end
 end
 
-function CharacterCreate_OnHide()
+function CharacterCreate_OnHide(self)
 	PAID_SERVICE_CHARACTER_ID = nil;
 	PAID_SERVICE_TYPE = nil;
 	CharCreateCharacterTypeFrame.currentCharacterType = nil;
@@ -482,7 +498,7 @@ function CharacterCreate_OnHide()
 	-- character previews will need to be redone if coming back to character create. One reason is all the memory used for
 	-- tracking the frames (on the c side) will get released if the user returns to the login screen
 	CharCreatePreviewFrame.rebuildPreviews = true;
-	SetInCharacterCreate(false);
+	C_CharacterCreation.SetInCharacterCreate(false);
 end
 
 function CharacterCreate_OnEvent(self, event, ...)
@@ -613,26 +629,11 @@ function CharacterCreateFrame_UpdateRecruitInfo()
 	return false;
 end
 
--- For these races, the names are shortened for the atlas
-local fixedRaceAtlasNames = {
-	["highmountaintauren"] = "highmountain",
-	["lightforgeddraenei"] = "lightforged",
-	["scourge"] = "undead",
-	["zandalaritroll"] = "zandalari",
-};
-
-function GetRaceAtlas(raceName, gender)
-	if (fixedRaceAtlasNames[raceName]) then
-		raceName = fixedRaceAtlasNames[raceName];
-	end
-	return ("raceicon-%s-%s"):format(raceName, gender);
-end
-
 function CharacterCreate_GetRandomRace()
 	local races = C_CharacterCreation.GetAvailableRaces();
 
-	local kioskModeData = IsKioskGlueEnabled() and KioskModeSplash_GetModeData();
-	local raceList = kioskModeData and KioskModeSplash_GetRaceList();
+	local kioskModeData = IsKioskGlueEnabled() and KioskModeSplash:GetModeData();
+	local raceList = kioskModeData and KioskModeSplash:GetRaceList();
 	-- Filter the list if were in kiosk mode
 	races = tFilter(races, function(v) return not raceList or raceList[strupper(v.fileName)] end, true);
 	
@@ -715,8 +716,8 @@ function CharacterCreateEnumerateRaces(modeChange)
 		button.NewString:SetShown(isNewAlliedRace);
 		button.NewGlow:SetShown(isNewAlliedRace);
 		
-		local kioskModeData = IsKioskGlueEnabled() and KioskModeSplash_GetModeData();
-		local raceList = kioskModeData and KioskModeSplash_GetRaceList();
+		local kioskModeData = IsKioskGlueEnabled() and KioskModeSplash:GetModeData();
+		local raceList = kioskModeData and KioskModeSplash:GetRaceList();
 		local disableTexture = button.DisableTexture;
 
 		local hiddenInKiosk = false;
@@ -727,11 +728,11 @@ function CharacterCreateEnumerateRaces(modeChange)
 			button.tooltip = name;
 			disableTexture:Hide();
 		else
-			if (C_CharacterCreation.ShouldShowAlliedRacesButton() and inAlliedRaceMode and not IsKioskModeEnabled()) then
+			if (C_CharacterCreation.ShouldShowAlliedRacesButton() and inAlliedRaceMode and not Kiosk.IsEnabled()) then
 				button:Enable();
 			else
 				button:Disable();
-				if (inAlliedRaceMode and IsKioskModeEnabled()) then
+				if (inAlliedRaceMode and Kiosk.IsEnabled()) then
 					hiddenInKiosk = true;
 				end
 			end
@@ -819,10 +820,10 @@ function FindButtonForClassID(classID)
 end
 
 local function UpdateClassButtonEnabledState(button, classID, classData)
-	local kioskModeData = IsKioskGlueEnabled() and KioskModeSplash_GetModeData();
+	local kioskModeData = IsKioskGlueEnabled() and KioskModeSplash:GetModeData();
 	local disableTexture = button.DisableTexture;
 	button.PadLock:Hide();
-	if ( classData.enabled == true ) then
+	if classData.enabled then
 		if (IsKioskGlueEnabled() and (not C_CharacterCreation.IsClassAllowedInKioskMode(classID) or not kioskModeData.classes[classData.fileName])) then
 			button:Disable();
 			SetButtonDesaturated(button, true);
@@ -837,44 +838,33 @@ local function UpdateClassButtonEnabledState(button, classID, classData)
 			button:Disable();
 			disableTexture:Show();
 		end
-	elseif ( classData.disabledReason == Enum.CreationClassDisabledReason.InvalidForSelectedRace ) then
-		button:Disable();
-		SetButtonDesaturated(button, true);
-		local validRaces = C_CharacterCreation.GetValidRacesForClass(button.classID, Enum.CharacterCreateRaceMode.AllRaces);
-		local validRaceNames = {};
-		for i, raceData in ipairs(validRaces) do
-			tinsert(validRaceNames, raceData.name);
-		end
-		local validRaceConcat = table.concat(validRaceNames, ", ");
-		button.tooltip.footer = WrapTextInColorCode(CLASS_DISABLED, "ffff0000") .. "|n|n" .. WrapTextInColorCode(validRaceConcat, "ffff0000");
-		disableTexture:Show();
-	elseif ( classData.disabledReason == Enum.CreationClassDisabledReason.InvalidForTrialAccount or classData.disabledReason == Enum.CreationClassDisabledReason.InvalidForVeteranAccount ) then
-		button:Disable();
-		SetButtonDesaturated(button, true);
-		local error = button.classID == DEMON_HUNTER_CLASS_ID and CHAR_CREATE_TRIAL_DEMON_HUNTER or CHAR_CREATE_TRIAL;
-		button.tooltip.footer = WrapTextInColorCode(error, "ffff0000") ;
-		button.PadLock:Show();
-		disableTexture:Show();
 	else
 		button:Disable();
 		SetButtonDesaturated(button, true);
-		local reason;
-		if ( classData.disabledReason ) then
-			if ( classData.disabledReason == Enum.CreationClassDisabledReason.BoostIsTooLowLevel ) then
-				reason = DEMON_HUNTER_RESTRICTED_BOOST_IS_TOO_LOW_LEVEL;
-			elseif ( classData.disabledReason == Enum.CreationClassDisabledReason.HaveDemonHunter ) then
-				reason = DEMON_HUNTER_RESTRICTED_HAS_DEMON_HUNTER;
-			elseif ( classData.disabledReason == Enum.CreationClassDisabledReason.NeedLevel70 ) then
-				reason = DEMON_HUNTER_RESTRICTED_NEED_LEVEL_70;
+		if classData.disabledReason == Enum.CreationClassDisabledReason.DoesNotHaveExpansion then
+			button.tooltip.footer = RED_FONT_COLOR:WrapTextInColorCode(CHAR_CREATE_NEED_EXPANSION);
+			button.PadLock:Show();
+		elseif classData.disabledReason == Enum.CreationClassDisabledReason.InvalidForTemplates then
+			button.tooltip.footer = RED_FONT_COLOR:WrapTextInColorCode(CHAR_CREATE_CLASS_DISABLED_TEMPLATE);
+		elseif classData.disabledReason == Enum.CreationClassDisabledReason.InvalidForNewPlayers then
+			button.tooltip.footer = RED_FONT_COLOR:WrapTextInColorCode(CHAR_CREATE_NEW_PLAYER);
+		elseif classData.disabledReason == Enum.CreationClassDisabledReason.InvalidForSelectedRace then
+			local validRaces = C_CharacterCreation.GetValidRacesForClass(button.classID, Enum.CharacterCreateRaceMode.AllRaces);
+			local validRaceNames = {};
+			for i, raceData in ipairs(validRaces) do
+				tinsert(validRaceNames, raceData.name);
 			end
-		end
+			local validRaceConcat = table.concat(validRaceNames, ", ");
+			button.tooltip.footer = RED_FONT_COLOR:WrapTextInColorCode(CLASS_DISABLED.."|n|n"..validRaceConcat);
+		else
+			local reason;
+			if classData.fileName and _G[classData.fileName.."_DISABLED"] then
+				reason = _G[classData.fileName.."_DISABLED"];
+			else
+				reason = CHAR_CREATE_CLASS_DISABLED_GENERIC;
+			end
 
-		if ( not reason and classData.fileName ) then
-			reason = _G[classData.fileName.."_DISABLED"];
-		end
-
-		if ( reason ) then
-			button.tooltip.footer = "|cffff0000".. reason .."|r";
+			button.tooltip.footer = RED_FONT_COLOR:WrapTextInColorCode(reason);
 		end
 
 		disableTexture:Show();
@@ -896,12 +886,7 @@ local function SetupClassButton(button, classID, classData)
 end
 
 function CharacterCreateEnumerateClasses()
-	local boostLevel = nil;
-	if CharacterUpgrade_IsCreatedCharacterUpgrade() and CharacterUpgradeFlow.data then
-		boostLevel = CharacterUpgradeFlow.data.level;
-	end
-	
-	local classes = C_CharacterCreation.GetAvailableClasses(boostLevel);
+	local classes = C_CharacterCreation.GetAvailableClasses();
 
 	CharacterCreate.numClasses = #classes;
 
@@ -971,6 +956,10 @@ local function CanProceedThroughCharacterCreate()
 	end
 	
 	return canProceed, faction;
+end
+
+local function CanUseBackButton()
+	return not (IsKioskGlueEnabled() and CharacterCreateFrame.state == "CLASSRACE");
 end
 
 function SetCharacterRace(id)
@@ -1073,6 +1062,14 @@ function SetCharacterClass(id)
 		frame:SetChecked(true);
 	end
 
+	-- remove any current targets sitting out
+	for i,v in ipairs(currentTargets) do
+		C_CharacterCreation.DestroyAuxModel(v);
+	end
+
+	C_CharacterCreation.StopAllSpellVisualKitsOnCharacter();
+	C_CharacterCreation.StopAllSpellVisualKitsOnPet();
+
 	-- class info
 	local frame = CharCreateClassInfoFrame;
 	local scrollFrame = frame.scrollFrame.scrollChild;
@@ -1094,7 +1091,7 @@ function SetCharacterClass(id)
 		for idx, spell in pairs(CHARCREATE_CLASS_INFO[classInfo.fileName].spells) do
 			local spellIcon = scrollFrame.Spells[idx];
 			if ( not spellIcon ) then
-				spellIcon = CreateFrame("FRAME", "CharCreateClassInfoFrameSpell"..idx, scrollFrame, "CharacterCreateSpellIconTemplate");
+				spellIcon = CreateFrame("BUTTON", "CharCreateClassInfoFrameSpell"..idx, scrollFrame, "CharacterCreateSpellIconTemplate");
 			end
 			spellIcon.tooltip = spell;
 			spellIcon.layoutIndex = layoutIndexCount;
@@ -1106,6 +1103,13 @@ function SetCharacterClass(id)
 		end
 	else
 		scrollFrame.AbilityText:Hide();
+	end
+
+	--display the targets
+	if((CHARCREATE_CLASS_INFO[classInfo.fileName].targets ~= nil) and (#CHARCREATE_CLASS_INFO[classInfo.fileName].targets > 0)) then
+		for idx, target in pairs(CHARCREATE_CLASS_INFO[classInfo.fileName].targets) do
+			currentTargets[idx] = C_CharacterCreation.CreateAuxModel(target.info.creatureDisplayInfoID, target.position);
+		end
 	end
 
 	-- Format the starting level for this race/class combo in
@@ -1147,7 +1151,7 @@ function CharacterCreate_GetValidAlliedRacePaidServiceOptions()
 end
 
 function CharacterCreate_UpdateRacesToggleButton()
-	local kioskModeHide = IsKioskGlueEnabled() and KioskModeSplash_GetMode() == "newcharacter";
+	local kioskModeHide = IsKioskGlueEnabled() and KioskModeSplash:GetMode() == "newcharacter";
 	local shouldShow = C_CharacterCreation.ShouldShowAlliedRacesButton() and CharacterCreateFrame.state == "CLASSRACE" and not kioskModeHide;
 
 	if shouldShow then
@@ -1161,7 +1165,7 @@ function CharacterCreate_UpdateRacesToggleButton()
 end
 
 function CharacterCreate_OnKeyDown(self, key)
-	if ( key == "ESCAPE" ) then
+	if ( key == "ESCAPE" and CanUseBackButton()) then
 		CharacterCreate_Back();
 	elseif ( key == "ENTER" ) then
 		CharacterCreate_TryForward();
@@ -1180,8 +1184,8 @@ function CharacterCreate_Finish()
 	if ( PAID_SERVICE_TYPE ) then
 		GlueDialog_Show("CONFIRM_PAID_SERVICE");
 	else
-		if( IsKioskModeEnabled() ) then
-			KioskModeSplash_SetAutoEnterWorld(true);
+		if( Kiosk.IsEnabled() ) then
+			KioskModeSplash:SetAutoEnterWorld(true);
 		end
 
 		local classInfo = C_CharacterCreation.GetSelectedClass();
@@ -1210,8 +1214,8 @@ end
 
 function CharCreateMoreInfoButton_OnEnter(self)
 	if self:GetFontString():IsTruncated() then
-		CharacterCreateTooltip:SetOwner(self, "ANCHOR_TOP", 0, -5);
-		CharacterCreateTooltip:SetText(self:GetText());
+		GlueTooltip:SetOwner(self, "ANCHOR_TOP", 0, -5);
+		GameTooltip_SetTitle(GlueTooltip, self:GetText());
 	end
 end
 
@@ -1250,6 +1254,7 @@ function CharacterCreate_Back()
 		end
 	end
 	CharCreate_RefreshNextButton();
+	CharCreate_RefreshBackButton();
 end
 
 function CharacterCreate_TryForward()
@@ -1299,6 +1304,8 @@ function CharacterCreate_Forward()
 		CharacterCreate_Finish();
 		CharCreate_EnableNextButton(false);
 	end
+
+	CharCreate_RefreshBackButton();
 end
 
 function CharCreateCustomizationFrame_UpdateButtons ()
@@ -1360,19 +1367,8 @@ function CharCreateCustomizationFrame_UpdateButtons ()
 	CharCreateCustomizationFrame.BannerMiddle:SetHeight(10 + (numButtons - 1) * buttonHeight);
 
 	if (lastGoodButton) then
-		CharCreateRandomizeButton:SetPoint("TOP", lastGoodButton:GetName(), "BOTTOM", 0, 0);
+		CharCreateRandomizeButton:SetPoint("TOP", lastGoodButton:GetName(), "BOTTOM", 0, -5);
 	end
-end
-
-local AdvancedCharacterCreationWarningStrings = {
-	[6]	= ADVANCED_CHARACTER_CREATION_WARNING_DIALOG_TEXT_DEATHKNIGHT,
-	[12] = ADVANCED_CHARACTER_CREATION_WARNING_DIALOG_TEXT_DEMONHUNTER,
-	GenericWarning = ADVANCED_CHARACTER_CREATION_WARNING_DIALOG_TEXT_GENERIC,
-};
-
-local function ShowAdvancedCharacterCreationWarning(classButton)
-	local warningText = AdvancedCharacterCreationWarningStrings[classButton.classID] or AdvancedCharacterCreationWarningStrings.GenericWarning;
-	GlueDialog_Show("ADVANCED_CHARACTER_CREATION_WARNING", warningText, classButton);
 end
 
 function CharacterClass_SelectClass(self, forceAccept)
@@ -1385,12 +1381,6 @@ function CharacterClass_SelectClass(self, forceAccept)
 		local currClassInfo = C_CharacterCreation.GetSelectedClass();
 		local id = self.classID;
 		if ( currClassInfo.classID ~= id ) then
-			if (C_CharacterCreation.IsAdvancedClass(id) and not (C_CharacterCreation.HasSufficientExperienceForAdvancedCreation() or forceAccept)) then
-				ShowAdvancedCharacterCreationWarning(self);
-				self:SetChecked(false);
-				return;
-			end
-
 			C_CharacterCreation.SetSelectedClass(id);
 			SetCharacterClass(id);
 			SetCharacterRace(C_CharacterCreation.GetSelectedRace());
@@ -1406,12 +1396,12 @@ function CharacterClass_SelectClass(self, forceAccept)
 		self:SetChecked(false);
 	end
 	if ( CharCreateMoreInfoButton.infoShown ) then
-		CharacterCreateTooltip:Hide();
+		GlueTooltip:Hide();
 	end
 end
 
 function CharacterClass_OnClick(self)
-	CharacterClass_SelectClass(self, IsKioskModeEnabled());
+	CharacterClass_SelectClass(self, Kiosk.IsEnabled());
 end
 
 function CharCreateSelectRace(id, forceSelect)
@@ -1422,18 +1412,18 @@ function CharCreateSelectRace(id, forceSelect)
 		C_CharacterCreation.SetCharacterCreateFacing(-15);
 		CharacterCreateEnumerateClasses();
 		if (IsKioskGlueEnabled()) then
-			local kioskModeData = KioskModeSplash_GetModeData();
+			local kioskModeData = KioskModeSplash:GetModeData();
 			local available = {};
 			for k, v in pairs(kioskModeData.classes) do
 				if (v) then
-					local cid = KioskModeSplash_GetIDForSelection("classes", k);
+					local cid = KioskModeSplash:GetIDForSelection("classes", k);
 					if (C_CharacterCreation.IsClassAllowedInKioskMode(cid) and C_CharacterCreation.IsRaceClassValid(id, cid)) then
 						tinsert(available, k);
 					end
 				end
 			end
 
-			local fcid = KioskModeSplash_GetIDForSelection("classes", available[math.random(1, #available)]);
+			local fcid = KioskModeSplash:GetIDForSelection("classes", available[math.random(1, #available)]);
 			KioskModeCheckHighLevel(fcid);
 			C_CharacterCreation.SetSelectedClass(fcid);
 			SetCharacterClass(fcid);
@@ -1575,7 +1565,7 @@ end
 
 function KioskModeCheckHighLevel(classID)
 	if (IsKioskGlueEnabled()) then
-		local kioskModeData = KioskModeSplash_GetModeData();
+		local kioskModeData = KioskModeSplash:GetModeData();
 		if (not kioskModeData) then -- why?
 			return;
 		end
@@ -1599,19 +1589,24 @@ function KioskModeCheckHighLevel(classID)
 				CharacterUpgrade_ResetBoostData();
 			end
 		elseif (kioskModeData.template) then
-			local useTemplate = nil;
+			local templateIndex = nil;
 			if (kioskModeData.template.enabled) then
-				useTemplate = kioskModeData.template.index;
+				local useTemplate = true;
 				for i, classFilename in ipairs(kioskModeData.template.ignoreClasses) do
 					local id = C_CharacterCreation.GetClassIDFromName(classFilename);
 					if (id == classID) then
-						useTemplate = nil;
+						useTemplate = false;
 						break;
 					end
 				end
+
+				if useTemplate then
+					templateIndex = Kiosk.GetCharacterTemplateSetIndex() or kioskModeData.template.index;
+				end
 			end
-			if (useTemplate) then
-				C_CharacterCreation.SetCharacterTemplate(useTemplate);
+
+			if (templateIndex) then
+				C_CharacterCreation.SetCharacterTemplate(templateIndex);
 			else
 				C_CharacterCreation.ClearCharacterTemplate();
 			end
@@ -1917,6 +1912,21 @@ function CharCreatePreviewFrame_SelectFeatureVariation(endIndex)
 	end
 end
 
+function CharCreateSpellPreviewFrameButton_OnClick(self)
+	if(self.tooltip.animkitID) then
+		C_CharacterCreation.PlayAnimKitOnCharacter(self.tooltip.animkitID);
+	end
+	
+	if(self.tooltip.petAnimkitID) then
+		C_CharacterCreation.PlayAnimKitOnPet(self.tooltip.petAnimkitID);
+	end
+
+	if(self.tooltip.spellVisualkitID) then
+		--currentTargets[tooltip.target]
+		C_CharacterCreation.PlaySpellVisualKitOnCharacter(self.tooltip.spellVisualkitID, nil, currentTargets[self.tooltip.target], self.tooltip.durationMS);
+	end
+end
+
 function CharCreatePreviewFrame_StartAnimating(startIndex, endIndex)
 	local self = CharCreatePreviewFrame;
 	if ( self.animating ) then
@@ -2018,8 +2028,6 @@ function CharCreate_EnableNextButton(enabled)
 	local button = CharCreateOkayButton;
 	button:SetEnabled(enabled);
 	button.Arrow:SetDesaturated(not enabled);
-	button.TopGlow:SetShown(enabled);
-	button.BottomGlow:SetShown(enabled);
 	if (CharacterCreateFrame.state == "CUSTOMIZATION") then
 		button:SetText(FINISH);
 	elseif (CharacterCreate_IsAlliedRacePreview()) then
@@ -2031,6 +2039,16 @@ end
 
 function CharCreate_RefreshNextButton()
 	CharCreate_EnableNextButton(CanProceedThroughCharacterCreate());
+end
+
+function CharCreate_EnableBackButton(enabled)
+	local button = CharCreateBackButton;
+	button:SetEnabled(enabled);
+	button.Arrow:SetDesaturated(not enabled);
+end
+
+function CharCreate_RefreshBackButton()
+	CharCreate_EnableBackButton(CanUseBackButton());	
 end
 
 function IsPandarenRace(raceID)
@@ -2154,35 +2172,36 @@ end
 ---------------------------------------------
 function CharCreateRaceButton_OnEnter(self)
 	local raceData = C_CharacterCreation.GetRaceDataByID(self.raceID);
-	CharacterCreateTooltip:SetOwner(self, "ANCHOR_RIGHT", 8, -5);
-	CharacterCreateTooltip:SetText(raceData.name, 1, 1, 1, 1, true);
+	GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", 8, -5);
+	GameTooltip_SetTitle(GlueTooltip, raceData.name);
 	if (raceData.isAlliedRace) then
 		local INDENTED_WORD_WRAP = true;
 		local hasExpansion, hasAchievement = C_CharacterCreation.GetAlliedRaceCreationRequirements(self.raceID);
 		if (not hasExpansion) then
-			CharacterCreateTooltip:AddLine(ALLIED_RACE_UNLOCK_TEXT, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
-			CharacterCreateTooltip:AddLine(string.format(DASH_WITH_TEXT, CHARACTER_CREATION_REQUIREMENTS_NEED_8_0), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true, INDENTED_WORD_WRAP);
+			GameTooltip_AddNormalLine(GlueTooltip, ALLIED_RACE_UNLOCK_TEXT);
+			GameTooltip_AddErrorLine(GlueTooltip, string.format(DASH_WITH_TEXT, CHARACTER_CREATION_REQUIREMENTS_NEED_8_0));
 		end
 		if (not hasAchievement) then
 			local requirements = C_CharacterCreation.GetAlliedRaceAchievementRequirements(self.raceID);
 			if requirements then
 				-- Add unlock text if we have the expansion, otherwise it would have already been added above
 				if hasExpansion then
-					CharacterCreateTooltip:AddLine(ALLIED_RACE_UNLOCK_TEXT, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+					GameTooltip_AddNormalLine(GlueTooltip, ALLIED_RACE_UNLOCK_TEXT);
 				end
 				for i, requirement in ipairs(requirements) do
-					CharacterCreateTooltip:AddLine(string.format(DASH_WITH_TEXT, requirement), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true, INDENTED_WORD_WRAP);
+					GameTooltip_AddErrorLine(GlueTooltip, string.format(DASH_WITH_TEXT, requirement));
 				end
 				local _, internalFaction = C_CharacterCreation.GetFactionForRace(self.raceID);
 				local embassy = internalFaction == "Horde" and CHAR_CREATE_HORDE_EMBASSY or CHAR_CREATE_ALLIANCE_EMBASSY;
-				CharacterCreateTooltip:AddLine(string.format(DASH_WITH_TEXT, embassy), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true, INDENTED_WORD_WRAP);
+				GameTooltip_AddErrorLine(GlueTooltip, string.format(DASH_WITH_TEXT, embassy));
 			end
 		end	
 	end
+	GlueTooltip:Show();
 end
 
 function CharCreateRaceButton_OnLeave(self)
-	CharacterCreateTooltip:Hide();
+	GlueTooltip:Hide();
 end
 
 ---------------------------------------------
@@ -2193,34 +2212,37 @@ function CharCreateClassButton_OnEnter(self)
 		return;
 	end
 
-	CharacterCreateTooltip:SetOwner(self, "ANCHOR_LEFT", -8, -5);
-	CharacterCreateTooltip:SetText(self.tooltip.name, 1, 1, 1, 1, true);
-	CharacterCreateTooltip:AddLine(self.tooltip.roles, 0.510, 0.773, 1, 1, true);
-	CharacterCreateTooltip:AddLine(self.tooltip.description, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
-	CharacterCreateTooltip:AddLine(self.tooltip.footer, nil, nil, nil, nil, true);
+	GlueTooltip:SetOwner(self, "ANCHOR_LEFT", -8, -5);
+	GameTooltip_SetTitle(GlueTooltip, self.tooltip.name);
+	GameTooltip_AddHighlightLine(GlueTooltip, self.tooltip.roles);
+	GameTooltip_AddNormalLine(GlueTooltip, self.tooltip.description);
+	GameTooltip_AddHighlightLine(GlueTooltip, self.tooltip.footer);
 
 	local raceData = C_CharacterCreation.GetRaceDataByID(C_CharacterCreation.GetSelectedRace());
 	local classData = C_CharacterCreation.GetClassDataByID(self.classID);
 	if not IsKioskGlueEnabled() and CharacterUpgrade_IsCreatedCharacterTrialBoost() and not CharacterCreate_IsTrialBoostAllowedForClass(classData, raceData) then
-		CharacterCreateTooltip:AddLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP_INVALID, 1, 0, 0, 1, true);
+		GameTooltip_AddErrorLine(GlueTooltip, CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP_INVALID);
 	end
+
+	GlueTooltip:Show();
 end
 
 function CharCreateClassButton_OnLeave(self)
-	CharacterCreateTooltip:Hide();
+	GlueTooltip:Hide();
 end
 
 ---------------------------------------------
 -- CharacterCreateSpellIcon script functions
 ---------------------------------------------
 function CharacterCreateSpellIcon_OnEnter(self)
-	CharacterCreateTooltip:SetOwner(self, "ANCHOR_LEFT", 8, -4);
-	CharacterCreateTooltip:SetText(self.tooltip.name, 1, 1, 1, 1);
-	CharacterCreateTooltip:AddLine(self.tooltip.desc, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+	GlueTooltip:SetOwner(self, "ANCHOR_LEFT", 8, -4);
+	GameTooltip_SetTitle(GlueTooltip, self.tooltip.name);
+	GameTooltip_AddNormalLine(GlueTooltip, self.tooltip.desc);
+	GlueTooltip:Show();
 end
 
 function CharacterCreateSpellIcon_OnLeave(self)
-	CharacterCreateTooltip:Hide();
+	GlueTooltip:Hide();
 end
 
 ---------------------------------------------
@@ -2275,24 +2297,25 @@ end
 function CharacterCreate_TypeButtonOnEnter(self)
 	GlueTooltip:SetOwner(self, "ANCHOR_BOTTOM", 0, -10);
 	if IsExpansionTrial() then
-		GlueTooltip:SetText(CHARACTER_TYPE_FRAME_EXPANSION_TRIAL_CHARACTER);
-		GlueTooltip:AddLine(CHARACTER_TYPE_FRAME_EXPANSION_TRIAL_CHARACTER_TOOLTIP, 1, 1, 1, 1, true);
+		GameTooltip_SetTitle(GlueTooltip, CHARACTER_TYPE_FRAME_EXPANSION_TRIAL_CHARACTER);
+		GameTooltip_AddHighlightLine(GlueTooltip, CHARACTER_TYPE_FRAME_EXPANSION_TRIAL_CHARACTER_TOOLTIP);
 	else
-		GlueTooltip:SetText(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER);
-		GlueTooltip:AddLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP:format(C_CharacterCreation.GetTrialBoostStartingLevel()), 1, 1, 1, 1, true);
+		GameTooltip_SetTitle(GlueTooltip, CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER);
+		GameTooltip_AddHighlightLine(GlueTooltip, CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP:format(C_CharacterCreation.GetTrialBoostStartingLevel()));
 	end
 
 	if not self:IsEnabled() then
 		local classData = C_CharacterCreation.GetSelectedClass();
 		if (not classData.allowBoost) then
-			GlueTooltip:AddLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP_INVALID, 1, 0, 0, 1, true);
+			GameTooltip_AddErrorLine(GlueTooltip, CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP_INVALID);
 		end
 
 		local raceData = C_CharacterCreation.GetRaceDataByID(C_CharacterCreation.GetSelectedRace());
 		if (not raceData.enabled) then
-			GlueTooltip:AddLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP_INVALID_ALLIED_RACE, 1, 0, 0, 1, true);
+			GameTooltip_AddErrorLine(GlueTooltip, CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP_INVALID_ALLIED_RACE);
 		end
 	end
+	GlueTooltip:Show();
 end
 
 function CharacterCreate_GetStartingLevel(forTrialBoost)
@@ -2355,7 +2378,7 @@ local function ShouldHideCharacterTypeFrame(characterType)
 	 or (PAID_SERVICE_TYPE ~= nil)
 	 or C_CharacterCreation.IsUsingCharacterTemplate()
 	 or C_CharacterCreation.IsForcingCharacterTemplate()
-	 or IsKioskModeEnabled() then
+	 or Kiosk.IsEnabled() then
 		return true;
 	end
 
@@ -2517,14 +2540,16 @@ end
 function RequirementsFlowMixin:DisplayTooltip()
 	-- Only need a tooltip if there are incomplete requirements
 	if self:GetFirstIncompleteRequirement() then
-		GlueTooltip:SetText("");
 		GlueTooltip:SetOwner(self.completeButton, "ANCHOR_TOP");
+		GameTooltip_AddBlankLineToTooltip(GlueTooltip)
 
 		for requirementID, requirementData in ipairs(self.requirements) do
 			if not requirementData.complete then
-				GlueTooltip:AddLine(requirementData.description, 1, 0, 0, 1);
+				GameTooltip_AddErrorLine(GlueTooltip, requirementData.description);
 			end
 		end
+
+		GlueTooltip:Show();
 	else
 		self:HideTooltip();
 	end

@@ -1,0 +1,81 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_RuneforgeFrame.lua"/>
+
+	<Frame name="RuneforgeFrame" toplevel="true" parent="UIParent" enableMouse="true" mixin="RuneforgeFrameMixin" hidden="true">
+		<Size x="600" y="600"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="6" y="-6"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-6" y="6"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<FontString parentKey="Title">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate">
+				<KeyValues>
+					<KeyValue key="layoutType" value="Runeforge" type="string"/>
+				</KeyValues>
+			</Frame>
+
+			<Button parentKey="BaseItemSlot" inherits="RuneforgeItemSlotTemplate">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="ItemLevelSelector" inherits="RuneforgeItemLevelSelectorTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.BaseItemSlot" relativePoint="TOP" x="0" y="10"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="ModifierFrame" inherits="RuneforgeModifierFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="70" y="0"/>
+				</Anchors>
+			</Frame>
+
+			<Button parentKey="PowerSlot" inherits="RuneforgePowerSlotTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-70" y="-120"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="PowerFrame" inherits="RuneforgePowerFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.PowerSlot" relativePoint="BOTTOMRIGHT" x="10" y="0"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="CreateFrame" inherits="RuneforgeCreateFrameTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="20"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="CurrencyDisplay" inherits="CurrencyDisplayGroupTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="TOPRIGHT" x="-20" y="-20"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

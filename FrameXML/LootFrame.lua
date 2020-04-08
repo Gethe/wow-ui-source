@@ -557,7 +557,7 @@ function GroupLootFrame_OnShow(self)
 	end
 
 	self.IconFrame.Icon:SetTexture(texture);
-	self.IconFrame.Border:SetAtlas(LOOT_BORDER_BY_QUALITY[quality] or LOOT_BORDER_BY_QUALITY[LE_ITEM_QUALITY_UNCOMMON]);
+	self.IconFrame.Border:SetAtlas(LOOT_BORDER_BY_QUALITY[quality] or LOOT_BORDER_BY_QUALITY[Enum.ItemQuality.Uncommon]);
 	self.Name:SetText(name);
 	local color = ITEM_QUALITY_COLORS[quality];
 	self.Name:SetVertexColor(color.r, color.g, color.b);
@@ -624,7 +624,9 @@ function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, curr
 		currencyID = BONUS_ROLL_REQUIRED_CURRENCY;
 	end
 
-	local _, count, icon = GetCurrencyInfo(currencyID);
+	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
+	local count = currencyInfo.quantity;
+	local icon = currencyInfo.iconFileID;
 	if ( count == 0 ) then
 		return;
 	end

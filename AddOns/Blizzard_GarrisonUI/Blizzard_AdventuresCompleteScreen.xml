@@ -1,0 +1,172 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_AdventuresCompleteScreen.lua"/>
+
+	<Frame name="CovenantMissionCompleteStageTemplate" inherits="GarrisonMissionStageTemplate, GarrisonMissionCompleteStageTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="TOP"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="Board" inherits="AdventuresBoardCombatTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-150"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="MissionInfo">
+				<Size x="556" y="285"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture atlas="GarrMission_LocationCover-Side" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="GarrMission_LocationCover-Side" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+							<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+						</Texture>
+						<Texture atlas="_GarrMission_LocationCover-Bottom" useAtlasSize="true" horizTile="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" y="-17"/>
+								<Anchor point="BOTTOMRIGHT" y="-17"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="3">
+						<Texture parentKey="Header">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="-66"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" a=".35"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="4">
+						<Texture parentKey="IconBG" atlas="GarrMission_IconLevelBG" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" y="-1"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="0.55"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="5">
+						<FontString parentKey="Level" inherits="Game24Font">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="TOPLEFT" x="30" y="-36"/>
+							</Anchors>
+							<Color r="0.84" g="0.72" b="0.57"/>
+						</FontString>
+						<FontString parentKey="ItemLevel" inherits="GameFontNormalLarge" hidden="true">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Level" relativePoint="BOTTOM" x="0" y="2"/>
+							</Anchors>
+							<Color r="0.84" g="0.72" b="0.57"/>
+						</FontString>
+						<Texture parentKey="MissionType" atlas="GarrMission_MissionIcon-Combat" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="48" y="-4"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Title" inherits="QuestFont_Super_Huge" justifyH="LEFT" maxLines="1">
+							<Size x="430" y="0"/>
+							<Shadow>
+								<Offset x="1" y="-1"/>
+							</Shadow>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Header" x="125" y="10"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+						<FontString parentKey="Location" inherits="QuestFont_Huge">
+							<Shadow>
+								<Offset x="1" y="-1"/>
+							</Shadow>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-6"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="6">
+						<Texture atlas="_GarrMission_TopBorder" useAtlasSize="true" horizTile="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="20" y="4"/>
+								<Anchor point="TOPRIGHT" x="-20" y="4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="7">
+						<Texture atlas="GarrMission_TopBorderCorner" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-5" y="4"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="GarrMission_TopBorderCorner" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="4" y="4"/>
+							</Anchors>
+							<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 3);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="ItemLevelHitboxFrame" enableMouse="true" hidden="true">
+				<Size x="49" y="41"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.MissionInfo.Level" x="0" y="3"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+						local itemLevel = self:GetParent():GetParent().currentMission.iLevel;
+						GameTooltip:SetText(string.format(GARRISON_MISSION_EXPECTED_ILVL, itemLevel), 1, 1, 1);
+						GameTooltip:AddLine(GARRISON_MISSION_EXPECTED_ILVL_TOOLTIP, nil, nil, nil, 1);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="AdventuresCompleteScreenTemplate" inherits="GarrisonMissionPageBaseTemplate, GarrisonMissionCompleteTemplate" mixin="GarrisonFollowerMissionComplete, AdventuresCompleteScreenMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="Stage" inherits="CovenantMissionCompleteStageTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="AdventuresCombatLog" inherits="CombatLogTemplate" hidden="false" frameStrata="HIGH">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-340" y="-20"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="MaterialFrame" inherits="MaterialFrameTemplate">
+						<Size x="316" y="43"/>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="BOTTOM" y="8"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+			<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" frameLevel="1000" setAllPoints="true">
+			</ModelScene>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

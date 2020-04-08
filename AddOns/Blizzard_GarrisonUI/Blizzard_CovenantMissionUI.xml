@@ -1,0 +1,532 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<Script file="Blizzard_CovenantMissionUI.lua"/>
+
+	<Frame name="CovenantMissionPageEnemyTemplate" inherits="GarrisonMissionPageEnemyTemplate" mixin="CovenantMissionPageEnemyMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="MechanicEffect" hidden="true">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="CrossLeft" hidden="false" alpha="0" atlas="GarrMission_EncounterBar-Xleft">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CrossRight" hidden="false" alpha="0" atlas="GarrMission_EncounterBar-Xright">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Countered" setToFinalAlpha="true">
+						<Scale childKey="CrossLeft" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="CrossLeft" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="CrossRight" startDelay="0.1" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="CrossRight" startDelay="0.1" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CovenantMissionPageStageTemplate" inherits="GarrisonMissionStageTemplate" virtual="true">
+		<Size x="556" y="230"/>
+		<Anchors>
+			<Anchor point="TOP"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="Header">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="-66"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a=".35"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="5">
+				<FontString parentKey="Level" inherits="Game24Font" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="TOPLEFT" x="30" y="-36"/>
+					</Anchors>
+					<Color r="0.84" g="0.72" b="0.57"/>
+				</FontString>
+				<FontString parentKey="ItemLevel" inherits="GameFontNormalLarge" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Level" relativePoint="BOTTOM" x="0" y="2"/>
+					</Anchors>
+					<Color r="0.84" g="0.72" b="0.57"/>
+				</FontString>
+				<FontString parentKey="Title" inherits="QuestFont_Super_Huge" justifyH="LEFT" maxLines="1">
+					<Size x="410" y="0"/>
+					<Shadow>
+						<Offset x="1" y="-1"/>
+					</Shadow>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Header" x="125" y="0"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString parentKey="Location" inherits="QuestFont_Huge" hidden="true">
+					<Shadow>
+						<Offset x="1" y="-1"/>
+					</Shadow>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-6"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString parentKey="MissionDescription" inherits="GameFontHighlight" justifyH="LEFT" hidden ="true">
+					<Size x="260" y="0"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Header" relativePoint="BOTTOMRIGHT" x="-15" y="-7"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="MissionInfo" inherits="VerticalLayoutFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="7" y="-7"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="spacing" value="3" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="5">
+						<FontString parentKey="XP" inherits="GameFontNormalMed2" justifyH="LEFT" text="GARRISON_MISSION_EXHAUSTING" hidden="true">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="1" type="number"/>
+							</KeyValues>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+						<FontString parentKey="ExhaustingLabel" inherits="GameFontNormalMed2" justifyH="LEFT" text="GARRISON_MISSION_EXHAUSTING" hidden="true">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
+							</KeyValues>
+							<Color r="1" g="0.573" b="0.075"/>
+						</FontString>
+						<FontString parentKey="MissionTime" inherits="GameFontNormalMed2" justifyH="LEFT" hidden="true">
+							<Size x="300" y="0"/>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="3" type="number"/>
+							</KeyValues>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+						<FontString parentKey="MissionEnv" inherits="GameFontNormalMed2" justifyH="LEFT">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="4" type="number"/>
+							</KeyValues>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="MissionEnvIcon" inherits="GarrisonMissionCheckTemplate">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.MissionInfo.MissionEnv" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Highlight" hidden="true" alpha="0" alphaMode="ADD" atlas="groupfinder-eye-highlight" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Texture" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="CrossLeft" hidden="true" alpha="1" atlas="GarrMission_EncounterBar-Xleft">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CrossRight" hidden="true" alpha="1" atlas="GarrMission_EncounterBar-Xright">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Countered" setToFinalAlpha="true">
+						<Scale childKey="CrossLeft" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="CrossLeft" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="CrossRight" startDelay="0.1" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="CrossRight" startDelay="0.1" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="EnvironmentHighlight" setToFinalAlpha="true" looping="REPEAT">
+						<Scale childKey="Highlight" startDelay="0.1" endDelay="2.9" smoothing="NONE" duration="1.0" order="1" fromScaleX="0.39" fromScaleY="0.39" toScaleX=".6" toScaleY=".6"/>
+						<Alpha childKey="Highlight" startDelay="0.1" endDelay="2.9" smoothing="NONE" duration="1.0" order="1" fromAlpha=".6" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+				<Scripts>
+					<OnEnter function="GarrisonMissionPageEnvironment_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnUpdate function="GarrisonMissionController_OnStageUpdate"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="CovenantMissionPageTemplate" inherits="GarrisonMissionPageBaseTemplate" virtual="true">
+		<Size x="556" y="580"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="-55" y="-34"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ButtonFrame" atlas="GarrMission_MissionCostStartButtonBg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="-22"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="EmptyString" inherits="GameFontNormalMed3" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-255"/>
+					</Anchors>
+					<Color r="0.910" g="0.835" b="0.706"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="GarrisonMissionPageCloseButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="4" y="6"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="Stage" inherits="CovenantMissionPageStageTemplate"/>
+			<Frame parentKey="ItemLevelHitboxFrame" inherits="GarrisonMissionPageItemLevelHitboxFrame">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Stage.Level" x="0" y="3"/>
+				</Anchors>
+			</Frame>
+			<Button inherits="StartMissionButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" x="-50" y="1"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="CostFrame" inherits="GarrisonMissionPageCostFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ButtonFrame" x="50"/>
+					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" relativePoint="CENTER" />
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture atlas="GarrMission_LocationCover-Side" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="GarrMission_LocationCover-Side" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+				<Texture atlas="_GarrMission_LocationCover-Bottom" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" y="333"/>
+						<Anchor point="BOTTOMRIGHT" y="333"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="4">
+				<Texture parentKey="IconBG" atlas="GarrMission_IconLevelBG" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" y="-1"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.55"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="5">
+				<Texture parentKey="MissionType" atlas="GarrMission_MissionIcon-Combat">
+					<Size x="50" y="50"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="6">
+				<Texture atlas="_GarrMission_TopBorder" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="4"/>
+						<Anchor point="TOPRIGHT" x="-20" y="4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="7">
+				<Texture atlas="GarrMission_TopBorderCorner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="4"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="GarrMission_TopBorderCorner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="4" y="4"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Enemy1" parentArray="Enemies" inherits="CovenantMissionPageEnemyTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.EnemyLeftBack" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Enemy2" parentArray="Enemies" inherits="CovenantMissionPageEnemyTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Enemy1" relativePoint="RIGHT" x="60"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.EnemyCenterLeftBack" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Enemy3" parentArray="Enemies" inherits="CovenantMissionPageEnemyTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Enemy2" relativePoint="RIGHT" x="60"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.EnemyCenterRightBack" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Enemy4" parentArray="Enemies" inherits="CovenantMissionPageEnemyTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Enemy3" relativePoint="RIGHT" x="60"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.EnemyRightBack" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Enemy5" parentArray="Enemies" inherits="CovenantMissionPageEnemyTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Enemy1" relativePoint="BOTTOM" y="-28"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.EnemyLeftFront" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Enemy6" parentArray="Enemies" inherits="CovenantMissionPageEnemyTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Enemy5" relativePoint="RIGHT" x="60"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.EnemyCenterLeftFront" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Enemy7" parentArray="Enemies" inherits="CovenantMissionPageEnemyTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Enemy6" relativePoint="RIGHT" x="60"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.EnemyCenterRightFront" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Enemy8" parentArray="Enemies" inherits="CovenantMissionPageEnemyTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Enemy7" relativePoint="RIGHT" x="60"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.EnemyRightFront" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="FollowerAnchor" hidden="true">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="-375"/>
+					<Anchor point="TOPRIGHT" x="0" y="-375"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Follower1" parentArray="Followers" inherits="CovenantMissionPageFollowerTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="22" y="0" relativeKey="$parent.FollowerAnchor"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.AllyLeftFront" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Follower2" parentArray="Followers" inherits="CovenantMissionPageFollowerTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Follower1" relativePoint="RIGHT" x="17" y="0"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.AllyCenterFront" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Follower3" parentArray="Followers" inherits="CovenantMissionPageFollowerTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Follower2" relativePoint="RIGHT" x="17" y="0"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.AllyRightFront" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Follower4" parentArray="Followers" inherits="CovenantMissionPageFollowerTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Follower1" relativePoint="BOTTOMRIGHT" x="0" y="-30"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.AllyLeftBack" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Follower5" parentArray="Followers" inherits="CovenantMissionPageFollowerTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Follower2" relativePoint="BOTTOMRIGHT" x="0" y="-30"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.AllyRightBack" type="global"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GarrisonMissionPage_OnLoad"/>
+			<OnEvent function="GarrisonMissionPage_OnEvent"/>
+			<OnShow function="CovenantMissionPage_OnShow"/>
+			<OnHide function="CovenantMissionPage_OnHide"/>
+			<OnUpdate function="GarrisonMissionPage_OnUpdate"/>
+			<OnClick>
+				self.CloseButton:Click();
+			</OnClick>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CovenantMissionFrame" inherits="GarrisonMissionFrameTemplate, GarrisonUITemplate" mixin="GarrisonMission, GarrisonFollowerMission, CovenantMission" frameLevel="1">
+		<Size x="962" y="662"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="followerTypeID" value="Enum.GarrisonFollowerType.FollowerType_9_0" type="global"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoadMainFrame"/>
+			<OnShow method="OnShowMainFrame"/>
+			<OnHide method="OnHideMainFrame"/>
+			<OnEvent method="OnEventMainFrame"/>`
+		</Scripts>
+		<Frames>
+			<Frame parentKey="OverlayElements" frameLevel="510" setAllPoints="true">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="CloseButtonBorder">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.CloseButton" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="Tab1" name="$parentTab1" inherits="OrderHallFrameTabButtonTemplate" id="1" text="GARRISON_MISSIONS"/>
+			<Button parentKey="Tab2" name="$parentTab2" inherits="OrderHallFrameTabButtonTemplate" id="2" text="GARRISON_FOLLOWERS"/>
+			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader" name="$parentFollowers" hidden="true" mixin="GarrisonFollowerList" frameStrata="HIGH">
+				<Size x="305" y="535"/>
+				<KeyValues>
+					<KeyValue key ="followerTemplate" value="CovenantMissionFollowerOrCategoryListButtonTemplate" type="string"/>
+					<KeyValue key="showUncollected" value="true" type="boolean"/>
+					<KeyValue key="canCastSpellsOnFollowers" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="33" y="-64"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="MaterialFrame" inherits="MaterialFrameTemplate">
+						<Size x="316" y="43"/>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="BOTTOM" y="8"/>
+						</Anchors>
+					</Frame>
+					<Frame name="OrderHallFollowerOptionDropDown" parentKey="OptionDropDown" inherits="UIDropDownMenuTemplate">
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_Initialize(self, GarrisonFollowerOptionDropDown_Initialize, "MENU");
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="MissionTab" setAllPoints="true" useParentLevel="true">
+				<Frames>
+					<Frame parentKey="MissionList" inherits="GarrisonMissionListTemplate" mixin="OrderHallMissionListMixin" name="$parentMissions">
+						<Scripts>
+							<OnLoad inherit="prepend">
+								self.CompleteDialog.Background:ClearAllPoints();
+								self.CompleteDialog.Background:SetPoint("TOPLEFT", -1, 20);
+								self.CompleteDialog.Background:SetPoint("BOTTOMRIGHT", 4, -3);
+								self.CompleteDialog.Background:SetSize(961, 660);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="ZoneSupportMissionPageBackground" hidden="true" frameLevel="1">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Background" atlas="legionmission-background-combatally" useAtlasSize="false">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.$parent.Left" x="6" y="0"/>
+										<Anchor point="RIGHT" relativeKey="$parent.$parent.Right" x="-6" y="0"/>
+										<Anchor point="TOP" relativeKey="$parent.$parent.Top" x="0" y="-6"/>
+										<Anchor point="BOTTOM" relativeKey="$parent.$parent.Bottom" x="0" y="7"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Button parentKey="MissionPage" inherits="CovenantMissionPageTemplate" hidden="true" mixin="GarrisonMissionPageMixin,GarrisonFollowerMissionPageMixin,CovenantFollowerMissionPageMixin"/>
+				</Frames>
+			</Frame>
+			<Frame parentKey="FollowerTab" inherits="GarrisonFollowerTabTemplate" frameStrata="HIGH" frameLevel="100"/>
+			<Frame parentKey="MissionCompleteBackground" enableMouse="true" frameStrata="HIGH" hidden="true">
+				<Size x="956" y="637"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-22"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-1" y="20"/>
+								<Anchor point="BOTTOMRIGHT" x="4" y="-3"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="0.8"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="MissionComplete" inherits="AdventuresCompleteScreenTemplate" frameStrata="HIGH" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" x="170" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

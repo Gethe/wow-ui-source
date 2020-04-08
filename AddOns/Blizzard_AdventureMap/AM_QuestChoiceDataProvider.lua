@@ -15,7 +15,7 @@ function AdventureMap_QuestChoiceDataProviderMixin:OnEvent(event, ...)
 		self:RefreshAllData();
 	elseif event == "QUEST_ACCEPTED" then
 		if self:GetMap():IsVisible() then
-			local questIndex, questID = ...;
+			local questID = ...;
 			for pin in self:GetMap():EnumeratePinsByTemplate("AdventureMap_QuestChoicePinTemplate") do
 				if pin.questID == questID then
 					self:OnQuestAccepted(pin);
@@ -136,7 +136,7 @@ function AdventureMap_QuestChoiceDataProviderMixin:SelectQuestID(questID, textur
 			else
 				AdventureMapQuestChoiceDialog:SetPortraitAtlas("QuestPortraitIcon-SandboxQuest", 38, 63, 0, 12);
 			end
-			
+
 		else
 			AdventureMapQuestChoiceDialog:DeclineQuest(true);
 			self:GetMap():ZoomOut();
@@ -149,7 +149,7 @@ function AdventureMap_QuestChoiceDataProviderMixin:AddFogPin(questID, normalized
 	pin:SetPosition(normalizedX, normalizedY);
 	return pin;
 end
-		
+
 function AdventureMap_QuestChoiceDataProviderMixin:OnQuestAccepted(pin)
 	local fogPin = pin.fogPin;
 	fogPin.OnQuestAcceptedAnim:SetScript("OnFinished", function()

@@ -151,8 +151,7 @@ end
 
 function GameTooltip_SetDefaultAnchor(tooltip, parent)
 	tooltip:SetOwner(parent, "ANCHOR_NONE");
-	tooltip:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X - 13, CONTAINER_OFFSET_Y);
-	tooltip.default = 1;
+	tooltip:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -CONTAINER_OFFSET_X - 13, CONTAINER_OFFSET_Y);
 end
 
 function GameTooltip_SetBasicTooltip(tooltip, text, x, y, wrap)
@@ -163,60 +162,13 @@ function GameTooltip_SetBasicTooltip(tooltip, text, x, y, wrap)
 	tooltip:SetText(text, r, g, b, 1, wrap);
 end
 
-function GameTooltip_AddBlankLinesToTooltip(tooltip, numLines)
-	if numLines ~= nil then
-		for i = 1, numLines do
-			tooltip:AddLine(" ");
-		end
-	end
-end
-
-function GameTooltip_AddBlankLineToTooltip(tooltip)
-	GameTooltip_AddBlankLinesToTooltip(tooltip, 1);
-end
-
-function GameTooltip_SetTitle(tooltip, text, overrideColor, wrap)
-	local titleColor = overrideColor or HIGHLIGHT_FONT_COLOR;
-	local r, g, b, a = titleColor:GetRGBA();
-	tooltip:SetText(text, r, g, b, a, wrap);
-end
-
-function GameTooltip_AddNormalLine(tooltip, text, wrap, leftOffset)
-	GameTooltip_AddColoredLine(tooltip, text, NORMAL_FONT_COLOR, wrap, leftOffset);
-end
-
-function GameTooltip_AddInstructionLine(tooltip, text, wrap, leftOffset)
-	GameTooltip_AddColoredLine(tooltip, text, GREEN_FONT_COLOR, wrap, leftOffset);
-end
-
-function GameTooltip_AddErrorLine(tooltip, text, wrap, leftOffset)
-	GameTooltip_AddColoredLine(tooltip, text, RED_FONT_COLOR, wrap, leftOffset);
-end
-
-function GameTooltip_AddColoredLine(tooltip, text, color, wrap, leftOffset)
-	local r, g, b = color:GetRGB();
-	if wrap == nil then
-		wrap = true;
-	end
-	tooltip:AddLine(text, r, g, b, wrap, leftOffset);
-end
-
-function GameTooltip_AddColoredDoubleLine(tooltip, leftText, rightText, leftColor, rightColor, wrap)
-	local leftR, leftG, leftB = leftColor:GetRGB();
-	local rightR, rightG, rightB = rightColor:GetRGB();
-	if wrap == nil then
-		wrap = true;
-	end
-	tooltip:AddDoubleLine(leftText, rightText, leftR, leftG, leftB, rightR, rightG, rightB, wrap);
-end
-
 function GameTooltip_ShowDisabledTooltip(tooltip, owner, text)
-	GameTooltip:SetOwner(owner);
+	tooltip:SetOwner(owner);
 
 	local wrap = true;
-	GameTooltip_SetTitle(GameTooltip, text, RED_FONT_COLOR, wrap);
+	GameTooltip_SetTitle(tooltip, text, RED_FONT_COLOR, wrap);
 
-	GameTooltip:Show();
+	tooltip:Show();
 end
 
 function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
@@ -289,10 +241,9 @@ function GameTooltip_SetBottomText(self, text, lineColor)
 end
 
 function GameTooltip_OnLoad(self)
+	SharedTooltip_OnLoad(self);
 	self.needsReset = true;
 	self.updateTooltip = TOOLTIP_UPDATE_TIME;
-	GameTooltip_SetBackdropStyle(self, GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT);
-	self:SetClampRectInsets(0, 0, 15, 0);
 end
 
 function GameTooltip_OnTooltipAddMoney(self, cost, maxcost)
@@ -366,55 +317,10 @@ function GameTooltip_ClearMoney(self)
 	self.shownMoneyFrames = nil;
 end
 
-function GameTooltip_InsertFrame(tooltipFrame, frame)
-	local textSpacing = 2;
-	local textHeight = _G[tooltipFrame:GetName().."TextLeft2"]:GetLineHeight();
-	local numLinesNeeded = math.ceil(frame:GetHeight() / (textHeight + textSpacing));
-	local currentLine = tooltipFrame:NumLines();
-	GameTooltip_AddBlankLinesToTooltip(tooltipFrame, numLinesNeeded);
-	frame:SetParent(tooltipFrame);
-	frame:ClearAllPoints();
-	frame:SetPoint("TOPLEFT", tooltipFrame:GetName().."TextLeft"..(currentLine + 1), "TOPLEFT", 0, 0);
-	if ( not tooltipFrame.insertedFrames ) then
-		tooltipFrame.insertedFrames = { };
-	end
-	local frameWidth = frame:GetWidth();
-	if ( tooltipFrame:GetMinimumWidth() < frameWidth ) then
-		tooltipFrame:SetMinimumWidth(frameWidth);
-	end
-	frame:Show();
-	tinsert(tooltipFrame.insertedFrames, frame);
-	-- return space taken so inserted frame can resize if needed
-	return (numLinesNeeded * textHeight) + (numLinesNeeded - 1) * textSpacing;
-end
-
-function GameTooltip_ClearInsertedFrames(self)
-	if ( self.insertedFrames ) then
-		for i = 1, #self.insertedFrames do
-			self.insertedFrames[i]:Hide();
-		end
-	end
-	self.insertedFrames = nil;
-end
-
-GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT = {
-	bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-	edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-	tile = true,
-	tileEdge = true,
-	tileSize = 16,
-	edgeSize = 16,
-	insets = { left = 4, right = 4, top = 4, bottom = 4 },
-
-	backdropBorderColor = TOOLTIP_DEFAULT_COLOR,
-	backdropColor = TOOLTIP_DEFAULT_BACKGROUND_COLOR,
-};
-
 GAME_TOOLTIP_BACKDROP_STYLE_EMBEDDED = {
 	-- Nothing
 };
 
-TOOLTIP_AZERITE_BACKGROUND_COLOR = CreateColor(1, 1, 1);
 GAME_TOOLTIP_BACKDROP_STYLE_AZERITE_ITEM = {
 	bgFile = "Interface/Tooltips/UI-Tooltip-Background-Azerite",
 	edgeFile = "Interface/Tooltips/UI-Tooltip-Border-Azerite",
@@ -425,7 +331,7 @@ GAME_TOOLTIP_BACKDROP_STYLE_AZERITE_ITEM = {
 	insets = { left = 4, right = 4, top = 4, bottom = 4 },
 
 	backdropBorderColor = TOOLTIP_DEFAULT_COLOR,
-	backdropColor = TOOLTIP_AZERITE_BACKGROUND_COLOR,
+	backdropColor = WHITE_FONT_COLOR,
 
 	overlayAtlasTop = "AzeriteTooltip-Topper";
 	overlayAtlasTopScale = .75,
@@ -436,7 +342,6 @@ GAME_TOOLTIP_BACKDROP_STYLE_AZERITE_ITEM = {
 	padding = { left = 3, right = 3, top = 3, bottom = 3 },
 };
 
-TOOLTIP_CORRUPTED_BACKGROUND_COLOR = CreateColor(1, 1, 1);
 GAME_TOOLTIP_BACKDROP_STYLE_CORRUPTED_ITEM = {
 	bgFile = "Interface/Tooltips/UI-Tooltip-Background-Corrupted",
 	edgeFile = "Interface/Tooltips/UI-Tooltip-Border-Corrupted",
@@ -447,7 +352,7 @@ GAME_TOOLTIP_BACKDROP_STYLE_CORRUPTED_ITEM = {
 	insets = { left = 4, right = 4, top = 4, bottom = 4 },
 
 	backdropBorderColor = TOOLTIP_DEFAULT_COLOR,
-	backdropColor = TOOLTIP_CORRUPTED_BACKGROUND_COLOR,
+	backdropColor = WHITE_FONT_COLOR,
 
 	overlayAtlasTop = "Nzoth-tooltip-topper";
 	overlayAtlasTopScale = .75,
@@ -456,42 +361,9 @@ GAME_TOOLTIP_BACKDROP_STYLE_CORRUPTED_ITEM = {
 	padding = { left = 3, right = 3, top = 3, bottom = 3 },
 };
 
-function GameTooltip_SetBackdropStyle(self, style)
-	self:SetBackdrop(style);
-	self:SetBackdropBorderColor((style.backdropBorderColor or TOOLTIP_DEFAULT_COLOR):GetRGB());
-	self:SetBackdropColor((style.backdropColor or TOOLTIP_DEFAULT_BACKGROUND_COLOR):GetRGB());
-
-	if self.TopOverlay then
-		if style.overlayAtlasTop then
-			self.TopOverlay:SetAtlas(style.overlayAtlasTop, true);
-			self.TopOverlay:SetScale(style.overlayAtlasTopScale or 1.0);
-			self.TopOverlay:SetPoint("CENTER", self, "TOP", style.overlayAtlasTopXOffset or 0, style.overlayAtlasTopYOffset or 0);
-			self.TopOverlay:Show();
-		else
-			self.TopOverlay:Hide();
-		end
-	end
-
-	if self.BottomOverlay then
-		if style.overlayAtlasBottom then
-			self.BottomOverlay:SetAtlas(style.overlayAtlasBottom, true);
-			self.BottomOverlay:SetScale(style.overlayAtlasBottomScale or 1.0);
-			self.BottomOverlay:SetPoint("CENTER", self, "BOTTOM", style.overlayAtlasBottomXOffset or 0, style.overlayAtlasBottomYOffset or 0);
-			self.BottomOverlay:Show();
-		else
-			self.BottomOverlay:Hide();
-		end
-	end
-
-	if style.padding then
-		self:SetPadding(style.padding.right, style.padding.bottom, style.padding.left, style.padding.top);
-	end
-end
-
 function GameTooltip_OnHide(self)
 	self.needsReset = true;
-	GameTooltip_SetBackdropStyle(self, self.IsEmbedded and GAME_TOOLTIP_BACKDROP_STYLE_EMBEDDED or GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT);
-	self.default = nil;
+	SharedTooltip_SetBackdropStyle(self, self.IsEmbedded and GAME_TOOLTIP_BACKDROP_STYLE_EMBEDDED or TOOLTIP_BACKDROP_STYLE_DEFAULT);
 	GameTooltip_ClearMoney(self);
 	GameTooltip_ClearStatusBars(self);
 	GameTooltip_ClearProgressBars(self);
@@ -571,7 +443,7 @@ function GameTooltip_OnTooltipSetUnit(self)
 end
 
 function GameTooltip_UpdateStyle(self)
-	local backdropStyle = GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT;
+	local backdropStyle = TOOLTIP_BACKDROP_STYLE_DEFAULT;
 	local _, itemLink = self:GetItem();
 	if itemLink then
 		if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemLink) or C_AzeriteItem.IsAzeriteItemByID(itemLink) then
@@ -581,7 +453,7 @@ function GameTooltip_UpdateStyle(self)
 		end
 	end
 
-	GameTooltip_SetBackdropStyle(self, backdropStyle);
+	SharedTooltip_SetBackdropStyle(self, backdropStyle);
 end
 
 function GameTooltip_OnTooltipSetItem(self)
@@ -1038,7 +910,7 @@ function EmbeddedItemTooltip_SetSpellByQuestReward(self, rewardIndex, questID)
 		EmbeddedItemTooltip_PrepareForSpell(self);
 		self.Tooltip:SetOwner(self, "ANCHOR_NONE");
 		self.Tooltip:SetQuestLogRewardSpell(rewardIndex, questID);
-		SetItemButtonQuality(self, LE_ITEM_QUALITY_COMMON);
+		SetItemButtonQuality(self, Enum.ItemQuality.Common);
 		SetItemButtonCount(self, 0);
 		self.Icon:SetTexture(texture);
 		self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 0, 10);
@@ -1049,7 +921,10 @@ function EmbeddedItemTooltip_SetSpellByQuestReward(self, rewardIndex, questID)
 end
 
 function EmbeddedItemTooltip_SetCurrencyByID(self, currencyID, quantity)
-	local name, _, texture, _, _, _, _, quality = GetCurrencyInfo(currencyID);
+	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
+	local name = currencyInfo.name;
+	local texture = currencyInfo.iconFileID;
+	local quality = currencyInfo.quality;
 	if name and texture then
 		self.itemID = nil;
 		self.spellID = nil;

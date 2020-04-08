@@ -20,7 +20,7 @@ end
 function FlightMap_WorldQuestPinMixin:RefreshVisuals()
 	WorldQuestPinMixin.RefreshVisuals(self);
 
-	if IsWorldQuestWatched(self.questID) then
+	if QuestUtils_IsQuestWatched(self.questID) then
 		self:SetAlphaLimits(1.0, 1.0, 1.0);
 	else
 		self:SetAlphaLimits(2.0, 0.0, 1.0);

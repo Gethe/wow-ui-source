@@ -62,7 +62,6 @@ local Expansion =
 			Arguments =
 			{
 				{ Name = "playerLevel", Type = "number", Nilable = false },
-				{ Name = "useLegacy", Type = "bool", Nilable = true },
 			},
 
 			Returns =
@@ -92,13 +91,30 @@ local Expansion =
 		{
 			Name = "GetMaxLevelForExpansionLevel",
 			Type = "Function",
-			Documentation = { "Maps an expansion level to a maximum character level for that expansion, optionally takes a useModernLevelMapping instead of legacy level mapping. Legacy treats the maxes as the original caps for those expansions." },
+			Documentation = { "Maps an expansion level to a maximum character level for that expansion." },
 
 			Arguments =
 			{
 				{ Name = "expansionLevel", Type = "number", Nilable = false },
-				{ Name = "useModernLevelMapping", Type = "bool", Nilable = false, Default = false },
 			},
+
+			Returns =
+			{
+				{ Name = "maxLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMaxLevelForLatestExpansion",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "maxLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMaxLevelForPlayerExpansion",
+			Type = "Function",
 
 			Returns =
 			{

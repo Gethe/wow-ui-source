@@ -36,3 +36,4 @@ MapLinkDataProvider.xml
 SelectableGraveyardDataProvider.xml
 MapIndicatorQuestDataProvider.xml
 QuestSessionDataProvider.lua
+WaypointLocationDataProvider.xml

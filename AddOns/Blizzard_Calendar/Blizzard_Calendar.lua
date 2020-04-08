@@ -3811,14 +3811,16 @@ function CalendarCreateEventFrame_Update()
 	end
 end
 
-function CalendarCreateEventTitleEdit_OnTextChanged(self)
-	local text = self:GetText();
-	local trimmedText = strtrim(text);
-	if ( trimmedText == "" or trimmedText == CALENDAR_CREATEEVENTFRAME_DEFAULT_TITLE ) then
-		-- if the title is either the default or all whitespace, just set it to the empty string
-		C_Calendar.EventSetTitle("");
-	else
-		C_Calendar.EventSetTitle(text);
+function CalendarCreateEventTitleEdit_OnTextChanged(self, userChanged)
+	if userChanged then
+		local text = self:GetText();
+		local trimmedText = strtrim(text);
+		if ( trimmedText == "" or trimmedText == CALENDAR_CREATEEVENTFRAME_DEFAULT_TITLE ) then
+			-- if the title is either the default or all whitespace, just set it to the empty string
+			C_Calendar.EventSetTitle("");
+		else
+			C_Calendar.EventSetTitle(text);
+		end
 	end
 	CalendarCreateEventCreateButton_Update();
 end
@@ -3829,6 +3831,14 @@ function CalendarCreateEventTitleEdit_OnEditFocusLost(self)
 		self:SetText(CALENDAR_CREATEEVENTFRAME_DEFAULT_TITLE);
 	end
 	self:HighlightText(0, 0);
+end
+
+function CalendarCreateEventDescriptionEdit_OnTextChanged(self, userChanged)
+	if userChanged then
+		ScrollingEdit_OnTextChanged(self, self:GetParent());
+		C_Calendar.EventSetDescription(self:GetText());
+	end
+	CalendarCreateEventCreateButton_Update();
 end
 
 function CalendarCreateEventCreatorName_Update()
@@ -4458,13 +4468,15 @@ function CalendarInviteStatusContextMenu_OnLoad(self)
 end
 
 function CalendarInviteStatusContextMenu_OnShow(self)
-	CalendarInviteStatusContextMenu_Initialize(self, C_Calendar.EventGetStatusOptions(CalendarContextMenu.inviteButton.inviteIndex));
+	local statusOptions = C_Calendar.EventGetStatusOptions(CalendarContextMenu.inviteButton.inviteIndex);
+	CalendarInviteStatusContextMenu_Initialize(self, statusOptions);
 end
 
 function CalendarInviteStatusContextMenu_OnEvent(self, event, ...)
 	if ( event == "CALENDAR_UPDATE_EVENT" ) then
 		if ( self:IsShown() ) then
-			CalendarInviteStatusContextMenu_Initialize(self, C_Calendar.EventGetStatusOptions(CalendarContextMenu.inviteButton.inviteIndex));
+			local statusOptions = C_Calendar.EventGetStatusOptions(CalendarContextMenu.inviteButton.inviteIndex);
+			CalendarInviteStatusContextMenu_Initialize(self, statusOptions);
 		end
 	end
 end
@@ -4472,17 +4484,14 @@ end
 function CalendarInviteStatusContextMenu_Initialize(self, statusOptions)
 	UIMenu_Initialize(self);
 
-	local statusIndex, statusName;
 	for i = 1, #statusOptions, 1 do
-		statusIndex = statusOptions[i].optionIndex;
-		statusName = _G[statusOptions[i].statusString];
 		UIMenu_AddButton(
 			self,													-- self
-			statusName,												-- text
+			_G[statusOptions[i].statusString],						-- text
 			nil,													-- shortcut
 			CalendarInviteStatusContextMenu_SetStatusOption,		-- func
 			nil,													-- nested
-			statusIndex												-- value
+			statusOptions[i].status									-- value
 		);
 	end
 

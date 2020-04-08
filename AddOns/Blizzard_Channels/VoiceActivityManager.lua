@@ -116,10 +116,6 @@ function VoiceActivityManagerMixin:OnChannelDeactivated(channelID)
 	self:ReleaseNotifications("*", channelID);
 end
 
-function VoiceActivityManagerMixin:OnChannelDeactivated(channelID)
-	self:ReleaseNotifications("*", channelID);
-end
-
 -- First return value is the created notification
 -- Second return value is true if the notification is an alert
 function VoiceActivityManagerMixin:CreateNotification(memberID, channelID, frameTemplate, isLocalPlayer, parentFrame)

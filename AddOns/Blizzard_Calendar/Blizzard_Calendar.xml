@@ -909,11 +909,7 @@
 									<OnTabPressed>
 										EditBox_HandleTabbing(self, CALENDAR_CREATEEVENTFRAME_TAB_LIST);
 									</OnTabPressed>
-									<OnTextChanged>
-										ScrollingEdit_OnTextChanged(self, self:GetParent());
-										C_Calendar.EventSetDescription(self:GetText());
-										CalendarCreateEventCreateButton_Update();
-									</OnTextChanged>
+									<OnTextChanged function="CalendarCreateEventDescriptionEdit_OnTextChanged"/>
 									<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
 									<OnUpdate>
 										ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());

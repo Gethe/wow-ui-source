@@ -309,6 +309,13 @@
 	<Frame name="QuestMapFrame" enableMouse="true" mixin="QuestLogMixin" hidden="true">
 		<Size x="286" y="0"/>
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="QuestLogBackground" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="VerticalSeparator" inherits="!UI-Frame-InnerRightTile">
 					<Size x="3" y="0"/>
@@ -327,15 +334,6 @@
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" atlas="QuestLogBackground" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="3"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 				<ScrollChild>
 					<Frame parentKey="Contents" inherits="VerticalLayoutFrame">
 						<Size x="258" y="454"/>
@@ -343,81 +341,16 @@
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
 						<Frames>
-							<Frame parentKey="EmptySpacer">
-								<KeyValues>
-									<KeyValue key="layoutIndex" value="1" type="number"/>
-								</KeyValues>
-								<Size x="260" y="10"/>
-							</Frame>
-							<Frame parentKey="WarCampaignHeader" hidden="true">
-								<KeyValues>
-									<KeyValue key="layoutIndex" value="QUEST_LOG_WAR_CAMPAIGN_LAYOUT_INDEX" type="global"/>
-									<KeyValue key="topPadding" value="-10" type="number"/>
-								</KeyValues>
-								<Size x="260" y="62"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" x="1" y="1"/>
-								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture parentKey="Background" atlas="Campaign_Horde" useAtlasSize="true">
-											<Anchors>
-												<Anchor point="TOP" x="0" y="0"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="ARTWORK">
-										<FontString parentKey="Text" inherits="GameFontHighlightMedium">
-											<Anchors>
-												<Anchor point="TOPLEFT" x="18" y="-11"/>
-											</Anchors>
-										</FontString>
-										<FontString parentKey="Progress" inherits="GameFontNormalSmall">
-											<Anchors>
-												<Anchor point="TOPLEFT" relativeKey="$parent.Text" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-											</Anchors>
-										</FontString>
-									</Layer>
-									<Layer level="HIGHLIGHT">
-										<Texture parentKey="HighlightTexture" file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD">
-											<Size x="248" y="50"/>
-											<Anchors>
-												<Anchor point="BOTTOM" x="0" y="11"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnEnter function="QuestMapLog_ShowWarCampaignTooltip"/>
-									<OnLeave function="QuestMapLog_HideWarCampaignTooltip"/>
-								</Scripts>
-							</Frame>
-							<Frame parentKey="WarCampaignNextObjective" hidden="false">
-								<KeyValues>
-									<KeyValue key="layoutIndex" value="QUEST_LOG_WAR_CAMPAIGN_NEXT_OBJECTIVE_LAYOUT_INDEX" type="global"/>
-								</KeyValues>
-								<Size x="262" y="59"/>
-								<Layers>
-									<Layer level="ARTWORK">
-										<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT">
-											<Size x="220" y="0"/>
-											<Anchors>
-												<Anchor point="TOPLEFT" x="18" y="-12"/>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-							</Frame>
 							<Frame parentKey="Separator" hidden="true">
 								<KeyValues>
 									<KeyValue key="layoutIndex" value="QUEST_LOG_SEPARATOR_LAYOUT_INDEX" type="global"/>
 								</KeyValues>
-								<Size x="260" y="37"/>
+								<Size x="260" y="20"/>
 								<Layers>
 									<Layer level="OVERLAY">
 										<Texture parentKey="Divider" atlas="QuestLog_Divider" useAtlasSize="true">
 											<Anchors>
-												<Anchor point="CENTER"/>
+												<Anchor point="TOP" y="16"/>
 											</Anchors>
 										</Texture>
 									</Layer>
@@ -459,6 +392,7 @@
 											<Anchors>
 												<Anchor point="BOTTOM" x="0" y="10"/>
 											</Anchors>
+											<Color color="HIGHLIGHT_LIGHT_BLUE"/>
 										</Texture>
 									</Layer>
 								</Layers>
@@ -491,7 +425,7 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="ScrollBar">
+					<Slider parentKey="ScrollBar" inherits="UIPanelScrollBarTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="6" y="-18"/>
 							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="18"/>
@@ -566,7 +500,7 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<Frame parentKey="WarCampaignTooltip" inherits="WarCampaignTooltipTemplate"/>
+					<Frame parentKey="CampaignTooltip" inherits="CampaignTooltipTemplate"/>
 				</Frames>
 				<Scripts>
 					<OnLoad function="QuestsFrame_OnLoad"/>
@@ -754,7 +688,7 @@
 							</Frame>
 						</ScrollChild>
 						<Frames>
-							<Slider name="$parentScrollBar" parentKey="ScrollBar" inherits="MinimalScrollBarTemplate">
+							<Slider parentKey="ScrollBar" inherits="MinimalScrollBarTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-14"/>
 									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="14"/>
@@ -834,7 +768,7 @@
 								</Layers>
 								<Scripts>
 									<OnClick>
-										ShowQuestComplete(GetQuestLogSelection());
+										ShowQuestComplete(C_QuestLog.GetSelectedQuest());
 										AutoQuestPopupTracker_RemovePopUp(QuestMapFrame.DetailsFrame.questID);
 									</OnClick>
 									<OnShow>
@@ -900,6 +834,12 @@
 					<OnShow function="QuestDetailsFrame_OnShow"/>
 					<OnHide function="QuestDetailsFrame_OnHide"/>
 				</Scripts>
+			</Frame>
+			<Frame parentKey="CampaignOverview" inherits="CampaignOverviewTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.QuestsFrame"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.QuestsFrame"/>
+				</Anchors>
 			</Frame>
 		</Frames>
 		<Scripts>

@@ -1,0 +1,12 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ScriptedAnimations.lua"/>
+
+	<ModelScene name="ScriptAnimatedModelSceneTemplate" mixin="ScriptAnimatedModelSceneMixin" inherits="NonInteractableModelSceneMixinTemplate" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</ModelScene>
+</Ui>

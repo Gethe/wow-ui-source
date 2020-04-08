@@ -6,11 +6,11 @@ QUEST_TAG_DUNGEON_TYPES = {
 };
 
 WORLD_QUEST_TYPE_DUNGEON_TYPES = {
-	[LE_QUEST_TAG_TYPE_DUNGEON] = true,
-	[LE_QUEST_TAG_TYPE_RAID] = true,
-}
+	[Enum.QuestTagType.Dungeon] = true,
+	[Enum.QuestTagType.Raid] = true,
+};
 
-local ECHOS_OF_NYLOTHA_CURRENCY_ID = 1803; 
+local ECHOS_OF_NYLOTHA_CURRENCY_ID = 1803;
 
 WorldQuestsSecondsFormatter = CreateFromMixins(SecondsFormatterMixin);
 WorldQuestsSecondsFormatter:Init(SECONDS_PER_MIN, SecondsFormatter.Abbreviation.None, false);
@@ -63,33 +63,32 @@ end
 
 QuestUtil = {};
 
-function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskillLineIndex)
+function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskillLineID)
 	local iconAtlas;
-	local tradeskillLineID = tradeskillLineIndex and select(7, GetProfessionInfo(tradeskillLineIndex));
 	if ( inProgress ) then
 		return "worldquest-questmarker-questionmark", 10, 15;
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PVP ) then
+	elseif ( worldQuestType == Enum.QuestTagType.Pvp ) then
 		iconAtlas =  "worldquest-icon-pvp-ffa";
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PET_BATTLE ) then
+	elseif ( worldQuestType == Enum.QuestTagType.PetBattle ) then
 		iconAtlas =  "worldquest-icon-petbattle";
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION and WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID] ) then
+	elseif ( worldQuestType == Enum.QuestTagType.Profession and WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID] ) then
 		iconAtlas =  WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID];
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_DUNGEON ) then
+	elseif ( worldQuestType == Enum.QuestTagType.Dungeon ) then
 		iconAtlas =  "worldquest-icon-dungeon";
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_RAID ) then
+	elseif ( worldQuestType == Enum.QuestTagType.Raid ) then
 		iconAtlas =  "worldquest-icon-raid";
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_INVASION ) then
+	elseif ( worldQuestType == Enum.QuestTagType.Invasion ) then
 		iconAtlas =  "worldquest-icon-burninglegion";
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_ISLANDS ) then
+	elseif ( worldQuestType == Enum.QuestTagType.Islands ) then
 		iconAtlas ="poi-islands-table";
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_FACTION_ASSAULT ) then
+	elseif ( worldQuestType == Enum.QuestTagType.FactionAssault ) then
 		local factionTag = UnitFactionGroup("player");
 		if factionTag == "Alliance" then
 			iconAtlas = "worldquest-icon-alliance";
 		else -- "Horde" or "Neutral"
 			iconAtlas = "worldquest-icon-horde";
 		end
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_THREAT ) then
+	elseif ( worldQuestType == Enum.QuestTagType.Threat ) then
 		iconAtlas = "worldquest-icon-nzoth";
 	else
 		return "worldquest-questmarker-questbang", 6, 15;
@@ -97,6 +96,54 @@ function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskill
 
 	local info = C_Texture.GetAtlasInfo(iconAtlas);
 	return iconAtlas, info and info.width, info and info.height;
+end
+
+function QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCampaign)
+	if isLegendary then
+		return "Interface/GossipFrame/AvailableLegendaryQuestIcon";
+	elseif isCampaign then
+		return "Interface/GossipFrame/AvailableQuestIcon"; -- This texture is not correct, but the asset doesn't exist yet...
+	elseif frequency ~= Enum.QuestFrequency.Default then
+		return "Interface/GossipFrame/DailyQuestIcon";
+	elseif isRepeatable then
+		return "Interface/GossipFrame/DailyActiveQuestIcon";
+	end
+
+	return "Interface/GossipFrame/AvailableQuestIcon";
+end
+
+function QuestUtil.GetQuestIconActive(isComplete, isLegendary, frequency, isRepeatable, isCampaign)
+	-- Frequency and isRepeatable aren't used yet, reserved for differentiating daily/weekly quests from other ones...
+	if isComplete then
+		if isLegendary then
+			return "Interface/GossipFrame/ActiveLegendaryQuestIcon";
+		elseif isCampaign then
+			return "Interface/GossipFrame/ActiveQuestIcon"; -- Not correct, needs asset
+		else
+			return "Interface/GossipFrame/ActiveQuestIcon";
+		end
+	else
+		-- This is the only incomplete icon right now, need to update logic to have different icons for campaigns
+		return "Interface/GossipFrame/IncompleteQuestIcon";
+	end
+end
+
+function QuestUtil.GetQuestIconOfferForQuestID(questID)
+	local quest = QuestCache:Get(questID);
+	if quest then
+		return QuestUtil.GetQuestIconOffer(quest:IsLegendary(), quest.frequency, quest:IsRepeatable(), quest:IsCampaign());
+	end
+
+	return "Interface/GossipFrame/AvailableQuestIcon";
+end
+
+function QuestUtil.GetQuestIconActiveForQuestID(questID)
+	local quest = QuestCache:Get(questID);
+	if quest then
+		return QuestUtil.GetQuestIconActive(quest:IsComplete(), quest:IsLegendary(), quest.frequency, quest:IsRepeatable(), quest:IsCampaign());
+	end
+
+	return "Interface/GossipFrame/IncompleteQuestIcon";
 end
 
 local function ApplyTextureToPOI(texture, width, height)
@@ -147,30 +194,29 @@ local function ApplyStandardTexturesToPOI(button, selected)
 	button:GetHighlightTexture():SetTexCoord(0.625, 0.750, 0.875, 1);
 end
 
-function QuestUtil.SetupWorldQuestButton(button, worldQuestType, rarity, isElite, tradeskillLineIndex, inProgress, selected, isCriteria, isSpellTarget, isEffectivelyTracked)
+function QuestUtil.SetupWorldQuestButton(button, info, inProgress, selected, isCriteria, isSpellTarget, isEffectivelyTracked)
 	button.Glow:SetShown(selected);
 
-	if rarity == LE_WORLD_QUEST_QUALITY_COMMON then
+	if info.quality == Enum.WorldQuestQuality.Common then
 		ApplyStandardTexturesToPOI(button, selected);
-	elseif rarity == LE_WORLD_QUEST_QUALITY_RARE then
+	elseif info.quality == Enum.WorldQuestQuality.Rare then
 		ApplyAtlasTexturesToPOI(button, "worldquest-questmarker-rare", "worldquest-questmarker-rare-down", "worldquest-questmarker-rare", 18, 18);
-	elseif rarity == LE_WORLD_QUEST_QUALITY_EPIC then
+	elseif info.quality == Enum.WorldQuestQuality.Epic then
 		ApplyAtlasTexturesToPOI(button, "worldquest-questmarker-epic", "worldquest-questmarker-epic-down", "worldquest-questmarker-epic", 18, 18);
 	end
 
 	if ( button.SelectedGlow ) then
-		button.SelectedGlow:SetShown(rarity ~= LE_WORLD_QUEST_QUALITY_COMMON and selected);
+		button.SelectedGlow:SetShown(info.quality ~= Enum.WorldQuestQuality.Common and selected);
 	end
 
-	if ( isElite ) then
+	if ( info.isElite ) then
 		button.Underlay:SetAtlas("worldquest-questmarker-dragon");
 		button.Underlay:Show();
 	else
 		button.Underlay:Hide();
 	end
 
-	local tradeskillLineID = tradeskillLineIndex and select(7, GetProfessionInfo(tradeskillLineIndex));
-	local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskillLineIndex)
+	local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(info.worldQuestType, inProgress, info.tradeskillLineID);
 	button.Texture:SetAtlas(atlas);
 	button.Texture:SetSize(width, height);
 
@@ -200,35 +246,34 @@ function QuestUtils_GetQuestTagTextureCoords(tagID, worldQuestType)
 end
 
 function QuestUtils_IsQuestWorldQuest(questID)
-	local _, _, worldQuestType = GetQuestTagInfo(questID);
-	return IsQuestWorldQuest_Internal(worldQuestType);
+	return C_QuestLog.IsWorldQuest(questID);
 end
 
 function QuestUtils_IsQuestDungeonQuest(questID)
-	local tagID, _, worldQuestType = GetQuestTagInfo(questID);
-	return IsQuestDungeonQuest_Internal(tagID, worldQuestType);
+	local info = C_QuestLog.GetQuestTagInfo(questID);
+	return info and IsQuestDungeonQuest_Internal(info.tagID, info.worldQuestType);
 end
 
 function QuestUtils_IsQuestBonusObjective(questID)
-	return IsQuestTask(questID) and not QuestUtils_IsQuestWorldQuest(questID);
+	return C_QuestLog.IsQuestTask(questID) and not QuestUtils_IsQuestWorldQuest(questID);
 end
 
 function QuestUtils_GetQuestTypeTextureMarkupString(questID, iconWidth, iconHeight)
-	local tagID, tagName, worldQuestType = GetQuestTagInfo(questID);
+	local info = C_QuestLog.GetQuestTagInfo(questID);
 
 	-- NOTE: For now, only allow dungeon quests to get markup
-	if IsQuestDungeonQuest_Internal(tagID, worldQuestType) then
-		return GetTextureMarkupStringFromTagData(tagID, worldQuestType, tagName, iconWidth, iconHeight);
+	if info and IsQuestDungeonQuest_Internal(info.tagID, info.worldQuestType) then
+		return GetTextureMarkupStringFromTagData(info.tagID, info.worldQuestType, info.tagName, iconWidth, iconHeight);
 	end
 end
 
 function QuestUtils_AddQuestTypeToTooltip(tooltip, questID, color, iconWidth, iconHeight)
-	local tagID, tagName, worldQuestType = GetQuestTagInfo(questID);
+	local info = C_QuestLog.GetQuestTagInfo(questID);
 
 	-- NOTE: See above, for now only add dungeons quests to quest tooltips.  Can add a set of filters or a predicate to evaluate
 	-- whether or not we want to add this in the future.
-	if IsQuestDungeonQuest_Internal(tagID, worldQuestType) then
-		AddQuestTagTooltipLine(tooltip, tagID, worldQuestType, tagName, iconWidth, iconHeight, color);
+	if info and IsQuestDungeonQuest_Internal(info.tagID, info.worldQuestType) then
+		AddQuestTagTooltipLine(tooltip, info.tagID, info.worldQuestType, info.tagName, iconWidth, iconHeight, color);
 	end
 end
 
@@ -240,17 +285,7 @@ end
 
 function QuestUtils_GetQuestName(questID)
 	-- TODO: Make unified API for this?
-	local questName = C_TaskQuest.GetQuestInfoByQuestID(questID);
-	if not questName then
-		local questIndex = GetQuestLogIndexByID(questID);
-		if questIndex and questIndex > 0 then
-			questName = GetQuestLogTitle(questIndex);
-		else
-			questName = C_QuestLog.GetQuestInfo(questID);
-		end
-	end
-
-	return questName or "";
+	return C_TaskQuest.GetQuestInfoByQuestID(questID) or C_QuestLog.GetTitleForQuestID(questID) or "";
 end
 
 local function ShouldShowWarModeBonus(questID, currencyID, firstInstance)
@@ -412,7 +447,7 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 	local uniqueCurrencyIDs = { };
 	for i = 1, numQuestCurrencies do
 		local name, texture, numItems, currencyID = GetQuestLogRewardCurrencyInfo(i, questID);
-		local rarity = select(8, GetCurrencyInfo(currencyID));
+		local rarity = C_CurrencyInfo.GetCurrencyInfo(currencyID).quality;
 		local firstInstance = not uniqueCurrencyIDs[currencyID];
 		if firstInstance then
 			uniqueCurrencyIDs[currencyID] = true;
@@ -539,6 +574,21 @@ function QuestUtils_GetQuestTimeColor(secondsRemaining)
 end
 
 function QuestUtils_ShouldDisplayExpirationWarning(questID)
-	local displayExpiration = select(7, GetQuestTagInfo(questID));
-	return displayExpiration;
+	local info = C_QuestLog.GetQuestTagInfo(questID);
+	return not info or info.displayExpiration;
+end
+
+function QuestUtils_GetNumPartyMembersOnQuest(questID)
+	local count = 0;
+	for i = 1, GetNumSubgroupMembers() do
+		if C_QuestLog.IsUnitOnQuest("party"..i, questID) then
+			count = count + 1;
+		end
+	end
+
+	return count;
+end
+
+function QuestUtils_IsQuestWatched(questID)
+	return questID and C_QuestLog.GetQuestWatchType(questID) ~= nil;
 end

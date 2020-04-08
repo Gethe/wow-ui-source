@@ -23,7 +23,7 @@ function MapLinkPinMixin:OnAcquired(mapLink) -- override
 	self.linkedUiMapID = mapLink.linkedUiMapID;
 end
 
-function MapLinkPinMixin:OnClick()
+function MapLinkPinMixin:OnMouseClickAction()
 	self:GetMap():SetMapID(self.linkedUiMapID);
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
 end

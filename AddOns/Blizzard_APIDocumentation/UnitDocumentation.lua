@@ -274,6 +274,20 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitNameplateShowsWidgetsOnly",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "nameplateShowsWidgetsOnly", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitPower",
 			Type = "Function",
 
@@ -345,6 +359,34 @@ local Unit =
 			Returns =
 			{
 				{ Name = "classification", Type = "PvpUnitClassification", Nilable = true },
+			},
+		},
+		{
+			Name = "UnitQuestTrivialLevelRange",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "levelRange", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitQuestTrivialLevelRangeScaling",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "levelRange", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -943,15 +985,6 @@ local Unit =
 			Name = "UnitHealth",
 			Type = "Event",
 			LiteralName = "UNIT_HEALTH",
-			Payload =
-			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
-			},
-		},
-		{
-			Name = "UnitHealthFrequent",
-			Type = "Event",
-			LiteralName = "UNIT_HEALTH_FREQUENT",
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "string", Nilable = false },

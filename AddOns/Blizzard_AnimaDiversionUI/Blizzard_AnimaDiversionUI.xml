@@ -1,0 +1,79 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_AnimaDiversionUI.lua"/>
+	
+	<Frame name="AnimaDiversionFrame" inherits="MapCanvasFrameTemplate" toplevel="true" mixin="AnimaDiversionFrameMixin" enableMouse="true" parent="UIParent" frameStrata="DIALOG" hidden="true">
+		<Size x="925" y="635"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="0"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-6" y="6"/>
+					<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="BorderFrame" frameLevel="510">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-16" y="3"/>
+					<Anchor point="BOTTOMRIGHT" x="3" y="-12"/>
+				</Anchors>
+			</Frame>
+			<ScrollFrame parentKey="ScrollContainer" inherits="MapCanvasFrameScrollContainerTemplate"/>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="510">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-5" y="-5" />
+				</Anchors>
+			</Button>
+			<Frame parentKey="SelectPinInfoFrame" mixin="AnimaDiversionSelectionInfoMixin" frameLevel="515" inherits="GlowBoxTemplate">
+				<Size x="150" y="150"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" justifyV="BOTTOM" justifyH="LEFT" inherits="GameFontNormal">
+							<Size x="140" y="0"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Description" justifyV="BOTTOM" justifyH="LEFT" inherits="GameFontNormal">
+							<Size x="140" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-15"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Cost" justifyV="BOTTOM" justifyH="LEFT" inherits="GameFontNormal">
+							<Size x="140" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="0" y="-15"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="AlreadySelected" justifyV="BOTTOM" justifyH="LEFT" inherits="GameFontNormal" text="ANIMA_DIVERSION_NODE_SELECTED" hidden="true">
+							<Size x="140" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Cost" relativePoint="BOTTOM" x="0" y="-20" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="SelectButton" inherits="UIPanelButtonTemplate" mixin="AnimaDiversionSelectButtonMixin" text="ANIMA_DIVERSION_DIVERT_ANIMA">
+						<Size x="100" y="25"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.Cost" relativePoint="BOTTOM" x="0" y="-20" />
+						</Anchors>
+						<Scripts>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -8,7 +8,7 @@ function PVPConquestRewardMixin:Setup(questID, seasonState, tooltipAnchor)
 		self.CheckMark:Show();
 		self.CheckMark:SetDesaturated(true);
 	else
-		if IsQuestComplete(questID) then
+		if C_QuestLog.IsComplete(questID) then
 			self.CheckMark:Show();
 			self.CheckMark:SetDesaturated(false);
 		else
@@ -57,7 +57,7 @@ function PVPConquestRewardMixin:TryShowTooltip()
 	elseif self.questID and self:IsMouseOver() then
 		EmbeddedItemTooltip:SetOwner(self, self.questTooltipAnchor);
 		GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_CONQUEST);
-		if IsQuestComplete(self.questID) then
+		if C_QuestLog.IsComplete(self.questID) then
 			GameTooltip_AddNormalLine(EmbeddedItemTooltip, CONQUEST_BAR_REWARD_COLLECT, WORD_WRAP);
 			GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
 		end
@@ -189,7 +189,7 @@ end
 PVPLootMixin = CreateFromMixins(LootItemExtendedMixin);
 function PVPLootMixin:Init(itemLink, quantity, specID, isCurrency, isUpgraded, isIconBorderShown, isIconBorderDropShadowShown, iconDrawLayer)
 	LootItemExtendedMixin.Init(self, itemLink, quantity, specID, isCurrency, isUpgraded, isIconBorderShown, isIconBorderDropShadowShown, iconDrawLayer);
-	
+
 	self.link = itemLink;
 end
 function PVPLootMixin:OnEnter()

@@ -1854,7 +1854,7 @@ function LFGList_DefaultFilterFunction(dungeonID, maxLevelDiff)
 	end
 
 	--If we're too high above the recommended level, we won't display it
-	if ( level - maxLevelDiff > recLevel ) then
+	if maxLevelDiff and ( level - maxLevelDiff > recLevel ) then
 		return false;
 	end
 

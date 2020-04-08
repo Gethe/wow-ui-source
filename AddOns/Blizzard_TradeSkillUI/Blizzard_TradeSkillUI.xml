@@ -229,6 +229,12 @@
 			</Button>
 
 			<Frame parentKey="LinkToDropDown" name="TradeSkillLinkToDropDown" inherits="UIDropDownMenuTemplate" />
+
+			<Frame parentKey="OptionalReagentList" inherits="OptionalReagentListTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" />

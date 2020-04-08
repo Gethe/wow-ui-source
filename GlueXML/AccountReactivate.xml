@@ -155,7 +155,7 @@
 		</Layers>
 		<Frames>
 			<Button parentKey="Accept" inherits="GlueDialogButtonTemplate" text="ACCEPT_GLUE">
-				<Size x="132" y="44"/>
+				<Size x="132" y="30"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.LogoutNotice" relativePoint="BOTTOM" x="-4" y="-8"/>
 				</Anchors>
@@ -170,7 +170,7 @@
 				</Scripts>
 			</Button>
 			<Button parentKey="Cancel" inherits="GlueDialogButtonTemplate" text="CANCEL">
-				<Size x="132" y="44"/>
+				<Size x="132" y="30"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Accept" relativePoint="RIGHT" x="8" y="0"/>
 				</Anchors>
@@ -186,7 +186,7 @@
 		</Frames>
 		<Scripts>
 			<OnShow>
-				self:SetHeight( 60 + self.Description:GetHeight() + 96 + self.Accept:GetHeight() + self.LogoutNotice:GetHeight() + 20 );
+				self:SetHeight( 60 + self.Description:GetHeight() + 96 + self.Accept:GetHeight() + self.LogoutNotice:GetHeight() + 30 );
 			</OnShow>
 			<OnHide>
 				if (self.ticker) then
@@ -233,7 +233,7 @@
 		</Layers>
 		<Frames>
 			<Button parentKey="Accept" inherits="GlueDialogButtonTemplate" text="ACCEPT_GLUE">
-				<Size x="192" y="44"/>
+				<Size x="170" y="30"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.LogoutNotice" relativePoint="BOTTOM" x="-6" y="-8"/>
 				</Anchors>
@@ -248,7 +248,7 @@
 				</Scripts>
 			</Button>
 			<Button parentKey="Cancel" inherits="GlueDialogButtonTemplate" text="CANCEL">
-				<Size x="192" y="44"/>
+				<Size x="170" y="30"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Accept" relativePoint="RIGHT" x="13" y="0"/>
 				</Anchors>
@@ -285,7 +285,7 @@
 				<FontString parentKey="ButtonDivider" inherits="GlueFontNormal" text="ACCOUNT_REACTIVATE_BUTTON_DIVIDER">
 					<Size x="400" y="12"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" x="0" y="-54"/>
+						<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" x="0" y="-62"/>
 					</Anchors>
 					<Color r="0.5" g="0.5" b="0.5"/>
 				</FontString>
@@ -301,8 +301,8 @@
 					<OnClick function="AccountReactivate_ReactivateNow"/>
 				</Scripts>
 			</Button>
-			<Button parentKey="Reactivate" inherits="GluePanelButtonTemplate" motionScriptsWhileDisabled="true">
-				<Size x="320" y="48"/>
+			<Button parentKey="Reactivate" inherits="GlueDialogButtonTemplate" motionScriptsWhileDisabled="true">
+				<Size x="250" y="44"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.ButtonDivider" relativePoint="BOTTOM" x="0" y="-4"/>
 				</Anchors>

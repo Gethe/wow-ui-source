@@ -63,7 +63,7 @@ function ClassPowerBar:OnEvent(event, ...)
 end
 
 function ClassPowerBar:OnEnter()
-	GameTooltip_SetDefaultAnchor(GameTooltip, self);
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
 	GameTooltip:SetText(self.tooltipTitle, 1, 1, 1);
 	GameTooltip:AddLine(self.tooltip, nil, nil, nil, true);
 	GameTooltip:Show();

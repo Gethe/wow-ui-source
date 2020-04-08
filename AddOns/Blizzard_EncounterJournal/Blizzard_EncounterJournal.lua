@@ -171,7 +171,7 @@ local EncounterJournalSlotFilters = {
 	{ invType = LE_ITEM_FILTER_TYPE_OFF_HAND, invTypeName = INVTYPE_WEAPONOFFHAND },
 	{ invType = LE_ITEM_FILTER_TYPE_FINGER, invTypeName = INVTYPE_FINGER },
 	{ invType = LE_ITEM_FILTER_TYPE_TRINKET, invTypeName = INVTYPE_TRINKET },
-	{ invType = LE_ITEM_FILTER_TYPE_ARTIFACT_RELIC, invTypeName = EJ_LOOT_SLOT_FILTER_ARTIFACT_RELIC },
+	{ invType = LE_ITEM_FILTER_TYPE_OTHER, invTypeName = EJ_LOOT_SLOT_FILTER_OTHER },
 }
 
 local BOSS_LOOT_BUTTON_HEIGHT = 45;
@@ -297,7 +297,7 @@ function EncounterJournal_OnShow(self)
 	if ( tonumber(GetCVar("advJournalLastOpened")) == 0 ) then
 		SetCVar("advJournalLastOpened", GetServerTime() );
 	end
-	EJMicroButtonAlert:Hide();
+	MainMenuMicroButton_HideAlert(EJMicroButton);
 	MicroButtonPulseStop(EJMicroButton);
 
 	UpdateMicroButtons();
@@ -341,22 +341,11 @@ function EncounterJournal_OnShow(self)
 	instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
 	instanceSelect.raidsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 	instanceSelect.dungeonsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
-	EncounterJournal_CheckLevelAndDisplayLootTab();
 
 	-- Request raid locks to show the defeated overlay for bosses the player has killed this week.
 	RequestRaidInfo();
 end
 
-function EncounterJournal_CheckLevelAndDisplayLootTab()
-
-	local instanceSelect = EncounterJournal.instanceSelect;
-
-	if(UnitLevel("player") < 100) then
-		PanelTemplates_HideTab(instanceSelect, instanceSelect.LootJournalTab.id)
-	else
-		PanelTemplates_ShowTab(instanceSelect, instanceSelect.LootJournalTab.id)
-	end
-end
 function EncounterJournal_OnHide(self)
 	self:UnregisterEvent("SPELL_TEXT_UPDATE");
 	UpdateMicroButtons();
@@ -469,8 +458,6 @@ function EncounterJournal_OnEvent(self, event, ...)
 		EncounterJournal_UpdatePortraits();
 	elseif event == "SEARCH_DB_LOADED" then
 		EncounterJournal_RestartSearchTracking();
-	elseif event == "PLAYER_LEVEL_UP" and EncounterJournal:IsShown() then
-		EncounterJournal_CheckLevelAndDisplayLootTab();
 	elseif event == "UI_MODEL_SCENE_INFO_UPDATED" then
 		local forceUpdate = true;
 		EncounterJournal_ShowCreatures(forceUpdate);
@@ -2451,18 +2438,9 @@ function EJ_HideInstances(index)
 	end
 end
 
+-- TODO: Fix for Level Squish
 function EJSuggestTab_GetPlayerTierIndex()
-	local playerLevel = UnitLevel("player");
-	local expansionId = LE_EXPANSION_LEVEL_CURRENT;
-	local minDiff = MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT];
-	for tierId, tierLevel in pairs(MAX_PLAYER_LEVEL_TABLE) do
-		local diff = tierLevel - playerLevel;
-		if ( diff > 0 and diff < minDiff ) then
-			expansionId = tierId;
-			minDiff = diff;
-		end
-	end
-	return GetEJTierDataTableID(expansionId);
+	return GetEJTierDataTableID(GetExpansionForLevel(UnitLevel("player")));
 end
 
 function EJ_ContentTab_OnClick(self)
@@ -2502,7 +2480,6 @@ function EJ_ContentTab_Select(id)
 
 	if ( id == instanceSelect.suggestTab.id ) then
 		EJ_HideInstances();
-		EJ_HideLootJournalPanel();
 		instanceSelect.scroll:Hide();
 		EncounterJournal.suggestFrame:Show();
 		if ( not instanceSelect.dungeonsTab.grayBox:IsShown() or not instanceSelect.raidsTab.grayBox:IsShown() ) then
@@ -2510,12 +2487,6 @@ function EJ_ContentTab_Select(id)
 		else
 			EncounterJournal_EnableTierDropDown();
 		end
-	elseif ( id == instanceSelect.LootJournalTab.id ) then
-		EJ_HideInstances();
-		EJ_HideSuggestPanel();
-		instanceSelect.scroll:Hide();
-		EncounterJournal_DisableTierDropDown(true);
-		EncounterJournal.LootJournal:Show();
 	elseif ( id == instanceSelect.dungeonsTab.id or id == instanceSelect.raidsTab.id ) then
 		EJ_HideNonInstancePanels();
 		instanceSelect.scroll:Show();
@@ -2546,16 +2517,8 @@ function EJ_HideSuggestPanel()
 	end
 end
 
-function EJ_HideLootJournalPanel()
-	-- might not exist yet since its xml gets loaded after EJ
-	if ( EncounterJournal.LootJournal ) then
-		EncounterJournal.LootJournal:Hide();
-	end
-end
-
 function EJ_HideNonInstancePanels()
 	EJ_HideSuggestPanel();
-	EJ_HideLootJournalPanel();
 end
 
 function EJTierDropDown_OnLoad(self)
@@ -2796,7 +2759,6 @@ function EJSuggestFrame_OnLoad(self)
 
 	self:RegisterEvent("AJ_REWARD_DATA_RECEIVED");
 	self:RegisterEvent("AJ_REFRESH_DISPLAY");
-	self:RegisterEvent("PLAYER_LEVEL_UP");
 end
 
 function EJSuggestFrame_OnEvent(self, event, ...)
@@ -3150,17 +3112,18 @@ function AdventureJournal_Reward_OnEnter(self)
 
 			SetItemButtonQuality(frame.Item1, quality, rewardData.itemLink);
 
-			if (quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+			if (quality > Enum.ItemQuality.Common and BAG_ITEM_QUALITY_COLORS[quality]) then
 				frame.Item1.text:SetTextColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
 			end
 
-			local currencyName, amount, currencyTexture, _, _, _, _, quality = GetCurrencyInfo(rewardData.currencyType);
-			frame.Item2.icon:SetTexture(currencyTexture);
-			frame.Item2.text:SetText(currencyName);
+			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(rewardData.currencyType);
+			local quality = currencyInfo.quality;
+			frame.Item2.icon:SetTexture(currencyInfo.iconFileID);
+			frame.Item2.text:SetText(currencyInfo.name);
 			frame.Item2:Show();
 
 			SetItemButtonQuality(frame.Item2, quality);
-			if (quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+			if (quality > Enum.ItemQuality.Common and BAG_ITEM_QUALITY_COLORS[quality]) then
 				frame.Item2.text:SetTextColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
 			end
 
@@ -3212,7 +3175,7 @@ function AdventureJournal_Reward_OnEnter(self)
 			elseif ( rewardData.currencyType ) then
 				tooltip:SetCurrencyByID(rewardData.currencyType);
 
-				local quality = select(8, GetCurrencyInfo(rewardData.currencyType));
+				local quality = C_CurrencyInfo.GetCurrencyInfo(rewardData.currencyType).quality;
 
 				SetItemButtonQuality(frame.Item1, quality);
 

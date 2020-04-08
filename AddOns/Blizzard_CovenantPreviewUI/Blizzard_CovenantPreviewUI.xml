@@ -1,0 +1,170 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_CovenantPreviewUI.lua"/>
+	
+		<Button name="CovenantAbilityButtonTemplate" mixin="CovenantAbilityButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="208" y="46"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="PetList-ButtonBackground" parentKey="background"/>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="LEFT" x="5" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="-1">
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" JustifyV="BOTTOM">
+					<Size x="147" y="25"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="10" y="10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Type" inherits="GameFontHighlight" justifyH="LEFT" JustifyV="BOTTOM">
+					<Size x="147" y="25"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.Name" x="0" y="10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/> 
+		</Scripts>
+	</Button>
+
+	<Frame name="CovenantPreviewFrame" toplevel="true" mixin="CovenantPreviewFrameMixin" enableMouse="true" parent="UIParent" frameStrata="DIALOG" hidden="true">
+		<Size x="1150" y="607"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="0"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" setAllPoints="true"/>
+			<Frame parentKey="BorderFrame" frameLevel="510">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-6" y="6"/>
+					<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+				</Anchors>
+				</Frame>
+			<Frame parentKey="Background" clipChildren="true" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" x="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="BackgroundTile" atlas="UI-Frame-Neutral-BackgroundTile" horizTile="true" vertTile="true" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Title">
+				<Size x="0" y="85"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-25"/>
+					<Anchor point="LEFT" x="30" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Left" atlas="UI-Frame-Neutral-TitleLeft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Right" atlas="UI-Frame-Neutral-TitleRight" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="Middle" atlas="_UI-Frame-Neutral-TitleMiddle" horizTile="true">
+							<Size x="0" y="85"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT" x="-60" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT" x="60" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="SystemFont_Large" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Middle"/>
+							</Anchors>
+							<Color r="1.0" g="0.82" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="ModelSceneContainer">
+				<Size x="400" y="450"/>
+				<Anchors>
+					<Anchor point="LEFT" x="0" y="-30"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="InfoPanel">
+				<Size x="500" y="450"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ModelSceneContainer" relativePoint="RIGHT" x="50"/> 
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Crest" atlas="AlliedRace-Crest-Nightborne" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<FontString parentKey="Name" JustifyH="LEFT" JustifyV="BOTTOM" inherits="QuestFont_Super_Huge">
+							<Size x="300" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Crest" relativePoint="RIGHT" x="28"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Location" JustifyH="LEFT" JustifyV="TOP" inherits="SystemFont_Large">
+							<Size x="300" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM" x="0" y="-15"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Description" JustifyH="LEFT" JustifyV="TOP" inherits="GameFontNormal">
+							<Size x="300" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Location" relativePoint="BOTTOM" x="0" y="-40"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="510">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="3" y="2" />
+				</Anchors>
+			</Button>
+			<Button parentKey="SelectButton" inherits="UIPanelButtonTemplate" text="OK">
+				<Size x="150" y="25"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="180" y="30" />
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

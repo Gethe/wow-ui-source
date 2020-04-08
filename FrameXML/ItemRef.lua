@@ -139,6 +139,12 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif ( strsub(link, 1, 6) == "pvpbgs" ) then
 		TogglePVPUI();
 		return;
+	elseif ( strsub(link, 1, 12) == "battleground" ) then
+		PVEFrame_ShowFrame("PVPUIFrame", HonorFrame);
+		HonorFrame_SetType("specific");
+		local _, bgID = strsplit(":", link);
+		HonorFrameSpecificList_FindAndSelectBattleground(tonumber(bgID));
+		return;
 	elseif ( strsub(link, 1, 3) == "lfd" ) then
 		ToggleLFDParentFrame();
 		return;
@@ -346,6 +352,13 @@ function SetItemRef(link, text, button, chatFrame)
 		local _, clubFinderId = strsplit(":", link);
 		CommunitiesFrame:ClubFinderHyperLinkClicked(clubFinderId);
 		return;
+	elseif ( strsub(link, 1, 8) == "worldmap" ) then
+		local waypoint = C_Map.GetUserWaypointFromHyperlink(link);
+		if waypoint then
+			C_Map.SetUserWaypoint(waypoint);
+			OpenWorldMap(mapID);
+		end
+		return;
 	end
 
 	if ( IsModifiedClick() ) then
@@ -397,6 +410,8 @@ function GetFixedLink(text, quality)
 			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 12) == "transmogset" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
+		elseif ( strsub(text, startLink + 2, startLink + 9) == "worldmap" ) then
+			return (gsub(text, "(|H.+|h.+|h)", "|cffffff00%1|r", 1));
 		end
 	end
 	--Nothing to change.

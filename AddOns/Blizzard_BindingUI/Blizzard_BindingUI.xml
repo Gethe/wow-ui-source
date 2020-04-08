@@ -268,6 +268,7 @@
 		<Scripts>
 			<OnClick function="KeyBindingFrame_OnKeyDown"/>
 			<OnKeyDown function="KeyBindingFrame_OnKeyDown"/>
+			<OnGamePadDown function="KeyBindingFrame_OnKeyDown"/>
 			<OnShow function="KeyBindingFrame_OnShow"/>
 			<OnHide function="KeyBindingFrame_OnHide"/>
 			<OnLoad function="KeyBindingFrame_OnLoad"/>

@@ -25,8 +25,8 @@ local DEFAULT_BAR_WIDTH = 215;
 function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 
-	local frameTextureKit = GetUITextureKitInfo(widgetInfo.frameTextureKitID);
-	local fillTextureKit = GetUITextureKitInfo(widgetInfo.textureKitID);
+	local frameTextureKit = widgetInfo.frameTextureKit;
+	local fillTextureKit = widgetInfo.textureKit;
 	if frameTextureKit and fillTextureKit then
 		local fillAtlas = fillTextureKitFormatString:format(frameTextureKit, fillTextureKit);
 		self.Bar:SetStatusBarAtlas(fillAtlas);

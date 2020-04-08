@@ -27,51 +27,6 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<Frame name="MicroButtonAlertTemplate" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG" frameLevel="2" toplevel="true" virtual="true">
-		<Size x="220" y="100"/>
-		<!--KeyValues>
-			Optional
-			<KeyValue key="label" value="DISPLAY_STRING" type="global"/>
-			<KeyValue key="tutorialIndex" value="LE_FRAME_TUTORIAL_X" type="global"/>
-		</KeyValues-->
-		<Layers>
-			<Layer level="OVERLAY">
-				<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP">
-					<Size x="188" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="16" y="-24"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="6" y="6"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						MicroButtonAlert_OnAcknowledged(self:GetParent());
-						self:GetParent():Hide();
-						local tutIdx = self:GetParent().tutorialIndex;
-						if ( tutIdx ) then
-							SetCVarBitfield("closedInfoFrames", tutIdx, true);
-						end
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativePoint="BOTTOM" y="4"/>
-				</Anchors>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad function="MicroButtonAlert_OnLoad"/>
-			<OnShow function="MicroButtonAlert_OnShow"/>
-			<OnHide function="MicroButtonAlert_OnHide"/>
-		</Scripts>
-	</Frame>
 	<Button name="CharacterMicroButton" inherits="MainMenuBarMicroButton" mixin="CharacterMicroButtonMixin" parent="UIParent">
 		<Layers>
 			<Layer level="OVERLAY">
@@ -133,7 +88,7 @@
 				self.tooltipText = MicroButtonTooltipText(ACHIEVEMENT_BUTTON, "TOGGLEACHIEVEMENT");
 				self.newbieText = NEWBIE_TOOLTIP_ACHIEVEMENT;
 				self.minLevel = 10;	--Just used for display. But we know that it will become available by level 10 due to the level 10 achievement.
-				if (IsKioskModeEnabled()) then
+				if (Kiosk.IsEnabled()) then
 					self:Disable();
 				end
 			</OnLoad>
@@ -207,19 +162,10 @@
 			<Anchor point="BOTTOMLEFT" relativeTo="GuildMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad>
-				LoadMicroButtonTextures(self, "LFG");
-				SetDesaturation(self:GetDisabledTexture(), true);
-				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLEGROUPFINDER");
-				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
-				self.minLevel = math.min(SHOW_LFD_LEVEL, SHOW_PVP_LEVEL);
-				if (IsKioskModeEnabled()) then
-					self:Disable();
-				end
-			</OnLoad>
+			<OnLoad function="LFDMicroButton_OnLoad" />
 			<OnShow function="MicroButton_KioskModeDisable"/>
 			<OnEvent>
-				if (IsKioskModeEnabled()) then
+				if (Kiosk.IsEnabled()) then
 					return;
 				end
 				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLEGROUPFINDER");
@@ -242,6 +188,7 @@
 		<Scripts>
 			<OnLoad function="CollectionsMicroButton_OnLoad"/>
 			<OnEnter function="CollectionsMicroButton_OnEnter"/>
+			<OnShow function="MicroButton_KioskModeDisable"/>
 			<OnClick function="CollectionsMicroButton_OnClick"/>
 			<OnEvent function="CollectionsMicroButton_OnEvent"/>
 		</Scripts>
@@ -441,74 +388,4 @@
 			<OnClick function="ToggleHelpFrame"/>
 		</Scripts>
 	</Button>
-    <Frame name="CharacterMicroButtonAlert" inherits="MicroButtonAlertTemplate">
-        <KeyValues>
-            <KeyValue key="MicroButton" value="CharacterMicroButton" type="global"/>
-        </KeyValues>
-        <Scripts>
-            <OnLoad>
-                MicroButtonAlert_OnLoad(self);
-            </OnLoad>
-        </Scripts>
-    </Frame>
-	<Frame name="TalentMicroButtonAlert" inherits="MicroButtonAlertTemplate">
-		<KeyValues>
-			<KeyValue key="MicroButton" value="TalentMicroButton" type="global"/>
-		</KeyValues>
-		<Scripts>
-			<OnLoad>
-				MicroButtonAlert_OnLoad(self);
-			</OnLoad>
-		</Scripts>
-	</Frame>
-	<Frame name="CollectionsMicroButtonAlert" inherits="MicroButtonAlertTemplate">
-		<KeyValues>
-			<KeyValue key="MicroButton" value="CollectionsMicroButton" type="global"/>
-		</KeyValues>
-		<Scripts>
-			<OnLoad>
-				MicroButtonAlert_OnLoad(self);
-			</OnLoad>
-		</Scripts>
-	</Frame>
-	<Frame name="LFDMicroButtonAlert" inherits="MicroButtonAlertTemplate">
-		<KeyValues>
-			<KeyValue key="MicroButton" value="LFDMicroButton" type="global"/>
-		</KeyValues>
-		<Scripts>
-			<OnLoad>
-				MicroButtonAlert_OnLoad(self);
-				self.Text:SetText(LFG_MICRO_BUTTON_SPEC_TUTORIAL);
-			</OnLoad>
-		</Scripts>
-	</Frame>
-	<Frame name="EJMicroButtonAlert" inherits="MicroButtonAlertTemplate">
-		<KeyValues>
-			<KeyValue key="MicroButton" value="EJMicroButton" type="global"/>
-		</KeyValues>
-		<Scripts>
-			<OnLoad>
-				MicroButtonAlert_OnLoad(self);
-			</OnLoad>
-			<OnHide>
-				SetCVar("advJournalLastOpened", GetServerTime() );
-			</OnHide>
-		</Scripts>
-	</Frame>
-	<Frame name="StoreMicroButtonAlert" inherits="MicroButtonAlertTemplate">
-		<KeyValues>
-			<KeyValue key="MicroButton" value="StoreMicroButton" type="global"/>
-		</KeyValues>
-		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="StoreMicroButton" relativePoint="TOP" x="0" y="-8"/>
-		</Anchors>
-	</Frame>
-	<Frame name="GuildMicroButtonAlert" inherits="MicroButtonAlertTemplate">
-		<KeyValues>
-			<KeyValue key="MicroButton" value="GuildMicroButton" type="global"/>
-		</KeyValues>
-		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="GuildMicroButton" relativePoint="TOP" x="0" y="-8"/>
-		</Anchors>
-	</Frame>
 </Ui>

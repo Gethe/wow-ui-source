@@ -371,13 +371,13 @@ end
 
 UIWidgetBaseStateIconTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
 
-function UIWidgetBaseStateIconTemplateMixin:Setup(widgetContainer, textureKitID, textureKitFormatter, captureIconInfo)
+function UIWidgetBaseStateIconTemplateMixin:Setup(widgetContainer, textureKit, textureKitFormatter, captureIconInfo)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
 	if captureIconInfo.iconState == Enum.IconState.ShowState1 then
-		SetupTextureKitOnFrameByID(textureKitID, self.Icon, "%s-"..textureKitFormatter.."-state1", TextureKitConstants.SetVisiblity, TextureKitConstants.UseAtlasSize);
+		SetupTextureKitOnFrame(textureKit, self.Icon, "%s-"..textureKitFormatter.."-state1", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 		self:SetTooltip(captureIconInfo.state1Tooltip);
 	elseif captureIconInfo.iconState == Enum.IconState.ShowState2 then
-		SetupTextureKitOnFrameByID(textureKitID, self.Icon, "%s-"..textureKitFormatter.."-state2", TextureKitConstants.SetVisiblity, TextureKitConstants.UseAtlasSize);
+		SetupTextureKitOnFrame(textureKit, self.Icon, "%s-"..textureKitFormatter.."-state2", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 		self:SetTooltip(captureIconInfo.state2Tooltip);
 	else
 		self.Icon:Hide();
@@ -412,7 +412,7 @@ function UIWidgetBaseTextureAndTextTemplateMixin:OnLoad()
 	self.Text:SetFontObjectsToTry(); 
 end 
 
-function UIWidgetBaseTextureAndTextTemplateMixin:Setup(widgetContainer, text, tooltip, frameTextureKitID, textureKitID, textSizeType, layoutIndex)
+function UIWidgetBaseTextureAndTextTemplateMixin:Setup(widgetContainer, text, tooltip, frameTextureKit, textureKit, textSizeType, layoutIndex)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
 	self.layoutIndex = layoutIndex;
 
@@ -427,8 +427,8 @@ function UIWidgetBaseTextureAndTextTemplateMixin:Setup(widgetContainer, text, to
 	self.Text:SetText(text); 
 	self:SetTooltip(tooltip);
 
-	SetupTextureKitOnFrameByID(frameTextureKitID, self.Background, "%s"..textureKitAppend, TextureKitConstants.SetVisiblity, TextureKitConstants.UseAtlasSize);
-	SetupTextureKitOnFrameByID(textureKitID, self.Foreground, "%s"..textureKitAppend, TextureKitConstants.SetVisiblity, TextureKitConstants.UseAtlasSize);
+	SetupTextureKitOnFrame(frameTextureKit, self.Background, "%s"..textureKitAppend, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	SetupTextureKitOnFrame(textureKit, self.Foreground, "%s"..textureKitAppend, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 
 	self:MarkDirty(); -- The widget needs to resize based on whether the textures are shown or hidden
 end
@@ -527,9 +527,8 @@ function UIWidgetBaseControlZoneTemplateMixin:UpdateAnimations(zoneInfo, zoneIsG
 	end
 end
 
-function UIWidgetBaseControlZoneTemplateMixin:Setup(widgetContainer, zoneIndex, zoneMode, leadingEdgeType, dangerFlashType, zoneInfo, lastVals, textureKitID)
+function UIWidgetBaseControlZoneTemplateMixin:Setup(widgetContainer, zoneIndex, zoneMode, leadingEdgeType, dangerFlashType, zoneInfo, lastVals, textureKit)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
-	local textureKit = GetUITextureKitInfo(textureKitID);
 	if not textureKit then
 		self:Hide();
 		return;

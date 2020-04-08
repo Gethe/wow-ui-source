@@ -115,3 +115,15 @@ function SideDressUpModelFrameFrameMixin:OnHide()
 	UpdateUIPanelPositions();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 end
+
+TransmogAndMountDressupFrameMixin = {};
+
+function TransmogAndMountDressupFrameMixin:CheckButtonOnClick()
+	if(self.ShowMountCheckButton:GetChecked()) then
+		DressUpMount(self.mountID);
+	else
+		local sources = C_TransmogSets.GetAllSourceIDs(self.transmogSetID);
+		DressUpTransmogSet(sources);
+	end
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end

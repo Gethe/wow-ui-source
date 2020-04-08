@@ -96,10 +96,6 @@ function BaseExpandableDialogMixin:SetupTextureKit(textureKit, textureKitRegionI
 	SetupTextureKitsFromRegionInfo(textureKit, self, textureKitRegionInfo);
 end
 
-function BaseExpandableDialogMixin:SetupTextureKitByID(textureKitID)
-	SetupTextureKitsFromRegionInfoByID(textureKitID, self, textureKitRegionInfo);
-end
-
 -- override as needed
 function BaseExpandableDialogMixin:OnCloseClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
@@ -242,6 +238,15 @@ function ScriptErrorsFrameMixin:Update()
 	parent:SetVerticalScroll(0);
 
 	self:UpdateButtons();
+end
+
+local function GetNavigationButtonEnabledStates(count, index)
+	-- Returns indicate whether navigation for "previous" and "next" should be enabled, respectively.
+	if count > 1 then
+		return index > 1, index < count;
+	end
+
+	return false, false;
 end
 
 function ScriptErrorsFrameMixin:UpdateButtons()

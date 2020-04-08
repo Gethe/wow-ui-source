@@ -1,5 +1,5 @@
 
-CommunitiesFrameMixin = CreateFromMixins(CallbackRegistryBaseMixin);
+CommunitiesFrameMixin = CreateFromMixins(CallbackRegistryMixin);
 
 CommunitiesFrameMixin:GenerateCallbackEvents(
 {
@@ -89,7 +89,7 @@ function CommunitiesFrameMixin:RequestSubscribedClubFinderPostingInfo()
 end 
 
 function CommunitiesFrameMixin:OnLoad()
-	CallbackRegistryBaseMixin.OnLoad(self);
+	CallbackRegistryMixin.OnLoad(self);
 
 	self:SetTitle(COMMUNITIES_FRAME_TITLE);
 
@@ -136,7 +136,7 @@ function CommunitiesFrameMixin:OnShow()
 
 	self:UpdateClubSelection();
 	self:UpdateStreamDropDown();
-	GuildMicroButtonAlert:Hide();
+	MainMenuMicroButton_HideAlert(GuildMicroButton);
 	UpdateMicroButtons();
 	self:UpdateCommunitiesTabs();
 
@@ -144,12 +144,7 @@ function CommunitiesFrameMixin:OnShow()
 		self.CommunitiesList:ScrollToClub(self:GetSelectedClubId());
 	end
 
-	local function OnMemberListDropDownShown()
-		HelpTip:Acknowledge(self, CLUB_FINDER_TUTORIAL_APPLICANT_LIST);
-	end
-
-	self.memberListDropDownShownCallback = OnMemberListDropDownShown;
-	self:RegisterCallback(CommunitiesFrameMixin.Event.MemberListDropDownShown, self.memberListDropDownShownCallback);
+	self:RegisterCallback(CommunitiesFrameMixin.Event.MemberListDropDownShown, self.OnMemberListDropDownShown, self);
 end
 
 function CommunitiesFrameMixin:OnEvent(event, ...)
@@ -300,6 +295,10 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 
 		InitSeenApplicants();
 	end
+end
+
+function CommunitiesFrameMixin:OnMemberListDropDownShown()
+	HelpTip:Acknowledge(self, CLUB_FINDER_TUTORIAL_APPLICANT_LIST);
 end
 
 function CommunitiesFrameMixin:HasNewClubApplications(clubId)
@@ -1450,7 +1449,7 @@ function CommunitiesFrameMixin:OnHide()
 	self.GuildFinderFrame:ClearAllCardLists();
 	self.CommunityFinderFrame:ClearAllCardLists();
 
-	self:UnregisterCallback(CommunitiesFrameMixin.Event.MemberListDropDownShown, self.memberListDropDownShownCallback);
+	self:UnregisterCallback(CommunitiesFrameMixin.Event.MemberListDropDownShown, self);
 end
 
 function CommunitiesFrameMixin:ShowCreateChannelDialog()

@@ -2138,7 +2138,7 @@ function WardrobeSetsTransmogModelMixin:RefreshTooltip()
 	if ( waitingOnQuality ) then
 		GameTooltip:SetText(RETRIEVING_ITEM_INFO, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 	else
-		local setQuality = (numTotalSlots > 0 and totalQuality > 0) and Round(totalQuality / numTotalSlots) or LE_ITEM_QUALITY_COMMON;
+		local setQuality = (numTotalSlots > 0 and totalQuality > 0) and Round(totalQuality / numTotalSlots) or Enum.ItemQuality.Common;
 		local color = ITEM_QUALITY_COLORS[setQuality];
 		local setInfo = C_TransmogSets.GetSetInfo(self.setID);
 		GameTooltip:SetText(setInfo.name, color.r, color.g, color.b);
@@ -3367,11 +3367,11 @@ end
 function WardrobeSetsCollectionMixin:SetItemFrameQuality(itemFrame)
 	if ( itemFrame.collected ) then
 		local quality = C_TransmogCollection.GetSourceInfo(itemFrame.sourceID).quality;
-		if ( quality == LE_ITEM_QUALITY_UNCOMMON ) then
+		if ( quality == Enum.ItemQuality.Uncommon ) then
 			itemFrame.IconBorder:SetAtlas("loottab-set-itemborder-green", true);
-		elseif ( quality == LE_ITEM_QUALITY_RARE ) then
+		elseif ( quality == Enum.ItemQuality.Rare ) then
 			itemFrame.IconBorder:SetAtlas("loottab-set-itemborder-blue", true);
-		elseif ( quality == LE_ITEM_QUALITY_EPIC ) then
+		elseif ( quality == Enum.ItemQuality.Epic ) then
 			itemFrame.IconBorder:SetAtlas("loottab-set-itemborder-purple", true);
 		end
 	end

@@ -1077,7 +1077,7 @@ function FriendsFrame_GroupInvite()
 end
 
 function ToggleFriendsFrame(tab)
-	if (IsKioskModeEnabled()) then
+	if (Kiosk.IsEnabled()) then
 		return;
 	end
 
@@ -1148,7 +1148,7 @@ function ShowWhoPanel()
 end
 
 function ToggleFriendsSubPanel(panelIndex)
-	if (IsKioskModeEnabled()) then
+	if (Kiosk.IsEnabled()) then
 		return;
 	end
 
@@ -1866,7 +1866,7 @@ end
 FriendsListButtonMixin = {};
 
 function FriendsListButtonMixin:OnLoad()
-	self.highlight:SetVertexColor(0.243, 0.570, 1);
+	self.highlight:SetVertexColor(HIGHLIGHT_LIGHT_BLUE:GetRGB());
 end
 
 function FriendsListButtonMixin:OnEnter()

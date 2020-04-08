@@ -51,7 +51,7 @@ function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:Setup(widget
 	self.CurrencyContainer:SetWidth(totalCurrencyWidth);
 	self.CurrencyContainer:SetHeight(totalCurrencyHeight);
 
-	SetupTextureKits(widgetInfo.frameTextureKitID, self, frameTextureKitRegions, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
+	SetupTextureKitOnRegions(widgetInfo.frameTextureKit, self, frameTextureKitRegions, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
 
 	self:SetWidth(self.Frame:GetWidth());
 	self:SetHeight(self.Frame:GetHeight());

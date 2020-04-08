@@ -28,7 +28,7 @@ function LootItemExtendedMixin:Init(itemLink, originalQuantity, specID, isCurren
 	self:StopAnimArrows();
 	
 	if isUpgraded then
-		local upgradeTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[itemRarity or LE_ITEM_QUALITY_UNCOMMON];
+		local upgradeTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[itemRarity or Enum.ItemQuality.Uncommon];
 		self:SetArrowUpgradeTexture(upgradeTexture);
 	else
 		self:SetArrowUpgradeTexture(nil);

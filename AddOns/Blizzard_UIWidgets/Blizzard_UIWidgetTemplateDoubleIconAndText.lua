@@ -16,7 +16,7 @@ local textureKitRegions = {
 
 function UIWidgetTemplateDoubleIconAndTextMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
-	SetupTextureKits(widgetInfo.textureKitID, self, textureKitRegions, TextureKitConstants.SetVisiblity);
+	SetupTextureKitOnRegions(widgetInfo.textureKit, self, textureKitRegions, TextureKitConstants.SetVisibility);
 
 	self.Label:SetText(widgetInfo.label);
 

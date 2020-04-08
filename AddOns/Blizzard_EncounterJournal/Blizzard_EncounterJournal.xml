@@ -1911,17 +1911,6 @@
 							<OnClick function="EJ_ContentTab_OnClick"/>
 						</Scripts>
 					</Button>
-					<Button name="$parentLootJournalTab" inherits="EncounterTierTabTemplate" text="LOOT_JOURNAL_ITEM_SETS" parentKey="LootJournalTab">
-						<KeyValues>
- 							<KeyValue key="id" value="4" type="number"/>
- 						</KeyValues>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeTo="$parentRaidTab" relativePoint="BOTTOMRIGHT" x="35" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnClick function="EJ_ContentTab_OnClick"/>
-						</Scripts>
-					</Button>
 					<Frame name="$parentTierDropDown" parentKey="tierDropDown" inherits="UIDropDownMenuTemplate">
 						<Size x="156" y="32"/>
 						<Anchors>
@@ -2989,16 +2978,16 @@
 				</Layers>
 				<Frames>
 					<GameTooltip name="$parentTooltip" parentKey="tooltip" inherits="GameTooltipTemplate">
-            <KeyValues>
-                <KeyValue key="IsEmbedded" value="true" type="boolean"/>
-            </KeyValues>
+						<KeyValues>
+							<KeyValue key="IsEmbedded" value="true" type="boolean"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.icon" relativePoint="TOPRIGHT" x="0" y="10"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad inherit="prepend">
-									GameTooltip_SetBackdropStyle(self, GAME_TOOLTIP_BACKDROP_STYLE_EMBEDDED);
-									self.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
+								SharedTooltip_SetBackdropStyle(self, GAME_TOOLTIP_BACKDROP_STYLE_EMBEDDED);
+								self.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
 							</OnLoad>
 							<OnUpdate function="GameTooltip_OnUpdate"/>
 						</Scripts>

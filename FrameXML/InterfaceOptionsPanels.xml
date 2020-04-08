@@ -564,9 +564,21 @@
           </OnLoad>
         </Scripts>
       </CheckButton>
+      <CheckButton name="$parentShowInGameNavigation" inherits="InterfaceOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentAJAlerts" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.cvar = "showInGameNavigation";
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
       <CheckButton name="$parentShowTutorials" inherits="InterfaceOptionsCheckButtonTemplate">
         <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="$parentAJAlerts" relativePoint="BOTTOMLEFT">
+          <Anchor point="TOPLEFT" relativeTo="$parentShowInGameNavigation" relativePoint="BOTTOMLEFT">
             <Offset>
               <AbsDimension x="0" y="-8"/>
             </Offset>
@@ -603,7 +615,7 @@
           <OnClick>
             PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
             SetCVar("closedInfoFrames", "");			-- reset the help plates too
-            SetCVar("closedInfoFramesAccountWide", ""); 
+            SetCVar("closedInfoFramesAccountWide", "");
             SetCVar("showNPETutorials", "1");
             ResetTutorials();
             TutorialFrame_ClearQueue();
@@ -2208,7 +2220,7 @@
             end
             BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
             self:RegisterEvent("VARIABLES_LOADED");
-            if (IsKioskModeEnabled()) then
+            if (Kiosk.IsEnabled()) then
             self:RegisterEvent("PLAYER_ENTERING_WORLD");
             end
           </OnLoad>

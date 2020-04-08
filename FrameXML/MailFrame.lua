@@ -783,6 +783,7 @@ function OpenMail_Reply()
 
 	-- Set the send mode so the work flow can change accordingly
 	SendMailFrame.sendMode = "reply";
+	SendMailFrame.replyMailID = InboxFrame.openMailID;
 end
 
 function OpenMail_Delete()
@@ -867,7 +868,8 @@ function SendMailMailButton_OnClick(self)
 end
 
 function SendMailFrame_SendMail()
-	SendMail(SendMailNameEditBox:GetText(), SendMailSubjectEditBox:GetText(), SendMailBodyEditBox:GetText());
+	local replyMailID = SendMailFrame.sendMode == "reply" and SendMailFrame.replyMailID or nil;
+	SendMail(SendMailNameEditBox:GetText(), SendMailSubjectEditBox:GetText(), SendMailBodyEditBox:GetText(), replyMailID);
 end
 
 function SendMailFrame_EnableSendMailButton()

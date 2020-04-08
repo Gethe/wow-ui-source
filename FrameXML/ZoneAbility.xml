@@ -1,83 +1,68 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="ZoneAbility.lua"/>
-	<Frame name="ZoneAbilityFrame" parent="UIParent" hidden="true">
-		<Size x="64" y="64"/>
-		<Anchors>
-			<Anchor point="BOTTOM" x="0" y="160"/>
-		</Anchors>
-		<Frames>
-			<Button parentKey="SpellButton">
-				<Size x="52" y="52"/>
-				<Anchors>
-					<Anchor point="CENTER" x="0" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Icon"/>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Style" file="Interface\ExtraButton\GarrZoneAbility-BarracksAlliance">
-							<Size x="256" y="128"/>
-							<Anchors>
-								<Anchor point="CENTER" x="-2" y="0"/>
-							</Anchors>
-						</Texture>
-						<FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" useParentLevel="true"/>
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:RegisterForDrag("LeftButton");
-					</OnLoad>
-					<OnClick function="ZoneAbilityFrame_OnClick"/>
-					<OnDragStart function="ZoneAbilityFrame_OnDragStart"/>
-					<OnEnter>
-						GameTooltip:SetOwner(self);
-						GameTooltip:SetSpellByID(self.currentSpellID);
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-				<NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" file="Interface\Buttons\UI-Quickslot2">
+
+	<Frame name="ZoneAbilityFrameTemplate" mixin="ZoneAbilityFrameMixin" virtual="true">
+		<Size x="256" y="128"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Style" file="Interface\ExtraButton\GarrZoneAbility-BarracksAlliance">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-15" y="15"/>
-						<Anchor point="BOTTOMRIGHT" x="15" y="-15"/>
+						<Anchor point="CENTER" x="-2" y="0"/>
 					</Anchors>
-				</NormalTexture>
-				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
-				<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
-			</Button>
-		</Frames>		
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="SpellButtonContainer" inherits="ManagedHorizontalLayoutFrameTemplate">
+				<KeyValues>
+					<KeyValue key="spacing" value="4" type="number"/>
+					<KeyValue key="fixedHeight" value="52" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Scripts>
-			<OnLoad function="ZoneAbilityFrame_OnLoad"/>
-			<OnEvent function="ZoneAbilityFrame_OnEvent"/>
-			<OnShow function="ZoneAbilityFrame_OnShow"/>
-			<OnHide function="ZoneAbilityFrame_OnHide"/>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 
-	<Frame name="ZoneAbilityButtonAlert" inherits="MicroButtonAlertTemplate" parent="ZoneAbilityFrame" frameStrata="MEDIUM" toplevel="false">
-		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="ZoneAbilityFrame" relativePoint="TOP" x="0" y="8"/>
-		</Anchors>
+	<Button name="ZoneAbilityFrameSpellButtonTemplate" mixin="ZoneAbilityFrameSpellButtonMixin" virtual="true">
+		<Size x="52" y="52"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" useParentLevel="true"/>
+		</Frames>
 		<Scripts>
-			<OnLoad>
-				MicroButtonAlert_OnLoad(self);
-				self.Text:SetText(DRAENOR_ZONE_ABILITY_TUTORIAL);
-			</OnLoad>
-			<OnShow>
-				self:SetHeight(self.Text:GetHeight()+42);
-				self:SetFrameLevel(self:GetParent():GetFrameLevel()+3);
-			</OnShow>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
-	</Frame>
+		<NormalTexture parentKey="NormalTexture" file="Interface\Buttons\UI-Quickslot2">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="-15" y="15"/>
+				<Anchor point="BOTTOMRIGHT" x="15" y="-15"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+	</Button>
+
+	<Frame name="ZoneAbilityFrame" inherits="ZoneAbilityFrameTemplate" hidden="true"/>
 </Ui>

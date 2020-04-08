@@ -71,7 +71,7 @@ PVPMatchStyle = {
 			nineSliceLayout = "BFAMissionAlliance",
 		},
 		Neutral = {
-			nineSliceLayout = "BFAMissionNeutral",
+			nineSliceLayout = "GenericMetal",
 		},
 	},
 }

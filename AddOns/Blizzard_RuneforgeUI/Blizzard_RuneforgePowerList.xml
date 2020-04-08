@@ -1,0 +1,97 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_RuneforgePowerList.lua"/>
+
+	<Button name="RuneforgePowerButtonTemplate" mixin="RuneforgePowerButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Scripts>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Button name="RuneforgePowerSlotTemplate" mixin="RuneforgePowerSlotMixin" inherits="RuneforgePowerButtonTemplate" virtual="true">
+		<Size x="80" y="80"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true">
+					<Color r="0" g="0" b="0" a="0.7"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Button name="RuneforgePowerTemplate" mixin="RuneforgePowerMixin" inherits="RuneforgePowerButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="64" y="64"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true">
+					<Color r="0" g="0" b="1" a="0.7"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<ScrollFrame name="RuneforgePowerListTemplate" mixin="RuneforgePowerListMixin" inherits="MinimalScrollFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="scrollBarHideable" value="true" type="boolean" />
+		</KeyValues>
+		<Size x="286" y="222"/>
+		<ScrollChild>
+			<Frame parentKey="ScrollChild" inherits="ResizeLayoutFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Frame>
+		</ScrollChild>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</ScrollFrame>
+
+	<Frame name="RuneforgePowerFrameTemplate" mixin="RuneforgePowerFrameMixin" virtual="true">
+		<Size x="400" y="300"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true">
+					<Color r="0" g="0" b="0" a="0.7"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Line">
+					<Size x="2" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" x="30" y="0"/>
+						<Anchor point="TOP"/>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+					<Color r="0" g="1" b="0" a="0.7"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Label" inherits="GameFontHighlightLarge" text="RUNEFORGE_LEGENDARY_POWER_LIST_LABEL">
+					<Anchors>
+						<Anchor point="TOP"/>
+						<Anchor point="LEFT" relativeKey="$parent.Line" relativePoint="RIGHT" x="12" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame parentKey="PowerList" inherits="RuneforgePowerListTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Label" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
+				</Anchors>
+			</ScrollFrame>
+		</Frames>
+	</Frame>
+</Ui>

@@ -123,7 +123,7 @@ function PVPUIFrame_OnLoad(self)
 end
 
 function PVPUIFrame_OnShow(self)
-	if (UnitLevel("player") < SHOW_PVP_LEVEL or IsKioskModeEnabled()) then
+	if Kiosk.IsEnabled() then
 		self:Hide();
 		return;
 	end
@@ -133,6 +133,7 @@ function PVPUIFrame_OnShow(self)
 
 	PVPUIFrame_UpdateSelectedRoles();
 	PVPUIFrame_UpdateRolesChangeable();
+	PVPUIFrame_EvaluateHelpTips(self);
 end
 
 function PVPUIFrame_OnHide(self)
@@ -184,6 +185,19 @@ function PVPUIFrame_ToggleFrame(sidePanelName, selection)
 	end
 end
 
+function PVPUIFrame_EvaluateHelpTips(self)
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LFG_LIST) and UnitLevel("player") >= 90 then
+		local helpTipInfo = {
+			text = LFG_LIST_TUTORIAL_ALERT,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_LFG_LIST,
+			targetPoint = HelpTip.Point.TopEdgeCenter,
+		};
+		HelpTip:Show(self, helpTipInfo, PVPQueueFrameCategoryButton3);
+	end
+end
+
 function PVPUIFrame_RoleButtonClicked(self)
 	PVPUIFrame_SetRoles(self:GetParent():GetParent());
 end
@@ -229,10 +243,13 @@ function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRew
 
 	-- artifact-level currency trumps item
 	if currencyRewards then
-		for i, reward in ipairs(currencyRewards) do
+		for i, reward in ipairs(currencyRewards) do	
 			if(reward.id ~= ECHOS_OF_NYLOTHA_CURRENCY_ID or #currencyRewards == 1) then
-				local name, _, texture, _, _, _, _, quality = GetCurrencyInfo(reward.id);
-				if quality == LE_ITEM_QUALITY_ARTIFACT then
+				local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(reward.id);
+				local name = currencyInfo.name;
+				local texture = currencyInfo.iconFileID;
+				local quality = currencyInfo.quality;
+				if quality == Enum.ItemQuality.Artifact then
 					name, texture, _, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.id, reward.quantity, name, texture, quality);
 					currencyID = reward.id;
 					rewardTexture = texture;
@@ -284,11 +301,11 @@ function PVPQueueFrame_OnLoad(self)
 	self.CategoryButton3.Name:SetText(PVP_TAB_GROUPS);
 
 	-- disable unusable side buttons
-	if ( UnitLevel("player") < SHOW_CONQUEST_LEVEL ) then
+	if not C_PvP.CanPlayerUseRatedPVPUI() then
 		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton2, false);
 		self.CategoryButton2.tooltip = format(PVP_CONQUEST_LOWLEVEL, PVP_TAB_CONQUEST);
 		PVPQueueFrame:SetScript("OnEvent", PVPQueueFrame_OnEvent);
-		PVPQueueFrame:RegisterEvent("PLAYER_LEVEL_UP");
+		PVPQueueFrame:RegisterEvent("PLAYER_LEVEL_CHANGED");
 	end
 
 	PVPQueueFrame_SetCategoryButtonState(self.CategoryButton3, true);
@@ -308,12 +325,11 @@ function PVPQueueFrame_OnLoad(self)
 end
 
 function PVPQueueFrame_OnEvent(self, event, ...)
-	if (event == "PLAYER_LEVEL_UP") then
-		local level = ...;
-		if ( level >= SHOW_CONQUEST_LEVEL ) then
+	if (event == "PLAYER_LEVEL_CHANGED") then
+		if C_PvP.CanPlayerUseRatedPVPUI() then
 			PVPQueueFrame_SetCategoryButtonState(self.CategoryButton2, true);
 			self.CategoryButton2.tooltip = nil;
-			PVPQueueFrame:UnregisterEvent("PLAYER_LEVEL_UP");
+			PVPQueueFrame:UnregisterEvent("PLAYER_LEVEL_CHANGED");
 		end
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "ZONE_CHANGED_NEW_AREA" or event == "ZONE_CHANGED") then
 		PVP_UpdateStatus();
@@ -602,7 +618,7 @@ function HonorFrame_UpdateQueueButtons()
 		if IsInGroup(LE_PARTY_CATEGORY_HOME) then
 			local brawlInfo = C_PvP.GetAvailableBrawlInfo();
 			if brawlInfo then
-				disabledReason = QUEUE_UNAVAILABLE_PARTY_MIN_LEVEL:format(GetEffectivePlayerMaxLevel());
+				disabledReason = QUEUE_UNAVAILABLE_PARTY_MIN_LEVEL:format(GetMaxLevelForPlayerExpansion());
 			end
 		else
 			disabledReason = INSTANCE_UNAVAILABLE_SELF_LEVEL_TOO_LOW;
@@ -921,7 +937,7 @@ function HonorFrameBonusFrame_Update()
 		-- brawls
 		local button = buttons[4];
 		local brawlInfo = C_PvP.GetAvailableBrawlInfo();
-		button.canQueue = brawlInfo and brawlInfo.canQueue and PartyUtil.GetMinLevel() == GetEffectivePlayerMaxLevel();
+		button.canQueue = brawlInfo and brawlInfo.canQueue and PartyUtil.GetMinLevel() == GetMaxLevelForPlayerExpansion();
 		button.isBrawl = true;
 
 		if (brawlInfo and brawlInfo.canQueue) then

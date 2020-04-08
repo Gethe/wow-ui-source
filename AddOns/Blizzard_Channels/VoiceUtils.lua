@@ -110,21 +110,6 @@ function Voice_GetGameAlertStringFromStatusCode(statusCode)
 	return Voice_GetGameErrorStringFromStatusCode(statusCode);
 end
 
-local SUPPRESS_ALERT_MESSAGE = true;
-local voiceChatStatusAlertBlacklist =
-{
-	[Enum.VoiceChatStatusCode.PlayerVoiceChatParentalDisabled] = SUPPRESS_ALERT_MESSAGE,
-	[Enum.VoiceChatStatusCode.Disabled] = SUPPRESS_ALERT_MESSAGE,
-};
-
-function Voice_GetGameAlertStringFromStatusCode(statusCode)
-	if voiceChatStatusAlertBlacklist[statusCode] == SUPPRESS_ALERT_MESSAGE then
-		return nil;
-	end
-
-	return Voice_GetGameErrorStringFromStatusCode(statusCode);
-end
-
 local partyCategoryToChannelType =
 {
 	[LE_PARTY_CATEGORY_HOME] = Enum.ChatChannelType.Private_Party;

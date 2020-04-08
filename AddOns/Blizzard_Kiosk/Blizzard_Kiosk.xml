@@ -1,0 +1,65 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_Kiosk.lua"/>
+	
+	<Font name="KioskDialogHeaderFont" font="Fonts\FRIZQT__.TTF" height="20"/>
+	<Frame name="KioskFrame" mixin="KioskFrameMixin">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+	<Frame name="KioskSessionFinishedDialog" toplevel="true" enableMouse="true" enableKeyboard="true" frameStrata="FULLSCREEN_DIALOG" parent="UIParent" setAllPoints="true" mixin="KioskSessionFinishedDialogMixin" hidden="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture setAllPoints="true">
+					<Color color="BLACK_FONT_COLOR" a="0.80"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Dialog">
+				<Size x="563" y="345"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Bg" atlas="ClassTrial-End-Frame" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" inherits="KioskDialogHeaderFont">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-92.0" />
+							</Anchors>
+							<Color color="BLACK_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="SubTitle" inherits="SystemFont_WTF2">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-10" />
+							</Anchors>
+							<Color color="BLACK_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="Body" inherits="SystemFont_Large" justifyH="CENTER" justifyV="CENTER" wordWrap="true">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.SubTitle" relativePoint="BOTTOM" y="18"/>
+								<Anchor point="LEFT" relativePoint="LEFT" x="90.0"/>
+								<Anchor point="RIGHT" relativePoint="RIGHT" x="-90.0"/>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+							<Color color="BLACK_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>
