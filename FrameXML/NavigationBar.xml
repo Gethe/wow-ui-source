@@ -150,7 +150,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="MenuArrowButton" hidden="true">
+			<DropDownToggleButton parentKey="MenuArrowButton" hidden="true">
 				<Size x="27" y="31"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativePoint="TOPRIGHT" x="-2" y="-15"/>
@@ -187,6 +187,8 @@
 				<Scripts>
 					<OnMouseDown>
 						self.Art:SetPoint("CENTER", -1, -2);
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						NavBar_ToggleMenu(self:GetParent());
 					</OnMouseDown>
 					<OnMouseUp>
 						self.Art:SetPoint("CENTER", 0, -1);
@@ -199,12 +201,8 @@
 						self.NormalTexture:SetAlpha(0);
 						self.PushedTexture:SetAlpha(0);
 					</OnLeave>
-					<OnClick>
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						NavBar_ToggleMenu(self:GetParent());
-					</OnClick>
 				</Scripts>
-			</Button>
+			</DropDownToggleButton>
 		</Frames>
 		<Scripts>
 			<OnMouseDown>
@@ -282,15 +280,15 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Button name="$parentOverflowButton" parentKey="overflow">
+			<DropDownToggleButton name="$parentOverflowButton" parentKey="overflow">
 				<Size x="44" y="30"/>
 				<Scripts>
 					<OnLoad>
 						self.xoffset = -18
 					</OnLoad>
-					<OnClick>
+					<OnMouseDown>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-					</OnClick>
+					</OnMouseDown>
 				</Scripts>
 				<NormalTexture file="Interface\HelpFrame\CS_HelpTextures">
 					<TexCoords left="0.54296875" right="0.62890625" top="0.75781250" bottom="0.99218750"/>
@@ -301,7 +299,7 @@
 				<HighlightTexture file="Interface\HelpFrame\CS_HelpTextures" alphaMode="ADD" alpha="0.4">
 					<TexCoords left="0.54296875" right="0.62890625" top="0.75781250" bottom="0.99218750"/>
 				</HighlightTexture>
-			</Button>
+			</DropDownToggleButton>
 			<Button name="$parentHomeButton" parentKey="home" text="HOME">
 				<Size x="128" y="30"/>
 				<Layers>

@@ -40,7 +40,7 @@ function SocialQueueUtil_GetQueueName(queue, nameFormatter)
 		local isBrawl = queue.isBrawl;
 		local name = queue.mapName;
 		if (isBrawl) then
-			local brawlInfo = C_PvP.GetBrawlInfo();
+			local brawlInfo = C_PvP.GetAvailableBrawlInfo();
 			if (brawlInfo and brawlInfo.active) then
 				name = brawlInfo.name;
 			end
@@ -56,7 +56,10 @@ function SocialQueueUtil_GetQueueName(queue, nameFormatter)
 	elseif ( queue.queueType == "lfglist" ) then
 		local name;
 		if ( queue.lfgListID ) then
-			name = select(3, C_LFGList.GetSearchResultInfo(queue.lfgListID));
+			local searchResultInfo = C_LFGList.GetSearchResultInfo(queue.lfgListID);
+			if searchResultInfo then
+				name = searchResultInfo.name;
+			end
 		else
 			if ( queue.activityID ) then
 				name = C_LFGList.GetActivityInfo(queue.activityID);
@@ -79,23 +82,23 @@ function SocialQueueUtil_GetHeaderName(groupGUID)
 		return "";
 	else
 		members = SocialQueueUtil_SortGroupMembers(members);
-		
+
 		local clubId = members[1].clubId;
 		local playerName, color, relationship = SocialQueueUtil_GetRelationshipInfo(members[1].guid, nil, clubId);
 		if ( #members > 1 ) then
 			playerName = string.format(QUICK_JOIN_TOAST_EXTRA_PLAYERS, playerName, #members - 1);
 		end
 		playerName = color..playerName;
-		
+
 		if ( relationship == "club" and clubId ) then
 			local clubInfo = C_Club.GetClubInfo(clubId);
 			if ( clubInfo ) then
 				playerName = SOCIAL_QUEUE_COMMUNITIES_HEADER_FORMAT:format(playerName, clubInfo.name);
 			end
 		end
-		
+
 		playerName = playerName..FONT_COLOR_CODE_CLOSE;
-		
+
 		return playerName;
 	end
 end
@@ -112,7 +115,7 @@ function SocialQueueUtil_SetTooltip(tooltip, playerDisplayName, queues, canJoin,
 	if ( firstQueue.queueData.queueType == "lfglist" ) then
 		needTank, needHealer, needDamage = firstQueue.needTank, firstQueue.needHealer, firstQueue.needDamage;
 
-		canEffectivelyJoin = canJoin and C_LFGList.GetSearchResultInfo(firstQueue.queueData.lfgListID);
+		canEffectivelyJoin = canJoin and C_LFGList.HasSearchResultInfo(firstQueue.queueData.lfgListID);
 
 		if ( canEffectivelyJoin ) then
 			isAutoAccept = firstQueue.isAutoAccept; -- Auto accept is set on the premade group entry
@@ -165,32 +168,38 @@ function SocialQueueUtil_SetTooltip(tooltip, playerDisplayName, queues, canJoin,
 end
 
 function SocialQueueUtil_GetRelationshipInfo(guid, missingNameFallback, clubId)
-	local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, zoneName, level, gameText, broadcast, broadcastTime, online, bnetIDGameAccount, bnetIDAccount = BNGetGameAccountInfoByGUID(guid);
-	if ( characterName and bnetIDAccount ) then
-		local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isBnetAFK, isBnetDND, messageText, noteText, isRIDFriend, messageTime, canSoR = BNGetFriendInfoByID(bnetIDAccount);
-		if ( accountName ) then
-			return accountName, FRIENDS_BNET_NAME_COLOR_CODE, "bnfriend", GetBNPlayerLink(accountName, accountName, bnetIDAccount, 0, 0, 0);
-		end
+	local accountInfo = C_BattleNet.GetAccountInfoByGUID(guid);
+	if accountInfo then
+		return accountInfo.accountName, FRIENDS_BNET_NAME_COLOR_CODE, "bnfriend", GetBNPlayerLink(accountInfo.accountName, accountInfo.accountName, accountInfo.bnetAccountID, 0, 0, 0);
 	end
 
 	local name, normalizedRealmName = select(6, GetPlayerInfoByGUID(guid));
-	name = (name or missingNameFallback) or UNKNOWNOBJECT;
+	name = name or missingNameFallback;
+
+	local hasName = name ~= nil;
+	if ( not hasName ) then
+		name = UNKNOWNOBJECT;
+	elseif ( normalizedRealmName and normalizedRealmName ~= "" ) then
+		name = FULL_PLAYER_NAME:format(name, normalizedRealmName);
+	end
+
 	local linkName = name;
 	local playerLink;
 
-	if name ~= UNKNOWNOBJECT then
+	if ( hasName ) then
 		playerLink = GetPlayerLink(linkName, name);
 	end
 
-	if ( IsCharacterFriend(guid) ) then
+	if ( C_FriendList.IsFriend(guid) ) then
 		return name, FRIENDS_WOW_NAME_COLOR_CODE, "wowfriend", playerLink;
 	end
 
 	if ( IsGuildMember(guid) ) then
 		return name, RGBTableToColorCode(ChatTypeInfo.GUILD), "guild", playerLink;
 	end
-	
-	if ( clubId ) then
+
+	local clubInfo = clubId and C_Club.GetClubInfo(clubId) or nil;
+	if ( clubInfo ) then
 		return name, FRIENDS_WOW_NAME_COLOR_CODE, "club", playerLink;
 	end
 

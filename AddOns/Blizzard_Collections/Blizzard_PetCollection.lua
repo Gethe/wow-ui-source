@@ -128,7 +128,7 @@ function PetJournal_OnShow(self)
 		end
 	end
 
-	SetPortraitToTexture(CollectionsJournalPortrait, "Interface\\Icons\\PetJournalPortrait");
+	CollectionsJournal:SetPortraitToAsset("Interface\\Icons\\PetJournalPortrait");
 end
 
 function PetJournal_OnHide(self)
@@ -379,7 +379,7 @@ function PetJournalSummonRandomFavoritePetButton_UpdateSpellUsability(self)
 			self.BlackCover:Hide();
 			self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			self:RegisterForDrag("LeftButton");
-		end																				
+		end
 	else
 		self.BlackCover:Show();
 		self.texture:SetDesaturated(true);
@@ -410,7 +410,7 @@ function PetJournalSummonRandomFavoritePetButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
 	local numPets, numOwned = C_PetJournal.GetNumPets();
-	if ( numOwned > 0 and not C_PetBattles.IsInBattle()  ) then 
+	if ( numOwned > 0 and not C_PetBattles.IsInBattle()  ) then
 		GameTooltip:SetCompanionPet(self.petID);
 	else
 		GameTooltip:SetSpellByID(self.spellID);
@@ -482,7 +482,7 @@ function PetJournal_ShowPetSelect(self)
 	self.selected:Show();
 	PetJournal.SpellSelect.slotIndex = slotIndex;
 	PetJournal.SpellSelect.abilityIndex = abilityIndex;
-	PetJournal.SpellSelect:SetFrameLevel(PetJournalLoadoutBorder:GetFrameLevel()+1);
+	PetJournal.SpellSelect:SetFrameLevel(CollectionsJournal.NineSlice:GetFrameLevel() + 1);
 	PetJournal_HideAbilityTooltip();
 
 	--Setup spell one
@@ -592,7 +592,8 @@ function PetJournal_UpdatePetLoadOut(forceSceneChange)
 				loadoutPlate.requirement.str:SetText(GetAchievementLink(UNLOCK_REQUIREMENTS[i].id));
 				loadoutPlate.requirement.achievementID = UNLOCK_REQUIREMENTS[i].id;
 			elseif (UNLOCK_REQUIREMENTS[i].requirement == "SPELL" and UNLOCK_REQUIREMENTS[i].id) then
-				loadoutPlate.requirement.str:SetText(GetSpellLink(UNLOCK_REQUIREMENTS[i].id));
+				local spellLink = GetSpellLink(UNLOCK_REQUIREMENTS[i].id);
+				loadoutPlate.requirement.str:SetText(spellLink);
 				loadoutPlate.requirement.spellID = UNLOCK_REQUIREMENTS[i].id;
 			end
 			loadoutPlate.helpFrame.text:SetText(_G["BATTLE_PET_UNLOCK_HELP_"..i]);
@@ -852,6 +853,12 @@ function PetJournal_UpdatePetList()
 					pet.icon:SetDesaturated(true);
 					pet.petTypeIcon:SetDesaturated(true);
 					pet.dragButton:Disable();
+				else
+					-- Only display the unusable texture if you'll never be able to summon this pet.
+					local isSummonable, error, errorText = C_PetJournal.GetPetSummonInfo(petID);
+					local neverUsable = error == Enum.PetJournalError.InvalidFaction;
+					pet.iconBorder:SetShown(not neverUsable);
+					CollectionItemListButton_SetRedOverlayShown(pet, neverUsable);
 				end
 			else
 				pet.dragButton.levelBG:Hide();
@@ -929,6 +936,17 @@ function PetJournalListItem_OnClick(self, button)
 			PetJournal_ShowPetCard(self.index);
 		end
 	end
+end
+
+function PetJournalDragButton_OnEnter(self)
+	local petID = self:GetParent().petID;
+	if (not petID) then
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetCompanionPet(petID);
+	GameTooltip:Show();
 end
 
 function PetJournalDragButton_OnClick(self, button)
@@ -1098,7 +1116,7 @@ function PetJournalPetCard_OnClick(self, button)
 		end
 	elseif button == "RightButton" then
 		if ( PetJournalPetCard.petID ) then
-			PetJournal_ShowPetDropdown(PetJournalPetCard.petIndex, self, 0, 0);
+			PetJournal_ShowPetDropdown(PetJournalPetCard.petIndex, self, 0, 0, PetJournalPetCard.petID);
 		end
 	else
 		PetJournalDragButton_OnDragStart(self);
@@ -1803,6 +1821,14 @@ function PetJournalSummonButton_OnEnter(self)
 	else
 		GameTooltip:AddLine(BATTLE_PETS_SUMMON_TOOLTIP, nil, nil, nil, true);
 	end
+
+	if PetJournalPetCard.petID ~= nil then
+		local isSummonable, error, errorText = C_PetJournal.GetPetSummonInfo(PetJournalPetCard.petID);
+		if errorText then
+			GameTooltip_AddErrorLine(GameTooltip, errorText, true);
+		end
+	end
+
 	GameTooltip:Show();
 end
 
@@ -1826,8 +1852,7 @@ function PetJournal_ToggleTutorial()
 	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
 		HelpPlate_Show( helpPlate, PetJournal, PetJournal.MainHelpButton );
 		SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true );
-		CollectionsJournal.HeirloomTabHelpBox:Hide();
-		CollectionsJournal.WardrobeTabHelpBox:Hide();
+		CollectionsJournal_HideTabHelpTips();
 	else
 		HelpPlate_Hide(true);
 	end

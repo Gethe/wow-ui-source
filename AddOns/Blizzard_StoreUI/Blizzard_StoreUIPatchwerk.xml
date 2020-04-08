@@ -1,8 +1,4 @@
 ﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
-	<Texture name="store-card-splash1" file="Interface\Store\Store-Main" virtual="true" >
-		<Size x="576" y="471"/>	
-		<TexCoords left="0.00097656" right="0.56347656" top="0.00097656" bottom="0.46093750"/>	
-	</Texture>
 	<Texture name="store-receipt-parchment-bottom" file="Interface\Store\Store-Main" virtual="true" >
 		<Size x="376" y="160"/>	
 		<TexCoords left="0.56542969" right="0.93261719" top="0.00097656" bottom="0.15722656"/>	

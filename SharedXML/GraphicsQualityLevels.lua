@@ -16,18 +16,17 @@ VideoData["Graphics_Quality"]={
 				"Graphics_ProjectedTexturesDropDown",
 				"Graphics_SSAODropDown",
 				"Graphics_DepthEffectsDropDown",
-				"Graphics_LightingQualityDropDown",
 				"Graphics_OutlineModeDropDown",
 			},
 	numQualityLevels = 10,
-	SetDisplayValue = 
+	SetDisplayValue =
 		function(self,value)
 		end,
-	preGetValue = 
+	preGetValue =
 		function(self)
 			self.selectedID = nil;
 		end,
-	GetValueNew = 
+	GetValueNew =
 		function(self)
 			if(self.preGetValue) then
 				self:preGetValue();
@@ -44,7 +43,7 @@ VideoData["Graphics_Quality"]={
 		end,
 	description =  "Video Quality:",
 	dependtarget = Graphics_ControlRefreshValue,
-	initialize = 
+	initialize =
 		function(self)
 			self:SetWidth(550);
 			local parent = self:GetParent():GetName();
@@ -90,7 +89,7 @@ VideoData["Graphics_Quality"]={
 				end
 			end
 		end,
-	onvaluechanged = 
+	onvaluechanged =
 		function(self, value)
 			value = floor(value + 0.5);
 			self.savevalue = value;
@@ -128,7 +127,6 @@ VideoData["RaidGraphics_Quality"].childOptions = {
 				"RaidGraphics_ProjectedTexturesDropDown",
 				"RaidGraphics_SSAODropDown",
 				"RaidGraphics_DepthEffectsDropDown",
-				"RaidGraphics_LightingQualityDropDown",
 				"RaidGraphics_OutlineModeDropDown",
 			};
 VideoData["RaidGraphics_Quality"].numQualityLevels = 10;
@@ -190,15 +188,15 @@ VideoData["Display_DisplayModeDropDown"]={
 			return self.data[self:GetSafeValue()].fullscreen;
 		end,
 	lookup = Graphics_TableLookupSafe,
-	restart = true,
+	windowUpdate = true,
 }
 -------------------------------------------------------------------------------------------------------
 VideoData["Display_PrimaryMonitorDropDown"]={
 	name = PRIMARY_MONITOR;
 	description = OPTION_TOOLTIP_PRIMARY_MONITOR,
-	
+
 	table = {},
-	tablefunction = 
+	tablefunction =
 		function(self)
 			local count = GetMonitorCount();
 			for i=1, count do
@@ -213,11 +211,11 @@ VideoData["Display_PrimaryMonitorDropDown"]={
 				self.table[i] = name;
 			end
 		end,
-	SetValue = 
+	SetValue =
 		function (self, value)
 			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value-1);
 		end,
-	doGetValue = 
+	doGetValue =
 		function (self)
 			return 1+BlizzardOptionsPanel_GetCVarSafe(self.cvar);
 		end,
@@ -231,7 +229,7 @@ VideoData["Display_PrimaryMonitorDropDown"]={
 			local ratio = GetMonitorAspectRatio(self:GetValue());
 			return (ratio>=1.0);
 		end,
-	restart = true,
+	windowUpdate = true,
 }
 
 -------------------------------------------------------------------------------------------------------
@@ -253,13 +251,13 @@ end
 
 VideoData["Display_ResolutionDropDown"]={
 	name = WINDOW_SIZE;
-	description = OPTION_TOOLTIP_RESOLUTION,	
-	
-	tablefunction = 
+	description = OPTION_TOOLTIP_RESOLUTION,
+
+	tablefunction =
 		function(self)
-			return GetScreenResolutions(Display_PrimaryMonitorDropDown:GetValue());
+			return GetScreenResolutions(Display_PrimaryMonitorDropDown:GetValue(), Display_DisplayModeDropDown:fullscreenmode());
 		end,
-	getValues = 
+	getValues =
 		function(self)
 			return DecodeResolution(self.table[self:GetValue()]);
 		end,
@@ -271,29 +269,25 @@ VideoData["Display_ResolutionDropDown"]={
 	SetValue =
 		function (self, value)
 			local width, height = DecodeResolution(self.table[value]);
-			SetScreenResolution(width, height, Display_DisplayModeDropDown:fullscreenmode());
+			SetScreenResolution(width, height);
 		end,
-	doGetValue = 
+	doGetValue =
 		function(self)
 			return GetCurrentResolution(Display_PrimaryMonitorDropDown:GetValue(), Display_DisplayModeDropDown:fullscreenmode());
 		end,
 	onrefresh =
 	function(self)
-		if(Display_DisplayModeDropDown:fullscreenmode()) then
-			VideoOptions_Disable(self);
-		else
-			VideoOptions_Enable(self);
-		end
+		VideoOptions_Enable(self);
 	end,
 	lookup = Graphics_TableLookupSafe,
-	restart = true,
+	windowUpdate = true,
 }
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Display_VerticalSyncDropDown"]={
 	name = VERTICAL_SYNC;
 	description = OPTION_TOOLTIP_VERTICAL_SYNC,
-	
+
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
@@ -308,7 +302,7 @@ VideoData["Display_VerticalSyncDropDown"]={
 			},
 		},
 	},
-	restart = true,
+	windowUpdate = true,
 }
 
 -------------------------------------------------------------------------------------------------------
@@ -367,7 +361,7 @@ end
 
 local function GenerateAntiAliasingDropDownData()
 	local data = {};
-	
+
 	data[#data + 1] = {
 		text = VIDEO_OPTIONS_NONE,
 		cvars =	{
@@ -936,54 +930,6 @@ VideoData["RaidGraphics_DepthEffectsDropDown"]={
 }
 
 -------------------------------------------------------------------------------------------------------
-VideoData["Graphics_LightingQualityDropDown"]={
-	name = LIGHTING_QUALITY;
-	description = OPTION_TOOLTIP_LIGHTING_QUALITY,
-	graphicsCVar =	"graphicsLightingQuality",
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_LOW,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_LOW,
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_MEDIUM,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_MEDIUM,
-		},
-		[3] = {
-			text = VIDEO_OPTIONS_HIGH,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_HIGH,
-		},
-	},
-	dependent = {
-		"Graphics_Quality",
-	},
-}
-
--------------------------------------------------------------------------------------------------------
-VideoData["RaidGraphics_LightingQualityDropDown"]={
-	name = LIGHTING_QUALITY;
-	description = OPTION_TOOLTIP_LIGHTING_QUALITY,
-	graphicsCVar =	"raidGraphicsLightingQuality",
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_LOW,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_LOW,
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_MEDIUM,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_MEDIUM,
-		},
-		[3] = {
-			text = VIDEO_OPTIONS_HIGH,
-			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_HIGH,
-		},
-	},
-	dependent = {
-		"RaidGraphics_Quality",
-	},
-}
-
--------------------------------------------------------------------------------------------------------
 VideoData["Graphics_OutlineModeDropDown"]={
 	name = OUTLINE_MODE;
 	description = OPTION_TOOLTIP_OUTLINE_MODE,
@@ -1032,44 +978,22 @@ VideoData["RaidGraphics_OutlineModeDropDown"]={
 VideoData["Advanced_BufferingDropDown"]={
 	name = TRIPLE_BUFFER;
 	description = OPTION_TOOLTIP_TRIPLE_BUFFER,
-	
+
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
 			cvars =	{
-				gxTripleBuffer = 0,
+				gxMaxFrameLatency = 2,
 			},
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_ENABLED,
 			cvars =	{
-				gxTripleBuffer = 1,
+				gxMaxFrameLatency = 3,
 			},
 		},
 	},
 	restart = true;
-}
-
--------------------------------------------------------------------------------------------------------
-VideoData["Advanced_LagDropDown"]={
-	name = FIX_LAG;
-	description = OPTION_TOOLTIP_FIX_LAG,
-	
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_DISABLED,
-			cvars =	{
-				gxFixLag = 0,
-			},
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_ENABLED,
-			cvars =	{
-				gxFixLag = 1,
-			},
-		},
-	},
-	restart = true,
 }
 
 VideoData["Advanced_MultisampleAntiAliasingDropDown"]={
@@ -1114,15 +1038,21 @@ VideoData["Advanced_ResampleQualityDropDown"]={
 
 	data = {
 		{
+			text = VIDEO_OPTIONS_NONE,
+			cvars =    {
+				resampleQuality = 0,
+			},
+		},
+		{
 			text = RESAMPLE_QUALITY_BILINEAR,
 			cvars =	{
-				resampleQuality = 0,
+				resampleQuality = 1,
 			},
 		},
 		{
 			text = RESAMPLE_QUALITY_BICUBIC,
 			cvars =	{
-				resampleQuality = 1,
+				resampleQuality = 2,
 			},
 		},
 	},
@@ -1131,7 +1061,7 @@ VideoData["Advanced_ResampleQualityDropDown"]={
 VideoData["Advanced_MaxFPSSlider"]={
 	name = MAXFPS;
 	tooltip = OPTION_MAXFPS,
-	initialize = 
+	initialize =
 		function(self)
 			local value = self:GetCurrentValue();
 			if(value == 0) then
@@ -1146,7 +1076,7 @@ VideoData["Advanced_MaxFPSSlider"]={
 VideoData["Advanced_MaxFPSBKSlider"]={
 	name = MAXFPSBK;
 	tooltip = OPTION_MAXFPSBK,
-	initialize = 
+	initialize =
 		function(self)
 			local value = self:GetCurrentValue();
 			if(value == 0) then
@@ -1189,7 +1119,7 @@ VideoData["Advanced_UseUIScale"]={
 VideoData["Advanced_AdapterDropDown"]={
 	name = GRAPHICS_CARD,
 	description = OPTION_TOOLTIP_GRAPHICS_CARD,
-	tablefunction = 
+	tablefunction =
 		function(self)
 			self.adapters = C_VideoOptions.GetGxAdapterInfo();
 			local adapterNames = {};
@@ -1212,7 +1142,7 @@ VideoData["Advanced_AdapterDropDown"]={
 				SetCVar("gxAdapter", self.adapters[value - 1].name);
 			end
 		end,
-	doGetValue = 
+	doGetValue =
 		function(self)
 			local adapter = GetCVar("gxAdapter");
 			if ( adapter == "" ) then
@@ -1225,11 +1155,6 @@ VideoData["Advanced_AdapterDropDown"]={
 			end
 		end,
 	restart = true,
-}
-
-VideoData["Advanced_StereoEnabled"]={
-	name = ENABLE_STEREO_VIDEO;
-	tooltip = OPTION_TOOLTIP_ENABLE_STEREO_VIDEO,
 }
 
 VideoData["Advanced_MultisampleAlphaTest"]={
@@ -1253,8 +1178,60 @@ VideoData["Advanced_MultisampleAlphaTest"]={
 }
 
 VideoData["Display_RenderScaleSlider"]={
-	name = RENDER_SCALE;
+	name = RENDER_SCALE,
 	tooltip = OPTION_TOOLTIP_RENDER_SCALE,
+	graphicsCVar = "RenderScale",
+	dependtarget = Graphics_ControlRefreshValue,
+	preventValueChangeHandlerFromSettingLabel = true,
+
+	SetDisplayValue = function(self,value)
+		self.noclick = true;
+		self:sliderSetValue(value);
+		self:updatecustomfield(value);
+		self.noclick = false;
+	end,
+
+	SetCVarValue = function(self, value)
+		BlizzardOptionsPanel_SetCVarSafe(self.graphicsCVar, value);
+	end,
+
+	initialize = function(self)
+		self:SetDisplayValue(tonumber(BlizzardOptionsPanel_GetCVarSafe(self.graphicsCVar)));
+	end,
+
+	onload = function(self)
+		self:SetMinMaxValues(GetMinRenderScale(), GetMaxRenderScale());
+		self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+
+		self.Text:SetFontObject("OptionsFontSmall");
+		self.Text:ClearAllPoints();
+		self.Text:SetPoint("RIGHT", self, "LEFT", -20, 0);
+		self.Text:SetText(RENDER_SCALE);
+
+		-- Alias Low and High fontStrings to be Value and Resolution respectively.
+		self.Value = self.Low;
+		self.Value:ClearAllPoints();
+		self.Value:SetPoint("LEFT", self, "RIGHT", 3, 2);
+
+		self.Resolution = self.High;
+		self.Resolution:ClearAllPoints();
+		self.Resolution:SetPoint("TOP", self, "BOTTOM", 0, 0);
+
+		self.sliderSetValue = self.SetValue;
+		self.SetValue = self.SetCVarValue;
+	end,
+
+	updatecustomfield = function(self, value)
+		local renderScale = value;
+		local roundToNearestInteger = true;
+		self.Value:SetText(FormatPercentage(renderScale, roundToNearestInteger));
+		local width, height = GetPhysicalScreenSize();
+		self.Resolution:SetText(math.floor(width * renderScale).."x"..math.floor(height * renderScale));
+	end,
+
+	onvaluechanged = function(self, value)
+		self:updatecustomfield(value);
+	end,
 }
 
 -------------------------------------------------------------------------------------------------------
@@ -1262,9 +1239,9 @@ VideoData["Advanced_GraphicsAPIDropDown"]={
 	name = GXAPI;
 	description = OPTION_TOOLTIP_GXAPI;
 
-	tablefunction = 
+	tablefunction =
 		function(self)
-			self.cvarValues = { GetGraphicsAPIs() };	-- this is a table of the cvar values, ie "d3d9", "opengl", etc
+			self.cvarValues = { GetGraphicsAPIs() };	-- this is a table of the cvar values, ie "d3d11", "metal", etc
 			local temp = { };
 			for i = 1, #self.cvarValues do
 				tinsert(temp, _G["GXAPI_"..strupper(self.cvarValues[i])]);
@@ -1275,7 +1252,7 @@ VideoData["Advanced_GraphicsAPIDropDown"]={
 		function (self, value)
 			SetCVar("gxapi", self.cvarValues[value]);
 		end,
-	doGetValue = 
+	doGetValue =
 		function(self)
 			local api = GetCVar("gxapi");
 			for i = 1, #self.cvarValues do
@@ -1285,8 +1262,7 @@ VideoData["Advanced_GraphicsAPIDropDown"]={
 			end
 		end,
 	lookup = Graphics_TableLookupSafe,
-	clientRestart = true,
-	gameRestart = true,
+	restart = true,
 }
 
 VideoData["Advanced_PhysicsInteractionDropDown"]={

@@ -20,12 +20,12 @@ function LFRFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_LFG_LIST");
 	self:RegisterEvent("LFG_UPDATE");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
-	
-	
+
+
 	LFRFrame_SetActiveTab(1);
-	
+
 	self.lastInGroup = IsInGroup();
-	
+
 	for i = 2, NUM_LFR_LIST_BUTTONS do
 		local button = CreateFrame("Button", "LFRBrowseFrameListButton"..i, LFRBrowseFrame, "LFRBrowseButtonTemplate");
 		button:SetPoint("TOPLEFT", _G["LFRBrowseFrameListButton"..(i-1)], "BOTTOMLEFT");
@@ -84,7 +84,7 @@ function LFRQueueFrameFindGroupButton_Update()
 			LFRQueueFrameFindGroupButton:SetText(LIST_ME);
 		end
 	end
-	
+
 	if ( not RaidBrowser_IsEmpowered() or (LFRRaidList and not LFRRaidList[1]) ) then --Not group leader or no eligible raids
 		LFRQueueFrameFindGroupButton:Disable();
 		LFRQueueFrameAcceptCommentButton:Disable();
@@ -108,8 +108,8 @@ end
 
 function LFRQueueFrame_SetRoles()
 	local leader, tank, healer, damage = GetLFGRoles();
-	
-	SetLFGRoles(leader, 
+
+	SetLFGRoles(leader,
 		LFGRole_GetChecked(LFRQueueFrameRoleButtonTank),
 		LFGRole_GetChecked(LFRQueueFrameRoleButtonHealer),
 		LFGRole_GetChecked(LFRQueueFrameRoleButtonDPS) );
@@ -143,7 +143,7 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		button.instanceName:SetFontObject(QuestDifficulty_Header);
 		button.instanceName:SetPoint("RIGHT", button, "RIGHT", 0, 0);
 		button.level:Hide();
-		
+
 		if ( subtypeID == LFG_SUBTYPEID_HEROIC ) then
 			button.heroicIcon:Show();
 			button.instanceName:SetPoint("LEFT", button.heroicIcon, "RIGHT", 0, 1);
@@ -151,7 +151,7 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 			button.heroicIcon:Hide();
 			button.instanceName:SetPoint("LEFT", 40, 0);
 		end
-			
+
 		button.expandOrCollapseButton:Show();
 		local isCollapsed = LFGCollapseList[dungeonID];
 		button.isCollapsed = isCollapsed;
@@ -164,10 +164,10 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 	else
 		button.instanceName:SetText(name);
 		button.instanceName:SetPoint("RIGHT", button.level, "LEFT", -10, 0);
-		
+
 		button.heroicIcon:Hide();
 		button.instanceName:SetPoint("LEFT", 40, 0);
-			
+
 		if ( minLevel == maxLevel ) then
 			button.level:SetText(format(LFD_LEVEL_FORMAT_SINGLE, minLevel));
 		else
@@ -176,19 +176,19 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		button.level:Show();
 		local difficultyColor = GetQuestDifficultyColor(recLevel);
 		button.level:SetFontObject(difficultyColor.font);
-		
+
 		if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or mode == "suspended" or not RaidBrowser_IsEmpowered()) then
 			button.instanceName:SetFontObject(QuestDifficulty_Header);
 		else
 			button.instanceName:SetFontObject(difficultyColor.font);
 		end
-		
-		
+
+
 		button.expandOrCollapseButton:Hide();
-		
+
 		button.isCollapsed = false;
 	end
-	
+
 	if ( not LFGLockList[dungeonID] or LFR_CanQueueForLockedInstances() or (LFR_CanQueueForRaidLockedInstances() and LFGLockList[dungeonID] == LFG_INSTANCE_INVALID_RAID_LOCKED) ) then
 		if ( LFR_CanQueueForMultiple() ) then
 			button.enableButton:Show();
@@ -206,7 +206,7 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		button.enableButton:Hide();
 		button.lockedIndicator:Show();
 	end
-	
+
 	local enableState;
 	if ( mode == "queued" or mode == "listed" or mode == "suspended" ) then
 		enableState = LFGQueuedForList[LE_LFG_CATEGORY_LFR][dungeonID];
@@ -215,7 +215,7 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 	else
 		enableState = LFGEnabledList[dungeonID];
 	end
-	
+
 	if ( LFR_CanQueueForMultiple() ) then
 		if ( enableState == 1 ) then	--Some are checked, some aren't.
 			button.enableButton:SetCheckedTexture("Interface\\Buttons\\UI-MultiCheck-Up");
@@ -226,7 +226,7 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		end
 	end
 	button.enableButton:SetChecked(enableState and enableState ~= 0);
-	
+
 	if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or mode == "suspended" or not RaidBrowser_IsEmpowered() ) then
 		button.enableButton:Disable();
 	else
@@ -240,11 +240,11 @@ function LFRQueueFrameSpecificList_Update()
 		return;	--Setup will update the list.
 	end
 	FauxScrollFrame_Update(LFRQueueFrameSpecificListScrollFrame, LFRGetNumDungeons(), NUM_LFR_CHOICE_BUTTONS, 16);
-	
+
 	local offset = FauxScrollFrame_GetOffset(LFRQueueFrameSpecificListScrollFrame);
-	
+
 	local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_LFR);
-	
+
 	for i = 1, NUM_LFR_CHOICE_BUTTONS do
 		local button = _G["LFRQueueFrameSpecificListButton"..i];
 		local dungeonID = LFRRaidList[i+offset];
@@ -255,7 +255,7 @@ function LFRQueueFrameSpecificList_Update()
 			button:Hide();
 		end
 	end
-	
+
 	if ( LFRRaidList[1] ) then
 		LFRQueueFrameSpecificNoRaidsAvailable:Hide();
 	else
@@ -274,7 +274,7 @@ end
 
 function LFRQueueFrame_Join()
 	ClearAllLFGDungeons(LE_LFG_CATEGORY_LFR);
-	
+
 	if ( LFR_CanQueueForMultiple() ) then
 		for _, queueID in pairs(LFRRaidList) do
 			LFRQueueFrame_QueueForInstanceIfEnabled(queueID);
@@ -287,7 +287,7 @@ function LFRQueueFrame_Join()
 			SetLFGDungeon(LE_LFG_CATEGORY_LFR, LFRQueueFrame.selectedLFM);
 		end
 	end
-	
+
 	if ( LFRQueueFrameComment:HasFocus() ) then
 		LFRQueueFrameComment:ClearFocus();
 	else
@@ -306,11 +306,11 @@ function LFRQueueFrame_Update()
 	else
 		checkedList = LFGQueuedForList[LE_LFG_CATEGORY_LFR];
 	end
-	
+
 	LFRRaidList = GetLFRChoiceOrder(LFRRaidList);
-		
+
 	LFGQueueFrame_UpdateLFGDungeonList(LFRRaidList, LFRHiddenByCollapseList, checkedList, LFR_CURRENT_FILTER, LFR_MAX_SHOWN_LEVEL_DIFF);
-	
+
 	LFRQueueFrameSpecificList_Update();
 end
 
@@ -341,13 +341,13 @@ end
 --We construct the list. This should only need to be called once (since we don't filter or change it), so we don't much worry about 1 garbage table.
 function GetFullRaidList()
 	LFGDungeonList_Setup();
-	
+
 	local headerOrder = {};
 	local list = {};
-	
+
 	local tempList = GetLFRChoiceOrder();
 	LFGListRemoveHeadersWithoutChildren(tempList);
-	
+
 	for i=1, #tempList do
 		local id = tempList[i];
 		if ( LFGIsIDHeader(tempList[i]) ) then
@@ -375,18 +375,18 @@ function LFRBrowseFrameRaidDropDown_Initialize(self, level)
 	if ( not LFR_FULL_RAID_LIST_HEADER_ORDER ) then
 		LFR_FULL_RAID_LIST_HEADER_ORDER, LFR_FULL_RAID_LIST = GetFullRaidList();
 	end
-	
+
 	local activeSearching = SearchLFGGetJoinedID() or "none";
-	
+
 	local info = UIDropDownMenu_CreateInfo();
-	
+
 	if ( not level or level == 1 ) then
 		info.text = NONE;
 		info.value = "none";
 		info.func = LFRBrowseFrameRaidDropDownButton_OnClick;
 		info.checked = activeSearching == info.value;
 		UIDropDownMenu_AddButton(info);
-		
+
 		for _, groupID in ipairs(LFR_FULL_RAID_LIST_HEADER_ORDER) do
 			info.text = select(LFG_RETURN_VALUES.name, GetLFGDungeonInfo(groupID));
 			info.value = groupID;
@@ -453,12 +453,12 @@ end
 
 function LFRBrowseFrameList_Update()
 	LFRBrowseFrameRefreshButton.timeUntilNextRefresh = LFR_BROWSE_AUTO_REFRESH_TIME;
-	
+
 	local numResults, totalResults = SearchLFGGetNumResults();
 	FauxScrollFrame_Update(LFRBrowseFrameListScrollFrame, numResults, NUM_LFR_LIST_BUTTONS, 16);
-	
+
 	local offset = FauxScrollFrame_GetOffset(LFRBrowseFrameListScrollFrame);
-	
+
 	for i=1, NUM_LFR_LIST_BUTTONS do
 		local button = _G["LFRBrowseFrameListButton"..i];
 		if ( i <= numResults ) then
@@ -482,13 +482,13 @@ function LFRBrowseFrameList_Update()
 			LFRBrowseFrame.selectedName = nil;
 		end
 	end
-	
+
 	LFRBrowse_UpdateButtonStates();
 end
 
 function LFRBrowseFrameListButton_SetData(button, index)
 	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetResults(index);
-	
+
 	button.index = index;
 	button.unitName = name;
 	if ( LFRBrowseFrame.selectedName == name ) then
@@ -497,9 +497,9 @@ function LFRBrowseFrameListButton_SetData(button, index)
 		button:UnlockHighlight();
 	end
 	button.name:SetText(name);
-	
+
 	button.level:SetText(level);
-	
+
 	local classTextColor;
 	if ( class ) then
 		classTextColor = RAID_CLASS_COLORS[class];
@@ -508,8 +508,8 @@ function LFRBrowseFrameListButton_SetData(button, index)
 	end
 	button.class:SetText(className);
 	button.class:SetTextColor(classTextColor.r, classTextColor.g, classTextColor.b);
-	
-	
+
+
 	if ( partyMembers > 0 ) then
 		button.type = "party";
 		button.partyIcon:Show();
@@ -519,26 +519,26 @@ function LFRBrowseFrameListButton_SetData(button, index)
 	else
 		button.type = "individual";
 		button.partyIcon:Hide();
-		
+
 		if ( isTank ) then
 			button.tankIcon:Show()
 		else
 			button.tankIcon:Hide();
 		end
-		
+
 		if ( isHealer ) then
 			button.healerIcon:Show();
 		else
 			button.healerIcon:Hide();
 		end
-		
+
 		if ( isDamage ) then
 			button.damageIcon:Show();
 		else
 			button.damageIcon:Hide();
 		end
 	end
-	
+
 	if ( name == UnitName("player") ) then
 		button:Disable();
 		button.name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
@@ -566,17 +566,17 @@ end
 function LFRBrowseButton_OnEnter(self)
 	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetResults(self.index);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 27, -37);
-	
+
 	if ( partyMembers > 0 ) then
 		GameTooltip:AddLine(LOOKING_FOR_RAID);
-		
+
 		GameTooltip:AddLine(name);
 		GameTooltip:AddTexture("Interface\\LFGFrame\\LFGRole", 0, 0.25, 0, 1);
-		
+
 		GameTooltip:AddLine(format(LFM_NUM_RAID_MEMBER_TEMPLATE, partyMembers));
 		-- Bogus texture to fix spacing
 		GameTooltip:AddTexture("");
-		
+
 		--Display ignored party members and friend party members. (You probably won't care about the rest. Though guildys would be nice at some point...)
 		local displayedMembersLabel = false;
 		for i=1, partyMembers do
@@ -599,11 +599,11 @@ function LFRBrowseButton_OnEnter(self)
 		GameTooltip:AddLine(format(FRIENDS_LEVEL_TEMPLATE, level, className));
 		GameTooltip:AddLine(format(ITEM_LEVEL, avgILevel));
 	end
-	
+
 	if ( comment and comment ~= "" ) then
 		GameTooltip:AddLine("\n"..comment, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 	end
-	
+
 	if ( partyMembers == 0 ) then
 		GameTooltip:AddLine("\n"..LFG_TOOLTIP_ROLES);
 		if ( isTank ) then
@@ -619,7 +619,7 @@ function LFRBrowseButton_OnEnter(self)
 			GameTooltip:AddTexture("Interface\\LFGFrame\\LFGRole", 0.25, 0.5, 0, 1);
 		end
 	end
-	
+
 	if ( encountersComplete > 0 or isIneligible ) then
 		GameTooltip:AddLine("\n"..BOSSES);
 		for i=1, encountersTotal do
@@ -635,7 +635,7 @@ function LFRBrowseButton_OnEnter(self)
 	elseif ( partyMembers > 0 and encountersTotal > 0) then
 		GameTooltip:AddLine("\n"..ALL_BOSSES_ALIVE);
 	end
-	
+
 	GameTooltip:Show();
 end
 
@@ -680,14 +680,14 @@ end
 function LFRBrowse_UpdateButtonStates()
 	local playerName = UnitName("player");
 	local selectedName = LFRBrowseFrame.selectedName;
-	
+
 	if ( selectedName and selectedName ~= playerName ) then
 		LFRBrowseFrameSendMessageButton:Enable();
 	else
 		LFRBrowseFrameSendMessageButton:Disable();
 	end
-	
-	if ( selectedName and selectedName ~= playerName and LFRBrowseFrame.selectedType ~= "party" and CanGroupInvite() ) then
+
+	if ( selectedName and selectedName ~= playerName and LFRBrowseFrame.selectedType ~= "party" and C_PartyInfo.CanInvite() ) then
 		LFRBrowseFrameInviteButton:Enable();
 	else
 		LFRBrowseFrameInviteButton:Disable();

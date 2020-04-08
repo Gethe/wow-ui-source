@@ -129,6 +129,14 @@ function CommentatorTeamDisplayMixin:RemoveScore(teamIndex)
 	self:SetScore(teamIndex, self:GetScore(teamIndex) - 1);
 end
 
+function CommentatorTeamDisplayMixin:ResetDampeningTracker()
+	self.Divider:Show();
+	self.DampeningHealthBacking:Hide();
+	self.Dampening:SetAlpha(0);
+	self.DampeningHealthIcon:SetAlpha(0);
+	self.DampeningFadeCycle:Stop();
+end
+
 function CommentatorTeamDisplayMixin:ResetScore()
 	for teamIndex = 1, C_Commentator.GetMaxNumTeams() do
 		self:SetScore(teamIndex, 0);
@@ -138,11 +146,14 @@ end
 function CommentatorTeamDisplayMixin:SetDampeningValue(percent)
 	if percent and percent > 0 then
 		self.Dampening:SetText(COMMENTATOR_DAMPENING_PERCENT:format(percent));
-		self.Dampening:Show();
-		self.DampeningBg:Show();
+		
+		if not self.DampeningFadeCycle:IsPlaying() then
+			self.Divider:Hide();
+			self.DampeningHealthBacking:Show();
+			self.DampeningFadeCycle:Play();
+		end
 	else
-		self.Dampening:Hide();
-		self.DampeningBg:Hide();
+		self:ResetDampeningTracker();
 	end
 end
 
@@ -194,4 +205,15 @@ end
 function CommentatorTeamDisplayMixin:AssignPlayerToTeam(playerName, teamName)
 	g_TeamDefinitions[playerName] = teamName;
 	self:RefreshPlayerNamesAndScores();
+end
+
+function CommentatorTeamDisplayMixin:SetMatchDuration(seconds)
+	local ElapsedTime = self.ElapsedTime;
+	local visible = seconds >= 0.0;
+	if visible then
+		ElapsedTime:SetFormattedText(SecondsToClock(seconds));
+		ElapsedTime:Show();
+	else
+		ElapsedTime:Hide();
+	end
 end

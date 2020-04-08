@@ -722,10 +722,12 @@ function GarrisonFollowerButton_SetCounterButton(button, followerID, index, info
 		counter = button.Counters[index];
 	end
 	local numPerRow, innerSpacing, outerSpacingX, outerSpacingY, scale = GetFollowerButtonCounterSpacings(followerTypeID);
-	if ((index - 1) % numPerRow ~= 0) then
-		counter:SetPoint("RIGHT", button.Counters[index-1], "LEFT", -innerSpacing, 0);
-	else
-		counter:SetPoint("TOP", button.Counters[index-2], "BOTTOM", 0, -innerSpacing);
+	if index > 1 then
+		if ((index - 1) % numPerRow ~= 0) then
+			counter:SetPoint("RIGHT", button.Counters[index-1], "LEFT", -innerSpacing, 0);
+		else
+			counter:SetPoint("TOP", button.Counters[index-numPerRow], "BOTTOM", 0, -innerSpacing);
+		end
 	end
 	counter:SetScale(scale);
 	counter.info = info;
@@ -1263,41 +1265,6 @@ function GarrisonFollowerPage_AnchorAbility(abilityFrame, lastAnchor, headerStri
 		abilityFrame:SetPoint("TOPLEFT", headerString, "BOTTOMLEFT", 2, isLandingPage and -5 or -12);
 	end
 	return abilityFrame;
-end
-
-function GarrisonFollowerPageModel_SpellCast_OnMouseDown(self, button)
-	local followerList = self:GetParent().followerList;
-	if ( button == "LeftButton" and followerList.canCastSpellsOnFollowers and SpellCanTargetGarrisonFollower(self.followerID) ) then
-		-- no rotation if you can upgrade this follower
-		local followerInfo = self.followerID and C_Garrison.GetFollowerInfo(self.followerID);
-		if ( followerInfo and followerInfo.isCollected and followerInfo.status ~= GARRISON_FOLLOWER_ON_MISSION ) then
-			return true;
-		end
-	end
-	return false;
-end
-
-function GarrisonFollowerPageModel_OnMouseDown(self, button)
-	if (not GarrisonFollowerPageModel_SpellCast_OnMouseDown(self, button)) then
-		Model_OnMouseDown(self, button);
-	end
-end
-
-function GarrisonFollowerPageModel_SpellCast_OnMouseUp(self, button)
-	local followerList = self:GetParent().followerList;
-	if ( button == "LeftButton" and followerList.canCastSpellsOnFollowers and SpellCanTargetGarrisonFollower(self.followerID) ) then
-		-- no rotation if you can upgrade this follower, bring up confirmation dialog
-		if ( GarrisonFollower_AttemptUpgrade(self.followerID) ) then
-			return true;
-		end
-	end
-	return false;
-end
-
-function GarrisonFollowerPageModel_OnMouseUp(self, button)
-	if (not GarrisonFollowerPageModel_SpellCast_OnMouseUp(self, button)) then
-		Model_OnMouseUp(self, button);
-	end
 end
 
 function GarrisonFollowerPageModelUpgrade_OnLoad(self)
@@ -1970,25 +1937,31 @@ function GarrisonFollowerTabMixin:ShowEquipment(followerInfo)
 		equipmentFrame.followerList = self:GetFollowerList();
 		equipmentFrame.abilityID = equipment.id;
 		equipmentFrame.followerID = followerInfo.followerID;
-		if (equipment.icon) then
-			equipmentFrame.Icon:SetTexture(equipment.icon);
-			equipmentFrame.Icon:Show();
+
+		if equipmentFrame.Icon then
+			equipmentFrame.Icon:SetShown(equipment.icon ~= nil);
+
+			if (equipment.icon) then
+				equipmentFrame.Icon:SetTexture(equipment.icon);
+
+				if (followerInfo.isCollected and GarrisonFollowerAbilities_IsNew(self.lastUpdate, followerID, equipment.id, GARRISON_FOLLOWER_ABILITY_TYPE_EITHER)) then
+					equipmentFrame.EquipAnim:Play();
+				else
+					GarrisonEquipment_StopAnimations(equipmentFrame);
+				end
+			end
+		end
+
+		if equipmentFrame.Counter then
 			local id, counter = next(equipment.counters, nil);
+			equipmentFrame.Counter:SetShown(GarrisonFollowerOptions[followerInfo.followerTypeID].allowEquipmentCounterToShow and counter);
+
 			if (counter) then
 				equipmentFrame.Counter.Icon:SetTexture(counter.icon);
 				equipmentFrame.Counter.tooltip = counter.name;
 				equipmentFrame.Counter.mainFrame = self:GetParent();
 				equipmentFrame.Counter.info = counter;
-				equipmentFrame.Counter:Show();
 			end
-
-			if (followerInfo.isCollected and GarrisonFollowerAbilities_IsNew(self.lastUpdate, followerID, equipment.id, GARRISON_FOLLOWER_ABILITY_TYPE_EITHER)) then
-				equipmentFrame.EquipAnim:Play();
-			else
-				GarrisonEquipment_StopAnimations(equipmentFrame);
-			end
-		else
-			equipmentFrame.Icon:Hide();
 		end
 
 		local tooltipText;

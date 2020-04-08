@@ -3,7 +3,7 @@
     <Script file="EquipmentFlyout.lua"/>
 
 	<Texture name="EquipmentFlyoutTexture" file="Interface\PaperDollInfoFrame\UI-GearManager-Flyout" hidden="true" virtual="true"/>
-	<Button name="EquipmentFlyoutButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+	<ItemButton name="EquipmentFlyoutButtonTemplate" virtual="true">
 		<Frames>
 			<Cooldown name="$parentCooldown" parentKey="cooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>
@@ -24,7 +24,7 @@
 			</OnLeave>
 			<OnClick function="EquipmentFlyoutButton_OnClick"/>
 		</Scripts>
-	</Button>
+	</ItemButton>
 	<Button name="EquipmentFlyoutPopoutButtonTemplate" hidden="true" virtual="true">
 		<Size>
 			<AbsDimension x="16" y="32"/>

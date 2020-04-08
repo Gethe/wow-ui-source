@@ -1,0 +1,106 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_AuctionHouseCommoditiesBuyFrame.lua"/>
+
+	<Frame name="AuctionHouseCommoditiesBuyDisplayTemplate" inherits="VerticalLayoutFrame, AuctionHouseBackgroundTemplate" mixin="AuctionHouseCommoditiesBuyDisplayMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="topPadding" value="19" type="number"/>
+			<KeyValue key="bottomPadding" value="120" type="number"/>
+			<KeyValue key="leftPadding" value="15" type="number"/>
+			<KeyValue key="rightPadding" value="16" type="number"/>
+			
+			<KeyValue key="spacing" value="15" type="number"/>
+
+			<KeyValue key="backgroundAtlas" value="auctionhouse-background-buy-commodities" type="string"/>
+		</KeyValues>
+		<Frames>
+			<Button parentKey="ItemDisplay" inherits="AuctionHouseItemDisplayTemplate">
+				<Size x="342" y="72"/>
+				<KeyValues>
+					<KeyValue key="itemButtonXOffset" value="11" type="number"/>
+					<KeyValue key="itemButtonYOffset" value="0" type="number"/>
+					<KeyValue key="bottomPadding" value="8" type="number"/>
+					<KeyValue key="layoutIndex" value="10" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture atlas="auctionhouse-itemheaderframe" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="QuantityInput" inherits="AuctionHouseAlignedQuantityInputFrameTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="20" type="number"/>
+					<KeyValue key="labelText" value="AUCTION_HOUSE_QUANTITY_LABEL" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="UnitPrice" inherits="AuctionHouseAlignedPriceDisplayTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="30" type="number"/>
+					<KeyValue key="labelText" value="AUCTION_HOUSE_UNIT_PRICE_LABEL" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="TotalPrice" inherits="AuctionHouseAlignedPriceDisplayTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="40" type="number"/>
+					<KeyValue key="labelText" value="AUCTION_HOUSE_TOTAL_PRICE_LABEL" type="global"/>
+				</KeyValues>
+			</Frame>
+
+			<Button parentKey="BuyButton" mixin="AuctionHouseCommoditiesBuyButtonMixin" inherits="UIPanelButtonTemplate, ButtonWithDisableTooltipTemplate" text="AUCTION_HOUSE_BUY_BUTTON">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="50" type="number"/>
+					<KeyValue key="leftPadding" value="110" type="number"/>
+				</KeyValues>
+				<Size x="196" y="22"/>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AuctionHouseCommoditiesBuyFrameTemplate" mixin="AuctionHouseCommoditiesBuyFrameMixin" virtual="true">
+		<Frames>
+			<Button parentKey="BackButton" mixin="AuctionHouseCommoditiesBackButtonMixin" inherits="UIPanelButtonTemplate" text="AUCTION_HOUSE_BACK_BUTTON">
+				<Size x="110" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="11" y="-9"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="BuyDisplay" inherits="AuctionHouseCommoditiesBuyDisplayTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.BackButton" relativePoint="BOTTOM" x="0" y="-10"/>
+					<Anchor point="LEFT"/>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ItemList" inherits="AuctionHouseCommoditiesBuyListTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BuyDisplay" relativePoint="TOPRIGHT" x="1" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.BuyDisplay" relativePoint="BOTTOMRIGHT" x="2" y="0"/>
+					<Anchor point="RIGHT" x="-4"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -82,6 +82,7 @@
 				<OnHide method="OnHide"/>
 				<OnShow method="OnShow"/>
 				<OnRequestNewSize method="OnRequestNewSize"/>
+				<OnExternalLink method="OnExternalLink"/>
 			</Scripts>
 		</Checkout>
 	</ScopedModifier>

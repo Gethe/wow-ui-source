@@ -2,6 +2,46 @@
 ..\FrameXML\UI.xsd">
 	<Script file="QuestMapFrame.lua"/>
 
+	<Button name="QuestLogPathButtonTemplate" frameLevel="10" hidden="true" virtual="true">
+		<Size x="16" y="24"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="16" y="24"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="HighlightIcon" alphaMode="ADD" alpha="0.3" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown>
+				self.Icon:SetPoint("CENTER", 1, -1);
+			</OnMouseDown>
+			<OnMouseUp>
+				self.Icon:SetPoint("CENTER", 0, 0);
+			</OnMouseUp>
+			<OnClick>
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+				QuestMapFrame_ToggleShowDestination();
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip_AddColoredLine(GameTooltip, self.tooltipText, HIGHLIGHT_FONT_COLOR);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Button>
+
 	<Button name="QuestLogHeaderTemplate" virtual="true">
 		<Size x="16" y="16"/>
 		<KeyValues>
@@ -233,10 +273,6 @@
 					<OnClick>
 						QuestMapQuestOptions_AbandonQuest(self:GetParent().questID);
 					</OnClick>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, ABANDON_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ABANDONQUEST, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 			<Button parentKey="TrackButton" name="$parentTrackButton" inherits="UIPanelButtonTemplate" text="TRACK_QUEST_ABBREV">
@@ -249,10 +285,6 @@
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						QuestMapQuestOptions_TrackQuest(self:GetParent().questID);
 					</OnClick>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, TRACK_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_TRACKQUEST, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 			<Button parentKey="ShareButton" name="$parentShareButton" inherits="UIPanelButtonTemplate" text="SHARE_QUEST_ABBREV">
@@ -265,10 +297,6 @@
 					<OnClick>
 						QuestMapQuestOptions_ShareQuest(self:GetParent().questID);
 					</OnClick>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, SHARE_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_SHAREQUEST, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 		</Frames>
@@ -279,13 +307,14 @@
 	</Frame>
 
 	<Frame name="QuestMapFrame" enableMouse="true" mixin="QuestLogMixin" hidden="true">
-		<Size x="287" y="462"/>
+		<Size x="286" y="0"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="VerticalSeparator" inherits="!UI-Frame-InnerRightTile">
-					<Size x="3" y="509"/>
+					<Size x="3" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-1" y="-2"/>
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -293,9 +322,10 @@
 		<Frames>
 			<Frame name="QuestMapQuestOptionsDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
 			<ScrollFrame parentKey="QuestsFrame" name="QuestScrollFrame" inherits="UIPanelScrollFrameCodeTemplate">
-				<Size x="259" y="502"/>
+				<!-- NOTE: See QuestMapFrame_UpdateQuestSessionState for anchor updates, these are default -->
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-26" y="-5"/>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -441,38 +471,42 @@
 					</Frame>
 				</ScrollChild>
 				<Frames>
-					<Frame parentKey="DetailFrame" setAllPoints="true">
+					<Frame parentKey="DetailFrame">
+						<Anchors>
+							<Anchor point="TOPLEFT" />
+							<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
+						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK" textureSubLevel="2">
 								<Texture parentKey="BottomDetail" atlas="QuestLog_BottomDetail" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="BOTTOM" x="1" y="-4"/>
+										<Anchor point="BOTTOM" x="0" y="0"/>
 									</Anchors>
 								</Texture>
 								<Texture parentKey="TopDetail" atlas="QuestLog_TopDetail" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="TOP" x="1" y="9"/>
+										<Anchor point="TOP" x="0" y="9"/>
 									</Anchors>
 								</Texture>
 							</Layer>
 						</Layers>
 					</Frame>
 					<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="ScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="6" y="-18"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="18"/>
+						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK" textureSubLevel="1">
 								<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="256"/>
-									</Size>
+									<Size x="31" y="256"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="$parentScrollUpButton" relativePoint="TOPLEFT" x="-7" y="5"/>
 									</Anchors>
 									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
 								</Texture>
 								<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="106"/>
-									</Size>
+									<Size x="31" y="106"/>
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" relativeTo="$parentScrollDownButton" relativePoint="BOTTOMLEFT" x="-7" y="-2"/>
 									</Anchors>
@@ -487,18 +521,6 @@
 								</Texture>
 							</Layer>
 						</Layers>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-								<Offset>
-									<AbsDimension x="6" y="-18"/>
-								</Offset>
-							</Anchor>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="6" y="14"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
 					</Slider>
 					<Frame parentKey="StoryTooltip" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
 						<Size x="10" y="10"/>
@@ -550,10 +572,76 @@
 					<OnLoad function="QuestsFrame_OnLoad"/>
 				</Scripts>
 			</ScrollFrame>
+			<Frame parentKey="QuestSessionManagement" mixin="QuestSessionManagementMixin">
+				<Size x="0" y="49"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="ExecuteSessionCommand" hidden="true">
+						<Size x="44" y="44"/>
+						<Anchors>
+							<Anchor point="LEFT" x="14"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="QuestSessionManagementExecute_OnClick"/>
+							<OnEnter function="QuestSessionManagement_OnEnter"/>
+							<OnLeave function="QuestSessionManagement_OnLeave"/>
+						</Scripts>
+						<NormalTexture atlas="QuestSharing-QuestLog-Button" useAtlasSize="true"/>
+						<DisabledTexture atlas="QuestSharing-QuestLog-Button" useAtlasSize="true" desaturated="true"/>
+						<PushedTexture atlas="QuestSharing-QuestLog-ButtonPressed" useAtlasSize="true"/>
+					 	<HighlightTexture atlas="QuestSharing-QuestLog-ButtonHighlight" alphaMode="ADD"/>
+					</Button>
+					<Frame parentKey="SessionActiveFrame" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ExecuteSessionCommand"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExecuteSessionCommand"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Icon" atlas="QuestSharing-QuestLog-Active" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter function="QuestSessionManagement_OnEnter"/>
+							<OnLeave function="QuestSessionManagement_OnLeave"/>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="BG" atlas="QuestSharing-QuestLog-Background" setAllPoints="true"/>
+						<FontString parentKey="CommandText" inherits="GameFontNormalLeft" maxLines="1">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.ExecuteSessionCommand" relativePoint="RIGHT" x="10" y="2"/>
+								<Anchor point="RIGHT" x="-10" y="0"/>
+							</Anchors>
+							<Color color="WHITE_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="HelpText" inherits="GameFontNormalSmallLeft" maxLines="1">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ExecuteSessionCommand" relativePoint="RIGHT" x="10" y="-2"/>
+								<Anchor point="RIGHT" x="-10" y="0"/>
+							</Anchors>
+							<Color color="NORMAL_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnHide method="OnHide"/>
+				</Scripts>
+			</Frame>
 			<Frame parentKey="DetailsFrame" hidden="true">
 				<Size x="259" y="462"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-26" y="-46"/>
+					<Anchor point="TOPRIGHT" x="-26" y="-42"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -570,7 +658,7 @@
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="BORDER" textureSubLevel="-1">	
+					<Layer level="BORDER" textureSubLevel="-1">
 						<Texture parentKey="SealMaterialBG" hidden="true">
 							<Size x="285" y="407"/>
 							<Anchors>
@@ -599,6 +687,30 @@
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								QuestMapFrame_ReturnFromQuestDetails();
 							</OnClick>
+						</Scripts>
+					</Button>
+					<Button parentKey="DestinationMapButton" inherits="QuestLogPathButtonTemplate">
+						<KeyValues>
+							<KeyValue key="tooltipText" value="QUEST_WAYPOINT_FINAL" type="global"/>
+						</KeyValues>
+						<Scripts>
+							<OnLoad>
+								self.Icon:SetAtlas("questlog-waypoint-finaldestination-questionmark");
+								self.Icon:SetSize(16, 24);
+								self.HighlightIcon:SetAtlas("questlog-waypoint-finaldestination-questionmark");
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button parentKey="WaypointMapButton" inherits="QuestLogPathButtonTemplate">
+						<KeyValues>
+							<KeyValue key="tooltipText" value="QUEST_WAYPOINT_ROUTE" type="global"/>
+						</KeyValues>
+						<Scripts>
+							<OnLoad>
+								self.Icon:SetAtlas("poi-traveldirections-arrow", false);
+								self.Icon:SetSize(15, 19);
+								self.HighlightIcon:SetAtlas("poi-traveldirections-arrow", false);
+							</OnLoad>
 						</Scripts>
 					</Button>
 					<Frame parentKey="RewardsFrame">
@@ -655,6 +767,10 @@
 								self.ScrollBar.trackBG:SetAlpha(0.5);
 								ScrollFrame_OnLoad(self);
 							</OnLoad>
+							<OnScrollRangeChanged>
+								ScrollFrame_OnScrollRangeChanged(self, xrange, yrange);
+								QuestMapFrame_AdjustPathButtons();
+							</OnScrollRangeChanged>
 						</Scripts>
 					</ScrollFrame>
 					<Button>
@@ -740,10 +856,6 @@
 							<OnClick>
 								QuestMapQuestOptions_AbandonQuest(QuestMapFrame_GetDetailQuestID())
 							</OnClick>
-							<OnEnter>
-								GameTooltip_AddNewbieTip(self, ABANDON_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ABANDONQUEST, 1);
-							</OnEnter>
-							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Button>
 					<Button parentKey="ShareButton" inherits="UIPanelButtonTemplate" text="SHARE_QUEST_ABBREV">
@@ -769,10 +881,6 @@
 							<OnClick>
 								QuestMapQuestOptions_ShareQuest(QuestMapFrame_GetDetailQuestID())
 							</OnClick>
-							<OnEnter>
-								GameTooltip_AddNewbieTip(self, SHARE_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_SHAREQUEST, 1);
-							</OnEnter>
-							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Button>
 					<Button parentKey="TrackButton" inherits="UIPanelButtonTemplate" text="TRACK_QUEST_ABBREV">
@@ -785,18 +893,19 @@
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								QuestMapQuestOptions_TrackQuest(QuestMapFrame_GetDetailQuestID())
 							</OnClick>
-							<OnEnter>
-								GameTooltip_AddNewbieTip(self, TRACK_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_TRACKQUEST, 1);
-							</OnEnter>
-							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Button>
 				</Frames>
+				<Scripts>
+					<OnShow function="QuestDetailsFrame_OnShow"/>
+					<OnHide function="QuestDetailsFrame_OnHide"/>
+				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="QuestMapFrame_OnLoad"/>
 			<OnEvent function="QuestMapFrame_OnEvent"/>
+			<OnShow function="QuestMapFrame_OnShow"/>
 			<OnHide function="QuestMapFrame_OnHide"/>
 		</Scripts>
 	</Frame>

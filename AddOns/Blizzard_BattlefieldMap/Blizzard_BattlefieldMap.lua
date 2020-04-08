@@ -50,7 +50,7 @@ function BattlefieldMapTabMixin:OnClick(button)
 			self:GetParent():InitializeOptionsDropDown();
 		end
 		UIDropDownMenu_Initialize(self.OptionsDropDown, InitializeOptionsDropDown, "MENU");
-		ToggleDropDownMenu(1, nil, self.OptionsDropDown, self, 0, 0);	
+		ToggleDropDownMenu(1, nil, self.OptionsDropDown, self, 0, 0);
 		return;
 	end
 
@@ -69,10 +69,6 @@ function BattlefieldMapTabMixin:OnClick(button)
 		end
 	end
 	ValidateFramePosition(self);
-end
-
-function BattlefieldMapTabMixin:OnEnter()
-	GameTooltip_AddNewbieTip(self, BATTLEFIELDMINIMAP_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_BATTLEFIELDMINIMAP_OPTIONS, 1);
 end
 
 function BattlefieldMapTabMixin:OnDragStart()
@@ -134,7 +130,7 @@ BattlefieldMapMixin = {};
 
 function BattlefieldMapMixin:Toggle()
 	if self:IsShown() then
-		SetCVar("showBattlefieldMinimap", "0");	
+		SetCVar("showBattlefieldMinimap", "0");
 		self:Hide();
 	else
 		SetCVar("showBattlefieldMinimap", "1");
@@ -221,7 +217,8 @@ function BattlefieldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(MapLinkDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(SelectableGraveyardDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(AreaPOIDataProviderMixin));
-	
+	self:AddDataProvider(CreateFromMixins(QuestSessionDataProviderMixin));
+
 	self.groupMembersDataProvider = CreateFromMixins(GroupMembersDataProviderMixin);
 	self.groupMembersDataProvider:SetUnitPinSize("player", BATTLEFIELD_MAP_PLAYER_SIZE);
 	self.groupMembersDataProvider:SetUnitPinSize("party", BATTLEFIELD_MAP_PARTY_MEMBER_SIZE);

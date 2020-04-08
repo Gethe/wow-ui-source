@@ -223,10 +223,12 @@
 	</xs:simpleType>
 
 	<xs:complexType name="ColorType">
-		<xs:attribute name="r" type="ColorFloat" use="required"/>
-		<xs:attribute name="g" type="ColorFloat" use="required"/>
-		<xs:attribute name="b" type="ColorFloat" use="required"/>
+		<xs:attribute name="r" type="ColorFloat" default="0.0"/>
+		<xs:attribute name="g" type="ColorFloat" default="0.0"/>
+		<xs:attribute name="b" type="ColorFloat" default="0.0"/>
 		<xs:attribute name="a" type="ColorFloat" default="1.0"/>
+		<xs:attribute name="color" type="xs:string"/>
+		<xs:assert test="(@r and @g and @b and not(@color)) or (not(@r and @g and @b) and @color)"/>
 	</xs:complexType>
 
 	<xs:complexType name="ShadowType">
@@ -236,7 +238,9 @@
 				<xs:element name="Offset" type="Dimension"/>
 			</xs:choice>
 		</xs:sequence>
-	</xs:complexType>
+    <xs:attribute name="x" type="xs:float"/>
+    <xs:attribute name="y" type="xs:float"/>
+  </xs:complexType>
 
 	<xs:complexType name="GradientType">
 		<xs:sequence>
@@ -310,6 +314,7 @@
 				<xs:element name="OnMinMaxChanged" type="ScriptType"/>
 				<xs:element name="OnUpdateModel" type="ScriptType"/>
 				<xs:element name="OnModelLoaded" type="ScriptType"/>
+				<xs:element name="OnAnimStarted" type="ScriptType"/>
 				<xs:element name="OnAnimFinished" type="ScriptType"/>
 				<xs:element name="OnEnterPressed" type="ScriptType"/>
 				<xs:element name="OnEscapePressed" type="ScriptType"/>
@@ -521,6 +526,8 @@
 				<xs:attribute name="alpha" type="xs:float" default="1.0"/>
                 <xs:attribute name="scale" type="xs:float" default="1.0"/>
                 <xs:attribute name="rotation" type="xs:float" default="0.0"/>
+                <xs:attribute name="snapToPixelGrid" type="xs:boolean" default="true"/>
+                <xs:attribute name="texelSnappingBias" type="xs:float"/>
                 <xs:attribute name="hWrapMode" type="WRAPMODE" default="CLAMP"/>
                 <xs:attribute name="vWrapMode" type="WRAPMODE" default="CLAMP"/>
                 <xs:attribute name="ignoreParentAlpha" type="xs:boolean" default="false"/>
@@ -894,6 +901,7 @@
 				<xs:attribute name="font" type="xs:string"/>
 				<xs:attribute name="file" type="xs:string"/>
 				<xs:attribute name="hyperlinkFormat" type="xs:string" default="|H%s|h%s|h"/>
+				<xs:attribute name="resizeToFitContents" type="xs:boolean" default="false"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

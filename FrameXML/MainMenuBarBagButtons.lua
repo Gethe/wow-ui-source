@@ -1,26 +1,26 @@
 local allBagButtons = {};
 
-function BagSlotButton_UpdateChecked(self)
-	local translatedID = self:GetID() - CharacterBag0Slot:GetID() + 1;
-	local isVisible = false;
-	for i=1, NUM_CONTAINER_FRAMES, 1 do
-		local frame = _G["ContainerFrame"..i];
-		if ( (frame:GetID() == translatedID) and frame:IsShown() ) then
-			isVisible = true;
-			break;
-		end
+BagSlotMixin = {};
+
+function BagSlotMixin:GetItemContextMatchResult()
+	return ItemButtonUtil.GetItemContextMatchResultForContainer(self:GetBagID());
+end
+
+function BagSlotMixin:GetBagID()
+	if ( self:GetID() == 0 ) then
+		return 0;
 	end
-	self:SetChecked(isVisible);
+	
+	return (self:GetID() - CharacterBag0Slot:GetID()) + 1;
 end
 
 function BagSlotButton_OnClick(self)
 	local id = self:GetID();
-	local translatedID = id - CharacterBag0Slot:GetID() + 1;
+	local translatedID = self:GetBagID();
 	local hadItem = PutItemInBag(id);
 	if ( not hadItem ) then
 		ToggleBag(translatedID);
 	end
-	BagSlotButton_UpdateChecked(self);
 end
 
 function BagSlotButton_OnModifiedClick(self)
@@ -29,38 +29,22 @@ function BagSlotButton_OnModifiedClick(self)
 			ToggleAllBags();
 		end
 	end
-	BagSlotButton_UpdateChecked(self);
 end
 
 function BagSlotButton_OnDrag(self)
 	PickupBagFromSlot(self:GetID());
-	BagSlotButton_UpdateChecked(self);
-end
-
-function BackpackButton_UpdateChecked(self)
-	local isVisible = false;
-	for i=1, NUM_CONTAINER_FRAMES do
-		local frame = _G["ContainerFrame"..i];
-		if ( (frame:GetID() == 0) and frame:IsShown() ) then
-			isVisible = true;
-			break;
-		end
-	end
-	self:SetChecked(isVisible);
 end
 
 function BackpackButton_OnClick(self)
 	if ( not PutItemInBackpack() ) then
 		ToggleBackpack();
 	end
-	BackpackButton_UpdateChecked(self);
 end
 
 function BackpackButton_OnModifiedClick(self)
 	if ( IsModifiedClick("OPENALLBAGS") ) then
 		ToggleAllBags();
 	end
-	BackpackButton_UpdateChecked(self);
 end
 
 function BagSlotButton_OnLoad(self)
@@ -84,11 +68,7 @@ function BagSlotButton_OnEvent(self, event, ...)
 	if ( event == "BAG_UPDATE_DELAYED" ) then
 		PaperDollItemSlotButton_Update(self);
 	elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
-		if ( IsContainerFiltered(self:GetID() - CharacterBag0Slot:GetID() + 1) ) then
-			self.searchOverlay:Show();
-		else
-			self.searchOverlay:Hide();
-		end
+		self:SetMatchesSearch(not IsContainerFiltered(self:GetBagID()));
 	else
 		PaperDollItemSlotButton_OnEvent(self, event, ...);
 	end
@@ -97,11 +77,11 @@ end
 function BagSlotButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	if ( GameTooltip:SetInventoryItem("player", self:GetID()) ) then
-		local bindingKey = GetBindingKey("TOGGLEBAG"..(4 -  (self:GetID() - CharacterBag0Slot:GetID())));
+		local bindingKey = GetBindingKey("TOGGLEBAG"..(3 - self:GetBagID()));
 		if ( bindingKey ) then
 			GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..bindingKey..")"..FONT_COLOR_CODE_CLOSE);
 		end
-		local bagID = (self:GetID() - CharacterBag0Slot:GetID()) + 1;
+		local bagID = self:GetBagID();
 		if (not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(bagID))) then
 			for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
 				if ( GetBagSlotFlag(bagID, i) ) then
@@ -197,11 +177,7 @@ function MainMenuBarBackpackButton_OnEvent(self, event, ...)
 			end
 		end
 	elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
-		if ( IsContainerFiltered(BACKPACK_CONTAINER) ) then
-			self.searchOverlay:Show();
-		else
-			self.searchOverlay:Hide();
-		end
+		self:SetMatchesSearch(not IsContainerFiltered(BACKPACK_CONTAINER));
 	elseif ( event == "AZERITE_EMPOWERED_ITEM_LOOTED" ) then
 		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_BAG) then
 			if AzeriteUtil.AreAnyAzeriteEmpoweredItemsEquipped() then

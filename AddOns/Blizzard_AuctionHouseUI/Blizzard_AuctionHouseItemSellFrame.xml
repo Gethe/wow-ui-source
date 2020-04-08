@@ -1,0 +1,45 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_AuctionHouseItemSellFrame.lua"/>
+
+	<Frame name="AuctionHouseItemSellFrameTemplate" inherits="AuctionHouseSellFrameTemplate" mixin="AuctionHouseItemSellFrameMixin" virtual="true">
+		<Frames>
+			<CheckButton parentKey="BuyoutModeCheckButton" frameLevel="350" mixin="AuctionHouseBuyoutModeCheckButtonMixin" inherits="UICheckButtonTemplate">
+				<Size x="36" y="36"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="8" y="8"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</CheckButton>
+			<Frame parentKey="SecondaryPriceInput" inherits="AuctionHouseAlignedPriceInputFrameTemplate" hidden="true">
+				<Size x="300" y="20"/>
+				<KeyValues>
+					<KeyValue key="topPadding" value="5" type="number"/>
+					<KeyValue key="layoutIndex" value="25" type="number"/>
+					<KeyValue key="labelText" value="AUCTION_HOUSE_BID_LABEL" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Button parentKey="DisabledOverlay" frameLevel="1500" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.4"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

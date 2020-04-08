@@ -88,7 +88,7 @@ end
 	CustomBindingManager:SetPendingBind(self:GetCustomBindingType(), self.keys);
 
 	if self.receivedNonMetaKeyInput or isButtonRelease then
-		self:NotifyBindingCompleted(true);
+		self:NotifyBindingCompleted(true, self.keys);
 
 		if isButtonRelease then
 			self:EnableKeyboard(false);
@@ -119,8 +119,8 @@ end
 	end
 end
 
---[[private]] function CustomBindingButtonMixin:NotifyBindingCompleted(completedSuccessfully)
-	CustomBindingManager:OnBindingCompleted(self, completedSuccessfully);
+--[[private]] function CustomBindingButtonMixin:NotifyBindingCompleted(completedSuccessfully, keys)
+	CustomBindingManager:OnBindingCompleted(self, completedSuccessfully, keys);
 	self:SetBindingModeActive(false);
 end
 

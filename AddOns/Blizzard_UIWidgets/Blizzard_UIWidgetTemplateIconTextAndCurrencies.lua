@@ -13,8 +13,8 @@ local textureKitRegions = {
 	["Icon"] = "%s",
 }
 
-function UIWidgetTemplateIconTextAndCurrenciesMixin:Setup(widgetInfo)
-	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
+function UIWidgetTemplateIconTextAndCurrenciesMixin:Setup(widgetInfo, widgetContainer)
+	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 	self.currencyPool:ReleaseAll();
 
 	SetupTextureKits(widgetInfo.textureKitID, self, textureKitRegions);
@@ -36,7 +36,7 @@ function UIWidgetTemplateIconTextAndCurrenciesMixin:Setup(widgetInfo)
 		local currencyFrame = self.currencyPool:Acquire();
 		currencyFrame:Show();
 
-		currencyFrame:Setup(currencyInfo, enabledState);
+		currencyFrame:Setup(widgetContainer, currencyInfo, enabledState);
 
 		if previousCurrencyFrame then
 			currencyFrame:SetPoint("TOPLEFT", previousCurrencyFrame, "TOPRIGHT", 10, 0);
@@ -51,7 +51,7 @@ function UIWidgetTemplateIconTextAndCurrenciesMixin:Setup(widgetInfo)
 	end
 
 	local descHeight = 0;
-	local showDescription = (widgetInfo.descriptionShownState == Enum.WidgetShownState.Shown) and widgetInfo.description;
+	local showDescription = (widgetInfo.descriptionShownState == Enum.WidgetShownState.Shown) and (widgetInfo.description ~= "");
 	if showDescription then
 		self.Description:SetText(widgetInfo.description);
 		self.Description:SetEnabledState(widgetInfo.descriptionEnabledState);

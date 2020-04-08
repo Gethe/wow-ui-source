@@ -6,6 +6,137 @@ local Unit =
 	Functions =
 	{
 		{
+			Name = "GetNegativeCorruptionEffectInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "corruptionEffects", Type = "table", InnerType = "CorruptionEffectInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUnitPowerBarInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "UnitPowerBarInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUnitPowerBarInfoByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "barID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "UnitPowerBarInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUnitPowerBarStrings",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = true },
+				{ Name = "tooltip", Type = "string", Nilable = true },
+				{ Name = "cost", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetUnitPowerBarStringsByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "barID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = true },
+				{ Name = "tooltip", Type = "string", Nilable = true },
+				{ Name = "cost", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetUnitPowerBarTextureInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "textureIndex", Type = "number", Nilable = false },
+				{ Name = "timerIndex", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "texture", Type = "number", Nilable = false },
+				{ Name = "colorR", Type = "number", Nilable = false },
+				{ Name = "colorG", Type = "number", Nilable = false },
+				{ Name = "colorB", Type = "number", Nilable = false },
+				{ Name = "colorA", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUnitPowerBarTextureInfoByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "barID", Type = "number", Nilable = false },
+				{ Name = "textureIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "texture", Type = "number", Nilable = false },
+				{ Name = "colorR", Type = "number", Nilable = false },
+				{ Name = "colorG", Type = "number", Nilable = false },
+				{ Name = "colorB", Type = "number", Nilable = false },
+				{ Name = "colorA", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "IsUnitModelReadyForUI",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isReady", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "PlayerVehicleHasComboPoints",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "vehicleHasComboPoints", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetPortraitTexture",
 			Type = "Function",
 
@@ -159,6 +290,20 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitPowerBarID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "barID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitPowerDisplayMod",
 			Type = "Function",
 
@@ -189,6 +334,20 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitPvpClassification",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "classification", Type = "PvpUnitClassification", Nilable = true },
+			},
+		},
+		{
 			Name = "UnitSex",
 			Type = "Function",
 
@@ -200,6 +359,34 @@ local Unit =
 			Returns =
 			{
 				{ Name = "sex", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "UnitTreatAsPlayerForDisplay",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "treatAsPlayer", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitWidgetSet",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "uiWidgetSet", Type = "number", Nilable = false },
 			},
 		},
 	},
@@ -281,6 +468,15 @@ local Unit =
 			Name = "IncomingResurrectChanged",
 			Type = "Event",
 			LiteralName = "INCOMING_RESURRECT_CHANGED",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "IncomingSummonChanged",
+			Type = "Event",
+			LiteralName = "INCOMING_SUMMON_CHANGED",
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "string", Nilable = false },
@@ -478,14 +674,34 @@ local Unit =
 			},
 		},
 		{
+			Name = "PlayerStartedLooking",
+			Type = "Event",
+			LiteralName = "PLAYER_STARTED_LOOKING",
+		},
+		{
 			Name = "PlayerStartedMoving",
 			Type = "Event",
 			LiteralName = "PLAYER_STARTED_MOVING",
 		},
 		{
+			Name = "PlayerStartedTurning",
+			Type = "Event",
+			LiteralName = "PLAYER_STARTED_TURNING",
+		},
+		{
+			Name = "PlayerStoppedLooking",
+			Type = "Event",
+			LiteralName = "PLAYER_STOPPED_LOOKING",
+		},
+		{
 			Name = "PlayerStoppedMoving",
 			Type = "Event",
 			LiteralName = "PLAYER_STOPPED_MOVING",
+		},
+		{
+			Name = "PlayerStoppedTurning",
+			Type = "Event",
+			LiteralName = "PLAYER_STOPPED_TURNING",
 		},
 		{
 			Name = "PlayerTargetChanged",
@@ -1174,6 +1390,60 @@ local Unit =
 				{ Name = "Fury", Type = "PowerType", EnumValue = 17 },
 				{ Name = "Pain", Type = "PowerType", EnumValue = 18 },
 				{ Name = "NumPowerTypes", Type = "PowerType", EnumValue = 19 },
+			},
+		},
+		{
+			Name = "PvpUnitClassification",
+			Type = "Enumeration",
+			NumValues = 11,
+			MinValue = 0,
+			MaxValue = 10,
+			Fields =
+			{
+				{ Name = "FlagCarrierHorde", Type = "PvpUnitClassification", EnumValue = 0 },
+				{ Name = "FlagCarrierAlliance", Type = "PvpUnitClassification", EnumValue = 1 },
+				{ Name = "FlagCarrierNeutral", Type = "PvpUnitClassification", EnumValue = 2 },
+				{ Name = "CartRunnerHorde", Type = "PvpUnitClassification", EnumValue = 3 },
+				{ Name = "CartRunnerAlliance", Type = "PvpUnitClassification", EnumValue = 4 },
+				{ Name = "AssassinHorde", Type = "PvpUnitClassification", EnumValue = 5 },
+				{ Name = "AssassinAlliance", Type = "PvpUnitClassification", EnumValue = 6 },
+				{ Name = "OrbCarrierBlue", Type = "PvpUnitClassification", EnumValue = 7 },
+				{ Name = "OrbCarrierGreen", Type = "PvpUnitClassification", EnumValue = 8 },
+				{ Name = "OrbCarrierOrange", Type = "PvpUnitClassification", EnumValue = 9 },
+				{ Name = "OrbCarrierPurple", Type = "PvpUnitClassification", EnumValue = 10 },
+			},
+		},
+		{
+			Name = "CorruptionEffectInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "minCorruption", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitPowerBarInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "ID", Type = "number", Nilable = false },
+				{ Name = "barType", Type = "number", Nilable = false },
+				{ Name = "minPower", Type = "number", Nilable = false },
+				{ Name = "startInset", Type = "number", Nilable = false },
+				{ Name = "endInset", Type = "number", Nilable = false },
+				{ Name = "smooth", Type = "bool", Nilable = false },
+				{ Name = "hideFromOthers", Type = "bool", Nilable = false },
+				{ Name = "showOnRaid", Type = "bool", Nilable = false },
+				{ Name = "opaqueSpark", Type = "bool", Nilable = false },
+				{ Name = "opaqueFlash", Type = "bool", Nilable = false },
+				{ Name = "anchorTop", Type = "bool", Nilable = false },
+				{ Name = "forcePercentage", Type = "bool", Nilable = false },
+				{ Name = "sparkUnderFrame", Type = "bool", Nilable = false },
+				{ Name = "flashAtMinPower", Type = "bool", Nilable = false },
+				{ Name = "fractionalCounter", Type = "bool", Nilable = false },
+				{ Name = "animateNumbers", Type = "bool", Nilable = false },
 			},
 		},
 	},

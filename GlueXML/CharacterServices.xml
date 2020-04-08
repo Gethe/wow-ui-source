@@ -35,8 +35,8 @@
 					</Anchors>
 					<Color r="0.5" g="0.5" b="0.5"/>
 				</FontString>
-				<FontString parentKey="ResultsLabel" inherits="GameFontNormalMed3" justifyH="LEFT" hidden="true" >
-					<Size x="260" y="20"/>
+				<FontString parentKey="ResultsLabel" inherits="GameFontNormalMed3" justifyH="LEFT" hidden="true" maxLines="2">
+					<Size x="260" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.StepFinishedLabel" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 					</Anchors>
@@ -392,13 +392,28 @@
 		<Frames>
 			<Frame parentKey="ControlsFrame" setAllPoints="true">
 				<Frames>
-					<CheckButton parentArray="FactionButtons" inherits="CharacterUpgradeSelectFactionRadioButtonTemplate" id="1">
+					<CheckButton parentKey="HordeButton" parentArray="FactionButtons" inherits="CharacterUpgradeSelectFactionRadioButtonTemplate">
+						<KeyValues>
+							<KeyValue key="factionID" value="0" type="number"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="83" y="-73"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="AllianceButton" parentArray="FactionButtons" inherits="CharacterUpgradeSelectFactionRadioButtonTemplate">
+						<KeyValues>
+							<KeyValue key="factionID" value="1" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.HordeButton" relativePoint="BOTTOM" x="0" y="-35"/>
 						</Anchors>
 					</CheckButton>
 				</Frames>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnLoad function="CharacterUpgradeSelectFactionFrame_OnLoad"/>
+			<OnHide function="CharacterUpgradeSelectFactionFrame_ClearChecked"/>
+		</Scripts>
 	</Frame>
 </Ui>

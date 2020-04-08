@@ -1,19 +1,10 @@
-
 local STANDARD_SIZE_TEXT_WIDTH = 196;
 local STANDARD_SIZE_WIDTH = 240;
 
 local WIDE_SIZE_TEXT_WIDTH = 356;
 local WIDE_SIZE_WIDTH = 501;
 
-local SOLO_OPTION_WIDTH = 500;
-
-local HEADER_SHOWN_ARTWORK_OFFSET_Y = -38;
-local HEADER_SHOWN_STATIC_HEIGHT = 220;
-
-local HEADER_HIDDEN_ARTWORK_OFFSET_Y = -19;
-local HEADER_HIDDEN_STATIC_HEIGHT = 299;
-
-local HEADERS_SHOWN_TOP_PADDING = 123;
+local HEADERS_SHOWN_TOP_PADDING = 185;
 local HEADERS_HIDDEN_TOP_PADDING = 150;
 
 WarboardQuestChoiceFrameMixin = CreateFromMixins(QuestChoiceFrameMixin);
@@ -27,19 +18,6 @@ local titleTextureKitRegions = {
 	["Right"] = "UI-Frame-%s-TitleRight",
 	["Middle"] = "_UI-Frame-%s-TitleMiddle",
 }
-
-local borderFrameTextureKitRegions = {
-	["Header"] = "UI-Frame-%s-Header",
-	["TopRightCorner"] = "UI-Frame-%s-Corner",
-	["TopLeftCorner"] = "UI-Frame-%s-Corner",
-	["BottomLeftCorner"] = "UI-Frame-%s-Corner",
-	["BottomRightCorner"] = "UI-Frame-%s-Corner",
-	["TopBorder"] = "_UI-Frame-%s-TileTop",
-	["BottomBorder"] = "_UI-Frame-%s-TileBottom",
-	["LeftBorder"] = "!UI-Frame-%s-TileLeft",
-	["RightBorder"] = "!UI-Frame-%s-TileRight",
-	["CloseButtonBorder"] = "UI-Frame-%s-ExitButtonBorder",
-};
 
 local standardSizeTextureKitRegions = {
 	["ArtworkBorder"] = "UI-Frame-%s-Portrait",
@@ -61,6 +39,14 @@ local contentHeaderTextureKitRegions = {
 	["Ribbon"] = "UI-Frame-%s-Ribbon",
 };
 
+local contentSubHeaderTextureKitRegions = {
+	["BG"] = "UI-Frame-%s-Subtitle",
+};
+
+local contentSubHeaderTextureKitRegionsDisabled = {
+	["BG"] = "UI-Frame-%s-DisableSubtitle",
+};
+
 local textureKitColors = {
 	["alliance"] = {
 		title = CreateColor(0.008, 0.051, 0.192),
@@ -70,40 +56,82 @@ local textureKitColors = {
 		title = CreateColor(0.192, 0.051, 0.008),
 		description = CreateColor(0.412, 0.020, 0.020),
 	},
+	["marine"] = {
+		title = CreateColor(0.192, 0.051, 0.008),
+		description = CreateColor(0.192, 0.051, 0.008),
+	},
+	["mechagon"] = {
+		title = CreateColor(0.969, 0.855, 0.667),
+		description = CreateColor(0.969, 0.855, 0.667),
+	},
 };
 
-local borderOffsets = {
-	["alliance"] = { cornerX = 7, cornerY = 7, edge = 0, closeX = 4, closeY = 6, header = -56, showHeader = true, },
-	["horde"] = { cornerX = 7, cornerY = 7, edge = 0, closeX = 4, closeY = 6, header = -61, showHeader = true, },
-	["neutral"] = { cornerX = 9, cornerY = 9, edge = 0, closeX = 4, closeY = 6, header = 0, showHeader = false, },
+local borderFrameTextureKitRegions = {
+	["Header"] = "UI-Frame-%s-Header",
+	["Corner"] = "UI-Frame-%s-Corner",
+	["TopRightCorner"] = "UI-Frame-%s-CornerTopRight",
+	["TopLeftCorner"] = "UI-Frame-%s-Corner",
+	["BottomLeftCorner"] = "UI-Frame-%s-CornerBottomLeft",
+	["BottomRightCorner"] = "UI-Frame-%s-CornerBottomRight",
+	["TopEdge"] = "_UI-Frame-%s-TileTop",
+	["BottomEdge"] = "_UI-Frame-%s-TileBottom",
+	["LeftEdge"] = "!UI-Frame-%s-TileLeft",
+	["RightEdge"] = "!UI-Frame-%s-TileRight",
+	["CloseButtonBorder"] = "UI-Frame-%s-ExitButtonBorder",
+};
+
+-- NOTE: Because the nineSlice is themed, the offsets may not be able to remain the same, ideally the artwork will be set up so that this isn't a problem
+NineSliceUtil.AddLayout("WarboardTextureKit", {
+	mirrorLayout = true,
+	TopLeftCorner =	{ atlas = borderFrameTextureKitRegions["Corner"], x = -6, y = 6, },
+	TopRightCorner =	{ atlas = borderFrameTextureKitRegions["Corner"], x = 6, y = 6, },
+	BottomLeftCorner =	{ atlas = borderFrameTextureKitRegions["Corner"], x = -6, y = -6, },
+	BottomRightCorner =	{ atlas = borderFrameTextureKitRegions["Corner"], x = 6, y = -6, },
+	TopEdge = { atlas = borderFrameTextureKitRegions["TopEdge"], },
+	BottomEdge = { atlas = borderFrameTextureKitRegions["BottomEdge"], mirrorLayout = false, },
+	LeftEdge = { atlas = borderFrameTextureKitRegions["LeftEdge"], },
+	RightEdge = { atlas = borderFrameTextureKitRegions["RightEdge"], mirrorLayout = false, },
+});
+
+NineSliceUtil.AddLayout("WarboardTextureKit_FourCorners", {
+	mirrorLayout = true,
+	TopLeftCorner =	{ atlas = borderFrameTextureKitRegions["TopLeftCorner"], x = -6, y = 6, },
+	TopRightCorner =	{ atlas = borderFrameTextureKitRegions["TopRightCorner"], x = 6, y = 6, mirrorLayout = false},
+	BottomLeftCorner =	{ atlas = borderFrameTextureKitRegions["BottomLeftCorner"], x = -6, y = -6, mirrorLayout = false},
+	BottomRightCorner =	{ atlas = borderFrameTextureKitRegions["BottomRightCorner"], x = 6, y = -6, mirrorLayout = false},
+	TopEdge = { atlas = borderFrameTextureKitRegions["TopEdge"], },
+	BottomEdge = { atlas = borderFrameTextureKitRegions["BottomEdge"], mirrorLayout = false, },
+	LeftEdge = { atlas = borderFrameTextureKitRegions["LeftEdge"], },
+	RightEdge = { atlas = borderFrameTextureKitRegions["RightEdge"], mirrorLayout = false, },
+});
+
+local nineSliceLayout = {
+	["marine"] = "WarboardTextureKit_FourCorners",
 }
 
-local function SetupNineSlice(self, offsets)
-	local border = AnchorUtil.CreateNineSlice(self.BorderFrame);
-	border:SetTopLeftCorner(self.BorderFrame.TopLeftCorner, -offsets.cornerX, offsets.cornerY);
-	border:SetTopRightCorner(self.BorderFrame.TopRightCorner, offsets.cornerX, offsets.cornerY);
-	border:SetBottomLeftCorner(self.BorderFrame.BottomLeftCorner, -offsets.cornerX, -offsets.cornerY);
-	border:SetBottomRightCorner(self.BorderFrame.BottomRightCorner, offsets.cornerX, -offsets.cornerY);
-	border:SetTopEdge(self.BorderFrame.TopBorder, -offsets.edge, 0, offsets.edge, 0);
-	border:SetBottomEdge(self.BorderFrame.BottomBorder, -offsets.edge, 0, offsets.edge, 0);
-	border:SetLeftEdge(self.BorderFrame.LeftBorder, 0, offsets.edge, 0, -offsets.edge);
-	border:SetRightEdge(self.BorderFrame.RightBorder, 0, offsets.edge, 0, -offsets.edge);
-	border:Apply();
-end
+local borderLayout = {
+	["alliance"] = { closeButtonX = 1, closeButtonY = 2, closeBorderX = 0, closeBorderY = 0, header = -55, showHeader = true, },
+	["horde"] = { closeButtonX = 1, closeButtonY = 2, closeBorderX = -1, closeBorderY = 1, header = -61, showHeader = true, },
+	["marine"] = { closeButtonX = 3, closeButtonY = 3, closeBorderX = -1, closeBorderY = 1, header = 0, showHeader = false, },
+	["neutral"] = { closeButtonX = 1, closeButtonY = 2, closeBorderX = -1, closeBorderY = 1, header = 0, showHeader = false, },
+	["mechagon"] = { closeButtonX = 3, closeButtonY = 3, closeBorderX = -1, closeBorderY = 1, header = 0, showHeader = false, },
+}
 
-local function SetupBorder(self, offsets)
-	SetupNineSlice(self, offsets);
-	self.BorderFrame.Header:SetPoint("BOTTOM", self.BorderFrame, "TOP", 0, offsets.header);
-	self.BorderFrame.Header:SetShown(offsets.showHeader);
-	self.BorderFrame.CloseButtonBorder:SetPoint("TOPRIGHT", self.BorderFrame, "TOPRIGHT", offsets.closeX, offsets.closeY);
+local function SetupBorder(self, layout, textureKit, nineSliceLayout)
+	NineSliceUtil.ApplyLayoutByName(self.NineSlice, nineSliceLayout, textureKit);
+
+	self.BorderFrame.Header:SetPoint("BOTTOM", self.BorderFrame, "TOP", 0, layout.header);
+	self.BorderFrame.Header:SetShown(layout.showHeader);
+
+	UIPanelCloseButton_SetBorderAtlas(self.CloseButton, borderFrameTextureKitRegions.CloseButtonBorder, layout.closeBorderX, layout.closeBorderY, textureKit);
+
+	self.CloseButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", layout.closeButtonX, layout.closeButtonY);
+	self.CloseButton:SetFrameLevel(510);
 end
 
 function WarboardQuestChoiceFrameMixin:OnLoad()
 	self.QuestionText = self.Title.Text;
-	self.initOptionHeight = 439;
-	self.initWindowHeight = 549;
-	self.initOptionBackgroundHeight = 439;
-	self.initOptionHeaderTextHeight = 0;
+	self.initOptionHeight = 370;
 
 	QuestChoiceFrameMixin.OnLoad(self);
 end
@@ -113,30 +141,30 @@ function WarboardQuestChoiceFrameMixin:ShowRewards(numChoices)
 end
 
 function WarboardQuestChoiceFrameMixin:SetupTextureKits(frame, regions)
-	local setVisibilityOfRegions = nil;
-	local useAtlasSize = true;
-	SetupTextureKits(self.uiTextureKitID, frame, regions, setVisibilityOfRegions, useAtlasSize);
+	SetupTextureKits(self.uiTextureKitID, frame, regions, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
 end
 
 function WarboardQuestChoiceFrameMixin:TryShow()
-	local uiTextureKitID, hideWarboardHeader = select(4, GetQuestChoiceInfo());
-	self.uiTextureKitID = uiTextureKitID;
+	local choiceInfo = C_QuestChoice.GetQuestChoiceInfo();
+	self.uiTextureKitID = choiceInfo.uiTextureKitID;
+
 	self:SetupTextureKits(self.BorderFrame, borderFrameTextureKitRegions);
 	self:SetupTextureKits(self.Title, titleTextureKitRegions);
 	self:SetupTextureKits(self.Background, backgroundTextureKitRegions);
 
-	self.BorderFrame.Header:SetShown(not hideWarboardHeader);
+	self.BorderFrame.Header:SetShown(not choiceInfo.hideWarboardHeader);
 	self.optionDescriptionColor = WARBOARD_OPTION_TEXT_COLOR;
 	self.optionHeaderTitleColor = BLACK_FONT_COLOR;
-	local textureKit = GetUITextureKitInfo(uiTextureKitID);
+	local textureKit = GetUITextureKitInfo(choiceInfo.uiTextureKitID);
 	local textureKitColor = textureKitColors[textureKit];
 	if textureKitColor then
 		self.optionDescriptionColor = textureKitColor.description;
 		self.optionHeaderTitleColor = textureKitColor.title;
 	end
 
-	local offsets = borderOffsets[textureKit] or borderOffsets["neutral"];
-	SetupBorder(self, offsets);
+	local layout = borderLayout[textureKit] or borderLayout["neutral"];
+	local nineSliceLayout = nineSliceLayout[textureKit] or "WarboardTextureKit";
+	SetupBorder(self, layout, textureKit, nineSliceLayout);
 
 	for _, option in pairs(self.Options) do
 		option.OptionText:SetTextColor(self.optionDescriptionColor:GetRGBA());
@@ -146,18 +174,12 @@ function WarboardQuestChoiceFrameMixin:TryShow()
 	QuestChoiceFrameMixin.TryShow(self);
 end
 
-function WarboardQuestChoiceFrameMixin:OnHeightChanged(heightDiff)
-	for _, option in pairs(self.Options) do
-		option.Background:SetHeight(self.initOptionBackgroundHeight + heightDiff);
-	end
-end
-
 function WarboardQuestChoiceFrameMixin:Update()
 	QuestChoiceFrameMixin.Update(self);
 
 	local hasHeaders = false;
-	local numOptions = self:GetNumOptions();
-	for i = 1, numOptions do
+	local lastActiveOption;
+	for i = 1, self.numActiveOptions do
 		local option = self.Options[i];
 		option.Artwork:SetDesaturated(option.hasDesaturatedArt);
 		option.ArtworkBorder:SetShown(not option.hasDesaturatedArt);
@@ -166,23 +188,26 @@ function WarboardQuestChoiceFrameMixin:Update()
 			hasHeaders = option.Header:IsShown();
 		end
 		option:SetupTextureKits(option.Header, contentHeaderTextureKitRegions);
+		if option.hasDesaturatedArt then
+			option:SetupTextureKits(option.SubHeader, contentSubHeaderTextureKitRegionsDisabled);
+		else
+			option:SetupTextureKits(option.SubHeader, contentSubHeaderTextureKitRegions);
+		end
+		lastActiveOption = option;
 	end
 
-	-- resize solo options of standard size
-	local lastOption = self.Options[numOptions];
-	if numOptions == 1 and not lastOption.isWide then
-		lastOption:SetWidth(SOLO_OPTION_WIDTH);
-	end
 	-- title needs to reach across
-	self.Title:SetPoint("RIGHT", lastOption, "RIGHT", 3, 0);
+	if lastActiveOption then
+		self.Title:SetPoint("RIGHT", lastActiveOption, "RIGHT", 15, 0);
+	end
 
 	if hasHeaders then
-		self.topPadding = HEADERS_HIDDEN_TOP_PADDING;
-	else
 		self.topPadding = HEADERS_SHOWN_TOP_PADDING;
+	else
+		self.topPadding = HEADERS_HIDDEN_TOP_PADDING;
 	end
 
-	self:Layout();
+	self:MarkDirty();
 
 	local showWarfrontHelpbox = false;
 	if C_Scenario.IsInScenario() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARFRONT_CONSTRUCTION) then
@@ -199,30 +224,35 @@ end
 
 WarboardQuestChoiceOptionFrameMixin = CreateFromMixins(QuestChoiceOptionFrameMixin);
 
-function WarboardQuestChoiceOptionFrameMixin:ConfigureButtons()
-	local parent = self:GetParent();
-	local secondButton = self.OptionButtonsContainer.OptionButton2;
-	if self.hasMultipleButtons then
-		secondButton:Show();
-		secondButton:ClearAllPoints();
-		local firstButton = self.OptionButtonsContainer.OptionButton1;
-		if self:GetParent():GetNumOptions() == 1 then
-			self.OptionButtonsContainer:SetSize(parent.optionButtonWidth * 2 + parent.optionButtonHorizontalSpacing, parent.optionButtonHeight);
-			secondButton:SetPoint("LEFT", firstButton, "RIGHT", parent.optionButtonHorizontalSpacing, 0);
-			self:SetToWideSize();
-		else
-			self.OptionButtonsContainer:SetSize(parent.optionButtonWidth, parent.optionButtonHeight * 2 + parent.optionButtonVerticalSpacing);
-			secondButton:SetPoint("TOP", firstButton, "BOTTOM", 0, -parent.optionButtonVerticalSpacing);
-			self:SetToStandardSize();
-		end
+-- If there is only 1 option use a wider size
+function WarboardQuestChoiceOptionFrameMixin:UpdateOptionSize()
+	if self:GetParent():GetNumOptions() == 1 then
+		self:SetToWideSize();
 	else
-		if self:GetParent():GetNumOptions() == 1 then
-			self:SetToWideSize();
-		else
-			self:SetToStandardSize();
-		end
-		secondButton:Hide();
-		self.OptionButtonsContainer:SetSize(parent.optionButtonWidth, parent.optionButtonHeight);
+		self:SetToStandardSize();
+	end
+end
+
+function WarboardQuestChoiceOptionFrameMixin:SetToStandardSize()
+	self:SetupTextureKits(self, standardSizeTextureKitRegions);
+	self.OptionText:SetWidth(STANDARD_SIZE_TEXT_WIDTH);
+	self.fixedWidth = STANDARD_SIZE_WIDTH;
+end
+
+function WarboardQuestChoiceOptionFrameMixin:SetToWideSize()
+	self:SetupTextureKits(self, wideSizeTextureKitRegions);
+	self.OptionText:SetWidth(WIDE_SIZE_TEXT_WIDTH);
+	self.fixedWidth = WIDE_SIZE_WIDTH;
+end
+
+-- If there is only 1 option align the buttons horizontally. Otherwise align vertically
+function WarboardQuestChoiceOptionFrameMixin:UpdateSecondButtonAnchors()
+	local button = self.OptionButtonsContainer.OptionButton2;
+	button:ClearAllPoints();
+	if self:GetParent():GetNumOptions() == 1 then
+		button:SetPoint("LEFT", self.OptionButtonsContainer.OptionButton1, "RIGHT", 40, 0);
+	else
+		button:SetPoint("TOP", self.OptionButtonsContainer.OptionButton1, "BOTTOM", 0, -8);
 	end
 end
 
@@ -230,28 +260,17 @@ function WarboardQuestChoiceOptionFrameMixin:SetupTextureKits(frame, regions)
 	self:GetParent():SetupTextureKits(frame, regions);
 end
 
-function WarboardQuestChoiceOptionFrameMixin:SetToStandardSize()
-	self:SetupTextureKits(self, standardSizeTextureKitRegions);
-	self.OptionText:SetWidth(STANDARD_SIZE_TEXT_WIDTH);
-	self:SetWidth(STANDARD_SIZE_WIDTH);
-	self.isWide = false;
-end
-
-function WarboardQuestChoiceOptionFrameMixin:SetToWideSize()
-	self:SetupTextureKits(self, wideSizeTextureKitRegions);
-	self.OptionText:SetWidth(WIDE_SIZE_TEXT_WIDTH);
-	self:SetWidth(WIDE_SIZE_WIDTH);
-	self.isWide = true;
-end
-
-function WarboardQuestChoiceOptionFrameMixin:ConfigureHeader(header)
-	QuestChoiceOptionFrameMixin.ConfigureHeader(self, header);
-
-	if self.Header:IsShown() then
-		self.ArtworkBorder:SetPoint("TOP", 0, HEADER_SHOWN_ARTWORK_OFFSET_Y);
-		self:GetParent().optionStaticHeight = HEADER_SHOWN_STATIC_HEIGHT;
+function WarboardQuestChoiceOptionFrameMixin:ConfigureSubHeader(subHeader)
+	if subHeader then
+		self.SubHeader.Text:SetText(subHeader);
+		self.SubHeader:Show();
+		self.OptionText:SetPoint("TOP", self.SubHeader, "BOTTOM", 0, -12);
 	else
-		self.ArtworkBorder:SetPoint("TOP", 0, HEADER_HIDDEN_ARTWORK_OFFSET_Y);
-		self:GetParent().optionStaticHeight = HEADER_HIDDEN_STATIC_HEIGHT;
+		self.SubHeader:Hide();
+		self.OptionText:SetPoint("TOP", self.ArtworkBorder, "BOTTOM", 0, -12);
 	end
+end
+
+function WarboardQuestChoiceOptionFrameMixin:GetPaddingFrame()
+	return self.WidgetContainer;
 end

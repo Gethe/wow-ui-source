@@ -118,9 +118,8 @@ function TradeSkillUIMixin:RefreshTitle()
 	self.LinkNameButton:Hide();
 
 	if C_TradeSkillUI.IsTradeSkillGuild() then
-		self.TitleText:SetFormattedText(GUILD_TRADE_SKILL_TITLE, skillLineName);
-
-		self.portrait:Hide();
+		self:SetTitleFormatted(GUILD_TRADE_SKILL_TITLE, skillLineName);
+		self:SetPortraitShown(false);
 
 		self.TabardBackground:Show();
 		self.TabardEmblem:Show();
@@ -130,7 +129,7 @@ function TradeSkillUIMixin:RefreshTitle()
 		local linked, linkedName = C_TradeSkillUI.IsTradeSkillLinked();
 		if linked and linkedName then
 			self.LinkNameButton:Show();
-			self.TitleText:SetFormattedText("%s %s[%s]|r", TRADE_SKILL_TITLE:format(skillLineName), HIGHLIGHT_FONT_COLOR_CODE, linkedName);
+			self:SetTitleFormatted("%s %s[%s]|r", TRADE_SKILL_TITLE:format(skillLineName), HIGHLIGHT_FONT_COLOR_CODE, linkedName);
 			self.LinkNameButton.linkedName = linkedName;
 			self.LinkNameButton:SetWidth(self.TitleText:GetStringWidth());
 		else
@@ -138,11 +137,11 @@ function TradeSkillUIMixin:RefreshTitle()
 			self.LinkNameButton.linkedName = nil;
 		end
 
-		self.portrait:Show();
 		self.TabardBackground:Hide();
 		self.TabardEmblem:Hide();
 		self.TabardBorder:Hide();
-		SetPortraitToTexture(self.portrait, C_TradeSkillUI.GetTradeSkillTexture(tradeSkillID));
+		self:SetPortraitShown(true);
+		self:SetPortraitToAsset(C_TradeSkillUI.GetTradeSkillTexture(tradeSkillID));
 	end
 end
 
@@ -223,7 +222,7 @@ local function GenerateRankText(skillLineName, skillLineRank, skillLineMaxRank, 
 end
 
 function TradeSkillUIMixin:RefreshSkillRank()
-	if C_TradeSkillUI.IsTradeSkillGuild() then
+	if C_TradeSkillUI.IsTradeSkillGuild() or C_TradeSkillUI.IsTradeSkillGuildMember() then
 		self.RankFrame:Hide();
 	else
 		local tradeSkillID, skillLineName, skillLineRank, skillLineMaxRank, skillLineModifier = C_TradeSkillUI.GetTradeSkillLine();
@@ -424,10 +423,10 @@ function TradeSkillUIMixin:InitLinkToMenu(dropdown, level)
 	info.disabled = false
 
 	local channels = { GetChannelList() };
-	local channelCount = #channels / 2;
-	for i = 1, channelCount do
-		info.text = ChatFrame_ResolveChannelName(channels[i * 2]);
-		info.arg1 = "/"..channels[(i - 1) * 2 + 1];
+	for i = 1, #channels, 3 do
+		info.text = ChatFrame_ResolveChannelName(channels[i + 1]);
+		info.arg1 = "/"..channels[i];
+		info.disabled = channels[i + 2];
 		UIDropDownMenu_AddButton(info);
 	end
 end

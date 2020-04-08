@@ -41,7 +41,7 @@ function GuildFrame_OnShow(self)
 	if ( not PanelTemplates_GetSelectedTab(self) ) then
 		GuildFrame_TabClicked(GuildFrameTab1);
 	end
-	GuildRoster();
+	C_GuildInfo.GuildRoster();
 	UpdateMicroButtons();
 	GuildNameChangeAlertFrame.topAnchored = true;
 	GuildFrame.hasForcedNameChange = GetGuildRenameRequired();
@@ -219,10 +219,7 @@ function GuildFrame_OpenAchievement(button, achievementID)
 end
 
 function GuildFrame_LinkItem(button, itemID, itemLink)
-	local _;
-	if ( not itemLink ) then
-		_, itemLink = GetItemInfo(itemID);
-	end
+	itemLink = itemLink or select(2, GetItemInfo(itemID));
 	if ( itemLink ) then
 		if ( ChatEdit_GetActiveWindow() ) then
 			ChatEdit_InsertLink(itemLink);
@@ -366,7 +363,7 @@ function GuildFrame_TabClicked(self)
 		GuildFrameMembersCountLabel:Hide();
 	end
 	if ( updateRosterCount ) then
-		GuildRoster();
+		C_GuildInfo.GuildRoster();
 		GuildFrameMembersCount:Show();
 	else
 		GuildFrameMembersCount:Hide();
@@ -442,7 +439,7 @@ function GuildPerksFrame_OnEvent(self, event, ...)
 	if ( event == "GUILD_ROSTER_UPDATE" ) then
 		local canRequestRosterUpdate = ...;
 		if ( canRequestRosterUpdate ) then
-			GuildRoster();
+			C_GuildInfo.GuildRoster();
 		end
 	end
 end
@@ -464,7 +461,8 @@ end
 function GuildPerksButton_OnEnter(self)
 	GuildPerksContainer.activeButton = self;
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 36, 0);
-	GameTooltip:SetHyperlink(GetSpellLink(self.spellID));
+	local spellLink = GetSpellLink(self.spellID);
+	GameTooltip:SetHyperlink(spellLink);
 end
 
 function GuildPerks_Update()

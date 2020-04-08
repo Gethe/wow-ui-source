@@ -3,7 +3,7 @@ GARRISON_FOLLOWER_MAX_UPGRADE_QUALITY = {
 	[LE_FOLLOWER_TYPE_GARRISON_6_0] = LE_GARR_FOLLOWER_QUALITY_EPIC,
 	[LE_FOLLOWER_TYPE_SHIPYARD_6_2] = LE_GARR_FOLLOWER_QUALITY_EPIC,
 	[LE_FOLLOWER_TYPE_GARRISON_7_0] = LE_GARR_FOLLOWER_QUALITY_TITLE,
-	[LE_FOLLOWER_TYPE_GARRISON_8_0] = LE_GARR_FOLLOWER_QUALITY_EPIC,
+	[LE_FOLLOWER_TYPE_GARRISON_8_0] = LE_GARR_FOLLOWER_QUALITY_LEGENDARY,
 }
 
 GARRISON_MISSION_NAME_FONT_COLOR	=	{r=0.78, g=0.75, b=0.73};
@@ -573,10 +573,19 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 							Reward.tooltip = BreakUpLargeNumbers(reward.quantity).." |T"..currencyTexture..":0:0:0:-1|t ";
 							Reward.currencyID = reward.currencyID;
 							Reward.currencyQuantity = reward.quantity;
-							Reward.Quantity:SetText(reward.quantity);
+							if C_CurrencyInfo.IsCurrencyContainer(reward.currencyID, reward.quantity) then
+								local name, texture, quantity = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.currencyID, reward.quantity);
+								Reward.Icon:SetTexture(texture);
+								if quantity > 1 then
+									Reward.Quantity:SetText(quantity);
+									Reward.Quantity:Show();
+								end
+							else
+								Reward.Quantity:SetText(reward.quantity);
+								Reward.Quantity:Show();
+							end
 							local currencyColor = GetColorForCurrencyReward(reward.currencyID, reward.quantity);
 							Reward.Quantity:SetTextColor(currencyColor:GetRGB());
-							Reward.Quantity:Show();
 						end
 					elseif (reward.bonusAbilityID) then
 						Reward.bonusAbilityID = reward.bonusAbilityID;
@@ -850,6 +859,10 @@ function GarrisonLandingPageReportMissionReward_OnEnter(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		if (self.itemID) then
 			GameTooltip:SetItemByID(self.itemID);
+			return;
+		end
+		if (self.currencyID and C_CurrencyInfo.IsCurrencyContainer(self.currencyID, self.currencyQuantity)) then			
+			GameTooltip:SetCurrencyByID(self.currencyID, self.currencyQuantity);
 			return;
 		end
 		if (self.title) then

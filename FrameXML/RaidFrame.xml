@@ -129,18 +129,24 @@
 			<OnShow>
 				UpdateMicroButtons();
 				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-				RequestLFDPlayerLockInfo(); --This info coming back might affect the tab state.
-				RequestLFDPartyLockInfo();
+				QueueUpdater:RequestInfo();
+				QueueUpdater:AddRef();
 				RaidFinderFrame_UpdateTab();
 			</OnShow>
 			<OnHide>
 				UpdateMicroButtons();
+				QueueUpdater:RemoveRef();
 				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 			</OnHide>
 		</Scripts>
 	</Frame>
 	<Frame name="RaidFrame"><!-- Parent set dynamically.   See ClaimRaidFrame()  -->
 		<Frames>
+			<Frame parentKey="RoleCount" inherits="RoleCountTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="12" y="-25"/>
+				</Anchors>
+			</Frame>
 			<CheckButton name="RaidFrameAllAssistCheckButton" parent="RaidFrame" motionScriptsWhileDisabled="true" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
@@ -160,12 +166,12 @@
 						RaidFrameAllAssistCheckButton_UpdateAvailable(self);
 					</OnEvent>
 					<OnClick>
-						if (self.enabled) then 
+						if (self.enabled) then
 							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						else
 							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						end
-						SetEveryoneIsAssistant(self:GetChecked());	
+						SetEveryoneIsAssistant(self:GetChecked());
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -196,27 +202,12 @@
 					<Anchor point="BOTTOMRIGHT" x="-7" y="5"/>
 				</Anchors>
 				<Scripts>
-					<OnClick function="ConvertToRaid"/>
+					<OnClick function="RaidFrame_ConvertToRaid"/>
 				</Scripts>
 				<NormalFont style="GameFontNormalSmall"/>
 				<HighlightFont style="GameFontHighlightSmall"/>
 				<DisabledFont style="GameFontDisableSmall"/>
 			</Button>
-			<!--Button name="RaidFrameRaidBrowserButton" inherits="UIPanelButtonTemplate" text="LOOKING_FOR_RAID" >
-				<Size x="100" y="21"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-100" y="-24"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						ToggleRaidBrowser();
-					</OnClick>
-				</Scripts>
-				<NormalFont style="GameFontNormalSmall"/>
-				<HighlightFont style="GameFontHighlightSmall"/>
-				<DisabledFont style="GameFontDisableSmall"/>
-			</Button-->
 			<Button name="RaidFrameRaidInfoButton" inherits="UIPanelButtonTemplate" text="RAID_INFO" >
 				<Size x="90" y="21"/>
 				<Anchors>
@@ -240,17 +231,6 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-28"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture name="RaidInfoDetailHeader" file="Interface\RaidFrame\UI-RaidInfo-Header">
@@ -275,21 +255,15 @@
 								<Anchor point="TOPRIGHT" x="-6" y="-7"/>
 							</Anchors>
 						</Texture>
-						<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size x="256" y="64"/>
-							<Anchors>
-								<Anchor point="TOP" x="0" y="12"/>
-							</Anchors>
-						</Texture>
-						<FontString name="$parentHeaderText" inherits="GameFontNormal" text="RAID_INFORMATION">
-							<Size x="185" y="12"/>
-							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentHeader" x="0" y="-14"/>
-							</Anchors>
-						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
+					<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+						<KeyValues>
+							<KeyValue key="textString" value="RAID_INFORMATION" type="global"/>
+						</KeyValues>
+					</Frame>
 					<Frame name="RaidInfoInstanceLabel" inherits="RaidInfoHeaderTemplate">
 						<Size x="173" y="22"/>
 						<Anchors>

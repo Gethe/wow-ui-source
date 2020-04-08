@@ -80,7 +80,7 @@
 		</Frames>
 	</Frame>
 	
-	<Frame name="DeathRecapFrame" movable="true" clampedToScreen="true" parent="UIParent" hidden="true">
+	<Frame name="DeathRecapFrame" FrameStrata="HIGH" movable="true" clampedToScreen="true" parent="UIParent" hidden="true">
 		<Size x="380" y="326"/>
 		<Anchors>
 			<Anchor point="CENTER"/>

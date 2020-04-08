@@ -6,6 +6,29 @@ local SpellBook =
 
 	Functions =
 	{
+		{
+			Name = "ContainsAnyDisenchantSpell",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "contains", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellDisabled",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "disabled", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

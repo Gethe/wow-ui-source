@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="LootFrame.lua"/>
-	<Button name="LootButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+	<ItemButton name="LootButtonTemplate" virtual="true">
 		<HitRectInsets>
 			<AbsInset left="0" right="-107" top="0" bottom="0"/>
 		</HitRectInsets>
@@ -55,7 +55,7 @@
 				end
 			</OnClick>
 		</Scripts>
-	</Button>
+	</ItemButton>
 	<Button name="LootRollButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="32" y="32"/>
 		<Scripts>
@@ -64,7 +64,7 @@
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
+				GameTooltip_SetTitle(GameTooltip, self.tooltipText);
 				if ( not self:IsEnabled() ) then
 					GameTooltip:AddLine(self.reason, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 					GameTooltip:Show();
@@ -108,27 +108,27 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="LootButton1" inherits="LootButtonTemplate" id="1">
+			<ItemButton name="LootButton1" inherits="LootButtonTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="9" y="-68"/>
 				</Anchors>
-			</Button>
+			</ItemButton>
 			<!-- anchors not relative - see bug 266687 -->
-			<Button name="LootButton2" inherits="LootButtonTemplate" id="2">
+			<ItemButton name="LootButton2" inherits="LootButtonTemplate" id="2">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="9" y="-109"/>
 				</Anchors>
-			</Button>
-			<Button name="LootButton3" inherits="LootButtonTemplate" id="3">
+			</ItemButton>
+			<ItemButton name="LootButton3" inherits="LootButtonTemplate" id="3">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="9" y="-150"/>
 				</Anchors>
-			</Button>
-			<Button name="LootButton4" inherits="LootButtonTemplate" id="4">
+			</ItemButton>
+			<ItemButton name="LootButton4" inherits="LootButtonTemplate" id="4">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="9" y="-193"/>
 				</Anchors>
-			</Button>
+			</ItemButton>
 			<Button name="LootFrameUpButton">
 				<Size x="32" y="32"/>
 				<Anchors>
@@ -395,6 +395,9 @@
 							<Anchor point="TOPRIGHT" x="-48" y="-16"/>
 						</Anchors>
 						<Scripts>
+							<OnShow>
+								self:SetEnabled(true);
+							</OnShow>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetText(ROLL);
@@ -403,6 +406,7 @@
 							<OnLeave function="GameTooltip_Hide"/>
 							<OnClick>
 								AcceptSpellConfirmationPrompt(self:GetParent():GetParent().spellID);
+								self:SetEnabled(false);
 							</OnClick>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-GroupLoot-Dice-Up"/>
@@ -457,7 +461,7 @@
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetCurrencyByID(self:GetParent().currencyID);
+						GameTooltip:SetCurrencyByID(self.currencyID);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>

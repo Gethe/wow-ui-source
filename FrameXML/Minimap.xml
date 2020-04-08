@@ -202,7 +202,7 @@
 										</Anchor>
 									</Anchors>
 								</Texture>
-								<Texture name="MinimapCompassTexture" file="Interface\Minimap\CompassRing">
+								<Texture name="MinimapCompassTexture" file="Interface\Minimap\CompassRing" scale=".7">
 									<Size>
 										<AbsDimension x="365" y="365"/>
 									</Size>
@@ -227,7 +227,8 @@
 										self:RegisterEvent("UPDATE_BINDINGS");
 									</OnLoad>
 									<OnEnter>
-										GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+										GameTooltip_SetTitle(GameTooltip, self.tooltipText);
 									</OnEnter>
 									<OnLeave function="GameTooltip_Hide"/>
 									<OnEvent>
@@ -298,7 +299,7 @@
 											<OnLoad function="MiniMapTrackingDropDown_OnLoad"/>
 										</Scripts>
 									</Frame>
-									<Button name="$parentButton">
+									<DropDownToggleButton name="$parentButton">
 										<Size x="32" y="32"/>
 										<Anchors>
 											<Anchor point="TOPLEFT"/>
@@ -330,30 +331,13 @@
 												MiniMapTracking_Update();
 											</OnLoad>
 											<OnEvent function="MiniMapTracking_Update"/>
-											<OnClick>
-												ToggleDropDownMenu(1, nil, MiniMapTrackingDropDown, "MiniMapTracking", 0, -5);
-												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-											</OnClick>
-											<OnMouseDown>
-												MiniMapTrackingIcon:SetPoint("TOPLEFT", MiniMapTracking, "TOPLEFT", 8, -8);
-												MiniMapTrackingIconOverlay:Show();
-											</OnMouseDown>
-											<OnMouseUp>
-												MiniMapTrackingIcon:SetPoint("TOPLEFT", MiniMapTracking, "TOPLEFT", 6, -6);
-												MiniMapTrackingIconOverlay:Hide();
-											</OnMouseUp>
-											<OnEnter>
-												GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-												GameTooltip:SetText(TRACKING, 1, 1, 1);
-												GameTooltip:AddLine(MINIMAP_TRACKING_TOOLTIP_NONE, nil, nil, nil, true);
-												GameTooltip:Show();
-											</OnEnter>
-											<OnLeave>
-												GameTooltip:Hide();
-											</OnLeave>
+											<OnMouseDown function="MiniMapTracking_OnMouseDown"/>
+											<OnMouseUp function="MiniMapTracking_OnMouseUp"/>
+											<OnEnter function="MiniMapTracking_OnEnter"/>
+											<OnLeave function="MiniMapTracking_OnLeave"/>
 										</Scripts>
 										<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
-									</Button>
+									</DropDownToggleButton>
 								</Frames>
 							</Frame>
 							<Button name="MinimapZoomIn">

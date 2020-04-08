@@ -9,8 +9,23 @@ UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.Tex
 
 UIWidgetTemplateTextWithStateMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
-function UIWidgetTemplateTextWithStateMixin:Setup(widgetInfo)
-	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
+local textFontSizes =
+{
+	[Enum.UIWidgetTextSizeType.Small]	= "GameTooltipText",
+	[Enum.UIWidgetTextSizeType.Medium]	= "Game16Font",
+	[Enum.UIWidgetTextSizeType.Large]	= "Game24Font",
+	[Enum.UIWidgetTextSizeType.Huge]	= "Game27Font",
+}
+
+local function GetTextSizeFont(textSizeType)
+	return textFontSizes[textSizeType] and textFontSizes[textSizeType] or textFontSizes[Enum.UIWidgetTextSizeType.Small];
+end
+
+function UIWidgetTemplateTextWithStateMixin:Setup(widgetInfo, widgetContainer)
+	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
+	self:SetTooltip(widgetInfo.tooltip);
+
+	self.Text:SetFontObject(GetTextSizeFont(widgetInfo.textSizeType));
 
 	self.Text:SetText(widgetInfo.text);
 	self.Text:SetEnabledState(widgetInfo.enabledState);
@@ -19,15 +34,15 @@ function UIWidgetTemplateTextWithStateMixin:Setup(widgetInfo)
 		self.Text:SetTextColor(self.fontColor:GetRGB());
 	end
 
-	local width;
-	if widgetInfo.widgetWidth > 0 then
-		width = widgetInfo.widgetWidth;
-	else
-		width = self.Text:GetStringWidth();
-	end
+	local width = (widgetInfo.widgetSizeSetting > 0) and widgetInfo.widgetSizeSetting or self.Text:GetStringWidth();
 
 	self:SetWidth(width);
 	self:SetHeight(self.Text:GetStringHeight());
+end
+
+function UIWidgetTemplateTextWithStateMixin:OnReset()
+	UIWidgetBaseTemplateMixin.OnReset(self);
+	self.fontColor = nil;
 end
 
 function UIWidgetTemplateTextWithStateMixin:SetFontStringColor(fontColor)

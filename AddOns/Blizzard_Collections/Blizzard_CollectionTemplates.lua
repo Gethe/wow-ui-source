@@ -46,92 +46,6 @@ function CollectionsSpellButton_UpdateCooldown(self)
 	end
 end
 
-CollectionsWrappedModelSceneMixin = {};
-
-function CollectionsWrappedModelSceneMixin:IsUnwrapAnimating()
-	return self.isUnwrapping;
-end
-
-function CollectionsWrappedModelSceneMixin:NeedsFanfare()
-	return self.needsFanFare;
-end
-
-function CollectionsWrappedModelSceneMixin:StartUnwrapAnimation(OnFinishedCallback)
-	if not self:NeedsFanfare() or self:IsUnwrapAnimating() then
-		return;
-	end
-
-	local wrappedActor = self:GetActorByTag("wrapped");
-	local unwrappedActor = self:GetActorByTag("unwrapped");
-
-	if unwrappedActor and wrappedActor then
-		self.isUnwrapping = true;
-		self.needsFanFare = false;
-
-		self.UnwrapAnim.WrappedAnim:SetTarget(wrappedActor);
-		self.UnwrapAnim.UnwrappedAnim:SetTarget(unwrappedActor);
-
-		self.UnwrapAnim:Play();
-
-		wrappedActor:SetAnimation(148);
-
-		PlaySound(SOUNDKIT.UI_STORE_UNWRAP);
-
-		C_Timer.After(.8, function()
-			for actor in self:EnumerateActiveActors() do
-				actor:SetSpellVisualKit(73393, true);
-			end
-		end)
-
-
-		C_Timer.After(1.6, function()
-			self.isUnwrapping = nil;
-			if OnFinishedCallback then
-				OnFinishedCallback();
-			end
-		end)
-	end
-end
-
-function CollectionsWrappedModelSceneMixin:PrepareForFanfare(needsFanFare)
-	self.needsFanFare = needsFanFare;
-
-	local wrappedActor = self:GetActorByTag("wrapped");
-	local unwrappedActor = self:GetActorByTag("unwrapped");
-	if wrappedActor and unwrappedActor then
-		wrappedActor:SetModelByCreatureDisplayID(COLLECTIONS_FANFARE_CREATURE_DISPLAY_ID);
-		if self:NeedsFanfare() then
-			wrappedActor:Show();
-			if not self:IsUnwrapAnimating() then
-				unwrappedActor:SetAlpha(0);
-				wrappedActor:SetAnimation(0);
-				wrappedActor:SetAlpha(1);
-			end
-		else
-			wrappedActor:Hide();
-			if not self:IsUnwrapAnimating() then
-				unwrappedActor:SetAlpha(1);
-			end
-		end
-	end
-end
-
-function CollectionsWrappedModelSceneMixin:OnShow()
-	self:SetLightAmbientColor(self.normalIntensity, self.normalIntensity, self.normalIntensity);
-end
-
-function CollectionsWrappedModelSceneMixin:OnMouseEnter()
-	if self:NeedsFanfare() then
-		self:SetLightAmbientColor(self.highlightIntensity, self.highlightIntensity, self.highlightIntensity);
-	else
-		self:SetLightAmbientColor(self.normalIntensity, self.normalIntensity, self.normalIntensity);
-	end
-end
-
-function CollectionsWrappedModelSceneMixin:OnMouseLeave()
-	self:SetLightAmbientColor(self.normalIntensity, self.normalIntensity, self.normalIntensity);
-end
-
 CollectionsPagingMixin = { };
 
 function CollectionsPagingMixin:OnLoad()
@@ -198,5 +112,18 @@ function CollectionsPagingMixin:Update()
 		self.NextPageButton:Disable();
 	else
 		self.NextPageButton:Enable();
+	end
+end
+
+-- Used for pet and mount buttons when they will never be usable, e.g. they're faction restricted.
+function CollectionItemListButton_SetRedOverlayShown(self, showRedOverlay)
+	self.icon:SetDesaturated(showRedOverlay);
+	if showRedOverlay then
+		-- Desaturate and re-color as red to approximate coloration.
+		self.background:SetVertexColor(1, 0, 0);
+		self.icon:SetVertexColor(150/255, 50/255, 50/255);
+	else
+		self.background:SetVertexColor(1, 1, 1);
+		self.icon:SetVertexColor(1, 1, 1);
 	end
 end

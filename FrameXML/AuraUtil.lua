@@ -33,3 +33,29 @@ do
 		return AuraUtil.FindAura(NamePredicate, unit, filter, auraName);
 	end
 end
+
+do
+	local function ForEachAuraHelper(unit, filter, func, continuationToken, ...)
+		-- continuationToken is the first return value of UnitAuraSlots()
+		local n = select('#', ...);
+		for i=1, n do
+			local slot = select(i, ...);
+			if func(UnitAuraBySlot(unit, slot)) then
+				-- if func returns true then no further slots are needed, so don't return continuationToken
+				return nil;
+			end
+		end
+		return continuationToken;
+	end
+
+	function AuraUtil.ForEachAura(unit, filter, maxCount, func)
+		if maxCount and maxCount <= 0 then
+			return;
+		end
+		local continuationToken;
+		repeat
+			-- continuationToken is the first return value of UnitAuraSltos
+			continuationToken = ForEachAuraHelper(unit, filter, func, UnitAuraSlots(unit, filter, maxCount, continuationToken));
+		until continuationToken == nil;
+	end
+end

@@ -1,102 +1,76 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="StackSplitFrame.lua"/>
-	<Frame name="StackSplitFrame" frameStrata="HIGH" parent="UIParent" toplevel="true" enableMouse="true" enableKeyboard="true" hidden="true" clampedToScreen="true">
-		<Size>
-			<AbsDimension x="172" y="96"/>
-		</Size>
+	<Frame name="StackSplitFrame" frameStrata="HIGH" parent="UIParent" toplevel="true" enableMouse="true" enableKeyboard="true" hidden="true" clampedToScreen="true" mixin="StackSplitMixin">
+		<Size x="172" y="96"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\MoneyFrame\UI-MoneyFrame">
-					<Size>
-						<AbsDimension x="256" y="32"/>
-					</Size>
+				<Texture parentKey="SingleItemSplitBackground" file="Interface\MoneyFrame\UI-MoneyFrame" >
+					<Size x="256" y="32"/>
 					<TexCoords left="0" right="0.671875" top="0" bottom="0.75"/>
 				</Texture>
-				<FontString name="StackSplitText" inherits="GameFontHighlight" justifyH="RIGHT">
+				<Texture parentKey="MultiItemSplitBackground" atlas="UI-MoneyFrame-Large" useAtlasSize="true" hidden="true"/>
+				<FontString parentKey="StackSplitText" inherits="GameFontHighlight" justifyH="RIGHT">
 					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset>
-								<AbsDimension x="-50" y="18"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" x="-50" y="18"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="StackItemCountText" inherits="GameFontNormal" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.StackSplitText" x="0" y="-25"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="StackSplitLeftButton">
-				<Size>
-					<AbsDimension x="16" y="16"/>
-				</Size>
+			<Button parentKey="LeftButton">
+				<Size x="16" y="16"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativePoint="CENTER">
-						<Offset>
-							<AbsDimension x="-59" y="18"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="RIGHT" relativePoint="CENTER" x="-59" y="18"/>
 				</Anchors>
 				<Scripts>
-					<OnClick function="StackSplitFrameLeft_Click"/>
+					<OnClick function="StackSplitLeftButton_OnClick"/>
 				</Scripts>
 				<NormalTexture file="Interface\MoneyFrame\Arrow-Left-Up"/>
 				<PushedTexture file="Interface\MoneyFrame\Arrow-Left-Down"/>
 				<DisabledTexture file="Interface\MoneyFrame\Arrow-Left-Disabled"/>
 			</Button>
-			<Button name="StackSplitRightButton">
-				<Size>
-					<AbsDimension x="16" y="16"/>
-				</Size>
+			<Button parentKey="RightButton">
+				<Size x="16" y="16"/>
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="CENTER">
-						<Offset>
-							<AbsDimension x="64" y="18"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativePoint="CENTER" x="64" y="18"/>
 				</Anchors>
 				<Scripts>
-					<OnClick function="StackSplitFrameRight_Click"/>
+					<OnClick function="StackSplitRightButton_OnClick"/>
 				</Scripts>
 				<NormalTexture file="Interface\MoneyFrame\Arrow-Right-Up"/>
 				<PushedTexture file="Interface\MoneyFrame\Arrow-Right-Down"/>
 				<DisabledTexture file="Interface\MoneyFrame\Arrow-Right-Disabled"/>
 			</Button>
-			<Button name="StackSplitOkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
-				<Size>
-					<AbsDimension x="64" y="24"/>
-				</Size>
+			<Button parentKey="OkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
+				<Size x="64" y="24"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="-3" y="32"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="RIGHT" relativePoint="BOTTOM" x="-3" y="32"/>
 				</Anchors>
 				<Scripts>
-					<OnClick function="StackSplitFrameOkay_Click"/>
+					<OnClick function="StackSplitOkayButton_OnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="StackSplitCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
-				<Size>
-					<AbsDimension x="64" y="24"/>
-				</Size>
+			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size x="64" y="24"/>
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="5" y="32"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativePoint="BOTTOM" x="5" y="32"/>
 				</Anchors>
 				<Scripts>
-					<OnClick function="StackSplitFrameCancel_Click"/>
+					<OnClick function="StackSplitCancelButton_OnClick"/>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnHide function="StackSplitFrame_OnHide"/>
-			<OnChar function="StackSplitFrame_OnChar"/>
-			<OnKeyDown function="StackSplitFrame_OnKeyDown"/>
-			<OnKeyUp function="StackSplitFrame_OnKeyUp"/>
+			<OnHide method="OnHide"/>
+			<OnChar method="OnChar"/>
+			<OnKeyDown method="OnKeyDown"/>
+			<OnKeyUp method="OnKeyUp"/>
 		</Scripts>
 	</Frame>
 </Ui>

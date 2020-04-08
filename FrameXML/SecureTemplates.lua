@@ -416,7 +416,16 @@ SECURE_ACTIONS.item =
             end
         end
     end;
-
+	
+SECURE_ACTIONS.equipmentset =
+	function (self, unit, button)
+		local setName = SecureButton_GetModifiedAttribute(self, "equipmentset", button);
+		local setID = setName and C_EquipmentSet.GetEquipmentSetID(setName);
+		if ( setID ) then
+			C_EquipmentSet.UseEquipmentSet(setID);
+		end
+	end;
+	
 SECURE_ACTIONS.macro =
     function (self, unit, button)
         local macro = SecureButton_GetModifiedAttribute(self, "macro", button);

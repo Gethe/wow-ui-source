@@ -16,18 +16,21 @@ function BannerDataProvider:RefreshAllData(fromOnShow)
 end
 
 function BannerDataProvider:AddBanner(mapBannerInfo)
-	local timeLeftMinutes = C_AreaPoiInfo.GetAreaPOITimeLeft(mapBannerInfo.areaPoiID);
-	local descriptionLabel = nil;
-	if timeLeftMinutes then
-		local hoursLeft = math.floor(timeLeftMinutes / 60);
-		local minutesLeft = timeLeftMinutes % 60;
-		descriptionLabel = INVASION_TIME_FORMAT:format(hoursLeft, minutesLeft)
-	end
+	local function CalculateAndFormatPOITimeRemaining()
+		local seconds = C_AreaPoiInfo.GetAreaPOISecondsLeft(mapBannerInfo.areaPoiID);
+		if seconds and seconds > 0 then
+			local omitSeconds = true;
+			return SecondsToTime(math.max(seconds, 60), omitSeconds);
+		end
+ 	end
 
-	local atlas, width, height = GetAtlasInfo(mapBannerInfo.atlasName);
+	local info = C_Texture.GetAtlasInfo(mapBannerInfo.atlasName);
 	local bannerLabelTextureInfo = {};
 	bannerLabelTextureInfo.atlas = mapBannerInfo.atlasName;
-	bannerLabelTextureInfo.width = width;
-	bannerLabelTextureInfo.height = height;
-	self:GetMap():TriggerEvent("SetAreaLabel", MAP_AREA_LABEL_TYPE.AREA_POI_BANNER, mapBannerInfo.name, descriptionLabel, INVASION_FONT_COLOR, INVASION_DESCRIPTION_FONT_COLOR, bannerLabelTextureInfo);
+	bannerLabelTextureInfo.width = info and info.width or 0;
+	bannerLabelTextureInfo.height = info and info.height or 0;
+	local descriptionCallback = CalculateAndFormatPOITimeRemaining;
+	local fontColor = mapBannerInfo.uiTextureKit == "LegionInvasion" and INVASION_FONT_COLOR or AREA_NAME_FONT_COLOR;
+	local descriptionFontColor = mapBannerInfo.uiTextureKit == "LegionInvasion" and INVASION_DESCRIPTION_FONT_COLOR or AREA_DESCRIPTION_FONT_COLOR;
+	self:GetMap():TriggerEvent("SetAreaLabel", MAP_AREA_LABEL_TYPE.AREA_POI_BANNER, mapBannerInfo.name, descriptionCallback, fontColor, descriptionFontColor, bannerLabelTextureInfo);
 end

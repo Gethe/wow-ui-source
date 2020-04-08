@@ -9,8 +9,9 @@ function MapExplorationDataProviderMixin:OnAdded(mapCanvas)
 end
 
 function MapExplorationDataProviderMixin:OnRemoved(mapCanvas)
-	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 	self:GetMap():RemoveAllPinsByTemplate("MapExplorationPinTemplate");
+
+	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 end
 
 function MapExplorationDataProviderMixin:OnShow()

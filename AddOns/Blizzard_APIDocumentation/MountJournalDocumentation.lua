@@ -7,6 +7,29 @@ local MountJournal =
 	Functions =
 	{
 		{
+			Name = "ApplyMountEquipment",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canContinue", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "AreMountEquipmentEffectsSuppressed",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "areEffectsSuppressed", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ClearFanfare",
 			Type = "Function",
 
@@ -22,6 +45,15 @@ local MountJournal =
 		{
 			Name = "Dismiss",
 			Type = "Function",
+		},
+		{
+			Name = "GetAppliedMountEquipmentID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "itemID", Type = "number", Nilable = true },
+			},
 		},
 		{
 			Name = "GetCollectedFilterSetting",
@@ -93,6 +125,9 @@ local MountJournal =
 				{ Name = "isSelfMount", Type = "bool", Nilable = false },
 				{ Name = "mountTypeID", Type = "number", Nilable = false },
 				{ Name = "uiModelSceneID", Type = "number", Nilable = false },
+				{ Name = "animID", Type = "number", Nilable = false },
+				{ Name = "spellVisualKitID", Type = "number", Nilable = false },
+				{ Name = "disablePlayerMountPreview", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -122,6 +157,29 @@ local MountJournal =
 			Returns =
 			{
 				{ Name = "allDisplayInfo", Type = "table", InnerType = "MountCreatureDisplayInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMountEquipmentUnlockLevel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "level", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMountFromItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "mountID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -189,6 +247,25 @@ local MountJournal =
 				{ Name = "isSelfMount", Type = "bool", Nilable = false },
 				{ Name = "mountTypeID", Type = "number", Nilable = false },
 				{ Name = "uiModelSceneID", Type = "number", Nilable = false },
+				{ Name = "animID", Type = "number", Nilable = false },
+				{ Name = "spellVisualKitID", Type = "number", Nilable = false },
+				{ Name = "disablePlayerMountPreview", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMountUsabilityByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mountID", Type = "number", Nilable = false },
+				{ Name = "checkIndoors", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUsable", Type = "bool", Nilable = false },
+				{ Name = "useError", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -216,6 +293,39 @@ local MountJournal =
 			Returns =
 			{
 				{ Name = "numMountsNeedingFanfare", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "IsItemMountEquipment",
+			Type = "Function",
+			Documentation = { "Determines if the item is mount equipment based on its class and subclass." },
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isMountEquipment", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsMountEquipmentApplied",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isApplied", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsMountEquipmentUnlocked",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isUnlocked", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -330,6 +440,15 @@ local MountJournal =
 
 	Events =
 	{
+		{
+			Name = "MountEquipmentApplyResult",
+			Type = "Event",
+			LiteralName = "MOUNT_EQUIPMENT_APPLY_RESULT",
+			Payload =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
 		{
 			Name = "MountJournalSearchUpdated",
 			Type = "Event",

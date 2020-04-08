@@ -116,6 +116,7 @@ function PartyMemberFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_PHASE");
 	self:RegisterEvent("UNIT_FLAGS");
 	self:RegisterEvent("UNIT_OTHER_PARTY_CHANGED");
+	self:RegisterEvent("INCOMING_SUMMON_CHANGED");
 	local id = self:GetID();
 	self:RegisterUnitEvent("UNIT_AURA", "party"..id, "partypet"..id);
 	self:RegisterUnitEvent("UNIT_PET",  "party"..id, "partypet"..id);
@@ -127,10 +128,21 @@ function PartyMemberFrame_OnLoad (self)
 	PartyMemberFrame_UpdateArt(self);
 end
 
+function PartyMemberFrame_UpdateVoiceActivityNotification(self)
+	if self.voiceNotification then
+		self.voiceNotification:ClearAllPoints();
+		if self.notPresentIcon:IsShown() then
+			self.voiceNotification:SetPoint("LEFT", self.notPresentIcon, "RIGHT", 0, 0);
+		else
+			self.voiceNotification:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, -12);
+		end
+	end
+end
+
 function PartyMemberFrame_VoiceActivityNotificationCreatedCallback(self, notification)
-	notification:SetParent(self);
-	notification:ClearAllPoints();
-	notification:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, -12);
+	self.voiceNotification = notification;
+	self.voiceNotification:SetParent(self);
+	PartyMemberFrame_UpdateVoiceActivityNotification(self);
 	notification:Show();
 end
 
@@ -154,6 +166,7 @@ function PartyMemberFrame_UpdateMember (self)
 	else
 		if VoiceActivityManager then
 			VoiceActivityManager:UnregisterFrameForVoiceActivityNotifications(self);
+			self.voiceNotification = nil;
 		end
 		self:Hide();
 	end
@@ -310,6 +323,27 @@ function PartyMemberFrame_UpdateNotPresentIcon(self)
 		self.notPresentIcon.Border:Show();
 		self.notPresentIcon.tooltip = PARTY_IN_PUBLIC_GROUP_MESSAGE;
 		self.notPresentIcon:Show();
+	elseif ( C_IncomingSummon.HasIncomingSummon(self.unit) ) then
+		local status = C_IncomingSummon.IncomingSummonStatus(self.unit);
+		if(status == Enum.SummonStatus.Pending) then
+			self.notPresentIcon.texture:SetAtlas("Raid-Icon-SummonPending");
+			self.notPresentIcon.texture:SetTexCoord(0, 1, 0, 1);
+			self.notPresentIcon.tooltip = INCOMING_SUMMON_TOOLTIP_SUMMON_PENDING;
+			self.notPresentIcon.Border:Hide();
+			self.notPresentIcon:Show();
+		elseif( status == Enum.SummonStatus.Accepted ) then
+			self.notPresentIcon.texture:SetAtlas("Raid-Icon-SummonAccepted");
+			self.notPresentIcon.texture:SetTexCoord(0, 1, 0, 1);
+			self.notPresentIcon.tooltip = INCOMING_SUMMON_TOOLTIP_SUMMON_ACCEPTED;
+			self.notPresentIcon.Border:Hide();
+			self.notPresentIcon:Show();
+		elseif( status == Enum.SummonStatus.Declined ) then
+			self.notPresentIcon.texture:SetAtlas("Raid-Icon-SummonDeclined");
+			self.notPresentIcon.texture:SetTexCoord(0, 1, 0, 1);
+			self.notPresentIcon.tooltip = INCOMING_SUMMON_TOOLTIP_SUMMON_DECLINED;
+			self.notPresentIcon.Border:Hide();
+			self.notPresentIcon:Show();
+		end
 	elseif ( (notInSameWarMode or not inPhase) and UnitIsConnected(partyID) ) then
 		self:SetAlpha(0.6);
 		self.notPresentIcon.texture:SetTexture("Interface\\TargetingFrame\\UI-PhasingIcon");
@@ -317,13 +351,19 @@ function PartyMemberFrame_UpdateNotPresentIcon(self)
 		self.notPresentIcon.Border:Hide();
 		self.notPresentIcon.tooltip = PARTY_PHASED_MESSAGE;
 		if ( notInSameWarMode ) then
-			self.notPresentIcon.tooltip = PARTY_WARMODE_MESSAGE;
+			if C_PvP.IsWarModeDesired() then
+				self.notPresentIcon.tooltip = PARTY_PLAYER_WARMODE_DISABLED;
+			else
+				self.notPresentIcon.tooltip = PARTY_PLAYER_WARMODE_ENABLED;
+			end
 		end
 		self.notPresentIcon:Show();
 	else
 		self:SetAlpha(1);
 		self.notPresentIcon:Hide();
 	end
+
+	PartyMemberFrame_UpdateVoiceActivityNotification(self);
 end
 
 function PartyMemberFrame_OnEvent(self, event, ...)
@@ -400,12 +440,13 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "UNIT_CONNECTION" ) and ( arg1 == "party"..selfID ) then
 		PartyMemberFrame_UpdateArt(self);
-		PartyMemberFrame_UpdateOnlineStatus(self);
 	elseif ( event == "UNIT_PHASE" or event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE" or event == "UNIT_FLAGS") then
 		if ( event ~= "UNIT_PHASE" or arg1 == unit ) then
 			PartyMemberFrame_UpdateNotPresentIcon(self);
 		end
 	elseif ( event == "UNIT_OTHER_PARTY_CHANGED" and arg1 == unit ) then
+		PartyMemberFrame_UpdateNotPresentIcon(self);
+	elseif ( event == "INCOMING_SUMMON_CHANGED" ) then
 		PartyMemberFrame_UpdateNotPresentIcon(self);
 	end
 end
@@ -433,68 +474,61 @@ function PartyMemberFrame_RefreshPetDebuffs (self, id)
 	RefreshDebuffs(_G["PartyMemberFrame"..id.."PetFrame"], "partypet"..id, nil, nil, true);
 end
 
-function PartyMemberBuffTooltip_Update (self)
-	local name, icon;
+function PartyMemberBuffTooltip_Update(self)
 	local numBuffs = 0;
 	local numDebuffs = 0;
-	local index = 1;
-	local filter;
 
 	PartyMemberBuffTooltip:SetID(self:GetID());
 
-	if ( SHOW_CASTABLE_BUFFS == "1" ) then
-		filter = "RAID";
-	else
-		filter = nil;
-	end
-	for i=1, MAX_PARTY_TOOLTIP_BUFFS do
-		name, icon = UnitBuff(self.unit, i, filter);
+	local filter = ( SHOW_CASTABLE_BUFFS == "1" ) and "HELPFUL|RAID" or "HELPFUL";
+	local index = 1;
+	AuraUtil.ForEachAura(self.unit, filter, MAX_PARTY_TOOLTIP_BUFFS, function(...)
+		local name, icon = ...;
 		if ( icon ) then
-			_G["PartyMemberBuffTooltipBuff"..index.."Icon"]:SetTexture(icon);
-			_G["PartyMemberBuffTooltipBuff"..index]:Show();
+			PartyMemberBuffTooltip.Buff[index].Icon:SetTexture(icon);
+			PartyMemberBuffTooltip.Buff[index]:Show();
 			index = index + 1;
 			numBuffs = numBuffs + 1;
 		end
-	end
+		return index > MAX_PARTY_TOOLTIP_BUFFS
+	end);
+
 	for i=index, MAX_PARTY_TOOLTIP_BUFFS do
-		_G["PartyMemberBuffTooltipBuff"..i]:Hide();
+		PartyMemberBuffTooltip.Buff[i]:Hide();
 	end
 
 	if ( numBuffs == 0 ) then
-		PartyMemberBuffTooltipDebuff1:SetPoint("TOP", "PartyMemberBuffTooltipBuff1", "TOP", 0, 0);
+		PartyMemberBuffTooltip.Debuff[1]:SetPoint("TOP", PartyMemberBuffTooltip.Buff[1], "TOP", 0, 0);
 	elseif ( numBuffs <= 8 ) then
-		PartyMemberBuffTooltipDebuff1:SetPoint("TOP", "PartyMemberBuffTooltipBuff1", "BOTTOM", 0, -2);
+		PartyMemberBuffTooltip.Debuff[1]:SetPoint("TOP", PartyMemberBuffTooltip.Buff[1], "BOTTOM", 0, -2);
 	else
-		PartyMemberBuffTooltipDebuff1:SetPoint("TOP", "PartyMemberBuffTooltipBuff9", "BOTTOM", 0, -2);
+		PartyMemberBuffTooltip.Debuff[1]:SetPoint("TOP", PartyMemberBuffTooltip.Buff[9], "BOTTOM", 0, -2);
 	end
 
+	filter = ( SHOW_DISPELLABLE_DEBUFFS == "1" ) and "HARMFUL|RAID" or "HARMFUL";
 	index = 1;
-
-	local debuffButton, debuffStack, debuffType, color, countdown;
-	if ( SHOW_DISPELLABLE_DEBUFFS == "1" ) then
-		filter = "RAID";
-	else
-		filter = nil;
-	end
-	for i=1, MAX_PARTY_TOOLTIP_DEBUFFS do
-		local debuffBorder = _G["PartyMemberBuffTooltipDebuff"..index.."Border"]
-		local partyDebuff = _G["PartyMemberBuffTooltipDebuff"..index.."Icon"];
-		name, icon, debuffStack, debuffType = UnitDebuff(self.unit, i, filter);
+	AuraUtil.ForEachAura(self.unit, filter, MAX_PARTY_TOOLTIP_DEBUFFS, function(...)
+		local debuffBorder = PartyMemberBuffTooltip.Debuff[index].Border;
+		local partyDebuff = PartyMemberBuffTooltip.Debuff[index].Icon;
+		local name, icon, debuffStack, debuffType = ...;
 		if ( icon ) then
 			partyDebuff:SetTexture(icon);
+			local color;
 			if ( debuffType ) then
 				color = DebuffTypeColor[debuffType];
 			else
 				color = DebuffTypeColor["none"];
 			end
 			debuffBorder:SetVertexColor(color.r, color.g, color.b);
-			_G["PartyMemberBuffTooltipDebuff"..index]:Show();
+			PartyMemberBuffTooltip.Debuff[index]:Show();
 			numDebuffs = numDebuffs + 1;
 			index = index + 1;
 		end
-	end
+		return index > MAX_PARTY_TOOLTIP_DEBUFFS;
+	end);
+
 	for i=index, MAX_PARTY_TOOLTIP_DEBUFFS do
-		_G["PartyMemberBuffTooltipDebuff"..i]:Hide();
+		PartyMemberBuffTooltip.Debuff[i]:Hide();
 	end
 
 	-- Size the tooltip

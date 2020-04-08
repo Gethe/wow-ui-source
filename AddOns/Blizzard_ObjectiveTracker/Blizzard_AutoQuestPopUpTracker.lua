@@ -10,6 +10,8 @@ AUTO_QUEST_POPUP_TRACKER_MODULE.Header = ObjectiveTrackerFrame.BlocksFrame.Quest
 AUTO_QUEST_POPUP_TRACKER_MODULE.blockOffsetX = -39;
 AUTO_QUEST_POPUP_TRACKER_MODULE.blockOffsetY = -4;
 
+local questItems = { };
+
 function AUTO_QUEST_POPUP_TRACKER_MODULE:OnFreeBlock(block)
 	block.init = nil;
 end
@@ -64,8 +66,9 @@ function AUTO_QUEST_POPUP_TRACKER_MODULE:Update()
 						elseif ( popUpType == "OFFER" ) then
 							local blockContents = block.ScrollChild;
 							blockContents.QuestionMark:Hide();
-                            if (questID == QUEST_FRAME_AUTO_ACCEPT_QUEST_ID and QUEST_FRAME_AUTO_ACCEPT_QUEST_START_ITEM_ID ~= 0) then
-                                local texture = select(10, GetItemInfo(QUEST_FRAME_AUTO_ACCEPT_QUEST_START_ITEM_ID));
+							local itemID = questItems[questID];
+							if ( itemID ) then
+                                local texture = select(10, GetItemInfo(itemID));
                                 blockContents.Exclamation:SetTexCoord(0.078125, 0.921875, 0.078125, 0.921875);
                                 blockContents.Exclamation:SetSize(35, 35);
                                 SetPortraitToTexture(blockContents.Exclamation, texture);
@@ -98,8 +101,9 @@ function AUTO_QUEST_POPUP_TRACKER_MODULE:Update()
 	AUTO_QUEST_POPUP_TRACKER_MODULE:EndLayout();
 end
 
-function AutoQuestPopupTracker_AddPopUp(questID, popUpType)
+function AutoQuestPopupTracker_AddPopUp(questID, popUpType, itemID)
 	if ( AddAutoQuestPopUp(questID, popUpType) ) then
+		questItems[questID] = itemID;
 		ObjectiveTracker_Expand();
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED, questID);
 		PlaySound(SOUNDKIT.UI_AUTO_QUEST_COMPLETE);
@@ -110,6 +114,9 @@ end
 
 function AutoQuestPopupTracker_RemovePopUp(questID)
 	RemoveAutoQuestPopUp(questID);
+	if GetNumAutoQuestPopUps() == 0 then
+		wipe(questItems);
+	end
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_QUEST);
 end
 

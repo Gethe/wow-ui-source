@@ -1,0 +1,146 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ItemInteractionUI.lua"/>
+
+	<Frame name="ItemInteractionFrame" inherits="PortraitFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true" mixin="ItemInteractionMixin" hidden="true">
+		<Size x="343" y="261"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-4">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="BOTTOM" y="30" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Description" justifyV="CENTER" justifyH="CENTER" inherits="GameFontHighlight">
+					<Size x="250" y="0"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="45"/>
+					</Anchors>
+				</FontString>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.portrait" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.portrait" x="-2" y="2"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="portrait"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="ItemSlot" mixin="ItemInteractionItemSlotMixin">
+				<Size x="44" y="44" />
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Background" />
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Icon" hidden="true">
+							<Size x="42" y="42" />
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="GlowOverlay" useAtlasSize="true" alphaMode="ADD" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" y="7"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad" />
+					<OnClick method="OnClick" />
+					<OnDragStart method="OnDragStart" />
+					<OnReceiveDrag method="OnReceiveDrag" />
+					<OnEnter method="OnMouseEnter" />
+					<OnLeave method="OnMouseLeave" /> 
+				</Scripts>
+			</Button>
+			<Frame parentKey="ButtonFrame">
+				<Size x="0" y="35"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="ActionButton" mixin="ItemInteractionActionButtonMixin" inherits="MagicButtonTemplate" motionScriptsWhileDisabled="true">
+						<Size x="154" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-2" y="5"/>
+						</Anchors>
+						<Scripts>
+							<OnClick method="OnClick"/>
+							<OnEnter method="OnMouseEnter"/>
+							<OnLeave method="OnMouseLeave"/>
+						</Scripts>
+					</Button>
+					<Frame parentKey="MoneyFrameEdge" inherits="ThinGoldEdgeTemplate" >
+						<Size x="182" y="24"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-160" y="3"/>
+						</Anchors>
+					</Frame>
+					<Button parentKey="Currency" inherits="BackpackTokenTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-170" y="7"/>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetCurrencyByID(self.currencyID);
+							</OnEnter>
+						</Scripts>
+					</Button>
+					<Frame parentKey="MoneyFrame" hidden="true" name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-150" y="6"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								SmallMoneyFrame_OnLoad(self);
+								MoneyFrame_SetType(self, "STATIC");
+								MoneyFrame_SetMaxDisplayWidth(self, 183);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Layers>
+					<Layer level="BORDER" textureSubLevel="1">
+						<Texture parentKey="BlackBorder">
+							<Size x="334" y="21"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="1" y="5"/>
+							</Anchors>
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="2">
+						<Texture parentKey="ButtonBorder" inherits="_UI-Frame-InnerBotTile">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="1" y="26"/>
+								<Anchor point="BOTTOMRIGHT" x="-3" y="26"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ButtonBottomBorder" inherits="_UI-Frame-BtnBotTile">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="6" y="2"/>
+								<Anchor point="BOTTOMRIGHT" x="-8" y="2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

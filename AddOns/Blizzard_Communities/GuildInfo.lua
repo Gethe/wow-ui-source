@@ -37,7 +37,7 @@ function CommunitiesGuildInfoFrame_OnEvent(self, event, arg1)
 end
 
 function CommunitiesGuildInfoFrame_OnShow(self)
-	GuildRoster();
+	C_GuildInfo.GuildRoster();
 	CommunitiesGuildInfoFrame_UpdatePermissions(self);	
 	CommunitiesGuildInfoFrame_UpdateText(self);
 	RequestGuildChallengeInfo();
@@ -108,13 +108,13 @@ end
 function CommunitiesGuildTextEditFrame_SetType(self, editType, guildInfoFrame)
 	if ( editType == "motd" ) then
 		self:SetHeight(162);
-		self.Container.ScrollFrame.EditBox:SetMaxLetters(128);
+		self.Container.ScrollFrame.EditBox:SetMaxLetters(255);
 		self.Container.ScrollFrame.EditBox:SetText(GetGuildRosterMOTD());
 		self.Title:SetText(GUILD_MOTD_EDITLABEL);
 		self.Container.ScrollFrame.EditBox:SetScript("OnEnterPressed", CommunitiesGuildTextEditFrame_OnAccept);
 	elseif ( editType == "info" ) then
 		self:SetHeight(295);
-		self.Container.ScrollFrame.EditBox:SetMaxLetters(500);
+		self.Container.ScrollFrame.EditBox:SetMaxLetters(499);
 		self.Container.ScrollFrame.EditBox:SetText(GetGuildInfoText());
 		self.Title:SetText(GUILD_INFO_EDITLABEL);
 		self.Container.ScrollFrame.EditBox:SetScript("OnEnterPressed", nil);

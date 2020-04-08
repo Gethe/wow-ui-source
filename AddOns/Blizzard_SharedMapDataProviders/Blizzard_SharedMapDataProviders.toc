@@ -1,6 +1,4 @@
-## Interface: 80000
 ## Title: Blizzard Shared Map Data Providers
-## Secure: 1
 ## Author: Blizzard Entertainment
 ## Version: 1.0
 ## LoadOnDemand: 1
@@ -36,3 +34,5 @@ BannerDataProvider.xml
 ContributionCollectorDataProvider.xml
 MapLinkDataProvider.xml
 SelectableGraveyardDataProvider.xml
+MapIndicatorQuestDataProvider.xml
+QuestSessionDataProvider.lua

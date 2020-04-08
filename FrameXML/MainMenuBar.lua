@@ -5,7 +5,7 @@ MAIN_MENU_BAR_MARGIN = 75;		-- number of art pixels on one side, used by UIParen
 
 MainMenuBarMixin = { };
 function MainMenuBarMixin:OnStatusBarsUpdated()
-	self:SetPositionForStatusBars(); 
+	self:SetPositionForStatusBars();
 end
 
 function MainMenuBarMixin:OnLoad()
@@ -18,7 +18,7 @@ function MainMenuBarMixin:OnLoad()
 	self:RegisterEvent("UI_SCALE_CHANGED");
 
 	CreateFrame("FRAME", "StatusTrackingBarManager", self, "StatusTrackingBarManagerTemplate");
-	
+
 	MAX_PLAYER_LEVEL = MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()];
 
 	self.state = "player";
@@ -40,21 +40,21 @@ function MainMenuBarMixin:GetYOffset()
 end
 
 function MainMenuBarMixin:SetPositionForStatusBars()
-	MainMenuBar:ClearAllPoints(); 
-	MainMenuBarArtFrame.LeftEndCap:ClearAllPoints(); 
-	MainMenuBarArtFrame.RightEndCap:ClearAllPoints(); 
-	if ( StatusTrackingBarManager:GetNumberVisibleBars() == 2 ) then 
-		self:SetYOffset(17);
-		MainMenuBarArtFrame.LeftEndCap:SetPoint("BOTTOMLEFT", MainMenuBar, -98, -17); 
-		MainMenuBarArtFrame.RightEndCap:SetPoint("BOTTOMRIGHT", MainMenuBar, 98, -17); 
+	MainMenuBar:ClearAllPoints();
+	MainMenuBarArtFrame.LeftEndCap:ClearAllPoints();
+	MainMenuBarArtFrame.RightEndCap:ClearAllPoints();
+	if ( StatusTrackingBarManager:GetNumberVisibleBars() == 2 ) then
+		self:SetYOffset(19);
+		MainMenuBarArtFrame.LeftEndCap:SetPoint("BOTTOMLEFT", MainMenuBar, -98, -19);
+		MainMenuBarArtFrame.RightEndCap:SetPoint("BOTTOMRIGHT", MainMenuBar, 98, -19);
 	elseif ( StatusTrackingBarManager:GetNumberVisibleBars() == 1 ) then
 		self:SetYOffset(14);
-		MainMenuBarArtFrame.LeftEndCap:SetPoint("BOTTOMLEFT", MainMenuBar, -98, -14); 
-		MainMenuBarArtFrame.RightEndCap:SetPoint("BOTTOMRIGHT", MainMenuBar, 98, -14); 
-	else 
+		MainMenuBarArtFrame.LeftEndCap:SetPoint("BOTTOMLEFT", MainMenuBar, -98, -14);
+		MainMenuBarArtFrame.RightEndCap:SetPoint("BOTTOMRIGHT", MainMenuBar, 98, -14);
+	else
 		self:SetYOffset(0);
-		MainMenuBarArtFrame.LeftEndCap:SetPoint("BOTTOMLEFT", MainMenuBar, -98, 0); 
-		MainMenuBarArtFrame.RightEndCap:SetPoint("BOTTOMRIGHT", MainMenuBar, 98, 0); 
+		MainMenuBarArtFrame.LeftEndCap:SetPoint("BOTTOMLEFT", MainMenuBar, -98, 0);
+		MainMenuBarArtFrame.RightEndCap:SetPoint("BOTTOMRIGHT", MainMenuBar, 98, 0);
 	end
 	if ( IsPlayerInWorld() ) then
 		UIParent_ManageFramePositions();
@@ -85,7 +85,7 @@ function MainMenuBarMixin:OnEvent(event, ...)
 					SetButtonPulse(CharacterFrameTab3, 60, 1);
 				end
 			end
-			
+
 			if ( hasNormalTokens or showTokenFrame or showTokenFrameHonor ) then
 				TokenFrame_LoadUI();
 				TokenFrame_Update();
@@ -110,7 +110,7 @@ function MainMenuBarMixin:OnEvent(event, ...)
 			StatusTrackingBarManager:AddBarFromTemplate("FRAME", "HonorStatusBarTemplate");
 			StatusTrackingBarManager:AddBarFromTemplate("FRAME", "ArtifactStatusBarTemplate");
 			StatusTrackingBarManager:AddBarFromTemplate("FRAME", "ExpStatusBarTemplate");
-			StatusTrackingBarManager:AddBarFromTemplate("FRAME", "AzeriteBarTemplate"); 
+			StatusTrackingBarManager:AddBarFromTemplate("FRAME", "AzeriteBarTemplate");
 			UIParent_ManageFramePositions();
 		end
 	elseif ( event == "TRIAL_STATUS_UPDATE" ) then
@@ -121,7 +121,7 @@ function MainMenuBarMixin:OnEvent(event, ...)
 
 	self:SetPositionForStatusBars();
 end
- 
+
 function MainMenuBarVehicleLeaveButton_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
@@ -138,7 +138,8 @@ function MainMenuBarVehicleLeaveButton_OnEnter(self)
 		GameTooltip:AddLine(TAXI_CANCEL_DESCRIPTION, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 		GameTooltip:Show();
 	else
-		GameTooltip_AddNewbieTip(self, LEAVE_VEHICLE, 1.0, 1.0, 1.0, nil);
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, LEAVE_VEHICLE);
 	end
 end
 
@@ -175,7 +176,7 @@ end
 function MainMenuBarVehicleLeaveButton_OnClicked(self)
 	if ( UnitOnTaxi("player") ) then
 		TaxiRequestEarlyLanding();
-		
+
 		-- Show that the request for landing has been received.
 		self:Disable();
 		self:SetHighlightTexture([[Interface\Buttons\CheckButtonHilight]], "ADD");
@@ -213,7 +214,7 @@ local MovieList = {
 function MainMenu_GetMovieDownloadProgress(id)
 	local movieList = MovieList[id];
 	if (not movieList) then return; end
-	
+
 	local anyInProgress = false;
 	local allDownloaded = 0;
 	local allTotal = 0;
@@ -223,7 +224,7 @@ function MainMenu_GetMovieDownloadProgress(id)
 		allDownloaded = allDownloaded + downloaded;
 		allTotal = allTotal + total;
 	end
-	
+
 	return anyInProgress, allDownloaded, allTotal;
 end
 
@@ -234,63 +235,43 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 	local i, j, k = 0, 0, 0;
 
 	GameTooltip_SetDefaultAnchor(GameTooltip, self);
-	
-	GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
-	
+	GameTooltip_SetTitle(GameTooltip, self.tooltipText);
+
 	-- latency
 	local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
 	string = format(MAINMENUBAR_LATENCY_LABEL, latencyHome, latencyWorld);
 	GameTooltip:AddLine(" ");
 	GameTooltip:AddLine(string, 1.0, 1.0, 1.0);
-	if ( SHOW_NEWBIE_TIPS == "1" ) then
-		GameTooltip:AddLine(NEWBIE_TOOLTIP_LATENCY, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-	end
 	GameTooltip:AddLine(" ");
-	
+
 	-- protocol types
 	if ( GetCVarBool("useIPv6") ) then
 		local ipTypeHome, ipTypeWorld = GetNetIpTypes();
 		string = format(MAINMENUBAR_PROTOCOLS_LABEL, ipTypes[ipTypeHome or 0] or UNKNOWN, ipTypes[ipTypeWorld or 0] or UNKNOWN);
 		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(string, 1.0, 1.0, 1.0);
-		if ( SHOW_NEWBIE_TIPS == "1" ) then
-			GameTooltip:AddLine(NEWBIE_TOOLTIP_PROTOCOLS, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-		end
 		GameTooltip:AddLine(" ");
 	end
 
 	-- framerate
 	string = format(MAINMENUBAR_FPS_LABEL, GetFramerate());
 	GameTooltip:AddLine(string, 1.0, 1.0, 1.0);
-	if ( SHOW_NEWBIE_TIPS == "1" ) then
-		GameTooltip:AddLine(NEWBIE_TOOLTIP_FRAMERATE, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-	end
 	GameTooltip:AddLine(" ");
 
 	string = format(MAINMENUBAR_BANDWIDTH_LABEL, GetAvailableBandwidth());
 	GameTooltip:AddLine(string, 1.0, 1.0, 1.0);
-	if ( SHOW_NEWBIE_TIPS == "1" ) then
-		GameTooltip:AddLine(NEWBIE_TOOLTIP_BANDWIDTH, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-	end
 	GameTooltip:AddLine(" ");
 
 	local percent = floor(GetDownloadedPercentage()*100+0.5);
 	string = format(MAINMENUBAR_DOWNLOAD_PERCENT_LABEL, percent);
 	GameTooltip:AddLine(string, 1.0, 1.0, 1.0);
-	if ( SHOW_NEWBIE_TIPS == "1" ) then
-		GameTooltip:AddLine(NEWBIE_TOOLTIP_DOWNLOAD_PERCENT, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-	end
-	
+
 	-- Downloaded cinematics
 	local firstMovie = true;
 	for i, movieList in next, MovieList do
 		local inProgress, downloaded, total = MainMenu_GetMovieDownloadProgress(i);
 		if ( inProgress ) then
 			if ( firstMovie ) then
-				if ( SHOW_NEWBIE_TIPS == "1" ) then
-					-- The "Cinematics" header looks bad when it's next to the newbie tooltip text, so add an extra line break
-					GameTooltip:AddLine(" ");
-				end
 				GameTooltip:AddLine("   "..CINEMATICS, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 				firstMovie = false;
 			end
@@ -336,10 +317,7 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 
 		GameTooltip:AddLine("\n");
 		GameTooltip:AddLine(string, 1.0, 1.0, 1.0);
-		if ( SHOW_NEWBIE_TIPS == "1" ) then
-			GameTooltip:AddLine(NEWBIE_TOOLTIP_MEMORY, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-		end
-		
+
 		local size;
 		for i=1, NUM_ADDONS_TO_DISPLAY, 1 do
 			if ( topAddOns[i].value == 0 ) then
@@ -359,25 +337,29 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 end
 
 function MainMenuBarMixin:ChangeMenuBarSizeAndPosition(rightMultiBarShowing)
-	local _, width, height;
-	if( rightMultiBarShowing ) then 
-		_, width, height = GetAtlasInfo("hud-MainMenuBar-large");
-		self:SetSize(width,height); 
-		MainMenuBarArtFrame:SetSize(width,height); 
-		MainMenuBarArtFrameBackground:SetSize(width, height); 
-		MainMenuBarArtFrameBackground.BackgroundLarge:Show();
-		MainMenuBarArtFrameBackground.BackgroundSmall:Hide();
-		MainMenuBarArtFrame.PageNumber:ClearAllPoints();
+	local atlasInfo;
+
+	if( rightMultiBarShowing ) then
+		atlasInfo = C_Texture.GetAtlasInfo("hud-MainMenuBar-large");
+	else
+		atlasInfo = C_Texture.GetAtlasInfo("hud-MainMenuBar-small");
+	end
+
+	local width = atlasInfo and atlasInfo.width or 0;
+	local height = atlasInfo and atlasInfo.height or 0;
+	self:SetSize(width, height);
+	MainMenuBarArtFrame:SetSize(width, height);
+	MainMenuBarArtFrameBackground:SetSize(width, height);
+	MainMenuBarArtFrameBackground.BackgroundLarge:SetShown(rightMultiBarShowing);
+	MainMenuBarArtFrameBackground.BackgroundSmall:SetShown(not rightMultiBarShowing);
+	MainMenuBarArtFrame.PageNumber:ClearAllPoints();
+
+	if rightMultiBarShowing then
 		MainMenuBarArtFrame.PageNumber:SetPoint("CENTER", MainMenuBarArtFrameBackground, "CENTER", 138, -3);
-	else 
-		_, width, height = GetAtlasInfo("hud-MainMenuBar-small");
-		self:SetSize(width,height); 
-		MainMenuBarArtFrame:SetSize(width,height); 
-		MainMenuBarArtFrameBackground:SetSize(width, height); 
-		MainMenuBarArtFrameBackground.BackgroundLarge:Hide();
-		MainMenuBarArtFrameBackground.BackgroundSmall:Show(); 
-		MainMenuBarArtFrame.PageNumber:ClearAllPoints();
+	else
 		MainMenuBarArtFrame.PageNumber:SetPoint("RIGHT", MainMenuBarArtFrameBackground, "RIGHT", -6, -3);
 	end
-	StatusTrackingBarManager:SetBarSize(rightMultiBarShowing);
+
+	local isLargeSize = rightMultiBarShowing;
+	StatusTrackingBarManager:SetBarSize(isLargeSize);
 end

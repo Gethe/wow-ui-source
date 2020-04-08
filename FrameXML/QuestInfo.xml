@@ -32,6 +32,24 @@
 		</Scripts>
 	</Button>
 
+	<Button name="WarModeBonusFrameTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self.Name:SetText(WAR_MODE_BONUS);
+				self.Name:SetTextColor(GREEN_FONT_COLOR:GetRGB());
+				self.Count:SetTextColor(GREEN_FONT_COLOR:GetRGB());
+				SetItemButtonTexture(self, "Interface\\Icons\\UI_WARMODE");
+			</OnLoad>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip_SetTitle(GameTooltip, WAR_MODE_BONUS, NORMAL_FONT_COLOR);
+				GameTooltip_AddColoredLine(GameTooltip, WAR_MODE_BONUS_QUEST, HIGHLIGHT_FONT_COLOR);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide" />
+		</Scripts>
+	</Button>
+
 	<Button name="QuestInfoRewardItemCodeTemplate" virtual="true">
 		<Scripts>
 			<OnEnter function="QuestInfoRewardItemCodeTemplate_OnEnter" />
@@ -45,7 +63,7 @@
 			</OnUpdate>
 		</Scripts>
 	</Button>
-	
+
 	<Button name="SmallQuestRewardItemButtonTemplate" inherits="SmallItemButtonTemplate, QuestInfoRewardItemCodeTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="1">
@@ -66,7 +84,7 @@
 			</Layer>
 		</Layers>
 	</Button>
-	
+
 	<Button name="LargeQuestRewardItemButtonTemplate" inherits="LargeItemButtonTemplate, QuestInfoRewardItemCodeTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="1">
@@ -87,7 +105,7 @@
 			</Layer>
 		</Layers>
 	</Button>
-	
+
 	<Button name="QuestInfoRewardFollowerCodeTemplate" virtual="true">
 		<Scripts>
 			<OnEnter>
@@ -198,6 +216,16 @@
 		 </Frames>
 	 </Button>
 
+	 <Button name="QuestInfoHonorFrameScriptTemplate" virtual="true">
+		 <Scripts>
+			 <OnEnter>
+				 GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				 GameTooltip:SetCurrencyByID(Constant.Currency.Honor);
+			 </OnEnter>
+			 <OnLeave function="GameTooltip_Hide" />
+		 </Scripts>
+	 </Button>
+
 	<Frame name="QuestInfoObjectivesFrame" hidden="true">
 		<Size x="285" y="10"/>
 		<Anchors>
@@ -297,10 +325,13 @@
 				</FontString>
 				<FontString parentKey="ItemReceiveText" inherits="QuestFont" hidden="true" justifyH="LEFT" />
 				<FontString parentKey="PlayerTitleText" inherits="QuestFont" text="REWARD_TITLE" hidden="true" justifyH="LEFT" />
+				<FontString parentKey="QuestSessionBonusReward" inherits="QuestFont" text="QUEST_SESSION_BONUS_LOOT_REWARD_FRAME_TITLE" hidden="true" justifyH="LEFT">
+					<Size x="270" y="0"/>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="HonorFrame" inherits="LargeItemButtonTemplate" hidden="true"/>
+			<Button parentKey="HonorFrame" inherits="LargeItemButtonTemplate, QuestInfoHonorFrameScriptTemplate" hidden="true"/>
 			<Button parentArray="RewardButtons" name="$parentQuestInfoItem1" inherits="LargeQuestRewardItemButtonTemplate" hidden="true"/>
 			<Frame parentKey="MoneyFrame" name="QuestInfoMoneyFrame" inherits="MoneyFrameTemplate">
 				<Anchors>
@@ -389,6 +420,7 @@
 					<OnLeave function="GameTooltip_Hide" />
 				</Scripts>
 			</Button>
+			<Button parentKey="WarModeBonusFrame" inherits="LargeItemButtonTemplate, WarModeBonusFrameTemplate" hidden="true"/>
 			<Frame parentKey="TitleFrame" name="QuestInfoPlayerTitleFrame">
 				<Size x="500" y="39"/>
 				<Layers>
@@ -471,7 +503,7 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString parentKey="ItemChooseText" inherits="QuestMapRewardsFont" text="REWARD_CHOICES" hidden="true" justifyH="LEFT">
-					<Size x="285" y="0"/>
+					<Size x="265" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="-6"/>
 					</Anchors>
@@ -479,6 +511,9 @@
 				</FontString>
 				<FontString parentKey="ItemReceiveText" inherits="QuestMapRewardsFont" hidden="true" justifyH="LEFT"/>
 				<FontString parentKey="PlayerTitleText" inherits="QuestMapRewardsFont" text="REWARD_TITLE" hidden="true" justifyH="LEFT"/>
+				<FontString parentKey="QuestSessionBonusReward" inherits="QuestMapRewardsFont" text="QUEST_SESSION_BONUS_LOOT_REWARD_FRAME_TITLE" hidden="true" justifyH="LEFT">
+					<Size x="265" y="0"/>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -491,7 +526,7 @@
 			</Frame>
 			<Button parentArray="RewardButtons" name="$parentQuestInfoItem1" inherits="SmallQuestRewardItemButtonTemplate" hidden="true"/>
 			<Button parentKey="XPFrame" inherits="SmallItemButtonTemplate" hidden="true"/>
-            <Button parentKey="HonorFrame" inherits="SmallItemButtonTemplate" hidden="true"/>
+			<Button parentKey="HonorFrame" inherits="SmallItemButtonTemplate, QuestInfoHonorFrameScriptTemplate" hidden="true"/>
 			<Button parentKey="ArtifactXPFrame" inherits="SmallItemButtonTemplate" hidden="true">
 				<Layers>
 					<Layer level="BORDER">
@@ -512,6 +547,7 @@
 					<OnLeave function="GameTooltip_Hide" />
 				</Scripts>
 			</Button>
+			<Button parentKey="WarModeBonusFrame" inherits="SmallItemButtonTemplate, WarModeBonusFrameTemplate" hidden="true"/>
 			<Button parentKey="MoneyFrame" inherits="SmallItemButtonTemplate" hidden="true"/>
 			<Button parentKey="SkillPointFrame" inherits="SmallItemButtonTemplate">
 				<Layers>

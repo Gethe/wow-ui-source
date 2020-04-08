@@ -1,0 +1,40 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_AuctionHouseCommoditiesList.lua"/>
+
+	<Frame name="AuctionHouseCommoditiesListTemplate" mixin="AuctionHouseCommoditiesListMixin" inherits="AuctionHouseItemListTemplate" virtual="true">
+		<KeyValues>
+			<!--
+			searchContext: What search context should be used for this list when refreshing search results.
+			<KeyValue key="searchContext" value="AuctionHouseSearchContext.BuyCommodities" type="global"/>
+			-->
+
+			<KeyValue key="refreshFrameXOffset" value="-4" type="number"/>
+			<KeyValue key="refreshFrameYOffset" value="30" type="number"/>
+		</KeyValues>
+		<Size x="210" y="400"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AuctionHouseCommoditiesBuyListTemplate" mixin="AuctionHouseCommoditiesBuyListMixin" inherits="AuctionHouseCommoditiesListTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backgroundAtlas" value="auctionhouse-background-buy-commodities-market" type="string"/>
+			<KeyValue key="backgroundYOffset" value="0" type="number"/>
+			<KeyValue key="searchContext" value="AuctionHouseSearchContext.BuyCommodities" type="global"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="AuctionHouseCommoditiesSellListTemplate" mixin="AuctionHouseCommoditiesSellListMixin" inherits="AuctionHouseCommoditiesListTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backgroundAtlas" value="auctionhouse-background-sell-right" type="string"/>
+			<KeyValue key="searchContext" value="AuctionHouseSearchContext.SellCommodities" type="global"/>
+			<KeyValue key="refreshFrameXOffset" value="-8" type="number"/>
+			<KeyValue key="refreshFrameYOffset" value="30" type="number"/>
+		</KeyValues>
+	</Frame>
+</Ui>

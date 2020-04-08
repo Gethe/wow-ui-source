@@ -32,7 +32,7 @@
 			<OnEvent method="OnEvent"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
-			<OnClick method="ToggleActivateChannel"/>
+			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
 

@@ -2,11 +2,16 @@ local AZERITE_XP_BAR_EVENTS = {
 	"PLAYER_ENTERING_WORLD",
 	"AZERITE_ITEM_EXPERIENCE_CHANGED", 
 	"CVAR_UPDATE",
+	"BAG_UPDATE",
 };
 AzeriteBarMixin = CreateFromMixins(StatusTrackingBarMixin);
 
 function AzeriteBarMixin:ShouldBeVisible()
-	return C_AzeriteItem.HasActiveAzeriteItem(); 
+	local isMaxLevel = C_AzeriteItem.IsAzeriteItemAtMaxLevel();
+	if isMaxLevel then
+		return false;
+	end
+	return C_AzeriteItem.HasActiveAzeriteItem();
 end
 
 function AzeriteBarMixin:Update()
@@ -18,10 +23,15 @@ function AzeriteBarMixin:Update()
 	
 	local azeriteItem = Item:CreateFromItemLocation(azeriteItemLocation); 
 	
-	self.xp, self.totalLevelXP = C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation);
-	self.currentLevel = C_AzeriteItem.GetPowerLevel(azeriteItemLocation); 
+	if AzeriteUtil.IsAzeriteItemLocationBankBag(azeriteItemLocation) then
+		self.xp, self.totalLevelXP = 0, 1;
+		self.currentLevel = -1;
+	else
+		self.xp, self.totalLevelXP = C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation);
+		self.currentLevel = C_AzeriteItem.GetPowerLevel(azeriteItemLocation); 
+	end
 	self.xpToNextLevel = self.totalLevelXP - self.xp; 
-		
+
 	self:SetBarValues(self.xp, 0, self.totalLevelXP);
 	self:UpdatePointsTooltip();
 	self:Show();
@@ -43,7 +53,7 @@ end
 function AzeriteBarMixin:OnLoad() 
 	self:SetBarColor(ARTIFACT_BAR_COLOR:GetRGB());
 	self.StatusBar:SetOnAnimatedValueChangedCallback(function() self:AnimatedValueChangedCallback(); end)
-	self.priority = 3; 
+	self.priority = 0; 
 end
 
 function AzeriteBarMixin:OnEvent(event, ...)
@@ -54,6 +64,11 @@ function AzeriteBarMixin:OnEvent(event, ...)
 			local name, value = ...;
 			if ( name == "XP_BAR_TEXT" ) then
 				self:UpdateTextVisibility();
+			end
+		elseif ( event == "BAG_UPDATE" ) then
+			local bagID = ...;
+			if bagID > NUM_BAG_SLOTS then
+				self:Update();
 			end
 		end
 	end
@@ -71,13 +86,20 @@ end
 function AzeriteBarMixin:OnEnter()
 	self:ShowText(); 
 	self:UpdateOverlayFrameText();
-	self:SetupPointsTooltip();
+	if self.currentLevel == -1 then
+		GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
+		GameTooltip:SetText(HEART_OF_AZEROTH_MISSING_ERROR, HIGHLIGHT_FONT_COLOR:GetRGB());
+	else
+		self:SetupPointsTooltip();
+	end
 end
 
 function AzeriteBarMixin:OnLeave()
 	self:HideText();
 	GameTooltip_Hide();
-	self:CancelItemLoadCallback();
+	if self.currentLevel ~= -1 then
+		self:CancelItemLoadCallback();
+	end
 end
 
 function AzeriteBarMixin:CancelItemLoadCallback()

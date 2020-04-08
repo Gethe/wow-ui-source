@@ -1,40 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-<!-- Patchwerk
-size=1024,1024
-<Texture name="Destiny_BG.png" >
-	<Size x="1020" y="626"/>	
-	<TexCoords left="0.00097656" right="0.99707031" top="0.00097656" bottom="0.61230469"/>	
-</Texture>
-<Texture name="ButtonBG-Glow.png" >
-	<Size x="279" y="207"/>	
-	<TexCoords left="0.00097656" right="0.27343750" top="0.61425781" bottom="0.81640625"/>	
-</Texture>
-<Texture name="AllianceButton-Up.png" >
-	<Size x="191" y="121"/>	
-	<TexCoords left="0.00097656" right="0.18750000" top="0.81835938" bottom="0.93652344"/>	
-</Texture>
-<Texture name="OrnateBit.png" >
-	<Size x="80" y="14"/>	
-	<TexCoords left="0.00097656" right="0.07910156" top="0.93847656" bottom="0.95214844"/>	
-</Texture>
-<Texture name="ButtonHighlight.png" >
-	<Size x="191" y="121"/>	
-	<TexCoords left="0.27539063" right="0.46191406" top="0.61425781" bottom="0.73242188"/>	
-</Texture>
-<Texture name="AllianceButton-Down.png" >
-	<Size x="191" y="121"/>	
-	<TexCoords left="0.27539063" right="0.46191406" top="0.73437500" bottom="0.85253906"/>	
-</Texture>
-<Texture name="HordeButton-Down.png" >
-	<Size x="191" y="121"/>	
-	<TexCoords left="0.27539063" right="0.46191406" top="0.85449219" bottom="0.97265625"/>	
-</Texture>
-<Texture name="HordeButton-Up.png" >
-	<Size x="191" y="121"/>	
-	<TexCoords left="0.46386719" right="0.65039063" top="0.61425781" bottom="0.73242188"/>	
-</Texture>
--->
 	<Script file="DestinyFrame.lua"/>
 	<Button name="DestinyButtonTemplate" virtual="true">
 		<Size x="191" y="121"/>
@@ -100,8 +65,7 @@ size=1024,1024
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame parentKey="RecruitAFriendSuggestion" frameStrata="FULLSCREEN" inherits="RecruitInfoDialogTemplate"/>
-		</Frames>
+	</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture setAllPoints="true" parentKey="alphaLayer">

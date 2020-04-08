@@ -49,6 +49,15 @@ local QuestLineInfo =
 				{ Name = "questIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "RequestQuestLinesForMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -83,6 +92,7 @@ local QuestLineInfo =
 				{ Name = "y", Type = "number", Nilable = false },
 				{ Name = "isHidden", Type = "bool", Nilable = false },
 				{ Name = "isLegendary", Type = "bool", Nilable = false },
+				{ Name = "isDaily", Type = "bool", Nilable = false },
 				{ Name = "floorLocation", Type = "QuestLineFloorLocation", Nilable = false },
 			},
 		},

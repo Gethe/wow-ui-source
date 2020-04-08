@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Button name="PartyPoseRewardsButtonTemplate" mixin="PartyPoseRewardsMixin" alpha="0" virtual="true">
-		<Size x="174" y="55"/> 
+		<Size x="174" y="55"/>
 		<Animations>
 			<AnimationGroup parentKey="AnimFade">
                 <Alpha parentKey="FadeIn" fromAlpha="0" toAlpha="1" order="1" duration=".5">
@@ -35,13 +35,22 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER" textureSubLevel="2">
-				<Texture parentKey="IconBorder" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
-					</Anchors>
-				</Texture>
-			</Layer>
+      <Layer level="BORDER" textureSubLevel="2">
+        <Texture parentKey="IconOverlay" hidden="true">
+          <!-- The overlay is inset to prevent an overlap with the IconBorder.-->
+          <Size x="47" y="47" />
+          <Anchors>
+            <Anchor point="CENTER" relativeKey="$parent.Icon"/>
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="BORDER" textureSubLevel="3">
+        <Texture parentKey="IconBorder" useAtlasSize="true">
+          <Anchors>
+            <Anchor point="CENTER" relativeKey="$parent.Icon"/>
+          </Anchors>
+        </Texture>
+      </Layer>
 			<Layer level="BORDER">
 				<FontString parentKey="Name" inherits="GameFontHighlightMedium" justifyH="LEFT">
 					<Size x="160" y="40"/>
@@ -80,12 +89,19 @@
 	</Button>
 	<Frame name="PartyPoseFrameTemplate" enableMouse="true" frameStrata="FULLSCREEN" hidden="true" virtual="true">
 		<Size x="760" y="549"/>
+		<Frames>
+			<Frame parentKey="Border" inherits="NineSlicePanelTemplate">
+				<KeyValues>
+					<KeyValue key="layoutType" value="PartyPoseFrameTemplate" type="string"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-6">
 				<Texture parentKey="Background" atlas="groupfinder-background">
-					<Size x="750" y="539"/>
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Border" x="6" y="-6" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Border" x="-6" y="6"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -96,7 +112,7 @@
 						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
-			</Layer>	
+			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="5">
 				<FontString parentKey="TitleText" inherits="Game42Font">
 					<Anchors>
@@ -105,58 +121,16 @@
 					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>
 			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="TopRightCorner" atlas="scoreboard-frameborder-topright" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="TopLeftCorner" atlas="scoreboard-frameborder-topleft" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="TopBorder" atlas="scoreboard-frameborder-top" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOP" x="1" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BotLeftCorner" atlas="scoreboard-frameborder-bottomleft" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BotRightCorner" atlas="scoreboard-frameborder-bottomright" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BottomBorder" atlas="scoreboard-frameborder-bottom" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="LeftBorder" atlas="scoreboard-frameborder-left" vertTile="true" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BotLeftCorner" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="RightBorder" atlas="scoreboard-frameborder-right" vertTile="true" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnEvent method="OnEvent"/> 
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 		<Frames>
 			<Frame parentKey="RewardAnimations">
 				<Size x="174" y="55"/>
 				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="10"/> 
+					<Anchor point="BOTTOM" x="0" y="5"/>
 				</Anchors>
 				<Frames>
 					<Button parentKey="RewardFrame" inherits="PartyPoseRewardsButtonTemplate" hidden="true">
@@ -176,7 +150,7 @@
 							</AnimationGroup>
 						</Animations>
 					</ModelScene>
-					
+
 					<ModelScene parentKey="ImpactModelScene" hidden="true" inherits="NonInteractableModelSceneMixinTemplate" drawLayer="OVERLAY" useParentLevel="true">
 						<Size x="700" y="700"/>
 						<Anchors>
@@ -193,8 +167,8 @@
 			<KeyValue key="reversedLighting" value="true" type="boolean"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="TOPLEFT" x="5" y="-75"/>	
-			<Anchor point="BOTTOMRIGHT" x="-5" y="65"/>	
+			<Anchor point="TOPLEFT" x="5" y="-75"/>
+			<Anchor point="BOTTOMRIGHT" x="-5" y="65"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-5">
@@ -271,7 +245,7 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Bg"/>
 					</Anchors>
 				</Texture>
-				
+
 				<Texture parentKey="OverlayShadowTopRight" atlas="collections-background-shadow-small" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.Bg"/>
@@ -300,7 +274,7 @@
 					</Anchors>
 					<TexCoords left="0.9999" right="1" top="0" bottom="1"/>
 				</Texture>
-				
+
 				<Texture parentKey="OverlayShadowLeft" atlas="collections-background-shadow-small" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.OverlayShadowTopLeft" relativePoint="BOTTOMLEFT"/>
@@ -375,7 +349,7 @@
 				</Texture>
 			</Layer>
 		</Layers>
-	</ModelScene> 
+	</ModelScene>
 	<Texture name="PartyPoseModelShadowTextureTemplate" atlas="scoreboard-charactermodels-shadow" useAtlasSize="true" virtual="true"/>
 </Ui>
 

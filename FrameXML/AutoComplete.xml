@@ -10,6 +10,8 @@
 			<OnEditFocusLost function="AutoCompleteEditBox_OnEditFocusLost"/>
 			<OnEscapePressed function="AutoCompleteEditBox_OnEscapePressed"/>
 			<OnArrowPressed function="AutoCompleteEditBox_OnArrowPressed"/>
+			<OnKeyDown function="AutoCompleteEditBox_OnKeyDown"/>
+			<OnKeyUp function="AutoCompleteEditBox_OnKeyUp"/>
 		</Scripts>
 	</EditBox>
 	<Button name="AutoCompleteButtonTemplate" virtual="true">
@@ -28,7 +30,7 @@
 		<DisabledFont style="GameFontDisable"/>
 		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 	</Button>
-	<Frame name="AutoCompleteBox" parent="UIParent" hidden="true">
+	<Frame name="AutoCompleteBox" parent="UIParent" enableMouse="true" hidden="true">
 		<Size>
 			<AbsDimension x="5" y="5"/>
 		</Size>

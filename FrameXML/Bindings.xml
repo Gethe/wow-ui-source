@@ -66,11 +66,17 @@
 	</Binding>
 	<Binding name="TOGGLESHEATH" category="BINDING_HEADER_MOVEMENT">
 		ToggleSheath();
-		if ( DressUpModel:IsShown() ) then
-			DressUpModel:SetSheathed(not DressUpModel:GetSheathed());
+		if ( DressUpFrame:IsShown() ) then
+			local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
+			if playerActor then
+				playerActor:SetSheathed(not playerActor:GetSheathed());
+			end
 		end
-		if ( WardrobeTransmogFrame and WardrobeTransmogFrame.Model:IsShown() ) then
-			WardrobeTransmogFrame.Model:SetSheathed(not WardrobeTransmogFrame.Model:GetSheathed());
+		if ( WardrobeTransmogFrame and WardrobeTransmogFrame.ModelScene:IsShown() ) then
+			local playerActor = WardrobeTransmogFrame.ModelScene:GetPlayerActor();
+			if playerActor then
+				playerActor:SetSheathed(not playerActor:GetSheathed());
+			end
 		end
 	</Binding>
 	<Binding name="TOGGLEAUTORUN" category="BINDING_HEADER_MOVEMENT">
@@ -104,7 +110,7 @@
 	</Binding>
 	<!-- Chat frame bindings header="CHAT" -->
 	<Binding name="OPENCHAT" category="BINDING_HEADER_CHAT">
-		ChatFrame_OpenChat("");
+		ChatFrame_OpenChat(nil);
 	</Binding>
 	<Binding name="OPENCHATSLASH" category="BINDING_HEADER_CHAT">
 		ChatFrame_OpenChat("/");
@@ -134,10 +140,10 @@
 		ChatFrame2:ScrollToBottom();
 	</Binding>
 	<Binding name="TOGGLE_VOICE_SELF_MUTE" category="BINDING_HEADER_CHAT">
-		C_VoiceChat.ToggleMuted();
+		VoiceChat_ToggleMutedFromUserAction();
 	</Binding>
 	<Binding name="TOGGLE_VOICE_SELF_DEAFEN" category="BINDING_HEADER_CHAT">
-		C_VoiceChat.ToggleDeafened();
+		VoiceChat_ToggleDeafenedFromUserAction();
 	</Binding>
 	<Binding name="TOGGLE_VOICE_PUSH_TO_TALK" category="BINDING_HEADER_CHAT" customBindingID="VoicePushToTalk">
 		nop(); -- Action handler is custom
@@ -1013,7 +1019,7 @@
 		ToggleBattlefieldMap();
 	</Binding>
 	<Binding name="TOGGLEWORLDSTATESCORES" category="BINDING_HEADER_INTERFACE">
-		ToggleWorldStateScoreFrame();
+		TogglePVPScoreboardOrResults();
 	</Binding>
 
 	<Binding name="TOGGLEGUILDTAB" header="BLANK12" category="BINDING_HEADER_INTERFACE">
@@ -1109,7 +1115,6 @@
 			securecall("CloseMenus");
 			securecall("CloseAllWindows");
 			SetUIVisibility(false);
-			ActionStatus_DisplayMessage(format(UI_HIDDEN, GetBindingText(GetBindingKey("TOGGLEUI"))))
 		else
 			SetUIVisibility(true);
 		end
@@ -1149,7 +1154,14 @@
 	</Binding>
 
 	<!-- Debug function key bindings -->
-	<Binding name="TOGGLESTATS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+  <Binding name="RELOADUI" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+    ReloadUI();
+  </Binding>
+	<Binding name="FSTACK" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		LoadAddOn("Blizzard_DebugTools");
+		FrameStackTooltip_ToggleDefaults();
+	</Binding>
+  <Binding name="TOGGLESTATS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		ToggleStats();
 	</Binding>
 	<Binding name="TOGGLETRIS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
@@ -1188,6 +1200,9 @@
 	<!-- Commentator Mode Bindings -->
 	<Binding name="TOGGLECOMMENTATOR" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		C_Commentator.ToggleCheats();
+	</Binding>
+	<Binding name="DUMPMOVEMENTCAPTURE" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		DumpMovementCapture();
 	</Binding>
 
 	<!-- Camera key bindings header="CAMERA" -->

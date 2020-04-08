@@ -5,7 +5,7 @@ function ExpBarMixin:GetPriority()
 end
 
 function ExpBarMixin:ShouldBeVisible()
-	return UnitLevel("player") < MAX_PLAYER_LEVEL and not IsXPUserDisabled();
+	return not IsPlayerAtEffectiveMaxLevel() and not IsXPUserDisabled();
 end
 
 function ExpBarMixin:Update() 
@@ -31,6 +31,8 @@ function ExpBarMixin:Update()
 
 	self.currXP = currXP; 
 	self.maxBar = maxBar;
+
+	self:UpdateCurrentText();
 end
 
 function ExpBarMixin:UpdateCurrentText()
@@ -53,7 +55,7 @@ function ExpBarMixin:OnLoad()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_XP_UPDATE");
 	self:RegisterEvent("CVAR_UPDATE");
-	self.priority = 0; 
+	self.priority = 3; 
 end
 
 function ExpBarMixin:OnEvent(event, ...) 
@@ -101,8 +103,6 @@ function ExpBarMixin:OnEnter()
 		end
 	end
 
-	GameTooltip_AddNewbieTip(self, label, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_XPBAR, 1);
-	GameTooltip.canAddRestStateLine = 1;
 	self.ExhaustionTick:ExhaustionToolTipText();
 end
 
@@ -162,15 +162,7 @@ function ExhaustionTickMixin:ExhaustionToolTipText()
 		tooltipText = tooltipText..append;
 	end
 
-	if ( SHOW_NEWBIE_TIPS ~= "1" ) then
-		GameTooltip:SetText(tooltipText);
-	else
-		if ( GameTooltip.canAddRestStateLine ) then
-			GameTooltip:AddLine("\n"..tooltipText);
-			GameTooltip:Show();
-			GameTooltip.canAddRestStateLine = nil;
-		end
-	end
+	GameTooltip:SetText(tooltipText);
 end
 
 function ExhaustionTickMixin:OnLoad()
@@ -210,7 +202,7 @@ function ExhaustionTickMixin:UpdateTickPosition()
 	end
 
 	-- Hide exhaustion tick if player is max level or XP is turned off
-	if ( UnitLevel("player") == MAX_PLAYER_LEVEL or IsXPUserDisabled() ) then
+	if ( IsPlayerAtEffectiveMaxLevel() or IsXPUserDisabled() ) then
 		self:Hide();
 	end			
 end

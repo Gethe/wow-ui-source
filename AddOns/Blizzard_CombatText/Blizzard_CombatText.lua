@@ -196,6 +196,9 @@ function CombatText_OnEvent(self, event, ...)
 			return
 		end
 		message = "-"..BreakUpLargeNumbers(data);
+		if(arg1 and arg1 == "BLOCK" and arg3 and arg3 > 0) then
+			message = COMBAT_TEXT_BLOCK_REDUCED:format(arg3);
+		end
 	elseif ( messageType == "SPELL_CAST" ) then
 		message = "<"..data..">";
 	elseif ( messageType == "SPELL_AURA_START" ) then
@@ -251,6 +254,7 @@ function CombatText_OnEvent(self, event, ...)
 				or arg3 == "COMBO_POINTS"
 				or arg3 == "ARCANE_CHARGES" ) then
 			local numPower = UnitPower( "player" , GetPowerEnumFromEnergizeString(arg3) );
+			numPower = numPower + count;
 			message = "<"..numPower.." ".._G[arg3]..">";
 			info = PowerBarColor[arg3];
 			--Display as crit if we're at max power

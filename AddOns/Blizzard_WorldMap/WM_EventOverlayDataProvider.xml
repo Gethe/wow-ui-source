@@ -1,0 +1,22 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="WM_EventOverlayDataProvider.lua"/>
+
+	<Frame name="WorldMapInvasionOverlayPinTemplate" mixin="WorldMap_EventOverlayPinMixin" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture atlas="legioninvasion-map-cover"/>
+				<!-- intentionally duplicated -->
+				<Texture atlas="legioninvasion-map-cover"/>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="WorldMapThreatOverlayPinTemplate" mixin="WorldMap_EventOverlayPinMixin" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture atlas="bfa-threats-mapborder"/>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

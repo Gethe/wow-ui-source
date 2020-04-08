@@ -48,6 +48,7 @@ local QuestTaskInfo =
 				{ Name = "questTitle", Type = "string", Nilable = false },
 				{ Name = "factionID", Type = "number", Nilable = true },
 				{ Name = "capped", Type = "bool", Nilable = true },
+				{ Name = "displayAsObjective", Type = "bool", Nilable = true },
 			},
 		},
 		{
@@ -95,6 +96,20 @@ local QuestTaskInfo =
 			},
 		},
 		{
+			Name = "GetQuestTimeLeftSeconds",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "secondsLeft", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetQuestZoneID",
 			Type = "Function",
 
@@ -120,6 +135,15 @@ local QuestTaskInfo =
 			Returns =
 			{
 				{ Name = "taskPOIs", Type = "table", InnerType = "TaskPOIData", Nilable = false },
+			},
+		},
+		{
+			Name = "GetThreatQuests",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "quests", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{
@@ -164,6 +188,10 @@ local QuestTaskInfo =
 				{ Name = "inProgress", Type = "bool", Nilable = false },
 				{ Name = "numObjectives", Type = "number", Nilable = false },
 				{ Name = "mapID", Type = "number", Nilable = false },
+				{ Name = "isQuestStart", Type = "bool", Nilable = false },
+				{ Name = "isDaily", Type = "bool", Nilable = false },
+				{ Name = "isCombatAllyQuest", Type = "bool", Nilable = false },
+				{ Name = "childDepth", Type = "number", Nilable = true },
 			},
 		},
 	},

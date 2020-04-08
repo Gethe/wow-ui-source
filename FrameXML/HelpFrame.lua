@@ -152,10 +152,6 @@ function HelpFrame_OnLoad(self)
 
 	self.leftInset.Bg:SetTexture("Interface\\HelpFrame\\Tileable-Parchment", true, true);
 
-	self.header.Bg:SetTexture("Interface\\FrameGeneral\\UI-Background-Rock", true, true);
-	self.header.Bg:SetHorizTile(true);
-	self.header.Bg:SetVertTile(true);
-
 	self.Bg:SetTexture("Interface\\FrameGeneral\\UI-Background-Rock", true, true);
 	self.Bg:SetHorizTile(true);
 	self.Bg:SetVertTile(true);
@@ -340,9 +336,9 @@ end
 
 function HelpFrame_ShowReportCheatingDialog(playerLocation)
 	local frame = ReportCheatingDialog;
-	frame.target = playerLocation;
 	frame.CommentFrame.EditBox:SetText("");
 	frame.CommentFrame.EditBox.InformationText:Show();
+	frame.reportToken = C_ReportSystem.InitiateReportPlayer(PLAYER_REPORT_TYPE_CHEATING, playerLocation);
 	StaticPopupSpecial_Show(frame);
 end
 
@@ -387,15 +383,11 @@ end
 
 function AccountSecurityOpenTicket_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	if ( HelpBrowser:HasConnection() ) then
-		local data = HelpFrameNavTbl[self:GetID()];
-		if ( not data.noSelection ) then
-			HelpFrame_SetSelectedButton(self);
-		end
-		HelpFrame_SetFrameByKey(self:GetID());
-	else
-		StaticPopup_Show("CONFIRM_LAUNCH_URL", nil, nil, {index = 6});
+	local data = HelpFrameNavTbl[self:GetID()];
+	if ( not data.noSelection ) then
+		HelpFrame_SetSelectedButton(self);
 	end
+	HelpFrame_SetFrameByKey(self:GetID());
 end
 
 --
@@ -708,19 +700,15 @@ end
 
 
 function KnowledgeBase_OnShow(self)
+	HelpBrowser:Show();
 	if ( not kbsetupLoaded ) then
 		KnowledgeBase_GotoTopIssues();
+	else
+		HelpBrowser:NavigateHome("KnowledgeBase");
 	end
 
-	if (HelpBrowser:HasConnection()) then
-		HelpBrowser:Show();
-		HelpBrowser:NavigateHome("KnowledgeBase");
-		HelpBrowser.homepage = "KnowledgeBase"
-		HideKnowledgeBase();
-	else
-		HelpBrowser:Hide();
-		ShowKnowledgeBase();
-	end
+	HelpBrowser.homepage = "KnowledgeBase"
+	HideKnowledgeBase();
 end
 
 function HideKnowledgeBase()
@@ -1179,12 +1167,11 @@ function HelpBrowser_ToggleTooltip(button, browser)
 	if (not hasResized) then
 		local tooltip = BrowserSettingsTooltip;
 		local maxWidth = tooltip.Title:GetWidth()
-		local buttonWidth = max(tooltip.CacheButton:GetTextWidth(), tooltip.CookiesButton:GetTextWidth());
+		local buttonWidth = tooltip.CookiesButton:GetTextWidth();
 		buttonWidth = buttonWidth + 20; --add button padding
 		buttonWidth = max(buttonWidth, BROWSER_TOOLTIP_BUTTON_WIDTH);
 		maxWidth = max(buttonWidth, maxWidth);
 		maxWidth = maxWidth + 20; --add tooltip padding
-		tooltip.CacheButton:SetWidth(buttonWidth);
 		tooltip.CookiesButton:SetWidth(buttonWidth);
 		tooltip:SetWidth(maxWidth);
 		hasResized = true;

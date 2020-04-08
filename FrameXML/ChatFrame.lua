@@ -301,7 +301,7 @@ CHAT_CATEGORY_LIST = {
 	RAID = { "RAID_LEADER", "RAID_WARNING" },
 	GUILD = { "GUILD_ACHIEVEMENT", "GUILD_ITEM_LOOTED" },
 	WHISPER = { "WHISPER_INFORM", "AFK", "DND" },
-	CHANNEL = { "CHANNEL_JOIN", "CHANNEL_LEAVE", "CHANNEL_NOTICE", "CHANNEL_USER" },
+	CHANNEL = { "CHANNEL_JOIN", "CHANNEL_LEAVE", "CHANNEL_NOTICE", "CHANNEL_USER", "CHANNEL_NOTICE_USER" },
 	INSTANCE_CHAT = { "INSTANCE_CHAT_LEADER" },
 	BN_WHISPER = { "BN_WHISPER_INFORM" },
 };
@@ -672,9 +672,10 @@ EMOTE455_TOKEN = "FORTHEHORDE"
 EMOTE517_TOKEN = "WHOA"
 EMOTE518_TOKEN = "OOPS"
 EMOTE521_TOKEN = "MEOW"
+EMOTE522_TOKEN = "BOOP"
 
 -- NOTE: The indices used to iterate the tokens may not be contiguous, keep that in mind when updating this value.
-local MAXEMOTEINDEX = 521;
+local MAXEMOTEINDEX = 522;
 
 
 ICON_LIST = {
@@ -1069,15 +1070,11 @@ local CastRandomManager;
 local CastRandomTable = {};
 
 local function CastRandomManager_OnEvent(self, event, ...)
-	local unit, name, rank = ...;
-
-	if ( not name ) then
-		-- This was a server-side only spell affecting the player somehow, don't do anything with cast sequencing, just bail.
-		return;
-	end
+	local unit, castID, spellID = ...;
 
 	if ( unit == "player" ) then
-		name, rank = strlower(name), strlower(rank);
+		local name = strlower(GetSpellInfo(spellID));
+		local rank = strlower(GetSpellSubtext(spellID) or "");
 		local nameplus = name.."()";
 		local fullname = name.."("..rank..")";
 		for sequence, entry in pairs(CastRandomTable) do
@@ -1569,6 +1566,12 @@ SecureCmdList["PET_DEFENSIVE"] = function(msg)
 	end
 end
 
+SecureCmdList["PET_DEFENSIVEASSIST"] = function(msg)
+	if ( SecureCmdOptionParse(msg) ) then
+		PetDefensiveAssistMode();
+	end
+end
+
 SecureCmdList["PET_AGGRESSIVE"] = function(msg)
 	if ( SecureCmdOptionParse(msg) ) then
 		PetAggressiveMode();
@@ -1703,15 +1706,83 @@ SecureCmdList["LOGOUT"] = function(msg)
 	Logout();
 end
 
+SecureCmdList["QUIT"] = function(msg)
+	if (IsKioskModeEnabled()) then
+		return;
+	end
+	Quit();
+end
+
+SecureCmdList["GUILD_UNINVITE"] = function(msg)
+	if(msg == "") then
+		msg = UnitName("target");
+	end
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
+	GuildUninvite(msg);
+end
+
+SecureCmdList["GUILD_PROMOTE"] = function(msg)
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
+	GuildPromote(msg);
+end
+
+SecureCmdList["GUILD_DEMOTE"] = function(msg)
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
+	GuildDemote(msg);
+end
+
+SecureCmdList["GUILD_LEADER"] = function(msg)
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
+	GuildSetLeader(msg);
+end
+
+SecureCmdList["GUILD_LEAVE"] = function(msg)
+	GuildLeave();
+end
+
+SecureCmdList["GUILD_DISBAND"] = function(msg)
+	if ( IsGuildLeader() ) then
+		StaticPopup_Show("CONFIRM_GUILD_DISBAND");
+	end
+end
+
+function AddSecureCmd(cmd, cmdString)
+	if not issecure() then
+		error("Cannot call AddSecureCmd from insecure code");
+	end
+
+	hash_SecureCmdList[strupper(cmdString)] = cmd;
+end
+
+function AddSecureCmdAliases(cmd, ...)
+	for i = 1, select("#", ...) do
+		local cmdString = select(i, ...);
+		AddSecureCmd(cmd, cmdString);
+	end
+end
+
 -- Pre-populate the secure command hash table
 for index, value in pairs(SecureCmdList) do
 	local i = 1;
-	local cmdString = _G["SLASH_"..index..i];
-	while ( cmdString ) do
-		cmdString = strupper(cmdString);
-		hash_SecureCmdList[cmdString] = value;	-- add to hash
-		i = i + 1;
+	local cmdString = "";
+	while cmdString do
 		cmdString = _G["SLASH_"..index..i];
+		if cmdString then
+			AddSecureCmd(value, cmdString);
+			i = i + 1;
+		end
 	end
 end
 
@@ -1757,7 +1828,7 @@ SlashCmdList["INVITE"] = function(msg)
 		ChatFrame_DisplayUsageError(ERR_NO_TARGET_OR_NAME);
 		return;
 	end
-	InviteToGroup(msg);
+	C_PartyInfo.InviteUnit(msg);
 end
 
 SlashCmdList["REQUEST_INVITE"] = function(msg)
@@ -1772,7 +1843,7 @@ SlashCmdList["REQUEST_INVITE"] = function(msg)
 		ChatFrame_DisplayUsageError(ERR_NO_TARGET_OR_NAME);
 		return;
 	end
-	RequestInviteFromUnit(msg);
+	C_PartyInfo.RequestInviteFromUnit(msg);
 end
 
 SlashCmdList["UNINVITE"] = function(msg)
@@ -1826,13 +1897,6 @@ end
 
 SlashCmdList["INSPECT"] = function(msg)
 	InspectUnit("target");
-end
-
-SlashCmdList["QUIT"] = function(msg)
-	if (IsKioskModeEnabled()) then
-		return;
-	end
-	Quit();
 end
 
 SlashCmdList["JOIN"] = 	function(msg)
@@ -2019,53 +2083,8 @@ SlashCmdList["GUILD_INVITE"] = function(msg)
 	GuildInvite(msg);
 end
 
-SlashCmdList["GUILD_UNINVITE"] = function(msg)
-	if(msg == "") then
-		msg = UnitName("target");
-	end
-	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
-		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
-		return;
-	end
-	GuildUninvite(msg);
-end
-
-SlashCmdList["GUILD_PROMOTE"] = function(msg)
-	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
-		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
-		return;
-	end
-	GuildPromote(msg);
-end
-
-SlashCmdList["GUILD_DEMOTE"] = function(msg)
-	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
-		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
-		return;
-	end
-	GuildDemote(msg);
-end
-
-SlashCmdList["GUILD_LEADER"] = function(msg)
-	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
-		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
-		return;
-	end
-	GuildSetLeader(msg);
-end
-
 SlashCmdList["GUILD_MOTD"] = function(msg)
 	GuildSetMOTD(msg)
-end
-
-SlashCmdList["GUILD_LEAVE"] = function(msg)
-	GuildLeave();
-end
-
-SlashCmdList["GUILD_DISBAND"] = function(msg)
-	if ( IsGuildLeader() ) then
-		StaticPopup_Show("CONFIRM_GUILD_DISBAND");
-	end
 end
 
 SlashCmdList["GUILD_INFO"] = function(msg)
@@ -2103,7 +2122,7 @@ SlashCmdList["WHO"] = function(msg)
 		ShowWhoPanel();
 	end
 	WhoFrameEditBox:SetText(msg);
-	SendWho(msg);
+	C_FriendList.SendWho(msg);
 end
 
 SlashCmdList["CHANNEL"] = function(msg, editBox)
@@ -2114,14 +2133,14 @@ end
 SlashCmdList["FRIENDS"] = function(msg)
 	local player, note = strmatch(msg, "%s*([^%s]+)%s*(.*)");
 	if ( player ~= "" or UnitIsPlayer("target") ) then
-		AddOrRemoveFriend(player, note);
+		C_FriendList.AddOrRemoveFriend(player, note);
 	else
 		ToggleFriendsPanel();
 	end
 end
 
 SlashCmdList["REMOVEFRIEND"] = function(msg)
-	RemoveFriend(msg);
+	C_FriendList.RemoveFriend(msg);
 end
 
 SlashCmdList["IGNORE"] = function(msg)
@@ -2134,7 +2153,7 @@ SlashCmdList["IGNORE"] = function(msg)
 				BNSetBlocked(bNetIDAccount, not BNIsBlocked(bNetIDAccount));
 			end
 		else
-			AddOrDelIgnore(msg);
+			C_FriendList.AddOrDelIgnore(msg);
 		end
 	else
 		ToggleIgnorePanel();
@@ -2143,7 +2162,7 @@ end
 
 SlashCmdList["UNIGNORE"] = function(msg)
 	if ( msg ~= "" or UnitIsPlayer("target") ) then
-		DelIgnore(msg);
+		C_FriendList.DelIgnore(msg);
 	else
 		ToggleIgnorePanel();
 	end
@@ -2344,14 +2363,19 @@ SlashCmdList["FRAMESTACK"] = function(msg)
 	UIParentLoadAddOn("Blizzard_DebugTools");
 
 	local showHiddenArg, showRegionsArg, showAnchorsArg;
+	local pattern = "^%s*(%S+)(.*)$";
+	showHiddenArg, msg = string.match(msg or "", pattern);
+	showRegionsArg, msg = string.match(msg or "", pattern);
+	showAnchorsArg, msg = string.match(msg or "", pattern);
 
-	showHiddenArg, msg = string.match(msg or "", "^%s*(%S+)(.*)$");
-	showRegionsArg, msg = string.match(msg or "", "^%s*(%S+)(.*)$");
-	showAnchorsArg, msg =  string.match(msg or "", "^%s*(%S+)(.*)$");
+	-- If no parameters are passed the defaults specified by these cvars are used instead.
+	local showHiddenDefault = FrameStackTooltip_IsShowHiddenEnabled();
+	local showRegionsDefault = FrameStackTooltip_IsShowRegionsEnabled();
+	local showAnchorsDefault = FrameStackTooltip_IsShowAnchorsEnabled();
 
-	local showHidden = StringToBoolean(showHiddenArg or "", false);
-	local showRegions = StringToBoolean(showRegionsArg or "", true);
-	local showAnchors = StringToBoolean(showAnchorsArg or "", true);
+	local showHidden = StringToBoolean(showHiddenArg or "", showHiddenDefault);
+	local showRegions = StringToBoolean(showRegionsArg or "", showRegionsDefault);
+	local showAnchors = StringToBoolean(showAnchorsArg or "", showAnchorsDefault);
 
 	FrameStackTooltip_Toggle(showHidden, showRegions, showAnchors);
 end
@@ -2361,7 +2385,23 @@ SlashCmdList["EVENTTRACE"] = function(msg)
 	EventTraceFrame_HandleSlashCmd(msg);
 end
 
+if IsGMClient() then
+	SLASH_TEXELVIS1 = "/texelvis";
+	SLASH_TEXELVIS2 = "/tvis";
+	SlashCmdList["TEXELVIS"] = function(msg)
+		UIParentLoadAddOn("Blizzard_DebugTools");
+		TexelSnappingVisualizer:Show();
+	end
+end
+
 SlashCmdList["TABLEINSPECT"] = function(msg)
+	if ( IsKioskModeEnabled() or ScriptsDisallowedForBeta() ) then
+		return;
+	end
+	if ( not AreDangerousScriptsAllowed() ) then
+		StaticPopup_Show("DANGEROUS_SCRIPTS_WARNING");
+		return;
+	end
 	forceinsecure();
 	UIParentLoadAddOn("Blizzard_DebugTools");
 
@@ -2538,6 +2578,82 @@ SlashCmdList["RESET_COMMENTATOR_SETTINGS"] = function(msg)
 	PvPCommentator:SetDefaultCommentatorSettings();
 end
 
+SlashCmdList["VOICECHAT"] = function(msg)
+	if msg == "" then
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(VOICE_COMMAND_SYNTAX, info.r, info.g, info.b, info.id);
+		return;
+	end
+	local name = msg;
+	local lowerName = string.lower(name);
+
+	if lowerName == string.lower(VOICE_LEAVE_COMMAND) then
+		local channelID = C_VoiceChat.GetActiveChannelID();
+		if channelID then
+			C_VoiceChat.DeactivateChannel(channelID);
+		end
+		return;
+	end
+
+	local channelType;
+	local communityID;
+	local streamID;
+	if lowerName == string.lower(PARTY) then
+		channelType = Enum.ChatChannelType.Private_Party;
+	elseif lowerName == string.lower(INSTANCE) then
+		channelType = Enum.ChatChannelType.Public_Party;
+	elseif lowerName == string.lower(GUILD) then
+		communityID, streamID = CommunitiesUtil.FindGuildStreamByType(Enum.ClubStreamType.Guild);
+	elseif lowerName == string.lower(OFFICER) then
+		communityID, streamID = CommunitiesUtil.FindGuildStreamByType(Enum.ClubStreamType.Officer);
+	else
+		local communityName, streamName = string.split(":", name);
+		communityID, streamID = CommunitiesUtil.FindCommunityAndStreamByName(communityName, streamName);
+	end
+
+	if channelType then
+		if channelType ~= C_VoiceChat.GetActiveChannelType() then
+			local activate = true;
+			ChannelFrame:TryJoinVoiceChannelByType(channelType, activate);
+		end
+	elseif communityID and streamID then
+		local activeChannelID = C_VoiceChat.GetActiveChannelID();
+		local communityStreamChannel = C_VoiceChat.GetChannelForCommunityStream(communityID, streamID);
+		local communityStreamChannelID = communityStreamChannel and communityStreamChannel.channelID;
+		if not activeChannelID or activeChannelID ~= communityStreamChannelID then
+			ChannelFrame:TryJoinCommunityStreamChannel(communityID, streamID);
+		end
+	end
+end
+
+SlashCmdList["COMMUNITY"] = function(msg)
+	if msg == "" then
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(COMMUNITY_COMMAND_SYNTAX, info.r, info.g, info.b, info.id);
+		return;
+	end
+
+	local command, clubType = string.split(" ", string.lower(msg));
+	local loadCommunity = function()
+		if not CommunitiesFrame or not CommunitiesFrame:IsShown() then
+			Communities_LoadUI();
+			ToggleCommunitiesFrame();
+		end
+	end
+	if command == string.lower(COMMUNITY_COMMAND_JOIN) then
+		loadCommunity();
+		AddCommunitiesFlow_Toggle()
+	elseif command == string.lower(COMMUNITY_COMMAND_CREATE) then
+		if clubType == string.lower(COMMUNITY_COMMAND_CHARACTER) then
+			loadCommunity();
+			CommunitiesCreateCommunityDialog();
+		elseif clubType == string.lower(COMMUNITY_COMMAND_BATTLENET) then
+			loadCommunity();
+			CommunitiesCreateBattleNetDialog();
+		end
+	end
+end
+
 function ChatFrame_SetupListProxyTable(list)
 	if ( getmetatable(list) ) then
 		return;
@@ -2628,6 +2744,7 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_CHAT_WINDOWS");
 	self:RegisterEvent("CHAT_MSG_CHANNEL");
 	self:RegisterEvent("CHAT_MSG_COMMUNITIES_CHANNEL");
+	self:RegisterEvent("CLUB_REMOVED");
 	self:RegisterEvent("UPDATE_INSTANCE_INFO");
 	self:RegisterEvent("UPDATE_CHAT_COLOR_NAME_BY_CLASS");
 	self:RegisterEvent("VARIABLES_LOADED");
@@ -2682,6 +2799,16 @@ function ChatFrame_AddMessageGroup(chatFrame, group)
 	end
 end
 
+function ChatFrame_ContainsMessageGroup(chatFrame, group)
+	for i, messageType in pairs(chatFrame.messageTypeList) do
+		if group == messageType then
+			return true;
+		end
+	end
+
+	return false;
+end
+
 function ChatFrame_AddSingleMessageType(chatFrame, messageType)
 	local group = ChatTypeGroupInverted[messageType];
 	local info = ChatTypeGroup[group];
@@ -2724,7 +2851,7 @@ function ChatFrame_RemoveAllMessageGroups(chatFrame)
 end
 
 function ChatFrame_ContainsChannel(chatFrame, channel)
-	for i, channelName in ipairs(chatFrame.channelList) do
+	for i, channelName in pairs(chatFrame.channelList) do
 		if channel == channelName then
 			return true;
 		end
@@ -2736,17 +2863,17 @@ end
 function ChatFrame_AddNewCommunitiesChannel(chatFrameIndex, clubId, streamId, setEditBoxToChannel)
 	local clubInfo = C_Club.GetClubInfo(clubId);
 	if clubInfo then
-		C_Club.AddClubStreamToChatWindow(clubId, streamId, chatFrameIndex);
-		
+		C_Club.AddClubStreamChatChannel(clubId, streamId);
+
 		local channelColor = DEFAULT_CHAT_CHANNEL_COLOR;
 		local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
 		if clubInfo.clubType == Enum.ClubType.BattleNet then
 			channelColor = BATTLENET_FONT_COLOR;
-			
+
 			local channel = Chat_GetCommunitiesChannel(clubId, streamId);
 			ChangeChatColor(channel, channelColor:GetRGB());
 		end
-		
+
 		local chatFrame = _G["ChatFrame"..chatFrameIndex];
 		ChatFrame_AddCommunitiesChannel(chatFrame, channelName, channelColor, setEditBoxToChannel);
 	end
@@ -2787,16 +2914,19 @@ function ChatFrame_AddChannel(chatFrame, channel)
 end
 
 function ChatFrame_GetCommunitiesChannelLocalID(clubId, streamId)
-	local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);	
+	local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
 	local localID = GetChannelName(channelName);
 	return localID;
 end
 
-function ChatFrame_RemoveCommunitiesChannel(chatFrame, clubId, streamId)
+function ChatFrame_RemoveCommunitiesChannel(chatFrame, clubId, streamId, omitMessage)
 	local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
 	local channelIndex = ChatFrame_RemoveChannel(chatFrame, channelName);
-	local r, g, b = Chat_GetCommunitiesChannelColor(clubId, streamId);
-	chatFrame:AddMessage(COMMUNITIES_CHANNEL_REMOVED_FROM_CHAT_WINDOW:format(channelIndex, ChatFrame_ResolveChannelName(channelName)), r, g, b);
+
+	if not omitMessage then
+		local r, g, b = Chat_GetCommunitiesChannelColor(clubId, streamId);
+		chatFrame:AddMessage(COMMUNITIES_CHANNEL_REMOVED_FROM_CHAT_WINDOW:format(channelIndex, ChatFrame_ResolveChannelName(channelName)), r, g, b);
+	end
 end
 
 function ChatFrame_RemoveChannel(chatFrame, channel)
@@ -3016,9 +3146,9 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		end
 		return true;
 	elseif (event == "UNIT_LEVEL" ) then
-		local arg1 = ...;
-		if (arg1 == "pet" and UnitName("pet") ~= UNKNOWNOBJECT) then
-			LevelUpDisplay_ChatPrint(self, UnitLevel("pet"), LEVEL_UP_TYPE_PET);
+		local unit = ...;
+		if LevelUpDisplay_ShouldDisplayPetLevelUpdate(LevelUpDisplay, unit) then
+			LevelUpDisplay_ChatPrint(self, UnitLevel(unit), LEVEL_UP_TYPE_PET);
 		end
 	elseif ( event == "CHARACTER_UPGRADE_SPELL_TIER_SET" ) then
 		local tierIndex = ...;
@@ -3052,15 +3182,34 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		self:AddMessage(CHAT_SERVER_RECONNECTED_MESSAGE, info.r, info.g, info.b, info.id);
 		return true;
 	elseif ( event == "BN_CONNECTED" ) then
+		local suppressNotification = ...;
 		local info = ChatTypeInfo["SYSTEM"];
-		self:AddMessage(BN_CHAT_CONNECTED, info.r, info.g, info.b, info.id);
+		if not suppressNotification then
+			self:AddMessage(BN_CHAT_CONNECTED, info.r, info.g, info.b, info.id);
+		end
 	elseif ( event == "BN_DISCONNECTED" ) then
+		local _, suppressNotification = ...;
 		local info = ChatTypeInfo["SYSTEM"];
-		self:AddMessage(BN_CHAT_DISCONNECTED, info.r, info.g, info.b, info.id);
+		if not suppressNotification then
+			self:AddMessage(BN_CHAT_DISCONNECTED, info.r, info.g, info.b, info.id);
+		end
 	elseif ( event == "PLAYER_REPORT_SUBMITTED" ) then
 		local guid = ...;
 		FCF_RemoveAllMessagesFromChanSender(self, guid);
 		return true;
+	elseif ( event == "CLUB_REMOVED" ) then
+		local clubId = ...;
+		local streamIDs = C_ChatInfo.GetClubStreamIDs(clubId);
+		for k, streamID in pairs(streamIDs) do
+			local channelName = Chat_GetCommunitiesChannelName(clubId, streamID);
+			for i = 1, FCF_GetNumActiveChatFrames() do
+				local chatWindow = _G["ChatFrame"..i];
+				if ChatFrame_ContainsChannel(chatWindow, channelName) then
+					local omitMessage = true;
+					ChatFrame_RemoveCommunitiesChannel(chatWindow, clubId, streamID, omitMessage);
+				end
+			end
+		end
 	end
 end
 
@@ -3127,42 +3276,6 @@ function ChatFrame_CanChatGroupPerformExpressionExpansion(chatGroup)
 	end
 
 	return false;
-end
-
-do
-	local seenGroups = {};
-	function ChatFrame_ReplaceIconAndGroupExpressions(message, noIconReplacement, noGroupReplacement)
-		wipe(seenGroups);
-
-		for tag in string.gmatch(message, "%b{}") do
-			local term = strlower(string.gsub(tag, "[{}]", ""));
-			if ( not noIconReplacement and ICON_TAG_LIST[term] and ICON_LIST[ICON_TAG_LIST[term]] ) then
-				message = string.gsub(message, tag, ICON_LIST[ICON_TAG_LIST[term]] .. "0|t");
-			elseif ( not noGroupReplacement and GROUP_TAG_LIST[term] ) then
-				local groupIndex = GROUP_TAG_LIST[term];
-				if not seenGroups[groupIndex] then
-					seenGroups[groupIndex] = true;
-					local groupList = "[";
-					for i=1, GetNumGroupMembers() do
-						local name, rank, subgroup, level, class, classFileName = GetRaidRosterInfo(i);
-						if ( name and subgroup == groupIndex ) then
-							local classColorTable = RAID_CLASS_COLORS[classFileName];
-							if ( classColorTable ) then
-								name = string.format("\124cff%.2x%.2x%.2x%s\124r", classColorTable.r*255, classColorTable.g*255, classColorTable.b*255, name);
-							end
-							groupList = groupList..(groupList == "[" and "" or PLAYER_LIST_DELIMITER)..name;
-						end
-					end
-					if groupList ~= "[" then
-						groupList = groupList.."]";
-						message = string.gsub(message, tag, groupList, 1);
-					end
-				end
-			end
-		end
-
-		return message;
-	end
 end
 
 function ChatFrame_MessageEventHandler(self, event, ...)
@@ -3279,11 +3392,12 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif (type == "LOOT") then
 			-- Append [Share] hyperlink if this is a valid social item and you are the looter.
-			-- arg5 contains the name of the player who looted
-			if (C_Social.IsSocialEnabled() and UnitName("player") == arg5) then
-				local itemID, creationContext = GetItemInfoFromHyperlink(arg1);
+			if (C_Social.IsSocialEnabled() and UnitGUID("player") == arg12) then
+				-- Because it is being placed inside another hyperlink (the shareitem link created below), we have to strip off the hyperlink markup
+				-- The item link markup will be added back in when the shareitem link is clicked (in ItemRef.lua) and then passed to the social panel
+				local itemID, strippedItemLink = GetItemInfoFromHyperlink(arg1);
 				if (itemID and C_Social.GetLastItem() == itemID) then
-					arg1 = arg1 .. " " .. Social_GetShareItemLink(itemID, creationContext, true);
+					arg1 = arg1 .. " " .. Social_GetShareItemLink(strippedItemLink, true);
 				end
 			end
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
@@ -3339,7 +3453,10 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				-- TWO users in this notice (E.G. x kicked y)
 				self:AddMessage(format(globalstring, arg8, arg4, arg2, arg5), info.r, info.g, info.b, info.id);
 			elseif ( arg1 == "INVITE" ) then
-				self:AddMessage(format(globalstring, arg4, arg2), info.r, info.g, info.b, info.id);
+				local playerLink = GetPlayerLink(arg2, ("[%s]"):format(arg2), arg11);
+				local accessID = ChatHistory_GetAccessID(chatGroup, chatTarget);
+				local typeID = ChatHistory_GetAccessID(infoType, chatTarget, arg12);
+				self:AddMessage(format(globalstring, arg4, playerLink), info.r, info.g, info.b, info.id, accessID, typeID);
 			else
 				self:AddMessage(format(globalstring, arg8, arg4, arg2), info.r, info.g, info.b, info.id);
 			end
@@ -3377,12 +3494,10 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			elseif ( arg1 == "FRIEND_REMOVED" or arg1 == "BATTLETAG_FRIEND_REMOVED" ) then
 				message = format(globalstring, arg2);
 			elseif ( arg1 == "FRIEND_ONLINE" or arg1 == "FRIEND_OFFLINE") then
-				local _, accountName, battleTag, _, characterName, _, client = BNGetFriendInfoByID(arg13);
-				if (client and client ~= "") then
-					local _, _, battleTag = BNGetFriendInfoByID(arg13);
-					characterName = BNet_GetValidatedCharacterName(characterName, battleTag, client) or "";
-					local characterNameText = BNet_GetClientEmbeddedTexture(client, 14)..characterName;
-					local linkDisplayText = ("[%s] (%s)"):format(arg2, characterNameText);
+				local accountInfo = C_BattleNet.GetAccountInfoByID(arg13);
+				if accountInfo and accountInfo.gameAccountInfo.clientProgram ~= "" then
+					local characterName = BNet_GetValidatedCharacterNameWithClientEmbeddedTexture(accountInfo.gameAccountInfo.characterName, accountInfo.battleTag, accountInfo.gameAccountInfo.clientProgram, 14);
+					local linkDisplayText = ("[%s] (%s)"):format(arg2, characterName);
 					local playerLink = GetBNPlayerLink(arg2, linkDisplayText, arg13, arg11, Chat_GetChatCategory(type), 0);
 					message = format(globalstring, playerLink);
 				else
@@ -3449,7 +3564,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 
 			-- Search for icon links and replace them with texture links.
-			arg1 = ChatFrame_ReplaceIconAndGroupExpressions(arg1, arg17, not ChatFrame_CanChatGroupPerformExpressionExpansion(chatGroup)); -- If arg17 is true, don't convert to raid icons
+			arg1 = C_ChatInfo.ReplaceIconAndGroupExpressions(arg1, arg17, not ChatFrame_CanChatGroupPerformExpressionExpansion(chatGroup)); -- If arg17 is true, don't convert to raid icons
 
 			--Remove groups of many spaces
 			arg1 = RemoveExtraSpaces(arg1);
@@ -3642,16 +3757,24 @@ end
 
 function ChatFrame_OpenChat(text, chatFrame, desiredCursorPosition)
 	if chatFrame == nil and CHAT_FOCUS_OVERRIDE ~= nil then
-		CHAT_FOCUS_OVERRIDE:SetFocus();
-		return;
+		if CHAT_FOCUS_OVERRIDE.supportsSlashCommands or not text or strsub(text, 0, 1) ~= "/" then
+		    CHAT_FOCUS_OVERRIDE:SetFocus();
+			if text then
+				CHAT_FOCUS_OVERRIDE:SetText(text);
+			end
+		    return;
+		end
 	end
-	
+
 	local editBox = ChatEdit_ChooseBoxForSend(chatFrame);
 
 	ChatEdit_ActivateChat(editBox);
-	editBox.setText = 1;
 	editBox.desiredCursorPosition = desiredCursorPosition;
-	editBox.text = text;
+
+	if text then
+		editBox.text = text;
+		editBox.setText = 1;
+	end
 
 	if ( editBox:GetAttribute("chatType") == editBox:GetAttribute("stickyType") ) then
 		if ( (editBox:GetAttribute("stickyType") == "PARTY") and (not IsInGroup(LE_PARTY_CATEGORY_HOME)) or
@@ -3729,19 +3852,15 @@ function ChatFrame_SendTell(name, chatFrame)
 	ChatEdit_ParseText(editBox, 0);
 end
 
-function ChatFrame_SendSmartTell(name, chatFrame)
-	local editBox = ChatEdit_ChooseBoxForSend(chatFrame);
-
-	--DEBUG FIXME - for now, we're not going to remove spaces from names. We need to make sure X-server still works.
-	-- Remove spaces from the server name for slash command parsing
-	--name = gsub(name, " ", "");
-
+function ChatFrame_SendBNetTell(tokenizedName)
+	local editBox = ChatEdit_ChooseBoxForSend();
+	editBox:SetAttribute("tellTarget", tokenizedName);
+	editBox:SetAttribute("chatType", "BN_WHISPER");
 	if ( editBox ~= ChatEdit_GetActiveWindow() ) then
-		ChatFrame_OpenChat(SLASH_SMART_WHISPER1.." "..name.." ", chatFrame);
+		ChatFrame_OpenChat("");
 	else
-		editBox:SetText(SLASH_SMART_WHISPER1.." "..name.." ");
+		ChatEdit_UpdateHeader(editBox);
 	end
-	ChatEdit_ParseText(editBox, 0);
 end
 
 function ChatFrame_ReplyTell(chatFrame)
@@ -3933,6 +4052,20 @@ function ChatEdit_OnLoad(self)
 		self:Show();
 	end
 
+	local function ChatEditAutoComplete(editBox, fullText, nameInfo)
+		if nameInfo.bnetID ~= nil and nameInfo.bnetID ~= 0 then
+			editBox:SetAttribute("tellTarget", nameInfo.name);
+			editBox:SetAttribute("chatType", "BN_WHISPER");
+			editBox:SetText("");
+			ChatEdit_UpdateHeader(editBox);
+			return true;
+		end
+
+		return false;
+	end
+
+	AutoCompleteEditBox_SetCustomAutoCompleteFunction(self, ChatEditAutoComplete);
+
 	self:SetParent(UIParent);
 end
 
@@ -4002,7 +4135,10 @@ end
 
 function ChatEdit_OnEditFocusLost(self)
 	AutoCompleteEditBox_OnEditFocusLost(self);
-	ChatEdit_DeactivateChat(self);
+	
+	if self:GetText() == "" then
+		ChatEdit_DeactivateChat(self);
+	end
 end
 
 function ChatEdit_ActivateChat(editBox)
@@ -4132,24 +4268,6 @@ function ChatEdit_InsertLink(text)
 		return false;
 	end
 
-	local activeWindow = ChatEdit_GetActiveWindow();
-	if ( activeWindow ) then
-		activeWindow:Insert(text);
-		return true;
-	end
-	if ( BrowseName and BrowseName:IsVisible() ) then
-		local item;
-		if ( strfind(text, "battlepet:") ) then
-			local petName = strmatch(text, "%[(.+)%]");
-			item = petName;
-		elseif ( strfind(text, "item:", 1, true) ) then
-			item = GetItemInfo(text);
-		end
-		if ( item ) then
-			BrowseName:SetText(item);
-			return true;
-		end
-	end
 	if ( MacroFrameText and MacroFrameText:HasFocus() ) then
 		local item;
 		if ( strfind(text, "item:", 1, true) ) then
@@ -4185,6 +4303,28 @@ function ChatEdit_InsertLink(text)
 		CommunitiesFrame.ChatEditBox:Insert(text);
 		return true;
 	end
+
+	local activeWindow = ChatEdit_GetActiveWindow();
+	if ( activeWindow ) then
+		activeWindow:Insert(text);
+		activeWindow:SetFocus();
+		return true;
+	end
+	if ( AuctionHouseFrame and AuctionHouseFrame:IsVisible() ) then
+		local item;
+		if ( strfind(text, "battlepet:") ) then
+			local petName = strmatch(text, "%[(.+)%]");
+			item = petName;
+		elseif ( strfind(text, "item:", 1, true) ) then
+			item = GetItemInfo(text);
+		end
+		if ( item ) then
+			if ( AuctionHouseFrame:SetSearchText(item) ) then
+				return true;
+			end
+		end
+	end
+
 	return false;
 end
 
@@ -4529,7 +4669,7 @@ function ChatEdit_OnTextChanged(self, userInput)
 	self.ignoreTextChange = nil;
 	local regex = "^((/[^%s]+)%s+(.+))"
 	local full, command, target = strmatch(self:GetText(), regex);
-	if ( not target or (strsub(target, 1, 1) == "|") ) then
+	if ( not target or (strsub(target, 1, 1) == "|") or self.disallowAutoComplete) then
 		AutoComplete_HideIfAttachedTo(self);
 		return;
 	end
@@ -4550,31 +4690,29 @@ function escapePatternSymbols(text)
 end
 
 function ChatEdit_OnChar(self)
-	local regex = "^((/[^%s]+)%s+(.+))$"
-	local text, command, target = strmatch(self:GetText(), regex);
+	local regex = "^((/[^%s]+)(%s+)(.+))$"
+	local text, command, whitespace, target = strmatch(self:GetText(), regex);
 	if (command) then
 		self.command = command
 	else
 		self.command = nil;
 	end
-	if (command and target and self.autoCompleteParams) then --if they typed a command with a autocompletable target
+	if (command and target and self.autoCompleteSource and self.autoCompleteParams) then --if they typed a command with a autocompletable target
 		local utf8Position = self:GetUTF8CursorPosition();
-		local nameToShow = GetAutoCompleteResults(target, 1, utf8Position, self.autoCompleteParams.include, self.autoCompleteParams.exclude)[1];
+		local allowFullMatch = false;
+		local nameToShow = self.autoCompleteSource(target, 1, utf8Position, allowFullMatch, unpack(self.autoCompleteParams))[1];
 		if (nameToShow and nameToShow.name) then
 			local name = Ambiguate(nameToShow.name, "all");
 			--We're going to be setting the text programatically which will clear the userInput flag on the editBox.
 			--So we want to manually update the dropdown before we change the text.
-			AutoComplete_Update(self, target, utf8Position - strlenutf8(command) - 1);
-			target = escapePatternSymbols(target)
-			local highlightRegex = "^"..target.."(.*)";
-			local nameEnding = name:match(highlightRegex)
-			if (not nameEnding) then
-				return;
+			AutoComplete_Update(self, target, utf8Position - strlenutf8(command) - strlen(whitespace));
+			if strsub(name, 1, 1) ~= "|" then
+				target = escapePatternSymbols(target);
+
+				local newTarget = name;
+				self:SetText(string.format("%s%s%s", command, whitespace, newTarget));
+				self:HighlightText(strlen(text), strlen(command) + strlen(whitespace) + strlen(newTarget));
 			end
-			local newText = text..nameEnding;
-			self:SetText(newText);
-			self:HighlightText(strlen(text), strlen(newText));
-			self:SetCursorPosition(strlen(text));
 		end
 	end
 end
@@ -4594,7 +4732,13 @@ function ChatEdit_OnInputLanguageChanged(self)
 end
 
 local function processChatType(editBox, msg, index, send)
-	editBox.autoCompleteParams = AUTOCOMPLETE_LIST[index];
+	local autoCompleteInfo = AUTOCOMPLETE_LIST[index];
+	if ( autoCompleteInfo ) then
+		AutoCompleteEditBox_SetAutoCompleteSource(editBox, GetAutoCompleteResults, autoCompleteInfo.include, autoCompleteInfo.exclude);
+	else
+		AutoCompleteEditBox_SetAutoCompleteSource(editBox, nil);
+	end
+
 -- this is a special function for "ChatEdit_HandleChatType"
 	if ( ChatTypeInfo[index] ) then
 		if ( index == "WHISPER" or index == "SMART_WHISPER" ) then
@@ -4633,8 +4777,7 @@ local function processChatType(editBox, msg, index, send)
 end
 
 function ChatEdit_HandleChatType(editBox, msg, command, send)
-	local channel = strmatch(command, "/([0-9]+)");
-
+	local channel = strmatch(command, "/([0-9]+)$");
 	if( channel ) then
 		local chanNum = tonumber(channel);
 		if ( chanNum > 0 and chanNum <= MAX_WOW_CHAT_CHANNELS ) then
@@ -4655,7 +4798,7 @@ function ChatEdit_HandleChatType(editBox, msg, command, send)
 		end
 	end
 	--This isn't one we found in our list, so we're not going to autocomplete.
-	editBox.autoCompleteParams = nil;
+	AutoCompleteEditBox_SetAutoCompleteSource(editBox, nil);
 	return false;
 end
 
@@ -4681,6 +4824,7 @@ function ChatEdit_ParseText(editBox, send, parseIfNoSpaces)
 
 	if ( command ~= text ) then
 		msg = strsub(text, strlen(command) + 2);
+		msg = strmatch(msg, "^%s*(.*)$") or msg;
 	end
 
 	command = strupper(command);
@@ -4764,32 +4908,24 @@ function ChatEdit_ExtractTellTarget(editBox, msg, chatType)
 		return false;
 	end
 
-	if((strsub(target, 1, 1) == "|") and not(strsub(target, 1, 2) == "|K")) then
+	if ( strsub(target, 1, 1) == "|" ) then
 		return false;
 	end
 
-	if ( #GetAutoCompleteResults(target, 1, 0, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude, true) > 0 ) then
+	if ( #GetAutoCompleteResults(target, 1, 0, true, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude) > 0 ) then
 		--Even if there's a space, we still want to let the person keep typing -- they may be trying to type whatever is in AutoComplete.
 		return false;
 	end
 
-	if(strsub(target, 1, 2) == "|K") then
-		target, msg = BNTokenFindName(target);
-		--If there is a space just after the name (to trigger a parse), remove it.
-		if ( strsub(msg, 1, 1) == " " ) then
-			msg = strsub(msg, 2);
+	--Keep pulling off everything after the last space until we either have something on the AutoComplete list or only a single word is left.
+	while ( strfind(target, "%s") ) do
+		--Pull off everything after the last space.
+		target = strmatch(target, "(.+)%s+[^%s]*");
+		if ( #GetAutoCompleteResults(target, 1, 0, true, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude) > 0 ) then
+			break;
 		end
-	else
-		--Keep pulling off everything after the last space until we either have something on the AutoComplete list or only a single word is left.
-		while ( strfind(target, "%s") ) do
-			--Pull off everything after the last space.
-			target = strmatch(target, "(.+)%s+[^%s]*");
-			if ( #GetAutoCompleteResults(target, 1, 0, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude, true) > 0 ) then
-				break;
-			end
-		end
-		msg = strsub(msg, strlen(target) + 2);
 	end
+	msg = strsub(msg, strlen(target) + 2);
 
 	if ( chatType ~= "WHISPER" and BNet_GetBNetIDAccount(target) ) then --"WHISPER" forces character whisper
 		chatType = "BN_WHISPER";
@@ -5188,15 +5324,12 @@ end
 SHARE_ICON_COLOR = "ffffd200";
 SHARE_ICON_TEXT = "|TInterface\\ChatFrame\\UI-ChatIcon-Share:18:18|t";
 
-function Social_GetShareItemLink(itemID, creationContext, earned)
-	if (creationContext == nil) then
-		creationContext = "";
-	end
+function Social_GetShareItemLink(strippedItemLink, earned)
 	local earnedNum = 0;
 	if (earned) then
 		earnedNum = 1;
 	end
-	return format("|c%s|Hshareitem:%d:%d:%s|h%s|h|r", SHARE_ICON_COLOR, itemID, earnedNum, creationContext, SHARE_ICON_TEXT);
+	return format("|c%s|Hshareitem:%s:%d|h%s|h|r", SHARE_ICON_COLOR, strippedItemLink, earnedNum, SHARE_ICON_TEXT);
 end
 
 function Social_GetShareAchievementLink(achievementID, earned)
@@ -5208,6 +5341,6 @@ function Social_GetShareAchievementLink(achievementID, earned)
 end
 
 function Social_GetShareScreenshotLink()
-	local index = C_Social.GetLastScreenshot();
+	local index = C_Social.GetLastScreenshotIndex();
 	return format("|c%s|Hsharess:%d|h%s|h|r", SHARE_ICON_COLOR, index, SHARE_ICON_TEXT);
 end

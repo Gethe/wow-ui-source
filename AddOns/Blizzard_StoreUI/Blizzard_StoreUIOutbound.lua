@@ -8,10 +8,6 @@ function Outbound.UpdateMicroButtons()
 	securecall("UpdateMicroButtons");
 end
 
-function Outbound.ShowPreview(name, modelID, modelSceneID)
-	securecall("StoreShowPreview", name, modelID, modelSceneID);
-end
-
 function Outbound.ShowPreviews(displayInfoEntries)
 	securecall("StoreShowPreviews", displayInfoEntries);
 end

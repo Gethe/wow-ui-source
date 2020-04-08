@@ -1,0 +1,279 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_AuctionHouseSellFrame.lua"/>
+	
+	<Frame name="AuctionHouseSellFrameAlignedControlTemplate" mixin="AuctionHouseSellFrameAlignedControlMixin" virtual="true">
+		<Size x="200" y="30"/>
+		<!-- You can set the label text with a key value:
+		<KeyValues>
+			<KeyValue key="labelText" value="AUCTION_HOUSE_UNIT_PRICE_LABEL" type="global"/>
+		</KeyValues>
+		-->
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontNormal" justifyH="RIGHT">
+					<Size x="93" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+					<Shadow x="1" y="-1">
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+				</FontString>
+				<FontString parentKey="LabelTitle" inherits="GameFontNormal" justifyH="RIGHT" hidden="true">
+					<Size x="90" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="7"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+					<Shadow x="1" y="-1">
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+				</FontString>
+				<FontString parentKey="Subtext" inherits="GameFontNormalSmall" justifyH="RIGHT" hidden="true">
+					<Size x="90" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.LabelTitle" relativePoint="BOTTOM" x="0" y="-1"/>
+						<Anchor point="LEFT" x="0" y="-6"/>
+					</Anchors>
+					<Color color="DISABLED_FONT_COLOR"/>
+					<Shadow x="1" y="-1">
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AuctionHouseAlignedQuantityInputFrameTemplate" mixin="AuctionHouseAlignedQuantityInputFrameMixin" inherits="AuctionHouseSellFrameAlignedControlTemplate" virtual="true">
+		<Frames>
+			<EditBox parentKey="InputBox" mixin="AuctionHouseAlignedQuantityInputBoxMixin" inherits="AuctionHouseQuantityInputEditBoxTemplate">
+				<Size x="134" y="33"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT" x="18" y="-2"/>
+				</Anchors>
+				<Scripts>
+					<OnEditFocusLost method="OnEditFocusLost"/>
+				</Scripts>
+			</EditBox>
+			<Button parentKey="MaxButton" mixin="AuctionHouseQuantityInputMaxButtonMixin" inherits="UIPanelButtonTemplate" text="AUCTION_HOUSE_MAX_QUANTITY_BUTTON">
+				<Size x="75" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.InputBox" relativePoint="RIGHT" x="6" y="2"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="AuctionHouseAlignedPriceInputFrameTemplate" mixin="AuctionHouseAlignedPriceInputFrameMixin" inherits="AuctionHouseSellFrameAlignedControlTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="MoneyInputFrame" inherits="LargeMoneyInputFrameTemplate">
+				<KeyValues>
+					<KeyValue key="hideCopper" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="150" y="33"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT" x="18" y="-2"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="PriceError" mixin="AuctionHousePriceErrorFrameMixin" enableMouse="true" hidden="true">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.MoneyInputFrame" relativePoint="RIGHT" x="10" y="0" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
+							<Size x="20" y="20"/>
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="PerItemPostfix" inherits="GameFontNormalSmall" justifyH="LEFT" text="AUCTION_HOUSE_PER_ITEM_LABEL" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.MoneyInputFrame" relativePoint="RIGHT" x="4" y="4"/>
+					</Anchors>
+					<Color color="DISABLED_FONT_COLOR"/>
+					<Shadow x="1" y="-1">
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AuctionHouseAlignedDurationDropDownTemplate" mixin="AuctionHouseAlignedDurationDropDownMixin" inherits="AuctionHouseSellFrameAlignedControlTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="DropDown" mixin="AuctionHouseDurationDropDownMixin" inherits="LargeUIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT" x="17" y="-2"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="AuctionHouseAlignedPriceDisplayTemplate" mixin="AuctionHouseAlignedPriceDisplayMixin" inherits="AuctionHouseSellFrameAlignedControlTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="MoneyDisplayFrame" inherits="MoneyDisplayFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT" x="18" y="0"/>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="hideCopper" value="true" type="boolean"/>
+					<KeyValue key="leftAlign" value="true" type="boolean"/>
+					<KeyValue key="useAuctionHouseIcons" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Button name="AuctionHouseSellFrameOverlayTemplate" enableMouse="true" mixin="AuctionHouseSellFrameOverlayMixin" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+			<OnReceiveDrag method="OnReceiveDrag"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="AuctionHouseSellFrameTemplate" inherits="VerticalLayoutFrame, AuctionHouseBackgroundTemplate" mixin="AuctionHouseSellFrameMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="topPadding" value="12" type="number"/>
+			<KeyValue key="bottomPadding" value="120" type="number"/>
+			<KeyValue key="leftPadding" value="11" type="number"/>
+			<KeyValue key="rightPadding" value="10" type="number"/>
+			
+			<KeyValue key="spacing" value="15" type="number"/>
+
+			<KeyValue key="backgroundAtlas" value="auctionhouse-background-sell-left" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="CreateAuctionTabLeft" atlas="auctionhouse-selltab-left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="42" y="-3"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="CreateAuctionLabel" inherits="GameFontNormalSmall" justifyH="LEFT" text="CREATE_AUCTION">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.CreateAuctionTabLeft" relativePoint="RIGHT" x="12"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="CreateAuctionTabMiddle" atlas="auctionhouse-selltab-middle">
+					<Size y="23"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CreateAuctionTabLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="RIGHT" relativeKey="$parent.CreateAuctionLabel" relativePoint="RIGHT" x="12" y="0"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="CreateAuctionTabRight" atlas="auctionhouse-selltab-right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CreateAuctionTabMiddle" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.CreateAuctionTabMiddle" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="Overlay" inherits="AuctionHouseSellFrameOverlayTemplate" setAllPoints="true"/>
+			<Button parentKey="ItemDisplay" inherits="AuctionHouseInteractableItemDisplayTemplate" mixin="AuctionHouseSellFrameItemDisplayMixin" frameLevel="350">
+				<Size x="342" y="72"/>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="10" type="number"/>
+					<KeyValue key="bottomPadding" value="8" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture atlas="auctionhouse-itemheaderframe" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="QuantityInput" inherits="AuctionHouseAlignedQuantityInputFrameTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="20" type="number"/>
+					<KeyValue key="labelText" value="AUCTION_HOUSE_QUANTITY_LABEL" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="PriceInput" inherits="AuctionHouseAlignedPriceInputFrameTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="30" type="number"/>
+					<KeyValue key="labelText" value="AUCTION_HOUSE_UNIT_PRICE_LABEL" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="DurationDropDown" inherits="AuctionHouseAlignedDurationDropDownTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="40" type="number"/>
+					<KeyValue key="labelText" value="AUCTION_HOUSE_DURATION_LABEL" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Deposit" inherits="AuctionHouseAlignedPriceDisplayTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="50" type="number"/>
+					<KeyValue key="labelText" value="AUCTION_HOUSE_DEPOSIT_LABEL" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="TotalPrice" inherits="AuctionHouseAlignedPriceDisplayTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="60" type="number"/>
+					<KeyValue key="labelText" value="AUCTION_HOUSE_TOTAL_PRICE_LABEL" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Button parentKey="PostButton" motionScriptsWhileDisabled="true" mixin="AuctionHouseSellFramePostButtonMixin" inherits="UIPanelButtonTemplate" text="AUCTION_HOUSE_POST_BUTTON" frameLevel="350">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="70" type="number"/>
+					<KeyValue key="leftPadding" value="74" type="number"/>
+				</KeyValues>
+				<Size x="194" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT" x="12" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

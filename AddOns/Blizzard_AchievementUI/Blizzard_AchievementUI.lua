@@ -86,6 +86,9 @@ local function updateTrackedAchievements (...)
 	end
 end
 
+local function GetSafeScrollChildBottom(scrollChild)
+	return scrollChild:GetBottom() or 0;
+end
 
 -- [[ AchievementFrame ]] --
 
@@ -1041,7 +1044,7 @@ end
 ACHIEVEMENTBUTTON_DESCRIPTIONHEIGHT = 20;
 ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT = 84;
 ACHIEVEMENTBUTTON_CRITERIAROWHEIGHT = 15;
-ACHIEVEMENTBUTTON_METAROWHEIGHT = 14;
+ACHIEVEMENTBUTTON_METAROWHEIGHT = 28;
 ACHIEVEMENTBUTTON_MAXHEIGHT = 232;
 ACHIEVEMENTBUTTON_TEXTUREHEIGHT = 128;
 GUILDACHIEVEMENTBUTTON_MINHEIGHT = 128;
@@ -1095,7 +1098,7 @@ function AchievementButton_Collapse (self)
 end
 
 function AchievementButton_Expand (self, height)
-	if ( not self.collapsed ) then
+	if ( not self.collapsed and self:GetHeight() == height ) then
 		return;
 	end
 
@@ -1769,16 +1772,21 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id, renderOffSc
 		return;
 	end
 
-	local initialOffset = 0;
+	local yOffset = 0;
 	local ACHIEVEMENTMODE_CRITERIA = 1;
-	local numRows = 0;
-	local extraRows = 0;
+	local numMetaRows = 0;
+	local numCriteriaRows = 0;
+	local numExtraCriteriaRows = 0;
+
+	local function AddExtraCriteriaRow()
+		numExtraCriteriaRows = numExtraCriteriaRows + 1;
+		yOffset = -numExtraCriteriaRows * ACHIEVEMENTBUTTON_CRITERIAROWHEIGHT;
+	end
 
 	local requiresRep, hasRep, repLevel;
 	if ( not objectivesFrame.completed ) then
 		requiresRep, hasRep, repLevel = GetAchievementGuildRep(id);
 		if ( requiresRep ) then
-			initialOffset = -ACHIEVEMENTBUTTON_CRITERIAROWHEIGHT;
 			local gender = UnitSex("player");
 			local factionStandingtext = GetText("FACTION_STANDING_LABEL"..repLevel, gender);
 			objectivesFrame.repCriteria:SetFormattedText(ACHIEVEMENT_REQUIRES_GUILD_REPUTATION, factionStandingtext);
@@ -1788,7 +1796,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id, renderOffSc
 				objectivesFrame.repCriteria:SetTextColor(1, 0, 0);
 			end
 			objectivesFrame.repCriteria:Show();
-			extraRows = 1;
+			AddExtraCriteriaRow();
 		end
 	end
 
@@ -1810,6 +1818,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id, renderOffSc
 
 	-- Why textStrings? You try naming anything just "string" and see how happy you are.
 	local textStrings, progressBars, metas = 0, 0, 0;
+	local firstMetaCriteria;
 
 	local maxCriteriaWidth = 0;
 	local yPos;
@@ -1819,17 +1828,19 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id, renderOffSc
 		if ( criteriaType == CRITERIA_TYPE_ACHIEVEMENT and assetID ) then
 			metas = metas + 1;
 			local metaCriteria = AchievementButton_GetMeta(metas, renderOffScreen);
+			metaCriteria:ClearAllPoints();
 
 			if ( metas == 1 ) then
-				metaCriteria:SetPoint("TOP", objectivesFrame, "TOP", 0, -4 + initialOffset);
-				numRows = numRows + 2;
+				-- this will be anchored below, we need to know how many text criteria there are
+				firstMetaCriteria = metaCriteria;
+				numMetaRows = numMetaRows + 1;
 			elseif ( math.fmod(metas, 2) == 0 ) then
-				yPos = -((metas/2 - 1) * 28) - 8;
-				AchievementButton_GetMeta(metas-1, renderOffScreen):SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 20, yPos + initialOffset);
-				metaCriteria:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 210, yPos + initialOffset);
+				local anchorMeta = AchievementButton_GetMeta(metas-1, renderOffScreen);
+				metaCriteria:SetPoint("LEFT", anchorMeta, "RIGHT", 35, 0);
 			else
-				metaCriteria:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 20, -(math.ceil(metas/2 - 1) * 28) - 8 + initialOffset);
-				numRows = numRows + 2;
+				local anchorMeta = AchievementButton_GetMeta(metas-2, renderOffScreen);
+				metaCriteria:SetPoint("TOPLEFT", anchorMeta, "BOTTOMLEFT", -0, 2);
+				numMetaRows = numMetaRows + 1;
 			end
 
 			local id, achievementName, points, achievementCompleted, month, day, year, description, flags, iconpath = GetAchievementInfo(assetID);
@@ -1874,7 +1885,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id, renderOffSc
 			local progressBar = AchievementButton_GetProgressBar(progressBars, renderOffScreen);
 
 			if ( progressBars == 1 ) then
-				progressBar:SetPoint("TOP", objectivesFrame, "TOP", 4, -4 + initialOffset);
+				progressBar:SetPoint("TOP", objectivesFrame, "TOP", 4, -4 + yOffset);
 			else
 				progressBar:SetPoint("TOP", AchievementButton_GetProgressBar(progressBars-1, renderOffScreen), "BOTTOM", 0, 0);
 			end
@@ -1886,16 +1897,16 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id, renderOffSc
 			progressBar:SetParent(objectivesFrame);
 			progressBar:Show();
 
-			numRows = numRows + 1;
+			numCriteriaRows = numCriteriaRows + 1;
 		else
 			textStrings = textStrings + 1;
 			local criteria = AchievementButton_GetCriteria(textStrings, renderOffScreen);
 			criteria:ClearAllPoints();
 			if ( textStrings == 1 ) then
 				if ( numCriteria == 1 ) then
-					criteria:SetPoint("TOP", objectivesFrame, "TOP", -14, initialOffset);
+					criteria:SetPoint("TOP", objectivesFrame, "TOP", -14, yOffset);
 				else
-					criteria:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 0, initialOffset);
+					criteria:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 0, yOffset);
 				end
 
 			else
@@ -1938,7 +1949,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id, renderOffSc
 			criteria:SetWidth(stringWidth + ACHIEVEMENTUI_CRITERIACHECKWIDTH);
 			maxCriteriaWidth = max(maxCriteriaWidth, stringWidth + ACHIEVEMENTUI_CRITERIACHECKWIDTH);
 
-			numRows = numRows + 1;
+			numCriteriaRows = numCriteriaRows + 1;
 		end
 	end
 
@@ -1963,8 +1974,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id, renderOffSc
 			-- if top right criteria would run into the achievement shield, move them all down 1 row
 			-- this assumes description is 1 or 2 lines, otherwise this wouldn't be a problem
 			if ( AchievementButton_GetCriteria(2, renderOffScreen).name:GetStringWidth() > FORCE_COLUMNS_RIGHT_COLUMN_SPACE and progressBars == 0 ) then
-				initialOffset = initialOffset - AchievementButton_GetCriteria(2, renderOffScreen):GetHeight();
-				extraRows = extraRows + 1;
+				AddExtraCriteriaRow();
 			end
 		end
 		if ( numColumns > 1 ) then
@@ -1992,22 +2002,32 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id, renderOffSc
 							xOffset = FORCE_COLUMNS_RIGHT_OFFSET;
 						end
 					end
-					criTable[i]:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", (position - 1)*(ACHIEVEMENTUI_MAXCONTENTWIDTH/numColumns) + xOffset, initialOffset);
+					criTable[i]:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", (position - 1)*(ACHIEVEMENTUI_MAXCONTENTWIDTH/numColumns) + xOffset, yOffset);
 				else
 					criTable[i]:ClearAllPoints();
 					criTable[i]:SetPoint("TOPLEFT", criTable[position + ((rows - 2) * numColumns)], "BOTTOMLEFT", 0, 0);
 				end
 			end
-			numRows = ceil(numRows/numColumns);
+			numCriteriaRows = ceil(numCriteriaRows/numColumns);
 		end
 	end
 
-	numRows = numRows + extraRows;
-	if ( metas > 0 or progressBars > 0 ) then
-		objectivesFrame:SetHeight(numRows * ACHIEVEMENTBUTTON_METAROWHEIGHT + 10);
-	else
-		objectivesFrame:SetHeight(numRows * ACHIEVEMENTBUTTON_CRITERIAROWHEIGHT);
+	numCriteriaRows = numCriteriaRows + numExtraCriteriaRows;
+
+	if ( firstMetaCriteria ) then
+		local yOffsetMeta = -8 - numCriteriaRows * ACHIEVEMENTBUTTON_CRITERIAROWHEIGHT;
+		if ( metas == 1 ) then
+			firstMetaCriteria:SetPoint("TOP", objectivesFrame, "TOP", 0, yOffsetMeta);
+		else
+			firstMetaCriteria:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 20, yOffsetMeta);
+		end
 	end
+
+	local height = numMetaRows * ACHIEVEMENTBUTTON_METAROWHEIGHT + numCriteriaRows * ACHIEVEMENTBUTTON_CRITERIAROWHEIGHT;
+	if ( metas > 0 or progressBars > 0 ) then
+		height = height + 10;
+	end
+	objectivesFrame:SetHeight(height);
 	objectivesFrame.mode = ACHIEVEMENTMODE_CRITERIA;
 end
 
@@ -2602,7 +2622,7 @@ function AchievementFrame_SelectAchievement(id, forceSelect, isComparison)
 			if ( button.categoryID == category ) then
 				found = true;
 			end
-			if ( button.categoryID == category and math.ceil(button:GetBottom()) >= math.ceil(AchievementFrameAchievementsContainerScrollChild:GetBottom())) then
+			if ( button.categoryID == category and math.ceil(button:GetBottom()) >= math.ceil(GetSafeScrollChildBottom(AchievementFrameAchievementsContainerScrollChild)) ) then
 				shown = true;
 			end
 		end
@@ -2639,7 +2659,7 @@ function AchievementFrame_SelectAchievement(id, forceSelect, isComparison)
 	local previousScrollValue;
 	while ( not shown ) do
 		for _, button in next, container.buttons do
-			if ( button.id == id and math.ceil(button:GetTop()) >= math.ceil(child:GetBottom())) then
+			if ( button.id == id and math.ceil(button:GetTop()) >= math.ceil(GetSafeScrollChildBottom(child)) ) then
 				if ( not isComparison ) then
 					-- The "True" here ignores modifiers, so you don't accidentally track or link this achievement. :P
 					AchievementButton_OnClick(button, nil, nil, true);
@@ -2776,7 +2796,7 @@ function AchievementFrame_SelectStatisticByAchievementID(achievementID, isCompar
 	local shown = false;
 	while ( not shown ) do
 		for _, button in next, AchievementFrameCategoriesContainer.buttons do
-			if ( button.categoryID == category and math.ceil(button:GetBottom()) >= math.ceil(AchievementFrameAchievementsContainerScrollChild:GetBottom())) then
+			if ( button.categoryID == category and math.ceil(button:GetBottom()) >= math.ceil(GetSafeScrollChildBottom(AchievementFrameAchievementsContainerScrollChild)) ) then
 				shown = true;
 			end
 		end
@@ -2806,7 +2826,7 @@ function AchievementFrame_SelectStatisticByAchievementID(achievementID, isCompar
 	local shown = false;
 	while ( not shown ) do
 		for _, button in next, container.buttons do
-			if ( button.id == achievementID and math.ceil(button:GetBottom()) >= math.ceil(child:GetBottom())) then
+			if ( button.id == achievementID and math.ceil(button:GetBottom()) >= math.ceil(GetSafeScrollChildBottom(child)) ) then
 				if ( not isComparison ) then
 					AchievementStatButton_OnClick(button);
 				end
@@ -3633,13 +3653,15 @@ function AchievementFrame_FindDisplayedAchievement(baseAchievementID)
 end
 
 function AchievementFrame_HideSearchPreview()
-	AchievementFrame.searchPreviewContainer:Hide();
+	local searchPreviewContainer = AchievementFrame.searchPreviewContainer;
+	local searchPreviews = searchPreviewContainer.searchPreviews;
+	searchPreviewContainer:Hide();
 
 	for index = 1, ACHIEVEMENT_FRAME_NUM_SEARCH_PREVIEWS do
-		AchievementFrame.searchPreview[index]:Hide();
+		searchPreviews[index]:Hide();
 	end
 
-	AchievementFrame.showAllSearchResults:Hide();
+	searchPreviewContainer.showAllSearchResults:Hide();
 	AchievementFrame.searchProgressBar:Hide();
 end
 
@@ -3676,15 +3698,17 @@ function AchievementFrameSearchBox_OnUpdate (self, elapsed)
 		if ( AchievementFrame.searchProgressBar:GetScript("OnUpdate") == nil ) then
 			AchievementFrame.searchProgressBar:SetScript("OnUpdate", AchievementFrameSearchProgressBar_OnUpdate);
 
+			local searchPreviewContainer = AchievementFrame.searchPreviewContainer;
+			local searchPreviews = searchPreviewContainer.searchPreviews;
 			for index = 1, ACHIEVEMENT_FRAME_NUM_SEARCH_PREVIEWS do
-				AchievementFrame.searchPreview[index]:Hide();
+				searchPreviews[index]:Hide();
 			end
 
-			AchievementFrame.showAllSearchResults:Hide();
+			searchPreviewContainer.showAllSearchResults:Hide();
 
-			AchievementFrame.searchPreviewContainer.borderAnchor:SetPoint("BOTTOM", 0, -5);
-			AchievementFrame.searchPreviewContainer.background:Show();
-			AchievementFrame.searchPreviewContainer:Show();
+			searchPreviewContainer.borderAnchor:SetPoint("BOTTOM", 0, -5);
+			searchPreviewContainer.background:Show();
+			searchPreviewContainer:Show();
 
 			AchievementFrame.searchProgressBar:Show();
 			return;
@@ -3717,9 +3741,11 @@ function AchievementFrame_ShowSearchPreviewResults()
 		AchievementFrame_SetSearchPreviewSelection(1);
 	end
 
+	local searchPreviewContainer = AchievementFrame.searchPreviewContainer;
+	local searchPreviews = searchPreviewContainer.searchPreviews;
 	local lastButton;
 	for index = 1, ACHIEVEMENT_FRAME_NUM_SEARCH_PREVIEWS do
-		local searchPreview = AchievementFrame.searchPreview[index];
+		local searchPreview = searchPreviews[index];
 		if ( index <= numResults ) then
 			local achievementID = GetFilteredAchievementID(index);
 			local _, name, _, _, _, _, _, description, _, icon, _, _, _, _ = GetAchievementInfo(achievementID);
@@ -3735,19 +3761,19 @@ function AchievementFrame_ShowSearchPreviewResults()
 	end
 
 	if ( numResults > 5 ) then
-		AchievementFrame.showAllSearchResults:Show();
-		lastButton = AchievementFrame.showAllSearchResults;
-		AchievementFrame.showAllSearchResults.text:SetText(string.format(ENCOUNTER_JOURNAL_SHOW_SEARCH_RESULTS, numResults));
+		searchPreviewContainer.showAllSearchResults:Show();
+		lastButton = searchPreviewContainer.showAllSearchResults;
+		searchPreviewContainer.showAllSearchResults.text:SetText(string.format(ENCOUNTER_JOURNAL_SHOW_SEARCH_RESULTS, numResults));
 	else
-		AchievementFrame.showAllSearchResults:Hide();
+		searchPreviewContainer.showAllSearchResults:Hide();
 	end
 
 	if (lastButton) then
-		AchievementFrame.searchPreviewContainer.borderAnchor:SetPoint("BOTTOM", lastButton, "BOTTOM", 0, -5);
-		AchievementFrame.searchPreviewContainer.background:Hide();
-		AchievementFrame.searchPreviewContainer:Show();
+		searchPreviewContainer.borderAnchor:SetPoint("BOTTOM", lastButton, "BOTTOM", 0, -5);
+		searchPreviewContainer.background:Hide();
+		searchPreviewContainer:Show();
 	else
-		AchievementFrame.searchPreviewContainer:Hide();
+		searchPreviewContainer:Hide();
 	end
 end
 
@@ -3766,6 +3792,14 @@ function AchievementFrameSearchBox_OnTextChanged(self)
 	end
 end
 
+function AchievementFrameSearchBox_OnLoad(self)
+	SearchBoxTemplate_OnLoad(self);
+	self.HasStickyFocus = function()
+		local ancestry = self:GetParent().searchPreviewContainer;
+		return DoesAncestryInclude(ancestry, GetMouseFocus());
+	end
+end
+
 function AchievementFrameSearchBox_OnShow(self)
 	self:SetFrameLevel(self:GetParent():GetFrameLevel() + 7);
 	AchievementFrame_SetSearchPreviewSelection(1);
@@ -3779,12 +3813,13 @@ function AchievementFrameSearchBox_OnEnterPressed(self)
 		return;
 	end
 
+	local searchPreviewContainer = AchievementFrame.searchPreviewContainer;
 	if ( self.selectedIndex == ACHIEVEMENT_FRAME_SHOW_ALL_RESULTS_INDEX ) then
-		if ( AchievementFrame.showAllSearchResults:IsShown() ) then
-			AchievementFrame.showAllSearchResults:Click();
+		if ( searchPreviewContainer.showAllSearchResults:IsShown() ) then
+			searchPreviewContainer.showAllSearchResults:Click();
 		end
 	else
-		local preview = AchievementFrame.searchPreview[self.selectedIndex];
+		local preview = searchPreviewContainer.searchPreviews[self.selectedIndex];
 		if ( preview:IsShown() ) then
 			preview:Click();
 		end
@@ -3811,20 +3846,23 @@ function AchievementFrameSearchBox_OnKeyDown(self, key)
 end
 
 function AchievementFrame_SetSearchPreviewSelection(selectedIndex)
+	local searchPreviewContainer = AchievementFrame.searchPreviewContainer;
+	local searchPreviews = searchPreviewContainer.searchPreviews;
 	local numShown = 0;
 	for index = 1, ACHIEVEMENT_FRAME_NUM_SEARCH_PREVIEWS do
-		AchievementFrame.searchPreview[index].selectedTexture:Hide();
+		local searchPreview = searchPreviews[index];
+		searchPreview.selectedTexture:Hide();
 
-		if ( AchievementFrame.searchPreview[index]:IsShown() ) then
+		if ( searchPreview:IsShown() ) then
 			numShown = numShown + 1;
 		end
 	end
 
-	if ( AchievementFrame.showAllSearchResults:IsShown() ) then
+	if ( searchPreviewContainer.showAllSearchResults:IsShown() ) then
 		numShown = numShown + 1;
 	end
 
-	AchievementFrame.showAllSearchResults.selectedTexture:Hide();
+	searchPreviewContainer.showAllSearchResults.selectedTexture:Hide();
 	
 	if ( numShown <= 0 ) then
 		-- Default to the first entry.
@@ -3836,9 +3874,9 @@ function AchievementFrame_SetSearchPreviewSelection(selectedIndex)
 	AchievementFrame.searchBox.selectedIndex = selectedIndex;
 
 	if ( selectedIndex == ACHIEVEMENT_FRAME_SHOW_ALL_RESULTS_INDEX ) then
-		AchievementFrame.showAllSearchResults.selectedTexture:Show();
+		searchPreviewContainer.showAllSearchResults.selectedTexture:Show();
 	else
-		AchievementFrame.searchPreview[selectedIndex].selectedTexture:Show();
+		searchPreviewContainer.searchPreviews[selectedIndex].selectedTexture:Show();
 	end
 end
 
@@ -3923,9 +3961,12 @@ function AchievementSearchPreviewButton_OnShow(self)
 end
 
 function AchievementSearchPreviewButton_OnLoad(self)
+	local searchPreviewContainer = AchievementFrame.searchPreviewContainer;
+	local searchPreviews = searchPreviewContainer.searchPreviews;
 	for index = 1, ACHIEVEMENT_FRAME_NUM_SEARCH_PREVIEWS do
-		if ( AchievementFrame.searchPreview[index] == self ) then
+		if ( searchPreviews[index] == self ) then
 			self.previewIndex = index;
+			break;
 		end
 	end
 end

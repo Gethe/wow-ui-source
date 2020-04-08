@@ -140,6 +140,40 @@ end
 -- ***** FRAME HANDLERS
 -- *****************************************************************************************************
 
+local SCENARIO_TRACKER_WIDGET_SET = 252;
+
+local function WidgetsLayout(widgetContainerFrame, sortedWidgets)
+	local widgetsHeight = 0;
+	local maxWidgetWidth = 1;
+
+	for index, widgetFrame in ipairs(sortedWidgets) do
+		if ( index == 1 ) then
+			-- Add a padding of 15 pixels before the first widget (so it doesn't bump right up against the objectives)
+			widgetFrame:SetPoint("TOP", widgetContainerFrame, "TOP", 0, -15);
+			widgetsHeight = 15;
+		else
+			local relative = sortedWidgets[index - 1];
+			widgetFrame:SetPoint("TOP", relative, "BOTTOM", 0, 0);
+		end
+
+		widgetsHeight = widgetsHeight + widgetFrame:GetWidgetHeight();
+
+		local widgetWidth = widgetFrame:GetWidgetWidth();
+		if widgetWidth > maxWidgetWidth then
+			maxWidgetWidth = widgetWidth;
+		end
+	end
+
+	widgetsHeight = math.max(widgetsHeight, 1);
+
+	widgetContainerFrame:SetHeight(widgetsHeight);
+	widgetContainerFrame:SetWidth(maxWidgetWidth);
+
+	-- The scenario tracker needs to update so the new height is taken into account
+	widgetContainerFrame.height = widgetsHeight;
+	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO);
+end
+
 function ScenarioBlocksFrame_OnLoad(self)
 	self.module = SCENARIO_CONTENT_TRACKER_MODULE;
 	-- scenario uses fixed blocks (stage, objective, challenge mode)
@@ -150,6 +184,8 @@ function ScenarioBlocksFrame_OnLoad(self)
 	ScenarioChallengeModeBlock.height = ScenarioChallengeModeBlock:GetHeight();
 	ScenarioProvingGroundsBlock.module = SCENARIO_TRACKER_MODULE;
 	ScenarioProvingGroundsBlock.height = ScenarioProvingGroundsBlock:GetHeight();
+	ScenarioWidgetContainerBlock.module = SCENARIO_TRACKER_MODULE;
+	ScenarioWidgetContainerBlock:RegisterForWidgetSet(SCENARIO_TRACKER_WIDGET_SET, WidgetsLayout);
 
 	SCENARIO_TRACKER_MODULE.BlocksFrame = self;
 
@@ -179,7 +215,7 @@ function ScenarioBlocksFrame_OnEvent(self, event, ...)
 		ScenarioProvingGroundsBlock.Score:SetText(score);
 	elseif (event == "SCENARIO_COMPLETED") then
 		local rewardQuestID, xp, money = ...;
-		if( ( xp and xp > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL ) or ( money and money > 0 ) ) then
+		if( ( xp and xp > 0 and not IsPlayerAtEffectiveMaxLevel() ) or ( money and money > 0 ) ) then
 			ScenarioObjectiveTracker_AnimateReward( xp, money );
 		end
 	elseif (event == "SPELL_UPDATE_COOLDOWN") then
@@ -202,7 +238,7 @@ function ScenarioObjectiveStageBlock_OnEnter(self)
 	  GameTooltip:SetText(name, 1, 0.914, 0.682, 1);
 	  GameTooltip:AddLine(description, 1, 1, 1, true);
 	  GameTooltip:AddLine(" ");
-	  if ( xp > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL ) then
+	  if ( xp > 0 and not IsPlayerAtEffectiveMaxLevel() ) then
 		GameTooltip:AddLine(string.format(BONUS_OBJECTIVE_EXPERIENCE_FORMAT, xp), 1, 1, 1);
 	  end
 	  if ( money > 0 ) then
@@ -287,7 +323,7 @@ function ScenarioObjectiveTracker_AnimateReward(xp, money)
 	rewardsFrame:Show();
 	rewardsFrame:SetScale(0.9);
 	local rewards = {};
-	if( xp > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL ) then
+	if( xp > 0 and not IsPlayerAtEffectiveMaxLevel() ) then
 		local t = {};
 		t.label = xp;
 		t.texture = "Interface\\Icons\\XP_Icon";
@@ -446,7 +482,7 @@ end
 function ScenarioChallengeDeathCountMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	GameTooltip:SetText(CHALLENGE_MODE_DEATH_COUNT_TITLE:format(self.count), 1, 1, 1);
-	GameTooltip:AddLine(CHALLENGE_MODE_DEATH_COUNT_DESCRIPTION:format(GetTimeStringFromSeconds(self.timeLost, false, true)));
+	GameTooltip:AddLine(CHALLENGE_MODE_DEATH_COUNT_DESCRIPTION:format(SecondsToClock(self.timeLost)));
 	GameTooltip:Show();
 end
 
@@ -466,7 +502,7 @@ function Scenario_ChallengeMode_UpdateTime(block, elapsedTime)
 	else
 		block.TimeLeft:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 	end
-	block.TimeLeft:SetText(GetTimeStringFromSeconds(timeLeft, false, true));
+	block.TimeLeft:SetText(SecondsToClock(timeLeft));
 end
 
 function Scenario_ChallengeMode_TimesUpLootStatus_OnEnter(self)
@@ -533,7 +569,7 @@ function Scenario_ProvingGrounds_UpdateTime(block, elapsedTime)
 	local anim = ScenarioProvingGroundsBlockAnim.CountdownAnim;
 	if ( elapsedTime < statusBar.duration ) then
 		statusBar:SetValue(statusBar.duration - elapsedTime);
-		statusBar.TimeLeft:SetText(GetTimeStringFromSeconds(statusBar.duration - elapsedTime));
+		statusBar.TimeLeft:SetText(SecondsToClock(statusBar.duration - elapsedTime, true));
 
 		local timeLeft = statusBar.duration - elapsedTime;
 		if (timeLeft <= 5) then
@@ -752,7 +788,7 @@ function SCENARIO_TRACKER_MODULE:AddProgressBar(block, line, criteriaIndex)
 				texture = "Interface\\Icons\\inv_misc_coin_02";
 			end
 			-- xp
-			if ( not texture and GetQuestLogRewardXP(rewardQuestID) > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL ) then
+			if ( not texture and GetQuestLogRewardXP(rewardQuestID) > 0 and not IsPlayerAtEffectiveMaxLevel() ) then
 				texture = "Interface\\Icons\\xp_icon";
 			end
 			if ( texture ) then
@@ -808,17 +844,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:StaticReanchor()
 end
 
 function ScenarioStage_UpdateOptionWidgetRegistration(stageBlock, widgetSetID)
-	if stageBlock.widgetSetID and stageBlock.widgetSetID ~= widgetSetID then
-		UIWidgetManager:UnregisterWidgetSetContainer(stageBlock.widgetSetID, stageBlock.WidgetContainer);
-		stageBlock.WidgetContainer:Hide();
-	end
-
-	if widgetSetID then
-		UIWidgetManager:RegisterWidgetSetContainer(widgetSetID, stageBlock.WidgetContainer);
-		stageBlock.WidgetContainer:Show();
-	end
-
-	stageBlock.widgetSetID = widgetSetID;
+	stageBlock.WidgetContainer:RegisterForWidgetSet(widgetSetID);
 end
 
 function ScenarioStage_CustomizeBlock(stageBlock, scenarioType, widgetSetID, textureKitID)
@@ -829,8 +855,10 @@ function ScenarioStage_CustomizeBlock(stageBlock, scenarioType, widgetSetID, tex
 		stageBlock.CompleteLabel:SetPoint("LEFT", stageBlock, "LEFT", 15, 17);
 		stageBlock.Stage:SetPoint("TOPLEFT", stageBlock, "TOPLEFT", 15, -8);
 		stageBlock.Stage:SetTextColor(1, 0.914, 0.682);
+		stageBlock.Stage:SetHeight(34);
 		stageBlock.NormalBG:Hide();
 	else
+		stageBlock.NormalBG:Show();
 		ScenarioStageBlock.CompleteLabel:SetPoint("LEFT", stageBlock, "LEFT", 15, 3);
 
 		if textureKitID then
@@ -962,6 +990,8 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 		end
 	end
 	ScenarioSpellButtons_UpdateCooldowns();
+
+	ObjectiveTracker_AddBlock(ScenarioWidgetContainerBlock);
 
 	-- add the scenario block
 	if ( BlocksFrame.currentBlock ) then

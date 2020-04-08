@@ -51,7 +51,10 @@ function WorldMapTrackingOptionsButtonMixin:OnLoad()
 	UIDropDownMenu_Initialize(self.DropDown, InitializeDropDown, "MENU");
 end
 
-function WorldMapTrackingOptionsButtonMixin:OnClick()
+function WorldMapTrackingOptionsButtonMixin:OnMouseDown(button)
+	self.Icon:SetPoint("TOPLEFT", 8, -8);
+	self.IconOverlay:Show();
+
 	local mapID = self:GetParent():GetMapID();
 	if not mapID then
 		return;
@@ -59,11 +62,6 @@ function WorldMapTrackingOptionsButtonMixin:OnClick()
 	self.DropDown.mapID = mapID;
 	ToggleDropDownMenu(1, nil, self.DropDown, self, 0, -5);
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-end
-
-function WorldMapTrackingOptionsButtonMixin:OnMouseDown()
-	self.Icon:SetPoint("TOPLEFT", 8, -8);
-	self.IconOverlay:Show();
 end
 
 function WorldMapTrackingOptionsButtonMixin:OnMouseUp()
@@ -84,6 +82,8 @@ function WorldMapTrackingOptionsButtonMixin:OnSelection(value, checked)
 
 	if (value == "quests") then
 		SetCVar("questPOI", checked and "1" or "0", "QUEST_POI");
+	elseif (value == "dungeon entrances") then
+		SetCVar("showDungeonEntrancesOnMap", checked and "1" or "0", "SHOW_DUNGEON_ENTRANCES");
 	elseif (value == "digsites") then
 		SetCVar("digSites", checked and "1" or "0", "SHOW_DIG_SITES");
 	elseif (value == "tamers") then
@@ -92,7 +92,7 @@ function WorldMapTrackingOptionsButtonMixin:OnSelection(value, checked)
 		SetCVar(value, checked and "1" or "0");
 	elseif (value == "worldQuestFilterResources" or value == "worldQuestFilterArtifactPower" or
 			value == "worldQuestFilterProfessionMaterials" or value == "worldQuestFilterGold" or
-			value == "worldQuestFilterEquipment") then
+			value == "worldQuestFilterEquipment" or value == "worldQuestFilterReputation") then
 		-- World quest reward filter cvars
 		SetCVar(value, checked and "1" or "0");
 	end
@@ -123,6 +123,11 @@ function WorldMapTrackingOptionsButtonMixin:InitializeDropDown()
 	info.checked = GetCVarBool("questPOI");
 	UIDropDownMenu_AddButton(info);
 
+	info.text = SHOW_DUNGEON_ENTRACES_ON_MAP_TEXT;
+	info.value = "dungeon entrances";
+	info.checked = GetCVarBool("showDungeonEntrancesOnMap");
+	UIDropDownMenu_AddButton(info);
+
 	local prof1, prof2, arch, fish, cook, firstAid = GetProfessions();
 	if arch then
 		info.text = ARCHAEOLOGY_SHOW_DIG_SITES;
@@ -138,9 +143,9 @@ function WorldMapTrackingOptionsButtonMixin:InitializeDropDown()
 		UIDropDownMenu_AddButton(info);
 	end
 
-	-- If we aren't on a map with world quests don't show the world quest reward filter options.
+	-- If we aren't on a map which has emissaries don't show the world quest reward filter options.
 	local mapID = self:GetParent():GetMapID();
-	if not mapID or not MapUtil.MapHasUnlockedBounties(mapID) then
+	if not mapID or not MapUtil.MapHasEmissaries(mapID) then
 		return;
 	end
 
@@ -197,6 +202,11 @@ function WorldMapTrackingOptionsButtonMixin:InitializeDropDown()
 	info.text = WORLD_QUEST_REWARD_FILTERS_EQUIPMENT;
 	info.value = "worldQuestFilterEquipment";
 	info.checked = GetCVarBool("worldQuestFilterEquipment");
+	UIDropDownMenu_AddButton(info);
+	
+	info.text = WORLD_QUEST_REWARD_FILTERS_REPUTATION;
+	info.value = "worldQuestFilterReputation";
+	info.checked = GetCVarBool("worldQuestFilterReputation");
 	UIDropDownMenu_AddButton(info);
 end
 
@@ -304,4 +314,153 @@ end
 
 function WorldMapZoneTimerMixin:Refresh()
 	-- nothing to do here
+end
+
+WorldMapThreatFrameMixin = {};
+
+function WorldMapThreatFrameMixin:OnLoad()
+	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
+	self.dirtyModels = true;
+end
+
+function WorldMapThreatFrameMixin:OnShow()
+	self:Refresh();
+	self:RegisterEvent("QUEST_ACCEPTED");
+	self:RegisterEvent("QUEST_REMOVED");
+end
+
+function WorldMapThreatFrameMixin:OnHide()
+	self:UnregisterEvent("QUEST_ACCEPTED");
+	self:UnregisterEvent("QUEST_REMOVED");
+end
+
+function WorldMapThreatFrameMixin:OnEvent(event)
+	if event == "QUEST_ACCEPTED" or event == "QUEST_REMOVED" then
+		self:Refresh();
+	elseif event == "UI_MODEL_SCENE_INFO_UPDATED" then
+		self.dirtyModels = true;
+		if self:IsVisible() then
+			self:RefreshModels();
+		end
+	end
+end
+
+local function DoActiveThreatMapsMatchBountySet(mapBountySetID)
+	local threatMaps = C_QuestLog.GetActiveThreatMaps();
+	if threatMaps then
+		for i, mapID in ipairs(threatMaps) do
+			local bounties, displayLocation, lockedQuestID, bountySetID = GetQuestBountyInfoForMapID(mapID);
+			if bountySetID == mapBountySetID then
+				return true;
+			end
+		end
+	end
+	return false;
+end
+
+function WorldMapThreatFrameMixin:Refresh()
+	local show = false;
+	if C_QuestLog.HasActiveThreats() then
+		local mapID = self:GetParent():GetMapID();
+		if mapID then
+			local bounties, displayLocation, lockedQuestID, bountySetID = GetQuestBountyInfoForMapID(mapID);
+			if displayLocation then
+				show = DoActiveThreatMapsMatchBountySet(bountySetID);
+			end
+		end
+	end
+
+	if show then
+		self.Background:Show();
+		self.Eye:Show();
+		
+		if not self.threatQuests then
+			self.threatQuests = C_TaskQuest.GetThreatQuests();
+		end
+
+		local haveActiveQuest = false;
+		for i, questID in ipairs(self.threatQuests) do
+			if C_TaskQuest.IsActive(questID) then
+				haveActiveQuest = true;
+				break;
+			end
+		end
+
+		self.ModelSceneTop:SetShown(haveActiveQuest);
+		self.ModelSceneBottom:SetShown(haveActiveQuest);
+		if haveActiveQuest then
+			self:RefreshModels();
+		end
+	else
+		self.Background:Hide();
+		self.Eye:Hide();
+		self.ModelSceneTop:Hide();
+		self.ModelSceneBottom:Hide();
+	end
+end
+
+function WorldMapThreatFrameMixin:RefreshModels()
+	if self.dirtyModels then
+		self.dirtyModels = false;
+		local forceUpdate = true;
+		if not self.modelSceneInfoTop then
+			self.modelSceneInfoTop = StaticModelInfo.CreateModelSceneEntry(313, 2387313);	-- SPELLS\\7FX_Argus_VoidOrb_State.m2
+		end
+		if not self.modelSceneInfoBottom then
+			self.modelSceneInfoBottom = StaticModelInfo.CreateModelSceneEntry(312, 1715654);-- SPELLS\\8FX_Generic_Void_Shield.m2
+		end
+		StaticModelInfo.SetupModelScene(self.ModelSceneTop, self.modelSceneInfoTop, forceUpdate);
+		StaticModelInfo.SetupModelScene(self.ModelSceneBottom, self.modelSceneInfoBottom, forceUpdate);
+	end
+end
+
+function WorldMapThreatFrameMixin:SetNextMapForThreat()
+	local threatMaps = C_QuestLog.GetActiveThreatMaps();
+	if not threatMaps then
+		return;
+	end
+
+	local currentMapID = self:GetParent():GetMapID();
+	local mapIndex = 1;
+	-- check if we're on the same map as a threat
+	for i, mapID in ipairs(threatMaps) do
+		if mapID == currentMapID then
+			-- we want the next map
+			mapIndex = i + 1;
+			break;
+		end
+	end
+	if mapIndex > #threatMaps then
+		mapIndex = 1;
+	end
+
+	self:GetParent():SetMapID(threatMaps[mapIndex]);
+end
+
+WorldMapThreatEyeMixin = { };
+
+function WorldMapThreatEyeMixin:OnShow()
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_THREAT_ICON) then
+		local helpTipInfo = {
+			text = WORLD_MAP_THREATS_TOOLTIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_WORLD_MAP_THREAT_ICON,
+			targetPoint = HelpTip.Point.TopEdgeCenter,
+			alignment = HelpTip.Alignment.Left,
+		};
+		HelpTip:Show(self, helpTipInfo);
+	end
+end
+
+function WorldMapThreatEyeMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -9, -5);
+	GameTooltip_SetTitle(GameTooltip, WORLD_MAP_THREATS);
+	GameTooltip_AddColoredLine(GameTooltip, WORLD_MAP_THREATS_TOOLTIP, GREEN_FONT_COLOR);
+	GameTooltip:Show();
+	HelpTip:Acknowledge(self, WORLD_MAP_THREATS_TOOLTIP);
+end
+
+function WorldMapThreatEyeMixin:OnMouseDown()
+	self:GetParent():SetNextMapForThreat();
 end

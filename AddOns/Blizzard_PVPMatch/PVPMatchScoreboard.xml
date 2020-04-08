@@ -1,0 +1,173 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="PVPMatchScoreboard.lua"/>
+	
+	<Frame name="PVPMatchScoreboard" mixin="PVPMatchScoreboardMixin" frameStrata="DIALOG" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Size x="1024" y="420"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="3.6" y="3"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="Content">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="30" y="-35"/>
+					<Anchor point="BOTTOMRIGHT" x="-30" y="35"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="pvpscoreboard-background" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="InsetBorderTopLeft" inherits="UI-Frame-InnerTopLeft">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Content"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="InsetBorderTopRight" inherits="UI-Frame-InnerTopRight">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.Content"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="InsetBorderBottomLeft" inherits="UI-Frame-InnerBotLeftCorner">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Content"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="InsetBorderBottomRight" inherits="UI-Frame-InnerBotRight">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Content"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="InsetBorderTop" inherits="_UI-Frame-InnerTopTile">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="InsetBorderBottom" inherits="_UI-Frame-InnerBotTile">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft" relativePoint="BOTTOMRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBorderBottomRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="InsetBorderLeft" inherits="!UI-Frame-InnerLeftTile">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="InsetBorderRight" inherits="!UI-Frame-InnerRightTile">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="BOTTOMRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBorderBottomRight" relativePoint="TOPRIGHT" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="ScrollCategories">
+						<Size y="50"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="3" y="-3"/>
+							<Anchor point="TOPRIGHT" x="-25" y="-3"/>
+						</Anchors>
+					</Frame>
+					<ScrollFrame parentKey="ScrollFrame" inherits="HybridScrollFrameTemplate">
+						<Size y="256"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollCategories" relativePoint="BOTTOMLEFT"/>
+							<Anchor point="TOPRIGHT" x="-22"/>
+						</Anchors>
+						<Frames>
+							<Slider inherits="HybridScrollBarTemplate" parentKey="ScrollBar">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" y="36"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" y="14"/>
+								</Anchors>
+							</Slider>
+						</Frames>
+            <Layers>
+              <Layer>
+                <Texture parentKey="Background" atlas="pvpscoreboard-background-color" alphaMode="ADD" setAllPoints="true"/>
+              </Layer>
+            </Layers>
+					</ScrollFrame>
+					<Frame parentKey="TabContainer">
+						<Size y="45"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.ScrollFrame" relativePoint="BOTTOM"/>
+							<Anchor point="LEFT" relativePoint="BOTTOMLEFT"/>
+							<Anchor point="TOPRIGHT"/>
+						</Anchors>
+						<Layers>
+							<Layer>
+								<Texture parentKey="InsetBorderTop" inherits="_UI-Frame-InnerTopTile">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="3"/>
+										<Anchor point="TOPRIGHT" x="-3"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="MatchmakingText" inherits="GameFontNormal" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="RIGHT" x="-10" y="2"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="TabGroup">
+								<Size x="1" y="1"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="10" y="-50"/>
+								</Anchors>
+								<Frames>
+									<Button name="PVPScoreboardTab1" parentKey="Tab1" inherits="CharacterFrameTabButtonTemplate" id="1">
+										<KeyValues>
+											<KeyValue key="factionEnum" value="-1" type="number"/>
+										</KeyValues>
+											<Anchors>
+											<Anchor point="TOPLEFT" y="50"/>
+										</Anchors>
+									</Button>
+									<Button name="PVPScoreboardTab2" parentKey="Tab2" inherits="CharacterFrameTabButtonTemplate" id="2">
+										<KeyValues>
+											<KeyValue key="factionEnum" value="1" type="number"/>
+										</KeyValues>
+										<Anchors>
+											<Anchor point="LEFT" relativeKey="$parent.Tab1" relativePoint="RIGHT" x="-14"/>
+										</Anchors>
+									</Button>
+									<Button name="PVPScoreboardTab3" parentKey="Tab3" inherits="CharacterFrameTabButtonTemplate" id="3">
+										<KeyValues>
+											<KeyValue key="factionEnum" value="0" type="number"/>
+										</KeyValues>
+										<Anchors>
+											<Anchor point="LEFT" relativeKey="$parent.Tab2" relativePoint="RIGHT" x="-14"/>
+										</Anchors>
+									</Button>
+								</Frames>
+							</Frame>
+						</Frames>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Layers>
+      <Layer level="BACKGROUND">
+				<Texture atlas="groupfinder-background" useAtlasSize="true" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

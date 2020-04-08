@@ -151,22 +151,41 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="BasicMessageDialog" inherits="DialogBoxFrame">
-		<Size>
-			<AbsDimension x="384" y="128"/>
-		</Size>
+	<Frame name="BasicMessageDialog" toplevel="true" frameStrata="DIALOG" hidden="true">
+		<Size x="384" y="128"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Text" inherits="GameFontRedLarge" justifyH="CENTER" justifyV="TOP" nonspacewrap="true">
-					<Size>
-						<AbsDimension x="360" y="0"/>
-					</Size>
+					<Size x="360" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-16"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<Button name="$parentButton">
+				<Size x="128" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="16"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<ButtonText text="OKAY"/>
+				<NormalFont style="DialogButtonNormalText"/>
+				<HighlightFont style="DialogButtonHighlightText"/>
+			</Button>
+		</Frames>
 	</Frame>
 
 	<Frame name="TitleDragAreaTemplate" virtual="true">
@@ -332,5 +351,23 @@
 				</Scripts>
 			</Button>
 		</Frames>
+	</Frame>
+
+	<Frame name="NewCallout" inherits="ResizeLayoutFrame" virtual="true" hidden="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="GameFontHighlight" maxLines="1" justifyH="CENTER" text="NEW_CAPS">
+					<Shadow>
+						<Color r="0.32" g="0.5" b="1.0"/>
+					</Shadow>
+				</FontString>
+				<Texture parentKey="Glow" atlas="collections-newglow">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Text" x="-20" y="10"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Text" x="20" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 	</Frame>
 </Ui>

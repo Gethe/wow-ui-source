@@ -100,6 +100,26 @@
 						<Anchor point="RIGHT" relativeTo="$parentTextLeft5" relativePoint="LEFT" x="40" y="0"/>
 					</Anchors>
 				</FontString>
+				<FontString name="$parentTextLeft6" inherits="GlueFontNormalSmall" justifyH="LEFT" hidden="true" parentKey="TextLeft6">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTextLeft5" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTextRight6" inherits="GlueFontNormalSmall" justifyH="RIGHT" hidden="true" parentKey="TextRight6">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentTextLeft6" relativePoint="LEFT" x="40" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTextLeft7" inherits="GlueFontNormalSmall" justifyH="LEFT" hidden="true" parentKey="TextLeft7">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTextLeft6" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTextRight7" inherits="GlueFontNormalSmall" justifyH="RIGHT" hidden="true" parentKey="TextRight7">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentTextLeft7" relativePoint="LEFT" x="40" y="0"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>

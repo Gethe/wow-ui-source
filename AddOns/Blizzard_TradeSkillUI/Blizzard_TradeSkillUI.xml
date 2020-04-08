@@ -17,9 +17,9 @@
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="TabardEmblem" file="Interface\GuildFrame\GuildEmblemsLG_01">
-					<Size x="64" y="64"/>
+					<Size x="56" y="64"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-8" y="9"/>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPLEFT" x="24" y="-24"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -175,7 +175,7 @@
 				</Scripts>
 			</Button>
 
-			<Button parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
+			<DropDownToggleButton parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
 				<Size x="70" y="22"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-12" y="-55"/>
@@ -191,12 +191,13 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnClick>
+					<OnMouseDown>
+						UIMenuButtonStretchMixin.OnMouseDown(self, button);
 						ToggleDropDownMenu(1, nil, self:GetParent().FilterDropDown, self, 74, 15);
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-					</OnClick>
+					</OnMouseDown>
 				</Scripts>
-			</Button>
+			</DropDownToggleButton>
 			<Frame name="TradeSkillFilterDropDown" parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate">
 				<Scripts>
 					<OnLoad>
@@ -206,7 +207,7 @@
 				</Scripts>
 			</Frame>
 
-			<Button parentKey="LinkToButton">
+			<Button parentKey="LinkToButton" mixin="DropDownToggleButtonMixin">
 				<Size x="30" y="30"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.FilterButton" relativePoint="TOPRIGHT" x="3" y="1"/>

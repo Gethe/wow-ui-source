@@ -1,9 +1,28 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
-	<Frame name="CommentatorCooldownTemplate" inherits="CooldownFrameTemplate" useParentLevel="true" mixin="CommentatorCooldownFrameMixin" virtual="true">
+	<Frame name="CommentatorSpellFrameMixin" inherits="CooldownFrameTemplate" useParentLevel="true" mixin="CommentatorSpellFrameMixin" virtual="true">
 		<Size x="36" y="36" />
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Icon" />
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" >
+				<Scripts>
+					<OnLoad>
+						self:SetHideCountdownNumbers(false);
+					</OnLoad>
+				</Scripts>
+				<SwipeTexture>
+					<Color r="0" g="0" b="0" a="0.7"/>
+				</SwipeTexture>
+			</Cooldown>
+		</Frames>
+	</Frame>
+	<Frame name="CommentatorDebuffFrameTemplate" inherits="CommentatorSpellFrameMixin" mixin="CommentatorDebuffFrameMixin" virtual="true"/>
+	<Frame name="CommentatorCooldownFrameTemplate" inherits="CommentatorSpellFrameMixin" mixin="CommentatorCooldownFrameMixin" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
 				<FontString parentKey="ChargesText" inherits="NumberFontNormal" justifyH="RIGHT">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
@@ -29,16 +48,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" >
-				<Scripts>
-					<OnLoad>
-						self:SetHideCountdownNumbers(false);
-					</OnLoad>
-				</Scripts>
-				<SwipeTexture>
-					<Color r="0" g="0" b="0" a="0.7"/>
-				</SwipeTexture>
-			</Cooldown>
 			<Cooldown parentKey="Charges" frameStrata="DIALOG" inherits="CooldownFrameTemplate">
 				<Scripts>
 					<OnLoad>

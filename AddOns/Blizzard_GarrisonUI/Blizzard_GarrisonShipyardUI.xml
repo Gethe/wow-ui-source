@@ -1604,8 +1604,6 @@
 						self:SetAlpha(1);
 						GarrisonMission_SetFollowerModelItems(self);
 					</OnModelLoaded>
-					<OnMouseDown function="GarrisonFollowerPageModel_OnMouseDown"/>
-					<OnMouseUp function="GarrisonFollowerPageModel_OnMouseUp"/>
 				</Scripts>
 			</CinematicModel>
 			<Button parentKey="Trait1" parentArray="Traits" inherits="GarrisonShipTraitTemplate">

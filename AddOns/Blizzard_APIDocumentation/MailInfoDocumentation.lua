@@ -7,6 +7,16 @@ local MailInfo =
 	Functions =
 	{
 		{
+			Name = "CanCheckInbox",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canCheckInbox", Type = "bool", Nilable = false },
+				{ Name = "secondsUntilAllowed", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "HasInboxMoney",
 			Type = "Function",
 

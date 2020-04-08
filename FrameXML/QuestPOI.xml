@@ -1,8 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	
+
 	<Script file="QuestPOI.lua"/>
-	
+
 	<Button name="QuestPOINumericTemplate" hidden="true" virtual="true">
 		<Size x="20" y="20"/>
 		<Layers>
@@ -12,7 +12,7 @@
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
-				</Texture>				
+				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="Number" file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga">
@@ -32,7 +32,7 @@
 			<Size x="32" y="32"/>
 			<Anchors>
 				<Anchor point="CENTER"/>
-			</Anchors>	
+			</Anchors>
 			<TexCoords left="0.875" right="1" top="0.875" bottom="1"/>
 		</NormalTexture>
 		<HighlightTexture parentKey="HighlightTexture" file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga" alphaMode="ADD">
@@ -46,11 +46,11 @@
 			<Size x="32" y="32"/>
 			<Anchors>
 				<Anchor point="CENTER"/>
-			</Anchors>			
+			</Anchors>
 			<TexCoords left="0.750" right=".875" top="0.875" bottom="1"/>
 		</PushedTexture>
 	</Button>
-	<Button name="QuestPOICompletedTemplate" hidden="true" virtual="true">
+	<Button name="QuestPOICompletedTemplate" hidden="true" virtual="true" motionScriptsWhileDisabled="true">
 		<Size x="20" y="20"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -84,27 +84,29 @@
 						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 					</Anchors>
 					<TexCoords left="0.5" right="1" top="0.0" bottom="0.5"/>
-				</Texture>				
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
 			<OnMouseDown function="QuestPOIButton_OnMouseDown"/>
 			<OnMouseUp function="QuestPOIButton_OnMouseUp"/>
-			<OnClick function="QuestPOIButton_OnClick"/>			
+			<OnClick function="QuestPOIButton_OnClick"/>
+			<OnEnter function="QuestPOIButton_OnEnter"/>
+			<OnLeave function="QuestPOIButton_OnLeave"/>
 		</Scripts>
 		<NormalTexture parentKey="NormalTexture" file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga">
 			<Size x="32" y="32"/>
 			<Anchors>
 				<Anchor point="CENTER"/>
-			</Anchors>			
+			</Anchors>
 			<TexCoords left="0.875" right="1" top="0.875" bottom="1"/>
 		</NormalTexture>
 		<PushedTexture parentKey="PushedTexture" file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga" alphaMode="BLEND">
 			<Size x="32" y="32"/>
 			<Anchors>
 				<Anchor point="CENTER"/>
-			</Anchors>		
+			</Anchors>
 			<TexCoords left="0.750" right=".875" top="0.875" bottom="1"/>
-		</PushedTexture>		
+		</PushedTexture>
 	</Button>
 </Ui>

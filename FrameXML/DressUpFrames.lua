@@ -1,3 +1,7 @@
+function DressUpLink(link)
+	return link and (DressUpItemLink(link) or DressUpBattlePetLink(link) or DressUpMountLink(link));
+end
+
 function DressUpItemLink(link)
 	if( link ) then 
 		if ( IsDressableItem(link) ) then
@@ -14,114 +18,151 @@ function DressUpTransmogLink(link)
 	return DressUpVisual(link);
 end
 
-function DressUpVisual(...)
-	if ( SideDressUpFrame.parentFrame and SideDressUpFrame.parentFrame:IsShown() ) then
-		if ( not SideDressUpFrame:IsShown() or SideDressUpFrame.mode ~= "player" ) then
-			SideDressUpFrame.mode = "player";
-			SideDressUpFrame.ResetButton:Show();
-
-			local race, fileName = UnitRace("player");
-			SetDressUpBackground(SideDressUpFrame, fileName);
-
-			ShowUIPanel(SideDressUpFrame);
-			SideDressUpModel:SetUnit("player");
+local function GetFrameAndSetBackground(raceFilename, classFilename)
+	local frame;
+	if SideDressUpFrame.parentFrame and SideDressUpFrame.parentFrame:IsShown() then
+		frame = SideDressUpFrame;
+		if not raceFilename then
+			raceFilename = select(2, UnitRace("player"));
 		end
-		SideDressUpModel:TryOn(...);
 	else
-		DressUpFrame_Show();
-		DressUpModel:TryOn(...);
+		frame = DressUpFrame;
+		if not classFilename then
+			classFilename = select(2, UnitClass("player"));
+		end
 	end
+
+	SetDressUpBackground(frame, raceFilename, classFilename);
+
+	return frame;
+end
+
+function DressUpVisual(...)
+	local frame = GetFrameAndSetBackground();
+	DressUpFrame_Show(frame);
+
+	local playerActor = frame.ModelScene:GetPlayerActor();
+	if (not playerActor) then
+		return false;
+	end
+
+	local result = playerActor:TryOn(...);
+	if ( result ~= Enum.ItemTryOnReason.Success ) then
+		UIErrorsFrame:AddExternalErrorMessage(ERR_NOT_EQUIPPABLE);
+	end
+	DressUpFrame_OnDressModel(frame);
 	return true;
+end
+
+function DressUpTransmogSet(itemModifiedAppearanceIDs)
+	local frame = GetFrameAndSetBackground();
+	DressUpFrame_Show(frame);
+	DressUpFrame_ApplyAppearances(frame, itemModifiedAppearanceIDs);
 end
 
 function DressUpBattlePetLink(link)
 	if( link ) then 
-		
-		local _, _, _, linkType, speciesIDString, _, _, _, _, _, battlePetID = strsplit(":|H", link);
-		if ( linkType == "battlepet" ) then
+		local _, _, _, linkType, linkID, _, _, _, _, _, battlePetID, battlePetDisplayID = strsplit(":|H", link);
+		if ( linkType == "item") then
+			local _, _, _, creatureID, _, _, _, _, _, _, _, displayID, speciesID = C_PetJournal.GetPetInfoByItemID(tonumber(linkID));
+			if (creatureID and displayID) then
+				return DressUpBattlePet(creatureID, displayID, speciesID);
+			end
+		elseif ( linkType == "battlepet" ) then
 			local speciesID, _, _, _, _, displayID, _, _, _, _, creatureID = C_PetJournal.GetPetInfoByPetID(battlePetID);
-			if ( speciesID == tonumber(speciesIDString)) then
-				return DressUpBattlePet(creatureID, displayID);
+			if ( speciesID == tonumber(linkID)) then
+				return DressUpBattlePet(creatureID, displayID, speciesID);
 			else
-				local _, _, _, creatureID, _, _, _, _, _, _, _, displayID = C_PetJournal.GetPetInfoBySpeciesID(tonumber(speciesIDString));
-				return DressUpBattlePet(creatureID, displayID);
+				speciesID = tonumber(linkID);
+				local _, _, _, creatureID, _, _, _, _, _, _, _, displayID = C_PetJournal.GetPetInfoBySpeciesID(speciesID);
+				displayID = (battlePetDisplayID and battlePetDisplayID ~= "0") and battlePetDisplayID or displayID;
+				return DressUpBattlePet(creatureID, displayID, speciesID);
 			end
 		end
 	end
 	return false
 end
 
-function DressUpBattlePet(creatureID, displayID)
+function DressUpBattlePet(creatureID, displayID, speciesID)
 	if ( not displayID and not creatureID ) then
 		return false;
 	end
-
-	--Figure out which frame we're going to use
-	local frame, model, fileName, atlasPostfix;
-	if ( SideDressUpFrame.parentFrame and SideDressUpFrame.parentFrame:IsShown() ) then
-		frame, model, fileName = SideDressUpFrame, SideDressUpModel, "Pet";
-	else
-		frame, model, atlasPostfix = DressUpFrame, DressUpModel, "warrior"; --default to warrior BG when viewing full Pet/Mounts for now
-	end
+	
+	local frame = GetFrameAndSetBackground("Pet", "warrior");	--default to warrior BG when viewing full Pet/Mounts for now
 
 	--Show the frame
 	if ( not frame:IsShown() or frame.mode ~= "battlepet" ) then
-		SetDressUpBackground(frame, fileName, atlasPostfix);
 		ShowUIPanel(frame);
 	end
-
-	--Set up the model on the frame
 	frame.mode = "battlepet";
 	frame.ResetButton:Hide();
-	if ( displayID and displayID ~= 0 ) then
-		model:SetPosition(0,0,0);
-		model:SetDisplayInfo(displayID);
-	else
-		model:SetPosition(0,0,0);
-		model:SetCreature(creatureID);
+
+	local _, loadoutModelSceneID = C_PetJournal.GetPetModelSceneInfoBySpeciesID(speciesID);
+
+	frame.ModelScene:ClearScene();
+	frame.ModelScene:SetViewInsets(0, 0, 50, 0);
+	frame.ModelScene:TransitionToModelSceneID(loadoutModelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
+
+	local battlePetActor = frame.ModelScene:GetActorByTag("pet");
+	if ( battlePetActor ) then
+		battlePetActor:SetModelByCreatureDisplayID(displayID);
+		battlePetActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
 	end
 	return true;
 end
 
 function DressUpMountLink(link)
-	if( link ) then 
-		local _, _, _, linkType, spellID = strsplit(":|H", link);
-		if linkType == "spell" then
-			local mountID = C_MountJournal.GetMountFromSpell(tonumber(spellID));
-			if ( mountID ) then
-				local creatureDisplayID = C_MountJournal.GetMountInfoExtraByID(mountID);
-				return DressUpMount(creatureDisplayID);
-			end
+	if( link ) then
+		local mountID = 0;
+
+		local _, _, _, linkType, linkID = strsplit(":|H", link);
+		if linkType == "item" then
+			mountID = C_MountJournal.GetMountFromItem(tonumber(linkID));
+		elseif linkType == "spell" then
+			mountID = C_MountJournal.GetMountFromSpell(tonumber(linkID));
+		end
+
+		if ( mountID ) then
+			return DressUpMount(mountID);
 		end
 	end
 	return false
 end
 
-function DressUpMount(creatureDisplayID)
-	if ( not creatureDisplayID or creatureDisplayID == 0 ) then
+function DressUpMount(mountID)
+	if ( not mountID or mountID == 0 ) then
 		return false;
 	end
 
-	--Figure out which frame we're going to use
-	local frame, model, fileName, atlasPostfix;
-	if ( SideDressUpFrame.parentFrame and SideDressUpFrame.parentFrame:IsShown() ) then
-		frame, model, fileName = SideDressUpFrame, SideDressUpModel, "Pet";
-	else
-		frame, model, atlasPostfix = DressUpFrame, DressUpModel, "warrior"; --default to warrior BG when viewing full Pet/Mounts for now
-	end
+	local frame = GetFrameAndSetBackground("Pet", "warrior");	--default to warrior BG when viewing full Pet/Mounts for now
 
 	--Show the frame
 	if ( not frame:IsShown() or frame.mode ~= "mount" ) then
-		SetDressUpBackground(frame, fileName, atlasPostfix);
 		ShowUIPanel(frame);
 	end
-
-	--Set up the model on the frame
 	frame.mode = "mount";
 	frame.ResetButton:Hide();
-	model:SetPosition(0,0,0);
-	model:SetDisplayInfo(creatureDisplayID);
 
+	local creatureDisplayID, _, _, isSelfMount, _, modelSceneID, animID, spellVisualKitID, disablePlayerMountPreview = C_MountJournal.GetMountInfoExtraByID(mountID);
+	frame.ModelScene:ClearScene();
+	frame.ModelScene:SetViewInsets(0, 0, 0, 0);
+	local forceEvenIfSame = true;
+	frame.ModelScene:TransitionToModelSceneID(modelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceEvenIfSame);
+	
+	local mountActor = frame.ModelScene:GetActorByTag("unwrapped");
+	if mountActor then
+		mountActor:SetModelByCreatureDisplayID(creatureDisplayID);
+
+		-- mount self idle animation
+		if (isSelfMount) then
+			mountActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+			mountActor:SetAnimation(618); -- MountSelfIdle
+		else
+			mountActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_ANIM);
+			mountActor:SetAnimation(0);
+		end
+		frame.ModelScene:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview);
+	end
 	return true;
 end
 
@@ -135,8 +176,8 @@ function DressUpTexturePath(raceFileName)
 	return "Interface\\DressUpFrame\\DressUpBackground-"..raceFileName;
 end
 
-function SetDressUpBackground(frame, fileName, atlasPostfix)
-	local texture = DressUpTexturePath(fileName);
+function SetDressUpBackground(frame, raceFilename, classFilename)
+	local texture = DressUpTexturePath(raceFilename);
 	
 	if ( frame.BGTopLeft ) then
 		frame.BGTopLeft:SetTexture(texture..1);
@@ -151,8 +192,8 @@ function SetDressUpBackground(frame, fileName, atlasPostfix)
 		frame.BGBottomRight:SetTexture(texture..4);
 	end
 	
-	if ( frame.ModelBackground and atlasPostfix ) then
-		frame.ModelBackground:SetAtlas("dressingroom-background-"..atlasPostfix);
+	if ( frame.ModelBackground and classFilename ) then
+		frame.ModelBackground:SetAtlas("dressingroom-background-"..classFilename);
 	end
 end
 
@@ -164,18 +205,39 @@ function DressUpFrame_OnDressModel(self)
 	end
 end
 
-function DressUpFrame_Show()
-	if ( not DressUpFrame:IsShown() or DressUpFrame.mode ~= "player") then
-		DressUpFrame.mode = "player";
-		DressUpFrame.ResetButton:Show();
+function DressUpFrame_Show(frame)
+	if ( not frame:IsShown() or frame.mode ~= "player") then
+		frame.mode = "player";
+		frame.ResetButton:Show();
 
-		local className, classFileName = UnitClass("player");
-		SetDressUpBackground(DressUpFrame, nil, classFileName);
+		-- If there's not enough space as-is, try minimizing.
+		if not CanShowRightUIPanel(frame) and not frame.MaximizeMinimizeFrame:IsMinimized() then
+			local isAutomaticAction = true;
+			frame.MaximizeMinimizeFrame:Minimize(isAutomaticAction);
 
-		ShowUIPanel(DressUpFrame);
-		DressUpModel:SetPosition(0,0,0);
-		DressUpModel:SetUnit("player");
+			-- Restore the frame to its original state if we still can't fit.
+			if not CanShowRightUIPanel(frame) then
+				frame.MaximizeMinimizeFrame:Maximize(isAutomaticAction);
+			end
+		end
+
+		ShowUIPanel(frame);
+
+		frame.ModelScene:ClearScene();
+		frame.ModelScene:SetViewInsets(0, 0, 0, 0);
+		frame.ModelScene:TransitionToModelSceneID(290, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
+		
+		local sheatheWeapons = false;
+		local autoDress = true;
+		local itemModifiedAppearanceIDs = nil;
+		SetupPlayerForModelScene(frame.ModelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress);
 	end
+end
+
+function DressUpFrame_ApplyAppearances(frame, itemModifiedAppearanceIDs)
+	local sheatheWeapons = false;
+	local autoDress = true;
+	SetupPlayerForModelScene(frame.ModelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress);
 end
 
 function DressUpSources(appearanceSources, mainHandEnchant, offHandEnchant)
@@ -183,26 +245,40 @@ function DressUpSources(appearanceSources, mainHandEnchant, offHandEnchant)
 		return true;
 	end
 
-	DressUpFrame_Show();
+	local raceFilename = nil;
+	local classFilename = select(2, UnitClass("player"));
+	SetDressUpBackground(DressUpFrame, raceFilename, classFilename);
+	DressUpFrame_Show(DressUpFrame);
+
+	local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
+	if (not playerActor) then
+		return true;
+	end
+
 	local mainHandSlotID = GetInventorySlotInfo("MAINHANDSLOT");
 	local secondaryHandSlotID = GetInventorySlotInfo("SECONDARYHANDSLOT");
 	for i = 1, #appearanceSources do
 		if ( i ~= mainHandSlotID and i ~= secondaryHandSlotID ) then
 			if ( appearanceSources[i] and appearanceSources[i] ~= NO_TRANSMOG_SOURCE_ID ) then
-				DressUpModel:TryOn(appearanceSources[i]);
+				playerActor:TryOn(appearanceSources[i]);
 			end
 		end
 	end
 
-	DressUpModel:TryOn(appearanceSources[mainHandSlotID], "MAINHANDSLOT", mainHandEnchant);
-	DressUpModel:TryOn(appearanceSources[secondaryHandSlotID], "SECONDARYHANDSLOT", offHandEnchant);
+	playerActor:TryOn(appearanceSources[mainHandSlotID], "MAINHANDSLOT", mainHandEnchant);
+	playerActor:TryOn(appearanceSources[secondaryHandSlotID], "SECONDARYHANDSLOT", offHandEnchant);
 end
 
 DressUpOutfitMixin = { };
 
 function DressUpOutfitMixin:GetSlotSourceID(slot, transmogType)
+	local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
+	if (not playerActor) then
+		return;
+	end
+
 	local slotID = GetInventorySlotInfo(slot);
-	local appearanceSourceID, illusionSourceID = DressUpModel:GetSlotTransmogSources(slotID);
+	local appearanceSourceID, illusionSourceID = playerActor:GetSlotTransmogSources(slotID);
 	if ( transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
 		return appearanceSourceID;
 	elseif ( transmogType == LE_TRANSMOG_TYPE_ILLUSION ) then
@@ -215,18 +291,6 @@ function DressUpOutfitMixin:LoadOutfit(outfitID)
 		return;
 	end
 	DressUpSources(C_TransmogCollection.GetOutfitSources(outfitID))
-end
-
-function SideDressUpFrame_OnShow(self)
-	SetUIPanelAttribute(self.parentFrame, "width", self.openWidth);
-	UpdateUIPanelPositions(self.parentFrame);
-	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-end
-
-function SideDressUpFrame_OnHide(self)
-	SetUIPanelAttribute(self.parentFrame, "width", self.closedWidth);
-	UpdateUIPanelPositions();
-	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 end
 
 function SetUpSideDressUpFrame(parentFrame, closedWidth, openWidth, point, relativePoint, offsetX, offsetY)

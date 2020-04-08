@@ -7,6 +7,15 @@ local TradeSkillUI =
 	Functions =
 	{
 		{
+			Name = "GetAllProfessionTradeSkillLines",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "skillLineID", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTradeSkillDisplayName",
 			Type = "Function",
 
@@ -33,6 +42,24 @@ local TradeSkillUI =
 				{ Name = "skillLineModifier", Type = "number", Nilable = false },
 				{ Name = "parentSkillLineID", Type = "number", Nilable = true },
 				{ Name = "parentSkillLineDisplayName", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetTradeSkillLineInfoByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "skillLineID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "skillLineDisplayName", Type = "string", Nilable = false },
+				{ Name = "skillLineRank", Type = "number", Nilable = false },
+				{ Name = "skillLineMaxRank", Type = "number", Nilable = false },
+				{ Name = "skillLineModifier", Type = "number", Nilable = false },
+				{ Name = "parentSkillLineID", Type = "number", Nilable = true },
 			},
 		},
 		{

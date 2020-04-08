@@ -6,11 +6,11 @@ BoostTutorial = {
 	MINIMUM_POINTER_SHOW_TIME = 3,
 };
 
-function BoostTutorial:EVENT_TUTORIAL_UNHIGHLIGHT_SPELL()
+function BoostTutorial:TUTORIAL_UNHIGHLIGHT_SPELL()
 	self:UnhighlightSpells();
 end
 
-function BoostTutorial:EVENT_TUTORIAL_HIGHLIGHT_SPELL(spellID, textID)
+function BoostTutorial:TUTORIAL_HIGHLIGHT_SPELL(spellID, textID)
 	self:HighlightSpell(spellID, textID);
 end
 
@@ -18,7 +18,7 @@ function BoostTutorial:SPELL_PUSHED_TO_ACTIONBAR(spellID)
 	self.spellQueue[spellID] = true;
 end
 
-function BoostTutorial:UNIT_SPELLCAST_SUCCEEDED(unit, name, rank, lineID, spellID)
+function BoostTutorial:UNIT_SPELLCAST_SUCCEEDED(unit, cast, spellID)
 	-- NOTE: Might not want to to do this here in case the tutorial requires multiple spell casts...
 	-- but in that case, shouldn't the server be telling the client to highlight a spell?
 	self:UnhighlightSpells(spellID);

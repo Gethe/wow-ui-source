@@ -1,5 +1,16 @@
 local BATTLE_PET_TOOLTIP = {};
 
+function BattlePetToolTip_ShowLink(battlePetLink)
+	local linkType, linkOptions, name = LinkUtil.ExtractLink(battlePetLink);
+	if linkType ~= "battlepet" then
+		return false;
+	end
+
+	local speciesID, level, breedQuality, maxHealth, power, speed = strsplit(":", linkOptions);
+	BattlePetToolTip_Show(tonumber(speciesID), tonumber(level), tonumber(breedQuality), tonumber(maxHealth), tonumber(power), tonumber(speed), name);
+	return true;
+end
+
 function BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, customName)
 	if (speciesID and speciesID > 0) then
 		local name, icon, petType = C_PetJournal.GetPetInfoBySpeciesID(speciesID);

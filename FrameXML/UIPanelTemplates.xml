@@ -461,6 +461,26 @@
 		</PushedTexture>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 	</Button>
+
+    <Button name="UIPanelBorderedButtonTemplate" virtual="true">
+        <Size x="40" y="40"/>
+        <Layers>
+            <Layer level="BORDER">
+                <Texture parentKey="Icon">
+                    <Size x="38" y="38"/>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK" textureSubLevel="-1">
+                <Texture parentKey="Border" file="Interface\Common\WhiteIconFrame" setAllPoints="true"/>
+            </Layer>
+        </Layers>
+        <PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+        <HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+    </Button>
+
 	<Button name="UIPanelLargeSilverButton" virtual="true">
 		<Size>
 			<AbsDimension x="96" y="46"/>
@@ -548,6 +568,58 @@
 			</OnMouseUp>
 		</Scripts>
 	</Button>
+
+	<Frame name="RoleCountNoScriptsTemplate" virtual="true">
+		<Size x="125" y="17"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="DamagerIcon" atlas="groupfinder-icon-role-large-dps">
+					<Size x="17" y="17"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="-11" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="DamagerCount" inherits="GameFontHighlightSmall" justifyH="CENTER">
+					<Size x="17" y="14"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.DamagerIcon" relativePoint="LEFT" x="-1" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="HealerIcon" atlas="groupfinder-icon-role-large-heal">
+					<Size x="17" y="17"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.DamagerCount" relativePoint="LEFT" x="-4" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="HealerCount" inherits="GameFontHighlightSmall" justifyH="CENTER">
+					<Size x="17" y="14"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.HealerIcon" relativePoint="LEFT" x="-1" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="TankIcon" atlas="groupfinder-icon-role-large-tank">
+					<Size x="17" y="17"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.HealerCount" relativePoint="LEFT" x="-4" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="TankCount" inherits="GameFontHighlightSmall" justifyH="CENTER">
+					<Size x="17" y="14"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.TankIcon" relativePoint="LEFT" x="-1" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="RoleCountTemplate" mixin="RoleCountMixin" inherits="RoleCountNoScriptsTemplate" virtual="true">
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
 
 	<!-- Talent Frame -->
 
@@ -1304,8 +1376,8 @@
 				</Texture>
 				<Texture parentKey="TitleBg" inherits="_UI-Frame-TitleTileBg">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="2" y="-3"/>
-						<Anchor point="TOPRIGHT" x="-25" y="-3"/>
+						<Anchor point="TOPLEFT" x="2" y="-1"/>
+						<Anchor point="TOPRIGHT" x="-25" y="-1"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -1647,8 +1719,8 @@
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTitleBg"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentTitleBg"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TitleBg"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TitleBg"/>
 					</Anchors>
 					<Color r="0.302" g="0.102" b="0.204" a="1"/>
 				</Texture>
@@ -2073,7 +2145,7 @@
     Help Plate System
 *******************************************************************************
 -->
-	<Button name="MainHelpPlateButton" virtual="true">
+	<Button name="MainHelpPlateButton" frameLevel="510" virtual="true">
 		<Size x="64" y="64"/>
 		<HitRectInsets>
 			<AbsInset left="20" right="20" top="20" bottom="20"/>
@@ -2322,6 +2394,33 @@
 		</Layers>
 		<Scripts>
 			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="TalentRankDisplayTemplate" virtual="true" mixin="TalentRankDisplayMixin">
+		<Size x="33" y="22"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="CENTER" x="1" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="ButtonWithDisableTooltipTemplate" mixin="ButtonWithDisableMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 </Ui>

@@ -12,7 +12,7 @@
 			</OnLoad>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="RaidFinderFrame" useParentLevel="true" parent="GroupFinderFrame" hidden="true">
 		<Size x="338" y="428"/>
 		<Anchors>
@@ -20,12 +20,6 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<!--Texture name="$parentRoleBackground" file="Interface\LFGFrame\UI-LFG-BlueBG">
-					<Size x="512" y="128"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="2" y="270"/>
-					</Anchors>
-				</Texture-->
 				<Texture name="$parentRoleBackground">
 					<Size x="321" y="64"/>
 					<Anchors>
@@ -36,19 +30,6 @@
 						<MinColor r="1" g="0" b="0" a="0.0"/>
 						<MaxColor r="1" g="0.5" b="0" a="0.2"/>
 					</Gradient>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture name="$parentBtnCornerRight" inherits="UI-Frame-BtnCornerRight" hidden="false">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentButtonBottomBorder" inherits="_UI-Frame-BtnBotTile">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-23" y="2"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBtnCornerRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -257,12 +238,12 @@
 								_G[myName.."ScrollBackground"]:SetParent(_G[myName.."ScrollBar"]);
 								_G[myName.."ScrollBackgroundTopLeft"]:SetParent(_G[myName.."ScrollBar"]);
 								_G[myName.."ScrollBackgroundBottomRight"]:SetParent(_G[myName.."ScrollBar"]);
-								
+
 								local scrollBar = _G[myName.."ScrollBar"];
 								scrollBar:ClearAllPoints();
 								scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 3, 14);
 								scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", 3, -16);
-								
+
 								self.scrollBarHideable = true;
 								ScrollFrame_OnLoad(self);
 							</OnLoad>

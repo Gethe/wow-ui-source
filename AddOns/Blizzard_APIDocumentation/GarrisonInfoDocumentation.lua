@@ -39,6 +39,48 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "GetGarrisonTalentTreeCurrencyTypes",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "garrTalentTreeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "garrTalentTreeCurrencyType", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetGarrisonTalentTreeType",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "garrTalentTreeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "garrTalentTreeType", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTalentPointsSpentInTalentTree",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "garrTalentTreeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "talentPoints", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTalentTreeIDsByClassID",
 			Type = "Function",
 
@@ -51,6 +93,48 @@ local GarrisonInfo =
 			Returns =
 			{
 				{ Name = "treeIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTalentTreeTalentPointResearchInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "garrTalentTreeID", Type = "number", Nilable = false },
+				{ Name = "talentPointIndex", Type = "number", Nilable = false },
+				{ Name = "isRespec", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "goldCost", Type = "number", Nilable = false },
+				{ Name = "currencyType", Type = "number", Nilable = false },
+				{ Name = "currencyCost", Type = "number", Nilable = false },
+				{ Name = "durationSecs", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "IsAtGarrisonMissionNPC",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "atGarrisonMissionNPC", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsEnvironmentCountered",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "missionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "environmentCountered", Type = "bool", Nilable = false },
 			},
 		},
 	},
@@ -454,6 +538,7 @@ local GarrisonInfo =
 			Payload =
 			{
 				{ Name = "garrisonTypeID", Type = "number", Nilable = false },
+				{ Name = "garrisonTalentTreeID", Type = "number", Nilable = false },
 			},
 		},
 		{

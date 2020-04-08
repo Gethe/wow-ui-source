@@ -1,15 +1,21 @@
 local popupOwner;
 
+function MoneyInputFrame_SetEnabled(moneyFrame, enabled)
+	moneyFrame.gold:SetEnabled(enabled);
+	moneyFrame.silver:SetEnabled(enabled);
+	moneyFrame.copper:SetEnabled(enabled);
+end
+
 function MoneyInputFrame_ResetMoney(moneyFrame)
-	_G[moneyFrame:GetName().."Gold"]:SetText("");
-	_G[moneyFrame:GetName().."Silver"]:SetText("");
-	_G[moneyFrame:GetName().."Copper"]:SetText("");
+	moneyFrame.gold:SetText("");
+	moneyFrame.silver:SetText("");
+	moneyFrame.copper:SetText("");
 end
 
 function MoneyInputFrame_ClearFocus(moneyFrame)
-	_G[moneyFrame:GetName().."Gold"]:ClearFocus();
-	_G[moneyFrame:GetName().."Silver"]:ClearFocus();
-	_G[moneyFrame:GetName().."Copper"]:ClearFocus();
+	moneyFrame.gold:ClearFocus();
+	moneyFrame.silver:ClearFocus();
+	moneyFrame.copper:ClearFocus();
 end
 
 function MoneyInputFrame_SetGoldOnly(moneyFrame, set)
@@ -20,11 +26,16 @@ function MoneyInputFrame_SetGoldOnly(moneyFrame, set)
 	end
 end
 
+function MoneyInputFrame_SetCopperShown(moneyFrame, shown)
+	moneyFrame.copper:SetShown(shown);
+	moneyFrame:SetWidth(shown and 176 or 126);
+end
+
 function MoneyInputFrame_GetCopper(moneyFrame)
 	local totalCopper = 0;
-	local copper = _G[moneyFrame:GetName().."Copper"]:GetText();
-	local silver = _G[moneyFrame:GetName().."Silver"]:GetText();
-	local gold = _G[moneyFrame:GetName().."Gold"]:GetText();
+	local copper = moneyFrame.copper:GetText();
+	local silver = moneyFrame.silver:GetText();
+	local gold = moneyFrame.gold:GetText();
 	
 	if ( copper ~= "" ) then
 		totalCopper = totalCopper + copper;
@@ -39,9 +50,9 @@ function MoneyInputFrame_GetCopper(moneyFrame)
 end
 
 function MoneyInputFrame_SetTextColor(moneyFrame, r, g, b)
-	_G[moneyFrame:GetName().."Copper"]:SetTextColor(r, g, b);
-	_G[moneyFrame:GetName().."Silver"]:SetTextColor(r, g, b);
-	_G[moneyFrame:GetName().."Gold"]:SetTextColor(r, g, b);
+	moneyFrame.copper:SetTextColor(r, g, b);
+	moneyFrame.silver:SetTextColor(r, g, b);
+	moneyFrame.gold:SetTextColor(r, g, b);
 end
 
 function MoneyInputFrame_SetCopper(moneyFrame, money)
@@ -52,21 +63,21 @@ function MoneyInputFrame_SetCopper(moneyFrame, money)
 
 	moneyFrame.expectChanges = 0;
 	if ( moneyFrame.goldOnly) then
-		_G[moneyFrame:GetName().."Copper"]:Hide();
-		_G[moneyFrame:GetName().."Silver"]:Hide();
+		moneyFrame.copper:Hide();
+		moneyFrame.silver:Hide();
 	else
-		editbox = _G[moneyFrame:GetName().."Copper"];
+		editbox = moneyFrame.copper;
 		if ( editbox:GetNumber() ~= copper ) then
 			editbox:SetNumber(copper);
 			moneyFrame.expectChanges = moneyFrame.expectChanges + 1;
 		end
-		editbox = _G[moneyFrame:GetName().."Silver"];
+		editbox = moneyFrame.silver;
 		if ( editbox:GetNumber() ~= silver ) then
 			editbox:SetNumber(silver);
 			moneyFrame.expectChanges = moneyFrame.expectChanges + 1;
 		end
 	end
-	editbox = _G[moneyFrame:GetName().."Gold"];
+	editbox = moneyFrame.gold;
 	if ( editbox:GetNumber() ~= gold ) then
 		editbox:SetNumber(gold);
 		moneyFrame.expectChanges = moneyFrame.expectChanges + 1;
@@ -226,5 +237,93 @@ function MoneyInputFrame_PickupPlayerMoney(moneyFrame)
 		UIErrorsFrame:AddMessage(ERR_NOT_ENOUGH_MONEY, 1.0, 0.1, 0.1, 1.0);
 	else
 		PickupPlayerMoney(copper);
+	end
+end
+
+LargeMoneyInputBoxMixin = {};
+
+function LargeMoneyInputBoxMixin:OnLoad()
+	self:SetFontObject("PriceFont");
+	
+	if self.iconAtlas then
+		self.Icon:SetAtlas(self.iconAtlas);
+	end
+end
+
+function LargeMoneyInputBoxMixin:Clear()
+	self:SetText("");
+end
+
+function LargeMoneyInputBoxMixin:SetAmount(amount)
+	self:SetNumber(amount);
+end
+
+function LargeMoneyInputBoxMixin:GetAmount()
+	return self:GetNumber() or 0;
+end
+
+function LargeMoneyInputBoxMixin:OnTextChanged()
+	self:GetParent():OnAmountChanged();
+end
+
+LargeMoneyInputFrameMixin = {};
+
+function LargeMoneyInputFrameMixin:OnLoad()
+	if self.hideCopper then
+		self.CopperBox:Hide();
+		self.SilverBox:ClearAllPoints();
+		self.SilverBox:SetPoint("RIGHT", self.CopperBox, "RIGHT");
+	
+		self.GoldBox.nextEditBox = self.SilverBox;
+		self.SilverBox.previousEditBox = self.GoldBox;
+		self.SilverBox.nextEditBox = self.nextEditBox;
+	else
+		self.GoldBox.nextEditBox = self.SilverBox;
+		self.SilverBox.previousEditBox = self.GoldBox;
+		self.SilverBox.nextEditBox = self.CopperBox;
+		self.CopperBox.previousEditBox = self.GoldBox;
+		self.CopperBox.nextEditBox = self.nextEditBox;
+	end
+end
+
+function LargeMoneyInputFrameMixin:SetNextEditBox(nextEditBox)
+	if self.hideCopper then
+		self.SilverBox.nextEditBox = nextEditBox or self.GoldBox;
+
+		if nextEditBox then
+			nextEditBox.previousEditBox = self.SilverBox;
+		end
+	else
+		self.CopperBox.nextEditBox = nextEditBox or self.GoldBox;
+
+		if nextEditBox then
+			nextEditBox.previousEditBox = self.CopperBox;
+		end
+	end
+end
+
+function LargeMoneyInputFrameMixin:Clear()
+	self.CopperBox:Clear();
+	self.SilverBox:Clear();
+	self.GoldBox:Clear();
+end
+
+function LargeMoneyInputFrameMixin:SetAmount(amount)
+	self.CopperBox:SetAmount(amount % COPPER_PER_SILVER);
+	self.SilverBox:SetAmount(math.floor((amount % COPPER_PER_GOLD) / COPPER_PER_SILVER));
+	self.GoldBox:SetAmount(math.floor(amount / COPPER_PER_GOLD));
+end
+
+function LargeMoneyInputFrameMixin:GetAmount()
+	return self.CopperBox:GetAmount() + (self.SilverBox:GetAmount() * COPPER_PER_SILVER) + (self.GoldBox:GetAmount() * COPPER_PER_GOLD);
+end
+
+function LargeMoneyInputFrameMixin:SetOnValueChangedCallback(callback)
+	self.onValueChangedCallback = callback;
+end
+
+function LargeMoneyInputFrameMixin:OnAmountChanged(callback)
+	if self.onValueChangedCallback then
+		self.onValueChangedCallback();
 	end
 end

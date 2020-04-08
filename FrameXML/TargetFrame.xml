@@ -19,7 +19,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" reverse="true" drawEdge="true" hidden="true">
+			<Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" reverse="true" drawEdge="true" hidden="true">
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="-1"/>
 				</Anchors>
@@ -44,14 +44,14 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<Frame name="TargetDebuffFrameTemplate" virtual="true" enableMouse="true">
+	<Frame name="TargetDebuffFrameTemplate" parentArray="Debuff" virtual="true" enableMouse="true">
 		<Size x="17" y="17"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentIcon" setAllPoints="true"/>
+				<Texture name="$parentIcon" parentKey="Icon" setAllPoints="true"/>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentBorder" file="Interface\Buttons\UI-Debuff-Overlays">
+				<Texture name="$parentBorder" parentKey="Border" file="Interface\Buttons\UI-Debuff-Overlays">
 					<Size x="17" y="17"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-1" y="1"/>
@@ -59,7 +59,7 @@
 					</Anchors>
 					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
 				</Texture>
-				<FontString name="$parentCount" inherits="NumberFontNormalSmall" justifyH="RIGHT">
+				<FontString name="$parentCount" parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="5" y="0"/>
 					</Anchors>
@@ -67,7 +67,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" reverse="true" drawEdge="true" hidden="true">
+			<Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" reverse="true" drawEdge="true" hidden="true">
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="-1"/>
 				</Anchors>
@@ -88,21 +88,21 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<Frame name="TargetBuffFrameTemplate" virtual="true" enableMouse="true">
+	<Frame name="TargetBuffFrameTemplate" parentArray="Buff" virtual="true" enableMouse="true">
 		<Size x="21" y="21"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentIcon" setAllPoints="true"/>
+				<Texture name="$parentIcon" parentKey="Icon" setAllPoints="true"/>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="$parentCount" inherits="NumberFontNormalSmall" justifyH="RIGHT">
+				<FontString name="$parentCount" parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="3" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentStealable" file="Interface\TargetingFrame\UI-TargetingFrame-Stealable" hidden="true" alphaMode="ADD">
+				<Texture name="$parentStealable" parentKey="Stealable" file="Interface\TargetingFrame\UI-TargetingFrame-Stealable" hidden="true" alphaMode="ADD">
 					<Size x="24" y="24"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
@@ -111,7 +111,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" reverse="true" drawEdge="true">
+			<Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" reverse="true" drawEdge="true">
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="-1"/>
 				</Anchors>
@@ -533,7 +533,7 @@
 		<Frames>
 			<Frame name="$parentPowerBarAlt" parentKey="powerBarAlt" inherits="UnitPowerBarAltTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-25" y="5"/>
+					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-5" y="5"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>

@@ -1,0 +1,9 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Frame name="UIWidgetPowerBarContainerFrame" toplevel="true" parent="UIParent" inherits="UIWidgetContainerTemplate" mixin="UIWidgetPowerBarContainerMixin">
+		<Size x="10" y="10"/>
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="PlayerPowerBarAlt" relativePoint="TOP"/>
+		</Anchors>
+	</Frame>
+</Ui>

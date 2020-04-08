@@ -162,9 +162,9 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 
 		self.Contents.Description:SetText("");
 		self.Contents.RequirementLabel:SetPoint("TOPLEFT", self.Contents.Description, "BOTTOMLEFT", 0, 0);
-		local spell = Spell:CreateFromSpellID(self.selectedRecipeID);
-		self.spellDataLoadedCancelFunc = spell:ContinueWithCancelOnSpellLoad(function()
-			local recipeDescription = C_TradeSkillUI.GetRecipeDescription(spell:GetSpellID());
+		local baseSpell = Spell:CreateFromSpellID(TradeSkillFrame_GetBaseRecipeID(self.selectedRecipeID));
+		self.spellDataLoadedCancelFunc = baseSpell:ContinueWithCancelOnSpellLoad(function()
+			local recipeDescription = C_TradeSkillUI.GetRecipeDescription(baseSpell:GetSpellID());
 			if recipeDescription and #recipeDescription > 0 then
 				self.Contents.Description:SetText(recipeDescription);
 				self.Contents.RequirementLabel:SetPoint("TOPLEFT", self.Contents.Description, "BOTTOMLEFT", 0, -18);
@@ -376,9 +376,10 @@ function TradeSkillDetailsMixin:RefreshButtons()
 end
 
 function TradeSkillDetailsMixin:ViewGuildCrafters()
-	local tradeSkillID, skillLineName, skillLineRank, skillLineMaxRank, skillLineModifier = C_TradeSkillUI.GetTradeSkillLine();
-	if tradeSkillID and self.selectedRecipeID then
-		self.GuildFrame:ShowGuildRecipe(tradeSkillID, self.selectedRecipeID);
+	local tradeSkillID, skillLineName, skillLineRank, skillLineMaxRank, skillLineModifier, parentSkillLineID = C_TradeSkillUI.GetTradeSkillLine();
+	local effectiveSkillLineID = parentSkillLineID or tradeSkillID;
+	if effectiveSkillLineID and self.selectedRecipeID then
+		self.GuildFrame:ShowGuildRecipe(effectiveSkillLineID, self.selectedRecipeID);
 	end
 end
 

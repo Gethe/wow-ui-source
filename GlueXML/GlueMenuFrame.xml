@@ -11,33 +11,13 @@
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="GameMenuFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Size x="256" y="64"/>
-					<Anchors>
-						<Anchor point="TOP" x="0" y="12"/>
-					</Anchors>
-				</Texture>
-				<FontString inherits="GlueFontNormal" text="MAINMENU_BUTTON">
-					<Anchors>
-						<Anchor point="TOP" relativeTo="GameMenuFrameHeader" x="0" y="-14"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="textString" value="MAINMENU_BUTTON" type="global"/>
+				</KeyValues>
+			</Frame>
 			<Button parentKey="OptionsButton" inherits="GlueMenuFrameButtonTemplate" text="SYSTEMOPTIONS_MENU">
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOP" x="0" y="-42"/>

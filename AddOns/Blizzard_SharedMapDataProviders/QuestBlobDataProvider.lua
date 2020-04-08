@@ -49,14 +49,14 @@ function QuestBlobDataProviderMixin:OnAdded(mapCanvas)
 end
 
 function QuestBlobDataProviderMixin:OnRemoved(mapCanvas)
-	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
-
 	self:GetMap():UnregisterCallback("SetHighlightedQuestID", self.setHighlightedQuestIDCallback);
 	self:GetMap():UnregisterCallback("ClearHighlightedQuestID", self.clearHighlightedQuestIDCallback);
 	self:GetMap():UnregisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
 	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
 	self:GetMap():UnregisterCallback("SetHighlightedQuestPOI", self.setHighlightedQuestPOICallback);
 	self:GetMap():UnregisterCallback("ClearHighlightedQuestPOI", self.clearHighlightedQuestPOICallback);
+
+	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 end
 
 function QuestBlobDataProviderMixin:OnMapChanged()
@@ -120,7 +120,7 @@ function QuestBlobPinMixin:OnUpdate()
 end
 
 function QuestBlobPinMixin:TryDrawQuest(questID)
-	if questID and questID > 0 and (self.dataProvider:IsShowingWorldQuests() or not QuestUtils_IsQuestWorldQuest(questID)) then
+	if questID and questID > 0 and (self.dataProvider:IsShowingWorldQuests() or not QuestUtils_IsQuestWorldQuest(questID)) and (C_QuestLog.IsThreatQuest(questID) or not QuestUtils_IsQuestBonusObjective(questID)) then
 		self:DrawBlob(questID, true);
 	end
 end
@@ -185,13 +185,28 @@ function QuestBlobPinMixin:UpdateTooltip()
 		self:OnMouseLeave();
 		return;
 	end
+	
+	local gameTooltipOwner = GameTooltip:GetOwner();
+	if gameTooltipOwner and gameTooltipOwner ~= self then
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT", 5, 2);
 
 	local title, _, _, _, _, _, _, questID = GetQuestLogTitle(questLogIndex);
-	WorldMapTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT", 5, 2);
-	WorldMapTooltip:SetText(title);
-	QuestUtils_AddQuestTypeToTooltip(WorldMapTooltip, questID, NORMAL_FONT_COLOR);
-
 	local numObjectives = GetNumQuestLeaderBoards(questLogIndex);
+	self.questID = questID;
+	self.numObjectives = numObjectives;
+
+	if C_QuestLog.IsThreatQuest(questID) then
+		local skipSetOwner = true;
+		TaskPOI_OnEnter(self, skipSetOwner);
+		return;
+	end
+
+	GameTooltip:SetText(title);
+	QuestUtils_AddQuestTypeToTooltip(GameTooltip, questID, NORMAL_FONT_COLOR);
+
 	for i = 1, numObjectives do
 		local text, objectiveType, finished;
 
@@ -203,10 +218,10 @@ function QuestBlobPinMixin:UpdateTooltip()
 		end
 
 		if text and not finished then
-			WorldMapTooltip:AddLine(QUEST_DASH..text, 1, 1, 1, true);
+			GameTooltip:AddLine(QUEST_DASH..text, 1, 1, 1, true);
 		end
 	end
-	WorldMapTooltip:Show();
+	GameTooltip:Show();
 end
 
 function QuestBlobPinMixin:OnMouseEnter()
@@ -214,7 +229,7 @@ function QuestBlobPinMixin:OnMouseEnter()
 end
 
 function QuestBlobPinMixin:OnMouseLeave()
-	if WorldMapTooltip:GetOwner() == self then
-		WorldMapTooltip:Hide();
+	if GameTooltip:GetOwner() == self then
+		GameTooltip:Hide();
 	end
 end

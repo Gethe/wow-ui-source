@@ -1,0 +1,141 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="PVPUITemplates.lua"/>
+
+  <Button name="PVPConquestRewardButton" mixin="PVPConquestRewardMixin" virtual="true">
+    <Size x="36" y="36"/>
+    <Anchors>
+      <Anchor point="LEFT" relativePoint="RIGHT" x="-8" y="-2"/>
+    </Anchors>
+    <Layers>
+      <Layer level="ARTWORK">
+        <Texture parentKey="Ring" atlas="honorsystem-bar-rewardborder-circle" useAtlasSize="true">
+          <Anchors>
+            <Anchor point="CENTER"/>
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="BACKGROUND">
+        <Texture parentKey="Icon">
+          <Size x="30" y="30"/>
+          <Anchors>
+            <Anchor point="CENTER"/>
+          </Anchors>
+          <Color r="0" g="0" b="0"/>
+        </Texture>
+        <MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+          <Size x="30" y="30"/>
+          <Anchors>
+            <Anchor point="CENTER"/>
+          </Anchors>
+          <MaskedTextures>
+            <MaskedTexture childKey="Icon"/>
+          </MaskedTextures>
+        </MaskTexture>
+      </Layer>
+      <Layer level="OVERLAY">
+        <Texture parentKey="CheckMark" atlas="pvpqueue-conquestbar-checkmark" hidden="true">
+          <Size x="30" y="26"/>
+          <Anchors>
+            <Anchor point="BOTTOMRIGHT" x="5" y="-4"/>
+          </Anchors>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnEnter method="OnEnter"/>
+      <OnLeave method="OnLeave"/>
+      <OnClick method="OnClick"/>
+    </Scripts>
+  </Button>
+
+  <Button name="PVPHonorRewardTemplate" mixin="PVPHonorRewardMixin" virtual="true">
+    <Size x="36" y="36"/>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture parentKey="RewardIcon">
+          <Size x="28" y="28"/>
+          <Anchors>
+            <Anchor point="CENTER"/>
+          </Anchors>
+          <Color r="0" g="0" b="0"/>
+        </Texture>
+      </Layer>
+      <Layer level="BACKGROUND" textureSubLevel="1">
+        <Texture parentKey="IconCover">
+          <Size x="36" y="36"/>
+          <Anchors>
+            <Anchor point="CENTER"/>
+          </Anchors>
+          <Color r="0" g="0" b="0" a="0.5"/>
+        </Texture>
+        <MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+          <Size x="36" y="36"/>
+          <Anchors>
+            <Anchor point="CENTER"/>
+          </Anchors>
+          <MaskedTextures>
+            <MaskedTexture childKey="RewardIcon"/>
+            <MaskedTexture childKey="IconCover"/>
+          </MaskedTextures>
+        </MaskTexture>
+      </Layer>
+      <Layer level="BORDER">
+        <Texture parentKey="RingBorder" atlas="pvpqueue-rewardring-black">
+          <Size x="48" y="48"/>
+          <Anchors>
+            <Anchor point="CENTER"/>
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="ARTWORK">
+        <FontString parentKey="LevelLabel" inherits="Game10Font_o1">
+          <Anchors>
+            <Anchor point="CENTER" x="1"/>
+          </Anchors>
+          <Color r="0.498" g="0.498" b="0.498"/>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnEnter method="OnEnter"/>
+      <OnLeave method="OnLeave"/>
+    </Scripts>
+  </Button>
+
+  <Frame name="PVPRatedTierTemplate" mixin="PVPRatedTierMixin" virtual="true">
+    <Size x="50" y="50"/>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture parentKey="Icon">
+          <Size x="50" y="50"/>
+          <Anchors>
+            <Anchor point="CENTER"/>
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="BORDER">
+        <Texture parentKey="RankingShadow" atlas="pvpqueue-rankglow" useAtlasSize="true" alphaMode="ADD">
+          <Anchors>
+            <Anchor point="CENTER" x="1" y="-3"/>
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="ARTWORK">
+        <FontString parentKey="Ranking" inherits="Number12Font_o1">
+          <Anchors>
+            <Anchor point="CENTER" relativeKey="$parent.Shadow"/>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+  </Frame>
+
+  <Button name="PVPLootTemplate" inherits="LootItemExtended" mixin="PVPLootMixin" virtual="true">
+    <Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+  </Button>
+</Ui>
+

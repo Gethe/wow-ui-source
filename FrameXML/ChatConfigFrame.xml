@@ -102,7 +102,7 @@
 				if ( self.func ) then
 					self.func(self, checked);
 				end
-				
+
 				ChatConfigFrame_PlayCheckboxSound(checked);
 			</OnClick>
 			<OnEnter>
@@ -440,40 +440,13 @@
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="ChatConfigFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Size x="256" y="64"/>
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset x="0" y="12"/>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<FontString name="ChatConfigFrameHeaderText" inherits="GameFontNormal">
-					<Size>
-						<AbsDimension x="185" y="12"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="ChatConfigFrameHeader">
-							<Offset x="0" y="-14"/>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="headerTextPadding" value="100" type="number"/>
+				</KeyValues>
+			</Frame>
 			<Frame name="ChatConfigCategoryFrame" inherits="ChatConfigBoxTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -782,7 +755,7 @@
 									</OnClick>
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GameTooltip_AddNewbieTip(self, MOVE_FILTER_UP, 1.0, 1.0, 1.0);
+										GameTooltip_SetTitle(GameTooltip, MOVE_FILTER_UP);
 									</OnEnter>
 									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
@@ -812,7 +785,7 @@
 									</OnClick>
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GameTooltip_AddNewbieTip(self, MOVE_FILTER_DOWN, 1.0, 1.0, 1.0);
+										GameTooltip_SetTitle(GameTooltip, MOVE_FILTER_DOWN);
 									</OnEnter>
 									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
@@ -1079,7 +1052,7 @@
 													CHATCONFIG_SELECTED_FILTER.settings.schoolNameHighlighting = false;
 												end
 												CombatConfig_Colorize_Update();
-												ChatConfigFrame_PlayCheckboxSound(checked);											
+												ChatConfigFrame_PlayCheckboxSound(checked);
 											</OnClick>
 										</Scripts>
 									</CheckButton>
@@ -1885,10 +1858,7 @@
 				<Scripts>
 					<OnLoad function="ChatConfigCombat_OnLoad"/>
 					<OnShow function="ChatConfigCombat_OnShow"/>
-					<OnHide>
-						ChatConfigBackgroundFrame:SetPoint("TOPLEFT", ChatConfigCategoryFrame, "TOPRIGHT", 1, 0);
-						ChatConfig_HideCombatTabs();
-					</OnHide>
+					<OnHide function="ChatConfigCombat_OnHide"/>
 				</Scripts>
 			</Frame>
 			<Button name="$parentDefaultButton" parentKey="DefaultButton" inherits="UIPanelButtonTemplate" text="CHAT_DEFAULTS">

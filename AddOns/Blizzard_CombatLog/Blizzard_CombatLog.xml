@@ -12,15 +12,6 @@
 			<OnClick>
 				Blizzard_CombatLog_QuickButton_OnClick(self:GetID());
 			</OnClick>
-			<OnEnter>
-				if (self.tooltip) then
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip_AddNewbieTip(self, self.tooltip, 1.0, 1.0, 1.0, nil, 1);
-				end
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
 		</Scripts>
 		<NormalFont style="GameFontDisable"/>
 		<HighlightFont style="GameFontHighlight"/>
@@ -63,7 +54,7 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0.0" g="1.0" b="0.3"/>
 			</StatusBar>
-			<Button name="$parentAdditionalFilterButton">
+			<DropDownToggleButton name="$parentAdditionalFilterButton">
 				<Size>
 					<AbsDimension x="28" y="28"/>
 				</Size>
@@ -81,13 +72,13 @@
 					<OnLoad>
 						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 					</OnLoad>
-					<OnClick>
+					<OnMouseDown>
 						EasyMenu(Blizzard_CombatLog_CreateFilterMenu(), CombatLogDropDown, "cursor", nil, nil, "MENU");
 						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-					</OnClick>
+					</OnMouseDown>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip_AddNewbieTip(self, ADDITIONAL_FILTERS, 1.0, 1.0, 1.0);
+						GameTooltip_SetTitle(GameTooltip, ADDITIONAL_FILTERS);
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
@@ -95,7 +86,7 @@
 				<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Down"/>
 				<DisabledTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Disabled"/>
 				<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Highlight"/>
-			</Button>
+			</DropDownToggleButton>
 		</Frames>
 		<Scripts>
 			<OnShow function="Blizzard_CombatLog_Update_QuickButtons"/>

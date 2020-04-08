@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="WardrobeOutfits.lua"/>
-	
+
 	<Button name="WardrobeOutfitButtonButtonTemplate" virtual="true">
 		<Scripts>
 			<OnEnter>
@@ -123,24 +123,14 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="WardrobeOutfitFrame" frameStrata="DIALOG" parent="UIParent" hidden="true" enableMouse="true" mixin="WardrobeOutfitFrameMixin">
 		<Size x="224" y="200"/>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="9"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
 			<Button inherits="WardrobeOutfitButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="11" y="-15"/>
@@ -158,17 +148,6 @@
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="GameFontHighlight" text="TRANSMOG_OUTFIT_NAME">
@@ -186,6 +165,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<EditBox parentKey="EditBox" historyLines="1" letters="31">
 				<Size x="260" y="32"/>
 				<Anchors>

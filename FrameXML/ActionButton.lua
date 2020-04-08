@@ -19,6 +19,10 @@ VIEWABLE_ACTION_BAR_PAGES = {1, 1, 1, 1, 1, 1};
 ACTION_HIGHLIGHT_MARKS = { };
 ON_BAR_HIGHLIGHT_MARKS = { };
 
+ACTION_BUTTON_SHOW_GRID_REASON_CVAR = 1;
+ACTION_BUTTON_SHOW_GRID_REASON_EVENT = 2;
+ACTION_BUTTON_SHOW_GRID_REASON_SPELLBOOK = 4;
+
 function MarkNewActionHighlight(action)
 	ACTION_HIGHLIGHT_MARKS[action] = true;
 end
@@ -196,8 +200,8 @@ function ActionBarButtonEventsFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
 	self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
 	self:RegisterEvent("PET_BAR_UPDATE");
-	self:RegisterEvent("UNIT_FLAGS");
-	self:RegisterEvent("UNIT_AURA");
+	self:RegisterUnitEvent("UNIT_FLAGS", "pet");
+	self:RegisterUnitEvent("UNIT_AURA", "pet");
 	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED");
 end
 
@@ -385,8 +389,12 @@ function ActionButton_Update(self)
 		
 		ActionButton_ClearFlash(self);
 		self:SetChecked(false);
-	end
 
+		if self.LevelLinkLockIcon then
+			self.LevelLinkLockIcon:SetShown(false);
+		end
+	end
+	
 	-- Add a green border if button is an equipped item
 	local border = self.Border;
 	if border then
@@ -463,30 +471,29 @@ function ActionButton_UpdateSpellHighlightMark(self)
 	end
 end
 
-function ActionButton_ShowGrid(button)
-	assert(button);
-
+function ActionButton_ShowGrid(button, reason)
+	assert(button and reason);
 	if ( issecure() ) then
-		button:SetAttribute("showgrid", button:GetAttribute("showgrid") + 1);
+		button:SetAttribute("showgrid", bit.bor(button:GetAttribute("showgrid"), reason));
 	end
 
 	if ( button.NormalTexture ) then
 		button.NormalTexture:SetVertexColor(1.0, 1.0, 1.0, 0.5);
 	end
 
-	if ( button:GetAttribute("showgrid") >= 1 and not button:GetAttribute("statehidden") ) then
+	if ( button:GetAttribute("showgrid") > 0 and not button:GetAttribute("statehidden") ) then
 		button:Show();
 	end
 end
 
-function ActionButton_HideGrid(button)
-	assert(button);
+function ActionButton_HideGrid(button, reason)
+	assert(button and reason);
 
 	local showgrid = button:GetAttribute("showgrid");
 
 	if ( issecure() ) then
 		if ( showgrid > 0 ) then
-			button:SetAttribute("showgrid", showgrid - 1);
+			button:SetAttribute("showgrid", bit.band(showgrid, bit.bnot(reason)));
 		end
 	end
 
@@ -520,6 +527,15 @@ function ActionButton_UpdateUsable(self)
 	else
 		icon:SetVertexColor(0.4, 0.4, 0.4);
 		normalTexture:SetVertexColor(1.0, 1.0, 1.0);
+	end
+
+	local isLevelLinkLocked = C_LevelLink.IsActionLocked(self.action);
+	if not icon:IsDesaturated() then
+		icon:SetDesaturated(isLevelLinkLocked);
+	end
+
+	if self.LevelLinkLockIcon then
+		self.LevelLinkLockIcon:SetShown(isLevelLinkLocked);
 	end
 end
 
@@ -729,14 +745,14 @@ function ActionButton_OnEvent(self, event, ...)
 			self.icon:SetTexture(texture);
 		end
 	elseif ( event == "ACTIONBAR_SHOWGRID" ) then
-		ActionButton_ShowGrid(self);
+		ActionButton_ShowGrid(self, ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
 	elseif ( event == "ACTIONBAR_HIDEGRID" ) then
-		ActionButton_HideGrid(self);
+		ActionButton_HideGrid(self, ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
 	elseif ( event == "UPDATE_BINDINGS" ) then
 		ActionButton_UpdateHotkeys(self, self.buttonType);
 	elseif ( event == "PLAYER_TARGET_CHANGED" ) then	-- All event handlers below this line are only set when the button has an action
 		self.rangeTimer = -1;
-	elseif ( (((event == "UNIT_FLAGS") or (event == "UNIT_AURA")) and arg1 == "pet") or (event == "PET_BAR_UPDATE") ) then
+	elseif ( event == "UNIT_FLAGS" or event == "UNIT_AURA" or event == "PET_BAR_UPDATE" ) then
 		-- Pet actions can also change the state of action buttons.
 		ActionButton_UpdateState(self);
 		ActionButton_UpdateFlash(self);

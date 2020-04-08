@@ -1,25 +1,15 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
   <Script file="Blizzard_ClassNameplateBar_Monk.lua"/>
   
 	<Frame name="ClassNameplateBarChiFrame" virtual="true">
 		<Size x="15" y="15"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="OrbOff" atlas="MonkUI-OrbOff" useAtlasSize="false">
-					<Size x="15" y="15"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
+				<Texture parentKey="OrbOff" atlas="MonkUI-OrbOff" useAtlasSize="false" texelSnappingBias="0.0" snapToPixelGrid="false" />
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Orb" atlas="MonkUI-LightOrb" useAtlasSize="false" alpha="0">
-					<Size x="15" y="15"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
+				<Texture parentKey="Orb" atlas="MonkUI-LightOrb" useAtlasSize="false" alpha="0" texelSnappingBias="0.0" snapToPixelGrid="false" />
 			</Layer>
 		</Layers>
 		<Animations>
@@ -32,7 +22,7 @@
 		</Animations>
 	</Frame>
 		
-	<Frame name="ClassNameplateBarWindwalkerMonkFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarWindwalkerMonk">
+	<Frame name="ClassNameplateBarWindwalkerMonkFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarWindwalkerMonk" ignoreParentScale="true">
 		<Size x="75" y="14"/>
 		<Frames>
 			<Frame parentKey="Chi1" parentArray="Chi" inherits="ClassNameplateBarChiFrame">
@@ -70,10 +60,7 @@
 
 	<StatusBar name="ClassNameplateBrewmasterBarFrame" mixin="ClassNameplateBar, ClassNameplateBarBrewmasterMonk">
 		<KeyValues>
-			<KeyValue key="layoutIndex" value="2"/>
-			<KeyValue key="align" value="center"/>
 			<KeyValue key="scale" value="1"/>
-			<KeyValue key="topPadding" value="-3" type="number"/>
 		</KeyValues>
 		<Size x="86" y="4"/>
 		<Frames>

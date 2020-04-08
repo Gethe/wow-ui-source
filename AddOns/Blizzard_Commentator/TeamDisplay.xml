@@ -7,6 +7,16 @@
 			<Anchor point="TOP" relativeTo="WorldFrame" />
 		</Anchors>
 		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="ClockBg" atlas="Frame_Timer" useAtlasSize="true">
+					<Size x="384" y="96" />
+					<Anchors>
+						<Anchor point="TOP" relativeTo="WorldFrame" relativePoint="TOP" y="-16"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+			
 			<Layer level="BACKGROUND">
 				<Texture parentKey="LeftBg" atlas="ScoreTeam">
 					<Size x="384" y="96" />
@@ -22,7 +32,7 @@
 					<TexCoords left="1" right="0" top="0" bottom="1"/>
 				</Texture>
 			</Layer>
-
+			
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="Divider" atlas="ScoreDivider">
 					<Size x="48" y="96" />
@@ -30,13 +40,17 @@
 						<Anchor point="TOP" relativeTo="WorldFrame" y="-3" />
 					</Anchors>
 				</Texture>
+				<Texture parentKey="DampeningHealthBacking" atlas="Healing_Backing" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="WorldFrame" y="-2" />
+					</Anchors>
+				</Texture>
 			</Layer>
 
 			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture parentKey="DampeningBg" atlas="HealingDampening">
-					<Size x="192" y="96" />
+				<Texture parentKey="DampeningHealthIcon" atlas="Healing_Red" useAtlasSize="true" alpha="0">
 					<Anchors>
-						<Anchor point="TOP" relativeTo="WorldFrame" y="-3" />
+						<Anchor point="TOP" relativeTo="WorldFrame" y="-8" />
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -70,12 +84,29 @@
 
 				<FontString parentKey="Dampening" font="CommentatorDampeningFont">
 					<Anchors>
-						<Anchor point="TOP" relativeTo="WorldFrame" y="-58" />
+						<Anchor point="TOP" relativeTo="WorldFrame" y="-18" />
 					</Anchors>
-					<Color r="1" g="0" b="0"/>
+					<Color r="1" g="0" b="0" a="0"/>
+				</FontString>
+
+				<FontString parentKey="ElapsedTime" inherits="CommentatorTeamNameFont" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="WorldFrame" y="-53" />
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
 				</FontString>
 			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="DampeningFadeCycle" looping="REPEAT">
+				<Alpha fromAlpha="1" toAlpha="1" duration="0" order="1" childKey="DampeningHealthIcon"/>
+				<Alpha fromAlpha="0" toAlpha="0" duration="0" order="1" childKey="Dampening"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.25" order="2" startDelay="2" childKey="DampeningHealthIcon"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.25" order="2" startDelay="2" childKey="Dampening"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.25" order="3" startDelay="15" setToFinalAlpha="1" childKey="DampeningHealthIcon"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.25" order="3" startDelay="15" setToFinalAlpha="1" childKey="Dampening"/>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>

@@ -1,3 +1,10 @@
+function GetFormattedItemQuantity(quantity, maxQuantity)
+	if quantity > (maxQuantity or 9999) then
+		return "*";
+	end;
+
+	return quantity;
+end
 
 function SetItemButtonCount(button, count, abbreviate)
 	if ( not button ) then
@@ -13,15 +20,20 @@ function SetItemButtonCount(button, count, abbreviate)
 	if ( count > 1 or (button.isBag and count > 0) ) then
 		if ( abbreviate ) then
 			count = AbbreviateNumbers(count);
-		elseif ( count > (button.maxDisplayCount or 9999) ) then
-			count = "*";
+		else
+			count = GetFormattedItemQuantity(count, button.maxDisplayCount);
 		end
+
 		countString:SetText(count);
 		countString:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 		countString:Show();
 	else
 		countString:Hide();
 	end
+end
+
+function GetItemButtonCount(button)
+	return button.count;
 end
 
 function SetItemButtonStock(button, numInStock)
@@ -46,12 +58,14 @@ function SetItemButtonTexture(button, texture)
 	if ( not button ) then
 		return;
 	end
+	
 	local icon = button.Icon or button.icon or _G[button:GetName().."IconTexture"];
 	if ( texture ) then
 		icon:Show();
 	else
 		icon:Hide();
 	end
+
 	icon:SetTexture(texture);
 end
 
@@ -102,6 +116,34 @@ function SetItemButtonSlotVertexColor(button, r, g, b)
 end
 
 function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
+	if button.useCircularIconBorder then
+		button.IconBorder:Show();
+
+		if quality == LE_ITEM_QUALITY_POOR then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-gray");
+		elseif quality == LE_ITEM_QUALITY_COMMON then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-white");
+		elseif quality == LE_ITEM_QUALITY_UNCOMMON then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-green");
+		elseif quality == LE_ITEM_QUALITY_RARE then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-blue");
+		elseif quality == LE_ITEM_QUALITY_EPIC then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-purple");
+		elseif quality == LE_ITEM_QUALITY_LEGENDARY then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-orange");
+		elseif quality == LE_ITEM_QUALITY_ARTIFACT then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-artifact");
+		elseif quality == LE_ITEM_QUALITY_HEIRLOOM then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-account");
+		elseif quality == LE_ITEM_QUALITY_WOW_TOKEN then
+			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-account");
+		else
+			button.IconBorder:Hide();
+		end
+		
+		return;
+	end
+
 	if itemIDOrLink then
 		if IsArtifactRelicItem(itemIDOrLink) then
 			button.IconBorder:SetTexture([[Interface\Artifacts\RelicIconFrame]]);
@@ -109,11 +151,15 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
 			button.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
 		end
 		
-		if not suppressOverlays and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemIDOrLink) then
-			button.IconOverlay:SetAtlas([[AzeriteIconFrame]]);
-			button.IconOverlay:Show();
-		else
-			button.IconOverlay:Hide();
+		button.IconOverlay:Hide();
+		if not suppressOverlays then
+			if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemIDOrLink) then
+				button.IconOverlay:SetAtlas("AzeriteIconFrame");
+				button.IconOverlay:Show();
+			elseif IsCorruptedItem(itemIDOrLink) then
+				button.IconOverlay:SetAtlas("Nzoth-inventory-icon");
+				button.IconOverlay:Show();
+			end
 		end
 	else
 		button.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
@@ -146,7 +192,8 @@ function HandleModifiedItemClick(link)
 		end
 		if ( ChatEdit_InsertLink(link) ) then
 			return true;
-		elseif ( SocialPostFrame and Social_IsShown() and Social_InsertLink(link) ) then
+		elseif ( SocialPostFrame and Social_IsShown() ) then
+			Social_InsertLink(link);
 			return true;
 		end
 	end
@@ -160,4 +207,65 @@ function HandleModifiedItemClick(link)
 		end
 	end
 	return false;
+end
+
+ItemButtonMixin = {};
+
+function ItemButtonMixin:PostOnLoad()
+	self.itemContextChangedCallback = function()
+		self:UpdateItemContextMatching();
+	end
+end
+
+function ItemButtonMixin:RegisterCallback()
+	if not self.itemContextChangedCallbackIsSet then
+		ItemButtonUtil.RegisterCallback(ItemButtonUtil.Event.ItemContextChanged, self.itemContextChangedCallback);
+		self.itemContextChangedCallbackIsSet = true;
+	end
+end
+
+function ItemButtonMixin:UnregisterCallback()
+	if self.itemContextChangedCallbackIsSet then
+		ItemButtonUtil.UnregisterCallback(ItemButtonUtil.Event.ItemContextChanged, self.itemContextChangedCallback);
+		self.itemContextChangedCallbackIsSet = false;
+	end
+end
+
+function ItemButtonMixin:PostOnShow()
+	self:UpdateItemContextMatching();
+	
+	local hasFunctionSet = self.GetItemContextMatchResult ~= nil;
+	if hasFunctionSet then
+		self:RegisterCallback();
+	end
+end
+
+function ItemButtonMixin:PostOnHide()
+	self:UnregisterCallback();
+end
+
+function ItemButtonMixin:SetMatchesSearch(matchesSearch)
+	self.matchesSearch = matchesSearch;
+	self:UpdateItemContextOverlay(self);
+end
+
+function ItemButtonMixin:GetMatchesSearch()
+	return self.matchesSearch;
+end
+
+function ItemButtonMixin:UpdateItemContextMatching()
+	local hasFunctionSet = self.GetItemContextMatchResult ~= nil;
+	if hasFunctionSet then
+		self.itemContextMatchResult = self:GetItemContextMatchResult();
+	else
+		self.itemContextMatchResult = ItemButtonUtil.ItemContextMatchResult.DoesNotApply;
+	end
+	
+	self:UpdateItemContextOverlay(self);
+end
+
+function ItemButtonMixin:UpdateItemContextOverlay()
+	local matchesSearch = self.matchesSearch == nil or self.matchesSearch;
+	local matchesContext = self.itemContextMatchResult == ItemButtonUtil.ItemContextMatchResult.DoesNotApply or self.itemContextMatchResult == ItemButtonUtil.ItemContextMatchResult.Match;
+	self.ItemContextOverlay:SetShown(not matchesSearch or not matchesContext);
 end

@@ -92,6 +92,9 @@
 	</Frame>
 	<EditBox name="CommunitiesChatEditBoxTemplate" autoFocus="false" virtual="true" bytes="512" visibleBytes="255" invisibleBytes="255">
 		<Size x="130" y="32"/>
+		<KeyValues>
+			<KeyValue key="supportsSlashCommands" value="false" type="boolean"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Left" file="Interface\ChatFrame\UI-ChatInputBorder-Left2">

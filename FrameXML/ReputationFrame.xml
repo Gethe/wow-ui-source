@@ -274,11 +274,8 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="ReputationFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" hidden="true" id="2">
-		<HitRectInsets>
-			<AbsInset left="0" right="30" top="0" bottom="75"/>
-		</HitRectInsets>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="ReputationFrameFactionLabel" inherits="GameFontHighlight" text="FACTION">
@@ -369,11 +366,11 @@
 					<Anchor point="TOPRIGHT" relativeTo="ReputationBar14" relativePoint="BOTTOMRIGHT" x="0" y="-3"/>
 				</Anchors>
 			</Button>
-			
+
 			<ScrollFrame name="ReputationListScrollFrame" inherits="FauxScrollFrameTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="CharacterFrameInset" x="0" y="-4"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInset" x="-27" y="2"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Inset" x="0" y="-4"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.Inset" x="-27" y="2"/>
 				</Anchors>
 				<Scripts>
 					<OnVerticalScroll>
@@ -410,41 +407,18 @@
 					<Anchor point="TOPLEFT" relativeTo="ReputationFrameFactionLabel"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="ReputationFrameFactionLabel"/>
 				</Anchors>
-				<Scripts>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, FACTION, 1.0, 1.0, 1.0, REPUTATION_FACTION_DESCRIPTION, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
 			</Frame>
 			<Frame name="StandingMouseOver">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="ReputationFrameStandingLabel"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="ReputationFrameStandingLabel"/>
 				</Anchors>
-				<Scripts>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, STANDING, 1.0, 1.0, 1.0, REPUTATION_STANDING_DESCRIPTION, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
 			</Frame>
 			<Frame name="ReputationDetailFrame" enableMouse="true" hidden="true">
 				<Size x="212" y="203"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="ReputationFrame" relativePoint="TOPRIGHT" x="0" y="-28"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="ReputationDetailFactionName" inherits="GameFontNormal" justifyH="LEFT" nonspacewrap="true">
@@ -482,6 +456,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 					<Button name="ReputationDetailCloseButton" inherits="UIPanelCloseButton">
 						<Anchors>
 							<Anchor point="TOPRIGHT" x="-3" y="-3"/>
@@ -578,7 +553,7 @@
 							<OnLoad>
 								_G[self:GetName().."Text"]:SetText(SHOW_FACTION_ON_MAINSCREEN);
 							</OnLoad>
-							<OnClick function="ReputationDetailMainScreenCheckBox_OnClick"/> 
+							<OnClick function="ReputationDetailMainScreenCheckBox_OnClick"/>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetText(REPUTATION_SHOW_AS_XP, nil, nil, nil, nil, true);

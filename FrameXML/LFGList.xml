@@ -19,48 +19,8 @@
 	<Frame name="LFGListGroupDataDisplayTemplate" virtual="true">
 		<Size x="125" y="24"/>
 		<Frames>
-			<Frame parentKey="RoleCount" setAllPoints="true">
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="DamagerIcon" atlas="groupfinder-icon-role-large-dps">
-							<Size x="17" y="17"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="-11" y="0"/>
-							</Anchors>
-						</Texture>
-						<FontString parentKey="DamagerCount" inherits="GameFontHighlightSmall" justifyH="CENTER">
-							<Size x="17" y="14"/>
-							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.DamagerIcon" relativePoint="LEFT" x="-1" y="0"/>
-							</Anchors>
-						</FontString>
-						<Texture parentKey="HealerIcon" atlas="groupfinder-icon-role-large-heal">
-							<Size x="17" y="17"/>
-							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.DamagerCount" relativePoint="LEFT" x="-4" y="0"/>
-							</Anchors>
-						</Texture>
-						<FontString parentKey="HealerCount" inherits="GameFontHighlightSmall" justifyH="CENTER">
-							<Size x="17" y="14"/>
-							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.HealerIcon" relativePoint="LEFT" x="-1" y="0"/>
-							</Anchors>
-						</FontString>
-						<Texture parentKey="TankIcon" atlas="groupfinder-icon-role-large-tank">
-							<Size x="17" y="17"/>
-							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.HealerCount" relativePoint="LEFT" x="-4" y="0"/>
-							</Anchors>
-						</Texture>
-						<FontString parentKey="TankCount" inherits="GameFontHighlightSmall" justifyH="CENTER">
-							<Size x="17" y="14"/>
-							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.TankIcon" relativePoint="LEFT" x="-1" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
+			<Frame parentKey="RoleCount" setAllPoints="true" inherits="RoleCountNoScriptsTemplate"/>
+
 			<Frame parentKey="Enumerate" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
@@ -165,7 +125,7 @@
 		<NormalFont style="GameFontNormal"/>
 		<HighlightFont style="GameFontHighlight"/>
 	</Button>
-	<Button name="LFGListApplicantMemberTemplate" virtual="true">
+	<DropDownToggleButton name="LFGListApplicantMemberTemplate" virtual="true">
 		<Size x="190" y="20"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -257,14 +217,14 @@
 			<OnLoad>
 				self:RegisterForClicks("RightButtonUp");
 			</OnLoad>
-			<OnClick>
+			<OnMouseDown>
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				EasyMenu(LFGListUtil_GetApplicantMemberMenu(self:GetParent().applicantID, self.memberIdx), LFGListFrameDropDown, self, 60, -5, "MENU");
-			</OnClick>
+			</OnMouseDown>
 			<OnEnter function="LFGListApplicantMember_OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
-	</Button>
+	</DropDownToggleButton>
 	<Button name="LFGListApplicantTemplate" virtual="true">
 		<Size x="309" y="20"/>
 		<Layers>
@@ -570,7 +530,7 @@
 				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
 				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
 				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 			</CheckButton>
 		</Frames>
 		<Scripts>
@@ -1006,7 +966,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox parentKey="SearchBox" inherits="SearchBoxTemplate" letters="64">
+					<EditBox parentKey="SearchBox" secureReferenceKey="LFGListSearchBox" securityDisableSetText="true" securityDisablePaste="true" inherits="SearchBoxTemplate" letters="64">
 						<Size x="319" y="18"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.CategoryName" relativePoint="BOTTOMLEFT" x="4" y="-7"/>
@@ -1027,7 +987,7 @@
 							</OnEditFocusLost>
 						</Scripts>
 					</EditBox>
-					<Button parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
+					<DropDownToggleButton parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
 						<Size x="93" y="22"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="2" y="0"/>
@@ -1043,12 +1003,13 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnClick>
+							<OnMouseDown>
+								UIMenuButtonStretchMixin.OnMouseDown(self, button);
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								ToggleDropDownMenu(1, nil, LFGListLanguageFilterDropDownFrame, self, 0, -2, "MENU");
-							</OnClick>
+							</OnMouseDown>
 						</Scripts>
-					</Button>
+					</DropDownToggleButton>
 					<Frame name="LFGListLanguageFilterDropDownFrame" inherits="UIDropDownMenuTemplate">
 						<Scripts>
 							<OnLoad>
@@ -1223,6 +1184,7 @@
 								local frame = self:GetParent():GetParent();
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								LFGListFrame_SetActivePanel(frame, frame.CategorySelection);
+								self:GetParent().shouldAlwaysShowCreateGroupButton = false;
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -1640,14 +1602,6 @@
 								<Anchors>
 									<Anchor point="CENTER"/>
 								</Anchors>
-								<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-									<TileSize>
-										<AbsValue val="32"/>
-									</TileSize>
-									<EdgeSize>
-										<AbsValue val="32"/>
-									</EdgeSize>
-								</Backdrop>
 								<Layers>
 									<Layer level="BACKGROUND" textureSubLevel="-1">
 										<Texture parentKey="Bg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
@@ -1659,6 +1613,7 @@
 									</Layer>
 								</Layers>
 								<Frames>
+									<Frame parentKey="Border" inherits="DialogBorderNoCenterTemplate"/>
 									<EditBox parentKey="EntryBox" inherits="LFGListEditBoxTemplate" autoFocus="true">
 										<Size x="268" y="22"/>
 										<Anchors>
@@ -1880,17 +1835,6 @@
 	</Frame>
 	<Frame name="LFGListApplicationDialog" parent="UIParent" frameStrata="DIALOG" hidden="true" enableMouse="true">
 		<Size x="306" y="203"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Label" inherits="GameFontHighlight" text="LFG_LIST_CHOOSE_YOUR_ROLES">
@@ -1901,6 +1845,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<Button parentKey="HealerButton" inherits="LFGListRoleButtonTemplate">
 				<Size x="70" y="70"/>
 				<Anchors>
@@ -1987,17 +1932,6 @@
 	</Frame>
 	<Frame name="LFGListInviteDialog" parent="UIParent" frameStrata="DIALOG" hidden="true" enableMouse="true">
 		<Size x="314" y="210"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Label" inherits="GameFontHighlight" text="LFG_LIST_INVITED_TO_GROUP">
@@ -2041,6 +1975,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
 				<Size x="118" y="22"/>
 				<Anchors>

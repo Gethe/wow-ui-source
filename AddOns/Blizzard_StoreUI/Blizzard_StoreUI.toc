@@ -1,6 +1,6 @@
-## Interface: 80000
 ## Title: Blizzard Store UI
-## Secure: 1
+## AllowLoad: Both
+..\..\SharedXML\Mixin.lua
 ..\..\SharedXML\Spline.lua
 ..\..\SharedXML\Pools.lua
 ..\..\SharedXML\ModelSceneTemplatesScripts.xml
@@ -9,7 +9,12 @@
 ..\..\SharedXML\LayoutFrame.lua
 ..\..\SharedXML\ManagedLayoutFrame.lua
 ..\..\SharedXML\BulletPoint.lua
+..\..\SharedXML\NineSlice.lua
+..\..\SharedXML\SecureUtil.lua
+..\..\SharedXML\PortraitFrame.lua
 Blizzard_SimpleCheckout.xml
+Blizzard_StoreButtonMixin.lua
+Blizzard_ProductCardTemplates.xml
 Blizzard_StoreUI.xml
 Blizzard_StoreUIInsecure.xml
 Localization.lua

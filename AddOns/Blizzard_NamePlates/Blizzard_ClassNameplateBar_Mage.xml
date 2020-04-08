@@ -1,17 +1,12 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
   <Script file="Blizzard_ClassNameplateBar_Mage.lua"/>
   
 	<Frame name="ClassNameplateBarArcaneChargeFrame" virtual="true">
 		<Size x="22" y="22"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="ChargeTexture" atlas="Mage-ArcaneCharge" useAtlasSize="false" alpha="0.3">
-					<Size x="22" y="22"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
+				<Texture parentKey="ChargeTexture" atlas="Mage-ArcaneCharge" useAtlasSize="false" alpha="0.3" texelSnappingBias="0.0" snapToPixelGrid="false" />
 			</Layer>
 		</Layers>
 		<Animations>
@@ -24,7 +19,7 @@
 		</Animations>
 	</Frame>
 		
-	<Frame name="ClassNameplateBarMageFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarMage">
+	<Frame name="ClassNameplateBarMageFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarMage" ignoreParentScale="true">
 		<Size x="82" y="20"/>
 		<Frames>
 			<Frame parentKey="Charge1" parentArray="Charges" inherits="ClassNameplateBarArcaneChargeFrame">

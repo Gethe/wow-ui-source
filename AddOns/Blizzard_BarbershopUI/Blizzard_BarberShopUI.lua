@@ -130,9 +130,24 @@ function BarberShop_UpdateSelector(self)
 end
 
 function BarberShop_UpdateCustomizationOptions(self)
-	self.HairStyleSelector.Category:SetText(GetCustomizationDetails(CHAR_CUSTOMIZE_HAIR_STYLE));
-	self.HairColorSelector.Category:SetText(GetCustomizationDetails(CHAR_CUSTOMIZE_HAIR_COLOR));
-	self.FacialHairSelector.Category:SetText(GetCustomizationDetails(CHAR_CUSTOMIZE_FACIAL_HAIR));
+	local hairStyleValid = IsBarberShopStyleValid(STYLE_HAIR_STYLE);
+	if hairStyleValid then
+		self.HairStyleSelector.Category:SetText(GetCustomizationDetails(CHAR_CUSTOMIZE_HAIR_STYLE));
+	end
+	self.HairStyleSelector:SetShown(hairStyleValid);
+
+	local hairColorValid = IsBarberShopStyleValid(STYLE_HAIR_COLOR);
+	if hairColorValid then
+		self.HairColorSelector.Category:SetText(GetCustomizationDetails(CHAR_CUSTOMIZE_HAIR_COLOR));
+	end
+	self.HairColorSelector:SetShown(hairColorValid);
+	
+	local facialHairIsValid = IsBarberShopStyleValid(STYLE_FACIAL_HAIR);
+	self.FacialHairSelector:SetShown(facialHairIsValid);
+	
+	if ( facialHairIsValid ) then
+		self.FacialHairSelector.Category:SetText(GetCustomizationDetails(CHAR_CUSTOMIZE_FACIAL_HAIR));
+	end
 
 	for i = 1, STYLE_NUM_CUSTOM_DISPLAY do
 		local barberStyle = STYLE_CUSTOM_DISPLAY1 + i - 1;

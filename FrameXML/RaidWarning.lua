@@ -113,7 +113,7 @@ end
 
 function RaidWarningFrame_OnEvent(self, event, message)
 	if ( event == "CHAT_MSG_RAID_WARNING" ) then
-		message = ChatFrame_ReplaceIconAndGroupExpressions(message);
+		message = C_ChatInfo.ReplaceIconAndGroupExpressions(message);
 		
 		RaidNotice_AddMessage( self, message, ChatTypeInfo["RAID_WARNING"] );
 		PlaySound(SOUNDKIT.RAID_WARNING);

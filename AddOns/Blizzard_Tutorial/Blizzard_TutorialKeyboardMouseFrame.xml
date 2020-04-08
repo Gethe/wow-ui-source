@@ -177,7 +177,7 @@
 		</Layers>
 
 		<Frames>
-			<Button parentKey="btnOpen" inherits="ItemButtonTemplate" name="xx">
+			<ItemButton parentKey="btnOpen" name="xx">
 				<Anchors>
 					<Anchor point="RIGHT" x="-5" y="1"/>
 				</Anchors>
@@ -188,7 +188,7 @@
 						self.icon:SetAtlas("NPE_Icon");
 					</OnLoad>
 				</Scripts>
-			</Button>
+			</ItemButton>
 		</Frames>
 
 		<Animations>

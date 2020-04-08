@@ -93,7 +93,8 @@
 				<PushedTexture parentKey="Pushed" atlas="orderhall-commandbar-mapbutton-down"/>
 				<Scripts>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip_SetTitle(GameTooltip, self.tooltipText);
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick function="ToggleWorldMap"/>

@@ -178,6 +178,7 @@ function ChannelRosterButtonMixin:OnClick(button)
 		dropdown.channelType = channel:GetChannelType();
 		dropdown.guid = guid;
 		dropdown.isSelf = self:IsLocalPlayer();
+		dropdown.isOffline = (self:IsConnected() == false);
 		dropdown.voiceChannel = channel:GetVoiceChannel();
 		dropdown.voiceChannelID = channel:GetVoiceChannelID();
 		if dropdown.voiceChannelID and guid then
@@ -205,45 +206,22 @@ function ChannelRosterButtonMixin:OnLeave()
 end
 
 function ChannelRosterButtonMixin:Update()
-	self:UpdateName();
-
-	local showRank = self:IsMemberLeadership();
-	self.Rank:SetShown(showRank);
-
+	-- The following methods are not really an API, should only use the public entry point of Update.
+	self:UpdateRankVisibleState();
 	self.SelfDeafenButton:UpdateVisibleState();
 	self.SelfMuteButton:UpdateVisibleState();
 	self.MemberMuteButton:UpdateVisibleState();
 
-	-- Adjust the name to be smaller to make room for the voice buttons
-	if self.SelfMuteButton:IsShown() then
-		self.Name:SetWidth(showRank and 98 or 113);
-	elseif self.MemberMuteButton:IsShown() then
-		self.Name:SetWidth(showRank and 113 or 128);
-	else
-		self.Name:SetWidth(140);
-	end
-
-	if showRank then
-		local nameOffset = self.Name:GetLeft() - self:GetLeft();
-		local nameWidth = self.Name:GetWidth();
-		local nameStringWidth = self.Name:GetStringWidth();
-		local rankOffset = (self.Name:IsTruncated() and nameWidth or (nameStringWidth + 4)) + nameOffset;
-		self.Rank:SetPoint("LEFT", self, "LEFT", rankOffset, 0);
-	end
-
-	if self:IsMemberOwner() then
-		self.Rank:SetTexture("Interface\\GroupFrame\\UI-Group-LeaderIcon");
-	elseif self:IsMemberModerator() then
-		self.Rank:SetTexture("Interface\\GroupFrame\\UI-Group-AssistantIcon");
-	end
-
+	self:UpdateName();
+	self:UpdateNameSize();
+	self:UpdateRankPosition();
 	self:UpdateVoiceActivityNotification();
 
 	self:Show();
 end
 
 do
-	function ChannelRosterButton_VoiceActivityNotificationCreatedCallback(self, notification)
+	local function ChannelRosterButton_VoiceActivityNotificationCreatedCallback(self, notification)
 		notification:SetParent(self);
 		notification:ClearAllPoints();
 		notification:SetPoint("RIGHT", self, "RIGHT", 0, 0);
@@ -293,4 +271,52 @@ function ChannelRosterButtonMixin:UpdateName()
 	end
 
 	self.Name:SetTextColor(r, g, b);
+end
+
+function ChannelRosterButtonMixin:UpdateNameSize()
+	-- Adjust the name to be smaller to make room for the voice buttons
+	if self.SelfMuteButton:IsShown() then
+		self.Name:SetWidth(self.showRank and 98 or 113);
+	elseif self.MemberMuteButton:IsShown() then
+		self.Name:SetWidth(self.showRank and 113 or 128);
+	else
+		self.Name:SetWidth(140);
+	end
+end
+
+function ChannelRosterButtonMixin:UpdateRankVisibleState()
+	self.showRank = self:IsMemberLeadership();
+	self.Rank:SetShown(self.showRank);
+
+	if self.showRank then
+		if self:IsMemberOwner() then
+			self.Rank:SetTexture("Interface\\GroupFrame\\UI-Group-LeaderIcon");
+		elseif self:IsMemberModerator() then
+			self.Rank:SetTexture("Interface\\GroupFrame\\UI-Group-AssistantIcon");
+		end
+	end
+end
+
+function ChannelRosterButtonMixin:UpdateRankPosition()
+	if self.showRank then
+		local nameOffset = self.Name:GetLeft() - self:GetLeft();
+		local nameWidth = self.Name:GetWidth();
+		local nameStringWidth = self.Name:GetStringWidth();
+		local rankOffset = (self.Name:IsTruncated() and nameWidth or (nameStringWidth + 4)) + nameOffset;
+		self.Rank:SetPoint("LEFT", self, "LEFT", rankOffset, 0);
+	end
+end
+
+function ChannelRosterButtonMixin:OnHide()
+	self:ClearData();
+end
+
+function ChannelRosterButtonMixin:ClearData()
+	-- This only clears the main identifying data for the button all member/voice info
+	-- some of the other data could remain, but should be updated if the button is shown
+	-- again.
+	self:SetMemberID(nil);
+	self:SetVoiceChannelID(nil);
+	self:SetVoiceMemberID(nil);
+	self:SetMemberName(nil);
 end

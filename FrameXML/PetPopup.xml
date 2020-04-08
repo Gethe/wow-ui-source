@@ -2,9 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="PetPopup.lua"/>
 	<Button name="PetPopupButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="64" y="20"/>
-		</Size>
+		<Size x="64" y="20"/>
 		<NormalTexture file="Interface\Buttons\UI-DialogBox-Button-Up">
 			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.625"/>
 		</NormalTexture>
@@ -18,65 +16,37 @@
 		<HighlightFont style="GameFontHighlight"/>
 	</Button>
 	<Frame name="PetRenamePopup" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" parent="UIParent">
-		<Size>
-			<AbsDimension x="196" y="112"/>
-		</Size>
+		<Size x="196" y="112"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
-				<Offset>
-					<AbsDimension x="10" y="-128"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="10" y="-128"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString text="PET_RENAME_LABEL" inherits="GameFontHighlight">
-					<Size>
-						<AbsDimension x="300" y="0"/>
-					</Size>
+					<Size x="300" y="0"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-25"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="-25"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<EditBox name="PetRenamePopupEditBox" letters="12" historyLines="1">
-				<Size>
-					<AbsDimension x="150" y="32"/>
-				</Size>
+				<Size x="150" y="32"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
-							<Size>
-								<AbsDimension x="150" y="32"/>
-							</Size>
+							<Size x="150" y="32"/>
 							<Anchors>
 								<Anchor point="LEFT"/>
 							</Anchors>
 						</Texture>
 						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
-							<Size>
-								<AbsDimension x="150" y="32"/>
-							</Size>
+							<Size x="150" y="32"/>
 							<Anchors>
 								<Anchor point="RIGHT"/>
 							</Anchors>
@@ -88,14 +58,10 @@
 					<OnEscapePressed function="PetPopup_Cancel"/>
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
-			</EditBox>			
+			</EditBox>
 			<Button name="PetRenamePopupAcceptButton" inherits="PetPopupButtonTemplate">
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="-5" y="15"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-5" y="15"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="PetPopup_Confirm"/>
@@ -106,11 +72,7 @@
 			</Button>
 			<Button name="PetRenamePopupCancelButton" inherits="PetPopupButtonTemplate">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="5" y="15"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="5" y="15"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="PetPopup_Cancel"/>

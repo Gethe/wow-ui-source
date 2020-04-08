@@ -1,5 +1,8 @@
 PartyPoseRewardsMixin = { };
 
+local IMPACT_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(214, 1983536);	-- 8FX_AZERITE_GENERIC_IMPACTHIGH_CHEST
+local HOLD_MODEL_SCENE_INFO	= StaticModelInfo.CreateModelSceneEntry(234, 1983980);		-- 8FX_AZERITE_EMPOWER_STATECHEST
+
 function PartyPoseRewardsMixin:OnLoad()
 	local startingSound = SOUNDKIT.UI_80_ISLANDS_AZERITECOLLECTION_START;
 	local loopingSound = SOUNDKIT.UI_80_ISLANDS_AZERITECOLLECTION_LOOP;
@@ -78,6 +81,13 @@ function PartyPoseRewardsMixin:SetRewardsQuality(quality)
 		self.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
 		self.Name:SetVertexColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 	end
+
+	if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(self.id) then
+		self.IconOverlay:SetAtlas([[AzeriteIconFrame]]);
+		self.IconOverlay:Show();
+	else
+		self.IconOverlay:Hide();
+	end
 end
 
 function PartyPoseRewardsMixin:PlayRewardAnimation()
@@ -120,7 +130,7 @@ end
 function PartyPoseRewardsMixin:CheckForIndefinitePause()
 	if not self:GetParent():GetParent():CanResumeAnimation() then
 		self:PauseRewardAnimation();
-		self.isPlayingRewards = false; 
+		self.isPlayingRewards = false;
 	end
 end
 
@@ -166,12 +176,12 @@ end
 
 function PartyPoseMixin:AddReward(name, texture, quality, id, objectType, objectLink, quantity, originalQuantity, isCurrencyContainer)
 	local rewardData = {
-		name = name, 
-		texture = texture, 
-		quality = quality, 
-		id = id, 
-		objectType = objectType, 
-		objectLink = objectLink, 
+		name = name,
+		texture = texture,
+		quality = quality,
+		id = id,
+		objectType = objectType,
+		objectLink = objectLink,
 		quantity = quantity,
 		originalQuantity = originalQuantity,
 		isCurrencyContainer = isCurrencyContainer,
@@ -188,20 +198,13 @@ function PartyPoseMixin:PlayModelSceneAnimations(forceUpdate)
 	self.RewardAnimations.ImpactModelScene:Show();
 	self.RewardAnimations.HoldModelScene:Show();
 
-	self.RewardAnimations.ImpactModelScene:SetFromModelSceneID(214, forceUpdate);
-	local impactActor = self.RewardAnimations.ImpactModelScene:GetActorByTag("effect");
+	local impactActor = StaticModelInfo.SetupModelScene(self.RewardAnimations.ImpactModelScene, IMPACT_MODEL_SCENE_INFO, forceUpdate);
 	if (impactActor) then
-		impactActor:SetModelByFileID(1983536); -- 8FX_AZERITE_GENERIC_IMPACTHIGH_CHEST
-
 		impactActor:SetAnimation(0, 0, 1, 0);
 		C_Timer.After(.2, function() impactActor:SetAnimation(0, 0, 0, 0); end);
 	end
 
-	self.RewardAnimations.HoldModelScene:SetFromModelSceneID(234, forceUpdate);
-	local holdActor = self.RewardAnimations.HoldModelScene:GetActorByTag("effect");
-	if (holdActor) then
-		holdActor:SetModelByFileID(1983980); -- 8FX_AZERITE_EMPOWER_STATECHEST
-	end
+	StaticModelInfo.SetupModelScene(self.RewardAnimations.HoldModelScene, HOLD_MODEL_SCENE_INFO, forceUpdate);
 
 	self.RewardAnimations.HoldModelScene.RewardModelAnim:Play();
 end
@@ -247,7 +250,7 @@ function PartyPoseMixin:SetModelScene(sceneID, partyCategory, forceUpdate)
 	self.ModelScene.shadowPool:ReleaseAll();
 	self.ModelScene.partyCategory = partyCategory;
 
-	local playerActor = self.ModelScene:GetActorByTag("player");
+	local playerActor = self.ModelScene:GetPlayerActor();
 	if (playerActor) then
 		if (playerActor:SetModelByUnit("player")) then
 			self:SetupShadow(playerActor);
@@ -266,68 +269,143 @@ function PartyPoseMixin:SetModelScene(sceneID, partyCategory, forceUpdate)
 	self.ModelScene:Show();
 end
 
-function PartyPoseMixin:PlaySounds(partyPoseInfo, winnerFactionGroup) 
-	local factionGroup = UnitFactionGroup("player"); 
-	if (factionGroup == winnerFactionGroup) then
-		PlaySound(partyPoseInfo.victorySoundKitID); 
-	else 
-		PlaySound(partyPoseInfo.defeatSoundKitID); 
+function PartyPoseMixin:AddCreatureActor(displayID, name)
+	local actor = self.ModelScene:GetActorByTag(name);
+	if (actor) then
+		if (actor:SetModelByCreatureDisplayID(displayID)) then
+			self:SetupShadow(actor);
+		end
 	end
 end
 
-function PartyPoseMixin:SetupTheme(styleData)
-	if self.Topper then
-		self.Topper:SetPoint("BOTTOM", self.TopBorder, "TOP", 0, styleData.topperOffset);
-		self.Topper:SetAtlas(styleData.Topper, true);
+function PartyPoseMixin:AddModelSceneActors(actors)
+	for scriptTag, displayID in pairs(actors) do
+		self:AddCreatureActor(displayID, scriptTag);
+	end
+end
 
-		if styleData.topperBehindFrame then
-			self.Topper:SetDrawLayer("BACKGROUND", -7);
-		else
-			self.Topper:SetDrawLayer("ARTWORK", 2);
+function PartyPoseMixin:PlaySounds()
+	if (self.partyPoseData.playerWon) then
+		PlaySound(self.partyPoseData.partyPoseInfo.victorySoundKitID);
+	else
+		PlaySound(self.partyPoseData.partyPoseInfo.defeatSoundKitID);
+	end
+end
+
+do
+	NineSliceUtil.AddLayout("PartyPoseFrameTemplate", {
+		TopLeftCorner =	{ atlas = "scoreboard-frameborder-topleft", x = 0, y = 0, },
+		TopRightCorner =	{ atlas = "scoreboard-frameborder-topright", x = 0, y = 0, },
+		BottomLeftCorner =	{ atlas = "scoreboard-frameborder-bottomleft", x = 0, y = 0, },
+		BottomRightCorner =	{ atlas = "scoreboard-frameborder-bottomright", x = 0, y = 0, },
+		TopEdge = { atlas = "scoreboard-frameborder-top", },
+		BottomEdge = { atlas = "scoreboard-frameborder-bottom",  },
+		LeftEdge = { atlas = "scoreboard-frameborder-left", },
+		RightEdge = { atlas = "scoreboard-frameborder-right",  },
+	});
+
+	NineSliceUtil.AddLayout("PartyPoseKit", {
+		mirrorLayout = true,
+		TopLeftCorner =	{ atlas = "scoreboard-%s-corner", x = 0, y = 0, },
+		TopRightCorner =	{ atlas = "scoreboard-%s-corner", x = 0, y = 0, },
+		BottomLeftCorner =	{ atlas = "scoreboard-%s-corner", x = 0, y = 0, },
+		BottomRightCorner =	{ atlas = "scoreboard-%s-corner", x = 0, y = 0, },
+		TopEdge = { atlas = "_scoreboard-%s-tiletop", mirrorLayout = false, },
+		BottomEdge = { atlas = "_scoreboard-%s-tilebottom", mirrorLayout = false, },
+		LeftEdge = { atlas = "!scoreboard-%s-tileleft", mirrorLayout = false, },
+		RightEdge = { atlas = "!scoreboard-%s-tileright", mirrorLayout = false, },
+	});
+
+	function PartyPoseMixin:SetupTheme()
+		if self.OverlayElements.Topper then
+			self.OverlayElements.Topper:SetPoint("BOTTOM", self.Border, "TOP", 0, self.partyPoseData.themeData.topperOffset);
+			self.OverlayElements.Topper:SetAtlas(self.partyPoseData.themeData.Topper, true);
 		end
+
+		self.TitleBg:ClearAllPoints();
+		self.TitleBg:SetPoint("CENTER", self.ModelScene, "TOP", 0, 25);
+		self.TitleBg:SetAtlas(self.partyPoseData.themeData.TitleBG, true);
+		self.TitleBg:SetDrawLayer("OVERLAY", 6);
+		self.TitleText:SetDrawLayer("OVERLAY", 7);
+
+		-- TODO: Potentially move this to theme data to avoid special case code like this.
+		self.Border:ClearAllPoints();
+		self.Border:SetPoint("TOPLEFT", self, "TOPLEFT", -(self.partyPoseData.themeData.borderPaddingX or 0), self.partyPoseData.themeData.borderPaddingY or 0);
+		self.Border:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", self.partyPoseData.themeData.borderPaddingX or 0, -(self.partyPoseData.themeData.borderPaddingY or 0));
+
+		NineSliceUtil.ApplyLayoutByName(self.Border, self.partyPoseData.themeData.nineSliceLayout, self.partyPoseData.themeData.nineSliceTextureKitName);
 	end
 
-	self.TitleBg:SetAtlas(styleData.TitleBG, true);
-	
-	self.TitleText:SetDrawLayer("OVERLAY", 7);
-	self.TitleBg:SetDrawLayer("OVERLAY", 6);
-	
-	self.TitleBg:ClearAllPoints();
-	self.TitleBg:SetPoint("CENTER", self.ModelScene, "TOP", 0, 25);
+	local function WidgetsLayout(widgetContainerFrame, sortedWidgets)
+		local widgetsHeight = 0;
+		local maxWidgetWidth = 1;
 
-	if self.ModelScene then
-		self.ModelScene.Bg:SetAtlas(styleData.ModelSceneBG);
+		for index, widgetFrame in ipairs(sortedWidgets) do
+			if ( index == 1 ) then
+				widgetFrame:SetPoint("TOP", widgetContainerFrame, "TOP", 0, 0);
+				widgetsHeight = widgetsHeight + widgetFrame:GetWidgetHeight();
+			else
+				local relative = sortedWidgets[index - 1];
+				widgetFrame:SetPoint("TOP", relative, "BOTTOM", 0, 5);
+				widgetsHeight = widgetsHeight + widgetFrame:GetWidgetHeight() - 5;
+			end
+
+			local widgetWidth = widgetFrame:GetWidgetWidth();
+			if widgetWidth > maxWidgetWidth then
+				maxWidgetWidth = widgetWidth;
+			end
+		end
+
+		widgetContainerFrame:SetHeight(math.max(widgetsHeight, 1));
+		widgetContainerFrame:SetWidth(maxWidgetWidth);
 	end
 
-	self.TopLeftCorner:SetAtlas(styleData.TopLeft, true);
-	self.TopRightCorner:SetAtlas(styleData.TopRight, true);
-	self.BotLeftCorner:SetAtlas(styleData.BottomLeft, true);
-	self.BotRightCorner:SetAtlas(styleData.BottomRight, true);
+	function PartyPoseMixin:LoadPartyPose(partyPoseData, forceUpdate)
+		self.partyPoseData = partyPoseData;
 
-	self.TopBorder:SetAtlas(styleData.Top, true);
-	self.BottomBorder:SetAtlas(styleData.Bottom, true);
-	self.LeftBorder:SetAtlas(styleData.Left, true);
-	self.RightBorder:SetAtlas(styleData.Right, true);
+		if self.Score then
+			self.Score:RegisterForWidgetSet(partyPoseData.partyPoseInfo.widgetSetID, WidgetsLayout);
+		end
 
-	self.TopLeftCorner:SetTexCoord(0, 1, 0, 1);
-	self.TopRightCorner:SetTexCoord(1, 0, 0, 1);
-	self.BotLeftCorner:SetTexCoord(0, 1, 1, 0);
-	self.BotRightCorner:SetTexCoord(1, 0, 1, 0);
+		if (partyPoseData.playerWon) then
+			self.TitleText:SetText(PARTY_POSE_VICTORY);
+			self:SetModelScene(partyPoseData.partyPoseInfo.victoryModelSceneID, partyPoseData.themeData.partyCategory, forceUpdate);
+		else
+			self.TitleText:SetText(PARTY_POSE_DEFEAT);
+			self:SetModelScene(partyPoseData.partyPoseInfo.defeatModelSceneID, partyPoseData.themeData.partyCategory, forceUpdate);
+		end
 
-	self.Background:ClearAllPoints();
-	self.Background:SetPoint("TOPLEFT", self.TopLeftCorner, 4, -4);
-	self.Background:SetPoint("BOTTOMRIGHT", self.BotRightCorner, -4, 4);
+		self.ModelScene.Bg:SetAtlas(partyPoseData.modelSceneData.ModelSceneBG);
 
-	local border = AnchorUtil.CreateNineSlice(self);
-	border:SetTopLeftCorner(self.TopLeftCorner, -20, 20);
-	border:SetTopRightCorner(self.TopRightCorner, 20, 20);
-	border:SetBottomLeftCorner(self.BotLeftCorner, -20, styleData.bottomCornerYOffset);
-	border:SetBottomRightCorner(self.BotRightCorner, 20, styleData.bottomCornerYOffset);
-	border:SetTopEdge(self.TopBorder);
-	border:SetLeftEdge(self.LeftBorder);
-	border:SetRightEdge(self.RightBorder);
-	border:SetBottomEdge(self.BottomBorder);
-	border:Apply();
+		if partyPoseData.modelSceneData.addModelSceneActors then
+			self:AddModelSceneActors(partyPoseData.modelSceneData.addModelSceneActors);
+		end
+
+		self:SetupTheme();
+		self:SetLeaveButtonText();
+		self:PlaySounds();
+	end
+end
+
+function PartyPoseMixin:GetPartyPoseData(mapID, winner)
+	local winnerFactionGroup = PLAYER_FACTION_GROUP[winner];
+	local playerFactionGroup = UnitFactionGroup("player");
+	local partyPoseData = {};
+	partyPoseData.partyPoseInfo = C_PartyPose.GetPartyPoseInfoByMapID(mapID);
+	partyPoseData.playerWon = (winnerFactionGroup == playerFactionGroup);
+	return partyPoseData;
+end
+
+function PartyPoseMixin:LoadScreen(mapID, winner)
+	self:LoadPartyPose(self:GetPartyPoseData(mapID, winner));
+end
+
+function PartyPoseMixin:ReloadPartyPose()
+	if self.partyPoseData then
+		local forceUpdate = true;
+		self:LoadPartyPose(self.partyPoseData, forceUpdate);
+		self:PlayModelSceneAnimations(forceUpdate);
+	end
 end
 
 function PartyPoseMixin:OnLoad()
@@ -339,9 +417,7 @@ end
 
 function PartyPoseMixin:OnEvent(event, ...)
 	if (event == "UI_MODEL_SCENE_INFO_UPDATED") then
-		local forceUpdate = true;
-		self:SetModelScene(self.ModelScene:GetModelSceneID(), self.ModelScene.partyCategory, forceUpdate);
-		self:PlayModelSceneAnimations(forceUpdate);
+		self:ReloadPartyPose();
 	elseif ( event == "PLAYER_LEAVING_WORLD" ) then
 		HideUIPanel(self);
 	end

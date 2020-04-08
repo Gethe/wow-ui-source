@@ -508,11 +508,6 @@
 								<Anchor point="TOPLEFT" relativeTo="$parentOfficerBg" relativePoint="TOPLEFT" x="22" y="-20"/>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentRosterLabel" inherits="GameFontNormal" text="GUILD_ROSTER">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentRosterBg" x="7" y="-7"/>
-							</Anchors>
-						</FontString>
 						<FontString name="$parentBankLabel" inherits="GameFontNormal" text="GUILD_BANK">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentBankBg" x="7" y="-7"/>
@@ -555,7 +550,7 @@
 					
 					<CheckButton parentKey="InviteCheckbox" name="$parentCheckbox5" inherits="GuildPermissionCheckBoxTemplate" id="5">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentRosterLabel" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentRosterBg" x="7" y="-2"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="$parentCheckbox7" inherits="GuildPermissionCheckBoxTemplate" id="7">
@@ -571,6 +566,11 @@
 					<CheckButton name="$parentCheckbox8" inherits="GuildPermissionCheckBoxTemplate" id="8">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox6" relativePoint="BOTTOMLEFT" x="0" y="1"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="$parentCheckbox2" inherits="GuildPermissionCheckBoxTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox7" relativePoint="BOTTOMLEFT" x="0" y="1"/>
 						</Anchors>
 					</CheckButton>
 					

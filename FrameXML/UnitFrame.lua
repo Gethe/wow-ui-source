@@ -122,7 +122,7 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE")
 	self:RegisterEvent("PORTRAITS_UPDATED");
 	if ( self.healAbsorbBar ) then
-		self:RegisterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED");
+		self:RegisterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", unit);
 	end
 	if ( self.myHealPredictionBar ) then
 		self:RegisterUnitEvent("UNIT_MAXHEALTH", unit);
@@ -445,28 +445,12 @@ function UnitFrameUtil_UpdateManaFillBar(frame, previousTexture, bar, amount, ba
 end
 
 function UnitFrame_OnEnter (self)
-	-- If showing newbie tips then only show the explanation
-	if ( SHOW_NEWBIE_TIPS == "1" ) then
-		if ( self == PlayerFrame ) then
-			GameTooltip_SetDefaultAnchor(GameTooltip, self);
-			GameTooltip_AddNewbieTip(self, PARTY_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_PARTYOPTIONS);
-			return;
-		elseif ( self == TargetFrame and UnitPlayerControlled("target") and not UnitIsUnit("target", "player") and not UnitIsUnit("target", "pet") ) then
-			GameTooltip_SetDefaultAnchor(GameTooltip, self);
-			GameTooltip_AddNewbieTip(self, PLAYER_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_PLAYEROPTIONS);
-			return;
-		end
-	end
 	UnitFrame_UpdateTooltip(self);
 end
 
 function UnitFrame_OnLeave (self)
 	self.UpdateTooltip = nil;
-	if ( SHOW_NEWBIE_TIPS == "1" ) then
-		GameTooltip:Hide();
-	else
-		GameTooltip:FadeOut();
-	end
+	GameTooltip:FadeOut();
 end
 
 function UnitFrame_UpdateTooltip (self)
@@ -530,7 +514,14 @@ function UnitFrameManaBar_UpdateType (manaBar)
 		if ( manaBar.FullPowerFrame ) then
 			manaBar.FullPowerFrame:RemoveAnims();
 		end
+		if manaBar.FeedbackFrame then
+			manaBar.FeedbackFrame:StopFeedbackAnim();
+		end
 		manaBar.currValue = UnitPower("player", powerType);
+		if unitFrame.myManaCostPredictionBar then
+			unitFrame.myManaCostPredictionBar:Hide();
+		end
+		unitFrame.predictedPowerCost = 0;
 	end
 
 	-- Update the manabar text

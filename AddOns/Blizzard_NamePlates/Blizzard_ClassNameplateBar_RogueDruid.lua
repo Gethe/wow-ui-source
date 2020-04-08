@@ -20,11 +20,11 @@ function ClassNameplateBarRogueDruid:OnLoad()
 	ClassNameplateBar.OnLoad(self);
 end
 
-function ClassNameplateBarRogueDruid:OnEvent(event, arg1, arg2)
+function ClassNameplateBarRogueDruid:OnEvent(event, ...)
 	if (event == "UNIT_DISPLAYPOWER" or event == "PLAYER_ENTERING_WORLD") then
 		self:SetupDruid();
 	else
-		ClassNameplateBar.OnEvent(self, event, arg1, arg2);
+		ClassNameplateBar.OnEvent(self, event, ...);
 	end
 end
 

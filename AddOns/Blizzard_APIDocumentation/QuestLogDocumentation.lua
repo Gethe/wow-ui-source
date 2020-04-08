@@ -7,6 +7,15 @@ local QuestLog =
 	Functions =
 	{
 		{
+			Name = "GetActiveThreatMaps",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "uiMapIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMapForQuestPOIs",
 			Type = "Function",
 
@@ -33,6 +42,80 @@ local QuestLog =
 			Returns =
 			{
 				{ Name = "maxNumQuestsCanAccept", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNextWaypoint",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+				{ Name = "x", Type = "number", Nilable = false },
+				{ Name = "y", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNextWaypointForMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "x", Type = "number", Nilable = false },
+				{ Name = "y", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNextWaypointText",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "waypointText", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNumQuestObjectives",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "leaderboardCount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetQuestDifficultyLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "level", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -93,6 +176,29 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "HasActiveThreats",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasActiveThreats", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsLegendaryQuest",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isLegendaryQuest", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsOnQuest",
 			Type = "Function",
 
@@ -107,7 +213,106 @@ local QuestLog =
 			},
 		},
 		{
-			Name = "QuestHasWarModeBonus",
+			Name = "IsQuestDisabledForSession",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isDisabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsQuestFlaggedCompleted",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCompleted", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsQuestReplayable",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isReplayable", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsQuestReplayedRecently",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "recentlyReplayed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsQuestTrivial",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isTrivial", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsThreatQuest",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isThreat", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "QuestCanHaveWarModeBonus",
+			Type = "Function",
+			Documentation = { "Tests whether a quest is eligible for warmode bonuses (e.g. most world quests, some daily quests" },
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasBonus", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "QuestHasQuestSessionBonus",
 			Type = "Function",
 
 			Arguments =
@@ -118,6 +323,30 @@ local QuestLog =
 			Returns =
 			{
 				{ Name = "hasBonus", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "QuestHasWarModeBonus",
+			Type = "Function",
+			Documentation = { "Tests whether a quest in the player's quest log that is eligible for warmode bonuses (see 'QuestCanHaveWarModeBOnus') has been completed in warmode (including accepting it)" },
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasBonus", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RequestLoadQuestByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -172,6 +401,16 @@ local QuestLog =
 			LiteralName = "QUEST_COMPLETE",
 		},
 		{
+			Name = "QuestDataLoadResult",
+			Type = "Event",
+			LiteralName = "QUEST_DATA_LOAD_RESULT",
+			Payload =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "QuestDetail",
 			Type = "Event",
 			LiteralName = "QUEST_DETAIL",
@@ -210,6 +449,7 @@ local QuestLog =
 			Payload =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "wasReplayQuest", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -246,20 +486,30 @@ local QuestLog =
 			Name = "QuestlineUpdate",
 			Type = "Event",
 			LiteralName = "QUESTLINE_UPDATE",
+			Payload =
+			{
+				{ Name = "requestRequired", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "SuperTrackedQuestChanged",
 			Type = "Event",
 			LiteralName = "SUPER_TRACKED_QUEST_CHANGED",
-			Payload =
-			{
-				{ Name = "superTrackedQuestID", Type = "number", Nilable = false },
-			},
 		},
 		{
 			Name = "TaskProgressUpdate",
 			Type = "Event",
 			LiteralName = "TASK_PROGRESS_UPDATE",
+		},
+		{
+			Name = "TreasurePickerCacheFlush",
+			Type = "Event",
+			LiteralName = "TREASURE_PICKER_CACHE_FLUSH",
+		},
+		{
+			Name = "WaypointUpdate",
+			Type = "Event",
+			LiteralName = "WAYPOINT_UPDATE",
 		},
 		{
 			Name = "WorldQuestCompletedBySpell",
@@ -277,9 +527,9 @@ local QuestLog =
 		{
 			Name = "QuestTag",
 			Type = "Enumeration",
-			NumValues = 10,
-			MinValue = 0,
-			MaxValue = 102,
+			NumValues = 11,
+			MinValue = 1,
+			MaxValue = 266,
 			Fields =
 			{
 				{ Name = "Group", Type = "QuestTag", EnumValue = 1 },
@@ -292,6 +542,7 @@ local QuestLog =
 				{ Name = "Raid25", Type = "QuestTag", EnumValue = 89 },
 				{ Name = "Scenario", Type = "QuestTag", EnumValue = 98 },
 				{ Name = "Account", Type = "QuestTag", EnumValue = 102 },
+				{ Name = "CombatAlly", Type = "QuestTag", EnumValue = 266 },
 			},
 		},
 		{
@@ -314,6 +565,8 @@ local QuestLog =
 				{ Name = "questID", Type = "number", Nilable = false },
 				{ Name = "x", Type = "number", Nilable = false },
 				{ Name = "y", Type = "number", Nilable = false },
+				{ Name = "type", Type = "number", Nilable = false },
+				{ Name = "isMapIndicatorQuest", Type = "bool", Nilable = false },
 			},
 		},
 	},

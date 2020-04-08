@@ -24,7 +24,7 @@ function CommunitiesGuildMemberDetailMixin:OnEvent(event, ...)
 	if event == "GUILD_ROSTER_UPDATE" then
 		local canRequestRosterUpdate = ...;
 		if ( canRequestRosterUpdate ) then
-			GuildRoster();
+			C_GuildInfo.GuildRoster();
 		end
 		
 		local clubId = self:GetClubId();
@@ -80,7 +80,8 @@ function CommunitiesGuildMemberDetailMixin:DisplayMember(clubId, memberInfo)
 
 	local personalNoteText = self.NoteBackground.PersonalNoteText;
 	local note = memberInfo.memberNote;
-	if CanEditPublicNote() then
+	local canEditNote = memberInfo.isSelf or CanEditPublicNote();
+	if canEditNote then
 		personalNoteText:SetTextColor(1.0, 1.0, 1.0);
 		if not note or note == "" then
 			note = GUILD_NOTE_EDITLABEL;
@@ -88,7 +89,7 @@ function CommunitiesGuildMemberDetailMixin:DisplayMember(clubId, memberInfo)
 	else
 		personalNoteText:SetTextColor(0.65, 0.65, 0.65);
 	end
-	self.NoteBackground:EnableMouse(CanEditPublicNote());
+	self.NoteBackground:EnableMouse(canEditNote);
 	personalNoteText:SetText(note);
 
 	local maxRankOrder = GuildControlGetNumRanks();	
@@ -109,9 +110,9 @@ function CommunitiesGuildMemberDetailMixin:DisplayMember(clubId, memberInfo)
 	
 	-- Update officer note
 	local officerNoteText = self.OfficerNoteBackground.OfficerNoteText;
-	if CanViewOfficerNote() then
+	if C_GuildInfo.CanViewOfficerNote() then
 		local officernote = memberInfo.officerNote;
-		if CanEditOfficerNote() then
+		if C_GuildInfo.CanEditOfficerNote() then
 			if not officernote or officernote == "" then
 				officernote = GUILD_OFFICERNOTE_EDITLABEL;
 			end
@@ -119,7 +120,7 @@ function CommunitiesGuildMemberDetailMixin:DisplayMember(clubId, memberInfo)
 		else
 			officerNoteText:SetTextColor(0.65, 0.65, 0.65);
 		end
-		self.OfficerNoteBackground:EnableMouse(CanEditOfficerNote());
+		self.OfficerNoteBackground:EnableMouse(C_GuildInfo.CanEditOfficerNote());
 		officerNoteText:SetText(officernote);
 
 		-- Resize detail frame
@@ -178,11 +179,12 @@ function CommunitiesGuildMemberRankDropdown_Initialize(self)
 		info.value = listRankOrder;
 		-- check
 		if not info.checked then
-			local allowed, reason = C_GuildInfo.IsGuildRankAssignmentAllowed(memberInfo.guid, listRankOrder);
-			if not allowed and reason == "authenticator" then
+			if not C_GuildInfo.IsGuildRankAssignmentAllowed(memberInfo.guid, listRankOrder) then
 				info.disabled = true;
 				info.tooltipWhileDisabled = 1;
 				info.tooltipTitle = GUILD_RANK_UNAVAILABLE;
+				
+				-- We only disallow a rank if it requires an authenticator.
 				info.tooltipText = GUILD_RANK_UNAVAILABLE_AUTHENTICATOR;
 				info.tooltipOnButton = 1;
 			end

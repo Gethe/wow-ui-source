@@ -63,23 +63,17 @@ function GarrisonFollowerMission:SetupCompleteDialog()
 		    local dialogBorderFrame = completeDialog.BorderFrame;
 		    dialogBorderFrame.Model:SetDisplayInfo(59175);
 		    dialogBorderFrame.Model:SetPosition(0.2, 1.15, -0.7);
-		    dialogBorderFrame.Stage.LocBack:SetAtlas("_GarrMissionLocation-FrostfireRidge-Back", true);
-		    dialogBorderFrame.Stage.LocMid:SetAtlas ("_GarrMissionLocation-FrostfireRidge-Mid", true);
-		    dialogBorderFrame.Stage.LocFore:SetAtlas("_GarrMissionLocation-FrostfireRidge-Fore", true);
-		    dialogBorderFrame.Stage.LocBack:SetTexCoord(0, 0.485, 0, 1);
-		    dialogBorderFrame.Stage.LocMid:SetTexCoord(0, 0.485, 0, 1);
-		    dialogBorderFrame.Stage.LocFore:SetTexCoord(0, 0.485, 0, 1);
+			GarrisonMissionStage_SetBack(dialogBorderFrame.Stage, "_GarrMissionLocation-FrostfireRidge-Back");
+			GarrisonMissionStage_SetMid(dialogBorderFrame.Stage, "_GarrMissionLocation-FrostfireRidge-Mid");
+			GarrisonMissionStage_SetFore(dialogBorderFrame.Stage, "_GarrMissionLocation-FrostfireRidge-Fore");
 	    else
 			chestDisplayID = 54912;
 		    local dialogBorderFrame = completeDialog.BorderFrame;
 		    dialogBorderFrame.Model:SetDisplayInfo(58063);
 		    dialogBorderFrame.Model:SetPosition(0.2, .75, -0.7);
-		    dialogBorderFrame.Stage.LocBack:SetAtlas("_GarrMissionLocation-ShadowmoonValley-Back", true);
-		    dialogBorderFrame.Stage.LocMid:SetAtlas ("_GarrMissionLocation-ShadowmoonValley-Mid", true);
-		    dialogBorderFrame.Stage.LocFore:SetAtlas("_GarrMissionLocation-ShadowmoonValley-Fore", true);
-		    dialogBorderFrame.Stage.LocBack:SetTexCoord(0.2, 0.685, 0, 1);
-		    dialogBorderFrame.Stage.LocMid:SetTexCoord(0.2, 0.685, 0, 1);
-		    dialogBorderFrame.Stage.LocFore:SetTexCoord(0.2, 0.685, 0, 1);
+			GarrisonMissionStage_SetBack(dialogBorderFrame.Stage, "_GarrMissionLocation-ShadowmoonValley-Back");
+			GarrisonMissionStage_SetMid(dialogBorderFrame.Stage, "_GarrMissionLocation-ShadowmoonValley-Mid");
+			GarrisonMissionStage_SetFore(dialogBorderFrame.Stage, "_GarrMissionLocation-ShadowmoonValley-Fore");
 	    end
 		if (GarrisonFollowerOptions[self.followerTypeID].missionCompleteUseNeutralChest) then
 			chestDisplayID = 71671;
@@ -1298,6 +1292,12 @@ function GarrisonMissionPageEnvironment_OnEnter(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetText(environment);
 		GameTooltip:AddLine(environmentDesc, 1, 1, 1, 1);
+
+		if ( C_Garrison.IsEnvironmentCountered(missionPage.missionInfo.missionID) ) then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddInstructionLine(GameTooltip, GARRISON_MISSION_ENVIRONMENT_COUNTERED, 1);
+		end
+
 		GameTooltip:Show();
 	end
 end

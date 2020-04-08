@@ -7,12 +7,98 @@ local PvpInfo =
 	Functions =
 	{
 		{
-			Name = "CanToggleWarMode",
+			Name = "CanDisplayDeaths",
 			Type = "Function",
 
 			Returns =
 			{
+				{ Name = "canDisplay", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanDisplayHonorableKills",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canDisplay", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanToggleWarMode",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "toggle", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
 				{ Name = "canTogglePvP", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanToggleWarModeInArea",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canTogglePvPInArea", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "DoesMatchOutcomeAffectRating",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "doesAffect", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetActiveBrawlInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "brawlInfo", Type = "PvpBrawlInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetActiveMatchBracket",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "bracket", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetActiveMatchDuration",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "seconds", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetActiveMatchState",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "state", Type = "PvpMatchState", Nilable = false },
+			},
+		},
+		{
+			Name = "GetActiveMatchWinner",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "winner", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -61,7 +147,7 @@ local PvpInfo =
 			},
 		},
 		{
-			Name = "GetBrawlInfo",
+			Name = "GetAvailableBrawlInfo",
 			Type = "Function",
 			Documentation = { "If nil is returned, PVP_BRAWL_INFO_UPDATED event will be sent when the data is ready." },
 
@@ -117,6 +203,29 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetMatchPVPStatColumn",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "pvpStatID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "MatchPVPStatColumn", Nilable = true },
+			},
+		},
+		{
+			Name = "GetMatchPVPStatColumns",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "columns", Type = "table", InnerType = "MatchPVPStatColumn", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNextHonorLevelForReward",
 			Type = "Function",
 
@@ -142,6 +251,33 @@ local PvpInfo =
 			Returns =
 			{
 				{ Name = "pvpWaitTime", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPVPActiveMatchPersonalRatedInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "info", Type = "PVPPersonalRatedInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetPostMatchCurrencyRewards",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "rewards", Type = "table", InnerType = "PVPPostMatchCurrencyReward", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPostMatchItemRewards",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "rewards", Type = "table", InnerType = "PVPPostMatchItemReward", Nilable = false },
 			},
 		},
 		{
@@ -213,6 +349,49 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetRewardItemLevelsByTierEnum",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "pvpTierEnum", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "activityItemLevel", Type = "number", Nilable = false },
+				{ Name = "weeklyItemLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetScoreInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "offsetIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "PVPScoreInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetScoreInfoByPlayerGuid",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "guid", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "PVPScoreInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetSeasonBestInfo",
 			Type = "Function",
 
@@ -237,12 +416,110 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetSpecialEventDetails",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "info", Type = "SpecialEventDetails", Nilable = true },
+			},
+		},
+		{
+			Name = "GetSpecialEventInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "info", Type = "RandomBGInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTeamInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "factionIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "PVPTeamInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetWarModeRewardBonus",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "rewardBonus", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetWarModeRewardBonusDefault",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "defaultBonus", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetWeeklyChestInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "rewardAchieved", Type = "bool", Nilable = false },
+				{ Name = "lastWeekRewardAchieved", Type = "bool", Nilable = false },
+				{ Name = "lastWeekRewardClaimed", Type = "bool", Nilable = false },
+				{ Name = "pvpTierMaxFromWins", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "HasArenaSkirmishWinToday",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "hasArenaSkirmishWinToday", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsActiveBattlefield",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isActiveBattlefield", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsActiveMatchRegistered",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "registered", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsArena",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isArena", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsBattleground",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isBattleground", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -265,12 +542,57 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "IsMatchConsideredArena",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "asArena", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsMatchFactional",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isFactional", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPVPMap",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "isPVPMap", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsRatedArena",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isRatedArena", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsRatedBattleground",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isRatedBattleground", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsRatedMap",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isRatedMap", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -411,9 +733,43 @@ local PvpInfo =
 			LiteralName = "PLAYER_ENTERING_BATTLEGROUND",
 		},
 		{
+			Name = "PostMatchCurrencyRewardUpdate",
+			Type = "Event",
+			LiteralName = "POST_MATCH_CURRENCY_REWARD_UPDATE",
+			Payload =
+			{
+				{ Name = "reward", Type = "PVPPostMatchCurrencyReward", Nilable = false },
+			},
+		},
+		{
+			Name = "PostMatchItemRewardUpdate",
+			Type = "Event",
+			LiteralName = "POST_MATCH_ITEM_REWARD_UPDATE",
+		},
+		{
 			Name = "PvpBrawlInfoUpdated",
 			Type = "Event",
 			LiteralName = "PVP_BRAWL_INFO_UPDATED",
+		},
+		{
+			Name = "PvpMatchActive",
+			Type = "Event",
+			LiteralName = "PVP_MATCH_ACTIVE",
+		},
+		{
+			Name = "PvpMatchComplete",
+			Type = "Event",
+			LiteralName = "PVP_MATCH_COMPLETE",
+			Payload =
+			{
+				{ Name = "winner", Type = "number", Nilable = false },
+				{ Name = "duration", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "PvpMatchInactive",
+			Type = "Event",
+			LiteralName = "PVP_MATCH_INACTIVE",
 		},
 		{
 			Name = "PvpRatedStatsUpdate",
@@ -429,6 +785,11 @@ local PvpInfo =
 			Name = "PvpRoleUpdate",
 			Type = "Event",
 			LiteralName = "PVP_ROLE_UPDATE",
+		},
+		{
+			Name = "PvpSpecialEventInfoUpdated",
+			Type = "Event",
+			LiteralName = "PVP_SPECIAL_EVENT_INFO_UPDATED",
 		},
 		{
 			Name = "PvpTypesEnabled",
@@ -520,6 +881,19 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "PvpMatchState",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Inactive", Type = "PvpMatchState", EnumValue = 0 },
+				{ Name = "Active", Type = "PvpMatchState", EnumValue = 1 },
+				{ Name = "Complete", Type = "PvpMatchState", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "BattlefieldCurrencyReward",
 			Type = "Structure",
 			Fields =
@@ -554,6 +928,28 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "HonorRewardInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "honorLevelName", Type = "string", Nilable = false },
+				{ Name = "badgeFileDataID", Type = "number", Nilable = false },
+				{ Name = "achievementRewardedID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "MatchPVPStatColumn",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "pvpStatID", Type = "number", Nilable = false },
+				{ Name = "columnHeaderID", Type = "number", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "PvpBrawlInfo",
 			Type = "Structure",
 			Fields =
@@ -561,9 +957,8 @@ local PvpInfo =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "shortDescription", Type = "string", Nilable = false },
 				{ Name = "longDescription", Type = "string", Nilable = false },
-				{ Name = "active", Type = "bool", Nilable = false },
+				{ Name = "canQueue", Type = "bool", Nilable = false },
 				{ Name = "timeLeftUntilNextChange", Type = "number", Nilable = false },
-				{ Name = "lfgDungeonID", Type = "number", Nilable = false },
 				{ Name = "brawlType", Type = "BrawlType", Nilable = false },
 				{ Name = "mapNames", Type = "table", InnerType = "string", Nilable = false },
 			},
@@ -577,16 +972,6 @@ local PvpInfo =
 				{ Name = "specializationID", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "value", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "HonorRewardInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "honorLevelName", Type = "string", Nilable = false },
-				{ Name = "badgeFileDataID", Type = "number", Nilable = false },
-				{ Name = "achievementRewardedID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -604,6 +989,97 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "PVPPersonalRatedInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "personalRating", Type = "number", Nilable = false },
+				{ Name = "bestSeasonRating", Type = "number", Nilable = false },
+				{ Name = "bestWeeklyRating", Type = "number", Nilable = false },
+				{ Name = "seasonPlayed", Type = "number", Nilable = false },
+				{ Name = "seasonWon", Type = "number", Nilable = false },
+				{ Name = "weeklyPlayed", Type = "number", Nilable = false },
+				{ Name = "weeklyWon", Type = "number", Nilable = false },
+				{ Name = "lastWeeksBestRating", Type = "number", Nilable = false },
+				{ Name = "hasWonBracketToday", Type = "bool", Nilable = false },
+				{ Name = "tier", Type = "number", Nilable = false },
+				{ Name = "ranking", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "PVPPostMatchCurrencyReward",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "currencyType", Type = "number", Nilable = false },
+				{ Name = "quantityChanged", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "PVPPostMatchItemReward",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "type", Type = "string", Nilable = false },
+				{ Name = "link", Type = "string", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+				{ Name = "specID", Type = "number", Nilable = false },
+				{ Name = "sex", Type = "number", Nilable = false },
+				{ Name = "isUpgraded", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "PVPScoreInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "killingBlows", Type = "number", Nilable = false },
+				{ Name = "honorableKills", Type = "number", Nilable = false },
+				{ Name = "deaths", Type = "number", Nilable = false },
+				{ Name = "honorGained", Type = "number", Nilable = false },
+				{ Name = "faction", Type = "number", Nilable = false },
+				{ Name = "raceName", Type = "string", Nilable = false },
+				{ Name = "className", Type = "string", Nilable = false },
+				{ Name = "classToken", Type = "string", Nilable = false },
+				{ Name = "damageDone", Type = "number", Nilable = false },
+				{ Name = "healingDone", Type = "number", Nilable = false },
+				{ Name = "rating", Type = "number", Nilable = false },
+				{ Name = "ratingChange", Type = "number", Nilable = false },
+				{ Name = "prematchMMR", Type = "number", Nilable = false },
+				{ Name = "mmrChange", Type = "number", Nilable = false },
+				{ Name = "talentSpec", Type = "string", Nilable = false },
+				{ Name = "honorLevel", Type = "number", Nilable = false },
+				{ Name = "stats", Type = "table", InnerType = "PVPStatInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "PVPStatInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "pvpStatID", Type = "number", Nilable = false },
+				{ Name = "pvpStatValue", Type = "number", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+				{ Name = "iconName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "PVPTeamInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "size", Type = "number", Nilable = false },
+				{ Name = "rating", Type = "number", Nilable = false },
+				{ Name = "ratingNew", Type = "number", Nilable = false },
+				{ Name = "ratingMMR", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "RandomBGInfo",
 			Type = "Structure",
 			Fields =
@@ -613,6 +1089,18 @@ local PvpInfo =
 				{ Name = "hasRandomWinToday", Type = "bool", Nilable = false },
 				{ Name = "minLevel", Type = "number", Nilable = false },
 				{ Name = "maxLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SpecialEventDetails",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "shortDescription", Type = "string", Nilable = false },
+				{ Name = "longDescription", Type = "string", Nilable = false },
+				{ Name = "achievementID", Type = "number", Nilable = false },
+				{ Name = "isActive", Type = "bool", Nilable = false },
 			},
 		},
 	},

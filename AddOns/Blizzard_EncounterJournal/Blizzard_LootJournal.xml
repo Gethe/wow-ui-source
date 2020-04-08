@@ -94,18 +94,19 @@
 					<Anchor point="BOTTOMLEFT" x="0" y="3"/>
 				</Anchors>
 				<Frames>
-					<Button parentKey="ClassButton" inherits="EJButtonTemplate">
+					<DropDownToggleButton parentKey="ClassButton" inherits="EJButtonTemplate">
 						<Size x="114" y="26"/>
 						<Anchors>
 							<Anchor point="TOPRIGHT" x="-12" y="35"/>
 						</Anchors>
 						<Scripts>
-							<OnClick>
+							<OnMouseDown>
+								EJButtonMixin.OnMouseDown(self, button);
 								ToggleDropDownMenu(1, nil, self:GetParent():GetParent().ClassDropDown, self, 5, 0);
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-							</OnClick>
+							</OnMouseDown>
 						</Scripts>
-					</Button>
+					</DropDownToggleButton>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>

@@ -276,7 +276,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentKey="WidgetContainer" hidden="true">
+							<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT"/>
 								</Anchors>
@@ -519,6 +519,7 @@
 							</StatusBar>
 						</Frames>
 					</Frame>
+					<Frame name="ScenarioWidgetContainerBlock" inherits="UIWidgetContainerTemplate" hidden="true" />
 				</Frames>
 			</Frame>
 		</ScrollChild>

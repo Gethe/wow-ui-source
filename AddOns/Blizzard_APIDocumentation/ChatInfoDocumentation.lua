@@ -7,20 +7,6 @@ local ChatInfo =
 	Functions =
 	{
 		{
-			Name = "CanReportPlayer",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "canReport", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "GetChannelRosterInfo",
 			Type = "Function",
 
@@ -36,6 +22,20 @@ local ChatInfo =
 				{ Name = "owner", Type = "bool", Nilable = false },
 				{ Name = "moderator", Type = "bool", Nilable = false },
 				{ Name = "guid", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetClubStreamIDs",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "ids", Type = "table", InnerType = "string", Nilable = false },
 			},
 		},
 		{
@@ -85,6 +85,20 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "IsValidChatLine",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "chatLine", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "isValid", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RegisterAddonMessagePrefix",
 			Type = "Function",
 			Documentation = { "Registers interest in addon messages with this prefix, cannot be an empty string." },
@@ -100,15 +114,24 @@ local ChatInfo =
 			},
 		},
 		{
-			Name = "ReportPlayer",
+			Name = "ReplaceIconAndGroupExpressions",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "complaintType", Type = "string", Nilable = false },
-				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = true },
-				{ Name = "comment", Type = "string", Nilable = true },
+				{ Name = "input", Type = "string", Nilable = false },
+				{ Name = "noIconReplacement", Type = "bool", Nilable = true },
+				{ Name = "noGroupReplacement", Type = "bool", Nilable = true },
 			},
+
+			Returns =
+			{
+				{ Name = "output", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ResetDefaultZoneChannels",
+			Type = "Function",
 		},
 		{
 			Name = "SendAddonMessage",
@@ -144,6 +167,16 @@ local ChatInfo =
 			Returns =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SwapChatChannelsByChannelIndex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "firstChannelIndex", Type = "number", Nilable = false },
+				{ Name = "secondChannelIndex", Type = "number", Nilable = false },
 			},
 		},
 	},

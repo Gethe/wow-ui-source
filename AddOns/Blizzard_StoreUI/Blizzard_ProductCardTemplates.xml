@@ -1,0 +1,251 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_StoreButtonMixin.lua" />
+	<Script file="Blizzard_ProductCardBuyButtonMixin.lua" />
+	<Script file="Blizzard_ProductCardTemplates.lua" />
+	<Script file="Blizzard_SmallProductCardTemplates.lua" />
+	<Script file="Blizzard_LargeProductCardTemplates.lua" />
+	<Script file="Blizzard_FullProductCardTemplates.lua" />
+	<Script file="Blizzard_ProductCardMagnifierTemplates.lua" />
+	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
+
+			<Button name="CustomBuyButtonTemplate" inherits="StoreButtonTemplate" mixin="StoreBuyButtonMixin" virtual="true">
+				<Frames>
+					<Frame parentKey="Discount" inherits="ResizeLayoutFrame" virtual="true">
+						<Anchors>
+							<Anchor point="CENTER" />
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString parentKey="LeftText" inherits="GameFontNormalMed2" justifyH="CENTER">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="LEFT" x="0" y="0" />
+									</Anchors>
+								</FontString>
+								<FontString parentKey="RightText" inherits="GameFontNormalMed2" justifyH="CENTER">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.LeftText" relativePoint="RIGHT" x="7" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="Strikethrough" texelSnappingBias="0.0" snapToPixelGrid="false" >
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.LeftText" relativePoint="LEFT"/>
+										<Anchor point="RIGHT" relativeKey="$parent.LeftText" relativePoint="RIGHT"/>
+									</Anchors>
+									<Size x="1" y="1"/>
+									<Color color="GRAY_FONT_COLOR"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnMouseUp method="OnMouseUp" />
+					<OnMouseDown method="OnMouseDown" />
+				</Scripts>
+			</Button>
+
+		<Button name="DefaultStoreCardTemplate" motionScriptsWhileDisabled="true" virtual="true">
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture parentKey="Card" inherits="store-card" />
+				</Layer>
+				<Layer level="BACKGROUND" textureSubLevel="2">
+					<Texture parentKey="Shadows" inherits="store-card-petshadow" hidden="true" />
+				</Layer>
+				<Layer level="BORDER">
+					<Texture parentKey="Icon" hidden="true" />
+				</Layer>
+				<Layer level="ARTWORK" textureSubLevel="-1">
+					<Texture parentKey="IconBorder" inherits="store-itemicon-border" hidden="true" />
+				</Layer>
+				<Layer level="ARTWORK">
+					<FontString parentKey="CurrentMarketPrice" inherits="GameFontNormalMed2" justifyH="LEFT" hidden="true" />
+					<FontString parentKey="CurrentPrice" inherits="GameFontNormalMed3" />
+					<FontString parentKey="NormalPrice" inherits="GameFontNormalSmall2" hidden="true" />
+					<FontString parentKey="SalePrice" inherits="GameFontNormalMed3" hidden="true" />
+					<FontString parentKey="ProductName" inherits="GameFontNormalMed3" justifyV="TOP" wordwrap="true" />
+				</Layer>
+				<Layer level="ARTWORK" textureSubLevel="1">
+					<Texture parentKey="SelectedTexture" inherits="store-card-selected" hidden="true" alphaMode="ADD" />
+					<Texture parentKey="UpgradeArrow" inherits="store-icon-upgradearrow" hidden="true" />
+				</Layer>
+				<Layer level="ARTWORK" textureSubLevel="2">
+					<Texture parentKey="HighlightTexture" inherits="store-card-hover" hidden="true" alphaMode="ADD" />
+				</Layer>
+				<Layer level="ARTWORK" textureSubLevel="3">
+					<Texture parentKey="DiscountRight" inherits="store-corner-discount-right" hidden="true" />
+					<Texture parentKey="DiscountLeft" inherits="store-corner-discount-left" hidden="true" />
+					<Texture parentKey="DiscountMiddle" inherits="store-corner-discount-middle" hidden="true" />
+					<FontString parentKey="DiscountText" inherits="GameFontNormalMed2" justifyH="CENTER" text="-25%" hidden="true" />
+				</Layer>
+				<Layer level="OVERLAY">
+					<Texture parentKey="Strikethrough" inherits="store-strikethrough" hidden="true" />
+				</Layer>
+			</Layers>
+			<Frames>
+				<Frame parentKey="DisabledOverlay" frameLevel="1000" setAllPoints="true" hidden="true">
+					<Layers>
+						<Layer level="OVERLAY" textureSubLevel="1">
+							<Texture atlas="shop-card-darkcover" setAllPoints="true" alpha=".55" />
+						</Layer>
+					</Layers>
+				</Frame>
+				<Frame parentKey="GlowSpin" hidden="true">
+					<Layers>
+						<Layer level="OVERLAY">
+							<Texture inherits="store-itemicon-border-glowspin" setAllPoints="true" alpha="0.09" alphaMode="ADD" />
+						</Layer>
+					</Layers>
+					<Animations>
+						<AnimationGroup parentKey="SpinAnim" looping="REPEAT">
+							<Rotation order="1" duration="15" degrees="-360"/>
+						</AnimationGroup>
+					</Animations>
+				</Frame>
+				<Frame parentKey="GlowPulse" hidden="true">
+					<Layers>
+						<Layer level="OVERLAY">
+							<Texture inherits="store-itemicon-border-glowpulse" setAllPoints="true" alpha="1" alphaMode="ADD" />
+						</Layer>
+						<Layer level="OVERLAY" textureSubLevel="1">
+							<Texture inherits="store-itemicon-border-glowpulse" setAllPoints="true" alpha=".5" alphaMode="ADD" />
+						</Layer>
+					</Layers>
+					<Animations>
+						<AnimationGroup parentKey="PulseAnim" looping="BOUNCE">
+							<Alpha fromAlpha="1" toAlpha="0" duration="1.5" order="1"/>
+						</AnimationGroup>
+					</Animations>
+				</Frame>
+				<Frame parentKey="BannerFadeIn" alpha="0.75" hidden="true">
+					<Layers>
+						<Layer level="OVERLAY">
+							<Texture parentKey="Banner" inherits="store-card-splash-banner" setAllPoints="true" alphaMode="ADD" />
+						</Layer>
+					</Layers>
+					<Animations>
+						<AnimationGroup parentKey="FadeAnim">
+							<Alpha fromAlpha="0.75" toAlpha="0" duration=".3"/>
+							<Scripts>
+								<OnFinished>
+									self:GetParent():Hide();
+								</OnFinished>
+							</Scripts>
+						</AnimationGroup>
+					</Animations>
+				</Frame>
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="NoCameraControlModelSceneMixinTemplate" />
+				<Button parentKey="Magnifier" mixin="DefaultStoreCardMagnifierMixin" enableMouse="true" hidden="true">
+					<NormalTexture inherits="store-icon-magnifyingglass" />
+					<HighlightTexture inherits="store-icon-magnifyingglass" alphaMode="ADD" />
+					<Scripts>
+						<OnClick method="OnClick" />
+						<OnEnter method="OnEnter" />
+						<OnLeave method="OnLeave" />
+						<OnShow method="OnShow"/>
+					</Scripts>
+				</Button>
+				<Frame parentKey="InvisibleMouseOverFrame" enableMouse="true" hidden="true">
+					<Scripts>
+						<OnEnter function="StoreProductCardItem_OnEnter"/>
+						<OnLeave function="StoreProductCardItem_OnLeave"/>
+					</Scripts>
+				</Frame>
+				<Frame parentKey="Checkmark" hidden="true">
+					<Layers>
+						<Layer level="OVERLAY">
+							<Texture inherits="store-icon-checkmark" setAllPoints="true"/>
+						</Layer>
+					</Layers>
+					<Scripts>
+						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
+						<OnEnter function="StoreProductCardCheckmark_OnEnter"/>
+						<OnLeave function="StoreProductCardCheckmark_OnLeave"/>
+					</Scripts>
+				</Frame>
+			</Frames>
+			<Scripts>
+				<OnLoad method="OnLoad" />
+				<OnEnter method="OnEnter" />
+				<OnLeave method="OnLeave" />
+				<OnClick method="OnClick" />
+				<OnMouseDown method="OnMouseDown" />
+				<OnMouseUp method="OnMouseUp" />
+			</Scripts>
+		</Button>
+
+		<Button name="LargeStoreCardTemplate" inherits="DefaultStoreCardTemplate" virtual="true">
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString parentKey="Description" inherits="GameFontNormalMed1" justifyH="LEFT" justifyV="TOP">
+						<Color r="1" g="0.84" b="0.55" />
+					</FontString>
+				</Layer>
+			</Layers>
+			<Frames>
+				<Frame parentKey="DescriptionBulletPointContainer" inherits="ManagedVerticalLayoutFrameTemplate">
+					<KeyValues>
+						<KeyValue key="fixedWidth" value="250" type="number"/>
+						<KeyValue key="templateType" value="StoreBulletPointTemplate" type="string"/>
+					</KeyValues>
+				</Frame>
+			</Frames>
+		</Button>
+
+		<Button name="LargeStoreCardBuyButtonTemplate" inherits="LargeStoreCardTemplate" virtual="true">
+			<Layers>
+				<Layer level="ARTWORK" textureSubLevel="4">
+					<Texture parentKey="SplashBanner" inherits="store-card-splash-banner" />
+					<FontString parentKey="SplashBannerText" inherits="GameFontNormalHuge3" />
+					<FontString parentKey="PurchasedText" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="TOP">
+						<Color r="0.1" g="1" b="0.1" />
+					</FontString>
+					<FontString parentKey="DisclaimerText" inherits="GameFontNormalTiny2" justifyH="LEFT" hidden="true">
+						<Color r="1" g="1" b="1" />
+					</FontString>
+					<Texture parentKey="PurchasedMark" atlas="shop-icon-purchasedcheckmark" useAtlasSize="true" >
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.PurchasedText" relativePoint="LEFT" x="-5" y="0" />
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Frames>
+				<Button parentKey="BuyButton" inherits="CustomBuyButtonTemplate" motionScriptsWhileDisabled="true">
+					<Scripts>
+						<OnClick function="ProductCardBuyButton_OnClick" />
+						<OnEnter function="ProductCardBuyButton_OnEnter" />
+						<OnLeave function="ProductCardBuyButton_OnLeave" />
+					</Scripts>
+				</Button>
+			</Frames>
+		</Button>
+
+
+		<!-- Card Templates WITHOUT a Buy Button-->
+		<Button name="SmallStoreCardTemplate" mixin="SmallStoreCardMixin" inherits="DefaultStoreCardTemplate" virtual="true" />
+
+		<Button name="MediumStoreCardTemplate" mixin="MediumStoreCardMixin" inherits="DefaultStoreCardTemplate" virtual="true" />
+
+		<Button name="HorizontalLargeStoreCardTemplate" mixin="HorizontalLargeStoreCardMixin" inherits="LargeStoreCardTemplate" virtual="true" />
+
+		<Button name="VerticalLargeStoreCardTemplate" mixin="VerticalLargeStoreCardMixin" inherits="LargeStoreCardTemplate" virtual="true" />
+
+		<!-- Card Templates WITH a Buy Button-->
+		<Button name="MediumStoreCardWithBuyButtonTemplate" mixin="MediumStoreCardWithBuyButtonMixin" inherits="LargeStoreCardBuyButtonTemplate" virtual="true" />
+
+		<Button name="HorizontalLargeStoreCardWithBuyButtonTemplate" mixin="HorizontalLargeStoreCardWithBuyButtonMixin" inherits="LargeStoreCardBuyButtonTemplate" virtual="true" />
+
+		<Button name="VerticalLargeStoreCardWithBuyButtonTemplate" mixin="VerticalLargeStoreCardWithBuyButtonMixin" inherits="LargeStoreCardBuyButtonTemplate" virtual="true" />
+
+		<Button name="HorizontalFullStoreCardWithBuyButtonTemplate" mixin="HorizontalFullStoreCardMixin" inherits="LargeStoreCardBuyButtonTemplate" virtual="true" />
+
+		<Button name="VerticalFullStoreCardWithBuyButtonTemplate" mixin="VerticalFullStoreCardMixin" inherits="LargeStoreCardBuyButtonTemplate" virtual="true" />
+
+	</ScopedModifier>
+</Ui>
+
+

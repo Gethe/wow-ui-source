@@ -12,12 +12,88 @@ local SEASON_STATE_ACTIVE = 3;
 local SEASON_STATE_DISABLED = 4;
 
 local CONQUEST_CURRENCY_ID = 1602;
+local ECHOS_OF_NYLOTHA_CURRENCY_ID = 1803; 
+
+local BFA_START_SEASON = 26;
 
 ---------------------------------------------------------------
 -- PVP FRAME
 ---------------------------------------------------------------
 
 local DEFAULT_BG_TEXTURE = "Interface\\PVPFrame\\RandomPVPIcon";
+
+PVPCasualActivityButtonMixin = {};
+
+function PVPCasualActivityButtonMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	HonorFrameBonusFrame_SelectButton(self);
+end
+
+function PVPCasualActivityButtonMixin:OnEnter()
+	if (not self.tooltipTableKey) then
+		return;
+	end
+
+	local tooltipTbl = BONUS_BUTTON_TOOLTIPS[self.tooltipTableKey];
+
+	if (not tooltipTbl) then
+		return;
+	end
+
+	if (tooltipTbl.func) then
+		tooltipTbl.func(self);
+	else
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(_G["BONUS_BUTTON_"..tooltipTbl.tooltipKey.."_TITLE"], 1, 1, 1);
+		GameTooltip:AddLine(_G["BONUS_BUTTON_"..tooltipTbl.tooltipKey.."_DESC"], nil, nil, nil, true);
+		GameTooltip:Show();
+	end
+end
+
+function PVPCasualActivityButtonMixin:OnMouseDown()
+	if ( self:IsEnabled() ) then
+		self.Anchor:SetPoint("TOPLEFT", -1, -1);
+	end
+end
+
+function PVPCasualActivityButtonMixin:OnMouseUp()
+	self.Anchor:SetPoint("TOPLEFT", 0, 0);
+end
+
+function PVPCasualActivityButtonMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+function PVPCasualActivityButtonMixin:OnShow()
+	self.Title:SetPoint("RIGHT", self.Anchor, "RIGHT", -60, -1);
+end
+
+function PVPCasualActivityButtonMixin:OnHide()
+	self.Title:SetPoint("RIGHT", self.Anchor, "RIGHT", -20, -1);
+end
+
+PVPSpecialEventButtonMixin = CreateFromMixins(PVPCasualActivityButtonMixin);
+
+function PVPSpecialEventButtonMixin:OnEnter()
+	PVPCasualActivityButtonMixin.OnEnter(self);
+	self.NewAlert:ClearAlert();
+end
+
+function PVPSpecialEventButtonMixin:OnShow()
+	PVPCasualActivityButtonMixin.OnShow(self);
+	self.NewAlert:ValidateIsShown();
+end
+
+PVPSpecialEventLabelMixin = CreateFromMixins(NewFeatureLabelMixin);
+
+function PVPSpecialEventLabelMixin:ClearAlert()
+	NewFeatureLabelMixin.ClearAlert(self);
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_SPECIAL_EVENT, true);
+end
+
+function PVPSpecialEventLabelMixin:ValidateIsShown()
+	self:SetShown(not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_SPECIAL_EVENT));
+end
 
 function PVPUIFrame_OnLoad(self)
 	PanelTemplates_SetNumTabs(self, 2);
@@ -37,12 +113,12 @@ function PVPUIFrame_OnLoad(self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("PVP_ROLE_UPDATE");
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
-		
+
 	self.update = function(self, panel) return PVPQueueFrame_Update(PVPQueueFrame, panel); end
 	self.getSelection = function(self) return PVPQueueFrame_GetSelection(PVPQueueFrame); end
 
 	self.waitingOnItems = {};
-	
+
 	PVPQueueFrame_ShowFrame(HonorFrame);
 end
 
@@ -79,7 +155,7 @@ function PVPUIFrame_OnEvent(self, event, ...)
 		local id = ...;
 		if (tContains(self.waitingOnItems, id)) then
 			tDeleteItem(self.waitingOnItems, id);
-			
+
 			HonorFrameBonusFrame_Update();
 			ConquestFrame_Update(ConquestFrame);
 		end
@@ -154,14 +230,16 @@ function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRew
 	-- artifact-level currency trumps item
 	if currencyRewards then
 		for i, reward in ipairs(currencyRewards) do
-			local name, _, texture, _, _, _, _, quality = GetCurrencyInfo(reward.id);
-			if quality == LE_ITEM_QUALITY_ARTIFACT then
-				name, texture, _, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.id, reward.quantity, name, texture, quality);
-				currencyID = reward.id;
-				rewardTexture = texture;
-				rewardQuantity = reward.quantity;
-			elseif reward.id == CONQUEST_CURRENCY_ID then
-				rewardFrame.conquestAmount = reward.quantity;
+			if(reward.id ~= ECHOS_OF_NYLOTHA_CURRENCY_ID or #currencyRewards == 1) then
+				local name, _, texture, _, _, _, _, quality = GetCurrencyInfo(reward.id);
+				if quality == LE_ITEM_QUALITY_ARTIFACT then
+					name, texture, _, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.id, reward.quantity, name, texture, quality);
+					currencyID = reward.id;
+					rewardTexture = texture;
+					rewardQuantity = reward.quantity;
+				elseif reward.id == CONQUEST_CURRENCY_ID then
+					rewardFrame.conquestAmount = reward.quantity;
+				end
 			end
 		end
 	end
@@ -196,13 +274,12 @@ local pvpFrames = { "HonorFrame", "ConquestFrame", "LFGListPVPStub" }
 
 function PVPQueueFrame_OnLoad(self)
 	--set up side buttons
-	local englishFaction = UnitFactionGroup("player");
 	SetPortraitToTexture(self.CategoryButton1.Icon, "Interface\\Icons\\achievement_bg_winwsg");
 	self.CategoryButton1.Name:SetText(PVP_TAB_HONOR);
 
 	SetPortraitToTexture(self.CategoryButton2.Icon, "Interface\\Icons\\achievement_bg_killxenemies_generalsroom");
 	self.CategoryButton2.Name:SetText(PVP_TAB_CONQUEST);
-	
+
 	SetPortraitToTexture(self.CategoryButton3.Icon, "Interface\\Icons\\Achievement_General_StayClassy");
 	self.CategoryButton3.Name:SetText(PVP_TAB_GROUPS);
 
@@ -279,14 +356,14 @@ end
 
 function PVPQueueFrame_OnShow(self)
 	if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0]) then
-		SetPortraitToTexture(PVEFrame.portrait, "Interface\\Icons\\INV_BannerPVP_01");
+		PVEFrame:SetPortraitToAsset("Interface\\Icons\\INV_BannerPVP_01");
 	else
-		SetPortraitToTexture(PVEFrame.portrait, "Interface\\Icons\\INV_BannerPVP_02");
+		PVEFrame:SetPortraitToAsset("Interface\\Icons\\INV_BannerPVP_02");
 	end
 
 	PVPQueueFrame_SetPrestige(self);
 	PVPQueueFrame_UpdateTitle();
-	
+
 	PVEFrame.TopTileStreaks:Show()
 end
 
@@ -296,7 +373,6 @@ function PVPQueueFrame_UpdateTitle()
 	elseif ConquestFrame.seasonState == SEASON_STATE_OFFSEASON then
 		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_OFF_SEASON);
 	else
-		local BFA_START_SEASON = 26; -- if you're changing this you probably want to update the global string PLAYER_V_PLAYER_SEASON also
 		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON:format(GetCurrentArenaSeason() - BFA_START_SEASON + 1));
 	end
 end
@@ -382,6 +458,7 @@ end
 ---------------------------------------------------------------
 
 local MIN_BONUS_HONOR_LEVEL;
+local HONOR_REWARD_QUEST_ID = 54748;
 
 function HonorFrame_OnLoad(self)
 	self.SpecificFrame.scrollBar.doNotHide = true;
@@ -412,6 +489,11 @@ function HonorFrame_OnLoad(self)
 	self:RegisterEvent("PVP_WORLDSTATE_UPDATE");
 end
 
+function HonorFrame_OnShow(self)
+	-- prime the data;
+	HaveQuestRewardData(HONOR_REWARD_QUEST_ID);
+end
+
 function HonorFrame_OnEvent(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_LEVEL_UP") then
 		HonorFrameSpecificList_Update();
@@ -423,6 +505,9 @@ function HonorFrame_OnEvent(self, event, ...)
 		HonorFrameBonusFrame_Update();
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		HonorFrame_UpdateQueueButtons();
+		if ( self:IsShown() ) then
+			RequestPVPRewards();
+		end
 	elseif ( event == "PVP_REWARDS_UPDATE" or event == "PVP_WORLDSTATE_UPDATE" ) then
 		if ( self:IsShown() ) then
 			RequestRandomBattlegroundInstanceInfo();
@@ -454,6 +539,10 @@ function HonorFrameTypeDropDown_Initialize()
 	info.func = HonorFrameTypeDropDown_OnClick;
 	info.checked = HonorFrame.type == info.value;
 	info.disabled = nil;
+	info.tooltipWhileDisabled = nil;
+	info.tooltipTitle = nil;
+	info.tooltipText = nil;
+	info.tooltipOnButton = nil;
 	UIDropDownMenu_AddButton(info);
 end
 
@@ -510,7 +599,14 @@ function HonorFrame_UpdateQueueButtons()
 	end
 
 	if isBrawl and not canQueue then
-		disabledReason = INSTANCE_UNAVAILABLE_SELF_LEVEL_TOO_LOW;
+		if IsInGroup(LE_PARTY_CATEGORY_HOME) then
+			local brawlInfo = C_PvP.GetAvailableBrawlInfo();
+			if brawlInfo then
+				disabledReason = QUEUE_UNAVAILABLE_PARTY_MIN_LEVEL:format(GetEffectivePlayerMaxLevel());
+			end
+		else
+			disabledReason = INSTANCE_UNAVAILABLE_SELF_LEVEL_TOO_LOW;
+		end
 	end
 
 	if ( canQueue ) then
@@ -537,7 +633,7 @@ function HonorFrame_UpdateQueueButtons()
 	if not disabledReason then
 		if ( select(2,C_LFGList.GetNumApplications()) > 0 ) then
 			disabledReason = CANNOT_DO_THIS_WITH_LFGLIST_APP;
-		elseif ( C_LFGList.GetActiveEntryInfo() ) then
+		elseif ( C_LFGList.HasActiveEntryInfo() ) then
 			disabledReason = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
 		end
 	end
@@ -547,19 +643,18 @@ end
 
 function HonorFrame_Queue()
 	local HonorFrame = HonorFrame;
-    local isParty = IsInGroup(LE_PARTY_CATEGORY_HOME);
 	if ( HonorFrame.type == "specific" and HonorFrame.SpecificFrame.selectionID ) then
-		JoinBattlefield(HonorFrame.SpecificFrame.selectionID, isParty);
+		JoinBattlefield(HonorFrame.SpecificFrame.selectionID);
 	elseif ( HonorFrame.type == "bonus" and HonorFrame.BonusFrame.selectedButton ) then
 		if ( HonorFrame.BonusFrame.selectedButton.arenaID ) then
-			JoinSkirmish(HonorFrame.BonusFrame.selectedButton.arenaID, isParty);
+			JoinSkirmish(HonorFrame.BonusFrame.selectedButton.arenaID);
 		elseif (HonorFrame.BonusFrame.selectedButton.queueID) then
 			ClearAllLFGDungeons(LE_LFG_CATEGORY_WORLDPVP);
 			JoinSingleLFG(LE_LFG_CATEGORY_WORLDPVP, HonorFrame.BonusFrame.selectedButton.queueID);
 		elseif (HonorFrame.BonusFrame.selectedButton.isBrawl) then
 			C_PvP.JoinBrawl();
 		else
-			JoinBattlefield(HonorFrame.BonusFrame.selectedButton.bgID, isParty);
+			JoinBattlefield(HonorFrame.BonusFrame.selectedButton.bgID);
 		end
 	end
 end
@@ -618,9 +713,9 @@ function HonorFrame_CalculateScroll(offset)
 	local heightLeft = offset;
 	local buttonHeight;
 	local numBattlegrounds = GetNumBattlegroundTypes();
-	
+
 	for i = 1, numBattlegrounds do
-		buttonHeight = 40;	
+		buttonHeight = 40;
 		if ( heightLeft - buttonHeight <= 0 ) then
 			return i-1, heightLeft;
 		else
@@ -690,12 +785,25 @@ BONUS_BUTTON_TOOLTIPS = {
 		tooltipKey = "SKIRMISH",
 	},
 	EpicBattleground = {
-		tooltipKey = "RANDOM_EPIC_BG",
+		func = function(self)
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			GameTooltip:SetText(BONUS_BUTTON_RANDOM_LARGE_BG_TITLE, 1, 1, 1);
+			GameTooltip:AddLine(BONUS_BUTTON_RANDOM_LARGE_BG_DESC, nil, nil, nil, true);
+			GameTooltip:Show();
+		end,
 	},
 	Brawl = {
 		func = function(self)
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 			GameTooltip:SetPvpBrawl();
+		end,
+	},
+	SpecialEvent = {
+		func = function(self)
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			GameTooltip:SetText(PVP_SPECIAL_EVENT_BUTTON_TT_TITLE, 1, 1, 1);
+			GameTooltip:AddLine(PVP_SPECIAL_EVENT_BUTTON_TT_DESC, nil, nil, nil, true);
+			GameTooltip:Show();
 		end,
 	}
 }
@@ -718,7 +826,7 @@ function PVPCasualActivityButton_OnEnter(self)
 		GameTooltip:SetText(_G["BONUS_BUTTON_"..tooltipTbl.tooltipKey.."_TITLE"], 1, 1, 1);
 		GameTooltip:AddLine(_G["BONUS_BUTTON_"..tooltipTbl.tooltipKey.."_DESC"], nil, nil, nil, true);
 		GameTooltip:Show();
-	end	
+	end
 end
 
 function HonorFrameBonusFrame_OnShow(self)
@@ -726,12 +834,13 @@ function HonorFrameBonusFrame_OnShow(self)
 	HonorFrameBonusFrame_Update();
 	RequestRandomBattlegroundInstanceInfo();
 
-	RequestLFDPlayerLockInfo();
-	RequestLFDPartyLockInfo();
+	QueueUpdater:RequestInfo();
+	QueueUpdater:AddRef();
 	self:RegisterEvent("PVP_BRAWL_INFO_UPDATED");
 end
 
 function HonorFrameBonusFrame_OnHide(self)
+	QueueUpdater:RemoveRef();
 	self:UnregisterEvent("PVP_BRAWL_INFO_UPDATED");
 end
 
@@ -758,13 +867,19 @@ local function ShouldShowBrawlHelpBox(brawlActive, isMaxLevel)
 end
 
 function HonorFrameBonusFrame_Update()
-	local englishFaction = UnitFactionGroup("player");
 	local selectButton = nil;
 	local battlegroundEnlistmentActive, brawlEnlistmentActive = C_PvP.IsBattlegroundEnlistmentBonusActive();
 
+	local buttons = {
+		HonorFrame.BonusFrame.RandomBGButton,
+		HonorFrame.BonusFrame.Arena1Button,
+		HonorFrame.BonusFrame.RandomEpicBGButton,
+		HonorFrame.BonusFrame.BrawlButton,
+	};
+
 	-- random bg
 	do
-		local button = HonorFrame.BonusFrame.RandomBGButton;
+		local button = buttons[1];
 		button.Title:SetText(RANDOM_BATTLEGROUNDS);
 		local randomBGInfo = C_PvP.GetRandomBGInfo();
 		HonorFrameBonusFrame_SetButtonState(button, randomBGInfo.canQueue, randomBGInfo.minLevel);
@@ -778,11 +893,12 @@ function HonorFrameBonusFrame_Update()
 
 		PVPUIFrame_ConfigureRewardFrame(button.Reward, C_PvP.GetRandomBGRewards());
 		button.Reward.EnlistmentBonus:SetShown(battlegroundEnlistmentActive);
+		button.rewardQuestID = HONOR_REWARD_QUEST_ID;
     end
 
 	-- arena pvp
 	do
-		local button = HonorFrame.BonusFrame.Arena1Button;
+		local button = buttons[2];
 		button.Title:SetText(SKIRMISH);
 
 		PVPUIFrame_ConfigureRewardFrame(button.Reward, C_PvP.GetArenaSkirmishRewards());
@@ -790,7 +906,7 @@ function HonorFrameBonusFrame_Update()
 
 	-- epic battleground
 	do
-		local button = HonorFrame.BonusFrame.RandomEpicBGButton;
+		local button = buttons[3];
 		local randomBGInfo = C_PvP.GetRandomEpicBGInfo();
 		HonorFrameBonusFrame_SetButtonState(button, randomBGInfo.canQueue, randomBGInfo.minLevel);
 		button.canQueue = randomBGInfo.canQueue;
@@ -798,17 +914,17 @@ function HonorFrameBonusFrame_Update()
 		button.Title:SetText(RANDOM_EPIC_BATTLEGROUND);
 
 		PVPUIFrame_ConfigureRewardFrame(button.Reward, C_PvP.GetRandomEpicBGRewards());
+		button.rewardQuestID = HONOR_REWARD_QUEST_ID;
 	end
 
 	do
 		-- brawls
-		local button = HonorFrame.BonusFrame.BrawlButton;
-		local brawlInfo = C_PvP.GetBrawlInfo();
-		local isMaxLevel = UnitLevel("player") >= MAX_PLAYER_LEVEL;
-		button.canQueue = brawlInfo and brawlInfo.active and isMaxLevel;
+		local button = buttons[4];
+		local brawlInfo = C_PvP.GetAvailableBrawlInfo();
+		button.canQueue = brawlInfo and brawlInfo.canQueue and PartyUtil.GetMinLevel() == GetEffectivePlayerMaxLevel();
 		button.isBrawl = true;
 
-		if (brawlInfo and brawlInfo.active) then
+		if (brawlInfo and brawlInfo.canQueue) then
 			button:Enable();
 			button.Title:SetText(brawlInfo.name);
 			button.Title:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
@@ -826,7 +942,36 @@ function HonorFrameBonusFrame_Update()
 			button.Reward:Hide();
 			button:Disable();
 		end
-		HonorFrame.BonusFrame.BrawlHelpBox:SetShown(ShouldShowBrawlHelpBox(brawlInfo and brawlInfo.active, (UnitLevel("player") >= MAX_PLAYER_LEVEL)));
+		HonorFrame.BonusFrame.BrawlHelpBox:SetShown(ShouldShowBrawlHelpBox(brawlInfo and brawlInfo.canQueue, (IsPlayerAtEffectiveMaxLevel())));
+	end
+
+	do
+		-- special event
+		local info = C_PvP.GetSpecialEventInfo();
+		local details = C_PvP.GetSpecialEventDetails();
+		local button = HonorFrame.BonusFrame.SpecialEventButton;
+		local isEventAvailable = info and details and details.isActive;
+		if isEventAvailable then
+			button.canQueue = info.canQueue;
+			button.bgID = info.bgID;
+			button.Title:SetText(details.name);
+			button.Reward:Init(details.achievementID, PVP_SPECIAL_EVENT_REWARD);
+			local textColor = button.canQueue and HIGHLIGHT_FONT_COLOR or DISABLED_FONT_COLOR;
+			button.Title:SetTextColor(textColor:GetRGB());
+			button:SetEnabled(button.canQueue);
+			tinsert(buttons, button);
+		end
+		button:SetShown(isEventAvailable);
+	end
+
+	local buttonContainerHeight = HonorFrame.BonusFrame:GetHeight();
+	local buttonContainerMargin = 26;
+	local buttonCount = #buttons;
+	local buttonHeight = (buttonContainerHeight-buttonContainerMargin) / buttonCount;
+	for i = 1, buttonCount do
+		local button = buttons[i];
+		button:SetHeight(buttonHeight);
+		button.Anchor:SetHeight(buttonHeight);
 	end
 
 	-- select a button if one isn't selected
@@ -889,7 +1034,7 @@ function ConquestFrame_OnLoad(self)
 
 	RequestRatedInfo();
 	RequestPVPOptionsEnabled();
-	
+
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("PVP_RATED_STATS_UPDATE");
@@ -950,9 +1095,13 @@ function ConquestFrame_OnShow(self)
 	RequestRatedInfo();
 	RequestPVPOptionsEnabled();
 	ConquestFrame_Update(self);
+	local lastSeasonNumber = tonumber(GetCVar("newPvpSeason"));
+	if lastSeasonNumber < (GetCurrentArenaSeason() - BFA_START_SEASON + 1) then
+		PVPQueueFrame.NewSeasonPopup:Show();
+	end
 end
 
-local tierEnumToName = 
+local tierEnumToName =
 {
 	[0] = PVP_RANK_0_NAME,
 	[1] = PVP_RANK_1_NAME,
@@ -962,7 +1111,7 @@ local tierEnumToName =
 	[5] = PVP_RANK_5_NAME,
 };
 
-local nextTierEnumToDescription = 
+local nextTierEnumToDescription =
 {
 	[0] = nil,
 	[1] = PVP_RANK_1_NEXT_RANK_DESC,
@@ -982,17 +1131,23 @@ end
 
 function NextTier_OnEnter(self)
 	if self.tierInfo and self.tierInfo.pvpTierEnum and tierEnumToName[self.tierInfo.pvpTierEnum] then
+		local WORD_WRAP = true;
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip_SetTitle(GameTooltip, TOOLTIP_PVP_NEXT_RANK:format(tierEnumToName[self.tierInfo.pvpTierEnum]));
 		if nextTierEnumToDescription[self.tierInfo.pvpTierEnum] then
 			GameTooltip:SetMinimumWidth(260);
-			GameTooltip_AddNormalLine(GameTooltip, nextTierEnumToDescription[self.tierInfo.pvpTierEnum], true);
+			GameTooltip_AddNormalLine(GameTooltip, nextTierEnumToDescription[self.tierInfo.pvpTierEnum], WORD_WRAP);
+		end
+		local activityItemLevel, weeklyItemLevel = C_PvP.GetRewardItemLevelsByTierEnum(self.tierInfo.pvpTierEnum);
+		if activityItemLevel > 0 then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddColoredLine(GameTooltip, PVP_GEAR_REWARD_CHANCE_LONG:format(activityItemLevel), NORMAL_FONT_COLOR, WORD_WRAP);
 		end
 		GameTooltip:Show();
 	end
 end
 
-function ConquestFrame_SetTierInfo(tierFrame, tierInfo, ranking)
+function ConquestFrame_SetPanelTierInfo(tierFrame, tierInfo, ranking)
 	if tierInfo then
 		tierFrame.Icon:SetTexture(tierInfo.tierIconID);
 		tierFrame:Show();
@@ -1022,7 +1177,7 @@ function ConquestFrame_Update(self)
 		local isOffseason = self.seasonState == SEASON_STATE_OFFSEASON;
 		ConquestFrame.NoSeason:Hide();
 		ConquestFrame.Disabled:Hide();
-		
+
 		local firstAvailableButton = self.arenasEnabled and ConquestFrame.Arena2v2 or ConquestFrame.RatedBG;
 
 		for i = 1, RATED_BG_ID do
@@ -1033,10 +1188,11 @@ function ConquestFrame_Update(self)
 			if tierInfo then
 				button.CurrentRating:SetText(rating);
 				button.CurrentRating:Show();
+				button.pvpTierEnum = tierInfo.pvpTierEnum;
 			else
 				button.CurrentRating:Hide();
 			end
-			ConquestFrame_SetTierInfo(button.Tier, tierInfo, ranking);
+			button.Tier:Setup(tierInfo, ranking);
 			if isOffseason then
 				button.Tier:SetAlpha(0.25);
 			else
@@ -1058,7 +1214,7 @@ function ConquestFrame_Update(self)
 				end
 			end
 			button:SetEnabled(enabled);
-			
+
 			if (not enabled) then
 				button.TeamSizeText:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 				button.CurrentRating:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
@@ -1075,7 +1231,7 @@ function ConquestFrame_Update(self)
 				ConquestFrame_SelectButton(firstAvailableButton);
 			end
 		end
-		
+
 		if ( not ConquestFrame.selectedButton ) then
 			ConquestFrame_SelectButton(firstAvailableButton);
 		else
@@ -1098,7 +1254,7 @@ function ConquestFrame_UpdateJoinButton()
 	local lfgListDisabled;
 	if ( select(2,C_LFGList.GetNumApplications()) > 0 ) then
 		lfgListDisabled = CANNOT_DO_THIS_WITH_LFGLIST_APP;
-	elseif ( C_LFGList.GetActiveEntryInfo() ) then
+	elseif ( C_LFGList.HasActiveEntryInfo() ) then
 		lfgListDisabled = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
 	end
 
@@ -1205,15 +1361,26 @@ local CONQUEST_TOOLTIP_PADDING = 30 --counts both sides
 
 function ConquestFrameButton_OnEnter(self)
 	local tooltip = ConquestTooltip;
-	
-	local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest, pvpTier, ranking = GetPersonalRatedInfo(self.bracketIndex);
-	
+
+	local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest, hasWon, pvpTier, ranking = GetPersonalRatedInfo(self.bracketIndex);
+
 	tooltip.Title:SetText(self.toolTipTitle);
-	
+
+	local tierInfo = C_PvP.GetPvpTierInfo(pvpTier);
+	if tierInfo and tierInfo.pvpTierEnum and tierEnumToName[tierInfo.pvpTierEnum] then
+		if ranking then
+			tooltip.Tier:SetFormattedText(PVP_TIER_WITH_RANK_AND_RATING, tierEnumToName[tierInfo.pvpTierEnum], ranking, rating);
+		else
+			tooltip.Tier:SetFormattedText(PVP_TIER_WITH_RATING, tierEnumToName[tierInfo.pvpTierEnum], rating);
+		end
+	else
+		tooltip.Tier:SetText("");
+	end
+
 	tooltip.WeeklyBest:SetText(PVP_BEST_RATING..weeklyBest);
 	tooltip.WeeklyGamesWon:SetText(PVP_GAMES_WON..weeklyWon);
 	tooltip.WeeklyGamesPlayed:SetText(PVP_GAMES_PLAYED..weeklyPlayed);
-	
+
 	tooltip.SeasonBest:SetText(PVP_BEST_RATING..seasonBest);
 	tooltip.SeasonWon:SetText(PVP_GAMES_WON..seasonWon);
 	tooltip.SeasonGamesPlayed:SetText(PVP_GAMES_PLAYED..seasonPlayed);
@@ -1222,9 +1389,9 @@ function ConquestFrameButton_OnEnter(self)
 	for i, fontString in ipairs(tooltip.Content) do
 		maxWidth = math.max(maxWidth, fontString:GetStringWidth());
 	end
-	
+
 	tooltip:SetWidth(maxWidth + CONQUEST_TOOLTIP_PADDING);
-	tooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, 0);
+	tooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", 0, 0);
 	tooltip:Show();
 end
 
@@ -1232,13 +1399,14 @@ end
 -- Rewards
 ---------------------------------------------------------------
 
-function PVPRewardTemplate_OnEnter(self)
+function PVPStandardRewardTemplate_OnEnter(self)
 	if (not self.Icon:IsShown()) then
 		return;
 	end
-
 	EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	EmbeddedItemTooltip:SetText(PVP_REWARD_TOOLTIP);
+	self.UpdateTooltip = nil;
+
 	if (self.experience > 0) then
 		GameTooltip_AddColoredLine(EmbeddedItemTooltip, PVP_REWARD_XP_FORMAT:format(BreakUpLargeNumbers(self.experience)), HIGHLIGHT_FONT_COLOR);
 	else
@@ -1252,14 +1420,36 @@ function PVPRewardTemplate_OnEnter(self)
 			EmbeddedItemTooltip:AddLine(text, currencyColor:GetRGB());
 		end
 	end
+	local activityItemLevel;
+	local pvpTierEnum = self:GetParent().pvpTierEnum;
+	if pvpTierEnum then
+		activityItemLevel = C_PvP.GetRewardItemLevelsByTierEnum(pvpTierEnum);
+	end
+	local rewardQuestID = self:GetParent().rewardQuestID;
+	if rewardQuestID then
+		if HaveQuestRewardData(rewardQuestID) then
+			activityItemLevel = select(7, GetQuestLogRewardInfo(1, rewardQuestID));
+		else
+			self.UpdateTooltip = PVPStandardRewardTemplate_OnEnter;
+		end
+	end
+	if activityItemLevel and activityItemLevel > 0 then
+		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
+		GameTooltip_AddColoredLine(EmbeddedItemTooltip, PVP_GEAR_REWARD_CHANCE:format(activityItemLevel), HIGHLIGHT_FONT_COLOR);
+	end
 	if self.itemID then
-		EmbeddedItemTooltip:AddLine(" ");
+		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
 		EmbeddedItemTooltip_SetItemByID(EmbeddedItemTooltip.ItemTooltip, self.itemID);
 	elseif self.currencyID then
-		EmbeddedItemTooltip:AddLine(" ");
+		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
 		EmbeddedItemTooltip_SetCurrencyByID(EmbeddedItemTooltip.ItemTooltip, self.currencyID, self.quantity);
 	end
 	EmbeddedItemTooltip:Show();
+end
+
+function PVPRewardTemplate_OnLeave(self)
+	EmbeddedItemTooltip:Hide();
+	self.UpdateTooltip = nil;
 end
 
 function PVPRewardEnlistmentBonus_OnEnter(self)
@@ -1334,20 +1524,74 @@ function PVPUIHonorInsetMixin:DisplayCasualPanel()
 	panel.HKValue:SetText(BreakUpLargeNumbers(lifetimeHonorKills));
 end
 
+local SEASON_REWARD_ACHIEVEMENTS = {
+	[BFA_START_SEASON] = {
+		[PLAYER_FACTION_GROUP[0]] = 13136,
+		[PLAYER_FACTION_GROUP[1]] = 13137,
+	},
+	[BFA_START_SEASON + 1] = {
+		[PLAYER_FACTION_GROUP[0]] = 13227,
+		[PLAYER_FACTION_GROUP[1]] = 13228,
+	},
+	[BFA_START_SEASON + 2] = {
+		[PLAYER_FACTION_GROUP[0]] = 13636,
+		[PLAYER_FACTION_GROUP[1]] = 13637,
+	},
+	[BFA_START_SEASON + 3] = {
+		[PLAYER_FACTION_GROUP[0]] = 13944,
+		[PLAYER_FACTION_GROUP[1]] = 13943,
+	},
+};
+
+local function GetPVPSeasonAchievementID(seasonID)
+	local achievements = SEASON_REWARD_ACHIEVEMENTS[seasonID];
+	local achievementID = achievements and achievements[UnitFactionGroup("player")];
+	if achievementID then
+		while true do
+			local completed = select(4, GetAchievementInfo(achievementID));
+			if not completed then
+				break;
+			end
+
+			local supercedingAchievements = C_AchievementInfo.GetSupercedingAchievements(achievementID);
+			if not supercedingAchievements[1] then
+				break;
+			end
+
+			achievementID = supercedingAchievements[1];
+		end
+	end
+
+	return achievementID;
+end
+
 function PVPUIHonorInsetMixin:DisplayRatedPanel()
 	local panel = self.RatedPanel;
 	panel:Show();
 	self.CasualPanel:Hide();
 
+	local showSeasonReward = false;
 	local seasonState = ConquestFrame.seasonState;
-
-	panel.SeasonRewardFrame:SetShown(seasonState == SEASON_STATE_ACTIVE or seasonState == SEASON_STATE_DISABLED);
+	if seasonState ~= SEASON_STATE_PRESEASON then
+		local seasonID = GetCurrentArenaSeason();
+		if seasonID == NO_ARENA_SEASON then
+			seasonID = GetPreviousArenaSeason();
+		end
+		if seasonID and seasonID >= BFA_START_SEASON then
+			local achievementID = GetPVPSeasonAchievementID(seasonID);
+			if achievementID ~= nil then
+				showSeasonReward = true;
+				panel.SeasonRewardFrame:Init(achievementID, PVP_SEASON_REWARD);
+			end
+		end
+	end
+	panel.SeasonRewardFrame:SetShown(showSeasonReward);
 
 	if seasonState == SEASON_STATE_PRESEASON then
 		panel.Tier:Hide();
 	else
 		panel.Tier:Show();
-	
+
 		if seasonState == SEASON_STATE_OFFSEASON then
 			panel.Tier.Title:SetText(PVP_LAST_SEASON_HIGH);
 			panel.Tier.Title:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
@@ -1358,7 +1602,7 @@ function PVPUIHonorInsetMixin:DisplayRatedPanel()
 
 		local tierID, nextTierID = C_PvP.GetSeasonBestInfo();
 		local tierInfo = C_PvP.GetPvpTierInfo(tierID);
-		ConquestFrame_SetTierInfo(panel.Tier, tierInfo);
+		ConquestFrame_SetPanelTierInfo(panel.Tier, tierInfo);
 
 		local nextTierInfo = nextTierID and C_PvP.GetPvpTierInfo(nextTierID);
 		if nextTierInfo and seasonState ~= SEASON_STATE_OFFSEASON then
@@ -1378,8 +1622,10 @@ function PVPUIHonorLevelDisplayMixin:OnLoad()
 	self:Pause();
 	if UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0] then
 		self.Background:SetAtlas("pvpqueue-sidebar-honorbar-background-horde", false);
+		self.FactionBadge:SetAtlas("pvpqueue-sidebar-honorbar-badge-horde", false);
 	else
 		self.Background:SetAtlas("pvpqueue-sidebar-honorbar-background-alliance", false);
+		self.FactionBadge:SetAtlas("pvpqueue-sidebar-honorbar-badge-alliance", false);
 	end
 end
 
@@ -1411,8 +1657,10 @@ function PVPUIHonorLevelDisplayMixin:Update()
 	if honorRewardInfo then
 		self.LevelBadge:SetTexture(honorRewardInfo.badgeFileDataID);
 		self.LevelBadge:Show();
+		self.FactionBadge:Hide();
 	else
 		self.LevelBadge:Hide();
+		self.FactionBadge:Show();
 	end
 	-- next reward level
 	self.nextHonorLevelForReward = C_PvP.GetNextHonorLevelForReward(honorLevel);
@@ -1442,20 +1690,6 @@ function PVPUIHonorLevelDisplayMixin:Update()
 	end
 end
 
-function PVPUIHonorLevelDisplayMixin:ShowNextRewardTooltip()
-	local rewardInfo = C_PvP.GetHonorRewardInfo(self.nextHonorLevelForReward);
-	if rewardInfo then
-		local rewardText = select(11, GetAchievementInfo(rewardInfo.achievementRewardedID));
-		if rewardText and rewardText ~= "" then
-			GameTooltip:SetOwner(self.NextRewardLevel, "ANCHOR_RIGHT", -4, -4);
-			GameTooltip:SetText(PVP_PRESTIGE_RANK_UP_NEXT_MAX_LEVEL_REWARD:format(self.nextHonorLevelForReward));
-			local WRAP = true;
-			GameTooltip_AddColoredLine(GameTooltip, rewardText, HIGHLIGHT_FONT_COLOR, WRAP);
-			GameTooltip:Show();
-		end
-	end
-end
-
 function PVPUIHonorLevelDisplayMixin:OnMouseUp(button)
 	if button == "RightButton" then
 		UIDropDownMenu_Initialize(self.DropDown, InitializeHonorXPBarDropDown, "MENU");
@@ -1472,96 +1706,103 @@ function PVPUIHonorLevelDisplayMixin:OnEnter()
 	GameTooltip:Show();
 end
 
-PVPUISeasonRewardFrameMixin = { };
+PVPAchievementRewardMixin = {};
 
-local REWARD_QUEST_ID = 53096;
-local SEASON_REWARD_ACHIEVEMENTS = {
-	[PLAYER_FACTION_GROUP[0]] = 13136,
-	[PLAYER_FACTION_GROUP[1]] = 13137,
-};
-
-function PVPUISeasonRewardFrameMixin:OnShow()
-	if self:IsRewardAvailable() then
-		self:Update();
-	else
-		self:RegisterEvent("QUEST_LOG_UPDATE");
-	end
+function PVPAchievementRewardMixin:Init(achievementID, headerString)
+	self.achievementID = achievementID;
+	self.headerString = headerString;
+	self:Update();
 end
 
-function PVPUISeasonRewardFrameMixin:OnHide()
-	self:UnregisterEvent("QUEST_LOG_UPDATE");
+function PVPAchievementRewardMixin:GetAchievementID()
+	return self.achievementID;
 end
 
-function PVPUISeasonRewardFrameMixin:IsRewardAvailable()
-	return HaveQuestData(REWARD_QUEST_ID) and HaveQuestRewardData(REWARD_QUEST_ID);
+function PVPAchievementRewardMixin:GetHeaderString()
+	return self.headerString;
 end
 
-function PVPUISeasonRewardFrameMixin:OnEvent(event, ...)
-	if event == "QUEST_LOG_UPDATE" then
-		if self:IsRewardAvailable() then
-			self:UnregisterEvent("QUEST_LOG_UPDATE");
-			self:Update();
-		end
-	end
+function PVPAchievementRewardMixin:OnShow()
+	self:Update();
 end
 
-function PVPUISeasonRewardFrameMixin:Update()
-	local itemIndex = 1;
-	local name, texture, count, quality, isUsable = GetQuestLogRewardInfo(itemIndex, REWARD_QUEST_ID);
-	if texture then
+function PVPAchievementRewardMixin:Update()
+	local achievementID = self:GetAchievementID();
+	local hasAchievementID = achievementID ~= nil;
+	if hasAchievementID then
+		local rewardItemID = C_AchievementInfo.GetRewardItemID(achievementID);
+		local texture = rewardItemID and select(5, GetItemInfoInstant(rewardItemID)) or nil;
 		self.Icon:SetTexture(texture);
 		self.Icon:Show();
 		local completed = false;
-		local achievementID = SEASON_REWARD_ACHIEVEMENTS[UnitFactionGroup("player")];
-		if achievementID and GetAchievementNumCriteria(achievementID) > 0 then
+		if  GetAchievementNumCriteria(achievementID) > 0 then
 			completed = select(3, GetAchievementCriteriaInfo(achievementID, 1));
 		end
 		if completed then
 			self.Icon:SetDesaturated(false);
-			self.CheckMark:Show();
+			if self.CheckMark then
+				self.CheckMark:Show();
+			end
 		else
 			self.Icon:SetDesaturated(true);
+				if self.CheckMark then
 			self.CheckMark:Hide();
+		end
 		end
 	else
 		self.Icon:Hide();
 	end
+
+	self:SetShown(hasAchievementID);
 end
 
-function PVPUISeasonRewardFrameMixin:UpdateTooltip()
-	local achievementID = SEASON_REWARD_ACHIEVEMENTS[UnitFactionGroup("player")];
-	if not achievementID then
-		return;
-	end
-	if GetAchievementNumCriteria(achievementID) == 0 then
+function PVPAchievementRewardMixin:UpdateTooltip()
+	local achievementID = self:GetAchievementID();
+	if not achievementID or GetAchievementNumCriteria(achievementID) == 0 then
 		return;
 	end
 
 	EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_SEASON_REWARD);
+	GameTooltip_SetTitle(EmbeddedItemTooltip, self:GetHeaderString());
 
-	local criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString = GetAchievementCriteriaInfo(achievementID, 1);
+	local criteriaString, criteriaType, completed, quantity, reqQuantity = GetAchievementCriteriaInfo(achievementID, 1);
 	if criteriaString then
 		if completed then
 			GameTooltip_AddColoredLine(EmbeddedItemTooltip, GOAL_COMPLETED, GREEN_FONT_COLOR);
 		else
 			local wordWrap = true;
-			GameTooltip_AddNormalLine(EmbeddedItemTooltip, criteriaString, wordWrap);
-			local roundToNearestInteger = true;
-			GameTooltip_ShowProgressBar(EmbeddedItemTooltip, 0, reqQuantity, quantity, FormatPercentage(quantity / reqQuantity, roundToNearestInteger));
-			EmbeddedItemTooltip:AddLine(" ");
-			GameTooltip_AddNormalLine(EmbeddedItemTooltip, REWARD, wordWrap);
-			EmbeddedItemTooltip_SetItemByQuestReward(EmbeddedItemTooltip.ItemTooltip, 1, REWARD_QUEST_ID);
+			if self.useAchievementDescription then
+				local description = select(8, GetAchievementInfo(achievementID));
+				GameTooltip_AddNormalLine(EmbeddedItemTooltip, description, wordWrap);
+			else
+				GameTooltip_AddNormalLine(EmbeddedItemTooltip, criteriaString, wordWrap);
+			end
+
+			GameTooltip_ShowProgressBar(EmbeddedItemTooltip, 0, reqQuantity, quantity, FormatPercentage(quantity / reqQuantity));
+			local rewardItemID = C_AchievementInfo.GetRewardItemID(achievementID);
+			if rewardItemID then
+				GameTooltip_AddBlankLinesToTooltip(EmbeddedItemTooltip, 1);
+				GameTooltip_AddNormalLine(EmbeddedItemTooltip, REWARD, wordWrap);
+				EmbeddedItemTooltip_SetItemByID(EmbeddedItemTooltip.ItemTooltip, rewardItemID);
+			end
 		end
 	end
 	EmbeddedItemTooltip:Show();
 end
 
-function PVPUISeasonRewardFrameMixin:OnLeave()
+function PVPAchievementRewardMixin:OnEnter()
+	self:UpdateTooltip();
+end
+
+function PVPAchievementRewardMixin:OnLeave()
 	EmbeddedItemTooltip:Hide();
 end
 
 PVPConquestBarMixin = { };
+
+function PVPConquestBarMixin:OnLoad()
+	self.Reward:SetTooltipAnchor("ANCHOR_BOTTOMRIGHT");
+end
 
 function PVPConquestBarMixin:OnShow()
 	self:RegisterEvent("QUEST_LOG_UPDATE");
@@ -1578,54 +1819,34 @@ function PVPConquestBarMixin:OnEvent(event, ...)
 	end
 end
 
-function PVPConquestBarMixin:Update()
-	local locked = UnitLevel("player") < MAX_PLAYER_LEVEL;
-	self:SetDisabled(ConquestFrame.seasonState == SEASON_STATE_PRESEASON or ConquestFrame.seasonState == SEASON_STATE_OFFSEASON or locked);
-	self.Lock:SetShown(locked);
-
-	local current, max, rewardItemID = self:GetConquestLevelInfo();
-	if max == 0 or self.disabled then
-		self:SetValue(0);
-	else
-		self:SetValue(current / max * 100);
-	end
-	self.Label:SetFormattedText(CONQUEST_BAR, current, max);
-	if rewardItemID and not self.disabled then
-		self.Reward.Icon:SetTexture(GetItemIcon(rewardItemID));
-		self.Reward.itemID = rewardItemID;
-	else
-		self.Reward.Icon:SetColorTexture(0, 0, 0);
-		self.Reward.itemID = nil;
-	end
+function PVPConquestBarMixin:OnEnter()
+	self.Reward:TryShowTooltip();
 end
 
-function PVPConquestBarMixin:GetConquestLevelInfo()
-	local CONQUEST_QUESTLINE_ID = 782;
-	local quests = C_QuestLine.GetQuestLineQuests(CONQUEST_QUESTLINE_ID)
-	local currentQuestID = quests[1];
-	for i, questID in ipairs(quests) do
-		if not IsQuestFlaggedCompleted(questID) and not C_QuestLog.IsOnQuest(questID) then
-			break;
-		end
-		currentQuestID = questID;
-	end
+function PVPConquestBarMixin:OnLeave()
+	self.Reward:HideTooltip();
+end
 
-	if not HaveQuestData(currentQuestID) then
-		return 0, 0, nil;
-	end
+function PVPConquestBarMixin:Update()
+	local locked = not IsPlayerAtEffectiveMaxLevel();
+	self.Lock:SetShown(locked);
 
-	local objectives = C_QuestLog.GetQuestObjectives(currentQuestID);
-	if not objectives or not objectives[1] then
-		return 0, 0, nil;
+	local inactiveSeason = ConquestFrame.seasonState == SEASON_STATE_PRESEASON or ConquestFrame.seasonState == SEASON_STATE_DISABLED;
+	local currentValue, maxValue, questID = PVPGetConquestLevelInfo();
+	local questDone = questID and questID == 0;
+	if locked or inactiveSeason or questDone or maxValue == 0 then
+		self:SetValue(0);
+	else
+		self:SetValue(currentValue / maxValue * 100);
 	end
+	self:SetDisabled(inactiveSeason or locked or questDone);
+	self.Label:SetFormattedText(CONQUEST_BAR, currentValue, maxValue);
 
-	local rewardItemID;
-	if HaveQuestRewardData(currentQuestID) then
-		local itemIndex = 1;
-		rewardItemID = select(6, GetQuestLogRewardInfo(itemIndex, currentQuestID));
+	if locked or inactiveSeason or not questID then
+		self.Reward:Clear();
+	else
+		self.Reward:Setup(questID, self.seasonState);
 	end
-
-	return objectives[1].numFulfilled, objectives[1].numRequired, rewardItemID;
 end
 
 function PVPConquestBarMixin:SetDisabled(disabled)
@@ -1638,7 +1859,96 @@ function PVPConquestBarMixin:SetDisabled(disabled)
 		local alpha = disabled and 0.6 or 1;
 		self.Border:SetAlpha(alpha);
 		self.Background:SetAlpha(alpha);
-		self.Reward:SetAlpha(alpha);
 		self.disabled = disabled;
 	end
+end
+
+NewPvpSeasonMixin = { };
+
+function NewPvpSeasonMixin:OnShow()
+	local currentSeason = GetCurrentArenaSeason();
+	self.SeasonDescription:SetText(BFA_SEASON_NUMBER:format(currentSeason - BFA_START_SEASON + 1));
+	self.SeasonDescription2:SetText(BFA_PVP_SEASON_DESCRIPTION_TWO);
+
+	local achievementID = GetPVPSeasonAchievementID(currentSeason);
+	local showSeasonReward = achievementID ~= nil;
+	if showSeasonReward then
+		self.SeasonRewardFrame:Init(achievementID, PVP_SEASON_REWARD);
+	end
+	self.SeasonRewardFrame:SetShown(showSeasonReward);
+end
+
+PVPWeeklyChestMixin = { };
+
+function PVPWeeklyChestMixin:GetState()
+	local rewardAchieved, lastWeekRewardAchieved, lastWeekRewardClaimed, pvpTierMaxFromWins = C_PvP.GetWeeklyChestInfo();
+	if lastWeekRewardAchieved and not lastWeekRewardClaimed then
+		return "collect";
+	elseif rewardAchieved then
+		return "complete";
+	end
+	return "incomplete";
+end
+
+function PVPWeeklyChestMixin:OnShow()
+	local state = self:GetState();
+	local atlas;
+	if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0]) then
+		atlas = "pvpqueue-chest-horde-"..state;
+	else
+		atlas = "pvpqueue-chest-alliance-"..state;
+	end
+	self.ChestTexture:SetAtlas(atlas);
+
+	if state == "collect" then
+		self.SpinTextureBottom:Show();
+		self.SpinTextureTop:Show();
+		self.SpinAnim:Play();
+	else
+		self.SpinTextureBottom:Hide();
+		self.SpinTextureTop:Hide();
+		self.SpinAnim:Stop();
+	end
+end
+
+function PVPWeeklyChestMixin:OnEnter()
+	local state = self:GetState();
+	local title, description, showItemLevel;
+	if state == "incomplete" then
+		title = RATED_PVP_WEEKLY_CHEST;
+		description = RATED_PVP_WEEKLY_CHEST_TOOLTIP_INCOMPLETE;
+		showItemLevel = true;
+	elseif state == "complete" then
+		title = RATED_PVP_WEEKLY_CHEST_EARNED;
+		description = RATED_PVP_WEEKLY_CHEST_TOOLTIP_COMPLETE;
+		showItemLevel = true;
+	elseif state == "collect" then
+		title = RATED_PVP_WEEKLY_CHEST;
+		description = RATED_PVP_WEEKLY_CHEST_TOOLTIP_COLLECT;
+		showItemLevel = false;
+	end
+
+	if showItemLevel then
+		local rewardAchieved, lastWeekRewardAchieved, lastWeekRewardClaimed, pvpTierMaxFromWins = C_PvP.GetWeeklyChestInfo();
+		-- it's -1 if you haven't won any matches in the current season
+		pvpTierMaxFromWins = max(pvpTierMaxFromWins, 0);
+		local activityItemLevel, weeklyItemLevel = C_PvP.GetRewardItemLevelsByTierEnum(pvpTierMaxFromWins);
+		description = description:format(weeklyItemLevel);
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	local WORD_WRAP = true;
+	GameTooltip_SetTitle(GameTooltip, title);
+	GameTooltip_AddColoredLine(GameTooltip, description, NORMAL_FONT_COLOR, WORD_WRAP);
+	if state == "incomplete" then
+		local current, max = PVPGetConquestLevelInfo();
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddColoredLine(GameTooltip, RATED_PVP_WEEKLY_CHEST_REQUIREMENTS:format(current, max), HIGHLIGHT_FONT_COLOR, WORD_WRAP);
+	end
+	GameTooltip:Show();
+end
+
+function PVPNewSeasonPopupOnClick(self)
+	self:GetParent():Hide();
+	SetCVar("newPvpSeason", GetCurrentArenaSeason() - BFA_START_SEASON + 1);
 end

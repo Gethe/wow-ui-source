@@ -1,6 +1,4 @@
-## Interface: 80000
 ## Title: Blizzard API Documentation
-## Secure: 1
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
 
@@ -24,6 +22,7 @@ AreaPoiInfoDocumentation.lua
 ArtifactUIDocumentation.lua
 AuctionHouseDocumentation.lua
 AzeriteEmpoweredItemDocumentation.lua
+AzeriteEssenceDocumentation.lua
 AzeriteItemDocumentation.lua
 BankDocumentation.lua
 BarberShopDocumentation.lua
@@ -31,11 +30,16 @@ BattleNetDocumentation.lua
 BattlePetDocumentation.lua
 BlackMarketInfoDocumentation.lua
 BrowserDocumentation.lua
+CVarDocumentation.lua
+CalendarDocumentation.lua
 ChallengeModeInfoDocumentation.lua
 ChatBubblesDocumentation.lua
 ChatInfoDocumentation.lua
 CinematicDocumentation.lua
+ClassColorDocumentation.lua
 ClassTrialDocumentation.lua
+ClubDocumentation.lua
+ClubFinderDocumentation.lua
 CombatLogDocumentation.lua
 CommentatorFrameDocumentation.lua
 CompactUnitFramesDocumentation.lua
@@ -54,6 +58,7 @@ EncounterJournalDocumentation.lua
 EquipmentManagerDocumentation.lua
 ExpansionDocumentation.lua
 FogOfWarDocumentation.lua
+FriendListDocumentation.lua
 GMTicketInfoDocumentation.lua
 GarrisonInfoDocumentation.lua
 GlyphInfoDocumentation.lua
@@ -61,11 +66,13 @@ GossipInfoDocumentation.lua
 GuildBankDocumentation.lua
 GuildInfoDocumentation.lua
 HeirloomInfoDocumentation.lua
+IncomingSummonDocumentation.lua
 InstanceEncounterDocumentation.lua
 InvasionInfoDocumentation.lua
 IslandsInfoDocumentation.lua
 IslandsQueueUIDocumentation.lua
 ItemDocumentation.lua
+ItemInteractionUIDocumentation.lua
 ItemSocketInfoDocumentation.lua
 ItemTextDocumentation.lua
 ItemUpgradeDocumentation.lua
@@ -74,6 +81,7 @@ KnowledgeBaseDocumentation.lua
 LFGInfoDocumentation.lua
 LFGListInfoDocumentation.lua
 LFGuildInfoDocumentation.lua
+LevelLinkDocumentation.lua
 LoadingScreenDocumentation.lua
 LootDocumentation.lua
 LootJournalDocumentation.lua
@@ -97,8 +105,11 @@ QuestChoiceDocumentation.lua
 QuestLineInfoDocumentation.lua
 QuestLogDocumentation.lua
 QuestOfferDocumentation.lua
+QuestSessionDocumentation.lua
 QuestTaskInfoDocumentation.lua
+RaidLocksDocumentation.lua
 RecruitAFriendDocumentation.lua
+ReportSystemDocumentation.lua
 ReputationInfoDocumentation.lua
 ResearchInfoDocumentation.lua
 RestrictedActionsDocumentation.lua
@@ -109,6 +120,7 @@ SecureTransferDocumentation.lua
 SkillInfoDocumentation.lua
 SocialInfoDocumentation.lua
 SocialQueueDocumentation.lua
+SocialRestrictionsDocumentation.lua
 SoundDocumentation.lua
 SpecializationInfoDocumentation.lua
 SpellDocumentation.lua
@@ -116,9 +128,12 @@ SpellActivationOverlayDocumentation.lua
 SpellBookDocumentation.lua
 StableInfoDocumentation.lua
 StorePublicUIDocumentation.lua
+SummonInfoDocumentation.lua
 SystemDocumentation.lua
 TalkingHeadDocumentation.lua
 TaxiMapDocumentation.lua
+TextureUtilsDocumentation.lua
+TooltipConstantsDocumentation.lua
 ToyBoxInfoDocumentation.lua
 TradeInfoDocumentation.lua
 TradeSkillUIDocumentation.lua
@@ -139,9 +154,30 @@ VoiceChatDocumentation.lua
 VoidStorageInfoDocumentation.lua
 WarCampaignDocumentation.lua
 WorldStateInfoDocumentation.lua
+WowEntitlementInfoDocumentation.lua
 WowTokenUIDocumentation.lua
 ZoneAbilityDocumentation.lua
-CalendarDocumentation.lua
-ClubDocumentation.lua
-FriendsDocumentation.lua
+ActionDocumentation.lua
+AppearanceSourceDocumentation.lua
+AuctionHouseEnumsDocumentation.lua
+BaseDocumentation.lua
+CalendarConstantsDocumentation.lua
+ChatDocumentation.lua
+ClubSharedDocumentation.lua
+ColorDocumentation.lua
+GarrisonConstantsDocumentation.lua
+GarrisonSharedDocumentation.lua
+GuildInfoSharedDocumentation.lua
+ItemLocationSharedDocumentation.lua
+ItemSharedDocumentation.lua
+ModelSceneDocumentation.lua
+NamePlateDocumentation.lua
+PlayerDocumentation.lua
+QuestSessionConstantsDocumentation.lua
+QueueSpecificDocumentation.lua
+RecruitAFriendSharedDocumentation.lua
+TextureSharedDocumentation.lua
+TimeDocumentation.lua
+UnitSharedDocumentation.lua
+VectorSharedDocumentation.lua
 # End documentation files here

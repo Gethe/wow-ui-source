@@ -1,5 +1,9 @@
 AzeritePaperDollItemOverlayMixin = {};
 
+function AzeritePaperDollItemOverlayMixin:UpdateCorruptedGlow(itemLocation, glow)
+	self.CorruptedHighlightTexture:SetShown(glow and itemLocation:IsValid() and C_Item.IsItemCorruptionRelated(itemLocation));
+end
+
 function AzeritePaperDollItemOverlayMixin:SetAzeriteItem(itemLocation)
 	if not itemLocation or not itemLocation:HasAnyLocation() then
 		self:ResetAzeriteItem();
@@ -32,9 +36,9 @@ function AzeritePaperDollItemOverlayMixin:DisplayAsAzeriteItem(itemLocation)
 	highlightTexture:ClearAllPoints();
 	highlightTexture:SetPoint("CENTER");
 
-	local _, width, height = GetAtlasInfo(ATLAS_NAME);
+	local info = C_Texture.GetAtlasInfo(ATLAS_NAME);
 	local SCALAR = .55;
-	highlightTexture:SetSize(width * SCALAR, height * SCALAR);
+	highlightTexture:SetSize((info and info.width or 0) * SCALAR, (info and info.height or 0) * SCALAR);
 
 	self:UpdateAzeriteRank(itemLocation);
 end

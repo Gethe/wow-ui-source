@@ -11,4 +11,11 @@
 	</Frame>
 
 	<Frame name="WorldMap_DebugPortLocPinTemplate" inherits="BaseMapPoiPinTemplate" mixin="WorldMap_DebugPortLocPinMixin" virtual="true" />
+
+	<Frame name="WorldMap_DebugTeleportPinTemplate" mixin="WorldMap_DebugTeleportPinMixin" virtual="true">
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
 </Ui>

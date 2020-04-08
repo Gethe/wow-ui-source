@@ -52,20 +52,7 @@ function TutorialHelper:FormatString(str)
 	-- Atlas icons e.g. {Atlas|NPE_RightClick:16}
 	str = string.gsub(str, "{Atlas|([%w_]+):?(%d*)}", function(atlasName, size)
 				size = tonumber(size) or 0;
-
-				local filename, width, height, txLeft, txRight, txTop, txBottom = GetAtlasInfo(atlasName);
-
-				if (not filename) then return; end
-
-				local atlasWidth = width / (txRight - txLeft);
-				local atlasHeight = height / (txBottom - txTop);
-
-				local pxLeft	= atlasWidth	* txLeft;
-				local pxRight	= atlasWidth	* txRight;
-				local pxTop		= atlasHeight	* txTop;
-				local pxBottom	= atlasHeight	* txBottom;
-
-				return string.format("|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d|t", filename, size, size, atlasWidth, atlasHeight, pxLeft, pxRight, pxTop, pxBottom);
+				return CreateAtlasMarkup(atlasName, size, size);
 			end);
 
 	return str;
@@ -133,7 +120,7 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:IsQuestCompleteOrActive(questID)
-	return IsQuestFlaggedCompleted(questID) or (GetQuestLogIndexByID(questID) > 0);
+	return C_QuestLog.IsQuestFlaggedCompleted(questID) or (GetQuestLogIndexByID(questID) > 0);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -913,9 +900,9 @@ local Class_ActionBarCallout = class("ActionBarCallout", Class_TutorialBase);
 function Class_ActionBarCallout:OnBegin()
 	self.SuccessfulCastCount = 0;
 	self.isWarrior = TutorialHelper:GetClass() == "WARRIOR";
-	
+
 	local startingAbility = TutorialHelper:FilterByClass(TutorialData.StartingAbility);
-	
+
 	if (self.isWarrior) then
 		startingAbility = 88163; -- Warriors start off with melee as their "first" ability.
 	end
@@ -974,7 +961,7 @@ function Class_ActionBarCallout:HighlightPointer(spellID, textID)
 		local prompt = formatStr(TutorialHelper:GetClassString(textID or "NPE_ABILITYINITIAL"));
 		local binding = GetBindingKey("ACTIONBUTTON" .. btn.action) or "?";
 		local finalString = string.format(prompt, binding, name, icon);
-		
+
 		self:ShowPointerTutorial(finalString, "DOWN", btn);
 		ActionButton_ShowOverlayGlow(btn);
 
@@ -1847,7 +1834,7 @@ function Class_ShowMapQuestTurnIn:Display()
 	local desiredMap = self.QuestData:GetTurnInMapID();
 
 	local poiButton;
-	
+
 	-- Get the PoI Pin from the map map
 	if (currentMap == desiredMap) then
 		for pin in self.MapProvider:GetMap():EnumeratePinsByTemplate("QuestPinTemplate") do
@@ -1881,7 +1868,7 @@ function Class_SelectQuestDifferentZone:OnBegin(questData)
 	self.QuestData = questData;
 
 	-- Have to delay by one frame because the quest log doesn't update before this code runs which causes the frame pool to be out of sync
-	C_Timer.After(0, function() self:Display(); end); 
+	C_Timer.After(0, function() self:Display(); end);
 end
 
 function Class_SelectQuestDifferentZone:Display()
@@ -1904,7 +1891,7 @@ function Class_SelectQuestDifferentZone:Display()
 	end
 
 	if (not found) then
-		self:ShowPointerTutorial(formatStr(NPE_TURNINNOTONMAP_QUESTFRAMENOTFOUND), "LEFT", QuestScrollFrame, -20, 0, "RIGHT");	
+		self:ShowPointerTutorial(formatStr(NPE_TURNINNOTONMAP_QUESTFRAMENOTFOUND), "LEFT", QuestScrollFrame, -20, 0, "RIGHT");
 	end
 end
 
@@ -2547,11 +2534,19 @@ local Class_Taxi = class("Taxi", Class_TutorialBase);
 
 function Class_Taxi:OnBegin()
 	Dispatcher:RegisterEvent("TAXIMAP_OPENED", self);
+	Dispatcher:RegisterEvent("TAXIMAP_CLOSED", self);
 end
 
-function Class_Taxi:TAXIMAP_OPENED()
-	self:ShowPointerTutorial(formatStr(NPE_TAXICALLOUT), "LEFT", TaxiRouteMap, -10, 0);
-	Dispatcher:RegisterScript(TaxiFrame, "OnHide", function() self:Complete() end);
+function Class_Taxi:TAXIMAP_OPENED(uiMapSystem)
+	local frame = FlightMapFrame.ScrollContainer;
+	if uiMapSystem == Enum.UIMapSystem.Taxi then
+		frame = TaxiRouteMap;
+	end
+	self:ShowPointerTutorial(formatStr(NPE_TAXICALLOUT), "LEFT", frame, -10, 0);
+end
+
+function Class_Taxi:TAXIMAP_CLOSED()
+	self:Complete();
 end
 
 -- ------------------------------------------------------------------------------------------------------------

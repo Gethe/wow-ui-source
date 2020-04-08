@@ -384,11 +384,8 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-				self:RegisterEvent("UI_SCALE_CHANGED");
-			</OnLoad>
-			<OnEvent function="MultiActionBar_Update"/>
+			<OnLoad function="MultiActionBar_OnLoad"/>
+			<OnEvent function="MultiActionBar_OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

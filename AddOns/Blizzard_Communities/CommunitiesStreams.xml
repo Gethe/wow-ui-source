@@ -81,11 +81,6 @@
 	
 	<Frame name="CommunitiesEditStreamDialogTemplate" frameStrata="DIALOG" mixin="CommunitiesEditStreamDialogMixin" virtual="true">
 		<Size x="350" y="320"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets left="11" right="11" top="11" bottom="11"/>
-			<TileSize val="32"/>
-			<EdgeSize val="32"/>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="TitleLabel" inherits="GameFontHighlight">
@@ -111,6 +106,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="BG" inherits="DialogBorderDarkTemplate"/>
 			<EditBox parentKey="NameEdit" inherits="InputBoxTemplate" autoFocus="false" letters="30">
 				<Size x="0" y="30"/>
 				<Anchors>
@@ -180,7 +176,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Frame name="CommunitiesNotificationSettingsDialogTemplate" frameStrata="DIALOG" mixin="CommunitiesNotificationSettingsDialogMixin" inherits="SelectionFrameTemplate" virtual="true">
+	<Frame name="CommunitiesNotificationSettingsDialogTemplate" frameStrata="DIALOG" enableMouse="true" mixin="CommunitiesNotificationSettingsDialogMixin" inherits="SelectionFrameTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="OnOkay" value="CommunitiesNotificationSettingsDialogOkayButton_OnClick" type="global"/>
 			<KeyValue key="OnCancel" value="CommunitiesNotificationSettingsDialogCancelButton_OnClick" type="global"/>
@@ -295,7 +291,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Button name="AddToChatButtonTemplate" inherits="UIMenuButtonStretchTemplate" mixin="CommunitiesAddToChatMixin" virtual="true">
+	<DropDownToggleButton name="AddToChatButtonTemplate" inherits="UIMenuButtonStretchTemplate" mixin="CommunitiesAddToChatMixin" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture file="Interface\Buttons\SquareButtonTextures" parentKey="icon">
@@ -324,9 +320,9 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnClick method="OnClick"/>
+			<OnMouseDown method="OnMouseDown"/>
 		</Scripts>
-	</Button>
+	</DropDownToggleButton>
 		
 	<Frame name="StreamDropDownMenuTemplate" inherits="UIDropDownMenuTemplate" mixin="CommunitiesStreamDropDownMixin" virtual="true">
 		<Size x="40" y="28"/>

@@ -243,7 +243,7 @@ function GameTimeFrame_OnClick(self)
 end
 
 function GameTimeFrame_SetDate()
-	local date = C_Calendar.GetDate();
-	GameTimeFrame:SetText(date.monthDay);
+	local currentCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
+	GameTimeFrame:SetText(currentCalendarTime.monthDay);
 end
 

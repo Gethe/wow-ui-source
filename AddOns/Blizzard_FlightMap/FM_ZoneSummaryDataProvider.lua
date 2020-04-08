@@ -27,7 +27,7 @@ function FlightMap_ZoneSummaryDataProvider:GetNumWorldQuestsForMap(mapID)
 	local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapID);
 	if taskInfo then
 		for i, info in ipairs(taskInfo) do
-			if HaveQuestData(info.questId) and QuestUtils_IsQuestWorldQuest(info.questId) and WorldMap_DoesWorldQuestInfoPassFilters(info) then
+			if info.childDepth and HaveQuestData(info.questId) and QuestUtils_IsQuestWorldQuest(info.questId) and WorldMap_DoesWorldQuestInfoPassFilters(info) then
 				numWorldQuests = numWorldQuests + 1;
 			end
 		end

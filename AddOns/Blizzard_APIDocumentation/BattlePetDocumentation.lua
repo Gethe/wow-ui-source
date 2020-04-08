@@ -132,6 +132,15 @@ local BattlePet =
 			LiteralName = "PET_BATTLE_OVER",
 		},
 		{
+			Name = "PetBattleOverrideAbility",
+			Type = "Event",
+			LiteralName = "PET_BATTLE_OVERRIDE_ABILITY",
+			Payload =
+			{
+				{ Name = "abilityIndex", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "PetBattlePetChanged",
 			Type = "Event",
 			LiteralName = "PET_BATTLE_PET_CHANGED",

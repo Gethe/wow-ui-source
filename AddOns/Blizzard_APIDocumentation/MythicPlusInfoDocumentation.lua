@@ -12,7 +12,35 @@ local MythicPlusInfo =
 
 			Returns =
 			{
-				{ Name = "affixIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "affixIDs", Type = "table", InnerType = "MythicPlusKeystoneAffix", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCurrentSeason",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "seasonID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetLastWeeklyBestInformation",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "challengeMapId", Type = "number", Nilable = false },
+				{ Name = "level", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOwnedKeystoneChallengeMapID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "challengeMapID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -83,11 +111,8 @@ local MythicPlusInfo =
 
 			Returns =
 			{
-				{ Name = "durationSec", Type = "number", Nilable = false },
-				{ Name = "level", Type = "number", Nilable = false },
-				{ Name = "completionDate", Type = "MythicPlusDate", Nilable = false },
-				{ Name = "affixIDs", Type = "table", InnerType = "number", Nilable = false },
-				{ Name = "members", Type = "table", InnerType = "MythicPlusMember", Nilable = false },
+				{ Name = "intimeInfo", Type = "MapSeasonBestInfo", Nilable = true },
+				{ Name = "overtimeInfo", Type = "MapSeasonBestInfo", Nilable = true },
 			},
 		},
 		{
@@ -117,6 +142,7 @@ local MythicPlusInfo =
 				{ Name = "currentWeekBestLevel", Type = "number", Nilable = false },
 				{ Name = "weeklyRewardLevel", Type = "number", Nilable = false },
 				{ Name = "nextDifficultyWeeklyRewardLevel", Type = "number", Nilable = false },
+				{ Name = "nextBestLevel", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -185,6 +211,18 @@ local MythicPlusInfo =
 	Tables =
 	{
 		{
+			Name = "MapSeasonBestInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "durationSec", Type = "number", Nilable = false },
+				{ Name = "level", Type = "number", Nilable = false },
+				{ Name = "completionDate", Type = "MythicPlusDate", Nilable = false },
+				{ Name = "affixIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "members", Type = "table", InnerType = "MythicPlusMember", Nilable = false },
+			},
+		},
+		{
 			Name = "MythicPlusDate",
 			Type = "Structure",
 			Fields =
@@ -194,6 +232,15 @@ local MythicPlusInfo =
 				{ Name = "day", Type = "number", Nilable = false },
 				{ Name = "hour", Type = "number", Nilable = false },
 				{ Name = "minute", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "MythicPlusKeystoneAffix",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "seasonID", Type = "number", Nilable = false },
 			},
 		},
 		{

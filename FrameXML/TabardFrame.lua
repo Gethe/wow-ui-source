@@ -5,6 +5,9 @@ function TabardFrame_OnLoad(self)
 	self:RegisterEvent("TABARD_CANSAVE_CHANGED");
 	self:RegisterEvent("TABARD_SAVE_PENDING");
 	self:RegisterEvent("UNIT_MODEL_CHANGED");
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:RegisterEvent("UI_SCALE_CHANGED");
+
 	TabardFrameCostFrame:SetBackdropBorderColor(0.4, 0.4, 0.4);
 	TabardFrameCostFrame:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 	MoneyFrame_Update("TabardFrameCostMoneyFrame",GetTabardCreationCost());
@@ -16,11 +19,6 @@ function TabardFrame_OnLoad(self)
 	TabardFrameEmblemBottomLeft:SetAlpha(backgroundAlpha);
 	
 	MoneyFrame_SetMaxDisplayWidth(TabardFrameMoneyFrame, 160);
-end
-
-function TabardCharacterModelFrame_OnLoad(self)
-	self.rotation = 0;
-	TabardModel:SetRotation(self.rotation);
 end
 
 function TabardFrame_OnEvent(self, event, ...)
@@ -44,19 +42,9 @@ function TabardFrame_OnEvent(self, event, ...)
 		if ( unit == "player" ) then
 			TabardModel:SetUnit("player");
 		end
+	elseif ( event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" ) then
+		TabardModel:SetUnit("player");
 	end
-end
-
-function TabardCharacterModelRotateLeftButton_OnClick(self)
-	Model_RotateLeft(self:GetParent());
-end
-
-function TabardCharacterModelRotateRightButton_OnClick(self)
-	Model_RotateRight(self:GetParent());
-end
-
-function TabardCharacterModelFrame_OnUpdate(self, elapsedTime)
-	Model_UpdateRotation(self, TabardCharacterModelRotateLeftButton, TabardCharacterModelRotateRightButton, elapsedTime);
 end
 
 function TabardCustomization_Left(id)

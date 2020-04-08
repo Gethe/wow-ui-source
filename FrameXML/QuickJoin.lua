@@ -14,8 +14,6 @@ function QuickJoinMixin:OnLoad()
 
 	self.ScrollFrame.update = function() self:UpdateScrollFrame(); end
 	self.ScrollFrame.dynamic = function(...) return self:GetTopButton(...) end
-	self.ScrollFrame.scrollBar.doNotHide = true;
-	self.ScrollFrame.scrollBar.trackBG:Hide();
 
 	self.entries = CreateFromMixins(QuickJoinEntriesMixin);
 	self.entries:Init();
@@ -69,7 +67,7 @@ function QuickJoinMixin:OnEvent(event, ...)
 	elseif ( event == "GUILD_ROSTER_UPDATE" ) then
 		local canRequestGuildRoster = ...;
 		if ( canRequestGuildRoster ) then
-			GuildRoster();
+			C_GuildInfo.GuildRoster();
 		end
 
 		self:UpdateScrollFrame();
@@ -233,7 +231,7 @@ function QuickJoinFrameDropDown_Initialize(dropdownFrame, level, menuList)
 	info.text = WHISPER;
 	info.notCheckable = 1;
 	info.func = function()
-		local link, text = SplitLink(memberInfo.playerLink);
+		local link, text = LinkUtil.SplitLink(memberInfo.playerLink);
 		SetItemRef(link, text, "LeftButton");
 	end
 	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);

@@ -1686,10 +1686,12 @@ function Blizzard_CombatLog_SpellMenuClick(action, spellName, spellId, eventType
 			v.eventList[eventType] = false;
 		end
 	elseif ( action == "LINK" ) then
+		local spellLink = GetSpellLink(spellId);
+
 		if ( ChatEdit_GetActiveWindow() ) then
-			ChatEdit_InsertLink(GetSpellLink(spellId));
+			ChatEdit_InsertLink(spellLink);
 		else
-			ChatFrame_OpenChat(GetSpellLink(spellId));
+			ChatFrame_OpenChat(spellLink);
 		end
 		return;
 	end
@@ -1821,8 +1823,8 @@ local function CombatLog_String_PowerType(powerType, amount, alternatePowerType)
 	end
 
 	if ( powerType == alternatePowerEnumValue and alternatePowerType ) then
-		local costName = select(13, GetAlternatePowerInfoByID(alternatePowerType));
-		return costName; --costName could be nil if we didn't get the alternatePowerType for some reason (e.g. target out of AOI)
+		local name, tooltip, cost = GetUnitPowerBarStringsByID(alternatePowerType);
+		return cost; --cost could be nil if we didn't get the alternatePowerType for some reason (e.g. target out of AOI)
 	end
 
 	-- Previous behavior was returning nil if powerType didn't match one of the explicitly checked types
@@ -2138,10 +2140,12 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		spellName = ACTION_SWING;
 
 		-- Miss type
-		missType, isOffHand, amountMissed = ...;
+		missType, isOffHand, amountMissed, critical = ...;
 
 		-- Result String
-		if( missType == "RESIST" or missType == "BLOCK" or missType == "ABSORB" ) then
+		if ( missType == "ABSORB" ) then
+			resultStr = CombatLog_String_DamageResultString( resisted, blocked, amountMissed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
+		elseif( missType == "RESIST" or missType == "BLOCK" ) then
 			resultStr = format(_G["TEXT_MODE_A_STRING_RESULT_"..missType], amountMissed);
 		else
 			resultStr = _G["ACTION_SWING_MISSED_"..missType];
@@ -2176,11 +2180,13 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			end
 		elseif ( event == "SPELL_MISSED" ) then
 			-- Miss type
-			missType,  isOffHand, amountMissed = select(4, ...);
+			missType,  isOffHand, amountMissed, critical = select(4, ...);
 
 			resultEnabled = true;
 			-- Result String
-			if( missType == "RESIST" or missType == "BLOCK" or missType == "ABSORB" ) then
+			if ( missType == "ABSORB" ) then
+				resultStr = CombatLog_String_DamageResultString( resisted, blocked, amountMissed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
+			elseif( missType == "RESIST" or missType == "BLOCK" ) then
 				if ( amountMissed ~= 0 ) then
 					resultStr = format(_G["TEXT_MODE_A_STRING_RESULT_"..missType], amountMissed);
 				else
@@ -2237,7 +2243,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 
 			if ( event == "SPELL_PERIODIC_MISSED" ) then
 				-- Miss type
-				missType, isOffHand, amountMissed = select(4, ...);
+				missType, isOffHand, amountMissed, critical = select(4, ...);
 
 				-- Result String
 				if ( missType == "ABSORB" ) then
@@ -2597,11 +2603,14 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			spellName = ACTION_RANGED;
 
 			-- Miss type
-			missType, isOffHand, amountMissed = select(4,...);
+			missType, isOffHand, amountMissed, critical = select(4,...);
 
 			-- Result String
-			if( missType == "RESIST" or missType == "BLOCK" or missType == "ABSORB" ) then
+			if ( missType == "ABSORB" ) then
+				resultStr = CombatLog_String_DamageResultString( resisted, blocked, amountMissed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
+			elseif( missType == "RESIST" or missType == "BLOCK" ) then
 				resultStr = format(_G["TEXT_MODE_A_STRING_RESULT_"..missType], amountMissed);
+
 			else
 				resultStr = _G["ACTION_RANGE_MISSED_"..missType];
 			end
@@ -3480,7 +3489,8 @@ function SetItemRef(link, text, button, chatFrame)
 
 		if ( IsModifiedClick("CHATLINK") ) then
 			if ( spellId > 0 ) then
-				if ( ChatEdit_InsertLink(GetSpellLink(spellId, glyphId)) ) then
+				local spellLink = GetSpellLink(spellId, glyphId);
+				if ( ChatEdit_InsertLink(spellLink) ) then
 					return;
 				end
 			else

@@ -575,6 +575,8 @@ function FloatingGarrisonMission_Show(garrMissionID, garrMissionDBID)
 				local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(reward.itemID);
 				if itemName then
 					rewardText = rewardText..ITEM_QUALITY_COLORS[itemRarity].hex..itemName..FONT_COLOR_CODE_CLOSE;
+				else  
+					rewardText = RED_FONT_COLOR:GenerateHexColorMarkup()..RETRIEVING_DATA..FONT_COLOR_CODE_CLOSE;
 				end
 			elseif (reward.followerXP) then
 				rewardText = rewardText..reward.title;
@@ -585,7 +587,7 @@ function FloatingGarrisonMission_Show(garrMissionID, garrMissionDBID)
 			end
 		end
 	else
-		rewardText = RETRIEVING_DATA;
+		rewardText = RED_FONT_COLOR:GenerateHexColorMarkup()..RETRIEVING_DATA..FONT_COLOR_CODE_CLOSE;
 	end
 	
 	FloatingGarrisonMissionTooltip.Rewards:SetText(rewardText, 1, 1, 1);

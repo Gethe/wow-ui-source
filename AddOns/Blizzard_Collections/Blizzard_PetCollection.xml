@@ -8,7 +8,7 @@
         <Size x="208" y="46"/>
         <Layers>
             <Layer level="BACKGROUND">
-                <Texture atlas="PetList-ButtonBackground"/>
+                <Texture parentKey="background" atlas="PetList-ButtonBackground"/>
             </Layer>
             <Layer level="BORDER">
                 <Texture name="$parentIcon" parentKey="icon">
@@ -120,6 +120,8 @@
                     <OnHide>
                         self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
                     </OnHide>
+                    <OnEnter function="PetJournalDragButton_OnEnter"/>
+                    <OnLeave function="GameTooltip_Hide"/>
                     <OnEvent function="PetJournalDragButton_OnEvent"/>
                     <OnDragStart function="PetJournalDragButton_OnDragStart"/>
                 </Scripts>
@@ -610,6 +612,8 @@
 				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 				<Scripts>
 					<OnClick function="PetJournalPetLoadoutDragButton_OnClick"/>
+					<OnEnter function="PetJournalDragButton_OnEnter"/>
+                    <OnLeave function="GameTooltip_Hide"/>
 					<OnLoad>
 						self:RegisterForDrag("LeftButton");
 						self:RegisterForClicks("RightButtonUp");
@@ -963,7 +967,7 @@
 					<OnTextChanged function="PetJournal_OnSearchTextChanged"/>
 				</Scripts>
 			</EditBox>
-			<Button name="$parentFilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
+			<DropDownToggleButton name="$parentFilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
 				<Size x="93" y="22"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parentLeftInset" x="-5" y="-9"/>
@@ -979,12 +983,13 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnClick>
+					<OnMouseDown>
+						UIMenuButtonStretchMixin.OnMouseDown(self, button);
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						ToggleDropDownMenu(1, nil, PetJournalFilterDropDown, "PetJournalFilterButton", 74, 15);
-					</OnClick>
+					</OnMouseDown>
 				</Scripts>
-			</Button>
+			</DropDownToggleButton>
 			<Frame name="$parentFilterDropDown" inherits="UIDropDownMenuTemplate">
 				<Scripts>
 					<OnLoad function="PetJournalFilterDropDown_OnLoad"/>
@@ -1645,33 +1650,18 @@
 							</OnLeave>
 						</Scripts>
 					</StatusBar>
-					<ModelScene parentKey="modelScene" useParentLevel="true" inherits="ModelSceneMixinTemplate" mixin="CollectionsWrappedModelSceneMixin">
-						<KeyValues>
-							<KeyValue key="normalIntensity" value="0.75" type="number"/>
-							<KeyValue key="highlightIntensity" value="1.2" type="number"/>
-						</KeyValues>
-
+					<ModelScene parentKey="modelScene" useParentLevel="true" inherits="WrappedAndUnwrappedModelScene">
 						<Size x="173" y="135"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="45" y="-21"/>
 						</Anchors>
-
 						<Scripts>
 							<OnMouseUp inherit="append">
 								if PetJournalPetCard.petID then
 									PetJournal_UnwrapPet(PetJournalPetCard.petID);
 								end
 							</OnMouseUp>
-							<OnEnter method="OnMouseEnter" />
-							<OnLeave method="OnMouseLeave" />
-							<OnShow method="OnShow" />
 						</Scripts>
-						<Animations>
-							<AnimationGroup parentKey="UnwrapAnim" setToFinalAlpha="true">
-								<Alpha parentKey="WrappedAnim" startDelay="1.2" fromAlpha="1" toAlpha="0" duration=".3" order="1"/>
-								<Alpha parentKey="UnwrappedAnim" startDelay="1.2" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
-							</AnimationGroup>
-						</Animations>
 					</ModelScene>
 				</Frames>
 			</Frame> <!-- PetCard -->
@@ -1707,7 +1697,7 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<Button name="$parentSummonButton" inherits="MagicButtonTemplate" parentKey="SummonButton" text="BATTLE_PET_SUMMON">
+			<Button name="$parentSummonButton" motionScriptsWhileDisabled="true" inherits="MagicButtonTemplate" parentKey="SummonButton" text="BATTLE_PET_SUMMON">
 				<Size x="160" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT"/>
@@ -1834,9 +1824,6 @@
 					</CheckButton>
  				</Frames>
 				<Scripts>
-					<OnShow>
-						self:SetFrameLevel(self:GetFrameLevel() + 5);
-					</OnShow>
 					<OnHide>
 						PetJournalPrimaryAbilityTooltip:Hide();
 						PetJournalSecondaryAbilityTooltip:Hide();

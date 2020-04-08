@@ -62,6 +62,7 @@ local SocialQueue =
 				{ Name = "needHealer", Type = "bool", Nilable = false },
 				{ Name = "needDamage", Type = "bool", Nilable = false },
 				{ Name = "isSoloQueueParty", Type = "bool", Nilable = false },
+				{ Name = "questSessionActive", Type = "bool", Nilable = false },
 				{ Name = "leaderGUID", Type = "string", Nilable = false },
 			},
 		},
@@ -174,15 +175,6 @@ local SocialQueue =
 			},
 		},
 		{
-			Name = "SocialQueuePlayerInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "guid", Type = "string", Nilable = false },
-				{ Name = "clubId", Type = "string", Nilable = true },
-			},
-		},
-		{
 			Name = "SocialQueueGroupQueueInfo",
 			Type = "Structure",
 			Fields =
@@ -194,6 +186,15 @@ local SocialQueue =
 				{ Name = "needDamage", Type = "bool", Nilable = false },
 				{ Name = "isAutoAccept", Type = "bool", Nilable = false },
 				{ Name = "queueData", Type = "QueueSpecificInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "SocialQueuePlayerInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "string", Nilable = true },
 			},
 		},
 	},

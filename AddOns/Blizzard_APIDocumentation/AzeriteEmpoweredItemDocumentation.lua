@@ -87,6 +87,22 @@ local AzeriteEmpoweredItem =
 			},
 		},
 		{
+			Name = "GetPowerText",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "azeriteEmpoweredItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "powerID", Type = "number", Nilable = false },
+				{ Name = "level", Type = "AzeritePowerLevel", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "powerText", Type = "AzeriteEmpoweredItemPowerText", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSpecsForPower",
 			Type = "Function",
 
@@ -172,6 +188,15 @@ local AzeriteEmpoweredItem =
 			},
 		},
 		{
+			Name = "IsHeartOfAzerothEquipped",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isHeartOfAzerothEquipped", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPowerAvailableForSpec",
 			Type = "Function",
 
@@ -230,6 +255,15 @@ local AzeriteEmpoweredItem =
 	Events =
 	{
 		{
+			Name = "AzeriteEmpoweredItemEquippedStatusChanged",
+			Type = "Event",
+			LiteralName = "AZERITE_EMPOWERED_ITEM_EQUIPPED_STATUS_CHANGED",
+			Payload =
+			{
+				{ Name = "isHeartEquipped", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "AzeriteEmpoweredItemSelectionUpdated",
 			Type = "Event",
 			LiteralName = "AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED",
@@ -253,12 +287,34 @@ local AzeriteEmpoweredItem =
 	Tables =
 	{
 		{
+			Name = "AzeritePowerLevel",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Base", Type = "AzeritePowerLevel", EnumValue = 0 },
+				{ Name = "Upgraded", Type = "AzeritePowerLevel", EnumValue = 1 },
+				{ Name = "Downgraded", Type = "AzeritePowerLevel", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "AzeriteEmpoweredItemPowerInfo",
 			Type = "Structure",
 			Fields =
 			{
 				{ Name = "azeritePowerID", Type = "number", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "AzeriteEmpoweredItemPowerText",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
 			},
 		},
 		{

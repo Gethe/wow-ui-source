@@ -6,6 +6,15 @@ local Loot =
 
 	Functions =
 	{
+		{
+			Name = "IsLegacyLootModeEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isLegacyLootModeEnabled", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -47,6 +56,8 @@ local Loot =
 				{ Name = "sex", Type = "number", Nilable = false },
 				{ Name = "personalLootToast", Type = "bool", Nilable = false },
 				{ Name = "currencyID", Type = "number", Nilable = true },
+				{ Name = "isSecondaryResult", Type = "bool", Nilable = false },
+				{ Name = "corrupted", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -105,6 +116,7 @@ local Loot =
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -196,6 +208,7 @@ local Loot =
 			Payload =
 			{
 				{ Name = "autoLoot", Type = "bool", Nilable = false },
+				{ Name = "isFromItem", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -289,9 +302,10 @@ local Loot =
 				{ Name = "specID", Type = "number", Nilable = false },
 				{ Name = "sex", Type = "number", Nilable = false },
 				{ Name = "personalLootToast", Type = "bool", Nilable = false },
-				{ Name = "ITEM_TOAST_METHOD_LOOT", Type = "number", Nilable = false },
+				{ Name = "toastMethod", Type = "number", Nilable = false },
 				{ Name = "lessAwesome", Type = "bool", Nilable = false },
 				{ Name = "upgraded", Type = "bool", Nilable = false },
+				{ Name = "corrupted", Type = "bool", Nilable = false },
 			},
 		},
 		{

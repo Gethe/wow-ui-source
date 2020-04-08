@@ -2,27 +2,10 @@
 ..\FrameXML\UI.xsd">
 	<Script file="DevBuildAlert.lua"/>
 	<Frame name="DevBuildAlert" setAllPoints="true" frameStrata="DIALOG" toplevel="true" parent="AccountLogin" hidden="true">
-		<Size>
-			<AbsDimension x="400" y="325"/>
-		</Size>
+		<Size x="400" y="325"/>
 		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="410" y="-25"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPLEFT" x="410" y="-25"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="11" top="11" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="GlueFontNormalLarge" text="DEVELOPER ALERT">
@@ -33,6 +16,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<ScrollFrame parentKey="ScrollFrame" name="$parentScrollFrame" inherits="GlueScrollFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="15" y="-46"/>
@@ -51,9 +35,7 @@
 				</Scripts>
 				<ScrollChild>
 					<SimpleHTML parentKey="Text" name="$parentText" hyperlinkFormat="|cff06ff07|H%s|h[%s]|h|r">
-						<Size>
-							<AbsDimension x="300" y="10"/>
-						</Size>
+						<Size x="300" y="10"/>
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 						</Anchors>

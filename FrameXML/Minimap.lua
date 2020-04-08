@@ -246,6 +246,31 @@ function MiniMapTracking_Update()
 	UIDropDownMenu_RefreshAll(MiniMapTrackingDropDown);
 end
 
+function MiniMapTracking_OnMouseDown(self)
+	MiniMapTrackingIcon:SetPoint("TOPLEFT", MiniMapTracking, "TOPLEFT", 8, -8);
+	MiniMapTrackingIconOverlay:Show();
+	MiniMapTrackingDropDown.point = "TOPRIGHT";
+	MiniMapTrackingDropDown.relativePoint = "BOTTOMLEFT";
+	ToggleDropDownMenu(1, nil, MiniMapTrackingDropDown, "MiniMapTracking", 8, 5);
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end
+
+function MiniMapTracking_OnMouseUp(self)
+	MiniMapTrackingIcon:SetPoint("TOPLEFT", MiniMapTracking, "TOPLEFT", 6, -6);
+	MiniMapTrackingIconOverlay:Hide();
+end
+
+function MiniMapTracking_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+	GameTooltip:SetText(TRACKING, 1, 1, 1);
+	GameTooltip:AddLine(MINIMAP_TRACKING_TOOLTIP_NONE, nil, nil, nil, true);
+	GameTooltip:Show();
+end
+
+function MiniMapTracking_OnLeave(self)
+	GameTooltip:Hide();
+end
+
 function MiniMapTrackingDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, MiniMapTrackingDropDown_Initialize, "MENU");
 	self.noResize = true;
@@ -571,6 +596,14 @@ function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
 	end
 end
 
+local function GetMinimapAtlases_GarrisonType8_0(faction)
+	if faction == "Horde" then
+		return "bfa-landingbutton-horde-up", "bfa-landingbutton-horde-down", "bfa-landingbutton-horde-diamondhighlight", "bfa-landingbutton-horde-diamondglow";
+	else
+		return "bfa-landingbutton-alliance-up", "bfa-landingbutton-alliance-down", "bfa-landingbutton-alliance-shieldhighlight", "bfa-landingbutton-alliance-shieldglow";
+	end
+end
+
 function GarrisonLandingPageMinimapButton_UpdateIcon(self)
 	local garrisonType = C_Garrison.GetLandingPageGarrisonType();
 	if (garrisonType == LE_GARRISON_TYPE_6_0) then
@@ -592,23 +625,14 @@ function GarrisonLandingPageMinimapButton_UpdateIcon(self)
 		self.description = MINIMAP_ORDER_HALL_LANDING_PAGE_TOOLTIP;
 	elseif (garrisonType == LE_GARRISON_TYPE_8_0) then
 		self.faction = UnitFactionGroup("player");
-		if ( self.faction == "Horde" ) then
-			local _, width, height = GetAtlasInfo("bfa-landingbutton-horde-up");
-			self:SetSize(width, height);
+		local atlasUp, atlasDown, atlasHighlight, atlasGlow = GetMinimapAtlases_GarrisonType8_0(self.faction);
+		local info = C_Texture.GetAtlasInfo(atlasUp);
+		self:SetSize(info and info.width or 0, info and info.height or 0);
+		self:GetNormalTexture():SetAtlas(atlasUp, true);
+		self:GetPushedTexture():SetAtlas(atlasDown, true);
+		self:GetHighlightTexture():SetAtlas(atlasHighlight, true);
+		self.LoopingGlow:SetAtlas(atlasGlow, true);
 
-			self:GetNormalTexture():SetAtlas("bfa-landingbutton-horde-up", true);
-			self:GetPushedTexture():SetAtlas("bfa-landingbutton-horde-down", true);
-			self:GetHighlightTexture():SetAtlas("bfa-landingbutton-horde-diamondhighlight", true);
-			self.LoopingGlow:SetAtlas("bfa-landingbutton-horde-diamondglow", true);
-		else
-			local _, width, height = GetAtlasInfo("bfa-landingbutton-alliance-up");
-			self:SetSize(width, height);
-
-			self:GetNormalTexture():SetAtlas("bfa-landingbutton-alliance-up", true);
-			self:GetPushedTexture():SetAtlas("bfa-landingbutton-alliance-down", true);
-			self:GetHighlightTexture():SetAtlas("bfa-landingbutton-alliance-shieldhighlight", true);
-			self.LoopingGlow:SetAtlas("bfa-landingbutton-alliance-shieldglow", true);
-		end
 		self.title = GARRISON_TYPE_8_0_LANDING_PAGE_TITLE;
 		self.description = GARRISON_TYPE_8_0_LANDING_PAGE_TOOLTIP;
 	end

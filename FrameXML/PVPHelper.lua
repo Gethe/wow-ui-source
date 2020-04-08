@@ -119,9 +119,6 @@ function PVPTimerFrame_OnUpdate(self, elapsed)
 	
 	BATTLEFIELD_SHUTDOWN_TIMER = BATTLEFIELD_SHUTDOWN_TIMER - elapsed;
 
-	-- Set the time for the score frame
-	WorldStateScoreFrameTimer:SetFormattedText(SecondsToTimeAbbrev(BATTLEFIELD_SHUTDOWN_TIMER));
-
 	-- Check if I should send a message only once every 3 seconds (BATTLEFIELD_TIMER_DELAY)
 	frame.timerDelay = frame.timerDelay + elapsed;
 	if ( frame.timerDelay < BATTLEFIELD_TIMER_DELAY ) then
@@ -316,7 +313,7 @@ function PVPReadyDialog_Display(self, index, displayName, isRated, queueType, ga
 			self.background:SetTexture("Interface\\LFGFrame\\UI-PVP-BACKGROUND-"..(factionGroup or "Alliance"));
 			self.label:SetText(BATTLEGROUND_IS_READY);
 		end
-	elseif ( queueType == "ARENA" ) then
+	elseif ( queueType == "ARENA" or queueType == "ARENASKIRMISH" ) then
 		self.background:SetTexCoord(0, 1, 25/128, 91/128);
 		self.background:SetTexture("Interface\\PVPFrame\\PvpBg-NagrandArena-ToastBG");
 		showTitle = false;

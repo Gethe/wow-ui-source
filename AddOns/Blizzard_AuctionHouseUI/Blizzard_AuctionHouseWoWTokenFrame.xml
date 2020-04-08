@@ -1,0 +1,430 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_AuctionHouseWoWTokenFrame.lua"/>	
+
+	<Slider name="DummyScrollBarTemplate" inherits="HybridScrollBarTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="0" y="-17"/>
+			<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-1" y="14"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+	</Slider>
+	
+	<Frame name="BrowseWowTokenResultsTemplate" inherits="AuctionHouseBackgroundTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backgroundAtlas" value="auctionhouse-background-index" type="string"/>
+		</KeyValues>
+		<Size x="634" y="306"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="188" y="-103"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="BuyoutLabel" inherits="GameFontNormal" text="TOKEN_CURRENT_BUYOUT_PRICE" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="40"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+				</FontString>
+				<FontString parentKey="BuyoutPrice" inherits="NumberFont_Normal_Med" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.BuyoutLabel" relativePoint="BOTTOM" x="0" y="-8"/>
+					</Anchors>
+					<Shadow x="1" y="-1">
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="GameTimeTutorial" inherits="ButtonFrameTemplate" enableMouse="true" frameStrata="DIALOG" hidden="true">
+				<Size x="646" y="540"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER" x="0" y="35"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Tutorial" atlas="token-info-background" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="LeftInset" useParentLevel="true">
+						<Size x="317" y="475" />
+						<Anchors>
+							<Anchor point="TOPLEFT" x="4" y="-22" />
+							<Anchor point="BOTTOMLEFT" x="4" y="6" />
+						</Anchors>
+					</Frame>
+					<Frame parentKey="RightInset" useParentLevel="true">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-6" y="-22" />
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.LeftInset" relativePoint="BOTTOMRIGHT" x="2" y="0" />
+						</Anchors>
+					</Frame>
+					<Frame parentKey="LeftDisplay" useParentLevel="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" relativePoint="TOPLEFT" x="3" y="-3" />
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.LeftInset" relativePoint="BOTTOMRIGHT" x="-3" y="3" />
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" inherits="GameFontNormalHuge2" text="TUTORIAL_TOKEN_I_NEED_GAME_TIME" justifyH="LEFT">
+									<Size x="280" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="34" y="-38"/>
+									</Anchors>
+									<Color r="0" g="0" b="0"/>
+								</FontString>
+								<FontString parentKey="Tutorial1" inherits="GameFontNormal" text="TUTORIAL_TOKEN_PAY_FOR_TIME_WITH_GOLD" justifyH="LEFT">
+									<Size x="280" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Label" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
+									</Anchors>
+									<Color r=".282" g=".016" b=".016"/>
+									<Shadow>
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+										<Color r="0" g="0" b="0" a="0"/>
+									</Shadow>
+								</FontString>
+								<FontString parentKey="Tutorial2" inherits="GameFontNormalMed1" text="TUTORIAL_TOKEN_GAME_TIME_STEP_1" justifyH="LEFT">
+									<Size x="240" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Tutorial1" relativePoint="BOTTOMLEFT" x="8" y="-49"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Tutorial3" inherits="GameFontNormalMed1" text="TUTORIAL_TOKEN_GAME_TIME_STEP_2" justifyH="LEFT">
+									<Size x="240" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Tutorial2" relativePoint="BOTTOMLEFT" x="0" y="-26"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="RightDisplay" useParentLevel="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.RightInset" relativePoint="TOPLEFT" x="3" y="-3" />
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightInset" relativePoint="BOTTOMRIGHT" x="-3" y="3" />
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" inherits="GameFontNormalHuge2" text="TUTORIAL_TOKEN_I_NEED_GOLD" justifyH="LEFT">
+									<Size x="280" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="26" y="-38"/>
+									</Anchors>
+									<Color r="0" g="0" b="0"/>
+								</FontString>
+								<FontString parentKey="Tutorial1" inherits="GameFontNormal" text="TUTORIAL_TOKEN_SELL_FOR_GOLD" justifyH="LEFT">
+									<Size x="280" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Label" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
+									</Anchors>
+									<Color r=".282" g=".016" b=".016"/>
+									<Shadow>
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+										<Color r="0" g="0" b="0" a="0"/>
+									</Shadow>
+								</FontString>
+								<FontString parentKey="Tutorial2" inherits="GameFontNormalMed1" text="TUTORIAL_TOKEN_GOLD_STEP_1" justifyH="LEFT">
+									<Size x="240" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Tutorial1" relativePoint="BOTTOMLEFT" x="8" y="-49"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Tutorial3" inherits="GameFontNormalMed1" text="TUTORIAL_TOKEN_GOLD_STEP_2" justifyH="LEFT">
+									<Size x="240" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Tutorial2" relativePoint="BOTTOMLEFT" x="0" y="-62"/>
+									</Anchors>
+								</FontString>
+								<Texture parentKey="infoarrow" atlas="token-info-arrow" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Tutorial2" relativePoint="BOTTOMLEFT" x="20" y="-11"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button parentKey="StoreButton" inherits="UIPanelGoldButtonTemplate" motionScriptsWhileDisabled="true" text="BLIZZARD_STORE">
+								<Size x="164" y="32"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.Tutorial2" relativePoint="BOTTOMLEFT" x="41" y="-12"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture parentKey="Logo" file="Interface\Store\Store-Main">
+											<Size x="21" y="20"/>									
+											<TexCoords left="0.97460938" right="0.99511719" top="0.27148438" bottom="0.29101563"/>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnLoad function="WowTokenGameTimeTutorialStoreButton_OnLoad"/>
+									<OnEvent function="WowTokenGameTimeTutorialStoreButton_OnEvent"/>
+									<OnClick>
+										ToggleStoreUI();
+										StoreFrame_SetTokenCategory();
+									</OnClick>
+									<OnMouseDown>
+										if (self:IsEnabled()) then
+											local fontString = self:GetFontString();
+											self.Logo:SetPoint("RIGHT", fontString, "LEFT", -1, -2);
+										end
+									</OnMouseDown>
+									<OnMouseUp>
+										if (self:IsEnabled()) then
+											local fontString = self:GetFontString();
+											self.Logo:SetPoint("RIGHT", fontString, "LEFT", -2, 0);
+										end
+									</OnMouseUp>
+									<OnEnable>
+										self.Left:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-up-left");
+										self.Middle:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-up-middle");
+										self.Right:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-up-right");
+										self.Logo:SetDesaturated(false);
+										self.Logo:SetAlpha(1);
+									</OnEnable>
+									<OnDisable>
+										self.Left:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-disabled-left");
+										self.Middle:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-disabled-middle");
+										self.Right:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-disabled-right");
+										self.Logo:SetDesaturated(true);
+										self.Logo:SetAlpha(0.4);
+									</OnDisable>
+									<OnEnter>
+										if (self.tooltip) then
+											GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+											GameTooltip:SetText(self.tooltip, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+											GameTooltip:Show();
+										end
+									</OnEnter>
+									<OnLeave function="GameTooltip_Hide"/>
+								</Scripts>
+							</Button>
+						</Frames>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad function="WoWTokenGameTimeTutorial_OnLoad"/>
+					<OnShow function="WoWTokenGameTimeTutorial_OnShow"/>
+				</Scripts>
+			</Frame>
+			<Button parentKey="HelpButton" inherits="MainHelpPlateButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="5" y="8" />
+				</Anchors>
+				<HighlightTexture file="Interface\common\help-i" alphaMode="ADD" hidden="true">
+					<Size x="46" y="46"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a=".2"/>
+				</HighlightTexture>
+				<Scripts>
+					<OnLoad>
+						self.Ring:Hide();
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT",-22,-22);
+						GameTooltip:SetText(TUTORIAL_TOKEN_ABOUT_TOKENS);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnClick>
+						local gameTimeTutorial = self:GetParent().GameTimeTutorial;
+						gameTimeTutorial:SetShown(not gameTimeTutorial:IsShown());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="TokenDisplay" inherits="AuctionHouseItemDisplayTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-63"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture atlas="auctionhouse-itemheaderframe" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
+			<Button parentKey="Buyout" inherits="UIPanelButtonTemplate" text="BUYOUT" motionScriptsWhileDisabled="true">
+				<Size x="194" y="22"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.TokenDisplay" relativePoint="BOTTOM" x="0" y="-110"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="BrowseWowTokenResultsBuyout_OnClick"/>
+					<OnEnter function="BrowseWowTokenResultsBuyout_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="InvisiblePriceFrame" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BuyoutLabel" relativePoint="TOPLEFT" x="-20" y="10"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.BuyoutLabel" relativePoint="TOPRIGHT" x="20" y="10"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.BuyoutPrice" relativePoint="BOTTOM" x="0" y="-10"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT",-20,-10);
+						GameTooltip:SetText(TOKEN_BUYOUT_PRICE_UPDATES, nil, nil, nil, nil, true);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<Slider parentKey="DummyScrollBar" inherits="DummyScrollBarTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnLoad function="BrowseWowTokenResults_OnLoad"/>
+			<OnEvent function="BrowseWowTokenResults_OnEvent"/>
+			<OnShow function="BrowseWowTokenResults_OnShow"/>
+			<OnHide function="BrowseWowTokenResults_OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="WoWTokenSellFrameTemplate" mixin="WoWTokenSellFrameMixin" inherits="AuctionHouseBackgroundTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backgroundAtlas" value="auctionhouse-background-sell-left" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="BuyoutPriceLabel" inherits="GameFontNormal" text="TOKEN_CURRENT_MARKET_PRICE" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-110"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="MarketPrice" inherits="Number14FontWhite" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.BuyoutPriceLabel" relativePoint="BOTTOM" x="0" y="-6"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="EstimatedTime" inherits="GameFontNormal" text="ESTIMATED_TIME_TO_SELL" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.MarketPrice" relativePoint="BOTTOM" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="TimeToSell" inherits="GameFontHighlight" justifyH="CENTER">
+					<Size x="160" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.EstimatedTime" relativePoint="BOTTOM" x="0" y="-6"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="CreateAuctionTabLeft" atlas="auctionhouse-selltab-left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="42" y="-3"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="CreateAuctionLabel" inherits="GameFontNormalSmall" justifyH="LEFT" text="CREATE_AUCTION">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.CreateAuctionTabLeft" relativePoint="RIGHT" x="12"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="CreateAuctionTabMiddle" atlas="auctionhouse-selltab-middle">
+					<Size y="23"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CreateAuctionTabLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="RIGHT" relativeKey="$parent.CreateAuctionLabel" relativePoint="RIGHT" x="12" y="0"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="CreateAuctionTabRight" atlas="auctionhouse-selltab-right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CreateAuctionTabMiddle" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.CreateAuctionTabMiddle" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="ItemDisplay" inherits="AuctionHouseInteractableItemDisplayTemplate" mixin="AuctionHouseSellFrameItemDisplayMixin" frameLevel="350">
+				<Size x="342" y="72"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-12"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture atlas="auctionhouse-itemheaderframe" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="InvisiblePriceFrame" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BuyoutPriceLabel" relativePoint="TOPLEFT" x="-20" y="10"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.BuyoutPriceLabel" relativePoint="TOPRIGHT" x="20" y="10"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.MarketPrice" relativePoint="BOTTOM" x="0" y="-10"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -20, -10);
+						GameTooltip:SetText(TOKEN_CREATE_AUCTION_LOCKED_PRICE, nil, nil, nil, nil, true);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<Button parentKey="PostButton" motionScriptsWhileDisabled="true" mixin="AuctionHouseSellFramePostButtonMixin" inherits="UIPanelButtonTemplate" text="AUCTION_HOUSE_POST_BUTTON">
+				<Size x="190" y="22"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.TimeToSell" relativePoint="BOTTOM" x="0" y="-30"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local sellToken = self:GetParent():GetSellToken();
+						if sellToken then
+							C_WowTokenUI.StartTokenSell(sellToken);
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame parentKey="DummyItemList" inherits="AuctionHouseBackgroundTemplate">
+				<KeyValues>
+					<KeyValue key="backgroundAtlas" value="auctionhouse-background-sell-right" type="string"/>
+				</KeyValues>
+				<Size x="405" y="0"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="1" y="-19"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="1" y="0"/>
+				</Anchors>
+				<Frames>
+					<Slider parentKey="DummyScrollBar" inherits="DummyScrollBarTemplate"/>
+				</Frames>
+			</Frame>
+			<Button parentKey="DummyRefreshButton" inherits="RefreshButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.DummyItemList" relativePoint="TOPRIGHT" x="17" y="55"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

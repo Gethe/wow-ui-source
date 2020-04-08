@@ -14,9 +14,10 @@ function GroupMembersDataProviderMixin:OnAdded(mapCanvas)
 end
 
 function GroupMembersDataProviderMixin:OnRemoved(mapCanvas)
-	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 	self:GetMap():RemoveAllPinsByTemplate("GroupMembersPinTemplate");
 	mapCanvas:RemoveCanvasClickHandler(self.onClickHandler);
+
+	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 end
 
 function GroupMembersDataProviderMixin:OnMapChanged()
@@ -88,6 +89,9 @@ function GroupMembersPinMixin:OnHide()
 	UnitPositionFrameMixin.OnHide(self);
 	if self.dataProvider:ShouldShowUnit("player") then
 		self:StopPlayerPing();
+	end
+	if GameTooltip:GetOwner() == self then
+		GameTooltip:Hide();
 	end
 end
 

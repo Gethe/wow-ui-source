@@ -1,17 +1,18 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_NamePlatesCommentatorDisplay.lua" />
 
 	<Frame name="NamePlateCommentatorDisplayInfoTemplate" parentKey="CommentatorDisplayInfo" setAllPoints="true" mixin="NamePlateCommentatorDisplayInfoMixin" virtual="true">
 		<Frames>
-			<Model parentKey="OffensiveCooldownModel" frameStrata="BACKGROUND" drawLayer="OVERLAY" hidden="true" alpha="0.55">
-				<Size x="1800" y="24" />
+			<!-- These models have ignoreParentScale set and are then scaled manually in the update function. -->
+			<Model parentKey="OffensiveCooldownModel" frameStrata="BACKGROUND" drawLayer="OVERLAY" hidden="true" alpha="0.55" ignoreParentScale="true">
+				<Size x="3600" y="48" />
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.$parent.healthBar" relativePoint="BOTTOM" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						self:SetModel([[Spells\ograid_engine_flame.m2]]);
+						self:SetModel(1085621); --[[Spells\ograid_engine_flame.m2]]
 					</OnShow>
 					<OnModelLoaded>
 						self:MakeCurrentCameraCustom();
@@ -24,14 +25,16 @@
 					</OnModelLoaded>
 				</Scripts>
 			</Model>
-			<Model parentKey="DefensiveCooldownModel" frameStrata="BACKGROUND" drawLayer="BACKGROUND" hidden="true" alpha="0.7">
-				<Size x="356" y="356" />
+			
+			<!-- These models have ignoreParentScale set and are then scaled manually in the update function. -->
+			<Model parentKey="DefensiveCooldownModel" frameStrata="BACKGROUND" drawLayer="BACKGROUND" hidden="true" alpha="0.7" ignoreParentScale="true">
+				<Size x="712" y="712" />
 				<Anchors>
-					<Anchor point="CENTER" y="165"/>
+					<Anchor point="CENTER" y="330"/>
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						self:SetModel([[Spells\SPELLREFLECTION_STATE_SHIELD.m2]]);
+						self:SetModel(166940); --[[Spells\SPELLREFLECTION_STATE_SHIELD.m2]]
 					</OnShow>
 					<OnModelLoaded>
 						self:MakeCurrentCameraCustom();

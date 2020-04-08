@@ -43,7 +43,6 @@ function VignetteDataProviderMixin:RefreshAllData(fromOnShow)
 	end
 
 	local vignetteGUIDs = C_VignetteInfo.GetVignettes();
-	local mapID = self:GetMap():GetMapID();
 	for i, vignetteGUID in ipairs(vignetteGUIDs) do
 		local vignetteInfo = C_VignetteInfo.GetVignetteInfo(vignetteGUID);
 		if vignetteInfo and vignetteInfo.onWorldMap then

@@ -1,0 +1,35 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\SharedXML\UI.xsd">
+	<Script file="NewFeatureLabel.lua"/>
+	<Frame name="NewFeatureLabelTemplate" mixin="NewFeatureLabelMixin" virtual="true">
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<FontString parentKey="Label" inherits="GameFontHighlight" maxLines="1" justifyH="CENTER" text="NEW_CAPS">
+					<Shadow>
+						<Color r="0.32" g="0.5" b="1.0"/>
+					</Shadow>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Glow" atlas="collections-newglow">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Label" x="-20" y="10"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Label" x="20" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Fade" looping="REPEAT">
+				<Alpha childKey="Glow" duration="1.0" order="1" fromAlpha="1" toAlpha=".5"/>
+				<Alpha childKey="Glow" duration="1.0" order="2" fromAlpha=".5" toAlpha="1"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

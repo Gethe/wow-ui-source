@@ -86,7 +86,7 @@ function WorldMapBountyBoardMixin:Refresh()
 		return;
 	end
 
-	self.bounties, self.displayLocation, self.lockedQuestID = GetQuestBountyInfoForMapID(mapID, self.bounties);
+	self.bounties, self.displayLocation, self.lockedQuestID, self.bountySetID = GetQuestBountyInfoForMapID(mapID, self.bounties);
 
 	if not self.displayLocation then
 		self:Clear();
@@ -305,7 +305,7 @@ local function AddObjectives(questID, numObjectives)
 		local objectiveText, objectiveType, finished = GetQuestObjectiveInfo(questID, objectiveIndex, false);
 		if objectiveText and #objectiveText > 0 then
 			local color = finished and GRAY_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
-			WorldMapTooltip:AddLine(QUEST_DASH .. objectiveText, color.r, color.g, color.b, true);
+			GameTooltip:AddLine(QUEST_DASH .. objectiveText, color.r, color.g, color.b, true);
 		end
 	end
 end
@@ -317,32 +317,33 @@ function WorldMapBountyBoardMixin:ShowBountyTooltip(bountyIndex)
 	local questIndex = GetQuestLogIndexByID(bountyData.questID);
 	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isStory = GetQuestLogTitle(questIndex);
 	if title then
-		WorldMapTooltip:SetText(title, HIGHLIGHT_FONT_COLOR:GetRGB());
+		GameTooltip:SetText(title, HIGHLIGHT_FONT_COLOR:GetRGB());
 		WorldMap_AddQuestTimeToTooltip(bountyData.questID);
 
 		local _, questDescription = GetQuestLogQuestText(questIndex);
-		WorldMapTooltip:AddLine(questDescription, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+		GameTooltip:AddLine(questDescription, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 
 		AddObjectives(bountyData.questID, bountyData.numObjectives);
 
 		if bountyData.turninRequirementText then
-			WorldMapTooltip:AddLine(bountyData.turninRequirementText, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+			GameTooltip:AddLine(bountyData.turninRequirementText, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 		end
-
-		GameTooltip_AddQuestRewardsToTooltip(WorldMapTooltip, bountyData.questID, TOOLTIP_QUEST_REWARDS_STYLE_EMISSARY_REWARD);
-		WorldMapTooltip:Show();
+		
+		GameTooltip_AddQuestRewardsToTooltip(GameTooltip, bountyData.questID, TOOLTIP_QUEST_REWARDS_STYLE_EMISSARY_REWARD);
+		GameTooltip:Show();
 	else
-		WorldMapTooltip:SetText(RETRIEVING_DATA, RED_FONT_COLOR:GetRGB());
-		WorldMapTooltip:Show();
+		GameTooltip:SetText(RETRIEVING_DATA, RED_FONT_COLOR:GetRGB());
+		GameTooltip:Show();
 	end
+	GameTooltip.recalculatePadding = true;
 end
 
 function WorldMapBountyBoardMixin:SetTooltipOwner()
 	local x = self:GetRight();
 	if x >= GetScreenWidth() / 2 then
-		WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT", -100, -50);
+		GameTooltip:SetOwner(self, "ANCHOR_LEFT", -100, -50);
 	else
-		WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, -50);
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, -50);
 	end
 end
 
@@ -352,14 +353,14 @@ function WorldMapBountyBoardMixin:ShowLockedByQuestTooltip()
 	if title then
 		self:SetTooltipOwner();
 
-		WorldMapTooltip:SetText(BOUNTY_BOARD_LOCKED_TITLE, HIGHLIGHT_FONT_COLOR:GetRGB());
+		GameTooltip:SetText(BOUNTY_BOARD_LOCKED_TITLE, HIGHLIGHT_FONT_COLOR:GetRGB());
 
 		local _, questDescription = GetQuestLogQuestText(questIndex);
-		WorldMapTooltip:AddLine(questDescription, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+		GameTooltip:AddLine(questDescription, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 
 		AddObjectives(self.lockedQuestID, GetNumQuestLeaderBoards(questIndex));
 
-		WorldMapTooltip:Show();
+		GameTooltip:Show();
 	end
 end
 
@@ -373,9 +374,9 @@ function WorldMapBountyBoardMixin:ShowLockedByNoBountiesTooltip(bountyIndex)
 	else
 		tooltipText = BOUNTY_BOARD_NO_BOUNTIES;
 	end
-	WorldMapTooltip:SetText(tooltipText, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+	GameTooltip:SetText(tooltipText, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 
-	WorldMapTooltip:Show();
+	GameTooltip:Show();
 end
 
 function WorldMapBountyBoardMixin:OnEnter()
@@ -392,7 +393,7 @@ function WorldMapBountyBoardMixin:OnEnter()
 end
 
 function WorldMapBountyBoardMixin:OnLeave()
-	WorldMapTooltip:Hide();
+	GameTooltip:Hide();
 end
 
 function WorldMapBountyBoardMixin:OnTabEnter(tab)
@@ -444,8 +445,8 @@ function WorldMapBountyBoardMixin:CacheMapsForSelectionBounty()
 
 	self.cachedMapInfo = {};
 	local mapID = self:GetMapID();
-	local zones = MapUtil.GetRelatedBountyZoneMaps(mapID);
-	for i, zoneMapID in ipairs(zones) do
+	local bountySetMaps = MapUtil.GetBountySetMaps(self.bountySetID);
+	for i, zoneMapID in ipairs(bountySetMaps) do
 		local numQuests = self:CalculateNumActiveWorldQuestsForSelectedBountyByMap(zoneMapID);
 		if numQuests > 0 then
 			table.insert(self.cachedMapInfo, { mapID = zoneMapID, count = numQuests });

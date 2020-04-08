@@ -207,60 +207,15 @@
 	</Button>
 
 	<!-- Calendar Misc Templates -->
-	<Frame name="CalendarTitleFrameTemplate" virtual="true">
-		<Size x="240" y="40"/>
-		<Anchors>
-			<Anchor point="TOP">
-				<Offset x="0" y="12"/>
-			</Anchor>
-		</Anchors>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="$parentBackgroundMiddle" file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Size x="140" y="40"/>
-					<Anchors>
-						<Anchor point="TOP"/>
-					</Anchors>
-					<TexCoords left="0.28125" right="0.71484375" top="0.0" bottom="0.625"/>
-				</Texture>
-				<Texture name="$parentBackgroundLeft" file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Size x="14" y="40"/>
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentBackgroundMiddle" relativePoint="LEFT"/>
-					</Anchors>
-					<TexCoords left="0.2265625" right="0.28125" top="0.0" bottom="0.625"/>
-				</Texture>
-				<Texture name="$parentBackgroundRight" file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Size x="14" y="40"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentBackgroundMiddle" relativePoint="RIGHT"/>
-					</Anchors>
-					<TexCoords left="0.71484375" right="0.76953125" top="0.0" bottom="0.625"/>
-				</Texture>
-				<FontString name="$parentText" inherits="GameFontNormal">
-					<Size x="0" y="14"/>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentBackgroundMiddle">
-							<Offset x="0" y="-14"/>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-	</Frame>
 	<Button name="CalendarCloseButtonTemplate" inherits="UIPanelCloseButton" virtual="true">
 		<Anchors>
-			<Anchor point="TOPRIGHT">
-				<Offset x="0" y="0"/>
-			</Anchor>
+			<Anchor point="TOPRIGHT" x="-3" y="-3"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\DialogFrame\UI-DialogBox-Corner">
 					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset x="-4" y="-4"/>
-						</Anchor>
+						<Anchor point="TOPRIGHT" x="-4" y="-4"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -505,7 +460,7 @@
 	</Button>
 	<Button name="CalendarMassInviteArenaButtonTemplate" inherits="CalendarEventButtonTemplate" virtual="true">
 		<Scripts>
-			<OnLoad>	
+			<OnLoad>
 				CalendarMassInviteArenaButton_OnLoad(self);
 			</OnLoad>
 			<OnClick>
@@ -659,7 +614,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-			</Layer>		
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad>

@@ -17,9 +17,9 @@ end
 	end
 end
 
---[[private]] function CustomBindingHandlerMixin:CallOnBindingCompletedCallback(completedSuccessfully)
+--[[private]] function CustomBindingHandlerMixin:CallOnBindingCompletedCallback(completedSuccessfully, keys)
 	if self.bindingCompletedCallback then
-		self.bindingCompletedCallback(completedSuccessfully);
+		self.bindingCompletedCallback(completedSuccessfully, keys);
 	end
 end
 

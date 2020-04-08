@@ -1,0 +1,12 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="UIWidgetTemplateSpellDisplay" inherits="UIWidgetBaseTemplate" virtual="true" mixin="UIWidgetTemplateSpellDisplayMixin">
+		<Frames>
+			<Frame parentKey="Spell" inherits="UIWidgetBaseSpellTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" y="-1"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

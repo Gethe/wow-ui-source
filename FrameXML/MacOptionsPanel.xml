@@ -67,43 +67,14 @@
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="FolderPickerHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Size>
-						<AbsDimension x="296" y="70"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="FolderPicker" relativePoint="TOP">
-							<Offset>
-								<AbsDimension x="0" y="12"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<FontString inherits="GameFontNormalLarge" text="Folder...">
-					<Anchors>
-						<Anchor point="TOP" relativeTo="FolderPickerHeader">
-							<Offset>
-								<AbsDimension x="0" y="-14"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="headerTextPadding" value="110" type="number"/>
+					<KeyValue key="textString" value="Folder..." type="string"/>
+				</KeyValues>
+			</Frame>
 			<Button name="FolderPickerButton01" text="YES">
 				<Size>
 					<AbsDimension x="100" y="21"/>

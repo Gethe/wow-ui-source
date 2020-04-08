@@ -1,11 +1,13 @@
 WorldMapMixin = {};
 
+local TITLE_CANVAS_SPACER_FRAME_HEIGHT = 67;
+
 function WorldMapMixin:SetupTitle()
-	self.BorderFrame.TitleText:SetText(MAP_AND_QUEST_LOG);
+	self.BorderFrame:SetTitle(MAP_AND_QUEST_LOG);
 	self.BorderFrame.Bg:SetParent(self);
 	self.BorderFrame.TopTileStreaks:Hide();
 
-	SetPortraitToTexture(self.BorderFrame.portrait, [[Interface\QuestFrame\UI-QuestLog-BookIcon]]);
+	self.BorderFrame:SetPortraitToAsset([[Interface\QuestFrame\UI-QuestLog-BookIcon]]);
 end
 
 function WorldMapMixin:SynchronizeDisplayState()
@@ -29,14 +31,13 @@ function WorldMapMixin:Minimize()
 	SetUIPanelAttribute(self, "bottomClampOverride", nil);
 	UpdateUIPanelPositions(self);
 
-	ButtonFrameTemplate_ShowPortrait(self.BorderFrame);
+	self.BorderFrame:SetBorder("PortraitFrameTemplateMinimizable");
+	self.BorderFrame:SetPortraitShown(true);
+
 	self.BorderFrame.Tutorial:Show();
 	self.NavBar:SetPoint("TOPLEFT", self.TitleCanvasSpacerFrame, "TOPLEFT", 64, -25);
 
 	self:SynchronizeDisplayState();
-
-	self.BorderFrame.MaximizeMinimizeFrame.MinimizeButton:Hide();
-	self.BorderFrame.MaximizeMinimizeFrame.MaximizeButton:Show();
 
 	self:OnFrameSizeChanged();
 end
@@ -44,15 +45,14 @@ end
 function WorldMapMixin:Maximize()
 	self.isMaximized = true;
 
-	ButtonFrameTemplate_HidePortrait(self.BorderFrame);
+	self.BorderFrame:SetBorder("ButtonFrameTemplateNoPortraitMinimizable");
+	self.BorderFrame:SetPortraitShown(false);
+
 	self.BorderFrame.Tutorial:Hide();
 	self.NavBar:SetPoint("TOPLEFT", self.TitleCanvasSpacerFrame, "TOPLEFT", 8, -25);
 
 	self:UpdateMaximizedSize();
 	self:SynchronizeDisplayState();
-
-	self.BorderFrame.MaximizeMinimizeFrame.MinimizeButton:Show();
-	self.BorderFrame.MaximizeMinimizeFrame.MaximizeButton:Hide();
 
 	self:OnFrameSizeChanged();
 end
@@ -97,8 +97,13 @@ function WorldMapMixin:OnLoad()
 
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:RegisterEvent("UI_SCALE_CHANGED");
+	self:RegisterEvent("WORLD_MAP_OPEN");
+	self:RegisterEvent("WORLD_MAP_CLOSE");
 
 	self:AttachQuestLog();
+
+	self:UpdateSpacerFrameAnchoring();
 end
 
 function WorldMapMixin:OnEvent(event, ...)
@@ -110,17 +115,22 @@ function WorldMapMixin:OnEvent(event, ...)
 		else
 			self:Maximize();
 		end
-	elseif event == "DISPLAY_SIZE_CHANGED" then
+	elseif event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" then
 		if self:IsMaximized() then
 			self:UpdateMaximizedSize();
 		end
+	elseif event == "WORLD_MAP_OPEN" then
+		local mapID = ...;
+		OpenWorldMap(mapID);
+	elseif event == "WORLD_MAP_CLOSE" then
+		HideUIPanel(self);
 	end
 end
 
 function WorldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(MapExplorationDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(MapHighlightDataProviderMixin));
-	self:AddDataProvider(CreateFromMixins(WorldMap_InvasionDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(WorldMap_EventOverlayDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(StorylineQuestDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(BattlefieldFlagDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(BonusObjectiveDataProviderMixin));
@@ -144,6 +154,8 @@ function WorldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(MapLinkDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(SelectableGraveyardDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(AreaPOIDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(MapIndicatorQuestDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(QuestSessionDataProviderMixin));
 
 	if IsGMClient() then
 		self:AddDataProvider(CreateFromMixins(WorldMap_DebugDataProviderMixin));
@@ -165,6 +177,7 @@ function WorldMapMixin:AddStandardDataProviders()
 
 	local pinFrameLevelsManager = self:GetPinFrameLevelsManager();
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_MAP_EXPLORATION");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_EVENT_OVERLAY");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_GARRISON_PLOT");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_FOG_OF_WAR");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_QUEST_BLOB");
@@ -188,6 +201,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SCENARIO");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WORLD_QUEST_PING");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WORLD_QUEST", 500);
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WORLD_QUEST_PING");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ACTIVE_QUEST", C_QuestLog.GetMaxNumQuests());
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SUPER_TRACKED_QUEST");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VEHICLE_BELOW_GROUP_MEMBER");
@@ -201,10 +215,11 @@ end
 
 function WorldMapMixin:AddOverlayFrames()
 	self:AddOverlayFrame("WorldMapFloorNavigationFrameTemplate", "FRAME", "TOPLEFT", self:GetCanvasContainer(), "TOPLEFT", -15, 2);
-	self:AddOverlayFrame("WorldMapTrackingOptionsButtonTemplate", "BUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", -4, -2);
+	self:AddOverlayFrame("WorldMapTrackingOptionsButtonTemplate", "DROPDOWNTOGGLEBUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", -4, -2);
 	self:AddOverlayFrame("WorldMapBountyBoardTemplate", "FRAME", nil, self:GetCanvasContainer());
 	self:AddOverlayFrame("WorldMapActionButtonTemplate", "FRAME", nil, self:GetCanvasContainer());
 	self:AddOverlayFrame("WorldMapZoneTimerTemplate", "FRAME", "BOTTOM", self:GetCanvasContainer(), "BOTTOM", 0, 20);
+	self:AddOverlayFrame("WorldMapThreatFrameTemplate", "FRAME", "BOTTOMLEFT", self:GetCanvasContainer(), "BOTTOMLEFT", 0, 0);
 
 	self.NavBar = self:AddOverlayFrame("WorldMapNavBarTemplate", "FRAME");
 	self.NavBar:SetPoint("TOPLEFT", self.TitleCanvasSpacerFrame, "TOPLEFT", 64, -25);
@@ -234,6 +249,18 @@ function WorldMapMixin:OnShow()
 
 	PlayerMovementFrameFader.AddDeferredFrame(self, .5, 1.0, .5, function() return GetCVarBool("mapFade") and not self:IsMouseOver() end);
 	self.BorderFrame.Tutorial:CheckAndShowTooltip();
+
+	local miniWorldMap = GetCVarBool("miniWorldMap");
+	local maximized = self:IsMaximized();
+	if miniWorldMap ~= maximized then
+		if miniWorldMap then
+			self.BorderFrame.MaximizeMinimizeFrame:Minimize();
+		else
+			self.BorderFrame.MaximizeMinimizeFrame:Maximize();
+		end
+	end
+
+	self:TriggerEvent("WorldMapOnShow");
 end
 
 function WorldMapMixin:OnHide()
@@ -246,6 +273,8 @@ function WorldMapMixin:OnHide()
 	self.BorderFrame.Tutorial:CheckAndHideHelpInfo();
 
 	self:OnUIClose();
+	self:TriggerEvent("WorldMapOnHide");
+	C_Map.CloseWorldMapInteraction();
 end
 
 function WorldMapMixin:RefreshOverlayFrames()
@@ -290,7 +319,7 @@ function WorldMapMixin:UpdateMaximizedSize()
 	local SCREEN_BORDER_PIXELS = 30;
 	parentWidth = parentWidth - SCREEN_BORDER_PIXELS;
 
-	local spacerFrameHeight = self.TitleCanvasSpacerFrame:GetHeight();
+	local spacerFrameHeight = TITLE_CANVAS_SPACER_FRAME_HEIGHT;
 	local unclampedWidth = ((parentHeight - spacerFrameHeight) * self.minimizedWidth) / (self.minimizedHeight - spacerFrameHeight);
 	local clampedWidth = math.min(parentWidth, unclampedWidth);
 
@@ -307,9 +336,9 @@ end
 
 function WorldMapMixin:UpdateSpacerFrameAnchoring()
 	if self.QuestLog and self.QuestLog:IsShown() then
-		self.TitleCanvasSpacerFrame:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -3 - self.questLogWidth, -67);
+		self.TitleCanvasSpacerFrame:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -3 - self.questLogWidth, -TITLE_CANVAS_SPACER_FRAME_HEIGHT);
 	else
-		self.TitleCanvasSpacerFrame:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -3, -67);
+		self.TitleCanvasSpacerFrame:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -3, -TITLE_CANVAS_SPACER_FRAME_HEIGHT);
 	end
 	self:OnFrameSizeChanged();
 end
@@ -367,7 +396,8 @@ function WorldMapMixin:AttachQuestLog()
 	QuestMapFrame:SetParent(self);
 	QuestMapFrame:SetFrameStrata("HIGH");
 	QuestMapFrame:ClearAllPoints();
-	QuestMapFrame:SetPoint("TOPRIGHT", -6, -20);
+	QuestMapFrame:SetPoint("TOPRIGHT", -3, -25);
+	QuestMapFrame:SetPoint("BOTTOMRIGHT", -3, 3);
 	QuestMapFrame:Hide();
 	self.QuestLog = QuestMapFrame;
 end

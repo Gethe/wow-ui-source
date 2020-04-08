@@ -64,6 +64,7 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_6_0] = {
 	traitAbilitiesAreEquipment = false,
 	useAbilityTooltipStyleWithoutCounters = false,
 	usesOvermaxMechanic = false,
+	allowEquipmentCounterToShow = false,
 }
 
 GarrisonFollowerOptions[LE_FOLLOWER_TYPE_SHIPYARD_6_2] = {
@@ -116,6 +117,7 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_SHIPYARD_6_2] = {
 	traitAbilitiesAreEquipment = true,
 	useAbilityTooltipStyleWithoutCounters = false,
 	usesOvermaxMechanic = false,
+	allowEquipmentCounterToShow = true,
 }
 
 GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_7_0] = {
@@ -170,6 +172,7 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_7_0] = {
 	traitAbilitiesAreEquipment = true,
 	useAbilityTooltipStyleWithoutCounters = true,
 	usesOvermaxMechanic = true,
+	allowEquipmentCounterToShow = false,
 }
 
 GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_8_0] = {
@@ -224,6 +227,7 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_8_0] = {
 	traitAbilitiesAreEquipment = true,
 	useAbilityTooltipStyleWithoutCounters = true,
 	usesOvermaxMechanic = true,
+	allowEquipmentCounterToShow = false,
 }
 
 function GetPrimaryGarrisonFollowerType(garrTypeID)

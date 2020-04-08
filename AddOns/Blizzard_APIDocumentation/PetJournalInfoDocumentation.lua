@@ -51,6 +51,36 @@ local PetJournalInfo =
 			},
 		},
 		{
+			Name = "GetPetSummonInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "battlePetGUID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isSummonable", Type = "bool", Nilable = false },
+				{ Name = "error", Type = "PetJournalError", Nilable = false },
+				{ Name = "errorText", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "PetIsSummonable",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "battlePetGUID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isSummonable", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PetUsesRandomDisplay",
 			Type = "Function",
 
@@ -181,6 +211,22 @@ local PetJournalInfo =
 
 	Tables =
 	{
+		{
+			Name = "PetJournalError",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 0,
+			MaxValue = 5,
+			Fields =
+			{
+				{ Name = "None", Type = "PetJournalError", EnumValue = 0 },
+				{ Name = "PetIsDead", Type = "PetJournalError", EnumValue = 1 },
+				{ Name = "JournalIsLocked", Type = "PetJournalError", EnumValue = 2 },
+				{ Name = "InvalidFaction", Type = "PetJournalError", EnumValue = 3 },
+				{ Name = "NoFavoritesToSummon", Type = "PetJournalError", EnumValue = 4 },
+				{ Name = "NoValidRandomSummon", Type = "PetJournalError", EnumValue = 5 },
+			},
+		},
 	},
 };
 

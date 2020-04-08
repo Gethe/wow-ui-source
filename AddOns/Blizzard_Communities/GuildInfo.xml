@@ -162,13 +162,13 @@
 		</Layers>
 		<Frames>
 			<ScrollFrame name="$parentMOTDScrollFrame" parentKey="MOTDScrollFrame" inherits="MinimalScrollFrameTemplate">
-				<Size x="254" y="42"/>
+				<Size x="246" y="46"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentHeader2" relativePoint="BOTTOMLEFT" x="14" y="-2"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentHeader2" relativePoint="BOTTOMLEFT" x="14" y="-1"/>
 				</Anchors>
 				<ScrollChild>
 					<SimpleHTML parentKey="MOTD" disallowFormatting="true">
-						<Size x="254" y="42"/>
+						<Size x="246" y="46"/>
 						<Scripts>
 							<OnHyperlinkClick>
 								SetItemRef(link, text, button, self);
@@ -183,7 +183,7 @@
 					<OnLoad>
 						self.scrollBarHideable = true;
 						self.noScrollThumb = true;
-						ScrollBar_AdjustAnchors(self.ScrollBar, 2, -2);
+						ScrollBar_AdjustAnchors(self.ScrollBar, 3, -2);
 						self.ScrollBar:Hide();
 						ScrollFrame_OnLoad(self);
 					</OnLoad>

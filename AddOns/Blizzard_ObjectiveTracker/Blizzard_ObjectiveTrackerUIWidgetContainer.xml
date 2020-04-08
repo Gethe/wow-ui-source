@@ -1,0 +1,16 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<Script file="Blizzard_ObjectiveTrackerUIWidgetContainer.lua"/>
+
+	<Frame name="ObjectiveTrackerUIWidgetBlock" parent="ObjectiveTrackerBlocksFrame" inherits="ResizeLayoutFrame" mixin="ObjectiveTrackerUIWidgetBlockMixin" hidden="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="212" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ObjectiveTrackerUIWidgetContainer" parent="UIParent" inherits="UIWidgetContainerTemplate" mixin="ObjectiveTrackerUIWidgetContainerMixin" alpha="0" />
+</Ui>

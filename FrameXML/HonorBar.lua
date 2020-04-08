@@ -5,7 +5,7 @@ function HonorBarMixin:GetPriority()
 end
 
 function HonorBarMixin:ShouldBeVisible()
-	return IsWatchingHonorAsXP() or InActiveBattlefield() or IsInActiveWorldPVP();
+	return IsWatchingHonorAsXP() or C_PvP.IsActiveBattlefield() or IsInActiveWorldPVP();
 end
 
 function HonorBarMixin:Update()

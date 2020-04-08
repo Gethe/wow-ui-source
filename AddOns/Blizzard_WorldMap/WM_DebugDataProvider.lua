@@ -7,14 +7,14 @@ WorldMap_DebugDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 function WorldMap_DebugDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 
-	self.onClickHandler = self.onClickHandler or function(mapCanvas, button, cursorX, cursorY) return self:OnCanvasClicked(button, cursorX, cursorY) end;
-	mapCanvas:AddCanvasClickHandler(self.onClickHandler);
+	local pin = self:GetMap():AcquirePin("WorldMap_DebugTeleportPinTemplate");
+	pin:SetPosition(0.5, 0.5);
 end
 
 function WorldMap_DebugDataProviderMixin:OnRemoved(mapCanvas)
-	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
+	mapCanvas:RemoveAllPinsByTemplate("WorldMap_DebugTeleportPinTemplate");
 
-	mapCanvas:RemoveCanvasClickHandler(self.onClickHandler);
+	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 end
 
 local DEBUG_ICON_INFO = {
@@ -77,17 +77,11 @@ function WorldMap_DebugDataProviderMixin:RefreshPortLocs(mapID)
 	end
 end
 
-function WorldMap_DebugDataProviderMixin:OnCanvasClicked(button, cursorX, cursorY)
-	if button == "LeftButton" then
-		return C_Debug.TeleportToMapLocation(self:GetMap():GetMapID(), cursorX, cursorY);
-	end
-	return false;
-end
-
 WorldMap_DebugObjectPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function WorldMap_DebugObjectPinMixin:OnAcquired(debugObjectInfo)
 	self.index = debugObjectInfo.index;
+	self.name = debugObjectInfo.name;
 	local info = DEBUG_ICON_INFO[debugObjectInfo.size];
 	self:SetWidth(info.size);
 	self:SetHeight(info.size);
@@ -98,29 +92,66 @@ function WorldMap_DebugObjectPinMixin:GetDebugObjectIndex()
 	return self.index;
 end
 
+function WorldMap_DebugObjectPinMixin:GetName()
+	return self.name;
+end
+
 function WorldMap_DebugObjectPinMixin:OnMouseEnter(motion)
 	local tooltipText = {};
 	for pin in self:GetMap():EnumeratePinsByTemplate("WorldMap_DebugObjectPinTemplate") do
 		if pin:IsMouseOver() then
-			local debugObjectInfo = C_Debug.GetMapDebugObjectInfo(pin:GetDebugObjectIndex());
-			if debugObjectInfo then
-				table.insert(tooltipText, debugObjectInfo.name);
-			end
+			table.insert(tooltipText, pin:GetName());
 		end
 	end
-	WorldMapTooltip:SetOwner(self);
-	WorldMapTooltip:SetText(table.concat(tooltipText, "|n"));
-	WorldMapTooltip:Show();
+	GameTooltip:SetOwner(self);
+	GameTooltip:SetText(table.concat(tooltipText, "|n"));
+	GameTooltip:Show();
 end
 
 function WorldMap_DebugObjectPinMixin:OnMouseLeave(motion)
-	WorldMapTooltip:Hide();
-end
-
-function WorldMap_DebugObjectPinMixin:OnClick()
-	if IsModifierKeyDown("CTRL") then
-		C_Debug.TeleportToMapDebugObject(self.index);
-	end
+	GameTooltip:Hide();
 end
 
 WorldMap_DebugPortLocPinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_DEBUG");
+
+WorldMap_DebugTeleportPinMixin = CreateFromMixins(MapCanvasPinMixin);
+
+function WorldMap_DebugTeleportPinMixin:OnLoad()
+	self:SetIgnoreGlobalPinScale(true);
+end
+
+function WorldMap_DebugTeleportPinMixin:OnCanvasSizeChanged()
+	self:SetSize(self:GetMap():DenormalizeHorizontalSize(1.0), self:GetMap():DenormalizeVerticalSize(1.0));
+end
+
+function WorldMap_DebugTeleportPinMixin:OnAcquired()
+	self:SetFrameStrata("DIALOG");
+end
+
+function WorldMap_DebugTeleportPinMixin:OnUpdate()
+	self:EnableMouse(IsControlKeyDown());
+end
+
+function WorldMap_DebugTeleportPinMixin:OnMouseDown(button)
+	if button == "LeftButton" then
+		local pinFrameLevel = 0;
+		local pinIndex;
+		for pin in self:GetMap():EnumeratePinsByTemplate("WorldMap_DebugObjectPinTemplate") do
+			if pin:IsMouseOver() then
+				-- there might be overlapping pins, find topmost
+				local frameLevel = pin:GetFrameLevel();
+				if frameLevel > pinFrameLevel then
+					pinFrameLevel = frameLevel;
+					pinIndex = pin:GetDebugObjectIndex();
+				end
+			end
+		end
+		if pinIndex then
+			C_Debug.TeleportToMapDebugObject(pinIndex);
+		else
+			local scrollContainer = self:GetMap().ScrollContainer;
+			local cursorX, cursorY = scrollContainer:NormalizeUIPosition(scrollContainer:GetCursorPosition());
+			C_Debug.TeleportToMapLocation(self:GetMap():GetMapID(), cursorX, cursorY);
+		end
+	end
+end

@@ -6,7 +6,6 @@ local ISLANDS_QUEUE_RIGHT_CARD_ROTATION = math.rad(-1.15);
 local ISLAND_QUEUE_DIFFICULTY_EVENTS = {
 	"GROUP_ROSTER_UPDATE",
 	"LFG_UPDATE_RANDOM_INFO",
-	"PLAYER_AVG_ITEM_LEVEL_UPDATE", 
 };
 
 IslandsQueueWeeklyQuestMixin = { };
@@ -55,14 +54,47 @@ function IslandsQueueWeeklyQuestMixin:UpdateRewardInformation()
 	end
 end
 
+function IslandsQueueWeeklyQuestMixin:SetElementsEnabled(enabled)
+	local r, g, b;
+	if enabled then
+		r, g, b = 1, 1, 1;
+	else
+		r, g, b = .4, .4, .4;
+	end
+
+	local desaturated = not enabled;
+
+	self.QuestReward.Icon:SetDesaturated(desaturated);
+	self.QuestReward.Icon:SetVertexColor(r, g, b);
+	self.StatusBar.BarTexture:SetDesaturated(desaturated);
+	self.StatusBar.BarTexture:SetVertexColor(r, g, b);
+	self.OverlayFrame.Bar:SetDesaturated(desaturated);
+	self.OverlayFrame.Bar:SetVertexColor(r, g, b);
+	self.QuestReward.CompletedCheck:SetDesaturated(desaturated);
+	self.QuestReward.CompletedCheck:SetVertexColor(r, g, b);
+end
+
 function IslandsQueueWeeklyQuestMixin:UpdateQuestProgressBar()
+	if C_QuestLog.IsQuestFlaggedCompleted(self.questID) then
+		self.OverlayFrame.Text:SetText(GOAL_COMPLETED);
+		self.QuestReward.CompletedCheck:Show();
+		self.QuestReward.Completed = true;
+
+		self.StatusBar:SetMinMaxValues(0, 1);
+		self.StatusBar:SetValue(1);
+
+		self.OverlayFrame.Spark:Hide();
+		self:SetElementsEnabled(false);
+		return;
+	end
+
+	self:SetElementsEnabled(true);
 	local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(self.questID, 1, false);
 
 	self.StatusBar:SetMinMaxValues(0, numRequired);
 	self.StatusBar:SetValue(numFulfilled);
 	self.OverlayFrame.Text:SetText(ISLANDS_QUEUE_WEEKLY_QUEST_PROGRESS:format(numFulfilled, numRequired));
 
-	self.objectiveText = objectiveText;
 	if (numFulfilled > 0) then
 		local sparkSet = math.max((numFulfilled  / numRequired) * (self.StatusBar:GetWidth()), 0);
 		self.OverlayFrame.Spark:ClearAllPoints();
@@ -86,24 +118,31 @@ end
 IslandsQueueFrameMixin = { };
 
 local function SetWidgetFrameAnchors(frame, anchorFrame)
+	frame:ClearAllPoints();
 	frame:SetPoint("CENTER", anchorFrame.Background, "CENTER", 0,0);
 	frame.Text:SetPoint("CENTER", anchorFrame.TitleScroll, "CENTER", 0, 0);
 	frame:SetFrameLevel(anchorFrame:GetFrameLevel() +10);
+end
+
+local function WidgetInit(widgetFrame)
+	widgetFrame.Background:SetSize(451, 301);
+	widgetFrame.Text:SetSize(165, 50);
+	widgetFrame.Text:SetFontObjectsToTry(GameFontNormalLarge, GameFontNormalMed1, GameFontNormal);
 end
 
 local function WidgetsLayout(widgetContainer, sortedWidgets)
 	for index, widgetFrame in ipairs(sortedWidgets) do
 		if ( index == 1 ) then
 			widgetFrame.Background:SetRotation(ISLANDS_QUEUE_LEFT_CARD_ROTATION);
-			widgetFrame.Portrait:SetRotation(ISLANDS_QUEUE_LEFT_CARD_ROTATION);
+			widgetFrame.Foreground:SetRotation(ISLANDS_QUEUE_LEFT_CARD_ROTATION);
 			SetWidgetFrameAnchors(widgetFrame, widgetContainer.LeftCard)
 		elseif ( index == 2 ) then
 			widgetFrame.Background:SetRotation(ISLANDS_QUEUE_CENTER_CARD_ROTATION);
-			widgetFrame.Portrait:SetRotation(ISLANDS_QUEUE_CENTER_CARD_ROTATION);
+			widgetFrame.Foreground:SetRotation(ISLANDS_QUEUE_CENTER_CARD_ROTATION);
 			SetWidgetFrameAnchors(widgetFrame, widgetContainer.CenterCard)
 		elseif ( index == 3 ) then
 			widgetFrame.Background:SetRotation(ISLANDS_QUEUE_RIGHT_CARD_ROTATION);
-			widgetFrame.Portrait:SetRotation(ISLANDS_QUEUE_RIGHT_CARD_ROTATION);
+			widgetFrame.Foreground:SetRotation(ISLANDS_QUEUE_RIGHT_CARD_ROTATION);
 			SetWidgetFrameAnchors(widgetFrame, widgetContainer.RightCard)
 		end
 	end
@@ -114,7 +153,7 @@ function IslandsQueueFrameMixin:OnLoad()
 
 	self.portrait:Hide();
 	SetPortraitToTexture(self.ArtOverlayFrame.portrait, "Interface\\Icons\\icon_treasuremap");
-	UIWidgetManager:RegisterWidgetSetContainer(ISLANDS_QUEUE_WIDGET_SET_ID, self.IslandCardsFrame, WidgetsLayout);
+	self.IslandCardsFrame:RegisterForWidgetSet(ISLANDS_QUEUE_WIDGET_SET_ID, WidgetsLayout, WidgetInit);
 	self:RegisterEvent("ISLANDS_QUEUE_CLOSE");
 end
 
@@ -173,23 +212,24 @@ function IslandsQueueFrameDifficultyMixin:UpdateQueueText()
 end
 
 function IslandsQueueFrameDifficultyMixin:OnShow()
-	RequestLFDPlayerLockInfo();
-	RequestLFDPartyLockInfo();
-	
+	QueueUpdater:RequestInfo();
+	QueueUpdater:AddRef();
+
 	FrameUtil.RegisterFrameForEvents(self, ISLAND_QUEUE_DIFFICULTY_EVENTS);
-	
-	self:UpdateQueueText(); 
+
+	self:UpdateQueueText();
 	self:RefreshDifficultyButtons();
-	
+
 	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ISLANDS_QUEUE_BUTTON)) then
 		self.QueueButton.Flash:Show();
 		self.QueueButton.FlashAnim:Play();
 	end
-	
+
 	self:PreloadQuestRewardInformation();
 end
 
 function IslandsQueueFrameDifficultyMixin:OnHide()
+	QueueUpdater:RemoveRef();
 	FrameUtil.UnregisterFrameForEvents(self, ISLAND_QUEUE_DIFFICULTY_EVENTS);
 end
 
@@ -198,12 +238,9 @@ function IslandsQueueFrameDifficultyMixin:OnLoad()
 end
 
 function IslandsQueueFrameDifficultyMixin:OnEvent(event, ...)
-	if (event == "GROUP_ROSTER_UPDATE" or event == "LFG_UPDATE_RANDOM_INFO") then 
-		self:RefreshDifficultyButtons(); 
+	if (event == "GROUP_ROSTER_UPDATE" or event == "LFG_UPDATE_RANDOM_INFO") then
+		self:RefreshDifficultyButtons();
 		self:UpdateQueueText();
-	elseif (event == "PLAYER_AVG_ITEM_LEVEL_UPDATE") then 
-		RequestLFDPlayerLockInfo();
-		RequestLFDPartyLockInfo();
 	end
 end
 
@@ -236,7 +273,7 @@ function IslandsQueueFrameDifficultyMixin:RefreshDifficultyButtons()
 		button.NormalTexture:SetAtlas("islands-queue-difficultyselector-"..buttonIndex);
 		self.previousDifficulty = button;
 		button.difficulty = info.difficultyId;
-		button.tooltipText = ButtonTooltips[buttonIndex]; 
+		button.tooltipText = ButtonTooltips[buttonIndex];
 		button.questId = info.previewRewardQuestId;
 		local isAvailable, _, _, totalGroupSizeRequired = IsLFGDungeonJoinable(button.difficulty);
 
@@ -254,13 +291,13 @@ function IslandsQueueFrameDifficultyMixin:RefreshDifficultyButtons()
 				button.notAvailableText = nil;
 				button.CanQueue = true;
 			end
-			button:SetEnabled(true); 
+			button:SetEnabled(true);
 			button.NormalTexture:SetDesaturated(false);
-			button:SetAlpha(1); 
-		else 
+			button:SetAlpha(1);
+		else
 			button.notAvailableText = nil;
 			button.NormalTexture:SetDesaturated(false);
-			button:SetAlpha(1); 
+			button:SetAlpha(1);
 			button:SetEnabled(true);
 			button.CanQueue = true;
 		end

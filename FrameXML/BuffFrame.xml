@@ -5,7 +5,7 @@
 		<Size x="30" y="30"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentIcon"/>
+				<Texture name="$parentIcon" parentKey="Icon"/>
 				<FontString name="$parentCount" inherits="NumberFontNormal" parentKey="count">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT">
@@ -33,7 +33,7 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<Button name="BuffButtonTemplate" inherits="AuraButtonTemplate" virtual="true">
+	<Button name="BuffButtonTemplate" parentArray="BuffButton" inherits="AuraButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
 				BuffButton_OnLoad(self);
@@ -43,10 +43,10 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="DebuffButtonTemplate" inherits="AuraButtonTemplate" virtual="true">
+	<Button name="DebuffButtonTemplate" parentArray="DebuffButton" inherits="AuraButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="$parentBorder" file="Interface\Buttons\UI-Debuff-Overlays">
+				<Texture name="$parentBorder" parentKey="Border" file="Interface\Buttons\UI-Debuff-Overlays">
 					<Size>
 						<AbsDimension x="33" y="32"/>
 					</Size>
@@ -70,10 +70,10 @@
 			</OnLoad>
 		</Scripts>
 	</Button>
-	<Button name="TempEnchantButtonTemplate" inherits="AuraButtonTemplate" virtual="true">
+	<Button name="TempEnchantButtonTemplate" parentArray="TempEnchant" inherits="AuraButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="$parentBorder" file="Interface\Buttons\UI-TempEnchant-Border">
+				<Texture name="$parentBorder" parentKey="Border" file="Interface\Buttons\UI-TempEnchant-Border">
 					<Size>
 						<AbsDimension x="32" y="32"/>
 					</Size>

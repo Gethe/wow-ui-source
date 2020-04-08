@@ -43,8 +43,6 @@ do
 		self:RegisterEvent("CLUB_MEMBER_ROLE_UPDATED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ACTIVE_STATE_CHANGED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSMIT_CHANGED");
-		self:RegisterEvent("VOICE_CHAT_MUTED_CHANGED");
-		self:RegisterEvent("VOICE_CHAT_DEAFENED_CHANGED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ME_CHANGED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ADDED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_GUID_UPDATED");
@@ -56,8 +54,6 @@ do
 
 		local notificationSubSystem = ChatAlertFrame:AddAutoAnchoredSubSystem(VoiceChatChannelActivatedNotification);
 		ChatAlertFrame:SetSubSystemAnchorPriority(notificationSubSystem, 11);
-
-		self:CheckDiscoverChannels();
 	end
 end
 
@@ -149,10 +145,6 @@ function ChannelFrameMixin:OnEvent(event, ...)
 		self:OnMemberActiveStateChanged(...);
 	elseif event == "VOICE_CHAT_CHANNEL_TRANSMIT_CHANGED" then
 		self:OnChatChannelTransmitChanged(...);
-	elseif event == "VOICE_CHAT_MUTED_CHANGED" then
-		self:OnMutedChanged(...);
-	elseif event == "VOICE_CHAT_DEAFENED_CHANGED" then
-		self:OnDeafenedChanged(...);
 	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ME_CHANGED" then
 		self:OnMemberMuted(...);
 	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_ADDED" then
@@ -237,9 +229,9 @@ function ChannelFrameMixin:TryCreateVoiceChannel(channelName)
 	end);
 end
 
-function ChannelFrameMixin:TryJoinVoiceChannelByType(channelType)
+function ChannelFrameMixin:TryJoinVoiceChannelByType(channelType, autoActivate)
 	self:TryExecuteCommand(function()
-		C_VoiceChat.RequestJoinChannelByChannelType(channelType);
+		C_VoiceChat.RequestJoinChannelByChannelType(channelType, autoActivate);
 	end);
 end
 
@@ -387,18 +379,16 @@ function ChannelFrameMixin:ToggleVoiceSettings()
 end
 
 -- Channel remains, but appears disabled
-function ChannelFrameMixin:OnVoiceChannelRemoved(statusCode, channelID)
-	if statusCode == Enum.VoiceChatStatusCode.Success then
-		local button = self:GetList():GetButtonForVoiceChannelID(channelID);
-		if button then
-			if button:ChannelIsCommunity() then
-				-- This is a community stream, so just remove the attached voice channel...we will try to re-join when they activate next
-				button:ClearVoiceChannel();
-			else
-				button:SetActive(false);
-				button:SetRemoved(true);
-				button:Update();
-			end
+function ChannelFrameMixin:OnVoiceChannelRemoved(channelID)
+	local button = self:GetList():GetButtonForVoiceChannelID(channelID);
+	if button then
+		if button:ChannelIsCommunity() then
+			-- This is a community stream, so just remove the attached voice channel...we will try to re-join when they activate next
+			button:ClearVoiceChannel();
+		else
+			button:SetActive(false);
+			button:SetRemoved(true);
+			button:Update();
 		end
 	end
 end
@@ -413,18 +403,19 @@ function ChannelFrameMixin:OnVoiceChannelDisplayNameChanged(channelID, channelNa
 end
 
 function ChannelFrameMixin:OnVoiceChatError(platformCode, statusCode)
-	local errorCode = Voice_GetGameErrorFromStatusCode(statusCode);
 	local errorString = Voice_GetGameAlertStringFromStatusCode(statusCode);
 	if errorString then
-		UIErrorsFrame:TryDisplayMessage(errorCode, errorString, RED_FONT_COLOR:GetRGB());
 		ChatFrame_DisplayUsageError(errorString);
 		self.lastError = statusCode;
+	end
+
+	local errorCode = Voice_GetGameErrorFromStatusCode(statusCode);
+	if errorCode then
+		UIErrorsFrame:TryDisplayMessage(errorCode, errorString, RED_FONT_COLOR:GetRGB());
 	end
 end
 
 function ChannelFrameMixin:OnVoiceChatConnectionSuccess()
-	self:CheckDiscoverChannels();
-
 	if self.lastError then
 		ChatFrame_DisplayUsageError(VOICE_CHAT_SERVICE_CONNECTION_RESTORED);
 		self.lastError = nil;
@@ -494,10 +485,13 @@ function ChannelFrameMixin:ShowChannelManagementTip(channelID)
 	local channel = C_VoiceChat.GetChannel(channelID);
 	if channel and GetPartyCategoryFromChannelType(channel.channelType) ~= nil then
 		local atlas = CreateAtlasMarkup("voicechat-channellist-icon-headphone-off");
-		local useNotBound = true;
+		local useNotBound = false;
 		local useParentheses = true;
-		local announceText = VOICE_CHAT_CHANNEL_MANAGEMENT_TIP:format(atlas, GetBindingKeyForAction("TOGGLECHATTAB", useNotBound, useParentheses));
-		ChatFrame_DisplaySystemMessageInPrimary(announceText);
+		local bindingText = GetBindingKeyForAction("TOGGLECHATTAB", useNotBound, useParentheses);
+		if bindingText and bindingText ~= "" then
+			local announceText = VOICE_CHAT_CHANNEL_MANAGEMENT_TIP:format(atlas, bindingText);
+			ChatFrame_DisplaySystemMessageInPrimary(announceText);
+		end
 	end
 end
 
@@ -539,7 +533,6 @@ function ChannelFrameMixin:OnCountUpdate(id, count)
 end
 
 function ChannelFrameMixin:OnGroupFormed(partyCategory, partyGUID)
-	self:TryJoinVoiceChannelByType(GetChannelTypeFromPartyCategory(partyCategory));
 end
 
 function ChannelFrameMixin:OnGroupLeft(partyCategory, partyGUID)
@@ -548,8 +541,6 @@ function ChannelFrameMixin:OnGroupLeft(partyCategory, partyGUID)
 	-- ...need to verify some things related to zoning out of the instance/bg/etc...
 	VoiceChatPromptActivateChannel:Hide();
 	VoiceChatChannelActivatedNotification:Hide();
-
-	-- TODO: Channel removal now happens as a matter of course on the server. Verify that the channel is being removed properly.
 end
 
 function ChannelFrameMixin:OnClubAdded(clubId)
@@ -589,22 +580,6 @@ function ChannelFrameMixin:OnMemberActiveStateChanged(memberID, channelID, isAct
 				PlaySound(SOUNDKIT.UI_VOICECHAT_MEMBERLEAVECHANNEL);
 			end
 		end
-	end
-end
-
-function ChannelFrameMixin:OnMutedChanged(isMuted)
-	if isMuted then
-		PlaySound(SOUNDKIT.UI_VOICECHAT_MUTEON);
-	else
-		PlaySound(SOUNDKIT.UI_VOICECHAT_MUTEOFF);
-	end
-end
-
-function ChannelFrameMixin:OnDeafenedChanged(isDeafened)
-	if isDeafened then
-		PlaySound(SOUNDKIT.UI_VOICECHAT_DEAFENON);
-	else
-		PlaySound(SOUNDKIT.UI_VOICECHAT_DEAFENOFF);
 	end
 end
 

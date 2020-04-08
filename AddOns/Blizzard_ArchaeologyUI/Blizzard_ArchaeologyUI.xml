@@ -171,7 +171,7 @@
 				
 				GameTooltip:AddLine(" ");
 				
-				local adate = date("*t", self.firstComletionTime);
+				local adate = date("*t", self.firstCompletionTime);
 				GameTooltip:AddLine(ARCHAEOLOGY_TIMESTAMP.." |cffffffff"..FormatShortDate(adate.day, adate.month, adate.year).." "..
 												GameTime_GetFormattedTime(adate.hour, adate.min, true).."|r");
 				GameTooltip:AddLine(string.format(ARCHAEOLOGY_COMPLETION, self.completionCount));
@@ -326,7 +326,7 @@
 				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
 				<BarColor r="0.03125" g="0.85" b="0.0" />
 			</StatusBar>
-			<Button name="$parentSummarytButton" parentKey="tab1" id="1">
+			<Button name="$parentSummarytButton" frameLevel="600" parentKey="tab1" id="1">
 				<Size x="63" y="57"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-22" y="-50" relativePoint="TOPRIGHT"/>
@@ -370,7 +370,7 @@
 					<Color r="1" g="1" b="1" a="0.3"/>
 				</HighlightTexture>
 			</Button>
-			<Button name="$parentCompletedButton"  parentKey="tab2" id="2">
+			<Button name="$parentCompletedButton" frameLevel="600" parentKey="tab2" id="2">
 				<Size x="63" y="57"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-22" y="-120" relativePoint="TOPRIGHT"/>

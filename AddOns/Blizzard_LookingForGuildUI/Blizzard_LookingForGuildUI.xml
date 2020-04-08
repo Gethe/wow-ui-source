@@ -843,13 +843,6 @@
 					<Anchor point="BOTTOMRIGHT" relativeTo="LookingForGuildFrame" x="-6" y="3"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						-- Override OnLoad for HiRes test because we need to position this button manually.
-						MagicButton_OnLoad(self);
-						self.LeftSeparator:Hide();
-						self:ClearAllPoints();
-						self:SetPoint("BOTTOMRIGHT", LookingForGuildFrame, "BOTTOMRIGHT", -6, 3);
-					</OnLoad>
 					<OnClick>
 						LookingForGuildFrameTab2:Click();
 					</OnClick>
@@ -975,23 +968,10 @@
 *******************************************************************************
 -->
 	<Frame name="GuildFinderRequestMembershipFrame" parent="UIParent" hidden="true" frameStrata="DIALOG">
-		<Size>
-			<AbsDimension x="328" y="174"/>
-		</Size>
+		<Size x="328" y="174"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentTitle" inherits="GameFontNormal" text="GUILDFINDER_POPUP_TEXT">
@@ -1009,6 +989,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
 			<Frame name="$parentInputFrame">
 				<Size x="286" y="62"/>
 				<Anchors>

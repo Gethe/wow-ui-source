@@ -14,10 +14,11 @@ function ReputationFrame_OnLoad(self)
 	end
 	--]]
 	self.paragonFramesPool = CreateFramePool("FRAME", self, "ReputationParagonFrameTemplate");
+	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
 end
 
 function ReputationFrame_OnShow(self)
-	CharacterFrameTitleText:SetText(UnitPVPName("player"));
+	CharacterFrame:SetTitle(UnitPVPName("player"));
 	ReputationFrame_Update(true);
 	SHOWED_LFG_PULSE = true;
 	self:RegisterEvent("QUEST_LOG_UPDATE");
@@ -39,6 +40,8 @@ end
 function ReputationFrame_OnEvent(self, event, ...)
 	if ( event == "UPDATE_FACTION" or event == "LFG_BONUS_FACTION_ID_UPDATED" or event == "QUEST_LOG_UPDATE" ) then
 		ReputationFrame_Update();
+	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
+		ReputationWatchBar_UpdateMaxLevel();
 	end
 end
 
@@ -63,14 +66,14 @@ function ReputationFrame_SetRowType(factionRow, isChild, isHeader, hasRep)	--row
 		factionButton:SetPoint("LEFT", factionRow, "LEFT", 3, 0);
 		factionButton:Show();
 		factionTitle:SetPoint("LEFT",factionButton,"RIGHT", 10, 0);
-		if (hasRep) then 
+		if (hasRep) then
 			factionTitle:SetPoint("RIGHT", factionBar, "LEFT", -3, 0);
 		else
 			factionTitle:SetPoint("RIGHT", factionBar, "RIGHT", -3, 0);
 		end
 
 		factionTitle:SetFontObject(GameFontNormalLeft);
-		factionBackground:Hide()	
+		factionBackground:Hide()
 		factionLeftTexture:SetHeight(15);
 		factionLeftTexture:SetWidth(60);
 		factionRightTexture:SetHeight(15);
@@ -98,7 +101,7 @@ function ReputationFrame_SetRowType(factionRow, isChild, isHeader, hasRep)	--row
 		factionBar:SetWidth(101)
 		factionRow.LFGBonusRepButton:SetPoint("RIGHT", factionBackground, "LEFT", -2, 0);
 	end
-	
+
 	if ( (hasRep) or (not isHeader) ) then
 		factionStanding:Show();
 		factionBar:Show();
@@ -123,7 +126,7 @@ function ReputationFrame_Update(showLFGPulse)
 
 	local gender = UnitSex("player");
 	local lfgBonusFactionID = GetLFGBonusFactionID();
-	
+
 	for i=1, NUM_FACTIONS_DISPLAYED, 1 do
 		local factionIndex = factionOffset + i;
 		local factionRow = _G["ReputationBar"..i];
@@ -138,7 +141,7 @@ function ReputationFrame_Update(showLFGPulse)
 			if ( isCollapsed ) then
 				factionButton:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
 			else
-				factionButton:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up"); 
+				factionButton:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up");
 			end
 			factionRow.index = factionIndex;
 			factionRow.isCollapsed = isCollapsed;
@@ -160,7 +163,7 @@ function ReputationFrame_Update(showLFGPulse)
 			if (standingID == MAX_REPUTATION_REACTION) then
 				isCapped = true;
 			end
-			-- check if this is a friendship faction 
+			-- check if this is a friendship faction
 			local friendID, friendRep, friendMaxRep, friendName, friendText, friendTexture, friendTextLevel, friendThreshold, nextFriendThreshold = GetFriendshipReputation(factionID);
 			if (friendID ~= nil) then
 				factionStandingtext = friendTextLevel;
@@ -196,7 +199,7 @@ function ReputationFrame_Update(showLFGPulse)
 			factionBar:SetValue(barValue);
 			local color = FACTION_BAR_COLORS[colorIndex];
 			factionBar:SetStatusBarColor(color.r, color.g, color.b);
-			
+
 			factionBar.BonusIcon:SetShown(hasBonusRepGain);
 
 			factionRow.LFGBonusRepButton.factionID = factionID;
@@ -212,7 +215,7 @@ function ReputationFrame_Update(showLFGPulse)
 			end
 
 			ReputationFrame_SetRowType(factionRow, isChild, isHeader, hasRep);
-			
+
 			factionRow:Show();
 
 			-- Update details if this is the selected faction

@@ -1,7 +1,14 @@
+
+## first
+..\SharedXML\SharedConstants.lua
+
 ##DebugHook.lua
 ..\SharedXML\C_TimerAugment.lua
+..\SharedXML\Mixin.lua
 ..\SharedXML\Util.lua
-..\SharedXML\AnchorUtil.xml
+..\SharedXML\SecureUtil.lua
+..\SharedXML\TimeUtil.lua
+..\SharedXML\NineSlice.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
 ..\SharedXML\SoundKitConstants.lua
@@ -10,6 +17,7 @@
 ..\SharedXML\FontableFrameMixin.lua
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
+..\SharedXML\DropDownToggleButton.xml
 Constants.lua
 GlueFonts.xml
 GlueFontStyles.xml
@@ -19,14 +27,15 @@ GlueLocalization.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\SharedBasicControls.xml
 ..\SharedXML\KeyCommand.lua
+..\SharedXML\GlobalCallbackRegistry.lua
 GlueTemplates.xml
 ## add new files after here
 GlueButtons.xml
 GlueDropDownMenu.xml
 GlueContextMenu.xml
 
-..\SharedXML\HybridScrollFrame.lua
 ..\SharedXML\HybridScrollFrame.xml
+..\SharedXML\ScrollList.xml
 ..\SharedXML\Vector2D.lua
 ..\SharedXML\Vector3D.lua
 ..\SharedXML\Spline.lua
@@ -43,8 +52,11 @@ GlueAddons.lua
 GlueParent.xml
 ## These SharedXML files need to be loaded after GlueParent.xml
 ..\SharedXML\IME.xml
+..\SharedXML\ModelFrameTemplates.xml
 ..\SharedXML\ModelFrames.xml
 ..\SharedXML\ModelPreviewFrame.xml
+..\SharedXML\DressUpModelFrameMixin.lua
+..\SharedXML\CharacterModelFrameMixin.lua
 GlueDialog.xml
 GlueTooltip.xml
 ..\SharedXML\AddonList.xml

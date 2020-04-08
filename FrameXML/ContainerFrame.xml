@@ -67,7 +67,7 @@
         </KeyValues>
     </Frame>
 	
-	<Button name="ContainerFrameItemButtonTemplate" inherits="ItemButtonTemplate" hidden="true" virtual="true">
+	<ItemButton name="ContainerFrameItemButtonTemplate" mixin="ContainerFrameItemButtonMixin" hidden="true" virtual="true">
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 		</Anchors>
@@ -90,11 +90,6 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="JunkIcon" atlas="bags-junkcoin" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="1" y="0"/>
-					</Anchors>
-				</Texture>
 				<Texture parentKey="UpgradeIcon" atlas="bags-greenarrow" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -157,6 +152,13 @@
 					<Color r="0.603" g="0.875" b="1"/>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="5">
+				<Texture parentKey="JunkIcon" atlas="bags-junkcoin" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
@@ -198,7 +200,7 @@
 				ContainerFrameItemButton_OnDrag(self);
 			</OnReceiveDrag>
 		</Scripts>
-	</Button>
+	</ItemButton>
 	<Frame name="ContainerFrameTemplate" frameStrata="MEDIUM" toplevel="true" movable="true" enableMouse="true" hidden="true" virtual="true">
 		<Size x="256" y="256"/>
 		<Layers>
@@ -266,44 +268,44 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Button name="$parentItem1" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem2" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem3" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem4" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem5" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem6" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem7" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem8" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem9" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem10" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem11" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem12" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem13" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem14" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem15" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem16" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem17" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem18" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem19" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem20" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem21" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem22" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem23" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem24" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem25" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem26" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem27" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem28" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem29" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem30" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem31" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem32" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem33" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem34" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem35" inherits="ContainerFrameItemButtonTemplate"/>
-			<Button name="$parentItem36" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem1" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem2" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem3" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem4" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem5" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem6" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem7" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem8" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem9" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem10" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem11" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem12" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem13" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem14" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem15" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem16" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem17" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem18" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem19" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem20" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem21" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem22" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem23" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem24" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem25" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem26" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem27" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem28" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem29" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem30" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem31" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem32" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem33" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem34" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem35" inherits="ContainerFrameItemButtonTemplate"/>
+			<ItemButton name="$parentItem36" inherits="ContainerFrameItemButtonTemplate"/>
 
-			<Button name="$parentPortraitButton" parentKey="PortraitButton">
+			<DropDownToggleButton name="$parentPortraitButton" mixin="ContainerFramePortraitButtonMixin" parentKey="PortraitButton">
 				<Size x="40" y="40"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="7" y="-5"/>
@@ -319,16 +321,12 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnter function="ContainerFramePortraitButton_OnEnter" />
-					<OnLeave function="ContainerFramePortraitButton_OnLeave" />
-					<OnClick>
-						local parent = self:GetParent();
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						ToggleDropDownMenu(1, nil, parent.FilterDropDown, self, 0, 0);
-					</OnClick>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnEnter method="OnEnter" />
+					<OnLeave method="OnLeave" />
 				</Scripts>
-			</Button>
-			<Button parentKey="FilterIcon" hidden="true">
+			</DropDownToggleButton>
+			<Button parentKey="FilterIcon" mixin="DropDownToggleButtonMixin" hidden="true">
 				<Size x="28" y="28"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.Portrait" relativePoint="BOTTOMRIGHT" x="-9" y="14"/>
@@ -354,16 +352,16 @@
 						local target = self:GetParent().PortraitButton;
 						target:GetScript("OnLeave")(target);
 					</OnLeave>
-					<OnClick>
+					<OnMouseDown>
 						local target = self:GetParent().PortraitButton;
-						target:GetScript("OnClick")(target);
-					</OnClick>
+						target:GetScript("OnMouseDown")(target);
+					</OnMouseDown>
 				</Scripts>
 			</Button>
 			<Button name="$parentAddSlotsButton" hidden="true">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parent" relativePoint="TOPLEFT" x="17" y="-224"/>
+					<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="17" y="7"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -406,11 +404,8 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame name="$parentExtraBagSlotsHelpBox" parentKey="ExtraBagSlotsHelpBox" inherits="GlowBoxTemplate" enableMouse="true" frameStrata="DIALOG">
+			<Frame name="$parentExtraBagSlotsHelpBox" parentKey="ExtraBagSlotsHelpBox" inherits="GlowBoxTemplate" enableMouse="true" frameStrata="DIALOG" hidden="true">
 				<Size x="220" y="100"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPLEFT" x="-2" y="-206"/>
-				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="Arrow" inherits="HelpPlateArrowDOWN">
@@ -476,7 +471,7 @@
 					<OnLoad function="ContainerFrameFilterDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
-			<Button parentKey="ClickableTitleFrame">
+			<Button parentKey="ClickableTitleFrame" mixin="DropDownToggleButtonMixin">
 				<Size x="118" y="16"/>
 				<Anchors>
 					<Anchor point="TOP" x="8" y="-8"/>
@@ -490,10 +485,10 @@
 						local target = self:GetParent().PortraitButton;
 						target:GetScript("OnLeave")(target);
 					</OnLeave>
-					<OnClick>
+					<OnMouseDown>
 						local target = self:GetParent().PortraitButton;
-						target:GetScript("OnClick")(target);
-					</OnClick>
+						target:GetScript("OnMouseDown")(target);
+					</OnMouseDown>
 				</Scripts>
 			</Button>
 		</Frames>	

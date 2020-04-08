@@ -1,6 +1,4 @@
-## Interface: 80000
 ## Title: Blizzard_TokenUI
-## Secure: 1
 Blizzard_TokenUI.lua
 Blizzard_TokenUI.xml
 Localization.lua

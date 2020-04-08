@@ -16,8 +16,8 @@ CR_HIT_SPELL = 8;
 CR_CRIT_MELEE = 9;
 CR_CRIT_RANGED = 10;
 CR_CRIT_SPELL = 11;
-CR_UNUSED_2 = 12;
-CR_UNUSED_3 = 13;
+CR_CORRUPTION = 12;
+CR_CORRUPTION_RESISTANCE = 13;
 CR_SPEED = 14;
 COMBAT_RATING_RESILIENCE_CRIT_TAKEN = 15;
 COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN = 16;
@@ -349,13 +349,6 @@ function PaperDoll_IsEquippedSlot(slot)
 		end
 	end
 	return false;
-end
-
-function CharacterModelFrame_OnMouseUp(self, button)
-	if ( button == "LeftButton" ) then
-		AutoEquipCursorItem();
-	end
-	Model_OnMouseUp(self, button);
 end
 
 -- This makes sure the update only happens once at the end of the frame
@@ -1040,7 +1033,7 @@ function PaperDollFrame_SetCritChance(statFrame, unit)
 
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_CRITICAL_STRIKE, critChance, true, critChance);
 
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_CRITICAL_STRIKE).." "..format("%.2F%%", critChance)..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_CRITICAL_STRIKE)..FONT_COLOR_CODE_CLOSE;
 	local extraCritChance = GetCombatRatingBonus(rating);
 	local extraCritRating = GetCombatRating(rating);
 	if (GetCritChanceProvidesParryEffect()) then
@@ -1129,7 +1122,7 @@ function PaperDollFrame_SetHaste(statFrame, unit)
 	end
 
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_HASTE, format(hasteFormatString, format("%d%%", haste + 0.5)), false, haste);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE .. format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_HASTE) .. " " .. format(hasteFormatString, format("%.2F%%", haste)) .. FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_HASTE)..FONT_COLOR_CODE_CLOSE;
 
 	local _, class = UnitClass(unit);
 	statFrame.tooltip2 = _G["STAT_HASTE_"..class.."_TOOLTIP"];
@@ -1173,12 +1166,6 @@ function Mastery_OnEnter(statFrame)
 	local _, class = UnitClass("player");
 	local mastery, bonusCoeff = GetMasteryEffect();
 	local masteryBonus = GetCombatRatingBonus(CR_MASTERY) * bonusCoeff;
-
-	local title = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_MASTERY).." "..format("%.2F%%", mastery)..FONT_COLOR_CODE_CLOSE;
-	if (masteryBonus > 0) then
-		title = title..HIGHLIGHT_FONT_COLOR_CODE.." ("..format("%.2F%%", mastery-masteryBonus)..FONT_COLOR_CODE_CLOSE..GREEN_FONT_COLOR_CODE.."+"..format("%.2F%%", masteryBonus)..FONT_COLOR_CODE_CLOSE..HIGHLIGHT_FONT_COLOR_CODE..")"..FONT_COLOR_CODE_CLOSE;
-	end
-	GameTooltip:SetText(title);
 
 	local primaryTalentTree = GetSpecialization();
 	if (primaryTalentTree) then
@@ -1276,7 +1263,7 @@ function PaperDollFrame_SetVersatility(statFrame, unit)
 	local versatilityDamageBonus = GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_DONE) + GetVersatilityBonus(CR_VERSATILITY_DAMAGE_DONE);
 	local versatilityDamageTakenReduction = GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_TAKEN) + GetVersatilityBonus(CR_VERSATILITY_DAMAGE_TAKEN);
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_VERSATILITY, versatilityDamageBonus, true, versatilityDamageBonus);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE .. format(VERSATILITY_TOOLTIP_FORMAT, STAT_VERSATILITY, versatilityDamageBonus, versatilityDamageTakenReduction) .. FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_VERSATILITY)..FONT_COLOR_CODE_CLOSE;
 
 	statFrame.tooltip2 = format(CR_VERSATILITY_TOOLTIP, versatilityDamageBonus, versatilityDamageTakenReduction, BreakUpLargeNumbers(versatility), versatilityDamageBonus, versatilityDamageTakenReduction);
 
@@ -1293,7 +1280,7 @@ function PaperDollFrame_SetItemLevel(statFrame, unit)
 	local minItemLevel = C_PaperDollInfo.GetMinItemLevel();
 
 	local displayItemLevel = math.max(minItemLevel or 0, avgItemLevelEquipped);
-	
+
 	displayItemLevel = floor(displayItemLevel);
 	avgItemLevel = floor(avgItemLevel);
 
@@ -1427,7 +1414,7 @@ end
 
 function PaperDollFrame_OnShow(self)
 	CharacterStatsPane.initialOffsetY = 0;
-	CharacterFrameTitleText:SetText(UnitPVPName("player"));
+	CharacterFrame:SetTitle(UnitPVPName("player"));
 	PaperDollFrame_SetLevel();
 	PaperDollFrame_UpdateStats();
 	CharacterFrame_Expand();
@@ -1475,6 +1462,14 @@ function PaperDollFrame_IgnoreSlot(slot)
 	C_EquipmentSet.IgnoreSlotForSave(slot);
 	itemSlotButtons[slot].ignored = true;
 	PaperDollItemSlotButton_Update(itemSlotButtons[slot]);
+end
+
+function PaperDollFrame_UpdateCorruptedItemGlows(glow)
+	for _, button in next, itemSlotButtons do
+		if button.HasPaperDollAzeriteItemOverlay then
+			button:UpdateCorruptedGlow(ItemLocation:CreateFromEquipmentSlot(button:GetID()), glow);
+		end
+	end
 end
 
 function PaperDollItemSlotButton_OnLoad(self)
@@ -1595,9 +1590,22 @@ end
 function PaperDollItemSlotButton_OnModifiedClick(self, button)
 	if ( IsModifiedClick("EXPANDITEM") ) then
 		local itemLocation = ItemLocation:CreateFromEquipmentSlot(self:GetID());
-		if C_Item.DoesItemExist(itemLocation) and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) then
-			OpenAzeriteEmpoweredItemUIFromItemLocation(itemLocation);
-		else
+		if C_Item.DoesItemExist(itemLocation) then
+			if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) then
+				if C_Item.CanViewItemPowers(itemLocation) then 
+					OpenAzeriteEmpoweredItemUIFromItemLocation(itemLocation);
+				else 
+					UIErrorsFrame:AddExternalErrorMessage(AZERITE_PREVIEW_UNAVAILABLE_FOR_CLASS);
+				end
+				return;
+			end
+
+			local heartItemLocation = C_AzeriteItem.FindActiveAzeriteItem();
+			if heartItemLocation and heartItemLocation:IsEqualTo(itemLocation) then
+				OpenAzeriteEssenceUIFromItemLocation(itemLocation);
+				return;
+			end
+
 			SocketInventoryItem(self:GetID());
 		end
 		return;
@@ -1610,7 +1618,8 @@ end
 function PaperDollItemSlotButton_Update(self)
 	local textureName = GetInventoryItemTexture("player", self:GetID());
 	local cooldown = _G[self:GetName().."Cooldown"];
-	if ( textureName ) then
+	local hasItem = textureName ~= nil;
+	if ( hasItem ) then
 		SetItemButtonTexture(self, textureName);
 		SetItemButtonCount(self, GetInventoryItemCount("player", self:GetID()));
 		if ( GetInventoryItemBroken("player", self:GetID())
@@ -1625,7 +1634,6 @@ function PaperDollItemSlotButton_Update(self)
 			local start, duration, enable = GetInventoryItemCooldown("player", self:GetID());
 			CooldownFrame_Set(cooldown, start, duration, enable);
 		end
-		self.hasItem = 1;
 	else
 		local textureName = self.backgroundTextureName;
 		if ( self.checkRelic and UnitHasRelicSlot("player") ) then
@@ -1638,7 +1646,6 @@ function PaperDollItemSlotButton_Update(self)
 		if ( cooldown ) then
 			cooldown:Hide();
 		end
-		self.hasItem = nil;
 	end
 
 	local quality = GetInventoryItemQuality("player", self:GetID());
@@ -1654,7 +1661,7 @@ function PaperDollItemSlotButton_Update(self)
 	end
 
 	if self.HasPaperDollAzeriteItemOverlay then
-		self:SetAzeriteItem(self.hasItem and ItemLocation:CreateFromEquipmentSlot(self:GetID()) or nil);
+		self:SetAzeriteItem(hasItem and ItemLocation:CreateFromEquipmentSlot(self:GetID()) or nil);
 	end
 
 	PaperDollItemSlotButton_UpdateLock(self);
@@ -1971,7 +1978,7 @@ function PaperDollFrameItemFlyout_PostGetItems(itemSlotButton, itemDisplayTable,
 		end
 		numItems = numItems + 1;
 	end
-	if ( itemSlotButton.hasItem ) then
+	if ( GetInventoryItemTexture("player", itemSlotButton:GetID()) ~= nil ) then
 		tinsert(itemDisplayTable, 1, EQUIPMENTFLYOUT_PLACEINBAGS_LOCATION);
 		numItems = numItems + 1;
 	end
@@ -1984,7 +1991,9 @@ function GearSetEditButton_OnLoad(self)
 	UIDropDownMenu_SetInitializeFunction(self.Dropdown, GearSetEditButtonDropDown_Initialize);
 end
 
-function GearSetEditButton_OnClick(self, button)
+function GearSetEditButton_OnMouseDown(self, button)
+	self.texture:SetPoint("TOPLEFT", 1, -1);
+
 	GearSetButton_OnClick(self:GetParent(), button);
 
 	if ( self.Dropdown.gearSetButton ~= self:GetParent() ) then
@@ -2847,9 +2856,26 @@ end
 
 PaperDollItemsMixin = {};
 
-function PaperDollItemsMixin:OnLoad()
-	self.isDirty = false;
-	self.onAzeriteUIShownCallback = function() self:OnAzeriteUIShown() end;
+do
+	local helpFlags = {
+		AzeriteEmpoweredItemTipClosed	= 0x0001,
+		AzeriteEmpoweredItemUIShown 	= 0x0002,
+		AzeriteEssenceUnlockTipClosed	= 0x0004,
+		AzeriteEssenceSlotTipClosed		= 0x0008,
+		AzeriteEssenceUIShown			= 0x0010,
+		AzeriteEssenceSwapTipClosed		= 0x0020,
+	};
+
+	function PaperDollItemsMixin:OnLoad()
+		self.isDirty = false;
+		self.onAzeriteEmpoweredItemUIShownCallback = function() self:OnAzeriteEmpoweredItemUIShown() end;
+		self.onAzeriteEssenceUIShownCallback = function() self:OnAzeriteEssenceUIShown() end;
+
+		self.helpFlags = CreateFromMixins(FlagsMixin);
+		self.helpFlags:OnLoad();
+		self.helpFlags:AddNamedFlagsFromTable(helpFlags);
+		self.clearableFlags = Flags_CreateMaskFromTable(helpFlags) - self.helpFlags.AzeriteEssenceUnlockTipClosed - self.helpFlags.AzeriteEssenceSwapTipClosed;
+	end
 end
 
 function PaperDollItemsMixin:MarkDirty()
@@ -2875,7 +2901,7 @@ function PaperDollItemsMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, PAPERDOLL_ITEMS_FRAME_EVENTS);
 
 	if AzeriteEmpoweredItemUI then
-		AzeriteEmpoweredItemUI:RegisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnShow, self.onAzeriteUIShownCallback);
+		AzeriteEmpoweredItemUI:RegisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnShow, self.onAzeriteEmpoweredItemUIShownCallback);
 	else
 		self:RegisterEvent("ADDON_LOADED");
 	end
@@ -2887,7 +2913,7 @@ function PaperDollItemsMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, PAPERDOLL_ITEMS_FRAME_EVENTS);
 
 	if AzeriteEmpoweredItemUI then
-		AzeriteEmpoweredItemUI:UnregisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnShow, self.onAzeriteUIShownCallback);
+		AzeriteEmpoweredItemUI:UnregisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnShow, self.onAzeriteEmpoweredItemUIShownCallback);
 	end
 	self:UnregisterEvent("ADDON_LOADED");
 end
@@ -2906,29 +2932,37 @@ function PaperDollItemsMixin:OnEvent(event, ...)
 	elseif event == "ADDON_LOADED" then
 		local addOnName = ...;
 		if addOnName == "Blizzard_AzeriteUI" then
-			self.wasAzeriteUIShown = true;
+			self.helpFlags:Set(self.helpFlags.AzeriteEmpoweredItemUIShown);
 			self:MarkDirty();
-			AzeriteEmpoweredItemUI:RegisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnShow, self.onAzeriteUIShownCallback);
+			AzeriteEmpoweredItemUI:RegisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnShow, self.onAzeriteEmpoweredItemUIShownCallback);
+		elseif addOnName == "Blizzard_AzeriteEssenceUI" then
+			self.helpFlags:Set(self.helpFlags.AzeriteEssenceUIShown);
+			self:MarkDirty();
+			AzeriteEssenceUI:RegisterCallback(AzeriteEssenceUIMixin.Event.OnShow, self.onAzeriteEssenceUIShownCallback);
 		end
 	end
 end
 
-function PaperDollItemsMixin:OnAzeriteUIShown()
-	self.wasAzeriteUIShown = true;
+function PaperDollItemsMixin:OnAzeriteEmpoweredItemUIShown()
+	self.helpFlags:Set(self.helpFlags.AzeriteEmpoweredItemUIShown);
+	self:MarkDirty();
+end
+
+function PaperDollItemsMixin:OnAzeriteEssenceUIShown()
+	self.helpFlags:Set(self.helpFlags.AzeriteEssenceUIShown);
 	self:MarkDirty();
 end
 
 function PaperDollItemsMixin:ResetHelpTipFlags()
-	self.wasHelpTipManuallyClosed = nil;
-	self.wasAzeriteUIShown = nil;
+	self.helpFlags:Clear(self.clearableFlags);
 end
 
-function PaperDollItemsMixin:ShouldShowHelpTip()
-	if self.wasHelpTipManuallyClosed then
+function PaperDollItemsMixin:ShouldShowAzeriteEmpoweredItemHelpTip()
+	if self.helpFlags:IsSet(self.helpFlags.AzeriteEmpoweredItemTipClosed) then
 		return false;
 	end
 
-	if self.wasAzeriteUIShown then
+	if self.helpFlags:IsSet(self.helpFlags.AzeriteEmpoweredItemUIShown) then
 		return false;
 	end
 
@@ -2939,48 +2973,111 @@ function PaperDollItemsMixin:ShouldShowHelpTip()
 	return true;
 end
 
-function PaperDollItemsMixin:OnHelpTipManuallyClosed()
-	self.wasHelpTipManuallyClosed = true;
+function PaperDollItemsMixin:ShouldShowAzeriteEssenceUnlockHelpTip()
+	if self.helpFlags:IsSet(self.helpFlags.AzeriteEssenceUnlockTipClosed) then
+		return false;
+	end
+
+	if self.helpFlags:IsSet(self.helpFlags.AzeriteEssenceUIShown) then
+		return false;
+	end
+
+	if AzeriteEssenceUI and AzeriteEssenceUI:IsShown() then
+		return false;
+	end
+
+	return true;
+end
+
+function PaperDollItemsMixin:ShouldShowAzeriteEssenceSlotHelpTip()
+	if self.helpFlags:IsSet(self.helpFlags.AzeriteEssenceSlotTipClosed) then
+		return false;
+	end
+
+	if self.helpFlags:IsSet(self.helpFlags.AzeriteEssenceUIShown) then
+		return false;
+	end
+
+	if AzeriteEssenceUI and AzeriteEssenceUI:IsShown() then
+		return false;
+	end
+
+	return true;
+end
+
+function PaperDollItemsMixin:ShouldShowAzeriteEssenceSwapHelpTip()
+	if self.helpFlags:IsSet(self.helpFlags.AzeriteEssenceSwapTipClosed) then
+		return false;
+	end
+
+	if self.helpFlags:IsSet(self.helpFlags.AzeriteEssenceUIShown) then
+		return false;
+	end
+
+	return AzeriteEssenceUtil.ShouldShowEssenceSwapTutorial();
+end
+
+function PaperDollItemsMixin:OnHelpTipManuallyClosed(closeFlag)
+	self.helpFlags:Set(closeFlag);
+	self:MarkDirty();
 end
 
 function PaperDollItemsMixin:EvaluateHelpTip()
-	if not self:ShouldShowHelpTip() then
-		self.UnspentAzeriteHelpBox:Hide();
-		return;
+	local bestHelpTipButton, helpTipText;
+	local helpCloseFlag = 0;
+	if not bestHelpTipButton and self:ShouldShowAzeriteEssenceUnlockHelpTip() then
+		local hasUnlockable, firstUnlockableIsSlot = AzeriteEssenceUtil.HasAnyUnlockableMilestones();
+		if hasUnlockable then
+			bestHelpTipButton = self:FindActiveAzeriteItemButton();
+			helpTipText = firstUnlockableIsSlot and AZERITE_ESSENCE_HELPTIP_UNLOCKED_SLOT or AZERITE_ESSENCE_HELPTIP_UNLOCKED_POWER;
+			helpCloseFlag = self.helpFlags.AzeriteEssenceUnlockTipClosed;
+		end
+	end
+	if not bestHelpTipButton and self:ShouldShowAzeriteEssenceSlotHelpTip() then
+		if AzeriteEssenceUtil.ShouldShowEmptySlotHelptip() then
+			bestHelpTipButton = self:FindActiveAzeriteItemButton();
+			helpTipText = AZERITE_ESSENCE_HELPTIP_AVAILABLE_SLOT;
+			helpCloseFlag = self.helpFlags.AzeriteEssenceSlotTipClosed;
+		end
+	end
+	if not bestHelpTipButton and self:ShouldShowAzeriteEssenceSwapHelpTip() then
+		bestHelpTipButton = self:FindActiveAzeriteItemButton();
+		if bestHelpTipButton then
+			helpTipText = CHARACTER_SHEET_MICRO_BUTTON_AZERITE_ESSENCE_CHANGE_ESSENCES;
+			helpCloseFlag = self.helpFlags.AzeriteEssenceSwapTipClosed;
+			AzeriteEssenceUtil.SetEssenceSwapTutorialSeen();
+		end
+	end	
+	if not bestHelpTipButton and self:ShouldShowAzeriteEmpoweredItemHelpTip() then
+		bestHelpTipButton = self:FindBestAzeriteEmpoweredItemUIHelpTipButton();
+		helpTipText = AZERITE_EMPOWERED_UNSELECTED_TRAITS_HELPTIP;
+		helpCloseFlag = self.helpFlags.AzeriteEmpoweredItemTipClosed;
 	end
 
-	local bestHelpTipButton = self:FindBestHelpTipButton();
+	HelpTip:HideAll(self);
 	if bestHelpTipButton then
-		self.UnspentAzeriteHelpBox.Arrow:ClearAllPoints();
-		self.UnspentAzeriteHelpBox:ClearAllPoints();
-		self.UnspentAzeriteHelpBox.Arrow.Glow:ClearAllPoints();
-		self.UnspentAzeriteHelpBox:ClearAllPoints();
-
+		local helpTipInfo = {
+			onHideCallback = function(acknowledged, closeFlag)
+				if acknowledged then
+					PaperDollItemsFrame:OnHelpTipManuallyClosed(closeFlag);
+				end
+			end,
+			callbackArg = helpCloseFlag;
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			text = helpTipText
+		};
 		if bestHelpTipButton.IsLeftSide then
-			self.UnspentAzeriteHelpBox.Arrow.Arrow:SetRotation(-math.pi / 2);
-			self.UnspentAzeriteHelpBox.Arrow.Glow:SetRotation(-math.pi / 2);
-
-			self.UnspentAzeriteHelpBox.Arrow:SetPoint("RIGHT", self.UnspentAzeriteHelpBox, "LEFT", 17, 0);
-			self.UnspentAzeriteHelpBox.Arrow.Glow:SetPoint("CENTER", self.UnspentAzeriteHelpBox.Arrow.Arrow, "CENTER", -3, 0);
-			self.UnspentAzeriteHelpBox.CloseButton:SetPoint("TOPRIGHT", self.UnspentAzeriteHelpBox, "TOPRIGHT", 6, 6);
-			self.UnspentAzeriteHelpBox:SetPoint("LEFT", bestHelpTipButton, "RIGHT", 30, 0);
+			helpTipInfo.targetPoint = HelpTip.Point.RightEdgeCenter;
+			helpTipInfo.offsetX = 10;
 		else
-			self.UnspentAzeriteHelpBox.Arrow.Arrow:SetRotation(math.pi / 2);
-			self.UnspentAzeriteHelpBox.Arrow.Glow:SetRotation(math.pi / 2);
-
-			self.UnspentAzeriteHelpBox.Arrow:SetPoint("LEFT", self.UnspentAzeriteHelpBox, "RIGHT", -17, 0);
-			self.UnspentAzeriteHelpBox.Arrow.Glow:SetPoint("CENTER", self.UnspentAzeriteHelpBox.Arrow.Arrow, "CENTER", 4, 0);
-			self.UnspentAzeriteHelpBox.CloseButton:SetPoint("TOPRIGHT", self.UnspentAzeriteHelpBox, "TOPRIGHT", 4, 6);
-			self.UnspentAzeriteHelpBox:SetPoint("RIGHT", bestHelpTipButton, "LEFT", -30, 0);
+			helpTipInfo.targetPoint = HelpTip.Point.LeftEdgeCenter;
+			helpTipInfo.offsetX = -10;
 		end
-
-		self.UnspentAzeriteHelpBox:Show();
-	else
-		self.UnspentAzeriteHelpBox:Hide();
+		HelpTip:Show(self, helpTipInfo, bestHelpTipButton);
 	end
 end
 
-function PaperDollItemsMixin:FindBestHelpTipButton()
+function PaperDollItemsMixin:FindBestAzeriteEmpoweredItemUIHelpTipButton()
 	for equipSlotIndex, itemLocation in AzeriteUtil.EnumerateEquipedAzeriteEmpoweredItems() do
 		if C_AzeriteEmpoweredItem.HasAnyUnselectedPowers(itemLocation) then
 			-- Right now we're just going to try pointing at the lowest slot index
@@ -2988,5 +3085,13 @@ function PaperDollItemsMixin:FindBestHelpTipButton()
 		end
 	end
 
+	return nil;
+end
+
+function PaperDollItemsMixin:FindActiveAzeriteItemButton()
+	local itemLocation = C_AzeriteItem.FindActiveAzeriteItem();
+	if itemLocation then
+		return self.EquipmentSlots[itemLocation.equipmentSlotIndex];
+	end
 	return nil;
 end

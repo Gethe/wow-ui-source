@@ -36,6 +36,9 @@ end
 
 function QuickJoinToastMixin:OnShow()
 	self:RegisterEvent("PVP_BRAWL_INFO_UPDATED");
+	if RecruitAFriendFrame then
+		RecruitAFriendFrame:UpdateRAFTutorialTips();
+	end
 end
 
 function QuickJoinToastMixin:OnHide()
@@ -115,7 +118,7 @@ function QuickJoinToastMixin:ProcessUpdate(guid)
 	if ( group:GetPriority() > 0 and not group:ShouldSuppressToast() ) then
 		if ( not self.groupsAwaitingDisplay[guid] ) then
 			self.groupsAwaitingDisplay[guid] = true;
-			GuildRoster();
+			C_GuildInfo.GuildRoster();
 			group:DelayUntil(GetTime() + QUICK_JOIN_CONFIG.DELAY_DURATION);
 		end
 	else
@@ -152,7 +155,7 @@ end
 
 function QuickJoinToastMixin:UpdateDisplayedFriendCount()
 	local _, numBNetOnline = BNGetNumFriends();
-	local _, numWoWOnline = GetNumFriends();
+	local numWoWOnline = C_FriendList.GetNumOnlineFriends() or 0;
 	self.FriendCount:SetText(numBNetOnline + numWoWOnline);
 end
 
@@ -354,7 +357,8 @@ function QuickJoinToastMixin:OnEnter()
 			GameTooltip:Show();
 		end
 	else
-		GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_SOCIAL);
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL"));
 	end
 end
 
@@ -524,8 +528,8 @@ function QuickJoinToast_GetPriorityFromQueue(queue)
 
 	local itemLevel = GetAverageItemLevel();
 	if ( queueData.queueType == "lfglist" ) then
-		local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted = C_LFGList.GetSearchResultInfo(queueData.lfgListID);
-		local fullName, shortName, categoryID, groupID, iLevel, filters, minLevel, maxPlayers, displayType, orderIndex, useHonorLevel, showQuickJoin = C_LFGList.GetActivityInfo(activityID);
+		local searchResultInfo = C_LFGList.GetSearchResultInfo(queueData.lfgListID);
+		local fullName, shortName, categoryID, groupID, iLevel, filters, minLevel, maxPlayers, displayType, orderIndex, useHonorLevel, showQuickJoin = C_LFGList.GetActivityInfo(searchResultInfo.activityID);
 		--Filter by activity flags
 		if ( not showQuickJoin ) then
 			return 0;
@@ -603,7 +607,7 @@ function QuickJoinToast_GetPriorityFromPlayers(players)
 	local priority = 0;
 	for i=1, #players do
 		local player = players[i].guid;
-		if ( BNGetGameAccountInfoByGUID(player) or IsCharacterFriend(player) ) then
+		if ( C_BattleNet.GetGameAccountInfoByGUID(player) or C_FriendList.IsFriend(player) ) then
 			priority = priority + QUICK_JOIN_CONFIG.PLAYER_FRIEND_VALUE;
 		end
 		if ( IsGuildMember(player) ) then

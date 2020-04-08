@@ -1,21 +1,5 @@
-DigSiteDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
-
-function DigSiteDataProviderMixin:OnShow()
-	self:RegisterEvent("CVAR_UPDATE");
-end
-
-function DigSiteDataProviderMixin:OnHide()
-	self:UnregisterEvent("CVAR_UPDATE");
-end
-
-function DigSiteDataProviderMixin:OnEvent(event, ...)
-	if event == "CVAR_UPDATE" then
-		local eventName, value = ...;
-		if eventName == "SHOW_DIG_SITES" then
-			self:RefreshAllData();
-		end
-	end
-end
+DigSiteDataProviderMixin = CreateFromMixins(CVarMapCanvasDataProviderMixin);
+DigSiteDataProviderMixin:Init("digSites", "SHOW_DIG_SITES");
 
 function DigSiteDataProviderMixin:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate("DigSitePinTemplate");
@@ -23,8 +7,8 @@ end
 
 function DigSiteDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
-
-	if not GetCVarBool("digSites") then
+	
+	if not self:IsCVarSet() then
 		return;
 	end
 

@@ -35,11 +35,11 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Button name="GossipTitleButtonTemplate" virtual="true" hidden="false">
+	<Button name="GossipTitleButtonTemplate" virtual="true" mixin="GossipTitleButtonMixin" hidden="false">
 		<Size x="300" y="16"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentGossipIcon" file="Interface\QuestFrame\UI-Quest-BulletPoint">
+				<Texture name="$parentGossipIcon" parentKey="Icon" file="Interface\QuestFrame\UI-Quest-BulletPoint">
 					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="3" y="1"/>
@@ -80,7 +80,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-		</Layers> 
+		</Layers>
  		<Frames>
 			<Frame name="GossipNpcNameFrame">
 				<Size x="0" y="14"/>

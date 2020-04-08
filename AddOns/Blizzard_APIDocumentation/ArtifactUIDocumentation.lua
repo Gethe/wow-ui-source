@@ -220,6 +220,15 @@ local ArtifactUI =
 			},
 		},
 		{
+			Name = "GetArtifactItemID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetArtifactTier",
 			Type = "Function",
 
@@ -286,6 +295,15 @@ local ArtifactUI =
 				{ Name = "altItemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altOnTop", Type = "bool", Nilable = false },
 				{ Name = "tier", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetEquippedArtifactItemID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
 			},
 		},
 		{

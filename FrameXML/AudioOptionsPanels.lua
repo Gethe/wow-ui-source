@@ -230,7 +230,7 @@ function AudioOptionsSoundPanelSoundCacheSizeDropDown_OnLoad (self)
 	end
 end
 
-local soundCacheSizeValues = { 16777216, 67108864 }; --value in bytes, displayed in MB
+local soundCacheSizeValues = { 67108864, 134217728 }; --value in bytes, displayed in MB
 local soundCacheSizeText = { "SOUND_CACHE_SIZE_SMALL", "SOUND_CACHE_SIZE_LARGE" };
 function AudioOptionsSoundPanelSoundCacheSizeDropDown_Initialize(self)
 	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
@@ -335,7 +335,24 @@ function AudioOptionsVoicePanel_OnEvent(self, event, ...)
 	elseif event == "UPDATE_BINDINGS" then
 		AudioOptionsVoicePanel_UpdateCommunicationModeUI(self);
 	elseif event == "VOICE_CHAT_ERROR" or event == "VOICE_CHAT_CONNECTION_SUCCESS" then
-		AudioOptionsVoicePanelEnableVoice_UpdateControls(self);
+		AudioOptionsVoicePanel_Refresh(self);
+	end
+end
+
+function DisplayUniversalAccessDialogIfRequiredForVoiceChatKeybind(keys)
+	if IsMacClient() then
+		local hasNonMetaKey = false;
+		for i, key in ipairs(keys) do
+			if not IsMetaKey(key) then
+				hasNonMetaKey = true;
+				break;
+			end
+		end
+		if hasNonMetaKey then
+			if not MacOptions_IsUniversalAccessEnabled() then
+				StaticPopup_Show("MAC_OPEN_UNIVERSAL_ACCESS");
+			end
+		end
 	end
 end
 
@@ -349,10 +366,14 @@ function AudioOptionsVoicePanel_InitializeCommunicationModeUI(self)
 			end
 		end);
 
-		handler:SetOnBindingCompletedCallback(function(completedSuccessfully)
+		handler:SetOnBindingCompletedCallback(function(completedSuccessfully, keys)
 			self.ChatModeDropdown.PushToTalkNotification:SetText("");
 			BindingButtonTemplate_SetSelected(self.PushToTalkKeybindButton, false);
 			AudioOptionsVoicePanel_UpdateCommunicationModeUI(self);
+
+			if completedSuccessfully and keys then
+				DisplayUniversalAccessDialogIfRequiredForVoiceChatKeybind(keys);
+			end
 		end);
 
 		self.PushToTalkKeybindButton = CustomBindingManager:RegisterHandlerAndCreateButton(handler, "CustomBindingButtonTemplateWithLabel", self);
@@ -424,7 +445,8 @@ end
 
 local function AudioOptionsPanelVoiceChatSlider_BaseOnLoad(self, cvar, getCurrentFn)
 	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-	self:SetMinMaxValues(0, 100);
+	local max = self.isValueNormalized and 1.0 or 100;
+	self:SetMinMaxValues(0, max);
 	self.Low:Hide();
 	self.High:Hide();
 	self.Text:ClearAllPoints();
@@ -434,13 +456,16 @@ local function AudioOptionsPanelVoiceChatSlider_BaseOnLoad(self, cvar, getCurren
 	self.defaultValue = defaultValue;
 
 	self.GetCurrentValue = function(self)
-		return getCurrentFn();
+		local value = getCurrentFn();
+		if value ~= nil then
+			return self.isValueInverted and (max - value) or value;
+		end
 	end
 
 	self.RefreshValue = function(self)
-		local current = getCurrentFn();
-		if current ~= nil then
-			self:SetValue(current);
+		local value = self:GetCurrentValue();
+		if value ~= nil then
+			self:SetValue(value);
 		end
 	end
 
@@ -448,9 +473,26 @@ local function AudioOptionsPanelVoiceChatSlider_BaseOnLoad(self, cvar, getCurren
 end
 
 local function AudioOptionsPanelVoiceChatSlider_BaseOnValueChanged(self, value, setValueFn)
-	self.newValue = floor(value);
-	self.Text:SetText(FormatPercentage(self.newValue / 100, true));
-	setValueFn(self.newValue);
+	local max;
+	-- Normalized values are in the range of [0,1].
+	if self.isValueNormalized then
+		self.newValue = value;
+		max = 1.0;
+	else
+		self.newValue = floor(value);
+		max = 100;
+	end
+	self.Text:SetText(FormatPercentage(self.newValue / max, true));
+	
+	-- If the underlying cvar's value has an inverse range, i.e. the slider
+	-- range is [0,1], but the cvar represents this range as [0,1], the value
+	-- can be inverted before returning. This changes a slider value of .9 to
+	-- a cvar value of .1.
+	if self.isValueInverted then
+		setValueFn(max - self.newValue);
+	else
+		setValueFn(self.newValue);
+	end
 end
 
 function AudioOptionsPanelVoiceChatVolumeSlider_OnLoad(self)
@@ -459,6 +501,14 @@ end
 
 function AudioOptionsPanelVoiceChatVolumeSlider_OnValueChanged(self, value)
 	AudioOptionsPanelVoiceChatSlider_BaseOnValueChanged(self, value, C_VoiceChat.SetOutputVolume);
+end
+
+function AudioOptionsPanelVoiceChatDuckingSlider_OnLoad(self)
+	AudioOptionsPanelVoiceChatSlider_BaseOnLoad(self, "VoiceChatMasterVolumeScale", C_VoiceChat.GetMasterVolumeScale);
+end
+
+function AudioOptionsPanelVoiceChatDuckingSlider_OnValueChanged(self, value)
+	AudioOptionsPanelVoiceChatSlider_BaseOnValueChanged(self, value, C_VoiceChat.SetMasterVolumeScale);
 end
 
 function AudioOptionsPanelVoiceChatMicVolumeSlider_OnLoad(self)

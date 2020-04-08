@@ -388,4 +388,70 @@
 			</Button>
 		</Frames>
 	</Frame>
+
+	<Frame name="MoneyDenominationDisplayTemplate" mixin="MoneyDenominationDisplayMixin" virtual="true">
+		<Size x="32" y="13"/>
+		<!-- This key value is required and determines the denomination to display.
+		<KeyValues>
+			<KeyValue key="displayType" value="MoneyDenominationDisplayType.Copper" type="global"/>
+		</KeyValues>
+		-->
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size  x="13" y="13"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="PriceFont" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="RIGHT" x="-13" y="0"/>
+					</Anchors>
+					<Shadow x="1" y="-1">
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="MoneyDisplayFrameTemplate" mixin="MoneyDisplayFrameMixin" virtual="true">
+		<Size x="128" y="13"/>
+		<!--
+			hideCopper: Hides the copper amount.
+			leftAlign: Aligns the display to the left of the frame instead of the right.
+			resizeToFit: Changes width based on the amount displayed.
+			useAuctionHouseIcons: Use the newer auction house money icons. This may become the default in the future.
+		<KeyValues>
+			<KeyValue key="hideCopper" value="true" type="boolean"/>
+			<KeyValue key="leftAlign" value="true" type="boolean"/>
+			<KeyValue key="resizeToFit" value="true" type="boolean"/>
+			<KeyValue key="useAuctionHouseIcons" value="true" type="boolean"/>
+		</KeyValues>
+		-->
+		<Frames>
+			<Frame parentKey="CopperDisplay" inherits="MoneyDenominationDisplayTemplate">
+				<KeyValues>
+					<KeyValue key="displayType" value="MoneyDenominationDisplayType.Copper" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="SilverDisplay" inherits="MoneyDenominationDisplayTemplate">
+				<KeyValues>
+					<KeyValue key="displayType" value="MoneyDenominationDisplayType.Silver" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="GoldDisplay" inherits="MoneyDenominationDisplayTemplate">
+				<KeyValues>
+					<KeyValue key="displayType" value="MoneyDenominationDisplayType.Gold" type="global"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
 </Ui>

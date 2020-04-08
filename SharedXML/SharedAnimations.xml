@@ -1,0 +1,129 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+
+	<Texture name="PowerSwirlScaleTexture" scale="1.7079419299744" virtual="true" />
+	
+	<Frame name="PowerSwirlAnimationTemplate" setAllPoints="true" hidden="true" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="-2">
+				<Texture parentKey="LightRune" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="6">
+				<Texture parentKey="BigWhirls" alpha="0" alphaMode="ADD" atlas="PowerSwirlAnimation-Whirls" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color r="1" g="0.83921568627451" b="0.45098039215686"/>
+				</Texture>
+				<Texture parentKey="SpinningGlows" alpha="0" alphaMode="ADD" atlas="PowerSwirlAnimation-SpinningGlowys" useAtlasSize="true" inherits="PowerSwirlScaleTexture">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SpinningGlows2" alpha="0" alphaMode="ADD" atlas="PowerSwirlAnimation-SpinningGlowys" useAtlasSize="true" inherits="PowerSwirlScaleTexture">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RingBurst" alpha="0" alphaMode="ADD" atlas="PowerSwirlAnimation-YellowRing" useAtlasSize="true" inherits="PowerSwirlScaleTexture">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color r="0.45098039215686" g="0.83921568627451" b="1"/>
+				</Texture>
+				<Texture parentKey="WhiteStarBurst" alpha="0" alphaMode="ADD" atlas="PowerSwirlAnimation-WhiteStarBurst" useAtlasSize="true" inherits="PowerSwirlScaleTexture">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Ring" alphaMode="ADD" alpha="0" atlas="PowerSwirlAnimation-BlueRing" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="7">
+				<Texture parentKey="StarBurst" alpha="0" alphaMode="ADD" atlas="PowerSwirlAnimation-StarBurst" useAtlasSize="true" inherits="PowerSwirlScaleTexture">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="SelectedAnim" setToFinalAlpha="true">
+				<Alpha childKey="BigWhirls" startDelay="0.25" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BigWhirls" startDelay="0.25" duration="0.75" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1.25" toScaleY="1.25"/>
+				<Rotation childKey="BigWhirls" startDelay="0.25" smoothing="OUT" duration="0.75" order="1" degrees="-90"/>
+				<Alpha childKey="BigWhirls" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+
+				<Alpha childKey="SpinningGlows" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="SpinningGlows" duration="0.75" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.75" toScaleY="0.75"/>
+				<Rotation childKey="SpinningGlows" smoothing="OUT" duration="0.75" order="1" degrees="-180"/>
+				<Alpha childKey="SpinningGlows" startDelay="0.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+
+				<Alpha childKey="SpinningGlows2" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="SpinningGlows2" duration="0.75" order="1" fromScaleX="0.9" fromScaleY="0.9" toScaleX="0.6" toScaleY="0.6"/>
+				<Rotation childKey="SpinningGlows2" smoothing="OUT" duration="0.75" order="1" degrees="-200"/>
+				<Alpha childKey="SpinningGlows2" startDelay="0.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+
+				<Alpha childKey="StarBurst" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="StarBurst" smoothing="IN" duration="0.5" order="1" fromScaleX="0.1" fromScaleY="0.1" toScaleX="1.5" toScaleY="1.5"/>
+				<Alpha childKey="StarBurst" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+
+				<Alpha childKey="RingBurst" smoothing="OUT" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RingBurst" startDelay="0.5" smoothing="NONE" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="RingBurst" startDelay="0.25" duration="0.5" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="0.75" toScaleY="0.75"/>
+				<Scripts>
+					<OnFinished>
+						local powerButton = self:GetParent():GetParent();
+						if powerButton.OnSwirlAnimationFinished then
+							powerButton:OnSwirlAnimationFinished();
+						end
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+
+			<AnimationGroup parentKey="RevealAnim" setToFinalAlpha="true">
+				<Alpha parentKey="Start" childKey="LightRune" duration=".001" order="1" fromAlpha="0" toAlpha="0"/>
+
+				<Alpha childKey="LightRune" smoothing="OUT" duration="0.3" order="2" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="LightRune" startDelay="0.4" smoothing="IN" duration="1.25" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="WhiteStarBurst" smoothing="OUT" duration="0.4" order="2" fromAlpha="0" toAlpha="0.5"/>
+				<Scale childKey="WhiteStarBurst" smoothing="OUT" duration="0.4" order="2" fromScaleX="0.6" fromScaleY="0.6" toScaleX="1" toScaleY="1.25"/>
+				<Alpha childKey="WhiteStarBurst" startDelay="0.3" smoothing="IN" duration="0.75" order="2" fromAlpha="0.5" toAlpha="0"/>
+				<Alpha childKey="$parent.CanSelectEffect" startDelay="0.0" smoothing="IN" duration="0.5" order="2" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="$parent.IconBorder" startDelay="0.8" smoothing="IN" duration="0.5" order="2" fromAlpha="0" toAlpha="0"/>
+				<Alpha childKey="$parent.IconOn" startDelay="0.9" smoothing="IN" duration="0.5" order="2" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="$parent.IconOff" startDelay="0.9" smoothing="IN" duration="0.5" order="2" fromAlpha="0" toAlpha="0"/>
+				<Alpha childKey="$parent.IconDesaturated" startDelay="0.8" smoothing="IN" duration="0.5" order="2" fromAlpha="0" toAlpha="0"/>
+				<Alpha childKey="$parent.IconNotSelectableOverlay" startDelay="0.8" smoothing="IN" duration="0.5" order="2" fromAlpha="0" toAlpha="0"/>
+				<Alpha childKey="$parent.IconBorderSelectable" startDelay="0.8" smoothing="IN" duration="0.5" order="2" fromAlpha=".5" toAlpha="1"/>
+				<Alpha childKey="$parent.CanSelectEffect" startDelay="1.0" smoothing="OUT" duration="1.1" order="2" fromAlpha="1" toAlpha="0"/>
+
+				<Alpha childKey="SpinningGlows" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="SpinningGlows" duration="0.75" order="2" fromScaleX="1.2" fromScaleY="1.2" toScaleX="0.9" toScaleY="0.9"/>
+				<Rotation childKey="SpinningGlows" smoothing="OUT" duration="0.75" order="2" degrees="-180"/>
+				<Alpha childKey="SpinningGlows" startDelay="0.25" duration="0.5" order="2" fromAlpha="1" toAlpha="0"/>
+
+				<Alpha childKey="Ring" startDelay="0.15" duration="0.3" order="2" fromAlpha="0" toAlpha=".5"/>
+				<Scale childKey="Ring" startDelay="0.15" smoothing="OUT" duration="0.3" order="2" fromScaleX="1" fromScaleY="1" toScaleX="1.25" toScaleY="1.25"/>
+				<Scale childKey="Ring" startDelay="0.45" smoothing="IN" duration="0.3" order="2" fromScaleX="1.5" fromScaleY="1.5" toScaleX="0.6" toScaleY="0.6"/>
+				<Alpha childKey="Ring" startDelay="0.65" duration="0.25" order="2" fromAlpha=".5" toAlpha="0"/>
+				<Scripts>
+					<OnFinished>
+						local powerButton = self:GetParent():GetParent();
+						if powerButton.OnSwirlAnimationFinished then
+							powerButton:OnSwirlAnimationFinished();
+						end
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+</Ui>

@@ -4,6 +4,7 @@ local COMMUNITIES_MEMBER_LIST_EVENTS = {
 	"CLUB_MEMBER_REMOVED",
 	"CLUB_MEMBER_UPDATED",
 	"CLUB_MEMBER_PRESENCE_UPDATED",
+	"CLUB_STREAMS_LOADED",
 	"VOICE_CHAT_CHANNEL_ACTIVATED",
 	"VOICE_CHAT_CHANNEL_DEACTIVATED",
 	"VOICE_CHAT_CHANNEL_JOINED",
@@ -34,13 +35,13 @@ local BNET_COLUMN_INFO = {
 		width = 145,
 		attribute = "name",
 	},
-	
+
 	[2] = {
 		title = COMMUNITIES_ROSTER_COLUMN_TITLE_RANK,
 		width = 85,
 		attribute = "role",
 	},
-	
+
 	[3] = {
 		title = COMMUNITIES_ROSTER_COLUMN_TITLE_NOTE,
 		width = 0,
@@ -54,31 +55,69 @@ local CHARACTER_COLUMN_INFO = {
 		width = 40,
 		attribute = "level",
 	},
-	
+
 	[2] = {
 		title = COMMUNITIES_ROSTER_COLUMN_TITLE_CLASS,
 		width = 45,
 		attribute = "classID",
 	},
-	
+
 	[3] = {
 		title = COMMUNITIES_ROSTER_COLUMN_TITLE_NAME,
 		width = 100,
 		attribute = "name",
 	},
-	
+
 	[4] = {
 		title = COMMUNITIES_ROSTER_COLUMN_TITLE_ZONE,
 		width = 100,
 		attribute = "zone",
 	},
-	
+
 	[5] = {
 		title = COMMUNITIES_ROSTER_COLUMN_TITLE_RANK,
 		width = 85,
 		attribute = "role",
 	},
-	
+
+	[6] = {
+		title = COMMUNITIES_ROSTER_COLUMN_TITLE_NOTE,
+		width = 0,
+		attribute = "memberNote",
+	},
+};
+
+local GUILD_COLUMN_INFO = {
+	[1] = {
+		title = COMMUNITIES_ROSTER_COLUMN_TITLE_LEVEL,
+		width = 40,
+		attribute = "level",
+	},
+
+	[2] = {
+		title = COMMUNITIES_ROSTER_COLUMN_TITLE_CLASS,
+		width = 45,
+		attribute = "classID",
+	},
+
+	[3] = {
+		title = COMMUNITIES_ROSTER_COLUMN_TITLE_NAME,
+		width = 100,
+		attribute = "name",
+	},
+
+	[4] = {
+		title = COMMUNITIES_ROSTER_COLUMN_TITLE_ZONE,
+		width = 100,
+		attribute = "zone",
+	},
+
+	[5] = {
+		title = COMMUNITIES_ROSTER_COLUMN_TITLE_RANK,
+		width = 85,
+		attribute = "guildRankOrder",
+	},
+
 	[6] = {
 		title = COMMUNITIES_ROSTER_COLUMN_TITLE_NOTE,
 		width = 0,
@@ -88,26 +127,45 @@ local CHARACTER_COLUMN_INFO = {
 
 local EXTRA_GUILD_COLUMN_ACHIEVEMENT = 1;
 local EXTRA_GUILD_COLUMN_PROFESSION = 2;
+local EXTRA_GUILD_COLUMN_APPLICANTS = 3;
+local EXTRA_GUILD_COLUMN_PENDING = 4;
+
+local COMMUNITY_APPLICANT_LIST_VALUE = 2; 
+
 local EXTRA_GUILD_COLUMNS = {
 	[EXTRA_GUILD_COLUMN_ACHIEVEMENT] = {
-		dropdownText = GUILLD_ROSTER_DROPDOWN_ACHIEVEMENT_POINTS,
+		dropdownText = GUILD_ROSTER_DROPDOWN_ACHIEVEMENT_POINTS,
 		title = COMMUNITIES_ROSTER_COLUMN_TITLE_ACHIEVEMENT,
 		attribute = "achievementPoints",
 		width = 115,
 	};
 
 	[EXTRA_GUILD_COLUMN_PROFESSION] = {
-		dropdownText = GUILLD_ROSTER_DROPDOWN_PROFESSION,
+		dropdownText = GUILD_ROSTER_DROPDOWN_PROFESSION,
 		title = COMMUNITIES_ROSTER_COLUMN_TITLE_PROFESSION,
 		attribute = "profession", -- This is a special case since there are 2 separate sets of profession attributes.
+		width = 115,
+	};
+	
+	[EXTRA_GUILD_COLUMN_APPLICANTS] = {
+		dropdownText = CLUB_FINDER_APPLICANTS,
+		title = CLUB_FINDER_APPLICANTS,
+		attribute = "applicants",
+		width = 115,
+	};
+	[EXTRA_GUILD_COLUMN_PENDING] = {
+		dropdownText = CLUB_FINDER_APPLICANT_HISTORY,
+		title = CLUB_FINDER_APPLICANT_HISTORY,
+		attribute = "pending",
 		width = 115,
 	};
 };
 
 CommunitiesMemberListMixin = {};
 
-function CommunitiesMemberListMixin:OnClubSelected(clubId)
+function CommunitiesMemberListMixin:ResetColumnSort()
 	self.activeColumnSortIndex = nil;
+	self.reverseActiveColumnSort = nil;
 end
 
 function CommunitiesMemberListMixin:SetVoiceChannel(voiceChannel)
@@ -141,19 +199,19 @@ function CommunitiesMemberListMixin:UpdateProfessionDisplay()
 	if not self.sortedMemberList then
 		return;
 	end
-	
+
 	-- Clear out the profession lists without removing the additional data.
 	local professionLookup = self.professionDisplay;
 	for professionId, professionList in pairs(professionLookup) do
 		wipe(professionList.memberList);
 	end
-	
+
 	for i, member in ipairs(self.sortedMemberList) do
 		local firstProfessionID = member.profession1ID
 		if firstProfessionID then
 			if not professionLookup[firstProfessionID] then
 				professionLookup[firstProfessionID] = {};
-				
+
 				local professionList = professionLookup[firstProfessionID];
 				professionList.memberList = { member };
 				professionList.collapsed = true;
@@ -162,12 +220,12 @@ function CommunitiesMemberListMixin:UpdateProfessionDisplay()
 				table.insert(professionLookup[firstProfessionID].memberList, member);
 			end
 		end
-		
+
 		local secondProfessionID = member.profession2ID
 		if secondProfessionID then
 			if not professionLookup[secondProfessionID] then
 				professionLookup[secondProfessionID] = {};
-				
+
 				local professionList = professionLookup[secondProfessionID];
 				professionList.memberList = { member };
 				professionList.collapsed = true;
@@ -177,7 +235,7 @@ function CommunitiesMemberListMixin:UpdateProfessionDisplay()
 			end
 		end
 	end
-	
+
 	self:UpdateSortedProfessionList();
 end
 
@@ -190,9 +248,9 @@ function CommunitiesMemberListMixin:UpdateSortedProfessionList()
 			professionHeaderName = professionList.professionName,
 			professionHeaderCollapsed = professionList.collapsed,
 		};
-		
+
 		table.insert(sortedProfessionList, professionEntry);
-		
+
 		if not professionList.collapsed then
 			for i, member in ipairs(professionList.memberList) do
 				table.insert(sortedProfessionList, member);
@@ -210,16 +268,11 @@ function CommunitiesMemberListMixin:SetProfessionCollapsed(professionId, collaps
 end
 
 function CommunitiesMemberListMixin:IsDisplayingProfessions()
-	local clubId = self:GetSelectedClubId();
-	if not clubId then
-		return false;
-	end
-	
-	local clubInfo = C_Club.GetClubInfo(clubId);
+	local clubInfo = self:GetSelectedClubInfo();
 	if not clubInfo then
 		return false;
 	end
-	
+
 	return clubInfo.clubType == Enum.ClubType.Guild and self.expandedDisplay and self.extraGuildColumnIndex == EXTRA_GUILD_COLUMN_PROFESSION;
 end
 
@@ -227,7 +280,7 @@ function CommunitiesMemberListMixin:RefreshListDisplay()
 	local scrollFrame = self.ListScrollFrame;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local buttons = scrollFrame.buttons;
-	
+
 	local displayingProfessions = self:IsDisplayingProfessions();
 	local professionId = nil;
 	local usedHeight = 0;
@@ -253,7 +306,7 @@ function CommunitiesMemberListMixin:RefreshListDisplay()
 		else
 			if displayInvitations  then
 				displayIndex = displayIndex - #memberList;
-				
+
 				-- Display an extra space and header first.
 				if displayIndex == 1 then
 					-- Leave an extra space between the member list and invitations.
@@ -278,12 +331,12 @@ function CommunitiesMemberListMixin:RefreshListDisplay()
 			end
 		end
 	end
-	
+
 	local totalNum = #memberList;
 	if displayInvitations then
 		totalNum = totalNum + #invitations + 2;
 	end
-	
+
 	HybridScrollFrame_Update(scrollFrame, height * totalNum, usedHeight);
 end
 
@@ -295,12 +348,12 @@ function CommunitiesMemberListMixin:UpdateMemberList()
 	if not self.expandedDisplay then
 		streamId = self:GetSelectedStreamId();
 	end
-	
+
 	self.memberIds = CommunitiesUtil.GetMemberIdsSortedByName(clubId, streamId);
 	self.allMemberList = CommunitiesUtil.GetMemberInfo(clubId, self.memberIds);
 	self.allMemberInfoLookup = CommunitiesUtil.GetMemberInfoLookup(self.allMemberList);
-	self.allMemberList = CommunitiesUtil.SortMemberInfo(self.allMemberList);
-	if not self:ShouldShowOfflinePlayers() then 
+	self.allMemberList = CommunitiesUtil.SortMemberInfo(clubId, self.allMemberList);
+	if not self:ShouldShowOfflinePlayers() then
 		self.sortedMemberList = CommunitiesUtil.GetOnlineMembers(self.allMemberList);
 		self.sortedMemberLookup = CommunitiesUtil.GetMemberInfoLookup(self.sortedMemberList);
 	else
@@ -312,12 +365,44 @@ function CommunitiesMemberListMixin:UpdateMemberList()
 		local keepSortDirection = true;
 		self:SortByColumnIndex(self.activeColumnSortIndex, keepSortDirection);
 	end
-	
+
 	if self:IsDisplayingProfessions() then
 		self:UpdateProfessionDisplay();
 	end
-	
+
+	self:UpdateMemberCount();
 	self:Update();
+end
+
+function CommunitiesMemberListMixin:UpdateWatermark()
+	local clubInfo = self:GetSelectedClubInfo();
+	self.WatermarkFrame:SetShown(clubInfo ~= nil);
+	if clubInfo then
+		if clubInfo.clubType == Enum.ClubType.Guild then
+			SetLargeGuildTabardTextures("player", self.WatermarkFrame.Watermark, nil, nil);
+			self.WatermarkFrame.Watermark:SetVertexColor(1.0, 1.0, 1.0);
+			self.WatermarkFrame.Watermark:SetAlpha(0.15);
+			self.WatermarkFrame.Watermark:SetSize(112, 128);
+		else
+			C_Club.SetAvatarTexture(self.WatermarkFrame.Watermark, clubInfo.avatarId, clubInfo.clubType);
+			self.WatermarkFrame.Watermark:SetTexCoord(0, 1, 0, 1);
+			self.WatermarkFrame.Watermark:SetAlpha(0.1);
+			self.WatermarkFrame.Watermark:SetSize(128, 128);
+		end
+	end
+end
+
+function CommunitiesMemberListMixin:UpdateMemberCount()
+	local numOnlineMembers = 0;
+	for i, memberInfo in ipairs(self.allMemberList) do
+		if memberInfo.presence == Enum.ClubMemberPresence.Online or
+			memberInfo.presence == Enum.ClubMemberPresence.Away or
+			memberInfo.presence == Enum.ClubMemberPresence.Busy then
+			numOnlineMembers = numOnlineMembers + 1;
+		end
+	end
+
+	self.MemberCount:SetText(COMMUNITIES_MEMBER_LIST_MEMBER_COUNT_FORMAT:format(AbbreviateNumbers(numOnlineMembers), AbbreviateNumbers(#self.allMemberList)));
 end
 
 function CommunitiesMemberListMixin:Update()
@@ -351,34 +436,44 @@ function CommunitiesMemberListMixin:ClearMemberListDirty()
 end
 
 function CommunitiesMemberListMixin:SortList()
-	CommunitiesUtil.SortMemberInfo(self.sortedMemberList);
+	if self.activeColumnSortIndex then
+		local keepSortDirection = true;
+		self:SortByColumnIndex(self.activeColumnSortIndex, keepSortDirection);
+	else
+		CommunitiesUtil.SortMemberInfo(self:GetSelectedClubId(), self.sortedMemberList);
+	end
+
 	if self:IsDisplayingProfessions() then
 		self:UpdateProfessionDisplay();
 	end
-	
+
 	self:RefreshListDisplay();
 end
 
 function CommunitiesMemberListMixin:OnLoad()
 	self.ListScrollFrame.update = function()
-		self:Update(); 
+		self:Update();
 	end;
-	
+
 	self.invitations = {};
 	self.professionDisplay = {};
 	self.showOfflinePlayers = GetCVarBool("communitiesShowOffline");
 	self.ShowOfflineButton:SetChecked(self.showOfflinePlayers);
-	
+
 	self.ListScrollFrame.scrollBar.doNotHide = true;
 	self.ListScrollFrame.scrollBar:SetValue(0);
-	
+
 	self:SetExpandedDisplay(false);
 	self:SetGuildColumnIndex(EXTRA_GUILD_COLUMN_ACHIEVEMENT);
 end
-	
+
 function CommunitiesMemberListMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, COMMUNITIES_MEMBER_LIST_EVENTS);
-	
+	local shouldSetExpandedDisplay = self:GetCommunitiesFrame():GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER;
+	self:SetExpandedDisplay(shouldSetExpandedDisplay);
+
+	local selectedClubId = self:GetSelectedClubId();
+
 	self:UpdateMemberList();
 
 	local function StreamSelectedCallback(event, streamId)
@@ -387,10 +482,16 @@ function CommunitiesMemberListMixin:OnShow()
 
 	self.streamSelectedCallback = StreamSelectedCallback;
 	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.streamSelectedCallback);
-	
+
 	local function ClubSelectedCallback(event, clubId)
+		self:ResetColumnSort();
+		if clubId == C_Club.GetGuildClubId() then
+			C_GuildInfo.GuildRoster();
+		end
+
 		self:UpdateInvitations();
 		self:UpdateMemberList();
+		self:UpdateWatermark();
 	end
 
 	self.clubSelectedCallback = ClubSelectedCallback;
@@ -400,11 +501,21 @@ function CommunitiesMemberListMixin:OnShow()
 		local expandedDisplay = displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER;
 		self:SetExpandedDisplay(expandedDisplay);
 	end
-	
+
 	self.displayModeChangedCallback = CommunitiesDisplayModeChangedCallback;
 	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.DisplayModeChanged, self.displayModeChangedCallback);
+	
+	local function SelectedClubInfoChangedCallback(clubId)
+		self:UpdateWatermark();
+	end
 
-	QueryGuildRecipes();
+	self.selectedClubInfoChangedCallback = SelectedClubInfoChangedCallback;
+	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.SelectedClubInfoUpdated, self.selectedClubInfoChangedCallback);
+
+	if selectedClubId ~= nil and selectedClubId == C_Club.GetGuildClubId() then
+		C_GuildInfo.GuildRoster();
+		QueryGuildRecipes();
+	end
 end
 
 function CommunitiesMemberListMixin:OnUpdate()
@@ -414,33 +525,37 @@ function CommunitiesMemberListMixin:OnUpdate()
 	end
 
 	if self:IsSortDirty() then
-		if not self:ShouldShowOfflinePlayers() then 
+		if not self:ShouldShowOfflinePlayers() then
 			self.sortedMemberList = CommunitiesUtil.GetOnlineMembers(self.allMemberList);
 			self.sortedMemberLookup = CommunitiesUtil.GetMemberInfoLookup(self.sortedMemberList);
 		end
 		self:SortList();
 		self:ClearSortDirty();
+		self:UpdateMemberCount();
 	end
 end
 
 function CommunitiesMemberListMixin:UpdateInvitations()
 	self.invitations = {};
-	
-	local clubId = self:GetCommunitiesFrame():GetSelectedClubId();
+
+	local clubId = self:GetSelectedClubId();
 	if self:GetCommunitiesFrame():GetPrivilegesForClub(clubId).canGetInvitation then
 		C_Club.RequestInvitationsForClub(clubId);
 	end
 end
 
 function CommunitiesMemberListMixin:OnInvitationsUpdated()
-	self.invitations = C_Club.GetInvitationsForClub(self:GetCommunitiesFrame():GetSelectedClubId());
+	self.invitations = C_Club.GetInvitationsForClub(self:GetSelectedClubId());
 	self:RefreshListDisplay();
 end
 
 function CommunitiesMemberListMixin:SetExpandedDisplay(expandedDisplay)
 	self.expandedDisplay = expandedDisplay;
+	self.MemberCount:SetShown(not expandedDisplay);
+	self.WatermarkFrame:SetShown(not expandedDisplay);
+	self:ResetColumnSort();
 	self:UpdateMemberList();
-	
+
 	if expandedDisplay then
 		if self:IsDisplayingProfessions() then
 			self:UpdateProfessionDisplay();
@@ -448,7 +563,7 @@ function CommunitiesMemberListMixin:SetExpandedDisplay(expandedDisplay)
 			self:UpdateInvitations();
 		end
 	end
-	
+
 	self:RefreshLayout();
 	self:RefreshListDisplay();
 	self.ShowOfflineButton:SetShown(expandedDisplay);
@@ -461,6 +576,7 @@ end
 function CommunitiesMemberListMixin:SetShowOfflinePlayers(showOfflinePlayers)
 	self.showOfflinePlayers = showOfflinePlayers;
 	SetCVar("communitiesShowOffline", showOfflinePlayers and "1" or "0");
+	self.ListScrollFrame.scrollBar:SetValue(0);
 	self:UpdateMemberList();
 end
 
@@ -470,35 +586,32 @@ function CommunitiesMemberListMixin:RefreshLayout()
 	else
 		self:SetPoint("TOPLEFT", self:GetCommunitiesFrame(), "TOPRIGHT", -165, -63);
 	end
-	
+
 	if not self.ListScrollFrame.buttons then
 		HybridScrollFrame_CreateButtons(self.ListScrollFrame, "CommunitiesMemberListEntryTemplate", 0, 0);
 	end
-	
+
 	self.ColumnDisplay:Hide();
 	local guildColumnIndex = nil;
 	if self.expandedDisplay then
-		local clubId = self:GetCommunitiesFrame():GetSelectedClubId();
-		if clubId then
-			local clubInfo = C_Club.GetClubInfo(clubId);
-			if clubInfo then
-				if clubInfo.clubType == Enum.ClubType.Guild then
-					guildColumnIndex = self:GetGuildColumnIndex();
-					self.columnInfo = CHARACTER_COLUMN_INFO;
-					self.ColumnDisplay:LayoutColumns(CHARACTER_COLUMN_INFO, EXTRA_GUILD_COLUMNS[guildColumnIndex]);
-				elseif clubInfo.clubType == Enum.ClubType.Character then
-					self.columnInfo = CHARACTER_COLUMN_INFO;
-					self.ColumnDisplay:LayoutColumns(CHARACTER_COLUMN_INFO);
-				else
-					self.columnInfo = BNET_COLUMN_INFO;
-					self.ColumnDisplay:LayoutColumns(BNET_COLUMN_INFO);
-				end
-				
-				self.ColumnDisplay:Show();
+		local clubInfo = self:GetSelectedClubInfo();
+		if clubInfo then
+			if clubInfo.clubType == Enum.ClubType.Guild then
+				guildColumnIndex = self:GetGuildColumnIndex();
+				self.columnInfo = GUILD_COLUMN_INFO;
+				self.ColumnDisplay:LayoutColumns(GUILD_COLUMN_INFO, EXTRA_GUILD_COLUMNS[guildColumnIndex]);
+			elseif clubInfo.clubType == Enum.ClubType.Character then
+				self.columnInfo = CHARACTER_COLUMN_INFO;
+				self.ColumnDisplay:LayoutColumns(CHARACTER_COLUMN_INFO);
+			else
+				self.columnInfo = BNET_COLUMN_INFO;
+				self.ColumnDisplay:LayoutColumns(BNET_COLUMN_INFO);
 			end
+
+			self.ColumnDisplay:Show();
 		end
 	end
-	
+
 	for i, button in ipairs(self.ListScrollFrame.buttons or {}) do
 		button:SetExpanded(self.expandedDisplay);
 		button:SetGuildColumnIndex(guildColumnIndex);
@@ -506,11 +619,11 @@ function CommunitiesMemberListMixin:RefreshLayout()
 end
 
 function CommunitiesMemberListMixin:OnEvent(event, ...)
-	if event == "CLUB_MEMBER_ADDED" or event == "CLUB_MEMBER_REMOVED" or event == "CLUB_MEMBER_UPDATED" then
+	if event == "CLUB_MEMBER_ADDED" or event == "CLUB_MEMBER_REMOVED" or event == "CLUB_MEMBER_UPDATED" or event == "CLUB_STREAMS_LOADED" then
 		local clubId, memberId = ...;
 		if clubId == self:GetSelectedClubId() then
 			self:MarkMemberListDirty();
-		
+
 			if event == "CLUB_MEMBER_ADDED" then
 				self:RemoveInvitation(memberId);
 			end
@@ -521,7 +634,7 @@ function CommunitiesMemberListMixin:OnEvent(event, ...)
 			self:MarkMemberListDirty();
 		end
 	elseif event == "VOICE_CHAT_CHANNEL_REMOVED" then
-		local _, voiceChannelID = ...;
+		local voiceChannelID = ...;
 		if voiceChannelID == self:GetVoiceChannelID() then
 			self:MarkMemberListDirty();
 		end
@@ -537,7 +650,7 @@ function CommunitiesMemberListMixin:OnEvent(event, ...)
 		end
 	elseif event == "CLUB_INVITATIONS_RECEIVED_FOR_CLUB" then
 		local clubId = ...;
-		if self.expandedDisplay and clubId == self:GetCommunitiesFrame():GetSelectedClubId() then
+		if self.expandedDisplay and clubId == self:GetSelectedClubId() then
 			self:OnInvitationsUpdated();
 		end
 	elseif event == "CLUB_MEMBER_PRESENCE_UPDATED" then
@@ -553,9 +666,11 @@ function CommunitiesMemberListMixin:OnEvent(event, ...)
 			self:MarkSortDirty();
 		end
 	elseif event == "GUILD_ROSTER_UPDATE" then
-		local clubId = self:GetSelectedClubId();
-		local clubInfo = clubId and C_Club.GetClubInfo(clubId);
-		if clubInfo and clubInfo.clubType == Enum.ClubType.Guild then
+		local canRequestGuildRosterUpdate = ...;
+		if canRequestGuildRosterUpdate then
+			C_GuildInfo.GuildRoster();
+		end
+		if C_Club.GetGuildClubId() == self:GetSelectedClubId() then
 			self:MarkMemberListDirty();
 			self:MarkSortDirty();
 		end
@@ -567,6 +682,7 @@ function CommunitiesMemberListMixin:OnHide()
 	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.DisplayModeChanged, self.displayModeChangedCallback);
 	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.streamSelectedCallback);
 	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
+	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.DisplayModeChanged, self.selectedClubInfoChangedCallback);
 end
 
 function CommunitiesMemberListMixin:GetCommunitiesFrame()
@@ -580,7 +696,7 @@ function CommunitiesMemberListMixin:RemoveInvitation(memberId)
 			break;
 		end
 	end
-	
+
 	self:RefreshListDisplay();
 end
 
@@ -595,19 +711,19 @@ function CommunitiesMemberListMixin:OnClubMemberButtonClicked(entry, button)
 		ToggleDropDownMenu(1, nil, self.DropDown, entry, 0, 0);
 		return;
 	end
-	
-	local clubId = self:GetSelectedClubId();
-	local clubInfo = C_Club.GetClubInfo(clubId);
+
+	local clubInfo = self:GetSelectedClubInfo();
 	if clubInfo and clubInfo.clubType == Enum.ClubType.Guild then
-		if entry:GetProfessionId() ~= nil then
+		local professionId = entry:GetProfessionId();
+		if professionId then
 			local memberInfo = entry:GetMemberInfo();
 			if memberInfo then
-				C_GuildInfo.QueryGuildMemberRecipes(memberInfo.guid, entry:GetProfessionId());
+				C_GuildInfo.QueryGuildMemberRecipes(memberInfo.guid, professionId);
 			end
 		else
 			local memberInfo = entry:GetMemberInfo();
 			if memberInfo then
-				CommunitiesFrame:OpenGuildMemberDetailFrame(clubId, memberInfo);
+				CommunitiesFrame:OpenGuildMemberDetailFrame(clubInfo.clubId, memberInfo);
 			end
 		end
 	end
@@ -625,6 +741,10 @@ function CommunitiesMemberListMixin:GetSelectedClubId()
 	return self:GetCommunitiesFrame():GetSelectedClubId();
 end
 
+function CommunitiesMemberListMixin:GetSelectedClubInfo()
+	return self:GetCommunitiesFrame():GetSelectedClubInfo();
+end
+
 function CommunitiesMemberListMixin:GetSelectedStreamId()
 	return self:GetCommunitiesFrame():GetSelectedStreamId();
 end
@@ -635,7 +755,7 @@ function CommunitiesMemberListMixin:SetGuildColumnIndex(extraGuildColumnIndex)
 		if self:IsDisplayingProfessions() then
 			self:UpdateProfessionDisplay();
 		end
-		
+
 		self:RefreshLayout();
 		self:RefreshListDisplay();
 	end
@@ -665,7 +785,7 @@ local function CompareMembersByAttribute(lhsMemberInfo, rhsMemberInfo, attribute
 	elseif attributeType == "number" then
 		return lhsAttribute > rhsAttribute;
 	end
-	
+
 	return nil;
 end
 
@@ -674,19 +794,17 @@ function CommunitiesMemberListMixin:SortByColumnIndex(columnIndex, keepSortDirec
 	if columnIndex > #self.columnInfo and self.extraGuildColumnIndex then
 		sortAttribute = EXTRA_GUILD_COLUMNS[self.extraGuildColumnIndex].attribute;
 	end
-	
+
 	if sortAttribute == nil then
 		return;
 	end
 
-	if not keepSortDirection or self.reverseActiveColumnSort == nil then	
+	if not keepSortDirection or self.reverseActiveColumnSort == nil then
 		self.reverseActiveColumnSort = columnIndex ~= self.activeColumnSortIndex and false or not self.reverseActiveColumnSort;
 	end
 	self.activeColumnSortIndex = columnIndex;
 
 	if sortAttribute == "name" then
-		local clubId = self:GetSelectedClubId();
-		local streamId = self:GetSelectedStreamId();
 		self.sortedMemberList = CommunitiesUtil.SortMembersByList(self.sortedMemberLookup, self.memberIds);
 		if self.reverseActiveColumnSort then
 			-- Reverse the member list.
@@ -698,7 +816,7 @@ function CommunitiesMemberListMixin:SortByColumnIndex(columnIndex, keepSortDirec
 				self.sortedMemberList[i] = reverseEntry;
 			end
 		end
-		
+
 		if self:IsDisplayingProfessions() then
 			self:UpdateProfessionDisplay();
 		end
@@ -716,20 +834,44 @@ function CommunitiesMemberListMixin:SortByColumnIndex(columnIndex, keepSortDirec
 				end
 			end);
 		end
-		
+
 		self:UpdateSortedProfessionList();
-		
+
+		return;
+	elseif sortAttribute == "zone" then
+		table.sort(self.sortedMemberList, function(lhsMemberInfo, rhsMemberInfo)
+			if self.reverseActiveColumnSort then
+				lhsMemberInfo, rhsMemberInfo = rhsMemberInfo, lhsMemberInfo;
+			end
+			if lhsMemberInfo.lastOnlineYear and rhsMemberInfo.lastOnlineYear then
+				if lhsMemberInfo.lastOnlineYear ~= rhsMemberInfo.lastOnlineYear then
+					return lhsMemberInfo.lastOnlineYear > rhsMemberInfo.lastOnlineYear;
+				elseif lhsMemberInfo.lastOnlineMonth ~= rhsMemberInfo.lastOnlineMonth then
+					return lhsMemberInfo.lastOnlineMonth > rhsMemberInfo.lastOnlineMonth;
+				elseif lhsMemberInfo.lastOnlineDay ~= rhsMemberInfo.lastOnlineDay then
+					return lhsMemberInfo.lastOnlineDay > rhsMemberInfo.lastOnlineDay;
+				else
+					return lhsMemberInfo.lastOnlineHour > rhsMemberInfo.lastOnlineHour;
+				end
+			elseif lhsMemberInfo.lastOnlineYear then
+				return false;
+			elseif rhsMemberInfo.lastOnlineYear then
+				return true;
+			else
+				return CompareMembersByAttribute(lhsMemberInfo, rhsMemberInfo, sortAttribute);
+			end
+		end);
 		return;
 	end
-		
-	CommunitiesUtil.SortMemberInfoWithOverride(self.sortedMemberList, function(lhsMemberInfo, rhsMemberInfo)
+
+	CommunitiesUtil.SortMemberInfoWithOverride(self:GetSelectedClubId(), self.sortedMemberList, function(lhsMemberInfo, rhsMemberInfo)
 		if self.reverseActiveColumnSort then
 			return CompareMembersByAttribute(lhsMemberInfo, rhsMemberInfo, sortAttribute);
 		else
 			return CompareMembersByAttribute(rhsMemberInfo, lhsMemberInfo, sortAttribute);
 		end
 	end);
-	
+
 	if self:IsDisplayingProfessions() then
 		self:UpdateProfessionDisplay();
 	end
@@ -768,25 +910,20 @@ function CommunitiesMemberListEntryMixin:OnEvent(event, ...)
 			self:UpdateNameFrame();
 		end
 	elseif event == "GUILD_ROSTER_UPDATE" then
-		local clubId = self:GetMemberList():GetSelectedClubId();
-		if clubId == nil then
-			return;
-		end
-		
-		local clubInfo = C_Club.GetClubInfo(clubId);
+		local clubInfo = self:GetMemberList():GetSelectedClubInfo();
 		if clubInfo == nil or clubInfo.clubType ~= Enum.ClubType.Guild then
 			return;
 		end
-		
+
 		if self.memberInfo == nil then
 			return;
 		end
-		
-		self.memberInfo = C_Club.GetMemberInfo(clubId, self.memberInfo.memberId);
+
+		self.memberInfo = C_Club.GetMemberInfo(clubInfo.clubId, self.memberInfo.memberId);
 		if self.memberInfo == nil then
 			return;
 		end
-		
+
 		self:RefreshExpandedColumns();
 	end
 end
@@ -800,7 +937,7 @@ function CommunitiesMemberListEntryMixin:UpdateRank()
 		self.NameFrame.RankIcon:Hide();
 		return;
 	end
-	
+
 	local memberInfo = self:GetMemberInfo();
 	if memberInfo then
 		self.NameFrame.RankIcon:Show();
@@ -819,7 +956,7 @@ end
 
 function CommunitiesMemberListEntryMixin:UpdatePresence()
 	self.NameFrame.PresenceIcon:Show();
-	
+
 	local memberInfo = self:GetMemberInfo();
 	if memberInfo then
 		if memberInfo.classID then
@@ -829,6 +966,12 @@ function CommunitiesMemberListEntryMixin:UpdatePresence()
 		else
 			self.NameFrame.Name:SetTextColor(BATTLENET_FONT_COLOR:GetRGB());
 		end
+
+		self.Level:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		self.Zone:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		self.Rank:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		self.Note:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		self.GuildInfo:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 
 		self.NameFrame.PresenceIcon:SetPoint("LEFT", 0, 0);
 		if memberInfo.presence == Enum.ClubMemberPresence.Away then
@@ -842,6 +985,11 @@ function CommunitiesMemberListEntryMixin:UpdatePresence()
 			self.NameFrame.PresenceIcon:Hide();
 			if memberInfo.presence == Enum.ClubMemberPresence.Offline then
 				self.NameFrame.Name:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+				self.Level:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+				self.Zone:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+				self.Rank:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+				self.Note:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+				self.GuildInfo:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 			end
 		end
 	else
@@ -865,7 +1013,7 @@ end
 
 function CommunitiesMemberListEntryMixin:SetProfessionHeader(professionId, professionName, isCollapsed)
 	self:SetMember(nil, nil, professionId);
-	
+
 	local professionHeader = self.ProfessionHeader;
 	professionHeader.AllRecipes:SetShown(CanViewGuildRecipes(professionId));
 	professionHeader.Icon:SetTexture(C_TradeSkillUI.GetTradeSkillTexture(professionId));
@@ -888,10 +1036,10 @@ end
 
 function CommunitiesMemberListEntryMixin:SetMember(memberInfo, isInvitation, professionId)
 	self.isInvitation = isInvitation;
-	
+
 	self:SetProfessionId(professionId);
 	self.ProfessionHeader:Hide();
-	
+
 	if memberInfo then
 		self.memberInfo = memberInfo;
 		self:SetMemberPlayerLocationFromGuid(memberInfo.guid);
@@ -901,7 +1049,7 @@ function CommunitiesMemberListEntryMixin:SetMember(memberInfo, isInvitation, pro
 		self:SetMemberPlayerLocationFromGuid(nil);
 		self.NameFrame.Name:SetText(nil);
 	end
-	
+
 	self:UpdateRank();
 	self:UpdatePresence();
 	self:RefreshExpandedColumns();
@@ -952,14 +1100,13 @@ function CommunitiesMemberListEntryMixin:OnEnter()
 			return;
 		end
 	end
-	
+
 	local memberInfo = self:GetMemberInfo();
 	if memberInfo then
 		GameTooltip:SetOwner(self);
 		GameTooltip:AddLine(memberInfo.name);
-		
-		local clubId = self:GetMemberList():GetSelectedClubId();
-		local clubInfo = C_Club.GetClubInfo(clubId);
+
+		local clubInfo = self:GetMemberList():GetSelectedClubInfo();
 		if not clubInfo or clubInfo.clubType == Enum.ClubType.Guild then
 			GameTooltip:AddLine(memberInfo.guildRank or "");
 		else
@@ -968,7 +1115,7 @@ function CommunitiesMemberListEntryMixin:OnEnter()
 				GameTooltip:AddLine(COMMUNITY_MEMBER_ROLE_NAMES[memberRoleId], HIGHLIGHT_FONT_COLOR:GetRGB());
 			end
 		end
-		
+
 		if memberInfo.level and memberInfo.race and memberInfo.classID then
 			local raceInfo = C_CreatureInfo.GetRaceInfo(memberInfo.race);
 			local classInfo = C_CreatureInfo.GetClassInfo(memberInfo.classID);
@@ -976,17 +1123,17 @@ function CommunitiesMemberListEntryMixin:OnEnter()
 				GameTooltip:AddLine(COMMUNITY_MEMBER_CHARACTER_INFO_FORMAT:format(memberInfo.level, raceInfo.raceName, classInfo.className), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 			end
 		end
-		
+
 		if memberInfo.presence == Enum.ClubMemberPresence.OnlineMobile then
 			GameTooltip:AddLine(COMMUNITIES_PRESENCE_MOBILE_CHAT, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 		elseif memberInfo.zone then
 			GameTooltip:AddLine(memberInfo.zone, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 		end
-		
+
 		if memberInfo.memberNote then
 			GameTooltip:AddLine(COMMUNITY_MEMBER_NOTE_FORMAT:format(memberInfo.memberNote), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 		end
-		
+
 		GameTooltip:Show();
 	end
 end
@@ -1027,17 +1174,16 @@ function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 		return;
 	end
 
-	local clubId = self:GetMemberList():GetSelectedClubId();
-	local clubInfo = C_Club.GetClubInfo(clubId);
+	local clubInfo = self:GetMemberList():GetSelectedClubInfo();
 	if not clubInfo then
 		return;
 	end
-	
+
 	if clubInfo.clubType == Enum.ClubType.BattleNet then
 		self.Level:Hide();
 		self.Class:Hide();
 		self.Zone:Hide();
-	
+
 		self.Rank:SetSize(75, 0);
 		self.Rank:ClearAllPoints();
 		self.Rank:SetPoint("LEFT", self.NameFrame, "RIGHT", 10, 0);
@@ -1047,7 +1193,7 @@ function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 		else
 			self.Level:SetText("");
 		end
-		
+
 		self.Class:Hide();
 		if memberInfo.classID then
 			local classInfo = C_CreatureInfo.GetClassInfo(memberInfo.classID);
@@ -1056,20 +1202,26 @@ function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 				self.Class:Show();
 			end
 		end
-	
+
 		if memberInfo.presence == Enum.ClubMemberPresence.OnlineMobile then
 			self.Zone:SetText(COMMUNITIES_PRESENCE_MOBILE_CHAT);
+		elseif memberInfo.presence == Enum.ClubMemberPresence.Offline then
+			if memberInfo.lastOnlineYear then
+				self.Zone:SetText(RecentTimeDate(memberInfo.lastOnlineYear, memberInfo.lastOnlineMonth, memberInfo.lastOnlineDay, memberInfo.lastOnlineHour));
+			else
+				self.Zone:SetText(COMMUNITIES_PRESENCE_OFFLINE);
+			end
 		elseif memberInfo.zone then
 			self.Zone:SetText(memberInfo.zone);
 		else
 			self.Zone:SetText("");
 		end
-		
+
 		self.Rank:SetSize(75, 0);
 		self.Rank:ClearAllPoints();
 		self.Rank:SetPoint("LEFT", self.Zone, "RIGHT", 7, 0);
 	end
-	
+
 	local memberRoleId = memberInfo.role;
 	if clubInfo.clubType == Enum.ClubType.Guild then
 		self.Rank:SetText(memberInfo.guildRank or "");
@@ -1080,10 +1232,14 @@ function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 	end
 
 	self.Note:SetText(memberInfo.memberNote or "");
-		
+
 	-- TODO:: Replace these hardcoded strings with proper accessors.
 	if self.guildColumnIndex == EXTRA_GUILD_COLUMN_ACHIEVEMENT then
-		self.GuildInfo:SetText(memberInfo.achievementPoints or "");
+		if ( memberInfo.achievementPoints ) then
+			self.GuildInfo:SetText(memberInfo.achievementPoints);
+		else
+			self.GuildInfo:SetText(NO_ROSTER_ACHIEVEMENT_POINTS);
+		end
 	elseif self.guildColumnIndex == EXTRA_GUILD_COLUMN_PROFESSION then
 		local professionId = self:GetProfessionId();
 		self.GuildInfo:SetText(GUILD_VIEW_RECIPES_LINK);
@@ -1106,7 +1262,7 @@ function CommunitiesMemberListEntryMixin:SetGuildColumnIndex(guildColumnIndex)
 	if self.guildColumnIndex == guildColumnIndex then
 		return;
 	end
-	
+
 	self.guildColumnIndex = guildColumnIndex;
 	self.Note:ClearAllPoints();
 	self.Note:SetPoint("LEFT", self.Rank, "RIGHT", 8, 0);
@@ -1117,7 +1273,7 @@ function CommunitiesMemberListEntryMixin:SetGuildColumnIndex(guildColumnIndex)
 		self.Note:SetPoint("RIGHT", self, "RIGHT", -4, 0);
 		self.GuildInfo:Hide();
 	end
-	
+
 	self:RefreshExpandedColumns();
 end
 
@@ -1285,69 +1441,234 @@ function CommunitiesMemberListDropdown_Initialize(self, level)
 	if not SelectedCommunitiesMemberListEntry then
 		return;
 	end
-		
-	local clubId = CommunitiesMemberList:GetSelectedClubId();
-	local memberInfo = SelectedCommunitiesMemberListEntry:GetMemberInfo();
-	local clubPrivileges = CommunitiesMemberList:GetCommunitiesFrame():GetPrivilegesForClub(clubId);
-	local clubInfo = C_Club.GetClubInfo(clubId);
 
-	if memberInfo and clubInfo then
+	local clubInfo = CommunitiesMemberList:GetSelectedClubInfo();
+	if not clubInfo then
+		return;
+	end
+	
+	local memberInfo = SelectedCommunitiesMemberListEntry:GetMemberInfo();
+	local clubPrivileges = CommunitiesMemberList:GetCommunitiesFrame():GetPrivilegesForClub(clubInfo.clubId);
+
+	if memberInfo and memberInfo.name then
 		self.clubMemberInfo = memberInfo;
 		self.clubInfo = clubInfo;
 		self.clubPrivileges = clubPrivileges;
-		self.clubAssignableRoles = C_Club.GetAssignableRoles(clubId, memberInfo.memberId);
+		self.clubAssignableRoles = C_Club.GetAssignableRoles(clubInfo.clubId, memberInfo.memberId);
 		self.isSelf = memberInfo.isSelf;
 		self.guid = memberInfo.guid;
+		self.isMobile = memberInfo.presence == Enum.ClubMemberPresence.OnlineMobile;
 		UnitPopup_ShowMenu(self, clubTypeToUnitPopup[clubInfo.clubType], nil, memberInfo.name);
 	end
 end
 
-GuildMemberListDropDownMenuMixin = {};
+CommunitiesFrameMemberListDropDownMenuMixin = {};
 
-function GuildMemberListDropDownMenuMixin:OnLoad()
+function CommunitiesFrameMemberListDropDownMenuMixin:OnLoad()
 	UIDropDownMenu_SetWidth(self, self.width or 115);
-end
 
-function GuildMemberListDropDownMenuMixin:OnShow()
-	UIDropDownMenu_Initialize(self, GuildMemberListDropDownMenu_Initialize);
-	local communitiesFrame = self:GetCommunitiesFrame();
-	UIDropDownMenu_SetSelectedValue(self, communitiesFrame.MemberList:GetGuildColumnIndex());
-
-	local function CommunitiesClubSelectedCallback(event, clubId)
-		if clubId and self:IsVisible() then
-			local clubInfo = C_Club.GetClubInfo(clubId);
-			if clubInfo and clubInfo.clubType ~= Enum.ClubType.Guild then
-				self:Hide();
-			end
-		end
+	self.listFrameOnShow = function ()
+		self:GetCommunitiesFrame():TriggerEvent(CommunitiesFrameMixin.Event.MemberListDropDownShown);
 	end
-	
-	self.clubSelectedCallback = CommunitiesClubSelectedCallback;
-	communitiesFrame:RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
 end
 
-function GuildMemberListDropDownMenuMixin:OnHide()
+function CommunitiesFrameMemberListDropDownMenuMixin:OnHide()
 	local communitiesFrame = self:GetCommunitiesFrame();
 	communitiesFrame:UnregisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
 end
 
-function GuildMemberListDropDownMenuMixin:GetCommunitiesFrame()
+function CommunitiesFrameMemberListDropDownMenuMixin:UpdateNotificationFlash(shouldShowFlash)
+	self.NotificationOverlay:SetShown(shouldShowFlash);
+	self.NotificationOverlay.UnreadNotificationIcon:SetShown(shouldShowFlash);
+	self.NotificationOverlay.Flash:SetShown(shouldShowFlash);
+end
+
+function CommunitiesFrameMemberListDropDownMenuMixin:GetCommunitiesFrame()
 	return self:GetParent();
 end
 
+GuildMemberListDropDownMenuMixin = CreateFromMixins(CommunitiesFrameMemberListDropDownMenuMixin);
+
+function GuildMemberListDropDownMenuMixin:OnShow()
+	UIDropDownMenu_Initialize(self, GuildMemberListDropDownMenu_Initialize);
+
+	local communitiesFrame = self:GetCommunitiesFrame();
+	UIDropDownMenu_SetSelectedValue(self, 1);
+	communitiesFrame.MemberList:SetGuildColumnIndex(1);
+	local function CommunitiesClubSelectedCallback(event, clubId)
+		if clubId and self:IsVisible() then
+			local clubInfo = communitiesFrame:GetSelectedClubInfo();
+			if clubInfo and clubInfo.clubType ~= Enum.ClubType.Guild then
+				self:Hide();
+			else 
+				communitiesFrame.CommunityMemberListDropDownMenu:Hide();
+			end
+		end
+	end
+
+	self.clubSelectedCallback = CommunitiesClubSelectedCallback;
+	communitiesFrame:RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
+end
+
+function GuildMemberListDropDownMenuMixin:ResetDisplayMode()
+	local memberList = self:GetParent().MemberList;
+	UIDropDownMenu_SetSelectedValue(self, EXTRA_GUILD_COLUMN_ACHIEVEMENT);
+	memberList:SetGuildColumnIndex(EXTRA_GUILD_COLUMN_ACHIEVEMENT);	
+	UIDropDownMenu_SetText(self, GUILD_ROSTER_DROPDOWN_ACHIEVEMENT_POINTS);	
+	if(not self.hasApplicants) then 
+		self.NotificationOverlay:Hide();
+	end 
+end 
+
 function GuildMemberListDropDownMenu_Initialize(self)
-	local memberList = self:GetCommunitiesFrame().MemberList;
+	local communitiesFrame = self:GetCommunitiesFrame();
+	local memberList = communitiesFrame.MemberList;
 	local info = UIDropDownMenu_CreateInfo();
+	local canGuildInvite = CanGuildInvite() and (C_GuildInfo.IsGuildOfficer() or IsGuildLeader());
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
+	local displayMode = communitiesFrame:GetDisplayMode();
+	local isClubFinderEnabled = C_ClubFinder.IsEnabled(); 
+	if (selectedValue == EXTRA_GUILD_COLUMN_APPLICANTS and self.shouldResetDropdown and communitiesFrame:IsShowingApplicantList()) then 
+		self:ResetDisplayMode();
+	end 
+
 	for i, extraColumnInfo in ipairs(EXTRA_GUILD_COLUMNS) do
 		info.text = extraColumnInfo.dropdownText;
 		info.value = i;
-		info.func = function(button)
-			memberList:SetGuildColumnIndex(i);
-			UIDropDownMenu_SetSelectedValue(self, i);
+		if i == EXTRA_GUILD_COLUMN_APPLICANTS then 
+			if (self.hasApplicants and canGuildInvite) then 
+				info.text = extraColumnInfo.dropdownText.." "..CreateAtlasMarkup("communities-icon-notification", 10, 10);
+			end
+			info.disabled = not self.hasApplicants
+			info.func = function(button)
+				communitiesFrame.ApplicantList.isPendingList = false; 
+				communitiesFrame.ApplicantList:BuildList();
+				communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_APPLICANT_LIST);
+				memberList:SetGuildColumnIndex(i);
+				UIDropDownMenu_SetSelectedValue(self, i);
+				UIDropDownMenu_SetText(self, CLUB_FINDER_APPLICANTS);
+			end
+		elseif i == EXTRA_GUILD_COLUMN_PENDING then 
+			info.disabled = not self.hasPendingApplicants;
+			info.func = function(button)
+				communitiesFrame.ApplicantList.isPendingList = true; 
+				communitiesFrame.ApplicantList:BuildList();
+				communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_APPLICANT_LIST);
+				memberList:SetGuildColumnIndex(i);
+				UIDropDownMenu_SetSelectedValue(self, i);
+				UIDropDownMenu_SetText(self, CLUB_FINDER_APPLICANT_HISTORY);
+			end
+		else 
+			info.func = function(button)
+				communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
+				memberList:SetGuildColumnIndex(i);
+				UIDropDownMenu_SetSelectedValue(self, i);
+			end
 		end
-		
-		UIDropDownMenu_AddButton(info);
+		local isFinderDropdownType = (i == EXTRA_GUILD_COLUMN_APPLICANTS or i == EXTRA_GUILD_COLUMN_PENDING); 
+
+		if (not isFinderDropdownType) then 
+			UIDropDownMenu_AddButton(info);
+		elseif(canGuildInvite and isFinderDropdownType and isClubFinderEnabled) then
+			UIDropDownMenu_AddButton(info);
+		end
 	end
-	
+
+	self:UpdateNotificationFlash(communitiesFrame:HasNewClubApplications(memberList:GetSelectedClubId()) and canGuildInvite and isClubFinderEnabled);
 	UIDropDownMenu_SetSelectedValue(self, memberList:GetGuildColumnIndex());
+end
+
+CommunityMemberListDropDownMenuMixin = CreateFromMixins(CommunitiesFrameMemberListDropDownMenuMixin);
+
+function CommunityMemberListDropDownMenuMixin:OnShow()
+	UIDropDownMenu_Initialize(self, CommunityMemberListDropDownMenu_Initialize);
+
+	UIDropDownMenu_SetSelectedValue(self, 1);
+	local communitiesFrame = self:GetCommunitiesFrame();
+
+	local function CommunitiesClubSelectedCallback(event, clubId)
+		if clubId and self:IsVisible() then
+			local clubInfo = communitiesFrame:GetSelectedClubInfo();
+			if clubInfo and clubInfo.clubType ~= Enum.ClubType.Character then
+				self:Hide();
+			else 
+				communitiesFrame.GuildMemberListDropDownMenu:Hide();
+			end
+		end
+	end
+
+	self.clubSelectedCallback = CommunitiesClubSelectedCallback;
+	communitiesFrame:RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
+end
+
+function CommunityMemberListDropDownMenuMixin:ResetDisplayMode()
+	UIDropDownMenu_SetSelectedValue(self, 1);
+	UIDropDownMenu_SetText(self, CLUB_FINDER_COMMUNITY_ROSTER_DROPDOWN);		
+	if(not self.hasApplicants) then 
+		self.NotificationOverlay:Hide();
+	end 
+end 
+
+function CommunityMemberListDropDownMenu_Initialize(self)
+	local communitiesFrame = self:GetCommunitiesFrame();
+	local memberList = communitiesFrame.MemberList;
+	local info = UIDropDownMenu_CreateInfo();
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
+	local hasFinderPermissions = false; 
+	local displayMode = communitiesFrame:GetDisplayMode();
+
+	if (selectedValue == COMMUNITY_APPLICANT_LIST_VALUE and self.shouldResetDropdown and communitiesFrame:IsShowingApplicantList()) then 
+		self:ResetDisplayMode();
+	end 
+
+	local clubInfo = communitiesFrame:GetSelectedClubInfo();
+	if (clubInfo) then 
+		local selectedClubId = clubInfo.clubId;
+		local myMemberInfo = C_Club.GetMemberInfoForSelf(selectedClubId);
+		if (myMemberInfo.role and myMemberInfo.role == Enum.ClubRoleIdentifier.Owner or myMemberInfo.role == Enum.ClubRoleIdentifier.Leader) then 
+			hasFinderPermissions = true;
+		end 
+	end
+
+	info.text = CLUB_FINDER_COMMUNITY_ROSTER_DROPDOWN;
+	info.value = 1;
+	info.checked = info.value == selectedValue;
+	info.func = function(button)
+		communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
+		UIDropDownMenu_SetSelectedValue(self, 1);
+		UIDropDownMenu_SetText(self, CLUB_FINDER_COMMUNITY_ROSTER_DROPDOWN);
+	end
+	UIDropDownMenu_AddButton(info);
+
+	info.text = CLUB_FINDER_APPLICANTS;
+	info.value = COMMUNITY_APPLICANT_LIST_VALUE;
+	info.checked = info.value == selectedValue; 
+	info.disabled = not self.hasApplicants
+	if (self.hasApplicants and hasFinderPermissions) then 
+		info.text = CLUB_FINDER_APPLICANTS.." "..CreateAtlasMarkup("communities-icon-notification", 10, 10);
+	end
+	info.func = function(button)
+		communitiesFrame.ApplicantList.isPendingList = false; 
+		communitiesFrame.ApplicantList:BuildList();
+		communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_APPLICANT_LIST);
+		UIDropDownMenu_SetSelectedValue(self, 2);
+		UIDropDownMenu_SetText(self, CLUB_FINDER_APPLICANTS);
+	end
+	UIDropDownMenu_AddButton(info);
+
+	info.text = CLUB_FINDER_APPLICANT_HISTORY;
+	info.value = 3;
+	info.checked = info.value == selectedValue;
+	info.disabled =	not self.hasPendingApplicants;
+
+	info.func = function(button)
+		communitiesFrame.ApplicantList.isPendingList = true; 
+		communitiesFrame.ApplicantList:BuildList();
+		communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_APPLICANT_LIST);
+		UIDropDownMenu_SetSelectedValue(self, 3);
+		UIDropDownMenu_SetText(self, CLUB_FINDER_APPLICANT_HISTORY);
+	end
+
+	UIDropDownMenu_AddButton(info);
+	self:UpdateNotificationFlash(communitiesFrame:HasNewClubApplications(memberList:GetSelectedClubId()) and hasFinderPermissions);
 end

@@ -59,7 +59,7 @@ function EquipmentFlyout_CreateButton()
 	local buttonAnchor = EquipmentFlyoutFrame.buttonFrame;
 	local numButtons = #buttons;
 	
-	local button = CreateFrame("BUTTON", "EquipmentFlyoutFrameButton" .. numButtons + 1, buttonAnchor, "EquipmentFlyoutButtonTemplate");
+	local button = CreateFrame("ItemButton", "EquipmentFlyoutFrameButton" .. numButtons + 1, buttonAnchor, "EquipmentFlyoutButtonTemplate");
 
 	local pos = numButtons/EQUIPMENTFLYOUT_ITEMS_PER_ROW;
 	if ( math.floor(pos) == pos ) then
@@ -419,6 +419,11 @@ function EquipmentFlyout_DisplaySpecialButton(button, paperDollItemSlot)
 	local location = button.location;
 	button.UpgradeIcon:Hide();
 	button.IconOverlay:Hide();
+	
+	local quality = nil;
+	local itemID = nil;
+	SetItemButtonQuality(button, quality, itemID);
+
 	if ( location == EQUIPMENTFLYOUT_IGNORESLOT_LOCATION ) then
 		SetItemButtonTexture(button, "Interface\\PaperDollInfoFrame\\UI-GearManager-LeaveItem-Opaque");
 		SetItemButtonCount(button, nil);
@@ -426,9 +431,6 @@ function EquipmentFlyout_DisplaySpecialButton(button, paperDollItemSlot)
 			function () 
 				GameTooltip:SetOwner(EquipmentFlyoutFrame.buttonFrame, "ANCHOR_RIGHT", 6, -EquipmentFlyoutFrame.buttonFrame:GetHeight() - 6);
 				GameTooltip:SetText(EQUIPMENT_MANAGER_IGNORE_SLOT, 1.0, 1.0, 1.0); 
-				if ( SHOW_NEWBIE_TIPS == "1" ) then
-					GameTooltip:AddLine(NEWBIE_TOOLTIP_EQUIPMENT_MANAGER_IGNORE_SLOT, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-				end
 				GameTooltip:Show();
 			end;
 		SetItemButtonTextureVertexColor(button, 1.0, 1.0, 1.0);
@@ -440,9 +442,6 @@ function EquipmentFlyout_DisplaySpecialButton(button, paperDollItemSlot)
 			function () 
 				GameTooltip:SetOwner(EquipmentFlyoutFrame.buttonFrame, "ANCHOR_RIGHT", 6, -EquipmentFlyoutFrame.buttonFrame:GetHeight() - 6); 
 				GameTooltip:SetText(EQUIPMENT_MANAGER_UNIGNORE_SLOT, 1.0, 1.0, 1.0); 
-				if ( SHOW_NEWBIE_TIPS == "1" ) then
-					GameTooltip:AddLine(NEWBIE_TOOLTIP_EQUIPMENT_MANAGER_UNIGNORE_SLOT, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-				end
 				GameTooltip:Show();
 			end;
 		SetItemButtonTextureVertexColor(button, 1.0, 1.0, 1.0);
@@ -454,9 +453,6 @@ function EquipmentFlyout_DisplaySpecialButton(button, paperDollItemSlot)
 			function () 
 				GameTooltip:SetOwner(EquipmentFlyoutFrame.buttonFrame, "ANCHOR_RIGHT", 6, -EquipmentFlyoutFrame.buttonFrame:GetHeight() - 6);
 				GameTooltip:SetText(EQUIPMENT_MANAGER_PLACE_IN_BAGS, 1.0, 1.0, 1.0); 
-				if ( SHOW_NEWBIE_TIPS == "1" ) then
-					GameTooltip:AddLine(NEWBIE_TOOLTIP_EQUIPMENT_MANAGER_PLACE_IN_BAGS, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-				end
 				GameTooltip:Show();
 			end;
 		SetItemButtonTextureVertexColor(button, 1.0, 1.0, 1.0);

@@ -252,11 +252,7 @@ function GuildBankFrame_Update()
 			SetItemButtonCount(button, itemCount);
 			SetItemButtonDesaturated(button, locked);
 			
-			if ( isFiltered ) then
-				button.searchOverlay:Show();
-			else
-				button.searchOverlay:Hide();
-			end
+			button:SetMatchesSearch(not isFiltered);
 
 			SetItemButtonQuality(button, quality, GetGuildBankItemLink(tab, i));
 		end
@@ -306,11 +302,7 @@ function GuildBankFrame_UpdateFiltered()
 			button = _G["GuildBankColumn"..column.."Button"..index];
 			_, _, _, isFiltered = GetGuildBankItemInfo(tab, i);
 			
-			if ( isFiltered ) then
-				button.searchOverlay:Show();
-			else
-				button.searchOverlay:Hide();
-			end
+			button:SetMatchesSearch(not isFiltered);
 		end
 	end
 end
@@ -552,28 +544,11 @@ function GuildBankFrame_UpdateTabs()
 		GuildBankTabLimitBackground:Show();
 		GuildBankTabLimitBackgroundLeft:Show();
 		GuildBankTabLimitBackgroundRight:Show();
-		GuildBankCashFlowLabel:Hide();
-		GuildBankCashFlowMoneyFrame:Hide();
 	else
 		GuildBankLimitLabel:Hide();
 		GuildBankTabLimitBackground:Hide();
 		GuildBankTabLimitBackgroundLeft:Hide();
 		GuildBankTabLimitBackgroundRight:Hide();
-		GuildBankCashFlowLabel:Hide();
-		GuildBankCashFlowMoneyFrame:Hide();
-	end
-end
-
-function GuildBankFrame_UpdateCashFlowMoney()
-	MoneyFrame_Update("GuildBankCashFlowMoneyFrame", GetGuildBankBonusDepositMoney());
-	local width = GuildBankCashFlowLabel:GetWidth() + GuildBankCashFlowMoneyFrame:GetWidth() + 10;
-	GuildBankTabLimitBackground:SetWidth(width);
-	if ( width > 310 ) then
-		GuildBankTabLimitBackground:ClearAllPoints();
-		GuildBankTabLimitBackground:SetPoint("RIGHT", GuildBankFrameWithdrawButton, "LEFT", -14, -1);
-	else
-		GuildBankTabLimitBackground:ClearAllPoints();
-		GuildBankTabLimitBackground:SetPoint("TOP", "GuildBankFrame", "TOP", 6, -378);
 	end
 end
 
@@ -649,7 +624,7 @@ function GuildBankItemButton_OnClick(self, button)
 		if ( not CursorHasItem() ) then
 			local texture, count, locked = GetGuildBankItemInfo(GetCurrentGuildBankTab(), self:GetID());
 			if ( not locked and count and count > 1) then
-				OpenStackSplitFrame(count, self, "BOTTOMLEFT", "TOPLEFT");
+				StackSplitFrame:OpenStackSplitFrame(count, self, "BOTTOMLEFT", "TOPLEFT");
 			end
 		end
 		return;
@@ -801,10 +776,10 @@ end
 
 function GuildBankFrame_UpdateTabard()
 	--Set the tabard images
-	local tabardBackgroundUpper, tabardBackgroundLower, tabardEmblemUpper, tabardEmblemLower, tabardBorderUpper, tabardBorderLower = GetGuildTabardFileNames();
+	local tabardBackgroundUpper, tabardBackgroundLower, tabardEmblemUpper, tabardEmblemLower, tabardBorderUpper, tabardBorderLower = GetGuildTabardFiles();
 	if ( not tabardEmblemUpper ) then
-		tabardBackgroundUpper = "Textures\\GuildEmblems\\Background_49_TU_U";
-		tabardBackgroundLower = "Textures\\GuildEmblems\\Background_49_TL_U";
+		tabardBackgroundUpper = 180158; --"Textures\\GuildEmblems\\Background_49_TU_U";
+		tabardBackgroundLower = 180159; --"Textures\\GuildEmblems\\Background_49_TL_U";
 	end
 	GuildBankEmblemBackgroundUL:SetTexture(tabardBackgroundUpper);
 	GuildBankEmblemBackgroundUR:SetTexture(tabardBackgroundUpper);

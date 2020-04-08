@@ -19,7 +19,7 @@ function PVEFrame_OnLoad(self)
 	self:RegisterEvent("AJ_PVP_LFG_ACTION");
 	self:RegisterEvent("AJ_PVP_RBG_ACTION");
 	self:RegisterEvent("AJ_PVE_LFG_ACTION");
-	
+
 	self.maxTabWidth = (self:GetWidth() - 19) / #panels;
 end
 
@@ -29,9 +29,9 @@ function PVEFrame_OnShow(self)
 			PanelTemplates_HideTab(self, index);
 		else
 			PanelTemplates_ShowTab(self, index);
-			if (panel.name == "ChallengesFrame" and not C_MythicPlus.IsMythicPlusActive()) then 
+			if (panel.name == "ChallengesFrame" and not C_MythicPlus.IsMythicPlusActive()) then
 				PanelTemplates_DisableTab(self, index);
-			else 
+			else
 				PanelTemplates_EnableTab(self, index);
 			end
 		end
@@ -47,7 +47,7 @@ function PVEFrame_OnEvent(self, event, ...)
 	elseif ( event == "AJ_PVP_SKIRMISH_ACTION" ) then
 		PVEFrame_ShowFrame("PVPUIFrame", "HonorFrame");
 		HonorFrame_SetType("bonus");
-		
+
 		HonorFrameBonusFrame_SelectButton(HonorFrame.BonusFrame.Arena1Button);
 	elseif ( event == "AJ_PVE_LFG_ACTION" ) then
 		PVEFrame_ShowFrame("GroupFinderFrame", "LFGListPVEStub");
@@ -56,7 +56,7 @@ function PVEFrame_OnEvent(self, event, ...)
 	elseif ( event == "AJ_PVP_RBG_ACTION" ) then
 		PVEFrame_ShowFrame("PVPUIFrame", "HonorFrame");
 		HonorFrame_SetType("bonus");
-		
+
 		HonorFrameBonusFrame_SelectButton(HonorFrame.BonusFrame.RandomBGButton);
 	end
 end
@@ -106,7 +106,7 @@ function PVEFrame_ShowFrame(sidePanelName, selection)
 			-- no current panel, go to the first panel
 			tabIndex = 1;
 		end
-	end	
+	end
 	if ( not tabIndex ) then
 		return;
 	end
@@ -127,7 +127,7 @@ function PVEFrame_ShowFrame(sidePanelName, selection)
 
 	-- show it
 	ShowUIPanel(self);
-	self.activeTabIndex = tabIndex;	
+	self.activeTabIndex = tabIndex;
 	PanelTemplates_SetTab(self, tabIndex);
 	self:SetWidth(PVE_FRAME_BASE_WIDTH);
 	UpdateUIPanelPositions(PVEFrame);
@@ -148,13 +148,13 @@ end
 function PVEFrame_UpdateTabs(self)
 	self = self or PVEFrame;
 	for i = 1, self.numTabs do
-		local state = "normal";	
+		local state = "normal";
 		local tab = self["tab"..i];
 		if ( tab.panel.GetState ) then
 			state = tab.panel:GetState();
 		end
 		-- do something with state
-	end	
+	end
 end
 
 function PVEFrame_TabOnClick(self)
@@ -213,9 +213,9 @@ function GroupFinderFrame_OnLoad(self)
 	self.groupButton3.name:SetText(RAID_FINDER_PVEFRAME);
 	SetPortraitToTexture(self.groupButton4.icon, "Interface\\Icons\\Achievement_General_StayClassy");
 	self.groupButton4.name:SetText(LFGLIST_NAME);
-	
+
 	GroupFinderFrame_EvaluateButtonVisibility(self, UnitLevel("player"));
-	
+
 	self:RegisterEvent("PLAYER_LEVEL_UP");
 
 	GroupFinderFrameButton_SetEnabled(self.groupButton4, true);
@@ -226,34 +226,37 @@ function GroupFinderFrame_OnLoad(self)
 end
 
 function GroupFinderFrame_EvaluateButtonVisibility(self, level)
-	if ( level > SCENARIOS_HIDE_ABOVE_LEVEL ) then
+	-- To support Level Sync, scenarios and LFD use the lowest level in the party to determine visibility.
+	local partyMinLevel = C_PartyInfo.GetMinLevel(PARTY_CATEGORY_HOME);
+	if ( partyMinLevel > SCENARIOS_HIDE_ABOVE_LEVEL ) then
 		self.groupButton2:Hide()
-		
+
 		if ( GroupFinderFrame_GetSelectedIndex(self) == self.groupButton2:GetID() ) then
 			-- Deselect this now hidden tab if it happened to be selected
 			self.selection = nil
 			GroupFinderFrame_ShowGroupFrame(nil)
 		end
 	else
-		if ( level < SCENARIOS_SHOW_LEVEL ) then
+		if ( partyMinLevel < SCENARIOS_SHOW_LEVEL ) then
 			GroupFinderFrameButton_SetEnabled(self.groupButton2, false);
 			self.groupButton2.tooltip = self.groupButton2.tooltip or format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SCENARIOS_SHOW_LEVEL);
 		else
 			GroupFinderFrameButton_SetEnabled(self.groupButton2, true);
 			self.groupButton2.tooltip = nil
 		end
-		
+
 		self.groupButton2:Show()
 	end
 
-	if ( level < SHOW_LFD_LEVEL ) then
+	if ( partyMinLevel < SHOW_LFD_LEVEL ) then
 		GroupFinderFrameButton_SetEnabled(self.groupButton1, false);
 		self.groupButton1.tooltip = self.groupButton1.tooltip or format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL);
 	else
 		self.groupButton1.tooltip = nil;
 		GroupFinderFrameButton_SetEnabled(self.groupButton1, true);
 	end
-	
+
+	-- Raids don't support LevelSync; we use the player's actual level.
 	if ( level < RAID_FINDER_SHOW_LEVEL ) then
 		GroupFinderFrameButton_SetEnabled(self.groupButton3, false);
 		self.groupButton3.tooltip = self.groupButton3.tooltip or format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, RAID_FINDER_SHOW_LEVEL);
@@ -261,7 +264,7 @@ function GroupFinderFrame_EvaluateButtonVisibility(self, level)
 		self.groupButton3.tooltip = nil;
 		GroupFinderFrameButton_SetEnabled(self.groupButton3, true);
 	end
-	
+
 	GroupFinderFrame_UpdateButtonAnchors(self);
 end
 
@@ -278,7 +281,7 @@ function GroupFinderFrameButton_SetEnabled(button, enabled)
 	if ( button:IsEnabled() == enabled ) then
 		return
 	end
-	
+
 	if ( enabled ) then
 		button.bg:SetTexCoord(0.00390625, 0.87890625, 0.75195313, 0.83007813);
 		button.name:SetFontObject("GameFontNormalLarge");
@@ -309,8 +312,9 @@ function GroupFinderFrame_Update(self, frame)
 end
 
 function GroupFinderFrame_OnShow(self)
-	SetPortraitToTexture(PVEFrame.portrait, "Interface\\LFGFrame\\UI-LFG-PORTRAIT");
+	PVEFrame:SetPortraitToAsset("Interface\\LFGFrame\\UI-LFG-PORTRAIT");
 	PVEFrame.TitleText:SetText(GROUP_FINDER);
+	GroupFinderFrame_EvaluateButtonVisibility(self, UnitLevel("player"));
 end
 
 function GroupFinderFrame_ShowGroupFrame(frame)
@@ -325,7 +329,7 @@ function GroupFinderFrame_ShowGroupFrame(frame)
 		end
 	end
 	frame:Show();
-	GroupFinderFrame.selection = frame;	
+	GroupFinderFrame.selection = frame;
 end
 
 function GroupFinderFrame_SelectGroupButton(index)
@@ -338,7 +342,7 @@ function GroupFinderFrame_SelectGroupButton(index)
 			button.bg:SetTexCoord(0.00390625, 0.87890625, 0.75195313, 0.83007813);
 		end
 	end
-	
+
 	GroupFinderFrame.selectionIndex = index
 end
 

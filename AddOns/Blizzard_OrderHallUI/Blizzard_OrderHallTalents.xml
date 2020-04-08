@@ -5,10 +5,15 @@
 	<Button name="GarrisonTalentButtonTemplate" virtual="true" mixin="GarrisonTalentButtonMixin">
 		<Size x="39" y="39"/>
 		<Layers>
-			<Layer level="ARTWORK" textureSubLevel="0">
-				<Texture parentKey="Icon" >
-					<Size x="39" y="39"/>
+			<Layer level="BORDER">
+				<Texture parentKey="MajorGlow" atlas="orderhalltalents-done-glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture parentKey="Icon" setAllPoints="true"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="AlphaIconOverlay">
@@ -17,12 +22,12 @@
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture parentKey="CooldownTimerBackground" atlas="orderhalltalents-timer-bg" textureSubLevel="2">
-					<Size x="37" y="37"/>
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
 					</Anchors>
 				</Texture>
-                <Texture parentKey="DoneCheckmark" hidden="false" alpha="0" alphaMode="BLEND" atlas="orderhalltalents-done-checkmark" useAtlasSize="true">
+        <Texture parentKey="DoneCheckmark" hidden="false" alpha="0" alphaMode="BLEND" atlas="orderhalltalents-done-checkmark" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
@@ -34,10 +39,9 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="Border" atlas="orderhalltalents-spellborder-yellow">
-					<Size x="50" y="50"/>
+				<Texture parentKey="Border" atlas="orderhalltalents-spellborder-yellow" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOP" x="0" y="5"/>
+						<Anchor point="CENTER" x="0" y="-1"/>
 					</Anchors>
 				</Texture>
                 <Texture parentKey="DoneCheckmark2" hidden="false" alpha="0" alphaMode="ADD" atlas="orderhalltalents-done-checkmark" useAtlasSize="true">
@@ -47,19 +51,19 @@
 				</Texture>
 				<Texture parentKey="Highlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" hidden="true"/>
 			</Layer>
-            <Layer level="OVERLAY" textureSubLevel="1">
+      <Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="DoneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="orderhalltalents-done-glow" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.DoneCheckmark" x="0" y="-3"/>
 					</Anchors>
 				</Texture>
-			</Layer>
+			</Layer>				
 		</Layers>
 		<Frames>
 			<Cooldown parentKey="Cooldown" reverse="true" hideCountdownNumbers="true">
-				<Size x="37" y="37"/>
 				<Anchors>
-					<Anchor point="CENTER"/>
+					<Anchor point="TOPLEFT" x="1" y="-1"/>
+					<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
 				</Anchors>
 				<SwipeTexture file="Interface\Garrison\orderhalltalents-timer-fill"/>
 			</Cooldown>
@@ -91,6 +95,15 @@
 		</Scripts>
 	</Button>
 
+	<Frame name="GarrisonTalentPrerequisiteArrowTemplate" virtual="true">
+		<Size x="31" y="23"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Arrow" atlas="orderhalltalents-prerequisite-arrow" useAtlasSize="true"/>
+			</Layer>
+		</Layers>
+	</Frame>
+
 	<Texture name="GarrisonTalentChoiceTemplate" virtual="true" atlas="orderhalltalents-choice-background" useAtlasSize="true"/>
 	<Texture name="GarrisonTalentArrowTemplate" virtual="true" atlas="orderhalltalents-choice-arrow-large" useAtlasSize="true" alphaMode="ADD">
 		<Animations>
@@ -104,6 +117,7 @@
 	<FontString parentArray="FrameTick" name="OrderHallTalentFrameTick" inherits="GameFontNormal" virtual="true">
 		<Color r="0.27" g="0.27" b="0.27"/>
 	</FontString>
+
 	<Frame name="OrderHallTalentFrame" inherits="PortraitFrameTemplate" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" mixin="OrderHallTalentFrameMixin">
 		<Size x="336" y="566"/>
 		<Scripts>
@@ -113,25 +127,17 @@
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Background">
-					<Size x="322" y="498"/>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="CurrencyBG">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="OrderHallTalentFrameBg" x="4" y="-40"/>
+						<Anchor point="TOP" x="0" y="-50"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="CurrencyIcon" atlas="legionmission-icon-currency" useAtlasSize="false">
-					<Size x="27" y="26"/>
+				<FontString parentKey="SingleCost" inherits="GameFontNormal">
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="-12" y="-29"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="Currency" inherits="SystemFont_Shadow_Med2" justifyH="RIGHT">
-					<Size x="100" y="20"/>
-					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.CurrencyIcon" relativePoint="LEFT" x="-4" y="0"/>
+						<Anchor point="TOP" y="-67"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Tick1" inherits="OrderHallTalentFrameTick" text="I">
@@ -177,12 +183,43 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="OverlayElements" frameLevel="510" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="CornerLogo" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Currency" inherits="ResizeLayoutFrame">
+				<!-- Size/Anchor updated in talent frame OnLoad -->
+				<Anchors>
+					<Anchor point="TOP" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="SystemFont_Shadow_Med2" justifyH="LEFT">
+							<Size x="0" y="20"/>
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="Icon" atlas="legionmission-icon-currency" useAtlasSize="false">
+							<Size x="27" y="26"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Text" relativePoint="RIGHT" x="4" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame parentKey="CurrencyHitTest">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Currency"/>
-					<Anchor point="RIGHT" relativeKey="$parent.CurrencyIcon"/>
-					<Anchor point="TOP" relativeKey="$parent.CurrencyIcon"/>
-					<Anchor point="BOTTOM" relativeKey="$parent.CurrencyIcon"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Currency"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Currency"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
@@ -193,8 +230,11 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
-			<Frame name="ClassHallTalentInset" inherits="InsetFrameTemplate" parentKey="LeftInset" useParentLevel="true">
-				<Size x="328" y="504"/>
+			<Frame parentKey="Inset" inherits="InsetFrameTemplate" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-58"/>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="6"/>
+				</Anchors>
 			</Frame>
 			<Button parentKey="BackButton" inherits="UIPanelButtonTemplate" text="BACK">
 				<Size x="86" y="22"/>
@@ -208,89 +248,16 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame parentKey="StyleFrame" hidden="true">
-				<Size x="336" y="566"/>
-				<Anchors>
-					<Anchor point="CENTER"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BORDER" textureSubLevel="2">
-						<Texture parentKey="TopTalentLeftCorner" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-7" y="7" />
-							</Anchors>
-						</Texture>
-						<Texture parentKey="TopTalentRightCorner" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="7" y="7"/>
-							</Anchors>
-							<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
-						</Texture>
-						<Texture parentKey="BotTalentLeftCorner" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="-7" y="-7"/>
-							</Anchors>
-							<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
-						</Texture>
-						<Texture parentKey="BotTalentRightCorner" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
-							</Anchors>
-							<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture parentKey="CornerLogo" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.TopTalentLeftCorner" x="0" y="0"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="CloseButtonBorder" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.CloseButton" x="0" y="1"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BACKGROUND" textureSubLevel="1">
-						<Texture parentKey="Top" horizTile="true" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.TopTalentLeftCorner" relativePoint="TOPRIGHT"/>
-								<Anchor point="TOPRIGHT" relativeKey="$parent.TopTalentRightCorner" relativePoint="TOPLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Bottom" horizTile="true" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent.BotTalentLeftCorner" relativePoint="BOTTOMRIGHT"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BotTalentRightCorner" relativePoint="BOTTOMLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Left" vertTile="true" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.TopTalentLeftCorner" relativePoint="BOTTOMLEFT"/>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent.BotTalentLeftCorner" relativePoint="TOPLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Right" vertTile="true" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPRIGHT" relativeKey="$parent.TopTalentRightCorner" relativePoint="BOTTOMRIGHT"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BotTalentRightCorner" relativePoint="TOPRIGHT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="CurrencyBG" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOP" x="0" y="-50"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Background">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
 		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Inset"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 	</Frame>
 </Ui>

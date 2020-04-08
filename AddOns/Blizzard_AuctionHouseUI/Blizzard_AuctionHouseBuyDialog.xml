@@ -1,0 +1,121 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_AuctionHouseBuyDialog.lua"/>
+	
+	<Frame name="AuctionHouseBuyDialogNotificationFrameTemplate" mixin="AuctionHouseBuyDialogNotificationFrameMixin" virtual="true">
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="Number13FontWhite" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="CENTER" x="-15" y="0"/>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="Button" mixin="AuctionHouseBuyDialogNotificationButtonMixin">
+				<Size x="22" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Text" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="HelpI" alphaMode="BLEND" file="Interface\common\help-i"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight">
+					<Size x="22" y="22"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</HighlightTexture>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Button name="AuctionHouseDialogButtonTemplate" mixin="AuctionHouseBuyDialogButtonMixin" inherits="UIPanelButtonTemplate" virtual="true">
+		<Size x="120" y="22"/>
+		<Anchors>
+			<Anchor point="BOTTOM" x="0" y="18"/>
+		</Anchors>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="AuctionHouseBuyDialogTemplate" mixin="AuctionHouseBuyDialogMixin" frameLevel="1000" virtual="true">
+		<Size x="420" y="0"/>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate" useParentLevel="true"/>
+
+			<Button parentKey="DialogOverlay" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.$parent" relativePoint="TOPLEFT" x="0" y="-22"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="ItemDisplay" hidden="true">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-17"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="ItemText" inherits="Number15FontWhite" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="PriceFrame" inherits="MoneyDisplayFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.ItemDisplay.ItemText" relativePoint="BOTTOM" x="0" y="-6"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="hideCopper" value="true" type="boolean"/>
+					<KeyValue key="resizeToFit" value="true" type="boolean"/>
+					<KeyValue key="useAuctionHouseIcons" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+
+			<Button parentKey="BuyNowButton" mixin="AuctionHouseBuyDialogBuyNowButtonMixin" inherits="AuctionHouseDialogButtonTemplate, ButtonWithDisableTooltipTemplate" text="AUCTION_HOUSE_DIALOG_BUY_NOW" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" x="-64" y="0"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="CancelButton" mixin="AuctionHouseBuyDialogCancelButtonMixin" inherits="AuctionHouseDialogButtonTemplate" text="CANCEL" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" x="64" y="0"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="OkayButton" mixin="AuctionHouseBuyDialogOkayButtonMixin" inherits="AuctionHouseDialogButtonTemplate" text="OKAY" hidden="true"/>
+
+			<Frame parentKey="Notification" inherits="AuctionHouseBuyDialogNotificationFrameTemplate" hidden="true"/>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="TimeLeftText" inherits="NumberFontNormalRightRed" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="RIGHT" x="-25" y="0"/>
+						<Anchor point="CENTER" relativeKey="$parent.CancelButton" relativePoint="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>
