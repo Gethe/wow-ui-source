@@ -14,6 +14,8 @@ function Tutorials:Begin()
 	--self.Hide_StatusTrackingBar:Begin();
 	self.Hide_Minimap:Begin();
 
+	self.AutoPushSpellWatcher:Begin();
+
 	local level = UnitLevel("player");
 	if (level < 2) then
 		self.XPBarTutorial:Begin();
@@ -56,7 +58,7 @@ function Tutorials:Begin()
 	elseif C_QuestLog.GetLogIndexForQuestID(questID) ~= nil then -- Starting Quest is active
 		self.Intro_CombatDummyInRange:Begin();
 	else
-		self.Intro_CameraLook:Begin(); -- otherwise just start at the beginning
+		self.Intro_KeyboardMouse:Begin(); -- otherwise just start at the beginning
 	end
 
 	-- LFG Quest
@@ -132,6 +134,12 @@ function Tutorials:Begin()
 	if C_QuestLog.GetLogIndexForQuestID(questID) ~= nil then -- Spec Choice Quest is active
 		self.SpecTutorial:Begin();
 	end
+
+	-- Chat frame
+	-- We don't want this active right off the bat.
+	C_Timer.After(5, function()
+			Dispatcher:RegisterFunction("ChatEdit_ActivateChat", function(editBox) Tutorials.ChatFrame:Begin(editBox) end);
+		end);
 end
 
 function Tutorials:Shutdown()
@@ -251,8 +259,9 @@ Tutorials.Hide_Minimap					= Class_Hide_Minimap:new();
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Intro to Controls
-Tutorials.Intro_CameraLook				= Class_Intro_CameraLook:new();
 Tutorials.Intro_KeyboardMouse			= Class_Intro_KeyboardMouse:new()
+Tutorials.Intro_CameraLook				= Class_Intro_CameraLook:new();
+Tutorials.Intro_ApproachQuestGiver		= Class_Intro_ApproachQuestGiver:new();
 Tutorials.Intro_Interact				= Class_Intro_Interact:new();
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -340,6 +349,7 @@ Tutorials.SpecTutorial					= Class_SpecTutorial:new()
 Tutorials.HighlightItem					= Class_HighlightItem:new();
 Tutorials.ChatFrame						= Class_ChatFrame:new();
 Tutorials.StealthTutorial 				= Class_StealthTutorial:new()
+Tutorials.AutoPushSpellWatcher			= Class_AutoPushSpellWatcher:new();
 
 
 -- ============================================================================================================

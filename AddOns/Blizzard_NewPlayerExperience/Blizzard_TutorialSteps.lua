@@ -29,6 +29,7 @@ function Class_CreatureRangeWatcher:OnBegin(range, targets, screenString, callba
 	self.range = range;
 	self.targets = targets;
 	self.screenString = screenString;
+	self.icon = nil;
 	self.callback = callback;
 	Dispatcher:RegisterEvent("UNIT_TARGET", self);
 end
@@ -39,7 +40,8 @@ function Class_CreatureRangeWatcher:UNIT_TARGET()
 		local creatureID = TutorialHelper:GetCreatureIDFromGUID(unitGUID);
 		for i, target in ipairs(self.targets) do
 			if creatureID == target then
-				self.PointerID = self:ShowScreenTutorial(TutorialHelper:FormatString(self.screenString), nil, NPE_TutorialMainFrame.FramePositions.Low);
+				local content = {text = TutorialHelper:FormatString(self.screenString), icon=self.icon};
+				self.PointerID = self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low);
 				NPE_RangeManager:Shutdown();
 				NPE_RangeManager:StartWatching(creatureID, NPE_RangeManager.Type.Unit, self.range, function() self:Complete(); end);
 				return;
@@ -185,13 +187,35 @@ end
 
 
 -- ------------------------------------------------------------------------------------------------------------
+-- Intro Keyboard Mouse
+-- ------------------------------------------------------------------------------------------------------------
+Class_Intro_KeyboardMouse = class("Intro_KeyboardMouse", Class_TutorialBase);
+function Class_Intro_KeyboardMouse:OnBegin()
+	self:HideScreenTutorial();
+
+	C_Timer.After(2, function()
+		self:ShowMouseKeyboardTutorial();
+	end);
+	EventRegistry:RegisterCallback("NPE_TutorialKeyboardMouseFrame.Closed", self.TutorialClosed, self);
+end
+
+function Class_Intro_KeyboardMouse:TutorialClosed()
+	self:Complete();
+end
+
+function Class_Intro_KeyboardMouse:OnComplete()
+	Tutorials.Intro_CameraLook:Begin();
+end
+
+
+-- ------------------------------------------------------------------------------------------------------------
 -- Mouse Look Help - This shows using the mouse to look around
 -- ------------------------------------------------------------------------------------------------------------
 Class_Intro_CameraLook = class("Intro_CameraLook", Class_TutorialBase);
 function Class_Intro_CameraLook:OnBegin()
 	self.PlayerHasLooked = false;
-
-	self:ShowScreenTutorial(TutorialHelper:FormatString(NPEV2_INTRO_CAMERA_LOOK), nil, NPE_TutorialMainFrame.FramePositions.Low);
+	local content = {text = NPEV2_INTRO_CAMERA_LOOK, icon="newplayertutorial-icon-mouse-turn"};
+	self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low);
 
 	print(GetBindingKey("MOVEFORWARD"));
 
@@ -214,19 +238,18 @@ function Class_Intro_CameraLook:OnComplete()
 	Dispatcher:UnregisterEvent("PLAYER_STARTED_TURNING", self);
 	Dispatcher:UnregisterEvent("PLAYER_STOPPED_TURNING", self);
 
-	Tutorials.Intro_KeyboardMouse:Begin(); 
+	Tutorials.Intro_ApproachQuestGiver:Begin(); 
 end
 
 
 -- ------------------------------------------------------------------------------------------------------------
--- WASD Movement - This shows using the WASD keys to move.
+-- Approach Quest Giver
 -- ------------------------------------------------------------------------------------------------------------
-Class_Intro_KeyboardMouse = class("Intro_KeyboardMouse", Class_TutorialBase);
-function Class_Intro_KeyboardMouse:OnBegin()
+Class_Intro_ApproachQuestGiver = class("Intro_ApproachQuestGiver", Class_TutorialBase);
+function Class_Intro_ApproachQuestGiver:OnBegin()
 	self:HideScreenTutorial();
-	NPE_TutorialKeyboardMouseFrame:Show();
-
-	self:ShowScreenTutorial(TutorialHelper:GetFactionData().StartingQuestTutorialString, nil, NPE_TutorialMainFrame.FramePositions.Low);
+	local content = {text = TutorialHelper:GetFactionData().StartingQuestTutorialString, icon = nil};
+	self:ShowWalkTutorial();
 
 	local unit = TutorialHelper:GetFactionData().StartingQuestGiverCreatureID;
 	if (unit) then
@@ -234,10 +257,10 @@ function Class_Intro_KeyboardMouse:OnBegin()
 	end
 end
 
-function Class_Intro_KeyboardMouse:OnComplete()
-	Tutorials.Intro_Interact:Begin();
+function Class_Intro_ApproachQuestGiver:OnComplete()
+	self:HideWalkTutorial();
+	Tutorials.Intro_Interact:Begin(); 
 end
-
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Interact with Quest Giver
@@ -245,14 +268,15 @@ end
 Class_Intro_Interact = class("Intro_Interact", Class_TutorialBase);
 function Class_Intro_Interact:OnBegin()
 	Dispatcher:RegisterEvent("QUEST_DETAIL", self);
-	self:ShowScreenTutorial(TutorialHelper:FormatString(TutorialHelper:GetFactionData().StartingQuestInteractString), nil, NPE_TutorialMainFrame.FramePositions.Low); 
+	local content = {text = TutorialHelper:GetFactionData().StartingQuestInteractString, icon = "newplayertutorial-icon-mouse-rightbutton"};
+	self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low); 
 end
 
 function Class_Intro_Interact:QUEST_DETAIL(logindex, questID)
 	local questID = TutorialHelper:GetFactionData().StartingQuest;
 	if not TutorialHelper:IsQuestCompleteOrActive(questID) then 
 		self:Complete();
-	end 
+	end
 end
 
 
@@ -270,10 +294,12 @@ function Class_Intro_CombatDummyInRange:OnBegin()
 	local unit = TutorialHelper:GetFactionData().StartingQuestTargetDummyCreatureID;
 	if (unit) then
 		if TutorialHelper:IsMeleeClass() then
-			self:ShowScreenTutorial(TutorialHelper:FormatString(NPEV2_INTRO_MELEE_COMBAT), nil, NPE_TutorialMainFrame.FramePositions.Low);
+			local content = {text = NPEV2_INTRO_MELEE_COMBAT, icon="newplayertutorial-icon-mouse-rightbutton"};
+			self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low);
 			NPE_RangeManager:StartWatching(unit, NPE_RangeManager.Type.Unit, 7, function() self.InRange = true;self:CheckFinished(); end);
 		else
-			self:ShowScreenTutorial(TutorialHelper:FormatString(NPEV2_INTRO_RANGED_COMBAT), nil, NPE_TutorialMainFrame.FramePositions.Low);
+			local content = {text = NPEV2_INTRO_RANGED_COMBAT, icon="newplayertutorial-icon-mouse-leftbutton"};
+			self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low);
 			NPE_RangeManager:StartWatching(unit, NPE_RangeManager.Type.Unit, 30, function() self.InRange = true;self:CheckFinished(); end);
 		end
 	end
@@ -309,22 +335,41 @@ end
 Class_Intro_CombatTactics = class("Intro_CombatTactics", Class_TutorialBase);
 function Class_Intro_CombatTactics:OnBegin()
 	Dispatcher:RegisterEvent("QUEST_REMOVED", self);
+	Dispatcher:RegisterEvent("PLAYER_LEAVE_COMBAT", self);
 
 	local classData = TutorialHelper:FilterByClass(TutorialData.ClassData);
 	self.spellID = classData.firstSpellID;
 	self.spellIDString = "{$"..self.spellID.."}";
 	self.keyBindString = "{KB|"..self.spellID.."}";
+
+	self:Reset();
+end
+
+function Class_Intro_CombatTactics:Reset()
 	self.pointerID = nil;
+
+	self:HidePointerTutorials();
+	self:HideResourceCallout();
 
 	local unitGUID = UnitGUID("target");
 	if unitGUID and (TutorialHelper:GetCreatureIDFromGUID(unitGUID) == TutorialHelper:GetFactionData().StartingQuestTargetDummyCreatureID) then
-		Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
-		Dispatcher:RegisterEvent("NAME_PLATE_UNIT_ADDED", self);
-		Dispatcher:RegisterEvent("NAME_PLATE_UNIT_REMOVED", self);
-		local firstTime = true;
-		self:ShowAbilityPrompt(firstTime);
+		local playerClass = TutorialHelper:GetClass();
+		if playerClass == "WARRIOR" or playerClass == "ROGUE" then
+			Dispatcher:RegisterEvent("UNIT_POWER_FREQUENT", self);
+		else
+			local firstTime = true;
+			self:ShowAbilityPrompt(firstTime);
+			Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);		end
 	else
 		Dispatcher:RegisterEvent("UNIT_TARGET", self);
+	end
+end
+
+function Class_Intro_CombatTactics:UNIT_TARGET()
+	local unitGUID = UnitGUID("target");
+	if unitGUID and (TutorialHelper:GetCreatureIDFromGUID(unitGUID) == TutorialHelper:GetFactionData().StartingQuestTargetDummyCreatureID) then
+		Dispatcher:UnregisterEvent("UNIT_TARGET", self);
+		Dispatcher:RegisterEvent("UNIT_POWER_FREQUENT", self);
 	end
 end
 
@@ -347,41 +392,22 @@ function Class_Intro_CombatTactics:ResourceCallout()
 		resourceString = NPEV2_RESOURCE_CALLOUT_WARRIOR;
 	elseif playerClass == "ROGUE" or playerClass == "MONK" then
 		resourceString = NPEV2_RESOURCE_CALLOUT_ENERGY;
-	elseif playerClass == "HUNTER" then
-		--resourceString = NPEV2_RESOURCE_CALLOUT_HUNTER;
-		return;
 	else
 		return;
 	end
 	if not self.pointerID then
+		resourceString = TutorialHelper:FormatString(resourceString:format(self.keyBindString, self.spellIDString));
 		self.pointerID = self:AddPointerTutorial(resourceString, "LEFT", namePlatePlayer, 0, 0, nil, "RIGHT");
 	end
 end
 
-function Class_Intro_CombatTactics:UNIT_TARGET()
-	local unitGUID = UnitGUID("target");
-	if unitGUID and (TutorialHelper:GetCreatureIDFromGUID(unitGUID) == TutorialHelper:GetFactionData().StartingQuestTargetDummyCreatureID) then
-		Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
-		Dispatcher:RegisterEvent("NAME_PLATE_UNIT_ADDED", self);
-		Dispatcher:RegisterEvent("NAME_PLATE_UNIT_REMOVED", self);
-		local firstTime = true;
-		self:ShowAbilityPrompt(firstTime);
-		self.pointerID = nil;
-		self:ResourceCallout();
+function Class_Intro_CombatTactics:PLAYER_LEAVE_COMBAT()
+	local tutorialData = TutorialHelper:GetFactionData();
+	if C_QuestLog.ReadyForTurnIn(tutorialData.StartingQuest) then
+		Dispatcher:UnregisterEvent("PLAYER_LEAVE_COMBAT", self);
+		self:Complete();
 	else
-		Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
-		Dispatcher:UnregisterEvent("UNIT_POWER_FREQUENT", self);
-		Dispatcher:UnregisterEvent("NAME_PLATE_UNIT_ADDED", self);
-		Dispatcher:UnregisterEvent("NAME_PLATE_UNIT_REMOVED", self);
-
-		self:HidePointerTutorials();
-		self:HideResourceCallout();
-
-		local questID = TutorialHelper:GetFactionData().StartingQuest;
-		if not C_QuestLog.ReadyForTurnIn(questID) then	-- the first quest is not ready to turn in
-			Tutorials.Intro_CombatDummyInRange:Begin();	-- player changed target, start over
-			self:Complete();
-		end
+		self:Reset();
 	end
 end
 
@@ -401,48 +427,29 @@ end
 function Class_Intro_CombatTactics:UNIT_SPELLCAST_SUCCEEDED(caster, spelllineID, spellID)
 	if spellID == self.spellID then
 		Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
-		local firstTime = false;
-		self:ShowAbilityPrompt(firstTime);
-		self.pointerID = nil;
-		self:ResourceCallout();
+
+		local playerClass = TutorialHelper:GetClass();
+		if playerClass == "WARRIOR" or playerClass == "ROGUE" then
+			self:HidePointerTutorials();
+			self.pointerID = nil;
+			self:ResourceCallout();
+		else
+			local firstTime = false;
+			self:ShowAbilityPrompt(firstTime);
+		end
 	end
 end
 
-function Class_Intro_CombatTactics:UNIT_POWER_FREQUENT(namePlateAdded)
-	local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player", issecure());
-	if not namePlatePlayer then
-		return;
-	end
-
-	self:ResourceCallout();
-end
-
-function Class_Intro_CombatTactics:NAME_PLATE_UNIT_ADDED(namePlateAdded)
-	local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player", issecure());
-	if not namePlatePlayer then
-		return;
-	end
-
-	if namePlatePlayer.namePlateUnitToken == namePlateAdded then
-		Dispatcher:UnregisterEvent("NAME_PLATE_UNIT_ADDED", self);
-		Dispatcher:RegisterEvent("UNIT_POWER_FREQUENT", self);
-
-		print("NAME_PLATE_UNIT_ADDED");
-		self.playerNamePlate = namePlateAdded;
-		self:ResourceCallout();
-	end
-end
-
-function Class_Intro_CombatTactics:NAME_PLATE_UNIT_REMOVED(namePlateRemoved)
-	local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player", issecure());
-	if not namePlatePlayer then
-		return;
-	end
-
-	if namePlatePlayer.namePlateUnitToken == namePlateRemoved then
-		print("NAME_PLATE_UNIT_REMOVED");
-		self.playerNamePlate = nil;
-		self:HideResourceCallout();
+function Class_Intro_CombatTactics:UNIT_POWER_FREQUENT(unit, resource)
+	local button = TutorialHelper:GetActionButtonBySpellID(self.spellID);
+	if button then
+		local isUsable, notEnoughMana = IsUsableAction(button.action);
+		if isUsable then
+			Dispatcher:UnregisterEvent("UNIT_POWER_FREQUENT", self);
+			local firstTime = true;
+			self:ShowAbilityPrompt(firstTime);
+			Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
+		end
 	end
 end
 
@@ -609,10 +616,10 @@ end
 function Class_QuestCompleteHelp:QUEST_COMPLETE()
 	if (self.QuestCompleteTimer) then
 		self.QuestCompleteTimer:Cancel()
-	end 
+	end
 	self:HidePointerTutorials();
 	self:Complete();
-end 
+end
 
 function Class_QuestCompleteHelp:QUEST_REMOVED(questIDRemoved)
 	local questID = TutorialHelper:GetFactionData().StartingQuest;
@@ -679,7 +686,7 @@ function Class_LevelUpTutorial:PLAYER_LEVEL_CHANGED(originallevel, newLevel)
 					Tutorials.StealthTutorial:Begin();
 					return;
 				end
-			end 
+			end
 			Tutorials.AddSpellToActionBar:Begin(spellID, nil, NPEV2_SPELLBOOK_TUTORIAL);
 		end
 	end
@@ -709,18 +716,28 @@ function Class_AddSpellToActionBar:OnBegin(spellID, warningString, spellMicroBut
 
 	if self.warningString then
 		local finalString = self.warningString:format(self.spellIDString);
-		self.PointerID = self:ShowScreenTutorial(TutorialHelper:FormatString(finalString), nil, NPE_TutorialMainFrame.FramePositions.Low);
+		local content = {text = TutorialHelper:FormatString(finalString), icon=nil};
+		self.PointerID = self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low);
 	end
 
 	if self.spellIDString then
 		self:ShowPointerTutorial(TutorialHelper:FormatString(self.spellMicroButtonString:format(self.spellIDString)), "DOWN", SpellbookMicroButton, 0, 10, nil, "DOWN");
 	end
 
-	Dispatcher:RegisterFunction("ToggleSpellBook", function() 
-		self:HidePointerTutorials();
-		ActionButton_HideOverlayGlow(SpellbookMicroButton);
-		self:RemindAbility();
-	end, true);
+	EventRegistry:RegisterCallback("SpellBookFrame.Show", self.SpellBookFrameShow, self);
+end
+
+function Class_AddSpellToActionBar:SpellBookFrameShow()
+	EventRegistry:RegisterCallback("SpellBookFrame.Show", nil, self);
+	EventRegistry:RegisterCallback("SpellBookFrame.Hide", self.SpellBookFrameHide, self);
+	self:HidePointerTutorials();
+	ActionButton_HideOverlayGlow(SpellbookMicroButton);
+	self:RemindAbility();
+end
+
+function Class_AddSpellToActionBar:SpellBookFrameHide()
+	EventRegistry:RegisterCallback("SpellBookFrame.Hide", nil, self);
+	self:Complete();
 end
 
 function Class_AddSpellToActionBar:RemindAbility()
@@ -730,7 +747,13 @@ function Class_AddSpellToActionBar:RemindAbility()
 
 	local tutorialString = NPEV2_SPELLBOOKREMINDER:format(self.spellIDString);
 	tutorialString = TutorialHelper:FormatString(tutorialString)
-	self:ShowPointerTutorial(tutorialString, "LEFT", SpellBookFrame, 0, 10, nil, "LEFT"); 
+	
+	local spellBtn;
+	local buttonIndex = SpellBookFrame_OpenToSpell(self.spellToAdd);
+	if buttonIndex then
+		spellBtn = _G["SpellButton" .. buttonIndex];
+	end
+	self:ShowPointerTutorial(tutorialString, "LEFT", spellBtn or SpellBookFrame, 50, 0, nil, "LEFT"); 
 end
 
 function Class_AddSpellToActionBar:ACTIONBAR_SLOT_CHANGED(slot)
@@ -762,14 +785,16 @@ function Class_Intro_OpenMap:OnBegin()
 		end, true);
 
 	self.Timer = C_Timer.NewTimer(4, function()
-		self:ShowScreenTutorial(TutorialHelper:FormatString(string.format(NPEV2_OPENMAP, key)));
+		local content = {text = NPEV2_OPENMAP, icon=nil, keyText=key};
+		self:ShowSingleKeyTutorial(content);
 	end);
-end 
+end
 
 function Class_Intro_OpenMap:OnComplete()
 	if self.Timer then 
 		self.Timer:Cancel()
-	end 
+	end
+	self:HideSingleKeyTutorial();
 	Tutorials.Intro_MapHighlights:Begin();
 end
 
@@ -1069,11 +1094,12 @@ function Class_LootCorpse:OnUnsuppressed()
 end
 
 function Class_LootCorpse:Display()
-	local prompt = NPE_LOOTCORPSE;
+	local prompt = NPEV2_LOOT_CORPSE;
 	if (self.QuestMobID) then
-		prompt = NPE_LOOTCORPSEQUEST;
+		prompt = NPEV2_LOOT_CORPSE_QUEST;
 	end
-	self:ShowScreenTutorial(TutorialHelper:FormatString(prompt));
+	local content = {text = prompt, icon="newplayertutorial-icon-mouse-rightbutton"};
+	self:ShowScreenTutorial(content);
 end
 
 function Class_LootCorpse:OnComplete()
@@ -1109,9 +1135,9 @@ end
 function Class_LootPointer:LOOT_CLOSED()
 	if (self.LootHelpTimer) then
 		self.LootHelpTimer:Cancel();
-	end 
+	end
 	self:HidePointerTutorials();
-end 
+end
 
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -1689,7 +1715,7 @@ function Class_EnhancedCombatTactics_UseDoTs:UNIT_TARGET()
 		end;
 
 		--check for the spender spell on the action bar
-		if not self:IsForSpellOnActionBar(self.combatData.resourceSpenderSpellID, self.combatData.warningSpenderString, NPEV2_SPELLBOOK_ADD_SPELL) then
+		if not self:IsSpellOnActionBar(self.combatData.resourceSpenderSpellID, self.combatData.warningSpenderString, NPEV2_SPELLBOOK_ADD_SPELL) then
 			return;
 		end;
 
@@ -1832,7 +1858,8 @@ function Class_EatFood:OnBegin(inCombat)
 	if not self.inCombat then
 		local key = TutorialHelper:GetBagBinding();
 		local tutorialString = string.format(NPEV2_EAT_FOOD_P1, key);
-		self:ShowScreenTutorial(TutorialHelper:FormatString(tutorialString), nil, NPE_TutorialMainFrame.FramePositions.Low);
+		local content = {text = TutorialHelper:FormatString(tutorialString), icon=nil};
+		self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low);
 		Dispatcher:RegisterFunction("ToggleBackpack", function() self:BackpackOpened() end, true);
 	end
 end
@@ -1856,7 +1883,8 @@ function Class_EatFood:UNIT_SPELLCAST_SUCCEEDED(caster, spelllineID, spellID)
 	local tutorialData = TutorialHelper:GetFactionData();
 	if spellID == tutorialData.FoodSpellCast then
 		self:HidePointerTutorials();
-		self:ShowScreenTutorial(TutorialHelper:FormatString(NPEV2_EAT_FOOD_P2_SUCCEEDED), nil, NPE_TutorialMainFrame.FramePositions.Low); 
+		local content = {text = TutorialHelper:FormatString(NPEV2_EAT_FOOD_P2_SUCCEEDED), icon=nil};
+		self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low); 
 		self.CloseBagTimer = C_Timer.NewTimer(8, function()
 			self:Complete();
 		end);
@@ -1901,7 +1929,6 @@ function Class_Vendor_Watcher:BuyBackTabHelp()
 		self:HidePointerTutorials();
 		return;
 	end
-	--self:ShowScreenTutorial(TutorialHelper:FormatString(NPEV2_BUYBACK_ITEMS_FROM_VENDOR), nil, NPE_TutorialMainFrame.FramePositions.Low);
 	self:ShowPointerTutorial(TutorialHelper:FormatString(NPEV2_BUYBACK_ITEMS), "LEFT", MerchantFrame, 0, 10, nil, "LEFT");
 	self.buyBackTutorialComplete = true;
 end
@@ -1952,7 +1979,8 @@ function Class_Vendor_Watcher:MerchantTabHelp()
 		self:HidePointerTutorials();
 	else
 		Dispatcher:RegisterEvent("BAG_NEW_ITEMS_UPDATED", self);
-		self:ShowScreenTutorial(TutorialHelper:FormatString(NPEV2_SELL_ITEMS_TO_VENDOR), nil, NPE_TutorialMainFrame.FramePositions.Low);
+		local content = {text = TutorialHelper:FormatString(NPEV2_SELL_ITEMS_TO_VENDOR), icon="newplayertutorial-icon-mouse-rightbutton"};
+		self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low);
 		self:UpdateGreyItemPointer();
 
 		self.Timer = C_Timer.NewTimer(2, function()
@@ -2051,11 +2079,9 @@ function Class_LookingForGroup:LFG_ROLE_UPDATE()
 	self:CheckRoleInfo();
 end
 
---LFG_UPDATE
---local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_LFD);
-
 function Class_LookingForGroup:ShowRoleInfo()
-	self:ShowScreenTutorial(TutorialHelper:FormatString(NPEV2_LFD_ROLE_INFO), nil, NPE_TutorialMainFrame.FramePositions.Low);
+	local content = {text = TutorialHelper:FormatString(NPEV2_LFD_ROLE_INFO), icon=nil};
+	self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low);
 	self.rolePointerID = self:AddPointerTutorial(NPEV2_LFD_SELECT_ROLE, "LEFT", LFDQueueFrameRoleButtonDPS, 0, 0, nil, "RIGHT"); 
 end
 
@@ -2068,7 +2094,9 @@ function Class_LookingForGroup:LFG_QUEUE_STATUS_UPDATE()
 	end
 	
 	self:ShowPointerTutorial(NPEV2_LFD_INFO_POINTER_MESSAGE, "RIGHT", QueueStatusMinimapButton, 0, 10, nil, "RIGHT"); 
-	self:ShowScreenTutorial(NPEV2_LFD_INFO_MESSAGE, nil, NPE_TutorialMainFrame.FramePositions.Low);
+	
+	local content = {text = NPEV2_LFD_INFO_MESSAGE, icon=nil};
+	self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low);
 	Dispatcher:RegisterEvent("LFG_PROPOSAL_SHOW", self);
 end
 
@@ -2127,7 +2155,9 @@ end
 Class_Death_MapPrompt = class("Death_MapPrompt", Class_TutorialBase);
 function Class_Death_MapPrompt:OnBegin()
 	local key = TutorialHelper:GetMapBinding();
-	self:ShowScreenTutorial(TutorialHelper:FormatString(string.format(NPE_FINDCORPSE, key)));
+	local content = {text = TutorialHelper:FormatString(string.format(NPE_FINDCORPSE, key)), icon=nil};
+
+	self:ShowScreenTutorial(content);
 	Dispatcher:RegisterEvent("CORPSE_IN_RANGE", self);
 	Dispatcher:RegisterEvent("PLAYER_UNGHOST", self);
 end
@@ -2211,7 +2241,7 @@ function Class_ChatFrame:OnBegin(editBox)
 		self.ShowCount = self.ShowCount + 1;
 
 		if (self.ShowCount == 1) then
-			self:ShowPointerTutorial(TutorialHelper:FormatString(NPE_CHATFRAME), "LEFT", editBox);
+			self:ShowPointerTutorial(TutorialHelper:FormatString(NPEV2_CHATFRAME), "LEFT", editBox);
 		end
 
 		self.Elapsed = 0;
@@ -2235,6 +2265,10 @@ function Class_ChatFrame:OnShutdown()
 	self.EditBox = nil;
 end
 
+function Class_ChatFrame:OnComplete()
+	Dispatcher:UnregisterEvent("OnUpdate", self);
+	Dispatcher:RegisterFunction("ChatEdit_DeactivateChat", nil, true);
+end
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Rogue Stealth Tutorial
@@ -2243,19 +2277,43 @@ Class_StealthTutorial = class("StealthTutorial", Class_TutorialBase);
 function Class_StealthTutorial:OnBegin()
 	self:ShowPointerTutorial(NPEV2_STEALTH_TUTORIAL, "DOWN", StanceButton1, 0, 10, nil, "DOWN"); 
 	Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
-end 
+end
 
 local STEALTH_SPELL_ID = 1784;
 function Class_StealthTutorial:UNIT_SPELLCAST_SUCCEEDED(unit, _, spellID)
 	if spellID == STEALTH_SPELL_ID then
 		self:Complete();
-	end 
+	end
 end
 
 function Class_StealthTutorial:OnComplete()
 	self:HidePointerTutorials();
-end 
+end
 
+
+-- ------------------------------------------------------------------------------------------------------------
+-- Auto Spell Watcher
+-- ------------------------------------------------------------------------------------------------------------
+Class_AutoPushSpellWatcher = class("AutoPushSpellWatcher", Class_TutorialBase);
+function Class_AutoPushSpellWatcher:OnBegin()
+	local level = UnitLevel("player");
+	if level < 10 then
+		Dispatcher:RegisterEvent("PLAYER_LEVEL_CHANGED", self);
+		SetCVar("AutoPushSpellToActionBar", 0);
+	else
+		self:Complete();
+	end
+end
+
+function Class_AutoPushSpellWatcher:PLAYER_LEVEL_CHANGED(originallevel, newLevel)
+	if newLevel >= 10 then
+		self:Complete();
+	end
+end
+
+function Class_AutoPushSpellWatcher:OnComplete()
+	SetCVar("AutoPushSpellToActionBar", 1);
+end
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Mount Tutorial
@@ -2336,7 +2394,7 @@ function Class_MountTutorial:ACTIONBAR_SLOT_CHANGED(slot)
 
 	if spellID == mountID then 
 		self:Complete()
-	end 
+	end
 end
 
 function Class_MountTutorial:OnComplete()

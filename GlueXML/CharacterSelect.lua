@@ -8,8 +8,6 @@ MAX_CHARACTERS_DISPLAYED_BASE = MAX_CHARACTERS_DISPLAYED;
 
 CHARACTER_LIST_OFFSET = 0;
 
-CHARACTER_SELECT_BACK_FROM_CREATE = false;
-
 MOVING_TEXT_OFFSET = 12;
 DEFAULT_TEXT_OFFSET = 0;
 CHARACTER_BUTTON_HEIGHT = 57;
@@ -18,6 +16,14 @@ AUTO_DRAG_TIME = 0.5;				-- in seconds
 
 CHARACTER_UNDELETE_COOLDOWN = 0;	-- in seconds
 CHARACTER_UNDELETE_COOLDOWN_REMAINING = 0; -- in seconds
+
+PAID_CHARACTER_CUSTOMIZATION = 1;
+PAID_RACE_CHANGE = 2;
+PAID_FACTION_CHANGE = 3;
+
+-- TODO: Remove once the old Char Create is dead
+PAID_SERVICE_CHARACTER_ID = nil;
+PAID_SERVICE_TYPE = nil;
 
 local translationTable = { };	-- for character reordering: key = button index, value = character ID
 
@@ -36,7 +42,7 @@ function GenerateBuildString(buildNumber)
 
 	-- Generate Build String from the Integer.
 	local versionParse = {tostring(buildNumber):match("(%d+)(%d%d)(%d%d)$")};
-	
+
 	if #versionParse > 0 then
 		for k, v in ipairs(versionParse) do
 			versionParse[k] = tonumber(v);
@@ -113,6 +119,7 @@ function CharacterSelect_OnLoad(self)
     self.createIndex = 0;
     self.selectedIndex = 0;
 	self.selectLast = false;
+	self.backFromCharCreate = false;
     self.characterPadlockPool = CreateFramePool("BUTTON", self, "CharSelectLockedButtonTemplate");
     self:RegisterEvent("CHARACTER_LIST_UPDATE");
     self:RegisterEvent("UPDATE_SELECTED_CHARACTER");
@@ -150,9 +157,10 @@ function CharacterSelect_OnLoad(self)
     CharacterSelectCharacterFrame:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
     CharacterSelectCharacterFrame:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6], 0.85);
 
-    CHARACTER_SELECT_BACK_FROM_CREATE = false;
-
     CHARACTER_LIST_OFFSET = 0;
+
+	LoadAddOn("Blizzard_CharacterCustomize");
+    LoadAddOn("Blizzard_CharacterCreate");
 end
 
 function CharacterSelect_OnShow(self)
@@ -247,7 +255,7 @@ function CharacterSelect_OnShow(self)
     CharacterSelectUI.FadeIn:Play();
 
     --Clear out the addons selected item
-    GlueDropDownMenu_SetSelectedValue(AddonCharacterDropDown, true);
+    UIDropDownMenu_SetSelectedValue(AddonCharacterDropDown, true);
 
     AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
 
@@ -431,7 +439,7 @@ function CharacterSelect_OnUpdate(self, elapsed)
     if (STORE_IS_LOADED and StoreFrame_WaitingForCharacterListUpdate()) then
         StoreFrame_OnCharacterListUpdate();
     end
-	
+
 	GlueDialog_CheckQueuedDialogs();
 end
 
@@ -487,7 +495,7 @@ function CharacterSelect_OnEvent(self, event, ...)
             CharacterSelect_EndCharacterUndelete();
             self.undeleteNoCharacters = true;
             return;
-        elseif (not CHARACTER_SELECT_BACK_FROM_CREATE and numChars == 0) then
+        elseif (not self.backFromCharCreate and numChars == 0) then
             if (IsKioskGlueEnabled()) then
                 GlueParent_SetScreen("kioskmodesplash");
             else
@@ -496,7 +504,7 @@ function CharacterSelect_OnEvent(self, event, ...)
             return;
         end
 
-        CHARACTER_SELECT_BACK_FROM_CREATE = false;
+        self.backFromCharCreate = false;
 
         if (self.hasPendingTrialBoost) then
             KioskMode_SetWaitingOnTrial(true);
@@ -677,7 +685,7 @@ function CharacterSelect_SetupPadlockForCharacterButton(button, guid)
    else
         GMError("Invalid lock type");
     end
-	
+
     padlock:SetParent(button);
     padlock:SetPoint("TOPRIGHT", button, "TOPLEFT", 5, 12);
 
@@ -821,7 +829,7 @@ function UpdateCharacterList(skipSelect)
 			-- If we're not showing the build, don't bother doing nice formatting.
 			if (showlastLoginBuild) then
 				local currentVersion = select(6, GetBuildInfo());
-				
+
 				-- Set the Color based on the build being old / new
 				if (lastLoginBuild < currentVersion) then
 					button.buttonText.LastVersion:SetTextColor(YELLOW_FONT_COLOR:GetRGBA()) -- Earlier Build
@@ -830,7 +838,7 @@ function UpdateCharacterList(skipSelect)
 				else
 					button.buttonText.LastVersion:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGBA()) -- Current Build
 				end
-				
+
 				button.buttonText.LastVersion:SetText(GenerateBuildString(lastLoginBuild));
 			end
 
@@ -1177,7 +1185,11 @@ end
 
 function CharacterSelect_CreateNewCharacter(characterType, allowCharacterTypeFrameToShow)
     C_CharacterCreation.SetCharacterCreateType(characterType);
-    CharacterCreate_SetAllowCharacterTypeFrame(allowCharacterTypeFrameToShow);
+
+-- TODO: Remove once the old Char Create is dead
+	if CharacterCreate_Old then
+		CharacterCreate_SetAllowCharacterTypeFrame(allowCharacterTypeFrameToShow);
+	end
     CharacterSelect_SelectCharacter(CharacterSelect.createIndex);
 end
 
@@ -1197,7 +1209,9 @@ function CharacterSelect_SelectCharacter(index, noCreate)
             AccountReactivate_RecheckEligibility();
         end
         ReactivateAccountDialog_Open();
-        SetBackgroundModel(CharacterSelectModel, GetSelectBackgroundModel(charID));
+
+		SetCharSelectBackground(GetSelectBackgroundModel(charID));
+		ResetModel(CharacterSelectModel);
 
         -- Update the text of the EnterWorld button based on the type of character that's selected, default to "enter world"
         local text = ENTER_WORLD;
@@ -1356,14 +1370,22 @@ function CharacterSelect_PaidServiceOnClick(self, button, down, service)
     if (translatedIndex <= 0 or translatedIndex > GetNumCharacters()) then
         -- Somehow our character order got borked, reset the offset and get an updated character list.
         CHARACTER_LIST_OFFSET = 0;
+		CharacterCreateFrame:ClearPaidServiceInfo();
+
+		-- TODO: Remove once the old Char Create is dead
         PAID_SERVICE_CHARACTER_ID = nil;
         PAID_SERVICE_TYPE = nil;
+
         GetCharacterListUpdate();
         return;
     end
 
+	CharacterCreateFrame:SetPaidServiceInfo(service, translatedIndex);
+
+	-- TODO: Remove once the old Char Create is dead
     PAID_SERVICE_CHARACTER_ID = translatedIndex;
     PAID_SERVICE_TYPE = service;
+
     PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
     if (CharacterSelect.undeleting) then
         local guid = select(15, GetCharacterInfo(PAID_SERVICE_CHARACTER_ID));
@@ -1544,13 +1566,13 @@ function AccountUpgradePanel_GetDisplayExpansionLevel()
 		currentExpansionLevel = currentExpansionLevel - 1;
 	end
 	local upgradeExpansionLevel = math.min(currentExpansionLevel + 1, GetMaximumExpansionLevel());
-	
+
 	local minExpansionLevel = GetMinimumExpansionLevel();
 
 	if currentExpansionLevel <= minExpansionLevel then
 		currentExpansionLevel = LE_EXPANSION_CLASSIC;
 	end
-	
+
 	if upgradeExpansionLevel <= minExpansionLevel then
 		upgradeExpansionLevel = LE_EXPANSION_CLASSIC;
 	end
@@ -1567,11 +1589,11 @@ function AccountUpgradePanel_GetBannerInfo()
 		else
 			expansionDisplayInfo = GetExpansionDisplayInfo(LE_EXPANSION_LEVEL_CURRENT);
 			features = expansionDisplayInfo.features;
-			
+
 			-- Replace the boost feature.
 			features[3] = { icon = "Interface\\Icons\\Achievement_Quests_Completed_06", text = UPGRADE_FEATURE_2 }
 		end
-		
+
 		if not expansionDisplayInfo then
 			return nil, false;
 		end
@@ -1584,13 +1606,13 @@ function AccountUpgradePanel_GetBannerInfo()
 			{ icon = "Interface\\Icons\\achievement_reputation_01", text = VETERAN_FEATURE_2 },
 			{ icon = "Interface\\Icons\\spell_holy_surgeoflight", text = VETERAN_FEATURE_3 },
 		};
-		
+
 		local currentExpansionLevel = AccountUpgradePanel_GetDisplayExpansionLevel();
 		local expansionDisplayInfo = GetExpansionDisplayInfo(currentExpansionLevel);
 		if not expansionDisplayInfo then
 			return currentExpansionLevel, false;
 		end
-		
+
 		local shouldShowBanner = true;
 		return currentExpansionLevel, shouldShowBanner, REACTIVATE_ACCOUNT_NOW, expansionDisplayInfo.logo, expansionDisplayInfo.banner, features;
 	else
@@ -1601,7 +1623,7 @@ function AccountUpgradePanel_GetBannerInfo()
 			if not expansionDisplayInfo then
 				return currentExpansionLevel, false;
 			end
-		
+
 			return currentExpansionLevel, shouldShowBanner, UPGRADE_ACCOUNT_SHORT, expansionDisplayInfo.logo, expansionDisplayInfo.banner, expansionDisplayInfo.features;
 		else
 			return currentExpansionLevel, shouldShowBanner;
@@ -1714,7 +1736,7 @@ function CharacterSelect_ScrollToCharacter(self, characterGUID)
 			return;
 		end
 	end
-	
+
 	CharacterSelect_ScrollList(self, maxScroll);
 end
 
@@ -1729,10 +1751,10 @@ function CharacterTemplatesFrame_Update()
         if ( not self:IsShown() ) then
             -- set it up
             self:Show();
-            GlueDropDownMenu_SetAnchor(self.dropDown, -100, 54, "TOP", self, "TOP");
-            GlueDropDownMenu_SetWidth(self.dropDown, 160);
-            GlueDropDownMenu_Initialize(self.dropDown, CharacterTemplatesFrameDropDown_Initialize);
-            GlueDropDownMenu_SetSelectedID(self.dropDown, 1);
+            UIDropDownMenu_SetAnchor(self.dropDown, -100, 54, "TOP", self, "TOP");
+            UIDropDownMenu_SetWidth(self.dropDown, 160);
+            UIDropDownMenu_Initialize(self.dropDown, CharacterTemplatesFrameDropDown_Initialize);
+            UIDropDownMenu_SetSelectedID(self.dropDown, 1);
         end
     else
         self:Hide();
@@ -1740,7 +1762,7 @@ function CharacterTemplatesFrame_Update()
 end
 
 function CharacterTemplatesFrameDropDown_Initialize()
-    local info = GlueDropDownMenu_CreateInfo();
+    local info = UIDropDownMenu_CreateInfo();
     for i = 1, C_CharacterCreation.GetNumCharacterTemplates() do
         local name, description = C_CharacterCreation.GetCharacterTemplateInfo(i);
         info.text = name;
@@ -1748,7 +1770,7 @@ function CharacterTemplatesFrameDropDown_Initialize()
         info.func = CharacterTemplatesFrameDropDown_OnClick;
         info.tooltipTitle = name;
         info.tooltipText = description;
-        GlueDropDownMenu_AddButton(info);
+        UIDropDownMenu_AddButton(info);
     end
 end
 
@@ -1770,13 +1792,13 @@ function SetStoreUIShown(shown)
 			--We weren't showing, now we are. We should hide all other panels.
 			-- not sure if anything is needed here at the gluescreen
 		end
-		
+
 		StoreFrame_SetShown(shown);
 	end
 end
 
 function CharacterTemplatesFrameDropDown_OnClick(button)
-    GlueDropDownMenu_SetSelectedID(CharacterTemplatesFrameDropDown, button:GetID());
+    UIDropDownMenu_SetSelectedID(CharacterTemplatesFrameDropDown, button:GetID());
 end
 
 function PlayersOnServer_Update()
@@ -1917,7 +1939,7 @@ function KioskMode_CheckAutoRealm()
         SetKioskAutoRealmAddress(nil);
     end
 end
-    
+
 local KIOSK_MODE_WAITING_ON_TRIAL = false;
 function KioskMode_SetWaitingOnTrial(waiting)
     KIOSK_MODE_WAITING_ON_TRIAL = waiting;
@@ -1960,9 +1982,9 @@ function CharacterServicesMaster_UpdateServiceButton()
             frame.GlowPulse.PulseAnim:Stop();
         end
     end
-	
+
 	CharacterSelect.numActiveCharacterBoosts = 0;
-	
+
     UpgradePopupFrame:Hide();
     CharacterSelectUI.WarningText:Hide();
 
@@ -1970,7 +1992,7 @@ function CharacterServicesMaster_UpdateServiceButton()
         return;
     end
 
-    local upgradeInfo = C_SharedCharacterServices.GetUpgradeDistributions();	
+    local upgradeInfo = C_SharedCharacterServices.GetUpgradeDistributions();
     local hasPurchasedBoost = false;
     for id, data in pairs(upgradeInfo) do
 		hasPurchasedBoost = hasPurchasedBoost or data.hasPaid;
@@ -2023,7 +2045,7 @@ function CharacterServicesMaster_UpdateServiceButton()
 				end
 			end
 		end
-		
+
 		if freeFrame then
 			DisplayBattlepayTokenFreeFrame(freeFrame);
 		end
@@ -2041,7 +2063,7 @@ end
 function DisplayBattlepayTokenType(charUpgradeDisplayData, upgradeInfo)
 	if upgradeInfo.amount > 0 then
 		CharacterSelect.numActiveCharacterBoosts = CharacterSelect.numActiveCharacterBoosts + 1;
-		
+
 		local boostFrameIndex = CharacterSelect.numActiveCharacterBoosts;
 		local frame = CharacterSelect.CharacterBoosts[boostFrameIndex];
 		if not frame then
@@ -2104,7 +2126,7 @@ function DisplayBattlepayTokenFreeFrame(freeFrame)
 	local popupData = freeFrameData.popupInfo;
 	if popupData then
 		local popupFrame = UpgradePopupFrame;
-		
+
 		popupFrame.data = freeFrameData;
 		popupFrame.Title:SetText(popupData.title);
 
@@ -2120,7 +2142,7 @@ function DisplayBattlepayTokenFreeFrame(freeFrame)
 
 		popupFrame.Description:SetText(popupData.description);
 		popupFrame:SetupTextureKit(popupData.textureKit, textureKitRegionInfo);
-		
+
 		local baseHeight;
 		if freeFrame.data.isExpansionTrial then
 			popupFrame.GetStartedButton:SetText(EXPANSION_TRIAL_CREATE_TRIAL_CHARACTER);
@@ -2181,9 +2203,9 @@ end
 
 function CharacterUpgradePopup_BeginCharacterUpgradeFlow(data, guid)
 	CharacterUpgradeFlow:SetTrialBoostGuid(nil);
-	
+
 	if guid then
-		local isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade = select(22, GetCharacterInfoByGUID(guid)); 
+		local isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade = select(22, GetCharacterInfoByGUID(guid));
 		if isTrialBoost then
 			CharacterUpgradeFlow:SetTrialBoostGuid(guid);
 		else
@@ -2289,7 +2311,7 @@ function CharacterServicesMaster_OnCharacterListUpdate()
 			else
 				CharacterUpgradeFlow:SetTarget(C_CharacterServices.GetCharacterServiceDisplayData(automaticBoostType), false);
 			end
-			
+
 			if CharacterUpgradeFlow.data then
 				CharSelectServicesFlowFrame:Show();
 				CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
@@ -2297,7 +2319,7 @@ function CharacterServicesMaster_OnCharacterListUpdate()
 
 			CharacterUpgrade_ResetBoostData();
 		end
-        
+
         C_CharacterServices.SetAutomaticBoost(nil);
 		C_CharacterServices.SetAutomaticBoostCharacter(nil);
     elseif (C_CharacterServices.HasQueuedUpgrade()) then
@@ -2388,7 +2410,7 @@ function CharacterServicesMaster_Update()
     CharacterServicesMaster_UpdateFinishLabel(self);
 
 	if (block and block:IsFinished()) then
-		
+
         if (not block.HiddenStep and (block.AutoAdvance or self.blockComplete)) then
             CharacterServicesMaster_SetBlockFinishedState(block);
         end
@@ -2678,9 +2700,9 @@ end
 
 function CopyCharacter_AccountDataFromLive()
     if ( not IsGMClient() ) then
-        CopyAccountDataFromLive(GlueDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID));
+        CopyAccountDataFromLive(UIDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID));
     else
-        CopyAccountDataFromLive(GlueDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID), CopyCharacterFrame.RealmName:GetText(), CopyCharacterFrame.CharacterName:GetText());
+        CopyAccountDataFromLive(UIDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID), CopyCharacterFrame.RealmName:GetText(), CopyCharacterFrame.CharacterName:GetText());
     end
     GlueDialog_Show("COPY_IN_PROGRESS");
 end
@@ -2700,7 +2722,7 @@ end
 function CopyCharacterSearch_OnClick(self)
     ClearAccountCharacters();
     CopyCharacterFrame_Update(CopyCharacterFrame.scrollFrame);
-    RequestAccountCharacters(GlueDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID), CopyCharacterFrame.RealmName:GetText(), CopyCharacterFrame.CharacterName:GetText());
+    RequestAccountCharacters(UIDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID), CopyCharacterFrame.RealmName:GetText(), CopyCharacterFrame.CharacterName:GetText());
     self:Disable();
 end
 
@@ -2781,11 +2803,11 @@ function CopyCharacterFrame_OnShow(self)
     self.SelectedIndex = nil;
     self.CopyButton:SetEnabled(false);
 
-    GlueDropDownMenu_SetWidth(self.RegionID, 80);
-    GlueDropDownMenu_SetSelectedValue(self.RegionID, 1);
-    GlueDropDownMenu_Initialize(self.RegionID, CopyCharacterFrameRegionIDDropdown_Initialize);
-    GlueDropDownMenu_SetAnchor(self.RegionID, 0, 0, "TOPLEFT", self.RegionID, "BOTTOMLEFT");
-    GlueDropDownMenu_Refresh(self.RegionID);
+    UIDropDownMenu_SetWidth(self.RegionID, 80);
+    UIDropDownMenu_SetSelectedValue(self.RegionID, 1);
+    UIDropDownMenu_Initialize(self.RegionID, CopyCharacterFrameRegionIDDropdown_Initialize);
+    UIDropDownMenu_SetAnchor(self.RegionID, 0, 0, "TOPLEFT", self.RegionID, "BOTTOMLEFT");
+    UIDropDownMenu_Refresh(self.RegionID);
 
     ClearAccountCharacters();
     CopyCharacterFrame_Update(self.scrollFrame);
@@ -2794,7 +2816,7 @@ function CopyCharacterFrame_OnShow(self)
         self.RealmName:Hide();
         self.CharacterName:Hide();
         self.SearchButton:Hide();
-        RequestAccountCharacters(GlueDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID));
+        RequestAccountCharacters(UIDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID));
     else
         self.RealmName:Show();
         self.RealmName:SetFocus();
@@ -2805,38 +2827,38 @@ function CopyCharacterFrame_OnShow(self)
 end
 
 function CopyCharacterFrameRegionIDDropdown_Initialize()
-    local info = GlueDropDownMenu_CreateInfo();
-    local selectedValue = GlueDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID);
+    local info = UIDropDownMenu_CreateInfo();
+    local selectedValue = UIDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID);
     info.func = CopyCharacterFrameRegionIDDropdown_OnClick;
 
     info.text = NORTH_AMERICA;
     info.value = 1;
     info.checked = (info.value == selectedValue);
-    GlueDropDownMenu_AddButton(info);
+    UIDropDownMenu_AddButton(info);
 
     info.text = KOREA;
     info.value = 2;
     info.checked = (info.value == selectedValue);
-    GlueDropDownMenu_AddButton(info);
+    UIDropDownMenu_AddButton(info);
 
     info.text = EUROPE;
     info.value = 3;
     info.checked = (info.value == selectedValue);
-    GlueDropDownMenu_AddButton(info);
+    UIDropDownMenu_AddButton(info);
 
     info.text = TAIWAN;
     info.value = 4;
     info.checked = (info.value == selectedValue);
-    GlueDropDownMenu_AddButton(info);
+    UIDropDownMenu_AddButton(info);
 
 --	info.text = "China";
 --	info.value = 5;
 --	info.checked = (info.value == selectedValue);
---	GlueDropDownMenu_AddButton(info);
+--	UIDropDownMenu_AddButton(info);
 end
 
 function CopyCharacterFrameRegionIDDropdown_OnClick(button)
-    GlueDropDownMenu_SetSelectedValue(CopyCharacterFrame.RegionID, button.value);
+    UIDropDownMenu_SetSelectedValue(CopyCharacterFrame.RegionID, button.value);
     if ( not IsGMClient() ) then
         RequestAccountCharacters(button.value);
     end

@@ -102,7 +102,7 @@ function QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCam
 	if isLegendary then
 		return "Interface/GossipFrame/AvailableLegendaryQuestIcon";
 	elseif isCampaign then
-		return "Interface/GossipFrame/AvailableQuestIcon"; -- This texture is not correct, but the asset doesn't exist yet...
+		return "Interface/GossipFrame/CampaignAvailableQuestIcon";
 	elseif frequency ~= Enum.QuestFrequency.Default then
 		return "Interface/GossipFrame/DailyQuestIcon";
 	elseif isRepeatable then
@@ -118,13 +118,16 @@ function QuestUtil.GetQuestIconActive(isComplete, isLegendary, frequency, isRepe
 		if isLegendary then
 			return "Interface/GossipFrame/ActiveLegendaryQuestIcon";
 		elseif isCampaign then
-			return "Interface/GossipFrame/ActiveQuestIcon"; -- Not correct, needs asset
+			return "Interface/GossipFrame/CampaignActiveQuestIcon";
 		else
 			return "Interface/GossipFrame/ActiveQuestIcon";
 		end
 	else
-		-- This is the only incomplete icon right now, need to update logic to have different icons for campaigns
-		return "Interface/GossipFrame/IncompleteQuestIcon";
+		if isCampaign then
+			return "Interface/GossipFrame/CampaignIncompleteQuestIcon";
+		else
+			return "Interface/GossipFrame/IncompleteQuestIcon";
+		end
 	end
 end
 

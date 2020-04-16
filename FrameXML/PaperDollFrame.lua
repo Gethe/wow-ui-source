@@ -1401,7 +1401,7 @@ local function ShouldShowExaltedPlusHelpTip()
 
 	local numFactions = GetNumFactions();
 	for i=1, numFactions do
-		local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild, factionID, hasBonusRepGain, canBeLFGBonus = GetFactionInfo(i);
+		local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild, factionID, hasBonusRepGain = GetFactionInfo(i);
 		if (factionID and C_Reputation.IsFactionParagon(factionID) ) then
 			return true;
 		end

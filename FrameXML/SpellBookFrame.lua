@@ -71,14 +71,6 @@ function ToggleSpellBook(bookType)
 		SpellBookFrame.bookType = bookType;
 		ShowUIPanel(SpellBookFrame);
 	end
-
-	local tutorial, helpPlate = SpellBookFrame_GetTutorialEnum()
-	if ( tutorial and not GetCVarBitfield("closedInfoFrames", tutorial) and GetCVarBool("showTutorials") ) then
-		if ( helpPlate and not HelpPlate_IsShowing(helpPlate) and SpellBookFrame:IsShown()) then
-			HelpPlate_ShowTutorialPrompt( helpPlate, SpellBookFrame.MainHelpButton );
-			SetCVarBitfield( "closedInfoFrames", tutorial, true );
-		end
-	end
 end
 
 function SpellBookFrame_GetTutorialEnum()
@@ -186,6 +178,7 @@ end
 
 function SpellBookFrame_OnShow(self)
 	SpellBookFrame_Update();
+	EventRegistry:TriggerEvent("SpellBookFrame.Show");
 
 	-- If there are tabs waiting to flash, then flash them... yeah..
 	if ( self.flashTabs ) then
@@ -356,6 +349,31 @@ function SpellBookFrame_UpdatePages()
 	SpellBookPageText:SetFormattedText(PAGE_NUMBER, currentPage);
 end
 
+local buttonOrder = {1,3,5,7,9,11,2,4,6,8,10,12};
+function SpellBookFrame_OpenToSpell(spellID)
+	SpellBookFrame.bookType = BOOKTYPE_SPELL;
+	ShowUIPanel(SpellBookFrame);
+	local slot = FindSpellBookSlotBySpellID(spellID);
+	if slot then
+		local numTabs = GetNumSpellTabs()
+		for tabIndex = 1, numTabs do
+			local _, _, offset, numSlots = GetSpellTabInfo(tabIndex);
+			if slot <= offset + numSlots then
+				local spellIndex = slot - offset;
+				local page = 1;
+				if spellIndex > SPELLS_PER_PAGE then
+					page = math.ceil(spellIndex / SPELLS_PER_PAGE);
+					spellIndex = spellIndex - ((page - 1) * SPELLS_PER_PAGE);
+				end
+				SPELLBOOK_PAGENUMBERS[tabIndex] = page;
+				SpellBookFrame.selectedSkillLine = tabIndex;
+				SpellBookFrame_Update();
+				return buttonOrder[spellIndex];
+			end
+		end
+	end
+end
+
 function SpellBookFrame_PlayOpenSound()
 	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
 		PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
@@ -379,6 +397,7 @@ end
 function SpellBookFrame_OnHide(self)
 	HelpPlate_Hide();
 	SpellBookFrame_PlayCloseSound();
+	EventRegistry:TriggerEvent("SpellBookFrame.Hide");
 
 	-- Stop the flash frame from flashing if its still flashing.. flash flash flash
 	UIFrameFlashStop(SpellBookTabFlashFrame);
@@ -844,7 +863,7 @@ function SpellButton_UpdateButton(self)
 
 		if self.SpellHighlightTexture then
 			self.SpellHighlightTexture:Hide();
-			if ( SpellBookFrame.selectedSkillLine == 2 or SpellBookFrame.bookType == BOOKTYPE_PET ) then
+			if ( (SpellBookFrame.selectedSkillLine > 1 and not isOffSpec) or SpellBookFrame.bookType == BOOKTYPE_PET ) then
 				if ( slotType == "SPELL" ) then
 					-- If the spell is passive we never show the highlight.  Otherwise, check if there are any action
 					-- buttons with this spell.

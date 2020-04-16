@@ -33,15 +33,16 @@
 	</Frame>
 
 	<Button name="ObjectiveTrackerMinimizeButtonTemplate" mixin="ObjectiveTrackerMinimizeButtonMixin" virtual="true">
-		<Size x="16" y="16"/>
-		<NormalTexture file="Interface\Buttons\UI-Panel-QuestHideButton">
-			<TexCoords left="0" right="0.5" top="0.5" bottom="1"/>
-		</NormalTexture>
-		<PushedTexture file="Interface\Buttons\UI-Panel-QuestHideButton">
-			<TexCoords left="0.5" right="1" top="0.5" bottom="1"/>
-		</PushedTexture>
-		<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD" />
-		<DisabledTexture file="Interface\Buttons\UI-Panel-QuestHideButton-disabled" />
+		<KeyValues>
+  			<KeyValue key="buttonType" value="all" type="string"/>
+  		</KeyValues>
+		<Size x="15" y="14"/>
+		<NormalTexture atlas="UI-QuestTrackerButton-Collapse-All" useAtlasSize="true"/>
+		<PushedTexture atlas="UI-QuestTrackerButton-Collapse-All-Pressed" useAtlasSize="true"/>
+		<HighlightTexture atlas="UI-QuestTrackerButton-Highlight" alphaMode="ADD" useAtlasSize="true"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Button>
 
 	<Frame name="ObjectiveTrackerHeaderTemplate" virtual="true" hidden="true">
@@ -111,6 +112,9 @@
 		</Animations>
 		<Frames>
 			<Button parentKey="MinimizeButton" inherits="ObjectiveTrackerMinimizeButtonTemplate">
+				<KeyValues>
+		  			<KeyValue key="buttonType" value="module" type="string"/>
+		  		</KeyValues>
 				<Anchors>
 					<Anchor point="RIGHT"/>
 				</Anchors>

@@ -1,5 +1,3 @@
-local CONDUIT_INSTALLED_SOUND_KIT = 856;
-
 SoulbindTreeNodeMixin = CreateFromMixins(CallbackRegistryMixin);
 
 SoulbindTreeNodeMixin:GenerateCallbackEvents(
@@ -262,7 +260,7 @@ function SoulbindConduitNodeMixin:SetConduitID(itemID)
 
 	if itemID > 0 then
 		self:PlayInstallAnim();
-		PlaySound(CONDUIT_INSTALLED_SOUND_KIT);
+		PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_INSTALLED);
 	end
 
 	if GameTooltip:IsShown() then

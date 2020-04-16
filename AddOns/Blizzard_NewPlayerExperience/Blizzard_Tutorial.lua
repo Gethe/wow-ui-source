@@ -46,7 +46,6 @@ end
 function NewPlayerExperience:Shutdown()
 	NPE_RangeManager:Shutdown();
 	NPE_QuestManager:Shutdown();
-	NPE_TutorialKeyboardMouseFrame:HideHelpFrame();
 
 	HelpTip:SetHelpTipsEnabled("NPEv2", true);
 	MainMenuMicroButton_SetAlertsEnabled(true, "NPEv2"); --Turns microtips back on

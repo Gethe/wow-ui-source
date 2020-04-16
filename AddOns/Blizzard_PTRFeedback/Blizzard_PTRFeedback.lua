@@ -89,6 +89,7 @@ function PTR_IssueReporter.SlashHandeler(msg)
         
         if not (Blizzard_PTRIssueReporter_Saved.RanSetups[strupper(unlockWord)]) then
             PTR_IssueReporter.Data.RegisteredSlashSetups[strupper(unlockWord)]()
+            print(string.format("%s Survey's have been Enabled!", unlockWord))
             Blizzard_PTRIssueReporter_Saved.RanSetups[strupper(unlockWord)] = true
         end
     elseif (strupper(words[1]) == "SURVEY") and (unlockWord) and (PTR_IssueReporter.Data.RegisteredSlashSurveys[strupper(unlockWord)]) then

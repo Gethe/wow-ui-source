@@ -17,7 +17,7 @@ local UIDropDownMenu_SetSelectedValue = UIDropDownMenu_SetSelectedValue
 if ( InGlue() ) then
 	AddonDialogTypes = { };
 	HasShownAddonOutOfDateDialog = false;
-	
+
 	AddonDialogTypes["ADDONS_OUT_OF_DATE"] = {
 		text = ADDONS_OUT_OF_DATE,
 		button1 = DISABLE_ADDONS,
@@ -116,11 +116,6 @@ if ( InGlue() ) then
 	end
 
 	AddonTooltip = GlueTooltip
-	UIDropDownMenu_Initialize = GlueDropDownMenu_Initialize
-	UIDropDownMenu_AddButton = GlueDropDownMenu_AddButton
-	UIDropDownMenu_CreateInfo = GlueDropDownMenu_CreateInfo
-	UIDropDownMenu_GetSelectedValue = GlueDropDownMenu_GetSelectedValue
-	UIDropDownMenu_SetSelectedValue = GlueDropDownMenu_SetSelectedValue
 
 	function UpdateAddonButton(checkVersion)
 		if ( GetNumAddOns() > 0 ) then
@@ -192,7 +187,6 @@ function AddonList_OnLoad(self)
 
 	self.offset = 0;
 
-	local template;
 	if ( InGlue() ) then
 		self:SetParent(GlueParent)
 		AddonDialog:SetParent(GlueParent)
@@ -212,12 +206,10 @@ function AddonList_OnLoad(self)
 		self:EnableKeyboard(true)
 		self:SetScript("OnKeyDown", AddonList_OnKeyDown)
 		self:SetFrameStrata("DIALOG")
-		template = "GlueDropDownMenuTemplate"
 	else
 		AddonDialog = nil;
 		self:SetParent(UIParent);
 		self:SetFrameStrata("HIGH");
-		template = "UIDropDownMenuTemplate"
 		self.startStatus = {};
 		self.shouldReload = false;
 		self.outOfDate = IsAddonVersionCheckEnabled() and AddonList_HasOutOfDate();
@@ -229,7 +221,7 @@ function AddonList_OnLoad(self)
 			end
 		end
 	end
-	local drop = CreateFrame("Frame", "AddonCharacterDropDown", self, template)
+	local drop = CreateFrame("Frame", "AddonCharacterDropDown", self, "UIDropDownMenuTemplate")
 	drop:SetPoint("TOPLEFT", 0, -30)
 	UIDropDownMenu_Initialize(drop, AddonListCharacterDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(drop, true);
@@ -258,7 +250,7 @@ function AddonList_SetStatus(self,lod,status,reload)
 	else
 		relstr:Hide()
 	end
-end 
+end
 
 local function TriStateCheckbox_SetState(checked, checkButton)
 	local checkedTexture = _G[checkButton:GetName().."CheckedTexture"];
@@ -348,8 +340,8 @@ function AddonList_Update()
 			end
 
 			if ( not InGlue() ) then
-				if ( enabled ~= AddonList.startStatus[addonIndex] and reason ~= "DEP_DISABLED" or 
-					(reason ~= "INTERFACE_VERSION" and tContains(AddonList.outOfDateIndexes, addonIndex)) or 
+				if ( enabled ~= AddonList.startStatus[addonIndex] and reason ~= "DEP_DISABLED" or
+					(reason ~= "INTERFACE_VERSION" and tContains(AddonList.outOfDateIndexes, addonIndex)) or
 					(reason == "INTERFACE_VERSION" and not tContains(AddonList.outOfDateIndexes, addonIndex))) then
 					if ( enabled ) then
 						-- special case for loadable on demand addons
@@ -529,7 +521,7 @@ function AddonList_DisableOutOfDate()
 		end
 		local enabled = (GetAddOnEnableState(character , i) > 0);
 		if ( enabled and not loadable and reason == "INTERFACE_VERSION" ) then
-			DisableAddOn(i, true);			
+			DisableAddOn(i, true);
 		end
 	end
 	SaveAddOns();

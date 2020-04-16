@@ -103,6 +103,7 @@ local PlayerChoice =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "id", Type = "number", Nilable = false },
 				{ Name = "responseIdentifier", Type = "number", Nilable = false },
 				{ Name = "buttonText", Type = "string", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = false },
@@ -121,6 +122,7 @@ local PlayerChoice =
 				{ Name = "hasRewards", Type = "bool", Nilable = false },
 				{ Name = "rarity", Type = "PlayerChoiceRarity", Nilable = false },
 				{ Name = "typeArtID", Type = "number", Nilable = true },
+				{ Name = "uiTextureKit", Type = "string", Nilable = true },
 			},
 		},
 		{

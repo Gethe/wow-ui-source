@@ -2082,7 +2082,7 @@
 		-->
 		<Frames>
 			<CheckButton parentKey="Button">
-				<Size x="20" y="20"/>
+				<Size x="28" y="28"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
@@ -2100,7 +2100,7 @@
 		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Label" inherits="GameFontHighlight">
+				<FontString parentKey="Label" inherits="GameFontHighlightLarge">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Button" relativePoint="RIGHT" x="2" y="0"/>
 					</Anchors>
@@ -2111,5 +2111,105 @@
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 		</Scripts>
+	</Frame>
+
+	<EditBox name="SharedEditBoxTemplate" mixin="SharedEditBoxMixin" virtual="true">
+		<Size x="240" y="48"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Left" atlas="common-input-left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right" atlas="common-input-left" useAtlasSize="true">
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Middle" atlas="common-input-middle" setAllPoints="true" />
+			</Layer>
+		</Layers>
+		<FontString inherits="NumberFont_Shadow_Large"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</EditBox>
+
+	<Slider name="SharedHorizontalSliderTemplate" orientation="HORIZONTAL" obeyStepOnDrag="true" virtual="true">
+		<Size x="300" y="20"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Track" atlas="common-slider-track" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<ThumbTexture parentKey="Thumb" atlas="common-slider-thumb" useAtlasSize="true"/>
+	</Slider>
+	
+	<Frame name="SliderWithButtonsAndLabelTemplate" inherits="ResizeLayoutFrame" mixin="SliderWithButtonsAndLabelMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" font="GameFontHighlightMedium" ignoreInLayout="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.DecrementButton" relativePoint="LEFT" x="-50"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Slider parentKey="Slider" inherits="SharedHorizontalSliderTemplate" scale="0.7">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						self:GetParent():OnEnter();
+					</OnEnter>
+					<OnLeave>
+						self:GetParent():OnLeave();
+					</OnLeave>
+					<OnValueChanged>
+						self:GetParent():OnSliderValueChanged(value, userInput);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Button parentKey="IncrementButton" motionScriptsWhileDisabled="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Slider" relativePoint="RIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Increment();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button parentKey="DecrementButton" motionScriptsWhileDisabled="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Slider" relativePoint="LEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Decrement();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
 	</Frame>
 </Ui>

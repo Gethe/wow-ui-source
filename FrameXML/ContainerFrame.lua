@@ -41,7 +41,6 @@ function ContainerFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
 	ContainerFrame1.bagsShown = 0;
 	ContainerFrame1.bags = {};
-	ContainerFrame1.forceExtended = false;
 end
 
 function ContainerFrame_OnEvent(self, event, ...)
@@ -96,15 +95,10 @@ end
 
 function ContainerFrame_GetContainerNumSlots(id)
 	local num = GetContainerNumSlots(id);
-	if (id == 0 and ContainerFrame1.forceExtended) then
+	if (id == 0 and not IsAccountSecured()) then
 		num = num + 4;
 	end
 	return num;
-end
-
-function ContainerFrame_SetBackpackForceExtended(forceExtended)
-	ContainerFrame1.forceExtended = forceExtended;
-	OpenBag(0, true);
 end
 
 function ToggleBag(id)
@@ -809,7 +803,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 
 		_G[name.."MoneyFrame"]:Show();
 		_G[name.."MoneyFrame"]:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -2, BACKPACK_MONEY_OFFSET_DEFAULT - (ROW_HEIGHT * extraRows));
-		_G[name.."AddSlotsButton"]:SetShown(not secured and not ContainerFrame1.forceExtended);
+		_G[name.."AddSlotsButton"]:SetShown(not secured);
 
 		-- Hide unused textures
 		for i=1, MAX_MIDDLE_TEXTURES do
@@ -818,10 +812,6 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 		end
 
 		local middleBgHeight = 0;
-
-		if (frame.extendedOverlay) then
-			frame.extendedOverlay:Hide();
-		end
 
 		if (extended) then
 			local remainingRows = extraRows;
@@ -844,19 +834,6 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 				bgTextureMiddle:SetHeight(height);
 				bgTextureMiddle:SetTexCoord(0, 1, BG_TEXTURE_MIDDLE_START / BG_TEXTURE_HEIGHT, ((BG_TEXTURE_MIDDLE_START + height) / BG_TEXTURE_HEIGHT) );
 				bgTextureMiddle:Show();
-
-				if ContainerFrame1.forceExtended then
-					if (not frame.extendedOverlay) then
-						frame.extendedOverlay = frame:CreateTexture(nil, "OVERLAY", 1);
-						frame.extendedOverlay:SetColorTexture(0.603, 0.875, 1);
-						frame.extendedOverlay:SetAlpha(1);
-						frame.extendedOverlay:SetBlendMode("MOD");
-					end
-					frame.extendedOverlay:SetWidth(CONTAINER_WIDTH - 20);
-					frame.extendedOverlay:SetHeight(ROW_HEIGHT + 2);
-					frame.extendedOverlay:SetPoint("BOTTOMRIGHT", bgTextureMiddle, "BOTTOMRIGHT", -8, -2);
-					frame.extendedOverlay:Show();
-				end
 			end
 			
 			-- Position and setup bottom texture
@@ -1025,16 +1002,15 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 		end
 		if (id == 0 and secured and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BAG_SLOTS_AUTHENTICATOR)) then
 			itemButton = _G[name.."Item"..4];
-			frame.ExtraBagSlotsHelpBox:SetPoint("RIGHT", itemButton, "LEFT", -18, 0);
-			frame.ExtraBagSlotsHelpBox:Show();
-			ContainerFrame1.isHelpBoxShown = true;
-			ContainerFrame1.helpBoxFrame = frame.ExtraBagSlotsHelpBox;
-		else
-			frame.ExtraBagSlotsHelpBox:Hide();
-			if (id == 0) then
-				ContainerFrame1.isHelpBoxShown = false;
-				ContainerFrame1.helpBoxFrame = nil;
-			end
+			local helpTipInfo = {
+				text = BACKPACK_AUTHENTICATOR_EXTRA_SLOTS_ADDED,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = LE_FRAME_TUTORIAL_BAG_SLOTS_AUTHENTICATOR,
+				targetPoint = HelpTip.Point.LeftEdgeCenter,
+				offsetX = 1,
+			};
+			HelpTip:Show(frame, helpTipInfo, itemButton);
 		end
 	end
 	for i=size + 1, MAX_CONTAINER_ITEMS, 1 do
@@ -1047,9 +1023,6 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 	-- Add the bag to the baglist
 	frame:Show();
 	frame:Raise();
-	if (ContainerFrame1.isHelpBoxShown and ContainerFrame1.helpBoxFrame) then
-		ContainerFrame1.helpBoxFrame:Raise();
-	end
 end
 
 function UpdateContainerFrameAnchors()
@@ -1148,50 +1121,20 @@ function ContainerFrameItemButton_TryUpdateItemUpgradeIcon(self, elapsed)
 	end
 end
 
-local bagStaticDuration = 2.5;
-local bagStaticStartingHeight = 37;
-local bagStaticMovePerSec = bagStaticStartingHeight / bagStaticDuration;
-
-function ContainerFrameItemButton_BagStatic_AnimateUpdate(self, elapsed)
-	local shift = bagStaticMovePerSec * elapsed;
-	if (not self.currentHeight or (self.currentHeight - shift) <= 0) then
-		self.BagStaticTop:SetHeight(0);
-		self.BagStaticTop:SetTexCoord(0, 1, 0, 0);
-		self.BagStaticBottom:SetTexCoord(0, 1, 0, 1);
-		self.currentHeight = bagStaticStartingHeight;
-	end
-	self.currentHeight = self.currentHeight - shift;
-	self.BagStaticBottom:SetHeight(self.currentHeight);
-	self.BagStaticBottom:SetTexCoord(0, 1, 0, (self.currentHeight / bagStaticStartingHeight));
-	local topHeight = bagStaticStartingHeight - self.currentHeight;
-	if (topHeight < bagStaticStartingHeight and topHeight > 0) then
-		self.BagStaticTop:SetHeight(topHeight);
-		self.BagStaticTop:SetTexCoord(0, 1, 1 - (topHeight / bagStaticStartingHeight), 1);
-	end
-end
-
 function ContainerFrameItemButton_SetForceExtended(itemButton, extended)
 	if (extended) then
-		itemButton:GetNormalTexture():SetVertexColor(0.603, 0.875, 1);
-		itemButton.ExtendedOverlay:Show();
-		itemButton.ExtendedOverlay2:Show();
-		itemButton.ExtendedSlot:Show();
-		if ((itemButton:GetID() - 1) == GetContainerNumSlots(0)) then
-			itemButton.BagStaticBottom:Show();
-			itemButton.BagStaticTop:Show();
-			itemButton:SetScript("OnUpdate", ContainerFrameItemButton_BagStatic_AnimateUpdate);
+		if not itemButton.extendedFrame then
+			itemButton.extendedFrame = CreateFrame("FRAME", nil, itemButton, "ContainerFrameExtendedItemButtonTemplate");
+			itemButton.extendedFrame:SetAllPoints(itemButton);
 		end
+		itemButton.extendedFrame:Show();
 		itemButton:EnableMouse(false);
 		itemButton.isExtended = true;
 	else
-		itemButton:GetNormalTexture():SetVertexColor(1, 1, 1);
-		itemButton.ExtendedOverlay:Hide();
-		itemButton.ExtendedOverlay2:Hide();
-		itemButton.ExtendedSlot:Hide();
-		itemButton.BagStaticBottom:Hide();
-		itemButton.BagStaticTop:Hide();
+		if itemButton.extendedFrame then
+			itemButton.extendedFrame:Hide();
+		end
 		itemButton:EnableMouse(true);
-		itemButton:SetScript("OnUpdate", nil);
 		itemButton.isExtended = false;
 	end
 end
@@ -1407,6 +1350,13 @@ function ContainerFrameItemButton_CalculateItemTooltipAnchors(self, mainTooltip)
 		mainTooltip:SetAnchorType("ANCHOR_LEFT", 0, 0);
 		mainTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT");
 	end
+end
+
+function ContainerFrameExtendedItemButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_NONE");
+	ContainerFrameItemButton_CalculateItemTooltipAnchors(self, GameTooltip);
+	GameTooltip_SetTitle(GameTooltip, BACKPACK_AUTHENTICATOR_INCREASE_SIZE);
+	GameTooltip:Show();
 end
 
 function ContainerFrameItemButton_OnUpdate(self)

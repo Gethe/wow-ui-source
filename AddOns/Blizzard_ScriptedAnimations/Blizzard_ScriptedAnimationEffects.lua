@@ -46,6 +46,12 @@ local StandardCurveMagnitude = 0.2;
 local StandardCurveTrajectory = GenerateCurveTrajectory(HalfPi, StandardCurveMagnitude);
 local ReverseCurveTrajectory = GenerateCurveTrajectory(-HalfPi, StandardCurveMagnitude);
 
+local function RandomCurveTrajectory(source, target, elapsed, duration)
+	local curveTrajectory = (math.random(0, 1) == 0) and StandardCurveTrajectory or ReverseCurveTrajectory;
+	local x, y = curveTrajectory(source, target, elapsed, duration);
+	return x, y, curveTrajectory;
+end
+
 local function SourceStaticTrajectory(source, target, elapsed, duration)
 	return source:GetCenter();
 end
@@ -54,38 +60,12 @@ local function TargetStaticTrajectory(source, target, elapsed, duration)
 	return target:GetCenter();
 end
 
-local function GenerateDelayedTrajectory(delay, trajectory)
-	local function DelayedTrajectory(source, target, elapsed, duration)
-		if elapsed < delay then
-			return nil, nil;
-		end
-
-		return trajectory(source, target, elapsed - delay, duration - delay);
-	end
-
-	return DelayedTrajectory;
-end
-
-local function GenerateSourceAtAngle(target, distance, angleRadians)
-	local targetX, targetY = target:GetCenter();
-	local sourceX, sourceY = Vector2D_RotateDirection(angleRadians, 0, distance);
-	sourceX = sourceX + targetX;
-	sourceY = sourceY + targetY;
-
-	local source = {};
-	source.GetCenter = function()
-		return sourceX, sourceY;
-	end
-
-	return source;
-end
-
-local function ShakeTargetLight(effectActor, effectDescription, source, target)
+local function ShakeTargetLight(effectDescription, source, target)
 	ScriptAnimationUtil.ShakeFrameRandom(target, 2, effectDescription.duration, .05);
 end
 
 local function GenerateRecoilCallback(magnitude, duration)
-	local function RecoilFunction(effectActor, effectDescription, source, target)
+	local function RecoilFunction(effectDescription, source, target)
 		local sourceX, sourceY = source:GetCenter();
 		local targetX, targetY = target:GetCenter();
 		local direction = CreateVector2D(sourceX - targetX, sourceY - targetY);
@@ -109,7 +89,7 @@ end
 local StandardRecoil = GenerateRecoilCallback(15, 0.2);
 
 local function GenerateKnockbackCallback(knockbackMagnitude, duration)
-	local function KnockbackFunction(effectActor, effectDescription, source, target)
+	local function KnockbackFunction(effectDescription, source, target)
 		-- Only one recoil can play at a time.
 		if not ScriptAnimationUtil.GetScriptAnimationLock(target) then
 			return;
@@ -154,7 +134,7 @@ end
 local StandardKnockback = GenerateKnockbackCallback(25, 0.3);
 
 local function GenerateCollisionFunction()
-	local function CollisionFunction(effectActor, effectDescription, source, target)
+	local function CollisionFunction(effectDescription, source, target)
 		local sourceX, sourceY = source:GetCenter();
 		local targetX, targetY = target:GetCenter();
 		local translation = CreateVector2D(targetX - sourceX, targetY - sourceY);
@@ -180,7 +160,7 @@ local ForwardPercentage = 0.3;
 local ForwardThreshold = PullbackPercentage + ForwardPercentage;
 local BackwardPercentage = 1.0 - (PullbackPercentage + ForwardPercentage);
 local function GenerateAttackCollisionFunction(pullbackMagnitude)
-	local function AttackCollisionFunction(effectActor, effectDescription, source, target)
+	local function AttackCollisionFunction(effectDescription, source, target)
 		local sourceX, sourceY = source:GetCenter();
 		local targetX, targetY = target:GetCenter();
 		local translation = CreateVector2D(targetX - sourceX, targetY - sourceY);
@@ -218,169 +198,60 @@ end
 
 local StandardAttackCollision = GenerateAttackCollisionFunction(50);
 
-local RingSize = 8;
-local RingDistance = 75;
-local function GenerateImpactRing(effectActor, effectDescription, source, target)
-	local modelScene = effectActor:GetModelScene();
-	local angleRadians = math.pi / 4;
-	local angle = 0;
-	for i = 1, RingSize do
-		modelScene:AddEffect(effectDescription.ringImpact, target, GenerateSourceAtAngle(target, RingDistance, angle));
-		angle = angle + angleRadians;
+
+local BehaviorToCallback = {
+	-- [Enum.ScriptedAnimationBehavior.None] = nil,
+	[Enum.ScriptedAnimationBehavior.SourceRecoil] = StandardRecoil,
+	[Enum.ScriptedAnimationBehavior.SourceCollideWithTarget] = StandardAttackCollision,
+	[Enum.ScriptedAnimationBehavior.TargetShake] = ShakeTargetLight,
+	[Enum.ScriptedAnimationBehavior.TargetKnockBack] = StandardKnockback,
+};
+
+local TrajectoryToCallback = {
+	[Enum.ScriptedAnimationTrajectory.AtSource] = SourceStaticTrajectory,
+	[Enum.ScriptedAnimationTrajectory.Straight] = LinearTrajectory,
+	[Enum.ScriptedAnimationTrajectory.CurveLeft] = StandardCurveTrajectory,
+	[Enum.ScriptedAnimationTrajectory.CurveRight] = ReverseCurveTrajectory,
+	[Enum.ScriptedAnimationTrajectory.CurveRandom] = RandomCurveTrajectory,
+	[Enum.ScriptedAnimationTrajectory.AtTarget] = TargetStaticTrajectory,
+};
+
+local function LoadScriptedAnimationEffects()
+	local effects = {};
+	local effectDescriptions = C_ScriptedAnimations.GetAllScriptedAnimationEffects();
+	local count = #effectDescriptions;
+	for i = 1, count do
+		local effectDescription = effectDescriptions[i];
+		effectDescription.trajectory = TrajectoryToCallback[effectDescription.trajectory];
+		effectDescription.startBehavior = effectDescription.startBehavior and BehaviorToCallback[effectDescription.startBehavior] or nil;
+		effectDescription.finishBehavior = effectDescription.finishBehavior and BehaviorToCallback[effectDescription.finishBehavior] or nil;
+		effects[effectDescription.id] = effectDescription;
 	end
+
+	return effects;
 end
 
-local function GenerateCurvedMissileSequence(numMissiles, spacingSeconds)
-	local function CurvedMissileSequence(effectActor, effectDescription, source, target)
-		local modelScene = effectActor:GetModelScene();
-		for i = 1, numMissiles do
-			local missileDescription = CopyTable(effectDescription);
-			local delay = i * spacingSeconds;
-			missileDescription.duration = missileDescription.duration + delay;
-			missileDescription.onStart = nil;
-			local baseTrajectory = (i % 2 == 1) and ReverseCurveTrajectory or StandardCurveTrajectory;
-			missileDescription.trajectory = GenerateDelayedTrajectory(delay, baseTrajectory);
-			modelScene:AddEffect(missileDescription, source, target);
-		end
-	end
+local ScriptedAnimationEffects = LoadScriptedAnimationEffects();
 
-	return CurvedMissileSequence;
+
+ScriptedAnimationEffectsUtil = {};
+
+ScriptedAnimationEffectsUtil.NamedEffectIDs = {
+	Fireball = 1,
+	Regrowth = 3,
+	MeleeAttack = 4,
+	ShockTarget = 6,
+};
+
+function ScriptedAnimationEffectsUtil.GetEffectByID(effectID)
+	return ScriptedAnimationEffects[effectID];
 end
 
-local ArcaneMissileSequence = GenerateCurvedMissileSequence(3, 0.1);
+function ScriptedAnimationEffectsUtil.GetAllEffectIDs()
+	local allEffectIDs = {};
+	for effectID, effect in pairs(ScriptedAnimationEffects) do
+		table.insert(allEffectIDs, effectID);
+	end
 
-
-local StandardImpactDuration = 0.5;
-local LongImpactDuration = 0.75;
-local StandardEffectDuration = 1.0;
-local QuickProjectileDuration = 0.5;
-local MissileProjectileDuration = 0.3;
-local StandardCollisionDuration = 0.3;
-
-local ExplosionImpact = 1327007;
-local LightningImpact = 1953988;
-local ArcaneImpact = 1601380;
-local StarsurgeImpact = 464345;
-local FlamestrikeImpact = 1387771;
-local NukeImpact = 1810660;
-local ArgusImpact = 1715647;
-
-local FireballEffect = 166128;
-local LightningEffect = 1953986;
-local ArcaneEffect = 1007493;
-local StarsurgeEffect = 451173;
-local RegrowthEffect = 166605;
-local FireQuakeEffect = 1387771;
-local FireMissileEffect = 1368707;
-local ArgusEffect = 1711490;
-
-local StandardImpact = {
-	trajectory = TargetStaticTrajectory,
-	duration = StandardImpactDuration,
-};
-
-local StandardImpactShake = Mixin({
-	trajectory = TargetStaticTrajectory,
-	duration = StandardImpactDuration,
-	onStart = ShakeTargetLight,
-}, StandardImpact);
-
-local ScriptedAnimationImpacts = {
-	Explosion = Mixin({
-		effectFileID = ExplosionImpact,
-	}, StandardImpactShake),
-
-	ExplosionRecoil = Mixin({
-		effectFileID = ExplosionImpact,
-		onStart = StandardKnockback,
-	}, StandardImpact),
-
-	Arcane = Mixin({
-		effectFileID = ArcaneImpact,
-		actorScale = 0.35,
-	}, StandardImpactShake),
-
-	Shock = Mixin({
-		effectFileID = LightningImpact,
-	}, StandardImpactShake),
-
-	Starsurge = Mixin({
-		effectFileID = StarsurgeImpact,
-	}, StandardImpactShake),
-
-	Flamestrike = Mixin({
-		effectFileID = FlamestrikeImpact,
-		actorScale = 0.5,
-	}, StandardImpact),
-
-	Argus = Mixin({
-		effectFileID = ArgusImpact,
-		onStart = StandardKnockback,
-	}, StandardImpact),
-
-	FireMissileImpact = {
-		trajectory = InOutTrajectory,
-		duration = LongImpactDuration,
-		effectFileID = FireMissileEffect,
-	},
-};
-
-ScriptedAnimationEffects = {
-	Fireball = {
-		effectFileID = FireballEffect,
-		trajectory = LinearTrajectory,
-		duration = StandardEffectDuration,
-		impact = ScriptedAnimationImpacts.ExplosionRecoil,
-		onStart = StandardRecoil,
-	},
-
-	ArcaneMissile = {
-		effectFileID = ArcaneEffect,
-		actorScale = 0.5,
-		trajectory = StandardCurveTrajectory,
-		duration = MissileProjectileDuration,
-		impact = ScriptedAnimationImpacts.Arcane,
-		onStart = ArcaneMissileSequence,
-	},
-
-	LightningOrb = {
-		effectFileID = LightningEffect,
-		trajectory = LinearTrajectory,
-		duration = StandardEffectDuration,
-		impact = ScriptedAnimationImpacts.Shock,
-	},
-
-	Starsurge = {
-		effectFileID = StarsurgeEffect,
-		trajectory = LinearTrajectory,
-		duration = StandardEffectDuration,
-		impact = ScriptedAnimationImpacts.Starsurge,
-	},
-
-	Regrowth = {
-		effectFileID = RegrowthEffect,
-		actorScale = 5.0,
-		trajectory = TargetStaticTrajectory,
-		duration = StandardEffectDuration,
-	},
-
-	FireMissileRing = {
-		effectFileID = FireQuakeEffect,
-		actorScale = 0.75,
-		trajectory = TargetStaticTrajectory,
-		duration = QuickProjectileDuration,
-		impact = ScriptedAnimationImpacts.Flamestrike,
-		ringImpact = ScriptedAnimationImpacts.FireMissileImpact,
-		onFinish = GenerateImpactRing,
-	},
-
-	ShockTarget = ScriptedAnimationImpacts.Shock,
-
-	ArgusCollide = {
-		effectFileID = ArgusEffect,
-		trajectory = SourceStaticTrajectory,
-		duration = StandardCollisionDuration,
-		impact = ScriptedAnimationImpacts.Argus,
-		onStart = StandardAttackCollision,
-	},
-};
+	return allEffectIDs;
+end

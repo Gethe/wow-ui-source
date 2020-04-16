@@ -74,6 +74,9 @@ end
 
 function ScriptAnimationUtil.StartScriptAnimation(region, variationCallback, duration, onFinish)
 	if not ScriptAnimationUtil.GetScriptAnimationLock(region) then
+		if onFinish then
+			onFinish();
+		end
 		return;
 	end
 

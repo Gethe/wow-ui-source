@@ -1619,7 +1619,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame name="$parentDropDown" inherits="GlueDropDownMenuTemplate" enableMouse="true" parentKey="dropDown">
+							<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="dropDown">
 								<Anchors>
 									<Anchor point="TOP" x="0" y="-54"/>
 								</Anchors>
@@ -1634,7 +1634,7 @@
 									</OnLoad>
 									<OnClick>
 										PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
-										C_CharacterCreation.SetCharacterTemplate(GlueDropDownMenu_GetSelectedID(CharacterTemplatesFrameDropDown));
+										C_CharacterCreation.SetCharacterTemplate(UIDropDownMenu_GetSelectedID(CharacterTemplatesFrameDropDown));
 										GlueParent_SetScreen("charcreate");
 									</OnClick>
 								</Scripts>
@@ -2118,7 +2118,7 @@
 					<OnClick function="CopyAccountData_OnClick"/>
 				</Scripts>
 			</Button>
-			<Frame name="$parentRegionID" inherits="GlueDropDownMenuTemplate" enableMouse="true" parentKey="RegionID">
+			<Frame name="$parentRegionID" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="RegionID">
 				<Size x="50" y="16"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-10" y="-30"/>

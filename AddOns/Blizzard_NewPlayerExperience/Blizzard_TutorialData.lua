@@ -54,11 +54,11 @@ TutorialData.LevelAbilitiesTable = {
 		589,	-- Shadow Word: Pain, level 2
 		2061,	-- Flash Heal, level 3
 		17,		-- Power Word: Shield, level 4
-		19236,	-- Desperate Prayer, level 5
-		nil,	-- ???, level 6
+		8092,	-- Mind Blast, level 5
+		21562,	-- Power Word: Fortitude, level 6
 		8122,	-- Psychic Scream, level 7
-		8092,	-- Mind Blast, level 8
-		nil,	-- ???, level 9
+		19236,	-- Desperate Prayer, level 8
+		586,	-- Fade, level 9
 	};
 	SHAMAN = {
 		188196,	-- Start with Lightning Bolt
@@ -68,7 +68,7 @@ TutorialData.LevelAbilitiesTable = {
 		2484,	-- Earthbind Totem, level 5
 		nil,	-- 318044,	Lightning Bolt Rank 2, level 6
 		318038,	-- Flametongue Weapon, level 7
-		20608,	-- Reincarnation, level 8
+		nil,	--20608,-- Reincarnation, level 8
 		3599,	-- Searing Totem, level 9
 	};
 	MAGE = {
@@ -88,7 +88,7 @@ TutorialData.LevelAbilitiesTable = {
 		688,	-- Summon Imp, level 3
 		317138,	-- Unending Resolve, level 4
 		5782,	-- Fear, level 5
-		703,	-- Curse of Weakness, level 6
+		702,	-- Curse of Weakness, level 6
 		6201,	-- Create Healthstone, level 7
 		755,	-- Health Funnel, level 8
 		234153,	-- Drain Life, level 9
@@ -108,10 +108,10 @@ TutorialData.LevelAbilitiesTable = {
 		5176,	-- Start with Wrath
 		8921,	-- Moonfire, level 2
 		8936,	-- Regrowth, level 3
-		5221,	-- Shred, level 4
-		339,	-- Entangling Roots, level 5
+		339,	-- Entangling Roots, level 4
+		5221,	-- Shred, level 5
 		1850,	-- Dash, level 6
-		22812,	-- Barkskin, level 7
+		22568,	-- Ferocious Bite, level 7
 		33917,	-- Mangle, level 8
 		nil,	-- 326646, Moonfire Rank 2, level 9
 	};
@@ -124,12 +124,12 @@ TutorialData.SecondLevelAbilityTable =
 		nil,	-- 
 		nil,	-- 
 		nil,	-- 
-		768,	-- Cat Form, level 4
+		nil,	-- 
+		768,	-- Cat Form, level 5
 		nil,	-- 
 		nil,	-- 
+		5487,	-- Bear Form, level 8
 		nil,	-- 
-		nil,	-- 
-		5487,	-- Bear Form, level 9
 	}
 }
 
@@ -137,8 +137,8 @@ TutorialData.SecondLevelAbilityTable =
 TutorialData.ClassData = {
 	WARRIOR = {
 		firstSpellID = 1464,				-- Slam
-		initialString = NPEV2_WARRIOR_ABILITYINITIAL,
-		reminderString = NPEV2_WARRIOR_ABILITYINITIALREPEAT,
+		initialString = NPEV2_ABILITYINITIAL,
+		reminderString = NPEV2_ABILITY_REMINDER,
 		
 		resourceBuilderSpellID = 100,		-- Charge
 		resourceSpenderSpellID = 1464,		-- Slam
@@ -172,7 +172,7 @@ TutorialData.ClassData = {
 	HUNTER = {
 		firstSpellID = 56641,				-- Steady Shot
 		initialString = NPEV2_ABILITYINITIAL,
-		reminderString = NPEV2_ABILITYINITIALREPEAT,
+		reminderString = NPEV2_ABILITY_REMINDER,
 
 		resourceBuilderSpellID = 56641,		-- Steady Shot
 		resourceSpenderSpellID = 185358,	-- Arcane Shot
@@ -181,15 +181,15 @@ TutorialData.ClassData = {
 		warningBuilderString = NPEV2_ENHANCED_COMBAT_TACTICS_WARNING;
 		warningSpenderString = NPEV2_ENHANCED_COMBAT_TACTICS_WARNING;
 
-		builderString = NPEV2_PALADIN_BUILDER,
-		spenderString = NPEV2_PALADIN_SPENDER,
+		builderString = nil,
+		spenderString = nil,
 		backupUIElement = ClassNameplateBarPaladinFrame,
 		classQuestSpellID = 187650,			-- Freezing Trap
 	},
 	ROGUE = {
 		firstSpellID = 1752,				-- Sinister Strike
-		initialString = NPEV2_ROGUE_ABILITYINITIAL,
-		reminderString = NPEV2_ROGUE_ABILITYINITIALREPEAT,
+		initialString = NPEV2_ABILITYINITIAL,
+		reminderString = NPEV2_ABILITY_REMINDER,
 
 		resourceBuilderSpellID = 1752,		-- Sinister Strike
 		resourceSpenderSpellID = 196819,	-- Eviscerate
@@ -275,7 +275,7 @@ TutorialData.ClassData = {
 	MONK = {
 		firstSpellID = 100780,				-- Tiger Palm
 		initialString = NPEV2_ABILITYINITIAL,
-		reminderString = NPEV2_ABILITYINITIALREPEAT,
+		reminderString = NPEV2_ABILITY_REMINDER,
 
 		resourceBuilderSpellID = 100780,	-- Tiger Palm
 		resourceSpenderSpellID = 100784,	-- Blackout Kick
@@ -337,7 +337,7 @@ TutorialData.Alliance = {
 
 	UseQuestItemData = {
 		ScreenTutorialStringID = NPEV2_APPROACH_INJURED_CREWMEMBER;
-		PointerTutorialStringID = NPE_USEQUESTITEM;
+		PointerTutorialStringID = NPEV2_USEQUESTITEM;
 		ItemQuest = 54951;
 		ItemTargets = {156612, 156610, 156609};
 		TargetRange = 5;
@@ -346,7 +346,7 @@ TutorialData.Alliance = {
 
 	RemindUseQuestItemData = {
 		ScreenTutorialStringID = NPEV2_APPROACH_WANDERING_BOAR;
-		PointerTutorialStringID = NPE_USEQUESTITEM;
+		PointerTutorialStringID = NPEV2_USEQUESTITEM;
 		ItemQuest = 56034;
 		ItemTargets = {156716};
 		TargetRange = 8;
@@ -424,7 +424,7 @@ TutorialData.Horde = {
 
 	UseQuestItemData = {
 		ScreenTutorialStringID = NPEV2_APPROACH_INJURED_CREWMEMBER;
-		PointerTutorialStringID = NPE_USEQUESTITEM;
+		PointerTutorialStringID = NPEV2_USEQUESTITEM;
 		ItemQuest = 59930;
 		ItemTargets = {166786, 166791, 166796};
 		TargetRange = 5;
@@ -433,7 +433,7 @@ TutorialData.Horde = {
 
 	RemindUseQuestItemData = {
 		ScreenTutorialStringID = NPEV2_APPROACH_WANDERING_BOAR;
-		PointerTutorialStringID = NPE_USEQUESTITEM;
+		PointerTutorialStringID = NPEV2_USEQUESTITEM;
 		ItemQuest = 59941;
 		ItemTargets = {156716};
 		TargetRange = 8;

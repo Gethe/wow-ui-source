@@ -566,6 +566,15 @@
 		</Member>
 	</FontFamily>
 
+	<Font name="QuestFont_Shadow_Super_Huge" inherits="QuestFont_Super_Huge" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0.49" g="0.35" b="0.05"/>
+		</Shadow>
+	</Font>
+
 	<FontFamily name="QuestFont_Super_Huge_Outline" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\MORPHEUS.ttf" height="24" outline="NORMAL">
@@ -1165,6 +1174,15 @@
 		</Member>
 	</FontFamily>
 
+	<Font name="QuestFont_Shadow_Enormous" inherits="QuestFont_Enormous" virtual="true">
+	<Shadow>
+		<Offset>
+			<AbsDimension x="1" y="-1"/>
+		</Offset>
+		<Color r="0.49" g="0.35" b="0.05"/>
+	</Shadow>
+	</Font>
+	
 	<FontFamily name="DestinyFontMed" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\MORPHEUS.ttf" height="14">

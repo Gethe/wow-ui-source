@@ -5,9 +5,9 @@ local QuestConstants =
 		{
 			Name = "QuestTagType",
 			Type = "Enumeration",
-			NumValues = 15,
+			NumValues = 16,
 			MinValue = 0,
-			MaxValue = 14,
+			MaxValue = 15,
 			Fields =
 			{
 				{ Name = "Tag", Type = "QuestTagType", EnumValue = 0 },
@@ -25,6 +25,7 @@ local QuestConstants =
 				{ Name = "FactionAssault", Type = "QuestTagType", EnumValue = 12 },
 				{ Name = "Islands", Type = "QuestTagType", EnumValue = 13 },
 				{ Name = "Threat", Type = "QuestTagType", EnumValue = 14 },
+				{ Name = "CovenantCalling", Type = "QuestTagType", EnumValue = 15 },
 			},
 		},
 		{

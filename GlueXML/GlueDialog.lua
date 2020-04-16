@@ -195,7 +195,16 @@ GlueDialogTypes["CONFIRM_PAID_SERVICE"] = {
 	OnAccept = function()
 		-- need to get desired faction in case of pandaren doing faction change to another pandaren
 		-- this will be nil in any other case
-		C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText(), PandarenFactionButtons_GetSelectedFaction());
+
+		-- TODO: Remove once the old Char Create is dead
+		if CharacterCreate_Old then
+			C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText(), PandarenFactionButtons_GetSelectedFaction());
+		else
+			C_CharacterCreation.CreateCharacter(CharacterCreateFrame:GetSelectedName(), CharacterCreateFrame:GetCreateCharacterFaction());
+		end
+	end,
+	OnCancel = function()
+		CharacterCreateFrame:UpdateForwardButton();
 	end,
 }
 

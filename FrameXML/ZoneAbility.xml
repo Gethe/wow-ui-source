@@ -49,6 +49,9 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
 			<OnClick method="OnClick"/>
 			<OnDragStart method="OnDragStart"/>
 			<OnEnter method="OnEnter"/>

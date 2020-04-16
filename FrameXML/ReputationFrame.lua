@@ -5,8 +5,6 @@ MAX_PLAYER_LEVEL = 0;
 REPUTATIONFRAME_ROWSPACING = 23;
 MAX_REPUTATION_REACTION = 8;
 
-SHOWED_LFG_PULSE = false;
-
 function ReputationFrame_OnLoad(self)
 	ReputationWatchBar_UpdateMaxLevel();
 	--[[for i=1, NUM_FACTIONS_DISPLAYED, 1 do
@@ -19,11 +17,9 @@ end
 
 function ReputationFrame_OnShow(self)
 	CharacterFrame:SetTitle(UnitPVPName("player"));
-	ReputationFrame_Update(true);
-	SHOWED_LFG_PULSE = true;
+	ReputationFrame_Update();
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("UPDATE_FACTION");
-	self:RegisterEvent("LFG_BONUS_FACTION_ID_UPDATED");
 
 	if (self:GetParent().ReputationTabHelpBox:IsShown()) then
 		self:GetParent().ReputationTabHelpBox:Hide();
@@ -34,11 +30,10 @@ end
 function ReputationFrame_OnHide(self)
 	self:UnregisterEvent("QUEST_LOG_UPDATE");
 	self:UnregisterEvent("UPDATE_FACTION");
-	self:UnregisterEvent("LFG_BONUS_FACTION_ID_UPDATED");
 end
 
 function ReputationFrame_OnEvent(self, event, ...)
-	if ( event == "UPDATE_FACTION" or event == "LFG_BONUS_FACTION_ID_UPDATED" or event == "QUEST_LOG_UPDATE" ) then
+	if ( event == "UPDATE_FACTION" or event == "QUEST_LOG_UPDATE" ) then
 		ReputationFrame_Update();
 	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
 		ReputationWatchBar_UpdateMaxLevel();
@@ -81,7 +76,6 @@ function ReputationFrame_SetRowType(factionRow, isChild, isHeader, hasRep)	--row
 		factionLeftTexture:SetTexCoord(0.765625, 1.0, 0.046875, 0.28125);
 		factionRightTexture:SetTexCoord(0.0, 0.15234375, 0.390625, 0.625);
 		factionBar:SetWidth(99);
-		factionRow.LFGBonusRepButton:SetPoint("RIGHT", factionButton, "LEFT", 0, 1);
 	else
 		if ( isChild ) then
 			factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 52, 0);
@@ -99,7 +93,6 @@ function ReputationFrame_SetRowType(factionRow, isChild, isHeader, hasRep)	--row
 		factionLeftTexture:SetTexCoord(0.7578125, 1.0, 0.0, 0.328125);
 		factionRightTexture:SetTexCoord(0.0, 0.1640625, 0.34375, 0.671875);
 		factionBar:SetWidth(101)
-		factionRow.LFGBonusRepButton:SetPoint("RIGHT", factionBackground, "LEFT", -2, 0);
 	end
 
 	if ( (hasRep) or (not isHeader) ) then
@@ -113,7 +106,7 @@ function ReputationFrame_SetRowType(factionRow, isChild, isHeader, hasRep)	--row
 	end
 end
 
-function ReputationFrame_Update(showLFGPulse)
+function ReputationFrame_Update()
 	ReputationFrame.paragonFramesPool:ReleaseAll();
 
 	local numFactions = GetNumFactions();
@@ -125,7 +118,6 @@ function ReputationFrame_Update(showLFGPulse)
 	local factionOffset = FauxScrollFrame_GetOffset(ReputationListScrollFrame);
 
 	local gender = UnitSex("player");
-	local lfgBonusFactionID = GetLFGBonusFactionID();
 
 	for i=1, NUM_FACTIONS_DISPLAYED, 1 do
 		local factionIndex = factionOffset + i;
@@ -136,7 +128,7 @@ function ReputationFrame_Update(showLFGPulse)
 		local factionStanding = _G["ReputationBar"..i.."ReputationBarFactionStanding"];
 		local factionBackground = _G["ReputationBar"..i.."Background"];
 		if ( factionIndex <= numFactions ) then
-			local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild, factionID, hasBonusRepGain, canBeLFGBonus = GetFactionInfo(factionIndex);
+			local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild, factionID, hasBonusRepGain = GetFactionInfo(factionIndex);
 			factionTitle:SetText(name);
 			if ( isCollapsed ) then
 				factionButton:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
@@ -202,18 +194,6 @@ function ReputationFrame_Update(showLFGPulse)
 
 			factionBar.BonusIcon:SetShown(hasBonusRepGain);
 
-			factionRow.LFGBonusRepButton.factionID = factionID;
-			factionRow.LFGBonusRepButton:SetShown(canBeLFGBonus);
-			factionRow.LFGBonusRepButton:SetChecked(lfgBonusFactionID == factionID);
-			factionRow.LFGBonusRepButton:SetEnabled(lfgBonusFactionID ~= factionID);
-			if ( showLFGPulse and not SHOWED_LFG_PULSE and not lfgBonusFactionID ) then
-				factionRow.LFGBonusRepButton.Glow:Show();
-				factionRow.LFGBonusRepButton.GlowAnim:Play();
-			else
-				factionRow.LFGBonusRepButton.Glow:Hide();
-				factionRow.LFGBonusRepButton.GlowAnim:Stop();
-			end
-
 			ReputationFrame_SetRowType(factionRow, isChild, isHeader, hasRep);
 
 			factionRow:Show();
@@ -259,10 +239,6 @@ function ReputationFrame_Update(showLFGPulse)
 					else
 						ReputationDetailMainScreenCheckBox:SetChecked(false);
 					end
-					ReputationDetailFrame:SetHeight(canBeLFGBonus and 225 or 203);
-					ReputationDetailLFGBonusReputationCheckBox:SetShown(canBeLFGBonus);
-					ReputationDetailLFGBonusReputationCheckBox:SetChecked(lfgBonusFactionID == factionID);
-					ReputationDetailLFGBonusReputationCheckBox.factionID = factionID;
 					_G["ReputationBar"..i.."ReputationBarHighlight1"]:Show();
 					_G["ReputationBar"..i.."ReputationBarHighlight2"]:Show();
 				end
@@ -289,36 +265,6 @@ function ReputationBar_OnClick(self)
 			SetSelectedFaction(self.index);
 			ReputationDetailFrame:Show();
 			ReputationFrame_Update();
-		end
-	end
-end
-
-function ReputationBarLFGBonusRepButton_OnClick(self)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	ReputationBar_SetLFBonus(self.factionID);
-end
-
-function ReputationBar_SetLFBonus(factionID)
-	SetLFGBonusFactionID(factionID);
-	--It feels really weird when the client waits to update until it receives a response from the server.
-	--Instead, we'll fake it. Hopefully we don't end up lying to people
-	for i=1, NUM_FACTIONS_DISPLAYED, 1 do
-		local factionRow = _G["ReputationBar"..i];
-		local button = factionRow.LFGBonusRepButton;
-		if ( factionID == 0 ) then
-			button:SetChecked(false);
-			button:Enable();
-			--button.GlowAnim:Play();
-			--button.Glow:Show();
-		elseif ( button.factionID == factionID ) then
-			button:SetChecked(true);
-			button:Disable();
-			--button.GlowAnim:Stop();
-			--button.Glow:Hide();
-		else
-			button:SetChecked(false);
-			--button.GlowAnim:Stop();
-			--button.Glow:Hide();
 		end
 	end
 end

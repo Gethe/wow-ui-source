@@ -8,15 +8,31 @@ local titleTextureKitRegions = {
 	["Left"] = "UI-Frame-%s-TitleLeft",
 	["Right"] = "UI-Frame-%s-TitleRight",
 	["Middle"] = "_UI-Frame-%s-TitleMiddle",
-}
+};
+
+local abilityButtonTextureKitRegions = { 
+	["Background"] = "CovenantChoice-Offering-Ability-Frame-%s",
+	["IconBorder"] = "CovenantChoice-Offering-Ability-Ring-%s",
+};
+
+local infoPanelTextureKitRegions = {
+	["Parchment"] = "CovenantChoice-Offering-Parchment-%s",
+	["Crest"] = "CovenantChoice-Offering-Sigil-%s",
+};
+
+local modelSceneContainerTextureKitRegions = {
+	["ModelSceneBorder"] = "CovenantChoice-Offering-Preview-Frame-%s",
+	["Background"] =  "CovenantChoice-Offering-Preview-Frame-Background-%s",
+};
 
 local abilityTypeText = {
 	[Enum.CovenantAbilityType.Class] = COVENANT_PREVIEW_CLASS_ABILITY, 
 	[Enum.CovenantAbilityType.Racial] = COVENANT_PREVIEW_RACIAL_ABILITY, 
 }
 
+--Aubrie TODO fix this up when the artwork for the frames are in.
 local covenantNineSlice = {
-	["Oribos"] = "Oribos",
+	["Kyrian"] = "Oribos",
 }
 
 CovenantPreviewFrameMixin = { }; 
@@ -46,8 +62,12 @@ function CovenantPreviewFrameMixin:Reset()
 	self.uiTextureKit = nil; 
 end 
 
-function CovenantPreviewFrameMixin:SetupTextureKits(frame, regions)
-	SetupTextureKitOnRegions(self.uiTextureKit, frame, regions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+function CovenantPreviewFrameMixin:SetupTextureKits(frame, regions, overrideTextureKit)
+	if(overrideTextureKit) then 
+		SetupTextureKitOnRegions(overrideTextureKit, frame, regions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	else
+		SetupTextureKitOnRegions(self.uiTextureKit, frame, regions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	end 
 end 
 
 function CovenantPreviewFrameMixin:SetupFramesWithTextureKit()
@@ -57,8 +77,9 @@ function CovenantPreviewFrameMixin:SetupFramesWithTextureKit()
 		NineSliceUtil.ApplyLayoutByName(self.BorderFrame, nineSliceLayout);
 	end
 
-	self:SetupTextureKits(self.Title, titleTextureKitRegions);
-	self:SetupTextureKits(self.Background, backgroundTextureKitRegions);
+	self:SetupTextureKits(self.Title, titleTextureKitRegions, nineSliceLayout);
+	self:SetupTextureKits(self.Background, backgroundTextureKitRegions, nineSliceLayout);
+	self:SetupTextureKits(self.InfoPanel, infoPanelTextureKitRegions);
 end
 
 function CovenantPreviewFrameMixin:TryShow(covenantInfo)
@@ -89,21 +110,23 @@ function CovenantPreviewFrameMixin:SetupAndGetAbilityButton(index, abilityInfo)
 	local abilityButton = self.AbilityButtonsPool:Acquire(); 
 
 	if(not self.lastAbility) then 
-		abilityButton:SetPoint("TOP", self.InfoPanel.Description, "BOTTOMLEFT", 0, -20); 
+		abilityButton:SetPoint("TOPLEFT", self.InfoPanel.AbilitiesLabel, "BOTTOMLEFT", -5, -15); 
 		self.previousRowOption = abilityButton; 
 	elseif (mod(index - 1, MAX_ABILITIES_IN_ROW) == 0) then
 		abilityButton:SetPoint("TOP", self.previousRowOption, "BOTTOM", 0, -20);
 		self.previousRowOption = abilityButton; 
 	else 
-		abilityButton:SetPoint("LEFT", self.lastAbility, "RIGHT", 50, 0);
+		abilityButton:SetPoint("LEFT", self.lastAbility, "RIGHT", 30, 0);
 	end		
 
+	self:SetupTextureKits(abilityButton, abilityButtonTextureKitRegions);
 	abilityButton:SetupButton(abilityInfo);
 	return abilityButton;
 end 
 
 function CovenantPreviewFrameMixin:SetupModelSceneFrame(transmogSetID, mountID)
-	SetUpTransmogAndMountDressupFrame(self.ModelSceneContainer, transmogSetID, mountID, 400, 500, "CENTER", "CENTER", 0 , 0); 
+	self:SetupTextureKits(self.ModelSceneContainer, modelSceneContainerTextureKitRegions);
+	SetUpTransmogAndMountDressupFrame(self.ModelSceneContainer, transmogSetID, mountID, 414, 432, "CENTER", "CENTER", 0 , 0); 
 	local sources = C_TransmogSets.GetAllSourceIDs(transmogSetID);
 	DressUpTransmogSet(sources);
 end 

@@ -37,7 +37,7 @@ function VideoOptionsValueChanged(self, value, flag)
 	self.newValue = value;
 
 	if(self.type == CONTROLTYPE_DROPDOWN) then
-		VideoOptionsDropDownMenu_SetSelectedID(self, value, flag);
+		UIDropDownMenu_SetSelectedID(self, value, flag);
 	else
 		if(self.SetDisplayValue) then
 			self.SetDisplayValue(self, value);
@@ -431,7 +431,7 @@ function Graphics_NotifyTarget(self, masterIndex, isRaid)
 		self.newValue = dropdownIndex;
 		self.selectedID = dropdownIndex;
 		if(self.type == CONTROLTYPE_DROPDOWN) then
-			VideoOptionsDropDownMenu_SetText(self, value);
+			UIDropDownMenu_SetText(self, value);
 		elseif(self.type == CONTROLTYPE_SLIDER) then
 			self:SetDisplayValue(dropdownIndex);
 		end
@@ -447,7 +447,7 @@ function Graphics_NotifyTarget(self, masterIndex, isRaid)
 				if (isValid) then
 					self.newValue = fallbackIndex;
 					self.selectedID = fallbackIndex;
-					VideoOptionsDropDownMenu_SetText(self, self.data[fallbackIndex].text);
+					UIDropDownMenu_SetText(self, self.data[fallbackIndex].text);
 					break;
 				end
 			end
@@ -673,8 +673,8 @@ function Graphics_SliderRefreshValue(self)
 end
 
 function Graphics_DropDownRefreshValue(self)
-	VideoOptionsDropDownMenu_Initialize(self, self.initialize);
-	VideoOptionsDropDownMenu_SetSelectedID(self, self:GetValue(), 1);
+	UIDropDownMenu_Initialize(self, self.initialize);
+	UIDropDownMenu_SetSelectedID(self, self:GetValue(), 1);
 	local graphicsQuality = "Graphics_Quality";
 	if (self.raid) then
 		graphicsQuality = "RaidGraphics_Quality";
@@ -734,7 +734,7 @@ end
 
 function VideoOptions_Enable(self)
 	if(self.type == CONTROLTYPE_DROPDOWN) then
-		VideoOptionsDropDownMenu_EnableDropDown(self);
+		UIDropDownMenu_EnableDropDown(self);
 	elseif(self.type == CONTROLTYPE_SLIDER) then
 		Slider_Enable(self);
 	elseif(self.type == CONTROLTYPE_CHECKBOX) then
@@ -744,7 +744,7 @@ end
 
 function VideoOptions_Disable(self)
 	if(self.type == CONTROLTYPE_DROPDOWN) then
-		VideoOptionsDropDownMenu_DisableDropDown(self);
+		UIDropDownMenu_DisableDropDown(self);
 	elseif(self.type == CONTROLTYPE_SLIDER) then
 		Slider_Disable(self);
 	elseif(self.type == CONTROLTYPE_CHECKBOX) then
@@ -813,7 +813,7 @@ function VideoOptionsDropDown_OnLoad(self)
 			end
 
 			for mode, text in ipairs(self.table) do
-				local info = VideoOptionsDropDownMenu_CreateInfo();
+				local info = UIDropDownMenu_CreateInfo();
 				info.text = text;
 				info.value = text;
 				info.func = self.onclickfunction or VideoOptionsDropDown_OnClick;
@@ -837,7 +837,7 @@ function VideoOptionsDropDown_OnLoad(self)
 					info.notClickable = true;
 					info.disablecolor = GREYCOLORCODE;
 				end
-				VideoOptionsDropDownMenu_AddButton(info);
+				UIDropDownMenu_AddButton(info);
 			end
 		end
 	self.SetValue = self.SetValue or Graphics_TableSetValue;
@@ -863,7 +863,7 @@ function VideoOptionsDropDown_OnLoad(self)
 	if(self.width == nil) then
 		self.width = 110;
 	end
-	VideoOptionsDropDownMenu_SetWidth(self, self.width);
+	UIDropDownMenu_SetWidth(self, self.width);
 	-- force another control to change to a value
 	if(self.graphicsCVar) then
 		self.notifytarget = self.notifytarget or Graphics_NotifyTarget;
@@ -1074,38 +1074,38 @@ function InterfaceOptionsLanguagesPanelLocaleDropDown_OnLoad (self)
 	self.value = value;
 	self.tooltip = OPTION_TOOLTIP_LOCALE;
 
-	VideoOptionsDropDownMenu_SetWidth(self, 200);
-	VideoOptionsDropDownMenu_Initialize(self, InterfaceOptionsLanguagesPanelLocaleDropDown_Initialize);
-	VideoOptionsDropDownMenu_SetSelectedValue(self, value);
+	UIDropDownMenu_SetWidth(self, 200);
+	UIDropDownMenu_Initialize(self, InterfaceOptionsLanguagesPanelLocaleDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(self, value);
 
 	self.SetValue =
 		function (self, value)
-			local currentValue = VideoOptionsDropDownMenu_GetSelectedValue(self);
-			local audioCurrentValue = VideoOptionsDropDownMenu_GetSelectedValue(InterfaceOptionsLanguagesPanelAudioLocaleDropDown);
+			local currentValue = UIDropDownMenu_GetSelectedValue(self);
+			local audioCurrentValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsLanguagesPanelAudioLocaleDropDown);
 			-- Audio dropdown value should follow changes to text dropdown, except if user has explicitly chosen English instead of
 			-- the text level.
 			if (audioCurrentValue ~= "enUS" or currentValue == "enUS") then
 				InterfaceOptionsLanguagesPanelAudioLocaleDropDown.SetValue(InterfaceOptionsLanguagesPanelAudioLocaleDropDown, value);
 			end
 			if (value == "enUS") then
-				VideoOptionsDropDownMenu_DisableDropDown(InterfaceOptionsLanguagesPanelAudioLocaleDropDown);
+				UIDropDownMenu_DisableDropDown(InterfaceOptionsLanguagesPanelAudioLocaleDropDown);
 			else
-				VideoOptionsDropDownMenu_EnableDropDown(InterfaceOptionsLanguagesPanelAudioLocaleDropDown);
+				UIDropDownMenu_EnableDropDown(InterfaceOptionsLanguagesPanelAudioLocaleDropDown);
 			end
 
 			SetCVar("textLocale", value, self.event);
 			self.value = value;
 			InterfaceOptionsLanguagesPanel_UpdateRestartTexture();
-			VideoOptionsDropDownMenu_SetSelectedValue(self, value);
+			UIDropDownMenu_SetSelectedValue(self, value);
 		end
 	self.GetValue =
 		function (self)
-			return VideoOptionsDropDownMenu_GetSelectedValue(self);
+			return UIDropDownMenu_GetSelectedValue(self);
 		end
 	self.RefreshValue =
 		function (self)
-			VideoOptionsDropDownMenu_Initialize(self, InterfaceOptionsLanguagesPanelLocaleDropDown_Initialize);
-			VideoOptionsDropDownMenu_SetSelectedValue(self, self.value);
+			UIDropDownMenu_Initialize(self, InterfaceOptionsLanguagesPanelLocaleDropDown_Initialize);
+			UIDropDownMenu_SetSelectedValue(self, self.value);
 		end
 end
 
@@ -1122,31 +1122,31 @@ function InterfaceOptionsLanguagesPanelAudioLocaleDropDown_OnLoad(self)
 	self.value = value;
 	self.tooltip = OPTION_TOOLTIP_AUDIO_LOCALE;
 
-	VideoOptionsDropDownMenu_SetWidth(self, 200);
-	VideoOptionsDropDownMenu_Initialize(self, InterfaceOptionsLanguagesPanelLocaleDropDown_Initialize);
-	VideoOptionsDropDownMenu_SetSelectedValue(self, value);
+	UIDropDownMenu_SetWidth(self, 200);
+	UIDropDownMenu_Initialize(self, InterfaceOptionsLanguagesPanelLocaleDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(self, value);
 
 	self.SetValue =
 		function (self, value)
 			SetCVar("audioLocale", value, self.event);
 			self.value = value;
 			InterfaceOptionsLanguagesPanel_UpdateRestartTexture();
-			VideoOptionsDropDownMenu_SetSelectedValue(self, value);
+			UIDropDownMenu_SetSelectedValue(self, value);
 		end
 	self.GetValue =
 		function (self)
-			return VideoOptionsDropDownMenu_GetSelectedValue(self);
+			return UIDropDownMenu_GetSelectedValue(self);
 		end
 	self.RefreshValue =
 		function (self)
-			VideoOptionsDropDownMenu_Initialize(self, InterfaceOptionsLanguagesPanelAudioLocaleDropDown_Initialize);
-			VideoOptionsDropDownMenu_SetSelectedValue(self, self.value);
+			UIDropDownMenu_Initialize(self, InterfaceOptionsLanguagesPanelAudioLocaleDropDown_Initialize);
+			UIDropDownMenu_SetSelectedValue(self, self.value);
 
 			local audioLocales = {GetAvailableAudioLocales()};
 			if (#audioLocales <= 1) then
-				VideoOptionsDropDownMenu_DisableDropDown(InterfaceOptionsLanguagesPanelAudioLocaleDropDown);
+				UIDropDownMenu_DisableDropDown(InterfaceOptionsLanguagesPanelAudioLocaleDropDown);
 			else
-				VideoOptionsDropDownMenu_EnableDropDown(InterfaceOptionsLanguagesPanelAudioLocaleDropDown);
+				UIDropDownMenu_EnableDropDown(InterfaceOptionsLanguagesPanelAudioLocaleDropDown);
 			end
 		end
 
@@ -1159,8 +1159,8 @@ function InterfaceOptionsLanguagesPanelLocaleDropDown_OnClick (self)
 end
 
 function InterfaceOptionsLanguagesPanelLocaleDropDown_Initialize (self)
-	local selectedValue = VideoOptionsDropDownMenu_GetSelectedValue(self);
-	local info = VideoOptionsDropDownMenu_CreateInfo();
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
+	local info = UIDropDownMenu_CreateInfo();
 
 	InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeHelper(info, selectedValue, GetAvailableLocales());
 end
@@ -1173,12 +1173,12 @@ function GetAvailableAudioLocales()
 end
 
 function InterfaceOptionsLanguagesPanelAudioLocaleDropDown_Initialize (self)
-	local selectedValue = VideoOptionsDropDownMenu_GetSelectedValue(self);
-	local info = VideoOptionsDropDownMenu_CreateInfo();
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
+	local info = UIDropDownMenu_CreateInfo();
 
 	InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeHelper(info, selectedValue, GetAvailableAudioLocales());
 	if (GetCVar("textLocale") == "enUS") then
-		VideoOptionsDropDownMenu_DisableDropDown(InterfaceOptionsLanguagesPanelAudioLocaleDropDown);
+		UIDropDownMenu_DisableDropDown(InterfaceOptionsLanguagesPanelAudioLocaleDropDown);
 	end
 end
 
@@ -1236,14 +1236,14 @@ function InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeHelper (createIn
 			else
 				createInfo.checked = nil;
 			end
-			VideoOptionsDropDownMenu_AddButton(createInfo);
+			UIDropDownMenu_AddButton(createInfo);
 		end
 	end
 
 	if ( not currentChoiceAdded and LanguageRegions[selectedValue]) then
 		InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeChoice(createInfo, selectedValue);
 		createInfo.checked = 1;
-		VideoOptionsDropDownMenu_AddButton(createInfo);
+		UIDropDownMenu_AddButton(createInfo);
 	end
 end
 

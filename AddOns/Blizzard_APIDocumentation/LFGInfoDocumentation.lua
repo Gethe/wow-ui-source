@@ -99,11 +99,6 @@ local LFGInfo =
 			},
 		},
 		{
-			Name = "LfgBonusFactionIdUpdated",
-			Type = "Event",
-			LiteralName = "LFG_BONUS_FACTION_ID_UPDATED",
-		},
-		{
 			Name = "LfgBootProposalUpdate",
 			Type = "Event",
 			LiteralName = "LFG_BOOT_PROPOSAL_UPDATE",

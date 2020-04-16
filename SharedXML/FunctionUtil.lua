@@ -18,14 +18,14 @@ function CallMethodOnNearestAncestor(self, methodName, ...)
 	return false;
 end
 
-function GetValueOrCallFunction(tbl, key)
+function GetValueOrCallFunction(tbl, key, ...)
 	if not tbl then
 		return;
 	end
 
 	local value = tbl[key];
 	if type(value) == "function" then
-		return value();
+		return value(...);
 	else
 		return value;
 	end
@@ -33,9 +33,9 @@ end
 
 -- [[ Closure generation ]]
 
-local closureGeneration = { 
-	function(f) return function(...) return f(...); end end, 
-	function(f, a) return function(...) return f(a, ...); end end, 
+local closureGeneration = {
+	function(f) return function(...) return f(...); end end,
+	function(f, a) return function(...) return f(a, ...); end end,
 	function(f, a, b) return function(...) return f(a, b, ...); end end,
 	function(f, a, b, c) return function(...) return f(a, b, c, ...); end end,
 	function(f, a, b, c, d) return function(...) return f(a, b, c, d, ...); end end,
@@ -49,4 +49,3 @@ function GenerateClosure(f, ...)
     end
     error("Closure generation does not support more than "..(#closureGeneration - 1).." parameters");
  end
- 

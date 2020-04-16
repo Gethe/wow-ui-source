@@ -132,7 +132,7 @@ FloatingGarrisonFollowerTooltip.xml
 GarrisonFollowerTooltip.xml
 GameTooltip.xml
 UIMenu.xml
-UIDropDownMenu.xml
+..\SharedXML\UIDropDownMenu.xml
 UIPanelTemplates.lua
 UIPanelTemplates.xml
 SecureTemplates.xml

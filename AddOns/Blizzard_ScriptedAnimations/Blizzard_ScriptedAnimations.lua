@@ -16,12 +16,20 @@ function ScriptAnimatedModelSceneActorMixin:GetModelScene()
 end
 
 function ScriptAnimatedModelSceneActorMixin:OnFinish()
-	if self.onFinish then
-		self.onFinish(self, self.effectDescription, self.source, self.target);
+	if self.finishBehavior then
+		self.finishBehavior(self.effectDescription, self.source, self.target);
 	end
 
-	if self.impact then
-		self:GetModelScene():AddEffect(self.impact, self.source, self.target);
+	if self.finishSoundKitID then
+		PlaySound(self.finishSoundKitID);
+	end
+
+	if self.finishEffectID then
+		self:GetModelScene():AddEffect(self.finishEffectID, self.source, self.target);
+	end
+
+	if self.externalOnFinish then
+		self.externalOnFinish();
 	end
 end
 
@@ -29,7 +37,12 @@ end
 function ScriptAnimatedModelSceneActorMixin:DeltaUpdate(elapsed)
 	self.elapsedTime = (self.elapsedTime or 0) + elapsed;
 	if self.trajectory and self:IsActive() then
-		local positionX, positionY = self.trajectory(self.source, self.target, self.elapsedTime, self.duration);
+		local positionX, positionY, newTrajectory = self.trajectory(self.source, self.target, self.elapsedTime, self.duration);
+		
+		if newTrajectory then
+			self.trajectory = newTrajectory;
+		end
+
 		if positionX and positionY then
 			self:GetModelScene():SetActorPositionFromPixels(self, positionX, positionY);
 			self:Show();
@@ -50,27 +63,29 @@ local function GetAngleForModel(source, target)
 	return radians;
 end
 
-function ScriptAnimatedModelSceneActorMixin:SetEffect(effectDescription, source, target)
-	self:SetModelByFileID(effectDescription.effectFileID);
+function ScriptAnimatedModelSceneActorMixin:SetEffect(effectDescription, source, target, externalOnFinish)
+	self:SetModelByFileID(effectDescription.visual);
 	self:SetAnimation(0, 0, 1);
 	self.elapsedTime = nil;
 
 	self.source = source;
 	self.target = target;
+	self.externalOnFinish = externalOnFinish;
 
 	self.effectDescription = effectDescription;
 	self.trajectory = effectDescription.trajectory;
 	self.duration = effectDescription.duration;
-	self.onFinish = effectDescription.onFinish;
-	self.impact = effectDescription.impact;
-	self:SetScale(effectDescription.actorScale or 1.0);
-
-	if effectDescription.onStart then
-		effectDescription.onStart(self, self.effectDescription, self.source, self.target);
-	end
+	self.finishBehavior = effectDescription.finishBehavior;
+	self.finishEffectID = effectDescription.finishEffectID;
+	self.finishSoundKitID = effectDescription.finishSoundKitID;
+	self:SetScale(effectDescription.visualScale);
 
 	if self.source and self.target then
 		self:SetYaw(GetAngleForModel(self.source, self.target));
+	end
+
+	if effectDescription.startSoundKitID then
+		PlaySound(effectDescription.startSoundKitID);
 	end
 
 	self:DeltaUpdate(0);
@@ -136,10 +151,16 @@ function ScriptAnimatedModelSceneMixin:CalculatePixelsPerSceneUnit()
 	self.pixelsPerSceneUnit = (sceneSize * zoomDistance) / SceneUnitDivisor;
 end
 
-function ScriptAnimatedModelSceneMixin:AddEffect(effectDescription, source, target)
+function ScriptAnimatedModelSceneMixin:AddEffect(effectID, source, target, onFinish)
+	local effect = ScriptedAnimationEffectsUtil.GetEffectByID(effectID);
+
+	if effect.startBehavior then
+		effect.startBehavior(effect, source, target);
+	end
+
 	local actor = self:AcquireActor();
 	Mixin(actor, ScriptAnimatedModelSceneActorMixin);
-	actor:SetEffect(effectDescription, source, target);
+	actor:SetEffect(effect, source, target, onFinish);
 	actor:Show();
 
 	table.insert(self.effectActors, actor);

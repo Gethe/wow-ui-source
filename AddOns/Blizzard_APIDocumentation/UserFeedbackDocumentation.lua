@@ -13,6 +13,7 @@ local UserFeedback =
 			Arguments =
 			{
 				{ Name = "bugInfo", Type = "string", Nilable = false },
+				{ Name = "suppressNotification", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =

@@ -47,8 +47,7 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<NormalTexture atlas="common-search-magnifyingglass" useAtlasSize="true"/>
-		<HighlightTexture atlas="common-search-magnifyingglass" alphaMode="ADD" useAtlasSize="true"/>
+		<NormalTexture atlas="UI-Frame-Oribos-ExtraButton" useAtlasSize="true"/>
 	</Button>
 
 	<Button name="PlayerChoiceOptionButtonTemplate"  inherits="UIPanelButtonTemplate, PlayerChoiceOptionBaseButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
@@ -208,6 +207,62 @@
 					</KeyValues>
 				</Texture>
 			</Layer>
+			<Layer level="BACKGROUND" hidden="true" textureSubLevel="3">
+				<Texture parentKey="BackgroundShadowSmall">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="6">
+				<Texture parentKey="BackgroundShadowLarge" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND"  textureSubLevel="5">
+				<Texture parentKey="ScrollingBG" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="4">
+				<Texture parentKey="BlackBackground" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BackgroundShadowLarge"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BackgroundShadowLarge"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Color r="0" g="0" b="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<MaskTexture parentKey="ShadowMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BackgroundShadowLarge"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="ScrollingBG"/>
+						<MaskedTexture childKey="BlackBackground"/>
+					</MaskedTextures>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+				</MaskTexture>
+			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Type">
 					<Size x="40" y="42"/>
@@ -224,6 +279,9 @@
 					</Anchors>
 				</Texture>
 				<Texture parentKey="ArtworkBorder2" hidden="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.ArtworkBorder"/>
 					</Anchors>
@@ -411,6 +469,19 @@
 			<AnimationGroup parentKey="BackgroundGlowAnimation" looping="REPEAT">
 				<Alpha childKey="BackgroundGlow" smoothing="OUT" duration="2" order="1" fromAlpha="1" toAlpha="0.5"/>
 				<Alpha childKey="BackgroundGlow" smoothing="OUT" startDelay=".25" duration="2" order="2" fromAlpha="0.5" toAlpha="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="ScrollingBackgroundAnimIn" setToFinalAlpha="true">
+				<Alpha childKey="ScrollingBG" fromAlpha=".6" toAlpha="1" duration=".6" order="1">
+					<Scripts>
+						<OnFinished>
+							self:GetParent():GetParent().ScrollingBackgroundScroll:Play();
+						</OnFinished>
+					</Scripts>
+				</Alpha>
+			</AnimationGroup>
+			<AnimationGroup parentKey="ScrollingBackgroundScroll" looping="REPEAT">
+				<Translation childKey="ScrollingBG" duration="50" order="1" offsetX="300" offsetY="0" smoothing="OUT"/>
+				<Translation childKey="ScrollingBG" duration="50" order="2" offsetX="-300" offsetY="0" smoothing="OUT"/>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>

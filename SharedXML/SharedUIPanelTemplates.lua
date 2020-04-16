@@ -1179,17 +1179,21 @@ function UIButtonMixin:InitButton()
 	self:SetHighlightAtlas(self.atlasName.."-Highlight");
 end
 
+function UIButtonMixin:GetAppropriateTooltip()
+	return UIParent and GameTooltip or GlueTooltip;
+end
+
 function UIButtonMixin:OnEnter()
-	local tooltipText = GetValueOrCallFunction(self.tooltip);
+	local tooltipText = GetValueOrCallFunction(self, "tooltip");
 	if tooltipText then
-		local tooltip = GetAppropriateTooltip();
+		local tooltip = self:GetAppropriateTooltip();
 		tooltip:SetOwner(self, "ANCHOR_RIGHT");
 		tooltip:SetText(tooltipText);
 	end
 end
 
 function UIButtonMixin:OnLeave()
-	local tooltip = GetAppropriateTooltip();
+	local tooltip = self:GetAppropriateTooltip();
 	tooltip:Hide();
 end
 
@@ -1332,4 +1336,59 @@ end
 
 -- Override in derived mixins
 function ResizeCheckButtonMixin:OnCheckButtonClick()
+end
+
+SharedEditBoxMixin = {}
+
+function SharedEditBoxMixin:OnLoad()
+	local leftAtlasInfo = C_Texture.GetAtlasInfo("common-input-left");
+
+	local editBoxHeight = self:GetHeight();
+	local scale = editBoxHeight / leftAtlasInfo.height;
+
+	self.Left:SetScale(scale);
+	self.Right:SetScale(scale);
+
+	if self.justifyH then
+		self:SetJustifyH(self.justifyH);
+	end
+end
+
+SliderWithButtonsAndLabelMixin = {}
+
+function SliderWithButtonsAndLabelMixin:OnEnter()
+end
+
+function SliderWithButtonsAndLabelMixin:OnLeave()
+end
+
+function SliderWithButtonsAndLabelMixin:SetupSlider(minValue, maxValue, value, valueStep, label)
+	self.minValue = minValue;
+	self.maxValue = maxValue;
+	self.Slider:SetMinMaxValues(minValue, maxValue);
+
+	self.valueStep = valueStep;
+	self.Slider:SetValueStep(valueStep);
+
+	self.value = value;
+	self.Slider:SetValue(value);
+
+	self.Label:SetText(label);
+end
+
+function SliderWithButtonsAndLabelMixin:OnSliderValueChanged(value, userInput)
+	self.value = value;
+
+	self.IncrementButton:SetEnabled(value < self.maxValue);
+	self.DecrementButton:SetEnabled(value > self.minValue);
+end
+
+function SliderWithButtonsAndLabelMixin:Increment()
+	local userInput = true;
+	self.Slider:SetValue(self.value + self.valueStep, userInput);
+end
+
+function SliderWithButtonsAndLabelMixin:Decrement()
+	local userInput = true;
+	self.Slider:SetValue(self.value - self.valueStep, userInput);
 end

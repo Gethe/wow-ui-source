@@ -37,6 +37,7 @@
 ..\SharedXML\CircularBuffer.lua
 ..\SharedXML\FontableFrameMixin.lua
 ..\SharedXML\PixelUtilSecure.lua
+..\SharedXML\AnchorUtil.lua
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
 ..\SharedXML\DropDownToggleButton.xml
@@ -53,7 +54,7 @@ GlueLocalization.xml
 GlueTemplates.xml
 ## add new files after here
 GlueButtons.xml
-GlueDropDownMenu.xml
+..\SharedXML\UIDropDownMenu.xml
 GlueContextMenu.xml
 
 ..\SharedXML\HybridScrollFrame.xml
@@ -90,7 +91,6 @@ CharacterSelect.xml
 AccountReactivate.xml
 KioskModeSplash.xml
 CharacterServices.xml
-CharacterCreate.xml
 PromotionFrame.xml
 StarterEditionPopUp.xml
 GlueOptions.xml

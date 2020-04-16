@@ -810,14 +810,36 @@ end
 
 ObjectiveTrackerMinimizeButtonMixin = {};
 
-function ObjectiveTrackerMinimizeButtonMixin:SetCollapsed(collapsed)
-	local top, bottom = 0, 0.5;
-	if not collapsed then
-		top, bottom = 0.5, 1;
-	end
+function ObjectiveTrackerMinimizeButtonMixin:OnLoad()
+	local collapsed = false;
+	self:SetAtlases(collapsed);
+end
 
-	self:GetNormalTexture():SetTexCoord(0, 0.5, top, bottom);
-	self:GetPushedTexture():SetTexCoord(0.5, 1, top, bottom);
+function ObjectiveTrackerMinimizeButtonMixin:SetAtlases(collapsed)
+	local normalTexture = self:GetNormalTexture();
+	local pushedTexture = self:GetPushedTexture();
+
+	if self.buttonType == "module" then
+		if collapsed then
+			normalTexture:SetAtlas("UI-QuestTrackerButton-Expand-Section", true);
+			pushedTexture:SetAtlas("UI-QuestTrackerButton-Expand-Section-Pressed", true);
+		else
+			normalTexture:SetAtlas("UI-QuestTrackerButton-Collapse-Section", true);
+			pushedTexture:SetAtlas("UI-QuestTrackerButton-Collapse-Section-Pressed", true);
+		end
+	else
+		if collapsed then
+			normalTexture:SetAtlas("UI-QuestTrackerButton-Expand-All", true);
+			pushedTexture:SetAtlas("UI-QuestTrackerButton-Expand-All-Pressed", true);
+		else
+			normalTexture:SetAtlas("UI-QuestTrackerButton-Collapse-All", true);
+			pushedTexture:SetAtlas("UI-QuestTrackerButton-Collapse-All-Pressed", true);
+		end
+	end
+end
+
+function ObjectiveTrackerMinimizeButtonMixin:SetCollapsed(collapsed)
+	self:SetAtlases(collapsed);
 end
 
 function ObjectiveTracker_MinimizeButton_OnClick(self)
@@ -1082,15 +1104,6 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:StaticReanchor()
 	self:EndLayout(true);
 end
 
-function DEFAULT_OBJECTIVE_TRACKER_MODULE:AnchorMinimizeButton(anchorTo)
-	self.Header.MinimizeButton:ClearAllPoints();
-	if anchorTo then
-		self.Header.MinimizeButton:SetPoint("RIGHT", anchorTo, "LEFT", -20, 0);
-	else
-		self.Header.MinimizeButton:SetPoint("RIGHT", self.Header, "RIGHT", 0, 0);
-	end
-end
-
 function ObjectiveTracker_UpdateSuperTrackedQuest(self)
 	local questID = C_SuperTrack.GetSuperTrackedQuestID();
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED, questID);
@@ -1244,12 +1257,12 @@ function ObjectiveTracker_ReorderModules()
 			if not hasAnchoredHeader then
 				tracker.HeaderMenu:SetPoint("RIGHT", topBlock, "RIGHT", 0, 0);
 				hasAnchoredHeader = true;
-				module:AnchorMinimizeButton(tracker.HeaderMenu);
-			else
-				module:AnchorMinimizeButton();
 			end
 
 			module.Header.MinimizeButton:SetShown(showModuleMinimizeButton);
+			if showModuleMinimizeButton then
+				module.Header.MinimizeButton:SetPoint("RIGHT", module.Header, "RIGHT", -21, 0);
+			end
 		end
 	end
 end

@@ -841,7 +841,12 @@ local Class_SelectMobWatcher = class("SelectMobWatcher", Class_TutorialBase);
 
 function Class_SelectMobWatcher:OnBegin()
 	-- Use a leash on the first unit if it's defined, otherwise, lease the player's current location
-	local unit = TutorialHelper:GetRacialData().FirstKillQuestUnit;
+	local tutorialData = TutorialHelper:GetRacialData();
+	if not tutorialData then
+		return;
+	end
+
+	local unit = tutorialData.FirstKillQuestUnit;
 	if (unit) then
 		NPE_RangeManager:StartWatching( unit, NPE_RangeManager.Type.Unit, 20, function() self:Complete(); end);
 	else
@@ -2743,12 +2748,15 @@ function Tutorials:Begin()
 	-- Turn on specific tutorials
 	local level = UnitLevel("player");
 
-	-- First Quest
-	local startingQuest = TutorialHelper:FilterByClass(TutorialHelper:GetRacialData().StartingQuest);
-	if (not TutorialHelper:IsQuestCompleteOrActive(startingQuest)) then
-		Tutorials.Intro_Interact:Begin();
-	else -- things that have to happen if the into is skipped
-		NPE_TutorialKeyboardMouseFrame:ShowHelpFrame()
+	local tutorialData = TutorialHelper:GetRacialData();
+	if tutorialData then
+		-- First Quest
+		local startingQuest = TutorialHelper:FilterByClass(tutorialData.StartingQuest);
+		if (not TutorialHelper:IsQuestCompleteOrActive(startingQuest)) then
+			Tutorials.Intro_Interact:Begin();
+		else -- things that have to happen if the into is skipped
+			NPE_TutorialKeyboardMouseFrame:ShowHelpFrame()
+		end
 	end
 
 	-- Callout what button to click on to accept a quest
@@ -2805,6 +2813,9 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 function Tutorials:Quest_Accepted(questData)
 	local tutorialData = TutorialHelper:GetRacialData();
+	if not tutorialData then
+		return;
+	end
 	local questID = questData.QuestID;
 
 	-- -----------------------------------------------
@@ -2979,6 +2990,9 @@ end
 function Tutorials:Quest_ObjectivesComplete(questData)
 	local questID = questData.QuestID;
 	local tutorialData = TutorialHelper:GetRacialData();
+	if not tutorialData then
+		return;
+	end
 
 	-- -----------------------------------------------
 	-- All active quests complete
@@ -3023,6 +3037,9 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 function Tutorials:Quest_TurnedIn(questData)
 	local tutorialData = TutorialHelper:GetRacialData();
+	if not tutorialData then
+		return;
+	end
 
 	-- -----------------------------------------------
 	-- close the Open Map prompt if it's still up when they complete a quest

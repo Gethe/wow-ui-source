@@ -728,7 +728,7 @@
 							<OnKeyDown function="TokenEntry_OnKeyDown"/>
 						</Scripts>
 					</Frame>
-					<Frame parentKey="AccountsDropDown" name="AccountLoginDropDown" inherits="GlueDropDownMenuTemplate">
+					<Frame parentKey="AccountsDropDown" name="AccountLoginDropDown" inherits="UIDropDownMenuTemplate">
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.AccountEditBox" relativePoint="BOTTOM" x="2" y="5"/>
 						</Anchors>

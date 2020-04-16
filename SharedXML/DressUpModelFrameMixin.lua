@@ -118,12 +118,23 @@ end
 
 TransmogAndMountDressupFrameMixin = {};
 
+function TransmogAndMountDressupFrameMixin:OnLoad()
+	local checkButton = self.ShowMountCheckButton; 
+	checkButton.text:SetFontObject("GameFontNormal");
+	checkButton.text:ClearAllPoints(); 
+	checkButton.text:SetPoint("RIGHT", checkButton, "LEFT"); 
+	checkButton.text:SetText(TRANSMOG_AND_MOUNT_DRESSUP_FRAME_SHOW_MOUNT);
+	
+end 
+
 function TransmogAndMountDressupFrameMixin:CheckButtonOnClick()
 	if(self.ShowMountCheckButton:GetChecked()) then
 		DressUpMount(self.mountID);
+		self.ShowMountCheckButton.text:SetText(TRANSMOG_AND_MOUNT_DRESSUP_FRAME_SHOW_TRANSMOG)
 	else
 		local sources = C_TransmogSets.GetAllSourceIDs(self.transmogSetID);
 		DressUpTransmogSet(sources);
+		self.ShowMountCheckButton.text:SetText(TRANSMOG_AND_MOUNT_DRESSUP_FRAME_SHOW_MOUNT)
 	end
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end

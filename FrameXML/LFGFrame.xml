@@ -778,47 +778,6 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentBonusRepFrame" parentKey="bonusRepFrame">
-				<Size x="200" y="35"/>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Label" inherits="GameFontHighlight" text="LFG_BONUS_REPUTATION">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="18" y="0"/>
-							</Anchors>
-						</FontString>
-						<FontString parentKey="ChosenFaction" inherits="GameFontNormal" hidden="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Label" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
-							</Anchors>
-						</FontString>
-						<Texture parentKey="Icon" file="Interface\Common\ReputationStar">
-							<Size x="16" y="16"/>
-							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.Label" relativePoint="LEFT" x="0" y="1"/>
-							</Anchors>
-							<TexCoords left="0" right="0.5" top="0" bottom="0.5"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button parentKey="ChooseButton" inherits="UIPanelButtonTemplate" text="LFG_CHOOSE_BONUS_REPUTATION">
-						<Size x="160" y="22"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Label" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								ToggleCharacter("ReputationFrame", true);
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
-				<Scripts>
-					<OnLoad function="LFGRewardsFrameBonusRep_OnLoad"/>
-					<OnEvent function="LFGRewardsFrameBonusRep_OnEvent"/>
-				</Scripts>
-			</Frame>
 			<Frame name="$parentSpacer" parentKey="spacer">
 				<Size x="2" y="2"/>
 				<Anchors>

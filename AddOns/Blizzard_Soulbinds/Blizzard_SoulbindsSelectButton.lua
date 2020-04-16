@@ -1,5 +1,3 @@
-local SOULBIND_SELECTED_SOUND_KIT = 856;
-
 SoulbindsSelectButtonMixin = CreateFromMixins(SelectableButtonMixin);
 
 local SoulbindsSelectButtonEvents =
@@ -82,7 +80,7 @@ function SoulbindsSelectButtonMixin:OnSelected(newSelected, isInitializing)
 	self.ModelScene:SetPaused(not newSelected);
 
 	if not isInitializing then
-		PlaySound(SOULBIND_SELECTED_SOUND_KIT);
+		PlaySound(SOUNDKIT.SOULBINDS_SOULBIND_SELECTED);
 	end
 end
 

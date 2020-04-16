@@ -396,7 +396,7 @@ end
 
 function HelpFrameReportBugSubmit_OnClick()
 	local bugText = HelpFrameReportBugEditBox:GetText();
-	C_UserFeedback.SubmitBug(bugText);
+	C_UserFeedback.SubmitBug(bugText, false);
 	HelpFrameReportBugEditBox:SetText("");
 	HideUIPanel(HelpFrame);
 end

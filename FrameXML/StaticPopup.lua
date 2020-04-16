@@ -4144,9 +4144,6 @@ StaticPopupDialogs["BACKPACK_INCREASE_SIZE"] = {
 	OnAccept = function(self)
 		LoadURLIndex(41);
 	end,
-	OnHide = function(self)
-		ContainerFrame_SetBackpackForceExtended(false);
-	end,
 	wide = true,
 	timeout = 0,
 	whileDead = 0,

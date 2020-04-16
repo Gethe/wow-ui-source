@@ -28,8 +28,6 @@ local RARITY_OFFSET = 1;
 local ANIMA_GLOW_MODEL_SCENE_ID = 342;
 local ANIMA_GLOW_FILE_ID = 3164512; 
 
-local JAILERS_TOWER_MAP_ID = 2162;
-
 local PLAYER_CHOICE_FRAME_EVENTS = {
 	"PLAYER_ENTERING_WORLD",
 	"PLAYER_DEAD",
@@ -80,9 +78,16 @@ local standardSizeTextureKitRegions = {
 	["ArtworkBorder"] = "UI-Frame-%s-Portrait",
 	["ArtworkBorderAdditionalGlow"] = "UI-Frame-%s-Portrait",
 	["ArtworkBorderDisabled"] = "UI-Frame-%s-PortraitDisable",
-	["Background"] = "UI-Frame-%s-CardParchment",
 	["BackgroundGlow"] = "UI-Frame-%s-CardParchment-Normal",
 	["ArtworkBorder2"] = "UI-Frame-%s-Portrait-border",
+	["BackgroundShadowSmall"] = "UI-Frame-%s-CardShadowSmall",
+	["BackgroundShadowLarge"] = "UI-Frame-%s-CardShadowLarge",
+	["ShadowMask"] = "UI-Frame-%s-CardShadowMask",
+};
+
+local optionBackgroundTextureKitRegions = {
+	["Background"] = "UI-Frame-%s-CardParchment",
+	["ScrollingBG"] = "UI-Frame-%s-ScrollingBG",
 };
 
 local variedBackgroundTextureKits = {
@@ -251,7 +256,7 @@ local choiceLayout = {
 		offsetBetweenOptions = -50, 
 	},
 	["Oribos"] = { 
-		atlasBackgroundWidthPadding = 0, 
+		atlasBackgroundWidthPadding = -2, 
 		optionHeightOffset = 0, 
 		extraPaddingOnArtworkBorder = 0,
 		backgroundYOffset = 0, 
@@ -284,7 +289,7 @@ local choiceButtonLayout = {
 		secondButtonTemplate = "PlayerChoiceOptionMagnifyingGlass",
 		firstButtonUseAtlasSize = false, 
 		secondButtonUseAtlasSize = true, 
-		hideSecondButtonUntilMouseOver = true, 
+		hideOptionButtonsUntilMouseOver = true, 
 		forceSideBySideLayout = true, 
 	}, 
 }
@@ -377,8 +382,8 @@ function PlayerChoiceFrameMixin:OnHide()
 	end 
 end
 
-function PlayerChoiceFrameMixin:SetupTextureKits(frame, regions)
-	SetupTextureKitOnRegions(self.uiTextureKit, frame, regions, true, TextureKitConstants.UseAtlasSize);
+function PlayerChoiceFrameMixin:SetupTextureKits(frame, regions, overrideTextureKit)
+	SetupTextureKitOnRegions(overrideTextureKit or self.uiTextureKit, frame, regions, self.setAtlasVisibility, TextureKitConstants.UseAtlasSize);
 end
 
 function PlayerChoiceFrameMixin:OnFadeOutFinished()
@@ -404,7 +409,7 @@ function PlayerChoiceFrameMixin:TryShow()
 	self:SetPoint("CENTER", 0, layout.frameOffsetY); 
 	self:AdjustFramePaddingForCustomChoicePadding();
 
-	self.setAtlasVisibility = self.optionLayout.setAtlasVisibility;
+	self.setAtlasVisibility = layout.setAtlasVisibility;
 
 	self:SetupTextureKits(self.Title, titleTextureKitRegions);
 	self:SetupTextureKits(self.Background, backgroundTextureKitRegions);
@@ -608,7 +613,7 @@ end
 function PlayerChoiceFrameMixin:ThrowTooManyOptionsError(playerChoiceID, badOptID)
 	local showingOptionIDs = {};
 	for _, option in ipairs(self.Options) do
-		table.insert(showingOptionIDs, option.optID);
+		table.insert(showingOptionIDs, option.id);
 	end
 
 	table.insert(showingOptionIDs, badOptID);
@@ -631,7 +636,7 @@ function PlayerChoiceFrameMixin:UpdateNumActiveOptions(choiceInfo)
 		if not optionInfo.groupID or not groupOptionMap[optionInfo.groupID] then
 			-- This option is either not part of a group or is part of a NEW group
 			if self.numActiveOptions == MAX_PLAYER_CHOICE_OPTIONS then
-				self:ThrowTooManyOptionsError(choiceInfo.choiceID, optionInfo.responseIdentifier);	-- This will cause a lua error and execution will stop
+				self:ThrowTooManyOptionsError(choiceInfo.choiceID, optionInfo.id);	-- This will cause a lua error and execution will stop
 			end
 
 			self.numActiveOptions = self.numActiveOptions + 1;
@@ -693,17 +698,19 @@ function PlayerChoiceFrameMixin:Update()
 
 			option.hasDesaturatedArt = optionInfo.desaturatedArt;
 			option.Artwork:SetDesaturated(option.hasDesaturatedArt);
-			option.ArtworkBorder:SetShown(not option.hasDesaturatedArt);
+			option.ArtworkBorder:SetShown(not option.hasDesaturatedArt and optionInfo.choiceArtID > 0 );
 			option.ArtworkBorderDisabled:SetShown(option.hasDesaturatedArt);
+			option.uiTextureKit = optionInfo.uiTextureKit; 
 			
+			option:ConfigureHeader(optionInfo.header, optionInfo.headerIconAtlasElement);
 			option:UpdateOptionSize();
 			option:SetupArtworkForOption();
 			option:UpdatePadding();
 			option.optID = optionInfo.responseIdentifier;
+			option.id = optionInfo.id; 
 			option.OptionText:SetJustifyH(self.optionLayout.optionTextJustifyH);
 			option.OptionText:SetText(optionInfo.description);
 			option:ConfigureType(optionInfo.typeArtID);
-			option:ConfigureHeader(optionInfo.header, optionInfo.headerIconAtlasElement);
 			option:ConfigureSubHeader(optionInfo.subHeader);
 			option.Artwork:SetTexture(optionInfo.choiceArtID);
 			option.soundKitID = optionInfo.soundKitID; 
@@ -711,7 +718,7 @@ function PlayerChoiceFrameMixin:Update()
 			self:UpdateOptionWidgetRegistration(option, optionInfo.widgetSetID);
 			option.OptionButtonsContainer:ClearAllPoints(); 
 			option.OptionButtonsContainer:SetPoint("TOP", option:GetPaddingFrame(), "BOTTOM", 0, -5);
-			option.OptionButtonsContainer:ConfigureButtons(optionInfo, textureKit);
+			option.OptionButtonsContainer:ConfigureButtons(optionInfo, self.uiTextureKit);
 
 			-- We want to override the texture text color if this is jailers tower.
 			if(self.uiTextureKit == "jailerstower") then 
@@ -755,7 +762,6 @@ function PlayerChoiceFrameMixin:Update()
 	end 
 
 	self.Title:SetShown(shouldShowTitle);
-
 	if self.optionLayout.combineHeaderWithOption and shouldShowTitle then 
 		self.topPadding = HEADERS_COMBINED_WITH_OPTION_TOP_PADDING; 
 	elseif self.optionLayout.combineHeaderWithOption and not shouldShowTitle then
@@ -846,7 +852,7 @@ PlayerChoiceOptionFrameMixin = {};
 
 function PlayerChoiceOptionFrameMixin:ResetOption()
 	self.Background:SetScale(1); 
-	self.Background:SetAlpha(1); 
+	self.Background:SetAlpha(1);
 
 	self.ArtworkBorder:SetRotation(0);	
 	self.ArtworkBorder:SetAlpha(1); 
@@ -859,9 +865,13 @@ function PlayerChoiceOptionFrameMixin:ResetOption()
 
 	self.BackgroundGlow:Hide();
 	self.ArtworkBorder2:Hide(); 
+	self.BackgroundShadowSmall:Hide(); 
+	self.BackgroundShadowLarge:Hide(); 
 	self.RotateArtworkBorderAnimation:Stop(); 
 	self.ArtworkBorderGlowAnimation:Stop();  
-
+	local layoutInfo = self:GetOptionLayoutInfo(); 
+	local optionButtonLayout = choiceButtonLayout[self:GetParent().uiTextureKit] or choiceButtonLayout["default"];
+	self.OptionButtonsContainer:SetShown(not optionButtonLayout.hideOptionButtonsUntilMouseOver); 
 	self:GetPaddingFrame():SetHeight(1); 
 	self:UpdatePadding(1);
 end 
@@ -885,15 +895,25 @@ function PlayerChoiceOptionFrameMixin:OnEnterOverride()
 
 	local textureKit = self:GetParent().uiTextureKit;
 	local optionButtonLayout = choiceButtonLayout[textureKit] or choiceButtonLayout["default"];
-
-	if(optionButtonLayout.hideSecondButtonUntilMouseOver and self.OptionButtonsContainer.button2) then 
-		self.OptionButtonsContainer.button2:Show(); 
-		self.OptionButtonsContainer.button2:SetAlpha(1);
+	local needsLayout = false; 
+	if(optionButtonLayout.hideOptionButtonsUntilMouseOver) then 
+		self.OptionButtonsContainer:Show(); 
+		needsLayout = true;
 	end 
 
 	if(self:GetOptionLayoutInfo().enlargeBackgroundOnMouseOver) then 
-		self.Background:SetScale(1.5); 
+		self.BlackBackground:Show(); 
+		self.Background:Hide(); 
+		self.ScrollingBackgroundAnimIn:Play();
+		self.BackgroundShadowSmall:Hide(); 
+		self.BackgroundShadowLarge:Show(); 
+		self:SetFrameLevel(550); 
+		needsLayout = true;
 	end 
+
+	if(needsLayout) then
+		self:Layout();
+	end
 
 	self.BackgroundGlowAnimationIn:Play(); 
 
@@ -903,13 +923,21 @@ end
 function PlayerChoiceOptionFrameMixin:OnLeaveOverride()
 	self.BackgroundGlowAnimationIn:Stop(); 
 	self.BackgroundGlowAnimation:Stop(); 
+	self.ScrollingBackgroundAnimIn:Stop(); 
 
 	local textureKit = self:GetParent().uiTextureKit;
 	local optionButtonLayout = choiceButtonLayout[textureKit] or choiceButtonLayout["default"]
 
-	if(optionButtonLayout.hideSecondButtonUntilMouseOver and self.OptionButtonsContainer.button2) then 
-		self.OptionButtonsContainer.button2:Hide(); 
-		self.OptionButtonsContainer.button2:SetAlpha(0);
+	if(optionButtonLayout.hideOptionButtonsUntilMouseOver) then 
+		self.Background:Show(); 
+		self.BlackBackground:Hide(); 
+		self.ScrollingBG:SetAlpha(0);
+		self.ScrollingBackgroundScroll:Stop(); 
+		self.OptionButtonsContainer:Hide(); 
+		self.BackgroundShadowSmall:Show(); 
+		self.BackgroundShadowLarge:Hide(); 
+		self:SetFrameLevel(200); 
+		self:Layout();
 	end 
 
 	
@@ -968,9 +996,9 @@ end
 function PlayerChoiceOptionFrameMixin:OverrideBackgroundTextureForVariedTextures()
 	if(self.layoutIndex > MAXIMUM_VARIED_BACKGROUND_OPTION_TEXTURES) then 
 		local optionIndex = mod(self.layoutIndex, MAXIMUM_VARIED_BACKGROUND_OPTION_TEXTURES);
-		standardSizeTextureKitRegions.Background = variedBackgroundTextureKits[optionIndex];
+		optionBackgroundTextureKitRegions.Background = variedBackgroundTextureKits[optionIndex];
 	else
-		standardSizeTextureKitRegions.Background = variedBackgroundTextureKits[self.layoutIndex];
+		optionBackgroundTextureKitRegions.Background = variedBackgroundTextureKits[self.layoutIndex];
 	end		
 end 
 
@@ -1004,7 +1032,6 @@ function PlayerChoiceOptionFrameMixin:SetupArtworkForOption()
 			artworkBorder:SetPoint("TOP", 0, -(height + 15));
 		end 
 
-		self.ArtworkBorderAdditionalGlow:SetPoint("BOTTOM", self.Header, 0, -(height + 15));
 		self.Artwork:SetPoint("TOPLEFT", artworkBorder, "TOPLEFT", (width), -(height));
 		self.Artwork:SetPoint("BOTTOMRIGHT", artworkBorder, "BOTTOMRIGHT", -(width), (height));
 	else
@@ -1014,32 +1041,14 @@ function PlayerChoiceOptionFrameMixin:SetupArtworkForOption()
 			artworkBorder:SetPoint("TOP", 0, -10);
 		end 
 
-		self.ArtworkBorderAdditionalGlow:SetPoint("BOTTOM", self.Header, 0, -10);
 		self.Artwork:SetPoint("TOPLEFT", artworkBorder, "TOPLEFT", 10, -9);
 		self.Artwork:SetPoint("BOTTOMRIGHT", artworkBorder, "BOTTOMRIGHT", -10, 9);
 	end
+	self.ArtworkBorderAdditionalGlow:SetPoint("CENTER", artworkBorder);
+
 
 	self.CircleMask:SetShown(optionLayout.showCircleMaskOnArtwork);
 end 
-
---[[ **** AUBRIE TODO: FIGURE OUT HOW TO SCROLL BACKGROUND IN A CIRCULAR MOTION. ****
-local rateBack = 8;
-function PlayerChoiceOptionFrameMixin:OnUpdate(elapsed)
-	if(self.playBackgroundAnimation and self.locBackTexCoordRange) then 
-		--local changeBack = (rateBack / 100) * elapsed;
-
-	--	self.backProgress = (self.backProgress or 0) + changeBack;
-	--	if self.backProgress >= 1 then
-	--		self.backProgress = self.backProgress - 1;
-	--	end
---
-	--	local backL = self.backProgress;
-	--	local backR = backL + self.locBackTexCoordRange;
-
-	--	self.Background:SetTexCoord(backL, backR, 0, 1);
-	end 
-end
---]]
 
 function PlayerChoiceOptionFrameMixin:SetToStandardSize()
 	self:UpdateOptionBorderAtlasBasedOnRarity(); 
@@ -1049,21 +1058,18 @@ function PlayerChoiceOptionFrameMixin:SetToStandardSize()
 	if (optionLayout.usesVariedBackgrounds) then 
 		self:OverrideBackgroundTextureForVariedTextures();
 	else
-		standardSizeTextureKitRegions.Background = "UI-Frame-%s-CardParchment";
+		optionBackgroundTextureKitRegions.Background = "UI-Frame-%s-CardParchment";
 	end 
 
 	self:SetupTextureKits(self, standardSizeTextureKitRegions);
+	self:SetupTextureKits(self, optionBackgroundTextureKitRegions, self.uiTextureKit);
 
-	local textureKit = self:GetParent().uiTextureKit;
-	local backgroundInfo = C_Texture.GetAtlasInfo(GetFinalNameFromTextureKit(standardSizeTextureKitRegions.Background, textureKit));
+	local textureKit = self.uiTextureKit or self:GetParent().uiTextureKit;
+	local backgroundInfo = C_Texture.GetAtlasInfo(GetFinalNameFromTextureKit(optionBackgroundTextureKitRegions.Background, textureKit));
+
 	if (not backgroundInfo) then 
 		self.Background:SetAtlas("UI-Frame-neutral-CardParchment");
 	end
-	--[[ **** Ahealy TODO: Add scrolling atlas support later (once we figure out what crash sort of wants better) 
-	if(info) then 
-		self.locBackTexCoordRange = self.Background:GetWidth() / info.width;
-	end
-	--]]
 
 	self.fixedWidth = STANDARD_SIZE_WIDTH + (optionLayout.atlasBackgroundWidthPadding * 2);
 
@@ -1084,8 +1090,8 @@ function PlayerChoiceOptionFrameMixin:SetToWideSize()
 	self.OptionText:SetWidth(WIDE_SIZE_TEXT_WIDTH);
 end
 
-function PlayerChoiceOptionFrameMixin:SetupTextureKits(frame, regions)
-	self:GetParent():SetupTextureKits(frame, regions);
+function PlayerChoiceOptionFrameMixin:SetupTextureKits(frame, regions, textureKit)
+	self:GetParent():SetupTextureKits(frame, regions, textureKit);
 end
 
 function PlayerChoiceOptionFrameMixin:GetPaddingFrame()
@@ -1407,10 +1413,8 @@ end
 
 PlayerChoiceToggleButtonMixin = { }; 
 function PlayerChoiceToggleButtonMixin:TryShow() 
-	if(self:IsShown() and GetMapID() ~= JAILERS_TOWER_MAP_ID) then 
-		ClosePlayerChoice();
-	end
-	PlayerChoiceToggleButton:SetShown(GetMapID() == JAILERS_TOWER_MAP_ID);
+	local IsInJailersTower = IsInJailersTower();
+	PlayerChoiceToggleButton:SetShown(IsInJailersTower);
 end 
 
 function PlayerChoiceToggleButtonMixin:OnShow() 

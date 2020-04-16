@@ -134,9 +134,9 @@ function AudioOptionsSoundPanelHardwareDropDown_OnLoad (self)
 	self.newValue = selectedDriverIndex;
 	self.restart = true;
 
-	GlueDropDownMenu_SetWidth(self, 136)
-	GlueDropDownMenu_SetSelectedValue(self, selectedDriverIndex);
-	GlueDropDownMenu_Initialize(self, AudioOptionsSoundPanelHardwareDropDown_Initialize);
+	UIDropDownMenu_SetWidth(self, 136)
+	UIDropDownMenu_SetSelectedValue(self, selectedDriverIndex);
+	UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelHardwareDropDown_Initialize);
 
 	self.SetValue =
 		function (self, value)
@@ -154,38 +154,38 @@ function AudioOptionsSoundPanelHardwareDropDown_OnLoad (self)
 			self.value = selectedDriverIndex;
 			self.newValue = selectedDriverIndex;
 
-			GlueDropDownMenu_SetSelectedValue(self, selectedDriverIndex);
-			GlueDropDownMenu_Initialize(self, AudioOptionsSoundPanelHardwareDropDown_Initialize);
+			UIDropDownMenu_SetSelectedValue(self, selectedDriverIndex);
+			UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelHardwareDropDown_Initialize);
 		end
 end
 
 function AudioOptionsSoundPanelHardwareDropDown_Initialize()
 	local dropdown = AudioOptionsSoundPanelHardwareDropDown;
-	local selectedValue = GlueDropDownMenu_GetSelectedValue(dropdown);
+	local selectedValue = UIDropDownMenu_GetSelectedValue(dropdown);
 	local num = Sound_GameSystem_GetNumOutputDrivers();
 
-	local info = GlueDropDownMenu_CreateInfo();
+	local info = UIDropDownMenu_CreateInfo();
 	for index=0,num-1,1 do
 		info.text = Sound_GameSystem_GetOutputDriverNameByIndex(index);
 		info.value = index;
 		info.checked = nil;
 		if (selectedValue and index == selectedValue) then
-			GlueDropDownMenu_SetText(dropdown, info.text);
+			UIDropDownMenu_SetText(dropdown, info.text);
 			info.checked = 1;
 		else
 			info.checked = nil;
 		end
 		info.func = AudioOptionsSoundPanelHardwareDropDown_OnClick;
 
-		GlueDropDownMenu_AddButton(info);
+		UIDropDownMenu_AddButton(info);
 	end
 end
 
 function AudioOptionsSoundPanelHardwareDropDown_OnClick(self)
 	local value = self.value;
 	local dropdown = AudioOptionsSoundPanelHardwareDropDown;
-	GlueDropDownMenu_SetSelectedValue(dropdown, value);
-	GlueDropDownMenu_SetText(dropdown, Sound_GameSystem_GetOutputDriverNameByIndex(value));
+	UIDropDownMenu_SetSelectedValue(dropdown, value);
+	UIDropDownMenu_SetText(dropdown, Sound_GameSystem_GetOutputDriverNameByIndex(value));
 
 	local prevValue = dropdown:GetValue();
 	dropdown:SetValue(value);
@@ -203,15 +203,15 @@ function AudioOptionsSoundPanelSoundChannelsDropDown_OnLoad (self)
 	self.newValue = selected;
 	self.restart = true;
 
-	GlueDropDownMenu_SetWidth(self, 136);
-	GlueDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundChannelsDropDown_Initialize);
-	GlueDropDownMenu_SetSelectedValue(self, selected);
+	UIDropDownMenu_SetWidth(self, 136);
+	UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundChannelsDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(self, selected);
 
 	self.SetValue =
 		function (self, value)
 			self.value = value;
 			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-			GlueDropDownMenu_SetSelectedValue(self, value);
+			UIDropDownMenu_SetSelectedValue(self, value);
 		end
 	self.GetValue =
 		function (self)
@@ -223,16 +223,16 @@ function AudioOptionsSoundPanelSoundChannelsDropDown_OnLoad (self)
 			self.value = selected;
 			self.newValue = selected;
 
-			GlueDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundChannelsDropDown_Initialize);
-			GlueDropDownMenu_SetSelectedValue(self, selected);
+			UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundChannelsDropDown_Initialize);
+			UIDropDownMenu_SetSelectedValue(self, selected);
 		end
 end
 
 local soundChannelValues = { 24, 48, 64 };
 local soundChannelText = { "SOUND_CHANNELS_LOW", "SOUND_CHANNELS_MEDIUM", "SOUND_CHANNELS_HIGH" };
 function AudioOptionsSoundPanelSoundChannelsDropDown_Initialize(self)
-	local selectedValue = GlueDropDownMenu_GetSelectedValue(self);
-	local info = GlueDropDownMenu_CreateInfo();
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
+	local info = UIDropDownMenu_CreateInfo();
 
 	for i=1, #soundChannelValues do
 		info.text = format(_G[soundChannelText[i]], soundChannelValues[i]);
@@ -244,14 +244,14 @@ function AudioOptionsSoundPanelSoundChannelsDropDown_Initialize(self)
 		end
 		info.func = AudioOptionsSoundPanelSoundChannelsDropDown_OnClick;
 
-		GlueDropDownMenu_AddButton(info);
+		UIDropDownMenu_AddButton(info);
 	end
 end
 
 function AudioOptionsSoundPanelSoundChannelsDropDown_OnClick(self)
 	local value = self.value;
 	local dropdown = AudioOptionsSoundPanelSoundChannelsDropDown;
-	GlueDropDownMenu_SetSelectedValue(dropdown, value);
+	UIDropDownMenu_SetSelectedValue(dropdown, value);
 
 	local prevValue = dropdown:GetValue();
 	dropdown:SetValue(value);
@@ -269,15 +269,15 @@ function AudioOptionsSoundPanelSoundCacheSizeDropDown_OnLoad (self)
 	self.newValue = selected;
 	self.restart = true;
 
-	GlueDropDownMenu_SetWidth(self, 136);
-	GlueDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundCacheSizeDropDown_Initialize);
-	GlueDropDownMenu_SetSelectedValue(self, selected);
+	UIDropDownMenu_SetWidth(self, 136);
+	UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundCacheSizeDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(self, selected);
 
 	self.SetValue =
 		function (self, value)
 			self.value = value;
 			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-			GlueDropDownMenu_SetSelectedValue(self, value);
+			UIDropDownMenu_SetSelectedValue(self, value);
 		end
 	self.GetValue =
 		function (self)
@@ -289,16 +289,16 @@ function AudioOptionsSoundPanelSoundCacheSizeDropDown_OnLoad (self)
 			self.value = selected;
 			self.newValue = selected;
 
-			GlueDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundCacheSizeDropDown_Initialize);
-			GlueDropDownMenu_SetSelectedValue(self, selected);
+			UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundCacheSizeDropDown_Initialize);
+			UIDropDownMenu_SetSelectedValue(self, selected);
 		end
 end
 
 local soundCacheSizeValues = { 67108864, 134217728 }; --value in bytes, displayed in MB
 local soundCacheSizeText = { "SOUND_CACHE_SIZE_SMALL", "SOUND_CACHE_SIZE_LARGE" };
 function AudioOptionsSoundPanelSoundCacheSizeDropDown_Initialize(self)
-	local selectedValue = GlueDropDownMenu_GetSelectedValue(self);
-	local info = GlueDropDownMenu_CreateInfo();
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
+	local info = UIDropDownMenu_CreateInfo();
 
 	for i=1, #soundCacheSizeValues do
 		info.text = format(_G[soundCacheSizeText[i]], soundCacheSizeValues[i]/1024/1024); --convert to MB
@@ -310,14 +310,14 @@ function AudioOptionsSoundPanelSoundCacheSizeDropDown_Initialize(self)
 		end
 		info.func = AudioOptionsSoundPanelSoundCacheSizeDropDown_OnClick;
 
-		GlueDropDownMenu_AddButton(info);
+		UIDropDownMenu_AddButton(info);
 	end
 end
 
 function AudioOptionsSoundPanelSoundCacheSizeDropDown_OnClick(self)
 	local value = self.value;
 	local dropdown = AudioOptionsSoundPanelSoundCacheSizeDropDown;
-	GlueDropDownMenu_SetSelectedValue(dropdown, value);
+	UIDropDownMenu_SetSelectedValue(dropdown, value);
 
 	local prevValue = dropdown:GetValue();
 	dropdown:SetValue(value);

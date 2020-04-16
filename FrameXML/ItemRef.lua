@@ -356,7 +356,7 @@ function SetItemRef(link, text, button, chatFrame)
 		local waypoint = C_Map.GetUserWaypointFromHyperlink(link);
 		if waypoint then
 			C_Map.SetUserWaypoint(waypoint);
-			OpenWorldMap(mapID);
+			OpenWorldMap(waypoint.uiMapID);
 		end
 		return;
 	end

@@ -1387,6 +1387,49 @@
 		</Member>
 	</FontFamily>
 
+	<FontFamily name="NumberFont_Shadow_Large" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="20">
+				<Shadow>
+					<Offset x="1" y="-1"/>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="19" spacing="3">
+				<Shadow>
+					<Offset x="1" y="-1"/>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="20">
+				<Shadow>
+					<Offset x="1" y="-1"/>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\arheiuhk_bd.TTF" height="20">
+				<Shadow>
+					<Offset x="1" y="-1"/>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="20">
+				<Shadow>
+					<Offset x="1" y="-1"/>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+	</FontFamily>
+	
 	<Font name="ChatFontNormal" inherits="NumberFont_Shadow_Med" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>

@@ -1,10 +1,10 @@
 
 GLUE_SCREENS = {
-	["login"] = 		{ frame = "AccountLogin", 		playMusic = true,	playAmbience = true },
-	["realmlist"] = 	{ frame = "RealmListUI", 		playMusic = true,	playAmbience = false },
-	["charselect"] = 	{ frame = "CharacterSelect",	playMusic = true,	playAmbience = false, onAttemptShow = function() InitializeCharacterScreenData() end },
-	["charcreate"] =	{ frame = "CharacterCreate",	playMusic = true,	playAmbience = false, onAttemptShow = function() InitializeCharacterScreenData() end },
-	["kioskmodesplash"]={ frame = "KioskModeSplash",	playMusic = true,	playAmbience = false },
+	["login"] = 		{ frame = "AccountLogin", 			playMusic = true,	playAmbience = true },
+	["realmlist"] = 	{ frame = "RealmListUI", 			playMusic = true,	playAmbience = false },
+	["charselect"] = 	{ frame = "CharacterSelect",		playMusic = true,	playAmbience = false, onAttemptShow = function() InitializeCharacterScreenData() end },
+	["charcreate"] =	{ frame = "CharacterCreateFrame",	playMusic = true,	playAmbience = false, onAttemptShow = function() InitializeCharacterScreenData() end },
+	["kioskmodesplash"]={ frame = "KioskModeSplash",		playMusic = true,	playAmbience = false },
 };
 
 GLUE_SECONDARY_SCREENS = {
@@ -101,7 +101,7 @@ function GlueParent_OnEvent(self, event, ...)
 	elseif (event == "GLOBAL_MOUSE_DOWN" or event == "GLOBAL_MOUSE_UP") then
 		local buttonID = ...;
 		if not IsGlobalMouseEventHandled(buttonID, event) then
-			GlueDropDownMenu_HandleGlobalMouseEvent(buttonID, event);
+			UIDropDownMenu_HandleGlobalMouseEvent(buttonID, event);
 		end
 	elseif (event == "KIOSK_SESSION_SHUTDOWN" or event == "KIOSK_SESSION_EXPIRED") then
 		GlueParent_SetScreen("kioskmodesplash");
@@ -283,7 +283,7 @@ local function GlueParent_ChangeScreen(screenInfo, screenTable)
 
 	--Hide all other screens
 	for key, info in pairs(screenTable) do
-		if ( info ~= screenInfo ) then
+		if ( info ~= screenInfo and _G[info.frame] ) then
 			_G[info.frame]:Hide();
 		end
 	end
@@ -569,17 +569,6 @@ function ResetModel(model)
 
 	ResetLighting(model);
 	UpdateLighting(model);
-end
-
--- Function to set the background model for character select and create screens
-function SetBackgroundModel(model, path)
-	if ( model == CharacterCreate ) then
-		C_CharacterCreation.SetCharCustomizeBackground(path);
-	else
-		SetCharSelectBackground(path);
-	end
-
-	ResetModel(model);
 end
 
 -- =============================================================

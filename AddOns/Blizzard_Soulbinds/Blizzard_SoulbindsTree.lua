@@ -1,5 +1,3 @@
-local NODE_LEARNED_SOUND_KIT = 856;
-local CONDUIT_START_INTALL_SOUND_KIT = 856;
 local CONDUIT_TEMPLATE = "SoulbindConduitNodeTemplate";
 local TRAIT_TEMPLATE = "SoulbindTraitNodeTemplate";
 local LINK_TEMPLATE = "SoulbindTreeNodeLinkTemplate";
@@ -81,7 +79,7 @@ function SoulbindTreeMixin:OnNodeChanged(nodeID)
 	self:Init(C_Soulbinds.GetSoulbindData(self.soulbindID));
 	self:TriggerEvent(SoulbindTreeMixin.Event.OnNodeChanged);
 
-	PlaySound(NODE_LEARNED_SOUND_KIT);
+	PlaySound(SOUNDKIT.SOULBINDS_NODE_LEARNED);
 end
 
 function SoulbindTreeMixin:OnNodeClicked(button, buttonID)
@@ -277,7 +275,7 @@ function SoulbindTreeMixin:TryInstallConduitInSlot(nodeID, itemLocation)
 			local dialogCallback = GenerateClosure(self.CommitInstallConduit, self, nodeID, itemLocation);
 			StaticPopup_Show("SOULBIND_DIALOG_REPLACE_CONDUIT", nil, nil, dialogCallback);
 			
-			PlaySound(CONDUIT_START_INTALL_SOUND_KIT);
+			PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_START_INTALL);
 		else
 			self:CommitInstallConduit(nodeID, itemLocation);
 		end

@@ -1409,17 +1409,6 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 		lastFrame = _G[parentName.."Item"..(totalRewards - mod(totalRewards+1, 2))];
 	end
 
-	local bonusID, numKnownFactionsWithLFGBonus = GetLFGBonusFactionID();
-	if ( bonusRepAmount and bonusRepAmount > 0 and not doneToday and numKnownFactionsWithLFGBonus > 0 ) then
-		parentFrame.bonusRepFrame.bonusRep = bonusRepAmount;
-		parentFrame.bonusRepFrame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -8);
-		LFGRewardsFrameBonusRep_Update(parentFrame.bonusRepFrame);
-		parentFrame.bonusRepFrame:Show();
-		lastFrame = parentFrame.bonusRepFrame;
-	else
-		parentFrame.bonusRepFrame:Hide();
-	end
-
 	if ( experienceGained > 0 ) then
 		parentFrame.xpAmount:SetText(experienceGained);
 		parentFrame.xpLabel:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 20, -10);
@@ -1568,41 +1557,6 @@ function LFGRewardsFrameEncounterList_OnEnter(self)
 		end
 		GameTooltip:Show();
 	end
-end
-
-function LFGRewardsFrameBonusRep_OnLoad(self)
-	self:RegisterEvent("LFG_BONUS_FACTION_ID_UPDATED")
-end
-
-function LFGRewardsFrameBonusRep_OnEvent(self, event, ...)
-	if ( event == "LFG_BONUS_FACTION_ID_UPDATED" ) then
-		LFGRewardsFrameBonusRep_Update(self);
-	end
-end
-
-function LFGRewardsFrameBonusRep_Update(self)
-	if ( not self.bonusRep ) then
-		return;
-	end
-
-	local bonusID = GetLFGBonusFactionID();
-	if ( bonusID ) then
-		local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild, factionID, hasBonusRepGain, canBeLFGBonus = GetFactionInfoByID(bonusID);
-		if ( name ) then
-			local bonusRep = self.bonusRep;
-			if ( hasBonusRepGain ) then
-				bonusRep = bonusRep * 2;
-			end
-			self.ChosenFaction:SetFormattedText(LFG_BONUS_REPUTATION_FACTION, name, bonusRep);
-			self.ChosenFaction:Show();
-			self.ChooseButton:Hide();
-			return;
-		end
-	end
-
-	--Found no bonus reputation
-	self.ChooseButton:Show();
-	self.ChosenFaction:Hide();
 end
 
 --

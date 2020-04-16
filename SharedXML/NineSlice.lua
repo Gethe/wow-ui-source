@@ -259,10 +259,10 @@ local layouts =
 		TopRightCorner =	{ atlas = "UI-Frame-GenericMetal-Corner", x = 6, y = 6, mirrorLayout = true, },
 		BottomLeftCorner =	{ atlas = "UI-Frame-GenericMetal-Corner", x = -6, y = -6, mirrorLayout = true, },
 		BottomRightCorner =	{ atlas = "UI-Frame-GenericMetal-Corner", x = 6, y = -6, mirrorLayout = true, },
-		TopEdge = { atlas = "_UI-Frame-GenericMetal-TileTop", },
-		BottomEdge = { atlas = "_UI-Frame-GenericMetal-TileBottom", },
-		LeftEdge = { atlas = "!UI-Frame-GenericMetal-TileLeft", },
-		RightEdge = { atlas = "!UI-Frame-GenericMetal-TileRight", },
+		TopEdge = { atlas = "_UI-Frame-GenericMetal-EdgeTop", },
+		BottomEdge = { atlas = "_UI-Frame-GenericMetal-EdgeBottom", },
+		LeftEdge = { atlas = "!UI-Frame-GenericMetal-EdgeLeft", },
+		RightEdge = { atlas = "!UI-Frame-GenericMetal-EdgeRight", },
 	},
 
 	Dialog =
@@ -284,10 +284,10 @@ local layouts =
 		TopRightCorner =	{ atlas = "UI-Frame-neutral-Corner", x = 6, y = 6, },
 		BottomLeftCorner =	{ atlas = "UI-Frame-neutral-Corner", x = -6, y = -6, },
 		BottomRightCorner =	{ atlas = "UI-Frame-neutral-Corner", x = 6, y = -6, },
-		TopEdge = { atlas = "_UI-Frame-neutral-TileTop", },
-		BottomEdge = { atlas = "_UI-Frame-neutral-TileBottom", mirrorLayout = false, },
-		LeftEdge = { atlas = "!UI-Frame-neutral-TileLeft", },
-		RightEdge = { atlas = "!UI-Frame-neutral-TileRight", mirrorLayout = false, },
+		TopEdge = { atlas = "_UI-Frame-neutral-EdgeTop", },
+		BottomEdge = { atlas = "_UI-Frame-neutral-EdgeBottom", mirrorLayout = false, },
+		LeftEdge = { atlas = "!UI-Frame-neutral-EdgeLeft", },
+		RightEdge = { atlas = "!UI-Frame-neutral-EdgeRight", mirrorLayout = false, },
 	},
 
 
@@ -309,10 +309,10 @@ local layouts =
 		TopRightCorner =	{ atlas = "UI-Frame-Oribos-CornerTopRight", },
 		BottomLeftCorner =	{ atlas = "UI-Frame-Oribos-CornerBottomLeft", },
 		BottomRightCorner =	{ atlas = "UI-Frame-Oribos-CornerBottomRight", },
-		TopEdge = { atlas = "_UI-Frame-Oribos-TileTop", },
-		BottomEdge = { atlas = "_UI-Frame-Oribos-TileBottom", },
-		LeftEdge = { atlas = "!UI-Frame-Oribos-TileLeft", },
-		RightEdge = { atlas = "!UI-Frame-Oribos-TileRight", },
+		TopEdge = { atlas = "_UI-Frame-Oribos-EdgeTop", },
+		BottomEdge = { atlas = "_UI-Frame-Oribos-EdgeBottom", },
+		LeftEdge = { atlas = "!UI-Frame-Oribos-EdgeLeft", },
+		RightEdge = { atlas = "!UI-Frame-Oribos-EdgeRight", },
 	},
 }
 
@@ -322,10 +322,11 @@ local uniqueCornersLayout =
 	["TopLeftCorner"] = { atlas = "UI-Frame-%s-CornerTopLeft" },
 	["BottomLeftCorner"] = { atlas = "UI-Frame-%s-CornerBottomLeft" },
 	["BottomRightCorner"] = { atlas = "UI-Frame-%s-CornerBottomRight" },
-	["TopEdge"] = { atlas = "_UI-Frame-%s-TileTop" },
-	["BottomEdge"] = { atlas = "_UI-Frame-%s-TileBottom" },
-	["LeftEdge"] = { atlas = "!UI-Frame-%s-TileLeft" },
-	["RightEdge"] = { atlas = "!UI-Frame-%s-TileRight" },
+	["TopEdge"] = { atlas = "_UI-Frame-%s-EdgeTop" },
+	["BottomEdge"] = { atlas = "_UI-Frame-%s-EdgeBottom" },
+	["LeftEdge"] = { atlas = "!UI-Frame-%s-EdgeLeft" },
+	["RightEdge"] = { atlas = "!UI-Frame-%s-EdgeRight" },
+	["Center"] = { atlas = "UI-Frame-%s-Center" },
 };
 
 local identicalCornersLayout = 
@@ -334,10 +335,11 @@ local identicalCornersLayout =
 	["TopLeftCorner"] = { atlas = "UI-Frame-%s-Corner", mirrorLayout = true,},
 	["BottomLeftCorner"] = { atlas = "UI-Frame-%s-Corner", mirrorLayout = true, },
 	["BottomRightCorner"] = { atlas = "UI-Frame-%s-Corner",  mirrorLayout = true,},
-	["TopEdge"] = { atlas = "_UI-Frame-%s-TileTop" },
-	["BottomEdge"] = { atlas = "_UI-Frame-%s-TileBottom" },
-	["LeftEdge"] = { atlas = "!UI-Frame-%s-TileLeft" },
-	["RightEdge"] = { atlas = "!UI-Frame-%s-TileRight" },
+	["TopEdge"] = { atlas = "_UI-Frame-%s-EdgeTop" },
+	["BottomEdge"] = { atlas = "_UI-Frame-%s-EdgeBottom" },
+	["LeftEdge"] = { atlas = "!UI-Frame-%s-EdgeLeft" },
+	["RightEdge"] = { atlas = "!UI-Frame-%s-EdgeRight" },
+	["Center"] = { atlas = "UI-Frame-%s-Center" },
 };
 
 --------------------------------------------------

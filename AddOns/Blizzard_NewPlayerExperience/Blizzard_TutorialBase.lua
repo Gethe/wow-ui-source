@@ -91,7 +91,7 @@ end
 -- Frame is automatically closed when tutorial is shutdown
 function Class_TutorialBase:ShowScreenTutorial(content, druation, position, showMovieName, loopMovie, resolution)
 	self:DebugLog("ShowScreenTutorial");
-	self._screenTutorial = NPE_TutorialMainFrame:Show(content, druation, position, showMovieName, loopMovie, resolution);
+	self._screenTutorial = NPE_TutorialMainFrame_Frame:ShowTutorial(content, druation, position, showMovieName, loopMovie, resolution);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -99,8 +99,38 @@ function Class_TutorialBase:HideScreenTutorial()
 	if (not self._screenTutorial) then return; end
 
 	self:DebugLog("HideScreenTutorial");
-	NPE_TutorialMainFrame:Hide(self._screenTutorial);
+	NPE_TutorialMainFrame_Frame:HideTutorial(self._screenTutorial);
 	self._screenTutorial = nil;
+end
+
+function Class_TutorialBase:ShowMouseKeyboardTutorial()
+	self:DebugLog("ShowMouseKeyboardTutorial");
+	self._screenTutorial = NPE_TutorialKeyboardMouseFrame_Frame:ShowTutorial();
+end
+
+function Class_TutorialBase:HideMouseKeyboardTutorial()
+	self:DebugLog("HideMouseKeyboardTutorial");
+	self._screenTutorial = NPE_TutorialKeyboardMouseFrame_Frame:HideTutorial();
+end
+
+function Class_TutorialBase:ShowSingleKeyTutorial(content, druation, position, showMovieName, loopMovie, resolution)
+	self:DebugLog("ShowSingleKeyTutorial");
+	self._screenTutorial = NPE_TutorialSingleKey_Frame:ShowTutorial(content, druation, position, showMovieName, loopMovie, resolution);
+end
+
+function Class_TutorialBase:HideSingleKeyTutorial()
+	self:DebugLog("HideSingleKeyTutorial");
+	self._screenTutorial = NPE_TutorialSingleKey_Frame:HideTutorial();
+end
+
+function Class_TutorialBase:ShowWalkTutorial()
+	self:DebugLog("ShowWalkTutorial");
+	self._screenTutorial = NPE_TutorialWalk_Frame:ShowTutorial();
+end
+
+function Class_TutorialBase:HideWalkTutorial()
+	self:DebugLog("HideWalkTutorial");
+	self._screenTutorial = NPE_TutorialWalk_Frame:HideTutorial();
 end
 
 -- ------------------------------------------------------------------------------------------------------------

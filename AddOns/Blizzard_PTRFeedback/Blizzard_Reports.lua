@@ -357,7 +357,7 @@ function PTR_IssueReporter.CreateNPEReports() -- These surveys are for the New P
             EndQuestID = 55639,
         },
         Harpy_Roost = {        
-            URSurveyIndexOffset + 7,
+            ReportID = URSurveyIndexOffset + 7,
             QuestChainTitle = "Harpy's Roost",
             QuestChainSentence = "the Harpy's Roost",
             EndQuestID = 55882,
@@ -379,7 +379,7 @@ function PTR_IssueReporter.CreateNPEReports() -- These surveys are for the New P
     local startOfSurvey = PTR_IssueReporter.CreateSurvey(URSurveyIndexOffset + 27, "Welcome to Shadowlands!")
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(startOfSurvey)
     startOfSurvey:AddDataCollection(collector.TextBlock, "Welcome to the Shadowlands Alpha!\n This survey will prompt you with questions while you play through the New Player Experience.")
-    startOfSurvey:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Before we get started, have you played in the Shadowlands Alpha at all previously?", {"Yes, I have played previously", "No, I have not played previously"}, true)
+    startOfSurvey:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Before we get started, are you a new or novice World of Warcraft player?", {"Yes", "No"}, true)
     startOfSurvey:RegisterPopEvent(event.QuestTurnedIn, 54952)
     
     for key, endOfHubData in pairs (endOfHubReports) do
@@ -406,31 +406,31 @@ function PTR_IssueReporter.CreateNPEReports() -- These surveys are for the New P
         DRUID = {
             ReportID = URSurveyIndexOffset + 10,
             QuestTitle = "A Druid's Form",
-            SpellID = 159456,
+            SpellID = 783,
             SpellName = "Travel Form",
             CompletionQuestID = 59350,
             ClassName = "Druid",
         },
         HUNTER = {
             ReportID = URSurveyIndexOffset + 11,
-            QuestTitle = "Hunting the Stalker",
-            SpellID = 159456,
+            QuestTitle = "The Art of Taming",
+            SpellID = 83242,
             SpellName = "Tame Beast",
-            CompletionQuestID = 59355,
+            CompletionQuestID = 60168,
             ClassName = "Hunter",            
         },
         MAGE = {
             ReportID = URSurveyIndexOffset + 12,
             QuestTitle = "The Best Way to Use Sheep",
-            SpellID = 159456,
+            SpellID = 118,
             SpellName = "Polymorph",
-            CompletionQuestID = 59352,   
+            CompletionQuestID = 59354,   
             ClassName = "Mage",
         },
         MONK = {
             ReportID = URSurveyIndexOffset + 13,
             QuestTitle = "One Last Spar",
-            SpellID = 159456,
+            SpellID = 322109,
             SpellName = "Touch of Death",
             CompletionQuestID = 59349,
             ClassName = "Monk",
@@ -438,7 +438,7 @@ function PTR_IssueReporter.CreateNPEReports() -- These surveys are for the New P
         PALADIN = {
             ReportID = URSurveyIndexOffset + 14,
             QuestTitle = "The Divine's Shield",
-            SpellID = 159456,
+            SpellID = 642,
             SpellName = "Divine Shield",
             CompletionQuestID = 58946,
             ClassName = "Paladin",
@@ -446,7 +446,7 @@ function PTR_IssueReporter.CreateNPEReports() -- These surveys are for the New P
         PRIEST = {
             ReportID = URSurveyIndexOffset + 15,
             QuestTitle = "Resurrecting the Recruits",
-            SpellID = 159456,
+            SpellID = 2006,
             SpellName = "Resurrection",
             CompletionQuestID = 58960,
             ClassName = "Priest",
@@ -454,7 +454,7 @@ function PTR_IssueReporter.CreateNPEReports() -- These surveys are for the New P
         ROGUE = {
             ReportID = URSurveyIndexOffset + 16,
             QuestTitle = "The Deadliest of Poisons",
-            SpellID = 159456,
+            SpellID = 315584,
             SpellName = "Instant Poison",
             CompletionQuestID = 58933,
             ClassName = "Rogue",
@@ -462,7 +462,7 @@ function PTR_IssueReporter.CreateNPEReports() -- These surveys are for the New P
         SHAMAN = {
             ReportID = URSurveyIndexOffset + 17,
             QuestTitle = "A Shaman's Duty",
-            SpellID = 159456,
+            SpellID = 2645,
             SpellName = "Ghost Wolf",
             CompletionQuestID = 59002,
             ClassName = "Shaman",
@@ -470,7 +470,7 @@ function PTR_IssueReporter.CreateNPEReports() -- These surveys are for the New P
         WARLOCK = {
             ReportID = URSurveyIndexOffset + 18,
             QuestTitle = "A Warlock's Bargain",
-            SpellID = 159456,
+            SpellID = 697,
             SpellName = "Summon Voidwalker",
             CompletionQuestID = 58962,
             ClassName = "Warlock",
@@ -478,7 +478,7 @@ function PTR_IssueReporter.CreateNPEReports() -- These surveys are for the New P
         WARRIOR = {
             ReportID = URSurveyIndexOffset + 19,
             QuestTitle = "Hjalmar's Final Execution",
-            SpellID = 159456,
+            SpellID = 163201,
             SpellName = "Execute",
             CompletionQuestID = 58915,
             ClassName = "Warrior",

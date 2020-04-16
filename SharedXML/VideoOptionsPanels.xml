@@ -17,7 +17,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="VideoOptionsDropDownMenuTemplate" inherits="DropDownMenuTemplate" virtual="true">
+	<Frame name="VideoOptionsDropDownMenuTemplate" inherits="UIDropDownMenuTemplate" virtual="true">
 		<Frames>
 			<Frame name="$parentWarning" inherits="VideoOptionsWarningTemplate">
 				<Anchors>
@@ -707,7 +707,7 @@
 			<!-- Raid Panel -->
 			<Frame name="RaidGraphics_" hidden="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="5" y="-185"/>
+					<Anchor point="TOPLEFT" x="5" y="-215"/>
 					<Anchor point="BOTTOMRIGHT" x="-5" y="40"/>
 				</Anchors>
 				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
@@ -743,7 +743,7 @@
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentTexturesHeaderUnderline" relativePoint="BOTTOMLEFT">
 									<Offset>
-										<AbsDimension x="0" y="-130"/>
+										<AbsDimension x="0" y="-119"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -1730,7 +1730,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentLocaleDropDown" inherits="DropDownMenuTemplate" enableMouse="true">
+			<Frame name="$parentLocaleDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentDisplayHeader" relativePoint="BOTTOMLEFT">
 						<Offset x="120" y="-14"/>
@@ -1751,7 +1751,7 @@
 					<OnLeave function="InterfaceOptionsLanguagePanelLocalDropDown_OnLeave"/>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentAudioLocaleDropDown" inherits="DropDownMenuTemplate" enableMouse="true">
+			<Frame name="$parentAudioLocaleDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentLocaleDropDown" relativePoint="BOTTOMLEFT">
 						<Offset>

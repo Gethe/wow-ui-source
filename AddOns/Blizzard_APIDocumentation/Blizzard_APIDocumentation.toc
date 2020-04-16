@@ -123,6 +123,7 @@ RestrictedActionsDocumentation.lua
 ScenarioInfoDocumentation.lua
 ScrappingMachineUIDocumentation.lua
 ScriptWarningsDocumentation.lua
+ScriptedAnimationsDocumentation.lua
 SecureTransferDocumentation.lua
 SkillInfoDocumentation.lua
 SocialInfoDocumentation.lua
@@ -172,6 +173,7 @@ AppearanceSourceDocumentation.lua
 AuctionHouseEnumsDocumentation.lua
 BaseDocumentation.lua
 CalendarConstantsDocumentation.lua
+CharacterCustomizationSharedDocumentation.lua
 ChatDocumentation.lua
 ClubSharedDocumentation.lua
 ColorDocumentation.lua

@@ -95,18 +95,14 @@ function NPE_TutorialPointerFrame:Show(content, direction, anchorFrame, ofsX, of
 	frame.Content.Text:SetText(content);
 
 	local contentHeight = frame.Content.Text:GetHeight() + 40;
-	local contentWidth = 240;
+	local contentWidth = frame.Content.Text:GetStringWidth();
+	if contentWidth > 200 then
+		contentWidth = 200;
+	end
+	contentWidth = contentWidth + 40;
 
 	frame.Content.Text:ClearAllPoints()
-	if showMovieName then
-		frame.Content.Movie:PlayMovieByName(showMovieName, loopMovie, resolution);
-		contentHeight = contentHeight + frame.Content.Movie:GetHeight() + 5;
-		contentWidth = frame.Content.Movie:GetWidth() + 40;
-		frame.Content.Text:SetPoint("TOP", frame.Content, "TOP", 0, -20);
-	else
-		frame.Content.Movie:Hide();
-		frame.Content.Text:SetPoint("CENTER", frame.Content, "CENTER", 0, 0);
-	end
+	frame.Content.Text:SetPoint("LEFT", frame.Content, "LEFT", 20, 0);
 
 	frame.Content:SetHeight(contentHeight);
 	frame.Content:SetWidth(contentWidth);

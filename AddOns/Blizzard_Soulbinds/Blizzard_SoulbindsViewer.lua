@@ -1,8 +1,3 @@
-local ACTIVATE_SOULBIND_SOUND_KIT = 856;
-local RESET_SOULBIND_SOUND_KIT = 856;
-local OPEN_UI_SOUND_KIT = 856;
-local CLOSE_UI_SOUND_KIT = 856;
-
 local SoulbindViewerEvents =
 {
 	"SOULBIND_FORGE_INTERACTION_ENDED",
@@ -60,7 +55,7 @@ function SoulbindViewerMixin:OnShow()
 	self.ResetButton:SetScript("OnLeave", GenerateClosure(self.HideResetButtonTooltip, self));
 	self.ResetButton:SetShown(atForge);
 
-	PlaySound(OPEN_UI_SOUND_KIT);
+	PlaySound(SOUNDKIT.SOULBINDS_OPEN_UI);
 end
 
 function SoulbindViewerMixin:HideResetButtonTooltip()
@@ -77,7 +72,7 @@ function SoulbindViewerMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, SoulbindViewerEvents);
 	C_Soulbinds.EndInteraction();
 
-	PlaySound(CLOSE_UI_SOUND_KIT);
+	PlaySound(SOUNDKIT.SOULBINDS_CLOSE_UI);
 end
 
 function SoulbindViewerMixin:OnNodeChanged()
@@ -162,13 +157,13 @@ end
 
 function SoulbindViewerMixin:ResetOpenSoulbind()
 	C_Soulbinds.ResetSoulbind(self:GetOpenSoulbindID());
-	PlaySound(RESET_SOULBIND_SOUND_KIT);
+	PlaySound(SOUNDKIT.SOULBINDS_RESET_SOULBIND);
 end
 
 function SoulbindViewerMixin:OnActivateSoulbindClicked()
 	self.ActivateButton:SetEnabled(false);
 	C_Soulbinds.ActivateSoulbind(self:GetOpenSoulbindID());
-	PlaySound(ACTIVATE_SOULBIND_SOUND_KIT);
+	PlaySound(SOUNDKIT.SOULBINDS_ACTIVATE_SOULBIND);
 end
 
 function SoulbindViewerMixin:OnInventoryItemEnter(bag, slot)

@@ -310,10 +310,10 @@ do
 		TopRightCorner =	{ atlas = "scoreboard-%s-corner", x = 0, y = 0, },
 		BottomLeftCorner =	{ atlas = "scoreboard-%s-corner", x = 0, y = 0, },
 		BottomRightCorner =	{ atlas = "scoreboard-%s-corner", x = 0, y = 0, },
-		TopEdge = { atlas = "_scoreboard-%s-tiletop", mirrorLayout = false, },
-		BottomEdge = { atlas = "_scoreboard-%s-tilebottom", mirrorLayout = false, },
-		LeftEdge = { atlas = "!scoreboard-%s-tileleft", mirrorLayout = false, },
-		RightEdge = { atlas = "!scoreboard-%s-tileright", mirrorLayout = false, },
+		TopEdge = { atlas = "_scoreboard-%s-edgetop", mirrorLayout = false, },
+		BottomEdge = { atlas = "_scoreboard-%s-edgebottom", mirrorLayout = false, },
+		LeftEdge = { atlas = "!scoreboard-%s-edgeleft", mirrorLayout = false, },
+		RightEdge = { atlas = "!scoreboard-%s-edgeright", mirrorLayout = false, },
 	});
 
 	function PartyPoseMixin:SetupTheme()

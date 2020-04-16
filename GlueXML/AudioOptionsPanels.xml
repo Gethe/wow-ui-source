@@ -6,7 +6,7 @@
 	<Script file="AudioOptionsPanels.lua"/>
 
 	<!-- Templates -->
-	
+
 	<CheckButton name="AudioOptionsBaseCheckButtonTemplate" inherits="OptionsBaseCheckButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
@@ -89,7 +89,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<Frame name="$parentPlayback" inherits="OptionsBoxTemplate">
 				<Size x="186" y="342"/>
 				<Anchors>
@@ -104,7 +104,7 @@
 						_G[self:GetName().."Title"]:SetText(PLAYBACK);
 					</OnLoad>
 				</Scripts>
-			</Frame>		
+			</Frame>
 			<CheckButton name="$parentSoundEffects" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentPlayback">
@@ -118,7 +118,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>				
+			</CheckButton>
 			<CheckButton name="$parentPetSounds" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSoundEffects" relativePoint="BOTTOMLEFT">
@@ -162,7 +162,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<CheckButton name="$parentLoopMusic" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMusic" relativePoint="BOTTOMLEFT">
@@ -249,7 +249,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>				
+			</CheckButton>
 			<CheckButton name="$parentReverb" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSoundInBG" relativePoint="BOTTOMLEFT">
@@ -264,7 +264,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<CheckButton name="$parentHRTF" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentReverb" relativePoint="BOTTOMLEFT">
@@ -279,7 +279,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>				
+			</CheckButton>
 			<Frame name="$parentHardware" inherits="OptionsBoxTemplate">
 				<Size x="186" y="152"/>
 				<Anchors>
@@ -294,8 +294,8 @@
 						_G[self:GetName().."Title"]:SetText(HARDWARE);
 					</OnLoad>
 				</Scripts>
-			</Frame>		
-			<Frame name="$parentHardwareDropDown" inherits="GlueDropDownMenuTemplate" id="4">
+			</Frame>
+			<Frame name="$parentHardwareDropDown" inherits="UIDropDownMenuTemplate" id="4">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHardware" relativePoint="TOPLEFT">
 						<Offset x="-6" y="-24"/>
@@ -329,7 +329,7 @@
 					</OnLeave>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentSoundChannelsDropDown" inherits="GlueDropDownMenuTemplate">
+			<Frame name="$parentSoundChannelsDropDown" inherits="UIDropDownMenuTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHardwareDropDown" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="-12"/>
@@ -363,7 +363,7 @@
 					</OnLeave>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentSoundCacheSizeDropDown" inherits="GlueDropDownMenuTemplate">
+			<Frame name="$parentSoundCacheSizeDropDown" inherits="UIDropDownMenuTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSoundChannelsDropDown" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="-12"/>
@@ -426,7 +426,7 @@
 						_G[self:GetName().."Title"]:SetText(VOLUME);
 					</OnLoad>
 				</Scripts>
-			</Frame>			
+			</Frame>
 			<Slider name="$parentMasterVolume" inherits="OptionsSliderTemplate">
 				<Size x="118" y="17"/>
 				<Anchors>
@@ -481,8 +481,8 @@
 							end
 						end
 					</OnEnter>
-				</Scripts>	
-			</Slider>	
+				</Scripts>
+			</Slider>
 			<Slider name="$parentSoundVolume" inherits="OptionsSliderTemplate">
 				<Size x="100" y="17"/>
 				<Anchors>
@@ -512,7 +512,7 @@
 
 						local label = _G[name.."Low"];
 						label:ClearAllPoints();
-						label:SetPoint("BOTTOMLEFT", "$parent", "TOPLEFT", -2, 4);						
+						label:SetPoint("BOTTOMLEFT", "$parent", "TOPLEFT", -2, 4);
 
 						label = _G[name.."High"];
 						label:ClearAllPoints();
@@ -539,7 +539,7 @@
 							if (not AudioOptionsSoundPanelSoundEffects:GetChecked()) then
 								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, true);
 								GlueTooltip:Show();
-							end	
+							end
 						end
 					</OnEnter>
 				</Scripts>
@@ -593,10 +593,10 @@
 							if (not AudioOptionsSoundPanelMusic:GetChecked()) then
 								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, true);
 								GlueTooltip:Show();
-							end	
+							end
 						end
 					</OnEnter>
-				</Scripts>	
+				</Scripts>
 			</Slider>
 			<Slider name="$parentAmbienceVolume" inherits="OptionsSliderTemplate">
 				<Size x="100" y="17"/>

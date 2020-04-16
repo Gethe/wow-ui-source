@@ -131,7 +131,7 @@ function AccountLogin_Login()
 		local username = AccountLogin.UI.AccountEditBox:GetText();
 		C_Login.Login(string.gsub(username, "||", "|"), AccountLogin.UI.PasswordEditBox);
 		if ( AccountLoginDropDown:IsShown() ) then
-			C_Login.SelectGameAccount(GlueDropDownMenu_GetSelectedValue(AccountLoginDropDown));
+			C_Login.SelectGameAccount(UIDropDownMenu_GetSelectedValue(AccountLoginDropDown));
 		end
 	end
 
@@ -263,23 +263,23 @@ end
 -- =============================================================
 
 function AccountLoginDropDown_OnLoad(self)
-	GlueDropDownMenu_SetWidth(self, 174);
-	GlueDropDownMenu_SetSelectedValue(self, 1);
+	UIDropDownMenu_SetWidth(self, 174);
+	UIDropDownMenu_SetSelectedValue(self, 1);
 	AccountLoginDropDownText:SetJustifyH("LEFT");
 	AccountLoginDropDown_SetupList();
-	GlueDropDownMenu_Initialize(self, AccountLoginDropDown_Initialize);
+	UIDropDownMenu_Initialize(self, AccountLoginDropDown_Initialize);
 end
 
 function AccountLoginDropDown_OnClick(self)
-	GlueDropDownMenu_SetSelectedValue(AccountLoginDropDown, self.value);
+	UIDropDownMenu_SetSelectedValue(AccountLoginDropDown, self.value);
 end
 
 function AccountLoginDropDown_Initialize()
-	local selectedValue = GlueDropDownMenu_GetSelectedValue(AccountLoginDropDown);
+	local selectedValue = UIDropDownMenu_GetSelectedValue(AccountLoginDropDown);
 	local list = AccountLoginDropDown.list;
 	for i = 1, #list do
 		list[i].checked = (list[i].text == selectedValue);
-		GlueDropDownMenu_AddButton(list[i]);
+		UIDropDownMenu_AddButton(list[i]);
 	end
 end
 
@@ -291,8 +291,8 @@ function AccountLoginDropDown_SetupList()
 		if ( strsub(str, 1, 1) == "!" ) then
 			selected = true;
 			str = strsub(str, 2, #str);
-			GlueDropDownMenu_SetSelectedValue(AccountLoginDropDown, str);
-			GlueDropDownMenu_SetText(AccountLoginDropDown, str);
+			UIDropDownMenu_SetSelectedValue(AccountLoginDropDown, str);
+			UIDropDownMenu_SetText(AccountLoginDropDown, str);
 		end
 		AccountLoginDropDown.list[i] = { ["text"] = str, ["value"] = str, ["selected"] = selected, func = AccountLoginDropDown_OnClick };
 		i = i + 1;

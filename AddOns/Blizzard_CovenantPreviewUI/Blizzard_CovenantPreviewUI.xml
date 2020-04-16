@@ -3,26 +3,36 @@
 	<Script file="Blizzard_CovenantPreviewUI.lua"/>
 	
 		<Button name="CovenantAbilityButtonTemplate" mixin="CovenantAbilityButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
-		<Size x="208" y="46"/>
+		<Size x="228" y="77"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture atlas="PetList-ButtonBackground" parentKey="background"/>
+				<Texture parentKey="Background"/>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="2">
+				<Texture parentKey="IconBorder">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="Icon">
-					<Size x="38" y="38"/>
 					<Anchors>
-						<Anchor point="LEFT" x="5" y="0"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.IconBorder" x="6" y="-6"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconBorder" x="-6" y="6"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="-1">
-				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+			<Layer level="ARTWORK" textureSubLevel="8">
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeKey="$parent.Icon"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
 					</Anchors>
-				</Texture>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" JustifyV="BOTTOM">
@@ -79,12 +89,12 @@
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Left" atlas="UI-Frame-Neutral-TitleLeft" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="LEFT"/>
+								<Anchor point="LEFT" x="40"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="Right" atlas="UI-Frame-Neutral-TitleRight" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="RIGHT"/>
+								<Anchor point="RIGHT" x="-40"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -102,32 +112,57 @@
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Middle"/>
 							</Anchors>
-							<Color r="1.0" g="0.82" b="0"/>
+							<Color r="1.0" g="1.0" b="1.0"/>
 						</FontString>
 					</Layer>
 				</Layers>
 			</Frame>
 			<Frame parentKey="ModelSceneContainer">
-				<Size x="400" y="450"/>
+				<Size x="414" y="432"/>
 				<Anchors>
-					<Anchor point="LEFT" x="0" y="-30"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="InfoPanel">
-				<Size x="500" y="450"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.ModelSceneContainer" relativePoint="RIGHT" x="50"/> 
+					<Anchor point="LEFT" x="85" y="-40"/>
 				</Anchors>
 				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="Crest" atlas="AlliedRace-Crest-Nightborne" useAtlasSize="true">
+					<Layer level="BORDER">
+						<Texture parentKey="ModelSceneBorder">
 							<Anchors>
-								<Anchor point="TOPLEFT"/>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture >
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background">
+							<Anchors>
+									<Anchor point="TOPLEFT" x="2" y="-2"/>
+									<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+								</Anchors>
+						</Texture >
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="InfoPanel">
+				<Size x="557" y="435"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ModelSceneContainer" relativePoint="RIGHT" x="15"/> 
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Parchment">
+							<Size x="557" y="435"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Crest">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="10" y="-10"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="BORDER">
-						<FontString parentKey="Name" JustifyH="LEFT" JustifyV="BOTTOM" inherits="QuestFont_Super_Huge">
+						<FontString parentKey="Name" JustifyH="LEFT" JustifyV="BOTTOM" inherits="QuestFont_Shadow_Enormous">
 							<Size x="300" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.Crest" relativePoint="RIGHT" x="28"/>
@@ -145,6 +180,19 @@
 								<Anchor point="TOP" relativeKey="$parent.Location" relativePoint="BOTTOM" x="0" y="-40"/>
 							</Anchors>
 						</FontString>
+						<FontString parentKey="Description" JustifyH="LEFT" JustifyV="TOP" inherits="GameFontBlack">
+							<Size x="450" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Location" relativePoint="BOTTOM" x="20" y="-40"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="AbilitiesLabel" JustifyH="LEFT" JustifyV="TOP" inherits="QuestFont_Super_Huge" text="COVENANT_PREVIEW_ABILITIE_LABEL">
+							<Size x="450" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT" x="30" y="-20"/>
+							</Anchors>
+							<Color r="0" g="0" b="0"/>
+						</FontString>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -153,7 +201,7 @@
 					<Anchor point="TOPRIGHT" x="3" y="2" />
 				</Anchors>
 			</Button>
-			<Button parentKey="SelectButton" inherits="UIPanelButtonTemplate" text="OK">
+			<Button parentKey="SelectButton" inherits="UIPanelButtonTemplate" hidden="true" text="OK">
 				<Size x="150" y="25"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="180" y="30" />

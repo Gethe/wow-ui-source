@@ -1,3 +1,7 @@
 ## Title: Blizzard_CharacterCreate
-## Author: achurchill
-## Notes: This file is just here to update the manifest
+## Author: Blizzard Entertainment
+## AllowLoad: Glue
+## RequiredDep: Blizzard_CharacterCustomize
+## LoadOnDemand: 1
+Blizzard_CharacterCreate.lua
+Blizzard_CharacterCreate.xml

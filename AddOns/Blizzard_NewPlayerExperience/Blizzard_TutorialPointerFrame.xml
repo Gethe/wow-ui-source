@@ -138,14 +138,6 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<Frames>
-					<MovieFrame parentKey="Movie" inherits="VideoFrameTemplate">
-						<Size x="380" y="213.75"/>
-						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" y="-5"/>
-						</Anchors>
-					</MovieFrame>
-				</Frames>
 			</Frame>
 
 			<Frame parentKey="Glow" frameLevel="1000">

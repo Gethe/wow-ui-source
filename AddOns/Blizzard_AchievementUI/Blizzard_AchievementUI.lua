@@ -842,10 +842,6 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 		AchievementFrame.searchBox.fullSearchFinished = true;
 		AchievementFrame_UpdateSearch(self);
 	end
-
-	if ( not AchievementMicroButton:IsShown() ) then
-		AchievementMicroButton_Update();
-	end
 end
 
 function AchievementFrameAchievementsBackdrop_OnLoad (self)

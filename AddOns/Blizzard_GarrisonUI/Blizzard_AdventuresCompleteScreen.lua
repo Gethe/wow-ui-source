@@ -161,49 +161,42 @@ function AdventuresCompleteScreenMixin:StartReplayEvent(roundIndex, eventIndex)
 	self:PlayReplayEffect(event);
 end
 
-local function GetEffectForEvent(combatLogEvent) 
+local function GetEffectForEvent(combatLogEvent)
 	-- TODO:: Replace this function.
 	local eventType = combatLogEvent.type;
 	if eventType == Enum.GarrAutoMissionEventType.MeleeDamage then
-		return ScriptedAnimationEffects.ArgusCollide;
+		return ScriptedAnimationEffectsUtil.NamedEffectIDs.MeleeAttack;
 	elseif eventType == Enum.GarrAutoMissionEventType.RangeDamage then
-		return ScriptedAnimationEffects.Starsurge;
+		return ScriptedAnimationEffectsUtil.NamedEffectIDs.Fireball;
 	elseif eventType == Enum.GarrAutoMissionEventType.SpellDamage then
-		return ScriptedAnimationEffects.Fireball;
+		return ScriptedAnimationEffectsUtil.NamedEffectIDs.Fireball;
 	elseif eventType == Enum.GarrAutoMissionEventType.PeriodicDamage then
-		return ScriptedAnimationEffects.LightningOrb;
+		return ScriptedAnimationEffectsUtil.NamedEffectIDs.ShockTarget;
 	elseif eventType == Enum.GarrAutoMissionEventType.ApplyAura then
-		return ScriptedAnimationEffects.ShockTarget;
+		return ScriptedAnimationEffectsUtil.NamedEffectIDs.ShockTarget;
 	elseif eventType == Enum.GarrAutoMissionEventType.Heal then
-		return ScriptedAnimationEffects.Regrowth;
+		return ScriptedAnimationEffectsUtil.NamedEffectIDs.Regrowth;
 	elseif eventType == Enum.GarrAutoMissionEventType.PeriodicHeal then
-		return ScriptedAnimationEffects.Regrowth;
+		return ScriptedAnimationEffectsUtil.NamedEffectIDs.Regrowth;
 	elseif eventType == Enum.GarrAutoMissionEventType.Died then
-		return ScriptedAnimationEffects.ShockTarget;
+		return ScriptedAnimationEffectsUtil.NamedEffectIDs.ShockTarget;
 	elseif eventType == Enum.GarrAutoMissionEventType.RemoveAura then
-		return ScriptedAnimationEffects.ShockTarget;
+		return ScriptedAnimationEffectsUtil.NamedEffectIDs.ShockTarget;
 	else
-		return ScriptedAnimationEffects.Fireball;
+		return ScriptedAnimationEffectsUtil.NamedEffectIDs.Fireball;
 	end
 end
 
 function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)	
-	local baseEffect = GetEffectForEvent(combatLogEvent);
-
-	local baseOnFinish = baseEffect.onFinish or nop;
-	local function EffectOnFinish(...)
+	local effect = GetEffectForEvent(combatLogEvent);
+	local function EffectOnFinish()
 		self.Stage.Board:AddCombatEventText(combatLogEvent);
-
-		baseOnFinish(...);
 	end
-
-	local effect = { onFinish = EffectOnFinish };
-	setmetatable(effect, { __index = baseEffect });
 
 	local sourceFrame = self:GetFrameFromBoardIndex(combatLogEvent.casterBoardIndex);
 	for i, target in ipairs(combatLogEvent.targetInfo) do
 		local targetFrame = self:GetFrameFromBoardIndex(target.boardIndex);
-		self.ModelScene:AddEffect(effect, sourceFrame, targetFrame);
+		self.ModelScene:AddEffect(effect, sourceFrame, targetFrame, EffectOnFinish);
 	end
 end
 

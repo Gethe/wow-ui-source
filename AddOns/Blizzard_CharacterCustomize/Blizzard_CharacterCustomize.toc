@@ -1,3 +1,6 @@
 ## Title: Blizzard_CharacterCustomize
-## Author: achurchill
-## Notes: This file is just here to update the manifest
+## Author: Blizzard Entertainment
+## AllowLoad: Both
+## LoadOnDemand: 1
+Blizzard_CharacterCustomize.lua
+Blizzard_CharacterCustomize.xml

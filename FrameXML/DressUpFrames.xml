@@ -88,13 +88,9 @@
 			<CheckButton parentKey="ShowMountCheckButton" inherits="UICheckButtonTemplate">
 				<Size x="30" y="30"/>
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.ModelScene" relativePoint="BOTTOMRIGHT" x="-69" y="0"/>
+					<Anchor point="TOP" relativeKey="$parent.ModelScene" relativePoint="BOTTOMRIGHT" x="-20" y="30"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self.text:SetFontObject("GameFontNormal");
-						self.text:SetText(TRANSMOG_AND_MOUNT_DRESSUP_FRAME_SHOW_MOUNT);
-					</OnLoad>
 					<OnClick>
 						self:GetParent():CheckButtonOnClick();
 					</OnClick>
@@ -102,8 +98,8 @@
 			</CheckButton>
 			<ModelScene parentKey="ModelScene" inherits="PanningModelSceneMixinTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="5" y="-13"/>
-					<Anchor point="BOTTOMRIGHT" x="-11" y="60"/>
+					<Anchor point="TOPLEFT" x="5" y="-5"/>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="normalIntensity" value="0.75" type="number"/>
@@ -121,6 +117,9 @@
 				</Scripts>
 			</Button>
 		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="DressUpFrame" mixin="DressUpModelFrameFrameMixin" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplateMinimizable">

@@ -1,0 +1,458 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Button name="CharacterCreateNavButtonTemplate" inherits="GlueButtonTemplate" mixin="CharacterCreateNavButtonMixin" frameLevel="10" virtual="true">
+		<Size x="170" y="40"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="CharacterCreateFrameRacialAbilityTemplate" mixin="CharacterCreateFrameRacialAbilityMixin" inherits="ResizeLayoutFrame" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x ="42" y="42" />
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="GameFontNormalMed3" justifyH="LEFT">
+					<Size x ="180" />
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" />
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconOverlay" atlas="charactercreate-ring-racialtrait" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x ="38" y="38" />
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<CheckButton name="CharacterCreateSexButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharacterCreateSexButtonMixin" virtual="true">
+		<Size x="46" y="46"/>
+		<KeyValues>
+			<KeyValue key="ringAtlas" value="charactercreate-ring-metaldark" type="string"/>
+			<KeyValue key="ringWidth" value="99" type="number"/>
+			<KeyValue key="ringHeight" value="100" type="number"/>
+			<KeyValue key="disabledOverlayAlpha" value="0" type="number"/>
+			<KeyValue key="circleMaskSizeOffset" value="-5" type="number"/>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMRIGHT" type="string"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="number"/>
+		</KeyValues>
+
+		<CheckedTexture parentKey="CheckedTexture" atlas="charactercreate-ring-select">
+			<Size x="84" y="84"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</CheckedTexture>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BlackBG">
+					<Size x="56" y="56"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</CheckButton>
+
+	<CheckButton name="CharacterCreateClassButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharacterCreateClassButtonMixin" virtual="true">
+		<Size x="67" y="67"/>
+		<KeyValues>
+			<KeyValue key="ringAtlas" value="charactercreate-ring-metaldark" type="string"/>
+			<KeyValue key="ringWidth" value="116" type="number"/>
+			<KeyValue key="ringHeight" value="117" type="number"/>
+			<KeyValue key="disabledOverlayAlpha" value="0.75" type="number"/>
+			<KeyValue key="circleMaskSizeOffset" value="2" type="number"/>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_RIGHT" type="string"/>
+			<KeyValue key="tooltipXOffset" value="0" type="number"/>
+			<KeyValue key="tooltipYOffset" value="10" type="number"/>
+		</KeyValues>
+
+		<CheckedTexture parentKey="CheckedTexture" atlas="charactercreate-ring-select">
+			<Size x="99" y="99"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</CheckedTexture>
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="ClassName" inherits="GameFontNormalMed3" justifyH="CENTER" justifyV="MIDDLE">
+					<Size x="67" y="30"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" x="2" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</CheckButton>
+	
+	<CheckButton name="CharacterCreateRaceButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharacterCreateRaceButtonMixin" virtual="true">
+		<Size x="79" y="79"/>
+		<KeyValues>
+			<KeyValue key="ringWidth" value="139" type="number"/>
+			<KeyValue key="ringHeight" value="140" type="number"/>
+			<KeyValue key="disabledOverlayAlpha" value="0.5" type="number"/>
+			<KeyValue key="circleMaskSizeOffset" value="2" type="number"/>
+		</KeyValues>
+
+		<CheckedTexture parentKey="CheckedTexture" atlas="charactercreate-ring-select">
+			<Size x="118" y="118"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</CheckedTexture>
+	</CheckButton>
+
+	<CheckButton name="CharacterCreateAllianceButtonTemplate" inherits="CharacterCreateRaceButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="ringAtlas" value="charactercreate-ring-alliance" type="string"/>
+			<KeyValue key="faction" value="Alliance" type="string"/>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_TOPRIGHT" type="string"/>
+			<KeyValue key="tooltipXOffset" value="99" type="number"/>
+		</KeyValues>
+	</CheckButton>
+
+	<CheckButton name="CharacterCreateAllianceAlliedRaceButtonTemplate" inherits="CharacterCreateAllianceButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="tooltipXOffset" value="10" type="number"/>
+		</KeyValues>
+	</CheckButton>
+
+	<CheckButton name="CharacterCreateHordeButtonTemplate" inherits="CharacterCreateRaceButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="ringAtlas" value="charactercreate-ring-horde" type="string"/>
+			<KeyValue key="faction" value="Horde" type="string"/>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_TOPLEFT" type="string"/>
+			<KeyValue key="tooltipXOffset" value="99" type="number"/>
+			<KeyValue key="flipTextures" value="true" type="boolean"/>
+		</KeyValues>
+	</CheckButton>
+
+	<CheckButton name="CharacterCreateHordeAlliedRaceButtonTemplate" inherits="CharacterCreateHordeButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="tooltipXOffset" value="10" type="number"/>
+		</KeyValues>
+	</CheckButton>
+
+	<CheckButton name="CharacterCreateSpecButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharacterCreateSpecButtonMixin" virtual="true">
+		<Size x="54" y="54"/>
+		<KeyValues>
+			<KeyValue key="ringAtlas" value="charactercreate-ring-metaldark" type="string"/>
+			<KeyValue key="ringWidth" value="90" type="number"/>
+			<KeyValue key="ringHeight" value="91" type="number"/>
+			<KeyValue key="disabledOverlayAlpha" value="0.5" type="number"/>
+			<KeyValue key="circleMaskSizeOffset" value="2" type="number"/>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_RIGHT" type="string"/>
+			<KeyValue key="tooltipXOffset" value="0" type="number"/>
+			<KeyValue key="tooltipYOffset" value="10" type="number"/>
+		</KeyValues>
+
+		<CheckedTexture parentKey="CheckedTexture" atlas="charactercreate-ring-select">
+			<Size x="78" y="78"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</CheckedTexture>
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="SpecName" inherits="GameFontNormalMed3">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="20" y="-10"/>
+					</Anchors>
+				</FontString>
+				
+				<FontString parentKey="RoleName" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SpecName" relativePoint="BOTTOMLEFT" y="-5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</CheckButton>
+	
+	<Frame name="CharacterCreateVerticalLayoutFrame" inherits="VerticalLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="spacing" value="15" type="number"/>
+		</KeyValues>
+	</Frame>
+
+	<Texture name="CharacterCreateBackgroundOverlayTexture" parentArray="BGTex" virtual="true"/>
+
+	<ModelFFX name="CharacterCreateFrame" mixin="CharacterCreateMixin" toplevel="true" parent="UIParent" setAllPoints="true" enableKeyboard="true" hidden="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TopBackgroundOverlay" inherits="CharacterCreateBackgroundOverlayTexture" atlas="charactercreate-vignette-top">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeftBackgroundOverlay" inherits="CharacterCreateBackgroundOverlayTexture" atlas="charactercreate-vignette-sides">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightBackgroundOverlay" inherits="CharacterCreateBackgroundOverlayTexture" atlas="charactercreate-vignette-sides">
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomBackgroundOverlay" inherits="CharacterCreateBackgroundOverlayTexture" atlas="charactercreate-vignette-bottom">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+						<Anchor point="TOPRIGHT" relativePoint="RIGHT"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="FadeOut" setToFinalAlpha="true">
+							<Alpha parentKey="AlphaAnim" duration="0.25" fromAlpha="1" toAlpha="0"/>
+						</AnimationGroup>
+						<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
+							<Alpha parentKey="AlphaAnim" duration="0.25" fromAlpha="0" toAlpha="1"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="BackButton" inherits="CharacterCreateNavButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="30" y="15"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="charCreateOnClickMethod" value="NavBack" type="string"/>
+				</KeyValues>
+			</Button>
+			<Button parentKey="ForwardButton" inherits="CharacterCreateNavButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-30" y="15"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="charCreateOnClickMethod" value="NavForward" type="string"/>
+				</KeyValues>
+			</Button>
+			<Frame parentKey="RaceAndClassFrame" mixin="CharacterCreateRaceAndClassMixin" setAllPoints="true" hidden="true" scale="0.7111">
+				<Frames>
+					<Frame parentKey="AllianceHeader" inherits="ResizeLayoutFrame, CharCustomizeFrameWithTooltipTemplate" mixin="CharacterCreateFactionHeaderMixin">
+						<KeyValues>
+							<KeyValue key="tooltipAnchor" value="ANCHOR_TOPLEFT" type="string"/>
+							<KeyValue key="tooltipXOffset" value="228" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Logo" atlas="charactercreate-icon-alliance" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="Text" inherits="GameFontNormalLarge2" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.Logo" relativePoint="RIGHT" x="-10"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="HordeHeader" inherits="ResizeLayoutFrame, CharCustomizeFrameWithTooltipTemplate" mixin="CharacterCreateFactionHeaderMixin">
+						<KeyValues>
+							<KeyValue key="tooltipAnchor" value="ANCHOR_TOPRIGHT" type="string"/>
+							<KeyValue key="tooltipXOffset" value="228" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPRIGHT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Logo" atlas="charactercreate-icon-horde" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPRIGHT"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="Text" inherits="GameFontNormalLarge2" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="RIGHT" relativeKey="$parent.Logo" relativePoint="LEFT" x="15"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="Sexes" inherits="HorizontalLayoutFrame">
+						<KeyValues>
+							<KeyValue key="spacing" value="30" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" y="-30"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="AllianceRaces" inherits="CharacterCreateVerticalLayoutFrame">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="50" y="-100"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="AllianceAlliedRaces" inherits="CharacterCreateVerticalLayoutFrame">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AllianceRaces" relativePoint="TOPRIGHT" x="10" y="-50"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="HordeRaces" inherits="CharacterCreateVerticalLayoutFrame">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-50" y="-100"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="HordeAlliedRaces" inherits="CharacterCreateVerticalLayoutFrame">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.HordeRaces" relativePoint="TOPLEFT" x="-10" y="-50"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Classes" inherits="HorizontalLayoutFrame">
+						<KeyValues>
+							<KeyValue key="spacing" value="15" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="BOTTOM" y="60"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="ClassTrialCheckButton" inherits="CharCustomizeFrameWithTooltipTemplate, ResizeCheckButtonTemplate" mixin="ClassTrialCheckButtonMixin" hidden="true">
+						<KeyValues>
+							<KeyValue key="labelText" value="CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER" type="global"/>
+							<KeyValue key="tooltipAnchor" value="ANCHOR_LEFT" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-35" y="120"/>
+						</Anchors>
+					</Frame>
+					
+					<!--This is added to the tooltip for a race, never shown outside of the tooltip-->
+					<Frame parentKey="RacialAbilityList" inherits="VerticalLayoutFrame" mixin="CharacterCreateRacialAbilityListMixin" hidden="true">
+						<KeyValues>
+							<KeyValue key="spacing" value="5" type="number"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" text="RACIAL_TRAITS_TOOLTIP" font="GameFontHighlightMedium">
+									<KeyValues>
+										<KeyValue key="layoutIndex" value="0" type="number"/>
+										<KeyValue key="bottomPadding" value="10" type="number"/>
+									</KeyValues>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad" />
+					<OnShow method="OnShow" />
+					<OnHide method="OnHide" />
+				</Scripts>
+			</Frame>
+			<Frame parentKey="NameChoiceFrame" inherits="ResizeLayoutFrame" hidden="true" scale="0.7111">
+				<Anchors>
+					<Anchor point="TOP" y="-30"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" text="NAME" font="GameFontHighlightLarge2">
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<EditBox parentKey="EditBox" inherits="SharedEditBoxTemplate" mixin="CharacterCreateEditBoxMixin" letters="12">
+						<KeyValues>
+							<KeyValue key="justifyH" value="CENTER" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" y="-5"/>
+						</Anchors>
+						<Frames>
+							<Button parentKey="ClearButton">
+								<Size x="18" y="18"/>
+								<Anchors>
+									<Anchor point="RIGHT"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										self:GetParent():SetText("");
+									</OnClick>
+								</Scripts>
+								<NormalTexture atlas="common-icon-redx"/>
+								<HighlightTexture atlas="common-icon-redx" alphaMode="ADD" alpha="0.2"/>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnShow method="UpdateState"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
+							<OnEscapePressed method="OnEscapePressed"/>
+							<OnEnterPressed method="OnEnterPressed"/>
+							<OnTextChanged method="UpdateState"/>
+						</Scripts>
+					</EditBox>
+					<Button parentKey="RandomNameButton" inherits="CharCustomizeSmallButtonTemplate" mixin="CharacterCreateRandomNameButtonMixin">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.EditBox" relativePoint="RIGHT" x="20"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="simpleTooltipLine" value="RANDOMIZE" type="global"/>
+							<KeyValue key="iconAtlas" value="charactercreate-icon-dice" type="string"/>
+						</KeyValues>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame parentKey="ClassTrialSpecs" inherits="CharacterCreateVerticalLayoutFrame" mixin="CharacterCreateClassTrialSpecsMixin" hidden="true" scale="0.7111">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="50" y="-200"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" inherits="GameFontHighlightMedium" text="CLASS_TRIAL_SELECT_SPEC_TITLE">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="0" type="number"/>
+							</KeyValues>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow method="UpdateNavBlocker" />
+					<OnHide method="OnHide" />
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+			<OnMouseDown method="OnMouseDown" />
+			<OnMouseUp method="OnMouseUp" />
+		</Scripts>
+	</ModelFFX>
+</Ui>

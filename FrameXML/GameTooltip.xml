@@ -349,4 +349,13 @@
 			</OnSizeChanged>
 		</Scripts>
 	</GameTooltip>
+
+	<GameTooltip name="GameNoHeaderTooltip" inherits="GameTooltipTemplate">
+		<KeyValues>
+			<KeyValue key="textLeft1Font" value="GameTooltipText" type="string"/>
+			<KeyValue key="textRight1Font" value="GameTooltipText" type="string"/>
+			<KeyValue key="textLeft2Font" value="GameTooltipText" type="string"/>
+			<KeyValue key="textRight2Font" value="GameTooltipText" type="string"/>
+		</KeyValues>
+	</GameTooltip>
 </Ui>

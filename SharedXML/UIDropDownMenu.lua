@@ -143,24 +143,25 @@ function UIDropDownMenuButtonInvisibleButton_OnEnter(self)
 	local parent = self:GetParent();
 	if ( parent.tooltipTitle and parent.tooltipWhileDisabled) then
 		if ( parent.tooltipOnButton ) then
-			GameTooltip:SetOwner(parent, "ANCHOR_RIGHT");
-			GameTooltip_SetTitle(GameTooltip, parent.tooltipTitle);
+			local tooltip = GetAppropriateTooltip();
+			tooltip:SetOwner(parent, "ANCHOR_RIGHT");
+			GameTooltip_SetTitle(tooltip, parent.tooltipTitle);
 			if parent.tooltipInstruction then
-				GameTooltip_AddInstructionLine(GameTooltip, parent.tooltipInstruction);
+				GameTooltip_AddInstructionLine(tooltip, parent.tooltipInstruction);
 			end
 			if parent.tooltipText then
-				GameTooltip_AddNormalLine(GameTooltip, parent.tooltipText, true);
+				GameTooltip_AddNormalLine(tooltip, parent.tooltipText, true);
 			end
 			if parent.tooltipWarning then
-				GameTooltip_AddColoredLine(GameTooltip, parent.tooltipWarning, RED_FONT_COLOR, true);
+				GameTooltip_AddColoredLine(tooltip, parent.tooltipWarning, RED_FONT_COLOR, true);
 			end
-			GameTooltip:Show();
+			tooltip:Show();
 		end
 	end
 end
 
 function UIDropDownMenuButtonInvisibleButton_OnLeave(self)
-	GameTooltip:Hide();
+	GetAppropriateTooltip():Hide();
 end
 
 function UIDropDownMenuButton_OnEnter(self)
@@ -176,12 +177,13 @@ function UIDropDownMenuButton_OnEnter(self)
 	self.Highlight:Show();
 	if ( self.tooltipTitle and not self.noTooltipWhileEnabled ) then
 		if ( self.tooltipOnButton ) then
-			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-			GameTooltip_SetTitle(GameTooltip, self.tooltipTitle);
+			local tooltip = GetAppropriateTooltip();
+			tooltip:SetOwner(self, "ANCHOR_RIGHT");
+			GameTooltip_SetTitle(tooltip, self.tooltipTitle);
 			if self.tooltipText then
-				GameTooltip_AddNormalLine(GameTooltip, self.tooltipText, true);
+				GameTooltip_AddNormalLine(tooltip, self.tooltipText, true);
 			end
-			GameTooltip:Show();
+			tooltip:Show();
 		end
 	end
 
@@ -189,11 +191,13 @@ function UIDropDownMenuButton_OnEnter(self)
 		self.Icon:SetTexture(self.mouseOverIcon);
 		self.Icon:Show();
 	end
+
+	GetValueOrCallFunction(self, "funcOnEnter", self);
 end
 
 function UIDropDownMenuButton_OnLeave(self)
 	self.Highlight:Hide();
-	GameTooltip:Hide();
+	GetAppropriateTooltip():Hide();
 
 	if ( self.mouseOverIcon ~= nil ) then
 		if ( self.icon ~= nil ) then
@@ -202,6 +206,8 @@ function UIDropDownMenuButton_OnLeave(self)
 			self.Icon:Hide();
 		end
 	end
+
+	GetValueOrCallFunction(self, "funcOnLeave", self);
 end
 
 --[[
@@ -440,6 +446,8 @@ function UIDropDownMenu_AddButton(info, level)
 
 	-- Pass through attributes
 	button.func = info.func;
+	button.funcOnEnter = info.funcOnEnter;
+	button.funcOnLeave = info.funcOnLeave;
 	button.owner = info.owner;
 	button.hasOpacity = info.hasOpacity;
 	button.opacity = info.opacity;
