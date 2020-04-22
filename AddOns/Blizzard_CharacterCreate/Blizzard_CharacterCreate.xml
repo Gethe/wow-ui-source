@@ -190,6 +190,71 @@
 			</Layer>
 		</Layers>
 	</CheckButton>
+
+	<Frame name="CharacterCreateStartingZoneTemplate" mixin="CharacterCreateStartingZoneMixin" virtual="true">
+		<Size x ="746" y="564" />
+		<Frames>
+			<Button parentKey="ZoneArt" mixin="CharacterCreateStartingZoneArtMixin">
+				<Size x ="762" y="506" />
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="BGTex" atlas="charactercreate-startingzone-exilesreach" setAllPoints="true">
+							<Size x ="730" y="474" />
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="Border" useParentLevel="true" inherits="NineSlicePanelTemplate">
+						<KeyValues>
+							<KeyValue key="layoutType" value="CharacterCreateThickBorder" type="string"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+
+			<Frame parentKey="ZoneNameButton" inherits="ResizeLayoutFrame" mixin="ResizeCheckButtonMixin, CharacterCreateStartingZoneButtonMixin">
+				<Anchors>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+				<Frames>
+					<CheckButton parentKey="Button">
+						<Size x="58" y="58"/>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+						<NormalTexture parentKey="NormalTexture" atlas="common-radiobutton-circle"/>
+						<HighlightTexture parentKey="HighlightTexture" atlas="common-radiobutton-circle" alphaMode="ADD" alpha="0.2"/>
+						<CheckedTexture parentKey="CheckedTexture" atlas="common-radiobutton-dot"/>
+						<Scripts>
+							<OnClick>
+								self:GetParent():OnCheckButtonClick();
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="GameFontHighlightLarge2">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Button" relativePoint="RIGHT" x="10" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
 	
 	<Frame name="CharacterCreateVerticalLayoutFrame" inherits="VerticalLayoutFrame" virtual="true">
 		<KeyValues>
@@ -234,6 +299,18 @@
 							<Alpha parentKey="AlphaAnim" duration="0.25" fromAlpha="0" toAlpha="1"/>
 						</AnimationGroup>
 					</Animations>
+				</Texture>
+				<Texture parentKey="LeftBlackBar">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0"/>
+				</Texture>
+				<Texture parentKey="RightBlackBar">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -393,30 +470,33 @@
 							<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" y="-5"/>
 						</Anchors>
 						<Frames>
-							<Button parentKey="ClearButton">
+							<Button parentKey="NameAvailabilityState" inherits="CharCustomizeFrameWithTooltipTemplate" mixin="CharacterCreateNameAvailabilityStateMixin">
 								<Size x="18" y="18"/>
 								<Anchors>
 									<Anchor point="RIGHT"/>
 								</Anchors>
-								<Scripts>
-									<OnClick>
-										self:GetParent():SetText("");
-									</OnClick>
-								</Scripts>
+								<KeyValues>
+									<KeyValue key="tooltipMinWidth" value="nil" type="number"/>
+									<KeyValue key="tooltipXOffset" value="20" type="number"/>
+									<KeyValue key="tooltipYOffset" value="-10" type="number"/>
+								</KeyValues>
 								<NormalTexture atlas="common-icon-redx"/>
 								<HighlightTexture atlas="common-icon-redx" alphaMode="ADD" alpha="0.2"/>
+								<Scripts>
+									<OnEvent method="OnEvent"/>
+								</Scripts>
 							</Button>
 						</Frames>
 						<Scripts>
-							<OnShow method="UpdateState"/>
+							<OnShow method="OnTextChanged"/>
 							<OnHide method="OnHide"/>
 							<OnEvent method="OnEvent"/>
 							<OnEscapePressed method="OnEscapePressed"/>
 							<OnEnterPressed method="OnEnterPressed"/>
-							<OnTextChanged method="UpdateState"/>
+							<OnTextChanged method="OnTextChanged"/>
 						</Scripts>
 					</EditBox>
-					<Button parentKey="RandomNameButton" inherits="CharCustomizeSmallButtonTemplate" mixin="CharacterCreateRandomNameButtonMixin">
+					<Button parentKey="RandomNameButton" inherits="CharCustomizeSmallButtonTemplate" mixin="CharacterCreateRandomNameButtonMixin" hidden="true">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.EditBox" relativePoint="RIGHT" x="20"/>
 						</Anchors>
@@ -445,6 +525,50 @@
 					<OnHide method="OnHide" />
 				</Scripts>
 			</Frame>
+			<Frame parentKey="ZoneChoiceFrame" mixin="CharacterCreateZoneChoiceMixin" setAllPoints="true" hidden="true" scale="0.7111">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="BlackOverlay" setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.5"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" inherits="GameFont72NormalShadow" text="CHOOSE_STARTING_ZONE">
+							<Anchors>
+								<Anchor point="TOP" y="-100"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="NPEZone" inherits="CharacterCreateStartingZoneTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="CENTER" x="-30" y="-10"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="isNPE" value="true" type="boolean"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="NormalStartingZone" inherits="CharacterCreateStartingZoneTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="CENTER" x="30" y="-10"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="isNPE" value="false" type="boolean"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+				<Animations>
+					<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
+						<Alpha childKey="BlackOverlay" duration="0.25" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
+				</Animations>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" />
@@ -453,6 +577,7 @@
 			<OnHide method="OnHide" />
 			<OnMouseDown method="OnMouseDown" />
 			<OnMouseUp method="OnMouseUp" />
+			<OnKeyDown method="OnKeyDown"/>
 		</Scripts>
 	</ModelFFX>
 </Ui>

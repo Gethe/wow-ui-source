@@ -27,11 +27,13 @@ function Tutorials:Begin()
 	self.Hide_StoreMicroButton:Begin();
 
 	-- Looting
-	self.LootCorpseWatcher:Begin()
-	if (level > 2) then
-		-- if the player is returning after level 2, then start this tutorial off
-		-- in the state where they are only reminded if they don't loot a corpse
-		self.LootCorpseWatcher.LootCount = 3;
+	if (level <= 5) then
+		if (level > 2) then
+			-- if the player is returning after level 2, then start this tutorial off
+			-- in the state where they are only reminded if they don't loot a corpse
+			self.LootCorpseWatcher.LootCount = 3;
+		end
+		self.LootCorpseWatcher:Begin()
 	end
 
 	if (level < 7) then
@@ -368,4 +370,4 @@ function TutorialStatus()
 	end
 end
 
-DebugTutorials(true);
+DebugTutorials(false);

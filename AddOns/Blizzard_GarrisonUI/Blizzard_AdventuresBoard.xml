@@ -4,10 +4,12 @@
 
 	<Frame name="AdventuresBoardTemplate" mixin="AdventuresBoardMixin" virtual="true">
 		<KeyValues>
-			<KeyValue key="enemyTemplate" type="string" value="GarrisonEncounterPortraitTemplate"/>
-			<KeyValue key="followerTemplate" type="string" value="GarrisonLargeFollowerXPFrameTemplate"/>
+			<KeyValue key="enemyTemplate" type="string" value="AdventuresEnemyPuckTemplate"/>
+			<KeyValue key="followerTemplate" type="string" value="AdventuresFollowerPuckTemplate"/>
+			<KeyValue key="enemySocketAtlas" type="string" value="Adventures-Mission-Enemy-Socket-01"/>
+			<KeyValue key="followerSocketAtlas" type="string" value="Adventures-Mission-Follower-Socket-01"/>
 		</KeyValues>
-		<Size x="556" y="385"/>
+		<Size x="556" y="455"/>
 		<Frames>
 			<Frame parentKey="EnemyContainer" inherits="ResizeLayoutFrame">
 				<Anchors>
@@ -27,9 +29,9 @@
 				</Animations>
 			</Frame>
 			<Frame parentKey="FollowerContainer" inherits="ResizeLayoutFrame" frameLevel="20">
+				<Size x="1" y="1"/>
 				<Anchors>
 					<Anchor point="BOTTOM"/>
-					<Anchor point="CENTER" x="8" y="0"/>
 				</Anchors>
 				<Animations>
 					<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
@@ -40,6 +42,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>
 

@@ -68,20 +68,21 @@ local GarrisonConstants =
 		{
 			Name = "GarrAutoMissionEventType",
 			Type = "Enumeration",
-			NumValues = 9,
+			NumValues = 10,
 			MinValue = 0,
-			MaxValue = 8,
+			MaxValue = 9,
 			Fields =
 			{
 				{ Name = "MeleeDamage", Type = "GarrAutoMissionEventType", EnumValue = 0 },
 				{ Name = "RangeDamage", Type = "GarrAutoMissionEventType", EnumValue = 1 },
-				{ Name = "SpellDamage", Type = "GarrAutoMissionEventType", EnumValue = 2 },
-				{ Name = "Heal", Type = "GarrAutoMissionEventType", EnumValue = 3 },
-				{ Name = "PeriodicDamage", Type = "GarrAutoMissionEventType", EnumValue = 4 },
-				{ Name = "PeriodicHeal", Type = "GarrAutoMissionEventType", EnumValue = 5 },
-				{ Name = "ApplyAura", Type = "GarrAutoMissionEventType", EnumValue = 6 },
-				{ Name = "RemoveAura", Type = "GarrAutoMissionEventType", EnumValue = 7 },
-				{ Name = "Died", Type = "GarrAutoMissionEventType", EnumValue = 8 },
+				{ Name = "SpellMeleeDamage", Type = "GarrAutoMissionEventType", EnumValue = 2 },
+				{ Name = "SpellRangeDamage", Type = "GarrAutoMissionEventType", EnumValue = 3 },
+				{ Name = "Heal", Type = "GarrAutoMissionEventType", EnumValue = 4 },
+				{ Name = "PeriodicDamage", Type = "GarrAutoMissionEventType", EnumValue = 5 },
+				{ Name = "PeriodicHeal", Type = "GarrAutoMissionEventType", EnumValue = 6 },
+				{ Name = "ApplyAura", Type = "GarrAutoMissionEventType", EnumValue = 7 },
+				{ Name = "RemoveAura", Type = "GarrAutoMissionEventType", EnumValue = 8 },
+				{ Name = "Died", Type = "GarrAutoMissionEventType", EnumValue = 9 },
 			},
 		},
 		{
@@ -255,6 +256,14 @@ local GarrisonConstants =
 				{ Name = "Type_7_0", Type = "GarrisonType", EnumValue = 3 },
 				{ Name = "Type_8_0", Type = "GarrisonType", EnumValue = 9 },
 				{ Name = "Type_9_0", Type = "GarrisonType", EnumValue = 111 },
+			},
+		},
+		{
+			Name = "GarrisonConstsExposed",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "GARRISON_AUTO_COMBATANT_FULL_HEAL_COST", Type = "number", Value = 100 },
 			},
 		},
 	},

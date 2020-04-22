@@ -243,14 +243,27 @@ local layouts =
 	BFAMissionAlliance =
 	{
 		mirrorLayout = true,
-		TopLeftCorner =	{ atlas = "AllianceFrameCorner-TopLeft", x = -6, y = 6, },
-		TopRightCorner =	{ atlas = "AllianceFrameCorner-TopLeft", x = 6, y = 6, },
-		BottomLeftCorner =	{ atlas = "AllianceFrameCorner-TopLeft", x = -6, y = -6, },
-		BottomRightCorner =	{ atlas = "AllianceFrameCorner-TopLeft", x = 6, y = -6, },
+		TopLeftCorner =	{ atlas = "AllianceFrameCornerTopLeft", x = -6, y = 6, },
+		TopRightCorner =	{ atlas = "AllianceFrameCornerTopLeft", x = 6, y = 6, },
+		BottomLeftCorner =	{ atlas = "AllianceFrameCornerTopLeft", x = -6, y = -6, },
+		BottomRightCorner =	{ atlas = "AllianceFrameCornerTopLeft", x = 6, y = -6, },
 		TopEdge = { atlas = "_AllianceFrameTile-Top", },
 		BottomEdge = { atlas = "_AllianceFrameTile-Top", },
 		LeftEdge = { atlas = "!AllianceFrameTile-Left", },
 		RightEdge = { atlas = "!AllianceFrameTile-Left", },
+	},
+
+	CovenantMissionFrame =
+	{
+		mirrorLayout = true,
+		TopLeftCorner =	{ atlas = "UI-Frame-Oribos-CornerTopLeft", x = -6, y = 6, },
+		TopRightCorner =	{ atlas = "UI-Frame-Oribos-CornerTopLeft", x = 6, y = 6, },
+		BottomLeftCorner =	{ atlas = "UI-Frame-Oribos-CornerTopLeft", x = -6, y = -6, },
+		BottomRightCorner =	{ atlas = "UI-Frame-Oribos-CornerTopLeft", x = 6, y = -6, },
+		TopEdge = { atlas = "_UI-Frame-Oribos-EdgeTop", },
+		BottomEdge = { atlas = "_UI-Frame-Oribos-EdgeTop", },
+		LeftEdge = { atlas = "!UI-Frame-Oribos-EdgeLeft", },
+		RightEdge = { atlas = "!UI-Frame-Oribos-EdgeLeft", },
 	},
 
 	GenericMetal =
@@ -313,6 +326,18 @@ local layouts =
 		BottomEdge = { atlas = "_UI-Frame-Oribos-EdgeBottom", },
 		LeftEdge = { atlas = "!UI-Frame-Oribos-EdgeLeft", },
 		RightEdge = { atlas = "!UI-Frame-Oribos-EdgeRight", },
+	},
+
+	AdventuresMissionComplete =
+	{
+		TopLeftCorner =	{ atlas = "AdventuresFrame-Corner-Small-TopLeft", mirrorLayout = true, },
+		TopRightCorner =	{ atlas = "AdventuresFrame-Corner-Small-TopLeft", mirrorLayout = true, },
+		BottomLeftCorner =	{ atlas = "AdventuresFrame-Corner-Small-TopLeft", mirrorLayout = true, },
+		BottomRightCorner =	{ atlas = "AdventuresFrame-Corner-Small-TopLeft", mirrorLayout = true, },
+		TopEdge = { layer = "BACKGROUND", atlas = "_AdventuresFrame-Small-Top", x = -10, y = 0, x1 = 10, y1 = 0, },
+		BottomEdge = { layer = "BACKGROUND", atlas = "_AdventuresFrame-Small-Top", x = -10, y = 0, x1 = 10, y1 = 0, mirrorLayout = true, },
+		LeftEdge = { layer = "BACKGROUND", atlas = "!AdventuresFrame-Left", x = 0, y = 10, x1 = 0, y1 = -10, },
+		RightEdge = { layer = "BACKGROUND", atlas = "!AdventuresFrame-Right", x = 0, y = 10, x1 = 0, y1 = -10, },
 	},
 }
 

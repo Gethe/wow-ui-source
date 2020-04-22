@@ -1,0 +1,172 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_AdventuresPuck.lua"/>
+
+	<Button name="AdventuresPuckAbilityTemplate" mixin="AventuresPuckAbilityMixin" enableMouse="true" virtual="true">
+		<Size x="28" y="29"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon"/>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Border" atlas="Adventure_Ability_Frame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="DisabledTexture" setAllPoints="true" hidden="true">
+					<Color r="0" g="0" b ="0" a="0.7"/>
+				</Texture>
+
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+						<MaskedTexture childKey="DisabledTexture"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="CooldownText" inherits="NumberFontNormal" setAllPoints="true" justifyH="CENTER" justifyV="MIDDLE" hidden="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="AdventuresPuckHealthBarTemplate" mixin="AventuresPuckHealthBarMixin" virtual="true">
+		<Size x="89" y="36"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="LEFT" x="27" y="0"/>
+						<Anchor point="RIGHT" x="-6" y="0"/>
+						<Anchor point="TOP" x="0" y="-9"/>
+						<Anchor point="BOTTOM" x="0" y="12"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.7"/>
+				</Texture>
+				<Texture parentKey="RoleIcon">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="4" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Health" file="Interface\TargetingFrame\UI-StatusBar">
+					<Size x="30" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="LEFT" relativeKey="$parent.Background" relativePoint="LEFT"/>
+					</Anchors>
+					<Color r="0" g="1" b="0" a="1.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border" atlas="Adventure-Healthbar" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="AdventuresPuckTemplate" mixin="AdventuresPuckMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Portrait">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
+						<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
+					</Anchors>
+					<Color r="1" g="0" b="1" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="PuckBorder">
+					<Color r="0.4" g="0.4" b="0.4" a="1.0"/>
+				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Portrait"/>
+						<MaskedTexture childKey="PuckBorder"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="BorderOverlay" hidden="true">
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="AbilityTwo" parentArray="AbilityButtons" inherits="AdventuresPuckAbilityTemplate">
+				<Anchors>
+					<Anchor point="LEFT" x="-4" y="25"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="AbilityOne" parentArray="AbilityButtons" inherits="AdventuresPuckAbilityTemplate">
+				<Anchors>
+					<Anchor point="LEFT" x="-7" y="-5"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="HealthBar" inherits="AdventuresPuckHealthBarTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="-2"/>
+				</Anchors>
+			</Frame>
+
+			<!-- Draw over the other subframes -->
+			<Frame parentKey="DeathAnimationFrame" frameLevel="1500" enableMouse="false" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY" sublayer="1">
+						<Texture parentKey="CrossLeft" hidden="false" alpha="0" atlas="GarrMission_EncounterBar-Xleft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CrossRight" hidden="false" alpha="0" atlas="GarrMission_EncounterBar-Xright" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="DeathAnimation" setToFinalAlpha="true">
+						<Scale childKey="CrossLeft" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="CrossLeft" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="CrossRight" startDelay="0.1" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="CrossRight" startDelay="0.1" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Button>
+
+	<Button name="AdventuresFollowerPuckTemplate" mixin="AdventuresFollowerPuckMixin" inherits="AdventuresPuckTemplate" virtual="true">
+		<Size x="94" y="96"/>
+	</Button>
+
+	<Button name="AdventuresEnemyPuckTemplate" mixin="AdventuresEnemyPuckMixin" inherits="AdventuresPuckTemplate" virtual="true">
+		<Size x="76" y="76"/>
+	</Button>
+</Ui>

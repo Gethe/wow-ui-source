@@ -13,6 +13,7 @@ Blizzard_TutorialMainFrame.xml
 Blizzard_TutorialPointerFrame.xml
 Blizzard_TutorialKeyboardMouseFrame.xml
 Blizzard_TutorialCalloutFrame.xml
+Blizzard_TutorialEffects.xml
 
 Blizzard_TutorialBase.lua
 Blizzard_TutorialHelper.lua

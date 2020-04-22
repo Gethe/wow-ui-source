@@ -49,6 +49,7 @@ ConfigurationWarningsDocumentation.lua
 ConsoleDocumentation.lua
 ContainerDocumentation.lua
 ContributionCollectorDocumentation.lua
+CovenantCallingsDocumentation.lua
 CovenantPreviewDocumentation.lua
 CovenantSanctumDocumentation.lua
 CreatureInfoDocumentation.lua
@@ -172,6 +173,7 @@ ActionDocumentation.lua
 AppearanceSourceDocumentation.lua
 AuctionHouseEnumsDocumentation.lua
 BaseDocumentation.lua
+BountySharedDocumentation.lua
 CalendarConstantsDocumentation.lua
 CharacterCustomizationSharedDocumentation.lua
 ChatDocumentation.lua

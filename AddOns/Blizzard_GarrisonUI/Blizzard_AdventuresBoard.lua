@@ -28,39 +28,67 @@ AdventuresBoardMixin = {};
 
 function AdventuresBoardMixin:OnLoad()
 	self.framesByBoardIndex = {};
+	self.socketsByBoardIndex = {};
 	self.enemyFramePool = CreateFramePool("FRAME", self.EnemyContainer, self.enemyTemplate);
 	self.followerFramePool = CreateFramePool("FRAME", self.FollowerContainer, self.followerTemplate);
+	self.socketTexturePool = CreateTexturePool(self, "BACKGROUND");
+
 	self:CreateEnemyFrames();
 	self:CreateFollowerFrames();
+end
+
+function AdventuresBoardMixin:OnShow()
+	if not self.containerLayoutUpdated then
+		self.FollowerContainer:Layout();
+		self.EnemyContainer:Layout();
+		self.containerLayoutUpdated = true;
+	end
 end
 
 function AdventuresBoardMixin:GetFrameByBoardIndex(boardIndex)
 	return self.framesByBoardIndex[boardIndex];
 end
 
+function AdventuresBoardMixin:GetSocketByBoardIndex(boardIndex)
+	return self.socketsByBoardIndex[boardIndex];
+end
+
 function AdventuresBoardMixin:Reset()
 	for enemyFrame in self.enemyFramePool:EnumerateActive() do
-		GarrisonFollowerMission_ResetMissionCompleteEncounter(enemyFrame);
-		GarrisonEnemyPortait_Set(enemyFrame.Portrait, nil);
-		enemyFrame.Elite:Hide();
+		if enemyFrame.Reset then
+			enemyFrame:Reset();
+		end
+		enemyFrame:Hide();
 	end
 
 	for followerFrame in self.followerFramePool:EnumerateActive() do
-		GarrisonMissionComplete_KillFollowerXPAnims(followerFrame);
+		if followerFrame.Reset then
+			followerFrame:Reset();
+		end
+		followerFrame:Hide();
 	end
 end
 
-function AdventuresBoardMixin:RegisterFrame(frame)
-	self.framesByBoardIndex[frame.boardIndex] = frame;
+function AdventuresBoardMixin:RegisterFrame(boardIndex, socket, frame)
+	self.framesByBoardIndex[boardIndex] = frame;
+	self.socketsByBoardIndex[boardIndex] = socket;
 end
 
-function AdventuresBoardMixin:GenerateFactoryFunction(framePool, boardIndices)
+function AdventuresBoardMixin:GenerateFactoryFunction(framePool, boardIndices, socketContainer, socketAtlas)
 	local function CreateNewFrame(index)
+		local newSocket = self.socketTexturePool:Acquire();
+		local useAtlasSize = true;
+		newSocket:SetAtlas(socketAtlas, useAtlasSize);
+		newSocket:SetParent(socketContainer);
+		newSocket:Show();
+
 		local newFrame = framePool:Acquire();
 		newFrame.boardIndex = boardIndices[index];
-		self:RegisterFrame(newFrame);
+		self:RegisterFrame(newFrame.boardIndex, newSocket, newFrame);
+		newFrame:SetPoint("CENTER", newSocket, "CENTER");
 		newFrame:Show();
-		return newFrame;
+
+		return newSocket;
 	end
 
 	return CreateNewFrame;
@@ -74,7 +102,7 @@ function AdventuresBoardMixin:CreateEnemyFrames()
 	self.enemyFramesCreated = true;
 
 	local boardIndices = EnemyOrder;
-	local createNewEnemy = self:GenerateFactoryFunction(self.enemyFramePool, boardIndices);
+	local createNewEnemy = self:GenerateFactoryFunction(self.enemyFramePool, boardIndices, self.EnemyContainer, self.enemySocketAtlas);
 
 	local initialAnchor = AnchorUtil.CreateAnchor("TOPLEFT", self.EnemyContainer, "TOPLEFT", 0, 0);
 
@@ -95,24 +123,23 @@ function AdventuresBoardMixin:CreateFollowerFrames()
 	self.followerFramesCreated = true;
 
 	local boardIndices = FollowerOrder;
-	local createNewFollower = self:GenerateFactoryFunction(self.followerFramePool, boardIndices);
+	local createNewFollower = self:GenerateFactoryFunction(self.followerFramePool, boardIndices, self.FollowerContainer, self.followerSocketAtlas);
 
 	local initialAnchor = AnchorUtil.CreateAnchor("TOPLEFT", self.FollowerContainer, "TOPLEFT", 0, 0);
 
 	local direction = nil;
 	local stride = 3;
-	local paddingX = 6;
+	local paddingX = 30;
 	local paddingY = 6;
 	local layout = AnchorUtil.CreateGridLayout(direction, stride, paddingX, paddingY);
 
 	AnchorUtil.GridLayoutFactoryByCount(createNewFollower, #boardIndices, initialAnchor, layout);
 
-	-- TODO:: Replace this? At least update the value based on new templates
-	local backRowAdjustment = 88;
+	local backRowAdjustment = nil;
 	for i, position in ipairs(BackFollowerPositions) do
-		local followerFrame = self:GetFrameByBoardIndex(position);
-		
-		followerFrame:AdjustPointsOffset(backRowAdjustment, 0);
+		local followerSocket = self:GetSocketByBoardIndex(position);
+		backRowAdjustment = backRowAdjustment or ((followerSocket:GetWidth() + paddingX) / 2);
+		followerSocket:AdjustPointsOffset(backRowAdjustment, 0);
 	end
 end
 
@@ -131,35 +158,37 @@ function AdventuresBoardCombatMixin:OnLoad()
 	self.floatingTextPool = CreateFontStringPool(self.TextContainer, "OVERLAY", 0, "MissionCombatTextFontOutline", ResetFontString);
 end
 
+function AdventuresBoardCombatMixin:UpdateCooldownsFromEvent(combatLogEvent)
+	local sourceFrame = self:GetFrameByBoardIndex(combatLogEvent.casterBoardIndex);
+	sourceFrame:StartCooldown(combatLogEvent.spellID);
+end
+
+function AdventuresBoardCombatMixin:UpdateCooldownsFromNewRound()
+	for enemyFrame in self.enemyFramePool:EnumerateActive() do
+		enemyFrame:AdvanceCooldowns();
+	end
+
+	for followerFrame in self.followerFramePool:EnumerateActive() do
+		followerFrame:AdvanceCooldowns();
+	end
+end
+
 -- TODO:: Finalize table
 local EventTypeFormat = {
 	[Enum.GarrAutoMissionEventType.MeleeDamage] = RED_FONT_COLOR:WrapTextInColorCode(SYMBOLIC_NEGATIVE_NUMBER),
 	[Enum.GarrAutoMissionEventType.RangeDamage] = RED_FONT_COLOR:WrapTextInColorCode(SYMBOLIC_NEGATIVE_NUMBER),
-	[Enum.GarrAutoMissionEventType.SpellDamage] = RED_FONT_COLOR:WrapTextInColorCode(SYMBOLIC_NEGATIVE_NUMBER),
+	[Enum.GarrAutoMissionEventType.SpellMeleeDamage] = RED_FONT_COLOR:WrapTextInColorCode(SYMBOLIC_NEGATIVE_NUMBER),
+	[Enum.GarrAutoMissionEventType.SpellRangeDamage] = RED_FONT_COLOR:WrapTextInColorCode(SYMBOLIC_NEGATIVE_NUMBER),
 	[Enum.GarrAutoMissionEventType.PeriodicDamage] = RED_FONT_COLOR:WrapTextInColorCode(SYMBOLIC_NEGATIVE_NUMBER),
-	[Enum.GarrAutoMissionEventType.ApplyAura] = WHITE_FONT_COLOR:WrapTextInColorCode("%s"),
 	[Enum.GarrAutoMissionEventType.Heal] = GREEN_FONT_COLOR:WrapTextInColorCode(SYMBOLIC_POSITIVE_NUMBER),
 	[Enum.GarrAutoMissionEventType.PeriodicHeal] = GREEN_FONT_COLOR:WrapTextInColorCode(SYMBOLIC_POSITIVE_NUMBER),
-	[Enum.GarrAutoMissionEventType.Died] = RED_FONT_COLOR:WrapTextInColorCode("%s"),
-	[Enum.GarrAutoMissionEventType.RemoveAura] = WHITE_FONT_COLOR:WrapTextInColorCode("%s"),
 };
 
 local function GetTargetText(combatLogEvent, targetInfo)
 	local eventType = combatLogEvent.type;
 	local formatString = EventTypeFormat[eventType];
 
-	-- TODO:: finalize implementation.
-
-	if eventType == Enum.GarrAutoMissionEventType.Died then
-		-- TODO:: Replace with animation.
-		return formatString:format("Dead");
-	elseif eventType == Enum.GarrAutoMissionEventType.ApplyAura then
-		-- TODO:: determine if we want to keep these, and localize if so.
-		return formatString:format("Applied");
-	elseif eventType == Enum.GarrAutoMissionEventType.RemoveAura then
-		-- TODO:: determine if we want to keep these, and localize if so.
-		return formatString:format("Removed");
-	elseif targetInfo.points then
+	if formatString and targetInfo.points then
 		return formatString:format(targetInfo.points);
 	end
 
@@ -173,6 +202,7 @@ function AdventuresBoardCombatMixin:AddCombatEventText(combatLogEvent)
 		if text then
 			local targetFrame = self:GetFrameByBoardIndex(target.boardIndex);
 			self:AddCombatText(text, sourceFrame, targetFrame);
+			targetFrame:SetHealth(target.newHealth);
 		end
 	end
 end

@@ -519,6 +519,22 @@
 	</Button>
 
 	<Frame name="CharacterSelect" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="LeftBlackBar">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0"/>
+				</Texture>
+				<Texture parentKey="RightBlackBar">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
 			<Frame name="CharacterSelectUI" setAllPoints="true" enableMouse="true">
 				<Layers>

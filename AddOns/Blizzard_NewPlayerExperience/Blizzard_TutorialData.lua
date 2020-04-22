@@ -404,23 +404,23 @@ TutorialData.Horde = {
 	StartingQuestGiverCreatureID = 166573;
 	StartingQuestTargetDummyCreatureID = 160737;
 
-	ShowMinimapQuest = 55122;
+	ShowMinimapQuest = 59929;
 	
-	UseMapQuest = 59929;
+	UseMapQuest = 59931;
 
 	FirstLootableCreatureID = {150228, 150229};
 
 	ShowAllUIQuest = 59928;
 
-	UseFoodQuest = 55174;
+	UseFoodQuest = 59932;
 	FoodItem = 117;
 	FoodSpellCast = 433;
 
-	LookingForGroupQuest = 55992;
+	LookingForGroupQuest = 59984;
 	
-	GetMountQuest = 58909;
+	GetMountQuest = 60345;
 
-	SpecChoiceQuest = 59587;
+	SpecChoiceQuest = 60348;
 
 	UseQuestItemData = {
 		ScreenTutorialStringID = NPEV2_APPROACH_INJURED_CREWMEMBER;
@@ -441,44 +441,44 @@ TutorialData.Horde = {
 	};
 
 	EnhancedCombatTacticsQuest = 59933;
-	EnhancedCombatTacticsCreatureID = 164577;
-	EnhancedCombatTacticsOverrideCreatureID = 164605;
+	EnhancedCombatTacticsCreatureID = 166916;
+	EnhancedCombatTacticsOverrideCreatureID = 166918;
 
 	Mounts = {
-		Orc = {
-			mountItem = 2411,
-			mountSpellID = 9;
-			mountID = 9;
+		Orc = {					-- dire wolf (dark grey)
+			mountItem = 5665,
+			mountSpellID = 6653;
+			mountID = 19;
 		},
-		Scourge = {
-			mountItem = 28481,
-			mountSpellID = 9;
-			mountID = 9;
+		Scourge = {				-- red skeletal horse
+			mountItem = 13331,
+			mountSpellID = 17462;
+			mountID = 65;
 		},
-		Tauren = {
-			mountItem = 13322,
-			mountSpellID = 9;
-			mountID = 9;
+		Tauren = {				-- grey kodo
+			mountItem = 15277,
+			mountSpellID = 18989;
+			mountID = 71;
 		},
-		Troll = {
-			mountItem = 5864,
-			mountSpellID = 9;
-			mountID = 9;
+		Troll = {				-- emerald raptor
+			mountItem = 8588,
+			mountSpellID = 8395;
+			mountID = 27;
 		},
-		BloodElf = {
-			mountItem = 73838,
-			mountSpellID = 9;
-			mountID = 9;
+		BloodElf = {			-- red hawkstrider        
+			mountItem = 28927,
+			mountSpellID = 34795;
+			mountID = 152;
 		},
-		Goblin = {
-			mountItem = 8629,
-			mountSpellID = 9;
-			mountID = 9;
+		Goblin = {				-- goblin trike
+			mountItem = 62461,
+			mountSpellID = 87090;
+			mountID = 388;
 		},
-		Pandaren = {
+		Pandaren = {			-- red dragon turtle
 			mountItem = 87800,
-			mountSpellID = 9;
-			mountID = 9;
+			mountSpellID = 127290;
+			mountID = 496;
 		}
 	};
 }

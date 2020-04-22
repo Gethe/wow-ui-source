@@ -23,6 +23,20 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "GetAutoCombatSpellInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "autoCombatSpellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellInfo", Type = "AutoCombatSpellInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCurrentGarrTalentTreeFriendshipFactionID",
 			Type = "Function",
 
@@ -52,6 +66,20 @@ local GarrisonInfo =
 			Returns =
 			{
 				{ Name = "spellInfo", Type = "table", InnerType = "AutoCombatSpellInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFollowerAutoCombatStats",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "garrFollowerID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "autoCombatInfo", Type = "FollowerAutoCombatStatsInfo", Nilable = true },
 			},
 		},
 		{
@@ -249,6 +277,15 @@ local GarrisonInfo =
 			{
 				{ Name = "isMet", Type = "bool", Nilable = false },
 				{ Name = "failureString", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "RushHealFollower",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "garrFollowerID", Type = "string", Nilable = false },
 			},
 		},
 	},
@@ -736,6 +773,19 @@ local GarrisonInfo =
 	Tables =
 	{
 		{
+			Name = "AutoCombatantRole",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Damager", Type = "AutoCombatantRole", EnumValue = 0 },
+				{ Name = "Healer", Type = "AutoCombatantRole", EnumValue = 1 },
+				{ Name = "Tank", Type = "AutoCombatantRole", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "AutoCombatResult",
 			Type = "Structure",
 			Fields =
@@ -791,6 +841,17 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "FollowerAutoCombatStatsInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "currentHealth", Type = "number", Nilable = false },
+				{ Name = "maxHealth", Type = "number", Nilable = false },
+				{ Name = "attack", Type = "number", Nilable = false },
+				{ Name = "healingTimestamp", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "FollowerDisplayID",
 			Type = "Structure",
 			Fields =
@@ -827,6 +888,9 @@ local GarrisonInfo =
 				{ Name = "textureKit", Type = "string", Nilable = false },
 				{ Name = "isTroop", Type = "bool", Nilable = false },
 				{ Name = "boardIndex", Type = "number", Nilable = false },
+				{ Name = "health", Type = "number", Nilable = false },
+				{ Name = "maxHealth", Type = "number", Nilable = false },
+				{ Name = "role", Type = "AutoCombatantRole", Nilable = false },
 			},
 		},
 		{
@@ -871,6 +935,9 @@ local GarrisonInfo =
 				{ Name = "height", Type = "number", Nilable = false },
 				{ Name = "mechanics", Type = "table", InnerType = "GarrisonMechanicInfo", Nilable = false },
 				{ Name = "autoCombatSpells", Type = "table", InnerType = "AutoCombatSpellInfo", Nilable = false },
+				{ Name = "role", Type = "AutoCombatantRole", Nilable = false },
+				{ Name = "health", Type = "number", Nilable = false },
+				{ Name = "maxHealth", Type = "number", Nilable = false },
 				{ Name = "boardIndex", Type = "number", Nilable = false },
 			},
 		},

@@ -177,6 +177,18 @@
 	<Font name="GameFontNormalHuge4Outline" inherits="SystemFont_Shadow_Outline_Huge4" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
+	<Font name="GameFont72Normal" inherits="Game72Font" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="GameFont72Highlight" inherits="GameFont72Normal" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="GameFont72NormalShadow" inherits="Game72Font_Shadow" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="GameFont72HighlightShadow" inherits="GameFont72NormalShadow" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
 	<Font name="GameTooltipHeaderText" inherits="GameTooltipHeader" justifyH="LEFT" virtual="true">
     <Color r="1.0" g="1.0" b="1.0"/>
   </Font>

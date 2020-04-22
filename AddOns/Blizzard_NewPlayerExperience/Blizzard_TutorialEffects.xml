@@ -1,0 +1,76 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Script file="Blizzard_TutorialEffects.lua" />
+	<Frame name="NPE_TutorialButtonPulseGlowTemplate" virtual="true">
+		<Size x="2" y="2"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Left" atlas="newplayertutorial-greenglow-redbutton-left" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right" atlas="newplayertutorial-greenglow-redbutton-right" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Middle" atlas="newplayertutorial-greenglow-redbutton-middle" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="NPE_TutorialSpellDragOriginFrame" hidden="true">
+		<Size x="76" y="76"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture atlas="newplayertutorial-drag-slotgreen" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="NPE_TutorialSpellDragTargetFrame" hidden="true">
+		<Size x="76" y="76"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture atlas="newplayertutorial-drag-slotblue" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="NPE_TutorialSpellDragAnimationFrame" hidden="true" alpha="0.6">
+		<Size x="76" y="76"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture atlas="newplayertutorial-drag-cursor" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="9" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" looping="REPEAT">
+				<Translation parentKey="Move" duration="2" order="1" endDelay="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+</Ui>

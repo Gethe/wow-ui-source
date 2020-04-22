@@ -9,42 +9,16 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0].missionFollo
 local covenantGarrisonStyleData =
 {
 	--Might do 4x for covenants, setting it up for this to be the possible way to express it, but also just because this'll be an easy way to replace the assets 1 to 1
-	TitleScrollOffset = -5,
-	TitleColor = CreateColor(0.008, 0.051, 0.192, 1),
-
-	titleScrollLeft = "AllianceFrame_Title-End-2",
-	titleScrollRight = "AllianceFrame_Title-End",
-	titleScrollMiddle = "_AllianceFrame_Title-Tile",
-
 	closeButtonBorder = "AllianceFrame_ExitBorder",
 	closeButtonBorderX = 0,
 	closeButtonBorderY = -1,
 	closeButtonX = 4,
 	closeButtonY = 4,
 
-	nineSliceLayout = "BFAMissionAlliance",
+	nineSliceLayout = "CovenantMissionFrame",
 
-	BackgroundTile = "UI-Frame-Alliance-BackgroundTile",
-
-	TabLeft = "AllianceFrame_ParchmentHeader-End-2",
-	TabRight = "AllianceFrame_ParchmentHeader-End-2",
-	TabMiddle = "_AllianceFrame_ParchmentHeader-Mid",
-	TabSelectLeft = "AllianceFrame_ParchmentHeaderSelect-End-2",
-	TabSelectRight = "AllianceFrame_ParchmentHeaderSelect-End-2",
-	TabSelectMiddle = "_AllianceFrame_ParchmentHeaderSelect-Mid",
-
-	SearchLeft = "AllianceFrame_ParchmentHeader-End",
-	SearchRight = "AllianceFrame_ParchmentHeader-End-2",
-	SearchMiddle = "_AllianceFrame_ParchmentHeader-Mid",
+	BackgroundTile = "Adventures-Missions-BG-02",
 };
-
-local function SetupTitleText(self, styleData)
-	if styleData.TitleColor then
-		self.TitleText:SetTextColor(styleData.TitleColor:GetRGBA())
-	end
-
-	self.TitleText:SetShadowOffset(0, 0);
-end
 
 local function SetupMissionTab(tab, styleData)
 	tab.Left:SetAtlas(styleData.TabLeft, true);
@@ -61,14 +35,6 @@ end
 local function SetupMissionList(self, styleData)
 	SetupMissionTab(self.MissionTab.MissionList.Tab1, styleData);
 	SetupMissionTab(self.MissionTab.MissionList.Tab2, styleData);
-end
-
-local function SetupFollowerList(self, styleData)
-	self.FollowerList.HeaderLeft:SetAtlas(styleData.SearchLeft, true);
-	self.FollowerList.HeaderRight:SetAtlas(styleData.SearchRight, true);
-	self.FollowerList.HeaderMid:SetAtlas(styleData.SearchMiddle, true);
-
-	self.FollowerList.HeaderRight:SetTexCoord(0, 1, 0, 1);
 end
 
 local function SetupBorder(self, styleData)
@@ -107,11 +73,38 @@ end
 CovenantMission = { }
 
 function CovenantMission:OnLoadMainFrame()
-	GarrisonFollowerMission.OnLoadMainFrame(self);
+	GarrisonMission.OnLoadMainFrame(self);
+
+	self.TitleText:Hide();
+
+	self:UpdateCurrency();
+	self:SetupMissionList();
+	self:SetupCompleteDialog();
 	self:UpdateTextures();
 	PanelTemplates_SetNumTabs(self, 2);
 	self:SelectTab(self:DefaultTab());
 	self:AssignBoardPositions();
+end
+
+local COVENANT_MISSION_EVENTS = {
+	"GARRISON_MISSION_LIST_UPDATE",
+	"CURRENCY_DISPLAY_UPDATE",
+	"GARRISON_MISSION_STARTED",
+	"GARRISON_MISSION_FINISHED",
+	"GET_ITEM_INFO_RECEIVED",
+	"GARRISON_RANDOM_MISSION_ADDED",
+	"CURRENT_SPELL_CAST_CHANGED",
+	"GARRISON_FOLLOWER_XP_CHANGED",
+};
+
+function CovenantMission:OnShowMainFrame()
+	GarrisonFollowerMission.OnShowMainFrame(self);
+	FrameUtil.RegisterFrameForEvents(self, COVENANT_MISSION_EVENTS); 
+end
+
+function CovenantMission:OnHideMainFrame()
+	GarrisonFollowerMission.OnHideMainFrame(self);
+	FrameUtil.UnregisterFrameForEvents(self, COVENANT_MISSION_EVENTS);
 end
 
 function CovenantMission:AssignBoardPositions()
@@ -250,13 +243,16 @@ function CovenantMission:GetNineSlicePiece(pieceName)
 end
 
 function CovenantMission:UpdateTextures()
-	--TODO: Crazy placeholder on art for now. 
 	local primaryCurrency, _ = C_Garrison.GetCurrencyTypes(GarrisonFollowerOptions[self.followerTypeID].garrisonType);
 	local currencyTexture = C_CurrencyInfo.GetCurrencyInfo(primaryCurrency).iconFileID;
 
 	self.MissionTab.MissionPage.CostFrame.CostIcon:SetTexture(currencyTexture);
 	self.MissionTab.MissionPage.CostFrame.CostIcon:SetSize(18, 18);
 	self.MissionTab.MissionPage.CostFrame.Cost:SetPoint("RIGHT", self.MissionTab.MissionPage.CostFrame.CostIcon, "LEFT", -8, -1);
+
+	self.FollowerTab.CostFrame.CostIcon:SetTexture(currencyTexture);
+	self.FollowerTab.CostFrame.CostIcon:SetSize(18, 18);
+	self.FollowerTab.CostFrame.Cost:SetPoint("RIGHT", self.FollowerTab.CostFrame.CostIcon, "LEFT", -8, -1);
 
 	SetupMaterialFrame(self.FollowerList.MaterialFrame, primaryCurrency, currencyTexture);
 	SetupMaterialFrame(self.MissionTab.MissionList.MaterialFrame, primaryCurrency, currencyTexture);
@@ -265,14 +261,10 @@ function CovenantMission:UpdateTextures()
 	self.MissionTab.MissionPage.Stage.MissionEnvIcon:SetSize(48,48);
 	self.MissionTab.MissionPage.Stage.MissionEnvIcon:SetPoint("LEFT", self.MissionTab.MissionPage.Stage.MissionInfo.MissionEnv, "RIGHT", -11, 0);
 
-	self.Top:SetAtlas("_StoneFrameTile-Top", true);
-	self.Bottom:SetAtlas("_StoneFrameTile-Bottom", true);
-	self.Left:SetAtlas("!StoneFrameTile-Left", true);
-	self.Right:SetAtlas("!StoneFrameTile-Left", true);
-	self.GarrCorners.TopLeftGarrCorner:SetAtlas("StoneFrameCorner-TopLeft", true);
-	self.GarrCorners.TopRightGarrCorner:SetAtlas("StoneFrameCorner-TopLeft", true);
-	self.GarrCorners.BottomLeftGarrCorner:SetAtlas("StoneFrameCorner-TopLeft", true);
-	self.GarrCorners.BottomRightGarrCorner:SetAtlas("StoneFrameCorner-TopLeft", true);
+	self.Top:SetAtlas("_AdventuresFrame-Small-Top", true);
+	self.Bottom:SetAtlas("_AdventuresFrame-Small-Top", true);
+	self.Left:SetAtlas("!AdventuresFrame-Left", true);
+	self.Right:SetAtlas("!AdventuresFrame-Left", true);
 
 	local tabs = { self.MissionTab.MissionList.Tab1, self.MissionTab.MissionList.Tab2 };
 	for _, tab in ipairs(tabs) do
@@ -292,7 +284,7 @@ function CovenantMission:UpdateTextures()
 
 	local frames = { self.FollowerTab, self.MissionTab.MissionList };
 	for _, frame in ipairs(frames) do
-		frame.BaseFrameBackground:SetAtlas("ClassHall_StoneFrame-BackgroundTile");
+		frame.BaseFrameBackground:SetAtlas("Adventures-Missions-BG-01");
 		frame.BaseFrameLeft:SetAtlas("!ClassHall_InfoBoxMission-Left");
 		frame.BaseFrameRight:SetAtlas("!ClassHall_InfoBoxMission-Left");
 		frame.BaseFrameTop:SetAtlas("_ClassHall_InfoBoxMission-Top");
@@ -303,24 +295,12 @@ function CovenantMission:UpdateTextures()
 		frame.BaseFrameBottomRight:SetAtlas("ClassHall_InfoBoxMission-Corner");
 	end
 
-	self.FollowerList.HeaderLeft:SetAtlas("ClassHall_ParchmentHeaderSelect-End-2", true);
-	self.FollowerList.HeaderLeft:SetPoint("BOTTOMLEFT", self.FollowerList, "TOPLEFT", 30, -8);
-
-	self.FollowerList.HeaderRight:SetAtlas("ClassHall_ParchmentHeaderSelect-End-2", true);
-	self.FollowerList.HeaderMid:SetAtlas("_ClassHall_ParchmentHeaderSelect-Mid", true);
-	self.FollowerList.HeaderMid:SetPoint("LEFT", self.FollowerList.HeaderLeft, "RIGHT");
-	self.FollowerList.HeaderMid:SetPoint("RIGHT", self.FollowerList.HeaderRight, "LEFT");
-	self.FollowerList.HeaderMid:SetHorizTile(false);
-	self.FollowerList.HeaderMid:SetWidth(110);
-
-	self.BackgroundTile:SetAtlas("ClassHall_InfoBoxMission-BackgroundTile");
+	self.BackgroundTile:SetAtlas("Adventures-Missions-BG-02");
 
 	local styleData = covenantGarrisonStyleData;
 
 	SetupTabOffset(self);
-	SetupTitleText(self, styleData);
 	SetupMissionList(self, styleData);
-	SetupFollowerList(self, styleData);
 	SetupBorder(self, styleData);
 end
 
@@ -371,6 +351,11 @@ function CovenantMission:RemoveFollowerFromMission(frame, updateValues)
 			frame.Abilities[i]:Hide();
 		end
 	end
+end
+
+function CovenantMission:OnShowMainFrame()
+	GarrisonFollowerMission.OnShowMainFrame(self);
+	self:SetupTabs();
 end
 
 ---------------------------------------------------------------------------------

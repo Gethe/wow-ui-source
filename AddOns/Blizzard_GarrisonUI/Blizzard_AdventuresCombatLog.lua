@@ -13,7 +13,8 @@ end
 local function IsEventOffensive(eventType) 
 	return	eventType == Enum.GarrAutoMissionEventType.MeleeDamage or
 			eventType == Enum.GarrAutoMissionEventType.RangeDamage or
-			eventType == Enum.GarrAutoMissionEventType.SpellDamage or 
+			eventType == Enum.GarrAutoMissionEventType.SpellMeleeDamage or 
+			eventType == Enum.GarrAutoMissionEventType.SpellRangeDamage or 
 			eventType == Enum.GarrAutoMissionEventType.PeriodicDamage or
 			eventType == Enum.GarrAutoMissionEventType.Died;
 end
@@ -21,7 +22,8 @@ end
 local function EventHasPoints(eventType) 
 	return	eventType == Enum.GarrAutoMissionEventType.MeleeDamage or
 			eventType == Enum.GarrAutoMissionEventType.RangeDamage or
-			eventType == Enum.GarrAutoMissionEventType.SpellDamage or 
+			eventType == Enum.GarrAutoMissionEventType.SpellMeleeDamage or 
+			eventType == Enum.GarrAutoMissionEventType.SpellRangeDamage or 
 			eventType == Enum.GarrAutoMissionEventType.PeriodicDamage or
 			eventType == Enum.GarrAutoMissionEventType.Heal or
 			eventType == Enum.GarrAutoMissionEventType.PeriodicHeal;
@@ -38,7 +40,9 @@ local function GetActionForEvent(spellName, eventType)
 		return "meleed ";
 	elseif  eventType == Enum.GarrAutoMissionEventType.RangeDamage then
 		return "shot ";
-	elseif  eventType == Enum.GarrAutoMissionEventType.SpellDamage then
+	elseif  eventType == Enum.GarrAutoMissionEventType.SpellMeleeDamage then
+		return "cast " .. spellName .. " at ";
+	elseif  eventType == Enum.GarrAutoMissionEventType.SpellRangeDamage then
 		return "cast " .. spellName .. " at ";
 	elseif  eventType == Enum.GarrAutoMissionEventType.PeriodicDamage then
 		return spellName .. " damage ticked "
@@ -133,7 +137,7 @@ end
 
 function AdventuresCombatLogMixin:GetNameAtBoardIndex(boardIndex)
 	local frame = self:GetCompleteScreen():GetFrameFromBoardIndex(boardIndex);
-	return frame.Name:GetText();
+	return frame:GetName() or "";
 end
 
 function AdventuresCombatLogMixin:GetTargetName(targetInfo)

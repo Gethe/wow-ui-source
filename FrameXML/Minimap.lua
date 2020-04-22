@@ -14,6 +14,9 @@ GARRISON_ALERT_CONTEXT_MISSION = {
 	[Enum.GarrisonFollowerType.FollowerType_6_2] = 4,
 	[Enum.GarrisonFollowerType.FollowerType_7_0] = 5,
 	[Enum.GarrisonFollowerType.FollowerType_8_0] = 6,
+
+	-- TODO:: Replace with the correct flash.
+	[Enum.GarrisonFollowerType.FollowerType_9_0] = 6,
 };
 GARRISON_ALERT_CONTEXT_INVASION = 3;
 
@@ -597,7 +600,7 @@ local garrisonType9_0AtlasFormats = {
 };
 
 local function GetMinimapAtlases_GarrisonType9_0(covenantData)
-	local kit = covenantData and covenantData.textureKit;
+	local kit = covenantData and covenantData.textureKit or "kyrian";
 	if kit then
 		local t = garrisonType9_0AtlasFormats;
 		return t[1]:format(kit), t[2]:format(kit), t[3]:format(kit), t[4]:format(kit);

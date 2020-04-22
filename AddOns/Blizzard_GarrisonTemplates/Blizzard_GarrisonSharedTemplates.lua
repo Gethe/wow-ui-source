@@ -1720,7 +1720,10 @@ local positionData = {
 function GarrisonFollowerTabMixin:ShowFollowerModel(followerInfo)
 	if (followerInfo) then
 		self.NoFollowersLabel:Hide();
-		self.PortraitFrame:Show();
+		
+		if(self.PortraitFrame) then 
+			self.PortraitFrame:Show();
+		end
 		local originX, originY = 12, -78;
 		local maxModels = #self.ModelCluster.Child.Model
 		local numShown = Clamp(#followerInfo.displayIDs, 1, maxModels);
@@ -1753,12 +1756,16 @@ function GarrisonFollowerTabMixin:ShowFollowerModel(followerInfo)
 		self.ModelCluster:Show();
 	else
 		self.NoFollowersLabel:Show();
-		self.PortraitFrame:Hide();
+		if(self.PortraitFrame) then
+			self.PortraitFrame:Hide();
+		end
 		self.ModelCluster:Hide();
 	end
 
 	GarrisonFollowerPageModelUpgrade_Update(self.ModelCluster.UpgradeFrame);
-	GarrisionFollowerPageUpgradeTarget_Update(self.UpgradeClickTarget);
+	if (self.UpgradeClickTarget) then
+		GarrisionFollowerPageUpgradeTarget_Update(self.UpgradeClickTarget);
+	end
 end
 
 
@@ -2111,7 +2118,9 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 		followerInfo.unlockableEquipment = { };
 		followerInfo.combatAllySpellIDs = { };
 	end
-	GarrisonMissionPortrait_SetFollowerPortrait(self.PortraitFrame, followerInfo);
+	if(self.PortraitFrame) then
+		GarrisonMissionPortrait_SetFollowerPortrait(self.PortraitFrame, followerInfo);
+	end
 	self.Name:SetText(followerInfo.name);
 	local color = FOLLOWER_QUALITY_COLORS[followerInfo.quality];
 	self.Name:SetVertexColor(color.r, color.g, color.b);
@@ -2212,11 +2221,16 @@ function GarrisonFollowerPageAbility_OnClick(self, button)
 end
 
 function GarrisonFollowerPageAbility_StopAnimations(self)
-	self.LargeAbilityFeedbackGlowAnim:Stop();
-	if ( self.AbilityOverwriteAnim:IsPlaying() ) then
-		self.AbilityOverwriteAnim:Stop();
-		self.IconButton.Icon:SetAlpha(1);
-		self.IconButton.OldIcon:SetAlpha(0);
+	if self.LargeAbilityFeedbackGlowAnim then
+		self.LargeAbilityFeedbackGlowAnim:Stop();
+	end
+
+	if self.AbilityOverwriteAnim then
+		if ( self.AbilityOverwriteAnim:IsPlaying() ) then
+			self.AbilityOverwriteAnim:Stop();
+			self.IconButton.Icon:SetAlpha(1);
+			self.IconButton.OldIcon:SetAlpha(0);
+		end
 	end
 end
 

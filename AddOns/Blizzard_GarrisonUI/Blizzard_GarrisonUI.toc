@@ -15,6 +15,7 @@ Blizzard_OrderHallMissionUI.xml
 Blizzard_BFAMissionUI.xml
 Blizzard_AdventuresCombatLog.xml
 Blizzard_AdventuresCompleteScreen.xml
+Blizzard_AdventuresPuck.xml
 Blizzard_AdventuresBoard.xml
 Blizzard_CovenantMissionUI.xml
 Localization.lua

@@ -2,15 +2,40 @@ local showDebugTooltipInfo = GetCVarBool("debugTargetInfo");
 
 local CHAR_CREATE_MODE_CLASS_RACE = 1;
 local CHAR_CREATE_MODE_CUSTOMIZE = 2;
-local CHAR_CREATE_MODE_STARTING_ZONE = 3;
+local CHAR_CREATE_MODE_ZONE_CHOICE = 3;
 
 local FORWARD_ARROW = true;
 local BACKWARD_ARROW = false;
 local PENDING_RANDOM_NAME = "...";
 
+local ZONE_CHOICE_ZOOM_AMOUNT = 100;
+local ZOOM_TIME_SECONDS = 0.25;
+local ROTATION_ADJUST_SECONDS = 0.25;
+
 local RaceAndClassFrame;
 local NameChoiceFrame;
 local ClassTrialSpecs;
+local ZoneChoiceFrame;
+
+NineSliceUtil.AddLayout("CharacterCreateThickBorder", {
+	TopLeftCorner =	{ atlas = "charactercreate-DiamondMetal-CornerTopLeft-8x", },
+	TopRightCorner =	{ atlas = "charactercreate-DiamondMetal-CornerTopRight-8x", },
+	BottomLeftCorner =	{ atlas = "charactercreate-DiamondMetal-CornerBottomLeft-8x", },
+	BottomRightCorner =	{ atlas = "charactercreate-DiamondMetal-CornerBottomRight-8x", },
+	TopEdge = { atlas = "_charactercreate-DiamondMetal-EdgeTop-8x", },
+	BottomEdge = { atlas = "_charactercreate-DiamondMetal-EdgeBottom-8x", },
+	LeftEdge = { atlas = "!charactercreate-DiamondMetal-EdgeLeft-8x", },
+	RightEdge = { atlas = "!charactercreate-DiamondMetal-EdgeRight-8x", },
+});
+
+GlueDialogTypes["CHARACTER_CREATE_FAILURE"] = {
+	text = "",
+	button1 = OKAY,
+	button2 = nil,
+    OnAccept = function ()
+        CharacterCreateFrame:SetMode(CHAR_CREATE_MODE_CUSTOMIZE);
+    end,
+}
 
 CharacterCreateMixin = {};
 
@@ -21,11 +46,15 @@ function CharacterCreateMixin:OnLoad()
 	self:RegisterEvent("CUSTOMIZE_CHARACTER_STARTED");
 	self:RegisterEvent("CUSTOMIZE_CHARACTER_RESULT");
 
+	self.LeftBlackBar:SetPoint("TOPLEFT", nil);
+	self.RightBlackBar:SetPoint("TOPRIGHT", nil);
+
 	C_CharacterCreation.SetCharCustomizeFrame("CharacterCreateFrame");
 
 	RaceAndClassFrame = self.RaceAndClassFrame;
 	NameChoiceFrame = self.NameChoiceFrame;
 	ClassTrialSpecs = self.ClassTrialSpecs;
+	ZoneChoiceFrame = self.ZoneChoiceFrame;
 
 	CharCustomizeFrame:AttachToParentFrame(self);
 	CharCustomizeFrame:SetScale(RaceAndClassFrame:GetScale());
@@ -33,7 +62,7 @@ function CharacterCreateMixin:OnLoad()
 	self.navBlockers = {};
 
 	self.ForwardButton.tooltip = function()
-		return self.currentNavBlocker and self.currentNavBlocker.error;
+		return self.currentNavBlocker and RED_FONT_COLOR:WrapTextInColorCode(self.currentNavBlocker.error);
 	end
 
 	self.BackButton:UpdateText(BACK, BACKWARD_ARROW);
@@ -89,7 +118,7 @@ function CharacterCreateMixin:OnEvent(event, ...)
 
 	if showError then
 		self:UpdateForwardButton();
-		GlueDialog_Show("OKAY", _G[showError]);
+		GlueDialog_Show("CHARACTER_CREATE_FAILURE", _G[showError]);
 	end
 end
 
@@ -104,7 +133,9 @@ function CharacterCreateMixin:OnShow()
 		NameChoiceFrame.EditBox:SetText("");
 	end
 
-	self:SetMode(CHAR_CREATE_MODE_CLASS_RACE);
+	local instantRotate = true;
+	self:SetMode(CHAR_CREATE_MODE_CLASS_RACE, instantRotate);
+
 	RaceAndClassFrame:UpdateState();
 end
 
@@ -125,14 +156,26 @@ end
 
 function CharacterCreateMixin:OnMouseDown(button)
 	self.lastCursorPosX = GetCursorPosition();
-	self:SetScript("OnUpdate", self.OnUpdate);
+	self.mouseRotating = true;
+	self:SetScript("OnUpdate", self.OnUpdateMouseRotate);
 end
 
 function CharacterCreateMixin:OnMouseUp(button)
 	self:SetScript("OnUpdate", nil);
+	self.mouseRotating = false;
 end
 
-function CharacterCreateMixin:OnUpdate()
+function CharacterCreateMixin:OnKeyDown(key)
+	if key == "ESCAPE" then
+		self:NavBack();
+	elseif key == "ENTER" then
+		self:NavForward();
+	elseif key == "PRINTSCREEN" then
+		Screenshot();
+	end
+end
+
+function CharacterCreateMixin:OnUpdateMouseRotate()
 	local x = GetCursorPosition();
 	local diff = (x - self.lastCursorPosX) * CHARACTER_ROTATION_CONSTANT;
 	C_CharacterCreation.SetCharacterCreateFacing(C_CharacterCreation.GetCharacterCreateFacing() + diff);
@@ -198,50 +241,83 @@ function CharacterCreateMixin:UpdateCharCustomizationFrame(alsoReset)
 	CharCustomizeFrame:SetCustomizations(customizationCategoryData);
 end
 
-function CharacterCreateMixin:SetMode(mode)
+local raceZoneChoiceZoomAmounts = {
+	Gnome = 50,
+	Pandaren = 50,
+};
+
+local factionZoneChoiceZoomAmounts = {
+	Horde = 50,
+};
+
+function CharacterCreateMixin:EnableZoneChoiceMode(enable)
+	local zoomAmount = ZONE_CHOICE_ZOOM_AMOUNT;
+	if raceZoneChoiceZoomAmounts[RaceAndClassFrame.selectedRaceData.fileName] then
+		zoomAmount = raceZoneChoiceZoomAmounts[RaceAndClassFrame.selectedRaceData.fileName];
+	elseif factionZoneChoiceZoomAmounts[RaceAndClassFrame.selectedRaceData.factionInternalName] then
+		zoomAmount = factionZoneChoiceZoomAmounts[RaceAndClassFrame.selectedRaceData.factionInternalName];
+	end
+
+	local force = true;
+	self:ZoomCamera(enable and zoomAmount or -zoomAmount, ZOOM_TIME_SECONDS, force);
+
+	if enable then
+		C_CharacterCreation.SetModelsHiddenState(true);
+	else
+		C_Timer.After(ZOOM_TIME_SECONDS, function() C_CharacterCreation.SetModelsHiddenState(false); end);
+	end
+end
+
+function CharacterCreateMixin:SetMode(mode, instantRotate)
+	self:ResetCharacterRotation(mode, instantRotate);
+
 	if self.currentMode == mode then
 		return;
 	end
 
-	self.currentMode = mode;
-	self:UpdateForwardButton();
-
-	RaceAndClassFrame:SetShown(self.currentMode == CHAR_CREATE_MODE_CLASS_RACE);
-	NameChoiceFrame:SetShown(self.currentMode == CHAR_CREATE_MODE_CUSTOMIZE);
-
-	if self.currentMode == CHAR_CREATE_MODE_CLASS_RACE then
-		self:ResetCharacterRotation();
-		
+	if mode == CHAR_CREATE_MODE_CLASS_RACE then
 		C_CharacterCreation.SetBlurEnabled(false);
 
 		self:SetCameraZoomLevel(0);
 		self:SetModelDressState(true);
 		C_CharacterCreation.SetSelectedPreviewGearType(Enum.PreviewGearType.Awesome);
 
-		self.BottomBackgroundOverlay.FadeIn:Play();
-	elseif self.currentMode == CHAR_CREATE_MODE_CUSTOMIZE then
-		-- Have to do this BEFORE entering customization mode or else the camera will jump
-		C_CharacterCreation.SetBlurEnabled(true);
+		if self.currentMode == CHAR_CREATE_MODE_CUSTOMIZE then
+			self.BottomBackgroundOverlay.FadeIn:Play();
+		end
+	elseif mode == CHAR_CREATE_MODE_CUSTOMIZE then
+		if self.currentMode == CHAR_CREATE_MODE_CLASS_RACE then
+			C_CharacterCreation.SetBlurEnabled(true);
+			C_CharacterCreation.SetSelectedPreviewGearType(Enum.PreviewGearType.Starting);
 
-		-- We are entering customize mode. Grab the customizations for the selected race & sex and send it to CharCustomizeFrame before showing it
-		local reset = true;
-		self:UpdateCharCustomizationFrame(reset);
+			self.BottomBackgroundOverlay.FadeOut:Play();
 
-		CharCustomizeFrame:SetSelectedData(RaceAndClassFrame.selectedRaceData, RaceAndClassFrame.selectedSexID, C_CharacterCreation.IsViewingAlteredForm());
-		ClassTrialSpecs:SetClass(RaceAndClassFrame.selectedClassID, RaceAndClassFrame.selectedSexID);
+			-- We are entering customize mode. Grab the customizations for the selected race & sex and send it to CharCustomizeFrame before showing it
+			local reset = true;
+			self:UpdateCharCustomizationFrame(reset);
 
-		C_CharacterCreation.SetSelectedPreviewGearType(Enum.PreviewGearType.Starting);
-
-		self.BottomBackgroundOverlay.FadeOut:Play();
+			CharCustomizeFrame:SetSelectedData(RaceAndClassFrame.selectedRaceData, RaceAndClassFrame.selectedSexID, C_CharacterCreation.IsViewingAlteredForm());
+			ClassTrialSpecs:SetClass(RaceAndClassFrame.selectedClassID, RaceAndClassFrame.selectedSexID);
+			ZoneChoiceFrame:Setup();
+		else
+			self:EnableZoneChoiceMode(false);
+		end
+	else
+		self:EnableZoneChoiceMode(true);
 	end
 
-	CharCustomizeFrame:SetShown(self.currentMode == CHAR_CREATE_MODE_CUSTOMIZE);
-	ClassTrialSpecs:SetShown(self.currentMode == CHAR_CREATE_MODE_CUSTOMIZE and (C_CharacterCreation.GetCharacterCreateType() == Enum.CharacterCreateType.TrialBoost));
+	RaceAndClassFrame:SetShown(mode == CHAR_CREATE_MODE_CLASS_RACE);
+	CharCustomizeFrame:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE);
+	ClassTrialSpecs:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE and (C_CharacterCreation.GetCharacterCreateType() == Enum.CharacterCreateType.TrialBoost));
+	NameChoiceFrame:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE);
+	ZoneChoiceFrame:SetShown(mode == CHAR_CREATE_MODE_ZONE_CHOICE);
+
+	self.currentMode = mode;
+	self:UpdateForwardButton();
 end
 
 function CharacterCreateMixin:UpdateMode(offset)
-	-- TODO: Add starting zone mode
-	self:SetMode(Clamp(self.currentMode + offset, CHAR_CREATE_MODE_CLASS_RACE, CHAR_CREATE_MODE_CUSTOMIZE))
+	self:SetMode(Clamp(self.currentMode + offset, CHAR_CREATE_MODE_CLASS_RACE, CHAR_CREATE_MODE_ZONE_CHOICE))
 end
 
 function CharacterCreateMixin:NavBack()
@@ -319,7 +395,7 @@ function CharacterCreateMixin:CreateCharacter()
 			KioskModeSplash:SetAutoEnterWorld(true);
 		end
 
-		C_CharacterCreation.CreateCharacter(self:GetSelectedName(), RaceAndClassFrame:GetCreateCharacterFaction());
+		C_CharacterCreation.CreateCharacter(self:GetSelectedName(), ZoneChoiceFrame.useNPE, RaceAndClassFrame:GetCreateCharacterFaction());
 	end
 end
 
@@ -344,12 +420,16 @@ function CharacterCreateMixin:SetViewingAlteredForm(viewingAlteredForm)
 	self:UpdateCharCustomizationFrame();
 end
 
-function CharacterCreateMixin:ResetCharacterRotation()
-	C_CharacterCreation.SetCharacterCreateFacing(-15);
+function CharacterCreateMixin:GetTargetRotation(mode)
+	return 0;
 end
 
-function CharacterCreateMixin:ZoomCamera(zoomAmount)
-	C_CharacterCreation.ZoomCamera(zoomAmount);
+function CharacterCreateMixin:ResetCharacterRotation(mode, instantRotate)
+	self:RotateCharacterToTarget(self:GetTargetRotation(mode or self.currentMode), instantRotate and 0 or ROTATION_ADJUST_SECONDS);
+end
+
+function CharacterCreateMixin:ZoomCamera(zoomAmount, zoomTime, force)
+	C_CharacterCreation.ZoomCamera(zoomAmount, zoomTime or ZOOM_TIME_SECONDS, force or false);
 end
 
 function CharacterCreateMixin:GetCurrentCameraZoom()
@@ -358,6 +438,44 @@ end
 
 function CharacterCreateMixin:RotateCharacter(rotationAmount)
 	C_CharacterCreation.SetCharacterCreateFacing(C_CharacterCreation.GetCharacterCreateFacing() + rotationAmount);
+end
+
+function CharacterCreateMixin:RotateCharacterToTarget(targetRotation, duration)
+	if not self.mouseRotating then
+		local currentRotation = C_CharacterCreation.GetCharacterCreateFacing();
+		if targetRotation == currentRotation then
+			return;
+		end
+
+		if duration == 0 then
+			C_CharacterCreation.SetCharacterCreateFacing(targetRotation);
+			return;
+		end
+
+		local rotationDiff = targetRotation - currentRotation;
+		self.isRotationNegative = (rotationDiff < 0);
+		self.perSecondRotation = rotationDiff / duration;
+		self.targetRotation = targetRotation;
+		self:SetScript("OnUpdate", self.OnUpdateRotateCharacterToTarget);
+	end
+end
+
+function CharacterCreateMixin:OnUpdateRotateCharacterToTarget(elapsed)
+	local rotateAmount = self.perSecondRotation * elapsed;
+	local currentRotation = C_CharacterCreation.GetCharacterCreateFacing();
+	local newRotation = currentRotation + rotateAmount;
+	local reachedTarget = false;
+	if self.isRotationNegative then
+		reachedTarget = (newRotation <= self.targetRotation);
+	else
+		reachedTarget = (newRotation >= self.targetRotation);
+	end
+	if reachedTarget then
+		C_CharacterCreation.SetCharacterCreateFacing(self.targetRotation);
+		self:SetScript("OnUpdate", nil);
+	else
+		C_CharacterCreation.SetCharacterCreateFacing(newRotation);
+	end
 end
 
 function CharacterCreateMixin:RandomizeAppearance()
@@ -370,8 +488,10 @@ function CharacterCreateMixin:NavForward()
 		if self.currentMode == CHAR_CREATE_MODE_CLASS_RACE then
 			PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
 			self:UpdateMode(1);
+		elseif self.currentMode == CHAR_CREATE_MODE_CUSTOMIZE and ZoneChoiceFrame:ShouldShow() then
+			PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
+			self:UpdateMode(1);
 		else
-			-- TODO: Add starting zone mode
 			PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CREATE_CHAR);
 			self:CreateCharacter();
 			self.ForwardButton:SetEnabled(false);
@@ -382,13 +502,12 @@ end
 function CharacterCreateMixin:UpdateForwardButton()
 	if self.currentMode == CHAR_CREATE_MODE_CLASS_RACE then
 		self.ForwardButton:UpdateText(CUSTOMIZE, FORWARD_ARROW);
-	-- TODO: Add starting zone mode
-	--[[elseif self.currentMode == CHAR_CREATE_MODE_CUSTOMIZE then
-		if C_CharacterCreation.IsNewPlayerRestricted() then
-			self.ForwardButton:UpdateText(FINISH);
-		else
+	elseif self.currentMode == CHAR_CREATE_MODE_CUSTOMIZE then
+		if ZoneChoiceFrame:ShouldShow() then
 			self.ForwardButton:UpdateText(NEXT, FORWARD_ARROW);
-		end]]--
+		else
+			self.ForwardButton:UpdateText(FINISH);
+		end
 	else
 		self.ForwardButton:UpdateText(FINISH);
 	end
@@ -720,9 +839,14 @@ function CharacterCreateRaceAndClassMixin:GetCreateCharacterFaction()
 	if self.ClassTrialCheckButton.Button:GetChecked() then
 		-- Class Trials need to use no faction...their faction choice is sent up separately after the character is created
 		return nil;
-	elseif self.selectedRaceData.isNeutralRace and not self.selectedClassData.earlyFactionChoice then
-		-- For neutral races, if the class selected is not an earlyFactionChoice class (DK) we also need to use no faction because they are Nuetral at level 1
-		return nil;
+	elseif self.selectedRaceData.isNeutralRace then
+		if C_CharacterCreation.IsUsingCharacterTemplate() or self.selectedClassData.earlyFactionChoice or ZoneChoiceFrame.useNPE then
+			-- For neutral races, if the player is using a character template, selected an earlyFactionChoice class (DK) or chose to start in the NPE we need to pass back the selected faction
+			return self.selectedFaction;
+		else
+			-- Otherwise they start as neutral so pass back nil
+			return nil;
+		end
 	else
 		return self.selectedFaction;
 	end
@@ -739,8 +863,7 @@ function CharacterCreateRaceAndClassMixin:OnShow()
 
 	self.ClassTrialCheckButton:ClearTooltipLines();
 	self.ClassTrialCheckButton:AddTooltipLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP:format(C_CharacterCreation.GetTrialBoostStartingLevel()));
-	-- Always hiding the class trial button until after the CN/alpha build
-	--self.ClassTrialCheckButton:SetShown(not isNewPlayerRestricted and not CharacterCreateFrame.paidServiceType);
+	self.ClassTrialCheckButton:SetShown(not isNewPlayerRestricted and not CharacterCreateFrame.paidServiceType);
 
 	self:SetupTargetDummies(true);
 	self:PlayClassAnimations(true);
@@ -960,14 +1083,14 @@ function CharacterCreateEditBoxMixin:OnEnterPressed()
 	CharacterCreateFrame:NavForward();
 end
 
-function CharacterCreateEditBoxMixin:UpdateState()
+function CharacterCreateEditBoxMixin:OnTextChanged()
 	local selectedName = self:GetText();
 	if selectedName == "" or selectedName == PENDING_RANDOM_NAME then
 		CharacterCreateFrame:AddNavBlocker(CHARACTER_CREATION_REQUIREMENTS_PICK_NAME, HIGH_PRIORITY);
-		self.ClearButton:Hide();
+		self.NameAvailabilityState:Hide();
 	else
 		CharacterCreateFrame:RemoveNavBlocker(CHARACTER_CREATION_REQUIREMENTS_PICK_NAME);
-		self.ClearButton:Show();
+		self.NameAvailabilityState:CheckName(selectedName);
 	end
 end
 
@@ -976,14 +1099,94 @@ function CharacterCreateEditBoxMixin:OnEvent(event, ...)
 		local success, name = ...;
 		if not success then
 			-- Failed.  Generate a random name locally.
-			self:SetText(C_CharacterCreation.GenerateRandomName());
-		else
-			-- Succeeded.  Use what the server sent.
-			self:SetText(name);
+			name = C_CharacterCreation.GenerateRandomName();
 		end
+
+		self.NameAvailabilityState.lastRandomName = name;
+		self:SetText(name);
+
 		self:GetParent().RandomNameButton.pendingRequest = false;
 		PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_LOOK);
 	end
+end
+
+CharacterCreateNameAvailabilityStateMixin = {};
+
+function CharacterCreateNameAvailabilityStateMixin:OnLoad()
+	self:RegisterEvent("CHECK_CHARACTER_NAME_AVAILABILITY_RESULT");
+end
+
+function CharacterCreateNameAvailabilityStateMixin:SetupAnchors(tooltip)
+	tooltip:SetOwner(self, "ANCHOR_NONE");
+	tooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT", self.tooltipXOffset, self.tooltipYOffset);
+end
+
+function CharacterCreateNameAvailabilityStateMixin:OnEvent(event, ...)
+	local available, checkedName = ...;
+
+	-- First make sure that the checked name is still what is in the box
+	if checkedName == self:GetParent():GetText() then
+		-- ok they match, so update the state
+		self:UpdateState(available, CHAR_CREATE_NAME_IN_USE);
+	end
+end
+
+local CHECK_NAME_WAIT_TIME_SECONDS = 1;
+
+function CharacterCreateNameAvailabilityStateMixin:CheckName(nameToCheck)
+	self:Hide();
+
+	self:UpdateNavBlocker(nil);
+
+	if self.Timer then
+		self.Timer:Cancel();
+	end
+
+	local function checkName()
+		local valid, reason = C_CharacterCreation.IsCharacterNameValid(nameToCheck);
+		if not valid then
+			self:UpdateState(false, _G[reason]);
+			return;
+		end
+
+		-- The name is valid, so next request the availability be checked
+		C_CharacterCreation.RequestCheckNameAvailability(nameToCheck);
+	end
+
+	if nameToCheck == self.lastRandomName then
+		self:UpdateState(true);
+	else
+		self.Timer = C_Timer.NewTimer(CHECK_NAME_WAIT_TIME_SECONDS, checkName);
+	end
+end
+
+function CharacterCreateNameAvailabilityStateMixin:UpdateNavBlocker(navBlocker)
+	if self.navBlocker then
+		CharacterCreateFrame:RemoveNavBlocker(self.navBlocker);
+	end
+
+	if navBlocker then
+		CharacterCreateFrame:AddNavBlocker(navBlocker);
+	end
+
+	self.navBlocker = navBlocker;
+end
+
+function CharacterCreateNameAvailabilityStateMixin:UpdateState(available, failureReason)
+	self:ClearTooltipLines();
+
+	if available then
+		self:AddTooltipLine(CHAR_CREATE_NAME_AVILABLE, GREEN_FONT_COLOR);
+		self:SetNormalAtlas("common-icon-checkmark");
+		self:SetHighlightAtlas("common-icon-checkmark", "ADD");
+	else
+		self:UpdateNavBlocker(failureReason);
+		self:AddTooltipLine(failureReason, RED_FONT_COLOR);
+		self:SetNormalAtlas("common-icon-redx");
+		self:SetHighlightAtlas("common-icon-redx", "ADD");
+	end
+
+	self:Show();
 end
 
 CharacterCreateRandomNameButtonMixin = {};
@@ -1047,4 +1250,75 @@ function CharacterCreateClassTrialSpecsMixin:UpdateButtons()
 
 	self:UpdateNavBlocker();
 	self:Layout();
+end
+
+CharacterCreateZoneChoiceMixin = {}
+
+function CharacterCreateZoneChoiceMixin:OnLoad()
+	self.NPEZone:SetZoneInfo(EXILES_REACH, "charactercreate-startingzone-exilesreach");
+	self:SetUseNPE(true);
+end
+
+function CharacterCreateZoneChoiceMixin:OnShow()
+	self.FadeIn:Play();
+end
+
+function CharacterCreateZoneChoiceMixin:OnHide()
+	self.FadeIn:Stop();
+end
+
+function CharacterCreateZoneChoiceMixin:Setup()
+	local firstZoneChoiceInfo, secondZoneChoiceInfo = C_CharacterCreation.GetStartingZoneChoices(RaceAndClassFrame.selectedFaction);
+
+	if not secondZoneChoiceInfo or CharacterCreateFrame.paidServiceType then
+		self:SetUseNPE(firstZoneChoiceInfo.isNPE);
+		self.shouldShow = false;
+		return;
+	end
+
+	self.shouldShow = true;
+
+	-- If there is more than one choice, the normal starting zone will always be first
+	self.NormalStartingZone:SetZoneInfo(firstZoneChoiceInfo.zoneName, firstZoneChoiceInfo.zoneImageAtlas);
+end
+
+function CharacterCreateZoneChoiceMixin:ShouldShow()
+	return self.shouldShow;
+end
+
+function CharacterCreateZoneChoiceMixin:UpdateButtons()
+	self.NPEZone.ZoneNameButton.Button:SetChecked(self.useNPE);
+	self.NormalStartingZone.ZoneNameButton.Button:SetChecked(not self.useNPE);
+end
+
+function CharacterCreateZoneChoiceMixin:SetUseNPE(useNPE)
+	self.useNPE = useNPE;
+	self:UpdateButtons();
+end
+
+CharacterCreateStartingZoneMixin = {};
+
+function CharacterCreateStartingZoneMixin:SetZoneInfo(zoneName, zoneAtlas)
+	self.ZoneArt.BGTex:SetAtlas(zoneAtlas);
+	self.ZoneNameButton.Label:SetText(zoneName);
+end
+
+CharacterCreateStartingZoneArtMixin = {};
+
+function CharacterCreateStartingZoneArtMixin:OnEnter()
+	self:GetParent().ZoneNameButton.Button:LockHighlight();
+end
+
+function CharacterCreateStartingZoneArtMixin:OnLeave()
+	self:GetParent().ZoneNameButton.Button:UnlockHighlight();
+end
+
+function CharacterCreateStartingZoneArtMixin:OnClick()
+	ZoneChoiceFrame:SetUseNPE(self:GetParent().isNPE);
+end
+
+CharacterCreateStartingZoneButtonMixin = {};
+
+function CharacterCreateStartingZoneButtonMixin:OnCheckButtonClick()
+	ZoneChoiceFrame:SetUseNPE(self:GetParent().isNPE);
 end

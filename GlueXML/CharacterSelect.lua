@@ -116,6 +116,9 @@ function CharacterSelect_OnLoad(self)
     CharacterSelectModel:SetSequence(0);
     CharacterSelectModel:SetCamera(0);
 
+	self.LeftBlackBar:SetPoint("TOPLEFT", nil);
+	self.RightBlackBar:SetPoint("TOPRIGHT", nil);
+
     self.createIndex = 0;
     self.selectedIndex = 0;
 	self.selectLast = false;

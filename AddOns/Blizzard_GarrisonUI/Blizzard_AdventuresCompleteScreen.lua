@@ -2,18 +2,59 @@
 -- TODO:: Replace this with the final model scene.
 local AdventuresModelSceneID = 343;
 
+-- TODO:: Find a proper default value
+local SlowSpeed = 1.35;
+local FastSpeed = 2 * SlowSpeed;
+
+
+AdventuresCompleteScreenContinueButtonMixin = {};
+
+function AdventuresCompleteScreenContinueButtonMixin:OnClick()
+	local completeScreen = self:GetParent():GetParent();
+	completeScreen:CloseMissionComplete();
+end
+
+
+AdventuresCompleteScreenSpeedButtonMixin = {};
+
+function AdventuresCompleteScreenSpeedButtonMixin:OnClick()
+	local completeScreen = self:GetParent():GetParent();
+	completeScreen:ToggleReplaySpeed();
+end
+
+
+AdventuresCompleteScreenReplayButtonMixin = {};
+
+function AdventuresCompleteScreenReplayButtonMixin:OnClick()
+	local completeScreen = self:GetParent():GetParent();
+	completeScreen:ResetReplay();
+end
+
 
 AdventuresCompleteScreenMixin = {};
+
+local AdventuresCompleteScreenEvents = {
+	"GARRISON_MISSION_COMPLETE_RESPONSE",
+};
+
+function AdventuresCompleteScreenMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, AdventuresCompleteScreenEvents);
+end
+
+function AdventuresCompleteScreenMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, AdventuresCompleteScreenEvents);
+end
 
 function AdventuresCompleteScreenMixin:OnLoad()
 	GarrisonMissionComplete.OnLoad(self);
 
+	self.replaySpeed = SlowSpeed;
 
 	self.ModelScene:SetFromModelSceneID(AdventuresModelSceneID);
+	self.ModelScene:SetEffectSpeed(self.replaySpeed);
 end
 
--- Set dynamically.
-function AdventuresCompleteScreenMixin:OnUpdate(elapsed)
+function AdventuresCompleteScreenMixin:UpdateMissionReplay(elapsed)
 	self.replayTimeElapsed = self.replayTimeElapsed + (elapsed * self:GetReplaySpeed());
 	self:AdvanceReplay();
 end
@@ -24,30 +65,47 @@ function AdventuresCompleteScreenMixin:OnEvent(event, ...)
 	end
 end
 
+function AdventuresCompleteScreenMixin:SetAnimationControl()
+end
+
+function AdventuresCompleteScreenMixin:CloseMissionComplete()
+	if self.currentMission then
+		C_Garrison.MissionBonusRoll(self.currentMission.missionID);
+	end
+	
+	self:GetCovenantMissionFrame():CloseMissionComplete();
+end
+
 function AdventuresCompleteScreenMixin:GetFrameFromBoardIndex(boardIndex)
-	return self.Stage.Board:GetFrameByBoardIndex(boardIndex);
+	return self.Board:GetFrameByBoardIndex(boardIndex);
 end
 
 function AdventuresCompleteScreenMixin:SetCurrentMission(mission)
 	self.currentMission = mission;
+   	self.missionEncounters = C_Garrison.GetMissionCompleteEncounters(mission.missionID);
 
-	self.Stage.Board:Reset();
+   	self.followerGUIDToInfo = {};
+   	for i, followerGUID in ipairs(mission.followers) do
+   		self.followerGUIDToInfo[followerGUID] = C_Garrison.GetFollowerMissionCompleteInfo(followerGUID);	
+   	end
 
-   	self.NextMissionButton:Enable();
-   
-   	local stage = self.Stage;
-   	stage.Board.FollowerContainer:Show();
-   	stage.Board.EnemyContainer.FadeOut:Stop();
-   	stage.Board.EnemyContainer:Show();
+   	self:ResetMissionDisplay();
 
-   	local missionInfo = stage.MissionInfo;
+   	C_Garrison.MarkMissionComplete(self.currentMission.missionID);
+
+   	-- TEMP:: Claim rewards so the mission disappears.
+   	C_Garrison.MissionBonusRoll(self.currentMission.missionID);
+end
+
+function AdventuresCompleteScreenMixin:ResetMissionDisplay()
+	local mission = self.currentMission;
+
+   	local board = self.Board;
+   	board:Reset();
+
+   	local missionInfo = self.MissionInfo;
    	missionInfo.Title:SetText(mission.name);
    	GarrisonTruncationFrame_Check(missionInfo.Title);
-   
-   	self.LoadingFrame:Hide();
-   
-   	self:StopAnims();
-   	self.rollCompleted = false;
    
    	-- rare
    	local color = mission.isRare and RARE_MISSION_COLOR or BLACK_FONT_COLOR;
@@ -55,75 +113,74 @@ function AdventuresCompleteScreenMixin:SetCurrentMission(mission)
    	local a = 0.4;
    	missionInfo.IconBG:SetVertexColor(r, g, b, a);
 
-   	local missionDeploymentInfo = C_Garrison.GetMissionDeploymentInfo(mission.missionID);
    	missionInfo.MissionType:SetAtlas(mission.typeAtlas, true);
    
-   	local encounters = C_Garrison.GetMissionCompleteEncounters(mission.missionID);
-   	for i, encounter in ipairs(encounters) do
+   	for i, encounter in ipairs(self.missionEncounters) do
    		local encounterFrame = self:GetFrameFromBoardIndex(encounter.boardIndex);
-   		encounterFrame.Name:SetText(encounter.name);
-		encounterFrame.Name:Show();
-   		encounterFrame.displayID = encounter.displayID;
-   		GarrisonEnemyPortait_Set(encounterFrame.Portrait, encounter.portraitFileDataID);
-   		-- encounterFrame.Elite:Hide();
+   		encounterFrame:SetEncounter(encounter);
+   		encounterFrame:Show();
    	end
    
-   	self.pendingXPAwards = { };
-   	self.animInfo = {};
-   	stage.followers = {};
    	local encounterIndex = 1;
-   	for missionFollowerIndex = 1, #mission.followers do
-   		local missionCompleteInfo = C_Garrison.GetFollowerMissionCompleteInfo(mission.followers[missionFollowerIndex]);						
+   	for i, followerGUID in ipairs(mission.followers) do
+   		local missionCompleteInfo = self.followerGUIDToInfo[followerGUID];			
    		local followerFrame = self:GetFrameFromBoardIndex(missionCompleteInfo.boardIndex);
-
-   		if followerFrame then
-   			followerFrame.followerID = mission.followers[missionFollowerIndex];
-   			self:SetFollowerData(followerFrame, missionCompleteInfo.name, missionCompleteInfo.className, missionCompleteInfo.classAtlas, missionCompleteInfo.portraitIconID, missionCompleteInfo.textureKit);
-   			local followerInfo = C_Garrison.GetFollowerInfo(followerFrame.followerID);
-   			self:SetFollowerLevel(followerFrame, followerInfo);
-
-   			stage.followers[missionFollowerIndex] = {
-				displayIDs = missionCompleteInfo.displayIDs,
-				height = missionCompleteInfo.height,
-				scale = missionCompleteInfo.scale,
-				followerID = mission.followers[missionFollowerIndex],
-				isTroop = isTroop,
-				durability = followerInfo.durability,
-				maxDurability = followerInfo.maxDurability
-			};
-   		end
+		followerFrame:SetFollowerGUID(followerGUID, missionCompleteInfo);
+		followerFrame:Show();
    	end
-
-   	C_Garrison.MarkMissionComplete(mission.missionID);
 end
 
 function AdventuresCompleteScreenMixin:OnMissionCompleteResponse(missionID, canComplete, succeeded, overmaxSucceeded, followerDeaths, autoCombatResult)
 	if self.currentMission and self.currentMission.missionID == missionID then
-		self.NextMissionButton:Enable();
-
+		self.autoCombatResult = autoCombatResult;
 		if autoCombatResult then
-			self:StartMissionReplay(autoCombatResult);
-		end
-
-		-- TODO:: We're automatically completing missions temporarily.
-		if canComplete then
-			C_Garrison.MissionBonusRoll(self.currentMission.missionID);
+			self:StartMissionReplay();
 		end
 	end
 end
 
-function AdventuresCompleteScreenMixin:StartMissionReplay(autoCombatResult)
+function AdventuresCompleteScreenMixin:ResetReplay()
+	self.ModelScene:ClearEffects();
+	self:ResetMissionDisplay();
+	self:StartMissionReplay();
+end
+
+function AdventuresCompleteScreenMixin:StartMissionReplay()
 	self.AdventuresCombatLog:Clear();
-	self.autoCombatResult = autoCombatResult;
 	self.replayTimeElapsed = 0;
-	self:SetScript("OnUpdate", AdventuresCompleteScreenMixin.OnUpdate);
+	self.replayRoundIndex = 1;
+	self:SetScript("OnUpdate", AdventuresCompleteScreenMixin.UpdateMissionReplay);
 
 	local roundIndex = 1;
 	self:StartReplayRound(roundIndex);
 end
 
 function AdventuresCompleteScreenMixin:GetReplaySpeed()
-	return 1.0;
+	return self.replaySpeed;
+end
+
+function AdventuresCompleteScreenMixin:ToggleReplaySpeed()
+	if self.replaySpeed > SlowSpeed then
+		self:SetReplaySpeed(SlowSpeed);
+	else
+		self:SetReplaySpeed(FastSpeed);
+	end
+end
+
+function AdventuresCompleteScreenMixin:SetReplaySpeed(replaySpeed)
+	self.replaySpeed = replaySpeed;
+
+	self.ModelScene:SetEffectSpeed(replaySpeed);
+
+	if self:IsReplaySpeedFast() then
+		self.CompleteFrame.SpeedButton:LockHighlight();
+	else
+		self.CompleteFrame.SpeedButton:UnlockHighlight();
+	end
+end
+
+function AdventuresCompleteScreenMixin:IsReplaySpeedFast()
+	return self.replaySpeed > SlowSpeed;
 end
 
 function AdventuresCompleteScreenMixin:GetReplayRound(roundIndex)
@@ -146,6 +203,7 @@ function AdventuresCompleteScreenMixin:StartReplayRound(roundIndex)
 	self.replayRoundIndex = roundIndex;
 	self.roundStartTime = self:GetReplayTimeElapsed();
 	self.AdventuresCombatLog:AddCombatRoundHeader(roundIndex);
+	self.Board:UpdateCooldownsFromNewRound();
 
 	local eventIndex = 1;
 	self:StartReplayEvent(roundIndex, eventIndex);
@@ -158,6 +216,7 @@ function AdventuresCompleteScreenMixin:StartReplayEvent(roundIndex, eventIndex)
 	local round = self:GetReplayRound(roundIndex);
 	local event = round.events[eventIndex];
 	self.AdventuresCombatLog:AddCombatEvent(event);
+	self.Board:UpdateCooldownsFromEvent(event);
 	self:PlayReplayEffect(event);
 end
 
@@ -168,35 +227,35 @@ local function GetEffectForEvent(combatLogEvent)
 		return ScriptedAnimationEffectsUtil.NamedEffectIDs.MeleeAttack;
 	elseif eventType == Enum.GarrAutoMissionEventType.RangeDamage then
 		return ScriptedAnimationEffectsUtil.NamedEffectIDs.Fireball;
-	elseif eventType == Enum.GarrAutoMissionEventType.SpellDamage then
+	elseif eventType == Enum.GarrAutoMissionEventType.SpellMeleeDamage then
+		return ScriptedAnimationEffectsUtil.NamedEffectIDs.Fireball;
+	elseif eventType == Enum.GarrAutoMissionEventType.SpellRangeDamage then
 		return ScriptedAnimationEffectsUtil.NamedEffectIDs.Fireball;
 	elseif eventType == Enum.GarrAutoMissionEventType.PeriodicDamage then
-		return ScriptedAnimationEffectsUtil.NamedEffectIDs.ShockTarget;
-	elseif eventType == Enum.GarrAutoMissionEventType.ApplyAura then
 		return ScriptedAnimationEffectsUtil.NamedEffectIDs.ShockTarget;
 	elseif eventType == Enum.GarrAutoMissionEventType.Heal then
 		return ScriptedAnimationEffectsUtil.NamedEffectIDs.Regrowth;
 	elseif eventType == Enum.GarrAutoMissionEventType.PeriodicHeal then
 		return ScriptedAnimationEffectsUtil.NamedEffectIDs.Regrowth;
-	elseif eventType == Enum.GarrAutoMissionEventType.Died then
-		return ScriptedAnimationEffectsUtil.NamedEffectIDs.ShockTarget;
-	elseif eventType == Enum.GarrAutoMissionEventType.RemoveAura then
-		return ScriptedAnimationEffectsUtil.NamedEffectIDs.ShockTarget;
-	else
-		return ScriptedAnimationEffectsUtil.NamedEffectIDs.Fireball;
 	end
+
+	return nil;
 end
 
 function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)	
 	local effect = GetEffectForEvent(combatLogEvent);
-	local function EffectOnFinish()
-		self.Stage.Board:AddCombatEventText(combatLogEvent);
-	end
+	if effect then
+		local function EffectOnFinish()
+			self.Board:AddCombatEventText(combatLogEvent);
+		end
 
-	local sourceFrame = self:GetFrameFromBoardIndex(combatLogEvent.casterBoardIndex);
-	for i, target in ipairs(combatLogEvent.targetInfo) do
-		local targetFrame = self:GetFrameFromBoardIndex(target.boardIndex);
-		self.ModelScene:AddEffect(effect, sourceFrame, targetFrame, EffectOnFinish);
+		local sourceFrame = self:GetFrameFromBoardIndex(combatLogEvent.casterBoardIndex);
+		for i, target in ipairs(combatLogEvent.targetInfo) do
+			local targetFrame = self:GetFrameFromBoardIndex(target.boardIndex);
+			self.ModelScene:AddEffect(effect, sourceFrame, targetFrame, EffectOnFinish);
+		end
+	else
+		self.Board:AddCombatEventText(combatLogEvent);
 	end
 end
 

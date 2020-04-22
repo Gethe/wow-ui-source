@@ -101,7 +101,7 @@ local QuestLog =
 
 			Returns =
 			{
-				{ Name = "bounties", Type = "table", InnerType = "MapBountyInfo", Nilable = true },
+				{ Name = "bounties", Type = "table", InnerType = "BountyInfo", Nilable = true },
 			},
 		},
 		{
@@ -1152,18 +1152,6 @@ local QuestLog =
 				{ Name = "Common", Type = "WorldQuestQuality", EnumValue = 0 },
 				{ Name = "Rare", Type = "WorldQuestQuality", EnumValue = 1 },
 				{ Name = "Epic", Type = "WorldQuestQuality", EnumValue = 2 },
-			},
-		},
-		{
-			Name = "MapBountyInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "questID", Type = "number", Nilable = false },
-				{ Name = "factionID", Type = "number", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
-				{ Name = "numObjectives", Type = "number", Nilable = false },
-				{ Name = "turninRequirementText", Type = "string", Nilable = true },
 			},
 		},
 		{

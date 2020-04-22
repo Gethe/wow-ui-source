@@ -27,6 +27,8 @@ do
 	end
 
 	function CampaignOverviewMixin:OnHide()
+		self.linePool:ReleaseAll();
+		self.texturePool:ReleaseAll();
 		FrameUtil.UnregisterFrameForEvents(self, dynamicEvents);
 	end
 end

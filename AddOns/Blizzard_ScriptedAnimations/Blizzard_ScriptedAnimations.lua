@@ -104,8 +104,8 @@ function ScriptAnimatedModelSceneMixin:OnShow()
 	self.centerX, self.centerY = self:GetCenter();
 end
 
-function ScriptAnimatedModelSceneMixin:OnUpdate(...)
-	ModelSceneMixin.OnUpdate(self, ...);
+function ScriptAnimatedModelSceneMixin:OnUpdate(elapsed, ...)
+	ModelSceneMixin.OnUpdate(self, elapsed, ...);
 
 	if not self.centerX then
 		self.centerX, self.centerY = self:GetCenter();
@@ -127,8 +127,9 @@ function ScriptAnimatedModelSceneMixin:OnUpdate(...)
 
 	self.effectActors = remainingActors;
 
+	local modifiedElapsed = elapsed * self:GetEffectSpeed();
 	for i, effectActor in ipairs(self.effectActors) do
-		effectActor:DeltaUpdate(...);
+		effectActor:DeltaUpdate(modifiedElapsed, ...);
 	end
 end
 
@@ -164,6 +165,23 @@ function ScriptAnimatedModelSceneMixin:AddEffect(effectID, source, target, onFin
 	actor:Show();
 
 	table.insert(self.effectActors, actor);
+end
+
+function ScriptAnimatedModelSceneMixin:SetEffectSpeed(speed)
+	self.effectSpeed = speed;
+end
+
+function ScriptAnimatedModelSceneMixin:GetEffectSpeed()
+	return self.effectSpeed or 1.0;
+end
+
+function ScriptAnimatedModelSceneMixin:ClearEffects()
+	for i, effectActor in ipairs(self.effectActors) do
+		effectActor:OnFinish();
+		self:ReleaseActor(effectActor);
+	end
+
+	self.effectActors = {};
 end
 
 function ScriptAnimatedModelSceneMixin:SetActorPositionFromPixels(actor, x, y, z)

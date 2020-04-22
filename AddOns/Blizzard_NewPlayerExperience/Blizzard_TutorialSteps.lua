@@ -40,11 +40,22 @@ function Class_CreatureRangeWatcher:UNIT_TARGET()
 		local creatureID = TutorialHelper:GetCreatureIDFromGUID(unitGUID);
 		for i, target in ipairs(self.targets) do
 			if creatureID == target then
-				local content = {text = TutorialHelper:FormatString(self.screenString), icon=self.icon};
-				self.PointerID = self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low);
-				NPE_RangeManager:Shutdown();
-				NPE_RangeManager:StartWatching(creatureID, NPE_RangeManager.Type.Unit, self.range, function() self:Complete(); end);
-				return;
+				
+				local playerX, playerY = UnitPosition("player");
+				local targetX, targetY = UnitPosition("target");
+				local squaredDistance = math.pow(targetX - playerX, 2) + math.pow(targetY - playerY, 2);
+
+				local squaredRange = math.pow(self.range, 2);
+				if (squaredDistance >= squaredRange) then
+					local content = {text = TutorialHelper:FormatString(self.screenString), icon=self.icon};
+					self.PointerID = self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low);
+					NPE_RangeManager:Shutdown();
+					NPE_RangeManager:StartWatching(creatureID, NPE_RangeManager.Type.Unit, self.range, function() self:Complete(); end);
+					return;
+				else
+					self:Complete();
+					return;
+				end
 			end
 		end
 	end
@@ -191,12 +202,23 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_Intro_KeyboardMouse = class("Intro_KeyboardMouse", Class_TutorialBase);
 function Class_Intro_KeyboardMouse:OnBegin()
+	Dispatcher:RegisterEvent("QUEST_DETAIL", self);
+
 	self:HideScreenTutorial();
 
 	C_Timer.After(2, function()
 		self:ShowMouseKeyboardTutorial();
 	end);
 	EventRegistry:RegisterCallback("NPE_TutorialKeyboardMouseFrame.Closed", self.TutorialClosed, self);
+end
+
+function Class_Intro_KeyboardMouse:QUEST_DETAIL(logindex, questID)
+	EventRegistry:RegisterCallback("NPE_TutorialKeyboardMouseFrame.Closed", nil, self);
+	
+	NPE_TutorialKeyboardMouseFrame_Frame:HideTutorial();
+	self:Complete();
+	Tutorials.Intro_CameraLook:Complete();
+	Tutorials.Intro_ApproachQuestGiver:Complete();
 end
 
 function Class_Intro_KeyboardMouse:TutorialClosed()
@@ -216,8 +238,6 @@ function Class_Intro_CameraLook:OnBegin()
 	self.PlayerHasLooked = false;
 	local content = {text = NPEV2_INTRO_CAMERA_LOOK, icon="newplayertutorial-icon-mouse-turn"};
 	self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low);
-
-	print(GetBindingKey("MOVEFORWARD"));
 
 	Dispatcher:RegisterEvent("PLAYER_STARTED_TURNING", self);
 	Dispatcher:RegisterEvent("PLAYER_STOPPED_TURNING", self);
@@ -259,7 +279,7 @@ end
 
 function Class_Intro_ApproachQuestGiver:OnComplete()
 	self:HideWalkTutorial();
-	Tutorials.Intro_Interact:Begin(); 
+	Tutorials.Intro_Interact:Begin();
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -497,7 +517,7 @@ function Class_AcceptQuest:OnBegin()
 		self:Complete();
 		end, true);
 
-	self.Timer = C_Timer.NewTimer(4, function() ActionButton_ShowOverlayGlow(QuestFrameAcceptButton) end);
+	self.Timer = C_Timer.NewTimer(4, function() NPE_TutorialButtonPulseGlow:Show(QuestFrameAcceptButton) end);
 end
 
 function Class_AcceptQuest:QUEST_ACCEPTED()
@@ -508,7 +528,7 @@ function Class_AcceptQuest:OnComplete()
 	if self.Timer then
 		self.Timer:Cancel();
 	end
-	ActionButton_HideOverlayGlow(QuestFrameAcceptButton);
+	NPE_TutorialButtonPulseGlow:Hide(QuestFrameAcceptButton);
 end
 
 
@@ -559,14 +579,14 @@ function Class_TurnInQuest:OnBegin()
 		self:Complete() 
 		end, true);
 
-	self.Timer = C_Timer.NewTimer(4, function() ActionButton_ShowOverlayGlow(QuestFrameCompleteQuestButton) end);
+	self.Timer = C_Timer.NewTimer(4, function() NPE_TutorialButtonPulseGlow:Show(QuestFrameCompleteQuestButton) end);
 end
 
 function Class_TurnInQuest:OnComplete()
 	if self.Timer then
 		self.Timer:Cancel();
 	end
-	ActionButton_HideOverlayGlow(QuestFrameCompleteQuestButton);
+	NPE_TutorialButtonPulseGlow:Hide(QuestFrameCompleteQuestButton);
 end
 
 
@@ -676,7 +696,8 @@ function Class_LevelUpTutorial:PLAYER_LEVEL_CHANGED(originallevel, newLevel)
 	Tutorials.Hide_BagsBar:Complete();
 	Tutorials.Hide_SpellbookMicroButton:Complete();
 
-	if newLevel > 1 and newLevel < 10 then 
+	if newLevel > 1 and newLevel < 10 then
+		Tutorials.ShowBags:Suppress();
 		LevelUpTutorial_spellIDlookUp = TutorialHelper:FilterByClass(TutorialData.LevelAbilitiesTable);
 		local spellID = LevelUpTutorial_spellIDlookUp[newLevel];
 		if spellID then
@@ -748,18 +769,37 @@ function Class_AddSpellToActionBar:RemindAbility()
 	local tutorialString = NPEV2_SPELLBOOKREMINDER:format(self.spellIDString);
 	tutorialString = TutorialHelper:FormatString(tutorialString)
 	
-	local spellBtn;
+	-- find an empty button
+	local actionButton;
+	for i = 1, 12 do
+		local btn = _G["ActionButton" .. i];
+		local _, sID = GetActionInfo(btn.action);
+		if not sID then
+			actionButton = btn;
+			break;
+		end
+	end
+
+	-- find the spell button
+	local spellButton;
 	local buttonIndex = SpellBookFrame_OpenToSpell(self.spellToAdd);
 	if buttonIndex then
-		spellBtn = _G["SpellButton" .. buttonIndex];
+		spellButton = _G["SpellButton" .. buttonIndex];
 	end
-	self:ShowPointerTutorial(tutorialString, "LEFT", spellBtn or SpellBookFrame, 50, 0, nil, "LEFT"); 
+
+	if actionButton and spellButton then
+		-- play the drag animation
+		NPE_TutorialSpellDrag:Show(spellButton, actionButton);
+	end
+
+	self:ShowPointerTutorial(tutorialString, "LEFT", spellButton or SpellBookFrame, 50, 0, nil, "LEFT"); 
 end
 
 function Class_AddSpellToActionBar:ACTIONBAR_SLOT_CHANGED(slot)
 	local _, spellID = GetActionInfo(slot)
 	if spellID == self.spellToAdd then 
 		Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
+		NPE_TutorialSpellDrag:Hide(spellButton, actionButton);
 		self:Complete();
 	end
 end
@@ -767,6 +807,7 @@ end
 function Class_AddSpellToActionBar:OnComplete()
 	self:HidePointerTutorials();
 	self:HideScreenTutorial();
+	Tutorials.ShowBags:Unsuppress();
 	self.spellToAdd = nil;
 end
 
@@ -805,28 +846,9 @@ end
 Class_Intro_MapHighlights = class("Intro_MapHighlights", Class_TutorialBase);
 function Class_Intro_MapHighlights:OnBegin()
 	self.MapID = WorldMapFrame:GetMapID();
-	self.Prompt = NPE_MAPCALLOUTBASE;
-	local hasBlob = false;
 
-	for i = 1, C_QuestLog.GetNumQuestLogEntries() do
-		local questID = C_QuestLog.GetQuestIDForLogIndex(i);
-		if QuestUtils_IsQuestWatched(questID) and GetQuestPOIBlobCount(questID) > 0 then
-			hasBlob = true;
-			break;
-		end
-	end
-
-	if (hasBlob) then
-		self.Prompt = self.Prompt .. NPE_MAPCALLOUTAREA;
-	else
-		self.Prompt = self.Prompt .. NPE_MAPCALLOUTPOINT;
-	end
-
+	self.Prompt = NPEV2_MAPCALLOUTPOINT;
 	self:Display();
-
-	self.Timer = C_Timer.NewTimer(8, function()
-			self:AddPointerTutorial(TutorialHelper:FormatString(NPE_CLOSEWORLDMAP), "UP", WorldMapFrameCloseButton, 0, 15);
-		end);
 
 	Dispatcher:RegisterScript(WorldMapFrame, "OnHide", function() self:Complete(); end, true);
 
@@ -842,11 +864,19 @@ function Class_Intro_MapHighlights:OnBegin()
 end
 
 function Class_Intro_MapHighlights:Display()
-	if WorldMapFrame.isMaximized then
-		self.MapPointerTutorialID = self:AddPointerTutorial(TutorialHelper:FormatString(self.Prompt), "LEFT", WorldMapFrame.ScrollContainer, -200, 0, nil);
-	else
-		self.MapPointerTutorialID = self:AddPointerTutorial(TutorialHelper:FormatString(self.Prompt), "UP", WorldMapFrame.ScrollContainer, 0, 100, nil);
+	local tutorialData = TutorialHelper:GetFactionData();
+	questID = tutorialData.UseMapQuest;	
+
+	local targetPin
+	for pin in WorldMapFrame:EnumerateAllPins() do
+		 if pin.pinTemplate == "QuestPinTemplate" then
+			if questID == pin.questID then
+				targetPin = pin;
+				break;
+			end
+		 end
 	end
+	self.MapPointerTutorialID = self:AddPointerTutorial(TutorialHelper:FormatString(self.Prompt), "UP", targetPin or WorldMapFrame.ScrollContainer, 0, 0, nil);
 end
 
 function Class_Intro_MapHighlights:OnSuppressed()
@@ -1339,6 +1369,7 @@ function Class_ShowBags:OnBegin(data)
 
 	local key = TutorialHelper:GetBagBinding();
 	local tutorialString = TutorialHelper:FormatString(string.format(NPEV2_SHOW_BAGS, key))
+	Tutorials.LevelUpTutorial:Suppress();
 	self:ShowPointerTutorial(tutorialString, "DOWN", MainMenuBarBackpackButton, 0, 0);
 end
 
@@ -1393,6 +1424,7 @@ function Class_EquipItem:BAG_UPDATE_DELAYED()
 end
 
 function Class_EquipItem:OnComplete()
+	Tutorials.LevelUpTutorial:Unsuppress();
 	Tutorials.EquipFirstItemWatcher:ItemSuccessfullyEquiped();
 	Tutorials.Hide_CharacterMicroButton:Complete();
 	Tutorials.OpenCharacterSheet:ForceBegin(self.ItemData);
@@ -1451,10 +1483,14 @@ function Class_HighlightEquippedItem:OnBegin(data)
 		[16] = "CharacterMainHandSlot",
 		[17] = "CharacterSecondaryHandSlot",
 	}
-	local equippedItemFrame = _G[Slot[data.CharacterSlot]];
-
-	self:ShowPointerTutorial(NPEV2_HIGHLIGHT_EQUIPPED_ITEM, "LEFT", equippedItemFrame);
-	Dispatcher:RegisterScript(CharacterFrame, "OnHide", function() self:Complete() end, true)
+	local slotTarget = Slot[data.CharacterSlot];
+	if slotTarget then
+		local equippedItemFrame = _G[Slot[data.CharacterSlot]];
+		if equippedItemFrame then
+			self:ShowPointerTutorial(NPEV2_HIGHLIGHT_EQUIPPED_ITEM, "LEFT", equippedItemFrame);
+			Dispatcher:RegisterScript(CharacterFrame, "OnHide", function() self:Complete() end, true);
+		end
+	end
 end
 
 
@@ -1464,14 +1500,6 @@ end
 Class_CloseCharacterSheet = class("CloseCharacterSheet", Class_TutorialBase);
 function Class_CloseCharacterSheet:OnBegin()
 	Dispatcher:RegisterScript(CharacterFrame, "OnHide", function() self:Complete() end, true);
-
-	self.Timer = C_Timer.NewTimer(20, function()
-			self:ShowPointerTutorial(TutorialHelper:FormatString(NPE_CLOSECHARACTERSHEET), "LEFT", CharacterFrameCloseButton, -10);
-		end);
-end
-
-function Class_CloseCharacterSheet:OnShutdown()
-	self.Timer:Cancel();
 end
 
 
@@ -1840,7 +1868,12 @@ function Class_LowHealthWatcher:UNIT_HEALTH(arg1)
 	if ( arg1 == "player" ) then
 		if ( UnitHealth(arg1)/UnitHealthMax(arg1) <= 0.5 ) and not self.inCombat then
 			Dispatcher:UnregisterEvent("UNIT_HEALTH", self);
-			Tutorials.EatFood:Begin(self.inCombat);
+
+			local tutorialData = TutorialHelper:GetFactionData();
+			local container, slot = TutorialHelper:FindItemInContainer(tutorialData.FoodItem);
+			if container and slot then
+				Tutorials.EatFood:Begin(self.inCombat);
+			end
 			self:Complete();
 		end
 	end
@@ -1859,6 +1892,10 @@ function Class_EatFood:OnBegin(inCombat)
 		local key = TutorialHelper:GetBagBinding();
 		local tutorialString = string.format(NPEV2_EAT_FOOD_P1, key);
 		local content = {text = TutorialHelper:FormatString(tutorialString), icon=nil};
+
+		-- Dirty hack to make sure all bags are closed
+		TutorialHelper:CloseAllBags();
+
 		self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low);
 		Dispatcher:RegisterFunction("ToggleBackpack", function() self:BackpackOpened() end, true);
 	end
@@ -1882,6 +1919,7 @@ end
 function Class_EatFood:UNIT_SPELLCAST_SUCCEEDED(caster, spelllineID, spellID)
 	local tutorialData = TutorialHelper:GetFactionData();
 	if spellID == tutorialData.FoodSpellCast then
+		Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
 		self:HidePointerTutorials();
 		local content = {text = TutorialHelper:FormatString(NPEV2_EAT_FOOD_P2_SUCCEEDED), icon=nil};
 		self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low); 
@@ -2134,7 +2172,7 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_Death_ReleaseCorpse = class("Death_ReleaseCorpse", Class_TutorialBase);
 function Class_Death_ReleaseCorpse:OnBegin()
-	self:ShowPointerTutorial(TutorialHelper:FormatString(NPE_RELEASESPIRIT), "LEFT", StaticPopup1);
+	self:ShowPointerTutorial(TutorialHelper:FormatString(NPEV2_RELEASESPIRIT), "LEFT", StaticPopup1);
 	Dispatcher:RegisterEvent("PLAYER_ALIVE", self);
 end
 
@@ -2155,9 +2193,9 @@ end
 Class_Death_MapPrompt = class("Death_MapPrompt", Class_TutorialBase);
 function Class_Death_MapPrompt:OnBegin()
 	local key = TutorialHelper:GetMapBinding();
-	local content = {text = TutorialHelper:FormatString(string.format(NPE_FINDCORPSE, key)), icon=nil};
+	local content = {text = NPEV2_FINDCORPSE, icon=nil, keyText=key};
+	self:ShowSingleKeyTutorial(content);
 
-	self:ShowScreenTutorial(content);
 	Dispatcher:RegisterEvent("CORPSE_IN_RANGE", self);
 	Dispatcher:RegisterEvent("PLAYER_UNGHOST", self);
 end
@@ -2171,6 +2209,7 @@ function Class_Death_MapPrompt:CORPSE_IN_RANGE()
 end
 
 function Class_Death_MapPrompt:OnComplete()
+	self:HideSingleKeyTutorial();
 	Tutorials.Death_ResurrectPrompt:Begin();
 end
 
@@ -2179,7 +2218,7 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_Death_ResurrectPrompt = class("Death_ResurrectPrompt", Class_TutorialBase);
 function Class_Death_ResurrectPrompt:OnBegin()
-	self:ShowPointerTutorial(TutorialHelper:FormatString(NPE_RESURRECT), "UP", StaticPopup1);
+	self.Timer = C_Timer.NewTimer(2, function() NPE_TutorialButtonPulseGlow:Show(StaticPopup1Button1) end);
 	Dispatcher:RegisterEvent("PLAYER_UNGHOST", self);
 end
 

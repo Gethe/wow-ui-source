@@ -219,4 +219,266 @@
 			<OnMouseUp function="GarrisonMissionPageFollowerFrame_OnMouseUp"/>
 		</Scripts>
 	</Frame>
+
+	<Frame name="CovenantMissionBaseFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="BaseFrameBackground" atlas="Adventures-Missions-BG-01" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="BaseFrameTop" atlas="_Garr_InfoBoxMission-Top" horizTile="true" useAtlasSize="false">
+					<Size y="4"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-7"/>
+						<Anchor point="TOPRIGHT" x="-1" y="-7"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a=".65"/>
+				</Texture>
+				<Texture parentKey="BaseFrameBottom" atlas="_Garr_InfoBoxMission-Top" horizTile="true" useAtlasSize="false">
+					<Size y="4"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" y="7"/>
+						<Anchor point="BOTTOMRIGHT" y="7"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a=".65"/>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+				<Texture parentKey="BaseFrameBottom" atlas="_Garr_InfoBoxMission-Top" horizTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" y="0"/>
+						<Anchor point="BOTTOMRIGHT" y="0"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a=".75"/>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+				<Texture parentKey="BaseFrameLeft" atlas="!Garr_InfoBoxMission-Left" vertTile="true" useAtlasSize="false">
+					<Size x="4"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7"/>
+						<Anchor point="BOTTOMLEFT" x="7"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a=".65"/>
+				</Texture>
+				<Texture parentKey="BaseFrameRight" atlas="!Garr_InfoBoxMission-Left" vertTile="true" useAtlasSize="false">
+					<Size x="4"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-7"/>
+						<Anchor point="BOTTOMRIGHT" x="-7"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+					<Color r="1" g="1" b="1" a=".55"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="2">
+				<Texture parentKey="BaseFrameTopLeft" atlas="Garr_InfoBoxMission-Corner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="7"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BaseFrameTopRight" atlas="Garr_InfoBoxMission-Corner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="6" y="7"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+				<Texture parentKey="BaseFrameBottomLeft" atlas="Garr_InfoBoxMission-Corner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-7" y="-7"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+				<Texture parentKey="BaseFrameBottomRight" atlas="Garr_InfoBoxMission-Corner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="4">
+				<Texture parentKey="BaseFrameTopEdge" atlas="_AdventuresFrame-Small-Top" horizTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BaseFrameBottomEdge" atlas="_AdventuresFrame-Small-Top" horizTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+				<Texture parentKey="BaseFrameLeftEdge" atlas="!AdventuresFrame-Left" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BaseFrameRightEdge" atlas="!AdventuresFrame-Left" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="5">
+				<Texture parentKey="BaseFrameTopLeftCorner" atlas="AdventuresFrame-Corner-Small-TopLeft" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BaseFrameTopRightCorner" atlas="AdventuresFrame-Corner-Small-TopLeft" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+				<Texture parentKey="BaseFrameBottomLeftCorner" atlas="AdventuresFrame-Corner-Small-TopLeft" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+				<Texture parentKey="BaseFrameBottomRightCorner" atlas="AdventuresFrame-Corner-Small-TopLeft" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name ="CovenantStatLineTemplate" parentArray="Abilities" virtual="true">
+		<Size x="230" y="22"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="RightString" inherits="GameFontHighlightLarge2" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="LeftString" inherits="GameFontHighlightLarge2" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="CovenantFollowerTabTemplate" inherits="CovenantMissionBaseFrameTemplate" mixin="GarrisonFollowerTabMixin,CovenantFollowerTabMixin" hidden="true" virtual="true">
+		<Size x="550" y="565"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="NoFollowersLabel" inherits="GameFontNormalLarge2" text="GARRISON_NO_SELECTED_FOLLOWER" hidden="true">
+					<Size x="500" y="0"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="3">
+				<Texture parentKey="Header">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="-66"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a=".35"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ButtonFrame" atlas="GarrMission_MissionCostStartButtonBg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="-22"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="QuestFont_Enormous" justifyH="LEFT">
+					<Size x="0" y="18"/>
+					<Color r="1.0" g="1.0" b="1.0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="26" y="5"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT"  y="-83"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ClassSpec" inherits="QuestFont_Huge" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x ="26" y="-8"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="AbilitiesLabel" inherits="GameFontNormalLarge2" justifyH="LEFT" text="ABILITIES">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.StatsFrame" relativePoint="BOTTOMLEFT" x ="26" y="-8"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="HealFollowerButtonTemplate" parentKey="HealFollowerButton" inherits="UIPanelButtonTemplate" text="COVENANT_MISSIONS_HEAL_BUTTON" motionScriptsWhileDisabled="true" virtual="true">
+				<Size x="130" y="20"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" x="-50" y="1"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="CovenantMissionHealFollowerButton_OnClick"/>
+					<OnEnter function="CovenantMissionHealFollowerButton_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="CostFrame" inherits="GarrisonMissionPageCostFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ButtonFrame" x="50"/>
+					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" relativePoint="CENTER" />
+				</Anchors>
+			</Frame>
+			<ScrollFrame parentKey="ModelCluster" inherits="GarrisonFollowerTabModelCluster" setAllPoints="true"/>
+			<Frame parentKey="StatsFrame" inherits="VerticalLayoutFrame" mixin="GarrisonAbilitiesFrameMixin" frameLevel="20">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="290" y="-100"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="expand" value="true" type="boolean"/>
+					<KeyValue key="spacing" value="10" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="StatsLabel" inherits="GameFontNormalLarge2" justifyH="LEFT" text="COVENANT_MISSIONS_STATS">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="100" type="number"/>
+								<KeyValue key="topPadding" value="10" type="number"/>
+								<KeyValue key="bottomPadding" value="5" type="number"/>
+							</KeyValues>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="AbilitiesFrame" inherits="HorizontalLayoutFrame" mixin="GarrisonAbilitiesFrameMixin" frameLevel="20">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesLabel" relativePoint="BOTTOMLEFT" y="-14"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="expand" value="true" type="boolean"/>
+					<KeyValue key="spacing" value="10" type="number"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnHide>
+				self.lastUpdate = nil;
+			</OnHide>
+			<OnLoad method="OnLoad"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
 </Ui>

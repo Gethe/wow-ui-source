@@ -1,5 +1,13 @@
 
-local HalfPi = math.pi / 2;
+local function GetDirectionVector(source, target)
+	local sourceX, sourceY = source:GetCenter();
+	local targetX, targetY = target:GetCenter();
+	return CreateVector2D(targetX - sourceX, targetY - sourceY);
+end
+
+local function InOutProgress(progress)
+	return (progress < 0.5 and progress or (1.0 - progress)) * 2.0;
+end
 
 
 local function LinearTrajectory(source, target, elapsed, duration)
@@ -11,30 +19,21 @@ local function LinearTrajectory(source, target, elapsed, duration)
 	return positionX, positionY;
 end
 
-local function InOutTrajectory(source, target, elapsed, duration)
-	local sourceX, sourceY = source:GetCenter();
-	local targetX, targetY = target:GetCenter();
-	local progress = elapsed / duration;
-	progress = (progress < 0.5 and progress or (1.0 - progress)) * 2.0;
-	local positionX = Lerp(sourceX, targetX, progress);
-	local positionY = Lerp(sourceY, targetY, progress);
-	return positionX, positionY;
-end
-
-local function GenerateCurveTrajectory(rotation, curveMagnitude)
+local function GenerateCurveTrajectory(curveMagnitude)
 	local function CurveTrajectory(source, target, elapsed, duration)
-		local sourceX, sourceY = source:GetCenter();
-		local targetX, targetY = target:GetCenter();
-		local direction = CreateVector2D(targetX - sourceX, targetY - sourceY);
-		local curveDirection = direction:Clone();
-		curveDirection:RotateDirection(rotation);
 		local progress = elapsed / duration;
+		local direction = GetDirectionVector(source, target);
+
+		-- Add movement perpendicular to direction to curve the effect.
+		local curveDirection = CreateVector2D(-direction.y, direction.x);
+		local inOutProgress = InOutProgress(progress);
+		local curveProgress = math.sin(inOutProgress * math.pi);
+		curveDirection:ScaleBy(curveProgress * curveMagnitude);
+
 		direction:ScaleBy(progress);
-
-		local perpendicularProgress = (progress < 0.5 and progress or (1.0 - progress));
-		curveDirection:ScaleBy(math.sin(perpendicularProgress * math.pi) * curveMagnitude);
-
 		direction:Add(curveDirection);
+
+		local sourceX, sourceY = source:GetCenter();
 		local deltaX, deltaY = direction:GetXY();
 		return sourceX + deltaX, sourceY + deltaY;
 	end
@@ -42,9 +41,9 @@ local function GenerateCurveTrajectory(rotation, curveMagnitude)
 	return CurveTrajectory;
 end
 
-local StandardCurveMagnitude = 0.2;
-local StandardCurveTrajectory = GenerateCurveTrajectory(HalfPi, StandardCurveMagnitude);
-local ReverseCurveTrajectory = GenerateCurveTrajectory(-HalfPi, StandardCurveMagnitude);
+local StandardCurveMagnitude = 0.1;
+local StandardCurveTrajectory = GenerateCurveTrajectory(StandardCurveMagnitude);
+local ReverseCurveTrajectory = GenerateCurveTrajectory(-StandardCurveMagnitude);
 
 local function RandomCurveTrajectory(source, target, elapsed, duration)
 	local curveTrajectory = (math.random(0, 1) == 0) and StandardCurveTrajectory or ReverseCurveTrajectory;
@@ -66,13 +65,12 @@ end
 
 local function GenerateRecoilCallback(magnitude, duration)
 	local function RecoilFunction(effectDescription, source, target)
-		local sourceX, sourceY = source:GetCenter();
-		local targetX, targetY = target:GetCenter();
-		local direction = CreateVector2D(sourceX - targetX, sourceY - targetY);
+		local direction = GetDirectionVector(source, target);
 		direction:Normalize();
 		direction:ScaleBy(magnitude);
 		local distanceX, distanceY = direction:GetXY();
 
+		-- Half the animation will be going out, and the other half coming in.
 		local recoilDuration = duration / 2;
 
 		local easingFunction = nil;
@@ -89,43 +87,11 @@ end
 local StandardRecoil = GenerateRecoilCallback(15, 0.2);
 
 local function GenerateKnockbackCallback(knockbackMagnitude, duration)
+	-- To make recoil a knockback, reverse the source and target, and reverse the direction by negating magnitude.
+	local recoilFunction = GenerateRecoilCallback(-knockbackMagnitude, duration);
+
 	local function KnockbackFunction(effectDescription, source, target)
-		-- Only one recoil can play at a time.
-		if not ScriptAnimationUtil.GetScriptAnimationLock(target) then
-			return;
-		end
-
-		local sourceX, sourceY = source:GetCenter();
-		local targetX, targetY = target:GetCenter();
-		local direction = CreateVector2D(targetX - sourceX, targetY - sourceY);
-		direction:Normalize();
-
-		local point, relativeFrame, relativePoint, x, y = target:GetPoint();
-		local startTime = GetTime();
-		local endTime = startTime + duration;
-		direction:ScaleBy(knockbackMagnitude);
-
-		local function KnockbackTickerFunction()
-			local currentTime = GetTime();
-			local elapsedTime = currentTime - startTime;
-			local progress = elapsedTime / duration;
-			local progressCurve = (progress < 0.5 and progress or (1.0 - progress)) * 2.0;
-			local directionClone = direction:Clone();
-			directionClone:ScaleBy(progressCurve);
-			
-			local xVariation, yVariation = directionClone:GetXY();
-			target:SetPoint(point, relativeFrame, relativePoint, x + xVariation, y + yVariation);
-
-			if currentTime >= endTime then
-				target:SetPoint(point, relativeFrame, relativePoint, x, y);
-				target.knockbackTicker:Cancel();
-				target.knockbackTicker = nil;
-				ScriptAnimationUtil.ReleaseScriptAnimationLock(target);
-			end
-		end
-
-		local frequency = 0.01;
-		target.knockbackTicker = C_Timer.NewTicker(frequency, KnockbackTickerFunction);
+		return recoilFunction(effectDescription, target, source)
 	end
 
 	return KnockbackFunction;
@@ -133,43 +99,27 @@ end
 
 local StandardKnockback = GenerateKnockbackCallback(25, 0.3);
 
-local function GenerateCollisionFunction()
-	local function CollisionFunction(effectDescription, source, target)
-		local sourceX, sourceY = source:GetCenter();
-		local targetX, targetY = target:GetCenter();
-		local translation = CreateVector2D(targetX - sourceX, targetY - sourceY);
-		translation:ScaleBy(0.95); -- don't go the entire distance.
-		
-		local distanceX, distanceY = translation:GetXY();
-
-		local easingFunction = nil; 
-		local reverseVariationCallback = ScriptAnimationUtil.GenerateEasedVariationCallback(easingFunction, -distanceX, -distanceY);
-		local reversePosition = GenerateClosure(ScriptAnimationUtil.StartScriptAnimation, source, reverseVariationCallback, effectDescription.duration * 2.0);
-
-		local variationCallback = ScriptAnimationUtil.GenerateEasedVariationCallback(easingFunction, distanceX, distanceY);
-		ScriptAnimationUtil.StartScriptAnimation(source, variationCallback, effectDescription.duration, reversePosition);
-	end
-
-	return CollisionFunction;
-end
-
-local StandardCollision = GenerateCollisionFunction();
-
 local PullbackPercentage = 0.2;
 local ForwardPercentage = 0.3;
 local ForwardThreshold = PullbackPercentage + ForwardPercentage;
 local BackwardPercentage = 1.0 - (PullbackPercentage + ForwardPercentage);
 local function GenerateAttackCollisionFunction(pullbackMagnitude)
 	local function AttackCollisionFunction(effectDescription, source, target)
-		local sourceX, sourceY = source:GetCenter();
-		local targetX, targetY = target:GetCenter();
-		local translation = CreateVector2D(targetX - sourceX, targetY - sourceY);
+		local translation = GetDirectionVector(source, target);
 		translation:ScaleBy(0.95); -- don't go the entire distance.
 		
 		local direction = translation:Clone();
 		direction:Normalize();
 		direction:ScaleBy(-pullbackMagnitude);
 
+		-- This will be a three part animation: pull back, launch forward, then return to start.
+		-- time:          1         5       4   2        3
+		-- positions: pullback...source................target
+		-- t1: source has pulled back
+		-- t2: source is between the pullback point and target
+		-- t3: source reaches target (the effect finish triggers, which can include a knockback)
+		-- t4: source is returning to its original position
+		-- t5: source has returned to its original position
 		local distanceX, distanceY = translation:GetXY();
 		local pullbackDistanceX, pullbackDistanceY = direction:GetXY();
 		local forwardDistanceX, forwardDistanceY = distanceX - pullbackDistanceX, distanceY - pullbackDistanceY;
@@ -188,7 +138,8 @@ local function GenerateAttackCollisionFunction(pullbackMagnitude)
 			end
 		end
 
-		-- The end of the effect should be triggered on collision, at the end of the "forward" part of the animation.
+		-- The end of the effect should be triggered on collision, at the end of the "forward" part of the animation, so the
+		-- full movement animation should last longer than the effect.
 		local fullDuration = effectDescription.duration * (1.0 / ForwardThreshold);
 		ScriptAnimationUtil.StartScriptAnimation(source, AttackCollisionVariationCallback, fullDuration);
 	end
@@ -254,4 +205,8 @@ function ScriptedAnimationEffectsUtil.GetAllEffectIDs()
 	end
 
 	return allEffectIDs;
+end
+
+function ScriptedAnimationEffectsUtil.ReloadDB()
+	ScriptedAnimationEffects = LoadScriptedAnimationEffects();
 end

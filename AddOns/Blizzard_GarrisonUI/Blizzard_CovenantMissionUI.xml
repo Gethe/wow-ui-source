@@ -444,8 +444,8 @@
 			</Frame>
 			<Button parentKey="Tab1" name="$parentTab1" inherits="OrderHallFrameTabButtonTemplate" id="1" text="GARRISON_MISSIONS"/>
 			<Button parentKey="Tab2" name="$parentTab2" inherits="OrderHallFrameTabButtonTemplate" id="2" text="GARRISON_FOLLOWERS"/>
-			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader" name="$parentFollowers" hidden="true" mixin="GarrisonFollowerList" frameStrata="HIGH">
-				<Size x="305" y="535"/>
+			<Frame parentKey="FollowerList" inherits="GarrisonListTemplate" name="$parentFollowers" hidden="true" mixin="GarrisonFollowerList" frameStrata="HIGH">
+				<Size x="305" y="505"/>
 				<KeyValues>
 					<KeyValue key ="followerTemplate" value="CovenantMissionFollowerOrCategoryListButtonTemplate" type="string"/>
 					<KeyValue key="showUncollected" value="true" type="boolean"/>
@@ -454,19 +454,21 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" x="33" y="-64"/>
 				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="AdventurersLabel" inherits="GameFontHighlightLarge" text="COVENANT_MISSIONS_FOLLOWERS">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="TOP" x="0" y="8"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 				<Frames>
 					<Frame parentKey="MaterialFrame" inherits="MaterialFrameTemplate">
 						<Size x="316" y="43"/>
 						<Anchors>
 							<Anchor point="TOP" relativePoint="BOTTOM" y="8"/>
 						</Anchors>
-					</Frame>
-					<Frame name="OrderHallFollowerOptionDropDown" parentKey="OptionDropDown" inherits="UIDropDownMenuTemplate">
-						<Scripts>
-							<OnLoad>
-								UIDropDownMenu_Initialize(self, GarrisonFollowerOptionDropDown_Initialize, "MENU");
-							</OnLoad>
-						</Scripts>
 					</Frame>
 				</Frames>
 				<Scripts>
@@ -504,7 +506,11 @@
 					<Button parentKey="MissionPage" inherits="CovenantMissionPageTemplate" hidden="true" mixin="GarrisonMissionPageMixin,GarrisonFollowerMissionPageMixin,CovenantFollowerMissionPageMixin"/>
 				</Frames>
 			</Frame>
-			<Frame parentKey="FollowerTab" inherits="GarrisonFollowerTabTemplate" frameStrata="HIGH" frameLevel="100"/>
+			<Frame parentKey="FollowerTab" inherits="CovenantFollowerTabTemplate" frameStrata="HIGH" frameLevel="100">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-65" y="-44"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="MissionCompleteBackground" enableMouse="true" frameStrata="HIGH" hidden="true">
 				<Size x="956" y="637"/>
 				<Anchors>
