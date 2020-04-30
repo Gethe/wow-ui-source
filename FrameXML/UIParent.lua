@@ -138,11 +138,16 @@ UIChildWindows = {
 	"GearManagerDialog",
 };
 
-function UpdateUIParentRelativeToDebugMenu()
-	local debugMenuOffset = DebugMenu and DebugMenu.IsVisible() and -DebugMenu.GetMenuHeight() or 0;
-	local revealTimeTrackOffset = C_Reveal and C_Reveal:IsCapturing() and -C_Reveal:GetTimeTrackHeight() or 0;
-	local topOffset = debugMenuOffset + revealTimeTrackOffset;
-	UIParent:SetPoint("TOPLEFT", 0, topOffset);
+-- Hooked by DesignerBar.lua if that addon is loaded
+function GetOffsetForDebugMenu()
+	local debugMenuOffset = DebugMenu and DebugMenu.IsVisible() and DebugMenu.GetMenuHeight() or 0;
+	local revealTimeTrackOffset = C_Reveal and C_Reveal:IsCapturing() and C_Reveal:GetTimeTrackHeight() or 0;
+	return debugMenuOffset + revealTimeTrackOffset;
+end
+
+function UpdateUIParentRelativeToDebugMenu() 
+	local topOffset = GetOffsetForDebugMenu();
+	UIParent:SetPoint("TOPLEFT", 0, -topOffset);
 end
 
 UISpecialFrames = {
@@ -454,6 +459,9 @@ function UIParent_OnLoad(self)
 
 	-- Event(s) for Anima Diversion UI 
 	self:RegisterEvent("ANIMA_DIVERSION_OPEN");
+
+	-- Event(s) for Runeforge UI 
+	self:RegisterEvent("RUNEFORGE_LEGENDARY_CRAFTING_OPENED");
 end
 
 function UIParent_OnShow(self)
@@ -752,6 +760,10 @@ end
 
 function AnimaDiversionFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_AnimaDiversionUI");
+end 
+
+function RuneforgeFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_RuneforgeUI");
 end 
 
 local playerEnteredWorld = false;
@@ -1900,9 +1912,11 @@ function UIParent_OnEvent(self, event, ...)
 		local followerTypeID = ...;
 		if ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0 ) then
 			ShowUIPanel(OrderHallMissionFrame);
-		else
+		elseif ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_8_0 ) then
 			ShowUIPanel(BFAMissionFrame);
-		end
+		elseif ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0 ) then
+			ShowUIPanel(CovenantMissionFrame);
+		end	
 
 	-- Event for BarberShop handling
 	elseif ( event == "BARBER_SHOP_OPEN" ) then
@@ -2144,6 +2158,10 @@ function UIParent_OnEvent(self, event, ...)
 		if ( BFAMissionFrame ) then
 			HideUIPanel(BFAMissionFrame);
 		end
+
+		if ( CovenantMissionFrame ) then
+			HideUIPanel(CovenantMissionFrame);
+		end
 	elseif ( event == "GARRISON_SHIPYARD_NPC_OPENED") then
 		if (not GarrisonShipyardFrame) then
 			Garrison_LoadUI();
@@ -2279,6 +2297,9 @@ function UIParent_OnEvent(self, event, ...)
 	elseif (event == "ANIMA_DIVERSION_OPEN") then
 		AnimaDiversionFrame_LoadUI(); 
 		AnimaDiversionFrame:TryShow(...);
+	elseif (event == "RUNEFORGE_LEGENDARY_CRAFTING_OPENED") then
+		RuneforgeFrame_LoadUI(); 
+		ShowUIPanel(RuneforgeFrame);
 	-- Events for Reporting system
 	elseif (event == "REPORT_PLAYER_RESULT") then
 		local success = ...;

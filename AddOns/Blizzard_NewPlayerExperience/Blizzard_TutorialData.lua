@@ -22,10 +22,10 @@ TutorialData.LevelAbilitiesTable = {
 		20271,	-- Judgment, level 3
 		19750,	-- Flash of Light, level 4
 		853,	-- Hammer of Justice, level 5
-		190784,	-- Divine Steed, level 6
+		26573,	-- Consecration, level 6
 		85673,	-- Word of Glory, level 7
+		nil,	-- 327977, Judgement Rank 2, level 8
 		633,	-- Lay on Hands, level 8
-		26573,	-- Consecration, level 9
 	};
 	HUNTER = {
 		56641,	-- Start with Steady Shot
@@ -206,7 +206,7 @@ TutorialData.ClassData = {
 	PRIEST = {
 		firstSpellID = 585,					-- Smite
 		initialString = NPEV2_CASTER_ABILITYINITIAL,
-		remidnerString = NPEV2_CASTER_ABILITYINITIALREPEAT,
+		reminderString = NPEV2_CASTER_ABILITYINITIALREPEAT,
 
 		resourceBuilderSpellID = 585,		-- Smite
 		resourceSpenderSpellID = 589,		-- Shadow Word: Pain
@@ -394,6 +394,32 @@ TutorialData.Alliance = {
 			mountID = 496;
 		}
 	};
+
+	ClassQuests = {
+		WARRIOR =	58914,
+		PALADIN =	58923,
+		HUNTER =	59355,
+		ROGUE =		58917,
+		PRIEST =	58953,
+		SHAMAN =	59002,
+		MAGE =		59352,
+		WARLOCK =	58962,
+		MONK =		59347,
+		DRUID =		59350,
+	};
+
+	SpecQuests = {
+		WARRIOR =	59594,
+		PALADIN =	59589,
+		HUNTER =	59586,
+		ROGUE =		59591,
+		PRIEST =	59590,
+		SHAMAN =	59592,
+		MAGE =		59587,
+		WARLOCK =	59593,
+		MONK =		59588,
+		DRUID =		58910,
+	};
 }
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -480,5 +506,31 @@ TutorialData.Horde = {
 			mountSpellID = 127290;
 			mountID = 496;
 		}
+	};
+
+	ClassQuests = {
+		WARRIOR =	59971,
+		PALADIN =	59958,
+		HUNTER =	59952,
+		ROGUE =		59967,
+		PRIEST =	59961,
+		SHAMAN =	59969,
+		MAGE =		59954,
+		WARLOCK =	59970,
+		MONK =		59956,
+		DRUID =		59951,
+	};
+
+	SpecQuests = {
+		WARRIOR =	60357,
+		PALADIN =	60350,
+		HUNTER =	60347,
+		ROGUE =		60352,
+		PRIEST =	60351,
+		SHAMAN =	60353,
+		MAGE =		60348,
+		WARLOCK =	60355,
+		MONK =		60349,
+		DRUID =		60346,
 	};
 }

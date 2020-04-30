@@ -428,6 +428,12 @@ function CharCustomizeOptionCheckButtonMixin:SetupOption(optionData)
 	self.layoutIndex = optionData.orderIndex;
 	self.checked = (optionData.currentChoiceIndex == 2);
 
+	if showDebugTooltipInfo then
+		self:ClearTooltipLines();
+		self:AddTooltipLine("Option ID: "..self.optionData.id, HIGHLIGHT_FONT_COLOR);
+		self:AddTooltipLine("Choice ID: "..self.optionData.choices[optionData.currentChoiceIndex].id, HIGHLIGHT_FONT_COLOR);
+	end
+
 	self.Label:SetText(optionData.name);
 	self.Button:SetChecked(self.checked);
 end
@@ -442,19 +448,112 @@ function CharCustomizeOptionCheckButtonMixin:OnCheckButtonClick()
 	CharCustomizeFrame:SetCustomizationChoice(self.optionData.id, newChoiceData.id);
 end
 
+CharCustomizeOptionSelectionPopoutMixin = CreateFromMixins(CharCustomizeFrameWithTooltipMixin);
+
+function CharCustomizeOptionSelectionPopoutMixin:OnLoad()
+	CharCustomizeFrameWithTooltipMixin.OnLoad(self);
+	ResizeLayoutMixin.OnLoad(self);
+end
+
+function CharCustomizeOptionSelectionPopoutMixin:SetupAnchors(tooltip)
+	tooltip:SetOwner(self, "ANCHOR_NONE");
+	tooltip:SetPoint("BOTTOMRIGHT", self.SelectionPopoutButton, "TOPLEFT", self.tooltipXOffset, self.tooltipYOffset);
+end
+
+function CharCustomizeOptionSelectionPopoutMixin:OnPopoutShown()
+	CharCustomizeFrame:HidePopouts(self);
+end
+
+function CharCustomizeOptionSelectionPopoutMixin:OnEntryClick(entry)
+	CharCustomizeFrame:OnOptionPopoutEntryClick(self, entry);
+end
+
+function CharCustomizeOptionSelectionPopoutMixin:OnEntryMouseEnter(entry)
+	CharCustomizeFrame:OnOptionPopoutEntryMouseEnter(self, entry);
+
+	local tooltipText = entry:GetTooltipText();
+	if tooltipText or showDebugTooltipInfo then
+		local tooltip = self:GetAppropriateTooltip();
+
+		tooltip:SetOwner(self, "ANCHOR_NONE");
+		tooltip:SetPoint("BOTTOMRIGHT", entry, "TOPLEFT", 0, 0);
+
+		if tooltipText then
+			GameTooltip_AddNormalLine(tooltip, tooltipText);
+		end
+
+		if showDebugTooltipInfo then
+			if tooltipText then
+				GameTooltip_AddBlankLineToTooltip(tooltip, tooltipText);
+			end
+
+			GameTooltip_AddHighlightLine(tooltip, "Choice ID: "..entry.selectionData.id);
+		end
+
+		tooltip:Show();
+	end
+end
+
+function CharCustomizeOptionSelectionPopoutMixin:OnEntryMouseLeave(entry)
+	CharCustomizeFrame:OnOptionPopoutEntryMouseLeave(self, entry);
+
+	local tooltip = self:GetAppropriateTooltip();
+	tooltip:Hide();
+end
+
+function CharCustomizeOptionSelectionPopoutMixin:SetupOption(optionData)
+	self.optionData = optionData;
+	self.layoutIndex = optionData.orderIndex;
+
+	self:SetupSelections(optionData.choices, optionData.currentChoiceIndex, optionData.name);
+
+	self:ClearTooltipLines();
+
+	local currentTooltip = self:GetTooltipText();
+	if currentTooltip then
+		self:AddTooltipLine(currentTooltip);
+	end
+
+	if showDebugTooltipInfo then
+		if currentTooltip then
+			self:AddBlankTooltipLine();
+		end
+		self:AddTooltipLine("Option ID: "..self.optionData.id, HIGHLIGHT_FONT_COLOR);
+		self:AddTooltipLine("Choice ID: "..optionData.choices[optionData.currentChoiceIndex].id, HIGHLIGHT_FONT_COLOR);
+	end
+end
+
 CharCustomizeMixin = {};
 
 function CharCustomizeMixin:OnLoad()
+	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
+	self:RegisterEvent("GLOBAL_MOUSE_UP");
+
 	self.pools = CreateFramePoolCollection();
 	self.pools:CreatePool("CHECKBUTTON", self.Categories, "CharCustomizeCategoryButtonTemplate");
 	self.pools:CreatePool("FRAME", self.Options, "CharCustomizeOptionCheckButtonTemplate");
 
-	-- Keep the sliders in a different pool because we need to NEVER release a slider when the player is dragging the thumb
-	-- Otherwise after the release/re-acquire the slider they are dragging may belong to a different option
+	-- Keep the selectionPopout and sliders in different pools because we need to be careful not to release the option the player is interacting with
+	self.selectionPopoutPool = CreateFramePool("BUTTON", self.Options, "CharCustomizeOptionSelectionPopoutTemplate");
 	self.sliderPool = CreateFramePool("FRAME", self.Options, "CharCustomizeOptionSliderTemplate");
 
 	-- Keep the altered forms buttons in a different pool because we only want to release those when we enter this screen
 	self.alteredFormsPool = CreateFramePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeAlteredFormButtonTemplate");
+end
+
+function CharCustomizeMixin:OnEvent(event, ...)
+	if event == "GLOBAL_MOUSE_DOWN" or event == "GLOBAL_MOUSE_UP" then
+		local buttonID = ...;
+
+		local frame = GetMouseFocus();
+		if frame and frame.HandlesGlobalMouseEvent and frame:HandlesGlobalMouseEvent(buttonID, event) then
+			-- Do nothing...this frame handles this global mouse event
+			return;
+		end
+
+		-- Otherwise hide all popouts
+		self:HidePopouts();
+	end
 end
 
 function CharCustomizeMixin:AttachToParentFrame(parentFrame)
@@ -464,6 +563,14 @@ end
 
 function CharCustomizeMixin:SetCustomizationChoice(optionID, choiceID)
 	self.parentFrame:SetCustomizationChoice(optionID, choiceID);
+end
+
+function CharCustomizeMixin:PreviewCustomizationChoice(optionID, choiceID)
+	self.parentFrame:PreviewCustomizationChoice(optionID, choiceID);
+end
+
+function CharCustomizeMixin:ResetCustomizationPreview(optionData)
+	self.parentFrame:PreviewCustomizationChoice(optionData.id, optionData.choices[optionData.currentChoiceIndex].id);
 end
 
 function CharCustomizeMixin:Reset()
@@ -523,21 +630,23 @@ end
 function CharCustomizeMixin:SetCustomizations(categories)
 	self.categories = categories;
 
-	local keepCustomZoom = (self.selectedCategoryData ~= nil);
+	local keepState = (self.selectedCategoryData ~= nil);
 
 	if self:NeedsCategorySelected() then
 		table.sort(self.categories, SortCategories);
-		self:SetSelectedCatgory(self.categories[1], keepCustomZoom);
+		self:SetSelectedCatgory(self.categories[1], keepState);
 	else
-		self:SetSelectedCatgory(self.selectedCategoryData, keepCustomZoom);
+		self:SetSelectedCatgory(self.selectedCategoryData, keepState);
 	end
 end
 
 function CharCustomizeMixin:GetOptionPool(optionType)
-	if optionType == Enum.ChrCustomizationOptionType.Slider then
-		return self.sliderPool;
+	if optionType == Enum.ChrCustomizationOptionType.SelectionPopout then
+		return self.selectionPopoutPool;
 	elseif optionType == Enum.ChrCustomizationOptionType.Checkbox then
 		return self.pools:GetPool("CharCustomizeOptionCheckButtonTemplate");
+	elseif optionType == Enum.ChrCustomizationOptionType.Slider then
+		return self.sliderPool;
 	end
 end
 
@@ -562,10 +671,40 @@ function CharCustomizeMixin:ReleaseNonDraggingSliders()
 	return draggingSlider;
 end
 
-function CharCustomizeMixin:UpdateOptionButtons()
+-- Releases all popouts EXCEPT the one the player currently has open (if they have one open)
+-- Returns the currently open popout if there was one
+function CharCustomizeMixin:ReleaseClosedPopoutOptions()
+	local openPopout;
+	local releasePopouts = {};
+
+	for selectionPopout in pairs(self.selectionPopoutPool.activeObjects) do
+		if selectionPopout.SelectionPopoutButton.Popout:IsShown() then
+			openPopout = selectionPopout;
+		else
+			table.insert(releasePopouts, selectionPopout);
+		end
+	end
+
+	for _, releasePopout in ipairs(releasePopouts) do
+		self.selectionPopoutPool:Release(releasePopout);
+	end
+
+	return openPopout;
+end
+
+function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 	self.pools:ReleaseAll();
 
-	local draggingSlider = self:ReleaseNonDraggingSliders();
+	local interactingOption;
+
+	if forceReset then
+		self.sliderPool:ReleaseAll();
+		self.selectionPopoutPool:ReleaseAll();
+	else
+		local draggingSlider = self:ReleaseNonDraggingSliders();
+		local openPopout = self:ReleaseClosedPopoutOptions();
+		interactingOption = draggingSlider or openPopout;
+	end
 
 	for _, categoryData in ipairs(self.categories) do
 		local button = self.pools:Acquire("CharCustomizeCategoryButtonTemplate");
@@ -576,13 +715,17 @@ function CharCustomizeMixin:UpdateOptionButtons()
 			for _, optionData in ipairs(categoryData.options) do
 				local optionPool = self:GetOptionPool(optionData.optionType);
 				if optionPool then
-					if draggingSlider and draggingSlider.optionData.id == optionData.id then
-						-- Do nothing. This option is being dragged and so was not released
+					local optionFrame;
+
+					if interactingOption and interactingOption.optionData.id == optionData.id then
+						-- This option is being interacted with and so was not released.
+						optionFrame = interactingOption;
 					else
-						local optionFrame = optionPool:Acquire();
-						optionFrame:SetupOption(optionData);
-						optionFrame:Show();
+						optionFrame = optionPool:Acquire();
 					end
+
+					optionFrame:SetupOption(optionData);
+					optionFrame:Show();
 				end
 			end
 		end
@@ -613,11 +756,11 @@ function CharCustomizeMixin:UpdateCameraMode(keepCustomZoom)
 	self:UpdateZoomButtonStates();
 end
 
-function CharCustomizeMixin:SetSelectedCatgory(categoryData, keepCustomZoom)
+function CharCustomizeMixin:SetSelectedCatgory(categoryData, keepState)
 	self.selectedCategoryData = categoryData;
-	self:UpdateOptionButtons();
+	self:UpdateOptionButtons(not keepState);
 	self:UpdatetModelDressState();
-	self:UpdateCameraMode(keepCustomZoom);
+	self:UpdateCameraMode(keepState);
 end
 
 function CharCustomizeMixin:ResetCharacterRotation()
@@ -639,4 +782,35 @@ end
 
 function CharCustomizeMixin:RandomizeAppearance()
 	self.parentFrame:RandomizeAppearance();
+end
+
+function CharCustomizeMixin:HidePopouts(exemptPopout)
+	local selectionPopoutPool = self:GetOptionPool(Enum.ChrCustomizationOptionType.SelectionPopout);
+	if selectionPopoutPool then
+		for selectionPopout in selectionPopoutPool:EnumerateActive() do
+			if selectionPopout ~= exemptPopout then
+				selectionPopout:HidePopout();
+			end
+		end
+	end
+end
+
+function CharCustomizeMixin:OnOptionPopoutEntryClick(option, entry)
+	self:SetCustomizationChoice(option.optionData.id, entry.selectionData.id);
+end
+
+function CharCustomizeMixin:OnOptionPopoutEntryMouseEnter(option, entry)
+	self:PreviewCustomizationChoice(option.optionData.id, entry.selectionData.id);
+	self.pendingPreviewResetOptionData = nil;
+end
+
+function CharCustomizeMixin:OnOptionPopoutEntryMouseLeave(option, entry)
+	self.pendingPreviewResetOptionData = option.optionData;
+end
+
+function CharCustomizeMixin:OnUpdate()
+	if self.pendingPreviewResetOptionData then
+		self:ResetCustomizationPreview(self.pendingPreviewResetOptionData);
+		self.pendingPreviewResetOptionData = nil;
+	end
 end

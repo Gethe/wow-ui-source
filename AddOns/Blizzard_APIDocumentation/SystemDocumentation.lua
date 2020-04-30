@@ -6,6 +6,15 @@ local System =
 
 	Functions =
 	{
+		{
+			Name = "GetFrameStack",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "objects", Type = "table", InnerType = "table", Nilable = false },
+			},
+		},
 	},
 
 	Events =

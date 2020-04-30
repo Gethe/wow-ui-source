@@ -349,16 +349,24 @@ function SpellBookFrame_UpdatePages()
 	SpellBookPageText:SetFormattedText(PAGE_NUMBER, currentPage);
 end
 
+-- ------------------------------------------------------------------------------------------------------------
+-- returns the spell button, if it can find it, for the spellID passed in
 local buttonOrder = {1,3,5,7,9,11,2,4,6,8,10,12};
 function SpellBookFrame_OpenToSpell(spellID)
 	SpellBookFrame.bookType = BOOKTYPE_SPELL;
 	ShowUIPanel(SpellBookFrame);
-	local slot = FindSpellBookSlotBySpellID(spellID);
+	local numTabs = GetNumSpellTabs();
+
+	local slot = FindFlyoutSlotBySpellID(spellID);
+	if (slot <= 0) then
+		slot = FindSpellBookSlotBySpellID(spellID);
+	end
 	if slot then
-		local numTabs = GetNumSpellTabs()
 		for tabIndex = 1, numTabs do
 			local _, _, offset, numSlots = GetSpellTabInfo(tabIndex);
+
 			if slot <= offset + numSlots then
+				-- get to the correct tab and page
 				local spellIndex = slot - offset;
 				local page = 1;
 				if spellIndex > SPELLS_PER_PAGE then
@@ -368,7 +376,33 @@ function SpellBookFrame_OpenToSpell(spellID)
 				SPELLBOOK_PAGENUMBERS[tabIndex] = page;
 				SpellBookFrame.selectedSkillLine = tabIndex;
 				SpellBookFrame_Update();
-				return buttonOrder[spellIndex];
+
+				--now we need to find the spell button, which COULD be a flyout button
+				local slotType, actionID = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
+				if ( slotType == "FLYOUT" ) then
+					-- find the ACTUAL flyout button
+					local buttonIndex = buttonOrder[spellIndex];
+					local flyoutButton = _G["SpellButton" .. buttonIndex];
+
+					--find the spellbutton INSIDE the flyout
+					local numButtons = 1;
+					local _, _, numSlots = GetFlyoutInfo(actionID);
+					for i = 1, numSlots do
+						local flyoutSpellID, overrideSpellID, isKnown, spellName, slotSpecID = GetFlyoutSlotInfo(actionID, i);
+						if spellID == flyoutSpellID then -- we found it
+							--open the flyout
+							SpellFlyout:Toggle(actionID, flyoutButton, "RIGHT", 1, false, flyoutButton.offSpecID, true);
+							local returnButton = _G["SpellFlyoutButton"..numButtons];
+							return returnButton;
+						end
+						numButtons = numButtons + 1;
+					end
+				else
+					-- this is just a regular spell button
+					local buttonIndex = buttonOrder[spellIndex];
+					local returnButton = _G["SpellButton" .. buttonIndex];
+					return returnButton;
+				end
 			end
 		end
 	end

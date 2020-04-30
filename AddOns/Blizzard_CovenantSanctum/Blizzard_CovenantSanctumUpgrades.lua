@@ -148,7 +148,7 @@ function CovenantSanctumUpgradesTabMixin:SetUpCurrencies()
 	local currencies = DEBUG_GetCurrencies();
 	local stride = #currencies;
 	local paddingX = 10;
-	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopRightToBottomRight, stride, paddingX);
+	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopRightToBottomLeft, stride, paddingX);
 	local initAnchor = nil;
 	self.CurrencyDisplayGroup:SetCurrencies(currencies, initFunction, initAnchor, layout, tooltipAnchor);
 end

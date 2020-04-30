@@ -16,6 +16,33 @@ local AnimaDiversionUI =
 			},
 		},
 		{
+			Name = "GetPlayerCovenantAnimaCurrencyID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "currencyID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetReinforceProgress",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "progress", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTextureKit",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "textureKit", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "OpenAnimaDiversionUI",
 			Type = "Function",
 		},
@@ -26,6 +53,7 @@ local AnimaDiversionUI =
 			Arguments =
 			{
 				{ Name = "talentID", Type = "number", Nilable = false },
+				{ Name = "temporary", Type = "bool", Nilable = false },
 			},
 		},
 	},
@@ -46,6 +74,11 @@ local AnimaDiversionUI =
 				{ Name = "info", Type = "AnimaDiversionFrameInfo", Nilable = false },
 			},
 		},
+		{
+			Name = "AnimaDiversionTalentUpdated",
+			Type = "Event",
+			LiteralName = "ANIMA_DIVERSION_TALENT_UPDATED",
+		},
 	},
 
 	Tables =
@@ -53,14 +86,24 @@ local AnimaDiversionUI =
 		{
 			Name = "AnimaDiversionNodeState",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
-				{ Name = "Available", Type = "AnimaDiversionNodeState", EnumValue = 0 },
-				{ Name = "SelectedTemporary", Type = "AnimaDiversionNodeState", EnumValue = 1 },
-				{ Name = "SelectedPermanent", Type = "AnimaDiversionNodeState", EnumValue = 2 },
+				{ Name = "Unavailable", Type = "AnimaDiversionNodeState", EnumValue = 0 },
+				{ Name = "Available", Type = "AnimaDiversionNodeState", EnumValue = 1 },
+				{ Name = "SelectedTemporary", Type = "AnimaDiversionNodeState", EnumValue = 2 },
+				{ Name = "SelectedPermanent", Type = "AnimaDiversionNodeState", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "AnimaDiversionCostInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "currencyID", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -81,7 +124,7 @@ local AnimaDiversionUI =
 				{ Name = "talentID", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = false },
-				{ Name = "cost", Type = "number", Nilable = false },
+				{ Name = "costs", Type = "table", InnerType = "AnimaDiversionCostInfo", Nilable = false },
 				{ Name = "currencyID", Type = "number", Nilable = false },
 				{ Name = "icon", Type = "number", Nilable = false },
 				{ Name = "normalizedPosition", Type = "table", Mixin = "Vector2DMixin", Nilable = false },

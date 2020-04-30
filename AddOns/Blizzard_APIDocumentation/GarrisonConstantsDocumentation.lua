@@ -200,14 +200,15 @@ local GarrisonConstants =
 		{
 			Name = "GarrTalentUI",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Generic", Type = "GarrTalentUI", EnumValue = 0 },
 				{ Name = "CovenantSanctum", Type = "GarrTalentUI", EnumValue = 1 },
 				{ Name = "SoulBinds", Type = "GarrTalentUI", EnumValue = 2 },
+				{ Name = "AnimaDiversion", Type = "GarrTalentUI", EnumValue = 3 },
 			},
 		},
 		{

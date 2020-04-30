@@ -5,34 +5,12 @@
 		<Size x="150" y="150"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="0">
-				<Texture parentKey="Icon" file="Interface/TaxiFrame/UI-Taxi-Icon-Green" />
+				<Texture parentKey="Icon"/>
 			</Layer>
-			<Layer level="HIGHLIGHT">
-				<Texture parentKey="IconHighlight" file="Interface/TaxiFrame/UI-Taxi-Icon-White" alphaMode="ADD" alpha=".25">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" />
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="4">
-				<Texture parentKey="CircleBorder" atlas="UI-Frame-jailerstower-Portrait-QualityRare">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="-125" y="125"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="125" y="-125"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="2">
-				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
-					</Anchors>
-					<MaskedTextures>
-						<MaskedTexture childKey="Icon"/>
-					</MaskedTextures>
-				</MaskTexture>
+			<Layer level="BORDER">
+				<Texture parentKey="IconSelect"/>
+				<Texture parentKey="IconReady"/>
+				<Texture parentKey="IconReinforce"/>
 			</Layer>
 		</Layers>
 	</Frame>

@@ -132,8 +132,8 @@ function Tutorials:Begin()
 	end
 
 	-- Spec Choice Quest
-	local questID = tutorialData.SpecChoiceQuest;
-	if C_QuestLog.GetLogIndexForQuestID(questID) ~= nil then -- Spec Choice Quest is active
+	local specQuestID = TutorialHelper:FilterByClass(tutorialData.SpecQuests);
+	if C_QuestLog.GetLogIndexForQuestID(specQuestID) ~= nil then -- Spec Choice Quest is active
 		self.SpecTutorial:Begin();
 	end
 
@@ -153,6 +153,7 @@ end
 function Tutorials:Quest_Accepted(questData)
 	local questID = questData.QuestID;
 	local tutorialData = TutorialHelper:GetFactionData();
+	local specQuestID = TutorialHelper:FilterByClass(tutorialData.SpecQuests);
 
 	if (questID == tutorialData.StartingQuest) then
 		-- Starting Quest
@@ -176,7 +177,7 @@ function Tutorials:Quest_Accepted(questData)
 	elseif (questID == tutorialData.LookingForGroupQuest) then
 		-- Looking For Group Quest
 		self.LookingForGroup:Begin();
-	elseif (questID == tutorialData.SpecChoiceQuest) then
+	elseif (questID == specQuestID) then
 		-- Spec Choice Quest
 		self.SpecTutorial:Begin();
 	elseif (questID == tutorialData.ShowAllUIQuest) then
@@ -239,6 +240,11 @@ function Tutorials:Quest_TurnedIn(questData)
 		if questID == tutorialData.GetMountQuest then
 			self.MountAddedWatcher:Begin();
 		end
+
+		local classQuestID = TutorialHelper:FilterByClass(tutorialData.ClassQuests);
+		if questID == classQuestID then
+			self.AddClassSpellToActionBar:Begin();
+		end
 	end
 end
 
@@ -285,6 +291,7 @@ Tutorials.QuestCompleteHelp				= Class_QuestCompleteHelp:new();
 Tutorials.XPBarTutorial					= Class_XPBarTutorial:new()
 Tutorials.LevelUpTutorial				= Class_LevelUpTutorial:new()
 Tutorials.AddSpellToActionBar			= Class_AddSpellToActionBar:new();
+Tutorials.AddClassSpellToActionBar		= Class_AddClassSpellToActionBar:new();
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Intro to Map

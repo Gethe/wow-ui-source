@@ -16,13 +16,14 @@ local CharacterCustomizationShared =
 		{
 			Name = "ChrCustomizationOptionType",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
-				{ Name = "Slider", Type = "ChrCustomizationOptionType", EnumValue = 0 },
+				{ Name = "SelectionPopout", Type = "ChrCustomizationOptionType", EnumValue = 0 },
 				{ Name = "Checkbox", Type = "ChrCustomizationOptionType", EnumValue = 1 },
+				{ Name = "Slider", Type = "ChrCustomizationOptionType", EnumValue = 2 },
 			},
 		},
 		{
@@ -32,6 +33,7 @@ local CharacterCustomizationShared =
 			{
 				{ Name = "id", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "swatchColor", Type = "table", Mixin = "ColorMixin", Nilable = true },
 			},
 		},
 		{

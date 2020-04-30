@@ -62,8 +62,8 @@ do
 			borderPaddingY = 20,
 			Topper = "scoreboard-horde-header",
 			TitleBG = "scoreboard-header-horde",
-			nineSliceLayout = "PartyPoseKit",
-			nineSliceTextureKit = "horde",
+			nineSliceLayout = "UniqueCornersLayout",
+			nineSliceTextureKit = "scoreboard-horde",
 			partyCategory = LE_PARTY_CATEGORY_INSTANCE,
 		},
 
@@ -74,8 +74,8 @@ do
 			borderPaddingY = 20,
 			Topper = "scoreboard-alliance-header",
 			TitleBG = "scoreboard-header-alliance",
-			nineSliceLayout = "PartyPoseKit",
-			nineSliceTextureKit = "alliance",
+			nineSliceLayout = "UniqueCornersLayout",
+			nineSliceTextureKit = "scoreboard-alliance",
 			partyCategory = LE_PARTY_CATEGORY_INSTANCE,
 		},
 	};

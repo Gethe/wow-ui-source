@@ -52,6 +52,7 @@ ContributionCollectorDocumentation.lua
 CovenantCallingsDocumentation.lua
 CovenantPreviewDocumentation.lua
 CovenantSanctumDocumentation.lua
+CovenantsDocumentation.lua
 CreatureInfoDocumentation.lua
 CurrencyInfoDocumentation.lua
 CursorDocumentation.lua
@@ -130,6 +131,7 @@ SkillInfoDocumentation.lua
 SocialInfoDocumentation.lua
 SocialQueueDocumentation.lua
 SocialRestrictionsDocumentation.lua
+SoulbindsDocumentation.lua
 SoundDocumentation.lua
 SpecializationInfoDocumentation.lua
 SpellDocumentation.lua
@@ -179,6 +181,7 @@ CharacterCustomizationSharedDocumentation.lua
 ChatDocumentation.lua
 ClubSharedDocumentation.lua
 ColorDocumentation.lua
+CovenantsConstantsDocumentation.lua
 GarrisonConstantsDocumentation.lua
 GarrisonSharedDocumentation.lua
 GuildInfoSharedDocumentation.lua

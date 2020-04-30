@@ -407,6 +407,11 @@ function CharacterCreateMixin:SetCustomizationChoice(optionID, choiceID)
 	self:UpdateCharCustomizationFrame();
 end
 
+function CharacterCreateMixin:PreviewCustomizationChoice(optionID, choiceID)
+	-- It is important that we DON'T call UpdateCharCustomizationFrame here because we want to keep the current selections
+	C_CharacterCreation.SetCustomizationChoice(optionID, choiceID);
+end
+
 function CharacterCreateMixin:SetCameraZoomLevel(zoomLevel, keepCustomZoom)
 	C_CharacterCreation.SetCameraZoomLevel(zoomLevel, keepCustomZoom);
 end
@@ -1114,6 +1119,12 @@ CharacterCreateNameAvailabilityStateMixin = {};
 
 function CharacterCreateNameAvailabilityStateMixin:OnLoad()
 	self:RegisterEvent("CHECK_CHARACTER_NAME_AVAILABILITY_RESULT");
+end
+
+function CharacterCreateNameAvailabilityStateMixin:OnHide()
+	if self.navBlocker then
+		CharacterCreateFrame:RemoveNavBlocker(self.navBlocker);
+	end
 end
 
 function CharacterCreateNameAvailabilityStateMixin:SetupAnchors(tooltip)

@@ -86,10 +86,15 @@ function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 			self.Report.Background:ClearAllPoints();
 			self.Report.Background:SetPoint("BOTTOMLEFT", 100, 127);
 		end
+	elseif (self.garrTypeID == Enum.GarrisonType.Type_9_0) then
+		self:SetupCovenantCallings();
 	end
+
 	self.abilityCountersForMechanicTypes = C_Garrison.GetFollowerAbilityCountersForMechanicTypes(GetPrimaryGarrisonFollowerType(self.garrTypeID));
 	GarrisonThreatCountersFrame:SetParent(self.FollowerTab);
 	GarrisonThreatCountersFrame:SetPoint("TOPRIGHT", -152, 30);
+
+	self:UpdateCovenantCallings();
 end
 
 function GarrisonLandingPageMixin:OnShow()
@@ -118,12 +123,30 @@ function GarrisonLandingPageMixin:GetShipFollowerList()
 	return self.ShipFollowerList;
 end
 
+function GarrisonLandingPageMixin:SetupCovenantCallings()
+	if not self.CovenantCallings then
+		if UIParentLoadAddOn("Blizzard_CovenantCallings") then
+			self.CovenantCallings = CovenantCallings.Create(self.Report);
+			self.CovenantCallings:SetPoint("TOPLEFT", self.Report.Title, "BOTTOMLEFT", 0, -32);
+		end
+	end
+end
+
+function GarrisonLandingPageMixin:UpdateCovenantCallings()
+	if self.CovenantCallings then
+		local hasCallings = (self.garrTypeID == Enum.GarrisonType.Type_9_0);
+		self.CovenantCallings:SetShown(hasCallings);
+		if hasCallings then
+			self.CovenantCallings:Update();
+		end
+	end
+end
+
 function GarrisonLandingPageMixin:OnEvent(event)
 	if (event == "GARRISON_HIDE_LANDING_PAGE") then
 		HideUIPanel(self);
 	end
 end
-
 
 ---------------------------------------------------------------------------------
 --- Shipyard Follower page
@@ -855,7 +878,7 @@ function GarrisonLandingPageReportMissionReward_OnEnter(self)
 			GameTooltip:SetItemByID(self.itemID);
 			return;
 		end
-		if (self.currencyID and C_CurrencyInfo.IsCurrencyContainer(self.currencyID, self.currencyQuantity)) then			
+		if (self.currencyID and C_CurrencyInfo.IsCurrencyContainer(self.currencyID, self.currencyQuantity)) then
 			GameTooltip:SetCurrencyByID(self.currencyID, self.currencyQuantity);
 			return;
 		end

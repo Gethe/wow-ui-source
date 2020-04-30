@@ -14,6 +14,8 @@ function AnchorMixin:Set(point, relativeTo, relativePoint, x, y)
 end
 
 function AnchorMixin:SetFromPoint(region, pointIndex)
+	-- TODO: Need to check if this has no point set...probably don't want default behavior in some cases, probably
+	-- want to signal something or return an invalid anchor.
 	self:Set(region:GetPoint(pointIndex));
 end
 
@@ -43,9 +45,18 @@ end
 
 GridLayoutMixin = {};
 
+-- If isVertical is true lay out columns first then rows, otherwise we lay out rows then columns
+-- So for example with a stride of 2 and 6 frames this is how they would look using TopLeftToBottomRight and TopLeftToBottomRightVertical:
+--
+-- TopLeftToBottomRight				TopLeftToBottomRightVertical
+-- 1	2							1	3	5
+-- 3	4							2	4	6
+-- 5	6
 GridLayoutMixin.Direction = {
 	TopLeftToBottomRight = { x = 1, y = -1 },
-	TopRightToBottomRight = { x = -1, y = -1 },
+	TopRightToBottomLeft = { x = -1, y = -1 },
+	TopLeftToBottomRightVertical = { x = 1, y = -1, isVertical = true },
+	TopRightToBottomLeftVertical = { x = -1, y = -1, isVertical = true },
 };
 
 function GridLayoutMixin:Init(direction, stride, paddingX, paddingY, horizontalSpacing, verticalSpacing)
@@ -63,6 +74,13 @@ AnchorUtil = {};
 AnchorUtil.CreateAnchor = GenerateClosure(CreateAndInitFromMixin, AnchorMixin);
 AnchorUtil.CreateGridLayout = GenerateClosure(CreateAndInitFromMixin, GridLayoutMixin);
 
+
+function AnchorUtil.CreateAnchorFromPoint(region, pointIndex)
+	local anchor = AnchorUtil.CreateAnchor();
+	anchor:SetFromPoint(region, pointIndex);
+	return anchor;
+end
+
 -- For initialAnchor and layout, use AnchorUtil.CreateAnchor(...) and AnchorUtil.CreateGridLayout(...)
 function AnchorUtil.GridLayout(frames, initialAnchor, layout)
 	if #frames <= 0 then
@@ -78,6 +96,11 @@ function AnchorUtil.GridLayout(frames, initialAnchor, layout)
 	for i, frame in ipairs(frames) do
 		local row = math.floor((i - 1) / stride) + 1;
 		local col = (i - 1) % stride + 1;
+		if direction.isVertical then
+			local tempRow = row;
+			row = col;
+			col = tempRow;
+		end
 		local clearAllPoints = true;
 		local extraOffsetX = (col - 1) * (width + paddingX) * direction.x;
 		local extraOffsetY = (row - 1) * (height + paddingY) * direction.y;

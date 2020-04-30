@@ -641,7 +641,7 @@ function GarrisonLandingPageMinimapButton_UpdateIcon(self)
 		self.title = GARRISON_TYPE_8_0_LANDING_PAGE_TITLE;
 		self.description = GARRISON_TYPE_8_0_LANDING_PAGE_TOOLTIP;
 	elseif (garrisonType == Enum.GarrisonType.Type_9_0) then
-		local covenantData = C_Soulbinds.GetCovenantData(C_Soulbinds.GetActiveCovenantID());
+		local covenantData = C_Covenants.GetCovenantData(C_Covenants.GetActiveCovenantID());
 		if covenantData then
 			SetLandingPageIconFromAtlases(self, GetMinimapAtlases_GarrisonType9_0(covenantData));
 		end

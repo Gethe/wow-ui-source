@@ -85,7 +85,7 @@ function SoulbindViewerMixin:UpdateResetButton()
 end
 
 function SoulbindViewerMixin:OpenSoulbindForge()
-	local covenantData = C_Soulbinds.GetCovenantData(C_Soulbinds.GetActiveCovenantID());
+	local covenantData = C_Covenants.GetCovenantData(C_Covenants.GetActiveCovenantID());
 	local soulbindData = C_Soulbinds.GetSoulbindData(C_Soulbinds.GetActiveSoulbindID());
 
 	self:InitCovenant(covenantData, soulbindData);
@@ -94,7 +94,7 @@ end
 
 function SoulbindViewerMixin:OpenSoulbind(soulbindID)
 	local soulbindData = C_Soulbinds.GetSoulbindData(soulbindID);
-	local covenantData = C_Soulbinds.GetCovenantData(soulbindData.covenantID);
+	local covenantData = C_Covenants.GetCovenantData(soulbindData.covenantID);
 	
 	self:InitCovenant(covenantData, soulbindData);
 	ShowUIPanel(SoulbindViewer);
@@ -143,7 +143,7 @@ function SoulbindViewerMixin:GetSoulbindData()
 end
 
 function SoulbindViewerMixin:UpdateActivateButton()
-	local canEnable = not self:IsActiveSoulbindOpen() and C_Soulbinds.GetActiveCovenantID() == self:GetCovenantData().ID;
+	local canEnable = not self:IsActiveSoulbindOpen() and C_Covenants.GetActiveCovenantID() == self:GetCovenantData().ID;
 	self.ActivateButton:SetEnabled(canEnable);
 end
 

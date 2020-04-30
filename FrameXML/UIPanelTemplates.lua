@@ -528,7 +528,7 @@ function CurrencyDisplayGroupMixin:SetCurrencies(currencies, initFunction, initi
 	end
 
 	local initialAnchor = initialAnchor or AnchorUtil.CreateAnchor("TOPRIGHT", self, "TOPRIGHT");
-	local layout = gridLayout or AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopRightToBottomRight);
+	local layout = gridLayout or AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopRightToBottomLeft);
 	AnchorUtil.GridLayoutFactoryByCount(FactoryFunction, #currencies, initialAnchor, layout);
 
 	self:MarkDirty();

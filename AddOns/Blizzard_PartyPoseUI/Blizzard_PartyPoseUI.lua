@@ -293,29 +293,6 @@ function PartyPoseMixin:PlaySounds()
 end
 
 do
-	NineSliceUtil.AddLayout("PartyPoseFrameTemplate", {
-		TopLeftCorner =	{ atlas = "scoreboard-frameborder-topleft", x = 0, y = 0, },
-		TopRightCorner =	{ atlas = "scoreboard-frameborder-topright", x = 0, y = 0, },
-		BottomLeftCorner =	{ atlas = "scoreboard-frameborder-bottomleft", x = 0, y = 0, },
-		BottomRightCorner =	{ atlas = "scoreboard-frameborder-bottomright", x = 0, y = 0, },
-		TopEdge = { atlas = "scoreboard-frameborder-top", },
-		BottomEdge = { atlas = "scoreboard-frameborder-bottom",  },
-		LeftEdge = { atlas = "scoreboard-frameborder-left", },
-		RightEdge = { atlas = "scoreboard-frameborder-right",  },
-	});
-
-	NineSliceUtil.AddLayout("PartyPoseKit", {
-		mirrorLayout = true,
-		TopLeftCorner =	{ atlas = "scoreboard-%s-corner", x = 0, y = 0, },
-		TopRightCorner =	{ atlas = "scoreboard-%s-corner", x = 0, y = 0, },
-		BottomLeftCorner =	{ atlas = "scoreboard-%s-corner", x = 0, y = 0, },
-		BottomRightCorner =	{ atlas = "scoreboard-%s-corner", x = 0, y = 0, },
-		TopEdge = { atlas = "_scoreboard-%s-edgetop", mirrorLayout = false, },
-		BottomEdge = { atlas = "_scoreboard-%s-edgebottom", mirrorLayout = false, },
-		LeftEdge = { atlas = "!scoreboard-%s-edgeleft", mirrorLayout = false, },
-		RightEdge = { atlas = "!scoreboard-%s-edgeright", mirrorLayout = false, },
-	});
-
 	function PartyPoseMixin:SetupTheme()
 		if self.OverlayElements.Topper then
 			self.OverlayElements.Topper:SetPoint("BOTTOM", self.Border, "TOP", 0, self.partyPoseData.themeData.topperOffset);

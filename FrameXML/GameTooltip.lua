@@ -61,6 +61,13 @@ TOOLTIP_QUEST_REWARDS_STYLE_EMISSARY_REWARD = {
 	fullItemDescription = true,
 }
 
+TOOLTIP_QUEST_REWARDS_STYLE_CALLING_REWARD = {
+	prefixBlankLineCount = 0,
+	postHeaderBlankLineCount = 1,
+	atLeastShowAzerite = true,
+	fullItemDescription = true,
+}
+
 TOOLTIP_QUEST_REWARDS_PRIORITIZE_CURRENCY_OVER_ITEM = {
 	headerText = QUEST_REWARDS,
 	headerColor = NORMAL_FONT_COLOR,

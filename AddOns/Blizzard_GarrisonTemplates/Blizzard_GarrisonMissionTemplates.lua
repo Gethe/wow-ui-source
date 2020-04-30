@@ -106,18 +106,16 @@ function GarrisonMission:GetFollowerBuffsForMission(missionID)
 	self.followerSpells = C_Garrison.GetFollowersSpellsForMission(missionID);
 end
 
-function GarrisonMission:ShowMission(missionInfo)
+function GarrisonMission:SetTitle(title)
 	local missionPage = self:GetMissionPage();
-	missionPage.missionInfo = missionInfo;
-
-	local missionDeploymentInfo =  C_Garrison.GetMissionDeploymentInfo(missionInfo.missionID);
-
-	missionPage.Stage.Title:SetText(missionInfo.name);
+	missionPage.Stage.Title:SetText(title);
 	GarrisonTruncationFrame_Check(missionPage.Stage.Title);
-	missionPage.environment = missionDeploymentInfo.environment;
-	missionPage.xp = missionDeploymentInfo.xp;
+end
+
+function GarrisonMission:SetEnvironmentTexture(environmentTexture)
+	local missionPage = self:GetMissionPage();
+
 	-- This is a fix for bug 496154. TODO: Add an icon for Elite difficulty that has a baked in glow.
-	local environmentTexture = missionDeploymentInfo.environmentTexture;
 	if (environmentTexture == 1488824 or environmentTexture == 1488825) then
 		missionPage.Stage.MissionEnvIcon:SetSize(48,48);
 		missionPage.Stage.MissionEnvIcon:SetPoint("LEFT", self.MissionTab.MissionPage.Stage.MissionInfo.MissionEnv, "RIGHT", -11, 0);
@@ -125,6 +123,32 @@ function GarrisonMission:ShowMission(missionInfo)
 		missionPage.Stage.MissionEnvIcon:SetSize(16,16);
 		missionPage.Stage.MissionEnvIcon:SetPoint("LEFT", self.MissionTab.MissionPage.Stage.MissionInfo.MissionEnv, "RIGHT", 4, 0);
 	end
+end
+
+function GarrisonMission:SetMissionIcon(typeAtlas, isRare)
+	local missionPage = self:GetMissionPage();
+	missionPage.MissionType:SetAtlas(typeAtlas);
+
+	if ( isRare ) then
+		missionPage.IconBG:SetVertexColor(0, 0.012, 0.291, 0.4);
+	else
+		missionPage.IconBG:SetVertexColor(0, 0, 0, 0.4);
+	end
+end
+
+function GarrisonMission:ShowMission(missionInfo)
+	local missionPage = self:GetMissionPage();
+	missionPage.missionInfo = missionInfo;
+
+	local missionDeploymentInfo =  C_Garrison.GetMissionDeploymentInfo(missionInfo.missionID);
+
+	self:SetTitle(missionInfo.name);
+
+	missionPage.environment = missionDeploymentInfo.environment;
+	missionPage.xp = missionDeploymentInfo.xp;
+
+	self:SetEnvironmentTexture(missionDeploymentInfo.environmentTexture)
+	
 	missionPage.Stage.MissionEnvIcon.Texture:SetTexture(environmentTexture);
 
 	local locTextureKit = missionDeploymentInfo.locTextureKit;
@@ -133,13 +157,8 @@ function GarrisonMission:ShowMission(missionInfo)
 		GarrisonMissionStage_SetMid(missionPage.Stage, "_"..locTextureKit.."-Mid");
 		GarrisonMissionStage_SetFore(missionPage.Stage, "_"..locTextureKit.."-Fore");
 	end
-	missionPage.MissionType:SetAtlas(missionInfo.typeAtlas);
 
-	if ( missionPage.missionInfo.isRare ) then
-		missionPage.IconBG:SetVertexColor(0, 0.012, 0.291, 0.4);
-	else
-		missionPage.IconBG:SetVertexColor(0, 0, 0, 0.4);
-	end
+	self:SetMissionIcon(missionInfo.typeAtlas, missionInfo.isRare);
 
 	-- max level
 	if ( GarrisonFollowerOptions[self.followerTypeID].showILevelOnMission and missionPage.missionInfo.level == self.followerMaxLevel and missionPage.missionInfo.iLevel > 0 ) then
@@ -554,16 +573,22 @@ function GarrisonMission:UpdateStartButton(missionPage)
 	-- required number of champions
 	if ( not disableError ) then
 		local requiredChampionCount = missionPage.missionInfo.requiredChampionCount;
+
 		local numChampions = 0;
-		local followers = missionPage.Followers;
-		for followerIndex = 1, #followers do
-			local followerFrame = followers[followerIndex];
-			if ( followerFrame.info ) then
-				if (not followerFrame.info.isTroop) then
-					numChampions = numChampions + 1;
+		if self.GetNumMissionFollowers then
+			numChampions = self:GetNumMissionFollowers();
+		else
+			local followers = missionPage.Followers;
+			for followerIndex = 1, #followers do
+				local followerFrame = followers[followerIndex];
+				if ( followerFrame.info ) then
+					if (not followerFrame.info.isTroop) then
+						numChampions = numChampions + 1;
+					end
 				end
 			end
 		end
+
 		if ( numChampions < requiredChampionCount ) then
 			disableError = GarrisonFollowerOptions[self.followerTypeID].partyNotFullText;
 		end
@@ -768,18 +793,22 @@ function GarrisonMission:OnDragStopFollowerButton(placer)
 	end
 end
 
+function GarrisonMission:SetPlacerFrame(placer, info, yOffset)
+	self:SetFollowerPortrait(placer, info, false, false);
+	placer.info = info;
+	local cursorX, cursorY = GetCursorPosition();
+	local uiScale = UIParent:GetScale();
+	placer.yOffset = yOffset or 25;
+	placer:SetPoint("TOP", UIParent, "BOTTOMLEFT", cursorX / uiScale, cursorY / uiScale + placer.yOffset);
+	placer:Show();
+	placer:SetScript("OnUpdate", GarrisonFollowerPlacer_OnUpdate);
+end
+
 function GarrisonMission:OnDragStartMissionFollower(placer, frame, yOffset)
 	if ( not frame.info ) then
 		return;
 	end
-	self:SetFollowerPortrait(placer, frame.info, false, false);
-	placer.info = frame.info;
-	local cursorX, cursorY = GetCursorPosition();
-	local uiScale = UIParent:GetScale();
-	placer.yOffset = yOffset;
-	placer:SetPoint("TOP", UIParent, "BOTTOMLEFT", cursorX / uiScale, cursorY / uiScale + placer.yOffset);
-	placer:Show();
-	placer:SetScript("OnUpdate", GarrisonFollowerPlacer_OnUpdate);
+	self:SetPlacerFrame(placer, frame.info, yOffset);
 	self:RemoveFollowerFromMission(frame);
 end
 
@@ -799,7 +828,8 @@ end
 
 function GarrisonMission:OnMouseUpMissionFollower(frame, button)
 	if ( button == "RightButton" ) then
-		if ( frame.info ) then
+		local info = frame.GetInfo and frame:GetInfo() or frame.info;
+		if ( info ) then
 			self:RemoveFollowerFromMission(frame, true);
 		else
 			self:GetMissionPage().CloseButton:Click();

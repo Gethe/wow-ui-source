@@ -3,8 +3,8 @@
 ---------------------------------------------------------------------------------
 
 -- These are follower options that depend on this AddOn being loaded, and so they can't be set in GarrisonBaseUtils.
-GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0].missionFollowerSortFunc =  GarrisonFollowerList_PrioritizeSpecializationAbilityMissionSort;
-GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0].missionFollowerInitSortFunc = GarrisonFollowerList_InitializePrioritizeSpecializationAbilityMissionSort;
+GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0].missionFollowerSortFunc =  nil;
+GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0].missionFollowerInitSortFunc = nil;
 
 local covenantGarrisonStyleData =
 {
@@ -19,6 +19,8 @@ local covenantGarrisonStyleData =
 
 	BackgroundTile = "Adventures-Missions-BG-02",
 };
+
+local CovenantPlacer = GarrisonFollowerPlacer;
 
 local function SetupMissionTab(tab, styleData)
 	tab.Left:SetAtlas(styleData.TabLeft, true);
@@ -70,9 +72,18 @@ end
 -- Shadowlands/Covenant Mission Frame
 ---------------------------------------------------------------------------------
 
-CovenantMission = { }
+CovenantMission = CreateFromMixins(CallbackRegistryMixin);
+
+CovenantMission:GenerateCallbackEvents(
+{
+	"OnFollowerFrameMouseUp",
+	"OnFollowerFrameDragStart",
+	"OnFollowerFrameDragStop",
+	"OnFollowerFrameReceiveDrag",
+});
 
 function CovenantMission:OnLoadMainFrame()
+	CallbackRegistryMixin.OnLoad(self);
 	GarrisonMission.OnLoadMainFrame(self);
 
 	self.TitleText:Hide();
@@ -83,7 +94,14 @@ function CovenantMission:OnLoadMainFrame()
 	self:UpdateTextures();
 	PanelTemplates_SetNumTabs(self, 2);
 	self:SelectTab(self:DefaultTab());
-	self:AssignBoardPositions();
+
+	self.FollowerList:SetSortFuncs(nil);
+
+	self:GetMissionPage().Board:Reset();
+
+	for followerFrame in self:GetMissionPage().Board:EnumerateFollowers() do
+		followerFrame:SetMainFrame(self);
+	end
 end
 
 local COVENANT_MISSION_EVENTS = {
@@ -100,23 +118,25 @@ local COVENANT_MISSION_EVENTS = {
 function CovenantMission:OnShowMainFrame()
 	GarrisonFollowerMission.OnShowMainFrame(self);
 	FrameUtil.RegisterFrameForEvents(self, COVENANT_MISSION_EVENTS); 
+
+	self:RegisterCallback(CovenantMission.Event.OnFollowerFrameMouseUp, self.OnMouseUpMissionFollower, self);
+	self:RegisterCallback(CovenantMission.Event.OnFollowerFrameDragStart, self.OnFollowerFrameDragStart, self);
+	self:RegisterCallback(CovenantMission.Event.OnFollowerFrameDragStop, self.OnFollowerFrameDragStop, self);
+	self:RegisterCallback(CovenantMission.Event.OnFollowerFrameReceiveDrag, self.OnFollowerFrameReceiveDrag, self);
+
+	self:SetupTabs();
 end
 
 function CovenantMission:OnHideMainFrame()
 	GarrisonFollowerMission.OnHideMainFrame(self);
 	FrameUtil.UnregisterFrameForEvents(self, COVENANT_MISSION_EVENTS);
-end
 
-function CovenantMission:AssignBoardPositions()
-	self.missionSendBoardReverseLookup = {};
-	local missionPage = self.MissionTab.MissionPage;
-	for i=1, #missionPage.Enemies do
-		self.missionSendBoardReverseLookup[missionPage.Enemies[i].boardIndex] = missionPage.Enemies[i];
-	end
+	self:UnregisterCallback(CovenantMission.Event.OnFollowerFrameMouseUp, self);
+	self:UnregisterCallback(CovenantMission.Event.OnFollowerFrameDragStart, self);
+	self:UnregisterCallback(CovenantMission.Event.OnFollowerFrameDragStop, self);
+	self:UnregisterCallback(CovenantMission.Event.OnFollowerFrameReceiveDrag, self);
 
-	for i=1, #missionPage.Followers do 
-		self.missionSendBoardReverseLookup[missionPage.Followers[i].boardIndex] = missionPage.Followers[i];
-	end
+	C_AdventureMap.Close(); --Opening the table implicitly opens an Adventure Map, this clears the npc on it.
 end
 
 function CovenantMission:SetupTabs()
@@ -161,46 +181,52 @@ function CovenantMission:SetupTabs()
    end
 end
 
+function CovenantMission:ShowMission(missionInfo)
+	local missionPage = self:GetMissionPage();
+
+	for followerFrame in missionPage.Board:EnumerateFollowers() do
+		followerFrame:SetEmpty();
+		followerFrame:Show();
+	end
+
+	missionPage.missionInfo = missionInfo;
+
+	self:SetTitle(missionInfo.name);
+
+	self:SetMissionIcon(missionInfo.typeAtlas, missionInfo.isRare);
+	
+	local missionDeploymentInfo =  C_Garrison.GetMissionDeploymentInfo(missionInfo.missionID);
+	missionPage.environment = missionDeploymentInfo.environment;
+
+	self:SetEnvironmentTexture(missionDeploymentInfo.environmentTexture);
+
+	local enemies = missionDeploymentInfo.enemies;
+	self:SetEnemies(missionPage, enemies);
+
+	self:UpdateMissionData(missionPage);
+end
+
+function CovenantMission:ClearParty()
+	local missionPage = self:GetMissionPage();
+	for followerFrame in missionPage.Board:EnumerateFollowers() do
+		local followerGUID = followerFrame:GetFollowerGUID();
+		if followerGUID then
+			C_Garrison.RemoveFollowerFromMission(missionPage.missionInfo.missionID, followerGUID);
+		end
+	end
+
+	missionPage.Board:Reset();
+end
+
+-- numFollowers is unused, but kept to maintain the same function signature.
 function CovenantMission:SetEnemies(missionPage, enemies, numFollowers)
-   	local numVisibleEnemies = 0;
-
-   	local enemiesByBoardIndex = {};
-
-   	for i=1, #enemies do
-   		enemiesByBoardIndex[enemies[i].boardIndex] = enemies[i];
-   	end
-
-   	for i=1, #missionPage.Enemies do
-   		local frame = missionPage.Enemies[i];
-   		if ( not frame ) then
-   			break;
-   		end
-
-   		local enemy = enemiesByBoardIndex[frame.boardIndex];
-   		local numMechs = 0;
-   		local portrait = frame;
-   		if (frame.PortraitFrame) then
-   			portrait = frame.PortraitFrame;
-   		end
-   		local enemyName = "";
-
-   		if( enemy ) then 
-   			numVisibleEnemies = numVisibleEnemies + 1;		
-   			enemyName = enemy.name;
-			frame.autoCombatSpells = enemy.autoCombatSpells;
-   		else
-   			enemy = {};
-			frame.autoCombatSpells = {};
-   		end
-
-   		self:SetEnemyPortrait(portrait, enemy, portrait.Elite, numMechs);
-		self:OnSetEnemy(frame, enemy);
-   		frame.Name:SetText(enemyName);
+   	for i, enemyInfo in ipairs(enemies) do
+   		local frame = missionPage.Board:GetFrameByBoardIndex(enemyInfo.boardIndex);
+   		frame:SetEncounter(enemyInfo);
    		frame:Show();
    	end
 
-   	missionPage.Enemy1:SetPoint("TOPLEFT", 78, -164);
-   	return numVisibleEnemies;
+   	return #enemies;
 end
 
 function CovenantMission:MissionCompleteInitialize(missionList, index)
@@ -217,6 +243,54 @@ function CovenantMission:MissionCompleteInitialize(missionList, index)
    	self.MissionComplete:SetCurrentMission(mission);
    	return true;
 end
+
+function CovenantMission:OnClickFollowerPlacerFrame(button, info)
+	if button == "LeftButton" then
+		for followerFrame in self:GetMissionPage().Board:EnumerateFollowers() do
+			if followerFrame:IsShown() and followerFrame:IsMouseOver() then
+				self:AssignFollowerToMission(followerFrame, info);
+			end
+		end
+	end
+
+	self:ClearMouse();
+end
+
+function CovenantMission:OnFollowerFrameDragStart(followerFrame)
+	local info = followerFrame:GetInfo();
+	if not info then
+		return;
+	end
+
+	self:SetPlacerFrame(CovenantPlacer, info);
+	CovenantPlacer.dragStartFrame = followerFrame;
+
+	local function CovenantPlacerFrame_OnHide()
+		CovenantPlacer.dragStartFrame = nil;
+		CovenantPlacer:SetScript("OnHide", nil);
+	end
+	
+	CovenantPlacer:SetScript("OnHide", CovenantPlacerFrame_OnHide);
+
+	self:RemoveFollowerFromMission(followerFrame);
+end
+
+function CovenantMission:OnFollowerFrameDragStop(followerFrame)
+	GarrisonShowFollowerPlacerFrame(self, CovenantPlacer.info);
+end
+
+function CovenantMission:OnFollowerFrameReceiveDrag(followerFrame)
+	self:AssignFollowerToMission(followerFrame, CovenantPlacer.info);
+	self:ClearMouse();
+end
+
+local AutoAssignmentFollowerOrder = {
+	Enum.GarrAutoBoardIndex.AllyLeftFront,
+	Enum.GarrAutoBoardIndex.AllyCenterFront,
+	Enum.GarrAutoBoardIndex.AllyRightFront,
+	Enum.GarrAutoBoardIndex.AllyLeftBack,
+	Enum.GarrAutoBoardIndex.AllyRightBack,
+};
 
 function CovenantMission:DefaultTab()
     return 1;   -- Missions
@@ -304,58 +378,60 @@ function CovenantMission:UpdateTextures()
 	SetupBorder(self, styleData);
 end
 
-function CovenantMission:UpdateMissionParty(followers)
-	for followerIndex = 1, #followers do
-		local followerFrame = followers[followerIndex];
-		if ( followerFrame.info ) then
-			local followerInfo = C_Garrison.GetFollowerInfo(followerFrame.info.followerID);
-			if ( followerInfo and followerInfo.status == GARRISON_FOLLOWER_IN_PARTY ) then
-				self:SetFollowerPortrait(followerFrame, followerInfo, true);
-			else
-				self:RemoveFollowerFromMission(followerFrame, true);
-				for i = 1 , #followerFrame.Abilities do
-					followerFrame.Abilities[i]:Hide();
-				end
-			end
+function CovenantMission:AssignFollowerToMission(frame, info)
+	local missionPage = self:GetMissionPage();
 
-			local autoSpellAbilities = C_Garrison.GetFollowerAutoCombatSpells(followerFrame.info.followerID);
-			local numAbilities = #autoSpellAbilities;
-
-			for i = 1, numAbilities do
-				if (not followerFrame.Abilities[i]) then
-						followerFrame.Abilities[i] = CreateFrame("Frame", nil, followerFrame, "CovenantMissionAutoSpellAbilityTemplate");
-						followerFrame.Abilities[i]:SetPoint("LEFT", followerFrame.Abilities[i - 1], "RIGHT", 16, 0);
-				end
-
-				local autoSpellAbilityFrame = followerFrame.Abilities[i];
-				autoSpellAbilityFrame.info = autoSpellAbilities[i];
-				autoSpellAbilityFrame.Icon:SetTexture(autoSpellAbilities[i].icon)
-				autoSpellAbilityFrame:Show();
-			end
-
-			for i = numAbilities + 1, #followerFrame.Abilities do
-				followerFrame.Abilities[i]:Hide();
-			end
-
-			self:GetMissionPage():UpdateFollowerDurability(followerFrame);
+	local previousFollowerID = frame:GetFollowerGUID();
+	local previousFollowerInfo = frame:GetInfo();
+	if previousFollowerID then
+		C_Garrison.RemoveFollowerFromMission(missionPage.missionInfo.missionID, previousFollowerID);
+		frame:SetEmpty();
+	end
+	
+	if C_Garrison.GetFollowerStatus(info.followerID) ~= GARRISON_FOLLOWER_IN_PARTY then
+		if not C_Garrison.AddFollowerToMission(missionPage.missionInfo.missionID, info.followerID, frame.boardIndex) then
+			return false;
 		end
 	end
+
+	frame:SetFollowerGUID(info.followerID, info);
+
+	-- We're dragging this follower from another slot.
+	if CovenantPlacer.dragStartFrame and previousFollowerInfo then
+		self:AssignFollowerToMission(CovenantPlacer.dragStartFrame, previousFollowerInfo);
+	end
+
+	self:UpdateMissionData(missionPage);
+
+	return true;
+end
+
+function CovenantMission:UpdateMissionParty()
+	-- We don't need to do any further updates for covenant missions, as the pucks handle the display work.
 end
 
 function CovenantMission:RemoveFollowerFromMission(frame, updateValues)
-	GarrisonFollowerMission.RemoveFollowerFromMission(self, frame, updateValues);
+	local missionPage = self:GetMissionPage();
 
-	frame.info = nil;
-	if frame.Abilities then
-		for i = 1, #frame.Abilities do
-			frame.Abilities[i]:Hide();
-		end
+	local followerID = frame:GetFollowerGUID();
+	if followerID then
+		C_Garrison.RemoveFollowerFromMission(missionPage.missionInfo.missionID, followerID);
 	end
+
+	frame:SetEmpty();
+
+	self:UpdateMissionData(missionPage);
 end
 
-function CovenantMission:OnShowMainFrame()
-	GarrisonFollowerMission.OnShowMainFrame(self);
-	self:SetupTabs();
+function CovenantMission:GetNumMissionFollowers()
+	local numFollowers = 0;
+	for followerFrame in self:GetMissionPage().Board:EnumerateFollowers() do
+		if followerFrame:GetFollowerGUID() then
+			numFollowers = numFollowers + 1;
+		end
+	end
+
+	return numFollowers;
 end
 
 ---------------------------------------------------------------------------------
@@ -366,13 +442,28 @@ CovenantFollowerMissionPageMixin = { }
 
 function CovenantFollowerMissionPageMixin:AddFollower(followerID)
 	local missionFrame = self:GetParent():GetParent();
-	for i = 1, #self.Followers do
-		local followerFrame = self.Followers[i];
-		if ( not followerFrame.info ) then
-			local followerInfo = C_Garrison.GetFollowerInfo(followerID);
-			followerInfo.autoSpellAbilities = C_Garrison.GetFollowerAutoCombatSpells(followerID);
-			missionFrame:AssignFollowerToMission(followerFrame, followerInfo);
+
+	local followerInfo = C_Garrison.GetFollowerInfo(followerID);
+	
+	for i, boardIndex in ipairs(AutoAssignmentFollowerOrder) do
+		local puck = self.Board:GetFrameByBoardIndex(boardIndex);
+		if not puck:GetFollowerGUID() then
+			missionFrame:AssignFollowerToMission(puck, followerInfo);
+			puck:SetHighlight(false);
 			break;
+		end
+	end
+end
+
+function CovenantFollowerMissionPageMixin:UpdatePortraitPulse()
+	local highlightFound = false;
+	for i, boardIndex in ipairs(AutoAssignmentFollowerOrder) do
+		local puck = self.Board:GetFrameByBoardIndex(boardIndex);
+		if highlightFound or puck:GetFollowerGUID() then
+			puck:SetHighlight(false);
+		else
+			highlightFound = true;
+			puck:SetHighlight(true);
 		end
 	end
 end
@@ -397,7 +488,6 @@ function CovenantMissionPage_OnHide(self)
 	mainFrame.FollowerList.showCounters = false;
 	mainFrame.FollowerList.canExpand = false;
 	mainFrame.FollowerList.showUncollected = true;
-	mainFrame.FollowerList:SetSortFuncs(GarrisonGarrisonFollowerList_DefaultSort, GarrisonFollowerList_InitializeDefaultSort);
 
 	self.lastUpdate = nil;
 end

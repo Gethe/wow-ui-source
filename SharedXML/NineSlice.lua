@@ -339,44 +339,56 @@ local layouts =
 		LeftEdge = { layer = "BACKGROUND", atlas = "!AdventuresFrame-Left", x = 0, y = 10, x1 = 0, y1 = -10, },
 		RightEdge = { layer = "BACKGROUND", atlas = "!AdventuresFrame-Right", x = 0, y = 10, x1 = 0, y1 = -10, },
 	},
-}
 
-local uniqueCornersLayout = 
-{
-	["TopRightCorner"] = { atlas = "UI-Frame-%s-CornerTopRight" },
-	["TopLeftCorner"] = { atlas = "UI-Frame-%s-CornerTopLeft" },
-	["BottomLeftCorner"] = { atlas = "UI-Frame-%s-CornerBottomLeft" },
-	["BottomRightCorner"] = { atlas = "UI-Frame-%s-CornerBottomRight" },
-	["TopEdge"] = { atlas = "_UI-Frame-%s-EdgeTop" },
-	["BottomEdge"] = { atlas = "_UI-Frame-%s-EdgeBottom" },
-	["LeftEdge"] = { atlas = "!UI-Frame-%s-EdgeLeft" },
-	["RightEdge"] = { atlas = "!UI-Frame-%s-EdgeRight" },
-	["Center"] = { atlas = "UI-Frame-%s-Center" },
+	CharacterCreateDropdown =
+	{
+		TopLeftCorner =	{ atlas = "CharacterCreateDropdown-NineSlice-CornerTopLeft", x=-30, y=20 },
+		TopRightCorner =	{ atlas = "CharacterCreateDropdown-NineSlice-CornerTopRight", x=30, y=20 },
+		BottomLeftCorner =	{ atlas = "CharacterCreateDropdown-NineSlice-CornerBottomLeft", x=-30, y=-20 },
+		BottomRightCorner =	{ atlas = "CharacterCreateDropdown-NineSlice-CornerBottomRight", x=30, y=-20 },
+		TopEdge = { atlas = "_CharacterCreateDropdown-NineSlice-EdgeTop", },
+		BottomEdge = { atlas = "_CharacterCreateDropdown-NineSlice-EdgeBottom", },
+		LeftEdge = { atlas = "!CharacterCreateDropdown-NineSlice-EdgeLeft", },
+		RightEdge = { atlas = "!CharacterCreateDropdown-NineSlice-EdgeRight", },
+		Center = { atlas = "CharacterCreateDropdown-NineSlice-Center", },
+	},
+
+	UniqueCornersLayout = 
+	{
+		["TopRightCorner"] = { atlas = "%s-NineSlice-CornerTopRight" },
+		["TopLeftCorner"] = { atlas = "%s-NineSlice-CornerTopLeft" },
+		["BottomLeftCorner"] = { atlas = "%s-NineSlice-CornerBottomLeft" },
+		["BottomRightCorner"] = { atlas = "%s-NineSlice-CornerBottomRight" },
+		["TopEdge"] = { atlas = "_%s-NineSlice-EdgeTop" },
+		["BottomEdge"] = { atlas = "_%s-NineSlice-EdgeBottom" },
+		["LeftEdge"] = { atlas = "!%s-NineSlice-EdgeLeft" },
+		["RightEdge"] = { atlas = "!%s-NineSlice-EdgeRight" },
+		["Center"] = { atlas = "%s-NineSlice-Center" },
+	};
+
+	IdenticalCornersLayout =
+	{
+		["TopRightCorner"] = { atlas = "%s-NineSlice-Corner", mirrorLayout = true, },
+		["TopLeftCorner"] = { atlas = "%s-NineSlice-Corner", mirrorLayout = true,},
+		["BottomLeftCorner"] = { atlas = "%s-NineSlice-Corner", mirrorLayout = true, },
+		["BottomRightCorner"] = { atlas = "%s-NineSlice-Corner",  mirrorLayout = true,},
+		["TopEdge"] = { atlas = "_%s-NineSlice-EdgeTop" },
+		["BottomEdge"] = { atlas = "_%s-NineSlice-EdgeBottom" },
+		["LeftEdge"] = { atlas = "!%s-NineSlice-EdgeLeft" },
+		["RightEdge"] = { atlas = "!%s-NineSlice-EdgeRight" },
+		["Center"] = { atlas = "%s-NineSlice-Center" },
+	};
 };
-
-local identicalCornersLayout = 
-{
-	["TopRightCorner"] = { atlas = "UI-Frame-%s-Corner", mirrorLayout = true, },
-	["TopLeftCorner"] = { atlas = "UI-Frame-%s-Corner", mirrorLayout = true,},
-	["BottomLeftCorner"] = { atlas = "UI-Frame-%s-Corner", mirrorLayout = true, },
-	["BottomRightCorner"] = { atlas = "UI-Frame-%s-Corner",  mirrorLayout = true,},
-	["TopEdge"] = { atlas = "_UI-Frame-%s-EdgeTop" },
-	["BottomEdge"] = { atlas = "_UI-Frame-%s-EdgeBottom" },
-	["LeftEdge"] = { atlas = "!UI-Frame-%s-EdgeLeft" },
-	["RightEdge"] = { atlas = "!UI-Frame-%s-EdgeRight" },
-	["Center"] = { atlas = "UI-Frame-%s-Center" },
-};
-
 --------------------------------------------------
 -- NINE SLICE UTILS
 NineSliceUtil = {};
 
 function NineSliceUtil.ApplyUniqueCornersLayout(self, textureKit)
-	NineSliceUtil.ApplyLayout(self, uniqueCornersLayout, textureKit);
+	NineSliceUtil.ApplyLayout(self, layouts.UniqueCornersLayout, textureKit);
 end
 
 function NineSliceUtil.ApplyIdenticalCornersLayout(self, textureKit)
-	NineSliceUtil.ApplyLayout(self, identicalCornersLayout, textureKit);
+	NineSliceUtil.ApplyLayout(self, layouts.IdenticalCornersLayout, textureKit);
 end
 
 function NineSliceUtil.ApplyLayout(container, userLayout, textureKit)
@@ -422,6 +434,6 @@ end
 function NineSlicePanelMixin:OnLoad()
 	local layout = NineSliceUtil.GetLayout(self:GetFrameLayoutType());
 	if layout then
-		NineSliceUtil.ApplyLayout(self, layout);
+		NineSliceUtil.ApplyLayout(self, layout, self.layoutTextureKit);
 	end
 end

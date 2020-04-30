@@ -89,13 +89,10 @@
 						<Anchor point="TOPLEFT" x="10" y="-10"/>
 						<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
 					</Anchors>
-					<Color r="1" g="0" b="1" a="0.5"/>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture parentKey="PuckBorder">
-					<Color r="0.4" g="0.4" b="0.4" a="1.0"/>
-				</Texture>
+				<Texture parentKey="PuckBorder"/>
 				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
@@ -159,6 +156,8 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
 
@@ -167,6 +166,37 @@
 	</Button>
 
 	<Button name="AdventuresEnemyPuckTemplate" mixin="AdventuresEnemyPuckMixin" inherits="AdventuresPuckTemplate" virtual="true">
-		<Size x="76" y="76"/>
+		<Size x="67" y="67"/>
+	</Button>
+
+	<Button name="AdventuresMissionPageFollowerPuckTemplate" mixin="AdventuresMissionPageFollowerPuckMixin" inherits="AdventuresFollowerPuckTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="EmptyPortrait" atlas="GarrMission_PortraitRing_Empty" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="Highlight" alpha="0" alphaMode="ADD" atlas="GarrMission_PortraitRing_Glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="PulseAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="Highlight" duration="0.5" order="1" fromAlpha="0.5" toAlpha="1"/>
+				<Alpha childKey="Highlight" startDelay="1" duration="0.5" order="1" fromAlpha="1" toAlpha="0.5"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
+			<OnReceiveDrag method="OnReceiveDrag"/>
+		</Scripts>
 	</Button>
 </Ui>

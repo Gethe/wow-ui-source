@@ -69,6 +69,14 @@ function AdventuresBoardMixin:Reset()
 	end
 end
 
+function AdventuresBoardMixin:EnumerateEnemies()
+	return self.enemyFramePool:EnumerateActive();
+end
+
+function AdventuresBoardMixin:EnumerateFollowers()
+	return self.followerFramePool:EnumerateActive();
+end
+
 function AdventuresBoardMixin:RegisterFrame(boardIndex, socket, frame)
 	self.framesByBoardIndex[boardIndex] = frame;
 	self.socketsByBoardIndex[boardIndex] = socket;

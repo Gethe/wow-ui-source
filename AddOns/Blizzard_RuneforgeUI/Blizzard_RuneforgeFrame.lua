@@ -1,6 +1,5 @@
 
--- TODO:: Implement npc interaction.
-UIPanelWindows["RuneforgeFrame"] = { area = "left", pushable = 3, --[[ showFailedFunc = C_LegendaryCrafting.CloseInteraction, ]] };
+UIPanelWindows["RuneforgeFrame"] = { area = "left", pushable = 3, showFailedFunc = C_LegendaryCrafting.CloseRuneforgeInteraction, };
 
 
 RuneforgeFrameMixin = CreateFromMixins(CallbackRegistryMixin);
@@ -16,6 +15,7 @@ RuneforgeFrameMixin:GenerateCallbackEvents(
 local RuneforgeFrameEvents = {
 	"GLOBAL_MOUSE_DOWN",
 	"CURRENCY_DISPLAY_UPDATE",
+	"RUNEFORGE_LEGENDARY_CRAFTING_CLOSED",
 };
 
 local RuneforgeFrameUnitEvents = {
@@ -39,8 +39,7 @@ function RuneforgeFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, RuneforgeFrameEvents);
 	FrameUtil.UnregisterFrameForEvents(self, RuneforgeFrameUnitEvents);
 
-	-- TODO:: Implement npc interaction.
-	-- C_LegendaryCrafting.CloseInteraction();
+	C_LegendaryCrafting.CloseRuneforgeInteraction();
 
 	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 end
@@ -64,6 +63,8 @@ function RuneforgeFrameMixin:OnEvent(event, ...)
 				break;
 			end
 		end
+	elseif event == "RUNEFORGE_LEGENDARY_CRAFTING_CLOSED" then
+		HideUIPanel(self);
 	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 		local unit, castGUID, spellID = ...;
 		if spellID == C_LegendaryCrafting.GetRuneforgeLegendaryCraftSpellID() then
@@ -160,5 +161,5 @@ function RuneforgeFrameMixin:GetCraftDescription()
 end
 
 function RuneforgeFrameMixin:Close()
-	self:Hide();
+	HideUIPanel(self);
 end

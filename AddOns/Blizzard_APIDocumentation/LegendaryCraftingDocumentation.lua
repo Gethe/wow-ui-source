@@ -22,6 +22,10 @@ local LegendaryCrafting =
 			},
 		},
 		{
+			Name = "CloseRuneforgeInteraction",
+			Type = "Function",
+		},
+		{
 			Name = "CraftRuneforgeLegendary",
 			Type = "Function",
 
@@ -149,6 +153,16 @@ local LegendaryCrafting =
 
 	Events =
 	{
+		{
+			Name = "RuneforgeLegendaryCraftingClosed",
+			Type = "Event",
+			LiteralName = "RUNEFORGE_LEGENDARY_CRAFTING_CLOSED",
+		},
+		{
+			Name = "RuneforgeLegendaryCraftingOpened",
+			Type = "Event",
+			LiteralName = "RUNEFORGE_LEGENDARY_CRAFTING_OPENED",
+		},
 		{
 			Name = "RuneforgePowerInfoUpdated",
 			Type = "Event",

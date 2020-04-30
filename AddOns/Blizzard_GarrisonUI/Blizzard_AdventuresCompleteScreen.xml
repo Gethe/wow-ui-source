@@ -125,6 +125,15 @@
 						<Anchors>
 							<Anchor point="LEFT" x="48" y="1"/>
 						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="SpeedUp" inherits="GameFontNormal" text="COVENANT_MISSIONS_COMPLETE_SCREEN_SPEED_UP" hidden="true">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="2" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
 						<Scripts>
 							<OnClick method="OnClick"/>
 						</Scripts>

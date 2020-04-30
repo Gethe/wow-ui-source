@@ -42,7 +42,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="CovenantMissionPageStageTemplate" inherits="GarrisonMissionStageTemplate" virtual="true">
+	<Frame name="CovenantMissionPageStageTemplate" virtual="true">
 		<Size x="556" y="230"/>
 		<Anchors>
 			<Anchor point="TOP"/>
@@ -182,24 +182,14 @@
 				</Scripts>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnUpdate function="GarrisonMissionController_OnStageUpdate"/>
-		</Scripts>
 	</Frame>
 	
-	<Frame name="CovenantMissionPageTemplate" inherits="GarrisonMissionPageBaseTemplate" virtual="true">
+	<Frame name="CovenantMissionPageTemplate" virtual="true">
 		<Size x="556" y="580"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT" x="-55" y="-34"/>
 		</Anchors>
 		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="ButtonFrame" atlas="GarrMission_MissionCostStartButtonBg" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="-22"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="EmptyString" inherits="GameFontNormalMed3" justifyH="CENTER">
 					<Anchors>
@@ -207,51 +197,6 @@
 					</Anchors>
 					<Color r="0.910" g="0.835" b="0.706"/>
 				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button parentKey="CloseButton" inherits="GarrisonMissionPageCloseButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="4" y="6"/>
-				</Anchors>
-			</Button>
-			<Frame parentKey="Stage" inherits="CovenantMissionPageStageTemplate"/>
-			<Frame parentKey="ItemLevelHitboxFrame" inherits="GarrisonMissionPageItemLevelHitboxFrame">
-				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Stage.Level" x="0" y="3"/>
-				</Anchors>
-			</Frame>
-			<Button inherits="StartMissionButtonTemplate">
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" x="-50" y="1"/>
-				</Anchors>
-			</Button>
-			<Frame parentKey="CostFrame" inherits="GarrisonMissionPageCostFrameTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.ButtonFrame" x="50"/>
-					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" relativePoint="CENTER" />
-				</Anchors>
-			</Frame>
-		</Frames>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture atlas="GarrMission_LocationCover-Side" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture atlas="GarrMission_LocationCover-Side" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
-				</Texture>
-				<Texture atlas="_GarrMission_LocationCover-Bottom" useAtlasSize="true" horizTile="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" y="333"/>
-						<Anchor point="BOTTOMRIGHT" y="333"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="4">
 				<Texture parentKey="IconBG" atlas="GarrMission_IconLevelBG" useAtlasSize="true">
@@ -269,139 +214,77 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="6">
-				<Texture atlas="_GarrMission_TopBorder" useAtlasSize="true" horizTile="true">
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Median" atlas="_AdventuresFrameTile-Median" useAtlasSize="true" tile="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="20" y="4"/>
-						<Anchor point="TOPRIGHT" x="-20" y="4"/>
+						<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT"/>
+						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="7">
-				<Texture atlas="GarrMission_TopBorderCorner" useAtlasSize="true">
+				<Texture parentKey="EnemyBackground" atlas="Adventures-Missions-BG-01" tile="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-5" y="4"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Median" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture atlas="GarrMission_TopBorderCorner" useAtlasSize="true">
+				<Texture parentKey="FollowerBackground" atlas="Adventures-Missions-BG-01" tile="true">
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="4" y="4"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Median" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
-					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="Enemy1" parentArray="Enemies" inherits="CovenantMissionPageEnemyTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="0" y="0"/>
-				</Anchors>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" frameLevel="1000">
 				<KeyValues>
-					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.EnemyLeftBack" type="global"/>
+					<KeyValue key="layoutType" value="AdventuresMissionComplete" type="string"/>
 				</KeyValues>
 			</Frame>
-			<Frame parentKey="Enemy2" parentArray="Enemies" inherits="CovenantMissionPageEnemyTemplate">
+			<Button parentKey="CloseButton" frameLevel="1500" inherits="GarrisonMissionPageCloseButtonTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Enemy1" relativePoint="RIGHT" x="60"/>
+					<Anchor point="TOPRIGHT" x="4" y="6"/>
 				</Anchors>
-				<KeyValues>
-					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.EnemyCenterLeftBack" type="global"/>
-				</KeyValues>
-			</Frame>
-			<Frame parentKey="Enemy3" parentArray="Enemies" inherits="CovenantMissionPageEnemyTemplate">
+			</Button>
+			<Frame parentKey="Stage" inherits="CovenantMissionPageStageTemplate"/>
+			<Frame parentKey="ItemLevelHitboxFrame" inherits="GarrisonMissionPageItemLevelHitboxFrame">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Enemy2" relativePoint="RIGHT" x="60"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.EnemyCenterRightBack" type="global"/>
-				</KeyValues>
-			</Frame>
-			<Frame parentKey="Enemy4" parentArray="Enemies" inherits="CovenantMissionPageEnemyTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Enemy3" relativePoint="RIGHT" x="60"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.EnemyRightBack" type="global"/>
-				</KeyValues>
-			</Frame>
-			<Frame parentKey="Enemy5" parentArray="Enemies" inherits="CovenantMissionPageEnemyTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Enemy1" relativePoint="BOTTOM" y="-28"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.EnemyLeftFront" type="global"/>
-				</KeyValues>
-			</Frame>
-			<Frame parentKey="Enemy6" parentArray="Enemies" inherits="CovenantMissionPageEnemyTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Enemy5" relativePoint="RIGHT" x="60"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.EnemyCenterLeftFront" type="global"/>
-				</KeyValues>
-			</Frame>
-			<Frame parentKey="Enemy7" parentArray="Enemies" inherits="CovenantMissionPageEnemyTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Enemy6" relativePoint="RIGHT" x="60"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.EnemyCenterRightFront" type="global"/>
-				</KeyValues>
-			</Frame>
-			<Frame parentKey="Enemy8" parentArray="Enemies" inherits="CovenantMissionPageEnemyTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Enemy7" relativePoint="RIGHT" x="60"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.EnemyRightFront" type="global"/>
-				</KeyValues>
-			</Frame>
-			<Frame parentKey="FollowerAnchor" hidden="true">
-				<Size x="1" y="1"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="0" y="-375"/>
-					<Anchor point="TOPRIGHT" x="0" y="-375"/>
+					<Anchor point="TOP" relativeKey="$parent.Stage.Level" x="0" y="3"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="Follower1" parentArray="Followers" inherits="CovenantMissionPageFollowerTemplate">
+			<!-- A frame is used here for layering. -->
+			<Frame parentKey="StartMissionFrame" inherits="ResizeLayoutFrame" frameLevel="1500">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="22" y="0" relativeKey="$parent.FollowerAnchor"/>
+					<Anchor point="CENTER" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="7"/>
 				</Anchors>
-				<KeyValues>
-					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.AllyLeftFront" type="global"/>
-				</KeyValues>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="ButtonFrame" atlas="GarrMission_MissionCostStartButtonBg" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 			</Frame>
-			<Frame parentKey="Follower2" parentArray="Followers" inherits="CovenantMissionPageFollowerTemplate">
+			<Button parentKey="StartMissionButton" inherits="StartMissionButtonTemplate" frameLevel="1600">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Follower1" relativePoint="RIGHT" x="17" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.StartMissionFrame" x="-50" y="1"/>
 				</Anchors>
-				<KeyValues>
-					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.AllyCenterFront" type="global"/>
-				</KeyValues>
+			</Button>
+			<Frame parentKey="CostFrame" inherits="GarrisonMissionPageCostFrameTemplate" frameLevel="1600">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.StartMissionFrame" x="50"/>
+					<Anchor point="RIGHT" relativeKey="$parent.StartMissionFrame" relativePoint="CENTER" />
+				</Anchors>
 			</Frame>
-			<Frame parentKey="Follower3" parentArray="Followers" inherits="CovenantMissionPageFollowerTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Follower2" relativePoint="RIGHT" x="17" y="0"/>
-				</Anchors>
+			<Frame parentKey="Board" inherits="AdventuresBoardTemplate">
 				<KeyValues>
-					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.AllyRightFront" type="global"/>
+					<KeyValue key="followerTemplate" type="string" value="AdventuresMissionPageFollowerPuckTemplate"/>
 				</KeyValues>
-			</Frame>
-			<Frame parentKey="Follower4" parentArray="Followers" inherits="CovenantMissionPageFollowerTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Follower1" relativePoint="BOTTOMRIGHT" x="0" y="-30"/>
+					<Anchor point="TOP" x="0" y="-80"/>
 				</Anchors>
-				<KeyValues>
-					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.AllyLeftBack" type="global"/>
-				</KeyValues>
-			</Frame>
-			<Frame parentKey="Follower5" parentArray="Followers" inherits="CovenantMissionPageFollowerTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Follower2" relativePoint="BOTTOMRIGHT" x="0" y="-30"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="boardIndex" value="Enum.GarrAutoBoardIndex.AllyRightBack" type="global"/>
-				</KeyValues>
 			</Frame>
 		</Frames>
 		<Scripts>

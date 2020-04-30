@@ -1119,6 +1119,42 @@ VideoData["Advanced_ResampleQualityDropDown"]={
 	},
 }
 
+VideoData["Advanced_RTShadowQualityDropDown"]={
+	name = RT_SHADOW_QUALITY;
+	description = OPTION_TOOLTIP_RT_SHADOW_QUALITY,
+
+	data = {
+		{
+			text = VIDEO_OPTIONS_DISABLED,
+			cvars =    {
+				shadowrt = 0,
+				
+			},
+		},
+		{
+			text = VIDEO_OPTIONS_FAIR,
+			tooltip = VIDEO_OPTIONS_RT_SHADOW_QUALITY_FAIR,
+			cvars =	{
+				shadowrt = 1,
+			},
+		},
+		{
+			text = VIDEO_OPTIONS_MEDIUM,
+			tooltip = VIDEO_OPTIONS_RT_SHADOW_QUALITY_MEDIUM,
+			cvars =	{
+				shadowrt = 2,
+			},
+		},
+		{
+			text = VIDEO_OPTIONS_HIGH,
+			tooltip = VIDEO_OPTIONS_RT_SHADOW_QUALITY_HIGH,
+			cvars =	{
+				shadowrt = 3,
+			},
+		},
+	},
+}
+
 VideoData["Advanced_MaxFPSSlider"]={
 	name = MAXFPS;
 	tooltip = OPTION_MAXFPS,

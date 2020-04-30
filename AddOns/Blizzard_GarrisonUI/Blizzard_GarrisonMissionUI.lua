@@ -1421,13 +1421,15 @@ end
 
 
 function GarrisonFollowerMissionPageMixin:UpdateFollowerDurability(followerFrame)
-	if (followerFrame.info and followerFrame.info.isTroop) then
-		followerFrame.DurabilityBackground:Show();
-		followerFrame.Durability:Show();
-		followerFrame.Durability:SetDurability(followerFrame.info.durability, followerFrame.info.maxDurability, self:CalculateDurabilityLoss(self.missionEffects, followerFrame.info));
-	else
-		followerFrame.DurabilityBackground:Hide();
-		followerFrame.Durability:Hide();
+	if followerFrame.Durability then
+		if (followerFrame.info and followerFrame.info.isTroop) then
+			followerFrame.DurabilityBackground:Show();
+			followerFrame.Durability:Show();
+			followerFrame.Durability:SetDurability(followerFrame.info.durability, followerFrame.info.maxDurability, self:CalculateDurabilityLoss(self.missionEffects, followerFrame.info));
+		else
+			followerFrame.DurabilityBackground:Hide();
+			followerFrame.Durability:Hide();
+		end
 	end
 end
 
@@ -1455,6 +1457,9 @@ function GarrisonMissionPageFollowerFrame_OnEnter(self)
 		return;
 	end
 
+	local followerBias = missionPage.missionInfo and (C_Garrison.GetFollowerBiasForMission(missionPage.missionInfo.missionID, self.info.followerID) < 0.0) or nil;
+	local underBiasReason = missionPage.missionInfo and C_Garrison.GetFollowerUnderBiasReason(missionPage.missionInfo.missionID, self.info.followerID) or nil;
+
 	GarrisonFollowerTooltip:ClearAllPoints();
 	GarrisonFollowerTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
 	GarrisonFollowerTooltip_Show(self.info.garrFollowerID,
@@ -1474,8 +1479,8 @@ function GarrisonMissionPageFollowerFrame_OnEnter(self)
 		C_Garrison.GetFollowerTraitAtIndex(self.info.followerID, 3),
 		C_Garrison.GetFollowerTraitAtIndex(self.info.followerID, 4),
 		true,
-		C_Garrison.GetFollowerBiasForMission(missionPage.missionInfo.missionID, self.info.followerID) < 0.0,
-		C_Garrison.GetFollowerUnderBiasReason(missionPage.missionInfo.missionID, self.info.followerID)
+		followerBias,
+		underBiasReason
 		);
 end
 

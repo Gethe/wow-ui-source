@@ -1172,9 +1172,27 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame name="$parentMultisampleAntiAliasingDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="15">
+			<Frame name="$parentRTShadowQualityDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="15">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentFilteringDropDown" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="RT_SHADOW_QUALITY" >
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentMultisampleAntiAliasingDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="15">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentRTShadowQualityDropDown" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-8"/>
 						</Offset>

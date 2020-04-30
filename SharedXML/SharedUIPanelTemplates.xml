@@ -2156,7 +2156,10 @@
 	<Frame name="SliderWithButtonsAndLabelTemplate" inherits="ResizeLayoutFrame" mixin="SliderWithButtonsAndLabelMixin" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Label" font="GameFontHighlightMedium" ignoreInLayout="true">
+				<FontString parentKey="Label" font="GameFontHighlightMedium">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
 					<Anchors>
 						<Anchor point="RIGHT" relativeKey="$parent.DecrementButton" relativePoint="LEFT" x="-50"/>
 					</Anchors>
@@ -2199,6 +2202,180 @@
 				<Size x="32" y="32"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.Slider" relativePoint="LEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Decrement();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="SelectionPopoutDetails" mixin="SelectionPopoutDetailsMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="SelectionNumber" font="GameFontHighlight" justifyH="LEFT">
+					<Size x="25" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SelectionName" font="GameFontHighlight" justifyH="LEFT" hidden="true">
+					<Size x="25" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.SelectionNumber" relativePoint="RIGHT"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="ColorSwatch" atlas="charactercreate-customize-palette" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.SelectionNumber" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="SelectionPopoutEntryTemplate" inherits="ResizeLayoutFrame" mixin="SelectionPopoutEntryMixin" virtual="true">
+		<ButtonText parentKey="ButtonText" setAllPoints="true"/>
+		<KeyValues>
+			<KeyValue key="widthPadding" value="14" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="SelectionDetails" inherits="SelectionPopoutDetails">
+				<Size x="144" y="20"/>
+				<KeyValues>
+					<KeyValue key="showColors" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="HighlightBGTex" alpha="0" setAllPoints="true">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Left" atlas="charactercreate-customize-dropdown-linemouseover-side" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Right" atlas="charactercreate-customize-dropdown-linemouseover-side" useAtlasSize="true">
+							<TexCoords left="1" right="0" top="0" bottom="1"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Middle" atlas="charactercreate-customize-dropdown-linemouseover-middle" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="SelectionPopoutTemplate" inherits="ResizeLayoutFrame" mixin="SelectionPopoutMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="widthPadding" value="6" type="number"/>
+			<KeyValue key="heightPadding" value="32" type="number"/>
+		</KeyValues>
+
+		<Frames>
+			<Frame parentKey="Border" useParentLevel="true" inherits="NineSlicePanelTemplate">
+				<KeyValues>
+					<KeyValue key="layoutType" value="CharacterCreateDropdown" type="string"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+
+		<Scripts>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+	
+	<Button name="SelectionPopoutButtonTemplate" mixin="SelectionPopoutButtonMixin" virtual="true">
+		<Size x="150" y="38"/>
+		<NormalTexture parentKey="NormalTexture" atlas="charactercreate-customize-dropdownbox"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="charactercreate-customize-dropdownbox-open" alphaMode="ADD" alpha="0"/>
+		<PushedTextOffset x="2" y="-2"/>
+		<ButtonText parentKey="ButtonText">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="10" y="-10"/>
+				<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
+			</Anchors>
+		</ButtonText>
+		<Frames>
+			<Frame parentKey="SelectionDetails" inherits="SelectionPopoutDetails, ResizeLayoutFrame" useParentLevel="true" />
+			<Frame parentKey="Popout" inherits="SelectionPopoutTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="3" y="11"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="SelectionPopoutWithButtonsAndLabelTemplate" inherits="ResizeLayoutFrame" mixin="SelectionPopoutWithButtonsAndLabelMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" font="GameFontHighlightMedium">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.DecrementButton" relativePoint="LEFT" x="-50"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="SelectionPopoutButton" inherits="SelectionPopoutButtonTemplate">
+				<Size x="150" y="38"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="IncrementButton" motionScriptsWhileDisabled="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.SelectionPopoutButton" relativePoint="RIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Increment();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button parentKey="DecrementButton" motionScriptsWhileDisabled="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.SelectionPopoutButton" relativePoint="LEFT"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

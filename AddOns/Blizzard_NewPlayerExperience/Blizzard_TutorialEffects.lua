@@ -15,6 +15,7 @@ function NPE_TutorialButtonPulseGlow:Show(button)
 	frame.button = button;
 	frame:SetParent(button);
 	frame:ClearAllPoints();
+	frame:SetFrameStrata("DIALOG");
 	frame:SetPoint("LEFT", button, -12, 0);
 	frame:SetPoint("RIGHT", button, 12, 0);
 	UIFrameFlash(frame, 1, 1, -1);
@@ -31,7 +32,7 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function NPE_TutorialButtonPulseGlow:GetExisting(button)
-	if not framePool then
+	if not self.framePool then
 		return;
 	end
 	for frame in self.framePool:EnumerateActive() do
@@ -43,8 +44,6 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 NPE_TutorialSpellDrag = {};
-
--- ------------------------------------------------------------------------------------------------------------
 function NPE_TutorialSpellDrag:Show(spellButton, actionButton)
 	local originFrame = NPE_TutorialSpellDragOriginFrame;
 	originFrame:SetParent(spellButton);
@@ -57,7 +56,12 @@ function NPE_TutorialSpellDrag:Show(spellButton, actionButton)
 	targetFrame:Show();
 
 	local slot = SpellBook_GetSpellBookSlot(spellButton);
-	local texture = GetSpellBookItemTexture(slot, SpellBookFrame.bookType);
+	local texture;
+	if spellButton.spellID then -- the data is set if this is from a flyout spell button
+		texture = GetSpellTexture(spellButton.spellID);
+	else
+		texture = GetSpellBookItemTexture(slot, SpellBookFrame.bookType);
+	end
 	local animFrame = NPE_TutorialSpellDragAnimationFrame;
 	animFrame.Icon:SetTexture(texture);
 	animFrame:SetParent(spellButton);

@@ -3,12 +3,7 @@ AventuresPuckAbilityMixin = {};
 
 function AventuresPuckAbilityMixin:OnEnter()
 	GameTooltip:SetOwner(self);
-
-	local wrap = true;
-	local overrideColor = nil;
-	GameTooltip_SetTitle(GameTooltip, self.abilityInfo.name, overrideColor, wrap);
-	GameTooltip_AddNormalLine(GameTooltip, self.abilityInfo.description, wrap);
-
+	AddAutoCombatSpellToTooltip(GameTooltip, self.abilityInfo);
 	GameTooltip:Show();
 end
 
@@ -186,6 +181,32 @@ function AdventuresPuckMixin:PlayDeathAnimation()
 	self.DeathAnimationFrame.DeathAnimation:Play();
 end
 
+function AdventuresPuckMixin:OnEnter()
+	local name = self:GetName();
+	if name then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, name);
+
+		local autoCombatSpells = self:GetAutoCombatSpells();
+		if autoCombatSpells then 
+			for i = 1, #autoCombatSpells do
+				GameTooltip_AddBlankLineToTooltip(GameTooltip);
+				AddAutoCombatSpellToTooltip(GameTooltip, autoCombatSpells[i])
+			end
+		end
+		GameTooltip:Show();
+	end
+end
+
+function AdventuresPuckMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+-- Overwrite in your derived Mixin
+function AdventuresPuckMixin:GetAutoCombatSpells()
+	return nil;
+end
+
 -- Overwrite in your derived Mixin
 function AdventuresPuckMixin:GetName()
 	return "";
@@ -200,29 +221,16 @@ function AdventuresFollowerPuckMixin:OnLoad()
 	self.PuckBorder:SetAtlas("Adventurers-Followers-Frame");
 end
 
-function AdventuresFollowerPuckMixin:SetFollowerGUID(followerGUID, missionCompleteInfo)
+function AdventuresFollowerPuckMixin:SetFollowerGUID(followerGUID, info)
 	self.followerGUID = followerGUID;
-	self.missionCompleteInfo = missionCompleteInfo;
-	self:Refresh();
-end
-
-function AdventuresFollowerPuckMixin:GetFollowerGUID()
-	return self.followerGUID;
-end
-
-function AdventuresFollowerPuckMixin:Refresh()
-	local followerGUID = self:GetFollowerGUID();
-
-	local info = self.missionCompleteInfo or C_Garrison.GetFollowerMissionCompleteInfo(followerGUID);
+	self.info = info;
 	self.name = info.name;
-	self.Portrait:SetTexture(info.portraitIconID);
-	self.HealthBar:SetMaxHealth(info.maxHealth);
-	self.HealthBar:SetHealth(info.health);
-	self.HealthBar:SetRole(info.role);
 
-	local abilities = C_Garrison.GetFollowerAutoCombatSpells(followerGUID);
-	local abilityOne = abilities[1];
-	local abilityTwo = abilities[2];
+	local autoCombatSpells = C_Garrison.GetFollowerAutoCombatSpells(followerGUID);
+	self.autoCombatSpells = autoCombatSpells;
+	
+	local abilityOne = autoCombatSpells[1];
+	local abilityTwo = autoCombatSpells[2];
 
 	self.AbilityOne:SetShown(abilityOne ~= nil);
 	if abilityOne then
@@ -233,6 +241,19 @@ function AdventuresFollowerPuckMixin:Refresh()
 	if abilityTwo then
 		self.AbilityTwo:SetAbilityInfo(abilityTwo);
 	end
+
+	self.Portrait:SetTexture(info.portraitIconID);
+	self.HealthBar:SetMaxHealth(info.maxHealth);
+	self.HealthBar:SetHealth(info.health);
+	self.HealthBar:SetRole(info.role);
+end
+
+function AdventuresFollowerPuckMixin:GetFollowerGUID()
+	return self.followerGUID;
+end
+
+function AdventuresFollowerPuckMixin:GetAutoCombatSpells()
+	return self.autoCombatSpells;
 end
 
 function AdventuresFollowerPuckMixin:GetName()
@@ -256,15 +277,12 @@ end
 
 function AdventuresEnemyPuckMixin:SetEncounter(encounter)
 	self.name = encounter.name;
-	self.Portrait:SetTexture(encounter.portraitFileDataID);
 
-	self.HealthBar:SetMaxHealth(encounter.maxHealth);
-	self.HealthBar:SetHealth(encounter.health);
-	self.HealthBar:SetRole(encounter.role);
+	local autoCombatSpells = encounter.autoCombatSpells;
+	self.autoCombatSpells = autoCombatSpells;
 
-	local abilities = encounter.autoCombatSpells;
-	local abilityOne = abilities[1];
-	local abilityTwo = abilities[2];
+	local abilityOne = autoCombatSpells[1];
+	local abilityTwo = autoCombatSpells[2];
 
 	self.AbilityOne:SetShown(abilityOne ~= nil);
 	if abilityOne then
@@ -275,8 +293,108 @@ function AdventuresEnemyPuckMixin:SetEncounter(encounter)
 	if abilityTwo then
 		self.AbilityTwo:SetAbilityInfo(abilityTwo);
 	end
+
+	self.Portrait:SetTexture(encounter.portraitFileDataID);
+
+	self.HealthBar:SetMaxHealth(encounter.maxHealth);
+	self.HealthBar:SetHealth(encounter.health);
+	self.HealthBar:SetRole(encounter.role);
+end
+
+function AdventuresEnemyPuckMixin:GetAutoCombatSpells()
+	return self.autoCombatSpells;
 end
 
 function AdventuresEnemyPuckMixin:GetName()
 	return self.name;
+end
+
+
+AdventuresMissionPageFollowerPuckMixin = {}
+
+function AdventuresMissionPageFollowerPuckMixin:OnLoad()
+	AdventuresFollowerPuckMixin.OnLoad(self);
+
+	self:RegisterForDrag("LeftButton");
+end
+
+function AdventuresMissionPageFollowerPuckMixin:OnEnter()
+	local followerID = self:GetFollowerGUID();
+	if followerID then
+		GarrisonMissionPageFollowerFrame_OnEnter(self);
+	end
+end
+
+function AdventuresMissionPageFollowerPuckMixin:OnLeave()
+	GarrisonFollowerTooltip:Hide();
+end
+
+function AdventuresMissionPageFollowerPuckMixin:SetEmpty()
+	self.name = nil;
+	self.info = nil;
+	self.followerGUID = nil;
+	self.Portrait:Hide();
+	self.PuckBorder:Hide();
+	self.EmptyPortrait:Show();
+	self.HealthBar:Hide();
+	self.AbilityOne:Hide();
+	self.AbilityTwo:Hide();
+end
+
+function AdventuresMissionPageFollowerPuckMixin:SetFollowerGUID(...)
+	AdventuresFollowerPuckMixin.SetFollowerGUID(self, ...);
+
+	self.Portrait:Show();
+	self.PuckBorder:Show();
+	self.EmptyPortrait:Hide();
+	self.HealthBar:Show();
+end
+
+function AdventuresMissionPageFollowerPuckMixin:GetInfo()
+	return self.info;
+end
+
+function AdventuresMissionPageFollowerPuckMixin:SetMainFrame(mainFrame)
+	self.mainFrame = mainFrame;
+end
+
+function AdventuresMissionPageFollowerPuckMixin:GetMainFrame()
+	return self.mainFrame;
+end
+
+function AdventuresMissionPageFollowerPuckMixin:OnMouseUp(button)
+	local mainFrame = self:GetMainFrame();
+	if mainFrame then
+		mainFrame:TriggerEvent(CovenantMission.Event.OnFollowerFrameMouseUp, self, button);
+	end
+end
+
+function AdventuresMissionPageFollowerPuckMixin:OnDragStart()
+	local mainFrame = self:GetMainFrame();
+	if mainFrame then
+		mainFrame:TriggerEvent(CovenantMission.Event.OnFollowerFrameDragStart, self);
+	end
+end
+
+function AdventuresMissionPageFollowerPuckMixin:OnDragStop()
+	local mainFrame = self:GetMainFrame();
+	if mainFrame then
+		mainFrame:TriggerEvent(CovenantMission.Event.OnFollowerFrameDragStop, self);
+	end
+end
+
+function AdventuresMissionPageFollowerPuckMixin:OnReceiveDrag()
+	local mainFrame = self:GetMainFrame();
+	if mainFrame then
+		mainFrame:TriggerEvent(CovenantMission.Event.OnFollowerFrameReceiveDrag, self);
+	end
+end
+
+function AdventuresMissionPageFollowerPuckMixin:SetHighlight(highlight)
+	if highlight then
+		self.PulseAnim:Play();
+	else
+		self.PulseAnim:Stop();
+		self.Highlight:SetAlpha(0);
+	end
 end

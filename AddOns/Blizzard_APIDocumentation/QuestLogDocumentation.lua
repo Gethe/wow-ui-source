@@ -629,6 +629,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "IsQuestCalling",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCalling", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsQuestCriteriaForBounty",
 			Type = "Function",
 

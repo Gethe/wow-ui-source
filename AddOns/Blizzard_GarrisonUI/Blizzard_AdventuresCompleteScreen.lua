@@ -2,8 +2,7 @@
 -- TODO:: Replace this with the final model scene.
 local AdventuresModelSceneID = 343;
 
--- TODO:: Find a proper default value
-local SlowSpeed = 1.35;
+local SlowSpeed = 1.0;
 local FastSpeed = 2 * SlowSpeed;
 
 
@@ -20,6 +19,10 @@ AdventuresCompleteScreenSpeedButtonMixin = {};
 function AdventuresCompleteScreenSpeedButtonMixin:OnClick()
 	local completeScreen = self:GetParent():GetParent();
 	completeScreen:ToggleReplaySpeed();
+end
+
+function AdventuresCompleteScreenSpeedButtonMixin:SetSpeedUpShown(shown)
+	self.SpeedUp:SetShown(shown);
 end
 
 
@@ -146,6 +149,9 @@ function AdventuresCompleteScreenMixin:ResetReplay()
 end
 
 function AdventuresCompleteScreenMixin:StartMissionReplay()
+	self.CompleteFrame.ReplayButton:SetEnabled(false);
+	self:SetReplaySpeed(SlowSpeed);
+
 	self.AdventuresCombatLog:Clear();
 	self.replayTimeElapsed = 0;
 	self.replayRoundIndex = 1;
@@ -172,11 +178,7 @@ function AdventuresCompleteScreenMixin:SetReplaySpeed(replaySpeed)
 
 	self.ModelScene:SetEffectSpeed(replaySpeed);
 
-	if self:IsReplaySpeedFast() then
-		self.CompleteFrame.SpeedButton:LockHighlight();
-	else
-		self.CompleteFrame.SpeedButton:UnlockHighlight();
-	end
+	self.CompleteFrame.SpeedButton:SetSpeedUpShown(self:IsReplaySpeedFast());
 end
 
 function AdventuresCompleteScreenMixin:IsReplaySpeedFast()
@@ -276,6 +278,7 @@ end
 
 function AdventuresCompleteScreenMixin:FinishReplay()
 	self:SetScript("OnUpdate", nil);
+	self.CompleteFrame.ReplayButton:SetEnabled(true);
 	self.AdventuresCombatLog:AddVictoryState(self.autoCombatResult.winner);
 end
 

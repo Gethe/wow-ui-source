@@ -40,11 +40,9 @@ function Class_CreatureRangeWatcher:UNIT_TARGET()
 		local creatureID = TutorialHelper:GetCreatureIDFromGUID(unitGUID);
 		for i, target in ipairs(self.targets) do
 			if creatureID == target then
-				
 				local playerX, playerY = UnitPosition("player");
 				local targetX, targetY = UnitPosition("target");
 				local squaredDistance = math.pow(targetX - playerX, 2) + math.pow(targetY - playerY, 2);
-
 				local squaredRange = math.pow(self.range, 2);
 				if (squaredDistance >= squaredRange) then
 					local content = {text = TutorialHelper:FormatString(self.screenString), icon=self.icon};
@@ -559,7 +557,7 @@ function Class_TurnInQuestWatcher:QUEST_COMPLETE()
 
 	if (GetNumQuestChoices() > 1) then
 		--  Wait one frame to make sure the reward buttons have been positioned
-		C_Timer.After(0.01, function() Tutorials.QuestRewardChoice:Begin(areAllItemsUsable); end);
+		C_Timer.After(0.1, function() Tutorials.QuestRewardChoice:Begin(areAllItemsUsable); end);
 	end
 end
 
@@ -696,7 +694,7 @@ function Class_LevelUpTutorial:PLAYER_LEVEL_CHANGED(originallevel, newLevel)
 	Tutorials.Hide_BagsBar:Complete();
 	Tutorials.Hide_SpellbookMicroButton:Complete();
 
-	if newLevel > 1 and newLevel < 10 then
+	if newLevel < 10 then
 		Tutorials.ShowBags:Suppress();
 		LevelUpTutorial_spellIDlookUp = TutorialHelper:FilterByClass(TutorialData.LevelAbilitiesTable);
 		local spellID = LevelUpTutorial_spellIDlookUp[newLevel];
@@ -741,11 +739,14 @@ function Class_AddSpellToActionBar:OnBegin(spellID, warningString, spellMicroBut
 		self.PointerID = self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low);
 	end
 
-	if self.spellIDString then
-		self:ShowPointerTutorial(TutorialHelper:FormatString(self.spellMicroButtonString:format(self.spellIDString)), "DOWN", SpellbookMicroButton, 0, 10, nil, "DOWN");
+	if SpellBookFrame:IsShown() then
+		self:SpellBookFrameShow()
+	else
+		if self.spellIDString then
+			self:ShowPointerTutorial(TutorialHelper:FormatString(self.spellMicroButtonString:format(self.spellIDString)), "DOWN", SpellbookMicroButton, 0, 10, nil, "DOWN");
+		end
+		EventRegistry:RegisterCallback("SpellBookFrame.Show", self.SpellBookFrameShow, self);
 	end
-
-	EventRegistry:RegisterCallback("SpellBookFrame.Show", self.SpellBookFrameShow, self);
 end
 
 function Class_AddSpellToActionBar:SpellBookFrameShow()
@@ -757,58 +758,84 @@ function Class_AddSpellToActionBar:SpellBookFrameShow()
 end
 
 function Class_AddSpellToActionBar:SpellBookFrameHide()
-	EventRegistry:RegisterCallback("SpellBookFrame.Hide", nil, self);
 	self:Complete();
 end
 
-function Class_AddSpellToActionBar:RemindAbility()
-	Dispatcher:RegisterEvent("ACTIONBAR_SLOT_CHANGED", self);
-
-	self:HideScreenTutorial();
-
-	local tutorialString = NPEV2_SPELLBOOKREMINDER:format(self.spellIDString);
-	tutorialString = TutorialHelper:FormatString(tutorialString)
-	
-	-- find an empty button
-	local actionButton;
+function Class_AddSpellToActionBar:FindEmptyButton()
 	for i = 1, 12 do
 		local btn = _G["ActionButton" .. i];
 		local _, sID = GetActionInfo(btn.action);
 		if not sID then
-			actionButton = btn;
-			break;
+			return btn;
 		end
 	end
+end
+
+function Class_AddSpellToActionBar:RemindAbility()
+	self:HideScreenTutorial();
+	
+	-- find an empty button
+	self.actionButton = self:FindEmptyButton();
 
 	-- find the spell button
-	local spellButton;
-	local buttonIndex = SpellBookFrame_OpenToSpell(self.spellToAdd);
-	if buttonIndex then
-		spellButton = _G["SpellButton" .. buttonIndex];
-	end
-
-	if actionButton and spellButton then
+	self.spellButton = SpellBookFrame_OpenToSpell(self.spellToAdd);
+	if self.actionButton and self.spellButton then
 		-- play the drag animation
-		NPE_TutorialSpellDrag:Show(spellButton, actionButton);
-	end
+		Dispatcher:RegisterEvent("ACTIONBAR_SLOT_CHANGED", self);
+		NPE_TutorialSpellDrag:Show(self.spellButton, self.actionButton);
 
-	self:ShowPointerTutorial(tutorialString, "LEFT", spellButton or SpellBookFrame, 50, 0, nil, "LEFT"); 
+		local tutorialString = NPEV2_SPELLBOOKREMINDER:format(self.spellIDString);
+		tutorialString = TutorialHelper:FormatString(tutorialString)
+		self:ShowPointerTutorial(tutorialString, "LEFT", self.spellButton or SpellBookFrame, 50, 0, nil, "LEFT"); 
+	else
+		local tutorialString = NPEV2_SPELLBOOKREMINDER_PART2:format(self.spellIDString);
+		tutorialString = TutorialHelper:FormatString(tutorialString)
+		self:ShowPointerTutorial(tutorialString, "LEFT", self.spellButton or SpellBookFrame, 50, 0, nil, "LEFT"); 
+	end
 end
 
 function Class_AddSpellToActionBar:ACTIONBAR_SLOT_CHANGED(slot)
 	local _, spellID = GetActionInfo(slot)
 	if spellID == self.spellToAdd then 
-		Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
-		NPE_TutorialSpellDrag:Hide(spellButton, actionButton);
 		self:Complete();
+	else
+		local nextEmptyButton = self:FindEmptyButton();
+		if not nextEmptyButton then
+			-- no more empty buttons
+			self:Complete();
+		elseif self.actionButton ~= nextEmptyButton then
+			NPE_TutorialSpellDrag:Hide();
+			self.actionButton = nextEmptyButton;
+			NPE_TutorialSpellDrag:Show(self.spellButton, self.actionButton);
+		end
 	end
 end
 
 function Class_AddSpellToActionBar:OnComplete()
+	EventRegistry:RegisterCallback("SpellBookFrame.Show", nil, self);
+	EventRegistry:RegisterCallback("SpellBookFrame.Hide", nil, self);
+	Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 	self:HidePointerTutorials();
 	self:HideScreenTutorial();
+	NPE_TutorialSpellDrag:Hide();
 	Tutorials.ShowBags:Unsuppress();
 	self.spellToAdd = nil;
+	self.actionButton = nil;
+	self.spellButton = nil;
+end
+
+
+-- ------------------------------------------------------------------------------------------------------------
+-- Add Class Spell To Action Bar
+-- ------------------------------------------------------------------------------------------------------------
+Class_AddClassSpellToActionBar = class("AddClassSpellToActionBar", Class_TutorialBase);
+function Class_AddClassSpellToActionBar:OnBegin()
+	local classData = TutorialHelper:FilterByClass(TutorialData.ClassData);
+	local spellID = classData.classQuestSpellID;
+	if spellID then
+		Tutorials.AddSpellToActionBar:Begin(spellID, nil, NPEV2_SPELLBOOK_TUTORIAL);
+	end
+	self:Complete();
 end
 
 
@@ -2335,9 +2362,11 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_AutoPushSpellWatcher = class("AutoPushSpellWatcher", Class_TutorialBase);
 function Class_AutoPushSpellWatcher:OnBegin()
+	local button = Class_AddSpellToActionBar:FindEmptyButton();
 	local level = UnitLevel("player");
-	if level < 10 then
+	if button and (level < 10) then
 		Dispatcher:RegisterEvent("PLAYER_LEVEL_CHANGED", self);
+		Dispatcher:RegisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 		SetCVar("AutoPushSpellToActionBar", 0);
 	else
 		self:Complete();
@@ -2350,7 +2379,16 @@ function Class_AutoPushSpellWatcher:PLAYER_LEVEL_CHANGED(originallevel, newLevel
 	end
 end
 
+function Class_AutoPushSpellWatcher:ACTIONBAR_SLOT_CHANGED(slot)
+	local button = Class_AddSpellToActionBar:FindEmptyButton();
+	if not button then
+		self:Complete();
+	end
+end
+
 function Class_AutoPushSpellWatcher:OnComplete()
+	Dispatcher:UnregisterEvent("PLAYER_LEVEL_CHANGED", self);
+	Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 	SetCVar("AutoPushSpellToActionBar", 1);
 end
 
@@ -2359,6 +2397,16 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_MountAddedWatcher = class("MountAddedWatcher", Class_TutorialBase);
 function Class_MountAddedWatcher:OnBegin()
+	local mountData = TutorialHelper:FilterByRace(TutorialHelper:GetFactionData().Mounts);
+	self.mountID = mountData.mountID;
+	local _, _, _, _, _, _, _, _, _, _, isCollected = C_MountJournal.GetMountInfoByID(self.mountID);
+	if isCollected then
+		-- the player had already learned this mount
+		self.proceed = true;
+		self:NEW_MOUNT_ADDED();
+		return;
+	end
+
 	Dispatcher:RegisterEvent("NEW_MOUNT_ADDED", self);
 	self.proceed = true;
 
@@ -2393,7 +2441,7 @@ function Class_MountAddedWatcher:BackpackOpened()
 	end
 end
 
-function Class_MountAddedWatcher:NEW_MOUNT_ADDED(ID, data)
+function Class_MountAddedWatcher:NEW_MOUNT_ADDED(data)
 	Dispatcher:UnregisterEvent("NEW_MOUNT_ADDED", self);
 	TutorialHelper:CloseAllBags();
 	ActionButton_ShowOverlayGlow(CollectionsMicroButton) 
@@ -2401,6 +2449,8 @@ function Class_MountAddedWatcher:NEW_MOUNT_ADDED(ID, data)
 
 	self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_P2_NEW_MOUNT_ADDED, "DOWN", CollectionsMicroButton, 0, 10, nil, "DOWN");
 	Dispatcher:RegisterFunction("ToggleCollectionsJournal", function()
+		SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
+		MountJournal_SelectByMountID(self.mountID);
 		self:Complete()
 	end, true);
 end
@@ -2416,24 +2466,13 @@ end
 
 Class_MountTutorial = class("MountTutorial", Class_TutorialBase);
 function Class_MountTutorial:OnBegin()
-	Dispatcher:RegisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 	self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_P3, "LEFT", MountJournal, 0, 10, nil, "LEFT");
 
-	C_Timer.After(5, function()
+	C_Timer.After(1, function()
 		Dispatcher:RegisterFunction("ToggleCollectionsJournal", function()
 			self:Complete()
 		end, true);
 	end);
-end
-
-function Class_MountTutorial:ACTIONBAR_SLOT_CHANGED(slot)
-	local _, spellID = GetActionInfo(slot)
-	local mountData = TutorialHelper:FilterByRace(TutorialHelper:GetFactionData().Mounts);
-	local mountID = mountData.mountID;
-
-	if spellID == mountID then 
-		self:Complete()
-	end
 end
 
 function Class_MountTutorial:OnComplete()

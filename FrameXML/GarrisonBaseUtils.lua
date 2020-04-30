@@ -331,7 +331,16 @@ function ShowGarrisonLandingPage(garrTypeID)
 		GarrisonLandingPage.Report.Title:SetText(GARRISON_TYPE_8_0_LANDING_PAGE_TITLE);
 		GarrisonLandingPage.FollowerList:Initialize(Enum.GarrisonFollowerType.FollowerType_8_0);
 	elseif (garrTypeID == Enum.GarrisonType.Type_9_0) then
-		GarrisonLandingPage.Report.Title:SetText(GARRISON_TYPE_9_0_LANDING_PAGE_TITLE);
+		local pageTitle = GARRISON_TYPE_9_0_LANDING_PAGE_TITLE;
+		local activeCovenantID = C_Covenants.GetActiveCovenantID();
+		if activeCovenantID and activeCovenantID > 0 then
+			local covenantData = C_Covenants.GetCovenantData(activeCovenantID);
+			if covenantData then
+				pageTitle = covenantData.name;
+			end
+		end
+
+		GarrisonLandingPage.Report.Title:SetText(pageTitle);
 		GarrisonLandingPage.FollowerList:Initialize(Enum.GarrisonFollowerType.FollowerType_9_0);
 	else
 		return;

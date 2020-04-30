@@ -5,7 +5,7 @@ function AddAutoCombatSpellToTooltip(tooltip, autoCombatSpell)
 	else
 		str = "";
 	end
-	str = str .. autoCombatSpell.name;
+	str = str .. " " .. autoCombatSpell.name;
 	GameTooltip_AddColoredLine(tooltip, str, WHITE_FONT_COLOR);
 
 	local wrap = true;

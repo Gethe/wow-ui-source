@@ -483,6 +483,7 @@
 								<NormalTexture atlas="common-icon-redx"/>
 								<HighlightTexture atlas="common-icon-redx" alphaMode="ADD" alpha="0.2"/>
 								<Scripts>
+									<OnHide method="OnHide"/>
 									<OnEvent method="OnEvent"/>
 								</Scripts>
 							</Button>
