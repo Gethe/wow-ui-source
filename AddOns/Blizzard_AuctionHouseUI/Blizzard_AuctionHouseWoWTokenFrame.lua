@@ -220,6 +220,10 @@ function WoWTokenSellFrameMixin:OnEvent(event, ...)
 end
 
 function WoWTokenSellFrameMixin:SetItem(itemLocation)
+	if itemLocation then
+		C_WowTokenPublic.UpdateTokenCount();
+	end
+
 	local skipCallback = true;
 	self.ItemDisplay:SetItemLocation(itemLocation, skipCallback);
 
