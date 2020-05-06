@@ -6,17 +6,14 @@
 			<KeyValue key="widthPadding" value="150" type="number"/>
 			<KeyValue key="heightPadding" value="50" type="number"/>
 		</KeyValues>
-		
 		<Anchors>
-			<Anchor point="CENTER" y="160" />
+			<Anchor point="BOTTOM" y="100" />
 		</Anchors>
-
 		<Frames>
 			<Frame parentKey="ContainerFrame" inherits="ResizeLayoutFrame" frameStrata="MEDIUM">
 				<Anchors>
 					<Anchor point="CENTER" />
 				</Anchors>
-
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentkey="Icon" useAtlasSize="true">
@@ -25,7 +22,6 @@
 							</Anchors>
 						</Texture>
 					</Layer>
-
 					<Layer level="OVERLAY">
 						<FontString parentKey="Text" inherits="GameFontNormalHuge">
 							<Color color="TUTORIAL_FONT_COLOR"/>
@@ -37,7 +33,6 @@
 				</Layers>
 			</Frame>
 		</Frames>
-			
 		<Animations>
 			<AnimationGroup parentKey="Anim_FadeIn" setToFinalAlpha="true">
 				<Alpha fromAlpha="0" toAlpha="1" duration="1" />
@@ -54,12 +49,10 @@
 				</Scripts>
 			</AnimationGroup>
 		</Animations>
-
 		<Scripts>
 			<OnLoad method="OnLoad" />
 		</Scripts>
 	</Frame>
-
 
 	<Frame name="KeyBindingTemplate" virtual="true">
 		<Size x="40" y="35" />
@@ -79,7 +72,6 @@
 			</Layer>
 		</Layers>
 	</Frame>
-
 
 	<Frame name="NPE_TutorialSingleKey_Frame" mixin="NPE_TutorialSingleKeyMixin" inherits="ResizeLayoutFrame" parent="UIParent" alpha="0">
 		<KeyValues>

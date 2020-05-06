@@ -13,16 +13,8 @@
 
 			<Frame parentKey="AdventuresCombatLog" inherits="CombatLogTemplate" hidden="false" frameStrata="HIGH">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="-340" y="-20"/>
+					<Anchor point="TOPLEFT" x="-340" y="0"/>
 				</Anchors>
-				<Frames>
-					<Frame parentKey="MaterialFrame" inherits="MaterialFrameTemplate">
-						<Size x="316" y="43"/>
-						<Anchors>
-							<Anchor point="TOP" relativePoint="BOTTOM" y="8"/>
-						</Anchors>
-					</Frame>
-				</Frames>
 			</Frame>
 
 			<Frame parentKey="MissionInfo">
@@ -179,5 +171,4 @@
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
-
 </Ui>

@@ -10,8 +10,7 @@ UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.Cap
 UIWidgetTemplateCaptureZoneMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
 function UIWidgetTemplateCaptureZoneMixin:OnLoad()
-	UIWidgetBaseTemplateMixin.OnLoad(self); 
-	ResizeLayoutMixin.OnLoad(self); 
+	UIWidgetBaseTemplateMixin.OnLoad(self);
 	self.lastVals = {};
 end
 

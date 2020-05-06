@@ -1262,6 +1262,7 @@ local AuctionHouse =
 				{ Name = "itemKey", Type = "ItemKey", Nilable = false },
 				{ Name = "itemLink", Type = "string", Nilable = true },
 				{ Name = "timeLeft", Type = "AuctionHouseTimeLeftBand", Nilable = false },
+				{ Name = "minBid", Type = "number", Nilable = true },
 				{ Name = "bidAmount", Type = "number", Nilable = true },
 				{ Name = "buyoutAmount", Type = "number", Nilable = true },
 				{ Name = "bidder", Type = "string", Nilable = true },

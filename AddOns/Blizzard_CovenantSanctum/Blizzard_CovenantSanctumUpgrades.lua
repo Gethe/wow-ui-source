@@ -1,38 +1,4 @@
 
-local DEBUG_CURRENCIES = { 1751, 1754, 1767 };
-local DEBUG_ANIMA_CURRENCY = 1794;
-
-local function DEBUG_GetCurrencies()
-	return DEBUG_CURRENCIES;
-end
-
-local DEBUG_ANIMA = 0;
-local DEBUG_MAX_ANIMA = 5000;
-
-local function DEBUG_GetAnimaValue()
-	return DEBUG_ANIMA;
-end
-
-local function DEBUG_GetMaxAnimaValue()
-	return DEBUG_MAX_ANIMA;
-end
-
-local function DEBUG_DepositAnima()
-	if DEBUG_ANIMA == DEBUG_MAX_ANIMA then
-		DEBUG_ANIMA = 0;
-	elseif DEBUG_ANIMA == 0 then
-		DEBUG_ANIMA = math.floor(DEBUG_MAX_ANIMA * 0.01);
-	else
-		DEBUG_ANIMA = DEBUG_ANIMA + random(500, 1500);
-		if DEBUG_ANIMA > DEBUG_MAX_ANIMA then
-			DEBUG_ANIMA = DEBUG_MAX_ANIMA;
-		end
-	end
-	CovenantSanctumFrame.UpgradesTab:OnEvent("CURRENCY_DISPLAY_UPDATE");
-end
-
-DEBUG_ANIMA_CURRENCY = 1794;
-
 local function GetCurrentTier(talents)
 	local currentTier = 1;
 	for i, talentInfo in ipairs(talents) do
@@ -131,7 +97,7 @@ function CovenantSanctumUpgradesTabMixin:GetSelectedTree()
 end
 
 function CovenantSanctumUpgradesTabMixin:DepositAnima()
-	DEBUG_DepositAnima();
+	-- TODO
 end
 
 function CovenantSanctumUpgradesTabMixin:SetUpCurrencies()
@@ -139,13 +105,14 @@ function CovenantSanctumUpgradesTabMixin:SetUpCurrencies()
 
 	local animaFrame = self.AnimaCurrency;
 	animaFrame:SetTooltipAnchor(tooltipAnchor);
-	animaFrame:SetCurrencyFromID(DEBUG_ANIMA_CURRENCY);
+	local animaCurrencyID, maxDisplayableValue = C_CovenantSanctumUI.GetAnimaInfo()
+	animaFrame:SetCurrencyFromID(animaCurrencyID);
 	animaFrame:Show();
 
 	local initFunction = function(currencyFrame)
 		currencyFrame:SetWidth(50);
 	end
-	local currencies = DEBUG_GetCurrencies();
+	local currencies = C_CovenantSanctumUI.GetSoulCurrencies();
 	local stride = #currencies;
 	local paddingX = 10;
 	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopRightToBottomLeft, stride, paddingX);
@@ -419,20 +386,22 @@ function CovenantSanctumUpgradeReservoirMixin:Refresh()
 end
 
 function CovenantSanctumUpgradeReservoirMixin:UpdateAnima()
-	local usableHeight = 164;  -- orb portion of the artwork
-	local value = DEBUG_GetAnimaValue();
+	local animaCurrencyID, maxDisplayableValue = C_CovenantSanctumUI.GetAnimaInfo();
+	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(animaCurrencyID);
+	local value = currencyInfo and currencyInfo.quantity or 0;
+
 	if value == 0 then
 		self.FillBackground:Hide();
 	else
 		self.FillBackground:Show();
 		local totalHeight = self.Background:GetHeight();
-		local maxValue = DEBUG_GetMaxAnimaValue();
-		if value == maxValue then
+		if value == maxDisplayableValue then
 			self.FillBackground:SetHeight(totalHeight);
 			self.FillBackground:SetTexCoord(0, 1, 0, 1);
 		else
+			local usableHeight = 164;  -- orb portion of the artwork
 			local base = (totalHeight - usableHeight) / 2;
-			local percent = value / maxValue;
+			local percent = value / maxDisplayableValue;
 			local height = base + usableHeight * percent;
 			self.FillBackground:SetHeight(height);
 			local coordTop = 1 - height / totalHeight;

@@ -469,23 +469,6 @@
 	</xs:complexType>
 	<xs:element name="LayoutFrame" type="LayoutFrameType"/>
 
-	<xs:complexType name="BackdropType">
-		<xs:sequence minOccurs="0">
-			<xs:choice maxOccurs="unbounded">
-				<xs:element name="BackgroundInsets" type="Inset"/>
-				<xs:element name="TileSize" type="Value"/>
-				<xs:element name="EdgeSize" type="Value"/>
-				<xs:element name="Color" type="ColorType"/>
-				<xs:element name="BorderColor" type="ColorType"/>
-			</xs:choice>
-		</xs:sequence>
-		<xs:attribute name="bgFile" type="xs:string"/>
-		<xs:attribute name="edgeFile" type="xs:string"/>
-		<xs:attribute name="tile" type="xs:boolean" default="false"/>
-        <xs:attribute name="tileEdge" type="xs:boolean" default="false"/>
-		<xs:attribute name="alphaMode" type="ALPHAMODE" default="BLEND"/>
-	</xs:complexType>
-
 	<xs:complexType name="RectType">
 		<xs:attribute name="ULx" type="xs:float"/>
 		<xs:attribute name="ULy" type="xs:float"/>
@@ -649,7 +632,6 @@
 								</xs:sequence>
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="Backdrop" type="BackdropType"/>
 						<xs:element name="HitRectInsets" type="Inset"/>
 						<xs:element name="Layers">
 							<xs:complexType>

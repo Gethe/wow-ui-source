@@ -110,18 +110,11 @@
 			</Anchors>
 		</HighlightTexture>
     </Button>
-	<Frame name="OptionsFrameListTemplate" virtual="true">
-		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
+	<Frame name="OptionsFrameListTemplate" inherits="TooltipBorderBackdropTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
+			<KeyValue key="backdropBorderColorAlpha" value="0.6" type="number"/>
+		</KeyValues>
 		<Frames>
 			<ScrollFrame name="$parentList" hidden="true">
 				<Size>
@@ -140,10 +133,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(.6, .6, .6, .6);
-						ScrollFrame_OnLoad(self);
-					</OnLoad>
+					<OnLoad function="ScrollFrame_OnLoad"/>
 					<OnMouseWheel function="ScrollFrameTemplate_OnMouseWheel"/>
 					<OnVerticalScroll>
 						FauxScrollFrame_OnVerticalScroll(self, offset, self:GetParent().buttonHeight, OptionsListScroll_Update);
@@ -174,9 +164,7 @@
 			</ScrollFrame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				OptionsList_OnLoad(self);
-			</OnLoad>
+			<OnLoad inherit="prepend" function="OptionsList_OnLoad"/>
 		</Scripts>
 	</Frame>
 	<Button name="OptionsListButtonTemplate" virtual="true">
@@ -266,16 +254,12 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						--self.labelText = CATEGORY;
-						OptionsList_OnLoad(self);
-						self.update = OptionsCategoryFrame_Update;
-						self.toggleSubCategories = OptionsFrame_ToggleSubCategories;
-					</OnLoad>
-				</Scripts>
+				<KeyValues>
+					<KeyValue key="update" value="OptionsCategoryFrame_Update" type="global"/>
+					<KeyValue key="toggleSubCategories" value="OptionsFrame_ToggleSubCategories" type="global"/>
+				</KeyValues>
 			</Frame>
-			<Frame name="$parentPanelContainer">
+			<Frame name="$parentPanelContainer" inherits="TooltipBorderBackdropTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentCategoryFrame" relativePoint="TOPRIGHT">
 						<Offset>
@@ -293,22 +277,9 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(.6, .6, .6, 1);
-					</OnLoad>
-				</Scripts>
+				<KeyValues>
+					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
+				</KeyValues>
 			</Frame>
 		</Frames>
 		<Scripts>

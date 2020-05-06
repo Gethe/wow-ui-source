@@ -98,6 +98,14 @@ function tAppendAll(table, addedArray)
 	end
 end
 
+function tUnorderedRemove(tbl, index)
+	if index ~= #tbl then
+		tbl[index] = tbl[#tbl];
+	end
+
+	table.remove(tbl);
+end
+
 function CopyTable(settings)
 	local copy = {};
 	for k, v in pairs(settings) do

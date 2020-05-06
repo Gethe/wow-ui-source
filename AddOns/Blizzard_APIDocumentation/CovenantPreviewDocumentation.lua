@@ -80,6 +80,7 @@ local CovenantPreview =
 				{ Name = "description", Type = "string", Nilable = false },
 				{ Name = "covenantCrest", Type = "string", Nilable = false },
 				{ Name = "covenantAbilities", Type = "table", InnerType = "CovenantAbilityInfo", Nilable = false },
+				{ Name = "fromPlayerChoice", Type = "bool", Nilable = false },
 			},
 		},
 	},

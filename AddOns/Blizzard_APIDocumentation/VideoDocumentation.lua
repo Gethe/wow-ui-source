@@ -30,6 +30,11 @@ local Video =
 			LiteralName = "GLUE_SCREENSHOT_FAILED",
 		},
 		{
+			Name = "GxRestarted",
+			Type = "Event",
+			LiteralName = "GX_RESTARTED",
+		},
+		{
 			Name = "ScreenshotFailed",
 			Type = "Event",
 			LiteralName = "SCREENSHOT_FAILED",

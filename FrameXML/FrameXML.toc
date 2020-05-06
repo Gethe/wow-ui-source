@@ -98,6 +98,7 @@ ObjectAPI\Quest.lua
 ObjectAPI\UiMapPoint.lua
 
 ## add new modules below here
+..\SharedXML\Backdrop.xml
 WorldFrame.xml
 UIParent.xml
 PartyUtil.lua

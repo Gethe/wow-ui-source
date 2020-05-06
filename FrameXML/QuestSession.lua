@@ -112,8 +112,6 @@ end
 QuestSessionDialogMixin = {};
 
 function QuestSessionDialogMixin:OnLoad()
-	ResizeLayoutMixin.OnLoad(self); -- TODO: Convert layoutFrames to intrinsics?  this is painful
-
 	self.ButtonContainer.Confirm:SetText(self.confirmText);
 	self.ButtonContainer.Decline:SetText(self.cancelText);
 	self.Divider:SetShown(self.showDivider);

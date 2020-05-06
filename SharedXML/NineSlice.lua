@@ -406,7 +406,11 @@ function NineSliceUtil.ApplyLayout(container, userLayout, textureKit)
 
 			-- Piece setup can change arbitrary properties, do it before changing the texture.
 			setup.fn(container, piece, setup, pieceLayout);
-			SetupPieceVisuals(piece, setup, pieceLayout, textureKit);
+			if userLayout.setupPieceVisualsFunction then
+				userLayout.setupPieceVisualsFunction(container, piece, setup, pieceLayout, textureKit);
+			else
+				SetupPieceVisuals(piece, setup, pieceLayout, textureKit);
+			end
 		end
 	end
 end

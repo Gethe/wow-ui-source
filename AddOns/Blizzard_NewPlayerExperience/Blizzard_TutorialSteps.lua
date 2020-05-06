@@ -1893,7 +1893,8 @@ end
 
 function Class_LowHealthWatcher:UNIT_HEALTH(arg1)
 	if ( arg1 == "player" ) then
-		if ( UnitHealth(arg1)/UnitHealthMax(arg1) <= 0.5 ) and not self.inCombat then
+		local heatlh = UnitHealth(arg1);
+		if (heatlh > 0) and (heatlh/UnitHealthMax(arg1) <= 0.5 ) and not self.inCombat then
 			Dispatcher:UnregisterEvent("UNIT_HEALTH", self);
 
 			local tutorialData = TutorialHelper:GetFactionData();
@@ -2044,12 +2045,9 @@ function Class_Vendor_Watcher:MerchantTabHelp()
 		self:HidePointerTutorials();
 	else
 		Dispatcher:RegisterEvent("BAG_NEW_ITEMS_UPDATED", self);
-		local content = {text = TutorialHelper:FormatString(NPEV2_SELL_ITEMS_TO_VENDOR), icon="newplayertutorial-icon-mouse-rightbutton"};
-		self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low);
-		self:UpdateGreyItemPointer();
-
-		self.Timer = C_Timer.NewTimer(2, function()
-			self:AddPointerTutorial(TutorialHelper:FormatString(NPEV2_BUY_ITEMS_FROM_VENDOR), "LEFT", MerchantItem2, 0, 15);
+		self:AddPointerTutorial(TutorialHelper:FormatString(NPEV2_BUY_ITEMS_FROM_VENDOR), "LEFT", MerchantItem2, 0, 15);
+		self.Timer = C_Timer.NewTimer(4, function()
+			self:UpdateGreyItemPointer();
 		end);
 	end
 end

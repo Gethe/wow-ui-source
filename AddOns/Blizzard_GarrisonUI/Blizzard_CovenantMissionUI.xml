@@ -391,7 +391,7 @@
 			</Frame>
 			<Frame parentKey="FollowerTab" inherits="CovenantFollowerTabTemplate" frameStrata="HIGH" frameLevel="100">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-65" y="-44"/>
+					<Anchor point="TOPRIGHT" x="-38" y="-61"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="MissionCompleteBackground" enableMouse="true" frameStrata="HIGH" hidden="true">

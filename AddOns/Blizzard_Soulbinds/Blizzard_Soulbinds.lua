@@ -2,7 +2,7 @@ Soulbinds = {};
 
 function Soulbinds.OnAddonLoaded(event, ...)
 	if event == "SOULBIND_FORGE_INTERACTION_STARTED" then
-		SoulbindViewer:OpenSoulbindForge();
+		SoulbindViewer:Open();
 	end
 end
 

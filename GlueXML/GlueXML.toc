@@ -45,6 +45,7 @@ Constants.lua
 GlueFonts.xml
 GlueFontStyles.xml
 GlueLocalization.xml
+..\SharedXML\Backdrop.xml
 ..\SharedXML\LayoutFrame.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml

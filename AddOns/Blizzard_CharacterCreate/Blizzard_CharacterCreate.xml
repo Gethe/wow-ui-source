@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Button name="CharacterCreateNavButtonTemplate" inherits="GlueButtonTemplate" mixin="CharacterCreateNavButtonMixin" frameLevel="10" virtual="true">
+	<Button name="CharacterCreateNavButtonTemplate" inherits="GlueButtonTemplate" mixin="CharacterCreateNavButtonMixin" frameLevel="10" virtual="true" ignoreParentScale="true">
 		<Size x="170" y="40"/>
 		<Scripts>
 			<OnClick method="OnClick"/>
@@ -105,7 +105,7 @@
 			</Layer>
 		</Layers>
 	</CheckButton>
-	
+
 	<CheckButton name="CharacterCreateRaceButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharacterCreateRaceButtonMixin" virtual="true">
 		<Size x="79" y="79"/>
 		<KeyValues>
@@ -181,7 +181,7 @@
 						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="20" y="-10"/>
 					</Anchors>
 				</FontString>
-				
+
 				<FontString parentKey="RoleName" inherits="GameFontHighlight">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.SpecName" relativePoint="BOTTOMLEFT" y="-5"/>
@@ -255,7 +255,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	
+
 	<Frame name="CharacterCreateVerticalLayoutFrame" inherits="VerticalLayoutFrame" virtual="true">
 		<KeyValues>
 			<KeyValue key="spacing" value="15" type="number"/>
@@ -264,32 +264,36 @@
 
 	<Texture name="CharacterCreateBackgroundOverlayTexture" parentArray="BGTex" virtual="true"/>
 
-	<ModelFFX name="CharacterCreateFrame" mixin="CharacterCreateMixin" toplevel="true" parent="UIParent" setAllPoints="true" enableKeyboard="true" hidden="true">
+	<ModelFFX name="CharacterCreateFrame" mixin="CharacterCreateMixin" toplevel="true" parent="UIParent" setAllPoints="true" enableKeyboard="true" hidden="true" scale="0.7111">
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="TopBackgroundOverlay" inherits="CharacterCreateBackgroundOverlayTexture" atlas="charactercreate-vignette-top">
+					<Size y="451" />
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="RIGHT"/>
+						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="LeftBackgroundOverlay" inherits="CharacterCreateBackgroundOverlayTexture" atlas="charactercreate-vignette-sides">
+					<Size x="703" />
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM"/>
+						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="RightBackgroundOverlay" inherits="CharacterCreateBackgroundOverlayTexture" atlas="charactercreate-vignette-sides">
+					<Size x="703" />
 					<TexCoords left="1" right="0" top="0" bottom="1"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT"/>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM"/>
+						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="BottomBackgroundOverlay" inherits="CharacterCreateBackgroundOverlayTexture" atlas="charactercreate-vignette-bottom">
+					<Size y="577" />
 					<Anchors>
 						<Anchor point="BOTTOMLEFT"/>
-						<Anchor point="TOPRIGHT" relativePoint="RIGHT"/>
+						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="FadeOut" setToFinalAlpha="true">
@@ -331,7 +335,7 @@
 					<KeyValue key="charCreateOnClickMethod" value="NavForward" type="string"/>
 				</KeyValues>
 			</Button>
-			<Frame parentKey="RaceAndClassFrame" mixin="CharacterCreateRaceAndClassMixin" setAllPoints="true" hidden="true" scale="0.7111">
+			<Frame parentKey="RaceAndClassFrame" mixin="CharacterCreateRaceAndClassMixin" setAllPoints="true" hidden="true">
 				<Frames>
 					<Frame parentKey="AllianceHeader" inherits="ResizeLayoutFrame, CharCustomizeFrameWithTooltipTemplate" mixin="CharacterCreateFactionHeaderMixin">
 						<KeyValues>
@@ -424,7 +428,7 @@
 							<Anchor point="BOTTOMRIGHT" x="-35" y="120"/>
 						</Anchors>
 					</Frame>
-					
+
 					<!--This is added to the tooltip for a race, never shown outside of the tooltip-->
 					<Frame parentKey="RacialAbilityList" inherits="VerticalLayoutFrame" mixin="CharacterCreateRacialAbilityListMixin" hidden="true">
 						<KeyValues>
@@ -440,6 +444,9 @@
 								</FontString>
 							</Layer>
 						</Layers>
+						<Scripts>
+							<OnLoad method="OnLoad" />
+						</Scripts>
 					</Frame>
 				</Frames>
 				<Scripts>
@@ -448,7 +455,7 @@
 					<OnHide method="OnHide" />
 				</Scripts>
 			</Frame>
-			<Frame parentKey="NameChoiceFrame" inherits="ResizeLayoutFrame" hidden="true" scale="0.7111">
+			<Frame parentKey="NameChoiceFrame" inherits="ResizeLayoutFrame" hidden="true">
 				<Anchors>
 					<Anchor point="TOP" y="-30"/>
 				</Anchors>
@@ -508,7 +515,7 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<Frame parentKey="ClassTrialSpecs" inherits="CharacterCreateVerticalLayoutFrame" mixin="CharacterCreateClassTrialSpecsMixin" hidden="true" scale="0.7111">
+			<Frame parentKey="ClassTrialSpecs" inherits="CharacterCreateVerticalLayoutFrame" mixin="CharacterCreateClassTrialSpecsMixin" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="50" y="-200"/>
 				</Anchors>
@@ -522,11 +529,12 @@
 					</Layer>
 				</Layers>
 				<Scripts>
+					<OnLoad method="OnLoad"/>
 					<OnShow method="UpdateNavBlocker" />
 					<OnHide method="OnHide" />
 				</Scripts>
 			</Frame>
-			<Frame parentKey="ZoneChoiceFrame" mixin="CharacterCreateZoneChoiceMixin" setAllPoints="true" hidden="true" scale="0.7111">
+			<Frame parentKey="ZoneChoiceFrame" mixin="CharacterCreateZoneChoiceMixin" setAllPoints="true" hidden="true">
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="BlackOverlay" setAllPoints="true">

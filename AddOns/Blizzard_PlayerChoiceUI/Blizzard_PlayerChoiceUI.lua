@@ -12,21 +12,21 @@ local WIDE_SIZE_TEXT_WIDTH = 356;
 local WIDE_SIZE_WIDTH = 501;
 
 local HEADERS_SHOWN_TOP_PADDING = 185;
-local TITLE_HIDDEN_TOP_PADDING = -200; 
+local TITLE_HIDDEN_TOP_PADDING = -200;
 local HEADERS_HIDDEN_TOP_PADDING = 150;
-local HEADERS_COMBINED_WITH_OPTION_TOP_PADDING = 160; 
+local HEADERS_COMBINED_WITH_OPTION_TOP_PADDING = 160;
 local HEADERS_COMBINED_AND_TITLE_HIDDEN_TOP_PADDING = 30;
 
 local DEFAULT_LEFT_PADDING = 65;
 local DEFAULT_RIGHT_PADDING = 65;
-local DEFAULT_SPACING = 20; 
+local DEFAULT_SPACING = 20;
 local DEFAULT_TEXTURE_KIT = "neutral";
 
-local MAXIMUM_VARIED_BACKGROUND_OPTION_TEXTURES = 3; 
-local RARITY_OFFSET = 1; 
+local MAXIMUM_VARIED_BACKGROUND_OPTION_TEXTURES = 3;
+local RARITY_OFFSET = 1;
 
 local ANIMA_GLOW_MODEL_SCENE_ID = 342;
-local ANIMA_GLOW_FILE_ID = 3164512; 
+local ANIMA_GLOW_FILE_ID = 3164512;
 
 local PLAYER_CHOICE_FRAME_EVENTS = {
 	"PLAYER_ENTERING_WORLD",
@@ -104,10 +104,10 @@ local wideSizeTextureKitRegions = {
 };
 
 local hideButtonAtlasOptions = {
-	SmallButton = "UI-Frame-%s-HideButton", 
-	LargeButton = "UI-Frame-%s-PendingButton", 
-	SmallButtonHighlight = "UI-Frame-%s-HideButtonHighlight", 
-	LargeButtonHighlight = "UI-Frame-%s-PendingButtonHighlight", 
+	SmallButton = "UI-Frame-%s-HideButton",
+	LargeButton = "UI-Frame-%s-PendingButton",
+	SmallButtonHighlight = "UI-Frame-%s-HideButtonHighlight",
+	LargeButtonHighlight = "UI-Frame-%s-PendingButtonHighlight",
 };
 
 local backgroundTextureKitRegions = {
@@ -146,7 +146,7 @@ local textureFontProperties = {
 	["jailerstower"] = {
 		title = HIGHLIGHT_FONT_COLOR,
 		description = NORMAL_FONT_COLOR,
-		titleFont = QuestFont_Huge; 
+		titleFont = QuestFont_Huge;
 	},
 
 	["Oribos"] = {
@@ -165,9 +165,9 @@ local borderLayout = {
 		header = -55,
 		showHeader = true,
 		showTitle = true,
-		frameOffsetY = 0, 
+		frameOffsetY = 0,
 	},
-	["horde"] = { 
+	["horde"] = {
 		closeButtonX = 1,
 		closeButtonY = 2,
 		closeBorderX = -1,
@@ -175,9 +175,9 @@ local borderLayout = {
 		header = -61,
 		showHeader = true,
 		showTitle = true,
-		frameOffsetY = 0, 
+		frameOffsetY = 0,
 	},
-	["marine"] = { 
+	["marine"] = {
 		closeButtonX = 3,
 		closeButtonY = 3,
 		closeBorderX = -1,
@@ -185,25 +185,25 @@ local borderLayout = {
 		header = 0,
 		showTitle = true,
 		frameOffsetY = 0,
-		useFourCornersBorderNineSlice = true, 
+		useFourCornersBorderNineSlice = true,
 	},
-	["neutral"] = { 
+	["neutral"] = {
 		closeButtonX = 1,
 		closeButtonY = 2,
 		closeBorderX = -1,
 		closeBorderY = 1,
 		header = 0,
 		showTitle = true,
-		frameOffsetY = 0, 
+		frameOffsetY = 0,
 	},
-	["mechagon"] = { 
+	["mechagon"] = {
 		closeButtonX = 3,
 		closeButtonY = 3,
 		closeBorderX = -1,
 		closeBorderY = 1,
 		header = 0,
 		showTitle = true,
-		frameOffsetY = 0, 
+		frameOffsetY = 0,
 	},
 	["jailerstower"] = {
 		closeButtonX = 1,
@@ -213,10 +213,10 @@ local borderLayout = {
 		closeBorderY = 1,
 		header = 0,
 		setAtlasVisibility = true,
-		frameOffsetY = 90, 
-		hideBorder = true, 
+		frameOffsetY = 90,
+		hideBorder = true,
 	},
-	["Oribos"] = { 
+	["Oribos"] = {
 		closeButtonX = 1,
 		closeButtonY = 2,
 		closeBorderX = -1,
@@ -224,22 +224,22 @@ local borderLayout = {
 		header = 0,
 		showTitle = true,
 		setAtlasVisibility = true,
-		frameOffsetY = 0, 
+		frameOffsetY = 0,
 		useFourCornersBorderNineSlice = true,
 	},
 }
 
 local choiceLayout = {
-	["default"] = { 
-		atlasBackgroundWidthPadding = 0, 
-		optionHeightOffset = 0, 
+	["default"] = {
+		atlasBackgroundWidthPadding = 0,
+		optionHeightOffset = 0,
 		extraPaddingOnArtworkBorder = 0,
-		backgroundYOffset = 0, 
-		optionButtonOverrideWidth = 175, 
+		backgroundYOffset = 0,
+		optionButtonOverrideWidth = 175,
 		optionTextJustifyH = "LEFT",
 		offsetBetweenOptions = 0,
 	},
-	["jailerstower"] = { 
+	["jailerstower"] = {
 		atlasBackgroundWidthPadding = 50,
 		optionHeightOffset = 90,
 		extraPaddingOnArtworkBorder = 56,
@@ -249,49 +249,49 @@ local choiceLayout = {
 		showCircleMaskOnArtwork = true,
 		optionButtonOverrideWidth = 120,
 		forceStandardSize = true,
-		optionTextJustifyH = "CENTER", 
+		optionTextJustifyH = "CENTER",
 		standardSizeTextWidthOverride = 160,
-		animateArtworkBorder = true, 
+		animateArtworkBorder = true,
 		animateFrameInAndOut = true,
-		offsetBetweenOptions = -50, 
+		offsetBetweenOptions = -50,
 	},
-	["Oribos"] = { 
-		atlasBackgroundWidthPadding = -2, 
-		optionHeightOffset = 0, 
+	["Oribos"] = {
+		atlasBackgroundWidthPadding = -2,
+		optionHeightOffset = 0,
 		extraPaddingOnArtworkBorder = 0,
-		backgroundYOffset = 0, 
+		backgroundYOffset = 0,
 		combineHeaderWithOption = true,
-		optionTextJustifyH = "CENTER", 
+		optionTextJustifyH = "CENTER",
 		anchorOptionTextToButton = true;
-		optionButtonOverrideWidth = 120, 
-		offsetBetweenOptions = 0, 
-		covenantPreviewId = 1, 
+		optionButtonOverrideWidth = 120,
+		offsetBetweenOptions = 0,
+		covenantPreviewId = 1,
 		secondButtonClickDoesntCloseUI = true,
-		enlargeBackgroundOnMouseOver = true, 
+		enlargeBackgroundOnMouseOver = true,
 	},
 }
 
 local choiceButtonLayout = {
-	["default"] = { 
+	["default"] = {
 		firstButtonOffsetX = 0,
 		firstButtonOffsetY = 0,
 		secondButtonOffsetX = 0,
 		secondButtonOffsetY = 0,
 		firstButtonTemplate="PlayerChoiceOptionButtonTemplate",
-		secondButtonTemplate="PlayerChoiceOptionButtonTemplate", 
-	}, 
-	["Oribos"] = { 
-		firstButtonOffsetX = 20, 
+		secondButtonTemplate="PlayerChoiceOptionButtonTemplate",
+	},
+	["Oribos"] = {
+		firstButtonOffsetX = 20,
 		firstButtonOffsetY = 0,
 		secondButtonOffsetX = -30,
 		secondButtonOffsetY = 0,
 		firstButtonTemplate = "PlayerChoiceOptionButtonTemplate",
 		secondButtonTemplate = "PlayerChoiceOptionMagnifyingGlass",
-		firstButtonUseAtlasSize = false, 
-		secondButtonUseAtlasSize = true, 
-		hideOptionButtonsUntilMouseOver = true, 
-		forceSideBySideLayout = true, 
-	}, 
+		firstButtonUseAtlasSize = false,
+		secondButtonUseAtlasSize = true,
+		hideOptionButtonsUntilMouseOver = true,
+		forceSideBySideLayout = true,
+	},
 }
 
 local hideButtonOverrideInfo = {
@@ -299,17 +299,17 @@ local hideButtonOverrideInfo = {
 }
 
 local function SetupBorder(self, layout, textureKit)
-	if (layout.useFourCornersBorderNineSlice) then 
-		if(not layout.hideBorder) then 
-			NineSliceUtil.ApplyUniqueCornersLayout(self.NineSlice, textureKit); 
-		end 
-	else 
-		if(not layout.hideBorder) then 
+	if (layout.useFourCornersBorderNineSlice) then
+		if(not layout.hideBorder) then
+			NineSliceUtil.ApplyUniqueCornersLayout(self.NineSlice, textureKit);
+		end
+	else
+		if(not layout.hideBorder) then
 			NineSliceUtil.ApplyIdenticalCornersLayout(self.NineSlice, textureKit);
-		end 
-	end 
+		end
+	end
 
-	self.NineSlice:SetShown(not layout.hideBorder); 
+	self.NineSlice:SetShown(not layout.hideBorder);
 
 	self.BorderFrame.Header:SetPoint("BOTTOM", self.BorderFrame, "TOP", 0, layout.header);
 	self.BorderFrame.Header:SetShown(layout.showHeader);
@@ -324,28 +324,26 @@ end
 
 PlayerChoiceFrameMixin = { };
 function PlayerChoiceFrameMixin:OnLoad()
-	BaseLayoutMixin.OnLoad(self);
 	self.QuestionText = self.Title.Text;
 	self.optionInitHeight = INIT_OPTION_HEIGHT;
 end
 
 function PlayerChoiceFrameMixin:OnEvent(event)
 	if (event == "PLAYER_DEAD" or event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_CHOICE_CLOSE") then
-		self:TryHide(); 
+		self:TryHide();
 	end
 end
 
 function PlayerChoiceFrameMixin:OnShow()
-	BaseLayoutMixin.OnLoad(self);
 	FrameUtil.RegisterFrameForEvents(self, PLAYER_CHOICE_FRAME_EVENTS);
 
 	local choiceInfo = C_PlayerChoice.GetPlayerChoiceInfo();
 
-	if(choiceInfo and choiceInfo.soundKitID) then 
+	if(choiceInfo and choiceInfo.soundKitID) then
 		PlaySound(choiceInfo.soundKitID);
-	else 
+	else
 		PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
-	end 
+	end
 
 	--TODO: AChurchill Change this section when you work on the maw buffs.
 	if IsInJailersTower() then
@@ -378,8 +376,8 @@ function PlayerChoiceFrameMixin:OnHide()
 	end
 
 	if(PlayerChoiceToggleButton:IsShown()) then
-		PlayerChoiceToggleButton:UpdateButtonState(); 
-	end 
+		PlayerChoiceToggleButton:UpdateButtonState();
+	end
 end
 
 function PlayerChoiceFrameMixin:SetupTextureKits(frame, regions, overrideTextureKit)
@@ -387,16 +385,16 @@ function PlayerChoiceFrameMixin:SetupTextureKits(frame, regions, overrideTexture
 end
 
 function PlayerChoiceFrameMixin:OnFadeOutFinished()
-	HideUIPanel(self); 
-end 
+	HideUIPanel(self);
+end
 
 function PlayerChoiceFrameMixin:TryHide()
-	if(self.optionLayout.animateFrameInAndOut) then 
-		self.FadeOut:Play(); 
-	else 
+	if(self.optionLayout.animateFrameInAndOut) then
+		self.FadeOut:Play();
+	else
 		HideUIPanel(self);
-	end 
-end 
+	end
+end
 
 function PlayerChoiceFrameMixin:TryShow()
 	local choiceInfo = C_PlayerChoice.GetPlayerChoiceInfo();
@@ -406,7 +404,7 @@ function PlayerChoiceFrameMixin:TryShow()
 	self.optionLayout = choiceLayout[self.uiTextureKit] or choiceLayout["default"];
 	self.optionInitHeight = INIT_OPTION_HEIGHT - self.optionLayout.optionHeightOffset;
 
-	self:SetPoint("CENTER", 0, layout.frameOffsetY); 
+	self:SetPoint("CENTER", 0, layout.frameOffsetY);
 	self:AdjustFramePaddingForCustomChoicePadding();
 
 	self.setAtlasVisibility = layout.setAtlasVisibility;
@@ -416,47 +414,48 @@ function PlayerChoiceFrameMixin:TryShow()
 
 	self.optionDescriptionColor = WARBOARD_OPTION_TEXT_COLOR;
 	self.optionHeaderTitleColor = BLACK_FONT_COLOR;
-	
+
 	local textureKitFontProperties = textureFontProperties[self.uiTextureKit];
 	if textureKitFontProperties then
 		self.optionDescriptionColor = textureKitFontProperties.description;
 		self.optionHeaderTitleColor = textureKitFontProperties.title;
-		if(textureKitFontProperties.titleFont) then 
+		if(textureKitFontProperties.titleFont) then
 			self.optionTitleFont = textureKitFontProperties.titleFont;
-		else 
+		else
 			self.optionTitleFont = SystemFont_Large;
 		end
-		if(textureKitFontProperties.descriptionFont) then 
+		if(textureKitFontProperties.descriptionFont) then
 			self.optionDescriptionFont = textureKitFontProperties.descriptionFont;
-		else 
+		else
 			self.optionDescriptionFont = GameFontBlack;
-		end 
+		end
 	end
 
+	self.BlackBackground:Hide(); 
 	SetupBorder(self, layout, self.uiTextureKit);
 
-	if(choiceInfo.hideWarboardHeader) then 
-		self.BorderFrame.Header:Hide(); 
-	end 
+	if(choiceInfo.hideWarboardHeader) then
+		self.BorderFrame.Header:Hide();
+	end
 
 	for _, option in pairs(self.Options) do
 		option.Header.Text:SetFontObject(self.optionTitleFont)
-		option.Header.Text:SetTextColor(self.optionHeaderTitleColor:GetRGBA()); 
-		option.OptionText:SetFontObject(self.optionDescriptionFont); 
+		option.Header.Text:SetTextColor(self.optionHeaderTitleColor:GetRGBA());
+		option.OptionText:SetFontObject(self.optionDescriptionFont);
 		option.OptionText:SetTextColor(self.optionDescriptionColor:GetRGBA());
 	end
 
 	if (not self:IsShown()) then
-		if (self.optionLayout.animateFrameInAndOut) then 
+		if (self.optionLayout.animateFrameInAndOut) then
 			self.FadeIn:Play();
 		end
 		ShowUIPanel(self)
 	end
 
 	if(PlayerChoiceToggleButton:IsShown()) then
-		PlayerChoiceToggleButton.isPlayerChoiceFrameSetup = true; 
-		PlayerChoiceToggleButton:UpdateButtonState(); 
-	end 
+		PlayerChoiceToggleButton.isPlayerChoiceFrameSetup = true;
+		PlayerChoiceToggleButton:UpdateButtonState();
+	end
 
 	self:SetAlpha(1);
 	self:Update();
@@ -575,7 +574,7 @@ function PlayerChoiceFrameMixin:AlignOptionHeights()
 			option:AddPaddingHeight(heightDiff);
 		end
 
-		maxOptionHeight = math.max(maxOptionHeight, option:GetHeight());	-- Might as well calculate the new maxOptionHeight while we are in here 
+		maxOptionHeight = math.max(maxOptionHeight, option:GetHeight());	-- Might as well calculate the new maxOptionHeight while we are in here
 	end
 
 	-- Then loop through again and adjust the padding offset and heights to make all the options the same height
@@ -662,14 +661,14 @@ end
 
 function PlayerChoiceFrameMixin:AdjustFramePaddingForCustomChoicePadding()
 	self.spacing = (DEFAULT_SPACING - self.optionLayout.atlasBackgroundWidthPadding) + self.optionLayout.offsetBetweenOptions;
-	self.leftPadding = DEFAULT_LEFT_PADDING - self.optionLayout.atlasBackgroundWidthPadding; 
+	self.leftPadding = DEFAULT_LEFT_PADDING - self.optionLayout.atlasBackgroundWidthPadding;
 	self.rightPadding = DEFAULT_RIGHT_PADDING - self.optionLayout.atlasBackgroundWidthPadding;
-end 
+end
 
 function PlayerChoiceFrameMixin:Update()
 	self.hasPendingUpdate = false;
 
-	local choiceInfo = C_PlayerChoice.GetPlayerChoiceInfo();	
+	local choiceInfo = C_PlayerChoice.GetPlayerChoiceInfo();
 	if (not choiceInfo or choiceInfo.choiceID == 0 or choiceInfo.numOptions == 0) then
 		self:Hide();
 		return;
@@ -684,14 +683,14 @@ function PlayerChoiceFrameMixin:Update()
 	local hasHeaders = false;
 	local lastActiveOption;
 
-	local layout = borderLayout[self.uiTextureKit] or borderLayout[DEFAULT_TEXTURE_KIT]; 
-	local shouldShowTitle = layout.showTitle; 
+	local layout = borderLayout[self.uiTextureKit] or borderLayout[DEFAULT_TEXTURE_KIT];
+	local shouldShowTitle = layout.showTitle;
 	for i, option in ipairs(self.Options) do
 		if i > self.numActiveOptions then
 			self:UpdateOptionWidgetRegistration(option, nil);
 			option:Hide();
 		else
-			option:ResetOption(); 
+			option:ResetOption();
 
 			local optionInfo = self.optionData[i];
 			option.rarity = optionInfo.rarity;
@@ -700,43 +699,43 @@ function PlayerChoiceFrameMixin:Update()
 			option.Artwork:SetDesaturated(option.hasDesaturatedArt);
 			option.ArtworkBorder:SetShown(not option.hasDesaturatedArt and optionInfo.choiceArtID > 0 );
 			option.ArtworkBorderDisabled:SetShown(option.hasDesaturatedArt);
-			option.uiTextureKit = optionInfo.uiTextureKit; 
-			
+			option.uiTextureKit = optionInfo.uiTextureKit;
+
 			option:ConfigureHeader(optionInfo.header, optionInfo.headerIconAtlasElement);
 			option:UpdateOptionSize();
 			option:SetupArtworkForOption();
 			option:UpdatePadding();
 			option.optID = optionInfo.responseIdentifier;
-			option.id = optionInfo.id; 
+			option.id = optionInfo.id;
 			option.OptionText:SetJustifyH(self.optionLayout.optionTextJustifyH);
 			option.OptionText:SetText(optionInfo.description);
 			option:ConfigureType(optionInfo.typeArtID);
 			option:ConfigureSubHeader(optionInfo.subHeader);
 			option.Artwork:SetTexture(optionInfo.choiceArtID);
-			option.soundKitID = optionInfo.soundKitID; 
-			option.hasRewards = optionInfo.hasRewards; 
+			option.soundKitID = optionInfo.soundKitID;
+			option.hasRewards = optionInfo.hasRewards;
 			self:UpdateOptionWidgetRegistration(option, optionInfo.widgetSetID);
-			option.OptionButtonsContainer:ClearAllPoints(); 
+			option.OptionButtonsContainer:ClearAllPoints();
 			option.OptionButtonsContainer:SetPoint("TOP", option:GetPaddingFrame(), "BOTTOM", 0, -5);
 			option.OptionButtonsContainer:ConfigureButtons(optionInfo, self.uiTextureKit);
 
 			-- We want to override the texture text color if this is jailers tower.
-			if(self.uiTextureKit == "jailerstower") then 
-				option.Header.Text:SetTextColor(BAG_ITEM_QUALITY_COLORS[option.rarity + RARITY_OFFSET]:GetRGBA()); 
-			end 
+			if(self.uiTextureKit == "jailerstower") then
+				option.Header.Text:SetTextColor(BAG_ITEM_QUALITY_COLORS[option.rarity + RARITY_OFFSET]:GetRGBA());
+			end
 
 			option.Background:ClearAllPoints();
-			option.Background:SetPoint("TOPLEFT", -8, 38); 
-			option.Background:SetPoint("BOTTOMRIGHT", 8, -30 + self.optionLayout.backgroundYOffset);			
+			option.Background:SetPoint("TOPLEFT", -8, 38);
+			option.Background:SetPoint("BOTTOMRIGHT", 8, -30 + self.optionLayout.backgroundYOffset);
 
 
 			if(self.optionLayout.animateArtworkBorder) then
-				option.ArtworkBorderAdditionalGlow:Show(); 
-				option.RotateArtworkBorderAnimation:Play(); 
-				option.ArtworkBorderGlowAnimation:Play(); 
-			else 
-				option.ArtworkBorderAdditionalGlow:Hide(); 
-			end 
+				option.ArtworkBorderAdditionalGlow:Show();
+				option.RotateArtworkBorderAnimation:Play();
+				option.ArtworkBorderGlowAnimation:Play();
+			else
+				option.ArtworkBorderAdditionalGlow:Hide();
+			end
 
 			option:Show();
 
@@ -755,20 +754,20 @@ function PlayerChoiceFrameMixin:Update()
 	end
 
 	self:SetupRewards();
- 
+
 	-- title needs to reach across
 	if lastActiveOption and shouldShowTitle then
 		self.Title:SetPoint("RIGHT", lastActiveOption, "RIGHT", 15, -50);
-	end 
+	end
 
 	self.Title:SetShown(shouldShowTitle);
-	if self.optionLayout.combineHeaderWithOption and shouldShowTitle then 
-		self.topPadding = HEADERS_COMBINED_WITH_OPTION_TOP_PADDING; 
+	if self.optionLayout.combineHeaderWithOption and shouldShowTitle then
+		self.topPadding = HEADERS_COMBINED_WITH_OPTION_TOP_PADDING;
 	elseif self.optionLayout.combineHeaderWithOption and not shouldShowTitle then
 		self.topPadding = HEADERS_COMBINED_AND_TITLE_HIDDEN_TOP_PADDING;
 	elseif hasHeaders then
 		self.topPadding = HEADERS_SHOWN_TOP_PADDING;
-	else	
+	else
 		self.topPadding = HEADERS_HIDDEN_TOP_PADDING;
 	end
 
@@ -791,15 +790,15 @@ function PlayerChoiceFrameMixin:SetupRewards()
 		local optionFrameRewards = self["Option"..i].Rewards;
 		local rewardInfo = C_PlayerChoice.GetPlayerChoiceRewardInfo(i);
 
-		if rewardInfo then 
-			optionFrameRewards.ItemRewardsPool:ReleaseAll(); 
-			optionFrameRewards.CurrencyRewardsPool:ReleaseAll(); 
-			optionFrameRewards.ReputationRewardsPool:ReleaseAll(); 
+		if rewardInfo then
+			optionFrameRewards.ItemRewardsPool:ReleaseAll();
+			optionFrameRewards.CurrencyRewardsPool:ReleaseAll();
+			optionFrameRewards.ReputationRewardsPool:ReleaseAll();
 			optionFrameRewards.lastReward = nil;
 			for _, itemReward in ipairs(rewardInfo.itemRewards) do
 				optionFrameRewards.lastReward = optionFrameRewards:GetItemRewardsFrame(itemReward);
 			end
-		
+
 			for _, currencyReward in ipairs(rewardInfo.currencyRewards) do
 				if C_CurrencyInfo.IsCurrencyContainer(currencyReward.currencyId, currencyReward.quantity) then
 					optionFrameRewards.lastReward = optionFrameRewards:GetCurrencyContainerRewardsFrame(currencyReward);
@@ -810,9 +809,9 @@ function PlayerChoiceFrameMixin:SetupRewards()
 
 			for _, reputationReward in ipairs(rewardInfo.repRewards) do
 				optionFrameRewards.lastReward = optionFrameRewards:GetReputationRewardsFrame(reputationReward);
-			end 
+			end
 
-			optionFrameRewards:MarkDirty(); 
+			optionFrameRewards:MarkDirty();
 		end
 	end
 end
@@ -821,7 +820,7 @@ PlayerChoiceItemButtonMixin = {};
 
 function PlayerChoiceItemButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT");
-	if (self.isCurrencyContainer) then 
+	if (self.isCurrencyContainer) then
 		GameTooltip:SetCurrencyByID(self.itemID, self.quantity);
 		self.UpdateTooltip = self.OnEnter;
 	elseif GameTooltip:SetItemByID(self.itemID) then
@@ -851,30 +850,30 @@ end
 PlayerChoiceOptionFrameMixin = {};
 
 function PlayerChoiceOptionFrameMixin:ResetOption()
-	self.Background:SetScale(1); 
+	self.Background:SetScale(1);
 	self.Background:SetAlpha(1);
 
-	self.ArtworkBorder:SetRotation(0);	
-	self.ArtworkBorder:SetAlpha(1); 
+	self.ArtworkBorder:SetRotation(0);
+	self.ArtworkBorder:SetAlpha(1);
 	self.ArtworkBorder:SetAtlas("UI-Frame-Horde-Portrait", true);
-	self.ArtworkBorder:ClearAllPoints(); 
+	self.ArtworkBorder:ClearAllPoints();
 	self.ArtworkBorder:SetPoint("TOP");
 
-	self.ArtworkBorderAdditionalGlow:SetRotation(0); 
+	self.ArtworkBorderAdditionalGlow:SetRotation(0);
 	self.ArtworkBorderAdditionalGlow:SetAlpha(1);
 
 	self.BackgroundGlow:Hide();
-	self.ArtworkBorder2:Hide(); 
-	self.BackgroundShadowSmall:Hide(); 
-	self.BackgroundShadowLarge:Hide(); 
-	self.RotateArtworkBorderAnimation:Stop(); 
-	self.ArtworkBorderGlowAnimation:Stop();  
-	local layoutInfo = self:GetOptionLayoutInfo(); 
+	self.ArtworkBorder2:Hide();
+	self.BackgroundShadowSmall:Hide();
+	self.BackgroundShadowLarge:Hide();
+	self.RotateArtworkBorderAnimation:Stop();
+	self.ArtworkBorderGlowAnimation:Stop();
+	local layoutInfo = self:GetOptionLayoutInfo();
 	local optionButtonLayout = choiceButtonLayout[self:GetParent().uiTextureKit] or choiceButtonLayout["default"];
-	self.OptionButtonsContainer:SetShown(not optionButtonLayout.hideOptionButtonsUntilMouseOver); 
-	self:GetPaddingFrame():SetHeight(1); 
+	self.OptionButtonsContainer:SetShown(not optionButtonLayout.hideOptionButtonsUntilMouseOver);
+	self:GetPaddingFrame():SetHeight(1);
 	self:UpdatePadding(1);
-end 
+end
 
 function PlayerChoiceOptionFrameMixin:UpdateMouseOverStateOnOption()
 	local mouseOver = RegionUtil.IsDescendantOfOrSame(GetMouseFocus(), self);
@@ -883,71 +882,71 @@ function PlayerChoiceOptionFrameMixin:UpdateMouseOverStateOnOption()
 	-- OnLeave logic
 	if not mouseOver then
 		self:SetScript("OnUpdate", nil);
-		self:OnLeaveOverride(); 
+		self:OnLeaveOverride();
 	end
-end 
+end
 
 function PlayerChoiceOptionFrameMixin:OnEnterOverride()
-	self.BackgroundGlow:Show(); 
-	self.BackgroundGlowAnimationOut:Stop(); 
-	self.BackgroundGlowAnimation:Stop(); 
-	self.BackgroundGlowAnimationIn:Stop(); 
+	self.BackgroundGlow:Show();
+	self.BackgroundGlowAnimationOut:Stop();
+	self.BackgroundGlowAnimation:Stop();
+	self.BackgroundGlowAnimationIn:Stop();
 
 	local textureKit = self:GetParent().uiTextureKit;
 	local optionButtonLayout = choiceButtonLayout[textureKit] or choiceButtonLayout["default"];
-	local needsLayout = false; 
-	if(optionButtonLayout.hideOptionButtonsUntilMouseOver) then 
-		self.OptionButtonsContainer:Show(); 
+	local needsLayout = false;
+	if(optionButtonLayout.hideOptionButtonsUntilMouseOver) then
+		self.OptionButtonsContainer:Show();
 		needsLayout = true;
-	end 
+	end
 
-	if(self:GetOptionLayoutInfo().enlargeBackgroundOnMouseOver) then 
-		self.BlackBackground:Show(); 
-		self.Background:Hide(); 
+	if(self:GetOptionLayoutInfo().enlargeBackgroundOnMouseOver) then
+		self.BlackBackground:Show();
+		self.Background:Hide();
 		self.ScrollingBackgroundAnimIn:Play();
-		self.BackgroundShadowSmall:Hide(); 
-		self.BackgroundShadowLarge:Show(); 
-		self:SetFrameLevel(550); 
+		self.BackgroundShadowSmall:Hide();
+		self.BackgroundShadowLarge:Show();
+		self:SetFrameLevel(550);
 		needsLayout = true;
-	end 
+	end
 
 	if(needsLayout) then
 		self:Layout();
 	end
 
-	self.BackgroundGlowAnimationIn:Play(); 
+	self.BackgroundGlowAnimationIn:Play();
 
 	self:SetScript("OnUpdate", self.UpdateMouseOverStateOnOption);
-end 
+end
 
 function PlayerChoiceOptionFrameMixin:OnLeaveOverride()
-	self.BackgroundGlowAnimationIn:Stop(); 
-	self.BackgroundGlowAnimation:Stop(); 
-	self.ScrollingBackgroundAnimIn:Stop(); 
+	self.BackgroundGlowAnimationIn:Stop();
+	self.BackgroundGlowAnimation:Stop();
+	self.ScrollingBackgroundAnimIn:Stop();
 
 	local textureKit = self:GetParent().uiTextureKit;
 	local optionButtonLayout = choiceButtonLayout[textureKit] or choiceButtonLayout["default"]
 
-	if(optionButtonLayout.hideOptionButtonsUntilMouseOver) then 
-		self.Background:Show(); 
-		self.BlackBackground:Hide(); 
+	if(optionButtonLayout.hideOptionButtonsUntilMouseOver) then
+		self.Background:Show();
+		self.BlackBackground:Hide();
 		self.ScrollingBG:SetAlpha(0);
-		self.ScrollingBackgroundScroll:Stop(); 
-		self.OptionButtonsContainer:Hide(); 
-		self.BackgroundShadowSmall:Show(); 
-		self.BackgroundShadowLarge:Hide(); 
-		self:SetFrameLevel(200); 
+		self.ScrollingBackgroundScroll:Stop();
+		self.OptionButtonsContainer:Hide();
+		self.BackgroundShadowSmall:Show();
+		self.BackgroundShadowLarge:Hide();
+		self:SetFrameLevel(200);
 		self:Layout();
-	end 
-
-	
-	if(self:GetOptionLayoutInfo().enlargeBackgroundOnMouseOver) then 		 
-		self.Background:SetScale(1); 
 	end
 
-	self.BackgroundGlowAnimationOut:Play(); 
 
-end 
+	if(self:GetOptionLayoutInfo().enlargeBackgroundOnMouseOver) then
+		self.Background:SetScale(1);
+	end
+
+	self.BackgroundGlowAnimationOut:Play();
+
+end
 
 function PlayerChoiceOptionFrameMixin:UpdateOptionSize()
 	if self:GetParent():GetNumOptions() == 1 and not self:GetOptionLayoutInfo().forceStandardSize then
@@ -959,51 +958,51 @@ end
 
 function PlayerChoiceOptionFrameMixin:GetOptionLayoutInfo()
 	return self:GetParent().optionLayout;
-end 
+end
 
 function PlayerChoiceOptionFrameMixin:UpdateOptionBorderAtlasBasedOnRarity()
-	if (self.rarity == Enum.PlayerChoiceRarity.Common) then 
+	if (self.rarity == Enum.PlayerChoiceRarity.Common) then
 		standardSizeTextureKitRegions.ArtworkBorder = "UI-Frame-%s-Portrait";
 		standardSizeTextureKitRegions.ArtworkBorderAdditionalGlow = "UI-Frame-%s-Portrait";
 		standardSizeTextureKitRegions.ArtworkBorder2 = "UI-Frame-%s-Portrait-border";
-	elseif (self.rarity == Enum.PlayerChoiceRarity.Uncommon) then 
+	elseif (self.rarity == Enum.PlayerChoiceRarity.Uncommon) then
 		standardSizeTextureKitRegions.ArtworkBorder = "UI-Frame-%s-Portrait-QualityUncommon";
 		standardSizeTextureKitRegions.ArtworkBorderAdditionalGlow = "UI-Frame-%s-Portrait-QualityUncommon";
 		standardSizeTextureKitRegions.ArtworkBorder2 = "UI-Frame-%s-Portrait-QualityUncommon-border";
-	elseif (self.rarity == Enum.PlayerChoiceRarity.Rare) then 
+	elseif (self.rarity == Enum.PlayerChoiceRarity.Rare) then
 		standardSizeTextureKitRegions.ArtworkBorder = "UI-Frame-%s-Portrait-QualityRare";
 		standardSizeTextureKitRegions.ArtworkBorderAdditionalGlow = "UI-Frame-%s-Portrait-QualityRare";
 		standardSizeTextureKitRegions.ArtworkBorder2 = "UI-Frame-%s-Portrait-QualityRare-border";
-	elseif (self.rarity == Enum.PlayerChoiceRarity.Epic) then 
+	elseif (self.rarity == Enum.PlayerChoiceRarity.Epic) then
 		standardSizeTextureKitRegions.ArtworkBorder = "UI-Frame-%s-Portrait-QualityEpic";
 		standardSizeTextureKitRegions.ArtworkBorderAdditionalGlow = "UI-Frame-%s-Portrait-QualityEpic";
 		standardSizeTextureKitRegions.ArtworkBorder2 = "UI-Frame-%s-Portrait-QualityEpic-border";
 	end
-end 
+end
 
 function PlayerChoiceOptionFrameMixin:UpdateBackgroundGlowAtlasBasedOnRarity()
-	if (self.rarity == Enum.PlayerChoiceRarity.Common) then 
+	if (self.rarity == Enum.PlayerChoiceRarity.Common) then
 		standardSizeTextureKitRegions.BackgroundGlow = "UI-Frame-%s-CardParchment-Normal";
-	elseif (self.rarity == Enum.PlayerChoiceRarity.Uncommon) then 
+	elseif (self.rarity == Enum.PlayerChoiceRarity.Uncommon) then
 		standardSizeTextureKitRegions.BackgroundGlow = "UI-Frame-%s-CardParchment-Uncommon";
-	elseif (self.rarity == Enum.PlayerChoiceRarity.Rare) then 
+	elseif (self.rarity == Enum.PlayerChoiceRarity.Rare) then
 		standardSizeTextureKitRegions.BackgroundGlow = "UI-Frame-%s-CardParchment-Rare";
-	elseif (self.rarity == Enum.PlayerChoiceRarity.Epic) then 
+	elseif (self.rarity == Enum.PlayerChoiceRarity.Epic) then
 		standardSizeTextureKitRegions.BackgroundGlow = "UI-Frame-%s-CardParchment-Epic";
 	end
-end 
+end
 
 function PlayerChoiceOptionFrameMixin:OverrideBackgroundTextureForVariedTextures()
-	if(self.layoutIndex > MAXIMUM_VARIED_BACKGROUND_OPTION_TEXTURES) then 
+	if(self.layoutIndex > MAXIMUM_VARIED_BACKGROUND_OPTION_TEXTURES) then
 		local optionIndex = mod(self.layoutIndex, MAXIMUM_VARIED_BACKGROUND_OPTION_TEXTURES);
 		optionBackgroundTextureKitRegions.Background = variedBackgroundTextureKits[optionIndex];
 	else
 		optionBackgroundTextureKitRegions.Background = variedBackgroundTextureKits[self.layoutIndex];
-	end		
-end 
+	end
+end
 
-function PlayerChoiceOptionFrameMixin:SetupArtworkForOption() 
-	local optionLayout = self:GetOptionLayoutInfo(); 
+function PlayerChoiceOptionFrameMixin:SetupArtworkForOption()
+	local optionLayout = self:GetOptionLayoutInfo();
 	local artworkBorder;
 
 	local extraPaddingOnArtworkBorder = optionLayout.extraPaddingOnArtworkBorder;
@@ -1011,35 +1010,35 @@ function PlayerChoiceOptionFrameMixin:SetupArtworkForOption()
 	height = height - (extraPaddingOnArtworkBorder);
 	width = width - (extraPaddingOnArtworkBorder);
 
-	if(self.ArtworkBorder:IsShown()) then 
-		artworkBorder = self.ArtworkBorder; 
-	elseif(self.ArtworkBorderDisabled:IsShown()) then 
-		artworkBorder = self.ArtworkBorderDisabled; 
-	end 
+	if(self.ArtworkBorder:IsShown()) then
+		artworkBorder = self.ArtworkBorder;
+	elseif(self.ArtworkBorderDisabled:IsShown()) then
+		artworkBorder = self.ArtworkBorderDisabled;
+	end
 
-	if(not artworkBorder) then 
-		return; 
-	end 
+	if(not artworkBorder) then
+		return;
+	end
 
-	artworkBorder:ClearAllPoints(); 
+	artworkBorder:ClearAllPoints();
 	self.Artwork:ClearAllPoints();
-	self.ArtworkBorderAdditionalGlow:ClearAllPoints(); 
+	self.ArtworkBorderAdditionalGlow:ClearAllPoints();
 
-	if (optionLayout.combineHeaderWithOption) then 
-		if(self.hasHeader) then 
+	if (optionLayout.combineHeaderWithOption) then
+		if(self.hasHeader) then
 			artworkBorder:SetPoint("BOTTOM", self.Header, 0, -(height + 15));
-		else 
+		else
 			artworkBorder:SetPoint("TOP", 0, -(height + 15));
-		end 
+		end
 
 		self.Artwork:SetPoint("TOPLEFT", artworkBorder, "TOPLEFT", (width), -(height));
 		self.Artwork:SetPoint("BOTTOMRIGHT", artworkBorder, "BOTTOMRIGHT", -(width), (height));
 	else
-		if(self.hasHeader) then 
+		if(self.hasHeader) then
 			artworkBorder:SetPoint("TOP", self.Header, "BOTTOM", 0, -10);
-		else 
+		else
 			artworkBorder:SetPoint("TOP", 0, -10);
-		end 
+		end
 
 		self.Artwork:SetPoint("TOPLEFT", artworkBorder, "TOPLEFT", 10, -9);
 		self.Artwork:SetPoint("BOTTOMRIGHT", artworkBorder, "BOTTOMRIGHT", -10, 9);
@@ -1048,18 +1047,18 @@ function PlayerChoiceOptionFrameMixin:SetupArtworkForOption()
 
 
 	self.CircleMask:SetShown(optionLayout.showCircleMaskOnArtwork);
-end 
+end
 
 function PlayerChoiceOptionFrameMixin:SetToStandardSize()
-	self:UpdateOptionBorderAtlasBasedOnRarity(); 
-	self:UpdateBackgroundGlowAtlasBasedOnRarity(); 
+	self:UpdateOptionBorderAtlasBasedOnRarity();
+	self:UpdateBackgroundGlowAtlasBasedOnRarity();
 
-	local optionLayout = self:GetOptionLayoutInfo(); 
-	if (optionLayout.usesVariedBackgrounds) then 
+	local optionLayout = self:GetOptionLayoutInfo();
+	if (optionLayout.usesVariedBackgrounds) then
 		self:OverrideBackgroundTextureForVariedTextures();
 	else
 		optionBackgroundTextureKitRegions.Background = "UI-Frame-%s-CardParchment";
-	end 
+	end
 
 	self:SetupTextureKits(self, standardSizeTextureKitRegions);
 	self:SetupTextureKits(self, optionBackgroundTextureKitRegions, self.uiTextureKit);
@@ -1067,23 +1066,23 @@ function PlayerChoiceOptionFrameMixin:SetToStandardSize()
 	local textureKit = self.uiTextureKit or self:GetParent().uiTextureKit;
 	local backgroundInfo = C_Texture.GetAtlasInfo(GetFinalNameFromTextureKit(optionBackgroundTextureKitRegions.Background, textureKit));
 
-	if (not backgroundInfo) then 
+	if (not backgroundInfo) then
 		self.Background:SetAtlas("UI-Frame-neutral-CardParchment");
 	end
 
 	self.fixedWidth = STANDARD_SIZE_WIDTH + (optionLayout.atlasBackgroundWidthPadding * 2);
 
-	if(optionLayout.standardSizeTextWidthOverride) then 
+	if(optionLayout.standardSizeTextWidthOverride) then
 		self.OptionText:SetWidth(optionLayout.standardSizeTextWidthOverride);
-	else 
+	else
 		self.OptionText:SetWidth(STANDARD_SIZE_TEXT_WIDTH);
-	end 
+	end
 
-	self.Background:Show(); 
+	self.Background:Show();
 end
 
 function PlayerChoiceOptionFrameMixin:SetToWideSize()
-	local optionLayout = self:GetOptionLayoutInfo(); 
+	local optionLayout = self:GetOptionLayoutInfo();
 
 	self:SetupTextureKits(self, wideSizeTextureKitRegions);
 	self.fixedWidth = WIDE_SIZE_WIDTH + (optionLayout.atlasBackgroundWidthPadding * 2);
@@ -1095,9 +1094,9 @@ function PlayerChoiceOptionFrameMixin:SetupTextureKits(frame, regions, textureKi
 end
 
 function PlayerChoiceOptionFrameMixin:GetPaddingFrame()
-	if (self.hasRewards) then 
-		return self.Rewards; 
-	else 
+	if (self.hasRewards) then
+		return self.Rewards;
+	else
 		return self.WidgetContainer;
 	end
 end
@@ -1118,7 +1117,7 @@ function PlayerChoiceOptionFrameMixin:UpdatePadding(maxOptionHeight)
 end
 
 function PlayerChoiceOptionFrameMixin:AddPaddingHeight(addedHeight)
-	local paddingFrame = self:GetPaddingFrame(); 
+	local paddingFrame = self:GetPaddingFrame();
 	paddingFrame:SetHeight(paddingFrame:GetHeight() + addedHeight);
 	self:SetHeight(self:GetHeight() + addedHeight);
 end
@@ -1130,12 +1129,12 @@ end
 local HEADER_TEXT_AREA_WIDTH = 195;
 
 function PlayerChoiceOptionFrameMixin:ConfigureType(typeIconFileId)
-	if (typeIconFileId) then 
+	if (typeIconFileId) then
 		self.Type:SetTexture(typeIconFileId);
-	else 
-		self.Type:Hide(); 
-	end 
-end 
+	else
+		self.Type:Hide();
+	end
+end
 
 function PlayerChoiceOptionFrameMixin:ConfigureHeader(header, headerIconAtlasElement)
 	if header and #header > 0 then
@@ -1155,23 +1154,23 @@ function PlayerChoiceOptionFrameMixin:ConfigureHeader(header, headerIconAtlasEle
 		else
 			self.Header.Text:SetWidth(self.Header.Text:GetStringWidth());
 		end
-		local optionLayout = self:GetOptionLayoutInfo(); 
+		local optionLayout = self:GetOptionLayoutInfo();
 
-		self.Header:ClearAllPoints(); 
-		if (optionLayout and optionLayout.combineHeaderWithOption) then 
-			self.Header.ignoreInLayout = false; 
+		self.Header:ClearAllPoints();
+		if (optionLayout and optionLayout.combineHeaderWithOption) then
+			self.Header.ignoreInLayout = false;
 			self.Header:SetPoint("TOP", self, "TOP", 0, -60);
-		else 
-			self.Header.ignoreInLayout = true; 
+		else
+			self.Header.ignoreInLayout = true;
 			self.Header:SetPoint("BOTTOM", self, "TOP", 0, 15);
-		end 
+		end
 
 		self.Header:Show();
 		self.Header:Layout();	-- Force a layout in case it was already shown
-		self.hasHeader = true; 
+		self.hasHeader = true;
 	else
 		self.Header:Hide();
-		self.hasHeader = false; 
+		self.hasHeader = false;
 	end
 end
 
@@ -1182,16 +1181,16 @@ function PlayerChoiceOptionFrameMixin:ConfigureSubHeader(subHeader)
 		self.OptionText:SetPoint("TOP", self.SubHeader, "BOTTOM", 0, -12);
 	else
 		self.SubHeader:Hide();
-		local optionLayout = self:GetOptionLayoutInfo(); 
-		local paddingY = -20 + optionLayout.extraPaddingOnArtworkBorder; 
+		local optionLayout = self:GetOptionLayoutInfo();
+		local paddingY = -20 + optionLayout.extraPaddingOnArtworkBorder;
 		self.OptionText:SetPoint("TOP", self.ArtworkBorder, "BOTTOM", 0, paddingY);
 	end
 end
 
 function PlayerChoiceOptionFrameMixin:OnButtonClick(button)
-	if(button.soundKitID) then 
+	if(button.soundKitID) then
 		PlaySound(button.soundKitID);
-	else 
+	else
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end
 
@@ -1204,10 +1203,10 @@ function PlayerChoiceOptionFrameMixin:OnButtonClick(button)
 			SendPlayerChoiceResponse(button.optID);
 			local choiceInfo = C_PlayerChoice.GetPlayerChoiceInfo();
 			local optionLayout = self:GetParent().optionLayout;
-			local isSecondButton = button.buttonIndex == 2; 
+			local isSecondButton = button.buttonIndex == 2;
 
 			if (not choiceInfo.keepOpenAfterChoice and (not isSecondButton or not optionLayout.secondButtonClickDoesntCloseUI)) then
-				self:GetParent():TryHide(); 
+				self:GetParent():TryHide();
 			end
 		end
 	end
@@ -1216,35 +1215,37 @@ end
 PlayerChoiceOptionButtonContainerMixin = {};
 
 function PlayerChoiceOptionButtonContainerMixin:OnLoad()
-	ResizeLayoutMixin.OnLoad(self);
 	self.buttonPool = CreateFramePoolCollection();
 	self.buttonPool:CreatePool("Button", self, "PlayerChoiceOptionButtonTemplate");
 	self.buttonPool:CreatePool("Button", self, "PlayerChoiceOptionMagnifyingGlass");
 end
 
 function PlayerChoiceOptionButtonContainerMixin:ConfigureButtons(optionInfo, textureKit)
+	if(not self.buttonPool) then 
+		return;
+	end 
 	self.buttonPool:ReleaseAll();
 
 	local parent = self:GetParent();
-	local optionLayout = parent:GetOptionLayoutInfo(); 
+	local optionLayout = parent:GetOptionLayoutInfo();
 	local optionButtonLayout = choiceButtonLayout[textureKit] or choiceButtonLayout["default"];
 
-	self.button1 = self.buttonPool:Acquire(optionButtonLayout.firstButtonTemplate); 
-	self.button1.buttonIndex = 1; 
+	self.button1 = self.buttonPool:Acquire(optionButtonLayout.firstButtonTemplate);
+	self.button1.buttonIndex = 1;
 
-	if(not optionButtonLayout.firstButtonUseAtlasSize) then 
-		self.button1:SetWidth(optionLayout.optionButtonOverrideWidth); 
-	end 
+	if(not optionButtonLayout.firstButtonUseAtlasSize) then
+		self.button1:SetWidth(optionLayout.optionButtonOverrideWidth);
+	end
 
 	self.button1:ConfigureButton(optionInfo);
 	self.button1:SetPoint("TOPLEFT", self, optionButtonLayout.firstButtonOffsetX, optionButtonLayout.firstButtonOffsetY);
-	self.button1:Show(); 
+	self.button1:Show();
 
 	local buttonContainerOffset = 5;
 	if optionInfo.secondOptionInfo then
-		 self.button2 = self.buttonPool:Acquire(optionButtonLayout.secondButtonTemplate); 
-		 self.button2.buttonIndex = 2; 
-		if(not optionButtonLayout.secondButtonUseAtlasSize) then 
+		 self.button2 = self.buttonPool:Acquire(optionButtonLayout.secondButtonTemplate);
+		 self.button2.buttonIndex = 2;
+		if(not optionButtonLayout.secondButtonUseAtlasSize) then
 			self.button2:SetWidth(optionLayout.optionButtonOverrideWidth);
 		end
 
@@ -1253,11 +1254,11 @@ function PlayerChoiceOptionButtonContainerMixin:ConfigureButtons(optionInfo, tex
 			local xOffset = 40 + optionButtonLayout.secondButtonOffsetX;
 			self.button2:SetPoint("LEFT", self.button1, "RIGHT", xOffset, optionButtonLayout.secondButtonOffsetY);
 		else
-			local yOffset = optionButtonLayout.secondButtonOffsetY - 8; 
+			local yOffset = optionButtonLayout.secondButtonOffsetY - 8;
 			self.button2:SetPoint("TOP", self.button1, "BOTTOM", optionButtonLayout.secondButtonOffsetX, yOffset);
 		end
 
-		self.button2:Show(); 
+		self.button2:Show();
 		self.button2:SetAlpha(optionButtonLayout.hideSecondButtonUntilMouseOver and 0 or 1);
 	else
 		if parent:GetParent().anOptionHasMultipleButtons and not optionButtonLayout.forceSideBySideLayout then
@@ -1313,21 +1314,19 @@ function PlayerChoiceOptionButtonMixin:OnLeave()
 	self.UpdateTooltip = nil;
 end
 
-PlayerChoiceRewardsMixin = {}; 
+PlayerChoiceRewardsMixin = {};
 
 function PlayerChoiceRewardsMixin:OnLoad()
-	ResizeLayoutMixin.OnLoad(self);
-
 	self.CurrencyRewardsPool = CreateFramePool("FRAME", self, "PlayerChoiceCurrencyTemplate");
 	self.ReputationRewardsPool = CreateFramePool("FRAME", self, "PlayerChoiceReputationTemplate");
 	self.ItemRewardsPool = CreateFramePool("BUTTON", self, "PlayerChoiceItemTemplate");
-end 
+end
 
 function PlayerChoiceRewardsMixin:GetItemRewardsFrame(itemReward)
-	local itemRewardButton = self.ItemRewardsPool:Acquire(); 
+	local itemRewardButton = self.ItemRewardsPool:Acquire();
 
-	if(not self.lastReward) then 
-		itemRewardButton:SetPoint("TOPLEFT", self, 0, 0); 
+	if(not self.lastReward) then
+		itemRewardButton:SetPoint("TOPLEFT", self, 0, 0);
 	else
 		itemRewardButton:SetPoint("TOP", self.lastReward, "BOTTOM", 0, -10);
 	end
@@ -1338,17 +1337,17 @@ function PlayerChoiceRewardsMixin:GetItemRewardsFrame(itemReward)
 	SetItemButtonTexture(itemRewardButton, itemReward.textureFileId);
 	SetItemButtonQuality(itemRewardButton, itemReward.quality, itemReward.itemId);
 	itemRewardButton.itemLink = itemReward.itemLink;
-	itemRewardButton.isCurrencyContainer = false; 
+	itemRewardButton.isCurrencyContainer = false;
 	itemRewardButton.quantity = nil;
-	itemRewardButton:Show(); 
+	itemRewardButton:Show();
 	return itemRewardButton;
-end 
+end
 
 function PlayerChoiceRewardsMixin:GetCurrencyContainerRewardsFrame(currencyReward)
-	local itemRewardButton = self.ItemRewardsPool:Acquire(); 
+	local itemRewardButton = self.ItemRewardsPool:Acquire();
 
-	if(not self.lastReward) then 
-		itemRewardButton:SetPoint("TOPLEFT", self, 0, 0); 
+	if(not self.lastReward) then
+		itemRewardButton:SetPoint("TOPLEFT", self, 0, 0);
 	else
 		itemRewardButton:SetPoint("TOPLEFT", self.lastReward, "BOTTOMLEFT", 0, -10);
 	end
@@ -1362,17 +1361,17 @@ function PlayerChoiceRewardsMixin:GetCurrencyContainerRewardsFrame(currencyRewar
 	SetItemButtonTexture(itemRewardButton, texture);
 	SetItemButtonQuality(itemRewardButton, quality);
 	itemRewardButton.itemLink = nil;
-	itemRewardButton.isCurrencyContainer = true; 
+	itemRewardButton.isCurrencyContainer = true;
 	itemRewardButton.quantity = currencyReward.quantity;
-	itemRewardButton:Show(); 
+	itemRewardButton:Show();
 	return itemRewardButton;
-end 
+end
 
 function PlayerChoiceRewardsMixin:GetCurrencyRewardsFrame(currencyReward)
-	local currencyRewardButton = self.CurrencyRewardsPool:Acquire(); 
+	local currencyRewardButton = self.CurrencyRewardsPool:Acquire();
 
-	if(not self.lastReward) then 
-		currencyRewardButton:SetPoint("TOPLEFT", self, 0, 0); 
+	if(not self.lastReward) then
+		currencyRewardButton:SetPoint("TOPLEFT", self, 0, 0);
 	else
 		currencyRewardButton:SetPoint("TOPLEFT", self.lastReward, "BOTTOMLEFT", 0, -10);
 	end
@@ -1380,15 +1379,15 @@ function PlayerChoiceRewardsMixin:GetCurrencyRewardsFrame(currencyReward)
 	currencyRewardButton.currencyID = currencyReward.currencyId;
 	currencyRewardButton.Icon:SetTexture(currencyReward.currencyTexture);
 	currencyRewardButton.Quantity:SetText(currencyReward.quantity);
-	currencyRewardButton:Show(); 
-	return currencyRewardButton; 
-end 
+	currencyRewardButton:Show();
+	return currencyRewardButton;
+end
 
-function PlayerChoiceRewardsMixin:GetReputationRewardsFrame(reputationReward) 
-	local reputationRewardButton = self.ReputationRewardsPool:Acquire(); 
+function PlayerChoiceRewardsMixin:GetReputationRewardsFrame(reputationReward)
+	local reputationRewardButton = self.ReputationRewardsPool:Acquire();
 
-	if(not self.lastReward) then 
-		reputationRewardButton:SetPoint("TOPLEFT", self,  0, 0); 
+	if(not self.lastReward) then
+		reputationRewardButton:SetPoint("TOPLEFT", self,  0, 0);
 	else
 		reputationRewardButton:SetPoint("TOPLEFT", self.lastReward, "BOTTOMLEFT", 0, -10);
 	end
@@ -1407,19 +1406,18 @@ function PlayerChoiceRewardsMixin:GetReputationRewardsFrame(reputationReward)
 		reputationRewardButton.tooltip = nil
 	end
 
-	reputationRewardButton:Show(); 
-	return reputationRewardButton; 
-end 
+	reputationRewardButton:Show();
+	return reputationRewardButton;
+end
 
-PlayerChoiceToggleButtonMixin = { }; 
-function PlayerChoiceToggleButtonMixin:TryShow() 
-	local IsInJailersTower = IsInJailersTower();
-	PlayerChoiceToggleButton:SetShown(IsInJailersTower);
-end 
+PlayerChoiceToggleButtonMixin = { };
+function PlayerChoiceToggleButtonMixin:TryShow()
+	PlayerChoiceToggleButton:SetShown(IsInJailersTower());
+end
 
-function PlayerChoiceToggleButtonMixin:OnShow() 
-	self:UpdateButtonState(); 
-end 
+function PlayerChoiceToggleButtonMixin:OnShow()
+	self:UpdateButtonState();
+end
 
 function PlayerChoiceToggleButtonMixin:UpdateModelScene(scene, sceneID, fileID, forceUpdate)
 	if (not scene) then
@@ -1436,58 +1434,58 @@ end
 
 
 function PlayerChoiceToggleButtonMixin:UpdateButtonState()
-	if (not C_PlayerChoice.IsWaitingForPlayerChoiceResponse()) then 
+	if (not C_PlayerChoice.IsWaitingForPlayerChoiceResponse()) then
 		self:Hide();
-	end 
+	end
 
 	local choiceInfo = C_PlayerChoice.GetPlayerChoiceInfo();
-	if(not choiceInfo or not choiceInfo.uiTextureKit) then 
+	if(not choiceInfo or not choiceInfo.uiTextureKit) then
 		return;
 	end
 
-	self:ClearAllPoints(); 
-	if(self.isPlayerChoiceFrameSetup) then 
+	self:ClearAllPoints();
+	if(self.isPlayerChoiceFrameSetup) then
 		self:SetPoint("TOP", PlayerChoiceFrame, "BOTTOM", 0, -70);
-	else 
+	else
 		self:SetPoint("CENTER", self:GetParent(), 0, -300);
-	end 
+	end
 
 	local textureKit = choiceInfo.uiTextureKit;
-	local overrideTextInfo = hideButtonOverrideInfo[textureKit]; 
-	local isPlayerChoiceShowing = PlayerChoiceFrame:IsShown(); 
+	local overrideTextInfo = hideButtonOverrideInfo[textureKit];
+	local isPlayerChoiceShowing = PlayerChoiceFrame:IsShown();
 	local normalTextureKitInfo = isPlayerChoiceShowing and hideButtonAtlasOptions.SmallButton or hideButtonAtlasOptions.LargeButton;
 	local highlightTextureKitInfo = isPlayerChoiceShowing and hideButtonAtlasOptions.SmallButtonHighlight or hideButtonAtlasOptions.LargeButtonHighlight;
 
-	if(not isPlayerChoiceShowing) then 
+	if(not isPlayerChoiceShowing) then
 		self:UpdateModelScene(self.GlowySphereModelScene, ANIMA_GLOW_MODEL_SCENE_ID, ANIMA_GLOW_FILE_ID, true);
 	else
-		self.GlowySphereModelScene:Hide(); 
+		self.GlowySphereModelScene:Hide();
 	end
-	local normalTextureAtlas = GetFinalNameFromTextureKit(normalTextureKitInfo, textureKit); 
-	local highlightTextureAtlas = GetFinalNameFromTextureKit(highlightTextureKitInfo, textureKit); 
+	local normalTextureAtlas = GetFinalNameFromTextureKit(normalTextureKitInfo, textureKit);
+	local highlightTextureAtlas = GetFinalNameFromTextureKit(highlightTextureKitInfo, textureKit);
 
 	self:SetNormalAtlas(normalTextureAtlas);
 	self:SetHighlightAtlas(highlightTextureAtlas);
 
 	if(overrideTextInfo) then
 		self.Text:SetText(isPlayerChoiceShowing and overrideTextInfo.playerChoiceShowingText or overrideTextInfo.playerChoiceHiddenText);
-		self.Text:Show(); 
-	else 
+		self.Text:Show();
+	else
 		self.Text:Hide();
-	end 
+	end
 
-	local normalAtlasInfo = C_Texture.GetAtlasInfo(normalTextureAtlas); 
-	if(normalAtlasInfo) then 
+	local normalAtlasInfo = C_Texture.GetAtlasInfo(normalTextureAtlas);
+	if(normalAtlasInfo) then
 		self:SetSize(normalAtlasInfo.width, normalAtlasInfo.height);
 	end
-end 
+end
 
 function PlayerChoiceToggleButtonMixin:OnClick()
-	if(not PlayerChoiceFrame:IsShown()) then 
+	if(not PlayerChoiceFrame:IsShown()) then
 		PlayerChoiceFrame:TryShow();
-		self.FadeIn:Play(); 
-	else 
-		PlayerChoiceFrame:TryHide(); 
-		self.FadeOutAndIn:Play(); 
+		self.FadeIn:Play();
+	else
+		PlayerChoiceFrame:TryHide();
+		self.FadeOutAndIn:Play();
 	end
-end 
+end

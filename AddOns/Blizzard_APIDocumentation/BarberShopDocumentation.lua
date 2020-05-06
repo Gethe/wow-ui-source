@@ -6,6 +6,51 @@ local BarberShop =
 
 	Functions =
 	{
+		{
+			Name = "ApplyCustomizationChoices",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "Cancel",
+			Type = "Function",
+		},
+		{
+			Name = "GetAvailableCustomizations",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "categories", Type = "table", InnerType = "CharCustomizationCategory", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCurrentCost",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "cost", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ResetCustomizationChoices",
+			Type = "Function",
+		},
+		{
+			Name = "SetCustomizationChoice",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "optionID", Type = "number", Nilable = false },
+				{ Name = "choiceID", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -31,9 +76,13 @@ local BarberShop =
 			LiteralName = "BARBER_SHOP_OPEN",
 		},
 		{
-			Name = "BarberShopSuccess",
+			Name = "BarberShopResult",
 			Type = "Event",
-			LiteralName = "BARBER_SHOP_SUCCESS",
+			LiteralName = "BARBER_SHOP_RESULT",
+			Payload =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
 		},
 	},
 

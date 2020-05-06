@@ -27,6 +27,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="VideoOptionsDropDown_OnLoad"/>
+			<OnEvent function="VideoOptionsDropDown_OnEvent"/>
 			<OnEnter function="VideoOptionsControl_OnEnter"/>
 			<OnLeave function="VideoOptionsControl_OnLeave"/>
 		</Scripts>
@@ -95,22 +96,14 @@
 		</Scripts>
 		<Frames>
 			<!-- Display -->
-			<Frame name="Display_">
+			<Frame name="Display_" inherits="TooltipBorderBackdropTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-5"/>
 					<Anchor point="BOTTOMRIGHT" x="-5" y="390"/>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
+				<KeyValues>
+					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
+				</KeyValues>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentDisplayHeader" text="DISPLAY_HEADER" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
@@ -352,30 +345,19 @@
 					</CheckButton>
 				</Frames>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(.6, .6, .6, 1);
-					</OnLoad>
 					<OnShow function="VideoOptionsPanel_OnShow"/>
 				</Scripts>
 			</Frame>
 
 			<!-- Graphics -->
-			<Frame name="Graphics_">
+			<Frame name="Graphics_" inherits="TooltipBorderBackdropTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-215"/>
 					<Anchor point="BOTTOMRIGHT" x="-5" y="40"/>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
+				<KeyValues>
+					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
+				</KeyValues>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentTexturesHeader" text="GENERAL_SUBHEADER" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
@@ -696,31 +678,19 @@
 						</Layers>
 					</Frame>
 				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(.6, .6, .6, 1);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 
 
 			<!-- Raid Panel -->
-			<Frame name="RaidGraphics_" hidden="true">
+			<Frame name="RaidGraphics_" hidden="true" inherits="TooltipBorderBackdropTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-215"/>
 					<Anchor point="BOTTOMRIGHT" x="-5" y="40"/>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
+				<KeyValues>
+					<KeyValue key="raid" value="true" type="boolean"/>
+					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
+				</KeyValues>
 				<Layers>
 					<Layer level="ARTWORK">
 
@@ -1044,12 +1014,6 @@
 						</Layers>
 					</Frame>
 				</Frames>
-				<Scripts>
-					<OnLoad>
-						self.raid = true;
-						self:SetBackdropBorderColor(.6, .6, .6, 1);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 
 			<Button name="GraphicsButton" inherits="TabButtonTemplate" text="BASE_SETTINGS">

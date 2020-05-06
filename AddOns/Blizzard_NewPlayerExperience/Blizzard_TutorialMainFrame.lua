@@ -18,8 +18,6 @@ NPE_TutorialMainFrameMixin.FramePositions =
 function NPE_TutorialMainFrameMixin:OnLoad()
 	NineSliceUtil.ApplyUniqueCornersLayout(self, "NewPlayerTutorial");
 
-	ResizeLayoutMixin.OnLoad(self);
-	ResizeLayoutMixin.OnLoad(self.ContainerFrame);
 	self:MarkDirty();
 
 	self.NextID = 1;
@@ -231,8 +229,6 @@ NPE_TutorialSingleKeyMixin = CreateFromMixins(NPE_TutorialMainFrameMixin);
 function NPE_TutorialSingleKeyMixin:OnLoad()
 	NPE_TutorialMainFrameMixin.OnLoad(self);
 
-	ResizeLayoutMixin.OnLoad(self);
-	ResizeLayoutMixin.OnLoad(self.ContainerFrame);
 	self:MarkDirty();
 end
 
@@ -277,9 +273,6 @@ function NPE_TutorialWalkMixin:OnLoad()
 	NPE_TutorialMainFrameMixin.OnLoad(self);
 
 	self:SetKeybindings();
-
-	ResizeLayoutMixin.OnLoad(self);
-	ResizeLayoutMixin.OnLoad(self.ContainerFrame);
 	self:MarkDirty();
 end
 

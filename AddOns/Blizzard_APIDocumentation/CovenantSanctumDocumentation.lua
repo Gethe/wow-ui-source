@@ -11,6 +11,16 @@ local CovenantSanctum =
 			Type = "Function",
 		},
 		{
+			Name = "GetAnimaInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "currencyID", Type = "number", Nilable = false },
+				{ Name = "maxDisplayableValue", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetFeatures",
 			Type = "Function",
 
@@ -26,6 +36,15 @@ local CovenantSanctum =
 			Returns =
 			{
 				{ Name = "sanctumType", Type = "GarrTalentFeatureSubtype", Nilable = true },
+			},
+		},
+		{
+			Name = "GetSoulCurrencies",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "currencyIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 	},

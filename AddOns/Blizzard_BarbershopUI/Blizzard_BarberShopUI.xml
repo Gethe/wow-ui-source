@@ -1,376 +1,105 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-<!-- AltForm
-<Texture name="BarbershopPortrait-Frame.png" >
-	<Size x="165" y="162"/>
-	<TexCoords left="0.00390625" right="0.64843750" top="0.00195313" bottom="0.31835938"/>	
-</Texture>
-<Texture name="BarbershopPortrait-LeftButton.png" >
-	<Size x="40" y="67"/>
-	<TexCoords left="0.65625000" right="0.81250000" top="0.00195313" bottom="0.13281250"/>	
-</Texture>
-<Texture name="BarbershopPortrait-RightButton.png" >
-	<Size x="41" y="61"/>
-	<TexCoords left="0.82031250" right="0.98046875" top="0.00195313" bottom="0.12109375"/>	
-</Texture>
-<Texture name="BarbershopPortrait-BG.png" >
-	<Size x="103" y="118"/>
-	<TexCoords left="0.00390625" right="0.40625000" top="0.32226563" bottom="0.55273438"/>	
-</Texture>
--->
-	<Frame name="BarberShopSelectorTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="175" y="32"/>
-		</Size>								
-		<Layers>
-			<Layer level="BACKGROUND">
-				<FontString parentKey="Category" inherits="GameFontNormal">
-					<Size>
-						<AbsDimension x="90" y="14"/>
-					</Size>								
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button parentKey="Prev" virtual="true">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.Category" relativePoint="LEFT">
-						<Offset>
-							<AbsDimension x="-5" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						local parent = self:GetParent();
-						SetNextBarberShopStyle(parent:GetID(), true);
-						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-						BarberShop_UpdateCost(parent:GetParent());
-						BarberShop_UpdateSelector(parent);
-					</OnClick>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
-				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-			</Button>
-			<Button parentKey="Next" virtual="true">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Category" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="5" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						local parent = self:GetParent();
-						SetNextBarberShopStyle(parent:GetID());
-						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-						BarberShop_UpdateCost(parent:GetParent());
-						BarberShop_UpdateSelector(parent);
-					</OnClick>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
-				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-			</Button>
-		</Frames>
-	</Frame>
-	<Frame name="BarberShopFrame" parent="UIParent" toplevel="true" hidden="true" enableMouse="true" inherits="VerticalLayoutFrame">
-		<KeyValues>
-			<KeyValue key="fixedWidth" value="271" type="number"/>
-			<KeyValue key="topPadding" value="78" type="number"/>
-			<KeyValue key="bottomPadding" value="52" type="number"/>
-			<KeyValue key="spacing" value="3" type="number"/>
-		</KeyValues>
-		<Anchors>
-			<Anchor point="RIGHT" relativeTo="UIParent" relativePoint="RIGHT" x="-18" y="-54"/>
-		</Anchors>
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="1">
-				<Texture atlas="Barbershop-Top" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOP"/>
-					</Anchors>
-				</Texture>
-				<Texture atlas="Barbershop-Bottom" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOM"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="0">
-				<Texture atlas="!Barbershop-MiddleTile" useAtlasSize="true" vertTile="true">
-					<Anchors>
-						<Anchor point="TOP" x="0" y="-81"/>
-						<Anchor point="BOTTOM" x="0" y="81"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame parentKey="FaceSelector" parentArray="Selector" inherits="BarberShopSelectorTemplate">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="1" type="number"/>
-					<KeyValue key="align" value="center" type="string"/>
-				</KeyValues>
-				<Scripts>
-					<OnLoad>
-						self:SetID(STYLE_FACE);
-						self.Category:SetText(FACE);
-					</OnLoad>
-				</Scripts>
-			</Frame>
-			<Frame parentKey="HairStyleSelector" parentArray="Selector" inherits="BarberShopSelectorTemplate">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="2" type="number"/>
-					<KeyValue key="align" value="center" type="string"/>
-				</KeyValues>
-				<Scripts>
-					<OnLoad>
-						self:SetID(STYLE_HAIR_STYLE);
-					</OnLoad>
-				</Scripts>
-			</Frame>
-			<Frame parentKey="HairColorSelector" parentArray="Selector" inherits="BarberShopSelectorTemplate">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="3" type="number"/>
-					<KeyValue key="align" value="center" type="string"/>
-				</KeyValues>
-				<Scripts>
-					<OnLoad>
-						self:SetID(STYLE_HAIR_COLOR);
-					</OnLoad>
-				</Scripts>
-			</Frame>
-			<Frame parentKey="FacialHairSelector" parentArray="Selector" inherits="BarberShopSelectorTemplate">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="4" type="number"/>
-					<KeyValue key="align" value="center" type="string"/>
-				</KeyValues>
-				<Scripts>
-					<OnLoad>
-						self:SetID(STYLE_FACIAL_HAIR);
-					</OnLoad>
-				</Scripts>
-			</Frame>
-			<Frame parentKey="SkinColorSelector" parentArray="Selector" inherits="BarberShopSelectorTemplate" hidden="true">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="5" type="number"/>
-					<KeyValue key="align" value="center" type="string"/>
-				</KeyValues>
-				<Scripts>
-					<OnLoad>
-						self:SetID(STYLE_SKIN);
-						self.Category:SetText(SKIN_COLOR);
-					</OnLoad>
-				</Scripts>
-			</Frame>
-			<Frame parentKey="CustomSelector1" parentArray="Selector" inherits="BarberShopSelectorTemplate" hidden="true">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="6" type="number"/>
-					<KeyValue key="align" value="center" type="string"/>
-				</KeyValues>
-				<Scripts>
-					<OnLoad>
-           				 self:SetID(STYLE_CUSTOM_DISPLAY1);
-           				 self.Category:SetText(DEMONHUNTER_TATTOO_STYLE);
-          			</OnLoad>
-				</Scripts>
-			</Frame>
-			<Frame parentKey="CustomSelector2" parentArray="Selector" inherits="BarberShopSelectorTemplate" hidden="true">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="8" type="number"/>
-					<KeyValue key="align" value="center" type="string"/>
-				</KeyValues>
-				<Scripts>
-					<OnLoad>
-           				 self:SetID(STYLE_CUSTOM_DISPLAY2);
-           				 self.Category:SetText(DEMONHUNTER_HORN_STYLE);
-          			</OnLoad>
-				</Scripts>
-			</Frame>
-			<Frame parentKey="CustomSelector3" parentArray="Selector" inherits="BarberShopSelectorTemplate" hidden="true">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="9" type="number"/>
-					<KeyValue key="align" value="center" type="string"/>
-				</KeyValues>
-				<Scripts>
-					<OnLoad>
-           				 self:SetID(STYLE_CUSTOM_DISPLAY3);
-           				 self.Category:SetText(DEMONHUNTER_BLINDFOLD_STYLE);
-         			 </OnLoad>
-				</Scripts>
-			</Frame>
-			<Frame parentKey="CustomSelector4" parentArray="Selector" inherits="BarberShopSelectorTemplate" hidden="true">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="7" type="number"/>
-					<KeyValue key="align" value="center" type="string"/>
-				</KeyValues>
-				<Scripts>
-					<OnLoad>
-						self:SetID(STYLE_CUSTOM_DISPLAY4);
-						self.Category:SetText(DEMONHUNTER_TATTOO_COLOR);
-					</OnLoad>
-				</Scripts>
-			</Frame>
-			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="10" type="number"/>
-					<KeyValue key="align" value="center" type="string"/>
-					<KeyValue key="leftPadding" value="11" type="number"/>
-					<KeyValue key="topPadding" value="1" type="number"/>
-				</KeyValues>
-				<Size x="128" y="32"/>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture file="Interface\MoneyFrame\UI-MoneyFrame-Border">
-							<Size x="128" y="32"/>
-							<Anchors>
-								<Anchor point="CENTER" x="-8" y="-5"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						SmallMoneyFrame_OnLoad(self);
-						MoneyFrame_SetType(self, "GUILD_REPAIR");
-					</OnLoad>
-				</Scripts>
-			</Frame>
-			<Button name="$parentOkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="11" type="number"/>
-					<KeyValue key="leftPadding" value="52" type="number"/>
-					<KeyValue key="topPadding" value="1" type="number"/>
-				</KeyValues>
-				<Size x="80" y="24"/>
-				<Scripts>
-					<OnClick function="ApplyBarberShopStyle"/>
-				</Scripts>
-			</Button>
-			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="COINPICKUP_CANCEL">
-				<Size x="80" y="24"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentOkayButton" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="5" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						CancelBarberShop();
-						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentResetButton" inherits="UIPanelButtonTemplate" text="RESET">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="12" type="number"/>
-					<KeyValue key="align" value="center" type="string"/>
-					<KeyValue key="topPadding" value="5" type="number"/>
-				</KeyValues>
-				<Size x="80" y="24"/>
-				<Scripts>
-					<OnClick>
-						BarberShopReset();
-						BarberShop_ResetLabelColors();
-						BarberShop_UpdateCost(self:GetParent());
-						BarberShop_UpdateBanner(GetBarberShopStyleInfo(1));
-						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
-					</OnClick>
-				</Scripts>
-			</Button>
-			<PlayerModel name="BarberShopAltFormFrame" hidden="true" inherits="ModelTemplate">
-				<Size x="100" y="116"/>
-				<Anchors>
-					<Anchor point="BOTTOM" relativePoint="TOP" x="2" y="-37"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentBackground" file="Interface\BarberShop\Barbershop-AltForm">
-							<Size x="103" y="118"/>
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="0"/>
-							</Anchors>
-							<TexCoords left="0.00390625" right="0.40625000" top="0.32226563" bottom="0.55273438"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Frame name="$parentBorder">
-						<Size x="165" y="162"/>	
-						<Anchors>
-							<Anchor point="CENTER" x="0" y="0"/>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture name="$parentTexture" file="Interface\BarberShop\Barbershop-AltForm" setAllPoints="true">
-									<TexCoords left="0.00390625" right="0.64843750" top="0.00195313" bottom="0.31835938"/>
-								</Texture>
-							</Layer>
-						</Layers>
-					</Frame>
-				</Frames>
-			</PlayerModel>
-		</Frames>
+	<Button name="BarberShopButtonTemplate" inherits="SharedButtonLargeTemplate" mixin="BarberShopButtonMixin" ignoreParentScale="true" virtual="true">
+		<Size x="150" y="40"/>
 		<Scripts>
-			<OnLoad function="BarberShop_OnLoad"/>
-			<OnShow inherit="append" function="BarberShop_OnShow"/>
-			<OnHide function="BarberShop_OnHide"/>
-			<OnEvent function="BarberShop_OnEvent"/>
+			<OnClick method="OnClick"/>
 		</Scripts>
-	</Frame>
-	<Frame name="BarberShopBannerFrame" toplevel="true" parent="UIParent">
-		<Size>
-			<AbsDimension x="381" y="210"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOP" relativeTo="UIParent" relativePoint="TOP">
-				<Offset x="2" y="5"/>
-			</Anchor>
-		</Anchors>
+	</Button>
+
+	<Frame name="BarberShopFrame" mixin="BarberShopMixin" toplevel="true" setAllPoints="true" enableKeyboard="true" hidden="true">
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBGTexture" setAllPoints="true">
-					<TexCoords left="0" right="0.744141" top="0" bottom="0.820313"/>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TopBackgroundOverlay" atlas="charactercreate-vignette-top">
+					<Size y="451" />
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeftBackgroundOverlay" atlas="charactercreate-vignette-sides">
+					<Size x="703" />
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightBackgroundOverlay" atlas="charactercreate-vignette-sides">
+					<Size x="703" />
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY">
-				<FontString name="$parentCaption" inherits="GameFontNormalLarge" text="BARBERSHOP">
-					<Size>
-						<AbsDimension x="350" y="30"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="BarberShopBannerFrame" relativePoint="TOP">
-							<Offset x="0" y="-94"/>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="Banner">
+				<Size x="381" y="210"/>
+				<Anchors>
+					<Anchor point="TOP" x="2" y="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="BGTex" setAllPoints="true" file="Interface\Barbershop\UI-Barbershop-Banner">
+							<TexCoords left="0" right="0.744141" top="0" bottom="0.820313"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Caption" inherits="GameFontNormalLarge" text="BARBERSHOP">
+							<Size x="350" y="30"/>
+							<Anchors>
+								<Anchor point="TOP" y="-94"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="CancelButton" inherits="BarberShopButtonTemplate" text="CANCEL">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="30" y="15"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="barberShopFunction" value="Cancel" type="string"/>
+				</KeyValues>
+			</Button>
+
+			<Button parentKey="ResetButton" inherits="BarberShopButtonTemplate" text="RESET">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.CancelButton" relativePoint="TOPLEFT" y="15"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="barberShopOnClickMethod" value="Reset" type="string"/>
+				</KeyValues>
+			</Button>
+
+			<Button parentKey="AcceptButton" inherits="BarberShopButtonTemplate" text="ACCEPT">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-30" y="15"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="barberShopOnClickMethod" value="ApplyChanges" type="string"/>
+				</KeyValues>
+			</Button>
+
+			<Frame parentKey="PriceFrame" inherits="MoneyDisplayFrameTemplate" scale="1.5">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.AcceptButton" relativePoint="TOP" y="15"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="hideCopper" value="true" type="boolean"/>
+					<KeyValue key="resizeToFit" value="true" type="boolean"/>
+					<KeyValue key="useAuctionHouseIcons" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
 		<Scripts>
-			<OnLoad>
-				self.caption = _G[self:GetName() .. "Caption"];
-			</OnLoad>
-			<OnShow>
-				UIErrorsFrame:SetPoint("TOP", self, "BOTTOM", 0, 0);
-				BarberShopBannerFrameBGTexture:SetTexture("Interface\\Barbershop\\UI-Barbershop-Banner");
-			</OnShow>
-			<OnHide>
-				UIErrorsFrame:SetPoint("TOP", UIParent, "TOP", 0, -122);
-				BarberShopBannerFrameBGTexture:SetTexture(nil);
-			</OnHide>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent" />
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+			<OnKeyDown method="OnKeyDown"/>
 		</Scripts>
 	</Frame>
 </Ui>

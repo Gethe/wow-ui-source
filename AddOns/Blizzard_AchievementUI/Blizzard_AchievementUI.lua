@@ -3,20 +3,10 @@ UIPanelWindows["AchievementFrame"] = { area = "doublewide", pushable = 0, xoffse
 
 ACHIEVEMENTUI_CATEGORIES = {};
 
-ACHIEVEMENTUI_GOLDBORDER_R = 1;
-ACHIEVEMENTUI_GOLDBORDER_G = 0.675;
-ACHIEVEMENTUI_GOLDBORDER_B = 0.125;
-ACHIEVEMENTUI_GOLDBORDER_A = 1;
-
-ACHIEVEMENTUI_REDBORDER_R = 0.7;
-ACHIEVEMENTUI_REDBORDER_G = 0.15;
-ACHIEVEMENTUI_REDBORDER_B = 0.05;
-ACHIEVEMENTUI_REDBORDER_A = 1;
-
-ACHIEVEMENTUI_BLUEBORDER_R = 0.129;
-ACHIEVEMENTUI_BLUEBORDER_G = 0.671;
-ACHIEVEMENTUI_BLUEBORDER_B = 0.875;
-ACHIEVEMENTUI_BLUEBORDER_A = 1;
+ACHIEVEMENT_GOLD_BORDER_COLOR	= CreateColor(1, 0.675, 0.125);
+ACHIEVEMENT_RED_BORDER_COLOR	= CreateColor(0.7, 0.15, 0.05);
+ACHIEVEMENT_BLUE_BORDER_COLOR	= CreateColor(0.129, 0.671, 0.875);
+ACHIEVEMENT_YELLOW_BORDER_COLOR = CreateColor(0.4, 0.2, 0.0);
 
 ACHIEVEMENTUI_CATEGORIESWIDTH = 175;
 
@@ -224,8 +214,9 @@ function AchievementFrame_ToggleView()
 		if ( emblemFilename ) then
 			AchievementFrameGuildEmblemLeft:SetTexture(emblemFilename);
 			AchievementFrameGuildEmblemRight:SetTexture(emblemFilename);
-			AchievementFrameGuildEmblemLeft:SetVertexColor(0.4, 0.2, 0, 0.5);
-			AchievementFrameGuildEmblemRight:SetVertexColor(0.4, 0.2, 0, 0.5);
+			local r, g, b = ACHIEVEMENT_YELLOW_COLOR:GetRGB();
+			AchievementFrameGuildEmblemLeft:SetVertexColor(r, g, b, 0.5);
+			AchievementFrameGuildEmblemRight:SetVertexColor(r, g, b, 0.5);
 		end
 	end
 	AchievementFrameHeaderPoints:SetText(BreakUpLargeNumbers(GetTotalAchievementPoints(IN_GUILD_VIEW)));
@@ -358,7 +349,6 @@ end
 -- [[ AchievementFrameCategories ]] --
 
 function AchievementFrameCategories_OnLoad (self)
-	self:SetBackdropBorderColor(ACHIEVEMENTUI_GOLDBORDER_R, ACHIEVEMENTUI_GOLDBORDER_G, ACHIEVEMENTUI_GOLDBORDER_B, ACHIEVEMENTUI_GOLDBORDER_A);
 	self.buttons = {};
 	self:RegisterEvent("ADDON_LOADED");
 	self:SetScript("OnEvent", AchievementFrameCategories_OnEvent);
@@ -845,7 +835,6 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 end
 
 function AchievementFrameAchievementsBackdrop_OnLoad (self)
-	self:SetBackdropBorderColor(ACHIEVEMENTUI_GOLDBORDER_R, ACHIEVEMENTUI_GOLDBORDER_G, ACHIEVEMENTUI_GOLDBORDER_B, ACHIEVEMENTUI_GOLDBORDER_A);
 	self:SetFrameLevel(self:GetFrameLevel()+1);
 end
 
@@ -1121,7 +1110,7 @@ function AchievementButton_Saturate (self)
 		self.background:SetTexture("Interface\\AchievementFrame\\UI-GuildAchievement-Parchment-Horizontal");
 		self.titleBar:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
 		self.titleBar:SetTexCoord(0, 1, 0.83203125, 0.91015625);
-		self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
+		self:SetBackdropBorderColor(ACHIEVEMENT_RED_BORDER_COLOR:GetRGB());
 		self.shield.points:SetVertexColor(0, 1, 0);
 		self.saturatedStyle = "guild";
 	else
@@ -1129,12 +1118,12 @@ function AchievementButton_Saturate (self)
 		if ( self.accountWide ) then
 			self.titleBar:SetTexture("Interface\\AchievementFrame\\AccountLevel-AchievementHeader");
 			self.titleBar:SetTexCoord(0, 1, 0, 0.375);
-			self:SetBackdropBorderColor(ACHIEVEMENTUI_BLUEBORDER_R, ACHIEVEMENTUI_BLUEBORDER_G, ACHIEVEMENTUI_BLUEBORDER_B, ACHIEVEMENTUI_BLUEBORDER_A);
+			self:SetBackdropBorderColor(ACHIEVEMENT_BLUE_BORDER_COLOR:GetRGB());
 			self.saturatedStyle = "account";
 		else
 			self.titleBar:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
 			self.titleBar:SetTexCoord(0, 1, 0.66015625, 0.73828125);
-			self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
+			self:SetBackdropBorderColor(ACHIEVEMENT_RED_BORDER_COLOR:GetRGB());
 			self.saturatedStyle = "normal";
 		end
 		self.shield.points:SetVertexColor(1, 1, 1);
@@ -1187,7 +1176,6 @@ function AchievementButton_OnLoad (self)
 	self.description:SetWidth(ACHIEVEMENTUI_MAXCONTENTWIDTH);
 	self.hiddenDescription:SetWidth(ACHIEVEMENTUI_MAXCONTENTWIDTH);
 
-	self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
 	self.Collapse = AchievementButton_Collapse;
 	self.Expand = AchievementButton_Expand;
 	self.Saturate = AchievementButton_Saturate;
@@ -2449,7 +2437,6 @@ function AchievementFrameSummaryAchievement_OnLoad(self)
 	AchievementComparisonPlayerButton_OnLoad(self);
 	AchievementFrameSummaryAchievements.buttons = AchievementFrameSummaryAchievements.buttons or {};
 	tinsert(AchievementFrameSummaryAchievements.buttons, self);
-	self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, 0.5);
 	self.titleBar:SetVertexColor(1,1,1,0.5);
 	self.dateCompleted:Show();
 end
@@ -3268,7 +3255,7 @@ function AchievementComparisonPlayerButton_Saturate (self)
 		self.background:SetTexture("Interface\\AchievementFrame\\UI-GuildAchievement-Parchment-Horizontal");
 		self.titleBar:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
 		self.titleBar:SetTexCoord(0, 1, 0.83203125, 0.91015625);
-		self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
+		self:SetBackdropBorderColor(ACHIEVEMENT_RED_BORDER_COLOR:GetRGB());
 		self.shield.points:SetVertexColor(0, 1, 0);
 		self.saturatedStyle = "guild";
 	else
@@ -3277,12 +3264,12 @@ function AchievementComparisonPlayerButton_Saturate (self)
 		if ( self.accountWide ) then
 			self.titleBar:SetTexture("Interface\\AchievementFrame\\AccountLevel-AchievementHeader");
 			self.titleBar:SetTexCoord(0, 1, 0, 0.375);
-			self:SetBackdropBorderColor(ACHIEVEMENTUI_BLUEBORDER_R, ACHIEVEMENTUI_BLUEBORDER_G, ACHIEVEMENTUI_BLUEBORDER_B, ACHIEVEMENTUI_BLUEBORDER_A);
+			self:SetBackdropBorderColor(ACHIEVEMENT_BLUE_BORDER_COLOR:GetRGB());
 			self.saturatedStyle = "account";
 		else
 			self.titleBar:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
 			self.titleBar:SetTexCoord(0, 1, 0.66015625, 0.73828125);
-			self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
+			self:SetBackdropBorderColor(ACHIEVEMENT_RED_BORDER_COLOR:GetRGB());
 			self.saturatedStyle = "normal";
 		end
 	end
@@ -3336,7 +3323,6 @@ function AchievementComparisonPlayerButton_Desaturate (self)
 end
 
 function AchievementComparisonPlayerButton_OnLoad (self)
-	self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
 	self.Saturate = AchievementComparisonPlayerButton_Saturate;
 	self.Desaturate = AchievementComparisonPlayerButton_Desaturate;
 
@@ -3351,12 +3337,12 @@ function AchievementComparisonFriendButton_Saturate (self)
 		self.titleBar:SetTexture("Interface\\AchievementFrame\\AccountLevel-AchievementHeader");
 		self.titleBar:SetTexCoord(0.3, 0.575, 0, 0.375);
 		self.saturatedStyle = "account";
-		self:SetBackdropBorderColor(ACHIEVEMENTUI_BLUEBORDER_R, ACHIEVEMENTUI_BLUEBORDER_G, ACHIEVEMENTUI_BLUEBORDER_B, ACHIEVEMENTUI_BLUEBORDER_A);
+		self:SetBackdropBorderColor(ACHIEVEMENT_BLUE_BORDER_COLOR:GetRGB());
 	else
 		self.titleBar:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
 		self.titleBar:SetTexCoord(0.3, 0.575, 0.66015625, 0.73828125);
 		self.saturatedStyle = "normal";
-		self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
+		self:SetBackdropBorderColor(ACHIEVEMENT_RED_BORDER_COLOR:GetRGB());
 	end
 	self.background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal");
 	self.glow:SetVertexColor(1.0, 1.0, 1.0);
@@ -3385,7 +3371,6 @@ function AchievementComparisonFriendButton_Desaturate (self)
 end
 
 function AchievementComparisonFriendButton_OnLoad (self)
-	self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
 	self.Saturate = AchievementComparisonFriendButton_Saturate;
 	self.Desaturate = AchievementComparisonFriendButton_Desaturate;
 

@@ -1,7 +1,4 @@
 
-local DEFAULT_DURATION = 2;
-
-
 AuctionHouseSellFrameAlignedControlMixin = {};
 
 function AuctionHouseSellFrameAlignedControlMixin:OnLoad()
@@ -32,7 +29,7 @@ AuctionHouseAlignedQuantityInputBoxMixin = {};
 
 function AuctionHouseAlignedQuantityInputBoxMixin:OnEditFocusLost()
 	EditBox_ClearHighlight(self);
-	
+
 	if self:GetNumber() < 1 then
 		self:Reset();
 
@@ -154,7 +151,7 @@ function AuctionHouseDurationDropDownMixin:OnShow()
 	UIDropDownMenu_Initialize(self, AuctionHouseDurationDropDownMixin.Initialize);
 
 	if self.durationValue == nil then
-		self:SetDuration(DEFAULT_DURATION);
+		self:SetDuration(tonumber(GetCVar("auctionHouseDurationDropdown")));
 	end
 end
 
@@ -167,6 +164,7 @@ local AUCTION_DURATIONS = {
 function AuctionHouseDurationDropDownMixin:Initialize()
 	local function AuctionHouseDurationDropDownButton_OnClick(button)
 		self:SetDuration(button.value);
+		SetCVar("auctionHouseDurationDropdown", button.value);
 	end
 
 	for i, durationText in ipairs(AUCTION_DURATIONS) do
@@ -188,7 +186,7 @@ function AuctionHouseDurationDropDownMixin:SetDuration(durationValue)
 end
 
 function AuctionHouseDurationDropDownMixin:GetDuration()
-	return self.durationValue or DEFAULT_DURATION;
+	return self.durationValue or tonumber(GetCVar("auctionHouseDurationDropdown"));
 end
 
 
@@ -274,11 +272,10 @@ local AUCTION_HOUSE_SELL_FRAME_EVENTS = {
 }
 
 function AuctionHouseSellFrameMixin:OnLoad()
-	LayoutMixin.OnLoad(self);
 	AuctionHouseBackgroundMixin.OnLoad(self);
 	AuctionHouseSortOrderSystemMixin.OnLoad(self);
 
-	self.ItemDisplay:SetAuctionHouseFrame(self:GetAuctionHouseFrame());	
+	self.ItemDisplay:SetAuctionHouseFrame(self:GetAuctionHouseFrame());
 
 	self.ItemDisplay:SetOnItemChangedCallback(function(item)
 		if item == nil then
@@ -349,7 +346,7 @@ function AuctionHouseSellFrameMixin:UpdatePostState()
 	self:UpdateDeposit();
 	self:UpdateTotalPrice();
 	self:UpdatePostButtonState();
-	
+
 	local quantity = self.QuantityInput:GetQuantity();
 	self.QuantityInput.MaxButton:SetEnabled(quantity < self:GetMaxQuantity());
 
@@ -410,7 +407,7 @@ function AuctionHouseSellFrameMixin:SetItem(itemLocation, fromItemDisplay)
 	-- the left and the text would not be visible. This seems to be a problem with setting
 	-- the text on the edit box and showing it in the same frame.
 	self.QuantityInput.InputBox:SetCursorPosition(0);
-	
+
 	self:MarkDirty();
 
 	self:UpdateFocusTabbing();
@@ -430,7 +427,7 @@ function AuctionHouseSellFrameMixin:GetDefaultPrice()
 		if LinkUtil.IsLinkType(itemLink, "item") then
 			local vendorPrice = select(11, GetItemInfo(itemLink));
 			defaultPrice = vendorPrice ~= nil and (vendorPrice * 1.5) or COPPER_PER_SILVER;
-			defaultPrice = defaultPrice - (defaultPrice % COPPER_PER_SILVER); -- AH prices must be in silver increments.
+			defaultPrice = defaultPrice + (COPPER_PER_SILVER - (defaultPrice % COPPER_PER_SILVER)); -- AH prices must be in silver increments.
 		end
 		return math.max(defaultPrice, COPPER_PER_SILVER);
 	end

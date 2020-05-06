@@ -1,5 +1,5 @@
 
-SCENARIO_CONTENT_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable();
+SCENARIO_CONTENT_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable("SCENARIO_CONTENT_TRACKER_MODULE");
 SCENARIO_CONTENT_TRACKER_MODULE.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO;
 SCENARIO_CONTENT_TRACKER_MODULE.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_SCENARIO + OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE + OBJECTIVE_TRACKER_UPDATE_SCENARIO_SPELLS;
 SCENARIO_CONTENT_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.ScenarioHeader, TRACKER_HEADER_SCENARIO, nil);	-- never anim-in the header
@@ -9,7 +9,7 @@ SCENARIO_CONTENT_TRACKER_MODULE.ShowCriteria = C_Scenario.ShouldShowCriteria();
 
 -- we need to go deeper
 
-SCENARIO_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable();
+SCENARIO_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable("SCENARIO_TRACKER_MODULE");
 SCENARIO_TRACKER_MODULE.usedBlocks = { };
 SCENARIO_TRACKER_MODULE.freeLines = { };
 SCENARIO_TRACKER_MODULE.lineTemplate = "ObjectiveTrackerCheckLineTemplate";
@@ -489,7 +489,7 @@ function ScenarioChallengeDeathCountMixin:OnEnter()
 end
 
 function Scenario_ChallengeMode_SetUpDeathCount(block)
-	block.DeathCount:Update();	
+	block.DeathCount:Update();
 end
 
 function Scenario_ChallengeMode_UpdateTime(block, elapsedTime)
@@ -856,10 +856,10 @@ function ScenarioStage_CustomizeBlock(stageBlock, scenarioType, widgetSetID, tex
 		stageBlock.CompleteLabel:SetPoint("LEFT", stageBlock, "LEFT", 15, 17);
 		stageBlock.Stage:SetPoint("TOPLEFT", stageBlock, "TOPLEFT", 15, -8);
 
-		if(IsInJailersTower()) then 
+		if(IsInJailersTower()) then
 			stageBlock.Stage:SetFontObjectsToTry(GameFontNormalLarge, GameFontNormalHuge);
 			stageBlock.Stage:SetTextColor(1, 1, 1);
-		else 
+		else
 			stageBlock.Stage:SetFontObjectsToTry(QuestTitleFont, Fancy16Font, SystemFont_Med1);
 			stageBlock.Stage:SetTextColor(1, 0.914, 0.682);
 			stageBlock.Stage:SetHeight(34);
@@ -915,12 +915,12 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 	local inProvingGrounds = (scenarioType == LE_SCENARIO_TYPE_PROVING_GROUNDS);
 	local dungeonDisplay = (scenarioType == LE_SCENARIO_TYPE_USE_DUNGEON_DISPLAY);
 	local inWarfront = (scenarioType == LE_SCENARIO_TYPE_WARFRONT);
-	local isInJailersTower = IsInJailersTower(); 
+	local isInJailersTower = IsInJailersTower();
 	local scenariocompleted = currentStage > numStages;
 
-	if (isInJailersTower) then 
+	if (isInJailersTower) then
 		stageName = JAILERS_TOWER_SCENARIO_FLOOR:format(GetJailersTowerLevel());
-	end 
+	end
 
 	if ( scenariocompleted ) then
 		ObjectiveTracker_AddBlock(stageBlock);

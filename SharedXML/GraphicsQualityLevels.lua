@@ -1122,6 +1122,7 @@ VideoData["Advanced_ResampleQualityDropDown"]={
 VideoData["Advanced_RTShadowQualityDropDown"]={
 	name = RT_SHADOW_QUALITY;
 	description = OPTION_TOOLTIP_RT_SHADOW_QUALITY,
+	validateOnGXRestart = true,
 
 	data = {
 		{

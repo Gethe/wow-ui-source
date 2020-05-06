@@ -401,7 +401,7 @@ function UIExpandingButtonMixin:Update(override)
 	if (override ~= nil) then
 		self.currentlyExpanded = override;
 	end
-	
+
 	local direction = self.currentlyExpanded and GetOppositeDirection(self.expansionDirection) or self.expansionDirection;
 
 	SquareButton_SetIcon(self, direction);
@@ -498,7 +498,6 @@ end
 CurrencyDisplayGroupMixin = {};
 
 function CurrencyDisplayGroupMixin:OnLoad()
-	ResizeLayoutMixin.OnLoad(self);
 	self.currencyFramePool = CreateFramePool("FRAME", self, "CurrencyDisplayTemplate");
 end
 

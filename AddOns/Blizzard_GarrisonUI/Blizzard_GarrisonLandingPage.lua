@@ -88,6 +88,7 @@ function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 		end
 	elseif (self.garrTypeID == Enum.GarrisonType.Type_9_0) then
 		self:SetupCovenantCallings();
+		self:SetupSoulbind();
 	end
 
 	self.abilityCountersForMechanicTypes = C_Garrison.GetFollowerAbilityCountersForMechanicTypes(GetPrimaryGarrisonFollowerType(self.garrTypeID));
@@ -127,7 +128,19 @@ function GarrisonLandingPageMixin:SetupCovenantCallings()
 	if not self.CovenantCallings then
 		if UIParentLoadAddOn("Blizzard_CovenantCallings") then
 			self.CovenantCallings = CovenantCallings.Create(self.Report);
-			self.CovenantCallings:SetPoint("TOPLEFT", self.Report.Title, "BOTTOMLEFT", 0, -32);
+			self.CovenantCallings:SetPoint("TOPLEFT", self.Report.Title, "BOTTOMLEFT", -46, -55);
+		end
+	end
+end
+
+function GarrisonLandingPageMixin:SetupSoulbind()
+	if not self.SoulbindPanel then
+		if UIParentLoadAddOn("Blizzard_LandingSoulbinds") then
+			local soulbindData = C_Soulbinds.GetSoulbindData(C_Soulbinds.GetActiveSoulbindID());
+			if soulbindData.ID > 0 then
+				self.SoulbindPanel = LandingSoulbind.Create(self.Report);
+				self.SoulbindPanel:SetPoint("TOPLEFT", self.Report.Title, "TOPLEFT", -46, -250);
+			end
 		end
 	end
 end

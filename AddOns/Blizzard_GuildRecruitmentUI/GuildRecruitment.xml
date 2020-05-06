@@ -102,13 +102,12 @@
 		</Scripts>
 		<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-ROLES"/>
 	</Button>
-	<Button name="CommunitiesGuildRecruitmentApplicantTemplate" virtual="true">
+	<Button name="CommunitiesGuildRecruitmentApplicantTemplate" inherits="BackdropTemplate" virtual="true">
 		<Size x="320" y="84"/>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize val="12"/>
-			<TileSize val="12"/>
-			<BackgroundInsets left="4" right="4" top="4" bottom="4"/>
-		</Backdrop>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_12_12_4444" type="global"/>
+			<KeyValue key="backdropColorAlpha" value="0.3" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BORDER" textureSubLevel="-1">
 				<Texture parentKey="selectedTex" file="Interface\ClassTrainerFrame\TrainerTextures" hidden="true" alphaMode="ADD">
@@ -197,7 +196,6 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				self:SetBackdropColor(1, 1, 1, 0.3);
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				
 				if ( GUILD_APPLICANT_LEVEL_TEXT_Y_OVERRIDE ) then

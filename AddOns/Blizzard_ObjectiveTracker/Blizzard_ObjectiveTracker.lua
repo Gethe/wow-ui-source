@@ -93,7 +93,8 @@ hasSkippedBlocks:	if the module couldn't display all its blocks because of not e
 
 DEFAULT_OBJECTIVE_TRACKER_MODULE = {};
 
-function DEFAULT_OBJECTIVE_TRACKER_MODULE:OnLoad()
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:OnLoad(friendlyName)
+	self.friendlyName = friendlyName or "UnnamedTrackerModule";
 	self.blockTemplate = "ObjectiveTrackerBlockTemplate";
 	self.blockType = "Frame";
 	self.lineTemplate = "ObjectiveTrackerLineTemplate";
@@ -120,9 +121,9 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:OnLoad()
 	self.BlocksFrame = ObjectiveTrackerFrame.BlocksFrame;
 end
 
-function ObjectiveTracker_GetModuleInfoTable(baseModule)
+function ObjectiveTracker_GetModuleInfoTable(friendlyName, baseModule)
 	local info = CreateFromMixins(baseModule or DEFAULT_OBJECTIVE_TRACKER_MODULE);
-	info:OnLoad();
+	info:OnLoad(friendlyName);
 	return info;
 end
 
@@ -154,6 +155,15 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:SetHeader(block, text, animateReason)
 	block.Text:SetText(text);
 	block.animateReason = animateReason or 0;
 	self.Header = block;
+end
+
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:SetSharedHeader(block)
+	self.Header = block;
+	self.usesSharedHeader = true;
+end
+
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:UsesSharedHeader()
+	return self.usesSharedHeader;
 end
 
 function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetBlock(id)
@@ -638,17 +648,17 @@ end
 function ObjectiveTracker_Initialize(self)
 	self.MODULES = {	SCENARIO_CONTENT_TRACKER_MODULE,
 						UI_WIDGET_TRACKER_MODULE,
-						AUTO_QUEST_POPUP_TRACKER_MODULE,
 						BONUS_OBJECTIVE_TRACKER_MODULE,
 						WORLD_QUEST_TRACKER_MODULE,
 						CAMPAIGN_QUEST_TRACKER_MODULE,
 						QUEST_TRACKER_MODULE,
+						AUTO_QUEST_POPUP_TRACKER_MODULE,
 						ACHIEVEMENT_TRACKER_MODULE,
 	};
 	self.MODULES_UI_ORDER = {	SCENARIO_CONTENT_TRACKER_MODULE,
 								UI_WIDGET_TRACKER_MODULE,
-								AUTO_QUEST_POPUP_TRACKER_MODULE,
 								CAMPAIGN_QUEST_TRACKER_MODULE,
+								AUTO_QUEST_POPUP_TRACKER_MODULE,
 								QUEST_TRACKER_MODULE,
 								BONUS_OBJECTIVE_TRACKER_MODULE,
 								WORLD_QUEST_TRACKER_MODULE,
@@ -853,8 +863,8 @@ function ObjectiveTracker_MinimizeButton_OnClick(self)
 end
 
 function ObjectiveTracker_MinimizeModuleButton_OnClick(self)
-	local module = self:GetParent().module;
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	local module = self:GetParent().module;
 	ObjectiveTracker_SetModuleCollapsed(module, not module.collapsed);
 	ObjectiveTracker_Update();
 end
@@ -873,9 +883,32 @@ function ObjectiveTracker_Expand()
 	ObjectiveTrackerFrame.HeaderMenu.Title:Hide();
 end
 
+local function ObjectiveTracker_GetAllModulesForHeader(header)
+	local modules = {};
+	for index, module in ipairs(ObjectiveTrackerFrame.MODULES) do
+		if module.Header and module.Header == header then
+			table.insert(modules, module);
+		end
+	end
+
+	return unpack(modules);
+end
+
+local function ObjectiveTracker_SetModulesCollapsed(collapsed, ...)
+	local header;
+	for i = 1, select("#", ...) do
+		local module = select(i, ...);
+		module.collapsed = collapsed;
+		header = module.Header; -- store this so that the button state only updates once.
+	end
+
+	if header and header.MinimizeButton then
+		header.MinimizeButton:SetCollapsed(collapsed);
+	end
+end
+
 function ObjectiveTracker_SetModuleCollapsed(module, collapsed)
-	module.collapsed = collapsed;
-	module.Header.MinimizeButton:SetCollapsed(collapsed);
+	ObjectiveTracker_SetModulesCollapsed(collapsed, ObjectiveTracker_GetAllModulesForHeader(module.Header))
 end
 
 function ObjectiveTracker_ToggleDropDown(frame, handlerFunc)
@@ -960,32 +993,43 @@ local function InternalAddBlock(block)
 	return true;
 end
 
-function ObjectiveTracker_AddBlock(block, forceAdd)
+function ObjectiveTracker_AddHeader(header)
+	if InternalAddBlock(header) then
+		header.added = true;
+		if not header:IsShown() then
+			header:Show();
+			if header.animateReason and band(OBJECTIVE_TRACKER_UPDATE_REASON, header.animateReason ) > 0 and not header.animating then
+				-- animate header
+				header.animating = true;
+				header.HeaderOpenAnim:Stop();
+				header.HeaderOpenAnim:Play();
+			end
+		end
+
+		return true;
+	end
+
+	return false;
+end
+
+function ObjectiveTracker_AddBlock(block)
 	local header = block.module.Header;
 	local blockAdded = false;
+
 	-- if there's no header or it's been added, just add the block...
-	if ( not header or header.added ) then
+	if not header or header.added then
 		blockAdded = InternalAddBlock(block);
-	elseif ( ObjectiveTracker_CanFitBlock(block, header) ) then
+	elseif ObjectiveTracker_CanFitBlock(block, header) then
 		-- try to add header and maybe block
-		if ( InternalAddBlock(header) ) then
-			header.added = true;
-			if ( not header:IsShown() ) then
-				header:Show();
-				if ( header.animateReason and band(OBJECTIVE_TRACKER_UPDATE_REASON, header.animateReason ) > 0 and not header.animating ) then
-					-- animate header
-					header.animating = true;
-					header.HeaderOpenAnim:Stop();
-					header.HeaderOpenAnim:Play();
-				end
-			end
-			-- add the block
+		if ObjectiveTracker_AddHeader(header) then
 			blockAdded = InternalAddBlock(block);
 		end
 	end
-	if ( not blockAdded ) then
+
+	if not blockAdded then
 		block.module.hasSkippedBlocks = true;
 	end
+
 	return blockAdded;
 end
 
@@ -1002,7 +1046,7 @@ function ObjectiveTracker_CanFitBlock(block, header)
 	end
 
 	local totalHeight;
-	if ( header ) then
+	if header then
 		totalHeight = header.height - offsetY + block.height - module.fromHeaderOffsetY;
 	else
 		totalHeight = block.height - offsetY;
@@ -1082,6 +1126,13 @@ end
 -- ***** UPDATE
 
 function DEFAULT_OBJECTIVE_TRACKER_MODULE:StaticReanchor()
+	-- If this module is collapsed, don't process anything, it will result in the entire module being hidden, since just the header
+	-- is showing, there's nothing to update.
+	if self.collapsed then
+		ObjectiveTracker_AddHeader(self.Header); -- the header was marked as not being added, make sure to add it again...
+		return;
+	end
+
 	local block = self.firstBlock;
 	self:BeginLayout(true);
 	while ( block ) do
@@ -1209,11 +1260,17 @@ function ObjectiveTracker_WatchMoney(watchMoney, reason)
 	end
 end
 
-local function ObjectiveTracker_CountVisibleModules(startIndex, modules)
+local function ObjectiveTracker_CountVisibleModules()
 	local count = 0;
-	for i = startIndex, #modules do
-		if modules[i].topBlock then
-			count = count + 1;
+	local seen = {};
+	for index, module in ipairs(ObjectiveTrackerFrame.MODULES) do
+		local header = module.Header;
+		if header and not seen[header] then
+			seen[header] = true;
+
+			if header:IsVisible() then
+				count = count + 1;
+			end
 		end
 	end
 
@@ -1221,42 +1278,33 @@ local function ObjectiveTracker_CountVisibleModules(startIndex, modules)
 end
 
 function ObjectiveTracker_ReorderModules()
-	local tracker = ObjectiveTrackerFrame;
-	local modules = tracker.MODULES;
-	local modulesUIOrder = tracker.MODULES_UI_ORDER;
+	local visibleCount = ObjectiveTracker_CountVisibleModules();
+	local showModuleMinimizeButton = visibleCount > 1;
 	local detachIndex = nil;
 	local anchorBlock = nil;
-	for i = 1, #modules do
-		if ( not detachIndex ) then
-			if ( modules[i] ~= modulesUIOrder[i] ) then
-				detachIndex = i;
-			else
-				anchorBlock = modules[i].lastBlock or anchorBlock;
-			end
-		end
 
-		if ( detachIndex ) then
-			if ( modules[i].topBlock ) then
-				modules[i].topBlock:ClearAllPoints();
-			end
-		end
-	end
+	local header = ObjectiveTrackerFrame.HeaderMenu;
+	header:ClearAllPoints();
 
-	tracker.HeaderMenu:ClearAllPoints();
-	local hasAnchoredHeader = false;
-	local visibleCount = ObjectiveTracker_CountVisibleModules(detachIndex, modulesUIOrder);
-	local showModuleMinimizeButton = visibleCount > 1;
-
-	for i = detachIndex, #modulesUIOrder do
-		local module = modulesUIOrder[i];
+	for index, module in ipairs(ObjectiveTrackerFrame.MODULES_UI_ORDER) do
 		local topBlock = module.topBlock;
 		if topBlock then
-			AnchorBlock(topBlock, anchorBlock);
-			anchorBlock = module.lastBlock;
+			if module:UsesSharedHeader() then
+				AnchorBlock(topBlock, module.Header);
 
-			if not hasAnchoredHeader then
-				tracker.HeaderMenu:SetPoint("RIGHT", topBlock, "RIGHT", 0, 0);
-				hasAnchoredHeader = true;
+				local containingModule = module.Header.module;
+				if containingModule and containingModule.firstBlock then
+					containingModule.firstBlock:ClearAllPoints();
+					AnchorBlock(containingModule.firstBlock, module.lastBlock);
+				end
+			else
+				AnchorBlock(topBlock, anchorBlock);
+				anchorBlock = module.lastBlock;
+			end
+
+			if header then
+				header:SetPoint("RIGHT", module.Header, "RIGHT", 0, 0);
+				header = nil;
 			end
 
 			module.Header.MinimizeButton:SetShown(showModuleMinimizeButton);

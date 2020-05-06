@@ -98,9 +98,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						self:SetBackdropColor(0.15, 0.15, 0.15);
+					<OnLoad inherit="prepend">
 						_G[self:GetName().."Title"]:SetText(PLAYBACK);
 					</OnLoad>
 				</Scripts>
@@ -288,9 +286,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						self:SetBackdropColor(0.15, 0.15, 0.15);
+					<OnLoad inherit="prepend">
 						_G[self:GetName().."Title"]:SetText(HARDWARE);
 					</OnLoad>
 				</Scripts>
@@ -420,9 +416,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						self:SetBackdropColor(0.15, 0.15, 0.15);
+					<OnLoad inherit="prepend">
 						_G[self:GetName().."Title"]:SetText(VOLUME);
 					</OnLoad>
 				</Scripts>

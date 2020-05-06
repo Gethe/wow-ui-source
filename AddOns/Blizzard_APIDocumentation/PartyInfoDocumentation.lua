@@ -87,6 +87,15 @@ local PartyInfo =
 			Documentation = { "Usually this will convert to raid immediately. In some cases (e.g. PartySync) the user will be prompted to confirm converting to raid, because it's potentially destructive." },
 		},
 		{
+			Name = "DoCountdown",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "seconds", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetActiveCategories",
 			Type = "Function",
 

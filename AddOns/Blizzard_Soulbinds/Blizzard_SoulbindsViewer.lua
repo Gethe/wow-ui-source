@@ -39,7 +39,7 @@ end
 
 function SoulbindViewerMixin:OnEvent(event, ...)
 	if event == "SOULBIND_FORGE_INTERACTION_STARTED" then
-		self:OpenSoulbindForge();
+		self:Open();
 	elseif event == "SOULBIND_FORGE_INTERACTION_ENDED" then
 		HideUIPanel(self);
 	elseif event == "SOULBIND_ACTIVATED" then
@@ -84,7 +84,7 @@ function SoulbindViewerMixin:UpdateResetButton()
 	self.ResetButton:SetEnabled(canReset);
 end
 
-function SoulbindViewerMixin:OpenSoulbindForge()
+function SoulbindViewerMixin:Open()
 	local covenantData = C_Covenants.GetCovenantData(C_Covenants.GetActiveCovenantID());
 	local soulbindData = C_Soulbinds.GetSoulbindData(C_Soulbinds.GetActiveSoulbindID());
 
@@ -117,7 +117,7 @@ function SoulbindViewerMixin:OnSoulbindSelected(soulbindIDs, button, buttonIndex
 	self.soulbindData = soulbindData;
 
 	self.Name:SetText(soulbindData.name);
-	self.Portrait:SetAtlas(soulbindData.portrait, true);
+	self.Portrait:SetAtlas(string.format("Soulbind_Portrait_%s", soulbindData.textureKit), true);
 	self.Description:SetText(soulbindData.description)
 
 	self.Tree:Init(soulbindData);

@@ -29,14 +29,26 @@ end
 
 BaseLayoutMixin = {};
 
-function BaseLayoutMixin:OnLoad()
-	self.isLayoutFrame = true;
+function BaseLayoutMixin:OnShow()
+	self:Layout();
+end
+
+function BaseLayoutMixin:IsLayoutFrame()
+	return true;
+end
+
+function BaseLayoutMixin:IgnoreLayoutIndex()
+	return false;
+end
+
+local function IsLayoutFrame(f)
+	return f.IsLayoutFrame and f:IsLayoutFrame();
 end
 
 function BaseLayoutMixin:AddLayoutChildren(layoutChildren, ...)
 	for i = 1, select("#", ...) do
 		local region = select(i, ...);
-		if region:IsShown() and not region.ignoreInLayout and (self.ignoreLayoutIndex or region.layoutIndex) then
+		if region:IsShown() and not region.ignoreInLayout and (self:IgnoreLayoutIndex() or region.layoutIndex) then
 			layoutChildren[#layoutChildren + 1] = region;
 		end
 	end
@@ -54,7 +66,7 @@ function BaseLayoutMixin:GetLayoutChildren()
 	self:AddLayoutChildren(children, self:GetChildren());
 	self:AddLayoutChildren(children, self:GetRegions());
 	self:AddLayoutChildren(children, self:GetAdditionalRegions());
-	if not self.ignoreLayoutIndex then
+	if not self:IgnoreLayoutIndex() then
 		table.sort(children, LayoutIndexComparator);
 	end
 
@@ -81,7 +93,7 @@ function BaseLayoutMixin:MarkDirty()
 	-- Tell any ancestors who may also be LayoutFrames that they should also become dirty
 	local parent = self:GetParent();
 	while parent do
-		if parent.isLayoutFrame then
+		if IsLayoutFrame(parent) then
 			parent:MarkDirty();
 			return;
 		end
@@ -170,7 +182,7 @@ function VerticalLayoutMixin:LayoutChildren(children, expandToWidth)
 
 	-- Calculate width and height based on children
 	for i, child in ipairs(children) do
-		if child.isLayoutFrame then
+		if IsLayoutFrame(child) then
 			child:Layout();
 		end
 
@@ -225,7 +237,7 @@ function HorizontalLayoutMixin:LayoutChildren(children, ignored, expandToHeight)
 
 	-- Calculate width and height based on children
 	for i, child in ipairs(children) do
-		if child.isLayoutFrame then
+		if IsLayoutFrame(child) then
 			child:Layout();
 		end
 
@@ -289,9 +301,8 @@ local function GetSize(desired, fixed, minimum, maximum)
 	return fixed or Clamp(desired, minimum or desired, maximum or desired);
 end
 
-function ResizeLayoutMixin:OnLoad()
-	BaseLayoutMixin.OnLoad(self);
-	self.ignoreLayoutIndex = true;
+function ResizeLayoutMixin:IgnoreLayoutIndex()
+	return true;
 end
 
 function ResizeLayoutMixin:Layout()
@@ -307,7 +318,7 @@ function ResizeLayoutMixin:Layout()
 	local left, right, top, bottom;
 	local layoutFrameScale = self:GetEffectiveScale();
 	for childIndex, child in ipairs(self:GetLayoutChildren()) do
-		if child.isLayoutFrame then
+		if IsLayoutFrame(child) then
 			child:Layout();
 		end
 

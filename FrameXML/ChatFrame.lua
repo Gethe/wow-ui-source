@@ -7,6 +7,7 @@ DEFAULT_CHAT_FRAME = ChatFrame1;
 CHAT_FOCUS_OVERRIDE = nil;
 NUM_REMEMBERED_TELLS = 10;
 MAX_WOW_CHAT_CHANNELS = 20;
+MAX_COUNTDOWN_SECONDS = 3600; -- One Hour 
 
 CHAT_TIMESTAMP_FORMAT = nil;		-- gets set from Interface Options
 CHAT_SHOW_IME = false;
@@ -2661,6 +2662,13 @@ function RegisterNewSlashCommand(callback, command, commandAlias)
 	SlashCmdList[name] = callback;
 end
 
+SlashCmdList["COUNTDOWN"] = function(msg)
+	local num1 = gsub(msg, "(%s*)(%d+)", "%2");
+	if(num1 ~= "" and tonumber(num1) <= MAX_COUNTDOWN_SECONDS) then 
+		C_PartyInfo.DoCountdown(num1);
+	end
+end
+
 function ChatFrame_SetupListProxyTable(list)
 	if ( getmetatable(list) ) then
 		return;
@@ -5033,9 +5041,6 @@ function ChatMenu_OnShow(self)
 	EmoteMenu:Hide();
 	LanguageMenu:Hide();
 	VoiceMacroMenu:Hide();
-
-	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 end
 
 function EmoteMenu_Click(self)

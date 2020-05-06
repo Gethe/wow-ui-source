@@ -9,7 +9,7 @@
 		<Size x="12" y="12"/>
 	</Texture>
 	
-	<GameTooltip name="SharedTooltipTemplate" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" virtual="true">
+	<GameTooltip name="SharedTooltipTemplate" clampedToScreen="true" frameStrata="TOOLTIP" inherits="BackdropTemplate" hidden="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="textLeft1Font" value="GameTooltipHeaderText" type="string"/>
 			<KeyValue key="textRight1Font" value="GameTooltipHeaderText" type="string"/>

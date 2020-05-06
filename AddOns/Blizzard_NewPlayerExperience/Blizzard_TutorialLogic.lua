@@ -36,7 +36,8 @@ function Tutorials:Begin()
 		self.LootCorpseWatcher:Begin()
 	end
 
-	if (level < 7) then
+	local vendorQuestID = tutorialData.UseVendorQuest;
+	if C_QuestLog.GetLogIndexForQuestID(vendorQuestID) ~= nil then
 		self.Vendor_Watcher:Begin();
 	end
 
@@ -50,7 +51,7 @@ function Tutorials:Begin()
 	-- Starting Quest
 	local questID = tutorialData.StartingQuest;
 	if C_QuestLog.IsQuestFlaggedCompleted(questID) then	-- Starting Quest is complete
-		self.Hide_MainMenuBar:Complete();			-- Show the Nain Menu bar
+		self.Hide_MainMenuBar:Complete();			-- Show the Main Menu bar
 		self.Hide_TargetFrame:Complete();			-- Show the Target Frame
 		self.Hide_StatusTrackingBar:Complete();	-- and show the status tracker
 	elseif C_QuestLog.ReadyForTurnIn(questID) then	-- Starting Quest is ready to turn in
@@ -154,6 +155,7 @@ function Tutorials:Quest_Accepted(questData)
 	local questID = questData.QuestID;
 	local tutorialData = TutorialHelper:GetFactionData();
 	local specQuestID = TutorialHelper:FilterByClass(tutorialData.SpecQuests);
+	local vendorQuestID = tutorialData.UseVendorQuest;
 
 	if (questID == tutorialData.StartingQuest) then
 		-- Starting Quest
@@ -180,6 +182,9 @@ function Tutorials:Quest_Accepted(questData)
 	elseif (questID == specQuestID) then
 		-- Spec Choice Quest
 		self.SpecTutorial:Begin();
+	elseif (questID == vendorQuestID) then
+		-- Use Vendor Quest
+		self.Vendor_Watcher:Begin();
 	elseif (questID == tutorialData.ShowAllUIQuest) then
 		-- Show All UI Quest
 		self.Hide_Backpack:Complete();

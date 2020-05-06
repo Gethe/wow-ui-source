@@ -182,6 +182,7 @@ ChatDocumentation.lua
 ClubSharedDocumentation.lua
 ColorDocumentation.lua
 CovenantsConstantsDocumentation.lua
+DamageConstantsDocumentation.lua
 GarrisonConstantsDocumentation.lua
 GarrisonSharedDocumentation.lua
 GuildInfoSharedDocumentation.lua

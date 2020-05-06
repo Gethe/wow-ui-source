@@ -45,6 +45,10 @@ function CovenantPreviewFrameMixin:OnShow()
 end
 
 function CovenantPreviewFrameMixin:OnHide()
+	if(self.showingFromPlayerChoice) then 
+		PlayerChoiceFrame.BlackBackground:Hide(); 
+	end 
+
 	self:Reset(); 
 	self:UnregisterEvent("COVENANT_PREVIEW_CLOSE");
 	C_CovenantPreview.CloseFromUI(); 
@@ -60,6 +64,7 @@ function CovenantPreviewFrameMixin:Reset()
 	self.lastAbility = nil;
 	self.previousRowOption = nil; 
 	self.uiTextureKit = nil; 
+	self.showingFromPlayerChoice = nil;
 end 
 
 function CovenantPreviewFrameMixin:SetupTextureKits(frame, regions, overrideTextureKit)
@@ -71,12 +76,21 @@ function CovenantPreviewFrameMixin:SetupTextureKits(frame, regions, overrideText
 end 
 
 function CovenantPreviewFrameMixin:SetupFramesWithTextureKit()
-	local nineSliceLayout = covenantNineSlice[self.uiTextureKit];
 
-	if(self.uiTextureKit and nineSliceLayout) then 
-		NineSliceUtil.ApplyLayoutByName(self.BorderFrame, nineSliceLayout);
+	if (not self.showingFromPlayerChoice) then 
+		local nineSliceLayout = covenantNineSlice[self.uiTextureKit];
+
+		if(self.uiTextureKit and nineSliceLayout) then 
+			NineSliceUtil.ApplyLayoutByName(self.BorderFrame, nineSliceLayout);
+		end
 	end
-
+	if(self.showingFromPlayerChoice) then 
+		PlayerChoiceFrame.BlackBackground:Show(); 
+	end 
+	self.NineSlice:SetShown(not self.showingFromPlayerChoice);
+	self.BorderFrame:SetShown(not self.showingFromPlayerChoice);
+	self.CloseButton:SetShown(not self.showingFromPlayerChoice);
+	self.SelectButton:SetShown(self.showingFromPlayerChoice);
 	self:SetupTextureKits(self.Title, titleTextureKitRegions, nineSliceLayout);
 	self:SetupTextureKits(self.Background, backgroundTextureKitRegions, nineSliceLayout);
 	self:SetupTextureKits(self.InfoPanel, infoPanelTextureKitRegions);
@@ -89,6 +103,7 @@ function CovenantPreviewFrameMixin:TryShow(covenantInfo)
 
 	self:Reset();
 	self.uiTextureKit = covenantInfo.textureKit; 
+	self.showingFromPlayerChoice = covenantInfo.fromPlayerChoice;
 	self.Title.Text:SetText(COVENANT_PREVIEW_TITLE:format(covenantInfo.covenantName)); 
 
 	self:SetupFramesWithTextureKit(); 

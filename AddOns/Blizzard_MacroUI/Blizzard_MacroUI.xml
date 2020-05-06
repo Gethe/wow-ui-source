@@ -214,28 +214,11 @@
 					<OnClick function="MacroFrameSaveButton_OnClick"/>
 				</Scripts>
 			</Button>
-			<Frame name="MacroFrameTextBackground">
+			<Frame name="MacroFrameTextBackground" inherits="TooltipBackdropTemplate">
 				<Size x="322" y="95"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="MacroFrame" x="6" y="-289"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-						self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 			<Button name="MacroFrameTab1" inherits="TabButtonTemplate" text="GENERAL_MACROS" id="1">
 				<Anchors>

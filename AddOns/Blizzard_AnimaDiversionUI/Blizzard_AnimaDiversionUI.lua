@@ -1,14 +1,34 @@
 local ANIMA_GEM_TEXTURE_INFO = "AnimaChannel-Bar-%s-Gem";
+local OVERRIDE_MODEL_SCENE_FRAME_LEVEL = 511; 
 local MAX_ANIMA_GEM_COUNT = 10; 
 
 AnimaDiversionFrameMixin = { }; 
+
+local bolsterGemTextureKitAnimationEffectId = {
+	["Kyrian"] = 24,
+	["NightFae"] = 30,
+	["Venthyr"] = 27,
+	["Necrolord"] = 33, 
+}; 
+
+local newGemTextureKitAnimationEffectId = {
+	["Kyrian"] = 23,
+	["NightFae"] = 29,
+	["Venthyr"] = 26,
+	["Necrolord"] = 32, 
+}; 
+
+local ANIMA_DIVERSION_FRAME_EVENTS = {
+	"ANIMA_DIVERSION_TALENT_UPDATED",
+	"CURRENCY_DISPLAY_UPDATE",
+};
 
 function AnimaDiversionFrameMixin:OnLoad() 
 	MapCanvasMixin.OnLoad(self);	
 	self:SetShouldZoomInOnClick(false);
 	self:SetShouldPanOnClick(false);
 	self:AddStandardDataProviders();
-	self.bolsterProgressGemPool = CreateTexturePool(self.ReinforceProgressFrame, "ARTWORK", AnimaDiversionBolsterProgressGem);
+	self.bolsterProgressGemPool = CreateFramePool("FRAME", self.ReinforceProgressFrame, "AnimaDiversionBolsterProgressGemTemplate");
 	self.SelectPinInfoFrame.currencyPool = CreateFramePool("FRAME", self.SelectPinInfoFrame, "AnimaDiversionCurrencyCostFrameTemplate");
 end 
 
@@ -18,14 +38,12 @@ function AnimaDiversionFrameMixin:OnShow()
 
 	self:ResetZoom();
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-	self:RegisterEvent("ANIMA_DIVERSION_CLOSE");
-	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
+	FrameUtil.RegisterFrameForEvents(self, ANIMA_DIVERSION_FRAME_EVENTS);
 end
 
 function AnimaDiversionFrameMixin:OnHide()
 	MapCanvasMixin.OnHide(self);
-	self:UnregisterEvent("ANIMA_DIVERSION_CLOSE");
-	self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
+	FrameUtil.UnregisterFrameForEvents(self, ANIMA_DIVERSION_FRAME_EVENTS);
 end 
 
 function AnimaDiversionFrameMixin:OnEvent(event, ...) 
@@ -34,6 +52,7 @@ function AnimaDiversionFrameMixin:OnEvent(event, ...)
 	elseif (event == "CURRENCY_DISPLAY_UPDATE") then 
 		self:SetupBolsterProgressBar(); 
 	end 
+	MapCanvasMixin.OnEvent(self, event, ...);
 end 
 
 function AnimaDiversionFrameMixin:CanReinforceNode() 
@@ -43,8 +62,21 @@ end
 function AnimaDiversionFrameMixin:SetupBolsterProgressBar()
 	self.bolsterProgressGemPool:ReleaseAll(); 
 	self.bolsterProgress = C_AnimaDiversion.GetReinforceProgress(); 
+	local effectID = nil; 
+	local isReinforceReady = self:CanReinforceNode(); 
+	if(isReinforceReady) then 
+		self.ReinforceProgressFrame.ModelScene:SetFromModelSceneID(343);
+		self.ReinforceProgressFrame.ModelScene:SetFrameLevel(OVERRIDE_MODEL_SCENE_FRAME_LEVEL);
+		effectID = bolsterGemTextureKitAnimationEffectId[self.uiTextureKit]; 
+	else 
+		self.ReinforceProgressFrame.ModelScene:ClearEffects();
+	end 
+	self.ReinforceProgressFrame.ModelScene:SetShown(isReinforceReady);
 	for i=1, math.min(MAX_ANIMA_GEM_COUNT, self.bolsterProgress) do 
 		self.lastGem = self:SetupBolsterGem(i); 
+		if(isReinforceReady and effectID) then 
+			self.ReinforceProgressFrame.ModelScene:AddEffect(effectID, self.lastGem, self.lastGem);
+		end 
 	end
 	self.ReinforceInfoFrame:Init(); 
 	self.ReinforceInfoFrame:SetShown(self:CanReinforceNode()); 
@@ -60,7 +92,7 @@ function AnimaDiversionFrameMixin:SetupBolsterGem(index)
 		gem:SetPoint("LEFT", self.lastGem, "RIGHT", -2, 0);	
 	end
 	local atlas = GetFinalNameFromTextureKit(ANIMA_GEM_TEXTURE_INFO, self.uiTextureKit);
-	gem:SetAtlas(atlas, true);
+	gem.Gem:SetAtlas(atlas, true);
 	gem:Show();
 	return gem;
 end 
@@ -68,6 +100,9 @@ end
 
 function AnimaDiversionFrameMixin:AddStandardDataProviders() 
 	self:AddDataProvider(CreateFromMixins(AnimaDiversionDataProviderMixin));
+	local pinFrameLevelsManager = self:GetPinFrameLevelsManager(); 
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ANIMA_DIVERSION_MODELSCENE_PIN");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ANIMA_DIVERSION_PIN");
 end 
 
 function AnimaDiversionFrameMixin:SetupTextureKits(frame, regions)

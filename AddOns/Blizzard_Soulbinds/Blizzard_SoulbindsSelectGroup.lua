@@ -8,13 +8,12 @@ SoulbindSelectGroupMixin:GenerateCallbackEvents(
 
 function SoulbindSelectGroupMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
-	ResizeLayoutMixin.OnLoad(self);
 
 	local resetterCb = function(pool, frame)
 		frame:Reset();
 		FramePool_HideAndClearAnchors(pool, frame);
 	end;
-	
+
 	self.pool = CreateFramePool("BUTTON", self, "SoulbindsSelectButtonTemplate", resetterCb);
 
 	self.buttonGroup = CreateRadioButtonGroup();
@@ -51,7 +50,7 @@ function SoulbindSelectGroupMixin:Init(covenantData, initialSelectSoulbindID)
 	self.buttonGroup:RegisterSelectedCallback(self.OnSoulbindSelected, self, soulbindIDs);
 	local isInitializing = true;
 	self.buttonGroup:SelectAtIndex(tIndexOf(soulbindIDs, initialSelectSoulbindID) or 1, isInitializing);
-	
+
 	self:UpdateActiveMarker();
 end
 

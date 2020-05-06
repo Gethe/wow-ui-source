@@ -2,10 +2,6 @@ NewPlayerExperience = {};
 
 -- ------------------------------------------------------------------------------------------------------------
 function NewPlayerExperience:Initialize()
-	--Flags all old tutorials to be complete 
-	for i = 1, 65 do 
-		FlagTutorial(i)
-	end 
 	self:Begin();
 end
 

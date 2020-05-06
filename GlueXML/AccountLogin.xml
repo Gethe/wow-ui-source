@@ -2,6 +2,14 @@
 ..\FrameXML\UI.xsd">
 	<Script file="AccountLogin.lua"/>
 
+	<Frame name="AccountLoginBackdropTemplate" inherits="TooltipBackdropTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_MIXED_TOOLTIP_16_16" type="global"/>
+			<KeyValue key="backdropColor" value="GLUE_BACKDROP_COLOR" type="global"/>
+			<KeyValue key="backdropBorderColor" value="GLUE_BACKDROP_BORDER_COLOR" type="global"/>
+		</KeyValues>
+	</Frame>
+
 	<Button name="AccountNameButton" virtual="true">
 		<Size x="250" y="20"/>
 		<Layers>
@@ -130,7 +138,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox parentKey="AccountEditBox" parentArray="NormalLoginRegions" letters="320">
+					<EditBox parentKey="AccountEditBox" parentArray="NormalLoginRegions" letters="320" inherits="AccountLoginBackdropTemplate">
 						<Size x="200" y="37"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="345"/>
@@ -160,17 +168,6 @@
 								</FontString>
 							</Layer>
 						</Layers>
-						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-							<BackgroundInsets>
-								<AbsInset left="10" right="5" top="4" bottom="9"/>
-							</BackgroundInsets>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-						</Backdrop>
 						<Scripts>
 							<OnTabPressed function="AccountLogin_FocusPassword"/>
 							<OnEscapePressed function="AccountLogin_Exit"/>
@@ -200,7 +197,7 @@
 							<AbsInset left="12" right="5" bottom="5"/>
 						</TextInsets>
 					</EditBox>
-					<EditBox parentKey="PasswordEditBox" parentArray="NormalLoginRegions" letters="128" password="1">
+					<EditBox parentKey="PasswordEditBox" parentArray="NormalLoginRegions" letters="128" password="1" inherits="AccountLoginBackdropTemplate">
 						<Size x="200" y="37"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="275"/>
@@ -221,17 +218,6 @@
 								</FontString>
 							</Layer>
 						</Layers>
-						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-							<BackgroundInsets>
-								<AbsInset left="10" right="5" top="4" bottom="9"/>
-							</BackgroundInsets>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-						</Backdrop>
 						<Scripts>
 							<OnTabPressed function="AccountLogin_FocusAccount"/>
 							<OnEscapePressed function="AccountLogin_Exit"/>
@@ -410,22 +396,14 @@
 								</Layers>
 								<Frames>
 									<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-									<Frame parentKey="Container">
+									<Frame parentKey="Container" inherits="BackdropTemplate">
 										<Anchors>
 											<Anchor point="TOPLEFT" x="12" y="-52"/>
 											<Anchor point="BOTTOMRIGHT" x="-16" y="36"/>
 										</Anchors>
-										<Backdrop edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-											<BackgroundInsets>
-												<AbsInset left="10" right="5" top="4" bottom="9"/>
-											</BackgroundInsets>
-											<TileSize>
-												<AbsValue val="16"/>
-											</TileSize>
-											<EdgeSize>
-												<AbsValue val="16"/>
-											</EdgeSize>
-										</Backdrop>
+										<KeyValues>
+											<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_0_16" type="global"/>
+										</KeyValues>
 										<Frames>
 											<Button parentKey="Button1" parentArray="Buttons" inherits="AccountNameButton">
 												<Anchors>
@@ -560,7 +538,7 @@
 								</Layers>
 								<Frames>
 									<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-									<EditBox parentKey="EditBox" letters="16">
+									<EditBox parentKey="EditBox" letters="16" inherits="AccountLoginBackdropTemplate">
 										<Size x="160" y="37"/>
 										<Anchors>
 											<Anchor point="TOP" relativeKey="$parent.CaptchaImage" relativePoint="BOTTOM" x="0" y="-16"/>
@@ -575,17 +553,6 @@
 												</FontString>
 											</Layer>
 										</Layers>
-										<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-											<BackgroundInsets>
-												<AbsInset left="10" right="5" top="4" bottom="9"/>
-											</BackgroundInsets>
-											<TileSize>
-												<AbsValue val="16"/>
-											</TileSize>
-											<EdgeSize>
-												<AbsValue val="16"/>
-											</EdgeSize>
-										</Backdrop>
 										<Scripts>
 											<OnEscapePressed function="CaptchaEntry_Cancel"/>
 											<OnEnterPressed function="CaptchaEntry_Okay"/>
@@ -623,7 +590,6 @@
 							</Frame>
 						</Frames>
 						<Scripts>
-							<OnLoad function="CaptchaEntry_OnLoad"/>
 							<OnShow function="CaptchaEntry_OnShow"/>
 							<OnHide function="CaptchaEntry_OnHide"/>
 							<OnKeyDown function="CaptchaEntry_OnKeyDown"/>
@@ -659,7 +625,7 @@
 								</Layers>
 								<Frames>
 									<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-									<EditBox parentKey="EditBox" letters="16">
+									<EditBox parentKey="EditBox" letters="16" inherits="AccountLoginBackdropTemplate">
 										<Size x="160" y="37"/>
 										<Anchors>
 											<Anchor point="CENTER"/>
@@ -674,17 +640,6 @@
 												</FontString>
 											</Layer>
 										</Layers>
-										<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-											<BackgroundInsets>
-												<AbsInset left="10" right="5" top="4" bottom="9"/>
-											</BackgroundInsets>
-											<TileSize>
-												<AbsValue val="16"/>
-											</TileSize>
-											<EdgeSize>
-												<AbsValue val="16"/>
-											</EdgeSize>
-										</Backdrop>
 										<Scripts>
 											<OnEscapePressed function="TokenEntry_Cancel"/>
 											<OnEnterPressed function="TokenEntry_Okay"/>
@@ -722,7 +677,6 @@
 							</Frame>
 						</Frames>
 						<Scripts>
-							<OnLoad function="TokenEntry_OnLoad"/>
 							<OnShow function="TokenEntry_OnShow"/>
 							<OnHide function="TokenEntry_OnHide"/>
 							<OnKeyDown function="TokenEntry_OnKeyDown"/>

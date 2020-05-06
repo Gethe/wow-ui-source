@@ -35,7 +35,6 @@ PTR_IssueReporter.Data = {
 }
 
 PTR_IssueReporter.Assets = {
-    TestBorder = "Interface\\DialogFrame\\UI-DialogBox-TestWatermark-Border",
     InfoIcon = "Interface\\FriendsFrame\\InformationIcon.blp",
     InfoIconHighlight = "Interface\\FriendsFrame\\InformationIcon-Highlight.blp",
     ConfusedIcon = "Interface\\TutorialFrame\\TutorialFrame-QuestionMark",

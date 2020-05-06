@@ -388,7 +388,7 @@ function GuildMicroButtonMixin:EvaluateAlertVisibility()
 			self.showOfflineJoinAlert = false;
 		end
 	elseif (self:ShouldShowAlert()) then 
-		alertShown = MainMenuMicroButton_ShowAlert(self, CLUB_FINDER_NEW_FEATURE_TUTORIAL, LE_FRAME_TUTORIAL_ACCCOUNT_CLUB_FINDER_NEW_FEATURE);
+		alertShown = MainMenuMicroButton_ShowAlert(self, CLUB_FINDER_NEW_FEATURE_TUTORIAL, LE_FRAME_TUTORIAL_ACCCOUNT_CLUB_FINDER_NEW_FEATURE, "closedInfoFramesAccountWide");
 	end
 	return alertShown;
 end 
@@ -699,7 +699,7 @@ local function MainMenuMicroButton_OnAlertClose(acknowledged, microButton)
 	MainMenuMicroButton_UpdateAlertsEnabled(microButton);
 end
 
-function MainMenuMicroButton_ShowAlert(microButton, text, tutorialIndex)
+function MainMenuMicroButton_ShowAlert(microButton, text, tutorialIndex, cvarBitfield)
 	if not MainMenuMicroButton_AreAlertsEnabled() then
 		return false;
 	end
@@ -708,7 +708,8 @@ function MainMenuMicroButton_ShowAlert(microButton, text, tutorialIndex)
 		return false;
 	end
 
-	if tutorialIndex and GetCVarBitfield("closedInfoFrames", tutorialIndex) then
+	cvarBitfield = cvarBitfield or "closedInfoFrames";
+	if tutorialIndex and GetCVarBitfield(cvarBitfield, tutorialIndex) then
 		return false;
 	end
 
@@ -736,7 +737,7 @@ function MainMenuMicroButton_ShowAlert(microButton, text, tutorialIndex)
 		autoHorizontalSlide = true,
 	};
 	if tutorialIndex then
-		helpTipInfo.cvarBitfield =  "closedInfoFrames";
+		helpTipInfo.cvarBitfield = cvarBitfield;
 		helpTipInfo.bitfieldFlag = tutorialIndex;
 	end
 

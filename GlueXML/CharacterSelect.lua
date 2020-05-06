@@ -155,11 +155,6 @@ function CharacterSelect_OnLoad(self)
 
     SetCharSelectModelFrame("CharacterSelectModel");
 
-    -- Color edit box backdrops
-    local backdropColor = DEFAULT_TOOLTIP_COLOR;
-    CharacterSelectCharacterFrame:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
-    CharacterSelectCharacterFrame:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6], 0.85);
-
     CHARACTER_LIST_OFFSET = 0;
 
 	LoadAddOn("Blizzard_CharacterCustomize");
@@ -788,7 +783,7 @@ function UpdateCharacterList(skipSelect)
 
     for i=1, characterLimit, 1 do
 		local characterIndex = i + CHARACTER_LIST_OFFSET;
-	    local name, race, _, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked, isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, _, lastLoginBuild, _, isExpansionTrialCharacter, faction, lockedByExpansion, mailSenders = GetCharacterInfo(GetCharIDFromIndex(characterIndex));
+	    local name, race, _, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked, isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, _, lastLoginBuild, _, isExpansionTrialCharacter, faction, lockedByExpansion, mailSenders, PCCDisabled, PFCDisabled = GetCharacterInfo(GetCharIDFromIndex(characterIndex));
 		local productID, vasServiceState, vasServiceErrors, productInfo;
         if (guid) then
             productID, vasServiceState, vasServiceErrors = C_StoreGlue.GetVASPurchaseStateInfo(guid);
@@ -998,8 +993,9 @@ function UpdateCharacterList(skipSelect)
             paidServiceButton.VASIcon:SetTexture("Interface\\Icons\\VAS_FactionChange");
             paidServiceButton.VASIcon:Show();
             paidServiceButton.texture:Hide();
+            disableService = PFCDisabled;
             paidServiceButton.tooltip = PAID_FACTION_CHANGE_TOOLTIP;
-            paidServiceButton.disabledTooltip = nil;
+            paidServiceButton.disabledTooltip = PAID_FACTION_CHANGE_DISABLED_TOOLTIP;
         elseif ( PRC ) then
             serviceType = PAID_RACE_CHANGE;
             paidServiceButton.GoldBorder:Show();
@@ -1015,8 +1011,9 @@ function UpdateCharacterList(skipSelect)
             paidServiceButton.VASIcon:SetTexture("Interface\\Icons\\VAS_AppearanceChange");
             paidServiceButton.VASIcon:Show();
             paidServiceButton.texture:Hide();
+            disableService = PCCDisabled;
             paidServiceButton.tooltip = PAID_CHARACTER_CUSTOMIZE_TOOLTIP;
-            paidServiceButton.disabledTooltip = nil;
+            paidServiceButton.disabledTooltip = PAID_CHARACTER_CUSTOMIZE_DISABLED_TOOLTIP;
         end
         if ( serviceType ) then
             debugText = debugText.." "..(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));

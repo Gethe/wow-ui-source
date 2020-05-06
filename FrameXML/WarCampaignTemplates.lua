@@ -1,10 +1,5 @@
 CampaignTooltipMixin = {};
 
-function CampaignTooltipMixin:OnLoad()
-	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-end
-
 function CampaignTooltipMixin:OnShow()
 	self.ticker = C_Timer.NewTicker(0.25, function()
 		self:SetCampaign(self.campaign);

@@ -964,21 +964,13 @@
 		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 	</Button>
 
-	<Slider name="HorizontalSliderTemplate" orientation="HORIZONTAL" enableMouse="true" virtual="true">
+	<Slider name="HorizontalSliderTemplate" orientation="HORIZONTAL" enableMouse="true" virtual="true" inherits="BackdropTemplate">
 		<HitRectInsets>
 			<AbsInset left="0" right="0" top="-10" bottom="-10"/>
 		</HitRectInsets>
-		<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="8"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="8"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="3" right="3" top="6" bottom="6"/>
-			</BackgroundInsets>
-		</Backdrop>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_SLIDER_8_8" type="global"/>
+		</KeyValues>
 		<ThumbTexture parentKey="Thumb" name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
 			<Size x="32" y="32"/>
 		</ThumbTexture>
@@ -1122,28 +1114,15 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame name="$parentBorder">
+			<Frame name="$parentBorder" inherits="TooltipBorderBackdropTemplate">
 				<Size x="24" y="0"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentScrollUpButton" x="-5" y="5"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentScrollDownButton" x="5" y="-3"/>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="12"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="0" right="0" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-					</OnLoad>
-				</Scripts>
+				<KeyValues>
+					<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
+				</KeyValues>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -1249,74 +1228,35 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame parentKey="ScrollUpBorder">
+			<Frame parentKey="ScrollUpBorder" inherits="TooltipBorderBackdropTemplate">
 				<Size x="24" y="0"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollUpButton" x="-5" y="5"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollUpButton" x="5" y="-3"/>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="12"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="0" right="0" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-					</OnLoad>
-				</Scripts>
+				<KeyValues>
+					<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
+				</KeyValues>
 			</Frame>
-			<Frame parentKey="ScrollDownBorder">
+			<Frame parentKey="ScrollDownBorder" inherits="TooltipBorderBackdropTemplate">
 				<Size x="24" y="0"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollDownButton" x="-5" y="5"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollDownButton" x="5" y="-3"/>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="12"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="0" right="0" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-					</OnLoad>
-				</Scripts>
+				<KeyValues>
+					<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
+				</KeyValues>
 			</Frame>
-			<Frame parentKey="Border">
+			<Frame parentKey="Border" inherits="TooltipBorderBackdropTemplate">
 				<Size x="24" y="0"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollUpButton" x="-5" y="5"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollDownButton" x="5" y="-3"/>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="12"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="0" right="0" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-					</OnLoad>
-				</Scripts>
+				<KeyValues>
+					<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
+				</KeyValues>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -2029,6 +1969,13 @@
 		<NormalFont style="GameFontNormal"/>
 		<HighlightFont style="GameFontHighlight"/>
 		<DisabledFont style="GameFontDisable"/>
+	</Button>
+
+	<Button name="SharedButtonLargeTemplate" inherits="BigRedThreeSliceButtonTemplate" virtual="true">
+		<Size x="200" y="30"/>
+		<NormalFont style="GameFontNormalMed3"/>
+		<HighlightFont style="GameFontHighlightMedium"/>
+		<DisabledFont style="GameFontDisableMed3"/>
 	</Button>
 
 	<Button name="SharedButtonSmallTemplate" inherits="BigRedThreeSliceButtonTemplate" virtual="true">

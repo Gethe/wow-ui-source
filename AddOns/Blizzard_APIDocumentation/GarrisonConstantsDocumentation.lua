@@ -118,13 +118,14 @@ local GarrisonConstants =
 		{
 			Name = "GarrTalentCostType",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "Initial", Type = "GarrTalentCostType", EnumValue = 0 },
 				{ Name = "Respec", Type = "GarrTalentCostType", EnumValue = 1 },
+				{ Name = "MakePermanent", Type = "GarrTalentCostType", EnumValue = 2 },
 			},
 		},
 		{

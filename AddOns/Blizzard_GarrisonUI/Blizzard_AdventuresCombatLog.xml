@@ -4,7 +4,7 @@
 	<Script file="Blizzard_AdventuresCombatLog.lua"/>
 
 	<Frame name="CombatLogTemplate" inherits="GarrisonMissionBaseFrameTemplate" mixin="AdventuresCombatLogMixin" virtual="true">
-		<Size x="320" y="540"/>
+		<Size x="320" y="580"/>
 		<Frames>
 			<ScrollingMessageFrame parentKey="CombatLogMessageFrame" enableMouse="true">
 				<Anchors>

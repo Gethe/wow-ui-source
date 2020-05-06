@@ -45,9 +45,9 @@ TutorialData.LevelAbilitiesTable = {
 		1833,	-- Cheap Shot, level 4
 		2983,	-- Sprint, level 5
 		1766,	-- Kick, level 6
-		921,	-- Pick Pocket, level 7
+		8676,	-- Ambush, level 7
 		185311,	-- Crimson Vial, level 8
-		1804,	-- Pick Lock, level 9
+		315496,	-- Slice and Dice, level 9
 	};
 	PRIEST = {
 		585,	-- Start with Smite
@@ -68,7 +68,7 @@ TutorialData.LevelAbilitiesTable = {
 		2484,	-- Earthbind Totem, level 5
 		nil,	-- 318044,	Lightning Bolt Rank 2, level 6
 		318038,	-- Flametongue Weapon, level 7
-		nil,	--20608,-- Reincarnation, level 8
+		nil,	-- 20608,-- Reincarnation, level 8
 		3599,	-- Searing Totem, level 9
 	};
 	MAGE = {
@@ -102,7 +102,7 @@ TutorialData.LevelAbilitiesTable = {
 		119381,	-- Leg Sweep, level 6
 		101546,	-- Spinning Crane Kick, level 7
 		322101,	-- Expel Harm, level 8
-		115078,	-- Paralysis, level 9
+		nil,	-- 328669, Roll Rank 2, level 9
 	};
 	DRUID = {
 		5176,	-- Start with Wrath
@@ -329,6 +329,8 @@ TutorialData.Alliance = {
 	FoodItem = 117;
 	FoodSpellCast = 433;
 
+	UseVendorQuest = 55194;
+
 	LookingForGroupQuest = 55992;
 	
 	GetMountQuest = 58909;
@@ -441,6 +443,8 @@ TutorialData.Horde = {
 	UseFoodQuest = 59932;
 	FoodItem = 117;
 	FoodSpellCast = 433;
+
+	UseVendorQuest = 59950;
 
 	LookingForGroupQuest = 59984;
 	

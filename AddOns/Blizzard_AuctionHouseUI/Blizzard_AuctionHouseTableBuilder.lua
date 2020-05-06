@@ -169,7 +169,7 @@ function AuctionHouseTableCellCommoditiesQuantityMixin:Init(...)
 end
 
 function AuctionHouseTableCellCommoditiesQuantityMixin:Populate(rowData, dataIndex)
-	self.Text:SetText(rowData.quantity);
+	self.Text:SetText(BreakUpLargeNumbers(rowData.quantity));
 end
 
 
@@ -291,6 +291,9 @@ function AuctionHouseTableCellBidMixin:Populate(rowData, dataIndex)
 		self:UpdateWidth(rowData, dataIndex);
 		self:UpdateTextColor(rowData, dataIndex);
 	end
+
+	local hasBuyout = rowData.buyoutAmount ~= nil;
+	self.Checkmark:SetShown(not hasBuyout and rowData.containsOwnerItem);
 end
 
 function AuctionHouseTableCellBidMixin:UpdateTextColor(rowData, dataIndex)
@@ -312,7 +315,7 @@ function AuctionHouseTableCellBuyoutMixin:Populate(rowData, dataIndex)
 		self:UpdateWidth(rowData, dataIndex);
 	end
 
-	self.Checkmark:SetShown(rowData.containsOwnerItem);
+	self.Checkmark:SetShown(hasBuyout and rowData.containsOwnerItem);
 end
 
 function AuctionHouseTableCellBuyoutMixin:UpdateWidth(rowData, dataIndex)
@@ -676,7 +679,7 @@ AuctionHouseTableCellQuantityMixin = CreateFromMixins(AuctionHouseTableCellMixin
 function AuctionHouseTableCellQuantityMixin:Populate(rowData, dataIndex)
 	local noneAvailable = self.rowData.totalQuantity == 0;
 	self.Text:SetFontObject(noneAvailable and PriceFontGray or PriceFontWhite);
-	self.Text:SetText(rowData.totalQuantity);
+	self.Text:SetText(BreakUpLargeNumbers(rowData.totalQuantity));
 end
 
 
@@ -733,7 +736,7 @@ function AuctionHouseTableCellItemQuantityMixin:Populate(rowData, dataIndex)
 		self.Text:SetText(AuctionHouseUtil.GetBidTextFromStatus(bidStatus));
 		self.Text:SetFontObject(Number13FontGray);
 	else
-		self.Text:SetText(rowData.quantity);
+		self.Text:SetText(BreakUpLargeNumbers(rowData.quantity));
 		self.Text:SetFontObject(PriceFontWhite);
 	end
 end
@@ -853,7 +856,7 @@ function AuctionHouseTableBuilder.GetBidsListLayout(owner, itemList)
 		tableBuilder:AddFillColumn(owner, 0, 1.0, 10, 0, Enum.AuctionHouseSortOrder.Name, "AuctionHouseTableCellAuctionsItemDisplayTemplate");
 		tableBuilder:AddFixedWidthColumn(owner, PRICE_DISPLAY_PADDING, PRICE_DISPLAY_WIDTH, 10, 0, Enum.AuctionHouseSortOrder.Bid, "AuctionHouseTableCellAllAuctionsBidTemplate");
 		tableBuilder:AddFixedWidthColumn(owner, BUYOUT_DISPLAY_PADDING, PRICE_DISPLAY_WIDTH, 10, 0, Enum.AuctionHouseSortOrder.Buyout, "AuctionHouseTableCellAllAuctionsBuyoutTemplate");
-		tableBuilder:AddFixedWidthColumn(owner, 0, 115, 0, 10, nil, "AuctionHouseTableCellTimeLeftBandTemplate");
+		tableBuilder:AddFixedWidthColumn(owner, 0, 140, 0, 10, nil, "AuctionHouseTableCellTimeLeftBandTemplate");
 	end
 
 	return LayoutBidsListTableBuilder;
@@ -886,7 +889,7 @@ function AuctionHouseTableBuilder.GetCommoditiesAuctionsListLayout(owner, itemLi
 
 		tableBuilder:AddUnsortableFixedWidthColumn(owner, PRICE_DISPLAY_PADDING, PRICE_DISPLAY_WITH_CHECKMARK_WIDTH, 10, 0, AUCTION_HOUSE_HEADER_UNIT_PRICE, "AuctionHouseTableCellAuctionsUnitPriceTemplate");
 
-		tableBuilder:AddFixedWidthColumn(owner, 0, 40, 0, 0, nil, "AuctionHouseTableCellAuctionsCommoditiesQuantityTemplate");
+		tableBuilder:AddFixedWidthColumn(owner, 0, 60, 0, 0, nil, "AuctionHouseTableCellAuctionsCommoditiesQuantityTemplate");
 		tableBuilder:AddFillColumn(owner, 0, 1.0, 0, 0, nil, "AuctionHouseTableEmptyTemplate");
 		tableBuilder:AddFixedWidthColumn(owner, 0, 90, 0, 0, nil, "AuctionHouseTableCellAuctionsOwnersTemplate");
 		tableBuilder:AddFixedWidthColumn(owner, 0, 60, 0, 10, nil, "AuctionHouseTableCellTimeLeftTemplate");
@@ -959,7 +962,7 @@ function AuctionHouseTableBuilder.GetItemBuyListLayout(owner, itemList)
 
 		tableBuilder:AddFillColumn(owner, 0, 1.0, STANDARD_PADDING, 0, nil, "AuctionHouseTableCellItemQuantityLeftTemplate");
 		tableBuilder:AddFixedWidthColumn(owner, 0, 24, 0, 0, nil, "AuctionHouseTableCellExtraInfoTemplate");
-		tableBuilder:AddFixedWidthColumn(owner, 0, 115, STANDARD_PADDING, STANDARD_PADDING, nil, "AuctionHouseTableCellTimeLeftBandTemplate");
+		tableBuilder:AddFixedWidthColumn(owner, 0, 140, STANDARD_PADDING, STANDARD_PADDING, nil, "AuctionHouseTableCellTimeLeftBandTemplate");
 	end
 
 	return LayoutItemBuyListTableBuilder;

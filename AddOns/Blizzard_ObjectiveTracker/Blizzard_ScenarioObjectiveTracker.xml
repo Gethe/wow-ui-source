@@ -719,7 +719,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ScenarioStepRewardTooltip" inherits="VerticalLayoutFrame" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
+	<Frame name="ScenarioStepRewardTooltip" inherits="VerticalLayoutFrame, TooltipBackdropTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="100" type="number"/>
 			<KeyValue key="expand" value="true" type="boolean"/>
@@ -729,11 +729,6 @@
 			<KeyValue key="rightPadding" value="10" type="number"/>
 			<KeyValue key="spacing" value="8" type="number"/>
 		</KeyValues>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize val="16"/>
-			<TileSize val="16"/>
-			<BackgroundInsets left="5" right="5" top="5" bottom="5"/>
-		</Backdrop>
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT"/>
 		</Anchors>
@@ -762,12 +757,6 @@
 				</Scripts>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad>
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-			</OnLoad>
-		</Scripts>
 	</Frame>
 
 </Ui>

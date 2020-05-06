@@ -37,7 +37,7 @@ GlueDialogTypes["CHARACTER_CREATE_FAILURE"] = {
     end,
 }
 
-CharacterCreateMixin = {};
+CharacterCreateMixin = CreateFromMixins(CharCustomizeParentFrameBaseMixin);
 
 function CharacterCreateMixin:OnLoad()
 	self:RegisterEvent("CHARACTER_CREATION_RESULT");
@@ -125,10 +125,14 @@ end
 function CharacterCreateMixin:OnShow()
 	C_CharacterCreation.SetInCharacterCreate(true);
 
+	local selectedFaction;
 	if self.paidServiceType then
 		C_CharacterCreation.CustomizeExistingCharacter(self.paidServiceCharacterID);
-		NameChoiceFrame.EditBox:SetText(C_PaidServices.GetName());
+		self.currentPaidServiceName = C_PaidServices.GetName();
+		selectedFaction = C_PaidServices.GetCurrentFaction();
+		NameChoiceFrame.EditBox:SetText(self.currentPaidServiceName);
 	else
+		self.currentPaidServiceName = nil;
 		C_CharacterCreation.ResetCharCustomize();
 		NameChoiceFrame.EditBox:SetText("");
 	end
@@ -136,7 +140,7 @@ function CharacterCreateMixin:OnShow()
 	local instantRotate = true;
 	self:SetMode(CHAR_CREATE_MODE_CLASS_RACE, instantRotate);
 
-	RaceAndClassFrame:UpdateState();
+	RaceAndClassFrame:UpdateState(selectedFaction);
 end
 
 function CharacterCreateMixin:OnHide()
@@ -403,7 +407,7 @@ function CharacterCreateMixin:SetCustomizationChoice(optionID, choiceID)
 	C_CharacterCreation.SetCustomizationChoice(optionID, choiceID);
 
 	-- When a customization choice is made, that may force other options to change (if the current choices are no longer valid)
-	-- So grab all the latest data and update CharCustomizationFrame 
+	-- So grab all the latest data and update CharCustomizationFrame
 	self:UpdateCharCustomizationFrame();
 end
 
@@ -699,39 +703,7 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedSexID, selecte
 	self:SetNormalAtlas(atlas);
 	self:SetPushedAtlas(atlas);
 
-	local buttonEnabled = false;
-	if CharacterCreateFrame.paidServiceType == PAID_CHARACTER_CUSTOMIZATION then
-		buttonEnabled = (selectedRaceID == raceData.raceID and selectedFaction == self.faction);
-	elseif CharacterCreateFrame.paidServiceType == PAID_FACTION_CHANGE then
-		local currentFaction = C_PaidServices.GetCurrentFaction();
-		local currentClass = C_PaidServices.GetCurrentClassID();
-
-		if currentFaction ~= self.faction and C_CharacterCreation.IsRaceClassValid(raceData.raceID, currentClass) then
-			buttonEnabled = true;
-		elseif selectedRaceID == raceData.raceID and selectedFaction == self.faction then
-			-- The player is doing a faction change and this is their current race
-			-- Enable the button for now, but don't let the player nav forward (it will be disabled as soon as they select an eligible race)
-			buttonEnabled = true;
-			CharacterCreateFrame:AddNavBlocker(CHAR_FACTION_CHANGE_SWAP_FACTION);
-		end
-	elseif CharacterCreateFrame.paidServiceType == PAID_RACE_CHANGE then
-		local currentFaction = C_PaidServices.GetCurrentFaction();
-		local currentRace = C_PaidServices.GetCurrentRaceID();
-		local currentClass = C_PaidServices.GetCurrentClassID();
-
-		if currentFaction == self.faction and currentRace ~= raceData.raceID and C_CharacterCreation.IsRaceClassValid(raceData.raceID, currentClass) then
-			buttonEnabled = true;
-		elseif selectedRaceID == raceData.raceID and selectedFaction == self.faction then
-			-- The player is doing a race change and this is their current race
-			-- Enable the button for now, but don't let the player nav forward (it will be disabled as soon as they select an eligible race)
-			buttonEnabled = true;
-			CharacterCreateFrame:AddNavBlocker(CHAR_FACTION_CHANGE_CHOOSE_RACE);
-		end
-	else
-		buttonEnabled = raceData.enabled;
-	end
-
-	self:SetEnabledState(buttonEnabled);
+	self:SetEnabledState(RaceAndClassFrame:IsRaceValid(raceData, self.faction));
 
 	self:ClearTooltipLines();
 	self:AddTooltipLine(raceData.name, HIGHLIGHT_FONT_COLOR);
@@ -845,7 +817,7 @@ function CharacterCreateRaceAndClassMixin:GetCreateCharacterFaction()
 		-- Class Trials need to use no faction...their faction choice is sent up separately after the character is created
 		return nil;
 	elseif self.selectedRaceData.isNeutralRace then
-		if C_CharacterCreation.IsUsingCharacterTemplate() or self.selectedClassData.earlyFactionChoice or ZoneChoiceFrame.useNPE then
+		if C_CharacterCreation.IsUsingCharacterTemplate() or self.selectedClassData.earlyFactionChoice or ZoneChoiceFrame.useNPE or CharacterCreateFrame.paidServiceType then
 			-- For neutral races, if the player is using a character template, selected an earlyFactionChoice class (DK) or chose to start in the NPE we need to pass back the selected faction
 			return self.selectedFaction;
 		else
@@ -872,8 +844,6 @@ function CharacterCreateRaceAndClassMixin:OnShow()
 
 	self:SetupTargetDummies(true);
 	self:PlayClassAnimations(true);
-
-	self:UpdateState();
 end
 
 function CharacterCreateRaceAndClassMixin:OnHide()
@@ -902,6 +872,12 @@ function CharacterCreateRaceAndClassMixin:UpdateState(selectedFaction)
 		self.selectedFaction = selectedFaction;
 	elseif not self.selectedRaceData.isNeutralRace then
 		self.selectedFaction = self.selectedRaceData.factionInternalName;
+	end
+
+	if not self:IsRaceValid(self.selectedRaceData, self.selectedFaction) then
+		local randomRaceData = self:GetRandomValidRaceData();
+		self:SetCharacterRace(randomRaceData.raceID, randomRaceData.factionInternalName)
+		return;
 	end
 
 	self.selectedClassData = C_CharacterCreation.GetSelectedClass();
@@ -966,6 +942,50 @@ function CharacterCreateRaceAndClassMixin:LayoutButtons()
 	self.Classes:MarkDirty();
 end
 
+function CharacterCreateRaceAndClassMixin:IsRaceValid(raceData, faction)
+	if not raceData.enabled then
+		return false;
+	end
+
+	if CharacterCreateFrame.paidServiceType == PAID_CHARACTER_CUSTOMIZATION then
+		local notForPaidService = false;
+		local currentRace = C_PaidServices.GetCurrentRaceID(notForPaidService);
+		local currentFaction = C_PaidServices.GetCurrentFaction();
+		return (currentRace == raceData.raceID and currentFaction == faction);
+	elseif CharacterCreateFrame.paidServiceType == PAID_FACTION_CHANGE then
+		local currentFaction = C_PaidServices.GetCurrentFaction();
+		local currentClass = C_PaidServices.GetCurrentClassID();
+		return (currentFaction ~= faction and C_CharacterCreation.IsRaceClassValid(raceData.raceID, currentClass));
+	elseif CharacterCreateFrame.paidServiceType == PAID_RACE_CHANGE then
+		local currentFaction = C_PaidServices.GetCurrentFaction();
+		local notForPaidService = false;
+		local currentRace = C_PaidServices.GetCurrentRaceID(notForPaidService);
+		local currentClass = C_PaidServices.GetCurrentClassID();
+		return (currentFaction == faction and currentRace ~= raceData.raceID and C_CharacterCreation.IsRaceClassValid(raceData.raceID, currentClass));
+	end
+
+	return true;
+end
+
+function CharacterCreateRaceAndClassMixin:GetAllValidRaces()
+	local validRaces = {};
+
+	local races = C_CharacterCreation.GetAvailableRaces(Enum.CharacterCreateRaceMode.AllRaces);
+	for _, raceData in ipairs(races) do
+		if self:IsRaceValid(raceData, raceData.factionInternalName) then
+			table.insert(validRaces, raceData);
+		end
+	end
+
+	return validRaces;
+end
+
+function CharacterCreateRaceAndClassMixin:GetRandomValidRaceData()
+	local validRaces = self:GetAllValidRaces();
+	local randomIndex = math.random(1, #validRaces);
+	return validRaces[randomIndex];
+end
+
 function CharacterCreateRaceAndClassMixin:UpdateButtons()
 	self.buttonPool:ReleaseAll();
 	self.frameCount = {};
@@ -1010,7 +1030,6 @@ end
 CharacterCreateFactionHeaderMixin = {};
 
 function CharacterCreateFactionHeaderMixin:OnLoad()
-	ResizeLayoutMixin.OnLoad(self);
 	CharCustomizeFrameWithTooltipMixin.OnLoad(self);
 end
 
@@ -1053,7 +1072,6 @@ end
 CharacterCreateRacialAbilityListMixin = {}
 
 function CharacterCreateRacialAbilityListMixin:OnLoad()
-	BaseLayoutMixin.OnLoad(self);
 	self.buttonPool = CreateFramePool("FRAME", self, "CharacterCreateFrameRacialAbilityTemplate");
 end
 
@@ -1122,6 +1140,10 @@ function CharacterCreateNameAvailabilityStateMixin:OnLoad()
 end
 
 function CharacterCreateNameAvailabilityStateMixin:OnHide()
+	if self.Timer then
+		self.Timer:Cancel();
+	end
+	
 	if self.navBlocker then
 		CharacterCreateFrame:RemoveNavBlocker(self.navBlocker);
 	end
@@ -1164,7 +1186,7 @@ function CharacterCreateNameAvailabilityStateMixin:CheckName(nameToCheck)
 		C_CharacterCreation.RequestCheckNameAvailability(nameToCheck);
 	end
 
-	if nameToCheck == self.lastRandomName then
+	if nameToCheck == self.lastRandomName or nameToCheck == CharacterCreateFrame.currentPaidServiceName then
 		self:UpdateState(true);
 	else
 		self.Timer = C_Timer.NewTimer(CHECK_NAME_WAIT_TIME_SECONDS, checkName);
@@ -1176,11 +1198,12 @@ function CharacterCreateNameAvailabilityStateMixin:UpdateNavBlocker(navBlocker)
 		CharacterCreateFrame:RemoveNavBlocker(self.navBlocker);
 	end
 
-	if navBlocker then
+	if self:IsShown() and navBlocker then
 		CharacterCreateFrame:AddNavBlocker(navBlocker);
+		self.navBlocker = navBlocker;
+	else
+		self.navBlocker = nil;
 	end
-
-	self.navBlocker = navBlocker;
 end
 
 function CharacterCreateNameAvailabilityStateMixin:UpdateState(available, failureReason)
@@ -1214,7 +1237,6 @@ end
 CharacterCreateClassTrialSpecsMixin = {};
 
 function CharacterCreateClassTrialSpecsMixin:OnLoad()
-	BaseLayoutMixin.OnLoad(self);
 	self.specButtonPool = CreateFramePool("CHECKBUTTON", self, "CharacterCreateSpecButtonTemplate");
 end
 

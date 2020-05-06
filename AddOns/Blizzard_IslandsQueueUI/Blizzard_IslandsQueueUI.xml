@@ -141,7 +141,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame parentKey="Tooltip" inherits="VerticalLayoutFrame" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
+					<Frame parentKey="Tooltip" inherits="VerticalLayoutFrame, TooltipBackdropTemplate" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="0" y="0"/>
 						</Anchors>
@@ -154,11 +154,6 @@
 							<KeyValue key="rightPadding" value="5" type="number"/>
 							<KeyValue key="spacing" value="8" type="number"/>
 						</KeyValues>
-						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-							<EdgeSize val="16"/>
-							<TileSize val="16"/>
-							<BackgroundInsets left="5" right="5" top="5" bottom="5"/>
-						</Backdrop>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT"/>
 						</Anchors>
@@ -176,12 +171,6 @@
 								</Scripts>
 							</Frame>
 						</Frames>
-						<Scripts>
-							<OnLoad>
-								self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-								self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-							</OnLoad>
-						</Scripts>
 					</Frame>
 				</Frames>
 				<Scripts>

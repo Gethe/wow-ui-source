@@ -56,11 +56,6 @@ function FloatingGarrisonFollower_Show(floatingTooltip, garrisonFollowerID, foll
 	end
 end
 
-function GarrisonFollowerTooltip_OnLoad(self)
-	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-end
-
 function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data, xpWidth)
 	tooltipFrame.garrisonFollowerID = data.garrisonFollowerID;
 	tooltipFrame.name = data.name;

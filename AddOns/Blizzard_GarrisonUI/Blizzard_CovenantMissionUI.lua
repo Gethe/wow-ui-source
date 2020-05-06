@@ -88,9 +88,9 @@ function CovenantMission:OnLoadMainFrame()
 
 	self.TitleText:Hide();
 
-	self:UpdateCurrency();
 	self:SetupMissionList();
 	self:SetupCompleteDialog();
+	self:UpdateCurrencyInfo();
 	self:UpdateTextures();
 	PanelTemplates_SetNumTabs(self, 2);
 	self:SelectTab(self:DefaultTab());
@@ -316,7 +316,7 @@ function CovenantMission:GetNineSlicePiece(pieceName)
     end
 end
 
-function CovenantMission:UpdateTextures()
+function CovenantMission:UpdateCurrencyInfo()
 	local primaryCurrency, _ = C_Garrison.GetCurrencyTypes(GarrisonFollowerOptions[self.followerTypeID].garrisonType);
 	local currencyTexture = C_CurrencyInfo.GetCurrencyInfo(primaryCurrency).iconFileID;
 
@@ -332,6 +332,10 @@ function CovenantMission:UpdateTextures()
 	SetupMaterialFrame(self.MissionTab.MissionList.MaterialFrame, primaryCurrency, currencyTexture);
 	self:GetCompleteDialog().BorderFrame.ViewButton:SetPoint("BOTTOM", 0, 88);
 
+	self:UpdateCurrency();
+end
+
+function CovenantMission:UpdateTextures()
 	self.MissionTab.MissionPage.Stage.MissionEnvIcon:SetSize(48,48);
 	self.MissionTab.MissionPage.Stage.MissionEnvIcon:SetPoint("LEFT", self.MissionTab.MissionPage.Stage.MissionInfo.MissionEnv, "RIGHT", -11, 0);
 
@@ -426,7 +430,7 @@ end
 function CovenantMission:GetNumMissionFollowers()
 	local numFollowers = 0;
 	for followerFrame in self:GetMissionPage().Board:EnumerateFollowers() do
-		if followerFrame:GetFollowerGUID() then
+		if followerFrame:GetFollowerGUID()  and not followerFrame.info.isTroop then
 			numFollowers = numFollowers + 1;
 		end
 	end

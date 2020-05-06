@@ -395,7 +395,7 @@
 	Side panel
 *******************************************************************************
 -->
-	<Frame name="GuildMemberDetailFrame" toplevel="true" enableMouse="true" hidden="true" parent="GuildFrame">
+	<Frame name="GuildMemberDetailFrame" toplevel="true" enableMouse="true" hidden="true" parent="GuildFrame" inherits="BackdropTemplate">
 		<Size>
 			<AbsDimension x="212" y="270"/>
 		</Size>
@@ -406,17 +406,9 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="GuildMemberDetailName" justifyH="LEFT" inherits="GameFontNormal">
@@ -607,7 +599,7 @@
 					<OnLoad function="GuildMemberRankDropdown_OnLoad"/>
 				</Scripts>
 			</Frame>
-			<Frame name="GuildMemberNoteBackground" enableMouse="true">
+			<Frame name="GuildMemberNoteBackground" enableMouse="true" inherits="TooltipBackdropTemplate">
 				<Size>
 					<AbsDimension x="181" y="40"/>
 				</Size>
@@ -634,28 +626,17 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
+				<KeyValues>
+					<KeyValue key="backdropColorAlpha" value="0.25" type="number"/>
+					<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
+				</KeyValues>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-						self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.25);
-					</OnLoad>
 					<OnMouseUp>
 						StaticPopup_Show("SET_GUILDPLAYERNOTE");
 					</OnMouseUp>
 				</Scripts>
 			</Frame>
-			<Frame name="GuildMemberOfficerNoteBackground">
+			<Frame name="GuildMemberOfficerNoteBackground" inherits="TooltipBackdropTemplate">
 				<Size>
 					<AbsDimension x="181" y="40"/>
 				</Size>
@@ -682,22 +663,11 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
+				<KeyValues>
+					<KeyValue key="backdropColorAlpha" value="0.25" type="number"/>
+					<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
+				</KeyValues>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-						self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.25);
-					</OnLoad>
 					<OnMouseUp>
 						StaticPopup_Show("SET_GUILDOFFICERNOTE");
 					</OnMouseUp>
@@ -705,9 +675,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				GuildFrame_RegisterPopup(self);
-			</OnLoad>
+			<OnLoad inherit="prepend" function="GuildFrame_RegisterPopup"/>
 		</Scripts>
 	</Frame>
 </Ui>

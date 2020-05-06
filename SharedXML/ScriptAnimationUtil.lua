@@ -20,7 +20,7 @@ end
 
 function ScriptAnimationUtil.ShakeFrameRandom(region, magnitude, duration, frequency)
 	if frequency <= 0 or ScriptAnimationUtil.IsScriptAnimationLockActive(region) then
-		return;
+		return nop;
 	end
 
 	local shake = {};
@@ -29,28 +29,35 @@ function ScriptAnimationUtil.ShakeFrameRandom(region, magnitude, duration, frequ
 		shake[i] = { x = xVariation, y = yVariation };
 	end
 
-	ScriptAnimationUtil.ShakeFrame(region, shake, duration, frequency);
+	return ScriptAnimationUtil.ShakeFrame(region, shake, duration, frequency);
 end
 
 function ScriptAnimationUtil.ShakeFrame(region, shake, maximumDuration, frequency)
 	if not ScriptAnimationUtil.GetScriptAnimationLock(region) then
-		return;
+		return nop;
 	end
 
 	local point, relativeRegion, relativePoint, x, y = region:GetPoint();
 	local shakeIndex = 1;
 	local endTime = GetTime() + maximumDuration;
+
+	local function CancelShake()
+		region:SetPoint(point, relativeRegion, relativePoint, x, y);
+		region.shakeTicker:Cancel();
+		region.shakeTicker = nil;
+		ScriptAnimationUtil.ReleaseScriptAnimationLock(region);
+	end
+
 	region.shakeTicker = C_Timer.NewTicker(frequency, function()
 		local xVariation, yVariation = shake[shakeIndex].x, shake[shakeIndex].y;
 		region:SetPoint(point, relativeRegion, relativePoint, x + xVariation, y + yVariation);
 		shakeIndex = shakeIndex + 1;
 		if shakeIndex > #shake or GetTime() >= endTime then
-			region:SetPoint(point, relativeRegion, relativePoint, x, y);
-			region.shakeTicker:Cancel();
-			region.shakeTicker = nil;
-			ScriptAnimationUtil.ReleaseScriptAnimationLock(region);
+			CancelShake();
 		end
 	end);
+
+	return CancelShake;
 end
 
 local function NoEasing(progress)
@@ -77,7 +84,7 @@ function ScriptAnimationUtil.StartScriptAnimation(region, variationCallback, dur
 		if onFinish then
 			onFinish();
 		end
-		return;
+		return nop;
 	end
 
 	variationCallback = variationCallback;
@@ -90,33 +97,36 @@ function ScriptAnimationUtil.StartScriptAnimation(region, variationCallback, dur
 		region:SetPoint(point, relativeRegion, relativePoint, x + (variationX or 0), y + (variationY or 0));
 		region:SetAlpha(alpha + (variationAlpha or 0));
 		region:SetScale(scale + (variationScale or 0));
-
 	end
 
 	local startTime = GetTime();
 	local endTime = startTime + duration;
 	local elapsedTime = 0;
-	ApplyVariation(variationCallback(elapsedTime, duration))
+	ApplyVariation(variationCallback(elapsedTime, duration));
 	
+	local function CancelScriptAnimation()
+		ApplyVariation(variationCallback(duration, duration));
+		region.translationTicker:Cancel();
+		region.translationTicker = nil;
+		ScriptAnimationUtil.ReleaseScriptAnimationLock(region);
+		if onFinish then
+			onFinish();
+		end
+	end
+
 	local function TranslationTickerFunction()
 		local currentTime = GetTime();
 
 		local finished = GetTime() >= endTime;
 		if finished then
-			elapsedTime = duration;
-			region.translationTicker:Cancel();
-			region.translationTicker = nil;
-			ScriptAnimationUtil.ReleaseScriptAnimationLock(region);
+			CancelScriptAnimation();
 		else
 			elapsedTime = currentTime - startTime;
-		end
-
-		ApplyVariation(variationCallback(elapsedTime, duration));
-
-		if finished and onFinish then
-			onFinish();
+			ApplyVariation(variationCallback(elapsedTime, duration));
 		end
 	end
 
 	region.translationTicker = C_Timer.NewTicker(0.01, TranslationTickerFunction);
+
+	return CancelScriptAnimation;
 end

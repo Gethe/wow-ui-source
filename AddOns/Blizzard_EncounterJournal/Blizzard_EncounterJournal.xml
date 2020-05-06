@@ -2905,13 +2905,8 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="EncounterJournalTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
+	<Frame name="EncounterJournalTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" inherits="TooltipBackdropTemplate">
 		<Size x="128" y="256"/>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize val="16"/>
-			<TileSize val="16"/>
-			<BackgroundInsets left="4" right="4" top="4" bottom="4"/>
-		</Backdrop>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
@@ -3040,8 +3035,5 @@
 				</Layers>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad function="EncounterJournalTooltip_OnLoad"/>
-		</Scripts>
 	</Frame>
 </Ui>

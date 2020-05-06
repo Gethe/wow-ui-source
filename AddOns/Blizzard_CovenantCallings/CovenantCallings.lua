@@ -92,8 +92,6 @@ function CovenantCallingQuestMixin:UpdateIcon()
 	local icon = self.calling:GetIcon(self.covenantData);
 	self.Icon:SetTexture(icon);
 	self.Highlight:SetTexture(icon);
-
-	local isLocked = self.calling:IsLocked();
 end
 
 function CovenantCallingQuestMixin:UpdateBang()
@@ -102,6 +100,8 @@ function CovenantCallingQuestMixin:UpdateBang()
 	if bang then
 		self.Bang:SetAtlas(bang, true);
 	end
+
+	self.Glow:SetShown(self.calling:GetState() == Enum.CallingStates.QuestOffer);
 end
 
 function CovenantCallingQuestMixin:UpdateTooltip()
@@ -155,12 +155,8 @@ function CovenantCallingQuestMixin:UpdateTooltipQuestActive()
 
 	-- Add the "faction", really just the covenant name
 	-- TODO: Not planning on being able to use the same system that WQs use to put the faction on the quest tooltip, so just grab covenant name for now
-	local activeCovenantID = C_Covenants.GetActiveCovenantID();
-	if activeCovenantID and activeCovenantID > 0 then
-		local covenantData = C_Covenants.GetCovenantData(activeCovenantID);
-		if covenantData then
-			GameTooltip_AddNormalLine(GameTooltip, covenantData.name);
-		end
+	if self.covenantData then
+		GameTooltip_AddNormalLine(GameTooltip, self.covenantData.name);
 	end
 
 	-- Add the remaining time
@@ -234,9 +230,8 @@ end
 CovenantCallingsMixin = {};
 
 function CovenantCallingsMixin:OnLoad()
-	ResizeLayoutMixin.OnLoad(self);
 	self.pool = CreateFramePool("Frame", self, "CovenantCallingQuestTemplate");
-	self.layout = AnchorUtil.CreateGridLayout(nil, 20, 14, 0);
+	self.layout = AnchorUtil.CreateGridLayout(nil, Constants.Callings.MaxCallings, 35, 0);
 end
 
 local CovenantCallingsEvents = {
@@ -263,6 +258,14 @@ end
 
 function CovenantCallingsMixin:Update()
 	C_CovenantCallings.RequestCallings();
+
+	self.covenantData = C_Covenants.GetCovenantData(C_Covenants.GetActiveCovenantID());
+	self:UpdateBackground();
+end
+
+function CovenantCallingsMixin:UpdateBackground()
+	local decor = ("shadowlands-landingpage-callingsdecor-%s"):format(self.covenantData.textureKit);
+	self.Decor:SetAtlas(decor, true);
 end
 
 function CovenantCallingsMixin:OnCovenantCallingsUpdated(callings)
@@ -271,16 +274,13 @@ function CovenantCallingsMixin:OnCovenantCallingsUpdated(callings)
 	self.pool:ReleaseAll();
 
 	local frames = {};
-	local covenantData = C_Covenants.GetCovenantData(C_Covenants.GetActiveCovenantID());
 	for index, calling in ipairs(self.callings) do
 		local callingFrame = self.pool:Acquire();
-		callingFrame:Set(calling, covenantData);
+		callingFrame:Set(calling, self.covenantData);
 		table.insert(frames, callingFrame);
 	end
 
-	AnchorUtil.GridLayout(frames, AnchorUtil.CreateAnchor("TOPLEFT", self), self.layout);
-	self.RightSideSpacer:ClearAllPoints();
-	self.RightSideSpacer:SetPoint("LEFT", frames[#frames], "RIGHT", 0, 0);
+	AnchorUtil.GridLayout(frames, AnchorUtil.CreateAnchor("LEFT", self.Decor, "LEFT", -30, 0), self.layout);
 	self:Layout();
 end
 

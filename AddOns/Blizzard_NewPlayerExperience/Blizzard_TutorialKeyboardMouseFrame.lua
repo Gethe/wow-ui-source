@@ -10,7 +10,6 @@ NPE_TutorialKeyboardMouseFrameMixin = {};
 function NPE_TutorialKeyboardMouseFrameMixin:OnLoad()
 	NineSliceUtil.ApplyUniqueCornersLayout(self, "NewPlayerTutorial");
 
-	ResizeLayoutMixin.OnLoad(self);
 	self:MarkDirty();
 	self.Alpha = 0;
 	self.State = NPE_TutorialMainFrameMixin.States.Hidden;

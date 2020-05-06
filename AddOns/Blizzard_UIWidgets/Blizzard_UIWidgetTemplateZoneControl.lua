@@ -10,8 +10,7 @@ UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.Zon
 UIWidgetTemplateZoneControlMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
 function UIWidgetTemplateZoneControlMixin:OnLoad()
-	UIWidgetBaseTemplateMixin.OnLoad(self); 
-	ResizeLayoutMixin.OnLoad(self); 
+	UIWidgetBaseTemplateMixin.OnLoad(self);
 	self.entryPool = CreateFramePool("FRAME", self, "UIWidgetBaseControlZoneTemplate");
 	self.lastVals = {};
 end

@@ -59,26 +59,32 @@ local function TargetStaticTrajectory(source, target, elapsed, duration)
 	return target:GetCenter();
 end
 
-local function ShakeTargetLight(effectDescription, source, target)
-	ScriptAnimationUtil.ShakeFrameRandom(target, 2, effectDescription.duration, .05);
+local function ShakeTargetLight(effectDescription, source, target, speed)
+	local duration = effectDescription.duration / speed;
+	local cancelFunction = ScriptAnimationUtil.ShakeFrameRandom(target, 2, duration, .05);
+	return cancelFunction, duration;
 end
 
 local function GenerateRecoilCallback(magnitude, duration)
-	local function RecoilFunction(effectDescription, source, target)
+	local function RecoilFunction(effectDescription, source, target, speed)
+		local totalDuration = duration / speed;
+
 		local direction = GetDirectionVector(source, target);
 		direction:Normalize();
 		direction:ScaleBy(magnitude);
 		local distanceX, distanceY = direction:GetXY();
 
 		-- Half the animation will be going out, and the other half coming in.
-		local recoilDuration = duration / 2;
+		local recoilDuration = totalDuration / 2;
 
 		local easingFunction = nil;
 		local reverseVariationCallback = ScriptAnimationUtil.GenerateEasedVariationCallback(easingFunction, -distanceX, -distanceY);
 		local reversePosition = GenerateClosure(ScriptAnimationUtil.StartScriptAnimation, source, reverseVariationCallback, recoilDuration);
 
 		local variationCallback = ScriptAnimationUtil.GenerateEasedVariationCallback(easingFunction, distanceX, distanceY);
-		ScriptAnimationUtil.StartScriptAnimation(source, variationCallback, recoilDuration, reversePosition);
+		local cancelFunction = ScriptAnimationUtil.StartScriptAnimation(source, variationCallback, recoilDuration, reversePosition);
+
+		return cancelFunction, totalDuration;
 	end
 
 	return RecoilFunction;
@@ -90,8 +96,8 @@ local function GenerateKnockbackCallback(knockbackMagnitude, duration)
 	-- To make recoil a knockback, reverse the source and target, and reverse the direction by negating magnitude.
 	local recoilFunction = GenerateRecoilCallback(-knockbackMagnitude, duration);
 
-	local function KnockbackFunction(effectDescription, source, target)
-		return recoilFunction(effectDescription, target, source)
+	local function KnockbackFunction(effectDescription, source, target, speed)
+		return recoilFunction(effectDescription, target, source, speed);
 	end
 
 	return KnockbackFunction;
@@ -104,7 +110,7 @@ local ForwardPercentage = 0.3;
 local ForwardThreshold = PullbackPercentage + ForwardPercentage;
 local BackwardPercentage = 1.0 - (PullbackPercentage + ForwardPercentage);
 local function GenerateAttackCollisionFunction(pullbackMagnitude)
-	local function AttackCollisionFunction(effectDescription, source, target)
+	local function AttackCollisionFunction(effectDescription, source, target, speed)
 		local translation = GetDirectionVector(source, target);
 		translation:ScaleBy(0.95); -- don't go the entire distance.
 		
@@ -140,8 +146,10 @@ local function GenerateAttackCollisionFunction(pullbackMagnitude)
 
 		-- The end of the effect should be triggered on collision, at the end of the "forward" part of the animation, so the
 		-- full movement animation should last longer than the effect.
-		local fullDuration = effectDescription.duration * (1.0 / ForwardThreshold);
-		ScriptAnimationUtil.StartScriptAnimation(source, AttackCollisionVariationCallback, fullDuration);
+		local fullDuration = (effectDescription.duration * (1.0 / ForwardThreshold)) / speed;
+		local cancelFunction = ScriptAnimationUtil.StartScriptAnimation(source, AttackCollisionVariationCallback, fullDuration);
+
+		return cancelFunction, fullDuration;
 	end
 
 	return AttackCollisionFunction;
@@ -150,6 +158,7 @@ end
 local StandardAttackCollision = GenerateAttackCollisionFunction(50);
 
 
+-- Behavior functions should have the signature: (effectDescription, source, target) -> cancelFunction, behaviorDuration
 local BehaviorToCallback = {
 	-- [Enum.ScriptedAnimationBehavior.None] = nil,
 	[Enum.ScriptedAnimationBehavior.SourceRecoil] = StandardRecoil,
@@ -186,13 +195,6 @@ local ScriptedAnimationEffects = LoadScriptedAnimationEffects();
 
 
 ScriptedAnimationEffectsUtil = {};
-
-ScriptedAnimationEffectsUtil.NamedEffectIDs = {
-	Fireball = 1,
-	Regrowth = 3,
-	MeleeAttack = 4,
-	ShockTarget = 6,
-};
 
 function ScriptedAnimationEffectsUtil.GetEffectByID(effectID)
 	return ScriptedAnimationEffects[effectID];

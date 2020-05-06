@@ -489,7 +489,7 @@ end
 function AuctionHouseAuctionsFrameMixin:OnBidsListSearchResultSelected(bidInfo)
 	if bidInfo then
 		local isOwnerItem = false;
-		self:SetAuction(bidInfo.auctionID, bidInfo.minBid, bidInfo.buyoutAmount, isOwnerItem);
+		self:SetAuction(bidInfo.auctionID, bidInfo.minBid, bidInfo.buyoutAmount, isOwnerItem, bidInfo.bidder);
 	else
 		self:SetAuction(nil);
 	end
@@ -501,7 +501,7 @@ function AuctionHouseAuctionsFrameMixin:OnItemSearchResultSelected(itemSearchRes
 			self:SelectAuction(itemSearchResultInfo);
 			self:SetAuction(nil);
 		else
-			self:SetAuction(itemSearchResultInfo.auctionID, itemSearchResultInfo.minBid, itemSearchResultInfo.buyoutAmount, AuctionHouseUtil.IsOwnedAuction(itemSearchResultInfo));
+			self:SetAuction(itemSearchResultInfo.auctionID, itemSearchResultInfo.minBid, itemSearchResultInfo.buyoutAmount, AuctionHouseUtil.IsOwnedAuction(itemSearchResultInfo), itemSearchResultInfo.bidder);
 		end
 	else
 		self:SelectAuction(nil);

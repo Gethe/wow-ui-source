@@ -249,7 +249,7 @@ local Soulbinds =
 				{ Name = "covenantID", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = false },
-				{ Name = "portrait", Type = "string", Nilable = false },
+				{ Name = "textureKit", Type = "string", Nilable = false },
 				{ Name = "tree", Type = "SoulbindTree", Nilable = false },
 				{ Name = "modelSceneData", Type = "SoulbindModelSceneData", Nilable = false },
 			},

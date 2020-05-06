@@ -397,25 +397,17 @@
 					<Anchor point="RIGHT" x="-2"/>
 				</Anchors>
 			</Button>
-			<Frame name="ArenaPrepBackground" frameStrata="LOW" enableMouse="true" hidden="true">
+			<Frame name="ArenaPrepBackground" frameStrata="LOW" enableMouse="true" hidden="true" inherits="BackdropTemplate">
 				<Size x="125" y="10"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="ArenaPrepFrame1" x="-15" y="6"/>
 					<Anchor point="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\CharacterFrame\UI-Party-Background" edgeFile="Interface\ArenaEnemyFrame\UI-Arena-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="32" right="32" top="32" bottom="32"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
-				</Backdrop> 
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_ARENA_32_32" type="global"/>
+				</KeyValues>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS");
 						ArenaPrepFrames_UpdateBackground();
 					</OnLoad>
@@ -480,25 +472,17 @@
 					<Anchor point="RIGHT" x="-2"/>
 				</Anchors>
 			</Button>
-			<Frame name="ArenaEnemyBackground" frameStrata="LOW" enableMouse="true" hidden="true">
+			<Frame name="ArenaEnemyBackground" frameStrata="LOW" enableMouse="true" hidden="true" inherits="BackdropTemplate">
 				<Size x="125" y="10"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="ArenaEnemyFrame1" x="-15" y="6"/>
 					<Anchor point="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\CharacterFrame\UI-Party-Background" edgeFile="Interface\ArenaEnemyFrame\UI-Arena-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="32" right="32" top="32" bottom="32"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
-				</Backdrop> 
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_ARENA_32_32" type="global"/>
+				</KeyValues>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						self:RegisterEvent("VARIABLES_LOADED");
 						UpdateArenaEnemyBackground();
 					</OnLoad>

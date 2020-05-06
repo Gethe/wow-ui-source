@@ -1,10 +1,12 @@
 TIMER_MINUTES_DISPLAY = "%d:%02d"
 TIMER_TYPE_PVP = 1;
 TIMER_TYPE_CHALLENGE_MODE = 2;
+TIMER_TYPE_PLAYER_COUNTDOWN = 3; 
 
 local TIMER_DATA = {
 	[1] = { mediumMarker = 11, largeMarker = 6, updateInterval = 10 },
 	[2] = { mediumMarker = 100, largeMarker = 100, updateInterval = 100 },
+	[3] = { mediumMarker = 100, largeMarker = 100, updateInterval = 100 },
 };
 
 TIMER_NUMBERS_SETS = {};
@@ -81,7 +83,7 @@ function TimerTracker_OnEvent(self, event, ...)
 			end
 		end
 
-		if isTimerRunning then
+		if isTimerRunning and timer.type ~= TIMER_TYPE_PLAYER_COUNTDOWN then
 			-- don't interupt the final count down
 			if not timer.startNumbers:IsPlaying() then
 				timer.time = timeSeconds;
@@ -166,7 +168,6 @@ function StartTimer_BigNumberOnUpdate(self, elapsed)
 		self.fadeBarIn:Play();
 		self.barShowing = true;
 	elseif self.updateTime <= 0 then
-		QueryWorldCountdownTimer(self.type);
 		self.updateTime = TIMER_DATA[self.type].updateInterval;
 	end
 
@@ -265,7 +266,10 @@ function StartTimer_SetGoTexture(timer)
 	elseif ( timer.type == TIMER_TYPE_CHALLENGE_MODE ) then
 		timer.GoTexture:SetTexture("Interface\\Timer\\Challenges-Logo");
 		timer.GoTextureGlow:SetTexture("Interface\\Timer\\ChallengesGlow-Logo");
-	end
+	elseif (timer.type == TIMER_TYPE_PLAYER_COUNTDOWN) then 
+		timer.GoTexture:SetTexture("")
+		timer.GoTextureGlow:SetTexture("")
+	end 
 end
 
 function StartTimer_NumberAnimOnFinished(self)

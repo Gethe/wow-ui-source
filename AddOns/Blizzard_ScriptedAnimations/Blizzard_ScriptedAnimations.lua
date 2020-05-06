@@ -5,6 +5,129 @@ local HalfPi = math.pi / 2;
 local SceneUnitDivisor = 196;
 
 
+local EffectControllerMixin = {};
+
+function EffectControllerMixin:Init(modelScene, effectID, source, target, onEffectFinish, onEffectResolution)
+	self.modelScene = modelScene;
+	self.effectID = effectID;
+	self.source = source;
+	self.target = target;
+	self.onEffectFinish = onEffectFinish;
+	self.onEffectResolution = onEffectResolution;
+
+	self.activeBehaviors = {};
+	self.effectCount = 0;
+end
+
+function EffectControllerMixin:GetEffect()
+	return ScriptedAnimationEffectsUtil.GetEffectByID(self.effectID);
+end
+
+function EffectControllerMixin:StartEffect()
+	self.effectCount = self.effectCount + 1;
+
+	self.actor = self.modelScene:InternalAddEffect(self.effectID, self.source, self.target, self);
+
+	local effect = self:GetEffect();
+	if effect.startBehavior then
+		self:BeginBehavior(effect.startBehavior);
+	end
+
+	if effect.startSoundKitID then
+		PlaySound(effect.startSoundKitID);
+	end
+end
+
+function EffectControllerMixin:DeltaUpdate(elapsedTime)
+	if self.actor then
+		if self.actor:IsActive() then
+			self.actor:DeltaUpdate(elapsedTime);
+		else
+			self:FinishEffect();
+		end
+	end
+
+	local behaviorFinished = false;
+	local currentTime = GetTime();
+	local i = 1;
+	while i <= #self.activeBehaviors do
+		local activeBehaviors = self.activeBehaviors[i];
+		if currentTime < activeBehaviors.finishTime then
+			i = i + 1;
+		else
+			behaviorFinished = true;
+			tUnorderedRemove(self.activeBehaviors, i);
+		end
+	end
+
+	if behaviorFinished then
+		self:CheckResolution();
+	end
+end
+
+function EffectControllerMixin:IsActive()
+	return self.actor or #self.activeBehaviors > 0;
+end
+
+function EffectControllerMixin:FinishEffect()
+	local effect = self:GetEffect();
+	if effect.finishBehavior then
+		self:BeginBehavior(effect.finishBehavior);
+	end
+
+	if effect.finishSoundKitID then
+		PlaySound(effect.finishSoundKitID);
+	end
+
+	self:RunEffectFinish();
+
+	if self.actor then
+		self.modelScene:ReleaseActor(self.actor);
+		self.actor = nil;
+	end
+
+	if effect.finishEffectID then
+		self.effectID = effect.finishEffectID;
+		self:StartEffect();
+	end
+
+	self:CheckResolution();
+end
+
+function EffectControllerMixin:CheckResolution()
+	if not self:IsActive() then
+		self:RunEffectResolution();
+	end
+end
+
+function EffectControllerMixin:RunEffectResolution()
+	if self.onEffectResolution then
+		self.onEffectResolution(self.effectCount);
+	end
+end
+
+function EffectControllerMixin:RunEffectFinish()
+	if self.onEffectFinish then
+		if not self.onEffectFinish(self.effectCount) then
+			self.onEffectFinish = nil;
+		end
+	end
+end
+
+function EffectControllerMixin:CancelEffect()
+	self.modelScene:ReleaseActor(self.actor);
+	self:RunEffectFinish();
+	self:RunEffectResolution();
+end
+
+function EffectControllerMixin:BeginBehavior(behavior)
+	local effect = self:GetEffect();
+	local cancelFunction, duration = behavior(effect, self.source, self.target, self.modelScene:GetEffectSpeed());
+	local finishTime = GetTime() + duration;
+	table.insert(self.activeBehaviors, { cancelFunction = cancelFunction, finishTime = finishTime });
+end
+
+
 ScriptAnimatedModelSceneActorMixin = {};
 
 function ScriptAnimatedModelSceneActorMixin:IsActive()
@@ -16,21 +139,7 @@ function ScriptAnimatedModelSceneActorMixin:GetModelScene()
 end
 
 function ScriptAnimatedModelSceneActorMixin:OnFinish()
-	if self.finishBehavior then
-		self.finishBehavior(self.effectDescription, self.source, self.target);
-	end
-
-	if self.finishSoundKitID then
-		PlaySound(self.finishSoundKitID);
-	end
-
-	if self.finishEffectID then
-		self:GetModelScene():AddEffect(self.finishEffectID, self.source, self.target);
-	end
-
-	if self.externalOnFinish then
-		self.externalOnFinish();
-	end
+	self.effectControl:FinishEffect();
 end
 
 -- This isn't a frame so its update function is called through its parent.
@@ -63,32 +172,45 @@ local function GetAngleForModel(source, target)
 	return radians;
 end
 
-function ScriptAnimatedModelSceneActorMixin:SetEffect(effectDescription, source, target, externalOnFinish)
+function ScriptAnimatedModelSceneActorMixin:SetEffect(effectDescription, source, target)
 	self:SetModelByFileID(effectDescription.visual);
-	self:SetAnimation(0, 0, 1);
+	
+	self:SetYaw(effectDescription.yawRadians);
+	self:SetPitch(effectDescription.pitchRadians);
+	self:SetRoll(effectDescription.rollRadians);
+
+	self.baseOffsetX = effectDescription.offsetX;
+	self.baseOffsetY = effectDescription.offsetY;
+	self.baseOffsetZ = effectDescription.offsetZ;
+
+	local animationSpeed = effectDescription.animationSpeed;
+	if animationSpeed == 0 then
+		-- TODO:: Calculate the animation speed to complete 1 full cycle in the effect's duration.
+		animationSpeed = 1.0;
+	end
+
+	local animationSpeed = self:GetModelScene():GetEffectSpeed() * animationSpeed;
+	self:SetAnimation(0, 0, animationSpeed);
+
 	self.elapsedTime = nil;
 
 	self.source = source;
 	self.target = target;
-	self.externalOnFinish = externalOnFinish;
 
 	self.effectDescription = effectDescription;
 	self.trajectory = effectDescription.trajectory;
 	self.duration = effectDescription.duration;
-	self.finishBehavior = effectDescription.finishBehavior;
-	self.finishEffectID = effectDescription.finishEffectID;
-	self.finishSoundKitID = effectDescription.finishSoundKitID;
 	self:SetScale(effectDescription.visualScale);
 
 	if self.source and self.target then
 		self:SetYaw(GetAngleForModel(self.source, self.target));
 	end
 
-	if effectDescription.startSoundKitID then
-		PlaySound(effectDescription.startSoundKitID);
-	end
-
 	self:DeltaUpdate(0);
+end
+
+function ScriptAnimatedModelSceneActorMixin:SetEffectActorOffset(x, y, z)
+	self:SetPosition(self.baseOffsetX + x, self.baseOffsetY + y, self.baseOffsetZ + z);
 end
 
 
@@ -97,7 +219,7 @@ ScriptAnimatedModelSceneMixin = {};
 function ScriptAnimatedModelSceneMixin:OnLoad()
 	ModelSceneMixin.OnLoad(self);
 
-	self.effectActors = {};
+	self.effectControllers = {};
 end
 
 function ScriptAnimatedModelSceneMixin:OnShow()
@@ -111,25 +233,23 @@ function ScriptAnimatedModelSceneMixin:OnUpdate(elapsed, ...)
 		self.centerX, self.centerY = self:GetCenter();
 	end
 
-	if #self.effectActors == 0 then
+	if #self.effectControllers == 0 then
 		return;
 	end
 
-	local remainingActors = {};
-	for i, effectActor in ipairs(self.effectActors) do
-		if effectActor:IsActive() then
-			table.insert(remainingActors, effectActor);
-		else
-			effectActor:OnFinish();
-			self:ReleaseActor(effectActor);
-		end
+	local modifiedElapsed = elapsed * self:GetEffectSpeed();
+	for i, effectController in ipairs(self.effectControllers) do
+		effectController:DeltaUpdate(modifiedElapsed, ...);
 	end
 
-	self.effectActors = remainingActors;
-
-	local modifiedElapsed = elapsed * self:GetEffectSpeed();
-	for i, effectActor in ipairs(self.effectActors) do
-		effectActor:DeltaUpdate(modifiedElapsed, ...);
+	local i = 1;
+	while i <= #self.effectControllers do
+		local effectController = self.effectControllers[i];
+		if effectController:IsActive() then
+			i = i + 1;
+		else
+			tUnorderedRemove(self.effectControllers, i);
+		end
 	end
 end
 
@@ -152,19 +272,32 @@ function ScriptAnimatedModelSceneMixin:CalculatePixelsPerSceneUnit()
 	self.pixelsPerSceneUnit = (sceneSize * zoomDistance) / SceneUnitDivisor;
 end
 
-function ScriptAnimatedModelSceneMixin:AddEffect(effectID, source, target, onFinish)
+function ScriptAnimatedModelSceneMixin:AddEffect(effectID, source, target, onEffectFinish, onEffectResolution)
+	if not self.centerX then
+		self.centerX, self.centerY = self:GetCenter();
+	end
+	local effectController = CreateAndInitFromMixin(EffectControllerMixin, self, effectID, source, target, onEffectFinish, onEffectResolution);
+	effectController:StartEffect();
+	return effectController; 
+end
+
+function ScriptAnimatedModelSceneMixin:InternalAddEffect(effectID, source, target, effectController)
 	local effect = ScriptedAnimationEffectsUtil.GetEffectByID(effectID);
 
-	if effect.startBehavior then
-		effect.startBehavior(effect, source, target);
+	local actor = self:AcquireActor();
+	
+	if not actor.SetEffect then
+		Mixin(actor, ScriptAnimatedModelSceneActorMixin);
 	end
 
-	local actor = self:AcquireActor();
-	Mixin(actor, ScriptAnimatedModelSceneActorMixin);
-	actor:SetEffect(effect, source, target, onFinish);
+	actor:SetEffect(effect, source, target);
 	actor:Show();
 
-	table.insert(self.effectActors, actor);
+	if not tContains(self.effectControllers, effectController) then
+		table.insert(self.effectControllers, effectController);
+	end
+
+	return actor;
 end
 
 function ScriptAnimatedModelSceneMixin:SetEffectSpeed(speed)
@@ -176,12 +309,11 @@ function ScriptAnimatedModelSceneMixin:GetEffectSpeed()
 end
 
 function ScriptAnimatedModelSceneMixin:ClearEffects()
-	for i, effectActor in ipairs(self.effectActors) do
-		effectActor:OnFinish();
-		self:ReleaseActor(effectActor);
+	for i, effectController in ipairs(self.effectControllers) do
+		effectController:CancelEffect();
 	end
 
-	self.effectActors = {};
+	self.effectControllers = {};
 end
 
 function ScriptAnimatedModelSceneMixin:SetActorPositionFromPixels(actor, x, y, z)
@@ -189,5 +321,5 @@ function ScriptAnimatedModelSceneMixin:SetActorPositionFromPixels(actor, x, y, z
 	local dx = (x - self.centerX) / pixelsPerSceneUnit;
 	local dy = (y - self.centerY) / pixelsPerSceneUnit;
 	local actorScaleDivisor = actor:GetScale();
-	actor:SetPosition(dx / actorScaleDivisor, dy / actorScaleDivisor, (z or 0) / actorScaleDivisor);
+	actor:SetEffectActorOffset(dx / actorScaleDivisor, dy / actorScaleDivisor, (z or 0) / actorScaleDivisor);
 end

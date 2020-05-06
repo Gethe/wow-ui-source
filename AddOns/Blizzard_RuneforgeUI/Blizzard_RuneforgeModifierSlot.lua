@@ -107,8 +107,6 @@ end
 RuneforgeModifierSelectorFrameMixin = {};
 
 function RuneforgeModifierSelectorFrameMixin:OnLoad()
-	ResizeLayoutMixin.OnLoad(self);
-
 	self.selectionPool = CreateFramePool("ItemButton", self, "RuneforgeModifierSelectionTemplate");
 end
 
@@ -137,7 +135,7 @@ function RuneforgeModifierSelectorFrameMixin:GenerateSelections()
 
 		return lhsItemID < rhsItemID;
 	end
-	
+
 	table.sort(modifierItemIDs, ModifierSortFunction);
 
 	local previousSelection = nil;

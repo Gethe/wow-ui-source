@@ -415,6 +415,27 @@ local function IsValid(self,index)
 	return valid, is32BitFail;
 end
 
+function Graphics_ValidateControlImmediate(self)
+	-- refresh tooltip, which also updates dropdown options, because of course it does
+	Graphics_PrepareTooltip(self);
+
+	local index = self.selectedID;
+	while index > 0 and not IsValid(self, index) do
+		index = index - 1;
+	end
+	if index > 0 and index ~= self.selectedID then
+		-- change the cvar
+		local cvars = VideoData[self:GetName()].data[index].cvars;
+		for cvar, value in pairs(cvars) do
+			BlizzardOptionsPanel_SetCVarSafe(cvar, value);
+		end
+		-- change the dropdown value
+		self.newValue = index;
+		self.selectedID = index;
+		UIDropDownMenu_SetText(self, self.data[index].text);
+	end
+end
+
 function Graphics_NotifyTarget(self, masterIndex, isRaid)
 	local dropdownIndex = GetGraphicsDropdownIndexByMasterIndex(self.graphicsCVar, masterIndex, isRaid);
 	local value = nil;
@@ -776,6 +797,9 @@ end
 
 function VideoOptionsDropDown_OnLoad(self)
 	LoadVideoData(self);
+	if self.validateOnGXRestart then
+		self:RegisterEvent("GX_RESTARTED");
+	end
 	self.tablerefresh = true;
 	if(self.onload ~= nil) then
 		self.onload(self);
@@ -880,6 +904,10 @@ function VideoOptionsDropDown_OnLoad(self)
 	end
 end
 
+function VideoOptionsDropDown_OnEvent(self, event)
+	Graphics_ValidateControlImmediate(self);
+end
+
 function VideoOptionsCheckbox_OnLoad(self)
 	LoadVideoData(self);
 	self.type = self.type or CONTROLTYPE_CHECKBOX;
@@ -893,6 +921,7 @@ function VideoOptionsCheckbox_OnLoad(self)
 end
 
 function VideoOptionsSlider_OnLoad(self)
+	BackdropTemplateMixin.OnBackdropLoaded(self);
 	LoadVideoData(self);
 	self.type = self.type or CONTROLTYPE_SLIDER;
 	if(self.onload ~= nil) then

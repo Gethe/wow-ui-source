@@ -3262,11 +3262,6 @@ function AdventureJournal_Reward_OnMouseDown(self)
 	end
 end
 
-function EncounterJournalTooltip_OnLoad(self)
-	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-end
-
 function EncounterJournalBossButton_UpdateDifficultyOverlay(self)
 	if self.encounterID then
 		local name, description, bossID, rootSectionID, link, journalInstanceID, dungeonEncounterID, mapID = EJ_GetEncounterInfo(self.encounterID);

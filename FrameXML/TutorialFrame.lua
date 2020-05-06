@@ -742,6 +742,10 @@ function TutorialFrame_ClearTextures()
 end
 
 function TutorialFrame_NewTutorial(tutorialID, forceShow)
+	if C_PlayerInfo.IsPlayerNPERestricted() then
+		return;
+	end
+
 	if(forceShow) then
 		TutorialFrame_Update(tutorialID);
 		return;

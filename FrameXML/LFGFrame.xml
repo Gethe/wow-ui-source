@@ -370,7 +370,7 @@
 					</Frame>
 				</Frames>
 			</Frame>
-			<Frame name="LFGDungeonReadyDialog" setAllPoints="true" toplevel="true" enableMouse="true">
+			<Frame name="LFGDungeonReadyDialog" setAllPoints="true" toplevel="true" enableMouse="true" inherits="BackdropTemplate">
 				<Size x="306" y="193"/>
 				<Layers>
 					<Layer level="BACKGROUND">

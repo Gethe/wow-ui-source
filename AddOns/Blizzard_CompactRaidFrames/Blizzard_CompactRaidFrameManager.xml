@@ -519,7 +519,7 @@
 						<Size x="200" y="45"/>
 						<Frames>
 							<Button name="$parentInitiateRolePoll" inherits="UIMenuButtonStretchTemplate" text="ROLE_POLL" parentKey="rolePollButton">
-								<Size x="169" y="20"/>
+								<Size x="85" y="20"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="20" y="-5"/>
 								</Anchors>
@@ -527,6 +527,18 @@
 									<OnClick>
 										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 										InitiateRolePoll();
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Button name="$parentCountdown" inherits="UIMenuButtonStretchTemplate" text="PLAYER_COUNTDOWN_BUTTON" parentKey="countdownButton">
+								<Size x="85" y="20"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentInitiateRolePoll" relativePoint="TOPRIGHT" x="0" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+										C_PartyInfo.DoCountdown(10);
 									</OnClick>
 								</Scripts>
 							</Button>

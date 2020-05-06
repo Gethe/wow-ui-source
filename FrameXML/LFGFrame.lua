@@ -669,23 +669,6 @@ function LFGDungeonReadyPopup_OnUpdate(self, elapsed)
 	end
 end
 
-local DUNGEON_BACKDROP_TABLE = {
-	bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-	edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-	tile = true,
-	tileSize = 32,
-	edgeSize = 32,
-	insets = { left = 11, right = 12, top = 12, bottom = 11 }};
-
--- TODO: replace both backdrops with nineslice when gold trim is created.
-local RAID_BACKDROP_TABLE = {
-	bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-	edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Border",
-	tile = true,
-	tileSize = 32,
-	edgeSize = 32,
-	insets = { left = 11, right = 12, top = 12, bottom = 11 }};
-
 function LFGDungeonReadyPopup_Update()
 	local proposalExists, id, typeID, subtypeID, name, backgroundTexture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isLeader, _, _, isSilent = GetLFGProposal();
 	if ( not proposalExists ) then
@@ -825,7 +808,7 @@ function LFGDungeonReadyPopup_Update()
 			LFGDungeonReadyDialog.bottomArt:SetTexture("Interface\\LFGFrame\\LFR-Texture");
 			LFGDungeonReadyDialog.bottomArt:SetTexCoord(0.00195313, 0.55273438, 0.29296875, 0.57812500);
 			LFGDungeonReadyDialog.bottomArt:SetSize(282, 73);
-			LFGDungeonReadyDialog:SetBackdrop(RAID_BACKDROP_TABLE);
+			LFGDungeonReadyDialog:SetBackdrop(BACKDROP_GOLD_DIALOG_32_32);
 		else
 			LFGDungeonReadyDialog.filigree:SetTexture("Interface\\LFGFrame\\UI-LFG-FILIGREE");
 			LFGDungeonReadyDialog.filigree:SetTexCoord(0.02734, 0.59765, 0.578125, 1.0);
@@ -839,7 +822,7 @@ function LFGDungeonReadyPopup_Update()
 				LFGDungeonReadyDialog.bottomArt:SetTexCoord(0.0, 0.5605, 0.0, 0.5625);
 			end
 			LFGDungeonReadyDialog.bottomArt:SetSize(287, 72);
-			LFGDungeonReadyDialog:SetBackdrop(DUNGEON_BACKDROP_TABLE);
+			LFGDungeonReadyDialog:SetBackdrop(BACKDROP_DIALOG_32_32);
 		end
 
 		if ( showRole ) then

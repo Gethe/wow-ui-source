@@ -133,18 +133,19 @@ function AuctionHouseBuySystemMixin:SetAuctionID(auctionID)
 	self.auctionID = auctionID;
 end
 
-function AuctionHouseBuySystemMixin:SetPrice(minBid, buyoutPrice, isOwnerItem)
+function AuctionHouseBuySystemMixin:SetPrice(minBid, buyoutPrice, isOwnerItem, isPlayerHighBid)
 	minBid = minBid or 0;
 	buyoutPrice = buyoutPrice or 0;
 
 	self.minBid = minBid;
-	self.BidFrame:SetPrice(minBid, isOwnerItem);
+	self.BidFrame:SetPrice(minBid, isOwnerItem, isPlayerHighBid);
 	self.BuyoutFrame:SetPrice(buyoutPrice, isOwnerItem);
 end
 
-function AuctionHouseBuySystemMixin:SetAuction(auctionID, minBid, buyoutPrice, isOwnerItem)
+function AuctionHouseBuySystemMixin:SetAuction(auctionID, minBid, buyoutPrice, isOwnerItem, bidder)
+	local isPlayerHighBid = bidder == UnitGUID("player");
 	self:SetAuctionID(auctionID);
-	self:SetPrice(minBid, buyoutPrice, isOwnerItem);
+	self:SetPrice(minBid, buyoutPrice, isOwnerItem, isPlayerHighBid);
 end
 
 function AuctionHouseBuySystemMixin:ResetPrice()
@@ -286,18 +287,22 @@ function AuctionHouseUtil.GetTooltipTimeLeftBandText(rowData)
 	return "";
 end
 
+local MaxSellersListedExplicitly = 10;
 function AuctionHouseUtil.AddSellersToTooltip(tooltip, sellers)
 	local sellersString = sellers[1] == "player" and GREEN_FONT_COLOR:WrapTextInColorCode(AUCTION_HOUSE_SELLER_YOU) or sellers[1];
 	local numSellers = #sellers;
 	if numSellers > 1 then
-		sellersString = sellersString..HIGHLIGHT_FONT_COLOR_CODE;
-		for i = 2, numSellers do
+		local numSellersListed = math.min(numSellers, MaxSellersListedExplicitly);
+		for i = 2, numSellersListed do
 			sellersString = sellersString..PLAYER_LIST_DELIMITER..sellers[i];
 		end
-		sellersString = sellersString..FONT_COLOR_CODE_CLOSE;
 
 		local wrap = true;
-		GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_TOOLTIP_MULTIPLE_SELLERS_FORMAT:format(sellersString), wrap);
+		if numSellers > MaxSellersListedExplicitly then
+			GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_TOOLTIP_OVERFLOW_SELLERS_FORMAT:format(sellersString, numSellers - MaxSellersListedExplicitly), wrap);
+		else
+			GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_TOOLTIP_MULTIPLE_SELLERS_FORMAT:format(sellersString), wrap);
+		end
 	elseif numSellers > 0 then
 		local wrap = true;
 		GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_TOOLTIP_SELLER_FORMAT:format(sellersString), wrap);
@@ -330,7 +335,7 @@ function AuctionHouseUtil.GetDisplayTextFromOwnedAuctionData(ownedAuctionData, i
 	local itemColor = itemQualityColor.color;
 
 	if ownedAuctionData.quantity > 1 then
-		itemDisplayText = AUCTION_HOUSE_ITEM_WITH_QUANTITY_FORMAT:format(itemDisplayText, ownedAuctionData.quantity);
+		itemDisplayText = AUCTION_HOUSE_ITEM_WITH_QUANTITY_FORMAT:format(itemDisplayText, BreakUpLargeNumbers(ownedAuctionData.quantity));
 	end
 
 	if ownedAuctionData.status == Enum.AuctionStatus.Sold then

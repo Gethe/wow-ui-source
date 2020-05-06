@@ -1,5 +1,37 @@
 local showDebugTooltipInfo = GetCVarBool("debugTargetInfo");
 
+CharCustomizeParentFrameBaseMixin = {};
+
+function CharCustomizeParentFrameBaseMixin:SetCustomizationChoice(optionID, choiceID)
+end
+
+function CharCustomizeParentFrameBaseMixin:PreviewCustomizationChoice(optionID, choiceID)
+end
+
+function CharCustomizeParentFrameBaseMixin:SetViewingAlteredForm(viewingAlteredForm)
+end
+
+function CharCustomizeParentFrameBaseMixin:SetModelDressState(dressedState)
+end
+
+function CharCustomizeParentFrameBaseMixin:GetCurrentCameraZoom()
+end
+
+function CharCustomizeParentFrameBaseMixin:SetCameraZoomLevel(zoomLevel, keepCustomZoom)
+end
+
+function CharCustomizeParentFrameBaseMixin:ResetCharacterRotation(mode, instantRotate)
+end
+
+function CharCustomizeParentFrameBaseMixin:ZoomCamera(zoomAmount, zoomTime, force)
+end
+
+function CharCustomizeParentFrameBaseMixin:RotateCharacter(rotationAmount)
+end
+
+function CharCustomizeParentFrameBaseMixin:RandomizeAppearance()
+end
+
 CharCustomizeFrameWithTooltipMixin = {};
 
 function CharCustomizeFrameWithTooltipMixin:OnLoad()
@@ -368,7 +400,6 @@ CharCustomizeOptionSliderMixin = CreateFromMixins(SliderWithButtonsAndLabelMixin
 
 function CharCustomizeOptionSliderMixin:OnLoad()
 	CharCustomizeFrameWithTooltipMixin.OnLoad(self);
-	ResizeLayoutMixin.OnLoad(self);
 end
 
 function CharCustomizeOptionSliderMixin:SetupAnchors(tooltip)
@@ -452,7 +483,6 @@ CharCustomizeOptionSelectionPopoutMixin = CreateFromMixins(CharCustomizeFrameWit
 
 function CharCustomizeOptionSelectionPopoutMixin:OnLoad()
 	CharCustomizeFrameWithTooltipMixin.OnLoad(self);
-	ResizeLayoutMixin.OnLoad(self);
 end
 
 function CharCustomizeOptionSelectionPopoutMixin:SetupAnchors(tooltip)
@@ -741,6 +771,13 @@ end
 
 function CharCustomizeMixin:UpdateZoomButtonStates()
 	local currentZoom = self.parentFrame:GetCurrentCameraZoom();
+
+	if not currentZoom then
+		self.SmallButtons:Hide();
+		return;
+	else
+		self.SmallButtons:Show();
+	end
 
 	local zoomOutEnabled = (currentZoom > 0);
 	self.SmallButtons.ZoomOutButton:SetEnabled(zoomOutEnabled);

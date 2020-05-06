@@ -372,13 +372,13 @@
 			<!-- Context menus -->
 			<Frame name="CalendarContextMenu" inherits="UIMenuTemplate" frameStrata="FULLSCREEN" enableMouse="true" clampedToScreen="true" hidden="true">
 				<Scripts>
-					<OnLoad function="CalendarContextMenu_OnLoad"/>
+					<OnLoad inherit="prepend" function="CalendarContextMenu_OnLoad"/>
 					<OnHide function="CalendarContextMenu_OnHide"/>
 				</Scripts>
 			</Frame>
 			<Frame name="CalendarInviteStatusContextMenu" inherits="UIMenuTemplate" frameStrata="FULLSCREEN" enableMouse="true" hidden="true" parent="CalendarContextMenu">
 				<Scripts>
-					<OnLoad function="CalendarInviteStatusContextMenu_OnLoad"/>
+					<OnLoad inherit="prepend" function="CalendarInviteStatusContextMenu_OnLoad"/>
 					<OnShow function="CalendarInviteStatusContextMenu_OnShow"/>
 					<OnEvent function="CalendarInviteStatusContextMenu_OnEvent"/>
 				</Scripts>
@@ -620,22 +620,17 @@
 			</Button>
 			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
 			<Frame parentKey="Header" inherits="DialogHeaderTemplate"/>
-			<Frame name="CalendarViewEventDescriptionContainer">
+			<Frame name="CalendarViewEventDescriptionContainer" inherits="BackdropTemplate">
 				<Size x="287" y="65"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="16" y="-95"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="8"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="8"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="1" right="1" top="1" bottom="1"/>
-					</BackgroundInsets>
-				</Backdrop>
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_8_8_1111" type="global"/>
+					<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
+					<KeyValue key="backdropColorAlpha" value="0.9" type="number"/>
+					<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+				</KeyValues>
 				<Frames>
 					<ScrollFrame name="CalendarViewEventDescriptionScrollFrame" inherits="CalendarEventDescriptionScrollFrame">
 						<Scripts>
@@ -661,12 +656,6 @@
 						</ScrollChild>
 					</ScrollFrame>
 				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-						self:SetBackdropColor(0.0, 0.0, 0.0, 0.9);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 			<Frame name="CalendarViewEventInviteListSection">
 				<Size x="320" y="320"/>
@@ -875,22 +864,17 @@
 					<Anchor point="TOPLEFT" x="52" y="-50"/>
 				</Anchors>
 			</Frame>
-			<Frame name="CalendarCreateEventDescriptionContainer">
+			<Frame name="CalendarCreateEventDescriptionContainer" inherits="BackdropTemplate">
 				<Size x="287" y="65"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="16" y="-146"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="8"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="8"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="1" right="1" top="1" bottom="1"/>
-					</BackgroundInsets>
-				</Backdrop>
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_8_8_1111" type="global"/>
+					<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
+					<KeyValue key="backdropColorAlpha" value="0.9" type="number"/>
+					<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+				</KeyValues>
 				<Frames>
 					<ScrollFrame name="CalendarCreateEventDescriptionScrollFrame" inherits="CalendarEventDescriptionScrollFrame">
 						<Scripts>
@@ -932,12 +916,6 @@
 						</ScrollChild>
 					</ScrollFrame>
 				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-						self:SetBackdropColor(0.0, 0.0, 0.0, 0.9);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 			<Frame name="CalendarCreateEventInviteListSection">
 				<Size x="320" y="330"/>

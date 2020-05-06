@@ -6,8 +6,6 @@ ZoneAbilityFramePriority = 200;
 ExtraAbilityContainerMixin = {};
 
 function ExtraAbilityContainerMixin:OnLoad()
-	LayoutMixin.OnLoad(self);
-
 	self.frames = {};
 end
 
@@ -30,7 +28,7 @@ function ExtraAbilityContainerMixin:AddFrame(frameToAdd, priority)
 			if framePair.priority == priority then
 				return;
 			end
-			
+
 			framePair.priority = priority;
 			table.sort(self.frames, SortFramePairs);
 			self:UpdateLayoutIndicies();

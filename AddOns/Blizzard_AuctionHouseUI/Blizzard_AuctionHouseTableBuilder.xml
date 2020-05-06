@@ -91,7 +91,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="AuctionHouseTableCellBidTemplate" mixin="AuctionHouseTableCellBidMixin" inherits="AuctionHouseTableMoneyDisplayTemplate" virtual="true"/>
+	<Frame name="AuctionHouseTableCellBidTemplate" mixin="AuctionHouseTableCellBidMixin" inherits="AuctionHouseTableMoneyDisplayCheckmarkTemplate" virtual="true"/>
 	
 	<Frame name="AuctionHouseTableCellBuyoutTemplate" mixin="AuctionHouseTableCellBuyoutMixin" inherits="AuctionHouseTableMoneyDisplayCheckmarkTemplate" virtual="true"/>
 

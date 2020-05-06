@@ -16,7 +16,6 @@ local textureKitRegions = {
 
 function UIWidgetTemplateIconTextAndBackgroundMixin:OnLoad()
 	UIWidgetBaseTemplateMixin.OnLoad(self);
-	ResizeLayoutMixin.OnLoad(self);
 end
 
 function UIWidgetTemplateIconTextAndBackgroundMixin:Setup(widgetInfo, widgetContainer)

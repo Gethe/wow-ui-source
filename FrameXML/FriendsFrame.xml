@@ -1130,20 +1130,8 @@
 					</OnShow>
 				</Scripts>
 			</Frame>
-			<Frame name="FriendsTooltip" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true">
+			<Frame name="FriendsTooltip" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true" inherits="TooltipBackdropTemplate">
 				<Size x="200" y="200"/>
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<Color r="0" b="0" g="0"/>
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="4" right="4" top="4" bottom="4"/>
-					</BackgroundInsets>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentHeader" inherits="FriendsFont_Normal" justifyH="LEFT">
@@ -1572,28 +1560,14 @@
 					<Anchor point="TOPLEFT" x="8" y="-40"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="ScrollFrameBorder">
+			<Frame parentKey="ScrollFrameBorder" inherits="TooltipBackdropTemplate">
 				<Size x="266" y="215"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="24" y="-74"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-						self:SetBackdropColor(0, 0, 0);
-					</OnLoad>
-				</Scripts>
+				<KeyValues>
+					<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
+				</KeyValues>
 			</Frame>
 			<ScrollFrame name="FriendsFriendsScrollFrame" inherits="FriendsFrameScrollFrame">
 				<Anchors>

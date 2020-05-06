@@ -23,10 +23,10 @@ end
 -- SetParent to UIParent and set alpha to 0. This is so we continue to get updates when widgets are shown, allowing us to add the tracker block again
 function ObjectiveTrackerUIWidgetContainerMixin:UnattachFromBlockAndHide()
 	self:SetAlpha(0);
-	self:SetParent(UIParent);	
+	self:SetParent(UIParent);
 end
 
-UI_WIDGET_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable();
+UI_WIDGET_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable("UI_WIDGET_TRACKER_MODULE");
 UI_WIDGET_TRACKER_MODULE.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_UI_WIDGETS;
 UI_WIDGET_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.UIWidgetsHeader, GetRealZoneText(), OBJECTIVE_TRACKER_UPDATE_MODULE_UI_WIDGETS);
 UI_WIDGET_TRACKER_MODULE.blockTemplate = "ObjectiveTrackerUIWidgetBlock";
@@ -36,7 +36,7 @@ UI_WIDGET_TRACKER_MODULE.freeBlocks = {};
 function UI_WIDGET_TRACKER_MODULE:Update()
 	self:BeginLayout();
 
-	-- We only ever use a single block for the widget container 
+	-- We only ever use a single block for the widget container
 	local block = self:GetBlock(1);
 
 	-- We add or remove the block based on whether there are any widgets showing
@@ -67,7 +67,6 @@ end
 ObjectiveTrackerUIWidgetBlockMixin = {};
 
 function ObjectiveTrackerUIWidgetBlockMixin:OnLoad()
-	ResizeLayoutMixin.OnLoad(self);
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 end
 

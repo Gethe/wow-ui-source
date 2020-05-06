@@ -190,7 +190,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="CharCustomizeFrame" mixin="CharCustomizeMixin" parent="UIParent" setAllPoints="true" hidden="true">
+	<Frame name="CharCustomizeFrame" mixin="CharCustomizeMixin" parent="UIParent" setAllPoints="true">
 		<Frames>
 			<Frame parentKey="AlteredForms" inherits="HorizontalLayoutFrame">
 				<KeyValues>

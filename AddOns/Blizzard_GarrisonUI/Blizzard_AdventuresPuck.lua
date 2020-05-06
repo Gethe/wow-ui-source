@@ -242,9 +242,12 @@ function AdventuresFollowerPuckMixin:SetFollowerGUID(followerGUID, info)
 		self.AbilityTwo:SetAbilityInfo(abilityTwo);
 	end
 
+	local autoCombatStats = C_Garrison.GetFollowerAutoCombatStats(followerGUID);
+	info.autoCombatantStats = autoCombatStats;
+
 	self.Portrait:SetTexture(info.portraitIconID);
 	self.HealthBar:SetMaxHealth(info.maxHealth);
-	self.HealthBar:SetHealth(info.health);
+	self.HealthBar:SetHealth(info.autoCombatantStats.currentHealth);
 	self.HealthBar:SetRole(info.role);
 end
 

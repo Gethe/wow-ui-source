@@ -356,7 +356,7 @@
 	</Frame>
 
 	<Frame name ="CovenantStatLineTemplate" parentArray="Abilities" virtual="true">
-		<Size x="230" y="22"/>
+		<Size x="250" y="22"/>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
 		</Anchors>
@@ -377,7 +377,7 @@
 	</Frame>
 	
 	<Frame name="CovenantFollowerTabTemplate" inherits="CovenantMissionBaseFrameTemplate" mixin="GarrisonFollowerTabMixin,CovenantFollowerTabMixin" hidden="true" virtual="true">
-		<Size x="550" y="565"/>
+		<Size x="574" y="538"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="NoFollowersLabel" inherits="GameFontNormalLarge2" text="GARRISON_NO_SELECTED_FOLLOWER" hidden="true">

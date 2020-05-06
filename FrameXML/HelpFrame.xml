@@ -177,7 +177,11 @@
 	-->
 
 
-
+	<Frame name="HelpFrameContainerFrameTemplate" inherits="TooltipBackdropTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
+		</KeyValues>
+	</Frame>
 
 	<Button name="HelpFrameButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="174" y="54"/>
@@ -964,28 +968,11 @@
 							</EditBox>
 						</ScrollChild>
 					</ScrollFrame>
-					<Frame>
+					<Frame inherits="HelpFrameContainerFrameTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentScrollFrame" x="-7" y="7"/>
 							<Anchor point="BOTTOMRIGHT" relativeTo="$parentScrollFrame" x="7" y="-7"/>
 						</Anchors>
-						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<BackgroundInsets>
-								<AbsInset left="5" right="5" top="5" bottom="5"/>
-							</BackgroundInsets>
-						</Backdrop>
-						<Scripts>
-							<OnLoad>
-								self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-								self:SetBackdropColor(0, 0, 0);
-							</OnLoad>
-						</Scripts>
 					</Frame>
 				</Frames>
 				<Scripts>
@@ -1084,28 +1071,11 @@
 							</EditBox>
 						</ScrollChild>
 					</ScrollFrame>
-					<Frame>
+					<Frame inherits="HelpFrameContainerFrameTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentScrollFrame" x="-7" y="7"/>
 							<Anchor point="BOTTOMRIGHT" relativeTo="$parentScrollFrame" x="7" y="-7"/>
 						</Anchors>
-						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<BackgroundInsets>
-								<AbsInset left="5" right="5" top="5" bottom="5"/>
-							</BackgroundInsets>
-						</Backdrop>
-						<Scripts>
-							<OnLoad>
-								self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-								self:SetBackdropColor(0, 0, 0);
-							</OnLoad>
-						</Scripts>
 					</Frame>
 				</Frames>
 				<Scripts>
@@ -1683,51 +1653,17 @@
 							</EditBox>
 						</ScrollChild>
 					</ScrollFrame>
-					<Frame>
+					<Frame inherits="HelpFrameContainerFrameTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentScrollFrame1" x="-7" y="7"/>
 							<Anchor point="BOTTOMRIGHT" relativeTo="$parentScrollFrame1" x="7" y="-7"/>
 						</Anchors>
-						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<BackgroundInsets>
-								<AbsInset left="5" right="5" top="5" bottom="5"/>
-							</BackgroundInsets>
-						</Backdrop>
-						<Scripts>
-							<OnLoad>
-								self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-								self:SetBackdropColor(0, 0, 0);
-							</OnLoad>
-						</Scripts>
 					</Frame>
-					<Frame>
+					<Frame inherits="HelpFrameContainerFrameTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentScrollFrame2" x="-7" y="7"/>
 							<Anchor point="BOTTOMRIGHT" relativeTo="$parentScrollFrame2" x="7" y="-7"/>
 						</Anchors>
-						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<BackgroundInsets>
-								<AbsInset left="5" right="5" top="5" bottom="5"/>
-							</BackgroundInsets>
-						</Backdrop>
-						<Scripts>
-							<OnLoad>
-								self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-								self:SetBackdropColor(0, 0, 0);
-							</OnLoad>
-						</Scripts>
 					</Frame>
 				</Frames>
 				<Scripts>
@@ -2007,7 +1943,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="TicketStatusFrameButton">
+			<Button name="TicketStatusFrameButton" inherits="HelpFrameContainerFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="TicketStatusTitleText">
 						<Offset x="-8" y="8"/>
@@ -2016,19 +1952,8 @@
 						<Offset x="30" y="-8"/>		<!-- width added to accomodate the status button -->
 					</Anchor>
 				</Anchors>
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
 				<Scripts>
-					<OnLoad function="TicketStatusFrameButton_OnLoad"/>
+					<OnLoad inherit="prepend" function="TicketStatusFrameButton_OnLoad"/>
 					<OnClick function="TicketStatusFrameButton_OnClick"/>
 				</Scripts>
 			</Button>
@@ -2207,7 +2132,6 @@
 		<Scripts>
 			<OnLoad>
 				self.exclusive = true;
-				self:SetBackdropColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
 			</OnLoad>
 		</Scripts>
 	</Frame>

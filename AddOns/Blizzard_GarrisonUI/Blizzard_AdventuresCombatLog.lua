@@ -101,10 +101,10 @@ function AdventuresCombatLogMixin:AddCombatRound(roundIndex, currentRound)
 	end
 end
 
-function AdventuresCombatLogMixin:AddCombatRoundHeader(roundIndex) 
+function AdventuresCombatLogMixin:AddCombatRoundHeader(roundIndex, totalRounds) 
 --TODO: Finalize design of combat log to stop using nonlocalized string
 	self.CombatLogMessageFrame:AddMessage(" ");
-	self.CombatLogMessageFrame:AddMessage("Round " .. roundIndex .. ":", YELLOW_FONT_COLOR:GetRGB());
+	self.CombatLogMessageFrame:AddMessage("Round " .. roundIndex .. "/" .. totalRounds .. ":", YELLOW_FONT_COLOR:GetRGB());
 	self.CombatLogMessageFrame:AddMessage(" ");
 end
 

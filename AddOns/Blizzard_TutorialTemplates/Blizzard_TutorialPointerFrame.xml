@@ -140,7 +140,7 @@
 				</Layers>
 			</Frame>
 
-			<Frame parentKey="Glow" frameLevel="1000">
+			<Frame parentKey="Glow" frameLevel="1000" inherits="BackdropTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Content" x="-12" y="12"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Content" x="12" y="-12"/>
@@ -155,9 +155,10 @@
 						</Scripts>
 					</AnimationGroup>
 				</Animations>
-				<Backdrop edgeFile="Interface\TutorialFrame\UI-TutorialFrame-CalloutGlow" alphaMode="ADD">
-					<EdgeSize val="20"/>
-				</Backdrop>
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_CALLOUT_GLOW_0_20" type="global"/>
+					<KeyValue key="backdropBorderBlendMode" value="ADD" type="string"/>
+				</KeyValues>
 			</Frame>
 		</Frames>
 	</Frame>

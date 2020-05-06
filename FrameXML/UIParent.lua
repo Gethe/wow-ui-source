@@ -89,6 +89,7 @@ UIPanelWindows["OrderHallTalentFrame"] =		{ area = "left",			pushable = 0,		xoff
 UIPanelWindows["ChallengesKeystoneFrame"] =		{ area = "center",			pushable = 0};
 UIPanelWindows["BFAMissionFrame"] =				{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["CovenantMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
+UIPanelWindows["BarberShopFrame"] =				{ area = "full",			pushable = 0,};
 
 local function SetFrameAttributes(frame, attributes)
 	frame:SetAttribute("UIPanelLayout-defined", true);
@@ -1920,10 +1921,12 @@ function UIParent_OnEvent(self, event, ...)
 
 	-- Event for BarberShop handling
 	elseif ( event == "BARBER_SHOP_OPEN" ) then
-		BarberShopFrame_LoadUI();
-		if ( BarberShopFrame ) then
-			ShowUIPanel(BarberShopFrame);
+		-- TODO: Remove this if once the old barber shop can die completely
+		if not BarberShopFrame_Old then
+			BarberShopFrame_LoadUI();
 		end
+
+		ShowUIPanel(BarberShopFrame);
 	elseif ( event == "BARBER_SHOP_CLOSE" ) then
 		if ( BarberShopFrame and BarberShopFrame:IsVisible() ) then
 			HideUIPanel(BarberShopFrame);

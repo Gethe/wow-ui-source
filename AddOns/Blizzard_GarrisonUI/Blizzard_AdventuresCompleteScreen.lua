@@ -197,14 +197,25 @@ function AdventuresCompleteScreenMixin:GetReplayTimeElapsed()
 	return self.replayTimeElapsed;
 end
 
-function AdventuresCompleteScreenMixin:IsReplayEventFinished(round, eventIndex, eventTime)
-	return eventTime > 1.0;
+function AdventuresCompleteScreenMixin:IsReplayEventFinished()
+	if self.replayEffectInProgress then
+		return false;
+	end
+	
+	local replayTimeElapsed = self:GetReplayTimeElapsed();
+	if self.replayEffectResolutionTime then
+		local timeSinceResolution = replayTimeElapsed - self.replayEffectResolutionTime;
+		return timeSinceResolution > 0.2;
+	end
+
+	local eventTime = replayTimeElapsed - self.eventStartTime;
+	return eventTime > 0.5;
 end
 
 function AdventuresCompleteScreenMixin:StartReplayRound(roundIndex)
 	self.replayRoundIndex = roundIndex;
 	self.roundStartTime = self:GetReplayTimeElapsed();
-	self.AdventuresCombatLog:AddCombatRoundHeader(roundIndex);
+	self.AdventuresCombatLog:AddCombatRoundHeader(roundIndex, self:GetNumReplayRounds());
 	self.Board:UpdateCooldownsFromNewRound();
 
 	local eventIndex = 1;
@@ -222,50 +233,138 @@ function AdventuresCompleteScreenMixin:StartReplayEvent(roundIndex, eventIndex)
 	self:PlayReplayEffect(event);
 end
 
+local AdventuresDamageClass = {
+	Enum.Damageclass.Physical,
+	Enum.Damageclass.Holy,
+	Enum.Damageclass.Fire,
+	Enum.Damageclass.Nature,
+	Enum.Damageclass.Frost,
+	Enum.Damageclass.Shadow,
+	Enum.Damageclass.Arcane,
+};
+
+local function GetTypeFromSchoolMask(schoolMask)
+	for i = #AdventuresDamageClass, 1, -1 do 
+		local spellClass = AdventuresDamageClass[i];
+		local spellClassMask = bit.lshift(1, spellClass);
+		if bit.band(schoolMask, spellClassMask) == spellClassMask then
+			return spellClass;
+		end
+	end
+
+	return Enum.Damageclass.Physical;
+end
+
+local AdventuresEffects = {
+	Ranged = {
+		[Enum.Damageclass.Physical] = 7,
+		-- [Enum.Damageclass.Holy] = nil,
+		[Enum.Damageclass.Fire] = 1,
+		[Enum.Damageclass.Nature] = 6,
+		[Enum.Damageclass.Frost] = 9,
+		[Enum.Damageclass.Shadow] = 4,
+		[Enum.Damageclass.Arcane] = 10,
+	},
+
+	Melee = {
+		[Enum.Damageclass.Physical] = 12,
+		[Enum.Damageclass.Holy] = 19,
+		-- [Enum.Damageclass.Fire] = nil,
+		-- [Enum.Damageclass.Nature] = nil,
+		-- [Enum.Damageclass.Frost] = nil,
+		[Enum.Damageclass.Shadow] = 20,
+		-- [Enum.Damageclass.Arcane] = nil,
+	},
+
+	Heal = 3,
+};
+
 local function GetEffectForEvent(combatLogEvent)
-	-- TODO:: Replace this function.
 	local eventType = combatLogEvent.type;
-	if eventType == Enum.GarrAutoMissionEventType.MeleeDamage then
-		return ScriptedAnimationEffectsUtil.NamedEffectIDs.MeleeAttack;
-	elseif eventType == Enum.GarrAutoMissionEventType.RangeDamage then
-		return ScriptedAnimationEffectsUtil.NamedEffectIDs.Fireball;
-	elseif eventType == Enum.GarrAutoMissionEventType.SpellMeleeDamage then
-		return ScriptedAnimationEffectsUtil.NamedEffectIDs.Fireball;
-	elseif eventType == Enum.GarrAutoMissionEventType.SpellRangeDamage then
-		return ScriptedAnimationEffectsUtil.NamedEffectIDs.Fireball;
-	elseif eventType == Enum.GarrAutoMissionEventType.PeriodicDamage then
-		return ScriptedAnimationEffectsUtil.NamedEffectIDs.ShockTarget;
-	elseif eventType == Enum.GarrAutoMissionEventType.Heal then
-		return ScriptedAnimationEffectsUtil.NamedEffectIDs.Regrowth;
-	elseif eventType == Enum.GarrAutoMissionEventType.PeriodicHeal then
-		return ScriptedAnimationEffectsUtil.NamedEffectIDs.Regrowth;
+	local spellClass = GetTypeFromSchoolMask(combatLogEvent.schoolMask);
+	if eventType == Enum.GarrAutoMissionEventType.MeleeDamage or eventType == Enum.GarrAutoMissionEventType.SpellMeleeDamage then
+		return AdventuresEffects.Melee[spellClass];
+	elseif eventType == Enum.GarrAutoMissionEventType.RangeDamage or eventType == Enum.GarrAutoMissionEventType.SpellRangeDamage then
+		return AdventuresEffects.Ranged[spellClass];
+	elseif eventType == Enum.GarrAutoMissionEventType.Heal or eventType == Enum.GarrAutoMissionEventType.PeriodicHeal then
+		return AdventuresEffects.Heal;
+	-- elseif eventType == Enum.GarrAutoMissionEventType.PeriodicDamage then
 	end
 
 	return nil;
 end
 
-function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)	
+function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)
+	self.replayEffectResolutionTime = nil;
+
 	local effect = GetEffectForEvent(combatLogEvent);
 	if effect then
-		local function EffectOnFinish()
+		self.replayEffectInProgress = true;
+
+		local sourceBoardIndex = combatLogEvent.casterBoardIndex;
+		local sourceFrame = self:GetFrameFromBoardIndex(sourceBoardIndex);
+		self.Board:RaiseFrameByBoardIndex(sourceBoardIndex);
+
+		local effectInfo = ScriptedAnimationEffectsUtil.GetEffectByID(effect);
+		local secondaryEffect = effectInfo and effectInfo.finishEffectID or nil;
+
+		local function AddCombatText(effectSequenceIndex)
 			self.Board:AddCombatEventText(combatLogEvent);
+			return false;
 		end
 
-		local sourceFrame = self:GetFrameFromBoardIndex(combatLogEvent.casterBoardIndex);
-		for i, target in ipairs(combatLogEvent.targetInfo) do
-			local targetFrame = self:GetFrameFromBoardIndex(target.boardIndex);
-			self.ModelScene:AddEffect(effect, sourceFrame, targetFrame, EffectOnFinish);
+		-- If there's a secondary effect, then play the primary effect on the primary target, and 
+		-- the secondary effect on all targets. Otherwise, play the primary effect on all targets together.
+		if secondaryEffect then
+			local function PrimaryEffectOnFinish(effectSequenceIndex)
+				AddCombatText(effectSequenceIndex);
+
+				local effectInfo = ScriptedAnimationEffectsUtil.GetEffectByID(effect);
+				local secondaryEffect = effectInfo and effectInfo.finishEffectID or nil;
+				if secondaryEffect then
+					for i = 2, #combatLogEvent.targetInfo do
+						local boardIndex = combatLogEvent.targetInfo[i].boardIndex;
+						local targetFrame = self:GetFrameFromBoardIndex(boardIndex);
+						self.ModelScene:AddEffect(secondaryEffect, sourceFrame, targetFrame);
+					end
+				end
+
+				return false;
+			end
+
+			local function EffectOnResolution()
+				self:OnReplayEffectResolved();
+			end
+
+			local primaryTarget = self:GetFrameFromBoardIndex(combatLogEvent.targetInfo[1].boardIndex);
+			self.ModelScene:AddEffect(effect, sourceFrame, primaryTarget, PrimaryEffectOnFinish, EffectOnResolution);
+		else
+			local resolutionCount = #combatLogEvent.targetInfo;
+			local function MultiEffectOnResolution()
+				resolutionCount = resolutionCount - 1;
+				if resolutionCount == 0 then
+					self:OnReplayEffectResolved();
+				end
+			end
+			for i, target in ipairs(combatLogEvent.targetInfo) do
+				local targetFrame = self:GetFrameFromBoardIndex(target.boardIndex);
+				local effectOnFinish = (i == 1) and AddCombatText or nil; -- The first effect adds an aggregate combat log event.
+				self.ModelScene:AddEffect(effect, sourceFrame, targetFrame, effectOnFinish, MultiEffectOnResolution);
+			end
 		end
 	else
 		self.Board:AddCombatEventText(combatLogEvent);
 	end
 end
 
+function AdventuresCompleteScreenMixin:OnReplayEffectResolved()
+	self.replayEffectInProgress = nil;
+	self.replayEffectResolutionTime = self:GetReplayTimeElapsed();
+end
+
 function AdventuresCompleteScreenMixin:AdvanceReplay()
-	local replayTimeElapsed = self:GetReplayTimeElapsed();
 	local currentRound = self:GetReplayRound(self.replayRoundIndex);
-	local eventTime = replayTimeElapsed - self.eventStartTime;
-	if self:IsReplayEventFinished(currentRound, self.replayEventIndex, eventTime) then
+	if self:IsReplayEventFinished() then
 		if self.replayEventIndex < #currentRound.events then
 			self:StartReplayEvent(self.replayRoundIndex, self.replayEventIndex + 1);
 		elseif self.replayRoundIndex < self:GetNumReplayRounds() then

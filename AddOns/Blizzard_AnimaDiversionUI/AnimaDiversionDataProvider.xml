@@ -2,7 +2,6 @@
 ..\FrameXML\UI.xsd">
 	<Script file="AnimaDiversionDataProvider.lua"/>
 	<Frame name="AnimaDiversionPinTemplate" mixin="AnimaDiversionPinMixin" enableMouse="true" virtual="true">
-		<Size x="150" y="150"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="0">
 				<Texture parentKey="Icon"/>
@@ -14,11 +13,19 @@
 			</Layer>
 		</Layers>
 	</Frame>
-
+	<Frame name="AnimaDiversionModelScenePinTemplate" mixin="AnimaDiversionModelScenePinMixin" virtual="true">
+		<Frames>
+			<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" useParentLevel="true" enableMouse="false">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</ModelScene>
+		</Frames>
+	</Frame>
 	<Frame name="AnimaDiversionConnectionTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-2">
-				<Line parentKey="Fill" atlas="_UI-Taxi-Line-horizontal" alpha="1" />
+				<Line parentKey="Fill" atlas="_AnimaChannel-Channel-Line-horizontal" alpha="1" />
 			</Layer>
 		</Layers>
 		<Animations>

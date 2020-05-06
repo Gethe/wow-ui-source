@@ -18,7 +18,6 @@ end
 AuctionHouseCommoditiesBuyDisplayMixin = {};
 
 function AuctionHouseCommoditiesBuyDisplayMixin:OnLoad()
-	LayoutMixin.OnLoad(self);
 	AuctionHouseBackgroundMixin.OnLoad(self);
 
 	self.ItemDisplay.NineSlice:Hide();
@@ -26,7 +25,7 @@ function AuctionHouseCommoditiesBuyDisplayMixin:OnLoad()
 	self.QuantityInput.MaxButton:Hide();
 
 	self.ItemDisplay:SetAuctionHouseFrame(self:GetAuctionHouseFrame());
-	
+
 	local function QuantityInputChanged()
 		self:GetAuctionHouseFrame():TriggerEvent(AuctionHouseFrameMixin.Event.CommoditiesQuantitySelectionChanged, self.QuantityInput:GetQuantity());
 	end
@@ -38,7 +37,7 @@ end
 
 function AuctionHouseCommoditiesBuyDisplayMixin:OnShow()
 	self:RegisterEvent("COMMODITY_PURCHASE_SUCCEEDED");
-	
+
 	self:Layout();
 
 	self:GetAuctionHouseFrame():RegisterCallback(AuctionHouseFrameMixin.Event.CommoditiesQuantitySelectionChanged, self.OnQuantitySelectionChanged, self);
@@ -141,7 +140,7 @@ AuctionHouseCommoditiesBuyFrameMixin = CreateFromMixins(AuctionHouseSortOrderSys
 
 function AuctionHouseCommoditiesBuyFrameMixin:OnLoad()
 	AuctionHouseSortOrderSystemMixin.OnLoad(self);
-	
+
 	self:SetSearchContext(AuctionHouseSearchContext.BuyCommodities);
 
 	self.ItemList:SetSelectionCallback(AuctionHouseUtil.GenerateRowSelectedCallbackWithLink(self, self.OnAuctionSelected));

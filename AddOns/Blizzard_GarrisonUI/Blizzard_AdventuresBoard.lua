@@ -151,6 +151,24 @@ function AdventuresBoardMixin:CreateFollowerFrames()
 	end
 end
 
+function AdventuresBoardMixin:ResetFrameLevels()
+	local baseEnemyFrameLevel = self.EnemyContainer:GetFrameLevel() + 1;
+	for enemyFrame in self:EnumerateEnemies() do
+		enemyFrame:SetFrameLevel(baseEnemyFrameLevel);
+	end
+
+	local baseFollowerFrameLevel = self.FollowerContainer:GetFrameLevel() + 1;
+	for followerFrame in self:EnumerateFollowers() do
+		followerFrame:SetFrameLevel(baseFollowerFrameLevel);
+	end
+end
+
+function AdventuresBoardMixin:RaiseFrameByBoardIndex(boardIndex)
+	self:ResetFrameLevels();
+
+	local frame = self:GetFrameByBoardIndex(boardIndex);
+	frame:SetFrameLevel(frame:GetFrameLevel() + 50);
+end
 
 AdventuresBoardCombatMixin = CreateFromMixins(AdventuresBoardMixin);
 

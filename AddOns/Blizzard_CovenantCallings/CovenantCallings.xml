@@ -4,22 +4,27 @@
 	<Script file="CovenantCallings.lua"/>
 
 	<Frame name="CovenantCallingQuestTemplate" mixin="CovenantCallingQuestMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+		</KeyValues>
 		<Size x="54" y="54"/>
 		<Layers>
+			<Layer level="BACKGROUND" textureSublevel="-1">
+				<Texture parentKey="Glow" atlas="Callings-Glow" hidden="true">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Icon">
-					<KeyValues>
-						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-					</KeyValues>
-					<Size x="128" y="128"/>
+					<Size x="126" y="126"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Highlight" alphaMode="ADD" alpha="0.5" hidden="true">
-					<KeyValues>
-						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-					</KeyValues>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
@@ -29,11 +34,8 @@
 			<Layer level="ARTWORK">
 				<Texture parentKey="Bang">
 					<Size x="16" y="16"/>
-					<KeyValues>
-						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-					</KeyValues>
 					<Anchors>
-						<Anchor point="LEFT" x="0" y="10"/>
+						<Anchor point="LEFT" x="-4" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -46,21 +48,32 @@
 
 	<Frame name="CovenantCallingsTemplate" inherits="ResizeLayoutFrame" mixin="CovenantCallingsMixin" virtual="true">
 		<Layers>
+			<Layer level="BACKGROUND" textureSublevel="-1">
+				<Texture parentKey="Background" atlas="shadowlands-landingpage-divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="TrackerBackground">
+				<Texture parentKey="Decor">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
-					<Size x="1" y="30"/>
 					<Anchors>
-						<Anchor point="LEFT" x="4"/>
-						<Anchor point="RIGHT"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
-					<Color color="BLACK_FONT_COLOR" a="0.80"/>
 				</Texture>
-				<Texture parentKey="RightSideSpacer">
-					<Size x="30" y="1"/>
-				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlightLarge" text="CALLINGS_QUESTS">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="45" y="-14"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>

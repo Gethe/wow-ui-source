@@ -339,24 +339,19 @@
 		</Button>
 		<EditBox name="StoreEditBoxWithAutoCompleteTemplate" inherits="StoreEditBoxHorizontalLabelTemplate" letters="100" virtual="true">
 			<Frames>
-				<Frame parentKey="AutoCompleteBox" hidden="true">
-					<Size x="154" y="5"/>
+				<Frame parentKey="AutoCompleteBox" inherits="TooltipBorderedFrameTemplate" hidden="true">
+					<Size x="150" y="5"/>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="BOTTOM" x="-4" y="14"/>
+						<Anchor point="TOP" relativePoint="BOTTOM" x="-2" y="14"/>
 					</Anchors>
-					<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-						<BackgroundInsets left="10" right="5" top="4" bottom="9"/>
-						<TileSize val="16"/>
-						<EdgeSize val="16"/>
-					</Backdrop>
 					<Layers>
 						<Layer level="BACKGROUND">
 							<Texture parentKey="Shade">
 								<Anchors>
-									<Anchor point="TOPLEFT" x="11" y="-7"/>
-									<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+									<Anchor point="TOPLEFT" x="5" y="-5"/>
+									<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
 								</Anchors>
-								<Color r="0" g="0" b="0" a=".8"/>
+								<Color r="0" g="0" b="0" a="0.8"/>
 							</Texture>
 						</Layer>
 					</Layers>
@@ -1782,9 +1777,6 @@
 					</FontString>
 				</Layer>
 			</Layers>
-			<Scripts>
-				<OnLoad function="StoreTooltip_OnLoad" />
-			</Scripts>
 		</Frame>
 
 		<Frame name="StoreBulletPointTemplate" inherits="BulletPointWithTextureTemplate" mixin="StoreBulletPointMixin" hyperlinksEnabled="true" virtual="true">

@@ -56,9 +56,9 @@
 	</Button>
 
 	<Frame name="CovenantPreviewFrame" toplevel="true" mixin="CovenantPreviewFrameMixin" enableMouse="true" parent="UIParent" frameStrata="DIALOG" hidden="true">
-		<Size x="1150" y="607"/>
+		<Size x="1100" y="607"/>
 		<Anchors>
-			<Anchor point="CENTER" x="0" y="0"/>
+			<Anchor point="CENTER" x="-10" y="0"/>
 		</Anchors>
 		<Frames>
 			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" setAllPoints="true"/>
@@ -201,11 +201,16 @@
 					<Anchor point="TOPRIGHT" x="3" y="2" />
 				</Anchors>
 			</Button>
-			<Button parentKey="SelectButton" inherits="UIPanelButtonTemplate" hidden="true" text="OK">
+			<Button parentKey="SelectButton" inherits="UIPanelButtonTemplate" frameLevel="510" hidden="true" text="CLOSE">
 				<Size x="150" y="25"/>
 				<Anchors>
-					<Anchor point="BOTTOM" x="180" y="30" />
+					<Anchor point="BOTTOM" x="220" y="70" />
 				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(CovenantPreviewFrame); 
+					</OnClick>
+				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>

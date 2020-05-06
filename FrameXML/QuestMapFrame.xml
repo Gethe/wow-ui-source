@@ -456,19 +456,8 @@
 							</Layer>
 						</Layers>
 					</Slider>
-					<Frame parentKey="StoryTooltip" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
+					<Frame parentKey="StoryTooltip" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" inherits="TooltipBackdropTemplate">
 						<Size x="10" y="10"/>
-						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<BackgroundInsets>
-								<AbsInset left="5" right="5" top="5" bottom="5"/>
-							</BackgroundInsets>
-						</Backdrop>
 						<Layers>
 							<Layer level="ARTWORK">
 								<FontString parentKey="Title" inherits="GameFontHighlightMedium">

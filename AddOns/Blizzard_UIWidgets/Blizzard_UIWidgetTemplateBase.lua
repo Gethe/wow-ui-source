@@ -41,7 +41,7 @@ function UIWidgetTemplateTooltipFrameMixin:OnEnter()
 			if self.postString and self.postString:len() > 0 then
 				GameTooltip_AddColoredLine(EmbeddedItemTooltip, self.postString, self.tooltipColor or HIGHLIGHT_FONT_COLOR, true);
 			end
-			
+
 			EmbeddedItemTooltip:Show();
 		else
 			local header, nonHeader = SplitTextIntoHeaderAndNonHeader(self.tooltip);
@@ -408,9 +408,8 @@ end
 
 function UIWidgetBaseTextureAndTextTemplateMixin:OnLoad()
 	UIWidgetTemplateTooltipFrameMixin.OnLoad(self);
-	ResizeLayoutMixin.OnLoad(self); 
-	self.Text:SetFontObjectsToTry(); 
-end 
+	self.Text:SetFontObjectsToTry();
+end
 
 function UIWidgetBaseTextureAndTextTemplateMixin:Setup(widgetContainer, text, tooltip, frameTextureKit, textureKit, textSizeType, layoutIndex)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
@@ -424,7 +423,7 @@ function UIWidgetBaseTextureAndTextTemplateMixin:Setup(widgetContainer, text, to
 
 	self.Text:SetFontObject(GetTextSizeFont(textSizeType));
 
-	self.Text:SetText(text); 
+	self.Text:SetText(text);
 	self:SetTooltip(tooltip);
 
 	SetupTextureKitOnFrame(frameTextureKit, self.Background, "%s"..textureKitAppend, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
@@ -437,8 +436,6 @@ UIWidgetBaseControlZoneTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipF
 
 function UIWidgetBaseControlZoneTemplateMixin:OnLoad()
 	UIWidgetTemplateTooltipFrameMixin.OnLoad(self);
-	ResizeLayoutMixin.OnLoad(self);
-
 	self.Progress:SetFrameLevel(self.UncapturedSection:GetFrameLevel() + 1);
 end
 

@@ -6,11 +6,9 @@
 			<KeyValue key="widthPadding" value="200" type="number"/>
 			<KeyValue key="heightPadding" value="100" type="number"/>
 		</KeyValues>
-
 		<Anchors>
 			<Anchor point="BOTTOM" y="100" />
 		</Anchors>
-		
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentkey="Keyboard" atlas="newplayertutorial-keyboard" useAtlasSize="true">
@@ -19,7 +17,6 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-
 			<Layer level="OVERLAY">
 				<FontString parentKey="Text" text="NPEV2_INTRO_TO_MOUSE_AND_KEYBOARD" inherits="GameFontNormalHuge">
 					<Color color="TUTORIAL_FONT_COLOR"/>
@@ -28,7 +25,6 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-
 		</Layers>
 		<Frames>
 			<Button name="KeyboardMouseConfirmButton" inherits="UIPanelDynamicResizeButtonTemplate" text="OKAY" virtual="true">
@@ -40,7 +36,6 @@
 				</Scripts>
 			</Button>
 		</Frames>
-
 		<Scripts>
 			<OnLoad method="OnLoad" />
 		</Scripts>

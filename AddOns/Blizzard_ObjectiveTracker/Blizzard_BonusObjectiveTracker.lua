@@ -1,7 +1,7 @@
 BonusObjectiveTrackerModuleMixin = {};
 
-function CreateBonusObjectiveTrackerModule()
-	local module = Mixin(ObjectiveTracker_GetModuleInfoTable(), BonusObjectiveTrackerModuleMixin);
+function CreateBonusObjectiveTrackerModule(friendlyName)
+	local module = Mixin(ObjectiveTracker_GetModuleInfoTable(friendlyName), BonusObjectiveTrackerModuleMixin);
 
 	module.blockTemplate = "BonusObjectiveTrackerBlockTemplate";
 	module.blockType = "ScrollFrame";
@@ -86,7 +86,7 @@ end
 -- *****************************************************************************************************
 
 function BonusObjectiveTracker_OnHeaderLoad(self)
-	local module = CreateBonusObjectiveTrackerModule();
+	local module = CreateBonusObjectiveTrackerModule(self.ModuleName);
     self.Text:SetFontObjectsToTry(GameFontNormalMed2, SystemFont_Shadow_Med1);
 
 	module.rewardsFrame = self.RewardsFrame;

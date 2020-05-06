@@ -1111,7 +1111,7 @@ function UIMenuButtonStretchMixin:SetTextures(texture)
 	self.MiddleMiddle:SetTexture(texture);
 end
 
-function UIMenuButtonStretchMixin:OnMouseDown(button)	
+function UIMenuButtonStretchMixin:OnMouseDown(button)
 	if ( self:IsEnabled() ) then
 		self:SetTextures("Interface\\Buttons\\UI-Silver-Button-Down");
 		if ( self.Icon ) then
@@ -1326,12 +1326,11 @@ end
 ResizeCheckButtonMixin = {}
 
 function ResizeCheckButtonMixin:OnLoad()
-	ResizeLayoutMixin.OnLoad(self);
 	self.Label:SetText(self.labelText);
 end
 
 function ResizeCheckButtonMixin:OnShow()
-	ResizeLayoutMixin.Layout(self);
+	ResizeLayoutMixin.OnShow(self);
 end
 
 -- Override in derived mixins
@@ -1626,7 +1625,7 @@ end
 function SelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelected)
 	self.name = selectionData.name;
 	self.index = index;
-	
+
 	if self.showColors and selectionData.swatchColor then
 		self.ColorSwatch:Show();
 		self.SelectionName:Hide();
@@ -1657,7 +1656,6 @@ end
 SelectionPopoutEntryMixin = {};
 
 function SelectionPopoutEntryMixin:OnLoad()
-	ResizeLayoutMixin.OnLoad(self);
 	self.SelectionDetails:SetPoint("TOPLEFT", self.ButtonText,"TOPLEFT", 14, 0);
 	self.SelectionDetails.SelectionName:SetPoint("RIGHT", self.SelectionDetails, "RIGHT");
 	self.parentButton = self:GetParent():GetParent();

@@ -2089,9 +2089,6 @@ end
 function CalendarContextMenu_OnLoad(self)
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
-
-	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 end
 
 function CalendarContextMenu_OnEvent(self, event, ...)
@@ -2838,9 +2835,6 @@ function CalendarEventDescriptionScrollFrame_OnEvent(self, event, ...)
 end
 
 function CalendarEventInviteList_OnLoad(self)
-	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-	self:SetBackdropColor(0.0, 0.0, 0.0, 0.9);
-
 	self.sortButtons = {
 		name = _G[self:GetName().."NameSortButton"],
 		class = _G[self:GetName().."ClassSortButton"],
@@ -4460,8 +4454,6 @@ function CalendarInviteContextMenu_InviteToGroup(self)
 end
 
 function CalendarInviteStatusContextMenu_OnLoad(self)
-	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 	self:RegisterEvent("CALENDAR_UPDATE_EVENT");
 	self.parentMenu = "CalendarContextMenu";
 	self.onlyAutoHideSelf = true;

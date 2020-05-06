@@ -16,7 +16,6 @@ local RESIZE_HORIZONTAL_OUTSETS = 4;
 local RESIZE_VERTICAL_OUTSETS = 7;
 
 function CompactRaidFrameManager_OnLoad(self)
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 	self.container = CompactRaidFrameContainer;
 	self.container:SetParent(self);
 	
@@ -218,9 +217,13 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer(self)
 	if ( IsInGroup() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) ) then
 		self.displayFrame.leaderOptions.readyCheckButton:Enable();
 		self.displayFrame.leaderOptions.readyCheckButton:SetAlpha(1);
+		self.displayFrame.leaderOptions.countdownButton:Enable(); 
+		self.displayFrame.leaderOptions.countdownButton:SetAlpha(1);
 	else
 		self.displayFrame.leaderOptions.readyCheckButton:Disable();
 		self.displayFrame.leaderOptions.readyCheckButton:SetAlpha(0.5);
+		self.displayFrame.leaderOptions.countdownButton:Disable(); 
+		self.displayFrame.leaderOptions.countdownButton:SetAlpha(0.5);
 	end
 end
 

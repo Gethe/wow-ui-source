@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="WarCampaignTemplates.lua"/>
 
-	<Frame name="CampaignTooltipTemplate" mixin="CampaignTooltipMixin" inherits="VerticalLayoutFrame" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" virtual="true" toplevel="true">
+	<Frame name="CampaignTooltipTemplate" mixin="CampaignTooltipMixin" inherits="VerticalLayoutFrame, TooltipBackdropTemplate" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" virtual="true" toplevel="true">
 		<KeyValues>
 			<KeyValue key="expand" value="true" type="boolean"/>
 			<KeyValue key="topPadding" value="10" type="number"/>
@@ -12,17 +12,6 @@
 			<KeyValue key="spacing" value="0" type="number"/>
 		</KeyValues>
 		<Size x="10" y="10"/>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="GameFontHighlightMedium" justifyH="LEFT">
@@ -74,7 +63,6 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 		</Scripts>

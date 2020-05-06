@@ -182,35 +182,20 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" x="22" y="-40"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.labelText = CATEGORY;
-						OptionsList_OnLoad(self, "KeyBindingsCategoryListButtonTemplate");
-					</OnLoad>
-				</Scripts>
+				<KeyValues>
+					<KeyValue key="labelText" value="CATEGORY" type="global"/>
+					<KeyValue key="buttonTemplate" value="KeyBindingsCategoryListButtonTemplate" type="string"/>
+				</KeyValues>
 			</Frame>
-			<Frame parentKey="bindingsContainer">
+			<Frame parentKey="bindingsContainer" inherits="TooltipBorderBackdropTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.categoryList" relativePoint="TOPRIGHT" x="16" y="0"/>
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.categoryList" relativePoint="BOTTOMRIGHT" x="16" y="1"/>
 					<Anchor point="RIGHT" x="-22" y="0"/>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(.6, .6, .6, 1);
-					</OnLoad>
-				</Scripts>
+				<KeyValues>
+					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
+				</KeyValues>
 			</Frame>
 			<ScrollFrame name="$parentScrollFrame" parentKey="scrollFrame" inherits="FauxScrollFrameTemplate">
 				<Size x="560" y="554"/>

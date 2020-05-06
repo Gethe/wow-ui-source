@@ -3783,11 +3783,6 @@ function StoreCategory_OnClick(self,button,down)
 end
 
 ----------------------------------
-function StoreTooltip_OnLoad(self)
-	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.9);
-end
-
 function StoreTooltip_Show(name, description, isToken)
 	local self = StoreTooltip;
 	local STORETOOLTIP_MAX_WIDTH = isToken and 300 or 250;
