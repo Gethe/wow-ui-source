@@ -457,7 +457,7 @@
 			</Frame>
 			<Frame parentKey="NameChoiceFrame" inherits="ResizeLayoutFrame" hidden="true">
 				<Anchors>
-					<Anchor point="TOP" y="-30"/>
+					<Anchor point="TOP" y="-34"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -474,13 +474,13 @@
 							<KeyValue key="justifyH" value="CENTER" type="string"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" y="-5"/>
+							<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" y="-2"/>
 						</Anchors>
 						<Frames>
 							<Button parentKey="NameAvailabilityState" inherits="CharCustomizeFrameWithTooltipTemplate" mixin="CharacterCreateNameAvailabilityStateMixin">
-								<Size x="18" y="18"/>
+								<Size x="20" y="20"/>
 								<Anchors>
-									<Anchor point="RIGHT"/>
+									<Anchor point="LEFT" relativeKey="$parent.EditBox" relativePoint="RIGHT" x="22"/>
 								</Anchors>
 								<KeyValues>
 									<KeyValue key="tooltipMinWidth" value="nil" type="number"/>
@@ -506,7 +506,7 @@
 					</EditBox>
 					<Button parentKey="RandomNameButton" inherits="CharCustomizeSmallButtonTemplate" mixin="CharacterCreateRandomNameButtonMixin" hidden="true">
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.EditBox" relativePoint="RIGHT" x="20"/>
+							<Anchor point="RIGHT" relativeKey="$parent.EditBox" relativePoint="LEFT" x="-16" y="-1"/>
 						</Anchors>
 						<KeyValues>
 							<KeyValue key="simpleTooltipLine" value="RANDOMIZE" type="global"/>

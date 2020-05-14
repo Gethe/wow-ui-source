@@ -162,7 +162,7 @@ function PVPMatchResultsMixin:Shutdown()
 	HideUIPanel(self);
 end
 function PVPMatchResultsMixin:OnEvent(event, ...)
-	if event == "PVP_MATCH_ACTIVE" or (event == "PLAYER_ENTERING_WORLD" and C_PvP.GetActiveMatchState() ~= Enum.PvpMatchState.Inactive) then
+	if event == "PVP_MATCH_ACTIVE" or (event == "PLAYER_ENTERING_WORLD" and C_PvP.GetActiveMatchState() ~= Enum.PvPMatchState.Inactive) then
 		FrameUtil.RegisterFrameForEvents(self, ACTIVE_EVENTS);
 	elseif event == "PLAYER_LEAVING_WORLD" then
 		self:Shutdown();

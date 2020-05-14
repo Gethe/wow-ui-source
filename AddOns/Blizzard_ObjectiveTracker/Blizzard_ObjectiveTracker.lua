@@ -535,6 +535,34 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:FreeProgressBar(block, line)
 	end
 end
 
+local function ObjectiveTracker_SetModulesCollapsed(collapsed, ...)
+	for i = 1, select("#", ...) do
+		local module = select(i, ...);
+		module.collapsed = collapsed;
+	end
+end
+
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetRelatedModules()
+	-- Default implementation, most single/shared modules can be found this way
+	-- NOTE: This actually inserts self as well, since the header matches, that's fine.
+	local modules = {};
+	local header = self.Header;
+	for index, module in ipairs(ObjectiveTrackerFrame.MODULES) do
+		if module.Header == header then
+			table.insert(modules, module);
+		end
+	end
+
+	return unpack(modules);
+end
+
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:SetCollapsed(collapsed)
+	ObjectiveTracker_SetModulesCollapsed(collapsed, self:GetRelatedModules());
+
+	if self.Header and self.Header.MinimizeButton then
+		self.Header.MinimizeButton:SetCollapsed(collapsed);
+	end
+end
 
 -- *****************************************************************************************************
 -- ***** BLOCK HEADER HANDLERS
@@ -865,7 +893,7 @@ end
 function ObjectiveTracker_MinimizeModuleButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	local module = self:GetParent().module;
-	ObjectiveTracker_SetModuleCollapsed(module, not module.collapsed);
+	module:SetCollapsed(not module.collapsed);
 	ObjectiveTracker_Update();
 end
 
@@ -881,34 +909,6 @@ function ObjectiveTracker_Expand()
 	ObjectiveTrackerFrame.BlocksFrame:Show();
 	ObjectiveTrackerFrame.HeaderMenu.MinimizeButton:SetCollapsed(false);
 	ObjectiveTrackerFrame.HeaderMenu.Title:Hide();
-end
-
-local function ObjectiveTracker_GetAllModulesForHeader(header)
-	local modules = {};
-	for index, module in ipairs(ObjectiveTrackerFrame.MODULES) do
-		if module.Header and module.Header == header then
-			table.insert(modules, module);
-		end
-	end
-
-	return unpack(modules);
-end
-
-local function ObjectiveTracker_SetModulesCollapsed(collapsed, ...)
-	local header;
-	for i = 1, select("#", ...) do
-		local module = select(i, ...);
-		module.collapsed = collapsed;
-		header = module.Header; -- store this so that the button state only updates once.
-	end
-
-	if header and header.MinimizeButton then
-		header.MinimizeButton:SetCollapsed(collapsed);
-	end
-end
-
-function ObjectiveTracker_SetModuleCollapsed(module, collapsed)
-	ObjectiveTracker_SetModulesCollapsed(collapsed, ObjectiveTracker_GetAllModulesForHeader(module.Header))
 end
 
 function ObjectiveTracker_ToggleDropDown(frame, handlerFunc)

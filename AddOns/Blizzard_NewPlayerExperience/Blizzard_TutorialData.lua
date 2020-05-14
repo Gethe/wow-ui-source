@@ -42,10 +42,10 @@ TutorialData.LevelAbilitiesTable = {
 		1752,	-- Start with Sinister Strike
 		196819,	-- Eviscerate, level 2
 		1784,	-- Stealth, level 3
-		1833,	-- Cheap Shot, level 4
+		nil,	-- 1833, Cheap Shot, level 4
 		2983,	-- Sprint, level 5
 		1766,	-- Kick, level 6
-		8676,	-- Ambush, level 7
+		nil,	-- 8676, Ambush, level 7
 		185311,	-- Crimson Vial, level 8
 		315496,	-- Slice and Dice, level 9
 	};
@@ -109,29 +109,22 @@ TutorialData.LevelAbilitiesTable = {
 		8921,	-- Moonfire, level 2
 		8936,	-- Regrowth, level 3
 		339,	-- Entangling Roots, level 4
-		5221,	-- Shred, level 5
+		nil,	-- 5221, Shred, level 5
 		1850,	-- Dash, level 6
-		22568,	-- Ferocious Bite, level 7
-		33917,	-- Mangle, level 8
+		nil,	-- 22568, Ferocious Bite, level 7
+		nil,	-- 33917, Mangle, level 8
 		nil,	-- 326646, Moonfire Rank 2, level 9
 	};
 }
 
 -- ------------------------------------------------------------------------------------------------------------
-TutorialData.SecondLevelAbilityTable =
+TutorialData.DruidAnimalFormSpells =
 {
-	DRUID = {
-		nil,	-- 
-		nil,	-- 
-		nil,	-- 
-		nil,	-- 
-		768,	-- Cat Form, level 5
-		nil,	-- 
-		nil,	-- 
-		5487,	-- Bear Form, level 8
-		nil,	-- 
-	}
+	catSpells = {5221, 1850, 22568};
+	bearSpells = {33917};
 }
+
+TutorialData.RogueStealthSpells = {1833, 8676};
 
 -- ------------------------------------------------------------------------------------------------------------
 TutorialData.ClassData = {
@@ -149,7 +142,6 @@ TutorialData.ClassData = {
 
 		builderString = NPEV2_WARRIOR_BUILDER,
 		spenderString = NPEV2_WARRIOR_SPENDER,
-		backupUIElement = MainMenuBarArtFrame,
 		classQuestSpellID = 163201,			-- Execute
 	},
 	PALADIN = {
@@ -166,7 +158,6 @@ TutorialData.ClassData = {
 
 		builderString = NPEV2_PALADIN_BUILDER,
 		spenderString = NPEV2_PALADIN_SPENDER,
-		backupUIElement = ClassNameplateBarPaladinFrame,
 		classQuestSpellID = 642,			-- Divine Shield
 	},
 	HUNTER = {
@@ -183,7 +174,6 @@ TutorialData.ClassData = {
 
 		builderString = nil,
 		spenderString = nil,
-		backupUIElement = ClassNameplateBarPaladinFrame,
 		classQuestSpellID = 187650,			-- Freezing Trap
 	},
 	ROGUE = {
@@ -200,7 +190,6 @@ TutorialData.ClassData = {
 
 		builderString = NPEV2_ROGUE_BUILDER,
 		spenderString = NPEV2_ROGUE_SPENDER,
-		backupUIElement = ClassNameplateBarRogueDruidFrame,
 		classQuestSpellID = 315584,			-- Instant Poison
 	},
 	PRIEST = {
@@ -217,7 +206,6 @@ TutorialData.ClassData = {
 
 		builderString = NPEV2_PRIEST_BUILDER,
 		spenderString = NPEV2_PRIEST_SPENDER,
-		backupUIElement = ClassNameplateManaBarFrame,
 		classQuestSpellID = 2006,			-- Ressurection
 	},
 	SHAMAN = {
@@ -234,7 +222,6 @@ TutorialData.ClassData = {
 
 		builderString = NPEV2_SHAMAN_BUILDER,
 		spenderString = NPEV2_SHAMAN_SPENDER,
-		backupUIElement = ClassNameplateManaBarFrame,
 		classQuestSpellID = 2645,			-- Ghost Wolf
 	},
 	MAGE = {
@@ -251,7 +238,6 @@ TutorialData.ClassData = {
 
 		builderString = NPEV2_MAGE_BUILDER,
 		spenderString = NPEV2_MAGE_SPENDER,
-		backupUIElement = ClassNameplateManaBarFrame,
 		classQuestSpellID = 118,			-- Polymorph
 	},
 	WARLOCK = {
@@ -269,7 +255,6 @@ TutorialData.ClassData = {
 
 		builderString = NPEV2_WARLOCK_BUILDER,
 		spenderString = NPEV2_WARLOCK_SPENDER,
-		backupUIElement = ClassNameplateManaBarFrame,
 		classQuestSpellID = 697,			-- Summon Voidwalker
 	},
 	MONK = {
@@ -286,7 +271,6 @@ TutorialData.ClassData = {
 
 		builderString = NPEV2_MONK_BUILDER,
 		spenderString = NPEV2_MONK_SPENDER,
-		backupUIElement = ClassNameplateManaBarFrame,
 		classQuestSpellID = 322109,			-- Touch of Death
 	},
 	DRUID = {
@@ -304,7 +288,6 @@ TutorialData.ClassData = {
 
 		builderString = NPEV2_DRUID_BUILDER,
 		spenderStringD = NPEV2_DRUID_SPENDER,
-		backupUIElement = ClassNameplateManaBarFrame,
 		classQuestSpellID = 783,			-- Travel Form
 	},
 };
@@ -328,6 +311,8 @@ TutorialData.Alliance = {
 	UseFoodQuest = 55174;
 	FoodItem = 117;
 	FoodSpellCast = 433;
+
+	MultipleQuestsTutorial = {55184, 55186};
 
 	UseVendorQuest = 55194;
 
@@ -443,6 +428,8 @@ TutorialData.Horde = {
 	UseFoodQuest = 59932;
 	FoodItem = 117;
 	FoodSpellCast = 433;
+
+	MultipleQuestsTutorial = {59938, 59939};
 
 	UseVendorQuest = 59950;
 

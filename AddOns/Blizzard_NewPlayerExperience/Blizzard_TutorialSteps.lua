@@ -95,10 +95,16 @@ end
 
 Class_Hide_BagsBar = class("Hide_BagsBar", Class_TutorialBase);
 function Class_Hide_BagsBar:OnBegin()
+	Dispatcher:RegisterEvent("PLAYER_LEVEL_CHANGED", self);
 	MicroButtonAndBagsBar:Hide();
 end
 
+function Class_Hide_BagsBar:PLAYER_LEVEL_CHANGED(originalLevel, newLevel)
+	self:Complete();
+end
+
 function Class_Hide_BagsBar:OnComplete()
+	Dispatcher:UnregisterEvent("PLAYER_LEVEL_CHANGED", self);
 	MicroButtonAndBagsBar:Show();
 end
 
@@ -136,10 +142,16 @@ end
 
 Class_Hide_SpellbookMicroButton = class("Hide_SpellbookMicroButton", Class_TutorialBase);
 function Class_Hide_SpellbookMicroButton:OnBegin()
+	Dispatcher:RegisterEvent("PLAYER_LEVEL_CHANGED", self);
 	SpellbookMicroButton:Hide();
 end
 
+function Class_Hide_SpellbookMicroButton:PLAYER_LEVEL_CHANGED(originalLevel, newLevel)
+	self:Complete();
+end
+
 function Class_Hide_SpellbookMicroButton:OnComplete()
+	Dispatcher:UnregisterEvent("PLAYER_LEVEL_CHANGED", self);
 	SpellbookMicroButton:Show();
 end
 
@@ -214,9 +226,8 @@ function Class_Intro_KeyboardMouse:QUEST_DETAIL(logindex, questID)
 	EventRegistry:RegisterCallback("NPE_TutorialKeyboardMouseFrame.Closed", nil, self);
 	
 	NPE_TutorialKeyboardMouseFrame_Frame:HideTutorial();
+	self.shortCut = true;
 	self:Complete();
-	Tutorials.Intro_CameraLook:Complete();
-	Tutorials.Intro_ApproachQuestGiver:Complete();
 end
 
 function Class_Intro_KeyboardMouse:TutorialClosed()
@@ -224,7 +235,9 @@ function Class_Intro_KeyboardMouse:TutorialClosed()
 end
 
 function Class_Intro_KeyboardMouse:OnComplete()
-	Tutorials.Intro_CameraLook:Begin();
+	if not self.shortCut then
+		Tutorials.Intro_CameraLook:Begin();
+	end
 end
 
 
@@ -239,11 +252,11 @@ function Class_Intro_CameraLook:OnBegin()
 
 	Dispatcher:RegisterEvent("PLAYER_STARTED_TURNING", self);
 	Dispatcher:RegisterEvent("PLAYER_STOPPED_TURNING", self);
+	Dispatcher:RegisterEvent("QUEST_DETAIL", self);
 end
 
 function Class_Intro_CameraLook:PLAYER_STARTED_TURNING()
 	self.PlayerHasLooked = true;
-
 end
 
 function Class_Intro_CameraLook:PLAYER_STOPPED_TURNING()
@@ -252,11 +265,18 @@ function Class_Intro_CameraLook:PLAYER_STOPPED_TURNING()
 	end
 end
 
+function Class_Intro_CameraLook:QUEST_DETAIL()
+	self.shortCut = true;
+	self:Complete()
+end
+
 function Class_Intro_CameraLook:OnComplete()
 	Dispatcher:UnregisterEvent("PLAYER_STARTED_TURNING", self);
 	Dispatcher:UnregisterEvent("PLAYER_STOPPED_TURNING", self);
 
-	Tutorials.Intro_ApproachQuestGiver:Begin(); 
+	if not self.shortCut then
+		Tutorials.Intro_ApproachQuestGiver:Begin(); 
+	end;
 end
 
 
@@ -323,6 +343,11 @@ function Class_Intro_CombatDummyInRange:OnBegin()
 	end
 end
 
+function Class_Intro_CombatDummyInRange:OnInterrupt(interruptedBy)
+	self.interrupted = true;
+	self:Complete();
+end
+
 function Class_Intro_CombatDummyInRange:UNIT_TARGET()
 	local unitGUID = UnitGUID("target");
 	if unitGUID and (TutorialHelper:GetCreatureIDFromGUID(unitGUID) == TutorialHelper:GetFactionData().StartingQuestTargetDummyCreatureID) then
@@ -342,9 +367,11 @@ function Class_Intro_CombatDummyInRange:CheckFinished()
 end
 
 function Class_Intro_CombatDummyInRange:OnComplete()
-	Tutorials.Hide_MainMenuBar:Complete();
-	Tutorials.Hide_TargetFrame:Complete();
-	Tutorials.Intro_CombatTactics:Begin();
+	if not self.interrupted then
+		Tutorials.Hide_MainMenuBar:Complete();
+		Tutorials.Hide_TargetFrame:Complete();
+		Tutorials.Intro_CombatTactics:Begin();
+	end
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -354,6 +381,7 @@ Class_Intro_CombatTactics = class("Intro_CombatTactics", Class_TutorialBase);
 function Class_Intro_CombatTactics:OnBegin()
 	Dispatcher:RegisterEvent("QUEST_REMOVED", self);
 	Dispatcher:RegisterEvent("PLAYER_LEAVE_COMBAT", self);
+	Dispatcher:RegisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 
 	local classData = TutorialHelper:FilterByClass(TutorialData.ClassData);
 	self.spellID = classData.firstSpellID;
@@ -389,6 +417,11 @@ function Class_Intro_CombatTactics:UNIT_TARGET()
 		Dispatcher:UnregisterEvent("UNIT_TARGET", self);
 		Dispatcher:RegisterEvent("UNIT_POWER_FREQUENT", self);
 	end
+end
+
+function Class_Intro_CombatTactics:ACTIONBAR_SLOT_CHANGED()
+	--C_Timer.After(0.1, function() self:Reset(); end);
+	self:Reset();
 end
 
 function Class_Intro_CombatTactics:HideResourceCallout()
@@ -439,7 +472,11 @@ function Class_Intro_CombatTactics:ShowAbilityPrompt(firstTime)
 	end
 	
 	local button = TutorialHelper:GetActionButtonBySpellID(self.spellID);
-	self:ShowPointerTutorial(combatString, "DOWN", button, 0, 10, nil, "UP");
+	if button then
+		self:ShowPointerTutorial(combatString, "DOWN", button, 0, 10, nil, "UP");
+	else
+		self:HidePointerTutorials();
+	end
 end
 
 function Class_Intro_CombatTactics:UNIT_SPELLCAST_SUCCEEDED(caster, spelllineID, spellID)
@@ -483,6 +520,48 @@ function Class_Intro_CombatTactics:OnComplete()
 	self:HidePointerTutorials();
 end
 
+
+
+-- ------------------------------------------------------------------------------------------------------------
+-- Gossip Frame Watcher
+-- ------------------------------------------------------------------------------------------------------------
+Class_GossipFrameWatcher = class("GossipFrameWatcher", Class_TutorialBase);
+function Class_GossipFrameWatcher:OnBegin()
+	Dispatcher:RegisterEvent("GOSSIP_SHOW", self);
+	Dispatcher:RegisterEvent("GOSSIP_CLOSED", self);
+end
+
+function Class_GossipFrameWatcher:GOSSIP_SHOW()
+	local firstQuestButton = nil;
+	for i=1, NUMGOSSIPBUTTONS do
+		local button = _G["GossipTitleButton" .. i];
+		if button and button:IsShown() then
+			if not firstQuestButton then
+				firstQuestButton = button;
+			end
+			NPE_TutorialQuestBangGlow:Show(button);
+		end
+	end
+	GossipFrameGreetingGoodbyeButton:Hide();
+	if firstQuestButton then
+		self:ShowPointerTutorial(NPEV2_MULTIPLE_QUESTS_OFFERED, "LEFT", firstQuestButton, 0, 0, "RIGHT");
+	end
+end
+
+function Class_GossipFrameWatcher:GOSSIP_CLOSED()
+	for i=1, NUMGOSSIPBUTTONS do
+		local button = _G["GossipTitleButton" .. i];
+		if button and button:IsShown() then
+			NPE_TutorialQuestBangGlow:Hide(button);
+		end
+	end
+	GossipFrameGreetingGoodbyeButton:Show();
+	self:HidePointerTutorials();
+end
+
+function Class_GossipFrameWatcher:OnComplete()
+	self:HidePointerTutorials();
+end
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Accept Quest Watcher - Watches for a new quest window to pop up that is ready to be accepted
@@ -652,6 +731,158 @@ end
 
 
 -- ------------------------------------------------------------------------------------------------------------
+-- Queue System - this tutorial makes sure that certain tutorials can't happen at the same time
+-- ------------------------------------------------------------------------------------------------------------
+Class_QueueSystem = class("QueueSystem", Class_TutorialBase);
+function Class_QueueSystem:OnInitialize()
+	self.tutorialQueue = {};
+	self.tutorialQueue.first = 1;
+	self.tutorialQueue.last = 0;
+
+	self.tutorialQueue.Push = function(self, value)
+		local last = self.last + 1;
+		self.last = last;
+		self[last] = value;
+	end
+
+	self.tutorialQueue.Pop = function(self)
+		local first = self.first;
+		local value;
+		if first <= self.last then 
+			value = self[first];
+			self[first] = nil;
+			self.first = first + 1;
+		end
+		return value;
+	end
+end
+
+function Class_QueueSystem:OnBegin()
+	Dispatcher:RegisterEvent("PLAYER_LEVEL_CHANGED", self);
+	Dispatcher:RegisterEvent("UNIT_INVENTORY_CHANGED", self);
+
+	self.playerClass = TutorialHelper:GetClass();
+	if self.playerClass == "DRUID" or self.playerClass == "ROGUE" then
+		Dispatcher:RegisterEvent("UPDATE_SHAPESHIFT_FORM", self);
+	end
+end
+
+function Class_QueueSystem:PLAYER_LEVEL_CHANGED(originalLevel, newLevel)
+	if newLevel > 9 then
+		Dispatcher:UnregisterEvent("PLAYER_LEVEL_CHANGED", self);
+	else
+		LevelUpTutorial_spellIDlookUp = TutorialHelper:FilterByClass(TutorialData.LevelAbilitiesTable);
+		for i = originalLevel + 1, newLevel, 1 do
+			local spellID = LevelUpTutorial_spellIDlookUp[i];
+			if spellID then
+				local value = {};
+				value.spellID = spellID;
+				value.warningString = nil;
+				value.spellMicroButtonString = NPEV2_SPELLBOOK_TUTORIAL;
+				value.type = "PLAYER_LEVEL_CHANGED";
+				self.tutorialQueue:Push(value);
+			end
+		end
+	end
+	self:CheckQueue();
+end
+
+function Class_QueueSystem:UPDATE_SHAPESHIFT_FORM()
+	local level = UnitLevel("player");
+	if (level > 9) then
+		Dispatcher:UnregisterEvent("UPDATE_SHAPESHIFT_FORM", self);
+		self:CheckQueue();
+		return;
+	end
+	local form = GetShapeshiftFormID();
+	local formSpells = nil;
+	if form == BEAR_FORM then
+		formSpells = TutorialData.DruidAnimalFormSpells.bearSpells;
+	elseif form == CAT_FORM then
+		formSpells = TutorialData.DruidAnimalFormSpells.catSpells;
+	elseif form == ROGUE_STEALTH then
+		formSpells = TutorialData.RogueStealthSpells;
+	else
+		Tutorials.AddSpellToActionBar:Complete();
+	end
+	if formSpells then
+		for i, spellID in ipairs(formSpells) do
+			if IsSpellKnown(spellID) then
+				local value = {};
+				value.spellID = spellID;
+				value.warningString = nil;
+				value.spellMicroButtonString = NPEV2_SPELLBOOK_TUTORIAL;
+				value.form = form;
+				value.type = "REQUIRED_FORM_SPELL";
+				self.tutorialQueue:Push(value);
+			end
+		end
+	end
+	self.Timer = C_Timer.NewTimer(0.1, function()
+		self:CheckQueue();
+	end);
+end
+
+function Class_QueueSystem:UNIT_INVENTORY_CHANGED()
+	local level = UnitLevel("player");
+	if (level > 9) then
+		Dispatcher:UnregisterEvent("UNIT_INVENTORY_CHANGED", self);
+	else
+		local value = {};
+		value.type = "UNIT_INVENTORY_CHANGED";
+		self.tutorialQueue:Push(value);
+	end
+	self:CheckQueue();
+end
+
+
+function Class_QueueSystem:QueueSpellTutorial(spellID, warningString, spellMicroButtonString)
+	if spellID then
+		local value = {};
+		value.spellID = spellID;
+		value.warningString = warningString;
+		value.spellMicroButtonString = spellMicroButtonString;
+		value.type = "SPELL_TUTORIAL";
+		self.tutorialQueue:Push(value);
+	end
+	self:CheckQueue();
+end
+
+function Class_QueueSystem:TutorialFinished()
+	self.inProgress = false;
+	self:CheckQueue();
+end
+
+function Class_QueueSystem:CheckQueue()
+	if self.inProgress == true then
+		return;
+	end
+
+	local value = self.tutorialQueue:Pop();
+	if value then
+		if value.type == "PLAYER_LEVEL_CHANGED" or value.type == "SPELL_TUTORIAL" then
+			if value.spellID then
+				self.inProgress = true;
+				Tutorials.AddSpellToActionBar:Begin(value.spellID, value.warningString, value.spellMicroButtonString);
+			end
+		elseif value.type == "REQUIRED_FORM_SPELL" then
+			local form = GetShapeshiftFormID();
+			if form == value.form then
+				if value.spellID then
+					self.inProgress = true;
+					Tutorials.AddSpellToActionBar:Begin(value.spellID, value.warningString, value.spellMicroButtonString);
+				end
+			else
+				-- not in the correct form, push it back on the queue
+				self.tutorialQueue:Push(value);
+			end
+		elseif value.type == "UNIT_INVENTORY_CHANGED" then
+			self.inProgress = Tutorials.EquipFirstItemWatcher:CheckForUpgrades();
+		end
+	end
+end
+
+-- ------------------------------------------------------------------------------------------------------------
 -- XP Bar Tutorial
 -- ------------------------------------------------------------------------------------------------------------
 Class_XPBarTutorial = class("XPBarTutorial", Class_TutorialBase);
@@ -681,37 +912,6 @@ function Class_XPBarTutorial:OnInitialize()
 	Dispatcher:UnregisterEvent("QUEST_DETAIL", self);
 end
 
-
--- ------------------------------------------------------------------------------------------------------------
--- Repeatable Level Up Tutorial - Used to point out new abilities when a player levels up.
--- ------------------------------------------------------------------------------------------------------------
-Class_LevelUpTutorial = class("LevelUpTutorial", Class_TutorialBase);
-function Class_LevelUpTutorial:OnBegin()
-	Dispatcher:RegisterEvent("PLAYER_LEVEL_CHANGED", self);
-end
-
-function Class_LevelUpTutorial:PLAYER_LEVEL_CHANGED(originallevel, newLevel)
-	Tutorials.Hide_BagsBar:Complete();
-	Tutorials.Hide_SpellbookMicroButton:Complete();
-
-	if newLevel < 10 then
-		Tutorials.ShowBags:Suppress();
-		LevelUpTutorial_spellIDlookUp = TutorialHelper:FilterByClass(TutorialData.LevelAbilitiesTable);
-		local spellID = LevelUpTutorial_spellIDlookUp[newLevel];
-		if spellID then
-			if (newLevel == 3) then
-				local playerClass = TutorialHelper:GetClass();
-				if (playerClass == "ROGUE") then 
-					Tutorials.StealthTutorial:Begin();
-					return;
-				end
-			end
-			Tutorials.AddSpellToActionBar:Begin(spellID, nil, NPEV2_SPELLBOOK_TUTORIAL);
-		end
-	end
-end
-
-
 -- ------------------------------------------------------------------------------------------------------------
 -- Add Spell To Action Bar
 -- ------------------------------------------------------------------------------------------------------------
@@ -721,9 +921,9 @@ function Class_AddSpellToActionBar:OnBegin(spellID, warningString, spellMicroBut
 		self:Complete();
 		return;
 	end
-
+	self.inProgress = true;
 	self.spellToAdd = spellID;
-	self.spellIDString = "{$"..spellID.."}";
+	self.spellIDString = "{$"..self.spellToAdd.."}";
 	self.warningString = warningString;
 	self.spellMicroButtonString = spellMicroButtonString or NPEV2_SPELLBOOK_ADD_SPELL;
 
@@ -761,21 +961,11 @@ function Class_AddSpellToActionBar:SpellBookFrameHide()
 	self:Complete();
 end
 
-function Class_AddSpellToActionBar:FindEmptyButton()
-	for i = 1, 12 do
-		local btn = _G["ActionButton" .. i];
-		local _, sID = GetActionInfo(btn.action);
-		if not sID then
-			return btn;
-		end
-	end
-end
-
 function Class_AddSpellToActionBar:RemindAbility()
 	self:HideScreenTutorial();
 	
 	-- find an empty button
-	self.actionButton = self:FindEmptyButton();
+	self.actionButton = TutorialHelper:FindEmptyButton();
 
 	-- find the spell button
 	self.spellButton = SpellBookFrame_OpenToSpell(self.spellToAdd);
@@ -795,11 +985,11 @@ function Class_AddSpellToActionBar:RemindAbility()
 end
 
 function Class_AddSpellToActionBar:ACTIONBAR_SLOT_CHANGED(slot)
-	local _, spellID = GetActionInfo(slot)
+	local _, spellID = GetActionInfo(slot);
 	if spellID == self.spellToAdd then 
 		self:Complete();
 	else
-		local nextEmptyButton = self:FindEmptyButton();
+		local nextEmptyButton = TutorialHelper:FindEmptyButton();
 		if not nextEmptyButton then
 			-- no more empty buttons
 			self:Complete();
@@ -812,16 +1002,21 @@ function Class_AddSpellToActionBar:ACTIONBAR_SLOT_CHANGED(slot)
 end
 
 function Class_AddSpellToActionBar:OnComplete()
+	Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 	EventRegistry:RegisterCallback("SpellBookFrame.Show", nil, self);
 	EventRegistry:RegisterCallback("SpellBookFrame.Hide", nil, self);
-	Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 	self:HidePointerTutorials();
 	self:HideScreenTutorial();
 	NPE_TutorialSpellDrag:Hide();
-	Tutorials.ShowBags:Unsuppress();
+
 	self.spellToAdd = nil;
 	self.actionButton = nil;
 	self.spellButton = nil;
+	self.inProgress = false;
+
+	self.Timer = C_Timer.NewTimer(0.1, function()
+		Tutorials.QueueSystem:TutorialFinished();
+	end);
 end
 
 
@@ -833,11 +1028,10 @@ function Class_AddClassSpellToActionBar:OnBegin()
 	local classData = TutorialHelper:FilterByClass(TutorialData.ClassData);
 	local spellID = classData.classQuestSpellID;
 	if spellID then
-		Tutorials.AddSpellToActionBar:Begin(spellID, nil, NPEV2_SPELLBOOK_TUTORIAL);
+		Tutorials.QueueSystem:QueueSpellTutorial(spellID, nil, NPEV2_SPELLBOOK_TUTORIAL);
 	end
 	self:Complete();
 end
-
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Open Map - Main screen prompt to open the map
@@ -1176,6 +1370,12 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_LootPointer = class("LootPointer", Class_TutorialBase);
 function Class_LootPointer:OnBegin()
+	local level = UnitLevel("player");
+	if (level > 4) then -- if the player comes back after level 4, don't prompt them on loot anymore
+		self:Complete();
+		return;
+	end
+
 	Dispatcher:RegisterEvent("LOOT_OPENED", self);
 	Dispatcher:RegisterEvent("LOOT_CLOSED", self);
 end
@@ -1210,23 +1410,23 @@ function Class_EquipFirstItemWatcher:OnInitialize()
 end
 
 function Class_EquipFirstItemWatcher:OnBegin()
-	self.SuccessfulEquipCount = 0;
-	Dispatcher:RegisterEvent("UNIT_INVENTORY_CHANGED", self);
+	local level = UnitLevel("player");
+	if (level > 9) then -- if the player comes back after level 10, don't prompt them on loot anymore
+		self:Complete();
+		return;
+	end
 end
 
-function Class_EquipFirstItemWatcher:ItemSuccessfullyEquiped()
-	self.SuccessfulEquipCount = self.SuccessfulEquipCount + 1;
-end
-
-function Class_EquipFirstItemWatcher:UNIT_INVENTORY_CHANGED()
+function Class_EquipFirstItemWatcher:CheckForUpgrades()
 	local upgrades = self:GetBestItemUpgrades();
 	local slot, item = next(upgrades);
 	local level = UnitLevel("player");
 
-	-- Only show the equip tutorial 3 times
-	if (item and (self.SuccessfulEquipCount < 2) and (level > 1)) then
+	if item then
 		Tutorials.ShowBags:ForceBegin(item);
+		return true;
 	end
+	return false;
 end
 
 function Class_EquipFirstItemWatcher:STRUCT_ItemContainer(itemID, characterSlot, container, containerSlot)
@@ -1362,6 +1562,8 @@ function Class_EquipFirstItemWatcher:GetPotentialItemUpgrades()
 	return potentialUpgrades;
 end
 
+function Class_EquipFirstItemWatcher:OnComplete()
+end
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Show Bags - Called when the player recieves their first item upgrade
@@ -1396,7 +1598,6 @@ function Class_ShowBags:OnBegin(data)
 
 	local key = TutorialHelper:GetBagBinding();
 	local tutorialString = TutorialHelper:FormatString(string.format(NPEV2_SHOW_BAGS, key))
-	Tutorials.LevelUpTutorial:Suppress();
 	self:ShowPointerTutorial(tutorialString, "DOWN", MainMenuBarBackpackButton, 0, 0);
 end
 
@@ -1451,8 +1652,6 @@ function Class_EquipItem:BAG_UPDATE_DELAYED()
 end
 
 function Class_EquipItem:OnComplete()
-	Tutorials.LevelUpTutorial:Unsuppress();
-	Tutorials.EquipFirstItemWatcher:ItemSuccessfullyEquiped();
 	Tutorials.Hide_CharacterMicroButton:Complete();
 	Tutorials.OpenCharacterSheet:ForceBegin(self.ItemData);
 end
@@ -1529,12 +1728,19 @@ function Class_CloseCharacterSheet:OnBegin()
 	Dispatcher:RegisterScript(CharacterFrame, "OnHide", function() self:Complete() end, true);
 end
 
+function Class_CloseCharacterSheet:OnComplete()
+	self.Timer = C_Timer.NewTimer(0.1, function()
+		Tutorials.QueueSystem:TutorialFinished();
+	end);
+end
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Enhanced Combat Tactics
 -- ------------------------------------------------------------------------------------------------------------
 Class_EnhancedCombatTactics = class("EnhancedCombatTactics", Class_TutorialBase);
 function Class_EnhancedCombatTactics:OnBegin()
+	Dispatcher:RegisterEvent("ACTIONBAR_SLOT_CHANGED", self);
+
 	local playerClass = TutorialHelper:GetClass();
 	self.redirected = false;
 	if playerClass == "WARRIOR" then
@@ -1542,8 +1748,7 @@ function Class_EnhancedCombatTactics:OnBegin()
 		self:Complete();
 		self.redirected = true;
 	elseif self.playerClass == "MONK" then
-		--we need a special case for monk once class design is ready
-		--print("HERE IS WHERE WOULD START MONK TRAINING.");
+		-- currently there is not monk special MONK training
 	elseif playerClass == "PRIEST" or playerClass == "WARLOCK" or playerClass == "DRUID" then
 		Tutorials.EnhancedCombatTactics_UseDoTs:Begin();
 		self.redirected = true;
@@ -1564,7 +1769,7 @@ function Class_EnhancedCombatTactics:IsSpellOnActionBar(spellID, warningString, 
 		return true;
 	end
 
-	Tutorials.AddSpellToActionBar:Begin(spellID, warningString, spellbookString);
+	Tutorials.QueueSystem:QueueSpellTutorial(spellID, warningString, spellbookString);
 	return false;
 end
 
@@ -1596,24 +1801,42 @@ function Class_EnhancedCombatTactics:UNIT_TARGET()
 	end
 end
 
+function Class_EnhancedCombatTactics:ACTIONBAR_SLOT_CHANGED()
+	if self.callback then
+		self.callback();
+	end
+end
+
 function Class_EnhancedCombatTactics:ShowBuilderPrompt()
+	Tutorials.EnhancedCombatTactics.callback = GenerateClosure(self.ShowBuilderPrompt, self);
+
 	self.spenderPointerID = nil;
-	local button = TutorialHelper:GetActionButtonBySpellID(self.combatData.resourceBuilderSpellID);
+	Tutorials.EnhancedCombatTactics.spellID = self.combatData.resourceBuilderSpellID;
+	local button = TutorialHelper:GetActionButtonBySpellID(Tutorials.EnhancedCombatTactics.spellID);
 	local keyBindString = "{KB|"..self.combatData.resourceBuilderSpellID.."}";
 	local builderSpellString = "{$"..self.combatData.resourceBuilderSpellID.."}";
 	local tutorialString = self.combatData.builderString:format(keyBindString, builderSpellString);
-
-	self.builderPointerID = self:ShowPointerTutorial(TutorialHelper:FormatString(tutorialString), "DOWN", button or self.combatData.backupUIElement, 0, 10, nil, "DOWN")
+	if button then
+		self.builderPointerID = self:ShowPointerTutorial(TutorialHelper:FormatString(tutorialString), "DOWN", button, 0, 10, nil, "DOWN");
+	else
+		self:HidePointerTutorial(self.builderPointerID);
+	end
 end
 
 function Class_EnhancedCombatTactics:ShowSpenderPrompt()
+	Tutorials.EnhancedCombatTactics.callback = GenerateClosure(self.ShowSpenderPrompt, self);
+
 	self.builderPointerID = nil;
-	local button = TutorialHelper:GetActionButtonBySpellID(self.combatData.resourceSpenderSpellID);
+	Tutorials.EnhancedCombatTactics.spellID = self.combatData.resourceSpenderSpellID;
+	local button = TutorialHelper:GetActionButtonBySpellID(Tutorials.EnhancedCombatTactics.spellID);
 	local keyBindString = "{KB|"..self.combatData.resourceSpenderSpellID.."}";
 	local spenderSpellIDString = "{$"..self.combatData.resourceSpenderSpellID.."}";
 	local tutorialString = self.combatData.spenderString:format(keyBindString, spenderSpellIDString);
-
-	self.spenderPointerID = self:ShowPointerTutorial(TutorialHelper:FormatString(tutorialString), "DOWN", button or self.combatData.backupUIElement, 0, 10, nil, "DOWN"); 
+	if button then
+		self.spenderPointerID = self:ShowPointerTutorial(TutorialHelper:FormatString(tutorialString), "DOWN", button, 0, 10, nil, "DOWN"); 
+	else
+		self:HidePointerTutorial(self.spenderPointerID);
+	end
 end
 
 function Class_EnhancedCombatTactics:UNIT_POWER_FREQUENT(unit, resource)
@@ -1640,6 +1863,7 @@ function Class_EnhancedCombatTactics:OnComplete()
 	Dispatcher:UnregisterEvent("UNIT_TARGET", self);
 	Dispatcher:UnregisterEvent("UNIT_POWER_FREQUENT", self);
 	Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
+	Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 
 	if self.redirected == false then
 		Tutorials.LowHealthWatcher:Begin();
@@ -1814,7 +2038,7 @@ end
 function Class_EnhancedCombatTactics_Ranged:StartRangedWatcher()
 	local unit = TutorialHelper:GetFactionData().EnhancedCombatTacticsOverrideCreatureID;
 	if (unit) then
-		NPE_RangeManager:StartWatching(unit, NPE_RangeManager.Type.Unit, 6, function() self:AtCloseRange(); end);
+		NPE_RangeManager:StartWatching(unit, NPE_RangeManager.Type.Unit, 6, function() self:AtCloseRange(); end, NPE_RangeManager.Mode.Any, TutorialHelper:GetFactionData().EnhancedCombatTacticsQuest);
 	end
 end
 
@@ -1981,6 +2205,7 @@ Class_Vendor_Watcher = class("Vendor_Watcher", Class_TutorialBase);
 function Class_Vendor_Watcher:OnBegin()
 	Dispatcher:RegisterEvent("MERCHANT_SHOW", self);
 
+	self:HideScreenTutorial();
 	self.buyTutorialComplete = false;
 	self.sellTutorialComplete = false;
 	self.buyBackTutorialComplete = false;
@@ -1989,19 +2214,11 @@ function Class_Vendor_Watcher:OnBegin()
 	EventRegistry:RegisterCallback("MerchantFrame.MerchantTabShow", self.MerchantTabHelp, self);
 end
 
-function Class_Vendor_Watcher:BuyBackTabHelp()
-	if self.buyBackTutorialComplete == true then
-		self:HideScreenTutorial();
-		self:HidePointerTutorials();
-		return;
-	end
-	self:ShowPointerTutorial(TutorialHelper:FormatString(NPEV2_BUYBACK_ITEMS), "LEFT", MerchantFrame, 0, 10, nil, "LEFT");
-	self.buyBackTutorialComplete = true;
-end
-
 function Class_Vendor_Watcher:UpdateGreyItemPointer()
-	if self.sellTutorialComplete == true then
-		self:HidePointerTutorials();
+	if not self.merchantTab or self.sellTutorialComplete == true then
+		if self.sellPointerID then
+			self:HidePointerTutorial(self.sellPointerID);
+		end
 		return;
 	end
 
@@ -2022,11 +2239,13 @@ function Class_Vendor_Watcher:UpdateGreyItemPointer()
 		end
 	end
 
+	if self.sellPointerID then
+		self:HidePointerTutorial(self.sellPointerID);
+	end
 	if itemFrame then
-		self:ShowPointerTutorial(NPEV2_SELL_GREY_ITEMS, "DOWN", itemFrame, 0, 0);
+		self.sellPointerID = self:AddPointerTutorial(NPEV2_SELL_GREY_ITEMS, "DOWN", itemFrame, 0, 0);
 	else
 		self.sellTutorialComplete = true;
-		self:HidePointerTutorials();
 	end
 end
 
@@ -2039,13 +2258,36 @@ function Class_Vendor_Watcher:ITEM_LOCKED()
 	Dispatcher:RegisterEvent("BAG_UPDATE_DELAYED", self);
 end
 
+function Class_Vendor_Watcher:BuyBackTabHelp()
+	self.buyBackTab = true;
+	self.merchantTab = false;
+	if self.buyPointerID then
+		self:HidePointerTutorial(self.buyPointerID);
+	end
+	if self.sellPointerID then
+		self:HidePointerTutorial(self.sellPointerID);
+	end
+
+	if self.buyBackTutorialComplete == true then
+		return;
+	end
+	self.buyBackPointerID = self:AddPointerTutorial(TutorialHelper:FormatString(NPEV2_BUYBACK_ITEMS), "LEFT", MerchantFrame, 0, 10, nil, "LEFT");
+	self.buyBackTutorialComplete = true;
+end
+
 function Class_Vendor_Watcher:MerchantTabHelp()
-	if self.buyTutorialComplete == true then
-		self:HideScreenTutorial();
-		self:HidePointerTutorials();
-	else
+	self.buyBackTab = false;
+	self.merchantTab = true;
+	if self.buyBackPointerID then
+		self:HidePointerTutorial(self.buyBackPointerID);
+	end
+
+	if not self.buyTutorialComplete then
 		Dispatcher:RegisterEvent("BAG_NEW_ITEMS_UPDATED", self);
-		self:AddPointerTutorial(TutorialHelper:FormatString(NPEV2_BUY_ITEMS_FROM_VENDOR), "LEFT", MerchantItem2, 0, 15);
+		self.buyPointerID = self:AddPointerTutorial(TutorialHelper:FormatString(NPEV2_BUY_ITEMS_FROM_VENDOR), "LEFT", MerchantItem2, 0, 15);
+	end
+
+	if not self.sellTutorialComplete then
 		self.Timer = C_Timer.NewTimer(4, function()
 			self:UpdateGreyItemPointer();
 		end);
@@ -2055,24 +2297,33 @@ end
 function Class_Vendor_Watcher:BAG_NEW_ITEMS_UPDATED()
 	--the player bought something
 	Dispatcher:UnregisterEvent("BAG_NEW_ITEMS_UPDATED", self);
-	self:HideScreenTutorial();
 	self:HidePointerTutorials();
 	self:UpdateGreyItemPointer();
 	self.buyTutorialComplete = true;
 end
 
 function Class_Vendor_Watcher:MERCHANT_SHOW()
+	if self.buyTutorialComplete == true and self.sellTutorialComplete == true and self.buyBackTutorialComplete == true then
+		self:Complete();
+		return;
+	end
+	
 	Dispatcher:RegisterEvent("MERCHANT_CLOSED", self);
 	Dispatcher:RegisterEvent("ITEM_LOCKED", self);
-	Dispatcher:UnregisterEvent("MERCHANT_SHOW", self);
-
 	self:MerchantTabHelp();
 end
 
 function Class_Vendor_Watcher:MERCHANT_CLOSED()
-	Dispatcher:UnregisterEvent("MERCHANT_SHOW", self);
 	Dispatcher:UnregisterEvent("MERCHANT_CLOSED", self);
-	self:HideScreenTutorial();
+	self.buyBackTab = false;
+	self.merchantTab = false;
+	self:HidePointerTutorials();
+end
+
+function Class_Vendor_Watcher:OnComplete()
+	Dispatcher:UnregisterEvent("MERCHANT_SHOW", self);
+	self.buyPointerID = nil;
+	self.sellPointerID = nil;
 	self:HidePointerTutorials();
 end
 
@@ -2339,8 +2590,15 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_StealthTutorial = class("StealthTutorial", Class_TutorialBase);
 function Class_StealthTutorial:OnBegin()
-	self:ShowPointerTutorial(NPEV2_STEALTH_TUTORIAL, "DOWN", StanceButton1, 0, 10, nil, "DOWN"); 
-	Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
+	Dispatcher:RegisterEvent("PLAYER_LEVEL_CHANGED", self);
+end
+
+function Class_StealthTutorial:PLAYER_LEVEL_CHANGED(originalLevel, newLevel)
+	if newLevel == 3 then
+		Dispatcher:UnregisterEvent("PLAYER_LEVEL_CHANGED", self);
+		Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
+		self.pointerID = self:AddPointerTutorial(NPEV2_STEALTH_TUTORIAL, "DOWN", StanceButton1, 0, 10, nil, "DOWN");
+	end
 end
 
 local STEALTH_SPELL_ID = 1784;
@@ -2351,7 +2609,8 @@ function Class_StealthTutorial:UNIT_SPELLCAST_SUCCEEDED(unit, _, spellID)
 end
 
 function Class_StealthTutorial:OnComplete()
-	self:HidePointerTutorials();
+	Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
+	self:HidePointerTutorial(self.pointerID);
 end
 
 
@@ -2360,7 +2619,7 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_AutoPushSpellWatcher = class("AutoPushSpellWatcher", Class_TutorialBase);
 function Class_AutoPushSpellWatcher:OnBegin()
-	local button = Class_AddSpellToActionBar:FindEmptyButton();
+	local button = TutorialHelper:FindEmptyButton();
 	local level = UnitLevel("player");
 	if button and (level < 10) then
 		Dispatcher:RegisterEvent("PLAYER_LEVEL_CHANGED", self);
@@ -2371,14 +2630,14 @@ function Class_AutoPushSpellWatcher:OnBegin()
 	end
 end
 
-function Class_AutoPushSpellWatcher:PLAYER_LEVEL_CHANGED(originallevel, newLevel)
+function Class_AutoPushSpellWatcher:PLAYER_LEVEL_CHANGED(originalLevel, newLevel)
 	if newLevel >= 10 then
 		self:Complete();
 	end
 end
 
 function Class_AutoPushSpellWatcher:ACTIONBAR_SLOT_CHANGED(slot)
-	local button = Class_AddSpellToActionBar:FindEmptyButton();
+	local button = TutorialHelper:FindEmptyButton();
 	if not button then
 		self:Complete();
 	end

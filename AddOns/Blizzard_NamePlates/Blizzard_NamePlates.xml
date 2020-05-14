@@ -227,7 +227,7 @@
 				<BarColor r="1.0" g="0.7" b="0.0"/>
 			</StatusBar>
 
-			<Frame parentKey="WidgetContainer" scale="0.425" inherits="UIWidgetContainerTemplate" hidden="true">
+			<Frame parentKey="WidgetContainer" inherits="UIWidgetContainerTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.castBar" relativePoint="BOTTOM"/>
 				</Anchors>

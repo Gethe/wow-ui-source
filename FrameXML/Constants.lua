@@ -393,7 +393,7 @@ CALENDAR_FIRST_WEEKDAY			= 1;		-- 1=SUN 2=MON 3=TUE 4=WED 5=THU 6=FRI 7=SAT
 -- Event Types
 CALENDAR_EVENTTYPE_RAID			= Enum.CalendarEventType.Raid;
 CALENDAR_EVENTTYPE_DUNGEON		= Enum.CalendarEventType.Dungeon;
-CALENDAR_EVENTTYPE_PVP			= Enum.CalendarEventType.Pvp;
+CALENDAR_EVENTTYPE_PVP			= Enum.CalendarEventType.PvP;
 CALENDAR_EVENTTYPE_MEETING		= Enum.CalendarEventType.Meeting;
 CALENDAR_EVENTTYPE_OTHER		= Enum.CalendarEventType.Other;
 CALENDAR_MAX_EVENTTYPE			= Enum.CalendarEventType.Other;
@@ -553,6 +553,9 @@ CALENDAR_FULLDATE_MONTH_NAMES = {
 CAT_FORM = 1;
 BEAR_FORM = 5;
 MOONKIN_FORM = 31;
+
+-- Rogue Forms
+ROGUE_STEALTH = 30;
 
 -- PVP Global Lua Constants
 CONQUEST_CURRENCY = 390;
@@ -736,7 +739,7 @@ QUEST_TAG_TCOORDS = {
 	[Enum.QuestTag.Account] = { 0.84375, 0.984375, 0, 0.28125 },
 	[Enum.QuestTag.Legendary] = { 0, 0.140625, 0.28125, 0.5625 },
 	[Enum.QuestTag.Group] = { 0.140625, 0.28125, 0.28125, 0.5625 },
-	[Enum.QuestTag.Pvp] = { 0.28125, 0.421875, 0.28125, 0.5625 },
+	[Enum.QuestTag.PvP] = { 0.28125, 0.421875, 0.28125, 0.5625 },
 	[Enum.QuestTag.Heroic] = { 0, 0.140625, 0.5625, 0.84375 },
 	-- same texture for all raids
 	[Enum.QuestTag.Raid] = { 0.703125, 0.84375, 0, 0.28125 },

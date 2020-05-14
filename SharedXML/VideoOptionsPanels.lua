@@ -416,6 +416,11 @@ local function IsValid(self,index)
 end
 
 function Graphics_ValidateControlImmediate(self)
+	-- check if this has been initialized
+	if not self.table then
+		return;
+	end
+
 	-- refresh tooltip, which also updates dropdown options, because of course it does
 	Graphics_PrepareTooltip(self);
 

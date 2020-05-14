@@ -107,11 +107,19 @@
 
 	<Frame name="AuctionHouseTableCellAuctionsBuyoutTemplate" mixin="AuctionHouseTableCellAuctionsBuyoutMixin" inherits="AuctionHouseTableCellBuyoutTemplate" virtual="true"/>
 	
-	<Frame name="AuctionHouseTableCellAllAuctionsBuyoutTemplate" mixin="AuctionHouseTableCellAllAuctionsBuyoutMixin" inherits="AuctionHouseTableCellBuyoutTemplate" virtual="true"/>
+	<Frame name="AuctionHouseTableCellAllAuctionsPriceTemplate" mixin="AuctionHouseTableCellAllAuctionsPriceMixin" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AuctionHouseTableCellAllAuctionsBuyoutTemplate" mixin="AuctionHouseTableCellAllAuctionsBuyoutMixin" inherits="AuctionHouseTableCellBuyoutTemplate, AuctionHouseTableCellAllAuctionsPriceTemplate" virtual="true"/>
 
 	<Frame name="AuctionHouseTableCellAuctionsBidTemplate" mixin="AuctionHouseTableCellAuctionsBidMixin" inherits="AuctionHouseTableCellBidTemplate, AuctionHouseTableCellTextTemplate" virtual="true"/>
 
-	<Frame name="AuctionHouseTableCellAllAuctionsBidTemplate" mixin="AuctionHouseTableCellAllAuctionsBidMixin" inherits="AuctionHouseTableCellBidTemplate, AuctionHouseTableCellTextTemplate" virtual="true"/>
+	<Frame name="AuctionHouseTableCellAllAuctionsBidTemplate" mixin="AuctionHouseTableCellAllAuctionsBidMixin" inherits="AuctionHouseTableCellBidTemplate, AuctionHouseTableCellTextTemplate, AuctionHouseTableCellAllAuctionsPriceTemplate" virtual="true"/>
 
 	<Frame name="AuctionHouseTableCellAuctionsOwnersTemplate" mixin="AuctionHouseTableCellAuctionsOwnersMixin" inherits="AuctionHouseTableCellOwnersTemplate" virtual="true"/>
 

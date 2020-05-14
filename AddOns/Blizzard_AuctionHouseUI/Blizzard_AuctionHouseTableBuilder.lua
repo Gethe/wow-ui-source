@@ -73,7 +73,26 @@ function AuctionHouseTableCellItemKeyMixin:UpdateDisplay(itemKey, itemKeyInfo)
 end
 
 
-AuctionHouseTableCellTextTooltipMixin = CreateFromMixins(AuctionHouseTableCellMixin);
+AuctionHouseTableCellTooltipMixin = CreateFromMixins(AuctionHouseTableCellMixin);
+
+function AuctionHouseTableCellTooltipMixin:OnEnter()
+	ExecuteFrameScript(self:GetParent(), "OnEnter");
+	
+	self:ShowTooltip(GameTooltip);
+end
+
+function AuctionHouseTableCellTooltipMixin:OnLeave()
+	ExecuteFrameScript(self:GetParent(), "OnLeave");
+
+	GameTooltip_Hide();
+end
+
+function AuctionHouseTableCellTooltipMixin:ShowTooltip(tooltip)
+	-- Implement in your derived mixin.
+end
+
+
+AuctionHouseTableCellTextTooltipMixin = CreateFromMixins(AuctionHouseTableCellTooltipMixin);
 
 function AuctionHouseTableCellTextTooltipMixin:UpdateText(newText)
 	self.Text:SetText(newText);
@@ -87,22 +106,6 @@ function AuctionHouseTableCellTextTooltipMixin:UpdateHitRect()
 	else
 		self:SetHitRectInsets(hitRectInset, 0, 0, 0);
 	end
-end
-
-function AuctionHouseTableCellTextTooltipMixin:OnEnter()
-	ExecuteFrameScript(self:GetParent(), "OnEnter");
-	
-	self:ShowTooltip(GameTooltip);
-end
-
-function AuctionHouseTableCellTextTooltipMixin:OnLeave()
-	ExecuteFrameScript(self:GetParent(), "OnLeave");
-
-	GameTooltip_Hide();
-end
-
-function AuctionHouseTableCellItemKeyMixin:ShowTooltip(tooltip)
-	-- Implement in your derived mixin.
 end
 
 
@@ -500,15 +503,74 @@ function AuctionHouseTableCellAuctionsBidMixin:UpdateTextColor(rowData, dataInde
 end
 
 
-AuctionHouseTableCellAllAuctionsBidMixin = CreateFromMixins(AuctionHouseTableCellAuctionsBidMixin);
+AuctionHouseTableCellAllAuctionsPriceMixin = CreateFromMixins(AuctionHouseTableCellTooltipMixin);
+
+function AuctionHouseTableCellAllAuctionsPriceMixin:Populate(rowData, dataIndex)
+	self:UpdateBidder();
+end
+
+function AuctionHouseTableCellAllAuctionsPriceMixin:OnEvent(event, ...)
+	if event == "OWNED_AUCTION_BIDDER_INFO_RECEIVED" then
+		local auctionID, bidderName = ...;
+		if auctionID == self.rowData.auctionID then
+			self.rowData.bidder = bidderName;
+			self:UnregisterEvent("OWNED_AUCTION_BIDDER_INFO_RECEIVED");
+			
+			if GameTooltip:GetOwner() == self then
+				self:ShowTooltip(GameTooltip);
+			end
+		end
+	end
+end
+
+function AuctionHouseTableCellAllAuctionsPriceMixin:UpdateBidder()
+	local rowData = self.rowData;
+	if rowData.bidder then
+		if rowData.bidder == "" then
+			local updatedName = C_AuctionHouse.RequestOwnedAuctionBidderInfo(rowData.auctionID);
+			if updatedName then
+				rowData.bidder = updatedName;
+			else
+				self:RegisterEvent("OWNED_AUCTION_BIDDER_INFO_RECEIVED");
+			end
+		end
+	end
+end
+
+
+AuctionHouseTableCellAllAuctionsBidMixin = CreateFromMixins(AuctionHouseTableCellAllAuctionsPriceMixin, AuctionHouseTableCellAuctionsBidMixin);
+
+function AuctionHouseTableCellAllAuctionsBidMixin:Populate(rowData, dataIndex)
+	AuctionHouseTableCellAllAuctionsPriceMixin.Populate(self, rowData, dataIndex);
+	AuctionHouseTableCellAuctionsBidMixin.Populate(self, rowData, dataIndex);
+end
 
 function AuctionHouseTableCellAllAuctionsBidMixin:UpdateWidth(rowData, dataIndex)
 	local maxWidth = self:IsDisplayingBids() and self:GetAuctionHouseFrame():GetMaxBidPriceWidthForAllBids(self.MoneyDisplay:GetFontObject()) or self:GetAuctionHouseFrame():GetMaxBidPriceWidthForAllAuctions(self.MoneyDisplay:GetFontObject());
 	self.MoneyDisplay:SetWidth(maxWidth);
 end
 
+function AuctionHouseTableCellAllAuctionsBidMixin:ShowTooltip(tooltip)
+	self:UpdateBidder();
 
-AuctionHouseTableCellAuctionsBuyoutMixin = CreateFromMixins(AuctionHouseTableCellAuctionsPriceMixin, AuctionHouseTableCellBuyoutMixin);
+	local rowData = self.rowData;
+	local bidder = rowData.bidder;
+	if bidder then
+		tooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+		local wrap = true;
+		if rowData.status == Enum.AuctionStatus.Sold then
+			GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_BUYER_FORMAT:format(bidder), wrap);
+		else
+			GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_HIGH_BIDDER_FORMAT:format(bidder), wrap);
+		end
+
+		tooltip:Show();
+	end
+end
+
+
+AuctionHouseTableCellAuctionsBuyoutMixin = CreateFromMixins(AuctionHouseTableCellAllAuctionsPriceMixin, AuctionHouseTableCellAuctionsPriceMixin, AuctionHouseTableCellBuyoutMixin);
 
 function AuctionHouseTableCellAuctionsBuyoutMixin:Init(...)
 	AuctionHouseTableCellAuctionsPriceMixin.Init(self, ...);
@@ -516,8 +578,24 @@ function AuctionHouseTableCellAuctionsBuyoutMixin:Init(...)
 end
 
 function AuctionHouseTableCellAuctionsBuyoutMixin:Populate(rowData, dataIndex)
+	AuctionHouseTableCellAllAuctionsPriceMixin.Populate(self, rowData, dataIndex);
 	AuctionHouseTableCellAuctionsPriceMixin.Populate(self, rowData, dataIndex);
 	AuctionHouseTableCellBuyoutMixin.Populate(self, rowData, dataIndex);
+end
+
+function AuctionHouseTableCellAuctionsBuyoutMixin:ShowTooltip(tooltip)
+	self:UpdateBidder();
+
+	local rowData = self.rowData;
+	local bidder = rowData.bidder;
+	if bidder and rowData.status == Enum.AuctionStatus.Sold then
+		tooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+		local wrap = true;
+		GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_BUYER_FORMAT:format(bidder), wrap);
+
+		tooltip:Show();
+	end
 end
 
 

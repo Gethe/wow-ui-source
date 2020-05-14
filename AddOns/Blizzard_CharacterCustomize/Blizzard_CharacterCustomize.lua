@@ -20,10 +20,10 @@ end
 function CharCustomizeParentFrameBaseMixin:SetCameraZoomLevel(zoomLevel, keepCustomZoom)
 end
 
-function CharCustomizeParentFrameBaseMixin:ResetCharacterRotation(mode, instantRotate)
+function CharCustomizeParentFrameBaseMixin:ResetCharacterRotation()
 end
 
-function CharCustomizeParentFrameBaseMixin:ZoomCamera(zoomAmount, zoomTime, force)
+function CharCustomizeParentFrameBaseMixin:ZoomCamera(zoomAmount)
 end
 
 function CharCustomizeParentFrameBaseMixin:RotateCharacter(rotationAmount)

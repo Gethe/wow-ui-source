@@ -465,6 +465,17 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "UIWidgetFlag",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "UniversalWidget", Type = "UIWidgetFlag", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "UIWidgetTextSizeType",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -476,17 +487,6 @@ local UIWidgetManager =
 				{ Name = "Medium", Type = "UIWidgetTextSizeType", EnumValue = 1 },
 				{ Name = "Large", Type = "UIWidgetTextSizeType", EnumValue = 2 },
 				{ Name = "Huge", Type = "UIWidgetTextSizeType", EnumValue = 3 },
-			},
-		},
-		{
-			Name = "UiwIdgetFlag",
-			Type = "Enumeration",
-			NumValues = 1,
-			MinValue = 1,
-			MaxValue = 1,
-			Fields =
-			{
-				{ Name = "UniversalWidget", Type = "UiwIdgetFlag", EnumValue = 1 },
 			},
 		},
 		{
@@ -633,6 +633,7 @@ local UIWidgetManager =
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 			},
 		},
 		{
@@ -657,6 +658,7 @@ local UIWidgetManager =
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 			},
 		},
 		{
@@ -677,6 +679,7 @@ local UIWidgetManager =
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 			},
 		},
 		{
@@ -698,6 +701,7 @@ local UIWidgetManager =
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 			},
 		},
 		{
@@ -716,6 +720,7 @@ local UIWidgetManager =
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 			},
 		},
 		{
@@ -742,6 +747,7 @@ local UIWidgetManager =
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 			},
 		},
 		{
@@ -759,6 +765,7 @@ local UIWidgetManager =
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 			},
 		},
 		{
@@ -778,6 +785,7 @@ local UIWidgetManager =
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 			},
 		},
 		{
@@ -795,6 +803,7 @@ local UIWidgetManager =
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 			},
 		},
 		{
@@ -817,6 +826,7 @@ local UIWidgetManager =
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 			},
 		},
 		{
@@ -834,6 +844,7 @@ local UIWidgetManager =
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 			},
 		},
 		{
@@ -852,6 +863,7 @@ local UIWidgetManager =
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 			},
 		},
 		{
@@ -869,6 +881,7 @@ local UIWidgetManager =
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 			},
 		},
 		{
@@ -893,6 +906,7 @@ local UIWidgetManager =
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 			},
 		},
 		{
@@ -913,6 +927,7 @@ local UIWidgetManager =
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 			},
 		},
 		{
@@ -940,6 +955,7 @@ local UIWidgetManager =
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 			},
 		},
 		{
@@ -958,6 +974,7 @@ local UIWidgetManager =
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 			},
 		},
 		{
@@ -1024,6 +1041,7 @@ local UIWidgetManager =
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 			},
 		},
 		{

@@ -5,7 +5,7 @@
 	<ModelScene name="ScriptAnimatedModelSceneTemplate" mixin="ScriptAnimatedModelSceneMixin" inherits="NonInteractableModelSceneMixinTemplate" virtual="true">
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow"/>
+			<OnSizeChanged method="OnSizeChanged"/>
 			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</ModelScene>

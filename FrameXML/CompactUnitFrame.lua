@@ -1306,17 +1306,17 @@ do
 end
 
 local PvPClassificationIcons = {
-	[Enum.PvpUnitClassification.FlagCarrierHorde] = "nameplates-icon-flag-horde",
-	[Enum.PvpUnitClassification.FlagCarrierAlliance] = "nameplates-icon-flag-alliance",
-	[Enum.PvpUnitClassification.FlagCarrierNeutral] = "nameplates-icon-flag-neutral",
-	[Enum.PvpUnitClassification.CartRunnerHorde] = "nameplates-icon-cart-horde",
-	[Enum.PvpUnitClassification.CartRunnerAlliance] = "nameplates-icon-cart-alliance",
-	[Enum.PvpUnitClassification.AssassinHorde] = "nameplates-icon-bounty-horde",
-	[Enum.PvpUnitClassification.AssassinAlliance] = "nameplates-icon-bounty-alliance",
-	[Enum.PvpUnitClassification.OrbCarrierBlue] = "nameplates-icon-orb-blue",
-	[Enum.PvpUnitClassification.OrbCarrierGreen] = "nameplates-icon-orb-green",
-	[Enum.PvpUnitClassification.OrbCarrierOrange] = "nameplates-icon-orb-orange",
-	[Enum.PvpUnitClassification.OrbCarrierPurple] = "nameplates-icon-orb-purple",
+	[Enum.PvPUnitClassification.FlagCarrierHorde] = "nameplates-icon-flag-horde",
+	[Enum.PvPUnitClassification.FlagCarrierAlliance] = "nameplates-icon-flag-alliance",
+	[Enum.PvPUnitClassification.FlagCarrierNeutral] = "nameplates-icon-flag-neutral",
+	[Enum.PvPUnitClassification.CartRunnerHorde] = "nameplates-icon-cart-horde",
+	[Enum.PvPUnitClassification.CartRunnerAlliance] = "nameplates-icon-cart-alliance",
+	[Enum.PvPUnitClassification.AssassinHorde] = "nameplates-icon-bounty-horde",
+	[Enum.PvPUnitClassification.AssassinAlliance] = "nameplates-icon-bounty-alliance",
+	[Enum.PvPUnitClassification.OrbCarrierBlue] = "nameplates-icon-orb-blue",
+	[Enum.PvPUnitClassification.OrbCarrierGreen] = "nameplates-icon-orb-green",
+	[Enum.PvPUnitClassification.OrbCarrierOrange] = "nameplates-icon-orb-orange",
+	[Enum.PvPUnitClassification.OrbCarrierPurple] = "nameplates-icon-orb-purple",
 }
 
 function CompactUnitFrame_UpdatePvPClassificationIndicator(frame)

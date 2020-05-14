@@ -76,7 +76,7 @@ function PVPMatchScoreboardMixin:ShutdownPrivate()
 end
 
 function PVPMatchScoreboardMixin:OnEvent(event, ...)
-	if event == "PVP_MATCH_ACTIVE" or (event == "PLAYER_ENTERING_WORLD" and C_PvP.GetActiveMatchState() == Enum.PvpMatchState.Active) then
+	if event == "PVP_MATCH_ACTIVE" or (event == "PLAYER_ENTERING_WORLD" and C_PvP.GetActiveMatchState() == Enum.PvPMatchState.Active) then
 		self:Init();
 	elseif event == "PLAYER_LEAVING_WORLD" or event == "PVP_MATCH_COMPLETE" then
 		self:ShutdownPrivate();

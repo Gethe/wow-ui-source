@@ -99,7 +99,7 @@ local PvpInfo =
 
 			Returns =
 			{
-				{ Name = "state", Type = "PvpMatchState", Nilable = false },
+				{ Name = "state", Type = "PvPMatchState", Nilable = false },
 			},
 		},
 		{
@@ -920,16 +920,16 @@ local PvpInfo =
 			},
 		},
 		{
-			Name = "PvpMatchState",
+			Name = "PvPMatchState",
 			Type = "Enumeration",
 			NumValues = 3,
 			MinValue = 0,
 			MaxValue = 2,
 			Fields =
 			{
-				{ Name = "Inactive", Type = "PvpMatchState", EnumValue = 0 },
-				{ Name = "Active", Type = "PvpMatchState", EnumValue = 1 },
-				{ Name = "Complete", Type = "PvpMatchState", EnumValue = 2 },
+				{ Name = "Inactive", Type = "PvPMatchState", EnumValue = 0 },
+				{ Name = "Active", Type = "PvPMatchState", EnumValue = 1 },
+				{ Name = "Complete", Type = "PvPMatchState", EnumValue = 2 },
 			},
 		},
 		{
@@ -1032,31 +1032,6 @@ local PvpInfo =
 			},
 		},
 		{
-			Name = "PvpScalingData",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "scalingDataID", Type = "number", Nilable = false },
-				{ Name = "specializationID", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "value", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "PvpTierInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "descendRating", Type = "number", Nilable = false },
-				{ Name = "ascendRating", Type = "number", Nilable = false },
-				{ Name = "descendTier", Type = "number", Nilable = false },
-				{ Name = "ascendTier", Type = "number", Nilable = false },
-				{ Name = "pvpTierEnum", Type = "number", Nilable = false },
-				{ Name = "tierIconID", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "PVPPersonalRatedInfo",
 			Type = "Structure",
 			Fields =
@@ -1094,6 +1069,17 @@ local PvpInfo =
 				{ Name = "specID", Type = "number", Nilable = false },
 				{ Name = "sex", Type = "number", Nilable = false },
 				{ Name = "isUpgraded", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "PvpScalingData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "scalingDataID", Type = "number", Nilable = false },
+				{ Name = "specializationID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "value", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1145,6 +1131,20 @@ local PvpInfo =
 				{ Name = "rating", Type = "number", Nilable = false },
 				{ Name = "ratingNew", Type = "number", Nilable = false },
 				{ Name = "ratingMMR", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "PvpTierInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "descendRating", Type = "number", Nilable = false },
+				{ Name = "ascendRating", Type = "number", Nilable = false },
+				{ Name = "descendTier", Type = "number", Nilable = false },
+				{ Name = "ascendTier", Type = "number", Nilable = false },
+				{ Name = "pvpTierEnum", Type = "number", Nilable = false },
+				{ Name = "tierIconID", Type = "number", Nilable = false },
 			},
 		},
 		{

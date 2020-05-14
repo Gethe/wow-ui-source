@@ -134,7 +134,7 @@ local CalendarConstants =
 			{
 				{ Name = "Raid", Type = "CalendarEventType", EnumValue = 0 },
 				{ Name = "Dungeon", Type = "CalendarEventType", EnumValue = 1 },
-				{ Name = "Pvp", Type = "CalendarEventType", EnumValue = 2 },
+				{ Name = "PvP", Type = "CalendarEventType", EnumValue = 2 },
 				{ Name = "Meeting", Type = "CalendarEventType", EnumValue = 3 },
 				{ Name = "Other", Type = "CalendarEventType", EnumValue = 4 },
 				{ Name = "HeroicDeprecated", Type = "CalendarEventType", EnumValue = 5 },

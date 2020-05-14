@@ -16,6 +16,11 @@
 						<Anchor point="RIGHT" x="-26" y="0"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="Bar">
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="NeutralBar">
@@ -73,6 +78,13 @@
 						<Anchor point="LEFT" relativeKey="$parent.Spark" relativePoint="RIGHT" x="-1" y="0"/>
 					</Anchors>
 					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="SparkNeutral" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Spark"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>

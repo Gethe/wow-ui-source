@@ -29,6 +29,15 @@ local BarberShop =
 			},
 		},
 		{
+			Name = "GetCurrentCameraZoom",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "zoomLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCurrentCost",
 			Type = "Function",
 
@@ -38,8 +47,35 @@ local BarberShop =
 			},
 		},
 		{
+			Name = "OldBarberShopLoaded",
+			Type = "Function",
+		},
+		{
+			Name = "ResetCameraRotation",
+			Type = "Function",
+		},
+		{
 			Name = "ResetCustomizationChoices",
 			Type = "Function",
+		},
+		{
+			Name = "RotateCamera",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "diffDegrees", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetCameraZoomLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "zoomLevel", Type = "number", Nilable = false },
+				{ Name = "keepCustomZoom", Type = "bool", Nilable = true },
+			},
 		},
 		{
 			Name = "SetCustomizationChoice",
@@ -49,6 +85,15 @@ local BarberShop =
 			{
 				{ Name = "optionID", Type = "number", Nilable = false },
 				{ Name = "choiceID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ZoomCamera",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "zoomAmount", Type = "number", Nilable = false },
 			},
 		},
 	},

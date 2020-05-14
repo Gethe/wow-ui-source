@@ -121,11 +121,11 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
 
 		if quality == Enum.ItemQuality.Poor then
 			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-gray");
-		elseif quality == Enum.ItemQuality.Standard then
+		elseif quality == Enum.ItemQuality.Common then
 			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-white");
-		elseif quality == Enum.ItemQuality.Good then
+		elseif quality == Enum.ItemQuality.Uncommon then
 			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-green");
-		elseif quality == Enum.ItemQuality.Superior then
+		elseif quality == Enum.ItemQuality.Rare then
 			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-blue");
 		elseif quality == Enum.ItemQuality.Epic then
 			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-purple");

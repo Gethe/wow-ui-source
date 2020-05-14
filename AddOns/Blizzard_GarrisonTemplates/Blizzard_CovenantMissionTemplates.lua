@@ -112,8 +112,8 @@ function CovenantFollowerTabMixin:UpdateHealCost()
 		self.HealFollowerButton:SetEnabled(false);
 		self.HealFollowerButton.tooltip = COVENANT_MISSIONS_HEAL_ERROR_FULL_HEALTH;
 	else 
-		local primaryCurrency = C_Garrison.GetCurrencyTypes(GarrisonFollowerOptions[self.followerInfo.followerTypeID].garrisonType);
-		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(primaryCurrency);
+		local _, secondaryCurrency = C_Garrison.GetCurrencyTypes(GarrisonFollowerOptions[self.followerInfo.followerTypeID].garrisonType);
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(secondaryCurrency);
 		if (buttonCost > currencyInfo.quantity) then 
 			self.HealFollowerButton:SetEnabled(false);
 			self.HealFollowerButton.tooltip = COVENANT_MISSIONS_HEAL_ERROR_RESOURCES;

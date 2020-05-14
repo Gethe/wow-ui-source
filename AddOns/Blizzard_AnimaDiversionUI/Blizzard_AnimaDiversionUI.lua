@@ -127,8 +127,8 @@ function AnimaDiversionFrameMixin:TryShow(frameInfo)
 end 
 
 function AnimaDiversionFrameMixin:SetupCurrencyFrame() 
-	local currencyID = C_AnimaDiversion.GetPlayerCovenantAnimaCurrencyID(); 
-	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
+	local animaCurrencyID, maxDisplayableValue = C_CovenantSanctumUI.GetAnimaInfo()
+	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(animaCurrencyID);
 	if(currencyInfo) then 
 		self.AnimaDiversionCurrencyFrame.CurrencyFrame.Quantity:SetText(currencyInfo.quantity);	
 		self.AnimaDiversionCurrencyFrame.CurrencyFrame.CurrencyIcon:SetTexture(currencyInfo.iconFileID);

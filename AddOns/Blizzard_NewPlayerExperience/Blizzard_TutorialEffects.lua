@@ -1,6 +1,50 @@
-NPE_TutorialButtonPulseGlow = {};
+
 
 -- ------------------------------------------------------------------------------------------------------------
+NPE_TutorialQuestBangGlow = {};
+function NPE_TutorialQuestBangGlow:Show(button)
+	if not self.framePool then
+		self.framePool = CreateFramePool("FRAME", nil, "NPE_TutorialQuestBangGlowTemplate");
+	end
+
+	local frame = self:GetExisting(button);
+	if frame then
+		return;
+	end
+	local icon = button.Icon;
+	frame = self.framePool:Acquire();
+	frame.button = button;
+	frame:SetParent(button);
+	frame:ClearAllPoints();
+	frame:SetFrameStrata("DIALOG");
+	frame:SetPoint("CENTER", icon, 0, 0);
+	frame.GlowAnim:Play();
+	frame:Show();
+end
+
+function NPE_TutorialQuestBangGlow:Hide(button)
+	local frame = self:GetExisting(button);
+	if frame then
+		frame.GlowAnim:Stop();
+		self.framePool:Release(frame);
+	end
+end
+
+function NPE_TutorialQuestBangGlow:GetExisting(button)
+	if not self.framePool then
+		return;
+	end
+	for frame in self.framePool:EnumerateActive() do
+		if frame.button == button then
+			return frame;
+		end
+	end
+end
+-- ------------------------------------------------------------------------------------------------------------
+
+
+-- ------------------------------------------------------------------------------------------------------------
+NPE_TutorialButtonPulseGlow = {};
 function NPE_TutorialButtonPulseGlow:Show(button)
 	if not self.framePool then
 		self.framePool = CreateFramePool("FRAME", nil, "NPE_TutorialButtonPulseGlowTemplate");
@@ -21,7 +65,6 @@ function NPE_TutorialButtonPulseGlow:Show(button)
 	UIFrameFlash(frame, 1, 1, -1);
 end
 
--- ------------------------------------------------------------------------------------------------------------
 function NPE_TutorialButtonPulseGlow:Hide(button)
 	local frame = self:GetExisting(button);
 	if frame then
@@ -30,7 +73,6 @@ function NPE_TutorialButtonPulseGlow:Hide(button)
 	end
 end
 
--- ------------------------------------------------------------------------------------------------------------
 function NPE_TutorialButtonPulseGlow:GetExisting(button)
 	if not self.framePool then
 		return;
@@ -41,6 +83,8 @@ function NPE_TutorialButtonPulseGlow:GetExisting(button)
 		end
 	end
 end
+-- ------------------------------------------------------------------------------------------------------------
+
 
 -- ------------------------------------------------------------------------------------------------------------
 NPE_TutorialSpellDrag = {};
@@ -75,9 +119,9 @@ function NPE_TutorialSpellDrag:Show(spellButton, actionButton)
 	animFrame.Anim:Play();
 end
 
--- ------------------------------------------------------------------------------------------------------------
 function NPE_TutorialSpellDrag:Hide()
 	NPE_TutorialSpellDragOriginFrame:Hide();
 	NPE_TutorialSpellDragTargetFrame:Hide();
 	NPE_TutorialSpellDragAnimationFrame:Hide();
 end
+-- ------------------------------------------------------------------------------------------------------------

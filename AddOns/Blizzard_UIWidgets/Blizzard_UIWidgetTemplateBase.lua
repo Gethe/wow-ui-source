@@ -159,8 +159,23 @@ function UIWidgetBaseTemplateMixin:AnimOut()
 	end
 end
 
+local widgetScales =
+{
+	[Enum.UIWidgetScale.OneHundred]	= 1,
+	[Enum.UIWidgetScale.Ninty]	 = 0.9,
+	[Enum.UIWidgetScale.Eighty]	 = 0.8,
+	[Enum.UIWidgetScale.Seventy] = 0.7,
+	[Enum.UIWidgetScale.Sixty]	= 0.6,
+	[Enum.UIWidgetScale.Fifty]	= 0.5,
+}
+
+local function GetWidgetScale(widgetScale)
+	return widgetScales[widgetScale] and widgetScales[widgetScale] or widgetScales[Enum.UIWidgetScale.OneHundred];
+end
+
 -- Override with any custom behaviour that you need to perform when this widget is updated. Make sure you still call the base though because it handles animations
 function UIWidgetBaseTemplateMixin:Setup(widgetInfo, widgetContainer)
+	self:SetScale(GetWidgetScale(widgetInfo.widgetScale));
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
 	self.widgetContainer = widgetContainer;
 	self:AnimIn();

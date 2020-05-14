@@ -935,7 +935,7 @@ function WorldQuestCompleteAlertFrame_GetIconForQuestID(questID)
 	local info = C_QuestLog.GetQuestTagInfo(questID);
 
 	if info then
-		if info.worldQuestType == Enum.QuestTagType.Pvp then
+		if info.worldQuestType == Enum.QuestTagType.PvP then
 			return "Interface\\Icons\\achievement_arena_2v2_1";
 		elseif info.worldQuestType == Enum.QuestTagType.PetBattle then
 			return "Interface\\Icons\\INV_Pet_BattlePetTraining";

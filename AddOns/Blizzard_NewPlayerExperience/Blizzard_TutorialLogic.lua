@@ -7,6 +7,8 @@ function Tutorials:Begin()
 	-- Certain tutorials kick off when quests are accepted
 	NPE_QuestManager:RegisterForCallbacks(self);
 
+	self.QueueSystem:Begin();
+
 	-- Hide various UI elements until they are turned on
 	self.Hide_Backpack:Begin();
 	--self.Hide_MainMenuBar:Begin();
@@ -15,6 +17,16 @@ function Tutorials:Begin()
 	self.Hide_Minimap:Begin();
 
 	self.AutoPushSpellWatcher:Begin();
+
+	local startGossipWatcher = true;
+	for i, questID in ipairs(tutorialData.MultipleQuestsTutorial) do
+		if TutorialHelper:IsQuestCompleteOrActive(questID) then
+			startGossipWatcher = false;
+		end
+	end
+	if startGossipWatcher then
+		self.GossipFrameWatcher:Begin();
+	end
 
 	local level = UnitLevel("player");
 	if (level < 2) then
@@ -25,7 +37,12 @@ function Tutorials:Begin()
 	self.Hide_CharacterMicroButton:Begin();
 	self.Hide_OtherMicroButtons:Begin();
 	self.Hide_StoreMicroButton:Begin();
-
+		
+	local playerClass = TutorialHelper:GetClass();
+	if level < 3 and playerClass == "ROGUE" then
+		self.StealthTutorial:Begin();
+	end
+	
 	-- Looting
 	if (level <= 5) then
 		if (level > 2) then
@@ -37,7 +54,7 @@ function Tutorials:Begin()
 	end
 
 	local vendorQuestID = tutorialData.UseVendorQuest;
-	if C_QuestLog.GetLogIndexForQuestID(vendorQuestID) ~= nil then
+	if not TutorialHelper:IsQuestCompleteOrActive(vendorQuestID) then
 		self.Vendor_Watcher:Begin();
 	end
 
@@ -46,7 +63,6 @@ function Tutorials:Begin()
 
 	self.AcceptQuestWatcher:Begin();
 	self.TurnInQuestWatcher:Begin();
-	self.LevelUpTutorial:Begin();
 
 	-- Starting Quest
 	local questID = tutorialData.StartingQuest;
@@ -54,6 +70,8 @@ function Tutorials:Begin()
 		self.Hide_MainMenuBar:Complete();			-- Show the Main Menu bar
 		self.Hide_TargetFrame:Complete();			-- Show the Target Frame
 		self.Hide_StatusTrackingBar:Complete();	-- and show the status tracker
+		-- Chat frame
+		Dispatcher:RegisterFunction("ChatEdit_ActivateChat", function(editBox) Tutorials.ChatFrame:Begin(editBox) end);
 	elseif C_QuestLog.ReadyForTurnIn(questID) then	-- Starting Quest is ready to turn in
 		self.Hide_MainMenuBar:Complete();		-- Show the Main Menu bar
 		self.Intro_CombatTactics:Complete();	-- Intro Combat Tactics is complete
@@ -104,11 +122,8 @@ function Tutorials:Begin()
 		self.Hide_CharacterMicroButton:Complete();
 	end
 
-	-- Looting
-	if (level < 5) then -- if the player comes back after level 4, don't prompt them on loot anymore		
-		self.LootPointer:Begin();-- Begins watcher for player looting an item for the first time.
-		self.EquipFirstItemWatcher:Begin();
-	end
+	self.LootPointer:Begin();
+	self.EquipFirstItemWatcher:Begin();
 
 	if C_QuestLog.IsQuestFlaggedCompleted(tutorialData.UseFoodQuest) then
 		self.LowHealthWatcher:Begin();
@@ -137,12 +152,6 @@ function Tutorials:Begin()
 	if C_QuestLog.GetLogIndexForQuestID(specQuestID) ~= nil then -- Spec Choice Quest is active
 		self.SpecTutorial:Begin();
 	end
-
-	-- Chat frame
-	-- We don't want this active right off the bat.
-	C_Timer.After(5, function()
-			Dispatcher:RegisterFunction("ChatEdit_ActivateChat", function(editBox) Tutorials.ChatFrame:Begin(editBox) end);
-		end);
 end
 
 function Tutorials:Shutdown()
@@ -212,18 +221,20 @@ function Tutorials:Quest_ObjectivesComplete(questData)
 			if questID == tutorialData.StartingQuest then
 				self.Intro_CombatTactics:Complete();
 				self.QuestCompleteHelp:Begin();
+				-- Chat frame
+				Dispatcher:RegisterFunction("ChatEdit_ActivateChat", function(editBox) Tutorials.ChatFrame:Begin(editBox) end);
 			elseif questID == tutorialData.UseQuestItemData.ItemQuest then
 				self.UseQuestItemTutorial:Complete();
 			elseif questID == tutorialData.RemindUseQuestItemData.ItemQuest then
 				self.UseQuestItemTutorial:Complete();
 			elseif questID == tutorialData.EnhancedCombatTacticsQuest then
-				self.playerClass = TutorialHelper:GetClass();
-				if self.playerClass == "WARRIOR" then
+				local playerClass = TutorialHelper:GetClass();
+				if playerClass == "WARRIOR" then
 					self.EnhancedCombatTactics_Warrior:Complete();
-				elseif self.playerClass == "MONK" then
+				elseif playerClass == "MONK" then
 					--we need a special case for monk once class design has fixed some things
-					print("HERE IS WHERE WOULD COMPLETE MONK TRAINING.");
-				elseif self.playerClass == "PRIEST" or self.playerClass == "WARLOCK" or self.playerClass == "DRUID" then
+					--print("HERE IS WHERE WOULD COMPLETE MONK TRAINING.");
+				elseif playerClass == "PRIEST" or playerClass == "WARLOCK" or playerClass == "DRUID" then
 					self.EnhancedCombatTactics_UseDoTs:Complete();
 				elseif playerClass == "SHAMAN" or playerClass == "MAGE" then
 					self.EnhancedCombatTactics_Ranged:Complete();
@@ -233,6 +244,29 @@ function Tutorials:Quest_ObjectivesComplete(questData)
 			elseif questID == tutorialData.UseFoodQuest then
 				self.LowHealthWatcher:Begin();
 			end
+		end
+	end
+end
+
+function Tutorials:Quest_Abandoned(questData)
+	local questID = questData.QuestID;
+	local tutorialData = TutorialHelper:GetFactionData();
+
+	if questID == tutorialData.StartingQuest then
+		self.Intro_CombatDummyInRange:Interrupt();
+	elseif (questID == tutorialData.EnhancedCombatTacticsQuest) then
+		local playerClass = TutorialHelper:GetClass();
+		if playerClass == "WARRIOR" then
+			self.EnhancedCombatTactics_Warrior:Complete();
+		elseif playerClass == "MONK" then
+			--we need a special case for monk once class design has fixed some things
+			--print("HERE IS WHERE WOULD COMPLETE MONK TRAINING.");
+		elseif playerClass == "PRIEST" or playerClass == "WARLOCK" or playerClass == "DRUID" then
+			self.EnhancedCombatTactics_UseDoTs:Complete();
+		elseif playerClass == "SHAMAN" or playerClass == "MAGE" then
+			self.EnhancedCombatTactics_Ranged:Complete();
+		else -- ROGUE, PALADIN
+			self.EnhancedCombatTactics:Complete();
 		end
 	end
 end
@@ -284,6 +318,7 @@ Tutorials.Intro_CombatTactics 			= Class_Intro_CombatTactics:new();
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Intro to Quest Mechanics
+Tutorials.GossipFrameWatcher			= Class_GossipFrameWatcher:new();
 Tutorials.AcceptQuestWatcher			= Class_AcceptQuestWatcher:new();
 Tutorials.AcceptQuest					= Class_AcceptQuest:new(Tutorials.AcceptQuestWatcher);
 Tutorials.TurnInQuestWatcher			= Class_TurnInQuestWatcher:new();
@@ -292,9 +327,12 @@ Tutorials.QuestRewardChoice				= Class_QuestRewardChoice:new(Tutorials.TurnInQue
 Tutorials.QuestCompleteHelp				= Class_QuestCompleteHelp:new();
 
 -- ------------------------------------------------------------------------------------------------------------
+-- Queue System
+Tutorials.QueueSystem					= Class_QueueSystem:new();
+
+-- ------------------------------------------------------------------------------------------------------------
 -- Intro to XP and Level Up
-Tutorials.XPBarTutorial					= Class_XPBarTutorial:new()
-Tutorials.LevelUpTutorial				= Class_LevelUpTutorial:new()
+Tutorials.XPBarTutorial					= Class_XPBarTutorial:new();
 Tutorials.AddSpellToActionBar			= Class_AddSpellToActionBar:new();
 Tutorials.AddClassSpellToActionBar		= Class_AddClassSpellToActionBar:new();
 

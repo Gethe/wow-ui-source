@@ -146,9 +146,9 @@ local GarrisonConstants =
 		{
 			Name = "GarrTalentFeatureType",
 			Type = "Enumeration",
-			NumValues = 7,
+			NumValues = 8,
 			MinValue = 0,
-			MaxValue = 6,
+			MaxValue = 7,
 			Fields =
 			{
 				{ Name = "Generic", Type = "GarrTalentFeatureType", EnumValue = 0 },
@@ -158,6 +158,7 @@ local GarrisonConstants =
 				{ Name = "ReservoirUpgrades", Type = "GarrTalentFeatureType", EnumValue = 4 },
 				{ Name = "SanctumUnique", Type = "GarrTalentFeatureType", EnumValue = 5 },
 				{ Name = "SoulBinds", Type = "GarrTalentFeatureType", EnumValue = 6 },
+				{ Name = "AnimaDiversionMap", Type = "GarrTalentFeatureType", EnumValue = 7 },
 			},
 		},
 		{
@@ -209,7 +210,7 @@ local GarrisonConstants =
 				{ Name = "Generic", Type = "GarrTalentUI", EnumValue = 0 },
 				{ Name = "CovenantSanctum", Type = "GarrTalentUI", EnumValue = 1 },
 				{ Name = "SoulBinds", Type = "GarrTalentUI", EnumValue = 2 },
-				{ Name = "AnimaDiversion", Type = "GarrTalentUI", EnumValue = 3 },
+				{ Name = "AnimaDiversionMap", Type = "GarrTalentUI", EnumValue = 3 },
 			},
 		},
 		{

@@ -90,7 +90,7 @@ local VignetteInfo =
 			Fields =
 			{
 				{ Name = "Normal", Type = "VignetteType", EnumValue = 0 },
-				{ Name = "PvpBounty", Type = "VignetteType", EnumValue = 1 },
+				{ Name = "PvPBounty", Type = "VignetteType", EnumValue = 1 },
 			},
 		},
 		{

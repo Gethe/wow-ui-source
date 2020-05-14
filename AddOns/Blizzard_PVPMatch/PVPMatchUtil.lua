@@ -17,7 +17,7 @@ PVPMatchUtil.MatchTimeFormatter = CreateFromMixins(SecondsFormatterMixin);
 PVPMatchUtil.MatchTimeFormatter:Init(0, SecondsFormatter.Abbreviation.Truncate, true);
 
 function PVPMatchUtil.IsActiveMatchComplete()
-	return C_PvP.GetActiveMatchState() == Enum.PvpMatchState.Complete;
+	return C_PvP.GetActiveMatchState() == Enum.PvPMatchState.Complete;
 end
 
 function PVPMatchUtil.GetColorIndex(factionIndex, useAlternateColor)

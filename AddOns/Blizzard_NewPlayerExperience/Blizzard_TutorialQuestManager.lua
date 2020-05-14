@@ -124,6 +124,11 @@ function NPE_QuestManager:QUEST_LOG_UPDATE()
 				if (objectivesComplete) then
 					questData:ObjectivesComplete();
 					self:_DoCallback(self.Events.Quest_ObjectivesComplete, questData);
+				else
+					local onQuest = C_QuestLog.IsOnQuest(questID);
+					if onQuest == false then
+						self:_DoCallback(self.Events.Quest_Abandoned, questData);
+					end
 				end
 			else
 				if (C_QuestLog.IsQuestFlaggedCompleted(questID)) then

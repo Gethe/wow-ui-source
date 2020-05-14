@@ -17,7 +17,9 @@ function PVPConquestRewardMixin:Setup(questID, seasonState, tooltipAnchor)
 		local itemTexture;
 		if HaveQuestRewardData(questID) then
 			local itemIndex, rewardType = QuestUtils_GetBestQualityItemRewardIndex(questID);
-			itemTexture = select(2, QuestUtils_GetQuestLogRewardInfo(itemIndex, questID, rewardType));
+			if itemIndex and rewardType then
+				itemTexture = select(2, QuestUtils_GetQuestLogRewardInfo(itemIndex, questID, rewardType));
+			end
 		end
 		self:SetTexture(itemTexture, 1);
 	end

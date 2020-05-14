@@ -358,7 +358,7 @@ local Unit =
 
 			Returns =
 			{
-				{ Name = "classification", Type = "PvpUnitClassification", Nilable = true },
+				{ Name = "classification", Type = "PvPUnitClassification", Nilable = true },
 			},
 		},
 		{
@@ -1426,24 +1426,24 @@ local Unit =
 			},
 		},
 		{
-			Name = "PvpUnitClassification",
+			Name = "PvPUnitClassification",
 			Type = "Enumeration",
 			NumValues = 11,
 			MinValue = 0,
 			MaxValue = 10,
 			Fields =
 			{
-				{ Name = "FlagCarrierHorde", Type = "PvpUnitClassification", EnumValue = 0 },
-				{ Name = "FlagCarrierAlliance", Type = "PvpUnitClassification", EnumValue = 1 },
-				{ Name = "FlagCarrierNeutral", Type = "PvpUnitClassification", EnumValue = 2 },
-				{ Name = "CartRunnerHorde", Type = "PvpUnitClassification", EnumValue = 3 },
-				{ Name = "CartRunnerAlliance", Type = "PvpUnitClassification", EnumValue = 4 },
-				{ Name = "AssassinHorde", Type = "PvpUnitClassification", EnumValue = 5 },
-				{ Name = "AssassinAlliance", Type = "PvpUnitClassification", EnumValue = 6 },
-				{ Name = "OrbCarrierBlue", Type = "PvpUnitClassification", EnumValue = 7 },
-				{ Name = "OrbCarrierGreen", Type = "PvpUnitClassification", EnumValue = 8 },
-				{ Name = "OrbCarrierOrange", Type = "PvpUnitClassification", EnumValue = 9 },
-				{ Name = "OrbCarrierPurple", Type = "PvpUnitClassification", EnumValue = 10 },
+				{ Name = "FlagCarrierHorde", Type = "PvPUnitClassification", EnumValue = 0 },
+				{ Name = "FlagCarrierAlliance", Type = "PvPUnitClassification", EnumValue = 1 },
+				{ Name = "FlagCarrierNeutral", Type = "PvPUnitClassification", EnumValue = 2 },
+				{ Name = "CartRunnerHorde", Type = "PvPUnitClassification", EnumValue = 3 },
+				{ Name = "CartRunnerAlliance", Type = "PvPUnitClassification", EnumValue = 4 },
+				{ Name = "AssassinHorde", Type = "PvPUnitClassification", EnumValue = 5 },
+				{ Name = "AssassinAlliance", Type = "PvPUnitClassification", EnumValue = 6 },
+				{ Name = "OrbCarrierBlue", Type = "PvPUnitClassification", EnumValue = 7 },
+				{ Name = "OrbCarrierGreen", Type = "PvPUnitClassification", EnumValue = 8 },
+				{ Name = "OrbCarrierOrange", Type = "PvPUnitClassification", EnumValue = 9 },
+				{ Name = "OrbCarrierPurple", Type = "PvPUnitClassification", EnumValue = 10 },
 			},
 		},
 		{

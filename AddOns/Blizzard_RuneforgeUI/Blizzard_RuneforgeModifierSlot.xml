@@ -30,6 +30,9 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 
 	<Button name="RuneforgeModifierFrameTemplate" mixin="RuneforgeModifierFrameMixin" virtual="true">

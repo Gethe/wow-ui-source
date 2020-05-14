@@ -524,9 +524,9 @@ function SettingsDropdownMixin:GetRecruitmentSettingByValue(value)
 		return clubSettings.playStyleDungeon;
 	elseif (value == Enum.ClubFinderSettingFlags.Raids) then
 		return clubSettings.playStyleRaids;
-	elseif (value == Enum.ClubFinderSettingFlags.Pvp) then
+	elseif (value == Enum.ClubFinderSettingFlags.PvP) then
 		return clubSettings.playStylePvp;
-	elseif (value == Enum.ClubFinderSettingFlags.Rp) then
+	elseif (value == Enum.ClubFinderSettingFlags.RP) then
 		return clubSettings.playStyleRP;
 	elseif (value == Enum.ClubFinderSettingFlags.Social) then
 		return clubSettings.playStyleSocial;
@@ -567,11 +567,11 @@ function ClubFocusClubDropdownInitialize(self)
 	UIDropDownMenu_AddButton(info, level);
 
 	info.text = CLUB_FINDER_FOCUS_PVP;
-	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Pvp, PVP_ENABLED, allowMultipleSelection, isRadioStyle);
+	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.PvP, PVP_ENABLED, allowMultipleSelection, isRadioStyle);
 	UIDropDownMenu_AddButton(info, level);
 
 	info.text = GUILD_INTEREST_RP;
-	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Rp, GUILD_INTEREST_RP, allowMultipleSelection, isRadioStyle);
+	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.RP, GUILD_INTEREST_RP, allowMultipleSelection, isRadioStyle);
 	UIDropDownMenu_AddButton(info, level);
 end
 
@@ -1401,9 +1401,9 @@ function ClubFinderGetFocusStringFromFlags(recruitmentFlags)
 		return GUILD_INTEREST_DUNGEON;
 	elseif (focusFlag == Enum.ClubFinderSettingFlags.Raids) then
 		return GUILD_INTEREST_RAID;
-	elseif (focusFlag == Enum.ClubFinderSettingFlags.Pvp) then
+	elseif (focusFlag == Enum.ClubFinderSettingFlags.PvP) then
 		return CLUB_FINDER_FOCUS_PVP;
-	elseif (focusFlag == Enum.ClubFinderSettingFlags.Rp) then
+	elseif (focusFlag == Enum.ClubFinderSettingFlags.RP) then
 		return GUILD_INTEREST_RP;
 	elseif (focusFlag == Enum.ClubFinderSettingFlags.Social) then
 		return CLUB_FINDER_FOCUS_SOCIAL_LEVELING;
@@ -2441,9 +2441,9 @@ function ClubFinderGetPlayerSettingsByValue(value)
 		return playerSettings.playStyleDungeon;
 	elseif (value == Enum.ClubFinderSettingFlags.Raids) then
 		return playerSettings.playStyleRaids;
-	elseif (value == Enum.ClubFinderSettingFlags.Pvp) then
+	elseif (value == Enum.ClubFinderSettingFlags.PvP) then
 		return playerSettings.playStylePvp;
-	elseif (value == Enum.ClubFinderSettingFlags.Rp) then
+	elseif (value == Enum.ClubFinderSettingFlags.RP) then
 		return playerSettings.playStyleRP;
 	elseif (value == Enum.ClubFinderSettingFlags.Social) then
 		return playerSettings.playStyleSocial;

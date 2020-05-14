@@ -64,6 +64,11 @@ local InGameNavigation =
 				{ Name = "region", Type = "table", Nilable = false },
 			},
 		},
+		{
+			Name = "NavigationFrameDestroyed",
+			Type = "Event",
+			LiteralName = "NAVIGATION_FRAME_DESTROYED",
+		},
 	},
 
 	Tables =

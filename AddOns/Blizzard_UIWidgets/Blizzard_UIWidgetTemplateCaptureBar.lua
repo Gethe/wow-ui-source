@@ -11,13 +11,17 @@ UIWidgetTemplateCaptureBarMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
 local textureKitRegionInfo = {
 	["BarBackground"] = {formatString = "%s-frame-%s", useAtlasSize = true},
+	["Bar"] = {formatString = "%s-framebar-%s", useAtlasSize = true},
 	["LeftBar"] = {formatString = "%s-leftfill-%s"},
 	["RightBar"] = {formatString = "%s-rightfill-%s"},
-	["NeutralBar"] = {formatString = "%s-neutralfill-%s"},
+	["NeutralBar"] = {formatString = "%s-neutralfill-%s", useAtlasSize = true},
 	["Glow1"] = {formatString = "%s-leftglow-%s", useAtlasSize = true, setVisibility = true},
 	["Glow2"] = {formatString = "%s-rightglow-%s", useAtlasSize = true, setVisibility = true},
 	["Glow3"] = {formatString = "%s-neutralglow-%s", useAtlasSize = true, setVisibility = true},
 	["Spark"] = {formatString = "%s-spark-%s", useAtlasSize = true},
+	["SparkNeutral"] = {formatString = "%s-spark-neutral-%s", setVisibility = true},
+	["LeftArrow"] = {formatString = "%s-arrow-%s", useAtlasSize = true},
+	["RightArrow"] = {formatString = "%s-arrow-%s", useAtlasSize = true},
 }
 
 local LEFT_BAR_OFFSET = 25;
@@ -78,8 +82,18 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo, widgetContainer)
 	local hasLeftGlowTexture = self.Glow1:IsShown();
 	local hasRightGlowTexture = self.Glow2:IsShown();
 	local hasNeutralGlowTexture = self.Glow3:IsShown();
+	local hasNeutralSparkTexture = self.SparkNeutral:IsShown(); 
+	local neutralFrameOffsetY = 0; 
 
-	if frameTextureKit == "boss" then
+	if frameTextureKit == "bastionarmor" then 
+		neutralFrameOffsetY = -5
+		self.Glow3:ClearAllPoints();
+		self.Glow3:SetPoint("CENTER", self, "CENTER", 0, neutralFrameOffsetY); 
+		self.LeftArrow:ClearAllPoints(); 
+		self.RightArrow:ClearAllPoints(); 
+		self.LeftArrow:SetPoint("TOPRIGHT", self.Spark, "TOPLEFT", 0, neutralFrameOffsetY);
+		self.RightArrow:SetPoint("TOPLEFT", self.Spark, "TOPRIGHT", 0, neutralFrameOffsetY);
+	elseif frameTextureKit == "boss" then
 		self.Glow1:ClearAllPoints();
 		self.Glow1:SetPoint("CENTER", self, "CENTER", 0, 0); 
 		self.Glow2:ClearAllPoints();
@@ -89,6 +103,12 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo, widgetContainer)
 		self.Glow1:SetPoint("LEFT", self, "LEFT", -1, 0); 
 		self.Glow2:ClearAllPoints();
 		self.Glow2:SetPoint("RIGHT", self, "RIGHT", 1, 0); 
+		self.Glow3:ClearAllPoints();
+		self.Glow3:SetPoint("CENTER", self, "CENTER", 0, 0); 
+		self.LeftArrow:ClearAllPoints(); 
+		self.RightArrow:ClearAllPoints(); 
+		self.LeftArrow:SetPoint("RIGHT", self.Spark, "LEFT", 1, 0);
+		self.RightArrow:SetPoint("LEFT", self.Spark, "RIGHT", -1, 0);
 	end
 
 	local movedLeft = (position < self.oldValue);
@@ -166,7 +186,7 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo, widgetContainer)
 		self.Glow3:SetAlpha(1);
 	end
 
-	self.NeutralBar:SetPoint("CENTER", self, "LEFT", neutralZonePosition, 0); 
+	self.NeutralBar:SetPoint("CENTER", self, "LEFT", neutralZonePosition, neutralFrameOffsetY); 
 
 	-- Setup the size of the neutral bar
 	if (neutralZoneSizePercent == 0 ) then
@@ -182,6 +202,8 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo, widgetContainer)
 
 	self.oldValue = position;
 	self.Spark:SetPoint("CENTER", self, "LEFT", position, 0);
+	self.SparkNeutral:SetShown(hasNeutralSparkTexture and inNeutralZone); 
+	self.Spark:SetShown(not hasNeutralSparkTexture or not inNeutralZone); 
 end
 
 function UIWidgetTemplateCaptureBarMixin:AnimOut()

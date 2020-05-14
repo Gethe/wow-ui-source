@@ -1,4 +1,4 @@
-PTR_IssueReporter = CreateFrame("Frame", nil, UIParent)
+PTR_IssueReporter = CreateFrame("Frame", nil, GetAppropriateTopLevelParent())
 PTR_IssueReporter.Data = {
     UnitTokens = {
         Player = "player",
@@ -68,10 +68,31 @@ function PTR_IssueReporter.Init()
     PTR_IssueReporter.CreateReports()
     PTR_IssueReporter.RunPreviousSetupCommands()
     PTR_IssueReporter.CreateMainView()
-    
-    C_Timer.NewTicker(5, PTR_IssueReporter.CheckSurveyQueue)
+    if not(IsOnGlueScreen()) then
+        C_Timer.NewTicker(5, PTR_IssueReporter.CheckSurveyQueue)
+    end
     PTR_IssueReporter.Data.IsLoaded = true
     PTR_IssueReporter.HandleMapEvents()
+end
+----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.GlueInit()
+    Blizzard_PTRIssueReporter_Saved = Blizzard_PTRIssueReporter_Saved or {}
+    
+    for key, value in pairs (PTR_IssueReporter.ReportEventTypes) do
+        PTR_IssueReporter.Data.RegisteredSurveys[key] = {}
+        PTR_IssueReporter.Data.RegisteredButtonEvents[key]  = {}
+        PTR_IssueReporter.Data.RegisteredButtonEndEvents[key]  = {}
+        PTR_IssueReporter.Data.RegisteredFrameAttachedEvents[key] = {}
+        PTR_IssueReporter.Data.RegisteredEventFunctions[key] = {}
+    end
+    
+    PTR_IssueReporter.Data.RegisteredSurveys.FallbackEvents = {}
+    PTR_IssueReporter.Data.RegisteredButtonEvents.FallbackEvents = {}
+    PTR_IssueReporter.Data.RegisteredButtonEndEvents.FallbackEvents = {}
+
+    PTR_IssueReporter.CreateReports()
+    PTR_IssueReporter.RunPreviousSetupCommands()
+    PTR_IssueReporter.CreateMainView()    
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SlashHandeler(msg)
@@ -435,7 +456,7 @@ function PTR_IssueReporter.HandleTooltipKeypress()
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.QueueStandaloneSurvey(event, survey, dataPackage)
-    if (event == PTR_IssueReporter.ReportEventTypes.UIButtonClicked) or (event == PTR_IssueReporter.ReportEventTypes.Tooltip) then -- These event types warrant an immediate pop due to them being prompted from the player, the rest should be delayed until combat ends since their are prompted from game state
+    if (IsOnGlueScreen() or event == PTR_IssueReporter.ReportEventTypes.UIButtonClicked) or (event == PTR_IssueReporter.ReportEventTypes.Tooltip) then -- These event types warrant an immediate pop due to them being prompted from the player, the rest should be delayed until combat ends since their are prompted from game state
         PTR_IssueReporter.PopStandaloneSurvey(survey, dataPackage)
     else
         table.insert(PTR_IssueReporter.Data.PopSurveyQueue, {survey = survey, dataPackage = dataPackage})
@@ -585,6 +606,25 @@ local function PlayerEnteringWorldHandler()
     SLASH_PTRFEEDBACK2 = "/PTRFEEDBACK"
     SlashCmdList["PTRFEEDBACK"] = PTR_IssueReporter.SlashHandeler
 end
-PTR_IssueReporter:RegisterEvent("PLAYER_ENTERING_WORLD")  
-PTR_IssueReporter:SetScript("OnEvent", PlayerEnteringWorldHandler)
+if not(IsOnGlueScreen()) then
+	PTR_IssueReporter:RegisterEvent("PLAYER_ENTERING_WORLD")  
+	PTR_IssueReporter:SetScript("OnEvent", PlayerEnteringWorldHandler)
+end
+
+local function PlayerEnteringCharacterCustomization()
+    if PTR_IssueReporter.ReportBug then
+        PTR_IssueReporter:Show()
+    else
+        PTR_IssueReporter.GlueInit()
+    end
+end
+
+local function CustomizationScreenExit()
+    PTR_IssueReporter:Hide()
+end
+
+if IsOnGlueScreen() then
+    CharCustomizeFrame:HookScript("OnShow", PlayerEnteringCharacterCustomization)
+    CharCustomizeFrame:HookScript("OnHide", CustomizationScreenExit)
+end
 ----------------------------------------------------------------------------------------------------

@@ -55,7 +55,7 @@ CalendarEventTypeNames =
 {
 	[Enum.CalendarEventType.Raid] = CALENDAR_TYPE_RAID,
 	[Enum.CalendarEventType.Dungeon] = CALENDAR_TYPE_DUNGEON,
-	[Enum.CalendarEventType.Pvp] = CALENDAR_TYPE_PVP,
+	[Enum.CalendarEventType.PvP] = CALENDAR_TYPE_PVP,
 	[Enum.CalendarEventType.Meeting] = CALENDAR_TYPE_MEETING,
 	[Enum.CalendarEventType.Other] = CALENDAR_TYPE_OTHER,
 	[Enum.CalendarEventType.HeroicDeprecated] = CALENDAR_TYPE_DUNGEON,

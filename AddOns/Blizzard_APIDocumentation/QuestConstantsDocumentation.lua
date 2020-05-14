@@ -13,7 +13,7 @@ local QuestConstants =
 				{ Name = "Tag", Type = "QuestTagType", EnumValue = 0 },
 				{ Name = "Profession", Type = "QuestTagType", EnumValue = 1 },
 				{ Name = "Normal", Type = "QuestTagType", EnumValue = 2 },
-				{ Name = "Pvp", Type = "QuestTagType", EnumValue = 3 },
+				{ Name = "PvP", Type = "QuestTagType", EnumValue = 3 },
 				{ Name = "PetBattle", Type = "QuestTagType", EnumValue = 4 },
 				{ Name = "Bounty", Type = "QuestTagType", EnumValue = 5 },
 				{ Name = "Dungeon", Type = "QuestTagType", EnumValue = 6 },

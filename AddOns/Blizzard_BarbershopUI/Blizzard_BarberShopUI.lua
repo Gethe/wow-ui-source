@@ -5,6 +5,7 @@ function BarberShopMixin:OnLoad()
 	self:RegisterEvent("BARBER_SHOP_COST_UPDATE");
 
 	CharCustomizeFrame:AttachToParentFrame(self);
+	CharCustomizeFrame.SmallButtons.RandomizeAppearanceButton:Hide();
 end
 
 function BarberShopMixin:OnEvent(event, ...)
@@ -24,6 +25,7 @@ function BarberShopMixin:OnShow()
 
 	UIErrorsFrame:SetParent(self);
 	UIErrorsFrame:SetFrameStrata("DIALOG");
+	UIErrorsFrame:ClearAllPoints();
 	UIErrorsFrame:SetPoint("TOP", self.Banner, "BOTTOM", 0, 0);
 
 	self:SetScale(UIParent:GetScale());
@@ -37,6 +39,7 @@ end
 function BarberShopMixin:OnHide()
 	UIErrorsFrame:SetParent(UIParent);
 	UIErrorsFrame:SetFrameStrata("DIALOG");
+	UIErrorsFrame:ClearAllPoints();
 	UIErrorsFrame:SetPoint(unpack(self.oldErrorFramePointInfo));
 end
 
@@ -86,6 +89,26 @@ end
 function BarberShopMixin:PreviewCustomizationChoice(optionID, choiceID)
 	-- It is important that we DON'T call UpdateCharCustomizationFrame here because we want to keep the current selections
 	C_BarberShop.SetCustomizationChoice(optionID, choiceID);
+end
+
+function BarberShopMixin:GetCurrentCameraZoom()
+	return C_BarberShop.GetCurrentCameraZoom();
+end
+
+function BarberShopMixin:SetCameraZoomLevel(zoomLevel, keepCustomZoom)
+	C_BarberShop.SetCameraZoomLevel(zoomLevel, keepCustomZoom);
+end
+
+function BarberShopMixin:ZoomCamera(zoomAmount)
+	C_BarberShop.ZoomCamera(zoomAmount);
+end
+
+function BarberShopMixin:RotateCharacter(rotationAmount)
+	C_BarberShop.RotateCamera(rotationAmount);
+end
+
+function BarberShopMixin:ResetCharacterRotation()
+	C_BarberShop.ResetCameraRotation();
 end
 
 BarberShopButtonMixin = {};

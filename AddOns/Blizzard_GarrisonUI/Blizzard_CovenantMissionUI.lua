@@ -317,8 +317,8 @@ function CovenantMission:GetNineSlicePiece(pieceName)
 end
 
 function CovenantMission:UpdateCurrencyInfo()
-	local primaryCurrency, _ = C_Garrison.GetCurrencyTypes(GarrisonFollowerOptions[self.followerTypeID].garrisonType);
-	local currencyTexture = C_CurrencyInfo.GetCurrencyInfo(primaryCurrency).iconFileID;
+	local _, secondaryCurrency = C_Garrison.GetCurrencyTypes(GarrisonFollowerOptions[self.followerTypeID].garrisonType);
+	local currencyTexture = C_CurrencyInfo.GetCurrencyInfo(secondaryCurrency).iconFileID;
 
 	self.MissionTab.MissionPage.CostFrame.CostIcon:SetTexture(currencyTexture);
 	self.MissionTab.MissionPage.CostFrame.CostIcon:SetSize(18, 18);
@@ -328,8 +328,8 @@ function CovenantMission:UpdateCurrencyInfo()
 	self.FollowerTab.CostFrame.CostIcon:SetSize(18, 18);
 	self.FollowerTab.CostFrame.Cost:SetPoint("RIGHT", self.FollowerTab.CostFrame.CostIcon, "LEFT", -8, -1);
 
-	SetupMaterialFrame(self.FollowerList.MaterialFrame, primaryCurrency, currencyTexture);
-	SetupMaterialFrame(self.MissionTab.MissionList.MaterialFrame, primaryCurrency, currencyTexture);
+	SetupMaterialFrame(self.FollowerList.MaterialFrame, secondaryCurrency, currencyTexture);
+	SetupMaterialFrame(self.MissionTab.MissionList.MaterialFrame, secondaryCurrency, currencyTexture);
 	self:GetCompleteDialog().BorderFrame.ViewButton:SetPoint("BOTTOM", 0, 88);
 
 	self:UpdateCurrency();

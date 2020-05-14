@@ -59,7 +59,7 @@ local BUFF_LIST_NUM_COLUMNS = 4;
 function MawBuffsListMixin:OnLoad()
 	self.button = self:GetParent();
 	self:SetFrameLevel(self.button:GetFrameLevel() - 1);
-	self.buffPool = CreateFramePool("FRAME", self, "MawBuffTemplate");
+	self.buffPool = CreateFramePool("BUTTON", self, "MawBuffTemplate");
 end
 
 function MawBuffsListMixin:OnShow()

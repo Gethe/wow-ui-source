@@ -10,10 +10,15 @@ local function InOutProgress(progress)
 end
 
 
+local function GetProgress(elapsed, duration)
+	-- A duration of 0 is used for effects that last until canceled.
+	return (duration ~= 0) and (elapsed / duration) or 0;
+end
+
 local function LinearTrajectory(source, target, elapsed, duration)
 	local sourceX, sourceY = source:GetCenter();
 	local targetX, targetY = target:GetCenter();
-	local progress = elapsed / duration;
+	local progress = GetProgress(elapsed, duration);
 	local positionX = Lerp(sourceX, targetX, progress);
 	local positionY = Lerp(sourceY, targetY, progress);
 	return positionX, positionY;
@@ -21,7 +26,7 @@ end
 
 local function GenerateCurveTrajectory(curveMagnitude)
 	local function CurveTrajectory(source, target, elapsed, duration)
-		local progress = elapsed / duration;
+		local progress = GetProgress(elapsed, duration);
 		local direction = GetDirectionVector(source, target);
 
 		-- Add movement perpendicular to direction to curve the effect.

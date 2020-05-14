@@ -10,6 +10,7 @@ SCENARIO_CONTENT_TRACKER_MODULE.ShowCriteria = C_Scenario.ShouldShowCriteria();
 -- we need to go deeper
 
 SCENARIO_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable("SCENARIO_TRACKER_MODULE");
+SCENARIO_TRACKER_MODULE:SetSharedHeader(ObjectiveTrackerFrame.BlocksFrame.ScenarioHeader);	-- The module still needs a header
 SCENARIO_TRACKER_MODULE.usedBlocks = { };
 SCENARIO_TRACKER_MODULE.freeLines = { };
 SCENARIO_TRACKER_MODULE.lineTemplate = "ObjectiveTrackerCheckLineTemplate";
@@ -44,6 +45,11 @@ function SCENARIO_TRACKER_MODULE:OnFreeLine(line)
 		line.CheckFlash:SetAlpha(0);
 		line.completed = nil;
 	end
+end
+
+-- Provide a custom way to relate these two modules for collapse purposes, since SCENARIO_TRACKER_MODULE isn't in the MODULES table at all.
+function SCENARIO_CONTENT_TRACKER_MODULE:GetRelatedModules()
+	return self, SCENARIO_TRACKER_MODULE;
 end
 
 -- *****************************************************************************************************
@@ -884,10 +890,13 @@ function ScenarioStage_CustomizeBlock(stageBlock, scenarioType, widgetSetID, tex
 end
 
 function SCENARIO_CONTENT_TRACKER_MODULE:Update()
+	self:BeginLayout();
+
 	local scenarioName, currentStage, numStages, flags, _, _, _, xp, money, scenarioType, _, textureKit = C_Scenario.GetInfo();
 	local rewardsFrame = ObjectiveTrackerScenarioRewardsFrame;
 	if ( numStages == 0 ) then
 		ScenarioBlocksFrame_Hide();
+		self:EndLayout();
 		return;
 	end
 	local BlocksFrame = SCENARIO_TRACKER_MODULE.BlocksFrame;
@@ -899,6 +908,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 		if ( BlocksFrame.currentStage == currentStage ) then
 			ObjectiveTracker_AddBlock(BlocksFrame);
 			BlocksFrame:Show();
+			self:EndLayout();
 			return;
 		else
 			ObjectiveTracker_EndSlideBlock(BlocksFrame);
@@ -1047,6 +1057,8 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 	else
 		ScenarioBlocksFrame_Hide();
 	end
+
+	self:EndLayout();
 end
 
 function SCENARIO_CONTENT_TRACKER_MODULE:UpdateWeightedProgressCriteria(stageDescription, stageBlock, objectiveBlock, BlocksFrame)

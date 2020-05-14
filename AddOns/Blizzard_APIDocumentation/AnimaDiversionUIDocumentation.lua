@@ -16,15 +16,6 @@ local AnimaDiversionUI =
 			},
 		},
 		{
-			Name = "GetPlayerCovenantAnimaCurrencyID",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "currencyID", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetReinforceProgress",
 			Type = "Function",
 

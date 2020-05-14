@@ -1,5 +1,5 @@
 
-local HalfPi = math.pi / 2;
+local ScriptedAnimationModelSceneID = 343;
 
 -- Experimentally determined.
 local SceneUnitDivisor = 196;
@@ -131,7 +131,8 @@ end
 ScriptAnimatedModelSceneActorMixin = {};
 
 function ScriptAnimatedModelSceneActorMixin:IsActive()
-	return not self.elapsedTime or (self.elapsedTime < self.duration);
+	-- A duration of 0 is used for effects that last until canceled.
+	return not self.elapsedTime or (self.duration == 0) or (self.elapsedTime < self.duration);
 end
 
 function ScriptAnimatedModelSceneActorMixin:GetModelScene()
@@ -219,19 +220,34 @@ ScriptAnimatedModelSceneMixin = {};
 function ScriptAnimatedModelSceneMixin:OnLoad()
 	ModelSceneMixin.OnLoad(self);
 
+	self.centerX = 0;
+	self.centerY = 0;
 	self.effectControllers = {};
+
+	self:RefreshModelScene();
 end
 
-function ScriptAnimatedModelSceneMixin:OnShow()
+function ScriptAnimatedModelSceneMixin:OnSizeChanged()
+	self:RefreshModelScene();
+end
+
+function ScriptAnimatedModelSceneMixin:RefreshModelScene()
+	if not self:IsRectValid() then
+		return;
+	end
+
 	self.centerX, self.centerY = self:GetCenter();
+
+	self:CalculatePixelsPerSceneUnit();
+
+	if not self.modelSceneSet then
+		self:SetFromModelSceneID(ScriptedAnimationModelSceneID);
+		self.modelSceneSet = true;
+	end
 end
 
 function ScriptAnimatedModelSceneMixin:OnUpdate(elapsed, ...)
 	ModelSceneMixin.OnUpdate(self, elapsed, ...);
-
-	if not self.centerX then
-		self.centerX, self.centerY = self:GetCenter();
-	end
 
 	if #self.effectControllers == 0 then
 		return;
@@ -273,9 +289,6 @@ function ScriptAnimatedModelSceneMixin:CalculatePixelsPerSceneUnit()
 end
 
 function ScriptAnimatedModelSceneMixin:AddEffect(effectID, source, target, onEffectFinish, onEffectResolution)
-	if not self.centerX then
-		self.centerX, self.centerY = self:GetCenter();
-	end
 	local effectController = CreateAndInitFromMixin(EffectControllerMixin, self, effectID, source, target, onEffectFinish, onEffectResolution);
 	effectController:StartEffect();
 	return effectController; 

@@ -3,6 +3,22 @@ local UIWidgetManagerShared =
 	Tables =
 	{
 		{
+			Name = "UIWidgetScale",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 0,
+			MaxValue = 5,
+			Fields =
+			{
+				{ Name = "OneHundred", Type = "UIWidgetScale", EnumValue = 0 },
+				{ Name = "Ninty", Type = "UIWidgetScale", EnumValue = 1 },
+				{ Name = "Eighty", Type = "UIWidgetScale", EnumValue = 2 },
+				{ Name = "Seventy", Type = "UIWidgetScale", EnumValue = 3 },
+				{ Name = "Sixty", Type = "UIWidgetScale", EnumValue = 4 },
+				{ Name = "Fifty", Type = "UIWidgetScale", EnumValue = 5 },
+			},
+		},
+		{
 			Name = "UIWidgetVisualizationType",
 			Type = "Enumeration",
 			NumValues = 18,

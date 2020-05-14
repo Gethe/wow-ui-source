@@ -2061,7 +2061,7 @@
 	</Frame>
 
 	<EditBox name="SharedEditBoxTemplate" mixin="SharedEditBoxMixin" virtual="true">
-		<Size x="240" y="48"/>
+		<Size x="258" y="54"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Left" atlas="common-input-left" useAtlasSize="true">

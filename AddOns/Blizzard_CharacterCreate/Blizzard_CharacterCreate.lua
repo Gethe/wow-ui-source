@@ -1213,11 +1213,13 @@ function CharacterCreateNameAvailabilityStateMixin:UpdateState(available, failur
 		self:AddTooltipLine(CHAR_CREATE_NAME_AVILABLE, GREEN_FONT_COLOR);
 		self:SetNormalAtlas("common-icon-checkmark");
 		self:SetHighlightAtlas("common-icon-checkmark", "ADD");
+		self:SetSize(23, 20);
 	else
 		self:UpdateNavBlocker(failureReason);
 		self:AddTooltipLine(failureReason, RED_FONT_COLOR);
 		self:SetNormalAtlas("common-icon-redx");
 		self:SetHighlightAtlas("common-icon-redx", "ADD");
+		self:SetSize(20, 20);
 	end
 
 	self:Show();

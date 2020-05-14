@@ -10,6 +10,10 @@ function NewPlayerExperience:Begin()
 	if ( not GetCVarBool("showNPETutorials") ) then
 		return;
 	end
+
+	-- in the NPE
+	SetCVar("whisperMode", "popout");
+
 	-- Completion Criteria
 	if not C_PlayerInfo.IsPlayerEligibleForNPEv2() then
 		self:RegisterComplete();

@@ -67,7 +67,7 @@ function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskill
 	local iconAtlas;
 	if ( inProgress ) then
 		return "worldquest-questmarker-questionmark", 10, 15;
-	elseif ( worldQuestType == Enum.QuestTagType.Pvp ) then
+	elseif ( worldQuestType == Enum.QuestTagType.PvP ) then
 		iconAtlas =  "worldquest-icon-pvp-ffa";
 	elseif ( worldQuestType == Enum.QuestTagType.PetBattle ) then
 		iconAtlas =  "worldquest-icon-petbattle";

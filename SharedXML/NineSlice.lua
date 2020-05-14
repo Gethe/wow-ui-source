@@ -256,14 +256,14 @@ local layouts =
 	CovenantMissionFrame =
 	{
 		mirrorLayout = true,
-		TopLeftCorner =	{ atlas = "UI-Frame-Oribos-CornerTopLeft", x = -6, y = 6, },
-		TopRightCorner =	{ atlas = "UI-Frame-Oribos-CornerTopLeft", x = 6, y = 6, },
-		BottomLeftCorner =	{ atlas = "UI-Frame-Oribos-CornerTopLeft", x = -6, y = -6, },
-		BottomRightCorner =	{ atlas = "UI-Frame-Oribos-CornerTopLeft", x = 6, y = -6, },
-		TopEdge = { atlas = "_UI-Frame-Oribos-EdgeTop", },
-		BottomEdge = { atlas = "_UI-Frame-Oribos-EdgeTop", },
-		LeftEdge = { atlas = "!UI-Frame-Oribos-EdgeLeft", },
-		RightEdge = { atlas = "!UI-Frame-Oribos-EdgeLeft", },
+		TopLeftCorner =	{ atlas = "Oribos-NineSlice-CornerTopLeft", x = -6, y = 6, },
+		TopRightCorner =	{ atlas = "Oribos-NineSlice-CornerTopLeft", x = 6, y = 6, },
+		BottomLeftCorner =	{ atlas = "Oribos-NineSlice-CornerTopLeft", x = -6, y = -6, },
+		BottomRightCorner =	{ atlas = "Oribos-NineSlice-CornerTopLeft", x = 6, y = -6, },
+		TopEdge = { atlas = "_Oribos-NineSlice-EdgeTop", },
+		BottomEdge = { atlas = "_Oribos-NineSlice-EdgeTop", },
+		LeftEdge = { atlas = "!Oribos-NineSlice-EdgeLeft", },
+		RightEdge = { atlas = "!Oribos-NineSlice-EdgeLeft", },
 	},
 
 	GenericMetal =

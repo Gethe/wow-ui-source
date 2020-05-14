@@ -159,6 +159,7 @@ function CharacterSelect_OnLoad(self)
 
 	LoadAddOn("Blizzard_CharacterCustomize");
     LoadAddOn("Blizzard_CharacterCreate");
+	LoadAddOn("Blizzard_PTRFeedbackGlue");
 end
 
 function CharacterSelect_OnShow(self)

@@ -1921,8 +1921,7 @@ function UIParent_OnEvent(self, event, ...)
 
 	-- Event for BarberShop handling
 	elseif ( event == "BARBER_SHOP_OPEN" ) then
-		-- TODO: Remove this if once the old barber shop can die completely
-		if not BarberShopFrame_Old then
+		if not BarberShopFrame then
 			BarberShopFrame_LoadUI();
 		end
 

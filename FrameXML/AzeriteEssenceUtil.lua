@@ -62,7 +62,7 @@ function AzeriteEssenceUtil.ShouldShowEmptySlotHelptip()
 			end
 		end
 	end
-	return numEmptySlots > 0 and C_AzeriteEssence.GetNumUnlockedEssences() >= numValidSlots;
+	return numEmptySlots > 0 and C_AzeriteEssence.GetNumUsableEssences() >= numValidSlots;
 end
 
 local ESSENCE_SWAP_TUTORIAL_STATE_NOT_SEEN = 0;
