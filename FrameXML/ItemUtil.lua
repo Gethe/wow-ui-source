@@ -5,6 +5,7 @@ ItemButtonUtil.ItemContextEnum = {
 	Scrapping = 1,
 	CleanseCorruption = 2, 
 	PickRuneforgeBaseItem = 3, 
+	ApplyCorruption = 4,
 };
 
 ItemButtonUtil.ItemContextMatchResult = {
@@ -41,6 +42,8 @@ function ItemButtonUtil.GetItemContext()
 		return ItemButtonUtil.ItemContextEnum.CleanseCorruption;
 	elseif RuneforgeFrame and RuneforgeFrame:IsShown() then
 		return ItemButtonUtil.ItemContextEnum.PickRuneforgeBaseItem;
+	elseif TargetSpellHasApplyCorruption() then
+		return ItemButtonUtil.ItemContextEnum.ApplyCorruption;
 	end
 	
 	return nil;
@@ -64,6 +67,8 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 			return C_Item.IsItemCorrupted(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.PickRuneforgeBaseItem then 
 			return C_LegendaryCrafting.IsValidRuneforgeBaseItem(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+		elseif itemContext == ItemButtonUtil.ItemContextEnum.ApplyCorruption then 
+			return C_Item.IsItemCorruptable(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		else
 			return ItemButtonUtil.ItemContextMatchResult.DoesNotApply;
 		end

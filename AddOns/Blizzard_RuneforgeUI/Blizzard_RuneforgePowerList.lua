@@ -87,7 +87,7 @@ function RuneforgePowerSlotMixin:Reset()
 	self:SetPowerID(nil);
 end
 
-function RuneforgePowerSlotMixin:OnPowerSelected(event, powerID)
+function RuneforgePowerSlotMixin:OnPowerSelected(powerID)
 	self:SetPowerID(powerID);
 end
 

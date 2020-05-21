@@ -120,11 +120,17 @@ TutorialData.LevelAbilitiesTable = {
 -- ------------------------------------------------------------------------------------------------------------
 TutorialData.DruidAnimalFormSpells =
 {
+	CAT_FORM_SPELL_ID = 768;
+	BEAR_FORM_SPELL_ID = 5487;
+
 	catSpells = {5221, 1850, 22568};
 	bearSpells = {33917};
 }
 
 TutorialData.RogueStealthSpells = {1833, 8676};
+
+TutorialData.HunterTamePetSpells = {883, 1515};
+
 
 -- ------------------------------------------------------------------------------------------------------------
 TutorialData.ClassData = {
@@ -314,6 +320,8 @@ TutorialData.Alliance = {
 
 	MultipleQuestsTutorial = {55184, 55186};
 
+	HunterTameTutorialQuestID = 59342;
+
 	UseVendorQuest = 55194;
 
 	LookingForGroupQuest = 55992;
@@ -430,6 +438,8 @@ TutorialData.Horde = {
 	FoodSpellCast = 433;
 
 	MultipleQuestsTutorial = {59938, 59939};
+
+	HunterTameTutorialQuestID = 59937;
 
 	UseVendorQuest = 59950;
 

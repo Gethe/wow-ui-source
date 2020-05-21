@@ -205,7 +205,13 @@ function ScriptedAnimationEffectsUtil.GetEffectByID(effectID)
 	return ScriptedAnimationEffects[effectID];
 end
 
-function ScriptedAnimationEffectsUtil.GetAllEffectIDs()
+function ScriptedAnimationEffectsUtil.ReloadDB()
+	ScriptedAnimationEffects = LoadScriptedAnimationEffects();
+end
+
+ScriptedAnimationEffectsDebug = {};
+
+function ScriptedAnimationEffectsDebug.GetAllEffectIDs()
 	local allEffectIDs = {};
 	for effectID, effect in pairs(ScriptedAnimationEffects) do
 		table.insert(allEffectIDs, effectID);
@@ -214,6 +220,30 @@ function ScriptedAnimationEffectsUtil.GetAllEffectIDs()
 	return allEffectIDs;
 end
 
-function ScriptedAnimationEffectsUtil.ReloadDB()
-	ScriptedAnimationEffects = LoadScriptedAnimationEffects();
+function ScriptedAnimationEffectsDebug.GetBehavior(behavior)
+	return BehaviorToCallback[behavior];
+end
+
+function ScriptedAnimationEffectsDebug.GetTrajectory(trajectory)
+	return TrajectoryToCallback[trajectory];
+end
+
+function ScriptedAnimationEffectsDebug.GetEnumFromBehavior(behaviorFunction)
+	for enum, callback in pairs(BehaviorToCallback) do
+		if callback == behaviorFunction then
+			return enum;
+		end
+	end
+
+	return nil;
+end
+
+function ScriptedAnimationEffectsDebug.GetEnumFromTrajectory(trajectoryFunction)
+	for enum, callback in pairs(TrajectoryToCallback) do
+		if callback == trajectoryFunction then
+			return enum;
+		end
+	end
+
+	return nil;
 end

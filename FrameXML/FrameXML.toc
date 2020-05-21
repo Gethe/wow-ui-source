@@ -96,6 +96,7 @@ ObjectAPI\CampaignChapter.lua
 ObjectAPI\Campaign.lua
 ObjectAPI\Quest.lua
 ObjectAPI\UiMapPoint.lua
+ObjectAPI\CovenantCalling.lua
 
 ## add new modules below here
 ..\SharedXML\Backdrop.xml

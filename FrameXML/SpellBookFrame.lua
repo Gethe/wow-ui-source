@@ -352,7 +352,7 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 -- returns the spell button, if it can find it, for the spellID passed in
 local buttonOrder = {1,3,5,7,9,11,2,4,6,8,10,12};
-function SpellBookFrame_OpenToSpell(spellID)
+function SpellBookFrame_OpenToSpell(spellID, toggleFlyout)
 	SpellBookFrame.bookType = BOOKTYPE_SPELL;
 	ShowUIPanel(SpellBookFrame);
 	local numTabs = GetNumSpellTabs();
@@ -391,11 +391,16 @@ function SpellBookFrame_OpenToSpell(spellID)
 						local flyoutSpellID, overrideSpellID, isKnown, spellName, slotSpecID = GetFlyoutSlotInfo(actionID, i);
 						if spellID == flyoutSpellID then -- we found it
 							--open the flyout
-							SpellFlyout:Toggle(actionID, flyoutButton, "RIGHT", 1, false, flyoutButton.offSpecID, true);
-							local returnButton = _G["SpellFlyoutButton"..numButtons];
-							return returnButton;
+							if toggleFlyout then
+								SpellFlyout:Toggle(actionID, flyoutButton, "RIGHT", 1, false, flyoutButton.offSpecID, true);
+							end
+							local returnButton = _G["SpellFlyoutButton"..i];
+							return returnButton, flyoutButton;
 						end
-						numButtons = numButtons + 1;
+						local button = _G["SpellFlyoutButton"..i];
+						if (button and button:IsShown()) then
+							numButtons = numButtons + 1;
+						end
 					end
 				else
 					-- this is just a regular spell button

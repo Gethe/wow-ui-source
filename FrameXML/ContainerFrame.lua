@@ -105,7 +105,7 @@ function ToggleBag(id)
 	if ( IsOptionFrameOpen() ) then
 		return;
 	end
-	
+
 	local size = ContainerFrame_GetContainerNumSlots(id);
 	if ( size > 0 or id == KEYRING_CONTAINER ) then
 		local containerShowing;
@@ -113,6 +113,7 @@ function ToggleBag(id)
 			local frame = _G["ContainerFrame"..i];
 			if ( frame:IsShown() and frame:GetID() == id ) then
 				containerShowing = i;
+				EventRegistry:TriggerEvent("ContainerFrame.CloseBag", containerShowing);
 				frame:Hide();
 			end
 		end
@@ -135,6 +136,7 @@ function ToggleBackpack()
 		for i=1, NUM_CONTAINER_FRAMES, 1 do
 			local frame = _G["ContainerFrame"..i];
 			if ( frame:IsShown() ) then
+				EventRegistry:TriggerEvent("ContainerFrame.CloseBackpack");
 				frame:Hide();
 			end
 			-- Hide the token bar if closing the backpack
@@ -783,6 +785,8 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 
 	-- if id = 0 then its the backpack
 	if ( id == 0 ) then
+		EventRegistry:TriggerEvent("ContainerFrame.OpenBackpack");
+
 		bgTexture1Slot:Hide();
 
 		local extended = size > BACKPACK_BASE_SIZE;
@@ -860,6 +864,8 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			_G[name.."MoneyFrame"]:Hide();
 			_G[name.."AddSlotsButton"]:Hide();
 		else
+			EventRegistry:TriggerEvent("ContainerFrame.OpenBag");
+
 			bgTexture1Slot:Hide();
 			bgTextureTop:Show();
 	
@@ -1537,6 +1543,7 @@ function ToggleAllBags()
 		CloseBackpack()
 	end
 
+	local bagClosed = false;
 	for i=1, NUM_BAG_FRAMES, 1 do
 		if ( GetContainerNumSlots(i) > 0 ) then		
 			totalBags = totalBags +1;
@@ -1544,8 +1551,14 @@ function ToggleAllBags()
 		if ( IsBagOpen(i) ) then
 			CloseBag(i);
 			bagsOpen = bagsOpen +1;
+			bagClosed = true;
 		end
 	end
+	
+	if bagClosed then
+		EventRegistry:TriggerEvent("ContainerFrame.AllBagsClosed");
+	end
+
 	if (bagsOpen < totalBags) then
 		ContainerFrame1.allBags = true;
 		OpenBackpack();
@@ -1554,6 +1567,8 @@ function ToggleAllBags()
 		end
 		ContainerFrame1.allBags = false;
 		CheckBagSettingsTutorial();
+
+		EventRegistry:TriggerEvent("ContainerFrame.AllBagsOpened");
 	elseif( BankFrame:IsShown() ) then
 		bagsOpen = 0;
 		totalBags = 0;

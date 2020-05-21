@@ -122,7 +122,11 @@ function AdventuresCombatLogMixin:AddCombatEvent(combatLogEvent)
 	local amount = eventHasPoints and #combatLogEvent.targetInfo > 0 and combatLogEvent.targetInfo[1].points or "";
 	local textColor = GetCombatLogTextColor(combatLogEvent);
 
-	self.CombatLogMessageFrame:AddMessage(caster .. possessive .. action .. target .. preposition .. amount, textColor:GetRGB());
+	if target == "" then
+		self.CombatLogMessageFrame:AddMessage(caster .. possessive .. action .. "no target", textColor:GetRGB());
+	else
+		self.CombatLogMessageFrame:AddMessage(caster .. possessive .. action .. target .. preposition .. amount, textColor:GetRGB());
+	end
 end
 
 function AdventuresCombatLogMixin:AddVictoryState(winState)

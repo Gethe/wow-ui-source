@@ -115,7 +115,14 @@ MawBuffMixin = {};
 function MawBuffMixin:SetBuffInfo(buffInfo)
 	self.Icon:SetTexture(buffInfo.icon);
 	self.slot = buffInfo.slot;
-	self.Count:SetText(buffInfo.count);
+	local showCount = buffInfo.count > 1;
+
+	if (showCount) then
+		self.Count:SetText(buffInfo.count);
+	end 
+
+	self.Count:SetShown(showCount);
+	self.CountRing:SetShown(showCount);
 
 	if GameTooltip:GetOwner() == self then
 		self:OnEnter();

@@ -1,7 +1,4 @@
 
--- TODO:: Replace this with the final model scene.
-local AdventuresModelSceneID = 343;
-
 local SlowSpeed = 1.0;
 local FastSpeed = 2 * SlowSpeed;
 
@@ -53,7 +50,6 @@ function AdventuresCompleteScreenMixin:OnLoad()
 
 	self.replaySpeed = SlowSpeed;
 
-	self.ModelScene:SetFromModelSceneID(AdventuresModelSceneID);
 	self.ModelScene:SetEffectSpeed(self.replaySpeed);
 end
 
@@ -296,6 +292,11 @@ end
 
 function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)
 	self.replayEffectResolutionTime = nil;
+
+	local noTargets = #combatLogEvent.targetInfo == 0;
+	if noTargets then
+		return;
+	end
 
 	local effect = GetEffectForEvent(combatLogEvent);
 	if effect then

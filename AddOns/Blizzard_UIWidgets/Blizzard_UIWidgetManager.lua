@@ -10,7 +10,7 @@ UIWidgetContainerMixin = {}
 
 function UIWidgetContainerMixin:OnLoad()
 	self.widgetPools = CreateFramePoolCollection();
-
+	self.horizontalRowContainerPool = CreateFramePool("FRAME", self, "UIWidgetHorizontalWidgetContainerTemplate");
 	if WIDGET_CONTAINER_DEBUG_TEXTURE_SHOW then
 		self._debugBGTex = self:CreateTexture()
 		self._debugBGTex:SetColorTexture(WIDGET_CONTAINER_DEBUG_TEXTURE_COLOR:GetRGBA());
@@ -37,27 +37,49 @@ function UIWidgetContainerMixin:OnUpdate(elapsed)
 end
 
 function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
-	local widgetsHeight = 0;
-	local maxWidgetWidth = 1;
+	local horizontalRowContainer = nil; 
 
-	for index, widgetFrame in ipairs(sortedWidgets) do
-		if ( index == 1 ) then
-			widgetFrame:SetPoint("TOP", widgetContainerFrame, "TOP", 0, 0);
+	widgetContainerFrame.horizontalRowContainerPool:ReleaseAll();
+
+	for index, widgetFrame in ipairs(sortedWidgets) do	
+		local useVerticalLayout = (widgetFrame.layoutDirection == Enum.UIWidgetLayoutDirection.Vertical) or (widgetFrame.layoutDirection == Enum.UIWidgetLayoutDirection.Default and widgetContainerFrame.widgetSetLayoutDirection == Enum.UIWidgetSetLayoutDirection.Vertical);
+
+		if (useVerticalLayout) then 
+			if ( index == 1 ) then
+				widgetFrame:SetPoint("TOP", widgetContainerFrame);
+			else
+				local relative = horizontalRowContainer or sortedWidgets[index - 1];
+				widgetFrame:SetPoint("TOP", relative, "BOTTOM", 0, 0);
+				if(horizontalRowContainer) then 
+					horizontalRowContainer:Layout(); 
+					horizontalRowContainer = nil;
+				end
+			end
 		else
-			local relative = sortedWidgets[index - 1];
-			widgetFrame:SetPoint("TOP", relative, "BOTTOM", 0, 0);
-		end
+			if(not horizontalRowContainer) then 
+				horizontalRowContainer = widgetContainerFrame.horizontalRowContainerPool:Acquire();
+				horizontalRowContainer:Show(); 
 
-		widgetsHeight = widgetsHeight + widgetFrame:GetWidgetHeight();
-
-		local widgetWidth = widgetFrame:GetWidgetWidth();
-		if widgetWidth > maxWidgetWidth then
-			maxWidgetWidth = widgetWidth;
+				if ( index == 1 ) then
+					horizontalRowContainer:SetPoint("TOP", widgetContainerFrame, "TOP");
+				else 
+					local relative = sortedWidgets[index - 1];
+					horizontalRowContainer:SetPoint("TOP", relative, "BOTTOM", 0, 0);
+				end
+				widgetFrame:SetPoint("TOPLEFT", horizontalRowContainer);
+				widgetFrame:SetParent(horizontalRowContainer); 
+			else
+				local relative = sortedWidgets[index - 1];
+				widgetFrame:SetParent(horizontalRowContainer); 
+				widgetFrame:SetPoint("LEFT", relative, "RIGHT", 2, 0);
+			end
 		end
 	end
 
-	widgetContainerFrame:SetHeight(math.max(widgetsHeight, 1));
-	widgetContainerFrame:SetWidth(maxWidgetWidth);
+	if(horizontalRowContainer) then 
+		horizontalRowContainer:Layout(); 
+	end 
+	widgetContainerFrame:Layout(); 
 end
 
 -- widgetLayoutFunction should take 2 arguments (this widget container and a sequence containing all widgetFrames belonging to that widgetSet, sorted by orderIndex). It can update the layout of the widgets & widgetContainer as it sees fit. 
@@ -91,6 +113,7 @@ function UIWidgetContainerMixin:RegisterForWidgetSet(widgetSetID, widgetLayoutFu
 	self.timerWidgets = {};
 	self.numTimers = 0;
 	self.numWidgetsShowing = 0;
+	self.widgetSetLayoutDirection = C_UIWidgetManager.GetWidgetLayoutDirectionFromWidgetSetID(widgetSetID);
 
 	if self.attachedToUnit then
 		C_UIWidgetManager.RegisterUnitForWidgetUpdates(self.attachedToUnit);
@@ -257,6 +280,7 @@ function UIWidgetContainerMixin:CreateWidget(widgetID, widgetType, widgetTypeInf
 	widgetFrame.widgetTag = widgetInfo.widgetTag;
 	widgetFrame.inAnimType = widgetInfo.inAnimType;
 	widgetFrame.outAnimType = widgetInfo.outAnimType;
+	widgetFrame.layoutDirection = widgetInfo.layoutDirection; 
 	widgetFrame.markedForRemove = nil;
 
 	-- If this is a widget with a timer, add it from the timer list

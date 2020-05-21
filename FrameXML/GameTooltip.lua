@@ -741,30 +741,9 @@ function GameTooltip_ShowHyperlink(self, hyperlinkString, classID, specID, clear
 end
 
 local function WidgetLayout(widgetContainer, sortedWidgets)
-	local widgetsHeight = 0;
-	local maxWidgetWidth = 0;
-
-	for index, widgetFrame in ipairs(sortedWidgets) do
-		if ( index == 1 ) then
-			widgetFrame:SetPoint("TOPLEFT", widgetContainer, "TOPLEFT", 0, -10);
-		else
-			local relative = sortedWidgets[index - 1];
-			widgetFrame:SetPoint("TOPLEFT", relative, "BOTTOMLEFT", 0, -10);
-		end
-
-		widgetsHeight = widgetsHeight + widgetFrame:GetWidgetHeight() + 10;
-
-		local widgetWidth = widgetFrame:GetWidgetWidth();
-		if widgetWidth > maxWidgetWidth then
-			maxWidgetWidth = widgetWidth;
-		end
-
-		widgetFrame:EnableMouse(false);
-	end
-
-	widgetContainer:SetHeight(math.max(widgetsHeight, 1));
-	widgetContainer:SetWidth(math.max(maxWidgetWidth, 1));
-
+	DefaultWidgetLayout(widgetContainer, sortedWidgets);
+    local parentHeight = widgetContainer:GetHeight() + 10;
+	widgetContainer:GetParent():SetHeight(parentHeight);
 	widgetContainer.shownWidgetCount = #sortedWidgets;
 end
 
@@ -774,7 +753,8 @@ function GameTooltip_AddWidgetSet(self, widgetSetID)
 	end
 
 	if not self.widgetContainer then
-		self.widgetContainer = CreateFrame("FRAME", nil, self, "UIWidgetContainerTemplate");
+		self.widgetFrame = CreateFrame("FRAME", nil, self, "WidgetOffsetContainerTemplate");
+		self.widgetContainer = self.widgetFrame.WidgetContainer; 
 		self.widgetContainer.showAndHideOnWidgetSetRegistration = false;
 		self.widgetContainer.disableWidgetTooltips = true;
 		self.widgetContainer:Hide();

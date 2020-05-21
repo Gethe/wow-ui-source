@@ -96,9 +96,25 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:CloseAllBags()
-	for i = 0, 4 do
-		if (IsBagOpen(i)) then
-			ToggleBag(i);
+	if IsBagOpen(0) then
+		CloseBackpack()
+	end
+
+	for i = 1, NUM_BAG_FRAMES, 1 do
+		if IsBagOpen(i) then
+			CloseBag(i);
+		end
+	end
+end
+
+function TutorialHelper:OpenAllBags()
+	if not IsBagOpen(0) then
+		OpenBackpack()
+	end
+
+	for i = 1, NUM_BAG_FRAMES, 1 do
+		if not IsBagOpen(i) then
+			OpenBag(i);
 		end
 	end
 end
@@ -167,12 +183,24 @@ function TutorialHelper:DoQuestsInBundleNeedPickup(questBundle)
 	return false;
 end
 
-local actionBars = {"ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton", "MultiBarLeftButton", "MultiBarRightButton"}
-function TutorialHelper:FindEmptyButton()
+local actionBars = {"ActionButton", "MultiBarBottomLeftButton"}
+function TutorialHelper:FindEmptyButton(optionalPreferredActionBar)
+	if optionalPreferredActionBar then
+		for i = 1, 12 do
+			local btn = _G[optionalPreferredActionBar .. i];
+			if btn then
+				local _, sID = GetActionInfo(btn.action);
+				if not sID then
+					return btn;
+				end
+			end
+		end
+	end
+
 	for i, actionBar in pairs(actionBars) do
 		for i = 1, 12 do
 			local btn = _G[actionBar .. i];
-			if btn and btn:IsVisible() then
+			if btn then
 				local _, sID = GetActionInfo(btn.action);
 				if not sID then
 					return btn;
@@ -189,8 +217,11 @@ function TutorialHelper:GetActionButtonBySpellID(spellID)
 		for i = 1, 12 do
 			local btn = _G[actionBar .. i];
 			if btn  and btn:IsVisible() then
-				local _, sID = GetActionInfo(btn.action);
+				local actionType, sID, subType = GetActionInfo(btn.action);
+
 				if (sID == spellID) then
+					return btn;
+				elseif (actionType == "flyout" and FlyoutHasSpell(sID, spellID)) then
 					return btn;
 				end
 			end

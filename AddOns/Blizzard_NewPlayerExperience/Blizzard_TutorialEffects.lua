@@ -85,43 +85,52 @@ function NPE_TutorialButtonPulseGlow:GetExisting(button)
 end
 -- ------------------------------------------------------------------------------------------------------------
 
-
 -- ------------------------------------------------------------------------------------------------------------
-NPE_TutorialSpellDrag = {};
-function NPE_TutorialSpellDrag:Show(spellButton, actionButton)
-	local originFrame = NPE_TutorialSpellDragOriginFrame;
-	originFrame:SetParent(spellButton);
+NPE_TutorialDragButton = {};
+function NPE_TutorialDragButton:Show(originButton, destButton)
+	local originFrame = NPE_TutorialDragOriginFrame;
+	originFrame:SetParent(originButton);
 	originFrame:SetPoint("CENTER");
 	originFrame:Show();
 
-	local targetFrame = NPE_TutorialSpellDragTargetFrame;
-	targetFrame:SetParent(actionButton:GetParent());
-	targetFrame:SetPoint("CENTER", actionButton);
+	local targetFrame = NPE_TutorialDragTargetFrame;
+	targetFrame:SetParent(destButton:GetParent());
+	targetFrame:SetPoint("CENTER", destButton);
 	targetFrame:Show();
 
-	local slot = SpellBook_GetSpellBookSlot(spellButton);
 	local texture;
-	if spellButton.spellID then -- the data is set if this is from a flyout spell button
-		texture = GetSpellTexture(spellButton.spellID);
+	if originButton.icon then
+		texture = originButton.icon:GetTexture();
 	else
-		texture = GetSpellBookItemTexture(slot, SpellBookFrame.bookType);
+		local slot = SpellBook_GetSpellBookSlot(originButton);
+		if slot then
+			if originButton.spellID then -- the data is set if this is from a flyout spell button
+				texture = GetSpellTexture(originButton.spellID);
+			else
+				texture = GetSpellBookItemTexture(slot, SpellBookFrame.bookType);
+			end
+		end
 	end
-	local animFrame = NPE_TutorialSpellDragAnimationFrame;
+
+	local animFrame = NPE_TutorialDragAnimationFrame;
 	animFrame.Icon:SetTexture(texture);
-	animFrame:SetParent(spellButton);
-	animFrame:SetPoint("CENTER");
+	
+	animFrame:SetParent(UIParent);
+	animFrame:SetFrameStrata("DIALOG");
+	animFrame:ClearAllPoints();
+	animFrame:SetPoint("CENTER", originButton);
 	animFrame:Show();
 
 	animFrame.Anim:Stop();
-	local ox, oy = spellButton:GetCenter();
-	local tx, ty = actionButton:GetCenter();
+	local ox, oy = originButton:GetCenter();
+	local tx, ty = destButton:GetCenter();
 	animFrame.Anim.Move:SetOffset(tx - ox, ty - oy);
 	animFrame.Anim:Play();
 end
 
-function NPE_TutorialSpellDrag:Hide()
-	NPE_TutorialSpellDragOriginFrame:Hide();
-	NPE_TutorialSpellDragTargetFrame:Hide();
-	NPE_TutorialSpellDragAnimationFrame:Hide();
+function NPE_TutorialDragButton:Hide()
+	NPE_TutorialDragOriginFrame:Hide();
+	NPE_TutorialDragTargetFrame:Hide();
+	NPE_TutorialDragAnimationFrame:Hide();
 end
 -- ------------------------------------------------------------------------------------------------------------

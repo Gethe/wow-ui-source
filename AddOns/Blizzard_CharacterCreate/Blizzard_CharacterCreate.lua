@@ -11,6 +11,7 @@ local PENDING_RANDOM_NAME = "...";
 local ZONE_CHOICE_ZOOM_AMOUNT = 100;
 local ZOOM_TIME_SECONDS = 0.25;
 local ROTATION_ADJUST_SECONDS = 0.25;
+local CLASS_ANIM_WAIT_TIME_SECONDS = 10;
 
 local RaceAndClassFrame;
 local NameChoiceFrame;
@@ -45,6 +46,8 @@ function CharacterCreateMixin:OnLoad()
 	self:RegisterEvent("RACE_FACTION_CHANGE_RESULT");
 	self:RegisterEvent("CUSTOMIZE_CHARACTER_STARTED");
 	self:RegisterEvent("CUSTOMIZE_CHARACTER_RESULT");
+	self:RegisterEvent("CHAR_CREATE_BEGIN_ANIMATIONS");
+	self:RegisterEvent("CHAR_CREATE_ANIM_KIT_FINISHED");
 
 	self.LeftBlackBar:SetPoint("TOPLEFT", nil);
 	self.RightBlackBar:SetPoint("TOPRIGHT", nil);
@@ -114,6 +117,13 @@ function CharacterCreateMixin:OnEvent(event, ...)
 		else
 			showError = errorCode;
 		end
+	elseif event == "CHAR_CREATE_BEGIN_ANIMATIONS" then
+		if self.currentMode == CHAR_CREATE_MODE_CLASS_RACE then
+			RaceAndClassFrame:PlayClassAnimations();
+		end
+	elseif event == "CHAR_CREATE_ANIM_KIT_FINISHED" then
+		local animKitID, spellVisualKitID = ...;
+		RaceAndClassFrame:OnAnimKitFinished(animKitID, spellVisualKitID);
 	end
 
 	if showError then
@@ -146,6 +156,7 @@ end
 function CharacterCreateMixin:OnHide()
 	C_CharacterCreation.SetInCharacterCreate(false);
 	self:ClearPaidServiceInfo();
+	self.currentMode = 0;
 end
 
 function CharacterCreateMixin:SetPaidServiceInfo(serviceType, characterID)
@@ -159,9 +170,11 @@ function CharacterCreateMixin:ClearPaidServiceInfo()
 end
 
 function CharacterCreateMixin:OnMouseDown(button)
-	self.lastCursorPosX = GetCursorPosition();
-	self.mouseRotating = true;
-	self:SetScript("OnUpdate", self.OnUpdateMouseRotate);
+	if not RaceAndClassFrame:IsPlayingClassAnimtion() then
+		self.lastCursorPosX = GetCursorPosition();
+		self.mouseRotating = true;
+		self:SetScript("OnUpdate", self.OnUpdateMouseRotate);
+	end
 end
 
 function CharacterCreateMixin:OnMouseUp(button)
@@ -181,9 +194,14 @@ end
 
 function CharacterCreateMixin:OnUpdateMouseRotate()
 	local x = GetCursorPosition();
-	local diff = (x - self.lastCursorPosX) * CHARACTER_ROTATION_CONSTANT;
-	C_CharacterCreation.SetCharacterCreateFacing(C_CharacterCreation.GetCharacterCreateFacing() + diff);
-	self.lastCursorPosX = x;
+	if x ~= self.lastCursorPosX then
+		RaceAndClassFrame.allowClassAnimationsAfterSeconds = nil;
+
+		local diff = (x - self.lastCursorPosX) * CHARACTER_ROTATION_CONSTANT;
+		C_CharacterCreation.SetCharacterCreateFacing(C_CharacterCreation.GetCharacterCreateFacing() + diff);
+
+		self.lastCursorPosX = x;
+	end
 end
 
 function CharacterCreateMixin:UpdateBackgroundModel()
@@ -280,6 +298,16 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 	end
 
 	if mode == CHAR_CREATE_MODE_CLASS_RACE then
+		RaceAndClassFrame.allowClassAnimationsAfterSeconds = CLASS_ANIM_WAIT_TIME_SECONDS;
+
+		if self.currentMode == CHAR_CREATE_MODE_CUSTOMIZE then
+			local useBlending = true;
+			RaceAndClassFrame:PlayClassIdleAnimation(useBlending);
+		end
+		
+		RaceAndClassFrame:PlayClassAnimations();
+
+
 		C_CharacterCreation.SetBlurEnabled(false);
 
 		self:SetCameraZoomLevel(0);
@@ -291,6 +319,8 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 		end
 	elseif mode == CHAR_CREATE_MODE_CUSTOMIZE then
 		if self.currentMode == CHAR_CREATE_MODE_CLASS_RACE then
+			RaceAndClassFrame:PlayCustomizationAnimation();
+
 			C_CharacterCreation.SetBlurEnabled(true);
 			C_CharacterCreation.SetSelectedPreviewGearType(Enum.PreviewGearType.Starting);
 
@@ -841,27 +871,33 @@ function CharacterCreateRaceAndClassMixin:OnShow()
 	self.ClassTrialCheckButton:ClearTooltipLines();
 	self.ClassTrialCheckButton:AddTooltipLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP:format(C_CharacterCreation.GetTrialBoostStartingLevel()));
 	self.ClassTrialCheckButton:SetShown(not isNewPlayerRestricted and not CharacterCreateFrame.paidServiceType);
-
-	self:SetupTargetDummies(true);
-	self:PlayClassAnimations(true);
 end
 
 function CharacterCreateRaceAndClassMixin:OnHide()
-	self:DestroyTargetDummies();
 	self:StopClassAnimations();
 end
 
 -- TODO: Move these into WowEdit once we decide if per-class control (and not class/race combo control) is enough for our needs
-function CharacterCreateRaceAndClassMixin:SetupTargetDummies(reset)
-end
-
-function CharacterCreateRaceAndClassMixin:DestroyTargetDummies()
-end
-
-function CharacterCreateRaceAndClassMixin:PlayClassAnimations(reset)
+function CharacterCreateRaceAndClassMixin:PlayClassAnimations()
 end
 
 function CharacterCreateRaceAndClassMixin:StopClassAnimations()
+end
+
+function CharacterCreateRaceAndClassMixin:OnAnimKitFinished(animKitID, spellVisualKitID)
+end
+
+function CharacterCreateRaceAndClassMixin:PlayClassIdleAnimation()
+	local noBlending = false;
+	C_CharacterCreation.PlayClassIdleAnimationOnCharacter(noBlending);
+end
+
+function CharacterCreateRaceAndClassMixin:PlayCustomizationAnimation()
+	C_CharacterCreation.PlayCustomizationIdleAnimationOnCharacter();
+end
+
+function CharacterCreateRaceAndClassMixin:IsPlayingClassAnimtion()
+	return false;
 end
 
 function CharacterCreateRaceAndClassMixin:UpdateState(selectedFaction)
@@ -890,13 +926,13 @@ function CharacterCreateRaceAndClassMixin:UpdateState(selectedFaction)
 	CharacterCreateFrame:RemoveNavBlocker(CHAR_FACTION_CHANGE_SWAP_FACTION);
 	CharacterCreateFrame:RemoveNavBlocker(CHAR_FACTION_CHANGE_CHOOSE_RACE);
 	self:UpdateButtons();
-
-	self:SetupTargetDummies(usingNewBGModel);
-	self:PlayClassAnimations(usingNewBGModel);
 end
 
 function CharacterCreateRaceAndClassMixin:SetCharacterRace(raceID, faction)
 	if self.selectedRaceID ~= raceID then
+		CharacterCreateFrame:ResetCharacterRotation();
+		self.allowClassAnimationsAfterSeconds = CLASS_ANIM_WAIT_TIME_SECONDS;
+		self:StopClassAnimations();
 		C_CharacterCreation.SetSelectedRace(raceID);
 	end
 
@@ -904,8 +940,12 @@ function CharacterCreateRaceAndClassMixin:SetCharacterRace(raceID, faction)
 end
 
 function CharacterCreateRaceAndClassMixin:SetCharacterClass(classID)
+	self.allowClassAnimationsAfterSeconds = 0;
 	if self.selectedClassID ~= classID then
+		self:StopClassAnimations();
 		C_CharacterCreation.SetSelectedClass(classID);
+	elseif not self:IsPlayingClassAnimtion() then
+		self:PlayClassAnimations();
 	end
 
 	self:UpdateState();
@@ -913,6 +953,9 @@ end
 
 function CharacterCreateRaceAndClassMixin:SetCharacterSex(sexID)
 	if self.selectedSexID ~= sexID  then
+		CharacterCreateFrame:ResetCharacterRotation();
+		self.allowClassAnimationsAfterSeconds = CLASS_ANIM_WAIT_TIME_SECONDS;
+		self:StopClassAnimations();
 		C_CharacterCreation.SetSelectedSex(sexID);
 	end
 

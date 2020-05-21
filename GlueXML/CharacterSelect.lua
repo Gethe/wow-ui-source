@@ -35,6 +35,14 @@ REALM_CHANGE_IS_AUTO = false;
 
 CharacterSelectLockedButtonMixin = {};
 
+local characterCopyRegions = {
+	[1] = NORTH_AMERICA,
+	[2] = KOREA,
+	[3] = EUROPE,
+	[4] = TAIWAN,
+	[5] = CHINA,
+};
+
 function GenerateBuildString(buildNumber)
 	if buildNumber == 0 then
 		return "No Login";
@@ -2680,6 +2688,16 @@ GlueDialogTypes["COPY_ACCOUNT_DATA"] = {
     end,
 }
 
+GlueDialogTypes["COPY_KEY_BINDINGS"] = {
+    text = COPY_KEY_BINDINGS_CONFIRM,
+    button1 = OKAY,
+    button2 = CANCEL,
+    escapeHides = true,
+    OnAccept = function ()
+        CopyCharacter_KeyBindingsFromLive();
+    end,
+}
+
 GlueDialogTypes["COPY_IN_PROGRESS"] = {
     text = COPY_IN_PROGRESS,
     button1 = nil,
@@ -2695,15 +2713,28 @@ GlueDialogTypes["UNDELETING_CHARACTER"] = {
 }
 
 function CopyCharacterFromLive()
-    CopyAccountCharacterFromLive(CopyCharacterFrame.SelectedIndex);
+    if ( not IsGMClient() ) then
+		CopyAccountCharacterFromLive(UIDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID), CopyCharacterFrame.SelectedIndex);
+	else
+		CopyAccountCharacterFromLive(UIDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID), CopyCharacterFrame.SelectedIndex, CopyCharacterFrame.RealmName:GetText(), CopyCharacterFrame.CharacterName:GetText());
+	end
     GlueDialog_Show("COPY_IN_PROGRESS");
 end
 
 function CopyCharacter_AccountDataFromLive()
     if ( not IsGMClient() ) then
-        CopyAccountDataFromLive(UIDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID));
+        CopyAccountDataFromLive(UIDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID), CopyCharacterFrame.SelectedIndex);
     else
-        CopyAccountDataFromLive(UIDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID), CopyCharacterFrame.RealmName:GetText(), CopyCharacterFrame.CharacterName:GetText());
+        CopyAccountDataFromLive(UIDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID), CopyCharacterFrame.SelectedIndex, CopyCharacterFrame.RealmName:GetText(), CopyCharacterFrame.CharacterName:GetText());
+    end
+    GlueDialog_Show("COPY_IN_PROGRESS");
+end
+
+function CopyCharacter_KeyBindingsFromLive()
+    if ( not IsGMClient() ) then
+        CopyKeyBindingsFromLive(UIDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID), CopyCharacterFrame.SelectedIndex);
+    else
+        CopyKeyBindingsFromLive(UIDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID), CopyCharacterFrame.SelectedIndex, CopyCharacterFrame.RealmName:GetText(), CopyCharacterFrame.CharacterName:GetText());
     end
     GlueDialog_Show("COPY_IN_PROGRESS");
 end
@@ -2717,7 +2748,7 @@ function CopyCharacterButton_OnClick(self)
 end
 
 function CopyCharacterButton_UpdateButtonState()
-	CopyCharacterButton:SetShown(C_CharacterServices.IsLiveRegionCharacterListEnabled() or C_CharacterServices.IsLiveRegionCharacterCopyEnabled() or C_CharacterServices.IsLiveRegionAccountCopyEnabled());
+	CopyCharacterButton:SetShown(C_CharacterServices.IsLiveRegionCharacterListEnabled() or C_CharacterServices.IsLiveRegionCharacterCopyEnabled() or C_CharacterServices.IsLiveRegionAccountCopyEnabled() or C_CharacterServices.IsLiveRegionKeyBindingsCopyEnabled());
 end
 
 function CopyCharacterSearch_OnClick(self)
@@ -2728,15 +2759,25 @@ function CopyCharacterSearch_OnClick(self)
 end
 
 function CopyCharacterCopy_OnClick(self)
-    if ( CopyCharacterFrame.SelectedIndex and not GlueDialog:IsShown() ) then
-        local name, realm = GetAccountCharacterInfo(CopyCharacterFrame.SelectedIndex);
-        GlueDialog_Show("COPY_CHARACTER", format(COPY_CHARACTER_CONFIRM, name, realm));
+    if ( not GlueDialog:IsShown() ) then
+		if ( CopyCharacterFrame.SelectedIndex ) then
+			local name, realm = GetAccountCharacterInfo(CopyCharacterFrame.SelectedIndex);
+			GlueDialog_Show("COPY_CHARACTER", format(COPY_CHARACTER_CONFIRM, name, realm));
+		elseif ( IsGMClient() ) then
+			GlueDialog_Show("COPY_CHARACTER", format(COPY_CHARACTER_CONFIRM, CopyCharacterFrame.CharacterName:GetText(), CopyCharacterFrame.RealmName:GetText()));
+		end
     end
 end
 
 function CopyAccountData_OnClick(self)
     if ( not GlueDialog:IsShown() ) then
         GlueDialog_Show("COPY_ACCOUNT_DATA");
+    end
+end
+
+function CopyKeyBindings_OnClick(self)
+    if ( not GlueDialog:IsShown() ) then
+        GlueDialog_Show("COPY_KEY_BINDINGS");
     end
 end
 
@@ -2787,6 +2828,7 @@ function CopyCharacterFrame_OnLoad(self)
     self:RegisterEvent("ACCOUNT_CHARACTER_LIST_RECIEVED");
     self:RegisterEvent("CHAR_RESTORE_COMPLETE");
     self:RegisterEvent("ACCOUNT_DATA_RESTORED");
+    self:RegisterEvent("KEY_BINDINGS_COPY_COMPLETE");
     for i=2, MAX_COPY_CHARACTER_BUTTONS do
         local newButton = CreateFrame("BUTTON", nil, CopyCharacterFrame, "CopyCharacterEntryTemplate");
         newButton:SetPoint("TOP", self.CharacterEntries[i-1], "BOTTOM", 0, -4);
@@ -2805,10 +2847,8 @@ function CopyCharacterFrame_OnShow(self)
     self.CopyButton:SetEnabled(false);
 
     UIDropDownMenu_SetWidth(self.RegionID, 80);
-    UIDropDownMenu_SetSelectedValue(self.RegionID, 1);
     UIDropDownMenu_Initialize(self.RegionID, CopyCharacterFrameRegionIDDropdown_Initialize);
     UIDropDownMenu_SetAnchor(self.RegionID, 0, 0, "TOPLEFT", self.RegionID, "BOTTOMLEFT");
-    UIDropDownMenu_Refresh(self.RegionID);
 
     ClearAccountCharacters();
     CopyCharacterFrame_Update(self.scrollFrame);
@@ -2823,39 +2863,40 @@ function CopyCharacterFrame_OnShow(self)
         self.RealmName:SetFocus();
         self.CharacterName:Show();
         self.SearchButton:Show();
+		self.SearchButton:SetEnabled(C_CharacterServices.IsLiveRegionCharacterListEnabled());
+	    self.CopyButton:SetEnabled(C_CharacterServices.IsLiveRegionCharacterCopyEnabled());
     end
 	self.CopyAccountData:SetEnabled(C_CharacterServices.IsLiveRegionAccountCopyEnabled());
+	self.CopyKeyBindings:SetEnabled(C_CharacterServices.IsLiveRegionKeyBindingsCopyEnabled());
 end
 
 function CopyCharacterFrameRegionIDDropdown_Initialize()
     local info = UIDropDownMenu_CreateInfo();
     local selectedValue = UIDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID);
+	local newSelectedValue = nil;
     info.func = CopyCharacterFrameRegionIDDropdown_OnClick;
 
-    info.text = NORTH_AMERICA;
-    info.value = 1;
-    info.checked = (info.value == selectedValue);
-    UIDropDownMenu_AddButton(info);
 
-    info.text = KOREA;
-    info.value = 2;
-    info.checked = (info.value == selectedValue);
-    UIDropDownMenu_AddButton(info);
+	local regions = C_CharacterServices.GetLiveRegionCharacterCopySourceRegions();
+	for i=1, #regions do
+		local regionID = regions[i];
+		local regionName = characterCopyRegions[regionID];
 
-    info.text = EUROPE;
-    info.value = 3;
-    info.checked = (info.value == selectedValue);
-    UIDropDownMenu_AddButton(info);
+		if (regionName) then
+			info.text = regionName;
+			info.value = regionID;
+			info.checked = (info.value == selectedValue) or (selectedValue == nil and i == 1);
+			if (not newSelectedValue) then
+				newSelectedValue = info.value;
+			end
+			UIDropDownMenu_AddButton(info);
+		end
+	end
 
-    info.text = TAIWAN;
-    info.value = 4;
-    info.checked = (info.value == selectedValue);
-    UIDropDownMenu_AddButton(info);
-
---	info.text = "China";
---	info.value = 5;
---	info.checked = (info.value == selectedValue);
---	UIDropDownMenu_AddButton(info);
+	if (selectedValue == nil and newSelectedValue ~= nil) then
+		UIDropDownMenu_SetSelectedValue(CopyCharacterFrame.RegionID, newSelectedValue);
+		UIDropDownMenu_Refresh(CopyCharacterFrame.RegionID);
+	end
 end
 
 function CopyCharacterFrameRegionIDDropdown_OnClick(button)
@@ -2869,7 +2910,7 @@ function CopyCharacterFrame_OnEvent(self, event, ...)
     if ( event == "ACCOUNT_CHARACTER_LIST_RECIEVED" ) then
         CopyCharacterFrame_Update(self.scrollFrame);
         self.SearchButton:Enable();
-    elseif ( event == "CHAR_RESTORE_COMPLETE" or event == "ACCOUNT_DATA_RESTORED") then
+    elseif ( event == "CHAR_RESTORE_COMPLETE" or event == "ACCOUNT_DATA_RESTORED" or event == "KEY_BINDINGS_COPY_COMPLETE") then
         local success, token = ...;
         GlueDialog_Hide();
         self:Hide();

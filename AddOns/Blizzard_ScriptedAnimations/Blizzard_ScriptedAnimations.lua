@@ -2,7 +2,7 @@
 local ScriptedAnimationModelSceneID = 343;
 
 -- Experimentally determined.
-local SceneUnitDivisor = 196;
+local SceneUnitDivisor = 612.5;
 
 
 local EffectControllerMixin = {};
@@ -114,8 +114,19 @@ function EffectControllerMixin:RunEffectFinish()
 	end
 end
 
-function EffectControllerMixin:CancelEffect()
+function EffectControllerMixin:CancelEffect(skipRemovingController)
+	if not skipRemovingController then
+		self.modelScene:RemoveEffectController(self);
+	end
+
 	self.modelScene:ReleaseActor(self.actor);
+
+	for i, activeBehavior in ipairs(self.activeBehaviors) do
+		activeBehavior.cancelFunction();
+	end
+
+	self.activeBehaviors = {};
+
 	self:RunEffectFinish();
 	self:RunEffectResolution();
 end
@@ -238,12 +249,12 @@ function ScriptAnimatedModelSceneMixin:RefreshModelScene()
 
 	self.centerX, self.centerY = self:GetCenter();
 
-	self:CalculatePixelsPerSceneUnit();
-
 	if not self.modelSceneSet then
 		self:SetFromModelSceneID(ScriptedAnimationModelSceneID);
 		self.modelSceneSet = true;
 	end
+
+	self:CalculatePixelsPerSceneUnit();
 end
 
 function ScriptAnimatedModelSceneMixin:OnUpdate(elapsed, ...)
@@ -252,6 +263,8 @@ function ScriptAnimatedModelSceneMixin:OnUpdate(elapsed, ...)
 	if #self.effectControllers == 0 then
 		return;
 	end
+
+	self.centerX, self.centerY = self:GetCenter();
 
 	local modifiedElapsed = elapsed * self:GetEffectSpeed();
 	for i, effectController in ipairs(self.effectControllers) do
@@ -322,11 +335,21 @@ function ScriptAnimatedModelSceneMixin:GetEffectSpeed()
 end
 
 function ScriptAnimatedModelSceneMixin:ClearEffects()
+	local skipRemovingController = true;
 	for i, effectController in ipairs(self.effectControllers) do
-		effectController:CancelEffect();
+		effectController:CancelEffect(skipRemovingController);
 	end
 
 	self.effectControllers = {};
+end
+
+function ScriptAnimatedModelSceneMixin:RemoveEffectController(effectControllerToRemove)
+	for i, effectController in ipairs(self.effectControllers) do
+		if effectController == effectControllerToRemove then
+			tUnorderedRemove(self.effectControllers, i);
+			break;
+		end
+	end
 end
 
 function ScriptAnimatedModelSceneMixin:SetActorPositionFromPixels(actor, x, y, z)

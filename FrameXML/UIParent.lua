@@ -1307,6 +1307,7 @@ function UIParent_OnEvent(self, event, ...)
 				StaticPopup_Hide("CONFIRM_FOLLOWER_TEMPORARY_ABILITY");
 			end
 		end
+		ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 	elseif ( event == "VARIABLES_LOADED" ) then
 		UIParent.variablesLoaded = true;
 

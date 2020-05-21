@@ -83,6 +83,9 @@ end
 
 local function IsSourceArtifact(sourceID)
 	local link = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
+	if not link then
+		return false;
+	end
 	local _, _, quality = GetItemInfo(link);
 	return quality == Enum.ItemQuality.Artifact;
 end
@@ -96,10 +99,10 @@ function WardrobeOutfitDropDownMixin:IsOutfitDressed()
 		return true;
 	end
 
-	for i = 1, #TRANSMOG_SLOTS do
-		if ( TRANSMOG_SLOTS[i].transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
-			local sourceID = self:GetSlotSourceID(TRANSMOG_SLOTS[i].slot, LE_TRANSMOG_TYPE_APPEARANCE);
-			local slotID = GetInventorySlotInfo(TRANSMOG_SLOTS[i].slot);
+	for key, transmogSlot in pairs(TRANSMOG_SLOTS) do
+		if transmogSlot.location:IsAppearance() then
+			local sourceID = self:GetSlotSourceID(transmogSlot.location);
+			local slotID = transmogSlot.location:GetSlotID();
 			if ( sourceID ~= NO_TRANSMOG_SOURCE_ID and sourceID ~= appearanceSources[slotID] ) then
 				-- No artifacts in outfits, their sourceID is overriden to NO_TRANSMOG_SOURCE_ID
 				if ( not IsSourceArtifact(sourceID) or appearanceSources[slotID] ~= NO_TRANSMOG_SOURCE_ID ) then
@@ -108,11 +111,13 @@ function WardrobeOutfitDropDownMixin:IsOutfitDressed()
 			end
 		end
 	end
-	local mainHandSourceID = self:GetSlotSourceID("MAINHANDSLOT", LE_TRANSMOG_TYPE_ILLUSION);
+	local mainHandIllusionTransmogLocation = TransmogUtil.GetTransmogLocation("MAINHANDSLOT", Enum.TransmogType.Illusion, Enum.TransmogModification.None);
+	local mainHandSourceID = self:GetSlotSourceID(mainHandIllusionTransmogLocation);
 	if ( mainHandSourceID ~= mainHandEnchant ) then
 		return false;
 	end
-	local offHandSourceID = self:GetSlotSourceID("SECONDARYHANDSLOT", LE_TRANSMOG_TYPE_ILLUSION);
+	local offHandIllusionTransmogLocation = TransmogUtil.GetTransmogLocation("SECONDARYHANDSLOT", Enum.TransmogType.Illusion, Enum.TransmogModification.None);
+	local offHandSourceID = self:GetSlotSourceID(offHandIllusionTransmogLocation);
 	if ( offHandSourceID ~= offHandEnchant ) then
 		return false;
 	end
@@ -125,11 +130,11 @@ function WardrobeOutfitDropDownMixin:CheckOutfitForSave(name)
 	local pendingSources = { };
 	local hadInvalidSources = false;
 
-	for i = 1, #TRANSMOG_SLOTS do
-		local sourceID = self:GetSlotSourceID(TRANSMOG_SLOTS[i].slot, TRANSMOG_SLOTS[i].transmogType);
+	for key, transmogSlot in pairs(TRANSMOG_SLOTS) do
+		local sourceID = self:GetSlotSourceID(transmogSlot.location);
 		if ( sourceID ~= NO_TRANSMOG_SOURCE_ID ) then
-			if ( TRANSMOG_SLOTS[i].transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
-				local slotID = GetInventorySlotInfo(TRANSMOG_SLOTS[i].slot);
+			if ( transmogSlot.location:IsAppearance() ) then
+				local slotID = transmogSlot.location:GetSlotID();
 				local isValidSource = C_TransmogCollection.PlayerKnowsSource(sourceID);
 				if ( not isValidSource ) then
 					local isInfoReady, canCollect = C_TransmogCollection.PlayerCanCollectSource(sourceID);
@@ -155,8 +160,8 @@ function WardrobeOutfitDropDownMixin:CheckOutfitForSave(name)
 						sources[slotID] = sourceID;
 					end
 				end
-			elseif ( TRANSMOG_SLOTS[i].transmogType == LE_TRANSMOG_TYPE_ILLUSION ) then
-				if ( TRANSMOG_SLOTS[i].slot == "MAINHANDSLOT" ) then
+			elseif ( transmogSlot.location:IsIllusion() ) then
+				if ( transmogSlot.location:IsMainHand() ) then
 					mainHandEnchant = sourceID;
 				else
 					offHandEnchant = sourceID;
@@ -302,9 +307,9 @@ end
 
 function WardrobeOutfitFrameMixin:SaveOutfit(name)
 	local icon;
-	for i = 1, #TRANSMOG_SLOTS do
-		if ( TRANSMOG_SLOTS[i].transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
-			local slotID = GetInventorySlotInfo(TRANSMOG_SLOTS[i].slot);
+	for key, transmogSlot in pairs(TRANSMOG_SLOTS) do
+		if ( transmogSlot.location:IsAppearance() ) then
+			local slotID = transmogSlot.location:GetSlotID();
 			local sourceID = self.sources[slotID];
 			if ( sourceID ) then
 				icon = select(4, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));

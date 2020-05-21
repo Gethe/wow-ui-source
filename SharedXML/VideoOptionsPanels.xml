@@ -198,6 +198,7 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
+								BackdropTemplateMixin.OnBackdropLoaded(self);
 								if(InGlue()) then
 									self:Hide();
 								else

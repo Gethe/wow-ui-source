@@ -366,6 +366,10 @@
 				</Layers>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnShow> 
+			</OnShow>
+		</Scripts>
 	</Frame>
 	<Frame name="IslandsQueueFrame" parent="UIParent" hidden="true" frameStrata="HIGH" enableMouse="true" inherits="PortraitFrameTemplate" mixin="IslandsQueueFrameMixin">
 		<Size x="962" y="662"/> 

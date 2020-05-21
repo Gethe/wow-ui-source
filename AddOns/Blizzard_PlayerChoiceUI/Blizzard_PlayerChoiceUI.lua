@@ -254,6 +254,7 @@ local choiceLayout = {
 		animateArtworkBorder = true,
 		animateFrameInAndOut = true,
 		offsetBetweenOptions = -50,
+		highlightChoiceBeforeHide = true, 
 	},
 	["Oribos"] = {
 		atlasBackgroundWidthPadding = -2,
@@ -396,6 +397,14 @@ function PlayerChoiceFrameMixin:TryHide()
 	end
 end
 
+function PlayerChoiceFrameMixin:HideOptions(option) 
+	for i, optionToHide in ipairs(self.Options) do
+		if(option ~= optionToHide) then
+			optionToHide.FadeoutUnselected:Play(); 
+		end 
+	end
+end 
+
 function PlayerChoiceFrameMixin:TryShow()
 	local choiceInfo = C_PlayerChoice.GetPlayerChoiceInfo();
 
@@ -443,6 +452,7 @@ function PlayerChoiceFrameMixin:TryShow()
 		option.Header.Text:SetTextColor(self.optionHeaderTitleColor:GetRGBA());
 		option.OptionText:SetFontObject(self.optionDescriptionFont);
 		option.OptionText:SetTextColor(self.optionDescriptionColor:GetRGBA());
+		option:SetAlpha(1);
 	end
 
 	if (not self:IsShown()) then
@@ -1205,7 +1215,12 @@ function PlayerChoiceOptionFrameMixin:OnButtonClick(button)
 			local optionLayout = self:GetParent().optionLayout;
 			local isSecondButton = button.buttonIndex == 2;
 
-			if (not choiceInfo.keepOpenAfterChoice and (not isSecondButton or not optionLayout.secondButtonClickDoesntCloseUI)) then
+			local shouldFadeOutOtherOptions = optionLayout.highlightChoiceBeforeHide and self:GetParent():GetNumOptions() > 1; 
+			if(shouldFadeOutOtherOptions) then 
+				self:GetParent():HideOptions(self);
+				PlayerChoiceToggleButton:Hide(); 
+				self.FadeoutSelected:Play(); 
+			elseif (not choiceInfo.keepOpenAfterChoice and (not isSecondButton or not optionLayout.secondButtonClickDoesntCloseUI)) then
 				self:GetParent():TryHide();
 			end
 		end

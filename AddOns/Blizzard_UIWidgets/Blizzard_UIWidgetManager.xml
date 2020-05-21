@@ -6,17 +6,33 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="UIWidgetContainerTemplate" virtual="true" mixin="UIWidgetContainerMixin">
+	<Frame name="UIWidgetHorizontalWidgetContainerTemplate" inherits="ResizeLayoutFrame" virtual="true">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+	</Frame>
+
+	<Frame name="UIWidgetContainerTemplate" virtual="true" inherits="ResizeLayoutFrame" mixin="UIWidgetContainerMixin">
 		<Size x="1" y="1"/>
 		<KeyValues>
 			<!--Set this to false if you don't want visibility managed by the WidgetContainerMixin-->
 			<KeyValue key="showAndHideOnWidgetSetRegistration" value="true" type="boolean"/>
 		</KeyValues>
-
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
 			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
+
+	<Frame name="WidgetOffsetContainerTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="WidgetContainer" inherits="UIWidgetContainerTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-10"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+	
 </Ui>

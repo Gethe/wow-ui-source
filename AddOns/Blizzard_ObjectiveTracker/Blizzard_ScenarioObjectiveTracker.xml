@@ -519,7 +519,15 @@
 							</StatusBar>
 						</Frames>
 					</Frame>
-					<Frame name="ScenarioWidgetContainerBlock" inherits="UIWidgetContainerTemplate" hidden="true" />
+					<Frame name="ScenarioWidgetContainerBlock" hidden="true">
+						<Frames>
+							<Frame parentKey="WidgetContainer" inherits="UIWidgetContainerTemplate">
+								<Anchors>
+									<Anchor point="TOP" x="0" y="-15"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</Frame>
 				</Frames>
 			</Frame>
 		</ScrollChild>

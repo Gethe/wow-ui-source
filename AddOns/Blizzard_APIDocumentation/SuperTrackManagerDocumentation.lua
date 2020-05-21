@@ -7,6 +7,15 @@ local SuperTrackManager =
 	Functions =
 	{
 		{
+			Name = "GetHighestPrioritySuperTrackingType",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "type", Type = "SuperTrackingType", Nilable = true },
+			},
+		},
+		{
 			Name = "GetSuperTrackedQuestID",
 			Type = "Function",
 
@@ -82,19 +91,6 @@ local SuperTrackManager =
 
 	Tables =
 	{
-		{
-			Name = "SuperTrackingType",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 1,
-			MaxValue = 4,
-			Fields =
-			{
-				{ Name = "Quest", Type = "SuperTrackingType", EnumValue = 1 },
-				{ Name = "UserWaypoint", Type = "SuperTrackingType", EnumValue = 2 },
-				{ Name = "Corpse", Type = "SuperTrackingType", EnumValue = 4 },
-			},
-		},
 	},
 };
 

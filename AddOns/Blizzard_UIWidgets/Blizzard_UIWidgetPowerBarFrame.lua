@@ -1,11 +1,6 @@
 UIWidgetPowerBarContainerMixin = {}
 
 local function WidgetsLayout(widgetContainer, sortedWidgets)
-	-- Temp: Make a bigger capture bar
-	for index, widgetFrame in ipairs(sortedWidgets) do
-		widgetFrame:SetScale(1.5);
-	end
-
 	DefaultWidgetLayout(widgetContainer, sortedWidgets);
 	UIParent_ManageFramePositions();
 end

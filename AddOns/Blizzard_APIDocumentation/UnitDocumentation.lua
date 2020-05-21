@@ -15,6 +15,20 @@ local Unit =
 			},
 		},
 		{
+			Name = "GetUnitChargedPowerPoints",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "pointIndices", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetUnitPowerBarInfo",
 			Type = "Function",
 
@@ -1134,6 +1148,15 @@ local Unit =
 			{
 				{ Name = "unitTarget", Type = "string", Nilable = false },
 				{ Name = "powerType", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitPowerPointCharge",
+			Type = "Event",
+			LiteralName = "UNIT_POWER_POINT_CHARGE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
 			},
 		},
 		{

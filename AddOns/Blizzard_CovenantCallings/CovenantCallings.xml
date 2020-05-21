@@ -35,7 +35,7 @@
 				<Texture parentKey="Bang">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="LEFT" x="-4" y="0"/>
+						<Anchor point="LEFT" x="-15" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>

@@ -181,6 +181,7 @@ CharacterCustomizationSharedDocumentation.lua
 ChatDocumentation.lua
 ClubSharedDocumentation.lua
 ColorDocumentation.lua
+CovenantCallingsConstantsDocumentation.lua
 CovenantsConstantsDocumentation.lua
 DamageConstantsDocumentation.lua
 GarrisonConstantsDocumentation.lua
@@ -198,6 +199,7 @@ QuestSessionConstantsDocumentation.lua
 QueueSpecificDocumentation.lua
 RecruitAFriendSharedDocumentation.lua
 ScriptRegionSharedDocumentation.lua
+SuperTrackManagerSharedDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua
 TradeSkillUITypesDocumentation.lua

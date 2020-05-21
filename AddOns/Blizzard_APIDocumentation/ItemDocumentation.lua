@@ -259,6 +259,20 @@ local Item =
 			},
 		},
 		{
+			Name = "IsItemCorruptable",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCorruptable", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsItemCorrupted",
 			Type = "Function",
 

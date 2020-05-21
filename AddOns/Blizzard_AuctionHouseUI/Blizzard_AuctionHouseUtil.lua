@@ -5,6 +5,8 @@ local WOW_TOKEN_TIME_LEFT_TOOLTIP_FORMAT = WHITE_FONT_COLOR:WrapTextInColorCode(
 
 local RED_TEXT_MINUTES_THRESHOLD = 60;
 
+local TIME_LEFT_ATLAS_MARKUP = CreateAtlasMarkup("auctionhouse-icon-clock", 16, 16, 2, -2);
+
 AuctionHouseSearchContext = tInvert({
 	"BrowseAll",
 	"BrowseTradeGoods",
@@ -429,6 +431,8 @@ function AuctionHouseUtil.GetHeaderNameFromSortOrder(sortOrder)
 		return AUCTION_HOUSE_HEADER_BID_PRICE;
 	elseif sortOrder == Enum.AuctionHouseSortOrder.Buyout then
 		return AUCTION_HOUSE_HEADER_BUYOUT_PRICE;
+	elseif sortOrder == Enum.AuctionHouseSortOrder.TimeRemaining then
+		return TIME_LEFT_ATLAS_MARKUP;
 	-- Note: Level is contextual and must be set manually.
 	-- elseif sortOrder == Enum.AuctionHouseSortOrder.Level then
 	end

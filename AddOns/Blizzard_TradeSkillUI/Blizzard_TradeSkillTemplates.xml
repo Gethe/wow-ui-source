@@ -3,16 +3,6 @@
 	<Script file="Blizzard_TradeSkillTemplates.lua"/>
 
 	<Button name="OptionalReagentButtonTemplate" inherits="LargeItemButtonTemplate" mixin="OptionalReagentButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
-		<Layers>
-			<Layer level="Border">
-				<FontString parentKey="EffectText" inherits="GameFontGreenSmall" justifyH="LEFT" justifyV="TOP">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-4" y="2"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>

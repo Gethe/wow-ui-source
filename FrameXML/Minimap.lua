@@ -545,6 +545,8 @@ function GarrisonLandingPageMinimapButton_OnLoad(self)
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("ZONE_CHANGED");
 	self:RegisterEvent("ZONE_CHANGED_INDOORS");
+	self:RegisterEvent("COVENANT_CALLINGS_UPDATED");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
 
 function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
@@ -580,6 +582,17 @@ function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
 		local shipmentStarted, isTroop = ...;
 		if (shipmentStarted) then
 			GarrisonMinimapShipmentCreated_ShowPulse(self, isTroop);
+		end
+	elseif (event == "COVENANT_CALLINGS_UPDATED") then
+		if self.isInitialLogin then
+			local callings = ...;
+			GarrisonMinimap_OnCallingsUpdated(self, callings);
+			self.isInitialLogin = false;
+		end
+	elseif (event == "PLAYER_ENTERING_WORLD") then
+		self.isInitialLogin = ...;
+		if self.isInitialLogin then
+			C_CovenantCallings.RequestCallings();
 		end
 	end
 end
@@ -736,4 +749,26 @@ function GarrisonMinimapShipmentCreated_ShowPulse(self, isTroop)
 	self.AlertText:SetText(text);
 	GarrisonMinimap_Justify(self.AlertText);
 	self.MinimapAlertAnim:Play();
+end
+
+function GarrisonMinimap_ShowCovenantCallingsNotification(self)
+	self.AlertText:SetText(COVENANT_CALLINGS_AVAILABLE);
+	GarrisonMinimap_Justify(self.AlertText);
+	self.MinimapAlertAnim:Play();
+	self.MinimapLoopPulseAnim:Play();
+end
+
+function GarrisonMinimap_HasAvailableCalling(callings)
+	for index, calling in ipairs(callings) do
+		local callingObj = CovenantCalling_Create(calling);
+		if callingObj:GetState() == Enum.CallingStates.QuestOffer then
+			return true;
+		end
+	end
+end
+
+function GarrisonMinimap_OnCallingsUpdated(self, callings)
+	if GarrisonMinimap_HasAvailableCalling(callings) then
+		GarrisonMinimap_ShowCovenantCallingsNotification(self);
+	end
 end

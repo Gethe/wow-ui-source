@@ -3,32 +3,15 @@ OptionalReagentButtonMixin = {};
 
 function OptionalReagentButtonMixin:OnLoad()
 	self.Name:SetFontObject("GameFontHighlightSmall");
-	self.EffectText:SetMaxLines(2);
-end
-
-function OptionalReagentButtonMixin:ChangeMaxLinesForName(numMaxLines)
-	self.Name:SetMaxLines(numMaxLines);
-	self.Name:SetHeight(0);
-end
-
-function OptionalReagentButtonMixin:SetReagentText(name, bonusText)
-	self.Name:SetText(name);
-	self.EffectText:SetText(bonusText or "");
-	
-	local numEffectLines = self.EffectText:GetNumLines();
-	
+	self.Name:SetMaxLines(3);
 	self.Name:ClearAllPoints();
+	self.Name:SetPoint("LEFT", self.Icon, "RIGHT", 6, 0);
+end
 
-	if bonusText then
-		self:ChangeMaxLinesForName(1);
-
-		if numEffectLines > 1 then
-			self.Name:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 6, -4);
-		else
-			self.Name:SetPoint("LEFT", self.Icon, "RIGHT", 6, 6);
-		end
-	else
-		self:ChangeMaxLinesForName(3);
-		self.Name:SetPoint("LEFT", self.Icon, "RIGHT", 6, 0);
-	end
+function OptionalReagentButtonMixin:SetReagentText(name, quality)
+	local itemQualityColor = ITEM_QUALITY_COLORS[quality or Enum.ItemQuality.Common];
+	self.Name:SetTextColor(itemQualityColor.r, itemQualityColor.g, itemQualityColor.b);
+	self.Name:SetText(name);
+	
+	SetItemButtonQuality(self, quality);
 end

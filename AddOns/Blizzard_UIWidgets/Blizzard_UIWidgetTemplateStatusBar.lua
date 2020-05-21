@@ -19,6 +19,17 @@ local textureKitRegionFormatStrings = {
 	["Spark"] = "%s-Spark",
 }
 
+local barColorFromTintValue = {
+	[Enum.StatusBarColorTintValue.Black] = BLACK_FONT_COLOR,
+	[Enum.StatusBarColorTintValue.White] = WHITE_FONT_COLOR,
+	[Enum.StatusBarColorTintValue.Red] = RED_FONT_COLOR,
+	[Enum.StatusBarColorTintValue.Yellow] = YELLOW_FONT_COLOR,
+	[Enum.StatusBarColorTintValue.Orange] = ORANGE_FONT_COLOR,
+	[Enum.StatusBarColorTintValue.Purple] = EPIC_PURPLE_COLOR,
+	[Enum.StatusBarColorTintValue.Green] = GREEN_FONT_COLOR,
+	[Enum.StatusBarColorTintValue.Blue] = RARE_BLUE_COLOR,
+}
+
 local fillTextureKitFormatString = "%s-Fill-%s";
 local DEFAULT_BAR_WIDTH = 215;
 
@@ -31,6 +42,12 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 		local fillAtlas = fillTextureKitFormatString:format(frameTextureKit, fillTextureKit);
 		self.Bar:SetStatusBarAtlas(fillAtlas);
 	end
+
+	local barColor = barColorFromTintValue[widgetInfo.colorTint];
+	if(barColor) then 
+		self.Bar:SetStatusBarColor(barColor:GetRGB());
+		self.Bar.Spark:SetVertexColor(barColor:GetRGB());
+	end 
 
 	SetupTextureKitOnRegions(frameTextureKit, self.Bar, textureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
 

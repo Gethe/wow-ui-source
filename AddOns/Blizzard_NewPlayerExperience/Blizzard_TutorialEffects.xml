@@ -40,7 +40,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="NPE_TutorialSpellDragOriginFrame" hidden="true">
+	<Frame name="NPE_TutorialDragOriginFrame" hidden="true">
 		<Size x="76" y="76"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -52,7 +52,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="NPE_TutorialSpellDragTargetFrame" hidden="true">
+	<Frame name="NPE_TutorialDragTargetFrame" hidden="true">
 		<Size x="76" y="76"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -64,7 +64,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="NPE_TutorialSpellDragAnimationFrame" hidden="true" alpha="0.6">
+	<Frame name="NPE_TutorialDragAnimationFrame" frameStrate="DIALOG" hidden="true" alpha="0.6">
 		<Size x="76" y="76"/>
 		<Layers>
 			<Layer level="BACKGROUND">

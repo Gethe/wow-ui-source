@@ -32,7 +32,7 @@ function OptionalReagentListLineMixin:OnEnter()
 	GameTooltip_SetTitle(GameTooltip, title);
 
 	local wrap = true;
-	GameTooltip_AddColoredLine(GameTooltip, text, GREEN_FONT_COLOR, wrap);
+	GameTooltip_AddHighlightLine(GameTooltip, text, wrap);
 
 	if ItemUtil.GetOptionalReagentCount(self:GetItemID()) == 0 then
 		GameTooltip_AddErrorLine(GameTooltip, OPTIONAL_REAGENT_NONE_AVAILABLE);
@@ -71,7 +71,8 @@ function OptionalReagentListLineMixin:SetState(state)
 	self.Icon:SetAlpha(alpha);
 	self.NameFrame:SetAlpha(alpha);
 	self.Name:SetAlpha(alpha);
-	self.EffectText:SetAlpha(alpha);
+	self.IconBorder:SetAlpha(alpha);
+	self.IconOverlay:SetAlpha(alpha);
 
 	self.SelectedTexture:SetShown(state == OptionalReagentListLineState.Selected);
 
@@ -119,7 +120,7 @@ function OptionalReagentListLineMixin:UpdateDisplay()
 
 	self:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
 
-	self:SetReagentText(itemName, option.bonusText);
+	self:SetReagentText(itemName, itemQuality);
 	self.Icon:SetTexture(itemIcon);
 	
 	local itemCount = ItemUtil.GetOptionalReagentCount(itemID);
@@ -136,7 +137,8 @@ function OptionalReagentListLineMixin:GetTooltipText()
 		return RETRIEVING_ITEM_INFO, "";
 	end
 
-	return itemName, option.tooltipText or option.bonusText;
+	local itemQualityColor = ITEM_QUALITY_COLORS[itemQuality];
+	return itemQualityColor.color:WrapTextInColorCode(itemName), option.tooltipText or option.bonusText;
 end
 
 
@@ -163,13 +165,20 @@ end
 function OptionalReagentListMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, OptionalReagentListEvents);
 
-	self:GetTradeSkillUI():RegisterCallback(TradeSkillUIMixin.Event.OptionalReagentUpdated, self.OnOptionalReagentUpdated, self);
+	local tradeSkillUI = self:GetTradeSkillUI();
+	tradeSkillUI:RegisterCallback(TradeSkillUIMixin.Event.OptionalReagentUpdated, self.OnOptionalReagentUpdated, self);
+	SetUIPanelAttribute(tradeSkillUI, "width", tradeSkillUI:GetWidth() + self:GetWidth());
+	UpdateUIPanelPositions(tradeSkillUI);
 end
 
 function OptionalReagentListMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, OptionalReagentListEvents);
 
-	self:GetTradeSkillUI():UnregisterCallback(TradeSkillUIMixin.Event.OptionalReagentUpdated, self);
+	local tradeSkillUI = self:GetTradeSkillUI();
+	tradeSkillUI:UnregisterCallback(TradeSkillUIMixin.Event.OptionalReagentUpdated, self);
+	SetUIPanelAttribute(tradeSkillUI, "width", tradeSkillUI:GetWidth());
+	UpdateUIPanelPositions(tradeSkillUI);
+
 	self:Hide();
 end
 
@@ -251,7 +260,7 @@ function OptionalReagentListMixin:GetTradeSkillUI()
 end
 
 function OptionalReagentListMixin:GetSelectedItemID()
-	return select(5, self:GetTradeSkillUI():GetOptionalReagent(self.optionalReagentIndex));
+	return select(6, self:GetTradeSkillUI():GetOptionalReagent(self.optionalReagentIndex));
 end
 
 function OptionalReagentListMixin:HasOptionalReagent(itemID)

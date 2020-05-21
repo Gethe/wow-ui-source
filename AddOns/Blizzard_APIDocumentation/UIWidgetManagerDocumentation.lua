@@ -295,6 +295,20 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "GetWidgetLayoutDirectionFromWidgetSetID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "widgetSetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+			},
+		},
+		{
 			Name = "GetZoneControlVisualizationInfo",
 			Type = "Function",
 
@@ -411,13 +425,14 @@ local UIWidgetManager =
 		{
 			Name = "SpellDisplayIconDisplayType",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "Buff", Type = "SpellDisplayIconDisplayType", EnumValue = 0 },
 				{ Name = "Debuff", Type = "SpellDisplayIconDisplayType", EnumValue = 1 },
+				{ Name = "Circular", Type = "SpellDisplayIconDisplayType", EnumValue = 2 },
 			},
 		},
 		{
@@ -431,6 +446,25 @@ local UIWidgetManager =
 				{ Name = "Small", Type = "SpellDisplayIconSizeType", EnumValue = 0 },
 				{ Name = "Medium", Type = "SpellDisplayIconSizeType", EnumValue = 1 },
 				{ Name = "Large", Type = "SpellDisplayIconSizeType", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "StatusBarColorTintValue",
+			Type = "Enumeration",
+			NumValues = 9,
+			MinValue = 0,
+			MaxValue = 8,
+			Fields =
+			{
+				{ Name = "None", Type = "StatusBarColorTintValue", EnumValue = 0 },
+				{ Name = "Black", Type = "StatusBarColorTintValue", EnumValue = 1 },
+				{ Name = "White", Type = "StatusBarColorTintValue", EnumValue = 2 },
+				{ Name = "Red", Type = "StatusBarColorTintValue", EnumValue = 3 },
+				{ Name = "Yellow", Type = "StatusBarColorTintValue", EnumValue = 4 },
+				{ Name = "Orange", Type = "StatusBarColorTintValue", EnumValue = 5 },
+				{ Name = "Purple", Type = "StatusBarColorTintValue", EnumValue = 6 },
+				{ Name = "Green", Type = "StatusBarColorTintValue", EnumValue = 7 },
+				{ Name = "Blue", Type = "StatusBarColorTintValue", EnumValue = 8 },
 			},
 		},
 		{
@@ -634,6 +668,7 @@ local UIWidgetManager =
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
 			},
 		},
 		{
@@ -659,6 +694,7 @@ local UIWidgetManager =
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
 			},
 		},
 		{
@@ -680,6 +716,7 @@ local UIWidgetManager =
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
 			},
 		},
 		{
@@ -702,6 +739,7 @@ local UIWidgetManager =
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
 			},
 		},
 		{
@@ -721,6 +759,7 @@ local UIWidgetManager =
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
 			},
 		},
 		{
@@ -748,6 +787,7 @@ local UIWidgetManager =
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
 			},
 		},
 		{
@@ -766,6 +806,7 @@ local UIWidgetManager =
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
 			},
 		},
 		{
@@ -786,6 +827,7 @@ local UIWidgetManager =
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
 			},
 		},
 		{
@@ -804,6 +846,7 @@ local UIWidgetManager =
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
 			},
 		},
 		{
@@ -827,6 +870,7 @@ local UIWidgetManager =
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
 			},
 		},
 		{
@@ -845,6 +889,7 @@ local UIWidgetManager =
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
 			},
 		},
 		{
@@ -864,6 +909,7 @@ local UIWidgetManager =
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
 			},
 		},
 		{
@@ -882,6 +928,7 @@ local UIWidgetManager =
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
 			},
 		},
 		{
@@ -898,6 +945,7 @@ local UIWidgetManager =
 				{ Name = "barValueTextType", Type = "StatusBarValueTextType", Nilable = false },
 				{ Name = "overrideBarText", Type = "string", Nilable = false },
 				{ Name = "overrideBarTextShownType", Type = "StatusBarOverrideBarTextShownType", Nilable = false },
+				{ Name = "colorTint", Type = "StatusBarColorTintValue", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "string", Nilable = false },
 				{ Name = "frameTextureKit", Type = "string", Nilable = false },
@@ -907,6 +955,7 @@ local UIWidgetManager =
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
 			},
 		},
 		{
@@ -928,6 +977,7 @@ local UIWidgetManager =
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
 			},
 		},
 		{
@@ -956,6 +1006,7 @@ local UIWidgetManager =
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
 			},
 		},
 		{
@@ -975,6 +1026,7 @@ local UIWidgetManager =
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
 			},
 		},
 		{
@@ -1042,6 +1094,7 @@ local UIWidgetManager =
 				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
 			},
 		},
 		{

@@ -29,6 +29,21 @@ local QuestConstants =
 			},
 		},
 		{
+			Name = "RelativeContentDifficulty",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "Trivial", Type = "RelativeContentDifficulty", EnumValue = 0 },
+				{ Name = "Easy", Type = "RelativeContentDifficulty", EnumValue = 1 },
+				{ Name = "Fair", Type = "RelativeContentDifficulty", EnumValue = 2 },
+				{ Name = "Difficult", Type = "RelativeContentDifficulty", EnumValue = 3 },
+				{ Name = "Impossible", Type = "RelativeContentDifficulty", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "QuestWatchConsts",
 			Type = "Constants",
 			Values =

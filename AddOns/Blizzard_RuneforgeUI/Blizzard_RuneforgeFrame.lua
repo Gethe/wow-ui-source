@@ -98,7 +98,7 @@ function RuneforgeFrameMixin:SetItemTooltip(tooltip)
 end
 
 function RuneforgeFrameMixin:SetItem(itemLocation)
-	if C_LegendaryCrafting.IsValidRuneforgeBaseItem(itemLocation) then
+	if not itemLocation or C_LegendaryCrafting.IsValidRuneforgeBaseItem(itemLocation) then
 		return self.BaseItemSlot:SetItem(itemLocation);
 	end
 

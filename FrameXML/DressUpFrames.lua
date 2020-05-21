@@ -277,17 +277,17 @@ end
 
 DressUpOutfitMixin = { };
 
-function DressUpOutfitMixin:GetSlotSourceID(slot, transmogType)
+function DressUpOutfitMixin:GetSlotSourceID(transmogLocation)
 	local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
 	if (not playerActor) then
 		return;
 	end
 
-	local slotID = GetInventorySlotInfo(slot);
-	local appearanceSourceID, illusionSourceID = playerActor:GetSlotTransmogSources(slotID);
-	if ( transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
+	-- TODO: GetSlotTransmogSources needs to use modification
+	local appearanceSourceID, illusionSourceID = playerActor:GetSlotTransmogSources(transmogLocation:GetSlotID());
+	if ( transmogLocation:IsAppearance() ) then
 		return appearanceSourceID;
-	elseif ( transmogType == LE_TRANSMOG_TYPE_ILLUSION ) then
+	elseif ( transmogLocation:IsIllusion() ) then
 		return illusionSourceID;
 	end
 end

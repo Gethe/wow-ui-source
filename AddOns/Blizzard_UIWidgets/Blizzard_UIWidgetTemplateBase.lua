@@ -241,14 +241,35 @@ local function GetIconSize(iconSizeType)
 	return iconSizes[iconSizeType] and iconSizes[iconSizeType] or iconSizes[Enum.SpellDisplayIconSizeType.Large];
 end
 
-function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enabledState, width)
+local spellTextureKitRegionInfo = {
+	["Border"] = {formatString = "%s-frame", setVisibility = true, useAtlasSize = true},
+	["AmountBorder"] = {formatString = "%s-amount", setVisibility = true, useAtlasSize = true},
+}
+
+function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enabledState, width, textureKit)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
+	SetupTextureKitsFromRegionInfo(textureKit, self, spellTextureKitRegionInfo);
+
+	local hasAmountBorderTexture = self.AmountBorder:IsShown();
+	local hasBorderTexture = self.Border:IsShown(); 
+
+	self.StackCount:ClearAllPoints();
+	if (hasAmountBorderTexture) then  
+		self.StackCount:SetPoint("CENTER", self.AmountBorder);
+	else 
+		self.StackCount:SetPoint("BOTTOMRIGHT", self.Icon, -2, 2);
+	end 
+
 	local name, _, icon = GetSpellInfo(spellInfo.spellID);
 	self.Icon:SetTexture(icon);
 	self.Icon:SetDesaturated(enabledState == Enum.WidgetEnabledState.Disabled);
 
 	local iconSize = GetIconSize(spellInfo.iconSizeType);
 	self.Icon:SetSize(iconSize, iconSize);
+
+	if (not hasBorderTexture) then 
+		self.Border:SetAtlas("UI-Frame-IconBorder", false); 
+	end 
 
 	local iconWidth = self.Icon:GetWidth() + 5;
 	local textWidth = 0;
@@ -280,11 +301,12 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 		self.StackCount:Hide();
 	end
 
-	self.Border:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Buff);
+	self.Border:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Buff or spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular);
 	self.DebuffBorder:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Debuff);
+	self.IconMask:SetShown(spellInfo.iconDisplayType ~= Enum.SpellDisplayIconDisplayType.Circular);
+	self.CircleMask:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular);
 
 	local widgetHeight = math.max(self.Icon:GetHeight(), self.Text:GetHeight());
-
 	self:SetEnabledState(enabledState);
 	self.spellID = spellInfo.spellID;
 	self:SetTooltip(spellInfo.tooltip);

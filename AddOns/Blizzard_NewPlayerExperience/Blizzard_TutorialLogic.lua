@@ -8,25 +8,14 @@ function Tutorials:Begin()
 	NPE_QuestManager:RegisterForCallbacks(self);
 
 	self.QueueSystem:Begin();
+	self.AutoPushSpellWatcher:Begin();
 
 	-- Hide various UI elements until they are turned on
 	self.Hide_Backpack:Begin();
-	--self.Hide_MainMenuBar:Begin();
 	self.Hide_TargetFrame:Begin();
-	--self.Hide_StatusTrackingBar:Begin();
 	self.Hide_Minimap:Begin();
 
-	self.AutoPushSpellWatcher:Begin();
-
-	local startGossipWatcher = true;
-	for i, questID in ipairs(tutorialData.MultipleQuestsTutorial) do
-		if TutorialHelper:IsQuestCompleteOrActive(questID) then
-			startGossipWatcher = false;
-		end
-	end
-	if startGossipWatcher then
-		self.GossipFrameWatcher:Begin();
-	end
+	self.GossipFrameWatcher:Begin();
 
 	local level = UnitLevel("player");
 	if (level < 2) then
@@ -41,6 +30,17 @@ function Tutorials:Begin()
 	local playerClass = TutorialHelper:GetClass();
 	if level < 3 and playerClass == "ROGUE" then
 		self.StealthTutorial:Begin();
+	end
+	if level < 8 and  playerClass == "DRUID" then
+		self.DruidFormTutorial:Begin();
+	end
+	if playerClass == "HUNTER" then
+		local hunterTameQuestID = tutorialData.HunterTameTutorialQuestID;
+		if C_QuestLog.IsQuestFlaggedCompleted(hunterTameQuestID) or C_QuestLog.ReadyForTurnIn(hunterTameQuestID) then
+			-- we have already passed the hunter tame pet tutorial
+		elseif C_QuestLog.GetLogIndexForQuestID(hunterTameQuestID) ~= nil then -- Starting Quest is active
+			self.HunterTameTutorial:ForceBegin();
+		end
 	end
 	
 	-- Looting
@@ -88,12 +88,6 @@ function Tutorials:Begin()
 		self.LookingForGroup:Begin();
 	end
 
-	-- Show Minimap Quest
-	questID = tutorialData.ShowMinimapQuest;
-	if TutorialHelper:IsQuestCompleteOrActive(questID) then	-- Show Minimap Quest is complete (or active)
-		self.Hide_Minimap:Complete();					-- so show the minimap
-	end
-
 	-- Use Quest Item Quest
 	local useQuestItemData = tutorialData.UseQuestItemData;
 	if C_QuestLog.GetLogIndexForQuestID(useQuestItemData.ItemQuest) ~= nil then
@@ -115,11 +109,15 @@ function Tutorials:Begin()
 	-- if we are past a certain point, turn on of all the UI
 	if C_QuestLog.IsQuestFlaggedCompleted(tutorialData.ShowAllUIQuest) then
 		self.Hide_Backpack:Complete();
+		self.Hide_MainMenuBar:Complete();
 		self.Hide_BagsBar:Complete();
 		self.Hide_OtherMicroButtons:Complete();
 		self.Hide_StoreMicroButton:Complete();
 		self.Hide_SpellbookMicroButton:Complete();
 		self.Hide_CharacterMicroButton:Complete();
+		self.Hide_TargetFrame:Complete();
+		self.Hide_StatusTrackingBar:Complete();
+		self.Hide_Minimap:Complete();
 	end
 
 	self.LootPointer:Begin();
@@ -202,6 +200,8 @@ function Tutorials:Quest_Accepted(questData)
 		self.Hide_StoreMicroButton:Complete();
 		self.Hide_SpellbookMicroButton:Complete();
 		self.Hide_CharacterMicroButton:Complete();
+	elseif (questID == tutorialData.HunterTameTutorialQuestID) then
+		self.HunterTameTutorial:ForceBegin();
 	end
 end
 
@@ -243,6 +243,8 @@ function Tutorials:Quest_ObjectivesComplete(questData)
 				end
 			elseif questID == tutorialData.UseFoodQuest then
 				self.LowHealthWatcher:Begin();
+			elseif questID == tutorialData.HunterTameTutorialQuestID then
+				self.HunterTameTutorial:Complete();
 			end
 		end
 	end
@@ -354,11 +356,7 @@ Tutorials.LootPointer					= Class_LootPointer:new(Tutorials.LootCorpseWatcher);
 -- ------------------------------------------------------------------------------------------------------------
 -- Equip Item Tutorials
 Tutorials.EquipFirstItemWatcher			= Class_EquipFirstItemWatcher:new();
-Tutorials.ShowBags						= Class_ShowBags:new(Tutorials.EquipFirstItemWatcher);
-Tutorials.EquipItem						= Class_EquipItem:new(Tutorials.EquipFirstItemWatcher);
-Tutorials.OpenCharacterSheet			= Class_OpenCharacterSheet:new(Tutorials.EquipFirstItemWatcher);
-Tutorials.HighlightEquippedItem 		= Class_HighlightEquippedItem:new(Tutorials.EquipFirstItemWatcher);
-Tutorials.CloseCharacterSheet 			= Class_CloseCharacterSheet:new(Tutorials.EquipFirstItemWatcher);
+Tutorials.EquipTutorial					= Class_EquipTutorial:new();
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Enhanced Combat Tactics
@@ -400,7 +398,9 @@ Tutorials.SpecTutorial					= Class_SpecTutorial:new()
 -- Misc
 Tutorials.HighlightItem					= Class_HighlightItem:new();
 Tutorials.ChatFrame						= Class_ChatFrame:new();
-Tutorials.StealthTutorial 				= Class_StealthTutorial:new()
+Tutorials.StealthTutorial 				= Class_StealthTutorial:new();
+Tutorials.DruidFormTutorial 			= Class_DruidFormTutorial:new();
+Tutorials.HunterTameTutorial 			= Class_HunterTameTutorial:new();
 Tutorials.AutoPushSpellWatcher			= Class_AutoPushSpellWatcher:new();
 
 

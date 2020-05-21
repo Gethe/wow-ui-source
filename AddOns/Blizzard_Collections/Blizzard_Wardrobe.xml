@@ -138,7 +138,8 @@
 
 	<Button name="WardrobeSlotButtonTemplate" parentArray="Buttons" virtual="true">
 		<KeyValues>
-			<KeyValue key="transmogType" value="LE_TRANSMOG_TYPE_APPEARANCE" type="global"/>
+			<KeyValue key="transmogType" value="Enum.TransmogType.Appearance" type="global"/>
+			<KeyValue key="modification" value="Enum.TransmogModification.None" type="global"/>
 		</KeyValues>
 		<Size x="31" y="31"/>
 		<NormalTexture parentKey="NormalTexture">
@@ -164,18 +165,15 @@
 		<Scripts>
 			<OnClick>
 				PlaySound(SOUNDKIT.UI_TRANSMOG_GEAR_SLOT_CLICK);
-				WardrobeCollectionFrame.ItemsCollectionFrame:SetActiveSlot(self.slot, self.transmogType);
+				WardrobeCollectionFrame.ItemsCollectionFrame:SetActiveSlot(self.transmogLocation);
 			</OnClick>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetText(_G[self.slot]);
-			</OnEnter>
+			<OnEnter function="WardrobeCollectionFrame_OnSlotButtonEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
-	<Button name="WardrobeEnchantButtonTemplate" parentArray="Buttons" frameLevel="10" virtual="true">
+	<Button name="WardrobeSmallSlotButtonTemplate" parentArray="Buttons" frameLevel="10" virtual="true">
 		<KeyValues>
-			<KeyValue key="transmogType" value="LE_TRANSMOG_TYPE_ILLUSION" type="global"/>
+			<KeyValue key="isSmallButton" value="true" type="boolean"/>
 		</KeyValues>
 		<Size x="25" y="25"/>
 		<NormalTexture parentKey="NormalTexture" atlas="transmog-nav-slot-enchant" useAtlasSize="true">
@@ -201,7 +199,7 @@
 		<Scripts>
 			<OnClick>
 				PlaySound(SOUNDKIT.UI_TRANSMOG_GEAR_SLOT_CLICK);
-				WardrobeCollectionFrame.ItemsCollectionFrame:SetActiveSlot(self.slot, self.transmogType);
+				WardrobeCollectionFrame.ItemsCollectionFrame:SetActiveSlot(self.transmogLocation);
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -975,6 +973,32 @@
 							</OnShow>
 						</Scripts>
 					</Frame>
+					<CheckButton parentKey="RightShoulderCheckbox" mixin="RightShoulderCheckboxMixin" hidden="true">
+						<Size x="30" y="30"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="45" y="35"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" text="TRANSMOGRIFY_RIGHT_SHOULDER">
+									<Size x="180" y="30"/>
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT" x="2" y="1"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow method="OnShow"/>
+							<OnEvent method="OnEvent"/>
+							<OnClick method="OnClick"/>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+					</CheckButton>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
@@ -1418,7 +1442,8 @@
 	
 	<Button name="WardrobeTransmogButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<KeyValues>
-			<KeyValue key="transmogType" value="LE_TRANSMOG_TYPE_APPEARANCE" type="global"/>
+			<KeyValue key="transmogType" value="Enum.TransmogType.Appearance" type="global"/>
+			<KeyValue key="modification" value="Enum.TransmogModification.None" type="global"/>
 		</KeyValues>
 		<Size x="43" y="43"/>
 		<Layers>
@@ -1605,7 +1630,8 @@
 
 	<Button name="WardrobeTransmogEnchantButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<KeyValues>
-			<KeyValue key="transmogType" value="LE_TRANSMOG_TYPE_ILLUSION" type="global"/>
+			<KeyValue key="transmogType" value="Enum.TransmogType.Illusion" type="global"/>
+			<KeyValue key="modification" value="Enum.TransmogModification.None" type="global"/>
 		</KeyValues>
 		<Size x="27" y="27"/>
 		<Layers>
@@ -1898,12 +1924,21 @@
 									<Anchor point="TOP" x="-121" y="-41"/>
 								</Anchors>
 							</Button>
+							<Button parentKey="RightShoulderButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate" hidden="true">
+								<KeyValues>
+									<KeyValue key="slot" value="SHOULDERSLOT" type="string"/>
+									<KeyValue key="modification" value="Enum.TransmogModification.RightShoulder" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.HeadButton"/>
+								</Anchors>
+							</Button>
 							<Button parentKey="ShoulderButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
 								<KeyValues>
 									<KeyValue key="slot" value="SHOULDERSLOT" type="string"/>
 								</KeyValues>
 								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.HeadButton" relativePoint="BOTTOM" x="0" y="-10"/>
+									<Anchor point="TOP" relativeKey="$parent.RightShoulderButton" relativePoint="BOTTOM" x="0" y="-10"/>
 								</Anchors>
 							</Button>
 							<Button parentKey="BackButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">

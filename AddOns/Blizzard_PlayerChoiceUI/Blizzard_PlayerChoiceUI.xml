@@ -429,6 +429,10 @@
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.OptionText" relativePoint="BOTTOM" y="-5"/>
 				</Anchors>
+				<Scripts>
+					<OnShow>
+					</OnShow>
+				</Scripts>
 			</Frame>
 			<Frame parentKey="OptionButtonsContainer" mixin="PlayerChoiceOptionButtonContainerMixin" inherits="ResizeLayoutFrame">
 				<Size x="210" y="22"/>
@@ -485,6 +489,17 @@
 			<AnimationGroup parentKey="ScrollingBackgroundScroll" looping="REPEAT">
 				<Translation childKey="ScrollingBG" duration="50" order="1" offsetX="300" offsetY="0" smoothing="OUT"/>
 				<Translation childKey="ScrollingBG" duration="50" order="2" offsetX="-300" offsetY="0" smoothing="OUT"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeoutSelected">
+				<Alpha startDelay="2" order="1" duration=".5" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():GetParent():TryHide();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeoutUnselected">
+				<Alpha order="1" duration=".25" fromAlpha="1" toAlpha="0"/>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>

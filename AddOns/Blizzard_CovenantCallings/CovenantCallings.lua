@@ -1,79 +1,3 @@
--- NOTE: This is intended to use a calling/bounty created from the client, this just extends that table by adding an API and some cached data.
-Enum.CallingStates = {
-	QuestOffer = 1,
-	QuestActive = 2,
-	QuestCompleted = 3,
-};
-
-Constants.Callings = {
-	MaxCallings = 3, -- TODO: This needs to come from data, but it's completely arbitrary based on the scheduler, need to figure this out
-}
-
-CallingMixin = {};
-
-function CallingMixin:Init()
-	self.quest = QuestCache:Get(self.questID);
-	self.isOnQuest = C_QuestLog.IsOnQuest(self.questID); -- The only reason it's safe to cache this is that when quests are updated, we rebuild everything.
-	self.isLockedToday = false;
-end
-
-function CallingMixin:InitEmpty()
-	self.isLockedToday = true;
-end
-
-function CallingMixin:SetIndex(index)
-	self.index = index;
-end
-
-function CallingMixin:IsLocked()
-	return self.isLockedToday;
-end
-
-function CallingMixin:IsActive()
-	return self.isOnQuest;
-end
-
-function CallingMixin:GetState()
-	if self:IsLocked() then
-		return Enum.CallingStates.QuestCompleted;
-	elseif self:IsActive() then
-		return Enum.CallingStates.QuestActive;
-	else
-		return Enum.CallingStates.QuestOffer;
-	end
-end
-
-function CallingMixin:GetIcon(covenantData)
-	if self:IsLocked() or self.icon == 0 then
-		return ("Interface/Pictures/Callings-%s-Head-Disable"):format(covenantData.textureKit);
-	end
-
-	return self.icon;
-end
-
-function CallingMixin:GetBang()
-	local state = self:GetState();
-	if state == Enum.CallingStates.QuestActive and self.quest:IsComplete() then
-		return "Callings-Turnin";
-	elseif state == Enum.CallingStates.QuestOffer then
-		return "Callings-Available";
-	end
-
-	return nil;
-end
-
-function CallingMixin:GetDaysUntilNext()
-	if self:IsLocked() and self.index then
-		return Constants.Callings.MaxCallings - self.index + 1;
-	end
-
-	return 0;
-end
-
-function CallingMixin:GetDaysUntilNextString()
-	return _G["BOUNTY_BOARD_NO_CALLINGS_DAYS_" .. self:GetDaysUntilNext()] or BOUNTY_BOARD_NO_CALLINGS_DAYS_1;
-end
-
 CovenantCallingQuestMixin = {};
 
 function CovenantCallingQuestMixin:Set(calling, covenantData)
@@ -306,14 +230,12 @@ function CovenantCallingsMixin:ProcessCallings(callings)
 	for index = 1, Constants.Callings.MaxCallings do
 		local calling = callings[index];
 		if calling then
-			calling = Mixin(calling, CallingMixin);
-			calling:Init();
+			calling = CovenantCalling_Create(calling);
 
 			-- Cache the remaining time on the quest to help sort
 			calling.tempTimeRemaining = C_TaskQuest.GetQuestTimeLeftSeconds(calling.questID) or 0;
 		else
-			calling = CreateFromMixins(CallingMixin);
-			calling:InitEmpty();
+			calling = CovenantCalling_Create();
 			calling.tempTimeRemaining = 0;
 		end
 

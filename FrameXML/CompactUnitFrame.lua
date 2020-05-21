@@ -1070,37 +1070,13 @@ function CompactUnitFrame_UpdateClassificationIndicator(frame)
 	end
 end
 
-local function WidgetsLayout(widgetContainer, sortedWidgets)
-	local widgetsWidth = 0;
-	local maxWidgetHeight = 0;
-
-	for index, widgetFrame in ipairs(sortedWidgets) do
-		if ( index == 1 ) then
-			widgetFrame:SetPoint("LEFT", widgetContainer, "LEFT", 0, 0);
-		else
-			local relative = sortedWidgets[index - 1];
-			widgetFrame:SetPoint("LEFT", relative, "RIGHT", 2, 0);
-		end
-
-		widgetsWidth = widgetsWidth + widgetFrame:GetWidgetWidth();
-
-		local widgetHeight = widgetFrame:GetWidgetHeight();
-		if widgetHeight > maxWidgetHeight then
-			maxWidgetHeight = widgetHeight;
-		end
-	end
-
-	widgetContainer:SetHeight(math.max(maxWidgetHeight, 1));
-	widgetContainer:SetWidth(math.max(widgetsWidth, 1));
-end
-
 function CompactUnitFrame_UpdateWidgetSet(frame)
 	if not frame.WidgetContainer then
 		return;
 	end
 
 	local widgetSetID = UnitWidgetSet(frame.unit);
-	frame.WidgetContainer:RegisterForWidgetSet(widgetSetID, WidgetsLayout, nil, frame.unit);
+	frame.WidgetContainer:RegisterForWidgetSet(widgetSetID, DefaultWidgetLayout, nil, frame.unit);
 end
 
 function CompactUnitFrame_ClearWidgetSet(frame)

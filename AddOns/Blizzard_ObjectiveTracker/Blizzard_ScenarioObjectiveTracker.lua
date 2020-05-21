@@ -149,34 +149,11 @@ end
 local SCENARIO_TRACKER_WIDGET_SET = 252;
 
 local function WidgetsLayout(widgetContainerFrame, sortedWidgets)
-	local widgetsHeight = 0;
-	local maxWidgetWidth = 1;
-
-	for index, widgetFrame in ipairs(sortedWidgets) do
-		if ( index == 1 ) then
-			-- Add a padding of 15 pixels before the first widget (so it doesn't bump right up against the objectives)
-			widgetFrame:SetPoint("TOP", widgetContainerFrame, "TOP", 0, -15);
-			widgetsHeight = 15;
-		else
-			local relative = sortedWidgets[index - 1];
-			widgetFrame:SetPoint("TOP", relative, "BOTTOM", 0, 0);
-		end
-
-		widgetsHeight = widgetsHeight + widgetFrame:GetWidgetHeight();
-
-		local widgetWidth = widgetFrame:GetWidgetWidth();
-		if widgetWidth > maxWidgetWidth then
-			maxWidgetWidth = widgetWidth;
-		end
-	end
-
-	widgetsHeight = math.max(widgetsHeight, 1);
-
-	widgetContainerFrame:SetHeight(widgetsHeight);
-	widgetContainerFrame:SetWidth(maxWidgetWidth);
-
-	-- The scenario tracker needs to update so the new height is taken into account
-	widgetContainerFrame.height = widgetsHeight;
+	DefaultWidgetLayout(widgetContainerFrame, sortedWidgets);
+	local blockHeight = widgetContainerFrame:GetHeight() + 15;
+	ScenarioWidgetContainerBlock.height = blockHeight;
+	ScenarioWidgetContainerBlock:SetHeight(blockHeight);
+	ScenarioWidgetContainerBlock:Show(); 
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO);
 end
 
@@ -193,7 +170,7 @@ function ScenarioBlocksFrame_OnLoad(self)
 	self.MawBuffsBlock.module = SCENARIO_TRACKER_MODULE;
 	self.MawBuffsBlock.height = self.MawBuffsBlock:GetHeight();
 	ScenarioWidgetContainerBlock.module = SCENARIO_TRACKER_MODULE;
-	ScenarioWidgetContainerBlock:RegisterForWidgetSet(SCENARIO_TRACKER_WIDGET_SET, WidgetsLayout);
+	ScenarioWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_WIDGET_SET, WidgetsLayout);
 
 	SCENARIO_TRACKER_MODULE.BlocksFrame = self;
 

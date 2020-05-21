@@ -3,6 +3,19 @@ local UIWidgetManagerShared =
 	Tables =
 	{
 		{
+			Name = "UIWidgetLayoutDirection",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Default", Type = "UIWidgetLayoutDirection", EnumValue = 0 },
+				{ Name = "Vertical", Type = "UIWidgetLayoutDirection", EnumValue = 1 },
+				{ Name = "Horizontal", Type = "UIWidgetLayoutDirection", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "UIWidgetScale",
 			Type = "Enumeration",
 			NumValues = 6,
@@ -16,6 +29,18 @@ local UIWidgetManagerShared =
 				{ Name = "Seventy", Type = "UIWidgetScale", EnumValue = 3 },
 				{ Name = "Sixty", Type = "UIWidgetScale", EnumValue = 4 },
 				{ Name = "Fifty", Type = "UIWidgetScale", EnumValue = 5 },
+			},
+		},
+		{
+			Name = "UIWidgetSetLayoutDirection",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Vertical", Type = "UIWidgetSetLayoutDirection", EnumValue = 0 },
+				{ Name = "Horizontal", Type = "UIWidgetSetLayoutDirection", EnumValue = 1 },
 			},
 		},
 		{

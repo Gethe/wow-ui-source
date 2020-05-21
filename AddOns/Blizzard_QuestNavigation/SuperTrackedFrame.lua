@@ -3,6 +3,7 @@ SuperTrackedFrameMixin = {};
 function SuperTrackedFrameMixin:OnLoad()
 	self:RegisterEvent("NAVIGATION_FRAME_CREATED");
 	self:RegisterEvent("NAVIGATION_FRAME_DESTROYED");
+	self:RegisterEvent("SUPER_TRACKING_CHANGED");
 end
 
 function SuperTrackedFrameMixin:OnEvent(event, ...)
@@ -10,6 +11,8 @@ function SuperTrackedFrameMixin:OnEvent(event, ...)
 		self:InitializeNavigationFrame();
 	elseif event == "NAVIGATION_FRAME_DESTROYED" then
 		self:ShutdownNavigationFrame();
+	elseif event == "SUPER_TRACKING_CHANGED" then
+		self:UpdateIcon();
 	end
 end
 
@@ -49,9 +52,16 @@ do
 		[Enum.NavigationState.InRange] = 1.0,
 	};
 
-	local function GetTargetAlpha()
+	function SuperTrackedFrameMixin:GetTargetAlphaBaseValue()
 		local state = C_Navigation.GetTargetState();
-		return navStateToTargetAlpha[state];
+		local alpha = navStateToTargetAlpha[state];
+		if alpha and alpha > 0 then
+			if self.isClamped then
+				return 1; -- Just to make the indicator easier to see
+			end
+		end
+
+		return alpha;
 	end
 
 	function SuperTrackedFrameMixin:GetTargetAlpha()
@@ -68,7 +78,7 @@ do
 		local mouseToNavDistanceSq = mouseToNavVec:GetLengthSquared();
 		local additionalFade = ClampedPercentageBetween(mouseToNavDistanceSq, 0, self.navFrameRadiusSq * 2);
 
-		return FrameDeltaLerp(self:GetAlpha(), GetTargetAlpha() * additionalFade, 0.1);
+		return FrameDeltaLerp(self:GetAlpha(), self:GetTargetAlphaBaseValue() * additionalFade, 0.1);
 	end
 
 	function SuperTrackedFrameMixin:SetTargetAlphaForState(state, alpha)
@@ -157,6 +167,19 @@ function SuperTrackedFrameMixin:UpdateIconSize()
 	self.navFrameRadiusSq = self.navFrameRadius * self.navFrameRadius;
 end
 
+local iconLookup = {
+	[Enum.SuperTrackingType.Quest] = "Navigation-Tracked-Icon",
+	[Enum.SuperTrackingType.UserWaypoint] = "Waypoint-MapPin-Tracked",
+	[Enum.SuperTrackingType.Corpse] = "Navigation-Tombstone-Icon",
+};
+
+function SuperTrackedFrameMixin:UpdateIcon()
+	local superTrackingType = C_SuperTrack.GetHighestPrioritySuperTrackingType() or Enum.SuperTrackingType.Quest;
+	local atlas = iconLookup[superTrackingType] or "Navigation-Tracked-Icon";
+	self.Icon:SetAtlas(atlas, true);
+	self:UpdateIconSize();
+end
+
 function SuperTrackedFrameMixin:InitializeNavigationFrame()
 	assert(self.navFrame == nil);
 	self.navFrame = C_Navigation.GetFrame();
@@ -164,7 +187,7 @@ function SuperTrackedFrameMixin:InitializeNavigationFrame()
 
 	if self.navFrame then
 		self:SetPoint("CENTER", self.navFrame);
-		self:UpdateIconSize();
+		self:UpdateIcon();
 
 		-- Experimental clamping modes, pick one and erase the other
 		self.clampMode = 1;

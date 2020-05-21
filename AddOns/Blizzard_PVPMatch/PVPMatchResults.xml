@@ -29,6 +29,10 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-40" y="-30"/>
 				</Anchors>
+				<Scripts>
+					<OnShow>
+					</OnShow>
+				</Scripts>
 			</Frame>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
