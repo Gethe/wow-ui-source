@@ -7,7 +7,11 @@ AdventuresCompleteScreenContinueButtonMixin = {};
 
 function AdventuresCompleteScreenContinueButtonMixin:OnClick()
 	local completeScreen = self:GetParent():GetParent();
-	completeScreen:CloseMissionComplete();
+	if completeScreen.replayFinished then 
+		completeScreen:ShowRewardsScreen();
+	else
+		completeScreen:SkipToTheEndOfMission();
+	end
 end
 
 
@@ -21,7 +25,6 @@ end
 function AdventuresCompleteScreenSpeedButtonMixin:SetSpeedUpShown(shown)
 	self.SpeedUp:SetShown(shown);
 end
-
 
 AdventuresCompleteScreenReplayButtonMixin = {};
 
@@ -67,6 +70,14 @@ end
 function AdventuresCompleteScreenMixin:SetAnimationControl()
 end
 
+function AdventuresCompleteScreenMixin:ShowRewardsScreen()
+	if self.currentMission then
+		self.RewardsScreen:ShowRewardsScreen(self.currentMission);
+
+		self:DisableCompleteFrameButtons();
+	end
+end
+
 function AdventuresCompleteScreenMixin:CloseMissionComplete()
 	if self.currentMission then
 		C_Garrison.MissionBonusRoll(self.currentMission.missionID);
@@ -89,11 +100,13 @@ function AdventuresCompleteScreenMixin:SetCurrentMission(mission)
    	end
 
    	self:ResetMissionDisplay();
+	self.RewardsScreen:PopulateFollowerInfo(self.followerGUIDToInfo);
 
-   	C_Garrison.MarkMissionComplete(self.currentMission.missionID);
-
-   	-- TEMP:: Claim rewards so the mission disappears.
-   	C_Garrison.MissionBonusRoll(self.currentMission.missionID);
+	if not mission.completed then
+   		C_Garrison.MarkMissionComplete(self.currentMission.missionID);
+	else
+		C_Garrison.RegenerateCombatLog(self.currentMission.missionID);
+	end
 end
 
 function AdventuresCompleteScreenMixin:ResetMissionDisplay()
@@ -127,6 +140,12 @@ function AdventuresCompleteScreenMixin:ResetMissionDisplay()
 		followerFrame:SetFollowerGUID(followerGUID, missionCompleteInfo);
 		followerFrame:Show();
    	end
+
+	self.AdventuresCombatLog:Clear();
+	self.RewardsScreen:Reset();
+	self.CompleteFrame.ContinueButton:SetText(CONTINUE);
+	self.replayFinished = false;
+	self:EnableCompleteFrameButtons();
 end
 
 function AdventuresCompleteScreenMixin:OnMissionCompleteResponse(missionID, canComplete, succeeded, overmaxSucceeded, followerDeaths, autoCombatResult)
@@ -336,7 +355,7 @@ function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)
 			local function EffectOnResolution()
 				self:OnReplayEffectResolved();
 			end
-
+			
 			local primaryTarget = self:GetFrameFromBoardIndex(combatLogEvent.targetInfo[1].boardIndex);
 			self.ModelScene:AddEffect(effect, sourceFrame, primaryTarget, PrimaryEffectOnFinish, EffectOnResolution);
 		else
@@ -380,8 +399,47 @@ function AdventuresCompleteScreenMixin:FinishReplay()
 	self:SetScript("OnUpdate", nil);
 	self.CompleteFrame.ReplayButton:SetEnabled(true);
 	self.AdventuresCombatLog:AddVictoryState(self.autoCombatResult.winner);
+	self.RewardsScreen:ShowAdventureVictoryStateScreen(self.autoCombatResult.winner);
+	self.replayFinished = true;
+	self.CompleteFrame.ContinueButton:SetText(COVENANT_MISSIONS_COMPLETE_SCREEN_REWARDS);
+end
+
+function AdventuresCompleteScreenMixin:SkipToTheEndOfMission()
+	self.ModelScene:ClearEffects();
+	
+	--Finish current round
+	local currentRound = self:GetReplayRound(self.replayRoundIndex);
+	--Previous eventIndex already printed
+	for eventIndex = self.replayEventIndex + 1, #currentRound.events do
+		self.AdventuresCombatLog:AddCombatEvent(currentRound.events[eventIndex]);
+	end
+
+	--dump the rest
+	for roundIndex = self.replayRoundIndex + 1, self:GetNumReplayRounds() do 
+		local round = self:GetReplayRound(roundIndex);
+		self.AdventuresCombatLog:AddCombatRound(roundIndex, round, self:GetNumReplayRounds());
+	end
+
+	self:FinishReplay();
 end
 
 function AdventuresCompleteScreenMixin:GetCovenantMissionFrame()
 	return self:GetParent();
+end
+
+function AdventuresCompleteScreenMixin:DisableCompleteFrameButtons()
+	local completeFrame = self.CompleteFrame;
+
+	completeFrame.ContinueButton:Disable();
+	completeFrame.SpeedButton:Disable();
+	completeFrame.ReplayButton:Disable();
+end
+
+
+function AdventuresCompleteScreenMixin:EnableCompleteFrameButtons()
+	local completeFrame = self.CompleteFrame;
+
+	completeFrame.ContinueButton:Enable();
+	completeFrame.SpeedButton:Enable();
+	completeFrame.ReplayButton:Enable();
 end

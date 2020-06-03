@@ -329,6 +329,22 @@ local Map =
 			},
 		},
 		{
+			Name = "GetMapWorldSize",
+			Type = "Function",
+			Documentation = { "Returns the size in yards of the area represented by the map." },
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "width", Type = "number", Nilable = false },
+				{ Name = "height", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPlayerMapPosition",
 			Type = "Function",
 			Documentation = { "Only works for the player and party members." },

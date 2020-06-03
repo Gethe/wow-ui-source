@@ -7,7 +7,10 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="BarberShopFrame" mixin="BarberShopMixin" toplevel="true" setAllPoints="true" enableKeyboard="true" hidden="true">
+	<Frame name="BarberShopFrame" mixin="DefaultScaleFrameMixin, BarberShopMixin" toplevel="true" setAllPoints="true" ignoreParentScale="true" enableKeyboard="true" hidden="true">
+		<KeyValues>
+			<KeyValue key="maxScale" value="CHAR_CUSTOMIZE_MAX_SCALE" type="global"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="TopBackgroundOverlay" atlas="charactercreate-vignette-top">

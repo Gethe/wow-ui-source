@@ -115,6 +115,8 @@ function LFGListFrame_OnLoad(self)
 	self:RegisterEvent("LFG_LIST_ENTRY_EXPIRED_TIMEOUT");
 	self:RegisterEvent("LFG_LIST_APPLICATION_STATUS_UPDATED");
 	self:RegisterEvent("UNIT_CONNECTION");
+	self:RegisterEvent("LFG_GROUP_DELISTED_LEADERSHIP_CHANGE");
+
 	for i=1, #LFG_LIST_ACTIVE_QUEUE_MESSAGE_EVENTS do
 		self:RegisterEvent(LFG_LIST_ACTIVE_QUEUE_MESSAGE_EVENTS[i]);
 	end
@@ -197,6 +199,9 @@ function LFGListFrame_OnEvent(self, event, ...)
 		if ( not IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
 			self.displayedAutoAcceptConvert = false;
 		end
+	elseif ( event == "LFG_GROUP_DELISTED_LEADERSHIP_CHANGE") then
+		local listingTitle, delistTime = ...; 
+		StaticPopup_Show("PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING", nil, nil, { listingTitle = listingTitle, delistTime = delistTime, });
 	end
 
 	--Dispatch the event to our currently active panel

@@ -80,16 +80,22 @@ function LFDFrame_OnEvent(self, event, ...)
 		local targetName, targetGUID = ...;
 		StaticPopup_Show("VOTE_BOOT_REASON_REQUIRED", targetName, nil, targetGUID);
 	elseif ( event == "LFG_UPDATE_RANDOM_INFO" ) then
-		if ( not LFDQueueFrame.type or (type(LFDQueueFrame.type) == "number" and not IsLFGDungeonJoinable(LFDQueueFrame.type)) ) then
-			local bestChoice = GetRandomDungeonBestChoice();
-			if ( bestChoice ) then
-				UIDropDownMenu_Initialize(LFDQueueFrameTypeDropDown, LFDQueueFrameTypeDropDown_Initialize);
-				LFDQueueFrame_SetType(bestChoice);
-			end
-		end
-		--If we still don't have a value, we should go to specific.
-		if ( not LFDQueueFrame.type ) then
+		if C_PlayerInfo.IsPlayerNPERestricted() then
+		-- if the player is NPE restricted, we need to default to specific dungeons
+		-- for a cleaner tutorial experience
 			LFDQueueFrame_SetType("specific");
+		else
+			if ( not LFDQueueFrame.type or (type(LFDQueueFrame.type) == "number" and not IsLFGDungeonJoinable(LFDQueueFrame.type)) ) then
+				local bestChoice = GetRandomDungeonBestChoice();
+				if ( bestChoice ) then
+					UIDropDownMenu_Initialize(LFDQueueFrameTypeDropDown, LFDQueueFrameTypeDropDown_Initialize);
+					LFDQueueFrame_SetType(bestChoice);
+				end
+			end
+			--If we still don't have a value, we should go to specific.
+			if ( not LFDQueueFrame.type ) then
+				LFDQueueFrame_SetType("specific");
+			end
 		end
 	elseif ( event == "LFG_OPEN_FROM_GOSSIP" ) then
 		local dungeonID = ...;
@@ -297,7 +303,21 @@ function LFDQueueFrameSpecificList_Update()
 	if ( LFGDungeonList_Setup() ) then
 		return;	--Setup will update the list.
 	end
-	FauxScrollFrame_Update(LFDQueueFrameSpecificListScrollFrame, LFDGetNumDungeons(), NUM_LFD_CHOICE_BUTTONS, 16);
+
+	local dungeonList = {};
+	if C_PlayerInfo.IsPlayerNPERestricted() then
+		-- if the player is NPE restricted, we need to filter out locked dungeons for
+		-- a cleaner presentation to New Players
+		for i, dungeonID in ipairs(LFDDungeonList) do
+			if not LFGLockList[dungeonID] then
+				table.insert(dungeonList, dungeonID);
+			end
+		end
+	else
+		dungeonList = LFDDungeonList;
+	end
+
+	FauxScrollFrame_Update(LFDQueueFrameSpecificListScrollFrame, #dungeonList, NUM_LFD_CHOICE_BUTTONS, 16);
 
 	local offset = FauxScrollFrame_GetOffset(LFDQueueFrameSpecificListScrollFrame);
 
@@ -314,7 +334,8 @@ function LFDQueueFrameSpecificList_Update()
 
 	for i = 1, NUM_LFD_CHOICE_BUTTONS do
 		local button = _G["LFDQueueFrameSpecificListButton"..i];
-		local dungeonID = LFDDungeonList[i+offset];
+		local dungeonID = dungeonList[i+offset];
+
 		if ( dungeonID ) then
 			button:Show();
 			if ( areButtonsBig ) then
@@ -563,6 +584,13 @@ function LFDQueueFrameFindGroupButton_Update()
 			LFDQueueFrameFindGroupButton:SetText(JOIN_AS_PARTY);
 		else
 			LFDQueueFrameFindGroupButton:SetText(FIND_A_GROUP);
+		end
+	end
+
+	if C_PlayerInfo.IsPlayerNPERestricted() then
+		if not LFDQueueCheckRoleSelectionValid(LFGRole_GetChecked(LFDQueueFrameRoleButtonTank), LFGRole_GetChecked(LFDQueueFrameRoleButtonHealer), LFGRole_GetChecked(LFDQueueFrameRoleButtonDPS)) then
+			-- the NPE restricted player needs to at least be a DPS role if nothing is selected
+			LFDQueueFrameRoleButtonDPS.checkButton:SetChecked(true);
 		end
 	end
 

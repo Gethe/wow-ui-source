@@ -1497,6 +1497,10 @@ function SelectionPopoutButtonMixin:ShowPopout()
 	self.HighlightTexture:SetAlpha(0.2);
 end
 
+local MAX_POPOUT_ENTRIES_FOR_1_COLUMN = 10;
+local MAX_POPOUT_ENTRIES_FOR_2_COLUMNS = 24;
+local MAX_POPOUT_ENTRIES_FOR_3_COLUMNS = 36;
+
 function SelectionPopoutButtonMixin:SetupSelections(selections, selectedIndex)
 	self.selections = selections;
 	self.selectedIndex = selectedIndex;
@@ -1504,20 +1508,35 @@ function SelectionPopoutButtonMixin:SetupSelections(selections, selectedIndex)
 	self.buttonPool:ReleaseAll();
 	self.currentButtons = {};
 
-	local useTwoColumns = (#selections > 10);
+	local function getNumColumnsAndStride(numSelections)
+		if numSelections > MAX_POPOUT_ENTRIES_FOR_3_COLUMNS then
+			return 4, 12;
+		elseif numSelections > MAX_POPOUT_ENTRIES_FOR_2_COLUMNS then
+			return 3, 12;
+		elseif numSelections > MAX_POPOUT_ENTRIES_FOR_1_COLUMN then
+			if numSelections > 20 then
+				return 2, 12;
+			else
+				return 2, 10;
+			end
+		else
+			return 1, numSelections;
+		end
+	end
+
+	local numColumns, stride = getNumColumnsAndStride(#selections);
 
 	for index, selectionData in ipairs(selections) do
 		local button = self.buttonPool:Acquire();
 		local selectionInfo = selections[index];
 
 		local isSelected = (index == selectedIndex);
-		button:SetupEntry(selectionInfo, index, isSelected, useTwoColumns);
+		button:SetupEntry(selectionInfo, index, isSelected, numColumns > 1);
 		button:Show();
 
 		table.insert(self.currentButtons, button);
 	end
 
-	local stride = useTwoColumns and math.ceil(#selections / 2) or #selections;
 	self.layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRightVertical, stride);
 	AnchorUtil.GridLayout(self.currentButtons, self.initialAnchor, self.layout);
 
@@ -1602,19 +1621,19 @@ function SelectionPopoutDetailsMixin:GetTooltipText()
 	return nil;
 end
 
-function SelectionPopoutDetailsMixin:AdjustWidth(twoColumns, defaultWidth)
+function SelectionPopoutDetailsMixin:AdjustWidth(multipleColumns, defaultWidth)
 	local width = defaultWidth;
 
 	if self.ColorSwatch:IsShown() then
-		if twoColumns then
+		if multipleColumns then
 			width = self.SelectionNumber:GetWidth() + self.ColorSwatch:GetWidth();
 		end
 	elseif self.SelectionName:IsShown() then
-		if twoColumns then
+		if multipleColumns then
 			width = 108;
 		end
 	else
-		if twoColumns then
+		if multipleColumns then
 			width = 42;
 		end
 	end
@@ -1640,9 +1659,11 @@ function SelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelect
 		self.SelectionName:Hide();
 	end
 
-	local fontColor = isSelected and GREEN_FONT_COLOR or DISABLED_FONT_COLOR;
-	self.SelectionNumber:SetTextColor(fontColor:GetRGB());
-	self.SelectionName:SetTextColor(fontColor:GetRGB());
+	if isSelected ~= nil then
+		local fontColor = isSelected and NORMAL_FONT_COLOR or DISABLED_FONT_COLOR;
+		self.SelectionNumber:SetTextColor(fontColor:GetRGB());
+		self.SelectionName:SetTextColor(fontColor:GetRGB());
+	end
 	self.SelectionNumber:SetText(index);
 end
 
@@ -1665,12 +1686,12 @@ function SelectionPopoutEntryMixin:HandlesGlobalMouseEvent(buttonID, event)
 	return event == "GLOBAL_MOUSE_DOWN" and buttonID == "LeftButton";
 end
 
-function SelectionPopoutEntryMixin:SetupEntry(selectionData, index, isSelected, twoColumns)
+function SelectionPopoutEntryMixin:SetupEntry(selectionData, index, isSelected, multipleColumns)
 	self.isSelected = isSelected;
 	self.selectionData = selectionData;
 
 	self.SelectionDetails:SetupDetails(selectionData, index, isSelected);
-	self.SelectionDetails:AdjustWidth(twoColumns, 116);
+	self.SelectionDetails:AdjustWidth(multipleColumns, 116);
 	self:Layout();
 end
 
@@ -1700,4 +1721,21 @@ end
 
 function SelectionPopoutEntryMixin:OnClick()
 	self.parentButton:OnEntryClick(self);
+end
+
+DefaultScaleFrameMixin = {};
+
+function DefaultScaleFrameMixin:OnLoad()
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:UpdateScale();
+end
+
+function DefaultScaleFrameMixin:OnEvent(event, ...)
+	if event == "DISPLAY_SIZE_CHANGED" then
+		self:UpdateScale();
+	end
+end
+
+function DefaultScaleFrameMixin:UpdateScale()
+	ApplyDefaultScale(self, self.minScale, self.maxScale);
 end

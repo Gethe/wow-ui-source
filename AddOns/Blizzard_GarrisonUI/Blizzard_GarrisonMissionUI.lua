@@ -1057,6 +1057,66 @@ function GarrisonMissionButtonRewards_OnEnter(self)
 	GameTooltip:Show();
 end
 
+function GarrisonMissionButton_SetReward(frame, reward, currencyMultipliers)
+	frame.Quantity:Hide();
+	frame.Quantity:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+	frame.IconBorder:Hide();
+	frame.itemID = nil;
+	frame.currencyID = nil;
+	frame.tooltip = nil;
+	if (reward.itemID) then
+		frame.itemID = reward.itemID;
+		GarrisonMissionFrame_SetItemRewardDetails(frame);
+		if ( reward.quantity > 1 ) then
+			frame.Quantity:SetText(reward.quantity);
+			frame.Quantity:Show();
+		end
+	else
+		frame.Icon:SetTexture(reward.icon);
+		frame.title = reward.title
+		if (reward.currencyID and reward.quantity) then
+			local quantity = reward.quantity;
+			if (reward.currencyID == 0) then
+				if (goldMultiplier ~= nil) then
+					quantity = quantity * goldMultiplier;
+				end
+				frame.tooltip = GetMoneyString(quantity);
+				frame.Quantity:SetText(BreakUpLargeNumbers(floor(quantity / COPPER_PER_GOLD)));
+				frame.Quantity:Show();
+			else
+				if (currencyMultipliers[reward.currencyID] ~= nil) then
+					quantity = quantity * currencyMultipliers[reward.currencyID];
+				end
+				frame.currencyID = reward.currencyID;
+
+				local currencyName, currencyTexture, currencyQuantity, currencyQuality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.currencyID, reward.quantity, reward.title, reward.icon, nil);
+				if (currencyTexture) then
+					frame.Icon:SetTexture(currencyTexture);
+				end
+
+				frame.currencyQuantity = quantity;
+
+				if (currencyQuality) then
+					SetItemButtonQuality(frame, currencyQuality, reward.currencyID);
+				end
+
+				if (currencyQuantity > 1) then
+					frame.Quantity:SetText(currencyQuantity);
+					local currencyColor = GetColorForCurrencyReward(reward.currencyID, quantity);
+					frame.Quantity:SetTextColor(currencyColor:GetRGB());
+					frame.Quantity:Show();
+				end
+			end
+		else
+			frame.tooltip = reward.tooltip;
+			if ( reward.followerXP ) then
+				frame.Quantity:SetText(BreakUpLargeNumbers(reward.followerXP));
+				frame.Quantity:Show();
+			end
+		end
+	end
+end
+
 function GarrisonMissionButton_SetRewards(self, rewards)
 	if (#rewards > 0) then
 		local currencyMultipliers = nil;
@@ -1074,63 +1134,7 @@ function GarrisonMissionButton_SetRewards(self, rewards)
 				self.Rewards[index]:SetPoint("RIGHT", self.Rewards[index-1], "LEFT", 0, 0);
 			end
 			local Reward = self.Rewards[index];
-			Reward.Quantity:Hide();
-			Reward.Quantity:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-			Reward.IconBorder:Hide();
-			Reward.itemID = nil;
-			Reward.currencyID = nil;
-			Reward.tooltip = nil;
-			if (reward.itemID) then
-				Reward.itemID = reward.itemID;
-				GarrisonMissionFrame_SetItemRewardDetails(Reward);
-				if ( reward.quantity > 1 ) then
-					Reward.Quantity:SetText(reward.quantity);
-					Reward.Quantity:Show();
-				end
-			else
-				Reward.Icon:SetTexture(reward.icon);
-				Reward.title = reward.title
-				if (reward.currencyID and reward.quantity) then
-					local quantity = reward.quantity;
-					if (reward.currencyID == 0) then
-						if (goldMultiplier ~= nil) then
-							quantity = quantity * goldMultiplier;
-						end
-						Reward.tooltip = GetMoneyString(quantity);
-						Reward.Quantity:SetText(BreakUpLargeNumbers(floor(quantity / COPPER_PER_GOLD)));
-						Reward.Quantity:Show();
-					else
-						if (currencyMultipliers[reward.currencyID] ~= nil) then
-							quantity = quantity * currencyMultipliers[reward.currencyID];
-						end
-						Reward.currencyID = reward.currencyID;
-
-						local currencyName, currencyTexture, currencyQuantity, currencyQuality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.currencyID, reward.quantity, reward.title, reward.icon, nil);
-						if (currencyTexture) then
-							Reward.Icon:SetTexture(currencyTexture);
-						end
-
-						Reward.currencyQuantity = quantity;
-
-						if (currencyQuality) then
-							SetItemButtonQuality(Reward, currencyQuality, reward.currencyID);
-						end
-
-						if (currencyQuantity > 1) then
-							Reward.Quantity:SetText(currencyQuantity);
-							local currencyColor = GetColorForCurrencyReward(reward.currencyID, quantity);
-							Reward.Quantity:SetTextColor(currencyColor:GetRGB());
-							Reward.Quantity:Show();
-						end
-					end
-				else
-					Reward.tooltip = reward.tooltip;
-					if ( reward.followerXP ) then
-						Reward.Quantity:SetText(BreakUpLargeNumbers(reward.followerXP));
-						Reward.Quantity:Show();
-					end
-				end
-			end
+			GarrisonMissionButton_SetReward(Reward, reward, currencyMultipliers)
 			Reward:Show();
 			index = index + 1;
 		end

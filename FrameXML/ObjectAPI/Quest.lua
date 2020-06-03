@@ -40,6 +40,14 @@ function QuestMixin:IsCampaign()
 	return self.campaignID ~= nil;
 end
 
+function QuestMixin:IsCalling()
+	if self.isCalling == nil then
+		self.isCalling = C_QuestLog.IsQuestCalling(self:GetID());
+	end
+
+	return self.isCalling;
+end
+
 function QuestMixin:IsRepeatableQuest()
 	return self.isRepeatable;
 end

@@ -38,8 +38,12 @@ function Tutorials:Begin()
 		local hunterTameQuestID = tutorialData.HunterTameTutorialQuestID;
 		if C_QuestLog.IsQuestFlaggedCompleted(hunterTameQuestID) or C_QuestLog.ReadyForTurnIn(hunterTameQuestID) then
 			-- we have already passed the hunter tame pet tutorial
-		elseif C_QuestLog.GetLogIndexForQuestID(hunterTameQuestID) ~= nil then -- Starting Quest is active
+		elseif C_QuestLog.GetLogIndexForQuestID(hunterTameQuestID) ~= nil then
 			self.HunterTameTutorial:ForceBegin();
+		end
+
+		if level < 9 then
+			self.HunterStableTutorial:Begin();
 		end
 	end
 	
@@ -147,8 +151,12 @@ function Tutorials:Begin()
 
 	-- Spec Choice Quest
 	local specQuestID = TutorialHelper:FilterByClass(tutorialData.SpecQuests);
-	if C_QuestLog.GetLogIndexForQuestID(specQuestID) ~= nil then -- Spec Choice Quest is active
-		self.SpecTutorial:Begin();
+	if C_QuestLog.IsQuestFlaggedCompleted(specQuestID) then 
+		-- spec quest flagged complete
+	elseif C_QuestLog.ReadyForTurnIn(specQuestID) then
+		-- spec quest ready for turn in"
+	elseif C_QuestLog.GetLogIndexForQuestID(specQuestID) ~= nil then
+		self.SpecTutorial:ForceBegin();
 	end
 end
 
@@ -401,6 +409,7 @@ Tutorials.ChatFrame						= Class_ChatFrame:new();
 Tutorials.StealthTutorial 				= Class_StealthTutorial:new();
 Tutorials.DruidFormTutorial 			= Class_DruidFormTutorial:new();
 Tutorials.HunterTameTutorial 			= Class_HunterTameTutorial:new();
+Tutorials.HunterStableTutorial 			= Class_HunterStableTutorial:new();
 Tutorials.AutoPushSpellWatcher			= Class_AutoPushSpellWatcher:new();
 
 

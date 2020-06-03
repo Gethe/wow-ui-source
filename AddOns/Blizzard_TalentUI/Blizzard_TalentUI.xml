@@ -601,6 +601,11 @@
 					<Anchor point="TOP" relativeTo="$parentSpecButton3" relativePoint="BOTTOM" x="0" y="-30" />
 				</Anchors>
 			</Button>
+			<Button name="$parentSpecButton5" inherits="PlayerSpecButtonTemplate" id="5" parentKey="specButton5" hidden="true">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentSpecButton4" relativePoint="BOTTOM" x="0" y="-30" />
+				</Anchors>
+			</Button>
 			<!-- raised frame for shadows to be on top of the spec buttons -->
 			<Frame setAllPoints="true">
 				<Layers>

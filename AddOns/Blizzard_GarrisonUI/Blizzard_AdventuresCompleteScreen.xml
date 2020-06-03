@@ -5,12 +5,14 @@
 	<Frame name="AdventuresCompleteScreenTemplate" mixin="AdventuresCompleteScreenMixin" virtual="true">
 		<Size x="556" y="584"/>
 		<Frames>
-			<Frame parentKey="NineSlice" frameLevel="2000" inherits="NineSlicePanelTemplate">
+			<Frame parentKey="NineSlice" frameLevel="2500" inherits="NineSlicePanelTemplate">
 				<KeyValues>
 					<KeyValue key="layoutType" value="AdventuresMissionComplete" type="string"/>
 				</KeyValues>
 			</Frame>
 
+			<Frame parentKey="RewardsScreen" inherits="AdventuresRewardsScreenTemplate" frameLevel="2000" setAllPoints="true" />
+			
 			<Frame parentKey="AdventuresCombatLog" inherits="CombatLogTemplate" hidden="false" frameStrata="HIGH">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-340" y="0"/>
@@ -103,7 +105,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button parentKey="ContinueButton" mixin="AdventuresCompleteScreenContinueButtonMixin" inherits="UIPanelButtonTemplate" text="COVENANT_MISSIONS_COMPLETE_SCREEN_REWARDS">
+					<Button parentKey="ContinueButton" mixin="AdventuresCompleteScreenContinueButtonMixin" inherits="UIPanelButtonTemplate" text="CONTINUE">
 						<Size x="120" y="22"/>
 						<Anchors>
 							<Anchor point="CENTER" x="0" y="1"/>

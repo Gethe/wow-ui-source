@@ -76,6 +76,16 @@ function SoulbindsSelectButtonMixin:OnModelLoaded(model)
 end
 
 function SoulbindsSelectButtonMixin:OnSelected(newSelected, isInitializing)
+	if newSelected then
+		self.ModelScene.Highlight:SetAtlas("Soulbinds_Portrait_Selected", true);
+		self.ModelScene.Highlight:SetAlpha(.4);
+		self.ModelScene.Highlight:SetBlendMode("ADD");
+	else
+		self.ModelScene.Highlight:SetAtlas("Soulbinds_Portrait_Border", true);
+		self.ModelScene.Highlight:SetAlpha(.4);
+		self.ModelScene.Highlight:SetBlendMode("ADD");
+	end
+
 	self.ModelScene.Selected:SetShown(newSelected);
 	self.ModelScene:SetPaused(not newSelected);
 

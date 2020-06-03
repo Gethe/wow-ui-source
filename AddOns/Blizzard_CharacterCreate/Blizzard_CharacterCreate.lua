@@ -41,6 +41,9 @@ GlueDialogTypes["CHARACTER_CREATE_FAILURE"] = {
 CharacterCreateMixin = CreateFromMixins(CharCustomizeParentFrameBaseMixin);
 
 function CharacterCreateMixin:OnLoad()
+	DefaultScaleFrameMixin.OnLoad(self);
+
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("CHARACTER_CREATION_RESULT");
 	self:RegisterEvent("RACE_FACTION_CHANGE_STARTED");
 	self:RegisterEvent("RACE_FACTION_CHANGE_RESULT");
@@ -60,7 +63,6 @@ function CharacterCreateMixin:OnLoad()
 	ZoneChoiceFrame = self.ZoneChoiceFrame;
 
 	CharCustomizeFrame:AttachToParentFrame(self);
-	CharCustomizeFrame:SetScale(RaceAndClassFrame:GetScale());
 
 	self.navBlockers = {};
 
@@ -75,8 +77,9 @@ function CharacterCreateMixin:OnLoad()
 end
 
 function CharacterCreateMixin:OnEvent(event, ...)
-	local showError;
+	DefaultScaleFrameMixin.OnEvent(self, event, ...);
 
+	local showError;
 	if event == "CHARACTER_CREATION_RESULT" then
 		local success, errorCode, guid = ...;
 		if success then
@@ -299,6 +302,8 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 
 	if mode == CHAR_CREATE_MODE_CLASS_RACE then
 		RaceAndClassFrame.allowClassAnimationsAfterSeconds = CLASS_ANIM_WAIT_TIME_SECONDS;
+
+		C_CharacterCreation.SetViewingAlteredForm(false);
 
 		if self.currentMode == CHAR_CREATE_MODE_CUSTOMIZE then
 			local useBlending = true;
@@ -557,7 +562,7 @@ end
 CharacterCreateNavButtonMixin = {};
 
 function CharacterCreateNavButtonMixin:GetAppropriateTooltip()
-	return GlueTrueScaleNoHeaderTooltip;
+	return CharCustomizeNoHeaderTooltip;
 end
 
 function CharacterCreateNavButtonMixin:UpdateText(text, arrow)
@@ -704,7 +709,7 @@ end
 CharacterCreateRaceButtonMixin = CreateFromMixins(CharCustomizeFrameWithExpandableTooltipMixin, CharCustomizeMaskedButtonMixin);
 
 function CharacterCreateRaceButtonMixin:GetAppropriateTooltip()
-	return GlueTrueScaleTooltip;
+	return CharCustomizeTooltip;
 end
 
 function CharacterCreateRaceButtonMixin:AddExtraStuffToTooltip()
@@ -803,7 +808,7 @@ function CharacterCreateSpecButtonMixin:SetSpec(specData, selectedSpecID, layout
 end
 
 function CharacterCreateSpecButtonMixin:GetAppropriateTooltip()
-	return GlueTrueScaleTooltip;
+	return CharCustomizeTooltip;
 end
 
 function CharacterCreateSpecButtonMixin:OnClick()

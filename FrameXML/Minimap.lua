@@ -30,6 +30,7 @@ function Minimap_OnLoad(self)
 	self:RegisterEvent("MINIMAP_PING");
 	self:RegisterEvent("MINIMAP_UPDATE_ZOOM");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
 
 function ToggleMinimap()
@@ -116,6 +117,17 @@ function Minimap_OnEvent(self, event, ...)
 			MinimapZoomIn:Disable();
 		elseif ( zoom == 0 ) then
 			MinimapZoomOut:Disable();
+		end
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		if C_Minimap.ShouldUseHybridMinimap() then
+			if not HybridMinimap then
+				UIParentLoadAddOn("Blizzard_HybridMinimap");
+			end
+			HybridMinimap:Show();
+		else
+			if HybridMinimap then
+				HybridMinimap:Hide();
+			end
 		end
 	end
 end

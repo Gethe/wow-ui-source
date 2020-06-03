@@ -120,8 +120,8 @@ function BattlePetTooltipTemplate_SetBattlePet(tooltipFrame, data)
 	tooltipFrame.textLineAnchor = nil;
 end
 
--- [[ does not support wrapping ]]
-function BattlePetTooltipTemplate_AddTextLine(self, text, r, g, b)
+local LinePadding = 2;
+function BattlePetTooltipTemplate_AddTextLine(self, text, r, g, b, wrap)
 	if not r then
 		r, g, b = NORMAL_FONT_COLOR:GetRGB();
 	end
@@ -140,13 +140,18 @@ function BattlePetTooltipTemplate_AddTextLine(self, text, r, g, b)
 	local line = self.linePool:Acquire();
 	line:SetText(text);
 	line:SetTextColor(r, g, b);
-	line:SetPoint("TOP", anchor, "BOTTOM", 0, -2);
+	line:SetPoint("TOP", anchor, "BOTTOM", 0, -LinePadding);
 	line:SetPoint("LEFT", self.Name, "LEFT");
+
+	if wrap then
+		line:SetPoint("RIGHT", self, "RIGHT");
+	end
+
 	line:Show();
 
 	self.textLineAnchor = line;
 
-	self:SetHeight(self:GetHeight() + 14);
+	self:SetHeight(self:GetHeight() + line:GetHeight() + LinePadding);
 end
 
 function BattlePetTooltipJournalClick_OnClick(self)

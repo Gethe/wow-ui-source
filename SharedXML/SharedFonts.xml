@@ -1085,6 +1085,24 @@
 		</Member>
 	</FontFamily>
 
+	<FontFamily name="SystemFont_Outline_Huge2" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="22" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="22" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.ttf" height="22" outline="THICK"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\BLEI00D.TTF" height="22" outline="THICK"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="22" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
 	<FontFamily name="SystemFont_Shadow_Outline_Huge2" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\FRIZQT__.TTF" height="22" outline="NORMAL">

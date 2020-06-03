@@ -7,6 +7,34 @@ local PlayerInfo =
 	Functions =
 	{
 		{
+			Name = "GetContentDifficultyCreatureForPlayer",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "difficulty", Type = "RelativeContentDifficulty", Nilable = false },
+			},
+		},
+		{
+			Name = "GetContentDifficultyQuestForPlayer",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "difficulty", Type = "RelativeContentDifficulty", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPlayerEligibleForNPE",
 			Type = "Function",
 

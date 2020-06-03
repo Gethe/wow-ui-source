@@ -2355,8 +2355,8 @@ function Class_GossipQuestPointer:OnBegin()
 
 	-- Try to find the actual gossip button
 	if (questText) then
-		for i = 1, 10 do
-			local btn = _G["GossipTitleButton" .. i];
+		for i=1, GossipFrame_GetTitleButtonCount() do
+			local btn = GossipFrame_GetTitleButton(i);
 			if (btn) then
 				local text = btn:GetText();
 				if (text and string.match(text, questText)) then
@@ -2404,17 +2404,17 @@ function Class_GossipBindPointer:OnBegin()
 
 	if (bindButtonIndex) then
 		-- offset the index by the first gossip button
-		for i = 1, 32 do
-			local btn = _G["GossipTitleButton" .. i];
-			if ((btn.type) == "Gossip") then
+		for i=1, GossipFrame_GetTitleButtonCount() do
+			local btn = GossipFrame_GetTitleButton(i);
+			if btn and btn.type == "Gossip" then
 				bindButtonIndex = bindButtonIndex + (i - 1);
 				break;
 			end
 		end
 
-		local button = _G["GossipTitleButton" .. bindButtonIndex];
+		local button = GossipFrame_GetTitleButton(bindButtonIndex);
 
-		if (button) then
+		if button then
 			local x, y = TutorialHelper:GetFrameButtonEdgeOffset(GossipFrame, button);
 
 			self:ShowPointerTutorial(formatStr(NPE_BINDPOINTER), "LEFT", GossipFrame, x, y, "TOPRIGHT");
@@ -2437,7 +2437,7 @@ local Class_InteractThenGossipA = class("InteractThenGossipA", Class_TutorialBas
 function Class_InteractThenGossipA:OnBegin(data)
 	self:ShowScreenTutorial(formatStr(NPE_NPCINTERACT));
 	Dispatcher:RegisterEvent("GOSSIP_SHOW", function()
-			local btn = GossipTitleButton1;
+			local btn = GossipFrame_GetTitleButton(1);
 			if (btn and btn:IsVisible()) then
 				self:Complete();
 			end
@@ -2466,8 +2466,8 @@ function Class_InteractThenGossipB:GOSSIP_SHOW()
 end
 
 function Class_InteractThenGossipB:PointAtButton()
-	local btn = GossipTitleButton1;
-	if (btn and btn:IsVisible()) then
+	local btn = GossipFrame_GetTitleButton(1);
+	if btn and btn:IsVisible() then
 		local x, y = TutorialHelper:GetFrameButtonEdgeOffset(GossipFrame, btn);
 		self:ShowPointerTutorial(formatStr(NPE_NPCGOSSIP), "LEFT", GossipFrame, x, y, "TOPRIGHT");
 	end

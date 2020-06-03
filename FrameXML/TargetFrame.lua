@@ -273,7 +273,8 @@ function TargetFrame_CheckLevel (self)
 		self.levelText:SetText(targetEffectiveLevel);
 		-- Color level number
 		if ( UnitCanAttack("player", self.unit) ) then
-			local color = GetCreatureDifficultyColor(targetEffectiveLevel);
+			local difficulty = C_PlayerInfo.GetContentDifficultyCreatureForPlayer(self.unit)
+			local color = GetDifficultyColor(difficulty);
 			self.levelText:SetVertexColor(color.r, color.g, color.b);
 		else
 			self.levelText:SetVertexColor(1.0, 0.82, 0.0);

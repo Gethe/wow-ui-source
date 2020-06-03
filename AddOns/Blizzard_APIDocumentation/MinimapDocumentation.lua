@@ -6,6 +6,42 @@ local Minimap =
 
 	Functions =
 	{
+		{
+			Name = "GetDrawGroundTextures",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "draw", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetViewRadius",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "yards", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetDrawGroundTextures",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "draw", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldUseHybridMinimap",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "shouldUse", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

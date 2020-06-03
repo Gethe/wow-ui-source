@@ -33,7 +33,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="4">
-						<Texture parentKey="Highlight" atlas="Soulbinds_Portrait_Highlight" useAtlasSize="true" hidden="true">
+						<Texture parentKey="Highlight" atlas="Soulbinds_Portrait_Border" useAtlasSize="true" alphaMode="ADD" alpha=".4" hidden="true">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>

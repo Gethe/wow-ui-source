@@ -98,55 +98,76 @@ function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskill
 	return iconAtlas, info and info.width, info and info.height;
 end
 
-function QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCampaign)
+function QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling)
 	if isLegendary then
-		return "Interface/GossipFrame/AvailableLegendaryQuestIcon";
+		return "Interface/GossipFrame/AvailableLegendaryQuestIcon", false;
 	elseif isCampaign then
-		return "Interface/GossipFrame/CampaignAvailableQuestIcon";
+		return "CampaignAvailableQuestIcon", true;
+	elseif isCovenantCalling then
+		return "CampaignAvailableDailyQuestIcon", true;
 	elseif frequency ~= Enum.QuestFrequency.Default then
-		return "Interface/GossipFrame/DailyQuestIcon";
+		return "Interface/GossipFrame/DailyQuestIcon", false;
 	elseif isRepeatable then
-		return "Interface/GossipFrame/DailyActiveQuestIcon";
+		return "Interface/GossipFrame/DailyActiveQuestIcon", false;
 	end
 
-	return "Interface/GossipFrame/AvailableQuestIcon";
+	return "Interface/GossipFrame/AvailableQuestIcon", false;
 end
 
-function QuestUtil.GetQuestIconActive(isComplete, isLegendary, frequency, isRepeatable, isCampaign)
+local function ApplyAssetToTexture(texture, asset, isAtlas)
+	if isAtlas then
+		texture:SetAtlas(asset, true);
+	else
+		texture:SetSize(16, 16);
+		texture:SetTexture(asset);
+	end
+end
+
+function QuestUtil.ApplyQuestIconOfferToTexture(texture, ...)
+	ApplyAssetToTexture(texture, QuestUtil.GetQuestIconOffer(...));
+end
+
+function QuestUtil.GetQuestIconActive(isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling)
 	-- Frequency and isRepeatable aren't used yet, reserved for differentiating daily/weekly quests from other ones...
 	if isComplete then
 		if isLegendary then
-			return "Interface/GossipFrame/ActiveLegendaryQuestIcon";
+			return "Interface/GossipFrame/ActiveLegendaryQuestIcon", false;
 		elseif isCampaign then
-			return "Interface/GossipFrame/CampaignActiveQuestIcon";
+			return "CampaignActiveQuestIcon", true;
+		elseif isCovenantCalling then
+			return "CampaignActiveDailyQuestIcon", true;
 		else
-			return "Interface/GossipFrame/ActiveQuestIcon";
-		end
-	else
-		if isCampaign then
-			return "Interface/GossipFrame/CampaignIncompleteQuestIcon";
-		else
-			return "Interface/GossipFrame/IncompleteQuestIcon";
+			return "Interface/GossipFrame/ActiveQuestIcon", false;
 		end
 	end
+
+	if isCampaign or isCovenantCalling then
+		return "CampaignIncompleteQuestIcon", true;
+	end
+
+	return "Interface/GossipFrame/IncompleteQuestIcon", false;
+end
+
+function QuestUtil.ApplyQuestIconActiveToTexture(texture, ...)
+	ApplyAssetToTexture(texture, QuestUtil.GetQuestIconActive(...));
 end
 
 function QuestUtil.GetQuestIconOfferForQuestID(questID)
 	local quest = QuestCache:Get(questID);
-	if quest then
-		return QuestUtil.GetQuestIconOffer(quest:IsLegendary(), quest.frequency, quest:IsRepeatable(), quest:IsCampaign());
-	end
+	return QuestUtil.GetQuestIconOffer(quest:IsLegendary(), quest.frequency, quest:IsRepeatable(), quest:IsCampaign());
+end
 
-	return "Interface/GossipFrame/AvailableQuestIcon";
+function QuestUtil.ApplyQuestIconOfferToTextureForQuestID(texture, ...)
+	ApplyAssetToTexture(texture, QuestUtil.GetQuestIconOfferForQuestID(...));
 end
 
 function QuestUtil.GetQuestIconActiveForQuestID(questID)
 	local quest = QuestCache:Get(questID);
-	if quest then
-		return QuestUtil.GetQuestIconActive(quest:IsComplete(), quest:IsLegendary(), quest.frequency, quest:IsRepeatable(), quest:IsCampaign());
-	end
+	return QuestUtil.GetQuestIconActive(quest:IsComplete(), quest:IsLegendary(), quest.frequency, quest:IsRepeatable(), quest:IsCampaign());
+end
 
-	return "Interface/GossipFrame/IncompleteQuestIcon";
+function QuestUtil.ApplyQuestIconActiveToTextureForQuestID(texture, ...)
+	ApplyAssetToTexture(texture, QuestUtil.GetQuestIconActiveForQuestID(...));
 end
 
 local function ApplyTextureToPOI(texture, width, height)

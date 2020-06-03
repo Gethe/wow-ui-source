@@ -61,3 +61,17 @@ function GetUnscaledFrameRect(frame, scale)
 
 	return frameLeft / scale, frameBottom / scale, frameWidth / scale, frameHeight / scale;
 end
+
+function ApplyDefaultScale(frame, minScale, maxScale)
+	local scale = GetDefaultScale();
+
+	if minScale then
+		scale = math.max(scale, minScale);
+	end
+
+	if maxScale then
+		scale = math.min(scale, maxScale);
+	end
+
+	frame:SetScale(scale);
+end

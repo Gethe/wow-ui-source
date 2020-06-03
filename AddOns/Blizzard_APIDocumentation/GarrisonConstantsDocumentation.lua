@@ -52,6 +52,22 @@ local GarrisonConstants =
 			},
 		},
 		{
+			Name = "GarrAutoCombatantRole",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 0,
+			MaxValue = 5,
+			Fields =
+			{
+				{ Name = "None", Type = "GarrAutoCombatantRole", EnumValue = 0 },
+				{ Name = "Melee", Type = "GarrAutoCombatantRole", EnumValue = 1 },
+				{ Name = "RangedPhysical", Type = "GarrAutoCombatantRole", EnumValue = 2 },
+				{ Name = "RangedMagic", Type = "GarrAutoCombatantRole", EnumValue = 3 },
+				{ Name = "HealSupport", Type = "GarrAutoCombatantRole", EnumValue = 4 },
+				{ Name = "Tank", Type = "GarrAutoCombatantRole", EnumValue = 5 },
+			},
+		},
+		{
 			Name = "GarrAutoEventFlags",
 			Type = "Enumeration",
 			NumValues = 4,

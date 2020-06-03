@@ -18,15 +18,27 @@ function GossipTitleButtonMixin:AddCallbackForQuest(questID, cb)
 end
 
 function GossipTitleButtonMixin:SetQuest(titleText, level, isTrivial, frequency, isRepeatable, isLegendary, isIgnored, questID)
-	local icon = QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, C_CampaignInfo.IsCampaignQuest(questID));
-	self.Icon:SetTexture(icon);
+	self.type = "Available";
+
+	QuestUtil.ApplyQuestIconOfferToTexture(self.Icon, isLegendary, frequency, isRepeatable, C_CampaignInfo.IsCampaignQuest(questID), C_QuestLog.IsQuestCalling(questID))
 	self:UpdateTitleForQuest(questID, titleText, isIgnored, isTrivial);
 end
 
 function GossipTitleButtonMixin:SetActiveQuest(titleText, level, isTrivial, isComplete, isLegendary, isIgnored, questID)
-	local icon = QuestUtil.GetQuestIconActive(isComplete, isLegendary, nil, nil, C_CampaignInfo.IsCampaignQuest(questID));
-	self.Icon:SetTexture(icon);
+	self.type = "Active";
+
+	QuestUtil.ApplyQuestIconActiveToTexture(self.Icon, isComplete, isLegendary, nil, nil, C_CampaignInfo.IsCampaignQuest(questID), C_QuestLog.IsQuestCalling(questID));
 	self:UpdateTitleForQuest(questID, titleText, isIgnored, isTrivial);
+end
+
+function GossipTitleButtonMixin:SetOption(titleText, iconName)
+	self.type = "Gossip";
+
+	self:SetText(titleText);
+	self.Icon:SetTexture("Interface/GossipFrame/" .. iconName .. "GossipIcon");
+	self.Icon:SetVertexColor(1, 1, 1, 1);
+
+	self:Resize();
 end
 
 function GossipTitleButtonMixin:UpdateTitleForQuest(questID, titleText, isIgnored, isTrivial)
@@ -41,15 +53,19 @@ function GossipTitleButtonMixin:UpdateTitleForQuest(questID, titleText, isIgnore
 		self.Icon:SetVertexColor(1,1,1);
 	end
 
-	GossipResize(self);
+	self:Resize();
 end
 
-NUMGOSSIPBUTTONS = 32;
+function GossipTitleButtonMixin:Resize()
+	self:SetHeight(math.max(self:GetTextHeight() + 2, self.Icon:GetHeight()));
+end
 
 function GossipFrame_OnLoad(self)
 	self:RegisterEvent("GOSSIP_SHOW");
 	self:RegisterEvent("GOSSIP_CLOSED");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
+
+	self.titleButtonPool = CreateFramePool("Button", self, "GossipTitleButtonTemplate");
 end
 
 function GossipFrame_OnEvent(self, event, ...)
@@ -80,14 +96,13 @@ function GossipFrame_OnEvent(self, event, ...)
 end
 
 function GossipFrameUpdate()
-	GossipFrame.buttonIndex = 1;
+	GossipFrame.titleButtonPool:ReleaseAll();
+	GossipFrame.buttons = {};
+
 	GossipGreetingText:SetText(GetGossipText());
 	GossipFrameAvailableQuestsUpdate(GetGossipAvailableQuests());
 	GossipFrameActiveQuestsUpdate(GetGossipActiveQuests());
 	GossipFrameOptionsUpdate(GetGossipOptions());
-	for i=GossipFrame.buttonIndex, NUMGOSSIPBUTTONS do
-		_G["GossipTitleButton" .. i]:Hide();
-	end
 	GossipFrameNpcNameText:SetText(UnitName("npc"));
 	if ( UnitExists("npc") ) then
 		SetPortraitTexture(GossipFramePortrait, "npc");
@@ -96,14 +111,46 @@ function GossipFrameUpdate()
 	end
 
 	-- Set Spacer
-	if ( GossipFrame.buttonIndex > 1 ) then
-		GossipSpacerFrame:SetPoint("TOP", "GossipTitleButton"..GossipFrame.buttonIndex-1, "BOTTOM", 0, 0);
+	local buttonCount = GossipFrame_GetTitleButtonCount();
+	if buttonCount > 1 then
+		GossipSpacerFrame:SetPoint("TOP", GossipFrame_GetTitleButton(buttonCount - 1), "BOTTOM", 0, 0);
 	else
 		GossipSpacerFrame:SetPoint("TOP", GossipGreetingText, "BOTTOM", 0, 0);
 	end
 
 	-- Update scrollframe
 	GossipGreetingScrollFrame:SetVerticalScroll(0);
+end
+
+function GossipFrame_GetTitleButtonCount()
+	return #GossipFrame.buttons;
+end
+
+function GossipFrame_GetTitleButton(index)
+	return GossipFrame.buttons[index];
+end
+
+local function GossipFrame_AcquireTitleButton()
+	local button = GossipFrame.titleButtonPool:Acquire();
+	table.insert(GossipFrame.buttons, button);
+	button:Show();
+	return button;
+end
+
+local function GossipFrame_InsertTitleSeparator()
+	if GossipFrame_GetTitleButtonCount() > 1 then
+		GossipFrame.insertSeparator = true;
+	end
+end
+
+local function GossipFrame_AnchorTitleButton(button)
+	local buttonCount = GossipFrame_GetTitleButtonCount();
+	if buttonCount > 1 then
+		button:SetPoint("TOPLEFT", GossipFrame_GetTitleButton(buttonCount - 1), "BOTTOMLEFT", 0, (GossipFrame.insertSeparator and -19 or 0) - 3);
+		GossipFrame.insertSeparator = false;
+	else
+		button:SetPoint("TOPLEFT", GossipGreetingText, "BOTTOMLEFT", -10, -20);
+	end
 end
 
 function GossipTitleButton_OnClick(self, button)
@@ -118,79 +165,47 @@ end
 
 function GossipFrameAvailableQuestsUpdate(...)
 	local titleIndex = 1;
-
 	for i=1, select("#", ...), 8 do
-		if ( GossipFrame.buttonIndex > NUMGOSSIPBUTTONS ) then
-			message("This NPC has too many quests and/or gossip options.");
-		end
-		local titleButton = _G["GossipTitleButton" .. GossipFrame.buttonIndex];
+		local button = GossipFrame_AcquireTitleButton();
+		button:SetQuest(select(i, ...));
 
-		titleButton:SetQuest(select(i, ...));
-
-		titleButton:SetID(titleIndex);
-		titleButton.type="Available";
-		GossipFrame.buttonIndex = GossipFrame.buttonIndex + 1;
+		button:SetID(titleIndex);
 		titleIndex = titleIndex + 1;
-		titleButton:Show();
-	end
-	if ( GossipFrame.buttonIndex > 1 ) then
-		local titleButton = _G["GossipTitleButton" .. GossipFrame.buttonIndex];
-		titleButton:Hide();
-		GossipFrame.buttonIndex = GossipFrame.buttonIndex + 1;
+
+		GossipFrame_AnchorTitleButton(button);
 	end
 end
 
 function GossipFrameActiveQuestsUpdate(...)
-	local titleButton;
+	GossipFrame_InsertTitleSeparator();
+
 	local titleIndex = 1;
-	local titleButtonIcon;
 	local numActiveQuestData = select("#", ...);
 	GossipFrame.hasActiveQuests = (numActiveQuestData > 0);
 	for i=1, numActiveQuestData, 7 do
-		if ( GossipFrame.buttonIndex > NUMGOSSIPBUTTONS ) then
-			message("This NPC has too many quests and/or gossip options.");
-		end
-		titleButton = _G["GossipTitleButton" .. GossipFrame.buttonIndex];
-		titleButton:SetActiveQuest(select(i, ...));
+		local button = GossipFrame_AcquireTitleButton();
+		button:SetActiveQuest(select(i, ...));
 
-		titleButton:SetID(titleIndex);
-		titleButton.type="Active";
-
-		GossipFrame.buttonIndex = GossipFrame.buttonIndex + 1;
+		button:SetID(titleIndex);
 		titleIndex = titleIndex + 1;
-		titleButton:Show();
-	end
-	if ( titleIndex > 1 ) then
-		titleButton = _G["GossipTitleButton" .. GossipFrame.buttonIndex];
-		titleButton:Hide();
-		GossipFrame.buttonIndex = GossipFrame.buttonIndex + 1;
+
+		GossipFrame_AnchorTitleButton(button);
 	end
 end
 
 function GossipFrameOptionsUpdate(...)
-	local titleButton;
-	local titleIndex = 1;
-	local titleButtonIcon;
-	for i=1, select("#", ...), 2 do
-		if ( GossipFrame.buttonIndex > NUMGOSSIPBUTTONS ) then
-			message("This NPC has too many quests and/or gossip options.");
-		end
-		titleButton = _G["GossipTitleButton" .. GossipFrame.buttonIndex];
-		titleButton:SetText(select(i, ...));
-		GossipResize(titleButton);
-		titleButton:SetID(titleIndex);
-		titleButton.type="Gossip";
-		titleButtonIcon = _G[titleButton:GetName() .. "GossipIcon"];
-		titleButtonIcon:SetTexture("Interface\\GossipFrame\\" .. select(i+1, ...) .. "GossipIcon");
-		titleButtonIcon:SetVertexColor(1, 1, 1, 1);
-		GossipFrame.buttonIndex = GossipFrame.buttonIndex + 1;
-		titleIndex = titleIndex + 1;
-		titleButton:Show();
-	end
-end
+	GossipFrame_InsertTitleSeparator();
 
-function GossipResize(titleButton)
-	titleButton:SetHeight( titleButton:GetTextHeight() + 2);
+	local titleIndex = 1;
+	for i=1, select("#", ...), 2 do
+		local button = GossipFrame_AcquireTitleButton();
+		button:SetOption(select(i, ...));
+
+		button:SetID(titleIndex);
+		titleIndex = titleIndex + 1;
+
+		GossipFrame_AnchorTitleButton(button);
+	end
 end
 
 function NPCFriendshipStatusBar_Update(frame, factionID --[[ = nil ]])

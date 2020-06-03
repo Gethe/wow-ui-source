@@ -23,7 +23,7 @@ local GarrisonInfo =
 			},
 		},
 		{
-			Name = "GetAutoCombatSpellInfo",
+			Name = "GetAutoCombatSpellName",
 			Type = "Function",
 
 			Arguments =
@@ -33,7 +33,7 @@ local GarrisonInfo =
 
 			Returns =
 			{
-				{ Name = "spellInfo", Type = "AutoCombatSpellInfo", Nilable = false },
+				{ Name = "spellName", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -277,6 +277,15 @@ local GarrisonInfo =
 			{
 				{ Name = "isMet", Type = "bool", Nilable = false },
 				{ Name = "failureString", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "RegenerateCombatLog",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "missionID", Type = "number", Nilable = false },
 			},
 		},
 		{

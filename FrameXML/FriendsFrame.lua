@@ -1186,7 +1186,7 @@ function WhoFrame_GetDefaultWhoCommand()
 		minLevel = 1;
 	end
 	local maxLevel = min(level + 3, GetMaxPlayerLevel());
-	local command = WHO_TAG_ZONE.."\""..GetRealZoneText().."\" "..minLevel.."-"..maxLevel;
+	local command = WHO_TAG_ZONE.."\""..GetAreaText().."\" "..minLevel.."-"..maxLevel;
 	return command;
 end
 

@@ -94,8 +94,8 @@ function AdventuresCombatLogMixin:Clear()
 	self.CombatLogMessageFrame:Clear();
 end
 
-function AdventuresCombatLogMixin:AddCombatRound(roundIndex, currentRound) 
-	self:AddCombatRoundHeader(roundIndex);
+function AdventuresCombatLogMixin:AddCombatRound(roundIndex, currentRound, totalRounds) 
+	self:AddCombatRoundHeader(roundIndex, totalRounds);
 	for eventIndex = 1, #currentRound.events do 
 		self:AddCombatEvent(currentRound.events[eventIndex]);
 	end
@@ -110,8 +110,7 @@ end
 
 function AdventuresCombatLogMixin:AddCombatEvent(combatLogEvent)
 --TODO: Finalize design of combat log to stop using nonlocalized string
-	local autoCombatSpellRec = C_Garrison.GetAutoCombatSpellInfo(combatLogEvent.spellID);
-	local spellName = autoCombatSpellRec and autoCombatSpellRec.name or "<Failed to find Rec>";
+	local spellName = C_Garrison.GetAutoCombatSpellName(combatLogEvent.spellID) or "<Failed to find Rec>";
 
 	local caster = self:GetNameAtBoardIndex(combatLogEvent.casterBoardIndex);
 	local possessive = EventIsFollowedBySpell(combatLogEvent.type) and "'s " or " ";

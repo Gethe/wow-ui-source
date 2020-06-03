@@ -1,3 +1,5 @@
+CHAR_CUSTOMIZE_MAX_SCALE = 0.75;
+
 local showDebugTooltipInfo = GetCVarBool("debugTargetInfo");
 
 CharCustomizeParentFrameBaseMixin = {};
@@ -57,7 +59,7 @@ function CharCustomizeFrameWithTooltipMixin:AddBlankTooltipLine()
 end
 
 function CharCustomizeFrameWithTooltipMixin:GetAppropriateTooltip()
-	return UIParent and GameNoHeaderTooltip or GlueTrueScaleNoHeaderTooltip;
+	return CharCustomizeNoHeaderTooltip;
 end
 
 function CharCustomizeFrameWithTooltipMixin:SetupAnchors(tooltip)
@@ -67,6 +69,12 @@ function CharCustomizeFrameWithTooltipMixin:SetupAnchors(tooltip)
 	elseif self.tooltipAnchor == "ANCHOR_TOPLEFT" then
 		tooltip:SetOwner(self, "ANCHOR_NONE");
 		tooltip:SetPoint("TOPRIGHT", self, "TOPLEFT", -self.tooltipXOffset, self.tooltipYOffset);
+	elseif self.tooltipAnchor == "ANCHOR_BOTTOMRIGHT" then
+		tooltip:SetOwner(self, "ANCHOR_NONE");
+		tooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT", self.tooltipXOffset, self.tooltipYOffset);
+	elseif self.tooltipAnchor == "ANCHOR_BOTTOMLEFT" then
+		tooltip:SetOwner(self, "ANCHOR_NONE");
+		tooltip:SetPoint("TOPRIGHT", self, "BOTTOMLEFT", -self.tooltipXOffset, self.tooltipYOffset);
 	else
 		tooltip:SetOwner(self, self.tooltipAnchor, self.tooltipXOffset, self.tooltipYOffset);
 	end
@@ -109,11 +117,6 @@ CharCustomizeSmallButtonMixin = CreateFromMixins(CharCustomizeFrameWithTooltipMi
 function CharCustomizeSmallButtonMixin:OnLoad()
 	CharCustomizeFrameWithTooltipMixin.OnLoad(self);
 	self.Icon:SetAtlas(self.iconAtlas);
-end
-
-function CharCustomizeSmallButtonMixin:SetupAnchors(tooltip)
-	tooltip:SetOwner(self, "ANCHOR_NONE");
-	tooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT", self.tooltipXOffset, self.tooltipYOffset);
 end
 
 function CharCustomizeSmallButtonMixin:OnMouseDown()

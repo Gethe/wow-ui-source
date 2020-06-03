@@ -1,0 +1,260 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_AdventuresRewardsScreen.lua"/>
+
+	<Frame name="AdventuresRewardsFollowerTemplate" mixin="AdventuresRewardsFollowerMixin" virtual="true">
+		<Size x="48" y="48"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Portrait">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-6"/>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="PuckBorder"/>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Portrait"/>
+						<MaskedTexture childKey="PuckBorder"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="BorderOverlay" hidden="true">
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="FollowerExperienceDisplay" reverse="true" hideCountdownNumbers="true" rotation="180">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="1" y="1"/>
+					<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+				</Anchors>
+				<SwipeTexture file="Interface\Garrison\orderhalltalents-timer-fill"/>
+			</Cooldown>
+		</Frames>
+	</Frame>
+
+	<Frame name="AdventuresRewardsPaddedFollower" virtual="true">
+		<Size x="48" y="70"/>
+		<Frames>
+			<Frame parentKey="RewardsFollower" inherits="AdventuresRewardsFollowerTemplate">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="AdventuresRewardsScreenTemplate" mixin="AdventuresRewardsScreenMixin" virtual="true" hidden="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="3">
+				<Texture parentKey="RewardsBackground">
+					<Color r="0" g="0" b="0" a=".85"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="CombatCompleteSuccessFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="CombatCompleteBurst" atlas="Adventure-MissionEnd-Burst" useAtlasSize="true">
+							<Size x="80" y="80"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CombatCompleteLineTop" atlas="Adventure-MissionEnd-Line" useAtlasSize="true">
+							<Size x="400" y="24"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="30"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CombatCompleteLineBottom" atlas="Adventure-MissionEnd-Line" useAtlasSize="true">
+							<Size x="400" y="24"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.CombatCompleteLineTop" x="0" y="-60"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="4">
+						<Texture parentKey="CovenantCrest" hidden="false" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="TextLeft" text="COMBAT" inherits="QuestFont_Enormous" justifyH="CENTER" justifyV="MIDDLE">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.CovenantCrest" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="TextRight" text="COMPLETE" inherits="QuestFont_Enormous" justifyH="CENTER" justifyV="MIDDLE">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.CovenantCrest" relativePoint="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+	
+			<Frame parentKey="TreasureChestFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="5">
+						<Texture parentKey="TreasureChestBurst" atlas="Adventure-MissionEnd-Burst" useAtlasSize="true">
+							<Size x="80" y="80"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="60"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="TreasureChestTexture" atlas="Adventures-Chest" useAtlasSize="true">
+							<Size x="240" y="240"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+	
+			<Frame parentKey="FinalRewardsPanel" setAllPoints= "true" hidden="true">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="FinalRewardsLineTop" atlas="Adventure-MissionEnd-Line" useAtlasSize="true">
+							<Size x="400" y="24"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="100"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FinalRewardsLineBottom" atlas="Adventure-MissionEnd-Line" useAtlasSize="true">
+							<Size x="400" y="24"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.FinalRewardsLineTop" x="0" y="-210"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FinalRewardsBurst" atlas="Adventure-MissionEnd-Burst" useAtlasSize="true">
+							<Size x="80" y="80"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.FinalRewardsLineTop" relativePoint="CENTER"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="HighlightMaskThing" atlas="UI-Frame-IconMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="400" y="200"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent.FinalRewardsLineTop"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="FinalRewardsBurst"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="ScrollMiddle" atlas="_Adventures-Parchment-Tile-Mid" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.FinalRewardsLineTop" relativePoint="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ScrollLeft" atlas="Adventures-Parchment-Tile-Left" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.ScrollMiddle" relativePoint="LEFT" x="0" y="-2"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ScrollRight" atlas="Adventures-Parchment-Tile-Right" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.ScrollMiddle" relativePoint="RIGHT" x="0" y="-2"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="ScrollRewards" text="REWARDS" inherits="SystemFont_Huge1" justifyH="CENTER" justifyV="MIDDLE">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.ScrollMiddle" relativePoint="CENTER"/>
+							</Anchors>
+							<Color r=".1686" g="0.091" b="0" a="1"/>
+						</FontString>
+						<FontString parentKey="MissionName" text="Mission Name" inherits="Fancy32Font" justifyH="CENTER" justifyV="MIDDLE">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.ScrollMiddle" relativePoint="BOTTOM" y="-6"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a="1"/>
+						</FontString>
+						<FontString parentKey="MissionStatus" text="COMPLETE" inherits="Fancy32Font" justifyH="CENTER" justifyV="MIDDLE">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.MissionName" relativePoint="BOTTOM" y="-6"/>
+							</Anchors>
+							<Color r="1" g="1" b="0" a="1"/>
+						</FontString>
+						<FontString parentKey="RewardsEarnedLabel" text="COVENANT_MISSIONS_REWARDS_EARNED" inherits="GameFontNormalOutline" justifyH="CENTER" justifyV="MIDDLE">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent.RewardsEarnedFrame" relativePoint="TOP"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="FollowerProgressLabel" text="COVENANT_MISSIONS_REWARDS_FOLLOWER_PROGRESS" inherits="GameFontNormalOutline" justifyH="CENTER" justifyV="MIDDLE">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent.FollowerExperienceEarnedFrame" relativePoint="TOP"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="ContinueButton" inherits="UIPanelButtonTemplate" mixin="AdventuresRewardsScreenContinueButtonMixin" text="CONTINUE">
+						<Size x="116" y="32"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.FinalRewardsLineBottom" relativePoint="BOTTOM" x="0" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnClick method="OnClick"/>
+						</Scripts>
+						<NormalFont style="GameFontNormalLarge">
+							<Color r="0.827" g="0.659" b="0.463"/>
+						</NormalFont>
+						<HighlightFont style="GameFontNormalLarge">
+							<Color r="0.973" g="0.902" b="0.581"/>
+						</HighlightFont>
+						<DisabledFont style="GameFontHighlightMedium"/>
+						<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+					</Button>
+					<Frame parentKey="SpoilsFrame" inherits="HorizontalLayoutFrame">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.FinalRewardsLineBottom" relativePoint="TOP" x="0" y="-10"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="expand" value="true" type="boolean"/>
+							<KeyValue key="spacing" value="10" type="number"/>
+						</KeyValues>
+						<Frames>
+							<Frame parentKey="RewardsEarnedFrame" inherits="HorizontalLayoutFrame">
+								<Anchors>
+									<Anchor point="BOTTOM" relativeKey="$parent.FinalRewardsLineBottom"/>
+								</Anchors>
+								<KeyValues>
+									<KeyValue key="expand" value="true" type="boolean"/>
+									<KeyValue key="spacing" value="10" type="number"/>
+									<KeyValue key="layoutIndex" value="1" type="number" />
+								</KeyValues>
+							</Frame>
+							<Frame parentKey="FollowerExperienceEarnedFrame" inherits="HorizontalLayoutFrame">
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+								<KeyValues>
+									<KeyValue key="expand" value="true" type="boolean"/>
+									<KeyValue key="spacing" value="6" type="number"/>
+									<KeyValue key="layoutIndex" value="2" type="number" />
+								</KeyValues>
+							</Frame>
+						</Frames>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -2166,13 +2166,13 @@
 	<Frame name="SelectionPopoutDetails" mixin="SelectionPopoutDetailsMixin" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="SelectionNumber" font="GameFontHighlight" justifyH="LEFT">
+				<FontString parentKey="SelectionNumber" font="GameFontNormal" justifyH="LEFT">
 					<Size x="25" y="20"/>
 					<Anchors>
 						<Anchor point="LEFT"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="SelectionName" font="GameFontHighlight" justifyH="LEFT" hidden="true">
+				<FontString parentKey="SelectionName" font="GameFontNormal" justifyH="LEFT" hidden="true">
 					<Size x="25" y="20"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.SelectionNumber" relativePoint="RIGHT"/>

@@ -1,5 +1,33 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
+	<GameTooltip name="CharCustomizeTooltipTemplate" inherits="SharedTooltipTemplate" mixin="DefaultScaleFrameMixin" ignoreParentScale="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="maxScale" value="CHAR_CUSTOMIZE_MAX_SCALE" type="global"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="append"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</GameTooltip>
+
+	<GameTooltip name="CharCustomizeTooltip" inherits="CharCustomizeTooltipTemplate">
+		<KeyValues>
+			<KeyValue key="textLeft1Font" value="GameFontNormalLarge2" type="string"/>
+			<KeyValue key="textRight1Font" value="GameFontNormalLarge2" type="string"/>
+			<KeyValue key="textLeft2Font" value="GameFontNormalMed3" type="string"/>
+			<KeyValue key="textRight2Font" value="GameFontNormalMed3" type="string"/>
+		</KeyValues>
+	</GameTooltip>
+
+	<GameTooltip name="CharCustomizeNoHeaderTooltip" inherits="CharCustomizeTooltipTemplate">
+		<KeyValues>
+			<KeyValue key="textLeft1Font" value="GameFontNormalMed3" type="string"/>
+			<KeyValue key="textRight1Font" value="GameFontNormalMed3" type="string"/>
+			<KeyValue key="textLeft2Font" value="GameFontNormalMed3" type="string"/>
+			<KeyValue key="textRight2Font" value="GameFontNormalMed3" type="string"/>
+		</KeyValues>
+	</GameTooltip>
+	
 	<Frame name="CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeFrameWithTooltipMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="tooltipAnchor" value="ANCHOR_TOPRIGHT" type="string"/>
@@ -18,7 +46,7 @@
 	<Button name="CharCustomizeSmallButtonTemplate" inherits="CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeSmallButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="48" y="48"/>
 		<KeyValues>
-			<KeyValue key="tooltipAnchor" value="ANCHOR_LEFT" type="string"/>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMRIGHT" type="string"/>
 			<KeyValue key="tooltipMinWidth" value="nil" type="number"/>
 		</KeyValues>
 		<HitRectInsets left="6" right="6" top="6" bottom="6"/>
@@ -210,6 +238,17 @@
 				</Anchors>
 			</Frame>
 
+			<Button parentKey="RandomizeAppearanceButton" inherits="CharCustomizeSmallButtonTemplate" mixin="CharCustomizeRandomizeAppearanceButtonMixin">
+				<KeyValues>
+					<KeyValue key="iconAtlas" value="charactercreate-icon-dice" type="string"/>
+					<KeyValue key="simpleTooltipLine" value="RANDOMIZE_APPEARANCE" type="global"/>
+					<KeyValue key="tooltipAnchor" value="ANCHOR_LEFT" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Categories" relativePoint="LEFT" x="-20"/>
+				</Anchors>
+			</Button>
+
 			<Frame parentKey="Options" inherits="VerticalLayoutFrame">
 				<KeyValues>
 					<KeyValue key="spacing" value="40" type="number"/>
@@ -269,14 +308,6 @@
 							<KeyValue key="simpleTooltipLine" value="ROTATE_RIGHT" type="global"/>
 							<KeyValue key="clickAmount" value="10" type="number"/>
 							<KeyValue key="holdAmountPerSecond" value="100" type="number"/>
-						</KeyValues>
-					</Button>
-					<Button parentKey="RandomizeAppearanceButton" inherits="CharCustomizeSmallButtonTemplate" mixin="CharCustomizeRandomizeAppearanceButtonMixin">
-						<KeyValues>
-							<KeyValue key="layoutIndex" value="6" type="number"/>
-							<KeyValue key="iconAtlas" value="charactercreate-icon-dice" type="string"/>
-							<KeyValue key="simpleTooltipLine" value="RANDOMIZE_APPEARANCE" type="global"/>
-							<KeyValue key="leftPadding" value="30" type="number"/>
 						</KeyValues>
 					</Button>
 				</Frames>

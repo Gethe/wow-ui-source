@@ -1,14 +1,19 @@
 BarberShopMixin = CreateFromMixins(CharCustomizeParentFrameBaseMixin);
 
 function BarberShopMixin:OnLoad()
+	DefaultScaleFrameMixin.OnLoad(self);
+
 	self:RegisterEvent("BARBER_SHOP_RESULT");
 	self:RegisterEvent("BARBER_SHOP_COST_UPDATE");
+	self:RegisterEvent("BARBER_SHOP_FORCE_CUSTOMIZATIONS_UPDATE");
 
 	CharCustomizeFrame:AttachToParentFrame(self);
-	CharCustomizeFrame.SmallButtons.RandomizeAppearanceButton:Hide();
+	CharCustomizeFrame.RandomizeAppearanceButton:Hide();
 end
 
 function BarberShopMixin:OnEvent(event, ...)
+	DefaultScaleFrameMixin.OnEvent(self, event, ...);
+
 	if event == "BARBER_SHOP_RESULT" then
 		local success = ...;
 		if success then
@@ -17,6 +22,8 @@ function BarberShopMixin:OnEvent(event, ...)
 		self:UpdateCharCustomizationFrame();
 	elseif event == "BARBER_SHOP_COST_UPDATE" then
 		self:UpdatePrice();
+	elseif event == "BARBER_SHOP_FORCE_CUSTOMIZATIONS_UPDATE" then
+		self:UpdateCharCustomizationFrame();
 	end
 end
 
@@ -32,6 +39,11 @@ function BarberShopMixin:OnShow()
 
 	local reset = true;
 	self:UpdateCharCustomizationFrame(reset);
+
+	local currentCharacterData = C_BarberShop.GetCurrentCharacterData();
+	if currentCharacterData then
+		CharCustomizeFrame:SetSelectedData(currentCharacterData.raceData, currentCharacterData.sex, C_BarberShop.IsViewingAlteredForm());
+	end
 
 	PlaySound(SOUNDKIT.BARBERSHOP_SIT);
 end
@@ -109,6 +121,11 @@ end
 
 function BarberShopMixin:ResetCharacterRotation()
 	C_BarberShop.ResetCameraRotation();
+end
+
+function BarberShopMixin:SetViewingAlteredForm(viewingAlteredForm)
+	C_BarberShop.SetViewingAlteredForm(viewingAlteredForm);
+	self:UpdateCharCustomizationFrame();
 end
 
 BarberShopButtonMixin = {};

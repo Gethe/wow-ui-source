@@ -168,8 +168,8 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset, isWayp
 	pin.style = QuestPOI_GetStyleFromQuestData(pin, isComplete, isWaypoint);
 
 	if pin.style == "numeric" then
-		-- try to match the number with tracker POI if possible
-		local poiButton = QuestPOI_FindButton(ObjectiveTrackerFrame.BlocksFrame, questID);
+		-- try to match the number with tracker or quest log POI if possible
+		local poiButton = QuestPOI_FindButton(ObjectiveTrackerFrame.BlocksFrame, questID) or QuestPOI_FindButton(QuestScrollFrame.Contents, questID);
 		if poiButton and poiButton.style == "numeric" then
 			local questNumber = poiButton.index;
 			self.usedQuestNumbers[questNumber] = true;

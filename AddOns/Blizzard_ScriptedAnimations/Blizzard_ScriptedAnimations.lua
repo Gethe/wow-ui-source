@@ -234,6 +234,7 @@ function ScriptAnimatedModelSceneMixin:OnLoad()
 	self.centerX = 0;
 	self.centerY = 0;
 	self.effectControllers = {};
+	self.pixelsPerSceneUnit = math.huge;
 
 	self:RefreshModelScene();
 end
@@ -293,7 +294,6 @@ function ScriptAnimatedModelSceneMixin:CalculatePixelsPerSceneUnit()
 	local sceneSize = Vector2D_GetLength(width, height);
 	local activeCamera = self:GetActiveCamera();
 	if not activeCamera then
-		self.pixelsPerSceneUnit = nil;
 		return;
 	end
 

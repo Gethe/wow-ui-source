@@ -1796,7 +1796,7 @@ function LFGList_DefaultFilterFunction(dungeonID, maxLevelDiff)
 	end
 
 	-- If we're not within the hard level requirements, we won't display it
-	if ( level < minLevel or level > maxLevel ) then
+	if ( level < minRecLevel or level > maxRecLevel ) then
 		return false;
 	end
 
@@ -2123,6 +2123,11 @@ function LFGDungeonListCheckButton_OnClick(button, category, dungeonList, hidden
 	local dungeonID = parent.id;
 	local isChecked = button:GetChecked();
 
+	if C_PlayerInfo.IsPlayerNPERestricted() and isChecked then
+		-- in theory, an NPE Restriced Player can ONLY click on an NPE Restricted dungeon
+		EventRegistry:TriggerEvent("LFGDungeonListCheckButton_OnClick.DungeonChecked");
+	end
+
 	PlaySound(isChecked and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	if ( LFGIsIDHeader(dungeonID) ) then
 		LFGDungeonList_SetHeaderEnabled(category, dungeonID, isChecked, dungeonList, hiddenByCollapseList);
@@ -2133,9 +2138,9 @@ function LFGDungeonListCheckButton_OnClick(button, category, dungeonList, hidden
 end
 
 function LFG_IsRandomDungeonDisplayable(id)
-	local name, typeID, subtypeID, minLevel, maxLevel, _, _, _, expansionLevel, _, _, _, _, _, _, _, _, isTimewalker = GetLFGDungeonInfo(id);
+	local name, typeID, subtypeID, minLevel, maxLevel, _, targetMinLevel, targetMaxLevel, expansionLevel, _, _, _, _, _, _, _, _, isTimewalker = GetLFGDungeonInfo(id);
 	local myLevel = UnitLevel("player");
-	return ((myLevel >= minLevel and myLevel <= maxLevel and EXPANSION_LEVEL >= expansionLevel) or isTimewalker);
+	return ((myLevel >= targetMinLevel and myLevel <= targetMaxLevel and EXPANSION_LEVEL >= expansionLevel) or isTimewalker);
 end
 
 function LFGRandomList_OnEnter(self)

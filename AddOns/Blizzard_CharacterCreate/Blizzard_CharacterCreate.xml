@@ -1,7 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Button name="CharacterCreateNavButtonTemplate" inherits="GlueButtonTemplate" mixin="CharacterCreateNavButtonMixin" frameLevel="10" virtual="true" ignoreParentScale="true">
-		<Size x="170" y="40"/>
+	<Button name="CharacterCreateNavButtonTemplate" inherits="GlueButtonTemplate" mixin="CharacterCreateNavButtonMixin" frameLevel="10" virtual="true">
+		<NormalFont style="GameFontNormalOutlineHuge2"/>
+		<HighlightFont style="GameFontHighlightOutlineHuge2"/>
+		<DisabledFont style="GameFontDisableOutlineHuge2"/>
+		<Size x="250" y="60"/>
 		<Scripts>
 			<OnClick method="OnClick"/>
 		</Scripts>
@@ -264,7 +267,10 @@
 
 	<Texture name="CharacterCreateBackgroundOverlayTexture" parentArray="BGTex" virtual="true"/>
 
-	<ModelFFX name="CharacterCreateFrame" mixin="CharacterCreateMixin" toplevel="true" parent="UIParent" setAllPoints="true" enableKeyboard="true" hidden="true" scale="0.7111">
+	<ModelFFX name="CharacterCreateFrame" mixin="DefaultScaleFrameMixin, CharacterCreateMixin" toplevel="true" parent="UIParent" setAllPoints="true" enableKeyboard="true" hidden="true">
+		<KeyValues>
+			<KeyValue key="maxScale" value="CHAR_CUSTOMIZE_MAX_SCALE" type="global"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="TopBackgroundOverlay" inherits="CharacterCreateBackgroundOverlayTexture" atlas="charactercreate-vignette-top">
@@ -321,7 +327,7 @@
 		<Frames>
 			<Button parentKey="BackButton" inherits="CharacterCreateNavButtonTemplate">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="30" y="15"/>
+					<Anchor point="BOTTOMLEFT" x="49" y="28"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="charCreateOnClickMethod" value="NavBack" type="string"/>
@@ -329,7 +335,7 @@
 			</Button>
 			<Button parentKey="ForwardButton" inherits="CharacterCreateNavButtonTemplate">
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-30" y="15"/>
+					<Anchor point="BOTTOMRIGHT" x="-49" y="28"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="charCreateOnClickMethod" value="NavForward" type="string"/>
@@ -511,6 +517,7 @@
 						<KeyValues>
 							<KeyValue key="simpleTooltipLine" value="RANDOMIZE" type="global"/>
 							<KeyValue key="iconAtlas" value="charactercreate-icon-dice" type="string"/>
+							<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMLEFT" type="string"/>
 						</KeyValues>
 					</Button>
 				</Frames>

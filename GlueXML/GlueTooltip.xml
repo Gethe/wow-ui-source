@@ -19,22 +19,4 @@
 			<KeyValue key="textRight2Font" value="GlueFontNormalSmall" type="string"/>
 		</KeyValues>
 	</GameTooltip>
-
-	<GameTooltip name="GlueTrueScaleTooltip" inherits="GlueTooltipTemplate" parent="GlueParent" scale="0.7111">
-		<KeyValues>
-			<KeyValue key="textLeft1Font" value="GameFontNormalLarge2" type="string"/>
-			<KeyValue key="textRight1Font" value="GameFontNormalLarge2" type="string"/>
-			<KeyValue key="textLeft2Font" value="GameFontNormalMed3" type="string"/>
-			<KeyValue key="textRight2Font" value="GameFontNormalMed3" type="string"/>
-		</KeyValues>
-	</GameTooltip>
-
-	<GameTooltip name="GlueTrueScaleNoHeaderTooltip" inherits="GlueTooltipTemplate" parent="GlueParent" scale="0.7111">
-		<KeyValues>
-			<KeyValue key="textLeft1Font" value="GameFontNormalMed3" type="string"/>
-			<KeyValue key="textRight1Font" value="GameFontNormalMed3" type="string"/>
-			<KeyValue key="textLeft2Font" value="GameFontNormalMed3" type="string"/>
-			<KeyValue key="textRight2Font" value="GameFontNormalMed3" type="string"/>
-		</KeyValues>
-	</GameTooltip>
 </Ui>

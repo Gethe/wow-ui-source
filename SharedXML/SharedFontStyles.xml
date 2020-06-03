@@ -162,6 +162,15 @@
 	<Font name="GameFontNormalShadowHuge2" inherits="SystemFont_Shadow_Huge2" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
+	<Font name="GameFontNormalOutlineHuge2" inherits="SystemFont_Outline_Huge2" virtual="true">
+		<Color r="1.0" g="0.78" b="0"/>
+	</Font>
+	<Font name="GameFontHighlightOutlineHuge2" inherits="GameFontNormalOutlineHuge2" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="GameFontDisableOutlineHuge2" inherits="GameFontNormalOutlineHuge2" virtual="true">
+		<Color r="0.5" g="0.5" b="0.5"/>
+	</Font>
 	<Font name="GameFontNormalHugeOutline" inherits="SystemFont_Shadow_Huge1" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>

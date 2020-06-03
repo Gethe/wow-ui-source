@@ -134,7 +134,7 @@
 				<Texture name="$parentQuestIcon" file="Interface\GossipFrame\AvailableQuestIcon" parentKey="Icon">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="4" y="2"/>
+						<Anchor point="LEFT" x="4" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>

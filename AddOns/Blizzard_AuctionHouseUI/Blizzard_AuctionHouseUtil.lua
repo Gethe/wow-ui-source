@@ -486,7 +486,9 @@ end
 
 function AuctionHouseUtil.AppendBattlePetVariationLines(tooltip)
 	GameTooltip_AddBlankLineToTooltip(tooltip);
-	GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_BUCKET_VARIATION_PET_TOOLTIP);
+
+	local wrap = true;
+	GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_BUCKET_VARIATION_PET_TOOLTIP, wrap);
 end
 
 function AuctionHouseUtil.SetAuctionHouseTooltip(owner, rowData)

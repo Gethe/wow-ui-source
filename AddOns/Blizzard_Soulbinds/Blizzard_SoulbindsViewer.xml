@@ -15,12 +15,21 @@
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Background" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="26" y="-25"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="Portrait" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-25" y="-25"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="3">
 				<Texture parentKey="ShadowTop" atlas="_Soulbinds_ShadowHorizontal" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="20" y="-20"/>
@@ -47,17 +56,15 @@
 				</Texture>
 			</Layer>
 			<Layer>
-				<Texture parentKey="Portrait" useAtlasSize="true">
+				<FontString parentKey="Name" inherits="GameFontNormalWTF2" justifyH="LEFT" wordwrap="true">
+					<Size x="295"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="-25" y="-25"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="Name" inherits="SystemFont_Shadow_Huge1" justifyH="LEFT" wordwrap="true">
-					<Size x="250"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="BOTTOMRIGHT" x="-300" y="250"/>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-335" y="200"/>
 					</Anchors>
 					<Color color="WHITE_FONT_COLOR"/>
+					<Shadow x="1" y="-1">
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
 				</FontString>
 				<FontString parentKey="Description" inherits="SystemFont_Shadow_Med1" justifyH="LEFT" justifyV="TOP">
 					<Anchors>

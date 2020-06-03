@@ -420,7 +420,7 @@ function MapCanvasMixin:RefreshDetailLayers()
 	for layerIndex, layerInfo in ipairs(layers) do
 		local detailLayer = self.detailLayerPool:Acquire();
 		detailLayer:SetAllPoints(self:GetCanvas());
-		detailLayer:SetMapAndLayer(self.mapID, layerIndex);
+		detailLayer:SetMapAndLayer(self.mapID, layerIndex, self);
 		detailLayer:SetGlobalAlpha(self:GetGlobalAlpha());
 		detailLayer:Show();
 	end
@@ -880,6 +880,58 @@ function MapCanvasMixin:SetGlobalAlpha(globalAlpha)
 		end
 		for dataProvider in pairs(self.dataProviders) do
 			dataProvider:OnGlobalAlphaChanged();
+		end
+	end
+end
+
+function MapCanvasMixin:SetMaskTexture(maskTexture)
+	self.maskTexture = maskTexture;
+	self.maskableTextures = { };
+end
+
+function MapCanvasMixin:GetMaskTexture()
+	return self.maskTexture;
+end
+
+function MapCanvasMixin:SetUseMaskTexture(useMaskTexture)
+	if not self:GetMaskTexture() then
+		error("Must have a mask texture");
+	end
+	self.useMaskTexture = useMaskTexture;
+	self:RefreshMaskableTextures();
+end
+
+function MapCanvasMixin:GetUseMaskTexture()
+	return not not self.useMaskTexture;
+end
+
+function MapCanvasMixin:AddMaskableTexture(texture)
+	local maskTexture = self:GetMaskTexture();
+	if not maskTexture then
+		return;
+	end
+	if self.maskableTextures[texture] ~= nil then
+		return;
+	end
+
+	local useMaskTexture = self:GetUseMaskTexture();
+	self.maskableTextures[texture] = useMaskTexture;
+	if useMaskTexture then
+		texture:AddMaskTexture(maskTexture);
+	end
+end
+
+function MapCanvasMixin:RefreshMaskableTextures()
+	local useMaskTexture = self:GetUseMaskTexture();
+	local maskTexture = self:GetMaskTexture();
+	for texture, value in pairs(self.maskableTextures) do
+		if value ~= useMaskTexture then
+			self.maskableTextures[texture] = useMaskTexture;
+			if useMaskTexture then
+				texture:AddMaskTexture(maskTexture);
+			else
+				texture:RemoveMaskTexture(maskTexture);
+			end
 		end
 	end
 end

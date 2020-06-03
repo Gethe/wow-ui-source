@@ -128,12 +128,19 @@ do
 	function SuperTrackedFrameMixin:ClampElliptical()
 		local centerX, centerY = GetCenterScreenPoint();
 		local navX, navY = self.navFrame:GetCenter();
-		local v = CreateVector2D(navX - centerX, navY - centerY);
-		local angle = Vector2D_CalculateAngleBetween(v.x, v.y, RIGHT_VECTOR.x, RIGHT_VECTOR.y);
-		local x = self.majorAxis * math.cos(angle);
-		local y = self.minorAxis * math.sin(angle);
 
-		self:SetPoint("CENTER", WorldFrame, "CENTER", x, -y);
+		-- This is the point we want to find the intersection, translated to origin
+		local pX = navX - centerX;
+		local pY = navY - centerY;
+		local denominator = math.sqrt(self.majorAxisSquared * pY * pY + self.minorAxisSquared * pX * pX);
+
+		if denominator ~= 0 then
+			local ratio = self.axesMultiplied / denominator;
+			local intersectionX = pX * ratio;
+			local intersectionY = pY * ratio;
+
+			self:SetPoint("CENTER", WorldFrame, "CENTER", intersectionX, intersectionY);
+		end
 	end
 
 	function SuperTrackedFrameMixin:UpdatePosition()
@@ -196,9 +203,16 @@ function SuperTrackedFrameMixin:InitializeNavigationFrame()
 		self.clampRadius = 350;
 
 		-- Elliptical
-		self.majorAxis = 500;
-		self.minorAxis = 200;
+		self:SetEllipticalRadii(500, 200);
 	end
+end
+
+function SuperTrackedFrameMixin:SetEllipticalRadii(major, minor)
+	self.majorAxis = major;
+	self.minorAxis = minor;
+	self.majorAxisSquared = self.majorAxis * self.majorAxis;
+	self.minorAxisSquared = self.minorAxis * self.minorAxis;
+	self.axesMultiplied = self.majorAxis * self.minorAxis;
 end
 
 function SuperTrackedFrameMixin:CheckInitializeNavigationFrame()

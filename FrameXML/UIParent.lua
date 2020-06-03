@@ -4783,6 +4783,29 @@ function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
 	end
 end
 
+-- New Color API
+-- This function is intended to be used with C++ wrapped functions that return the difficulty of content instead
+-- of hand calculating the difficulty in the UI like the below APIs do. You should get difficulty color
+-- like this:
+-- local difficulty = C_PlayerInfo.GetContentDifficultyCreatureForPlayer(self.unit)
+-- local color = GetDifficultyColor(difficulty);
+function GetDifficultyColor(difficulty)
+	if (difficulty == Enum.RelativeContentDifficulty.Trivial) then 
+		return QuestDifficultyColors["trivial"], QuestDifficultyHighlightColors["trivial"]; -- Grey
+	elseif (difficulty == Enum.RelativeContentDifficulty.Easy) then 
+		return QuestDifficultyColors["standard"], QuestDifficultyHighlightColors["standard"]; -- Green
+	elseif (difficulty == Enum.RelativeContentDifficulty.Fair) then 
+		return QuestDifficultyColors["difficult"], QuestDifficultyHighlightColors["difficult"]; -- Yellow
+	elseif (difficulty == Enum.RelativeContentDifficulty.Difficult) then 
+		return QuestDifficultyColors["verydifficult"], QuestDifficultyHighlightColors["verydifficult"]; -- Orange
+	elseif (difficulty == Enum.RelativeContentDifficulty.Impossible) then 
+		return QuestDifficultyColors["impossible"], QuestDifficultyHighlightColors["impossible"]; -- Red
+	else
+		return QuestDifficultyColors["difficult"], QuestDifficultyHighlightColors["difficult"]; -- Yellow
+	end
+end
+
+-- Old Color API (See Comment Above: New Color API)
 function GetQuestDifficultyColor(level, isScaling, optQuestID)
 	if optQuestID and C_QuestLog.IsQuestDisabledForSession(optQuestID) then
 		return QuestDifficultyColors["disabled"], QuestDifficultyHighlightColors["disabled"];
@@ -4795,11 +4818,13 @@ function GetQuestDifficultyColor(level, isScaling, optQuestID)
 	return GetRelativeDifficultyColor(UnitEffectiveLevel("player"), level);
 end
 
+-- Old Color API (See Comment Above: New Color API)
 function GetCreatureDifficultyColor(level)
 	return GetRelativeDifficultyColor(UnitEffectiveLevel("player"), level);
 end
 
 --How difficult is this challenge for this unit?
+-- Old Color API (See Comment Above: New Color API)
 function GetRelativeDifficultyColor(unitLevel, challengeLevel)
 	local levelDiff = challengeLevel - unitLevel;
 	local color;
@@ -4816,6 +4841,7 @@ function GetRelativeDifficultyColor(unitLevel, challengeLevel)
 	end
 end
 
+-- Old Color API (See Comment Above: New Color API)
 function GetScalingQuestDifficultyColor(questLevel)
 	local playerLevel = UnitEffectiveLevel("player");
 	local levelDiff = questLevel - playerLevel;

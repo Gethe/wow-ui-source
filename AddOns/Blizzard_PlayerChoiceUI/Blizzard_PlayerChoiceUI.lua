@@ -358,10 +358,10 @@ end
 
 function PlayerChoiceFrameMixin:OnHide()
 	PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
-	ClosePlayerChoice();
 	StaticPopup_Hide("CONFIRM_GORGROND_GARRISON_CHOICE");
 
 	FrameUtil.UnregisterFrameForEvents(self, PLAYER_CHOICE_FRAME_EVENTS);
+	ClosePlayerChoice();
 
 	for i = 1, #self.Options do
 		local option = self.Options[i];
@@ -400,6 +400,7 @@ end
 function PlayerChoiceFrameMixin:HideOptions(option) 
 	for i, optionToHide in ipairs(self.Options) do
 		if(option ~= optionToHide) then
+			optionToHide.FadeoutUnselected:Stop(); 
 			optionToHide.FadeoutUnselected:Play(); 
 		end 
 	end
@@ -452,6 +453,11 @@ function PlayerChoiceFrameMixin:TryShow()
 		option.Header.Text:SetTextColor(self.optionHeaderTitleColor:GetRGBA());
 		option.OptionText:SetFontObject(self.optionDescriptionFont);
 		option.OptionText:SetTextColor(self.optionDescriptionColor:GetRGBA());
+
+		if(option.FadeoutSelected:IsPlaying()) then 
+			option.FadeoutSelected:Stop(); 
+		end 
+		option.FadeoutUnselected:Stop();
 		option:SetAlpha(1);
 	end
 
@@ -1219,6 +1225,7 @@ function PlayerChoiceOptionFrameMixin:OnButtonClick(button)
 			if(shouldFadeOutOtherOptions) then 
 				self:GetParent():HideOptions(self);
 				PlayerChoiceToggleButton:Hide(); 
+				self.FadeoutSelected:Stop(); 
 				self.FadeoutSelected:Play(); 
 			elseif (not choiceInfo.keepOpenAfterChoice and (not isSecondButton or not optionLayout.secondButtonClickDoesntCloseUI)) then
 				self:GetParent():TryHide();
@@ -1498,9 +1505,9 @@ end
 function PlayerChoiceToggleButtonMixin:OnClick()
 	if(not PlayerChoiceFrame:IsShown()) then
 		PlayerChoiceFrame:TryShow();
-		self.FadeIn:Play();
 	else
 		PlayerChoiceFrame:TryHide();
+		self.FadeOutAndIn:Stop();
 		self.FadeOutAndIn:Play();
 	end
 end

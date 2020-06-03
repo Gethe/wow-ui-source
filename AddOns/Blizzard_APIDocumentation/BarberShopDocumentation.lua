@@ -38,12 +38,30 @@ local BarberShop =
 			},
 		},
 		{
+			Name = "GetCurrentCharacterData",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "characterData", Type = "BarberShopCharacterData", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCurrentCost",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "cost", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "IsViewingAlteredForm",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isViewingAlteredForm", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -88,6 +106,15 @@ local BarberShop =
 			},
 		},
 		{
+			Name = "SetViewingAlteredForm",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "isViewingAlteredForm", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ZoomCamera",
 			Type = "Function",
 
@@ -116,6 +143,11 @@ local BarberShop =
 			LiteralName = "BARBER_SHOP_COST_UPDATE",
 		},
 		{
+			Name = "BarberShopForceCustomizationsUpdate",
+			Type = "Event",
+			LiteralName = "BARBER_SHOP_FORCE_CUSTOMIZATIONS_UPDATE",
+		},
+		{
 			Name = "BarberShopOpen",
 			Type = "Event",
 			LiteralName = "BARBER_SHOP_OPEN",
@@ -133,6 +165,25 @@ local BarberShop =
 
 	Tables =
 	{
+		{
+			Name = "BarberShopCharacterData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "raceData", Type = "BarberShopRaceData", Nilable = false },
+				{ Name = "sex", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "BarberShopRaceData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "fileName", Type = "string", Nilable = false },
+				{ Name = "alternateFormRaceData", Type = "CharacterAlternateFormData", Nilable = true },
+			},
+		},
 	},
 };
 

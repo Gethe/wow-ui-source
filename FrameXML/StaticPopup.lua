@@ -4125,6 +4125,40 @@ StaticPopupDialogs["PREMADE_GROUP_SEARCH_DELIST_WARNING"] = {
 	hideOnEscape = 1,
 }
 
+StaticPopupDialogs["PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING"] = {
+	text = GROUP_FINDER_DELIST_WARNING_TITLE,
+	subText = GROUP_FINDER_DELIST_WARNING_SUBTEXT,
+	button1 = LIST_MY_GROUP,
+	button2 = GROUP_FINDER_DESLIST_WARNING_EDIT_LISTING,
+	button3 = UNLIST_MY_GROUP,
+	
+	OnAccept = function(self)
+		self.delistOnHide = false;
+	end, 
+
+	OnCancel = function(self, data, reason)
+		if(reason ~= "timeout") then 
+			LFGListUtil_OpenBestWindow(true);
+			self.delistOnHide = false;
+		end 
+	end,
+
+	OnHide = function(self)
+		if  (C_LFGList.HasActiveEntryInfo() and self.delistOnHide) then
+			C_LFGList.RemoveListing();
+		end
+	end,
+
+	OnShow = function(self, data)
+		self.text:SetText(GROUP_FINDER_DELIST_WARNING_TITLE:format(data.listingTitle)); 
+		self.timeleft = data.delistTime; 
+		self.delistOnHide = true;
+	end,
+
+	whileDead = 1,
+	showAlert = 1,
+}
+
 StaticPopupDialogs["PREMADE_GROUP_INSECURE_SEARCH"] = {
 	text = PREMADE_GROUP_INSECURE_SEARCH,
 	button1 = YES,
@@ -4555,10 +4589,14 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		 (which == "BFMGR_INVITED_TO_ENTER") or
 		 (which == "AREA_SPIRIT_HEAL") or
 		 (which == "CONFIRM_REMOVE_COMMUNITY_MEMBER") or
-		 (which == "CONFIRM_DESTROY_COMMUNITY_STREAM") ) then
+		 (which == "CONFIRM_DESTROY_COMMUNITY_STREAM")) then 
 		text:SetText(" ");	-- The text will be filled in later.
 		text.text_arg1 = text_arg1;
 		text.text_arg2 = text_arg2;
+	elseif (which == "PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING") then 
+		dialog.SubText:SetText(" ");	-- The text will be filled in later.
+		dialog.SubText.text_arg1 = text_arg1;
+		dialog.SubText.text_arg2 = text_arg2;
 	elseif ( which == "BILLING_NAG" ) then
 		text:SetFormattedText(info.text, text_arg1, MINUTES);
 	elseif ( which == "SPELL_CONFIRMATION_PROMPT" or which == "SPELL_CONFIRMATION_WARNING" ) then
@@ -4880,7 +4918,8 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			 (which == "CONFIRM_SUMMON_STARTING_AREA") or
 			 (which == "BFMGR_INVITED_TO_ENTER") or
 			 (which == "AREA_SPIRIT_HEAL") or
-			 (which == "SPELL_CONFIRMATION_PROMPT") ) then
+			 (which == "SPELL_CONFIRMATION_PROMPT") or 
+			 (which == "PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING")) then
 			local text = _G[dialog:GetName().."Text"];
 			timeleft = ceil(timeleft);
 			if ( (which == "INSTANCE_BOOT") or (which == "GARRISON_BOOT") ) then
@@ -4904,6 +4943,8 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			elseif ( which == "SPELL_CONFIRMATION_PROMPT") then
 				local time = SpellConfirmationFormatter:Format(timeleft);
 				text:SetText(StaticPopupDialogs[which].text .. " " ..TIME_REMAINING .. " " .. time);
+			elseif (which == "PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING") then 
+				dialog.SubText:SetText(StaticPopupDialogs[which].subText:format(SecondsToTime(timeleft)));
 			else
 				if ( timeleft < 60 ) then
 					text:SetFormattedText(StaticPopupDialogs[which].text, timeleft, SECONDS);

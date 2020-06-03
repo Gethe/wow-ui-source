@@ -313,9 +313,9 @@ function QuestFrameGreetingPanel_OnShow()
 				questTitleButton.Icon:SetVertexColor(1,1,1);
 			end
 
-			local icon = QuestUtil.GetQuestIconActive(isComplete, IsActiveQuestLegendary(i), nil, nil, C_CampaignInfo.IsCampaignQuest(GetActiveQuestID(i)));
-			questTitleButton.Icon:SetTexture(icon);
-			questTitleButton:SetHeight(questTitleButton:GetTextHeight() + 2);
+			local activeQuestID = GetActiveQuestID(i);
+			QuestUtil.ApplyQuestIconActiveToTexture(questTitleButton.Icon, isComplete, IsActiveQuestLegendary(i), nil, nil, C_CampaignInfo.IsCampaignQuest(activeQuestID), C_QuestLog.IsQuestCalling(activeQuestID));
+			questTitleButton:SetHeight(math.max(questTitleButton:GetTextHeight() + 2, questTitleButton.Icon:GetHeight()));
 			questTitleButton:SetID(i);
 			questTitleButton.isActive = 1;
 			questTitleButton:Show();
@@ -344,8 +344,7 @@ function QuestFrameGreetingPanel_OnShow()
 		for i=(numActiveQuests + 1), (numActiveQuests + numAvailableQuests) do
 			local questTitleButton = QuestFrameGreetingPanel.titleButtonPool:Acquire();
 			local isTrivial, frequency, isRepeatable, isLegendary, questID = GetAvailableQuestInfo(i - numActiveQuests);
-			local icon = QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, C_CampaignInfo.IsCampaignQuest(questID));
-			questTitleButton.Icon:SetTexture(icon);
+			QuestUtil.ApplyQuestIconOfferToTexture(questTitleButton.Icon, isLegendary, frequency, isRepeatable, C_CampaignInfo.IsCampaignQuest(questID), C_QuestLog.IsQuestCalling(questID));
 
 			if ( isTrivial ) then
 				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));
@@ -354,7 +353,7 @@ function QuestFrameGreetingPanel_OnShow()
 				questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));
 				questTitleButton.Icon:SetVertexColor(1,1,1);
 			end
-			questTitleButton:SetHeight(questTitleButton:GetTextHeight() + 2);
+			questTitleButton:SetHeight(math.max(questTitleButton:GetTextHeight() + 2, questTitleButton.Icon:GetHeight()));
 			questTitleButton:SetID(i - numActiveQuests);
 			questTitleButton.isActive = 0;
 			questTitleButton:Show();

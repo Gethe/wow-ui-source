@@ -6,14 +6,14 @@ function MapCanvasDetailLayerMixin:OnLoad()
 	self.textureLoadGroup = CreateFromMixins(TextureLoadingGroupMixin);
 end
 
-function MapCanvasDetailLayerMixin:SetMapAndLayer(mapID, layerIndex)
+function MapCanvasDetailLayerMixin:SetMapAndLayer(mapID, layerIndex, mapCanvas)
 	local mapArtID = C_Map.GetMapArtID(mapID) -- phased map art may be different for the same mapID
 	if self.mapID ~= mapID or self.mapArtID ~= mapArtID or self.layerIndex ~= layerIndex then
 		self.mapID = mapID;
 		self.mapArtID = mapArtID;
 		self.layerIndex = layerIndex;
 
-		self:RefreshDetailTiles();
+		self:RefreshDetailTiles(mapCanvas);
 	end
 end
 
@@ -43,7 +43,7 @@ function MapCanvasDetailLayerMixin:GetGlobalAlpha()
 	return self.globalAlpha or 1;
 end
 
-function MapCanvasDetailLayerMixin:RefreshDetailTiles()
+function MapCanvasDetailLayerMixin:RefreshDetailTiles(mapCanvas)
 	self.detailTilePool:ReleaseAll();
 	self.textureLoadGroup:Reset();
 	self.isWaitingForLoad = true;
@@ -62,6 +62,7 @@ function MapCanvasDetailLayerMixin:RefreshDetailTiles()
 				prevRowDetailTile = nil;
 			end
 			local detailTile = self.detailTilePool:Acquire();
+			mapCanvas:AddMaskableTexture(detailTile);
 			self.textureLoadGroup:AddTexture(detailTile);
 			local textureIndex = (tileRow - 1) * numDetailTilesCols + tileCol;
 			detailTile:SetTexture(textures[textureIndex], nil, nil, "TRILINEAR");
