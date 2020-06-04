@@ -1154,10 +1154,10 @@ local vasErrorData = {
 	[Enum.VasError.UnderMinLevelReq] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_UNDER_MIN_LEVEL_REQ,
 	},
- 	[Enum.VasError.IneligibleTargetRealm] = {
- 		msg = BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_TARGET_REALM,
- 	},
- 	[Enum.VasError.CharacterTransferTooSoon] = {
+	[Enum.VasError.IneligibleTargetRealm] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_TARGET_REALM,
+	},
+	[Enum.VasError.CharacterTransferTooSoon] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_FACTION_CHANGE_TOO_SOON,
 	},
 	[Enum.VasError.AllianceNotEligible] = {

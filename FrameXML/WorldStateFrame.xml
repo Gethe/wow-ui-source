@@ -88,6 +88,24 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<FontString name="$parentDamageDone" inherits="GameFontNormalSmall" parentKey="damageDone">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="-7" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentHealingDone" inherits="GameFontNormalSmall" parentKey="healingDone">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="-7" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
 				<FontString name="$parentColumn1Text" inherits="GameFontNormalSmall">
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -573,9 +591,37 @@ name="$parentName"  parentKey="name">
 					</OnLoad>
 				</Scripts>
 			</Button>
+			<Button name="WorldStateScoreFrameDamageDone" inherits="WorldStateScoreColumnTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="WorldStateScoreFrameHK" relativePoint="RIGHT">
+						<Offset x="-5" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						WorldStateScoreFrameDamageDoneText:SetText(SCORE_DAMAGE_DONE);
+						self.tooltip = DAMAGE_DONE_TOOLTIP;
+						self.sortType = "damage";
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="WorldStateScoreFrameHealingDone" inherits="WorldStateScoreColumnTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="WorldStateScoreFrameDamageDone" relativePoint="RIGHT">
+						<Offset x="-5" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						WorldStateScoreFrameHealingDoneText:SetText(SCORE_HEALING_DONE);
+						self.tooltip = HEALING_DONE_TOOLTIP;
+						self.sortType = "healing";
+					</OnLoad>
+				</Scripts>
+			</Button>
 			<Button name="WorldStateScoreFrameHonorGained" inherits="WorldStateScoreColumnTemplate">
 				<Anchors>
-					<Anchor point="CENTER" relativeTo="WorldStateScoreFrameHK" relativePoint="CENTER">
+					<Anchor point="CENTER" relativeTo="WorldStateScoreFrameHealingDone" relativePoint="CENTER">
 						<Offset x="58" y="0"/>
 					</Anchor>
 				</Anchors>
@@ -594,7 +640,7 @@ name="$parentName"  parentKey="name">
 			</Button>
 			<Button name="WorldStateScoreColumn1" inherits="WorldStateScoreColumnTemplate">
 				<Anchors>
-					<Anchor point="CENTER" relativeTo="WorldStateScoreFrameHK" relativePoint="RIGHT">
+					<Anchor point="CENTER" relativeTo="WorldStateScoreFrameHealingDone" relativePoint="RIGHT">
 						<Offset x="38" y="0"/>
 					</Anchor>
 				</Anchors>

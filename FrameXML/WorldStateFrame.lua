@@ -4,6 +4,7 @@ local SCOREFRAME_BASE_COLUMNS = 4;
 local SCOREFRAME_COLUMN_SPACING = 77;
 local SCOREFRAME_BUTTON_TEXT_OFFSET = -31;
 local SCOREFRAME_BASE_WIDTH = 530;
+local SCOREFRAME_COMMENTATOR_BONUS_WIDTH = 130;
 
 local SCORE_BUTTON_HEIGHT = 15;
 
@@ -184,7 +185,7 @@ function WorldStateScoreFrame_Update()
 		end
 		if ( index <= numScores ) then
 			scoreButton.index = index;
-			name, killingBlows, honorableKills, deaths, honorGained, faction, rank, race, class, classToken = GetBattlefieldScore(index);
+			name, killingBlows, honorableKills, deaths, honorGained, faction, rank, race, class, classToken, damageDone, healingDone = GetBattlefieldScore(index);
 			rankName, rankNumber = GetPVPRankInfo(rank, faction);
 			if ( rankNumber > 0 ) then
 				scoreButton.rankButton.icon:SetTexture(format("%s%02d","Interface\\PvPRankBadges\\PvPRank", rankNumber));
@@ -222,6 +223,16 @@ function WorldStateScoreFrame_Update()
 			scoreButton.honorGained:Show();
 			scoreButton.honorableKills:SetText(honorableKills);
 			scoreButton.honorableKills:Show();
+
+			scoreButton.damageDone:SetText(damageDone);
+			scoreButton.healingDone:SetText(healingDone);
+			if (WorldStateScoreFrame_CanSeeDamageAndHealing()) then
+				scoreButton.damageDone:Show();
+				scoreButton.healingDone:Show();
+			else
+				scoreButton.damageDone:Hide();
+				scoreButton.healingDone:Hide();
+			end
 			
 			for j=1, MAX_NUM_STAT_COLUMNS do
 				columnButtonText = _G["WorldStateScoreButton"..i.."Column"..j.."Text"];
@@ -307,8 +318,12 @@ end
 function WorldStateScoreFrame_Resize()
 	local scrollBar = 37;
 	local name;
+	local showDamageAndHealing = WorldStateScoreFrame_CanSeeDamageAndHealing();
 	
 	local width = SCOREFRAME_BASE_WIDTH;
+	if (showDamageAndHealing) then
+		width = width + SCOREFRAME_COMMENTATOR_BONUS_WIDTH;
+	end
 
 	local columns = GetNumBattlefieldStats();
 
@@ -327,6 +342,18 @@ function WorldStateScoreFrame_Resize()
 	WorldStateScoreFrame.buttonWidth = WorldStateScoreFrame:GetWidth() - 137;
 	WorldStateScoreScrollFrame:SetWidth(WorldStateScoreFrame.scrollBarButtonWidth);
 
+	if (showDamageAndHealing) then
+		WorldStateScoreFrameDamageDone:Show();
+		WorldStateScoreFrameHealingDone:Show();
+		WorldStateScoreFrameHonorGained:SetPoint("CENTER", WorldStateScoreFrameHealingDone, "CENTER", 58, 0);
+		WorldStateScoreColumn1:SetPoint("CENTER", WorldStateScoreFrameHealingDone, "RIGHT", 38, 0);
+	else
+		WorldStateScoreFrameDamageDone:Hide();
+		WorldStateScoreFrameHealingDone:Hide();
+		WorldStateScoreFrameHonorGained:SetPoint("CENTER", WorldStateScoreFrameHK, "CENTER", 58, 0);
+		WorldStateScoreColumn1:SetPoint("CENTER", WorldStateScoreFrameHK, "RIGHT", 38, 0);
+	end
+
 	-- Position Column data horizontally
 	for i=1, MAX_SCORE_BUTTONS do
 		local scoreButton = _G["WorldStateScoreButton"..i];
@@ -336,6 +363,8 @@ function WorldStateScoreFrame_Resize()
 			scoreButton.killingBlows:SetPoint("CENTER", "WorldStateScoreFrameKB", "CENTER", 0, SCOREFRAME_BUTTON_TEXT_OFFSET);
 			scoreButton.deaths:SetPoint("CENTER", "WorldStateScoreFrameDeaths", "CENTER", 0, SCOREFRAME_BUTTON_TEXT_OFFSET);
 			scoreButton.honorGained:SetPoint("CENTER", "WorldStateScoreFrameHonorGained", "CENTER", 0, SCOREFRAME_BUTTON_TEXT_OFFSET);
+			scoreButton.damageDone:SetPoint("CENTER", "WorldStateScoreFrameDamageDone", "CENTER", 0, SCOREFRAME_BUTTON_TEXT_OFFSET);
+			scoreButton.healingDone:SetPoint("CENTER", "WorldStateScoreFrameHealingDone", "CENTER", 0, SCOREFRAME_BUTTON_TEXT_OFFSET);
 			for j=1, MAX_NUM_STAT_COLUMNS do
 				_G["WorldStateScoreButton"..i.."Column"..j.."Text"]:SetPoint("CENTER", _G["WorldStateScoreColumn"..j], "CENTER", 0,  SCOREFRAME_BUTTON_TEXT_OFFSET);
 			end
@@ -344,6 +373,8 @@ function WorldStateScoreFrame_Resize()
 			scoreButton.killingBlows:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."KillingBlows", "CENTER", 0, -SCORE_BUTTON_HEIGHT);
 			scoreButton.deaths:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."Deaths", "CENTER", 0, -SCORE_BUTTON_HEIGHT);
 			scoreButton.honorGained:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."HonorGained", "CENTER", 0, -SCORE_BUTTON_HEIGHT);
+			scoreButton.damageDone:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."DamageDone", "CENTER", 0, -SCORE_BUTTON_HEIGHT);
+			scoreButton.healingDone:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."HealingDone", "CENTER", 0, -SCORE_BUTTON_HEIGHT);
 			for j=1, MAX_NUM_STAT_COLUMNS do
 				_G["WorldStateScoreButton"..i.."Column"..j.."Text"]:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."Column"..j.."Text", "CENTER", 0, -SCORE_BUTTON_HEIGHT);
 			end
@@ -408,4 +439,8 @@ function ScorePlayer_OnClick(self, mouseButton)
 	elseif ( mouseButton == "LeftButton" and IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
 		ChatEdit_InsertLink(self.text:GetText());
 	end
+end
+
+function WorldStateScoreFrame_CanSeeDamageAndHealing()
+	return C_Commentator.GetMode() > 0;
 end
