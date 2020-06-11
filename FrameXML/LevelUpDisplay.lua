@@ -13,6 +13,7 @@ TOAST_WORLD_QUESTS_UNLOCKED = "worldquestsunlocked";
 
 LEVEL_UP_EVENTS = {
 --  Level  = {unlock}
+	[8] =  {"AreaLootUnlocked"},
 	[10] = {"SpecializationUnlocked", "BGsUnlocked"},
 	[15] = {"TalentsUnlocked","LFDUnlocked"},
 	[20]= {"PvpTalentsUnlocked"},
@@ -153,6 +154,14 @@ LEVEL_UP_TYPES = {
 										text=PVP_TALENTS,
 										subText=LEVEL_UP_FEATURE,
 										link=LEVEL_UP_FEATURE2..LEVEL_UP_HONOR_LINK
+									},
+
+	["AreaLootUnlocked"] 		= 	{	icon="Interface\\Icons\\ability_priest_holybolts01",
+										subIcon=SUBICON_TEXCOOR_LOCK,
+										text= AREA_LOOTING_UNLOCKED,
+										subText= LEVEL_UP_FEATURE,
+										instructionalText = AREA_LOOTING_UNLOCKED_DESC,
+										link=AREA_LOOTING_UNLOCKED_CHAT_DISPLAY
 									},
 
 ------ HACKS BELOW

@@ -39,6 +39,7 @@ function SoulbindsSelectButtonMixin:Reset()
 	self:SetSoulbindID(nil);
 	self.ModelScene.Active:Hide();
 	self.ModelScene.Selected:Hide();
+	self:SetHighlightUnselected();
 end
 
 function SoulbindsSelectButtonMixin:GetSoulbindID()
@@ -75,15 +76,23 @@ function SoulbindsSelectButtonMixin:OnModelLoaded(model)
 	self.ModelScene:SetPaused(not self:IsSelected());
 end
 
+function SoulbindsSelectButtonMixin:SetHighlightSelected()
+	self.ModelScene.Highlight:SetAtlas("Soulbinds_Portrait_Selected", true);
+	self.ModelScene.Highlight:SetAlpha(.8);
+	self.ModelScene.Highlight:SetBlendMode("ADD");
+end
+
+function SoulbindsSelectButtonMixin:SetHighlightUnselected()
+	self.ModelScene.Highlight:SetAtlas("Soulbinds_Portrait_Border", true);
+	self.ModelScene.Highlight:SetAlpha(.7);
+	self.ModelScene.Highlight:SetBlendMode("ADD");
+end
+
 function SoulbindsSelectButtonMixin:OnSelected(newSelected, isInitializing)
 	if newSelected then
-		self.ModelScene.Highlight:SetAtlas("Soulbinds_Portrait_Selected", true);
-		self.ModelScene.Highlight:SetAlpha(.4);
-		self.ModelScene.Highlight:SetBlendMode("ADD");
+		self:SetHighlightSelected();
 	else
-		self.ModelScene.Highlight:SetAtlas("Soulbinds_Portrait_Border", true);
-		self.ModelScene.Highlight:SetAlpha(.4);
-		self.ModelScene.Highlight:SetBlendMode("ADD");
+		self:SetHighlightUnselected();
 	end
 
 	self.ModelScene.Selected:SetShown(newSelected);

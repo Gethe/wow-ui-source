@@ -636,12 +636,22 @@ function SetExpansionLogo(texture, expansionLevel)
 end
 
 function UpgradeAccount()
-	if not IsTrialAccount() and C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAMES_CATEGORY_ID) then
-		StoreFrame_SetGamesCategory();
-		ToggleStoreUI();
+	if IsTrialAccount() then
+		if C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAME_TIME_CATEGORY_ID) then
+			StoreFrame_SelectGameTimeProduct()
+			ToggleStoreUI();
+		else
+			PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
+			LoadURLIndex(2);
+		end
 	else
-		PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
-		LoadURLIndex(2);
+		if C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAMES_CATEGORY_ID) then
+			StoreFrame_SetGamesCategory();
+			ToggleStoreUI();
+		else
+			PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
+			LoadURLIndex(2);
+		end
 	end
 end
 

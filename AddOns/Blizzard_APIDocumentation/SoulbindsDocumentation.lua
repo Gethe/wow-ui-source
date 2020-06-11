@@ -33,6 +33,34 @@ local Soulbinds =
 			},
 		},
 		{
+			Name = "GetConduitSpellID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "conduitID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemConduitID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "conduitID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetItemConduitType",
 			Type = "Function",
 
@@ -196,7 +224,7 @@ local Soulbinds =
 			Payload =
 			{
 				{ Name = "nodeID", Type = "number", Nilable = false },
-				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "conduitID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -231,6 +259,15 @@ local Soulbinds =
 			Name = "SoulbindNodeUnlearned",
 			Type = "Event",
 			LiteralName = "SOULBIND_NODE_UNLEARNED",
+			Payload =
+			{
+				{ Name = "nodeID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SoulbindNodeUpdated",
+			Type = "Event",
+			LiteralName = "SOULBIND_NODE_UPDATED",
 			Payload =
 			{
 				{ Name = "nodeID", Type = "number", Nilable = false },
@@ -274,6 +311,7 @@ local Soulbinds =
 				{ Name = "icon", Type = "number", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "conduitID", Type = "number", Nilable = false },
+				{ Name = "conduitRank", Type = "number", Nilable = false },
 				{ Name = "state", Type = "SoulbindNodeState", Nilable = false },
 				{ Name = "conduitType", Type = "SoulbindConduitType", Nilable = true },
 				{ Name = "parentNodeIDs", Type = "table", InnerType = "number", Nilable = false },

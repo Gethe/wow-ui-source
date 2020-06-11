@@ -69,7 +69,7 @@ TutorialData.LevelAbilitiesTable = {
 		nil,	-- 318044,	Lightning Bolt Rank 2, level 6
 		318038,	-- Flametongue Weapon, level 7
 		nil,	-- 20608,-- Reincarnation, level 8
-		3599,	-- Searing Totem, level 9
+		nil,	-- Searing Totem, level 9
 	};
 	MAGE = {
 		116,	-- Start with Frostbolt

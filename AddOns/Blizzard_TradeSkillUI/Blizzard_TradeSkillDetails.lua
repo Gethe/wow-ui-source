@@ -9,6 +9,10 @@ function TradeSkillDetailsMixin:OnLoad()
 
 	self:RegisterEvent("UPDATE_TRADESKILL_RECAST");
 	self:RegisterEvent("PLAYTIME_CHANGED");
+
+	self.GlowClipFrame.ModifiedCraftingGlow:SetPoint("CENTER", self.Contents.ResultIcon, "CENTER");
+	self.GlowClipFrame.ModifiedCraftingGlowSpin:SetPoint("CENTER", self.Contents.ResultIcon, "CENTER");
+	self.GlowClipFrame.ModifiedCraftingGlowSpinAnim:Play();
 end
 
 function TradeSkillDetailsMixin:OnHide()
@@ -318,7 +322,7 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 					craftable = false;
 				end
 			else
-				reagentButton.Icon:SetAtlas("communities-icon-addgroupplus"); -- + texture
+				reagentButton.Icon:SetAtlas("tradeskills-icon-add");
 				reagentButton.Icon:SetVertexColor(1.0, 1.0, 1.0);
 				reagentButton:SetReagentText(optionalReagentSlots[optionalReagentIndex].slotText or OPTIONAL_REAGENT_POSTFIX);
 				reagentButton.Count:SetText("");
@@ -328,6 +332,14 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 		for optionalReagentIndex = numOptionalReagentSlots + 1, #self.Contents.OptionalReagents do
 			local reagentButton = self.Contents.OptionalReagents[optionalReagentIndex];
 			reagentButton:Hide();
+		end
+
+		local optionalReagents = self:GetOptionalReagentsArray();
+		if #optionalReagents == 0 then
+			self.GlowClipFrame.ModifiedCraftingGlow:SetAlpha(0);
+			self.GlowClipFrame.ModifiedCraftingGlowSpin:SetAlpha(0);
+			self.Contents.ResultIcon.ModifiedCraftingGlowBorder:SetAlpha(0);
+			self.Contents.ResultIcon.ResultBorder:SetAlpha(1);
 		end
 
 
@@ -529,6 +541,8 @@ end
 function TradeSkillDetailsMixin:SetOptionalReagent(optionalReagentIndex, option)
 	local count = 1; -- Count is always 1 for optional profession reagents.
 
+	local previousNumOptionalReagents = #self.optionalReagents;
+
 	if option == nil then
 		for i = 1, #self.optionalReagents do
 			if self.optionalReagents[i].slot == optionalReagentIndex then
@@ -552,6 +566,13 @@ function TradeSkillDetailsMixin:SetOptionalReagent(optionalReagentIndex, option)
 		else
 			table.insert(self.optionalReagents, { itemID = option.itemID, count = count, slot = optionalReagentIndex, });
 		end
+	end
+
+	local glowActive = self.GlowClipFrame.ModifiedCraftingGlow:GetAlpha() ~= 0;
+	if previousNumOptionalReagents == 1 and #self.optionalReagents == 0 and glowActive then
+		self.GlowClipFrame.ModifiedCraftingGlowOutAnim:Play();
+	elseif previousNumOptionalReagents == 0 and #self.optionalReagents > 0 and not glowActive then
+		self.GlowClipFrame.ModifiedCraftingGlowInAnim:Play();
 	end
 	
 	self:GetParent():TriggerEvent(TradeSkillUIMixin.Event.OptionalReagentUpdated, optionalReagentIndex);

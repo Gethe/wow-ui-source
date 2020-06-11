@@ -421,6 +421,7 @@ function MountJournal_UpdateMountList()
 
 			button.index = index;
 			button.spellID = spellID;
+			button.mountID = mountID;
 
 			button.active = active;
 			if (active) then
@@ -620,12 +621,35 @@ function MountJournal_SelectByMountID(mountID)
 	MountJournal_SetSelected(mountID, spellID);
 end
 
+function MountJournal_GetMountButtonHeight()
+	return MOUNT_BUTTON_HEIGHT;
+end
+
+function MountJournal_GetMountButtonByMountID(mountID)
+	local scrollFrame = MountJournal.ListScrollFrame;
+	local buttons = scrollFrame.buttons;
+
+	for i=1, #buttons do
+		local button = buttons[i];
+		if ( button.mountID == mountID ) then
+			return button;
+		end
+	end
+end
+
+
 function MountJournal_SetSelected(mountID, spellID)
 	MountJournal.selectedSpellID = spellID;
 	MountJournal.selectedMountID = mountID;
 	MountJournal_HideMountDropdown();
 	MountJournal_UpdateMountList();
 	MountJournal_UpdateMountDisplay();
+	
+	local mountButton = MountJournal_GetMountButtonByMountID(mountID);
+	if(mountButton) then
+		local buttonIndex = HybridScrollFrame_GetButtonIndex(MountJournal.ListScrollFrame, mountButton);
+		HybridScrollFrame_ScrollToIndex(MountJournal.ListScrollFrame, buttonIndex, MountJournal_GetMountButtonHeight);
+	end
 end
 
 function MountJournalMountButton_UseMount(mountID)

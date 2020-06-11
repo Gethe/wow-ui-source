@@ -2292,7 +2292,7 @@
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
 					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.DecrementButton" relativePoint="LEFT" x="-50"/>
+						<Anchor point="RIGHT" relativeKey="$parent.DecrementButton" relativePoint="LEFT" x="-34"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -2307,7 +2307,7 @@
 			<Button parentKey="IncrementButton" motionScriptsWhileDisabled="true">
 				<Size x="32" y="32"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.SelectionPopoutButton" relativePoint="RIGHT"/>
+					<Anchor point="LEFT" relativeKey="$parent.SelectionPopoutButton" relativePoint="RIGHT" x="4"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -2322,7 +2322,7 @@
 			<Button parentKey="DecrementButton" motionScriptsWhileDisabled="true">
 				<Size x="32" y="32"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.SelectionPopoutButton" relativePoint="LEFT"/>
+					<Anchor point="RIGHT" relativeKey="$parent.SelectionPopoutButton" relativePoint="LEFT" x="-5"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

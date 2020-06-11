@@ -767,6 +767,10 @@ function RuneforgeFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_RuneforgeUI");
 end 
 
+function SubscriptionInterstitial_LoadUI()
+	LoadAddOn("Blizzard_SubscriptionInterstitialUI");
+end 
+
 local playerEnteredWorld = false;
 local varsLoaded = false;
 function NPETutorial_AttemptToBegin(event)
@@ -1607,6 +1611,15 @@ function UIParent_OnEvent(self, event, ...)
 
 		if Kiosk.IsEnabled() then
 			LoadAddOn("Blizzard_Kiosk");
+		end
+
+		if IsTrialAccount() and C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAME_TIME_CATEGORY_ID) then
+			SubscriptionInterstitial_LoadUI();
+
+			local isInitialLogin = ...;
+			if isInitialLogin then
+				SubscriptionInterstitialFrame:EvaluateShow();
+			end
 		end
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "PVP_BRAWL_INFO_UPDATED" ) then
 		PlayBattlefieldBanner(self);

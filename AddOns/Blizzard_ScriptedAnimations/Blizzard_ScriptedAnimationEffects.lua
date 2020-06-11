@@ -75,6 +75,10 @@ local function GenerateRecoilCallback(magnitude, duration)
 		local totalDuration = duration / speed;
 
 		local direction = GetDirectionVector(source, target);
+		if direction:IsZero() then
+			return nop, totalDuration;
+		end
+
 		direction:Normalize();
 		direction:ScaleBy(magnitude);
 		local distanceX, distanceY = direction:GetXY();
@@ -120,6 +124,10 @@ local function GenerateAttackCollisionFunction(pullbackMagnitude)
 		translation:ScaleBy(0.95); -- don't go the entire distance.
 		
 		local direction = translation:Clone();
+		if direction:IsZero() then
+			return nop, effectDescription.duration;
+		end
+		
 		direction:Normalize();
 		direction:ScaleBy(-pullbackMagnitude);
 

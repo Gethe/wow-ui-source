@@ -33,15 +33,14 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="4">
-						<Texture parentKey="Highlight" atlas="Soulbinds_Portrait_Border" useAtlasSize="true" alphaMode="ADD" alpha=".4" hidden="true">
+						<Texture parentKey="Highlight" hidden="true">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="5">
-						<Texture parentKey="Active" atlas="Soulbinds_Portrait_Active">
-							<Size x="78" y="77"/>
+						<Texture parentKey="Active" atlas="Soulbinds_Portrait_Active" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" relativePoint="BOTTOM" y="11"/>
 							</Anchors>

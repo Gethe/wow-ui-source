@@ -244,7 +244,7 @@
 			</Frame>
 		</Frames>
 		<ScrollChild>
-			<Frame parentKey="Contents" hidden="true" inherits="InlineHyperlinkFrameTemplate">
+			<Frame parentKey="Contents" hidden="true" inherits="InlineHyperlinkFrameTemplate" frameLevel="100">
 				<KeyValues>
 					<KeyValue key="hasIconHyperlinks" value="true" type="boolean"/>
 				</KeyValues>
@@ -367,6 +367,11 @@
 								</Texture>
 								<Texture parentKey="ResultBorder" atlas="tradeskills-iconborder">
 									<Size x="51" y="51"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="ModifiedCraftingGlowBorder" atlas="tradeskills-iconborder-glow" useAtlasSize="true" alpha="0">
 									<Anchors>
 										<Anchor point="CENTER"/>
 									</Anchors>
@@ -544,6 +549,47 @@
 				</Frames>
 			</Frame>
 		</ScrollChild>
+		<Frames>
+			<Frame parentKey="GlowClipFrame" clipChildren="true" frameLevel="50">
+				<Anchors>
+					<Anchor point="TOP"/>
+					<Anchor point="BOTTOM"/>
+					<Anchor point="LEFT" relativeKey="$parent.$parent" relativePoint="LEFT"/>
+					<Anchor point="RIGHT" relativeKey="$parent.$parent" relativePoint="RIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="ModifiedCraftingGlow" atlas="services-ring-large-glow" useAtlasSize="true" alpha="0" scale="0.35">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.Contents.ResultIcon" relativePoint="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ModifiedCraftingGlowSpin" atlas="services-ring-large-glowspin" alphaMode="ADD" useAtlasSize="true" alpha="0" scale="0.525">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.Contents.ResultIcon" relativePoint="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="ModifiedCraftingGlowSpinAnim" looping="REPEAT">
+						<Rotation childKey="ModifiedCraftingGlowSpin" degrees="-360" x="2" y="-4" duration="15"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="ModifiedCraftingGlowInAnim" setToFinalAlpha="true">
+						<Alpha childKey="ModifiedCraftingGlow" fromAlpha="0" toAlpha="0.8" duration="0.4"/>
+						<Alpha childKey="$parent.Contents.ResultIcon.ModifiedCraftingGlowBorder" fromAlpha="0" toAlpha="1.0" duration="0.4"/>
+						<Alpha childKey="$parent.Contents.ResultIcon.ResultBorder" fromAlpha="1.0" toAlpha="0" duration="0.4"/>
+						<Alpha childKey="ModifiedCraftingGlowSpin" fromAlpha="0" toAlpha="0.3" duration="0.4"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="ModifiedCraftingGlowOutAnim" setToFinalAlpha="true">
+						<Alpha childKey="ModifiedCraftingGlow" fromAlpha="0.8" toAlpha="0" duration="0.4"/>
+						<Alpha childKey="$parent.Contents.ResultIcon.ModifiedCraftingGlowBorder" fromAlpha="1.0" toAlpha="0" duration="0.4"/>
+						<Alpha childKey="$parent.Contents.ResultIcon.ResultBorder" fromAlpha="0" toAlpha="1.0" duration="0.4"/>
+						<Alpha childKey="ModifiedCraftingGlowSpin" fromAlpha="0.3" toAlpha="0" duration="0.4"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" />
 			<OnUpdate method="OnUpdate" />

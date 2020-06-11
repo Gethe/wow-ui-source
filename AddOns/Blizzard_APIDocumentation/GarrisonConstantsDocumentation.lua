@@ -190,6 +190,19 @@ local GarrisonConstants =
 			},
 		},
 		{
+			Name = "GarrTalentSocketType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "None", Type = "GarrTalentSocketType", EnumValue = 0 },
+				{ Name = "Spell", Type = "GarrTalentSocketType", EnumValue = 1 },
+				{ Name = "Conduit", Type = "GarrTalentSocketType", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "GarrTalentTreeType",
 			Type = "Enumeration",
 			NumValues = 2,

@@ -4328,14 +4328,14 @@ function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 		frame.ValidationDescription:ClearAllPoints();
 		frame.ValidationDescription:SetPoint("TOPLEFT", frame.TransferFactionCheckbox, "BOTTOMLEFT", 8, -8);
 	elseif (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
-		if (StoreVASValidationFrame.productInfo.sharedData.canChangeAccount) then
+		if (StoreVASValidationFrame.productInfo.sharedData.canChangeAccount and (StoreVASValidationFrame.productInfo.sharedData.canChangeBNetAccount or (#_G.C_Login.GetGameAccounts() > 1))) then
 			frame.TransferAccountCheckbox:Show();
 			frame.TransferAccountCheckbox.Label:ApplyFontObjects();
 			frame.TransferFactionCheckbox:ClearAllPoints();
 			frame.TransferFactionCheckbox:SetPoint("TOPLEFT", frame.TransferAccountCheckbox, "BOTTOMLEFT", 0, -4);
 		else
 			frame.TransferFactionCheckbox:ClearAllPoints();
-			frame.TransferFactionCheckbox:SetPoint("TOPLEFT", frame.TransferRealmEditbox, "BOTTOMLEFT", 0, -4);
+			frame.TransferFactionCheckbox:SetPoint("TOPLEFT", frame.TransferRealmEditbox, "BOTTOMLEFT", -168, -12);
 		end
 		frame.TransferRealmEditbox:Show();
 		frame.TransferRealmEditbox:SetText("");
@@ -5057,7 +5057,10 @@ function VASCharacterSelectionTransferAccountDropDown_OnClick(self)
 		end
 	end
 
-	infoTable[#infoTable+1] = {text=BLIZZARD_STORE_VAS_DIFFERENT_BNET, value=BLIZZARD_STORE_VAS_DIFFERENT_BNET, checked=(SelectedDestinationWowAccount == BLIZZARD_STORE_VAS_DIFFERENT_BNET)};
+	if StoreVASValidationFrame.productInfo.sharedData.canChangeBNetAccount then
+		infoTable[#infoTable+1] = {text=BLIZZARD_STORE_VAS_DIFFERENT_BNET, value=BLIZZARD_STORE_VAS_DIFFERENT_BNET, checked=(SelectedDestinationWowAccount == BLIZZARD_STORE_VAS_DIFFERENT_BNET)};
+	end
+
 	StoreDropDown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionTransferAccountDropDown_Callback);
 end
 

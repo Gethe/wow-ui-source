@@ -49,6 +49,20 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "GetBonusBarIndexForSlot",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "slotID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "bonusBarIndex", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetPetActionPetBarIndices",
 			Type = "Function",
 

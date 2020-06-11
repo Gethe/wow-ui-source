@@ -10,7 +10,10 @@ end
 function CharCustomizeParentFrameBaseMixin:PreviewCustomizationChoice(optionID, choiceID)
 end
 
-function CharCustomizeParentFrameBaseMixin:SetViewingAlteredForm(viewingAlteredForm)
+function CharCustomizeParentFrameBaseMixin:SetViewingAlteredForm(viewingAlteredForm, resetCategory)
+end
+
+function CharCustomizeParentFrameBaseMixin:SetViewingShapeshiftForm(formID)
 end
 
 function CharCustomizeParentFrameBaseMixin:SetModelDressState(dressedState)
@@ -32,6 +35,9 @@ function CharCustomizeParentFrameBaseMixin:RotateCharacter(rotationAmount)
 end
 
 function CharCustomizeParentFrameBaseMixin:RandomizeAppearance()
+end
+
+function CharCustomizeParentFrameBaseMixin:SetCameraDistanceOffset(offset)
 end
 
 CharCustomizeFrameWithTooltipMixin = {};
@@ -267,6 +273,7 @@ function CharCustomizeMaskedButtonMixin:OnLoad()
 	self.PushedTexture:AddMaskTexture(self.CircleMask);
 	self.DisabledOverlay:AddMaskTexture(self.CircleMask);
 	self.DisabledOverlay:SetAlpha(self.disabledOverlayAlpha);
+	self.CheckedTexture:SetSize(self.checkedTextureSize, self.checkedTextureSize);
 
 	if self.flipTextures then
 		self.NormalTexture:SetTexCoord(1, 0, 0, 1);
@@ -293,10 +300,10 @@ end
 
 function CharCustomizeMaskedButtonMixin:OnMouseDown(button)
 	if self:IsEnabled() then
-		self.CheckedTexture:SetPoint("CENTER", self.PushedTexture);
+		self.CheckedTexture:SetPoint("CENTER", self, "CENTER", 1, -1);
 		self.CircleMask:SetPoint("TOPLEFT", self.PushedTexture, "TOPLEFT", self.circleMaskSizeOffset, -self.circleMaskSizeOffset);
 		self.CircleMask:SetPoint("BOTTOMRIGHT", self.PushedTexture, "BOTTOMRIGHT", -self.circleMaskSizeOffset, self.circleMaskSizeOffset);
-		self.Ring:SetPoint("CENTER", self.PushedTexture);
+		self.Ring:SetPoint("CENTER", self, "CENTER", 1, -1);
 	end
 end
 
@@ -309,8 +316,8 @@ function CharCustomizeMaskedButtonMixin:OnMouseUp(button)
 	end
 
 	self.CheckedTexture:SetPoint("CENTER");
-	self.CircleMask:SetPoint("TOPLEFT", self, "TOPLEFT", self.circleMaskSizeOffset, -self.circleMaskSizeOffset);
-	self.CircleMask:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -self.circleMaskSizeOffset, self.circleMaskSizeOffset);
+	self.CircleMask:SetPoint("TOPLEFT", self.NormalTexture, "TOPLEFT", self.circleMaskSizeOffset, -self.circleMaskSizeOffset);
+	self.CircleMask:SetPoint("BOTTOMRIGHT", self.NormalTexture, "BOTTOMRIGHT", -self.circleMaskSizeOffset, self.circleMaskSizeOffset);
 	self.Ring:SetPoint("CENTER");
 end
 
@@ -326,9 +333,9 @@ function CharCustomizeMaskedButtonMixin:UpdateHighlightTexture()
 	end
 end
 
-CharacterCreateAlteredFormButtonMixin = CreateFromMixins(CharCustomizeFrameWithExpandableTooltipMixin, CharCustomizeMaskedButtonMixin);
+CharCustomizeAlteredFormButtonMixin = CreateFromMixins(CharCustomizeFrameWithExpandableTooltipMixin, CharCustomizeMaskedButtonMixin);
 
-function CharacterCreateAlteredFormButtonMixin:SetupAlteredFormButton(raceData, selectedSexID, viewingAlteredForm, isAlteredForm, layoutIndex)
+function CharCustomizeAlteredFormButtonMixin:SetupAlteredFormButton(raceData, selectedSexID, isSelected, isAlteredForm, layoutIndex)
 	self.layoutIndex = layoutIndex;
 	self.isAlteredForm = isAlteredForm;
 
@@ -347,21 +354,17 @@ function CharacterCreateAlteredFormButtonMixin:SetupAlteredFormButton(raceData, 
 	self:ClearTooltipLines();
 	self:AddTooltipLine(CHARACTER_FORM:format(raceData.name));
 
-	if viewingAlteredForm == isAlteredForm then
-		self:SetChecked(true);
-	else
-		self:SetChecked(false);
-	end
+	self:SetChecked(isSelected);
 
 	self:UpdateHighlightTexture();
 end
 
-function CharacterCreateAlteredFormButtonMixin:SetupAnchors(tooltip)
+function CharCustomizeAlteredFormButtonMixin:SetupAnchors(tooltip)
 	tooltip:SetOwner(self, "ANCHOR_NONE");
 	tooltip:SetPoint("TOPRIGHT", self, "BOTTOMLEFT", self.tooltipXOffset, self.tooltipYOffset);
 end
 
-function CharacterCreateAlteredFormButtonMixin:OnClick()
+function CharCustomizeAlteredFormButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
 	CharCustomizeFrame:SetViewingAlteredForm(self.isAlteredForm);
 end
@@ -374,7 +377,7 @@ function CharCustomizeCategoryButtonMixin:SetCategory(categoryData, selectedCate
 	self.layoutIndex = categoryData.orderIndex;
 
 	self:ClearTooltipLines();
-	self:AddTooltipLine(categoryData.name);
+	--self:AddTooltipLine(categoryData.name);
 
 	if showDebugTooltipInfo then
 		self:AddBlankTooltipLine();
@@ -397,6 +400,13 @@ end
 function CharCustomizeCategoryButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
 	CharCustomizeFrame:SetSelectedCatgory(self.categoryData);
+end
+
+CharCustomizeShapeshiftFormButtonMixin = CreateFromMixins(CharCustomizeCategoryButtonMixin);
+
+function CharCustomizeShapeshiftFormButtonMixin:SetupAnchors(tooltip)
+	tooltip:SetOwner(self, "ANCHOR_NONE");
+	tooltip:SetPoint("TOPRIGHT", self, "BOTTOMLEFT", self.tooltipXOffset, self.tooltipYOffset);
 end
 
 CharCustomizeOptionSliderMixin = CreateFromMixins(SliderWithButtonsAndLabelMixin, CharCustomizeFrameWithTooltipMixin);
@@ -565,13 +575,16 @@ function CharCustomizeMixin:OnLoad()
 	self.pools = CreateFramePoolCollection();
 	self.pools:CreatePool("CHECKBUTTON", self.Categories, "CharCustomizeCategoryButtonTemplate");
 	self.pools:CreatePool("FRAME", self.Options, "CharCustomizeOptionCheckButtonTemplate");
+	self.pools:CreatePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeShapeshiftFormButtonTemplate");
 
 	-- Keep the selectionPopout and sliders in different pools because we need to be careful not to release the option the player is interacting with
 	self.selectionPopoutPool = CreateFramePool("BUTTON", self.Options, "CharCustomizeOptionSelectionPopoutTemplate");
 	self.sliderPool = CreateFramePool("FRAME", self.Options, "CharCustomizeOptionSliderTemplate");
 
 	-- Keep the altered forms buttons in a different pool because we only want to release those when we enter this screen
-	self.alteredFormsPool = CreateFramePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeAlteredFormButtonTemplate");
+	self.alteredFormsPools = CreateFramePoolCollection();
+	self.alteredFormsPools:CreatePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeAlteredFormButtonTemplate");
+	self.alteredFormsPools:CreatePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeAlteredFormSmallButtonTemplate");
 end
 
 function CharCustomizeMixin:OnEvent(event, ...)
@@ -624,17 +637,33 @@ function CharCustomizeMixin:NeedsCategorySelected()
 	return true;
 end
 
-function CharCustomizeMixin:UpdateAlteredFormButtons()
-	self.alteredFormsPool:ReleaseAll();
+function CharCustomizeMixin:GetAlteredFormsButtonPool()
+	if self.hasShapeshiftForms then
+		return self.alteredFormsPools:GetPool("CharCustomizeAlteredFormSmallButtonTemplate");
+	else
+		return self.alteredFormsPools:GetPool("CharCustomizeAlteredFormButtonTemplate");
+	end
+end
 
+function CharCustomizeMixin:UpdateAlteredFormButtons()
+	self.alteredFormsPools:ReleaseAll();
+
+	local buttonPool = self:GetAlteredFormsButtonPool();
 	if self.selectedRaceData.alternateFormRaceData then
-		local normalForm = self.alteredFormsPool:Acquire();
-		normalForm:SetupAlteredFormButton(self.selectedRaceData, self.selectedSexID, self.viewingAlteredForm, false, 1);
+		local normalForm = buttonPool:Acquire();
+		local normalFormSelected = not self.viewingShapeshiftForm and not self.viewingAlteredForm;
+		normalForm:SetupAlteredFormButton(self.selectedRaceData, self.selectedSexID, normalFormSelected, false, -1);
 		normalForm:Show();
 
-		local alteredForm = self.alteredFormsPool:Acquire();
-		alteredForm:SetupAlteredFormButton(self.selectedRaceData.alternateFormRaceData, self.selectedSexID, self.viewingAlteredForm, true, 2);
+		local alteredForm = buttonPool:Acquire();
+		local alteredFormSelected = not self.viewingShapeshiftForm and self.viewingAlteredForm;
+		alteredForm:SetupAlteredFormButton(self.selectedRaceData.alternateFormRaceData, self.selectedSexID, alteredFormSelected, true, 0);
 		alteredForm:Show();
+	elseif self.hasShapeshiftForms then
+		local normalForm = buttonPool:Acquire();
+		local normalFormSelected = not self.viewingShapeshiftForm;
+		normalForm:SetupAlteredFormButton(self.selectedRaceData, self.selectedSexID, normalFormSelected, false, -1);
+		normalForm:Show();
 	end
 
 	self.AlteredForms:Layout();
@@ -644,16 +673,30 @@ function CharCustomizeMixin:SetSelectedData(selectedRaceData, selectedSexID, vie
 	self.selectedRaceData = selectedRaceData;
 	self.selectedSexID = selectedSexID;
 	self.viewingAlteredForm = viewingAlteredForm;
-	self:UpdateAlteredFormButtons();
+	self.viewingShapeshiftForm = nil;
 end
 
 function CharCustomizeMixin:SetViewingAlteredForm(viewingAlteredForm)
-	if self.viewingAlteredForm ~= viewingAlteredForm then
-		self.viewingAlteredForm = viewingAlteredForm;
-		self.parentFrame:SetViewingAlteredForm(viewingAlteredForm);
+	self.viewingAlteredForm = viewingAlteredForm;
+
+	if self.viewingShapeshiftForm then
+		self:ClearViewingShapeshiftForm();
 	end
 
-	self:UpdateAlteredFormButtons();
+	local resetCategory = true;
+	self.parentFrame:SetViewingAlteredForm(viewingAlteredForm, resetCategory);
+end
+
+function CharCustomizeMixin:ClearViewingShapeshiftForm()
+	local noShapeshiftForm = nil;
+	self:SetViewingShapeshiftForm(noShapeshiftForm);
+end
+
+function CharCustomizeMixin:SetViewingShapeshiftForm(formID)
+	if self.viewingShapeshiftForm ~= formID then
+		self.viewingShapeshiftForm = formID;
+		self.parentFrame:SetViewingShapeshiftForm(formID);
+	end
 end
 
 local function SortCategories(a, b)
@@ -680,6 +723,14 @@ function CharCustomizeMixin:GetOptionPool(optionType)
 		return self.pools:GetPool("CharCustomizeOptionCheckButtonTemplate");
 	elseif optionType == Enum.ChrCustomizationOptionType.Slider then
 		return self.sliderPool;
+	end
+end
+
+function CharCustomizeMixin:GetCategoryPool(categoryData)
+	if categoryData.spellShapeshiftFormID then
+		return self.pools:GetPool("CharCustomizeShapeshiftFormButtonTemplate");
+	else
+		return self.pools:GetPool("CharCustomizeCategoryButtonTemplate");
 	end
 end
 
@@ -739,26 +790,40 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 		interactingOption = draggingSlider or openPopout;
 	end
 
+	self.hasShapeshiftForms = false;
+	self.numNormalCategories = 0;
+
 	for _, categoryData in ipairs(self.categories) do
-		local button = self.pools:Acquire("CharCustomizeCategoryButtonTemplate");
-		button:SetCategory(categoryData, self.selectedCategoryData.id);
-		button:Show();
+		local showCategory = not self.selectedCategoryData.spellShapeshiftFormID or categoryData.spellShapeshiftFormID;
 
-		if self.selectedCategoryData.id == categoryData.id then
-			for _, optionData in ipairs(categoryData.options) do
-				local optionPool = self:GetOptionPool(optionData.optionType);
-				if optionPool then
-					local optionFrame;
+		if showCategory then
+			local categoryPool = self:GetCategoryPool(categoryData);
+			local button = categoryPool:Acquire();
+			button:SetCategory(categoryData, self.selectedCategoryData.id);
+			button:Show();
 
-					if interactingOption and interactingOption.optionData.id == optionData.id then
-						-- This option is being interacted with and so was not released.
-						optionFrame = interactingOption;
-					else
-						optionFrame = optionPool:Acquire();
+			if categoryData.spellShapeshiftFormID then
+				self.hasShapeshiftForms = true;
+			else
+				self.numNormalCategories = self.numNormalCategories + 1;
+			end
+
+			if self.selectedCategoryData.id == categoryData.id then
+				for _, optionData in ipairs(categoryData.options) do
+					local optionPool = self:GetOptionPool(optionData.optionType);
+					if optionPool then
+						local optionFrame;
+
+						if interactingOption and interactingOption.optionData.id == optionData.id then
+							-- This option is being interacted with and so was not released.
+							optionFrame = interactingOption;
+						else
+							optionFrame = optionPool:Acquire();
+						end
+
+						optionFrame:SetupOption(optionData);
+						optionFrame:Show();
 					end
-
-					optionFrame:SetupOption(optionData);
-					optionFrame:Show();
 				end
 			end
 		end
@@ -766,10 +831,23 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 
 	self.Categories:Layout();
 	self.Options:Layout();
+	self:UpdateAlteredFormButtons();
+
+	if self.numNormalCategories > 1 then
+		self.Categories:Show();
+		self.RandomizeAppearanceButton:SetPoint("RIGHT", self.Categories, "LEFT", -20, 0);
+	else
+		self.Categories:Hide();
+		self.RandomizeAppearanceButton:SetPoint("RIGHT", self.Categories, "RIGHT", -10, 0);
+	end
 end
 
-function CharCustomizeMixin:UpdatetModelDressState()
+function CharCustomizeMixin:UpdateModelDressState()
 	self.parentFrame:SetModelDressState(not self.selectedCategoryData.undressModel);
+end
+
+function CharCustomizeMixin:UpdateCameraDistanceOffset()
+	self.parentFrame:SetCameraDistanceOffset(self.selectedCategoryData.cameraDistanceOffset);
 end
 
 function CharCustomizeMixin:UpdateZoomButtonStates()
@@ -797,9 +875,14 @@ function CharCustomizeMixin:UpdateCameraMode(keepCustomZoom)
 end
 
 function CharCustomizeMixin:SetSelectedCatgory(categoryData, keepState)
+	if categoryData.spellShapeshiftFormID or self.viewingShapeshiftForm then
+		self:SetViewingShapeshiftForm(categoryData.spellShapeshiftFormID);
+	end
+
 	self.selectedCategoryData = categoryData;
 	self:UpdateOptionButtons(not keepState);
-	self:UpdatetModelDressState();
+	self:UpdateModelDressState();
+	self:UpdateCameraDistanceOffset();
 	self:UpdateCameraMode(keepState);
 end
 

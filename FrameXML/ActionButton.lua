@@ -23,6 +23,10 @@ ACTION_BUTTON_SHOW_GRID_REASON_CVAR = 1;
 ACTION_BUTTON_SHOW_GRID_REASON_EVENT = 2;
 ACTION_BUTTON_SHOW_GRID_REASON_SPELLBOOK = 4;
 
+function IsOnPrimaryActionBar(action)
+	return action >= 1 and action <= NUM_ACTIONBAR_BUTTONS;
+end
+
 function MarkNewActionHighlight(action)
 	ACTION_HIGHLIGHT_MARKS[action] = true;
 end

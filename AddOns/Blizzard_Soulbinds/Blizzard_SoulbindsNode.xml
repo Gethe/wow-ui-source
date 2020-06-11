@@ -6,12 +6,16 @@
 		<Size x="40" y="40"/>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="5">
-				<Texture parentKey="Arrow" atlas="Soulbinds_Tree_ActivateArrow" hidden="true">
-				<Size x="44" y="30"/>
+				<Texture parentKey="Arrow" atlas="Soulbinds_Tree_ActivateArrow" useAtlasSize="true" alphaMode="ADD" hidden="true">
 				<Anchors>
-					<Anchor point="BOTTOM" relativePoint="TOP" y="-13"/>
+					<Anchor point="BOTTOM" relativePoint="TOP" y="0"/>
 				</Anchors>
-			</Texture>
+				</Texture>
+				<Texture parentKey="Arrow2" atlas="Soulbinds_Tree_ActivateArrow" useAtlasSize="true" alphaMode="ADD" alpha="0.5" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Arrow"/>
+				</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>

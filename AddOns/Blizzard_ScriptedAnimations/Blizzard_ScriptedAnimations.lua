@@ -187,7 +187,6 @@ end
 function ScriptAnimatedModelSceneActorMixin:SetEffect(effectDescription, source, target)
 	self:SetModelByFileID(effectDescription.visual);
 	
-	self:SetYaw(effectDescription.yawRadians);
 	self:SetPitch(effectDescription.pitchRadians);
 	self:SetRoll(effectDescription.rollRadians);
 
@@ -214,8 +213,10 @@ function ScriptAnimatedModelSceneActorMixin:SetEffect(effectDescription, source,
 	self.duration = effectDescription.duration;
 	self:SetScale(effectDescription.visualScale);
 
-	if self.source and self.target then
+	if self.source and self.target and self.source ~= self.target then
 		self:SetYaw(GetAngleForModel(self.source, self.target));
+	else
+		self:SetYaw(effectDescription.yawRadians);
 	end
 
 	self:DeltaUpdate(0);

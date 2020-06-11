@@ -107,6 +107,10 @@ function Vector2DMixin:Dot(other)
 	return Vector2D_Dot(self.x, self.y, other:GetXY());
 end
 
+function Vector2DMixin:IsZero()
+	return self.x == 0 and self.y == 0;
+end
+
 function Vector2DMixin:GetLengthSquared()
 	return Vector2D_GetLengthSquared(self:GetXY());
 end

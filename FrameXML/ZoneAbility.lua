@@ -2,7 +2,28 @@
 local ZONE_SPELL_ABILITY_TEXTURES_BASE_FALLBACK = "Interface\\ExtraButton\\GarrZoneAbility-Armory";
 
 local function HasZoneAbilitySpellOnBar(spellID)
-	return C_ActionBar.FindSpellActionButtons(spellID) ~= nil;
+	local slots = C_ActionBar.FindSpellActionButtons(spellID);
+	if slots == nil then
+		return false;
+	end
+
+	local currentBonusBarIndex = GetBonusBarIndex();
+	for i = 1, #slots do
+		local slot = slots[i];
+		local isOnPrimaryActionBar = IsOnPrimaryActionBar(slot);
+		local slotBonusBarIndex = C_ActionBar.GetBonusBarIndexForSlot(slot);
+
+		-- This action is on one of the extra action bars that are always available, or on the primary action bar while it is not being replaced.
+		if not slotBonusBarIndex and (not isOnPrimaryActionBar or (currentBonusBarIndex == 0)) then
+			return true;
+		end
+
+		if slotBonusBarIndex == currentBonusBarIndex then
+			return true;
+		end
+	end
+
+	return false;
 end
 
 local function CheckShowZoneAbilityTutorial(zoneAbilityButton)

@@ -7,7 +7,7 @@ DEFAULT_CHAT_FRAME = ChatFrame1;
 CHAT_FOCUS_OVERRIDE = nil;
 NUM_REMEMBERED_TELLS = 10;
 MAX_WOW_CHAT_CHANNELS = 20;
-MAX_COUNTDOWN_SECONDS = 3600; -- One Hour 
+MAX_COUNTDOWN_SECONDS = 3600; -- One Hour
 
 CHAT_TIMESTAMP_FORMAT = nil;		-- gets set from Interface Options
 CHAT_SHOW_IME = false;
@@ -2664,7 +2664,7 @@ end
 
 SlashCmdList["COUNTDOWN"] = function(msg)
 	local num1 = gsub(msg, "(%s*)(%d+)", "%2");
-	if(num1 ~= "" and tonumber(num1) <= MAX_COUNTDOWN_SECONDS) then 
+	if(num1 ~= "" and tonumber(num1) <= MAX_COUNTDOWN_SECONDS) then
 		C_PartyInfo.DoCountdown(num1);
 	end
 end
@@ -3293,6 +3293,37 @@ function ChatFrame_CanChatGroupPerformExpressionExpansion(chatGroup)
 	return false;
 end
 
+local function GetPFlag(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17)
+	-- Renaming for clarity:
+	local specialFlag = arg6;
+	local zoneChannelID = arg7;
+	local localChannelID = arg8;
+
+	if specialFlag ~= "" then
+		if specialFlag == "GM" or specialFlag == "DEV" then
+			-- Add Blizzard Icon if  this was sent by a GM/DEV
+			return "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t ";
+		elseif specialFlag == "GUIDE" then
+			-- Guide icons only show in the channels with the appropriate rulesets
+			if C_ChatInfo.GetChannelRuleset(localChannelID) == Enum.ChatChannelRuleset.Mentor then
+				return CreateAtlasMarkup("VignetteKill");
+			end
+		elseif specialFlag == "NEWCOMER" then
+			-- Newcomer icons only show in zone channels without special rulesets, and then only if the active player is a guide.
+			if zoneChannelID ~= 0 and
+				C_ChatInfo.GetChannelRuleset(localChannelID) ~= Enum.ChatChannelRuleset.Mentor and
+				C_PlayerMentorship.GetMentorshipStatus(PlayerLocation:CreateFromUnit("player")) == Enum.PlayerMentorshipStatus.Mentor
+			then
+				return CreateAtlasMarkup("Islands-QuestTurnin");
+			end
+		else
+			return _G["CHAT_FLAG_"..specialFlag];
+		end
+	end
+
+	return "";
+end
+
 function ChatFrame_MessageEventHandler(self, event, ...)
 	if ( strsub(event, 1, 8) == "CHAT_MSG" ) then
 		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 = ...;
@@ -3303,6 +3334,11 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 
 		local type = strsub(event, 10);
 		local info = ChatTypeInfo[type];
+
+		--If it was a GM whisper, dispatch it to the GMChat addon.
+		if arg6 == "GM" and type == "WHISPER" then
+			return;
+		end
 
 		local filter = false;
 		if ( chatFilters[event] ) then
@@ -3549,24 +3585,8 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 
 			-- Add AFK/DND flags
-			local pflag;
-			if(arg6 ~= "") then
-				if ( arg6 == "GM" ) then
-					--If it was a whisper, dispatch it to the GMChat addon.
-					if ( type == "WHISPER" ) then
-						return;
-					end
-					--Add Blizzard Icon, this was sent by a GM
-					pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t ";
-				elseif ( arg6 == "DEV" ) then
-					--Add Blizzard Icon, this was sent by a Dev
-					pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t ";
-				else
-					pflag = _G["CHAT_FLAG_"..arg6];
-				end
-			else
-				pflag = "";
-			end
+			local pflag = GetPFlag(...);
+
 			if ( type == "WHISPER_INFORM" and GMChatFrame_IsGM and GMChatFrame_IsGM(arg2) ) then
 				return;
 			end
@@ -4150,7 +4170,7 @@ end
 
 function ChatEdit_OnEditFocusLost(self)
 	AutoCompleteEditBox_OnEditFocusLost(self);
-	
+
 	if self:GetText() == "" then
 		ChatEdit_DeactivateChat(self);
 	end

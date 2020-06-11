@@ -11,7 +11,7 @@ local PENDING_RANDOM_NAME = "...";
 local ZONE_CHOICE_ZOOM_AMOUNT = 100;
 local ZOOM_TIME_SECONDS = 0.25;
 local ROTATION_ADJUST_SECONDS = 0.25;
-local CLASS_ANIM_WAIT_TIME_SECONDS = 10;
+local CLASS_ANIM_WAIT_TIME_SECONDS = 5;
 
 local RaceAndClassFrame;
 local NameChoiceFrame;
@@ -123,6 +123,8 @@ function CharacterCreateMixin:OnEvent(event, ...)
 	elseif event == "CHAR_CREATE_BEGIN_ANIMATIONS" then
 		if self.currentMode == CHAR_CREATE_MODE_CLASS_RACE then
 			RaceAndClassFrame:PlayClassAnimations();
+		else
+			RaceAndClassFrame:PlayCustomizationAnimation();
 		end
 	elseif event == "CHAR_CREATE_ANIM_KIT_FINISHED" then
 		local animKitID, spellVisualKitID = ...;
@@ -312,7 +314,6 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 		
 		RaceAndClassFrame:PlayClassAnimations();
 
-
 		C_CharacterCreation.SetBlurEnabled(false);
 
 		self:SetCameraZoomLevel(0);
@@ -331,11 +332,12 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 
 			self.BottomBackgroundOverlay.FadeOut:Play();
 
+			CharCustomizeFrame:SetSelectedData(RaceAndClassFrame.selectedRaceData, RaceAndClassFrame.selectedSexID, C_CharacterCreation.IsViewingAlteredForm());
+
 			-- We are entering customize mode. Grab the customizations for the selected race & sex and send it to CharCustomizeFrame before showing it
 			local reset = true;
 			self:UpdateCharCustomizationFrame(reset);
 
-			CharCustomizeFrame:SetSelectedData(RaceAndClassFrame.selectedRaceData, RaceAndClassFrame.selectedSexID, C_CharacterCreation.IsViewingAlteredForm());
 			ClassTrialSpecs:SetClass(RaceAndClassFrame.selectedClassID, RaceAndClassFrame.selectedSexID);
 			ZoneChoiceFrame:Setup();
 		else
@@ -618,11 +620,11 @@ local classLayoutIndices = {
 	WARRIOR = 1,
 	HUNTER = 2,
 	MAGE = 3,
-	PRIEST = 4,
-	ROGUE = 5,
-	DRUID = 6,
+	ROGUE = 4,
+	PRIEST = 5,
+	WARLOCK = 6,
 	PALADIN = 7,
-	WARLOCK = 8,
+	DRUID = 8,
 	SHAMAN = 9,
 	MONK = 10,
 	DEMONHUNTER = 11,
@@ -879,30 +881,40 @@ function CharacterCreateRaceAndClassMixin:OnShow()
 end
 
 function CharacterCreateRaceAndClassMixin:OnHide()
-	self:StopClassAnimations();
+	self:DestroyTargetDummies();
 end
 
--- TODO: Move these into WowEdit once we decide if per-class control (and not class/race combo control) is enough for our needs
+function CharacterCreateRaceAndClassMixin:SetupTargetDummies()
+end
+
+function CharacterCreateRaceAndClassMixin:DestroyTargetDummies()
+end
+
 function CharacterCreateRaceAndClassMixin:PlayClassAnimations()
 end
 
 function CharacterCreateRaceAndClassMixin:StopClassAnimations()
+	C_CharacterCreation.StopAllSpellVisualKitsOnCharacter();
 end
 
 function CharacterCreateRaceAndClassMixin:OnAnimKitFinished(animKitID, spellVisualKitID)
 end
 
-function CharacterCreateRaceAndClassMixin:PlayClassIdleAnimation()
-	local noBlending = false;
-	C_CharacterCreation.PlayClassIdleAnimationOnCharacter(noBlending);
+function CharacterCreateRaceAndClassMixin:PlayClassIdleAnimation(useBlending)
+	self:StopClassAnimations();
+	C_CharacterCreation.PlayClassIdleAnimationOnCharacter(not useBlending);
 end
 
 function CharacterCreateRaceAndClassMixin:PlayCustomizationAnimation()
+	self:StopClassAnimations();
 	C_CharacterCreation.PlayCustomizationIdleAnimationOnCharacter();
 end
 
 function CharacterCreateRaceAndClassMixin:IsPlayingClassAnimtion()
 	return false;
+end
+
+function CharacterCreateRaceAndClassMixin:ClearCurrentSpellVisualKit()
 end
 
 function CharacterCreateRaceAndClassMixin:UpdateState(selectedFaction)
@@ -937,7 +949,7 @@ function CharacterCreateRaceAndClassMixin:SetCharacterRace(raceID, faction)
 	if self.selectedRaceID ~= raceID then
 		CharacterCreateFrame:ResetCharacterRotation();
 		self.allowClassAnimationsAfterSeconds = CLASS_ANIM_WAIT_TIME_SECONDS;
-		self:StopClassAnimations();
+		self:ClearCurrentSpellVisualKit();
 		C_CharacterCreation.SetSelectedRace(raceID);
 	end
 
@@ -947,9 +959,10 @@ end
 function CharacterCreateRaceAndClassMixin:SetCharacterClass(classID)
 	self.allowClassAnimationsAfterSeconds = 0;
 	if self.selectedClassID ~= classID then
-		self:StopClassAnimations();
+		self:ClearCurrentSpellVisualKit();
 		C_CharacterCreation.SetSelectedClass(classID);
 	elseif not self:IsPlayingClassAnimtion() then
+		self:ClearCurrentSpellVisualKit();
 		self:PlayClassAnimations();
 	end
 
@@ -960,7 +973,7 @@ function CharacterCreateRaceAndClassMixin:SetCharacterSex(sexID)
 	if self.selectedSexID ~= sexID  then
 		CharacterCreateFrame:ResetCharacterRotation();
 		self.allowClassAnimationsAfterSeconds = CLASS_ANIM_WAIT_TIME_SECONDS;
-		self:StopClassAnimations();
+		self:ClearCurrentSpellVisualKit();
 		C_CharacterCreation.SetSelectedSex(sexID);
 	end
 
@@ -1199,7 +1212,7 @@ end
 
 function CharacterCreateNameAvailabilityStateMixin:SetupAnchors(tooltip)
 	tooltip:SetOwner(self, "ANCHOR_NONE");
-	tooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT", self.tooltipXOffset, self.tooltipYOffset);
+	tooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", self.tooltipXOffset, self.tooltipYOffset);
 end
 
 function CharacterCreateNameAvailabilityStateMixin:OnEvent(event, ...)

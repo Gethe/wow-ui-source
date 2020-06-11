@@ -88,15 +88,7 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 NPE_TutorialDragButton = {};
 function NPE_TutorialDragButton:Show(originButton, destButton)
-	local originFrame = NPE_TutorialDragOriginFrame;
-	originFrame:SetParent(originButton);
-	originFrame:SetPoint("CENTER");
-	originFrame:Show();
-
-	local targetFrame = NPE_TutorialDragTargetFrame;
-	targetFrame:SetParent(destButton:GetParent());
-	targetFrame:SetPoint("CENTER", destButton);
-	targetFrame:Show();
+	Dispatcher:RegisterEvent("OnUpdate", self);
 
 	local texture;
 	if originButton.icon then
@@ -112,23 +104,52 @@ function NPE_TutorialDragButton:Show(originButton, destButton)
 		end
 	end
 
+	local originFrame = NPE_TutorialDragOriginFrame;
+	originFrame:SetParent(originButton.DragButton or originButton);
+	originFrame:SetPoint("CENTER");
+	originFrame:Show();
+
+	local targetFrame = NPE_TutorialDragTargetFrame;
+	targetFrame:SetParent(destButton:GetParent());
+	targetFrame:SetPoint("CENTER", destButton);
+	targetFrame:Show();
+
 	local animFrame = NPE_TutorialDragAnimationFrame;
 	animFrame.Icon:SetTexture(texture);
 	
 	animFrame:SetParent(UIParent);
 	animFrame:SetFrameStrata("DIALOG");
 	animFrame:ClearAllPoints();
-	animFrame:SetPoint("CENTER", originButton);
+	animFrame:SetPoint("CENTER", originButton.DragButton or originButton);
 	animFrame:Show();
 
+	self.originFrame = originButton.DragButton or originButton;
+	self.destFrame = destButton;
+	self:Animate();
+end
+
+function NPE_TutorialDragButton:Animate()
+	local animFrame = NPE_TutorialDragAnimationFrame;
 	animFrame.Anim:Stop();
-	local ox, oy = originButton:GetCenter();
-	local tx, ty = destButton:GetCenter();
-	animFrame.Anim.Move:SetOffset(tx - ox, ty - oy);
+
+	self.ox, self.oy = self.originFrame:GetCenter();
+	self.tx, self.ty = self.destFrame:GetCenter();
+
+	animFrame.Anim.Move:SetOffset(self.tx - self.ox, self.ty - self.oy);
 	animFrame.Anim:Play();
 end
 
+function NPE_TutorialDragButton:OnUpdate()
+	local ox, oy = self.originFrame:GetCenter();
+	local tx, ty = self.destFrame:GetCenter();
+
+	if (ox ~= self.ox) or (oy ~= self.oy) or (tx ~= self.tx) or (ty ~= self.ty) then
+		self:Animate();
+	end
+end
+
 function NPE_TutorialDragButton:Hide()
+	Dispatcher:UnregisterEvent("OnUpdate", self);
 	NPE_TutorialDragOriginFrame:Hide();
 	NPE_TutorialDragTargetFrame:Hide();
 	NPE_TutorialDragAnimationFrame:Hide();

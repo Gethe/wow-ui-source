@@ -35,15 +35,13 @@ function BarberShopMixin:OnShow()
 	UIErrorsFrame:ClearAllPoints();
 	UIErrorsFrame:SetPoint("TOP", self.Banner, "BOTTOM", 0, 0);
 
-	self:SetScale(UIParent:GetScale());
-
-	local reset = true;
-	self:UpdateCharCustomizationFrame(reset);
-
 	local currentCharacterData = C_BarberShop.GetCurrentCharacterData();
 	if currentCharacterData then
 		CharCustomizeFrame:SetSelectedData(currentCharacterData.raceData, currentCharacterData.sex, C_BarberShop.IsViewingAlteredForm());
 	end
+
+	local reset = true;
+	self:UpdateCharCustomizationFrame(reset);
 
 	PlaySound(SOUNDKIT.BARBERSHOP_SIT);
 end
@@ -123,9 +121,21 @@ function BarberShopMixin:ResetCharacterRotation()
 	C_BarberShop.ResetCameraRotation();
 end
 
-function BarberShopMixin:SetViewingAlteredForm(viewingAlteredForm)
+function BarberShopMixin:SetViewingAlteredForm(viewingAlteredForm, resetCategory)
 	C_BarberShop.SetViewingAlteredForm(viewingAlteredForm);
-	self:UpdateCharCustomizationFrame();
+	self:UpdateCharCustomizationFrame(resetCategory);
+end
+
+function BarberShopMixin:SetViewingShapeshiftForm(formID)
+	C_BarberShop.SetViewingShapeshiftForm(formID);
+end
+
+function BarberShopMixin:SetModelDressState(dressedState)
+	C_BarberShop.SetModelDressState(dressedState);
+end
+
+function BarberShopMixin:SetCameraDistanceOffset(offset)
+	C_BarberShop.SetCameraDistanceOffset(offset);
 end
 
 BarberShopButtonMixin = {};

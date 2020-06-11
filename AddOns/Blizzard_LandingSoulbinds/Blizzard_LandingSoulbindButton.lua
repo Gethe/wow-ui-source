@@ -24,7 +24,6 @@ function LandingPageSoulbindButtonMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, LandingSoulbindButtonEvents);
 end
 
-
 function LandingPageSoulbindButtonMixin:OnEnter()
 	self.Highlight:Show();
 end

@@ -770,11 +770,16 @@ end
 function Class_QueueSystem:OnBegin()
 	Dispatcher:RegisterEvent("PLAYER_LEVEL_CHANGED", self);
 	Dispatcher:RegisterEvent("UNIT_INVENTORY_CHANGED", self);
+	Dispatcher:RegisterEvent("PLAYER_UNGHOST", self);
 
 	self.playerClass = TutorialHelper:GetClass();
 	if self.playerClass == "DRUID" or self.playerClass == "ROGUE" then
 		Dispatcher:RegisterEvent("UPDATE_SHAPESHIFT_FORM", self);
 	end
+end
+
+function Class_QueueSystem:PLAYER_UNGHOST()
+	self:CheckQueue();
 end
 
 function Class_QueueSystem:PLAYER_LEVEL_CHANGED(originalLevel, newLevel)
@@ -866,6 +871,10 @@ end
 
 function Class_QueueSystem:CheckQueue()
 	if self.inProgress == true then
+		return;
+	end
+
+	if UnitIsDeadOrGhost("player") then
 		return;
 	end
 
@@ -1003,7 +1012,7 @@ function Class_AddSpellToActionBar:RemindAbility()
 
 		local tutorialString = NPEV2_SPELLBOOKREMINDER:format(self.spellIDString);
 		tutorialString = TutorialHelper:FormatString(tutorialString)
-		self:ShowPointerTutorial(tutorialString, "LEFT", self.spellButton or SpellBookFrame, 50, 0, nil, "LEFT");
+		self:ShowPointerTutorial(tutorialString, "LEFT", self.flyoutButton or self.spellButton or SpellBookFrame, 50, 0, nil, "LEFT");
 	else
 		local tutorialString = NPEV2_SPELLBOOKREMINDER_PART2:format(self.spellIDString);
 		tutorialString = TutorialHelper:FormatString(tutorialString)
@@ -1455,6 +1464,7 @@ function Class_EquipFirstItemWatcher:CheckForUpgrades()
 		Tutorials.EquipTutorial:ForceBegin(item);
 		return true;
 	end
+	Tutorials.QueueSystem:TutorialFinished();
 	return false;
 end
 
@@ -1609,6 +1619,9 @@ function Class_EquipTutorial:OnBegin(data)
 		return;
 	end
 
+	Dispatcher:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", self);
+	Dispatcher:RegisterEvent("PLAYER_DEAD", self);
+
 	EventRegistry:RegisterCallback("ContainerFrame.AllBagsClosed", self.BagClosed, self);
 	EventRegistry:RegisterCallback("ContainerFrame.OpenBag", self.BagOpened, self);
 	EventRegistry:RegisterCallback("ContainerFrame.CloseBag", self.BagClosed, self);
@@ -1628,6 +1641,15 @@ function Class_EquipTutorial:OnBegin(data)
 	self:Reset();
 end
 
+function Class_EquipTutorial:PLAYER_DEAD()
+	self:Complete();
+
+	-- the player died in the middle of the tutorial, requeue it so that when the player is alive, they can try again
+	self.Timer = C_Timer.NewTimer(0.1, function()
+		Tutorials.QueueSystem:UNIT_INVENTORY_CHANGED();
+	end);
+end
+
 function Class_EquipTutorial:Reset()
 	self.success = false;
 	NPE_TutorialDragButton:Hide();
@@ -1639,6 +1661,7 @@ function Class_EquipTutorial:PrepBags()
 	-- Dirty hack to make sure all bags are closed
 	TutorialHelper:CloseAllBags();
 	self.allBagsOpened = false;
+	NPE_TutorialDragButton:Hide();
 
 	self.Timer = C_Timer.NewTimer(0.1, function()
 		local key = TutorialHelper:GetBagBinding();
@@ -1730,10 +1753,18 @@ end
 
 function Class_EquipTutorial:PLAYER_EQUIPMENT_CHANGED()
 	if (GetInventoryItemID("player", self.data.CharacterSlot) == self.data.ItemID) then
+		Dispatcher:UnregisterEvent("BAG_UPDATE_DELAYED", self);
 		self.success = true;
 		NPE_TutorialDragButton:Hide();
-		self:ShowPointerTutorial(NPEV2_SUCCESSFULLY_EQUIPPED, "LEFT", self.destFrame);
-		Dispatcher:RegisterScript(CharacterFrame, "OnHide", function() self:Complete() end, true);
+		if CharacterFrame:IsVisible() then
+			self:ShowPointerTutorial(NPEV2_SUCCESSFULLY_EQUIPPED, "LEFT", self.destFrame);
+			Dispatcher:RegisterScript(CharacterFrame, "OnHide", function() self:Complete() end, true);
+			self.EquipmentChangedTimer = C_Timer.NewTimer(8, function()
+				self:Complete();
+			end);
+		else
+			self:Complete();
+		end
 	end
 end
 
@@ -1767,13 +1798,66 @@ function Class_EquipTutorial:StartAnimation()
 	end
 
 	if self.originFrame and self.destFrame then
-		Dispatcher:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", self)
 		self.newItemPointerID = self:AddPointerTutorial(NPEV2_DRAG_TO_EQUIP, "DOWN", self.originFrame, 0, 0);
+
+		Dispatcher:RegisterEvent("BAG_UPDATE_DELAYED", self);
 		NPE_TutorialDragButton:Show(self.originFrame, self.destFrame);
 	end
 end
 
+function Class_EquipTutorial:UpdateDragOrigin()
+	local currentItemID = self.data.ItemID;
+
+	local itemInfo = {GetContainerItemInfo(self.data.Container, self.data.ContainerSlot)};
+
+	if itemInfo and itemInfo[10] == currentItemID then
+		-- nothing in the inventory changed that effected the current tutorial
+	else
+		-- the origin has changed
+		local itemFrame = nil;
+		local maxNumContainters = 4;
+
+		for containerIndex = 0, maxNumContainters do
+			local slots = GetContainerNumSlots(containerIndex);
+			if (slots > 0) then
+				for slotIndex = 1, slots do
+					local itemInfo = {GetContainerItemInfo(containerIndex, slotIndex)};
+					local itemID = itemInfo[10];
+					if itemID and itemID == currentItemID then
+						self.data.Container = containerIndex;
+						self.data.ContainerSlot = slotIndex;
+						itemFrame = TutorialHelper:GetItemContainerFrame(containerIndex, slotIndex);
+						break;
+					end
+				end
+			end
+		end
+		if itemFrame then
+			self:HidePointerTutorial(self.newItemPointerID);
+			self:StartAnimation();
+		else
+			self:Complete();
+		end
+	end
+end
+
+function Class_EquipTutorial:BAG_UPDATE_DELAYED()
+	Dispatcher:UnregisterEvent("BAG_UPDATE_DELAYED", self);
+	self:UpdateDragOrigin();
+end
+
 function Class_EquipTutorial:OnComplete()
+	NPE_TutorialDragButton:Hide();
+	self.data = nil;
+
+	if self.EquipmentChangedTimer then
+		self.EquipmentChangedTimer:Cancel();
+	end
+
+	if self.onShowID then
+		Dispatcher:UnregisterScript(CharacterFrame, "OnShow", self.onShowID);
+	end
+
 	self.Timer = C_Timer.NewTimer(0.1, function()
 		Tutorials.QueueSystem:TutorialFinished();
 	end);
@@ -2506,7 +2590,7 @@ function Class_Death_MapPrompt:OnBegin()
 end
 
 function Class_Death_MapPrompt:PLAYER_UNGHOST()
-	self:Interrupt(self);
+	self:Complete();
 end
 
 function Class_Death_MapPrompt:CORPSE_IN_RANGE()
@@ -2686,10 +2770,35 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_HunterTameTutorial = class("HunterTameTutorial", Class_TutorialBase);
 function Class_HunterTameTutorial:OnBegin()
-	if self:KnowsRequiredSpells() then
-		self:CheckForBottomLeftActionBar();
+	self:RequestBottomLeftActionBar();
+	if not self.requested then
+		if MultiBarBottomLeft:IsVisible() then
+			-- the bottom left action bar is already visible
+			if self:KnowsRequiredSpells() then
+				-- we already know the hunter spells
+				if self:CheckForSpellsOnActionBar() then
+					-- and those spells are already on the action bar
+					self:StartTameTutorial();
+				else
+					self:AddHunterSpellsToActionBar();
+				end
+			end
+		else
+			-- wait for the bottom left action bar to show up
+			Dispatcher:RegisterEvent("UPDATE_EXTRA_ACTIONBAR", self);
+		end
 	else
+		-- wait for the spells to show up in the spell book
 		Dispatcher:RegisterEvent("LEARNED_SPELL_IN_TAB", self);
+	end
+end
+
+function Class_HunterTameTutorial:RequestBottomLeftActionBar()
+	if not self.requested and not MultiBarBottomLeft:IsVisible() then
+		-- request the bottom left action bar be shown
+		Dispatcher:RegisterEvent("ACTIONBAR_SHOW_BOTTOMLEFT", self);
+		Dispatcher:RegisterEvent("UPDATE_EXTRA_ACTIONBAR", self);
+		self.requested = RequestBottomLeftActionBar();
 	end
 end
 
@@ -2702,52 +2811,49 @@ function Class_HunterTameTutorial:KnowsRequiredSpells()
 	return true;
 end
 
-function Class_HunterTameTutorial:LEARNED_SPELL_IN_TAB(spellID)
-	if self:KnowsRequiredSpells() then
-		Dispatcher:UnregisterEvent("LEARNED_SPELL_IN_TAB", self);
-		self:CheckForBottomLeftActionBar();
-	end
-end
-
-function Class_HunterTameTutorial:CheckForBottomLeftActionBar()
-	if not self.requested and not MultiBarBottomLeft:IsVisible() then
-		-- request the bottom left action bar be shown
-		Dispatcher:RegisterEvent("ACTIONBAR_SHOW_BOTTOMLEFT", self);
-		Dispatcher:RegisterEvent("UPDATE_EXTRA_ACTIONBAR", self);
-		self.requested = RequestBottomLeftActionBar();
+function Class_HunterTameTutorial:StartTameTutorial()
+	local button = TutorialHelper:GetActionButtonBySpellID(1515);
+	if button then
+		self:ShowPointerTutorial(NPEV2_HUNTER_TAME_ANIMAL, "DOWN", button, 0, 25, nil, "UP");
+		Dispatcher:RegisterEvent("PET_STABLE_UPDATE", self);
 	else
-		self:CheckForSpellsOnActionBar();
+		self:AddHunterSpellsToActionBar();
 	end
 end
-
-function Class_HunterTameTutorial:ACTIONBAR_SHOW_BOTTOMLEFT()
-	Dispatcher:UnregisterEvent("ACTIONBAR_SHOW_BOTTOMLEFT", self);
-	self:CheckForSpellsOnActionBar();
-end
-
-function Class_HunterTameTutorial:UPDATE_EXTRA_ACTIONBAR(data)
-	if (MultiBarBottomLeft:IsShown() ) then
-		Dispatcher:UnregisterEvent("ACTIONBAR_SHOW_BOTTOMLEFT", self);
-		Dispatcher:UnregisterEvent("UPDATE_EXTRA_ACTIONBAR", self);
-	end
-
-	self:CheckForSpellsOnActionBar();
-end
-
 
 function Class_HunterTameTutorial:CheckForSpellsOnActionBar()
-	local allSpellsOnBar = true;
 	for i, spellID in ipairs(TutorialData.HunterTamePetSpells) do
 		local button = TutorialHelper:GetActionButtonBySpellID(spellID);
 		if not button then
-			allSpellsOnBar = false;
-			Tutorials.QueueSystem:QueueSpellTutorial(spellID, nil, NPEV2_SPELLBOOK_TUTORIAL, "MultiBarBottomLeftButton");
+			return false;
 		end
 	end
-	if allSpellsOnBar then
-		self:StartTameTutorial();
-	else
-		Dispatcher:RegisterEvent("ACTIONBAR_SLOT_CHANGED", self);
+	return true;
+end
+
+function Class_HunterTameTutorial:AddHunterSpellsToActionBar()
+	if not self.actionBarEventID then
+		self.actionBarEventID = Dispatcher:RegisterEvent("ACTIONBAR_SLOT_CHANGED", self);
+	end
+	for i, spellID in ipairs(TutorialData.HunterTamePetSpells) do
+		local button = TutorialHelper:GetActionButtonBySpellID(spellID);
+		if not button then
+			Tutorials.QueueSystem:QueueSpellTutorial(spellID, nil, NPEV2_SPELLBOOK_TUTORIAL, "MultiBarBottomLeftButton");
+			return;
+		end
+	end
+
+	self:StartTameTutorial();
+end
+
+function Class_HunterTameTutorial:LEARNED_SPELL_IN_TAB(spellID)
+	if self:KnowsRequiredSpells() then
+		Dispatcher:UnregisterEvent("LEARNED_SPELL_IN_TAB", self);
+		if self:CheckForSpellsOnActionBar() then
+			self:StartTameTutorial();
+		else
+			self:AddHunterSpellsToActionBar();
+		end
 	end
 end
 
@@ -2757,22 +2863,38 @@ function Class_HunterTameTutorial:ACTIONBAR_SLOT_CHANGED(slot)
 	for i, spellID in ipairs(TutorialData.HunterTamePetSpells) do
 		if spellID == sID then
 			hunterSpellAddedToBar = true;
+			break;
 		elseif (actionType == "flyout" and FlyoutHasSpell(sID, spellID)) then
 			hunterSpellAddedToBar = true;
+			break;
 		end
 	end
+
 	if hunterSpellAddedToBar then
-		Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
-		self:CheckForSpellsOnActionBar();
+		self:AddHunterSpellsToActionBar();
 	end
 end
 
+function Class_HunterTameTutorial:ACTIONBAR_SHOW_BOTTOMLEFT()
+	Dispatcher:UnregisterEvent("ACTIONBAR_SHOW_BOTTOMLEFT", self);
+	Dispatcher:UnregisterEvent("UPDATE_EXTRA_ACTIONBAR", self);
+	if self:KnowsRequiredSpells() then
+		self:AddHunterSpellsToActionBar();
+	end
+end
 
-function Class_HunterTameTutorial:StartTameTutorial()
-	local button = TutorialHelper:GetActionButtonBySpellID(1515);
-	if button then
-		self:ShowPointerTutorial(NPEV2_HUNTER_TAME_ANIMAL, "DOWN", button, 0, 25, nil, "UP");
-		Dispatcher:RegisterEvent("PET_STABLE_UPDATE", self);
+function Class_HunterTameTutorial:UPDATE_EXTRA_ACTIONBAR(data)
+	if (MultiBarBottomLeft:IsShown() ) then
+		Dispatcher:UnregisterEvent("ACTIONBAR_SHOW_BOTTOMLEFT", self);
+	end
+	if self:KnowsRequiredSpells() then
+		if self:CheckForSpellsOnActionBar() then
+			self:StartTameTutorial();
+		else
+			self:AddHunterSpellsToActionBar();
+		end
+	else
+		print("dont know spells");
 	end
 end
 
@@ -2781,6 +2903,7 @@ function Class_HunterTameTutorial:PET_STABLE_UPDATE()
 end
 
 function Class_HunterTameTutorial:OnComplete()
+	Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 	Dispatcher:UnregisterEvent("PET_STABLE_UPDATE", self);
 	self:HidePointerTutorials();
 end
@@ -2862,7 +2985,9 @@ function Class_MountAddedWatcher:OnBegin()
 		-- Dirty hack to make sure all bags are closed
 		TutorialHelper:CloseAllBags();
 		Dispatcher:RegisterFunction("ToggleBackpack", function() self:BackpackOpened() end, true);
-		self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_INTRO, "DOWN", MainMenuBarBackpackButton, 0, 10, nil, "DOWN");
+		local key = TutorialHelper:GetBagBinding();
+		local tutorialString = TutorialHelper:FormatString(string.format(NPEV2_MOUNT_TUTORIAL_INTRO, key))
+		self:ShowPointerTutorial(tutorialString, "DOWN", MainMenuBarBackpackButton, 0, 10, nil, "DOWN");
 	else
 		-- the player doesn't have the mount
 		self.proceed = false;
@@ -2880,7 +3005,7 @@ function Class_MountAddedWatcher:BackpackOpened()
 	local container, slot = self:CheckHasMountItem();
 	if container and slot then
 		local itemFrame = TutorialHelper:GetItemContainerFrame(container, slot)
-		self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_P2_BEGIN, "RIGHT", itemFrame, 0, 10, nil, "RIGHT");
+		self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_P2_BEGIN, "DOWN", itemFrame, 0, 10, nil, "RIGHT");
 	else
 		-- the player doesn't have the mount
 		self.proceed = false;
@@ -2906,14 +3031,28 @@ function Class_MountAddedWatcher:OnComplete()
 	Dispatcher:UnregisterEvent("NEW_MOUNT_ADDED", self);
 	ActionButton_HideOverlayGlow(CollectionsMicroButton);
 	if self.proceed == true then
-		Tutorials.MountTutorial:Begin();
+		Tutorials.MountTutorial:Begin(self.mountID);
 	end
 end
 
 
 Class_MountTutorial = class("MountTutorial", Class_TutorialBase);
-function Class_MountTutorial:OnBegin()
-	self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_P3, "LEFT", MountJournal, 0, 10, nil, "LEFT");
+function Class_MountTutorial:OnBegin(mountID)
+	Dispatcher:RegisterEvent("ACTIONBAR_SLOT_CHANGED", self);
+	self.mountID = mountID;
+
+	if TutorialHelper:GetActionButtonBySpellID(self.mountID) then
+		self:Complete();
+		return;
+	end
+
+	self.originButton = MountJournal_GetMountButtonByMountID(self.mountID);
+	self.destButton = TutorialHelper:FindEmptyButton();
+	if(self.originButton and self.destButton) then
+		NPE_TutorialDragButton:Show(self.originButton, self.destButton);
+	end
+
+	self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_P3, "LEFT", button or MountJournal, 0, 10, nil, "LEFT");
 
 	C_Timer.After(1, function()
 		Dispatcher:RegisterFunction("ToggleCollectionsJournal", function()
@@ -2922,7 +3061,27 @@ function Class_MountTutorial:OnBegin()
 	end);
 end
 
+function Class_MountTutorial:ACTIONBAR_SLOT_CHANGED(slot)
+	local actionType, sID, subType = GetActionInfo(slot);
+
+	if sID == self.mountID then
+		self:Complete();
+	else
+		local nextEmptyButton = TutorialHelper:FindEmptyButton();
+		if not nextEmptyButton then
+			-- no more empty buttons
+			self:Complete();
+		else
+			NPE_TutorialDragButton:Hide();
+			self.destButton = nextEmptyButton;
+			NPE_TutorialDragButton:Show(self.originButton, self.destButton);
+		end
+	end
+end
+
 function Class_MountTutorial:OnComplete()
+	Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
+	NPE_TutorialDragButton:Hide();
 	self:HidePointerTutorials();
 end
 

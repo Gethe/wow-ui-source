@@ -140,11 +140,9 @@ function Tutorials:Begin()
 	-- Mount Quest
 	questID = tutorialData.GetMountQuest;
 	if C_QuestLog.IsQuestFlaggedCompleted(questID) then	-- Mount Quest is complete
-		-- did the mount get collected?
+		-- is the mount already on the action bar?
 		local mountData = TutorialHelper:FilterByRace(TutorialHelper:GetFactionData().Mounts);
-		local name, _, _, _, _, _, _, _, _, hideOnChar, isCollected = C_MountJournal.GetMountInfoByID(mountData.mountID);
-		if not isCollected then
-			-- the mount was not collected, start the tutorial
+		if not TutorialHelper:GetActionButtonBySpellID(mountData.mountID) then
 			self.MountAddedWatcher:Begin();
 		end
 	end

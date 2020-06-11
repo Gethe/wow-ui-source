@@ -86,6 +86,15 @@ local BarberShop =
 			},
 		},
 		{
+			Name = "SetCameraDistanceOffset",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "offset", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetCameraZoomLevel",
 			Type = "Function",
 
@@ -106,12 +115,30 @@ local BarberShop =
 			},
 		},
 		{
+			Name = "SetModelDressState",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "dressedState", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetViewingAlteredForm",
 			Type = "Function",
 
 			Arguments =
 			{
 				{ Name = "isViewingAlteredForm", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetViewingShapeshiftForm",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "shapeshiftFormID", Type = "number", Nilable = true },
 			},
 		},
 		{

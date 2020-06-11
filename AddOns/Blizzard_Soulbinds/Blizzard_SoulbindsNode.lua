@@ -149,11 +149,13 @@ end
 function SoulbindTreeNodeMixin:SetActivationOverlayShown(shown, displayArrow)
 	self.RingOverlay.Pulse:SetPlaying(shown);
 	self.Arrow:SetShown(displayArrow or false);
+	self.Arrow2:SetShown(displayArrow or false);
 end
 
 function SoulbindTreeNodeMixin:StopAnimations()
 	self.RingOverlay.Pulse:Stop();
 	self.Arrow:Hide();
+	self.Arrow2:Hide();
 end
 
 SoulbindTraitNodeMixin = CreateFromMixins(SoulbindTreeNodeMixin);
@@ -183,11 +185,11 @@ end
 SoulbindConduitNodeMixin = CreateFromMixins(SoulbindTreeNodeMixin);
 
 local function GetConduitEmblemAtlas(conduitType)
-	if conduitType == Enum.SoulbindConduitType.Zealous then
+	if conduitType == Enum.SoulbindConduitType.Potency then
 		return "Soulbinds_Tree_Conduit_Icon_Attack";
-	elseif conduitType == Enum.SoulbindConduitType.Vigilant then
+	elseif conduitType == Enum.SoulbindConduitType.Endurance then
 		return "Soulbinds_Tree_Conduit_Icon_Protect";
-	elseif conduitType == Enum.SoulbindConduitType.Cunning then
+	elseif conduitType == Enum.SoulbindConduitType.Finesse then
 		return "Soulbinds_Tree_Conduit_Icon_Utility";
 	end
 end
@@ -255,10 +257,10 @@ function SoulbindConduitNodeMixin:IsConduitType(type)
 	return self.node.conduitType == type;
 end
 
-function SoulbindConduitNodeMixin:SetConduitID(itemID)
-	self:SetConduitID_Internal(itemID);
+function SoulbindConduitNodeMixin:SetConduitID(conduitID)
+	self:SetConduitID_Internal(conduitID);
 
-	if itemID > 0 then
+	if conduitID > 0 then
 		self:PlayInstallAnim();
 		PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_INSTALLED);
 	end
@@ -305,54 +307,40 @@ function SoulbindConduitNodeMixin:IsInstalled()
 	return self.conduit ~= nil;
 end
 
-function SoulbindConduitNodeMixin:SetConduitID_Internal(itemID)
-	if itemID > 0 then
-		if not self.conduit or self.conduit:GetItemID() ~= itemID then
-			self.conduit = Item:CreateFromItemID(itemID);
-			local onLoad = function()
-				self.Icon:SetTexture(self.conduit:GetItemIcon());
-				self.Icon:Show();
-			end;
-			self.conduit:ContinueOnItemLoad(onLoad);
+function SoulbindConduitNodeMixin:SetConduitID_Internal(conduitID)
+	if conduitID > 0 then
+		
+		if not self.conduit or self.conduit ~= conduitID then
+			self.conduit = conduitID
 		end
+
+		self.spell = Spell:CreateFromSpellID(C_Soulbinds.GetConduitSpellID(conduitID));
+		local onLoad = function()
+			local spellTexture = GetSpellTexture(self.spell:GetSpellID());
+			self.Icon:SetTexture(spellTexture);
+			self.Icon:Show();
+		end;
+		self.spell:ContinueOnSpellLoad(onLoad);
+
 	else
 		self.Icon:Hide();
 		self.conduit = nil;
 	end
 end
 
-function SoulbindTreeNodeMixin:LoadTooltip()
-	if self.conduit then
-		local loaded = {false, false};
-		local onLoad = function(index)
-			loaded[index] = true;
-			if (loaded[1] and loaded[2]) then
-				self:SetupTooltip();
-			end
-		end;
-
-		local onSpellLoad = function()
-			onLoad(1);
-		end;
-		self.spell:ContinueOnSpellLoad(onSpellLoad);
-
-		local onConduitLoad = function()
-			onLoad(2);
-		end;
-		self.conduit:ContinueOnItemLoad(onConduitLoad);
-	else
-		local onLoad = function()
-			self:SetupTooltip();
-		end;
-		self.spell:ContinueOnSpellLoad(onLoad);
-	end
+function SoulbindConduitNodeMixin:LoadTooltip()
+	local onLoad = function()
+		self:SetupTooltip();
+	end;
+	self.spell:ContinueOnSpellLoad(onLoad);
 end
 
 function SoulbindConduitNodeMixin:AddContentToTooltip()
-	SoulbindTreeNodeMixin.AddContentToTooltip(self);
-
+	
 	if self.conduit then
-		GameTooltip_AddBlankLineToTooltip(GameTooltip);
-		EmbeddedItemTooltip_SetItemByID(GameTooltip.ItemTooltip, self.conduit:GetItemID());
+		GameTooltip_SetTitle(GameTooltip, self.spell:GetSpellName());
+		GameTooltip_AddNormalLine(GameTooltip, self.spell:GetSpellDescription(), true);
+	else
+		SoulbindTreeNodeMixin.AddContentToTooltip(self);
 	end
 end

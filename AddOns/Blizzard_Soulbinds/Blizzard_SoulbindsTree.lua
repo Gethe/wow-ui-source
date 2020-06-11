@@ -49,6 +49,8 @@ function SoulbindTreeMixin:OnEvent(event, ...)
 end
 
 function SoulbindTreeMixin:OnShow()
+	self:StopThenApplyNodeAnimations();
+
 	if self.constructed then
 		FrameUtil.RegisterFrameForEvents(self, SoulbindTreeEvents);
 	end
@@ -134,8 +136,12 @@ function SoulbindTreeMixin:StopNodeAnimations()
 	end
 end
 
-function SoulbindTreeMixin:ApplyTargetedConduitAnimation(conduitType)
+function SoulbindTreeMixin:StopThenApplyTargetedConduitAnimation(conduitType)
 	self:StopNodeAnimations();
+	
+	if not self:IsEditable() then
+		return;
+	end
 
 	for _, nodeFrame in pairs(self.nodeFrames) do
 		if nodeFrame:IsOwned() and nodeFrame:IsConduit() and nodeFrame:IsConduitType(conduitType) then
@@ -157,7 +163,7 @@ function SoulbindTreeMixin:OnInventoryItemEnter(bag, slot)
 			self.handleLeave = true;
 			
 			if not self:IsConduitDragInProgress() then
-				self:ApplyTargetedConduitAnimation(conduitType);
+				self:StopThenApplyTargetedConduitAnimation(conduitType);
 			end
 		end
 	end;
@@ -166,7 +172,7 @@ end
 
 function SoulbindTreeMixin:OnInventoryItemLeave(bag, slot)
 	if self.handleLeave and not self:IsConduitDragInProgress() then
-		self:ApplyNodeAnimations();
+		self:StopThenApplyNodeAnimations();
 	end
 	self.handleLeave = false;
 end
@@ -176,6 +182,7 @@ function SoulbindTreeMixin:OnCursorStateChanged()
 	if conduitType then
 		self.handleCursor = true;
 
+		if self:IsEditable() then
 		self:StopNodeAnimations();
 
 		for _, nodeFrame in pairs(self.nodeFrames) do
@@ -183,6 +190,8 @@ function SoulbindTreeMixin:OnCursorStateChanged()
 				nodeFrame:SetInstallOverlayShown(true);
 			end
 		end
+		end
+
 	elseif self.handleCursor then
 		self.handleCursor = false;
 
@@ -202,9 +211,9 @@ function SoulbindTreeMixin:EvaluateItemAtCursor()
 			local itemCallback = function()
 				local conduitType = C_Soulbinds.GetItemConduitType(itemLocation);
 				if conduitType then
-					self:ApplyTargetedConduitAnimation(conduitType);
+					self:StopThenApplyTargetedConduitAnimation(conduitType);
 				else
-					self:ApplyNodeAnimations();
+					self:StopThenApplyNodeAnimations();
 				end
 			end;
 			item:ContinueOnItemLoad(itemCallback);
@@ -213,12 +222,16 @@ function SoulbindTreeMixin:EvaluateItemAtCursor()
 		end
 	end
 
-	self:ApplyNodeAnimations();
+	self:StopThenApplyNodeAnimations();
 end
 
-function SoulbindTreeMixin:ApplyNodeAnimations()
+function SoulbindTreeMixin:StopThenApplyNodeAnimations()
 	self:StopNodeAnimations();
 	
+	if not self:IsEditable() then
+		return;
+	end
+
 	local selectableNodeCount = 0;
 	for _, nodeFrame in pairs(self.nodeFrames) do
 		if nodeFrame:IsSelectable() then
@@ -245,10 +258,10 @@ function SoulbindTreeMixin:ApplyNodeAnimations()
 	end
 end
 
-function SoulbindTreeMixin:OnConduitInstalled(nodeID, itemID)
+function SoulbindTreeMixin:OnConduitInstalled(nodeID, conduitID)
 	local conduitFrame = self.nodeFrames[nodeID];
 	if conduitFrame then
-		conduitFrame:SetConduitID(itemID);
+		conduitFrame:SetConduitID(conduitID);
 	end
 end
 
@@ -408,7 +421,7 @@ function SoulbindTreeMixin:Init(soulbindData)
 	end
 
 	self:SetEditable(tree.editable);
-	self:ApplyNodeAnimations();
+	self:StopThenApplyNodeAnimations();
 end
 
 StaticPopupDialogs["SOULBIND_DIALOG_REPLACE_CONDUIT"] = {

@@ -67,6 +67,18 @@ local GarrisonShared =
 				{ Name = "perkSpellID", Type = "number", Nilable = false },
 				{ Name = "researchDescription", Type = "string", Nilable = true },
 				{ Name = "playerConditionReason", Type = "string", Nilable = true },
+				{ Name = "socketInfo", Type = "GarrisonTalentSocketInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GarrisonTalentSocketInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "socketType", Type = "number", Nilable = false },
+				{ Name = "socketSubtype", Type = "number", Nilable = false },
+				{ Name = "misc0", Type = "number", Nilable = false },
+				{ Name = "misc1", Type = "number", Nilable = false },
 			},
 		},
 	},
