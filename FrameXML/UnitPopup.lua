@@ -1969,7 +1969,7 @@ function UnitPopup_OnClick (self)
 		CommunitiesFrame.CommunitiesList:SetFavorite(clubInfo.clubId, clubInfo.favoriteTimeStamp == nil);
 	elseif ( button == "COMMUNITIES_INVITE" ) then
 		local streams = C_Club.GetStreams(clubInfo.clubId);
-		local defaultStreamId = #streams > 0 and streams[1] or nil;
+		local defaultStreamId = #streams > 0 and streams[1].streamId or nil;
 		for i, stream in ipairs(streams) do
 			if stream.streamType == Enum.ClubStreamType.General or stream.streamType == Enum.ClubStreamType.Guild then
 				defaultStreamId = stream.streamId;

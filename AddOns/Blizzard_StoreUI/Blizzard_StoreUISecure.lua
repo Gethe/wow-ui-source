@@ -3015,7 +3015,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 	end
 
 	VASServiceType = productInfo.sharedData.vasServiceType;
-	VASServiceCanChangeAccount = productInfo.sharedData.canChangeAccount;
+	VASServiceCanChangeAccount = productInfo.sharedData.canChangeAccount and (productInfo.sharedData.canChangeBNetAccount or (#_G.C_Login.GetGameAccounts() > 1));
 
 	SelectedCharacter = nil;
 	for list, _ in pairs(StoreDropdownLists) do
@@ -4884,7 +4884,10 @@ function VASCharacterSelectionTransferAccountDropDown_OnClick(self)
 		end
 	end
 
-	infoTable[#infoTable+1] = {text=BLIZZARD_STORE_VAS_DIFFERENT_BNET, value=BLIZZARD_STORE_VAS_DIFFERENT_BNET, checked=(SelectedDestinationWowAccount == BLIZZARD_STORE_VAS_DIFFERENT_BNET)};
+	if StoreVASValidationFrame.productInfo.sharedData.canChangeBNetAccount then
+		infoTable[#infoTable+1] = {text=BLIZZARD_STORE_VAS_DIFFERENT_BNET, value=BLIZZARD_STORE_VAS_DIFFERENT_BNET, checked=(SelectedDestinationWowAccount == BLIZZARD_STORE_VAS_DIFFERENT_BNET)};
+	end
+
 	StoreDropDown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionTransferAccountDropDown_Callback);
 end
 

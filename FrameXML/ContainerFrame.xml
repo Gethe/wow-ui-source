@@ -345,10 +345,10 @@
 					</OnClick>
 				</Scripts>
 			</Button>-->
-			<!--<Button name="$parentAddSlotsButton" hidden="true">
+			<Button name="$parentAddSlotsButton" hidden="true">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parent" relativePoint="TOPLEFT" x="17" y="-224"/>
+					<Anchor point="TOP" relativeTo="$parent" relativePoint="TOPLEFT" x="17" y="-210"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -390,7 +390,7 @@
 						ContainerFrame_SetBackpackForceExtended(true);
 					</OnClick>
 				</Scripts>
-			</Button>-->
+			</Button>
 			<!--<Frame name="$parentExtraBagSlotsHelpBox" parentKey="ExtraBagSlotsHelpBox" inherits="GlowBoxTemplate" enableMouse="true" frameStrata="DIALOG">
 				<Size x="220" y="100"/>
 				<Anchors>

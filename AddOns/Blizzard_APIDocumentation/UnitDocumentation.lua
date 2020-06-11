@@ -940,6 +940,24 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitThreatListUpdate",
+			Type = "Event",
+			LiteralName = "UNIT_THREAT_LIST_UPDATE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitThreatSituationUpdate",
+			Type = "Event",
+			LiteralName = "UNIT_THREAT_SITUATION_UPDATE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "UpdateExhaustion",
 			Type = "Event",
 			LiteralName = "UPDATE_EXHAUSTION",

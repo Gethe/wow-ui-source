@@ -118,7 +118,7 @@ function WorldMap_DebugObjectPinMixin:OnMouseLeave(motion)
 end
 
 function WorldMap_DebugObjectPinMixin:OnClick()
-	if IsModifierKeyDown("CTRL") then
+	if IsModifierKeyDown("ALT") then
 		C_Debug.TeleportToMapDebugObject(self.index);
 	end
 end

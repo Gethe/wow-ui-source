@@ -63,6 +63,7 @@ function NamePlateDriverMixin:OnEvent(event, ...)
 		self:OnUnitFactionChanged(...);
 	elseif event == "COMMENTATOR_PLAYER_UPDATE" then
 		self:UpdateAllNames();
+		self:UpdateAllHealthColor();
 	end
 end
 
@@ -184,6 +185,12 @@ end
 function NamePlateDriverMixin:UpdateAllNames()
 	for _, frame in pairs(C_NamePlate.GetNamePlates(issecure())) do
 		CompactUnitFrame_UpdateName(frame.UnitFrame);
+	end
+end
+
+function NamePlateDriverMixin:UpdateAllHealthColor()
+	for _, frame in pairs(C_NamePlate.GetNamePlates(issecure())) do
+		CompactUnitFrame_UpdateHealthColor(frame.UnitFrame);
 	end
 end
 

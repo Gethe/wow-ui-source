@@ -2687,7 +2687,11 @@ GlueDialogTypes["UNDELETING_CHARACTER"] = {
 }
 
 function CopyCharacterFromLive()
-    CopyAccountCharacterFromLive(CopyCharacterFrame.SelectedIndex);
+    if ( not IsGMClient() ) then
+		CopyAccountCharacterFromLive(GlueDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID), CopyCharacterFrame.SelectedIndex);
+	else
+		CopyAccountCharacterFromLive(GlueDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID), CopyCharacterFrame.SelectedIndex, CopyCharacterFrame.RealmName:GetText(), CopyCharacterFrame.CharacterName:GetText());
+	end
     GlueDialog_Show("COPY_IN_PROGRESS");
 end
 
@@ -2720,9 +2724,13 @@ function CopyCharacterSearch_OnClick(self)
 end
 
 function CopyCharacterCopy_OnClick(self)
-    if ( CopyCharacterFrame.SelectedIndex and not GlueDialog:IsShown() ) then
-        local name, realm = GetAccountCharacterInfo(CopyCharacterFrame.SelectedIndex);
-        GlueDialog_Show("COPY_CHARACTER", format(COPY_CHARACTER_CONFIRM, name, realm));
+    if ( not GlueDialog:IsShown() ) then
+		if ( CopyCharacterFrame.SelectedIndex ) then
+			local name, realm = GetAccountCharacterInfo(CopyCharacterFrame.SelectedIndex);
+			GlueDialog_Show("COPY_CHARACTER", format(COPY_CHARACTER_CONFIRM, name, realm));
+		elseif ( IsGMClient() ) then
+			GlueDialog_Show("COPY_CHARACTER", format(COPY_CHARACTER_CONFIRM, CopyCharacterFrame.CharacterName:GetText(), CopyCharacterFrame.RealmName:GetText()));
+		end
     end
 end
 
@@ -2813,6 +2821,8 @@ function CopyCharacterFrame_OnShow(self)
         self.RealmName:SetFocus();
         self.CharacterName:Show();
         self.SearchButton:Show();
+		self.SearchButton:SetEnabled(C_CharacterServices.IsLiveRegionCharacterListEnabled());
+	    self.CopyButton:SetEnabled(C_CharacterServices.IsLiveRegionCharacterCopyEnabled());
     end
 	self.CopyAccountData:SetEnabled(C_CharacterServices.IsLiveRegionAccountCopyEnabled());
 end

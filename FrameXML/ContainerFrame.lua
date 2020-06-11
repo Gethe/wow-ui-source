@@ -11,21 +11,23 @@ VISIBLE_CONTAINER_SPACING = 3;
 CONTAINER_OFFSET_Y = 70;
 CONTAINER_OFFSET_X = -4;
 CONTAINER_SCALE = 0.75;
---BACKPACK_MONEY_OFFSET_DEFAULT = -231;
 BACKPACK_MONEY_OFFSET_DEFAULT = -215;
 BACKPACK_MONEY_HEIGHT_OFFSET_PER_EXTRA_ROW = 41;
 BACKPACK_BASE_HEIGHT = 240;
-BACKPACK_HEIGHT_OFFSET_PER_EXTRA_ROW = 43;
+BACKPACK_HEIGHT_OFFSET_PER_EXTRA_ROW = 41;
 BACKPACK_DEFAULT_TOPHEIGHT = 255;
-BACKPACK_EXTENDED_TOPHEIGHT = 226;
+BACKPACK_EXTENDED_TOPHEIGHT = 210;
 BACKPACK_BASE_SIZE = 16;
---FIRST_BACKPACK_BUTTON_OFFSET_BASE = -225;
-FIRST_BACKPACK_BUTTON_OFFSET_BASE = -210;
+FIRST_BACKPACK_BUTTON_OFFSET_BASE = -208;
 FIRST_BACKPACK_BUTTON_OFFSET_PER_EXTRA_ROW = 41;
 FRAME_THAT_OPENED_BAGS = nil;
 CONTAINER_BOTTOM_TEXTURE_DEFAULT_HEIGHT = 10;
 CONTAINER_BOTTOM_TEXTURE_DEFAULT_TOP_COORD = 0.330078125;
 CONTAINER_BOTTOM_TEXTURE_DEFAULT_BOTTOM_COORD = 0.349609375;
+
+TUTORIAL_BAG_SLOTS_AUTHENTICATOR = 51;
+
+ADVERTISE_SLOTS_LEVEL = 20; -- Don't show the "Add Slots" button below this level
 
 function ContainerFrame_OnLoad(self)
 	self:RegisterEvent("BAG_OPEN");
@@ -715,11 +717,13 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 	local rows = ceil(size / columns);
 	local backpackFirstButtonOffset = FIRST_BACKPACK_BUTTON_OFFSET_BASE;
 	local secured = IsAccountSecured();
+	local playerLevel = UnitLevel("player");
 
 	-- if id = 0 then its the backpack
 	if ( id == 0 ) then
 		bgTexture1Slot:Hide();
 
+		local advertiseExtraSlots = playerLevel >= ADVERTISE_SLOTS_LEVEL;
 		local extended = size > BACKPACK_BASE_SIZE;
 		local extraRows = 0;
 
@@ -738,7 +742,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 
 		_G[name.."MoneyFrame"]:Show();
 		_G[name.."MoneyFrame"]:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -2, BACKPACK_MONEY_OFFSET_DEFAULT - (BACKPACK_MONEY_HEIGHT_OFFSET_PER_EXTRA_ROW * extraRows));
-		--_G[name.."AddSlotsButton"]:SetShown(not secured and not extended);
+		_G[name.."AddSlotsButton"]:SetShown(not secured and not extended and advertiseExtraSlots);
 
 		-- Hide unused textures
 		for i=1, MAX_BG_TEXTURES do
@@ -817,7 +821,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			bgTextureMiddle2:Hide();
 			bgTextureBottom:Hide();
 			_G[name.."MoneyFrame"]:Hide();
-			--_G[name.."AddSlotsButton"]:Hide();
+			_G[name.."AddSlotsButton"]:Hide();
 		else
 			bgTexture1Slot:Hide();
 			bgTextureTop:Show();
@@ -840,7 +844,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			bgTextureBottom:SetTexture("Interface\\ContainerFrame\\UI-Bag-Components"..bagTextureSuffix);
 			-- Hide the moneyframe since its not the backpack
 			_G[name.."MoneyFrame"]:Hide();	
-			--_G[name.."AddSlotsButton"]:Hide();
+			_G[name.."AddSlotsButton"]:Hide();
 						
 			local bgTextureCount, height;
 			local rowHeight = 41;
@@ -959,16 +963,8 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			
 			itemButton:Show();
 		end
-		if (id == 0 and secured and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BAG_SLOTS_AUTHENTICATOR)) then
-			--frame.ExtraBagSlotsHelpBox:Show();
-			ContainerFrame1.isHelpBoxShown = true;
-			--ContainerFrame1.helpBoxFrame = frame.ExtraBagSlotsHelpBox;
-		else
-			--frame.ExtraBagSlotsHelpBox:Hide();
-			if (id == 0) then
-				ContainerFrame1.isHelpBoxShown = false;
-				ContainerFrame1.helpBoxFrame = nil;
-			end
+		if (id == 0 and secured and not IsTutorialFlagged(TUTORIAL_BAG_SLOTS_AUTHENTICATOR)) then
+			TriggerTutorial(TUTORIAL_BAG_SLOTS_AUTHENTICATOR);
 		end
 	end
 	for i=size + 1, MAX_CONTAINER_ITEMS, 1 do
