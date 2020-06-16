@@ -140,6 +140,16 @@ local LFGListInfo =
 	Events =
 	{
 		{
+			Name = "LfgGroupDelistedLeadershipChange",
+			Type = "Event",
+			LiteralName = "LFG_GROUP_DELISTED_LEADERSHIP_CHANGE",
+			Payload =
+			{
+				{ Name = "listingName", Type = "string", Nilable = false },
+				{ Name = "automaticDelistTimeRemaining", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "LfgListActiveEntryUpdate",
 			Type = "Event",
 			LiteralName = "LFG_LIST_ACTIVE_ENTRY_UPDATE",
